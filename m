@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8CFDB11C4B0
-	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 05:13:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DDE7E11C4B9
+	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 05:15:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727987AbfLLEMO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Dec 2019 23:12:14 -0500
-Received: from mail-pl1-f195.google.com ([209.85.214.195]:40883 "EHLO
-        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727962AbfLLEML (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Dec 2019 23:12:11 -0500
-Received: by mail-pl1-f195.google.com with SMTP id g6so11376plp.7;
-        Wed, 11 Dec 2019 20:12:11 -0800 (PST)
+        id S1727876AbfLLENW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Dec 2019 23:13:22 -0500
+Received: from mail-pl1-f194.google.com ([209.85.214.194]:39218 "EHLO
+        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727695AbfLLENW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Dec 2019 23:13:22 -0500
+Received: by mail-pl1-f194.google.com with SMTP id o9so14049plk.6;
+        Wed, 11 Dec 2019 20:13:21 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=qay1LF8Oeto8Clk9zgjvEsuMPZtPffWiYUK4/AI02p0=;
-        b=DL/sEUxRRk7dSrY8qQi/4UENYwICeEFpJ2TzWojoH3hTa8yJC/Sb10dmQfzsTZ7UXP
-         unnrvdPP4jHUuBmvGTQ3KQLbS/LkdMOm2rSZV8CPbMECEQjK+yzGqCd6+vi6NFwMHGzA
-         uB4nFPQCWxr0VZ0NmS+s3UYTNJIj67L95/1h2Nb8QIHyygfrm2s+L8TOAeB9W39LOR3D
-         ZOGmE1sTh3bAH8J4z5RK2OwWDDLIg3hIrT6VxspXMtsoz28uqG+/5zcxBmN+2lfuNb63
-         uR/5st1SzSmK/deU1vWKljrus2aHQFrpIVjr/BzfFwFYtuMcKm56hMA9SRh1GJOxXdkZ
-         XEkA==
+        bh=3wj8Dheg0t7aOx2oOyzDxBUcqj9QGe+RgbTXlwms6a8=;
+        b=r1N7j2c/zMJURipN0QTxbWPytjyUJrIn7WZ5+bPqliFjXb2hVmvhoQA6OTIHd+2y03
+         52nYVDGsbT9k+IRibuEvylq8KhGkiho1UE52ESmRBryK7pWshfAqj4e6knQO87Yh/h2a
+         FNINv5Twrp8glgmL4wayQg/84+qwRanQiHb6vf6xZ5d3D3E4VPF8VIN+JRALkYoj/DlC
+         Lb8H6wVaqn36cpO9wuU6JFHbG/z3xF6PYMwRz3DJAGsiWrPh7Dl4nErHz3GS55Ujt5cX
+         JClYjVQk8+Fqr/ERw3+wfPCTpwIkr6eFPd8RN2kqpgDUY0W0+3ot3Jxy+IV7YXpTdpyg
+         Fe7A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=qay1LF8Oeto8Clk9zgjvEsuMPZtPffWiYUK4/AI02p0=;
-        b=jSG9OoqmyNVIuTFDiJydCPv8BSmSOw/xjuRVFq6A81dgDfu3uUD5b27eNGIeq6AqMF
-         lNc2ovq1/osYwUn/XDlTpHAyd+aLCNIoALcLj/ShLW1SYW3GjUY0W6QvjeOsu3wMOvE0
-         McJJxco2JNiYQIVnQBBWg711Yp6ExSl4oBQiMmKGHak65utHBj+ftliQ4SmZ1fA/xi5O
-         DEcDjaXl2j7IKwAe01hB0WpmxZ078Uf1V9qxagG9kPqS1PIk82cVd3FTuEasN+0IVfIi
-         lXMflrGWPdDJYJCUh8yfHSQ9YNGwwU3U4UOP+NoGz1kwboLbVSdBcKlzI8J49W/WKDff
-         YAiA==
-X-Gm-Message-State: APjAAAUCwVByP22eYTQxaPtjhznOLq/LoNgMQcZyloVsJZHAcQygY7XC
-        7e72qU+kzlW2ziREsMXaQsMmDaq8
-X-Google-Smtp-Source: APXvYqx9KpCB1MZGLnDn5yOs6A/TQCl17ItRMd0pXYWmJIT8MV1XudnJWoqsT33f154a8/jI+FvN7A==
-X-Received: by 2002:a17:902:d68f:: with SMTP id v15mr5842815ply.308.1576123930730;
-        Wed, 11 Dec 2019 20:12:10 -0800 (PST)
+        bh=3wj8Dheg0t7aOx2oOyzDxBUcqj9QGe+RgbTXlwms6a8=;
+        b=f3unug2tADMIJxaqF4SPHIdkhzouu6hYYCQV6sSnfODiwdI9Ieed2BeSSRodEWRIjy
+         78mcuYdARO1r1J31eg0zZup7KYFj9d9ib6M7muiMwvJM7K4T0oQ7Icezv9PPYXI5AYUu
+         7ZqBRJ/WQXqv+FIDbR6CKyX2YhfStKbjz7V/jGqEP2Ej5wDGq0zrPzJBpRAlWgnO4kWs
+         pNvIAmc0eTLwvwiO4cO916VXnWEauUykXHktIfgw7/sFIAAo9yX9KmpA23b+5NT0M+JV
+         WqIV4rgaF+tNDSiL7Xt0NW1s4+8Ef45XvmXb4+95MHklOM7VUj3jnFn9mu3/3DGukXp9
+         v/bA==
+X-Gm-Message-State: APjAAAXoik8+Hy+qNdzEMKMty5rAcFBTLQKuIv4dJe17th8oa5Dhec+h
+        jRgfXRJY6c3THA7Okj7oKD1RyrUd
+X-Google-Smtp-Source: APXvYqx276a1h/f7HPGSuz3alCcMOUjkgid0eq8s6bOTm+l/jw8fdiG9/xSRI/bwj43vEbn0UKa/Mg==
+X-Received: by 2002:a17:902:fe8d:: with SMTP id x13mr7497211plm.232.1576124001147;
+        Wed, 11 Dec 2019 20:13:21 -0800 (PST)
 Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
-        by smtp.gmail.com with ESMTPSA id s196sm5032317pfs.136.2019.12.11.20.12.09
+        by smtp.gmail.com with ESMTPSA id i3sm4930058pfg.94.2019.12.11.20.13.19
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 11 Dec 2019 20:12:10 -0800 (PST)
-Subject: Re: [PATCH net-next v3 5/5] ethtool: provide link mode names as a
- string set
+        Wed, 11 Dec 2019 20:13:20 -0800 (PST)
+Subject: Re: [PATCH net-next v3 0/5] ethtool netlink interface, preliminary
+ part
 To:     Michal Kubecek <mkubecek@suse.cz>,
         David Miller <davem@davemloft.net>, netdev@vger.kernel.org
 Cc:     Jakub Kicinski <jakub.kicinski@netronome.com>,
@@ -56,7 +56,6 @@ Cc:     Jakub Kicinski <jakub.kicinski@netronome.com>,
         Johannes Berg <johannes@sipsolutions.net>,
         linux-kernel@vger.kernel.org
 References: <cover.1576057593.git.mkubecek@suse.cz>
- <7aa9bf09b8007967b9aa1c48b3c342fd36bcc8b4.1576057593.git.mkubecek@suse.cz>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Autocrypt: addr=f.fainelli@gmail.com; keydata=
  mQGiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
@@ -112,12 +111,12 @@ Autocrypt: addr=f.fainelli@gmail.com; keydata=
  caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
  6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9qfUATKC9NgZjRvBztfqy4
  a9BQwACgnzGuH1BVeT2J0Ra+ZYgkx7DaPR0=
-Message-ID: <f4ac49ee-79a2-b91c-ae9a-1c7ab56580f1@gmail.com>
-Date:   Wed, 11 Dec 2019 20:12:08 -0800
+Message-ID: <7814ad69-8ae8-bc93-a880-ffa351d7b005@gmail.com>
+Date:   Wed, 11 Dec 2019 20:13:19 -0800
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
  Thunderbird/68.3.0
 MIME-Version: 1.0
-In-Reply-To: <7aa9bf09b8007967b9aa1c48b3c342fd36bcc8b4.1576057593.git.mkubecek@suse.cz>
+In-Reply-To: <cover.1576057593.git.mkubecek@suse.cz>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -129,27 +128,13 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 On 12/11/2019 1:58 AM, Michal Kubecek wrote:
-> Unlike e.g. netdev features, the ethtool ioctl interface requires link mode
-> table to be in sync between kernel and userspace for userspace to be able
-> to display and set all link modes supported by kernel. The way arbitrary
-> length bitsets are implemented in netlink interface, this will be no longer
-> needed.
-> 
-> To allow userspace to access all link modes running kernel supports, add
-> table of ethernet link mode names and make it available as a string set to
-> userspace GET_STRSET requests. Add build time check to make sure names
-> are defined for all modes declared in enum ethtool_link_mode_bit_indices.
-> 
-> Once the string set is available, make it also accessible via ioctl.
-> 
-> Signed-off-by: Michal Kubecek <mkubecek@suse.cz>
-> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-> Reviewed-by: Jiri Pirko <jiri@mellanox.com>
+> As Jakub Kicinski suggested in ethtool netlink v7 discussion, this
+> submission consists only of preliminary patches which raised no objections;
+> first four patches already have Acked-by or Reviewed-by.
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-
-I would have almost treated the _Half_ modes a special to omit
-specifying Full for 90% of the remaining modes and save both characters
-and room for errors, but that's fine this way too.
+Good strategy, let's make sure we can land the entire ethtool over
+netlink for v5.6, that would be a great milestone and would open up the
+door for quite a lot of development. Thanks for your persistence on the
+subject, because this is anything but fun.
 -- 
 Florian
