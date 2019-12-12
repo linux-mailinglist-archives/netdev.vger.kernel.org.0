@@ -2,106 +2,264 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 405E811CB7E
-	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 11:56:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 783A111CB99
+	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 11:59:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728873AbfLLKz6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Dec 2019 05:55:58 -0500
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:43198 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728722AbfLLKz6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Dec 2019 05:55:58 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1576148157;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=GVuBPnfR/HUS/yWuKBmjrvaEvLDIt8r0mtmDvQvQWOM=;
-        b=g8tatkdnF4c6mxO7ufHhdGvKpWyTSoS7Lb626hI/AtACLtKEn+Sh6hkORwRGwcEzHPOxQQ
-        5rteGgVKnZ30qxK4LjICNHEly4zpN0jVl2HWgjeOLeJDGsF8bWkHN4X8hg8aAtD+WspocQ
-        XzbPgCDq2YCcsuBe/AB0Gqawn9Pb8dQ=
-Received: from mail-lf1-f70.google.com (mail-lf1-f70.google.com
- [209.85.167.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-171-ShmickerNjmLrJ6Ey_zjsA-1; Thu, 12 Dec 2019 05:55:56 -0500
-X-MC-Unique: ShmickerNjmLrJ6Ey_zjsA-1
-Received: by mail-lf1-f70.google.com with SMTP id c16so485379lfm.10
-        for <netdev@vger.kernel.org>; Thu, 12 Dec 2019 02:55:55 -0800 (PST)
+        id S1728858AbfLLK6w (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Dec 2019 05:58:52 -0500
+Received: from mail-lj1-f196.google.com ([209.85.208.196]:39670 "EHLO
+        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728777AbfLLK6w (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Dec 2019 05:58:52 -0500
+Received: by mail-lj1-f196.google.com with SMTP id e10so1773084ljj.6;
+        Thu, 12 Dec 2019 02:58:50 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=MdFiPrT4aTcu+uxYUpE8vjkyE4T7x3v0GuPMtOhzjJI=;
+        b=aw7NK/nKtju3QQ8uB7brON1d7V06/qTqGN4gClZBZGizrHTDY6P8UF6KwkhELyD/w9
+         ld1eaq8rLxUtSiBGstZCbJcxT59ItflqY+EiAjiEoIAqM9tTaik3LnA5l8kiL2xAO3yc
+         q/4THpTXfhtwJSppqiLJ/boHmXGEGA4G4s+5p8YL5ZATlnY/rXu2KAgfmGMjUO3eIpwp
+         k6Gl09u6bAvNkhTQzDA8R0yZl81Jc0H3SAEDISZikB9eZIBUpkgCmRJm+rMrGKvLxnBb
+         aSqNjvvi1BJhozn9mFtENlxA6OwNoZH5bd/sjcaQ2fI2vYfDgU8J3ODfHkCb9NYav75I
+         ox9A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=GVuBPnfR/HUS/yWuKBmjrvaEvLDIt8r0mtmDvQvQWOM=;
-        b=Wgm6RYxiJ46BE13M5yW3cH3Ad4UFx53BxINJyk7KWx9pTgf6tE0iziE8gdW2O1D2su
-         8TdJ7nAic7u0rnzvtOsJQ/VE/NYbXjxAYG6NCQhMwKm3eEqO08M8SHr3Mg0z5fhMCf1P
-         n0TVrydpiSr1xHhORnmVvzs/HG1ZPrnyNRflMq9iHzrDpl/rnVadkjACWlV6ZDyZGkzl
-         B8M3x+DztNnXj5Dz66IkHZEMagleYlBTZ66xR+T2zkvIVPSqFY5OH08wLMoQK/Y2370u
-         v/COCUg7aqJn+NR+Pt0bZN9rmLyAyRskl/igXfDS6B1jw3U++wqCuX7OamasN2d1XPK0
-         eKNA==
-X-Gm-Message-State: APjAAAVXsYYOyuvetVA1F1CCOPKc5fy372IddeyK/5dBeHnpapQ3/B7O
-        HXGBzvNRlM/K4LyLAK0yWaArMT39sYHp8NHOvLjMncRWdvpM5CM3rmiZGpdXhBAcW+8T3rg3R8T
-        rFIUKvy1+Afr7TOY6
-X-Received: by 2002:a2e:6e03:: with SMTP id j3mr5586819ljc.27.1576148154768;
-        Thu, 12 Dec 2019 02:55:54 -0800 (PST)
-X-Google-Smtp-Source: APXvYqzQulJb9cL64aWnAVkDEjCXAkMtslsz6volfbLipNj/bndQRMaE4qy42O8bTfWr0N4Tt16Qug==
-X-Received: by 2002:a2e:6e03:: with SMTP id j3mr5586810ljc.27.1576148154561;
-        Thu, 12 Dec 2019 02:55:54 -0800 (PST)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id v26sm2783102lfq.73.2019.12.12.02.55.53
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=MdFiPrT4aTcu+uxYUpE8vjkyE4T7x3v0GuPMtOhzjJI=;
+        b=bT0dE6PMrRHpGF15uDl4MP0BF2grvh8miyOVpXmYozv2rviTYOS8MiDTV6ntfj8O1z
+         Rc59puP8vcGoLsFgXsFa7xVMww+RTisN8ocQMKb5TXMk0Z42VJP11RCXro+USOGD4yb0
+         9yABcy/cmDcpSKipIlmVOuw3/WXwTawQVVEqGKiM5O+rLg1onRSsaMLdQjpLwQzW868G
+         6QvvlUGHrj5VCwOH8hyWPTAJyw9lDQEuY3n/Z5ALngs3mzxErxMmZy6LzpmZrdHO2BWR
+         9QB/Z1tDSaYED/4uiLUTcGi/rAkfiHg7NowfCBIzD025i/d0m+w2C8pos1LDE6D35qul
+         bJ/A==
+X-Gm-Message-State: APjAAAU3R8bgVE1ms2d4/q5rgRtb1eJ0XN69EsLIaAdqkql4gJxKHlI4
+        lnOVHQ+L+3zgn9B0ID+be3I=
+X-Google-Smtp-Source: APXvYqwgVbK3KavsgLhtzDUGEnxKcVdSmx0O0TkFgq6nQgLJJ3VIP69yDYUcUeXrfN73RP4eyT6DGg==
+X-Received: by 2002:a2e:9610:: with SMTP id v16mr5560953ljh.88.1576148329191;
+        Thu, 12 Dec 2019 02:58:49 -0800 (PST)
+Received: from ul001888.synapse.com (18-129-132-95.pool.ukrtel.net. [95.132.129.18])
+        by smtp.gmail.com with ESMTPSA id f24sm2811496ljm.12.2019.12.12.02.58.47
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 Dec 2019 02:55:53 -0800 (PST)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 7FE311819EA; Thu, 12 Dec 2019 11:55:52 +0100 (CET)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Johannes Berg <johannes@sipsolutions.net>,
-        Jens Axboe <axboe@kernel.dk>,
-        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Steve French <smfrench@gmail.com>
-Cc:     "linux-wireless\@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>
-Subject: Re: iwlwifi warnings in 5.5-rc1
-In-Reply-To: <5d82fa60fa8170c6a41e87650785ba008da11826.camel@sipsolutions.net>
-References: <ceb74ea2-6a1b-4cef-8749-db21a2ee4311@kernel.dk> <d4a48cbdc4b0db7b07b8776a1ee70b140e8a9bbf.camel@sipsolutions.net> <87o8wfeyx5.fsf@toke.dk> <e65574ac1bb414c9feb3d51e5cbd643c2907b221.camel@sipsolutions.net> <87d0cugbe5.fsf@toke.dk> <5d82fa60fa8170c6a41e87650785ba008da11826.camel@sipsolutions.net>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Thu, 12 Dec 2019 11:55:52 +0100
-Message-ID: <87sglpert3.fsf@toke.dk>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+        Thu, 12 Dec 2019 02:58:48 -0800 (PST)
+From:   Vasyl Gomonovych <gomonovych@gmail.com>
+To:     jeffrey.t.kirsher@intel.com, davem@davemloft.net,
+        intel-wired-lan@lists.osuosl.org, gomonovych@gmail.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] igb: index regs_buff array via index variable
+Date:   Thu, 12 Dec 2019 11:58:47 +0100
+Message-Id: <20191212105847.16488-1-gomonovych@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Johannes Berg <johannes@sipsolutions.net> writes:
+This patch is just a preparation for additional register dump in regs_buff.
+To make new register insertion in the middle of regs_buff array easier
+change array indexing to use local counter reg_ix.
 
-> On Wed, 2019-12-11 at 15:55 +0100, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
->> Johannes Berg <johannes@sipsolutions.net> writes:
->>=20
->> > On Wed, 2019-12-11 at 15:09 +0100, Toke H=C3=B8iland-J=C3=B8rgensen wr=
-ote:
->> > > If we're doing this on a per-driver basis, let's make it a proper
->> > > NL80211_EXT_FEATURE and expose it to userspace; that way users can at
->> > > least discover if it's supported on their device. I can send a patch
->> > > adding that...
->> >=20
->> > Sure. Just didn't get to that yet, but if you want to send a patch
->> > that's very welcome. I have to run out now, will be back in the evening
->> > at most.
->>=20
->> Patch here (for those not following linux-wireless):
->> https://patchwork.kernel.org/project/linux-wireless/list/?series=3D215107
->
-> Thanks!
->
-> Maybe I should roll that into a single patch so it's actually easier to
-> apply as a bugfix while keeping ath10k on AQL for 5.5, otherwise it
-> could be argued that the ath10k patch is a feature for -next ...
+---
 
-Yeah, good point. Since it seems I'm sending a v2 anyway, I'll combine
-the two for that...
+Basically this path is just a subject to ask
+How to add a new register to dump from dataseet
+Because it is logically better to add an additional register
+in the middle of an array but that will break ABI.
+To not have the ABI problem we should just add it at the
+end of the array and increase the array size.
 
--Toke
+---
+
+Signed-off-by: Vasyl Gomonovych <gomonovych@gmail.com>
+---
+ drivers/net/ethernet/intel/igb/igb_ethtool.c | 110 ++++++++++---------
+ 1 file changed, 57 insertions(+), 53 deletions(-)
+
+diff --git a/drivers/net/ethernet/intel/igb/igb_ethtool.c b/drivers/net/ethernet/intel/igb/igb_ethtool.c
+index 3182b059bf55..4531f7ea9d99 100644
+--- a/drivers/net/ethernet/intel/igb/igb_ethtool.c
++++ b/drivers/net/ethernet/intel/igb/igb_ethtool.c
+@@ -459,6 +459,7 @@ static void igb_get_regs(struct net_device *netdev,
+ 	struct e1000_hw *hw = &adapter->hw;
+ 	u32 *regs_buff = p;
+ 	u8 i;
++	int reg_ix = 0;
+ 
+ 	memset(p, 0, IGB_REGS_LEN * sizeof(u32));
+ 
+@@ -603,116 +604,119 @@ static void igb_get_regs(struct net_device *netdev,
+ 	regs_buff[119] = adapter->stats.scvpc;
+ 	regs_buff[120] = adapter->stats.hrmpc;
+ 
++	reg_ix = 121;
+ 	for (i = 0; i < 4; i++)
+-		regs_buff[121 + i] = rd32(E1000_SRRCTL(i));
++		regs_buff[reg_ix++] = rd32(E1000_SRRCTL(i));
+ 	for (i = 0; i < 4; i++)
+-		regs_buff[125 + i] = rd32(E1000_PSRTYPE(i));
++		regs_buff[reg_ix++] = rd32(E1000_PSRTYPE(i));
+ 	for (i = 0; i < 4; i++)
+-		regs_buff[129 + i] = rd32(E1000_RDBAL(i));
++		regs_buff[reg_ix++] = rd32(E1000_RDBAL(i));
+ 	for (i = 0; i < 4; i++)
+-		regs_buff[133 + i] = rd32(E1000_RDBAH(i));
++		regs_buff[reg_ix++] = rd32(E1000_RDBAH(i));
+ 	for (i = 0; i < 4; i++)
+-		regs_buff[137 + i] = rd32(E1000_RDLEN(i));
++		regs_buff[reg_ix++] = rd32(E1000_RDLEN(i));
+ 	for (i = 0; i < 4; i++)
+-		regs_buff[141 + i] = rd32(E1000_RDH(i));
++		regs_buff[reg_ix++] = rd32(E1000_RDH(i));
+ 	for (i = 0; i < 4; i++)
+-		regs_buff[145 + i] = rd32(E1000_RDT(i));
++		regs_buff[reg_ix++] = rd32(E1000_RDT(i));
+ 	for (i = 0; i < 4; i++)
+-		regs_buff[149 + i] = rd32(E1000_RXDCTL(i));
++		regs_buff[reg_ix++] = rd32(E1000_RXDCTL(i));
+ 
+ 	for (i = 0; i < 10; i++)
+-		regs_buff[153 + i] = rd32(E1000_EITR(i));
++		regs_buff[reg_ix++] = rd32(E1000_EITR(i));
+ 	for (i = 0; i < 8; i++)
+-		regs_buff[163 + i] = rd32(E1000_IMIR(i));
++		regs_buff[reg_ix++] = rd32(E1000_IMIR(i));
+ 	for (i = 0; i < 8; i++)
+-		regs_buff[171 + i] = rd32(E1000_IMIREXT(i));
++		regs_buff[reg_ix++] = rd32(E1000_IMIREXT(i));
+ 	for (i = 0; i < 16; i++)
+-		regs_buff[179 + i] = rd32(E1000_RAL(i));
++		regs_buff[reg_ix++] = rd32(E1000_RAL(i));
+ 	for (i = 0; i < 16; i++)
+-		regs_buff[195 + i] = rd32(E1000_RAH(i));
++		regs_buff[reg_ix++] = rd32(E1000_RAH(i));
+ 
+ 	for (i = 0; i < 4; i++)
+-		regs_buff[211 + i] = rd32(E1000_TDBAL(i));
++		regs_buff[reg_ix++] = rd32(E1000_TDBAL(i));
+ 	for (i = 0; i < 4; i++)
+-		regs_buff[215 + i] = rd32(E1000_TDBAH(i));
++		regs_buff[reg_ix++] = rd32(E1000_TDBAH(i));
+ 	for (i = 0; i < 4; i++)
+-		regs_buff[219 + i] = rd32(E1000_TDLEN(i));
++		regs_buff[reg_ix++] = rd32(E1000_TDLEN(i));
+ 	for (i = 0; i < 4; i++)
+-		regs_buff[223 + i] = rd32(E1000_TDH(i));
++		regs_buff[reg_ix++] = rd32(E1000_TDH(i));
+ 	for (i = 0; i < 4; i++)
+-		regs_buff[227 + i] = rd32(E1000_TDT(i));
++		regs_buff[reg_ix++] = rd32(E1000_TDT(i));
+ 	for (i = 0; i < 4; i++)
+-		regs_buff[231 + i] = rd32(E1000_TXDCTL(i));
++		regs_buff[reg_ix++] = rd32(E1000_TXDCTL(i));
+ 	for (i = 0; i < 4; i++)
+-		regs_buff[235 + i] = rd32(E1000_TDWBAL(i));
++		regs_buff[reg_ix++] = rd32(E1000_TDWBAL(i));
+ 	for (i = 0; i < 4; i++)
+-		regs_buff[239 + i] = rd32(E1000_TDWBAH(i));
++		regs_buff[reg_ix++] = rd32(E1000_TDWBAH(i));
+ 	for (i = 0; i < 4; i++)
+-		regs_buff[243 + i] = rd32(E1000_DCA_TXCTRL(i));
++		regs_buff[reg_ix++] = rd32(E1000_DCA_TXCTRL(i));
+ 
+ 	for (i = 0; i < 4; i++)
+-		regs_buff[247 + i] = rd32(E1000_IP4AT_REG(i));
++		regs_buff[reg_ix++] = rd32(E1000_IP4AT_REG(i));
+ 	for (i = 0; i < 4; i++)
+-		regs_buff[251 + i] = rd32(E1000_IP6AT_REG(i));
++		regs_buff[reg_ix++] = rd32(E1000_IP6AT_REG(i));
+ 	for (i = 0; i < 32; i++)
+-		regs_buff[255 + i] = rd32(E1000_WUPM_REG(i));
++		regs_buff[reg_ix++] = rd32(E1000_WUPM_REG(i));
+ 	for (i = 0; i < 128; i++)
+-		regs_buff[287 + i] = rd32(E1000_FFMT_REG(i));
++		regs_buff[reg_ix++] = rd32(E1000_FFMT_REG(i));
+ 	for (i = 0; i < 128; i++)
+-		regs_buff[415 + i] = rd32(E1000_FFVT_REG(i));
++		regs_buff[reg_ix++] = rd32(E1000_FFVT_REG(i));
+ 	for (i = 0; i < 4; i++)
+-		regs_buff[543 + i] = rd32(E1000_FFLT_REG(i));
++		regs_buff[reg_ix++] = rd32(E1000_FFLT_REG(i));
+ 
+-	regs_buff[547] = rd32(E1000_TDFH);
+-	regs_buff[548] = rd32(E1000_TDFT);
+-	regs_buff[549] = rd32(E1000_TDFHS);
+-	regs_buff[550] = rd32(E1000_TDFPC);
++	regs_buff[reg_ix++] = rd32(E1000_TDFH);
++	regs_buff[reg_ix++] = rd32(E1000_TDFT);
++	regs_buff[reg_ix++] = rd32(E1000_TDFHS);
++	regs_buff[reg_ix++] = rd32(E1000_TDFPC);
+ 
+ 	if (hw->mac.type > e1000_82580) {
+-		regs_buff[551] = adapter->stats.o2bgptc;
+-		regs_buff[552] = adapter->stats.b2ospc;
+-		regs_buff[553] = adapter->stats.o2bspc;
+-		regs_buff[554] = adapter->stats.b2ogprc;
++		regs_buff[reg_ix++] = adapter->stats.o2bgptc;
++		regs_buff[reg_ix++] = adapter->stats.b2ospc;
++		regs_buff[reg_ix++] = adapter->stats.o2bspc;
++		regs_buff[reg_ix++] = adapter->stats.b2ogprc;
+ 	}
+ 
++	reg_ix = 555;
+ 	if (hw->mac.type == e1000_82576) {
+ 		for (i = 0; i < 12; i++)
+-			regs_buff[555 + i] = rd32(E1000_SRRCTL(i + 4));
++			regs_buff[reg_ix++] = rd32(E1000_SRRCTL(i + 4));
+ 		for (i = 0; i < 4; i++)
+-			regs_buff[567 + i] = rd32(E1000_PSRTYPE(i + 4));
++			regs_buff[reg_ix++] = rd32(E1000_PSRTYPE(i + 4));
+ 		for (i = 0; i < 12; i++)
+-			regs_buff[571 + i] = rd32(E1000_RDBAL(i + 4));
++			regs_buff[reg_ix++] = rd32(E1000_RDBAL(i + 4));
+ 		for (i = 0; i < 12; i++)
+-			regs_buff[583 + i] = rd32(E1000_RDBAH(i + 4));
++			regs_buff[reg_ix++] = rd32(E1000_RDBAH(i + 4));
+ 		for (i = 0; i < 12; i++)
+-			regs_buff[595 + i] = rd32(E1000_RDLEN(i + 4));
++			regs_buff[reg_ix++] = rd32(E1000_RDLEN(i + 4));
+ 		for (i = 0; i < 12; i++)
+-			regs_buff[607 + i] = rd32(E1000_RDH(i + 4));
++			regs_buff[reg_ix++] = rd32(E1000_RDH(i + 4));
+ 		for (i = 0; i < 12; i++)
+-			regs_buff[619 + i] = rd32(E1000_RDT(i + 4));
++			regs_buff[reg_ix++] = rd32(E1000_RDT(i + 4));
+ 		for (i = 0; i < 12; i++)
+-			regs_buff[631 + i] = rd32(E1000_RXDCTL(i + 4));
++			regs_buff[reg_ix++] = rd32(E1000_RXDCTL(i + 4));
+ 
+ 		for (i = 0; i < 12; i++)
+-			regs_buff[643 + i] = rd32(E1000_TDBAL(i + 4));
++			regs_buff[reg_ix++] = rd32(E1000_TDBAL(i + 4));
+ 		for (i = 0; i < 12; i++)
+-			regs_buff[655 + i] = rd32(E1000_TDBAH(i + 4));
++			regs_buff[reg_ix++] = rd32(E1000_TDBAH(i + 4));
+ 		for (i = 0; i < 12; i++)
+-			regs_buff[667 + i] = rd32(E1000_TDLEN(i + 4));
++			regs_buff[reg_ix++] = rd32(E1000_TDLEN(i + 4));
+ 		for (i = 0; i < 12; i++)
+-			regs_buff[679 + i] = rd32(E1000_TDH(i + 4));
++			regs_buff[reg_ix++] = rd32(E1000_TDH(i + 4));
+ 		for (i = 0; i < 12; i++)
+-			regs_buff[691 + i] = rd32(E1000_TDT(i + 4));
++			regs_buff[reg_ix++] = rd32(E1000_TDT(i + 4));
+ 		for (i = 0; i < 12; i++)
+-			regs_buff[703 + i] = rd32(E1000_TXDCTL(i + 4));
++			regs_buff[reg_ix++] = rd32(E1000_TXDCTL(i + 4));
+ 		for (i = 0; i < 12; i++)
+-			regs_buff[715 + i] = rd32(E1000_TDWBAL(i + 4));
++			regs_buff[reg_ix++] = rd32(E1000_TDWBAL(i + 4));
+ 		for (i = 0; i < 12; i++)
+-			regs_buff[727 + i] = rd32(E1000_TDWBAH(i + 4));
++			regs_buff[reg_ix++] = rd32(E1000_TDWBAH(i + 4));
+ 	}
+ 
++	reg_ix = 739;
+ 	if (hw->mac.type == e1000_i210 || hw->mac.type == e1000_i211)
+-		regs_buff[739] = rd32(E1000_I210_RR2DCDELAY);
++		regs_buff[reg_ix] = rd32(E1000_I210_RR2DCDELAY);
+ }
+ 
+ static int igb_get_eeprom_len(struct net_device *netdev)
+-- 
+2.17.1
 
