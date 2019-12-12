@@ -2,170 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2246111CD33
-	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 13:32:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A68011CD38
+	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 13:33:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729228AbfLLMcM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Dec 2019 07:32:12 -0500
-Received: from mx2.suse.de ([195.135.220.15]:53394 "EHLO mx1.suse.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1729092AbfLLMcL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 12 Dec 2019 07:32:11 -0500
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id 1D740AC35;
-        Thu, 12 Dec 2019 12:32:07 +0000 (UTC)
-Message-ID: <0a3e22d627a70cb60237c811b5874b9a4413329f.camel@suse.de>
-Subject: Re: [PATCH v4 7/8] linux/log2.h: Fix 64bit calculations in
- roundup/down_pow_two()
-From:   Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
-To:     Robin Murphy <robin.murphy@arm.com>, andrew.murray@arm.com,
-        maz@kernel.org, linux-kernel@vger.kernel.org,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Emilio =?ISO-8859-1?Q?L=F3pez?= <emilio@elopez.com.ar>,
-        Maxime Ripard <mripard@kernel.org>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Mike Marciniszyn <mike.marciniszyn@intel.com>,
-        Dennis Dalessandro <dennis.dalessandro@intel.com>,
-        Yishai Hadas <yishaih@mellanox.com>,
-        Moni Shoua <monis@mellanox.com>,
-        David Woodhouse <dwmw2@infradead.org>,
-        Lu Baolu <baolu.lu@linux.intel.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        Mirko Lindner <mlindner@marvell.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Solarflare linux maintainers <linux-net-drivers@solarflare.com>,
-        Edward Cree <ecree@solarflare.com>,
-        Martin Habets <mhabets@solarflare.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Eric Biederman <ebiederm@xmission.com>,
-        Thomas Graf <tgraf@suug.ch>,
-        Herbert Xu <herbert@gondor.apana.org.au>
-Cc:     james.quinlan@broadcom.com, mbrugger@suse.com,
-        f.fainelli@gmail.com, phil@raspberrypi.org, wahrenst@gmx.net,
-        jeremy.linton@arm.com, linux-pci@vger.kernel.org,
-        linux-rpi-kernel@lists.infradead.org,
-        Robin Murphy <robin.murphy@arm.con>,
-        Doug Ledford <dledford@redhat.com>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        "David S. Miller" <davem@davemloft.net>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Anna Schumaker <anna.schumaker@netapp.com>,
-        "J. Bruce Fields" <bfields@fieldses.org>,
-        Chuck Lever <chuck.lever@oracle.com>,
-        linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-rdma@vger.kernel.org, iommu@lists.linux-foundation.org,
-        netdev@vger.kernel.org, kexec@lists.infradead.org,
-        linux-nfs@vger.kernel.org
-Date:   Thu, 12 Dec 2019 13:31:57 +0100
-In-Reply-To: <70c6b704-a12a-fb44-e93f-a6db12ed928f@arm.com>
-References: <20191203114743.1294-1-nsaenzjulienne@suse.de>
-         <20191203114743.1294-8-nsaenzjulienne@suse.de>
-         <70c6b704-a12a-fb44-e93f-a6db12ed928f@arm.com>
-Content-Type: multipart/signed; micalg="pgp-sha256";
-        protocol="application/pgp-signature"; boundary="=-FrLm7Huzs2OM/GGn8vDZ"
-User-Agent: Evolution 3.34.2 
+        id S1729183AbfLLMdn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Dec 2019 07:33:43 -0500
+Received: from correo.us.es ([193.147.175.20]:45566 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729092AbfLLMdn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 12 Dec 2019 07:33:43 -0500
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id DACE7DA722
+        for <netdev@vger.kernel.org>; Thu, 12 Dec 2019 13:33:39 +0100 (CET)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id CDA43DA701
+        for <netdev@vger.kernel.org>; Thu, 12 Dec 2019 13:33:39 +0100 (CET)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id C355EDA703; Thu, 12 Dec 2019 13:33:39 +0100 (CET)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,URIBL_BLOCKED,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 8B27DDA712;
+        Thu, 12 Dec 2019 13:33:37 +0100 (CET)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Thu, 12 Dec 2019 13:33:37 +0100 (CET)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (129.166.216.87.static.jazztel.es [87.216.166.129])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id 4EC5D41E4801;
+        Thu, 12 Dec 2019 13:33:37 +0100 (CET)
+Date:   Thu, 12 Dec 2019 13:33:37 +0100
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Xin Long <lucien.xin@gmail.com>
+Cc:     network dev <netdev@vger.kernel.org>,
+        netfilter-devel@vger.kernel.org, davem <davem@davemloft.net>
+Subject: Re: [PATCH nf-next 1/7] netfilter: nft_tunnel: parse ERSPAN_VERSION
+ attr as u8
+Message-ID: <20191212123337.oozyghzz2j2qfkjs@salvia>
+References: <cover.1575779993.git.lucien.xin@gmail.com>
+ <981718e8e2ca5cd34d1153f54eae06ab2f087c07.1575779993.git.lucien.xin@gmail.com>
+ <20191211215104.qnvifdmlg55ox45b@salvia>
+ <CADvbK_cxeZmJa_FMd+p_35CPOSMDfnos1j3TC0_3u9TdmZZH=g@mail.gmail.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CADvbK_cxeZmJa_FMd+p_35CPOSMDfnos1j3TC0_3u9TdmZZH=g@mail.gmail.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, Dec 12, 2019 at 11:20:19AM +0800, Xin Long wrote:
+> On Thu, Dec 12, 2019 at 5:51 AM Pablo Neira Ayuso <pablo@netfilter.org> wrote:
+> >
+> > Hi,
+> >
+> > On Sun, Dec 08, 2019 at 12:41:31PM +0800, Xin Long wrote:
+> > > To keep consistent with ipgre_policy, it's better to parse
+> > > ERSPAN_VERSION attr as u8, as it does in act_tunnel_key,
+> > > cls_flower and ip_tunnel_core.
+> > >
+> > > Signed-off-by: Xin Long <lucien.xin@gmail.com>
+> > > ---
+> > >  net/netfilter/nft_tunnel.c | 5 +++--
+> > >  1 file changed, 3 insertions(+), 2 deletions(-)
+> > >
+> > > diff --git a/net/netfilter/nft_tunnel.c b/net/netfilter/nft_tunnel.c
+> > > index 3d4c2ae..f76cd7d 100644
+> > > --- a/net/netfilter/nft_tunnel.c
+> > > +++ b/net/netfilter/nft_tunnel.c
+> > > @@ -248,8 +248,9 @@ static int nft_tunnel_obj_vxlan_init(const struct nlattr *attr,
+> > >  }
+> > >
+> > >  static const struct nla_policy nft_tunnel_opts_erspan_policy[NFTA_TUNNEL_KEY_ERSPAN_MAX + 1] = {
+> > > +     [NFTA_TUNNEL_KEY_ERSPAN_VERSION]        = { .type = NLA_U8 },
+> > >       [NFTA_TUNNEL_KEY_ERSPAN_V1_INDEX]       = { .type = NLA_U32 },
+> > > -     [NFTA_TUNNEL_KEY_ERSPAN_V2_DIR] = { .type = NLA_U8 },
+> > > +     [NFTA_TUNNEL_KEY_ERSPAN_V2_DIR]         = { .type = NLA_U8 },
+> > >       [NFTA_TUNNEL_KEY_ERSPAN_V2_HWID]        = { .type = NLA_U8 },
+> > >  };
+> > >
+> > > @@ -266,7 +267,7 @@ static int nft_tunnel_obj_erspan_init(const struct nlattr *attr,
+> > >       if (err < 0)
+> > >               return err;
+> > >
+> > > -     version = ntohl(nla_get_be32(tb[NFTA_TUNNEL_KEY_ERSPAN_VERSION]));
+> > > +     version = nla_get_u8(tb[NFTA_TUNNEL_KEY_ERSPAN_VERSION]);
+> >
+> > I think NFTA_TUNNEL_KEY_ERSPAN_VERSION as 32-bit is just fine.
+> >
+> > Netlink will be adding the padding anyway for u8.
+> >
+> > I would suggest you leave this as is.
+> okay.
+> 
+> do you think I should prepare another patch/fix for the missing nla_policy part?
+> [NFTA_TUNNEL_KEY_ERSPAN_VERSION]        = { .type = NLA_U32 },
 
---=-FrLm7Huzs2OM/GGn8vDZ
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-Hi Robin,
-
-On Thu, 2019-12-05 at 17:48 +0000, Robin Murphy wrote:
-> On 03/12/2019 11:47 am, Nicolas Saenz Julienne wrote:
-> > Some users need to make sure their rounding function accepts and return=
-s
-> > 64bit long variables regardless of the architecture. Sadly
-> > roundup/rounddown_pow_two() takes and returns unsigned longs. It turns
-> > out ilog2() already handles 32/64bit calculations properly, and being
-> > the building block to the round functions we can rework them as a
-> > wrapper around it.
->=20
-> Neat! Although all the additional ULL casts this introduces seem=20
-> somewhat unwelcome - I suppose the (1ULL << (ilog2(n))) makes it=20
-> effectively always return unsigned long long now. Might it make sense to=
-=20
-> cast the return value to typeof(n) to avoid this slightly non-obvious=20
-> behaviour (and the associated churn)?
-
-It might alleviate some of the churn alright but I don't think a cast is re=
-ally
-going to make the behaviour more obvious. Say your expression is a big mess=
-,
-you'll have to analyze it to infer the output type, keeping in mind things =
-like
-integer promotion. See this example, 'params->nelem_hint' and
-'params->min_size' are u16:
-
-	diff --git a/lib/rhashtable.c b/lib/rhashtable.c
-	index bdb7e4cadf05..70908678c7a8 100644
-	--- a/lib/rhashtable.c
-	+++ b/lib/rhashtable.c
-	@@ -950,7 +950,7 @@ static size_t rounded_hashtable_size(const struct rhas=
-htable_params *params)
-
-		if (params->nelem_hint)
-			retsize =3D max(roundup_pow_of_two(params->nelem_hint * 4 / 3),
-	-                             (unsigned long)params->min_size);
-	+                             (unsigned long long)params->min_size);
-		else
-			retsize =3D max(HASH_DEFAULT_SIZE,
-				      (unsigned long)params->min_size);
-
-With a cast the patch will look like this:
-
-	diff --git a/lib/rhashtable.c b/lib/rhashtable.c
-	index bdb7e4cadf05..70908678c7a8 100644
-	--- a/lib/rhashtable.c
-	+++ b/lib/rhashtable.c
-	@@ -950,7 +950,7 @@ static size_t rounded_hashtable_size(const struct rhas=
-htable_params *params)
-
-		if (params->nelem_hint)
-			retsize =3D max(roundup_pow_of_two(params->nelem_hint * 4 / 3),
-	-                             (unsigned long)params->min_size);
-	+                             (int)params->min_size);
-		else
-			retsize =3D max(HASH_DEFAULT_SIZE,
-				      (unsigned long)params->min_size);
-
-To me it's even less obvious than with a fixed ULL.
-
-My intuition tells me to keep it as similar as the old behaviour, at the
-expense of the extra churn (which is not that different from the current st=
-atus
-quo anyway). That said, I'll be happy to change it.
-
-Regards,
-Nicolas
-
-
---=-FrLm7Huzs2OM/GGn8vDZ
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part
-Content-Transfer-Encoding: 7bit
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCAAdFiEErOkkGDHCg2EbPcGjlfZmHno8x/4FAl3yMz0ACgkQlfZmHno8
-x/50Nwf8DZv64TadvwE8CB4bWgsqMtbiu/fef5NUbUYuFUED8TIdE3BewSgcKkjR
-UcmnTnVxq9m204FNfGnEcHAS2TjDnv2GvkRDGKIAoXt2ewgnMSoS5cwHJrHfHLr9
-KX2ULSnGQqqtWEYGUe9h/hzd1mfC0gun3Mqafs1lQD7h2XeckKMt0iEa/WtfYGnP
-8UJbPU5wHnCJwEbQHCtc+mV/kcQfh+3u5OHh3O4KQHcBo5TJVJovpZ6jBV4uBV1G
-ePj2s84UCGZcXy1ZuwV2g32zpn8RgDXDWmdEgJ3hi1bTYZZzG4YQc2sTpjidvRB7
-86UCrw4pWQ/M0pNf1UdlDlf+jz7Njw==
-=1uX6
------END PGP SIGNATURE-----
-
---=-FrLm7Huzs2OM/GGn8vDZ--
-
+Yes, please, thanks.
