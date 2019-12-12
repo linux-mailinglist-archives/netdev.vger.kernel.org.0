@@ -2,158 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2C23111D5B9
-	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 19:36:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A9FD11D612
+	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 19:43:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730353AbfLLSgO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Dec 2019 13:36:14 -0500
-Received: from mail.nic.cz ([217.31.204.67]:51516 "EHLO mail.nic.cz"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730224AbfLLSgO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 12 Dec 2019 13:36:14 -0500
-Received: from localhost (unknown [172.20.6.135])
-        by mail.nic.cz (Postfix) with ESMTPSA id 3642E140E70;
-        Thu, 12 Dec 2019 19:36:12 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=nic.cz; s=default;
-        t=1576175772; bh=NuQ/QTcNiKIUvdzeVb43Eqws0OFYfy4hffTtptGqgGY=;
-        h=Date:From:To;
-        b=mpPscDN7RzZBAgtS5IgeXc1Uq3qMdp09jjzOSrzeJuLBSD1+UMO03A+kYvd7p32QO
-         Kbx+dgt3i6xe2RFak36l1aVJvesU2aGhqBMVwZxr37+/7naYM6cNhtDynpHFBvW90v
-         SGl/YlPzzTyYDFz4P4iNcE7jd3UVj57uc0c2FeP0=
-Date:   Thu, 12 Dec 2019 19:36:11 +0100
-From:   Marek Behun <marek.behun@nic.cz>
-To:     Baruch Siach <baruch@tkos.co.il>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        netdev@vger.kernel.org,
-        Denis Odintsov <d.odintsov@traviangames.com>,
-        Hubert Feurstein <h.feurstein@gmail.com>
-Subject: Re: [BUG] mv88e6xxx: tx regression in v5.3
-Message-ID: <20191212193611.63111051@nic.cz>
-In-Reply-To: <20191212152355.iiepmi4cjriddeon@sapphire.tkos.co.il>
-References: <87tv67tcom.fsf@tarshish>
-        <20191211131111.GK16369@lunn.ch>
-        <87fthqu6y6.fsf@tarshish>
-        <20191211174938.GB30053@lunn.ch>
-        <20191212085045.nqhfldkbebqzzamv@sapphire.tkos.co.il>
-        <20191212131448.GA9959@lunn.ch>
-        <20191212150810.zx6o26jnk5croh4r@sapphire.tkos.co.il>
-        <20191212151355.GE30053@lunn.ch>
-        <20191212152355.iiepmi4cjriddeon@sapphire.tkos.co.il>
-X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        id S1730522AbfLLSnj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Dec 2019 13:43:39 -0500
+Received: from mail-pf1-f178.google.com ([209.85.210.178]:46156 "EHLO
+        mail-pf1-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730292AbfLLSni (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Dec 2019 13:43:38 -0500
+Received: by mail-pf1-f178.google.com with SMTP id y14so1225952pfm.13
+        for <netdev@vger.kernel.org>; Thu, 12 Dec 2019 10:43:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=fEIPg/nQz4H3SkrhOeevoDfxx5kg6oJ1sVD3wkmZeI0=;
+        b=ABRb/h4SFCN15IlJ59pRxlKmFUVBRkKSP6xEkKHRgMqwZqw8UpadE/n46IhjBKm0xI
+         Hw1BTt6v5y/rIocXnccHBkGIZVICyVqoz7xSWV3uvQoQCugmlWIqMOnOZYzBrg5cUpmG
+         0+5vBkHOKMxEjtmzhGa3uzOdCsXMc7nOlFLXDOzzplMSDchmHph+zrBYze+a5cBo+LX2
+         ymnHRs8Jc2JLBOi7lFmdClxmXEtdYs8rvZ5Bap2HczqawwPjhm47w2r/96Lb/IiRn55+
+         Vc8URDEpeNvnjiUsCGI37gERHaXpJDwJbNcy+GHI8WYirzeS+z/DZdl/KAJQzyYcmXDj
+         q2vw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=fEIPg/nQz4H3SkrhOeevoDfxx5kg6oJ1sVD3wkmZeI0=;
+        b=FdIFiFUtSrGncjgAMXJuxhDOyfILxq2xhUOjPyDmqlvb/qDA8+CJ/S8HDAfG5LLsbz
+         eI7jLtt89gquwtXQGKfAiGZz+cR9Embsgu1FOuSq2IrxV35RtqytTaQ1Ube2DTz+vLoS
+         6K6XjJw+FU6LkcyAGJC1X8DnPyMAH3TZ+lkC8KaefF+hr1anVJs65lbp6AYeQDB88/hM
+         XGguVWE1W7irTJizAiRN+eec6LfdCpHtnosONSUh1naQBkfmO4iDhmkbTiXH/lBM2089
+         6nRa7Zh8Hl1dkRw6f9xGffjog9h/dBPZ5Qih7O7aQUlHPPZ6/oKQbcbONt4mOHa0HHkf
+         S7NQ==
+X-Gm-Message-State: APjAAAU1VWaEioDMbOQCKwjuF9bIVrQGj21CK+23QM2x4b06liyIKZtz
+        CxIJp328aWshK6Mif8YlXx9p/g==
+X-Google-Smtp-Source: APXvYqyVlBeifCyE3IO6vVv8sLrUbg/iyOye4wEh0A4o2JqPV+oWytkfEMTm0IaR5HFgRNwZljzrVg==
+X-Received: by 2002:a62:1742:: with SMTP id 63mr11114346pfx.231.1576176217889;
+        Thu, 12 Dec 2019 10:43:37 -0800 (PST)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id j14sm7532044pgs.57.2019.12.12.10.43.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 12 Dec 2019 10:43:37 -0800 (PST)
+Date:   Thu, 12 Dec 2019 10:43:34 -0800
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Stanislav Fomichev <sdf@fomichev.me>,
+        Andrii Nakryiko <andriin@fb.com>,
+        LKML <linux-kernel@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>
+Subject: Re: [PATCH bpf-next 11/15] bpftool: add skeleton codegen command
+Message-ID: <20191212104334.222552a1@cakuba.netronome.com>
+In-Reply-To: <CAEf4BzYJHvuFbBM-xvCCsEa+Pg-bG1tprGMbCDtsbGHdv7KspA@mail.gmail.com>
+References: <20191210225900.GB3105713@mini-arch>
+        <CAEf4BzYtqywKn4yGQ+vq2sKod4XE03HYWWBfUiNvg=BXhgFdWg@mail.gmail.com>
+        <20191211172432.GC3105713@mini-arch>
+        <CAEf4Bzb+3b-ypP8YJVA=ogQgp1KXx2xPConOswA0EiGXsmfJow@mail.gmail.com>
+        <20191211191518.GD3105713@mini-arch>
+        <CAEf4BzYofFFjSAO3O-G37qyeVHE6FACex=yermt8bF8mXksh8g@mail.gmail.com>
+        <20191211200924.GE3105713@mini-arch>
+        <CAEf4BzaE0Q7LnPOa90p1RX9qSbOA_8hkT=6=7peP9C88ErRumQ@mail.gmail.com>
+        <20191212025735.GK3105713@mini-arch>
+        <CAEf4BzY2KHK4h5e40QgGt4GzJ6c+rm-vtbyEdM41vUSqcs=txA@mail.gmail.com>
+        <20191212162953.GM3105713@mini-arch>
+        <CAEf4BzYJHvuFbBM-xvCCsEa+Pg-bG1tprGMbCDtsbGHdv7KspA@mail.gmail.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Virus-Scanned: clamav-milter 0.100.3 at mail
-X-Virus-Status: Clean
-X-Spam-Status: No, score=-1.0 required=5.0 tests=ALL_TRUSTED,SHORTCIRCUIT,
-        URIBL_BLOCKED shortcircuit=ham autolearn=disabled version=3.4.2
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.nic.cz
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 12 Dec 2019 17:23:55 +0200
-Baruch Siach <baruch@tkos.co.il> wrote:
+On Thu, 12 Dec 2019 08:53:22 -0800, Andrii Nakryiko wrote:
+> > > > Btw, how hard it would be to do this generation with a new python
+> > > > script instead of bpftool? Something along the lines of
+> > > > scripts/bpf_helpers_doc.py that parses BTF and spits out this C header
+> > > > (shouldn't be that hard to write custom BTF parser in python, right)?
+> > > >  
+> > >
+> > > Not impossible, but harder than I'd care to deal with. I certainly
+> > > don't want to re-implement a good chunk of ELF and BTF parsing (maps,
+> > > progs, in addition to datasec stuff). But "it's hard to use bpftool in
+> > > our build system" doesn't seem like good enough reason to do all that.  
+> > You can replace "our build system" with some other project you care about,
+> > like systemd. They'd have the same problem with vendoring in recent enough
+> > bpftool or waiting for every distro to do it. And all this work is
+> > because you think that doing:
+> >
+> >         my_obj->rodata->my_var = 123;
+> >
+> > Is easier / more type safe than doing:
+> >         int *my_var = bpf_object__rodata_lookup(obj, "my_var");
+> >         *my_var = 123;  
+> 
+> Your arguments are confusing me. Did I say that we shouldn't add this
+> type of "dynamic" interface to variables? Or did I say that every
+> single BPF application has to adopt skeleton and bpftool? I made no
+> such claims and it seems like discussion is just based around where I
+> have to apply my time and efforts... You think it's not useful - don't
+> integrate bpftool into your build system, simple as that. Skeleton is
+> used for selftests, but it's up to maintainers to decide whether to
+> keep this, similar to all the BTF decisions.
 
-> Hi Andrew,
-> 
-> On Thu, Dec 12, 2019 at 04:13:55PM +0100, Andrew Lunn wrote:
-> > > I compared phylib to phylink calls to mv88e6xxx_port_setup_mac(). It turns out 
-> > > that the phylink adds mv88e6xxx_port_setup_mac() call for the cpu port (port 5 
-> > > in my case) with these parameters and call stack:
-> > > 
-> > > [    4.219148] mv88e6xxx_port_setup_mac: port: 5 link: 0 speed: -1 duplex: 255
-> > > [    4.226144] CPU: 2 PID: 21 Comm: kworker/2:0 Not tainted 5.3.15-00003-gb9bb09189d02-dirty #104
-> > > [    4.234795] Hardware name: SolidRun ClearFog GT 8K (DT)
-> > > [    4.240044] Workqueue: events deferred_probe_work_func
-> > > [    4.245205] Call trace:
-> > > [    4.247661]  dump_backtrace+0x0/0x128
-> > > [    4.251339]  show_stack+0x14/0x1c
-> > > [    4.254669]  dump_stack+0xa4/0xd0
-> > > [    4.257998]  mv88e6xxx_port_setup_mac+0x78/0x2a0
-> > > [    4.262635]  mv88e6xxx_mac_config+0xd0/0x154
-> > > [    4.266924]  dsa_port_phylink_mac_config+0x2c/0x38
-> > > [    4.271736]  phylink_mac_config+0xe0/0x1cc
-> > > [    4.275849]  phylink_start+0xc8/0x224
-> > > [    4.279527]  dsa_port_link_register_of+0xe8/0x1b0
-> > > [    4.284251]  dsa_register_switch+0x7fc/0x908
-> > > [    4.288539]  mv88e6xxx_probe+0x62c/0x66c
-> > > [    4.292478]  mdio_probe+0x30/0x5c
-> > > [    4.295806]  really_probe+0x1d0/0x280
-> > > [    4.299483]  driver_probe_device+0xd4/0xe4
-> > > [    4.303596]  __device_attach_driver+0x94/0xa0
-> > > [    4.307971]  bus_for_each_drv+0x94/0xb4
-> > > [    4.311823]  __device_attach+0xc0/0x12c
-> > > [    4.315674]  device_initial_probe+0x10/0x18
-> > > [    4.319875]  bus_probe_device+0x2c/0x8c
-> > > [    4.323726]  deferred_probe_work_func+0x84/0x98
-> > > [    4.328276]  process_one_work+0x19c/0x258
-> > > [    4.332303]  process_scheduled_works+0x3c/0x40
-> > > [    4.336765]  worker_thread+0x228/0x2f8
-> > > [    4.340530]  kthread+0x114/0x124
-> > > [    4.343771]  ret_from_fork+0x10/0x18
-> > > 
-> > > This hunk removed that mv88e6xxx_port_setup_mac() call, and fixed Tx for me on 
-> > > v5.3.15:
-> > > 
-> > > diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-> > > index d0a97eb73a37..f0457274b5a9 100644
-> > > --- a/drivers/net/dsa/mv88e6xxx/chip.c
-> > > +++ b/drivers/net/dsa/mv88e6xxx/chip.c
-> > > @@ -611,6 +611,9 @@ static void mv88e6xxx_mac_config(struct dsa_switch *ds, int port,
-> > >  	if ((mode == MLO_AN_PHY) && mv88e6xxx_phy_is_internal(ds, port))
-> > >  		return;
-> > >  
-> > > +	if (dsa_is_cpu_port(ds, port))
-> > > +		return;
-> > > +
-> > >  	if (mode == MLO_AN_FIXED) {
-> > >  		link = LINK_FORCED_UP;
-> > >  		speed = state->speed;
-> > > 
-> > > Is that the right solution?  
-> > 
-> > What needs testing is:
-> > 
-> >                                         port@0 {
-> >                                                 reg = <0>;
-> >                                                 label = "cpu";
-> >                                                 ethernet = <&fec1>;
-> > 
-> >                                                 fixed-link {
-> >                                                         speed = <100>;
-> >                                                         full-duplex;
-> >                                                 };
-> > 
-> > At some point, there is a call to configure the CPU port to 100Mbps,
-> > because the SoC Ethernet does not support 1G. We need to ensure this
-> > does not break with your change.  
-> 
-> So maybe this:
-> 
-> diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-> index d0a97eb73a37..84ca4f36a778 100644
-> --- a/drivers/net/dsa/mv88e6xxx/chip.c
-> +++ b/drivers/net/dsa/mv88e6xxx/chip.c
-> @@ -611,6 +611,9 @@ static void mv88e6xxx_mac_config(struct dsa_switch *ds, int port,
->  	if ((mode == MLO_AN_PHY) && mv88e6xxx_phy_is_internal(ds, port))
->  		return;
->  
-> +	if (mode != MLO_AN_FIXED && dsa_is_cpu_port(ds, port))
-> +		return;
-> +
->  	if (mode == MLO_AN_FIXED) {
->  		link = LINK_FORCED_UP;
->  		speed = state->speed;
-> 
-> baruch
-> 
+Since we have two people suggesting this functionality to be a separate
+tool could you please reconsider my arguments from two days ago?
 
-No, if your switch is connected to the cpu via 100mbps on the cpu side,
-you have to add fixed-link node as Andrew suggested. This is what we
-were trying to do with the Topaz patches, so that dsa port nodes
-support fixed-link via phylink.
+  There absolutely nothing this tool needs from [bpftool], no
+  JSON needed, no bpffs etc. It can be a separate tool like
+  libbpf-skel-gen or libbpf-c-skel or something, distributed with libbpf.
+  That way you can actually soften the backward compat. In case people
+  become dependent on it they can carry that little tool on their own.
 
-Marek
+I'd honestly leave the distro packaging problem for people who actually
+work on that to complain about.
