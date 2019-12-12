@@ -2,105 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D23F111D8C2
-	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 22:47:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D970311D8C7
+	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 22:49:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731169AbfLLVqe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Dec 2019 16:46:34 -0500
-Received: from s3.sipsolutions.net ([144.76.43.62]:53108 "EHLO
-        sipsolutions.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730876AbfLLVqe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Dec 2019 16:46:34 -0500
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.92.3)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1ifWI1-008AXt-IM; Thu, 12 Dec 2019 22:46:29 +0100
-Message-ID: <49cd2d6c7bf597c224edb8806cd56c126b5901b4.camel@sipsolutions.net>
-Subject: Re: debugging TCP stalls on high-speed wifi
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     Ben Greear <greearb@candelatech.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Neal Cardwell <ncardwell@google.com>
-Cc:     Toke =?ISO-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
-        linux-wireless@vger.kernel.org, Netdev <netdev@vger.kernel.org>
-Date:   Thu, 12 Dec 2019 22:46:27 +0100
-In-Reply-To: <04dc171a-7385-6544-6cc6-141aae9f2782@candelatech.com>
-References: <14cedbb9300f887fecc399ebcdb70c153955f876.camel@sipsolutions.net>
-         <CADVnQym_CNktZ917q0-9dVY9dhtiJVRRotGTrPNdZUpkjd3vyw@mail.gmail.com>
-         <f4670ce0f4399fe82e7168fb9c491d8eb718e8d8.camel@sipsolutions.net>
-         <99748db5-7898-534b-d407-ed819f07f939@gmail.com>
-         <ff6b35ad589d7cf0710cb9fca4c799538da2e653.camel@sipsolutions.net>
-         <04dc171a-7385-6544-6cc6-141aae9f2782@candelatech.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.34.2 (3.34.2-1.fc31) 
+        id S1730941AbfLLVss (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Dec 2019 16:48:48 -0500
+Received: from mail-lj1-f193.google.com ([209.85.208.193]:42800 "EHLO
+        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730831AbfLLVsr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Dec 2019 16:48:47 -0500
+Received: by mail-lj1-f193.google.com with SMTP id e28so312578ljo.9;
+        Thu, 12 Dec 2019 13:48:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=251vXsWuEJ2xi9HpdeyVMWO66+kda9V2oIuPFR8DACc=;
+        b=J/0ey5vBuE4xIZz39LnvoyOG/fAB6pu9gHIRMpxn3FSo9MZDCqhdn1dfxk10IvMKeB
+         pC+Xc8mkKXhOujl6hgqYGP+EDyowenPt6283Ee2Vjw8beLyL3+BuchSUzHZknjIaVCxT
+         da8JgISZntIHtFqHRb6JtT9YHW8Pz5aGyqlq2XEPQuViKwuIY5+XuGkdPzQ5qi7gbXOQ
+         uSG5GJDThnuDVd5jzcW0R3jOazDHemWuPj2bqQmuvaa62L0qNmS6BMoaXEreMi2MwN2N
+         vPRKEr8649pXde/FYIlbhhBf9EluRRUnTc89x0I8U9neCXPeXqwqFN/TiDIyp4y4j8/F
+         Klqw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=251vXsWuEJ2xi9HpdeyVMWO66+kda9V2oIuPFR8DACc=;
+        b=UnJTu41UgGoi6CWC4SakYad0jZL+ishLvLY6CwmyhdKgMYJy6gQLkFNOfkwxd+3HoF
+         a6kKzE0eZ5JCHfPpYm/QmmMdrkJjV7HaqUXLXZG2QNCs42O3b2JDxwwcg5xOT9wxixBQ
+         ywMVdBE7vnC1cPOVINpB4TFusgGxQBrahau+EoHl3jTvCsHU3M15T/D1t8jYaVaUef79
+         dtDrRBf8lDZKjRX4vkkfpK84/ThXALsRU9Qbblis+tEEuGoDpgisHOVfjG1UNi4uKvsz
+         kIQW7eV3DNukPeP8RczXCj8WmcRyU991AADfahcp93sNLI5eQ8MvAqPodIu3zBxTXulr
+         xwTg==
+X-Gm-Message-State: APjAAAU6r/0oP9H6x4izN4NgFyc0h5g3/Cdn6ZNna3axXX1u3V5oh647
+        hjoUFbZMCbU1Z4407D6B1jgSsVtVG6AI3aPCXtc=
+X-Google-Smtp-Source: APXvYqzeBVphnRzs3/2/OERF5E5/HbE2ldGW+e9UXgfRWZWnzWK3+/UsUpkNCc7gdU81aliSlcSil8mHtQdh5Tv/F5c=
+X-Received: by 2002:a2e:3609:: with SMTP id d9mr7282781lja.188.1576187325385;
+ Thu, 12 Dec 2019 13:48:45 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+References: <20191212171918.638010-1-andriin@fb.com> <20191212183046.7h4kcuvmayafzztg@kafai-mbp>
+In-Reply-To: <20191212183046.7h4kcuvmayafzztg@kafai-mbp>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Thu, 12 Dec 2019 13:48:34 -0800
+Message-ID: <CAADnVQJ2T72Jos4g348ZYO-Up1-hYFYVxmHNA3RsLJL1xRWKog@mail.gmail.com>
+Subject: Re: [PATCH v2 bpf-next] libbpf: fix printf compilation warnings on
+ ppc64le arch
+To:     Martin Lau <kafai@fb.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "andrii.nakryiko@gmail.com" <andrii.nakryiko@gmail.com>,
+        Kernel Team <Kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2019-12-12 at 13:29 -0800, Ben Greear wrote:
-> 
-> > (*) Hmm. Now I have another idea. Maybe we have some kind of problem
-> > with the medium access configuration, and we transmit all this data
-> > without the AP having a chance to send back all the ACKs? Too bad I
-> > can't put an air sniffer into the setup - it's a conductive setup.
-> 
-> splitter/combiner?
+On Thu, Dec 12, 2019 at 10:31 AM Martin Lau <kafai@fb.com> wrote:
+>
+> On Thu, Dec 12, 2019 at 09:19:18AM -0800, Andrii Nakryiko wrote:
+> > On ppc64le __u64 and __s64 are defined as long int and unsigned long int,
+> > respectively. This causes compiler to emit warning when %lld/%llu are used to
+> > printf 64-bit numbers. Fix this by casting to size_t/ssize_t with %zu and %zd
+> > format specifiers, respectively.
+> Acked-by: Martin KaFai Lau <kafai@fb.com>
 
-I guess. I haven't looked at it, it's halfway around the world or
-something :)
-
-> If it is just delayed acks coming back, which would slow down a stream, then
-> multiple streams would tend to work around that problem?
-
-Only a bit, because it allows somewhat more outstanding data. But each
-stream estimates the throughput lower in its congestion control
-algorithm, so it would have a smaller window size?
-
-What I was thinking is that if we have some kind of skew in the system
-and always/frequently/sometimes make our transmissions have priority
-over the AP transmissions, then we'd not get ACKs back, and that might
-cause what I see - the queue drains entirely and *then* we get an ACK
-back...
-
-That's not a _bad_ theory and I'll have to find a good way to test it,
-but I'm not entirely convinced that's the problem.
-
-Oh, actually, I guess I know it's *not* the problem because otherwise
-the ss output would show we're blocked on congestion window far more
-than it looks like now? I think?
-
-
-> I would actually expect similar speedup with multiple streams if some TCP socket
-> was blocked on waiting for ACKs too.
-> 
-> Even if you can't sniff the air, you could sniff the wire or just look at packet
-> in/out counts.  If you have a huge number of ACKs, that would show up in raw pkt
-> counters.
-
-I know I have a huge number of ACKs, but I also know that's not the
-(only) problem. My question/observation was related to the timing of
-them.
-
-> I'm not sure it matters these days, but this patch greatly helped TCP throughput on
-> ath10k for a while, and we are still using it.  Maybe your sk_pacing change already
-> tweaked the same logic:
-> 
-> https://github.com/greearb/linux-ct-5.4/commit/65651d4269eb2b0d4b4952483c56316a7fbe2f48
-
-Yes, you should be able to drop that patch - look at it, it just
-multiples the thing there that you have with "sk->sk_pacing_shift",
-instead we currently by default set sk->sk_pacing_shift to 7 instead of
-10 or something, so that'd be equivalent to setting your sysctl to 8.
-
-> 		TCP_TSQ=200
-
-Setting it to 200 is way excessive. In particular since you already get
-the *8 from the default mac80211 behaviour, so now you effectively have
-*1600, which means instead of 1ms you can have 1.6s worth of TCP data on
-the queues ... way too much :)
-
-johannes
-
+Applied. Thanks
