@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D48111C45E
-	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 04:50:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5491E11C462
+	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 04:50:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727407AbfLLDpy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Dec 2019 22:45:54 -0500
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:35658 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727181AbfLLDpx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Dec 2019 22:45:53 -0500
-Received: by mail-pf1-f194.google.com with SMTP id b19so25522pfo.2;
-        Wed, 11 Dec 2019 19:45:53 -0800 (PST)
+        id S1727560AbfLLDqw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Dec 2019 22:46:52 -0500
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:33076 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726823AbfLLDqw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Dec 2019 22:46:52 -0500
+Received: by mail-pf1-f196.google.com with SMTP id y206so30051pfb.0;
+        Wed, 11 Dec 2019 19:46:51 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=07OMjO7lmkGh9f8g4geNEJnFp2GEjPLld3FY42QsWmc=;
-        b=kVTWHYIL6XGFhib+bfcDZWj9aQTUa0qUNex7+FONF0PiBz/uh80+2A2951UAsQpB79
-         YHq7ZHeWYfOI1dUGnwiwL7ZiUkNE765/TYymlYSwW5K/xKVEmVu9rfIQHWQbsZZDvO1R
-         jkneKok0uYxJ3P79Pm4mpdN9aaaterhJKrjszPEr0cPuEZE8PEw57pDsqczlSHKwt9dL
-         DpZ/ygKS1kC6pjdhFdqaWtFsu9C6ZULC12xNbOtM1b3Eld508H2zoWcFJkfab2zXQ0Uy
-         uVDv4O1ShWzyKgzpUZt3YDlGXGe3P159yjdNiiM8UQCCwAQf0vh6NVIMNcjSOZ8+gmMR
-         EHhQ==
+        bh=VxRH7y7mD8w9ZMZtzGYEhqBg5gtMnJozuYmxD6CW22s=;
+        b=fPAqKbxQ0dJtthqA7ldLeEe0ZalIWx+lVwE7yf7MPF8PK3PFVU4Yjpv/mhcxq7vOUI
+         DEa2ZKPGQTT4hPbXw6VztGvV7h7FKAMXjZy+759xiWlozmvUrK7OwR2Lb7y/6gU0oqdV
+         WodjjXnQTedSQQB1Zhz3fmpvEJ7Oa3A+w428wl0uWduvlTWCfgKEtKtC9DU+q9Arudpy
+         yYzTRRe7UMnFYvsOlPyUUqKU76HWn16VDe5fe/2TltoQaKa4FT4oC7GxtAPSxwC9mih7
+         PAUBB5hIuNlQT3FP0AqXO7sDG/zedVyAjoSFRBl6H9pZHYmk42ax3UY6qoBIFffiMhYn
+         7a9A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=07OMjO7lmkGh9f8g4geNEJnFp2GEjPLld3FY42QsWmc=;
-        b=OYS2SOjsQ7jFFqSCT3k9MM6sS/jMUfeK7KO+RiIF6Hhr1COYoT5VbqfSEh+ccUqbg7
-         VbZgm7E1Tu2oswMhsogvkrcqnXh726VHvukS345Lp3Zg5hNGS1HVw6YWC28E9SrnfMP1
-         AzOVP5r6jGXCz12ve2wFLk60/mdVgfst7iHcNT2qLSe6msFwpcab31Cde39zX3p7amib
-         FcAlIuyycZdU9GKl4ap6NR4nwhactJff4vn+JDAY6VFj8NbofDADGxRvDnIBtfqC2oEC
-         COrvDl1FkoVcK5a4QqRTm+ohyykwIy8HL8GR8nMTct8AVKN+DAc7lsXOgPCErCaETvxC
-         40Hg==
-X-Gm-Message-State: APjAAAXDemh0svZX6/jVck+2piaWw16c2Buo3gc/Ia8i1R7tIsxHaslS
-        ZhnIWXkLzx788nltA7gr3SA=
-X-Google-Smtp-Source: APXvYqznVMLWoXaG1KfzuljASoCWife9zOWrqBlls/IfY9KLjzX12fazK1jnaNL/zOx/Z0m9Z3PhjA==
-X-Received: by 2002:a65:6249:: with SMTP id q9mr8479861pgv.340.1576122352840;
-        Wed, 11 Dec 2019 19:45:52 -0800 (PST)
+        bh=VxRH7y7mD8w9ZMZtzGYEhqBg5gtMnJozuYmxD6CW22s=;
+        b=ornMRvP/IpXvfbsv0DOBKQhhwnea2llPRO65IZpZnzW3tUCZLRsIzpmTHLp/mKmNmU
+         X7Hffvyjw9sqIrwRlWN/90C+jHMIh1DkEuS6gNskFuu+FGMW1gbV2HxeUYojnTT6GDN8
+         DE4e5QcTNpa3VqCd8d1aX/9MPmcf0OSE1a6neTXrIBjJNIW0mvIkYPjNqFp4Nht7hjf+
+         DqEMnZTBM0Ebxq4HBfq7CMrpAg+bmT0AY0IiGRv9uONBEpDEYDyAUKwmXlCiF0KcFDuR
+         J2aj5nduNtabGt9ExYdacU1cCLYUUiRfhS6Yc2VHdiq6YAV47eEpRQ1p0flTc4CGBQRN
+         KkwQ==
+X-Gm-Message-State: APjAAAVxgyrulOr9c7JJ/kWnzjO+PYj/U3E/o6DfpV/SgZiEztcBmwli
+        ZgWHF6n+MeatypCysecovnc=
+X-Google-Smtp-Source: APXvYqwI7ntwHsEHTnB33WT/ymjEuB/A8th9gpJMZ7lWikARhC2o8fe9tNDXiIHZRqRQ28bySBi+hA==
+X-Received: by 2002:a63:d358:: with SMTP id u24mr8241064pgi.218.1576122411557;
+        Wed, 11 Dec 2019 19:46:51 -0800 (PST)
 Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
-        by smtp.gmail.com with ESMTPSA id c18sm4441414pgj.24.2019.12.11.19.45.51
+        by smtp.gmail.com with ESMTPSA id p21sm4718312pfn.103.2019.12.11.19.46.50
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 11 Dec 2019 19:45:52 -0800 (PST)
-Subject: Re: [PATCH net-next 2/6] net: dsa: mt7530: Extend device data ready
- for adding a new hardware
+        Wed, 11 Dec 2019 19:46:51 -0800 (PST)
+Subject: Re: [PATCH net-next 3/6] dt-bindings: net: dsa: add new MT7531
+ binding to support MT7531
 To:     Landen Chao <landen.chao@mediatek.com>, andrew@lunn.ch,
         vivien.didelot@savoirfairelinux.com, matthias.bgg@gmail.com,
         robh+dt@kernel.org, mark.rutland@arm.com
@@ -55,7 +55,7 @@ Cc:     devicetree@vger.kernel.org, netdev@vger.kernel.org,
         davem@davemloft.net, sean.wang@mediatek.com, opensource@vdorst.com,
         frank-w@public-files.de
 References: <cover.1575914275.git.landen.chao@mediatek.com>
- <2d546d6bb15ff8b4b75af2220e20db4e634f4145.1575914275.git.landen.chao@mediatek.com>
+ <1c382fd916b66bfe3ce8ef18c12f954dbcbddbbc.1575914275.git.landen.chao@mediatek.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Autocrypt: addr=f.fainelli@gmail.com; keydata=
  mQGiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
@@ -111,12 +111,12 @@ Autocrypt: addr=f.fainelli@gmail.com; keydata=
  caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
  6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9qfUATKC9NgZjRvBztfqy4
  a9BQwACgnzGuH1BVeT2J0Ra+ZYgkx7DaPR0=
-Message-ID: <d77e3109-e022-3581-2ca8-02889c5ddbf4@gmail.com>
-Date:   Wed, 11 Dec 2019 19:45:51 -0800
+Message-ID: <8afaf60d-bbbd-2931-3992-69511fb1e839@gmail.com>
+Date:   Wed, 11 Dec 2019 19:46:49 -0800
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
  Thunderbird/68.3.0
 MIME-Version: 1.0
-In-Reply-To: <2d546d6bb15ff8b4b75af2220e20db4e634f4145.1575914275.git.landen.chao@mediatek.com>
+In-Reply-To: <1c382fd916b66bfe3ce8ef18c12f954dbcbddbbc.1575914275.git.landen.chao@mediatek.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -128,65 +128,12 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 On 12/10/2019 12:14 AM, Landen Chao wrote:
-> Add a structure holding required operations for each device such as device
-> initialization, PHY port read or write, a checker whether PHY interface is
-> supported on a certain port, MAC port setup for either bus pad or a
-> specific PHY interface.
+> Add devicetree binding to support the compatible mt7531 switch as used
+> in the MediaTek MT7531 switch.
 > 
-> The patch is done for ready adding a new hardware MT7531.
-> 
-> Signed-off-by: Landen Chao <landen.chao@mediatek.com>
 > Signed-off-by: Sean Wang <sean.wang@mediatek.com>
-> ---
-[snip]
+> Signed-off-by: Landen Chao <landen.chao@mediatek.com>
 
-> diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
-> index ed1ec10ec62b..9a648d1f5d09 100644
-> --- a/drivers/net/dsa/mt7530.c
-> +++ b/drivers/net/dsa/mt7530.c
-> @@ -425,7 +425,7 @@ mt7530_fdb_write(struct mt7530_priv *priv, u16 vid,
->  }
->  
->  static int
-> -mt7530_pad_clk_setup(struct dsa_switch *ds, int mode)
-> +mt7530_pad_clk_setup(struct dsa_switch *ds, phy_interface_t mode)
-
-Here you pass a phy_interface_t argument but not in mt7632_pad_clk_setup().
-
-> +static int
-> +mt7530_pad_setup(struct dsa_switch *ds, const struct phylink_link_state *state)
-> +{
-> +	struct mt7530_priv *priv = ds->priv;
-> +
-> +	/* Setup TX circuit incluing relevant PAD and driving */
-> +	mt7530_pad_clk_setup(ds, state->interface);
-> +
-> +	if (priv->id == ID_MT7530) {
-> +		/* Setup RX circuit, relevant PAD and driving on the
-> +		 * host which must be placed after the setup on the
-> +		 * device side is all finished.
-> +		 */
-> +		mt7623_pad_clk_setup(ds);
-
-Would not it make sense to pass it down here as well for consistency?
-
-[snip]
-
-> @@ -1660,8 +1768,19 @@ mt7530_probe(struct mdio_device *mdiodev)
->  	/* Get the hardware identifier from the devicetree node.
->  	 * We will need it for some of the clock and regulator setup.
->  	 */
-> -	priv->id = (unsigned int)(unsigned long)
-> -		of_device_get_match_data(&mdiodev->dev);
-> +	priv->info = of_device_get_match_data(&mdiodev->dev);
-> +	if (!priv->info)
-> +		return -EINVAL;
-> +
-> +	/* Sanity check if these required device operstaions are filled
-> +	 * properly.
-
-Typo: operations.
-
-Other than that, this looks okay to me.
+With the comments from Andrew fixed, this looks good to me.
 -- 
 Florian
