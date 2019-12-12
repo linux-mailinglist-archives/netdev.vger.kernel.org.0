@@ -2,124 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C9AED11CDA4
-	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 13:56:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 80CF311CDEF
+	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 14:14:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729354AbfLLM4g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Dec 2019 07:56:36 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:33534 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1729302AbfLLM4f (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Dec 2019 07:56:35 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1576155395;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=BQ/OeprMEEQbDYMzEQzXy36w02TkBbbXNkwJyG1iOw4=;
-        b=NG0B5axReVWy8EKhw0y/n1xkmsDj3eGaqcaqk4NgkXUofXU/szFHC2dBvpG+2WZKjri+5q
-        vMCNjxI1MC/+xK/gRZLIgPHFBdWEaLwS+dvCMzx76DR9szCPIkJdLyQFDI/48NUder+6XN
-        LrQuhYMeq50hgZjhfedEoFfKiNJjt8o=
-Received: from mail-qv1-f70.google.com (mail-qv1-f70.google.com
- [209.85.219.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-427-9j6f3yojPCyfb5Dm21lbFg-1; Thu, 12 Dec 2019 07:56:32 -0500
-X-MC-Unique: 9j6f3yojPCyfb5Dm21lbFg-1
-Received: by mail-qv1-f70.google.com with SMTP id d7so1412955qvq.12
-        for <netdev@vger.kernel.org>; Thu, 12 Dec 2019 04:56:32 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=BQ/OeprMEEQbDYMzEQzXy36w02TkBbbXNkwJyG1iOw4=;
-        b=SpSrGbqhSp/lISvW37dlIwdOH94GSirve5Akrl6Jx84GuilpxausrAqBdzhwCpSl0H
-         e63ayFoPRDibNNDwz4rPZqbdElw2DdXN68+WXvWjjnxCwi/Rf7Nw1x0Bzstdetxn/NNF
-         NZFvZLWExTl+7lFh37cboBJerPAT2aO8WRTPdEA4HRAnD5upj18aHQziqkAZ8kK5LpyI
-         x0U6rZLg5YET/0MEbGR2d0pcDDx4pXindHcSdrKRkWcuye3I8c9XgoCGhYgAfMCFzYj7
-         OZuhKYOY/Pg7zbtSHPk+HRBzDYQMbx17VjUyvXSaRwawFHsCTYIVVKLgi9VY0yqusRNB
-         xVQw==
-X-Gm-Message-State: APjAAAXF6BoWJRAnSvf/CBoNx+k1wzCQCG1N9/toCZAbeKD+IKzEdE0p
-        o7rGLiuqOMJGo2XTFefldW8XR9RdD0nNDrUUiVDmn+CxJog3AcBhMh21zSf6al0ePA53joMSY3B
-        k0TT0c2STAGlVycGP
-X-Received: by 2002:ac8:1196:: with SMTP id d22mr7374523qtj.344.1576155392076;
-        Thu, 12 Dec 2019 04:56:32 -0800 (PST)
-X-Google-Smtp-Source: APXvYqwGAOqNeoXt3nIrQGWq7m2hfYKhqzgGGgHCw70gSt6fz7ekSW8rLr9/hwp3tuH2X5BB5yIhKQ==
-X-Received: by 2002:ac8:1196:: with SMTP id d22mr7374504qtj.344.1576155391867;
-        Thu, 12 Dec 2019 04:56:31 -0800 (PST)
-Received: from redhat.com (bzq-79-181-48-215.red.bezeqint.net. [79.181.48.215])
-        by smtp.gmail.com with ESMTPSA id d23sm2191968qte.32.2019.12.12.04.56.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 Dec 2019 04:56:30 -0800 (PST)
-Date:   Thu, 12 Dec 2019 07:56:26 -0500
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Stefano Garzarella <sgarzare@redhat.com>
-Cc:     virtualization@lists.linux-foundation.org,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        Jason Wang <jasowang@redhat.com>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH] vhost/vsock: accept only packets with the right dst_cid
-Message-ID: <20191212075356-mutt-send-email-mst@kernel.org>
-References: <20191206143912.153583-1-sgarzare@redhat.com>
- <20191211110235-mutt-send-email-mst@kernel.org>
- <20191212123624.ahyhrny7u6ntn3xt@steredhat>
+        id S1729385AbfLLNOx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Dec 2019 08:14:53 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:50038 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728996AbfLLNOx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 12 Dec 2019 08:14:53 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=HwFFFSlWfHzqreqZF4L/lRrwS7lsRs+Qp/Ypk9EX61I=; b=qWt2v+gPalYn/7PZPp6B8/ifdQ
+        XkVjCVwg5iQ8g10WqfvYnD3LYkFfu3KDjDe6wF0sbAtCdu5AvggDiK++C1gwGJRbKxAX7oog0u/vv
+        yx8B8LAOm00iMkukQWzvIgPPqQTOFpcil6XRUTPLfbv3kTjh9n9YxSXWt8MAJffJzNfk=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.92.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1ifOIq-0002hL-An; Thu, 12 Dec 2019 14:14:48 +0100
+Date:   Thu, 12 Dec 2019 14:14:48 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Baruch Siach <baruch@tkos.co.il>
+Cc:     Vivien Didelot <vivien.didelot@gmail.com>, netdev@vger.kernel.org,
+        Denis Odintsov <d.odintsov@traviangames.com>,
+        Hubert Feurstein <h.feurstein@gmail.com>
+Subject: Re: [BUG] mv88e6xxx: tx regression in v5.3
+Message-ID: <20191212131448.GA9959@lunn.ch>
+References: <87tv67tcom.fsf@tarshish>
+ <20191211131111.GK16369@lunn.ch>
+ <87fthqu6y6.fsf@tarshish>
+ <20191211174938.GB30053@lunn.ch>
+ <20191212085045.nqhfldkbebqzzamv@sapphire.tkos.co.il>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20191212123624.ahyhrny7u6ntn3xt@steredhat>
+In-Reply-To: <20191212085045.nqhfldkbebqzzamv@sapphire.tkos.co.il>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 12, 2019 at 01:36:24PM +0100, Stefano Garzarella wrote:
-> On Wed, Dec 11, 2019 at 11:03:07AM -0500, Michael S. Tsirkin wrote:
-> > On Fri, Dec 06, 2019 at 03:39:12PM +0100, Stefano Garzarella wrote:
-> > > When we receive a new packet from the guest, we check if the
-> > > src_cid is correct, but we forgot to check the dst_cid.
-> > > 
-> > > The host should accept only packets where dst_cid is
-> > > equal to the host CID.
-> > > 
-> > > Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
-> > 
-> > Stefano can you clarify the impact pls?
-> 
-> Sure, I'm sorry I didn't do it earlier.
-> 
-> > E.g. is this needed on stable? Etc.
-> 
-> This is a better analysis (I hope) when there is a malformed guest
-> that sends a packet with a wrong dst_cid:
-> - before v5.4 we supported only one transport at runtime, so the sockets
->   in the host can only receive packets from guests. In this case, if
->   the dst_cid is wrong, maybe the only issue is that the getsockname()
->   returns an inconsistent address (the cid returned is the one received
->   from the guest)
-> 
-> - from v5.4 we support multi-transport, so the L1 VM (e.g. L0 assigned
->   cid 5 to this VM) can have both Guest2Host and Host2Guest transports.
->   In this case, we have these possible issues:
->   - L2 (or L1) guest can use cid 0, 1, and 2 to reach L1 (or L0),
->     instead we should allow only CID_HOST (2) to reach the level below.
->     Note: this happens also with not malformed guest that runs Linux v5.4
->   - if a malformed L2 guest sends a packet with the wrong dst_cid, for example
->     instead of CID_HOST, it uses the cid assigned by L0 to L1 (5 in this
->     example), this packets can wrongly queued to a socket on L1 bound to cid 5,
->     that only expects connections from L0.
+> As you guessed, mv88e6xxx_mac_config() exits early because 
+> mv88e6xxx_phy_is_internal() returns true for port number 2, and 'mode' is 
+> MLO_AN_PHY. What is the right MAC/PHY setup flow in this case?
 
-Oh so a security issue?
+So this goes back to
 
-> 
-> Maybe we really need this only on stable v5.4, but the patch is very simple
-> and should apply cleanly to all stable branches.
-> 
-> What do you think?
-> 
-> Thanks,
-> Stefano
+commit d700ec4118f9d5e88db8f678e7342f28c93037b9
+Author: Marek Vasut <marex@denx.de>
+Date:   Wed Sep 12 00:15:24 2018 +0200
 
-I'd say it's better to backport to all stable releases where it applies,
-but yes it's only a security issue in 5.4.  Dave could you forward pls?
+    net: dsa: mv88e6xxx: Make sure to configure ports with external PHYs
+    
+    The MV88E6xxx can have external PHYs attached to certain ports and those
+    PHYs could even be on different MDIO bus than the one within the switch.
+    This patch makes sure that ports with such PHYs are configured correctly
+    according to the information provided by the PHY.
 
--- 
-MST
+@@ -709,13 +717,17 @@ static void mv88e6xxx_mac_config(struct dsa_switch *ds, int port,
+        struct mv88e6xxx_chip *chip = ds->priv;
+        int speed, duplex, link, pause, err;
+ 
+-       if (mode == MLO_AN_PHY)
++       if ((mode == MLO_AN_PHY) && mv88e6xxx_phy_is_internal(ds, port))
+                return;
 
+The idea being, that the MAC has direct knowledge of the PHY
+configuration because it is internal. There is no need to configure
+the MAC, it does it itself.
+
+This assumption seems wrong for the switch you have.
+
+I think it is just a optimisation. So we can probably remove this phy
+internal test.
+
+And
+        } else if (!mv88e6xxx_phy_is_internal(ds, port)) {
+
+also needs to change.
+
+It would be interesting to know if the MAC is completely wrongly
+configured, or it is just a subset of parameters.
+
+	    Andrew
