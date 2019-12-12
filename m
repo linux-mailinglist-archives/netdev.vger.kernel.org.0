@@ -2,180 +2,172 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 68C1F11D886
-	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 22:28:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 108D111D889
+	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 22:29:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731077AbfLLV2F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Dec 2019 16:28:05 -0500
-Received: from mail-pg1-f196.google.com ([209.85.215.196]:35184 "EHLO
-        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731040AbfLLV2F (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Dec 2019 16:28:05 -0500
-Received: by mail-pg1-f196.google.com with SMTP id l24so228454pgk.2;
-        Thu, 12 Dec 2019 13:28:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=D/gv7eytCwvP7hIyDmJBH2pwd4vDwIqS68/F/jtBrbU=;
-        b=eFknJIJNiil5F7PUR+gHKjhDpm10AC+X7Qnb0xCyWsoJRpWKmQsQpFMmP9xgr7Ce9J
-         A61tfE2oPwHitKCYXIHXbPfcUYOMZslJ8+hGb+SCYnsLu96xPawRQeHMAdG0jE+qycBj
-         dpNjyYSftQYwEFFCPhR9dGo9tnkQOA9QhgDkyrKyqkRbAkkTmq/kKKon2FKbgL0Zgntl
-         qAZlGWEozUHMlu6jFdIeD0uAGzfXg6saraQuhaHiu+EtCXsfx0GQ6+x4WE5F06i9FxvJ
-         c0zu/Vbb8QrW5Zh017NXJTT0elYiaH2BmKI0i5icQkPJr8ewpL4oHBtgGziHuTEv6a4G
-         MnWw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=D/gv7eytCwvP7hIyDmJBH2pwd4vDwIqS68/F/jtBrbU=;
-        b=oBG9TNdRrexC/BXRqgtIJ0uc0d8U34bNYVERLU2/eE4yU/p+352iczRMRsMys3kYxy
-         NIEz70hi3DEXRYhFbVtErH68DLk66WQDi9vqAOXcMjzaQKiPzz3gocf2Rim6kDGJ3J83
-         Sokel4Wal4EmMlLLKFsFOgCRZ1o3O0ooz8I5RNWZkCvvUFM7qHPxyR8CJCFJjy2ul8FP
-         3j3Q19mWWQ+PsyYcXYbD9hwAqx7Ku5VqvRwJGBxgVmDtCc/twqT5KM2Mk2Si7OeUvppr
-         r/Lwj0yT1QNbnGo3VO5PYHoppg37m8TwRKOVQbBbHHGsbq8atVYlN4tNYWYXomfbwlPt
-         FiPA==
-X-Gm-Message-State: APjAAAWWISps4hfeZrkwgszda7U0HxTDhbvqCPvIiAm567JZjUAhMxt3
-        A2aZtuN9XTdGtzlSmQFfGjY=
-X-Google-Smtp-Source: APXvYqwiF1zBZxfO3KLzlfcFvL6W+z5uHLsDMIHhT3FRbyLkJ+LG0Gd0hZgzNESr4nwKGacBAkKpgw==
-X-Received: by 2002:a62:e519:: with SMTP id n25mr12079467pff.220.1576186084062;
-        Thu, 12 Dec 2019 13:28:04 -0800 (PST)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:200::b509])
-        by smtp.gmail.com with ESMTPSA id 20sm7844486pgw.71.2019.12.12.13.28.02
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 12 Dec 2019 13:28:03 -0800 (PST)
-Date:   Thu, 12 Dec 2019 13:28:00 -0800
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Stanislav Fomichev <sdf@fomichev.me>,
-        Andrii Nakryiko <andriin@fb.com>,
-        LKML <linux-kernel@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>
-Subject: Re: [PATCH bpf-next 11/15] bpftool: add skeleton codegen command
-Message-ID: <20191212212759.mhzrlqj5brcyfwgb@ast-mbp.dhcp.thefacebook.com>
-References: <CAEf4BzYofFFjSAO3O-G37qyeVHE6FACex=yermt8bF8mXksh8g@mail.gmail.com>
- <20191211200924.GE3105713@mini-arch>
- <CAEf4BzaE0Q7LnPOa90p1RX9qSbOA_8hkT=6=7peP9C88ErRumQ@mail.gmail.com>
- <20191212025735.GK3105713@mini-arch>
- <CAEf4BzY2KHK4h5e40QgGt4GzJ6c+rm-vtbyEdM41vUSqcs=txA@mail.gmail.com>
- <20191212162953.GM3105713@mini-arch>
- <CAEf4BzYJHvuFbBM-xvCCsEa+Pg-bG1tprGMbCDtsbGHdv7KspA@mail.gmail.com>
- <20191212104334.222552a1@cakuba.netronome.com>
- <20191212195415.ubnuypco536rp6mu@ast-mbp.dhcp.thefacebook.com>
- <20191212122115.612bb13b@cakuba.netronome.com>
+        id S1731093AbfLLV3J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Dec 2019 16:29:09 -0500
+Received: from mail2.candelatech.com ([208.74.158.173]:48208 "EHLO
+        mail3.candelatech.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730811AbfLLV3I (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Dec 2019 16:29:08 -0500
+Received: from [192.168.100.195] (50-251-239-81-static.hfc.comcastbusiness.net [50.251.239.81])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail3.candelatech.com (Postfix) with ESMTPSA id 7A02113C283;
+        Thu, 12 Dec 2019 13:29:07 -0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail3.candelatech.com 7A02113C283
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=candelatech.com;
+        s=default; t=1576186147;
+        bh=1gtuydINIwsIZMa+/eWNaF7yM91GiVdaDA6M+mF7eZI=;
+        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
+        b=jKUYz1LLddiojTZbxkrO1Lo5FuYND6EJdaB1MMpF2lMKTa6YihLQm3Qmw6iXsyvQg
+         b13MxK6lKq+/gfJ72ytZGoRhPXGRdVj3b+jGORSqEwIhUDbcaa4ytMPvckBvzxFlKd
+         uJOC2FF9GNfqO8o5gc/EKxgHp1w3Y3qzAXweiqSo=
+Subject: Re: debugging TCP stalls on high-speed wifi
+To:     Johannes Berg <johannes@sipsolutions.net>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Neal Cardwell <ncardwell@google.com>
+Cc:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
+        linux-wireless@vger.kernel.org, Netdev <netdev@vger.kernel.org>
+References: <14cedbb9300f887fecc399ebcdb70c153955f876.camel@sipsolutions.net>
+ <CADVnQym_CNktZ917q0-9dVY9dhtiJVRRotGTrPNdZUpkjd3vyw@mail.gmail.com>
+ <f4670ce0f4399fe82e7168fb9c491d8eb718e8d8.camel@sipsolutions.net>
+ <99748db5-7898-534b-d407-ed819f07f939@gmail.com>
+ <ff6b35ad589d7cf0710cb9fca4c799538da2e653.camel@sipsolutions.net>
+From:   Ben Greear <greearb@candelatech.com>
+Organization: Candela Technologies
+Message-ID: <04dc171a-7385-6544-6cc6-141aae9f2782@candelatech.com>
+Date:   Thu, 12 Dec 2019 13:29:07 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.1.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191212122115.612bb13b@cakuba.netronome.com>
-User-Agent: NeoMutt/20180223
+In-Reply-To: <ff6b35ad589d7cf0710cb9fca4c799538da2e653.camel@sipsolutions.net>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 12, 2019 at 12:21:15PM -0800, Jakub Kicinski wrote:
-> > > 
-> > >   There absolutely nothing this tool needs from [bpftool], no
-> > >   JSON needed, no bpffs etc.   
-> > 
-> > To generate vmlinux.h bpftool doesn't need json and doesn't need bpffs.
+On 12/12/19 1:11 PM, Johannes Berg wrote:
+> Hi Eric,
 > 
-> At least for header generation it pertains to the running system.
-> And bpftool was (and still is AFAICT) about interacting with the BPF
-> state on the running system.
-
-No. Reality is different. vmlinux.h generation doesn't need to touch
-kernel on the running system. Part of its job is to generate multiple
-vmlinux.h from a set of vmlinux elf files. Different .h for different kernels.
-It can generate vmlinux.h from running kernel too, but its less relevant
-to make use of CO-RE.
-In the future bpftool will be used to merge such multiple .h-s.
-Likely it will first merge BTFs from vmlinuxes and then will produce
-merged vmlinux_4_x_and_5_x.h
-
-> > > It can be a separate tool like
-> > >   libbpf-skel-gen or libbpf-c-skel or something, distributed with libbpf.
-> > >   That way you can actually soften the backward compat. In case people
-> > >   become dependent on it they can carry that little tool on their own.  
-> > 
-> > Jakub,
-> > 
-> > Could you please consider Andrii's reply to your comment from two days ago:
-> > https://lore.kernel.org/bpf/CAEf4BzbeZbmCTOOo2uQXjm0GL0WDu7aLN6fdUk18Nv2g0kfwVg@mail.gmail.com/
-> > "we are trying to make users lives easier by having major distributions
-> > distribute bpftool and libbpf properly. Adding extra binaries to
-> > distribute around doesn't seem to be easing any of users pains."
+> Thanks for looking :)
 > 
-> Last time we argued I heard how GH makes libbpf packaging easier.
-> Only to have that dis-proven once the people in Europe who do distro
-> packaging woke up:
+>>> I'm not sure how to do headers-only, but I guess -s100 will work.
+>>>
+>>> https://johannes.sipsolutions.net/files/he-tcp.pcap.xz
+>>>
+>>
+>> Lack of GRO on receiver is probably what is killing performance,
+>> both for receiver (generating gazillions of acks) and sender
+>> (to process all these acks)
+> Yes, I'm aware of this, to some extent. And I'm not saying we should see
+> even close to 1800 Mbps like we have with UDP...
 > 
-> https://lkml.org/lkml/2019/12/5/101
-> https://lkml.org/lkml/2019/12/5/312
-
-I think you missed the point of these two comments. It was about packaging
-bpftool and libbpf together. Regardless how bpftool is packaged. I still
-strongly suggest to use github/libbpf to package libbpf. It's something that is
-actually tested whereas libbpf in the kernel tree has unit test coverage only.
-
+> Mind you, the biggest thing that kills performance with many ACKs isn't
+> the load on the system - the sender system is only moderately loaded at
+> ~20-25% of a single core with TSO, and around double that without TSO.
+> The thing that kills performance is eating up all the medium time with
+> small non-aggregated packets, due to the the half-duplex nature of WiFi.
+> I know you know, but in case somebody else is reading along :-)
 > 
-> > My opinion is the following.
-> > bpftool is necessary to write bpf programs already. It's necessary to produce
-> > vmlinux.h for bpf programs to include it. It's part of build process. I can
-> > relate to Stan's complains that he needs to update clang and pahole. He missed
-> > the fact that he needs to update bpftool too if he wants to use all features of
-> > CO-RE. Same thing for skeleton generation. If people need to run the latest
-> > selftest/bpf on the latest kernel they need to upgrade to the latest clang,
-> > pahole, libbpf, bpftool. Nothing new here.
+> But unless somehow you think processing the (many) ACKs on the sender
+> will cause it to stop transmitting, or something like that, I don't
+> think I should be seeing what I described earlier: we sometimes (have
+> to?) reclaim the entire transmit queue before TCP starts pushing data
+> again. That's less than 2MB split across at least two TCP streams, I
+> don't see why we should have to get to 0 (which takes about 7ms) until
+> more packets come in from TCP?
 > 
-> They have to update libbpf, so why can't the code gen tool be part of
-> libbpf? 
-
-I'm not sure why two answers were not enough.
-No idea how to answer this question differently for the third time.
-
-> > Backwards compat is the same concern for skeleton generation and for vmlinux.h
-> > generation. Obviously no one wants to introduce something that will keep
-> > changing. Is vmlinux.h generation stable? I like to believe so. Same with
-> > skeleton. I wouldn't want to see it changing, but in both cases such chance
-> > exists. 
+> Or put another way - if I free say 400kB worth of SKBs, what could be
+> the reason we don't see more packets be sent out of the TCP stack within
+> the few ms or so? I guess I have to correlate this somehow with the ACKs
+> so I know how much data is outstanding for ACKs. (*)
 > 
-> vmlinux.h is pretty stable, there isn't much wiggle room there.
-
-Do you have experience working with vmlinux.h? I bet the answer is no.
-While we have and identified few things that needs improvement.
-They require vmlinux.h to be generated differently.
-
-> It's more of a conversion tool, if you will.
+> The sk_pacing_shift is set to 7, btw, which should give us 8ms of
+> outstanding data. For now in this setup that's enough(**), and indeed
+> bumping the limit up (setting sk_pacing_shift to say 5) doesn't change
+> anything. So I think this part we actually solved - I get basically the
+> same performance and behaviour with two streams (needed due to GBit LAN
+> on the other side) as with 20 streams.
 > 
-> Skeleton OTOH is supposed to make people's lives easier, so it's a
-> completely different beast. It should be malleable so that users can
-> improve and hack on it. Baking it into as system tool is counter
-> productive. Users should be able to grab the skel tool single-file
-> source and adjust for their project's needs. Distributing your own copy
-> of bpftool because you want to adjust skel is a heavy lift.
-
-Adjust generator for their custom needs? essentially fork it for
-private use? I'd rather prevent such possibility.
-When people start using it I'd prefer they come back to this mailing
-list with patches than do 'easy fork'.
-
-> > Now consider if vmlinux.h and skeleton generation is split out of bpftool into
-> > new tool. Effectively it would mean a fork of bpftool. Two binaries doing bpf
-> > elf file processing without clear distinction between them is going to be very
-> > confusing.
 > 
-> To be clear I'm suggesting skel gen is a separate tool, vmlinux and
-> Quentin's header gen work on the running system, they are not pure
-> build env tools.
+>> I had a plan about enabling compressing ACK as I did for SACK
+>> in commit
+>> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=5d9f4262b7ea41ca9981cc790e37cca6e37c789e
+>>
+>> But I have not done it yet.
+>> It is a pity because this would tremendously help wifi I am sure.
+> 
+> Nice :-)
+> 
+> But that is something the *receiver* would have to do.
+> 
+> The dirty secret here is that we're getting close to 1700 Mbps TCP with
+> Windows in place of Linux in the setup, with the same receiver on the
+> other end (which is actually a single Linux machine with two GBit
+> network connections to the AP). So if we had this I'm sure it'd increase
+> performance, but it still wouldn't explain why we're so much slower than
+> Windows :-)
+> 
+> Now, I'm certainly not saying that TCP behaviour is the only reason for
+> the difference, we already found an issue for example where due to a
+> small Windows driver bug some packet extension was always used, and the
+> AP is also buggy in that it needs the extension but didn't request it
+> ... so the two bugs cancelled each other out and things worked well, but
+> our Linux driver believed the AP ... :) Certainly there can be more
+> things like that still, I just started on the TCP side and ran into the
+> queueing behaviour that I cannot explain.
+> 
+> 
+> In any case, I'll try to dig deeper into the TCP stack to understand the
+> reason for this transmit behaviour.
+> 
+> Thanks,
+> johannes
+> 
+> 
+> (*) Hmm. Now I have another idea. Maybe we have some kind of problem
+> with the medium access configuration, and we transmit all this data
+> without the AP having a chance to send back all the ACKs? Too bad I
+> can't put an air sniffer into the setup - it's a conductive setup.
 
-You meant to say Andrii's header generator that is based on Quentin's man page
-generator. Its output bpf_helper_defs.h makes sense as a part of libbpf
-package. The generator script itself doesn't need to be included with any package.
-bpftool vmlinux gen consumes vmlinux elf files and is a part of the build.
-bpftool skeleton gen consumes bpf elf files and is a part of the same build.
+splitter/combiner?
+
+If it is just delayed acks coming back, which would slow down a stream, then
+multiple streams would tend to work around that problem?
+
+I would actually expect similar speedup with multiple streams if some TCP socket
+was blocked on waiting for ACKs too.
+
+Even if you can't sniff the air, you could sniff the wire or just look at packet
+in/out counts.  If you have a huge number of ACKs, that would show up in raw pkt
+counters.
+
+I'm not sure it matters these days, but this patch greatly helped TCP throughput on
+ath10k for a while, and we are still using it.  Maybe your sk_pacing change already
+tweaked the same logic:
+
+https://github.com/greearb/linux-ct-5.4/commit/65651d4269eb2b0d4b4952483c56316a7fbe2f48
+
+if [ -w /proc/sys/net/ipv4/tcp_tsq_limit_output_interval ]
+		then
+		# This helps TCP tx throughput when using ath10k.  Setting > 1 likely
+		# increases latency in some cases, but on average, seems a win for us.
+		TCP_TSQ=200
+		echo -n "Setting TCP-tsq limit to $TCP_TSQ....................................... "
+		echo $TCP_TSQ > /proc/sys/net/ipv4/tcp_tsq_limit_output_interval
+		echo "DONE"
+	    fi
+
+
+Thanks,
+Ben
+
+-- 
+Ben Greear <greearb@candelatech.com>
+Candela Technologies Inc  http://www.candelatech.com
 
