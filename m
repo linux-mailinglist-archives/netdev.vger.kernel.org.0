@@ -2,81 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 32E1B11CD5F
-	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 13:39:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C9AED11CDA4
+	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 13:56:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729177AbfLLMjf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Dec 2019 07:39:35 -0500
-Received: from correo.us.es ([193.147.175.20]:49886 "EHLO mail.us.es"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729208AbfLLMjf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 12 Dec 2019 07:39:35 -0500
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id 96F04A4185
-        for <netdev@vger.kernel.org>; Thu, 12 Dec 2019 13:39:32 +0100 (CET)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 88C98DA70A
-        for <netdev@vger.kernel.org>; Thu, 12 Dec 2019 13:39:32 +0100 (CET)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id 7DCE2DA715; Thu, 12 Dec 2019 13:39:32 +0100 (CET)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 7BD35DA70B;
-        Thu, 12 Dec 2019 13:39:30 +0100 (CET)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Thu, 12 Dec 2019 13:39:30 +0100 (CET)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from us.es (129.166.216.87.static.jazztel.es [87.216.166.129])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: 1984lsi)
-        by entrada.int (Postfix) with ESMTPSA id 3DC4341E4801;
-        Thu, 12 Dec 2019 13:39:30 +0100 (CET)
-Date:   Thu, 12 Dec 2019 13:39:30 +0100
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     Xin Long <lucien.xin@gmail.com>
-Cc:     network dev <netdev@vger.kernel.org>,
-        netfilter-devel@vger.kernel.org, davem <davem@davemloft.net>
-Subject: Re: [PATCH nf-next 0/7] netfilter: nft_tunnel: reinforce key opts
- support
-Message-ID: <20191212123930.ws3qce3cxnspwvc2@salvia>
-References: <cover.1575779993.git.lucien.xin@gmail.com>
- <CADvbK_e25HuWG98OYCWsmWMB6cyRDSM6SovNYKa8ySZyJPchkA@mail.gmail.com>
+        id S1729354AbfLLM4g (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Dec 2019 07:56:36 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:33534 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1729302AbfLLM4f (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Dec 2019 07:56:35 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1576155395;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=BQ/OeprMEEQbDYMzEQzXy36w02TkBbbXNkwJyG1iOw4=;
+        b=NG0B5axReVWy8EKhw0y/n1xkmsDj3eGaqcaqk4NgkXUofXU/szFHC2dBvpG+2WZKjri+5q
+        vMCNjxI1MC/+xK/gRZLIgPHFBdWEaLwS+dvCMzx76DR9szCPIkJdLyQFDI/48NUder+6XN
+        LrQuhYMeq50hgZjhfedEoFfKiNJjt8o=
+Received: from mail-qv1-f70.google.com (mail-qv1-f70.google.com
+ [209.85.219.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-427-9j6f3yojPCyfb5Dm21lbFg-1; Thu, 12 Dec 2019 07:56:32 -0500
+X-MC-Unique: 9j6f3yojPCyfb5Dm21lbFg-1
+Received: by mail-qv1-f70.google.com with SMTP id d7so1412955qvq.12
+        for <netdev@vger.kernel.org>; Thu, 12 Dec 2019 04:56:32 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=BQ/OeprMEEQbDYMzEQzXy36w02TkBbbXNkwJyG1iOw4=;
+        b=SpSrGbqhSp/lISvW37dlIwdOH94GSirve5Akrl6Jx84GuilpxausrAqBdzhwCpSl0H
+         e63ayFoPRDibNNDwz4rPZqbdElw2DdXN68+WXvWjjnxCwi/Rf7Nw1x0Bzstdetxn/NNF
+         NZFvZLWExTl+7lFh37cboBJerPAT2aO8WRTPdEA4HRAnD5upj18aHQziqkAZ8kK5LpyI
+         x0U6rZLg5YET/0MEbGR2d0pcDDx4pXindHcSdrKRkWcuye3I8c9XgoCGhYgAfMCFzYj7
+         OZuhKYOY/Pg7zbtSHPk+HRBzDYQMbx17VjUyvXSaRwawFHsCTYIVVKLgi9VY0yqusRNB
+         xVQw==
+X-Gm-Message-State: APjAAAXF6BoWJRAnSvf/CBoNx+k1wzCQCG1N9/toCZAbeKD+IKzEdE0p
+        o7rGLiuqOMJGo2XTFefldW8XR9RdD0nNDrUUiVDmn+CxJog3AcBhMh21zSf6al0ePA53joMSY3B
+        k0TT0c2STAGlVycGP
+X-Received: by 2002:ac8:1196:: with SMTP id d22mr7374523qtj.344.1576155392076;
+        Thu, 12 Dec 2019 04:56:32 -0800 (PST)
+X-Google-Smtp-Source: APXvYqwGAOqNeoXt3nIrQGWq7m2hfYKhqzgGGgHCw70gSt6fz7ekSW8rLr9/hwp3tuH2X5BB5yIhKQ==
+X-Received: by 2002:ac8:1196:: with SMTP id d22mr7374504qtj.344.1576155391867;
+        Thu, 12 Dec 2019 04:56:31 -0800 (PST)
+Received: from redhat.com (bzq-79-181-48-215.red.bezeqint.net. [79.181.48.215])
+        by smtp.gmail.com with ESMTPSA id d23sm2191968qte.32.2019.12.12.04.56.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 12 Dec 2019 04:56:30 -0800 (PST)
+Date:   Thu, 12 Dec 2019 07:56:26 -0500
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Stefano Garzarella <sgarzare@redhat.com>
+Cc:     virtualization@lists.linux-foundation.org,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Jason Wang <jasowang@redhat.com>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH] vhost/vsock: accept only packets with the right dst_cid
+Message-ID: <20191212075356-mutt-send-email-mst@kernel.org>
+References: <20191206143912.153583-1-sgarzare@redhat.com>
+ <20191211110235-mutt-send-email-mst@kernel.org>
+ <20191212123624.ahyhrny7u6ntn3xt@steredhat>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CADvbK_e25HuWG98OYCWsmWMB6cyRDSM6SovNYKa8ySZyJPchkA@mail.gmail.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-Virus-Scanned: ClamAV using ClamSMTP
+In-Reply-To: <20191212123624.ahyhrny7u6ntn3xt@steredhat>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 12, 2019 at 11:02:19AM +0800, Xin Long wrote:
-[...]
-> Hi, Pablo
-> as you commented on other patches, I will post v2 and
-> >
-> > Xin Long (7):
-> >   netfilter: nft_tunnel: parse ERSPAN_VERSION attr as u8
-> >   netfilter: nft_tunnel: parse VXLAN_GBP attr as u32 in nft_tunnel
-> drop these two patches
+On Thu, Dec 12, 2019 at 01:36:24PM +0100, Stefano Garzarella wrote:
+> On Wed, Dec 11, 2019 at 11:03:07AM -0500, Michael S. Tsirkin wrote:
+> > On Fri, Dec 06, 2019 at 03:39:12PM +0100, Stefano Garzarella wrote:
+> > > When we receive a new packet from the guest, we check if the
+> > > src_cid is correct, but we forgot to check the dst_cid.
+> > > 
+> > > The host should accept only packets where dst_cid is
+> > > equal to the host CID.
+> > > 
+> > > Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
+> > 
+> > Stefano can you clarify the impact pls?
+> 
+> Sure, I'm sorry I didn't do it earlier.
+> 
+> > E.g. is this needed on stable? Etc.
+> 
+> This is a better analysis (I hope) when there is a malformed guest
+> that sends a packet with a wrong dst_cid:
+> - before v5.4 we supported only one transport at runtime, so the sockets
+>   in the host can only receive packets from guests. In this case, if
+>   the dst_cid is wrong, maybe the only issue is that the getsockname()
+>   returns an inconsistent address (the cid returned is the one received
+>   from the guest)
+> 
+> - from v5.4 we support multi-transport, so the L1 VM (e.g. L0 assigned
+>   cid 5 to this VM) can have both Guest2Host and Host2Guest transports.
+>   In this case, we have these possible issues:
+>   - L2 (or L1) guest can use cid 0, 1, and 2 to reach L1 (or L0),
+>     instead we should allow only CID_HOST (2) to reach the level below.
+>     Note: this happens also with not malformed guest that runs Linux v5.4
+>   - if a malformed L2 guest sends a packet with the wrong dst_cid, for example
+>     instead of CID_HOST, it uses the cid assigned by L0 to L1 (5 in this
+>     example), this packets can wrongly queued to a socket on L1 bound to cid 5,
+>     that only expects connections from L0.
 
-Yes, you will still need the netlink policy validation for
-ERSPAN_VERSION which is missing, so at least one patch will be needed
-for this one.
+Oh so a security issue?
 
-> >   netfilter: nft_tunnel: no need to call htons() when dumping ports
-> move this one to nf.git
+> 
+> Maybe we really need this only on stable v5.4, but the patch is very simple
+> and should apply cleanly to all stable branches.
+> 
+> What do you think?
+> 
+> Thanks,
+> Stefano
 
-Given that nft_tunnel really needs care and that there is no upstream
-userspace code using this extension, I think using nf-next.git in this
-case is fine.
+I'd say it's better to backport to all stable releases where it applies,
+but yes it's only a security issue in 5.4.  Dave could you forward pls?
 
-Thanks.
+-- 
+MST
+
