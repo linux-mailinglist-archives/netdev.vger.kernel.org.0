@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3A40811D280
-	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 17:41:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8273C11D282
+	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 17:41:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729964AbfLLQlu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Dec 2019 11:41:50 -0500
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:19018 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729932AbfLLQlt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Dec 2019 11:41:49 -0500
-Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xBCGbJX9003395
-        for <netdev@vger.kernel.org>; Thu, 12 Dec 2019 08:41:48 -0800
+        id S1729976AbfLLQl4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Dec 2019 11:41:56 -0500
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:23176 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1729969AbfLLQl4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Dec 2019 11:41:56 -0500
+Received: from pps.filterd (m0109331.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xBCGYrTi008053
+        for <netdev@vger.kernel.org>; Thu, 12 Dec 2019 08:41:55 -0800
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
  : date : message-id : in-reply-to : references : mime-version :
- content-type; s=facebook; bh=bzvD7R4vaIjJXCukGZddFxdWcBvttBi8iLa4gJasQsY=;
- b=AR/p9i0M4bimqAERyJYq6/LchLZqDTCSVUw6s0sVbY4S+84cmmF8uDfafLaXXaGksciX
- 7peNJZ5IioUZWzSH4rWY9eD/DX7JvtWzlQ9YFE0jetZWAYM/bEXHaE/29O1SqIp/Twfq
- h9exAmigZ073kJ6l/QEPi0fLSNsw3PYxwu8= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 2wtk8wshs1-5
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Thu, 12 Dec 2019 08:41:48 -0800
-Received: from intmgw001.41.prn1.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:83::4) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Thu, 12 Dec 2019 08:41:46 -0800
+ content-type; s=facebook; bh=JbJpXfb7+JuOPGR7Rb6TH5u/fwkcBLmG31N3NCob0wI=;
+ b=n6VNImj94aIVoq9QWt8c1D1hTfVDi1db334hqWImLO0zDlOhnZ1VTiZpeeCHReOx71xm
+ i6adse2sRIw+sRIOY4Q3I/orh9QF0Hj2W/HufjqSv5/dUaP6PBFCDjKJM5DbmLZS2rlU
+ /+Fk8u5gAtQhPSr9XlNoGaFM37k4qEsH2QQ= 
+Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
+        by mx0a-00082601.pphosted.com with ESMTP id 2wu4ehn86k-5
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Thu, 12 Dec 2019 08:41:54 -0800
+Received: from intmgw001.05.ash5.facebook.com (2620:10d:c081:10::13) by
+ mail.thefacebook.com (2620:10d:c081:35::127) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
+ Thu, 12 Dec 2019 08:41:51 -0800
 Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
-        id F41862EC1AD2; Thu, 12 Dec 2019 08:41:44 -0800 (PST)
+        id 950392EC1AD2; Thu, 12 Dec 2019 08:41:49 -0800 (PST)
 Smtp-Origin-Hostprefix: devbig
 From:   Andrii Nakryiko <andriin@fb.com>
 Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
@@ -38,9 +38,9 @@ To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
 CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
         Andrii Nakryiko <andriin@fb.com>
 Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH v2 bpf-next 05/15] libbpf: expose field/var declaration emitting API internally
-Date:   Thu, 12 Dec 2019 08:41:18 -0800
-Message-ID: <20191212164129.494329-6-andriin@fb.com>
+Subject: [PATCH v2 bpf-next 07/15] libbpf: refactor global data map initialization
+Date:   Thu, 12 Dec 2019 08:41:20 -0800
+Message-ID: <20191212164129.494329-8-andriin@fb.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20191212164129.494329-1-andriin@fb.com>
 References: <20191212164129.494329-1-andriin@fb.com>
@@ -49,10 +49,10 @@ MIME-Version: 1.0
 Content-Type: text/plain
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
  definitions=2019-12-12_04:2019-12-12,2019-12-12 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxscore=0
- lowpriorityscore=0 suspectscore=25 impostorscore=0 malwarescore=0
- phishscore=0 adultscore=0 priorityscore=1501 mlxlogscore=999 bulkscore=0
- clxscore=1015 spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 impostorscore=0
+ lowpriorityscore=0 adultscore=0 clxscore=1015 bulkscore=0 malwarescore=0
+ priorityscore=1501 mlxscore=0 phishscore=0 spamscore=0 suspectscore=29
+ mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-1910280000 definitions=main-1912120129
 X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
@@ -60,163 +60,209 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Expose useful function emitting field/variable declaration compilable C syntax
-of a provided BTF type. This is going to be used by bpftool when emitting data
-section layout as a struct. This is not a trivial algorithm, so better to
-expose it as internal API and let bpftool harness existing libbpf code. As
-part of making this API useful in a stand-alone fashion, move initialization
-of some of the internal btf_dumper state to early phase.
+Refactor global data map initialization to use anonymous mmap()-ed memory
+instead of malloc()-ed one. This allows to do a transparent re-mmap()-ing of
+already existing memory address to point to BPF map's memory after
+bpf_object__load() step (done in follow up patch). This choreographed setup
+allows to have a nice and unsurprising way to pre-initialize read-only (and
+r/w as well) maps by user and after BPF map creation keep working with
+mmap()-ed contents of this map. All in a way that doesn't require user code to
+update any pointers: the illusion of working with memory contents is preserved
+before and after actual BPF map instantiation.
 
-Also expose useful btf_align_of() function returning alignment of a given BTF
-type. This is also used for data section layout-compatible struct definition,
-specifically to determine necessary extra padding between fields/variables.
+Selftests and runqslower example demonstrate this feature in follow up patches.
 
 Acked-by: Martin KaFai Lau <kafai@fb.com>
 Signed-off-by: Andrii Nakryiko <andriin@fb.com>
 ---
- tools/lib/bpf/btf_dump.c        | 61 ++++++++++++++++-----------------
- tools/lib/bpf/libbpf_internal.h |  6 ++++
- 2 files changed, 36 insertions(+), 31 deletions(-)
+ tools/lib/bpf/libbpf.c | 92 +++++++++++++++++++++++++-----------------
+ 1 file changed, 55 insertions(+), 37 deletions(-)
 
-diff --git a/tools/lib/bpf/btf_dump.c b/tools/lib/bpf/btf_dump.c
-index cb126d8fcf75..e597eb9541f5 100644
---- a/tools/lib/bpf/btf_dump.c
-+++ b/tools/lib/bpf/btf_dump.c
-@@ -116,6 +116,8 @@ static void btf_dump_printf(const struct btf_dump *d, const char *fmt, ...)
- 	va_end(args);
- }
- 
-+static int btf_dump_mark_referenced(struct btf_dump *d);
-+
- struct btf_dump *btf_dump__new(const struct btf *btf,
- 			       const struct btf_ext *btf_ext,
- 			       const struct btf_dump_opts *opts,
-@@ -137,18 +139,39 @@ struct btf_dump *btf_dump__new(const struct btf *btf,
- 	if (IS_ERR(d->type_names)) {
- 		err = PTR_ERR(d->type_names);
- 		d->type_names = NULL;
--		btf_dump__free(d);
--		return ERR_PTR(err);
- 	}
- 	d->ident_names = hashmap__new(str_hash_fn, str_equal_fn, NULL);
- 	if (IS_ERR(d->ident_names)) {
- 		err = PTR_ERR(d->ident_names);
- 		d->ident_names = NULL;
--		btf_dump__free(d);
--		return ERR_PTR(err);
-+		goto err;
-+	}
-+	d->type_states = calloc(1 + btf__get_nr_types(d->btf),
-+				sizeof(d->type_states[0]));
-+	if (!d->type_states) {
-+		err = -ENOMEM;
-+		goto err;
-+	}
-+	d->cached_names = calloc(1 + btf__get_nr_types(d->btf),
-+				 sizeof(d->cached_names[0]));
-+	if (!d->cached_names) {
-+		err = -ENOMEM;
-+		goto err;
- 	}
- 
-+	/* VOID is special */
-+	d->type_states[0].order_state = ORDERED;
-+	d->type_states[0].emit_state = EMITTED;
-+
-+	/* eagerly determine referenced types for anon enums */
-+	err = btf_dump_mark_referenced(d);
-+	if (err)
-+		goto err;
-+
- 	return d;
-+err:
-+	btf_dump__free(d);
-+	return ERR_PTR(err);
- }
- 
- void btf_dump__free(struct btf_dump *d)
-@@ -175,7 +198,6 @@ void btf_dump__free(struct btf_dump *d)
- 	free(d);
- }
- 
--static int btf_dump_mark_referenced(struct btf_dump *d);
- static int btf_dump_order_type(struct btf_dump *d, __u32 id, bool through_ptr);
- static void btf_dump_emit_type(struct btf_dump *d, __u32 id, __u32 cont_id);
- 
-@@ -202,27 +224,6 @@ int btf_dump__dump_type(struct btf_dump *d, __u32 id)
- 	if (id > btf__get_nr_types(d->btf))
- 		return -EINVAL;
- 
--	/* type states are lazily allocated, as they might not be needed */
--	if (!d->type_states) {
--		d->type_states = calloc(1 + btf__get_nr_types(d->btf),
--					sizeof(d->type_states[0]));
--		if (!d->type_states)
--			return -ENOMEM;
--		d->cached_names = calloc(1 + btf__get_nr_types(d->btf),
--					 sizeof(d->cached_names[0]));
--		if (!d->cached_names)
--			return -ENOMEM;
--
--		/* VOID is special */
--		d->type_states[0].order_state = ORDERED;
--		d->type_states[0].emit_state = EMITTED;
--
--		/* eagerly determine referenced types for anon enums */
--		err = btf_dump_mark_referenced(d);
--		if (err)
--			return err;
--	}
--
- 	d->emit_queue_cnt = 0;
- 	err = btf_dump_order_type(d, id, false);
- 	if (err < 0)
-@@ -565,8 +566,6 @@ struct id_stack {
- 	int cnt;
+diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+index f13752c4d271..ff00a767adfb 100644
+--- a/tools/lib/bpf/libbpf.c
++++ b/tools/lib/bpf/libbpf.c
+@@ -221,16 +221,12 @@ struct bpf_map {
+ 	void *priv;
+ 	bpf_map_clear_priv_t clear_priv;
+ 	enum libbpf_map_type libbpf_type;
++	void *mmaped;
+ 	char *pin_path;
+ 	bool pinned;
+ 	bool reused;
  };
  
--static void btf_dump_emit_type_decl(struct btf_dump *d, __u32 id,
--				    const char *fname, int lvl);
- static void btf_dump_emit_type_chain(struct btf_dump *d,
- 				     struct id_stack *decl_stack,
- 				     const char *fname, int lvl);
-@@ -752,7 +751,7 @@ static void btf_dump_emit_type(struct btf_dump *d, __u32 id, __u32 cont_id)
- 	}
+-struct bpf_secdata {
+-	void *rodata;
+-	void *data;
+-};
+-
+ static LIST_HEAD(bpf_objects_list);
+ 
+ struct bpf_object {
+@@ -243,7 +239,6 @@ struct bpf_object {
+ 	struct bpf_map *maps;
+ 	size_t nr_maps;
+ 	size_t maps_cap;
+-	struct bpf_secdata sections;
+ 
+ 	bool loaded;
+ 	bool has_pseudo_calls;
+@@ -828,13 +823,24 @@ static struct bpf_map *bpf_object__add_map(struct bpf_object *obj)
+ 	return &obj->maps[obj->nr_maps++];
  }
  
--static int btf_align_of(const struct btf *btf, __u32 id)
-+int btf_align_of(const struct btf *btf, __u32 id)
++static size_t bpf_map_mmap_sz(const struct bpf_map *map)
++{
++	long page_sz = sysconf(_SC_PAGE_SIZE);
++	size_t map_sz;
++
++	map_sz = roundup(map->def.value_size, 8) * map->def.max_entries;
++	map_sz = roundup(map_sz, page_sz);
++	return map_sz;
++}
++
+ static int
+ bpf_object__init_internal_map(struct bpf_object *obj, enum libbpf_map_type type,
+-			      int sec_idx, Elf_Data *data, void **data_buff)
++			      int sec_idx, Elf_Data *data)
  {
- 	const struct btf_type *t = btf__type_by_id(btf, id);
- 	__u16 kind = btf_kind(t);
-@@ -1051,8 +1050,8 @@ static int btf_dump_push_decl_stack_id(struct btf_dump *d, __u32 id)
-  * of a stack frame. Some care is required to "pop" stack frames after
-  * processing type declaration chain.
-  */
--static void btf_dump_emit_type_decl(struct btf_dump *d, __u32 id,
--				    const char *fname, int lvl)
-+void btf_dump_emit_type_decl(struct btf_dump *d, __u32 id,
-+			     const char *fname, int lvl)
- {
- 	struct id_stack decl_stack;
- 	const struct btf_type *t;
-diff --git a/tools/lib/bpf/libbpf_internal.h b/tools/lib/bpf/libbpf_internal.h
-index 7ee0c8691835..bb7fd22eb0ab 100644
---- a/tools/lib/bpf/libbpf_internal.h
-+++ b/tools/lib/bpf/libbpf_internal.h
-@@ -98,6 +98,12 @@ static inline bool libbpf_validate_opts(const char *opts,
- int libbpf__load_raw_btf(const char *raw_types, size_t types_len,
- 			 const char *str_sec, size_t str_len);
+ 	char map_name[BPF_OBJ_NAME_LEN];
+ 	struct bpf_map_def *def;
+ 	struct bpf_map *map;
++	int err;
  
-+struct btf_dump;
+ 	map = bpf_object__add_map(obj);
+ 	if (IS_ERR(map))
+@@ -862,16 +868,20 @@ bpf_object__init_internal_map(struct bpf_object *obj, enum libbpf_map_type type,
+ 	pr_debug("map '%s' (global data): at sec_idx %d, offset %zu, flags %x.\n",
+ 		 map_name, map->sec_idx, map->sec_offset, def->map_flags);
+ 
+-	if (data_buff) {
+-		*data_buff = malloc(data->d_size);
+-		if (!*data_buff) {
+-			zfree(&map->name);
+-			pr_warn("failed to alloc map content buffer\n");
+-			return -ENOMEM;
+-		}
+-		memcpy(*data_buff, data->d_buf, data->d_size);
++	map->mmaped = mmap(NULL, bpf_map_mmap_sz(map), PROT_READ | PROT_WRITE,
++			   MAP_SHARED | MAP_ANONYMOUS, -1, 0);
++	if (map->mmaped == MAP_FAILED) {
++		err = -errno;
++		map->mmaped = NULL;
++		pr_warn("failed to alloc map '%s' content buffer: %d\n",
++			map->name, err);
++		zfree(&map->name);
++		return err;
+ 	}
+ 
++	if (type != LIBBPF_MAP_BSS)
++		memcpy(map->mmaped, data->d_buf, data->d_size);
 +
-+void btf_dump_emit_type_decl(struct btf_dump *d, __u32 id, const char *fname,
-+			     int lvl);
-+int btf_align_of(const struct btf *btf, __u32 id);
+ 	pr_debug("map %td is \"%s\"\n", map - obj->maps, map->name);
+ 	return 0;
+ }
+@@ -886,23 +896,21 @@ static int bpf_object__init_global_data_maps(struct bpf_object *obj)
+ 	if (obj->efile.data_shndx >= 0) {
+ 		err = bpf_object__init_internal_map(obj, LIBBPF_MAP_DATA,
+ 						    obj->efile.data_shndx,
+-						    obj->efile.data,
+-						    &obj->sections.data);
++						    obj->efile.data);
+ 		if (err)
+ 			return err;
+ 	}
+ 	if (obj->efile.rodata_shndx >= 0) {
+ 		err = bpf_object__init_internal_map(obj, LIBBPF_MAP_RODATA,
+ 						    obj->efile.rodata_shndx,
+-						    obj->efile.rodata,
+-						    &obj->sections.rodata);
++						    obj->efile.rodata);
+ 		if (err)
+ 			return err;
+ 	}
+ 	if (obj->efile.bss_shndx >= 0) {
+ 		err = bpf_object__init_internal_map(obj, LIBBPF_MAP_BSS,
+ 						    obj->efile.bss_shndx,
+-						    obj->efile.bss, NULL);
++						    obj->efile.bss);
+ 		if (err)
+ 			return err;
+ 	}
+@@ -2291,27 +2299,32 @@ bpf_object__populate_internal_map(struct bpf_object *obj, struct bpf_map *map)
+ {
+ 	char *cp, errmsg[STRERR_BUFSIZE];
+ 	int err, zero = 0;
+-	__u8 *data;
+ 
+ 	/* Nothing to do here since kernel already zero-initializes .bss map. */
+ 	if (map->libbpf_type == LIBBPF_MAP_BSS)
+ 		return 0;
+ 
+-	data = map->libbpf_type == LIBBPF_MAP_DATA ?
+-	       obj->sections.data : obj->sections.rodata;
++	err = bpf_map_update_elem(map->fd, &zero, map->mmaped, 0);
++	if (err) {
++		err = -errno;
++		cp = libbpf_strerror_r(err, errmsg, sizeof(errmsg));
++		pr_warn("Error setting initial map(%s) contents: %s\n",
++			map->name, cp);
++		return err;
++	}
+ 
+-	err = bpf_map_update_elem(map->fd, &zero, data, 0);
+ 	/* Freeze .rodata map as read-only from syscall side. */
+-	if (!err && map->libbpf_type == LIBBPF_MAP_RODATA) {
++	if (map->libbpf_type == LIBBPF_MAP_RODATA) {
+ 		err = bpf_map_freeze(map->fd);
+ 		if (err) {
+-			cp = libbpf_strerror_r(errno, errmsg, sizeof(errmsg));
++			err = -errno;
++			cp = libbpf_strerror_r(err, errmsg, sizeof(errmsg));
+ 			pr_warn("Error freezing map(%s) as read-only: %s\n",
+ 				map->name, cp);
+-			err = 0;
++			return err;
+ 		}
+ 	}
+-	return err;
++	return 0;
+ }
+ 
+ static int
+@@ -4682,17 +4695,22 @@ void bpf_object__close(struct bpf_object *obj)
+ 	btf_ext__free(obj->btf_ext);
+ 
+ 	for (i = 0; i < obj->nr_maps; i++) {
+-		zfree(&obj->maps[i].name);
+-		zfree(&obj->maps[i].pin_path);
+-		if (obj->maps[i].clear_priv)
+-			obj->maps[i].clear_priv(&obj->maps[i],
+-						obj->maps[i].priv);
+-		obj->maps[i].priv = NULL;
+-		obj->maps[i].clear_priv = NULL;
++		struct bpf_map *map = &obj->maps[i];
 +
- int bpf_object__section_size(const struct bpf_object *obj, const char *name,
- 			     __u32 *size);
- int bpf_object__variable_offset(const struct bpf_object *obj, const char *name,
++		if (map->clear_priv)
++			map->clear_priv(map, map->priv);
++		map->priv = NULL;
++		map->clear_priv = NULL;
++
++		if (map->mmaped) {
++			munmap(map->mmaped, bpf_map_mmap_sz(map));
++			map->mmaped = NULL;
++		}
++
++		zfree(&map->name);
++		zfree(&map->pin_path);
+ 	}
+ 
+-	zfree(&obj->sections.rodata);
+-	zfree(&obj->sections.data);
+ 	zfree(&obj->maps);
+ 	obj->nr_maps = 0;
+ 
 -- 
 2.17.1
 
