@@ -2,174 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B01C11C84C
-	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 09:35:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F2E1511C856
+	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 09:39:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728250AbfLLIeZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Dec 2019 03:34:25 -0500
-Received: from mail-ua1-f68.google.com ([209.85.222.68]:46271 "EHLO
-        mail-ua1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727906AbfLLIeZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Dec 2019 03:34:25 -0500
-Received: by mail-ua1-f68.google.com with SMTP id i31so519312uae.13
-        for <netdev@vger.kernel.org>; Thu, 12 Dec 2019 00:34:24 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=7UHi4BJ1RU7e2Qqap02HTsnKWPKQhPRzj+3IJpyS25I=;
-        b=CazqmSjeTmhzl/T12C6gcLYS78AV26Bg70XLZn0tfPlbRO0xZA1iYgJxjWgyvbKkYM
-         fqV5h9oeUZn2BR/O8OFlfjMF2ZBJkAoH7qEN8CgXpr3Yx5caJxkU3c/jv7Vkdkn1kQcW
-         0VvbmS0LJs31VYHSUKL+UOKderGSIrcaDzMIwLQ4gBxSZQntQeVK8YxgGb7cUKPqWdPE
-         td3UK3ak3il/JVLcA4/pZvdsHY2kEG9/lPeK3G6OUwgjdD041nqzE1Eh4w2pulwEskla
-         yziHm1/CNTbjVgTqoFg/JwFFwNiQOrzY+AwZ/Y0nQ49mgMp66XvA+LVRVVinF77kDisu
-         B4+A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=7UHi4BJ1RU7e2Qqap02HTsnKWPKQhPRzj+3IJpyS25I=;
-        b=C91H+uvOFf1zr/qujD+d1EBNScjLJegtEJJgw88SAGiZ67FVF8FGIDCPw1FDdsRCxq
-         +EdMM7NVN26CDsWGi59OdxSG9ZKUAs4I9SQiNVkc4ouHHVMZkurqmAYC6ZQmzTCnwnGf
-         mxKSouXPdgk/f56IO7MTJpgqOdg/+YOZqgVbDF+3hApY3bKG2r1njDI9wKfxmxTtYV1W
-         g95ozwuwQo2/OqUGcGRvPT3n4nDKMeuNdNiHPxUzMoWMSaGOoh9blXp96TAf9Ttw+E2N
-         BC1dnr8rVv3qiq3eTYS4pUt6OyipUkYk5m7YNltof+Idw7bs8Lwc+uZv7sibWIXP3puV
-         Ducg==
-X-Gm-Message-State: APjAAAUnQgEFA2acOx/oTCsLfsfvmnVexEUJawgjn/51Iz7LO8wmCHpi
-        Y1fqQ/20IFllYG4uz8TnxVz2AH0U1rMDgEUGllPuUw==
-X-Google-Smtp-Source: APXvYqynopALtn3p4wqILJgjiXAeEzWwP6jaNx08xBuWSale2Uc+wFkAq1aVL/iomN6MiJTwLqjwY+vVT8KlCKpstMw=
-X-Received: by 2002:ab0:4ea6:: with SMTP id l38mr7262273uah.129.1576139663793;
- Thu, 12 Dec 2019 00:34:23 -0800 (PST)
+        id S1728240AbfLLIjI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Dec 2019 03:39:08 -0500
+Received: from mail.kernel.org ([198.145.29.99]:35548 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728110AbfLLIjI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 12 Dec 2019 03:39:08 -0500
+Received: from localhost (unknown [193.47.165.251])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id EDE88214AF;
+        Thu, 12 Dec 2019 08:39:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1576139947;
+        bh=cqSA+BBmuxnW0DeRg7wYxrHXTet8s8DkuXKihlBn1Po=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Indm809ScNJyXc0kbJaplRDJr8tIkaaOO45qAUSVozv1GCYaTtXHi1AplY/nRX34D
+         0X/v0vJVMF386dGYqlQ/oYhwY7oDeMwHo2GQnYYEHrW7KG+62kRlVujGI1uMTRf7jB
+         dNjITeHekpyXpMziKBbEBnY/Gsu65aAElsw1E6n8=
+Date:   Thu, 12 Dec 2019 10:39:04 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     "Saleem, Shiraz" <shiraz.saleem@intel.com>
+Cc:     Jason Gunthorpe <jgg@ziepe.ca>,
+        "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "Ismail, Mustafa" <mustafa.ismail@intel.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "nhorman@redhat.com" <nhorman@redhat.com>,
+        "sassmann@redhat.com" <sassmann@redhat.com>,
+        "parav@mellanox.com" <parav@mellanox.com>
+Subject: Re: [PATCH v3 05/20] RDMA/irdma: Add driver framework definitions
+Message-ID: <20191212083904.GT67461@unreal>
+References: <20191209224935.1780117-1-jeffrey.t.kirsher@intel.com>
+ <20191209224935.1780117-6-jeffrey.t.kirsher@intel.com>
+ <20191210190438.GF46@ziepe.ca>
+ <9DD61F30A802C4429A01CA4200E302A7B6B8FBCA@fmsmsx124.amr.corp.intel.com>
 MIME-Version: 1.0
-References: <20191211235253.2539-1-smoch@web.de> <20191211235253.2539-6-smoch@web.de>
-In-Reply-To: <20191211235253.2539-6-smoch@web.de>
-From:   Ulf Hansson <ulf.hansson@linaro.org>
-Date:   Thu, 12 Dec 2019 09:33:46 +0100
-Message-ID: <CAPDyKFoE7g0XsyTkbSYBRE0=JraPCxCP+wyZ2PQFVpAvvQvCfg@mail.gmail.com>
-Subject: Re: [PATCH v2 5/9] brcmfmac: add support for BCM4359 SDIO chipset
-To:     Soeren Moch <smoch@web.de>
-Cc:     Kalle Valo <kvalo@codeaurora.org>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Arend van Spriel <arend.vanspriel@broadcom.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Chi-Hsien Lin <chi-hsien.lin@cypress.com>,
-        Wright Feng <wright.feng@cypress.com>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        brcm80211-dev-list.pdl@broadcom.com,
-        brcm80211-dev-list <brcm80211-dev-list@cypress.com>,
-        netdev <netdev@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <9DD61F30A802C4429A01CA4200E302A7B6B8FBCA@fmsmsx124.amr.corp.intel.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 12 Dec 2019 at 00:53, Soeren Moch <smoch@web.de> wrote:
->
-> BCM4359 is a 2x2 802.11 abgn+ac Dual-Band HT80 combo chip and it
-> supports Real Simultaneous Dual Band feature.
->
-> Based on a similar patch by: Wright Feng <wright.feng@cypress.com>
->
-> Signed-off-by: Soeren Moch <smoch@web.de>
+On Thu, Dec 12, 2019 at 01:40:27AM +0000, Saleem, Shiraz wrote:
+> > Subject: Re: [PATCH v3 05/20] RDMA/irdma: Add driver framework definitions
 
-Acked-by: Ulf Hansson <ulf.hansson@linaro.org>
+<...>
 
-Kind regards
-Uffe
+> >
+> > > +		ldev->ops->reg_for_notification(ldev, &events);
+> > > +	dev_info(rfdev_to_dev(dev), "IRDMA VSI Open Successful");
+> >
+> > Lets not do this kind of logging..
+> >
+>
+> There is some dev_info which should be cleaned up to dev_dbg.
+> But logging this info is useful to know that this functions VSI (and associated ibdev)
+> is up and reading for RDMA traffic.
+> Is info logging to be avoided altogether?
 
-> ---
-> changes in v2:
-> - add SDIO_DEVICE_ID_CYPRESS_89359 as requested
->   by Chi-Hsien Lin <chi-hsien.lin@cypress.com>
+Will function tracer (ftrace) output be sufficient here?
+https://www.kernel.org/doc/html/latest/trace/ftrace.html
+
 >
-> Cc: Kalle Valo <kvalo@codeaurora.org>
-> Cc: Heiko Stuebner <heiko@sntech.de>
-> Cc: Arend van Spriel <arend.vanspriel@broadcom.com>
-> Cc: Franky Lin <franky.lin@broadcom.com>
-> Cc: Hante Meuleman <hante.meuleman@broadcom.com>
-> Cc: Chi-Hsien Lin <chi-hsien.lin@cypress.com>
-> Cc: Wright Feng <wright.feng@cypress.com>
-> Cc: linux-wireless@vger.kernel.org
-> Cc: brcm80211-dev-list.pdl@broadcom.com
-> Cc: brcm80211-dev-list@cypress.com
-> Cc: netdev@vger.kernel.org
-> Cc: linux-arm-kernel@lists.infradead.org
-> Cc: linux-rockchip@lists.infradead.org
-> Cc: linux-kernel@vger.kernel.org
-> ---
->  drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c | 2 ++
->  drivers/net/wireless/broadcom/brcm80211/brcmfmac/chip.c   | 1 +
->  drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c   | 2 ++
->  include/linux/mmc/sdio_ids.h                              | 2 ++
->  4 files changed, 7 insertions(+)
+> > > +static void irdma_close(struct iidc_peer_dev *ldev, enum
+> > > +iidc_close_reason reason) {
+> > > +	struct irdma_device *iwdev;
+> > > +	struct irdma_pci_f *rf;
+> > > +
+> > > +	iwdev = irdma_get_device(ldev->netdev);
+> > > +	if (!iwdev)
+> > > +		return;
+> > > +
+> > > +	irdma_put_device(iwdev);
+> > > +	rf = iwdev->rf;
+> > > +	if (reason == IIDC_REASON_GLOBR_REQ || reason ==
+> > IIDC_REASON_CORER_REQ ||
+> > > +	    reason == IIDC_REASON_PFR_REQ || rf->reset) {
+> > > +		iwdev->reset = true;
+> > > +		rf->reset = true;
+> > > +	}
+> > > +
+> > > +	if (iwdev->init_state >= CEQ0_CREATED)
+> > > +		irdma_deinit_rt_device(iwdev);
+> > > +
+> > > +	kfree(iwdev);
+> >
+> > Mixing put and kfree? So confusing. Why are there so many structs and so much
+> > indirection? Very hard to understand if this is right or not.
 >
-> diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c
-> index 68baf0189305..f4c53ab46058 100644
-> --- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c
-> +++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c
-> @@ -973,8 +973,10 @@ static const struct sdio_device_id brcmf_sdmmc_ids[] = {
->         BRCMF_SDIO_DEVICE(SDIO_DEVICE_ID_BROADCOM_43455),
->         BRCMF_SDIO_DEVICE(SDIO_DEVICE_ID_BROADCOM_4354),
->         BRCMF_SDIO_DEVICE(SDIO_DEVICE_ID_BROADCOM_4356),
-> +       BRCMF_SDIO_DEVICE(SDIO_DEVICE_ID_BROADCOM_4359),
->         BRCMF_SDIO_DEVICE(SDIO_DEVICE_ID_CYPRESS_4373),
->         BRCMF_SDIO_DEVICE(SDIO_DEVICE_ID_CYPRESS_43012),
-> +       BRCMF_SDIO_DEVICE(SDIO_DEVICE_ID_CYPRESS_89359),
->         { /* end: all zeroes */ }
->  };
->  MODULE_DEVICE_TABLE(sdio, brcmf_sdmmc_ids);
-> diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/chip.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/chip.c
-> index baf72e3984fc..282d0bc14e8e 100644
-> --- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/chip.c
-> +++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/chip.c
-> @@ -1408,6 +1408,7 @@ bool brcmf_chip_sr_capable(struct brcmf_chip *pub)
->                 addr = CORE_CC_REG(base, sr_control0);
->                 reg = chip->ops->read32(chip->ctx, addr);
->                 return (reg & CC_SR_CTL0_ENABLE_MASK) != 0;
-> +       case BRCM_CC_4359_CHIP_ID:
->         case CY_CC_43012_CHIP_ID:
->                 addr = CORE_CC_REG(pmu->base, retention_ctl);
->                 reg = chip->ops->read32(chip->ctx, addr);
-> diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
-> index 21e535072f3f..c4012ed58b9c 100644
-> --- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
-> +++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
-> @@ -616,6 +616,7 @@ BRCMF_FW_DEF(43455, "brcmfmac43455-sdio");
->  BRCMF_FW_DEF(43456, "brcmfmac43456-sdio");
->  BRCMF_FW_DEF(4354, "brcmfmac4354-sdio");
->  BRCMF_FW_DEF(4356, "brcmfmac4356-sdio");
-> +BRCMF_FW_DEF(4359, "brcmfmac4359-sdio");
->  BRCMF_FW_DEF(4373, "brcmfmac4373-sdio");
->  BRCMF_FW_DEF(43012, "brcmfmac43012-sdio");
+> This does look weird. I think the irdma_get_device() was here
+> just to get to iwdev. And put_device is releasing the refcnt immediately.
+> Since we are in a VSI close(), we should not need to take refcnt on ibdev
+> and just deregister it. Will fix this.
 >
-> @@ -638,6 +639,7 @@ static const struct brcmf_firmware_mapping brcmf_sdio_fwnames[] = {
->         BRCMF_FW_ENTRY(BRCM_CC_4345_CHIP_ID, 0xFFFFFDC0, 43455),
->         BRCMF_FW_ENTRY(BRCM_CC_4354_CHIP_ID, 0xFFFFFFFF, 4354),
->         BRCMF_FW_ENTRY(BRCM_CC_4356_CHIP_ID, 0xFFFFFFFF, 4356),
-> +       BRCMF_FW_ENTRY(BRCM_CC_4359_CHIP_ID, 0xFFFFFFFF, 4359),
->         BRCMF_FW_ENTRY(CY_CC_4373_CHIP_ID, 0xFFFFFFFF, 4373),
->         BRCMF_FW_ENTRY(CY_CC_43012_CHIP_ID, 0xFFFFFFFF, 43012)
->  };
-> diff --git a/include/linux/mmc/sdio_ids.h b/include/linux/mmc/sdio_ids.h
-> index 08b25c02b5a1..2e9a6e4634eb 100644
-> --- a/include/linux/mmc/sdio_ids.h
-> +++ b/include/linux/mmc/sdio_ids.h
-> @@ -41,8 +41,10 @@
->  #define SDIO_DEVICE_ID_BROADCOM_43455          0xa9bf
->  #define SDIO_DEVICE_ID_BROADCOM_4354           0x4354
->  #define SDIO_DEVICE_ID_BROADCOM_4356           0x4356
-> +#define SDIO_DEVICE_ID_BROADCOM_4359           0x4359
->  #define SDIO_DEVICE_ID_CYPRESS_4373            0x4373
->  #define SDIO_DEVICE_ID_CYPRESS_43012           43012
-> +#define SDIO_DEVICE_ID_CYPRESS_89359           0x4355
+> >
+> > > new file mode 100644
+> > > index 000000000000..b418e76a3302
+> > > +++ b/drivers/infiniband/hw/irdma/main.c
+> > > @@ -0,0 +1,630 @@
+> > > +// SPDX-License-Identifier: GPL-2.0 or Linux-OpenIB
+> > > +/* Copyright (c) 2015 - 2019 Intel Corporation */ #include "main.h"
+> > > +
+> > > +/* Legacy i40iw module parameters */
+> > > +static int resource_profile;
+> > > +module_param(resource_profile, int, 0644);
+> > > +MODULE_PARM_DESC(resource_profile, "Resource Profile: 0=PF only,
+> > > +1=Weighted VF, 2=Even Distribution");
+> > > +
+> > > +static int max_rdma_vfs = 32;
+> > > +module_param(max_rdma_vfs, int, 0644);
+> > MODULE_PARM_DESC(max_rdma_vfs,
+> > > +"Maximum VF count: 0-32 32=default");
+> > > +
+> > > +static int mpa_version = 2;
+> > > +module_param(mpa_version, int, 0644); MODULE_PARM_DESC(mpa_version,
+> > > +"MPA version: deprecated parameter");
+> > > +
+> > > +static int push_mode;
+> > > +module_param(push_mode, int, 0644);
+> > > +MODULE_PARM_DESC(push_mode, "Low latency mode: deprecated
+> > > +parameter");
+> > > +
+> > > +static int debug;
+> > > +module_param(debug, int, 0644);
+> > > +MODULE_PARM_DESC(debug, "debug flags: deprecated parameter");
+> >
+> > Generally no to module parameters
 >
->  #define SDIO_VENDOR_ID_INTEL                   0x0089
->  #define SDIO_DEVICE_ID_INTEL_IWMC3200WIMAX     0x1402
-> --
-> 2.17.1
->
+> Agree. But these are module params that existed in i40iw.
+> And irdma replaces i40iw and has a module alias
+> for it.
+
+Maybe use this opportunity and ditch "deprecated" module parameters?
+
+Thanks
