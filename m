@@ -2,151 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A991811C179
-	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 01:33:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F88711C17C
+	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 01:33:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727322AbfLLAdo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Dec 2019 19:33:44 -0500
-Received: from mail-qt1-f195.google.com ([209.85.160.195]:39128 "EHLO
-        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726673AbfLLAdo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Dec 2019 19:33:44 -0500
-Received: by mail-qt1-f195.google.com with SMTP id i12so722582qtp.6;
-        Wed, 11 Dec 2019 16:33:43 -0800 (PST)
+        id S1727359AbfLLAd4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Dec 2019 19:33:56 -0500
+Received: from mail-pj1-f42.google.com ([209.85.216.42]:44230 "EHLO
+        mail-pj1-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726673AbfLLAdz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Dec 2019 19:33:55 -0500
+Received: by mail-pj1-f42.google.com with SMTP id w5so247856pjh.11
+        for <netdev@vger.kernel.org>; Wed, 11 Dec 2019 16:33:55 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=dlRyVutO8WwEs5kZc2nxRUo94tupxQG95GUjkBNjnKc=;
-        b=eCWAIgtUMaIObpm299g/K7r8oj2NvQyMYk7RxqHlqMFkrTkjPWZBL23Yp1/KlKzmBC
-         z25gE2CXf93N6ppuXSktEwK0vf8rQx78V3IT5pQIylqIX9mmi/SBGpzNcPEFdP8cl87H
-         XJyf2SbqblX/iWJ+ZfyFi4R0x9GvjHKsP8RAafXz4KgWHaZnDe0NuX2ygDYqDcngSrx2
-         OXZWDTcPLaUk/R+OlYPZWMhRNTJ0zvdfjIKO8mvMt1B6aaQkMyawgFTsAUPi1cc8q+vD
-         dRq0lGA1tFs8kI254WoHuZ3PHUmfKAVz91a3pT6An2SQrQLi2jK/VcdTEtST97hkLYI2
-         Osdg==
+        d=pensando.io; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=7Y07r+tiw0blKw19rI8Pi4pb+z6GV+dRLG25qbdXruk=;
+        b=obSvtXTEvh34GMkq7kebRTwxlvHm41HDGPBZTPLfRhMw4+2zvEedUsljuw+4btHBqA
+         GD9nHs511yRZLchFAMD4MdIAt8AX96P1yG/ag8bJ/RAKaeDKkZivfwRfC5SoQ74AQ684
+         p05cxPs82x1KFLHNM88aXzmuroltfYv1xK2qaaqkS51rqXqrkqAiEwApOm+fW5tlsRHV
+         2uejO6lAm7GaukHSnns7d1CcptspAxZZtLjf+ZST5IANIgRHWoahc5lBNerrV0sq7Brp
+         nnEQjZD6GZlCR4pB/Ud++RCTFKid4uOSxhiL+5lMO/2tBBEGIUhUmix4OtBRrfFAqC23
+         rE6w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=dlRyVutO8WwEs5kZc2nxRUo94tupxQG95GUjkBNjnKc=;
-        b=d0DI7+s3iTEUMlmS/vgJXGUig7jsVYMnbKaFDWoIq8ngCezhBvTqKtzRwdA3wOulqS
-         E6IGz88WzoM13YtNmYuL55AwwqEpMVYc1UUdPdrbg2gTur//2WvtkPZTTX+AjEejswRz
-         V7V766g8otT4iaFoJKCurRopKAz62GlW4u4qFiHhKyECNGlBOA6GVEGhmPtQd2ld/E+E
-         xOqy6Xk6lO71bLFaOSabEEEJjaoSwQs6M9CQdFqaH83QVisw5wpvvH1K2KiX/s1Nnl3R
-         urbVVEJiX+OY+Zh7N9TLDEQKiRTUePrQ31YK1BYLxgOiKNgH7fRSm/QlFAiwa+8ydmne
-         pIZg==
-X-Gm-Message-State: APjAAAWOUPIGh0M2HHv1R8utAQUDQlooI4Eceslee9RRbjUGczJYWBdT
-        OYFCb5WXB7h1itqvn0VrI05sGUYOxVcF0tm7nS8=
-X-Google-Smtp-Source: APXvYqzjAh7cJ2eURktitg4S7PzznT4DQxxCdoX2qGiONhsJsvM0KqkKNr5yD6ynG1XTv82wjhQU1mD2Qb7sssOIeT0=
-X-Received: by 2002:ac8:4050:: with SMTP id j16mr5256055qtl.171.1576110822551;
- Wed, 11 Dec 2019 16:33:42 -0800 (PST)
-MIME-Version: 1.0
-References: <20191211192634.402675-1-andriin@fb.com> <20191212000858.mhymtk5f4mhwgh2x@kafai-mbp>
- <CAEf4BzZhe0yJrrz3Q+eZLs_pDqpr7gFuMEvLm=EyJhBaS0W3Eg@mail.gmail.com> <20191212002328.m2eenwfbnbb7ngcm@kafai-mbp>
-In-Reply-To: <20191212002328.m2eenwfbnbb7ngcm@kafai-mbp>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 11 Dec 2019 16:33:31 -0800
-Message-ID: <CAEf4BzaEVhx2F+qWdn8d1zjDJ96XAW_EvBNiF0e98g8mNVuuvw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] libbpf: fix printf compilation warnings on
- ppc64le arch
-To:     Martin Lau <kafai@fb.com>
-Cc:     Andrii Nakryiko <andriin@fb.com>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        Kernel Team <Kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=7Y07r+tiw0blKw19rI8Pi4pb+z6GV+dRLG25qbdXruk=;
+        b=oE/EZDvr1utZ46KkEfPO/aGLUY2Q6YsALVifJTlcPZKfxV3SBG0G1ho5uvHxsiHJoZ
+         ZYGiV32AzLomlRaFe6/NnwdXs/UFdErYRp0NLLiCQlN8ua8ECx7S6je/PkpufgOKyQ3d
+         LMPCN+0VBMybkkRQ8nAM5l65nTzOG7bNv5KRKgR3rPgxZk90yZlbYN51jsL/riOj1204
+         MazNvZ+HQQf4oplkhzbDxMGsMQgq9QyjkcN74eumxo9Dlzpl5kNE1IHWdRm646+cc5YL
+         zD5hfD90t91iH9td2rwG3BytRPsuGcEDVmAmuO2QVHs6fjwV4LopkWuY9cqrAkgna41j
+         DFsw==
+X-Gm-Message-State: APjAAAUdIi7ovinjAjA7M5P65sxbNQiJ0ilhm9pEuMi/iLZkQU5ascA1
+        YUe/tqK5z2zVu27qxaEj4K3adwb7Fag=
+X-Google-Smtp-Source: APXvYqzSsY33abDZl7AYYcx2TJ+kXwrvS17l4u2f48Cap2Yn+E9b9QNUSPLKs5FYP+QV3T9OH99KIA==
+X-Received: by 2002:a17:90a:350e:: with SMTP id q14mr6821053pjb.46.1576110834343;
+        Wed, 11 Dec 2019 16:33:54 -0800 (PST)
+Received: from driver-dev1.pensando.io ([12.1.37.26])
+        by smtp.gmail.com with ESMTPSA id 16sm4343509pfh.182.2019.12.11.16.33.53
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 11 Dec 2019 16:33:53 -0800 (PST)
+From:   Shannon Nelson <snelson@pensando.io>
+To:     netdev@vger.kernel.org, davem@davemloft.net
+Cc:     parav@mellanox.com, Shannon Nelson <snelson@pensando.io>
+Subject: [PATCH v2 net-next 0/2] ionic: add sriov support
+Date:   Wed, 11 Dec 2019 16:33:42 -0800
+Message-Id: <20191212003344.5571-1-snelson@pensando.io>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 11, 2019 at 4:23 PM Martin Lau <kafai@fb.com> wrote:
->
-> On Wed, Dec 11, 2019 at 04:11:40PM -0800, Andrii Nakryiko wrote:
-> > On Wed, Dec 11, 2019 at 4:09 PM Martin Lau <kafai@fb.com> wrote:
-> > >
-> > > On Wed, Dec 11, 2019 at 11:26:34AM -0800, Andrii Nakryiko wrote:
-> > > > On ppc64le __u64 and __s64 are defined as long int and unsigned long int,
-> > > > respectively. This causes compiler to emit warning when %lld/%llu are used to
-> > > > printf 64-bit numbers. Fix this by casting directly to unsigned long long
-> > > > (through shorter typedef). In few cases casting error code to int explicitly
-> > > > is cleaner, so that's what's done instead.
-> > > >
-> > > > Fixes: 1f8e2bcb2cd5 ("libbpf: Refactor relocation handling")
-> > > > Fixes: abd29c931459 ("libbpf: allow specifying map definitions using BTF")
-> > > > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
-> > > > ---
-> > > >  tools/lib/bpf/libbpf.c | 34 ++++++++++++++++++----------------
-> > > >  1 file changed, 18 insertions(+), 16 deletions(-)
-> > > >
-> > > > diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-> > > > index 3f09772192f1..5ee54f9355a4 100644
-> > > > --- a/tools/lib/bpf/libbpf.c
-> > > > +++ b/tools/lib/bpf/libbpf.c
-> > > > @@ -128,6 +128,8 @@ void libbpf_print(enum libbpf_print_level level, const char *format, ...)
-> > > >  # define LIBBPF_ELF_C_READ_MMAP ELF_C_READ
-> > > >  #endif
-> > > >
-> > > > +typedef unsigned long long __pu64;
-> > > > +
-> > > >  static inline __u64 ptr_to_u64(const void *ptr)
-> > > >  {
-> > > >       return (__u64) (unsigned long) ptr;
-> > > > @@ -1242,15 +1244,15 @@ static int bpf_object__init_user_btf_map(struct bpf_object *obj,
-> > > >                       }
-> > > >                       sz = btf__resolve_size(obj->btf, t->type);
-> > > >                       if (sz < 0) {
-> > > > -                             pr_warn("map '%s': can't determine key size for type [%u]: %lld.\n",
-> > > > -                                     map_name, t->type, sz);
-> > > > +                             pr_warn("map '%s': can't determine key size for type [%u]: %d.\n",
-> > > > +                                     map_name, t->type, (int)sz);
-> > > >                               return sz;
-> > > >                       }
-> > > > -                     pr_debug("map '%s': found key [%u], sz = %lld.\n",
-> > > > -                              map_name, t->type, sz);
-> > > > +                     pr_debug("map '%s': found key [%u], sz = %d.\n",
-> > > > +                              map_name, t->type, (int)sz);
-> > > >                       if (map->def.key_size && map->def.key_size != sz) {
-> > > > -                             pr_warn("map '%s': conflicting key size %u != %lld.\n",
-> > > > -                                     map_name, map->def.key_size, sz);
-> > > > +                             pr_warn("map '%s': conflicting key size %u != %d.\n",
-> > > > +                                     map_name, map->def.key_size, (int)sz);
-> > > >                               return -EINVAL;
-> > > >                       }
-> > > >                       map->def.key_size = sz;
-> > > > @@ -1285,15 +1287,15 @@ static int bpf_object__init_user_btf_map(struct bpf_object *obj,
-> > > >                       }
-> > > >                       sz = btf__resolve_size(obj->btf, t->type);
-> > > >                       if (sz < 0) {
-> > > > -                             pr_warn("map '%s': can't determine value size for type [%u]: %lld.\n",
-> > > > -                                     map_name, t->type, sz);
-> > > > +                             pr_warn("map '%s': can't determine value size for type [%u]: %d.\n",
-> > > > +                                     map_name, t->type, (int)sz);
-> > > >                               return sz;
-> > > >                       }
-> > > > -                     pr_debug("map '%s': found value [%u], sz = %lld.\n",
-> > > > -                              map_name, t->type, sz);
-> > > > +                     pr_debug("map '%s': found value [%u], sz = %d.\n",
-> > > > +                              map_name, t->type, (int)sz);
-> > > >                       if (map->def.value_size && map->def.value_size != sz) {
-> > > > -                             pr_warn("map '%s': conflicting value size %u != %lld.\n",
-> > > > -                                     map_name, map->def.value_size, sz);
-> > > > +                             pr_warn("map '%s': conflicting value size %u != %d.\n",
-> > > > +                                     map_name, map->def.value_size, (int)sz);
-> > > It is not an error case (i.e. not sz < 0) here.
-> > > Same for the above pr_debug().
-> >
-> > You are right, not sure if it matters in practice, though. Highly
-> > unlikely values will be bigger than 2GB, but even if they, they still
-> > fit in 4 bytes, we'll just report them as negative values. I can do
-> Then may be everything to int without adding __pu64?
+Set up the basic support for enabling SR-IOV devices in the
+ionic driver.  Since most of the management work happens in
+the NIC firmware, the driver becomes mostly a pass-through
+for the network stack commands that want to control and
+configure the VFs.
 
-sym->st_value can be legitimately 64-bit value, truncating it seems
-worse. I'd rather do __pu64/__ps64 instead, as a more "data
-preserving" way to handle things.
+v2:	use pci_num_vf() and kcalloc()
+	add locking for the VF operations
+	disable VFs in ionic_remove() if they are still running
 
->
-> > similar __ps64 conversion, as for __pu64, though, it we are afraid
-> > it's going to be a problem.
+Shannon Nelson (2):
+  ionic: ionic_if bits for sr-iov support
+  ionic: support sr-iov operations
+
+ drivers/net/ethernet/pensando/ionic/ionic.h   |  15 +-
+ .../ethernet/pensando/ionic/ionic_bus_pci.c   |  85 ++++++
+ .../net/ethernet/pensando/ionic/ionic_dev.c   |  58 ++++
+ .../net/ethernet/pensando/ionic/ionic_dev.h   |   7 +
+ .../net/ethernet/pensando/ionic/ionic_if.h    |  97 +++++++
+ .../net/ethernet/pensando/ionic/ionic_lif.c   | 254 +++++++++++++++++-
+ .../net/ethernet/pensando/ionic/ionic_lif.h   |   7 +
+ .../net/ethernet/pensando/ionic/ionic_main.c  |   4 +
+ 8 files changed, 519 insertions(+), 8 deletions(-)
+
+-- 
+2.17.1
+
