@@ -2,165 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C6F111D22B
-	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 17:24:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B0EC311D22D
+	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 17:25:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729876AbfLLQY1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Dec 2019 11:24:27 -0500
-Received: from mailgw02.mediatek.com ([216.200.240.185]:41784 "EHLO
-        mailgw02.mediatek.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729762AbfLLQY1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Dec 2019 11:24:27 -0500
-X-UUID: aa8e210d760c43fbba3c28564a6030fa-20191212
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
-        h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:In-Reply-To:Date:CC:To:From:Subject:Message-ID; bh=GaNx7Y6ValbHeiS9Crk5bomhLkNvkMMHVvQsSt1bpmQ=;
-        b=onENMK8oUCz2FszWLdnRLgg+WHuo+OO7L1y34X2MTHw16Jbr38bY1st1PZZwNX1vr7/z2ic/ItqS3ePTBdc9yOmhZhjaRmg4EW0/qPQvFupZq526PbR102SGhtzE6A5lBRdd1jJZJo997vm9ERlz2eytEFEHqJlbRwDRnWKqSzg=;
-X-UUID: aa8e210d760c43fbba3c28564a6030fa-20191212
-Received: from mtkcas67.mediatek.inc [(172.29.193.45)] by mailgw02.mediatek.com
-        (envelope-from <landen.chao@mediatek.com>)
-        (musrelay.mediatek.com ESMTP with TLS)
-        with ESMTP id 2144421000; Thu, 12 Dec 2019 08:24:24 -0800
-Received: from MTKCAS06.mediatek.inc (172.21.101.30) by
- MTKMBS62DR.mediatek.inc (172.29.94.18) with Microsoft SMTP Server (TLS) id
- 15.0.1395.4; Thu, 12 Dec 2019 08:24:39 -0800
-Received: from [172.21.84.99] (172.21.84.99) by MTKCAS06.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1395.4 via Frontend
- Transport; Fri, 13 Dec 2019 00:23:44 +0800
-Message-ID: <1576167861.18168.29.camel@mtksdccf07>
-Subject: Re: [PATCH net-next 4/6] net: dsa: mt7530: Add the support of
- MT7531 switch
-From:   Landen Chao <landen.chao@mediatek.com>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-CC:     "andrew@lunn.ch" <andrew@lunn.ch>,
-        "vivien.didelot@savoirfairelinux.com" 
-        <vivien.didelot@savoirfairelinux.com>,
-        "matthias.bgg@gmail.com" <matthias.bgg@gmail.com>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "mark.rutland@arm.com" <mark.rutland@arm.com>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-mediatek@lists.infradead.org" 
-        <linux-mediatek@lists.infradead.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        Sean Wang <Sean.Wang@mediatek.com>,
-        "opensource@vdorst.com" <opensource@vdorst.com>,
-        "frank-w@public-files.de" <frank-w@public-files.de>
-Date:   Fri, 13 Dec 2019 00:24:21 +0800
-In-Reply-To: <0eb12ad8-0484-feb5-d912-40e052315739@gmail.com>
-References: <cover.1575914275.git.landen.chao@mediatek.com>
-         <6d608dd024edc90b09ba4fe35417b693847f973c.1575914275.git.landen.chao@mediatek.com>
-         <0eb12ad8-0484-feb5-d912-40e052315739@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.2.3-0ubuntu6 
+        id S1729895AbfLLQZQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Dec 2019 11:25:16 -0500
+Received: from www62.your-server.de ([213.133.104.62]:58954 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729762AbfLLQZQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Dec 2019 11:25:16 -0500
+Received: from [194.230.159.122] (helo=localhost)
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1ifRH7-0007Wx-UN; Thu, 12 Dec 2019 17:25:14 +0100
+Date:   Thu, 12 Dec 2019 17:25:13 +0100
+From:   Daniel Borkmann <daniel@iogearbox.net>
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     Sasha Levin <sashal@kernel.org>, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org, Andrii Nakryiko <andriin@fb.com>,
+        Song Liu <songliubraving@fb.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, oss-drivers@netronome.com
+Subject: Re: [oss-drivers] [PATCH AUTOSEL 5.4 326/350] bpf: Switch bpf_map
+ ref counter to atomic64_t so bpf_map_inc() never fails
+Message-ID: <20191212162513.GB1264@localhost.localdomain>
+References: <20191210210735.9077-1-sashal@kernel.org>
+ <20191210210735.9077-287-sashal@kernel.org>
+ <20191210132834.157d5fc5@cakuba.netronome.com>
 MIME-Version: 1.0
-X-MTK:  N
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191210132834.157d5fc5@cakuba.netronome.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.101.4/25661/Thu Dec 12 10:47:42 2019)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gVGh1LCAyMDE5LTEyLTEyIGF0IDExOjU3ICswODAwLCBGbG9yaWFuIEZhaW5lbGxpIHdyb3Rl
-Og0KPiANCj4gT24gMTIvMTAvMjAxOSAxMjoxNCBBTSwgTGFuZGVuIENoYW8gd3JvdGU6DQo+ID4g
-QWRkIG5ldyBzdXBwb3J0IGZvciBNVDc1MzE6DQo+ID4gDQo+ID4gTVQ3NTMxIGlzIHRoZSBuZXh0
-IGdlbmVyYXRpb24gb2YgTVQ3NTMwLiBJdCBpcyBhbHNvIGEgNy1wb3J0cyBzd2l0Y2ggd2l0aA0K
-PiA+IDUgZ2lnYSBlbWJlZGRlZCBwaHlzLCAyIGNwdSBwb3J0cywgYW5kIHRoZSBzYW1lIE1BQyBs
-b2dpYyBvZiBNVDc1MzAuIENwdQ0KPiA+IHBvcnQgNiBvbmx5IHN1cHBvcnRzIEhTR01JSSBpbnRl
-cmZhY2UuIENwdSBwb3J0IDUgc3VwcG9ydHMgZWl0aGVyIFJHTUlJDQo+ID4gb3IgSFNHTUlJIGlu
-IGRpZmZlcmVudCBIVyBza3UuIER1ZSB0byBIU0dNSUkgaW50ZXJmYWNlIHN1cHBvcnQsIHBsbCwg
-YW5kDQo+ID4gcGFkIHNldHRpbmcgYXJlIGRpZmZlcmVudCBmcm9tIE1UNzUzMC4gVGhpcyBwYXRj
-aCBhZGRzIGRpZmZlcmVudCBpbml0aWFsDQo+ID4gc2V0dGluZyBvZiBNVDc1MzEuDQo+ID4gDQo+
-ID4gU2lnbmVkLW9mZi1ieTogTGFuZGVuIENoYW8gPGxhbmRlbi5jaGFvQG1lZGlhdGVrLmNvbT4N
-Cj4gPiBTaWduZWQtb2ZmLWJ5OiBTZWFuIFdhbmcgPHNlYW4ud2FuZ0BtZWRpYXRlay5jb20+DQo+
-ID4gLS0tDQo+IA0KPiBbc25pcF0NCj4gDQo+ID4gKwkvKiBFbmFibGUgUEhZIHBvd2VyLCBzaW5j
-ZSBwaHlfZGV2aWNlIGhhcyBub3QgeWV0IGJlZW4gY3JlYXRlZA0KPiA+ICsJICogcHJvdmlkZWQg
-Zm9yIHBoeV9bcmVhZCx3cml0ZV1fbW1kX2luZGlyZWN0IGlzIGNhbGxlZCwgd2UgcHJvdmlkZQ0K
-PiA+ICsJICogb3VyIG93biBtdDc1MzFfaW5kX21tZF9waHlfW3JlYWQsd3JpdGVdIHRvIGNvbXBs
-ZXRlIHRoaXMNCj4gPiArCSAqIGZ1bmN0aW9uLg0KPiA+ICsJICovDQo+ID4gKwl2YWwgPSBtdDc1
-MzFfaW5kX21tZF9waHlfcmVhZChwcml2LCAwLCBQSFlfREVWMUYsDQo+ID4gKwkJCQkgICAgICBN
-VDc1MzFfUEhZX0RFVjFGX1JFR180MDMpOw0KPiA+ICsJdmFsIHw9IE1UNzUzMV9QSFlfRU5fQllQ
-QVNTX01PREU7DQo+ID4gKwl2YWwgJj0gfk1UNzUzMV9QSFlfUE9XRVJfT0ZGOw0KPiA+ICsJbXQ3
-NTMxX2luZF9tbWRfcGh5X3dyaXRlKHByaXYsIDAsIFBIWV9ERVYxRiwNCj4gPiArCQkJCSBNVDc1
-MzFfUEhZX0RFVjFGX1JFR180MDMsIHZhbCk7DQo+IA0KPiBZb3UgYXJlIGRvaW5nIHRoaXMgZm9y
-IHBvcnQgMCBvbmx5LCBpcyB0aGF0IGJlY2F1c2UgdGhpcyBicm9hZGNhc3RzIHRvDQo+IGFsbCBp
-bnRlcm5hbCBQSFlzIGFzIHdlbGwsIG9yIGlzIGl0IGVub3VnaCB0byBzb21laG93IGRvIGl0IGp1
-c3QgZm9yDQo+IHBvcnQgMD8gSXQgc291bmRzIGxpa2UgeW91IG1pZ2h0IHdhbnQgdG8gbWFrZSB0
-aGlzIG9wZXJhdGlvbiBhIGJpdCBtb3JlDQo+IHNjb3BlZCwgaWYgeW91IGhhdmUgYW4gZXh0ZXJu
-YWwgUEhZIHRoYXQgYWxzbyByZXNwb25kcyB0byBicm9hZGNhc3QgTURJTw0KPiB3cml0ZXMgdGhp
-cyBjb3VsZCBwb3NzaWJseSBjYXVzZSBzb21lIHVuYXR0ZW5kZWQgZWZmZWN0cywgbm8/DQpBbGwg
-aW50ZXJuYWwgUEhZIGFkZHJlc3NlcyBjYW4gYmUgdXNlZCB0byBhY2Nlc3MgdGhlIHNhbWUgUEhZ
-X0RFVjFGDQpncm91cCBvZiByZWdpc3RlcnMuDQoNCkkgdGhpbmsgdGhlIHBvcnQgIjAiIGhlcmUg
-bXVzdCBiZSBjaGFuZ2VkIHRvIHJlZmVyZW5jZSB0aGUgImZpcnN0DQppbnRlcm5hbCBwaHkgYWRk
-cmVzcyIgdG8gcHJldmVudCB0aGUgc2l0dWF0aW9uIHlvdSBtZW50aW9uZWQuDQo+IA0KPiBbc25p
-cF0NCj4gDQo+ID4gK3N0YXRpYyBpbnQgbXQ3NTMxX3JnbWlpX3NldHVwKHN0cnVjdCBtdDc1MzBf
-cHJpdiAqcHJpdiwgdTMyIHBvcnQpDQo+ID4gK3sNCj4gPiArCXUzMiB2YWw7DQo+ID4gKw0KPiA+
-ICsJaWYgKHBvcnQgIT0gNSkgew0KPiA+ICsJCWRldl9lcnIocHJpdi0+ZGV2LCAiUkdNSUkgbW9k
-ZSBpcyBub3QgYXZhaWxhYmxlIGZvciBwb3J0ICVkXG4iLA0KPiA+ICsJCQlwb3J0KTsNCj4gPiAr
-CQlyZXR1cm4gLUVJTlZBTDsNCj4gPiArCX0NCj4gPiArDQo+ID4gKwl2YWwgPSBtdDc1MzBfcmVh
-ZChwcml2LCBNVDc1MzFfQ0xLR0VOX0NUUkwpOw0KPiA+ICsJdmFsIHw9IEdQX0NMS19FTjsNCj4g
-PiArCXZhbCAmPSB+R1BfTU9ERV9NQVNLOw0KPiA+ICsJdmFsIHw9IEdQX01PREUoTVQ3NTMxX0dQ
-X01PREVfUkdNSUkpOw0KPiA+ICsJdmFsIHw9IFRYQ0xLX05PX1JFVkVSU0U7DQo+ID4gKwl2YWwg
-fD0gUlhDTEtfTk9fREVMQVk7DQo+IA0KPiBZb3UgYWN0dWFsbHkgbmVlZCB0byBsb29rIGF0IHRo
-ZSBwb3J0J3MgcGh5X2ludGVyZmFjZV90IHZhbHVlIHRvDQo+IGRldGVybWluZSB3aGV0aGVyIHRo
-ZSBkZWxheXMgc2hvdWxkIGJlIHNldC9jbGVhciBpbiBlaXRoZXIgUlggb3IgVFgNCj4gZGlyZWN0
-aW9ucy4NClN1cmUuIFRoYW5rcyBmb3IgeW91ciBhZHZpY2UuDQo+IA0KPiBbc25pcF0NCj4gDQo+
-ID4gLQlpZiAocGh5bGlua19hdXRvbmVnX2luYmFuZChtb2RlKSkgew0KPiA+ICsJaWYgKHBoeWxp
-bmtfYXV0b25lZ19pbmJhbmQobW9kZSkgJiYNCj4gPiArCSAgICBzdGF0ZS0+aW50ZXJmYWNlICE9
-IFBIWV9JTlRFUkZBQ0VfTU9ERV9TR01JSSkgew0KPiANCj4gU28geW91IGRvbid0IHN1cHBvcnQg
-aW4tYmFuZCBhdXRvLW5lZ290aWF0aW9uIGZvciAxMDAwQmFzZVggZWl0aGVyPw0KQWNjb3JkaW5n
-IHRvIHRoZSB1c2VyIG1hbnVhbCBJIGhhdmUsIGl0IG9ubHkgcHJvdmlkZXMgdGhlIGNvbmZpZ3Vy
-ZSAxME0NCisxMDBNKzEwMDBNIEFOIG1vZGUvMTAwME0gZm9yY2UgbW9kZS8yNTAwTSBmb3JjZSBt
-b2RlLCBzbyBJIG1hcHBpbmcgdGhlbQ0KdG8gU0dNSUkvMTAwMEJhc2VYLzI1MDBCYXNlWC4gVGhl
-IHVzZXIgZnJpZW5kbHkgcGFydCBvZiB0aGlzIElQIHdyYXBzDQp0b28gbXVjaCBkZXRhaWwgdG8g
-bWFwIHRvIHRoZSBzcGVjLiBJJ2xsIHRyeSB0byBkaWcgaXQgb3V0Lg0KPiANCj4gW3NuaXBdDQo+
-IA0KPiA+IEBAIC0xNTkwLDkgKzIxOTcsMjAgQEAgc3RhdGljIHZvaWQgbXQ3NTN4X3BoeWxpbmtf
-dmFsaWRhdGUoc3RydWN0IGRzYV9zd2l0Y2ggKmRzLCBpbnQgcG9ydCwNCj4gPiAgCXBoeWxpbmtf
-c2V0X3BvcnRfbW9kZXMobWFzayk7DQo+ID4gIAlwaHlsaW5rX3NldChtYXNrLCBBdXRvbmVnKTsN
-Cj4gPiAgDQo+ID4gLQlpZiAoc3RhdGUtPmludGVyZmFjZSA9PSBQSFlfSU5URVJGQUNFX01PREVf
-VFJHTUlJKSB7DQo+ID4gKwlzd2l0Y2ggKHN0YXRlLT5pbnRlcmZhY2UpIHsNCj4gPiArCWNhc2Ug
-UEhZX0lOVEVSRkFDRV9NT0RFX1RSR01JSToNCj4gPiAgCQlwaHlsaW5rX3NldChtYXNrLCAxMDAw
-YmFzZVRfRnVsbCk7DQo+ID4gLQl9IGVsc2Ugew0KPiA+ICsJCWJyZWFrOw0KPiA+ICsJY2FzZSBQ
-SFlfSU5URVJGQUNFX01PREVfMTAwMEJBU0VYOg0KPiA+ICsJY2FzZSBQSFlfSU5URVJGQUNFX01P
-REVfMjUwMEJBU0VYOg0KPiA+ICsJCXBoeWxpbmtfc2V0KG1hc2ssIDEwMDBiYXNlWF9GdWxsKTsN
-Cj4gPiArCQlwaHlsaW5rX3NldChtYXNrLCAyNTAwYmFzZVhfRnVsbCk7DQo+IA0KPiBEaWQgeW91
-IGludGVuZCB0aGlzIHRvIGJlOg0KPiANCj4gCWNhc2UgUEhZX0lOVEVSRkFDRV9NT0RFXzI1MDBC
-QVNFWDoNCj4gCQlwaHlsaW5rX3NldChtYXNrLCAyNTAwYmFzZVhfRnVsbCk7DQo+IAkJLyogZmFs
-bCB0aHJvdWdoICovDQo+IAljYXNlIFBIWV9JTlRFUkZBQ0VfTU9ERV8xMDAwQkFTRVg6DQo+IAkJ
-cGh5bGlua19zZXQobWFzaywgMTAwMGJhc2VYX0Z1bGwpOw0KPiAJCWJyZWFrOw0KPiANCj4gPw0K
-QXMgdGhlIHVzZXIgbWFudWFsIG1lbnRpb25lZCwgaXQgaXMgbW9yZSBsaWtlbHkgdG8gYmU6DQog
-CWNhc2UgUEhZX0lOVEVSRkFDRV9NT0RFXzI1MDBCQVNFWDoNCiAJCXBoeWxpbmtfc2V0KG1hc2ss
-IDI1MDBiYXNlWF9GdWxsKTsNCiAJCWJyZWFrOw0KIAljYXNlIFBIWV9JTlRFUkZBQ0VfTU9ERV8x
-MDAwQkFTRVg6DQogCQlwaHlsaW5rX3NldChtYXNrLCAxMDAwYmFzZVhfRnVsbCk7DQogCQlicmVh
-azsNCj4gW3NuaXBdDQo+IA0KPiA+ICsvKiBSZWdpc3RlciBmb3IgUEhZIEluZGlyZWN0IEFjY2Vz
-cyBDb250cm9sICovDQo+ID4gKyNkZWZpbmUgTVQ3NTMxX1BIWV9JQUMJCQkweDcwMUMNCj4gPiAr
-I2RlZmluZSAgUEhZX0FDU19TVAkJCUJJVCgzMSkNCj4gPiArI2RlZmluZSAgTURJT19SRUdfQURE
-Ul9NQVNLCQkoMHgxZiA8PCAyNSkNCj4gPiArI2RlZmluZSAgTURJT19QSFlfQUREUl9NQVNLCQko
-MHgxZiA8PCAyMCkNCj4gPiArI2RlZmluZSAgTURJT19DTURfTUFTSwkJCSgweDMgPDwgMTgpDQo+
-ID4gKyNkZWZpbmUgIE1ESU9fU1RfTUFTSwkJCSgweDMgPDwgMTYpDQo+ID4gKyNkZWZpbmUgIE1E
-SU9fUldfREFUQV9NQVNLCQkoMHhmZmZmKQ0KPiA+ICsjZGVmaW5lICBNRElPX1JFR19BRERSKHgp
-CQkoKCh4KSAmIDB4MWYpIDw8IDI1KQ0KPiA+ICsjZGVmaW5lICBNRElPX0RFVl9BRERSKHgpCQko
-KCh4KSAmIDB4MWYpIDw8IDI1KQ0KPiA+ICsjZGVmaW5lICBNRElPX1BIWV9BRERSKHgpCQkoKCh4
-KSAmIDB4MWYpIDw8IDIwKQ0KPiA+ICsjZGVmaW5lICBNRElPX0NNRCh4KQkJCSgoKHgpICYgMHgz
-KSA8PCAxOCkNCj4gPiArI2RlZmluZSAgTURJT19TVCh4KQkJCSgoKHgpICYgMHgzKSA8PCAxNikN
-Cj4gDQo+IEkgd291bGQgc3VnZ2VzdCBuYW1lcyB0aGF0IGFyZSBtb3JlIHNjb3BlZCBiZWNhdXNl
-IHRoZXNlIGNvdWxkIGVhc2lseQ0KPiBjb2xsaWRlIHdpdGggZXhpc3Rpbmcgb2YgZnV0dXJlIGRl
-ZmluaXRpb25zIGZyb20gaW5jbHVkZS9saW51eC9tZGlvLmguDQpTdXJlLCBJJ2xsIGFkZCAiTVQ3
-NTMxXyIgYXMgdGhlIHByZWZpeC4NCj4gDQo+ID4gKw0KPiA+ICtlbnVtIG10NzUzMV9waHlfaWFj
-X2NtZCB7DQo+ID4gKwlNVDc1MzFfTURJT19BRERSID0gMCwNCj4gPiArCU1UNzUzMV9NRElPX1dS
-SVRFID0gMSwNCj4gPiArCU1UNzUzMV9NRElPX1JFQUQgPSAyLA0KPiA+ICsJTVQ3NTMxX01ESU9f
-UkVBRF9DTDQ1ID0gMywNCj4gPiArfTsNCj4gPiArDQo+ID4gKy8qIE1ESU9fU1Q6IE1ESU8gc3Rh
-cnQgZmllbGQgKi8NCj4gPiArZW51bSBtdDc1MzFfbWRpb19zdCB7DQo+ID4gKwlNVDc1MzFfTURJ
-T19TVF9DTDQ1ID0gMCwNCj4gPiArCU1UNzUzMV9NRElPX1NUX0NMMjIgPSAxLA0KPiA+ICt9Ow0K
-PiA+ICsNCj4gPiArI2RlZmluZSAgTURJT19DTDIyX1JFQUQJCQkoTURJT19TVChNVDc1MzFfTURJ
-T19TVF9DTDIyKSB8IFwNCj4gPiArCQkJCQkgTURJT19DTUQoTVQ3NTMxX01ESU9fUkVBRCkpDQo+
-ID4gKyNkZWZpbmUgIE1ESU9fQ0wyMl9XUklURQkJKE1ESU9fU1QoTVQ3NTMxX01ESU9fU1RfQ0wy
-MikgfCBcDQo+ID4gKwkJCQkJIE1ESU9fQ01EKE1UNzUzMV9NRElPX1dSSVRFKSkNCj4gPiArI2Rl
-ZmluZSAgTURJT19DTDQ1X0FERFIJCQkoTURJT19TVChNVDc1MzFfTURJT19TVF9DTDQ1KSB8IFwN
-Cj4gPiArCQkJCQkgTURJT19DTUQoTVQ3NTMxX01ESU9fQUREUikpDQo+ID4gKyNkZWZpbmUgIE1E
-SU9fQ0w0NV9SRUFECQkJKE1ESU9fU1QoTVQ3NTMxX01ESU9fU1RfQ0w0NSkgfCBcDQo+ID4gKwkJ
-CQkJIE1ESU9fQ01EKE1UNzUzMV9NRElPX1JFQUQpKQ0KPiA+ICsjZGVmaW5lICBNRElPX0NMNDVf
-V1JJVEUJCShNRElPX1NUKE1UNzUzMV9NRElPX1NUX0NMNDUpIHwgXA0KPiA+ICsJCQkJCSBNRElP
-X0NNRChNVDc1MzFfTURJT19XUklURSkpDQo+IA0KPiBMaWtld2lzZS4NCkknbGwgYWRkICJNVDc1
-MzFfIiBhcyB0aGUgcHJlZml4Lg0KDQpMYW5kZW4NCg==
+On Tue, Dec 10, 2019 at 01:28:34PM -0800, Jakub Kicinski wrote:
+> On Tue, 10 Dec 2019 16:07:11 -0500, Sasha Levin wrote:
+> > From: Andrii Nakryiko <andriin@fb.com>
+> > 
+> > [ Upstream commit 1e0bd5a091e5d9e0f1d5b0e6329b87bb1792f784 ]
+> > 
+> > 92117d8443bc ("bpf: fix refcnt overflow") turned refcounting of bpf_map into
+> > potentially failing operation, when refcount reaches BPF_MAX_REFCNT limit
+> > (32k). Due to using 32-bit counter, it's possible in practice to overflow
+> > refcounter and make it wrap around to 0, causing erroneous map free, while
+> > there are still references to it, causing use-after-free problems.
+> 
+> I don't think this is a bug fix, the second sentence here is written
+> in a quite confusing way, but there is no bug.
+> 
+> Could you drop? I don't think it's worth the backporting pain since it
+> changes bpf_map_inc().
 
+Agree, this is not a bug fix and should not go to stable. (Also agree that
+the changelog is super confusing here and should have been done differently
+to avoid exactly where we are here. I think I pointed that out in the
+original patch, but seems this slipped through the cracks :/)
+
+Thanks,
+Daniel
