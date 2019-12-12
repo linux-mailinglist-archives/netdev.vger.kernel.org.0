@@ -2,187 +2,178 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F81811CB3F
-	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 11:47:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6976A11CB71
+	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 11:55:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728845AbfLLKr3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Dec 2019 05:47:29 -0500
-Received: from mout.web.de ([212.227.17.12]:58431 "EHLO mout.web.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728648AbfLLKr3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 12 Dec 2019 05:47:29 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
-        s=dbaedf251592; t=1576147629;
-        bh=iU0ev7VoC1TijGDuRwLbBpmGPdY4l6wXakXHGIG0OlE=;
-        h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
-        b=XCLwiiEEagsVPHcOL/uDVAZyOVwelM3Mmf+s8rJu111S4kNmasEi4MnhCfyYOhU44
-         r57699Z5UhuLNEwD9+MXtCTqyrrym0CJMQruVAKxT2cj+SoFGNviQG2EuoUbqJct1C
-         oUEZqZCCIzcGVFA2/PJ9pc6sGMk/YlBmAK94bZfw=
-X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
-Received: from [192.168.43.108] ([89.204.139.166]) by smtp.web.de (mrweb103
- [213.165.67.124]) with ESMTPSA (Nemesis) id 0M6UxL-1hmGH82HNL-00yUj1; Thu, 12
- Dec 2019 11:47:09 +0100
-Subject: Re: [PATCH v2 9/9] arm64: dts: rockchip: RockPro64: hook up bluetooth
- at uart0
-To:     Robin Murphy <robin.murphy@arm.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Heiko Stuebner <heiko@sntech.de>
-Cc:     brcm80211-dev-list.pdl@broadcom.com, netdev@vger.kernel.org,
-        linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-rockchip@lists.infradead.org, brcm80211-dev-list@cypress.com,
-        linux-arm-kernel@lists.infradead.org
-References: <20191211235253.2539-1-smoch@web.de>
- <20191211235253.2539-10-smoch@web.de>
- <a0ad4723-db85-0eda-efb5-f0c9a2a6aec3@arm.com>
-From:   Soeren Moch <smoch@web.de>
-Message-ID: <b859b9f1-2d89-ddef-df26-724ac4ffb088@web.de>
-Date:   Thu, 12 Dec 2019 11:47:06 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.1
+        id S1728865AbfLLKz2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Dec 2019 05:55:28 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:45806 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1728784AbfLLKz1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Dec 2019 05:55:27 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1576148125;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=tViCQG3lsrEoLFHJxHOiQKzVD2qVe3ldyRDKWpQIP6E=;
+        b=Hbdl9RLKT1tnmLsW4VH95+R7tETzjynAnkGxAs9CUlwkzLETAcMoS55HX6je0aSWtJbu8x
+        q8Fu2agwCUqw+c5f8mCILQ3GmzGv4Z3KFGsGiiJ8HAbkkL+iH8Oe1uTA6kcZTWYixHU8l0
+        +Lcwd0o+mlNGCvMeuGO5JzPRIVrzxSg=
+Received: from mail-lf1-f72.google.com (mail-lf1-f72.google.com
+ [209.85.167.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-274-70i_D3gZNpmx9W3ub80mqA-1; Thu, 12 Dec 2019 05:55:24 -0500
+X-MC-Unique: 70i_D3gZNpmx9W3ub80mqA-1
+Received: by mail-lf1-f72.google.com with SMTP id a11so480710lff.12
+        for <netdev@vger.kernel.org>; Thu, 12 Dec 2019 02:55:24 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=tViCQG3lsrEoLFHJxHOiQKzVD2qVe3ldyRDKWpQIP6E=;
+        b=PAeAClN19cn0feH9nTQ3ewSMu8sL9PqK2QhrROthDqpVLQAe9W7kOcrXFnLrPRZnK5
+         HrNSnza7xGyo/U9jrMMR32OENLjRvH1+mHPkELebCgIrjcuUB8ExnweLEWeErUtexUVA
+         fvsdpirEcrS99XcKplnM40M1VwVtmRC5BfNqPwGagHCn6HyXCX/Z1gtO06G7zeuBTb12
+         BD4PqstfuCl6Od1DZobjOygLxtHF2eUa6kYTjy9REGxIqEMPo7Oqy5DAXiIUbwtJnT6l
+         NR75YL9/nPCSV3Lvg7SLSUAewjZpxAo8vN4hrlgAgUrljAiO3NmBIWfjnRpIu8UACJn6
+         O9bw==
+X-Gm-Message-State: APjAAAX359x63xOgOMjA3cB+O39eAa+if24bdF/GvETSclClv7EDNaUA
+        LfAMSHIHfLWMKy2TaO/bjHT/LJJpUqKGmEQXShVeLwLJScNH96a/dAvmOQ3R1/PSckYLlY+zSso
+        EB1xvPRM/GbExoEP1
+X-Received: by 2002:ac2:5088:: with SMTP id f8mr5221539lfm.163.1576148122892;
+        Thu, 12 Dec 2019 02:55:22 -0800 (PST)
+X-Google-Smtp-Source: APXvYqwrQLxv9HuKyygd+IzL7zmMbMbX/4g6UlQhyF2/5QjIA9HBx51WjxChDUCOaA3NDttDiXpI1Q==
+X-Received: by 2002:ac2:5088:: with SMTP id f8mr5221531lfm.163.1576148122650;
+        Thu, 12 Dec 2019 02:55:22 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id u19sm2795521ljk.75.2019.12.12.02.55.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 12 Dec 2019 02:55:21 -0800 (PST)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 77DC11819EA; Thu, 12 Dec 2019 11:55:19 +0100 (CET)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Johannes Berg <johannes@sipsolutions.net>,
+        Jens Axboe <axboe@kernel.dk>,
+        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>
+Cc:     "linux-wireless\@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>
+Subject: Re: iwlwifi warnings in 5.5-rc1
+In-Reply-To: <3ca2be96898e9d30c27b2411148d201318e413f2.camel@sipsolutions.net>
+References: <ceb74ea2-6a1b-4cef-8749-db21a2ee4311@kernel.dk> <9727368004ceef03f72d259b0779c2cf401432e1.camel@sipsolutions.net> <878snjgs5l.fsf@toke.dk> <3420d73e667b01ec64bf0cc9da6232b41e862860.camel@sipsolutions.net> <875zingnzt.fsf@toke.dk> <bfab4987668990ea8d86a98f3e87c3fa31403745.camel@sipsolutions.net> <87tv67ez9p.fsf@toke.dk> <3ca2be96898e9d30c27b2411148d201318e413f2.camel@sipsolutions.net>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Thu, 12 Dec 2019 11:55:19 +0100
+Message-ID: <87v9qleru0.fsf@toke.dk>
 MIME-Version: 1.0
-In-Reply-To: <a0ad4723-db85-0eda-efb5-f0c9a2a6aec3@arm.com>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-Content-Language: en-GB
-X-Provags-ID: V03:K1:GxvXISq/vQUw0CF4n7qCFX0ucOQQ/WrciDDXrMEuGYWZVSa/9hB
- QAPsZtpo3t9v0XTThIaCt5DvRpmp3fB8lWb//T5QodTKvZBcSVje+4mohTMLZVqN14UT3pS
- 7KHQIMGBpf7mjeu1cNFW5zYEmU4IgvkoM+2RAsdoSGfHlZ5dlnc9cwEZ1igGGrszaSoUP4z
- Om2pt6sOQlrqUGzy7+qTA==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:tJ/tdq6fCbM=:+dw/5RxWG7gW0S7c717i5c
- qC/iLBFbuQhEZZoUY63jeayspCCRnlOuPytTsAlvpqNVatg++A2+MLAvjAG8zF3zBVe+Hhqcl
- YNsC5cTWfmNCsMOcMVdDVSGW46PPg3pW3AR7C850a2BlmmYj07PtIw84iCFGFyREwQ0bc9kFJ
- c3QPlG/1cbtv/7AXiRzHXEiqpMthD24Yst0DkfvB8JAWdEcAbVQnoeDHiuY8PxSyfB3hMCIMy
- otycqOrN5n4Av+3ebRscHZ4WOcPL0X9DZxmnW8B30wUv2ei1DQ7hLAesX8KklGAHtG/aMGyrG
- mDNNt8C2Fk2AI4OO7Yud4vFPf8QWWchLzeTzoIBEj/3Krm2p59MNAgr2RHbRVhJZqb+498iKr
- bZzTR4KbPUpmZ96FQ+zi+8h14ZFetc0ukHrepY3eAGXcYTGTMVVdqEp4clUe28GSuafEeeNW5
- I1HXygTosgqvCX64VTQzRxOXOPBFqtpEeYF9ViEwm7NXyQK5RxCpucdcd7Uq1aeosZG3i+F/9
- F/A+7CbF9I2VAZ2aXijdMuXVoKf8cNG2bfGhLkws086VBHDCBNz1GZfU9/p1tjC9XAt8vkRED
- zUuAVdNBpR9oHsfT4/99nHFTeaMK1rUwekofczJXDsCXpgOwQlJuTWEaoz0iU0iva6LL87G72
- vo9TLiBgRMpZRqtEWNKn90/Q5gXWrxMPDiUvFeNtnskT/tISY1yrCO4N2wuiM3cuddKZ74DGR
- TYfGnwGCx3ApOFNz2aqs6KchFirYOCV76JzQtPL7xKMWSbh0tJcZ9xOwgVna5Nt64d/DlyNfa
- 0G3kb0+wCwqahGqe0OOVvSGbecFFZ9c3Bx4VnIdT/yVrxoLNe8jrSSsQpt6EVXlVJOr/TYhwz
- X3Mg4FjBYjBt0uBljQU+I1peJwQ9dv2YS0rc34Oj1VAYc72Pf2bjlWKJ/iWNY5POzGXgMfi03
- Sqp8etxIB5Ir0w3k8oeIfBT1nOMt04uqhRadIq8uHlWbCZxjHO5hGN30CaIr8LEft4ghCv/9H
- alWWN2FexeAEFSz/aqV4oAmraMzBWsN0M+QxgHVMZbOHgNCZL7iVMKFNgNlA/efAUjfVl++2X
- n85ZSqEvUFoJVJvJ1JXvONkqNFdCYgWBpci68KdZi3jiDAGndXMKHvTzcypFLMMfFoDkcD0Ab
- YQ/TQLlCGs50yQTK89k5h881RUrBCZVItewkt1NKp2QWPlxIbyK2iWIPjOci+RbyLOiSgtiA4
- 3Yl5Q5K/y93xVK4y3b/JrFYO9mCnk3w3uPsN7Ow==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Johannes Berg <johannes@sipsolutions.net> writes:
 
+> On Wed, 2019-12-11 at 15:02 +0100, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
+>
+>> > 2) GSO/TSO like what we have - it's not really clear how to handle it.
+>> >    The airtime estimate will shoot *way* up (64kB frame) once that fra=
+me
+>> >    enters, and then ... should it "trickle back down" as the generated=
+=20
+>> >    parts are transmitted? But then the driver needs to split up the
+>> >    airtime estimate? Or should it just go back down entirely? On the
+>> >    first frame? That might overshoot. On the last frame? Opposite
+>> >    problem ...
+>>=20
+>> Well, ideally it would be divided out over the component packets; but
+>> yeah, who is going to do that?
+>
+> I'm not even sure we *can* do this easily - do we know up-front how many
+> packets this will expand to? We should know, but it might not be so easy
+> given the abstraction layers. We could guess and if it's wrong just set
+> it to 0 on any remaining ones.
 
-On 12.12.19 11:22, Robin Murphy wrote:
-> Hi Soeren,
->
-> On 11/12/2019 11:52 pm, Soeren Moch wrote:
->> With enabled wifi support (required for firmware loading) for the
->> Ampak AP6359SA based wifi/bt combo module we now also can enable
->> the bluetooth part.
->>
->> Suggested-by: Heiko Stuebner <heiko@sntech.de>
->> Signed-off-by: Soeren Moch <smoch@web.de>
->> ---
->> changes in v2:
->> - new patch
->>
->> Cc: Heiko Stuebner <heiko@sntech.de>
->> Cc: Kalle Valo <kvalo@codeaurora.org>
->> Cc: linux-wireless@vger.kernel.org
->> Cc: brcm80211-dev-list.pdl@broadcom.com
->> Cc: brcm80211-dev-list@cypress.com
->> Cc: netdev@vger.kernel.org
->> Cc: linux-arm-kernel@lists.infradead.org
->> Cc: linux-rockchip@lists.infradead.org
->> Cc: linux-kernel@vger.kernel.org
->> ---
->> =C2=A0 .../boot/dts/rockchip/rk3399-rockpro64.dts=C2=A0=C2=A0=C2=A0 | 2=
-9 ++++++++++++++++++-
->> =C2=A0 1 file changed, 28 insertions(+), 1 deletion(-)
->>
->> diff --git a/arch/arm64/boot/dts/rockchip/rk3399-rockpro64.dts
->> b/arch/arm64/boot/dts/rockchip/rk3399-rockpro64.dts
->> index 9fa92790d6e0..94cc462e234d 100644
->> --- a/arch/arm64/boot/dts/rockchip/rk3399-rockpro64.dts
->> +++ b/arch/arm64/boot/dts/rockchip/rk3399-rockpro64.dts
->> @@ -561,6 +561,20 @@
->> =C2=A0 };
->>
->> =C2=A0 &pinctrl {
->> +=C2=A0=C2=A0=C2=A0 bt {
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 bt_enable_h: bt-enable-h {
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 roc=
-kchip,pins =3D <0 RK_PB1 RK_FUNC_GPIO &pcfg_pull_none>;
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 };
->> +
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 bt_host_wake_l: bt-host-wak=
-e-l {
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 roc=
-kchip,pins =3D <0 RK_PA4 RK_FUNC_GPIO &pcfg_pull_down>;
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 };
->> +
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 bt_wake_l: bt-wake-l {
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 roc=
-kchip,pins =3D <2 RK_PD3 RK_FUNC_GPIO &pcfg_pull_none>;
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 };
->> +=C2=A0=C2=A0=C2=A0 };
->> +
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 buttons {
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 pwrbtn: pwrbtn {
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0 rockchip,pins =3D <0 RK_PA5 RK_FUNC_GPIO &pcfg_pull_up>;
->> @@ -729,8 +743,21 @@
->>
->> =C2=A0 &uart0 {
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 pinctrl-names =3D "default";
->> -=C2=A0=C2=A0=C2=A0 pinctrl-0 =3D <&uart0_xfer &uart0_cts>;
->> +=C2=A0=C2=A0=C2=A0 pinctrl-0 =3D <&uart0_xfer &uart0_cts &uart0_rts>;
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 status =3D "okay";
->> +
->> +=C2=A0=C2=A0=C2=A0 bluetooth {
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 compatible =3D "brcm,bcm434=
-38-bt";
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 clocks =3D <&rk808 1>;
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 clock-names =3D "extclk";
->
-> Is this right? Comparing the binding and the naming on the schematics,
-> it seems more likely that this might be the LPO clock rather than the
-> TXCO clock.
->
-> Robin.
-On second thought I have to agree. So we need another round on this.
+I was thinking about a scheme where we re-defined the value in the cb to
+be a "time per byte" value, that we could just multiply by the packet
+length; that would make it trivial to do partial reporting. Not sure
+it's quite workable in practice, though; it would be hard to avoid
+rounding errors, and there's also the additional headers when splitting
+a packet, so the lengths don't necessarily add up.
 
-Thanks for your review and bug report,
-Soeren
+>> I think reporting it on the first packet
+>> would be the safest if we had to choose.=20
 >
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 device-wakeup-gpios =3D <&g=
-pio2 RK_PD3 GPIO_ACTIVE_HIGH>;
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 host-wakeup-gpios =3D <&gpi=
-o0 RK_PA4 GPIO_ACTIVE_HIGH>;
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 shutdown-gpios =3D <&gpio0 =
-RK_PB1 GPIO_ACTIVE_HIGH>;
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 pinctrl-names =3D "default"=
-;
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 pinctrl-0 =3D <&bt_host_wak=
-e_l &bt_wake_l &bt_enable_h>;
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 vbat-supply =3D <&vcc3v3_sy=
-s>;
->> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 vddio-supply =3D <&vcc_1v8>=
-;
->> +=C2=A0=C2=A0=C2=A0 };
->> =C2=A0 };
->>
->> =C2=A0 &uart2 {
->> --
->> 2.17.1
->>
->>
->> _______________________________________________
->> Linux-rockchip mailing list
->> Linux-rockchip@lists.infradead.org
->> http://lists.infradead.org/mailman/listinfo/linux-rockchip
->>
+> Agree.
+>
+>> Also, ideally we would want the GSO/TSO mechanism to lower the size
+>> of the superpackets at lower rates (does it?). At higher rates this
+>> matters less...
+>
+> Well TCP does limit (pacing shift) the amount of outstanding data, so if
+> it's _really_ slow I guess it will also limit the size of the
+> superpackets?
+
+Yeah, I *think* it does... :)
+
+> It's really just an artifact of our software implementation that we
+> report the SKBs back as used with partial content. Maybe we shouldn't
+> even do that, since they weren't generated by mac80211 in the first
+> place, and only report the original skb or something.
+
+Hmm, yeah, was wondering how that works, actually. I assumed you send
+the whole thing to the hardware as one superpacket? But if so how do you
+get the completion events back? Or are you splitting it in the driver
+just before you send it to the hardware?
+
+>> > 3) I'm not quite convinced that all drivers report the TX rate
+>> >    completely correctly in the status, some don't even use this path
+>> >    but the ieee80211_tx_status_ext() which doesn't update the rate.
+>> >=20
+>> > 4) Probably most importantly, this is completely broken with HE because
+>> >    there's currently no way to report HE rates in the TX status at all!
+>> >    I just worked around that in our driver for 'iw' reporting purposes
+>> >    by implementing the rate reporting in the sta_statistics callback,
+>> >    but that data won't be used by the airtime estimates.
+>>=20
+>> Hmm, yeah, both of those are good points. I guess I just kinda assumed
+>> that the drivers were already doing the right thing there... :)
+>
+> I'm not really sure I want to rely on this - this was never really
+> needed *functionally*, just from a *statistics* point of view (e.g. "iw
+> link" or such).
+
+Right, I see. Well I guess now that we're turning this on one driver at
+a time, we can ensure that the driver provides sufficiently accurate
+rate information as part of that.
+
+BTW, since we're discussing this in the context of iwlwifi: do you have
+any data as to how much benefit AQL would be for that? I.e., do the
+Intel devices tend to buffer a lot of data in hardware/firmware?
+
+>> > Now, (1) probably doesn't matter, the estimates don't need to be that
+>> > accurate. (2) I'm not sure how to solve; (3) and (4) could both be
+>> > solved by having some mechanism of the rate scaling to tell us what the
+>> > current rate is whenever it updates, rather than relying on the
+>> > last_rate. Really we should do that much more, and even phase out
+>> > last_rate entirely, it's a stupid concept.
+>>=20
+>> Yes, that last bit would be good!
+>
+> We already partially have this, we have a 'get best rate' or so callback
+> in the rate scaling, we'd just have to extend it to the driver ops for
+> offloaded rate scaling.
+>
+> Ideally, it'd be a function call from the rate scaling to mac80211 so we
+> don't have to call a function every time we need the value, but the rate
+> scaling just calls us whenever it updates. This would even work with
+> iwlwifi's offloaded algorithm - it notifies the host on all changes.
+
+Yup, this makes sense, and would be easy to integrate with Minstrel as
+well, I think. We already have ieee80211_sta_set_expected_throughput(),
+so maybe expanding that? It just provides a single number now, but we
+could change it to set the full rate info instead?
+
+-Toke
 
