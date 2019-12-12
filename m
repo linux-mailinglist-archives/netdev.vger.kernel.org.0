@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5491E11C462
-	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 04:50:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BF5B411C47C
+	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 04:59:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727560AbfLLDqw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Dec 2019 22:46:52 -0500
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:33076 "EHLO
+        id S1727738AbfLLD56 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Dec 2019 22:57:58 -0500
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:41401 "EHLO
         mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726823AbfLLDqw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Dec 2019 22:46:52 -0500
-Received: by mail-pf1-f196.google.com with SMTP id y206so30051pfb.0;
-        Wed, 11 Dec 2019 19:46:51 -0800 (PST)
+        with ESMTP id S1726769AbfLLD55 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Dec 2019 22:57:57 -0500
+Received: by mail-pf1-f196.google.com with SMTP id s18so25459pfd.8;
+        Wed, 11 Dec 2019 19:57:57 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=VxRH7y7mD8w9ZMZtzGYEhqBg5gtMnJozuYmxD6CW22s=;
-        b=fPAqKbxQ0dJtthqA7ldLeEe0ZalIWx+lVwE7yf7MPF8PK3PFVU4Yjpv/mhcxq7vOUI
-         DEa2ZKPGQTT4hPbXw6VztGvV7h7FKAMXjZy+759xiWlozmvUrK7OwR2Lb7y/6gU0oqdV
-         WodjjXnQTedSQQB1Zhz3fmpvEJ7Oa3A+w428wl0uWduvlTWCfgKEtKtC9DU+q9Arudpy
-         yYzTRRe7UMnFYvsOlPyUUqKU76HWn16VDe5fe/2TltoQaKa4FT4oC7GxtAPSxwC9mih7
-         PAUBB5hIuNlQT3FP0AqXO7sDG/zedVyAjoSFRBl6H9pZHYmk42ax3UY6qoBIFffiMhYn
-         7a9A==
+        bh=zAqBwSAEjVBVcJbtUn42ZmrLmkYi+ObYmXAQBM0wBg0=;
+        b=uGqq6vlv/rR/Wp6JstxQ+BoqUe04G6Bt7ojtGSbn0kgrvsnoHm+dQTtbnXootKC3SB
+         RVdE3rk2KhqgL017zeBkcCHKgmD33sxrR5hYyQ0N6ZvL/oxE6b3i9TFMipW9YJ/AWmDS
+         qveIMN2jw45LtiDM9Iench75GXDFU0ji3378BHzbBze7bcWpaEQ9/luz6dSZO+L5SBI9
+         UD4ykB7dFRnW3srU/RcUABbLEwwJNiA9aNkomWttJYnWR0ok7wrp8oj//xxvMsmYHoZH
+         yF9cpfrXmVFMVAZVNydm1kDWgnKBxjPd7wea+JT2Cob06NAJEt2nZFjEu3SxPNUttM9H
+         +PCw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=VxRH7y7mD8w9ZMZtzGYEhqBg5gtMnJozuYmxD6CW22s=;
-        b=ornMRvP/IpXvfbsv0DOBKQhhwnea2llPRO65IZpZnzW3tUCZLRsIzpmTHLp/mKmNmU
-         X7Hffvyjw9sqIrwRlWN/90C+jHMIh1DkEuS6gNskFuu+FGMW1gbV2HxeUYojnTT6GDN8
-         DE4e5QcTNpa3VqCd8d1aX/9MPmcf0OSE1a6neTXrIBjJNIW0mvIkYPjNqFp4Nht7hjf+
-         DqEMnZTBM0Ebxq4HBfq7CMrpAg+bmT0AY0IiGRv9uONBEpDEYDyAUKwmXlCiF0KcFDuR
-         J2aj5nduNtabGt9ExYdacU1cCLYUUiRfhS6Yc2VHdiq6YAV47eEpRQ1p0flTc4CGBQRN
-         KkwQ==
-X-Gm-Message-State: APjAAAVxgyrulOr9c7JJ/kWnzjO+PYj/U3E/o6DfpV/SgZiEztcBmwli
-        ZgWHF6n+MeatypCysecovnc=
-X-Google-Smtp-Source: APXvYqwI7ntwHsEHTnB33WT/ymjEuB/A8th9gpJMZ7lWikARhC2o8fe9tNDXiIHZRqRQ28bySBi+hA==
-X-Received: by 2002:a63:d358:: with SMTP id u24mr8241064pgi.218.1576122411557;
-        Wed, 11 Dec 2019 19:46:51 -0800 (PST)
+        bh=zAqBwSAEjVBVcJbtUn42ZmrLmkYi+ObYmXAQBM0wBg0=;
+        b=XjH/7x6Kjx4H91nDWtjFNWOsLuOtddp49YTvGMcq8I18qcGhLCv1ew+6P7IOYdBonp
+         i+P4Ohti5IVWJXukzwpaW9nRzFFy7jytYErlqfZIWpo8MzYVxGYxh0ujPcWMawwQ9h13
+         Ijm+zdvOjSDajKxiEJuxsf2cyUIrT3GHcrvn0YqKC2/wCOnv7ewn8bO6kX8b3xjJXPB5
+         mVHwU2rBjJZH3XVeK7hjMJH5ZI6kI1jezlTx4AIqpzFrobRBYbyStY/si7jDXH/oqLb/
+         oPo0Vt4RtbzsSDaB2XWoKdjzLkPDfOm4gj3q/XaQ4OpUMVP9w26bz8jGpV2Nz2/JxstD
+         lXQQ==
+X-Gm-Message-State: APjAAAX1keSZ6kXnYiYgdFcgcuBJ+YUFTA6xc2rEL/u0/PPsadQtPVcb
+        oHGF9UzCveEftiSi+glrt4s=
+X-Google-Smtp-Source: APXvYqzBkRh3cwSyPQsZa5nDsKSRf+bLljilwo6YWX2fCXsu5TpTQhyEMggR3clwFExZgUd6zL095g==
+X-Received: by 2002:a62:1bd0:: with SMTP id b199mr7738199pfb.172.1576123076758;
+        Wed, 11 Dec 2019 19:57:56 -0800 (PST)
 Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
-        by smtp.gmail.com with ESMTPSA id p21sm4718312pfn.103.2019.12.11.19.46.50
+        by smtp.gmail.com with ESMTPSA id a19sm4716127pfn.50.2019.12.11.19.57.55
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 11 Dec 2019 19:46:51 -0800 (PST)
-Subject: Re: [PATCH net-next 3/6] dt-bindings: net: dsa: add new MT7531
- binding to support MT7531
+        Wed, 11 Dec 2019 19:57:56 -0800 (PST)
+Subject: Re: [PATCH net-next 4/6] net: dsa: mt7530: Add the support of MT7531
+ switch
 To:     Landen Chao <landen.chao@mediatek.com>, andrew@lunn.ch,
         vivien.didelot@savoirfairelinux.com, matthias.bgg@gmail.com,
         robh+dt@kernel.org, mark.rutland@arm.com
@@ -55,7 +55,7 @@ Cc:     devicetree@vger.kernel.org, netdev@vger.kernel.org,
         davem@davemloft.net, sean.wang@mediatek.com, opensource@vdorst.com,
         frank-w@public-files.de
 References: <cover.1575914275.git.landen.chao@mediatek.com>
- <1c382fd916b66bfe3ce8ef18c12f954dbcbddbbc.1575914275.git.landen.chao@mediatek.com>
+ <6d608dd024edc90b09ba4fe35417b693847f973c.1575914275.git.landen.chao@mediatek.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Autocrypt: addr=f.fainelli@gmail.com; keydata=
  mQGiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
@@ -111,15 +111,15 @@ Autocrypt: addr=f.fainelli@gmail.com; keydata=
  caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
  6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9qfUATKC9NgZjRvBztfqy4
  a9BQwACgnzGuH1BVeT2J0Ra+ZYgkx7DaPR0=
-Message-ID: <8afaf60d-bbbd-2931-3992-69511fb1e839@gmail.com>
-Date:   Wed, 11 Dec 2019 19:46:49 -0800
+Message-ID: <0eb12ad8-0484-feb5-d912-40e052315739@gmail.com>
+Date:   Wed, 11 Dec 2019 19:57:54 -0800
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
  Thunderbird/68.3.0
 MIME-Version: 1.0
-In-Reply-To: <1c382fd916b66bfe3ce8ef18c12f954dbcbddbbc.1575914275.git.landen.chao@mediatek.com>
+In-Reply-To: <6d608dd024edc90b09ba4fe35417b693847f973c.1575914275.git.landen.chao@mediatek.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -128,12 +128,141 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 On 12/10/2019 12:14 AM, Landen Chao wrote:
-> Add devicetree binding to support the compatible mt7531 switch as used
-> in the MediaTek MT7531 switch.
+> Add new support for MT7531:
 > 
-> Signed-off-by: Sean Wang <sean.wang@mediatek.com>
+> MT7531 is the next generation of MT7530. It is also a 7-ports switch with
+> 5 giga embedded phys, 2 cpu ports, and the same MAC logic of MT7530. Cpu
+> port 6 only supports HSGMII interface. Cpu port 5 supports either RGMII
+> or HSGMII in different HW sku. Due to HSGMII interface support, pll, and
+> pad setting are different from MT7530. This patch adds different initial
+> setting of MT7531.
+> 
 > Signed-off-by: Landen Chao <landen.chao@mediatek.com>
+> Signed-off-by: Sean Wang <sean.wang@mediatek.com>
+> ---
 
-With the comments from Andrew fixed, this looks good to me.
+[snip]
+
+> +	/* Enable PHY power, since phy_device has not yet been created
+> +	 * provided for phy_[read,write]_mmd_indirect is called, we provide
+> +	 * our own mt7531_ind_mmd_phy_[read,write] to complete this
+> +	 * function.
+> +	 */
+> +	val = mt7531_ind_mmd_phy_read(priv, 0, PHY_DEV1F,
+> +				      MT7531_PHY_DEV1F_REG_403);
+> +	val |= MT7531_PHY_EN_BYPASS_MODE;
+> +	val &= ~MT7531_PHY_POWER_OFF;
+> +	mt7531_ind_mmd_phy_write(priv, 0, PHY_DEV1F,
+> +				 MT7531_PHY_DEV1F_REG_403, val);
+
+You are doing this for port 0 only, is that because this broadcasts to
+all internal PHYs as well, or is it enough to somehow do it just for
+port 0? It sounds like you might want to make this operation a bit more
+scoped, if you have an external PHY that also responds to broadcast MDIO
+writes this could possibly cause some unattended effects, no?
+
+[snip]
+
+> +static int mt7531_rgmii_setup(struct mt7530_priv *priv, u32 port)
+> +{
+> +	u32 val;
+> +
+> +	if (port != 5) {
+> +		dev_err(priv->dev, "RGMII mode is not available for port %d\n",
+> +			port);
+> +		return -EINVAL;
+> +	}
+> +
+> +	val = mt7530_read(priv, MT7531_CLKGEN_CTRL);
+> +	val |= GP_CLK_EN;
+> +	val &= ~GP_MODE_MASK;
+> +	val |= GP_MODE(MT7531_GP_MODE_RGMII);
+> +	val |= TXCLK_NO_REVERSE;
+> +	val |= RXCLK_NO_DELAY;
+
+You actually need to look at the port's phy_interface_t value to
+determine whether the delays should be set/clear in either RX or TX
+directions.
+
+[snip]
+
+> -	if (phylink_autoneg_inband(mode)) {
+> +	if (phylink_autoneg_inband(mode) &&
+> +	    state->interface != PHY_INTERFACE_MODE_SGMII) {
+
+So you don't support in-band auto-negotiation for 1000BaseX either?
+
+[snip]
+
+> @@ -1590,9 +2197,20 @@ static void mt753x_phylink_validate(struct dsa_switch *ds, int port,
+>  	phylink_set_port_modes(mask);
+>  	phylink_set(mask, Autoneg);
+>  
+> -	if (state->interface == PHY_INTERFACE_MODE_TRGMII) {
+> +	switch (state->interface) {
+> +	case PHY_INTERFACE_MODE_TRGMII:
+>  		phylink_set(mask, 1000baseT_Full);
+> -	} else {
+> +		break;
+> +	case PHY_INTERFACE_MODE_1000BASEX:
+> +	case PHY_INTERFACE_MODE_2500BASEX:
+> +		phylink_set(mask, 1000baseX_Full);
+> +		phylink_set(mask, 2500baseX_Full);
+
+Did you intend this to be:
+
+	case PHY_INTERFACE_MODE_2500BASEX:
+		phylink_set(mask, 2500baseX_Full);
+		/* fall through */
+	case PHY_INTERFACE_MODE_1000BASEX:
+		phylink_set(mask, 1000baseX_Full);
+		break;
+
+?
+[snip]
+
+> +/* Register for PHY Indirect Access Control */
+> +#define MT7531_PHY_IAC			0x701C
+> +#define  PHY_ACS_ST			BIT(31)
+> +#define  MDIO_REG_ADDR_MASK		(0x1f << 25)
+> +#define  MDIO_PHY_ADDR_MASK		(0x1f << 20)
+> +#define  MDIO_CMD_MASK			(0x3 << 18)
+> +#define  MDIO_ST_MASK			(0x3 << 16)
+> +#define  MDIO_RW_DATA_MASK		(0xffff)
+> +#define  MDIO_REG_ADDR(x)		(((x) & 0x1f) << 25)
+> +#define  MDIO_DEV_ADDR(x)		(((x) & 0x1f) << 25)
+> +#define  MDIO_PHY_ADDR(x)		(((x) & 0x1f) << 20)
+> +#define  MDIO_CMD(x)			(((x) & 0x3) << 18)
+> +#define  MDIO_ST(x)			(((x) & 0x3) << 16)
+
+I would suggest names that are more scoped because these could easily
+collide with existing of future definitions from include/linux/mdio.h.
+
+> +
+> +enum mt7531_phy_iac_cmd {
+> +	MT7531_MDIO_ADDR = 0,
+> +	MT7531_MDIO_WRITE = 1,
+> +	MT7531_MDIO_READ = 2,
+> +	MT7531_MDIO_READ_CL45 = 3,
+> +};
+> +
+> +/* MDIO_ST: MDIO start field */
+> +enum mt7531_mdio_st {
+> +	MT7531_MDIO_ST_CL45 = 0,
+> +	MT7531_MDIO_ST_CL22 = 1,
+> +};
+> +
+> +#define  MDIO_CL22_READ			(MDIO_ST(MT7531_MDIO_ST_CL22) | \
+> +					 MDIO_CMD(MT7531_MDIO_READ))
+> +#define  MDIO_CL22_WRITE		(MDIO_ST(MT7531_MDIO_ST_CL22) | \
+> +					 MDIO_CMD(MT7531_MDIO_WRITE))
+> +#define  MDIO_CL45_ADDR			(MDIO_ST(MT7531_MDIO_ST_CL45) | \
+> +					 MDIO_CMD(MT7531_MDIO_ADDR))
+> +#define  MDIO_CL45_READ			(MDIO_ST(MT7531_MDIO_ST_CL45) | \
+> +					 MDIO_CMD(MT7531_MDIO_READ))
+> +#define  MDIO_CL45_WRITE		(MDIO_ST(MT7531_MDIO_ST_CL45) | \
+> +					 MDIO_CMD(MT7531_MDIO_WRITE))
+
+Likewise.
 -- 
 Florian
