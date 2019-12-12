@@ -2,148 +2,180 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 76EC711D863
-	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 22:16:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 68C1F11D886
+	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 22:28:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731055AbfLLVPw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Dec 2019 16:15:52 -0500
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:60706 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1730971AbfLLVPv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Dec 2019 16:15:51 -0500
-Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xBCL7Eno051267;
-        Thu, 12 Dec 2019 16:15:49 -0500
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 2wujxrppd5-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 12 Dec 2019 16:15:48 -0500
-Received: from m0098417.ppops.net (m0098417.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id xBCL7YiG052047;
-        Thu, 12 Dec 2019 16:15:48 -0500
-Received: from ppma04dal.us.ibm.com (7a.29.35a9.ip4.static.sl-reverse.com [169.53.41.122])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 2wujxrppcv-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 12 Dec 2019 16:15:48 -0500
-Received: from pps.filterd (ppma04dal.us.ibm.com [127.0.0.1])
-        by ppma04dal.us.ibm.com (8.16.0.27/8.16.0.27) with SMTP id xBCL9xOL012765;
-        Thu, 12 Dec 2019 21:15:47 GMT
-Received: from b03cxnp08027.gho.boulder.ibm.com (b03cxnp08027.gho.boulder.ibm.com [9.17.130.19])
-        by ppma04dal.us.ibm.com with ESMTP id 2wr3q7dhy4-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 12 Dec 2019 21:15:47 +0000
-Received: from b03ledav004.gho.boulder.ibm.com (b03ledav004.gho.boulder.ibm.com [9.17.130.235])
-        by b03cxnp08027.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id xBCLFka655836952
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 12 Dec 2019 21:15:46 GMT
-Received: from b03ledav004.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 48A8678060;
-        Thu, 12 Dec 2019 21:15:46 +0000 (GMT)
-Received: from b03ledav004.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id C55197805E;
-        Thu, 12 Dec 2019 21:15:44 +0000 (GMT)
-Received: from LeoBras.aus.stglabs.ibm.com (unknown [9.18.235.137])
-        by b03ledav004.gho.boulder.ibm.com (Postfix) with ESMTP;
-        Thu, 12 Dec 2019 21:15:44 +0000 (GMT)
-From:   Leonardo Bras <leonardo@linux.ibm.com>
-To:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>
-Cc:     Leonardo Bras <leonardo@linux.ibm.com>, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 1/1] drivers/vhost : Removes unnecessary 'else' in vhost_copy_from_user
-Date:   Thu, 12 Dec 2019 18:15:39 -0300
-Message-Id: <20191212211539.34578-1-leonardo@linux.ibm.com>
-X-Mailer: git-send-email 2.23.0
+        id S1731077AbfLLV2F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Dec 2019 16:28:05 -0500
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:35184 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731040AbfLLV2F (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Dec 2019 16:28:05 -0500
+Received: by mail-pg1-f196.google.com with SMTP id l24so228454pgk.2;
+        Thu, 12 Dec 2019 13:28:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=D/gv7eytCwvP7hIyDmJBH2pwd4vDwIqS68/F/jtBrbU=;
+        b=eFknJIJNiil5F7PUR+gHKjhDpm10AC+X7Qnb0xCyWsoJRpWKmQsQpFMmP9xgr7Ce9J
+         A61tfE2oPwHitKCYXIHXbPfcUYOMZslJ8+hGb+SCYnsLu96xPawRQeHMAdG0jE+qycBj
+         dpNjyYSftQYwEFFCPhR9dGo9tnkQOA9QhgDkyrKyqkRbAkkTmq/kKKon2FKbgL0Zgntl
+         qAZlGWEozUHMlu6jFdIeD0uAGzfXg6saraQuhaHiu+EtCXsfx0GQ6+x4WE5F06i9FxvJ
+         c0zu/Vbb8QrW5Zh017NXJTT0elYiaH2BmKI0i5icQkPJr8ewpL4oHBtgGziHuTEv6a4G
+         MnWw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=D/gv7eytCwvP7hIyDmJBH2pwd4vDwIqS68/F/jtBrbU=;
+        b=oBG9TNdRrexC/BXRqgtIJ0uc0d8U34bNYVERLU2/eE4yU/p+352iczRMRsMys3kYxy
+         NIEz70hi3DEXRYhFbVtErH68DLk66WQDi9vqAOXcMjzaQKiPzz3gocf2Rim6kDGJ3J83
+         Sokel4Wal4EmMlLLKFsFOgCRZ1o3O0ooz8I5RNWZkCvvUFM7qHPxyR8CJCFJjy2ul8FP
+         3j3Q19mWWQ+PsyYcXYbD9hwAqx7Ku5VqvRwJGBxgVmDtCc/twqT5KM2Mk2Si7OeUvppr
+         r/Lwj0yT1QNbnGo3VO5PYHoppg37m8TwRKOVQbBbHHGsbq8atVYlN4tNYWYXomfbwlPt
+         FiPA==
+X-Gm-Message-State: APjAAAWWISps4hfeZrkwgszda7U0HxTDhbvqCPvIiAm567JZjUAhMxt3
+        A2aZtuN9XTdGtzlSmQFfGjY=
+X-Google-Smtp-Source: APXvYqwiF1zBZxfO3KLzlfcFvL6W+z5uHLsDMIHhT3FRbyLkJ+LG0Gd0hZgzNESr4nwKGacBAkKpgw==
+X-Received: by 2002:a62:e519:: with SMTP id n25mr12079467pff.220.1576186084062;
+        Thu, 12 Dec 2019 13:28:04 -0800 (PST)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:200::b509])
+        by smtp.gmail.com with ESMTPSA id 20sm7844486pgw.71.2019.12.12.13.28.02
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 12 Dec 2019 13:28:03 -0800 (PST)
+Date:   Thu, 12 Dec 2019 13:28:00 -0800
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Stanislav Fomichev <sdf@fomichev.me>,
+        Andrii Nakryiko <andriin@fb.com>,
+        LKML <linux-kernel@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>
+Subject: Re: [PATCH bpf-next 11/15] bpftool: add skeleton codegen command
+Message-ID: <20191212212759.mhzrlqj5brcyfwgb@ast-mbp.dhcp.thefacebook.com>
+References: <CAEf4BzYofFFjSAO3O-G37qyeVHE6FACex=yermt8bF8mXksh8g@mail.gmail.com>
+ <20191211200924.GE3105713@mini-arch>
+ <CAEf4BzaE0Q7LnPOa90p1RX9qSbOA_8hkT=6=7peP9C88ErRumQ@mail.gmail.com>
+ <20191212025735.GK3105713@mini-arch>
+ <CAEf4BzY2KHK4h5e40QgGt4GzJ6c+rm-vtbyEdM41vUSqcs=txA@mail.gmail.com>
+ <20191212162953.GM3105713@mini-arch>
+ <CAEf4BzYJHvuFbBM-xvCCsEa+Pg-bG1tprGMbCDtsbGHdv7KspA@mail.gmail.com>
+ <20191212104334.222552a1@cakuba.netronome.com>
+ <20191212195415.ubnuypco536rp6mu@ast-mbp.dhcp.thefacebook.com>
+ <20191212122115.612bb13b@cakuba.netronome.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
- definitions=2019-12-12_07:2019-12-12,2019-12-12 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 lowpriorityscore=0
- malwarescore=0 mlxlogscore=999 impostorscore=0 priorityscore=1501
- clxscore=1011 suspectscore=0 bulkscore=0 spamscore=0 adultscore=0
- phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-1910280000 definitions=main-1912120164
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191212122115.612bb13b@cakuba.netronome.com>
+User-Agent: NeoMutt/20180223
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There is no need for this else statement, given that if block will return.
-This change is not supposed to change the output binary.
+On Thu, Dec 12, 2019 at 12:21:15PM -0800, Jakub Kicinski wrote:
+> > > 
+> > >   There absolutely nothing this tool needs from [bpftool], no
+> > >   JSON needed, no bpffs etc.   
+> > 
+> > To generate vmlinux.h bpftool doesn't need json and doesn't need bpffs.
+> 
+> At least for header generation it pertains to the running system.
+> And bpftool was (and still is AFAICT) about interacting with the BPF
+> state on the running system.
 
-It reduces identation level on most lines in this function, and also
-fixes an split string on vq_err().
+No. Reality is different. vmlinux.h generation doesn't need to touch
+kernel on the running system. Part of its job is to generate multiple
+vmlinux.h from a set of vmlinux elf files. Different .h for different kernels.
+It can generate vmlinux.h from running kernel too, but its less relevant
+to make use of CO-RE.
+In the future bpftool will be used to merge such multiple .h-s.
+Likely it will first merge BTFs from vmlinuxes and then will produce
+merged vmlinux_4_x_and_5_x.h
 
-Signed-off-by: Leonardo Bras <leonardo@linux.ibm.com>
----
- drivers/vhost/vhost.c | 50 +++++++++++++++++++++----------------------
- 1 file changed, 24 insertions(+), 26 deletions(-)
+> > > It can be a separate tool like
+> > >   libbpf-skel-gen or libbpf-c-skel or something, distributed with libbpf.
+> > >   That way you can actually soften the backward compat. In case people
+> > >   become dependent on it they can carry that little tool on their own.  
+> > 
+> > Jakub,
+> > 
+> > Could you please consider Andrii's reply to your comment from two days ago:
+> > https://lore.kernel.org/bpf/CAEf4BzbeZbmCTOOo2uQXjm0GL0WDu7aLN6fdUk18Nv2g0kfwVg@mail.gmail.com/
+> > "we are trying to make users lives easier by having major distributions
+> > distribute bpftool and libbpf properly. Adding extra binaries to
+> > distribute around doesn't seem to be easing any of users pains."
+> 
+> Last time we argued I heard how GH makes libbpf packaging easier.
+> Only to have that dis-proven once the people in Europe who do distro
+> packaging woke up:
+> 
+> https://lkml.org/lkml/2019/12/5/101
+> https://lkml.org/lkml/2019/12/5/312
 
-diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
-index f44340b41494..b23d1b74c32f 100644
---- a/drivers/vhost/vhost.c
-+++ b/drivers/vhost/vhost.c
-@@ -824,34 +824,32 @@ static int vhost_copy_from_user(struct vhost_virtqueue *vq, void *to,
- 
- 	if (!vq->iotlb)
- 		return __copy_from_user(to, from, size);
--	else {
--		/* This function should be called after iotlb
--		 * prefetch, which means we're sure that vq
--		 * could be access through iotlb. So -EAGAIN should
--		 * not happen in this case.
--		 */
--		void __user *uaddr = vhost_vq_meta_fetch(vq,
--				     (u64)(uintptr_t)from, size,
--				     VHOST_ADDR_DESC);
--		struct iov_iter f;
- 
--		if (uaddr)
--			return __copy_from_user(to, uaddr, size);
-+	/* This function should be called after iotlb
-+	 * prefetch, which means we're sure that vq
-+	 * could be access through iotlb. So -EAGAIN should
-+	 * not happen in this case.
-+	 */
-+	void __user *uaddr = vhost_vq_meta_fetch(vq,
-+			     (u64)(uintptr_t)from, size,
-+			     VHOST_ADDR_DESC);
-+	struct iov_iter f;
- 
--		ret = translate_desc(vq, (u64)(uintptr_t)from, size, vq->iotlb_iov,
--				     ARRAY_SIZE(vq->iotlb_iov),
--				     VHOST_ACCESS_RO);
--		if (ret < 0) {
--			vq_err(vq, "IOTLB translation failure: uaddr "
--			       "%p size 0x%llx\n", from,
--			       (unsigned long long) size);
--			goto out;
--		}
--		iov_iter_init(&f, READ, vq->iotlb_iov, ret, size);
--		ret = copy_from_iter(to, size, &f);
--		if (ret == size)
--			ret = 0;
--	}
-+	if (uaddr)
-+		return __copy_from_user(to, uaddr, size);
-+
-+	ret = translate_desc(vq, (u64)(uintptr_t)from, size, vq->iotlb_iov,
-+			     ARRAY_SIZE(vq->iotlb_iov),
-+			     VHOST_ACCESS_RO);
-+	if (ret < 0) {
-+		vq_err(vq, "IOTLB translation failure: uaddr %p size 0x%llx\n",
-+		       from, (unsigned long long)size);
-+		goto out;
-+	}
-+	iov_iter_init(&f, READ, vq->iotlb_iov, ret, size);
-+	ret = copy_from_iter(to, size, &f);
-+	if (ret == size)
-+		ret = 0;
- 
- out:
- 	return ret;
--- 
-2.23.0
+I think you missed the point of these two comments. It was about packaging
+bpftool and libbpf together. Regardless how bpftool is packaged. I still
+strongly suggest to use github/libbpf to package libbpf. It's something that is
+actually tested whereas libbpf in the kernel tree has unit test coverage only.
+
+> 
+> > My opinion is the following.
+> > bpftool is necessary to write bpf programs already. It's necessary to produce
+> > vmlinux.h for bpf programs to include it. It's part of build process. I can
+> > relate to Stan's complains that he needs to update clang and pahole. He missed
+> > the fact that he needs to update bpftool too if he wants to use all features of
+> > CO-RE. Same thing for skeleton generation. If people need to run the latest
+> > selftest/bpf on the latest kernel they need to upgrade to the latest clang,
+> > pahole, libbpf, bpftool. Nothing new here.
+> 
+> They have to update libbpf, so why can't the code gen tool be part of
+> libbpf? 
+
+I'm not sure why two answers were not enough.
+No idea how to answer this question differently for the third time.
+
+> > Backwards compat is the same concern for skeleton generation and for vmlinux.h
+> > generation. Obviously no one wants to introduce something that will keep
+> > changing. Is vmlinux.h generation stable? I like to believe so. Same with
+> > skeleton. I wouldn't want to see it changing, but in both cases such chance
+> > exists. 
+> 
+> vmlinux.h is pretty stable, there isn't much wiggle room there.
+
+Do you have experience working with vmlinux.h? I bet the answer is no.
+While we have and identified few things that needs improvement.
+They require vmlinux.h to be generated differently.
+
+> It's more of a conversion tool, if you will.
+> 
+> Skeleton OTOH is supposed to make people's lives easier, so it's a
+> completely different beast. It should be malleable so that users can
+> improve and hack on it. Baking it into as system tool is counter
+> productive. Users should be able to grab the skel tool single-file
+> source and adjust for their project's needs. Distributing your own copy
+> of bpftool because you want to adjust skel is a heavy lift.
+
+Adjust generator for their custom needs? essentially fork it for
+private use? I'd rather prevent such possibility.
+When people start using it I'd prefer they come back to this mailing
+list with patches than do 'easy fork'.
+
+> > Now consider if vmlinux.h and skeleton generation is split out of bpftool into
+> > new tool. Effectively it would mean a fork of bpftool. Two binaries doing bpf
+> > elf file processing without clear distinction between them is going to be very
+> > confusing.
+> 
+> To be clear I'm suggesting skel gen is a separate tool, vmlinux and
+> Quentin's header gen work on the running system, they are not pure
+> build env tools.
+
+You meant to say Andrii's header generator that is based on Quentin's man page
+generator. Its output bpf_helper_defs.h makes sense as a part of libbpf
+package. The generator script itself doesn't need to be included with any package.
+bpftool vmlinux gen consumes vmlinux elf files and is a part of the build.
+bpftool skeleton gen consumes bpf elf files and is a part of the same build.
 
