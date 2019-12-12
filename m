@@ -2,134 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0D9BC11D398
-	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 18:18:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A5C0F11D3A3
+	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 18:19:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730081AbfLLRSj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Dec 2019 12:18:39 -0500
-Received: from us-smtp-1.mimecast.com ([207.211.31.81]:47847 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1730054AbfLLRSj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Dec 2019 12:18:39 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1576171118;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=w+lNpQbi7n9NjMFW1p/6ELUJOEe40X4isyqspjvYH6E=;
-        b=Vs++swaN7pTnXzm5snXBPV9K25fjP4Gcvv92Z7COWvF8Uy8VJ/nAiScHLFVbGDwzVIH6rJ
-        vWtzl8Q7fWsHp9GVoFCWmjOX4jrOGHQZzAADZLAUYCYtMkUBYdgSwTv3CxWTl0e7OFID0u
-        rYMArMW+waZ1Nz5I7sikWoCumSmumbQ=
-Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
- [209.85.221.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-257-JqtvZClRNyOOH9OSYWtfQw-1; Thu, 12 Dec 2019 12:18:37 -0500
-X-MC-Unique: JqtvZClRNyOOH9OSYWtfQw-1
-Received: by mail-wr1-f72.google.com with SMTP id w6so1271761wrm.16
-        for <netdev@vger.kernel.org>; Thu, 12 Dec 2019 09:18:37 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=w+lNpQbi7n9NjMFW1p/6ELUJOEe40X4isyqspjvYH6E=;
-        b=h7sNtOJquDIxpVoVhYSefMjteCSeKJCzoqN/I6t+iFfIr6v7UYBDw11q2dIf1EWo3y
-         qAL/RAoi7pupu3gLbR/vqysFp+di0cPxiGjhilDPp4U6+4zriH32kkPP5TSRD5rTwbd4
-         gsGPe+70TccsgL/YvICZeWdnGoML+YEvXUU1zQT2/V6Gxz+bGk8cbjZ31bGljo0ERHU3
-         FTbKL+absaoXiqkU1OTKPhAjv5IPT9aZ2vAAFGy/y6RpsMk2YiIdSvyRKMajUQVZGnCc
-         X6+1Ut6SjSezW7RFM/ahceNx21Ea0Vtlc6B27xQZ6jsf+md6JS3SATss6x9MLDZHEDWm
-         9bFg==
-X-Gm-Message-State: APjAAAVw5E8UAWuou0Vrl3jTU0qEqxXK4Y2+bfyvX79nrehSVppcsup5
-        jsOwcCgqLyipEmPHa4dgCCjV4Y7+d6EHP+eAQ1AWHRRHdLf1EdBgOlxrp9cJ2dvw3LTH4UIg+mS
-        QdMMy4oPEoUaWHIk8
-X-Received: by 2002:a5d:5273:: with SMTP id l19mr7640204wrc.175.1576171116420;
-        Thu, 12 Dec 2019 09:18:36 -0800 (PST)
-X-Google-Smtp-Source: APXvYqxdf/lJae5vRRMQuAYB1NsUfS2ri+yj2mZtXoOp6zeDlaXOa3l7O6kmQWVGurWJ+dIsn9JABg==
-X-Received: by 2002:a5d:5273:: with SMTP id l19mr7640165wrc.175.1576171116091;
-        Thu, 12 Dec 2019 09:18:36 -0800 (PST)
-Received: from steredhat ([95.235.120.92])
-        by smtp.gmail.com with ESMTPSA id h2sm6702690wrv.66.2019.12.12.09.18.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 Dec 2019 09:18:35 -0800 (PST)
-Date:   Thu, 12 Dec 2019 18:18:32 +0100
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     "Michael S. Tsirkin" <mst@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     virtualization@lists.linux-foundation.org,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        Jason Wang <jasowang@redhat.com>, kvm <kvm@vger.kernel.org>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH] vhost/vsock: accept only packets with the right dst_cid
-Message-ID: <CAGxU2F5KYABXjATchcqw_rA13cyUzug0zrGX6TJX2CLqj9ZwGw@mail.gmail.com>
-References: <20191206143912.153583-1-sgarzare@redhat.com>
- <20191211110235-mutt-send-email-mst@kernel.org>
- <20191212123624.ahyhrny7u6ntn3xt@steredhat>
- <20191212075356-mutt-send-email-mst@kernel.org>
- <20191212131453.yocx6wckoluwofbb@steredhat>
+        id S1730156AbfLLRT3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Dec 2019 12:19:29 -0500
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:47638 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1730047AbfLLRT3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Dec 2019 12:19:29 -0500
+Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xBCHG0lc024491
+        for <netdev@vger.kernel.org>; Thu, 12 Dec 2019 09:19:28 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-type; s=facebook;
+ bh=zKfNol1lmm/ySKUdhFMzX23SCU/xjUY3EPbkthfX4tg=;
+ b=W/6f3HuhZCAZYrUjUDuGiTR/titAYZ/FIiGzMPPkmALH3KceWPfKsNXiMWq3qpY1RD/G
+ uh67Y73dPSjVP0rLW+0GJlLHh6go2iLLMFNTUun2LGPOC+hg5e7BbSvS1PuWP2OS4eIu
+ poKjZDuBQwpDBjNTkS+slXXsSzE8a/AFh3A= 
+Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
+        by mx0a-00082601.pphosted.com with ESMTP id 2wub46bhd7-7
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Thu, 12 Dec 2019 09:19:28 -0800
+Received: from intmgw004.08.frc2.facebook.com (2620:10d:c081:10::13) by
+ mail.thefacebook.com (2620:10d:c081:35::125) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
+ Thu, 12 Dec 2019 09:19:24 -0800
+Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
+        id CF27B2EC1E04; Thu, 12 Dec 2019 09:19:22 -0800 (PST)
+Smtp-Origin-Hostprefix: devbig
+From:   Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>
+CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Cluster: ftw2c04
+Subject: [PATCH v2 bpf-next] libbpf: fix printf compilation warnings on ppc64le arch
+Date:   Thu, 12 Dec 2019 09:19:18 -0800
+Message-ID: <20191212171918.638010-1-andriin@fb.com>
+X-Mailer: git-send-email 2.17.1
+X-FB-Internal: Safe
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191212131453.yocx6wckoluwofbb@steredhat>
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
+ definitions=2019-12-12_05:2019-12-12,2019-12-12 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 impostorscore=0
+ bulkscore=0 phishscore=0 adultscore=0 priorityscore=1501 mlxlogscore=843
+ lowpriorityscore=0 suspectscore=8 spamscore=0 mlxscore=0 clxscore=1015
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-1910280000 definitions=main-1912120135
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 12, 2019 at 2:14 PM Stefano Garzarella <sgarzare@redhat.com> wrote:
-> On Thu, Dec 12, 2019 at 07:56:26AM -0500, Michael S. Tsirkin wrote:
-> > On Thu, Dec 12, 2019 at 01:36:24PM +0100, Stefano Garzarella wrote:
-> > > On Wed, Dec 11, 2019 at 11:03:07AM -0500, Michael S. Tsirkin wrote:
-> > > > On Fri, Dec 06, 2019 at 03:39:12PM +0100, Stefano Garzarella wrote:
-> > > > > When we receive a new packet from the guest, we check if the
-> > > > > src_cid is correct, but we forgot to check the dst_cid.
-> > > > >
-> > > > > The host should accept only packets where dst_cid is
-> > > > > equal to the host CID.
-> > > > >
-> > > > > Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
-> > > >
-> > > > Stefano can you clarify the impact pls?
-> > >
-> > > Sure, I'm sorry I didn't do it earlier.
-> > >
-> > > > E.g. is this needed on stable? Etc.
-> > >
-> > > This is a better analysis (I hope) when there is a malformed guest
-> > > that sends a packet with a wrong dst_cid:
-> > > - before v5.4 we supported only one transport at runtime, so the sockets
-> > >   in the host can only receive packets from guests. In this case, if
-> > >   the dst_cid is wrong, maybe the only issue is that the getsockname()
-> > >   returns an inconsistent address (the cid returned is the one received
-> > >   from the guest)
-> > >
-> > > - from v5.4 we support multi-transport, so the L1 VM (e.g. L0 assigned
-> > >   cid 5 to this VM) can have both Guest2Host and Host2Guest transports.
-> > >   In this case, we have these possible issues:
-> > >   - L2 (or L1) guest can use cid 0, 1, and 2 to reach L1 (or L0),
-> > >     instead we should allow only CID_HOST (2) to reach the level below.
-> > >     Note: this happens also with not malformed guest that runs Linux v5.4
-> > >   - if a malformed L2 guest sends a packet with the wrong dst_cid, for example
-> > >     instead of CID_HOST, it uses the cid assigned by L0 to L1 (5 in this
-> > >     example), this packets can wrongly queued to a socket on L1 bound to cid 5,
-> > >     that only expects connections from L0.
-> >
-> > Oh so a security issue?
-> >
->
-> It seems so, I'll try to see if I can get a real example,
-> maybe I missed a few checks.
+On ppc64le __u64 and __s64 are defined as long int and unsigned long int,
+respectively. This causes compiler to emit warning when %lld/%llu are used to
+printf 64-bit numbers. Fix this by casting to size_t/ssize_t with %zu and %zd
+format specifiers, respectively.
 
-I was wrong!
-Multi-transport will be released with v5.5, which will contain this patch.
+v1->v2:
+- use size_t/ssize_t instead of custom typedefs (Martin).
 
-Linux <= v5.4 are safe, with the exception of the potential wrong
-address returned by getsockname().
+Fixes: 1f8e2bcb2cd5 ("libbpf: Refactor relocation handling")
+Fixes: abd29c931459 ("libbpf: allow specifying map definitions using BTF")
+Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+---
+ tools/lib/bpf/libbpf.c | 37 +++++++++++++++++++------------------
+ 1 file changed, 19 insertions(+), 18 deletions(-)
 
-In addition, trying Linux <= v5.4 (both guests and host), I found that
-userspace applications can use any dst_cid to reach the host.
-
-It is not a security issue but for sure a wrong semantics.
-Maybe we should still consider to backport this patch on stables to get
-the right semantics.
-
-Thanks,
-Stefano
+diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+index 3f09772192f1..920d4e06a5f9 100644
+--- a/tools/lib/bpf/libbpf.c
++++ b/tools/lib/bpf/libbpf.c
+@@ -1242,15 +1242,15 @@ static int bpf_object__init_user_btf_map(struct bpf_object *obj,
+ 			}
+ 			sz = btf__resolve_size(obj->btf, t->type);
+ 			if (sz < 0) {
+-				pr_warn("map '%s': can't determine key size for type [%u]: %lld.\n",
+-					map_name, t->type, sz);
++				pr_warn("map '%s': can't determine key size for type [%u]: %zd.\n",
++					map_name, t->type, (ssize_t)sz);
+ 				return sz;
+ 			}
+-			pr_debug("map '%s': found key [%u], sz = %lld.\n",
+-				 map_name, t->type, sz);
++			pr_debug("map '%s': found key [%u], sz = %zd.\n",
++				 map_name, t->type, (ssize_t)sz);
+ 			if (map->def.key_size && map->def.key_size != sz) {
+-				pr_warn("map '%s': conflicting key size %u != %lld.\n",
+-					map_name, map->def.key_size, sz);
++				pr_warn("map '%s': conflicting key size %u != %zd.\n",
++					map_name, map->def.key_size, (ssize_t)sz);
+ 				return -EINVAL;
+ 			}
+ 			map->def.key_size = sz;
+@@ -1285,15 +1285,15 @@ static int bpf_object__init_user_btf_map(struct bpf_object *obj,
+ 			}
+ 			sz = btf__resolve_size(obj->btf, t->type);
+ 			if (sz < 0) {
+-				pr_warn("map '%s': can't determine value size for type [%u]: %lld.\n",
+-					map_name, t->type, sz);
++				pr_warn("map '%s': can't determine value size for type [%u]: %zd.\n",
++					map_name, t->type, (ssize_t)sz);
+ 				return sz;
+ 			}
+-			pr_debug("map '%s': found value [%u], sz = %lld.\n",
+-				 map_name, t->type, sz);
++			pr_debug("map '%s': found value [%u], sz = %zd.\n",
++				 map_name, t->type, (ssize_t)sz);
+ 			if (map->def.value_size && map->def.value_size != sz) {
+-				pr_warn("map '%s': conflicting value size %u != %lld.\n",
+-					map_name, map->def.value_size, sz);
++				pr_warn("map '%s': conflicting value size %u != %zd.\n",
++					map_name, map->def.value_size, (ssize_t)sz);
+ 				return -EINVAL;
+ 			}
+ 			map->def.value_size = sz;
+@@ -1817,7 +1817,8 @@ static int bpf_program__record_reloc(struct bpf_program *prog,
+ 			return -LIBBPF_ERRNO__RELOC;
+ 		}
+ 		if (sym->st_value % 8) {
+-			pr_warn("bad call relo offset: %llu\n", (__u64)sym->st_value);
++			pr_warn("bad call relo offset: %zu\n",
++				(size_t)sym->st_value);
+ 			return -LIBBPF_ERRNO__RELOC;
+ 		}
+ 		reloc_desc->type = RELO_CALL;
+@@ -1859,8 +1860,8 @@ static int bpf_program__record_reloc(struct bpf_program *prog,
+ 			break;
+ 		}
+ 		if (map_idx >= nr_maps) {
+-			pr_warn("map relo failed to find map for sec %u, off %llu\n",
+-				shdr_idx, (__u64)sym->st_value);
++			pr_warn("map relo failed to find map for sec %u, off %zu\n",
++				shdr_idx, (size_t)sym->st_value);
+ 			return -LIBBPF_ERRNO__RELOC;
+ 		}
+ 		reloc_desc->type = RELO_LD64;
+@@ -1941,9 +1942,9 @@ bpf_program__collect_reloc(struct bpf_program *prog, GElf_Shdr *shdr,
+ 		name = elf_strptr(obj->efile.elf, obj->efile.strtabidx,
+ 				  sym.st_name) ? : "<?>";
+ 
+-		pr_debug("relo for shdr %u, symb %llu, value %llu, type %d, bind %d, name %d (\'%s\'), insn %u\n",
+-			 (__u32)sym.st_shndx, (__u64)GELF_R_SYM(rel.r_info),
+-			 (__u64)sym.st_value, GELF_ST_TYPE(sym.st_info),
++		pr_debug("relo for shdr %u, symb %zu, value %zu, type %d, bind %d, name %d (\'%s\'), insn %u\n",
++			 (__u32)sym.st_shndx, (size_t)GELF_R_SYM(rel.r_info),
++			 (size_t)sym.st_value, GELF_ST_TYPE(sym.st_info),
+ 			 GELF_ST_BIND(sym.st_info), sym.st_name, name,
+ 			 insn_idx);
+ 
+-- 
+2.17.1
 
