@@ -2,163 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 08BD811D51F
-	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 19:17:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ABB2411D56C
+	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 19:25:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730404AbfLLSRe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Dec 2019 13:17:34 -0500
-Received: from guitar.tcltek.co.il ([192.115.133.116]:36315 "EHLO
-        mx.tkos.co.il" rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730362AbfLLSRe (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 12 Dec 2019 13:17:34 -0500
-Received: from sapphire.tkos.co.il (unknown [192.168.100.188])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx.tkos.co.il (Postfix) with ESMTPS id D8E79440159;
-        Thu, 12 Dec 2019 20:17:30 +0200 (IST)
-Date:   Thu, 12 Dec 2019 20:17:29 +0200
-From:   Baruch Siach <baruch@tkos.co.il>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Marek =?utf-8?B?QmVow7pu?= <marek.behun@nic.cz>
-Cc:     Vivien Didelot <vivien.didelot@gmail.com>, netdev@vger.kernel.org,
-        Denis Odintsov <d.odintsov@traviangames.com>,
-        Hubert Feurstein <h.feurstein@gmail.com>
-Subject: Re: [BUG] mv88e6xxx: tx regression in v5.3
-Message-ID: <20191212181729.mviz5c26ysebg4w3@sapphire.tkos.co.il>
-References: <87tv67tcom.fsf@tarshish>
- <20191211131111.GK16369@lunn.ch>
- <87fthqu6y6.fsf@tarshish>
- <20191211174938.GB30053@lunn.ch>
- <20191212085045.nqhfldkbebqzzamv@sapphire.tkos.co.il>
- <20191212131448.GA9959@lunn.ch>
- <20191212150810.zx6o26jnk5croh4r@sapphire.tkos.co.il>
- <20191212151355.GE30053@lunn.ch>
- <20191212152355.iiepmi4cjriddeon@sapphire.tkos.co.il>
+        id S1730564AbfLLSZ0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Dec 2019 13:25:26 -0500
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:44784 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730551AbfLLSZW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Dec 2019 13:25:22 -0500
+Received: by mail-pg1-f194.google.com with SMTP id x7so1563471pgl.11
+        for <netdev@vger.kernel.org>; Thu, 12 Dec 2019 10:25:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=dq8iMUhZ2yfBywJFDlsyvo5d9zUYOkAnGOhY/ugaTfg=;
+        b=JZ5+WGDLMqcN43s4lZE8f2qx6LIqv25/YKdRZArNa+TIOR4zXMBDSDbF7EmxMp0teV
+         z1yPgFHV6R/Y9nblOr69R2by1K+voQaFqi1czL1TEgAnwKlhaWWZZOyJb4nkuo/BLt/j
+         wvdVj/ii5Vw695+oPBU4gtmV6mzDwuLoBejlJLVaGxuRsPGe5db080gTD4+bXeAAkx7d
+         YsJRtU9GgMY8L8P2KyUMmX/U6lfmDO4F9mwWnkrYv/C/XW/u2hNoBAISrq4fnjV5ENKG
+         fM0llueVK1mnbYBGRuPlE3cVPr1d4j3j6vm3deESJo64OOHDYqdZvR+4eQMMthrLa89/
+         3kpg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=dq8iMUhZ2yfBywJFDlsyvo5d9zUYOkAnGOhY/ugaTfg=;
+        b=A8ZcMcb4gqavJZwNILTlnrrEP4Kq12rWB8XIDiqARG/+7TrzMHNz9ULjRvX+n/nuTZ
+         UPMR0hGvEHaGHcyL+3CBGMKX6OFT0AQfOD56lovOkzCOZMpcstw0Z6rAHuWIDG2SetuZ
+         RfbVTi17OPjlNxJRkUy4rVeCOznX+Es7u9O/P1Qrysli6kB/sViST0X0YQgbMPJ+4nox
+         z6mgJeXuYVod+NINXSOGJQtoEfwsXGUhjo0MBKfuPCoRQeWhcPVmrnFxJM8yUxl1oXHk
+         v/qu7WgaUZ4PqtZO8ifbWsfDmVIYl6J/8WnZ4w/MsGtI5cTLAHpMFSzE21SiSvy5UX6b
+         GF9A==
+X-Gm-Message-State: APjAAAU0LmHxVjjXbNMNTtz4dtxcxgqOQogv6rIxIZBbm+qP8i3uDVJW
+        CvazobbEboIQVmb1JAn+9k3GtA==
+X-Google-Smtp-Source: APXvYqwKszuLsvTn/P8C2foIW/l93vtwMR+8x9dN4BqBvz0LjXnY6T5W9/poyEteamIBt2ikAk11+A==
+X-Received: by 2002:a63:c12:: with SMTP id b18mr11819556pgl.156.1576175121153;
+        Thu, 12 Dec 2019 10:25:21 -0800 (PST)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id i4sm6344645pjw.28.2019.12.12.10.25.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 12 Dec 2019 10:25:20 -0800 (PST)
+Date:   Thu, 12 Dec 2019 10:25:17 -0800
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Yuval Avnery <yuvalav@mellanox.com>
+Cc:     Jiri Pirko <jiri@mellanox.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Andy Gospodarek <andy@greyhouse.net>
+Subject: Re: [PATCH net-next] netdevsim: Add max_vfs to bus_dev
+Message-ID: <20191212102517.602a8a5d@cakuba.netronome.com>
+In-Reply-To: <AM6PR05MB51425B74E736C5D765356DC8C5550@AM6PR05MB5142.eurprd05.prod.outlook.com>
+References: <1576033133-18845-1-git-send-email-yuvalav@mellanox.com>
+        <20191211095854.6cd860f1@cakuba.netronome.com>
+        <AM6PR05MB514244DC6D25DDD433C0E238C55A0@AM6PR05MB5142.eurprd05.prod.outlook.com>
+        <20191211111537.416bf078@cakuba.netronome.com>
+        <AM6PR05MB5142CCAB9A06DAC199F7100CC55A0@AM6PR05MB5142.eurprd05.prod.outlook.com>
+        <20191211142401.742189cf@cakuba.netronome.com>
+        <AM6PR05MB51423D365FB5A8DB22B1DE62C55A0@AM6PR05MB5142.eurprd05.prod.outlook.com>
+        <20191211154952.50109494@cakuba.netronome.com>
+        <AM6PR05MB51425B74E736C5D765356DC8C5550@AM6PR05MB5142.eurprd05.prod.outlook.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191212152355.iiepmi4cjriddeon@sapphire.tkos.co.il>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Andrew, Marek,
-
-On Thu, Dec 12, 2019 at 05:23:57PM +0200, Baruch Siach wrote:
-> On Thu, Dec 12, 2019 at 04:13:55PM +0100, Andrew Lunn wrote:
-> > > I compared phylib to phylink calls to mv88e6xxx_port_setup_mac(). It turns out 
-> > > that the phylink adds mv88e6xxx_port_setup_mac() call for the cpu port (port 5 
-> > > in my case) with these parameters and call stack:
-> > > 
-> > > [    4.219148] mv88e6xxx_port_setup_mac: port: 5 link: 0 speed: -1 duplex: 255
-> > > [    4.226144] CPU: 2 PID: 21 Comm: kworker/2:0 Not tainted 5.3.15-00003-gb9bb09189d02-dirty #104
-> > > [    4.234795] Hardware name: SolidRun ClearFog GT 8K (DT)
-> > > [    4.240044] Workqueue: events deferred_probe_work_func
-> > > [    4.245205] Call trace:
-> > > [    4.247661]  dump_backtrace+0x0/0x128
-> > > [    4.251339]  show_stack+0x14/0x1c
-> > > [    4.254669]  dump_stack+0xa4/0xd0
-> > > [    4.257998]  mv88e6xxx_port_setup_mac+0x78/0x2a0
-> > > [    4.262635]  mv88e6xxx_mac_config+0xd0/0x154
-> > > [    4.266924]  dsa_port_phylink_mac_config+0x2c/0x38
-> > > [    4.271736]  phylink_mac_config+0xe0/0x1cc
-> > > [    4.275849]  phylink_start+0xc8/0x224
-> > > [    4.279527]  dsa_port_link_register_of+0xe8/0x1b0
-> > > [    4.284251]  dsa_register_switch+0x7fc/0x908
-> > > [    4.288539]  mv88e6xxx_probe+0x62c/0x66c
-> > > [    4.292478]  mdio_probe+0x30/0x5c
-> > > [    4.295806]  really_probe+0x1d0/0x280
-> > > [    4.299483]  driver_probe_device+0xd4/0xe4
-> > > [    4.303596]  __device_attach_driver+0x94/0xa0
-> > > [    4.307971]  bus_for_each_drv+0x94/0xb4
-> > > [    4.311823]  __device_attach+0xc0/0x12c
-> > > [    4.315674]  device_initial_probe+0x10/0x18
-> > > [    4.319875]  bus_probe_device+0x2c/0x8c
-> > > [    4.323726]  deferred_probe_work_func+0x84/0x98
-> > > [    4.328276]  process_one_work+0x19c/0x258
-> > > [    4.332303]  process_scheduled_works+0x3c/0x40
-> > > [    4.336765]  worker_thread+0x228/0x2f8
-> > > [    4.340530]  kthread+0x114/0x124
-> > > [    4.343771]  ret_from_fork+0x10/0x18
-> > > 
-> > > This hunk removed that mv88e6xxx_port_setup_mac() call, and fixed Tx for me on 
-> > > v5.3.15:
-> > > 
-> > > diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-> > > index d0a97eb73a37..f0457274b5a9 100644
-> > > --- a/drivers/net/dsa/mv88e6xxx/chip.c
-> > > +++ b/drivers/net/dsa/mv88e6xxx/chip.c
-> > > @@ -611,6 +611,9 @@ static void mv88e6xxx_mac_config(struct dsa_switch *ds, int port,
-> > >  	if ((mode == MLO_AN_PHY) && mv88e6xxx_phy_is_internal(ds, port))
-> > >  		return;
-> > >  
-> > > +	if (dsa_is_cpu_port(ds, port))
-> > > +		return;
-> > > +
-> > >  	if (mode == MLO_AN_FIXED) {
-> > >  		link = LINK_FORCED_UP;
-> > >  		speed = state->speed;
-> > > 
-> > > Is that the right solution?
+On Thu, 12 Dec 2019 05:11:12 +0000, Yuval Avnery wrote:
+> > > > Okay, please post v2 together with the tests. We don't accept
+> > > > netdevsim features without tests any more.  
+> > >
+> > > I think the only test I can currently write is the enable SR-IOV max_vfs  
+> > > enforcement. Because subdev is not in yet.
+> > > Will that be good enough?  
 > > 
-> > What needs testing is:
+> > It'd be good to test some netdev API rather than just the enforcement itself
+> > which is entirely in netdevsim, I think.
 > > 
-> >                                         port@0 {
-> >                                                 reg = <0>;
-> >                                                 label = "cpu";
-> >                                                 ethernet = <&fec1>;
-> > 
-> >                                                 fixed-link {
-> >                                                         speed = <100>;
-> >                                                         full-duplex;
-> >                                                 };
-> > 
-> > At some point, there is a call to configure the CPU port to 100Mbps,
-> > because the SoC Ethernet does not support 1G. We need to ensure this
-> > does not break with your change.
+> > So max_vfs enforcement plus checking that ip link lists the correct number of
+> > entries (and perhaps the entries are in reset state after
+> > enable) would do IMO.  
 > 
-> So maybe this:
+> Ok, but this is possible regardless of my patch (to enable vfs).
+
+I was being lenient :) Your patch is only really needed when the
+devlink API lands, since devlink will display all max VFs not enabled.
+
+> > My knee jerk reaction is that we should populate the values to those set via
+> > devlink upon SR-IOV enable, but then if user overwrites those values that's
+> > their problem.
+> > 
+> > Sort of mirror how VF MAC addrs work, just a level deeper. The VF defaults
+> > to the MAC addr provided by the PF after reset, but it can change it to
+> > something else (things may stop working because spoof check etc. will drop
+> > all its frames, but nothing stops the VF in legacy HW from writing its MAC
+> > addr register).
+> > 
+> > IOW the devlink addr is the default/provisioned addr, not necessarily the
+> > addr the PF has set _now_.
+> > 
+> > Other options I guess are (a) reject the changes of the address from the PF
+> > once devlink has set a value; (b) provide some device->control CPU notifier
+> > which can ack/reject a request from the PF to change devlink's value..?
+> > 
+> > You guys posted the devlink patches a while ago, what was your
+> > implementation doing?  
 > 
-> diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-> index d0a97eb73a37..84ca4f36a778 100644
-> --- a/drivers/net/dsa/mv88e6xxx/chip.c
-> +++ b/drivers/net/dsa/mv88e6xxx/chip.c
-> @@ -611,6 +611,9 @@ static void mv88e6xxx_mac_config(struct dsa_switch *ds, int port,
->  	if ((mode == MLO_AN_PHY) && mv88e6xxx_phy_is_internal(ds, port))
->  		return;
->  
-> +	if (mode != MLO_AN_FIXED && dsa_is_cpu_port(ds, port))
-> +		return;
-> +
->  	if (mode == MLO_AN_FIXED) {
->  		link = LINK_FORCED_UP;
->  		speed = state->speed;
+> devlink simply calls the driver with set or get.
+> It is up to the vendor driver/HW if to make this address persistent or not.
+> The address is not saved in the devlink layer.
 
-This is not enough to fix v5.4, though. Commit 7a3007d22e8dc ("net: dsa: 
-mv88e6xxx: fully support SERDES on Topaz family") breaks switch Tx on SolidRun 
-Clearfog GT-8K in much the same way. I could not easily revert 7a3007d22e8dc 
-on top of v5.4, but this is enough to make Tx work again with v5.4:
+It'd be preferable for the behaviour of the kernel API to not be vendor
+specific. That defeats the purpose of having an operating system as a
+HW abstraction layer. SR-IOV devices of today are so FW heavy we can
+make them behave whatever way we choose makes most sense.
 
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-index 7b5b73499e37..e7e6400a994e 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.c
-+++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -3191,7 +3191,6 @@ static const struct mv88e6xxx_ops mv88e6141_ops = {
- 	.port_disable_pri_override = mv88e6xxx_port_disable_pri_override,
- 	.port_link_state = mv88e6352_port_link_state,
- 	.port_get_cmode = mv88e6352_port_get_cmode,
--	.port_set_cmode = mv88e6341_port_set_cmode,
- 	.port_setup_message_port = mv88e6xxx_setup_message_port,
- 	.stats_snapshot = mv88e6390_g1_stats_snapshot,
- 	.stats_set_histogram = mv88e6095_g1_stats_set_histogram,
+> The MAC address in mlx5 is stored in the HW and
+> persistent (until PF reset) , whether it is set by devlink or ip link.
 
-Marek, do you have any idea how to properly fix this?
+Okay, let's see if I understand. The devlink and ip link interfaces
+basically do the same thing but one reaches from control CPU and the
+other one from the SR-IOV host? And on SR-IOV host reset the addresses
+go back to 00:00.. i.e. any?
 
-Thanks,
-baruch
+What happens if the SR-IOV host changes the MAC? Is it used by HW or is
+the MAC provisioned by the control CPU used for things like spoof check?
 
--- 
-     http://baruch.siach.name/blog/                  ~. .~   Tk Open Systems
-=}------------------------------------------------ooO--U--Ooo------------{=
-   - baruch@tkos.co.il - tel: +972.2.679.5364, http://www.tkos.co.il -
+Does the control CPU get a notification for SR-IOV host reset? In that
+case the control CPU driver could restore the MAC addr.
+
+> So from what I understand, we have the freedom to choose how netdevsim
+> behave in this case, which means non-persistent is ok.
+
+To be clear - by persistent I meant that it survives the SR-IOV host's
+resets, not necessarily written to NVRAM of any sort.
+
+I'd like to see netdevsim to also serve as sort of a reference model
+for device behaviour. Vendors who are not first to implement a feature
+always complain that there is no documentation on how things should
+work.
