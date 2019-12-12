@@ -2,100 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 85B6511D8A3
-	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 22:35:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D50711D8A5
+	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 22:35:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731116AbfLLVfp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Dec 2019 16:35:45 -0500
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:45896 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730902AbfLLVfp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Dec 2019 16:35:45 -0500
-Received: by mail-pf1-f193.google.com with SMTP id 2so37325pfg.12
-        for <netdev@vger.kernel.org>; Thu, 12 Dec 2019 13:35:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=tNyTr3xmeziTZe5n4V426N6wqESB9WWCV1aV/dRJK0E=;
-        b=jtYZI5YHv3VJtSWh3BQF6X+5cFIIVp8oegV5yzeVVYq++sEUsz1H0+OOU2aMxdo35K
-         icvN1Mx8S74gC+Jv9Cpi3n2lzwshgXabupjaIQ1GqJH6un9/tAG1dDQITbaMdL92vD6/
-         0HGzyGCzIcb2r1Yhin6S0JRI5Ao8HheBQf4JqqSdZrl9zrz5GhyKBQN3KEIKJzs4XD1c
-         fkOLmPgEwZL+Qxm4qHLBhNWwip1Rbvgwu7gciuaqcgd1HGnuVgHO1FGN6W5/SX1mLI2L
-         dx2aLxH5MYfzOUB/aiGvv+xBUJiwqM91/goa/N0fPSqTIR7CYV2rOgsdsvehkFmOqhjh
-         1WAw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=tNyTr3xmeziTZe5n4V426N6wqESB9WWCV1aV/dRJK0E=;
-        b=T8KfrpH6ERVOK1DT2R2QTkVZnyC8GgFLVWQq8AEK9+zETw4bZ5k8HkIpR6YkMwhoNe
-         lYLU+hBBXdepYzggAlThVuNhInkE9KL/FZXAabvDUSRtZ/WXSIqfxLEbM4Lq9PZRsXMS
-         2hFCUIlRqO4wZSgxMiGmnfm2a/52cKUAbdFFm9Z7OQ4aJct4B/p14nFkrhbg/tvQJsAi
-         KlgQtwYKFJRGrrJAUgo2Bf118t0hFDix2mE9s1TyCkC0MVCWveWIKMNiSjGygcoTr5dL
-         xGzM/MZo/VEbYll+JdhqR14M5cp/A8UZSHCh9NJSzvU0WjOC5mtZOIH4ldn5GhyivfB4
-         kclA==
-X-Gm-Message-State: APjAAAXWDgaZSUfT8FsFSSTq6hVA26n+caHIr3puGf8F+U7TLTK2CExW
-        loJORqlwfFwg2jZ//LyPtsMGDg==
-X-Google-Smtp-Source: APXvYqwSF48EtHnWteAR453fDew61L0gXn3g7cyIvgMYVcCUPbn3BCzIzqR1GWn2Dz9nkzIbBUUWEg==
-X-Received: by 2002:a63:c207:: with SMTP id b7mr13054407pgd.422.1576186544879;
-        Thu, 12 Dec 2019 13:35:44 -0800 (PST)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id s15sm7615906pgq.4.2019.12.12.13.35.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 Dec 2019 13:35:44 -0800 (PST)
-Date:   Thu, 12 Dec 2019 13:35:40 -0800
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Shannon Nelson <snelson@pensando.io>
-Cc:     Parav Pandit <parav@mellanox.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>
-Subject: Re: [PATCH v2 net-next 2/2] ionic: support sr-iov operations
-Message-ID: <20191212133540.3992ac0c@cakuba.netronome.com>
-In-Reply-To: <bd7553cd-8784-6dfd-0b51-552b49ca8eaa@pensando.io>
-References: <20191212003344.5571-1-snelson@pensando.io>
-        <20191212003344.5571-3-snelson@pensando.io>
-        <acfcf58b-93ff-fba5-5769-6bc29ed0d375@mellanox.com>
-        <20191212115228.2caf0c63@cakuba.netronome.com>
-        <bd7553cd-8784-6dfd-0b51-552b49ca8eaa@pensando.io>
-Organization: Netronome Systems, Ltd.
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+        id S1731101AbfLLVfx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Dec 2019 16:35:53 -0500
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:8958 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1731120AbfLLVfx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Dec 2019 16:35:53 -0500
+Received: from pps.filterd (m0098416.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xBCLYHtU009053
+        for <netdev@vger.kernel.org>; Thu, 12 Dec 2019 16:35:52 -0500
+Received: from e06smtp02.uk.ibm.com (e06smtp02.uk.ibm.com [195.75.94.98])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 2wusmjykx3-1
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Thu, 12 Dec 2019 16:35:52 -0500
+Received: from localhost
+        by e06smtp02.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
+        for <netdev@vger.kernel.org> from <kgraul@linux.ibm.com>;
+        Thu, 12 Dec 2019 21:35:50 -0000
+Received: from b06cxnps3074.portsmouth.uk.ibm.com (9.149.109.194)
+        by e06smtp02.uk.ibm.com (192.168.101.132) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
+        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
+        Thu, 12 Dec 2019 21:35:49 -0000
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
+        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id xBCLZl4I63897778
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 12 Dec 2019 21:35:47 GMT
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 6514BA4062;
+        Thu, 12 Dec 2019 21:35:47 +0000 (GMT)
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 1FC19A405B;
+        Thu, 12 Dec 2019 21:35:47 +0000 (GMT)
+Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
+        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Thu, 12 Dec 2019 21:35:47 +0000 (GMT)
+From:   Karsten Graul <kgraul@linux.ibm.com>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, linux-s390@vger.kernel.org,
+        heiko.carstens@de.ibm.com, raspl@linux.ibm.com,
+        ubraun@linux.ibm.com
+Subject: [PATCH net-next] net/smc: shorten lgr_cnt initialization
+Date:   Thu, 12 Dec 2019 22:35:41 +0100
+X-Mailer: git-send-email 2.17.1
+X-TM-AS-GCONF: 00
+x-cbid: 19121221-0008-0000-0000-0000034041C5
+X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
+x-cbparentid: 19121221-0009-0000-0000-00004A6045C3
+Message-Id: <20191212213541.10485-1-kgraul@linux.ibm.com>
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
+ definitions=2019-12-12_07:2019-12-12,2019-12-12 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 suspectscore=3
+ spamscore=0 adultscore=0 mlxscore=0 mlxlogscore=999 priorityscore=1501
+ lowpriorityscore=0 bulkscore=0 impostorscore=0 malwarescore=0
+ clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-1910280000 definitions=main-1912120165
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 12 Dec 2019 11:59:50 -0800, Shannon Nelson wrote:
-> On 12/12/19 11:52 AM, Jakub Kicinski wrote:
-> > On Thu, 12 Dec 2019 06:53:42 +0000, Parav Pandit wrote: =20
-> >>>   static void ionic_remove(struct pci_dev *pdev)
-> >>>   {
-> >>>   	struct ionic *ionic =3D pci_get_drvdata(pdev);
-> >>> @@ -257,6 +338,9 @@ static void ionic_remove(struct pci_dev *pdev)
-> >>>   	if (!ionic)
-> >>>   		return;
-> >>>  =20
-> >>> +	if (pci_num_vf(pdev))
-> >>> +		ionic_sriov_configure(pdev, 0);
-> >>> + =20
-> >> Usually sriov is left enabled while removing PF.
-> >> It is not the role of the pci PF removal to disable it sriov. =20
-> > I don't think that's true. I consider igb and ixgbe to set the standard
-> > for legacy SR-IOV handling since they were one of the first (the first?)
-> > and Alex Duyck wrote them.
-> >
-> > mlx4, bnxt and nfp all disable SR-IOV on remove. =20
->=20
-> This was my understanding as well, but now I can see that ixgbe and i40e=
-=20
-> are both checking for existing VFs in probe and setting up to use them,=20
-> as well as the newer ice driver.=C2=A0 I found this today by looking for=
-=20
-> where they use pci_num_vf().
+From: Ursula Braun <ubraun@linux.ibm.com>
 
-Right, if the VFs very already enabled on probe they are set up.
+Save a line of code by making use of ATOMIC_INIT() for lgr_cnt.
 
-It's a bit of a asymmetric design, in case some other driver left
-SR-IOV on, I guess.
+Suggested-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Ursula Braun <ubraun@linux.ibm.com>
+Signed-off-by: Karsten Graul <kgraul@linux.ibm.com>
+---
+ net/smc/smc_core.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/net/smc/smc_core.c b/net/smc/smc_core.c
+index bb92c7c6214c..c16b8d3e200b 100644
+--- a/net/smc/smc_core.c
++++ b/net/smc/smc_core.c
+@@ -41,7 +41,7 @@ static struct smc_lgr_list smc_lgr_list = {	/* established link groups */
+ 	.num = 0,
+ };
+ 
+-static atomic_t lgr_cnt;		/* number of existing link groups */
++static atomic_t lgr_cnt = ATOMIC_INIT(0); /* number of existing link groups */
+ static DECLARE_WAIT_QUEUE_HEAD(lgrs_deleted);
+ 
+ static void smc_buf_free(struct smc_link_group *lgr, bool is_rmb,
+@@ -1297,7 +1297,6 @@ static struct notifier_block smc_reboot_notifier = {
+ 
+ int __init smc_core_init(void)
+ {
+-	atomic_set(&lgr_cnt, 0);
+ 	return register_reboot_notifier(&smc_reboot_notifier);
+ }
+ 
+-- 
+2.21.0
+
