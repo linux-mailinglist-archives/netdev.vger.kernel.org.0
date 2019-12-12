@@ -2,334 +2,293 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 52F4111C25C
-	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 02:40:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 126D411C264
+	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 02:41:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727538AbfLLBka convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 11 Dec 2019 20:40:30 -0500
-Received: from mga14.intel.com ([192.55.52.115]:7916 "EHLO mga14.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727297AbfLLBk3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 11 Dec 2019 20:40:29 -0500
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 11 Dec 2019 17:40:29 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.69,303,1571727600"; 
-   d="scan'208";a="363799229"
-Received: from fmsmsx103.amr.corp.intel.com ([10.18.124.201])
-  by orsmga004.jf.intel.com with ESMTP; 11 Dec 2019 17:40:28 -0800
-Received: from fmsmsx162.amr.corp.intel.com (10.18.125.71) by
- FMSMSX103.amr.corp.intel.com (10.18.124.201) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Wed, 11 Dec 2019 17:40:28 -0800
-Received: from fmsmsx124.amr.corp.intel.com ([169.254.8.10]) by
- fmsmsx162.amr.corp.intel.com ([169.254.5.87]) with mapi id 14.03.0439.000;
- Wed, 11 Dec 2019 17:40:28 -0800
-From:   "Saleem, Shiraz" <shiraz.saleem@intel.com>
-To:     Jason Gunthorpe <jgg@ziepe.ca>,
-        "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>
-CC:     "davem@davemloft.net" <davem@davemloft.net>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "Ismail, Mustafa" <mustafa.ismail@intel.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "nhorman@redhat.com" <nhorman@redhat.com>,
-        "sassmann@redhat.com" <sassmann@redhat.com>,
-        "parav@mellanox.com" <parav@mellanox.com>
-Subject: RE: [PATCH v3 05/20] RDMA/irdma: Add driver framework definitions
-Thread-Topic: [PATCH v3 05/20] RDMA/irdma: Add driver framework definitions
-Thread-Index: AQHVruL5SWTxLWjtI0m5sVTIVSLbtKe0QawAgAEkwDA=
-Date:   Thu, 12 Dec 2019 01:40:27 +0000
-Message-ID: <9DD61F30A802C4429A01CA4200E302A7B6B8FBCA@fmsmsx124.amr.corp.intel.com>
-References: <20191209224935.1780117-1-jeffrey.t.kirsher@intel.com>
- <20191209224935.1780117-6-jeffrey.t.kirsher@intel.com>
- <20191210190438.GF46@ziepe.ca>
-In-Reply-To: <20191210190438.GF46@ziepe.ca>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ctpclassification: CTP_NT
-x-titus-metadata-40: eyJDYXRlZ29yeUxhYmVscyI6IiIsIk1ldGFkYXRhIjp7Im5zIjoiaHR0cDpcL1wvd3d3LnRpdHVzLmNvbVwvbnNcL0ludGVsMyIsImlkIjoiYjc4MjA2ZTItYjhjMC00ZDUzLTg3ZTEtMTFiMjRjZDhkYzM2IiwicHJvcHMiOlt7Im4iOiJDVFBDbGFzc2lmaWNhdGlvbiIsInZhbHMiOlt7InZhbHVlIjoiQ1RQX05UIn1dfV19LCJTdWJqZWN0TGFiZWxzIjpbXSwiVE1DVmVyc2lvbiI6IjE3LjEwLjE4MDQuNDkiLCJUcnVzdGVkTGFiZWxIYXNoIjoiUGFLTm04Mm9qeUpnSkFvazFpNHo3eUxsUmcyYVBJdXB2MVBDeElTTTY1VlFPUnRZRTN4ZUlzanhcL2VFY3JnYTcifQ==
-dlp-product: dlpe-windows
-dlp-version: 11.2.0.6
-dlp-reaction: no-action
-x-originating-ip: [10.1.200.106]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        id S1727574AbfLLBlN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Dec 2019 20:41:13 -0500
+Received: from szxga07-in.huawei.com ([45.249.212.35]:33014 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727297AbfLLBlN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 11 Dec 2019 20:41:13 -0500
+Received: from DGGEMS414-HUB.china.huawei.com (unknown [172.30.72.60])
+        by Forcepoint Email with ESMTP id 1BFB97CF2D5011ECE2A0;
+        Thu, 12 Dec 2019 09:41:11 +0800 (CST)
+Received: from [127.0.0.1] (10.74.221.148) by DGGEMS414-HUB.china.huawei.com
+ (10.3.19.214) with Microsoft SMTP Server id 14.3.439.0; Thu, 12 Dec 2019
+ 09:41:04 +0800
+Subject: Re: [PATCH v4] lib: optimize cpumask_local_spread()
+To:     Michal Hocko <mhocko@kernel.org>
+References: <1576051437-23230-1-git-send-email-zhangshaokun@hisilicon.com>
+ <20191211090823.GD14655@dhcp22.suse.cz>
+CC:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        yuqi jin <jinyuqi@huawei.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "Juergen Gross" <jgross@suse.com>,
+        Paul Burton <paul.burton@mips.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Mike Rapoport <rppt@linux.ibm.com>,
+        Anshuman Khandual <anshuman.khandual@arm.com>,
+        Rusty Russell <rusty@rustcorp.com.au>
+From:   Shaokun Zhang <zhangshaokun@hisilicon.com>
+Message-ID: <9c3b6b23-e352-43b8-ea4a-041baf62845b@hisilicon.com>
+Date:   Thu, 12 Dec 2019 09:41:03 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:45.0) Gecko/20100101
+ Thunderbird/45.1.1
 MIME-Version: 1.0
+In-Reply-To: <20191211090823.GD14655@dhcp22.suse.cz>
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.74.221.148]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Subject: Re: [PATCH v3 05/20] RDMA/irdma: Add driver framework definitions
-> 
-> On Mon, Dec 09, 2019 at 02:49:20PM -0800, Jeff Kirsher wrote:
-> > +{
-> > +	struct i40e_info *ldev = (struct i40e_info *)rf->ldev.if_ldev;
-> 
-> Why are there so many casts in this file? Is this really container of?
+Hi Michal,
 
-The casting here is redundant. Will clean up.
++Cc: Rusty Russell who optimised this function in commit
+f36963c9d3f6 ("cpumask_set_cpu_local_first => cpumask_local_spread, lament")
 
+On 2019/12/11 17:08, Michal Hocko wrote:
+> On Wed 11-12-19 16:03:57, Shaokun Zhang wrote:
+>> From: yuqi jin <jinyuqi@huawei.com>
+>>
+>> In multi-processor and NUMA system, I/O driver will find cpu cores that
+>> which shall be bound IRQ. When cpu cores in the local numa have been
+>> used, it is better to find the node closest to the local numa node for
+>> performance, instead of choosing any online cpu immediately.
+>>
+>> On Huawei Kunpeng 920 server, there are 4 NUMA node(0 - 3) in the 2-cpu
+>> system(0 - 1). The topology of this server is followed:
+>> available: 4 nodes (0-3)
+>> node 0 cpus: 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23
+>> node 0 size: 63379 MB
+>> node 0 free: 61899 MB
+>> node 1 cpus: 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47
+>> node 1 size: 64509 MB
+>> node 1 free: 63942 MB
+>> node 2 cpus: 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71
+>> node 2 size: 64509 MB
+>> node 2 free: 63056 MB
+>> node 3 cpus: 72 73 74 75 76 77 78 79 80 81 82 83 84 85 86 87 88 89 90 91 92 93 94 95
+>> node 3 size: 63997 MB
+>> node 3 free: 63420 MB
+>> node distances:
+>> node   0   1   2   3
+>>   0:  10  16  32  33
+>>   1:  16  10  25  32
+>>   2:  32  25  10  16
+>>   3:  33  32  16  10
+>>
+>> We perform PS (parameter server) business test, the behavior of the 
+>> service is that the client initiates a request through the network card,
+>> the server responds to the request after calculation. When two PS
+>> processes run on node2 and node3 separately and the network card is
+>> located on 'node2' which is in cpu1, the performance of node2 (26W QPS)
+>> and node3 (22W QPS) is different.
+>> It is better that the NIC queues are bound to the cpu1 cores in turn,
+>> then XPS will also be properly initialized, while cpumask_local_spread
+>> only considers the local node. When the number of NIC queues exceeds the
+>> number of cores in the local node, it returns to the online core directly.
+>> So when PS runs on node3 sending a calculated request, the performance is
+>> not as good as the node2.
+>> The IRQ from 369-392 will be bound from NUMA node0 to NUMA node3 with this
+>> patch, before the patch:
+>> Euler:/sys/bus/pci # cat /proc/irq/369/smp_affinity_list
+>> 0
+>> Euler:/sys/bus/pci # cat /proc/irq/370/smp_affinity_list
+>> 1
+>> ...
+>> Euler:/sys/bus/pci # cat /proc/irq/391/smp_affinity_list
+>> 22
+>> Euler:/sys/bus/pci # cat /proc/irq/392/smp_affinity_list
+>> 23
+>> After the patch:
+>> Euler:/sys/bus/pci # cat /proc/irq/369/smp_affinity_list
+>> 72
+>> Euler:/sys/bus/pci # cat /proc/irq/370/smp_affinity_list
+>> 73
+>> ...
+>> Euler:/sys/bus/pci # cat /proc/irq/391/smp_affinity_list
+>> 94
+>> Euler:/sys/bus/pci # cat /proc/irq/392/smp_affinity_list
+>> 95
+>> So the performance of the node3 is the same as node2 that is 26W QPS when
+>> the network card is still in 'node2' with the patch.
+>>
+>> It is considered that the NIC and other I/O devices shall initialize the
+>> interrupt binding, if the cores of the local node are used up, it is
+>> reasonable to return the node closest to it. Let's optimize it and find
+>> the nearest node through NUMA distance for the non-local NUMA nodes.
 > 
-> > +	hdl = kzalloc((sizeof(*hdl) + sizeof(*iwdev)), GFP_KERNEL);
-> > +	if (!hdl)
-> > +		return -ENOMEM;
-> > +
-> > +	iwdev = (struct irdma_device *)((u8 *)hdl + sizeof(*hdl));
-> 
-> Yikes, use structs and container of for things like this please.
+> As I've said/asked earlier. I am missing some background how this is
+> affecting other existing users. Is this just that nobody has noticed the
 
-iwdev object alloc should be split here from hdl. Will fix.
+I appreciate yours question, but I can't answer 'YES' or 'NO' to it. Since
+I encountered this issue, I'm glad to discuss this in the community. If we
+can solve it, it can give gain for people who maybe spend time to spot it
+again.
 
-> 
-> > +	iwdev->param_wq = alloc_ordered_workqueue("l2params",
-> WQ_MEM_RECLAIM);
-> > +	if (!iwdev->param_wq)
-> > +		goto error;
-> 
-> Leon usually asks why another work queue at this point, at least have a comment
-> justifying why. Shouldn't it have a better name?
->
+> suboptimal cpu usage or is your workload very special in that regards.
 
-Ugh! The l2 param changes is made synchronous based on
-prior feedback from Leon. This wq should be removed.
+What I have done is just that choosing cpu core from the nearest non-local
+NUMA node, not the random online cpu core when the local cpu core is used
+up. It's no matter what the workload is, Why I mention the PS in the patch?
+Because this issue is triggered by it.
 
-> > +/* client interface functions */
-> > +static const struct i40e_client_ops i40e_ops = {
-> > +	.open = i40iw_open,
-> > +	.close = i40iw_close,
-> > +	.l2_param_change = i40iw_l2param_change };
-> 
-> Wasn't the whole point of virtual bus to avoid stuff like this? Why isn't a client the
-> virtual bus object and this information extended into the driver ops?
-
-These are the private interface calls between lan and rdma.
-These ops are implemented by RDMA driver but invoked by
-netdev driver.
-
-> 
-> > +int i40iw_probe(struct virtbus_device *vdev) {
-> > +	struct i40e_info *ldev =
-> > +		container_of(vdev, struct i40e_info, vdev);
-> > +
-> > +	if (!ldev)
-> > +		return -EINVAL;
-> 
-> eh? how can that happen
-> 
-> > +
-> > +	if (!ldev->ops->client_device_register)
-> > +		return -EINVAL;
-> 
-> How can this happen too? If it doesn't support register then don't create a virtual
-> device, surely?
-> 
-> I've really developed a strong distate to these random non-functional 'ifs' that
-> seem to get into things.
-> 
-> If it is functional then fine, but if it is an assertion write it as if (WARN_ON()) to
-> make it clear to readers it can't happen by design
->
-
-Yeah. These cant happen by design and should be treated as assertion. Will fix.
-
-> 
-> > +/**
-> > + * irdma_lan_register_qset - Register qset with LAN driver
-> > + * @vsi: vsi structure
-> > + * @tc_node: Traffic class node
-> > + */
-> > +static enum irdma_status_code irdma_lan_register_qset(struct irdma_sc_vsi
-> *vsi,
-> > +						      struct irdma_ws_node
-> *tc_node) {
-> > +	struct irdma_device *iwdev = vsi->back_vsi;
-> > +	struct iidc_peer_dev *ldev = (struct iidc_peer_dev
-> > +*)iwdev->ldev->if_ldev;
-> 
-> Again with the casts.. Please try to clean up the casting in this driver
->
-
-Ditto as my previous comment.
-
-> > +	struct iidc_res rdma_qset_res = {};
-> > +	int ret;
-> > +
-> > +	if (ldev->ops->alloc_res) {
-> 
-> Quite an abnormal coding style to put the entire function under an if, just if() return
-> 0 ? Many examples of this
-
-Will fix.
-> 
-> > +/**
-> > + * irdma_log_invalid_mtu: log warning on invalid mtu
-> > + * @mtu: maximum tranmission unit
-> > + */
-> > +static void irdma_log_invalid_mtu(u16 mtu) {
-> > +	if (mtu < IRDMA_MIN_MTU_IPV4)
-> > +		pr_warn("Current MTU setting of %d is too low for RDMA traffic.
-> Minimum MTU is 576 for IPv4 and 1280 for IPv6\n",
-> > +			mtu);
-> > +	else if (mtu < IRDMA_MIN_MTU_IPV6)
-> > +		pr_warn("Current MTU setting of %d is too low for IPv6 RDMA
-> traffic, the minimum is 1280\n",
-> > +			mtu);
-> > +}
-> 
-> Don't use pr_* stuff in drivers that have a struct device.
->
-Will fix.
-
-> > +/**
-> > + * irdma_event_handler - Called by LAN driver to notify events
-> > + * @ldev: Peer device structure
-> > + * @event: event from LAN driver
-> > + */
-> > +static void irdma_event_handler(struct iidc_peer_dev *ldev,
-> > +				struct iidc_event *event)
-> > +{
-> > +	struct irdma_l2params l2params = {};
-> > +	struct irdma_device *iwdev;
-> > +	int i;
-> > +
-> > +	iwdev = irdma_get_device(ldev->netdev);
-> > +	if (!iwdev)
-> > +		return;
-> > +
-> > +	if (test_bit(IIDC_EVENT_LINK_CHANGE, event->type)) {
-> 
-> Is this atomic? Why using test_bit?
-No its not. What do you suggest we use?
+Thanks,
+Shaokun
 
 > 
-> > +		ldev->ops->reg_for_notification(ldev, &events);
-> > +	dev_info(rfdev_to_dev(dev), "IRDMA VSI Open Successful");
+>> Cc: Andrew Morton <akpm@linux-foundation.org>
+>> Cc: Juergen Gross <jgross@suse.com>
+>> Cc: Paul Burton <paul.burton@mips.com>
+>> Cc: Michal Hocko <mhocko@suse.com>
+>> Cc: Michael Ellerman <mpe@ellerman.id.au>
+>> Cc: Mike Rapoport <rppt@linux.ibm.com>
+>> Cc: Anshuman Khandual <anshuman.khandual@arm.com>
+>> Signed-off-by: yuqi jin <jinyuqi@huawei.com>
+>> Signed-off-by: Shaokun Zhang <zhangshaokun@hisilicon.com>
+>> ---
+>> ChangeLog from v3:
+>>     1. Make spread_lock local to cpumask_local_spread();
+>>     2. Add more descriptions on the affinities change in log;
+>>
+>> ChangeLog from v2:
+>>     1. Change the variables as static and use spinlock to protect;
+>>     2. Give more explantation on test and performance;
+>>
+>>  lib/cpumask.c | 102 +++++++++++++++++++++++++++++++++++++++++++++++++++-------
+>>  1 file changed, 90 insertions(+), 12 deletions(-)
+>>
+>> diff --git a/lib/cpumask.c b/lib/cpumask.c
+>> index 0cb672eb107c..f7394ba36116 100644
+>> --- a/lib/cpumask.c
+>> +++ b/lib/cpumask.c
+>> @@ -6,6 +6,7 @@
+>>  #include <linux/export.h>
+>>  #include <linux/memblock.h>
+>>  #include <linux/numa.h>
+>> +#include <linux/spinlock.h>
+>>  
+>>  /**
+>>   * cpumask_next - get the next cpu in a cpumask
+>> @@ -192,18 +193,39 @@ void __init free_bootmem_cpumask_var(cpumask_var_t mask)
+>>  }
+>>  #endif
+>>  
+>> -/**
+>> - * cpumask_local_spread - select the i'th cpu with local numa cpu's first
+>> - * @i: index number
+>> - * @node: local numa_node
+>> - *
+>> - * This function selects an online CPU according to a numa aware policy;
+>> - * local cpus are returned first, followed by non-local ones, then it
+>> - * wraps around.
+>> - *
+>> - * It's not very efficient, but useful for setup.
+>> - */
+>> -unsigned int cpumask_local_spread(unsigned int i, int node)
+>> +static void calc_node_distance(int *node_dist, int node)
+>> +{
+>> +	int i;
+>> +
+>> +	for (i = 0; i < nr_node_ids; i++)
+>> +		node_dist[i] = node_distance(node, i);
+>> +}
+>> +
+>> +static int find_nearest_node(int *node_dist, bool *used)
+>> +{
+>> +	int i, min_dist = node_dist[0], node_id = -1;
+>> +
+>> +	/* Choose the first unused node to compare */
+>> +	for (i = 0; i < nr_node_ids; i++) {
+>> +		if (used[i] == 0) {
+>> +			min_dist = node_dist[i];
+>> +			node_id = i;
+>> +			break;
+>> +		}
+>> +	}
+>> +
+>> +	/* Compare and return the nearest node */
+>> +	for (i = 0; i < nr_node_ids; i++) {
+>> +		if (node_dist[i] < min_dist && used[i] == 0) {
+>> +			min_dist = node_dist[i];
+>> +			node_id = i;
+>> +		}
+>> +	}
+>> +
+>> +	return node_id;
+>> +}
+>> +
+>> +static unsigned int __cpumask_local_spread(unsigned int i, int node)
+>>  {
+>>  	int cpu;
+>>  
+>> @@ -231,4 +253,60 @@ unsigned int cpumask_local_spread(unsigned int i, int node)
+>>  	}
+>>  	BUG();
+>>  }
+>> +
+>> +/**
+>> + * cpumask_local_spread - select the i'th cpu with local numa cpu's first
+>> + * @i: index number
+>> + * @node: local numa_node
+>> + *
+>> + * This function selects an online CPU according to a numa aware policy;
+>> + * local cpus are returned first, followed by the nearest non-local ones,
+>> + * then it wraps around.
+>> + *
+>> + * It's not very efficient, but useful for setup.
+>> + */
+>> +unsigned int cpumask_local_spread(unsigned int i, int node)
+>> +{
+>> +	static DEFINE_SPINLOCK(spread_lock);
+>> +	static int node_dist[MAX_NUMNODES];
+>> +	static bool used[MAX_NUMNODES];
+>> +	unsigned long flags;
+>> +	int cpu, j, id;
+>> +
+>> +	/* Wrap: we always want a cpu. */
+>> +	i %= num_online_cpus();
+>> +
+>> +	if (node == NUMA_NO_NODE) {
+>> +		for_each_cpu(cpu, cpu_online_mask)
+>> +			if (i-- == 0)
+>> +				return cpu;
+>> +	} else {
+>> +		if (nr_node_ids > MAX_NUMNODES)
+>> +			return __cpumask_local_spread(i, node);
+>> +
+>> +		spin_lock_irqsave(&spread_lock, flags);
+>> +		memset(used, 0, nr_node_ids * sizeof(bool));
+>> +		calc_node_distance(node_dist, node);
+>> +		for (j = 0; j < nr_node_ids; j++) {
+>> +			id = find_nearest_node(node_dist, used);
+>> +			if (id < 0)
+>> +				break;
+>> +
+>> +			for_each_cpu_and(cpu, cpumask_of_node(id),
+>> +					 cpu_online_mask)
+>> +				if (i-- == 0) {
+>> +					spin_unlock_irqrestore(&spread_lock,
+>> +							       flags);
+>> +					return cpu;
+>> +				}
+>> +			used[id] = 1;
+>> +		}
+>> +		spin_unlock_irqrestore(&spread_lock, flags);
+>> +
+>> +		for_each_cpu(cpu, cpu_online_mask)
+>> +			if (i-- == 0)
+>> +				return cpu;
+>> +	}
+>> +	BUG();
+>> +}
+>>  EXPORT_SYMBOL(cpumask_local_spread);
+>> -- 
+>> 2.7.4
 > 
-> Lets not do this kind of logging..
->
 
-There is some dev_info which should be cleaned up to dev_dbg.
-But logging this info is useful to know that this functions VSI (and associated ibdev)
-is up and reading for RDMA traffic.
-Is info logging to be avoided altogether?
-
-> > +static void irdma_close(struct iidc_peer_dev *ldev, enum
-> > +iidc_close_reason reason) {
-> > +	struct irdma_device *iwdev;
-> > +	struct irdma_pci_f *rf;
-> > +
-> > +	iwdev = irdma_get_device(ldev->netdev);
-> > +	if (!iwdev)
-> > +		return;
-> > +
-> > +	irdma_put_device(iwdev);
-> > +	rf = iwdev->rf;
-> > +	if (reason == IIDC_REASON_GLOBR_REQ || reason ==
-> IIDC_REASON_CORER_REQ ||
-> > +	    reason == IIDC_REASON_PFR_REQ || rf->reset) {
-> > +		iwdev->reset = true;
-> > +		rf->reset = true;
-> > +	}
-> > +
-> > +	if (iwdev->init_state >= CEQ0_CREATED)
-> > +		irdma_deinit_rt_device(iwdev);
-> > +
-> > +	kfree(iwdev);
-> 
-> Mixing put and kfree? So confusing. Why are there so many structs and so much
-> indirection? Very hard to understand if this is right or not.
-
-This does look weird. I think the irdma_get_device() was here
-just to get to iwdev. And put_device is releasing the refcnt immediately.
-Since we are in a VSI close(), we should not need to take refcnt on ibdev
-and just deregister it. Will fix this.
-
-> 
-> > new file mode 100644
-> > index 000000000000..b418e76a3302
-> > +++ b/drivers/infiniband/hw/irdma/main.c
-> > @@ -0,0 +1,630 @@
-> > +// SPDX-License-Identifier: GPL-2.0 or Linux-OpenIB
-> > +/* Copyright (c) 2015 - 2019 Intel Corporation */ #include "main.h"
-> > +
-> > +/* Legacy i40iw module parameters */
-> > +static int resource_profile;
-> > +module_param(resource_profile, int, 0644);
-> > +MODULE_PARM_DESC(resource_profile, "Resource Profile: 0=PF only,
-> > +1=Weighted VF, 2=Even Distribution");
-> > +
-> > +static int max_rdma_vfs = 32;
-> > +module_param(max_rdma_vfs, int, 0644);
-> MODULE_PARM_DESC(max_rdma_vfs,
-> > +"Maximum VF count: 0-32 32=default");
-> > +
-> > +static int mpa_version = 2;
-> > +module_param(mpa_version, int, 0644); MODULE_PARM_DESC(mpa_version,
-> > +"MPA version: deprecated parameter");
-> > +
-> > +static int push_mode;
-> > +module_param(push_mode, int, 0644);
-> > +MODULE_PARM_DESC(push_mode, "Low latency mode: deprecated
-> > +parameter");
-> > +
-> > +static int debug;
-> > +module_param(debug, int, 0644);
-> > +MODULE_PARM_DESC(debug, "debug flags: deprecated parameter");
-> 
-> Generally no to module parameters
-
-Agree. But these are module params that existed in i40iw.
-And irdma replaces i40iw and has a module alias
-for it.
-
-> 
-> > +static struct workqueue_struct *irdma_wq;
-> 
-> Another wq already?
-This wq is used for deferred handling of irdma service tasks.
-Such as rebuild/recovery after reset.
-
-> 
-> > +struct irdma_pci_f {
-> > +	bool ooo;
-> > +	bool reset;
-> > +	bool rsrc_created;
-> > +	bool stop_cqp_thread;
-> > +	bool msix_shared;
-> 
-> Linus has spoken poorly about lots of bools in a struct. Can this be a bitfield?
-Possibly. Yes. Will look into it.
-
-> 
-> > +/***********************************************************/
-> > +/**
-> > + * to_iwdev - get device
-> > + * @ibdev: ib device
-> > + **/
-> 
-> Maybe some of these comment blocks are not so valuable :\
-
-Will fix.
-
-> 
-> > +	spin_lock_irqsave(&rf->rsrc_lock, flags);
-> > +
-> > +	bit_is_set = test_bit(rsrc_num, rsrc_array);
-> 
-> Again, are these atomics? Looks like no, why test_bit?
-
-This helper is not used and to be removed.
-
-But, yes integrity needs to be assured while read/modify rsrc_array. 
-irdma_alloc_rsrc() and irdma_free_rsrc() probably warrant
-using the non-atomic ver. of set/clear bit since its inside
-a lock.
-
-Thanks for the feedback!
-
-Shiraz
