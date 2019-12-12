@@ -2,187 +2,218 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 661D311D805
-	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 21:45:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EA6DA11D804
+	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 21:45:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730872AbfLLUoq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Dec 2019 15:44:46 -0500
-Received: from mx0a-00190b01.pphosted.com ([67.231.149.131]:25606 "EHLO
-        mx0a-00190b01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1730834AbfLLUoq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Dec 2019 15:44:46 -0500
-Received: from pps.filterd (m0050093.ppops.net [127.0.0.1])
-        by m0050093.ppops.net-00190b01. (8.16.0.42/8.16.0.42) with SMTP id xBCKOJqx019022;
-        Thu, 12 Dec 2019 20:44:20 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=akamai.com; h=subject : to : cc :
- references : from : message-id : date : mime-version : in-reply-to :
- content-type : content-transfer-encoding; s=jan2016.eng;
- bh=XzP3tuBKBhwBopP1mUtiC7Fjv89V2NWKK1/4jJau3uY=;
- b=KUzAHKFdj6n4b7Ptr8t7EZBHH9IINFeIdHRpqNctd5xBXds2oybvx/h2487fBxKfYRbD
- NlCxiBeVyYCUCxCiz0dmAl7pRhX+Pf6NLXI8gKmZvkc1oBbD829UR0B60f1KI6EHztkK
- 2T5V1UgVe2rFIWD5SU+XsDUtQE9wQ8Ry0VoIHKalmUgeyJk1YwRaC0rBBRUuTw0t3/V+
- +P3WYkRk4uGNCFnHkNhpCLKqZy2pAX1HpnJyq0XMjcYI5x++2v/R9tVRU8PrqbSZTdVa
- JANwyAVugGuW0HOlPneZJ4EgbX9HoCvY95q7FpCI/B08lNVZ341IaAZfeMpCM+jtZXsc Bg== 
-Received: from prod-mail-ppoint1 (prod-mail-ppoint1.akamai.com [184.51.33.18] (may be forged))
-        by m0050093.ppops.net-00190b01. with ESMTP id 2wr47ur0n3-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 12 Dec 2019 20:44:20 +0000
-Received: from pps.filterd (prod-mail-ppoint1.akamai.com [127.0.0.1])
-        by prod-mail-ppoint1.akamai.com (8.16.0.27/8.16.0.27) with SMTP id xBCKfKxr004238;
-        Thu, 12 Dec 2019 15:44:18 -0500
-Received: from prod-mail-relay11.akamai.com ([172.27.118.250])
-        by prod-mail-ppoint1.akamai.com with ESMTP id 2wr8a1d04y-1;
-        Thu, 12 Dec 2019 15:44:18 -0500
-Received: from [0.0.0.0] (prod-ssh-gw02.sanmateo.corp.akamai.com [172.22.187.166])
-        by prod-mail-relay11.akamai.com (Postfix) with ESMTP id DF4451FC6A;
-        Thu, 12 Dec 2019 20:44:17 +0000 (GMT)
-Subject: Re: crash in __xfrm_state_lookup on 4.19 LTS
-To:     Steffen Klassert <steffen.klassert@secunet.com>
-Cc:     herbert@gondor.apana.org.au, David Miller <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>
-References: <0b3ab776-2b8b-1725-d36e-70af66c138da@akamai.com>
- <20191212132132.GL8621@gauss3.secunet.de>
-From:   Josh Hunt <johunt@akamai.com>
-Message-ID: <c328f835-6eb7-3ab9-1f7c-dc565634f8bd@akamai.com>
-Date:   Thu, 12 Dec 2019 12:44:17 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.1
-MIME-Version: 1.0
-In-Reply-To: <20191212132132.GL8621@gauss3.secunet.de>
-Content-Type: text/plain; charset=utf-8; format=flowed
+        id S1730851AbfLLUoi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Dec 2019 15:44:38 -0500
+Received: from mail-eopbgr80057.outbound.protection.outlook.com ([40.107.8.57]:57776
+        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1730834AbfLLUoi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 12 Dec 2019 15:44:38 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=fm9ULOjILEB9u2KdCtpgovt6m9nG7dui0ksgCPHRl3kVS8Co1eQM8a5A/fmzTuxrFruAvtMMHS1usAdOcNVCQNKa38GFVX3f2P/WTrneN0tO0IgepIleIngikVElZ5vZkCccqHFQv/nZk4aG2y5AhkjdnCO0FI8LPi6PF8If74xkSwSTpviidOFqDxyg6Z4kn1WDWYztS8AnJ06MGt/cA1evLYs0AMz1glcKTz7Vx3BxrLKR9vitEv71ktmmfomjHR0u86T04glbSxDj5MXXZVDIsno2b9eNoIdRi+elsMpRvuRWGfHJvORH/Z7VHYgFOWphA8qBbLPGQKRBBpMlOw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=F9HWt9uVFJSUCUB6qFlY484epjm1V3kcUmgU812hKhI=;
+ b=gHzWvZHuoOm/vAa+mBvVPfFGBnyYAcCM0k+KemOEXJ/1qmmGXHu2GzYwzseYg6e0a9JeAedhc1WjzqgF7YcMvkOc8BLLArUdLvxFKioWKjnBsZkpCw6F+gEzhKlOscfN28X+kTmRAOe2oBcTmaNnNc6Cv7xBjRZL9Dv35783jUBIiFrizDXiqGoUYaeei7S9xkflRBDpeEV8dwfHfoaWySbt3PfWY6pObdQy0Tq4jzrrhAHWMs1+mj4o5WvXOHLTu+u1burz+LXrtw/QXmfBwEhNBW6jCr3vw6VgvSrnzy07Rsz8QXfTtk/gWoiHsWwdwGW4pT7fHkOCuFHG/RvrTA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=F9HWt9uVFJSUCUB6qFlY484epjm1V3kcUmgU812hKhI=;
+ b=QJE5hItilxgDLZeAakXn9kMje+bHNNhwgIOe0LHzJhCARo5gzMnwey/mwHsh/ehS1X1PH9CFUAyZM9Pq0HJT8npZ8NsNYfWUc9jnAjrvj5nKQktQFOFAECGd18KrGkvPfSarKEJYm+QwLgconDEWZL1GAp7PjwURZyr9cFvEO8E=
+Received: from AM6PR05MB5142.eurprd05.prod.outlook.com (20.177.197.210) by
+ AM6PR05MB6615.eurprd05.prod.outlook.com (20.179.1.30) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2516.12; Thu, 12 Dec 2019 20:44:32 +0000
+Received: from AM6PR05MB5142.eurprd05.prod.outlook.com
+ ([fe80::e8d3:c539:7550:2fdd]) by AM6PR05MB5142.eurprd05.prod.outlook.com
+ ([fe80::e8d3:c539:7550:2fdd%6]) with mapi id 15.20.2538.017; Thu, 12 Dec 2019
+ 20:44:31 +0000
+From:   Yuval Avnery <yuvalav@mellanox.com>
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+CC:     Jiri Pirko <jiri@mellanox.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Andy Gospodarek <andy@greyhouse.net>
+Subject: RE: [PATCH net-next] netdevsim: Add max_vfs to bus_dev
+Thread-Topic: [PATCH net-next] netdevsim: Add max_vfs to bus_dev
+Thread-Index: AQHVr871nDBB5hrvy0ak2C7+9Ay1lae1Oa8AgAAB1gCAABOZgIAACO8QgAArtYCAAAxfkIAAC50AgABVJmCAAOJ/gIAAIpgg
+Date:   Thu, 12 Dec 2019 20:44:31 +0000
+Message-ID: <AM6PR05MB5142F0F18EA6B6F16C5888CEC5550@AM6PR05MB5142.eurprd05.prod.outlook.com>
+References: <1576033133-18845-1-git-send-email-yuvalav@mellanox.com>
+        <20191211095854.6cd860f1@cakuba.netronome.com>
+        <AM6PR05MB514244DC6D25DDD433C0E238C55A0@AM6PR05MB5142.eurprd05.prod.outlook.com>
+        <20191211111537.416bf078@cakuba.netronome.com>
+        <AM6PR05MB5142CCAB9A06DAC199F7100CC55A0@AM6PR05MB5142.eurprd05.prod.outlook.com>
+        <20191211142401.742189cf@cakuba.netronome.com>
+        <AM6PR05MB51423D365FB5A8DB22B1DE62C55A0@AM6PR05MB5142.eurprd05.prod.outlook.com>
+        <20191211154952.50109494@cakuba.netronome.com>
+        <AM6PR05MB51425B74E736C5D765356DC8C5550@AM6PR05MB5142.eurprd05.prod.outlook.com>
+ <20191212102517.602a8a5d@cakuba.netronome.com>
+In-Reply-To: <20191212102517.602a8a5d@cakuba.netronome.com>
+Accept-Language: he-IL, en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-12-12_07:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
- phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.0.1-1911140001 definitions=main-1912120159
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
- definitions=2019-12-12_06:2019-12-12,2019-12-12 signatures=0
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 lowpriorityscore=0 bulkscore=0
- clxscore=1015 impostorscore=0 mlxlogscore=999 spamscore=0 phishscore=0
- suspectscore=0 adultscore=0 mlxscore=0 malwarescore=0 priorityscore=1501
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-1910280000
- definitions=main-1912120157
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=yuvalav@mellanox.com; 
+x-originating-ip: [70.66.202.183]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 5e7d083f-2bb7-46a3-f393-08d77f441732
+x-ms-traffictypediagnostic: AM6PR05MB6615:|AM6PR05MB6615:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <AM6PR05MB6615B29E6DBF8F1A1E371F81C5550@AM6PR05MB6615.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:608;
+x-forefront-prvs: 0249EFCB0B
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(376002)(39860400002)(396003)(346002)(366004)(136003)(199004)(189003)(13464003)(8936002)(478600001)(5660300002)(6506007)(53546011)(2906002)(7696005)(81156014)(54906003)(66556008)(86362001)(316002)(6916009)(8676002)(33656002)(4326008)(26005)(186003)(52536014)(71200400001)(55016002)(81166006)(76116006)(66476007)(64756008)(66946007)(9686003)(66446008);DIR:OUT;SFP:1101;SCL:1;SRVR:AM6PR05MB6615;H:AM6PR05MB5142.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: hI4edV+cRMBDxtYxmGQ7lHfL3cp7KDIXbv0soHg9A5yNilZm5RQ+MBmPNubb4fmjwDi0lM/sDKPBa/wDj4NgtqF8Ootst60rhPqil8+V3iZuIKCG38nASpsqlDriPoswPzMJjGYFc0F4pf1NSr2tNvPtE8QZec2s+68yXB0CqC+96dVZZiexwabvuNPSt6hfTC7kgnLRxQ9dqvH+eYa1rBjeX8VnC9xGyLIFpx7Sl8l6h/7QKXAcYieVKDQ/cESgt/5Vi42dQYRn2u9HccwuoiaRYU0RB6rs67uHumT9n0+nGgG1sse1nSv2JTpNJkiGKquEaF+riG4ie5yq+Wb/ZigzAwSc6gRQNFVmqlkUatHc7ZLo1QxgRz5PYp/u7K3ZtWdUz0mt4QiGIWtroLwEHIFMGy067TOMju0hV15O0jN0vRmd+hoI2wGueeVNNAXp7/rlzHZNfz6pKPXOhxodi3ZnA5cNQHXupbSMPHqURQZ+1uzay2JugNq8Yh+7ZSdv
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5e7d083f-2bb7-46a3-f393-08d77f441732
+X-MS-Exchange-CrossTenant-originalarrivaltime: 12 Dec 2019 20:44:31.8554
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 0DDtLOOaP0GLG91d3fbixuToLcVGvNmQVoyKhRJbpEh6enJarbNM2/+gD9fQIit34hcI4Wgyw1X13ziDu/2ELw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR05MB6615
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/12/19 5:21 AM, Steffen Klassert wrote:
-> On Wed, Dec 11, 2019 at 02:52:41PM -0800, Josh Hunt wrote:
->> We've hit the following crash on a handful of machines recently running
->> 4.19.55 LTS and strongswan. The kernels running on these machines do have
->> some patches on top of 4.19 LTS, but nothing in the area of xfrm/ipsec:
->>
->> [54284.354997] general protection fault: 0000 [#1] SMP PTI
->> [54284.355504] CPU: 6 PID: 11937 Comm: charon Tainted: G           O L
->> 4.19.55-4.19.2.4-amd64-2b86b5ea31726254 #1
->> [54284.356382] Hardware name: Ciara Technologies 1x8-X6 SSD 32G
->> 10GE/CangJie, BIOS CC1F110D 08/12/2014
->> [54284.357322] RIP: 0010:__xfrm_state_lookup+0x7f/0x110
->> [54284.357856] Code: d0 4a 8d 04 c0 48 8b 00 48 85 c0 74 68 41 89 cf 49 89
->> d6 41 89 f5 eb 09 48 8b 43 28 48 85 c0 74 54 48 83 e8 28 48 89 c3 74 4b <66>
->> 3b a8 d2 00 00 00 75 e5 44 3b 78 50
->>   75 df 44 3a 60 54 75 d9 66
->> [54284.359190] RSP: 0018:ffffab5043d93ad0 EFLAGS: 00010212
->> [54284.359748] RAX: 6174735f79636e3d RBX: 6174735f79636e3d RCX:
->> 0000000064959bc7
->> [54284.360219] RDX: ffff9bb0593c3380 RSI: 0000000000000000 RDI:
->> ffffffff951071c0
->> [54284.360713] RBP: 0000000000000002 R08: 0000000000000010 R09:
->> 00000000001b950d
->> [54284.361209] R10: 000000000000003f R11: 0000000096001849 R12:
->> 0000000000000032
->> [54284.361755] R13: 0000000000000000 R14: ffff9bb0593c3380 R15:
->> 0000000064959bc7
->> [54284.362255] FS:  00007facd7b01700(0000) GS:ffff9bb07fb80000(0000)
->> knlGS:00000000000000000
->> [54284.363198] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
->> [54284.363687] CR2: 00007f99250e89e0 CR3: 00000007e1078006 CR4:
->> 00000000001606e0
->> [54284.364156] Call Trace:
->> [54284.364642]  xfrm_state_add+0x108/0x290
->> [54284.365113]  xfrm_add_sa+0x9e6/0xb28 [xfrm_user]
->> [54284.365580]  ? xfrm_user_rcv_msg+0x183/0x1a0 [xfrm_user]
->> [54284.366077]  xfrm_user_rcv_msg+0x183/0x1a0 [xfrm_user]
->> [54284.366543]  ? xfrm_dump_sa_done+0x30/0x30 [xfrm_user]
->> [54284.367040]  netlink_rcv_skb+0xde/0x110
->> [54284.367504]  xfrm_netlink_rcv+0x30/0x40 [xfrm_user]
->> [54284.368000]  netlink_unicast+0x191/0x230
->> [54284.368463]  netlink_sendmsg+0x2c4/0x390
->> [54284.368958]  sock_sendmsg+0x36/0x40
->> [54284.369449]  __sys_sendto+0xd8/0x150
->> [54284.369940]  ? kern_select+0xb9/0xe0
->> [54284.370405]  __x64_sys_sendto+0x24/0x30
->> [54284.370946]  do_syscall_64+0x4e/0x110
->> [54284.383941]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
->> [54284.384497] RIP: 0033:0x7face4679ad3
->>
->> (gdb) list *(__xfrm_state_lookup+0x7f)
->> 0xffffffff8271beaf is in __xfrm_state_lookup (net/xfrm/xfrm_state.c:841).
->> warning: Source file is more recent than executable.
->> 836	{
->> 837		unsigned int h = xfrm_spi_hash(net, daddr, spi, proto, family);
->> 838		struct xfrm_state *x;
->> 839	
->> 840		hlist_for_each_entry_rcu(x, net->xfrm.state_byspi + h, byspi) {
->> 841			if (x->props.family != family ||
->> 842			    x->id.spi       != spi ||
->> 843			    x->id.proto     != proto ||
->> 844			    !xfrm_addr_equal(&x->id.daddr, daddr, family))
->> 845				continue;
->>
->> The above looks similar to these very old reports:
->> https://wiki.strongswan.org/issues/2147
->> https://bugzilla.kernel.org/show_bug.cgi?id=84961
->>
->> Prior to the crash we are seeing softlockups and rcu stalls (see attached
->> netconsole log file.) The RIP in those stalls/lockups appears to be in the
->> same area as the crash reported above, lines 840 and 841.
->>
->> I've tried reproducing the problem in our lab, but have been unsuccessful so
->> far and running the latest upstream kernel in production to see if that
->> resolves the issue is not possible at the moment. It's very possible this
->> crash was happening on earlier kernel versions in our network, I just don't
->> have any data to confirm that.
-> 
-> Do you have any possibility to reproduce this on v4.19.55?
-> __xfrm_state_lookup() is called from process context and protected
-> by rcu_read_lock(). But updates to the above list can happen in
-> softirq context, so seems like we should disable BHs to prevent
-> beeing interrupted by a softirq that updates the list.
-> 
 
-Hey Steffen
 
-I really appreciate you looking into this. This kernel is pretty close 
-to v4.19.55. The patches that it has are not in/around this code and 
-given the older reports (linked above) I feel like this crash is 
-representative of what you would see on a v4.19.55 vanilla kernel.
+> -----Original Message-----
+> From: Jakub Kicinski <jakub.kicinski@netronome.com>
+> Sent: Thursday, December 12, 2019 10:25 AM
+> To: Yuval Avnery <yuvalav@mellanox.com>
+> Cc: Jiri Pirko <jiri@mellanox.com>; davem@davemloft.net;
+> netdev@vger.kernel.org; linux-kernel@vger.kernel.org; Andy Gospodarek
+> <andy@greyhouse.net>
+> Subject: Re: [PATCH net-next] netdevsim: Add max_vfs to bus_dev
+>=20
+> On Thu, 12 Dec 2019 05:11:12 +0000, Yuval Avnery wrote:
+> > > > > Okay, please post v2 together with the tests. We don't accept
+> > > > > netdevsim features without tests any more.
+> > > >
+> > > > I think the only test I can currently write is the enable SR-IOV
+> > > > max_vfs enforcement. Because subdev is not in yet.
+> > > > Will that be good enough?
+> > >
+> > > It'd be good to test some netdev API rather than just the
+> > > enforcement itself which is entirely in netdevsim, I think.
+> > >
+> > > So max_vfs enforcement plus checking that ip link lists the correct
+> > > number of entries (and perhaps the entries are in reset state after
+> > > enable) would do IMO.
+> >
+> > Ok, but this is possible regardless of my patch (to enable vfs).
+>=20
+> I was being lenient :) Your patch is only really needed when the devlink =
+API
+> lands, since devlink will display all max VFs not enabled.
+>=20
+> > > My knee jerk reaction is that we should populate the values to those
+> > > set via devlink upon SR-IOV enable, but then if user overwrites
+> > > those values that's their problem.
+> > >
+> > > Sort of mirror how VF MAC addrs work, just a level deeper. The VF
+> > > defaults to the MAC addr provided by the PF after reset, but it can
+> > > change it to something else (things may stop working because spoof
+> > > check etc. will drop all its frames, but nothing stops the VF in
+> > > legacy HW from writing its MAC addr register).
+> > >
+> > > IOW the devlink addr is the default/provisioned addr, not
+> > > necessarily the addr the PF has set _now_.
+> > >
+> > > Other options I guess are (a) reject the changes of the address from
+> > > the PF once devlink has set a value; (b) provide some
+> > > device->control CPU notifier which can ack/reject a request from the =
+PF
+> to change devlink's value..?
+> > >
+> > > You guys posted the devlink patches a while ago, what was your
+> > > implementation doing?
+> >
+> > devlink simply calls the driver with set or get.
+> > It is up to the vendor driver/HW if to make this address persistent or =
+not.
+> > The address is not saved in the devlink layer.
+>=20
+> It'd be preferable for the behaviour of the kernel API to not be vendor
+> specific. That defeats the purpose of having an operating system as a HW
+> abstraction layer. SR-IOV devices of today are so FW heavy we can make
+> them behave whatever way we choose makes most sense.
+>=20
+> > The MAC address in mlx5 is stored in the HW and persistent (until PF
+> > reset) , whether it is set by devlink or ip link.
+>=20
+> Okay, let's see if I understand. The devlink and ip link interfaces basic=
+ally do
+> the same thing but one reaches from control CPU and the other one from
+> the SR-IOV host? And on SR-IOV host reset the addresses go back to 00:00.=
+.
+> i.e. any?
 
-Unfortunately I cannot deploy a vanilla 4.19.55 on these boxes to see if 
-the problem reproduces, but I can attempt to reproduce in my lab. Do you 
-have an idea on how to trigger the issue? I'd be happy to test it.
+No,
+This will work only in non-SmartNic mode, when e-switch manager is on the h=
+ost,
+MAC will be accessible through devlink and legacy tools..
+For smartnic, only devlink from the embedded OS will work. Ip link from the=
+ host will not work.
 
-As far as disabling BHs, do you mean something like this?
-diff --git a/net/xfrm/xfrm_state.c b/net/xfrm/xfrm_state.c
-index f3423562d933..c3d7df1387c8 100644
---- a/net/xfrm/xfrm_state.c
-+++ b/net/xfrm/xfrm_state.c
-@@ -1730,9 +1730,9 @@ xfrm_state_lookup(struct net *net, u32 mark, const 
-xfrm_address_t *daddr, __be32
-  {
-         struct xfrm_state *x;
+>=20
+> What happens if the SR-IOV host changes the MAC? Is it used by HW or is t=
+he
+> MAC provisioned by the control CPU used for things like spoof check?
 
--       rcu_read_lock();
-+       spin_lock_bh(&net->xfrm.xfrm_state_lock);
-         x = __xfrm_state_lookup(net, mark, daddr, spi, proto, family);
--       rcu_read_unlock();
-+       spin_unlock_bh(&net->xfrm.xfrm_state_lock);
-         return x;
-  }
-  EXPORT_SYMBOL(xfrm_state_lookup);
+Host shouldn't have privileges to do it.
+If it does, then it's under the host ownership (like in non-smartnic mode).
 
-Josh
+>=20
+> Does the control CPU get a notification for SR-IOV host reset? In that ca=
+se
+> the control CPU driver could restore the MAC addr.
+
+Yes, but this is irrelevant here, the MAC is already stored in HW/FW.
+The MAC will reset only when the E-switch manager (on the control CPU) rese=
+t.
+
+>=20
+> > So from what I understand, we have the freedom to choose how
+> netdevsim
+> > behave in this case, which means non-persistent is ok.
+>=20
+> To be clear - by persistent I meant that it survives the SR-IOV host's re=
+sets,
+> not necessarily written to NVRAM of any sort.
+
+Yes, this is my view as well.
+For non-smartnic it will survive VF disable/enable.
+MAC is not stored on NVRAM, it will disappear once the driver on the contro=
+l CPU resets.
+
+>=20
+> I'd like to see netdevsim to also serve as sort of a reference model for =
+device
+> behaviour. Vendors who are not first to implement a feature always
+> complain that there is no documentation on how things should work.
+
+Yes, this is a good idea.
+But it seems we are always held back by legacy tools with no well-defined b=
+ehavior.
