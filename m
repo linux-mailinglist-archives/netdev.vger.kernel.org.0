@@ -2,130 +2,230 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6466A11D598
-	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 19:31:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 29D9E11D59A
+	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 19:32:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730383AbfLLSbH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Dec 2019 13:31:07 -0500
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:36494 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1730034AbfLLSbG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Dec 2019 13:31:06 -0500
-Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xBCISJMK018738;
-        Thu, 12 Dec 2019 10:30:53 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type : content-id
- : content-transfer-encoding : mime-version; s=facebook;
- bh=GS0789pbAF6LtEIu3B3dWMJgFEREkUq6vACdWQRl7B0=;
- b=UYh3cdu5/Gg6PsPhdgpBvRMK1meYKXZ92xNfZxjpZIPJx9+37p3RaC8098MBqo7tPahd
- 8HFo6U2QsX2arhjkxvKOEqMm0H4d2OSv7nhi18ffRNP79BlRMxlOLJS6eaZqlm2pyjAr
- HK2uePd8+7zCcqSKo9ugaYr2CBwBZ8+QbwI= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 2wub46bvt7-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Thu, 12 Dec 2019 10:30:53 -0800
-Received: from ash-exhub202.TheFacebook.com (2620:10d:c0a8:83::6) by
- ash-exhub202.TheFacebook.com (2620:10d:c0a8:83::6) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Thu, 12 Dec 2019 10:30:51 -0800
-Received: from NAM04-CO1-obe.outbound.protection.outlook.com (100.104.31.183)
- by o365-in.thefacebook.com (100.104.36.103) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1713.5
- via Frontend Transport; Thu, 12 Dec 2019 10:30:51 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=mMdy1O7vXeaoY+0P8x4AtwUEkchE0dHa3c1oEECGv9xVxDKB+n5JBj9T9I58fBDtol3+3Is13U2NoCB0+tvCMCukFpZoHxJdAZaoNW+jqJ7bf3xNGb0lD8j51Ja8BEyD4Pm9k3ygPiuG3hCAA+gOCp2YFjrhEu4rCX8dGFhjS4okzrlONPiuWGorSW5lUOqgFoPMORWfRMElFE54Wz/fUvAIkIbzr0LKx8SPjBDkiWX0DA7nsauC/lPnCkkF7w+Gg3w/Wdcumat2c66omB8auAt2NO0CShp+cM64H2TZDfZo+/5Kaxe4WIyJl9btq87UzGclX0g+z6JYHOKk9F1ZOQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=GS0789pbAF6LtEIu3B3dWMJgFEREkUq6vACdWQRl7B0=;
- b=FRsC0JQsJTg/Yl1sZt0aWBvEXYMMDF5y43EDBau8wKFOtGKrEFenYXdEIWRHYAhdJgIAo/qJKkkR+ImkNQZcbmCvoEQ/wqutVjthJjjavoVz/fS5RFEkPIk+CMtRrSmSxyY9NGDJuViyXDRreLW28vz3XM48TxtNe4SJJKpMoczJW+Pm19JYhTEE76a3uRKFLSnWBtsJx1SJ+mkSvvp/rfTomrGSrnNsD0hYS/ZeG8Tsc9UEF0w4f7G2upoX/cHb1gP6JCIO7R5lVerlqepXrTWZ/G/tu4nkDlxpIv3QlRGqB5NV4TwETg/1qy3X2mA2rsdTPzEs4jGT1UUeg/UNaw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=GS0789pbAF6LtEIu3B3dWMJgFEREkUq6vACdWQRl7B0=;
- b=h4/lUHX2QAKyMqalNLbgQClXdkns5sS+Il0Ph/gTE5FrmoxgeYbopYigiIlB9ngc79BH5UY6NFMIa9tGlQX+76FrwZgAXpdRG9TtX9VEx27Py+znTqMy8qBZ2OFfQhmc5j5glysQLY7AeLBsJ47crrHcaTNjAY2wsp74KOwPFdg=
-Received: from MN2PR15MB3213.namprd15.prod.outlook.com (20.179.21.76) by
- MN2PR15MB3597.namprd15.prod.outlook.com (52.132.172.85) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2538.15; Thu, 12 Dec 2019 18:30:50 +0000
-Received: from MN2PR15MB3213.namprd15.prod.outlook.com
- ([fe80::6d1e:f2f7:d36:a42f]) by MN2PR15MB3213.namprd15.prod.outlook.com
- ([fe80::6d1e:f2f7:d36:a42f%4]) with mapi id 15.20.2538.017; Thu, 12 Dec 2019
- 18:30:50 +0000
-From:   Martin Lau <kafai@fb.com>
-To:     Andrii Nakryiko <andriin@fb.com>
-CC:     "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "andrii.nakryiko@gmail.com" <andrii.nakryiko@gmail.com>,
-        Kernel Team <Kernel-team@fb.com>
-Subject: Re: [PATCH v2 bpf-next] libbpf: fix printf compilation warnings on
- ppc64le arch
-Thread-Topic: [PATCH v2 bpf-next] libbpf: fix printf compilation warnings on
- ppc64le arch
-Thread-Index: AQHVsRBQNM/jsU+ZtU6WmSyUu/Ydt6e20mkA
-Date:   Thu, 12 Dec 2019 18:30:50 +0000
-Message-ID: <20191212183046.7h4kcuvmayafzztg@kafai-mbp>
-References: <20191212171918.638010-1-andriin@fb.com>
-In-Reply-To: <20191212171918.638010-1-andriin@fb.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: CO2PR05CA0085.namprd05.prod.outlook.com
- (2603:10b6:104:1::11) To MN2PR15MB3213.namprd15.prod.outlook.com
- (2603:10b6:208:3d::12)
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [2620:10d:c090:180::97ef]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 54b674c2-06d7-4602-178e-08d77f3169de
-x-ms-traffictypediagnostic: MN2PR15MB3597:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <MN2PR15MB35970C89DC2C98BDFEF6C3B1D5550@MN2PR15MB3597.namprd15.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:1247;
-x-forefront-prvs: 0249EFCB0B
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(7916004)(136003)(366004)(39860400002)(376002)(346002)(396003)(189003)(199004)(81156014)(54906003)(81166006)(66556008)(6506007)(64756008)(4326008)(66946007)(66446008)(316002)(66476007)(6636002)(478600001)(8676002)(71200400001)(186003)(6862004)(1076003)(4744005)(6486002)(6512007)(9686003)(86362001)(5660300002)(2906002)(8936002)(52116002)(33716001);DIR:OUT;SFP:1102;SCL:1;SRVR:MN2PR15MB3597;H:MN2PR15MB3213.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: fb.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: sm7N40idxhdWnkiWtN89rWQVavCpq7znYkr4Cmxsbdi7bcyjs47vlG8BQXiZytad6tjgxKe+2Jx0193tS+5gI9UwTJEezUXtN0jpaHo828jMF2WfsXW45m83egDp4PAGsi6+xQ+ZTUjxOABppZgbOvUXE+ogEUsbe4K+QAxWv/xXBohd9iFH5DAXuuCpA4gUqH0ykyQqNWsOqJ5hxOy0HAeV7oAQwz4D3ffcekSnWjUwyikNQRoTc58PzyZ1NqNcK5QwbW4Myc5TFOCdowqBhw6a3TgeCxPF7gEw7p/3M1fOeszJyuAE4qeRZ+1rCrxkG3+ns+9K0hlQDpDCq364nCAbik/4TOW7CBcHHfFh8Tn2pc8R9M9vTFkAzAZYTlrdjC7N8S0J283ug4jJWfFmYsOXuIdz9gBXIICBmtpvRNKs16BOUcBtwsAe6jg0eAxo
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <B09A384F47A7E143B576B653314A73F3@namprd15.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
-MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: 54b674c2-06d7-4602-178e-08d77f3169de
-X-MS-Exchange-CrossTenant-originalarrivaltime: 12 Dec 2019 18:30:50.4191
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 8+ScWyl3sUTMGW8hI/w+2Sz49/bX1owadyA+AKLSWO2FHC2rnAFthZUjFeO6BuA6
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR15MB3597
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
- definitions=2019-12-12_06:2019-12-12,2019-12-12 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 impostorscore=0
- bulkscore=0 phishscore=0 adultscore=0 priorityscore=1501 mlxlogscore=508
- lowpriorityscore=0 suspectscore=0 spamscore=0 mlxscore=0 clxscore=1015
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-1910280000 definitions=main-1912120141
-X-FB-Internal: deliver
+        id S1730341AbfLLScT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Dec 2019 13:32:19 -0500
+Received: from mail-pg1-f201.google.com ([209.85.215.201]:51351 "EHLO
+        mail-pg1-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730017AbfLLScS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Dec 2019 13:32:18 -0500
+Received: by mail-pg1-f201.google.com with SMTP id g20so1898446pgb.18
+        for <netdev@vger.kernel.org>; Thu, 12 Dec 2019 10:32:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=aM3ymlZifwR3a9f8GuFO4yogWDQKC7L5vJ7yxlqVfJw=;
+        b=CCCaP0J5euaLtD7nElNO/bLuSCaRFOC0v62IGIx5qyrZ5+XBLdwZP5wsajuZWXpYBb
+         7FZQd9Go/0UTQLNGnTWRV6idWLha0GEx4FPKOdzaheIL1PD658+bEOcYDQN++9r8gArn
+         DTXsZqGl7QY/GYzlUGQJiaJVmdle4AVJ6b45DY/5WwIvGj9RzF+fozgPIOzm22XoD6/O
+         OefmUfgzibYvmtsR9x/3ALqO9VVjPuO7aUOPnyPj1gkuwrBXV/uPyMlv47whKQ0S6q1k
+         btuWHIhqEGH/bxmSrOBOZoZRLt2Ox5hlgVmnhGaziYxO1QGGqxl6idRqFqeqLCZO5dxg
+         Btuw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=aM3ymlZifwR3a9f8GuFO4yogWDQKC7L5vJ7yxlqVfJw=;
+        b=aB2ruJ8HVLgRNrZPfzJbwlM2HF3qXCDyX6Jh/kSYbj3CVQI48yPTptsGvyO2mnTN5N
+         leTmFVs+xoIIAZ/Kk7zQzkSZPBqlgPGUezTzP15ZAwsp//CmJ5Wza8HWGnTTNem7B/Vs
+         +RPiEm2tVLo3FO/43u8480jC4Lo1Z0SbyYkMcosj9unuLx77GPrbmNNL8mmyqto+ZYMg
+         Fq7/DTdR6Ja71RSCAOgiAt6DAGmXIuQXJlTJspCIPyWVsjKJe0RhjEq2nNDR9UX/ssuz
+         5sZ1egBP4+X11SoLn4alS/YwAEq4HUq2+s6lu1exgSvChFdmvDutXnzBuPDx7Xch0h5M
+         Jwvw==
+X-Gm-Message-State: APjAAAXnmaPY46fU6xtXd3mY/kK1KomEPQ2A3F82EXPppNyaCwlm/UYt
+        zj1+flGKUWrRqkyM2cDDRA1zPfbtZsW4OA==
+X-Google-Smtp-Source: APXvYqxZNhBElYRHNM355wDIHOfBY9XDc7OiuPHQIga8DNU9Juof9+y/GxACl6WsZisLv9HXHe0SzlYXbG3ZUg==
+X-Received: by 2002:a63:5920:: with SMTP id n32mr11901100pgb.443.1576175537627;
+ Thu, 12 Dec 2019 10:32:17 -0800 (PST)
+Date:   Thu, 12 Dec 2019 10:32:13 -0800
+Message-Id: <20191212183213.11396-1-edumazet@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.24.1.735.g03f4e72817-goog
+Subject: [PATCH net] 6pack,mkiss: fix possible deadlock
+From:   Eric Dumazet <edumazet@google.com>
+To:     "David S . Miller" <davem@davemloft.net>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        syzbot <syzkaller@googlegroups.com>,
+        Arnd Bergmann <arnd@arndb.de>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 12, 2019 at 09:19:18AM -0800, Andrii Nakryiko wrote:
-> On ppc64le __u64 and __s64 are defined as long int and unsigned long int,
-> respectively. This causes compiler to emit warning when %lld/%llu are use=
-d to
-> printf 64-bit numbers. Fix this by casting to size_t/ssize_t with %zu and=
- %zd
-> format specifiers, respectively.
-Acked-by: Martin KaFai Lau <kafai@fb.com>
+We got another syzbot report [1] that tells us we must use
+write_lock_irq()/write_unlock_irq() to avoid possible deadlock.
+
+[1]
+
+WARNING: inconsistent lock state
+5.5.0-rc1-syzkaller #0 Not tainted
+--------------------------------
+inconsistent {HARDIRQ-ON-W} -> {IN-HARDIRQ-R} usage.
+syz-executor826/9605 [HC1[1]:SC0[0]:HE0:SE1] takes:
+ffffffff8a128718 (disc_data_lock){+-..}, at: sp_get.isra.0+0x1d/0xf0 drivers/net/ppp/ppp_synctty.c:138
+{HARDIRQ-ON-W} state was registered at:
+  lock_acquire+0x190/0x410 kernel/locking/lockdep.c:4485
+  __raw_write_lock_bh include/linux/rwlock_api_smp.h:203 [inline]
+  _raw_write_lock_bh+0x33/0x50 kernel/locking/spinlock.c:319
+  sixpack_close+0x1d/0x250 drivers/net/hamradio/6pack.c:657
+  tty_ldisc_close.isra.0+0x119/0x1a0 drivers/tty/tty_ldisc.c:489
+  tty_set_ldisc+0x230/0x6b0 drivers/tty/tty_ldisc.c:585
+  tiocsetd drivers/tty/tty_io.c:2337 [inline]
+  tty_ioctl+0xe8d/0x14f0 drivers/tty/tty_io.c:2597
+  vfs_ioctl fs/ioctl.c:47 [inline]
+  file_ioctl fs/ioctl.c:545 [inline]
+  do_vfs_ioctl+0x977/0x14e0 fs/ioctl.c:732
+  ksys_ioctl+0xab/0xd0 fs/ioctl.c:749
+  __do_sys_ioctl fs/ioctl.c:756 [inline]
+  __se_sys_ioctl fs/ioctl.c:754 [inline]
+  __x64_sys_ioctl+0x73/0xb0 fs/ioctl.c:754
+  do_syscall_64+0xfa/0x790 arch/x86/entry/common.c:294
+  entry_SYSCALL_64_after_hwframe+0x49/0xbe
+irq event stamp: 3946
+hardirqs last  enabled at (3945): [<ffffffff87c86e43>] __raw_spin_unlock_irq include/linux/spinlock_api_smp.h:168 [inline]
+hardirqs last  enabled at (3945): [<ffffffff87c86e43>] _raw_spin_unlock_irq+0x23/0x80 kernel/locking/spinlock.c:199
+hardirqs last disabled at (3946): [<ffffffff8100675f>] trace_hardirqs_off_thunk+0x1a/0x1c arch/x86/entry/thunk_64.S:42
+softirqs last  enabled at (2658): [<ffffffff86a8b4df>] spin_unlock_bh include/linux/spinlock.h:383 [inline]
+softirqs last  enabled at (2658): [<ffffffff86a8b4df>] clusterip_netdev_event+0x46f/0x670 net/ipv4/netfilter/ipt_CLUSTERIP.c:222
+softirqs last disabled at (2656): [<ffffffff86a8b22b>] spin_lock_bh include/linux/spinlock.h:343 [inline]
+softirqs last disabled at (2656): [<ffffffff86a8b22b>] clusterip_netdev_event+0x1bb/0x670 net/ipv4/netfilter/ipt_CLUSTERIP.c:196
+
+other info that might help us debug this:
+ Possible unsafe locking scenario:
+
+       CPU0
+       ----
+  lock(disc_data_lock);
+  <Interrupt>
+    lock(disc_data_lock);
+
+ *** DEADLOCK ***
+
+5 locks held by syz-executor826/9605:
+ #0: ffff8880a905e198 (&tty->legacy_mutex){+.+.}, at: tty_lock+0xc7/0x130 drivers/tty/tty_mutex.c:19
+ #1: ffffffff899a56c0 (rcu_read_lock){....}, at: mutex_spin_on_owner+0x0/0x330 kernel/locking/mutex.c:413
+ #2: ffff8880a496a2b0 (&(&i->lock)->rlock){-.-.}, at: spin_lock include/linux/spinlock.h:338 [inline]
+ #2: ffff8880a496a2b0 (&(&i->lock)->rlock){-.-.}, at: serial8250_interrupt+0x2d/0x1a0 drivers/tty/serial/8250/8250_core.c:116
+ #3: ffffffff8c104048 (&port_lock_key){-.-.}, at: serial8250_handle_irq.part.0+0x24/0x330 drivers/tty/serial/8250/8250_port.c:1823
+ #4: ffff8880a905e090 (&tty->ldisc_sem){++++}, at: tty_ldisc_ref+0x22/0x90 drivers/tty/tty_ldisc.c:288
+
+stack backtrace:
+CPU: 1 PID: 9605 Comm: syz-executor826 Not tainted 5.5.0-rc1-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ <IRQ>
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0x197/0x210 lib/dump_stack.c:118
+ print_usage_bug.cold+0x327/0x378 kernel/locking/lockdep.c:3101
+ valid_state kernel/locking/lockdep.c:3112 [inline]
+ mark_lock_irq kernel/locking/lockdep.c:3309 [inline]
+ mark_lock+0xbb4/0x1220 kernel/locking/lockdep.c:3666
+ mark_usage kernel/locking/lockdep.c:3554 [inline]
+ __lock_acquire+0x1e55/0x4a00 kernel/locking/lockdep.c:3909
+ lock_acquire+0x190/0x410 kernel/locking/lockdep.c:4485
+ __raw_read_lock include/linux/rwlock_api_smp.h:149 [inline]
+ _raw_read_lock+0x32/0x50 kernel/locking/spinlock.c:223
+ sp_get.isra.0+0x1d/0xf0 drivers/net/ppp/ppp_synctty.c:138
+ sixpack_write_wakeup+0x25/0x340 drivers/net/hamradio/6pack.c:402
+ tty_wakeup+0xe9/0x120 drivers/tty/tty_io.c:536
+ tty_port_default_wakeup+0x2b/0x40 drivers/tty/tty_port.c:50
+ tty_port_tty_wakeup+0x57/0x70 drivers/tty/tty_port.c:387
+ uart_write_wakeup+0x46/0x70 drivers/tty/serial/serial_core.c:104
+ serial8250_tx_chars+0x495/0xaf0 drivers/tty/serial/8250/8250_port.c:1761
+ serial8250_handle_irq.part.0+0x2a2/0x330 drivers/tty/serial/8250/8250_port.c:1834
+ serial8250_handle_irq drivers/tty/serial/8250/8250_port.c:1820 [inline]
+ serial8250_default_handle_irq+0xc0/0x150 drivers/tty/serial/8250/8250_port.c:1850
+ serial8250_interrupt+0xf1/0x1a0 drivers/tty/serial/8250/8250_core.c:126
+ __handle_irq_event_percpu+0x15d/0x970 kernel/irq/handle.c:149
+ handle_irq_event_percpu+0x74/0x160 kernel/irq/handle.c:189
+ handle_irq_event+0xa7/0x134 kernel/irq/handle.c:206
+ handle_edge_irq+0x25e/0x8d0 kernel/irq/chip.c:830
+ generic_handle_irq_desc include/linux/irqdesc.h:156 [inline]
+ do_IRQ+0xde/0x280 arch/x86/kernel/irq.c:250
+ common_interrupt+0xf/0xf arch/x86/entry/entry_64.S:607
+ </IRQ>
+RIP: 0010:cpu_relax arch/x86/include/asm/processor.h:685 [inline]
+RIP: 0010:mutex_spin_on_owner+0x247/0x330 kernel/locking/mutex.c:579
+Code: c3 be 08 00 00 00 4c 89 e7 e8 e5 06 59 00 4c 89 e0 48 c1 e8 03 42 80 3c 38 00 0f 85 e1 00 00 00 49 8b 04 24 a8 01 75 96 f3 90 <e9> 2f fe ff ff 0f 0b e8 0d 19 09 00 84 c0 0f 85 ff fd ff ff 48 c7
+RSP: 0018:ffffc90001eafa20 EFLAGS: 00000246 ORIG_RAX: ffffffffffffffd7
+RAX: 0000000000000000 RBX: ffff88809fd9e0c0 RCX: 1ffffffff13266dd
+RDX: 0000000000000000 RSI: 0000000000000008 RDI: 0000000000000000
+RBP: ffffc90001eafa60 R08: 1ffff11013d22898 R09: ffffed1013d22899
+R10: ffffed1013d22898 R11: ffff88809e9144c7 R12: ffff8880a905e138
+R13: ffff88809e9144c0 R14: 0000000000000000 R15: dffffc0000000000
+ mutex_optimistic_spin kernel/locking/mutex.c:673 [inline]
+ __mutex_lock_common kernel/locking/mutex.c:962 [inline]
+ __mutex_lock+0x32b/0x13c0 kernel/locking/mutex.c:1106
+ mutex_lock_nested+0x16/0x20 kernel/locking/mutex.c:1121
+ tty_lock+0xc7/0x130 drivers/tty/tty_mutex.c:19
+ tty_release+0xb5/0xe90 drivers/tty/tty_io.c:1665
+ __fput+0x2ff/0x890 fs/file_table.c:280
+ ____fput+0x16/0x20 fs/file_table.c:313
+ task_work_run+0x145/0x1c0 kernel/task_work.c:113
+ exit_task_work include/linux/task_work.h:22 [inline]
+ do_exit+0x8e7/0x2ef0 kernel/exit.c:797
+ do_group_exit+0x135/0x360 kernel/exit.c:895
+ __do_sys_exit_group kernel/exit.c:906 [inline]
+ __se_sys_exit_group kernel/exit.c:904 [inline]
+ __x64_sys_exit_group+0x44/0x50 kernel/exit.c:904
+ do_syscall_64+0xfa/0x790 arch/x86/entry/common.c:294
+ entry_SYSCALL_64_after_hwframe+0x49/0xbe
+RIP: 0033:0x43fef8
+Code: Bad RIP value.
+RSP: 002b:00007ffdb07d2338 EFLAGS: 00000246 ORIG_RAX: 00000000000000e7
+RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 000000000043fef8
+RDX: 0000000000000000 RSI: 000000000000003c RDI: 0000000000000000
+RBP: 00000000004bf730 R08: 00000000000000e7 R09: ffffffffffffffd0
+R10: 00000000004002c8 R11: 0000000000000246 R12: 0000000000000001
+R13: 00000000006d1180 R14: 0000000000000000 R15: 0000000000000000
+
+Fixes: 6e4e2f811bad ("6pack,mkiss: fix lock inconsistency")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reported-by: syzbot <syzkaller@googlegroups.com>
+Cc: Arnd Bergmann <arnd@arndb.de>
+---
+ drivers/net/hamradio/6pack.c | 4 ++--
+ drivers/net/hamradio/mkiss.c | 4 ++--
+ 2 files changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/net/hamradio/6pack.c b/drivers/net/hamradio/6pack.c
+index 23281aeeb2226ee4dc9d7655aebc247c94c94def..71d6629e65c970e7e133cfa615aa01341a68d43f 100644
+--- a/drivers/net/hamradio/6pack.c
++++ b/drivers/net/hamradio/6pack.c
+@@ -654,10 +654,10 @@ static void sixpack_close(struct tty_struct *tty)
+ {
+ 	struct sixpack *sp;
+ 
+-	write_lock_bh(&disc_data_lock);
++	write_lock_irq(&disc_data_lock);
+ 	sp = tty->disc_data;
+ 	tty->disc_data = NULL;
+-	write_unlock_bh(&disc_data_lock);
++	write_unlock_irq(&disc_data_lock);
+ 	if (!sp)
+ 		return;
+ 
+diff --git a/drivers/net/hamradio/mkiss.c b/drivers/net/hamradio/mkiss.c
+index c5bfa19ddb932f2369b1a933f34c61a17b00b1b9..deef14215110494783720b94908b432537ee664a 100644
+--- a/drivers/net/hamradio/mkiss.c
++++ b/drivers/net/hamradio/mkiss.c
+@@ -773,10 +773,10 @@ static void mkiss_close(struct tty_struct *tty)
+ {
+ 	struct mkiss *ax;
+ 
+-	write_lock_bh(&disc_data_lock);
++	write_lock_irq(&disc_data_lock);
+ 	ax = tty->disc_data;
+ 	tty->disc_data = NULL;
+-	write_unlock_bh(&disc_data_lock);
++	write_unlock_irq(&disc_data_lock);
+ 
+ 	if (!ax)
+ 		return;
+-- 
+2.24.1.735.g03f4e72817-goog
+
