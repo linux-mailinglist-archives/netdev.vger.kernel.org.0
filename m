@@ -2,213 +2,207 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9E78011C1D6
-	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 02:05:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B22511C1DC
+	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 02:07:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727453AbfLLBE4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Dec 2019 20:04:56 -0500
-Received: from szxga04-in.huawei.com ([45.249.212.190]:7671 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726791AbfLLBE4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 11 Dec 2019 20:04:56 -0500
-Received: from DGGEMS410-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id 0B33BABFEBC6B4922017;
-        Thu, 12 Dec 2019 09:04:52 +0800 (CST)
-Received: from [127.0.0.1] (10.74.191.121) by DGGEMS410-HUB.china.huawei.com
- (10.3.19.210) with Microsoft SMTP Server id 14.3.439.0; Thu, 12 Dec 2019
- 09:04:47 +0800
-Subject: Re: [PATCH][v2] page_pool: handle page recycle for NUMA_NO_NODE
- condition
-To:     Saeed Mahameed <saeedm@mellanox.com>,
-        "brouer@redhat.com" <brouer@redhat.com>
-CC:     "jonathan.lemon@gmail.com" <jonathan.lemon@gmail.com>,
-        "ilias.apalodimas@linaro.org" <ilias.apalodimas@linaro.org>,
-        Li Rongqing <lirongqing@baidu.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <1575624767-3343-1-git-send-email-lirongqing@baidu.com>
- <9fecbff3518d311ec7c3aee9ae0315a73682a4af.camel@mellanox.com>
- <20191209131416.238d4ae4@carbon>
- <816bc34a7d25881f35e0c3e21dc2283ffeffb093.camel@mellanox.com>
- <e9855bd9-dddd-e12c-c889-b872702f80d1@huawei.com>
- <585eda1ebe8788959b31bca5bb6943908c08c909.camel@mellanox.com>
- <910156da-0b43-0a86-67a0-f4e7e6547373@huawei.com>
- <a6c43e98662b24574cb1e996fcccad196b9e2bcd.camel@mellanox.com>
-From:   Yunsheng Lin <linyunsheng@huawei.com>
-Message-ID: <82f1ddb0-805e-c6db-51dc-b6c4aa8c9bd6@huawei.com>
-Date:   Thu, 12 Dec 2019 09:04:47 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:52.0) Gecko/20100101
- Thunderbird/52.2.0
+        id S1727469AbfLLBHY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Dec 2019 20:07:24 -0500
+Received: from mail-qk1-f193.google.com ([209.85.222.193]:40173 "EHLO
+        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726791AbfLLBHY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Dec 2019 20:07:24 -0500
+Received: by mail-qk1-f193.google.com with SMTP id c17so239196qkg.7
+        for <netdev@vger.kernel.org>; Wed, 11 Dec 2019 17:07:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=FupJ3RGGSuXqZLNq9OYkiWJfWzpWGpZdY0+xiHFNf5k=;
+        b=PjjiqJD70gViXxHlckRfHszeRsbEJIdein9bLpB5qNeYEkSfEoTyWW9wkU27svoDy0
+         0mxU/QUmL6fRlJtD0dKcT/Q9P5+Ovr2iasAgSLBLpK5Mdc2YSJWsqNsP8Adqs4jmSIb6
+         zUPRkCxxbBPNlANZHRj+fZcJtOM/fWE5aHguHGBChkGGJX6KOW4ZXO597JCrxEK3Cyh4
+         jj3rxyymrXrUObd0sw+sFVJBltdo67iqcrdu35p/12jQDm6ByLD3HfVecZkA2e6SWWRH
+         Z8Qr1Va2idjdJxmpP1U77twQjydNksoo9NtHmK3QLmB9pbbRoOk+GouyAzdUstI00J2B
+         Yf6Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=FupJ3RGGSuXqZLNq9OYkiWJfWzpWGpZdY0+xiHFNf5k=;
+        b=Xp1SgjvVyEjCSYLNzIeRIs6OrZboeUVhOLLw26o0pr46FQForzUhby1hjPtLF7fQTK
+         KqcFqC0WPE4olvWfn/oeSgFPWhVvTexKFte2N/Yxl66G0/L1Fp5rvjCwN19yFz+FzIKN
+         CbUWkXdi/C7NRUBDhq6BgPCDKYZURL8tJzEy3gJqqOoQ/96I1w0BD7uFFndtNaeAnY2u
+         aAcLhC5AqG1utLpqyEndt1o6KJqwtdNzDrxvBD6DrUnq52Wyc8W3FwEiB407ZtNkdIW5
+         rMVGIupwP7EGcn/cF7s/pNn3o2TR/NeG9sA1Dfm6xhYSzd7toRoxtqGMrJylfs3bIVnV
+         bjMw==
+X-Gm-Message-State: APjAAAVwcP5almd7G+4pORx7ievyoHXaqIHVXnEl8xzZoOP13K+cJw/6
+        5Lp9Sutv4hb5IJCAogeiu+rut9pY
+X-Google-Smtp-Source: APXvYqxGprr/mAqF6JwMzrw9GeYyV1ZvN2/gkQuSUvX6dGvRZqrZvRbXveEiLEf/uH2nVDK2ZK0gZg==
+X-Received: by 2002:a05:620a:b19:: with SMTP id t25mr6025198qkg.82.1576112842707;
+        Wed, 11 Dec 2019 17:07:22 -0800 (PST)
+Received: from localhost (modemcable249.105-163-184.mc.videotron.ca. [184.163.105.249])
+        by smtp.gmail.com with ESMTPSA id b7sm1233208qkh.106.2019.12.11.17.07.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 11 Dec 2019 17:07:22 -0800 (PST)
+From:   Vivien Didelot <vivien.didelot@gmail.com>
+To:     "David S. Miller" <davem@davemloft.net>
+Cc:     Roopa Prabhu <roopa@cumulusnetworks.com>,
+        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
+        netdev@vger.kernel.org, bridge@lists.linux-foundation.org,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        David Ahern <dsahern@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>
+Subject: [PATCH net-next v3] net: bridge: add STP xstats
+Date:   Wed, 11 Dec 2019 20:07:10 -0500
+Message-Id: <20191212010711.1664000-1-vivien.didelot@gmail.com>
+X-Mailer: git-send-email 2.24.0
 MIME-Version: 1.0
-In-Reply-To: <a6c43e98662b24574cb1e996fcccad196b9e2bcd.camel@mellanox.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.74.191.121]
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2019/12/12 4:57, Saeed Mahameed wrote:
-> On Wed, 2019-12-11 at 11:01 +0800, Yunsheng Lin wrote:
->> On 2019/12/11 3:45, Saeed Mahameed wrote:
->>>>> maybe assume that __page_pool_recycle_direct() is always called
->>>>> from
->>>>> the right node and change the current bogus check:
->>>>>
->>>>> from:
->>>>> page_to_nid(page) == pool->p.nid 
->>>>>
->>>>> to:
->>>>> page_to_nid(page) == numa_mem_id()
->>>>>
->>>>> This will allow recycling only if handling node is the same as
->>>>> where
->>>>> the page was allocated, regardless of pool->p.nid.
->>>>>
->>>>> so semantics are:
->>>>>
->>>>> 1) allocate from: pool->p.nid, as chosen by user.
->>>>> 2) recycle when: page_to_nid(page) == numa_mem_id().
->>>>> 3) pool user must guarantee that the handler will run on the
->>>>> right
->>>>> node. which should always be the case. otherwise recycling will
->>>>> be
->>>>> skipped (no cross numa recycling).
->>>>>
->>>>>
->>>>> a) if the pool migrates, we will stop recycling until the pool
->>>>> moves
->>>>> back to original node, or user calls pool_update_nid() as we do
->>>>> in
->>>>> mlx5.
->>>>> b) if pool is NUMA_NO_NODE, then allocation and handling will
->>>>> be
->>>>> done
->>>>> on numa_mem_id(), which means the above check will work.
->>>>
->>>> Only checking page_to_nid(page) == numa_mem_id() may not work for
->>>> the
->>>> below
->>>> case in mvneta.c:
->>>>
->>>> static int mvneta_create_page_pool(struct mvneta_port *pp,
->>>> 				   struct mvneta_rx_queue *rxq, int
->>>> size)
->>>> {
->>>> 	struct bpf_prog *xdp_prog = READ_ONCE(pp->xdp_prog);
->>>> 	struct page_pool_params pp_params = {
->>>> 		.order = 0,
->>>> 		.flags = PP_FLAG_DMA_MAP | PP_FLAG_DMA_SYNC_DEV,
->>>> 		.pool_size = size,
->>>> 		.nid = cpu_to_node(0),
->>>> 		.dev = pp->dev->dev.parent,
->>>> 		.dma_dir = xdp_prog ? DMA_BIDIRECTIONAL :
->>>> DMA_FROM_DEVICE,
->>>> 		.offset = pp->rx_offset_correction,
->>>> 		.max_len = MVNETA_MAX_RX_BUF_SIZE,
->>>> 	};
->>>>
->>>> the pool->p.nid is not NUMA_NO_NODE, then the node of page
->>>> allocated
->>>> for rx
->>>> may not be numa_mem_id() when running in the NAPI polling,
->>>> because
->>>> pool->p.nid
->>>> is not the same as the node of cpu running in the NAPI polling.
->>>>
->>>> Does the page pool support recycling for above case?
->>>>
->>>
->>> I don't think you want to allow cross numa recycling.
->>
->> Cross numa recycling is not what I want.
->>
->>>> Or we "fix' the above case by setting pool->p.nid to
->>>> NUMA_NO_NODE/dev_to_node(),
->>>> or by calling pool_update_nid() in NAPI polling as mlx5 does?
->>>>
->>>
->>> Yes just update_nid when needed, and make sure the NAPI polling
->>> runs on
->>> a consistent core and eventually alloc/recycling will happen on the
->>> same core.
->>
->> To me, passing NUMA_NO_NODE/dev_to_node() seems to always work.
->> Calling pool_update_nid() in NAPI polling is another way of passing
->> NUMA_NO_NODE to page_pool_init().
->>
->> And it seems it is a copy & paste problem for mvneta and netsec
->> driver that uses cpu_to_node(0) as pool->p.nid but does not call
->> page_pool_nid_changed() in the NAPI polling as mlx5 does.
->>
->> So I suggest to remove page_pool_nid_changed() and always use
->> NUMA_NO_NODE/dev_to_node() as pool->p.nid or make it clear (
->> by comment or warning?)that page_pool_nid_changed() should be
->> called when pool->p.nid is NUMA_NO_NODE/dev_to_node().
->>
-> 
-> not an option.
-> 
-> rx rings should always allocate data buffers according to their cpu
-> affinity and not dev_node or default to NUMA_NO_NODE.
+This adds rx_bpdu, tx_bpdu, rx_tcn, tx_tcn, transition_blk,
+transition_fwd xstats counters to the bridge ports copied over via
+netlink, providing useful information for STP.
 
-Does "their cpu affinity" mean numa_mem_id() when runnig in the
-NAPI polling context?
+Signed-off-by: Vivien Didelot <vivien.didelot@gmail.com>
+---
+ include/uapi/linux/if_bridge.h | 10 ++++++++++
+ net/bridge/br_netlink.c        | 13 +++++++++++++
+ net/bridge/br_private.h        |  2 ++
+ net/bridge/br_stp.c            | 15 +++++++++++++++
+ net/bridge/br_stp_bpdu.c       |  4 ++++
+ 5 files changed, 44 insertions(+)
 
-If yes, the node of data buffers allocated for rx will be default to
-numa_mem_id() when the pool->p.nid is NUMA_NO_NODE.
-
-See:
-
-/*
- * Allocate pages, preferring the node given as nid. When nid == NUMA_NO_NODE,
- * prefer the current CPU's closest node. Otherwise node must be valid and
- * online.
- */
-static inline struct page *alloc_pages_node(int nid, gfp_t gfp_mask,
-						unsigned int order)
-{
-	if (nid == NUMA_NO_NODE)
-		nid = numa_mem_id();
-
-	return __alloc_pages_node(nid, gfp_mask, order);
-}
-
-If the above is true, NUMA_NO_NODE is default to numa_mem_id().
-
-> 
->> I prefer to remove page_pool_nid_changed() if we do not allow
->> cross numa recycling.
->>
-> 
-> This is not for cross numa recycling. 
-> Since rx rings can migragte between cores, (msix affinity/IRQ balancer)
-> we need page_pool_nid_changed() for seamless migration and for
-> recycling and allocation to migrate with the ring.
-
-
-If the allocation and recycling for rx data buffer is guaranteed to be in
-NAPI polling context, when rx rings migragtes between nodes, it will stop
-recycling the old pages allocated from old node, and start allocating new
-page from new node and start recycling those new pages, because numa_mem_id()
-will return different node id based on node the current cpu is running on.
-
-Or allocation and recycling for rx data buffer will not be guaranteed to be
-in the same NAPI polling context for a specific ring? Is there a usecase for
-this?
-
-
-> 
->>
->>>>> Thanks,
->>>>> Saeed.
->>>>>
->>>>>
->>>>>
->>>>>
->>>>>
->>>>>
->>>>>
+diff --git a/include/uapi/linux/if_bridge.h b/include/uapi/linux/if_bridge.h
+index 1b3c2b643a02..4a58e3d7de46 100644
+--- a/include/uapi/linux/if_bridge.h
++++ b/include/uapi/linux/if_bridge.h
+@@ -156,6 +156,15 @@ struct bridge_vlan_xstats {
+ 	__u32 pad2;
+ };
+ 
++struct bridge_stp_xstats {
++	__u64 transition_blk;
++	__u64 transition_fwd;
++	__u64 rx_bpdu;
++	__u64 tx_bpdu;
++	__u64 rx_tcn;
++	__u64 tx_tcn;
++};
++
+ /* Bridge multicast database attributes
+  * [MDBA_MDB] = {
+  *     [MDBA_MDB_ENTRY] = {
+@@ -262,6 +271,7 @@ enum {
+ 	BRIDGE_XSTATS_VLAN,
+ 	BRIDGE_XSTATS_MCAST,
+ 	BRIDGE_XSTATS_PAD,
++	BRIDGE_XSTATS_STP,
+ 	__BRIDGE_XSTATS_MAX
+ };
+ #define BRIDGE_XSTATS_MAX (__BRIDGE_XSTATS_MAX - 1)
+diff --git a/net/bridge/br_netlink.c b/net/bridge/br_netlink.c
+index a0a54482aabc..60136575aea4 100644
+--- a/net/bridge/br_netlink.c
++++ b/net/bridge/br_netlink.c
+@@ -1607,6 +1607,19 @@ static int br_fill_linkxstats(struct sk_buff *skb,
+ 		br_multicast_get_stats(br, p, nla_data(nla));
+ 	}
+ #endif
++
++	if (p) {
++		nla = nla_reserve_64bit(skb, BRIDGE_XSTATS_STP,
++					sizeof(p->stp_xstats),
++					BRIDGE_XSTATS_PAD);
++		if (!nla)
++			goto nla_put_failure;
++
++		spin_lock_bh(&br->lock);
++		memcpy(nla_data(nla), &p->stp_xstats, sizeof(p->stp_xstats));
++		spin_unlock_bh(&br->lock);
++	}
++
+ 	nla_nest_end(skb, nest);
+ 	*prividx = 0;
+ 
+diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
+index 36b0367ca1e0..f540f3bdf294 100644
+--- a/net/bridge/br_private.h
++++ b/net/bridge/br_private.h
+@@ -283,6 +283,8 @@ struct net_bridge_port {
+ #endif
+ 	u16				group_fwd_mask;
+ 	u16				backup_redirected_cnt;
++
++	struct bridge_stp_xstats	stp_xstats;
+ };
+ 
+ #define kobj_to_brport(obj)	container_of(obj, struct net_bridge_port, kobj)
+diff --git a/net/bridge/br_stp.c b/net/bridge/br_stp.c
+index 1f1410f8d312..6856a6d9282b 100644
+--- a/net/bridge/br_stp.c
++++ b/net/bridge/br_stp.c
+@@ -45,6 +45,17 @@ void br_set_state(struct net_bridge_port *p, unsigned int state)
+ 		br_info(p->br, "port %u(%s) entered %s state\n",
+ 				(unsigned int) p->port_no, p->dev->name,
+ 				br_port_state_names[p->state]);
++
++	if (p->br->stp_enabled == BR_KERNEL_STP) {
++		switch (p->state) {
++		case BR_STATE_BLOCKING:
++			p->stp_xstats.transition_blk++;
++			break;
++		case BR_STATE_FORWARDING:
++			p->stp_xstats.transition_fwd++;
++			break;
++		}
++	}
+ }
+ 
+ /* called under bridge lock */
+@@ -484,6 +495,8 @@ void br_received_config_bpdu(struct net_bridge_port *p,
+ 	struct net_bridge *br;
+ 	int was_root;
+ 
++	p->stp_xstats.rx_bpdu++;
++
+ 	br = p->br;
+ 	was_root = br_is_root_bridge(br);
+ 
+@@ -517,6 +530,8 @@ void br_received_config_bpdu(struct net_bridge_port *p,
+ /* called under bridge lock */
+ void br_received_tcn_bpdu(struct net_bridge_port *p)
+ {
++	p->stp_xstats.rx_tcn++;
++
+ 	if (br_is_designated_port(p)) {
+ 		br_info(p->br, "port %u(%s) received tcn bpdu\n",
+ 			(unsigned int) p->port_no, p->dev->name);
+diff --git a/net/bridge/br_stp_bpdu.c b/net/bridge/br_stp_bpdu.c
+index 7796dd9d42d7..0e4572f31330 100644
+--- a/net/bridge/br_stp_bpdu.c
++++ b/net/bridge/br_stp_bpdu.c
+@@ -118,6 +118,8 @@ void br_send_config_bpdu(struct net_bridge_port *p, struct br_config_bpdu *bpdu)
+ 	br_set_ticks(buf+33, bpdu->forward_delay);
+ 
+ 	br_send_bpdu(p, buf, 35);
++
++	p->stp_xstats.tx_bpdu++;
+ }
+ 
+ /* called under bridge lock */
+@@ -133,6 +135,8 @@ void br_send_tcn_bpdu(struct net_bridge_port *p)
+ 	buf[2] = 0;
+ 	buf[3] = BPDU_TYPE_TCN;
+ 	br_send_bpdu(p, buf, 4);
++
++	p->stp_xstats.tx_tcn++;
+ }
+ 
+ /*
+-- 
+2.24.0
 
