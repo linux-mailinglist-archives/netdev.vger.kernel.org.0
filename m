@@ -2,128 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B31611D8BF
-	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 22:47:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D23F111D8C2
+	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 22:47:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731162AbfLLVqA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Dec 2019 16:46:00 -0500
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:44688 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730887AbfLLVqA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Dec 2019 16:46:00 -0500
-Received: by mail-pg1-f194.google.com with SMTP id x7so227164pgl.11
-        for <netdev@vger.kernel.org>; Thu, 12 Dec 2019 13:46:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fomichev-me.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=zup1ZFvjpLsBitLXM/f/KZndih/WwXlNRrCfPRNh1DE=;
-        b=OnAUAo+5L7IrdfKAwza3RWTSyDtcRlQ+A/pI9OAMffvnebc2TXmw5+G2d+wBv7HBnS
-         AIkZoQ46KvORpYceLzrmoyXIwXtRVDkDUAiqD1RG5pJw6872gXyJfTdujXwIzer6Veib
-         AV3i3pL4J5jCS+d2aGpgA+jqD4qUZYxgoWp97etSOPknjf4v9L44hafc4z97sLoaZ0YJ
-         +hBZT5h0yhyl6zjIbU7eP8AebanKB0Zecd24v3qYgKeDcW1gufhR0Ii+T1eSBKtRPr/n
-         xsrV4I0FeHL6hVWyz8+Wx8aF1WHvyM+UCRWPeZtYUSAh0nPlaJHWfn6xLUN4QqrwmYNl
-         oIbQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=zup1ZFvjpLsBitLXM/f/KZndih/WwXlNRrCfPRNh1DE=;
-        b=atXwjADlKGH9TCGI5AdklB7xKI/eNUdVEeC+j3ldkrWKZ19F0zSwbB6Q4wQlNVsd7O
-         wwJjLmcOMDglLoApIzFR2k1Y/gPYRzOiHCl6DTDnQdaeAVGV2jH6VdFrwbP8OpwNGtUD
-         83YDfoO7h+kIMXIc/3iXLO66qo5CNznkfajDTMpritl8OqqIhoVRIL+wUkn00u+AwKMK
-         lGEILfLXeX38UAXhSV92Ck3Xyr6gwOd2HmNgRt5q6UsoqwvJU57tkMJilkeYZ/u2LIhL
-         VxIPXppkaNkoX7Q9PBKsCO9/+5TObok+6ARW0Uy31BgU837OzGJ7TYSmkRxlkI441Ug+
-         hPKw==
-X-Gm-Message-State: APjAAAWNFgHduF/bMBQFldWahGIOKEUX4SNoaGbWG/TMKhFVC5egRYAL
-        fVtSoMcHKQ0U6geqsmEFnRYHyA==
-X-Google-Smtp-Source: APXvYqzpVuPBBOl0fFYwopZqMbhecvaa2TBve0aCKEkOibigelJLHLP3OA806jFISBb3XOBTK2h5yg==
-X-Received: by 2002:a63:a508:: with SMTP id n8mr12684811pgf.278.1576187159678;
-        Thu, 12 Dec 2019 13:45:59 -0800 (PST)
-Received: from localhost ([2601:646:8f00:18d9:d0fa:7a4b:764f:de48])
-        by smtp.gmail.com with ESMTPSA id g6sm6903979pjl.25.2019.12.12.13.45.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 Dec 2019 13:45:58 -0800 (PST)
-Date:   Thu, 12 Dec 2019 13:45:57 -0800
-From:   Stanislav Fomichev <sdf@fomichev.me>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        LKML <linux-kernel@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>
-Subject: Re: [PATCH bpf-next 11/15] bpftool: add skeleton codegen command
-Message-ID: <20191212214557.GO3105713@mini-arch>
-References: <20191211191518.GD3105713@mini-arch>
- <CAEf4BzYofFFjSAO3O-G37qyeVHE6FACex=yermt8bF8mXksh8g@mail.gmail.com>
- <20191211200924.GE3105713@mini-arch>
- <CAEf4BzaE0Q7LnPOa90p1RX9qSbOA_8hkT=6=7peP9C88ErRumQ@mail.gmail.com>
- <20191212025735.GK3105713@mini-arch>
- <CAEf4BzY2KHK4h5e40QgGt4GzJ6c+rm-vtbyEdM41vUSqcs=txA@mail.gmail.com>
- <20191212162953.GM3105713@mini-arch>
- <CAEf4BzYJHvuFbBM-xvCCsEa+Pg-bG1tprGMbCDtsbGHdv7KspA@mail.gmail.com>
- <20191212104334.222552a1@cakuba.netronome.com>
- <20191212195415.ubnuypco536rp6mu@ast-mbp.dhcp.thefacebook.com>
+        id S1731169AbfLLVqe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Dec 2019 16:46:34 -0500
+Received: from s3.sipsolutions.net ([144.76.43.62]:53108 "EHLO
+        sipsolutions.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730876AbfLLVqe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Dec 2019 16:46:34 -0500
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.92.3)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1ifWI1-008AXt-IM; Thu, 12 Dec 2019 22:46:29 +0100
+Message-ID: <49cd2d6c7bf597c224edb8806cd56c126b5901b4.camel@sipsolutions.net>
+Subject: Re: debugging TCP stalls on high-speed wifi
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     Ben Greear <greearb@candelatech.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Neal Cardwell <ncardwell@google.com>
+Cc:     Toke =?ISO-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
+        linux-wireless@vger.kernel.org, Netdev <netdev@vger.kernel.org>
+Date:   Thu, 12 Dec 2019 22:46:27 +0100
+In-Reply-To: <04dc171a-7385-6544-6cc6-141aae9f2782@candelatech.com>
+References: <14cedbb9300f887fecc399ebcdb70c153955f876.camel@sipsolutions.net>
+         <CADVnQym_CNktZ917q0-9dVY9dhtiJVRRotGTrPNdZUpkjd3vyw@mail.gmail.com>
+         <f4670ce0f4399fe82e7168fb9c491d8eb718e8d8.camel@sipsolutions.net>
+         <99748db5-7898-534b-d407-ed819f07f939@gmail.com>
+         <ff6b35ad589d7cf0710cb9fca4c799538da2e653.camel@sipsolutions.net>
+         <04dc171a-7385-6544-6cc6-141aae9f2782@candelatech.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.34.2 (3.34.2-1.fc31) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191212195415.ubnuypco536rp6mu@ast-mbp.dhcp.thefacebook.com>
-User-Agent: Mutt/1.12.2 (2019-09-21)
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/12, Alexei Starovoitov wrote:
-> On Thu, Dec 12, 2019 at 10:43:34AM -0800, Jakub Kicinski wrote:
-> One more point from Stan's email:
+On Thu, 2019-12-12 at 13:29 -0800, Ben Greear wrote:
 > 
-> > You can replace "our build system" with some other project you care about,
-> > like systemd. They'd have the same problem with vendoring in recent enough
+> > (*) Hmm. Now I have another idea. Maybe we have some kind of problem
+> > with the medium access configuration, and we transmit all this data
+> > without the AP having a chance to send back all the ACKs? Too bad I
+> > can't put an air sniffer into the setup - it's a conductive setup.
 > 
-> we've been working with systemd folks for ~8 month to integrate libbpf into
-> their build that is using meson build system and their CI that is github based.
-> So we're well aware about systemd requirements for libbpf and friends.
-Just curious (searching on systemd github for bpftool/libbpf doesn't
-show up any code/issues): are you saying that there will be another ~8 months
-to bring in bpftool or that it's already being worked on as part of
-libbpf integration?
+> splitter/combiner?
 
-> > bpftool or waiting for every distro to do it. And all this work is
-> > because you think that doing:
-> >
-> >        my_obj->rodata->my_var = 123;
-> >
-> > Is easier / more type safe than doing:
-> >        int *my_var = bpf_object__rodata_lookup(obj, "my_var");
-> >        *my_var = 123;
+I guess. I haven't looked at it, it's halfway around the world or
+something :)
+
+> If it is just delayed acks coming back, which would slow down a stream, then
+> multiple streams would tend to work around that problem?
+
+Only a bit, because it allows somewhat more outstanding data. But each
+stream estimates the throughput lower in its congestion control
+algorithm, so it would have a smaller window size?
+
+What I was thinking is that if we have some kind of skew in the system
+and always/frequently/sometimes make our transmissions have priority
+over the AP transmissions, then we'd not get ACKs back, and that might
+cause what I see - the queue drains entirely and *then* we get an ACK
+back...
+
+That's not a _bad_ theory and I'll have to find a good way to test it,
+but I'm not entirely convinced that's the problem.
+
+Oh, actually, I guess I know it's *not* the problem because otherwise
+the ss output would show we're blocked on congestion window far more
+than it looks like now? I think?
+
+
+> I would actually expect similar speedup with multiple streams if some TCP socket
+> was blocked on waiting for ACKs too.
 > 
-> Stan, you conveniently skipped error checking. It should have been:
->     int *my_var = bpf_object__rodata_lookup(obj, "my_var");
->     if (IS_ERROR_NULL(my_var))
->         goto out_cleanup;
->      *my_var = 123;
-Yeah, but you have a choice, right? You can choose to check the error
-and support old programs that don't export some global var and a new
-program that has it. Or you can skip the error checks and rely on null
-deref crash which is sometimes an option.
+> Even if you can't sniff the air, you could sniff the wire or just look at packet
+> in/out counts.  If you have a huge number of ACKs, that would show up in raw pkt
+> counters.
 
-(might be not relevant with the introduction of EMBED_FILE which you
-seem to be using more and more; ideally, we still would like to be able to
-distribute bpf.o and userspace binary separately).
+I know I have a huge number of ACKs, but I also know that's not the
+(only) problem. My question/observation was related to the timing of
+them.
 
-> Take a look at Andrii's patch 13/15:
-> 5 files changed, 149 insertions(+), 249 deletions(-)
-> Those are simple selftests, yet code removal is huge. Bigger project benefits
-> even more.
-Excluding fentry/fexit tests (where new find_program_by_title+attach
-helper and mmap might help), it looks like the majority of those gains come
-from the fact that the patch in question doesn't do any error checking.
-You can drop all the CHECK() stuff for existing
-find_map_by_name/find_prog_by_name instead and get the same gains.
+> I'm not sure it matters these days, but this patch greatly helped TCP throughput on
+> ath10k for a while, and we are still using it.  Maybe your sk_pacing change already
+> tweaked the same logic:
+> 
+> https://github.com/greearb/linux-ct-5.4/commit/65651d4269eb2b0d4b4952483c56316a7fbe2f48
 
-[as usual, feel free to ignore me, I don't want to keep flaming about
-it, but it's hard not to reply]
+Yes, you should be able to drop that patch - look at it, it just
+multiples the thing there that you have with "sk->sk_pacing_shift",
+instead we currently by default set sk->sk_pacing_shift to 7 instead of
+10 or something, so that'd be equivalent to setting your sysctl to 8.
+
+> 		TCP_TSQ=200
+
+Setting it to 200 is way excessive. In particular since you already get
+the *8 from the default mac80211 behaviour, so now you effectively have
+*1600, which means instead of 1ms you can have 1.6s worth of TCP data on
+the queues ... way too much :)
+
+johannes
+
