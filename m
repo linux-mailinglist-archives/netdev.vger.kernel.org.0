@@ -2,91 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 37A6311CCD7
-	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 13:12:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2246111CD33
+	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 13:32:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729094AbfLLMMW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Dec 2019 07:12:22 -0500
-Received: from aserp2120.oracle.com ([141.146.126.78]:40756 "EHLO
-        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729004AbfLLMMV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Dec 2019 07:12:21 -0500
-Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
-        by aserp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id xBCC4VL5110310;
-        Thu, 12 Dec 2019 12:12:15 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : mime-version : content-type :
- in-reply-to; s=corp-2019-08-05;
- bh=DeBTMQ4Ve6kVrzUvuWYJqGCqXWL8BbVSM9l2GRIPWW0=;
- b=fXqTE/BDGCD+Bx19Dn8XOZczsWPTWd81/iVVHmKZbnq524GuNC4sJgDgGIi8QHO9AtEm
- jndeBb9Jl2Wwmi7vDWzAw9sWp34Bm/IkFfeoQfgvV9lJChLqZHjKgAn/DvxRfIBrcZMF
- lh1VDgIvF8RjLTYP1ZLXjvbc2i2CqKaNLrz30vPcbjDglMIsPZJmK+klNTPoPe0K+Tdn
- lWUesfkYdOk2GATI0aDDrBD5aOiL12zGZFzP13rlmqLRU0UwTVhH3W63uKlozUYPfOPK
- TFNOVtXk8TS5CvT3rRhWW4EqGGnVY5Nq8GjKrKm2LvBTxqDz8WUyRfA2WJgGpXfjAXOj 9g== 
-Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
-        by aserp2120.oracle.com with ESMTP id 2wr41qjmms-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 12 Dec 2019 12:12:15 +0000
-Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
-        by aserp3020.oracle.com (8.16.0.27/8.16.0.27) with SMTP id xBCC8BBV070476;
-        Thu, 12 Dec 2019 12:12:15 GMT
-Received: from userv0121.oracle.com (userv0121.oracle.com [156.151.31.72])
-        by aserp3020.oracle.com with ESMTP id 2wumvxxtbb-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 12 Dec 2019 12:12:15 +0000
-Received: from abhmp0006.oracle.com (abhmp0006.oracle.com [141.146.116.12])
-        by userv0121.oracle.com (8.14.4/8.13.8) with ESMTP id xBCCCD5D027919;
-        Thu, 12 Dec 2019 12:12:14 GMT
-Received: from kadam (/129.205.23.165)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Thu, 12 Dec 2019 04:12:13 -0800
-Date:   Thu, 12 Dec 2019 15:12:06 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Scott Schafer <schaferjscott@gmail.com>
-Cc:     gregkh@linuxfoundation.org, devel@driverdev.osuosl.org,
-        GR-Linux-NIC-Dev@marvell.com, Manish Chopra <manishc@marvell.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 11/23] staging: qlge: Fix CHECK: braces {} should be
- used on all arms of this statement
-Message-ID: <20191212121206.GB1895@kadam>
-References: <cover.1576086080.git.schaferjscott@gmail.com>
- <0e1fc1a16725094676fdab63d3a24a986309a759.1576086080.git.schaferjscott@gmail.com>
+        id S1729228AbfLLMcM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Dec 2019 07:32:12 -0500
+Received: from mx2.suse.de ([195.135.220.15]:53394 "EHLO mx1.suse.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1729092AbfLLMcL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 12 Dec 2019 07:32:11 -0500
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx1.suse.de (Postfix) with ESMTP id 1D740AC35;
+        Thu, 12 Dec 2019 12:32:07 +0000 (UTC)
+Message-ID: <0a3e22d627a70cb60237c811b5874b9a4413329f.camel@suse.de>
+Subject: Re: [PATCH v4 7/8] linux/log2.h: Fix 64bit calculations in
+ roundup/down_pow_two()
+From:   Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+To:     Robin Murphy <robin.murphy@arm.com>, andrew.murray@arm.com,
+        maz@kernel.org, linux-kernel@vger.kernel.org,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Emilio =?ISO-8859-1?Q?L=F3pez?= <emilio@elopez.com.ar>,
+        Maxime Ripard <mripard@kernel.org>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Mike Marciniszyn <mike.marciniszyn@intel.com>,
+        Dennis Dalessandro <dennis.dalessandro@intel.com>,
+        Yishai Hadas <yishaih@mellanox.com>,
+        Moni Shoua <monis@mellanox.com>,
+        David Woodhouse <dwmw2@infradead.org>,
+        Lu Baolu <baolu.lu@linux.intel.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Mirko Lindner <mlindner@marvell.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Solarflare linux maintainers <linux-net-drivers@solarflare.com>,
+        Edward Cree <ecree@solarflare.com>,
+        Martin Habets <mhabets@solarflare.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Eric Biederman <ebiederm@xmission.com>,
+        Thomas Graf <tgraf@suug.ch>,
+        Herbert Xu <herbert@gondor.apana.org.au>
+Cc:     james.quinlan@broadcom.com, mbrugger@suse.com,
+        f.fainelli@gmail.com, phil@raspberrypi.org, wahrenst@gmx.net,
+        jeremy.linton@arm.com, linux-pci@vger.kernel.org,
+        linux-rpi-kernel@lists.infradead.org,
+        Robin Murphy <robin.murphy@arm.con>,
+        Doug Ledford <dledford@redhat.com>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        "David S. Miller" <davem@davemloft.net>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Anna Schumaker <anna.schumaker@netapp.com>,
+        "J. Bruce Fields" <bfields@fieldses.org>,
+        Chuck Lever <chuck.lever@oracle.com>,
+        linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-rdma@vger.kernel.org, iommu@lists.linux-foundation.org,
+        netdev@vger.kernel.org, kexec@lists.infradead.org,
+        linux-nfs@vger.kernel.org
+Date:   Thu, 12 Dec 2019 13:31:57 +0100
+In-Reply-To: <70c6b704-a12a-fb44-e93f-a6db12ed928f@arm.com>
+References: <20191203114743.1294-1-nsaenzjulienne@suse.de>
+         <20191203114743.1294-8-nsaenzjulienne@suse.de>
+         <70c6b704-a12a-fb44-e93f-a6db12ed928f@arm.com>
+Content-Type: multipart/signed; micalg="pgp-sha256";
+        protocol="application/pgp-signature"; boundary="=-FrLm7Huzs2OM/GGn8vDZ"
+User-Agent: Evolution 3.34.2 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <0e1fc1a16725094676fdab63d3a24a986309a759.1576086080.git.schaferjscott@gmail.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9468 signatures=668685
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
- phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=965
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.0.1-1911140001 definitions=main-1912120092
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9468 signatures=668685
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
- suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1015
- lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1911140001
- definitions=main-1912120092
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 11, 2019 at 12:12:40PM -0600, Scott Schafer wrote:
-> @@ -351,8 +352,9 @@ static int ql_aen_lost(struct ql_adapter *qdev, struct mbox_params *mbcp)
->  	mbcp->out_count = 6;
->  
->  	status = ql_get_mb_sts(qdev, mbcp);
-> -	if (status)
-> +	if (status) {
->  		netif_err(qdev, drv, qdev->ndev, "Lost AEN broken!\n");
-> +	}
->  	else {
 
-The close } should be on the same line as the else.
+--=-FrLm7Huzs2OM/GGn8vDZ
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
->  		int i;
->  
+Hi Robin,
 
-regards,
-dan carpenter
+On Thu, 2019-12-05 at 17:48 +0000, Robin Murphy wrote:
+> On 03/12/2019 11:47 am, Nicolas Saenz Julienne wrote:
+> > Some users need to make sure their rounding function accepts and return=
+s
+> > 64bit long variables regardless of the architecture. Sadly
+> > roundup/rounddown_pow_two() takes and returns unsigned longs. It turns
+> > out ilog2() already handles 32/64bit calculations properly, and being
+> > the building block to the round functions we can rework them as a
+> > wrapper around it.
+>=20
+> Neat! Although all the additional ULL casts this introduces seem=20
+> somewhat unwelcome - I suppose the (1ULL << (ilog2(n))) makes it=20
+> effectively always return unsigned long long now. Might it make sense to=
+=20
+> cast the return value to typeof(n) to avoid this slightly non-obvious=20
+> behaviour (and the associated churn)?
+
+It might alleviate some of the churn alright but I don't think a cast is re=
+ally
+going to make the behaviour more obvious. Say your expression is a big mess=
+,
+you'll have to analyze it to infer the output type, keeping in mind things =
+like
+integer promotion. See this example, 'params->nelem_hint' and
+'params->min_size' are u16:
+
+	diff --git a/lib/rhashtable.c b/lib/rhashtable.c
+	index bdb7e4cadf05..70908678c7a8 100644
+	--- a/lib/rhashtable.c
+	+++ b/lib/rhashtable.c
+	@@ -950,7 +950,7 @@ static size_t rounded_hashtable_size(const struct rhas=
+htable_params *params)
+
+		if (params->nelem_hint)
+			retsize =3D max(roundup_pow_of_two(params->nelem_hint * 4 / 3),
+	-                             (unsigned long)params->min_size);
+	+                             (unsigned long long)params->min_size);
+		else
+			retsize =3D max(HASH_DEFAULT_SIZE,
+				      (unsigned long)params->min_size);
+
+With a cast the patch will look like this:
+
+	diff --git a/lib/rhashtable.c b/lib/rhashtable.c
+	index bdb7e4cadf05..70908678c7a8 100644
+	--- a/lib/rhashtable.c
+	+++ b/lib/rhashtable.c
+	@@ -950,7 +950,7 @@ static size_t rounded_hashtable_size(const struct rhas=
+htable_params *params)
+
+		if (params->nelem_hint)
+			retsize =3D max(roundup_pow_of_two(params->nelem_hint * 4 / 3),
+	-                             (unsigned long)params->min_size);
+	+                             (int)params->min_size);
+		else
+			retsize =3D max(HASH_DEFAULT_SIZE,
+				      (unsigned long)params->min_size);
+
+To me it's even less obvious than with a fixed ULL.
+
+My intuition tells me to keep it as similar as the old behaviour, at the
+expense of the extra churn (which is not that different from the current st=
+atus
+quo anyway). That said, I'll be happy to change it.
+
+Regards,
+Nicolas
+
+
+--=-FrLm7Huzs2OM/GGn8vDZ
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part
+Content-Transfer-Encoding: 7bit
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCAAdFiEErOkkGDHCg2EbPcGjlfZmHno8x/4FAl3yMz0ACgkQlfZmHno8
+x/50Nwf8DZv64TadvwE8CB4bWgsqMtbiu/fef5NUbUYuFUED8TIdE3BewSgcKkjR
+UcmnTnVxq9m204FNfGnEcHAS2TjDnv2GvkRDGKIAoXt2ewgnMSoS5cwHJrHfHLr9
+KX2ULSnGQqqtWEYGUe9h/hzd1mfC0gun3Mqafs1lQD7h2XeckKMt0iEa/WtfYGnP
+8UJbPU5wHnCJwEbQHCtc+mV/kcQfh+3u5OHh3O4KQHcBo5TJVJovpZ6jBV4uBV1G
+ePj2s84UCGZcXy1ZuwV2g32zpn8RgDXDWmdEgJ3hi1bTYZZzG4YQc2sTpjidvRB7
+86UCrw4pWQ/M0pNf1UdlDlf+jz7Njw==
+=1uX6
+-----END PGP SIGNATURE-----
+
+--=-FrLm7Huzs2OM/GGn8vDZ--
+
