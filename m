@@ -2,88 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A9CD11D06B
-	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 16:02:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D17411D06F
+	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 16:04:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728641AbfLLPCF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Dec 2019 10:02:05 -0500
-Received: from mail-yw1-f66.google.com ([209.85.161.66]:35319 "EHLO
-        mail-yw1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728581AbfLLPCF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Dec 2019 10:02:05 -0500
-Received: by mail-yw1-f66.google.com with SMTP id i190so878023ywc.2;
-        Thu, 12 Dec 2019 07:02:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=88P7hGgy6VEyhnH2Wu8BZSOUx6up5jv+cSRDPvY4HZ0=;
-        b=JakaJ6iM4KJXl2DlVFFGI4PE6etmpjeL2JZmewo+mrHW+fESI9UnGKRlaqUkMrV/+1
-         5geYwMDMu26/0rbn+bfE/oR3NAVtgCPv31N7eGtBdDVaWP2KTnTUMS1iHRowj0XnmpfX
-         4UX0f1MCIspncFDFSH/TI7ykgrnMZp6peglbRdfCR6kjwpiiuXC4Vzx4VJrOj63+s2qL
-         YJQvCVNEhTa/LlMVvadM8/RUdS1RDgic90ch6eFKU9RLN3IVnXHbXZFFb0APsmEJ0t14
-         s5A+LsUZkE1UQVcMxAHRvGVBamtdC40IdzM1+QeH/3H5heYyRs2Y0E9WBj7T/+8LrAxO
-         k4eA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=88P7hGgy6VEyhnH2Wu8BZSOUx6up5jv+cSRDPvY4HZ0=;
-        b=k+6JBMXo4JoiYIMYxbEUQn6+RD9P3aQfcWzW/GsKyCm0cJF7b4WfBls0z/YIpMac/k
-         rstI13A5JQuJ/wNDHcxhgUWypQIdjOaZIUxYrewx3efWEdrdzbDgZiOtsQGLwXLiuuzK
-         DyzSnJMoli3NuzclIt7Hujp54aWHF7XwgWaR/bB2g8uPyVvw/+05coENv8b2sjSphdZE
-         0YrtoKBwlmV5Tt1VbF24sPBL0WyrwhWxTWFEekdIh9fLPCcKn3f3q2klpA/bIA/YDw2k
-         QOxvebx95MPo1vraJSPU2SbIY9ztuDazV1ZvAwOpRKMtr/jpJXtK9ZvqW8BElD/KOHd7
-         inyw==
-X-Gm-Message-State: APjAAAVIHHQgVHGQKdr60NlUxWgmQ2RRKmGIc58layIXqnbgdMpk0O/j
-        Oy9fzn6C6j/lZ/yS57NjpQkphjzhnArmmA==
-X-Google-Smtp-Source: APXvYqydAxoN3yhF+zDxMfTh+NSSfxq/O43aghaQWXqunOVFNvk6+Q0tCC/c3s8uXvk9ThyuszIshQ==
-X-Received: by 2002:a25:70c1:: with SMTP id l184mr4322144ybc.463.1576162924271;
-        Thu, 12 Dec 2019 07:02:04 -0800 (PST)
-Received: from karen ([2604:2d80:d68a:cf00:1549:e76:ca4c:6ce8])
-        by smtp.gmail.com with ESMTPSA id s31sm2613870ywa.30.2019.12.12.07.02.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 Dec 2019 07:02:03 -0800 (PST)
-Date:   Thu, 12 Dec 2019 09:02:00 -0600
-From:   Scott Schafer <schaferjscott@gmail.com>
-To:     Dan Carpenter <dan.carpenter@oracle.com>
-Cc:     gregkh@linuxfoundation.org, devel@driverdev.osuosl.org,
-        GR-Linux-NIC-Dev@marvell.com, Manish Chopra <manishc@marvell.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 11/23] staging: qlge: Fix CHECK: braces {} should be
- used on all arms of this statement
-Message-ID: <20191212150200.GA8219@karen>
-References: <cover.1576086080.git.schaferjscott@gmail.com>
- <0e1fc1a16725094676fdab63d3a24a986309a759.1576086080.git.schaferjscott@gmail.com>
- <20191212121206.GB1895@kadam>
+        id S1728712AbfLLPDw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Dec 2019 10:03:52 -0500
+Received: from mailgw01.mediatek.com ([216.200.240.184]:42039 "EHLO
+        mailgw01.mediatek.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728581AbfLLPDw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Dec 2019 10:03:52 -0500
+X-UUID: 19c4e568909043eb8a02ec1502cd1e2d-20191212
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
+        h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:In-Reply-To:Date:CC:To:From:Subject:Message-ID; bh=F7v29UFNtFNozY6v/Vmo8huw/9C0N0CfhqOK+BHJmfA=;
+        b=pe5grwTEbxdX+eTkwE4Ar8K4zi/1qUGrGJxUuCGROcDg5t2JSSCQA0QCVg3yEPHNjashIe2SJSO0ZU/xkS2AttIYkmEHisbN+8tf2AxYDn962cGDX4HAwEMwr5Wv3QluUZHSLJ+XtVlCwgK3WU1o5UFYCsmCNxY2o+YJMeCq6zU=;
+X-UUID: 19c4e568909043eb8a02ec1502cd1e2d-20191212
+Received: from mtkcas68.mediatek.inc [(172.29.94.19)] by mailgw01.mediatek.com
+        (envelope-from <landen.chao@mediatek.com>)
+        (musrelay.mediatek.com ESMTP with TLS)
+        with ESMTP id 1856947062; Thu, 12 Dec 2019 07:03:50 -0800
+Received: from mtkcas09.mediatek.inc (172.21.101.178) by
+ MTKMBS62DR.mediatek.inc (172.29.94.18) with Microsoft SMTP Server (TLS) id
+ 15.0.1395.4; Thu, 12 Dec 2019 07:04:04 -0800
+Received: from [172.21.84.99] (172.21.84.99) by mtkcas09.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1395.4 via Frontend
+ Transport; Thu, 12 Dec 2019 23:03:32 +0800
+Message-ID: <1576163014.23763.90.camel@mtksdccf07>
+Subject: Re: [PATCH net-next 2/6] net: dsa: mt7530: Extend device data ready
+ for adding a new hardware
+From:   Landen Chao <landen.chao@mediatek.com>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+CC:     "andrew@lunn.ch" <andrew@lunn.ch>,
+        "vivien.didelot@savoirfairelinux.com" 
+        <vivien.didelot@savoirfairelinux.com>,
+        "matthias.bgg@gmail.com" <matthias.bgg@gmail.com>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "mark.rutland@arm.com" <mark.rutland@arm.com>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-mediatek@lists.infradead.org" 
+        <linux-mediatek@lists.infradead.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        Sean Wang <Sean.Wang@mediatek.com>,
+        "opensource@vdorst.com" <opensource@vdorst.com>,
+        "frank-w@public-files.de" <frank-w@public-files.de>
+Date:   Thu, 12 Dec 2019 23:03:34 +0800
+In-Reply-To: <d77e3109-e022-3581-2ca8-02889c5ddbf4@gmail.com>
+References: <cover.1575914275.git.landen.chao@mediatek.com>
+         <2d546d6bb15ff8b4b75af2220e20db4e634f4145.1575914275.git.landen.chao@mediatek.com>
+         <d77e3109-e022-3581-2ca8-02889c5ddbf4@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.2.3-0ubuntu6 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191212121206.GB1895@kadam>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+X-MTK:  N
+Content-Transfer-Encoding: base64
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 12, 2019 at 03:12:06PM +0300, Dan Carpenter wrote:
-> On Wed, Dec 11, 2019 at 12:12:40PM -0600, Scott Schafer wrote:
-> > @@ -351,8 +352,9 @@ static int ql_aen_lost(struct ql_adapter *qdev, struct mbox_params *mbcp)
-> >  	mbcp->out_count = 6;
-> >  
-> >  	status = ql_get_mb_sts(qdev, mbcp);
-> > -	if (status)
-> > +	if (status) {
-> >  		netif_err(qdev, drv, qdev->ndev, "Lost AEN broken!\n");
-> > +	}
-> >  	else {
-> 
-> The close } should be on the same line as the else.
-> 
-> >  		int i;
-> >  
-> 
-> regards,
-> dan carpenter
+T24gVGh1LCAyMDE5LTEyLTEyIGF0IDExOjQ1ICswODAwLCBGbG9yaWFuIEZhaW5lbGxpIHdyb3Rl
+Og0KPiANCj4gT24gMTIvMTAvMjAxOSAxMjoxNCBBTSwgTGFuZGVuIENoYW8gd3JvdGU6DQo+ID4g
+QWRkIGEgc3RydWN0dXJlIGhvbGRpbmcgcmVxdWlyZWQgb3BlcmF0aW9ucyBmb3IgZWFjaCBkZXZp
+Y2Ugc3VjaCBhcyBkZXZpY2UNCj4gPiBpbml0aWFsaXphdGlvbiwgUEhZIHBvcnQgcmVhZCBvciB3
+cml0ZSwgYSBjaGVja2VyIHdoZXRoZXIgUEhZIGludGVyZmFjZSBpcw0KPiA+IHN1cHBvcnRlZCBv
+biBhIGNlcnRhaW4gcG9ydCwgTUFDIHBvcnQgc2V0dXAgZm9yIGVpdGhlciBidXMgcGFkIG9yIGEN
+Cj4gPiBzcGVjaWZpYyBQSFkgaW50ZXJmYWNlLg0KPiA+IA0KPiA+IFRoZSBwYXRjaCBpcyBkb25l
+IGZvciByZWFkeSBhZGRpbmcgYSBuZXcgaGFyZHdhcmUgTVQ3NTMxLg0KPiA+IA0KPiA+IFNpZ25l
+ZC1vZmYtYnk6IExhbmRlbiBDaGFvIDxsYW5kZW4uY2hhb0BtZWRpYXRlay5jb20+DQo+ID4gU2ln
+bmVkLW9mZi1ieTogU2VhbiBXYW5nIDxzZWFuLndhbmdAbWVkaWF0ZWsuY29tPg0KPiA+IC0tLQ0K
+PiBbc25pcF0NCj4gDQo+ID4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvbmV0L2RzYS9tdDc1MzAuYyBi
+L2RyaXZlcnMvbmV0L2RzYS9tdDc1MzAuYw0KPiA+IGluZGV4IGVkMWVjMTBlYzYyYi4uOWE2NDhk
+MWY1ZDA5IDEwMDY0NA0KPiA+IC0tLSBhL2RyaXZlcnMvbmV0L2RzYS9tdDc1MzAuYw0KPiA+ICsr
+KyBiL2RyaXZlcnMvbmV0L2RzYS9tdDc1MzAuYw0KPiA+IEBAIC00MjUsNyArNDI1LDcgQEAgbXQ3
+NTMwX2ZkYl93cml0ZShzdHJ1Y3QgbXQ3NTMwX3ByaXYgKnByaXYsIHUxNiB2aWQsDQo+ID4gIH0N
+Cj4gPiAgDQo+ID4gIHN0YXRpYyBpbnQNCj4gPiAtbXQ3NTMwX3BhZF9jbGtfc2V0dXAoc3RydWN0
+IGRzYV9zd2l0Y2ggKmRzLCBpbnQgbW9kZSkNCj4gPiArbXQ3NTMwX3BhZF9jbGtfc2V0dXAoc3Ry
+dWN0IGRzYV9zd2l0Y2ggKmRzLCBwaHlfaW50ZXJmYWNlX3QgbW9kZSkNCj4gDQo+IEhlcmUgeW91
+IHBhc3MgYSBwaHlfaW50ZXJmYWNlX3QgYXJndW1lbnQgYnV0IG5vdCBpbiBtdDc2MzJfcGFkX2Ns
+a19zZXR1cCgpLg0KPiANCj4gPiArc3RhdGljIGludA0KPiA+ICttdDc1MzBfcGFkX3NldHVwKHN0
+cnVjdCBkc2Ffc3dpdGNoICpkcywgY29uc3Qgc3RydWN0IHBoeWxpbmtfbGlua19zdGF0ZSAqc3Rh
+dGUpDQo+ID4gK3sNCj4gPiArCXN0cnVjdCBtdDc1MzBfcHJpdiAqcHJpdiA9IGRzLT5wcml2Ow0K
+PiA+ICsNCj4gPiArCS8qIFNldHVwIFRYIGNpcmN1aXQgaW5jbHVpbmcgcmVsZXZhbnQgUEFEIGFu
+ZCBkcml2aW5nICovDQo+ID4gKwltdDc1MzBfcGFkX2Nsa19zZXR1cChkcywgc3RhdGUtPmludGVy
+ZmFjZSk7DQo+ID4gKw0KPiA+ICsJaWYgKHByaXYtPmlkID09IElEX01UNzUzMCkgew0KPiA+ICsJ
+CS8qIFNldHVwIFJYIGNpcmN1aXQsIHJlbGV2YW50IFBBRCBhbmQgZHJpdmluZyBvbiB0aGUNCj4g
+PiArCQkgKiBob3N0IHdoaWNoIG11c3QgYmUgcGxhY2VkIGFmdGVyIHRoZSBzZXR1cCBvbiB0aGUN
+Cj4gPiArCQkgKiBkZXZpY2Ugc2lkZSBpcyBhbGwgZmluaXNoZWQuDQo+ID4gKwkJICovDQo+ID4g
+KwkJbXQ3NjIzX3BhZF9jbGtfc2V0dXAoZHMpOw0KPiANCj4gV291bGQgbm90IGl0IG1ha2Ugc2Vu
+c2UgdG8gcGFzcyBpdCBkb3duIGhlcmUgYXMgd2VsbCBmb3IgY29uc2lzdGVuY3k/DQptdDc2MjNf
+cGFkX2NsaygpIGNvbnRhaW5zIHRoZSBzZXR0aW5nIGZvciBQSFlfSU5URVJGQUNFX01PREVfVFJH
+TUlJLiBJdA0KaXMgcmVhbGx5IGJldHRlciB0byBwYXNzIHBoeV9pbnRlcmZhY2VfdCBmb3IgZXJy
+b3IgaGFuZGxpbmcuDQo+IA0KPiBbc25pcF0NCj4gDQo+ID4gQEAgLTE2NjAsOCArMTc2OCwxOSBA
+QCBtdDc1MzBfcHJvYmUoc3RydWN0IG1kaW9fZGV2aWNlICptZGlvZGV2KQ0KPiA+ICAJLyogR2V0
+IHRoZSBoYXJkd2FyZSBpZGVudGlmaWVyIGZyb20gdGhlIGRldmljZXRyZWUgbm9kZS4NCj4gPiAg
+CSAqIFdlIHdpbGwgbmVlZCBpdCBmb3Igc29tZSBvZiB0aGUgY2xvY2sgYW5kIHJlZ3VsYXRvciBz
+ZXR1cC4NCj4gPiAgCSAqLw0KPiA+IC0JcHJpdi0+aWQgPSAodW5zaWduZWQgaW50KSh1bnNpZ25l
+ZCBsb25nKQ0KPiA+IC0JCW9mX2RldmljZV9nZXRfbWF0Y2hfZGF0YSgmbWRpb2Rldi0+ZGV2KTsN
+Cj4gPiArCXByaXYtPmluZm8gPSBvZl9kZXZpY2VfZ2V0X21hdGNoX2RhdGEoJm1kaW9kZXYtPmRl
+dik7DQo+ID4gKwlpZiAoIXByaXYtPmluZm8pDQo+ID4gKwkJcmV0dXJuIC1FSU5WQUw7DQo+ID4g
+Kw0KPiA+ICsJLyogU2FuaXR5IGNoZWNrIGlmIHRoZXNlIHJlcXVpcmVkIGRldmljZSBvcGVyc3Rh
+aW9ucyBhcmUgZmlsbGVkDQo+ID4gKwkgKiBwcm9wZXJseS4NCj4gDQo+IFR5cG86IG9wZXJhdGlv
+bnMuDQpPb3BzLCBzb3JyeS4gSSdsbCBjb3JyZWN0IGl0Lg0KDQpMYW5kZW4NCj4gDQo+IE90aGVy
+IHRoYW4gdGhhdCwgdGhpcyBsb29rcyBva2F5IHRvIG1lLg0KDQo=
 
-this was fixed in patch 22
