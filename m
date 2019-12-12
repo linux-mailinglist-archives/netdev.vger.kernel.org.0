@@ -2,48 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DCF7E11D6D7
-	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 20:09:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DA66011D6DE
+	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 20:10:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730535AbfLLTJK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Dec 2019 14:09:10 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:42878 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730096AbfLLTJK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Dec 2019 14:09:10 -0500
-Received: from localhost (unknown [IPv6:2601:601:9f00:1c3::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 9CC81153E164D;
-        Thu, 12 Dec 2019 11:09:09 -0800 (PST)
-Date:   Thu, 12 Dec 2019 11:09:09 -0800 (PST)
-Message-Id: <20191212.110909.1254452992283106976.davem@davemloft.net>
-To:     manishc@marvell.com
-Cc:     netdev@vger.kernel.org, aelior@marvell.com, skalluru@marvell.com
-Subject: Re: [PATCH net 1/1] qede: Fix multicast mac configuration
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20191212144928.509-1-manishc@marvell.com>
-References: <20191212144928.509-1-manishc@marvell.com>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 12 Dec 2019 11:09:09 -0800 (PST)
+        id S1730573AbfLLTKu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Dec 2019 14:10:50 -0500
+Received: from youngberry.canonical.com ([91.189.89.112]:60870 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730355AbfLLTKt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Dec 2019 14:10:49 -0500
+Received: from 1.general.cking.uk.vpn ([10.172.193.212] helo=localhost)
+        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <colin.king@canonical.com>)
+        id 1ifTrI-0000w1-HG; Thu, 12 Dec 2019 19:10:44 +0000
+From:   Colin King <colin.king@canonical.com>
+To:     Kalle Valo <kvalo@codeaurora.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Pradeep Kumar Chitrapu <pradeepc@codeaurora.org>,
+        Ganesh Sesetti <gseset@codeaurora.org>,
+        Karthikeyan Periyasamy <periyasa@codeaurora.org>,
+        John Crispin <john@phrozen.org>, ath11k@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH][next] ath11k: fix uninitialized variable radioup
+Date:   Thu, 12 Dec 2019 19:10:44 +0000
+Message-Id: <20191212191044.107544-1-colin.king@canonical.com>
+X-Mailer: git-send-email 2.24.0
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Manish Chopra <manishc@marvell.com>
-Date: Thu, 12 Dec 2019 06:49:28 -0800
+From: Colin Ian King <colin.king@canonical.com>
 
-> Driver doesn't accommodate the configuration for max number
-> of multicast mac addresses, in such particular case it leaves
-> the device with improper/invalid multicast configuration state,
-> causing connectivity issues (in lacp bonding like scenarios).
-> 
-> Signed-off-by: Manish Chopra <manishc@marvell.com>
-> Signed-off-by: Ariel Elior <aelior@marvell.com>
+The variable radioup is not uninitalized so it may contain a garbage
+value and hence the detection of a radio that is not up is buggy.
+Fix this by initializing it to zero.
 
-Applied and queued up for -stable.
+Addresses-Coverity: ("Uninitalized scalar variable")
+Fixes: d5c65159f289 ("ath11k: driver for Qualcomm IEEE 802.11ax devices")
+Signed-off-by: Colin Ian King <colin.king@canonical.com>
+---
+ drivers/net/wireless/ath/ath11k/debug.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/wireless/ath/ath11k/debug.c b/drivers/net/wireless/ath/ath11k/debug.c
+index c27fffd13a5d..34b960453edc 100644
+--- a/drivers/net/wireless/ath/ath11k/debug.c
++++ b/drivers/net/wireless/ath/ath11k/debug.c
+@@ -541,7 +541,7 @@ static ssize_t ath11k_write_simulate_fw_crash(struct file *file,
+ 	struct ath11k *ar = ab->pdevs[0].ar;
+ 	char buf[32] = {0};
+ 	ssize_t rc;
+-	int i, ret, radioup;
++	int i, ret, radioup = 0;
+ 
+ 	for (i = 0; i < ab->num_radios; i++) {
+ 		pdev = &ab->pdevs[i];
+-- 
+2.24.0
+
