@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B09B11D30E
-	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 18:03:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A4D5411D305
+	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 18:02:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730042AbfLLRDn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Dec 2019 12:03:43 -0500
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:21340 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729993AbfLLRDl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Dec 2019 12:03:41 -0500
-Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xBCH3ZXc020093
-        for <netdev@vger.kernel.org>; Thu, 12 Dec 2019 09:03:40 -0800
+        id S1730018AbfLLRCR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Dec 2019 12:02:17 -0500
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:62524 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1729260AbfLLRCR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Dec 2019 12:02:17 -0500
+Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xBCGxhP3032352
+        for <netdev@vger.kernel.org>; Thu, 12 Dec 2019 09:02:15 -0800
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
  : date : message-id : in-reply-to : references : mime-version :
- content-type; s=facebook; bh=DSe7tE7dbySpwf53sEiniXx5xKGB49USZ61XOVlkAAs=;
- b=bQiy3Z+dCxHRqoLSSJECeONfbrq09LqIt5ABW3nn6dD5dHzkg1/eD2Ayf+IVdbWVCAo2
- JqTcFRQ5Ef8x4FHC/+2FMqwSzTNwP7jiVYB+FeAH6VXXerjoYc8sZnyDov/lOb6sXAWu
- 354s3PSlCQilBXlaGYNJkEdUJVMyU/85h3M= 
+ content-type; s=facebook; bh=6rEsKbHiVsfxmc6Lqy6IOarl6gN+GAv08ixmbIuEXiQ=;
+ b=rM7FKl1Q5gR0bAKzNmM9sYaEAqGnhAWCE4Rnbkyqw2RDMqfsdz3aRin35llueDwO1vRw
+ xHz2HFoJq+JZPZzSk75hfqNPqBcBQuG0ETPQouteM+Ba/1OcdB/Zy88UVb3ONGCpspo2
+ 9mYAEb2rskL66utfLW/7p1kQITezQvFsjEY= 
 Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 2wu404dgw0-7
+        by mx0a-00082601.pphosted.com with ESMTP id 2wukessrk0-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Thu, 12 Dec 2019 09:03:40 -0800
+        for <netdev@vger.kernel.org>; Thu, 12 Dec 2019 09:02:15 -0800
 Received: from intmgw004.05.ash5.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:82::c) with Microsoft SMTP Server
+ mail.thefacebook.com (2620:10d:c0a8:83::7) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Thu, 12 Dec 2019 09:03:37 -0800
+ 15.1.1713.5; Thu, 12 Dec 2019 09:02:14 -0800
 Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
-        id 889F92EC1AD2; Thu, 12 Dec 2019 08:41:40 -0800 (PST)
+        id 34F1B2EC1AD2; Thu, 12 Dec 2019 08:41:47 -0800 (PST)
 Smtp-Origin-Hostprefix: devbig
 From:   Andrii Nakryiko <andriin@fb.com>
 Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
@@ -38,9 +38,9 @@ To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
 CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
         Andrii Nakryiko <andriin@fb.com>
 Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH v2 bpf-next 03/15] libbpf: move non-public APIs from libbpf.h to libbpf_internal.h
-Date:   Thu, 12 Dec 2019 08:41:16 -0800
-Message-ID: <20191212164129.494329-4-andriin@fb.com>
+Subject: [PATCH v2 bpf-next 06/15] libbpf: expose BPF program's function name
+Date:   Thu, 12 Dec 2019 08:41:19 -0800
+Message-ID: <20191212164129.494329-7-andriin@fb.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20191212164129.494329-1-andriin@fb.com>
 References: <20191212164129.494329-1-andriin@fb.com>
@@ -49,104 +49,205 @@ MIME-Version: 1.0
 Content-Type: text/plain
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
  definitions=2019-12-12_05:2019-12-12,2019-12-12 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 suspectscore=8 mlxscore=0
- phishscore=0 adultscore=0 impostorscore=0 lowpriorityscore=0
- priorityscore=1501 malwarescore=0 clxscore=1015 spamscore=0
- mlxlogscore=999 bulkscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-1910280000 definitions=main-1912120133
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
+ lowpriorityscore=0 bulkscore=0 adultscore=0 spamscore=0 impostorscore=0
+ mlxlogscore=999 phishscore=0 mlxscore=0 clxscore=1015 suspectscore=8
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-1910280000 definitions=main-1912120132
 X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Few libbpf APIs are not public but currently exposed through libbpf.h to be
-used by bpftool. Move them to libbpf_internal.h, where intent of being
-non-stable and non-public is much more obvious.
+Add APIs to get BPF program function name, as opposed to bpf_program__title(),
+which returns BPF program function's section name. Function name has a benefit
+of being a valid C identifier and uniquely identifies a specific BPF program,
+while section name can be duplicated across multiple independent BPF programs.
+
+Add also bpf_object__find_program_by_name(), similar to
+bpf_object__find_program_by_title(), to facilitate looking up BPF programs by
+their C function names.
+
+Convert one of selftests to new API for look up.
 
 Acked-by: Martin KaFai Lau <kafai@fb.com>
 Signed-off-by: Andrii Nakryiko <andriin@fb.com>
 ---
- tools/bpf/bpftool/net.c         |  1 +
- tools/lib/bpf/libbpf.h          | 17 -----------------
- tools/lib/bpf/libbpf_internal.h | 17 +++++++++++++++++
- 3 files changed, 18 insertions(+), 17 deletions(-)
+ tools/lib/bpf/libbpf.c                        | 28 +++++++++++++++----
+ tools/lib/bpf/libbpf.h                        |  9 ++++--
+ tools/lib/bpf/libbpf.map                      |  2 ++
+ .../selftests/bpf/prog_tests/rdonly_maps.c    | 11 +++-----
+ 4 files changed, 36 insertions(+), 14 deletions(-)
 
-diff --git a/tools/bpf/bpftool/net.c b/tools/bpf/bpftool/net.c
-index 4f52d3151616..d93bee298e54 100644
---- a/tools/bpf/bpftool/net.c
-+++ b/tools/bpf/bpftool/net.c
-@@ -18,6 +18,7 @@
+diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+index edfe1cf1e940..f13752c4d271 100644
+--- a/tools/lib/bpf/libbpf.c
++++ b/tools/lib/bpf/libbpf.c
+@@ -209,8 +209,8 @@ static const char * const libbpf_type_to_btf_name[] = {
+ };
  
- #include <bpf.h>
- #include <nlattr.h>
-+#include "libbpf_internal.h"
- #include "main.h"
- #include "netlink_dumper.h"
+ struct bpf_map {
+-	int fd;
+ 	char *name;
++	int fd;
+ 	int sec_idx;
+ 	size_t sec_offset;
+ 	int map_ifindex;
+@@ -1384,7 +1384,7 @@ static int bpf_object__init_user_btf_maps(struct bpf_object *obj, bool strict,
+ }
  
+ static int bpf_object__init_maps(struct bpf_object *obj,
+-				 struct bpf_object_open_opts *opts)
++				 const struct bpf_object_open_opts *opts)
+ {
+ 	const char *pin_root_path = OPTS_GET(opts, pin_root_path, NULL);
+ 	bool strict = !OPTS_GET(opts, relaxed_maps, false);
+@@ -1748,6 +1748,19 @@ bpf_object__find_program_by_title(const struct bpf_object *obj,
+ 	return NULL;
+ }
+ 
++struct bpf_program *
++bpf_object__find_program_by_name(const struct bpf_object *obj,
++				 const char *name)
++{
++	struct bpf_program *prog;
++
++	bpf_object__for_each_program(prog, obj) {
++		if (!strcmp(prog->name, name))
++			return prog;
++	}
++	return NULL;
++}
++
+ static bool bpf_object__shndx_is_data(const struct bpf_object *obj,
+ 				      int shndx)
+ {
+@@ -3893,7 +3906,7 @@ static int libbpf_find_attach_btf_id(const char *name,
+ 				     __u32 attach_prog_fd);
+ static struct bpf_object *
+ __bpf_object__open(const char *path, const void *obj_buf, size_t obj_buf_sz,
+-		   struct bpf_object_open_opts *opts)
++		   const struct bpf_object_open_opts *opts)
+ {
+ 	struct bpf_program *prog;
+ 	struct bpf_object *obj;
+@@ -4002,7 +4015,7 @@ struct bpf_object *bpf_object__open(const char *path)
+ }
+ 
+ struct bpf_object *
+-bpf_object__open_file(const char *path, struct bpf_object_open_opts *opts)
++bpf_object__open_file(const char *path, const struct bpf_object_open_opts *opts)
+ {
+ 	if (!path)
+ 		return ERR_PTR(-EINVAL);
+@@ -4014,7 +4027,7 @@ bpf_object__open_file(const char *path, struct bpf_object_open_opts *opts)
+ 
+ struct bpf_object *
+ bpf_object__open_mem(const void *obj_buf, size_t obj_buf_sz,
+-		     struct bpf_object_open_opts *opts)
++		     const struct bpf_object_open_opts *opts)
+ {
+ 	if (!obj_buf || obj_buf_sz == 0)
+ 		return ERR_PTR(-EINVAL);
+@@ -4819,6 +4832,11 @@ void bpf_program__set_ifindex(struct bpf_program *prog, __u32 ifindex)
+ 	prog->prog_ifindex = ifindex;
+ }
+ 
++const char *bpf_program__name(const struct bpf_program *prog)
++{
++	return prog->name;
++}
++
+ const char *bpf_program__title(const struct bpf_program *prog, bool needs_copy)
+ {
+ 	const char *title;
 diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
-index 804f445c9957..2698fbcb0c79 100644
+index fa803dde1f46..7fa583ebe56f 100644
 --- a/tools/lib/bpf/libbpf.h
 +++ b/tools/lib/bpf/libbpf.h
-@@ -126,11 +126,6 @@ bpf_object__open_buffer(const void *obj_buf, size_t obj_buf_sz,
+@@ -114,10 +114,10 @@ struct bpf_object_open_opts {
+ 
+ LIBBPF_API struct bpf_object *bpf_object__open(const char *path);
  LIBBPF_API struct bpf_object *
- bpf_object__open_xattr(struct bpf_object_open_attr *attr);
+-bpf_object__open_file(const char *path, struct bpf_object_open_opts *opts);
++bpf_object__open_file(const char *path, const struct bpf_object_open_opts *opts);
+ LIBBPF_API struct bpf_object *
+ bpf_object__open_mem(const void *obj_buf, size_t obj_buf_sz,
+-		     struct bpf_object_open_opts *opts);
++		     const struct bpf_object_open_opts *opts);
  
--int bpf_object__section_size(const struct bpf_object *obj, const char *name,
--			     __u32 *size);
--int bpf_object__variable_offset(const struct bpf_object *obj, const char *name,
--				__u32 *off);
--
- enum libbpf_pin_type {
- 	LIBBPF_PIN_NONE,
- 	/* PIN_BY_NAME: pin maps by name (in /sys/fs/bpf by default) */
-@@ -514,18 +509,6 @@ bpf_perf_event_read_simple(void *mmap_mem, size_t mmap_size, size_t page_size,
- 			   void **copy_mem, size_t *copy_size,
- 			   bpf_perf_event_print_t fn, void *private_data);
- 
--struct nlattr;
--typedef int (*libbpf_dump_nlmsg_t)(void *cookie, void *msg, struct nlattr **tb);
--int libbpf_netlink_open(unsigned int *nl_pid);
--int libbpf_nl_get_link(int sock, unsigned int nl_pid,
--		       libbpf_dump_nlmsg_t dump_link_nlmsg, void *cookie);
--int libbpf_nl_get_class(int sock, unsigned int nl_pid, int ifindex,
--			libbpf_dump_nlmsg_t dump_class_nlmsg, void *cookie);
--int libbpf_nl_get_qdisc(int sock, unsigned int nl_pid, int ifindex,
--			libbpf_dump_nlmsg_t dump_qdisc_nlmsg, void *cookie);
--int libbpf_nl_get_filter(int sock, unsigned int nl_pid, int ifindex, int handle,
--			 libbpf_dump_nlmsg_t dump_filter_nlmsg, void *cookie);
--
- struct bpf_prog_linfo;
- struct bpf_prog_info;
- 
-diff --git a/tools/lib/bpf/libbpf_internal.h b/tools/lib/bpf/libbpf_internal.h
-index 97ac17a64a58..7ee0c8691835 100644
---- a/tools/lib/bpf/libbpf_internal.h
-+++ b/tools/lib/bpf/libbpf_internal.h
-@@ -98,6 +98,23 @@ static inline bool libbpf_validate_opts(const char *opts,
- int libbpf__load_raw_btf(const char *raw_types, size_t types_len,
- 			 const char *str_sec, size_t str_len);
- 
-+int bpf_object__section_size(const struct bpf_object *obj, const char *name,
-+			     __u32 *size);
-+int bpf_object__variable_offset(const struct bpf_object *obj, const char *name,
-+				__u32 *off);
+ /* deprecated bpf_object__open variants */
+ LIBBPF_API struct bpf_object *
+@@ -156,6 +156,7 @@ struct bpf_object_load_attr {
+ LIBBPF_API int bpf_object__load(struct bpf_object *obj);
+ LIBBPF_API int bpf_object__load_xattr(struct bpf_object_load_attr *attr);
+ LIBBPF_API int bpf_object__unload(struct bpf_object *obj);
 +
-+struct nlattr;
-+typedef int (*libbpf_dump_nlmsg_t)(void *cookie, void *msg, struct nlattr **tb);
-+int libbpf_netlink_open(unsigned int *nl_pid);
-+int libbpf_nl_get_link(int sock, unsigned int nl_pid,
-+		       libbpf_dump_nlmsg_t dump_link_nlmsg, void *cookie);
-+int libbpf_nl_get_class(int sock, unsigned int nl_pid, int ifindex,
-+			libbpf_dump_nlmsg_t dump_class_nlmsg, void *cookie);
-+int libbpf_nl_get_qdisc(int sock, unsigned int nl_pid, int ifindex,
-+			libbpf_dump_nlmsg_t dump_qdisc_nlmsg, void *cookie);
-+int libbpf_nl_get_filter(int sock, unsigned int nl_pid, int ifindex, int handle,
-+			 libbpf_dump_nlmsg_t dump_filter_nlmsg, void *cookie);
-+
- struct btf_ext_info {
- 	/*
- 	 * info points to the individual info section (e.g. func_info and
+ LIBBPF_API const char *bpf_object__name(const struct bpf_object *obj);
+ LIBBPF_API unsigned int bpf_object__kversion(const struct bpf_object *obj);
+ 
+@@ -166,6 +167,9 @@ LIBBPF_API int bpf_object__btf_fd(const struct bpf_object *obj);
+ LIBBPF_API struct bpf_program *
+ bpf_object__find_program_by_title(const struct bpf_object *obj,
+ 				  const char *title);
++LIBBPF_API struct bpf_program *
++bpf_object__find_program_by_name(const struct bpf_object *obj,
++				 const char *name);
+ 
+ LIBBPF_API struct bpf_object *bpf_object__next(struct bpf_object *prev);
+ #define bpf_object__for_each_safe(pos, tmp)			\
+@@ -209,6 +213,7 @@ LIBBPF_API void *bpf_program__priv(const struct bpf_program *prog);
+ LIBBPF_API void bpf_program__set_ifindex(struct bpf_program *prog,
+ 					 __u32 ifindex);
+ 
++LIBBPF_API const char *bpf_program__name(const struct bpf_program *prog);
+ LIBBPF_API const char *bpf_program__title(const struct bpf_program *prog,
+ 					  bool needs_copy);
+ 
+diff --git a/tools/lib/bpf/libbpf.map b/tools/lib/bpf/libbpf.map
+index 757a88f64b5a..f2b2fa0f5c2a 100644
+--- a/tools/lib/bpf/libbpf.map
++++ b/tools/lib/bpf/libbpf.map
+@@ -211,5 +211,7 @@ LIBBPF_0.0.6 {
+ 
+ LIBBPF_0.0.7 {
+ 	global:
++		bpf_object__find_program_by_name;
+ 		bpf_program__attach;
++		bpf_program__name;
+ } LIBBPF_0.0.6;
+diff --git a/tools/testing/selftests/bpf/prog_tests/rdonly_maps.c b/tools/testing/selftests/bpf/prog_tests/rdonly_maps.c
+index d90acc13d1ec..563e12120e77 100644
+--- a/tools/testing/selftests/bpf/prog_tests/rdonly_maps.c
++++ b/tools/testing/selftests/bpf/prog_tests/rdonly_maps.c
+@@ -16,14 +16,11 @@ struct rdonly_map_subtest {
+ 
+ void test_rdonly_maps(void)
+ {
+-	const char *prog_name_skip_loop = "raw_tracepoint/sys_enter:skip_loop";
+-	const char *prog_name_part_loop = "raw_tracepoint/sys_enter:part_loop";
+-	const char *prog_name_full_loop = "raw_tracepoint/sys_enter:full_loop";
+ 	const char *file = "test_rdonly_maps.o";
+ 	struct rdonly_map_subtest subtests[] = {
+-		{ "skip loop", prog_name_skip_loop, 0, 0 },
+-		{ "part loop", prog_name_part_loop, 3, 2 + 3 + 4 },
+-		{ "full loop", prog_name_full_loop, 4, 2 + 3 + 4 + 5 },
++		{ "skip loop", "skip_loop", 0, 0 },
++		{ "part loop", "part_loop", 3, 2 + 3 + 4 },
++		{ "full loop", "full_loop", 4, 2 + 3 + 4 + 5 },
+ 	};
+ 	int i, err, zero = 0, duration = 0;
+ 	struct bpf_link *link = NULL;
+@@ -50,7 +47,7 @@ void test_rdonly_maps(void)
+ 		if (!test__start_subtest(t->subtest_name))
+ 			continue;
+ 
+-		prog = bpf_object__find_program_by_title(obj, t->prog_name);
++		prog = bpf_object__find_program_by_name(obj, t->prog_name);
+ 		if (CHECK(!prog, "find_prog", "prog '%s' not found\n",
+ 			  t->prog_name))
+ 			goto cleanup;
 -- 
 2.17.1
 
