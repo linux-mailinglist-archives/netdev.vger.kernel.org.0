@@ -2,109 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A68011CD38
-	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 13:33:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EE1A711CD4D
+	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 13:36:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729183AbfLLMdn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Dec 2019 07:33:43 -0500
-Received: from correo.us.es ([193.147.175.20]:45566 "EHLO mail.us.es"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729092AbfLLMdn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 12 Dec 2019 07:33:43 -0500
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id DACE7DA722
-        for <netdev@vger.kernel.org>; Thu, 12 Dec 2019 13:33:39 +0100 (CET)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id CDA43DA701
-        for <netdev@vger.kernel.org>; Thu, 12 Dec 2019 13:33:39 +0100 (CET)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id C355EDA703; Thu, 12 Dec 2019 13:33:39 +0100 (CET)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,URIBL_BLOCKED,USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 8B27DDA712;
-        Thu, 12 Dec 2019 13:33:37 +0100 (CET)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Thu, 12 Dec 2019 13:33:37 +0100 (CET)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from us.es (129.166.216.87.static.jazztel.es [87.216.166.129])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: 1984lsi)
-        by entrada.int (Postfix) with ESMTPSA id 4EC5D41E4801;
-        Thu, 12 Dec 2019 13:33:37 +0100 (CET)
-Date:   Thu, 12 Dec 2019 13:33:37 +0100
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     Xin Long <lucien.xin@gmail.com>
-Cc:     network dev <netdev@vger.kernel.org>,
-        netfilter-devel@vger.kernel.org, davem <davem@davemloft.net>
-Subject: Re: [PATCH nf-next 1/7] netfilter: nft_tunnel: parse ERSPAN_VERSION
- attr as u8
-Message-ID: <20191212123337.oozyghzz2j2qfkjs@salvia>
-References: <cover.1575779993.git.lucien.xin@gmail.com>
- <981718e8e2ca5cd34d1153f54eae06ab2f087c07.1575779993.git.lucien.xin@gmail.com>
- <20191211215104.qnvifdmlg55ox45b@salvia>
- <CADvbK_cxeZmJa_FMd+p_35CPOSMDfnos1j3TC0_3u9TdmZZH=g@mail.gmail.com>
+        id S1729093AbfLLMgb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Dec 2019 07:36:31 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:38470 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1729157AbfLLMgb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Dec 2019 07:36:31 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1576154190;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=vx9zJGf1oMGJUZXazsjSWnZ1RqAwmrURKhXjqCuTSZw=;
+        b=hTmtLE3R+BlTeyJOH581i/0AVRT5Z4l3O0dz89qP//BI7ncyqS+uOdXWxttP80hECqlJRC
+        nX3EuXek0LwHbl/nbxBNKW4diEOAbHYn86p7RjiYgVvpKlHcljP8PjvhBpoj1qFwcuWDVD
+        6disNfMURYWiokmBX7+nXhperAH2U7Y=
+Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
+ [209.85.221.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-4-NHH4jUObMgOtoc-tGE42jg-1; Thu, 12 Dec 2019 07:36:29 -0500
+X-MC-Unique: NHH4jUObMgOtoc-tGE42jg-1
+Received: by mail-wr1-f71.google.com with SMTP id u12so970555wrt.15
+        for <netdev@vger.kernel.org>; Thu, 12 Dec 2019 04:36:29 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=vx9zJGf1oMGJUZXazsjSWnZ1RqAwmrURKhXjqCuTSZw=;
+        b=Ejw3Iot9lEvhv2RPt3W2vKkXezG3a8h/toecdgniok1KfAGKXmVlCEvqZfU3VPmiqL
+         rngD0hBMio6neMcZJ5Ibglr/wo93mKvW1Op6xmluLcj9tMPypvndnjsdeUT/oMPVDB0h
+         RIj4zC30hgkwPfwqpwboOL+2Eb7XUgZn+1I3bO3Cm9JengCijBfMk+dFJssHewu1Y7WG
+         Tbwjh/uAoGOqhpjcmS56vJQYPRSYVVzppXT1HArHAPSQixf6pGcbC+YPm/V+1ryGvqzv
+         1nAyacXqjEJwo3BFGElyXynX+Aqx4e5aaDuGhkVZXPP+Q75JpDglESLL1EGL4GoRzddV
+         f4GQ==
+X-Gm-Message-State: APjAAAWrWLr+7ZDgckJykiJrb2TvLZv+Tn1dFGSJuwm3Go8o5NWXQayp
+        elTT4BF1VndqpKFyx7UWJV6DSHbauh9KFjIquq1Jn11OUk2/bEAfvqR9iwKCG74F5kAxlMoMBVM
+        fX4ht9BsmPX9IjIo6
+X-Received: by 2002:a1c:9893:: with SMTP id a141mr6328753wme.131.1576154187822;
+        Thu, 12 Dec 2019 04:36:27 -0800 (PST)
+X-Google-Smtp-Source: APXvYqw8OuvK7uQUGPj2YPMKShfitWnCo2iXv2VXIudtkzMfeAvfFAzJUBd43fFj7MHbtZkQxZXP5g==
+X-Received: by 2002:a1c:9893:: with SMTP id a141mr6328729wme.131.1576154187582;
+        Thu, 12 Dec 2019 04:36:27 -0800 (PST)
+Received: from steredhat ([95.235.120.92])
+        by smtp.gmail.com with ESMTPSA id x10sm5861395wrp.58.2019.12.12.04.36.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 12 Dec 2019 04:36:27 -0800 (PST)
+Date:   Thu, 12 Dec 2019 13:36:24 +0100
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     virtualization@lists.linux-foundation.org,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Jason Wang <jasowang@redhat.com>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH] vhost/vsock: accept only packets with the right dst_cid
+Message-ID: <20191212123624.ahyhrny7u6ntn3xt@steredhat>
+References: <20191206143912.153583-1-sgarzare@redhat.com>
+ <20191211110235-mutt-send-email-mst@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CADvbK_cxeZmJa_FMd+p_35CPOSMDfnos1j3TC0_3u9TdmZZH=g@mail.gmail.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-Virus-Scanned: ClamAV using ClamSMTP
+In-Reply-To: <20191211110235-mutt-send-email-mst@kernel.org>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 12, 2019 at 11:20:19AM +0800, Xin Long wrote:
-> On Thu, Dec 12, 2019 at 5:51 AM Pablo Neira Ayuso <pablo@netfilter.org> wrote:
-> >
-> > Hi,
-> >
-> > On Sun, Dec 08, 2019 at 12:41:31PM +0800, Xin Long wrote:
-> > > To keep consistent with ipgre_policy, it's better to parse
-> > > ERSPAN_VERSION attr as u8, as it does in act_tunnel_key,
-> > > cls_flower and ip_tunnel_core.
-> > >
-> > > Signed-off-by: Xin Long <lucien.xin@gmail.com>
-> > > ---
-> > >  net/netfilter/nft_tunnel.c | 5 +++--
-> > >  1 file changed, 3 insertions(+), 2 deletions(-)
-> > >
-> > > diff --git a/net/netfilter/nft_tunnel.c b/net/netfilter/nft_tunnel.c
-> > > index 3d4c2ae..f76cd7d 100644
-> > > --- a/net/netfilter/nft_tunnel.c
-> > > +++ b/net/netfilter/nft_tunnel.c
-> > > @@ -248,8 +248,9 @@ static int nft_tunnel_obj_vxlan_init(const struct nlattr *attr,
-> > >  }
-> > >
-> > >  static const struct nla_policy nft_tunnel_opts_erspan_policy[NFTA_TUNNEL_KEY_ERSPAN_MAX + 1] = {
-> > > +     [NFTA_TUNNEL_KEY_ERSPAN_VERSION]        = { .type = NLA_U8 },
-> > >       [NFTA_TUNNEL_KEY_ERSPAN_V1_INDEX]       = { .type = NLA_U32 },
-> > > -     [NFTA_TUNNEL_KEY_ERSPAN_V2_DIR] = { .type = NLA_U8 },
-> > > +     [NFTA_TUNNEL_KEY_ERSPAN_V2_DIR]         = { .type = NLA_U8 },
-> > >       [NFTA_TUNNEL_KEY_ERSPAN_V2_HWID]        = { .type = NLA_U8 },
-> > >  };
-> > >
-> > > @@ -266,7 +267,7 @@ static int nft_tunnel_obj_erspan_init(const struct nlattr *attr,
-> > >       if (err < 0)
-> > >               return err;
-> > >
-> > > -     version = ntohl(nla_get_be32(tb[NFTA_TUNNEL_KEY_ERSPAN_VERSION]));
-> > > +     version = nla_get_u8(tb[NFTA_TUNNEL_KEY_ERSPAN_VERSION]);
-> >
-> > I think NFTA_TUNNEL_KEY_ERSPAN_VERSION as 32-bit is just fine.
-> >
-> > Netlink will be adding the padding anyway for u8.
-> >
-> > I would suggest you leave this as is.
-> okay.
+On Wed, Dec 11, 2019 at 11:03:07AM -0500, Michael S. Tsirkin wrote:
+> On Fri, Dec 06, 2019 at 03:39:12PM +0100, Stefano Garzarella wrote:
+> > When we receive a new packet from the guest, we check if the
+> > src_cid is correct, but we forgot to check the dst_cid.
+> > 
+> > The host should accept only packets where dst_cid is
+> > equal to the host CID.
+> > 
+> > Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
 > 
-> do you think I should prepare another patch/fix for the missing nla_policy part?
-> [NFTA_TUNNEL_KEY_ERSPAN_VERSION]        = { .type = NLA_U32 },
+> Stefano can you clarify the impact pls?
 
-Yes, please, thanks.
+Sure, I'm sorry I didn't do it earlier.
+
+> E.g. is this needed on stable? Etc.
+
+This is a better analysis (I hope) when there is a malformed guest
+that sends a packet with a wrong dst_cid:
+- before v5.4 we supported only one transport at runtime, so the sockets
+  in the host can only receive packets from guests. In this case, if
+  the dst_cid is wrong, maybe the only issue is that the getsockname()
+  returns an inconsistent address (the cid returned is the one received
+  from the guest)
+
+- from v5.4 we support multi-transport, so the L1 VM (e.g. L0 assigned
+  cid 5 to this VM) can have both Guest2Host and Host2Guest transports.
+  In this case, we have these possible issues:
+  - L2 (or L1) guest can use cid 0, 1, and 2 to reach L1 (or L0),
+    instead we should allow only CID_HOST (2) to reach the level below.
+    Note: this happens also with not malformed guest that runs Linux v5.4
+
+  - if a malformed L2 guest sends a packet with the wrong dst_cid, for example
+    instead of CID_HOST, it uses the cid assigned by L0 to L1 (5 in this
+    example), this packets can wrongly queued to a socket on L1 bound to cid 5,
+    that only expects connections from L0.
+
+Maybe we really need this only on stable v5.4, but the patch is very simple
+and should apply cleanly to all stable branches.
+
+What do you think?
+
+Thanks,
+Stefano
+
