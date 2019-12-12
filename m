@@ -2,117 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 232D311CB9D
-	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 11:59:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D846E11CBA9
+	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 12:00:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728916AbfLLK7b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Dec 2019 05:59:31 -0500
-Received: from mout.web.de ([217.72.192.78]:42053 "EHLO mout.web.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728777AbfLLK7b (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 12 Dec 2019 05:59:31 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
-        s=dbaedf251592; t=1576148357;
-        bh=keZMm0sbIdLHuKg2ERn1DL+jHDL/cWURqxHw0Hu/p0A=;
-        h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
-        b=aA2fwg0bcpAURby5zURwZamBbgaMsktdVD6saMWtZuaoSVSoxO+4Pyc/8/4jwG2BV
-         1ejH7AznNmia67ny1h1ssx6Z01fXY6xjLka1D3VvwWmLBWQBKtVZPYE+UNnwhMb01M
-         aznF098xbi3gBtnkhRv3JV/5OHkbvFg4yxJQnTPM=
-X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
-Received: from [192.168.43.108] ([89.204.139.166]) by smtp.web.de (mrweb101
- [213.165.67.124]) with ESMTPSA (Nemesis) id 0M3Bhz-1hpaVu0SM3-00szdL; Thu, 12
- Dec 2019 11:59:17 +0100
-Subject: Re: [PATCH v2 0/9] brcmfmac: add support for BCM4359 SDIO chipset
-To:     Kalle Valo <kvalo@codeaurora.org>
-Cc:     brcm80211-dev-list.pdl@broadcom.com,
-        Heiko Stuebner <heiko@sntech.de>, netdev@vger.kernel.org,
-        linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-rockchip@lists.infradead.org, brcm80211-dev-list@cypress.com,
-        linux-arm-kernel@lists.infradead.org
-References: <20191211235253.2539-1-smoch@web.de>
- <0101016ef97cf6b5-2552a5e4-12de-4616-94d6-b63d9c795ed6-000000@us-west-2.amazonses.com>
-From:   Soeren Moch <smoch@web.de>
-Message-ID: <1daadfe0-5964-db9b-818c-6e4c75ac6a69@web.de>
-Date:   Thu, 12 Dec 2019 11:59:13 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.1
+        id S1728897AbfLLLAk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Dec 2019 06:00:40 -0500
+Received: from s3.sipsolutions.net ([144.76.43.62]:36454 "EHLO
+        sipsolutions.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728423AbfLLLAj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Dec 2019 06:00:39 -0500
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.92.3)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1ifMCv-006l2h-DV; Thu, 12 Dec 2019 12:00:33 +0100
+Message-ID: <bd9f32d02374a5e0b341585db88856a1e420ede8.camel@sipsolutions.net>
+Subject: Re: iwlwifi warnings in 5.5-rc1
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     Toke =?ISO-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
+        Jens Axboe <axboe@kernel.dk>,
+        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>
+Cc:     "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>
+Date:   Thu, 12 Dec 2019 12:00:31 +0100
+In-Reply-To: <87v9qleru0.fsf@toke.dk>
+References: <ceb74ea2-6a1b-4cef-8749-db21a2ee4311@kernel.dk>
+         <9727368004ceef03f72d259b0779c2cf401432e1.camel@sipsolutions.net>
+         <878snjgs5l.fsf@toke.dk>
+         <3420d73e667b01ec64bf0cc9da6232b41e862860.camel@sipsolutions.net>
+         <875zingnzt.fsf@toke.dk>
+         <bfab4987668990ea8d86a98f3e87c3fa31403745.camel@sipsolutions.net>
+         <87tv67ez9p.fsf@toke.dk>
+         <3ca2be96898e9d30c27b2411148d201318e413f2.camel@sipsolutions.net>
+         <87v9qleru0.fsf@toke.dk>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.34.2 (3.34.2-1.fc31) 
 MIME-Version: 1.0
-In-Reply-To: <0101016ef97cf6b5-2552a5e4-12de-4616-94d6-b63d9c795ed6-000000@us-west-2.amazonses.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Content-Language: en-GB
-X-Provags-ID: V03:K1:X1VXSbz0SVvWmuA9nSQSUNDgrZCFbxASzXxbWmYUVAixHdeM2ap
- 5jmIj84J8M/PXs/xv2KPflfJqUt1QNjJv5GJgJoLMLXyLiCjk0/Q3dLXeNg9mRE5SgJDMrp
- lMtjGHcpWNZZDPCuLLeuS1tRI3rHa+cB30xT2NU+YYo77xPbDHOD+6iyqP03+Hh+I890Zym
- DY/WgF90Ef1JOL5NUpYVA==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:nlKbbsRR7i0=:E+Q+EdeHtqjknVu7hYEK3S
- euzrTVn88dNTLxE8S8Bmf9etZpvuQ+ug2P/QlYtYWAvl6n5LeLFWYDUeZP8pMmhaW7kqTgs3V
- lT4dRgdn+ljCmrzCfjae5wbBHgUiv94nXEYCLSyRbUNi0w9+hMrjcobzp0HP8SZ3BaHb/Y/bS
- p1M8vXBKf3J17rBwRBwldk++//LFDOwBMSH1NJ1dl8wVua+01mQftvDogUSvv9JjSS7f/3URL
- Q6NNd7m+Umlw4wjz3wBbUDrFis01Cx6GzsDc/CVo0oNcUctbNrkFtmrbrNhcP32+zgg0SJsDR
- KjRIASeSNRRQKvnUhdNpwDvGaxz0d67FjGG9tg9L6T0wri4W+osqi7/S7CVq6P6ilteV9EY5j
- Joh3ig7b0psa4p8iR0vdKRjujfAtljo2MvB9JySRM6g6Jzy6p/4mBL2TswUxHssyzVdJhadEr
- VOnFagxMXcJD6/Bt6qkqk1sc4VBXHLE+y7mUvlcq8X1yxEE+GP1IWTOEHyFpJQVlgcxHf/bH4
- ezYtSPRp/55TUrUQsEULFDJIBHwKtLN0n2nWB2rc0xL1vDkVWCUGIiqtWUJlCQbvmxradRvzf
- 3IhC9nMdlUiwiq1J4IrSYRrI05627W4XAqLE9sCyQjbXTxaXvuiif5sQJYARAM46Qw8Pu8hQR
- q3ota1qXM6Vim/0XSoZGFcX0puCW+hfgx3ih4lat3dZhzbycUMyG/ZUg6AcEs9BAQAlAjB4/r
- qPYF5YDnohZEXMHPsLhIS14+NFQSPr9K5JzQZdix4QrggGcD1nU+RBXrKvzPuJuSz/Ybf8Bng
- OUCNE3nwUMqKDKMqwPPyONgbRFxmnsXYxBXSNlEZhQNzyQmpBWTzuMJyxgdxpcRGgWLhErbf3
- E17Z5TA64ZVTUX7PByWYChmwPpkDvVvJGdLGIw76hrdxs18tLy/57MY4TWunoefJS2TMplt15
- DGNeV1Bdaee9swC9w1PWtu03rqkXFIz2g1T0XDwqpxW6BnzbGdG3/xjCKiutsAEmKPfFvr71g
- egloZRpK3i3UQ1CEJn39vavZWYF/sxNfCwvz1OHafER/+PYgKcGXhZxgvj0xMTTiw/u+GQWuo
- sQvb15A1OdGWKK+cwMPCVOdWDSZc/XjeKojhCrY2891siO4IVsFQA24CScAYCM1YLSG+CVO47
- IPuicuo1OFqGIe23wysjRGfQsXbfw1Tm9KiqGCTFrymq0rv6+ZAnb+WDhf96GNsGKctmuxT7C
- lsN0L8y2/vEhLWXhXuLVXJE2s7y783NfGiXTdYQ==
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12.12.19 10:42, Kalle Valo wrote:
-> Soeren Moch <smoch@web.de> writes:
->
->> Add support for the BCM4359 chipset with SDIO interface and RSDB support
->> to the brcmfmac wireless network driver in patches 1-7.
->>
->> Enhance devicetree of the RockPro64 arm64/rockchip board to use an
->> AP6359SA based wifi/bt combo module with this chipset in patches 8-9.
->>
->>
->> Chung-Hsien Hsu (1):
->>   brcmfmac: set F2 blocksize and watermark for 4359
->>
->> Soeren Moch (5):
->>   brcmfmac: fix rambase for 4359/9
->>   brcmfmac: make errors when setting roaming parameters non-fatal
->>   brcmfmac: add support for BCM4359 SDIO chipset
->>   arm64: dts: rockchip: RockPro64: enable wifi module at sdio0
->>   arm64: dts: rockchip: RockPro64: hook up bluetooth at uart0
->>
->> Wright Feng (3):
->>   brcmfmac: reset two D11 cores if chip has two D11 cores
->>   brcmfmac: add RSDB condition when setting interface combinations
->>   brcmfmac: not set mbss in vif if firmware does not support MBSS
->>
->>  .../boot/dts/rockchip/rk3399-rockpro64.dts    | 50 +++++++++++---
->>  .../broadcom/brcm80211/brcmfmac/bcmsdh.c      |  8 ++-
->>  .../broadcom/brcm80211/brcmfmac/cfg80211.c    | 68 +++++++++++++++----
->>  .../broadcom/brcm80211/brcmfmac/chip.c        | 54 ++++++++++++++-
->>  .../broadcom/brcm80211/brcmfmac/chip.h        |  1 +
->>  .../broadcom/brcm80211/brcmfmac/pcie.c        |  2 +-
->>  .../broadcom/brcm80211/brcmfmac/sdio.c        | 17 +++++
->>  include/linux/mmc/sdio_ids.h                  |  2 +
->>  8 files changed, 176 insertions(+), 26 deletions(-)
-> Just to make sure we are on the same page, I will apply patches 1-7 to
-> wireless-drivers-next and patches 8-9 go to some other tree? And there
-> are no dependencies between the brcmfmac patches and dts patches?
->
-Yes, this also is my understanding. I'm glad if you are fine with
-patches 1-7.
-Heiko will pick up patches 8-9 later for linux-rockchip independently.
-And if we need another round of review for patches 8-9, I think we don't
-need to bother linux-wireless with this.
+On Thu, 2019-12-12 at 11:55 +0100, Toke Høiland-Jørgensen wrote:
+> 
+> > I'm not even sure we *can* do this easily - do we know up-front how many
+> > packets this will expand to? We should know, but it might not be so easy
+> > given the abstraction layers. We could guess and if it's wrong just set
+> > it to 0 on any remaining ones.
+> 
+> I was thinking about a scheme where we re-defined the value in the cb to
+> be a "time per byte" value, that we could just multiply by the packet
+> length; that would make it trivial to do partial reporting. Not sure
+> it's quite workable in practice, though; it would be hard to avoid
+> rounding errors, and there's also the additional headers when splitting
+> a packet, so the lengths don't necessarily add up.
 
-Thanks,
-Soeren
+Yeah, that won't really work. We could only estimate the # of pieces and
+split up the value across them.
+
+> > It's really just an artifact of our software implementation that we
+> > report the SKBs back as used with partial content. Maybe we shouldn't
+> > even do that, since they weren't generated by mac80211 in the first
+> > place, and only report the original skb or something.
+> 
+> Hmm, yeah, was wondering how that works, actually. I assumed you send
+> the whole thing to the hardware as one superpacket? But if so how do you
+> get the completion events back? Or are you splitting it in the driver
+> just before you send it to the hardware?
+
+If we get say a 64k superpacket, we'll split it first into SKBs of max
+A-MSDU size, and then rejigger the pieces inside each A-MSDU thing using
+the DMA engine so we get A-MSDUs of MTU-sized packets out at the end.
+The hardware is dumb here, it only takes care of TCP checksum.
+
+> > I'm not really sure I want to rely on this - this was never really
+> > needed *functionally*, just from a *statistics* point of view (e.g. "iw
+> > link" or such).
+> 
+> Right, I see. Well I guess now that we're turning this on one driver at
+> a time, we can ensure that the driver provides sufficiently accurate
+> rate information as part of that.
+
+Right.
+
+> BTW, since we're discussing this in the context of iwlwifi: do you have
+> any data as to how much benefit AQL would be for that? I.e., do the
+> Intel devices tend to buffer a lot of data in hardware/firmware?
+
+Hardware we have queues up to ~240 frames or so, otherwise no real
+buffering. Per station/TID.
+
+> > Ideally, it'd be a function call from the rate scaling to mac80211 so we
+> > don't have to call a function every time we need the value, but the rate
+> > scaling just calls us whenever it updates. This would even work with
+> > iwlwifi's offloaded algorithm - it notifies the host on all changes.
+> 
+> Yup, this makes sense, and would be easy to integrate with Minstrel as
+> well, I think. We already have ieee80211_sta_set_expected_throughput(),
+> so maybe expanding that? It just provides a single number now, but we
+> could change it to set the full rate info instead?
+
+Right, was thinking around that area too. Not sure about the details
+really though.
+
+johannes
+
