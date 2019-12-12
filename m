@@ -2,164 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7AE2D11CE2A
-	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 14:21:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 40FCB11CE30
+	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 14:21:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729436AbfLLNVH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Dec 2019 08:21:07 -0500
-Received: from mx2.suse.de ([195.135.220.15]:50418 "EHLO mx1.suse.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1729378AbfLLNVH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 12 Dec 2019 08:21:07 -0500
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id B70EFAFD8;
-        Thu, 12 Dec 2019 13:21:03 +0000 (UTC)
-Message-ID: <ff60337c5f6f324fb121fa7cad24e763af29cfe2.camel@suse.de>
-Subject: Re: [PATCH v4 8/8] linux/log2.h: Use roundup/dow_pow_two() on 64bit
- calculations
-From:   Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
-To:     Bjorn Helgaas <helgaas@kernel.org>
-Cc:     andrew.murray@arm.com, maz@kernel.org,
-        linux-kernel@vger.kernel.org,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Hanjun Guo <guohanjun@huawei.com>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Tariq Toukan <tariqt@mellanox.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        bcm-kernel-feedback-list@broadcom.com,
-        Eric Anholt <eric@anholt.net>,
-        Stefan Wahren <wahrenst@gmx.net>,
-        Shawn Lin <shawn.lin@rock-chips.com>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Christoph Hellwig <hch@lst.de>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        james.quinlan@broadcom.com, mbrugger@suse.com,
-        phil@raspberrypi.org, jeremy.linton@arm.com,
-        linux-pci@vger.kernel.org, linux-rpi-kernel@lists.infradead.org,
-        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
-        Len Brown <lenb@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-rockchip@lists.infradead.org,
-        iommu@lists.linux-foundation.org
-Date:   Thu, 12 Dec 2019 14:21:00 +0100
-In-Reply-To: <20191205203845.GA243596@google.com>
-References: <20191205203845.GA243596@google.com>
-Content-Type: multipart/signed; micalg="pgp-sha256";
-        protocol="application/pgp-signature"; boundary="=-lcx9Dpdc/nSfdN+F0tca"
-User-Agent: Evolution 3.34.2 
+        id S1729381AbfLLNVg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Dec 2019 08:21:36 -0500
+Received: from a.mx.secunet.com ([62.96.220.36]:40036 "EHLO a.mx.secunet.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729337AbfLLNVf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 12 Dec 2019 08:21:35 -0500
+Received: from localhost (localhost [127.0.0.1])
+        by a.mx.secunet.com (Postfix) with ESMTP id 4A980200A7;
+        Thu, 12 Dec 2019 14:21:34 +0100 (CET)
+X-Virus-Scanned: by secunet
+Received: from a.mx.secunet.com ([127.0.0.1])
+        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id trOZd3QcAKd0; Thu, 12 Dec 2019 14:21:33 +0100 (CET)
+Received: from mail-essen-01.secunet.de (mail-essen-01.secunet.de [10.53.40.204])
+        (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by a.mx.secunet.com (Postfix) with ESMTPS id 6EBA32008D;
+        Thu, 12 Dec 2019 14:21:33 +0100 (CET)
+Received: from gauss2.secunet.de (10.182.7.193) by mail-essen-01.secunet.de
+ (10.53.40.204) with Microsoft SMTP Server id 14.3.439.0; Thu, 12 Dec 2019
+ 14:21:32 +0100
+Received: by gauss2.secunet.de (Postfix, from userid 1000)      id CE3B23180A43;
+ Thu, 12 Dec 2019 14:21:32 +0100 (CET)
+Date:   Thu, 12 Dec 2019 14:21:32 +0100
+From:   Steffen Klassert <steffen.klassert@secunet.com>
+To:     Josh Hunt <johunt@akamai.com>
+CC:     <herbert@gondor.apana.org.au>, David Miller <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>
+Subject: Re: crash in __xfrm_state_lookup on 4.19 LTS
+Message-ID: <20191212132132.GL8621@gauss3.secunet.de>
+References: <0b3ab776-2b8b-1725-d36e-70af66c138da@akamai.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <0b3ab776-2b8b-1725-d36e-70af66c138da@akamai.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Dec 11, 2019 at 02:52:41PM -0800, Josh Hunt wrote:
+> We've hit the following crash on a handful of machines recently running
+> 4.19.55 LTS and strongswan. The kernels running on these machines do have
+> some patches on top of 4.19 LTS, but nothing in the area of xfrm/ipsec:
+> 
+> [54284.354997] general protection fault: 0000 [#1] SMP PTI
+> [54284.355504] CPU: 6 PID: 11937 Comm: charon Tainted: G           O L
+> 4.19.55-4.19.2.4-amd64-2b86b5ea31726254 #1
+> [54284.356382] Hardware name: Ciara Technologies 1x8-X6 SSD 32G
+> 10GE/CangJie, BIOS CC1F110D 08/12/2014
+> [54284.357322] RIP: 0010:__xfrm_state_lookup+0x7f/0x110
+> [54284.357856] Code: d0 4a 8d 04 c0 48 8b 00 48 85 c0 74 68 41 89 cf 49 89
+> d6 41 89 f5 eb 09 48 8b 43 28 48 85 c0 74 54 48 83 e8 28 48 89 c3 74 4b <66>
+> 3b a8 d2 00 00 00 75 e5 44 3b 78 50
+>  75 df 44 3a 60 54 75 d9 66
+> [54284.359190] RSP: 0018:ffffab5043d93ad0 EFLAGS: 00010212
+> [54284.359748] RAX: 6174735f79636e3d RBX: 6174735f79636e3d RCX:
+> 0000000064959bc7
+> [54284.360219] RDX: ffff9bb0593c3380 RSI: 0000000000000000 RDI:
+> ffffffff951071c0
+> [54284.360713] RBP: 0000000000000002 R08: 0000000000000010 R09:
+> 00000000001b950d
+> [54284.361209] R10: 000000000000003f R11: 0000000096001849 R12:
+> 0000000000000032
+> [54284.361755] R13: 0000000000000000 R14: ffff9bb0593c3380 R15:
+> 0000000064959bc7
+> [54284.362255] FS:  00007facd7b01700(0000) GS:ffff9bb07fb80000(0000)
+> knlGS:00000000000000000
+> [54284.363198] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [54284.363687] CR2: 00007f99250e89e0 CR3: 00000007e1078006 CR4:
+> 00000000001606e0
+> [54284.364156] Call Trace:
+> [54284.364642]  xfrm_state_add+0x108/0x290
+> [54284.365113]  xfrm_add_sa+0x9e6/0xb28 [xfrm_user]
+> [54284.365580]  ? xfrm_user_rcv_msg+0x183/0x1a0 [xfrm_user]
+> [54284.366077]  xfrm_user_rcv_msg+0x183/0x1a0 [xfrm_user]
+> [54284.366543]  ? xfrm_dump_sa_done+0x30/0x30 [xfrm_user]
+> [54284.367040]  netlink_rcv_skb+0xde/0x110
+> [54284.367504]  xfrm_netlink_rcv+0x30/0x40 [xfrm_user]
+> [54284.368000]  netlink_unicast+0x191/0x230
+> [54284.368463]  netlink_sendmsg+0x2c4/0x390
+> [54284.368958]  sock_sendmsg+0x36/0x40
+> [54284.369449]  __sys_sendto+0xd8/0x150
+> [54284.369940]  ? kern_select+0xb9/0xe0
+> [54284.370405]  __x64_sys_sendto+0x24/0x30
+> [54284.370946]  do_syscall_64+0x4e/0x110
+> [54284.383941]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+> [54284.384497] RIP: 0033:0x7face4679ad3
+> 
+> (gdb) list *(__xfrm_state_lookup+0x7f)
+> 0xffffffff8271beaf is in __xfrm_state_lookup (net/xfrm/xfrm_state.c:841).
+> warning: Source file is more recent than executable.
+> 836	{
+> 837		unsigned int h = xfrm_spi_hash(net, daddr, spi, proto, family);
+> 838		struct xfrm_state *x;
+> 839	
+> 840		hlist_for_each_entry_rcu(x, net->xfrm.state_byspi + h, byspi) {
+> 841			if (x->props.family != family ||
+> 842			    x->id.spi       != spi ||
+> 843			    x->id.proto     != proto ||
+> 844			    !xfrm_addr_equal(&x->id.daddr, daddr, family))
+> 845				continue;
+> 
+> The above looks similar to these very old reports:
+> https://wiki.strongswan.org/issues/2147
+> https://bugzilla.kernel.org/show_bug.cgi?id=84961
+> 
+> Prior to the crash we are seeing softlockups and rcu stalls (see attached
+> netconsole log file.) The RIP in those stalls/lockups appears to be in the
+> same area as the crash reported above, lines 840 and 841.
+> 
+> I've tried reproducing the problem in our lab, but have been unsuccessful so
+> far and running the latest upstream kernel in production to see if that
+> resolves the issue is not possible at the moment. It's very possible this
+> crash was happening on earlier kernel versions in our network, I just don't
+> have any data to confirm that.
 
---=-lcx9Dpdc/nSfdN+F0tca
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-On Thu, 2019-12-05 at 14:38 -0600, Bjorn Helgaas wrote:
-> The subject contains a couple typos: it's missing "of" and it's
-> missing the "n" on "down".
-
-Noted >=20
-> On Tue, Dec 03, 2019 at 12:47:41PM +0100, Nicolas Saenz Julienne wrote:
-> > The function now is safe to use while expecting a 64bit value. Use it
-> > where relevant.
->=20
-> Please include the function names ("roundup_pow_of_two()",
-> "rounddown_pow_of_two()") in the changelog so it is self-contained and
-> doesn't depend on the subject.
-
-Noted
-
-> > Signed-off-by: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
->=20
-> With the nits above and below addressed,
->=20
-> Acked-by: Bjorn Helgaas <bhelgaas@google.com>	# drivers/pci
-
-Thanks!
-
-> > ---
-> >  drivers/acpi/arm64/iort.c                        | 2 +-
-> >  drivers/net/ethernet/mellanox/mlx4/en_clock.c    | 3 ++-
-> >  drivers/of/device.c                              | 3 ++-
-> >  drivers/pci/controller/cadence/pcie-cadence-ep.c | 3 ++-
-> >  drivers/pci/controller/cadence/pcie-cadence.c    | 3 ++-
-> >  drivers/pci/controller/pcie-brcmstb.c            | 3 ++-
-> >  drivers/pci/controller/pcie-rockchip-ep.c        | 5 +++--
-> >  kernel/dma/direct.c                              | 2 +-
-> >  8 files changed, 15 insertions(+), 9 deletions(-)
-> > --- a/drivers/pci/controller/cadence/pcie-cadence-ep.c
-> > +++ b/drivers/pci/controller/cadence/pcie-cadence-ep.c
-> > @@ -10,6 +10,7 @@
-> >  #include <linux/platform_device.h>
-> >  #include <linux/pm_runtime.h>
-> >  #include <linux/sizes.h>
-> > +#include <linux/log2.h>
-> > =20
-> >  #include "pcie-cadence.h"
-> > =20
-> > @@ -65,7 +66,7 @@ static int cdns_pcie_ep_set_bar(struct pci_epc *epc, =
-u8
-> > fn,
-> >  	 * roundup_pow_of_two() returns an unsigned long, which is not suited
-> >  	 * for 64bit values.
-> >  	 */
->=20
-> Please remove the comment above since it no longer applies.
-
-Noted
-
-[...]
-
-> > diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
-> > index 6af7ae83c4ad..056886c4efec 100644
-> > --- a/kernel/dma/direct.c
-> > +++ b/kernel/dma/direct.c
-> > @@ -53,7 +53,7 @@ u64 dma_direct_get_required_mask(struct device *dev)
-> >  {
-> >  	u64 max_dma =3D phys_to_dma_direct(dev, (max_pfn - 1) << PAGE_SHIFT);
-> > =20
-> > -	return (1ULL << (fls64(max_dma) - 1)) * 2 - 1;
-> > +	return rounddown_pow_of_two(max_dma) * 2 - 1;
->=20
-> Personally I would probably make this one a separate patch since it's
-> qualitatively different than the others and it would avoid the slight
-> awkwardness of the non-greppable "roundup/down_pow_of_two()"
-> construction in the commit subject.
->=20
-> But it's fine either way.
-
-I'll split it into two parts, as RobH made a similar complaint.
-
-Regards,
-Nicolas
-
-
---=-lcx9Dpdc/nSfdN+F0tca
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part
-Content-Transfer-Encoding: 7bit
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCAAdFiEErOkkGDHCg2EbPcGjlfZmHno8x/4FAl3yPrwACgkQlfZmHno8
-x/4DxAf/dUNU44c6C5UlupKkHs1V09AR3yPNPOe8GrxrtpnzWAaNQ9L4S0ZG9ocS
-gey8W3CCPJPrWmqSAjQ8ddX9w+wKaaRaGFE3wHRFiGVMDSN8kGzHySuWi1ytfy0Y
-x0msb/bX87L3SwSegRTGlvbRJ1rDZl4WxCVFSrhCNRwem2R+v668VGifVS24Ay1f
-dwS7xyDUcMTmaiCfpK8KyJK1GdbScI6kVPFUM57deANw/I60zWGWykBnTeTQtlrM
-gLN2fGNP1wLRKZ5IEHObKLWo0rXTRKBjsouzL4/D5dW69LXZK1nS02rJsdu5bpUl
-WepA96OKnIgxngbBiO8z4btiMgZ1Jw==
-=QTsG
------END PGP SIGNATURE-----
-
---=-lcx9Dpdc/nSfdN+F0tca--
-
+Do you have any possibility to reproduce this on v4.19.55?
+__xfrm_state_lookup() is called from process context and protected
+by rcu_read_lock(). But updates to the above list can happen in
+softirq context, so seems like we should disable BHs to prevent
+beeing interrupted by a softirq that updates the list.
