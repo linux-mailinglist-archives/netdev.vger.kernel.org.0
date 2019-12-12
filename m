@@ -2,71 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A52A11D0F4
-	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 16:26:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 948DC11D14C
+	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 16:47:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729237AbfLLP0b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Dec 2019 10:26:31 -0500
-Received: from mail-lj1-f193.google.com ([209.85.208.193]:38694 "EHLO
-        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728581AbfLLP0a (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Dec 2019 10:26:30 -0500
-Received: by mail-lj1-f193.google.com with SMTP id k8so2748685ljh.5
-        for <netdev@vger.kernel.org>; Thu, 12 Dec 2019 07:26:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:sender:from:date:message-id:subject:to;
-        bh=knvEp+cAw5XudNjVgJBZDcbrg1+K6QxmqBDjp/0MqvQ=;
-        b=d/F/B+xYAWo5OmupIW4Sw/7O8pOwBx6Ke0REcU/wKZxF/Hhvv+D6yfP+AWBMr+nvi6
-         N7xt3ajo9H5OebhC2WxCx7nFXyclfpJepf8oja6XOeNN3cW57jPwQUx80zBYypoqFLW7
-         lvlWfsYHgc2MDIGKNMPzbKd883ZsNbggelJdjthY5jnLe+V0gLxPhwc8hWi0H0Yfeycj
-         mOyeP+mWMMSPkgEAFFe2nHt+Y8Nont1HuIrV6nPhLtqfMmMbYgafBcl9HUosm/b+12aM
-         8+SH/UgaoNIoHDNXpmOR8PVVAnTXFLlukYWQAS7+pYAvpHszx+pyOg2R6X2SquSEEj8h
-         gjww==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
-         :to;
-        bh=knvEp+cAw5XudNjVgJBZDcbrg1+K6QxmqBDjp/0MqvQ=;
-        b=jmSm3VHWGXzuKTd2KNK6UNVeTfZDzpkNZWlqnjMVHo7LyZXJ08rlt/MlQWJFyg54lW
-         v/hw0AWRFAtliFPoJGjYGKgOyIZtzQ33D52eUiXhvVwnkyOoarp7ffDnJW+/ZBatX+o1
-         F+dtvZjwXovP00VIZ6Pugkb5NJr3+tsk15FuYB7jg6aurXVXF5MKUMGQ8SORoPJ2Cfcy
-         YIsyAkD507zkQjTjPO2030q8/GDh/wey/0YDvWDjQWF+qzVWCmzxVY7+ycXYfBkrKfBn
-         I8yp+xNyRX43vMy+TG33I/1ThyJngS8O+UTezSNA00ypP4+uzGxDkFBT213xV601Kni7
-         8kBQ==
-X-Gm-Message-State: APjAAAVtjS4syhbVJVsvcwqOKOMIwaqgUPACSlCc+SWeJ6I43wcbxRBg
-        Gc5EiNL0j3EywdxVGkxmgvnPBl6NHClwvNiqEjk=
-X-Google-Smtp-Source: APXvYqzUoGc8YQLiVZ9d9gOtGBa6NG4sz2QHSsBbpvTkbVqCUirJvM6NcDHXHH5C8+bMkOTbBQZsdLKoZedu2cFIoOY=
-X-Received: by 2002:a2e:5850:: with SMTP id x16mr6378469ljd.228.1576164388768;
- Thu, 12 Dec 2019 07:26:28 -0800 (PST)
-MIME-Version: 1.0
-Received: by 2002:a19:551a:0:0:0:0:0 with HTTP; Thu, 12 Dec 2019 07:26:28
- -0800 (PST)
-From:   Rebecca Johnson <rebeccajohnson9998@gmail.com>
-Date:   Thu, 12 Dec 2019 15:26:28 +0000
-X-Google-Sender-Auth: 9TN6tAAMFmmWeOpLQPofIjEkyxs
-Message-ID: <CAMLrS46BdodM-aU8VYRb26fsqeGqMtGjCnP=c7OT2hdBcycBcg@mail.gmail.com>
-Subject: h
-To:     undisclosed-recipients:;
+        id S1729444AbfLLPrh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Dec 2019 10:47:37 -0500
+Received: from s3.sipsolutions.net ([144.76.43.62]:43966 "EHLO
+        sipsolutions.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729013AbfLLPrg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Dec 2019 10:47:36 -0500
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.92.3)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1ifQgf-007QNn-GP; Thu, 12 Dec 2019 16:47:33 +0100
+Message-ID: <f4670ce0f4399fe82e7168fb9c491d8eb718e8d8.camel@sipsolutions.net>
+Subject: Re: debugging TCP stalls on high-speed wifi
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     Neal Cardwell <ncardwell@google.com>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
+        Toke =?ISO-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
+        linux-wireless@vger.kernel.org, Netdev <netdev@vger.kernel.org>
+Date:   Thu, 12 Dec 2019 16:47:30 +0100
+In-Reply-To: <CADVnQym_CNktZ917q0-9dVY9dhtiJVRRotGTrPNdZUpkjd3vyw@mail.gmail.com> (sfid-20191212_161133_657244_F94C6EAB)
+References: <14cedbb9300f887fecc399ebcdb70c153955f876.camel@sipsolutions.net>
+         <CADVnQym_CNktZ917q0-9dVY9dhtiJVRRotGTrPNdZUpkjd3vyw@mail.gmail.com>
+         (sfid-20191212_161133_657244_F94C6EAB)
 Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.34.2 (3.34.2-1.fc31) 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
-My name is Mrs. Rebecca Johnson, I hope this email will not bother
-you? I'm from Toronto Canada, a dying widow suffering from cancer
-leukemia and has decided to donate some of my wealth to a reliable
-individual or cooperate
-Organization that will use my finance in the amount of $7,200,000.00
-Million for charity work .
-I took this decision because I don't have any child that will inherit
-this fund. I don't want a situation where this money will be used in
-an ungodly way. That is why I am taking this decision. I am not afraid
-of death hence I know where I am going. Please if you would be able to
-use this fund for helping the Less Privileges, kindly contact me back
-for more details.
+Hi Neal,
 
-I look forward to your prompt reply for more details.
-Mrs. Rebecca Johnson.
+On Thu, 2019-12-12 at 10:11 -0500, Neal Cardwell wrote:
+> On Thu, Dec 12, 2019 at 9:50 AM Johannes Berg <johannes@sipsolutions.net> wrote:
+> > If you have any thoughts on this, I'd appreciate it.
+> 
+> Thanks for the detailed report!
+
+Well, it wasn't. For example, I neglected to mention that I have to
+actually use at least 2 TCP streams (but have tried up to 20) in order
+to not run into the gbit link limit on the AP :-)
+
+> I was curious:
+> 
+> o What's the sender's qdisc configuration?
+
+There's none, mac80211 bypasses qdiscs in favour of its internal TXQs
+with FQ/codel.
+
+> o Would you be able to log periodic dumps (e.g. every 50ms or 100ms)
+> of the test connection using a recent "ss" binary and "ss -tinm", to
+> hopefully get a sense of buffer parameters, and whether the flow in
+> these cases is being cwnd-limited, pacing-limited,
+> send-buffer-limited, or receive-window-limited?
+
+Sure, though I'm not sure my ss is recent enough for what you had in
+mind - if not I'll have to rebuild it (it was iproute2-ss190708).
+
+https://p.sipsolutions.net/3e515625bf13fa69.txt
+
+Note there are 4 connections (iperf is being used) but two are control
+and two are data. Easy to see the difference really :-)
+
+> o Would you be able to share a headers-only tcpdump pcap trace?
+
+I'm not sure how to do headers-only, but I guess -s100 will work.
+
+https://johannes.sipsolutions.net/files/he-tcp.pcap.xz
+
+Note that this is from a different run than the ss stats.
+
+johannes
+
