@@ -2,91 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F37DF11D59B
-	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 19:32:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2482211D5A1
+	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 19:32:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730379AbfLLScX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Dec 2019 13:32:23 -0500
-Received: from mail.nic.cz ([217.31.204.67]:51446 "EHLO mail.nic.cz"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730348AbfLLScU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 12 Dec 2019 13:32:20 -0500
-Received: from localhost (unknown [172.20.6.135])
-        by mail.nic.cz (Postfix) with ESMTPSA id 8A1F0140E44;
-        Thu, 12 Dec 2019 19:32:18 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=nic.cz; s=default;
-        t=1576175538; bh=ZmC6CchjybjXVa6TO/1AkmEB1/mDD1k1orvejWCSEZg=;
-        h=Date:From:To;
-        b=qaiN9MaQQi3RsiXr1LEJ0AZkTzDizJAGi7CKUqdIJIYMH5SINrRNxNCp+DhMBq3pk
-         P4Wq/K3ZGO45Szf/u7zZwu1Rf7nbx7sFdXcbrekUnd2sMIX8/cAha2Xn/yC4H0Dg0w
-         qgkPTesd7xrl9KQdnFIXf3hrumQefpyA4OqC+rt0=
-Date:   Thu, 12 Dec 2019 19:32:18 +0100
-From:   Marek Behun <marek.behun@nic.cz>
-To:     Baruch Siach <baruch@tkos.co.il>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        netdev@vger.kernel.org,
-        Denis Odintsov <d.odintsov@traviangames.com>,
-        Hubert Feurstein <h.feurstein@gmail.com>
-Subject: Re: [BUG] mv88e6xxx: tx regression in v5.3
-Message-ID: <20191212193218.2f91df52@nic.cz>
-In-Reply-To: <20191212181729.mviz5c26ysebg4w3@sapphire.tkos.co.il>
-References: <87tv67tcom.fsf@tarshish>
-        <20191211131111.GK16369@lunn.ch>
-        <87fthqu6y6.fsf@tarshish>
-        <20191211174938.GB30053@lunn.ch>
-        <20191212085045.nqhfldkbebqzzamv@sapphire.tkos.co.il>
-        <20191212131448.GA9959@lunn.ch>
-        <20191212150810.zx6o26jnk5croh4r@sapphire.tkos.co.il>
-        <20191212151355.GE30053@lunn.ch>
-        <20191212152355.iiepmi4cjriddeon@sapphire.tkos.co.il>
-        <20191212181729.mviz5c26ysebg4w3@sapphire.tkos.co.il>
-X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        id S1730438AbfLLScj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Dec 2019 13:32:39 -0500
+Received: from youngberry.canonical.com ([91.189.89.112]:59939 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730418AbfLLScj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Dec 2019 13:32:39 -0500
+Received: from 1.general.cking.uk.vpn ([10.172.193.212] helo=localhost)
+        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <colin.king@canonical.com>)
+        id 1ifTGH-0006Ah-36; Thu, 12 Dec 2019 18:32:29 +0000
+From:   Colin King <colin.king@canonical.com>
+To:     Kalle Valo <kvalo@codeaurora.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Pradeep Kumar Chitrapu <pradeepc@codeaurora.org>,
+        Ganesh Sesetti <gseset@codeaurora.org>,
+        Karthikeyan Periyasamy <periyasa@codeaurora.org>,
+        John Crispin <john@phrozen.org>, ath11k@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH][next] ath11k: fix memory leak on reg_info
+Date:   Thu, 12 Dec 2019 18:32:28 +0000
+Message-Id: <20191212183228.105993-1-colin.king@canonical.com>
+X-Mailer: git-send-email 2.24.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Virus-Scanned: clamav-milter 0.100.3 at mail
-X-Virus-Status: Clean
-X-Spam-Status: No, score=-1.0 required=5.0 tests=ALL_TRUSTED,SHORTCIRCUIT,
-        URIBL_BLOCKED shortcircuit=ham autolearn=disabled version=3.4.2
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.nic.cz
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 12 Dec 2019 20:17:29 +0200
-Baruch Siach <baruch@tkos.co.il> wrote:
+From: Colin Ian King <colin.king@canonical.com>
 
-> This is not enough to fix v5.4, though. Commit 7a3007d22e8dc ("net: dsa: 
-> mv88e6xxx: fully support SERDES on Topaz family") breaks switch Tx on SolidRun 
-> Clearfog GT-8K in much the same way. I could not easily revert 7a3007d22e8dc 
-> on top of v5.4, but this is enough to make Tx work again with v5.4:
-> 
-> diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-> index 7b5b73499e37..e7e6400a994e 100644
-> --- a/drivers/net/dsa/mv88e6xxx/chip.c
-> +++ b/drivers/net/dsa/mv88e6xxx/chip.c
-> @@ -3191,7 +3191,6 @@ static const struct mv88e6xxx_ops mv88e6141_ops = {
->  	.port_disable_pri_override = mv88e6xxx_port_disable_pri_override,
->  	.port_link_state = mv88e6352_port_link_state,
->  	.port_get_cmode = mv88e6352_port_get_cmode,
-> -	.port_set_cmode = mv88e6341_port_set_cmode,
->  	.port_setup_message_port = mv88e6xxx_setup_message_port,
->  	.stats_snapshot = mv88e6390_g1_stats_snapshot,
->  	.stats_set_histogram = mv88e6095_g1_stats_set_histogram,
-> 
-> Marek, do you have any idea how to properly fix this?
-> 
-> Thanks,
-> baruch
-> 
+Currently a return path is leaking the previously allocate reg_info. Fix
+this by exiting via the return path mem_free.  Since the return value ret
+is defaulted to 0, there is no need to re-assign ret to the 0 before
+the goto.
 
-Hi Baruch,
+Addresses-Coverity: ("Resource leak")
+Fixes: d5c65159f289 ("ath11k: driver for Qualcomm IEEE 802.11ax devices")
+Signed-off-by: Colin Ian King <colin.king@canonical.com>
+---
+ drivers/net/wireless/ath/ath11k/wmi.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-can you tell on which port the port_set_cmode is called when things
-break? Because if it is other than port 5, than method
-mv88e6341_port_set_cmode does nothing. If it is port 5, do you have cpu
-connected to the switch via port 5? What phy mode?
+diff --git a/drivers/net/wireless/ath/ath11k/wmi.c b/drivers/net/wireless/ath/ath11k/wmi.c
+index b05642617b78..acb1c03d4f70 100644
+--- a/drivers/net/wireless/ath/ath11k/wmi.c
++++ b/drivers/net/wireless/ath/ath11k/wmi.c
+@@ -4522,7 +4522,7 @@ static int ath11k_reg_chan_list_event(struct ath11k_base *ab, struct sk_buff *sk
+ 	if (ab->default_regd[pdev_idx] && !ab->new_regd[pdev_idx] &&
+ 	    !memcmp((char *)ab->default_regd[pdev_idx]->alpha2,
+ 		    (char *)reg_info->alpha2, 2))
+-		return 0;
++		goto mem_free;
+ 
+ 	/* Intersect new rules with default regd if a new country setting was
+ 	 * requested, i.e a default regd was already set during initialization
+-- 
+2.24.0
 
-Marek
