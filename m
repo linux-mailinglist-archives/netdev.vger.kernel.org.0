@@ -2,86 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 547DF11D034
-	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 15:49:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 76C2411D036
+	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 15:50:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729838AbfLLOtf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Dec 2019 09:49:35 -0500
-Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:10084 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1729669AbfLLOtf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Dec 2019 09:49:35 -0500
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xBCEgot6014579;
-        Thu, 12 Dec 2019 06:49:32 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-type; s=pfpt0818;
- bh=esjUsElEsdSSAn7BQ88BtgQZa9fOxDz9xhGeaHy3xK0=;
- b=r5bLdtDrVCMUDPFiXELHiGkyCiwIgLS84ch1qyb2yYGAD6GrfhV3dEHMCUhj7uB3ksU+
- pOrTztWUKTYSGMSgLE0rTKeTiGJBG22a6PBE4h+oLV3lYEkqswEJ7/ojBPuln6CReLZw
- tqV4HBvtZLUJzD33Kc7L/pYno2GkPOegU3RpQNDxBF78WlXbFsvqHQbV36EkYZtiOUBs
- VzBi3FLJqfyc8Jzzgj18gNiyPYOyxeCoe5bbK1PXafRCrcDbHdLpM4EMr9Pa9LPnJK+Z
- +pN0uBkhxsjI2MuvdMm/nmMnqpNc01WYfMYW8Cf/nQeeM7UYzVEe4g02mT/90BfJT8AE ow== 
-Received: from sc-exch01.marvell.com ([199.233.58.181])
-        by mx0a-0016f401.pphosted.com with ESMTP id 2wuegj9v0a-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Thu, 12 Dec 2019 06:49:32 -0800
-Received: from SC-EXCH03.marvell.com (10.93.176.83) by SC-EXCH01.marvell.com
- (10.93.176.81) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 12 Dec
- 2019 06:49:31 -0800
-Received: from maili.marvell.com (10.93.176.43) by SC-EXCH03.marvell.com
- (10.93.176.83) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 12 Dec 2019 06:49:31 -0800
-Received: from dut1171.mv.qlogic.com (unknown [10.112.88.18])
-        by maili.marvell.com (Postfix) with ESMTP id 547CE3F703F;
-        Thu, 12 Dec 2019 06:49:31 -0800 (PST)
-Received: from dut1171.mv.qlogic.com (localhost [127.0.0.1])
-        by dut1171.mv.qlogic.com (8.14.7/8.14.7) with ESMTP id xBCEnVCb000546;
-        Thu, 12 Dec 2019 06:49:31 -0800
-Received: (from root@localhost)
-        by dut1171.mv.qlogic.com (8.14.7/8.14.7/Submit) id xBCEnUbm000545;
-        Thu, 12 Dec 2019 06:49:30 -0800
-From:   Manish Chopra <manishc@marvell.com>
-To:     <davem@davemloft.net>
-CC:     <netdev@vger.kernel.org>, <aelior@marvell.com>,
-        <skalluru@marvell.com>
-Subject: [PATCH net 1/1] qede: Fix multicast mac configuration
-Date:   Thu, 12 Dec 2019 06:49:28 -0800
-Message-ID: <20191212144928.509-1-manishc@marvell.com>
-X-Mailer: git-send-email 2.12.0
+        id S1729698AbfLLOuW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Dec 2019 09:50:22 -0500
+Received: from s3.sipsolutions.net ([144.76.43.62]:42610 "EHLO
+        sipsolutions.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728905AbfLLOuW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Dec 2019 09:50:22 -0500
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.92.3)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1ifPnH-007Ghk-QV; Thu, 12 Dec 2019 15:50:19 +0100
+Message-ID: <14cedbb9300f887fecc399ebcdb70c153955f876.camel@sipsolutions.net>
+Subject: debugging TCP stalls on high-speed wifi
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     Toke =?ISO-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Date:   Thu, 12 Dec 2019 15:50:18 +0100
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.34.2 (3.34.2-1.fc31) 
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
- definitions=2019-12-12_03:2019-12-12,2019-12-12 signatures=0
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Driver doesn't accommodate the configuration for max number
-of multicast mac addresses, in such particular case it leaves
-the device with improper/invalid multicast configuration state,
-causing connectivity issues (in lacp bonding like scenarios).
+Hi Eric, all,
 
-Signed-off-by: Manish Chopra <manishc@marvell.com>
-Signed-off-by: Ariel Elior <aelior@marvell.com>
----
- drivers/net/ethernet/qlogic/qede/qede_filter.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+I've been debugging (much thanks to bpftrace) TCP stalls on wifi, in
+particular on iwlwifi.
 
-diff --git a/drivers/net/ethernet/qlogic/qede/qede_filter.c b/drivers/net/ethernet/qlogic/qede/qede_filter.c
-index 9a6a9a008714..c8bdbf057d5a 100644
---- a/drivers/net/ethernet/qlogic/qede/qede_filter.c
-+++ b/drivers/net/ethernet/qlogic/qede/qede_filter.c
-@@ -1230,7 +1230,7 @@ qede_configure_mcast_filtering(struct net_device *ndev,
- 	netif_addr_lock_bh(ndev);
- 
- 	mc_count = netdev_mc_count(ndev);
--	if (mc_count < 64) {
-+	if (mc_count <= 64) {
- 		netdev_for_each_mc_addr(ha, ndev) {
- 			ether_addr_copy(temp, ha->addr);
- 			temp += ETH_ALEN;
--- 
-2.18.1
+What happens, essentially, is that we transmit large aggregates (63
+packets of 7.5k A-MSDU size each, for something on the order of 500kB
+per PPDU). Theoretically we can have ~240 A-MSDUs on our hardware
+queues, and the hardware aggregates them into up to 63 to send as a
+single PPDU.
+
+At HE rates (160 MHz, high rates) such a large PPDU takes less than 2ms
+to transmit.
+
+I'm seeing around 1400 Mbps TCP throughput (a bit more than 1800 UDP),
+but I'm expecting more. A bit more than 1800 for UDP is about the max I
+can expect on this AP (it only does 8k A-MSDU size), but I'd think TCP
+then shouldn't be so much less (and our Windows drivers gets >1600).
+
+
+What I see is that occasionally - and this doesn't happen all the time
+but probably enough to matter - we reclaim a few of those large
+aggregates and free the transmit SKBs, and then we try to pull from
+mac80211's TXQs but they're empty.
+
+At this point - we've just freed 400+k of data, I'd expect TCP to
+immediately push more, but it doesn't happen. I sometimes see another
+set of reclaims emptying the queue entirely (literally down to 0 packets
+on the queue) and it then takes another millisecond or two for TCP to
+start pushing packets again.
+
+Once that happens, I also observe that TCP stops pushing large TSO
+packets and goes down to sometimes less than a single A-MSDU (i.e.
+~7.5k) in a TSO, perhaps even an MTU-sized frame - didn't check this,
+only the # of frames we make out of this.
+
+
+If you have any thoughts on this, I'd appreciate it.
+
+
+Something I've been wondering is if our TSO implementation causes
+issues, but apart from higher CPU usage I see no real difference if I
+turned it off. I thought so because it splits up the SKBs into those A-
+MSDU sized chunks using skb_gso_segment() and then splits them down into
+MTU-sized all packed together into an A-MSDU using the hardware engine.
+But that means we release a bunch of A-MSDU-sized SKBs back to the TCP
+stack when they transmitted.
+
+Another thought I had was our broken NAPI, but this is TX traffic so the
+only RX thing is sync, and I'm currently still using kernel 5.4 anyway.
+
+Thanks,
+johannes
 
