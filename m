@@ -2,86 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E31711C61E
-	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 07:55:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 69FB411C65A
+	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 08:25:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728009AbfLLGzf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Dec 2019 01:55:35 -0500
-Received: from mail-lj1-f193.google.com ([209.85.208.193]:41999 "EHLO
-        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726170AbfLLGzf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Dec 2019 01:55:35 -0500
-Received: by mail-lj1-f193.google.com with SMTP id e28so975115ljo.9
-        for <netdev@vger.kernel.org>; Wed, 11 Dec 2019 22:55:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cumulusnetworks.com; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=ag166LO41mmIdH93hcAzJxPUu6DQ+iUSSg9O8F3Mz+8=;
-        b=bOiADHgew3Ea4mYbibX0J/zHUQu24msSSDM1WwGDDvtHFiRtPwzVvTlAznwc5T8Usd
-         /0NaheD+OFNIMT07YicGgnBkfBcqlnixQYJ8SUcl2sFpDaZ98qChoqfsIpUnD8dW3fSt
-         FXg1lZcDeIK4fBamc7bQ3xx+ZdnAasH906KQM=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=ag166LO41mmIdH93hcAzJxPUu6DQ+iUSSg9O8F3Mz+8=;
-        b=EV2scFEmkbTignRFeQvgVmIHwWusySHQQM+exs580niEo0WyobiZdgoIHpwvIr7o6E
-         4QWdTtjrLHm0LqtB/Nm2pW7gDuWSJaVJ/LVDQ9lWMCG6PEDdvEMuGeVTCsnAjQvX1djX
-         M/NWRkiHcTo+PE+85v3sVb/wANiRS8pu+d3DkZxqI8mfBbL6WPzBssnSA0mAM+BLYm1h
-         K9Lp1uLrptMbxM0KOd4m6f//3ahFr5NYdvmKEzQx5B2HpFntZf4fijyPyghOfV81lZ3/
-         lTMBACCCDu+d4HjCJRgpVGaJoB49pN9FjDfUuuHcBEJv5kNcyl6ZqwDTYmmLv78dpkzQ
-         SYRQ==
-X-Gm-Message-State: APjAAAV9gPNIAAtjiAukr8OdoYg47TG+pV6oI5EXJ26dywsq7yoSjIQM
-        gAnEGBgrTx9cd68vK4zaRkktzQ==
-X-Google-Smtp-Source: APXvYqxfmn1yC+2iKxoENGwinteXcKfYcMJw6Ta1Md7l2HIh9+ngK2JufWxhXRmcIjvZOX7CAViBHQ==
-X-Received: by 2002:a2e:8505:: with SMTP id j5mr4286573lji.235.1576133733488;
-        Wed, 11 Dec 2019 22:55:33 -0800 (PST)
-Received: from [192.168.0.107] (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
-        by smtp.gmail.com with ESMTPSA id x12sm2401731ljd.92.2019.12.11.22.55.31
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 11 Dec 2019 22:55:32 -0800 (PST)
-Subject: Re: [PATCH net-next v3] net: bridge: add STP xstats
-To:     Vivien Didelot <vivien.didelot@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     Roopa Prabhu <roopa@cumulusnetworks.com>, netdev@vger.kernel.org,
-        bridge@lists.linux-foundation.org,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        David Ahern <dsahern@gmail.com>
-References: <20191212010711.1664000-1-vivien.didelot@gmail.com>
-From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-Message-ID: <15115a6a-b95f-8de0-12ac-c3c98301ae25@cumulusnetworks.com>
-Date:   Thu, 12 Dec 2019 08:55:30 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.1.1
+        id S1728074AbfLLHZV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Dec 2019 02:25:21 -0500
+Received: from mga12.intel.com ([192.55.52.136]:21658 "EHLO mga12.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727994AbfLLHZV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 12 Dec 2019 02:25:21 -0500
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 11 Dec 2019 23:25:20 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.69,305,1571727600"; 
+   d="scan'208";a="245598700"
+Received: from linux.intel.com ([10.54.29.200])
+  by fmsmga002.fm.intel.com with ESMTP; 11 Dec 2019 23:25:20 -0800
+Received: from [10.226.38.237] (unknown [10.226.38.237])
+        by linux.intel.com (Postfix) with ESMTP id 4F11058033E;
+        Wed, 11 Dec 2019 23:25:18 -0800 (PST)
+Subject: Re: [PATCH v2] staging: intel-gwdpa: gswip: Introduce Gigabit
+ Ethernet Switch (GSWIP) device driver
+To:     dan.carpenter@oracle.com
+References: <5f85180573a3fb20238d6a340cdd990f140ed6f0.1576054234.git.jack.ping.chng@intel.com>
+ <20191211105757.GC2070@kadam>
+ <BYAPR11MB3176EB0A2BF59AAF161D4174DE5A0@BYAPR11MB3176.namprd11.prod.outlook.com>
+From:   "Chng, Jack Ping" <jack.ping.chng@linux.intel.com>
+Cc:     devel@driverdev.osuosl.org, cheol.yong.kim@intel.com,
+        andriy.shevchenko@intel.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, mallikarjunax.reddy@linux.intel.com,
+        gregkh@linuxfoundation.org, davem@davemloft.net
+Message-ID: <b46dc709-38c7-9c6e-cb75-e5efd3be6ae9@linux.intel.com>
+Date:   Thu, 12 Dec 2019 15:25:17 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-In-Reply-To: <20191212010711.1664000-1-vivien.didelot@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+In-Reply-To: <BYAPR11MB3176EB0A2BF59AAF161D4174DE5A0@BYAPR11MB3176.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/12/2019 03:07, Vivien Didelot wrote:
-> This adds rx_bpdu, tx_bpdu, rx_tcn, tx_tcn, transition_blk,
-> transition_fwd xstats counters to the bridge ports copied over via
-> netlink, providing useful information for STP.
-> 
-> Signed-off-by: Vivien Didelot <vivien.didelot@gmail.com>
-> ---
->  include/uapi/linux/if_bridge.h | 10 ++++++++++
->  net/bridge/br_netlink.c        | 13 +++++++++++++
->  net/bridge/br_private.h        |  2 ++
->  net/bridge/br_stp.c            | 15 +++++++++++++++
->  net/bridge/br_stp_bpdu.c       |  4 ++++
->  5 files changed, 44 insertions(+)
-> 
+Hi Dan,
 
-Looks good to me, thanks!
+On 11/12/2019 6:58 PM, Dan Carpenter wrote:
 
-Acked-by: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+> This should just be sent to netdev.  I spotted a couple bugs.
+>
+> 1) enable/disable we flipped xgmac_set_xgmii_2500_speed()
+> 2) retries wasn't reset in a couple places.
+>
+> I had a few tiny style nits as well but there is no reason to send it to
+> staging.
+>
+> regards,
+> dan carpenter
 
+Thanks for the review and comments.
+We will fix the bug and address the comments.
+
+Best regards,
+Chng Jack Ping
 
