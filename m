@@ -2,109 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D846E11CBA9
-	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 12:00:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 056B011CBAC
+	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 12:01:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728897AbfLLLAk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Dec 2019 06:00:40 -0500
-Received: from s3.sipsolutions.net ([144.76.43.62]:36454 "EHLO
-        sipsolutions.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728423AbfLLLAj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Dec 2019 06:00:39 -0500
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.92.3)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1ifMCv-006l2h-DV; Thu, 12 Dec 2019 12:00:33 +0100
-Message-ID: <bd9f32d02374a5e0b341585db88856a1e420ede8.camel@sipsolutions.net>
-Subject: Re: iwlwifi warnings in 5.5-rc1
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     Toke =?ISO-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
-        Jens Axboe <axboe@kernel.dk>,
-        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>
-Cc:     "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>
-Date:   Thu, 12 Dec 2019 12:00:31 +0100
-In-Reply-To: <87v9qleru0.fsf@toke.dk>
-References: <ceb74ea2-6a1b-4cef-8749-db21a2ee4311@kernel.dk>
-         <9727368004ceef03f72d259b0779c2cf401432e1.camel@sipsolutions.net>
-         <878snjgs5l.fsf@toke.dk>
-         <3420d73e667b01ec64bf0cc9da6232b41e862860.camel@sipsolutions.net>
-         <875zingnzt.fsf@toke.dk>
-         <bfab4987668990ea8d86a98f3e87c3fa31403745.camel@sipsolutions.net>
-         <87tv67ez9p.fsf@toke.dk>
-         <3ca2be96898e9d30c27b2411148d201318e413f2.camel@sipsolutions.net>
-         <87v9qleru0.fsf@toke.dk>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.34.2 (3.34.2-1.fc31) 
+        id S1728898AbfLLLBC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Dec 2019 06:01:02 -0500
+Received: from mail-yb1-f196.google.com ([209.85.219.196]:43446 "EHLO
+        mail-yb1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728423AbfLLLBB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Dec 2019 06:01:01 -0500
+Received: by mail-yb1-f196.google.com with SMTP id d34so274709yba.10;
+        Thu, 12 Dec 2019 03:01:01 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=3NLogIIkrt/hmZd7hzl4otAejKTvhVHjvTAan3q/U3Q=;
+        b=U/MDo+ExHjLwBASvVMUbmdOjymwLMERC0Omm57dulGMVXjJprLZdP52/rBvSla++6o
+         ru1Qbajslbn/FBW5TScyEMt5Sa7Ov0nI1b8aqBO3py3EcrvK060GiHRonnPiEbyHMGUl
+         3yx8oLd+pwvpvcYTraRwRqBpiLiZuXdpYruWtQQF7ZBfNbFafd/iWbF0b2xPYdbT8L7x
+         T81hbkYPB7X32Au0J9bUALVri+YtCM/oKYra9NTtdz1ZNglqIagk4ax6vkkF3lppmM67
+         nimZ+NlE8oL00yPrDrR82o3pLR5q6s9KQN8tGvO6QnXT7EvRWaTl6W+48Xaz+kZbXSXu
+         UIIQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=3NLogIIkrt/hmZd7hzl4otAejKTvhVHjvTAan3q/U3Q=;
+        b=QgIA38D/oIQKO5VgsqpiY5kvUfEzsCsdHnkKZ+EV6aFm6+xPKxjc94XqzQkHshg3jE
+         fHQcvScPSMKiekG+sjghJyudwGf+zoQTMx2ijIzykBPSeyPqp6PG6hrS9Lu6RbLm8ndw
+         0+u93Rh3F4DWyzXUY5zIUYXtXvsuf6145gjFnABZz1BR/VOFXMK1fz5R8TFN5f5VzePU
+         eBmIZo8ncfCV+8ca5NKf+WpwFgIPnts4wo9M84Vmjo8po5G041/6aEnHzz2bcjqv8cON
+         5phxNKnfkjkGsRwgqEIdQjT1U2wZbX5V7t1hspQ+4bx7+OHhnpdhHloiltYSZGa85qLs
+         9ldQ==
+X-Gm-Message-State: APjAAAUF+Gtl0OvgpMyNCitffKxUPZI1ijyQlLfHEu6T1VYscx3htwxb
+        XRrTF9985XEiewteuIjKMgzQGYq3JSILcg==
+X-Google-Smtp-Source: APXvYqyCiWoYgW7gP5cqkOhfMLFAjSAYch+A+DHKKiWA9vs2WRbDV64ENGoizBVTkS6dMJh0fJ4+9w==
+X-Received: by 2002:a25:6385:: with SMTP id x127mr3510081ybb.468.1576148460482;
+        Thu, 12 Dec 2019 03:01:00 -0800 (PST)
+Received: from karen ([2604:2d80:d68a:cf00:1549:e76:ca4c:6ce8])
+        by smtp.gmail.com with ESMTPSA id 199sm2383432ywn.52.2019.12.12.03.00.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 12 Dec 2019 03:00:59 -0800 (PST)
+Date:   Thu, 12 Dec 2019 05:00:57 -0600
+From:   Scott Schafer <schaferjscott@gmail.com>
+To:     Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
+Cc:     gregkh@linuxfoundation.org, Manish Chopra <manishc@marvell.com>,
+        GR-Linux-NIC-Dev@marvell.com, netdev@vger.kernel.org,
+        devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 20/23] staging: qlge: Fix CHECK: usleep_range is
+ preferred over udelay
+Message-ID: <20191212110057.GA7934@karen>
+References: <cover.1576086080.git.schaferjscott@gmail.com>
+ <a3f14b13d76102cd4e536152e09517a69ddbe9f9.1576086080.git.schaferjscott@gmail.com>
+ <337af773-a1da-0c04-6180-aa3597372522@cogentembedded.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <337af773-a1da-0c04-6180-aa3597372522@cogentembedded.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2019-12-12 at 11:55 +0100, Toke Høiland-Jørgensen wrote:
+On Thu, Dec 12, 2019 at 01:45:57PM +0300, Sergei Shtylyov wrote:
+> Hello!
 > 
-> > I'm not even sure we *can* do this easily - do we know up-front how many
-> > packets this will expand to? We should know, but it might not be so easy
-> > given the abstraction layers. We could guess and if it's wrong just set
-> > it to 0 on any remaining ones.
+> On 11.12.2019 21:12, Scott Schafer wrote:
 > 
-> I was thinking about a scheme where we re-defined the value in the cb to
-> be a "time per byte" value, that we could just multiply by the packet
-> length; that would make it trivial to do partial reporting. Not sure
-> it's quite workable in practice, though; it would be hard to avoid
-> rounding errors, and there's also the additional headers when splitting
-> a packet, so the lengths don't necessarily add up.
-
-Yeah, that won't really work. We could only estimate the # of pieces and
-split up the value across them.
-
-> > It's really just an artifact of our software implementation that we
-> > report the SKBs back as used with partial content. Maybe we shouldn't
-> > even do that, since they weren't generated by mac80211 in the first
-> > place, and only report the original skb or something.
+> > chage udelay() to usleep_range()
 > 
-> Hmm, yeah, was wondering how that works, actually. I assumed you send
-> the whole thing to the hardware as one superpacket? But if so how do you
-> get the completion events back? Or are you splitting it in the driver
-> just before you send it to the hardware?
-
-If we get say a 64k superpacket, we'll split it first into SKBs of max
-A-MSDU size, and then rejigger the pieces inside each A-MSDU thing using
-the DMA engine so we get A-MSDUs of MTU-sized packets out at the end.
-The hardware is dumb here, it only takes care of TCP checksum.
-
-> > I'm not really sure I want to rely on this - this was never really
-> > needed *functionally*, just from a *statistics* point of view (e.g. "iw
-> > link" or such).
+>    Change?
 > 
-> Right, I see. Well I guess now that we're turning this on one driver at
-> a time, we can ensure that the driver provides sufficiently accurate
-> rate information as part of that.
-
-Right.
-
-> BTW, since we're discussing this in the context of iwlwifi: do you have
-> any data as to how much benefit AQL would be for that? I.e., do the
-> Intel devices tend to buffer a lot of data in hardware/firmware?
-
-Hardware we have queues up to ~240 frames or so, otherwise no real
-buffering. Per station/TID.
-
-> > Ideally, it'd be a function call from the rate scaling to mac80211 so we
-> > don't have to call a function every time we need the value, but the rate
-> > scaling just calls us whenever it updates. This would even work with
-> > iwlwifi's offloaded algorithm - it notifies the host on all changes.
+> > Signed-off-by: Scott Schafer <schaferjscott@gmail.com>
+> > ---
+> >   drivers/staging/qlge/qlge_main.c | 2 +-
+> >   1 file changed, 1 insertion(+), 1 deletion(-)
+> > 
+> > diff --git a/drivers/staging/qlge/qlge_main.c b/drivers/staging/qlge/qlge_main.c
+> > index e18aa335c899..9427386e4a1e 100644
+> > --- a/drivers/staging/qlge/qlge_main.c
+> > +++ b/drivers/staging/qlge/qlge_main.c
+> > @@ -147,7 +147,7 @@ int ql_sem_spinlock(struct ql_adapter *qdev, u32 sem_mask)
+> >   	do {
+> >   		if (!ql_sem_trylock(qdev, sem_mask))
+> >   			return 0;
+> > -		udelay(100);
+> > +		usleep_range(100, 200);
 > 
-> Yup, this makes sense, and would be easy to integrate with Minstrel as
-> well, I think. We already have ieee80211_sta_set_expected_throughput(),
-> so maybe expanding that? It just provides a single number now, but we
-> could change it to set the full rate info instead?
+>    I hope you're not in atomic context...
+> 
+> >   	} while (--wait_count);
+> >   	return -ETIMEDOUT;
+> >   }
+> 
+> MBR, Sergei
 
-Right, was thinking around that area too. Not sure about the details
-really though.
-
-johannes
-
+Im not quite what you mean by "I hope you're not in atomic context",
+could you please explain why you said this? 
