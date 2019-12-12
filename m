@@ -2,87 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 957E811D816
-	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 21:50:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D06F11D82F
+	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 21:56:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730922AbfLLUtU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Dec 2019 15:49:20 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:50852 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730880AbfLLUtT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 12 Dec 2019 15:49:19 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=ZHoU3IAj9vIOIpdUdIlgIwi9co80WT5unLMZtFmwK4Y=; b=0TBtfmbdsmEZOB6vwmHAEhxeKJ
-        cSXvoEwIa4X7A+H01h8xwaLAjsARjxm3Co/1u7QD4Rt020gA0mMe//5xG2QXZaA7pbapjVHYzHb6p
-        4xvjaG1OJxePtOstitWXpZwnxgeQMPciSUoh+ol+GUScyRtra2QGRQzExIF265CL7yFU=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.92.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1ifVOe-0004qu-CX; Thu, 12 Dec 2019 21:49:16 +0100
-Date:   Thu, 12 Dec 2019 21:49:16 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Marek Behun <marek.behun@nic.cz>
-Cc:     Baruch Siach <baruch@tkos.co.il>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        netdev@vger.kernel.org,
-        Denis Odintsov <d.odintsov@traviangames.com>,
-        Hubert Feurstein <h.feurstein@gmail.com>
-Subject: Re: [BUG] mv88e6xxx: tx regression in v5.3
-Message-ID: <20191212204916.GG30053@lunn.ch>
-References: <20191211174938.GB30053@lunn.ch>
- <20191212085045.nqhfldkbebqzzamv@sapphire.tkos.co.il>
- <20191212131448.GA9959@lunn.ch>
- <20191212150810.zx6o26jnk5croh4r@sapphire.tkos.co.il>
- <20191212151355.GE30053@lunn.ch>
- <20191212152355.iiepmi4cjriddeon@sapphire.tkos.co.il>
- <20191212193611.63111051@nic.cz>
- <20191212190640.6vki2pjfacdnxihh@sapphire.tkos.co.il>
- <20191212193129.GF30053@lunn.ch>
- <20191212204141.16a406cd@nic.cz>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191212204141.16a406cd@nic.cz>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        id S1730968AbfLLUzl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Dec 2019 15:55:41 -0500
+Received: from mail-pj1-f74.google.com ([209.85.216.74]:55684 "EHLO
+        mail-pj1-f74.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730860AbfLLUzk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Dec 2019 15:55:40 -0500
+Received: by mail-pj1-f74.google.com with SMTP id e7so103600pjt.22
+        for <netdev@vger.kernel.org>; Thu, 12 Dec 2019 12:55:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=lcu+XBlazISW9Ha+P8a6hKyT894dJ4fC/BtrAAGAtZQ=;
+        b=pJTG96umM9VU1pl/7wVCyvjkAyX8W29aWjT8GUh3xQ6yx6wDS/0Z7GHvhDGMKiWX53
+         7pFU0H7e4Kqn46F9uKIi7+AYrFkUwKGdY7yBwntKJ9v0Gd/vIv1O5oTtOvPeIQaEnVov
+         lkIcOO2FIJsWsv6eoC/jjRchjlfcZFvon2Vfb6fiBEdAF5bTpwyZMvpX1yL+wLj06LTm
+         WxE4o5GLDJMljg5F0phRWN+ZeQFUCnHbM+o1MzUNt3u4B6eAIZWg1C+A75xtNDmU7L9l
+         RT6Qb1ahOZdw52bXNLcPtv8eD7GEoireFcDhyfyI2E1KiP6JVskMt7ghcTBf8blzQelE
+         yjZA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=lcu+XBlazISW9Ha+P8a6hKyT894dJ4fC/BtrAAGAtZQ=;
+        b=tFglpPxjyJrDLFwm4ag0sgV3YbolTJxjCcB40SxzWIC5QPeOJ7RCXtagghDyqtVtKK
+         I93bq6nqxFgJQ1XibCL6xjbeo96KMTy4zMJtnkwlJTzl9gfyjaXNOUVMMiNdL88An8Zm
+         n/HYaPmJXbG938MMfFSoCgDHfm3LG6iQNcXPTBIAgwlpZ47XdaVDKeeyCJqhEDIhQxrA
+         WzhbI9yb0Of7Qyo/C5RaklBrgizF0NAjvxlF43f5LZpNy6gL3uN9cDwVWRr+kQRy2o5z
+         S+DSysIJD8nuZIxcD2pC1c4cfGKYud3h7DgXcKQFlRN+WRVR22USqzgS0JSYn+j4blb0
+         uQ9Q==
+X-Gm-Message-State: APjAAAWuCTHjI8OqRdpGPJLeXcb/J7lKvFh+o0mv6im+xE7Zri7k42t/
+        s8/hRkMuIP1ir0wja8cTWMwGj4CKRe58Yg==
+X-Google-Smtp-Source: APXvYqwlGrFtMlT9ITB37Bi3MxY1JuSNkJGoH78oMjBFJQucPkqXrKj4KMYRhzbu783MXFoPbjpCn+RwXgVCdA==
+X-Received: by 2002:a63:31cf:: with SMTP id x198mr12560933pgx.272.1576184140174;
+ Thu, 12 Dec 2019 12:55:40 -0800 (PST)
+Date:   Thu, 12 Dec 2019 12:55:28 -0800
+Message-Id: <20191212205531.213908-1-edumazet@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.24.1.735.g03f4e72817-goog
+Subject: [PATCH net 0/3] tcp: take care of empty skbs in write queue
+From:   Eric Dumazet <edumazet@google.com>
+To:     "David S . Miller" <davem@davemloft.net>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Neal Cardwell <ncardwell@google.com>,
+        Jason Baron <jbaron@akamai.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Baruch, if the cpu port is in 2500 base-x, remove the fixed-link and do
-> this:
-> 
-> port@5 {
-> 	reg = <5>;
-> 	label = "cpu";
-> 	ethernet = <&cp1_eth2>;
-> 	phy-mode = "2500base-x";
-> 	managed = "in-band-status";
-> };
-> 
-> Andrew, if the dsa driver is expected to do that, the code certainly
-> does not do so. For example in mv88e6xxx_port_set_cmode you have:
->  /* Default to a slow mode, so freeing up SERDES interfaces for
->   * other ports which might use them for SFPs.
->   */
->  if (mode == PHY_INTERFACE_MODE_NA)
->          mode = PHY_INTERFACE_MODE_1000BASEX;
+We understood recently that TCP sockets could have an empty
+skb at the tail of the write queue, leading to various problems.
 
-Yah, Ports 9 and 10 of 6390X are a bit odd. They can do 10Gbps. But
-only if you set the correct phy-mode. Then they will default to 10G.
-If these ports are not doing 10Gbps they can lend there SERDES
-interfaces to other ports. There are a few boards which want this
-lending, connecting lots of SFPs using these SERDES interfaces. And
-there are other boards which do use the ports at 10G as DSA links. DSA
-links also default to the maximum speed of the port, and that does
-work if you set the correct phy-mode.
+This patch series :
 
-So in general, if the port supports > 1Gbps, you need to set the
-phy-mode for CPU and DSA ports. It will then default to the maximum
-speed for that mode.
+1) Make sure we do not send an empty packet since this
+   was unintended and causing crashes in old kernels.
 
-     Andrew
+2) Change tcp_write_queue_empty() to not be fooled by
+   the presence of an empty skb.
+
+3) Fix a bug that could trigger suboptimal epoll()
+   application behavior under memory pressure.
+
+Eric Dumazet (3):
+  tcp: do not send empty skb from tcp_write_xmit()
+  tcp: refine tcp_write_queue_empty() implementation
+  tcp: refine rule to allow EPOLLOUT generation under mem pressure
+
+ include/net/tcp.h     | 11 ++++++++++-
+ net/ipv4/tcp.c        |  6 ++----
+ net/ipv4/tcp_output.c | 13 +++++++++++--
+ 3 files changed, 23 insertions(+), 7 deletions(-)
+
+-- 
+2.24.1.735.g03f4e72817-goog
+
