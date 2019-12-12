@@ -2,134 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C709111D84F
-	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 22:11:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 58E9E11D858
+	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 22:13:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731004AbfLLVLZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Dec 2019 16:11:25 -0500
-Received: from s3.sipsolutions.net ([144.76.43.62]:52170 "EHLO
-        sipsolutions.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730806AbfLLVLZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Dec 2019 16:11:25 -0500
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.92.3)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1ifVjz-0086Dz-Ss; Thu, 12 Dec 2019 22:11:20 +0100
-Message-ID: <ff6b35ad589d7cf0710cb9fca4c799538da2e653.camel@sipsolutions.net>
-Subject: Re: debugging TCP stalls on high-speed wifi
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     Eric Dumazet <eric.dumazet@gmail.com>,
-        Neal Cardwell <ncardwell@google.com>
-Cc:     Toke =?ISO-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
-        linux-wireless@vger.kernel.org, Netdev <netdev@vger.kernel.org>
-Date:   Thu, 12 Dec 2019 22:11:17 +0100
-In-Reply-To: <99748db5-7898-534b-d407-ed819f07f939@gmail.com> (sfid-20191212_191119_097127_6CE454CE)
-References: <14cedbb9300f887fecc399ebcdb70c153955f876.camel@sipsolutions.net>
-         <CADVnQym_CNktZ917q0-9dVY9dhtiJVRRotGTrPNdZUpkjd3vyw@mail.gmail.com>
-         <f4670ce0f4399fe82e7168fb9c491d8eb718e8d8.camel@sipsolutions.net>
-         <99748db5-7898-534b-d407-ed819f07f939@gmail.com>
-         (sfid-20191212_191119_097127_6CE454CE)
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.34.2 (3.34.2-1.fc31) 
+        id S1731041AbfLLVMf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Dec 2019 16:12:35 -0500
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:40848 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731036AbfLLVMf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Dec 2019 16:12:35 -0500
+Received: by mail-wm1-f66.google.com with SMTP id t14so4193017wmi.5
+        for <netdev@vger.kernel.org>; Thu, 12 Dec 2019 13:12:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=PcmogneKF3nOjBA/T+Cz4S9PAlLf7HeJNjnctWOigOA=;
+        b=ImfmKt+bsixOfBnjE0ET8eegWSCQmsWgJkdDh8wX+cMo85ikcy0yblgThwbBXFZXCG
+         8jUEyGehhm6+FGVYCbh9WOp0o71kzFYMiyg7F9T4wvMB6sha9BqJOsUDU3SjNsCthVIt
+         rW91aCBzrKiBsCls17Kxmz466Sf9dw5VuRiRYMiM+pkvXw0O57Y5aW2S52YrEJw+fkz8
+         9LcXbGdnwcGs5DGyB8WyUw/r1oashn+OaraZXWi0RBpZ3QoIOB+JNfu2SJCuZW1kSN/R
+         coI/XBtHSOinLFQ4YBf0ROtYdf8DZNyCFBULnzH4XaBlnHyw3iiQ1f1gahjlqhHOFNZN
+         oCXA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=PcmogneKF3nOjBA/T+Cz4S9PAlLf7HeJNjnctWOigOA=;
+        b=EPTbrUvdbe1l6d/B21/Lc78BfF6hgNPLC4Sl2SGwLHor734IvNb9itHNVscviEeEoO
+         mXIMb/wb2vaYnmODQ9cXIAt0TzlEpQrW7nca76Tp3Ln7IkKQfVZouOd/yY6qrtyGOjyy
+         eHaj2Kf/sp8d1gljRQYDjkifQdhDntDO/XvRICNGLewrTk4W7kbeeikwjqd8QMkcBADV
+         eObX9FHYsvWNvfDbSSDQozCIJrNH+Z5BuNGE2Efel8mbp4fFIA9OqNRmwU5AmkgTEF9J
+         eTZ1KPPArW1DxxMN19m+YGRgXDVS/tDL8B9oaYfERsu6yEOIUeKsGUNVoYAP6nItprda
+         DisA==
+X-Gm-Message-State: APjAAAXH3UmvexAjq0PnYviX0w5/KB8LNpv4NyKnw7xQOCKbZRE3Kplw
+        xllvj/zl3muxBpRi5035iByo4Q==
+X-Google-Smtp-Source: APXvYqwTx0NSImnQ1KZPvlDXsPTwe7ZlXGBepFXFruy07ymD6hKLHCCYdzypIrdIquGlIf+sDbuzoA==
+X-Received: by 2002:a7b:c4cc:: with SMTP id g12mr9195722wmk.68.1576185152533;
+        Thu, 12 Dec 2019 13:12:32 -0800 (PST)
+Received: from [192.168.1.2] ([194.53.186.39])
+        by smtp.gmail.com with ESMTPSA id u22sm7821466wru.30.2019.12.12.13.12.31
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 12 Dec 2019 13:12:31 -0800 (PST)
+Subject: Re: [PATCH v2 bpf-next 15/15] bpftool: add `gen skeleton` BASH
+ completions
+To:     Andrii Nakryiko <andriin@fb.com>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, ast@fb.com, daniel@iogearbox.net
+Cc:     andrii.nakryiko@gmail.com, kernel-team@fb.com
+References: <20191212164129.494329-1-andriin@fb.com>
+ <20191212164129.494329-16-andriin@fb.com>
+From:   Quentin Monnet <quentin.monnet@netronome.com>
+Message-ID: <8b39cb0b-9372-4f68-cded-e464d5b80ec2@netronome.com>
+Date:   Thu, 12 Dec 2019 21:12:30 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.3.0
 MIME-Version: 1.0
+In-Reply-To: <20191212164129.494329-16-andriin@fb.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-GB
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Eric,
-
-Thanks for looking :)
-
-> > I'm not sure how to do headers-only, but I guess -s100 will work.
-> > 
-> > https://johannes.sipsolutions.net/files/he-tcp.pcap.xz
-> > 
+2019-12-12 08:41 UTC-0800 ~ Andrii Nakryiko <andriin@fb.com>
+> Add BASH completions for gen sub-command.
 > 
-> Lack of GRO on receiver is probably what is killing performance,
-> both for receiver (generating gazillions of acks) and sender
-> (to process all these acks)
-Yes, I'm aware of this, to some extent. And I'm not saying we should see
-even close to 1800 Mbps like we have with UDP...
-
-Mind you, the biggest thing that kills performance with many ACKs isn't
-the load on the system - the sender system is only moderately loaded at
-~20-25% of a single core with TSO, and around double that without TSO.
-The thing that kills performance is eating up all the medium time with
-small non-aggregated packets, due to the the half-duplex nature of WiFi.
-I know you know, but in case somebody else is reading along :-)
-
-But unless somehow you think processing the (many) ACKs on the sender
-will cause it to stop transmitting, or something like that, I don't
-think I should be seeing what I described earlier: we sometimes (have
-to?) reclaim the entire transmit queue before TCP starts pushing data
-again. That's less than 2MB split across at least two TCP streams, I
-don't see why we should have to get to 0 (which takes about 7ms) until
-more packets come in from TCP?
-
-Or put another way - if I free say 400kB worth of SKBs, what could be
-the reason we don't see more packets be sent out of the TCP stack within
-the few ms or so? I guess I have to correlate this somehow with the ACKs
-so I know how much data is outstanding for ACKs. (*)
-
-The sk_pacing_shift is set to 7, btw, which should give us 8ms of
-outstanding data. For now in this setup that's enough(**), and indeed
-bumping the limit up (setting sk_pacing_shift to say 5) doesn't change
-anything. So I think this part we actually solved - I get basically the
-same performance and behaviour with two streams (needed due to GBit LAN
-on the other side) as with 20 streams.
-
-
-> I had a plan about enabling compressing ACK as I did for SACK
-> in commit 
-> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=5d9f4262b7ea41ca9981cc790e37cca6e37c789e
+> Cc: Quentin Monnet <quentin.monnet@netronome.com>
+> Acked-by: Martin KaFai Lau <kafai@fb.com>
+> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+> ---
+>  tools/bpf/bpftool/bash-completion/bpftool         | 11 +++++++++++
+>  tools/bpf/bpftool/main.c                          |  2 +-
+>  tools/testing/selftests/bpf/prog_tests/skeleton.c |  6 ++++--
+>  tools/testing/selftests/bpf/progs/test_skeleton.c |  3 ++-
+>  4 files changed, 18 insertions(+), 4 deletions(-)
 > 
-> But I have not done it yet.
-> It is a pity because this would tremendously help wifi I am sure.
+> diff --git a/tools/bpf/bpftool/bash-completion/bpftool b/tools/bpf/bpftool/bash-completion/bpftool
+> index 70493a6da206..986519cc58d1 100644
+> --- a/tools/bpf/bpftool/bash-completion/bpftool
+> +++ b/tools/bpf/bpftool/bash-completion/bpftool
+> @@ -716,6 +716,17 @@ _bpftool()
+>                      ;;
+>              esac
+>              ;;
+> +        gen)
+> +            case $command in
+> +                skeleton)
+> +                    _filedir
+> +		    ;;
+> +                *)
+> +                    [[ $prev == $object ]] && \
+> +                        COMPREPLY=( $( compgen -W 'skeleton help' -- "$cur" ) )
+> +                    ;;
+> +            esac
+> +            ;;
 
-Nice :-)
+Hi Andrii,
 
-But that is something the *receiver* would have to do.
+Bpftool completion looks OK to me...
 
-The dirty secret here is that we're getting close to 1700 Mbps TCP with
-Windows in place of Linux in the setup, with the same receiver on the
-other end (which is actually a single Linux machine with two GBit
-network connections to the AP). So if we had this I'm sure it'd increase
-performance, but it still wouldn't explain why we're so much slower than
-Windows :-)
+>          cgroup)
+>              case $command in
+>                  show|list|tree)
+> diff --git a/tools/bpf/bpftool/main.c b/tools/bpf/bpftool/main.c
+> index 758b294e8a7d..1fe91c558508 100644
+> --- a/tools/bpf/bpftool/main.c
+> +++ b/tools/bpf/bpftool/main.c
+> @@ -58,7 +58,7 @@ static int do_help(int argc, char **argv)
+>  		"       %s batch file FILE\n"
+>  		"       %s version\n"
+>  		"\n"
+> -		"       OBJECT := { prog | map | cgroup | perf | net | feature | btf }\n"
+> +		"       OBJECT := { prog | map | cgroup | perf | net | feature | btf | gen }\n"
 
-Now, I'm certainly not saying that TCP behaviour is the only reason for
-the difference, we already found an issue for example where due to a
-small Windows driver bug some packet extension was always used, and the
-AP is also buggy in that it needs the extension but didn't request it
-... so the two bugs cancelled each other out and things worked well, but
-our Linux driver believed the AP ... :) Certainly there can be more
-things like that still, I just started on the TCP side and ran into the
-queueing behaviour that I cannot explain.
+... but this is part of the usage message, and ideally should be added
+when you add the new feature to bpftool in patch 11. Not a major issue,
+but ...
 
+>  		"       " HELP_SPEC_OPTIONS "\n"
+>  		"",
+>  		bin_name, bin_name, bin_name);
+> diff --git a/tools/testing/selftests/bpf/prog_tests/skeleton.c b/tools/testing/selftests/bpf/prog_tests/skeleton.c
+> index d65a0203e1df..94e0300f437a 100644
+> --- a/tools/testing/selftests/bpf/prog_tests/skeleton.c
+> +++ b/tools/testing/selftests/bpf/prog_tests/skeleton.c
+> @@ -39,8 +39,10 @@ void test_skeleton(void)
+>  	CHECK(bss->out2 != 2, "res2", "got %lld != exp %d\n", bss->out2, 2);
+>  	CHECK(bss->out3 != 3, "res3", "got %d != exp %d\n", (int)bss->out3, 3);
+>  	CHECK(bss->out4 != 4, "res4", "got %lld != exp %d\n", bss->out4, 4);
+> -	CHECK(bss->out5.a != 5, "res5", "got %d != exp %d\n", bss->out5.a, 5);
+> -	CHECK(bss->out5.b != 6, "res6", "got %lld != exp %d\n", bss->out5.b, 6);
+> +	CHECK(bss->handler_out5.a != 5, "res5", "got %d != exp %d\n",
+> +	      bss->handler_out5.a, 5);
+> +	CHECK(bss->handler_out5.b != 6, "res6", "got %lld != exp %d\n",
+> +	      bss->handler_out5.b, 6);
 
-In any case, I'll try to dig deeper into the TCP stack to understand the
-reason for this transmit behaviour.
+... This and the code below does not seem to relate to bpftool
+completion at all. And it was not present in v1. I suspect this code was
+not intended to end up in this patch?
 
-Thanks,
-johannes
-
-
-(*) Hmm. Now I have another idea. Maybe we have some kind of problem
-with the medium access configuration, and we transmit all this data
-without the AP having a chance to send back all the ACKs? Too bad I
-can't put an air sniffer into the setup - it's a conductive setup.
-
-
-(**) As another aside to this, the next generation HW after this will
-have 256 frames in a block-ack, so that means instead of up to 64 (we
-only use 63 for internal reasons) frames aggregated together we'll be
-able to aggregate 256 (or maybe we again only 255?). Each one of those
-frames may be an A-MSDU with ~11k content though (only 8k in the setup I
-have here right now), which means we can get a LOT of data into a single
-PPDU ... we'll probably have to bump the sk_pacing_shift to be able to
-fill that with a single TCP stream, though since we run all our
-performance numbers with many streams, maybe we should just leave it :)
-
+>  
+>  cleanup:
+>  	test_skeleton__destroy(skel);
+> diff --git a/tools/testing/selftests/bpf/progs/test_skeleton.c b/tools/testing/selftests/bpf/progs/test_skeleton.c
+> index 303a841c4d1c..db4fd88f3ecb 100644
+> --- a/tools/testing/selftests/bpf/progs/test_skeleton.c
+> +++ b/tools/testing/selftests/bpf/progs/test_skeleton.c
+> @@ -16,7 +16,6 @@ long long in4 __attribute__((aligned(64))) = 0;
+>  struct s in5 = {};
+>  
+>  long long out2 = 0;
+> -struct s out5 = {};
+>  char out3 = 0;
+>  long long out4 = 0;
+>  int out1 = 0;
+> @@ -25,6 +24,8 @@ int out1 = 0;
+>  SEC("raw_tp/sys_enter")
+>  int handler(const void *ctx)
+>  {
+> +	static volatile struct s out5;
+> +
+>  	out1 = in1;
+>  	out2 = in2;
+>  	out3 = in3;
+> 
 
