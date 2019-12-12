@@ -2,134 +2,191 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 02EAA11C594
-	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 06:45:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 87FA911C5AD
+	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 06:56:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726840AbfLLFpY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Dec 2019 00:45:24 -0500
-Received: from mail-mw2nam12on2087.outbound.protection.outlook.com ([40.107.244.87]:55104
-        "EHLO NAM12-MW2-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726775AbfLLFpX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 12 Dec 2019 00:45:23 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ls3BWT2JZiMF1quQjuW2S15TCuOw5zaqfW9UMp5+cvzya7BxjfU74GoDqUL2DJTrnAx+fjLKdAbomdSn5Fx/m72igko0+A/n6ztqQNoegncHpDvr54Bd5WoF6QGRO2HpikosAsGNl8e3jCV0krI3R8vQLtB8fLJLO89Ib3nhXswYhv1dsgFYjiXKAuOfyeNU9A8f/QYo6ppB+wglcOl74xMwbuROdoXVo2FeLPbLXJ4z0S/buRnbAb7e5n5R5Z2nnJ/2xBeipiGCpyhbtd5SrqdZZWlwKn+XQm//eEYGhTzDHN2vpgUB4a1/Pv1dXh02mEebwBDVbjgDcl4yYTKBfg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=V6a0Tis2G2v9de9CINqeKkPu/zvCMbwC7NJdlkWUaG8=;
- b=eV/aKQy4/0wP1xhcE3sGrnKPyha8bqv+fqEb55YD+2oP7SpNie+Q0h7LIYWrdbKtolJGrdVMS0zqPWfi3GAOt/+hIYVyDliMx1wH+wsw89BX+70M3ZxvbYUgJoYDgiyS/6o3gQCsByqVntW6BQ40neFF25Q2QLZciZy6LDgEJAvZJOpWKaTW+YRSDMaVPa8QwewQknXecSUh0lm6O20Hoa0uQKsfAE6BLFuhJG6VfSLiMmSBY+AU1ixphIvL6TWlJjLv/S/WYEc3lP402kWKi3jkiO2SS0GYgna6V0AiimJ6dbjqTjFs7ckJvUzlIDEm122+PsABBG6UknZFMCOaOQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=xilinx.com; dmarc=pass action=none header.from=xilinx.com;
- dkim=pass header.d=xilinx.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=V6a0Tis2G2v9de9CINqeKkPu/zvCMbwC7NJdlkWUaG8=;
- b=mmvLvDM8nAWVILtSfZh238d9XxZzfllSCu8k/lQ5MW7kKE7HUBGytftme1HhcwrJZRf/JCvgXkw4e9v9YUPPflLhCcqef4M11Ns83aYDbpfBMD7sQTsqrLOUU7467sJMicpJI9Y+w5YaYdCM/mtUHieDF1wU6KX4RPEG8VGoCQk=
-Received: from CH2PR02MB7000.namprd02.prod.outlook.com (20.180.9.216) by
- CH2PR02MB6245.namprd02.prod.outlook.com (52.132.230.147) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2516.14; Thu, 12 Dec 2019 05:45:20 +0000
-Received: from CH2PR02MB7000.namprd02.prod.outlook.com
- ([fe80::5d66:1c32:4c41:b087]) by CH2PR02MB7000.namprd02.prod.outlook.com
- ([fe80::5d66:1c32:4c41:b087%3]) with mapi id 15.20.2516.018; Thu, 12 Dec 2019
- 05:45:20 +0000
-From:   Radhey Shyam Pandey <radheys@xilinx.com>
-To:     Brendan Higgins <brendanhiggins@google.com>,
-        "jdike@addtoit.com" <jdike@addtoit.com>,
-        "richard@nod.at" <richard@nod.at>,
-        "anton.ivanov@cambridgegreys.com" <anton.ivanov@cambridgegreys.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Michal Simek <michals@xilinx.com>
-CC:     "linux-um@lists.infradead.org" <linux-um@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "davidgow@google.com" <davidgow@google.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>
-Subject: RE: [PATCH v1 3/7] net: axienet: add unspecified HAS_IOMEM dependency
-Thread-Topic: [PATCH v1 3/7] net: axienet: add unspecified HAS_IOMEM
- dependency
-Thread-Index: AQHVsFkiqR8nSduRnUG1Mm2Zwj3HCqe1/amA
-Date:   Thu, 12 Dec 2019 05:45:20 +0000
-Message-ID: <CH2PR02MB7000A8C27E849A6B81251AFEC7550@CH2PR02MB7000.namprd02.prod.outlook.com>
-References: <20191211192742.95699-1-brendanhiggins@google.com>
- <20191211192742.95699-4-brendanhiggins@google.com>
-In-Reply-To: <20191211192742.95699-4-brendanhiggins@google.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=radheys@xilinx.com; 
-x-originating-ip: [149.199.50.133]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 9c65c8d5-7781-406b-2a30-08d77ec6796f
-x-ms-traffictypediagnostic: CH2PR02MB6245:|CH2PR02MB6245:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <CH2PR02MB62457B07B6E59B127FE8C450C7550@CH2PR02MB6245.namprd02.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:4941;
-x-forefront-prvs: 0249EFCB0B
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(366004)(376002)(346002)(396003)(136003)(39860400002)(13464003)(189003)(199004)(66946007)(76116006)(52536014)(478600001)(5660300002)(33656002)(9686003)(66476007)(26005)(2906002)(6636002)(4326008)(86362001)(186003)(66556008)(8936002)(66446008)(8676002)(316002)(7696005)(6506007)(53546011)(54906003)(71200400001)(81166006)(81156014)(64756008)(110136005)(55016002)(7416002);DIR:OUT;SFP:1101;SCL:1;SRVR:CH2PR02MB6245;H:CH2PR02MB7000.namprd02.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: xilinx.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: wbdqpDUm6dDxHM6Yvm8GkKgvuhOVZSxhUtBsfZflN18AxhVoVk7/VXD6EAKeDeS1y2Sw+dm6fuCyRblTV31iVAGsDtIUchHUw1rsd++YE0bZ5oarS/QW6M+reEpGTBcEWXC2x3Q6PuKHP8EUeRBxQGPwJQLeM2aAAeI/qKOVv91Q9JVhTTL3extGojM9HvFQFpgz02uk5sYjXDskSYGKAzaO2t42mc9Fo+dEojE6C9qBSwYnnK9yg46rN3Jieih2vOOzLOR7mM7z8CEAZz7kzuk158QLG2S+vvvJAD5AMBcxgdVW3LmQJ8mlHw2WMGEVb5Pcy7pJf3zIOuU1YU/N/C8Cjfg/UdZC1Q8QziAI/Tp0Nnp+0phMjmQQBP6wrckK+8MlQtTJxKkz+Yfd/beaH4m1cQF12wkEOCcyGNn1rUZXL3bDP/7Wyv1u39XSKKH5muzcjrpgBT8tdO02DIjB0pWaR7fqe0QXXLatNQkselBeyoSodigOO5vaBFQqroR3
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S1727942AbfLLF4i (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Dec 2019 00:56:38 -0500
+Received: from hqnvemgate26.nvidia.com ([216.228.121.65]:14305 "EHLO
+        hqnvemgate26.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726798AbfLLF4h (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Dec 2019 00:56:37 -0500
+Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate26.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
+        id <B5df1d68d0000>; Wed, 11 Dec 2019 21:56:29 -0800
+Received: from hqmail.nvidia.com ([172.20.161.6])
+  by hqpgpgate101.nvidia.com (PGP Universal service);
+  Wed, 11 Dec 2019 21:56:36 -0800
+X-PGP-Universal: processed;
+        by hqpgpgate101.nvidia.com on Wed, 11 Dec 2019 21:56:36 -0800
+Received: from [10.2.165.195] (10.124.1.5) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Thu, 12 Dec
+ 2019 05:56:35 +0000
+Subject: Re: [PATCH v9 23/25] mm/gup: track FOLL_PIN pages
+To:     Jan Kara <jack@suse.cz>
+CC:     Andrew Morton <akpm@linux-foundation.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Dave Chinner <david@fromorbit.com>,
+        David Airlie <airlied@linux.ie>,
+        "David S . Miller" <davem@davemloft.net>,
+        Ira Weiny <ira.weiny@intel.com>,
+        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
+        Jonathan Corbet <corbet@lwn.net>,
+        =?UTF-8?B?SsOpcsO0bWUgR2xpc3Nl?= <jglisse@redhat.com>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Michal Hocko <mhocko@suse.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Paul Mackerras <paulus@samba.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Vlastimil Babka <vbabka@suse.cz>, <bpf@vger.kernel.org>,
+        <dri-devel@lists.freedesktop.org>, <kvm@vger.kernel.org>,
+        <linux-block@vger.kernel.org>, <linux-doc@vger.kernel.org>,
+        <linux-fsdevel@vger.kernel.org>, <linux-kselftest@vger.kernel.org>,
+        <linux-media@vger.kernel.org>, <linux-rdma@vger.kernel.org>,
+        <linuxppc-dev@lists.ozlabs.org>, <netdev@vger.kernel.org>,
+        <linux-mm@kvack.org>, LKML <linux-kernel@vger.kernel.org>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>
+References: <20191211025318.457113-1-jhubbard@nvidia.com>
+ <20191211025318.457113-24-jhubbard@nvidia.com>
+ <20191211112807.GN1551@quack2.suse.cz>
+From:   John Hubbard <jhubbard@nvidia.com>
+X-Nvconfidentiality: public
+Message-ID: <f961d0b6-c660-85b9-ad01-53bce74e39e9@nvidia.com>
+Date:   Wed, 11 Dec 2019 21:53:45 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.3.0
 MIME-Version: 1.0
-X-OriginatorOrg: xilinx.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9c65c8d5-7781-406b-2a30-08d77ec6796f
-X-MS-Exchange-CrossTenant-originalarrivaltime: 12 Dec 2019 05:45:20.1141
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 657af505-d5df-48d0-8300-c31994686c5c
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 3vu+7lUBSOYsSLoPc2QJVeXj42dT7tBNwx8k4EpdsOZX7dK5n+akLfOMwqT+jG4Oi8TkJTpnrmZ5favEIMyRzw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR02MB6245
+In-Reply-To: <20191211112807.GN1551@quack2.suse.cz>
+X-Originating-IP: [10.124.1.5]
+X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: quoted-printable
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1576130189; bh=WUvMFBOwsTbLT+9CzNbxGtAponFsFsmTJOyg8MjL8ds=;
+        h=X-PGP-Universal:Subject:To:CC:References:From:X-Nvconfidentiality:
+         Message-ID:Date:User-Agent:MIME-Version:In-Reply-To:
+         X-Originating-IP:X-ClientProxiedBy:Content-Type:Content-Language:
+         Content-Transfer-Encoding;
+        b=lsWfVOx2mYuCSEqMXkqo0p3SpKqw9VwSL+20QlVcuyoMSELQtTCN0YxM6RzLVo9oa
+         uq4Hl9KFn70q6l1bzqmgaiV5HLk4+H2168Aq1l5uWc+mWWgNKPzhftF1QMyxl40GPe
+         nNNgDtbzvAru+MjxE1MbEaMe+90vfqRYKPVuX/JzejQXCe2EVI5eyYy9CwInRuqtjp
+         2idGFh4dXFAMfDwQiKAN1Pz/TUuUoswEkyfXdQEyWp7z5jAlzfpntkPH8s96FOaimZ
+         1olYa+8gPiG8ccYKitvEKwCbv3GPr0UXUD+T0zjEzw7D9d6fQ9awWSzCOfMJ4VZl20
+         16ivttgOjkh4A==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBCcmVuZGFuIEhpZ2dpbnMgPGJy
-ZW5kYW5oaWdnaW5zQGdvb2dsZS5jb20+DQo+IFNlbnQ6IFRodXJzZGF5LCBEZWNlbWJlciAxMiwg
-MjAxOSAxMjo1OCBBTQ0KPiBUbzogamRpa2VAYWRkdG9pdC5jb207IHJpY2hhcmRAbm9kLmF0Ow0K
-PiBhbnRvbi5pdmFub3ZAY2FtYnJpZGdlZ3JleXMuY29tOyBEYXZpZCBTLiBNaWxsZXINCj4gPGRh
-dmVtQGRhdmVtbG9mdC5uZXQ+OyBNaWNoYWwgU2ltZWsgPG1pY2hhbHNAeGlsaW54LmNvbT47IFJh
-ZGhleQ0KPiBTaHlhbSBQYW5kZXkgPHJhZGhleXNAeGlsaW54LmNvbT4NCj4gQ2M6IGxpbnV4LXVt
-QGxpc3RzLmluZnJhZGVhZC5vcmc7IGxpbnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5vcmc7DQo+IGRh
-dmlkZ293QGdvb2dsZS5jb207IEJyZW5kYW4gSGlnZ2lucyA8YnJlbmRhbmhpZ2dpbnNAZ29vZ2xl
-LmNvbT47DQo+IG5ldGRldkB2Z2VyLmtlcm5lbC5vcmc7IGxpbnV4LWFybS1rZXJuZWxAbGlzdHMu
-aW5mcmFkZWFkLm9yZw0KPiBTdWJqZWN0OiBbUEFUQ0ggdjEgMy83XSBuZXQ6IGF4aWVuZXQ6IGFk
-ZCB1bnNwZWNpZmllZCBIQVNfSU9NRU0NCj4gZGVwZW5kZW5jeQ0KPiANCj4gQ3VycmVudGx5IENP
-TkZJR19YSUxJTlhfQVhJX0VNQUM9eSBpbXBsaWNpdGx5IGRlcGVuZHMgb24NCj4gQ09ORklHX0hB
-U19JT01FTT15OyBjb25zZXF1ZW50bHksIG9uIGFyY2hpdGVjdHVyZXMgd2l0aG91dCBJT01FTSB3
-ZQ0KPiBnZXQNCj4gdGhlIGZvbGxvd2luZyBidWlsZCBlcnJvcjoNCj4gDQo+IGxkOiBkcml2ZXJz
-L25ldC9ldGhlcm5ldC94aWxpbngveGlsaW54X2F4aWVuZXRfbWFpbi5vOiBpbiBmdW5jdGlvbg0K
-PiBgYXhpZW5ldF9wcm9iZSc6DQo+IGRyaXZlcnMvbmV0L2V0aGVybmV0L3hpbGlueC94aWxpbnhf
-YXhpZW5ldF9tYWluLmM6MTY4MDogdW5kZWZpbmVkIHJlZmVyZW5jZQ0KPiB0byBgZGV2bV9pb3Jl
-bWFwX3Jlc291cmNlJw0KPiBsZDogZHJpdmVycy9uZXQvZXRoZXJuZXQveGlsaW54L3hpbGlueF9h
-eGllbmV0X21haW4uYzoxNzc5OiB1bmRlZmluZWQNCj4gcmVmZXJlbmNlIHRvIGBkZXZtX2lvcmVt
-YXBfcmVzb3VyY2UnDQo+IGxkOiBkcml2ZXJzL25ldC9ldGhlcm5ldC94aWxpbngveGlsaW54X2F4
-aWVuZXRfbWFpbi5jOjE3ODk6IHVuZGVmaW5lZA0KPiByZWZlcmVuY2UgdG8gYGRldm1faW9yZW1h
-cF9yZXNvdXJjZScNCj4gDQo+IEZpeCB0aGUgYnVpbGQgZXJyb3IgYnkgYWRkaW5nIHRoZSB1bnNw
-ZWNpZmllZCBkZXBlbmRlbmN5Lg0KPiANCj4gUmVwb3J0ZWQtYnk6IEJyZW5kYW4gSGlnZ2lucyA8
-YnJlbmRhbmhpZ2dpbnNAZ29vZ2xlLmNvbT4NCj4gU2lnbmVkLW9mZi1ieTogQnJlbmRhbiBIaWdn
-aW5zIDxicmVuZGFuaGlnZ2luc0Bnb29nbGUuY29tPg0KUmV2aWV3ZWQtYnk6IFJhZGhleSBTaHlh
-bSBQYW5kZXkgPHJhZGhleS5zaHlhbS5wYW5kZXlAeGlsaW54LmNvbT4NClRoYW5rcyENCg0KPiAt
-LS0NCj4gIGRyaXZlcnMvbmV0L2V0aGVybmV0L3hpbGlueC9LY29uZmlnIHwgMSArDQo+ICAxIGZp
-bGUgY2hhbmdlZCwgMSBpbnNlcnRpb24oKykNCj4gDQo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL25l
-dC9ldGhlcm5ldC94aWxpbngvS2NvbmZpZw0KPiBiL2RyaXZlcnMvbmV0L2V0aGVybmV0L3hpbGlu
-eC9LY29uZmlnDQo+IGluZGV4IDYzMDRlYmQ4YjVjNjkuLmIxYTI4NWU2OTM3NTYgMTAwNjQ0DQo+
-IC0tLSBhL2RyaXZlcnMvbmV0L2V0aGVybmV0L3hpbGlueC9LY29uZmlnDQo+ICsrKyBiL2RyaXZl
-cnMvbmV0L2V0aGVybmV0L3hpbGlueC9LY29uZmlnDQo+IEBAIC0yNSw2ICsyNSw3IEBAIGNvbmZp
-ZyBYSUxJTlhfRU1BQ0xJVEUNCj4gDQo+ICBjb25maWcgWElMSU5YX0FYSV9FTUFDDQo+ICAJdHJp
-c3RhdGUgIlhpbGlueCAxMC8xMDAvMTAwMCBBWEkgRXRoZXJuZXQgc3VwcG9ydCINCj4gKwlkZXBl
-bmRzIG9uIEhBU19JT01FTQ0KPiAgCXNlbGVjdCBQSFlMSU5LDQo+ICAJLS0taGVscC0tLQ0KPiAg
-CSAgVGhpcyBkcml2ZXIgc3VwcG9ydHMgdGhlIDEwLzEwMC8xMDAwIEV0aGVybmV0IGZyb20gWGls
-aW54IGZvciB0aGUNCj4gLS0NCj4gMi4yNC4wLjUyNS5nOGYzNmEzNTRhZS1nb29nDQoNCg==
+On 12/11/19 3:28 AM, Jan Kara wrote:
+...
+>=20
+> The patch looks mostly good to me now. Just a few smaller comments below.
+>=20
+>> Suggested-by: Jan Kara <jack@suse.cz>
+>> Suggested-by: J=C3=A9r=C3=B4me Glisse <jglisse@redhat.com>
+>> Reviewed-by: Jan Kara <jack@suse.cz>
+>> Reviewed-by: J=C3=A9r=C3=B4me Glisse <jglisse@redhat.com>
+>> Reviewed-by: Ira Weiny <ira.weiny@intel.com>
+>=20
+> I think you inherited here the Reviewed-by tags from the "add flags" patc=
+h
+> you've merged into this one but that's not really fair since this patch
+> does much more... In particular I didn't give my Reviewed-by tag for this
+> patch yet.
+
+OK, I've removed those reviewed-by's. (I felt bad about dropping them, afte=
+r
+people had devoted time to reviewing, but I do see that it's wrong to imply
+that they've reviewed this much much larger thing.)
+
+...
+>=20
+> I somewhat wonder about the asymmetry of try_grab_compound_head() vs
+> try_grab_page() in the treatment of 'flags'. How costly would it be to ma=
+ke
+> them symmetric (i.e., either set FOLL_GET for try_grab_compound_head()
+> callers or make sure one of FOLL_GET, FOLL_PIN is set for try_grab_page()=
+)?
+>=20
+> Because this difference looks like a subtle catch in the long run...
+
+Done. It is only a modest code-level change, at least the way I've done it,=
+ which is
+setting FOLL_GET for try_grab_compound_head(). In order to do that, I set
+it at the top of the internal gup fast calling stacks, which is actually a =
+good
+design anyway: gup fast is logically doing FOLL_GET in all cases. So settin=
+g
+the flag internally is accurate and consistent with the overall design.
+
+
+> ...
+>=20
+>> @@ -1522,8 +1536,8 @@ struct page *follow_trans_huge_pmd(struct vm_area_=
+struct *vma,
+>>   skip_mlock:
+>>   	page +=3D (addr & ~HPAGE_PMD_MASK) >> PAGE_SHIFT;
+>>   	VM_BUG_ON_PAGE(!PageCompound(page) && !is_zone_device_page(page), pag=
+e);
+>> -	if (flags & FOLL_GET)
+>> -		get_page(page);
+>> +	if (!try_grab_page(page, flags))
+>> +		page =3D ERR_PTR(-EFAULT);
+>=20
+> I think you need to also move the try_grab_page() earlier in the function=
+.
+> At this point the page may be marked as mlocked and you'd need to undo th=
+at
+> in case try_grab_page() fails.
+
+
+OK, I've moved it up, adding a "subpage" variable in order to make that wor=
+k.
+
+>=20
+>> diff --git a/mm/hugetlb.c b/mm/hugetlb.c
+>> index ac65bb5e38ac..0aab6fe0072f 100644
+>> --- a/mm/hugetlb.c
+>> +++ b/mm/hugetlb.c
+>> @@ -4356,7 +4356,13 @@ long follow_hugetlb_page(struct mm_struct *mm, st=
+ruct vm_area_struct *vma,
+>>   same_page:
+>>   		if (pages) {
+>>   			pages[i] =3D mem_map_offset(page, pfn_offset);
+>> -			get_page(pages[i]);
+>> +			if (!try_grab_page(pages[i], flags)) {
+>> +				spin_unlock(ptl);
+>> +				remainder =3D 0;
+>> +				err =3D -ENOMEM;
+>> +				WARN_ON_ONCE(1);
+>> +				break;
+>> +			}
+>>   		}
+>=20
+> This function does a refcount overflow check early so that it doesn't hav=
+e
+> to do try_get_page() here. So that check can be now removed when you do
+> try_grab_page() here anyway since that early check seems to be just a tin=
+y
+> optimization AFAICT.
+>=20
+> 								Honza
+>=20
+
+Yes. I've removed it, good spot.
+
+
+thanks,
+--=20
+John Hubbard
+NVIDIA
