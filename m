@@ -2,149 +2,334 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A8B5011C24B
-	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 02:36:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 52F4111C25C
+	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 02:40:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727595AbfLLBgb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Dec 2019 20:36:31 -0500
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:35404 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727469AbfLLBgb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Dec 2019 20:36:31 -0500
-Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xBC1XN7N028613
-        for <netdev@vger.kernel.org>; Wed, 11 Dec 2019 17:36:30 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-type; s=facebook;
- bh=xQ5M/cOvnftQuavJNO36z9POUkMAY3rR4Tcd3dP6nOs=;
- b=DrA4PzWqytYfSQOyqEfOAvw/9mkOLjoNnpD1ZBkM/jvcV/UrCqjGvihNyuJ87JO9Ak3U
- 0MWxReOblLAhlh85MqiE9LTc6tjZ9Zcscnmz4jcQbxX6jYR4+P+ciw4SYYnJCt/TgfmP
- WquOjjvqudLtapmjm2RQyqowWIhpm7qvmdo= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 2wu4ksa1a8-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 11 Dec 2019 17:36:30 -0800
-Received: from intmgw002.41.prn1.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:83::5) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Wed, 11 Dec 2019 17:36:28 -0800
-Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
-        id 2C0AE2EC1A0E; Wed, 11 Dec 2019 17:36:23 -0800 (PST)
-Smtp-Origin-Hostprefix: devbig
-From:   Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
-        <daniel@iogearbox.net>
-CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH bpf-next 4/4] selftests/bpf: fix perf_buffer test on systems w/ offline CPUs
-Date:   Wed, 11 Dec 2019 17:36:20 -0800
-Message-ID: <20191212013621.1691858-1-andriin@fb.com>
-X-Mailer: git-send-email 2.17.1
-X-FB-Internal: Safe
+        id S1727538AbfLLBka convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 11 Dec 2019 20:40:30 -0500
+Received: from mga14.intel.com ([192.55.52.115]:7916 "EHLO mga14.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727297AbfLLBk3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 11 Dec 2019 20:40:29 -0500
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 11 Dec 2019 17:40:29 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.69,303,1571727600"; 
+   d="scan'208";a="363799229"
+Received: from fmsmsx103.amr.corp.intel.com ([10.18.124.201])
+  by orsmga004.jf.intel.com with ESMTP; 11 Dec 2019 17:40:28 -0800
+Received: from fmsmsx162.amr.corp.intel.com (10.18.125.71) by
+ FMSMSX103.amr.corp.intel.com (10.18.124.201) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Wed, 11 Dec 2019 17:40:28 -0800
+Received: from fmsmsx124.amr.corp.intel.com ([169.254.8.10]) by
+ fmsmsx162.amr.corp.intel.com ([169.254.5.87]) with mapi id 14.03.0439.000;
+ Wed, 11 Dec 2019 17:40:28 -0800
+From:   "Saleem, Shiraz" <shiraz.saleem@intel.com>
+To:     Jason Gunthorpe <jgg@ziepe.ca>,
+        "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>
+CC:     "davem@davemloft.net" <davem@davemloft.net>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "Ismail, Mustafa" <mustafa.ismail@intel.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "nhorman@redhat.com" <nhorman@redhat.com>,
+        "sassmann@redhat.com" <sassmann@redhat.com>,
+        "parav@mellanox.com" <parav@mellanox.com>
+Subject: RE: [PATCH v3 05/20] RDMA/irdma: Add driver framework definitions
+Thread-Topic: [PATCH v3 05/20] RDMA/irdma: Add driver framework definitions
+Thread-Index: AQHVruL5SWTxLWjtI0m5sVTIVSLbtKe0QawAgAEkwDA=
+Date:   Thu, 12 Dec 2019 01:40:27 +0000
+Message-ID: <9DD61F30A802C4429A01CA4200E302A7B6B8FBCA@fmsmsx124.amr.corp.intel.com>
+References: <20191209224935.1780117-1-jeffrey.t.kirsher@intel.com>
+ <20191209224935.1780117-6-jeffrey.t.kirsher@intel.com>
+ <20191210190438.GF46@ziepe.ca>
+In-Reply-To: <20191210190438.GF46@ziepe.ca>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ctpclassification: CTP_NT
+x-titus-metadata-40: eyJDYXRlZ29yeUxhYmVscyI6IiIsIk1ldGFkYXRhIjp7Im5zIjoiaHR0cDpcL1wvd3d3LnRpdHVzLmNvbVwvbnNcL0ludGVsMyIsImlkIjoiYjc4MjA2ZTItYjhjMC00ZDUzLTg3ZTEtMTFiMjRjZDhkYzM2IiwicHJvcHMiOlt7Im4iOiJDVFBDbGFzc2lmaWNhdGlvbiIsInZhbHMiOlt7InZhbHVlIjoiQ1RQX05UIn1dfV19LCJTdWJqZWN0TGFiZWxzIjpbXSwiVE1DVmVyc2lvbiI6IjE3LjEwLjE4MDQuNDkiLCJUcnVzdGVkTGFiZWxIYXNoIjoiUGFLTm04Mm9qeUpnSkFvazFpNHo3eUxsUmcyYVBJdXB2MVBDeElTTTY1VlFPUnRZRTN4ZUlzanhcL2VFY3JnYTcifQ==
+dlp-product: dlpe-windows
+dlp-version: 11.2.0.6
+dlp-reaction: no-action
+x-originating-ip: [10.1.200.106]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
- definitions=2019-12-11_07:2019-12-11,2019-12-11 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 clxscore=1015
- suspectscore=25 adultscore=0 priorityscore=1501 spamscore=0 mlxscore=0
- bulkscore=0 malwarescore=0 phishscore=0 mlxlogscore=999 lowpriorityscore=0
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-1910280000 definitions=main-1912120004
-X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix up perf_buffer.c selftest to take into account offline/missing CPUs.
-Fixes: ee5cf82ce04a ("selftests/bpf: test perf buffer API")
-Signed-off-by: Andrii Nakryiko <andriin@fb.com>
----
- .../selftests/bpf/prog_tests/perf_buffer.c    | 29 +++++++++++++++----
- 1 file changed, 24 insertions(+), 5 deletions(-)
+> Subject: Re: [PATCH v3 05/20] RDMA/irdma: Add driver framework definitions
+> 
+> On Mon, Dec 09, 2019 at 02:49:20PM -0800, Jeff Kirsher wrote:
+> > +{
+> > +	struct i40e_info *ldev = (struct i40e_info *)rf->ldev.if_ldev;
+> 
+> Why are there so many casts in this file? Is this really container of?
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/perf_buffer.c b/tools/testing/selftests/bpf/prog_tests/perf_buffer.c
-index 3003fddc0613..cf6c87936c69 100644
---- a/tools/testing/selftests/bpf/prog_tests/perf_buffer.c
-+++ b/tools/testing/selftests/bpf/prog_tests/perf_buffer.c
-@@ -4,6 +4,7 @@
- #include <sched.h>
- #include <sys/socket.h>
- #include <test_progs.h>
-+#include "libbpf_internal.h"
- 
- static void on_sample(void *ctx, int cpu, void *data, __u32 size)
- {
-@@ -19,7 +20,7 @@ static void on_sample(void *ctx, int cpu, void *data, __u32 size)
- 
- void test_perf_buffer(void)
- {
--	int err, prog_fd, nr_cpus, i, duration = 0;
-+	int err, prog_fd, on_len, nr_on_cpus = 0,  nr_cpus, i, duration = 0;
- 	const char *prog_name = "kprobe/sys_nanosleep";
- 	const char *file = "./test_perf_buffer.o";
- 	struct perf_buffer_opts pb_opts = {};
-@@ -29,15 +30,27 @@ void test_perf_buffer(void)
- 	struct bpf_object *obj;
- 	struct perf_buffer *pb;
- 	struct bpf_link *link;
-+	bool *online;
- 
- 	nr_cpus = libbpf_num_possible_cpus();
- 	if (CHECK(nr_cpus < 0, "nr_cpus", "err %d\n", nr_cpus))
- 		return;
- 
-+	err = parse_cpu_mask_file("/sys/devices/system/cpu/online",
-+				  &online, &on_len);
-+	if (CHECK(err, "nr_on_cpus", "err %d\n", err))
-+		return;
-+
-+	for (i = 0; i < on_len; i++)
-+		if (online[i])
-+			nr_on_cpus++;
-+
- 	/* load program */
- 	err = bpf_prog_load(file, BPF_PROG_TYPE_KPROBE, &obj, &prog_fd);
--	if (CHECK(err, "obj_load", "err %d errno %d\n", err, errno))
--		return;
-+	if (CHECK(err, "obj_load", "err %d errno %d\n", err, errno)) {
-+		obj = NULL;
-+		goto out_close;
-+	}
- 
- 	prog = bpf_object__find_program_by_title(obj, prog_name);
- 	if (CHECK(!prog, "find_probe", "prog '%s' not found\n", prog_name))
-@@ -64,6 +77,11 @@ void test_perf_buffer(void)
- 	/* trigger kprobe on every CPU */
- 	CPU_ZERO(&cpu_seen);
- 	for (i = 0; i < nr_cpus; i++) {
-+		if (i >= on_len || !online[i]) {
-+			printf("skipping offline CPU #%d\n", i);
-+			continue;
-+		}
-+
- 		CPU_ZERO(&cpu_set);
- 		CPU_SET(i, &cpu_set);
- 
-@@ -81,8 +99,8 @@ void test_perf_buffer(void)
- 	if (CHECK(err < 0, "perf_buffer__poll", "err %d\n", err))
- 		goto out_free_pb;
- 
--	if (CHECK(CPU_COUNT(&cpu_seen) != nr_cpus, "seen_cpu_cnt",
--		  "expect %d, seen %d\n", nr_cpus, CPU_COUNT(&cpu_seen)))
-+	if (CHECK(CPU_COUNT(&cpu_seen) != nr_on_cpus, "seen_cpu_cnt",
-+		  "expect %d, seen %d\n", nr_on_cpus, CPU_COUNT(&cpu_seen)))
- 		goto out_free_pb;
- 
- out_free_pb:
-@@ -91,4 +109,5 @@ void test_perf_buffer(void)
- 	bpf_link__destroy(link);
- out_close:
- 	bpf_object__close(obj);
-+	free(online);
- }
--- 
-2.17.1
+The casting here is redundant. Will clean up.
 
+> 
+> > +	hdl = kzalloc((sizeof(*hdl) + sizeof(*iwdev)), GFP_KERNEL);
+> > +	if (!hdl)
+> > +		return -ENOMEM;
+> > +
+> > +	iwdev = (struct irdma_device *)((u8 *)hdl + sizeof(*hdl));
+> 
+> Yikes, use structs and container of for things like this please.
+
+iwdev object alloc should be split here from hdl. Will fix.
+
+> 
+> > +	iwdev->param_wq = alloc_ordered_workqueue("l2params",
+> WQ_MEM_RECLAIM);
+> > +	if (!iwdev->param_wq)
+> > +		goto error;
+> 
+> Leon usually asks why another work queue at this point, at least have a comment
+> justifying why. Shouldn't it have a better name?
+>
+
+Ugh! The l2 param changes is made synchronous based on
+prior feedback from Leon. This wq should be removed.
+
+> > +/* client interface functions */
+> > +static const struct i40e_client_ops i40e_ops = {
+> > +	.open = i40iw_open,
+> > +	.close = i40iw_close,
+> > +	.l2_param_change = i40iw_l2param_change };
+> 
+> Wasn't the whole point of virtual bus to avoid stuff like this? Why isn't a client the
+> virtual bus object and this information extended into the driver ops?
+
+These are the private interface calls between lan and rdma.
+These ops are implemented by RDMA driver but invoked by
+netdev driver.
+
+> 
+> > +int i40iw_probe(struct virtbus_device *vdev) {
+> > +	struct i40e_info *ldev =
+> > +		container_of(vdev, struct i40e_info, vdev);
+> > +
+> > +	if (!ldev)
+> > +		return -EINVAL;
+> 
+> eh? how can that happen
+> 
+> > +
+> > +	if (!ldev->ops->client_device_register)
+> > +		return -EINVAL;
+> 
+> How can this happen too? If it doesn't support register then don't create a virtual
+> device, surely?
+> 
+> I've really developed a strong distate to these random non-functional 'ifs' that
+> seem to get into things.
+> 
+> If it is functional then fine, but if it is an assertion write it as if (WARN_ON()) to
+> make it clear to readers it can't happen by design
+>
+
+Yeah. These cant happen by design and should be treated as assertion. Will fix.
+
+> 
+> > +/**
+> > + * irdma_lan_register_qset - Register qset with LAN driver
+> > + * @vsi: vsi structure
+> > + * @tc_node: Traffic class node
+> > + */
+> > +static enum irdma_status_code irdma_lan_register_qset(struct irdma_sc_vsi
+> *vsi,
+> > +						      struct irdma_ws_node
+> *tc_node) {
+> > +	struct irdma_device *iwdev = vsi->back_vsi;
+> > +	struct iidc_peer_dev *ldev = (struct iidc_peer_dev
+> > +*)iwdev->ldev->if_ldev;
+> 
+> Again with the casts.. Please try to clean up the casting in this driver
+>
+
+Ditto as my previous comment.
+
+> > +	struct iidc_res rdma_qset_res = {};
+> > +	int ret;
+> > +
+> > +	if (ldev->ops->alloc_res) {
+> 
+> Quite an abnormal coding style to put the entire function under an if, just if() return
+> 0 ? Many examples of this
+
+Will fix.
+> 
+> > +/**
+> > + * irdma_log_invalid_mtu: log warning on invalid mtu
+> > + * @mtu: maximum tranmission unit
+> > + */
+> > +static void irdma_log_invalid_mtu(u16 mtu) {
+> > +	if (mtu < IRDMA_MIN_MTU_IPV4)
+> > +		pr_warn("Current MTU setting of %d is too low for RDMA traffic.
+> Minimum MTU is 576 for IPv4 and 1280 for IPv6\n",
+> > +			mtu);
+> > +	else if (mtu < IRDMA_MIN_MTU_IPV6)
+> > +		pr_warn("Current MTU setting of %d is too low for IPv6 RDMA
+> traffic, the minimum is 1280\n",
+> > +			mtu);
+> > +}
+> 
+> Don't use pr_* stuff in drivers that have a struct device.
+>
+Will fix.
+
+> > +/**
+> > + * irdma_event_handler - Called by LAN driver to notify events
+> > + * @ldev: Peer device structure
+> > + * @event: event from LAN driver
+> > + */
+> > +static void irdma_event_handler(struct iidc_peer_dev *ldev,
+> > +				struct iidc_event *event)
+> > +{
+> > +	struct irdma_l2params l2params = {};
+> > +	struct irdma_device *iwdev;
+> > +	int i;
+> > +
+> > +	iwdev = irdma_get_device(ldev->netdev);
+> > +	if (!iwdev)
+> > +		return;
+> > +
+> > +	if (test_bit(IIDC_EVENT_LINK_CHANGE, event->type)) {
+> 
+> Is this atomic? Why using test_bit?
+No its not. What do you suggest we use?
+
+> 
+> > +		ldev->ops->reg_for_notification(ldev, &events);
+> > +	dev_info(rfdev_to_dev(dev), "IRDMA VSI Open Successful");
+> 
+> Lets not do this kind of logging..
+>
+
+There is some dev_info which should be cleaned up to dev_dbg.
+But logging this info is useful to know that this functions VSI (and associated ibdev)
+is up and reading for RDMA traffic.
+Is info logging to be avoided altogether?
+
+> > +static void irdma_close(struct iidc_peer_dev *ldev, enum
+> > +iidc_close_reason reason) {
+> > +	struct irdma_device *iwdev;
+> > +	struct irdma_pci_f *rf;
+> > +
+> > +	iwdev = irdma_get_device(ldev->netdev);
+> > +	if (!iwdev)
+> > +		return;
+> > +
+> > +	irdma_put_device(iwdev);
+> > +	rf = iwdev->rf;
+> > +	if (reason == IIDC_REASON_GLOBR_REQ || reason ==
+> IIDC_REASON_CORER_REQ ||
+> > +	    reason == IIDC_REASON_PFR_REQ || rf->reset) {
+> > +		iwdev->reset = true;
+> > +		rf->reset = true;
+> > +	}
+> > +
+> > +	if (iwdev->init_state >= CEQ0_CREATED)
+> > +		irdma_deinit_rt_device(iwdev);
+> > +
+> > +	kfree(iwdev);
+> 
+> Mixing put and kfree? So confusing. Why are there so many structs and so much
+> indirection? Very hard to understand if this is right or not.
+
+This does look weird. I think the irdma_get_device() was here
+just to get to iwdev. And put_device is releasing the refcnt immediately.
+Since we are in a VSI close(), we should not need to take refcnt on ibdev
+and just deregister it. Will fix this.
+
+> 
+> > new file mode 100644
+> > index 000000000000..b418e76a3302
+> > +++ b/drivers/infiniband/hw/irdma/main.c
+> > @@ -0,0 +1,630 @@
+> > +// SPDX-License-Identifier: GPL-2.0 or Linux-OpenIB
+> > +/* Copyright (c) 2015 - 2019 Intel Corporation */ #include "main.h"
+> > +
+> > +/* Legacy i40iw module parameters */
+> > +static int resource_profile;
+> > +module_param(resource_profile, int, 0644);
+> > +MODULE_PARM_DESC(resource_profile, "Resource Profile: 0=PF only,
+> > +1=Weighted VF, 2=Even Distribution");
+> > +
+> > +static int max_rdma_vfs = 32;
+> > +module_param(max_rdma_vfs, int, 0644);
+> MODULE_PARM_DESC(max_rdma_vfs,
+> > +"Maximum VF count: 0-32 32=default");
+> > +
+> > +static int mpa_version = 2;
+> > +module_param(mpa_version, int, 0644); MODULE_PARM_DESC(mpa_version,
+> > +"MPA version: deprecated parameter");
+> > +
+> > +static int push_mode;
+> > +module_param(push_mode, int, 0644);
+> > +MODULE_PARM_DESC(push_mode, "Low latency mode: deprecated
+> > +parameter");
+> > +
+> > +static int debug;
+> > +module_param(debug, int, 0644);
+> > +MODULE_PARM_DESC(debug, "debug flags: deprecated parameter");
+> 
+> Generally no to module parameters
+
+Agree. But these are module params that existed in i40iw.
+And irdma replaces i40iw and has a module alias
+for it.
+
+> 
+> > +static struct workqueue_struct *irdma_wq;
+> 
+> Another wq already?
+This wq is used for deferred handling of irdma service tasks.
+Such as rebuild/recovery after reset.
+
+> 
+> > +struct irdma_pci_f {
+> > +	bool ooo;
+> > +	bool reset;
+> > +	bool rsrc_created;
+> > +	bool stop_cqp_thread;
+> > +	bool msix_shared;
+> 
+> Linus has spoken poorly about lots of bools in a struct. Can this be a bitfield?
+Possibly. Yes. Will look into it.
+
+> 
+> > +/***********************************************************/
+> > +/**
+> > + * to_iwdev - get device
+> > + * @ibdev: ib device
+> > + **/
+> 
+> Maybe some of these comment blocks are not so valuable :\
+
+Will fix.
+
+> 
+> > +	spin_lock_irqsave(&rf->rsrc_lock, flags);
+> > +
+> > +	bit_is_set = test_bit(rsrc_num, rsrc_array);
+> 
+> Again, are these atomics? Looks like no, why test_bit?
+
+This helper is not used and to be removed.
+
+But, yes integrity needs to be assured while read/modify rsrc_array. 
+irdma_alloc_rsrc() and irdma_free_rsrc() probably warrant
+using the non-atomic ver. of set/clear bit since its inside
+a lock.
+
+Thanks for the feedback!
+
+Shiraz
