@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E00A11D2E9
-	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 17:58:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3A40811D280
+	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 17:41:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729961AbfLLQ56 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Dec 2019 11:57:58 -0500
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:52660 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729771AbfLLQ56 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Dec 2019 11:57:58 -0500
-Received: from pps.filterd (m0109331.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xBCGv3c4012485
-        for <netdev@vger.kernel.org>; Thu, 12 Dec 2019 08:57:56 -0800
+        id S1729964AbfLLQlu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Dec 2019 11:41:50 -0500
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:19018 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1729932AbfLLQlt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Dec 2019 11:41:49 -0500
+Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xBCGbJX9003395
+        for <netdev@vger.kernel.org>; Thu, 12 Dec 2019 08:41:48 -0800
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
  : date : message-id : in-reply-to : references : mime-version :
- content-type; s=facebook; bh=fxFTz/nH5cWvMP7IOZ6lsJ5VlXxMLtQ4z3m5TPJnLrQ=;
- b=hD/go61Htmf0v2NblW+XKptN5pS99NMrIMOWlUup9YbYosCfO1VmHuEj87ELBoh0wGNT
- svjnJIXvZN2BKEgsjRPG67x/SUr/Ngnc5RadJzvkpUbiBmdTCDwosT9exFgygHncy7WC
- I5ip57iTjWVGmUyr1MppFk/wv7K81+6eWGY= 
+ content-type; s=facebook; bh=bzvD7R4vaIjJXCukGZddFxdWcBvttBi8iLa4gJasQsY=;
+ b=AR/p9i0M4bimqAERyJYq6/LchLZqDTCSVUw6s0sVbY4S+84cmmF8uDfafLaXXaGksciX
+ 7peNJZ5IioUZWzSH4rWY9eD/DX7JvtWzlQ9YFE0jetZWAYM/bEXHaE/29O1SqIp/Twfq
+ h9exAmigZ073kJ6l/QEPi0fLSNsw3PYxwu8= 
 Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 2wu4ehnagv-1
+        by mx0a-00082601.pphosted.com with ESMTP id 2wtk8wshs1-5
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Thu, 12 Dec 2019 08:57:56 -0800
-Received: from intmgw004.05.ash5.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:82::f) with Microsoft SMTP Server
+        for <netdev@vger.kernel.org>; Thu, 12 Dec 2019 08:41:48 -0800
+Received: from intmgw001.41.prn1.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:83::4) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Thu, 12 Dec 2019 08:57:54 -0800
+ 15.1.1713.5; Thu, 12 Dec 2019 08:41:46 -0800
 Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
-        id BE54A2EC1AD2; Thu, 12 Dec 2019 08:41:42 -0800 (PST)
+        id F41862EC1AD2; Thu, 12 Dec 2019 08:41:44 -0800 (PST)
 Smtp-Origin-Hostprefix: devbig
 From:   Andrii Nakryiko <andriin@fb.com>
 Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
@@ -38,9 +38,9 @@ To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
 CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
         Andrii Nakryiko <andriin@fb.com>
 Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH v2 bpf-next 04/15] libbpf: add BPF_EMBED_OBJ macro for embedding BPF .o files
-Date:   Thu, 12 Dec 2019 08:41:17 -0800
-Message-ID: <20191212164129.494329-5-andriin@fb.com>
+Subject: [PATCH v2 bpf-next 05/15] libbpf: expose field/var declaration emitting API internally
+Date:   Thu, 12 Dec 2019 08:41:18 -0800
+Message-ID: <20191212164129.494329-6-andriin@fb.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20191212164129.494329-1-andriin@fb.com>
 References: <20191212164129.494329-1-andriin@fb.com>
@@ -48,124 +48,175 @@ X-FB-Internal: Safe
 MIME-Version: 1.0
 Content-Type: text/plain
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
- definitions=2019-12-12_05:2019-12-12,2019-12-12 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 impostorscore=0
- lowpriorityscore=0 adultscore=0 clxscore=1015 bulkscore=0 malwarescore=0
- priorityscore=1501 mlxscore=0 phishscore=0 spamscore=0 suspectscore=9
- mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-1910280000 definitions=main-1912120130
+ definitions=2019-12-12_04:2019-12-12,2019-12-12 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxscore=0
+ lowpriorityscore=0 suspectscore=25 impostorscore=0 malwarescore=0
+ phishscore=0 adultscore=0 priorityscore=1501 mlxlogscore=999 bulkscore=0
+ clxscore=1015 spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-1910280000 definitions=main-1912120129
 X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a convenience macro BPF_EMBED_OBJ, which allows to embed other files
-(typically used to embed BPF .o files) into a hosting userspace programs. To
-C program it is exposed as struct bpf_embed_data, containing a pointer to
-raw data and its size in bytes.
+Expose useful function emitting field/variable declaration compilable C syntax
+of a provided BTF type. This is going to be used by bpftool when emitting data
+section layout as a struct. This is not a trivial algorithm, so better to
+expose it as internal API and let bpftool harness existing libbpf code. As
+part of making this API useful in a stand-alone fashion, move initialization
+of some of the internal btf_dumper state to early phase.
+
+Also expose useful btf_align_of() function returning alignment of a given BTF
+type. This is also used for data section layout-compatible struct definition,
+specifically to determine necessary extra padding between fields/variables.
 
 Acked-by: Martin KaFai Lau <kafai@fb.com>
 Signed-off-by: Andrii Nakryiko <andriin@fb.com>
 ---
- tools/lib/bpf/libbpf.h                        | 35 +++++++++++++++++++
- .../selftests/bpf/prog_tests/attach_probe.c   | 23 ++----------
- 2 files changed, 38 insertions(+), 20 deletions(-)
+ tools/lib/bpf/btf_dump.c        | 61 ++++++++++++++++-----------------
+ tools/lib/bpf/libbpf_internal.h |  6 ++++
+ 2 files changed, 36 insertions(+), 31 deletions(-)
 
-diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
-index 2698fbcb0c79..fa803dde1f46 100644
---- a/tools/lib/bpf/libbpf.h
-+++ b/tools/lib/bpf/libbpf.h
-@@ -615,6 +615,41 @@ bpf_program__bpil_offs_to_addr(struct bpf_prog_info_linear *info_linear);
-  */
- LIBBPF_API int libbpf_num_possible_cpus(void);
- 
-+struct bpf_embed_data {
-+	void *data;
-+	size_t size;
-+};
-+
-+#define BPF_EMBED_OBJ_DECLARE(NAME)					\
-+extern struct bpf_embed_data NAME##_embed;				\
-+extern char NAME##_data[];						\
-+extern char NAME##_data_end[];
-+
-+#define __BPF_EMBED_OBJ(NAME, PATH, SZ, ASM_TYPE)			\
-+asm (									\
-+"	.pushsection \".rodata\", \"a\", @progbits		\n"	\
-+"	.global "#NAME"_data					\n"	\
-+#NAME"_data:							\n"	\
-+"	.incbin \"" PATH "\"					\n"	\
-+"	.global "#NAME"_data_end				\n"	\
-+#NAME"_data_end:						\n"	\
-+"	.global "#NAME"_embed					\n"	\
-+"	.type "#NAME"_embed, @object				\n"	\
-+"	.size "#NAME"_size, "#SZ"				\n"	\
-+"	.align 8,						\n"	\
-+#NAME"_embed:							\n"	\
-+"	"ASM_TYPE" "#NAME"_data					\n"	\
-+"	"ASM_TYPE" "#NAME"_data_end - "#NAME"_data 		\n"	\
-+"	.popsection						\n"	\
-+);									\
-+BPF_EMBED_OBJ_DECLARE(NAME)
-+
-+#if __SIZEOF_POINTER__ == 4
-+#define BPF_EMBED_OBJ(NAME, PATH) __BPF_EMBED_OBJ(NAME, PATH, 8, ".long")
-+#else
-+#define BPF_EMBED_OBJ(NAME, PATH) __BPF_EMBED_OBJ(NAME, PATH, 16, ".quad")
-+#endif
-+
- #ifdef __cplusplus
- } /* extern "C" */
- #endif
-diff --git a/tools/testing/selftests/bpf/prog_tests/attach_probe.c b/tools/testing/selftests/bpf/prog_tests/attach_probe.c
-index a83111a32d4a..b2e7c1424b07 100644
---- a/tools/testing/selftests/bpf/prog_tests/attach_probe.c
-+++ b/tools/testing/selftests/bpf/prog_tests/attach_probe.c
-@@ -1,24 +1,6 @@
- // SPDX-License-Identifier: GPL-2.0
- #include <test_progs.h>
- 
--#define EMBED_FILE(NAME, PATH)						    \
--asm (									    \
--"      .pushsection \".rodata\", \"a\", @progbits              \n"	    \
--"      .global "#NAME"_data                                    \n"	    \
--#NAME"_data:                                                   \n"	    \
--"      .incbin \"" PATH "\"                                    \n"	    \
--#NAME"_data_end:                                               \n"	    \
--"      .global "#NAME"_size                                    \n"	    \
--"      .type "#NAME"_size, @object                             \n"	    \
--"      .size "#NAME"_size, 4                                   \n"	    \
--"      .align 4,                                               \n"	    \
--#NAME"_size:                                                   \n"	    \
--"      .int "#NAME"_data_end - "#NAME"_data                    \n"	    \
--"      .popsection                                             \n"	    \
--);									    \
--extern char NAME##_data[];						    \
--extern int NAME##_size;
--
- ssize_t get_base_addr() {
- 	size_t start;
- 	char buf[256];
-@@ -39,7 +21,7 @@ ssize_t get_base_addr() {
- 	return -EINVAL;
+diff --git a/tools/lib/bpf/btf_dump.c b/tools/lib/bpf/btf_dump.c
+index cb126d8fcf75..e597eb9541f5 100644
+--- a/tools/lib/bpf/btf_dump.c
++++ b/tools/lib/bpf/btf_dump.c
+@@ -116,6 +116,8 @@ static void btf_dump_printf(const struct btf_dump *d, const char *fmt, ...)
+ 	va_end(args);
  }
  
--EMBED_FILE(probe, "test_attach_probe.o");
-+BPF_EMBED_OBJ(probe, "test_attach_probe.o");
++static int btf_dump_mark_referenced(struct btf_dump *d);
++
+ struct btf_dump *btf_dump__new(const struct btf *btf,
+ 			       const struct btf_ext *btf_ext,
+ 			       const struct btf_dump_opts *opts,
+@@ -137,18 +139,39 @@ struct btf_dump *btf_dump__new(const struct btf *btf,
+ 	if (IS_ERR(d->type_names)) {
+ 		err = PTR_ERR(d->type_names);
+ 		d->type_names = NULL;
+-		btf_dump__free(d);
+-		return ERR_PTR(err);
+ 	}
+ 	d->ident_names = hashmap__new(str_hash_fn, str_equal_fn, NULL);
+ 	if (IS_ERR(d->ident_names)) {
+ 		err = PTR_ERR(d->ident_names);
+ 		d->ident_names = NULL;
+-		btf_dump__free(d);
+-		return ERR_PTR(err);
++		goto err;
++	}
++	d->type_states = calloc(1 + btf__get_nr_types(d->btf),
++				sizeof(d->type_states[0]));
++	if (!d->type_states) {
++		err = -ENOMEM;
++		goto err;
++	}
++	d->cached_names = calloc(1 + btf__get_nr_types(d->btf),
++				 sizeof(d->cached_names[0]));
++	if (!d->cached_names) {
++		err = -ENOMEM;
++		goto err;
+ 	}
  
- void test_attach_probe(void)
++	/* VOID is special */
++	d->type_states[0].order_state = ORDERED;
++	d->type_states[0].emit_state = EMITTED;
++
++	/* eagerly determine referenced types for anon enums */
++	err = btf_dump_mark_referenced(d);
++	if (err)
++		goto err;
++
+ 	return d;
++err:
++	btf_dump__free(d);
++	return ERR_PTR(err);
+ }
+ 
+ void btf_dump__free(struct btf_dump *d)
+@@ -175,7 +198,6 @@ void btf_dump__free(struct btf_dump *d)
+ 	free(d);
+ }
+ 
+-static int btf_dump_mark_referenced(struct btf_dump *d);
+ static int btf_dump_order_type(struct btf_dump *d, __u32 id, bool through_ptr);
+ static void btf_dump_emit_type(struct btf_dump *d, __u32 id, __u32 cont_id);
+ 
+@@ -202,27 +224,6 @@ int btf_dump__dump_type(struct btf_dump *d, __u32 id)
+ 	if (id > btf__get_nr_types(d->btf))
+ 		return -EINVAL;
+ 
+-	/* type states are lazily allocated, as they might not be needed */
+-	if (!d->type_states) {
+-		d->type_states = calloc(1 + btf__get_nr_types(d->btf),
+-					sizeof(d->type_states[0]));
+-		if (!d->type_states)
+-			return -ENOMEM;
+-		d->cached_names = calloc(1 + btf__get_nr_types(d->btf),
+-					 sizeof(d->cached_names[0]));
+-		if (!d->cached_names)
+-			return -ENOMEM;
+-
+-		/* VOID is special */
+-		d->type_states[0].order_state = ORDERED;
+-		d->type_states[0].emit_state = EMITTED;
+-
+-		/* eagerly determine referenced types for anon enums */
+-		err = btf_dump_mark_referenced(d);
+-		if (err)
+-			return err;
+-	}
+-
+ 	d->emit_queue_cnt = 0;
+ 	err = btf_dump_order_type(d, id, false);
+ 	if (err < 0)
+@@ -565,8 +566,6 @@ struct id_stack {
+ 	int cnt;
+ };
+ 
+-static void btf_dump_emit_type_decl(struct btf_dump *d, __u32 id,
+-				    const char *fname, int lvl);
+ static void btf_dump_emit_type_chain(struct btf_dump *d,
+ 				     struct id_stack *decl_stack,
+ 				     const char *fname, int lvl);
+@@ -752,7 +751,7 @@ static void btf_dump_emit_type(struct btf_dump *d, __u32 id, __u32 cont_id)
+ 	}
+ }
+ 
+-static int btf_align_of(const struct btf *btf, __u32 id)
++int btf_align_of(const struct btf *btf, __u32 id)
  {
-@@ -73,7 +55,8 @@ void test_attach_probe(void)
- 	uprobe_offset = (size_t)&get_base_addr - base_addr;
+ 	const struct btf_type *t = btf__type_by_id(btf, id);
+ 	__u16 kind = btf_kind(t);
+@@ -1051,8 +1050,8 @@ static int btf_dump_push_decl_stack_id(struct btf_dump *d, __u32 id)
+  * of a stack frame. Some care is required to "pop" stack frames after
+  * processing type declaration chain.
+  */
+-static void btf_dump_emit_type_decl(struct btf_dump *d, __u32 id,
+-				    const char *fname, int lvl)
++void btf_dump_emit_type_decl(struct btf_dump *d, __u32 id,
++			     const char *fname, int lvl)
+ {
+ 	struct id_stack decl_stack;
+ 	const struct btf_type *t;
+diff --git a/tools/lib/bpf/libbpf_internal.h b/tools/lib/bpf/libbpf_internal.h
+index 7ee0c8691835..bb7fd22eb0ab 100644
+--- a/tools/lib/bpf/libbpf_internal.h
++++ b/tools/lib/bpf/libbpf_internal.h
+@@ -98,6 +98,12 @@ static inline bool libbpf_validate_opts(const char *opts,
+ int libbpf__load_raw_btf(const char *raw_types, size_t types_len,
+ 			 const char *str_sec, size_t str_len);
  
- 	/* open object */
--	obj = bpf_object__open_mem(probe_data, probe_size, &open_opts);
-+	obj = bpf_object__open_mem(probe_embed.data, probe_embed.size,
-+				   &open_opts);
- 	if (CHECK(IS_ERR(obj), "obj_open_mem", "err %ld\n", PTR_ERR(obj)))
- 		return;
- 
++struct btf_dump;
++
++void btf_dump_emit_type_decl(struct btf_dump *d, __u32 id, const char *fname,
++			     int lvl);
++int btf_align_of(const struct btf *btf, __u32 id);
++
+ int bpf_object__section_size(const struct bpf_object *obj, const char *name,
+ 			     __u32 *size);
+ int bpf_object__variable_offset(const struct bpf_object *obj, const char *name,
 -- 
 2.17.1
 
