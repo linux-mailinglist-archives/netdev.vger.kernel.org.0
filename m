@@ -2,167 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A483511D8F8
-	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 23:01:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B0CFE11D94E
+	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 23:24:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731269AbfLLWAD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Dec 2019 17:00:03 -0500
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:42444 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731265AbfLLWAC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Dec 2019 17:00:02 -0500
-Received: by mail-pf1-f193.google.com with SMTP id 4so92752pfz.9
-        for <netdev@vger.kernel.org>; Thu, 12 Dec 2019 14:00:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=eXtHpJiSJg/9/jwCXXHyz4QnHW3p4m3tmPKqXv4Q3JE=;
-        b=dhwzw1wZBzp+s1092ddhqC+owajACV6UNC+ewplg0XmeIadQL9Q2tBXgv38VT+bjHn
-         hi7S0tLXuKEMahgR8NYCTuA0zJ2NVnjr9X8JzuJtf38ZyyB+dCJ3IxYDkZUrd5SRbLhF
-         X3ZL+kOBK48Y0ynokhghL761Pm3Ec68LA1dYnfXEBhWL8xA1qQdtzrWiqR3oYSe2tsVr
-         5t9cEzuupG/iodz1xU38GCFy2ktQqLWDUzZsdy9fNw3uBGIrsvsy+SN9SXavrG8iU2pw
-         STVChoWdWWpI6KT++PIYksG8UZrUiU2x0UL/i5NWMUzFNirPeT0yiKqRiZgKxejvmaWf
-         oqfw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=eXtHpJiSJg/9/jwCXXHyz4QnHW3p4m3tmPKqXv4Q3JE=;
-        b=W5JIxbq2fUXVhp92HUetcQsDwkO8nXD7klMj23JScDuykDcHub/RJqnWb2utZpnXRb
-         RlRypDaHxhlMGn+ViU5FuamPJ9VRyLtTNfHF0SIjBynAmb58nBKE2jQDzpp9Gd5V4zQ2
-         oa+YCSQBqT5XXWZW733zVgzPH23nfj0qRjLeq2teymvQgytAx1kPqe3VvVo+sICer8qs
-         gqVZ16OB0+aZWAa5oRq8xMh1zwrO2H0htRGoi0XfnaSJCP/UrvhEumURplrELtCgtQGN
-         LwuLj/WgV0pij06RNUsb+8cwv/9uJLrIV1GvGL43azMQePSlZ7HF9aa/a3Z40D6zC+L1
-         1S0Q==
-X-Gm-Message-State: APjAAAWc1p8ULn7QForGLH0MTgBnSY6MIE5ecbAS09GUY9IU+29vvm81
-        jMhmwp+MAoMdrG5P2/MlEDO57i2aMP8=
-X-Google-Smtp-Source: APXvYqwk0NcZ0t/BrYKLnyGvjeMXhCyG35EKksRxuhSEtPiXZM3VURxiPC0j7O9YZhTqcfB2I+boig==
-X-Received: by 2002:a63:31cf:: with SMTP id x198mr12855135pgx.272.1576188001988;
-        Thu, 12 Dec 2019 14:00:01 -0800 (PST)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id e6sm8525411pfh.32.2019.12.12.14.00.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 Dec 2019 14:00:01 -0800 (PST)
-Date:   Thu, 12 Dec 2019 13:59:58 -0800
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Stanislav Fomichev <sdf@fomichev.me>,
-        Andrii Nakryiko <andriin@fb.com>,
-        LKML <linux-kernel@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>
-Subject: Re: [PATCH bpf-next 11/15] bpftool: add skeleton codegen command
-Message-ID: <20191212135958.2970f188@cakuba.netronome.com>
-In-Reply-To: <20191212212759.mhzrlqj5brcyfwgb@ast-mbp.dhcp.thefacebook.com>
-References: <CAEf4BzYofFFjSAO3O-G37qyeVHE6FACex=yermt8bF8mXksh8g@mail.gmail.com>
-        <20191211200924.GE3105713@mini-arch>
-        <CAEf4BzaE0Q7LnPOa90p1RX9qSbOA_8hkT=6=7peP9C88ErRumQ@mail.gmail.com>
-        <20191212025735.GK3105713@mini-arch>
-        <CAEf4BzY2KHK4h5e40QgGt4GzJ6c+rm-vtbyEdM41vUSqcs=txA@mail.gmail.com>
-        <20191212162953.GM3105713@mini-arch>
-        <CAEf4BzYJHvuFbBM-xvCCsEa+Pg-bG1tprGMbCDtsbGHdv7KspA@mail.gmail.com>
-        <20191212104334.222552a1@cakuba.netronome.com>
-        <20191212195415.ubnuypco536rp6mu@ast-mbp.dhcp.thefacebook.com>
-        <20191212122115.612bb13b@cakuba.netronome.com>
-        <20191212212759.mhzrlqj5brcyfwgb@ast-mbp.dhcp.thefacebook.com>
-Organization: Netronome Systems, Ltd.
+        id S1731006AbfLLWYv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Dec 2019 17:24:51 -0500
+Received: from mail-eopbgr30058.outbound.protection.outlook.com ([40.107.3.58]:8622
+        "EHLO EUR03-AM5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1730868AbfLLWYu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 12 Dec 2019 17:24:50 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Vto9WGODMzkhZ3iNTiJOSOx3SCW/tb6u9ghUki3d5nC4V/sOn5cDcJ8Pw8mF5Cv79zxx1eS99uH5dlaG0QrwR73WrRpOewDFkeTnl46OZxIh9U7HOJXYzoyTspNM8gvLcRwD23vMufo3nRbVdzi3SRoRizFWll5crrLE6aqzO+xYSkCqKHk15JWUYjgNM1WgsQfoCMRcqKIgeX3fl/rLnef+JJsI9URqZBcpNLUCv5TNu4TTvyz7LU5ca9ZcQOa7oSUUvo1gkfoOqS4GqQVHm2hjrt+yy3hHgc2RpD3zUzB9PC0J6FKpwoksh0w49vDCzpL8PxjdvLyM1Xz/KHQztA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=mA3Xvy7C+iK5nTeZ2RfzoWZVJQXsaqSNYevv+oLRCXc=;
+ b=FtbXs0Tj0CAg+VQI0DCN33UH5XPFQJAxfDDrrxi/R5BBrZNOjWfNcyokTJbLTpKv0gn1tpt/bqUQgw3U2C72ww+IAtEwqP/Xl2A+j4w4Bo6H6blmUZBMWaADJukkUi8c1iH2ug4ITFo8V6AIhej7FJvUP7FDXvnwEMySyhGARxlScPcyj+A93ZeEF4PMMzptWJdb0iVjEikBo7C5FgOkxpqQYVgJcLdKaquhcMeNapsrjFr51Wc+vt34GfabvQ1r7OmqfoHYui9GxpWPmgRHoL7bhUjsflW5IiFCGozMKv/bQU8G4L5SsU1D5MFmwx2eFHV80G7SfzgggUVchRAR2Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=mA3Xvy7C+iK5nTeZ2RfzoWZVJQXsaqSNYevv+oLRCXc=;
+ b=PQVnu628Jtfrafll9cLeZbwdtjVrHcvbR23r3lSo5p8YVJ+vpFbjolgXYwGUxLpqqTlUJYm2n5Lko6BRezNwU1wz+BhJJn1iqZw2uF70lKIkeTX3eeg12p4o4doXmQdifuTgyAYGuA9jS6zK2PSPkDnwr+Q4CG4+2FxKyIun1nM=
+Received: from AM0PR05MB4866.eurprd05.prod.outlook.com (20.176.214.160) by
+ AM0PR05MB4114.eurprd05.prod.outlook.com (52.134.93.18) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2538.16; Thu, 12 Dec 2019 22:24:45 +0000
+Received: from AM0PR05MB4866.eurprd05.prod.outlook.com
+ ([fe80::16:9951:5a4b:9ec6]) by AM0PR05MB4866.eurprd05.prod.outlook.com
+ ([fe80::16:9951:5a4b:9ec6%7]) with mapi id 15.20.2516.020; Thu, 12 Dec 2019
+ 22:24:45 +0000
+From:   Parav Pandit <parav@mellanox.com>
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Shannon Nelson <snelson@pensando.io>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>
+Subject: Re: [PATCH v2 net-next 2/2] ionic: support sr-iov operations
+Thread-Topic: [PATCH v2 net-next 2/2] ionic: support sr-iov operations
+Thread-Index: AQHVsIPZtKRJJ1k2sk+Nw8POrjaYSqe2EL8AgADZlgCAAAIPAIAAGscAgAANtQA=
+Date:   Thu, 12 Dec 2019 22:24:45 +0000
+Message-ID: <a135f5fa-3745-69f6-4787-1695f47f1df8@mellanox.com>
+References: <20191212003344.5571-1-snelson@pensando.io>
+ <20191212003344.5571-3-snelson@pensando.io>
+ <acfcf58b-93ff-fba5-5769-6bc29ed0d375@mellanox.com>
+ <20191212115228.2caf0c63@cakuba.netronome.com>
+ <bd7553cd-8784-6dfd-0b51-552b49ca8eaa@pensando.io>
+ <20191212133540.3992ac0c@cakuba.netronome.com>
+In-Reply-To: <20191212133540.3992ac0c@cakuba.netronome.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=parav@mellanox.com; 
+x-originating-ip: [107.77.200.197]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: b903f1c2-1176-4986-15b5-08d77f521784
+x-ms-traffictypediagnostic: AM0PR05MB4114:
+x-microsoft-antispam-prvs: <AM0PR05MB41144BD680F1FAB59D34C105D1550@AM0PR05MB4114.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8273;
+x-forefront-prvs: 0249EFCB0B
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(39860400002)(366004)(376002)(136003)(346002)(396003)(199004)(189003)(8676002)(478600001)(110136005)(6512007)(6486002)(186003)(31686004)(81166006)(81156014)(8936002)(31696002)(26005)(316002)(71200400001)(54906003)(2906002)(5660300002)(2616005)(66946007)(86362001)(6506007)(66446008)(4326008)(36756003)(53546011)(76116006)(66556008)(64756008)(66476007);DIR:OUT;SFP:1101;SCL:1;SRVR:AM0PR05MB4114;H:AM0PR05MB4866.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: Dizp/cFPCf8xXXEiBXIIrZArJhwJIudei7UmFV/ai3IMneHRSk6btDFwhmLDoCwMP87014yBFRRDIj33eG5QZN0AvFCgxkP/M4gpW2GsHvQA1IJgLZOj02ofnbyCZeTzO6huX3Hgyhj4Q2VDUZHdFgKiFtsmjs1ws1L7jcmFBhNxvCk6TTOjoF1dMROJ8GfEOlifSoKooRInuqjjpG75ADru39FBeH5lpY02sgGWx14d5vVhj9efRIq5SU5nZ+VoYEpiTQ2OkM6Af+VUFFfV4VR5nKcCSRcjbUJ8NkepGvZF6Fasqc5SLNZlsYYYKCVp5S8Kk2QgeBs4Cs9AWSPwSffEAbiBY4HenrNz/IZZRBWW8Q5c8Y5Wd9POKATzRgy3SLYmxb5yGK0AWHmFfytTEfsOAazD7IN1s5JbnrSUoajC48ORnQb6F8Rnq/WnC8Ts
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <CEDD570EDC53004797550D7DAFE5FE4C@eurprd05.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b903f1c2-1176-4986-15b5-08d77f521784
+X-MS-Exchange-CrossTenant-originalarrivaltime: 12 Dec 2019 22:24:45.3123
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: GgbcX+U+gh1uKv3wod35cRP8OoskIRw6hhQzxADIWK/4TFuC+aztUW5mJ0xYI7xPG4TDNl/1nKigu0fczW+77g==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR05MB4114
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 12 Dec 2019 13:28:00 -0800, Alexei Starovoitov wrote:
-> On Thu, Dec 12, 2019 at 12:21:15PM -0800, Jakub Kicinski wrote:
-> > > > It can be a separate tool like
-> > > >   libbpf-skel-gen or libbpf-c-skel or something, distributed with libbpf.
-> > > >   That way you can actually soften the backward compat. In case people
-> > > >   become dependent on it they can carry that little tool on their own.    
-> > > 
-> > > Jakub,
-> > > 
-> > > Could you please consider Andrii's reply to your comment from two days ago:
-> > > https://lore.kernel.org/bpf/CAEf4BzbeZbmCTOOo2uQXjm0GL0WDu7aLN6fdUk18Nv2g0kfwVg@mail.gmail.com/
-> > > "we are trying to make users lives easier by having major distributions
-> > > distribute bpftool and libbpf properly. Adding extra binaries to
-> > > distribute around doesn't seem to be easing any of users pains."  
-> > 
-> > Last time we argued I heard how GH makes libbpf packaging easier.
-> > Only to have that dis-proven once the people in Europe who do distro
-> > packaging woke up:
-> > 
-> > https://lkml.org/lkml/2019/12/5/101
-> > https://lkml.org/lkml/2019/12/5/312  
-> 
-> I think you missed the point of these two comments. It was about packaging
-> bpftool and libbpf together. Regardless how bpftool is packaged. I still
-> strongly suggest to use github/libbpf to package libbpf. It's something that is
-> actually tested whereas libbpf in the kernel tree has unit test coverage only.
-
-I disagree.
-
-> > > My opinion is the following.
-> > > bpftool is necessary to write bpf programs already. It's necessary to produce
-> > > vmlinux.h for bpf programs to include it. It's part of build process. I can
-> > > relate to Stan's complains that he needs to update clang and pahole. He missed
-> > > the fact that he needs to update bpftool too if he wants to use all features of
-> > > CO-RE. Same thing for skeleton generation. If people need to run the latest
-> > > selftest/bpf on the latest kernel they need to upgrade to the latest clang,
-> > > pahole, libbpf, bpftool. Nothing new here.  
-> > 
-> > They have to update libbpf, so why can't the code gen tool be part of
-> > libbpf?   
-> 
-> I'm not sure why two answers were not enough.
-> No idea how to answer this question differently for the third time.
-
-I'm just presenting what I consider to be a cleaner solution.
-
-> > > Backwards compat is the same concern for skeleton generation and for vmlinux.h
-> > > generation. Obviously no one wants to introduce something that will keep
-> > > changing. Is vmlinux.h generation stable? I like to believe so. Same with
-> > > skeleton. I wouldn't want to see it changing, but in both cases such chance
-> > > exists.   
-> > 
-> > vmlinux.h is pretty stable, there isn't much wiggle room there.  
-> 
-> Do you have experience working with vmlinux.h? I bet the answer is no.
-> While we have and identified few things that needs improvement.
-> They require vmlinux.h to be generated differently.
-> 
-> > It's more of a conversion tool, if you will.
-> > 
-> > Skeleton OTOH is supposed to make people's lives easier, so it's a
-> > completely different beast. It should be malleable so that users can
-> > improve and hack on it. Baking it into as system tool is counter
-> > productive. Users should be able to grab the skel tool single-file
-> > source and adjust for their project's needs. Distributing your own copy
-> > of bpftool because you want to adjust skel is a heavy lift.  
-> 
-> Adjust generator for their custom needs? essentially fork it for
-> private use? I'd rather prevent such possibility.
-> When people start using it I'd prefer they come back to this mailing
-> list with patches than do 'easy fork'.
-> 
-> > > Now consider if vmlinux.h and skeleton generation is split out of bpftool into
-> > > new tool. Effectively it would mean a fork of bpftool. Two binaries doing bpf
-> > > elf file processing without clear distinction between them is going to be very
-> > > confusing.  
-> > 
-> > To be clear I'm suggesting skel gen is a separate tool, vmlinux and
-> > Quentin's header gen work on the running system, they are not pure
-> > build env tools.  
-> 
-> You meant to say Andrii's header generator that is based on Quentin's man page
-> generator. Its output bpf_helper_defs.h makes sense as a part of libbpf
-> package. The generator script itself doesn't need to be included with any package.
-> bpftool vmlinux gen consumes vmlinux elf files and is a part of the build.
-> bpftool skeleton gen consumes bpf elf files and is a part of the same build.
-
-I said what I meant to say tools/bpf/bpftool/feature.c
+T24gMTIvMTIvMjAxOSAzOjM1IFBNLCBKYWt1YiBLaWNpbnNraSB3cm90ZToNCj4gT24gVGh1LCAx
+MiBEZWMgMjAxOSAxMTo1OTo1MCAtMDgwMCwgU2hhbm5vbiBOZWxzb24gd3JvdGU6DQo+PiBPbiAx
+Mi8xMi8xOSAxMTo1MiBBTSwgSmFrdWIgS2ljaW5za2kgd3JvdGU6DQo+Pj4gT24gVGh1LCAxMiBE
+ZWMgMjAxOSAwNjo1Mzo0MiArMDAwMCwgUGFyYXYgUGFuZGl0IHdyb3RlOiAgDQo+Pj4+PiAgIHN0
+YXRpYyB2b2lkIGlvbmljX3JlbW92ZShzdHJ1Y3QgcGNpX2RldiAqcGRldikNCj4+Pj4+ICAgew0K
+Pj4+Pj4gICAJc3RydWN0IGlvbmljICppb25pYyA9IHBjaV9nZXRfZHJ2ZGF0YShwZGV2KTsNCj4+
+Pj4+IEBAIC0yNTcsNiArMzM4LDkgQEAgc3RhdGljIHZvaWQgaW9uaWNfcmVtb3ZlKHN0cnVjdCBw
+Y2lfZGV2ICpwZGV2KQ0KPj4+Pj4gICAJaWYgKCFpb25pYykNCj4+Pj4+ICAgCQlyZXR1cm47DQo+
+Pj4+PiAgIA0KPj4+Pj4gKwlpZiAocGNpX251bV92ZihwZGV2KSkNCj4+Pj4+ICsJCWlvbmljX3Ny
+aW92X2NvbmZpZ3VyZShwZGV2LCAwKTsNCj4+Pj4+ICsgIA0KPj4+PiBVc3VhbGx5IHNyaW92IGlz
+IGxlZnQgZW5hYmxlZCB3aGlsZSByZW1vdmluZyBQRi4NCj4+Pj4gSXQgaXMgbm90IHRoZSByb2xl
+IG9mIHRoZSBwY2kgUEYgcmVtb3ZhbCB0byBkaXNhYmxlIGl0IHNyaW92LiAgDQo+Pj4gSSBkb24n
+dCB0aGluayB0aGF0J3MgdHJ1ZS4gSSBjb25zaWRlciBpZ2IgYW5kIGl4Z2JlIHRvIHNldCB0aGUg
+c3RhbmRhcmQNCj4+PiBmb3IgbGVnYWN5IFNSLUlPViBoYW5kbGluZyBzaW5jZSB0aGV5IHdlcmUg
+b25lIG9mIHRoZSBmaXJzdCAodGhlIGZpcnN0PykNCj4+PiBhbmQgQWxleCBEdXljayB3cm90ZSB0
+aGVtLg0KPj4+DQo+Pj4gbWx4NCwgYm54dCBhbmQgbmZwIGFsbCBkaXNhYmxlIFNSLUlPViBvbiBy
+ZW1vdmUuICANCj4+DQo+PiBUaGlzIHdhcyBteSB1bmRlcnN0YW5kaW5nIGFzIHdlbGwsIGJ1dCBu
+b3cgSSBjYW4gc2VlIHRoYXQgaXhnYmUgYW5kIGk0MGUgDQo+PiBhcmUgYm90aCBjaGVja2luZyBm
+b3IgZXhpc3RpbmcgVkZzIGluIHByb2JlIGFuZCBzZXR0aW5nIHVwIHRvIHVzZSB0aGVtLCANCj4+
+IGFzIHdlbGwgYXMgdGhlIG5ld2VyIGljZSBkcml2ZXIuwqAgSSBmb3VuZCB0aGlzIHRvZGF5IGJ5
+IGxvb2tpbmcgZm9yIA0KPj4gd2hlcmUgdGhleSB1c2UgcGNpX251bV92ZigpLg0KPiANCj4gUmln
+aHQsIGlmIHRoZSBWRnMgdmVyeSBhbHJlYWR5IGVuYWJsZWQgb24gcHJvYmUgdGhleSBhcmUgc2V0
+IHVwLg0KPiANCj4gSXQncyBhIGJpdCBvZiBhIGFzeW1tZXRyaWMgZGVzaWduLCBpbiBjYXNlIHNv
+bWUgb3RoZXIgZHJpdmVyIGxlZnQNCj4gU1ItSU9WIG9uLCBJIGd1ZXNzLg0KPiANCg0KSSByZW1l
+bWJlciBvbiBvbmUgZW1haWwgdGhyZWFkIG9uIG5ldGRldiBsaXN0IGZyb20gc29tZW9uZSB0aGF0
+IGluIG9uZQ0KdXNlIGNhc2UsIHRoZXkgdXBncmFkZSB0aGUgUEYgZHJpdmVyIHdoaWxlIFZGcyBh
+cmUgc3RpbGwgYm91bmQgYW5kDQpTUi1JT1Yga2VwdCBlbmFibGVkLg0KSSBhbSBub3Qgc3VyZSBo
+b3cgbXVjaCBpdCBpcyB1c2VkIGluIHByYWN0aWNlL29yIHByYWN0aWNhbC4NClN1Y2ggdXNlIGNh
+c2UgbWF5IGJlIHRoZSByZWFzb24gdG8ga2VlcCBTUi1JT1YgZW5hYmxlZC4NCg==
