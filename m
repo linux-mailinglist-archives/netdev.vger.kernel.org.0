@@ -2,124 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7DD6C11C5F0
-	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 07:28:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4170911C606
+	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 07:40:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727899AbfLLG2E (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Dec 2019 01:28:04 -0500
-Received: from mail.windriver.com ([147.11.1.11]:33403 "EHLO
-        mail.windriver.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727592AbfLLG2E (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Dec 2019 01:28:04 -0500
-Received: from ALA-HCA.corp.ad.wrs.com (ala-hca.corp.ad.wrs.com [147.11.189.40])
-        by mail.windriver.com (8.15.2/8.15.2) with ESMTPS id xBC6RfSb021450
-        (version=TLSv1 cipher=AES256-SHA bits=256 verify=FAIL);
-        Wed, 11 Dec 2019 22:27:41 -0800 (PST)
-Received: from [128.224.155.90] (128.224.155.90) by ALA-HCA.corp.ad.wrs.com
- (147.11.189.50) with Microsoft SMTP Server (TLS) id 14.3.468.0; Wed, 11 Dec
- 2019 22:27:40 -0800
-Subject: Re: [tipc-discussion] [PATCH net/tipc] Replace rcu_swap_protected()
- with rcu_replace_pointer()
-To:     <paulmck@kernel.org>
-CC:     Tuong Lien Tong <tuong.t.lien@dektech.com.au>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <mingo@kernel.org>, <tipc-discussion@lists.sourceforge.net>,
-        <kernel-team@fb.com>, <torvalds@linux-foundation.org>,
-        <davem@davemloft.net>
-References: <20191210033146.GA32522@paulmck-ThinkPad-P72>
- <0e565b68-ece1-5ae6-bb5d-710163fb8893@windriver.com>
- <20191210223825.GS2889@paulmck-ThinkPad-P72>
- <54112a30-de24-f6b2-b02e-05bc7d567c57@windriver.com>
- <707801d5afc6$cac68190$605384b0$@dektech.com.au>
- <db88d33f-8e25-8859-84ec-3372a108c759@windriver.com>
- <20191211184609.GI2889@paulmck-ThinkPad-P72>
-From:   Ying Xue <ying.xue@windriver.com>
-Message-ID: <58df887e-cfb5-37fd-6c06-d5f98449edd5@windriver.com>
-Date:   Thu, 12 Dec 2019 14:14:20 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        id S1728029AbfLLGjL convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 12 Dec 2019 01:39:11 -0500
+Received: from youngberry.canonical.com ([91.189.89.112]:40389 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727937AbfLLGjL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Dec 2019 01:39:11 -0500
+Received: from 1.general.jvosburgh.us.vpn ([10.172.68.206] helo=famine.localdomain)
+        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <jay.vosburgh@canonical.com>)
+        id 1ifI6y-0003S6-Js; Thu, 12 Dec 2019 06:38:09 +0000
+Received: by famine.localdomain (Postfix, from userid 1000)
+        id E05596C567; Wed, 11 Dec 2019 22:38:06 -0800 (PST)
+Received: from famine (localhost [127.0.0.1])
+        by famine.localdomain (Postfix) with ESMTP id D8973AC1CC;
+        Wed, 11 Dec 2019 22:38:06 -0800 (PST)
+From:   Jay Vosburgh <jay.vosburgh@canonical.com>
+To:     =?us-ascii?Q?=3D=3FUTF-8=3FB=3FTWFoZXNoIEJhbmRld2FyICjgpK7gpLngpYfgpLY?=
+         =?us-ascii?Q?g4KSs4KSC4KSh4KWH4KS14KS+4KSwKQ=3D=3D=3F=3D?= 
+        <maheshb@google.com>
+cc:     Andy Gospodarek <andy@greyhouse.net>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        Netdev <netdev@vger.kernel.org>,
+        Mahesh Bandewar <mahesh@bandewar.net>
+Subject: Re: [PATCH net] bonding: fix active-backup transition after link failure
+In-reply-to: <CAF2d9jgjeky0eMgwFZKHO_RLTBNstH1gCq4hn1FfO=TtrMP1ow@mail.gmail.com>
+References: <20191206234455.213159-1-maheshb@google.com> <10902.1575756592@famine> <CAF2d9jgjeky0eMgwFZKHO_RLTBNstH1gCq4hn1FfO=TtrMP1ow@mail.gmail.com>
+Comments: In-reply-to =?us-ascii?Q?=3D=3FUTF-8=3FB=3FTWFoZXNoIEJhbmRld2FyI?=
+ =?us-ascii?Q?CjgpK7gpLngpYfgpLYg4KSs4KSC4KSh4KWH4KS14KS+4KSwKQ=3D=3D=3F?=
+ =?us-ascii?Q?=3D?= <maheshb@google.com>
+   message dated "Mon, 09 Dec 2019 10:41:28 -0800."
+X-Mailer: MH-E 8.6+git; nmh 1.6; GNU Emacs 27.0.50
 MIME-Version: 1.0
-In-Reply-To: <20191211184609.GI2889@paulmck-ThinkPad-P72>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [128.224.155.90]
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8BIT
+Date:   Wed, 11 Dec 2019 22:38:06 -0800
+Message-ID: <26918.1576132686@famine>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/12/19 2:46 AM, Paul E. McKenney wrote:
-> On Wed, Dec 11, 2019 at 12:42:00PM +0800, Ying Xue wrote:
->> On 12/11/19 10:00 AM, Tuong Lien Tong wrote:
->>>>  
->>>>  	/* Move passive key if any */
->>>>  	if (key.passive) {
->>>> -		tipc_aead_rcu_swap(rx->aead[key.passive], tmp2, &rx->lock);
->>>> +		tmp2 = rcu_replace_pointer(rx->aead[key.passive], tmp2,
->>> &rx->lock);
->>> The 3rd parameter should be the lockdep condition checking instead of the
->>> spinlock's pointer i.e. "lockdep_is_held(&rx->lock)"?
->>> That's why I'd prefer to use the 'tipc_aead_rcu_swap ()' macro, which is
->>> clear & concise at least for the context here. It might be re-used later as
->>> well...
->>>
+Mahesh Bandewar (महेश बंडेवार) wrote:
+
+>On Sat, Dec 7, 2019 at 2:09 PM Jay Vosburgh <jay.vosburgh@canonical.com> wrote:
 >>
->> Right. The 3rd parameter of rcu_replace_pointer() should be
->> "lockdep_is_held(&rx->lock)" instead of "&rx->lock".
-> 
-> Like this?
+>> Mahesh Bandewar <maheshb@google.com> wrote:
+>>
+>> >After the recent fix 1899bb325149 ("bonding: fix state transition
+>> >issue in link monitoring"), the active-backup mode with miimon
+>> >initially come-up fine but after a link-failure, both members
+>> >transition into backup state.
+>> >
+>> >Following steps to reproduce the scenario (eth1 and eth2 are the
+>> >slaves of the bond):
+>> >
+>> >    ip link set eth1 up
+>> >    ip link set eth2 down
+>> >    sleep 1
+>> >    ip link set eth2 up
+>> >    ip link set eth1 down
+>> >    cat /sys/class/net/eth1/bonding_slave/state
+>> >    cat /sys/class/net/eth2/bonding_slave/state
+>> >
+>> >Fixes: 1899bb325149 ("bonding: fix state transition issue in link monitoring")
+>> >CC: Jay Vosburgh <jay.vosburgh@canonical.com>
+>> >Signed-off-by: Mahesh Bandewar <maheshb@google.com>
+>> >---
+>> > drivers/net/bonding/bond_main.c | 3 ---
+>> > 1 file changed, 3 deletions(-)
+>> >
+>> >diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
+>> >index fcb7c2f7f001..ad9906c102b4 100644
+>> >--- a/drivers/net/bonding/bond_main.c
+>> >+++ b/drivers/net/bonding/bond_main.c
+>> >@@ -2272,9 +2272,6 @@ static void bond_miimon_commit(struct bonding *bond)
+>> >                       } else if (BOND_MODE(bond) != BOND_MODE_ACTIVEBACKUP) {
+>> >                               /* make it immediately active */
+>> >                               bond_set_active_slave(slave);
+>> >-                      } else if (slave != primary) {
+>> >-                              /* prevent it from being the active one */
+>> >-                              bond_set_backup_slave(slave);
+>>
+>>         How does this fix things?  Doesn't bond_select_active_slave() ->
+>> bond_change_active_slave() set the backup flag correctly via a call to
+>> bond_set_slave_active_flags() when it sets a slave to be the active
+>> slave?  If this change resolves the problem, I'm not sure how this ever
+>> worked correctly, even prior to 1899bb325149.
+>>
+>Hi Jay, I used kprobes to figure out the brokenness this patch fixes.
+>Prior to your patch this call would not happen but with the patch,
+>this extra call will put the master into the backup mode erroneously
+>(in fact both members would be in backup state). The mechanics you
+>have mentioned works correctly except that in the prior case, the
+>switch statement was using new_link which was not same as
+>link_new_state. The miimon_inspect will update new_link which is what
+>was used in miimon_commit code. The link_new_state was used only to
+>mitigate the rtnl-lock issue which would update the "link". Hence in
+>the prior code, this path would never get executed.
 
-Yes, I think it's better to set the 3rd parameter of
-rcu_replace_pointer() with "lockdep_is_held(&rx->lock)".
+	I'm looking at the old code (prior to 1899bb325149), and I don't
+see a path to what you're describing for the down to up transition in
+active-backup mode.
 
-> 
-> 							Thanx, Paul
-> 
-> ------------------------------------------------------------------------
-> 
-> commit 575bb4ba1b22383656760feb3d122e11656ccdfd
-> Author: Paul E. McKenney <paulmck@kernel.org>
-> Date:   Mon Dec 9 19:13:45 2019 -0800
-> 
->     net/tipc: Replace rcu_swap_protected() with rcu_replace_pointer()
->     
->     This commit replaces the use of rcu_swap_protected() with the more
->     intuitively appealing rcu_replace_pointer() as a step towards removing
->     rcu_swap_protected().
->     
->     Link: https://lore.kernel.org/lkml/CAHk-=wiAsJLw1egFEE=Z7-GGtM6wcvtyytXZA1+BHqta4gg6Hw@mail.gmail.com/
->     Reported-by: Linus Torvalds <torvalds@linux-foundation.org>
->     Reported-by: kbuild test robot <lkp@intel.com>
->     Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
->     [ paulmck: Updated based on Ying Xue and Tuong Lien Tong feedback. ]
->     Cc: Jon Maloy <jon.maloy@ericsson.com>
->     Cc: Ying Xue <ying.xue@windriver.com>
->     Cc: "David S. Miller" <davem@davemloft.net>
->     Cc: <netdev@vger.kernel.org>
->     Cc: <tipc-discussion@lists.sourceforge.net>
-> 
-> diff --git a/net/tipc/crypto.c b/net/tipc/crypto.c
-> index 990a872..c8c47fc 100644
-> --- a/net/tipc/crypto.c
-> +++ b/net/tipc/crypto.c
-> @@ -257,9 +257,6 @@ static char *tipc_key_change_dump(struct tipc_key old, struct tipc_key new,
->  #define tipc_aead_rcu_ptr(rcu_ptr, lock)				\
->  	rcu_dereference_protected((rcu_ptr), lockdep_is_held(lock))
->  
-> -#define tipc_aead_rcu_swap(rcu_ptr, ptr, lock)				\
-> -	rcu_swap_protected((rcu_ptr), (ptr), lockdep_is_held(lock))
-> -
->  #define tipc_aead_rcu_replace(rcu_ptr, ptr, lock)			\
->  do {									\
->  	typeof(rcu_ptr) __tmp = rcu_dereference_protected((rcu_ptr),	\
-> @@ -1189,7 +1186,7 @@ static bool tipc_crypto_key_try_align(struct tipc_crypto *rx, u8 new_pending)
->  
->  	/* Move passive key if any */
->  	if (key.passive) {
-> -		tipc_aead_rcu_swap(rx->aead[key.passive], tmp2, &rx->lock);
-> +		tmp2 = rcu_replace_pointer(rx->aead[key.passive], tmp2, lockdep_is_held(&rx->lock));
->  		x = (key.passive - key.pending + new_pending) % KEY_MAX;
->  		new_passive = (x <= 0) ? x + KEY_MAX : x;
->  	}
-> 
+bond_miimon_inspect enters switch, slave->link == BOND_LINK_DOWN.
+
+link_state is nonzero, call bond_propose_link_state(BOND_LINK_BACK),
+which sets slave->link_new_state to _BACK.
+
+Fall through to BOND_LINK_BACK case, set slave->new_link = BOND_LINK_UP
+
+bond_mii_monitor then calls bond_commit_link_state, which sets
+slave->link to BOND_LINK_BACK
+
+Enter bond_miimon_commit switch (new_link), which is BOND_LINK_UP
+
+In "case BOND_LINK_UP:" there is no way out of this block, and it should
+proceed to call bond_set_backup_slave for active-backup mode every time.
+
+>The steps to reproduce this issue is straightforward and happens 100%
+>of the time (I used two mlx interfaces but that shouldn't matter).
+
+	Yes, I've been able to reproduce it locally (with igb, FWIW).  I
+think the patch is likely ok, I'm just mystified as to how the backup
+setting could have worked prior to 1899bb325149, so perhaps the Fixes
+tag doesn't go back far enough.
+
+	-J
+
+>thanks,
+>--mahesh..
+>>         -J
+>>
+>> >                       }
+>> >
+>> >                       slave_info(bond->dev, slave->dev, "link status definitely up, %u Mbps %s duplex\n",
+>> >--
+>> >2.24.0.393.g34dc348eaf-goog
+
+---
+	-Jay Vosburgh, jay.vosburgh@canonical.com
