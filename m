@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D7BF11C247
-	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 02:36:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B34B311C249
+	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 02:36:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727589AbfLLBgD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Dec 2019 20:36:03 -0500
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:58296 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727443AbfLLBgD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Dec 2019 20:36:03 -0500
-Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xBC1YWln014605
-        for <netdev@vger.kernel.org>; Wed, 11 Dec 2019 17:36:01 -0800
+        id S1727564AbfLLBgO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Dec 2019 20:36:14 -0500
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:62972 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727469AbfLLBgN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Dec 2019 20:36:13 -0500
+Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
+        by m0089730.ppops.net (8.16.0.42/8.16.0.42) with SMTP id xBC1Yh47022335
+        for <netdev@vger.kernel.org>; Wed, 11 Dec 2019 17:36:12 -0800
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
  : date : message-id : mime-version : content-type; s=facebook;
- bh=L4cf5DQw0E46IuWw2ojsLJcqyot2tp0OdPGHHJGSdAg=;
- b=ICD5ufMfANvIuj9L44rOfIO9NEuk/Cj4Mp9VaInbcPiSPD8yfSHPDe89csc1UUn0GPRm
- mYKNW/awzLm0CMHoamWQ7TcOCfmEaX9KJLQT8NzYDzjG96/qaJ5NczLVVdCe1DfyUc0V
- cpno0yKJHzZzWNytxteBIsDv84gdKVtVrfw= 
+ bh=q2yXvwQlWtQh556GVbO35lfheFRkkaZdBIVAVVg+UUo=;
+ b=rDGznlTqjXyuoNKEWCivpeYWUsVRl7o1i4p+xhL0a8TMC+X4NyAhllHzxBGZ4hENddqe
+ 2nde3sQHYRulHulKblBa7VC5E5HXDnwh8/ycUTVIIcJDFenTD+jxAEGBEDiLOQmW0hE2
+ SDeAh1AcSijvQNoMqUgR3eiDmQJvam4mleE= 
 Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 2wu2gf2p8n-1
+        by m0089730.ppops.net with ESMTP id 2wtpnencsx-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 11 Dec 2019 17:36:01 -0800
-Received: from intmgw002.05.ash5.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:83::7) with Microsoft SMTP Server
+        for <netdev@vger.kernel.org>; Wed, 11 Dec 2019 17:36:12 -0800
+Received: from intmgw005.05.ash5.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:83::6) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Wed, 11 Dec 2019 17:36:00 -0800
+ 15.1.1713.5; Wed, 11 Dec 2019 17:36:11 -0800
 Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
-        id 80C342EC1A0E; Wed, 11 Dec 2019 17:36:00 -0800 (PST)
+        id D46A12EC1A0E; Wed, 11 Dec 2019 17:36:10 -0800 (PST)
 Smtp-Origin-Hostprefix: devbig
 From:   Andrii Nakryiko <andriin@fb.com>
 Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
@@ -38,118 +38,136 @@ To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
 CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
         Andrii Nakryiko <andriin@fb.com>
 Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH bpf-next 2/4] selftests/bpf: add CPU mask parsing tests
-Date:   Wed, 11 Dec 2019 17:35:58 -0800
-Message-ID: <20191212013559.1690898-1-andriin@fb.com>
+Subject: [PATCH bpf-next 3/4] libbpf: don't attach perf_buffer to offline/missing CPUs
+Date:   Wed, 11 Dec 2019 17:36:09 -0800
+Message-ID: <20191212013609.1691168-1-andriin@fb.com>
 X-Mailer: git-send-email 2.17.1
 X-FB-Internal: Safe
 MIME-Version: 1.0
 Content-Type: text/plain
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
  definitions=2019-12-11_07:2019-12-11,2019-12-11 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxscore=0 adultscore=0
- bulkscore=0 suspectscore=25 priorityscore=1501 impostorscore=0
- malwarescore=0 lowpriorityscore=0 spamscore=0 clxscore=1015
- mlxlogscore=999 phishscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-1910280000 definitions=main-1912120004
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 adultscore=0
+ clxscore=1015 suspectscore=25 phishscore=0 mlxlogscore=999 mlxscore=0
+ spamscore=0 impostorscore=0 lowpriorityscore=0 bulkscore=0 malwarescore=0
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-1910280000 definitions=main-1912120004
 X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a bunch of test validating CPU mask parsing logic and error handling.
+It's quite common on some systems to have more CPUs enlisted as "possible",
+than there are (and could ever be) present/online CPUs. In such cases,
+perf_buffer creationg will fail due to inability to create perf event on
+missing CPU with error like this:
 
+libbpf: failed to open perf buffer event on cpu #16: No such device
+
+This patch fixes the logic of perf_buffer__new() to ignore CPUs that are
+missing or currently offline. In rare cases where user explicitly listed
+specific CPUs to connect to, behavior is unchanged: libbpf will try to open
+perf event buffer on specified CPU(s) anyways.
+
+Fixes: fb84b8224655 ("libbpf: add perf buffer API")
 Signed-off-by: Andrii Nakryiko <andriin@fb.com>
 ---
- .../selftests/bpf/prog_tests/cpu_mask.c       | 78 +++++++++++++++++++
- 1 file changed, 78 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/cpu_mask.c
+ tools/lib/bpf/libbpf.c | 32 +++++++++++++++++++++++++-------
+ 1 file changed, 25 insertions(+), 7 deletions(-)
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/cpu_mask.c b/tools/testing/selftests/bpf/prog_tests/cpu_mask.c
-new file mode 100644
-index 000000000000..1fa1bdbaffa9
---- /dev/null
-+++ b/tools/testing/selftests/bpf/prog_tests/cpu_mask.c
-@@ -0,0 +1,78 @@
-+// SPDX-License-Identifier: GPL-2.0
-+#include <test_progs.h>
-+#include <bpf/btf.h>
-+#include "libbpf_internal.h"
-+
-+static int duration = 0;
-+
-+static void validate_mask(int case_nr, const char *exp, bool *mask, int n)
-+{
-+	int i;
-+
-+	for (i = 0; exp[i]; i++) {
-+		if (exp[i] == '1') {
-+			if (CHECK(i + 1 > n, "mask_short",
-+				  "case #%d: mask too short, got n=%d, need at least %d\n",
-+				  case_nr, n, i + 1))
-+				return;
-+			CHECK(!mask[i], "cpu_not_set",
-+			      "case #%d: mask differs, expected cpu#%d SET\n",
-+			      case_nr, i);
-+		} else {
-+			CHECK(i < n && mask[i], "cpu_set",
-+			      "case #%d: mask differs, expected cpu#%d UNSET\n",
-+			      case_nr, i);
-+		}
+diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+index b761d8636026..1bb63961d2ce 100644
+--- a/tools/lib/bpf/libbpf.c
++++ b/tools/lib/bpf/libbpf.c
+@@ -5944,7 +5944,7 @@ struct perf_buffer {
+ 	size_t mmap_size;
+ 	struct perf_cpu_buf **cpu_bufs;
+ 	struct epoll_event *events;
+-	int cpu_cnt;
++	int cpu_cnt; /* number of allocated CPU buffers */
+ 	int epoll_fd; /* perf event FD */
+ 	int map_fd; /* BPF_MAP_TYPE_PERF_EVENT_ARRAY BPF map FD */
+ };
+@@ -6078,11 +6078,13 @@ perf_buffer__new_raw(int map_fd, size_t page_cnt,
+ static struct perf_buffer *__perf_buffer__new(int map_fd, size_t page_cnt,
+ 					      struct perf_buffer_params *p)
+ {
++	const char *online_cpus_file = "/sys/devices/system/cpu/online";
+ 	struct bpf_map_info map = {};
+ 	char msg[STRERR_BUFSIZE];
+ 	struct perf_buffer *pb;
++	bool *online = NULL;
+ 	__u32 map_info_len;
+-	int err, i;
++	int err, i, j, n;
+ 
+ 	if (page_cnt & (page_cnt - 1)) {
+ 		pr_warn("page count should be power of two, but is %zu\n",
+@@ -6151,20 +6153,32 @@ static struct perf_buffer *__perf_buffer__new(int map_fd, size_t page_cnt,
+ 		goto error;
+ 	}
+ 
+-	for (i = 0; i < pb->cpu_cnt; i++) {
++	err = parse_cpu_mask_file(online_cpus_file, &online, &n);
++	if (err) {
++		pr_warn("failed to get online CPU mask: %d\n", err);
++		goto error;
 +	}
-+	CHECK(i < n, "mask_long",
-+	      "case #%d: mask too long, got n=%d, expected at most %d\n",
-+	      case_nr, n, i);
-+}
 +
-+static struct {
-+	const char *cpu_mask;
-+	const char *expect;
-+	bool fails;
-+} test_cases[] = {
-+	{ "0\n", "1", false },
-+	{ "0,2\n", "101", false },
-+	{ "0-2\n", "111", false },
-+	{ "0-2,3-4\n", "11111", false },
-+	{ "0", "1", false },
-+	{ "0-2", "111", false },
-+	{ "0,2", "101", false },
-+	{ "0,1-3", "1111", false },
-+	{ "0,1,2,3", "1111", false },
-+	{ "0,2-3,5", "101101", false },
-+	{ "3-3", "0001", false },
-+	{ "2-4,6,9-10", "00111010011", false },
-+	/* failure cases */
-+	{ "", "", true },
-+	{ "0-", "", true },
-+	{ "0 ", "", true },
-+	{ "0_1", "", true },
-+	{ "1-0", "", true },
-+	{ "-1", "", true },
-+};
++	for (i = 0, j = 0; i < pb->cpu_cnt; i++) {
+ 		struct perf_cpu_buf *cpu_buf;
+ 		int cpu, map_key;
+ 
+ 		cpu = p->cpu_cnt > 0 ? p->cpus[i] : i;
+ 		map_key = p->cpu_cnt > 0 ? p->map_keys[i] : i;
+ 
++		/* in case user didn't explicitly requested particular CPUs to
++		 * be attached to, skip offline/not present CPUs
++		 */
++		if (p->cpu_cnt <= 0 && (cpu >= n || !online[cpu]))
++			continue;
 +
-+void test_cpu_mask()
-+{
-+	int i, err, n;
-+	bool *mask;
-+
-+	for (i = 0; i < ARRAY_SIZE(test_cases); i++) {
-+		mask = NULL;
-+		err = parse_cpu_mask_str(test_cases[i].cpu_mask, &mask, &n);
-+		if (test_cases[i].fails) {
-+			CHECK(!err, "should_fail",
-+			      "case #%d: parsing should fail!\n", i + 1);
-+		} else {
-+			if (CHECK(err, "parse_err",
-+				  "case #%d: cpu mask parsing failed: %d\n",
-+				  i + 1, err))
-+				continue;
-+			validate_mask(i + 1, test_cases[i].expect, mask, n);
-+		}
-+		free(mask);
-+	}
-+}
+ 		cpu_buf = perf_buffer__open_cpu_buf(pb, p->attr, cpu, map_key);
+ 		if (IS_ERR(cpu_buf)) {
+ 			err = PTR_ERR(cpu_buf);
+ 			goto error;
+ 		}
+ 
+-		pb->cpu_bufs[i] = cpu_buf;
++		pb->cpu_bufs[j] = cpu_buf;
+ 
+ 		err = bpf_map_update_elem(pb->map_fd, &map_key,
+ 					  &cpu_buf->fd, 0);
+@@ -6176,21 +6190,25 @@ static struct perf_buffer *__perf_buffer__new(int map_fd, size_t page_cnt,
+ 			goto error;
+ 		}
+ 
+-		pb->events[i].events = EPOLLIN;
+-		pb->events[i].data.ptr = cpu_buf;
++		pb->events[j].events = EPOLLIN;
++		pb->events[j].data.ptr = cpu_buf;
+ 		if (epoll_ctl(pb->epoll_fd, EPOLL_CTL_ADD, cpu_buf->fd,
+-			      &pb->events[i]) < 0) {
++			      &pb->events[j]) < 0) {
+ 			err = -errno;
+ 			pr_warn("failed to epoll_ctl cpu #%d perf FD %d: %s\n",
+ 				cpu, cpu_buf->fd,
+ 				libbpf_strerror_r(err, msg, sizeof(msg)));
+ 			goto error;
+ 		}
++		j++;
+ 	}
++	pb->cpu_cnt = j;
++	free(online);
+ 
+ 	return pb;
+ 
+ error:
++	free(online);
+ 	if (pb)
+ 		perf_buffer__free(pb);
+ 	return ERR_PTR(err);
 -- 
 2.17.1
 
