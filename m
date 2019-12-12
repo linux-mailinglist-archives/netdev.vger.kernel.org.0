@@ -2,174 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 403F711D6CA
-	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 20:06:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 92DAE11D6CC
+	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 20:07:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730234AbfLLTGo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Dec 2019 14:06:44 -0500
-Received: from guitar.tcltek.co.il ([192.115.133.116]:36337 "EHLO
-        mx.tkos.co.il" rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730096AbfLLTGo (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 12 Dec 2019 14:06:44 -0500
-Received: from sapphire.tkos.co.il (unknown [192.168.100.188])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx.tkos.co.il (Postfix) with ESMTPS id C089D440406;
-        Thu, 12 Dec 2019 21:06:23 +0200 (IST)
-Date:   Thu, 12 Dec 2019 21:06:40 +0200
-From:   Baruch Siach <baruch@tkos.co.il>
-To:     Marek Behun <marek.behun@nic.cz>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        netdev@vger.kernel.org,
-        Denis Odintsov <d.odintsov@traviangames.com>,
-        Hubert Feurstein <h.feurstein@gmail.com>
-Subject: Re: [BUG] mv88e6xxx: tx regression in v5.3
-Message-ID: <20191212190640.6vki2pjfacdnxihh@sapphire.tkos.co.il>
-References: <87tv67tcom.fsf@tarshish>
- <20191211131111.GK16369@lunn.ch>
- <87fthqu6y6.fsf@tarshish>
- <20191211174938.GB30053@lunn.ch>
- <20191212085045.nqhfldkbebqzzamv@sapphire.tkos.co.il>
- <20191212131448.GA9959@lunn.ch>
- <20191212150810.zx6o26jnk5croh4r@sapphire.tkos.co.il>
- <20191212151355.GE30053@lunn.ch>
- <20191212152355.iiepmi4cjriddeon@sapphire.tkos.co.il>
- <20191212193611.63111051@nic.cz>
+        id S1730376AbfLLTHF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Dec 2019 14:07:05 -0500
+Received: from frisell.zx2c4.com ([192.95.5.64]:35121 "EHLO frisell.zx2c4.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730096AbfLLTHE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 12 Dec 2019 14:07:04 -0500
+Received: by frisell.zx2c4.com (ZX2C4 Mail Server) with ESMTP id 58c28a01;
+        Thu, 12 Dec 2019 18:11:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=zx2c4.com; h=mime-version
+        :references:in-reply-to:from:date:message-id:subject:to:cc
+        :content-type; s=mail; bh=Gap4hyb3YJho4i7tIDDW6ea2M7E=; b=GfeDyC
+        oTdom0f29bx7WQEfihXhBCQdSLOdasAvB0dalfeNHjtmMQm89xwF6KrDQJ3gwZ7l
+        chCkqbktrtUApPCE84fiRUalcI0PiIzvLmdGXpFf7Ao2wC9WKvbmdP8tRA75jhPI
+        jENw/TCtpC1ZR/yxQiEhJhRUGS+2rJV0+KVyRr03hmhfUNQQPrTsYAKlN15U9XPN
+        /CUYpZImVbfa7nFvkLjUTpwcUgXo6u3GQ01mcwPQeAicwi85FWduCEkPhz5MrEqc
+        kwFw5NPSSUh6VoY6raDbQuEwkyoRRX0XCAzZt2PTCqda7bHQpbDwFeJJtHZNBhvU
+        HCkuKEDj7IddxaFw==
+Received: by frisell.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id c4395c53 (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256:NO);
+        Thu, 12 Dec 2019 18:11:13 +0000 (UTC)
+Received: by mail-ot1-f45.google.com with SMTP id d17so3124526otc.0;
+        Thu, 12 Dec 2019 11:07:02 -0800 (PST)
+X-Gm-Message-State: APjAAAWc+kkh3Do9yUbgNuTwjg8nQS9x2Y06mD2aMiT6DsD0xJxw29Gb
+        rizHw9CJtC5OkAc2qIgFrmc+bGxMEYmOGgEv7HM=
+X-Google-Smtp-Source: APXvYqxCKAGJ2V7i7Z038u/aSejmowoq1mmb2+5F30wgv9JmKhhntQi57wRLGO7+Adc9XeyCGdQX/971aGYA9LxcTVo=
+X-Received: by 2002:a05:6830:1b6a:: with SMTP id d10mr10174984ote.52.1576177621494;
+ Thu, 12 Dec 2019 11:07:01 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191212193611.63111051@nic.cz>
+References: <20191212091527.35293-1-yuehaibing@huawei.com> <20191212.105258.579549471896891617.davem@davemloft.net>
+In-Reply-To: <20191212.105258.579549471896891617.davem@davemloft.net>
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date:   Thu, 12 Dec 2019 20:06:50 +0100
+X-Gmail-Original-Message-ID: <CAHmME9osYEbi1BDmJL=4N+A1rbb7_MPqVijogHSFhU39rRCbdw@mail.gmail.com>
+Message-ID: <CAHmME9osYEbi1BDmJL=4N+A1rbb7_MPqVijogHSFhU39rRCbdw@mail.gmail.com>
+Subject: Re: [PATCH net-next] net: Remove unused including <linux/version.h>
+To:     David Miller <davem@davemloft.net>
+Cc:     YueHaibing <yuehaibing@huawei.com>,
+        WireGuard mailing list <wireguard@lists.zx2c4.com>,
+        Netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        kernel-janitors@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Marek,
+Hi Dave,
 
-On Thu, Dec 12, 2019 at 07:36:11PM +0100, Marek Behun wrote:
-> On Thu, 12 Dec 2019 17:23:55 +0200
-> Baruch Siach <baruch@tkos.co.il> wrote:
-> > 
-> > On Thu, Dec 12, 2019 at 04:13:55PM +0100, Andrew Lunn wrote:
-> > > > I compared phylib to phylink calls to mv88e6xxx_port_setup_mac(). It turns out 
-> > > > that the phylink adds mv88e6xxx_port_setup_mac() call for the cpu port (port 5 
-> > > > in my case) with these parameters and call stack:
-> > > > 
-> > > > [    4.219148] mv88e6xxx_port_setup_mac: port: 5 link: 0 speed: -1 duplex: 255
-> > > > [    4.226144] CPU: 2 PID: 21 Comm: kworker/2:0 Not tainted 5.3.15-00003-gb9bb09189d02-dirty #104
-> > > > [    4.234795] Hardware name: SolidRun ClearFog GT 8K (DT)
-> > > > [    4.240044] Workqueue: events deferred_probe_work_func
-> > > > [    4.245205] Call trace:
-> > > > [    4.247661]  dump_backtrace+0x0/0x128
-> > > > [    4.251339]  show_stack+0x14/0x1c
-> > > > [    4.254669]  dump_stack+0xa4/0xd0
-> > > > [    4.257998]  mv88e6xxx_port_setup_mac+0x78/0x2a0
-> > > > [    4.262635]  mv88e6xxx_mac_config+0xd0/0x154
-> > > > [    4.266924]  dsa_port_phylink_mac_config+0x2c/0x38
-> > > > [    4.271736]  phylink_mac_config+0xe0/0x1cc
-> > > > [    4.275849]  phylink_start+0xc8/0x224
-> > > > [    4.279527]  dsa_port_link_register_of+0xe8/0x1b0
-> > > > [    4.284251]  dsa_register_switch+0x7fc/0x908
-> > > > [    4.288539]  mv88e6xxx_probe+0x62c/0x66c
-> > > > [    4.292478]  mdio_probe+0x30/0x5c
-> > > > [    4.295806]  really_probe+0x1d0/0x280
-> > > > [    4.299483]  driver_probe_device+0xd4/0xe4
-> > > > [    4.303596]  __device_attach_driver+0x94/0xa0
-> > > > [    4.307971]  bus_for_each_drv+0x94/0xb4
-> > > > [    4.311823]  __device_attach+0xc0/0x12c
-> > > > [    4.315674]  device_initial_probe+0x10/0x18
-> > > > [    4.319875]  bus_probe_device+0x2c/0x8c
-> > > > [    4.323726]  deferred_probe_work_func+0x84/0x98
-> > > > [    4.328276]  process_one_work+0x19c/0x258
-> > > > [    4.332303]  process_scheduled_works+0x3c/0x40
-> > > > [    4.336765]  worker_thread+0x228/0x2f8
-> > > > [    4.340530]  kthread+0x114/0x124
-> > > > [    4.343771]  ret_from_fork+0x10/0x18
-> > > > 
-> > > > This hunk removed that mv88e6xxx_port_setup_mac() call, and fixed Tx for me on 
-> > > > v5.3.15:
-> > > > 
-> > > > diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-> > > > index d0a97eb73a37..f0457274b5a9 100644
-> > > > --- a/drivers/net/dsa/mv88e6xxx/chip.c
-> > > > +++ b/drivers/net/dsa/mv88e6xxx/chip.c
-> > > > @@ -611,6 +611,9 @@ static void mv88e6xxx_mac_config(struct dsa_switch *ds, int port,
-> > > >  	if ((mode == MLO_AN_PHY) && mv88e6xxx_phy_is_internal(ds, port))
-> > > >  		return;
-> > > >  
-> > > > +	if (dsa_is_cpu_port(ds, port))
-> > > > +		return;
-> > > > +
-> > > >  	if (mode == MLO_AN_FIXED) {
-> > > >  		link = LINK_FORCED_UP;
-> > > >  		speed = state->speed;
-> > > > 
-> > > > Is that the right solution?  
-> > > 
-> > > What needs testing is:
-> > > 
-> > >                                         port@0 {
-> > >                                                 reg = <0>;
-> > >                                                 label = "cpu";
-> > >                                                 ethernet = <&fec1>;
-> > > 
-> > >                                                 fixed-link {
-> > >                                                         speed = <100>;
-> > >                                                         full-duplex;
-> > >                                                 };
-> > > 
-> > > At some point, there is a call to configure the CPU port to 100Mbps,
-> > > because the SoC Ethernet does not support 1G. We need to ensure this
-> > > does not break with your change.  
-> > 
-> > So maybe this:
-> > 
-> > diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-> > index d0a97eb73a37..84ca4f36a778 100644
-> > --- a/drivers/net/dsa/mv88e6xxx/chip.c
-> > +++ b/drivers/net/dsa/mv88e6xxx/chip.c
-> > @@ -611,6 +611,9 @@ static void mv88e6xxx_mac_config(struct dsa_switch *ds, int port,
-> >  	if ((mode == MLO_AN_PHY) && mv88e6xxx_phy_is_internal(ds, port))
-> >  		return;
-> >  
-> > +	if (mode != MLO_AN_FIXED && dsa_is_cpu_port(ds, port))
-> > +		return;
-> > +
-> >  	if (mode == MLO_AN_FIXED) {
-> >  		link = LINK_FORCED_UP;
-> >  		speed = state->speed;
-> 
-> No, if your switch is connected to the cpu via 100mbps on the cpu side,
-> you have to add fixed-link node as Andrew suggested. This is what we
-> were trying to do with the Topaz patches, so that dsa port nodes
-> support fixed-link via phylink.
+On Thu, Dec 12, 2019 at 7:53 PM David Miller <davem@davemloft.net> wrote:
+>
+> From: YueHaibing <yuehaibing@huawei.com>
+> Date: Thu, 12 Dec 2019 09:15:27 +0000
+>
+> > Remove including <linux/version.h> that don't need it.
+> >
+> > Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+>
+> Appropriate subject line for this should have been:
+>
+>         Subject: [PATCH net-next] wireguard: Remove unused include <linux/version.h>
+>
+> 'net' is too broad a subsystem prefix as it basically encompases half of the
+> entire kernel tree.  When people look at the git shortlog output you need to
+> be specific enough that people can tell what touches what.
 
-Thanks for the clarification. This also works without the hunk above:
+I have these fixed up how you like in the wireguard-linux.git repo,
+and I'll submit these in a series to net-next next week all together.
 
-diff --git a/arch/arm64/boot/dts/marvell/armada-8040-clearfog-gt-8k.dts b/arch/arm64/boot/dts/marvell/armada-8040-clearfog-gt-8k.dts
-index bd881497b872..8f61cae9d3b0 100644
---- a/arch/arm64/boot/dts/marvell/armada-8040-clearfog-gt-8k.dts
-+++ b/arch/arm64/boot/dts/marvell/armada-8040-clearfog-gt-8k.dts
-@@ -408,6 +408,11 @@ port@5 {
- 				reg = <5>;
- 				label = "cpu";
- 				ethernet = <&cp1_eth2>;
-+
-+				fixed-link {
-+					speed = <2500>;
-+					full-duplex;
-+				};
- 			};
- 		};
- 
-With this I get calls to mv88e6341_port_set_cmode() with PHY mode 0. So the 
-other "fix" is still needed.
+https://git.kernel.org/pub/scm/linux/kernel/git/zx2c4/wireguard-linux.git/log
 
-Thanks,
-baruch
-
--- 
-     http://baruch.siach.name/blog/                  ~. .~   Tk Open Systems
-=}------------------------------------------------ooO--U--Ooo------------{=
-   - baruch@tkos.co.il - tel: +972.2.679.5364, http://www.tkos.co.il -
+Jason
