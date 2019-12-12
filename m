@@ -2,35 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 56E7B11D0A2
-	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 16:14:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3254211D0E8
+	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 16:24:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728796AbfLLPN6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Dec 2019 10:13:58 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:50298 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728581AbfLLPN6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 12 Dec 2019 10:13:58 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=MH8pVOr8VlsyZwHqf02XeitMeR2Xdfx5ZpxUOtWsReg=; b=hs9YunlwiCmYlUUPDPOkLdpeJS
-        kWC4ovY+vqVLSA5q4bBWDJG0e/EcxZgvSW6lj0wEFQAu7WWEYwuo1tl9dzvbd/r352bsrHBL3W6TM
-        hB6AplFW+/9WfEi1vO9kWVT196832ED0rhx+B/nNqQWUGpyMOdopJel+KSui7oOakplU=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.92.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1ifQA7-0003Ke-IX; Thu, 12 Dec 2019 16:13:55 +0100
-Date:   Thu, 12 Dec 2019 16:13:55 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Baruch Siach <baruch@tkos.co.il>
+        id S1729050AbfLLPX7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Dec 2019 10:23:59 -0500
+Received: from guitar.tcltek.co.il ([192.115.133.116]:36293 "EHLO
+        mx.tkos.co.il" rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728654AbfLLPX7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 12 Dec 2019 10:23:59 -0500
+Received: from sapphire.tkos.co.il (unknown [192.168.100.188])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx.tkos.co.il (Postfix) with ESMTPS id 2E772440360;
+        Thu, 12 Dec 2019 17:23:57 +0200 (IST)
+Date:   Thu, 12 Dec 2019 17:23:55 +0200
+From:   Baruch Siach <baruch@tkos.co.il>
+To:     Andrew Lunn <andrew@lunn.ch>
 Cc:     Vivien Didelot <vivien.didelot@gmail.com>, netdev@vger.kernel.org,
         Denis Odintsov <d.odintsov@traviangames.com>,
         Hubert Feurstein <h.feurstein@gmail.com>
 Subject: Re: [BUG] mv88e6xxx: tx regression in v5.3
-Message-ID: <20191212151355.GE30053@lunn.ch>
+Message-ID: <20191212152355.iiepmi4cjriddeon@sapphire.tkos.co.il>
 References: <87tv67tcom.fsf@tarshish>
  <20191211131111.GK16369@lunn.ch>
  <87fthqu6y6.fsf@tarshish>
@@ -38,86 +31,110 @@ References: <87tv67tcom.fsf@tarshish>
  <20191212085045.nqhfldkbebqzzamv@sapphire.tkos.co.il>
  <20191212131448.GA9959@lunn.ch>
  <20191212150810.zx6o26jnk5croh4r@sapphire.tkos.co.il>
+ <20191212151355.GE30053@lunn.ch>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20191212150810.zx6o26jnk5croh4r@sapphire.tkos.co.il>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20191212151355.GE30053@lunn.ch>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> I compared phylib to phylink calls to mv88e6xxx_port_setup_mac(). It turns out 
-> that the phylink adds mv88e6xxx_port_setup_mac() call for the cpu port (port 5 
-> in my case) with these parameters and call stack:
+Hi Andrew,
+
+On Thu, Dec 12, 2019 at 04:13:55PM +0100, Andrew Lunn wrote:
+> > I compared phylib to phylink calls to mv88e6xxx_port_setup_mac(). It turns out 
+> > that the phylink adds mv88e6xxx_port_setup_mac() call for the cpu port (port 5 
+> > in my case) with these parameters and call stack:
+> > 
+> > [    4.219148] mv88e6xxx_port_setup_mac: port: 5 link: 0 speed: -1 duplex: 255
+> > [    4.226144] CPU: 2 PID: 21 Comm: kworker/2:0 Not tainted 5.3.15-00003-gb9bb09189d02-dirty #104
+> > [    4.234795] Hardware name: SolidRun ClearFog GT 8K (DT)
+> > [    4.240044] Workqueue: events deferred_probe_work_func
+> > [    4.245205] Call trace:
+> > [    4.247661]  dump_backtrace+0x0/0x128
+> > [    4.251339]  show_stack+0x14/0x1c
+> > [    4.254669]  dump_stack+0xa4/0xd0
+> > [    4.257998]  mv88e6xxx_port_setup_mac+0x78/0x2a0
+> > [    4.262635]  mv88e6xxx_mac_config+0xd0/0x154
+> > [    4.266924]  dsa_port_phylink_mac_config+0x2c/0x38
+> > [    4.271736]  phylink_mac_config+0xe0/0x1cc
+> > [    4.275849]  phylink_start+0xc8/0x224
+> > [    4.279527]  dsa_port_link_register_of+0xe8/0x1b0
+> > [    4.284251]  dsa_register_switch+0x7fc/0x908
+> > [    4.288539]  mv88e6xxx_probe+0x62c/0x66c
+> > [    4.292478]  mdio_probe+0x30/0x5c
+> > [    4.295806]  really_probe+0x1d0/0x280
+> > [    4.299483]  driver_probe_device+0xd4/0xe4
+> > [    4.303596]  __device_attach_driver+0x94/0xa0
+> > [    4.307971]  bus_for_each_drv+0x94/0xb4
+> > [    4.311823]  __device_attach+0xc0/0x12c
+> > [    4.315674]  device_initial_probe+0x10/0x18
+> > [    4.319875]  bus_probe_device+0x2c/0x8c
+> > [    4.323726]  deferred_probe_work_func+0x84/0x98
+> > [    4.328276]  process_one_work+0x19c/0x258
+> > [    4.332303]  process_scheduled_works+0x3c/0x40
+> > [    4.336765]  worker_thread+0x228/0x2f8
+> > [    4.340530]  kthread+0x114/0x124
+> > [    4.343771]  ret_from_fork+0x10/0x18
+> > 
+> > This hunk removed that mv88e6xxx_port_setup_mac() call, and fixed Tx for me on 
+> > v5.3.15:
+> > 
+> > diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
+> > index d0a97eb73a37..f0457274b5a9 100644
+> > --- a/drivers/net/dsa/mv88e6xxx/chip.c
+> > +++ b/drivers/net/dsa/mv88e6xxx/chip.c
+> > @@ -611,6 +611,9 @@ static void mv88e6xxx_mac_config(struct dsa_switch *ds, int port,
+> >  	if ((mode == MLO_AN_PHY) && mv88e6xxx_phy_is_internal(ds, port))
+> >  		return;
+> >  
+> > +	if (dsa_is_cpu_port(ds, port))
+> > +		return;
+> > +
+> >  	if (mode == MLO_AN_FIXED) {
+> >  		link = LINK_FORCED_UP;
+> >  		speed = state->speed;
+> > 
+> > Is that the right solution?
 > 
-> [    4.219148] mv88e6xxx_port_setup_mac: port: 5 link: 0 speed: -1 duplex: 255
-> [    4.226144] CPU: 2 PID: 21 Comm: kworker/2:0 Not tainted 5.3.15-00003-gb9bb09189d02-dirty #104
-> [    4.234795] Hardware name: SolidRun ClearFog GT 8K (DT)
-> [    4.240044] Workqueue: events deferred_probe_work_func
-> [    4.245205] Call trace:
-> [    4.247661]  dump_backtrace+0x0/0x128
-> [    4.251339]  show_stack+0x14/0x1c
-> [    4.254669]  dump_stack+0xa4/0xd0
-> [    4.257998]  mv88e6xxx_port_setup_mac+0x78/0x2a0
-> [    4.262635]  mv88e6xxx_mac_config+0xd0/0x154
-> [    4.266924]  dsa_port_phylink_mac_config+0x2c/0x38
-> [    4.271736]  phylink_mac_config+0xe0/0x1cc
-> [    4.275849]  phylink_start+0xc8/0x224
-> [    4.279527]  dsa_port_link_register_of+0xe8/0x1b0
-> [    4.284251]  dsa_register_switch+0x7fc/0x908
-> [    4.288539]  mv88e6xxx_probe+0x62c/0x66c
-> [    4.292478]  mdio_probe+0x30/0x5c
-> [    4.295806]  really_probe+0x1d0/0x280
-> [    4.299483]  driver_probe_device+0xd4/0xe4
-> [    4.303596]  __device_attach_driver+0x94/0xa0
-> [    4.307971]  bus_for_each_drv+0x94/0xb4
-> [    4.311823]  __device_attach+0xc0/0x12c
-> [    4.315674]  device_initial_probe+0x10/0x18
-> [    4.319875]  bus_probe_device+0x2c/0x8c
-> [    4.323726]  deferred_probe_work_func+0x84/0x98
-> [    4.328276]  process_one_work+0x19c/0x258
-> [    4.332303]  process_scheduled_works+0x3c/0x40
-> [    4.336765]  worker_thread+0x228/0x2f8
-> [    4.340530]  kthread+0x114/0x124
-> [    4.343771]  ret_from_fork+0x10/0x18
+> What needs testing is:
 > 
-> This hunk removed that mv88e6xxx_port_setup_mac() call, and fixed Tx for me on 
-> v5.3.15:
+>                                         port@0 {
+>                                                 reg = <0>;
+>                                                 label = "cpu";
+>                                                 ethernet = <&fec1>;
 > 
-> diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-> index d0a97eb73a37..f0457274b5a9 100644
-> --- a/drivers/net/dsa/mv88e6xxx/chip.c
-> +++ b/drivers/net/dsa/mv88e6xxx/chip.c
-> @@ -611,6 +611,9 @@ static void mv88e6xxx_mac_config(struct dsa_switch *ds, int port,
->  	if ((mode == MLO_AN_PHY) && mv88e6xxx_phy_is_internal(ds, port))
->  		return;
->  
-> +	if (dsa_is_cpu_port(ds, port))
-> +		return;
-> +
->  	if (mode == MLO_AN_FIXED) {
->  		link = LINK_FORCED_UP;
->  		speed = state->speed;
+>                                                 fixed-link {
+>                                                         speed = <100>;
+>                                                         full-duplex;
+>                                                 };
 > 
-> Is that the right solution?
+> At some point, there is a call to configure the CPU port to 100Mbps,
+> because the SoC Ethernet does not support 1G. We need to ensure this
+> does not break with your change.
 
-What needs testing is:
+So maybe this:
 
-                                        port@0 {
-                                                reg = <0>;
-                                                label = "cpu";
-                                                ethernet = <&fec1>;
+diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
+index d0a97eb73a37..84ca4f36a778 100644
+--- a/drivers/net/dsa/mv88e6xxx/chip.c
++++ b/drivers/net/dsa/mv88e6xxx/chip.c
+@@ -611,6 +611,9 @@ static void mv88e6xxx_mac_config(struct dsa_switch *ds, int port,
+ 	if ((mode == MLO_AN_PHY) && mv88e6xxx_phy_is_internal(ds, port))
+ 		return;
+ 
++	if (mode != MLO_AN_FIXED && dsa_is_cpu_port(ds, port))
++		return;
++
+ 	if (mode == MLO_AN_FIXED) {
+ 		link = LINK_FORCED_UP;
+ 		speed = state->speed;
 
-                                                fixed-link {
-                                                        speed = <100>;
-                                                        full-duplex;
-                                                };
+baruch
 
-At some point, there is a call to configure the CPU port to 100Mbps,
-because the SoC Ethernet does not support 1G. We need to ensure this
-does not break with your change.
-
-Thanks
-	Andrew
+-- 
+     http://baruch.siach.name/blog/                  ~. .~   Tk Open Systems
+=}------------------------------------------------ooO--U--Ooo------------{=
+   - baruch@tkos.co.il - tel: +972.2.679.5364, http://www.tkos.co.il -
