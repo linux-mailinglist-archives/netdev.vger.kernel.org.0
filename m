@@ -2,103 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9488C11D44B
-	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 18:43:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 251AC11D44C
+	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 18:43:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730184AbfLLRnV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Dec 2019 12:43:21 -0500
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:33734 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730074AbfLLRnV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Dec 2019 12:43:21 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:Content-Type:MIME-Version:
-        Message-ID:Subject:Cc:To:From:Date:Reply-To:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=WRjH8WMeEKdXiTwyuxwoErP0BKRnxF3dutj7tVKZhjg=; b=wuvSdWKMYsTWpl0WZKBJi4R6Q
-        iq4+brgwd2ur5nctj6Zm7fAZPUzraUzv4Ss6Hf0jWyaISIC/oQajEd1LAV8MCXLLukhSnXV7fHqep
-        PLGG+xsvLwvJLVvkuoFCAShRLmyGjdKdRLrCRgfM7wO3nEVLExrT3KNERfaff3c8SBeAXeseE+P/8
-        BfTGbvZ0fidag9PermSdVOwykMfdHuztEHbWTBgsBibnrf8C5iY4SSej+NJ7GHvrttweih1mR6IQL
-        22GvL9nCUD0zvQTZ2d7XSdjV9Sg1M90rvAXo8qbpwfdwxhNwzw1ais7Ig370nEja+FzQt+F+vZGmN
-        3lw/MHQQw==;
-Received: from shell.armlinux.org.uk ([2002:4e20:1eda:1:5054:ff:fe00:4ec]:47934)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1ifSUa-0008Bz-BF; Thu, 12 Dec 2019 17:43:12 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1ifSUX-00075I-EC; Thu, 12 Dec 2019 17:43:09 +0000
-Date:   Thu, 12 Dec 2019 17:43:09 +0000
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     Antoine Tenart <antoine.tenart@bootlin.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: [PATCH net-next 0/3] improve clause 45 support in phylink
-Message-ID: <20191212174309.GM25745@shell.armlinux.org.uk>
+        id S1730223AbfLLRn3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Dec 2019 12:43:29 -0500
+Received: from mail-yb1-f195.google.com ([209.85.219.195]:46508 "EHLO
+        mail-yb1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730189AbfLLRn2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Dec 2019 12:43:28 -0500
+Received: by mail-yb1-f195.google.com with SMTP id v15so730024ybp.13
+        for <netdev@vger.kernel.org>; Thu, 12 Dec 2019 09:43:28 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=EdqCF5tvwgVMUKXo5Gg9MZzmPyDl35poDR7wJSfMlzM=;
+        b=LLcJACZkeT7VlpN/7DZDcSAE6sghzdqmAkslR7S7RnFKp44sjfonW9yy+gDe23yant
+         QvMTOM7usCieW1ssJtP9p2R7HcfztV70xUrc5szz/uYOUOhPAMhsBf1A+bbzyCqJ0tY7
+         AaofMcilgF1LX7kfAjbmpPBMyAC1PbQjBQZGAGbRbFeU2XF6zaPyBTHXSDeR7jXLSfgv
+         FARxsrnNEkN1Aoqo05TqvGSqiCS6TLfVZJs3tfYyjhggCz0luFJutyrE8rsfUQ9XXIQ9
+         bDvRydKyX2l8CAJoXvCSlo9tzbqm7FaW/BhrEBQB91U5GaVrfYZhEqDcmVQ4j4Nc+mGQ
+         HOig==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=EdqCF5tvwgVMUKXo5Gg9MZzmPyDl35poDR7wJSfMlzM=;
+        b=R/nkKzRnMYnJlQ8Xm1Tf2t/sBPERDaMgQsE5y+qioalqAs2WGDBXFa4bO3JjpMd3Sp
+         rJuDaFFGdDOqv54mXHzrh/MimvFZNVNdTMwTsWDQIW/4gvTR5meRATOf0SVT3OYHCNsb
+         Ck6uFVEdIAFWhOONbzz5qzH5x4a6+VjwnPjYdkm/bLrvSqtJcti+HuZlOmI8uSHr/zfk
+         Y0BELcGqG0hMjrgoRu6NtSo7did7htxIjNbyl3fZR0ymQaBFaz24Qa4ZkvaGxyalYYEe
+         jczXH0IntZ9shS+y4vh3ytR/uLisOvkR+HvmkB8unm93VJxylUY5e6jxAU6qdnY99Dba
+         3Zzw==
+X-Gm-Message-State: APjAAAX52qxEsf5qYMijV4tiqjroDVi/4R6NWWeZeEsOimdsDv55s3jg
+        pXLFcPwoKWWgcWjJnAowNqoVCNsgZmhalu8tatweaQ==
+X-Google-Smtp-Source: APXvYqw1Ul0Fvx4Ka6m/sYUEBGT6sEv1LDItDmizwU4MLBmzin7Y7OdO4TP7SdRVVjAvNZIx9hhAAsJrp4dSOEHl3E4=
+X-Received: by 2002:a25:60c6:: with SMTP id u189mr5451702ybb.173.1576172607164;
+ Thu, 12 Dec 2019 09:43:27 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20191211170943.134769-1-edumazet@google.com> <20191212173156.GA21497@unicorn.suse.cz>
+In-Reply-To: <20191212173156.GA21497@unicorn.suse.cz>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Thu, 12 Dec 2019 09:43:15 -0800
+Message-ID: <CANn89i+16zwKepVcHX8a0pz6GrxS+B9y6RiYHL0M-Sn_+Gv1zg@mail.gmail.com>
+Subject: Re: [PATCH net] tcp/dccp: fix possible race __inet_lookup_established()
+To:     Michal Kubecek <mkubecek@suse.cz>
+Cc:     netdev <netdev@vger.kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Firo Yang <firo.yang@suse.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On Thu, Dec 12, 2019 at 9:32 AM Michal Kubecek <mkubecek@suse.cz> wrote:
+>
+> On Wed, Dec 11, 2019 at 09:09:43AM -0800, Eric Dumazet wrote:
+> > Michal Kubecek and Firo Yang did a very nice analysis of crashes
+> > happening in __inet_lookup_established().
+> >
+> > Since a TCP socket can go from TCP_ESTABLISH to TCP_LISTEN
+> > (via a close()/socket()/listen() cycle) without a RCU grace period,
+> > I should not have changed listeners linkage in their hash table.
+> >
+> > They must use the nulls protocol (Documentation/RCU/rculist_nulls.txt),
+> > so that a lookup can detect a socket in a hash list was moved in
+> > another one.
+> >
+> > Since we added code in commit d296ba60d8e2 ("soreuseport: Resolve
+> > merge conflict for v4/v6 ordering fix"), we have to add
+> > hlist_nulls_add_tail_rcu() helper.
+> >
+> > Fixes: 3b24d854cb35 ("tcp/dccp: do not touch listener sk_refcnt under synflood")
+> > Signed-off-by: Eric Dumazet <edumazet@google.com>
+> > Reported-by: Michal Kubecek <mkubecek@suse.cz>
+> > Reported-by: Firo Yang <firo.yang@suse.com>
+> > Link: https://lore.kernel.org/netdev/20191120083919.GH27852@unicorn.suse.cz/
+> > ---
+> >  include/linux/rculist_nulls.h | 37 +++++++++++++++++++++++++++++++++++
+> >  include/net/inet_hashtables.h | 11 +++++++++--
+> >  include/net/sock.h            |  5 +++++
+> >  net/ipv4/inet_diag.c          |  3 ++-
+> >  net/ipv4/inet_hashtables.c    | 16 +++++++--------
+> >  net/ipv4/tcp_ipv4.c           |  7 ++++---
+> >  6 files changed, 65 insertions(+), 14 deletions(-)
+> >
+> [...]
+> > diff --git a/include/net/inet_hashtables.h b/include/net/inet_hashtables.h
+> > index af2b4c065a042e36135fe6fdcee9833b6b353364..29ef5b7f4005a8e67fd358c136ee6532974efcab 100644
+> > --- a/include/net/inet_hashtables.h
+> > +++ b/include/net/inet_hashtables.h
+> > @@ -105,11 +105,18 @@ struct inet_bind_hashbucket {
+> >
+> >  /*
+> >   * Sockets can be hashed in established or listening table
+> > - */
+> > + * We must use different 'nulls' end-of-chain value for listening
+> > + * hash table, or we might find a socket that was closed and
+> > + * reallocated/inserted into established hash table
+> > +  */
+>
+> Just a nitpick: I don't think this comment is still valid because
+> listening sockets now have RCU protection so that listening socket
+> cannot be freed and reallocated without RCU grace period. (But we still
+> need disjoint ranges to handle the reallocation in the opposite
+> direction.)
 
-These three patches improve the clause 45 support in phylink, fixing
-some corner cases that have been noticed with the addition of SFP+
-NBASE-T modules, but are actually a little more wisespread than I
-initially realised.
+Hi Michal
 
-The first issue was spotted with a NBASE-T PHY on a SFP+ module plugged
-into a mvneta platform. When these PHYs are not operating in USXGMII
-mode, but are in a single-lane Serdes mode, they will switch between
-one of several different PHY interface modes.
+I am not a native English speaker, but I was trying to say :
 
-If we call the MAC validate() function with the current PHY interface
-mode, we will restrict the supported and advertising masks to the link
-modes that the current PHY interface mode supports. For example, if we
-determine that we want to start the PHY with an interface mode of
-2500BASE-X, then this setup will restrict the advertisement and
-supported masks to 2.5G speed link modes.
+A lookup in established sockets might go through a socket that
+was in this bucket but has been closed, reallocated and became a listener.
 
-What we actually want for these PHYs is to allow them to support any
-link modes that the PHY supports _and_ the MAC is also capable of
-supporting. Without knowing the details of the PHY interface modes that
-may be used, we can do this by using PHY_INTERFACE_MODE_NA to validate
-and restrict the link modes to any that the MAC supports.
+Maybe the comment needs to be refined, but I am not sure how, considering
+that most people reading it will not understand it anyway, given the
+complexity of the nulls stuff.
 
-mvpp2 with the 88X3310 PHY avoids this problem, because the validate()
-implementation allows all MAC supported speeds not only for
-PHY_INTERFACE_MODE_NA, but also for XAUI and 10GKR modes.
-
-The first patch addresses this; current MAC drivers should continue to
-work as-is, but there will be a follow-on patch to fixup at least
-mvpp2.
-
-The second issue addresses a very similar problem that occurs when
-trying to use ethtool to alter the advertisement mask - we call
-the MAC validate() function with the current interface mode, the
-current support and requested advertisement masks. This immediately
-restricts the advertisement in the same way as the above.
-
-This patch series addresses both issues, although the patches are not
-in the above order.
-
-Antoine - please can you check that there are no other reasons for
-the mvpp2 code to be the way it was?  Thanks.
-
- drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c |  20 ++++-
- drivers/net/phy/phylink.c                       | 106 +++++++++++++++---------
- 2 files changed, 82 insertions(+), 44 deletions(-)
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-According to speedtest.net: 11.9Mbps down 500kbps up
+>
+> Other than that, the patch looks good (and better than my
+> work-in-progress patch which I didn't manage to test properly).
+>
+> Reviewed-by: Michal Kubecek <mkubecek@suse.cz>
+>
+> > +#define LISTENING_NULLS_BASE (1U << 29)
+> >  struct inet_listen_hashbucket {
+> >       spinlock_t              lock;
+> >       unsigned int            count;
+> > -     struct hlist_head       head;
+> > +     union {
+> > +             struct hlist_head       head;
+> > +             struct hlist_nulls_head nulls_head;
+> > +     };
+> >  };
