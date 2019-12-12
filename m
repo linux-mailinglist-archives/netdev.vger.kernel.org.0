@@ -2,392 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4177211D2D2
-	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 17:53:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A3C1E11D2F1
+	for <lists+netdev@lfdr.de>; Thu, 12 Dec 2019 17:58:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730037AbfLLQxg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Dec 2019 11:53:36 -0500
-Received: from mail-qv1-f42.google.com ([209.85.219.42]:38296 "EHLO
-        mail-qv1-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729961AbfLLQxg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Dec 2019 11:53:36 -0500
-Received: by mail-qv1-f42.google.com with SMTP id t5so1219920qvs.5;
-        Thu, 12 Dec 2019 08:53:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=578hXcpf7j7vgUxhi1SpWDPxWYx7kHvrx1x0LiKaNV4=;
-        b=XAGildBHkUABfTEkisupm6E8ePOi5XWk84ZnN0MU7lgKktsIth2mxm67ErfirFdUY2
-         wpGSyU3jEUvPdUSXBdaK2bZvjpP78JhEzvq9MsVlo6jVbbmOpEkArk54CTiacAkv6MmI
-         gpS9WSilrnunrXgQKLwzoeiwFpvidEKjgn/y+DkSp5fgMz7B6RemSaZ+oU61TF9o3M0r
-         /i1664/XKJ/dIPEmf5ykY08fneojlNwX3pXZIHggBO2KOgQHMwlY1sarXwyICwWbR654
-         8YlNEARatE5QothHDmq522HF2VG2ts/oNWjq8WHraQhbTugIUiCiATfMfeUfDyfUVbeH
-         sYeA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=578hXcpf7j7vgUxhi1SpWDPxWYx7kHvrx1x0LiKaNV4=;
-        b=lLRKoxeJCy2jIJaLdOnqlcJr3TExXIO5OTelafqfaclODR4zSWEaZ7Y5nq/3zxgnje
-         mu7TWp6ByHnfaF2CQoOaa1G8kW/T0WL56BPzK4fhQd3azJDt4ZV6uUibsxD+LyDxWRY3
-         YlWmSVp96Wic08OB0RPyY+0h87RYq/sKgO68zps/sEw9Nn5srwEi3uNL3BJpHdHJX4db
-         cNFyHqIijMxwa66W6h8y5jUFsecZuuwRgqwJEo1u3ukM0Hoqf8sZ8N7CQGhnCRvX/49e
-         en2njrxJZzqaEzyA0BhjpE8dteW/ASEbQV4u4hUM1k/qId0qwknEjOV/KXEvZlrai6wE
-         dRHQ==
-X-Gm-Message-State: APjAAAWiOe4x9WnCM0Macri9sOo/dweZ2TiIrGGhH2qPEajl4PPIVkQ8
-        epG+lMrtw87Hq+qN+V/OVzK/xj18m2ffi1EMQiE=
-X-Google-Smtp-Source: APXvYqxCVMWXopJtVpTE9j0fPjxMz1AX9Tcp6xqmoGml+/jI8uqGznCJDuqV6u9kgqNqYVnUs8/gTXdJ9iUDR/xOolk=
-X-Received: by 2002:ad4:4e34:: with SMTP id dm20mr9366702qvb.163.1576169614027;
- Thu, 12 Dec 2019 08:53:34 -0800 (PST)
+        id S1730010AbfLLQ6q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Dec 2019 11:58:46 -0500
+Received: from mx2.cyber.ee ([193.40.6.72]:46704 "EHLO mx2.cyber.ee"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729260AbfLLQ6q (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 12 Dec 2019 11:58:46 -0500
+To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        linux-wireless@vger.kernel.org
+From:   Meelis Roos <mroos@linux.ee>
+Subject: UBSAN: Undefined behaviour in drivers/net/wireless/ath/ath5k/base.c
+ (two lines)
+Message-ID: <0992ebdc-54a6-3451-86af-7d94ed3cf9cf@linux.ee>
+Date:   Thu, 12 Dec 2019 18:58:29 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.3.0
 MIME-Version: 1.0
-References: <20191210225900.GB3105713@mini-arch> <CAEf4BzYtqywKn4yGQ+vq2sKod4XE03HYWWBfUiNvg=BXhgFdWg@mail.gmail.com>
- <20191211172432.GC3105713@mini-arch> <CAEf4Bzb+3b-ypP8YJVA=ogQgp1KXx2xPConOswA0EiGXsmfJow@mail.gmail.com>
- <20191211191518.GD3105713@mini-arch> <CAEf4BzYofFFjSAO3O-G37qyeVHE6FACex=yermt8bF8mXksh8g@mail.gmail.com>
- <20191211200924.GE3105713@mini-arch> <CAEf4BzaE0Q7LnPOa90p1RX9qSbOA_8hkT=6=7peP9C88ErRumQ@mail.gmail.com>
- <20191212025735.GK3105713@mini-arch> <CAEf4BzY2KHK4h5e40QgGt4GzJ6c+rm-vtbyEdM41vUSqcs=txA@mail.gmail.com>
- <20191212162953.GM3105713@mini-arch>
-In-Reply-To: <20191212162953.GM3105713@mini-arch>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 12 Dec 2019 08:53:22 -0800
-Message-ID: <CAEf4BzYJHvuFbBM-xvCCsEa+Pg-bG1tprGMbCDtsbGHdv7KspA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 11/15] bpftool: add skeleton codegen command
-To:     Stanislav Fomichev <sdf@fomichev.me>
-Cc:     Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        LKML <linux-kernel@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 12, 2019 at 8:29 AM Stanislav Fomichev <sdf@fomichev.me> wrote:
->
-> On 12/11, Andrii Nakryiko wrote:
-> > On Wed, Dec 11, 2019 at 6:57 PM Stanislav Fomichev <sdf@fomichev.me> wrote:
-> > >
-> > > On 12/11, Andrii Nakryiko wrote:
-> > > > On Wed, Dec 11, 2019 at 12:09 PM Stanislav Fomichev <sdf@fomichev.me> wrote:
-> > > > >
-> > > > > On 12/11, Andrii Nakryiko wrote:
-> > > > > > On Wed, Dec 11, 2019 at 11:15 AM Stanislav Fomichev <sdf@fomichev.me> wrote:
-> > > > > > >
-> > > > > > > On 12/11, Andrii Nakryiko wrote:
-> > > > > > > > On Wed, Dec 11, 2019 at 9:24 AM Stanislav Fomichev <sdf@fomichev.me> wrote:
-> > > > > > > > >
-> > > > > > > > > On 12/10, Andrii Nakryiko wrote:
-> > > > > > > > > > On Tue, Dec 10, 2019 at 2:59 PM Stanislav Fomichev <sdf@fomichev.me> wrote:
-> > > > > > > > > > >
-> > > > > > > > > > > On 12/10, Andrii Nakryiko wrote:
-> > > > > > > > > > > > On Tue, Dec 10, 2019 at 1:44 PM Stanislav Fomichev <sdf@fomichev.me> wrote:
-> > > > > > > > > > > > >
-> > > > > > > > > > > > > On 12/10, Jakub Kicinski wrote:
-> > > > > > > > > > > > > > On Tue, 10 Dec 2019 09:11:31 -0800, Andrii Nakryiko wrote:
-> > > > > > > > > > > > > > > On Mon, Dec 9, 2019 at 5:57 PM Jakub Kicinski wrote:
-> > > > > > > > > > > > > > > > On Mon, 9 Dec 2019 17:14:34 -0800, Andrii Nakryiko wrote:
-> > > > > > > > > > > > > > > > > struct <object-name> {
-> > > > > > > > > > > > > > > > >       /* used by libbpf's skeleton API */
-> > > > > > > > > > > > > > > > >       struct bpf_object_skeleton *skeleton;
-> > > > > > > > > > > > > > > > >       /* bpf_object for libbpf APIs */
-> > > > > > > > > > > > > > > > >       struct bpf_object *obj;
-> > > > > > > > > > > > > > > > >       struct {
-> > > > > > > > > > > > > > > > >               /* for every defined map in BPF object: */
-> > > > > > > > > > > > > > > > >               struct bpf_map *<map-name>;
-> > > > > > > > > > > > > > > > >       } maps;
-> > > > > > > > > > > > > > > > >       struct {
-> > > > > > > > > > > > > > > > >               /* for every program in BPF object: */
-> > > > > > > > > > > > > > > > >               struct bpf_program *<program-name>;
-> > > > > > > > > > > > > > > > >       } progs;
-> > > > > > > > > > > > > > > > >       struct {
-> > > > > > > > > > > > > > > > >               /* for every program in BPF object: */
-> > > > > > > > > > > > > > > > >               struct bpf_link *<program-name>;
-> > > > > > > > > > > > > > > > >       } links;
-> > > > > > > > > > > > > > > > >       /* for every present global data section: */
-> > > > > > > > > > > > > > > > >       struct <object-name>__<one of bss, data, or rodata> {
-> > > > > > > > > > > > > > > > >               /* memory layout of corresponding data section,
-> > > > > > > > > > > > > > > > >                * with every defined variable represented as a struct field
-> > > > > > > > > > > > > > > > >                * with exactly the same type, but without const/volatile
-> > > > > > > > > > > > > > > > >                * modifiers, e.g.:
-> > > > > > > > > > > > > > > > >                */
-> > > > > > > > > > > > > > > > >                int *my_var_1;
-> > > > > > > > > > > > > > > > >                ...
-> > > > > > > > > > > > > > > > >       } *<one of bss, data, or rodata>;
-> > > > > > > > > > > > > > > > > };
-> > > > > > > > > > > > > > > >
-> > > > > > > > > > > > > > > > I think I understand how this is useful, but perhaps the problem here
-> > > > > > > > > > > > > > > > is that we're using C for everything, and simple programs for which
-> > > > > > > > > > > > > > > > loading the ELF is majority of the code would be better of being
-> > > > > > > > > > > > > > > > written in a dynamic language like python?  Would it perhaps be a
-> > > > > > > > > > > > > > > > better idea to work on some high-level language bindings than spend
-> > > > > > > > > > > > > > > > time writing code gens and working around limitations of C?
-> > > > > > > > > > > > > > >
-> > > > > > > > > > > > > > > None of this work prevents Python bindings and other improvements, is
-> > > > > > > > > > > > > > > it? Patches, as always, are greatly appreciated ;)
-> > > > > > > > > > > > > >
-> > > > > > > > > > > > > > This "do it yourself" shit is not really funny :/
-> > > > > > > > > > > > > >
-> > > > > > > > > > > > > > I'll stop providing feedback on BPF patches if you guy keep saying
-> > > > > > > > > > > > > > that :/ Maybe that's what you want.
-> > > > > > > > > > > > > >
-> > > > > > > > > > > > > > > This skeleton stuff is not just to save code, but in general to
-> > > > > > > > > > > > > > > simplify and streamline working with BPF program from userspace side.
-> > > > > > > > > > > > > > > Fortunately or not, but there are a lot of real-world applications
-> > > > > > > > > > > > > > > written in C and C++ that could benefit from this, so this is still
-> > > > > > > > > > > > > > > immensely useful. selftests/bpf themselves benefit a lot from this
-> > > > > > > > > > > > > > > work, see few of the last patches in this series.
-> > > > > > > > > > > > > >
-> > > > > > > > > > > > > > Maybe those applications are written in C and C++ _because_ there
-> > > > > > > > > > > > > > are no bindings for high level languages. I just wish BPF programming
-> > > > > > > > > > > > > > was less weird and adding some funky codegen is not getting us closer
-> > > > > > > > > > > > > > to that goal.
-> > > > > > > > > > > > > >
-> > > > > > > > > > > > > > In my experience code gen is nothing more than a hack to work around
-> > > > > > > > > > > > > > bad APIs, but experiences differ so that's not a solid argument.
-> > > > > > > > > > > > > *nod*
-> > > > > > > > > > > > >
-> > > > > > > > > > > > > We have a nice set of C++ wrappers around libbpf internally, so we can do
-> > > > > > > > > > > > > something like BpfMap<key type, value type> and get a much better interface
-> > > > > > > > > > > > > with type checking. Maybe we should focus on higher level languages instead?
-> > > > > > > > > > > > > We are open to open-sourcing our C++ bits if you want to collaborate.
-> > > > > > > > > > > >
-> > > > > > > > > > > > Python/C++ bindings and API wrappers are an orthogonal concerns here.
-> > > > > > > > > > > > I personally think it would be great to have both Python and C++
-> > > > > > > > > > > > specific API that uses libbpf under the cover. The only debatable
-> > > > > > > > > > > > thing is the logistics: where the source code lives, how it's kept in
-> > > > > > > > > > > > sync with libbpf, how we avoid crippling libbpf itself because
-> > > > > > > > > > > > something is hard or inconvenient to adapt w/ Python, etc.
-> > > > > > > > > > >
-> > > > > > > > > > > [..]
-> > > > > > > > > > > > The problem I'm trying to solve here is not really C-specific. I don't
-> > > > > > > > > > > > think you can solve it without code generation for C++. How do you
-> > > > > > > > > > > > "generate" BPF program-specific layout of .data, .bss, .rodata, etc
-> > > > > > > > > > > > data sections in such a way, where it's type safe (to the degree that
-> > > > > > > > > > > > language allows that, of course) and is not "stringly-based" API? This
-> > > > > > > > > > > > skeleton stuff provides a natural, convenient and type-safe way to
-> > > > > > > > > > > > work with global data from userspace pretty much at the same level of
-> > > > > > > > > > > > performance and convenience, as from BPF side. How can you achieve
-> > > > > > > > > > > > that w/ C++ without code generation? As for Python, sure you can do
-> > > > > > > > > > > > dynamic lookups based on just the name of property/method, but amount
-> > > > > > > > > > > > of overheads is not acceptable for all applications (and Python itself
-> > > > > > > > > > > > is not acceptable for those applications). In addition to that, C is
-> > > > > > > > > > > > the best way for other less popular languages (e.g., Rust) to leverage
-> > > > > > > > > > > > libbpf without investing lots of effort in re-implementing libbpf in
-> > > > > > > > > > > > Rust.
-> > > > > > > > > > > I'd say that a libbpf API similar to dlopen/dlsym is a more
-> > > > > > > > > > > straightforward thing to do. Have a way to "open" a section and
-> > > > > > > > > > > a way to find a symbol in it. Yes, it's a string-based API,
-> > > > > > > > > > > but there is nothing wrong with it. IMO, this is easier to
-> > > > > > > > > > > use/understand and I suppose Python/C++ wrappers are trivial.
-> > > > > > > > > >
-> > > > > > > > > > Without digging through libbpf source code (or actually, look at code,
-> > > > > > > > > > but don't run any test program), what's the name of the map
-> > > > > > > > > > corresponding to .bss section, if object file is
-> > > > > > > > > > some_bpf_object_file.o? If you got it right (congrats, btw, it took me
-> > > > > > > > > > multiple attempts to memorize the pattern), how much time did you
-> > > > > > > > > > spend looking it up? Now compare it to `skel->maps.bss`. Further, if
-> > > > > > > > > > you use anonymous structs for your global vars, good luck maintaining
-> > > > > > > > > > two copies of that: one for BPF side and one for userspace.
-> > > > > > > > > As your average author of BPF programs I don't really care
-> > > > > > > > > which section my symbol ends up into. Just give me an api
-> > > > > > > > > to mmap all "global" sections (or a call per section which does all the
-> > > > > > > > > naming magic inside) and lookup symbol by name; I can cast it to a proper
-> > > > > > > > > type and set it.
-> > > > > > > >
-> > > > > > > > I'd like to not have to know about bss/rodata/data as well, but that's
-> > > > > > > > how things are done for global variables. In skeleton we can try to
-> > > > > > > > make an illusion like they are part of one big datasection/struct, but
-> > > > > > > > that seems like a bit too much magic at this point. But then again,
-> > > > > > > > one of the reasons I want this as an experimental feature, so that we
-> > > > > > > > can actually judge from real experience how inconvenient some things
-> > > > > > > > are, and not just based on "I think it would be ...".
-> > > > > > > >
-> > > > > > > > re: "Just give me ...". Following the spirit of "C is hard" from your
-> > > > > > > > previous arguments, you already have that API: mmap() syscall. C
-> > > > > > > > programmers have to be able to figure out the rest ;) But on the
-> > > > > > > > serious note, this auto-generated code in skeleton actually addresses
-> > > > > > > > all concerns (and more) that you mentioned: mmaping, knowing offsets,
-> > > > > > > > knowing names and types, etc. And it doesn't preclude adding more
-> > > > > > > > "conventional" additional APIs to do everything more dynamically,
-> > > > > > > > based on string names.
-> > > > > > > We have different understanding of what's difficult :-)
-> > > > > >
-> > > > > > Well, clearly... See below.
-> > > > > >
-> > > > > > >
-> > > > > > > To me, doing transparent data/rodata/bss mmap in bpf_object__load and then
-> > > > > > > adding a single libbpf api call to lookup symbol by string name is simple
-> > > > > > > (both from user perspective and from libbpf code complexity). Because in
-> > > > > > > order to use the codegen I need to teach our build system to spit it
-> > > > > > > out (which means I need to add bpftool to it and keep it
-> > > > > > > updated/etc/etc). You can use it as an example of "real experience how
-> > > > > > > inconvenient some things are".
-> > > > > >
-> > > > > > Yes, you need to integrate bpftool in your build process. Which is
-> > > > > > exactly what I'm doing internally for Facebook as well. But it's a
-> > > > > > mostly one-time cost, which benefits lots of users who have much
-> > > > > > better time with these changes, as opposed to make things simpler for
-> > > > > > us, libbpf developers, at the expense of more convoluted user
-> > > > > > experience for end users. I certainly prefer more complicated
-> > > > > > libbpf/bpftool code, if the resulting user experience is simpler for
-> > > > > > BPF application developers, no doubt about it.
-> > > > > I'm in the process of going through this with pahole to get proper BTF.
-> > > > > I don't think I'm willing yet (without a good reason) to go through
-> > > > > this process again :-D (I saw that you've converted a bunch of tests
-> > > > > to it which means I might not be able to run them).
-> > > >
-> > > > A lot of new functionality is depending on BTF for a really good
-> > > > reason (check Alexei's fentry/fexit/btf_tp stuff, allowing for safe
-> > > > direct memory reads and extremely low overhead kretprobes). More stuff
-> > > > is to come and is going to require in-kernel BTF, so even if it's
-> > > > painful right now, it's worth it. Think long term and keep perspective
-> > > > in mind.
-> > > Oh yeah, that's totally understandable with BTF, that's why I just started
-> > > adding it to our build. Still was a bit surprising that one day most
-> > > our our testing went red.
-> > >
-> > > > > I just hope bpftool codegen doesn't become a requirement for
-> > > > > any new useful feature; same happened to BTF, which was optional
-> > > > > for a while and now I can't run a single selftest without it.
-> > > > > I can totally understand the BTF requirement though, but I don't buy the
-> > > > > "codegen makes user experience simple for bpf application developers",
-> > > > > sorry (I guess, at this point, it's all about preference).
-> > > >
-> > > > Bpftool is going to be a requirement for selftests. And it's a good
-> > > > thing because it allows us to continuously test not just libbpf,
-> > > > kernel, but now also related tooling. I haven't converted all of the
-> > > > selftests to skeleton, but given enough time I'd do that, just for the
-> > > > cleaner and shorter plumbing code it gives.
-> > > Then why all the talk about --experimantal flags if you've set up your
-> > > mind on converting everything already?
-> >
-> > Where's contradiction? I'm not converting everything right now, same
-> > as I haven't converted everything into test_progs, right? But I do
-> > think that we should work towards that. But all that is still besides
-> > the point of experimental, because we are talking about selftests, we
-> > can atomically fix them up with whatever changes we do to those
-> > experimental APIs.
-> >
-> > The only reason for this experimental disclaimer is for user code
-> > outside of kernel source tree that is going to try and use skeleton.
-> > If we need to change something up a little bit, I'd like to still have
-> > a bit of a wiggle room to adjust things, even if that causes a small
-> > and easily fixable source code breakage (even though I don't see it
-> > happening yet, it might be necessary).
-> In this case, I might have misunderstood your original intent.
-> I thought you wanted to try this experimental stuff out in
-> the wild, collect some feedback and then, based on that, decide
-> whether you want to commit or not. But it seems that it's not
-> the case.
->
-> > > Btw, how hard it would be to do this generation with a new python
-> > > script instead of bpftool? Something along the lines of
-> > > scripts/bpf_helpers_doc.py that parses BTF and spits out this C header
-> > > (shouldn't be that hard to write custom BTF parser in python, right)?
-> > >
-> >
-> > Not impossible, but harder than I'd care to deal with. I certainly
-> > don't want to re-implement a good chunk of ELF and BTF parsing (maps,
-> > progs, in addition to datasec stuff). But "it's hard to use bpftool in
-> > our build system" doesn't seem like good enough reason to do all that.
-> You can replace "our build system" with some other project you care about,
-> like systemd. They'd have the same problem with vendoring in recent enough
-> bpftool or waiting for every distro to do it. And all this work is
-> because you think that doing:
->
->         my_obj->rodata->my_var = 123;
->
-> Is easier / more type safe than doing:
->         int *my_var = bpf_object__rodata_lookup(obj, "my_var");
->         *my_var = 123;
+I added a AR5005G to a laptop toget WiFI and got UBSAN warnings with todays git kernel.
 
-Your arguments are confusing me. Did I say that we shouldn't add this
-type of "dynamic" interface to variables? Or did I say that every
-single BPF application has to adopt skeleton and bpftool? I made no
-such claims and it seems like discussion is just based around where I
-have to apply my time and efforts... You think it's not useful - don't
-integrate bpftool into your build system, simple as that. Skeleton is
-used for selftests, but it's up to maintainers to decide whether to
-keep this, similar to all the BTF decisions.
+Relevant parts of dmesg (anything wireless or ath5k related + the UBSAN warnings themselves):
 
-So in conclusion. Yes, I think skeleton way is better/safer/easier
-than string-based interface you are proposing, but no I'm not claiming
-it should be the only way. It just happens to be the way I chose to
-implement (first?). If you think API you have in mind makes sense,
-feel free to implement it and we'll have a separate discussion for
-those.
+[   24.407902] cfg80211: Loading compiled-in X.509 certificates for regulatory database
+[   24.426476] cfg80211: Loaded X.509 cert 'sforshee: 00b28ddf47aef9cea7'
+[...]
+[   25.075174] platform regulatory.0: Direct firmware load for regulatory.db failed with error -2
+[   25.082956] cfg80211: failed to load regulatory.d
+[...]
+[   31.285760] ath5k 0000:06:04.0: registered as 'phy0'
+[   32.058128] ath: EEPROM regdomain: 0x63
+[   32.058130] ath: EEPROM indicates we should expect a direct regpair map
+[   32.058134] ath: Country alpha2 being used: 00
+[   32.058135] ath: Regpair used: 0x63
+[   32.058256] ieee80211 phy0: Selected rate control algorithm 'minstrel_ht'
+[   32.058554] ath5k: phy0: Atheros AR2413 chip found (MAC: 0x78, PHY: 0x45)
+[   32.339426] ath5k 0000:06:04.0 wlp6s4: renamed from wlan0
+[   45.651817] ================================================================================
+[   45.654340] UBSAN: Undefined behaviour in drivers/net/wireless/ath/ath5k/base.c:498:16
+[   45.656882] load of value 225 is not a valid value for type '_Bool'
+[   45.659422] CPU: 0 PID: 340 Comm: NetworkManager Not tainted 5.5.0-rc1-00027-gae4b064e2a61 #4
+[   45.662014] Hardware name: QCI             00000000000000000               /EF6                             , BIOS Q3B81 10/11/2005
+[   45.667286] Call Trace:
+[   45.669906]  dump_stack+0x16/0x19
+[   45.672508]  ubsan_epilogue+0x8/0x20
+[   45.675114]  __ubsan_handle_load_invalid_value.cold+0x43/0x48
+[   45.677786]  ? ieee80211_wake_queues_by_reason+0x85/0xa0 [mac80211]
+[   45.680441]  ? __internal_add_timer+0x14/0x50
+[   45.683081]  ath5k_vif_iter.cold+0x43/0x48 [ath5k]
+[   45.685722]  ath5k_update_bssid_mask_and_opmode+0x52/0x140 [ath5k]
+[   45.688390]  ath5k_add_interface+0x198/0x250 [ath5k]
+[   45.691061]  ? ath5k_start+0xeb/0x120 [ath5k]
+[   45.693680]  drv_add_interface+0x34/0x70 [mac80211]
+[   45.696265]  ieee80211_do_open+0x13d/0x980 [mac80211]
+[   45.698844]  ieee80211_open+0x41/0x50 [mac80211]
+[   45.701382]  __dev_open+0xb6/0x150
+[   45.703920]  __dev_change_flags+0x182/0x200
+[   45.706482]  dev_change_flags+0x28/0x60
+[   45.709032]  do_setlink+0x281/0x980
+[   45.711519]  ? rtnl_is_locked+0xd/0x20
+[   45.713957]  ? netdev_master_upper_dev_get+0xf/0x90
+[   45.716374]  ? __nla_parse+0x2d/0x40
+[   45.718760]  __rtnl_newlink+0x5f5/0x960
+[   45.721120]  ? __nla_reserve+0x20/0xd0
+[   45.723443]  ? nla_put+0x32/0x60
+[   45.725743]  ? __kmalloc_track_caller+0xe7/0x270
+[   45.728060]  ? pskb_expand_head+0x59/0x460
+[   45.730379]  ? skb_free_head+0x25/0x30
+[   45.732680]  ? sk_filter_trim_cap+0x33/0x210
+[   45.735001]  ? __netlink_sendskb+0x37/0x50
+[   45.737335]  ? apparmor_task_free+0xc0/0xc0
+[   45.739665]  ? security_capable+0x3f/0x60
+[   45.741985]  ? kmem_cache_alloc+0xc7/0x230
+[   45.744299]  ? rtnl_newlink+0x24/0x60
+[   45.746616]  rtnl_newlink+0x39/0x60
+[   45.748890]  ? __rtnl_newlink+0x960/0x960
+[   45.751160]  rtnetlink_rcv_msg+0x2bf/0x3e0
+[   45.753428]  ? rtnl_calcit+0x100/0x100
+[   45.755680]  netlink_rcv_skb+0x76/0xf0
+[   45.757929]  ? rtnl_calcit+0x100/0x100
+[   45.760167]  rtnetlink_rcv+0xd/0x10
+[   45.762318]  netlink_unicast+0x19d/0x280
+[   45.764378]  ? __check_object_size+0x104/0x11d
+[   45.766437]  netlink_sendmsg+0x20f/0x470
+[   45.768434]  ? netlink_unicast+0x280/0x280
+[   45.770390]  sock_sendmsg+0x75/0x90
+[   45.772290]  ____sys_sendmsg+0x1ea/0x240
+[   45.774149]  ___sys_sendmsg+0x66/0xa0
+[   45.775930]  ? addrconf_sysctl_forward+0xe5/0x240
+[   45.777700]  ? dev_forward_change+0x140/0x140
+[   45.779474]  ? sysctl_head_finish+0x11/0x30
+[   45.781256]  ? proc_sys_call_handler+0xf8/0x1c0
+[   45.783041]  ? proc_sys_call_handler+0x1c0/0x1c0
+[   45.784790]  ? __fget_light+0x52/0x60
+[   45.786514]  ? __fdget+0xd/0x10
+[   45.788195]  __sys_sendmsg+0x4b/0x90
+[   45.789876]  sys_socketcall+0x3af/0x450
+[   45.791532]  ? exit_to_usermode_loop+0x76/0xb0
+[   45.793190]  do_fast_syscall_32+0x95/0x270
+[   45.794831]  entry_SYSENTER_32+0xa5/0xf7
+[   45.796461] EIP: 0xb7ee19a9
+[   45.798073] Code: 5d c3 8d b4 26 00 00 00 00 b8 00 09 3d 00 eb b4 8b 04 24 c3 8b 14 24 c3 8b 1c 24 c3 8b 34 24 c3 90 51 52 55 89 e5 0f 34 cd 80 <5d> 5a 59 c3 90 90 90 90 8d 76 00 58 b8 77 00 00 00 cd 80 90 8d 76
+[   45.801678] EAX: ffffffda EBX: 00000010 ECX: bf8041a0 EDX: 00000000
+[   45.803543] ESI: b7711000 EDI: 020948c8 EBP: 020948c8 ESP: bf804190
+[   45.805422] DS: 007b ES: 007b FS: 0000 GS: 0033 SS: 007b EFLAGS: 00000282
+[   45.807320] ================================================================================
+[   45.935535] ================================================================================
+[   45.937514] UBSAN: Undefined behaviour in drivers/net/wireless/ath/ath5k/base.c:489:16
+[   45.939532] load of value 8 is not a valid value for type '_Bool'
+[   45.941557] CPU: 0 PID: 55 Comm: kworker/u2:2 Not tainted 5.5.0-rc1-00027-gae4b064e2a61 #4
+[   45.943638] Hardware name: QCI             00000000000000000               /EF6                             , BIOS Q3B81 10/11/2005
+[   45.947971] Workqueue: phy0 ieee80211_reconfig_filter [mac80211]
+[   45.950165] Call Trace:
+[   45.952352]  dump_stack+0x16/0x19
+[   45.954528]  ubsan_epilogue+0x8/0x20
+[   45.956700]  __ubsan_handle_load_invalid_value.cold+0x43/0x48
+[   45.958930]  ath5k_vif_iter.cold+0xd/0x48 [ath5k]
+[   45.961182]  ? ath5k_remove_padding+0xa0/0xa0 [ath5k]
+[   45.963457]  __iterate_interfaces+0x72/0x110 [mac80211]
+[   45.965743]  ? ath5k_remove_padding+0xa0/0xa0 [ath5k]
+[   45.968046]  ieee80211_iterate_active_interfaces_atomic+0x15/0x20 [mac80211]
+[   45.970405]  ath5k_configure_filter+0x10d/0x1a0 [ath5k]
+[   45.972764]  ? __switch_to_asm+0x27/0x50
+[   45.975120]  ? __switch_to_asm+0x33/0x50
+[   45.977438]  ? __switch_to_asm+0x27/0x50
+[   45.979749]  ? ath5k_set_key+0x160/0x160 [ath5k]
+[   45.982095]  ieee80211_configure_filter+0x123/0x1a0 [mac80211]
+[   45.984451]  ieee80211_reconfig_filter+0xd/0x10 [mac80211]
+[   45.986827]  process_one_work+0x134/0x2b0
+[   45.989198]  worker_thread+0x13e/0x390
+[   45.991557]  kthread+0xcd/0x100
+[   45.993909]  ? process_one_work+0x2b0/0x2b0
+[   45.996271]  ? kthread_unpark+0x70/0x70
+[   45.998620]  ret_from_fork+0x2e/0x38
+[   46.000968] ================================================================================
 
->
-> I don't think we are going anywhere with this thread, so feel free
-> to ignore me and don't reply.
->
-> > > Python might be easier to integrate with other projects (our build system,
-> > > cilium, etc).
-> > >
-> > > > > > > > > RE anonymous structs: maybe don't use them if you want to share the data
-> > > > > > > > > between bpf and userspace?
-> > > > > > > >
-> > > > > > > > Alright.
-> > > > > > > >
-> > > > > > > > >
-> > > > > > > > > > I never said there is anything wrong with current straightforward
-> > > > > > > > > > libbpf API, but I also never said it's the easiest and most
-> > > > > > > > > > user-friendly way to work with BPF either. So we'll have both
-> > > > > > > > > > code-generated interface and existing API. Furthermore, they are
-> > > > > > > > > > interoperable (you can pass skel->maps.whatever to any of the existing
-> > > > > > > > > > libbpf APIs, same for progs, links, obj itself). But there isn't much
-> > > > > > > > > > that can beat performance and usability of code-generated .data, .bss,
-> > > > > > > > > > .rodata (and now .extern) layout.
-> > > > > > > > > I haven't looked closely enough, but is there a libbpf api to get
-> > > > > > > > > an offset of a variable? Suppose I have the following in bpf.c:
-> > > > > > > > >
-> > > > > > > > >         int a;
-> > > > > > > > >         int b;
-> > > > > > > > >
-> > > > > > > > > Can I get an offset of 'b' in the .bss without manually parsing BTF?
-> > > > > > > >
-> > > > > > > > No there isn't right now. There isn't even an API to know that there
-> > > > > > > > is such a variable called "b". Except for this skeleton, of course.
-> > > > > > > >
-> > > > > > > > >
-> > > > > > > > > TBH, I don't buy the performance argument for these global maps.
-> > > > > > > > > When you did the mmap patchset for the array, you said it yourself
-> > > > > > > > > that it's about convenience and not performance.
-> > > > > > > >
-> > > > > > > > Yes, it's first and foremost about convenience, addressing exactly the
-> > > > > > > > problems you mentioned above. But performance is critical for some use
-> > > > > > > > cases, and nothing can beat memory-mapped view of BPF map for those.
-> > > > > > > > Think about the case of frequently polling (or even atomically
-> > > > > > > > exchanging) some stats from userspace, as one possible example. E.g.,
-> > > > > > > > like some map statistics (number of filled elements, p50 of whatever
-> > > > > > > > of those elements, etc). I'm not sure what's there to buy: doing
-> > > > > > > > syscall to get **entire** global data map contents vs just fetching
-> > > > > > > > single integer from memory-mapped region, guess which one is cheaper?
-> > > > > > > My understanding was that when you were talking about performance, you
-> > > > > > > were talking about doing symbol offset lookup at runtime vs having a
-> > > > > > > generated struct with fixed offsets; not about mmap vs old api with copy
-> > > > > > > (this debate is settled since your patches are accepted).
-> > > > > >
-> > > > > > Oh, I see. No, I didn't intend to claim that performance of looking up
-> > > > > > variable by name in BTF is a big performance concern. Settled then :)
-> > > > > >
-> > > > > > >
-> > > > > > > But to your original reply: you do understand that if you have multiple
-> > > > > > > threads that write to this global data you have a bigger problem, right?
-> > > > > >
-> > > > > > Not necessarily. BPF has atomic increment instruction, doesn't it? And
-> > > > > > can't we still do atomic swap from user-space (it's just a memory,
-> > > > > > after all), right? I haven't tried, tbh, but don't see why it wouldn't
-> > > > > > work.
-> > > > > Atomics are even worse because you get all these nice cache bouncing effects.
-> > > > > That's why I didn't understand initialy the argument about performance.
-> > > >
-> > > > Depends on problems you are trying to solve. I bet it's still cheaper
-> > > > than doing map updates under lock, don't you think?
-> > > Exactly, depends on the problem. But still, if you need frequent reads
-> > > of that global data, it means there are frequent writes, which is
-> > > a problem on its own.
+-- 
+Meelis Roos <mroos@linux.ee>
