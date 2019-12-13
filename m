@@ -2,127 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4412A11E478
-	for <lists+netdev@lfdr.de>; Fri, 13 Dec 2019 14:22:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A12711E4DB
+	for <lists+netdev@lfdr.de>; Fri, 13 Dec 2019 14:47:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726705AbfLMNUv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Dec 2019 08:20:51 -0500
-Received: from smtp-fw-6002.amazon.com ([52.95.49.90]:41412 "EHLO
-        smtp-fw-6002.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726386AbfLMNUv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Dec 2019 08:20:51 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1576243250; x=1607779250;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=tFySCLGtPwSbxUYEux7/p0Qq1N3sbGfPAhYwtPWA8rI=;
-  b=q+yFsIPL9vjV7Vk8SVEayXkaH+KzTUeReqwRvOFeNS/hB2HWIKZ12k1U
-   iu1yQG7MkOIFrMQmSTlWEqsHAO+ihcF6cijHLC6QLcfTd/1Vwp1+M4jEv
-   VNUV/SMdSTB+K8S1R80jvVX4TjM1kzeXAU1RpYgXxqdNuDQTsAqkXCaD/
-   8=;
-IronPort-SDR: O0jhjvelAXfwKAOT+PVxdrI3ucPHYGBWbSCbkKO9chIdq5QSf3fZxfvnAusUejisOvPnXz7Kg1
- G9cNGYjF/sKQ==
-X-IronPort-AV: E=Sophos;i="5.69,309,1571702400"; 
-   d="scan'208";a="7497894"
-Received: from iad6-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-1e-27fb8269.us-east-1.amazon.com) ([10.124.125.6])
-  by smtp-border-fw-out-6002.iad6.amazon.com with ESMTP; 13 Dec 2019 13:20:49 +0000
-Received: from EX13MTAUEA001.ant.amazon.com (iad55-ws-svc-p15-lb9-vlan3.iad.amazon.com [10.40.159.166])
-        by email-inbound-relay-1e-27fb8269.us-east-1.amazon.com (Postfix) with ESMTPS id 181C5A1B8E;
-        Fri, 13 Dec 2019 13:20:47 +0000 (UTC)
-Received: from EX13D32EUB002.ant.amazon.com (10.43.166.114) by
- EX13MTAUEA001.ant.amazon.com (10.43.61.243) with Microsoft SMTP Server (TLS)
- id 15.0.1367.3; Fri, 13 Dec 2019 13:20:46 +0000
-Received: from EX13MTAUWA001.ant.amazon.com (10.43.160.58) by
- EX13D32EUB002.ant.amazon.com (10.43.166.114) with Microsoft SMTP Server (TLS)
- id 15.0.1367.3; Fri, 13 Dec 2019 13:20:45 +0000
-Received: from u2f063a87eabd5f.cbg10.amazon.com (10.125.106.135) by
- mail-relay.amazon.com (10.43.160.118) with Microsoft SMTP Server id
- 15.0.1367.3 via Frontend Transport; Fri, 13 Dec 2019 13:20:43 +0000
-From:   Paul Durrant <pdurrant@amazon.com>
-To:     <xen-devel@lists.xenproject.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     Paul Durrant <pdurrant@amazon.com>,
-        Juergen Gross <jgross@suse.com>,
-        "Jakub Kicinski" <jakub.kicinski@netronome.com>,
-        Wei Liu <wei.liu@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH net v2] xen-netback: avoid race that can lead to NULL pointer dereference
-Date:   Fri, 13 Dec 2019 13:20:40 +0000
-Message-ID: <20191213132040.21446-1-pdurrant@amazon.com>
-X-Mailer: git-send-email 2.20.1
+        id S1727492AbfLMNrb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Dec 2019 08:47:31 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:51698 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726524AbfLMNrb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 13 Dec 2019 08:47:31 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=awCXz0GwD1LDcWzOjDMp0h+d0sdlS80mO4Nbpi4KuV0=; b=B022IG0f4HXZeMBlMNrforMruq
+        dFK7znmRa1CpiTRnP5y5JakiioHQ+FdeEMCHwk2Gj0/OgbKerI8jebCoeNmN1LuX1Yu+7UNmUTTXy
+        MGKwep3ErD6V9+pLSXg9iuy7P0DRSQDYOfxGJpzrOZ0+YYKV7JvJNzXUQvMMLC7dJSiw=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.92.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1iflHg-00019i-1C; Fri, 13 Dec 2019 14:47:08 +0100
+Date:   Fri, 13 Dec 2019 14:47:08 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     biao huang <biao.huang@mediatek.com>
+Cc:     davem@davemloft.net, Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, yt.shen@mediatek.com
+Subject: Re: [PATCH 1/2] net-next: stmmac: mediatek: add more suuport for RMII
+Message-ID: <20191213134708.GA4286@lunn.ch>
+References: <20191212024145.21752-1-biao.huang@mediatek.com>
+ <20191212024145.21752-2-biao.huang@mediatek.com>
+ <20191212132520.GB9959@lunn.ch>
+ <1576200981.29387.13.camel@mhfsdcap03>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1576200981.29387.13.camel@mhfsdcap03>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In function xenvif_disconnect_queue(), the value of queue->rx_irq is
-zeroed *before* queue->task is stopped. Unfortunately that task may call
-notify_remote_via_irq(queue->rx_irq) and calling that function with a
-zero value results in a NULL pointer dereference in evtchn_from_irq().
+> The clock labeled as "rmii_internal" is needed only in RMII(when MAC provides
+> reference clock), and useless for RGMII/MII/RMII(when phy provides reference
+> clock).
+> 
+> So, add a boolean flag to indicate where the RMII reference clock is from, MAC
+> or PHY, if MAC, enable the "rmii_internal", or disable it.
+> and this clock already documented in dt-binding in PATCH 2/2.
+> 
+> For power saving, it should not be enabled in default, so can't add it to the
+> existing list of clocks directly.
+> 
+> Any advice for this special case?
 
-This patch simply re-orders things, stopping all tasks before zero-ing the
-irq values, thereby avoiding the possibility of the race.
+O.K. Add the boolean, but also add the clock to the list of clocks in
+DT. Don't hard code the clock name in the driver.
 
-Fixes: 2ac061ce97f4 ("xen/netback: cleanup init and deinit code")
-Signed-off-by: Paul Durrant <pdurrant@amazon.com>
----
-Cc: Juergen Gross <jgross@suse.com>
-Cc: Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc: Wei Liu <wei.liu@kernel.org>
-Cc: "David S. Miller" <davem@davemloft.net>
-
-v2:
- - Add 'Fixes' tag and re-work commit comment
----
- drivers/net/xen-netback/interface.c | 24 ++++++++++++------------
- 1 file changed, 12 insertions(+), 12 deletions(-)
-
-diff --git a/drivers/net/xen-netback/interface.c b/drivers/net/xen-netback/interface.c
-index 68dd7bb07ca6..f15ba3de6195 100644
---- a/drivers/net/xen-netback/interface.c
-+++ b/drivers/net/xen-netback/interface.c
-@@ -628,18 +628,6 @@ int xenvif_connect_ctrl(struct xenvif *vif, grant_ref_t ring_ref,
- 
- static void xenvif_disconnect_queue(struct xenvif_queue *queue)
- {
--	if (queue->tx_irq) {
--		unbind_from_irqhandler(queue->tx_irq, queue);
--		if (queue->tx_irq == queue->rx_irq)
--			queue->rx_irq = 0;
--		queue->tx_irq = 0;
--	}
--
--	if (queue->rx_irq) {
--		unbind_from_irqhandler(queue->rx_irq, queue);
--		queue->rx_irq = 0;
--	}
--
- 	if (queue->task) {
- 		kthread_stop(queue->task);
- 		queue->task = NULL;
-@@ -655,6 +643,18 @@ static void xenvif_disconnect_queue(struct xenvif_queue *queue)
- 		queue->napi.poll = NULL;
- 	}
- 
-+	if (queue->tx_irq) {
-+		unbind_from_irqhandler(queue->tx_irq, queue);
-+		if (queue->tx_irq == queue->rx_irq)
-+			queue->rx_irq = 0;
-+		queue->tx_irq = 0;
-+	}
-+
-+	if (queue->rx_irq) {
-+		unbind_from_irqhandler(queue->rx_irq, queue);
-+		queue->rx_irq = 0;
-+	}
-+
- 	xenvif_unmap_frontend_data_rings(queue);
- }
- 
--- 
-2.20.1
-
+    Andrew
