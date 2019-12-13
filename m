@@ -2,251 +2,663 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4AD7D11EAC6
-	for <lists+netdev@lfdr.de>; Fri, 13 Dec 2019 19:59:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9718811EAE2
+	for <lists+netdev@lfdr.de>; Fri, 13 Dec 2019 20:04:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728664AbfLMS67 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Dec 2019 13:58:59 -0500
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:38948 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728473AbfLMS67 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Dec 2019 13:58:59 -0500
-Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xBDIq1ap025606;
-        Fri, 13 Dec 2019 10:58:39 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type : content-id
- : content-transfer-encoding : mime-version; s=facebook;
- bh=Kx6MqbG6kl+atUNNQbwoiDYmpXrpG8746xcS8N3lV5I=;
- b=aaQkWNMY8iVcOLR9SPFAKtRZIOwE7ka2jkE+kG6NPrSZEHfiXf9fqXvnEHb67WFlrRP7
- fl+B+266bqVnZ1cWm+C2ZsbmFTdOLPlUQhNU4Nd1FkGvfLBFyk8tr+jeeppEMTJ4tiC/
- Sg7daR5e9q9sG4XTLs7wrj9YkRXJIMTNSUc= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 2wuuxkd4vm-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Fri, 13 Dec 2019 10:58:39 -0800
-Received: from ash-exhub101.TheFacebook.com (2620:10d:c0a8:82::e) by
- ash-exhub201.TheFacebook.com (2620:10d:c0a8:83::7) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Fri, 13 Dec 2019 10:58:38 -0800
-Received: from NAM04-CO1-obe.outbound.protection.outlook.com (100.104.31.183)
- by o365-in.thefacebook.com (100.104.35.173) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1713.5
- via Frontend Transport; Fri, 13 Dec 2019 10:58:38 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Dz40aJPX9gCdReFRku80GE+sdBJrSSzdHGpDnpvlbDNWufIlWo3btfMDrihpLBlRA9OuLLK4Dly2YWzDdHb1XncYCahvhGKTI3pK/914Mk3fOJXgt6YtC9+ksVo3vKUSUlZj5NJ5yYknmiAgesY6BP2d+YXH5eqmyhUBHe7JHiZOcx2m5b2lS65j4fXwP6rvA7mQ1Jx1KBtBxTRAp+S3NMiU79xFLA68noMOUEH81tkGZ88LeIoxgOJU3JArx4XuPxsD2dR/1L0LGK5JMusQXA8zQ/p6Hup/DnUJPX2DJgyBZQ9k1o60Z/CaPWor8U6FzlecEz83QqSepbLR7CBJIQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Kx6MqbG6kl+atUNNQbwoiDYmpXrpG8746xcS8N3lV5I=;
- b=ZbW6c6ir+C/STHdf9SkxClNkKMFLBnp9NOCZtG4qpERUf/IRgY0JICiwhH9jR+Nibbn658Om7IYc7xwqTCK4RXyMF7XI9+4AqDDYHVAkMdJcmAHtPcop2b5WhIQX8YF4qQdgYArnx18aD84ryKB1+A91bEGcqzg1HJixhT6gR0Yz6jdr7DEijxOYOUeIWjOD5ZODao1e8f+PlWJTRjET6C39JAzPUrXzUek1iW76xNwwJiq1hmwvEt64wLHkrPLROP1KLts96cOAwR67NskrK/piQcIOHUpBRhJ7pqx/3SlKUUDsCHeMFG6Aa5hY1+rYWiZ6eIWMqR8apPiDOnlncg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Kx6MqbG6kl+atUNNQbwoiDYmpXrpG8746xcS8N3lV5I=;
- b=CXEZySRlxhF6iWe8ebcDiU7MCiIuC22VRCGJUh0WGkbV2iRigkARn4VLn819O/jUKnyai0UefrLyQwhf+kVuLZAN1B28al8c4UhEljNwuas6kEmlt52aG8pADKQdWKxPaip3d6IqsRQA0ImoZ36rkezAizmY8eZuA2xO4HK+/30=
-Received: from DM5PR15MB1675.namprd15.prod.outlook.com (10.175.107.145) by
- DM5PR15MB1546.namprd15.prod.outlook.com (10.173.223.151) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2538.18; Fri, 13 Dec 2019 18:58:36 +0000
-Received: from DM5PR15MB1675.namprd15.prod.outlook.com
- ([fe80::2844:b18d:c296:c23]) by DM5PR15MB1675.namprd15.prod.outlook.com
- ([fe80::2844:b18d:c296:c23%8]) with mapi id 15.20.2516.018; Fri, 13 Dec 2019
- 18:58:36 +0000
-From:   Yonghong Song <yhs@fb.com>
-To:     Brian Vazquez <brianvv@google.com>,
-        Brian Vazquez <brianvv.kernel@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        "Daniel Borkmann" <daniel@iogearbox.net>,
-        "David S . Miller" <davem@davemloft.net>
-CC:     Stanislav Fomichev <sdf@google.com>,
-        Petar Penkov <ppenkov@google.com>,
-        Willem de Bruijn <willemb@google.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>
-Subject: Re: [PATCH v3 bpf-next 06/11] bpf: add batch ops to all htab bpf map
-Thread-Topic: [PATCH v3 bpf-next 06/11] bpf: add batch ops to all htab bpf map
-Thread-Index: AQHVsHMuYMDKZmq21kWyUxx3YJSoMae4bbuA
-Date:   Fri, 13 Dec 2019 18:58:36 +0000
-Message-ID: <a33dab7b-0f46-c29f-0db1-a5539c433b3d@fb.com>
-References: <20191211223344.165549-1-brianvv@google.com>
- <20191211223344.165549-7-brianvv@google.com>
-In-Reply-To: <20191211223344.165549-7-brianvv@google.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: MWHPR14CA0053.namprd14.prod.outlook.com
- (2603:10b6:300:81::15) To DM5PR15MB1675.namprd15.prod.outlook.com
- (2603:10b6:3:11f::17)
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [2620:10d:c090:200::2:e8f1]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: e31cf9bd-53c6-461f-daf0-08d77ffe7576
-x-ms-traffictypediagnostic: DM5PR15MB1546:
-x-microsoft-antispam-prvs: <DM5PR15MB1546019442AAB70AC910EAEED3540@DM5PR15MB1546.namprd15.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:2043;
-x-forefront-prvs: 0250B840C1
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(39860400002)(396003)(366004)(136003)(376002)(346002)(189003)(199004)(52116002)(478600001)(966005)(4326008)(6506007)(53546011)(186003)(5660300002)(316002)(8936002)(36756003)(54906003)(86362001)(31696002)(110136005)(8676002)(81156014)(66946007)(64756008)(2616005)(71200400001)(66556008)(66476007)(66446008)(7416002)(81166006)(6486002)(31686004)(6512007)(2906002);DIR:OUT;SFP:1102;SCL:1;SRVR:DM5PR15MB1546;H:DM5PR15MB1675.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: fb.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: ddtfvaFMULg+iEWRaKBi60gmM+UNvsX2ZJGs/+Usq1dgTFxKJJmF2M8rjcpZPE5gbarJRZpOnGXNlT/H+BTjvnlnY80pNW2mdFdvAEekiex06/uiSG78BI/4fl99lUBrIxPutrE3QEk6yb+sfHlBeSBmav5/c6okApGhS/gbynbSowwM+JROiOWgmDl/fD73lq6GGdgjk0PSvHqRRzs0m0ccfj5yGB3UUbEcyx1854pXZTwwvd82p4bGuTteibJxnpciR2TAEnPDLVkJFfpecRbp3mtsq/P0F81Nq11AlQV0oMS5g/oL6u3Xr0QNyAW9L6rjt0ZJP+nFsNiH3GbaxxklZBWfz0cCwalJxW7RgOpqbGLWFw0MXK12Zu1tsF8PGaInfF0pcNkhTk/E/hTJLPAlfzzc75xuxAxp/8slQYvdWNMSziQsHtReoHKsFIOkAJpIzyOxQueC3bLxv2Fev9iVaREwsgOdU+2sZ5KqvDM=
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <33DAEE067798FD42979FA2D430DA6EE6@namprd15.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S1728893AbfLMTEA convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 13 Dec 2019 14:04:00 -0500
+Received: from smtprelay0020.hostedemail.com ([216.40.44.20]:56370 "EHLO
+        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1728455AbfLMTD7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Dec 2019 14:03:59 -0500
+Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+        by smtprelay06.hostedemail.com (Postfix) with ESMTP id 0CC0C18010D95;
+        Fri, 13 Dec 2019 19:03:54 +0000 (UTC)
+X-Session-Marker: 6E657665747340676F6F646D69732E6F7267
+X-Spam-Summary: 50,0,0,,d41d8cd98f00b204,rostedt@goodmis.org,:::::::::::::::::::::::::::::::::::::::,RULES_HIT:41:69:146:327:355:379:541:599:800:960:966:967:973:988:989:1260:1277:1311:1313:1314:1345:1359:1431:1437:1513:1515:1516:1518:1521:1593:1594:1605:1730:1747:1777:1792:1981:2194:2196:2198:2199:2200:2201:2393:2525:2553:2560:2563:2682:2685:2731:2859:2902:2933:2937:2939:2942:2945:2947:2951:2954:3022:3138:3139:3140:3141:3142:3622:3865:3866:3867:3868:3870:3872:3874:3934:3936:3938:3941:3944:3947:3950:3953:3956:3959:4250:4321:4385:4605:5007:6261:6742:7514:7576:7875:7903:8603:9008:9025:9545:10004:10954:10967:11026:11232:11473:11658:11914:12043:12262:12294:12296:12297:12438:12555:12679:12683:12740:12895:12986:13141:13230:13439:14096:14097:14659:21080:21324:21433:21451:21627:21740:21789:21795:21939:21990:30012:30029:30051:30054:30090:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:2,LUA_SUMMARY:non
+X-HE-Tag: year80_78fd867852a2f
+X-Filterd-Recvd-Size: 22216
+Received: from gandalf.local.home (cpe-66-24-58-225.stny.res.rr.com [66.24.58.225])
+        (Authenticated sender: nevets@goodmis.org)
+        by omf14.hostedemail.com (Postfix) with ESMTPA;
+        Fri, 13 Dec 2019 19:03:51 +0000 (UTC)
+Date:   Fri, 13 Dec 2019 14:03:49 -0500
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Ingo Molnar <mingo@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Quentin Monnet <quentin.monnet@netronome.com>
+Subject: Re: [RFC] btf: Some structs are doubled because of struct
+ ring_buffer
+Message-ID: <20191213140349.5a42a8af@gandalf.local.home>
+In-Reply-To: <20191213184621.GG2844@hirez.programming.kicks-ass.net>
+References: <20191213153553.GE20583@krava>
+        <20191213112438.773dff35@gandalf.local.home>
+        <20191213165155.vimm27wo7brkh3yu@ast-mbp.dhcp.thefacebook.com>
+        <20191213121118.236f55b8@gandalf.local.home>
+        <20191213180223.GE2844@hirez.programming.kicks-ass.net>
+        <20191213132941.6fa2d1bd@gandalf.local.home>
+        <20191213184621.GG2844@hirez.programming.kicks-ass.net>
+X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: e31cf9bd-53c6-461f-daf0-08d77ffe7576
-X-MS-Exchange-CrossTenant-originalarrivaltime: 13 Dec 2019 18:58:36.6398
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: cABoCw8CuGVzTtkCrNYph6kmzc7rR4WTxqba3gS7YI55fIXoElBwSxnL2k1drdDk
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR15MB1546
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
- definitions=2019-12-13_05:2019-12-13,2019-12-13 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 adultscore=0 spamscore=0
- mlxlogscore=999 phishscore=0 clxscore=1015 malwarescore=0 bulkscore=0
- suspectscore=0 lowpriorityscore=0 impostorscore=0 mlxscore=0
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-1910280000 definitions=main-1912130145
-X-FB-Internal: deliver
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQoNCk9uIDEyLzExLzE5IDI6MzMgUE0sIEJyaWFuIFZhenF1ZXogd3JvdGU6DQo+IEZyb206IFlv
-bmdob25nIFNvbmcgPHloc0BmYi5jb20+DQo+IA0KPiBodGFiIGNhbid0IHVzZSBnZW5lcmljIGJh
-dGNoIHN1cHBvcnQgZHVlIHNvbWUgcHJvYmxlbWF0aWMgYmVoYXZpb3Vycw0KPiBpbmhlcmVudCB0
-byB0aGUgZGF0YSBzdHJ1Y3RyZSwgaS5lLiB3aGlsZSBpdGVyYXRpbmcgdGhlIGJwZiBtYXAgIGEN
-Cj4gY29uY3VycmVudCBwcm9ncmFtIG1pZ2h0IGRlbGV0ZSB0aGUgbmV4dCBlbnRyeSB0aGF0IGJh
-dGNoIHdhcyBhYm91dCB0bw0KPiB1c2UsIGluIHRoYXQgY2FzZSB0aGVyZSdzIG5vIGVhc3kgc29s
-dXRpb24gdG8gcmV0cmlldmUgdGhlIG5leHQgZW50cnksDQo+IHRoZSBpc3N1ZSBoYXMgYmVlbiBk
-aXNjdXNzZWQgbXVsdGlwbGUgdGltZXMgKHNlZSBbMV0gYW5kIFsyXSkuDQo+IA0KPiBUaGUgb25s
-eSB3YXkgaG1hcCBjYW4gYmUgdHJhdmVyc2VkIHdpdGhvdXQgdGhlIHByb2JsZW0gcHJldmlvdXNs
-eQ0KPiBleHBvc2VkIGlzIGJ5IG1ha2luZyBzdXJlIHRoYXQgdGhlIG1hcCBpcyB0cmF2ZXJzaW5n
-IGVudGlyZSBidWNrZXRzLg0KPiBUaGlzIGNvbW1pdCBpbXBsZW1lbnRzIHRob3NlIHN0cmljdCBy
-ZXF1aXJlbWVudHMgZm9yIGhtYXAsIHRoZQ0KPiBpbXBsZW1lbnRhdGlvbiBmb2xsb3dzIHRoZSBz
-YW1lIGludGVyYWN0aW9uIHRoYXQgZ2VuZXJpYyBzdXBwb3J0IHdpdGgNCj4gc29tZSBleGNlcHRp
-b25zOg0KPiANCj4gICAtIElmIGtleXMvdmFsdWVzIGJ1ZmZlciBhcmUgbm90IGJpZyBlbm91Z2gg
-dG8gdHJhdmVyc2UgYSBidWNrZXQsDQo+ICAgICBFTk9TUEMgd2lsbCBiZSByZXR1cm5lZC4NCj4g
-ICAtIG91dF9iYXRjaCBjb250YWlucyB0aGUgdmFsdWUgb2YgdGhlIG5leHQgYnVja2V0IGluIHRo
-ZSBpdGVyYXRpb24sIG5vdA0KPiAgICAgdGhlIG5leHQga2V5LCBidXQgdGhpcyBpcyB0cmFuc3Bh
-cmVudCBmb3IgdGhlIHVzZXIgc2luY2UgdGhlIHVzZXINCj4gICAgIHNob3VsZCBuZXZlciB1c2Ug
-b3V0X2JhdGNoIGZvciBvdGhlciB0aGFuIGJwZiBiYXRjaCBzeXNjYWxscy4NCj4gDQo+IE5vdGUg
-dGhhdCBvbmx5IGxvb2t1cCBhbmQgbG9va3VwX2FuZF9kZWxldGUgYmF0Y2ggb3BzIHJlcXVpcmUg
-dGhlIGhtYXANCj4gc3BlY2lmaWMgaW1wbGVtZW50YXRpb24sIHVwZGF0ZS9kZWxldGUgYmF0Y2gg
-b3BzIGNhbiBiZSB0aGUgZ2VuZXJpYw0KPiBvbmVzLg0KPiANCj4gWzFdIGh0dHBzOi8vbG9yZS5r
-ZXJuZWwub3JnL2JwZi8yMDE5MDcyNDE2NTgwMy44NzQ3MC0xLWJyaWFudnZAZ29vZ2xlLmNvbS8N
-Cj4gWzJdIGh0dHBzOi8vbG9yZS5rZXJuZWwub3JnL2JwZi8yMDE5MDkwNjIyNTQzNC4zNjM1NDIx
-LTEteWhzQGZiLmNvbS8NCj4gDQo+IFNpZ25lZC1vZmYtYnk6IFlvbmdob25nIFNvbmcgPHloc0Bm
-Yi5jb20+DQo+IFNpZ25lZC1vZmYtYnk6IEJyaWFuIFZhenF1ZXogPGJyaWFudnZAZ29vZ2xlLmNv
-bT4NCj4gLS0tDQo+ICAga2VybmVsL2JwZi9oYXNodGFiLmMgfCAyNDIgKysrKysrKysrKysrKysr
-KysrKysrKysrKysrKysrKysrKysrKysrKysrKw0KPiAgIDEgZmlsZSBjaGFuZ2VkLCAyNDIgaW5z
-ZXJ0aW9ucygrKQ0KPiANCj4gZGlmZiAtLWdpdCBhL2tlcm5lbC9icGYvaGFzaHRhYi5jIGIva2Vy
-bmVsL2JwZi9oYXNodGFiLmMNCj4gaW5kZXggMjIwNjZhNjJjOGM5Ny4uZmFjMTA3YmRhZjllYyAx
-MDA2NDQNCj4gLS0tIGEva2VybmVsL2JwZi9oYXNodGFiLmMNCj4gKysrIGIva2VybmVsL2JwZi9o
-YXNodGFiLmMNCj4gQEAgLTE3LDYgKzE3LDE3IEBADQo+ICAgCShCUEZfRl9OT19QUkVBTExPQyB8
-IEJQRl9GX05PX0NPTU1PTl9MUlUgfCBCUEZfRl9OVU1BX05PREUgfAlcDQo+ICAgCSBCUEZfRl9B
-Q0NFU1NfTUFTSyB8IEJQRl9GX1pFUk9fU0VFRCkNCj4gICANCj4gKyNkZWZpbmUgQkFUQ0hfT1BT
-KF9uYW1lKQkJCVwNCj4gKwkubWFwX2xvb2t1cF9iYXRjaCA9CQkJXA0KPiArCV9uYW1lIyNfbWFw
-X2xvb2t1cF9iYXRjaCwJCVwNCj4gKwkubWFwX2xvb2t1cF9hbmRfZGVsZXRlX2JhdGNoID0JCVwN
-Cj4gKwlfbmFtZSMjX21hcF9sb29rdXBfYW5kX2RlbGV0ZV9iYXRjaCwJXA0KPiArCS5tYXBfdXBk
-YXRlX2JhdGNoID0JCQlcDQo+ICsJZ2VuZXJpY19tYXBfdXBkYXRlX2JhdGNoLAkJXA0KPiArCS5t
-YXBfZGVsZXRlX2JhdGNoID0JCQlcDQo+ICsJZ2VuZXJpY19tYXBfZGVsZXRlX2JhdGNoDQo+ICsN
-Cj4gKw0KPiAgIHN0cnVjdCBidWNrZXQgew0KPiAgIAlzdHJ1Y3QgaGxpc3RfbnVsbHNfaGVhZCBo
-ZWFkOw0KPiAgIAlyYXdfc3BpbmxvY2tfdCBsb2NrOw0KPiBAQCAtMTIzMiw2ICsxMjQzLDIzMyBA
-QCBzdGF0aWMgdm9pZCBodGFiX21hcF9zZXFfc2hvd19lbGVtKHN0cnVjdCBicGZfbWFwICptYXAs
-IHZvaWQgKmtleSwNCj4gICAJcmN1X3JlYWRfdW5sb2NrKCk7DQo+ICAgfQ0KPiAgIA0KPiArc3Rh
-dGljIGludA0KPiArX19odGFiX21hcF9sb29rdXBfYW5kX2RlbGV0ZV9iYXRjaChzdHJ1Y3QgYnBm
-X21hcCAqbWFwLA0KPiArCQkJCSAgIGNvbnN0IHVuaW9uIGJwZl9hdHRyICphdHRyLA0KPiArCQkJ
-CSAgIHVuaW9uIGJwZl9hdHRyIF9fdXNlciAqdWF0dHIsDQo+ICsJCQkJICAgYm9vbCBkb19kZWxl
-dGUsIGJvb2wgaXNfbHJ1X21hcCwNCj4gKwkJCQkgICBib29sIGlzX3BlcmNwdSkNCj4gK3sNCj4g
-KwlzdHJ1Y3QgYnBmX2h0YWIgKmh0YWIgPSBjb250YWluZXJfb2YobWFwLCBzdHJ1Y3QgYnBmX2h0
-YWIsIG1hcCk7DQo+ICsJdTMyIGJ1Y2tldF9jbnQsIHRvdGFsLCBrZXlfc2l6ZSwgdmFsdWVfc2l6
-ZSwgcm91bmR1cF9rZXlfc2l6ZTsNCj4gKwl2b2lkICprZXlzID0gTlVMTCwgKnZhbHVlcyA9IE5V
-TEwsICp2YWx1ZSwgKmRzdF9rZXksICpkc3RfdmFsOw0KPiArCXZvaWQgX191c2VyICp1dmFsdWVz
-ID0gdTY0X3RvX3VzZXJfcHRyKGF0dHItPmJhdGNoLnZhbHVlcyk7DQo+ICsJdm9pZCBfX3VzZXIg
-KnVrZXlzID0gdTY0X3RvX3VzZXJfcHRyKGF0dHItPmJhdGNoLmtleXMpOw0KPiArCXZvaWQgKnVi
-YXRjaCA9IHU2NF90b191c2VyX3B0cihhdHRyLT5iYXRjaC5pbl9iYXRjaCk7DQo+ICsJdTY0IGVs
-ZW1fbWFwX2ZsYWdzLCBtYXBfZmxhZ3M7DQo+ICsJc3RydWN0IGhsaXN0X251bGxzX2hlYWQgKmhl
-YWQ7DQo+ICsJdTMyIGJhdGNoLCBtYXhfY291bnQsIHNpemU7DQo+ICsJc3RydWN0IGhsaXN0X251
-bGxzX25vZGUgKm47DQo+ICsJdW5zaWduZWQgbG9uZyBmbGFnczsNCj4gKwlzdHJ1Y3QgaHRhYl9l
-bGVtICpsOw0KPiArCXN0cnVjdCBidWNrZXQgKmI7DQo+ICsJaW50IHJldCA9IDA7DQo+ICsNCj4g
-KwltYXhfY291bnQgPSBhdHRyLT5iYXRjaC5jb3VudDsNCj4gKwlpZiAoIW1heF9jb3VudCkNCj4g
-KwkJcmV0dXJuIDA7DQo+ICsNCj4gKwllbGVtX21hcF9mbGFncyA9IGF0dHItPmJhdGNoLmVsZW1f
-ZmxhZ3M7DQo+ICsJaWYgKChlbGVtX21hcF9mbGFncyAmIH5CUEZfRl9MT0NLKSB8fA0KPiArCSAg
-ICAoKGVsZW1fbWFwX2ZsYWdzICYgQlBGX0ZfTE9DSykgJiYgIW1hcF92YWx1ZV9oYXNfc3Bpbl9s
-b2NrKG1hcCkpKQ0KPiArCQlyZXR1cm4gLUVJTlZBTDsNCj4gKw0KPiArCW1hcF9mbGFncyA9IGF0
-dHItPmJhdGNoLmZsYWdzOw0KPiArCWlmIChtYXBfZmxhZ3MpDQo+ICsJCXJldHVybiAtRUlOVkFM
-Ow0KPiArDQo+ICsJYmF0Y2ggPSAwOw0KPiArCWlmICh1YmF0Y2ggJiYgY29weV9mcm9tX3VzZXIo
-JmJhdGNoLCB1YmF0Y2gsIHNpemVvZihiYXRjaCkpKQ0KPiArCQlyZXR1cm4gLUVGQVVMVDsNCj4g
-Kw0KPiArCWlmIChiYXRjaCA+PSBodGFiLT5uX2J1Y2tldHMpDQo+ICsJCXJldHVybiAtRU5PRU5U
-Ow0KPiArDQo+ICsJLyogV2UgY2Fubm90IGRvIGNvcHlfZnJvbV91c2VyIG9yIGNvcHlfdG9fdXNl
-ciBpbnNpZGUNCj4gKwkgKiB0aGUgcmN1X3JlYWRfbG9jay4gQWxsb2NhdGUgZW5vdWdoIHNwYWNl
-IGhlcmUuDQo+ICsJICovDQo+ICsJa2V5X3NpemUgPSBodGFiLT5tYXAua2V5X3NpemU7DQo+ICsJ
-cm91bmR1cF9rZXlfc2l6ZSA9IHJvdW5kX3VwKGh0YWItPm1hcC5rZXlfc2l6ZSwgOCk7DQo+ICsJ
-dmFsdWVfc2l6ZSA9IGh0YWItPm1hcC52YWx1ZV9zaXplOw0KPiArCXNpemUgPSByb3VuZF91cCh2
-YWx1ZV9zaXplLCA4KTsNCj4gKwlpZiAoaXNfcGVyY3B1KQ0KPiArCQl2YWx1ZV9zaXplID0gc2l6
-ZSAqIG51bV9wb3NzaWJsZV9jcHVzKCk7DQo+ICsJa2V5cyA9IGt2bWFsbG9jKGtleV9zaXplLCBH
-RlBfVVNFUiB8IF9fR0ZQX05PV0FSTik7DQo+ICsJdmFsdWVzID0ga3ZtYWxsb2ModmFsdWVfc2l6
-ZSwgR0ZQX1VTRVIgfCBfX0dGUF9OT1dBUk4pOw0KPiArCWlmICgha2V5cyB8fCAhdmFsdWVzKSB7
-DQo+ICsJCXJldCA9IC1FTk9NRU07DQo+ICsJCWdvdG8gb3V0Ow0KPiArCX0NCj4gKw0KPiArCWRz
-dF9rZXkgPSBrZXlzOw0KPiArCWRzdF92YWwgPSB2YWx1ZXM7DQo+ICsJdG90YWwgPSAwOw0KPiAr
-DQo+ICsJcHJlZW1wdF9kaXNhYmxlKCk7DQo+ICsJdGhpc19jcHVfaW5jKGJwZl9wcm9nX2FjdGl2
-ZSk7DQo+ICsJcmN1X3JlYWRfbG9jaygpOw0KPiArDQo+ICthZ2FpbjoNCj4gKwliID0gJmh0YWIt
-PmJ1Y2tldHNbYmF0Y2hdOw0KPiArCWhlYWQgPSAmYi0+aGVhZDsNCj4gKwlyYXdfc3Bpbl9sb2Nr
-X2lycXNhdmUoJmItPmxvY2ssIGZsYWdzKTsNCj4gKw0KPiArCWJ1Y2tldF9jbnQgPSAwOw0KPiAr
-CWhsaXN0X251bGxzX2Zvcl9lYWNoX2VudHJ5X3JjdShsLCBuLCBoZWFkLCBoYXNoX25vZGUpDQo+
-ICsJCWJ1Y2tldF9jbnQrKzsNCj4gKw0KPiArCWlmIChidWNrZXRfY250ID4gKG1heF9jb3VudCAt
-IHRvdGFsKSkgew0KPiArCQlpZiAodG90YWwgPT0gMCkNCj4gKwkJCXJldCA9IC1FTk9TUEM7DQo+
-ICsJCWdvdG8gYWZ0ZXJfbG9vcDsNCj4gKwl9DQo+ICsNCj4gKwlobGlzdF9udWxsc19mb3JfZWFj
-aF9lbnRyeV9zYWZlKGwsIG4sIGhlYWQsIGhhc2hfbm9kZSkgew0KPiArCQltZW1jcHkoZHN0X2tl
-eSwgbC0+a2V5LCBrZXlfc2l6ZSk7DQo+ICsNCj4gKwkJaWYgKGlzX3BlcmNwdSkgew0KPiArCQkJ
-aW50IG9mZiA9IDAsIGNwdTsNCj4gKwkJCXZvaWQgX19wZXJjcHUgKnBwdHI7DQo+ICsNCj4gKwkJ
-CXBwdHIgPSBodGFiX2VsZW1fZ2V0X3B0cihsLCBtYXAtPmtleV9zaXplKTsNCj4gKwkJCWZvcl9l
-YWNoX3Bvc3NpYmxlX2NwdShjcHUpIHsNCj4gKwkJCQlicGZfbG9uZ19tZW1jcHkoZHN0X3ZhbCAr
-IG9mZiwNCj4gKwkJCQkJCXBlcl9jcHVfcHRyKHBwdHIsIGNwdSksIHNpemUpOw0KPiArCQkJCW9m
-ZiArPSBzaXplOw0KPiArCQkJfQ0KPiArCQl9IGVsc2Ugew0KPiArCQkJdmFsdWUgPSBsLT5rZXkg
-KyByb3VuZHVwX2tleV9zaXplOw0KPiArCQkJaWYgKGVsZW1fbWFwX2ZsYWdzICYgQlBGX0ZfTE9D
-SykNCj4gKwkJCQljb3B5X21hcF92YWx1ZV9sb2NrZWQobWFwLCBkc3RfdmFsLCB2YWx1ZSwNCj4g
-KwkJCQkJCSAgICAgIHRydWUpOw0KPiArCQkJZWxzZQ0KPiArCQkJCWNvcHlfbWFwX3ZhbHVlKG1h
-cCwgZHN0X3ZhbCwgdmFsdWUpOw0KPiArCQkJY2hlY2tfYW5kX2luaXRfbWFwX2xvY2sobWFwLCBk
-c3RfdmFsKTsNCj4gKwkJfQ0KPiArCQlpZiAoZG9fZGVsZXRlKSB7DQo+ICsJCQlobGlzdF9udWxs
-c19kZWxfcmN1KCZsLT5oYXNoX25vZGUpOw0KPiArCQkJaWYgKGlzX2xydV9tYXApDQo+ICsJCQkJ
-YnBmX2xydV9wdXNoX2ZyZWUoJmh0YWItPmxydSwgJmwtPmxydV9ub2RlKTsNCj4gKwkJCWVsc2UN
-Cj4gKwkJCQlmcmVlX2h0YWJfZWxlbShodGFiLCBsKTsNCj4gKwkJfQ0KPiArCQlpZiAoY29weV90
-b191c2VyKHVrZXlzICsgdG90YWwgKiBrZXlfc2l6ZSwga2V5cywga2V5X3NpemUpIHx8DQo+ICsJ
-CSAgIGNvcHlfdG9fdXNlcih1dmFsdWVzICsgdG90YWwgKiB2YWx1ZV9zaXplLCB2YWx1ZXMsDQo+
-ICsJCSAgIHZhbHVlX3NpemUpKSB7DQoNCldlIGNhbm5vdCBkbyBjb3B5X3RvX3VzZXIgaW5zaWRl
-IGF0b21pYyByZWdpb24gd2hlcmUgaXJxIGlzIGRpc2FibGVkDQp3aXRoIHJhd19zcGluX2xvY2tf
-aXJxc2F2ZSgpLiBXZSBjb3VsZCBkbyB0aGUgZm9sbG93aW5nOg0KICAgIC4gd2Uga2FsbG9jIG1l
-bW9yeSBiZWZvcmUgcHJlZW1wdF9kaXNhYmxlKCkgd2l0aCB0aGUgY3VycmVudCBjb3VudA0KICAg
-ICAgb2YgYnVja2V0IHNpemUuDQogICAgLiBpbnNpZGUgdGhlIHJhd19zcGluX2xvY2tfaXJxc2F2
-ZSgpIHJlZ2lvbiwgd2UgY2FuIGRvIGNvcHkgdG8ga2VybmVsDQogICAgICBtZW1vcnkuDQogICAg
-LiBpbnNpZGUgdGhlIHJhd19zcGluX2xvY2tfaXJxc2F2ZSgpIHJlZ2lvbiwgaWYgdGhlIGJ1Y2tl
-dCBzaXplDQogICAgICBjaGFuZ2VzLCB3ZSBjYW4gaGF2ZSBhIGZldyByZXRyaWVzIHRvIGluY3Jl
-YXNlIGFsbG9jYXRpb24gc2l6ZQ0KICAgICAgYmVmb3JlIGdpdmluZyB1cC4NCkRvIHlvdSB0aGlu
-ayB0aGlzIG1heSB3b3JrPw0KDQo+ICsJCQlyZXQgPSAtRUZBVUxUOw0KPiArCQkJZ290byBhZnRl
-cl9sb29wOw0KPiArCQl9DQo+ICsJCXRvdGFsKys7DQo+ICsJfQ0KPiArDQo+ICsJYmF0Y2grKzsN
-Cj4gKwlpZiAoYmF0Y2ggPj0gaHRhYi0+bl9idWNrZXRzKSB7DQo+ICsJCXJldCA9IC1FTk9FTlQ7
-DQo+ICsJCWdvdG8gYWZ0ZXJfbG9vcDsNCj4gKwl9DQo+ICsNCj4gKwlyYXdfc3Bpbl91bmxvY2tf
-aXJxcmVzdG9yZSgmYi0+bG9jaywgZmxhZ3MpOw0KPiArCWdvdG8gYWdhaW47DQo+ICsNCj4gK2Fm
-dGVyX2xvb3A6DQo+ICsJcmF3X3NwaW5fdW5sb2NrX2lycXJlc3RvcmUoJmItPmxvY2ssIGZsYWdz
-KTsNCj4gKw0KPiArCXJjdV9yZWFkX3VubG9jaygpOw0KPiArCXRoaXNfY3B1X2RlYyhicGZfcHJv
-Z19hY3RpdmUpOw0KPiArCXByZWVtcHRfZW5hYmxlKCk7DQo+ICsNCj4gKwlpZiAocmV0ICYmIHJl
-dCAhPSAtRU5PRU5UKQ0KPiArCQlnb3RvIG91dDsNCj4gKw0KPiArCS8qIGNvcHkgZGF0YSBiYWNr
-IHRvIHVzZXIgKi8NCj4gKwl1YmF0Y2ggPSB1NjRfdG9fdXNlcl9wdHIoYXR0ci0+YmF0Y2gub3V0
-X2JhdGNoKTsNCj4gKwlpZiAoY29weV90b191c2VyKHViYXRjaCwgJmJhdGNoLCBzaXplb2YoYmF0
-Y2gpKSB8fA0KPiArCSAgICBwdXRfdXNlcih0b3RhbCwgJnVhdHRyLT5iYXRjaC5jb3VudCkpDQo+
-ICsJCXJldCA9IC1FRkFVTFQ7DQo+ICsNCj4gK291dDoNCj4gKwlrdmZyZWUoa2V5cyk7DQo+ICsJ
-a3ZmcmVlKHZhbHVlcyk7DQo+ICsJcmV0dXJuIHJldDsNCj4gK30NCj4gKw0KWy4uLl0NCg==
+On Fri, 13 Dec 2019 19:46:21 +0100
+Peter Zijlstra <peterz@infradead.org> wrote:
+
+> >   perf_buffer and trace_buffer ?  
+> 
+> That's what I just proposed, right? So ACK on that ;-)
+
+Anyway, here's v2, followed by the tracing one, which has the diffstat
+of:
+
+ drivers/oprofile/cpu_buffer.c        |   2 +-
+ include/linux/ring_buffer.h          | 110 ++++++++++++------------
+ include/linux/trace_events.h         |   4 +-
+ include/trace/trace_events.h         |   2 +-
+ kernel/trace/blktrace.c              |   4 +-
+ kernel/trace/ring_buffer.c           | 124 +++++++++++++--------------
+ kernel/trace/ring_buffer_benchmark.c |   2 +-
+ kernel/trace/trace.c                 |  70 +++++++--------
+ kernel/trace/trace.h                 |  22 ++---
+ kernel/trace/trace_branch.c          |   2 +-
+ kernel/trace/trace_events.c          |   2 +-
+ kernel/trace/trace_events_hist.c     |   2 +-
+ kernel/trace/trace_functions_graph.c |   4 +-
+ kernel/trace/trace_hwlat.c           |   2 +-
+ kernel/trace/trace_kprobe.c          |   4 +-
+ kernel/trace/trace_mmiotrace.c       |   4 +-
+ kernel/trace/trace_sched_wakeup.c    |   4 +-
+ kernel/trace/trace_syscalls.c        |   4 +-
+ kernel/trace/trace_uprobe.c          |   2 +-
+ 19 files changed, 185 insertions(+), 185 deletions(-)
+
+
+-- Steve
+
+From d15abd76c3d39741fd53e7e5846b07001f3cd895 Mon Sep 17 00:00:00 2001
+From: "Steven Rostedt (VMware)" <rostedt@goodmis.org>
+Date: Fri, 13 Dec 2019 13:21:30 -0500
+Subject: [PATCH] perf: Make struct ring_buffer less ambiguous
+
+eBPF requires needing to know the size of the perf ring buffer structure.
+But it unfortunately has the same name as the generic ring buffer used by
+tracing and oprofile. To make it less ambiguous, rename the perf ring buffer
+structure to "perf_buffer".
+
+As other parts of the ring buffer code has "perf_" as the prefix, it only
+makes sense to give the ring buffer the "perf_" prefix as well.
+
+Link: https://lore.kernel.org/r/20191213153553.GE20583@krava
+Acked-by: Peter Zijlstra <peterz@infradead.org>
+Suggested-by: Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Signed-off-by: Steven Rostedt (VMware) <rostedt@goodmis.org>
+---
+ include/linux/perf_event.h  |  6 ++---
+ kernel/events/core.c        | 42 ++++++++++++++---------------
+ kernel/events/internal.h    | 34 +++++++++++------------
+ kernel/events/ring_buffer.c | 54 ++++++++++++++++++-------------------
+ 4 files changed, 68 insertions(+), 68 deletions(-)
+
+diff --git a/include/linux/perf_event.h b/include/linux/perf_event.h
+index 6d4c22aee384..cf65763af0cb 100644
+--- a/include/linux/perf_event.h
++++ b/include/linux/perf_event.h
+@@ -582,7 +582,7 @@ struct swevent_hlist {
+ #define PERF_ATTACH_ITRACE	0x10
+ 
+ struct perf_cgroup;
+-struct ring_buffer;
++struct perf_buffer;
+ 
+ struct pmu_event_list {
+ 	raw_spinlock_t		lock;
+@@ -694,7 +694,7 @@ struct perf_event {
+ 	struct mutex			mmap_mutex;
+ 	atomic_t			mmap_count;
+ 
+-	struct ring_buffer		*rb;
++	struct perf_buffer		*rb;
+ 	struct list_head		rb_entry;
+ 	unsigned long			rcu_batches;
+ 	int				rcu_pending;
+@@ -854,7 +854,7 @@ struct perf_cpu_context {
+ 
+ struct perf_output_handle {
+ 	struct perf_event		*event;
+-	struct ring_buffer		*rb;
++	struct perf_buffer		*rb;
+ 	unsigned long			wakeup;
+ 	unsigned long			size;
+ 	u64				aux_flags;
+diff --git a/kernel/events/core.c b/kernel/events/core.c
+index 4ff86d57f9e5..2871c4d2bd53 100644
+--- a/kernel/events/core.c
++++ b/kernel/events/core.c
+@@ -4373,7 +4373,7 @@ static void free_event_rcu(struct rcu_head *head)
+ }
+ 
+ static void ring_buffer_attach(struct perf_event *event,
+-			       struct ring_buffer *rb);
++			       struct perf_buffer *rb);
+ 
+ static void detach_sb_event(struct perf_event *event)
+ {
+@@ -5054,7 +5054,7 @@ perf_read(struct file *file, char __user *buf, size_t count, loff_t *ppos)
+ static __poll_t perf_poll(struct file *file, poll_table *wait)
+ {
+ 	struct perf_event *event = file->private_data;
+-	struct ring_buffer *rb;
++	struct perf_buffer *rb;
+ 	__poll_t events = EPOLLHUP;
+ 
+ 	poll_wait(file, &event->waitq, wait);
+@@ -5296,7 +5296,7 @@ static long _perf_ioctl(struct perf_event *event, unsigned int cmd, unsigned lon
+ 		return perf_event_set_bpf_prog(event, arg);
+ 
+ 	case PERF_EVENT_IOC_PAUSE_OUTPUT: {
+-		struct ring_buffer *rb;
++		struct perf_buffer *rb;
+ 
+ 		rcu_read_lock();
+ 		rb = rcu_dereference(event->rb);
+@@ -5432,7 +5432,7 @@ static void calc_timer_values(struct perf_event *event,
+ static void perf_event_init_userpage(struct perf_event *event)
+ {
+ 	struct perf_event_mmap_page *userpg;
+-	struct ring_buffer *rb;
++	struct perf_buffer *rb;
+ 
+ 	rcu_read_lock();
+ 	rb = rcu_dereference(event->rb);
+@@ -5464,7 +5464,7 @@ void __weak arch_perf_update_userpage(
+ void perf_event_update_userpage(struct perf_event *event)
+ {
+ 	struct perf_event_mmap_page *userpg;
+-	struct ring_buffer *rb;
++	struct perf_buffer *rb;
+ 	u64 enabled, running, now;
+ 
+ 	rcu_read_lock();
+@@ -5515,7 +5515,7 @@ EXPORT_SYMBOL_GPL(perf_event_update_userpage);
+ static vm_fault_t perf_mmap_fault(struct vm_fault *vmf)
+ {
+ 	struct perf_event *event = vmf->vma->vm_file->private_data;
+-	struct ring_buffer *rb;
++	struct perf_buffer *rb;
+ 	vm_fault_t ret = VM_FAULT_SIGBUS;
+ 
+ 	if (vmf->flags & FAULT_FLAG_MKWRITE) {
+@@ -5548,9 +5548,9 @@ static vm_fault_t perf_mmap_fault(struct vm_fault *vmf)
+ }
+ 
+ static void ring_buffer_attach(struct perf_event *event,
+-			       struct ring_buffer *rb)
++			       struct perf_buffer *rb)
+ {
+-	struct ring_buffer *old_rb = NULL;
++	struct perf_buffer *old_rb = NULL;
+ 	unsigned long flags;
+ 
+ 	if (event->rb) {
+@@ -5608,7 +5608,7 @@ static void ring_buffer_attach(struct perf_event *event,
+ 
+ static void ring_buffer_wakeup(struct perf_event *event)
+ {
+-	struct ring_buffer *rb;
++	struct perf_buffer *rb;
+ 
+ 	rcu_read_lock();
+ 	rb = rcu_dereference(event->rb);
+@@ -5619,9 +5619,9 @@ static void ring_buffer_wakeup(struct perf_event *event)
+ 	rcu_read_unlock();
+ }
+ 
+-struct ring_buffer *ring_buffer_get(struct perf_event *event)
++struct perf_buffer *ring_buffer_get(struct perf_event *event)
+ {
+-	struct ring_buffer *rb;
++	struct perf_buffer *rb;
+ 
+ 	rcu_read_lock();
+ 	rb = rcu_dereference(event->rb);
+@@ -5634,7 +5634,7 @@ struct ring_buffer *ring_buffer_get(struct perf_event *event)
+ 	return rb;
+ }
+ 
+-void ring_buffer_put(struct ring_buffer *rb)
++void ring_buffer_put(struct perf_buffer *rb)
+ {
+ 	if (!refcount_dec_and_test(&rb->refcount))
+ 		return;
+@@ -5672,7 +5672,7 @@ static void perf_mmap_close(struct vm_area_struct *vma)
+ {
+ 	struct perf_event *event = vma->vm_file->private_data;
+ 
+-	struct ring_buffer *rb = ring_buffer_get(event);
++	struct perf_buffer *rb = ring_buffer_get(event);
+ 	struct user_struct *mmap_user = rb->mmap_user;
+ 	int mmap_locked = rb->mmap_locked;
+ 	unsigned long size = perf_data_size(rb);
+@@ -5790,8 +5790,8 @@ static int perf_mmap(struct file *file, struct vm_area_struct *vma)
+ 	struct perf_event *event = file->private_data;
+ 	unsigned long user_locked, user_lock_limit;
+ 	struct user_struct *user = current_user();
++	struct perf_buffer *rb = NULL;
+ 	unsigned long locked, lock_limit;
+-	struct ring_buffer *rb = NULL;
+ 	unsigned long vma_size;
+ 	unsigned long nr_pages;
+ 	long user_extra = 0, extra = 0;
+@@ -6266,7 +6266,7 @@ static unsigned long perf_prepare_sample_aux(struct perf_event *event,
+ 					  size_t size)
+ {
+ 	struct perf_event *sampler = event->aux_event;
+-	struct ring_buffer *rb;
++	struct perf_buffer *rb;
+ 
+ 	data->aux_size = 0;
+ 
+@@ -6299,7 +6299,7 @@ static unsigned long perf_prepare_sample_aux(struct perf_event *event,
+ 	return data->aux_size;
+ }
+ 
+-long perf_pmu_snapshot_aux(struct ring_buffer *rb,
++long perf_pmu_snapshot_aux(struct perf_buffer *rb,
+ 			   struct perf_event *event,
+ 			   struct perf_output_handle *handle,
+ 			   unsigned long size)
+@@ -6338,8 +6338,8 @@ static void perf_aux_sample_output(struct perf_event *event,
+ 				   struct perf_sample_data *data)
+ {
+ 	struct perf_event *sampler = event->aux_event;
++	struct perf_buffer *rb;
+ 	unsigned long pad;
+-	struct ring_buffer *rb;
+ 	long size;
+ 
+ 	if (WARN_ON_ONCE(!sampler || !data->aux_size))
+@@ -6707,7 +6707,7 @@ void perf_output_sample(struct perf_output_handle *handle,
+ 		int wakeup_events = event->attr.wakeup_events;
+ 
+ 		if (wakeup_events) {
+-			struct ring_buffer *rb = handle->rb;
++			struct perf_buffer *rb = handle->rb;
+ 			int events = local_inc_return(&rb->events);
+ 
+ 			if (events >= wakeup_events) {
+@@ -7150,7 +7150,7 @@ void perf_event_exec(void)
+ }
+ 
+ struct remote_output {
+-	struct ring_buffer	*rb;
++	struct perf_buffer	*rb;
+ 	int			err;
+ };
+ 
+@@ -7158,7 +7158,7 @@ static void __perf_event_output_stop(struct perf_event *event, void *data)
+ {
+ 	struct perf_event *parent = event->parent;
+ 	struct remote_output *ro = data;
+-	struct ring_buffer *rb = ro->rb;
++	struct perf_buffer *rb = ro->rb;
+ 	struct stop_event_data sd = {
+ 		.event	= event,
+ 	};
+@@ -10998,7 +10998,7 @@ static int perf_copy_attr(struct perf_event_attr __user *uattr,
+ static int
+ perf_event_set_output(struct perf_event *event, struct perf_event *output_event)
+ {
+-	struct ring_buffer *rb = NULL;
++	struct perf_buffer *rb = NULL;
+ 	int ret = -EINVAL;
+ 
+ 	if (!output_event)
+diff --git a/kernel/events/internal.h b/kernel/events/internal.h
+index 747d67f130cb..f16f66b6b655 100644
+--- a/kernel/events/internal.h
++++ b/kernel/events/internal.h
+@@ -10,7 +10,7 @@
+ 
+ #define RING_BUFFER_WRITABLE		0x01
+ 
+-struct ring_buffer {
++struct perf_buffer {
+ 	refcount_t			refcount;
+ 	struct rcu_head			rcu_head;
+ #ifdef CONFIG_PERF_USE_VMALLOC
+@@ -58,17 +58,17 @@ struct ring_buffer {
+ 	void				*data_pages[0];
+ };
+ 
+-extern void rb_free(struct ring_buffer *rb);
++extern void rb_free(struct perf_buffer *rb);
+ 
+ static inline void rb_free_rcu(struct rcu_head *rcu_head)
+ {
+-	struct ring_buffer *rb;
++	struct perf_buffer *rb;
+ 
+-	rb = container_of(rcu_head, struct ring_buffer, rcu_head);
++	rb = container_of(rcu_head, struct perf_buffer, rcu_head);
+ 	rb_free(rb);
+ }
+ 
+-static inline void rb_toggle_paused(struct ring_buffer *rb, bool pause)
++static inline void rb_toggle_paused(struct perf_buffer *rb, bool pause)
+ {
+ 	if (!pause && rb->nr_pages)
+ 		rb->paused = 0;
+@@ -76,16 +76,16 @@ static inline void rb_toggle_paused(struct ring_buffer *rb, bool pause)
+ 		rb->paused = 1;
+ }
+ 
+-extern struct ring_buffer *
++extern struct perf_buffer *
+ rb_alloc(int nr_pages, long watermark, int cpu, int flags);
+ extern void perf_event_wakeup(struct perf_event *event);
+-extern int rb_alloc_aux(struct ring_buffer *rb, struct perf_event *event,
++extern int rb_alloc_aux(struct perf_buffer *rb, struct perf_event *event,
+ 			pgoff_t pgoff, int nr_pages, long watermark, int flags);
+-extern void rb_free_aux(struct ring_buffer *rb);
+-extern struct ring_buffer *ring_buffer_get(struct perf_event *event);
+-extern void ring_buffer_put(struct ring_buffer *rb);
++extern void rb_free_aux(struct perf_buffer *rb);
++extern struct perf_buffer *ring_buffer_get(struct perf_event *event);
++extern void ring_buffer_put(struct perf_buffer *rb);
+ 
+-static inline bool rb_has_aux(struct ring_buffer *rb)
++static inline bool rb_has_aux(struct perf_buffer *rb)
+ {
+ 	return !!rb->aux_nr_pages;
+ }
+@@ -94,7 +94,7 @@ void perf_event_aux_event(struct perf_event *event, unsigned long head,
+ 			  unsigned long size, u64 flags);
+ 
+ extern struct page *
+-perf_mmap_to_page(struct ring_buffer *rb, unsigned long pgoff);
++perf_mmap_to_page(struct perf_buffer *rb, unsigned long pgoff);
+ 
+ #ifdef CONFIG_PERF_USE_VMALLOC
+ /*
+@@ -103,25 +103,25 @@ perf_mmap_to_page(struct ring_buffer *rb, unsigned long pgoff);
+  * Required for architectures that have d-cache aliasing issues.
+  */
+ 
+-static inline int page_order(struct ring_buffer *rb)
++static inline int page_order(struct perf_buffer *rb)
+ {
+ 	return rb->page_order;
+ }
+ 
+ #else
+ 
+-static inline int page_order(struct ring_buffer *rb)
++static inline int page_order(struct perf_buffer *rb)
+ {
+ 	return 0;
+ }
+ #endif
+ 
+-static inline unsigned long perf_data_size(struct ring_buffer *rb)
++static inline unsigned long perf_data_size(struct perf_buffer *rb)
+ {
+ 	return rb->nr_pages << (PAGE_SHIFT + page_order(rb));
+ }
+ 
+-static inline unsigned long perf_aux_size(struct ring_buffer *rb)
++static inline unsigned long perf_aux_size(struct perf_buffer *rb)
+ {
+ 	return rb->aux_nr_pages << PAGE_SHIFT;
+ }
+@@ -141,7 +141,7 @@ static inline unsigned long perf_aux_size(struct ring_buffer *rb)
+ 			buf += written;					\
+ 		handle->size -= written;				\
+ 		if (!handle->size) {					\
+-			struct ring_buffer *rb = handle->rb;		\
++			struct perf_buffer *rb = handle->rb;	\
+ 									\
+ 			handle->page++;					\
+ 			handle->page &= rb->nr_pages - 1;		\
+diff --git a/kernel/events/ring_buffer.c b/kernel/events/ring_buffer.c
+index 7ffd5c763f93..192b8abc6330 100644
+--- a/kernel/events/ring_buffer.c
++++ b/kernel/events/ring_buffer.c
+@@ -35,7 +35,7 @@ static void perf_output_wakeup(struct perf_output_handle *handle)
+  */
+ static void perf_output_get_handle(struct perf_output_handle *handle)
+ {
+-	struct ring_buffer *rb = handle->rb;
++	struct perf_buffer *rb = handle->rb;
+ 
+ 	preempt_disable();
+ 
+@@ -49,7 +49,7 @@ static void perf_output_get_handle(struct perf_output_handle *handle)
+ 
+ static void perf_output_put_handle(struct perf_output_handle *handle)
+ {
+-	struct ring_buffer *rb = handle->rb;
++	struct perf_buffer *rb = handle->rb;
+ 	unsigned long head;
+ 	unsigned int nest;
+ 
+@@ -150,7 +150,7 @@ __perf_output_begin(struct perf_output_handle *handle,
+ 		    struct perf_event *event, unsigned int size,
+ 		    bool backward)
+ {
+-	struct ring_buffer *rb;
++	struct perf_buffer *rb;
+ 	unsigned long tail, offset, head;
+ 	int have_lost, page_shift;
+ 	struct {
+@@ -301,7 +301,7 @@ void perf_output_end(struct perf_output_handle *handle)
+ }
+ 
+ static void
+-ring_buffer_init(struct ring_buffer *rb, long watermark, int flags)
++ring_buffer_init(struct perf_buffer *rb, long watermark, int flags)
+ {
+ 	long max_size = perf_data_size(rb);
+ 
+@@ -361,7 +361,7 @@ void *perf_aux_output_begin(struct perf_output_handle *handle,
+ {
+ 	struct perf_event *output_event = event;
+ 	unsigned long aux_head, aux_tail;
+-	struct ring_buffer *rb;
++	struct perf_buffer *rb;
+ 	unsigned int nest;
+ 
+ 	if (output_event->parent)
+@@ -449,7 +449,7 @@ void *perf_aux_output_begin(struct perf_output_handle *handle,
+ }
+ EXPORT_SYMBOL_GPL(perf_aux_output_begin);
+ 
+-static __always_inline bool rb_need_aux_wakeup(struct ring_buffer *rb)
++static __always_inline bool rb_need_aux_wakeup(struct perf_buffer *rb)
+ {
+ 	if (rb->aux_overwrite)
+ 		return false;
+@@ -475,7 +475,7 @@ static __always_inline bool rb_need_aux_wakeup(struct ring_buffer *rb)
+ void perf_aux_output_end(struct perf_output_handle *handle, unsigned long size)
+ {
+ 	bool wakeup = !!(handle->aux_flags & PERF_AUX_FLAG_TRUNCATED);
+-	struct ring_buffer *rb = handle->rb;
++	struct perf_buffer *rb = handle->rb;
+ 	unsigned long aux_head;
+ 
+ 	/* in overwrite mode, driver provides aux_head via handle */
+@@ -532,7 +532,7 @@ EXPORT_SYMBOL_GPL(perf_aux_output_end);
+  */
+ int perf_aux_output_skip(struct perf_output_handle *handle, unsigned long size)
+ {
+-	struct ring_buffer *rb = handle->rb;
++	struct perf_buffer *rb = handle->rb;
+ 
+ 	if (size > handle->size)
+ 		return -ENOSPC;
+@@ -569,8 +569,8 @@ long perf_output_copy_aux(struct perf_output_handle *aux_handle,
+ 			  struct perf_output_handle *handle,
+ 			  unsigned long from, unsigned long to)
+ {
++	struct perf_buffer *rb = aux_handle->rb;
+ 	unsigned long tocopy, remainder, len = 0;
+-	struct ring_buffer *rb = aux_handle->rb;
+ 	void *addr;
+ 
+ 	from &= (rb->aux_nr_pages << PAGE_SHIFT) - 1;
+@@ -626,7 +626,7 @@ static struct page *rb_alloc_aux_page(int node, int order)
+ 	return page;
+ }
+ 
+-static void rb_free_aux_page(struct ring_buffer *rb, int idx)
++static void rb_free_aux_page(struct perf_buffer *rb, int idx)
+ {
+ 	struct page *page = virt_to_page(rb->aux_pages[idx]);
+ 
+@@ -635,7 +635,7 @@ static void rb_free_aux_page(struct ring_buffer *rb, int idx)
+ 	__free_page(page);
+ }
+ 
+-static void __rb_free_aux(struct ring_buffer *rb)
++static void __rb_free_aux(struct perf_buffer *rb)
+ {
+ 	int pg;
+ 
+@@ -662,7 +662,7 @@ static void __rb_free_aux(struct ring_buffer *rb)
+ 	}
+ }
+ 
+-int rb_alloc_aux(struct ring_buffer *rb, struct perf_event *event,
++int rb_alloc_aux(struct perf_buffer *rb, struct perf_event *event,
+ 		 pgoff_t pgoff, int nr_pages, long watermark, int flags)
+ {
+ 	bool overwrite = !(flags & RING_BUFFER_WRITABLE);
+@@ -753,7 +753,7 @@ int rb_alloc_aux(struct ring_buffer *rb, struct perf_event *event,
+ 	return ret;
+ }
+ 
+-void rb_free_aux(struct ring_buffer *rb)
++void rb_free_aux(struct perf_buffer *rb)
+ {
+ 	if (refcount_dec_and_test(&rb->aux_refcount))
+ 		__rb_free_aux(rb);
+@@ -766,7 +766,7 @@ void rb_free_aux(struct ring_buffer *rb)
+  */
+ 
+ static struct page *
+-__perf_mmap_to_page(struct ring_buffer *rb, unsigned long pgoff)
++__perf_mmap_to_page(struct perf_buffer *rb, unsigned long pgoff)
+ {
+ 	if (pgoff > rb->nr_pages)
+ 		return NULL;
+@@ -798,13 +798,13 @@ static void perf_mmap_free_page(void *addr)
+ 	__free_page(page);
+ }
+ 
+-struct ring_buffer *rb_alloc(int nr_pages, long watermark, int cpu, int flags)
++struct perf_buffer *rb_alloc(int nr_pages, long watermark, int cpu, int flags)
+ {
+-	struct ring_buffer *rb;
++	struct perf_buffer *rb;
+ 	unsigned long size;
+ 	int i;
+ 
+-	size = sizeof(struct ring_buffer);
++	size = sizeof(struct perf_buffer);
+ 	size += nr_pages * sizeof(void *);
+ 
+ 	if (order_base_2(size) >= PAGE_SHIFT+MAX_ORDER)
+@@ -843,7 +843,7 @@ struct ring_buffer *rb_alloc(int nr_pages, long watermark, int cpu, int flags)
+ 	return NULL;
+ }
+ 
+-void rb_free(struct ring_buffer *rb)
++void rb_free(struct perf_buffer *rb)
+ {
+ 	int i;
+ 
+@@ -854,13 +854,13 @@ void rb_free(struct ring_buffer *rb)
+ }
+ 
+ #else
+-static int data_page_nr(struct ring_buffer *rb)
++static int data_page_nr(struct perf_buffer *rb)
+ {
+ 	return rb->nr_pages << page_order(rb);
+ }
+ 
+ static struct page *
+-__perf_mmap_to_page(struct ring_buffer *rb, unsigned long pgoff)
++__perf_mmap_to_page(struct perf_buffer *rb, unsigned long pgoff)
+ {
+ 	/* The '>' counts in the user page. */
+ 	if (pgoff > data_page_nr(rb))
+@@ -878,11 +878,11 @@ static void perf_mmap_unmark_page(void *addr)
+ 
+ static void rb_free_work(struct work_struct *work)
+ {
+-	struct ring_buffer *rb;
++	struct perf_buffer *rb;
+ 	void *base;
+ 	int i, nr;
+ 
+-	rb = container_of(work, struct ring_buffer, work);
++	rb = container_of(work, struct perf_buffer, work);
+ 	nr = data_page_nr(rb);
+ 
+ 	base = rb->user_page;
+@@ -894,18 +894,18 @@ static void rb_free_work(struct work_struct *work)
+ 	kfree(rb);
+ }
+ 
+-void rb_free(struct ring_buffer *rb)
++void rb_free(struct perf_buffer *rb)
+ {
+ 	schedule_work(&rb->work);
+ }
+ 
+-struct ring_buffer *rb_alloc(int nr_pages, long watermark, int cpu, int flags)
++struct perf_buffer *rb_alloc(int nr_pages, long watermark, int cpu, int flags)
+ {
+-	struct ring_buffer *rb;
++	struct perf_buffer *rb;
+ 	unsigned long size;
+ 	void *all_buf;
+ 
+-	size = sizeof(struct ring_buffer);
++	size = sizeof(struct perf_buffer);
+ 	size += sizeof(void *);
+ 
+ 	rb = kzalloc(size, GFP_KERNEL);
+@@ -939,7 +939,7 @@ struct ring_buffer *rb_alloc(int nr_pages, long watermark, int cpu, int flags)
+ #endif
+ 
+ struct page *
+-perf_mmap_to_page(struct ring_buffer *rb, unsigned long pgoff)
++perf_mmap_to_page(struct perf_buffer *rb, unsigned long pgoff)
+ {
+ 	if (rb->aux_nr_pages) {
+ 		/* above AUX space */
+-- 
+2.20.1
+
