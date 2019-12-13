@@ -2,122 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 242C311EAAD
-	for <lists+netdev@lfdr.de>; Fri, 13 Dec 2019 19:48:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E017511EABF
+	for <lists+netdev@lfdr.de>; Fri, 13 Dec 2019 19:55:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728891AbfLMSsR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Dec 2019 13:48:17 -0500
-Received: from us-smtp-2.mimecast.com ([205.139.110.61]:46395 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728833AbfLMSsP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Dec 2019 13:48:15 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1576262894;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=VSDDjKTdNjIjYY9lNEGudZN4ZxbNPvX2QUzIT/T3/bU=;
-        b=H+RNfMxdNvTysBCOEmbPOGorcnkdQWR0n9YwUpYf65m+E0ejY7abgtQ04kHLSiM0UHU2Az
-        BWCe4hrJHp904ycXffWHXpDCVGBoLFmMWifQXPHMZYB9ZUI3ZUjE5r6bEQvZko5mrr7fTa
-        QDe+Owf7cMPRb/BLYrOL/nrCTXYhrwI=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-252-arex5kL_PveUSWwTT-l1-A-1; Fri, 13 Dec 2019 13:48:12 -0500
-X-MC-Unique: arex5kL_PveUSWwTT-l1-A-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 657F1107ACC4;
-        Fri, 13 Dec 2019 18:48:11 +0000 (UTC)
-Received: from steredhat.redhat.com (ovpn-117-123.ams2.redhat.com [10.36.117.123])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id CDC1460474;
-        Fri, 13 Dec 2019 18:48:09 +0000 (UTC)
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     davem@davemloft.net
-Cc:     Stefano Garzarella <sgarzare@redhat.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        Stefan Hajnoczi <stefanha@redhat.com>
-Subject: [PATCH net 2/2] vsock/virtio: add WARN_ON check on virtio_transport_get_ops()
-Date:   Fri, 13 Dec 2019 19:48:01 +0100
-Message-Id: <20191213184801.486675-3-sgarzare@redhat.com>
-In-Reply-To: <20191213184801.486675-1-sgarzare@redhat.com>
-References: <20191213184801.486675-1-sgarzare@redhat.com>
-MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
-Content-Transfer-Encoding: quoted-printable
+        id S1728671AbfLMSzX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Dec 2019 13:55:23 -0500
+Received: from mail-pf1-f170.google.com ([209.85.210.170]:45199 "EHLO
+        mail-pf1-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728552AbfLMSzX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Dec 2019 13:55:23 -0500
+Received: by mail-pf1-f170.google.com with SMTP id 2so1913521pfg.12
+        for <netdev@vger.kernel.org>; Fri, 13 Dec 2019 10:55:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=pensando.io; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=G3AETG1PHdrDYUWiJKZpP5YvRz7xnlsT9JItYftb7xg=;
+        b=uYnz4Kqzw+yEhp9w89ZYwiPmwp6S2MuOAUZ2bwZMLJBm9K9yxk1dUEYdMMVQHxV5fs
+         ToyltWXIl4qU3QTN8g7TLQfkxGAHCBZ1lq1DOvQAXSAdvz7N7tfCk6d5XdauSFLIM8ra
+         BksHVx87MTn86gX4XIl5UWsLcysgUUv+9P25P5/X+9ByCONsUg6vUP9PcPpqs7yIGTEV
+         Fi8IK3vBz+VPm8Uw7ezADZcQiP/J77XVUjjgZ41qAgJwuuMc4E+QP4aTw5QIfIahm0ra
+         i+BRZkdTAqspm5QftyD2boN5iecHQsQiRMn6uSVjYws7HaDEwESxERgpxBe9fFvENpc9
+         t+4g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=G3AETG1PHdrDYUWiJKZpP5YvRz7xnlsT9JItYftb7xg=;
+        b=WItlZMmuE+IKJ/yLnptIlIJCpKYp8+mwEsLcr6gKR4X98T/as6Etn1Y4I4NFpjAuMd
+         +OmtqgvsqOMMmP9+kuR/vkB1IMzxrGfIdeUIcbLO4K2H8aFHSG9a+ML63rC0j11M+1VG
+         dnuK3TJ5SUFp5B3W9JwMCykFROEMb8gd7yhkdMv22VxwPwkQlND8rXDxVvClxHUhSCnY
+         zMvkIsKCy6K5KBw6HsZO+r4lt7reUCeERvXPLMXWLrRk8UVL6inGTfb5V2sZwWRrH8fC
+         4/obZE3jE1108I5DtxLVm1IOJaxWVKMKicLWJFlT7j1JzZvJDGoVXGmf2mcJiNZ6mK/u
+         atAw==
+X-Gm-Message-State: APjAAAXfOWmtITWBvx/HETr1OU4EEjCwojzUGLJ5CamizQd5TxtR6Fnd
+        ZSKC0NR0Dso58dADSbmEs0EZxqLW46k=
+X-Google-Smtp-Source: APXvYqxM/03Xp+7obBRfeILFtRtRCH06khfWpHk558eE6GbnNR4RvAIAhe1y4I2VUuosCDNQQtaYIw==
+X-Received: by 2002:a63:4d1b:: with SMTP id a27mr959612pgb.352.1576263322640;
+        Fri, 13 Dec 2019 10:55:22 -0800 (PST)
+Received: from driver-dev1.pensando.io ([12.1.37.26])
+        by smtp.gmail.com with ESMTPSA id n26sm12609003pgd.46.2019.12.13.10.55.21
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 13 Dec 2019 10:55:22 -0800 (PST)
+From:   Shannon Nelson <snelson@pensando.io>
+To:     netdev@vger.kernel.org, davem@davemloft.net
+Cc:     parav@mellanox.com, Shannon Nelson <snelson@pensando.io>
+Subject: [PATCH v3 net-next 0/2] ionic: add sriov support
+Date:   Fri, 13 Dec 2019 10:55:14 -0800
+Message-Id: <20191213185516.52087-1-snelson@pensando.io>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-virtio_transport_get_ops() and virtio_transport_send_pkt_info()
-can only be used on connecting/connected sockets, since a socket
-assigned to a transport is required.
+Set up the basic support for enabling SR-IOV devices in the
+ionic driver.  Since most of the management work happens in
+the NIC firmware, the driver becomes mostly a pass-through
+for the network stack commands that want to control and
+configure the VFs.
 
-This patch adds a WARN_ON() on virtio_transport_get_ops() to check
-this requirement, a comment and a returned error on
-virtio_transport_send_pkt_info(),
+v2:	use pci_num_vf() and kcalloc()
+	remove checks for vf too big
+	add locking for the VF operations
+	disable VFs in ionic_remove() if they are still running
 
-Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
----
- net/vmw_vsock/virtio_transport_common.c | 17 +++++++++++++++--
- 1 file changed, 15 insertions(+), 2 deletions(-)
+v3:	added check in probe for pre-existing VFs
+	split out the alloc and dealloc of vf structs to better deal
+	  with pre-existing VFs (left enabled on remove)
+	restored the checks for vf too big because of a potential
+	  case where VFs are already enabled but driver failed to
+	  alloc the vf structs
 
-diff --git a/net/vmw_vsock/virtio_transport_common.c b/net/vmw_vsock/virt=
-io_transport_common.c
-index f5991006190e..6abec3fc81d1 100644
---- a/net/vmw_vsock/virtio_transport_common.c
-+++ b/net/vmw_vsock/virtio_transport_common.c
-@@ -34,6 +34,9 @@ virtio_transport_get_ops(struct vsock_sock *vsk)
- {
- 	const struct vsock_transport *t =3D vsock_core_get_transport(vsk);
-=20
-+	if (WARN_ON(!t))
-+		return NULL;
-+
- 	return container_of(t, struct virtio_transport, transport);
- }
-=20
-@@ -161,15 +164,25 @@ void virtio_transport_deliver_tap_pkt(struct virtio=
-_vsock_pkt *pkt)
- }
- EXPORT_SYMBOL_GPL(virtio_transport_deliver_tap_pkt);
-=20
-+/* This function can only be used on connecting/connected sockets,
-+ * since a socket assigned to a transport is required.
-+ *
-+ * Do not use on listener sockets!
-+ */
- static int virtio_transport_send_pkt_info(struct vsock_sock *vsk,
- 					  struct virtio_vsock_pkt_info *info)
- {
- 	u32 src_cid, src_port, dst_cid, dst_port;
-+	const struct virtio_transport *t_ops;
- 	struct virtio_vsock_sock *vvs;
- 	struct virtio_vsock_pkt *pkt;
- 	u32 pkt_len =3D info->pkt_len;
-=20
--	src_cid =3D virtio_transport_get_ops(vsk)->transport.get_local_cid();
-+	t_ops =3D virtio_transport_get_ops(vsk);
-+	if (unlikely(!t_ops))
-+		return -EFAULT;
-+
-+	src_cid =3D t_ops->transport.get_local_cid();
- 	src_port =3D vsk->local_addr.svm_port;
- 	if (!info->remote_cid) {
- 		dst_cid	=3D vsk->remote_addr.svm_cid;
-@@ -202,7 +215,7 @@ static int virtio_transport_send_pkt_info(struct vsoc=
-k_sock *vsk,
-=20
- 	virtio_transport_inc_tx_pkt(vvs, pkt);
-=20
--	return virtio_transport_get_ops(vsk)->send_pkt(pkt);
-+	return t_ops->send_pkt(pkt);
- }
-=20
- static bool virtio_transport_inc_rx_pkt(struct virtio_vsock_sock *vvs,
---=20
-2.23.0
+Shannon Nelson (2):
+  ionic: ionic_if bits for sr-iov support
+  ionic: support sr-iov operations
+
+ drivers/net/ethernet/pensando/ionic/ionic.h   |  17 +-
+ .../ethernet/pensando/ionic/ionic_bus_pci.c   | 101 ++++++++
+ .../net/ethernet/pensando/ionic/ionic_dev.c   |  58 +++++
+ .../net/ethernet/pensando/ionic/ionic_dev.h   |   7 +
+ .../net/ethernet/pensando/ionic/ionic_if.h    |  97 ++++++++
+ .../net/ethernet/pensando/ionic/ionic_lif.c   | 222 +++++++++++++++++-
+ .../net/ethernet/pensando/ionic/ionic_lif.h   |   6 +
+ .../net/ethernet/pensando/ionic/ionic_main.c  |   4 +
+ 8 files changed, 504 insertions(+), 8 deletions(-)
+
+-- 
+2.17.1
 
