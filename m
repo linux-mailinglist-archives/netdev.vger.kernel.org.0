@@ -2,92 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 349C911DBE6
-	for <lists+netdev@lfdr.de>; Fri, 13 Dec 2019 02:58:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0CE2811DBF7
+	for <lists+netdev@lfdr.de>; Fri, 13 Dec 2019 03:05:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731888AbfLMB5Y convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 12 Dec 2019 20:57:24 -0500
-Received: from mail-pf1-f171.google.com ([209.85.210.171]:40204 "EHLO
-        mail-pf1-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727084AbfLMB5X (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Dec 2019 20:57:23 -0500
-Received: by mail-pf1-f171.google.com with SMTP id q8so574921pfh.7;
-        Thu, 12 Dec 2019 17:57:23 -0800 (PST)
+        id S1731892AbfLMCFD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Dec 2019 21:05:03 -0500
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:42561 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731876AbfLMCFD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Dec 2019 21:05:03 -0500
+Received: by mail-pf1-f196.google.com with SMTP id 4so581576pfz.9
+        for <netdev@vger.kernel.org>; Thu, 12 Dec 2019 18:05:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=XFE2WEqPww9hrPNTlokFg1ydsJkJIBHmKFrj5jVK8wg=;
+        b=LKyCIPEJOLjuL9eQqy/wHrbHSOXbMz4oMIAxi0+piXyWSjiZXwsDQkhHbSd5dtq5G+
+         Z0JAEL2XD8/1tCjZ4aof81Ib4dc7JyZpLEZCQ+G4jvHQJgUkCRf4RqHyIwhymTAAzMTZ
+         PAm4fj0fcSpdf12R8RdaXgXWONgog2zq9H9vDsOIwRA5JcyEEV5qdHRXPAXC6CDct6Y1
+         DMJE/RyFeYJr2JNyiQ9sdF/ycEdYWqX82DM2Y9DtLQKjrMxGoiItuuBBJF0PF6M3y1Sv
+         sSn/VJ9nFQHh7jrKQzviNHD5qU2PQ9XsFPCs5nviG0dL1FD2ky7SZ9LCQYzr/R7yuFVg
+         3/Ig==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
-         :content-transfer-encoding:message-id:references:to;
-        bh=CndJAowMJInL8tn9fXQ0Bjot5xFUhuMQ3mivrKVBjhs=;
-        b=SPZ6K+QLP7ROl0y8zPZaMHzYPXUMOB6s6rAYXRHwuUC7e/DV5q7FikMIhkskolpiek
-         R0SFRpQ1GY+D7YFTfNcC6I4imGCVyeHxrD7+yslYQ5wN83bRCR1+8AzP1XlSZ+g2Helr
-         qziIs2h/itqZbDhoylpBbGlGMmmHbamMAEeRTpkkRRNH0IjnzaUwN34u8M95N1dY4ytr
-         xwZLj2Pac81vadqigxCBVHBxEbZK4nwgAtLpsG+UTKT+Ii6pNR26hfFOaVj+piA3F/gB
-         oo44GHey59S3b5YUHBUdP8GDuGwRKt3qDMDwRKC5w42PGdLhWKj3K0UJ2c3YUMUAcmG3
-         reSQ==
-X-Gm-Message-State: APjAAAUV0R0rvWd9Nut1wYIl3XneampVlpPOzVXD3F7+nF4+NkMQtJ2u
-        xbepiNjPT2/0CeCyC5tiKmw=
-X-Google-Smtp-Source: APXvYqz5+9I2c9+BB9gbo/XUtG0zU4JO/dvc8qFiDsEuM+T5MJLIqwsMikJPqffpMgKBhGYk9TAq4w==
-X-Received: by 2002:a63:fe0a:: with SMTP id p10mr13699053pgh.96.1576202242950;
-        Thu, 12 Dec 2019 17:57:22 -0800 (PST)
-Received: from [192.168.51.23] (184-23-135-132.dedicated.static.sonic.net. [184.23.135.132])
-        by smtp.gmail.com with ESMTPSA id i11sm6421887pjg.0.2019.12.12.17.57.21
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 12 Dec 2019 17:57:22 -0800 (PST)
-Content-Type: text/plain;
-        charset=utf-8
-Mime-Version: 1.0 (Mac OS X Mail 11.5 \(3445.9.1\))
-Subject: Re: [Make-wifi-fast] debugging TCP stalls on high-speed wifi
-From:   Simon Barber <simon@superduper.net>
-In-Reply-To: <34a05f62-8dd0-9ea0-2192-1da5bfe6d843@gmail.com>
-Date:   Thu, 12 Dec 2019 17:57:13 -0800
-Cc:     Dave Taht <dave.taht@gmail.com>,
-        Make-Wifi-fast <make-wifi-fast@lists.bufferbloat.net>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        Neal Cardwell <ncardwell@google.com>,
-        Netdev <netdev@vger.kernel.org>
-Content-Transfer-Encoding: 8BIT
-Message-Id: <5DBB113A-E61A-4032-B877-18BE3ABBC616@superduper.net>
-References: <14cedbb9300f887fecc399ebcdb70c153955f876.camel@sipsolutions.net>
- <CADVnQym_CNktZ917q0-9dVY9dhtiJVRRotGTrPNdZUpkjd3vyw@mail.gmail.com>
- <f4670ce0f4399fe82e7168fb9c491d8eb718e8d8.camel@sipsolutions.net>
- <99748db5-7898-534b-d407-ed819f07f939@gmail.com>
- <ff6b35ad589d7cf0710cb9fca4c799538da2e653.camel@sipsolutions.net>
- <CAA93jw6b6n0jm_BC6DbccEU3uN9zXcfjqnZMNm=vFjLVqYKyNA@mail.gmail.com>
- <22B5F072-630A-44BE-A0E5-BF814A6CB9B0@superduper.net>
- <34a05f62-8dd0-9ea0-2192-1da5bfe6d843@gmail.com>
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-X-Mailer: Apple Mail (2.3445.9.1)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=XFE2WEqPww9hrPNTlokFg1ydsJkJIBHmKFrj5jVK8wg=;
+        b=j2JWEY1a+FINW3JgMsilXSJGxEu2AbPrrL+qmun9aOBnBoqtlvCLBEpZzFANyZW0jx
+         axt+sPzQ0mMGpngwnxypcgg1D62kIRiPlXjpileagrqE+LarvtfyCdSFDvcg1vEJXeIT
+         8TLecuwevSBmChSZVSD0al54ozIfy22vqAlqlA0SfoWxGDcMNQGCcQ/k+0jAkoo14dLv
+         +WYv3IK+wqpPUm83XFecctWg+Yz1fIVakbBgIQI9gXnK7lswa2m9j0W+Jedfr2bdEAC8
+         AEpq5ktaPa1/KqlqkLrQHWFXNj/KMTpPcJugRImQ8SS7X1z8n8iRNX9co6dKRZlrdOZC
+         xmkA==
+X-Gm-Message-State: APjAAAXWh5rIo1W4SgO+CX++TtRrJYIiKVgor4o9xzxTAPKy75YfNEwS
+        9+2VdKAAwxkgKriF3EqWvKy6uw==
+X-Google-Smtp-Source: APXvYqxejyDVM4mfG2SLpJhjeTv7BcxPUUI/HLA766KLgOJAt/nt7lz82x7KBEJgyGkHLEIFiSrSEA==
+X-Received: by 2002:a63:d041:: with SMTP id s1mr14379047pgi.363.1576202702817;
+        Thu, 12 Dec 2019 18:05:02 -0800 (PST)
+Received: from cakuba.netronome.com (c-73-202-202-92.hsd1.ca.comcast.net. [73.202.202.92])
+        by smtp.gmail.com with ESMTPSA id p186sm8734108pfp.56.2019.12.12.18.05.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 12 Dec 2019 18:05:02 -0800 (PST)
+Date:   Thu, 12 Dec 2019 18:04:59 -0800
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     subashab@codeaurora.org
+Cc:     Lorenzo Colitti <lorenzo@google.com>,
+        Maciej =?UTF-8?B?xbtlbmN6eWtv?= =?UTF-8?B?d3NraQ==?= 
+        <zenczykowski@gmail.com>, "David S . Miller" <davem@davemloft.net>,
+        Linux Network Development Mailing List 
+        <netdev@vger.kernel.org>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Sean Tranchetti <stranche@codeaurora.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Linux SCTP <linux-sctp@vger.kernel.org>
+Subject: Re: [PATCH v2] net: introduce ip_local_unbindable_ports sysctl
+Message-ID: <20191212180459.687adf9c@cakuba.netronome.com>
+In-Reply-To: <2e7ceea704ee71383d3f19d1de63dff4@codeaurora.org>
+References: <CAHo-OowKQPQj9UhjCND5SmTOergBXMHtEctJA_T0SKLO5yebSg@mail.gmail.com>
+        <20191209224530.156283-1-zenczykowski@gmail.com>
+        <20191209154216.7e19e0c0@cakuba.netronome.com>
+        <CANP3RGe8zqa2V-PBjvACAJa2Hrd8z7BXUkks0KCrAtyeDjbsYw@mail.gmail.com>
+        <20191209161835.7c455fc0@cakuba.netronome.com>
+        <CAHo-OowHek4i9Pzxn96u8U5sTH8keQmi-yMCY-OBS7CE74OGNQ@mail.gmail.com>
+        <20191210093111.7f1ad05d@cakuba.netronome.com>
+        <CAKD1Yr05=sRDTefSP6bmb-VvvDLe9=xUtAF0q3+rn8=U9UjPcA@mail.gmail.com>
+        <20191212164749.4e4c8a4c@cakuba.netronome.com>
+        <CAKD1Yr1V4S3cxvTaBs6pReEZ_3LPobnxdroY+vE3-injHyGt2A@mail.gmail.com>
+        <2e7ceea704ee71383d3f19d1de63dff4@codeaurora.org>
+Organization: Netronome Systems, Ltd.
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In my application this is a bridge or router (not TCP endpoint), and the driver is doing GRO and NAPI polling. Also looking at using the skb->fraglist to make the GRO code more effective and more transparent by passing flags, short segments, etc through for perfect reconstruction by TSO.
+On Thu, 12 Dec 2019 18:53:19 -0700, subashab@codeaurora.org wrote:
+> On 2019-12-12 17:57, Lorenzo Colitti wrote:
+> > On Fri, Dec 13, 2019 at 9:47 AM Jakub Kicinski wrote:  
+> >> How are the ports which get reserved communicated between the baseband
+> >> and the AP? Is this part of the standard? Is the driver that talks to
+> >> the base band in the user space and it knows which ports to reserve
+> >> statically? Or does the modem dynamically request ports to
+> >> reserve/inform the host of ports in use?  
+> > 
+> > I'm not an expert in that part of the system, but my understanding is
+> > that the primary way this is used is to pre-allocate a block of ports
+> > to be used by the modem on boot, before other applications can bind to
+> > ports. Subash, do you have more details?  
+> 
+> AFAIK these ports are randomly picked and not from a standard.
+> Userspace gets this information through qrtr during boot.
+> 
+> Atleast in our case, there cannot be any existing user of these ports
+> since these ports are blocked prior to mobile connection establishment.
 
-Simon
+Not even a listening socket?
 
-> On Dec 12, 2019, at 5:46 PM, Eric Dumazet <eric.dumazet@gmail.com> wrote:
-> 
-> 
-> 
-> On 12/12/19 4:59 PM, Simon Barber wrote:
->> I’m currently adding ACK thinning to Linux’s GRO code. Quite a simple addition given the way that code works.
->> 
->> Simon
->> 
->> 
-> 
-> Please don't.
-> 
-> 1) It will not help since many NIC  do not use GRO.
-> 
-> 2) This does not help if you receive one ACK per NIC interrupt, which is quite common.
-> 
-> 3) This breaks GRO transparency.
-> 
-> 4) TCP can implement this in a more effective/controlled way,
->   since the peer know a lot more flow characteristics.
-> 
-> Middle-box should not try to make TCP better, they usually break things.
+> We could call SOCK_DIAG_DESTROY on these ports from userspace as a
+> precaution as applications would gracefully handle the socket errors.
 
+Right, or kernel could walk them, since presumably every application
+using this functionality should do it, anyway? But no strong feeling 
+on this if nobody else feels this is needed.
