@@ -2,72 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A12711E4DB
-	for <lists+netdev@lfdr.de>; Fri, 13 Dec 2019 14:47:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BAEE411E58F
+	for <lists+netdev@lfdr.de>; Fri, 13 Dec 2019 15:32:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727492AbfLMNrb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Dec 2019 08:47:31 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:51698 "EHLO vps0.lunn.ch"
+        id S1727711AbfLMO3E (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Dec 2019 09:29:04 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:51748 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726524AbfLMNrb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 13 Dec 2019 08:47:31 -0500
+        id S1725747AbfLMO3E (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 13 Dec 2019 09:29:04 -0500
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
         s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
         Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
         Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
         :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
         List-Post:List-Owner:List-Archive;
-        bh=awCXz0GwD1LDcWzOjDMp0h+d0sdlS80mO4Nbpi4KuV0=; b=B022IG0f4HXZeMBlMNrforMruq
-        dFK7znmRa1CpiTRnP5y5JakiioHQ+FdeEMCHwk2Gj0/OgbKerI8jebCoeNmN1LuX1Yu+7UNmUTTXy
-        MGKwep3ErD6V9+pLSXg9iuy7P0DRSQDYOfxGJpzrOZ0+YYKV7JvJNzXUQvMMLC7dJSiw=;
+        bh=yu863y6QtmJ6iAw6RNMk9pO3KKo/xaA77rXntghiFao=; b=nHraHUYRHFCo5Xozt3pJYlAmb1
+        k8hiSAA1aYSQV/TZnVRFI5F8n6ZKopthMII7YuDYzgsAhd7TWgsYI5AnihoR3ZDxvo/azVJ94lepI
+        X8gnnylUYa3MP7TddG9EmR9fX/fgjiCaoDR7TSUPu8P67pjXS//yZA9OWrvdazmmoZXw=;
 Received: from andrew by vps0.lunn.ch with local (Exim 4.92.2)
         (envelope-from <andrew@lunn.ch>)
-        id 1iflHg-00019i-1C; Fri, 13 Dec 2019 14:47:08 +0100
-Date:   Fri, 13 Dec 2019 14:47:08 +0100
+        id 1iflwE-0001IF-H8; Fri, 13 Dec 2019 15:29:02 +0100
+Date:   Fri, 13 Dec 2019 15:29:02 +0100
 From:   Andrew Lunn <andrew@lunn.ch>
-To:     biao huang <biao.huang@mediatek.com>
-Cc:     davem@davemloft.net, Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, yt.shen@mediatek.com
-Subject: Re: [PATCH 1/2] net-next: stmmac: mediatek: add more suuport for RMII
-Message-ID: <20191213134708.GA4286@lunn.ch>
-References: <20191212024145.21752-1-biao.huang@mediatek.com>
- <20191212024145.21752-2-biao.huang@mediatek.com>
- <20191212132520.GB9959@lunn.ch>
- <1576200981.29387.13.camel@mhfsdcap03>
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Cc:     netdev@vger.kernel.org
+Subject: Re: ethtool pause mode clarifications
+Message-ID: <20191213142902.GB4286@lunn.ch>
+References: <20191213114935.GR25745@shell.armlinux.org.uk>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1576200981.29387.13.camel@mhfsdcap03>
+In-Reply-To: <20191213114935.GR25745@shell.armlinux.org.uk>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> The clock labeled as "rmii_internal" is needed only in RMII(when MAC provides
-> reference clock), and useless for RGMII/MII/RMII(when phy provides reference
-> clock).
+On Fri, Dec 13, 2019 at 11:49:35AM +0000, Russell King - ARM Linux admin wrote:
+> Hi,
 > 
-> So, add a boolean flag to indicate where the RMII reference clock is from, MAC
-> or PHY, if MAC, enable the "rmii_internal", or disable it.
-> and this clock already documented in dt-binding in PATCH 2/2.
+> Please can someone explain the ethtool pause mode settings?  The man
+> page isn't particularly clear, it says:
 > 
-> For power saving, it should not be enabled in default, so can't add it to the
-> existing list of clocks directly.
+>        -A --pause
+>               Changes the pause parameters of the specified Ethernet device.
 > 
-> Any advice for this special case?
+>            autoneg on|off
+>                   Specifies whether pause autonegotiation should be enabled.
+> 
+>            rx on|off
+>                   Specifies whether RX pause should be enabled.
+> 
+>            tx on|off
+>                   Specifies whether TX pause should be enabled.
+> 
+> 
+> "autoneg" states whether pause autonegotiation should be enabled, but
+> how is this possible, when pause autonegotiation happens as part of the
+> rest of the autonegotiation as a matter of course, and the only control
+> we have at the PHY is the value of the pause and asym pause bits?
 
-O.K. Add the boolean, but also add the clock to the list of clocks in
-DT. Don't hard code the clock name in the driver.
+Hi Russell
+
+Yah, this is not clear. How i've interpreted it is:
+
+autoneg on:
+
+The driver should validate rx and tx with its capabilities, and then
+tell the PHY what to advertise, kick off an auto-neg, and wait for the
+result to program the MAC with the negotiated value.
+
+If autoneg in general is off, return an error.
+
+autoneg off:
+
+Forget about the PHY, program the MAC directly, and potentially shoot
+yourself in the foot. But it can be useful it auto-neg in general is
+off, or there is no PHY.
+
+
+> So, would it be possible to clarify what these settings mean in the
+> ethtool man page please?
+
+I suspect the first step would be to survey current implementations
+and find out what is the most popular interpretation of this
+text. Then expand the document, and maybe list some of the alternative
+meanings which are currently in use?
+
+Clearly, the more of this we can handle in phylink/phylib, the more
+uniform it will be. But there is also a trend at the moment for
+firmware to control the PHY, and it seems like a few MAC driver
+writers have no idea what their firmware is actually doing with the
+PHY for things like this.
 
     Andrew
