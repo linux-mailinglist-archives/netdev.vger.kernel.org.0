@@ -2,62 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 461F311DCFC
-	for <lists+netdev@lfdr.de>; Fri, 13 Dec 2019 05:12:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D6B211DD06
+	for <lists+netdev@lfdr.de>; Fri, 13 Dec 2019 05:16:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732051AbfLMELg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Dec 2019 23:11:36 -0500
-Received: from mail-ot1-f53.google.com ([209.85.210.53]:43083 "EHLO
-        mail-ot1-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732042AbfLMELe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Dec 2019 23:11:34 -0500
-Received: by mail-ot1-f53.google.com with SMTP id p8so4649434oth.10
-        for <netdev@vger.kernel.org>; Thu, 12 Dec 2019 20:11:34 -0800 (PST)
+        id S1731746AbfLMEP1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Dec 2019 23:15:27 -0500
+Received: from mail-ot1-f49.google.com ([209.85.210.49]:44734 "EHLO
+        mail-ot1-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731436AbfLMEP1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Dec 2019 23:15:27 -0500
+Received: by mail-ot1-f49.google.com with SMTP id x3so4643885oto.11;
+        Thu, 12 Dec 2019 20:15:27 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
+        d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=xLM1UQFYYcAwjm3AkxL/XObitZ0sAOLzQkwkZFwVx3A=;
-        b=JJt9+r0W1EwucVyoKjZpsUZy1JY6gR1XEQUvGW0/M4ohjfR+JcTwijOrI3FfFIu+If
-         uPJJbHZfU7tuNkyZsGSUnfzzJV/qjFPopmpdHrGAGSNDp7rLlAmNEfF8CfZI1332F9gY
-         d3ClRJSG5sp7htcYeCBakwy8N3W+Pme/pcbCQ=
+        bh=7LVcz87mfJCZYhCb0ulqJCZii16qq0xWW3eUPOjkGkE=;
+        b=n+h8fWzqCvK2t/vEAWYqU8ajyuIOVBeYw3kh27bY7+j/BpT/Mfm0k6+U4B4q/xHfLZ
+         HB42i+ZCi9Xdmw7D1jho9iEUPCJy9bh7tO8C9PzN+0EaC8GUZpH7rKDlWtnFn0BULyuX
+         URFWSsggrpDYGF6XZyi143GGqY9VYIIvKMkGeSinlt2iHWDSzg/NAoruNR5/5ONAlDJq
+         QvAbS8RlAwhwDrJkg15ud0fIgTEnXSOrz2Keh63I61aVnNjhx9+IW/x/zgC3xy0OYsbF
+         mNMn6Q/l8Dpmj2d58emBrBhDNzCjeOVmhmN8+/QoYZU6O9G84B4OOukSk2AGnV/Y+HUD
+         tc5A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=xLM1UQFYYcAwjm3AkxL/XObitZ0sAOLzQkwkZFwVx3A=;
-        b=ZSafh9DrFaiMDvXegNNmTrS71B2MXBjI2NTcGo6lQ4oad152jRixKu54bKXRC3/m2b
-         PwMdWEWRtIPrxeF+a2iIRuUGxaBDVk09s+nPY0EeZUbJs12Eek1bIaCaRoWe6IE0j1nG
-         ERO77wX1FK0Gky1XU6fnFO1XIr0ejtgGFa23iCmJD6InEM5QQ4Iz+PDNkjXlXUm3bZS9
-         ylZ4V7Own49OOoxjzH0AabZmbMYAhqYXDWwVFjys/EjgU47Zt0MS7dDPi06lsd4vC9Cr
-         6VMrRcT9YAIiZn8zZbaevtowk70KDjK+0c69y6CbX+8F/9c58t9S/mHYOxQjZz38ybNX
-         Tdsg==
-X-Gm-Message-State: APjAAAX/F89ROSAJX+YOq5bt1cFkKDTKfXuBXol8hJwkc8cVgM7378zL
-        F3sOiTugk8IGLNsH1pdp6jDr5CGk/wCxXL5f7YtFKA==
-X-Google-Smtp-Source: APXvYqzNd4TzlE+88NZC9nxKeVIkHDzlTzUiD1HAvCd6oGZMmbaD9eWf49oiydCIT+m03sjjqkr84m7kMICXVqZ46Tc=
-X-Received: by 2002:a9d:6c06:: with SMTP id f6mr12593659otq.318.1576210294020;
- Thu, 12 Dec 2019 20:11:34 -0800 (PST)
+        bh=7LVcz87mfJCZYhCb0ulqJCZii16qq0xWW3eUPOjkGkE=;
+        b=LlidvkNU+IeFFPE+btRJ1PF0Ev6/TfXTzFEzXBFdU9QIIlxppUZQpx3o6z3nAKfZrr
+         2xoqkkCBMGcuWL0t7NeE/JRbQ0yhUmunUiYyqsJSAt5mYkOLqVk0N6YJaoyUnv+YApoB
+         6OtK/ogaMNskihopXyg/Rb8aN2Bu4QPqQp6wD9Ev5W5jLGYgm3EzeSBqmtoCwRp7iK/+
+         Cbi+rpW3LcdqTbG16f6sce+kD9sMKCVxkenru1cfW4nK0sdnPwDi7Df7SDbnVC12NO2Z
+         dUTK2z0eDDHTswIjCWJKy4z5F3HEnsX5so6CHrLBu/YGr7wqWT6uZt0NGvVqrnqFlBXY
+         sQ5g==
+X-Gm-Message-State: APjAAAXVGO2q8u/PyuwMM049EMFCi9xNf93DAB7AaqzBsca2/3mipbfA
+        Hev/9ZdQHrrN9rrsiFlSEfaoZwkYQobwCL8oWHZ4pGMhAjo=
+X-Google-Smtp-Source: APXvYqy3WiIzz2nXfI2jcEazJ+sFxZAFvmFaLmY8uwdep/ZCq/auKkzN5QEV3q2WvjDiGasCChrVDYXcRPFk9KBIHvA=
+X-Received: by 2002:a05:6830:10c9:: with SMTP id z9mr12257307oto.200.1576210526463;
+ Thu, 12 Dec 2019 20:15:26 -0800 (PST)
 MIME-Version: 1.0
-References: <DM6PR18MB338861990B56CCA5A4384779AB540@DM6PR18MB3388.namprd18.prod.outlook.com>
-In-Reply-To: <DM6PR18MB338861990B56CCA5A4384779AB540@DM6PR18MB3388.namprd18.prod.outlook.com>
-From:   Michael Chan <michael.chan@broadcom.com>
-Date:   Thu, 12 Dec 2019 20:11:23 -0800
-Message-ID: <CACKFLi=30KJXL0xbdfgYqxWML5C5ZWyDPjtATByVf7hsao9gZQ@mail.gmail.com>
-Subject: Re: LRO/HW_GRO is not disabled when native xdp is installed
-To:     Manish Chopra <manishc@marvell.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+References: <14cedbb9300f887fecc399ebcdb70c153955f876.camel@sipsolutions.net>
+In-Reply-To: <14cedbb9300f887fecc399ebcdb70c153955f876.camel@sipsolutions.net>
+From:   Justin Capella <justincapella@gmail.com>
+Date:   Thu, 12 Dec 2019 20:15:14 -0800
+Message-ID: <CAMrEMU-WdaAe2wOxsnMn=npPyAjf1KkuxA8cHE==yez_rUELUQ@mail.gmail.com>
+Subject: Re: debugging TCP stalls on high-speed wifi
+To:     Johannes Berg <johannes@sipsolutions.net>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 12, 2019 at 7:13 PM Manish Chopra <manishc@marvell.com> wrote:
+Could TCP window size (waiting for ACKnowledgements) be a contributing factor?
 
-> When attaching native xdp program, device's aggregation features (i.e LRO/HW_GRO) are not getting disabled.
-> They seems to be getting disabled only in case of generic xdp install, not in case of native/driver mode xdp,
-
-That sounds right.  For bnxt, when an xdp program is attached, the
-driver will run in a special paging mode that won't support LRO or
-hardware GRO.  So they are automatically turned off.  Isn't that the
-case for your device as well?
+On Thu, Dec 12, 2019 at 6:52 AM Johannes Berg <johannes@sipsolutions.net> wrote:
+>
+> Hi Eric, all,
+>
+> I've been debugging (much thanks to bpftrace) TCP stalls on wifi, in
+> particular on iwlwifi.
+>
+> What happens, essentially, is that we transmit large aggregates (63
+> packets of 7.5k A-MSDU size each, for something on the order of 500kB
+> per PPDU). Theoretically we can have ~240 A-MSDUs on our hardware
+> queues, and the hardware aggregates them into up to 63 to send as a
+> single PPDU.
+>
+> At HE rates (160 MHz, high rates) such a large PPDU takes less than 2ms
+> to transmit.
+>
+> I'm seeing around 1400 Mbps TCP throughput (a bit more than 1800 UDP),
+> but I'm expecting more. A bit more than 1800 for UDP is about the max I
+> can expect on this AP (it only does 8k A-MSDU size), but I'd think TCP
+> then shouldn't be so much less (and our Windows drivers gets >1600).
+>
+>
+> What I see is that occasionally - and this doesn't happen all the time
+> but probably enough to matter - we reclaim a few of those large
+> aggregates and free the transmit SKBs, and then we try to pull from
+> mac80211's TXQs but they're empty.
+>
+> At this point - we've just freed 400+k of data, I'd expect TCP to
+> immediately push more, but it doesn't happen. I sometimes see another
+> set of reclaims emptying the queue entirely (literally down to 0 packets
+> on the queue) and it then takes another millisecond or two for TCP to
+> start pushing packets again.
+>
+> Once that happens, I also observe that TCP stops pushing large TSO
+> packets and goes down to sometimes less than a single A-MSDU (i.e.
+> ~7.5k) in a TSO, perhaps even an MTU-sized frame - didn't check this,
+> only the # of frames we make out of this.
+>
+>
+> If you have any thoughts on this, I'd appreciate it.
+>
+>
+> Something I've been wondering is if our TSO implementation causes
+> issues, but apart from higher CPU usage I see no real difference if I
+> turned it off. I thought so because it splits up the SKBs into those A-
+> MSDU sized chunks using skb_gso_segment() and then splits them down into
+> MTU-sized all packed together into an A-MSDU using the hardware engine.
+> But that means we release a bunch of A-MSDU-sized SKBs back to the TCP
+> stack when they transmitted.
+>
+> Another thought I had was our broken NAPI, but this is TX traffic so the
+> only RX thing is sync, and I'm currently still using kernel 5.4 anyway.
+>
+> Thanks,
+> johannes
+>
