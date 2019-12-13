@@ -2,177 +2,354 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 31A1F11EC2F
-	for <lists+netdev@lfdr.de>; Fri, 13 Dec 2019 21:54:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1AB3C11EC4A
+	for <lists+netdev@lfdr.de>; Fri, 13 Dec 2019 21:57:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726824AbfLMUxu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Dec 2019 15:53:50 -0500
-Received: from mout.kundenserver.de ([212.227.126.187]:43261 "EHLO
+        id S1726704AbfLMU44 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Dec 2019 15:56:56 -0500
+Received: from mout.kundenserver.de ([212.227.126.135]:48953 "EHLO
         mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725937AbfLMUxt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Dec 2019 15:53:49 -0500
+        with ESMTP id S1725747AbfLMU4z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Dec 2019 15:56:55 -0500
 Received: from threadripper.lan ([149.172.19.189]) by mrelayeu.kundenserver.de
- (mreue012 [212.227.15.129]) with ESMTPA (Nemesis) id
- 1Mf3yk-1i3ky22RkQ-00gY1h; Fri, 13 Dec 2019 21:53:36 +0100
+ (mreue010 [212.227.15.129]) with ESMTPA (Nemesis) id
+ 1M7sUE-1iatty0MiI-004zAm; Fri, 13 Dec 2019 21:56:24 +0100
 From:   Arnd Bergmann <arnd@arndb.de>
 To:     y2038@lists.linaro.org, linux-kernel@vger.kernel.org,
+        "J. Bruce Fields" <bfields@fieldses.org>,
+        Chuck Lever <chuck.lever@oracle.com>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Anna Schumaker <anna.schumaker@netapp.com>,
         "David S. Miller" <davem@davemloft.net>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Willem de Bruijn <willemb@google.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Maxim Mikityanskiy <maximmi@mellanox.com>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
-Subject: [PATCH v2 08/24] packet: clarify timestamp overflow
-Date:   Fri, 13 Dec 2019 21:52:13 +0100
-Message-Id: <20191213205221.3787308-5-arnd@arndb.de>
+Cc:     Arnd Bergmann <arnd@arndb.de>, Simo Sorce <simo@redhat.com>,
+        Eric Biggers <ebiggers@google.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Bruce Fields <bfields@redhat.com>, linux-nfs@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH v2 15/24] sunrpc: convert to time64_t for expiry
+Date:   Fri, 13 Dec 2019 21:53:43 +0100
+Message-Id: <20191213205417.3871055-6-arnd@arndb.de>
 X-Mailer: git-send-email 2.20.0
 In-Reply-To: <20191213204936.3643476-1-arnd@arndb.de>
 References: <20191213204936.3643476-1-arnd@arndb.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:kKBta+G+as32YcXvSh8tqOxFF8jEv1GeP9pum+Ut03Clje4yb0Y
- szlos7jj5U38a9OyuzukApS8mGz2pEGMpu1kdmhnUtVYGq1KoMKrBMvwG2Ju1qHHmp6TxBX
- Ckl2dSzUfranvLS9EdhP4rZF83JADlDdY8rQeETo2twFKq2U+Hc5gvv4bWLL/UDNPmm4X9p
- JVMHJaWzJlbVlDbLw7GIQ==
+X-Provags-ID: V03:K1:RkDeIaFu6tTIaveO+DHQKcjxBAB7BEHoQZvY2uFHzWjSYL9X+Lx
+ mzQe0jVYOkFmWsPcEWpDftiypK700MdwLlAC5qHAnYw/dM8edUwm+Nvgn59UcxvmMnrXtFC
+ BPjnhGYXWorgsajgWORN1DsJp0bCmKmgUk+4B9lqB2Oa400G0AdEjnGetqrNtA3X2c/Cz7w
+ 3gqATfZJ2wxJUqTZA0O+w==
 X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:IRdm5OTc3rE=:EZmf5cbRyzKAHD8CnHoxmH
- gRxlyJt2cIfonuW1EgiTb6S6CC3kH7g5rzAgTaMgZ0k1RpIInOJ2F8y2+gd9A6VUVkKi5JCGb
- kd3iCHr+Obp8BOvM4r1mNwxlrC+n9BXx0w+2KXY6qh2qXG4lNnP1LNV+ftLNGZtPFNdGOrKcr
- wsh4atIZsxCGAek99Bp7zpXILcoh8saZ3vcIf+IuU9ytJDcsTP02o2wd4tQPS8FuXsZG/EYpG
- gP6AS9n28Y9Q5BEtZXdAAM6SeL4CGa+8eL10mRk9ruYXac+Uyk50eNmdioIsalwVYhAQPqN8g
- sD5ZAbLLfyKD01KehEeUvUEtOJMNUdtUaaDUGmvQx6LkICIZjvEKGY7tfG3W4jxBJ5+fRR3It
- 8D81cJPCLAx8nBmUVJXvnDtvRYZSI2xaDDdi+v4p7ge5IviGf4LvGxsUqG22NAIuIsEGPwswR
- MRpgwWx95S8xjpP+eM8f35d4yEg8Zwl8cf0QSE2vRpxNTSN6BAC23Ugpc0MgkaZvTN6PlgHy3
- 3Yh1MDgPA8QogrIr5jLZby5BU44A12q/x8ulD0APdnweT0jCXUQqUm2wLBb3dbSpdtinVL147
- 5kntc3jlnYo6w1mCqN9CRLprjxVgRpKRgCR3UEcqVEYjOLu2pY7wTgGZOOfyYAuJotpjSCjr/
- XlSIPO8GPwp3rLOl6z/JJoPmio90dX0nZi0jpOFeN9uHM9zbTXcnSGed0EnppfrcBJMoVR+YR
- 3ZyCOZjrtvRn5uKUkBZwnN1TgWzSHQpGViJqM8zRLcUpooFBFjgaWbyMEEB0HDT06PmgwsZKV
- ybKqE9JyyG90ElcZMYr1x0qseCj9ADA+RrT2+g9cu3G0ogv7a92+boY1NSUaS8oRVuYX9JbMU
- 1ytJBPm9j09YOD61HG6Q==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:4xIoJv151vc=:EjO59GyBCVMiLbjrWvBAmc
+ P1ThtoYjwjePIQ0tzE2plQ54sqhA06sclv6rfW73/e9ZxajyIfvD/CHxMkAk18L5s/8S73GWJ
+ HcUYGis6cW7xAPt4vqT0YQNqiJtTBelhYL+NTpNEWuHoRStoRYLypFpJPNXAgXavnYJs0IdPy
+ gkgBNDpKsgmL+yBUayrRWobfKhdHffP0LNysiTtzOzx5JmrX57hIdqH2nlHtWOLC/gc+gWNeX
+ RU8BWuFrqw+6hELw1Y0jBvNohB6zZTXX+1/twtli6t/poGfEtrI8mhA4YWlvlmya1kjgW3Qo/
+ QUGuxQhEEAXcy/D0YmAFM/PxMcM8BAVrvo0MpW8Jo6cB7uSK6GvFZH2hUygcSyjyza09meChQ
+ soXDRXWvgjif8CbzDUbZQs9axsgAWoYJy3Q7rLpg7h3qO0nXv3G4LOCrxoxQNS8Z8XXScjb1r
+ WUdsIvx7vxmSVyNHQxmHduqCUQ5HTVeUvcegoH1RzkKUlVf4pCEMXxuvsWAcvtnYXmfGgZXoH
+ mSVCWIL7x/jAcuDb3fvxpFZZCJh6nWN+2gsN8s0U1l/8vGWF4f3TiAaMVWIPUjFdUSRPtNtsu
+ SNhhqwYQwrDxhpOlX5IFrw9IzhZUwS9j3JTVBTHavWtOhjtkTO/7J1v75RP7RlAKE9AOpMANX
+ e56lfM1GrecgvziKOwlVbqwNaoCWfd5JAvrl36ceFDGXH1AKLvU/ipR1Kob+jY6hdufwmpC2y
+ 985ESbrWyeFUJjkGeEKqiPvobI9ubS6kiA1MUpbHU/dLa0VjQ9euq0eC8WB4qIJVCRVLq7tA1
+ EN23CSxDp4saTvTzf363IrwVNRFY77HnmVA8qE5f8aUk5H3dq8rPF25okrsT/vdZ/wuyQwDsz
+ NPGrVjQVZ3VWo6XU9RHg==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The memory mapped packet socket data structure in version 1 through 3
-all contain 32-bit second values for the packet time stamps, which makes
-them suffer from the overflow of time_t in y2038 or y2106 (depending
-on whether user space interprets the value as signed or unsigned).
+Using signed 32-bit types for UTC time leads to the y2038 overflow,
+which is what happens in the sunrpc code at the moment.
 
-The implementation uses the deprecated getnstimeofday() function.
+This changes the sunrpc code over to use time64_t where possible.
+The one exception is the gss_import_v{1,2}_context() function for
+kerberos5, which uses 32-bit timestamps in the protocol. Here,
+we can at least treat the numbers as 'unsigned', which extends the
+range from 2038 to 2106.
 
-In order to get rid of that, this changes the code to use
-ktime_get_real_ts64() as a replacement, documenting the nature of the
-overflow. As long as the user applications treat the timestamps as
-unsigned, or only use the difference between timestamps, they are
-fine, and changing the timestamps to 64-bit wouldn't require a more
-invasive user space API change.
-
-Note: a lot of other APIs suffer from incompatible structures when
-time_t gets redefined to 64-bit in 32-bit user space, but this one
-does not.
-
-Acked-by: Willem de Bruijn <willemb@google.com>
-Link: https://lore.kernel.org/lkml/CAF=yD-Jomr-gWSR-EBNKnSpFL46UeG564FLfqTCMNEm-prEaXA@mail.gmail.com/T/#u
 Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 ---
- net/packet/af_packet.c | 27 +++++++++++++++++----------
- 1 file changed, 17 insertions(+), 10 deletions(-)
+ include/linux/sunrpc/gss_api.h        |  4 ++--
+ include/linux/sunrpc/gss_krb5.h       |  2 +-
+ net/sunrpc/auth_gss/gss_krb5_mech.c   | 12 +++++++++---
+ net/sunrpc/auth_gss/gss_krb5_seal.c   |  8 ++++----
+ net/sunrpc/auth_gss/gss_krb5_unseal.c |  6 +++---
+ net/sunrpc/auth_gss/gss_krb5_wrap.c   | 16 ++++++++--------
+ net/sunrpc/auth_gss/gss_mech_switch.c |  2 +-
+ net/sunrpc/auth_gss/svcauth_gss.c     |  4 ++--
+ 8 files changed, 30 insertions(+), 24 deletions(-)
 
-diff --git a/net/packet/af_packet.c b/net/packet/af_packet.c
-index 53c1d41fb1c9..60300f3fcddc 100644
---- a/net/packet/af_packet.c
-+++ b/net/packet/af_packet.c
-@@ -408,17 +408,17 @@ static int __packet_get_status(const struct packet_sock *po, void *frame)
+diff --git a/include/linux/sunrpc/gss_api.h b/include/linux/sunrpc/gss_api.h
+index bd691e08be3b..1cc6cefb1220 100644
+--- a/include/linux/sunrpc/gss_api.h
++++ b/include/linux/sunrpc/gss_api.h
+@@ -48,7 +48,7 @@ int gss_import_sec_context(
+ 		size_t			bufsize,
+ 		struct gss_api_mech	*mech,
+ 		struct gss_ctx		**ctx_id,
+-		time_t			*endtime,
++		time64_t		*endtime,
+ 		gfp_t			gfp_mask);
+ u32 gss_get_mic(
+ 		struct gss_ctx		*ctx_id,
+@@ -108,7 +108,7 @@ struct gss_api_ops {
+ 			const void		*input_token,
+ 			size_t			bufsize,
+ 			struct gss_ctx		*ctx_id,
+-			time_t			*endtime,
++			time64_t		*endtime,
+ 			gfp_t			gfp_mask);
+ 	u32 (*gss_get_mic)(
+ 			struct gss_ctx		*ctx_id,
+diff --git a/include/linux/sunrpc/gss_krb5.h b/include/linux/sunrpc/gss_krb5.h
+index 02c0412e368c..c1d77dd8ed41 100644
+--- a/include/linux/sunrpc/gss_krb5.h
++++ b/include/linux/sunrpc/gss_krb5.h
+@@ -106,9 +106,9 @@ struct krb5_ctx {
+ 	struct crypto_sync_skcipher *initiator_enc_aux;
+ 	u8			Ksess[GSS_KRB5_MAX_KEYLEN]; /* session key */
+ 	u8			cksum[GSS_KRB5_MAX_KEYLEN];
+-	s32			endtime;
+ 	atomic_t		seq_send;
+ 	atomic64_t		seq_send64;
++	time64_t		endtime;
+ 	struct xdr_netobj	mech_used;
+ 	u8			initiator_sign[GSS_KRB5_MAX_KEYLEN];
+ 	u8			acceptor_sign[GSS_KRB5_MAX_KEYLEN];
+diff --git a/net/sunrpc/auth_gss/gss_krb5_mech.c b/net/sunrpc/auth_gss/gss_krb5_mech.c
+index 6e5d6d240215..75b3c2e9e8f8 100644
+--- a/net/sunrpc/auth_gss/gss_krb5_mech.c
++++ b/net/sunrpc/auth_gss/gss_krb5_mech.c
+@@ -253,6 +253,7 @@ gss_import_v1_context(const void *p, const void *end, struct krb5_ctx *ctx)
+ {
+ 	u32 seq_send;
+ 	int tmp;
++	u32 time32;
+ 
+ 	p = simple_get_bytes(p, end, &ctx->initiate, sizeof(ctx->initiate));
+ 	if (IS_ERR(p))
+@@ -290,9 +291,11 @@ gss_import_v1_context(const void *p, const void *end, struct krb5_ctx *ctx)
+ 		p = ERR_PTR(-ENOSYS);
+ 		goto out_err;
  	}
+-	p = simple_get_bytes(p, end, &ctx->endtime, sizeof(ctx->endtime));
++	p = simple_get_bytes(p, end, &time32, sizeof(time32));
+ 	if (IS_ERR(p))
+ 		goto out_err;
++	/* unsigned 32-bit time overflows in year 2106 */
++	ctx->endtime = (time64_t)time32;
+ 	p = simple_get_bytes(p, end, &seq_send, sizeof(seq_send));
+ 	if (IS_ERR(p))
+ 		goto out_err;
+@@ -587,15 +590,18 @@ gss_import_v2_context(const void *p, const void *end, struct krb5_ctx *ctx,
+ {
+ 	u64 seq_send64;
+ 	int keylen;
++	u32 time32;
+ 
+ 	p = simple_get_bytes(p, end, &ctx->flags, sizeof(ctx->flags));
+ 	if (IS_ERR(p))
+ 		goto out_err;
+ 	ctx->initiate = ctx->flags & KRB5_CTX_FLAG_INITIATOR;
+ 
+-	p = simple_get_bytes(p, end, &ctx->endtime, sizeof(ctx->endtime));
++	p = simple_get_bytes(p, end, &time32, sizeof(time32));
+ 	if (IS_ERR(p))
+ 		goto out_err;
++	/* unsigned 32-bit time overflows in year 2106 */
++	ctx->endtime = (time64_t)time32;
+ 	p = simple_get_bytes(p, end, &seq_send64, sizeof(seq_send64));
+ 	if (IS_ERR(p))
+ 		goto out_err;
+@@ -659,7 +665,7 @@ gss_import_v2_context(const void *p, const void *end, struct krb5_ctx *ctx,
+ static int
+ gss_import_sec_context_kerberos(const void *p, size_t len,
+ 				struct gss_ctx *ctx_id,
+-				time_t *endtime,
++				time64_t *endtime,
+ 				gfp_t gfp_mask)
+ {
+ 	const void *end = (const void *)((const char *)p + len);
+diff --git a/net/sunrpc/auth_gss/gss_krb5_seal.c b/net/sunrpc/auth_gss/gss_krb5_seal.c
+index 48fe4a591b54..f1d280accf43 100644
+--- a/net/sunrpc/auth_gss/gss_krb5_seal.c
++++ b/net/sunrpc/auth_gss/gss_krb5_seal.c
+@@ -131,14 +131,14 @@ gss_get_mic_v1(struct krb5_ctx *ctx, struct xdr_buf *text,
+ 	struct xdr_netobj	md5cksum = {.len = sizeof(cksumdata),
+ 					    .data = cksumdata};
+ 	void			*ptr;
+-	s32			now;
++	time64_t		now;
+ 	u32			seq_send;
+ 	u8			*cksumkey;
+ 
+ 	dprintk("RPC:       %s\n", __func__);
+ 	BUG_ON(ctx == NULL);
+ 
+-	now = get_seconds();
++	now = ktime_get_real_seconds();
+ 
+ 	ptr = setup_token(ctx, token);
+ 
+@@ -170,7 +170,7 @@ gss_get_mic_v2(struct krb5_ctx *ctx, struct xdr_buf *text,
+ 	struct xdr_netobj cksumobj = { .len = sizeof(cksumdata),
+ 				       .data = cksumdata};
+ 	void *krb5_hdr;
+-	s32 now;
++	time64_t now;
+ 	u8 *cksumkey;
+ 	unsigned int cksum_usage;
+ 	__be64 seq_send_be64;
+@@ -198,7 +198,7 @@ gss_get_mic_v2(struct krb5_ctx *ctx, struct xdr_buf *text,
+ 
+ 	memcpy(krb5_hdr + GSS_KRB5_TOK_HDR_LEN, cksumobj.data, cksumobj.len);
+ 
+-	now = get_seconds();
++	now = ktime_get_real_seconds();
+ 
+ 	return (ctx->endtime < now) ? GSS_S_CONTEXT_EXPIRED : GSS_S_COMPLETE;
+ }
+diff --git a/net/sunrpc/auth_gss/gss_krb5_unseal.c b/net/sunrpc/auth_gss/gss_krb5_unseal.c
+index ef2b25b86d2f..aaab91cf24c8 100644
+--- a/net/sunrpc/auth_gss/gss_krb5_unseal.c
++++ b/net/sunrpc/auth_gss/gss_krb5_unseal.c
+@@ -124,7 +124,7 @@ gss_verify_mic_v1(struct krb5_ctx *ctx,
+ 
+ 	/* it got through unscathed.  Make sure the context is unexpired */
+ 
+-	now = get_seconds();
++	now = ktime_get_real_seconds();
+ 
+ 	if (now > ctx->endtime)
+ 		return GSS_S_CONTEXT_EXPIRED;
+@@ -149,7 +149,7 @@ gss_verify_mic_v2(struct krb5_ctx *ctx,
+ 	char cksumdata[GSS_KRB5_MAX_CKSUM_LEN];
+ 	struct xdr_netobj cksumobj = {.len = sizeof(cksumdata),
+ 				      .data = cksumdata};
+-	s32 now;
++	time64_t now;
+ 	u8 *ptr = read_token->data;
+ 	u8 *cksumkey;
+ 	u8 flags;
+@@ -194,7 +194,7 @@ gss_verify_mic_v2(struct krb5_ctx *ctx,
+ 		return GSS_S_BAD_SIG;
+ 
+ 	/* it got through unscathed.  Make sure the context is unexpired */
+-	now = get_seconds();
++	now = ktime_get_real_seconds();
+ 	if (now > ctx->endtime)
+ 		return GSS_S_CONTEXT_EXPIRED;
+ 
+diff --git a/net/sunrpc/auth_gss/gss_krb5_wrap.c b/net/sunrpc/auth_gss/gss_krb5_wrap.c
+index 14a0aff0cd84..6c1920eed771 100644
+--- a/net/sunrpc/auth_gss/gss_krb5_wrap.c
++++ b/net/sunrpc/auth_gss/gss_krb5_wrap.c
+@@ -163,7 +163,7 @@ gss_wrap_kerberos_v1(struct krb5_ctx *kctx, int offset,
+ 					    .data = cksumdata};
+ 	int			blocksize = 0, plainlen;
+ 	unsigned char		*ptr, *msg_start;
+-	s32			now;
++	time64_t		now;
+ 	int			headlen;
+ 	struct page		**tmp_pages;
+ 	u32			seq_send;
+@@ -172,7 +172,7 @@ gss_wrap_kerberos_v1(struct krb5_ctx *kctx, int offset,
+ 
+ 	dprintk("RPC:       %s\n", __func__);
+ 
+-	now = get_seconds();
++	now = ktime_get_real_seconds();
+ 
+ 	blocksize = crypto_sync_skcipher_blocksize(kctx->enc);
+ 	gss_krb5_add_padding(buf, offset, blocksize);
+@@ -268,7 +268,7 @@ gss_unwrap_kerberos_v1(struct krb5_ctx *kctx, int offset, struct xdr_buf *buf)
+ 	char			cksumdata[GSS_KRB5_MAX_CKSUM_LEN];
+ 	struct xdr_netobj	md5cksum = {.len = sizeof(cksumdata),
+ 					    .data = cksumdata};
+-	s32			now;
++	time64_t		now;
+ 	int			direction;
+ 	s32			seqnum;
+ 	unsigned char		*ptr;
+@@ -359,7 +359,7 @@ gss_unwrap_kerberos_v1(struct krb5_ctx *kctx, int offset, struct xdr_buf *buf)
+ 
+ 	/* it got through unscathed.  Make sure the context is unexpired */
+ 
+-	now = get_seconds();
++	now = ktime_get_real_seconds();
+ 
+ 	if (now > kctx->endtime)
+ 		return GSS_S_CONTEXT_EXPIRED;
+@@ -439,7 +439,7 @@ gss_wrap_kerberos_v2(struct krb5_ctx *kctx, u32 offset,
+ 		     struct xdr_buf *buf, struct page **pages)
+ {
+ 	u8		*ptr, *plainhdr;
+-	s32		now;
++	time64_t	now;
+ 	u8		flags = 0x00;
+ 	__be16		*be16ptr;
+ 	__be64		*be64ptr;
+@@ -481,14 +481,14 @@ gss_wrap_kerberos_v2(struct krb5_ctx *kctx, u32 offset,
+ 	if (err)
+ 		return err;
+ 
+-	now = get_seconds();
++	now = ktime_get_real_seconds();
+ 	return (kctx->endtime < now) ? GSS_S_CONTEXT_EXPIRED : GSS_S_COMPLETE;
  }
  
--static __u32 tpacket_get_timestamp(struct sk_buff *skb, struct timespec *ts,
-+static __u32 tpacket_get_timestamp(struct sk_buff *skb, struct timespec64 *ts,
- 				   unsigned int flags)
+ static u32
+ gss_unwrap_kerberos_v2(struct krb5_ctx *kctx, int offset, struct xdr_buf *buf)
  {
- 	struct skb_shared_hwtstamps *shhwtstamps = skb_hwtstamps(skb);
+-	s32		now;
++	time64_t	now;
+ 	u8		*ptr;
+ 	u8		flags = 0x00;
+ 	u16		ec, rrc;
+@@ -557,7 +557,7 @@ gss_unwrap_kerberos_v2(struct krb5_ctx *kctx, int offset, struct xdr_buf *buf)
+ 	/* do sequencing checks */
  
- 	if (shhwtstamps &&
- 	    (flags & SOF_TIMESTAMPING_RAW_HARDWARE) &&
--	    ktime_to_timespec_cond(shhwtstamps->hwtstamp, ts))
-+	    ktime_to_timespec64_cond(shhwtstamps->hwtstamp, ts))
- 		return TP_STATUS_TS_RAW_HARDWARE;
+ 	/* it got through unscathed.  Make sure the context is unexpired */
+-	now = get_seconds();
++	now = ktime_get_real_seconds();
+ 	if (now > kctx->endtime)
+ 		return GSS_S_CONTEXT_EXPIRED;
  
--	if (ktime_to_timespec_cond(skb->tstamp, ts))
-+	if (ktime_to_timespec64_cond(skb->tstamp, ts))
- 		return TP_STATUS_TS_SOFTWARE;
- 
- 	return 0;
-@@ -428,13 +428,20 @@ static __u32 __packet_set_timestamp(struct packet_sock *po, void *frame,
- 				    struct sk_buff *skb)
+diff --git a/net/sunrpc/auth_gss/gss_mech_switch.c b/net/sunrpc/auth_gss/gss_mech_switch.c
+index 30b7de6f3d76..d3685d4ed9e0 100644
+--- a/net/sunrpc/auth_gss/gss_mech_switch.c
++++ b/net/sunrpc/auth_gss/gss_mech_switch.c
+@@ -376,7 +376,7 @@ int
+ gss_import_sec_context(const void *input_token, size_t bufsize,
+ 		       struct gss_api_mech	*mech,
+ 		       struct gss_ctx		**ctx_id,
+-		       time_t			*endtime,
++		       time64_t			*endtime,
+ 		       gfp_t gfp_mask)
  {
- 	union tpacket_uhdr h;
--	struct timespec ts;
-+	struct timespec64 ts;
- 	__u32 ts_status;
+ 	if (!(*ctx_id = kzalloc(sizeof(**ctx_id), gfp_mask)))
+diff --git a/net/sunrpc/auth_gss/svcauth_gss.c b/net/sunrpc/auth_gss/svcauth_gss.c
+index c62d1f10978b..0c3e22838ddf 100644
+--- a/net/sunrpc/auth_gss/svcauth_gss.c
++++ b/net/sunrpc/auth_gss/svcauth_gss.c
+@@ -436,7 +436,7 @@ static int rsc_parse(struct cache_detail *cd,
+ 	int id;
+ 	int len, rv;
+ 	struct rsc rsci, *rscp = NULL;
+-	time_t expiry;
++	time64_t expiry;
+ 	int status = -EINVAL;
+ 	struct gss_api_mech *gm = NULL;
  
- 	if (!(ts_status = tpacket_get_timestamp(skb, &ts, po->tp_tstamp)))
- 		return 0;
+@@ -1221,7 +1221,7 @@ static int gss_proxy_save_rsc(struct cache_detail *cd,
+ 	static atomic64_t ctxhctr;
+ 	long long ctxh;
+ 	struct gss_api_mech *gm = NULL;
+-	time_t expiry;
++	time64_t expiry;
+ 	int status = -EINVAL;
  
- 	h.raw = frame;
-+	/*
-+	 * versions 1 through 3 overflow the timestamps in y2106, since they
-+	 * all store the seconds in a 32-bit unsigned integer.
-+	 * If we create a version 4, that should have a 64-bit timestamp,
-+	 * either 64-bit seconds + 32-bit nanoseconds, or just 64-bit
-+	 * nanoseconds.
-+	 */
- 	switch (po->tp_version) {
- 	case TPACKET_V1:
- 		h.h1->tp_sec = ts.tv_sec;
-@@ -774,8 +781,8 @@ static void prb_close_block(struct tpacket_kbdq_core *pkc1,
- 		 * It shouldn't really happen as we don't close empty
- 		 * blocks. See prb_retire_rx_blk_timer_expired().
- 		 */
--		struct timespec ts;
--		getnstimeofday(&ts);
-+		struct timespec64 ts;
-+		ktime_get_real_ts64(&ts);
- 		h1->ts_last_pkt.ts_sec = ts.tv_sec;
- 		h1->ts_last_pkt.ts_nsec	= ts.tv_nsec;
- 	}
-@@ -805,7 +812,7 @@ static void prb_thaw_queue(struct tpacket_kbdq_core *pkc)
- static void prb_open_block(struct tpacket_kbdq_core *pkc1,
- 	struct tpacket_block_desc *pbd1)
- {
--	struct timespec ts;
-+	struct timespec64 ts;
- 	struct tpacket_hdr_v1 *h1 = &pbd1->hdr.bh1;
- 
- 	smp_rmb();
-@@ -818,7 +825,7 @@ static void prb_open_block(struct tpacket_kbdq_core *pkc1,
- 	BLOCK_NUM_PKTS(pbd1) = 0;
- 	BLOCK_LEN(pbd1) = BLK_PLUS_PRIV(pkc1->blk_sizeof_priv);
- 
--	getnstimeofday(&ts);
-+	ktime_get_real_ts64(&ts);
- 
- 	h1->ts_first_pkt.ts_sec = ts.tv_sec;
- 	h1->ts_first_pkt.ts_nsec = ts.tv_nsec;
-@@ -2168,7 +2175,7 @@ static int tpacket_rcv(struct sk_buff *skb, struct net_device *dev,
- 	unsigned long status = TP_STATUS_USER;
- 	unsigned short macoff, netoff, hdrlen;
- 	struct sk_buff *copy_skb = NULL;
--	struct timespec ts;
-+	struct timespec64 ts;
- 	__u32 ts_status;
- 	bool is_drop_n_account = false;
- 	bool do_vnet = false;
-@@ -2300,7 +2307,7 @@ static int tpacket_rcv(struct sk_buff *skb, struct net_device *dev,
- 	skb_copy_bits(skb, 0, h.raw + macoff, snaplen);
- 
- 	if (!(ts_status = tpacket_get_timestamp(skb, &ts, po->tp_tstamp)))
--		getnstimeofday(&ts);
-+		ktime_get_real_ts64(&ts);
- 
- 	status |= ts_status;
- 
+ 	memset(&rsci, 0, sizeof(rsci));
 -- 
 2.20.0
 
