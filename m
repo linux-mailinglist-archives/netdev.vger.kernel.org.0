@@ -2,89 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2CC9011E987
-	for <lists+netdev@lfdr.de>; Fri, 13 Dec 2019 18:53:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E2F4F11E98B
+	for <lists+netdev@lfdr.de>; Fri, 13 Dec 2019 18:55:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728603AbfLMRwa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Dec 2019 12:52:30 -0500
-Received: from mail-lj1-f193.google.com ([209.85.208.193]:39025 "EHLO
-        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728558AbfLMRw1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Dec 2019 12:52:27 -0500
-Received: by mail-lj1-f193.google.com with SMTP id e10so33825ljj.6
-        for <netdev@vger.kernel.org>; Fri, 13 Dec 2019 09:52:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=BOTadHFmyQTuyfnwzSO5t/8LbI/7laK+kqej1EbG7+k=;
-        b=b0T6JzCxMhVY13DLGA2xcpsls2Z66ZtChJQ7elMsepKxbxoshw3HJbTwpry9VVoxOr
-         eBB9yEodODAt9/hYOjjtM0bB1EjKSZt5v/CVKTY4R41s+NG+sZv6E9GqQWkgbDuM9jGu
-         gM6UucCGu9jUQXJaF+0TnEz0TwSikILJB3HnSrZ4qS1rtC6O//j5AOzEvXPBT5KNM7Uq
-         hHF6u3W3K44574yMXNuYOtKKC9hkFWBROtVL1sk9B28Sz2AUMhcXRwBVAAhUiAYtBhrw
-         bfAz8few88T/ksVKihwLdlrjrNkE7QzvbMTZTnWjJ5cB8UrVpxrIeT6eQpXgweuJHoiY
-         ueFA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=BOTadHFmyQTuyfnwzSO5t/8LbI/7laK+kqej1EbG7+k=;
-        b=AOFQJ6hLyTEAEppkKTrmcon07hDswhQ6x2Jkbh7ZQzdCshd9as8PTiRLeP1JpSs4/o
-         QA/q6kJzYOQeqluLRL7lIe6ujQnR1cUP+Uh7OFlEaeTC9GQ98qrIAq8suP+Zbs44lffb
-         1epkKMjT3epVSiqh4K7MkPJRO++SaarkkBO236du+8Kmfoc3u7y0MLtAJGT3ipkaon7S
-         wWYfUDc5IM4tJGD3sziGJdzOAt7WjWLNZfFsuhcJzRCCIFXoheDzOPQalA1Gzxl30M3Q
-         o976iJm5h69tpGQBXwoAAZZQxbHSZu0AtQwV6DS28WP4/bysNN1MAYgn16yOO7ZvlmMf
-         o3AQ==
-X-Gm-Message-State: APjAAAVWGXz6b8XMHFfWJrUNzc2dm6+BbYSCKGw+saz/X9K2aXCjFcwM
-        ihS638eYziC+IcWBhI8aiqz2sg==
-X-Google-Smtp-Source: APXvYqzNDAopUxd1xthpyicYmxDmbwcbiYO9ORSI/3KYNsxJbzSpz1Gg81uAjBuLDH9+jOSMfXWeKQ==
-X-Received: by 2002:a2e:995a:: with SMTP id r26mr10660526ljj.78.1576259545044;
-        Fri, 13 Dec 2019 09:52:25 -0800 (PST)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id m21sm4859062lfh.53.2019.12.13.09.52.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 13 Dec 2019 09:52:24 -0800 (PST)
-Date:   Fri, 13 Dec 2019 09:52:17 -0800
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Shuah Khan <shuah@kernel.org>,
-        Simon Horman <simon.horman@netronome.com>,
-        netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Paolo Pisati <paolo.pisati@canonical.com>
-Subject: Re: [PATCH] selftests: net: tls: remove recv_rcvbuf test
-Message-ID: <20191213095217.14588890@cakuba.netronome.com>
-In-Reply-To: <20191213103903.29777-1-cascardo@canonical.com>
-References: <20191213103903.29777-1-cascardo@canonical.com>
-Organization: Netronome Systems, Ltd.
+        id S1728569AbfLMRy3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Dec 2019 12:54:29 -0500
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:50410 "EHLO
+        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728438AbfLMRy2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Dec 2019 12:54:28 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:Content-Type:MIME-Version:
+        Message-ID:Subject:Cc:To:From:Date:Reply-To:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=XE/M3c9A/gAbAYTlIdY7YzGXQOHhm9oUXaSNdq3BmRk=; b=y4avUNPLiMPgelU3lNYMCE02T
+        dqx8Gxw4R5Q0FtP7hSjki/JEFaG5UrqSW6S380qBVVxBN7IGEYOQcLRuUAW59ibneSBTEUPsaI3KA
+        EuamEasKeQ9q5OgV/j0vvZ1ov2AYn5KDq2mbLwXoMd5qme8m5QdidvKHXTJQgCYlZn7oub2gpi1U8
+        xM+sUz7jd+eAVFwndOiOh+vgIkFLW9SAVMRoSY95qhNWh4DLOv6b8uuiX/Az96gHM3WZWgi/z6yZg
+        ea3cCmtYxBKJ51Gd1Mw6Sugjhm62yJgwpC8qbwZUT1wvXSnr7K6EunerxqUCxomM8t+rvolSkP+Sj
+        CdhzLqzlA==;
+Received: from shell.armlinux.org.uk ([2002:4e20:1eda:1:5054:ff:fe00:4ec]:48394)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1ifp8t-0006JK-Ck; Fri, 13 Dec 2019 17:54:19 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1ifp8p-00085P-8l; Fri, 13 Dec 2019 17:54:15 +0000
+Date:   Fri, 13 Dec 2019 17:54:15 +0000
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     Antoine Tenart <antoine.tenart@bootlin.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Subject: [PATCH net-next v2 0/3] improve clause 45 support in phylink
+Message-ID: <20191213175415.GW25745@shell.armlinux.org.uk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 13 Dec 2019 07:39:02 -0300, Thadeu Lima de Souza Cascardo wrote:
-> This test only works when [1] is applied, which was rejected.
-> 
-> Basically, the errors are reported and cleared. In this particular case of
-> tls sockets, following reads will block.
-> 
-> The test case was originally submitted with the rejected patch, but, then,
-> was included as part of a different patchset, possibly by mistake.
-> 
-> [1] https://lore.kernel.org/netdev/20191007035323.4360-2-jakub.kicinski@netronome.com/#t
+Hi,
 
-Ah, damn, you're right, sorry about that!
+These three patches improve the clause 45 support in phylink, fixing
+some corner cases that have been noticed with the addition of SFP+
+NBASE-T modules, but are actually a little more wisespread than I
+initially realised.
 
-> Thanks Paolo Pisati for pointing out the original patchset where this
-> appeared.
-> 
-> Cc: Jakub Kicinski <jakub.kicinski@netronome.com>
-> Fixes: 65190f77424d (selftests/tls: add a test for fragmented messages)
-> Reported-by: Paolo Pisati <paolo.pisati@canonical.com>
-> Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+The first issue was spotted with a NBASE-T PHY on a SFP+ module plugged
+into a mvneta platform. When these PHYs are not operating in USXGMII
+mode, but are in a single-lane Serdes mode, they will switch between
+one of several different PHY interface modes.
 
-Acked-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+If we call the MAC validate() function with the current PHY interface
+mode, we will restrict the supported and advertising masks to the link
+modes that the current PHY interface mode supports. For example, if we
+determine that we want to start the PHY with an interface mode of
+2500BASE-X, then this setup will restrict the advertisement and
+supported masks to 2.5G speed link modes.
+
+What we actually want for these PHYs is to allow them to support any
+link modes that the PHY supports _and_ the MAC is also capable of
+supporting. Without knowing the details of the PHY interface modes that
+may be used, we can do this by using PHY_INTERFACE_MODE_NA to validate
+and restrict the link modes to any that the MAC supports.
+
+mvpp2 with the 88X3310 PHY avoids this problem, because the validate()
+implementation allows all MAC supported speeds not only for
+PHY_INTERFACE_MODE_NA, but also for XAUI and 10GKR modes.
+
+The first patch addresses this; current MAC drivers should continue to
+work as-is, but there will be a follow-on patch to fixup at least
+mvpp2.
+
+The second issue addresses a very similar problem that occurs when
+trying to use ethtool to alter the advertisement mask - we call
+the MAC validate() function with the current interface mode, the
+current support and requested advertisement masks. This immediately
+restricts the advertisement in the same way as the above.
+
+This patch series addresses both issues, although the patches are not
+in the above order.
+
+v2: fix patch 3 missing 1G link modes for SGMII and RGMII interface
+    modes.
+
+ drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c |  22 ++++-
+ drivers/net/phy/phylink.c                       | 106 +++++++++++++++---------
+ 2 files changed, 84 insertions(+), 44 deletions(-)
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
+According to speedtest.net: 11.9Mbps down 500kbps up
