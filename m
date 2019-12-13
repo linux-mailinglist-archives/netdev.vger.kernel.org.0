@@ -2,127 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DC9F511E70B
-	for <lists+netdev@lfdr.de>; Fri, 13 Dec 2019 16:52:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C93711E6EF
+	for <lists+netdev@lfdr.de>; Fri, 13 Dec 2019 16:49:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728232AbfLMPuf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Dec 2019 10:50:35 -0500
-Received: from relay2-d.mail.gandi.net ([217.70.183.194]:43859 "EHLO
-        relay2-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728204AbfLMPuc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Dec 2019 10:50:32 -0500
-X-Originating-IP: 90.76.143.236
-Received: from localhost (lfbn-tou-1-1075-236.w90-76.abo.wanadoo.fr [90.76.143.236])
-        (Authenticated sender: antoine.tenart@bootlin.com)
-        by relay2-d.mail.gandi.net (Postfix) with ESMTPSA id 7EE4D4000D;
-        Fri, 13 Dec 2019 15:50:29 +0000 (UTC)
-From:   Antoine Tenart <antoine.tenart@bootlin.com>
-To:     davem@davemloft.net, sd@queasysnail.net, andrew@lunn.ch,
-        f.fainelli@gmail.com, hkallweit1@gmail.com
-Cc:     Antoine Tenart <antoine.tenart@bootlin.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        thomas.petazzoni@bootlin.com, alexandre.belloni@bootlin.com,
-        allan.nielsen@microchip.com, camelia.groza@nxp.com,
-        Simon.Edelhaus@aquantia.com, Igor.Russkikh@aquantia.com,
-        jakub.kicinski@netronome.com
-Subject: [PATCH net-next v3 15/15] net: macsec: add support for offloading to the MAC
-Date:   Fri, 13 Dec 2019 16:48:44 +0100
-Message-Id: <20191213154844.635389-16-antoine.tenart@bootlin.com>
-X-Mailer: git-send-email 2.23.0
-In-Reply-To: <20191213154844.635389-1-antoine.tenart@bootlin.com>
-References: <20191213154844.635389-1-antoine.tenart@bootlin.com>
+        id S1727962AbfLMPtQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Dec 2019 10:49:16 -0500
+Received: from mail-qk1-f193.google.com ([209.85.222.193]:34731 "EHLO
+        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727908AbfLMPtQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Dec 2019 10:49:16 -0500
+Received: by mail-qk1-f193.google.com with SMTP id d202so2418351qkb.1;
+        Fri, 13 Dec 2019 07:49:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=Gsc6a8n1oq89OaeyrnkAHq66uYj42sNcEqmul1hr5nE=;
+        b=QjWAuw7ObThExIdvmqhyAt/ihAFjyqCtI3GHXQPR56Mgd4N6ukVP4Fvtll6L1fEO/O
+         E0m0514119d9Wo8P+CyBRBSGQv/3beU63PLaQMQmMXyfux52BWwMbzuSG6iIEm4C3TcC
+         IBmLox0uTeGjgWu1AFaMWYNNf9chD2ywwhjyX1kO+eQ259IblAqHGiSZEbPOA4jnMxj+
+         ci8JKdXofMYZacccbiEpI8d/wJNLu2iygJuJGBJyl0Z99bVZc+RQbcpp600j87adbd9g
+         TXzJhu4eUSXP/5Qec53NNdObeQmgpljncCXnjsBXWnU9zvyLs464wTY3I9OVQ77Uqacr
+         HBIw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=Gsc6a8n1oq89OaeyrnkAHq66uYj42sNcEqmul1hr5nE=;
+        b=pRchqWAfv4GoO/8LjXN0be2uaNeoxwJ7bk6KyRHBInvU31oEKxUgj4+V8YhabQZeIR
+         w+F2ylK1KDdNvhwb0y7xQeVygI7pswREYOkXEmIUiE5FjCtdZu6nroKV015vpIv00Zrr
+         3uIf23S1AkVElcIyio7F+xcFZEF58yn64qGEA9A3idlMwxzGQoNWNr2m8kMLF7JNGLBt
+         E7PUDHSV3vCDVAz7A2mosv43tWx6Dr/FU5x7yHtmOI89w7C77sunFBTHr42xSflwqQ2l
+         MojjSXQncVC4uRdnA41lo42QrTRxwoQevUSfAeL15jH3Cck6j/CaPVDx+SUew6GXQ6JE
+         QG5A==
+X-Gm-Message-State: APjAAAUrKDKQBkEoCGPQdJ0OgKcd2ZjOA6b4PNXPonKMN8TTl5fACq7x
+        OT7NgAQpWEURhyA/28pG/24fRHqqoT7NqybRw1s=
+X-Google-Smtp-Source: APXvYqxoPs/7BEx0y3EmTpxmZwL5BCI76Bmp1H6flWSYOBBcrGpFrpjKZPIcWV3fG0jGpbxrHkdipwXSxaFANxxpFv8=
+X-Received: by 2002:a37:9c0f:: with SMTP id f15mr14169383qke.297.1576252155437;
+ Fri, 13 Dec 2019 07:49:15 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20191211123017.13212-1-bjorn.topel@gmail.com> <20191211123017.13212-3-bjorn.topel@gmail.com>
+ <20191213053054.l3o6xlziqzwqxq22@ast-mbp> <CAJ+HfNiYHM1v8SXs54rkT86MrNxuB5V_KyHjwYupcjUsMf1nSQ@mail.gmail.com>
+ <20191213150407.laqt2n2ue2ahsu2b@ast-mbp.dhcp.thefacebook.com>
+In-Reply-To: <20191213150407.laqt2n2ue2ahsu2b@ast-mbp.dhcp.thefacebook.com>
+From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
+Date:   Fri, 13 Dec 2019 16:49:04 +0100
+Message-ID: <CAJ+HfNgjvT2O=ux=AqdDdO=QSwBkALvXSBjZhib6zGu=AeARwA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v4 2/6] bpf: introduce BPF dispatcher
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Netdev <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        bpf <bpf@vger.kernel.org>,
+        Magnus Karlsson <magnus.karlsson@gmail.com>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Edward Cree <ecree@solarflare.com>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <thoiland@redhat.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds a new MACsec offloading option, MACSEC_OFFLOAD_MAC,
-allowing a user to select a MAC as a provider for MACsec offloading
-operations.
+On Fri, 13 Dec 2019 at 16:04, Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
+>
+> On Fri, Dec 13, 2019 at 08:51:47AM +0100, Bj=C3=B6rn T=C3=B6pel wrote:
+> >
+> > > I hope my guess that compiler didn't inline it is correct. Then extra=
+ noinline
+> > > will not hurt and that's the only thing needed to avoid the issue.
+> > >
+> >
+> > I'd say it's broken not marking it as noinline, and I was lucky. It
+> > would break if other BPF entrypoints that are being called from
+> > filter.o would appear. I'll wait for more comments, and respin a v5
+> > after the weekend.
+>
+> Also noticed that EXPORT_SYMBOL for dispatch function is not necessary at=
+m.
+> Please drop it. It can be added later when need arises.
+>
 
-Signed-off-by: Antoine Tenart <antoine.tenart@bootlin.com>
----
- drivers/net/macsec.c               | 16 +++++++++++++---
- include/uapi/linux/if_link.h       |  1 +
- tools/include/uapi/linux/if_link.h |  1 +
- 3 files changed, 15 insertions(+), 3 deletions(-)
+It's needed for module builds, so I cannot drop it!
 
-diff --git a/drivers/net/macsec.c b/drivers/net/macsec.c
-index 8247eb652f57..222b6ed93b27 100644
---- a/drivers/net/macsec.c
-+++ b/drivers/net/macsec.c
-@@ -324,7 +324,8 @@ static void macsec_set_shortlen(struct macsec_eth_header *h, size_t data_len)
- /* Checks if a MACsec interface is being offloaded to an hardware engine */
- static bool macsec_is_offloaded(struct macsec_dev *macsec)
- {
--	if (macsec->offload == MACSEC_OFFLOAD_PHY)
-+	if (macsec->offload == MACSEC_OFFLOAD_MAC ||
-+	    macsec->offload == MACSEC_OFFLOAD_PHY)
- 		return true;
- 
- 	return false;
-@@ -340,6 +341,9 @@ static bool macsec_check_offload(enum macsec_offload offload,
- 	if (offload == MACSEC_OFFLOAD_PHY)
- 		return macsec->real_dev->phydev &&
- 		       macsec->real_dev->phydev->macsec_ops;
-+	else if (offload == MACSEC_OFFLOAD_MAC)
-+		return macsec->real_dev->features & NETIF_F_HW_MACSEC &&
-+		       macsec->real_dev->macsec_ops;
- 
- 	return false;
- }
-@@ -354,9 +358,14 @@ static const struct macsec_ops *__macsec_get_ops(enum macsec_offload offload,
- 
- 		if (offload == MACSEC_OFFLOAD_PHY)
- 			ctx->phydev = macsec->real_dev->phydev;
-+		else if (offload == MACSEC_OFFLOAD_MAC)
-+			ctx->netdev = macsec->real_dev;
- 	}
- 
--	return macsec->real_dev->phydev->macsec_ops;
-+	if (offload == MACSEC_OFFLOAD_PHY)
-+		return macsec->real_dev->phydev->macsec_ops;
-+	else
-+		return macsec->real_dev->macsec_ops;
- }
- 
- /* Returns a pointer to the MACsec ops struct if any and updates the MACsec
-@@ -2414,7 +2423,8 @@ static int macsec_upd_offload(struct sk_buff *skb, struct genl_info *info)
- 
- 			priv = macsec_priv(loop_dev);
- 
--			if (!macsec_check_offload(MACSEC_OFFLOAD_PHY, priv))
-+			if (!macsec_check_offload(MACSEC_OFFLOAD_PHY, priv) &&
-+			    !macsec_check_offload(MACSEC_OFFLOAD_MAC, priv))
- 				continue;
- 
- 			if (priv->offload != MACSEC_OFFLOAD_OFF)
-diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
-index 024af2d1d0af..771371d5b996 100644
---- a/include/uapi/linux/if_link.h
-+++ b/include/uapi/linux/if_link.h
-@@ -489,6 +489,7 @@ enum macsec_validation_type {
- enum macsec_offload {
- 	MACSEC_OFFLOAD_OFF = 0,
- 	MACSEC_OFFLOAD_PHY = 1,
-+	MACSEC_OFFLOAD_MAC = 2,
- 	__MACSEC_OFFLOAD_END,
- 	MACSEC_OFFLOAD_MAX = __MACSEC_OFFLOAD_END - 1,
- };
-diff --git a/tools/include/uapi/linux/if_link.h b/tools/include/uapi/linux/if_link.h
-index 42efdb84d189..7bf406d3ce62 100644
---- a/tools/include/uapi/linux/if_link.h
-+++ b/tools/include/uapi/linux/if_link.h
-@@ -488,6 +488,7 @@ enum macsec_validation_type {
- enum macsec_offload {
- 	MACSEC_OFFLOAD_OFF = 0,
- 	MACSEC_OFFLOAD_PHY = 1,
-+	MACSEC_OFFLOAD_MAC = 2,
- 	__MACSEC_OFFLOAD_END,
- 	MACSEC_OFFLOAD_MAX = __MACSEC_OFFLOAD_END - 1,
- };
--- 
-2.23.0
+> With that please respin right away. No need to wait till Monday.
+> My general approach on accepting patches is "perfect is the enemy of the =
+good".
+> It's better to land patches sooner if architecture and api looks good.
+> Details and minor bugs can be worked out step by step.
+>
 
+Ok! Will respin right away!
