@@ -2,139 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EB30311E6D8
-	for <lists+netdev@lfdr.de>; Fri, 13 Dec 2019 16:39:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 12F7411E6EB
+	for <lists+netdev@lfdr.de>; Fri, 13 Dec 2019 16:47:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727934AbfLMPjy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Dec 2019 10:39:54 -0500
-Received: from shadbolt.e.decadent.org.uk ([88.96.1.126]:40648 "EHLO
-        shadbolt.e.decadent.org.uk" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727796AbfLMPjy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Dec 2019 10:39:54 -0500
-Received: from [167.98.27.226] (helo=deadeye)
-        by shadbolt.decadent.org.uk with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.89)
-        (envelope-from <ben@decadent.org.uk>)
-        id 1ifn2Y-0001FZ-DR; Fri, 13 Dec 2019 15:39:38 +0000
-Received: from ben by deadeye with local (Exim 4.93-RC7)
-        (envelope-from <ben@decadent.org.uk>)
-        id 1ifn2X-00056v-9m; Fri, 13 Dec 2019 15:39:37 +0000
-Message-ID: <784d8f924612b91310baca25f2b0acc7ba78b83b.camel@decadent.org.uk>
-Subject: Re: [PATCH] libbpf: fix readelf output parsing on powerpc with
- recent binutils
-From:   Ben Hutchings <ben@decadent.org.uk>
-To:     Michael Ellerman <mpe@ellerman.id.au>,
-        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>,
-        Justin Forbes <jmforbes@linuxtx.org>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Song Liu <songliubraving@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "open list:BPF (Safe dynamic programs and tools)" 
-        <netdev@vger.kernel.org>, Yonghong Song <yhs@fb.com>,
-        "open list:BPF (Safe dynamic programs and tools)" 
-        <bpf@vger.kernel.org>, linuxppc-dev@lists.ozlabs.org,
-        Martin KaFai Lau <kafai@fb.com>,
-        Aurelien Jarno <aurelien@aurel32.net>,
-        debian-kernel@lists.debian.org, Nick Clifton <nickc@redhat.com>
-Date:   Fri, 13 Dec 2019 15:39:32 +0000
-In-Reply-To: <87a77ypdno.fsf@mpe.ellerman.id.au>
-References: <20191201195728.4161537-1-aurelien@aurel32.net>
-         <87zhgbe0ix.fsf@mpe.ellerman.id.au>
-         <20191202093752.GA1535@localhost.localdomain>
-         <CAFxkdAqg6RaGbRrNN3e_nHfHFR-xxzZgjhi5AnppTxxwdg0VyQ@mail.gmail.com>
-         <20191210222553.GA4580@calabresa>
-         <CAFxkdAp6Up0qSyp0sH0O1yD+5W3LvY-+-iniBrorcz2pMV+y-g@mail.gmail.com>
-         <20191211160133.GB4580@calabresa> <87a77ypdno.fsf@mpe.ellerman.id.au>
-Content-Type: multipart/signed; micalg="pgp-sha512";
-        protocol="application/pgp-signature"; boundary="=-XTuTpKbXj3nCdOipqGDS"
-User-Agent: Evolution 3.30.5-1.1 
+        id S1727992AbfLMPrr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Dec 2019 10:47:47 -0500
+Received: from mail-wr1-f68.google.com ([209.85.221.68]:33361 "EHLO
+        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727920AbfLMPrq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Dec 2019 10:47:46 -0500
+Received: by mail-wr1-f68.google.com with SMTP id b6so7198122wrq.0
+        for <netdev@vger.kernel.org>; Fri, 13 Dec 2019 07:47:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=zy/1vxmK7IESgZ5MufAb5lMH5M1hrx2tBtD49AP8IGg=;
+        b=EwfZKJpHgTZfq2oP7jePrJKUK8ZNAm4PsQGN32QF3UGr1NkO0kMWQMhpx3xpKJd4k2
+         qCENKuKt9VkU+QR6qzO73xgYJPkZkW515/0DMsa4G85AiuMp+AxljrIpsZKE+TY8ngmk
+         /8dv3fPgl/f9PgecfmougTtKhSdBMssa8PEsw=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=zy/1vxmK7IESgZ5MufAb5lMH5M1hrx2tBtD49AP8IGg=;
+        b=sNnLSgoiomXdY62G2wL9Yej2bExbRyy39Qo5uIMjxJHdGzvLuFlVilkQz+3+QQSUs9
+         FTkbIMQQD/adcRCTIciTf5Ad+2yEVSiEFbkmGj9A1+QEXo3LpQdrhz7OyTMsDEdRn3Np
+         j8XT2bYw7wD+QWHIoiBjd/QIf8q8SFHlDFrqM1mNgVOulwoJQ3cIVjfwu6NDxDOt8gXW
+         uOPezPiCHN6yVJn8s+293TmNoImxqRMVQKi2XSkUeJ95S0v1cXhny9RkaljN79vNSrs5
+         yeGdC5SMEbGHD4XYBc0DcI3U0gPosaB7upuBVRjDqfYDHnEQZQ5novBM7nsJ5GP3Bl2w
+         A/Eg==
+X-Gm-Message-State: APjAAAUe4z7n2jTGlgf5hbNcXmfG7WflFr81I8M4K9egY8gCj2/XwuqF
+        3YyS/nJpcms6kbyiVtQgi0JU1w==
+X-Google-Smtp-Source: APXvYqxDDCsPNF553NwXAaiIZEZtJCqKHvMMr8OTf4QdQlkxPgrUbkSbZGoxyJoE0pe94MnpErfvJQ==
+X-Received: by 2002:adf:f3d0:: with SMTP id g16mr14079175wrp.2.1576252064539;
+        Fri, 13 Dec 2019 07:47:44 -0800 (PST)
+Received: from localhost.localdomain ([2a06:98c0:1000:8250:3da5:43ec:24b:e240])
+        by smtp.gmail.com with ESMTPSA id s8sm10140295wrt.57.2019.12.13.07.47.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 13 Dec 2019 07:47:43 -0800 (PST)
+From:   Lorenz Bauer <lmb@cloudflare.com>
+To:     ast@kernel.org, daniel@iogearbox.net,
+        "David S. Miller" <davem@davemloft.net>,
+        Jesus Sanchez-Palencia <jesus.sanchez-palencia@intel.com>,
+        Richard Cochran <rcochran@linutronix.de>,
+        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     kernel-team@cloudflare.com, Lorenz Bauer <lmb@cloudflare.com>
+Subject: [PATCH bpf] bpf: clear skb->tstamp in bpf_redirect when necessary
+Date:   Fri, 13 Dec 2019 15:46:34 +0000
+Message-Id: <20191213154634.27338-1-lmb@cloudflare.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-X-SA-Exim-Connect-IP: 167.98.27.226
-X-SA-Exim-Mail-From: ben@decadent.org.uk
-X-SA-Exim-Scanned: No (on shadbolt.decadent.org.uk); SAEximRunCond expanded to false
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Redirecting a packet from ingress to egress by using bpf_redirect
+breaks if the egress interface has an fq qdisc installed. This is the same
+problem as fixed in 8203e2d8 ("net: clear skb->tstamp in forwarding paths").
 
---=-XTuTpKbXj3nCdOipqGDS
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Clear skb->tstamp when redirecting into the egress path.
 
-On Thu, 2019-12-12 at 11:53 +1100, Michael Ellerman wrote:
-> Thadeu Lima de Souza Cascardo <cascardo@canonical.com> writes:
-[...]
-> > This is a patch on binutils carried by Fedora:
-> >=20
-> > https://src.fedoraproject.org/rpms/binutils/c/b8265c46f7ddae23a792ee830=
-6fbaaeacba83bf8
-> >=20
-> > " b8265c Have readelf display extra symbol information at the end of th=
-e line. "
-> >=20
-> > It has the following comment:
-> >=20
-> > # FIXME:    The proper fix would be to update the scripts that are expe=
-cting
-> > #           a fixed output from readelf.  But it seems that some of the=
-m are
-> > #           no longer being maintained.
-> >=20
-> > This commit is from 2017, had it been on binutils upstream, maybe the s=
-ituation
-> > right now would be different.
->=20
-> Bleeping bleep.
->=20
-> Looks like it was actually ruby that was the original problem:
->=20
->   https://bugzilla.redhat.com/show_bug.cgi?id=3D1479302
->=20
->=20
-> Why it wasn't hacked around in the ruby package I don't know, doing it in
-> the distro binutils package is not ideal.
+Fixes: 80b14de ("net: Add a new socket option for a future transmit time.")
+Fixes: fb420d5 ("tcp/fq: move back to CLOCK_MONOTONIC")
+Signed-off-by: Lorenz Bauer <lmb@cloudflare.com>
+---
+ net/core/filter.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-That wouldn't help people building Ruby from upstream.
+diff --git a/net/core/filter.c b/net/core/filter.c
+index f1e703eed3d2..d914257763b5 100644
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -2055,6 +2055,7 @@ static inline int __bpf_tx_skb(struct net_device *dev, struct sk_buff *skb)
+ 	}
+ 
+ 	skb->dev = dev;
++	skb->tstamp = 0;
+ 
+ 	dev_xmit_recursion_inc();
+ 	ret = dev_queue_xmit(skb);
+-- 
+2.20.1
 
-Any tool generating tabular output like this should add new fields at
-the end (or show them only if requested), since there are bound to be
-scripts that parse the output like this.  So I think Fedora's change to
-readelf was reasonable, but should have been pushed upstream as soon as
-possible.
-
-Now everyone is going to have to deal with both formats.
-
-Ben.
-
---=20
-Ben Hutchings
-Horngren's Observation:
-              Among economists, the real world is often a special case.
-
-
-
---=-XTuTpKbXj3nCdOipqGDS
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEErCspvTSmr92z9o8157/I7JWGEQkFAl3zsLQACgkQ57/I7JWG
-EQn2Yg//TXyohEOZzCVyllfhvYlZubQmABin7AvKKCrohI86PUkKZzydMPKW7wjF
-KSi+xCi62Q52OwskMvIaWjiBzvhijZaFWHB8EPGqRMeJtnbjjwGTTta0ZzPYBBEa
-ngKWvU50Vjqlt8uF7qNXQk3M/mJloOXmqhjPjwuX2Yqa/aWz20NAzV2WQQ9OzNMn
-8HQzX5jHN76CWmMwkqblKqO0yRpb8Cw08bpn42zkVYlIZapxAeBIY4DQP2A+TWPs
-3ElgHxlL3Rgg4qvYqnhIzD7Jr/jOCFIcdD/j5SaNMJV6HzLK5/vUQs0NEA0y6M7I
-91T2k3hhd6pJPpCn4eP0Vc2JQWZQl4P+x0FMlYiXfBiOjdy2cOqDiez0g3i3SqyQ
-6i29+SUSriP5QvPHK8Pg2L4MRuelBoNyuP55IZWonDYpQx1qDoI8ycXgEtPpuP1s
-B41ClX9UNrozPrEuDEcC7tbw+ak+xsJy+PqEF9RYnIJcJ8bJRI2YTR1h8ysWZyOI
-13zEPyAZG2b34rBmUaqA2fBFTG98qPuEV6Amcq4rpdqsdbzTkD1PYCpEtXnqiok/
-C0o/6Wsey1BpfcXsag7xX824BvJkgsWzQnFJ1cto4zmsHxUyLvLh+X5VXilsRgTd
-ongG67DAwcznlANn9XjPGeN3qjDErgSWwXPdUecrKm0+xgMNPo0=
-=ttgq
------END PGP SIGNATURE-----
-
---=-XTuTpKbXj3nCdOipqGDS--
