@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 00FF411EE5F
-	for <lists+netdev@lfdr.de>; Sat, 14 Dec 2019 00:21:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D67AF11EE63
+	for <lists+netdev@lfdr.de>; Sat, 14 Dec 2019 00:21:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726680AbfLMXTT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Dec 2019 18:19:19 -0500
-Received: from mail-lj1-f196.google.com ([209.85.208.196]:38599 "EHLO
-        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726608AbfLMXTT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Dec 2019 18:19:19 -0500
-Received: by mail-lj1-f196.google.com with SMTP id k8so453411ljh.5
-        for <netdev@vger.kernel.org>; Fri, 13 Dec 2019 15:19:17 -0800 (PST)
+        id S1726757AbfLMXUW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Dec 2019 18:20:22 -0500
+Received: from mail-lf1-f65.google.com ([209.85.167.65]:32845 "EHLO
+        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726638AbfLMXUW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Dec 2019 18:20:22 -0500
+Received: by mail-lf1-f65.google.com with SMTP id n25so488079lfl.0
+        for <netdev@vger.kernel.org>; Fri, 13 Dec 2019 15:20:20 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=netronome-com.20150623.gappssmtp.com; s=20150623;
         h=date:from:to:cc:subject:message-id:in-reply-to:references
          :organization:mime-version:content-transfer-encoding;
-        bh=WtkBDfsu+zN66MW4p99gf5h2Qf6ar53LzznejbBjRaY=;
-        b=VDHsojpB8QCs2wmQtGSz7VBNO6OI7HYQQw2tQNAzvOEJ5W6ZPenTGQAQH6XuhpLgQh
-         z2rxoMV0Tur/h0za8xn5ReHLeX/TOwIL+0mH9Y2PRIUlXnEp/2EWgqUon3GqEFJRnnmt
-         G/sMC747GZF8d7j5KNZhvcNBLPJUwini1xvMtcKoclbnep+nrI/FIJn7wibAjfBJtgod
-         +FgTpaaCJP1x97JM0GyrIjalg5rCUQbZVCjkGTsY1y5+k/qRzHPmiDTjALdrTLKuLfK4
-         kCdtvPkqk6ZMMZpwEvOe1odvMQPIiPp7qMipEXiMl4gdrjCQUTjWIv9N5OUSJC8TL8aW
-         8O1Q==
+        bh=KMei8lYNXb0UTYHgEyCRfOWiAP70N/PbnvVS+aFEWFM=;
+        b=fdu/Dh2m1ylz1omUQxD0S0JP86sdDn6nMCnnvflTW8c1CYwvL7wIkICsyVdGYbkgIg
+         /bc3tKQcRpI9VuyCu3Q4s2ZU6MCCN1+RqN1Jbfz1x7RFs/aHWw/OqLB6qONf1e4g7vtx
+         KFOiC4xpMCoAVK096G5pFfAukBpGYxx3FyqCatPU3D88nrWgKUduEf6Wocxo0VbNh/Ee
+         8TYQ93d1JBJ67u7GS353y9GhrVbXdSPLvEfReOgGU9/uJ9d1RBJlNb9GFr8FMObg6zSZ
+         552CuuuL/t3oMgLsHxE09cjHLpZG3LJDocHwYOG8+TEEQBDVqmJhWnWI2/MUOz6Lp/vp
+         rWUg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
          :references:organization:mime-version:content-transfer-encoding;
-        bh=WtkBDfsu+zN66MW4p99gf5h2Qf6ar53LzznejbBjRaY=;
-        b=Z5jZDMt9DnhLwmPMxMrP92cGfj7YC0wypTy199v+sRf3SN1JFRTMZjHLxaE/lH1XVF
-         EBXhhs1+ShtAhcqGM0jez63fuiNUmjJ52l5YgKJb45WoeBCtQ1MvpmiYtM6LcoUQYRxC
-         kwX+XdUDXmulWN11h+mzuZ1JZquj/LQnt6m/r/5wBhoDdX6HE5I8vBpdrbdMXEO20JuY
-         SQMXbd0ybMld2KQOt/K0/27GuZiNx74FGEIXWxStsexaOFZ2UT1e5LjWgc0bpzdyBlam
-         I5NjOQw6WdvRmQfJB1lm0Dmj20DAiRaiFZ3T4ocOwpObUzyfQuaG/dEdDrCBkDiv3aJA
-         Di6Q==
-X-Gm-Message-State: APjAAAVuzqBTqYp8WyQBzFQ7A7dtMxMXH9CPH2FguII8+bLGzGL1ZeKD
-        dk+PczMwx9RtYxYOtqhCn2iqkA==
-X-Google-Smtp-Source: APXvYqwwAIvZg0FvvigqVsmTMLueLybEPZrXSGW8Bp9nXSe0yupolOGjeT7ZE+hPnu2iEYi7dQe+iw==
-X-Received: by 2002:a2e:9890:: with SMTP id b16mr11494733ljj.190.1576279156909;
-        Fri, 13 Dec 2019 15:19:16 -0800 (PST)
+        bh=KMei8lYNXb0UTYHgEyCRfOWiAP70N/PbnvVS+aFEWFM=;
+        b=e6MF70vsPmZJpIHaeqlP9kjIvSeYSAY2nakK6buH4v2N30vQObksIEUUU4tfw148ZC
+         +w8J9Psy2rU/FJPmjgrAgkvyujjxutWDyw/J8T6LEC27gA/c8zNDwderd/BP5cutaiwe
+         Kl/jOPDTsmfC/PTJXGleS4+LaRURl2wxyhT8BxUNZtHxPHqvD6eWHp8xyjJn4vrMvj65
+         8Jv2IGO3BCqQ/3OsJu/YjZHCnHGSV9Ofw3eexpR2T6csV8hxPmJ4ljwlgyE4DtWtlT5f
+         h104knMUrY0o89gcG4oGhS5zUtjeSaq3z3+1DJhuRI0RsankHCIix+ucHq+5//JiURle
+         b7rQ==
+X-Gm-Message-State: APjAAAWdE3cuhyQ8DiX1r6bF64jMUNlLRihv4EtDd/raxRzkqWoMN6FS
+        z8kFDJcLKWWAwN1mb+sntoYO7Q==
+X-Google-Smtp-Source: APXvYqw6L+MMfJsKX67uPTGekmvZTiWrUu038dbRym8HtKNQf5aLcb7+/do6yCDqOACRzyWVFo0UoA==
+X-Received: by 2002:ac2:55a8:: with SMTP id y8mr10181128lfg.117.1576279220067;
+        Fri, 13 Dec 2019 15:20:20 -0800 (PST)
 Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id g6sm5615494lja.10.2019.12.13.15.19.14
+        by smtp.gmail.com with ESMTPSA id q27sm5626442ljc.65.2019.12.13.15.20.18
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 13 Dec 2019 15:19:16 -0800 (PST)
-Date:   Fri, 13 Dec 2019 15:19:08 -0800
+        Fri, 13 Dec 2019 15:20:19 -0800 (PST)
+Date:   Fri, 13 Dec 2019 15:20:14 -0800
 From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        Sean Tranchetti <stranche@codeaurora.org>
-Subject: Re: [PATCH net-next] MAINTAINERS: Add maintainers for rmnet
-Message-ID: <20191213151908.098d310f@cakuba.netronome.com>
-In-Reply-To: <0101016ef843ac7a-9e999ba4-e595-43dc-8646-9fa3959fa4b8-000000@us-west-2.amazonses.com>
-References: <0101016ef843ac7a-9e999ba4-e595-43dc-8646-9fa3959fa4b8-000000@us-west-2.amazonses.com>
+To:     Vivien Didelot <vivien.didelot@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] mailmap: add entry for myself
+Message-ID: <20191213152014.365c70dc@cakuba.netronome.com>
+In-Reply-To: <20191212175908.1727259-1-vivien.didelot@gmail.com>
+References: <20191212175908.1727259-1-vivien.didelot@gmail.com>
 Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -62,11 +62,10 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 12 Dec 2019 04:00:15 +0000, Subash Abhinov Kasiviswanathan
-wrote:
-> Add myself and Sean as maintainers for rmnet driver.
+On Thu, 12 Dec 2019 12:59:08 -0500, Vivien Didelot wrote:
+> I no longer work at Savoir-faire Linux but even though MAINTAINERS is
+> up-to-date, some emails are still sent to my old email address.
 > 
-> Signed-off-by: Sean Tranchetti <stranche@codeaurora.org>
-> Signed-off-by: Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>
+> Signed-off-by: Vivien Didelot <vivien.didelot@gmail.com>
 
 Applied to net, thanks!
