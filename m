@@ -2,128 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 65BE711EE20
-	for <lists+netdev@lfdr.de>; Sat, 14 Dec 2019 00:01:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9875211EE33
+	for <lists+netdev@lfdr.de>; Sat, 14 Dec 2019 00:06:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726772AbfLMXBh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Dec 2019 18:01:37 -0500
-Received: from mga04.intel.com ([192.55.52.120]:64703 "EHLO mga04.intel.com"
+        id S1726528AbfLMXGt convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 13 Dec 2019 18:06:49 -0500
+Received: from mga05.intel.com ([192.55.52.43]:1208 "EHLO mga05.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726743AbfLMXBb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 13 Dec 2019 18:01:31 -0500
+        id S1725818AbfLMXGt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 13 Dec 2019 18:06:49 -0500
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 13 Dec 2019 15:01:29 -0800
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 13 Dec 2019 15:06:48 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.69,311,1571727600"; 
-   d="scan'208";a="211506682"
-Received: from mjmartin-nuc02.mjmartin-nuc02 (HELO mjmartin-nuc02.sea.intel.com) ([10.251.17.224])
-  by fmsmga007.fm.intel.com with ESMTP; 13 Dec 2019 15:01:22 -0800
-From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
-To:     netdev@vger.kernel.org, mptcp@lists.01.org
-Cc:     Paolo Abeni <pabeni@redhat.com>,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>
-Subject: [PATCH net-next 11/11] skb: add helpers to allocate ext independently from sk_buff
-Date:   Fri, 13 Dec 2019 15:00:22 -0800
-Message-Id: <20191213230022.28144-12-mathew.j.martineau@linux.intel.com>
-X-Mailer: git-send-email 2.24.1
-In-Reply-To: <20191213230022.28144-1-mathew.j.martineau@linux.intel.com>
-References: <20191213230022.28144-1-mathew.j.martineau@linux.intel.com>
+   d="scan'208";a="208606346"
+Received: from fmsmsx106.amr.corp.intel.com ([10.18.124.204])
+  by orsmga008.jf.intel.com with ESMTP; 13 Dec 2019 15:06:46 -0800
+Received: from fmsmsx163.amr.corp.intel.com (10.18.125.72) by
+ FMSMSX106.amr.corp.intel.com (10.18.124.204) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Fri, 13 Dec 2019 15:06:45 -0800
+Received: from fmsmsx124.amr.corp.intel.com ([169.254.8.10]) by
+ fmsmsx163.amr.corp.intel.com ([169.254.6.237]) with mapi id 14.03.0439.000;
+ Fri, 13 Dec 2019 15:06:45 -0800
+From:   "Saleem, Shiraz" <shiraz.saleem@intel.com>
+To:     Jason Gunthorpe <jgg@ziepe.ca>,
+        "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>
+CC:     "davem@davemloft.net" <davem@davemloft.net>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "nhorman@redhat.com" <nhorman@redhat.com>,
+        "sassmann@redhat.com" <sassmann@redhat.com>,
+        "parav@mellanox.com" <parav@mellanox.com>
+Subject: RE: [PATCH v3 19/20] RDMA: Add irdma Kconfig/Makefile and remove
+ i40iw
+Thread-Topic: [PATCH v3 19/20] RDMA: Add irdma Kconfig/Makefile and remove
+ i40iw
+Thread-Index: AQHVruL28gEIgb9lXUm9x+ExMCj0FKe15AgAgAJKZ3A=
+Date:   Fri, 13 Dec 2019 23:06:45 +0000
+Message-ID: <9DD61F30A802C4429A01CA4200E302A7B6B9343F@fmsmsx124.amr.corp.intel.com>
+References: <20191209224935.1780117-1-jeffrey.t.kirsher@intel.com>
+ <20191209224935.1780117-20-jeffrey.t.kirsher@intel.com>
+ <20191211200200.GA13279@ziepe.ca>
+In-Reply-To: <20191211200200.GA13279@ziepe.ca>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ctpclassification: CTP_NT
+x-titus-metadata-40: eyJDYXRlZ29yeUxhYmVscyI6IiIsIk1ldGFkYXRhIjp7Im5zIjoiaHR0cDpcL1wvd3d3LnRpdHVzLmNvbVwvbnNcL0ludGVsMyIsImlkIjoiZTA3YzM2YTUtZjM0NS00YjBiLTk1ZTctMDAxMWQ2NjQxYTRlIiwicHJvcHMiOlt7Im4iOiJDVFBDbGFzc2lmaWNhdGlvbiIsInZhbHMiOlt7InZhbHVlIjoiQ1RQX05UIn1dfV19LCJTdWJqZWN0TGFiZWxzIjpbXSwiVE1DVmVyc2lvbiI6IjE3LjEwLjE4MDQuNDkiLCJUcnVzdGVkTGFiZWxIYXNoIjoiMnlJa0VhTG9qb25kXC84Vzh1UlVSbnM3UERhN1ZOZFU2R2NcLzB0dlZJSDl0Y3NudlhOczNFUXd3QXlCMkhOUTBvIn0=
+dlp-product: dlpe-windows
+dlp-version: 11.2.0.6
+dlp-reaction: no-action
+x-originating-ip: [10.1.200.108]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Paolo Abeni <pabeni@redhat.com>
+> Subject: Re: [PATCH v3 19/20] RDMA: Add irdma Kconfig/Makefile and remove
+> i40iw
+> 
+> On Mon, Dec 09, 2019 at 02:49:34PM -0800, Jeff Kirsher wrote:
+> > From: Shiraz Saleem <shiraz.saleem@intel.com>
+> >
+> > Add Kconfig and Makefile to build irdma driver.
+> >
+> > Remove i40iw driver. irdma is the replacement driver that supports
+> > X722.
+> 
+> I looked through this for a litle while, it is very very big. I'd like some of the other
+> people who have sent drivers lately to give it a go over as well..
+> 
+> A few broad comments
+>  - Do not use the 'err1', 'err2', etc labels for goto unwind
+>  - Please check all uses of rcu, I could not see why some existed
+>  - Use the new rdma mmap api. The whole mmap flow looked wonky to me
+Presume your referring to this series?
+https://github.com/jgunthorpe/linux/commits/rdma_mmap
 
-Currently we can allocate the extension only after the skb,
-this change allows the user to do the opposite, will simplify
-allocation failure handling from MPTCP.
+At the time it was published, I didn't think it applied to irdma, but rather
+benefit those drivers that keyed off an mmap database in their mmap function.
 
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
----
- include/linux/skbuff.h |  3 +++
- net/core/skbuff.c      | 35 +++++++++++++++++++++++++++++++++--
- 2 files changed, 36 insertions(+), 2 deletions(-)
+In irdma, there is a doorbell and a push page that are mapped. And the offset
+passed in is used to distinguish the 2 (0-for doorbell) and determine the address
+to map. Also, in the db scheme, I think there is presumption the mmap comes
+down with the key passed back in kernel response struct. For the doorbell page
+at least, the mmap in library provider just uses 0.
 
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index 1a261c3ee074..af9b6cf79a65 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -4115,6 +4115,9 @@ struct skb_ext {
- 	char data[0] __aligned(8);
- };
- 
-+struct skb_ext *__skb_ext_alloc(void);
-+void *__skb_ext_set(struct sk_buff *skb, enum skb_ext_id id,
-+		    struct skb_ext *ext);
- void *skb_ext_add(struct sk_buff *skb, enum skb_ext_id id);
- void __skb_ext_del(struct sk_buff *skb, enum skb_ext_id id);
- void __skb_ext_put(struct skb_ext *ext);
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index fa67036dd928..504e9bd5ebce 100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -5983,7 +5983,14 @@ static void *skb_ext_get_ptr(struct skb_ext *ext, enum skb_ext_id id)
- 	return (void *)ext + (ext->offset[id] * SKB_EXT_ALIGN_VALUE);
- }
- 
--static struct skb_ext *skb_ext_alloc(void)
-+/**
-+ * __skb_ext_alloc - allocate a new skb extensions storage
-+ *
-+ * Returns the newly allocated pointer. The pointer can later attached to a
-+ * skb via __skb_ext_set().
-+ * Note: caller must handle the skb_ext as an opaque data.
-+ */
-+struct skb_ext *__skb_ext_alloc(void)
- {
- 	struct skb_ext *new = kmem_cache_alloc(skbuff_ext_cache, GFP_ATOMIC);
- 
-@@ -6023,6 +6030,30 @@ static struct skb_ext *skb_ext_maybe_cow(struct skb_ext *old,
- 	return new;
- }
- 
-+/**
-+ * __skb_ext_set - attach the specified extension storage to this skb
-+ * @skb: buffer
-+ * @id: extension id
-+ * @ext: extension storage previously allocated via __skb_ext_alloc()
-+ *
-+ * Existing extensions, if any, are cleared.
-+ *
-+ * Returns the pointer to the extension.
-+ */
-+void *__skb_ext_set(struct sk_buff *skb, enum skb_ext_id id,
-+		    struct skb_ext *ext)
-+{
-+	unsigned int newlen, newoff = SKB_EXT_CHUNKSIZEOF(*ext);
-+
-+	skb_ext_put(skb);
-+	newlen = newoff + skb_ext_type_len[id];
-+	ext->chunks = newlen;
-+	ext->offset[id] = newoff;
-+	skb->extensions = ext;
-+	skb->active_extensions = 1 << id;
-+	return skb_ext_get_ptr(ext, id);
-+}
-+
- /**
-  * skb_ext_add - allocate space for given extension, COW if needed
-  * @skb: buffer
-@@ -6056,7 +6087,7 @@ void *skb_ext_add(struct sk_buff *skb, enum skb_ext_id id)
- 	} else {
- 		newoff = SKB_EXT_CHUNKSIZEOF(*new);
- 
--		new = skb_ext_alloc();
-+		new = __skb_ext_alloc();
- 		if (!new)
- 			return NULL;
- 	}
--- 
-2.24.1
+[....]
+>  - New drivers should use the ops->driver_unregister flow
+https://www.spinics.net/lists/linux-rdma/msg75466.html
+"These APIs are intended to support drivers that exist outside the usual
+driver core probe()/remove() callbacks. Normally the driver core will
+prevent remove() from running concurrently with probe(), once this safety
+is lost drivers need more support to get the locking and lifetimes right."
 
+As per this description, it seems ib_unregister_driver() would be
+redundant for irdma to use in module exit? virtbus_driver_unregister
+should guarantee the remove() callbacks and ib device unregistration. 
+Or did you mean just instrument ops->dealloc_driver?
+Surely I am missing something.
+
+[....]
+>  - The whole cqp_compl_thread thing looks really weird
+What is the concern?
+
+Thanks for the feedback. Will work on it.
+
+Shiraz
