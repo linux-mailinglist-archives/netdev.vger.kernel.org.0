@@ -2,145 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 04FD011E083
-	for <lists+netdev@lfdr.de>; Fri, 13 Dec 2019 10:24:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1AB9A11E0C3
+	for <lists+netdev@lfdr.de>; Fri, 13 Dec 2019 10:31:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726524AbfLMJY1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Dec 2019 04:24:27 -0500
-Received: from smtp-fw-33001.amazon.com ([207.171.190.10]:29186 "EHLO
-        smtp-fw-33001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725793AbfLMJY1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Dec 2019 04:24:27 -0500
+        id S1726687AbfLMJaa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Dec 2019 04:30:30 -0500
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:52380 "EHLO
+        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725770AbfLMJa3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Dec 2019 04:30:29 -0500
+Received: by mail-wm1-f68.google.com with SMTP id p9so5540395wmc.2
+        for <netdev@vger.kernel.org>; Fri, 13 Dec 2019 01:30:28 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1576229066; x=1607765066;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=nOI5D+6Qsp89fLJNSiePjd9aVYqvwjTs+8hPVGDGZg4=;
-  b=Ip25ffDtBfXJ7/HsWfbciogXX+Lb5HXzOWHqLXG6g/Hfe04zh10G0L3A
-   SgAYGy7l5hX9tjP+3mkLKHvyTBm16e+381341wpaScAYOQEqkLfA2NXq4
-   KW16BUM4emDmtlgT3OBxRfpbp3iqNIfqdjUjOt2745+Q5ucYAKHq8op+F
-   k=;
-IronPort-SDR: ItgiI5YTcY9vcNkOGczRdSyvJ3au/2IDZzv+cjArheaPDCdiSDPdDCOsFIFR18iO1vLt74Nzg1
- KVojnTkUh4QQ==
-X-IronPort-AV: E=Sophos;i="5.69,309,1571702400"; 
-   d="scan'208";a="14685483"
-Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-1e-a70de69e.us-east-1.amazon.com) ([10.47.23.38])
-  by smtp-border-fw-out-33001.sea14.amazon.com with ESMTP; 13 Dec 2019 09:24:13 +0000
-Received: from EX13MTAUEA001.ant.amazon.com (iad55-ws-svc-p15-lb9-vlan2.iad.amazon.com [10.40.159.162])
-        by email-inbound-relay-1e-a70de69e.us-east-1.amazon.com (Postfix) with ESMTPS id 08C9BA2F76;
-        Fri, 13 Dec 2019 09:24:11 +0000 (UTC)
-Received: from EX13D32EUC004.ant.amazon.com (10.43.164.121) by
- EX13MTAUEA001.ant.amazon.com (10.43.61.243) with Microsoft SMTP Server (TLS)
- id 15.0.1367.3; Fri, 13 Dec 2019 09:24:11 +0000
-Received: from EX13D32EUC003.ant.amazon.com (10.43.164.24) by
- EX13D32EUC004.ant.amazon.com (10.43.164.121) with Microsoft SMTP Server (TLS)
- id 15.0.1367.3; Fri, 13 Dec 2019 09:24:10 +0000
-Received: from EX13D32EUC003.ant.amazon.com ([10.43.164.24]) by
- EX13D32EUC003.ant.amazon.com ([10.43.164.24]) with mapi id 15.00.1367.000;
- Fri, 13 Dec 2019 09:24:10 +0000
-From:   "Durrant, Paul" <pdurrant@amazon.com>
-To:     =?utf-8?B?SsO8cmdlbiBHcm/Dnw==?= <jgross@suse.com>,
-        David Miller <davem@davemloft.net>
-CC:     "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>,
-        "wei.liu@kernel.org" <wei.liu@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: RE: [Xen-devel] [PATCH net-next] xen-netback: get rid of old udev
- related code
-Thread-Topic: [Xen-devel] [PATCH net-next] xen-netback: get rid of old udev
- related code
-Thread-Index: AQHVsPOiKWT/MKpGekOkpRko3pMZ46e23EKAgACxiQCAADwwIA==
-Date:   Fri, 13 Dec 2019 09:24:10 +0000
-Message-ID: <9f6d296e94744ce48d3f72fe4d3fd136@EX13D32EUC003.ant.amazon.com>
-References: <20191212135406.26229-1-pdurrant@amazon.com>
- <20191212.110513.1770889236741616001.davem@davemloft.net>
- <cefcf3a4-fc10-d62a-cac9-81f0e47710a8@suse.com>
-In-Reply-To: <cefcf3a4-fc10-d62a-cac9-81f0e47710a8@suse.com>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.43.166.122]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=jZdCFyi3P0PE/gTzwArDJAX7Y5Yjkz7bthFAd9kSL8E=;
+        b=vXhTJSwEs2tEqcb/W1Gixt5T1TWJyLh9ofXEc/v02oErGrluI4oixv9bY0AJ4TMlvq
+         G0QeZqQQPyGHijsjDq63NRpzjQ+xgx2VzF4lwbhvzy6bK4y6Qh5/k1uTd5HjDx9pzn54
+         0xDOtRV2Zdp8KEyIUXEOE3FGltLDsw4KJHojM28+gFt0mSUDfocWAldtbo8KJMAmjWVC
+         h/LBCyT4R02G9C4cWL62vmZM80OOeDW+VlMJjVjDxBLF/d0CZaHpGvokUY8sFDwFmB7t
+         eYcr5agT2xxCPCxDGN6ODzdCSR8/cni4r9gkLDNv86MiYRZ2YPMB+ZLoi0+z7Fx2qQNu
+         nMSw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=jZdCFyi3P0PE/gTzwArDJAX7Y5Yjkz7bthFAd9kSL8E=;
+        b=YCcIvFBeZtRaUU1QXIoWvgGpbjHmLhBMQnYE3Vll2GD58S+YpjURHz91RA1+7I3A7i
+         QonjjxYGWu3QfV/2xZvag4xhQYO0hKMchEtB1RsY/SZSWoZqqCQBDCn/K8nvQNzqOHXh
+         ZNs9aahEIa+Zj4vqzvN2eHLaMqohdAe2LSlP69BZ4GsFt9yYgdUtLC5mQO9JeChvaDcU
+         iA+x663Yb07bI+gcy7Jz7xkt4146evHJV52X3Wswy/oC6tyjkX3cdMG+e+CPplFWlEAa
+         t8447ukhJqi/64i+exvwElvOBqNqrM9LzyiKQNqSWjOi+mnhuYDLOMYIwArex7pnuqae
+         w2Ew==
+X-Gm-Message-State: APjAAAUvMU5v3WmPNqzya3gBjuvDKxeF2qfFXMaD/L7gOwSnfWLV6dK0
+        JSsjoxw9gn9llHI+4NzGcUxxEQ==
+X-Google-Smtp-Source: APXvYqxtTiPkSq43+iaH2FYGWbq7cKMj7CBY86RoUBako+Un9sDcQ15tBHAMmrgcHuJO0XjYun9iog==
+X-Received: by 2002:a1c:740b:: with SMTP id p11mr12928629wmc.78.1576229427548;
+        Fri, 13 Dec 2019 01:30:27 -0800 (PST)
+Received: from netronome.com ([2001:982:756:703:d63d:7eff:fe99:ac9d])
+        by smtp.gmail.com with ESMTPSA id x6sm9805907wmi.44.2019.12.13.01.30.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 13 Dec 2019 01:30:27 -0800 (PST)
+Date:   Fri, 13 Dec 2019 10:30:26 +0100
+From:   Simon Horman <simon.horman@netronome.com>
+To:     Xin Long <lucien.xin@gmail.com>
+Cc:     network dev <netdev@vger.kernel.org>,
+        netfilter-devel@vger.kernel.org, davem <davem@davemloft.net>,
+        Pablo Neira Ayuso <pablo@netfilter.org>
+Subject: Re: [PATCH nf-next 1/7] netfilter: nft_tunnel: parse ERSPAN_VERSION
+ attr as u8
+Message-ID: <20191213093026.GA27379@netronome.com>
+References: <cover.1575779993.git.lucien.xin@gmail.com>
+ <981718e8e2ca5cd34d1153f54eae06ab2f087c07.1575779993.git.lucien.xin@gmail.com>
+ <20191209200317.GA10466@netronome.com>
+ <CADvbK_fJjN0MsYpmoJ+WD=rRNYub96+nHsv3EozHTj5MG2d1ag@mail.gmail.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CADvbK_fJjN0MsYpmoJ+WD=rRNYub96+nHsv3EozHTj5MG2d1ag@mail.gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBKw7xyZ2VuIEdyb8OfIDxqZ3Jv
-c3NAc3VzZS5jb20+DQo+IFNlbnQ6IDEzIERlY2VtYmVyIDIwMTkgMDU6NDENCj4gVG86IERhdmlk
-IE1pbGxlciA8ZGF2ZW1AZGF2ZW1sb2Z0Lm5ldD47IER1cnJhbnQsIFBhdWwNCj4gPHBkdXJyYW50
-QGFtYXpvbi5jb20+DQo+IENjOiB4ZW4tZGV2ZWxAbGlzdHMueGVucHJvamVjdC5vcmc7IHdlaS5s
-aXVAa2VybmVsLm9yZzsgbGludXgtDQo+IGtlcm5lbEB2Z2VyLmtlcm5lbC5vcmc7IG5ldGRldkB2
-Z2VyLmtlcm5lbC5vcmcNCj4gU3ViamVjdDogUmU6IFtYZW4tZGV2ZWxdIFtQQVRDSCBuZXQtbmV4
-dF0geGVuLW5ldGJhY2s6IGdldCByaWQgb2Ygb2xkIHVkZXYNCj4gcmVsYXRlZCBjb2RlDQo+IA0K
-PiBPbiAxMi4xMi4xOSAyMDowNSwgRGF2aWQgTWlsbGVyIHdyb3RlOg0KPiA+IEZyb206IFBhdWwg
-RHVycmFudCA8cGR1cnJhbnRAYW1hem9uLmNvbT4NCj4gPiBEYXRlOiBUaHUsIDEyIERlYyAyMDE5
-IDEzOjU0OjA2ICswMDAwDQo+ID4NCj4gPj4gSW4gdGhlIHBhc3QgaXQgdXNlZCB0byBiZSB0aGUg
-Y2FzZSB0aGF0IHRoZSBYZW4gdG9vbHN0YWNrIHJlbGllZCB1cG9uDQo+ID4+IHVkZXYgdG8gZXhl
-Y3V0ZSBiYWNrZW5kIGhvdHBsdWcgc2NyaXB0cy4gSG93ZXZlciB0aGlzIGhhcyBub3QgYmVlbiB0
-aGUNCj4gPj4gY2FzZSBmb3IgbWFueSByZWxlYXNlcyBub3cgYW5kIHJlbW92YWwgb2YgdGhlIGFz
-c29jaWF0ZWQgY29kZSBpbg0KPiA+PiB4ZW4tbmV0YmFjayBzaG9ydGVucyB0aGUgc291cmNlIGJ5
-IG1vcmUgdGhhbiAxMDAgbGluZXMsIGFuZCByZW1vdmVzDQo+IG11Y2gNCj4gPj4gY29tcGxleGl0
-eSBpbiB0aGUgaW50ZXJhY3Rpb24gd2l0aCB0aGUgeGVuc3RvcmUgYmFja2VuZCBzdGF0ZS4NCj4g
-Pj4NCj4gPj4gTk9URTogeGVuLW5ldGJhY2sgaXMgdGhlIG9ubHkgeGVuYnVzIGRyaXZlciB0byBo
-YXZlIGEgZnVuY3Rpb25hbA0KPiB1ZXZlbnQoKQ0KPiA+PiAgICAgICAgbWV0aG9kLiBUaGUgb25s
-eSBvdGhlciBkcml2ZXIgdG8gaGF2ZSBhIG1ldGhvZCBhdCBhbGwgaXMNCj4gPj4gICAgICAgIHB2
-Y2FsbHMtYmFjaywgYW5kIGN1cnJlbnRseSBwdmNhbGxzX2JhY2tfdWV2ZW50KCkgc2ltcGx5IHJl
-dHVybnMNCj4gMC4NCj4gPj4gICAgICAgIEhlbmNlIHRoaXMgcGF0Y2ggYWxzbyBmYWNpbGl0YXRl
-cyBmdXJ0aGVyIGNsZWFudXAuDQo+ID4+DQo+ID4+IFNpZ25lZC1vZmYtYnk6IFBhdWwgRHVycmFu
-dCA8cGR1cnJhbnRAYW1hem9uLmNvbT4NCj4gPg0KPiA+IElmIHVzZXJzcGFjZSBldmVyIHVzZWQg
-dGhpcyBzdHVmZiwgSSBzZXJpb3VzbHkgZG91YnQgeW91IGNhbiByZW1vdmUgdGhpcw0KPiA+IGV2
-ZW4gaWYgaXQgaGFzbid0IGJlZW4gdXNlZCBpbiA1KyB5ZWFycy4NCj4gDQo+IEhtbSwgZGVwZW5k
-cy4NCj4gDQo+IFRoaXMgaGFzIGJlZW4gdXNlZCBieSBYZW4gdG9vbHMgaW4gZG9tMCBvbmx5LiBJ
-ZiB0aGUgbGFzdCB1c2FnZSBoYXMgYmVlbg0KPiBpbiBhIFhlbiB2ZXJzaW9uIHdoaWNoIGlzIG5v
-IGxvbmdlciBhYmxlIHRvIHJ1biB3aXRoIGN1cnJlbnQgTGludXggaW4NCj4gZG9tMCBpdCBjb3Vs
-ZCBiZSByZW1vdmVkLiBCdXQgSSBndWVzcyB0aGlzIHdvdWxkIGhhdmUgdG8gYmUgYSByYXRoZXIg
-b2xkDQo+IHZlcnNpb24gb2YgWGVuIChsaWtlIDMueD8pLg0KPiANCj4gUGF1bCwgY2FuIHlvdSBn
-aXZlIGEgaGludCBzaW5jZSB3aGljaCBYZW4gdmVyc2lvbiB0aGUgdG9vbHN0YWNrIG5vDQo+IGxv
-bmdlciByZWxpZXMgb24gdWRldiB0byBzdGFydCB0aGUgaG90cGx1ZyBzY3JpcHRzPw0KPiANCg0K
-VGhlIHVkZXYgcnVsZXMgd2VyZSBpbiBhIGZpbGUgY2FsbGVkIHRvb2xzL2hvdHBsdWcvTGludXgv
-eGVuLWJhY2tlbmQucnVsZXMgKGluIHhlbi5naXQpLCBhbmQgYSBjb21taXQgZnJvbSBSb2dlciBy
-ZW1vdmVkIHRoZSBOSUMgcnVsZXMgaW4gMjAxMjoNCg0KY29tbWl0IDU3YWQ2YWZlMmEwOGEwM2M0
-MGJjZDMzNmJmYjI3ZTAwOGUxZDNlNTMNCkF1dGhvcjogUm9nZXIgUGF1IE1vbm5lIDxyb2dlci5w
-YXVAY2l0cml4LmNvbT4NCkRhdGU6ICAgVGh1IEp1bCAyNiAxNjo0NzozNSAyMDEyICswMTAwDQoN
-CiAgICBsaWJ4bDogY2FsbCBob3RwbHVnIHNjcmlwdHMgZm9yIG5pYyBkZXZpY2VzIGZyb20gbGli
-eGwNCg0KICAgIFNpbmNlIG1vc3Qgb2YgdGhlIG5lZWRlZCB3b3JrIGlzIGFscmVhZHkgZG9uZSBp
-biBwcmV2aW91cyBwYXRjaGVzLA0KICAgIHRoaXMgcGF0Y2ggb25seSBjb250YWlucyB0aGUgbmVj
-ZXNzYXJ5IGNvZGUgdG8gY2FsbCBob3RwbHVnIHNjcmlwdHMNCiAgICBmb3IgbmljIGRldmljZXMs
-IHRoYXQgc2hvdWxkIGJlIGNhbGxlZCB3aGVuIHRoZSBkZXZpY2UgaXMgYWRkZWQgb3INCiAgICBy
-ZW1vdmVkIGZyb20gYSBndWVzdC4NCg0KICAgIEFkZGVkIGFub3RoZXIgcGFyYW1ldGVyIHRvIGxp
-YnhsX19nZXRfaG90cGx1Z19zY3JpcHRfaW5mbywgdGhhdCBpcw0KICAgIHVzZWQgdG8ga25vdyB0
-aGUgbnVtYmVyIG9mIHRpbWVzIGhvdHBsdWcgc2NyaXB0cyBoYXZlIGJlZW4gY2FsbGVkIGZvcg0K
-ICAgIHRoYXQgZGV2aWNlLiBUaGlzIGlzIGN1cnJlbnRseSB1c2VkIGJ5IElPRU1VIG5pY3Mgb24g
-TGludXguDQoNCiAgICBTaWduZWQtb2ZmLWJ5OiBSb2dlciBQYXUgTW9ubmUgPHJvZ2VyLnBhdUBj
-aXRyaXguY29tPg0KICAgIEFja2VkLWJ5OiBJYW4gSmFja3NvbjxpYW4uamFja3NvbkBldS5jaXRy
-aXguY29tPg0KICAgIENvbW1pdHRlZC1ieTogSWFuIENhbXBiZWxsIDxpYW4uY2FtcGJlbGxAY2l0
-cml4LmNvbT4NCg0KVGhlIGxhc3QgY29tbWl0IEkgY291bGQgZmluZCB0byB0aGF0IGZpbGUgbW9k
-aWZpZWQgaXRzIG5hbWUgdG8geGVuLWJhY2tlbmQucnVsZXMuaW4sIGFuZCB0aGlzIHdhcyBmaW5h
-bGx5IHJlbW92ZWQgYnkgR2VvcmdlIGluIDIwMTU6DQoNCmNvbW1pdCAyYmEzNjhkMTM4OTM0MDJi
-MmYxZmIzYzI4M2RkY2M3MTQ2NTlkZDliDQpBdXRob3I6IEdlb3JnZSBEdW5sYXAgPGdlb3JnZS5k
-dW5sYXBAZXUuY2l0cml4LmNvbT4NCkRhdGU6ICAgTW9uIEp1bCA2IDExOjUxOjM5IDIwMTUgKzAx
-MDANCg0KICAgIGxpYnhsOiBSZW1vdmUgbGludXggdWRldiBydWxlcw0KDQogICAgVGhleSBhcmUg
-bm8gbG9uZ2VyIG5lZWRlZCwgaGF2aW5nIGJlZW4gcmVwbGFjZWQgYnkgYSBkYWVtb24gZm9yDQog
-ICAgZHJpdmVyZG9tYWlucyB3aGljaCB3aWxsIHJ1biBzY3JpcHRzIGFzIG5lY2Vzc2FyeS4NCg0K
-ICAgIFdvcnNlIHlldCwgdGhleSBzZWVtIHRvIGJlIGJyb2tlbiBmb3Igc2NyaXB0LWJhc2VkIGJs
-b2NrIGRldmljZXMsIHN1Y2gNCiAgICBhcyBibG9jay1pc2NzaS4gIFRoaXMgd291bGRuJ3QgbWF0
-dGVyIHNvIG11Y2ggaWYgdGhleSB3ZXJlIG5ldmVyIHJ1bg0KICAgIGJ5IGRlZmF1bHQ7IGJ1dCBp
-ZiB5b3UgcnVuIGJsb2NrLWF0dGFjaCB3aXRob3V0IGhhdmluZyBjcmVhdGVkIGENCiAgICBkb21h
-aW4sIHRoZW4gdGhlIGFwcHJvcHJpYXRlIG5vZGUgdG8gZGlzYWJsZSBydW5uaW5nIHVkZXYgc2Ny
-aXB0cyB3aWxsDQogICAgbm90IGhhdmUgYmVlbiB3cml0dGVuIHlldCwgYW5kIHRoZSBhdHRhY2gg
-d2lsbCBzaWxlbnRseSBmYWlsLg0KDQogICAgUmF0aGVyIHRoYW4gdHJ5IHRvIHNvcnQgb3V0IHRo
-YXQgaXNzdWUsIGp1c3QgcmVtb3ZlIHRoZW0gZW50aXJlbHkuDQoNCiAgICBTaWduZWQtb2ZmLWJ5
-OiBHZW9yZ2UgRHVubGFwIDxnZW9yZ2UuZHVubGFwQGV1LmNpdHJpeC5jb20+DQogICAgQWNrZWQt
-Ynk6IFdlaSBMaXUgPHdlaS5saXUyQGNpdHJpeC5jb20+DQoNClNvLCBJIHRoaW5rIHRoaXMgbWVh
-bnMgYW55b25lIHVzaW5nIGEgdmVyc2lvbiBvZiB0aGUgWGVuIHRvb2xzIHdpdGhpbiByZWNlbnQg
-bWVtb3J5IHdpbGwgYmUgaGF2aW5nIHRoZWlyIGhvdHBsdWcgc2NyaXB0cyBjYWxsZWQgZGlyZWN0
-bHkgYnkgbGlieGwgKGFuZCBoYXZpbmcgdWRldiBydWxlcyBwcmVzZW50IHdvdWxkIGFjdHVhbGx5
-IGJlIGNvdW50ZXItcHJvZHVjdGl2ZSwgYXMgR2VvcmdlJ3MgY29tbWl0IHN0YXRlcyBhbmQgYXMg
-SSBkaXNjb3ZlcmVkIHRoZSBoYXJkIHdheSB3aGVuIHRoZSBjaGFuZ2Ugd2FzIG9yaWdpbmFsbHkg
-bWFkZSkuDQoNCiAgUGF1bA0KDQoNCg0KPiANCj4gSnVlcmdlbg0K
+On Tue, Dec 10, 2019 at 12:05:15PM +0800, Xin Long wrote:
+> On Tue, Dec 10, 2019 at 4:03 AM Simon Horman <simon.horman@netronome.com> wrote:
+> >
+> > Hi Xin,
+> >
+> > On Sun, Dec 08, 2019 at 12:41:31PM +0800, Xin Long wrote:
+> > > To keep consistent with ipgre_policy, it's better to parse
+> > > ERSPAN_VERSION attr as u8, as it does in act_tunnel_key,
+> > > cls_flower and ip_tunnel_core.
+> > >
+> > > Signed-off-by: Xin Long <lucien.xin@gmail.com>
+> > > ---
+> > >  net/netfilter/nft_tunnel.c | 5 +++--
+> > >  1 file changed, 3 insertions(+), 2 deletions(-)
+> > >
+> > > diff --git a/net/netfilter/nft_tunnel.c b/net/netfilter/nft_tunnel.c
+> > > index 3d4c2ae..f76cd7d 100644
+> > > --- a/net/netfilter/nft_tunnel.c
+> > > +++ b/net/netfilter/nft_tunnel.c
+> > > @@ -248,8 +248,9 @@ static int nft_tunnel_obj_vxlan_init(const struct nlattr *attr,
+> > >  }
+> > >
+> > >  static const struct nla_policy nft_tunnel_opts_erspan_policy[NFTA_TUNNEL_KEY_ERSPAN_MAX + 1] = {
+> > > +     [NFTA_TUNNEL_KEY_ERSPAN_VERSION]        = { .type = NLA_U8 },
+> > >       [NFTA_TUNNEL_KEY_ERSPAN_V1_INDEX]       = { .type = NLA_U32 },
+> > > -     [NFTA_TUNNEL_KEY_ERSPAN_V2_DIR] = { .type = NLA_U8 },
+> > > +     [NFTA_TUNNEL_KEY_ERSPAN_V2_DIR]         = { .type = NLA_U8 },
+> > >       [NFTA_TUNNEL_KEY_ERSPAN_V2_HWID]        = { .type = NLA_U8 },
+> > >  };
+> > >
+> > > @@ -266,7 +267,7 @@ static int nft_tunnel_obj_erspan_init(const struct nlattr *attr,
+> > >       if (err < 0)
+> > >               return err;
+> > >
+> > > -     version = ntohl(nla_get_be32(tb[NFTA_TUNNEL_KEY_ERSPAN_VERSION]));
+> > > +     version = nla_get_u8(tb[NFTA_TUNNEL_KEY_ERSPAN_VERSION]);
+> >
+> > I have concerns about this change and backwards-compatibility with existing
+> > users of this UAPI. Likewise, with other changes to the encoding of existing
+> > attributes elsewhere in this series.
+> userspace(nftables/libnftnl) is not ready for nft_tunnel, I don't
+> think there will be
+> any backwards-compatibility issue.
+> 
+> Pablo?
+
+Thanks, I'm happy to defer to Pablo on this question.
+
+> 
+> >
+> > >       switch (version) {
+> > >       case ERSPAN_VERSION:
+> > >               if (!tb[NFTA_TUNNEL_KEY_ERSPAN_V1_INDEX])
+> > > --
+> > > 2.1.0
+> > >
