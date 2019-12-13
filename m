@@ -2,127 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DDEC711DD85
-	for <lists+netdev@lfdr.de>; Fri, 13 Dec 2019 06:17:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 021D711DDC1
+	for <lists+netdev@lfdr.de>; Fri, 13 Dec 2019 06:31:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731976AbfLMFQS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Dec 2019 00:16:18 -0500
-Received: from mail-lj1-f193.google.com ([209.85.208.193]:40848 "EHLO
-        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725385AbfLMFQS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Dec 2019 00:16:18 -0500
-Received: by mail-lj1-f193.google.com with SMTP id s22so1202824ljs.7;
-        Thu, 12 Dec 2019 21:16:16 -0800 (PST)
+        id S1732023AbfLMFa7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Dec 2019 00:30:59 -0500
+Received: from mail-pj1-f66.google.com ([209.85.216.66]:47034 "EHLO
+        mail-pj1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725945AbfLMFa7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Dec 2019 00:30:59 -0500
+Received: by mail-pj1-f66.google.com with SMTP id z21so691877pjq.13;
+        Thu, 12 Dec 2019 21:30:59 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=HtHQdkqH4Es+ZIp2yRzZr6MYlrLXYfg6ekbWUN18b2I=;
-        b=dKY8h0JxXJUHhuimUVKzcifoLuMESUOhE3YvAPT8Ed5P2LVpjnb+wPesvekwYVMmWV
-         lca2b8ADEDpVm1j+LeOZ85ut0u+mF5kg9HH373P6xW0ER/wgAMcP1nBoXykldHdkpNVs
-         L/hVfZRvSsd/C+yFANp4lnHZM1DWlrg2m2xhgHcOfe+GtiGyCDmncFLAkta4uRtOoqXG
-         j1zkrdQwjmMP7lcK7k5mrp/velI5fdsv+vni2NA24IwondxJkD3lDLHEehbXgR3V7Mac
-         g5b/zU1kBwtJuhb4ANeK7drT7FZZGA2TT7LRDg0SmGbQTwL6sk2UVsfpFoz41tGrx2s4
-         ZuqA==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to
+         :user-agent;
+        bh=OKFBK2gNnko329ZjaMQO2iIA5rqF5fZBNGyDOWHkP1c=;
+        b=aSNeJR7P3e9Zhq8c4REfNlFQEeVnGUSQ3oH+G10BsXXcQn7Q8JUB+P2fLU6tSdNHG3
+         2Cb/0NoRzHJhCGBwJebnuwJ3XQ0lySrGLJGRWXTVl61SgdrlDnuqJA7beYzOANNAqZ3F
+         +8eSu89IMYVX9tvDU8L8KgNrUzqnxyHPPpnIK1RTNDt3aRQ29QRD/QnvymEKzcv3P4EH
+         Fl43ZdjElsCyHEAxq55JS4+BeBr+RCQAIF+dSYRqOCTDcS5x51YcSTnPkkj2tw8PqVjv
+         DLz49U0xoXRh5bcBYCjUW6CguhRrrOVkhVNTsPXq5e3i92Xad0ahBV1KREylfidM7J3o
+         WOzg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=HtHQdkqH4Es+ZIp2yRzZr6MYlrLXYfg6ekbWUN18b2I=;
-        b=XG1RkbNZUskXWvRIOumOqPl9JKM5oxYE0+4AId96k324NYKcGe91iFfMXqBt/RXI8x
-         TEILoWChx8/Pi54t18pl/t3xnuyNplJ8MmvEc8yQtQEhCLkTnwEtsN/fjn3s1njNGnS9
-         hII8+rLUubFYg9DAobrMWr+qRdV3j1T8QUFW7Ff5bN7A0ffw80thvP8mboJlzfhdxklN
-         SV8FW4ej4EYh1MEy5a7rmUcSPlIm6j7pSIWHOIhpd9fPMyQSMZTyf4JVx/JORyAfiBJ5
-         IzGQYLzs0qEH3rVRVK6W23Btcd32nERzLLjRlpNLq4FEHzErEdyHkbCxx6FDC3sDttAA
-         8rOA==
-X-Gm-Message-State: APjAAAWixFd9mNKVNbLuo6SBsHm1DEPDtbv2FHg2R+mPIg8NLzsHOL6t
-        /ga4y2Uh9Hkk6CsBkN5XIhKgn/S+yv+y2dzZoFtyWA==
-X-Google-Smtp-Source: APXvYqyWRWJccgtT72Yhl/J/B/P0l3E36sc6NcKyV2MDZoPUaxbtjRI7VSdtxF23LHwJL/UQ7tlYfya4Xg4uhs7RWfk=
-X-Received: by 2002:a2e:99cd:: with SMTP id l13mr8235977ljj.243.1576214175764;
- Thu, 12 Dec 2019 21:16:15 -0800 (PST)
-MIME-Version: 1.0
-References: <20191211223344.165549-1-brianvv@google.com>
-In-Reply-To: <20191211223344.165549-1-brianvv@google.com>
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to:user-agent;
+        bh=OKFBK2gNnko329ZjaMQO2iIA5rqF5fZBNGyDOWHkP1c=;
+        b=pwzljhm/u029shB4sEPZ+WTXGq+OL4TLVOGWedd06QY6qK/3MTA6I28WhBP54RAZR6
+         Zw4+kj38PrQnc6xvKXinr+x/DycZmoc3X0nCNZKpgKEOa3DbPAvDQlPTn4OCw9hyAs9T
+         HfdXvegIuZcgYEkQRM9AH2BZkTtoZ28jQn05opCcf5zZzdqgu5ohGOKPRBnXdpGRtrJ/
+         VaQPME8M2MqkAgNuUw4gBurdOb6me/PRGHa/CYF86zjVDZqPcA7miga8i1Zpdnkt1IOZ
+         IxQ0GZrpnnwWOcLiQBRhPRyKWLQWImxsbBgMuDF2EWi9WqEiH8Rk/xVPt4tNS5lkseo9
+         jTyg==
+X-Gm-Message-State: APjAAAUCPPLnHWhscNl9Dt6Xh+aeWfK+XPQoNMB5oLS9IqHStR7RM/PU
+        1/OZ9Qd/iyjmSP27utq9Q6U=
+X-Google-Smtp-Source: APXvYqyZiWcOGaj/mAMQKc+gZoyY+2W+UPiIcxjhO6bEPEMfTNmgsaa31cK6VB2UkK6GbEw4puY9YQ==
+X-Received: by 2002:a17:90a:c790:: with SMTP id gn16mr14674570pjb.76.1576215058772;
+        Thu, 12 Dec 2019 21:30:58 -0800 (PST)
+Received: from ast-mbp ([2620:10d:c090:180::c195])
+        by smtp.gmail.com with ESMTPSA id r28sm3416057pgk.39.2019.12.12.21.30.56
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 12 Dec 2019 21:30:57 -0800 (PST)
+Date:   Thu, 12 Dec 2019 21:30:55 -0800
 From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Thu, 12 Dec 2019 21:16:04 -0800
-Message-ID: <CAADnVQLh9Dz82YUMCR7P0sHed9W+bkcGXw098E3dwO5rHTmZ2g@mail.gmail.com>
-Subject: Re: [PATCH v3 bpf-next 00/11] add bpf batch ops to process more than
- 1 elem
-To:     Brian Vazquez <brianvv@google.com>
-Cc:     Brian Vazquez <brianvv.kernel@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "David S . Miller" <davem@davemloft.net>,
-        Yonghong Song <yhs@fb.com>,
-        Stanislav Fomichev <sdf@google.com>,
-        Petar Penkov <ppenkov@google.com>,
-        Willem de Bruijn <willemb@google.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+To:     =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
+Cc:     netdev@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        bpf@vger.kernel.org, magnus.karlsson@gmail.com,
+        magnus.karlsson@intel.com, jonathan.lemon@gmail.com,
+        ecree@solarflare.com, thoiland@redhat.com, brouer@redhat.com,
+        andrii.nakryiko@gmail.com
+Subject: Re: [PATCH bpf-next v4 2/6] bpf: introduce BPF dispatcher
+Message-ID: <20191213053054.l3o6xlziqzwqxq22@ast-mbp>
+References: <20191211123017.13212-1-bjorn.topel@gmail.com>
+ <20191211123017.13212-3-bjorn.topel@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20191211123017.13212-3-bjorn.topel@gmail.com>
+User-Agent: NeoMutt/20180223
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 11, 2019 at 2:34 PM Brian Vazquez <brianvv@google.com> wrote:
->
-> This patch series introduce batch ops that can be added to bpf maps to
-> lookup/lookup_and_delete/update/delete more than 1 element at the time,
-> this is specially useful when syscall overhead is a problem and in case
-> of hmap it will provide a reliable way of traversing them.
->
-> The implementation inclues a generic approach that could potentially be
-> used by any bpf map and adds it to arraymap, it also includes the specific
-> implementation of hashmaps which are traversed using buckets instead
-> of keys.
->
-> The bpf syscall subcommands introduced are:
->
->   BPF_MAP_LOOKUP_BATCH
->   BPF_MAP_LOOKUP_AND_DELETE_BATCH
->   BPF_MAP_UPDATE_BATCH
->   BPF_MAP_DELETE_BATCH
->
-> The UAPI attribute is:
->
->   struct { /* struct used by BPF_MAP_*_BATCH commands */
->          __aligned_u64   in_batch;       /* start batch,
->                                           * NULL to start from beginning
->                                           */
->          __aligned_u64   out_batch;      /* output: next start batch */
->          __aligned_u64   keys;
->          __aligned_u64   values;
->          __u32           count;          /* input/output:
->                                           * input: # of key/value
->                                           * elements
->                                           * output: # of filled elements
->                                           */
->          __u32           map_fd;
->          __u64           elem_flags;
->          __u64           flags;
->   } batch;
->
->
-> in_batch and out_batch are only used for lookup and lookup_and_delete since
-> those are the only two operations that attempt to traverse the map.
->
-> update/delete batch ops should provide the keys/values that user wants
-> to modify.
->
-> Here are the previous discussions on the batch processing:
->  - https://lore.kernel.org/bpf/20190724165803.87470-1-brianvv@google.com/
->  - https://lore.kernel.org/bpf/20190829064502.2750303-1-yhs@fb.com/
->  - https://lore.kernel.org/bpf/20190906225434.3635421-1-yhs@fb.com/
->
-> Changelog sinve v2:
->  - Add generic batch support for lpm_trie and test it (Yonghong Song)
->  - Use define MAP_LOOKUP_RETRIES for retries (John Fastabend)
->  - Return errors directly and remove labels (Yonghong Song)
->  - Insert new API functions into libbpf alphabetically (Yonghong Song)
->  - Change hlist_nulls_for_each_entry_rcu to
->    hlist_nulls_for_each_entry_safe in htab batch ops (Yonghong Song)
+On Wed, Dec 11, 2019 at 01:30:13PM +0100, Björn Töpel wrote:
+> +
+> +#define DEFINE_BPF_DISPATCHER(name)					\
+> +	unsigned int name##func(					\
+> +		const void *xdp_ctx,					\
+> +		const struct bpf_insn *insnsi,				\
+> +		unsigned int (*bpf_func)(const void *,			\
+> +					 const struct bpf_insn *))	\
+> +	{								\
+> +		return bpf_func(xdp_ctx, insnsi);			\
+> +	}								\
+> +	EXPORT_SYMBOL(name##func);			\
+> +	struct bpf_dispatcher name = BPF_DISPATCHER_INIT(name);
 
-Yonghong,
-please review.
+The dispatcher function is a normal function. EXPORT_SYMBOL doesn't make it
+'noinline'. struct bpf_dispatcher takes a pointer to it and that address is
+used for text_poke.
+
+In patch 3 __BPF_PROG_RUN calls dfunc() from two places.
+What stops compiler from inlining it? Or partially inlining it in one
+or the other place?
+
+I guess it works, because your compiler didn't inline it?
+Could you share how asm looks for bpf_prog_run_xdp()
+(where __BPF_PROG_RUN is called) and asm for name##func() ?
+
+I hope my guess that compiler didn't inline it is correct. Then extra noinline
+will not hurt and that's the only thing needed to avoid the issue.
+
