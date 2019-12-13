@@ -2,229 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F9C111E9B0
-	for <lists+netdev@lfdr.de>; Fri, 13 Dec 2019 19:04:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F234A11E9C7
+	for <lists+netdev@lfdr.de>; Fri, 13 Dec 2019 19:11:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728619AbfLMSEO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Dec 2019 13:04:14 -0500
-Received: from mail-eopbgr130048.outbound.protection.outlook.com ([40.107.13.48]:51383
-        "EHLO EUR01-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726404AbfLMSEO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 13 Dec 2019 13:04:14 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=a6izL3YEen3kJR8PgYEvibwhqo75n8Qz1xb1N+HMjhRFSgv1A+V4d+AyjfKIgH1A4Umej3ZA/16nGTEjyGizhZKE+7XVDCY9aVFyVhqDUdHKEmuO1BM9Oa0xe3RgxtgQSEP5EHLxGHEUCR6OxVsrF29ubPF1Ry5qu2ycqk/sXfsI6+yy2VZlGn6M0m5fdhMBWvBPlNCG69PXNLvp0MiL9kI+ZIRXb1pu9StHlmeFqdM8LJ81pY6ZfgjgdOPicv46xhJJvsIM/AhcA8ra8+0filKfmI8TfpcQP8YXFWZSMZbzJ5Lr0hv8egZpIpsdnf+dccZ4fSvlgiyNGgfhEXFsxA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=APzXaf7vaIhOqusxSQR/bcw39oyJtGx1KZ9g+UYPJQE=;
- b=iMFKP6O+FG0qsf0sApNapcXRJKLGyzuEihXx6p+k+xj/Vg54Fl0O+LHWX7uGMkjU5pd2y/RpqVX7n5lfbkql1nwVQFqGv+qG0oPtV+t9qBlb9tl5YbTzXLUl7HnrKKWraWg+dq4ldRdMYG/+HZ5+zZaTvyBxQaMg9y45okHEkUWJx4ELE3otgFBls5RmsEp84zNf5uUDbJgoIJ0o2jFIO9SBYRbPwpbBWc8py5S7NPRR7lN6cOaTgFCbrFD47NT3KobGy6IRQ30CvIU+hf6I0rpjtPYAfwWh3/5BVjbT01lay+040ZtUqJH+p5sAA604GCb0Cgf/z88z/mqB9IUDXg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=APzXaf7vaIhOqusxSQR/bcw39oyJtGx1KZ9g+UYPJQE=;
- b=dGdipW0IWvYAUnUWgSgUpaVfZ5rEUP3TjovGTaxOlXTAZdHIwSINRK7xVxOQ+2KObAbnTIerpLFpaYbagfCE9f/E5q/ag1RyFKjRakTvQfavPmPk4lBXVDGohgrGwTelLV/bdUZqRbOzP+yiS4xcAXuFzPKCrGAHNX28fK2O/SU=
-Received: from DB8PR05MB5881.eurprd05.prod.outlook.com (20.179.10.21) by
- DB8PR05MB5962.eurprd05.prod.outlook.com (20.179.9.24) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2538.17; Fri, 13 Dec 2019 18:04:08 +0000
-Received: from DB8PR05MB5881.eurprd05.prod.outlook.com
- ([fe80::1124:46fe:725e:458c]) by DB8PR05MB5881.eurprd05.prod.outlook.com
- ([fe80::1124:46fe:725e:458c%4]) with mapi id 15.20.2538.017; Fri, 13 Dec 2019
- 18:04:08 +0000
-From:   Maxim Mikityanskiy <maximmi@mellanox.com>
-To:     Magnus Karlsson <magnus.karlsson@intel.com>,
-        "bjorn.topel@intel.com" <bjorn.topel@intel.com>,
-        "ast@kernel.org" <ast@kernel.org>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "jonathan.lemon@gmail.com" <jonathan.lemon@gmail.com>
-CC:     "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        "jeffrey.t.kirsher@intel.com" <jeffrey.t.kirsher@intel.com>,
-        "maciej.fijalkowski@intel.com" <maciej.fijalkowski@intel.com>,
-        "maciejromanfijalkowski@gmail.com" <maciejromanfijalkowski@gmail.com>,
-        Maxim Mikityanskiy <maxtram95@gmail.com>,
-        Maxim Mikityanskiy <maximmi@mellanox.com>
-Subject: Re: [PATCH bpf-next 02/12] xsk: consolidate to one single cached
- producer pointer
-Thread-Topic: [PATCH bpf-next 02/12] xsk: consolidate to one single cached
- producer pointer
-Thread-Index: AQHVrmY7t5XVTFE7M062wFz9GlzapKe4YpAA
-Date:   Fri, 13 Dec 2019 18:04:08 +0000
-Message-ID: <63329cd7-4d3a-9497-e5ed-6995f05cd81f@mellanox.com>
-References: <1575878189-31860-1-git-send-email-magnus.karlsson@intel.com>
- <1575878189-31860-3-git-send-email-magnus.karlsson@intel.com>
-In-Reply-To: <1575878189-31860-3-git-send-email-magnus.karlsson@intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: BYAPR07CA0043.namprd07.prod.outlook.com
- (2603:10b6:a03:60::20) To DB8PR05MB5881.eurprd05.prod.outlook.com
- (2603:10a6:10:a8::21)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=maximmi@mellanox.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [159.224.90.213]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 6ab1ee39-17ca-4757-0946-08d77ff6d96d
-x-ms-traffictypediagnostic: DB8PR05MB5962:|DB8PR05MB5962:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <DB8PR05MB5962F734B27700ACE1BCBA41D1540@DB8PR05MB5962.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-forefront-prvs: 0250B840C1
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(39860400002)(366004)(136003)(376002)(346002)(396003)(52314003)(189003)(199004)(107886003)(66946007)(478600001)(54906003)(64756008)(66446008)(110136005)(66556008)(6512007)(71200400001)(66476007)(316002)(2616005)(6486002)(4326008)(55236004)(8676002)(6506007)(53546011)(186003)(26005)(86362001)(5660300002)(36756003)(81166006)(31686004)(8936002)(2906002)(52116002)(81156014)(7416002)(31696002);DIR:OUT;SFP:1101;SCL:1;SRVR:DB8PR05MB5962;H:DB8PR05MB5881.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: nyBifiZ97qtjB69lnyqoZNRRNkBTLGaaRtudl65jjXDCOHYaQpOi+bo/W9oRo3FJPCV0Yqa1Oy/WUh3WZZqzsfBnPy2fitkPFjz1nG54eiEd/TKqY/7PZHuelcLwOGnxxKbep2+VQUEHbIEBrdVEFvFLiT1Y36fOVeZGIen19V6Rz++DHUcjwlIT6nGo+QlOEenNOodEHVD82H1DaY9LLASYm2aHJ17089JzDRM52NesEP3FGhigKzwSHecgIp4DTm+Foz9MQGv11BvshASUxrHBc1gLgEaXhkZBwdU8OTWc6zmsDgxVYSj98lZFQKF45zp1HpNZpiDv4yBWgQkej+3HDFo1EU+bH8LOSSdDJe5NMpltG8s/bFlFvNBKBMynS072+kFPSpgJMQ6uhYEdJm5A4NrJQk4MA2o9yMzZo8P0G+rjeJZdyfRIGzhaNgGHq7BwffIbFtZbLuIeXy3elNmh6JxYAE6knI9Aw8owupaDN+H3r+vImoXKUA9a0Nta
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <089B2123F78CD44A9172FED16212E5C0@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S1728696AbfLMSI5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Dec 2019 13:08:57 -0500
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:55511 "EHLO
+        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728655AbfLMSI5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Dec 2019 13:08:57 -0500
+Received: by mail-wm1-f65.google.com with SMTP id q9so103800wmj.5
+        for <netdev@vger.kernel.org>; Fri, 13 Dec 2019 10:08:55 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=O/cxA8OR7wvHTzpZtT+CV5+Gsa2e2EvgAMAg5PhtGMU=;
+        b=yrsqrWs1BY9XfWRcorJXSVnwZk2X+HKuhTyAsxUPuUQSr+/GAJzVZjebOCv42OsEG2
+         J39R3rEgUdBuhtYfQyZ5X4REm5t3K9E70nVP2h51B6RzqZx66WWwLJ9okKiYvZoLtniY
+         awM3o9a/w3hFmTcDuzuXnHSZfrUGB2S5tNwag=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=O/cxA8OR7wvHTzpZtT+CV5+Gsa2e2EvgAMAg5PhtGMU=;
+        b=XOSXGI7X8joCtBPuap2rDenhdcFWr/Qv41QRs83hPXxv9sqyL6piyyhxFZpnmnA1If
+         3j6YzXb+uh17YX8ojBPgrccwe6YOO9C7fDI6qxq9srsxiG35slOb4B2/fgIm+rNoS3kg
+         U1AiggQtM1d5erKAJbHps2205IXsFEO52/wouLAEQ04/lzru+/di6mPH/tsoaN0NEQIQ
+         0d2jdTqO/nRJzjkQMOf/xKXu0XesKoFI+zBw6ebb1dPKo5/ClQ8QNg46leM9xYajAC4I
+         nNCdKwACqC3c3xvmXZ3NfbHuRJt32/IAdrX3cwB19TnKZHZO9k2JhoxPRoxpwVpkSJsz
+         kbNw==
+X-Gm-Message-State: APjAAAUcsuZfcmOSqEC6JcJT6oYfGkpftYQt1DNMR5qRpmzDfpsPfP4q
+        WYdHHyG/wopgCHHJWjlhgi44RQ==
+X-Google-Smtp-Source: APXvYqyRzmw1t/nhcd7tFqSwEq4NM+D3Xo/fEUCYFhdc2wqXY4e+lStCTXj/vfCE7f8Nr3vKFyJ+fA==
+X-Received: by 2002:a1c:9c87:: with SMTP id f129mr14480448wme.26.1576260534942;
+        Fri, 13 Dec 2019 10:08:54 -0800 (PST)
+Received: from localhost.localdomain ([2a06:98c0:1000:8250:3da5:43ec:24b:e240])
+        by smtp.gmail.com with ESMTPSA id d8sm10686655wrx.71.2019.12.13.10.08.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 13 Dec 2019 10:08:54 -0800 (PST)
+From:   Lorenz Bauer <lmb@cloudflare.com>
+To:     ast@kernel.org, daniel@iogearbox.net, davem@davemloft.net,
+        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     kernel-team@cloudflare.com, Lorenz Bauer <lmb@cloudflare.com>
+Subject: [PATCH bpf v2] bpf: clear skb->tstamp in bpf_redirect when necessary
+Date:   Fri, 13 Dec 2019 18:08:17 +0000
+Message-Id: <20191213180817.2510-1-lmb@cloudflare.com>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20191213154634.27338-1-lmb@cloudflare.com>
+References: <20191213154634.27338-1-lmb@cloudflare.com>
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6ab1ee39-17ca-4757-0946-08d77ff6d96d
-X-MS-Exchange-CrossTenant-originalarrivaltime: 13 Dec 2019 18:04:08.5616
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: aXYhq6KCYzms2DPnwNanKaOI9jw0ygzyesAIT4qwle0BrR/dnNzLO9QeBrXG9bnxSMR6PHLTC1wmEF4UPTyLbw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB8PR05MB5962
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gMjAxOS0xMi0wOSAwOTo1NiwgTWFnbnVzIEthcmxzc29uIHdyb3RlOg0KPiBDdXJyZW50bHks
-IHRoZSB4c2sgcmluZyBjb2RlIGhhcyB0d28gY2FjaGVkIHByb2R1Y2VyIHBvaW50ZXJzOg0KPiBw
-cm9kX2hlYWQgYW5kIHByb2RfdGFpbC4gVGhpcyBwYXRjaCBjb25zb2xpZGF0ZXMgdGhlc2UgdHdv
-IGludG8gYQ0KPiBzaW5nbGUgb25lIGNhbGxlZCBjYWNoZWRfcHJvZCB0byBtYWtlIHRoZSBjb2Rl
-IHNpbXBsZXIgYW5kIGVhc2llciB0bw0KPiBtYWludGFpbi4gVGhpcyB3aWxsIGJlIGluIGxpbmUg
-d2l0aCB0aGUgdXNlciBzcGFjZSBwYXJ0IG9mIHRoZSB0aGUNCj4gY29kZSBmb3VuZCBpbiBsaWJi
-cGYsIHRoYXQgb25seSB1c2VzIGEgc2luZ2xlIGNhY2hlZCBwb2ludGVyLg0KPiANCj4gVGhlIFJ4
-IHBhdGggb25seSB1c2VzIHRoZSB0d28gdG9wIGxldmVsIGZ1bmN0aW9ucw0KPiB4c2txX3Byb2R1
-Y2VfYmF0Y2hfZGVzYyBhbmQgeHNrcV9wcm9kdWNlX2ZsdXNoX2Rlc2MgYW5kIHRoZXkgYm90aCB1
-c2UNCj4gcHJvZF9oZWFkIGFuZCBuZXZlciBwcm9kX3RhaWwuIFNvIGp1c3QgbW92ZSB0aGVtIG92
-ZXIgdG8NCj4gY2FjaGVkX3Byb2QuDQo+IA0KPiBUaGUgVHggWERQX0RSViBwYXRoIHVzZXMgeHNr
-cV9wcm9kdWNlX2FkZHJfbGF6eSBhbmQNCj4geHNrcV9wcm9kdWNlX2ZsdXNoX2FkZHJfbiBhbmQg
-dW5uZWNlc3NhcmlseSBvcGVyYXRlcyBvbiBib3RoIHByb2RfdGFpbA0KPiBhbmQgcHJvZF9jb25z
-LCBzbyBtb3ZlIHRoZW0gb3ZlciB0byBqdXN0IHVzZSBjYWNoZWRfcHJvZCBieSBza2lwcGluZw0K
-PiB0aGUgaW50ZXJtZWRpYXRlIHN0ZXAgb2YgdXBkYXRpbmcgcHJvZF90YWlsLg0KPiANCj4gVGhl
-IFR4IHBhdGggaW4gWERQX1NLQiBtb2RlIHVzZXMgeHNrcV9yZXNlcnZlX2FkZHIgYW5kDQo+IHhz
-a3FfcHJvZHVjZV9hZGRyLiBUaGV5IGN1cnJlbnRseSB1c2UgYm90aCBjYWNoZWQgcG9pbnRlcnMs
-IGJ1dCB3ZSBjYW4NCj4gb3BlcmF0ZSBvbiB0aGUgZ2xvYmFsIHByb2R1Y2VyIHBvaW50ZXIgaW4g
-eHNrcV9wcm9kdWNlX2FkZHIgc2luY2UgaXQNCj4gaGFzIHRvIGJlIHVwZGF0ZWQgYW55d2F5LCB0
-aHVzIGVsaW1pbmF0aW5nIHRoZSB1c2Ugb2YgYm90aCBjYWNoZWQNCj4gcG9pbnRlcnMuIFdlIGNh
-biBhbHNvIHJlbW92ZSB0aGUgeHNrcV9uYl9mcmVlIGluIHhza3FfcHJvZHVjZV9hZGRyDQo+IHNp
-bmNlIGl0IGlzIGFscmVhZHkgY2FsbGVkIGluIHhza3FfcmVzZXJ2ZV9hZGRyLiBObyBuZWVkIHRv
-IGRvIGl0DQo+IHR3aWNlLg0KPiANCj4gV2hlbiB0aGVyZSBpcyBvbmx5IG9uZSBjYWNoZWQgcHJv
-ZHVjZXIgcG9pbnRlciwgd2UgY2FuIGFsc28gc2ltcGxpZnkNCj4geHNrcV9uYl9mcmVlIGJ5IHJl
-bW92aW5nIG9uZSBhcmd1bWVudC4NCj4gDQo+IFNpZ25lZC1vZmYtYnk6IE1hZ251cyBLYXJsc3Nv
-biA8bWFnbnVzLmthcmxzc29uQGludGVsLmNvbT4NCj4gLS0tDQo+ICAgbmV0L3hkcC94c2tfcXVl
-dWUuaCB8IDQ5ICsrKysrKysrKysrKysrKysrKysrKystLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0NCj4gICAxIGZpbGUgY2hhbmdlZCwgMjIgaW5zZXJ0aW9ucygrKSwgMjcgZGVsZXRpb25zKC0p
-DQo+IA0KPiBkaWZmIC0tZ2l0IGEvbmV0L3hkcC94c2tfcXVldWUuaCBiL25ldC94ZHAveHNrX3F1
-ZXVlLmgNCj4gaW5kZXggYTJmMGJhNi4uZDg4ZTFhMCAxMDA2NDQNCj4gLS0tIGEvbmV0L3hkcC94
-c2tfcXVldWUuaA0KPiArKysgYi9uZXQveGRwL3hza19xdWV1ZS5oDQo+IEBAIC0zNSw4ICszNSw3
-IEBAIHN0cnVjdCB4c2tfcXVldWUgew0KPiAgIAl1NjQgc2l6ZTsNCj4gICAJdTMyIHJpbmdfbWFz
-azsNCj4gICAJdTMyIG5lbnRyaWVzOw0KPiAtCXUzMiBwcm9kX2hlYWQ7DQo+IC0JdTMyIHByb2Rf
-dGFpbDsNCj4gKwl1MzIgY2FjaGVkX3Byb2Q7DQo+ICAgCXUzMiBjb25zX2hlYWQ7DQo+ICAgCXUz
-MiBjb25zX3RhaWw7DQo+ICAgCXN0cnVjdCB4ZHBfcmluZyAqcmluZzsNCj4gQEAgLTk0LDM5ICs5
-MywzOSBAQCBzdGF0aWMgaW5saW5lIHU2NCB4c2txX25iX2ludmFsaWRfZGVzY3Moc3RydWN0IHhz
-a19xdWV1ZSAqcSkNCj4gICANCj4gICBzdGF0aWMgaW5saW5lIHUzMiB4c2txX25iX2F2YWlsKHN0
-cnVjdCB4c2tfcXVldWUgKnEsIHUzMiBkY250KQ0KPiAgIHsNCj4gLQl1MzIgZW50cmllcyA9IHEt
-PnByb2RfdGFpbCAtIHEtPmNvbnNfdGFpbDsNCj4gKwl1MzIgZW50cmllcyA9IHEtPmNhY2hlZF9w
-cm9kIC0gcS0+Y29uc190YWlsOw0KPiAgIA0KPiAgIAlpZiAoZW50cmllcyA9PSAwKSB7DQo+ICAg
-CQkvKiBSZWZyZXNoIHRoZSBsb2NhbCBwb2ludGVyICovDQo+IC0JCXEtPnByb2RfdGFpbCA9IFJF
-QURfT05DRShxLT5yaW5nLT5wcm9kdWNlcik7DQo+IC0JCWVudHJpZXMgPSBxLT5wcm9kX3RhaWwg
-LSBxLT5jb25zX3RhaWw7DQo+ICsJCXEtPmNhY2hlZF9wcm9kID0gUkVBRF9PTkNFKHEtPnJpbmct
-PnByb2R1Y2VyKTsNCj4gKwkJZW50cmllcyA9IHEtPmNhY2hlZF9wcm9kIC0gcS0+Y29uc190YWls
-Ow0KPiAgIAl9DQo+ICAgDQo+ICAgCXJldHVybiAoZW50cmllcyA+IGRjbnQpID8gZGNudCA6IGVu
-dHJpZXM7DQo+ICAgfQ0KPiAgIA0KPiAtc3RhdGljIGlubGluZSB1MzIgeHNrcV9uYl9mcmVlKHN0
-cnVjdCB4c2tfcXVldWUgKnEsIHUzMiBwcm9kdWNlciwgdTMyIGRjbnQpDQo+ICtzdGF0aWMgaW5s
-aW5lIHUzMiB4c2txX25iX2ZyZWUoc3RydWN0IHhza19xdWV1ZSAqcSwgdTMyIGRjbnQpDQo+ICAg
-ew0KPiAtCXUzMiBmcmVlX2VudHJpZXMgPSBxLT5uZW50cmllcyAtIChwcm9kdWNlciAtIHEtPmNv
-bnNfdGFpbCk7DQo+ICsJdTMyIGZyZWVfZW50cmllcyA9IHEtPm5lbnRyaWVzIC0gKHEtPmNhY2hl
-ZF9wcm9kIC0gcS0+Y29uc190YWlsKTsNCj4gICANCj4gICAJaWYgKGZyZWVfZW50cmllcyA+PSBk
-Y250KQ0KPiAgIAkJcmV0dXJuIGZyZWVfZW50cmllczsNCj4gICANCj4gICAJLyogUmVmcmVzaCB0
-aGUgbG9jYWwgdGFpbCBwb2ludGVyICovDQo+ICAgCXEtPmNvbnNfdGFpbCA9IFJFQURfT05DRShx
-LT5yaW5nLT5jb25zdW1lcik7DQo+IC0JcmV0dXJuIHEtPm5lbnRyaWVzIC0gKHByb2R1Y2VyIC0g
-cS0+Y29uc190YWlsKTsNCj4gKwlyZXR1cm4gcS0+bmVudHJpZXMgLSAocS0+Y2FjaGVkX3Byb2Qg
-LSBxLT5jb25zX3RhaWwpOw0KPiAgIH0NCj4gICANCj4gICBzdGF0aWMgaW5saW5lIGJvb2wgeHNr
-cV9oYXNfYWRkcnMoc3RydWN0IHhza19xdWV1ZSAqcSwgdTMyIGNudCkNCj4gICB7DQo+IC0JdTMy
-IGVudHJpZXMgPSBxLT5wcm9kX3RhaWwgLSBxLT5jb25zX3RhaWw7DQo+ICsJdTMyIGVudHJpZXMg
-PSBxLT5jYWNoZWRfcHJvZCAtIHEtPmNvbnNfdGFpbDsNCj4gICANCj4gICAJaWYgKGVudHJpZXMg
-Pj0gY250KQ0KPiAgIAkJcmV0dXJuIHRydWU7DQo+ICAgDQo+ICAgCS8qIFJlZnJlc2ggdGhlIGxv
-Y2FsIHBvaW50ZXIuICovDQo+IC0JcS0+cHJvZF90YWlsID0gUkVBRF9PTkNFKHEtPnJpbmctPnBy
-b2R1Y2VyKTsNCj4gLQllbnRyaWVzID0gcS0+cHJvZF90YWlsIC0gcS0+Y29uc190YWlsOw0KPiAr
-CXEtPmNhY2hlZF9wcm9kID0gUkVBRF9PTkNFKHEtPnJpbmctPnByb2R1Y2VyKTsNCj4gKwllbnRy
-aWVzID0gcS0+Y2FjaGVkX3Byb2QgLSBxLT5jb25zX3RhaWw7DQo+ICAgDQo+ICAgCXJldHVybiBl
-bnRyaWVzID49IGNudDsNCj4gICB9DQo+IEBAIC0yMjAsMTcgKzIxOSwxNSBAQCBzdGF0aWMgaW5s
-aW5lIHZvaWQgeHNrcV9kaXNjYXJkX2FkZHIoc3RydWN0IHhza19xdWV1ZSAqcSkNCj4gICBzdGF0
-aWMgaW5saW5lIGludCB4c2txX3Byb2R1Y2VfYWRkcihzdHJ1Y3QgeHNrX3F1ZXVlICpxLCB1NjQg
-YWRkcikNCj4gICB7DQo+ICAgCXN0cnVjdCB4ZHBfdW1lbV9yaW5nICpyaW5nID0gKHN0cnVjdCB4
-ZHBfdW1lbV9yaW5nICopcS0+cmluZzsNCj4gLQ0KPiAtCWlmICh4c2txX25iX2ZyZWUocSwgcS0+
-cHJvZF90YWlsLCAxKSA9PSAwKQ0KPiAtCQlyZXR1cm4gLUVOT1NQQzsNCj4gKwl1bnNpZ25lZCBp
-bnQgaWR4ID0gcS0+cmluZy0+cHJvZHVjZXI7DQo+ICAgDQo+ICAgCS8qIEEsIG1hdGNoZXMgRCAq
-Lw0KPiAtCXJpbmctPmRlc2NbcS0+cHJvZF90YWlsKysgJiBxLT5yaW5nX21hc2tdID0gYWRkcjsN
-Cj4gKwlyaW5nLT5kZXNjW2lkeCsrICYgcS0+cmluZ19tYXNrXSA9IGFkZHI7DQo+ICAgDQo+ICAg
-CS8qIE9yZGVyIHByb2R1Y2VyIGFuZCBkYXRhICovDQo+ICAgCXNtcF93bWIoKTsgLyogQiwgbWF0
-Y2hlcyBDICovDQo+ICAgDQo+IC0JV1JJVEVfT05DRShxLT5yaW5nLT5wcm9kdWNlciwgcS0+cHJv
-ZF90YWlsKTsNCj4gKwlXUklURV9PTkNFKHEtPnJpbmctPnByb2R1Y2VyLCBpZHgpOw0KPiAgIAly
-ZXR1cm4gMDsNCj4gICB9DQo+ICAgDQo+IEBAIC0yMzgsMTEgKzIzNSwxMSBAQCBzdGF0aWMgaW5s
-aW5lIGludCB4c2txX3Byb2R1Y2VfYWRkcl9sYXp5KHN0cnVjdCB4c2tfcXVldWUgKnEsIHU2NCBh
-ZGRyKQ0KPiAgIHsNCj4gICAJc3RydWN0IHhkcF91bWVtX3JpbmcgKnJpbmcgPSAoc3RydWN0IHhk
-cF91bWVtX3JpbmcgKilxLT5yaW5nOw0KPiAgIA0KPiAtCWlmICh4c2txX25iX2ZyZWUocSwgcS0+
-cHJvZF9oZWFkLCAxKSA9PSAwKQ0KPiArCWlmICh4c2txX25iX2ZyZWUocSwgMSkgPT0gMCkNCj4g
-ICAJCXJldHVybiAtRU5PU1BDOw0KPiAgIA0KPiAgIAkvKiBBLCBtYXRjaGVzIEQgKi8NCj4gLQly
-aW5nLT5kZXNjW3EtPnByb2RfaGVhZCsrICYgcS0+cmluZ19tYXNrXSA9IGFkZHI7DQo+ICsJcmlu
-Zy0+ZGVzY1txLT5jYWNoZWRfcHJvZCsrICYgcS0+cmluZ19tYXNrXSA9IGFkZHI7DQo+ICAgCXJl
-dHVybiAwOw0KPiAgIH0NCj4gICANCj4gQEAgLTI1MiwxNyArMjQ5LDE2IEBAIHN0YXRpYyBpbmxp
-bmUgdm9pZCB4c2txX3Byb2R1Y2VfZmx1c2hfYWRkcl9uKHN0cnVjdCB4c2tfcXVldWUgKnEsDQo+
-ICAgCS8qIE9yZGVyIHByb2R1Y2VyIGFuZCBkYXRhICovDQo+ICAgCXNtcF93bWIoKTsgLyogQiwg
-bWF0Y2hlcyBDICovDQo+ICAgDQo+IC0JcS0+cHJvZF90YWlsICs9IG5iX2VudHJpZXM7DQo+IC0J
-V1JJVEVfT05DRShxLT5yaW5nLT5wcm9kdWNlciwgcS0+cHJvZF90YWlsKTsNCj4gKwlXUklURV9P
-TkNFKHEtPnJpbmctPnByb2R1Y2VyLCBxLT5yaW5nLT5wcm9kdWNlciArIG5iX2VudHJpZXMpOw0K
-PiAgIH0NCj4gICANCj4gICBzdGF0aWMgaW5saW5lIGludCB4c2txX3Jlc2VydmVfYWRkcihzdHJ1
-Y3QgeHNrX3F1ZXVlICpxKQ0KPiAgIHsNCj4gLQlpZiAoeHNrcV9uYl9mcmVlKHEsIHEtPnByb2Rf
-aGVhZCwgMSkgPT0gMCkNCj4gKwlpZiAoeHNrcV9uYl9mcmVlKHEsIDEpID09IDApDQo+ICAgCQly
-ZXR1cm4gLUVOT1NQQzsNCj4gICANCj4gICAJLyogQSwgbWF0Y2hlcyBEICovDQo+IC0JcS0+cHJv
-ZF9oZWFkKys7DQo+ICsJcS0+Y2FjaGVkX3Byb2QrKzsNCj4gICAJcmV0dXJuIDA7DQo+ICAgfQ0K
-PiAgIA0KPiBAQCAtMzQwLDExICszMzYsMTEgQEAgc3RhdGljIGlubGluZSBpbnQgeHNrcV9wcm9k
-dWNlX2JhdGNoX2Rlc2Moc3RydWN0IHhza19xdWV1ZSAqcSwNCj4gICAJc3RydWN0IHhkcF9yeHR4
-X3JpbmcgKnJpbmcgPSAoc3RydWN0IHhkcF9yeHR4X3JpbmcgKilxLT5yaW5nOw0KPiAgIAl1bnNp
-Z25lZCBpbnQgaWR4Ow0KPiAgIA0KPiAtCWlmICh4c2txX25iX2ZyZWUocSwgcS0+cHJvZF9oZWFk
-LCAxKSA9PSAwKQ0KPiArCWlmICh4c2txX25iX2ZyZWUocSwgMSkgPT0gMCkNCj4gICAJCXJldHVy
-biAtRU5PU1BDOw0KPiAgIA0KPiAgIAkvKiBBLCBtYXRjaGVzIEQgKi8NCj4gLQlpZHggPSAocS0+
-cHJvZF9oZWFkKyspICYgcS0+cmluZ19tYXNrOw0KPiArCWlkeCA9IHEtPmNhY2hlZF9wcm9kKysg
-JiBxLT5yaW5nX21hc2s7DQo+ICAgCXJpbmctPmRlc2NbaWR4XS5hZGRyID0gYWRkcjsNCj4gICAJ
-cmluZy0+ZGVzY1tpZHhdLmxlbiA9IGxlbjsNCj4gICANCj4gQEAgLTM1Niw4ICszNTIsNyBAQCBz
-dGF0aWMgaW5saW5lIHZvaWQgeHNrcV9wcm9kdWNlX2ZsdXNoX2Rlc2Moc3RydWN0IHhza19xdWV1
-ZSAqcSkNCj4gICAJLyogT3JkZXIgcHJvZHVjZXIgYW5kIGRhdGEgKi8NCj4gICAJc21wX3dtYigp
-OyAvKiBCLCBtYXRjaGVzIEMgKi8NCj4gICANCj4gLQlxLT5wcm9kX3RhaWwgPSBxLT5wcm9kX2hl
-YWQ7DQo+IC0JV1JJVEVfT05DRShxLT5yaW5nLT5wcm9kdWNlciwgcS0+cHJvZF90YWlsKTsNCj4g
-KwlXUklURV9PTkNFKHEtPnJpbmctPnByb2R1Y2VyLCBxLT5jYWNoZWRfcHJvZCk7DQo+ICAgfQ0K
-PiAgIA0KPiAgIHN0YXRpYyBpbmxpbmUgYm9vbCB4c2txX2Z1bGxfZGVzYyhzdHJ1Y3QgeHNrX3F1
-ZXVlICpxKQ0KPiBAQCAtMzY3LDcgKzM2Miw3IEBAIHN0YXRpYyBpbmxpbmUgYm9vbCB4c2txX2Z1
-bGxfZGVzYyhzdHJ1Y3QgeHNrX3F1ZXVlICpxKQ0KPiAgIA0KPiAgIHN0YXRpYyBpbmxpbmUgYm9v
-bCB4c2txX2VtcHR5X2Rlc2Moc3RydWN0IHhza19xdWV1ZSAqcSkNCj4gICB7DQo+IC0JcmV0dXJu
-IHhza3FfbmJfZnJlZShxLCBxLT5wcm9kX3RhaWwsIHEtPm5lbnRyaWVzKSA9PSBxLT5uZW50cmll
-czsNCj4gKwlyZXR1cm4geHNrcV9uYl9mcmVlKHEsIHEtPm5lbnRyaWVzKSA9PSBxLT5uZW50cmll
-czsNCg0KSSBkb24ndCB0aGluayB0aGlzIGNoYW5nZSBpcyBjb3JyZWN0LiBUaGUgb2xkIGNvZGUg
-Y2hlY2tlZCB0aGUgbnVtYmVyIG9mIA0KZnJlZSBpdGVtcyBhZ2FpbnN0IHByb2RfdGFpbCAoPT0g
-cHJvZHVjZXIpLiBUaGUgbmV3IGNvZGUgY2hhbmdlcyBpdCB0byANCnByb2RfaGVhZCAod2hpY2gg
-aXMgbm93IGNhY2hlZF9wcm9kKS4geHNrcV9uYl9mcmVlIGlzIHVzZWQgaW4geHNrX3BvbGwgDQp0
-byBzZXQgRVBPTExJTi4gQWZ0ZXIgdGhpcyBjaGFuZ2UgRVBPTExJTiB3aWxsIGJlIHNldCByaWdo
-dCBhZnRlciANCnhza3FfcHJvZHVjZV9iYXRjaF9kZXNjLCBidXQgaXQgc2hvdWxkIG9ubHkgYmUg
-c2V0IGFmdGVyIA0KeHNrcV9wcm9kdWNlX2ZsdXNoX2Rlc2MsIGp1c3QgYXMgYmVmb3JlLCBvdGhl
-cndpc2UgdGhlIGFwcGxpY2F0aW9uIHdpbGwgDQp3YWtlIHVwIGJlZm9yZSB0aGUgZGF0YSBpcyBh
-dmFpbGFibGUsIGFuZCBpdCB3aWxsIGp1c3Qgd2FzdGUgQ1BVIGN5Y2xlcy4NCg0KPiAgIH0NCj4g
-ICANCj4gICB2b2lkIHhza3Ffc2V0X3VtZW0oc3RydWN0IHhza19xdWV1ZSAqcSwgdTY0IHNpemUs
-IHU2NCBjaHVua19tYXNrKTsNCj4gDQoNCg==
+Redirecting a packet from ingress to egress by using bpf_redirect
+breaks if the egress interface has an fq qdisc installed. This is the same
+problem as fixed in 'commit 8203e2d844d3 ("net: clear skb->tstamp in forwarding paths")
+
+Clear skb->tstamp when redirecting into the egress path.
+
+Fixes: 80b14dee2bea ("net: Add a new socket option for a future transmit time.")
+Fixes: fb420d5d91c1 ("tcp/fq: move back to CLOCK_MONOTONIC")
+Signed-off-by: Lorenz Bauer <lmb@cloudflare.com>
+---
+ net/core/filter.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/net/core/filter.c b/net/core/filter.c
+index f1e703eed3d2..d914257763b5 100644
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -2055,6 +2055,7 @@ static inline int __bpf_tx_skb(struct net_device *dev, struct sk_buff *skb)
+ 	}
+ 
+ 	skb->dev = dev;
++	skb->tstamp = 0;
+ 
+ 	dev_xmit_recursion_inc();
+ 	ret = dev_queue_xmit(skb);
+-- 
+2.20.1
+
