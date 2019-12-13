@@ -2,96 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EF5EE11EE09
-	for <lists+netdev@lfdr.de>; Fri, 13 Dec 2019 23:52:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 152CA11EE1D
+	for <lists+netdev@lfdr.de>; Sat, 14 Dec 2019 00:01:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726613AbfLMWwI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Dec 2019 17:52:08 -0500
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:30296 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725948AbfLMWwH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Dec 2019 17:52:07 -0500
-Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xBDMq2hg015475
-        for <netdev@vger.kernel.org>; Fri, 13 Dec 2019 14:52:06 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-type; s=facebook; bh=1dJG8uMwcBDrpwgMjW91dzs8cFo6UiMu8gULn0pA6II=;
- b=hLa3xH3h+rgeSx4UjMInPee2k5RQ0dBbZNN+3BaRtdkpnqEywoEX8mEPvIqFR2CMj0Ol
- LAlheDq0iZ5+yAyxSgaIpD3BOrz5Ojqe07uVemb4jn+8YyQQNobQKalCNmn1pITsGYcG
- Ryco+kdylxNOMA4PPia+cIAFbUmUhgB3fkY= 
-Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by mx0a-00082601.pphosted.com with ESMTP id 2wvev5sf5j-10
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Fri, 13 Dec 2019 14:52:06 -0800
-Received: from intmgw001.41.prn1.facebook.com (2620:10d:c081:10::13) by
- mail.thefacebook.com (2620:10d:c081:35::130) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
- Fri, 13 Dec 2019 14:51:41 -0800
-Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
-        id 7A4BB2EC1C8E; Fri, 13 Dec 2019 14:32:54 -0800 (PST)
-Smtp-Origin-Hostprefix: devbig
-From:   Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
-        <daniel@iogearbox.net>
-CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Quentin Monnet <quentin.monnet@netronome.com>
-Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH v3 bpf-next 17/17] bpftool: add `gen skeleton` BASH completions
-Date:   Fri, 13 Dec 2019 14:32:14 -0800
-Message-ID: <20191213223214.2791885-18-andriin@fb.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20191213223214.2791885-1-andriin@fb.com>
-References: <20191213223214.2791885-1-andriin@fb.com>
-X-FB-Internal: Safe
+        id S1726691AbfLMXB3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Dec 2019 18:01:29 -0500
+Received: from mga04.intel.com ([192.55.52.120]:64701 "EHLO mga04.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725948AbfLMXB3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 13 Dec 2019 18:01:29 -0500
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 13 Dec 2019 15:01:29 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.69,311,1571727600"; 
+   d="scan'208";a="211506666"
+Received: from mjmartin-nuc02.mjmartin-nuc02 (HELO mjmartin-nuc02.sea.intel.com) ([10.251.17.224])
+  by fmsmga007.fm.intel.com with ESMTP; 13 Dec 2019 15:01:19 -0800
+From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
+To:     netdev@vger.kernel.org, mptcp@lists.01.org
+Cc:     Mat Martineau <mathew.j.martineau@linux.intel.com>
+Subject: [PATCH net-next 00/11] Multipath TCP: Prerequisites
+Date:   Fri, 13 Dec 2019 15:00:11 -0800
+Message-Id: <20191213230022.28144-1-mathew.j.martineau@linux.intel.com>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
- definitions=2019-12-13_08:2019-12-13,2019-12-13 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 bulkscore=0 spamscore=0
- mlxscore=0 lowpriorityscore=0 malwarescore=0 mlxlogscore=725 clxscore=1015
- priorityscore=1501 impostorscore=0 suspectscore=8 adultscore=0
- phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-1910280000 definitions=main-1912130162
-X-FB-Internal: deliver
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add BASH completions for gen sub-command.
+The MPTCP upstreaming community has been collaborating on an
+upstreamable MPTCP implementation that complies with RFC 8684. A minimal
+set of features to comply with the specification involves a sizeable set
+of code changes, so David requested that we split this work in to
+multiple, smaller patch sets to build up MPTCP infrastructure.
 
-Cc: Quentin Monnet <quentin.monnet@netronome.com>
-Acked-by: Martin KaFai Lau <kafai@fb.com>
-Signed-off-by: Andrii Nakryiko <andriin@fb.com>
----
- tools/bpf/bpftool/bash-completion/bpftool | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+The minimal MPTCP feature set we are proposing for review in the v5.6
+timeframe begins with these three parts:
 
-diff --git a/tools/bpf/bpftool/bash-completion/bpftool b/tools/bpf/bpftool/bash-completion/bpftool
-index 70493a6da206..986519cc58d1 100644
---- a/tools/bpf/bpftool/bash-completion/bpftool
-+++ b/tools/bpf/bpftool/bash-completion/bpftool
-@@ -716,6 +716,17 @@ _bpftool()
-                     ;;
-             esac
-             ;;
-+        gen)
-+            case $command in
-+                skeleton)
-+                    _filedir
-+		    ;;
-+                *)
-+                    [[ $prev == $object ]] && \
-+                        COMPREPLY=( $( compgen -W 'skeleton help' -- "$cur" ) )
-+                    ;;
-+            esac
-+            ;;
-         cgroup)
-             case $command in
-                 show|list|tree)
+Part 1 (this patch set): MPTCP prerequisites. Introduce some MPTCP
+definitions, additional ULP and skb extension features, TCP option space
+checking, and a few exported symbols.
+
+Part 2: Single subflow implementation and self tests.
+
+Part 3: Switch from MPTCP v0 (RFC 6824) to MPTCP v1 (new RFC 8684,
+publication expected in the next few days).
+
+We plan to send those over the next week. Additional patches for
+multiple subflow support, path management, active backup, and other
+features are in the pipeline for submission after making progress with
+the above reviews.
+
+Clone/fetch:
+https://github.com/multipath-tcp/mptcp_net-next.git (tag: netdev-v1-part1)
+
+Browse:
+https://github.com/multipath-tcp/mptcp_net-next/tree/netdev-v1-part1
+
+Thank you for your review. You can find us at mptcp@lists.01.org and
+https://is.gd/mptcp_upstream
+
+
+Mat Martineau (9):
+  net: Make sock protocol value checks more specific
+  sock: Make sk_protocol a 16-bit value
+  tcp: Define IPPROTO_MPTCP
+  tcp: Add MPTCP option number
+  tcp, ulp: Add clone operation to tcp_ulp_ops
+  mptcp: Add MPTCP to skb extensions
+  tcp: Prevent coalesce/collapse when skb has MPTCP extensions
+  tcp: Export TCP functions and ops struct
+  tcp: Check for filled TCP option space before SACK
+
+Paolo Abeni (2):
+  tcp: clean ext on tx recycle
+  skb: add helpers to allocate ext independently from sk_buff
+
+ MAINTAINERS                     | 10 ++++++++
+ include/linux/skbuff.h          |  6 +++++
+ include/net/mptcp.h             | 43 +++++++++++++++++++++++++++++++++
+ include/net/sock.h              |  6 ++---
+ include/net/tcp.h               | 22 +++++++++++++++++
+ include/trace/events/sock.h     |  5 ++--
+ include/uapi/linux/in.h         |  2 ++
+ net/ax25/af_ax25.c              |  2 +-
+ net/core/skbuff.c               | 42 ++++++++++++++++++++++++++++++--
+ net/decnet/af_decnet.c          |  2 +-
+ net/ipv4/inet_connection_sock.c |  2 ++
+ net/ipv4/tcp.c                  |  6 ++---
+ net/ipv4/tcp_input.c            | 10 ++++++--
+ net/ipv4/tcp_ipv4.c             |  2 +-
+ net/ipv4/tcp_output.c           |  5 +++-
+ net/ipv4/tcp_ulp.c              | 12 +++++++++
+ net/ipv6/tcp_ipv6.c             |  6 ++---
+ tools/include/uapi/linux/in.h   |  2 ++
+ 18 files changed, 166 insertions(+), 19 deletions(-)
+ create mode 100644 include/net/mptcp.h
+
 -- 
-2.17.1
+2.24.1
 
