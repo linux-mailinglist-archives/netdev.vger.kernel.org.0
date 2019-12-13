@@ -2,625 +2,251 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CD72311EAC0
-	for <lists+netdev@lfdr.de>; Fri, 13 Dec 2019 19:55:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4AD7D11EAC6
+	for <lists+netdev@lfdr.de>; Fri, 13 Dec 2019 19:59:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728736AbfLMSz0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Dec 2019 13:55:26 -0500
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:37715 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728678AbfLMSz0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Dec 2019 13:55:26 -0500
-Received: by mail-pf1-f194.google.com with SMTP id p14so172513pfn.4
-        for <netdev@vger.kernel.org>; Fri, 13 Dec 2019 10:55:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pensando.io; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=sSvXIRWqmDoFF4iciIq+7xuSQKjQHh+74qN4tpo0hlw=;
-        b=nhsoyYelaXmBaz2BKnQ42hfz8mBc40MI3fJvin5b5MQnqwJoRmWuC2LeOrlPDLFe7P
-         vXxFJKkxxLue1dM1WDa861fFsN+A5tbj+onv/OBC4jpUzsHv5rS0K6MeSkpSYxErqfTb
-         4XV51vT72J55K08uEJWgS2ucP0UGRroS2A0b+4oebMVprOLmq6lIbBC1v7bJhXTA4RkP
-         cZhr1h5pOZ3zslcqfryHxSSkbh+/jf3hIt+KV8jEJhNNsXNpx2WPdV8u+r7TFdL3j3Ww
-         TAchoxG+KeNYmFpNOcJgYqfzIAA5xzb43moEkEHreCsYgV+aKoPUdDx52ZaMHGdaoAEd
-         PnHw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=sSvXIRWqmDoFF4iciIq+7xuSQKjQHh+74qN4tpo0hlw=;
-        b=OV9PaHRK6PD0S30PbCdlC5G5jmifipp+vZua663JpyKRRDIBBS8bIOXnhEnh0cF/LK
-         1l6kh5ddLHpnibHZNecYec6IVazV7dCBymaUBmdshW/D1mNvKvfiKD364V5Ui/xaOb7M
-         pikRZMvBN4GN8AiErGEHwL+9aPLE+lieVUZYp2tvlOenujqWNL1VpxLkrn7JY+Kq74Yt
-         bJAcN3vUv8DGKOFGdm2ELSJ+0Zg2HWS7gmoqL4vNViRZ0rR9U7lp8Ny0Cadv1J4LOxzi
-         dEw7s6WOJLF2A/CBrLIhNAi2a7jEZ9N9yU9FQlT7iAIeAq2xQMsyhiBow21PPBoDz4hX
-         KMmA==
-X-Gm-Message-State: APjAAAX4CsEHq6q9jN1flFZ7YRB3jujjgQb+Y8m0CL5JL7rdhmQhZARZ
-        KEsF1qKV9i1HqReU675UiVTRLGSGBdg=
-X-Google-Smtp-Source: APXvYqxe0152LMlC89/IbHN4sxhqhGDqB2SbYUxWTTWbejc5fWm8J+MGeHDWV3b0iKEEU8/D+f+OVA==
-X-Received: by 2002:a65:4381:: with SMTP id m1mr1042587pgp.68.1576263324888;
-        Fri, 13 Dec 2019 10:55:24 -0800 (PST)
-Received: from driver-dev1.pensando.io ([12.1.37.26])
-        by smtp.gmail.com with ESMTPSA id n26sm12609003pgd.46.2019.12.13.10.55.23
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 13 Dec 2019 10:55:24 -0800 (PST)
-From:   Shannon Nelson <snelson@pensando.io>
-To:     netdev@vger.kernel.org, davem@davemloft.net
-Cc:     parav@mellanox.com, Shannon Nelson <snelson@pensando.io>
-Subject: [PATCH v3 net-next 2/2] ionic: support sr-iov operations
-Date:   Fri, 13 Dec 2019 10:55:16 -0800
-Message-Id: <20191213185516.52087-3-snelson@pensando.io>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20191213185516.52087-1-snelson@pensando.io>
-References: <20191213185516.52087-1-snelson@pensando.io>
+        id S1728664AbfLMS67 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Dec 2019 13:58:59 -0500
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:38948 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728473AbfLMS67 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Dec 2019 13:58:59 -0500
+Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xBDIq1ap025606;
+        Fri, 13 Dec 2019 10:58:39 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : references : in-reply-to : content-type : content-id
+ : content-transfer-encoding : mime-version; s=facebook;
+ bh=Kx6MqbG6kl+atUNNQbwoiDYmpXrpG8746xcS8N3lV5I=;
+ b=aaQkWNMY8iVcOLR9SPFAKtRZIOwE7ka2jkE+kG6NPrSZEHfiXf9fqXvnEHb67WFlrRP7
+ fl+B+266bqVnZ1cWm+C2ZsbmFTdOLPlUQhNU4Nd1FkGvfLBFyk8tr+jeeppEMTJ4tiC/
+ Sg7daR5e9q9sG4XTLs7wrj9YkRXJIMTNSUc= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 2wuuxkd4vm-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Fri, 13 Dec 2019 10:58:39 -0800
+Received: from ash-exhub101.TheFacebook.com (2620:10d:c0a8:82::e) by
+ ash-exhub201.TheFacebook.com (2620:10d:c0a8:83::7) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Fri, 13 Dec 2019 10:58:38 -0800
+Received: from NAM04-CO1-obe.outbound.protection.outlook.com (100.104.31.183)
+ by o365-in.thefacebook.com (100.104.35.173) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1713.5
+ via Frontend Transport; Fri, 13 Dec 2019 10:58:38 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Dz40aJPX9gCdReFRku80GE+sdBJrSSzdHGpDnpvlbDNWufIlWo3btfMDrihpLBlRA9OuLLK4Dly2YWzDdHb1XncYCahvhGKTI3pK/914Mk3fOJXgt6YtC9+ksVo3vKUSUlZj5NJ5yYknmiAgesY6BP2d+YXH5eqmyhUBHe7JHiZOcx2m5b2lS65j4fXwP6rvA7mQ1Jx1KBtBxTRAp+S3NMiU79xFLA68noMOUEH81tkGZ88LeIoxgOJU3JArx4XuPxsD2dR/1L0LGK5JMusQXA8zQ/p6Hup/DnUJPX2DJgyBZQ9k1o60Z/CaPWor8U6FzlecEz83QqSepbLR7CBJIQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Kx6MqbG6kl+atUNNQbwoiDYmpXrpG8746xcS8N3lV5I=;
+ b=ZbW6c6ir+C/STHdf9SkxClNkKMFLBnp9NOCZtG4qpERUf/IRgY0JICiwhH9jR+Nibbn658Om7IYc7xwqTCK4RXyMF7XI9+4AqDDYHVAkMdJcmAHtPcop2b5WhIQX8YF4qQdgYArnx18aD84ryKB1+A91bEGcqzg1HJixhT6gR0Yz6jdr7DEijxOYOUeIWjOD5ZODao1e8f+PlWJTRjET6C39JAzPUrXzUek1iW76xNwwJiq1hmwvEt64wLHkrPLROP1KLts96cOAwR67NskrK/piQcIOHUpBRhJ7pqx/3SlKUUDsCHeMFG6Aa5hY1+rYWiZ6eIWMqR8apPiDOnlncg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Kx6MqbG6kl+atUNNQbwoiDYmpXrpG8746xcS8N3lV5I=;
+ b=CXEZySRlxhF6iWe8ebcDiU7MCiIuC22VRCGJUh0WGkbV2iRigkARn4VLn819O/jUKnyai0UefrLyQwhf+kVuLZAN1B28al8c4UhEljNwuas6kEmlt52aG8pADKQdWKxPaip3d6IqsRQA0ImoZ36rkezAizmY8eZuA2xO4HK+/30=
+Received: from DM5PR15MB1675.namprd15.prod.outlook.com (10.175.107.145) by
+ DM5PR15MB1546.namprd15.prod.outlook.com (10.173.223.151) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2538.18; Fri, 13 Dec 2019 18:58:36 +0000
+Received: from DM5PR15MB1675.namprd15.prod.outlook.com
+ ([fe80::2844:b18d:c296:c23]) by DM5PR15MB1675.namprd15.prod.outlook.com
+ ([fe80::2844:b18d:c296:c23%8]) with mapi id 15.20.2516.018; Fri, 13 Dec 2019
+ 18:58:36 +0000
+From:   Yonghong Song <yhs@fb.com>
+To:     Brian Vazquez <brianvv@google.com>,
+        Brian Vazquez <brianvv.kernel@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        "Daniel Borkmann" <daniel@iogearbox.net>,
+        "David S . Miller" <davem@davemloft.net>
+CC:     Stanislav Fomichev <sdf@google.com>,
+        Petar Penkov <ppenkov@google.com>,
+        Willem de Bruijn <willemb@google.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>
+Subject: Re: [PATCH v3 bpf-next 06/11] bpf: add batch ops to all htab bpf map
+Thread-Topic: [PATCH v3 bpf-next 06/11] bpf: add batch ops to all htab bpf map
+Thread-Index: AQHVsHMuYMDKZmq21kWyUxx3YJSoMae4bbuA
+Date:   Fri, 13 Dec 2019 18:58:36 +0000
+Message-ID: <a33dab7b-0f46-c29f-0db1-a5539c433b3d@fb.com>
+References: <20191211223344.165549-1-brianvv@google.com>
+ <20191211223344.165549-7-brianvv@google.com>
+In-Reply-To: <20191211223344.165549-7-brianvv@google.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: MWHPR14CA0053.namprd14.prod.outlook.com
+ (2603:10b6:300:81::15) To DM5PR15MB1675.namprd15.prod.outlook.com
+ (2603:10b6:3:11f::17)
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [2620:10d:c090:200::2:e8f1]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: e31cf9bd-53c6-461f-daf0-08d77ffe7576
+x-ms-traffictypediagnostic: DM5PR15MB1546:
+x-microsoft-antispam-prvs: <DM5PR15MB1546019442AAB70AC910EAEED3540@DM5PR15MB1546.namprd15.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:2043;
+x-forefront-prvs: 0250B840C1
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(39860400002)(396003)(366004)(136003)(376002)(346002)(189003)(199004)(52116002)(478600001)(966005)(4326008)(6506007)(53546011)(186003)(5660300002)(316002)(8936002)(36756003)(54906003)(86362001)(31696002)(110136005)(8676002)(81156014)(66946007)(64756008)(2616005)(71200400001)(66556008)(66476007)(66446008)(7416002)(81166006)(6486002)(31686004)(6512007)(2906002);DIR:OUT;SFP:1102;SCL:1;SRVR:DM5PR15MB1546;H:DM5PR15MB1675.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: fb.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: ddtfvaFMULg+iEWRaKBi60gmM+UNvsX2ZJGs/+Usq1dgTFxKJJmF2M8rjcpZPE5gbarJRZpOnGXNlT/H+BTjvnlnY80pNW2mdFdvAEekiex06/uiSG78BI/4fl99lUBrIxPutrE3QEk6yb+sfHlBeSBmav5/c6okApGhS/gbynbSowwM+JROiOWgmDl/fD73lq6GGdgjk0PSvHqRRzs0m0ccfj5yGB3UUbEcyx1854pXZTwwvd82p4bGuTteibJxnpciR2TAEnPDLVkJFfpecRbp3mtsq/P0F81Nq11AlQV0oMS5g/oL6u3Xr0QNyAW9L6rjt0ZJP+nFsNiH3GbaxxklZBWfz0cCwalJxW7RgOpqbGLWFw0MXK12Zu1tsF8PGaInfF0pcNkhTk/E/hTJLPAlfzzc75xuxAxp/8slQYvdWNMSziQsHtReoHKsFIOkAJpIzyOxQueC3bLxv2Fev9iVaREwsgOdU+2sZ5KqvDM=
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <33DAEE067798FD42979FA2D430DA6EE6@namprd15.prod.outlook.com>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-Network-Message-Id: e31cf9bd-53c6-461f-daf0-08d77ffe7576
+X-MS-Exchange-CrossTenant-originalarrivaltime: 13 Dec 2019 18:58:36.6398
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: cABoCw8CuGVzTtkCrNYph6kmzc7rR4WTxqba3gS7YI55fIXoElBwSxnL2k1drdDk
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR15MB1546
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
+ definitions=2019-12-13_05:2019-12-13,2019-12-13 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 adultscore=0 spamscore=0
+ mlxlogscore=999 phishscore=0 clxscore=1015 malwarescore=0 bulkscore=0
+ suspectscore=0 lowpriorityscore=0 impostorscore=0 mlxscore=0
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-1910280000 definitions=main-1912130145
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add the netdev ops for managing VFs.  Since most of the
-management work happens in the NIC firmware, the driver becomes
-mostly a pass-through for the network stack commands that want
-to control and configure the VFs.
-
-We also tweak ionic_station_set() a little to allow for
-the VFs that start off with a zero'd mac address.
-
-Signed-off-by: Shannon Nelson <snelson@pensando.io>
----
- drivers/net/ethernet/pensando/ionic/ionic.h   |  17 +-
- .../ethernet/pensando/ionic/ionic_bus_pci.c   | 101 ++++++++
- .../net/ethernet/pensando/ionic/ionic_dev.c   |  58 +++++
- .../net/ethernet/pensando/ionic/ionic_dev.h   |   7 +
- .../net/ethernet/pensando/ionic/ionic_lif.c   | 222 +++++++++++++++++-
- .../net/ethernet/pensando/ionic/ionic_main.c  |   4 +
- 6 files changed, 401 insertions(+), 8 deletions(-)
-
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic.h b/drivers/net/ethernet/pensando/ionic/ionic.h
-index 98e102af7756..74b358f03599 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic.h
-+++ b/drivers/net/ethernet/pensando/ionic/ionic.h
-@@ -12,7 +12,7 @@ struct ionic_lif;
- 
- #define IONIC_DRV_NAME		"ionic"
- #define IONIC_DRV_DESCRIPTION	"Pensando Ethernet NIC Driver"
--#define IONIC_DRV_VERSION	"0.18.0-k"
-+#define IONIC_DRV_VERSION	"0.20.0-k"
- 
- #define PCI_VENDOR_ID_PENSANDO			0x1dd8
- 
-@@ -25,12 +25,25 @@ struct ionic_lif;
- 
- #define DEVCMD_TIMEOUT  10
- 
-+struct ionic_vf {
-+	u16	 index;
-+	u8	 macaddr[6];
-+	__le32	 maxrate;
-+	__le16	 vlanid;
-+	u8	 spoofchk;
-+	u8	 trusted;
-+	u8	 linkstate;
-+	dma_addr_t       stats_pa;
-+	struct ionic_lif_stats stats;
-+};
-+
- struct ionic {
- 	struct pci_dev *pdev;
- 	struct device *dev;
- 	struct devlink_port dl_port;
- 	struct ionic_dev idev;
- 	struct mutex dev_cmd_lock;	/* lock for dev_cmd operations */
-+	struct rw_semaphore vf_op_lock;	/* lock for VF operations */
- 	struct dentry *dentry;
- 	struct ionic_dev_bar bars[IONIC_BARS_MAX];
- 	unsigned int num_bars;
-@@ -46,6 +59,8 @@ struct ionic {
- 	DECLARE_BITMAP(intrs, IONIC_INTR_CTRL_REGS_MAX);
- 	struct work_struct nb_work;
- 	struct notifier_block nb;
-+	unsigned int num_vfs;
-+	struct ionic_vf **vf;
- 	struct timer_list watchdog_timer;
- 	int watchdog_period;
- };
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c b/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c
-index 9a9ab8cb2cb3..b9a3e1e1d41e 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c
-@@ -104,10 +104,101 @@ void ionic_bus_unmap_dbpage(struct ionic *ionic, void __iomem *page)
- 	iounmap(page);
- }
- 
-+static void ionic_vf_dealloc(struct ionic *ionic)
-+{
-+	struct ionic_vf *v;
-+	int i;
-+
-+	for (i = ionic->num_vfs - 1; i >= 0; i--) {
-+		v = ionic->vf[i];
-+		dma_unmap_single(ionic->dev, v->stats_pa,
-+				 sizeof(v->stats), DMA_FROM_DEVICE);
-+		kfree(v);
-+		ionic->vf[i] = NULL;
-+	}
-+
-+	ionic->num_vfs = 0;
-+	kfree(ionic->vf);
-+	ionic->vf = NULL;
-+}
-+
-+static int ionic_vf_alloc(struct ionic *ionic, int num_vfs)
-+{
-+	struct ionic_vf *v;
-+	int err, i;
-+
-+	ionic->vf = kcalloc(num_vfs, sizeof(struct ionic_vf *), GFP_KERNEL);
-+	if (!ionic->vf)
-+		return -ENOMEM;
-+
-+	for (i = 0; i < num_vfs; i++) {
-+		v = kzalloc(sizeof(*v), GFP_KERNEL);
-+		if (!v) {
-+			err = -ENOMEM;
-+			goto err_out;
-+		}
-+
-+		v->stats_pa = dma_map_single(ionic->dev, &v->stats,
-+					     sizeof(v->stats), DMA_FROM_DEVICE);
-+		if (dma_mapping_error(ionic->dev, v->stats_pa)) {
-+			err = -ENODEV;
-+			kfree(v);
-+			ionic->vf[i] = NULL;
-+			goto err_out;
-+		}
-+
-+		ionic->vf[i] = v;
-+		ionic->num_vfs++;
-+	}
-+
-+	return 0;
-+
-+err_out:
-+	ionic_vf_dealloc(ionic);
-+	return err;
-+}
-+
-+static int ionic_sriov_configure(struct pci_dev *pdev, int num_vfs)
-+{
-+	struct ionic *ionic = pci_get_drvdata(pdev);
-+	struct device *dev = ionic->dev;
-+	int ret = 0;
-+
-+	down_write(&ionic->vf_op_lock);
-+
-+	if (num_vfs > 0) {
-+		ret = pci_enable_sriov(pdev, num_vfs);
-+		if (ret) {
-+			dev_err(dev, "Cannot enable SRIOV: %d\n", ret);
-+			goto out;
-+		}
-+
-+		ret = ionic_vf_alloc(ionic, num_vfs);
-+		if (ret) {
-+			dev_err(dev, "Cannot alloc VFs: %d\n", ret);
-+			pci_disable_sriov(pdev);
-+			goto out;
-+		}
-+
-+		ret = num_vfs;
-+		goto out;
-+	}
-+
-+	if (num_vfs == 0) {
-+		pci_disable_sriov(pdev);
-+		ionic_vf_dealloc(ionic);
-+	}
-+
-+out:
-+	up_write(&ionic->vf_op_lock);
-+	return ret;
-+}
-+
- static int ionic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- {
- 	struct device *dev = &pdev->dev;
- 	struct ionic *ionic;
-+	int num_vfs;
- 	int err;
- 
- 	ionic = ionic_devlink_alloc(dev);
-@@ -118,6 +209,7 @@ static int ionic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	ionic->dev = dev;
- 	pci_set_drvdata(pdev, ionic);
- 	mutex_init(&ionic->dev_cmd_lock);
-+	init_rwsem(&ionic->vf_op_lock);
- 
- 	/* Query system for DMA addressing limitation for the device. */
- 	err = dma_set_mask_and_coherent(dev, DMA_BIT_MASK(IONIC_ADDR_LEN));
-@@ -206,6 +298,14 @@ static int ionic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- 		goto err_out_free_lifs;
- 	}
- 
-+	num_vfs = pci_num_vf(pdev);
-+	if (num_vfs) {
-+		dev_info(dev, "%d VFs found already enabled\n", num_vfs);
-+		err = ionic_vf_alloc(ionic, num_vfs);
-+		if (err)
-+			dev_err(dev, "Cannot enable existing VFs: %d\n", err);
-+	}
-+
- 	err = ionic_lifs_register(ionic);
- 	if (err) {
- 		dev_err(dev, "Cannot register LIFs: %d, aborting\n", err);
-@@ -279,6 +379,7 @@ static struct pci_driver ionic_driver = {
- 	.id_table = ionic_id_table,
- 	.probe = ionic_probe,
- 	.remove = ionic_remove,
-+	.sriov_configure = ionic_sriov_configure,
- };
- 
- int ionic_bus_register_driver(void)
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_dev.c b/drivers/net/ethernet/pensando/ionic/ionic_dev.c
-index 5f9d2ec70446..87f82f36812f 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_dev.c
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_dev.c
-@@ -286,6 +286,64 @@ void ionic_dev_cmd_port_pause(struct ionic_dev *idev, u8 pause_type)
- 	ionic_dev_cmd_go(idev, &cmd);
- }
- 
-+/* VF commands */
-+int ionic_set_vf_config(struct ionic *ionic, int vf, u8 attr, u8 *data)
-+{
-+	union ionic_dev_cmd cmd = {
-+		.vf_setattr.opcode = IONIC_CMD_VF_SETATTR,
-+		.vf_setattr.attr = attr,
-+		.vf_setattr.vf_index = vf,
-+	};
-+	int err;
-+
-+	switch (attr) {
-+	case IONIC_VF_ATTR_SPOOFCHK:
-+		cmd.vf_setattr.spoofchk = *data;
-+		dev_dbg(ionic->dev, "%s: vf %d spoof %d\n",
-+			__func__, vf, *data);
-+		break;
-+	case IONIC_VF_ATTR_TRUST:
-+		cmd.vf_setattr.trust = *data;
-+		dev_dbg(ionic->dev, "%s: vf %d trust %d\n",
-+			__func__, vf, *data);
-+		break;
-+	case IONIC_VF_ATTR_LINKSTATE:
-+		cmd.vf_setattr.linkstate = *data;
-+		dev_dbg(ionic->dev, "%s: vf %d linkstate %d\n",
-+			__func__, vf, *data);
-+		break;
-+	case IONIC_VF_ATTR_MAC:
-+		ether_addr_copy(cmd.vf_setattr.macaddr, data);
-+		dev_dbg(ionic->dev, "%s: vf %d macaddr %pM\n",
-+			__func__, vf, data);
-+		break;
-+	case IONIC_VF_ATTR_VLAN:
-+		cmd.vf_setattr.vlanid = cpu_to_le16(*(u16 *)data);
-+		dev_dbg(ionic->dev, "%s: vf %d vlan %d\n",
-+			__func__, vf, *(u16 *)data);
-+		break;
-+	case IONIC_VF_ATTR_RATE:
-+		cmd.vf_setattr.maxrate = cpu_to_le32(*(u32 *)data);
-+		dev_dbg(ionic->dev, "%s: vf %d maxrate %d\n",
-+			__func__, vf, *(u32 *)data);
-+		break;
-+	case IONIC_VF_ATTR_STATSADDR:
-+		cmd.vf_setattr.stats_pa = cpu_to_le64(*(u64 *)data);
-+		dev_dbg(ionic->dev, "%s: vf %d stats_pa 0x%08llx\n",
-+			__func__, vf, *(u64 *)data);
-+		break;
-+	default:
-+		return -EINVAL;
-+	}
-+
-+	mutex_lock(&ionic->dev_cmd_lock);
-+	ionic_dev_cmd_go(&ionic->idev, &cmd);
-+	err = ionic_dev_cmd_wait(ionic, DEVCMD_TIMEOUT);
-+	mutex_unlock(&ionic->dev_cmd_lock);
-+
-+	return err;
-+}
-+
- /* LIF commands */
- void ionic_dev_cmd_lif_identify(struct ionic_dev *idev, u8 type, u8 ver)
- {
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_dev.h b/drivers/net/ethernet/pensando/ionic/ionic_dev.h
-index 4665c5dc5324..7838e342c4fd 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_dev.h
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_dev.h
-@@ -113,6 +113,12 @@ static_assert(sizeof(struct ionic_rxq_desc) == 16);
- static_assert(sizeof(struct ionic_rxq_sg_desc) == 128);
- static_assert(sizeof(struct ionic_rxq_comp) == 16);
- 
-+/* SR/IOV */
-+static_assert(sizeof(struct ionic_vf_setattr_cmd) == 64);
-+static_assert(sizeof(struct ionic_vf_setattr_comp) == 16);
-+static_assert(sizeof(struct ionic_vf_getattr_cmd) == 64);
-+static_assert(sizeof(struct ionic_vf_getattr_comp) == 16);
-+
- struct ionic_devinfo {
- 	u8 asic_type;
- 	u8 asic_rev;
-@@ -275,6 +281,7 @@ void ionic_dev_cmd_port_autoneg(struct ionic_dev *idev, u8 an_enable);
- void ionic_dev_cmd_port_fec(struct ionic_dev *idev, u8 fec_type);
- void ionic_dev_cmd_port_pause(struct ionic_dev *idev, u8 pause_type);
- 
-+int ionic_set_vf_config(struct ionic *ionic, int vf, u8 attr, u8 *data);
- void ionic_dev_cmd_lif_identify(struct ionic_dev *idev, u8 type, u8 ver);
- void ionic_dev_cmd_lif_init(struct ionic_dev *idev, u16 lif_index,
- 			    dma_addr_t addr);
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_lif.c b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-index 60fd14df49d7..6cd6ac1fff81 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-@@ -1616,6 +1616,202 @@ int ionic_stop(struct net_device *netdev)
- 	return err;
- }
- 
-+static int ionic_get_vf_config(struct net_device *netdev,
-+			       int vf, struct ifla_vf_info *ivf)
-+{
-+	struct ionic_lif *lif = netdev_priv(netdev);
-+	struct ionic *ionic = lif->ionic;
-+
-+	if (vf >= ionic->num_vfs)
-+		return -EINVAL;
-+
-+	down_read(&ionic->vf_op_lock);
-+	ivf->vf           = vf;
-+	ivf->vlan         = ionic->vf[vf]->vlanid;
-+	ivf->qos	  = 0;
-+	ivf->spoofchk     = ionic->vf[vf]->spoofchk;
-+	ivf->linkstate    = ionic->vf[vf]->linkstate;
-+	ivf->max_tx_rate  = ionic->vf[vf]->maxrate;
-+	ivf->trusted      = ionic->vf[vf]->trusted;
-+	ether_addr_copy(ivf->mac, ionic->vf[vf]->macaddr);
-+	up_read(&ionic->vf_op_lock);
-+
-+	return 0;
-+}
-+
-+static int ionic_get_vf_stats(struct net_device *netdev, int vf,
-+			      struct ifla_vf_stats *vf_stats)
-+{
-+	struct ionic_lif *lif = netdev_priv(netdev);
-+	struct ionic *ionic = lif->ionic;
-+	struct ionic_lif_stats *vs;
-+
-+	if (vf >= ionic->num_vfs)
-+		return -EINVAL;
-+
-+	memset(vf_stats, 0, sizeof(*vf_stats));
-+	vs = &ionic->vf[vf]->stats;
-+
-+	down_read(&ionic->vf_op_lock);
-+	vf_stats->rx_packets = le64_to_cpu(vs->rx_ucast_packets);
-+	vf_stats->tx_packets = le64_to_cpu(vs->tx_ucast_packets);
-+	vf_stats->rx_bytes   = le64_to_cpu(vs->rx_ucast_bytes);
-+	vf_stats->tx_bytes   = le64_to_cpu(vs->tx_ucast_bytes);
-+	vf_stats->broadcast  = le64_to_cpu(vs->rx_bcast_packets);
-+	vf_stats->multicast  = le64_to_cpu(vs->rx_mcast_packets);
-+	vf_stats->rx_dropped = le64_to_cpu(vs->rx_ucast_drop_packets) +
-+			       le64_to_cpu(vs->rx_mcast_drop_packets) +
-+			       le64_to_cpu(vs->rx_bcast_drop_packets);
-+	vf_stats->tx_dropped = le64_to_cpu(vs->tx_ucast_drop_packets) +
-+			       le64_to_cpu(vs->tx_mcast_drop_packets) +
-+			       le64_to_cpu(vs->tx_bcast_drop_packets);
-+	up_read(&ionic->vf_op_lock);
-+
-+	return 0;
-+}
-+
-+static int ionic_set_vf_mac(struct net_device *netdev, int vf, u8 *mac)
-+{
-+	struct ionic_lif *lif = netdev_priv(netdev);
-+	struct ionic *ionic = lif->ionic;
-+	int ret;
-+
-+	if (vf >= ionic->num_vfs)
-+		return -EINVAL;
-+
-+	if (!(is_zero_ether_addr(mac) || is_valid_ether_addr(mac)))
-+		return -EINVAL;
-+
-+	down_write(&ionic->vf_op_lock);
-+	ret = ionic_set_vf_config(ionic, vf, IONIC_VF_ATTR_MAC, mac);
-+	if (!ret)
-+		ether_addr_copy(ionic->vf[vf]->macaddr, mac);
-+	up_write(&ionic->vf_op_lock);
-+
-+	return ret;
-+}
-+
-+static int ionic_set_vf_vlan(struct net_device *netdev, int vf, u16 vlan,
-+			     u8 qos, __be16 proto)
-+{
-+	struct ionic_lif *lif = netdev_priv(netdev);
-+	struct ionic *ionic = lif->ionic;
-+	int ret;
-+
-+	if (vf >= ionic->num_vfs)
-+		return -EINVAL;
-+
-+	/* until someday when we support qos */
-+	if (qos)
-+		return -EINVAL;
-+
-+	if (vlan > 4095)
-+		return -EINVAL;
-+
-+	if (proto != htons(ETH_P_8021Q))
-+		return -EPROTONOSUPPORT;
-+
-+	down_write(&ionic->vf_op_lock);
-+	ret = ionic_set_vf_config(ionic, vf, IONIC_VF_ATTR_VLAN, (u8 *)&vlan);
-+	if (!ret)
-+		ionic->vf[vf]->vlanid = vlan;
-+	up_write(&ionic->vf_op_lock);
-+
-+	return ret;
-+}
-+
-+static int ionic_set_vf_rate(struct net_device *netdev, int vf,
-+			     int tx_min, int tx_max)
-+{
-+	struct ionic_lif *lif = netdev_priv(netdev);
-+	struct ionic *ionic = lif->ionic;
-+	int ret;
-+
-+	if (vf >= ionic->num_vfs)
-+		return -EINVAL;
-+
-+	/* setting the min just seems silly */
-+	if (tx_min)
-+		return -EINVAL;
-+
-+	down_write(&ionic->vf_op_lock);
-+	ret = ionic_set_vf_config(ionic, vf, IONIC_VF_ATTR_RATE, (u8 *)&tx_max);
-+	if (!ret)
-+		lif->ionic->vf[vf]->maxrate = tx_max;
-+	up_write(&ionic->vf_op_lock);
-+
-+	return ret;
-+}
-+
-+static int ionic_set_vf_spoofchk(struct net_device *netdev, int vf, bool set)
-+{
-+	struct ionic_lif *lif = netdev_priv(netdev);
-+	struct ionic *ionic = lif->ionic;
-+	u8 data = set;  /* convert to u8 for config */
-+	int ret;
-+
-+	if (vf >= ionic->num_vfs)
-+		return -EINVAL;
-+
-+	down_write(&ionic->vf_op_lock);
-+	ret = ionic_set_vf_config(ionic, vf, IONIC_VF_ATTR_SPOOFCHK, &data);
-+	if (!ret)
-+		ionic->vf[vf]->spoofchk = data;
-+	up_write(&ionic->vf_op_lock);
-+
-+	return ret;
-+}
-+
-+static int ionic_set_vf_trust(struct net_device *netdev, int vf, bool set)
-+{
-+	struct ionic_lif *lif = netdev_priv(netdev);
-+	struct ionic *ionic = lif->ionic;
-+	u8 data = set;  /* convert to u8 for config */
-+	int ret;
-+
-+	if (vf >= ionic->num_vfs)
-+		return -EINVAL;
-+
-+	down_write(&ionic->vf_op_lock);
-+	ret = ionic_set_vf_config(ionic, vf, IONIC_VF_ATTR_TRUST, &data);
-+	if (!ret)
-+		ionic->vf[vf]->trusted = data;
-+	up_write(&ionic->vf_op_lock);
-+
-+	return ret;
-+}
-+
-+static int ionic_set_vf_link_state(struct net_device *netdev, int vf, int set)
-+{
-+	struct ionic_lif *lif = netdev_priv(netdev);
-+	struct ionic *ionic = lif->ionic;
-+	u8 data;
-+	int ret;
-+
-+	if (vf >= ionic->num_vfs)
-+		return -EINVAL;
-+
-+	switch (set) {
-+	case IFLA_VF_LINK_STATE_AUTO:
-+		data = IONIC_VF_LINK_STATUS_AUTO;
-+		break;
-+	case IFLA_VF_LINK_STATE_ENABLE:
-+		data = IONIC_VF_LINK_STATUS_UP;
-+		break;
-+	case IFLA_VF_LINK_STATE_DISABLE:
-+		data = IONIC_VF_LINK_STATUS_DOWN;
-+		break;
-+	}
-+
-+	down_write(&ionic->vf_op_lock);
-+	ret = ionic_set_vf_config(ionic, vf, IONIC_VF_ATTR_LINKSTATE, &data);
-+	if (!ret)
-+		ionic->vf[vf]->linkstate = set;
-+	up_write(&ionic->vf_op_lock);
-+
-+	return ret;
-+}
-+
- static const struct net_device_ops ionic_netdev_ops = {
- 	.ndo_open               = ionic_open,
- 	.ndo_stop               = ionic_stop,
-@@ -1629,6 +1825,14 @@ static const struct net_device_ops ionic_netdev_ops = {
- 	.ndo_change_mtu         = ionic_change_mtu,
- 	.ndo_vlan_rx_add_vid    = ionic_vlan_rx_add_vid,
- 	.ndo_vlan_rx_kill_vid   = ionic_vlan_rx_kill_vid,
-+	.ndo_set_vf_vlan	= ionic_set_vf_vlan,
-+	.ndo_set_vf_trust	= ionic_set_vf_trust,
-+	.ndo_set_vf_mac		= ionic_set_vf_mac,
-+	.ndo_set_vf_rate	= ionic_set_vf_rate,
-+	.ndo_set_vf_spoofchk	= ionic_set_vf_spoofchk,
-+	.ndo_get_vf_config	= ionic_get_vf_config,
-+	.ndo_set_vf_link_state	= ionic_set_vf_link_state,
-+	.ndo_get_vf_stats       = ionic_get_vf_stats,
- };
- 
- int ionic_reset_queues(struct ionic_lif *lif)
-@@ -1961,18 +2165,22 @@ static int ionic_station_set(struct ionic_lif *lif)
- 	if (err)
- 		return err;
- 
-+	if (is_zero_ether_addr(ctx.comp.lif_getattr.mac))
-+		return 0;
-+
- 	memcpy(addr.sa_data, ctx.comp.lif_getattr.mac, netdev->addr_len);
- 	addr.sa_family = AF_INET;
- 	err = eth_prepare_mac_addr_change(netdev, &addr);
--	if (err)
--		return err;
--
--	if (!is_zero_ether_addr(netdev->dev_addr)) {
--		netdev_dbg(lif->netdev, "deleting station MAC addr %pM\n",
--			   netdev->dev_addr);
--		ionic_lif_addr(lif, netdev->dev_addr, false);
-+	if (err) {
-+		netdev_warn(lif->netdev, "ignoring bad MAC addr from NIC %pM\n",
-+			    addr.sa_data);
-+		return 0;
- 	}
- 
-+	netdev_dbg(lif->netdev, "deleting station MAC addr %pM\n",
-+		   netdev->dev_addr);
-+	ionic_lif_addr(lif, netdev->dev_addr, false);
-+
- 	eth_commit_mac_addr_change(netdev, &addr);
- 	netdev_dbg(lif->netdev, "adding station MAC addr %pM\n",
- 		   netdev->dev_addr);
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_main.c b/drivers/net/ethernet/pensando/ionic/ionic_main.c
-index 3590ea7fd88a..837b85f2fed9 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_main.c
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_main.c
-@@ -165,6 +165,10 @@ static const char *ionic_opcode_to_str(enum ionic_cmd_opcode opcode)
- 		return "IONIC_CMD_FW_DOWNLOAD";
- 	case IONIC_CMD_FW_CONTROL:
- 		return "IONIC_CMD_FW_CONTROL";
-+	case IONIC_CMD_VF_GETATTR:
-+		return "IONIC_CMD_VF_GETATTR";
-+	case IONIC_CMD_VF_SETATTR:
-+		return "IONIC_CMD_VF_SETATTR";
- 	default:
- 		return "DEVCMD_UNKNOWN";
- 	}
--- 
-2.17.1
-
+DQoNCk9uIDEyLzExLzE5IDI6MzMgUE0sIEJyaWFuIFZhenF1ZXogd3JvdGU6DQo+IEZyb206IFlv
+bmdob25nIFNvbmcgPHloc0BmYi5jb20+DQo+IA0KPiBodGFiIGNhbid0IHVzZSBnZW5lcmljIGJh
+dGNoIHN1cHBvcnQgZHVlIHNvbWUgcHJvYmxlbWF0aWMgYmVoYXZpb3Vycw0KPiBpbmhlcmVudCB0
+byB0aGUgZGF0YSBzdHJ1Y3RyZSwgaS5lLiB3aGlsZSBpdGVyYXRpbmcgdGhlIGJwZiBtYXAgIGEN
+Cj4gY29uY3VycmVudCBwcm9ncmFtIG1pZ2h0IGRlbGV0ZSB0aGUgbmV4dCBlbnRyeSB0aGF0IGJh
+dGNoIHdhcyBhYm91dCB0bw0KPiB1c2UsIGluIHRoYXQgY2FzZSB0aGVyZSdzIG5vIGVhc3kgc29s
+dXRpb24gdG8gcmV0cmlldmUgdGhlIG5leHQgZW50cnksDQo+IHRoZSBpc3N1ZSBoYXMgYmVlbiBk
+aXNjdXNzZWQgbXVsdGlwbGUgdGltZXMgKHNlZSBbMV0gYW5kIFsyXSkuDQo+IA0KPiBUaGUgb25s
+eSB3YXkgaG1hcCBjYW4gYmUgdHJhdmVyc2VkIHdpdGhvdXQgdGhlIHByb2JsZW0gcHJldmlvdXNs
+eQ0KPiBleHBvc2VkIGlzIGJ5IG1ha2luZyBzdXJlIHRoYXQgdGhlIG1hcCBpcyB0cmF2ZXJzaW5n
+IGVudGlyZSBidWNrZXRzLg0KPiBUaGlzIGNvbW1pdCBpbXBsZW1lbnRzIHRob3NlIHN0cmljdCBy
+ZXF1aXJlbWVudHMgZm9yIGhtYXAsIHRoZQ0KPiBpbXBsZW1lbnRhdGlvbiBmb2xsb3dzIHRoZSBz
+YW1lIGludGVyYWN0aW9uIHRoYXQgZ2VuZXJpYyBzdXBwb3J0IHdpdGgNCj4gc29tZSBleGNlcHRp
+b25zOg0KPiANCj4gICAtIElmIGtleXMvdmFsdWVzIGJ1ZmZlciBhcmUgbm90IGJpZyBlbm91Z2gg
+dG8gdHJhdmVyc2UgYSBidWNrZXQsDQo+ICAgICBFTk9TUEMgd2lsbCBiZSByZXR1cm5lZC4NCj4g
+ICAtIG91dF9iYXRjaCBjb250YWlucyB0aGUgdmFsdWUgb2YgdGhlIG5leHQgYnVja2V0IGluIHRo
+ZSBpdGVyYXRpb24sIG5vdA0KPiAgICAgdGhlIG5leHQga2V5LCBidXQgdGhpcyBpcyB0cmFuc3Bh
+cmVudCBmb3IgdGhlIHVzZXIgc2luY2UgdGhlIHVzZXINCj4gICAgIHNob3VsZCBuZXZlciB1c2Ug
+b3V0X2JhdGNoIGZvciBvdGhlciB0aGFuIGJwZiBiYXRjaCBzeXNjYWxscy4NCj4gDQo+IE5vdGUg
+dGhhdCBvbmx5IGxvb2t1cCBhbmQgbG9va3VwX2FuZF9kZWxldGUgYmF0Y2ggb3BzIHJlcXVpcmUg
+dGhlIGhtYXANCj4gc3BlY2lmaWMgaW1wbGVtZW50YXRpb24sIHVwZGF0ZS9kZWxldGUgYmF0Y2gg
+b3BzIGNhbiBiZSB0aGUgZ2VuZXJpYw0KPiBvbmVzLg0KPiANCj4gWzFdIGh0dHBzOi8vbG9yZS5r
+ZXJuZWwub3JnL2JwZi8yMDE5MDcyNDE2NTgwMy44NzQ3MC0xLWJyaWFudnZAZ29vZ2xlLmNvbS8N
+Cj4gWzJdIGh0dHBzOi8vbG9yZS5rZXJuZWwub3JnL2JwZi8yMDE5MDkwNjIyNTQzNC4zNjM1NDIx
+LTEteWhzQGZiLmNvbS8NCj4gDQo+IFNpZ25lZC1vZmYtYnk6IFlvbmdob25nIFNvbmcgPHloc0Bm
+Yi5jb20+DQo+IFNpZ25lZC1vZmYtYnk6IEJyaWFuIFZhenF1ZXogPGJyaWFudnZAZ29vZ2xlLmNv
+bT4NCj4gLS0tDQo+ICAga2VybmVsL2JwZi9oYXNodGFiLmMgfCAyNDIgKysrKysrKysrKysrKysr
+KysrKysrKysrKysrKysrKysrKysrKysrKysrKw0KPiAgIDEgZmlsZSBjaGFuZ2VkLCAyNDIgaW5z
+ZXJ0aW9ucygrKQ0KPiANCj4gZGlmZiAtLWdpdCBhL2tlcm5lbC9icGYvaGFzaHRhYi5jIGIva2Vy
+bmVsL2JwZi9oYXNodGFiLmMNCj4gaW5kZXggMjIwNjZhNjJjOGM5Ny4uZmFjMTA3YmRhZjllYyAx
+MDA2NDQNCj4gLS0tIGEva2VybmVsL2JwZi9oYXNodGFiLmMNCj4gKysrIGIva2VybmVsL2JwZi9o
+YXNodGFiLmMNCj4gQEAgLTE3LDYgKzE3LDE3IEBADQo+ICAgCShCUEZfRl9OT19QUkVBTExPQyB8
+IEJQRl9GX05PX0NPTU1PTl9MUlUgfCBCUEZfRl9OVU1BX05PREUgfAlcDQo+ICAgCSBCUEZfRl9B
+Q0NFU1NfTUFTSyB8IEJQRl9GX1pFUk9fU0VFRCkNCj4gICANCj4gKyNkZWZpbmUgQkFUQ0hfT1BT
+KF9uYW1lKQkJCVwNCj4gKwkubWFwX2xvb2t1cF9iYXRjaCA9CQkJXA0KPiArCV9uYW1lIyNfbWFw
+X2xvb2t1cF9iYXRjaCwJCVwNCj4gKwkubWFwX2xvb2t1cF9hbmRfZGVsZXRlX2JhdGNoID0JCVwN
+Cj4gKwlfbmFtZSMjX21hcF9sb29rdXBfYW5kX2RlbGV0ZV9iYXRjaCwJXA0KPiArCS5tYXBfdXBk
+YXRlX2JhdGNoID0JCQlcDQo+ICsJZ2VuZXJpY19tYXBfdXBkYXRlX2JhdGNoLAkJXA0KPiArCS5t
+YXBfZGVsZXRlX2JhdGNoID0JCQlcDQo+ICsJZ2VuZXJpY19tYXBfZGVsZXRlX2JhdGNoDQo+ICsN
+Cj4gKw0KPiAgIHN0cnVjdCBidWNrZXQgew0KPiAgIAlzdHJ1Y3QgaGxpc3RfbnVsbHNfaGVhZCBo
+ZWFkOw0KPiAgIAlyYXdfc3BpbmxvY2tfdCBsb2NrOw0KPiBAQCAtMTIzMiw2ICsxMjQzLDIzMyBA
+QCBzdGF0aWMgdm9pZCBodGFiX21hcF9zZXFfc2hvd19lbGVtKHN0cnVjdCBicGZfbWFwICptYXAs
+IHZvaWQgKmtleSwNCj4gICAJcmN1X3JlYWRfdW5sb2NrKCk7DQo+ICAgfQ0KPiAgIA0KPiArc3Rh
+dGljIGludA0KPiArX19odGFiX21hcF9sb29rdXBfYW5kX2RlbGV0ZV9iYXRjaChzdHJ1Y3QgYnBm
+X21hcCAqbWFwLA0KPiArCQkJCSAgIGNvbnN0IHVuaW9uIGJwZl9hdHRyICphdHRyLA0KPiArCQkJ
+CSAgIHVuaW9uIGJwZl9hdHRyIF9fdXNlciAqdWF0dHIsDQo+ICsJCQkJICAgYm9vbCBkb19kZWxl
+dGUsIGJvb2wgaXNfbHJ1X21hcCwNCj4gKwkJCQkgICBib29sIGlzX3BlcmNwdSkNCj4gK3sNCj4g
+KwlzdHJ1Y3QgYnBmX2h0YWIgKmh0YWIgPSBjb250YWluZXJfb2YobWFwLCBzdHJ1Y3QgYnBmX2h0
+YWIsIG1hcCk7DQo+ICsJdTMyIGJ1Y2tldF9jbnQsIHRvdGFsLCBrZXlfc2l6ZSwgdmFsdWVfc2l6
+ZSwgcm91bmR1cF9rZXlfc2l6ZTsNCj4gKwl2b2lkICprZXlzID0gTlVMTCwgKnZhbHVlcyA9IE5V
+TEwsICp2YWx1ZSwgKmRzdF9rZXksICpkc3RfdmFsOw0KPiArCXZvaWQgX191c2VyICp1dmFsdWVz
+ID0gdTY0X3RvX3VzZXJfcHRyKGF0dHItPmJhdGNoLnZhbHVlcyk7DQo+ICsJdm9pZCBfX3VzZXIg
+KnVrZXlzID0gdTY0X3RvX3VzZXJfcHRyKGF0dHItPmJhdGNoLmtleXMpOw0KPiArCXZvaWQgKnVi
+YXRjaCA9IHU2NF90b191c2VyX3B0cihhdHRyLT5iYXRjaC5pbl9iYXRjaCk7DQo+ICsJdTY0IGVs
+ZW1fbWFwX2ZsYWdzLCBtYXBfZmxhZ3M7DQo+ICsJc3RydWN0IGhsaXN0X251bGxzX2hlYWQgKmhl
+YWQ7DQo+ICsJdTMyIGJhdGNoLCBtYXhfY291bnQsIHNpemU7DQo+ICsJc3RydWN0IGhsaXN0X251
+bGxzX25vZGUgKm47DQo+ICsJdW5zaWduZWQgbG9uZyBmbGFnczsNCj4gKwlzdHJ1Y3QgaHRhYl9l
+bGVtICpsOw0KPiArCXN0cnVjdCBidWNrZXQgKmI7DQo+ICsJaW50IHJldCA9IDA7DQo+ICsNCj4g
+KwltYXhfY291bnQgPSBhdHRyLT5iYXRjaC5jb3VudDsNCj4gKwlpZiAoIW1heF9jb3VudCkNCj4g
+KwkJcmV0dXJuIDA7DQo+ICsNCj4gKwllbGVtX21hcF9mbGFncyA9IGF0dHItPmJhdGNoLmVsZW1f
+ZmxhZ3M7DQo+ICsJaWYgKChlbGVtX21hcF9mbGFncyAmIH5CUEZfRl9MT0NLKSB8fA0KPiArCSAg
+ICAoKGVsZW1fbWFwX2ZsYWdzICYgQlBGX0ZfTE9DSykgJiYgIW1hcF92YWx1ZV9oYXNfc3Bpbl9s
+b2NrKG1hcCkpKQ0KPiArCQlyZXR1cm4gLUVJTlZBTDsNCj4gKw0KPiArCW1hcF9mbGFncyA9IGF0
+dHItPmJhdGNoLmZsYWdzOw0KPiArCWlmIChtYXBfZmxhZ3MpDQo+ICsJCXJldHVybiAtRUlOVkFM
+Ow0KPiArDQo+ICsJYmF0Y2ggPSAwOw0KPiArCWlmICh1YmF0Y2ggJiYgY29weV9mcm9tX3VzZXIo
+JmJhdGNoLCB1YmF0Y2gsIHNpemVvZihiYXRjaCkpKQ0KPiArCQlyZXR1cm4gLUVGQVVMVDsNCj4g
+Kw0KPiArCWlmIChiYXRjaCA+PSBodGFiLT5uX2J1Y2tldHMpDQo+ICsJCXJldHVybiAtRU5PRU5U
+Ow0KPiArDQo+ICsJLyogV2UgY2Fubm90IGRvIGNvcHlfZnJvbV91c2VyIG9yIGNvcHlfdG9fdXNl
+ciBpbnNpZGUNCj4gKwkgKiB0aGUgcmN1X3JlYWRfbG9jay4gQWxsb2NhdGUgZW5vdWdoIHNwYWNl
+IGhlcmUuDQo+ICsJICovDQo+ICsJa2V5X3NpemUgPSBodGFiLT5tYXAua2V5X3NpemU7DQo+ICsJ
+cm91bmR1cF9rZXlfc2l6ZSA9IHJvdW5kX3VwKGh0YWItPm1hcC5rZXlfc2l6ZSwgOCk7DQo+ICsJ
+dmFsdWVfc2l6ZSA9IGh0YWItPm1hcC52YWx1ZV9zaXplOw0KPiArCXNpemUgPSByb3VuZF91cCh2
+YWx1ZV9zaXplLCA4KTsNCj4gKwlpZiAoaXNfcGVyY3B1KQ0KPiArCQl2YWx1ZV9zaXplID0gc2l6
+ZSAqIG51bV9wb3NzaWJsZV9jcHVzKCk7DQo+ICsJa2V5cyA9IGt2bWFsbG9jKGtleV9zaXplLCBH
+RlBfVVNFUiB8IF9fR0ZQX05PV0FSTik7DQo+ICsJdmFsdWVzID0ga3ZtYWxsb2ModmFsdWVfc2l6
+ZSwgR0ZQX1VTRVIgfCBfX0dGUF9OT1dBUk4pOw0KPiArCWlmICgha2V5cyB8fCAhdmFsdWVzKSB7
+DQo+ICsJCXJldCA9IC1FTk9NRU07DQo+ICsJCWdvdG8gb3V0Ow0KPiArCX0NCj4gKw0KPiArCWRz
+dF9rZXkgPSBrZXlzOw0KPiArCWRzdF92YWwgPSB2YWx1ZXM7DQo+ICsJdG90YWwgPSAwOw0KPiAr
+DQo+ICsJcHJlZW1wdF9kaXNhYmxlKCk7DQo+ICsJdGhpc19jcHVfaW5jKGJwZl9wcm9nX2FjdGl2
+ZSk7DQo+ICsJcmN1X3JlYWRfbG9jaygpOw0KPiArDQo+ICthZ2FpbjoNCj4gKwliID0gJmh0YWIt
+PmJ1Y2tldHNbYmF0Y2hdOw0KPiArCWhlYWQgPSAmYi0+aGVhZDsNCj4gKwlyYXdfc3Bpbl9sb2Nr
+X2lycXNhdmUoJmItPmxvY2ssIGZsYWdzKTsNCj4gKw0KPiArCWJ1Y2tldF9jbnQgPSAwOw0KPiAr
+CWhsaXN0X251bGxzX2Zvcl9lYWNoX2VudHJ5X3JjdShsLCBuLCBoZWFkLCBoYXNoX25vZGUpDQo+
+ICsJCWJ1Y2tldF9jbnQrKzsNCj4gKw0KPiArCWlmIChidWNrZXRfY250ID4gKG1heF9jb3VudCAt
+IHRvdGFsKSkgew0KPiArCQlpZiAodG90YWwgPT0gMCkNCj4gKwkJCXJldCA9IC1FTk9TUEM7DQo+
+ICsJCWdvdG8gYWZ0ZXJfbG9vcDsNCj4gKwl9DQo+ICsNCj4gKwlobGlzdF9udWxsc19mb3JfZWFj
+aF9lbnRyeV9zYWZlKGwsIG4sIGhlYWQsIGhhc2hfbm9kZSkgew0KPiArCQltZW1jcHkoZHN0X2tl
+eSwgbC0+a2V5LCBrZXlfc2l6ZSk7DQo+ICsNCj4gKwkJaWYgKGlzX3BlcmNwdSkgew0KPiArCQkJ
+aW50IG9mZiA9IDAsIGNwdTsNCj4gKwkJCXZvaWQgX19wZXJjcHUgKnBwdHI7DQo+ICsNCj4gKwkJ
+CXBwdHIgPSBodGFiX2VsZW1fZ2V0X3B0cihsLCBtYXAtPmtleV9zaXplKTsNCj4gKwkJCWZvcl9l
+YWNoX3Bvc3NpYmxlX2NwdShjcHUpIHsNCj4gKwkJCQlicGZfbG9uZ19tZW1jcHkoZHN0X3ZhbCAr
+IG9mZiwNCj4gKwkJCQkJCXBlcl9jcHVfcHRyKHBwdHIsIGNwdSksIHNpemUpOw0KPiArCQkJCW9m
+ZiArPSBzaXplOw0KPiArCQkJfQ0KPiArCQl9IGVsc2Ugew0KPiArCQkJdmFsdWUgPSBsLT5rZXkg
+KyByb3VuZHVwX2tleV9zaXplOw0KPiArCQkJaWYgKGVsZW1fbWFwX2ZsYWdzICYgQlBGX0ZfTE9D
+SykNCj4gKwkJCQljb3B5X21hcF92YWx1ZV9sb2NrZWQobWFwLCBkc3RfdmFsLCB2YWx1ZSwNCj4g
+KwkJCQkJCSAgICAgIHRydWUpOw0KPiArCQkJZWxzZQ0KPiArCQkJCWNvcHlfbWFwX3ZhbHVlKG1h
+cCwgZHN0X3ZhbCwgdmFsdWUpOw0KPiArCQkJY2hlY2tfYW5kX2luaXRfbWFwX2xvY2sobWFwLCBk
+c3RfdmFsKTsNCj4gKwkJfQ0KPiArCQlpZiAoZG9fZGVsZXRlKSB7DQo+ICsJCQlobGlzdF9udWxs
+c19kZWxfcmN1KCZsLT5oYXNoX25vZGUpOw0KPiArCQkJaWYgKGlzX2xydV9tYXApDQo+ICsJCQkJ
+YnBmX2xydV9wdXNoX2ZyZWUoJmh0YWItPmxydSwgJmwtPmxydV9ub2RlKTsNCj4gKwkJCWVsc2UN
+Cj4gKwkJCQlmcmVlX2h0YWJfZWxlbShodGFiLCBsKTsNCj4gKwkJfQ0KPiArCQlpZiAoY29weV90
+b191c2VyKHVrZXlzICsgdG90YWwgKiBrZXlfc2l6ZSwga2V5cywga2V5X3NpemUpIHx8DQo+ICsJ
+CSAgIGNvcHlfdG9fdXNlcih1dmFsdWVzICsgdG90YWwgKiB2YWx1ZV9zaXplLCB2YWx1ZXMsDQo+
+ICsJCSAgIHZhbHVlX3NpemUpKSB7DQoNCldlIGNhbm5vdCBkbyBjb3B5X3RvX3VzZXIgaW5zaWRl
+IGF0b21pYyByZWdpb24gd2hlcmUgaXJxIGlzIGRpc2FibGVkDQp3aXRoIHJhd19zcGluX2xvY2tf
+aXJxc2F2ZSgpLiBXZSBjb3VsZCBkbyB0aGUgZm9sbG93aW5nOg0KICAgIC4gd2Uga2FsbG9jIG1l
+bW9yeSBiZWZvcmUgcHJlZW1wdF9kaXNhYmxlKCkgd2l0aCB0aGUgY3VycmVudCBjb3VudA0KICAg
+ICAgb2YgYnVja2V0IHNpemUuDQogICAgLiBpbnNpZGUgdGhlIHJhd19zcGluX2xvY2tfaXJxc2F2
+ZSgpIHJlZ2lvbiwgd2UgY2FuIGRvIGNvcHkgdG8ga2VybmVsDQogICAgICBtZW1vcnkuDQogICAg
+LiBpbnNpZGUgdGhlIHJhd19zcGluX2xvY2tfaXJxc2F2ZSgpIHJlZ2lvbiwgaWYgdGhlIGJ1Y2tl
+dCBzaXplDQogICAgICBjaGFuZ2VzLCB3ZSBjYW4gaGF2ZSBhIGZldyByZXRyaWVzIHRvIGluY3Jl
+YXNlIGFsbG9jYXRpb24gc2l6ZQ0KICAgICAgYmVmb3JlIGdpdmluZyB1cC4NCkRvIHlvdSB0aGlu
+ayB0aGlzIG1heSB3b3JrPw0KDQo+ICsJCQlyZXQgPSAtRUZBVUxUOw0KPiArCQkJZ290byBhZnRl
+cl9sb29wOw0KPiArCQl9DQo+ICsJCXRvdGFsKys7DQo+ICsJfQ0KPiArDQo+ICsJYmF0Y2grKzsN
+Cj4gKwlpZiAoYmF0Y2ggPj0gaHRhYi0+bl9idWNrZXRzKSB7DQo+ICsJCXJldCA9IC1FTk9FTlQ7
+DQo+ICsJCWdvdG8gYWZ0ZXJfbG9vcDsNCj4gKwl9DQo+ICsNCj4gKwlyYXdfc3Bpbl91bmxvY2tf
+aXJxcmVzdG9yZSgmYi0+bG9jaywgZmxhZ3MpOw0KPiArCWdvdG8gYWdhaW47DQo+ICsNCj4gK2Fm
+dGVyX2xvb3A6DQo+ICsJcmF3X3NwaW5fdW5sb2NrX2lycXJlc3RvcmUoJmItPmxvY2ssIGZsYWdz
+KTsNCj4gKw0KPiArCXJjdV9yZWFkX3VubG9jaygpOw0KPiArCXRoaXNfY3B1X2RlYyhicGZfcHJv
+Z19hY3RpdmUpOw0KPiArCXByZWVtcHRfZW5hYmxlKCk7DQo+ICsNCj4gKwlpZiAocmV0ICYmIHJl
+dCAhPSAtRU5PRU5UKQ0KPiArCQlnb3RvIG91dDsNCj4gKw0KPiArCS8qIGNvcHkgZGF0YSBiYWNr
+IHRvIHVzZXIgKi8NCj4gKwl1YmF0Y2ggPSB1NjRfdG9fdXNlcl9wdHIoYXR0ci0+YmF0Y2gub3V0
+X2JhdGNoKTsNCj4gKwlpZiAoY29weV90b191c2VyKHViYXRjaCwgJmJhdGNoLCBzaXplb2YoYmF0
+Y2gpKSB8fA0KPiArCSAgICBwdXRfdXNlcih0b3RhbCwgJnVhdHRyLT5iYXRjaC5jb3VudCkpDQo+
+ICsJCXJldCA9IC1FRkFVTFQ7DQo+ICsNCj4gK291dDoNCj4gKwlrdmZyZWUoa2V5cyk7DQo+ICsJ
+a3ZmcmVlKHZhbHVlcyk7DQo+ICsJcmV0dXJuIHJldDsNCj4gK30NCj4gKw0KWy4uLl0NCg==
