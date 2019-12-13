@@ -2,61 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E85F11DEBD
-	for <lists+netdev@lfdr.de>; Fri, 13 Dec 2019 08:39:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 46BD311DEC9
+	for <lists+netdev@lfdr.de>; Fri, 13 Dec 2019 08:43:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725818AbfLMHiw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Dec 2019 02:38:52 -0500
-Received: from relay.sw.ru ([185.231.240.75]:43538 "EHLO relay.sw.ru"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725468AbfLMHiw (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 13 Dec 2019 02:38:52 -0500
-Received: from dhcp-172-16-24-104.sw.ru ([172.16.24.104])
-        by relay.sw.ru with esmtp (Exim 4.92.3)
-        (envelope-from <ktkhai@virtuozzo.com>)
-        id 1iffWS-0004Zi-Kb; Fri, 13 Dec 2019 10:38:00 +0300
-Subject: Re: [PATCH net-next v2 0/2] unix: Show number of scm files in fdinfo
-To:     David Miller <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org, axboe@kernel.dk,
-        pankaj.laxminarayan.bharadiya@intel.com, keescook@chromium.org,
-        viro@zeniv.linux.org.uk, hare@suse.com, tglx@linutronix.de,
-        edumazet@google.com, arnd@arndb.de
-References: <157588565669.223723.2766246342567340687.stgit@localhost.localdomain>
- <20191212.170506.1014670344797867509.davem@davemloft.net>
-From:   Kirill Tkhai <ktkhai@virtuozzo.com>
-Message-ID: <57b6c0a4-285e-e429-2e87-41b5079974e1@virtuozzo.com>
-Date:   Fri, 13 Dec 2019 10:37:59 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        id S1726004AbfLMHna (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Dec 2019 02:43:30 -0500
+Received: from s3.sipsolutions.net ([144.76.43.62]:42382 "EHLO
+        sipsolutions.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725468AbfLMHna (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Dec 2019 02:43:30 -0500
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.92.3)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1iffbj-009Nc2-Ph; Fri, 13 Dec 2019 08:43:27 +0100
+Message-ID: <90485ecbfa2a13c4438b840c8a9d37677e833ea5.camel@sipsolutions.net>
+Subject: Re: debugging TCP stalls on high-speed wifi
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     Justin Capella <justincapella@gmail.com>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
+        Toke =?ISO-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Date:   Fri, 13 Dec 2019 08:43:26 +0100
+In-Reply-To: <CAMrEMU-WdaAe2wOxsnMn=npPyAjf1KkuxA8cHE==yez_rUELUQ@mail.gmail.com> (sfid-20191213_051528_721069_3C6497DE)
+References: <14cedbb9300f887fecc399ebcdb70c153955f876.camel@sipsolutions.net>
+         <CAMrEMU-WdaAe2wOxsnMn=npPyAjf1KkuxA8cHE==yez_rUELUQ@mail.gmail.com>
+         (sfid-20191213_051528_721069_3C6497DE)
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.34.2 (3.34.2-1.fc31) 
 MIME-Version: 1.0
-In-Reply-To: <20191212.170506.1014670344797867509.davem@davemloft.net>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 13.12.2019 04:05, David Miller wrote:
-> From: Kirill Tkhai <ktkhai@virtuozzo.com>
-> Date: Mon, 09 Dec 2019 13:03:34 +0300
-> 
->> v2: Pass correct argument to locked in patch [2/2].
->>
->> Unix sockets like a block box. You never know what is pending there:
->> there may be a file descriptor holding a mount or a block device,
->> or there may be whole universes with namespaces, sockets with receive
->> queues full of sockets etc.
->>
->> The patchset makes number of pending scm files be visible in fdinfo.
->> This may be useful to determine, that socket should be investigated
->> or which task should be killed to put a reference counter on a resourse.
->>
->> $cat /proc/[pid]/fdinfo/[unix_sk_fd] | grep scm_fds
->> scm_fds: 1
-> 
-> Series applied.
+On Thu, 2019-12-12 at 20:15 -0800, Justin Capella wrote:
+> Could TCP window size (waiting for ACKnowledgements) be a contributing factor?
 
-Thanks, David.
+Quite possibly, although even with a large number of flows?
+
+I thought we had a TCP_CHRONO_ for it but we don't, maybe I'll try to
+add one for debug.
+
+johannes
 
