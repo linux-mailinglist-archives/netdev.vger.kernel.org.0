@@ -2,152 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A188411E6AD
-	for <lists+netdev@lfdr.de>; Fri, 13 Dec 2019 16:37:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EB30311E6D8
+	for <lists+netdev@lfdr.de>; Fri, 13 Dec 2019 16:39:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728012AbfLMPgN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Dec 2019 10:36:13 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:25933 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1727992AbfLMPgM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Dec 2019 10:36:12 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1576251371;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
-        bh=XdvQKU8LiqO/th1XH/f5TTkHcNsE/YPklKDD6xZt6qQ=;
-        b=Db27FA3+Q1kolvE9edN0LO/0RSX8ErXy0AXWemMr3jEbp2sKgIfCuY92NDItgl+efEwj4A
-        XShBBAD1jHkRUKKbYHzvPbwxKTGo0fBy+RigcPZCLK/oA4kl9QMW8/NjXmFTRbnIuqN8cI
-        E4HVdP8vJ0MfQU9aULmpF8oHf1oNxvo=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-370-hbfm8CEePw28D6MRnwYrFA-1; Fri, 13 Dec 2019 10:36:07 -0500
-X-MC-Unique: hbfm8CEePw28D6MRnwYrFA-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 68935800582;
-        Fri, 13 Dec 2019 15:36:05 +0000 (UTC)
-Received: from krava (ovpn-205-9.brq.redhat.com [10.40.205.9])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 23A2C5C219;
-        Fri, 13 Dec 2019 15:35:55 +0000 (UTC)
-Date:   Fri, 13 Dec 2019 16:35:53 +0100
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Peter Zijlstra <a.p.zijlstra@chello.nl>
-Cc:     Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Ingo Molnar <mingo@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        id S1727934AbfLMPjy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Dec 2019 10:39:54 -0500
+Received: from shadbolt.e.decadent.org.uk ([88.96.1.126]:40648 "EHLO
+        shadbolt.e.decadent.org.uk" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727796AbfLMPjy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Dec 2019 10:39:54 -0500
+Received: from [167.98.27.226] (helo=deadeye)
+        by shadbolt.decadent.org.uk with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.89)
+        (envelope-from <ben@decadent.org.uk>)
+        id 1ifn2Y-0001FZ-DR; Fri, 13 Dec 2019 15:39:38 +0000
+Received: from ben by deadeye with local (Exim 4.93-RC7)
+        (envelope-from <ben@decadent.org.uk>)
+        id 1ifn2X-00056v-9m; Fri, 13 Dec 2019 15:39:37 +0000
+Message-ID: <784d8f924612b91310baca25f2b0acc7ba78b83b.camel@decadent.org.uk>
+Subject: Re: [PATCH] libbpf: fix readelf output parsing on powerpc with
+ recent binutils
+From:   Ben Hutchings <ben@decadent.org.uk>
+To:     Michael Ellerman <mpe@ellerman.id.au>,
+        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>,
+        Justin Forbes <jmforbes@linuxtx.org>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Song Liu <songliubraving@fb.com>,
         Andrii Nakryiko <andriin@fb.com>,
-        Quentin Monnet <quentin.monnet@netronome.com>
-Subject: [RFC] btf: Some structs are doubled because of struct ring_buffer
-Message-ID: <20191213153553.GE20583@krava>
+        Alexei Starovoitov <ast@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "open list:BPF (Safe dynamic programs and tools)" 
+        <netdev@vger.kernel.org>, Yonghong Song <yhs@fb.com>,
+        "open list:BPF (Safe dynamic programs and tools)" 
+        <bpf@vger.kernel.org>, linuxppc-dev@lists.ozlabs.org,
+        Martin KaFai Lau <kafai@fb.com>,
+        Aurelien Jarno <aurelien@aurel32.net>,
+        debian-kernel@lists.debian.org, Nick Clifton <nickc@redhat.com>
+Date:   Fri, 13 Dec 2019 15:39:32 +0000
+In-Reply-To: <87a77ypdno.fsf@mpe.ellerman.id.au>
+References: <20191201195728.4161537-1-aurelien@aurel32.net>
+         <87zhgbe0ix.fsf@mpe.ellerman.id.au>
+         <20191202093752.GA1535@localhost.localdomain>
+         <CAFxkdAqg6RaGbRrNN3e_nHfHFR-xxzZgjhi5AnppTxxwdg0VyQ@mail.gmail.com>
+         <20191210222553.GA4580@calabresa>
+         <CAFxkdAp6Up0qSyp0sH0O1yD+5W3LvY-+-iniBrorcz2pMV+y-g@mail.gmail.com>
+         <20191211160133.GB4580@calabresa> <87a77ypdno.fsf@mpe.ellerman.id.au>
+Content-Type: multipart/signed; micalg="pgp-sha512";
+        protocol="application/pgp-signature"; boundary="=-XTuTpKbXj3nCdOipqGDS"
+User-Agent: Evolution 3.30.5-1.1 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+X-SA-Exim-Connect-IP: 167.98.27.226
+X-SA-Exim-Mail-From: ben@decadent.org.uk
+X-SA-Exim-Scanned: No (on shadbolt.decadent.org.uk); SAEximRunCond expanded to false
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-hi,
-the current BTF vmlinux file have some of the structs doubled:
 
-  $ bpftool btf dump file /sys/kernel/btf/vmlinux | grep task_struct
-  [150] STRUCT 'task_struct' size=11008 vlen=205
-  [12262] STRUCT 'task_struct' size=11008 vlen=205
+--=-XTuTpKbXj3nCdOipqGDS
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-  $ bpftool btf dump file /sys/kernel/btf/vmlinux | grep "STRUCT 'perf_event'"
-  [1666] STRUCT 'perf_event' size=1160 vlen=70
-  [12301] STRUCT 'perf_event' size=1160 vlen=70
+On Thu, 2019-12-12 at 11:53 +1100, Michael Ellerman wrote:
+> Thadeu Lima de Souza Cascardo <cascardo@canonical.com> writes:
+[...]
+> > This is a patch on binutils carried by Fedora:
+> >=20
+> > https://src.fedoraproject.org/rpms/binutils/c/b8265c46f7ddae23a792ee830=
+6fbaaeacba83bf8
+> >=20
+> > " b8265c Have readelf display extra symbol information at the end of th=
+e line. "
+> >=20
+> > It has the following comment:
+> >=20
+> > # FIXME:    The proper fix would be to update the scripts that are expe=
+cting
+> > #           a fixed output from readelf.  But it seems that some of the=
+m are
+> > #           no longer being maintained.
+> >=20
+> > This commit is from 2017, had it been on binutils upstream, maybe the s=
+ituation
+> > right now would be different.
+>=20
+> Bleeping bleep.
+>=20
+> Looks like it was actually ruby that was the original problem:
+>=20
+>   https://bugzilla.redhat.com/show_bug.cgi?id=3D1479302
+>=20
+>=20
+> Why it wasn't hacked around in the ruby package I don't know, doing it in
+> the distro binutils package is not ideal.
 
-The reason seems to be that we have two distinct 'struct ring_buffer'
-objects used in kernel: one in perf subsystem and one in kernel trace
-subsystem.
+That wouldn't help people building Ruby from upstream.
 
-When we compile kernel/trace/ring_buffer.c we have 'struct task_struct',
-which references 'struct ring_buffer', which is at that compile time
-defined in kernel/trace/ring_buffer.c.
+Any tool generating tabular output like this should add new fields at
+the end (or show them only if requested), since there are bound to be
+scripts that parse the output like this.  So I think Fedora's change to
+readelf was reasonable, but should have been pushed upstream as soon as
+possible.
 
-While when we compile kernel/events/core.c we have 'struct task_struct',
-which references ring buffer, which is at that compile time defined
-in kernel/events/internal.h.
+Now everyone is going to have to deal with both formats.
 
-So we end up with 2 different 'struct task_struct' objects, and few
-other objects which are on the way to the 'struct ring_buffer' field,
-like:
+Ben.
 
-	[1666] STRUCT 'perf_event' size=1160 vlen=70
-		...
-		'rb' type_id=2289 bits_offset=5632
-		...
-
-		[2289] PTR '(anon)' type_id=10872
-
-			-> trace ring buffer
-
-			[10872] STRUCT 'ring_buffer' size=184 vlen=12
-				'flags' type_id=10 bits_offset=0
-				'cpus' type_id=22 bits_offset=32
-				'record_disabled' type_id=81 bits_offset=64
-				...
-
-	[12301] STRUCT 'perf_event' size=1160 vlen=70
-		...
-		'rb' type_id=13148 bits_offset=5632
-		...
-
-		[13148] PTR '(anon)' type_id=13147
-
-			-> perf ring buffer
-
-			[13147] STRUCT 'ring_buffer' size=240 vlen=33
-				'refcount' type_id=795 bits_offset=0
-				'callback_head' type_id=90 bits_offset=64
-				'nr_pages' type_id=22 bits_offset=192
-				'overwrite' type_id=22 bits_offset=224
-				'paused' type_id=22 bits_offset=256
-				...
-
-I don't think dedup algorithm can handle this and I'm not sure if there's
-some way in pahole to detect/prevent this.
-
-I only found that if I rename the ring_buffer objects to have distinct
-names, it will help:
-
-  $ bpftool btf dump file /sys/kernel/btf/vmlinux | grep task_struct
-  [150] STRUCT 'task_struct' size=11008 vlen=205
-
-  $ bpftool btf dump file /sys/kernel/btf/vmlinux | grep "STRUCT 'perf_event'"
-  [1665] STRUCT 'perf_event' size=1160 vlen=70
-
-also the BTF data get smaller ;-) before:
-
-  $ ll /sys/kernel/btf/vmlinux
-  -r--r--r--. 1 root root 2067432 Dec 13 22:56 /sys/kernel/btf/vmlinux
-
-after:
-  $ ll /sys/kernel/btf/vmlinux
-  -r--r--r--. 1 root root 1984345 Dec 13 23:02 /sys/kernel/btf/vmlinux
+--=20
+Ben Hutchings
+Horngren's Observation:
+              Among economists, the real world is often a special case.
 
 
-Peter, Steven,
-if above is correct and there's no other better solution, would it be possible
-to straighten up the namespace and user some distinct names for perf and ftrace
-ring buffers?
 
-thoughts?
-jirka
+--=-XTuTpKbXj3nCdOipqGDS
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part
 
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEErCspvTSmr92z9o8157/I7JWGEQkFAl3zsLQACgkQ57/I7JWG
+EQn2Yg//TXyohEOZzCVyllfhvYlZubQmABin7AvKKCrohI86PUkKZzydMPKW7wjF
+KSi+xCi62Q52OwskMvIaWjiBzvhijZaFWHB8EPGqRMeJtnbjjwGTTta0ZzPYBBEa
+ngKWvU50Vjqlt8uF7qNXQk3M/mJloOXmqhjPjwuX2Yqa/aWz20NAzV2WQQ9OzNMn
+8HQzX5jHN76CWmMwkqblKqO0yRpb8Cw08bpn42zkVYlIZapxAeBIY4DQP2A+TWPs
+3ElgHxlL3Rgg4qvYqnhIzD7Jr/jOCFIcdD/j5SaNMJV6HzLK5/vUQs0NEA0y6M7I
+91T2k3hhd6pJPpCn4eP0Vc2JQWZQl4P+x0FMlYiXfBiOjdy2cOqDiez0g3i3SqyQ
+6i29+SUSriP5QvPHK8Pg2L4MRuelBoNyuP55IZWonDYpQx1qDoI8ycXgEtPpuP1s
+B41ClX9UNrozPrEuDEcC7tbw+ak+xsJy+PqEF9RYnIJcJ8bJRI2YTR1h8ysWZyOI
+13zEPyAZG2b34rBmUaqA2fBFTG98qPuEV6Amcq4rpdqsdbzTkD1PYCpEtXnqiok/
+C0o/6Wsey1BpfcXsag7xX824BvJkgsWzQnFJ1cto4zmsHxUyLvLh+X5VXilsRgTd
+ongG67DAwcznlANn9XjPGeN3qjDErgSWwXPdUecrKm0+xgMNPo0=
+=ttgq
+-----END PGP SIGNATURE-----
+
+--=-XTuTpKbXj3nCdOipqGDS--
