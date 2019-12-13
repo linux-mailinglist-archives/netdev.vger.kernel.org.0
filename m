@@ -2,81 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7449311DB5E
-	for <lists+netdev@lfdr.de>; Fri, 13 Dec 2019 01:58:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 82C4211DB5C
+	for <lists+netdev@lfdr.de>; Fri, 13 Dec 2019 01:58:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727868AbfLMA5b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Dec 2019 19:57:31 -0500
-Received: from mail-il1-f196.google.com ([209.85.166.196]:34309 "EHLO
-        mail-il1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727835AbfLMA5a (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Dec 2019 19:57:30 -0500
-Received: by mail-il1-f196.google.com with SMTP id w13so670392ilo.1
-        for <netdev@vger.kernel.org>; Thu, 12 Dec 2019 16:57:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=h3jocdiFLzaES+h2wlJdlyw5Wx0cVcDESrSWJ0tTSLQ=;
-        b=U4Mw3wT6ni2X2a7ZywEHYvmtDC4cf4X59GJr+k87YaaPynmIBGXDKn1n2e5VcE3c5P
-         4ruo/dh0MoZn6yec53VhenRgsFzHDIMp9ysx1bO8ZYneDkhDTL3rxKGh4yR6jxCnLeW9
-         C8j8LIfV6PUQpimRH7xsgPFat0j05xgsvEEwjS4P33qtuVbzjFrFWKhbhXnqFvcZsMOJ
-         U0fqMW+7kx5ClXY13uv1OyYa7sBdZhG0Nc7vw0n1ac2zrkgyXhv6WxIgDK+wch0YNIyn
-         P3WBwAKY4QDVa0Imzf7h7i7mNQj9D0WLbyoTA1xmAn4rhCJnR8nSTxOW+buAgIeGqxII
-         Ahzw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=h3jocdiFLzaES+h2wlJdlyw5Wx0cVcDESrSWJ0tTSLQ=;
-        b=DQ/x3vaYP4vjBzW017DpckcTeAxdg/8pIbqhwefXK3/iqdEfb+taFxd/7Ch7Q7m5/G
-         gJH4B3n6sqgbF8Fe5qHrEyy3NNxwEp+5UBXIdwSJdjjknRUQYLR210/sKXOa0hUAjkI9
-         6ve0drvn6TpqiQE8XPDDj7iNLgJRXxBvgu+sInqPe9bUi77IdTKz879E0rGD39r8ZOAm
-         9oQyRsFCGQrIDbh2bOsYdqsFVXfOpA/4Bb6lmaCYFyP21onVs2cmLuly8w4TceLclWbY
-         QA7aedz6jTV93C8kl3nL9Ct2C5RDVzHAKyZsw3PsViUhimObBnf5vvnjfcBj/e91fafZ
-         +Txg==
-X-Gm-Message-State: APjAAAWU/BRB9ogZ3RSnfyFse/oT6EWe05vxVY7u0UXGcLTBYixKMna9
-        ndczYb89LQn/2X9GstFPxcNnqNJ7F7yi91i596I7Qw==
-X-Google-Smtp-Source: APXvYqx/dw8ihvZ31i4Natfa8mPoKCKMYZFd4QatEXTVGDoB2hpsajvTiTWjFom17ptNTJEs4qhditaWLmsOVffeDOU=
-X-Received: by 2002:a92:3b10:: with SMTP id i16mr11822126ila.170.1576198649802;
- Thu, 12 Dec 2019 16:57:29 -0800 (PST)
-MIME-Version: 1.0
-References: <CAHo-OowKQPQj9UhjCND5SmTOergBXMHtEctJA_T0SKLO5yebSg@mail.gmail.com>
- <20191209224530.156283-1-zenczykowski@gmail.com> <20191209154216.7e19e0c0@cakuba.netronome.com>
- <CANP3RGe8zqa2V-PBjvACAJa2Hrd8z7BXUkks0KCrAtyeDjbsYw@mail.gmail.com>
- <20191209161835.7c455fc0@cakuba.netronome.com> <CAHo-OowHek4i9Pzxn96u8U5sTH8keQmi-yMCY-OBS7CE74OGNQ@mail.gmail.com>
- <20191210093111.7f1ad05d@cakuba.netronome.com> <CAKD1Yr05=sRDTefSP6bmb-VvvDLe9=xUtAF0q3+rn8=U9UjPcA@mail.gmail.com>
- <20191212164749.4e4c8a4c@cakuba.netronome.com>
-In-Reply-To: <20191212164749.4e4c8a4c@cakuba.netronome.com>
-From:   Lorenzo Colitti <lorenzo@google.com>
-Date:   Fri, 13 Dec 2019 09:57:18 +0900
-Message-ID: <CAKD1Yr1V4S3cxvTaBs6pReEZ_3LPobnxdroY+vE3-injHyGt2A@mail.gmail.com>
-Subject: Re: [PATCH v2] net: introduce ip_local_unbindable_ports sysctl
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc:     =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <zenczykowski@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Linux Network Development Mailing List 
-        <netdev@vger.kernel.org>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Sean Tranchetti <stranche@codeaurora.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Linux SCTP <linux-sctp@vger.kernel.org>,
-        Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>
-Content-Type: text/plain; charset="UTF-8"
+        id S1727816AbfLMA53 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Dec 2019 19:57:29 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:46704 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727561AbfLMA53 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Dec 2019 19:57:29 -0500
+Received: from localhost (unknown [IPv6:2601:601:9f00:1c3::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id A4D7715420D00;
+        Thu, 12 Dec 2019 16:57:28 -0800 (PST)
+Date:   Thu, 12 Dec 2019 16:57:26 -0800 (PST)
+Message-Id: <20191212.165726.700898279205561499.davem@davemloft.net>
+To:     linux@armlinux.org.uk
+Cc:     andrew@lunn.ch, f.fainelli@gmail.com, hkallweit1@gmail.com,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net] net: phylink: fix interface passed to mac_link_up
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20191213000323.GN25745@shell.armlinux.org.uk>
+References: <E1ifLlX-0004U8-Of@rmk-PC.armlinux.org.uk>
+        <20191212.105544.1239200588810264031.davem@davemloft.net>
+        <20191213000323.GN25745@shell.armlinux.org.uk>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 12 Dec 2019 16:57:28 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Dec 13, 2019 at 9:47 AM Jakub Kicinski
-<jakub.kicinski@netronome.com> wrote:
-> How are the ports which get reserved communicated between the baseband
-> and the AP? Is this part of the standard? Is the driver that talks to
-> the base band in the user space and it knows which ports to reserve
-> statically? Or does the modem dynamically request ports to
-> reserve/inform the host of ports in use?
+From: Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Date: Fri, 13 Dec 2019 00:03:23 +0000
 
-I'm not an expert in that part of the system, but my understanding is
-that the primary way this is used is to pre-allocate a block of ports
-to be used by the modem on boot, before other applications can bind to
-ports. Subash, do you have more details?
+> On Thu, Dec 12, 2019 at 10:55:44AM -0800, David Miller wrote:
+>> From: Russell King <rmk+kernel@armlinux.org.uk>
+>> Date: Thu, 12 Dec 2019 10:32:15 +0000
+>> 
+>> > A mismerge between the following two commits:
+>> > 
+>> > c678726305b9 ("net: phylink: ensure consistent phy interface mode")
+>> > 27755ff88c0e ("net: phylink: Add phylink_mac_link_{up, down} wrapper functions")
+>> > 
+>> > resulted in the wrong interface being passed to the mac_link_up()
+>> > function. Fix this up.
+>> > 
+>> > Fixes: b4b12b0d2f02 ("Merge git://git.kernel.org/pub/scm/linux/kernel/git/davem/net")
+>> > Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
+>> 
+>> Does not apply to the 'net' tree.
+> 
+> The reason it doesn't apply is the change from link_an_mode to
+> cur_link_an_mode on the preceeding line that is in net-next.
+> Fixing this in net is going to create another merge conflict.
+> 
+> Would it be better to apply this one to net-next and a similar
+> fix to the net tree?
+
+I can handle such trivial merge conflicts when I merge net into net-next.
+Especially if you let me know about it like you did here.
+
+Please respin this for 'net'
