@@ -2,92 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DAF3D11EC42
-	for <lists+netdev@lfdr.de>; Fri, 13 Dec 2019 21:55:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C659511EC73
+	for <lists+netdev@lfdr.de>; Fri, 13 Dec 2019 22:04:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726463AbfLMUzo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Dec 2019 15:55:44 -0500
-Received: from mail-lf1-f67.google.com ([209.85.167.67]:39934 "EHLO
-        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725747AbfLMUzo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Dec 2019 15:55:44 -0500
-Received: by mail-lf1-f67.google.com with SMTP id y1so256147lfb.6;
-        Fri, 13 Dec 2019 12:55:42 -0800 (PST)
+        id S1726760AbfLMVEW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Dec 2019 16:04:22 -0500
+Received: from mail-lj1-f195.google.com ([209.85.208.195]:44735 "EHLO
+        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726599AbfLMVEV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Dec 2019 16:04:21 -0500
+Received: by mail-lj1-f195.google.com with SMTP id c19so123259lji.11;
+        Fri, 13 Dec 2019 13:04:20 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=mT5HHiq1Kpb9QJuduS2jGfWmu0FgjWtC0T7uCu1E0EM=;
-        b=qIM4aaidhg2lSD6OXc80DimWkhiFewGKhU6TkXE6FwRSed7xOunHDSgv0yDmFqE4j2
-         g0lFDGlDgIAR0lQwYD9c3og5mgcwhmyo5bN+5jxmJS608P3qc+9ce+8XjLRYhs3KGNQ2
-         Ypnb1WHF5GxRjgN7l4UVWUkBWzRwk0voMeXCTTCzKnmPGViX6fgahwO+XIKLIYK9Ztti
-         ld+kYyZQrXib+kSwDjnQ6V/RNZ09MKZJmldZh00hfwl6ggK5+fNBAoQaU8YRWr+jTjh7
-         2QuyS095Sj0N87JfYQ1uprpe8sQNbl9T6/oCpXfPEIRojOFi/NRx8ibHGb7HEQHVYVqg
-         fzEQ==
+        bh=n3yWfNzbkvRbbDeZJmQEVXV/JdfI39R66ZQaXIjNxB8=;
+        b=A2E5ngrfo+Cq5lf1+hmyMOhkOca8jn7tUR3suBaizqDReMperJHPaEdezTqnBswlAk
+         Zkn6SoWk5h7eb+4VwlEpQ/eoLVcyvSGAqugOGwQ7UHb91cJYGzDwlgweT7lOlgHEMxHb
+         U8LpjkcgGLrh7VDk46wJGBdXr2dPS3yDv8DUnJxBeJH9iv/3i8HTJOpPj4si1tVqohrp
+         z+KBRYVFCIbQ3FBChogIRPAvJAbGh8cbMaCKeKgJ+257B+bMiMLv/0JYZJ7gmqJOC4AJ
+         +n/XZAkal/TuLZpfBJMLuBRLlXWdHQ+SWm23E8L9QdQfl9RPGGl2vCSfo2mipxQtytEg
+         Y7cQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=mT5HHiq1Kpb9QJuduS2jGfWmu0FgjWtC0T7uCu1E0EM=;
-        b=aeFjV8QlMNESHFY22VE0su0OxydOzlr0CPOfl5cANu0+cMbWr67Fdt4D6DQj2HRiPQ
-         1fhJpK3vzzMSLgRUFMWGB1Lmh93Fj4Tie/dIZL97EMPIPj09Rdx+mWYnbC/MHCgtQssb
-         oNFAvtFP7V8I2uEfNaY/iYJj8DaNguflP8RH9+WGCdeyV3ylVPhr1V6wMb/1hnMhghIx
-         +wr0Q3UvJSDqgezTGt0BM/8xB2I+KXaFC/iKtTIJjYNlpZufM05OpOCUoWu20Esqj8vH
-         JboGjOZAm2fRyMVA/z4bsX6ggeQEdwUBcoflneRLB9jFz3ZZtSwuEkRXEygunYGPdKyw
-         uRQA==
-X-Gm-Message-State: APjAAAV0vcWon1yJyNkVr6X8WKBIdaSi0SeAwOvCE0ZJXdh0iOhQUh6V
-        qpiJUnjuLBUUCGDs2MePcwNWeaKhQRpJ4RkDSlKWxcmx
-X-Google-Smtp-Source: APXvYqy6mnnDnrty2BmDPBB7pTxc0PEdVbjUt0zGa1Tfx3o1qtdWVNWSVvyU5E0lVsb/wsK09GGwWObgopVEL/tv6ew=
-X-Received: by 2002:ac2:52a5:: with SMTP id r5mr10200511lfm.19.1576270541569;
- Fri, 13 Dec 2019 12:55:41 -0800 (PST)
+        bh=n3yWfNzbkvRbbDeZJmQEVXV/JdfI39R66ZQaXIjNxB8=;
+        b=ICdrsx5cFfw0VvQuvwLEh1qk0ocihgUng6LPmsUBszYq0tGGVeVb9z9URYFMRAFzHI
+         ie2cEhZGxM/HL+3B909dLbKjFV/3mMzswpzTZD24YT5PtqcuUXZUCtWDZGRWhe6Fv7zD
+         Q1SZFGQ9Nspa2MtxIDbH7RZRFV/i2VzvccQR+S0VkTCz08fhII1fLTqBOml37x5lRgCh
+         +XbOZhXn0KO4j+8X6f/9PG7IUfj3aRgSF0fQ1yZjbjIJjKoLhzMqrSR7i7lvSbEOKHzo
+         mUgRGsFtGDx9Uk12WdDhEdLsRcnzMRgMHk75e7xa6Rx+BHoiSUj8NovFsffY/QdZZ50w
+         UAww==
+X-Gm-Message-State: APjAAAV3NC0NUrhm3uvJagmPnKQRkE0mbhhvvS40XoFu18WuvmHo28t4
+        biQX3k6ka4YYUq/zbaPjqf8QZeJ16+d5KQcdRC0=
+X-Google-Smtp-Source: APXvYqySr3A+VsfA51cIfx5g3b0tFTKTHpRev6b7cJJ0qql29AN6C0EPaPoziewf8ahFfMMqUT50lNXgP4GeBVk2dN8=
+X-Received: by 2002:a2e:93c9:: with SMTP id p9mr11034740ljh.136.1576271059297;
+ Fri, 13 Dec 2019 13:04:19 -0800 (PST)
 MIME-Version: 1.0
-References: <20191211175349.245622-1-sdf@google.com>
-In-Reply-To: <20191211175349.245622-1-sdf@google.com>
+References: <20191212013521.1689228-1-andriin@fb.com>
+In-Reply-To: <20191212013521.1689228-1-andriin@fb.com>
 From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Fri, 13 Dec 2019 12:55:30 -0800
-Message-ID: <CAADnVQLAShTWUDaMd26cCP-na=U_ZVUBuWaXR7-VGV=H6r_Qbg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 1/2] bpf: expose __sk_buff wire_len/gso_segs to BPF_PROG_TEST_RUN
-To:     Stanislav Fomichev <sdf@google.com>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
+Date:   Fri, 13 Dec 2019 13:04:08 -0800
+Message-ID: <CAADnVQJMBbFma+0cGSJXX75=r=5jDK85AxLoqCPUWutf7bmnzg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 0/4] Fix perf_buffer creation on systems with
+ offline CPUs
+To:     Andrii Nakryiko <andriin@fb.com>
+Cc:     bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Kernel Team <kernel-team@fb.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 11, 2019 at 9:53 AM Stanislav Fomichev <sdf@google.com> wrote:
+On Wed, Dec 11, 2019 at 5:35 PM Andrii Nakryiko <andriin@fb.com> wrote:
 >
-> wire_len should not be less than real len and is capped by GSO_MAX_SIZE.
-> gso_segs is capped by GSO_MAX_SEGS.
->
-> Signed-off-by: Stanislav Fomichev <sdf@google.com>
+> This patch set fixes perf_buffer__new() behavior on systems which have some of
+> the CPUs offline/missing (due to difference between "possible" and "online"
+> sets). perf_buffer will create per-CPU buffer and open/attach to corresponding
+> perf_event only on CPUs present and online at the moment of perf_buffer
+> creation. Without this logic, perf_buffer creation has no chances of
+> succeeding on such systems, preventing valid and correct BPF applications from
+> starting.
 
-This change breaks tests:
-./test_progs -n 16
-test_kfree_skb:PASS:prog_load sched cls 0 nsec
-test_kfree_skb:PASS:prog_load raw tp 0 nsec
-test_kfree_skb:PASS:find_prog 0 nsec
-test_kfree_skb:PASS:find_prog 0 nsec
-test_kfree_skb:PASS:find_prog 0 nsec
-test_kfree_skb:PASS:find global data 0 nsec
-test_kfree_skb:PASS:attach_raw_tp 0 nsec
-test_kfree_skb:PASS:attach fentry 0 nsec
-test_kfree_skb:PASS:attach fexit 0 nsec
-test_kfree_skb:PASS:find_perf_buf_map 0 nsec
-test_kfree_skb:PASS:perf_buf__new 0 nsec
-test_kfree_skb:FAIL:ipv6 err -1 errno 22 retval 0 duration 0
-on_sample:PASS:check_size 0 nsec
-on_sample:PASS:check_meta_ifindex 0 nsec
-on_sample:PASS:check_cb8_0 0 nsec
-on_sample:PASS:check_cb32_0 0 nsec
-on_sample:PASS:check_eth 0 nsec
-on_sample:PASS:check_ip 0 nsec
-on_sample:PASS:check_tcp 0 nsec
-test_kfree_skb:PASS:perf_buffer__poll 0 nsec
-test_kfree_skb:PASS:get_result 0 nsec
-#16 kfree_skb:FAIL
-Summary: 0/0 PASSED, 0 SKIPPED, 1 FAILED
+Applied. Thanks
