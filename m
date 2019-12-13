@@ -2,98 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AAE3411E5A6
-	for <lists+netdev@lfdr.de>; Fri, 13 Dec 2019 15:35:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0AF4411E619
+	for <lists+netdev@lfdr.de>; Fri, 13 Dec 2019 16:07:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727784AbfLMOf2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Dec 2019 09:35:28 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:32073 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1727778AbfLMOf2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Dec 2019 09:35:28 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1576247727;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
-        bh=K16O3uoMoq1X7RVCymy3uF4s1barxs0V/Dkj4PdUFYc=;
-        b=SfOPf16mSueMwgf3nyaRmC/u3dTySn35hpUZBASapj1aK4RjFbXxNeBLmc3PzLBYpRSZqE
-        /KuZSPP1nuYGIY8RZG/eA/mfwcjBlV8PdTP64f4FkRhphkmtul7kuVTIAZnImRrAX2aWIM
-        2O+Pw3r5d5akrVLsl+JuNvvZobciluM=
-Received: from mail-qt1-f199.google.com (mail-qt1-f199.google.com
- [209.85.160.199]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-230-wWgND6PRMwqA-fzM6RgNaA-1; Fri, 13 Dec 2019 09:35:26 -0500
-X-MC-Unique: wWgND6PRMwqA-fzM6RgNaA-1
-Received: by mail-qt1-f199.google.com with SMTP id l1so1889853qtp.21
-        for <netdev@vger.kernel.org>; Fri, 13 Dec 2019 06:35:25 -0800 (PST)
+        id S1727693AbfLMPEO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Dec 2019 10:04:14 -0500
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:46363 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726528AbfLMPEO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Dec 2019 10:04:14 -0500
+Received: by mail-pg1-f195.google.com with SMTP id z124so1690077pgb.13;
+        Fri, 13 Dec 2019 07:04:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to
+         :user-agent;
+        bh=57vMBlnpciL/juUhZmhXykw/E2smdFCzEpCa1v5KKHs=;
+        b=fhH1d+8EovXL8gJtcHHnZLRLckuWRxEcfJQEeZ2PV0j44r6FVxxa3jZMlyeTu/GmOF
+         X54VXv6FZwzh87RugImVHB8DZK/pHqeJ9jThLb3vsLlAg7gFjUMQURPSCI/aoISI0hDp
+         W03Z+c6SMuB9FN+t4Xu9u8W5kta1Azl0XTXCuFimNSqijnmh4TLI1FpwUrKq38yu48ol
+         eE0dMC0wyhk0NogKufKz72HJ49xK44DhieWhdwWQA/S88b8U0XmsqgEDBaG6ap4guZqy
+         g687i+QAx/QIbgbxBABNCrz6/wYASfzbq5OgrIUt/iyopk7fcyJyrlHCRyMIpJORKUh2
+         gpgQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=K16O3uoMoq1X7RVCymy3uF4s1barxs0V/Dkj4PdUFYc=;
-        b=UDTTGCj+SW+9+j2IeYK1kiDFIIuOdnBPY6C05+mlkTobndFX3bRW1k3U0re2+S8pGg
-         SFALL75rV+TfkJcay4pTtjte20pE2zoGJ8rBtkbuJKFWtI/U3Lwg8hBmxvTfrg6LQJso
-         rrBt0ZOuu6uYOMJCh01qkQV2vl22n5Jqgxf5hqPRgb93c/s8Czalj86SpxocLNHRZrSp
-         ReXsY3Hv3h05Zjn2sdOmek2o//ZZM6rFJ6qgoSZdn3t5VF9EeYeWezoh18c8uaCsbvUV
-         z9VSJgQTiVEFjP4l7AJYkS09sgWSp799trL6pN9ndGJaIJO3CLjgKoWCDR0DKX+dunbb
-         8CEQ==
-X-Gm-Message-State: APjAAAWnrSWczIAHDrMGySM8AGeQS00i9ERLzgfa8TkicvAQ4U4F/oL9
-        zvxbhDM1zx+GLg4XdWFVNbMZVukSjpeIQ3i6wfRmZHXRHIMxA4WjRJtm7PUBhNFIBLlKGVTF6zO
-        dYs0f1+Mg/nvsfYFE
-X-Received: by 2002:a37:5d1:: with SMTP id 200mr13575578qkf.492.1576247725619;
-        Fri, 13 Dec 2019 06:35:25 -0800 (PST)
-X-Google-Smtp-Source: APXvYqxgq1bbRToA9P95foPk8oGS2OI8ibHY6a72vmEjljgya2qgJqTa4/Xh04URKGN+H8Bz4Y3K4g==
-X-Received: by 2002:a37:5d1:: with SMTP id 200mr13575555qkf.492.1576247725393;
-        Fri, 13 Dec 2019 06:35:25 -0800 (PST)
-Received: from redhat.com (bzq-79-181-48-215.red.bezeqint.net. [79.181.48.215])
-        by smtp.gmail.com with ESMTPSA id l62sm2885132qke.12.2019.12.13.06.35.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 13 Dec 2019 06:35:24 -0800 (PST)
-Date:   Fri, 13 Dec 2019 09:35:19 -0500
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        akpm@linux-foundation.org, david@redhat.com, imammedo@redhat.com,
-        jasowang@redhat.com, liuj97@gmail.com, mst@redhat.com,
-        stable@vger.kernel.org, yuhuang@redhat.com
-Subject: [PULL] virtio: cleanups and fixes
-Message-ID: <20191213093519-mutt-send-email-mst@kernel.org>
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to:user-agent;
+        bh=57vMBlnpciL/juUhZmhXykw/E2smdFCzEpCa1v5KKHs=;
+        b=KfjGXFQXngIyeB9k7vo/lH8p944pHyn3TTXIfM9I3zU6oy3anuIu67tNboXBSAPNuZ
+         x4FQ+NBWrumVVF8ailXUIONOFFI4Pm6A7iuB81UCVv9CRp0cy1MhBKTB1WiEj9SpRBof
+         FvGhUecHYXifriaHmLx2kV2BwJvt/1Q13uHzcAzPYYVEW9tGVBPcAmiNJhSndM6bMKC+
+         dEC37ufIg5XfkwyUf5LULp8F+Y1g0VTXJIrXfyOzo9mTS0RIb1uVyM7+y/HXxvcLdr90
+         920lBxXLhIhFUv8ssGAheLyTejJnm0sBnhYacozxA5Gh60ErUJJ5ys3/gcP9b3iTGJC+
+         YhpQ==
+X-Gm-Message-State: APjAAAXIsfxM/ONUNP75WeZ+8s9Kj+xSkWGiPrajQY0FPd0UWz12XoQS
+        7AVSr0cB+ZGolcdwma87RXM=
+X-Google-Smtp-Source: APXvYqyyw4vy9CkJAbKOoeQMxtp42hxEN29HXtnd6y4ks1cvb69JSf9oCtPXbbe8T5/BZsBN73ICVw==
+X-Received: by 2002:a62:5202:: with SMTP id g2mr16319864pfb.43.1576249453273;
+        Fri, 13 Dec 2019 07:04:13 -0800 (PST)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:180::4b46])
+        by smtp.gmail.com with ESMTPSA id e188sm12209505pfe.113.2019.12.13.07.04.10
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 13 Dec 2019 07:04:12 -0800 (PST)
+Date:   Fri, 13 Dec 2019 07:04:09 -0800
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
+Cc:     Netdev <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        bpf <bpf@vger.kernel.org>,
+        Magnus Karlsson <magnus.karlsson@gmail.com>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Edward Cree <ecree@solarflare.com>,
+        Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= 
+        <thoiland@redhat.com>, Jesper Dangaard Brouer <brouer@redhat.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Subject: Re: [PATCH bpf-next v4 2/6] bpf: introduce BPF dispatcher
+Message-ID: <20191213150407.laqt2n2ue2ahsu2b@ast-mbp.dhcp.thefacebook.com>
+References: <20191211123017.13212-1-bjorn.topel@gmail.com>
+ <20191211123017.13212-3-bjorn.topel@gmail.com>
+ <20191213053054.l3o6xlziqzwqxq22@ast-mbp>
+ <CAJ+HfNiYHM1v8SXs54rkT86MrNxuB5V_KyHjwYupcjUsMf1nSQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-X-Mutt-Fcc: =sent
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAJ+HfNiYHM1v8SXs54rkT86MrNxuB5V_KyHjwYupcjUsMf1nSQ@mail.gmail.com>
+User-Agent: NeoMutt/20180223
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The following changes since commit e42617b825f8073569da76dc4510bfa019b1c35a:
+On Fri, Dec 13, 2019 at 08:51:47AM +0100, Björn Töpel wrote:
+> 
+> > I hope my guess that compiler didn't inline it is correct. Then extra noinline
+> > will not hurt and that's the only thing needed to avoid the issue.
+> >
+> 
+> I'd say it's broken not marking it as noinline, and I was lucky. It
+> would break if other BPF entrypoints that are being called from
+> filter.o would appear. I'll wait for more comments, and respin a v5
+> after the weekend.
 
-  Linux 5.5-rc1 (2019-12-08 14:57:55 -0800)
+Also noticed that EXPORT_SYMBOL for dispatch function is not necessary atm.
+Please drop it. It can be added later when need arises.
 
-are available in the Git repository at:
-
-  https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git tags/for_linus
-
-for you to fetch changes up to 63b9b80e9f5b2c463d98d6e550e0d0e3ace66033:
-
-  virtio_balloon: divide/multiply instead of shifts (2019-12-11 08:14:07 -0500)
-
-----------------------------------------------------------------
-virtio: fixes, cleanups
-
-Some fixes and cleanup patches.
-
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-
-----------------------------------------------------------------
-David Hildenbrand (1):
-      virtio-balloon: fix managed page counts when migrating pages between zones
-
-Michael S. Tsirkin (2):
-      virtio_balloon: name cleanups
-      virtio_balloon: divide/multiply instead of shifts
-
- drivers/virtio/virtio_balloon.c | 36 ++++++++++++++++++++++++------------
- 1 file changed, 24 insertions(+), 12 deletions(-)
+With that please respin right away. No need to wait till Monday.
+My general approach on accepting patches is "perfect is the enemy of the good".
+It's better to land patches sooner if architecture and api looks good.
+Details and minor bugs can be worked out step by step.
 
