@@ -2,108 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0CE2811DBF7
-	for <lists+netdev@lfdr.de>; Fri, 13 Dec 2019 03:05:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 25DED11DC83
+	for <lists+netdev@lfdr.de>; Fri, 13 Dec 2019 04:13:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731892AbfLMCFD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Dec 2019 21:05:03 -0500
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:42561 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731876AbfLMCFD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Dec 2019 21:05:03 -0500
-Received: by mail-pf1-f196.google.com with SMTP id 4so581576pfz.9
-        for <netdev@vger.kernel.org>; Thu, 12 Dec 2019 18:05:03 -0800 (PST)
+        id S1727789AbfLMDN1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Dec 2019 22:13:27 -0500
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:5268 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726631AbfLMDN1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Dec 2019 22:13:27 -0500
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xBD3BONa025041;
+        Thu, 12 Dec 2019 19:13:24 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : content-type : content-transfer-encoding :
+ mime-version; s=pfpt0818; bh=jHXy15QEwjWW6lcWIbJsN6gqgKYFOy2yXeUtkUmWiHA=;
+ b=kdUqsEnevSAcsjgnf9AkoXoF2e/P74hJm7NihHF/TJl+yvV1z2xyorlzUw3pVjOuMET0
+ HJ8m0u9TniVMrtel8kzB2aBVgS4+eKVQWGWib2wTKyTs4uTkjBNxotsCT+Zpothaamy7
+ 0WTg0O4sOzrIBLsNyVh54qshSKSyM328OAcD8/uwbQRl2fU3ICQNNlqvu1wdCzB1I/IE
+ M/W6R4zmnJcvCqTX9os9R2PmLTKhmO0APG+/mUlF9VEYex18W6Hwcv+cxSbUHXbtPdsx
+ aPvDBGJNlVg5OdjM4VChmPbRZYb0WTXWXefhR1uarJANtIDbMuItFkb/Z6gcmQWUqAeM sw== 
+Received: from sc-exch02.marvell.com ([199.233.58.182])
+        by mx0b-0016f401.pphosted.com with ESMTP id 2wue9mvhu3-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Thu, 12 Dec 2019 19:13:24 -0800
+Received: from SC-EXCH01.marvell.com (10.93.176.81) by SC-EXCH02.marvell.com
+ (10.93.176.82) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 12 Dec
+ 2019 19:13:22 -0800
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (104.47.66.46) by
+ SC-EXCH01.marvell.com (10.93.176.81) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2 via Frontend Transport; Thu, 12 Dec 2019 19:13:22 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=PYIMTI/dsJhjxK7a5UtrYOgUPs7L1dLnwLElzFAu7zHQ5RkIGcpB8kNWbskcUK2iUyrAe+gDHUPHoXpgL3QRPrBZAWK4M5OfbcihIF9S37OUZFoM9aYtSdsZ/8YNrQ5NBUZwLsDDMiZIhVKasVOsySJqPjm7XzoF7G+VT4aBJXxI4Qprqg//lJ8ni8gjl7JL77E/yf/ze1+atLX/7PDhXXuwZDlMzw2pnEnoOrOzmXDOJg20z9XtK6QTS/2S3B0+2/ERlUdL64uWUkZLHi83qqEn9/Kg/tvJzQmPnkzhpvpG+AKF7DCOw+nahYee4nwdHa29kY/AKo7+w3EmwuzL9g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=jHXy15QEwjWW6lcWIbJsN6gqgKYFOy2yXeUtkUmWiHA=;
+ b=ajJ1ewheEPs/XD6lNk3srY+sOfxkbSWxXMEpwXcd3wHjhxuTyS9p8Xqdy8KcPJ25Dh3Cjal1fsk7NJFwjFDUA1JuvDMmdncZ+IAYst4PeaEwxgJCqYYsmRLlFMdIw5/mSvMR8LkKv4OWQdSMHVTYxuI+pSu+fe9o/f0toWF/OK4huSnBtlPAA2Q9DRyxsgV2/BePsMRdI05HFin1r+6gJWGWXASpd6YCEE4y8arTBsqhR3NO6q/WlczkrA1ndnNdJ3WPRCKPzjemYjdzrxA596GMw+yijBDGYQO9yk/189SKiT0kFupdx81KRmg7WZ++m9iX9OfaPQNcIQiagn4WoQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=marvell.com; dmarc=pass action=none header.from=marvell.com;
+ dkim=pass header.d=marvell.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=XFE2WEqPww9hrPNTlokFg1ydsJkJIBHmKFrj5jVK8wg=;
-        b=LKyCIPEJOLjuL9eQqy/wHrbHSOXbMz4oMIAxi0+piXyWSjiZXwsDQkhHbSd5dtq5G+
-         Z0JAEL2XD8/1tCjZ4aof81Ib4dc7JyZpLEZCQ+G4jvHQJgUkCRf4RqHyIwhymTAAzMTZ
-         PAm4fj0fcSpdf12R8RdaXgXWONgog2zq9H9vDsOIwRA5JcyEEV5qdHRXPAXC6CDct6Y1
-         DMJE/RyFeYJr2JNyiQ9sdF/ycEdYWqX82DM2Y9DtLQKjrMxGoiItuuBBJF0PF6M3y1Sv
-         sSn/VJ9nFQHh7jrKQzviNHD5qU2PQ9XsFPCs5nviG0dL1FD2ky7SZ9LCQYzr/R7yuFVg
-         3/Ig==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=XFE2WEqPww9hrPNTlokFg1ydsJkJIBHmKFrj5jVK8wg=;
-        b=j2JWEY1a+FINW3JgMsilXSJGxEu2AbPrrL+qmun9aOBnBoqtlvCLBEpZzFANyZW0jx
-         axt+sPzQ0mMGpngwnxypcgg1D62kIRiPlXjpileagrqE+LarvtfyCdSFDvcg1vEJXeIT
-         8TLecuwevSBmChSZVSD0al54ozIfy22vqAlqlA0SfoWxGDcMNQGCcQ/k+0jAkoo14dLv
-         +WYv3IK+wqpPUm83XFecctWg+Yz1fIVakbBgIQI9gXnK7lswa2m9j0W+Jedfr2bdEAC8
-         AEpq5ktaPa1/KqlqkLrQHWFXNj/KMTpPcJugRImQ8SS7X1z8n8iRNX9co6dKRZlrdOZC
-         xmkA==
-X-Gm-Message-State: APjAAAXWh5rIo1W4SgO+CX++TtRrJYIiKVgor4o9xzxTAPKy75YfNEwS
-        9+2VdKAAwxkgKriF3EqWvKy6uw==
-X-Google-Smtp-Source: APXvYqxejyDVM4mfG2SLpJhjeTv7BcxPUUI/HLA766KLgOJAt/nt7lz82x7KBEJgyGkHLEIFiSrSEA==
-X-Received: by 2002:a63:d041:: with SMTP id s1mr14379047pgi.363.1576202702817;
-        Thu, 12 Dec 2019 18:05:02 -0800 (PST)
-Received: from cakuba.netronome.com (c-73-202-202-92.hsd1.ca.comcast.net. [73.202.202.92])
-        by smtp.gmail.com with ESMTPSA id p186sm8734108pfp.56.2019.12.12.18.05.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 Dec 2019 18:05:02 -0800 (PST)
-Date:   Thu, 12 Dec 2019 18:04:59 -0800
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     subashab@codeaurora.org
-Cc:     Lorenzo Colitti <lorenzo@google.com>,
-        Maciej =?UTF-8?B?xbtlbmN6eWtv?= =?UTF-8?B?d3NraQ==?= 
-        <zenczykowski@gmail.com>, "David S . Miller" <davem@davemloft.net>,
-        Linux Network Development Mailing List 
-        <netdev@vger.kernel.org>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Sean Tranchetti <stranche@codeaurora.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Linux SCTP <linux-sctp@vger.kernel.org>
-Subject: Re: [PATCH v2] net: introduce ip_local_unbindable_ports sysctl
-Message-ID: <20191212180459.687adf9c@cakuba.netronome.com>
-In-Reply-To: <2e7ceea704ee71383d3f19d1de63dff4@codeaurora.org>
-References: <CAHo-OowKQPQj9UhjCND5SmTOergBXMHtEctJA_T0SKLO5yebSg@mail.gmail.com>
-        <20191209224530.156283-1-zenczykowski@gmail.com>
-        <20191209154216.7e19e0c0@cakuba.netronome.com>
-        <CANP3RGe8zqa2V-PBjvACAJa2Hrd8z7BXUkks0KCrAtyeDjbsYw@mail.gmail.com>
-        <20191209161835.7c455fc0@cakuba.netronome.com>
-        <CAHo-OowHek4i9Pzxn96u8U5sTH8keQmi-yMCY-OBS7CE74OGNQ@mail.gmail.com>
-        <20191210093111.7f1ad05d@cakuba.netronome.com>
-        <CAKD1Yr05=sRDTefSP6bmb-VvvDLe9=xUtAF0q3+rn8=U9UjPcA@mail.gmail.com>
-        <20191212164749.4e4c8a4c@cakuba.netronome.com>
-        <CAKD1Yr1V4S3cxvTaBs6pReEZ_3LPobnxdroY+vE3-injHyGt2A@mail.gmail.com>
-        <2e7ceea704ee71383d3f19d1de63dff4@codeaurora.org>
-Organization: Netronome Systems, Ltd.
+ d=marvell.onmicrosoft.com; s=selector1-marvell-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=jHXy15QEwjWW6lcWIbJsN6gqgKYFOy2yXeUtkUmWiHA=;
+ b=PF1CZWX4hmt16MrbYGpvmB2E33ObetIh8HbHBXqDPTbbgEcvm9E3dOjBOQcyIjB2rGXYFyhtyFSH8TO56JQh5LdkSSp3Fd/6lxADlu8SeHvcJG5PdqY9gYVkIpEYTUmmxNi+SgdVYpqwpjbJxKvzA2DrRLDwzmmgDAElOt5rtoE=
+Received: from DM6PR18MB3388.namprd18.prod.outlook.com (10.255.174.205) by
+ DM6PR18MB2474.namprd18.prod.outlook.com (20.179.106.156) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2538.18; Fri, 13 Dec 2019 03:13:21 +0000
+Received: from DM6PR18MB3388.namprd18.prod.outlook.com
+ ([fe80::b18e:16c:b407:64d3]) by DM6PR18MB3388.namprd18.prod.outlook.com
+ ([fe80::b18e:16c:b407:64d3%2]) with mapi id 15.20.2516.018; Fri, 13 Dec 2019
+ 03:13:21 +0000
+From:   Manish Chopra <manishc@marvell.com>
+To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     "michael.chan@broadcom.com" <michael.chan@broadcom.com>,
+        Manish Chopra <manishc@marvell.com>
+Subject: LRO/HW_GRO is not disabled when native xdp is installed
+Thread-Topic: LRO/HW_GRO is not disabled when native xdp is installed
+Thread-Index: AdWxYyOH9Q0NPNE5QOubY6DZVvHbMw==
+Date:   Fri, 13 Dec 2019 03:13:21 +0000
+Message-ID: <DM6PR18MB338861990B56CCA5A4384779AB540@DM6PR18MB3388.namprd18.prod.outlook.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [2405:204:908d:b8a0:1d9f:24aa:ca39:806]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 7ff273e5-1f7f-4977-9e6b-08d77f7a68cb
+x-ms-traffictypediagnostic: DM6PR18MB2474:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <DM6PR18MB24742F828C4F71C0E8BC833EAB540@DM6PR18MB2474.namprd18.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:7219;
+x-forefront-prvs: 0250B840C1
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(396003)(39860400002)(136003)(366004)(346002)(376002)(189003)(199004)(86362001)(5660300002)(66476007)(64756008)(66446008)(2906002)(316002)(66556008)(186003)(478600001)(7696005)(6506007)(6916009)(76116006)(66946007)(33656002)(9686003)(55016002)(52536014)(107886003)(54906003)(4326008)(71200400001)(8936002)(81166006)(8676002)(81156014);DIR:OUT;SFP:1101;SCL:1;SRVR:DM6PR18MB2474;H:DM6PR18MB3388.namprd18.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: marvell.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: Hjuc2O0pYdKoGK7wjys1fG/ZFS/gaOaucgN42+LbXamroe4ONui90piROvtbTn5tMv/3iAa8ZQGDVtu5Bb+9UifJ4F3BhrZWiMega3D6F0oBCNqMlom06/r5MaBneGAOrEFthaC2NcQAAWcFCWsmoNmMGeALpkWs06q6cYVSJDamipuz6PopZJg3n5TGUdhYHvZPp8N7Glc89XOq/jNLPkaOqC/DbI864bjQtgWIGA29zShr3AWEN3NVrpuAkXbJUl6N7ItH8Wp/3EXQ9KjkrJPCpLlH2SFquNUI3k0wYxvCXfKm/aLlZMsOrSA5QNItFOTPfiyoUC2+VSd2zwM2xi+O0WezltnV+PjpE+eQD3PMJVJ2rFT+poAd9GfNeC/0wRHt8vzOgFmeDHjytrGoQi5MRVaTnwCyNIGB02oviDtdb7SzuRlpZmHmDmt8OFSM
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7ff273e5-1f7f-4977-9e6b-08d77f7a68cb
+X-MS-Exchange-CrossTenant-originalarrivaltime: 13 Dec 2019 03:13:21.6537
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 70e1fb47-1155-421d-87fc-2e58f638b6e0
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: npdtYNuEIhCrnfToAdtiXoxGbVXumYB6gCrzRg1P5bvU1k8zT58iMb8JP5kU9FpMYxul1ETddNB2U2cgy+qLow==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR18MB2474
+X-OriginatorOrg: marvell.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
+ definitions=2019-12-12_08:2019-12-12,2019-12-12 signatures=0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 12 Dec 2019 18:53:19 -0700, subashab@codeaurora.org wrote:
-> On 2019-12-12 17:57, Lorenzo Colitti wrote:
-> > On Fri, Dec 13, 2019 at 9:47 AM Jakub Kicinski wrote:  
-> >> How are the ports which get reserved communicated between the baseband
-> >> and the AP? Is this part of the standard? Is the driver that talks to
-> >> the base band in the user space and it knows which ports to reserve
-> >> statically? Or does the modem dynamically request ports to
-> >> reserve/inform the host of ports in use?  
-> > 
-> > I'm not an expert in that part of the system, but my understanding is
-> > that the primary way this is used is to pre-allocate a block of ports
-> > to be used by the modem on boot, before other applications can bind to
-> > ports. Subash, do you have more details?  
-> 
-> AFAIK these ports are randomly picked and not from a standard.
-> Userspace gets this information through qrtr during boot.
-> 
-> Atleast in our case, there cannot be any existing user of these ports
-> since these ports are blocked prior to mobile connection establishment.
+Hello,
 
-Not even a listening socket?
+When attaching native xdp program, device's aggregation features (i.e LRO/H=
+W_GRO) are not getting disabled.=20
+They seems to be getting disabled only in case of generic xdp install, not =
+in case of native/driver mode xdp,
+Shouldn't it be done something like below ?? if so, please let me know if I=
+ can post a patch like below.
 
-> We could call SOCK_DIAG_DESTROY on these ports from userspace as a
-> precaution as applications would gracefully handle the socket errors.
+diff --git a/net/core/dev.c b/net/core/dev.c
+index c7db39926769..8a128a34378f 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -4580,8 +4580,6 @@ static int generic_xdp_install(struct net_device *dev=
+, struct netdev_bpf *xdp)
+=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 stati=
+c_key_slow_dec(&generic_xdp_needed);
+=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 } else if (new && !old) {
+=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 stati=
+c_key_slow_inc(&generic_xdp_needed);
+-=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 dev_dis=
+able_lro(dev);
+-=A0 =A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0dev_dis=
+able_gro_hw(dev);
+=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 }
+=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 break;
 
-Right, or kernel could walk them, since presumably every application
-using this functionality should do it, anyway? But no strong feeling 
-on this if nobody else feels this is needed.
+@@ -7216,8 +7214,12 @@ int dev_change_xdp_fd(struct net_device *dev, struct=
+ netlink_ext_ack *extack,
+=A0=A0=A0=A0=A0=A0=A0 }
+
+=A0=A0=A0=A0=A0=A0=A0 err =3D dev_xdp_install(dev, bpf_op, extack, flags, p=
+rog);
+-=A0=A0=A0=A0=A0=A0 if (err < 0 && prog)
++=A0=A0=A0=A0=A0=A0 if (err < 0 && prog) {
+=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 bpf_prog_put(prog);
++=A0=A0=A0=A0=A0=A0 } else {
++=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 dev_disable_lro(dev);
++=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 dev_disable_gro_hw(dev);
++=A0=A0=A0=A0=A0=A0 }
+
+=A0=A0=A0=A0=A0=A0=A0 return err;
+}
+
+Thanks,
+Manish
+
