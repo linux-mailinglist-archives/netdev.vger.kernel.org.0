@@ -2,143 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AFDBA11EED7
-	for <lists+netdev@lfdr.de>; Sat, 14 Dec 2019 00:50:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3479B11EEDF
+	for <lists+netdev@lfdr.de>; Sat, 14 Dec 2019 00:52:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726687AbfLMXuE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Dec 2019 18:50:04 -0500
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:40233 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725747AbfLMXuD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Dec 2019 18:50:03 -0500
-Received: by mail-pf1-f196.google.com with SMTP id q8so2289823pfh.7;
-        Fri, 13 Dec 2019 15:50:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=J87jfdzcYKYTCbIj29bsALQjPAoMzqA2blYQq9TuL+c=;
-        b=B9MzsY1JhzPO/HE6kzgxO5DhQRPdxeU73BXoi99E5K4pGSA1Ea2wtfilwCGtcSS1Pz
-         WPYsl7TyyRmEtVBbkLZxhcmE3ELC+0+a7phM9GlU7nQH+y4IwQVrKu1upJYIk/0SJFlK
-         9bAt9TsFw6zkI6h7vJE+5kbTgkWI9mGA4MkRc8eqhiuS5upBV4bZ8HEjXCDDW0KlOQAV
-         gJNZUc7vB43aT9eLpGlpi+RZyeAS3SeDehry82H484JCqBKEKuWPZJXhT5tl+hf5ud9h
-         Zu5rSeAd4DyI6tUK3UnFZIrTQNlxeNILusdoNahlFQRc8Lm6PKcWE0wvUucqHu+Gy+we
-         ZZKQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=J87jfdzcYKYTCbIj29bsALQjPAoMzqA2blYQq9TuL+c=;
-        b=GvJ54dQtotoCHpe8ZRpUCwJSVvX5FawyrLjibHrMRKzMksFxe7uJK/gDNM6LSTgtqs
-         xYwGIV2s2cBAb6J26XT2ae+zfge7jWx8qELmZJH6M5sWKiBxyqr/YuBDbnlbLD0ywI67
-         rMwr86138FE8sgd3wAitDtrxgOqhubJZTDhHw/w7QuocnwWo7es+GNbpurs4fxKQtqTH
-         QvB3xEi2bQWaPPvNplWupLj8udN8KmTNFwaSNB4SsKb67W+b47Kc1U5bFC58vj1lQypD
-         1em+IzjfeGL+lQ9sg6so08/tDtBoVpsaLWLJJtlaMNQxrG4Ak6LbQOvYfwSixnGmVoII
-         d9Lw==
-X-Gm-Message-State: APjAAAVX14kMumVYQPPExZRMDXHv4HoJ5g7FkwgMiPAlNGLWQVQFkheT
-        Ds70yzipsSdb7OlZU/5xr2w=
-X-Google-Smtp-Source: APXvYqzkjvSFBRHJBdTW3kikjsDrENn7/fNDOjAUbqSb6MruK/Xw1OrTJUYg85geSUbTixmD6dmqSg==
-X-Received: by 2002:a63:1101:: with SMTP id g1mr2297480pgl.435.1576281002962;
-        Fri, 13 Dec 2019 15:50:02 -0800 (PST)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:200::de66])
-        by smtp.gmail.com with ESMTPSA id k60sm11340968pjh.22.2019.12.13.15.50.01
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 13 Dec 2019 15:50:02 -0800 (PST)
-Date:   Fri, 13 Dec 2019 15:50:00 -0800
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Andrii Nakryiko <andriin@fb.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@fb.com,
-        daniel@iogearbox.net, andrii.nakryiko@gmail.com, kernel-team@fb.com
-Subject: Re: [PATCH v3 bpf-next 07/17] libbpf: expose BTF-to-C type
- declaration emitting API
-Message-ID: <20191213234959.7qrvp5n3habe34pp@ast-mbp.dhcp.thefacebook.com>
-References: <20191213223214.2791885-1-andriin@fb.com>
- <20191213223214.2791885-8-andriin@fb.com>
+        id S1726762AbfLMXwD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Dec 2019 18:52:03 -0500
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:9064 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725747AbfLMXwD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Dec 2019 18:52:03 -0500
+Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
+        by m0001303.ppops.net (8.16.0.42/8.16.0.42) with SMTP id xBDNpONM012067
+        for <netdev@vger.kernel.org>; Fri, 13 Dec 2019 15:52:01 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-type :
+ content-transfer-encoding; s=facebook;
+ bh=YXOOuOZ03EcBnBrGGLDOz6IisuvLp9MdqpEZ7nS9B/g=;
+ b=pY7vJz7G6UP4p/KBydswKOCaGya7JIYTaxpegapejIsWywt+NmSAY7kQ8uEj1jAxo5MQ
+ 1+/zyN4OfqR/Gcw6I0iXgHfr3DlQuqLj1wP6Fj4Ll42fb3pDIQFUOQvJCz0ZVRiZ+IRE
+ 26btOw2mG+EAqUTvvDeuci3d7sgSoE80iYU= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by m0001303.ppops.net with ESMTP id 2wvfg8sejy-6
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Fri, 13 Dec 2019 15:52:01 -0800
+Received: from intmgw002.41.prn1.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:83::5) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Fri, 13 Dec 2019 15:51:47 -0800
+Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
+        id 33A842EC1A1D; Fri, 13 Dec 2019 15:51:46 -0800 (PST)
+Smtp-Origin-Hostprefix: devbig
+From:   Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>
+CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Cluster: ftw2c04
+Subject: [PATCH v3 bpf-next 0/4] Add libbpf-provided extern variables support
+Date:   Fri, 13 Dec 2019 15:51:40 -0800
+Message-ID: <20191213235144.3063354-1-andriin@fb.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191213223214.2791885-8-andriin@fb.com>
-User-Agent: NeoMutt/20180223
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-FB-Internal: Safe
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
+ definitions=2019-12-13_09:2019-12-13,2019-12-13 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 spamscore=0
+ lowpriorityscore=0 adultscore=0 impostorscore=0 suspectscore=0 mlxscore=0
+ mlxlogscore=999 phishscore=0 bulkscore=0 priorityscore=1501 clxscore=1015
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-1910280000 definitions=main-1912130165
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Dec 13, 2019 at 02:32:04PM -0800, Andrii Nakryiko wrote:
-> Expose API that allows to emit type declaration and field/variable definition
-> (if optional field name is specified) in valid C syntax for any provided BTF
-> type. This is going to be used by bpftool when emitting data section layout as
-> a struct. As part of making this API useful in a stand-alone fashion, move
-> initialization of some of the internal btf_dump state to earlier phase.
-> 
-> Acked-by: Martin KaFai Lau <kafai@fb.com>
-> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
-> ---
->  tools/lib/bpf/btf.h      | 22 ++++++++++++++
->  tools/lib/bpf/btf_dump.c | 62 +++++++++++++++++++++++-----------------
->  tools/lib/bpf/libbpf.map |  1 +
->  3 files changed, 59 insertions(+), 26 deletions(-)
-> 
-> diff --git a/tools/lib/bpf/btf.h b/tools/lib/bpf/btf.h
-> index a114c8ef4f08..1f9625946ead 100644
-> --- a/tools/lib/bpf/btf.h
-> +++ b/tools/lib/bpf/btf.h
-> @@ -126,6 +126,28 @@ LIBBPF_API void btf_dump__free(struct btf_dump *d);
->  
->  LIBBPF_API int btf_dump__dump_type(struct btf_dump *d, __u32 id);
->  
-> +struct btf_dump_emit_type_decl_opts {
-> +	/* size of this struct, for forward/backward compatiblity */
-> +	size_t sz;
-> +	/* optional field name for type declaration, e.g.:
-> +	 * - struct my_struct <FNAME>
-> +	 * - void (*<FNAME>)(int)
-> +	 * - char (*<FNAME>)[123]
-> +	 */
-> +	const char *field_name;
-> +	/* extra indentation level (in number of tabs) to emit for multi-line
-> +	 * type declarations (e.g., anonymous struct); applies for lines
-> +	 * starting from the second one (first line is assumed to have
-> +	 * necessary indentation already
-> +	 */
-> +	int indent_level;
-> +};
-> +#define btf_dump_emit_type_decl_opts__last_field attach_prog_fd
+It's often important for BPF program to know kernel version or some speci=
+fic
+config values (e.g., CONFIG_HZ to convert jiffies to seconds) and change =
+or
+adjust program logic based on their values. As of today, any such need ha=
+s to
+be resolved by recompiling BPF program for specific kernel and kernel
+configuration. In practice this is usually achieved by using BCC and its
+embedded LLVM/Clang. With such set up #ifdef CONFIG_XXX and similar
+compile-time constructs allow to deal with kernel varieties.
 
-OPTS_VALID() is missing in btf_dump__emit_type_decl() ?
-Otherwise it would have caught above typo.
+With CO-RE (Compile Once =E2=80=93 Run Everywhere) approach, this is not =
+an option,
+unfortunately. All such logic variations have to be done as a normal
+C language constructs (i.e., if/else, variables, etc), not a preprocessor
+directives. This patch series add support for such advanced scenarios thr=
+ough
+C extern variables. These extern variables will be recognized by libbpf a=
+nd
+supplied through extra .extern internal map, similarly to global data. Th=
+is
+.extern map is read-only, which allows BPF verifier to track its content
+precisely as constants. That gives an opportunity to have pre-compiled BP=
+F
+program, which can potentially use BPF functionality (e.g., BPF helpers) =
+or
+kernel features (types, fields, etc), that are available only on a subset=
+ of
+targeted kernels, while effectively eleminating (through verifier's dead =
+code
+detection) such unsupported functionality for other kernels (typically, o=
+lder
+versions). Patch #3 explicitly tests a scenario of using unsupported BPF
+helper, to validate the approach.
 
+This patch set heavily relies on BTF type information emitted by compiler=
+ for
+each extern variable declaration. Based on specific types, libbpf does st=
+rict
+checks of config data values correctness. See patch #1 for details.
 
->  	d->ident_names = hashmap__new(str_hash_fn, str_equal_fn, NULL);
->  	if (IS_ERR(d->ident_names)) {
->  		err = PTR_ERR(d->ident_names);
->  		d->ident_names = NULL;
-> -		btf_dump__free(d);
-> -		return ERR_PTR(err);
-> +		goto err;
-> +	}
-> +	d->type_states = calloc(1 + btf__get_nr_types(d->btf),
-> +				sizeof(d->type_states[0]));
-> +	if (!d->type_states) {
-> +		err = -ENOMEM;
-> +		goto err;
-> +	}
-> +	d->cached_names = calloc(1 + btf__get_nr_types(d->btf),
-> +				 sizeof(d->cached_names[0]));
-> +	if (!d->cached_names) {
-> +		err = -ENOMEM;
-> +		goto err;
->  	}
->  
-> +	/* VOID is special */
-> +	d->type_states[0].order_state = ORDERED;
-> +	d->type_states[0].emit_state = EMITTED;
+Outline of the patch set:
+- patch #1 does a small clean up of internal map names contants;
+- patch #2 adds all of the libbpf internal machinery for externs support,
+  including setting up BTF information for .extern data section;
+- patch #3 adds support for .extern into BPF skeleton;
+- patch #4 adds externs selftests, as well as enhances test_skeleton.c te=
+st to
+  validate mmap()-ed .extern datasection functionality.
 
-Not following the logic with 1 + btf__get_nr_types(d->btf) and
-above init...
-type_states[0] is void. true.
-But btf__get_nr_types() includes that type_id=0 == void.
-So what this 1+ is for?
-I know it's just a move of old code. I just noticed.
-Would be great to add a comment.
+This patch set is based off BPF skeleton patch set ([0]).
+
+  [0] https://patchwork.ozlabs.org/project/netdev/list/?series=3D148468&s=
+tate=3D*
+
+v2->v3:
+- truncate too long strings (Alexei);
+- clean ups, adding comments (Alexei);
+
+v1->v2:
+- use BTF type information for externs (Alexei);
+- add strings support;
+- add BPF skeleton support for .extern.
+
+Andrii Nakryiko (4):
+  libbpf: extract internal map names into constants
+  libbpf: support libbpf-provided extern variables
+  bpftool: generate externs datasec in BPF skeleton
+  selftests/bpf: add tests for libbpf-provided externs
+
+ include/uapi/linux/btf.h                      |   3 +-
+ tools/bpf/bpftool/gen.c                       |   4 +
+ tools/include/uapi/linux/btf.h                |   7 +-
+ tools/lib/bpf/Makefile                        |  15 +-
+ tools/lib/bpf/bpf_helpers.h                   |   9 +
+ tools/lib/bpf/btf.c                           |   9 +-
+ tools/lib/bpf/libbpf.c                        | 786 ++++++++++++++++--
+ tools/lib/bpf/libbpf.h                        |  12 +-
+ tools/testing/selftests/bpf/Makefile          |   2 +-
+ .../selftests/bpf/prog_tests/core_extern.c    | 193 +++++
+ .../selftests/bpf/prog_tests/skeleton.c       |  18 +-
+ .../selftests/bpf/progs/test_core_extern.c    |  62 ++
+ .../selftests/bpf/progs/test_skeleton.c       |   9 +
+ 13 files changed, 1042 insertions(+), 87 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/core_extern.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_core_extern.c
+
+--=20
+2.17.1
 
