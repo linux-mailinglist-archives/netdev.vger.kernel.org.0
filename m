@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A5F6111EA1A
-	for <lists+netdev@lfdr.de>; Fri, 13 Dec 2019 19:24:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B34511EA1B
+	for <lists+netdev@lfdr.de>; Fri, 13 Dec 2019 19:24:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728671AbfLMSWP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Dec 2019 13:22:15 -0500
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:50792 "EHLO
+        id S1728736AbfLMSWY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Dec 2019 13:22:24 -0500
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:50804 "EHLO
         pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728670AbfLMSWP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Dec 2019 13:22:15 -0500
+        with ESMTP id S1726404AbfLMSWY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Dec 2019 13:22:24 -0500
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
         Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:References:
         In-Reply-To:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
         Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
         List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=SltXWcvZ7dN2oldZQNome5UIBaq/Hyb5rgTcJzCM5IM=; b=w0bENqiTAyVE/KhSC1qLUAXf8h
-        zCCQmwPrOm4Z4YL/SCmb6Wq+8D+6qy9F824iqPR3oMSdnhFniHwXq0JCuhAQyq1Ajf4m6qLcnK2Pt
-        srwPIb+mH2FKlXjYWltoB17Uq8JtIJs4c2ZZqr7P2E08sRgkOE0FdxyAmfpjZqTIu23jDEEuDxft4
-        F5taoL1Zb/6/fnb3QSY7YVLb6O7Rx8RllRmkeFinjil27Cl+79uZs/9IXThhGDbPpbHL50SCLFWYR
-        c4VjdCFwACGZ+FmRMMdi9a3eLwV++PPlLVRyqxtxhyo6IDRngYX3K+4xmbiZY46aQM9i84F48Wp26
-        Tw4cp5tA==;
-Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:47714 helo=rmk-PC.armlinux.org.uk)
+        bh=sw4p6TAUZstPkwM79xeq2y+f96wNSSWZzvjddm1ewWg=; b=ARg0tTVRLqDUeZY7xWvOWV7L3F
+        Yu2ZIh18ix0vtO4gNQC1JzHdXysZyHSz6xNA57F1MyWQZIp6UaHJgHKOVSenjMSGremL30lrAxH4X
+        LUSNXBb7efUIKVoEuULWd+k/0vJ0r+R4atYNkbSKy7xR3fegDrX12IVcfyOZEzZjQYp5Pq39d2081
+        UGXODiao2mgMOuYhm+icbDQvg6pS1Wx/fMoSwcJj5Nt5N2R/1ZWvGAQXwr1kMzW/y2Hsk3ZJnLv2j
+        VM6+idh/NxtI3P8MLF+CQ59qhhcgfRsb2H85qTyeKQc3bTclSYE6DExyUGNferUUQcSv4iYADUnEb
+        zCc/fW+w==;
+Received: from e0022681537dd.dyn.armlinux.org.uk ([2002:4e20:1eda:1:222:68ff:fe15:37dd]:43474 helo=rmk-PC.armlinux.org.uk)
         by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
         (Exim 4.90_1)
         (envelope-from <rmk@armlinux.org.uk>)
-        id 1ifpZj-0006Sa-AA; Fri, 13 Dec 2019 18:22:03 +0000
+        id 1ifpZo-0006Sk-BL; Fri, 13 Dec 2019 18:22:08 +0000
 Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.92)
         (envelope-from <rmk@armlinux.org.uk>)
-        id 1ifpZi-0004mP-7d; Fri, 13 Dec 2019 18:22:02 +0000
+        id 1ifpZn-00053f-FS; Fri, 13 Dec 2019 18:22:07 +0000
 In-Reply-To: <20191213175415.GW25745@shell.armlinux.org.uk>
 References: <20191213175415.GW25745@shell.armlinux.org.uk>
 From:   Russell King <rmk+kernel@armlinux.org.uk>
@@ -39,141 +39,93 @@ To:     Andrew Lunn <andrew@lunn.ch>,
         Heiner Kallweit <hkallweit1@gmail.com>
 Cc:     Antoine Tenart <antoine.tenart@bootlin.com>,
         "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: [PATCH net-next v2 1/3] net: phylink: improve clause 45 PHY
- ksettings_set implementation
+Subject: [PATCH net-next v2 2/3] net: phylink: extend clause 45 PHY validation
+ workaround
 MIME-Version: 1.0
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain; charset="utf-8"
-Message-Id: <E1ifpZi-0004mP-7d@rmk-PC.armlinux.org.uk>
-Date:   Fri, 13 Dec 2019 18:22:02 +0000
+Message-Id: <E1ifpZn-00053f-FS@rmk-PC.armlinux.org.uk>
+Date:   Fri, 13 Dec 2019 18:22:07 +0000
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-While testing ethtool with the Methode DM7052 module, it was noticed
-that attempting to set the advertising mask results in the mask being
-truncated to the support offered by the currently chosen PHY interface
-mode.
+Commit e45d1f5288b8 ("net: phylink: support Clause 45 PHYs on SFP+
+modules") added a workaround to support clause 45 PHYs which
+dynamically switch their interface mode on SFP+ modules.  This was
+implemented by validating the PHYs supported/advertising using
+PHY_INTERFACE_MODE_NA, rather than the specific interface mode that
+we attached the PHY with.
 
-When a PHY dynamically changes the PHY interface mode, limiting the
-advertising mask in this way is not correct - if the PHY happened to
-negotiate 10GBASE-T, and selected 10GBASE-R as the host interface, we
-don't want to restrict the advertisement to just 10GBASE-* modes.
+However, we already have a situation where phylink is used to connect
+a Marvell 88X3310 PHY which also behaves in exactly the same way, but
+which seemingly doesn't need this.  The reason seems to be that the
+mvpp2 driver sets a whole bunch of link modes for
+PHY_INTERFACE_MODE_10GKR down to 10Mb/s, despite 10GBASE-R not actually
+supporting anything but 10Gb/s speeds.
 
-Rework setting the advertisement to take account of this; do not pass
-the requested advertisement through phylink_validate(), but rely on
-the advertisement restriction (supported mask) set when the PHY was
-initially setup.
+When testing with drivers that (correctly) take the mvneta approach,
+where the validate() method only returns what can be supported /
+advertised for the specified link mode, we find that Clause 45 PHYs do
+not behave as we expect: their advertisement is restricted to what
+the current link will support, rather than what the PHY supports
+through its dynamic switching.
+
+Extend this workaround to all such cases; if we have a Clause 45 PHY
+attaching via any means, except in USXGMII, XAUI and RXAUI which are
+all unable to support this dynamic switching or have other solutions
+to it, then we need to validate using PHY_INTERFACE_MODE_NA.
+
+This should allow mvpp2 to switch to a more conformant validate()
+implementation.
 
 Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
 ---
- drivers/net/phy/phylink.c | 84 ++++++++++++++++++++++++---------------
- 1 file changed, 53 insertions(+), 31 deletions(-)
+ drivers/net/phy/phylink.c | 22 +++++++++++++---------
+ 1 file changed, 13 insertions(+), 9 deletions(-)
 
 diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
-index 8d20cf3ba0b7..2e5bc63c1dfa 100644
+index 2e5bc63c1dfa..896772694bf4 100644
 --- a/drivers/net/phy/phylink.c
 +++ b/drivers/net/phy/phylink.c
-@@ -1229,44 +1229,66 @@ int phylink_ethtool_ksettings_set(struct phylink *pl,
- 		__set_bit(ETHTOOL_LINK_MODE_Autoneg_BIT, config.advertising);
- 	}
- 
--	if (phylink_validate(pl, support, &config))
--		return -EINVAL;
--
--	/* If autonegotiation is enabled, we must have an advertisement */
--	if (config.an_enabled && phylink_is_empty_linkmode(config.advertising))
--		return -EINVAL;
--
--	our_kset = *kset;
--	linkmode_copy(our_kset.link_modes.advertising, config.advertising);
--	our_kset.base.speed = config.speed;
--	our_kset.base.duplex = config.duplex;
--
--	/* If we have a PHY, configure the phy */
- 	if (pl->phydev) {
-+		/* If we have a PHY, we process the kset change via phylib.
-+		 * phylib will call our link state function if the PHY
-+		 * parameters have changed, which will trigger a resolve
-+		 * and update the MAC configuration.
-+		 */
-+		our_kset = *kset;
-+		linkmode_copy(our_kset.link_modes.advertising,
-+			      config.advertising);
-+		our_kset.base.speed = config.speed;
-+		our_kset.base.duplex = config.duplex;
+@@ -735,7 +735,19 @@ static int phylink_bringup_phy(struct phylink *pl, struct phy_device *phy,
+ 	memset(&config, 0, sizeof(config));
+ 	linkmode_copy(supported, phy->supported);
+ 	linkmode_copy(config.advertising, phy->advertising);
+-	config.interface = interface;
 +
- 		ret = phy_ethtool_ksettings_set(pl->phydev, &our_kset);
- 		if (ret)
- 			return ret;
--	}
++	/* Clause 45 PHYs switch their Serdes lane between several different
++	 * modes, normally 10GBASE-R, SGMII. Some use 2500BASE-X for 2.5G
++	 * speeds. We really need to know which interface modes the PHY and
++	 * MAC supports to properly work out which linkmodes can be supported.
++	 */
++	if (phy->is_c45 &&
++	    interface != PHY_INTERFACE_MODE_RXAUI &&
++	    interface != PHY_INTERFACE_MODE_XAUI &&
++	    interface != PHY_INTERFACE_MODE_USXGMII)
++		config.interface = PHY_INTERFACE_MODE_NA;
++	else
++		config.interface = interface;
  
--	mutex_lock(&pl->state_mutex);
--	/* Configure the MAC to match the new settings */
--	linkmode_copy(pl->link_config.advertising, our_kset.link_modes.advertising);
--	pl->link_config.interface = config.interface;
--	pl->link_config.speed = our_kset.base.speed;
--	pl->link_config.duplex = our_kset.base.duplex;
--	pl->link_config.an_enabled = our_kset.base.autoneg != AUTONEG_DISABLE;
-+		mutex_lock(&pl->state_mutex);
-+		/* Save the new configuration */
-+		linkmode_copy(pl->link_config.advertising,
-+			      our_kset.link_modes.advertising);
-+		pl->link_config.interface = config.interface;
-+		pl->link_config.speed = our_kset.base.speed;
-+		pl->link_config.duplex = our_kset.base.duplex;
-+		pl->link_config.an_enabled = our_kset.base.autoneg !=
-+					     AUTONEG_DISABLE;
-+		mutex_unlock(&pl->state_mutex);
-+	} else {
-+		/* For a fixed link, this isn't able to change any parameters,
-+		 * which just leaves inband mode.
-+		 */
-+		if (phylink_validate(pl, support, &config))
-+			return -EINVAL;
+ 	ret = phylink_validate(pl, supported, &config);
+ 	if (ret)
+@@ -1904,14 +1916,6 @@ static int phylink_sfp_connect_phy(void *upstream, struct phy_device *phy)
+ 	if (ret < 0)
+ 		return ret;
  
--	/* If we have a PHY, phylib will call our link state function if the
--	 * mode has changed, which will trigger a resolve and update the MAC
--	 * configuration. For a fixed link, this isn't able to change any
--	 * parameters, which just leaves inband mode.
+-	/* Clause 45 PHYs switch their Serdes lane between several different
+-	 * modes, normally 10GBASE-R, SGMII. Some use 2500BASE-X for 2.5G
+-	 * speeds.  We really need to know which interface modes the PHY and
+-	 * MAC supports to properly work out which linkmodes can be supported.
 -	 */
--	if (pl->cur_link_an_mode == MLO_AN_INBAND &&
--	    !test_bit(PHYLINK_DISABLE_STOPPED, &pl->phylink_disable_state)) {
--		phylink_mac_config(pl, &pl->link_config);
--		phylink_mac_an_restart(pl);
-+		/* If autonegotiation is enabled, we must have an advertisement */
-+		if (config.an_enabled &&
-+		    phylink_is_empty_linkmode(config.advertising))
-+			return -EINVAL;
-+
-+		mutex_lock(&pl->state_mutex);
-+		linkmode_copy(pl->link_config.advertising, config.advertising);
-+		pl->link_config.interface = config.interface;
-+		pl->link_config.speed = config.speed;
-+		pl->link_config.duplex = config.duplex;
-+		pl->link_config.an_enabled = kset->base.autoneg !=
-+					     AUTONEG_DISABLE;
-+
-+		if (pl->cur_link_an_mode == MLO_AN_INBAND &&
-+		    !test_bit(PHYLINK_DISABLE_STOPPED,
-+			      &pl->phylink_disable_state)) {
-+			/* If in 802.3z mode, this updates the advertisement.
-+			 *
-+			 * If we are in SGMII mode without a PHY, there is no
-+			 * advertisement; the only thing we have is the pause
-+			 * modes which can only come from a PHY.
-+			 */
-+			phylink_mac_config(pl, &pl->link_config);
-+			phylink_mac_an_restart(pl);
-+		}
-+		mutex_unlock(&pl->state_mutex);
- 	}
--	mutex_unlock(&pl->state_mutex);
- 
- 	return 0;
- }
+-	if (phy->is_c45)
+-		interface = PHY_INTERFACE_MODE_NA;
+-
+ 	ret = phylink_bringup_phy(pl, phy, interface);
+ 	if (ret)
+ 		phy_detach(phy);
 -- 
 2.20.1
 
