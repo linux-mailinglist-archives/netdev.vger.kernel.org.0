@@ -2,79 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F351B11DA5C
-	for <lists+netdev@lfdr.de>; Fri, 13 Dec 2019 01:03:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 58C9811DB01
+	for <lists+netdev@lfdr.de>; Fri, 13 Dec 2019 01:16:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731431AbfLMADf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Dec 2019 19:03:35 -0500
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:37932 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731205AbfLMADe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Dec 2019 19:03:34 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=qvxHJslPOOm/34wIy7NYJCw9gY0qPsLHTXeHXJSu1sA=; b=QHn+fS7vDfRakKK0iSDcGbKvU
-        3a747Ll1leyRbNFZZpwh9DXHXB3PVyRlPn7L1FufKjn9CWwTLmTgCcWHrO6YgjTbrCLwqqea/TVsp
-        EauIIN2/HnNVq3Rn7Gu8c+J5tf43189zHl9oE8cVcU0yVAw6S5aPGNHw6LDR3scCInxJWtbbbJAq5
-        NiKXrbTXL18Abaj+Q8u7CT84w4ZmFEn5ktLzyv0/qxaDcpib2Vi1i7vdYir+Q6xv1IO/HrPgDXsQc
-        7VOlZOEufvfW3DayDD6qeMaUH+IdT+MqHV2D+eUXhsbfFI75iuTKh3TrfQVYMzhwE49QPRM5vzc4A
-        BHy9i0fVA==;
-Received: from shell.armlinux.org.uk ([2002:4e20:1eda:1:5054:ff:fe00:4ec]:48064)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1ifYQZ-0001Pt-8f; Fri, 13 Dec 2019 00:03:27 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1ifYQV-0007JU-RO; Fri, 13 Dec 2019 00:03:23 +0000
-Date:   Fri, 13 Dec 2019 00:03:23 +0000
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     David Miller <davem@davemloft.net>
-Cc:     andrew@lunn.ch, f.fainelli@gmail.com, hkallweit1@gmail.com,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net] net: phylink: fix interface passed to mac_link_up
-Message-ID: <20191213000323.GN25745@shell.armlinux.org.uk>
-References: <E1ifLlX-0004U8-Of@rmk-PC.armlinux.org.uk>
- <20191212.105544.1239200588810264031.davem@davemloft.net>
+        id S1731419AbfLMAQS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Dec 2019 19:16:18 -0500
+Received: from mail-io1-f68.google.com ([209.85.166.68]:33412 "EHLO
+        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731184AbfLMAQR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Dec 2019 19:16:17 -0500
+Received: by mail-io1-f68.google.com with SMTP id s25so609653iob.0
+        for <netdev@vger.kernel.org>; Thu, 12 Dec 2019 16:16:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Fhx/o/Pv1jKO2VN20lZS4U3D0OWihtm5CE7vV8mMIQI=;
+        b=BYQ3mPdXtaWu+GYbSo2EbcO4eeMH+Fb3l3klt2gfIT2IkPen3VBvtrBTo6BruzEDl6
+         mifIROamB8UEziu9ZaB2wu7AjiYkoJaAOK/SXSVIzx0Qu8cQC9ePMinYTs2uh1SRWxmY
+         YDDhI/bwZX2p757KzmVIVPRfs80dZfV2ys3dxHQrPEFg1L5v778fGNs9XlVShSOHZQM8
+         CJ0Zz1RmIESneN0s2zrADn5LZGtvOuL1/X0EW2gB+/UHY+/cT6BzAtu6PGgZ/s494SJz
+         mEKthYXBwdT2dMlPK5FVMROXYTrt04vlJucGDpBvOz3S73bh5OM0pCO6lbTynammQ/H6
+         EFbw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Fhx/o/Pv1jKO2VN20lZS4U3D0OWihtm5CE7vV8mMIQI=;
+        b=ay2851rj4VpgUWlueGM+dUqp5aXIZlqUk/bnUo7tEVsfVjo3MejNrwGsikX9LAPkPM
+         Il+aY/bzQ4hQcd0INTd9nCipksUf0t3lPw8F35paq3vWGVKOZK0UGQiE4qxOitTM/loa
+         HNcJAQlYlUqH7qpL3aySpO8CqF15G+CVjbZVAkA751M750O05xobM4OSYqq+XXVK5PnT
+         TUyRx7ZlUgl1ghSPrHuYfEmmWzeP3WUb6bQv5kuNb0rZtj7TRcBqx9Fdw7ymXBe+Z91u
+         obBtYn45iXObDvBJL0z00ZDAvjcGr3FUVkKIyMYxlJgUEwyNevZzyFbRA2qZNpJKfvyh
+         TaAQ==
+X-Gm-Message-State: APjAAAWzksO/7b92RuAR0dwCbFlm8Io2etnGHsMA04piKKPl15S+RHGy
+        WwvE8HUbraLTI4menV/3HKwTCmuG3sdQmRWtvtp4U27b8Bk=
+X-Google-Smtp-Source: APXvYqzKGGPDRDFfatMrOymOR3BopDiiGJG/yGfUw3OfUsYXTKNwWRjXmEc0wjrYlA+7NwB3IfpEu5heBfA6RXN7epc=
+X-Received: by 2002:a6b:3105:: with SMTP id j5mr5744700ioa.170.1576196176419;
+ Thu, 12 Dec 2019 16:16:16 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191212.105544.1239200588810264031.davem@davemloft.net>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <CAHo-OowKQPQj9UhjCND5SmTOergBXMHtEctJA_T0SKLO5yebSg@mail.gmail.com>
+ <20191209224530.156283-1-zenczykowski@gmail.com> <20191209154216.7e19e0c0@cakuba.netronome.com>
+ <CANP3RGe8zqa2V-PBjvACAJa2Hrd8z7BXUkks0KCrAtyeDjbsYw@mail.gmail.com>
+ <20191209161835.7c455fc0@cakuba.netronome.com> <CAHo-OowHek4i9Pzxn96u8U5sTH8keQmi-yMCY-OBS7CE74OGNQ@mail.gmail.com>
+ <20191210093111.7f1ad05d@cakuba.netronome.com>
+In-Reply-To: <20191210093111.7f1ad05d@cakuba.netronome.com>
+From:   Lorenzo Colitti <lorenzo@google.com>
+Date:   Fri, 13 Dec 2019 09:16:03 +0900
+Message-ID: <CAKD1Yr05=sRDTefSP6bmb-VvvDLe9=xUtAF0q3+rn8=U9UjPcA@mail.gmail.com>
+Subject: Re: [PATCH v2] net: introduce ip_local_unbindable_ports sysctl
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <zenczykowski@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Linux Network Development Mailing List 
+        <netdev@vger.kernel.org>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Sean Tranchetti <stranche@codeaurora.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Linux SCTP <linux-sctp@vger.kernel.org>,
+        Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 12, 2019 at 10:55:44AM -0800, David Miller wrote:
-> From: Russell King <rmk+kernel@armlinux.org.uk>
-> Date: Thu, 12 Dec 2019 10:32:15 +0000
-> 
-> > A mismerge between the following two commits:
-> > 
-> > c678726305b9 ("net: phylink: ensure consistent phy interface mode")
-> > 27755ff88c0e ("net: phylink: Add phylink_mac_link_{up, down} wrapper functions")
-> > 
-> > resulted in the wrong interface being passed to the mac_link_up()
-> > function. Fix this up.
-> > 
-> > Fixes: b4b12b0d2f02 ("Merge git://git.kernel.org/pub/scm/linux/kernel/git/davem/net")
-> > Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
-> 
-> Does not apply to the 'net' tree.
+On Wed, Dec 11, 2019 at 2:31 AM Jakub Kicinski
+<jakub.kicinski@netronome.com> wrote:
+> I don't consider users of non-vanilla kernels to necessarily be a
+> reason to merge patches upstream, no. They carry literally millions
+> of lines of patches out of tree, let them carry this patch, too.
+> If I can't boot a vanilla kernel on those devices, and clearly there is
+> no intent by the device manufacturers for me to ever will, why would I
+> care?
 
-The reason it doesn't apply is the change from link_an_mode to
-cur_link_an_mode on the preceeding line that is in net-next.
-Fixing this in net is going to create another merge conflict.
+That's *not* the intent.
+https://arstechnica.com/gadgets/2019/11/google-outlines-plans-for-mainline-linux-kernel-support-in-android/
 
-Would it be better to apply this one to net-next and a similar
-fix to the net tree?
+> > The reason Android runs non-vanilla kernels is *because* patches like
+> > this - that make Linux work in the real world - are missing from
+> > vanilla Linux
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-According to speedtest.net: 11.9Mbps down 500kbps up
+That's exactly the point here. Saying, "Android will never use
+mainline, so why should mainline take their patches" is a
+self-fulfilling prophecy. Obviously, if mainline never takes Android
+patches, then yes, Android will never be able to use mainline. We do
+have an Android tree we can take this patch into. But we don't want to
+take it without at least attempting to get it into mainline first.
+
+The use case here is pretty simple. There are many CPUs in a mobile
+phone. The baseband processor ("modem") implements much of the
+functionality required by cellular networks, so if you want cellular
+voice or data, it needs to be able to talk to the network. For many
+reasons (architectural, power conservation, security), the modem needs
+to be able to talk directly to the cellular network. This includes,
+for example, SIP/RTP media streams that go directly to the audio
+hardware, IKE traffic that is sent directly by the modem because only
+the modem has the keys, etc. Normally this happens directly on the
+cellular interface and Linux/Android is unaware of it. But, when using
+wifi calling (which is an IPsec tunnel over wifi to an endpoint inside
+the cellular network), the device only has one IPv4 address, and the
+baseband processor and the application processor (the CPU that runs
+Linux/Android) have to share it. This means that some ports have to be
+reserved so that the baseband processor can depend on using them. NAT
+cannot be used because the 3GPP standards require protocols that are
+not very NAT-friendly, and because the modem needs to be able to
+accept unsolicited inbound traffic.
+
+Other than "commit message doesn't have a use case", are there
+technical concerns with this patch?
