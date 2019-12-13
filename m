@@ -2,115 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DD3EF11ECAC
-	for <lists+netdev@lfdr.de>; Fri, 13 Dec 2019 22:12:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 072FC11ECD0
+	for <lists+netdev@lfdr.de>; Fri, 13 Dec 2019 22:26:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726427AbfLMVLR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Dec 2019 16:11:17 -0500
-Received: from fllv0015.ext.ti.com ([198.47.19.141]:40742 "EHLO
-        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725747AbfLMVLQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Dec 2019 16:11:16 -0500
-Received: from lelv0265.itg.ti.com ([10.180.67.224])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id xBDLBFM5083710
-        for <netdev@vger.kernel.org>; Fri, 13 Dec 2019 15:11:15 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1576271475;
-        bh=N0P1fYYCmxfGGAdb483IkpjnST0dDom0daWp32u43MA=;
-        h=From:To:Subject:Date;
-        b=qzA8KWcya0p0Yt2bbgW1HOd/bCYU5zIS47FWGiagxQqKxNg+p3Tp46yv9vnS9tVwX
-         jDvHzxXuhC+zPg3OPawFETujeAs9c4gX+E2ngQlikTW9uhK7U+m8fqYQ4ElRCrOjJ9
-         /4irKCB7aWrpnH1vXBnP6I592rkg+LDcCgadxGYY=
-Received: from DFLE109.ent.ti.com (dfle109.ent.ti.com [10.64.6.30])
-        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id xBDLBFdZ000874
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL)
-        for <netdev@vger.kernel.org>; Fri, 13 Dec 2019 15:11:15 -0600
-Received: from DFLE113.ent.ti.com (10.64.6.34) by DFLE109.ent.ti.com
- (10.64.6.30) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3; Fri, 13
- Dec 2019 15:11:15 -0600
-Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE113.ent.ti.com
- (10.64.6.34) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3 via
- Frontend Transport; Fri, 13 Dec 2019 15:11:15 -0600
-Received: from [158.218.117.45] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id xBDLBEvt109783;
-        Fri, 13 Dec 2019 15:11:14 -0600
-From:   Murali Karicheri <m-karicheri2@ti.com>
-To:     <netdev@vger.kernel.org>, "Kwok, WingMan" <w-kwok2@ti.com>
-Subject: RSTP with switchdev question
-Message-ID: <c234beeb-5511-f33c-1232-638e9c9a3ac2@ti.com>
-Date:   Fri, 13 Dec 2019 16:18:02 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
- Thunderbird/52.7.0
+        id S1726791AbfLMVXf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Dec 2019 16:23:35 -0500
+Received: from mail-lj1-f193.google.com ([209.85.208.193]:37721 "EHLO
+        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725747AbfLMVXf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Dec 2019 16:23:35 -0500
+Received: by mail-lj1-f193.google.com with SMTP id u17so210137lja.4;
+        Fri, 13 Dec 2019 13:23:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=f1slN2mkK8xs6G/MhtkTdmdutrXNzVbfJBL5Ni+GwHg=;
+        b=VkQAsnbNVe11m7w6bTAK/efI+DUDQWBY68O3xL7vPuMaj+c2W66G7eiSudXWkGNpMd
+         FJkJWesF2DwFGUTd5AfdmcWutVjW4hQZoS3rhll7EUcnGrPc8RlQJY4dZ0EAIKM/13Cr
+         cEXtu5BJ9kVPGmI1YGjjUI7qFuEMjakpjtuPbyErUh7wgURKjUqn6ApkIuC7F1qSVC4S
+         gl0Or1iGrCapsgwcX3Ac8lmCGS3fvczi/JKmZNDgeqd02y0MkDBifa0wBTXqWGvlzKPA
+         9c6Jv+REQ+kG4/14ljUuKlKjEJhXj1FdbLtjG/FT3YkbExXKHFQHikSfna5ljJCyEUub
+         sWCA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=f1slN2mkK8xs6G/MhtkTdmdutrXNzVbfJBL5Ni+GwHg=;
+        b=ImH9oyOK9mqgoTRkz00q6XAKkk1J7su5yRTsgdfzDIJK0NnZVrIpFrTqnKNIQluLwM
+         62yOfg6JZYVqd+Usn6m+jC8MOdEoW8XDRPUYIl+9uy7yXeh0Ph6El1FMtkWfgnXGsYlx
+         RuHjGJS6ktd+4H8PnbsJcnZLDlaizxOQRbS5UrvfUmHK9iotrzzYWNQeeQA2UMvqs9vF
+         4C01mRFs916uLoCfw4Uh4x9zCbOKcRU2poz1IiQ9D6Y0430lyKZGFypg7RcfMcvZ6pNc
+         Jirrx62tzt4UcQ0/OIj/DlmlHtSRcg+TKiy+ueN9nR3PP/KHCpbOQauPYbgy+7oT4EgX
+         j/Bg==
+X-Gm-Message-State: APjAAAXdnTjBtUtRyz2X8+lEqou9jMRC2vsIRyTcN3L9QSQEVHr8D86w
+        EjWAxPbTme4GwiQ5wrpk2tTBDkG/XM04TOS6Uik=
+X-Google-Smtp-Source: APXvYqyg+KeQgRXVJZDaUPbBmnIos7uPNGPm0OC3qfoP5mjou/q3men/6JEcxuvR2Oub8sziKTuimCywBRL3Bsfrp3o=
+X-Received: by 2002:a2e:8e8d:: with SMTP id z13mr10963165ljk.10.1576272213118;
+ Fri, 13 Dec 2019 13:23:33 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+References: <20191213175112.30208-1-bjorn.topel@gmail.com>
+In-Reply-To: <20191213175112.30208-1-bjorn.topel@gmail.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Fri, 13 Dec 2019 13:23:21 -0800
+Message-ID: <CAADnVQK5+z1n9xwkH0=W-8kwgqhp_LUPW=VfaMTTPAhKuNwxug@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v5 0/6] Introduce the BPF dispatcher
+To:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        bpf <bpf@vger.kernel.org>,
+        Magnus Karlsson <magnus.karlsson@gmail.com>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Edward Cree <ecree@solarflare.com>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <thoiland@redhat.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Netdev experts,
+On Fri, Dec 13, 2019 at 9:51 AM Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail.co=
+m> wrote:
+>
+> Overview
+> =3D=3D=3D=3D=3D=3D=3D=3D
+>
+> This is the 6th iteration of the series that introduces the BPF
+> dispatcher, which is a mechanism to avoid indirect calls.
+...
+> Revisions
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D
+>
+> v4->v5: [1]
 
-We are working on a switchdev based switch driver with L2 and stp
-offload.  Implemented the driver based on
-Documentation/networking/switchdev.txt
-Currently seeing an issue with switch over of a link failure. So
-wondering how this is supposed to work. So any help on this will
-be highy appreciated.
-
-
-                   0     1
-  |-------X---------- B ----------------------|
-  A                                           C root
-  |-------------------------------------------|
-
-                  Figure 1)
-
-At the start, A, B and C nodes are brought up and mstpd is started
-on all nodes and we get a toplogy as above with X marking the link
-that breaks the loop. We run a Ping from C to A and it works fine
-and takes the direct path from C to A. We then simulate a link
-failure to trigger topology change by disconnecting of the link
-A to C. Switch over happens and the topology gets updated quickly
-and we get the one below in Figure 2).
-
-Case 2)
-                   0     1
-  |------------------ B ----------------------|
-  A                                           C root
-  |-------------------X-----------------------|
-                 Figure 2)
-
-The ping stops and resume after about 30 seconds instead of right
-away as expected in rstp case which should be in milliseconds. On
-debug we found following happening.
-
-1) In the steady state, the fdb dump at the firmware on B (This
-    implements the switch) shows that both A and C appears on port
-    1 as expected.
-2  After switch over, Ping frame from C with A's MAC address gets
-    sent to B.  However B's fdb entry is still showing it is at
-    port 1. Since the frame arrived from C, it drops the frame.
-
-So the question is, in this scenario, how does the data path
-restored quickly? Looks like for this to happen FDB at the nodes
-needs to get flushed or re-learned so that it will show all nodes
-at the correct port in the new topology. So in this case at node
-B, A should appear on port 0 instead of port 1 so that L2
-forwarding happens correctly? As expected, if another ping is
-initiated from A to C, the other ping (C to A) starts working as
-the FDB at B is updated. But if data path needs to be restored
-quickly, these fdb update should happen immediately. How does
-this happen?
-
-Thanks
-
-Murali
-
--- 
-Murali Karicheri
-Texas Instruments
+Applied. Thanks for all the hard work.
