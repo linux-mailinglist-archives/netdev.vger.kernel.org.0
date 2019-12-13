@@ -2,98 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 19E5311E7D2
-	for <lists+netdev@lfdr.de>; Fri, 13 Dec 2019 17:11:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 51BB111E7F8
+	for <lists+netdev@lfdr.de>; Fri, 13 Dec 2019 17:19:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728091AbfLMQLy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Dec 2019 11:11:54 -0500
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:49216 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727946AbfLMQLy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Dec 2019 11:11:54 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=jDuXV/W8alQ1RXvNo3evM02Xeqkxr1Cbr87zhWql228=; b=xUca8MX5F9wfvZsV2WiJefqMR
-        0GGsLtnn6+D7P1QVTn6DPI6ONcsNj8rrNCxl0Wtcu1tDku3gQN1oeIeWB5RuTkAj9dZtabmfM5g6e
-        /BpnySVqR86ohyhIMh5Kt56QNhssnCuI3GHw19WYNpytJMjjwckQRJ+Yb8C8F27zip7piSQfHyRw9
-        r/Bal1rWd0OfPGNMKVGwavifItp90I0OW9hu6soFK9kYJFPpiWK1LxmBhX/hKQa81jsXFvbdKmYET
-        zkv4jfG8Rn47cmoqSDditR2Kga+iCqkcEbx6vOr3iAL/5l3r+DLt/E0Pv1KzEFDlwfc7Q1I+riNOi
-        S1Eor2OLg==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:52502)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1ifnXe-0005ok-K3; Fri, 13 Dec 2019 16:11:46 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1ifnXc-00081Z-Cx; Fri, 13 Dec 2019 16:11:44 +0000
-Date:   Fri, 13 Dec 2019 16:11:44 +0000
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Antoine Tenart <antoine.tenart@bootlin.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next 3/3] net: mvpp2: update mvpp2 validate()
- implementation
-Message-ID: <20191213161144.GU25745@shell.armlinux.org.uk>
-References: <20191212174309.GM25745@shell.armlinux.org.uk>
- <E1ifSV8-0000b1-NW@rmk-PC.armlinux.org.uk>
- <20191213160420.GA26710@kwain>
+        id S1728187AbfLMQTE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Dec 2019 11:19:04 -0500
+Received: from mail-lf1-f66.google.com ([209.85.167.66]:37299 "EHLO
+        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728133AbfLMQTE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Dec 2019 11:19:04 -0500
+Received: by mail-lf1-f66.google.com with SMTP id b15so2374429lfc.4;
+        Fri, 13 Dec 2019 08:19:02 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Spg0GfwWFlnRUw0lvoa6ReBLhxIzcCxpK224qhBQrwk=;
+        b=fS2w9fx2/qyRZCSQ7ld1Lck5W9YGKEyko/GaYYX6zDuKFTKxUOCu6aHpYPM6/ts8A1
+         ul7fUEDNoCcdtsiQ973+hkTLseRh5wv2ZkeDw8YIXdSXWuuYuZUSAMJhvzUzuOO/zsLm
+         Akr89PDzpaRXp4ZB1mtf9yAGE6gi4vmouWVNWufSAfxFI0BqZYx7ogKVR85I3YL6MNWQ
+         b35KglaacnJtkFnNl0XKLp6wHNfQ7L51T5Q3TuleAMkidmYaAl+ytGgw/SsI+FUWRcrX
+         he4K41jJPHcdEfOP4sC404HHTi8VyA7hAAqGyxelvVh2yGjivw4B051wGzzM2refoJKd
+         E+RQ==
+X-Gm-Message-State: APjAAAW3GMI8WnEDkOixPA7WoyKNLgiX4I2MXt8cYeJ72Eb69awT/SEL
+        3qZojReauFarRlyqmFXAOn8=
+X-Google-Smtp-Source: APXvYqxnVkGEyfViuTjx4mMxFXlrRlIx6//9d0OuQRcfhBx2KniHpTnXbEebHTcjKF/40vT+3FGIaw==
+X-Received: by 2002:a05:6512:21d:: with SMTP id a29mr9741453lfo.186.1576253941800;
+        Fri, 13 Dec 2019 08:19:01 -0800 (PST)
+Received: from xi.terra (c-14b8e655.07-184-6d6c6d4.bbcust.telenor.se. [85.230.184.20])
+        by smtp.gmail.com with ESMTPSA id x13sm4778590lfe.48.2019.12.13.08.19.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 13 Dec 2019 08:19:00 -0800 (PST)
+Received: from johan by xi.terra with local (Exim 4.92.3)
+        (envelope-from <johan@kernel.org>)
+        id 1ifnef-0000iF-Bd; Fri, 13 Dec 2019 17:19:01 +0100
+Date:   Fri, 13 Dec 2019 17:19:01 +0100
+From:   Johan Hovold <johan@kernel.org>
+To:     Guillaume La Roque <glaroque@baylibre.com>
+Cc:     marcel@holtmann.org, johan.hedberg@gmail.com,
+        linux-bluetooth@vger.kernel.org, devicetree@vger.kernel.org,
+        netdev@vger.kernel.org, nsaenzjulienne@suse.de,
+        linux-kernel@vger.kernel.org, khilman@baylibre.com,
+        Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH v5 1/2] dt-bindings: net: bluetooth: add interrupts
+ properties
+Message-ID: <20191213161901.GZ10631@localhost>
+References: <20191213150622.14162-1-glaroque@baylibre.com>
+ <20191213150622.14162-2-glaroque@baylibre.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20191213160420.GA26710@kwain>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20191213150622.14162-2-glaroque@baylibre.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Dec 13, 2019 at 05:04:20PM +0100, Antoine Tenart wrote:
-> Hello Russell,
+On Fri, Dec 13, 2019 at 04:06:21PM +0100, Guillaume La Roque wrote:
+> add interrupts and interrupt-names as optional properties
+> to support host-wakeup by interrupt properties instead of
+> host-wakeup-gpios.
 > 
-> On Thu, Dec 12, 2019 at 05:43:46PM +0000, Russell King wrote:
-> > 
-> > diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-> > index 111b3b8239e1..fddd856338b4 100644
-> > --- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-> > +++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-> > @@ -4786,6 +4786,8 @@ static void mvpp2_phylink_validate(struct phylink_config *config,
-> >  			phylink_set(mask, 10000baseER_Full);
-> >  			phylink_set(mask, 10000baseKR_Full);
-> >  		}
-> > +		if (state->interface != PHY_INTERFACE_MODE_NA)
-> > +			break;
+> Signed-off-by: Guillaume La Roque <glaroque@baylibre.com>
+> ---
+>  Documentation/devicetree/bindings/net/broadcom-bluetooth.txt | 4 +++-
+>  1 file changed, 3 insertions(+), 1 deletion(-)
 > 
-> >  		/* Fall-through */
-> >  	case PHY_INTERFACE_MODE_RGMII:
-> >  	case PHY_INTERFACE_MODE_RGMII_ID:
-> > @@ -4796,13 +4798,21 @@ static void mvpp2_phylink_validate(struct phylink_config *config,
-> >  		phylink_set(mask, 10baseT_Full);
-> >  		phylink_set(mask, 100baseT_Half);
-> >  		phylink_set(mask, 100baseT_Full);
-> > +		if (state->interface != PHY_INTERFACE_MODE_NA)
-> > +			break;
-> 
-> The two checks above will break the 10G/1G interfaces on the mcbin
-> (eth0/eth1) as they can support both 10gbase-kr and 10/100/1000baseT
-> modes depending on what's connected. With this patch only the modes
-> related to the one defined in the device tree would be valid, breaking
-> run-time reconfiguration of the link.
+> diff --git a/Documentation/devicetree/bindings/net/broadcom-bluetooth.txt b/Documentation/devicetree/bindings/net/broadcom-bluetooth.txt
+> index b5eadee4a9a7..95912d979239 100644
+> --- a/Documentation/devicetree/bindings/net/broadcom-bluetooth.txt
+> +++ b/Documentation/devicetree/bindings/net/broadcom-bluetooth.txt
+> @@ -36,7 +36,9 @@ Optional properties:
+>      - pcm-frame-type: short, long
+>      - pcm-sync-mode: slave, master
+>      - pcm-clock-mode: slave, master
+> -
+> + - interrupts: must be one, used to wakeup the host processor if
+> +   gpiod_to_irq function not supported
 
-Exactly which scenario are you talking about?  The mcbin doubleshot
-setup, or the singleshot setup?
+This is a Linux implementation detail which therefore doesn't belong in
+the binding.
 
-This patch (when combined with the others) has no effect on the
-doubleshot, and should have no effect on the SFP cages on the single
-shot.
+I think the general rule is to prefer interrupts over gpios where we
+have a choice, but here the current binding already has a
+host-wakeup-gpios.
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-According to speedtest.net: 11.9Mbps down 500kbps up
+Not sure how best to handle that, maybe Rob knows.
+
+> + - interrupt-names: must be "host-wakeup"
+>  
+>  Example:
+
+Oh, and please keep people commenting on your patches on CC when you
+submit new versions.
+
+Johan
