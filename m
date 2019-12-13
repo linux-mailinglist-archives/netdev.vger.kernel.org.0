@@ -2,74 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 75C8011EE95
-	for <lists+netdev@lfdr.de>; Sat, 14 Dec 2019 00:35:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5982911EE99
+	for <lists+netdev@lfdr.de>; Sat, 14 Dec 2019 00:38:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726528AbfLMXfR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Dec 2019 18:35:17 -0500
-Received: from mail-lf1-f65.google.com ([209.85.167.65]:37241 "EHLO
-        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725747AbfLMXfQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Dec 2019 18:35:16 -0500
-Received: by mail-lf1-f65.google.com with SMTP id b15so489239lfc.4;
-        Fri, 13 Dec 2019 15:35:15 -0800 (PST)
+        id S1726528AbfLMXit (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Dec 2019 18:38:49 -0500
+Received: from mail-lj1-f194.google.com ([209.85.208.194]:45359 "EHLO
+        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725747AbfLMXit (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Dec 2019 18:38:49 -0500
+Received: by mail-lj1-f194.google.com with SMTP id d20so449029ljc.12
+        for <netdev@vger.kernel.org>; Fri, 13 Dec 2019 15:38:47 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=63IWEeuSsZHeUVAZEAxoUgEaODyj0dbfa078QCT9/og=;
-        b=d/paQDTQYVyzAYJ2AkL2jt0q++QRNDylOOpjcP8tDw+PxKPKgppkg6YcQPcaCATtj2
-         VqvfGt1mHMtkYuiY+tAI8lfFr4Svieh8WbV6dw8uf7B0yrvbFM6Mr2USA3v6LhCajInM
-         LK19H4C9IPzhTSYk22rrImlZICbymonFIuYS+6MwWb4WTQC4slvQNCCbHv/AUQvD7kJG
-         igIZtKDKFoLxkKmz4bIvH9cDZ9tUTnY4QCtjk6hLFM18UfyC4cogC3MREO9OComY+w/g
-         Xq7d++B+bPCXmjEqtSyhJnXdZvKi9GvoHnPMmRldCHrPQ+a6896ZkGmKp6dWEwVzUzzr
-         zAjA==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=/C/dNXw9jXRBbpt2VneFJ2EKEuNVryzCHwyYuX+uJiU=;
+        b=GoRboWLvwk4Ut8iNMk08A9D3pRTvxzABl6eXb/YLxto8E1dujBexvyW18qxKQ+KfTz
+         lXgXSvyoH9DAhmEp8mByhvuezVlkCTDr0hM7nIBR7oN+qHxtM1FNLHk3/z3o6XRAgQwA
+         6t/K23AFKG+Xs4jRyJ0++oyjhfrCvg8jZhzvokPLfGH3bF8TuMZ/P4WhlQ+VM4IfNxqD
+         /jdq/fDmmbqlcpxWTeMGhCrrhea8Peq5i+44CstGvtKyPJgumOri9VwKTVkjW9olEs+D
+         NY2L7uuTl5wp6bTmY+RIntBowqJ+guv0IxtWSv22sQ/xif41SnyCpT+rBAUWroqxyNL3
+         pnoQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=63IWEeuSsZHeUVAZEAxoUgEaODyj0dbfa078QCT9/og=;
-        b=EGlKKMm6zDmsr9OqIJvyyXcNWtQCY+j0BNoh7DFdw2oOQ6zphbcRO9dDie8IFcunkN
-         Y9fNOWLVnkehJH4R9Qo8WsLOPZQZlg7oDoCU777jPNXMRGV2sjD5IbWwLB1/GjyBIwB6
-         jrFW1Jp4AC4Sa02taWlVzmit+FYAOAVU04jPLU4QwlBhuTipGFekzxQx/YJRQSa5Q8Wr
-         h4wtSHFA/3gOn9LHNtwqyw3jj/xuPKokBMkOJ9bLh7sNV5nUWY20k59ELJq6UDRhKCaR
-         n3ipOdoBRM8CqldPBAuQ8ygncVcEeNS0rZiCTqGBXICIMFHJD4I/lBOwoNl+3+PEyVpw
-         CuJA==
-X-Gm-Message-State: APjAAAUGSEf50a6SpqN614ggHqUoMHJUuMCFq/0RQ0SZGnwHbtKXlqxf
-        Y4TS3p1in5Hb5pP48Z1px5gvOj09BipHSMICVvA=
-X-Google-Smtp-Source: APXvYqzocSuJNeeMMXcVOzLrSi58tRGuQ/QqPMvfblIXKdQk3fpuFTo05KadDELFI/MQEcsWm3wC4Y/0ux8pQXi5oEo=
-X-Received: by 2002:a19:48c5:: with SMTP id v188mr10410708lfa.100.1576280114245;
- Fri, 13 Dec 2019 15:35:14 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=/C/dNXw9jXRBbpt2VneFJ2EKEuNVryzCHwyYuX+uJiU=;
+        b=KogRswf0EvafdqNnIS1Dejs1l2paPp9MLJzWxLSxbAojG6bkhohGHP5Fo3dmvMNheB
+         cA5HQH/cS/IqiPXToKWMFC1SgRgylvkJfJjdBiFLoXXIOtyPIuW2tX+5RZtJ8upshhKW
+         2DIt3pJUAU5lnZQAvJb5I8DUR5+85jRl1MDURMq3NG/REHtoRL4svq7SYFBqW4pQbL4B
+         RuAnP/Xki2osSm+m8P3zOYfeRmQ29w4s+o0WApztM2PNFv+8P1VMyXTRjNr84XX/s74q
+         r1DsnOlS7rr3q+TgisSkIHVSRCMxvQiQ2jOvfJLSNETtamWUXi0+BCBx36xSuJspg7tP
+         CBwA==
+X-Gm-Message-State: APjAAAW6fym4l0kgPBMmxYYLJu/p3SpdP5OxuxofAqyihEKKDnLmyfPM
+        tacMS/ZEpitPbokEQksVVFCcnw==
+X-Google-Smtp-Source: APXvYqwtgodCtaMq/95A9YEXmcdegXFdGgHxGN+zsjoKUwZ3Z/nT0fMyrbGB9XY6g/9eYJbFYOpgyQ==
+X-Received: by 2002:a05:651c:208:: with SMTP id y8mr11547682ljn.36.1576280327062;
+        Fri, 13 Dec 2019 15:38:47 -0800 (PST)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id e14sm6335670ljj.36.2019.12.13.15.38.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 13 Dec 2019 15:38:46 -0800 (PST)
+Date:   Fri, 13 Dec 2019 15:38:40 -0800
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Jonathan Lemon <jonathan.lemon@gmail.com>
+Cc:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        <kernel-team@fb.com>, <michael.chan@broadcom.com>
+Subject: Re: [PATCH net] bnxt: apply computed clamp value for coalece
+ parameter
+Message-ID: <20191213153840.7d9d4187@cakuba.netronome.com>
+In-Reply-To: <20191210163946.2887753-1-jonathan.lemon@gmail.com>
+References: <20191210163946.2887753-1-jonathan.lemon@gmail.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-References: <20191213223028.161282-1-sdf@google.com>
-In-Reply-To: <20191213223028.161282-1-sdf@google.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Fri, 13 Dec 2019 15:34:59 -0800
-Message-ID: <CAADnVQJMc6LVUGG-sgQ_i7VDhy7tcnS-SyuXmkwkpuEYT-thqg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 1/2] bpf: expose __sk_buff wire_len/gso_segs
- to BPF_PROG_TEST_RUN
-To:     Stanislav Fomichev <sdf@google.com>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Dec 13, 2019 at 2:30 PM Stanislav Fomichev <sdf@google.com> wrote:
->
-> wire_len should not be less than real len and is capped by GSO_MAX_SIZE.
-> gso_segs is capped by GSO_MAX_SEGS.
->
-> v2:
-> * set wire_len to skb->len when passed wire_len is 0 (Alexei Starovoitov)
->
-> Cc: Martin KaFai Lau <kafai@fb.com>
-> Signed-off-by: Stanislav Fomichev <sdf@google.com>
+On Tue, 10 Dec 2019 08:39:46 -0800, Jonathan Lemon wrote:
+> After executing "ethtool -C eth0 rx-usecs-irq 0", the box becomes
+> unresponsive, likely due to interrupt livelock.  It appears that
+> a minimum clamp value for the irq timer is computed, but is never
+> applied.
+> 
+> Fix by applying the corrected clamp value.
+> 
+> Fixes: 74706afa712d ("bnxt_en: Update interrupt coalescing logic.")
+> Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
 
-Now works. Applied.
+Applied, and queued for stable, thanks!
