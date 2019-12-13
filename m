@@ -2,31 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D0FC11EE22
-	for <lists+netdev@lfdr.de>; Sat, 14 Dec 2019 00:01:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F1BBF11EE1F
+	for <lists+netdev@lfdr.de>; Sat, 14 Dec 2019 00:01:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726783AbfLMXBi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Dec 2019 18:01:38 -0500
-Received: from mga04.intel.com ([192.55.52.120]:64701 "EHLO mga04.intel.com"
+        id S1726642AbfLMXBf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Dec 2019 18:01:35 -0500
+Received: from mga04.intel.com ([192.55.52.120]:64705 "EHLO mga04.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726741AbfLMXBa (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 13 Dec 2019 18:01:30 -0500
+        id S1726752AbfLMXBb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 13 Dec 2019 18:01:31 -0500
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from fmsmga007.fm.intel.com ([10.253.24.52])
   by fmsmga104.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 13 Dec 2019 15:01:29 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.69,311,1571727600"; 
-   d="scan'208";a="211506674"
+   d="scan'208";a="211506677"
 Received: from mjmartin-nuc02.mjmartin-nuc02 (HELO mjmartin-nuc02.sea.intel.com) ([10.251.17.224])
   by fmsmga007.fm.intel.com with ESMTP; 13 Dec 2019 15:01:21 -0800
 From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
 To:     netdev@vger.kernel.org, mptcp@lists.01.org
-Cc:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        Matthieu Baerts <matthieu.baerts@tessares.net>
-Subject: [PATCH net-next 06/11] mptcp: Add MPTCP to skb extensions
-Date:   Fri, 13 Dec 2019 15:00:17 -0800
-Message-Id: <20191213230022.28144-7-mathew.j.martineau@linux.intel.com>
+Cc:     Mat Martineau <mathew.j.martineau@linux.intel.com>
+Subject: [PATCH net-next 07/11] tcp: Prevent coalesce/collapse when skb has MPTCP extensions
+Date:   Fri, 13 Dec 2019 15:00:18 -0800
+Message-Id: <20191213230022.28144-8-mathew.j.martineau@linux.intel.com>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20191213230022.28144-1-mathew.j.martineau@linux.intel.com>
 References: <20191213230022.28144-1-mathew.j.martineau@linux.intel.com>
@@ -37,119 +36,143 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add enum value for MPTCP and update config dependencies
+The MPTCP extension data needs to be preserved as it passes through the
+TCP stack. Make sure that these skbs are not appended to others during
+coalesce or collapse, so the data remains associated with the payload of
+the given skb.
 
-Co-developed-by: Matthieu Baerts <matthieu.baerts@tessares.net>
-Signed-off-by: Matthieu Baerts <matthieu.baerts@tessares.net>
 Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
 ---
- MAINTAINERS            | 10 ++++++++++
- include/linux/skbuff.h |  3 +++
- include/net/mptcp.h    | 27 +++++++++++++++++++++++++++
- net/core/skbuff.c      |  7 +++++++
- 4 files changed, 47 insertions(+)
- create mode 100644 include/net/mptcp.h
+ include/net/mptcp.h   | 16 ++++++++++++++++
+ include/net/tcp.h     |  8 ++++++++
+ net/ipv4/tcp_input.c  | 10 ++++++++--
+ net/ipv4/tcp_output.c |  2 +-
+ 4 files changed, 33 insertions(+), 3 deletions(-)
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index a28c77ee6b0d..132eb3f9fbb7 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -11568,6 +11568,16 @@ F:	net/ipv6/calipso.c
- F:	net/netfilter/xt_CONNSECMARK.c
- F:	net/netfilter/xt_SECMARK.c
- 
-+NETWORKING [MPTCP]
-+M:	Mat Martineau <mathew.j.martineau@linux.intel.com>
-+M:	Matthieu Baerts <matthieu.baerts@tessares.net>
-+L:	netdev@vger.kernel.org
-+L:	mptcp@lists.01.org
-+W:	https://github.com/multipath-tcp/mptcp_net-next/wiki
-+B:	https://github.com/multipath-tcp/mptcp_net-next/issues
-+S:	Maintained
-+F:	include/net/mptcp.h
-+
- NETWORKING [TCP]
- M:	Eric Dumazet <edumazet@google.com>
- L:	netdev@vger.kernel.org
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index e9133bcf0544..1a261c3ee074 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -4091,6 +4091,9 @@ enum skb_ext_id {
- #endif
- #if IS_ENABLED(CONFIG_NET_TC_SKB_EXT)
- 	TC_SKB_EXT,
-+#endif
-+#if IS_ENABLED(CONFIG_MPTCP)
-+	SKB_EXT_MPTCP,
- #endif
- 	SKB_EXT_NUM, /* must be last */
- };
 diff --git a/include/net/mptcp.h b/include/net/mptcp.h
-new file mode 100644
-index 000000000000..f9f668ac4339
---- /dev/null
+index f9f668ac4339..43ddfdf9e4a3 100644
+--- a/include/net/mptcp.h
 +++ b/include/net/mptcp.h
-@@ -0,0 +1,27 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/*
-+ * Multipath TCP
-+ *
-+ * Copyright (c) 2017 - 2019, Intel Corporation.
-+ */
+@@ -8,6 +8,7 @@
+ #ifndef __NET_MPTCP_H
+ #define __NET_MPTCP_H
+ 
++#include <linux/skbuff.h>
+ #include <linux/types.h>
+ 
+ /* MPTCP sk_buff extension data */
+@@ -24,4 +25,19 @@ struct mptcp_ext {
+ 			__unused:2;
+ };
+ 
++#ifdef CONFIG_MPTCP
 +
-+#ifndef __NET_MPTCP_H
-+#define __NET_MPTCP_H
++static inline bool mptcp_skb_ext_exist(const struct sk_buff *skb)
++{
++	return skb_ext_exist(skb, SKB_EXT_MPTCP);
++}
 +
-+#include <linux/types.h>
++#else
 +
-+/* MPTCP sk_buff extension data */
-+struct mptcp_ext {
-+	u64		data_ack;
-+	u64		data_seq;
-+	u32		subflow_seq;
-+	u16		data_len;
-+	u8		use_map:1,
-+			dsn64:1,
-+			data_fin:1,
-+			use_ack:1,
-+			ack64:1,
-+			__unused:2;
-+};
++static inline bool mptcp_skb_ext_exist(const struct sk_buff *skb)
++{
++	return false;
++}
 +
-+#endif /* __NET_MPTCP_H */
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index 973a71f4bc89..fa67036dd928 100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -68,6 +68,7 @@
- #include <net/ip6_checksum.h>
- #include <net/xfrm.h>
- #include <net/mpls.h>
++#endif /* CONFIG_MPTCP */
+ #endif /* __NET_MPTCP_H */
+diff --git a/include/net/tcp.h b/include/net/tcp.h
+index c82b2f75d024..c483c73b8d41 100644
+--- a/include/net/tcp.h
++++ b/include/net/tcp.h
+@@ -39,6 +39,7 @@
+ #include <net/tcp_states.h>
+ #include <net/inet_ecn.h>
+ #include <net/dst.h>
 +#include <net/mptcp.h>
  
- #include <linux/uaccess.h>
- #include <trace/events/skb.h>
-@@ -4109,6 +4110,9 @@ static const u8 skb_ext_type_len[] = {
- #if IS_ENABLED(CONFIG_NET_TC_SKB_EXT)
- 	[TC_SKB_EXT] = SKB_EXT_CHUNKSIZEOF(struct tc_skb_ext),
- #endif
-+#if IS_ENABLED(CONFIG_MPTCP)
-+	[SKB_EXT_MPTCP] = SKB_EXT_CHUNKSIZEOF(struct mptcp_ext),
-+#endif
- };
- 
- static __always_inline unsigned int skb_ext_total_length(void)
-@@ -4122,6 +4126,9 @@ static __always_inline unsigned int skb_ext_total_length(void)
- #endif
- #if IS_ENABLED(CONFIG_NET_TC_SKB_EXT)
- 		skb_ext_type_len[TC_SKB_EXT] +
-+#endif
-+#if IS_ENABLED(CONFIG_MPTCP)
-+		skb_ext_type_len[SKB_EXT_MPTCP] +
- #endif
- 		0;
+ #include <linux/seq_file.h>
+ #include <linux/memcontrol.h>
+@@ -978,6 +979,13 @@ static inline bool tcp_skb_can_collapse_to(const struct sk_buff *skb)
+ 	return likely(!TCP_SKB_CB(skb)->eor);
  }
+ 
++static inline bool tcp_skb_can_collapse(const struct sk_buff *to,
++					const struct sk_buff *from)
++{
++	return likely(tcp_skb_can_collapse_to(to) &&
++		      !mptcp_skb_ext_exist(from));
++}
++
+ /* Events passed to congestion control interface */
+ enum tcp_ca_event {
+ 	CA_EVENT_TX_START,	/* first transmit when no packets in flight */
+diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
+index 88b987ca9ebb..55b460a2ece2 100644
+--- a/net/ipv4/tcp_input.c
++++ b/net/ipv4/tcp_input.c
+@@ -1422,7 +1422,7 @@ static struct sk_buff *tcp_shift_skb_data(struct sock *sk, struct sk_buff *skb,
+ 	if ((TCP_SKB_CB(prev)->sacked & TCPCB_TAGBITS) != TCPCB_SACKED_ACKED)
+ 		goto fallback;
+ 
+-	if (!tcp_skb_can_collapse_to(prev))
++	if (!tcp_skb_can_collapse(prev, skb))
+ 		goto fallback;
+ 
+ 	in_sack = !after(start_seq, TCP_SKB_CB(skb)->seq) &&
+@@ -4420,6 +4420,9 @@ static bool tcp_try_coalesce(struct sock *sk,
+ 	if (TCP_SKB_CB(from)->seq != TCP_SKB_CB(to)->end_seq)
+ 		return false;
+ 
++	if (mptcp_skb_ext_exist(from))
++		return false;
++
+ #ifdef CONFIG_TLS_DEVICE
+ 	if (from->decrypted != to->decrypted)
+ 		return false;
+@@ -4928,10 +4931,12 @@ tcp_collapse(struct sock *sk, struct sk_buff_head *list, struct rb_root *root,
+ 
+ 		/* The first skb to collapse is:
+ 		 * - not SYN/FIN and
++		 * - does not include a MPTCP skb extension
+ 		 * - bloated or contains data before "start" or
+ 		 *   overlaps to the next one.
+ 		 */
+ 		if (!(TCP_SKB_CB(skb)->tcp_flags & (TCPHDR_SYN | TCPHDR_FIN)) &&
++		    !mptcp_skb_ext_exist(skb) &&
+ 		    (tcp_win_from_space(sk, skb->truesize) > skb->len ||
+ 		     before(TCP_SKB_CB(skb)->seq, start))) {
+ 			end_of_skbs = false;
+@@ -4947,7 +4952,7 @@ tcp_collapse(struct sock *sk, struct sk_buff_head *list, struct rb_root *root,
+ 		/* Decided to skip this, advance start seq. */
+ 		start = TCP_SKB_CB(skb)->end_seq;
+ 	}
+-	if (end_of_skbs ||
++	if (end_of_skbs || mptcp_skb_ext_exist(skb) ||
+ 	    (TCP_SKB_CB(skb)->tcp_flags & (TCPHDR_SYN | TCPHDR_FIN)))
+ 		return;
+ 
+@@ -4990,6 +4995,7 @@ tcp_collapse(struct sock *sk, struct sk_buff_head *list, struct rb_root *root,
+ 				skb = tcp_collapse_one(sk, skb, list, root);
+ 				if (!skb ||
+ 				    skb == tail ||
++				    mptcp_skb_ext_exist(skb) ||
+ 				    (TCP_SKB_CB(skb)->tcp_flags & (TCPHDR_SYN | TCPHDR_FIN)))
+ 					goto end;
+ #ifdef CONFIG_TLS_DEVICE
+diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
+index b184f03d7437..9e04d45bc0e4 100644
+--- a/net/ipv4/tcp_output.c
++++ b/net/ipv4/tcp_output.c
+@@ -2854,7 +2854,7 @@ static void tcp_retrans_try_collapse(struct sock *sk, struct sk_buff *to,
+ 		if (!tcp_can_collapse(sk, skb))
+ 			break;
+ 
+-		if (!tcp_skb_can_collapse_to(to))
++		if (!tcp_skb_can_collapse(to, skb))
+ 			break;
+ 
+ 		space -= skb->len;
 -- 
 2.24.1
 
