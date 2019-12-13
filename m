@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 69BBB11EDD4
-	for <lists+netdev@lfdr.de>; Fri, 13 Dec 2019 23:32:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ACCEA11EDD6
+	for <lists+netdev@lfdr.de>; Fri, 13 Dec 2019 23:32:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726808AbfLMWcb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Dec 2019 17:32:31 -0500
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:32596 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726791AbfLMWc2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Dec 2019 17:32:28 -0500
-Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xBDMTcGo001364
-        for <netdev@vger.kernel.org>; Fri, 13 Dec 2019 14:32:28 -0800
+        id S1726823AbfLMWcd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Dec 2019 17:32:33 -0500
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:56956 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726798AbfLMWca (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Dec 2019 17:32:30 -0500
+Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
+        by m0001303.ppops.net (8.16.0.42/8.16.0.42) with SMTP id xBDMRFFk025595
+        for <netdev@vger.kernel.org>; Fri, 13 Dec 2019 14:32:29 -0800
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
  : date : message-id : in-reply-to : references : mime-version :
- content-type; s=facebook; bh=fxFTz/nH5cWvMP7IOZ6lsJ5VlXxMLtQ4z3m5TPJnLrQ=;
- b=kxu0HGpe1VHY30+L8hRqkADb0B565f8oT+i9fPQsrqzPVFnNayJBTdLsRwigFElhSuiG
- mzg6Y7NlrZQ0jXi0kDzhdj7yeeRCF1zEKQ3pdbmGhVOF+TVfwwO5+NUSzBoXyA3LqPSZ
- 3UQrfQndQR+nZaE4dRNDgiZaZASZs84guz8= 
+ content-type; s=facebook; bh=MJYO7O2IlWjl6Ql+2uc+AbDrOWQy3lSeh+3EvgIF7VQ=;
+ b=ZYXspg0b8JH9Hq2CdfcZfXptPhyAF03AT5TW4g5wSXWWmaMtBAjwtUBHMHy8HAMIXTbk
+ k9KCLYSsclAU74lyXvu/QceHiScN3lPW5xMHPpN2+hcPHevd1enTZXxeQEN50sednxxq
+ 2L4MR9jXv5kSjJCFHexFlcO048NAHIlA6VI= 
 Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 2wuskg6y6a-2
+        by m0001303.ppops.net with ESMTP id 2wvfg8s5yh-2
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Fri, 13 Dec 2019 14:32:28 -0800
+        for <netdev@vger.kernel.org>; Fri, 13 Dec 2019 14:32:29 -0800
 Received: from intmgw005.05.ash5.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:83::4) with Microsoft SMTP Server
+ mail.thefacebook.com (2620:10d:c0a8:82::d) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Fri, 13 Dec 2019 14:32:26 -0800
+ 15.1.1713.5; Fri, 13 Dec 2019 14:32:28 -0800
 Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
-        id A85642EC1C8E; Fri, 13 Dec 2019 14:32:25 -0800 (PST)
+        id D96282EC1C8E; Fri, 13 Dec 2019 14:32:27 -0800 (PST)
 Smtp-Origin-Hostprefix: devbig
 From:   Andrii Nakryiko <andriin@fb.com>
 Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
@@ -38,9 +38,9 @@ To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
 CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
         Andrii Nakryiko <andriin@fb.com>
 Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH v3 bpf-next 04/17] libbpf: add BPF_EMBED_OBJ macro for embedding BPF .o files
-Date:   Fri, 13 Dec 2019 14:32:01 -0800
-Message-ID: <20191213223214.2791885-5-andriin@fb.com>
+Subject: [PATCH v3 bpf-next 05/17] libbpf: extract common user-facing helpers
+Date:   Fri, 13 Dec 2019 14:32:02 -0800
+Message-ID: <20191213223214.2791885-6-andriin@fb.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20191213223214.2791885-1-andriin@fb.com>
 References: <20191213223214.2791885-1-andriin@fb.com>
@@ -49,123 +49,166 @@ MIME-Version: 1.0
 Content-Type: text/plain
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
  definitions=2019-12-13_08:2019-12-13,2019-12-13 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxlogscore=999
- suspectscore=9 impostorscore=0 priorityscore=1501 clxscore=1015
- adultscore=0 bulkscore=0 malwarescore=0 mlxscore=0 spamscore=0
- lowpriorityscore=0 phishscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-1910280000 definitions=main-1912130159
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 spamscore=0
+ lowpriorityscore=0 adultscore=0 impostorscore=0 suspectscore=8 mlxscore=0
+ mlxlogscore=999 phishscore=0 bulkscore=0 priorityscore=1501 clxscore=1015
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-1910280000 definitions=main-1912130159
 X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a convenience macro BPF_EMBED_OBJ, which allows to embed other files
-(typically used to embed BPF .o files) into a hosting userspace programs. To
-C program it is exposed as struct bpf_embed_data, containing a pointer to
-raw data and its size in bytes.
+LIBBPF_API and DECLARE_LIBBPF_OPTS are needed in many public libbpf API
+headers. Extract them into libbpf_common.h to avoid unnecessary
+interdependency between btf.h, libbpf.h, and bpf.h or code duplication.
 
-Acked-by: Martin KaFai Lau <kafai@fb.com>
 Signed-off-by: Andrii Nakryiko <andriin@fb.com>
 ---
- tools/lib/bpf/libbpf.h                        | 35 +++++++++++++++++++
- .../selftests/bpf/prog_tests/attach_probe.c   | 23 ++----------
- 2 files changed, 38 insertions(+), 20 deletions(-)
+ tools/lib/bpf/bpf.h           |  6 ++----
+ tools/lib/bpf/btf.h           |  6 ++----
+ tools/lib/bpf/libbpf.h        | 28 ++------------------------
+ tools/lib/bpf/libbpf_common.h | 38 +++++++++++++++++++++++++++++++++++
+ 4 files changed, 44 insertions(+), 34 deletions(-)
+ create mode 100644 tools/lib/bpf/libbpf_common.h
 
-diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
-index 2698fbcb0c79..fa803dde1f46 100644
---- a/tools/lib/bpf/libbpf.h
-+++ b/tools/lib/bpf/libbpf.h
-@@ -615,6 +615,41 @@ bpf_program__bpil_offs_to_addr(struct bpf_prog_info_linear *info_linear);
-  */
- LIBBPF_API int libbpf_num_possible_cpus(void);
+diff --git a/tools/lib/bpf/bpf.h b/tools/lib/bpf/bpf.h
+index 3c791fa8e68e..269807ce9ef5 100644
+--- a/tools/lib/bpf/bpf.h
++++ b/tools/lib/bpf/bpf.h
+@@ -28,14 +28,12 @@
+ #include <stddef.h>
+ #include <stdint.h>
  
-+struct bpf_embed_data {
-+	void *data;
-+	size_t size;
-+};
-+
-+#define BPF_EMBED_OBJ_DECLARE(NAME)					\
-+extern struct bpf_embed_data NAME##_embed;				\
-+extern char NAME##_data[];						\
-+extern char NAME##_data_end[];
-+
-+#define __BPF_EMBED_OBJ(NAME, PATH, SZ, ASM_TYPE)			\
-+asm (									\
-+"	.pushsection \".rodata\", \"a\", @progbits		\n"	\
-+"	.global "#NAME"_data					\n"	\
-+#NAME"_data:							\n"	\
-+"	.incbin \"" PATH "\"					\n"	\
-+"	.global "#NAME"_data_end				\n"	\
-+#NAME"_data_end:						\n"	\
-+"	.global "#NAME"_embed					\n"	\
-+"	.type "#NAME"_embed, @object				\n"	\
-+"	.size "#NAME"_size, "#SZ"				\n"	\
-+"	.align 8,						\n"	\
-+#NAME"_embed:							\n"	\
-+"	"ASM_TYPE" "#NAME"_data					\n"	\
-+"	"ASM_TYPE" "#NAME"_data_end - "#NAME"_data 		\n"	\
-+"	.popsection						\n"	\
-+);									\
-+BPF_EMBED_OBJ_DECLARE(NAME)
-+
-+#if __SIZEOF_POINTER__ == 4
-+#define BPF_EMBED_OBJ(NAME, PATH) __BPF_EMBED_OBJ(NAME, PATH, 8, ".long")
-+#else
-+#define BPF_EMBED_OBJ(NAME, PATH) __BPF_EMBED_OBJ(NAME, PATH, 16, ".quad")
-+#endif
++#include "libbpf_common.h"
 +
  #ifdef __cplusplus
- } /* extern "C" */
+ extern "C" {
  #endif
-diff --git a/tools/testing/selftests/bpf/prog_tests/attach_probe.c b/tools/testing/selftests/bpf/prog_tests/attach_probe.c
-index a83111a32d4a..b2e7c1424b07 100644
---- a/tools/testing/selftests/bpf/prog_tests/attach_probe.c
-+++ b/tools/testing/selftests/bpf/prog_tests/attach_probe.c
-@@ -1,24 +1,6 @@
- // SPDX-License-Identifier: GPL-2.0
- #include <test_progs.h>
  
--#define EMBED_FILE(NAME, PATH)						    \
--asm (									    \
--"      .pushsection \".rodata\", \"a\", @progbits              \n"	    \
--"      .global "#NAME"_data                                    \n"	    \
--#NAME"_data:                                                   \n"	    \
--"      .incbin \"" PATH "\"                                    \n"	    \
--#NAME"_data_end:                                               \n"	    \
--"      .global "#NAME"_size                                    \n"	    \
--"      .type "#NAME"_size, @object                             \n"	    \
--"      .size "#NAME"_size, 4                                   \n"	    \
--"      .align 4,                                               \n"	    \
--#NAME"_size:                                                   \n"	    \
--"      .int "#NAME"_data_end - "#NAME"_data                    \n"	    \
--"      .popsection                                             \n"	    \
--);									    \
--extern char NAME##_data[];						    \
--extern int NAME##_size;
+-#ifndef LIBBPF_API
+-#define LIBBPF_API __attribute__((visibility("default")))
+-#endif
 -
- ssize_t get_base_addr() {
- 	size_t start;
- 	char buf[256];
-@@ -39,7 +21,7 @@ ssize_t get_base_addr() {
- 	return -EINVAL;
- }
+ struct bpf_create_map_attr {
+ 	const char *name;
+ 	enum bpf_map_type map_type;
+diff --git a/tools/lib/bpf/btf.h b/tools/lib/bpf/btf.h
+index d9ac73a02cde..5fc23b988deb 100644
+--- a/tools/lib/bpf/btf.h
++++ b/tools/lib/bpf/btf.h
+@@ -8,14 +8,12 @@
+ #include <linux/btf.h>
+ #include <linux/types.h>
  
--EMBED_FILE(probe, "test_attach_probe.o");
-+BPF_EMBED_OBJ(probe, "test_attach_probe.o");
++#include "libbpf_common.h"
++
+ #ifdef __cplusplus
+ extern "C" {
+ #endif
  
- void test_attach_probe(void)
- {
-@@ -73,7 +55,8 @@ void test_attach_probe(void)
- 	uprobe_offset = (size_t)&get_base_addr - base_addr;
+-#ifndef LIBBPF_API
+-#define LIBBPF_API __attribute__((visibility("default")))
+-#endif
+-
+ #define BTF_ELF_SEC ".BTF"
+ #define BTF_EXT_ELF_SEC ".BTF.ext"
+ #define MAPS_ELF_SEC ".maps"
+diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
+index fa803dde1f46..49e6fa01024b 100644
+--- a/tools/lib/bpf/libbpf.h
++++ b/tools/lib/bpf/libbpf.h
+@@ -17,14 +17,12 @@
+ #include <sys/types.h>  // for size_t
+ #include <linux/bpf.h>
  
- 	/* open object */
--	obj = bpf_object__open_mem(probe_data, probe_size, &open_opts);
-+	obj = bpf_object__open_mem(probe_embed.data, probe_embed.size,
-+				   &open_opts);
- 	if (CHECK(IS_ERR(obj), "obj_open_mem", "err %ld\n", PTR_ERR(obj)))
- 		return;
++#include "libbpf_common.h"
++
+ #ifdef __cplusplus
+ extern "C" {
+ #endif
  
+-#ifndef LIBBPF_API
+-#define LIBBPF_API __attribute__((visibility("default")))
+-#endif
+-
+ enum libbpf_errno {
+ 	__LIBBPF_ERRNO__START = 4000,
+ 
+@@ -67,28 +65,6 @@ struct bpf_object_open_attr {
+ 	enum bpf_prog_type prog_type;
+ };
+ 
+-/* Helper macro to declare and initialize libbpf options struct
+- *
+- * This dance with uninitialized declaration, followed by memset to zero,
+- * followed by assignment using compound literal syntax is done to preserve
+- * ability to use a nice struct field initialization syntax and **hopefully**
+- * have all the padding bytes initialized to zero. It's not guaranteed though,
+- * when copying literal, that compiler won't copy garbage in literal's padding
+- * bytes, but that's the best way I've found and it seems to work in practice.
+- *
+- * Macro declares opts struct of given type and name, zero-initializes,
+- * including any extra padding, it with memset() and then assigns initial
+- * values provided by users in struct initializer-syntax as varargs.
+- */
+-#define DECLARE_LIBBPF_OPTS(TYPE, NAME, ...)				    \
+-	struct TYPE NAME = ({ 						    \
+-		memset(&NAME, 0, sizeof(struct TYPE));			    \
+-		(struct TYPE) {						    \
+-			.sz = sizeof(struct TYPE),			    \
+-			__VA_ARGS__					    \
+-		};							    \
+-	})
+-
+ struct bpf_object_open_opts {
+ 	/* size of this struct, for forward/backward compatiblity */
+ 	size_t sz;
+diff --git a/tools/lib/bpf/libbpf_common.h b/tools/lib/bpf/libbpf_common.h
+new file mode 100644
+index 000000000000..4fb833840961
+--- /dev/null
++++ b/tools/lib/bpf/libbpf_common.h
+@@ -0,0 +1,38 @@
++/* SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause) */
++
++/*
++ * Common user-facing libbpf helpers.
++ *
++ * Copyright (c) 2019 Facebook
++ */
++
++#ifndef __LIBBPF_LIBBPF_COMMON_H
++#define __LIBBPF_LIBBPF_COMMON_H
++
++#ifndef LIBBPF_API
++#define LIBBPF_API __attribute__((visibility("default")))
++#endif
++
++/* Helper macro to declare and initialize libbpf options struct
++ *
++ * This dance with uninitialized declaration, followed by memset to zero,
++ * followed by assignment using compound literal syntax is done to preserve
++ * ability to use a nice struct field initialization syntax and **hopefully**
++ * have all the padding bytes initialized to zero. It's not guaranteed though,
++ * when copying literal, that compiler won't copy garbage in literal's padding
++ * bytes, but that's the best way I've found and it seems to work in practice.
++ *
++ * Macro declares opts struct of given type and name, zero-initializes,
++ * including any extra padding, it with memset() and then assigns initial
++ * values provided by users in struct initializer-syntax as varargs.
++ */
++#define DECLARE_LIBBPF_OPTS(TYPE, NAME, ...)				    \
++	struct TYPE NAME = ({ 						    \
++		memset(&NAME, 0, sizeof(struct TYPE));			    \
++		(struct TYPE) {						    \
++			.sz = sizeof(struct TYPE),			    \
++			__VA_ARGS__					    \
++		};							    \
++	})
++
++#endif /* __LIBBPF_LIBBPF_COMMON_H */
 -- 
 2.17.1
 
