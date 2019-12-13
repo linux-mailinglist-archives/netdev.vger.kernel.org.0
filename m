@@ -2,101 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 44BB811EE66
-	for <lists+netdev@lfdr.de>; Sat, 14 Dec 2019 00:22:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CB78C11EE72
+	for <lists+netdev@lfdr.de>; Sat, 14 Dec 2019 00:25:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726642AbfLMXWl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Dec 2019 18:22:41 -0500
-Received: from mail-pl1-f194.google.com ([209.85.214.194]:44742 "EHLO
-        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725948AbfLMXWk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Dec 2019 18:22:40 -0500
-Received: by mail-pl1-f194.google.com with SMTP id az3so1852456plb.11
-        for <netdev@vger.kernel.org>; Fri, 13 Dec 2019 15:22:40 -0800 (PST)
+        id S1726794AbfLMXZj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Dec 2019 18:25:39 -0500
+Received: from mail-lj1-f195.google.com ([209.85.208.195]:42814 "EHLO
+        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725948AbfLMXZj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Dec 2019 18:25:39 -0500
+Received: by mail-lj1-f195.google.com with SMTP id e28so443266ljo.9;
+        Fri, 13 Dec 2019 15:25:38 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=KQSkJ25NloJBBL3uTiVtDV/N4wEuZVqk2swmfoy2zMc=;
-        b=PpO431ZN2DhU0Q8XU1oBwysraCUbMrh68B28cwZl7glcq6hPmGnD3M5UEAbhdvT6G2
-         gsBY2uHt4YSu13z5qll2SPnN8nprBW5LJOj9SWGI/yu+u7nn+XCZW1B+GBmY8rdSbKlg
-         N19364OEBsg9tlPNPAXTTJUIo5p/6NN7h3EK0i39Bwko1t3aJI2M7DDT77Tp2HrVq8Pj
-         z9/k93fzBnK64s1Da9Jyos+MRluozOkkjRzYM61QjXxcYYdMH8X5vzTqkg4ferszLSRv
-         1suj5fD9C4MTcwe3aiElETVtie+ZSprIszUoNEpTxx1EYPHcIpDhP9HNgrh0smTpCnFF
-         CHhw==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ajSzcywX0kn22XFVXdXCg7n3vQlG/dOEDYZp4LUX3Ow=;
+        b=h+PdYdtDFlgO1U/WzbDm1uXfUHVZn+MtjrKRm73syiH8DlTPUcb4qJ6z5D+aVyKLWM
+         3p80Jet0AQS6RILOtnQ+eR1O8YrkXKC77h1hzgbZrNgsPJtIcFU76+pe2A3cR1rmd5vg
+         bDUYBUx7rit+wxs8KyjHbOy7SIws/nLj9JqV8ooZJx68PzhWH1RO2/npkIcbgNWZT/+s
+         k864tuznfak8xnIdzg0V7Ky7diQuUJ3dtkwhTdY1w5WmEB8dwZimJYaukYaGL0buyy4e
+         3hLYjA0iDJ07K02uOy8JOqX/vfgWErhYOfNbx/U09txBZcqOQLEinvMQm2jJgGPpgH+f
+         tUaA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=KQSkJ25NloJBBL3uTiVtDV/N4wEuZVqk2swmfoy2zMc=;
-        b=czNXBYiIqbpoi/xti740d3aKri6TOMhzHQkG25eoWg/X8s5OUa7c51qqtbBFxch2Th
-         G+CpIfb0bf0/x1lS66gdYk8WhhLhlm6ZKdWsQGvzYVKOv2H3jdfIueCJcnmW1fHcggXX
-         fAApPx3+1h1+oF+G50oF5f+3PGh82vqGFBl9hC++XWKMnZNjCJkyOwJcbNVjYUzMW3IM
-         dLUUlosuZbPzn5ZSpmCWBWaxOiAB6Sw6UgVkp732ziWNHd6I3Zu3ARBGoMpRBfmUoEmW
-         hF6mgR8hiaUc7Ah2GHhLgMiihi/zry3tYVZGl1DeAO7G4AwmmFC+v1FoHFol8Lv/iw/I
-         GJAw==
-X-Gm-Message-State: APjAAAW6u+38ZICeaqdPXslveM2Av9aRpL5ovTdqLNHc3pLzUDaTE5Ae
-        bndwAA5PuiM3/QPlGj1tkjM=
-X-Google-Smtp-Source: APXvYqxcQPj7MpCSHDuTauLBN5PXHBTu7uVGun75jBNAkS2rfrc0tHJhCDx8tfGq2yEmpGt6VBctHA==
-X-Received: by 2002:a17:902:ac88:: with SMTP id h8mr2117263plr.131.1576279359944;
-        Fri, 13 Dec 2019 15:22:39 -0800 (PST)
-Received: from ?IPv6:2620:15c:2c1:200:55c7:81e6:c7d8:94b? ([2620:15c:2c1:200:55c7:81e6:c7d8:94b])
-        by smtp.gmail.com with ESMTPSA id q11sm12848697pff.111.2019.12.13.15.22.38
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 13 Dec 2019 15:22:39 -0800 (PST)
-Subject: Re: [PATCH net-next 09/11] tcp: Check for filled TCP option space
- before SACK
-To:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        netdev@vger.kernel.org, mptcp@lists.01.org
-References: <20191213230022.28144-1-mathew.j.martineau@linux.intel.com>
- <20191213230022.28144-10-mathew.j.martineau@linux.intel.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <47545b88-94db-e9cd-2f9f-2c6d665246e2@gmail.com>
-Date:   Fri, 13 Dec 2019 15:22:38 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ajSzcywX0kn22XFVXdXCg7n3vQlG/dOEDYZp4LUX3Ow=;
+        b=TPW5u7VXaMLOMqmEcWIC2zUXXbSTwfR5HK24IHUQPnuhxkOEz+MqvwkgNdd/1yWMIx
+         ePrus31Dz4YZJrJYZrOHx/63o8TILMsFou4Rb1XNcF9RVV+Ycl2AWTylhR1jHMODcYQ9
+         Zza+YDd5OgPMjTNqskQ6nZkIfkfWvHsE+VctGIqQdUuzORtZfTDlDZyhghGzn418kzsE
+         pNWrVkX12XX0yhKe2NlfHFNuMFSo8Ak0LQzCvlsj8s9544GoufQfWRROItizGGSWqLEP
+         l3/jVEwTlGN6n8K4p2QvsCKKrOWjSqeTHOicov/Mu8QDSYbTcSn99lpaEknxujYZdV9H
+         oA6Q==
+X-Gm-Message-State: APjAAAVLpQfUUFNQ/ImxMRi1r8TV5tC84O/UCUWiYKlrecaqRL+dV6lY
+        QOeIvR6BSHRRostc22BukFPkMSuCLWIoTWqDHxc=
+X-Google-Smtp-Source: APXvYqwa1Yam+ePaC98hMchGUQ10VfLcXFLEsxbNjQNIehCxvVsHQbhBtkk278u/Jr194totuUgTlelgH/mObOFrKQM=
+X-Received: by 2002:a2e:8e8d:: with SMTP id z13mr11197976ljk.10.1576279537229;
+ Fri, 13 Dec 2019 15:25:37 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20191213230022.28144-10-mathew.j.martineau@linux.intel.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20191213154634.27338-1-lmb@cloudflare.com> <20191213180817.2510-1-lmb@cloudflare.com>
+ <5e7ccc2c-cb6b-0154-15bf-fa93d374266e@gmail.com>
+In-Reply-To: <5e7ccc2c-cb6b-0154-15bf-fa93d374266e@gmail.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Fri, 13 Dec 2019 15:25:25 -0800
+Message-ID: <CAADnVQKmNifGQzh+gTL3vvxuEBR9et8-Oj++OWKgY4pfYc-=sQ@mail.gmail.com>
+Subject: Re: [PATCH bpf v2] bpf: clear skb->tstamp in bpf_redirect when necessary
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     Lorenz Bauer <lmb@cloudflare.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
+        kernel-team <kernel-team@cloudflare.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, Dec 13, 2019 at 1:09 PM Eric Dumazet <eric.dumazet@gmail.com> wrote:
+>
+>
+>
+> On 12/13/19 10:08 AM, Lorenz Bauer wrote:
+> > Redirecting a packet from ingress to egress by using bpf_redirect
+> > breaks if the egress interface has an fq qdisc installed. This is the same
+> > problem as fixed in 'commit 8203e2d844d3 ("net: clear skb->tstamp in forwarding paths")
+> >
+> > Clear skb->tstamp when redirecting into the egress path.
+> >
+> > Fixes: 80b14dee2bea ("net: Add a new socket option for a future transmit time.")
+> > Fixes: fb420d5d91c1 ("tcp/fq: move back to CLOCK_MONOTONIC")
+> > Signed-off-by: Lorenz Bauer <lmb@cloudflare.com>
+> > ---
+> >  net/core/filter.c | 1 +
+> >  1 file changed, 1 insertion(+)
+> >
+> > diff --git a/net/core/filter.c b/net/core/filter.c
+> > index f1e703eed3d2..d914257763b5 100644
+> > --- a/net/core/filter.c
+> > +++ b/net/core/filter.c
+> > @@ -2055,6 +2055,7 @@ static inline int __bpf_tx_skb(struct net_device *dev, struct sk_buff *skb)
+> >       }
+> >
+> >       skb->dev = dev;
+> > +     skb->tstamp = 0;
+> >
+> >       dev_xmit_recursion_inc();
+> >       ret = dev_queue_xmit(skb);
+> >
+>
+> Thanks !
+>
+> Reviewed-by: Eric Dumazet <edumazet@google.com>
 
-
-On 12/13/19 3:00 PM, Mat Martineau wrote:
-> The SACK code would potentially add four bytes to the expected
-> TCP option size even if all option space was already used.
-> 
-> Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
-> ---
->  net/ipv4/tcp_output.c | 3 +++
->  1 file changed, 3 insertions(+)
-> 
-> diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
-> index 9e04d45bc0e4..710ab45badfa 100644
-> --- a/net/ipv4/tcp_output.c
-> +++ b/net/ipv4/tcp_output.c
-> @@ -748,6 +748,9 @@ static unsigned int tcp_established_options(struct sock *sk, struct sk_buff *skb
->  		size += TCPOLEN_TSTAMP_ALIGNED;
->  	}
->  
-> +	if (size + TCPOLEN_SACK_BASE_ALIGNED >= MAX_TCP_OPTION_SPACE)
-> +		return size;
-> +
->  	eff_sacks = tp->rx_opt.num_sacks + tp->rx_opt.dsack;
->  	if (unlikely(eff_sacks)) {
->  		const unsigned int remaining = MAX_TCP_OPTION_SPACE - size;
-> 
-
-
-Hmmm... I thought I already fixed this issue ?
-
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=9424e2e7ad93ffffa88f882c9bc5023570904b55
-
-Please do not mix fixes (targeting net tree) in a patch series targeting net-next
-
+Applied. Thanks
