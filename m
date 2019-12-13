@@ -2,206 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 13C0511E644
-	for <lists+netdev@lfdr.de>; Fri, 13 Dec 2019 16:13:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A188411E6AD
+	for <lists+netdev@lfdr.de>; Fri, 13 Dec 2019 16:37:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727811AbfLMPM6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Dec 2019 10:12:58 -0500
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:48442 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726599AbfLMPM6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Dec 2019 10:12:58 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=etZtC+NUJmFt0La0f5fEcO6a9gCWyqF9yIN69XBsKPo=; b=NeL3pLImR9UnTgW/U4UZlvJ1z
-        S6I9iygAzPO+940RRDktu7yUXABmy8lGoVt02GNmQKT1Qa0+8Up0jfi8AwNzBRlC7C9vyMbOjUnHD
-        Vt9lBrrVYE00DQBJgfQxGjQhCrnS+qD9P8X2tVApSjQY2wAMtfFYgKNv72HwAaUa5b8ATDEfXnGHF
-        JhL5TwSE7C6JOsZvG083/KE7PC091BxmKEpiQythqLYSUfJaG+LOgo8cnStS2sD/tH33sNKMubo8T
-        oDRhWnG8BSfRJrJluOhzfDY8qqWOALZW4+7H2jXpV2n1M4XobS2mxuEOTyWIooLeTZrnXh6RhCYOl
-        c7cWIRgig==;
-Received: from shell.armlinux.org.uk ([2001:4d48:ad52:3201:5054:ff:fe00:4ec]:40830)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1ifmcg-0005Wc-O6; Fri, 13 Dec 2019 15:12:54 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1ifmcg-0007zO-3X; Fri, 13 Dec 2019 15:12:54 +0000
-Date:   Fri, 13 Dec 2019 15:12:54 +0000
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     netdev@vger.kernel.org
-Subject: Re: ethtool pause mode clarifications
-Message-ID: <20191213151254.GT25745@shell.armlinux.org.uk>
-References: <20191213114935.GR25745@shell.armlinux.org.uk>
- <20191213142902.GB4286@lunn.ch>
+        id S1728012AbfLMPgN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Dec 2019 10:36:13 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:25933 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1727992AbfLMPgM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Dec 2019 10:36:12 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1576251371;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
+        bh=XdvQKU8LiqO/th1XH/f5TTkHcNsE/YPklKDD6xZt6qQ=;
+        b=Db27FA3+Q1kolvE9edN0LO/0RSX8ErXy0AXWemMr3jEbp2sKgIfCuY92NDItgl+efEwj4A
+        XShBBAD1jHkRUKKbYHzvPbwxKTGo0fBy+RigcPZCLK/oA4kl9QMW8/NjXmFTRbnIuqN8cI
+        E4HVdP8vJ0MfQU9aULmpF8oHf1oNxvo=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-370-hbfm8CEePw28D6MRnwYrFA-1; Fri, 13 Dec 2019 10:36:07 -0500
+X-MC-Unique: hbfm8CEePw28D6MRnwYrFA-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 68935800582;
+        Fri, 13 Dec 2019 15:36:05 +0000 (UTC)
+Received: from krava (ovpn-205-9.brq.redhat.com [10.40.205.9])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 23A2C5C219;
+        Fri, 13 Dec 2019 15:35:55 +0000 (UTC)
+Date:   Fri, 13 Dec 2019 16:35:53 +0100
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Peter Zijlstra <a.p.zijlstra@chello.nl>
+Cc:     Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Ingo Molnar <mingo@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Quentin Monnet <quentin.monnet@netronome.com>
+Subject: [RFC] btf: Some structs are doubled because of struct ring_buffer
+Message-ID: <20191213153553.GE20583@krava>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20191213142902.GB4286@lunn.ch>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Dec 13, 2019 at 03:29:02PM +0100, Andrew Lunn wrote:
-> On Fri, Dec 13, 2019 at 11:49:35AM +0000, Russell King - ARM Linux admin wrote:
-> > Hi,
-> > 
-> > Please can someone explain the ethtool pause mode settings?  The man
-> > page isn't particularly clear, it says:
-> > 
-> >        -A --pause
-> >               Changes the pause parameters of the specified Ethernet device.
-> > 
-> >            autoneg on|off
-> >                   Specifies whether pause autonegotiation should be enabled.
-> > 
-> >            rx on|off
-> >                   Specifies whether RX pause should be enabled.
-> > 
-> >            tx on|off
-> >                   Specifies whether TX pause should be enabled.
-> > 
-> > 
-> > "autoneg" states whether pause autonegotiation should be enabled, but
-> > how is this possible, when pause autonegotiation happens as part of the
-> > rest of the autonegotiation as a matter of course, and the only control
-> > we have at the PHY is the value of the pause and asym pause bits?
-> 
-> Hi Russell
-> 
-> Yah, this is not clear. How i've interpreted it is:
-> 
-> autoneg on:
-> 
-> The driver should validate rx and tx with its capabilities, and then
-> tell the PHY what to advertise, kick off an auto-neg, and wait for the
-> result to program the MAC with the negotiated value.
-> 
-> If autoneg in general is off, return an error.
+hi,
+the current BTF vmlinux file have some of the structs doubled:
 
-That's similar to how I interpreted it - the ethtool uapi header
-describes it this way:
+  $ bpftool btf dump file /sys/kernel/btf/vmlinux | grep task_struct
+  [150] STRUCT 'task_struct' size=11008 vlen=205
+  [12262] STRUCT 'task_struct' size=11008 vlen=205
 
- * struct ethtool_pauseparam - Ethernet pause (flow control) parameters
- * @cmd: Command number = %ETHTOOL_GPAUSEPARAM or %ETHTOOL_SPAUSEPARAM
- * @autoneg: Flag to enable autonegotiation of pause frame use
- * @rx_pause: Flag to enable reception of pause frames
- * @tx_pause: Flag to enable transmission of pause frames
- *
- * Drivers should reject a non-zero setting of @autoneg when
- * autoneogotiation is disabled (or not supported) for the link.
- *
- * If the link is autonegotiated, drivers should use
- * mii_advertise_flowctrl() or similar code to set the advertised
- * pause frame capabilities based on the @rx_pause and @tx_pause flags,
- * even if @autoneg is zero.  They should also allow the advertised
- * pause frame capabilities to be controlled directly through the
- * advertising field of &struct ethtool_cmd.
- *
- * If @autoneg is non-zero, the MAC is configured to send and/or
- * receive pause frames according to the result of autonegotiation.
- * Otherwise, it is configured directly based on the @rx_pause and
- * @tx_pause flags.
+  $ bpftool btf dump file /sys/kernel/btf/vmlinux | grep "STRUCT 'perf_event'"
+  [1666] STRUCT 'perf_event' size=1160 vlen=70
+  [12301] STRUCT 'perf_event' size=1160 vlen=70
 
-but my point is that this is perverse and counter-intuitive.
+The reason seems to be that we have two distinct 'struct ring_buffer'
+objects used in kernel: one in perf subsystem and one in kernel trace
+subsystem.
 
-	ethtool -A ethN autoneg on rx on tx on
+When we compile kernel/trace/ring_buffer.c we have 'struct task_struct',
+which references 'struct ring_buffer', which is at that compile time
+defined in kernel/trace/ring_buffer.c.
 
-will advertise PAUSE but no ASYM PAUSE, which will only allow pause
-resolutions to:
-       	RX+TX enabled
-	RX+TX disabled
+While when we compile kernel/events/core.c we have 'struct task_struct',
+which references ring buffer, which is at that compile time defined
+in kernel/events/internal.h.
 
-depending on the link partner.
+So we end up with 2 different 'struct task_struct' objects, and few
+other objects which are on the way to the 'struct ring_buffer' field,
+like:
 
-	ethtool -A ethN autoneg on rx on tx off
+	[1666] STRUCT 'perf_event' size=1160 vlen=70
+		...
+		'rb' type_id=2289 bits_offset=5632
+		...
 
-will advertise PAUSE and ASYM PAUSE, allowing pause resolutions to:
-	RX+TX enabled
-	RX enabled TX disabled
-	RX+TX disabled
+		[2289] PTR '(anon)' type_id=10872
 
-This seems utterly wrong to me.
+			-> trace ring buffer
 
-Then we've got the issue that the advertisement can also be changed
-via ethtool -s (as explicitly stated above), which means if we store
-the ethtool rx/tx status separately, it will get out of sync with what
-is being advertised.  If we try to update the rx/tx enablement status
-from the advertisement, then we fall into a very similar trap - if
-ASYM_PAUSE=1 PAUSE=1 that could be RX=1 TX=0 or RX=1 TX=1.  It is
-completely ambiguous.
+			[10872] STRUCT 'ring_buffer' size=184 vlen=12
+				'flags' type_id=10 bits_offset=0
+				'cpus' type_id=22 bits_offset=32
+				'record_disabled' type_id=81 bits_offset=64
+				...
 
-> autoneg off:
-> 
-> Forget about the PHY, program the MAC directly, and potentially shoot
-> yourself in the foot. But it can be useful it auto-neg in general is
-> off, or there is no PHY.
+	[12301] STRUCT 'perf_event' size=1160 vlen=70
+		...
+		'rb' type_id=13148 bits_offset=5632
+		...
 
-Yep, that's how I interpret it - autoneg off => manual control of the
-MAC.
+		[13148] PTR '(anon)' type_id=13147
 
-> > So, would it be possible to clarify what these settings mean in the
-> > ethtool man page please?
-> 
-> I suspect the first step would be to survey current implementations
-> and find out what is the most popular interpretation of this
-> text. Then expand the document, and maybe list some of the alternative
-> meanings which are currently in use?
+			-> perf ring buffer
 
-I've looked at a number of implementations, and the result of the
-vagueness of specification is that we have every driver doing something
-different.
+			[13147] STRUCT 'ring_buffer' size=240 vlen=33
+				'refcount' type_id=795 bits_offset=0
+				'callback_head' type_id=90 bits_offset=64
+				'nr_pages' type_id=22 bits_offset=192
+				'overwrite' type_id=22 bits_offset=224
+				'paused' type_id=22 bits_offset=256
+				...
 
-Some refuse set_pauseparam if autoneg=1.
+I don't think dedup algorithm can handle this and I'm not sure if there's
+some way in pahole to detect/prevent this.
 
-Some set the PHY advertisement based on rx_pause/tx_pause in a way
-that seems popular, but leads to the perverse outcome I highlight
-above.
+I only found that if I rename the ring_buffer objects to have distinct
+names, it will help:
 
-Some report the MAC enablement state via get_pauseparam rx_pause /
-tx_pause - which means get_pauseparam followed by set_pauseparam
-with no changes is not a no-op.
+  $ bpftool btf dump file /sys/kernel/btf/vmlinux | grep task_struct
+  [150] STRUCT 'task_struct' size=11008 vlen=205
 
-Some require pause autoneg to match the autoneg state in ksettings,
-and then use tx_pause/rx_pause an "abilities mask" (which isn't
-clear what effect it has.)
+  $ bpftool btf dump file /sys/kernel/btf/vmlinux | grep "STRUCT 'perf_event'"
+  [1665] STRUCT 'perf_event' size=1160 vlen=70
 
-Some disappears off into firmware, so there's no clue there.
+also the BTF data get smaller ;-) before:
 
-Some have a boolean pause state, which they update if tx_pause
-doesn't match, else if rx_pause doesn't match, else return an
-error if autoneg is on (which gives really odd behaviour.)  See
-myri10ge_set_pauseparam() for that one.
+  $ ll /sys/kernel/btf/vmlinux
+  -r--r--r--. 1 root root 2067432 Dec 13 22:56 /sys/kernel/btf/vmlinux
 
-skge_set_pauseparam() is another variation on randomness.  If
-you change autoneg, you switch between none and symmetric mode.
-Otherwise what you end up with depends on the rx/tx_pause values.
+after:
+  $ ll /sys/kernel/btf/vmlinux
+  -r--r--r--. 1 root root 1984345 Dec 13 23:02 /sys/kernel/btf/vmlinux
 
-And then when you search the Internet, you very quickly come across
-lots of people who struggle to cope with all these random driver
-specific behaviours.  The whole thing seems to be one big trainwreck
-of a mess - which I suspect comes down to the total lack of clear
-specification about how this interface is supposed to work.
 
-> Clearly, the more of this we can handle in phylink/phylib, the more
-> uniform it will be. But there is also a trend at the moment for
-> firmware to control the PHY, and it seems like a few MAC driver
-> writers have no idea what their firmware is actually doing with the
-> PHY for things like this.
+Peter, Steven,
+if above is correct and there's no other better solution, would it be possible
+to straighten up the namespace and user some distinct names for perf and ftrace
+ring buffers?
 
-Yes, and I have nothing good to say about that; firmware leads to
-brokeness or restrictive implementations that are impossible to
-work-around.  I'm pretty sure that for one of the platforms I have
-here, it's downfall is going to be restrictive vendor firmware.
+thoughts?
+jirka
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-According to speedtest.net: 11.9Mbps down 500kbps up
