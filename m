@@ -2,92 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F6A811E856
-	for <lists+netdev@lfdr.de>; Fri, 13 Dec 2019 17:29:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 08E3C11E852
+	for <lists+netdev@lfdr.de>; Fri, 13 Dec 2019 17:29:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728255AbfLMQ3Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Dec 2019 11:29:16 -0500
-Received: from wtarreau.pck.nerim.net ([62.212.114.60]:29440 "EHLO 1wt.eu"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728032AbfLMQ3Q (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 13 Dec 2019 11:29:16 -0500
-Received: (from willy@localhost)
-        by pcw.home.local (8.15.2/8.15.2/Submit) id xBDGPxKt002386;
-        Fri, 13 Dec 2019 17:25:59 +0100
-Date:   Fri, 13 Dec 2019 17:25:59 +0100
-From:   Willy Tarreau <w@1wt.eu>
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        "William J. Tolley" <william@breakpointingbad.com>,
-        "Jason A. Donenfeld" <zx2c4@kernel.org>,
-        Eric Dumazet <edumazet@google.com>
-Subject: Re: [RFC] tcp: implement new per-interface sysctl "auto_dev_bind"
-Message-ID: <20191213162559.GE2209@1wt.eu>
-References: <20191213100730.2153-1-w@1wt.eu>
- <d40a3670-e983-d9fc-0a06-4f62bafe96b2@gmail.com>
+        id S1728207AbfLMQ2L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Dec 2019 11:28:11 -0500
+Received: from relay3-d.mail.gandi.net ([217.70.183.195]:33015 "EHLO
+        relay3-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728032AbfLMQ2L (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Dec 2019 11:28:11 -0500
+X-Originating-IP: 90.76.143.236
+Received: from localhost (lfbn-tou-1-1075-236.w90-76.abo.wanadoo.fr [90.76.143.236])
+        (Authenticated sender: antoine.tenart@bootlin.com)
+        by relay3-d.mail.gandi.net (Postfix) with ESMTPSA id 7EE8160010;
+        Fri, 13 Dec 2019 16:28:08 +0000 (UTC)
+Date:   Fri, 13 Dec 2019 17:28:08 +0100
+From:   Antoine Tenart <antoine.tenart@bootlin.com>
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Cc:     Antoine Tenart <antoine.tenart@bootlin.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next 3/3] net: mvpp2: update mvpp2 validate()
+ implementation
+Message-ID: <20191213162808.GB26710@kwain>
+References: <20191212174309.GM25745@shell.armlinux.org.uk>
+ <E1ifSV8-0000b1-NW@rmk-PC.armlinux.org.uk>
+ <20191213160420.GA26710@kwain>
+ <20191213161144.GU25745@shell.armlinux.org.uk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <d40a3670-e983-d9fc-0a06-4f62bafe96b2@gmail.com>
-User-Agent: Mutt/1.6.1 (2016-04-27)
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20191213161144.GU25745@shell.armlinux.org.uk>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Eric,
-
-On Fri, Dec 13, 2019 at 08:03:52AM -0800, Eric Dumazet wrote:
-> Hi Willy, thanks for working on this.
-
-Thanks for reviewing :-)
-
-> Could you check if your patch works with syncookies mode ?
+On Fri, Dec 13, 2019 at 04:11:44PM +0000, Russell King - ARM Linux admin wrote:
+> On Fri, Dec 13, 2019 at 05:04:20PM +0100, Antoine Tenart wrote:
+> > On Thu, Dec 12, 2019 at 05:43:46PM +0000, Russell King wrote:
+> > > 
+> > > diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+> > > index 111b3b8239e1..fddd856338b4 100644
+> > > --- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+> > > +++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+> > > @@ -4786,6 +4786,8 @@ static void mvpp2_phylink_validate(struct phylink_config *config,
+> > >  			phylink_set(mask, 10000baseER_Full);
+> > >  			phylink_set(mask, 10000baseKR_Full);
+> > >  		}
+> > > +		if (state->interface != PHY_INTERFACE_MODE_NA)
+> > > +			break;
+> > 
+> > >  		/* Fall-through */
+> > >  	case PHY_INTERFACE_MODE_RGMII:
+> > >  	case PHY_INTERFACE_MODE_RGMII_ID:
+> > > @@ -4796,13 +4798,21 @@ static void mvpp2_phylink_validate(struct phylink_config *config,
+> > >  		phylink_set(mask, 10baseT_Full);
+> > >  		phylink_set(mask, 100baseT_Half);
+> > >  		phylink_set(mask, 100baseT_Full);
+> > > +		if (state->interface != PHY_INTERFACE_MODE_NA)
+> > > +			break;
+> > 
+> > The two checks above will break the 10G/1G interfaces on the mcbin
+> > (eth0/eth1) as they can support both 10gbase-kr and 10/100/1000baseT
+> > modes depending on what's connected. With this patch only the modes
+> > related to the one defined in the device tree would be valid, breaking
+> > run-time reconfiguration of the link.
 > 
-> echo 2 >/proc/sys/net/ipv4/tcp_syncookies
+> Exactly which scenario are you talking about?  The mcbin doubleshot
+> setup, or the singleshot setup?
 
-Good catch:
+I was thinking about the doubleshot.
 
-[19401.670076] Call trace:
-[19401.672494]  tcp_v4_syn_recv_sock+0x168/0x250
-[19401.676807]  tcp_get_cookie_sock+0x4c/0xe4
-[19401.680858]  cookie_v4_check+0x470/0x4a8
-[19401.684740]  tcp_v4_do_rcv+0xf4/0x1c8
-[19401.688362]  tcp_v4_rcv+0x410/0x790
-[19401.691815]  ip_protocol_deliver_rcu+0x8c/0x128
-[19401.696298]  ip_local_deliver_finish+0x64/0x78
-[19401.700696]  ip_local_deliver+0x90/0x94
-[19401.704491]  ip_rcv_finish+0x3c/0x50
-[19401.708027]  ip_rcv+0x5c/0x74
-[19401.710961]  __netif_receive_skb_one_core+0x54/0x7c
-[19401.715790]  __netif_receive_skb+0x5c/0x64
-[19401.719843]  netif_receive_skb_internal+0x68/0xcc
-[19401.724501]  napi_gro_receive+0x70/0xa0
-[19401.728298]  gro_cell_poll+0x74/0x88
-[19401.731832]  net_rx_action+0x134/0x2c8
-[19401.735543]  __do_softirq+0x1bc/0x1fc
-[19401.739165]  irq_exit+0x60/0xb0
-[19401.742270]  __handle_domain_irq+0x6c/0x98
-[19401.746322]  gic_handle_irq+0x70/0xac
-[19401.749945]  el1_irq+0xb8/0x180
-[19401.753052]  arch_cpu_idle+0x10/0x18
-[19401.756588]  do_idle+0x134/0x22c
-[19401.759778]  cpu_startup_entry+0x20/0x3c
-[19401.763660]  rest_init+0xd0/0xdc
-[19401.766852]  arch_call_rest_init+0xc/0x14
-[19401.770818]  start_kernel+0x41c/0x448
-[19401.774444] Code: 790bd261 aa1303e0 97ffbdd1 f9400ac0 (f9416000) 
-[19401.780485] ---[ end trace e08862982660f052 ]---
-[19401.785049] Kernel panic - not syncing: Fatal exception in interrupt
+> This patch (when combined with the others) has no effect on the
+> doubleshot, and should have no effect on the SFP cages on the single
+> shot.
 
-> I wonder if your patch could be simpler if you were plugging the logic for passive
-> flows in inet_request_bound_dev_if() ?
+You're right, I just tested the series and it the two 10G/1G ports were
+able to be reconfigured at runtime, my bad.
 
-I'm not sure yet. For having had a quick lookk and tried to move the
-code there, I feel like I'll need to distinguish the protocols (v4/v6)
-in order to look at the per-interface configuration, while it's already
-done in the caller. Or maybe there are some ipv4 settings that also
-apply to ipv6 and we could do the same by having a single one for the
-two maybe ?
+However it seems cp1_eth1 is coming up at 100Mbps only. (I haven't
+looked into it more than a quick test so far).
 
-Willy
+  # ethtool eth2
+  Settings for eth2:
+          Supported ports: [ TP MII FIBRE ]
+          Supported link modes:   10baseT/Half 10baseT/Full
+                                  100baseT/Half 100baseT/Full
+          Supported pause frame use: Symmetric Receive-only
+          Supports auto-negotiation: Yes
+          Supported FEC modes: Not reported
+          Advertised link modes:  10baseT/Half 10baseT/Full
+                                  100baseT/Half 100baseT/Full
+          Advertised pause frame use: Symmetric Receive-only
+          Advertised auto-negotiation: Yes
+          Advertised FEC modes: Not reported
+          Link partner advertised link modes:  10baseT/Half 10baseT/Full
+                                               100baseT/Half 100baseT/Full
+          Link partner advertised pause frame use: Symmetric Receive-only
+          Link partner advertised auto-negotiation: Yes
+          Link partner advertised FEC modes: Not reported
+          Speed: 100Mb/s
+          Duplex: Full
+          Port: MII
+          PHYAD: 0
+          Transceiver: internal
+          Auto-negotiation: on
+          Link detected: yes
+
+The link partner however advertises:
+
+          Advertised link modes:  10baseT/Half 10baseT/Full
+                                  100baseT/Half 100baseT/Full
+                                  1000baseT/Full
+
+Thanks,
+Antoine
+
+-- 
+Antoine Ténart, Bootlin
+Embedded Linux and Kernel engineering
+https://bootlin.com
