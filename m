@@ -2,109 +2,226 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9413411F3AD
-	for <lists+netdev@lfdr.de>; Sat, 14 Dec 2019 20:25:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B80D111F3AE
+	for <lists+netdev@lfdr.de>; Sat, 14 Dec 2019 20:25:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726781AbfLNTZc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 14 Dec 2019 14:25:32 -0500
-Received: from mail-ot1-f68.google.com ([209.85.210.68]:38853 "EHLO
-        mail-ot1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726541AbfLNTZb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 14 Dec 2019 14:25:31 -0500
-Received: by mail-ot1-f68.google.com with SMTP id h20so3536207otn.5
-        for <netdev@vger.kernel.org>; Sat, 14 Dec 2019 11:25:31 -0800 (PST)
+        id S1726820AbfLNTZp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 14 Dec 2019 14:25:45 -0500
+Received: from mail-ed1-f68.google.com ([209.85.208.68]:34169 "EHLO
+        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725943AbfLNTZp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 14 Dec 2019 14:25:45 -0500
+Received: by mail-ed1-f68.google.com with SMTP id l8so1896342edw.1
+        for <netdev@vger.kernel.org>; Sat, 14 Dec 2019 11:25:43 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
+        d=herbertland-com.20150623.gappssmtp.com; s=20150623;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=Z+JLub6tSjjD0VYNukHxlnNiCf3LxZUN97TOzGRferM=;
-        b=ZJvhEehw1yFXqi+lWP9b9cl2E0XC6f082DGJD8gnBV6/Opz9r+odAxXuiLFiF86/1D
-         fdI+R4u6fCCVbU5BZZb8LU8YZk2Rw8c3J3XFa4g0pVwPqlCYQSFonp3CVVyb3PXVOXHG
-         5/LV6VUNa3XdvI2w1wDD3gVMjUyxDiHUOycibvUMxUgGsVbrjUnrRoIXPd54XQmi1Pbx
-         li+egwTNYQuShi/eCzq3yjAClZZ55TUIVxXFFNuf+iRlkesI7SesUOMMYI58F5ss6Fhr
-         6m1INRULw3vne6deq1Y3wZbH8/PjCFRJnvhYUfFQx+cVnVBHDcV00cXVGXTybYEQoibd
-         4N5Q==
+        bh=kDLf18D7Y+hYCQsCEctw8t60yTd0uKstHWb2k9BZDvQ=;
+        b=po4MTv0/6lFSeGiRTpj9mBv4rIr0zKH7G5v5iuErPFNYFYgf04Feh00r78jQUO5TBK
+         HGXnI1amMp47VuK9XkI2PVjO/JMMfF9FWh0AuGyB2uW3KQkrqqV08LAEQyxXWvwv4J7o
+         na4cHLNy8IfinFdWDsxmVWqyOKOYjl7yj0gGSo4sb7+IJfSHKtUbjXll3J487Yy7/agI
+         begDcxLnULfyxGtXY64lFKlzo1BTZWraice0SV2E+FztEQGBo+ZtscjyP43oUhCb737A
+         GVH7lDSebjIzIlw4wOiTrYNKsYJbdWyS6NvJS3iogmmKBXoIsHr+hUooyw2w32pgGWa8
+         q66A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=Z+JLub6tSjjD0VYNukHxlnNiCf3LxZUN97TOzGRferM=;
-        b=esUyTa2fQmX6OoRcaovVhzqv1RVghoWrYT972RF/MLEy6JTEGcF/oBONGtyrf1UcVX
-         4a2M/MRTSVlKHwYRk6QiOnz6Sc0HD1DIxlBRgXcN8m397+PROpN73X4rKSHtQswNspx1
-         R+pKGJ0QwOEK6x5y8nEszH1mPDI+xAEtJ7EFxJ0bkdnIhNkqgyfARi6aN2+Btz8WxPXW
-         O5JtQQJGX/a7J9Tp+gWGN2yv73HJ81P+4mcaQ+eUowjMkCqJWAnMmTm9zI5LYPugmfgb
-         1R5asPTI8lhJGf6Ff/KYgxXXqLSGHgO/H7m8WtkFegcLCu4+gowzOHCdpFyMxNCl8tJl
-         U+7g==
-X-Gm-Message-State: APjAAAXpnIa2eXDn8bZPl8pVmrVmFQKPGplRwcTEij3nmNA+rOAGpJp+
-        KuBuomaQ+QGvzCxgEr630vGlv6ajgBq42DIolVOh5w==
-X-Google-Smtp-Source: APXvYqw2rYLpk9L5q0n/ZsuZpXWvZm9n8UOyRMu3hYSCo+t5nPvK2xICr9ARcUqVVMXjv6l5co0QhzUMARbQzR8kA2I=
-X-Received: by 2002:a9d:480c:: with SMTP id c12mr23269628otf.255.1576351530462;
- Sat, 14 Dec 2019 11:25:30 -0800 (PST)
+        bh=kDLf18D7Y+hYCQsCEctw8t60yTd0uKstHWb2k9BZDvQ=;
+        b=R1hl5kE9XjB1zCU77R+6uZLausLSpNd4nXk9aGyYTw/+xH9+QwfQ0KCjdqPLfYEqL5
+         myvJioRuKZ8AXS2sSE6A1sZAVDiJS5Vw6XuOXU3qjNvYd3Sosg8dmOHHNPeJkQAOms5H
+         xNgrmCZ6Kb0ICk89noPXyhg7JJQhMLE0bbNBdlSFmsB1LtQXk4AEIvKSGyYd83O5DUIM
+         dwtGvpLrdGW66agGyRtEDA3x4fBwGp6ZxUkZD6gY4DHaTiPHyjmJhyeLKpS4lV4Skiox
+         +grDtEj/XUjhZc11m/lTANlETQ25MR2dUCOAr0Xz7mtVol230adpZdA5iD5WwAC/PEGB
+         bOMQ==
+X-Gm-Message-State: APjAAAWYBzI+s7EYSS9rQViEqRMwKm8edDC7+BrATR181eSk9SmNBz4M
+        r9KEOzvB/f+FaJlrNqHRpWcuw34nivydlXA/yT/ksw==
+X-Google-Smtp-Source: APXvYqyplSw0oqxW8bHqsnI8l709niEB9lJ0HcYIrSppxtrkQ7V5luEOzkveovLNN9TAnB7r6Embf34SbdFygIzVUFs=
+X-Received: by 2002:a17:906:a444:: with SMTP id cb4mr24806941ejb.42.1576351542945;
+ Sat, 14 Dec 2019 11:25:42 -0800 (PST)
 MIME-Version: 1.0
-References: <20191214004737.1652076-1-kafai@fb.com> <20191214004758.1653342-1-kafai@fb.com>
- <b321412c-1b42-45a9-4dc6-cc268b55cd0d@gmail.com>
-In-Reply-To: <b321412c-1b42-45a9-4dc6-cc268b55cd0d@gmail.com>
-From:   Neal Cardwell <ncardwell@google.com>
-Date:   Sat, 14 Dec 2019 14:25:14 -0500
-Message-ID: <CADVnQy=soQ8KhuUWEQj0n2ge3a43OSgAKS95bmBtp090jqbM_w@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 09/13] bpf: Add BPF_FUNC_jiffies
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     Martin KaFai Lau <kafai@fb.com>, bpf@vger.kernel.org,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        David Miller <davem@davemloft.net>,
-        Kernel Team <kernel-team@fb.com>,
-        Netdev <netdev@vger.kernel.org>
+References: <1570139884-20183-1-git-send-email-tom@herbertland.com>
+ <1570139884-20183-7-git-send-email-tom@herbertland.com> <20191007123943.blsqqr3my4jmklqy@netronome.com>
+In-Reply-To: <20191007123943.blsqqr3my4jmklqy@netronome.com>
+From:   Tom Herbert <tom@herbertland.com>
+Date:   Sat, 14 Dec 2019 11:25:31 -0800
+Message-ID: <CALx6S35OeP4nR+AB2Pujamcork3WVz3KyZi4qSGKfL5CXkMj6w@mail.gmail.com>
+Subject: Re: [PATCH v5 net-next 6/7] ip6tlvs: Add netlink interface
+To:     Simon Horman <simon.horman@netronome.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Tom Herbert <tom@quantonium.net>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Dec 13, 2019 at 9:00 PM Eric Dumazet <eric.dumazet@gmail.com> wrote:
+On Mon, Oct 7, 2019 at 5:39 AM Simon Horman <simon.horman@netronome.com> wrote:
 >
->
->
-> On 12/13/19 4:47 PM, Martin KaFai Lau wrote:
-> > This patch adds a helper to handle jiffies.  Some of the
-> > tcp_sock's timing is stored in jiffies.  Although things
-> > could be deduced by CONFIG_HZ, having an easy way to get
-> > jiffies will make the later bpf-tcp-cc implementation easier.
+> On Thu, Oct 03, 2019 at 02:58:03PM -0700, Tom Herbert wrote:
+> > From: Tom Herbert <tom@quantonium.net>
 > >
+> > Add a netlink interface to manage the TX TLV parameters. Managed
+> > parameters include those for validating and sending TLVs being sent
+> > such as alignment, TLV ordering, length limits, etc.
+> >
+> > Signed-off-by: Tom Herbert <tom@herbertland.com>
+>
+> Hi Tom,
+>
+> I am wondering if you considered including extack support in this code.
+>
+Good point, will look into adding it.
+
+> ...
+>
+> > diff --git a/include/uapi/linux/ipeh.h b/include/uapi/linux/ipeh.h
+> > index dbf0728..bac36a7 100644
+> > --- a/include/uapi/linux/ipeh.h
+> > +++ b/include/uapi/linux/ipeh.h
+> > @@ -21,4 +21,33 @@ enum {
+> >       IPEH_TLV_PERM_MAX = IPEH_TLV_PERM_NO_CHECK
+> >  };
+> >
+> > +/* NETLINK_GENERIC related info for IP TLVs */
+> > +
+> > +enum {
+> > +     IPEH_TLV_ATTR_UNSPEC,
+> > +     IPEH_TLV_ATTR_TYPE,                     /* u8, > 1 */
+> > +     IPEH_TLV_ATTR_ORDER,                    /* u16 */
+> > +     IPEH_TLV_ATTR_ADMIN_PERM,               /* u8, perm value */
+> > +     IPEH_TLV_ATTR_USER_PERM,                /* u8, perm value */
+>
+> My reading of struct tlv_tx_params is that admin_perm and user_perm are
+> 2-bit entities whose valid values are currently 0, 1 and 2. Perhaps that
+> would be worth noting here in keeping with restrictions noted for other
+> attributes.
+>
+Okay.
+
+> > +     IPEH_TLV_ATTR_CLASS,                    /* u8, 3 bit flags */
+> > +     IPEH_TLV_ATTR_ALIGN_MULT,               /* u8, 1 to 16 */
+> > +     IPEH_TLV_ATTR_ALIGN_OFF,                /* u8, 0 to 15 */
+> > +     IPEH_TLV_ATTR_MIN_DATA_LEN,             /* u8 (option data length) */
+> > +     IPEH_TLV_ATTR_MAX_DATA_LEN,             /* u8 (option data length) */
+> > +     IPEH_TLV_ATTR_DATA_LEN_MULT,            /* u8, 1 to 16 */
+> > +     IPEH_TLV_ATTR_DATA_LEN_OFF,             /* u8, 0 to 15 */
+> > +
+> > +     __IPEH_TLV_ATTR_MAX,
+> > +};
+> > +
+> > +#define IPEH_TLV_ATTR_MAX              (__IPEH_TLV_ATTR_MAX - 1)
 >
 > ...
 >
-> > +
-> > +BPF_CALL_2(bpf_jiffies, u64, in, u64, flags)
+> > diff --git a/net/ipv6/exthdrs_common.c b/net/ipv6/exthdrs_common.c
+> > index feaa4a6..e3c1f33 100644
+> > --- a/net/ipv6/exthdrs_common.c
+> > +++ b/net/ipv6/exthdrs_common.c
+> > @@ -454,6 +454,244 @@ int __ipeh_tlv_unset(struct tlv_param_table *tlv_param_table,
+>
+> ...
+>
+> > +int ipeh_tlv_nl_cmd_set(struct tlv_param_table *tlv_param_table,
+> > +                     struct genl_family *tlv_nl_family,
+> > +                     struct sk_buff *skb, struct genl_info *info)
 > > +{
-> > +     if (!flags)
-> > +             return get_jiffies_64();
+> > +     struct tlv_params new_params;
+> > +     struct tlv_proc *tproc;
+> > +     unsigned char type;
+> > +     unsigned int v;
+> > +     int retv = -EINVAL;
 > > +
-> > +     if (flags & BPF_F_NS_TO_JIFFIES) {
-> > +             return nsecs_to_jiffies(in);
-> > +     } else if (flags & BPF_F_JIFFIES_TO_NS) {
-> > +             if (!in)
-> > +                     in = get_jiffies_64();
-> > +             return jiffies_to_nsecs(in);
+> > +     if (!info->attrs[IPEH_TLV_ATTR_TYPE])
+> > +             return -EINVAL;
+> > +
+> > +     type = nla_get_u8(info->attrs[IPEH_TLV_ATTR_TYPE]);
+> > +     if (type < 2)
+> > +             return -EINVAL;
+> > +
+> > +     rcu_read_lock();
+> > +
+> > +     /* Base new parameters on existing ones */
+> > +     tproc = ipeh_tlv_get_proc_by_type(tlv_param_table, type);
+> > +     new_params = tproc->params;
+> > +
+> > +     if (info->attrs[IPEH_TLV_ATTR_ORDER]) {
+> > +             v = nla_get_u16(info->attrs[IPEH_TLV_ATTR_ORDER]);
+> > +             new_params.t.preferred_order = v;
 > > +     }
 > > +
-> > +     return 0;
+> > +     if (info->attrs[IPEH_TLV_ATTR_ADMIN_PERM]) {
+> > +             v = nla_get_u8(info->attrs[IPEH_TLV_ATTR_ADMIN_PERM]);
+> > +             if (v > IPEH_TLV_PERM_MAX)
+> > +                     goto out;
+> > +             new_params.t.admin_perm = v;
+> > +     }
+> > +
+> > +     if (info->attrs[IPEH_TLV_ATTR_USER_PERM]) {
+> > +             v = nla_get_u8(info->attrs[IPEH_TLV_ATTR_USER_PERM]);
+> > +             if (v > IPEH_TLV_PERM_MAX)
+> > +                     goto out;
+> > +             new_params.t.user_perm = v;
+> > +     }
+> > +
+> > +     if (info->attrs[IPEH_TLV_ATTR_CLASS]) {
+> > +             v = nla_get_u8(info->attrs[IPEH_TLV_ATTR_CLASS]);
+> > +             if (!v || (v & ~IPEH_TLV_CLASS_FLAG_MASK))
+> > +                     goto out;
+> > +             new_params.t.class = v;
+> > +     }
+> > +
+> > +     if (info->attrs[IPEH_TLV_ATTR_ALIGN_MULT]) {
+> > +             v = nla_get_u8(info->attrs[IPEH_TLV_ATTR_ALIGN_MULT]);
+> > +             if (v > 16 || v < 1)
+> > +                     goto out;
+> > +             new_params.t.align_mult = v - 1;
+> > +     }
+> > +
+> > +     if (info->attrs[IPEH_TLV_ATTR_ALIGN_OFF]) {
+> > +             v = nla_get_u8(info->attrs[IPEH_TLV_ATTR_ALIGN_OFF]);
+> > +             if (v > 15)
+> > +                     goto out;
+> > +             new_params.t.align_off = v;
+> > +     }
+> > +
+> > +     if (info->attrs[IPEH_TLV_ATTR_MAX_DATA_LEN])
+> > +             new_params.t.max_data_len =
+> > +                 nla_get_u8(info->attrs[IPEH_TLV_ATTR_MAX_DATA_LEN]);
+> > +
+> > +     if (info->attrs[IPEH_TLV_ATTR_MIN_DATA_LEN])
+> > +             new_params.t.min_data_len =
+> > +                 nla_get_u8(info->attrs[IPEH_TLV_ATTR_MIN_DATA_LEN]);
+> > +
+> > +     if (info->attrs[IPEH_TLV_ATTR_DATA_LEN_MULT]) {
+> > +             v = nla_get_u8(info->attrs[IPEH_TLV_ATTR_DATA_LEN_MULT]);
+> > +             if (v > 16 || v < 1)
+> > +                     goto out;
+> > +             new_params.t.data_len_mult = v - 1;
+> > +     }
+>
+> Is some sanity checking warranted for the min/max data len values.
+> f.e. that min <= max ?
+
+Okay, will add.
+
+>
+> > +
+> > +     if (info->attrs[IPEH_TLV_ATTR_DATA_LEN_OFF]) {
+> > +             v = nla_get_u8(info->attrs[IPEH_TLV_ATTR_DATA_LEN_OFF]);
+> > +             if (v > 15)
+> > +                     goto out;
+> > +             new_params.t.data_len_off = v;
+> > +     }
+> > +
+> > +     retv = ipeh_tlv_set_params(tlv_param_table, type, &new_params);
+> > +
+> > +out:
+> > +     rcu_read_unlock();
+> > +     return retv;
 > > +}
+> > +EXPORT_SYMBOL(ipeh_tlv_nl_cmd_set);
 >
-> This looks a bit convoluted :)
->
-> Note that we could possibly change net/ipv4/tcp_cubic.c to no longer use jiffies at all.
->
-> We have in tp->tcp_mstamp an accurate timestamp (in usec) that can be converted to ms.
-
-If the jiffies functionality stays, how about 3 simple functions that
-correspond to the underlying C functions, perhaps something like:
-
-  bpf_nsecs_to_jiffies(nsecs)
-  bpf_jiffies_to_nsecs(jiffies)
-  bpf_get_jiffies_64()
-
-Separate functions might be easier to read/maintain (and may even be
-faster, given the corresponding reduction in branches).
-
-neal
+> ...
