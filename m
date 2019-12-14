@@ -2,129 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C4B7111F40A
-	for <lists+netdev@lfdr.de>; Sat, 14 Dec 2019 21:49:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A6C3A11F40B
+	for <lists+netdev@lfdr.de>; Sat, 14 Dec 2019 21:49:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726783AbfLNUtB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 14 Dec 2019 15:49:01 -0500
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:34165 "EHLO
-        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726484AbfLNUtB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 14 Dec 2019 15:49:01 -0500
-Received: by mail-pg1-f195.google.com with SMTP id r11so1334222pgf.1
-        for <netdev@vger.kernel.org>; Sat, 14 Dec 2019 12:49:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=2IdZ4ekCQ6PMgSqK8hctEqFSrGXA9RF+ZiyRs539CIs=;
-        b=C4cMIcRKqgb7XDTzizag1jyyKpUw3a6kCSefQN1k3U/NmqeoarPF5j4D7HUwrOOt6M
-         ymBSUbBrKUa0PPtbHUAAwXT6h0EfJOBiqAB+Ks9cUHAcqp+eDeLpyI4MRWkY9brrrhfJ
-         OW7myxcF8q90/hrVqFYvw9z7uuupzeRDYdwguwq/zh4wSgOKk0/QFOVGQV0mwfBXQcJd
-         DWGqtCx65IT9GNOhYnXEimmp6IPmfBDGuEBeSX5i8YDzRrkOXBdA7v38uV5qBb3sf2A9
-         71bIEqL6cCG5uQRnv1cfDpCrB7sf7sD3GqVeO2Uxma2W87IPn5W7+op+ad67zTpzcetD
-         dCXw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=2IdZ4ekCQ6PMgSqK8hctEqFSrGXA9RF+ZiyRs539CIs=;
-        b=ui4EWe9iixMZzWFDDr1bb5P25UBedcVb2LzVLTd8Vl/a0Gk48Tmzm7mTuVYCs7hGJc
-         ySg9ga/QBGsFwm5IQgIIHWXgDV3MB+frhyo821iKR8xppMWJXuyJf/ERQjnO8tQRISu5
-         yJ4DMEkV0vvSpa1H+oC0pbdfrgcoEBnsm9q+kic+RjEwJ+B3eix/oukvh8nR4zMr552l
-         SHUa9ijReaIlM7rZTmEfSTbvFclHo8PNw+IkjIg8h465bfW8oYt2l5WWtufYQ1Id75jg
-         MJo53sjrgjfReN8f6+4Cu/0xIYXEfTjCWOO4xkM/x8p8Vt6u4bW1RrSQr+l6JIPYepCc
-         1CNg==
-X-Gm-Message-State: APjAAAX/h7WygTEgMaUmiu6AMumeCYsTe/1cmvyZede3Vgv49bYRANV6
-        Hw9bH8BynaDna08/IQTXuLIWGQ==
-X-Google-Smtp-Source: APXvYqyHqTzavs+mcqeibXkMmsY4yuF7m4xLpw0VZZNkHi6v4WW/MyDb4VDhmMyN58j9TheL8A9PUw==
-X-Received: by 2002:a63:1666:: with SMTP id 38mr7844385pgw.325.1576356540294;
-        Sat, 14 Dec 2019 12:49:00 -0800 (PST)
-Received: from cakuba.netronome.com (c-73-202-202-92.hsd1.ca.comcast.net. [73.202.202.92])
-        by smtp.gmail.com with ESMTPSA id p38sm13324756pjp.27.2019.12.14.12.48.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 14 Dec 2019 12:49:00 -0800 (PST)
-Date:   Sat, 14 Dec 2019 12:48:56 -0800
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Ajay Gupta <ajaykuee@gmail.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, treding@nvidia.com,
-        Ajay Gupta <ajayg@nvidia.com>
-Subject: Re: [PATCH v2 2/2] net: stmmac: dwc-qos: avoid clk and reset for
- acpi device
-Message-ID: <20191214124856.4a9e2449@cakuba.netronome.com>
-In-Reply-To: <20191211071125.15610-3-ajayg@nvidia.com>
-References: <20191211071125.15610-1-ajayg@nvidia.com>
-        <20191211071125.15610-3-ajayg@nvidia.com>
-Organization: Netronome Systems, Ltd.
+        id S1726823AbfLNUto (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 14 Dec 2019 15:49:44 -0500
+Received: from mout.kundenserver.de ([212.227.126.133]:43833 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726484AbfLNUto (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 14 Dec 2019 15:49:44 -0500
+Received: from mail-qv1-f42.google.com ([209.85.219.42]) by
+ mrelayeu.kundenserver.de (mreue012 [212.227.15.129]) with ESMTPSA (Nemesis)
+ id 1MY5XR-1iCEjz3uJR-00YTdo for <netdev@vger.kernel.org>; Sat, 14 Dec 2019
+ 21:49:43 +0100
+Received: by mail-qv1-f42.google.com with SMTP id l14so545353qvu.12
+        for <netdev@vger.kernel.org>; Sat, 14 Dec 2019 12:49:42 -0800 (PST)
+X-Gm-Message-State: APjAAAUaQ9k768y+0J52YV9r0AJ6hFMGhqi8x5nvh7rUYMeodw11ZE/A
+        JUJsqFQNVks/7bltc6wNSnpEiBkqPmvrtZZBfHI=
+X-Google-Smtp-Source: APXvYqzJlLUF7MWn60BUT4kK3gp8XwjCtTx7yyp/Q8aat+59lR8PB0ptwD7Bx8IryMM8DcuTg7iqYlPU94fYl1DA9M4=
+X-Received: by 2002:a0c:aca2:: with SMTP id m31mr19914980qvc.222.1576356581826;
+ Sat, 14 Dec 2019 12:49:41 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20191212171125.9933-1-olteanv@gmail.com> <CAK8P3a1PBa0bcfmPnVGry-6GUQ0WTLJ36MAE89QWXzbnuEf_XQ@mail.gmail.com>
+In-Reply-To: <CAK8P3a1PBa0bcfmPnVGry-6GUQ0WTLJ36MAE89QWXzbnuEf_XQ@mail.gmail.com>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Sat, 14 Dec 2019 21:49:25 +0100
+X-Gmail-Original-Message-ID: <CAK8P3a0EM0MOsgdCVHS7gPxLk2nvP4Xqs4_tmtPM4Da=M5ZUQA@mail.gmail.com>
+Message-ID: <CAK8P3a0EM0MOsgdCVHS7gPxLk2nvP4Xqs4_tmtPM4Da=M5ZUQA@mail.gmail.com>
+Subject: Re: [PATCH] net: mscc: ocelot: hide MSCC_OCELOT_SWITCH and move
+ outside NET_VENDOR_MICROSEMI
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Mao Wenan <maowenan@huawei.com>, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        alexandru.marginean@nxp.com, xiaoliang.yang_1@nxp.com,
+        yangbo lu <yangbo.lu@nxp.com>,
+        Networking <netdev@vger.kernel.org>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        UNGLinuxDriver@microchip.com,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:XSnj6rspf5Cspmgs6AbMZs3vmlJbVwnH6dbTiLu5bmuOrY03064
+ jTJldtvm5rDESmplDiaYeY8DlEXIchMTR81/oMCI5p/R4Edfz6uLN6s6oYGmSgR3TL1IHYY
+ Tg2+fqsS2jC4ueFViEaMrXCKiHlj+ow6csKeRyoyzsJf292vtgwY2OiQ0Sy2ADkbldv7txl
+ 7P+zY7QQ/NOz8hGANpIoQ==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:m2AlT2KzD58=:6boU//eE4VgftCNF481qLJ
+ BZb0aWTrQAewdbgw9fk1PQ0glRenzmUXMb57KzYUps7zvVnhTf3Kq8VrmYBTdm9Z3FWrybfZC
+ 9bqHTvgv9RKsX7BaZ/P1W3lYfIvJQEuWH4stYys/3WS1r2CmPd6n/2do16/2zLxP8/mjGim8J
+ yt+QjV5/uf9DibRceTVFRGuOkGmjqNO6Da+TLVQICpBN3GKq+Mqz+LJnYr4qnlJylyOyf46JY
+ /LzTkNzN942Fn2x5lSpFyg5Tgec1dH3Ubun4NNEGVF9uk+8jXH5D9sy9wQsm3bgELiI8dt+sm
+ I1NghNfW3974wVo4hRibrM0l0WJZYJm9deFxSBUeT3nryKlAdIomCuNzKcWlDOdHYTw61EL9l
+ cBkLvpbqTf+DVjp/h5qG2efy5aiidF3cwXuwZp/S3cLZXVZNPNKup0d7rkEtbkx5KLqOsdYpj
+ oOaQH7ON1Sw7CJWn7H2TqOc2yapixT/NLQlIF93rfsMolZLOzcNTgRed+DxtyMXwMspVnJeY0
+ 8u0Wi251Bvjvr9ttRysJP+JxjenHWsiGRMIo5FJf7K6upmczFgUp1wMCkfPPE9mXmquld8BAv
+ F1BkftUJkVFw8tEhrtm4YniMI513FNTkXOTk0INTUeYEsw/kPVD75y7VxX4LXWR26eCMq0xMU
+ CACNqzzovrY5ipuzL6oyeImjbQ4RDiwwuRW+5FfLQPjhIAsF2Eehvc4MPc0F7+LzYbvhAdO77
+ zfNTEjD9rEblidrVe55AsEDaXwgdbsRhaonnGUmjb9XAp+FsvJyNBJkZq0NZdTaY12WUioiLi
+ o92CgjUjuqCaelWSWKKh6SoA0OyJFj1Yyl4l2Hf+Rj2xwRuiMGXNQRIsFykIyGsYJPMXm+vL3
+ U06VqIzKhsysHQzUm9/A==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 10 Dec 2019 23:11:25 -0800, Ajay Gupta wrote:
-> From: Ajay Gupta <ajayg@nvidia.com>
-> 
-> There are no clocks or resets referenced by Tegra ACPI device
-> so don't access clocks or resets interface with ACPI device.
-> 
-> Clocks and resets for ACPI devices will be handled via ACPI
-> interface.
-> 
-> Signed-off-by: Ajay Gupta <ajayg@nvidia.com>
-> ---
-> Change from v1->v2: Rebased.
-> 
->  .../stmicro/stmmac/dwmac-dwc-qos-eth.c        | 122 ++++++++++--------
->  1 file changed, 67 insertions(+), 55 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-dwc-qos-eth.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-dwc-qos-eth.c
-> index f87306b3cdae..70e8c41f7761 100644
-> --- a/drivers/net/ethernet/stmicro/stmmac/dwmac-dwc-qos-eth.c
-> +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-dwc-qos-eth.c
-> @@ -272,6 +272,7 @@ static void *tegra_eqos_probe(struct platform_device *pdev,
->  			      struct stmmac_resources *res)
->  {
->  	struct tegra_eqos *eqos;
-> +	struct device *dev = &pdev->dev;
->  	int err;
+On Sat, Dec 14, 2019 at 4:16 PM Arnd Bergmann <arnd@arndb.de> wrote:
+>
+> On Thu, Dec 12, 2019 at 6:11 PM Vladimir Oltean <olteanv@gmail.com> wrote:
+> >
+> > From: Vladimir Oltean <vladimir.oltean@nxp.com>
+> >
+> > NET_DSA_MSCC_FELIX and MSCC_OCELOT_SWITCH_OCELOT are 2 different drivers
+> > that use the same core operations, compiled under MSCC_OCELOT_SWITCH.
+>
+> > Fixes: 56051948773e ("net: dsa: ocelot: add driver for Felix switch family")
+> > Reported-by: Arnd Bergmann <arnd@arndb.de>
+> > Reported-by: Mao Wenan <maowenan@huawei.com>
+> > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+>
+> I did some more build testing and ran into another issue now that
+> MSCC_OCELOT_SWITCH_OCELOT can be built without
+> CONFIG_SWITCHDEV:
 
-Looks like this file uses reverse xmas tree variable ordering (longest
-to shortest total line length), please comply and add the dev first.
+And another one when CONFIG_NET_VENDOR_MICROSEMI is disabled:
 
->  	eqos = devm_kzalloc(&pdev->dev, sizeof(*eqos), GFP_KERNEL);
-> @@ -283,77 +284,88 @@ static void *tegra_eqos_probe(struct platform_device *pdev,
->  	eqos->dev = &pdev->dev;
->  	eqos->regs = res->addr;
->  
-> -	eqos->clk_master = devm_clk_get(&pdev->dev, "master_bus");
-> -	if (IS_ERR(eqos->clk_master)) {
-> -		err = PTR_ERR(eqos->clk_master);
-> -		goto error;
-> -	}
-> +	if (is_of_node(dev->fwnode)) {
-> +		eqos->clk_master = devm_clk_get(&pdev->dev, "master_bus");
-> +		if (IS_ERR(eqos->clk_master)) {
-> +			err = PTR_ERR(eqos->clk_master);
-> +			goto error;
-> +		}
+ERROR: "ocelot_fdb_dump" [drivers/net/dsa/ocelot/mscc_felix.ko] undefined!
+ERROR: "ocelot_regfields_init" [drivers/net/dsa/ocelot/mscc_felix.ko] undefined!
+ERROR: "ocelot_regmap_init" [drivers/net/dsa/ocelot/mscc_felix.ko] undefined!
+ERROR: "ocelot_init" [drivers/net/dsa/ocelot/mscc_felix.ko] undefined!
+ERROR: "ocelot_fdb_del" [drivers/net/dsa/ocelot/mscc_felix.ko] undefined!
+ERROR: "__ocelot_write_ix" [drivers/net/dsa/ocelot/mscc_felix.ko] undefined!
+ERROR: "ocelot_bridge_stp_state_set"
+[drivers/net/dsa/ocelot/mscc_felix.ko] undefined!
+ERROR: "ocelot_port_vlan_filtering"
+[drivers/net/dsa/ocelot/mscc_felix.ko] undefined!
+ERROR: "ocelot_get_ethtool_stats"
+[drivers/net/dsa/ocelot/mscc_felix.ko] undefined!
+ERROR: "ocelot_port_enable" [drivers/net/dsa/ocelot/mscc_felix.ko] undefined!
+ERROR: "ocelot_vlan_del" [drivers/net/dsa/ocelot/mscc_felix.ko] undefined!
+ERROR: "ocelot_deinit" [drivers/net/dsa/ocelot/mscc_felix.ko] undefined!
+ERROR: "ocelot_init_port" [drivers/net/dsa/ocelot/mscc_felix.ko] undefined!
+ERROR: "ocelot_fdb_add" [drivers/net/dsa/ocelot/mscc_felix.ko] undefined!
 
-You're indenting most of this function (~70 lines?) Would it be
-possible to move this code out into a separate function?
+This fixes it:
 
-[..]
-> +	} else {
-> +		/* set clk and reset handle to NULL for non DT device */
-> +		eqos->clk_master = NULL;
-> +		eqos->clk_slave = NULL;
-> +		data->stmmac_clk = NULL;
-> +		eqos->clk_rx = NULL;
-> +		eqos->clk_tx = NULL;
-> +		eqos->reset = NULL;
+diff --git a/drivers/net/ethernet/Makefile b/drivers/net/ethernet/Makefile
+index f8f38dcb5f8a..83351228734a 100644
+--- a/drivers/net/ethernet/Makefile
++++ b/drivers/net/ethernet/Makefile
+@@ -55,7 +55,7 @@ obj-$(CONFIG_NET_VENDOR_MEDIATEK) += mediatek/
+ obj-$(CONFIG_NET_VENDOR_MELLANOX) += mellanox/
+ obj-$(CONFIG_NET_VENDOR_MICREL) += micrel/
+ obj-$(CONFIG_NET_VENDOR_MICROCHIP) += microchip/
+-obj-$(CONFIG_NET_VENDOR_MICROSEMI) += mscc/
++obj-y += mscc/
+ obj-$(CONFIG_NET_VENDOR_MOXART) += moxa/
+ obj-$(CONFIG_NET_VENDOR_MYRI) += myricom/
+ obj-$(CONFIG_FEALNX) += fealnx.o
 
-Not sure about data, but eqos is zalloced so there should be no need to
-set the pointers to NULL.
-
-> +	}
+        Arnd
