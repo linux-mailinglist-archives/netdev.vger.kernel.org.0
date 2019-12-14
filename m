@@ -2,165 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CB26811F0F6
-	for <lists+netdev@lfdr.de>; Sat, 14 Dec 2019 09:37:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6A95C11F0FA
+	for <lists+netdev@lfdr.de>; Sat, 14 Dec 2019 09:41:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726232AbfLNIh6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 14 Dec 2019 03:37:58 -0500
-Received: from mail.kernel.org ([198.145.29.99]:51836 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725895AbfLNIh6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 14 Dec 2019 03:37:58 -0500
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 2349B24125;
-        Sat, 14 Dec 2019 08:37:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1576312676;
-        bh=bBqXNqepPrUnfTEsgIJIVQE60S3PLIE7bqcl+SWbyf0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=2B1MmkBN2XkZO/EHfDdd0M5ZuY81cL9M8usKucsCiVupHXMYl1oJZT8nyWkt0Y9BK
-         zJZ1IZliqNl7dCFC2Z9pi193DcRNnNO02Mkr6lplLFJOvsxJ84e8Vqz8IjsmVxC4y5
-         8wXiE2RiWPPdXkDxnkHM6RDn1ROdwhFu7ZAgWD4Q=
-Date:   Sat, 14 Dec 2019 09:37:53 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     "Saleem, Shiraz" <shiraz.saleem@intel.com>
-Cc:     "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "nhorman@redhat.com" <nhorman@redhat.com>,
-        "sassmann@redhat.com" <sassmann@redhat.com>,
-        "jgg@ziepe.ca" <jgg@ziepe.ca>,
-        "parav@mellanox.com" <parav@mellanox.com>,
-        "Ismail, Mustafa" <mustafa.ismail@intel.com>
-Subject: Re: [PATCH v3 04/20] i40e: Register a virtbus device to provide RDMA
-Message-ID: <20191214083753.GB3318534@kroah.com>
-References: <20191209224935.1780117-1-jeffrey.t.kirsher@intel.com>
- <20191209224935.1780117-5-jeffrey.t.kirsher@intel.com>
- <20191210153959.GD4053085@kroah.com>
- <9DD61F30A802C4429A01CA4200E302A7B6B9345E@fmsmsx124.amr.corp.intel.com>
+        id S1726199AbfLNIja (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 14 Dec 2019 03:39:30 -0500
+Received: from mout.kundenserver.de ([212.227.17.10]:41605 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725893AbfLNIja (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 14 Dec 2019 03:39:30 -0500
+Received: from mail-qv1-f44.google.com ([209.85.219.44]) by
+ mrelayeu.kundenserver.de (mreue108 [212.227.15.145]) with ESMTPSA (Nemesis)
+ id 1MPosX-1iKvB53SCJ-00MpDc for <netdev@vger.kernel.org>; Sat, 14 Dec 2019
+ 09:39:29 +0100
+Received: by mail-qv1-f44.google.com with SMTP id b18so723810qvo.8
+        for <netdev@vger.kernel.org>; Sat, 14 Dec 2019 00:39:28 -0800 (PST)
+X-Gm-Message-State: APjAAAVW4tcr73y22oB/Nnx6zC5f743bZLJaEFXX9/6coxni6G3Gy/Np
+        8nRfeqdOccn3d0nhmpgzuyw9lW4QJzWUYNc+irU=
+X-Google-Smtp-Source: APXvYqyfS1/mfARFQg0rppTJhHXbwINtXYkhKsUiY6q8clodI60txGJuLGC/K1YZEP2Zokfkpam7CJjVtj3QunD/HgE=
+X-Received: by 2002:a0c:aca2:: with SMTP id m31mr17519530qvc.222.1576312767757;
+ Sat, 14 Dec 2019 00:39:27 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <9DD61F30A802C4429A01CA4200E302A7B6B9345E@fmsmsx124.amr.corp.intel.com>
+References: <20191212171125.9933-1-olteanv@gmail.com> <20191213161021.6c96d8fe@cakuba.netronome.com>
+In-Reply-To: <20191213161021.6c96d8fe@cakuba.netronome.com>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Sat, 14 Dec 2019 09:39:11 +0100
+X-Gmail-Original-Message-ID: <CAK8P3a3dkFQOxVxiGxVHXMLDwzn5SuoEvui_Fzhx7kYSF_LXKA@mail.gmail.com>
+Message-ID: <CAK8P3a3dkFQOxVxiGxVHXMLDwzn5SuoEvui_Fzhx7kYSF_LXKA@mail.gmail.com>
+Subject: Re: [PATCH] net: mscc: ocelot: hide MSCC_OCELOT_SWITCH and move
+ outside NET_VENDOR_MICROSEMI
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     Vladimir Oltean <olteanv@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        Mao Wenan <maowenan@huawei.com>, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        alexandru.marginean@nxp.com, xiaoliang.yang_1@nxp.com,
+        yangbo lu <yangbo.lu@nxp.com>,
+        Networking <netdev@vger.kernel.org>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        UNGLinuxDriver@microchip.com,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:j8nwSv2RR8LJ5tjI0E5cxwWEfxPjoUk5+SR2e9ttYW0zwdc77r0
+ SUSMyYNDwJJWzhzf4QdXPF3RWdRDB+EJxniXmbWNECiAbTR/3rRjwiI4SHXIMPuUNvzlWkw
+ PBlCVRJyWeMRc07IoDQtTpclu/92ARj3cuVG8C2ODguS/BmNj2mYLspxPuo5G7lpE2MzIat
+ BZoUWgxFv4zN5X4/OQY0Q==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:xj2HUlr8lcY=:bYaouYrLNQ854rzUxhWLke
+ Fw4CrJxij3NXOo+R7vflrHC35l54/qA6rUx6qupRdtXsY4bycJUcyKtg5XcsMFkmNbYz98DHp
+ uJlJGWBhT0Sf8NuQr240zj0iiieMMq0qkFaeZZTci+JLG/8YW6plIpS/DCo9oKuKaN7hkNh+Q
+ xEZCtiIPUrDAQJqvIctdw8MFLtTXL+QrXrKoV2IZ6Pt9LyuiMO/0CQHMmgH19fbt3dAw7LPqq
+ UHI8i4eZDSqHD2jUBfYZrlKIt07kxdpGalb9Ze1QRPJ3i7ybjup7XeoKHAep2vPtVYGHAvcBl
+ p5x+zCyIKX9tmShUJ1dFNJ+WfJVuWlZOrm6Uy8HvCxNEWl5r/CBIqjLkE6oJuMkzrWUvhZKmW
+ O/fmrjF7EcMLCH7t+Jke1b79vPIYftjTJkHnvnTfWDiqblNeOB3xYq6NVO94ujqNZx8l3u05q
+ Gfm3Ktkuax1H2lraWEGeELIKUy4BigEnS2SxBO53QGuLdEtNWlGdfAJlXjskD3hSz5MXM06+z
+ H4RRmHJSe1m+n5MnGNFg6SGmg4DfpWjSQVL3sU9WRqy2Pwb3r96ISIO33ZFnc3c8QtLdEncHV
+ ezaTxq8WWh6SV5wUs40oyEDjCo8KotnZ4RqS3MiLyrsZbf29D0DjOmzrcHuIKdUhmZNhrrZwG
+ TYge+g+htGToIjPh+OEQn5xdn6SgYst7Ut8qSJ1FTMx2lFXDU9zmUnaHzOtUZAV5dM2k3+KjL
+ z2T1fQadzaXSrua95leAc89JhMOohdC+pSp151YfKzbMiBDdfkDY3YCpBwaRN3ySD3sLjQ9Jq
+ AvVMoM7g4iXBmVdVR4BHDxRp+n2NuOyearyTlzfznjRX2FTc0LQdRfHuCltZ19Nw+5uCSFW21
+ hxrPen9yrJQKTAORpzwA==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Dec 13, 2019 at 11:08:34PM +0000, Saleem, Shiraz wrote:
-> > Subject: Re: [PATCH v3 04/20] i40e: Register a virtbus device to provide RDMA
-> > 
-> 
-> [....]
-> 
-> > >  /**
-> > > @@ -275,6 +281,27 @@ void i40e_client_update_msix_info(struct i40e_pf *pf)
-> > >  	cdev->lan_info.msix_entries =
-> > > &pf->msix_entries[pf->iwarp_base_vector];
-> > >  }
-> > >
-> > > +static int i40e_init_client_virtdev(struct i40e_pf *pf) {
-> > > +	struct i40e_info *ldev = &pf->cinst->lan_info;
-> > > +	struct pci_dev *pdev = pf->pdev;
-> > > +	struct virtbus_device *vdev;
-> > > +	int ret;
-> > > +
-> > > +	vdev = &ldev->vdev;
-> > > +	vdev->name = I40E_PEER_RDMA_NAME;
-> > > +	vdev->dev.parent = &pf->pdev->dev;
-> > 
-> > What a total and complete mess of a tangled web you just wove here.
-> > 
-> > Ok, so you pass in a single pointer, that then dereferences 3 pointers deep to find
-> > the pointer to the virtbus_device structure, but then you point the parent of that
-> > device, back at the original structure's sub-pointer's device itself.
-> > 
-> > WTF?
-> 
-> OK. This is convoluted. Passing a pointer to the i40e_info object should suffice. So something like,
-> 
-> +static int i40e_init_client_virtdev(struct i40e_info *ldev) {
-> +       struct pci_dev *pdev = ldev->pcidev;
-> +       struct virtbus_device *vdev = &ldev->vdev;
-> +       int ret;
-> +
-> +       vdev->name = I40E_PEER_RDMA_NAME;
-> +       vdev->dev.parent = &pdev->dev;
-> +       ret = virtbus_dev_register(vdev);
-> +       if (ret)
-> +               return ret;
-> +
-> +       return 0;
-> +}
-> +
-> 
-> > 
-> > And who owns the memory of this thing that is supposed to be dynamically
-> > controlled by something OUTSIDE of this driver?  Who created that thing 3
-> > pointers deep?  What happens when you leak the memory below (hint, you did),
-> > and who is supposed to clean it up if you need to properly clean it up if something
-> > bad happens?
-> 
-> The i40e_info object memory is tied to the PF driver.
+On Sat, Dec 14, 2019 at 1:11 AM Jakub Kicinski
+<jakub.kicinski@netronome.com> wrote:
+> On Thu, 12 Dec 2019 19:11:25 +0200, Vladimir Oltean wrote:
+> > From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-What is a "PF"?
+> Mmm. Is that really the only choice? Wouldn't it be better to do
+> something like:
+>
+> diff --git a/drivers/net/ethernet/mscc/Kconfig b/drivers/net/ethernet/mscc/Kconfig
+> index 13fa11c30f68..991db8b94a9c 100644
+> --- a/drivers/net/ethernet/mscc/Kconfig
+> +++ b/drivers/net/ethernet/mscc/Kconfig
+> @@ -10,7 +10,8 @@ config NET_VENDOR_MICROSEMI
+>           the questions about Microsemi devices.
+>
+>  config MSCC_OCELOT_SWITCH
+> -       bool
+> +       tristate
+> +       default (MSCC_OCELOT_SWITCH_OCELOT || NET_DSA_MSCC_FELIX)
+>         depends on NET_SWITCHDEV
+>         depends on HAS_IOMEM
+>         select REGMAP_MMIO
+>
+> Presumably if user wants the end driver to be loadable module the
+> library should default to a module?
 
-> The object hierarchy is,
-> 
-> i40e_pf: pointer to i40e_client_instance 
-> 	----- i40e_client_instance: i40e_info
-> 		----- i40e_info: virtbus_device
+Agreed, should be tristate.
 
-So you are 3 pointers deep to get a structure that is dynamically
-controlled?  Why are those "3 pointers" not also represented in sysfs?
-You have a heiarchy within the kernel that is not being represented that
-way to userspace, why?
+The 'default' isn't necessary here, the 'select' does it all the same
+and there only needs to be one of the two.
 
-Hint, I think this is totally wrong, you need to rework this to be sane.
+> > diff --git a/drivers/net/ethernet/mscc/Kconfig b/drivers/net/ethernet/mscc/Kconfig
+> > index bcec0587cf61..13fa11c30f68 100644
+> > --- a/drivers/net/ethernet/mscc/Kconfig
+> > +++ b/drivers/net/ethernet/mscc/Kconfig
+> > @@ -9,24 +9,29 @@ config NET_VENDOR_MICROSEMI
+> >         kernel: saying N will just cause the configurator to skip all
+> >         the questions about Microsemi devices.
+> >
+> > -if NET_VENDOR_MICROSEMI
+> > -
+> >  config MSCC_OCELOT_SWITCH
+> > -     tristate "Ocelot switch driver"
+> > +     bool
+...
+> >
+> > +if NET_VENDOR_MICROSEMI
+> >
+> >  config MSCC_OCELOT_SWITCH_OCELOT
+...
+> > +     tristate "Ocelot switch driver for local management CPUs"
+> > +     select MSCC_OCELOT_SWITCH
+> >  endif # NET_VENDOR_MICROSEMI
 
-> For each PF, there is a client_instance object allocated.
+The "if NET_VENDOR_MICROSEMI" must come directly after the
+config NET_VENDOR_MICROSEMI, otherwise the indentation
+in "make menuconfig" is wrong. So please move MSCC_OCELOT_SWITCH
+after the "endif".
 
-Great, make it dynamic and in the device tree.
-
-> The i40e_info object is populated and the virtbus_device hanging off this object is registered.
-
-Great, make that dynamic and inthe device tree.
-
-If you think this is too much, then your whole mess here is too much and
-needs to be made a lot simpler.
-
-> In irdma probe(), we use the container_of macro to get to this i40e_info object from the
-> virtbus_device. It contains all the ops/info which RDMA driver needs from the PCI function driver.
-
-Ok, that's what you are supposed to do, but why walk back 3 levels?
-
-> The lifetime of the i40e_info object (and the virtbus device) is tied to the PF.
-
-Careful, these are dynamic structures, you don't get to fully "tie"
-anything here.
-
-> When PF goes away, virtbus_device is unregistered and the client_instance object memory
-> is freed.
-
-Hopefully, if no one else has a reference (hint, you never know this.)
-If you are relying on this, then you are not using the driver model
-correctly.
-
-> > Also, what ever happened to my "YOU ALL MUST AGREE TO WORK TOGETHER"
-> > requirement between this group, and the other group trying to do the same thing?  I
-> > want to see signed-off-by from EVERYONE involved before we are going to
-> > consider this thing.
-> > 
-> We will have all parties cc'ed in the next submission. Would encourage folks to review
-> and hopefully we can get some consensus.
-
-Then when you post your patches, do so to be obvious that is what you
-are asking for, don't try to do a "here's a pull request to take!" type
-request like you did here, that's not nice.
-
-thanks,
-
-greg k-h
+     Arnd
