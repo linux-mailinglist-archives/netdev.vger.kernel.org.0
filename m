@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8561111EF5E
-	for <lists+netdev@lfdr.de>; Sat, 14 Dec 2019 01:48:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1AC0B11EF63
+	for <lists+netdev@lfdr.de>; Sat, 14 Dec 2019 01:48:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726977AbfLNAsH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Dec 2019 19:48:07 -0500
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:16228 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726890AbfLNAsG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Dec 2019 19:48:06 -0500
-Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xBE0UUJo009121
-        for <netdev@vger.kernel.org>; Fri, 13 Dec 2019 16:48:06 -0800
+        id S1726890AbfLNAsP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Dec 2019 19:48:15 -0500
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:41104 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726987AbfLNAsN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Dec 2019 19:48:13 -0500
+Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xBE0UtCk000747
+        for <netdev@vger.kernel.org>; Fri, 13 Dec 2019 16:48:11 -0800
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
  : date : message-id : in-reply-to : references : mime-version :
- content-type; s=facebook; bh=ZTYK8LaX3K+RSkTNYO6iEs1RBSmx7LEmkFhZ38VrVeM=;
- b=DChBOHkoiFdtzbKe1jAQ8EDZgYg5A0DJ9nihaJSZDnBFlyK4fjWcoC3LN1szFBQ/ztJb
- Bq3fZLrM/MCL5DK6wE/YtritVOUW5alxFUfYRAj9/1/AO8+Ap4wzu0HUbJeAyXsBw+ZU
- y6oF5PLBLErrYtX10NpU0y5oQfl4JtWIacA= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 2wvkm20g25-4
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Fri, 13 Dec 2019 16:48:06 -0800
-Received: from intmgw003.08.frc2.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:83::6) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Fri, 13 Dec 2019 16:48:04 -0800
+ content-type; s=facebook; bh=MGccbpaS1x/NG3G8e+ps2cay2TtxTMkX+g+I6SGlIXQ=;
+ b=cOaMjBg8auR2pbl+/a57s6FCSsL6eR55BXE4eAeSSV4hKcz8GB68aF01zKum6RjUpwLt
+ 8xA0PCgzbrsgunz+WZXNv6lTrj2uFdZ66vcV4FBDjXmscsX/gFnlyOSPn8v2TGSzW+Vk
+ S3JgyeykSIjSWucHw7kCmtRZP863K7ezjGY= 
+Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
+        by mx0a-00082601.pphosted.com with ESMTP id 2wv1r0vwg4-5
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Fri, 13 Dec 2019 16:48:11 -0800
+Received: from intmgw005.05.ash5.facebook.com (2620:10d:c081:10::13) by
+ mail.thefacebook.com (2620:10d:c081:35::127) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
+ Fri, 13 Dec 2019 16:48:09 -0800
 Received: by devbig005.ftw2.facebook.com (Postfix, from userid 6611)
-        id 32D662943AB4; Fri, 13 Dec 2019 16:48:03 -0800 (PST)
+        id AF2392943AB4; Fri, 13 Dec 2019 16:48:05 -0800 (PST)
 Smtp-Origin-Hostprefix: devbig
 From:   Martin KaFai Lau <kafai@fb.com>
 Smtp-Origin-Hostname: devbig005.ftw2.facebook.com
@@ -39,9 +39,9 @@ CC:     Alexei Starovoitov <ast@kernel.org>,
         David Miller <davem@davemloft.net>, <kernel-team@fb.com>,
         <netdev@vger.kernel.org>
 Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH bpf-next 11/13] bpf: libbpf: Add STRUCT_OPS support
-Date:   Fri, 13 Dec 2019 16:48:03 -0800
-Message-ID: <20191214004803.1653618-1-kafai@fb.com>
+Subject: [PATCH bpf-next 12/13] bpf: Add bpf_dctcp example
+Date:   Fri, 13 Dec 2019 16:48:05 -0800
+Message-ID: <20191214004805.1653838-1-kafai@fb.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20191214004737.1652076-1-kafai@fb.com>
 References: <20191214004737.1652076-1-kafai@fb.com>
@@ -50,10 +50,10 @@ MIME-Version: 1.0
 Content-Type: text/plain
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
  definitions=2019-12-13_09:2019-12-13,2019-12-13 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 impostorscore=0
- phishscore=0 lowpriorityscore=0 bulkscore=0 priorityscore=1501
- mlxlogscore=999 malwarescore=0 adultscore=0 spamscore=0 mlxscore=0
- clxscore=1015 suspectscore=43 classifier=spam adjust=0 reason=mlx
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 adultscore=0
+ priorityscore=1501 clxscore=1015 bulkscore=0 spamscore=0 mlxscore=0
+ lowpriorityscore=0 malwarescore=0 impostorscore=0 phishscore=0
+ mlxlogscore=999 suspectscore=13 classifier=spam adjust=0 reason=mlx
  scancount=1 engine=8.12.0-1910280000 definitions=main-1912140001
 X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
@@ -61,887 +61,657 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds BPF STRUCT_OPS support to libbpf.
-
-The only sec_name convention is SEC("struct_ops") to identify the
-struct ops implemented in BPF, e.g.
-SEC("struct_ops")
-struct tcp_congestion_ops dctcp = {
-	.init           = (void *)dctcp_init,  /* <-- a bpf_prog */
-	/* ... some more func prts ... */
-	.name           = "bpf_dctcp",
-};
-
-In the bpf_object__open phase, libbpf will look for the "struct_ops"
-elf section and find out what is the btf-type the "struct_ops" is
-implementing.  Note that the btf-type here is referring to
-a type in the bpf_prog.o's btf.  It will then collect (through SHT_REL)
-where are the bpf progs that the func ptrs are referring to.
-
-In the bpf_object__load phase, the prepare_struct_ops() will load
-the btf_vmlinux and obtain the corresponding kernel's btf-type.
-With the kernel's btf-type, it can then set the prog->type,
-prog->attach_btf_id and the prog->expected_attach_type.  Thus,
-the prog's properties do not rely on its section name.
-
-Currently, the bpf_prog's btf-type ==> btf_vmlinux's btf-type matching
-process is as simple as: member-name match + btf-kind match + size match.
-If these matching conditions fail, libbpf will reject.
-The current targeting support is "struct tcp_congestion_ops" which
-most of its members are function pointers.
-The member ordering of the bpf_prog's btf-type can be different from
-the btf_vmlinux's btf-type.
-
-Once the prog's properties are all set,
-the libbpf will proceed to load all the progs.
-
-After that, register_struct_ops() will create a map, finalize the
-map-value by populating it with the prog-fd, and then register this
-"struct_ops" to the kernel by updating the map-value to the map.
-
-By default, libbpf does not unregister the struct_ops from the kernel
-during bpf_object__close().  It can be changed by setting the new
-"unreg_st_ops" in bpf_object_open_opts.
+This patch adds a bpf_dctcp example.  It currently does not do
+no-ECN fallback but the same could be done through the cgrp2-bpf.
 
 Signed-off-by: Martin KaFai Lau <kafai@fb.com>
 ---
- tools/lib/bpf/bpf.c           |  10 +-
- tools/lib/bpf/bpf.h           |   5 +-
- tools/lib/bpf/libbpf.c        | 599 +++++++++++++++++++++++++++++++++-
- tools/lib/bpf/libbpf.h        |   3 +-
- tools/lib/bpf/libbpf_probes.c |   2 +
- 5 files changed, 612 insertions(+), 7 deletions(-)
+ tools/testing/selftests/bpf/bpf_tcp_helpers.h | 228 ++++++++++++++++++
+ .../selftests/bpf/prog_tests/bpf_tcp_ca.c     | 198 +++++++++++++++
+ tools/testing/selftests/bpf/progs/bpf_dctcp.c | 194 +++++++++++++++
+ 3 files changed, 620 insertions(+)
+ create mode 100644 tools/testing/selftests/bpf/bpf_tcp_helpers.h
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/bpf_tcp_ca.c
+ create mode 100644 tools/testing/selftests/bpf/progs/bpf_dctcp.c
 
-diff --git a/tools/lib/bpf/bpf.c b/tools/lib/bpf/bpf.c
-index 98596e15390f..ebb9d7066173 100644
---- a/tools/lib/bpf/bpf.c
-+++ b/tools/lib/bpf/bpf.c
-@@ -95,7 +95,11 @@ int bpf_create_map_xattr(const struct bpf_create_map_attr *create_attr)
- 	attr.btf_key_type_id = create_attr->btf_key_type_id;
- 	attr.btf_value_type_id = create_attr->btf_value_type_id;
- 	attr.map_ifindex = create_attr->map_ifindex;
--	attr.inner_map_fd = create_attr->inner_map_fd;
-+	if (attr.map_type == BPF_MAP_TYPE_STRUCT_OPS)
-+		attr.btf_vmlinux_value_type_id =
-+			create_attr->btf_vmlinux_value_type_id;
-+	else
-+		attr.inner_map_fd = create_attr->inner_map_fd;
- 
- 	return sys_bpf(BPF_MAP_CREATE, &attr, sizeof(attr));
- }
-@@ -228,7 +232,9 @@ int bpf_load_program_xattr(const struct bpf_load_program_attr *load_attr,
- 	memset(&attr, 0, sizeof(attr));
- 	attr.prog_type = load_attr->prog_type;
- 	attr.expected_attach_type = load_attr->expected_attach_type;
--	if (attr.prog_type == BPF_PROG_TYPE_TRACING) {
-+	if (attr.prog_type == BPF_PROG_TYPE_STRUCT_OPS) {
-+		attr.attach_btf_id = load_attr->attach_btf_id;
-+	} else if (attr.prog_type == BPF_PROG_TYPE_TRACING) {
- 		attr.attach_btf_id = load_attr->attach_btf_id;
- 		attr.attach_prog_fd = load_attr->attach_prog_fd;
- 	} else {
-diff --git a/tools/lib/bpf/bpf.h b/tools/lib/bpf/bpf.h
-index 3c791fa8e68e..1ddbf7f33b83 100644
---- a/tools/lib/bpf/bpf.h
-+++ b/tools/lib/bpf/bpf.h
-@@ -48,7 +48,10 @@ struct bpf_create_map_attr {
- 	__u32 btf_key_type_id;
- 	__u32 btf_value_type_id;
- 	__u32 map_ifindex;
--	__u32 inner_map_fd;
-+	union {
-+		__u32 inner_map_fd;
-+		__u32 btf_vmlinux_value_type_id;
-+	};
- };
- 
- LIBBPF_API int
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index 27d5f7ecba32..ffb5cdd7db5a 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -67,6 +67,10 @@
- 
- #define __printf(a, b)	__attribute__((format(printf, a, b)))
- 
-+static struct btf *bpf_core_find_kernel_btf(void);
-+static struct bpf_program *bpf_object__find_prog_by_idx(struct bpf_object *obj,
-+							int idx);
+diff --git a/tools/testing/selftests/bpf/bpf_tcp_helpers.h b/tools/testing/selftests/bpf/bpf_tcp_helpers.h
+new file mode 100644
+index 000000000000..7ba8c1b4157a
+--- /dev/null
++++ b/tools/testing/selftests/bpf/bpf_tcp_helpers.h
+@@ -0,0 +1,228 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++#ifndef __BPF_TCP_HELPERS_H
++#define __BPF_TCP_HELPERS_H
 +
- static int __base_pr(enum libbpf_print_level level, const char *format,
- 		     va_list args)
- {
-@@ -128,6 +132,8 @@ void libbpf_print(enum libbpf_print_level level, const char *format, ...)
- # define LIBBPF_ELF_C_READ_MMAP ELF_C_READ
- #endif
- 
-+#define BPF_STRUCT_OPS_SEC_NAME "struct_ops"
++#include <stdbool.h>
++#include <linux/types.h>
++#include <bpf_helpers.h>
++#include <bpf_core_read.h>
++#include "bpf_trace_helpers.h"
 +
- static inline __u64 ptr_to_u64(const void *ptr)
- {
- 	return (__u64) (unsigned long) ptr;
-@@ -233,6 +239,32 @@ struct bpf_map {
- 	bool reused;
- };
- 
-+struct bpf_struct_ops {
-+	const char *var_name;
-+	const char *tname;
-+	const struct btf_type *type;
-+	struct bpf_program **progs;
-+	__u32 *kern_func_off;
-+	/* e.g. struct tcp_congestion_ops in bpf_prog's btf format */
-+	void *data;
-+	/* e.g. struct __bpf_tcp_congestion_ops in btf_vmlinux's btf
-+	 * format.
-+	 * struct __bpf_tcp_congestion_ops {
-+	 *	[... some other kernel fields ...]
-+	 *	struct tcp_congestion_ops data;
-+	 * }
-+	 * kern_vdata in the sizeof(struct __bpf_tcp_congestion_ops).
-+	 * prepare_struct_ops() will populate the "data" into
-+	 * "kern_vdata".
-+	 */
-+	void *kern_vdata;
-+	__u32 type_id;
-+	__u32 kern_vtype_id;
-+	__u32 kern_vtype_size;
-+	int fd;
-+	bool unreg;
++#define BPF_TCP_OPS_0(fname, ret_type, ...) BPF_TRACE_x(0, #fname"_sec", fname, ret_type, __VA_ARGS__)
++#define BPF_TCP_OPS_1(fname, ret_type, ...) BPF_TRACE_x(1, #fname"_sec", fname, ret_type, __VA_ARGS__)
++#define BPF_TCP_OPS_2(fname, ret_type, ...) BPF_TRACE_x(2, #fname"_sec", fname, ret_type, __VA_ARGS__)
++#define BPF_TCP_OPS_3(fname, ret_type, ...) BPF_TRACE_x(3, #fname"_sec", fname, ret_type, __VA_ARGS__)
++#define BPF_TCP_OPS_4(fname, ret_type, ...) BPF_TRACE_x(4, #fname"_sec", fname, ret_type, __VA_ARGS__)
++#define BPF_TCP_OPS_5(fname, ret_type, ...) BPF_TRACE_x(5, #fname"_sec", fname, ret_type, __VA_ARGS__)
++
++struct sock_common {
++	unsigned char	skc_state;
++} __attribute__((preserve_access_index));
++
++struct sock {
++	struct sock_common	__sk_common;
++} __attribute__((preserve_access_index));
++
++struct inet_sock {
++	struct sock		sk;
++} __attribute__((preserve_access_index));
++
++struct inet_connection_sock {
++	struct inet_sock	  icsk_inet;
++	__u8			  icsk_ca_state:6,
++				  icsk_ca_setsockopt:1,
++				  icsk_ca_dst_locked:1;
++	struct {
++		__u8		  pending;
++	} icsk_ack;
++	__u64			  icsk_ca_priv[104 / sizeof(__u64)];
++} __attribute__((preserve_access_index));
++
++struct tcp_sock {
++	struct inet_connection_sock	inet_conn;
++
++	__u32	rcv_nxt;
++	__u32	snd_nxt;
++	__u32	snd_una;
++	__u8	ecn_flags;
++	__u32	delivered;
++	__u32	delivered_ce;
++	__u32	snd_cwnd;
++	__u32	snd_cwnd_cnt;
++	__u32	snd_cwnd_clamp;
++	__u32	snd_ssthresh;
++	__u8	syn_data:1,	/* SYN includes data */
++		syn_fastopen:1,	/* SYN includes Fast Open option */
++		syn_fastopen_exp:1,/* SYN includes Fast Open exp. option */
++		syn_fastopen_ch:1, /* Active TFO re-enabling probe */
++		syn_data_acked:1,/* data in SYN is acked by SYN-ACK */
++		save_syn:1,	/* Save headers of SYN packet */
++		is_cwnd_limited:1,/* forward progress limited by snd_cwnd? */
++		syn_smc:1;	/* SYN includes SMC */
++	__u32	max_packets_out;
++	__u32	lsndtime;
++	__u32	prior_cwnd;
++} __attribute__((preserve_access_index));
++
++static __always_inline struct inet_connection_sock *inet_csk(const struct sock *sk)
++{
++	return (struct inet_connection_sock *)sk;
++}
++
++static __always_inline void *inet_csk_ca(const struct sock *sk)
++{
++	return (void *)inet_csk(sk)->icsk_ca_priv;
++}
++
++static __always_inline struct tcp_sock *tcp_sk(const struct sock *sk)
++{
++	return (struct tcp_sock *)sk;
++}
++
++static __always_inline bool before(__u32 seq1, __u32 seq2)
++{
++	return (__s32)(seq1-seq2) < 0;
++}
++#define after(seq2, seq1) 	before(seq1, seq2)
++
++#define	TCP_ECN_OK		1
++#define	TCP_ECN_QUEUE_CWR	2
++#define	TCP_ECN_DEMAND_CWR	4
++#define	TCP_ECN_SEEN		8
++
++enum inet_csk_ack_state_t {
++	ICSK_ACK_SCHED	= 1,
++	ICSK_ACK_TIMER  = 2,
++	ICSK_ACK_PUSHED = 4,
++	ICSK_ACK_PUSHED2 = 8,
++	ICSK_ACK_NOW = 16	/* Send the next ACK immediately (once) */
 +};
 +
- struct bpf_secdata {
- 	void *rodata;
- 	void *data;
-@@ -251,6 +283,7 @@ struct bpf_object {
- 	size_t nr_maps;
- 	size_t maps_cap;
- 	struct bpf_secdata sections;
-+	struct bpf_struct_ops st_ops;
- 
- 	bool loaded;
- 	bool has_pseudo_calls;
-@@ -270,6 +303,7 @@ struct bpf_object {
- 		Elf_Data *data;
- 		Elf_Data *rodata;
- 		Elf_Data *bss;
-+		Elf_Data *st_ops_data;
- 		size_t strtabidx;
- 		struct {
- 			GElf_Shdr shdr;
-@@ -282,6 +316,7 @@ struct bpf_object {
- 		int data_shndx;
- 		int rodata_shndx;
- 		int bss_shndx;
-+		int st_ops_shndx;
- 	} efile;
- 	/*
- 	 * All loaded bpf_object is linked in a list, which is
-@@ -509,6 +544,508 @@ static __u32 get_kernel_version(void)
- 	return KERNEL_VERSION(major, minor, patch);
- }
- 
-+static int bpf_object__register_struct_ops(struct bpf_object *obj)
-+{
-+	struct bpf_create_map_attr map_attr = {};
-+	struct bpf_struct_ops *st_ops;
-+	const char *tname;
-+	__u32 i, zero = 0;
-+	int fd, err;
++enum tcp_ca_event {
++	CA_EVENT_TX_START = 0,
++	CA_EVENT_CWND_RESTART = 1,
++	CA_EVENT_COMPLETE_CWR = 2,
++	CA_EVENT_LOSS = 3,
++	CA_EVENT_ECN_NO_CE = 4,
++	CA_EVENT_ECN_IS_CE = 5,
++};
 +
-+	st_ops = &obj->st_ops;
-+	if (!st_ops->kern_vdata)
-+		return 0;
++enum tcp_ca_state {
++	TCP_CA_Open = 0,
++	TCP_CA_Disorder = 1,
++	TCP_CA_CWR = 2,
++	TCP_CA_Recovery = 3,
++	TCP_CA_Loss = 4
++};
 +
-+	tname = st_ops->tname;
-+	for (i = 0; i < btf_vlen(st_ops->type); i++) {
-+		struct bpf_program *prog = st_ops->progs[i];
-+		void *kern_data;
-+		int prog_fd;
++struct ack_sample {
++	__u32 pkts_acked;
++	__s32 rtt_us;
++	__u32 in_flight;
++} __attribute__((preserve_access_index));
 +
-+		if (!prog)
-+			continue;
++struct rate_sample {
++	__u64  prior_mstamp; /* starting timestamp for interval */
++	__u32  prior_delivered;	/* tp->delivered at "prior_mstamp" */
++	__s32  delivered;		/* number of packets delivered over interval */
++	long interval_us;	/* time for tp->delivered to incr "delivered" */
++	__u32 snd_interval_us;	/* snd interval for delivered packets */
++	__u32 rcv_interval_us;	/* rcv interval for delivered packets */
++	long rtt_us;		/* RTT of last (S)ACKed packet (or -1) */
++	int  losses;		/* number of packets marked lost upon ACK */
++	__u32  acked_sacked;	/* number of packets newly (S)ACKed upon ACK */
++	__u32  prior_in_flight;	/* in flight before this ACK */
++	bool is_app_limited;	/* is sample from packet with bubble in pipe? */
++	bool is_retrans;	/* is sample from retransmission? */
++	bool is_ack_delayed;	/* is this (likely) a delayed ACK? */
++} __attribute__((preserve_access_index));
 +
-+		prog_fd = bpf_program__nth_fd(prog, 0);
-+		if (prog_fd < 0) {
-+			pr_warn("struct_ops register %s: prog %s is not loaded\n",
-+				tname, prog->name);
-+			return -EINVAL;
-+		}
++#define TCP_CA_NAME_MAX		16
++#define TCP_CONG_NEEDS_ECN	0x2
 +
-+		kern_data = st_ops->kern_vdata + st_ops->kern_func_off[i];
-+		*(unsigned long *)kern_data = prog_fd;
-+	}
++struct tcp_congestion_ops {
++	__u32 flags;
 +
-+	map_attr.map_type = BPF_MAP_TYPE_STRUCT_OPS;
-+	map_attr.key_size = sizeof(unsigned int);
-+	map_attr.value_size = st_ops->kern_vtype_size;
-+	map_attr.max_entries = 1;
-+	map_attr.btf_fd = btf__fd(obj->btf);
-+	map_attr.btf_vmlinux_value_type_id = st_ops->kern_vtype_id;
-+	map_attr.name = st_ops->var_name;
++	/* initialize private data (optional) */
++	void (*init)(struct sock *sk);
++	/* cleanup private data  (optional) */
++	void (*release)(struct sock *sk);
 +
-+	fd = bpf_create_map_xattr(&map_attr);
-+	if (fd < 0) {
-+		err = -errno;
-+		pr_warn("struct_ops register %s: Error in creating struct_ops map\n",
-+			tname);
-+		return err;
-+	}
-+
-+	err = bpf_map_update_elem(fd, &zero, st_ops->kern_vdata, 0);
-+	if (err) {
-+		err = -errno;
-+		close(fd);
-+		pr_warn("struct_ops register %s: Error in updating struct_ops map\n",
-+			tname);
-+		return err;
-+	}
-+
-+	st_ops->fd = fd;
-+
-+	return 0;
-+}
-+
-+static int bpf_struct_ops__unregister(struct bpf_struct_ops *st_ops)
-+{
-+	if (st_ops->fd != -1) {
-+		__u32 zero = 0;
-+		int err = 0;
-+
-+		if (bpf_map_delete_elem(st_ops->fd, &zero))
-+			err = -errno;
-+		zclose(st_ops->fd);
-+
-+		return err;
-+	}
-+
-+	return 0;
-+}
-+
-+static const struct btf_type *
-+resolve_ptr(const struct btf *btf, __u32 id, __u32 *res_id);
-+static const struct btf_type *
-+resolve_func_ptr(const struct btf *btf, __u32 id, __u32 *res_id);
-+
-+static const struct btf_member *
-+find_member_by_offset(const struct btf_type *t, __u32 offset)
-+{
-+	struct btf_member *m;
-+	int i;
-+
-+	for (i = 0, m = btf_members(t); i < btf_vlen(t); i++, m++) {
-+		if (btf_member_bit_offset(t, i) == offset)
-+			return m;
-+	}
-+
-+	return NULL;
-+}
-+
-+static const struct btf_member *
-+find_member_by_name(const struct btf *btf, const struct btf_type *t,
-+		    const char *name)
-+{
-+	struct btf_member *m;
-+	int i;
-+
-+	for (i = 0, m = btf_members(t); i < btf_vlen(t); i++, m++) {
-+		if (!strcmp(btf__name_by_offset(btf, m->name_off), name))
-+			return m;
-+	}
-+
-+	return NULL;
-+}
-+
-+#define STRUCT_OPS_VALUE_PREFIX "__bpf_"
-+#define STRUCT_OPS_VALUE_PREFIX_LEN (sizeof(STRUCT_OPS_VALUE_PREFIX) - 1)
-+
-+static int
-+bpf_struct_ops__get_kern_types(const struct btf *btf, const char *tname,
-+			       const struct btf_type **type, __u32 *type_id,
-+			       const struct btf_type **vtype, __u32 *vtype_id,
-+			       const struct btf_member **data_member)
-+{
-+	const struct btf_type *kern_type, *kern_vtype;
-+	const struct btf_member *kern_data_member;
-+	__s32 kern_vtype_id, kern_type_id;
-+	char vtname[128] = STRUCT_OPS_VALUE_PREFIX;
-+	__u32 i;
-+
-+	kern_type_id = btf__find_by_name_kind(btf, tname, BTF_KIND_STRUCT);
-+	if (kern_type_id < 0) {
-+		pr_warn("struct_ops prepare: struct %s is not found in kernel BTF\n",
-+			tname);
-+		return -ENOTSUP;
-+	}
-+	kern_type = btf__type_by_id(btf, kern_type_id);
-+
-+	/* Find the corresponding "map_value" type that will be used
-+	 * in map_update(BPF_MAP_TYPE_STRUCT_OPS).  For example,
-+	 * find "struct __bpf_tcp_congestion_ops" from the btf_vmlinux.
++	/* return slow start threshold (required) */
++	__u32 (*ssthresh)(struct sock *sk);
++	/* do new cwnd calculation (required) */
++	void (*cong_avoid)(struct sock *sk, __u32 ack, __u32 acked);
++	/* call before changing ca_state (optional) */
++	void (*set_state)(struct sock *sk, __u8 new_state);
++	/* call when cwnd event occurs (optional) */
++	void (*cwnd_event)(struct sock *sk, enum tcp_ca_event ev);
++	/* call when ack arrives (optional) */
++	void (*in_ack_event)(struct sock *sk, __u32 flags);
++	/* new value of cwnd after loss (required) */
++	__u32  (*undo_cwnd)(struct sock *sk);
++	/* hook for packet ack accounting (optional) */
++	void (*pkts_acked)(struct sock *sk, const struct ack_sample *sample);
++	/* override sysctl_tcp_min_tso_segs */
++	__u32 (*min_tso_segs)(struct sock *sk);
++	/* returns the multiplier used in tcp_sndbuf_expand (optional) */
++	__u32 (*sndbuf_expand)(struct sock *sk);
++	/* call when packets are delivered to update cwnd and pacing rate,
++	 * after all the ca_state processing. (optional)
 +	 */
-+	strncat(vtname + STRUCT_OPS_VALUE_PREFIX_LEN, tname,
-+		sizeof(vtname) - STRUCT_OPS_VALUE_PREFIX_LEN - 1);
-+	kern_vtype_id = btf__find_by_name_kind(btf, vtname,
-+					       BTF_KIND_STRUCT);
-+	if (kern_vtype_id < 0) {
-+		pr_warn("struct_ops prepare: struct %s is not found in kernel BTF\n",
-+			vtname);
-+		return -ENOTSUP;
-+	}
-+	kern_vtype = btf__type_by_id(btf, kern_vtype_id);
++	void (*cong_control)(struct sock *sk, const struct rate_sample *rs);
 +
-+	/* Find "struct tcp_congestion_ops" from
-+	 * struct __bpf_tcp_congestion_ops {
-+	 *	[ ... ]
-+	 *	struct tcp_congestion_ops data;
-+	 * }
-+	 */
-+	for (i = 0, kern_data_member = btf_members(kern_vtype);
-+	     i < btf_vlen(kern_vtype);
-+	     i++, kern_data_member++) {
-+		if (kern_data_member->type == kern_type_id)
-+			break;
-+	}
-+	if (i == btf_vlen(kern_vtype)) {
-+		pr_warn("struct_ops prepare: struct %s data is not found in struct %s\n",
-+			tname, vtname);
-+		return -EINVAL;
-+	}
++	char 		name[TCP_CA_NAME_MAX];
++};
 +
-+	*type = kern_type;
-+	*type_id = kern_type_id;
-+	*vtype = kern_vtype;
-+	*vtype_id = kern_vtype_id;
-+	*data_member = kern_data_member;
++#define min(a, b) ((a) < (b) ? (a) : (b))
++#define max(a, b) ((a) > (b) ? (a) : (b))
++#define min_not_zero(x, y) ({			\
++	typeof(x) __x = (x);			\
++	typeof(y) __y = (y);			\
++	__x == 0 ? __y : ((__y == 0) ? __x : min(__x, __y)); })
 +
-+	return 0;
++static __always_inline __u32 tcp_slow_start(struct tcp_sock *tp, __u32 acked)
++{
++	__u32 cwnd = min(tp->snd_cwnd + acked, tp->snd_ssthresh);
++
++	acked -= cwnd - tp->snd_cwnd;
++	tp->snd_cwnd = min(cwnd, tp->snd_cwnd_clamp);
++
++	return acked;
 +}
 +
-+static int bpf_object__prepare_struct_ops(struct bpf_object *obj)
++static __always_inline bool tcp_in_slow_start(const struct tcp_sock *tp)
 +{
-+	const struct btf_member *member, *kern_member, *kern_data_member;
-+	const struct btf_type *type, *kern_type, *kern_vtype;
-+	__u32 i, kern_type_id, kern_vtype_id, kern_data_off;
-+	struct bpf_struct_ops *st_ops;
-+	void *data, *kern_data;
-+	const struct btf *btf;
-+	struct btf *kern_btf;
-+	const char *tname;
++	return tp->snd_cwnd < tp->snd_ssthresh;
++}
++
++static __always_inline bool tcp_is_cwnd_limited(const struct sock *sk)
++{
++	const struct tcp_sock *tp = tcp_sk(sk);
++
++	/* If in slow start, ensure cwnd grows to twice what was ACKed. */
++	if (tcp_in_slow_start(tp))
++		return tp->snd_cwnd < 2 * tp->max_packets_out;
++
++	return !!BPF_CORE_READ_BITFIELD(tp, is_cwnd_limited);
++}
++
++static __always_inline void tcp_cong_avoid_ai(struct tcp_sock *tp, __u32 w, __u32 acked)
++{
++	/* If credits accumulated at a higher w, apply them gently now. */
++	if (tp->snd_cwnd_cnt >= w) {
++		tp->snd_cwnd_cnt = 0;
++		tp->snd_cwnd++;
++	}
++
++	tp->snd_cwnd_cnt += acked;
++	if (tp->snd_cwnd_cnt >= w) {
++		__u32 delta = tp->snd_cwnd_cnt / w;
++
++		tp->snd_cwnd_cnt -= delta * w;
++		tp->snd_cwnd += delta;
++	}
++	tp->snd_cwnd = min(tp->snd_cwnd, tp->snd_cwnd_clamp);
++}
++
++#endif
+diff --git a/tools/testing/selftests/bpf/prog_tests/bpf_tcp_ca.c b/tools/testing/selftests/bpf/prog_tests/bpf_tcp_ca.c
+new file mode 100644
+index 000000000000..035de76bf8ed
+--- /dev/null
++++ b/tools/testing/selftests/bpf/prog_tests/bpf_tcp_ca.c
+@@ -0,0 +1,198 @@
++// SPDX-License-Identifier: GPL-2.0
++/* Copyright (c) 2019 Facebook */
++#include <linux/err.h>
++#include <test_progs.h>
++
++#define min(a, b) ((a) < (b) ? (a) : (b))
++
++static const unsigned int total_bytes = 10 * 1024 * 1024;
++static const struct timeval timeo_sec = { .tv_sec = 10 };
++static const size_t timeo_optlen = sizeof(timeo_sec);
++static int stop, duration;
++
++static int settimeo(int fd)
++{
 +	int err;
 +
-+	st_ops = &obj->st_ops;
-+	if (!st_ops->data)
-+		return 0;
++	err = setsockopt(fd, SOL_SOCKET, SO_RCVTIMEO, &timeo_sec,
++			 timeo_optlen);
++	if (CHECK(err == -1, "setsockopt(fd, SO_RCVTIMEO)", "errno:%d\n",
++		  errno))
++		return -1;
 +
-+	btf = obj->btf;
-+	type = st_ops->type;
-+	tname = st_ops->tname;
++	err = setsockopt(fd, SOL_SOCKET, SO_SNDTIMEO, &timeo_sec,
++			 timeo_optlen);
++	if (CHECK(err == -1, "setsockopt(fd, SO_SNDTIMEO)", "errno:%d\n",
++		  errno))
++		return -1;
 +
-+	kern_btf = bpf_core_find_kernel_btf();
-+	if (IS_ERR(kern_btf))
-+		return PTR_ERR(kern_btf);
++	return 0;
++}
 +
-+	err = bpf_struct_ops__get_kern_types(kern_btf, tname,
-+					     &kern_type, &kern_type_id,
-+					     &kern_vtype, &kern_vtype_id,
-+					     &kern_data_member);
-+	if (err)
-+		goto done;
++static int settcpca(int fd, const char *tcp_ca)
++{
++	int err;
 +
-+	pr_debug("struct_ops prepare %s: type_id:%u kern_type_id:%u kern_vtype_id:%u\n",
-+		 tname, st_ops->type_id, kern_type_id, kern_vtype_id);
++	err = setsockopt(fd, IPPROTO_TCP, TCP_CONGESTION, tcp_ca, strlen(tcp_ca));
++	if (CHECK(err == -1, "setsockopt(fd, TCP_CONGESTION)", "errno:%d\n",
++		  errno))
++		return -1;
 +
-+	kern_data_off = kern_data_member->offset / 8;
-+	st_ops->kern_vtype_size = kern_vtype->size;
-+	st_ops->kern_vtype_id = kern_vtype_id;
++	return 0;
++}
 +
-+	st_ops->kern_vdata = calloc(1, st_ops->kern_vtype_size);
-+	if (!st_ops->kern_vdata) {
-+		err = -ENOMEM;
-+		goto done;
-+	}
++static void *server(void *arg)
++{
++	int lfd = (int)(long)arg, err = 0, fd;
++	ssize_t nr_sent = 0, bytes = 0;
++	char batch[1500];
 +
-+	data = st_ops->data;
-+	kern_data = st_ops->kern_vdata + kern_data_off;
-+
-+	err = -ENOTSUP;
-+	for (i = 0, member = btf_members(type); i < btf_vlen(type);
-+	     i++, member++) {
-+		const struct btf_type *mtype, *kern_mtype;
-+		__u32 mtype_id, kern_mtype_id;
-+		void *mdata, *kern_mdata;
-+		__s64 msize, kern_msize;
-+		__u32 moff, kern_moff;
-+		__u32 kern_member_idx;
-+		const char *mname;
-+
-+		mname = btf__name_by_offset(btf, member->name_off);
-+		kern_member = find_member_by_name(kern_btf, kern_type, mname);
-+		if (!kern_member) {
-+			pr_warn("struct_ops prepare %s: Cannot find member %s in kernel BTF\n",
-+				tname, mname);
-+			goto done;
-+		}
-+
-+		kern_member_idx = kern_member - btf_members(kern_type);
-+		if (btf_member_bitfield_size(type, i) ||
-+		    btf_member_bitfield_size(kern_type, kern_member_idx)) {
-+			pr_warn("struct_ops prepare %s: bitfield %s is not supported\n",
-+				tname, mname);
-+			goto done;
-+		}
-+
-+		moff = member->offset / 8;
-+		kern_moff = kern_member->offset / 8;
-+
-+		mdata = data + moff;
-+		kern_mdata = kern_data + kern_moff;
-+
-+		mtype_id = member->type;
-+		kern_mtype_id = kern_member->type;
-+
-+		mtype = resolve_ptr(btf, mtype_id, NULL);
-+		kern_mtype = resolve_ptr(kern_btf, kern_mtype_id, NULL);
-+		if (mtype && kern_mtype) {
-+			struct bpf_program *prog;
-+
-+			if (!btf_is_func_proto(mtype) ||
-+			    !btf_is_func_proto(kern_mtype)) {
-+				pr_warn("struct_ops prepare %s: non func ptr %s is not supported\n",
-+					tname, mname);
-+				goto done;
-+			}
-+
-+			prog = st_ops->progs[i];
-+			if (!prog) {
-+				pr_debug("struct_ops prepare %s: func ptr %s is not set\n",
-+					 tname, mname);
-+				continue;
-+			}
-+
-+			if (prog->type != BPF_PROG_TYPE_UNSPEC ||
-+			    prog->attach_btf_id) {
-+				pr_warn("struct_ops prepare %s: cannot use prog %s with attach_btf_id %d for func ptr %s\n",
-+					tname, prog->name, prog->attach_btf_id, mname);
-+				err = -EINVAL;
-+				goto done;
-+			}
-+
-+			prog->type = BPF_PROG_TYPE_STRUCT_OPS;
-+			prog->attach_btf_id = kern_type_id;
-+			/* expected_attach_type is the member index */
-+			prog->expected_attach_type = kern_member_idx;
-+
-+			st_ops->kern_func_off[i] = kern_data_off + kern_moff;
-+
-+			pr_debug("struct_ops prepare %s: func ptr %s is set to prog %s from data(+%u) to kern_data(+%u)\n",
-+				 tname, mname, prog->name, moff, kern_moff);
-+
++	fd = accept(lfd, NULL, NULL);
++	while (fd == -1) {
++		if (errno == EINTR)
 +			continue;
-+		}
-+
-+		mtype_id = btf__resolve_type(btf, mtype_id);
-+		kern_mtype_id = btf__resolve_type(kern_btf, kern_mtype_id);
-+		if (mtype_id < 0 || kern_mtype_id < 0) {
-+			pr_warn("struct_ops prepare %s: Cannot resolve the type for %s\n",
-+				tname, mname);
-+			goto done;
-+		}
-+
-+		mtype = btf__type_by_id(btf, mtype_id);
-+		kern_mtype = btf__type_by_id(kern_btf, kern_mtype_id);
-+		if (BTF_INFO_KIND(mtype->info) !=
-+		    BTF_INFO_KIND(kern_mtype->info)) {
-+			pr_warn("struct_ops prepare %s: Unmatched member type %s %u != %u(kernel)\n",
-+				tname, mname,
-+				BTF_INFO_KIND(mtype->info),
-+				BTF_INFO_KIND(kern_mtype->info));
-+			goto done;
-+		}
-+
-+		msize = btf__resolve_size(btf, mtype_id);
-+		kern_msize = btf__resolve_size(kern_btf, kern_mtype_id);
-+		if (msize < 0 || kern_msize < 0 || msize != kern_msize) {
-+			pr_warn("struct_ops prepare %s: Error in size of member %s: %zd != %zd(kernel)\n",
-+				tname, mname,
-+				(ssize_t)msize, (ssize_t)kern_msize);
-+			goto done;
-+		}
-+
-+		pr_debug("struct_ops prepare %s: copy %s %u bytes from data(+%u) to kern_data(+%u)\n",
-+			 tname, mname, (unsigned int)msize,
-+			 moff, kern_moff);
-+		memcpy(kern_mdata, mdata, msize);
++		err = -errno;
++		goto done;
 +	}
 +
-+	err = 0;
++	if (settimeo(fd)) {
++		err = -errno;
++		goto done;
++	}
++
++	while (bytes < total_bytes && !READ_ONCE(stop)) {
++		nr_sent = send(fd, &batch,
++			       min(total_bytes - bytes, sizeof(batch)), 0);
++		if (nr_sent == -1 && errno == EINTR)
++			continue;
++		if (nr_sent == -1) {
++			err = -errno;
++			break;
++		}
++		bytes += nr_sent;
++	}
++
++	CHECK(bytes != total_bytes, "send", "%zd != %u nr_sent:%zd errno:%d\n",
++	      bytes, total_bytes, nr_sent, errno);
 +
 +done:
-+	/* On error case, bpf_object__unload() will free the
-+	 * st_ops->kern_vdata.
-+	 */
-+	btf__free(kern_btf);
-+	return err;
-+}
-+
-+static int bpf_object__collect_struct_ops_reloc(struct bpf_object *obj,
-+						GElf_Shdr *shdr,
-+						Elf_Data *data)
-+{
-+	const struct btf_member *member;
-+	struct bpf_struct_ops *st_ops;
-+	struct bpf_program *prog;
-+	const char *name, *tname;
-+	unsigned int shdr_idx;
-+	const struct btf *btf;
-+	Elf_Data *symbols;
-+	unsigned int moff;
-+	GElf_Sym sym;
-+	GElf_Rel rel;
-+	int i, nrels;
-+
-+	symbols = obj->efile.symbols;
-+	btf = obj->btf;
-+	st_ops = &obj->st_ops;
-+	tname = st_ops->tname;
-+
-+	nrels = shdr->sh_size / shdr->sh_entsize;
-+	for (i = 0; i < nrels; i++) {
-+		if (!gelf_getrel(data, i, &rel)) {
-+			pr_warn("struct_ops reloc %s: failed to get %d reloc\n",
-+				tname, i);
-+			return -LIBBPF_ERRNO__FORMAT;
-+		}
-+
-+		if (!gelf_getsym(symbols, GELF_R_SYM(rel.r_info), &sym)) {
-+			pr_warn("struct_ops reloc %s: symbol %" PRIx64 " not found\n",
-+				tname, GELF_R_SYM(rel.r_info));
-+			return -LIBBPF_ERRNO__FORMAT;
-+		}
-+
-+		name = elf_strptr(obj->efile.elf, obj->efile.strtabidx,
-+				  sym.st_name) ? : "<?>";
-+
-+		pr_debug("%s relo for %lld value %lld name %d (\'%s\')\n",
-+			 tname,
-+			 (long long) (rel.r_info >> 32),
-+			 (long long) sym.st_value, sym.st_name, name);
-+
-+		shdr_idx = sym.st_shndx;
-+		moff = rel.r_offset;
-+		pr_debug("struct_ops reloc %s: moff=%u, shdr_idx=%u\n",
-+			 tname, moff, shdr_idx);
-+
-+		if (shdr_idx >= SHN_LORESERVE) {
-+			pr_warn("struct_ops reloc %s: moff=%u shdr_idx=%u unsupported non-static function\n",
-+				tname, moff, shdr_idx);
-+			return -LIBBPF_ERRNO__RELOC;
-+		}
-+
-+		member = find_member_by_offset(st_ops->type, moff * 8);
-+		if (!member) {
-+			pr_warn("struct_ops reloc %s: cannot find member at moff=%u\n",
-+				tname, moff);
-+			return -EINVAL;
-+		}
-+		name = btf__name_by_offset(btf, member->name_off);
-+
-+		if (!resolve_func_ptr(btf, member->type, NULL)) {
-+			pr_warn("struct_ops reloc %s: cannot relocate non func ptr %s\n",
-+				tname, name);
-+			return -EINVAL;
-+		}
-+
-+		prog = bpf_object__find_prog_by_idx(obj, shdr_idx);
-+		if (!prog) {
-+			pr_warn("struct_ops reloc %s: cannot find prog at shdr_idx %u to relocate func ptr %s\n",
-+				tname, shdr_idx, name);
-+			return -EINVAL;
-+		}
-+
-+		st_ops->progs[member - btf_members(st_ops->type)] = prog;
++	if (fd != -1)
++		close(fd);
++	if (err) {
++		WRITE_ONCE(stop, 1);
++		return ERR_PTR(err);
 +	}
-+
-+	return 0;
-+}
-+
-+static int bpf_object__init_struct_ops(struct bpf_object *obj)
-+{
-+	const struct btf_type *type, *datasec;
-+	const struct btf_var_secinfo *vsi;
-+	struct bpf_struct_ops *st_ops;
-+	const char *tname, *var_name;
-+	__s32 type_id, datasec_id;
-+	const struct btf *btf;
-+
-+	if (obj->efile.st_ops_shndx == -1)
-+		return 0;
-+
-+	btf = obj->btf;
-+	st_ops = &obj->st_ops;
-+	datasec_id = btf__find_by_name_kind(btf, BPF_STRUCT_OPS_SEC_NAME,
-+					    BTF_KIND_DATASEC);
-+	if (datasec_id < 0) {
-+		pr_warn("struct_ops init: DATASEC %s not found\n",
-+			BPF_STRUCT_OPS_SEC_NAME);
-+		return -EINVAL;
-+	}
-+
-+	datasec = btf__type_by_id(btf, datasec_id);
-+	if (btf_vlen(datasec) != 1) {
-+		pr_warn("struct_ops init: multiple VAR in DATASEC %s\n",
-+			BPF_STRUCT_OPS_SEC_NAME);
-+		return -ENOTSUP;
-+	}
-+	vsi = btf_var_secinfos(datasec);
-+
-+	type = btf__type_by_id(obj->btf, vsi->type);
-+	if (!btf_is_var(type)) {
-+		pr_warn("struct_ops init: vsi->type %u is not a VAR\n",
-+			vsi->type);
-+		return -EINVAL;
-+	}
-+	var_name = btf__name_by_offset(obj->btf, type->name_off);
-+
-+	type_id = btf__resolve_type(obj->btf, vsi->type);
-+	if (type_id < 0) {
-+		pr_warn("struct_ops init: Cannot resolve var type_id %u in DATASEC %s\n",
-+			vsi->type, BPF_STRUCT_OPS_SEC_NAME);
-+		return -EINVAL;
-+	}
-+
-+	type = btf__type_by_id(obj->btf, type_id);
-+	tname = btf__name_by_offset(obj->btf, type->name_off);
-+	if (!btf_is_struct(type)) {
-+		pr_warn("struct_ops init: %s is not a struct\n", tname);
-+		return -EINVAL;
-+	}
-+
-+	if (type->size != obj->efile.st_ops_data->d_size) {
-+		pr_warn("struct_ops init: %s unmatched size %u (BTF DATASEC) != %zu (ELF)\n",
-+			tname, type->size, obj->efile.st_ops_data->d_size);
-+		return -EINVAL;
-+	}
-+
-+	st_ops->data = malloc(type->size);
-+	st_ops->progs = calloc(btf_vlen(type), sizeof(*st_ops->progs));
-+	st_ops->kern_func_off = malloc(btf_vlen(type) *
-+				       sizeof(*st_ops->kern_func_off));
-+	/* bpf_object__close() will take care of the free-ings */
-+	if (!st_ops->data || !st_ops->progs || !st_ops->kern_func_off)
-+		return -ENOMEM;
-+	memcpy(st_ops->data, obj->efile.st_ops_data->d_buf, type->size);
-+
-+	st_ops->tname = tname;
-+	st_ops->type = type;
-+	st_ops->type_id = type_id;
-+	st_ops->var_name = var_name;
-+
-+	pr_debug("struct_ops init: %s found. type_id:%u\n", tname, type_id);
-+
-+	return 0;
-+}
-+
- static struct bpf_object *bpf_object__new(const char *path,
- 					  const void *obj_buf,
- 					  size_t obj_buf_sz,
-@@ -550,6 +1087,9 @@ static struct bpf_object *bpf_object__new(const char *path,
- 	obj->efile.data_shndx = -1;
- 	obj->efile.rodata_shndx = -1;
- 	obj->efile.bss_shndx = -1;
-+	obj->efile.st_ops_shndx = -1;
-+
-+	obj->st_ops.fd = -1;
- 
- 	obj->kern_version = get_kernel_version();
- 	obj->loaded = false;
-@@ -572,6 +1112,7 @@ static void bpf_object__elf_finish(struct bpf_object *obj)
- 	obj->efile.data = NULL;
- 	obj->efile.rodata = NULL;
- 	obj->efile.bss = NULL;
-+	obj->efile.st_ops_data = NULL;
- 
- 	zfree(&obj->efile.reloc_sects);
- 	obj->efile.nr_reloc_sects = 0;
-@@ -757,6 +1298,9 @@ int bpf_object__section_size(const struct bpf_object *obj, const char *name,
- 	} else if (!strcmp(name, ".rodata")) {
- 		if (obj->efile.rodata)
- 			*size = obj->efile.rodata->d_size;
-+	} else if (!strcmp(name, BPF_STRUCT_OPS_SEC_NAME)) {
-+		if (obj->efile.st_ops_data)
-+			*size = obj->efile.st_ops_data->d_size;
- 	} else {
- 		ret = bpf_object_search_section_size(obj, name, &d_size);
- 		if (!ret)
-@@ -1060,6 +1604,30 @@ skip_mods_and_typedefs(const struct btf *btf, __u32 id, __u32 *res_id)
- 	return t;
- }
- 
-+static const struct btf_type *
-+resolve_ptr(const struct btf *btf, __u32 id, __u32 *res_id)
-+{
-+	const struct btf_type *t;
-+
-+	t = skip_mods_and_typedefs(btf, id, NULL);
-+	if (!btf_is_ptr(t))
-+		return NULL;
-+
-+	return skip_mods_and_typedefs(btf, t->type, res_id);
-+}
-+
-+static const struct btf_type *
-+resolve_func_ptr(const struct btf *btf, __u32 id, __u32 *res_id)
-+{
-+	const struct btf_type *t;
-+
-+	t = resolve_ptr(btf, id, res_id);
-+	if (t && btf_is_func_proto(t))
-+		return t;
-+
 +	return NULL;
 +}
 +
- /*
-  * Fetch integer attribute of BTF map definition. Such attributes are
-  * represented using a pointer to an array, in which dimensionality of array
-@@ -1509,7 +2077,7 @@ static void bpf_object__sanitize_btf_ext(struct bpf_object *obj)
- 
- static bool bpf_object__is_btf_mandatory(const struct bpf_object *obj)
- {
--	return obj->efile.btf_maps_shndx >= 0;
-+	return obj->efile.btf_maps_shndx >= 0 || obj->efile.st_ops_shndx >= 0;
- }
- 
- static int bpf_object__init_btf(struct bpf_object *obj,
-@@ -1689,6 +2257,9 @@ static int bpf_object__elf_collect(struct bpf_object *obj, bool relaxed_maps,
- 			} else if (strcmp(name, ".rodata") == 0) {
- 				obj->efile.rodata = data;
- 				obj->efile.rodata_shndx = idx;
-+			} else if (strcmp(name, BPF_STRUCT_OPS_SEC_NAME) == 0) {
-+				obj->efile.st_ops_data = data;
-+				obj->efile.st_ops_shndx = idx;
- 			} else {
- 				pr_debug("skip section(%d) %s\n", idx, name);
- 			}
-@@ -1698,7 +2269,8 @@ static int bpf_object__elf_collect(struct bpf_object *obj, bool relaxed_maps,
- 			int sec = sh.sh_info; /* points to other section */
- 
- 			/* Only do relo for section with exec instructions */
--			if (!section_have_execinstr(obj, sec)) {
-+			if (!section_have_execinstr(obj, sec) &&
-+			    !strstr(name, BPF_STRUCT_OPS_SEC_NAME)) {
- 				pr_debug("skip relo %s(%d) for section(%d)\n",
- 					 name, idx, sec);
- 				continue;
-@@ -1735,6 +2307,8 @@ static int bpf_object__elf_collect(struct bpf_object *obj, bool relaxed_maps,
- 		err = bpf_object__sanitize_and_load_btf(obj);
- 	if (!err)
- 		err = bpf_object__init_prog_names(obj);
-+	if (!err)
-+		err = bpf_object__init_struct_ops(obj);
- 	return err;
- }
- 
-@@ -3700,6 +4274,13 @@ static int bpf_object__collect_reloc(struct bpf_object *obj)
- 			return -LIBBPF_ERRNO__INTERNAL;
- 		}
- 
-+		if (idx == obj->efile.st_ops_shndx) {
-+			err = bpf_object__collect_struct_ops_reloc(obj, shdr, data);
-+			if (err)
-+				return err;
++static void do_test(const char *tcp_ca)
++{
++	struct sockaddr_in6 sa6 = {};
++	ssize_t nr_recv = 0, bytes = 0;
++	int lfd = -1, fd = -1;
++	pthread_t srv_thread;
++	socklen_t addrlen = sizeof(sa6);
++	void *thread_ret;
++	char batch[1500];
++	int err;
++
++	WRITE_ONCE(stop, 0);
++
++	lfd = socket(AF_INET6, SOCK_STREAM, 0);
++	if (CHECK(lfd == -1, "socket", "errno:%d\n", errno))
++		return;
++	fd = socket(AF_INET6, SOCK_STREAM, 0);
++	if (CHECK(fd == -1, "socket", "errno:%d\n", errno)) {
++		close(lfd);
++		return;
++	}
++
++	if (settcpca(lfd, tcp_ca) || settcpca(fd, tcp_ca) ||
++	    settimeo(lfd) || settimeo(fd))
++		goto done;
++
++	/* bind, listen and start server thread to accept */
++	sa6.sin6_family = AF_INET6;
++	sa6.sin6_addr = in6addr_loopback;
++	err = bind(lfd, (struct sockaddr *)&sa6, addrlen);
++	if (CHECK(err == -1, "bind", "errno:%d\n", errno))
++		goto done;
++	err = getsockname(lfd, (struct sockaddr *)&sa6, &addrlen);
++	if (CHECK(err == -1, "getsockname", "errno:%d\n", errno))
++		goto done;
++	err = listen(lfd, 1);
++	if (CHECK(err == -1, "listen", "errno:%d\n", errno))
++		goto done;
++	err = pthread_create(&srv_thread, NULL, server, (void *)(long)lfd);
++	if (CHECK(err != 0, "pthread_create", "err:%d\n", err))
++		goto done;
++
++	/* connect to server */
++	err = connect(fd, (struct sockaddr *)&sa6, addrlen);
++	if (CHECK(err == -1, "connect", "errno:%d\n", errno))
++		goto wait_thread;
++
++	/* recv total_bytes */
++	while (bytes < total_bytes && !READ_ONCE(stop)) {
++		nr_recv = recv(fd, &batch,
++			       min(total_bytes - bytes, sizeof(batch)), 0);
++		if (nr_recv == -1 && errno == EINTR)
 +			continue;
++		if (nr_recv == -1)
++			break;
++		bytes += nr_recv;
++	}
++
++	CHECK(bytes != total_bytes, "recv", "%zd != %u nr_recv:%zd errno:%d\n",
++	      bytes, total_bytes, nr_recv, errno);
++
++wait_thread:
++	WRITE_ONCE(stop, 1);
++	pthread_join(srv_thread, &thread_ret);
++	CHECK(IS_ERR(thread_ret), "pthread_join", "thread_ret:%ld",
++	      PTR_ERR(thread_ret));
++done:
++	close(lfd);
++	close(fd);
++}
++
++static struct bpf_object *load(const char *filename)
++{
++	DECLARE_LIBBPF_OPTS(bpf_object_open_opts, open_opts,
++		.unreg_st_ops = true,
++	);
++	struct bpf_object *obj;
++	int err;
++
++	obj = bpf_object__open_file(filename, &open_opts);
++	if (CHECK(IS_ERR(obj), "bpf_obj__open_file", "obj:%ld\n",
++		  PTR_ERR(obj)))
++		return obj;
++
++	err = bpf_object__load(obj);
++	if (CHECK(err, "bpf_object__load", "err:%d\n", err)) {
++		bpf_object__close(obj);
++		return ERR_PTR(err);
++	}
++
++	return obj;
++}
++
++static void test_dctcp(void)
++{
++	struct bpf_object *obj;
++
++	obj = load("bpf_dctcp.o");
++	if (IS_ERR(obj))
++		return;
++
++	do_test("bpf_dctcp");
++
++	bpf_object__close(obj);
++}
++
++void test_bpf_tcp_ca(void)
++{
++	if (test__start_subtest("dctcp"))
++		test_dctcp();
++}
+diff --git a/tools/testing/selftests/bpf/progs/bpf_dctcp.c b/tools/testing/selftests/bpf/progs/bpf_dctcp.c
+new file mode 100644
+index 000000000000..794954832adc
+--- /dev/null
++++ b/tools/testing/selftests/bpf/progs/bpf_dctcp.c
+@@ -0,0 +1,194 @@
++#include <linux/bpf.h>
++#include <linux/types.h>
++#include "bpf_tcp_helpers.h"
++
++char _license[] SEC("license") = "GPL";
++
++#define DCTCP_MAX_ALPHA	1024U
++
++struct dctcp {
++	__u32 old_delivered;
++	__u32 old_delivered_ce;
++	__u32 prior_rcv_nxt;
++	__u32 dctcp_alpha;
++	__u32 next_seq;
++	__u32 ce_state;
++	__u32 loss_cwnd;
++};
++
++static unsigned int dctcp_shift_g = 4; /* g = 1/2^4 */
++static unsigned int dctcp_alpha_on_init = DCTCP_MAX_ALPHA;
++
++static __always_inline void dctcp_reset(const struct tcp_sock *tp,
++					struct dctcp *ca)
++{
++	ca->next_seq = tp->snd_nxt;
++
++	ca->old_delivered = tp->delivered;
++	ca->old_delivered_ce = tp->delivered_ce;
++}
++
++BPF_TCP_OPS_1(dctcp_init, void, struct sock *, sk)
++{
++	const struct tcp_sock *tp = tcp_sk(sk);
++	struct dctcp *ca = inet_csk_ca(sk);
++
++	ca->prior_rcv_nxt = tp->rcv_nxt;
++	ca->dctcp_alpha = min(dctcp_alpha_on_init, DCTCP_MAX_ALPHA);
++	ca->loss_cwnd = 0;
++	ca->ce_state = 0;
++
++	dctcp_reset(tp, ca);
++}
++
++BPF_TCP_OPS_1(dctcp_ssthresh, __u32, struct sock *, sk)
++{
++	struct dctcp *ca = inet_csk_ca(sk);
++	struct tcp_sock *tp = tcp_sk(sk);
++
++	ca->loss_cwnd = tp->snd_cwnd;
++	return max(tp->snd_cwnd - ((tp->snd_cwnd * ca->dctcp_alpha) >> 11U), 2U);
++}
++
++BPF_TCP_OPS_2(dctcp_update_alpha, void,
++	      struct sock *, sk, __u32, flags)
++{
++	const struct tcp_sock *tp = tcp_sk(sk);
++	struct dctcp *ca = inet_csk_ca(sk);
++
++	/* Expired RTT */
++	if (!before(tp->snd_una, ca->next_seq)) {
++		__u32 delivered_ce = tp->delivered_ce - ca->old_delivered_ce;
++		__u32 alpha = ca->dctcp_alpha;
++
++		/* alpha = (1 - g) * alpha + g * F */
++
++		alpha -= min_not_zero(alpha, alpha >> dctcp_shift_g);
++		if (delivered_ce) {
++			__u32 delivered = tp->delivered - ca->old_delivered;
++
++			/* If dctcp_shift_g == 1, a 32bit value would overflow
++			 * after 8 M packets.
++			 */
++			delivered_ce <<= (10 - dctcp_shift_g);
++			delivered_ce /= max(1U, delivered);
++
++			alpha = min(alpha + delivered_ce, DCTCP_MAX_ALPHA);
 +		}
++		ca->dctcp_alpha = alpha;
++		dctcp_reset(tp, ca);
++	}
++}
 +
- 		prog = bpf_object__find_prog_by_idx(obj, idx);
- 		if (!prog) {
- 			pr_warn("relocation failed: no section(%d)\n", idx);
-@@ -3734,7 +4315,9 @@ load_program(struct bpf_program *prog, struct bpf_insn *insns, int insns_cnt,
- 	load_attr.insns = insns;
- 	load_attr.insns_cnt = insns_cnt;
- 	load_attr.license = license;
--	if (prog->type == BPF_PROG_TYPE_TRACING) {
-+	if (prog->type == BPF_PROG_TYPE_STRUCT_OPS) {
-+		load_attr.attach_btf_id = prog->attach_btf_id;
-+	} else if (prog->type == BPF_PROG_TYPE_TRACING) {
- 		load_attr.attach_prog_fd = prog->attach_prog_fd;
- 		load_attr.attach_btf_id = prog->attach_btf_id;
- 	} else {
-@@ -3952,6 +4535,7 @@ __bpf_object__open(const char *path, const void *obj_buf, size_t obj_buf_sz,
- 	if (IS_ERR(obj))
- 		return obj;
- 
-+	obj->st_ops.unreg = OPTS_GET(opts, unreg_st_ops, false);
- 	obj->relaxed_core_relocs = OPTS_GET(opts, relaxed_core_relocs, false);
- 	relaxed_maps = OPTS_GET(opts, relaxed_maps, false);
- 	pin_root_path = OPTS_GET(opts, pin_root_path, NULL);
-@@ -4077,6 +4661,10 @@ int bpf_object__unload(struct bpf_object *obj)
- 	for (i = 0; i < obj->nr_programs; i++)
- 		bpf_program__unload(&obj->programs[i]);
- 
-+	if (obj->st_ops.unreg)
-+		bpf_struct_ops__unregister(&obj->st_ops);
-+	zfree(&obj->st_ops.kern_vdata);
++static __always_inline void dctcp_react_to_loss(struct sock *sk)
++{
++	struct dctcp *ca = inet_csk_ca(sk);
++	struct tcp_sock *tp = tcp_sk(sk);
 +
- 	return 0;
- }
- 
-@@ -4100,7 +4688,9 @@ int bpf_object__load_xattr(struct bpf_object_load_attr *attr)
- 
- 	CHECK_ERR(bpf_object__create_maps(obj), err, out);
- 	CHECK_ERR(bpf_object__relocate(obj, attr->target_btf_path), err, out);
-+	CHECK_ERR(bpf_object__prepare_struct_ops(obj), err, out);
- 	CHECK_ERR(bpf_object__load_progs(obj, attr->log_level), err, out);
-+	CHECK_ERR(bpf_object__register_struct_ops(obj), err, out);
- 
- 	return 0;
- out:
-@@ -4690,6 +5280,9 @@ void bpf_object__close(struct bpf_object *obj)
- 			bpf_program__exit(&obj->programs[i]);
- 	}
- 	zfree(&obj->programs);
-+	zfree(&obj->st_ops.data);
-+	zfree(&obj->st_ops.progs);
-+	zfree(&obj->st_ops.kern_func_off);
- 
- 	list_del(&obj->list);
- 	free(obj);
-diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
-index 0dbf4bfba0c4..db255fce4948 100644
---- a/tools/lib/bpf/libbpf.h
-+++ b/tools/lib/bpf/libbpf.h
-@@ -109,8 +109,9 @@ struct bpf_object_open_opts {
- 	 */
- 	const char *pin_root_path;
- 	__u32 attach_prog_fd;
-+	bool unreg_st_ops;
- };
--#define bpf_object_open_opts__last_field attach_prog_fd
-+#define bpf_object_open_opts__last_field unreg_st_ops
- 
- LIBBPF_API struct bpf_object *bpf_object__open(const char *path);
- LIBBPF_API struct bpf_object *
-diff --git a/tools/lib/bpf/libbpf_probes.c b/tools/lib/bpf/libbpf_probes.c
-index a9eb8b322671..7f06942e9574 100644
---- a/tools/lib/bpf/libbpf_probes.c
-+++ b/tools/lib/bpf/libbpf_probes.c
-@@ -103,6 +103,7 @@ probe_load(enum bpf_prog_type prog_type, const struct bpf_insn *insns,
- 	case BPF_PROG_TYPE_CGROUP_SYSCTL:
- 	case BPF_PROG_TYPE_CGROUP_SOCKOPT:
- 	case BPF_PROG_TYPE_TRACING:
-+	case BPF_PROG_TYPE_STRUCT_OPS:
- 	default:
- 		break;
- 	}
-@@ -251,6 +252,7 @@ bool bpf_probe_map_type(enum bpf_map_type map_type, __u32 ifindex)
- 	case BPF_MAP_TYPE_XSKMAP:
- 	case BPF_MAP_TYPE_SOCKHASH:
- 	case BPF_MAP_TYPE_REUSEPORT_SOCKARRAY:
-+	case BPF_MAP_TYPE_STRUCT_OPS:
- 	default:
- 		break;
- 	}
++	ca->loss_cwnd = tp->snd_cwnd;
++	tp->snd_ssthresh = max(tp->snd_cwnd >> 1U, 2U);
++}
++
++BPF_TCP_OPS_2(dctcp_state, void, struct sock *, sk, __u8, new_state)
++{
++	if (new_state == TCP_CA_Recovery &&
++	    new_state != BPF_CORE_READ_BITFIELD(inet_csk(sk), icsk_ca_state))
++		dctcp_react_to_loss(sk);
++	/* We handle RTO in dctcp_cwnd_event to ensure that we perform only
++	 * one loss-adjustment per RTT.
++	 */
++}
++
++static __always_inline void dctcp_ece_ack_cwr(struct sock *sk, __u32 ce_state)
++{
++	struct tcp_sock *tp = tcp_sk(sk);
++
++	if (ce_state == 1)
++		tp->ecn_flags |= TCP_ECN_DEMAND_CWR;
++	else
++		tp->ecn_flags &= ~TCP_ECN_DEMAND_CWR;
++}
++
++/* Minimal DCTP CE state machine:
++ *
++ * S:	0 <- last pkt was non-CE
++ *	1 <- last pkt was CE
++ */
++static __always_inline
++void dctcp_ece_ack_update(struct sock *sk, enum tcp_ca_event evt,
++			  __u32 *prior_rcv_nxt, __u32 *ce_state)
++{
++	__u32 new_ce_state = (evt == CA_EVENT_ECN_IS_CE) ? 1 : 0;
++
++	if (*ce_state != new_ce_state) {
++		/* CE state has changed, force an immediate ACK to
++		 * reflect the new CE state. If an ACK was delayed,
++		 * send that first to reflect the prior CE state.
++		 */
++		if (inet_csk(sk)->icsk_ack.pending & ICSK_ACK_TIMER) {
++			dctcp_ece_ack_cwr(sk, *ce_state);
++			bpf_tcp_send_ack(sk, *prior_rcv_nxt);
++		}
++		inet_csk(sk)->icsk_ack.pending |= ICSK_ACK_NOW;
++	}
++	*prior_rcv_nxt = tcp_sk(sk)->rcv_nxt;
++	*ce_state = new_ce_state;
++	dctcp_ece_ack_cwr(sk, new_ce_state);
++}
++
++BPF_TCP_OPS_2(dctcp_cwnd_event, void,
++	      struct sock *, sk, enum tcp_ca_event, ev)
++{
++	struct dctcp *ca = inet_csk_ca(sk);
++
++	switch (ev) {
++	case CA_EVENT_ECN_IS_CE:
++	case CA_EVENT_ECN_NO_CE:
++		dctcp_ece_ack_update(sk, ev, &ca->prior_rcv_nxt, &ca->ce_state);
++		break;
++	case CA_EVENT_LOSS:
++		dctcp_react_to_loss(sk);
++		break;
++	default:
++		/* Don't care for the rest. */
++		break;
++	}
++}
++
++BPF_TCP_OPS_1(dctcp_cwnd_undo, __u32, struct sock *, sk)
++{
++	const struct dctcp *ca = inet_csk_ca(sk);
++
++	return max(tcp_sk(sk)->snd_cwnd, ca->loss_cwnd);
++}
++
++BPF_TCP_OPS_3(tcp_reno_cong_avoid, void,
++	      struct sock *, sk, __u32, ack, __u32, acked)
++{
++	struct tcp_sock *tp = tcp_sk(sk);
++
++	if (!tcp_is_cwnd_limited(sk))
++		return;
++
++	/* In "safe" area, increase. */
++	if (tcp_in_slow_start(tp)) {
++		acked = tcp_slow_start(tp, acked);
++		if (!acked)
++			return;
++	}
++	/* In dangerous area, increase slowly. */
++	tcp_cong_avoid_ai(tp, tp->snd_cwnd, acked);
++}
++
++SEC("struct_ops")
++struct tcp_congestion_ops dctcp = {
++	.init		= (void *)dctcp_init,
++	.in_ack_event   = (void *)dctcp_update_alpha,
++	.cwnd_event	= (void *)dctcp_cwnd_event,
++	.ssthresh	= (void *)dctcp_ssthresh,
++	.cong_avoid	= (void *)tcp_reno_cong_avoid,
++	.undo_cwnd	= (void *)dctcp_cwnd_undo,
++	.set_state	= (void *)dctcp_state,
++	.flags		= TCP_CONG_NEEDS_ECN,
++	.name		= "bpf_dctcp",
++};
 -- 
 2.17.1
 
