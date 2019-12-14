@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6CB7711EFA7
-	for <lists+netdev@lfdr.de>; Sat, 14 Dec 2019 02:44:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BC6EF11EFAA
+	for <lists+netdev@lfdr.de>; Sat, 14 Dec 2019 02:44:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726881AbfLNBoE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Dec 2019 20:44:04 -0500
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:56992 "EHLO
+        id S1726739AbfLNBoG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Dec 2019 20:44:06 -0500
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:8906 "EHLO
         mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726820AbfLNBoA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Dec 2019 20:44:00 -0500
-Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xBE1hfEQ016539
-        for <netdev@vger.kernel.org>; Fri, 13 Dec 2019 17:43:59 -0800
+        by vger.kernel.org with ESMTP id S1726865AbfLNBoC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Dec 2019 20:44:02 -0500
+Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xBE1aWIJ023668
+        for <netdev@vger.kernel.org>; Fri, 13 Dec 2019 17:44:01 -0800
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
  : date : message-id : in-reply-to : references : mime-version :
- content-type; s=facebook; bh=cQgeeXbyiIZkT4g3VYta4xZNV49Al/mlcbRJ21wjcOA=;
- b=H/kPfeptT32tejwDzn6ixhPuYR3Qe4FtirYFQUKpqNYMJRyQdqH5sturWd05HCEpWCB/
- qKwhItxR4oC74fCwoGl0WQXE1FgRp/yvbYZ+qfYyQgd/mmwYjAHt7m9zIC2FH4AwGb3S
- HLKktQPQaW5eiDZtnk2lcwqgz59UnJjNPNY= 
+ content-type; s=facebook; bh=512dWkOocrgjuSaxnmkZyPuor14cDXVxOCRvsLbZ+Ro=;
+ b=PbXlGG1/m5n6isPG6ZN3li3YgXzpW7nImc/Nlk6rbqnDH1qAxTOeDqlFGk7QIebc57H7
+ 6uwlrQ83nLsYTrwb2+TzHZdbzspRwLWKNwHuGZzU8qFe8dVlEE/SQMagxPjna1Ll9YmR
+ IclChh7ca/B2ENS616ieIEDlOq1gQIypJTw= 
 Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by mx0a-00082601.pphosted.com with ESMTP id 2wvm79rh3w-2
+        by mx0a-00082601.pphosted.com with ESMTP id 2wvkm20n1j-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Fri, 13 Dec 2019 17:43:59 -0800
-Received: from intmgw005.05.ash5.facebook.com (2620:10d:c081:10::13) by
- mail.thefacebook.com (2620:10d:c081:35::125) with Microsoft SMTP Server
+        for <netdev@vger.kernel.org>; Fri, 13 Dec 2019 17:44:00 -0800
+Received: from intmgw002.41.prn1.facebook.com (2620:10d:c081:10::13) by
+ mail.thefacebook.com (2620:10d:c081:35::129) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
- Fri, 13 Dec 2019 17:43:58 -0800
+ Fri, 13 Dec 2019 17:44:00 -0800
 Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
-        id 2AFF52EC1D51; Fri, 13 Dec 2019 17:43:57 -0800 (PST)
+        id 769172EC1D51; Fri, 13 Dec 2019 17:43:59 -0800 (PST)
 Smtp-Origin-Hostprefix: devbig
 From:   Andrii Nakryiko <andriin@fb.com>
 Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
@@ -38,9 +38,9 @@ To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
 CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
         Andrii Nakryiko <andriin@fb.com>
 Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH v4 bpf-next 06/17] libbpf: expose btf__align_of() API
-Date:   Fri, 13 Dec 2019 17:43:30 -0800
-Message-ID: <20191214014341.3442258-7-andriin@fb.com>
+Subject: [PATCH v4 bpf-next 07/17] libbpf: expose BTF-to-C type declaration emitting API
+Date:   Fri, 13 Dec 2019 17:43:31 -0800
+Message-ID: <20191214014341.3442258-8-andriin@fb.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20191214014341.3442258-1-andriin@fb.com>
 References: <20191214014341.3442258-1-andriin@fb.com>
@@ -49,185 +49,190 @@ MIME-Version: 1.0
 Content-Type: text/plain
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
  definitions=2019-12-13_09:2019-12-13,2019-12-13 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 malwarescore=0
- suspectscore=8 bulkscore=0 priorityscore=1501 mlxscore=0 impostorscore=0
- clxscore=1015 spamscore=0 adultscore=0 phishscore=0 mlxlogscore=750
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-1910280000 definitions=main-1912140007
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 impostorscore=0
+ phishscore=0 lowpriorityscore=0 bulkscore=0 priorityscore=1501
+ mlxlogscore=999 malwarescore=0 adultscore=0 spamscore=0 mlxscore=0
+ clxscore=1015 suspectscore=25 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-1910280000 definitions=main-1912140006
 X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Expose BTF API that calculates type alignment requirements.
+Expose API that allows to emit type declaration and field/variable definition
+(if optional field name is specified) in valid C syntax for any provided BTF
+type. This is going to be used by bpftool when emitting data section layout as
+a struct. As part of making this API useful in a stand-alone fashion, move
+initialization of some of the internal btf_dump state to earlier phase.
 
+Acked-by: Martin KaFai Lau <kafai@fb.com>
 Signed-off-by: Andrii Nakryiko <andriin@fb.com>
 ---
- tools/lib/bpf/btf.c      | 39 +++++++++++++++++++++++++++++++++
- tools/lib/bpf/btf.h      |  1 +
- tools/lib/bpf/btf_dump.c | 47 +++++-----------------------------------
+ tools/lib/bpf/btf.h      | 22 +++++++++++++
+ tools/lib/bpf/btf_dump.c | 68 +++++++++++++++++++++++++---------------
  tools/lib/bpf/libbpf.map |  1 +
- 4 files changed, 47 insertions(+), 41 deletions(-)
+ 3 files changed, 65 insertions(+), 26 deletions(-)
 
-diff --git a/tools/lib/bpf/btf.c b/tools/lib/bpf/btf.c
-index 88efa2bb7137..84fe82f27bef 100644
---- a/tools/lib/bpf/btf.c
-+++ b/tools/lib/bpf/btf.c
-@@ -278,6 +278,45 @@ __s64 btf__resolve_size(const struct btf *btf, __u32 type_id)
- 	return nelems * size;
- }
- 
-+int btf__align_of(const struct btf *btf, __u32 id)
-+{
-+	const struct btf_type *t = btf__type_by_id(btf, id);
-+	__u16 kind = btf_kind(t);
-+
-+	switch (kind) {
-+	case BTF_KIND_INT:
-+	case BTF_KIND_ENUM:
-+		return min(sizeof(void *), t->size);
-+	case BTF_KIND_PTR:
-+		return sizeof(void *);
-+	case BTF_KIND_TYPEDEF:
-+	case BTF_KIND_VOLATILE:
-+	case BTF_KIND_CONST:
-+	case BTF_KIND_RESTRICT:
-+		return btf__align_of(btf, t->type);
-+	case BTF_KIND_ARRAY:
-+		return btf__align_of(btf, btf_array(t)->type);
-+	case BTF_KIND_STRUCT:
-+	case BTF_KIND_UNION: {
-+		const struct btf_member *m = btf_members(t);
-+		__u16 vlen = btf_vlen(t);
-+		int i, align = 1, t;
-+
-+		for (i = 0; i < vlen; i++, m++) {
-+			t = btf__align_of(btf, m->type);
-+			if (t <= 0)
-+				return t;
-+			align = max(align, t);
-+		}
-+
-+		return align;
-+	}
-+	default:
-+		pr_warn("unsupported BTF_KIND:%u\n", btf_kind(t));
-+		return 0;
-+	}
-+}
-+
- int btf__resolve_type(const struct btf *btf, __u32 type_id)
- {
- 	const struct btf_type *t;
 diff --git a/tools/lib/bpf/btf.h b/tools/lib/bpf/btf.h
-index 5fc23b988deb..a114c8ef4f08 100644
+index a114c8ef4f08..8d73f7f5551f 100644
 --- a/tools/lib/bpf/btf.h
 +++ b/tools/lib/bpf/btf.h
-@@ -77,6 +77,7 @@ LIBBPF_API const struct btf_type *btf__type_by_id(const struct btf *btf,
- 						  __u32 id);
- LIBBPF_API __s64 btf__resolve_size(const struct btf *btf, __u32 type_id);
- LIBBPF_API int btf__resolve_type(const struct btf *btf, __u32 type_id);
-+LIBBPF_API int btf__align_of(const struct btf *btf, __u32 id);
- LIBBPF_API int btf__fd(const struct btf *btf);
- LIBBPF_API const void *btf__get_raw_data(const struct btf *btf, __u32 *size);
- LIBBPF_API const char *btf__name_by_offset(const struct btf *btf, __u32 offset);
+@@ -126,6 +126,28 @@ LIBBPF_API void btf_dump__free(struct btf_dump *d);
+ 
+ LIBBPF_API int btf_dump__dump_type(struct btf_dump *d, __u32 id);
+ 
++struct btf_dump_emit_type_decl_opts {
++	/* size of this struct, for forward/backward compatiblity */
++	size_t sz;
++	/* optional field name for type declaration, e.g.:
++	 * - struct my_struct <FNAME>
++	 * - void (*<FNAME>)(int)
++	 * - char (*<FNAME>)[123]
++	 */
++	const char *field_name;
++	/* extra indentation level (in number of tabs) to emit for multi-line
++	 * type declarations (e.g., anonymous struct); applies for lines
++	 * starting from the second one (first line is assumed to have
++	 * necessary indentation already
++	 */
++	int indent_level;
++};
++#define btf_dump_emit_type_decl_opts__last_field indent_level
++
++LIBBPF_API int
++btf_dump__emit_type_decl(struct btf_dump *d, __u32 id,
++			 const struct btf_dump_emit_type_decl_opts *opts);
++
+ /*
+  * A set of helpers for easier BTF types handling
+  */
 diff --git a/tools/lib/bpf/btf_dump.c b/tools/lib/bpf/btf_dump.c
-index cb126d8fcf75..53393026d085 100644
+index 53393026d085..e95f7710f210 100644
 --- a/tools/lib/bpf/btf_dump.c
 +++ b/tools/lib/bpf/btf_dump.c
-@@ -752,41 +752,6 @@ static void btf_dump_emit_type(struct btf_dump *d, __u32 id, __u32 cont_id)
- 	}
+@@ -116,6 +116,8 @@ static void btf_dump_printf(const struct btf_dump *d, const char *fmt, ...)
+ 	va_end(args);
  }
  
--static int btf_align_of(const struct btf *btf, __u32 id)
--{
--	const struct btf_type *t = btf__type_by_id(btf, id);
--	__u16 kind = btf_kind(t);
++static int btf_dump_mark_referenced(struct btf_dump *d);
++
+ struct btf_dump *btf_dump__new(const struct btf *btf,
+ 			       const struct btf_ext *btf_ext,
+ 			       const struct btf_dump_opts *opts,
+@@ -137,18 +139,39 @@ struct btf_dump *btf_dump__new(const struct btf *btf,
+ 	if (IS_ERR(d->type_names)) {
+ 		err = PTR_ERR(d->type_names);
+ 		d->type_names = NULL;
+-		btf_dump__free(d);
+-		return ERR_PTR(err);
+ 	}
+ 	d->ident_names = hashmap__new(str_hash_fn, str_equal_fn, NULL);
+ 	if (IS_ERR(d->ident_names)) {
+ 		err = PTR_ERR(d->ident_names);
+ 		d->ident_names = NULL;
+-		btf_dump__free(d);
+-		return ERR_PTR(err);
++		goto err;
++	}
++	d->type_states = calloc(1 + btf__get_nr_types(d->btf),
++				sizeof(d->type_states[0]));
++	if (!d->type_states) {
++		err = -ENOMEM;
++		goto err;
++	}
++	d->cached_names = calloc(1 + btf__get_nr_types(d->btf),
++				 sizeof(d->cached_names[0]));
++	if (!d->cached_names) {
++		err = -ENOMEM;
++		goto err;
+ 	}
+ 
++	/* VOID is special */
++	d->type_states[0].order_state = ORDERED;
++	d->type_states[0].emit_state = EMITTED;
++
++	/* eagerly determine referenced types for anon enums */
++	err = btf_dump_mark_referenced(d);
++	if (err)
++		goto err;
++
+ 	return d;
++err:
++	btf_dump__free(d);
++	return ERR_PTR(err);
+ }
+ 
+ void btf_dump__free(struct btf_dump *d)
+@@ -175,7 +198,6 @@ void btf_dump__free(struct btf_dump *d)
+ 	free(d);
+ }
+ 
+-static int btf_dump_mark_referenced(struct btf_dump *d);
+ static int btf_dump_order_type(struct btf_dump *d, __u32 id, bool through_ptr);
+ static void btf_dump_emit_type(struct btf_dump *d, __u32 id, __u32 cont_id);
+ 
+@@ -202,27 +224,6 @@ int btf_dump__dump_type(struct btf_dump *d, __u32 id)
+ 	if (id > btf__get_nr_types(d->btf))
+ 		return -EINVAL;
+ 
+-	/* type states are lazily allocated, as they might not be needed */
+-	if (!d->type_states) {
+-		d->type_states = calloc(1 + btf__get_nr_types(d->btf),
+-					sizeof(d->type_states[0]));
+-		if (!d->type_states)
+-			return -ENOMEM;
+-		d->cached_names = calloc(1 + btf__get_nr_types(d->btf),
+-					 sizeof(d->cached_names[0]));
+-		if (!d->cached_names)
+-			return -ENOMEM;
 -
--	switch (kind) {
--	case BTF_KIND_INT:
--	case BTF_KIND_ENUM:
--		return min(sizeof(void *), t->size);
--	case BTF_KIND_PTR:
--		return sizeof(void *);
--	case BTF_KIND_TYPEDEF:
--	case BTF_KIND_VOLATILE:
--	case BTF_KIND_CONST:
--	case BTF_KIND_RESTRICT:
--		return btf_align_of(btf, t->type);
--	case BTF_KIND_ARRAY:
--		return btf_align_of(btf, btf_array(t)->type);
--	case BTF_KIND_STRUCT:
--	case BTF_KIND_UNION: {
--		const struct btf_member *m = btf_members(t);
--		__u16 vlen = btf_vlen(t);
--		int i, align = 1;
+-		/* VOID is special */
+-		d->type_states[0].order_state = ORDERED;
+-		d->type_states[0].emit_state = EMITTED;
 -
--		for (i = 0; i < vlen; i++, m++)
--			align = max(align, btf_align_of(btf, m->type));
--
--		return align;
+-		/* eagerly determine referenced types for anon enums */
+-		err = btf_dump_mark_referenced(d);
+-		if (err)
+-			return err;
 -	}
--	default:
--		pr_warn("unsupported BTF_KIND:%u\n", btf_kind(t));
--		return 1;
--	}
--}
 -
- static bool btf_is_struct_packed(const struct btf *btf, __u32 id,
- 				 const struct btf_type *t)
+ 	d->emit_queue_cnt = 0;
+ 	err = btf_dump_order_type(d, id, false);
+ 	if (err < 0)
+@@ -1016,6 +1017,21 @@ static int btf_dump_push_decl_stack_id(struct btf_dump *d, __u32 id)
+  * of a stack frame. Some care is required to "pop" stack frames after
+  * processing type declaration chain.
+  */
++int btf_dump__emit_type_decl(struct btf_dump *d, __u32 id,
++			     const struct btf_dump_emit_type_decl_opts *opts)
++{
++	const char *fname;
++	int lvl;
++
++	if (!OPTS_VALID(opts, btf_dump_emit_type_decl_opts))
++		return -EINVAL;
++
++	fname = OPTS_GET(opts, field_name, NULL);
++	lvl = OPTS_GET(opts, indent_level, 0);
++	btf_dump_emit_type_decl(d, id, fname, lvl);
++	return 0;
++}
++
+ static void btf_dump_emit_type_decl(struct btf_dump *d, __u32 id,
+ 				    const char *fname, int lvl)
  {
-@@ -794,18 +759,18 @@ static bool btf_is_struct_packed(const struct btf *btf, __u32 id,
- 	int align, i, bit_sz;
- 	__u16 vlen;
- 
--	align = btf_align_of(btf, id);
-+	align = btf__align_of(btf, id);
- 	/* size of a non-packed struct has to be a multiple of its alignment*/
--	if (t->size % align)
-+	if (align && t->size % align)
- 		return true;
- 
- 	m = btf_members(t);
- 	vlen = btf_vlen(t);
- 	/* all non-bitfield fields have to be naturally aligned */
- 	for (i = 0; i < vlen; i++, m++) {
--		align = btf_align_of(btf, m->type);
-+		align = btf__align_of(btf, m->type);
- 		bit_sz = btf_member_bitfield_size(t, i);
--		if (bit_sz == 0 && m->offset % (8 * align) != 0)
-+		if (align && bit_sz == 0 && m->offset % (8 * align) != 0)
- 			return true;
- 	}
- 
-@@ -889,7 +854,7 @@ static void btf_dump_emit_struct_def(struct btf_dump *d,
- 		fname = btf_name_of(d, m->name_off);
- 		m_sz = btf_member_bitfield_size(t, i);
- 		m_off = btf_member_bit_offset(t, i);
--		align = packed ? 1 : btf_align_of(d->btf, m->type);
-+		align = packed ? 1 : btf__align_of(d->btf, m->type);
- 
- 		btf_dump_emit_bit_padding(d, off, m_off, m_sz, align, lvl + 1);
- 		btf_dump_printf(d, "\n%s", pfx(lvl + 1));
-@@ -907,7 +872,7 @@ static void btf_dump_emit_struct_def(struct btf_dump *d,
- 
- 	/* pad at the end, if necessary */
- 	if (is_struct) {
--		align = packed ? 1 : btf_align_of(d->btf, id);
-+		align = packed ? 1 : btf__align_of(d->btf, id);
- 		btf_dump_emit_bit_padding(d, off, t->size * 8, 0, align,
- 					  lvl + 1);
- 	}
 diff --git a/tools/lib/bpf/libbpf.map b/tools/lib/bpf/libbpf.map
-index 757a88f64b5a..e7fcca36f186 100644
+index e7fcca36f186..990c7c0e2d9f 100644
 --- a/tools/lib/bpf/libbpf.map
 +++ b/tools/lib/bpf/libbpf.map
-@@ -212,4 +212,5 @@ LIBBPF_0.0.6 {
+@@ -211,6 +211,7 @@ LIBBPF_0.0.6 {
+ 
  LIBBPF_0.0.7 {
  	global:
++		btf_dump__emit_type_decl;
  		bpf_program__attach;
-+		btf__align_of;
+ 		btf__align_of;
  } LIBBPF_0.0.6;
 -- 
 2.17.1
