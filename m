@@ -2,130 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 779E511F0B7
-	for <lists+netdev@lfdr.de>; Sat, 14 Dec 2019 08:23:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 82F4211F0C9
+	for <lists+netdev@lfdr.de>; Sat, 14 Dec 2019 08:51:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725933AbfLNHXY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 14 Dec 2019 02:23:24 -0500
-Received: from szxga04-in.huawei.com ([45.249.212.190]:7689 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725871AbfLNHXY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 14 Dec 2019 02:23:24 -0500
-Received: from DGGEMS404-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id 6B77C538BC6A79D7CB3B;
-        Sat, 14 Dec 2019 15:23:20 +0800 (CST)
-Received: from huawei.com (10.67.189.167) by DGGEMS404-HUB.china.huawei.com
- (10.3.19.204) with Microsoft SMTP Server id 14.3.439.0; Sat, 14 Dec 2019
- 15:23:10 +0800
-From:   Jiangfeng Xiao <xiaojiangfeng@huawei.com>
-To:     <davem@davemloft.net>, <yisen.zhuang@huawei.com>,
-        <salil.mehta@huawei.com>, <xiaojiangfeng@huawei.com>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <leeyou.li@huawei.com>, <nixiaoming@huawei.com>
-Subject: [PATCH] net: hisilicon: Fix a BUG trigered by wrong bytes_compl
-Date:   Sat, 14 Dec 2019 15:23:02 +0800
-Message-ID: <1576308182-121147-1-git-send-email-xiaojiangfeng@huawei.com>
-X-Mailer: git-send-email 1.8.5.6
+        id S1725990AbfLNHvr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 14 Dec 2019 02:51:47 -0500
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:59478 "EHLO
+        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725730AbfLNHvr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 14 Dec 2019 02:51:47 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=WAFCLYGV8jNiyKKmUCzFAPrQcuYc31iQJNkSj8zCW2U=; b=B5c9YO+Zy+RTcHNTGcvBCk1qk
+        GjVq+ncgLD993LzLfsfCf/y7RSVYl9Td1NFBf1cjuiDygqQxyjOh1gib/mfHTcOIdOXeCQLNWVaf4
+        KhiPDsNMvPFS6vZQ/LXrHns/U1y409D57uC5ln0bkcVYe4TpvKue81y717hA7qeBvQ0QgkNcBHvOz
+        zu9Olqm38uoDDstbP2V9/UWClfAHYqvvZfs5KnsnXVnNB7WbR02gh/bPDkHRhipQ2dtZ2eRRaCfE7
+        QAOuU/1iYu18+1REcJIMAeYk32YcJ1orR1Gy5ARefQV4LVWf7PRxR7zMzNbGMXkI6iA4XPRnek2/5
+        Lz3/ktefQ==;
+Received: from shell.armlinux.org.uk ([2001:4d48:ad52:3201:5054:ff:fe00:4ec]:41150)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1ig2D5-0001dV-DI; Sat, 14 Dec 2019 07:51:34 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1ig2D1-0000GN-Dl; Sat, 14 Dec 2019 07:51:27 +0000
+Date:   Sat, 14 Dec 2019 07:51:27 +0000
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Antoine Tenart <antoine.tenart@bootlin.com>,
+        Willy Tarreau <w@1wt.eu>, Andrew Lunn <andrew@lunn.ch>,
+        Thomas Bogendoerfer <tbogendoerfer@suse.de>,
+        maxime.chevallier@bootlin.com, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH] net: marvell: mvpp2: phylink requires the link interrupt
+Message-ID: <20191214075127.GX25745@shell.armlinux.org.uk>
+References: <E1ieo41-00023K-2O@rmk-PC.armlinux.org.uk>
+ <20191213163403.2a054262@cakuba.netronome.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.67.189.167]
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191213163403.2a054262@cakuba.netronome.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The trace is as follow:
-kernel BUG at lib/dynamic_queue_limits.c:26!
-Internal error: Oops - BUG: 0 [#1] SMP ARM
-Modules linked in: hip04_eth
-CPU: 0 PID: 2003 Comm: tDblStackPcap0 Tainted: G           O L  4.4.197 #1
-Hardware name: Hisilicon A15
-task: c3637668 task.stack: de3bc000
-PC is at dql_completed+0x18/0x154
-LR is at hip04_tx_reclaim+0x110/0x174 [hip04_eth]
-pc : [<c041abfc>]    lr : [<bf0003a8>]    psr: 800f0313
-sp : de3bdc2c  ip : 00000000  fp : c020fb10
-r10: 00000000  r9 : c39b4224  r8 : 00000001
-r7 : 00000046  r6 : c39b4000  r5 : 0078f392  r4 : 0078f392
-r3 : 00000047  r2 : 00000000  r1 : 00000046  r0 : df5d5c80
-Flags: Nzcv  IRQs on  FIQs on  Mode SVC_32  ISA ARM  Segment user
-Control: 32c5387d  Table: 1e189b80  DAC: 55555555
-Process tDblStackPcap0 (pid: 2003, stack limit = 0xde3bc190)
-Stack: (0xde3bdc2c to 0xde3be000)
-[<c041abfc>] (dql_completed) from [<bf0003a8>] (hip04_tx_reclaim+0x110/0x174 [hip04_eth])
-[<bf0003a8>] (hip04_tx_reclaim [hip04_eth]) from [<bf0012c0>] (hip04_rx_poll+0x20/0x388 [hip04_eth])
-[<bf0012c0>] (hip04_rx_poll [hip04_eth]) from [<c04c8d9c>] (net_rx_action+0x120/0x374)
-[<c04c8d9c>] (net_rx_action) from [<c021eaf4>] (__do_softirq+0x218/0x318)
-[<c021eaf4>] (__do_softirq) from [<c021eea0>] (irq_exit+0x88/0xac)
-[<c021eea0>] (irq_exit) from [<c0240130>] (msa_irq_exit+0x11c/0x1d4)
-[<c0240130>] (msa_irq_exit) from [<c0267ba8>] (__handle_domain_irq+0x110/0x148)
-[<c0267ba8>] (__handle_domain_irq) from [<c0201588>] (gic_handle_irq+0xd4/0x118)
-[<c0201588>] (gic_handle_irq) from [<c0558360>] (__irq_svc+0x40/0x58)
-Exception stack(0xde3bdde0 to 0xde3bde28)
-dde0: 00000000 00008001 c3637668 00000000 00000000 a00f0213 dd3627a0 c0af6380
-de00: c086d380 a00f0213 c0a22a50 de3bde6c 00000002 de3bde30 c0558138 c055813c
-de20: 600f0213 ffffffff
-[<c0558360>] (__irq_svc) from [<c055813c>] (_raw_spin_unlock_irqrestore+0x44/0x54)
-Kernel panic - not syncing: Fatal exception in interrupt
+On Fri, Dec 13, 2019 at 04:34:03PM -0800, Jakub Kicinski wrote:
+> On Tue, 10 Dec 2019 22:33:05 +0000, Russell King wrote:
+> > phylink requires the MAC to report when its link status changes when
+> > operating in inband modes.  Failure to report link status changes
+> > means that phylink has no idea when the link events happen, which
+> > results in either the network interface's carrier remaining up or
+> > remaining permanently down.
+> > 
+> > For example, with a fiber module, if the interface is brought up and
+> > link is initially established, taking the link down at the far end
+> > will cut the optical power.  The SFP module's LOS asserts, we
+> > deactivate the link, and the network interface reports no carrier.
+> > 
+> > When the far end is brought back up, the SFP module's LOS deasserts,
+> > but the MAC may be slower to establish link.  If this happens (which
+> > in my tests is a certainty) then phylink never hears that the MAC
+> > has established link with the far end, and the network interface is
+> > stuck reporting no carrier.  This means the interface is
+> > non-functional.
+> > 
+> > Avoiding the link interrupt when we have phylink is basically not
+> > an option, so remove the !port->phylink from the test.
+> > 
+> > Tested-by: Sven Auhagen <sven.auhagen@voleatech.de>
+> > Tested-by: Antoine Tenart <antoine.tenart@bootlin.com>
+> > Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
+> 
+> Fixes: 4bb043262878 ("net: mvpp2: phylink support") ?
+> 
+> Seems like you maybe didn't want this backported to stable hence 
+> no fixes tag?
 
-Pre-modification code:
-int hip04_mac_start_xmit(struct sk_buff *skb, struct net_device *ndev)
-{
-[...]
-[1]	priv->tx_head = TX_NEXT(tx_head);
-[2]	count++;
-[3]	netdev_sent_queue(ndev, skb->len);
-[...]
-}
-An rx interrupt occurs if hip04_mac_start_xmit just executes to the line 2,
-tx_head has been updated, but corresponding 'skb->len' has not been
-added to dql_queue.
+Correct, because backporting just this patch will break the
+Macchiatobin.
 
-And then
-hip04_mac_interrupt->__napi_schedule->hip04_rx_poll->hip04_tx_reclaim
+This patch is dependent on the previous two patches, which are more
+about correct use of the API.  I suspect if you try to backport the
+series, things will get very hairly very quickly.
 
-In hip04_tx_reclaim, because tx_head has been updated,
-bytes_compl will plus an additional "skb-> len"
-which has not been added to dql_queue. And then
-trigger the BUG_ON(bytes_compl > num_queued - dql->num_completed).
+> 
+> Please advise :)
+> 
+> > diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+> > index 111b3b8239e1..ef44c6979a31 100644
+> > --- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+> > +++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+> > @@ -3674,7 +3674,7 @@ static int mvpp2_open(struct net_device *dev)
+> >  		valid = true;
+> >  	}
+> >  
+> > -	if (priv->hw_version == MVPP22 && port->link_irq && !port->phylink) {
+> > +	if (priv->hw_version == MVPP22 && port->link_irq) {
+> >  		err = request_irq(port->link_irq, mvpp2_link_status_isr, 0,
+> >  				  dev->name, port);
+> >  		if (err) {
+> 
+> 
 
-To solve the problem described above, we put
-"netdev_sent_queue(ndev, skb->len);"
-before
-"priv->tx_head = TX_NEXT(tx_head);"
-
-In addition, I adjusted the position of "count++;"
-to make the code more readable.
-
-Signed-off-by: Jiangfeng Xiao <xiaojiangfeng@huawei.com>
----
- drivers/net/ethernet/hisilicon/hip04_eth.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/ethernet/hisilicon/hip04_eth.c b/drivers/net/ethernet/hisilicon/hip04_eth.c
-index 3e9b6d5..085476d 100644
---- a/drivers/net/ethernet/hisilicon/hip04_eth.c
-+++ b/drivers/net/ethernet/hisilicon/hip04_eth.c
-@@ -543,9 +543,8 @@ static void hip04_start_tx_timer(struct hip04_priv *priv)
- 	skb_tx_timestamp(skb);
- 
- 	hip04_set_xmit_desc(priv, phys);
--	priv->tx_head = TX_NEXT(tx_head);
--	count++;
- 	netdev_sent_queue(ndev, skb->len);
-+	priv->tx_head = TX_NEXT(tx_head);
- 
- 	stats->tx_bytes += skb->len;
- 	stats->tx_packets++;
-@@ -553,6 +552,7 @@ static void hip04_start_tx_timer(struct hip04_priv *priv)
- 	/* Ensure tx_head update visible to tx reclaim */
- 	smp_wmb();
- 
-+	count++;
- 	/* queue is getting full, better start cleaning up now */
- 	if (count >= priv->tx_coalesce_frames) {
- 		if (napi_schedule_prep(&priv->napi)) {
 -- 
-1.8.5.6
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
+According to speedtest.net: 11.9Mbps down 500kbps up
