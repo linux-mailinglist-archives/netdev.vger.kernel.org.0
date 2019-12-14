@@ -2,86 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B438811EEEC
-	for <lists+netdev@lfdr.de>; Sat, 14 Dec 2019 00:59:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6184111EEF5
+	for <lists+netdev@lfdr.de>; Sat, 14 Dec 2019 01:04:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726551AbfLMX7l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Dec 2019 18:59:41 -0500
-Received: from mail-pj1-f65.google.com ([209.85.216.65]:45766 "EHLO
-        mail-pj1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725747AbfLMX7k (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Dec 2019 18:59:40 -0500
-Received: by mail-pj1-f65.google.com with SMTP id r11so376732pjp.12;
-        Fri, 13 Dec 2019 15:59:40 -0800 (PST)
+        id S1726736AbfLNAAi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Dec 2019 19:00:38 -0500
+Received: from mail-pj1-f68.google.com ([209.85.216.68]:44073 "EHLO
+        mail-pj1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725747AbfLNAAh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Dec 2019 19:00:37 -0500
+Received: by mail-pj1-f68.google.com with SMTP id w5so378281pjh.11;
+        Fri, 13 Dec 2019 16:00:37 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to:user-agent;
-        bh=50HvCH/NJ2dLPO5jG5aDUZzY5nY5WRo3l9wOsKfsOnc=;
-        b=nRid5sBtQ62gETY1104+QYi3O4qKkqX//t7jb2Y9DX8V58VAqM8EFzy26x3f2+mobJ
-         kuYEMXB4qz+xxWOLdasoMzOBZbKgmYokADZB1MzEqtisDKvYdYsd1n2xftJltUNHkFo+
-         y7+NSLRFVFSCCg8/iI0rX7e/bYLWfFdbOaKUJW3rcGGihzYtdfLCLgbmUFHQ9BPW0LHi
-         r3NDhpw9ApsQ9XGmAs5qSF6LEBfc8Htv5/BFmHjLL9PzGiAV6NTFpSpCBJrA2v9ZZbaP
-         dXq9+bBYP2206N5Aun8Eqkd525GQ7sksRvtMnar0NOb+DS8VeQ3fYtHyAYB3RCpO0zqZ
-         GC5g==
+        bh=vtZIomLUQgnY+ds/9AYYekCSfpy7LmIWuX6Gn6ODVVo=;
+        b=LpcfUo+tyezj+z3ExmYnqDwp8HX1J/uKI0rukmj/W4yn8sUt5Wad9D6i2fNMOaWFa3
+         LE/mHwZD21C5t3GEkoVL15vxOHxsaYsWHMNPTGsKdbC/6Vpeb+AYQVSn5uJCECxH5xTf
+         sdB/lJUYxMjeygdD0b3iXeMlRj7Bs8A+sqHEf2V0tyglLz64uhivUX2/7Yy/dlRg33YW
+         74bYkZ3Ck3hAlQobLzLpLimWVbeF/Ijefz8GT47oVqeBA+ZlOsnYpDStA9vFjOMdOtQb
+         SwBBEgdOLJxo8210oQ5KLVrJkExkH2bA6L6OtOWMcVIFXPsJoJZPIYW+olDXB/Esn0kR
+         AFuA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=50HvCH/NJ2dLPO5jG5aDUZzY5nY5WRo3l9wOsKfsOnc=;
-        b=oUZzZRhbA1tSuBpOIwRAHs5JYOibWaz2Exxu8rK7T+8I4Zj8BIgf5MJIb5zJMFmCvp
-         tVSRjsLkzeVhiclfiE1d354hq38yFWCgDzA5cXyorkAtGeg/syj6W0JMPXzuR1XanhqM
-         BVYdQIAq8r4nNdesEQUcR3btG6euq+wBDk/Ld/5Cp/kGpUG1IwM5mOydIjEHUhi392VU
-         j0TKv5dwxUFQ09j9VgEeXJhTgOap+HQnXgOu8xZo5HzffC28oXfIoQS/c0DczPpZwGKf
-         KB6m2+18FzhjT+K4tnVn4W9gPwAzj/t30WA918uptsEnO7ste2TTcYe5kKqbYBZsCSCK
-         PnSQ==
-X-Gm-Message-State: APjAAAVSrdMC61tl8fJKd0fn6bjuwZgKoW4GrebRwqKCrpAxYbQ+OfTd
-        SKrREjP3pPmXenl0GJiW95Q=
-X-Google-Smtp-Source: APXvYqxu8KMEvc+vDWyAyRr0PW/0wwFib4pYM/tMW/RJVLiE3WDUc0ictK0xn1vJcVagVUvKYYPUFA==
-X-Received: by 2002:a17:902:b188:: with SMTP id s8mr2223210plr.206.1576281580008;
-        Fri, 13 Dec 2019 15:59:40 -0800 (PST)
+        bh=vtZIomLUQgnY+ds/9AYYekCSfpy7LmIWuX6Gn6ODVVo=;
+        b=ZPznHsMj+BYd8tojWshmwGq7YB4QUnPkFeN0+FHtpVwDZQZQqU0LZCRLuIzfSFVpiy
+         O6Src4RGfDU1mozwH3hogn8DlCz5OVZLVhc5wIAaa1AIKtWhFdTW55Gj1WVyWiIaVOiT
+         NfeZd/5K13kivh2P6XTYUHZ6ZUX6tICmIf+GGofTqT+IEV7Kf6PsxTdVx0Sc9Cw7gr19
+         cE8zOF2SVXBotNEv/fc9LtS0FkUyO+zlFz1yQrJwLQvwnwcODWkisoBZLniywyq1/Wfo
+         CD3c4956lyF7+qvQIkmZM7aS/U8coa8ldt/YpTqCTEmll65etsL9FxpBBf93Af9k1crL
+         Tkvw==
+X-Gm-Message-State: APjAAAX+hFZnKI/e8EYmoNpk0/YHwM9crJuAUeb4UGoKcrYP2kiLDwwM
+        Vi6hKxKfYHRBzqu4hWDFMokjQqT0
+X-Google-Smtp-Source: APXvYqzfsC0exBwik685eVWcd6/Yp16/LnoPLoVvJQWFi0QHcOJy4KoXDPKWYpe/Gn5Of7dkcypY7w==
+X-Received: by 2002:a17:90a:5d95:: with SMTP id t21mr2544941pji.31.1576281637210;
+        Fri, 13 Dec 2019 16:00:37 -0800 (PST)
 Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:200::de66])
-        by smtp.gmail.com with ESMTPSA id c1sm12840655pfa.51.2019.12.13.15.59.38
+        by smtp.gmail.com with ESMTPSA id e16sm7061839pfn.59.2019.12.13.16.00.35
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 13 Dec 2019 15:59:39 -0800 (PST)
-Date:   Fri, 13 Dec 2019 15:59:38 -0800
+        Fri, 13 Dec 2019 16:00:36 -0800 (PST)
+Date:   Fri, 13 Dec 2019 16:00:35 -0800
 From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
 To:     Andrii Nakryiko <andriin@fb.com>
 Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@fb.com,
         daniel@iogearbox.net, andrii.nakryiko@gmail.com, kernel-team@fb.com
-Subject: Re: [PATCH v3 bpf-next 12/17] libbpf: add BPF object skeleton support
-Message-ID: <20191213235937.naddjeklvds7akz7@ast-mbp.dhcp.thefacebook.com>
+Subject: Re: [PATCH v3 bpf-next 14/17] selftests/bpf: add BPF skeletons
+ selftests and convert attach_probe.c
+Message-ID: <20191214000034.nx3fisagqxxdk3lt@ast-mbp.dhcp.thefacebook.com>
 References: <20191213223214.2791885-1-andriin@fb.com>
- <20191213223214.2791885-13-andriin@fb.com>
+ <20191213223214.2791885-15-andriin@fb.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20191213223214.2791885-13-andriin@fb.com>
+In-Reply-To: <20191213223214.2791885-15-andriin@fb.com>
 User-Agent: NeoMutt/20180223
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Dec 13, 2019 at 02:32:09PM -0800, Andrii Nakryiko wrote:
-> Add new set of APIs, allowing to open/load/attach BPF object through BPF
-> object skeleton, generated by bpftool for a specific BPF object file. All the
-> xxx_skeleton() APIs wrap up corresponding bpf_object_xxx() APIs, but
-> additionally also automate map/program lookups by name, global data
-> initialization and mmap()-ing, etc.  All this greatly improves and simplifies
-> userspace usability of working with BPF programs. See follow up patches for
-> examples.
+On Fri, Dec 13, 2019 at 02:32:11PM -0800, Andrii Nakryiko wrote:
+> Add BPF skeleton generation to selftest/bpf's Makefile. Convert attach_probe.c
+> to use skeleton.
 > 
 > Acked-by: Martin KaFai Lau <kafai@fb.com>
 > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
-...
-> +int bpf_object__open_skeleton(struct bpf_object_skeleton *s,
-> +			      const struct bpf_object_open_opts *opts);
-> +int bpf_object__load_skeleton(struct bpf_object_skeleton *s);
-> +int bpf_object__attach_skeleton(struct bpf_object_skeleton *s);
-> +void bpf_object__detach_skeleton(struct bpf_object_skeleton *s);
-> +void bpf_object__destroy_skeleton(struct bpf_object_skeleton *s);
+> ---
+>  tools/testing/selftests/bpf/.gitignore        |   2 +
+>  tools/testing/selftests/bpf/Makefile          |  36 +++--
+>  .../selftests/bpf/prog_tests/attach_probe.c   | 135 +++++-------------
+>  .../selftests/bpf/progs/test_attach_probe.c   |  34 ++---
+>  4 files changed, 74 insertions(+), 133 deletions(-)
 
-libbpf.map and LIBBPF_API update for them is missing ?
-The intent was to expose them as stable libbpf api, right?
+Nice diff stat.
 
