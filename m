@@ -2,14 +2,14 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 706F211F07E
-	for <lists+netdev@lfdr.de>; Sat, 14 Dec 2019 07:04:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0753511F07F
+	for <lists+netdev@lfdr.de>; Sat, 14 Dec 2019 07:04:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725940AbfLNGEe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 14 Dec 2019 01:04:34 -0500
+        id S1726049AbfLNGEf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 14 Dec 2019 01:04:35 -0500
 Received: from mga06.intel.com ([134.134.136.31]:24722 "EHLO mga06.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725730AbfLNGEe (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1725372AbfLNGEe (ORCPT <rfc822;netdev@vger.kernel.org>);
         Sat, 14 Dec 2019 01:04:34 -0500
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
@@ -17,19 +17,19 @@ Received: from orsmga003.jf.intel.com ([10.7.209.27])
   by orsmga104.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 13 Dec 2019 22:04:33 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.69,312,1571727600"; 
-   d="scan'208";a="216855214"
+   d="scan'208";a="216855215"
 Received: from mjmartin-nuc02.mjmartin-nuc02 (HELO mjmartin-nuc02.sea.intel.com) ([10.251.17.224])
   by orsmga003.jf.intel.com with ESMTP; 13 Dec 2019 22:04:33 -0800
 From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
 To:     netdev@vger.kernel.org, mptcp@lists.01.org
-Cc:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        Florian Westphal <fw@strlen.de>,
-        Peter Krystad <peter.krystad@linux.intel.com>,
+Cc:     Peter Krystad <peter.krystad@linux.intel.com>,
         Matthieu Baerts <matthieu.baerts@tessares.net>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: [PATCH net-next 01/15] mptcp: Add MPTCP socket stubs
-Date:   Fri, 13 Dec 2019 22:04:03 -0800
-Message-Id: <20191214060417.2870-2-mathew.j.martineau@linux.intel.com>
+        Florian Westphal <fw@strlen.de>,
+        Davide Caratti <dcaratti@redhat.com>,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>
+Subject: [PATCH net-next 02/15] mptcp: Handle MPTCP TCP options
+Date:   Fri, 13 Dec 2019 22:04:04 -0800
+Message-Id: <20191214060417.2870-3-mathew.j.martineau@linux.intel.com>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20191214060417.2870-1-mathew.j.martineau@linux.intel.com>
 References: <20191214060417.2870-1-mathew.j.martineau@linux.intel.com>
@@ -40,359 +40,408 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Implements the infrastructure for MPTCP sockets.
+From: Peter Krystad <peter.krystad@linux.intel.com>
 
-MPTCP sockets open one in-kernel TCP socket per subflow. These subflow
-sockets are only managed by the MPTCP socket that owns them and are not
-visible from userspace. This commit allows a userspace program to open
-an MPTCP socket with:
+Add routines to parse and format the MP_CAPABLE option.
 
-  sock = socket(AF_INET, SOCK_STREAM, IPPROTO_MPTCP);
+These options are handled according to MPTCPv0 (RFC6824).
+RFC6824bis/RFC8684 MPTCPv1 MP_CAPABLE is added later in coordination
+with related code changes.
 
-The resulting socket is simply a wrapper around a single regular TCP
-socket, without any of the MPTCP protocol implemented over the wire.
-
-Co-developed-by: Florian Westphal <fw@strlen.de>
-Signed-off-by: Florian Westphal <fw@strlen.de>
-Co-developed-by: Peter Krystad <peter.krystad@linux.intel.com>
-Signed-off-by: Peter Krystad <peter.krystad@linux.intel.com>
 Co-developed-by: Matthieu Baerts <matthieu.baerts@tessares.net>
 Signed-off-by: Matthieu Baerts <matthieu.baerts@tessares.net>
-Co-developed-by: Paolo Abeni <pabeni@redhat.com>
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Co-developed-by: Florian Westphal <fw@strlen.de>
+Signed-off-by: Florian Westphal <fw@strlen.de>
+Co-developed-by: Davide Caratti <dcaratti@redhat.com>
+Signed-off-by: Davide Caratti <dcaratti@redhat.com>
+Signed-off-by: Peter Krystad <peter.krystad@linux.intel.com>
 Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
 ---
- MAINTAINERS          |   1 +
- include/net/mptcp.h  |  16 +++++
- net/Kconfig          |   1 +
- net/Makefile         |   1 +
- net/ipv4/tcp.c       |   2 +
- net/ipv6/tcp_ipv6.c  |   7 +++
- net/mptcp/Kconfig    |  16 +++++
- net/mptcp/Makefile   |   4 ++
- net/mptcp/protocol.c | 139 +++++++++++++++++++++++++++++++++++++++++++
- net/mptcp/protocol.h |  22 +++++++
- 10 files changed, 209 insertions(+)
- create mode 100644 net/mptcp/Kconfig
- create mode 100644 net/mptcp/Makefile
- create mode 100644 net/mptcp/protocol.c
- create mode 100644 net/mptcp/protocol.h
+ include/linux/tcp.h   |  18 +++++
+ include/net/mptcp.h   |  18 +++++
+ net/ipv4/tcp_input.c  |   5 ++
+ net/ipv4/tcp_output.c |  13 ++++
+ net/mptcp/Makefile    |   2 +-
+ net/mptcp/options.c   | 159 ++++++++++++++++++++++++++++++++++++++++++
+ net/mptcp/protocol.h  |  29 ++++++++
+ 7 files changed, 243 insertions(+), 1 deletion(-)
+ create mode 100644 net/mptcp/options.c
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 132eb3f9fbb7..b11e234dc833 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -11577,6 +11577,7 @@ W:	https://github.com/multipath-tcp/mptcp_net-next/wiki
- B:	https://github.com/multipath-tcp/mptcp_net-next/issues
- S:	Maintained
- F:	include/net/mptcp.h
-+F:	net/mptcp/
+diff --git a/include/linux/tcp.h b/include/linux/tcp.h
+index ca6f01531e64..52798ab00394 100644
+--- a/include/linux/tcp.h
++++ b/include/linux/tcp.h
+@@ -78,6 +78,16 @@ struct tcp_sack_block {
+ #define TCP_SACK_SEEN     (1 << 0)   /*1 = peer is SACK capable, */
+ #define TCP_DSACK_SEEN    (1 << 2)   /*1 = DSACK was received from peer*/
  
- NETWORKING [TCP]
- M:	Eric Dumazet <edumazet@google.com>
++#if IS_ENABLED(CONFIG_MPTCP)
++struct mptcp_options_received {
++	u64	sndr_key;
++	u64	rcvr_key;
++	u8	mp_capable : 1,
++		mp_join : 1,
++		dss : 1;
++};
++#endif
++
+ struct tcp_options_received {
+ /*	PAWS/RTTM data	*/
+ 	int	ts_recent_stamp;/* Time we stored ts_recent (for aging) */
+@@ -95,6 +105,9 @@ struct tcp_options_received {
+ 	u8	num_sacks;	/* Number of SACK blocks		*/
+ 	u16	user_mss;	/* mss requested by user in ioctl	*/
+ 	u16	mss_clamp;	/* Maximal mss, negotiated at connection setup */
++#if IS_ENABLED(CONFIG_MPTCP)
++	struct mptcp_options_received	mptcp;
++#endif
+ };
+ 
+ static inline void tcp_clear_options(struct tcp_options_received *rx_opt)
+@@ -104,6 +117,11 @@ static inline void tcp_clear_options(struct tcp_options_received *rx_opt)
+ #if IS_ENABLED(CONFIG_SMC)
+ 	rx_opt->smc_ok = 0;
+ #endif
++#if IS_ENABLED(CONFIG_MPTCP)
++	rx_opt->mptcp.mp_capable = 0;
++	rx_opt->mptcp.mp_join = 0;
++	rx_opt->mptcp.dss = 0;
++#endif
+ }
+ 
+ /* This is the max number of SACKS that we'll generate and process. It's safe
 diff --git a/include/net/mptcp.h b/include/net/mptcp.h
-index 43ddfdf9e4a3..4113e063f728 100644
+index 4113e063f728..ea96308ae546 100644
 --- a/include/net/mptcp.h
 +++ b/include/net/mptcp.h
-@@ -27,6 +27,8 @@ struct mptcp_ext {
+@@ -9,6 +9,7 @@
+ #define __NET_MPTCP_H
  
+ #include <linux/skbuff.h>
++#include <linux/tcp.h>
+ #include <linux/types.h>
+ 
+ /* MPTCP sk_buff extension data */
+@@ -25,10 +26,22 @@ struct mptcp_ext {
+ 			__unused:2;
+ };
+ 
++struct mptcp_out_options {
++#if IS_ENABLED(CONFIG_MPTCP)
++	u16 suboptions;
++	u64 sndr_key;
++	u64 rcvr_key;
++#endif
++};
++
  #ifdef CONFIG_MPTCP
  
-+void mptcp_init(void);
+ void mptcp_init(void);
+ 
++void mptcp_parse_option(const unsigned char *ptr, int opsize,
++			struct tcp_options_received *opt_rx);
++void mptcp_write_options(__be32 *ptr, struct mptcp_out_options *opts);
 +
  static inline bool mptcp_skb_ext_exist(const struct sk_buff *skb)
  {
  	return skb_ext_exist(skb, SKB_EXT_MPTCP);
-@@ -34,10 +36,24 @@ static inline bool mptcp_skb_ext_exist(const struct sk_buff *skb)
+@@ -40,6 +53,11 @@ static inline void mptcp_init(void)
+ {
+ }
  
- #else
- 
-+static inline void mptcp_init(void)
++static inline void mptcp_parse_option(const unsigned char *ptr, int opsize,
++				      struct tcp_options_received *opt_rx)
 +{
 +}
 +
  static inline bool mptcp_skb_ext_exist(const struct sk_buff *skb)
  {
  	return false;
- }
+diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
+index 55b460a2ece2..4fc649b72ae4 100644
+--- a/net/ipv4/tcp_input.c
++++ b/net/ipv4/tcp_input.c
+@@ -79,6 +79,7 @@
+ #include <trace/events/tcp.h>
+ #include <linux/jump_label_ratelimit.h>
+ #include <net/busy_poll.h>
++#include <net/mptcp.h>
  
- #endif /* CONFIG_MPTCP */
+ int sysctl_tcp_max_orphans __read_mostly = NR_FILE;
+ 
+@@ -3920,6 +3921,10 @@ void tcp_parse_options(const struct net *net,
+ 				 */
+ 				break;
+ #endif
++			case TCPOPT_MPTCP:
++				mptcp_parse_option(ptr, opsize, opt_rx);
++				break;
 +
-+#if IS_ENABLED(CONFIG_MPTCP_IPV6)
-+int mptcpv6_init(void);
-+#elif IS_ENABLED(CONFIG_IPV6)
-+static inline int mptcpv6_init(void)
-+{
-+	return 0;
-+}
-+#endif
-+
- #endif /* __NET_MPTCP_H */
-diff --git a/net/Kconfig b/net/Kconfig
-index bd191f978a23..6648779f184b 100644
---- a/net/Kconfig
-+++ b/net/Kconfig
-@@ -91,6 +91,7 @@ if INET
- source "net/ipv4/Kconfig"
- source "net/ipv6/Kconfig"
- source "net/netlabel/Kconfig"
-+source "net/mptcp/Kconfig"
+ 			case TCPOPT_FASTOPEN:
+ 				tcp_parse_fastopen_option(
+ 					opsize - TCPOLEN_FASTOPEN_BASE,
+diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
+index 710ab45badfa..5c91fc3b126b 100644
+--- a/net/ipv4/tcp_output.c
++++ b/net/ipv4/tcp_output.c
+@@ -38,6 +38,7 @@
+ #define pr_fmt(fmt) "TCP: " fmt
  
- endif # if INET
- 
-diff --git a/net/Makefile b/net/Makefile
-index 848303d98d3d..07ea48160874 100644
---- a/net/Makefile
-+++ b/net/Makefile
-@@ -87,3 +87,4 @@ endif
- obj-$(CONFIG_QRTR)		+= qrtr/
- obj-$(CONFIG_NET_NCSI)		+= ncsi/
- obj-$(CONFIG_XDP_SOCKETS)	+= xdp/
-+obj-$(CONFIG_MPTCP)		+= mptcp/
-diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index 932834eb467d..32b7c3d3041f 100644
---- a/net/ipv4/tcp.c
-+++ b/net/ipv4/tcp.c
-@@ -271,6 +271,7 @@
- #include <net/icmp.h>
- #include <net/inet_common.h>
  #include <net/tcp.h>
 +#include <net/mptcp.h>
- #include <net/xfrm.h>
- #include <net/ip.h>
- #include <net/sock.h>
-@@ -4021,4 +4022,5 @@ void __init tcp_init(void)
- 	tcp_metrics_init();
- 	BUG_ON(tcp_register_congestion_control(&tcp_reno) != 0);
- 	tcp_tasklet_init();
-+	mptcp_init();
- }
-diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
-index 30dceac8a608..e1cae9770788 100644
---- a/net/ipv6/tcp_ipv6.c
-+++ b/net/ipv6/tcp_ipv6.c
-@@ -2108,9 +2108,16 @@ int __init tcpv6_init(void)
- 	ret = register_pernet_subsys(&tcpv6_net_ops);
- 	if (ret)
- 		goto out_tcpv6_protosw;
-+
-+	ret = mptcpv6_init();
-+	if (ret)
-+		goto out_tcpv6_pernet_subsys;
-+
- out:
- 	return ret;
  
-+out_tcpv6_pernet_subsys:
-+	unregister_pernet_subsys(&tcpv6_net_ops);
- out_tcpv6_protosw:
- 	inet6_unregister_protosw(&tcpv6_protosw);
- out_tcpv6_protocol:
-diff --git a/net/mptcp/Kconfig b/net/mptcp/Kconfig
-new file mode 100644
-index 000000000000..c1a99f07a4cd
---- /dev/null
-+++ b/net/mptcp/Kconfig
-@@ -0,0 +1,16 @@
+ #include <linux/compiler.h>
+ #include <linux/gfp.h>
+@@ -411,6 +412,7 @@ static inline bool tcp_urg_mode(const struct tcp_sock *tp)
+ #define OPTION_WSCALE		(1 << 3)
+ #define OPTION_FAST_OPEN_COOKIE	(1 << 8)
+ #define OPTION_SMC		(1 << 9)
++#define OPTION_MPTCP		(1 << 10)
+ 
+ static void smc_options_write(__be32 *ptr, u16 *options)
+ {
+@@ -436,8 +438,17 @@ struct tcp_out_options {
+ 	__u8 *hash_location;	/* temporary pointer, overloaded */
+ 	__u32 tsval, tsecr;	/* need to include OPTION_TS */
+ 	struct tcp_fastopen_cookie *fastopen_cookie;	/* Fast open cookie */
++	struct mptcp_out_options mptcp;
+ };
+ 
++static void mptcp_options_write(__be32 *ptr, struct tcp_out_options *opts)
++{
++#if IS_ENABLED(CONFIG_MPTCP)
++	if (unlikely(OPTION_MPTCP & opts->options))
++		mptcp_write_options(ptr, &opts->mptcp);
++#endif
++}
 +
-+config MPTCP
-+	bool "MPTCP: Multipath TCP"
-+	depends on INET
-+	select SKB_EXTENSIONS
-+	help
-+	  Multipath TCP (MPTCP) connections send and receive data over multiple
-+	  subflows in order to utilize multiple network paths. Each subflow
-+	  uses the TCP protocol, and TCP options carry header information for
-+	  MPTCP.
+ /* Write previously computed TCP options to the packet.
+  *
+  * Beware: Something in the Internet is very sensitive to the ordering of
+@@ -546,6 +557,8 @@ static void tcp_options_write(__be32 *ptr, struct tcp_sock *tp,
+ 	}
+ 
+ 	smc_options_write(ptr, &options);
 +
-+config MPTCP_IPV6
-+	bool "MPTCP: IPv6 support for Multipath TCP"
-+	depends on MPTCP
-+	select IPV6
-+	default y
++	mptcp_options_write(ptr, opts);
+ }
+ 
+ static void smc_set_option(const struct tcp_sock *tp,
 diff --git a/net/mptcp/Makefile b/net/mptcp/Makefile
-new file mode 100644
-index 000000000000..659129d1fcbf
---- /dev/null
+index 659129d1fcbf..27a846263f08 100644
+--- a/net/mptcp/Makefile
 +++ b/net/mptcp/Makefile
-@@ -0,0 +1,4 @@
-+# SPDX-License-Identifier: GPL-2.0
-+obj-$(CONFIG_MPTCP) += mptcp.o
-+
-+mptcp-y := protocol.o
-diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
+@@ -1,4 +1,4 @@
+ # SPDX-License-Identifier: GPL-2.0
+ obj-$(CONFIG_MPTCP) += mptcp.o
+ 
+-mptcp-y := protocol.o
++mptcp-y := protocol.o options.o
+diff --git a/net/mptcp/options.c b/net/mptcp/options.c
 new file mode 100644
-index 000000000000..2e0a3266725a
+index 000000000000..cd4c0c8de6e0
 --- /dev/null
-+++ b/net/mptcp/protocol.c
-@@ -0,0 +1,139 @@
++++ b/net/mptcp/options.c
+@@ -0,0 +1,159 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/* Multipath TCP
 + *
 + * Copyright (c) 2017 - 2019, Intel Corporation.
 + */
 +
-+#define pr_fmt(fmt) "MPTCP: " fmt
-+
 +#include <linux/kernel.h>
-+#include <linux/module.h>
-+#include <linux/netdevice.h>
-+#include <net/sock.h>
-+#include <net/inet_common.h>
-+#include <net/inet_hashtables.h>
-+#include <net/protocol.h>
 +#include <net/tcp.h>
 +#include <net/mptcp.h>
 +#include "protocol.h"
 +
-+static int mptcp_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
++void mptcp_parse_option(const unsigned char *ptr, int opsize,
++			struct tcp_options_received *opt_rx)
 +{
-+	struct mptcp_sock *msk = mptcp_sk(sk);
-+	struct socket *subflow = msk->subflow;
++	struct mptcp_options_received *mp_opt = &opt_rx->mptcp;
++	u8 subtype = *ptr >> 4;
++	u8 version;
++	u8 flags;
 +
-+	if (msg->msg_flags & ~(MSG_MORE | MSG_DONTWAIT | MSG_NOSIGNAL))
-+		return -EOPNOTSUPP;
++	switch (subtype) {
++	/* MPTCPOPT_MP_CAPABLE
++	 * 0: 4MSB=subtype, 4LSB=version
++	 * 1: Handshake flags
++	 * 2-9: Sender key
++	 * 10-17: Receiver key (optional)
++	 */
++	case MPTCPOPT_MP_CAPABLE:
++		if (opsize != TCPOLEN_MPTCP_MPC_SYN &&
++		    opsize != TCPOLEN_MPTCP_MPC_ACK)
++			break;
 +
-+	return sock_sendmsg(subflow, msg);
-+}
++		version = *ptr++ & MPTCP_VERSION_MASK;
++		if (version != MPTCP_SUPPORTED_VERSION)
++			break;
 +
-+static int mptcp_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
-+			 int nonblock, int flags, int *addr_len)
-+{
-+	struct mptcp_sock *msk = mptcp_sk(sk);
-+	struct socket *subflow = msk->subflow;
++		flags = *ptr++;
++		if (!((flags & MPTCP_CAP_FLAG_MASK) == MPTCP_CAP_HMAC_SHA1) ||
++		    (flags & MPTCP_CAP_EXTENSIBILITY))
++			break;
 +
-+	return sock_recvmsg(subflow, msg, flags);
-+}
++		/* RFC 6824, Section 3.1:
++		 * "For the Checksum Required bit (labeled "A"), if either
++		 * host requires the use of checksums, checksums MUST be used.
++		 * In other words, the only way for checksums not to be used
++		 * is if both hosts in their SYNs set A=0."
++		 *
++		 * Section 3.3.0:
++		 * "If a checksum is not present when its use has been
++		 * negotiated, the receiver MUST close the subflow with a RST as
++		 * it is considered broken."
++		 *
++		 * We don't implement DSS checksum - fall back to TCP.
++		 */
++		if (flags & MPTCP_CAP_CHECKSUM_REQD)
++			break;
 +
-+static int mptcp_init_sock(struct sock *sk)
-+{
-+	return 0;
-+}
++		mp_opt->mp_capable = 1;
++		mp_opt->sndr_key = get_unaligned_be64(ptr);
++		ptr += 8;
 +
-+static void mptcp_close(struct sock *sk, long timeout)
-+{
-+	struct mptcp_sock *msk = mptcp_sk(sk);
++		if (opsize == TCPOLEN_MPTCP_MPC_ACK) {
++			mp_opt->rcvr_key = get_unaligned_be64(ptr);
++			ptr += 8;
++			pr_debug("MP_CAPABLE sndr=%llu, rcvr=%llu",
++				 mp_opt->sndr_key, mp_opt->rcvr_key);
++		} else {
++			pr_debug("MP_CAPABLE sndr=%llu", mp_opt->sndr_key);
++		}
++		break;
 +
-+	inet_sk_state_store(sk, TCP_CLOSE);
++	/* MPTCPOPT_MP_JOIN
++	 * Initial SYN
++	 * 0: 4MSB=subtype, 000, 1LSB=Backup
++	 * 1: Address ID
++	 * 2-5: Receiver token
++	 * 6-9: Sender random number
++	 * SYN/ACK response
++	 * 0: 4MSB=subtype, 000, 1LSB=Backup
++	 * 1: Address ID
++	 * 2-9: Sender truncated HMAC
++	 * 10-13: Sender random number
++	 * Third ACK
++	 * 0: 4MSB=subtype, 0000
++	 * 1: 0 (Reserved)
++	 * 2-21: Sender HMAC
++	 */
 +
-+	if (msk->subflow) {
-+		pr_debug("subflow=%p", msk->subflow->sk);
-+		sock_release(msk->subflow);
++	/* MPTCPOPT_DSS
++	 * 0: 4MSB=subtype, 0000
++	 * 1: 3MSB=0, F=Data FIN, m=DSN length, M=has DSN/SSN/DLL/checksum,
++	 *    a=DACK length, A=has DACK
++	 * 0, 4, or 8 bytes of DACK (depending on A/a)
++	 * 0, 4, or 8 bytes of DSN (depending on M/m)
++	 * 0 or 4 bytes of SSN (depending on M)
++	 * 0 or 2 bytes of DLL (depending on M)
++	 * 0 or 2 bytes of checksum (depending on M)
++	 */
++	case MPTCPOPT_DSS:
++		pr_debug("DSS");
++		mp_opt->dss = 1;
++		break;
++
++	/* MPTCPOPT_ADD_ADDR
++	 * 0: 4MSB=subtype, 4LSB=IP version (4 or 6)
++	 * 1: Address ID
++	 * 4 or 16 bytes of address (depending on ip version)
++	 * 0 or 2 bytes of port (depending on length)
++	 */
++
++	/* MPTCPOPT_RM_ADDR
++	 * 0: 4MSB=subtype, 0000
++	 * 1: Address ID
++	 * Additional bytes: More address IDs (depending on length)
++	 */
++
++	/* MPTCPOPT_MP_PRIO
++	 * 0: 4MSB=subtype, 000, 1LSB=Backup
++	 * 1: Address ID (optional, current addr implied if not present)
++	 */
++
++	/* MPTCPOPT_MP_FAIL
++	 * 0: 4MSB=subtype, 0000
++	 * 1: 0 (Reserved)
++	 * 2-9: DSN
++	 */
++
++	/* MPTCPOPT_MP_FASTCLOSE
++	 * 0: 4MSB=subtype, 0000
++	 * 1: 0 (Reserved)
++	 * 2-9: Receiver key
++	 */
++	default:
++		break;
 +	}
-+
-+	sock_orphan(sk);
-+	sock_put(sk);
 +}
 +
-+static int mptcp_connect(struct sock *sk, struct sockaddr *saddr, int len)
++void mptcp_write_options(__be32 *ptr, struct mptcp_out_options *opts)
 +{
-+	struct mptcp_sock *msk = mptcp_sk(sk);
-+	int err;
++	if ((OPTION_MPTCP_MPC_SYN |
++	     OPTION_MPTCP_MPC_ACK) & opts->suboptions) {
++		u8 len;
 +
-+	saddr->sa_family = AF_INET;
++		if (OPTION_MPTCP_MPC_SYN & opts->suboptions)
++			len = TCPOLEN_MPTCP_MPC_SYN;
++		else
++			len = TCPOLEN_MPTCP_MPC_ACK;
 +
-+	pr_debug("msk=%p, subflow=%p", msk, msk->subflow->sk);
-+
-+	err = kernel_connect(msk->subflow, saddr, len, 0);
-+
-+	sk->sk_state = TCP_ESTABLISHED;
-+
-+	return err;
++		*ptr++ = htonl((TCPOPT_MPTCP << 24) | (len << 16) |
++			       (MPTCPOPT_MP_CAPABLE << 12) |
++			       (MPTCP_SUPPORTED_VERSION << 8) |
++			       MPTCP_CAP_HMAC_SHA1);
++		put_unaligned_be64(opts->sndr_key, ptr);
++		ptr += 2;
++		if (OPTION_MPTCP_MPC_ACK & opts->suboptions) {
++			put_unaligned_be64(opts->rcvr_key, ptr);
++			ptr += 2;
++		}
++	}
 +}
-+
-+static struct proto mptcp_prot = {
-+	.name		= "MPTCP",
-+	.owner		= THIS_MODULE,
-+	.init		= mptcp_init_sock,
-+	.close		= mptcp_close,
-+	.accept		= inet_csk_accept,
-+	.connect	= mptcp_connect,
-+	.shutdown	= tcp_shutdown,
-+	.sendmsg	= mptcp_sendmsg,
-+	.recvmsg	= mptcp_recvmsg,
-+	.hash		= inet_hash,
-+	.unhash		= inet_unhash,
-+	.get_port	= inet_csk_get_port,
-+	.obj_size	= sizeof(struct mptcp_sock),
-+	.no_autobind	= true,
-+};
-+
-+static struct inet_protosw mptcp_protosw = {
-+	.type		= SOCK_STREAM,
-+	.protocol	= IPPROTO_MPTCP,
-+	.prot		= &mptcp_prot,
-+	.ops		= &inet_stream_ops,
-+};
-+
-+void __init mptcp_init(void)
-+{
-+	if (proto_register(&mptcp_prot, 1) != 0)
-+		panic("Failed to register MPTCP proto.\n");
-+
-+	inet_register_protosw(&mptcp_protosw);
-+}
-+
-+#if IS_ENABLED(CONFIG_MPTCP_IPV6)
-+static struct proto mptcp_v6_prot;
-+
-+static struct inet_protosw mptcp_v6_protosw = {
-+	.type		= SOCK_STREAM,
-+	.protocol	= IPPROTO_MPTCP,
-+	.prot		= &mptcp_v6_prot,
-+	.ops		= &inet6_stream_ops,
-+	.flags		= INET_PROTOSW_ICSK,
-+};
-+
-+int mptcpv6_init(void)
-+{
-+	int err;
-+
-+	mptcp_v6_prot = mptcp_prot;
-+	strcpy(mptcp_v6_prot.name, "MPTCPv6");
-+	mptcp_v6_prot.slab = NULL;
-+	mptcp_v6_prot.obj_size = sizeof(struct mptcp_sock) +
-+				 sizeof(struct ipv6_pinfo);
-+
-+	err = proto_register(&mptcp_v6_prot, 1);
-+	if (err)
-+		return err;
-+
-+	err = inet6_register_protosw(&mptcp_v6_protosw);
-+	if (err)
-+		proto_unregister(&mptcp_v6_prot);
-+
-+	return err;
-+}
-+#endif
 diff --git a/net/mptcp/protocol.h b/net/mptcp/protocol.h
-new file mode 100644
-index 000000000000..ee04a01bffd3
---- /dev/null
+index ee04a01bffd3..c59cf8b220b0 100644
+--- a/net/mptcp/protocol.h
 +++ b/net/mptcp/protocol.h
-@@ -0,0 +1,22 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/* Multipath TCP
-+ *
-+ * Copyright (c) 2017 - 2019, Intel Corporation.
-+ */
+@@ -7,6 +7,35 @@
+ #ifndef __MPTCP_PROTOCOL_H
+ #define __MPTCP_PROTOCOL_H
+ 
++#define MPTCP_SUPPORTED_VERSION	0
 +
-+#ifndef __MPTCP_PROTOCOL_H
-+#define __MPTCP_PROTOCOL_H
++/* MPTCP option bits */
++#define OPTION_MPTCP_MPC_SYN	BIT(0)
++#define OPTION_MPTCP_MPC_SYNACK	BIT(1)
++#define OPTION_MPTCP_MPC_ACK	BIT(2)
 +
-+/* MPTCP connection sock */
-+struct mptcp_sock {
-+	/* inet_connection_sock must be the first member */
-+	struct inet_connection_sock sk;
-+	struct socket	*subflow; /* outgoing connect/listener/!mp_capable */
-+};
++/* MPTCP option subtypes */
++#define MPTCPOPT_MP_CAPABLE	0
++#define MPTCPOPT_MP_JOIN	1
++#define MPTCPOPT_DSS		2
++#define MPTCPOPT_ADD_ADDR	3
++#define MPTCPOPT_RM_ADDR	4
++#define MPTCPOPT_MP_PRIO	5
++#define MPTCPOPT_MP_FAIL	6
++#define MPTCPOPT_MP_FASTCLOSE	7
 +
-+static inline struct mptcp_sock *mptcp_sk(const struct sock *sk)
-+{
-+	return (struct mptcp_sock *)sk;
-+}
++/* MPTCP suboption lengths */
++#define TCPOLEN_MPTCP_MPC_SYN		12
++#define TCPOLEN_MPTCP_MPC_SYNACK	12
++#define TCPOLEN_MPTCP_MPC_ACK		20
 +
-+#endif /* __MPTCP_PROTOCOL_H */
++/* MPTCP MP_CAPABLE flags */
++#define MPTCP_VERSION_MASK	(0x0F)
++#define MPTCP_CAP_CHECKSUM_REQD	BIT(7)
++#define MPTCP_CAP_EXTENSIBILITY	BIT(6)
++#define MPTCP_CAP_HMAC_SHA1	BIT(0)
++#define MPTCP_CAP_FLAG_MASK	(0x3F)
++
+ /* MPTCP connection sock */
+ struct mptcp_sock {
+ 	/* inet_connection_sock must be the first member */
 -- 
 2.24.1
 
