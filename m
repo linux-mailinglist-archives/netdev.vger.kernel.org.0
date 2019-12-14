@@ -2,88 +2,169 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AC4B311F1DB
-	for <lists+netdev@lfdr.de>; Sat, 14 Dec 2019 13:56:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C35911F1EB
+	for <lists+netdev@lfdr.de>; Sat, 14 Dec 2019 14:15:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725924AbfLNMu2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 14 Dec 2019 07:50:28 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:51599 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1725809AbfLNMu2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 14 Dec 2019 07:50:28 -0500
+        id S1726636AbfLNNO4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 14 Dec 2019 08:14:56 -0500
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:36319 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725884AbfLNNO4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 14 Dec 2019 08:14:56 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1576327827;
+        s=mimecast20190719; t=1576329294;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=SFJ+JVZh68kf5Bo3hbR3mNNs21dIVdglZ0+Q/a3JWrA=;
-        b=fN2IqF29q0juCFx9GW1E/+noyuAryz2UpqE9b+RLFVFuTYDuzC+6XMU+nrDpAnNMjoaZZX
-        cNTKzTx1xCazjSAz8Ge1dLcZQgZddjcxTXKm1/Yrt6CQnz8H6cO0bv+TDGvcMyic6fTFzp
-        BF65Y2I/HORpz8U4U/z1N3+30ck7J68=
-Received: from mail-lf1-f70.google.com (mail-lf1-f70.google.com
- [209.85.167.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-102-wC0StmtyPMC2cJI5tdNpFw-1; Sat, 14 Dec 2019 07:50:22 -0500
-X-MC-Unique: wC0StmtyPMC2cJI5tdNpFw-1
-Received: by mail-lf1-f70.google.com with SMTP id t74so109548lff.8
-        for <netdev@vger.kernel.org>; Sat, 14 Dec 2019 04:50:21 -0800 (PST)
+        bh=tXUYo8Z/1wc5z0Jgm8edXNyqrl3xATvrCgL0TB1nk/w=;
+        b=QgmGlJgk31M3cdPE5A04rioe+FYAY76MlL83lxm5/g1Oqd/tLnKlHImSEgBOGsm2mCg91D
+        N3kEK6hv+JEXt1SkymJmr6hAPQP0GhPNPxQMTJYkscsbxTTRaWXPjAeqT4/jKwDe9/6ABD
+        kZ6TvMD7Mps9pcBIZq24rL1N0t5gtA0=
+Received: from mail-lj1-f200.google.com (mail-lj1-f200.google.com
+ [209.85.208.200]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-118-rUQ5ZRhwOgGtKTWQa1kIFQ-1; Sat, 14 Dec 2019 08:14:50 -0500
+X-MC-Unique: rUQ5ZRhwOgGtKTWQa1kIFQ-1
+Received: by mail-lj1-f200.google.com with SMTP id j22so578587lja.20
+        for <netdev@vger.kernel.org>; Sat, 14 Dec 2019 05:14:50 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=SFJ+JVZh68kf5Bo3hbR3mNNs21dIVdglZ0+Q/a3JWrA=;
-        b=mPny3yq3ZM5MsVeTQBeTf0AgSQEk95h70HdcX/CarYPFG77/fCXO+aIS1ANQz+0w5T
-         Vc/sxrMlPaLNq9/KV9s9IXBqdp6Ssu/NORGX2Jhsr1dAowBZqS+JsASCyfIsR+Mmvs7E
-         /Gsj/rJ0y0JNkf/ZykM95pT6Srt4gc2pofmr+/Z26PsS6euEDNk/RHvogrYbXZcPjpTM
-         Ua22aE1+rLUgJ7GLHE32WR9BU0ZDNqKFmNku5LftbyEOkWPjbUxdskg/oWsSljBiIwFY
-         MXquiflLToBGuQFjtB/vsIbbtPolvWMfljQjOIQAPIMUdxDWBrsG8YCBwqSikhhsoVI/
-         /ouQ==
-X-Gm-Message-State: APjAAAXu20FhSU7wu/fo3bTQA0hQoACabKzWPmrZjVxajnOo8WvjuF/k
-        oA/mZPvIrQljleFAWtJ6rpBE6p2YEwO/1x2jtWA7B61xFqCmGNPONUZ7tg5aHZ58IadaljRgpMK
-        UeuIbvxy3XziUl1Gy
-X-Received: by 2002:ac2:46c2:: with SMTP id p2mr10276413lfo.139.1576327820533;
-        Sat, 14 Dec 2019 04:50:20 -0800 (PST)
-X-Google-Smtp-Source: APXvYqwvp0D/WOhsOaef++AzK+1abUCynFvfI+cueLmssQXL2aHLZSB34S5U/6RQhtGATfCbSDRr7Q==
-X-Received: by 2002:ac2:46c2:: with SMTP id p2mr10276403lfo.139.1576327820372;
-        Sat, 14 Dec 2019 04:50:20 -0800 (PST)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id e12sm6644826ljj.17.2019.12.14.04.50.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 14 Dec 2019 04:50:19 -0800 (PST)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id A61C5181A44; Sat, 14 Dec 2019 13:50:18 +0100 (CET)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Andrii Nakryiko <andriin@fb.com>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, ast@fb.com, daniel@iogearbox.net
-Cc:     andrii.nakryiko@gmail.com, kernel-team@fb.com,
-        Andrii Nakryiko <andriin@fb.com>
-Subject: Re: [PATCH v4 bpf-next 2/4] libbpf: support libbpf-provided extern variables
-In-Reply-To: <20191214014710.3449601-3-andriin@fb.com>
-References: <20191214014710.3449601-1-andriin@fb.com> <20191214014710.3449601-3-andriin@fb.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Sat, 14 Dec 2019 13:50:18 +0100
-Message-ID: <87a77vcbqt.fsf@toke.dk>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=tXUYo8Z/1wc5z0Jgm8edXNyqrl3xATvrCgL0TB1nk/w=;
+        b=K6bp81u4TrUe8G2X0M6godDCNsSzwi4JtA5393Q6a7tgNfzvOa5WA+TT6Pe5v6WGr3
+         MUajPfvhP7nW2iUo793AR0sHF+EBYfdtaNDSJzkNvXBapVhsKcmAjpmalS40E2QWQui0
+         gDL6h1HmOWcUb0Fiq+ETGVgiYaHwSdkTidjctrd6svP2I/xCNERuMb/CG9FR2VM6W0k/
+         DvqyUukO8hRKpuP2is9T3NKcpIiiqQjo6ug7s401HJeGMYWrs4WqRLm2pCvpvYIJ4rFL
+         bfafJaNW/SEmxMSTUcHdJbHEN3mrLyKink7nvpHBYdnac7Yt2k0c+wJjL0GYoPY3V4LU
+         Gdrw==
+X-Gm-Message-State: APjAAAX5blcec7FhOvlgcUG7len2IgXhvtnd0bYqaBvM/g2iiIehUPzH
+        o3B2CdGCVSpHYPjdTzUVBSeesm1JHa77F9kEWHreG1FbqtnQgtCqG5FQpHlbxrtu9zEfm/Z8i8o
+        qGO3eMcQm0WSYkZfuyK3SzjK39c8jbVN2
+X-Received: by 2002:a2e:824a:: with SMTP id j10mr13161571ljh.209.1576329289307;
+        Sat, 14 Dec 2019 05:14:49 -0800 (PST)
+X-Google-Smtp-Source: APXvYqxZbGoEbpVT/4Wz1na9eFRLpPfqSek9IjoemkGbe1gb3IsBoF63dOqBqzFEQofQR68ctx7JMlHOmw1geb/Km1Q=
+X-Received: by 2002:a2e:824a:: with SMTP id j10mr13161563ljh.209.1576329289135;
+ Sat, 14 Dec 2019 05:14:49 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain
+References: <20191210152454.86247-1-mcroce@redhat.com> <20191213181051.0f949b17@cakuba.netronome.com>
+In-Reply-To: <20191213181051.0f949b17@cakuba.netronome.com>
+From:   Matteo Croce <mcroce@redhat.com>
+Date:   Sat, 14 Dec 2019 14:14:13 +0100
+Message-ID: <CAGnkfhwbp3ZzsMTSuAP9WQhs49PJmPimoX1D-M+0uWuUErO91A@mail.gmail.com>
+Subject: Re: [PATCH net-next] bonding: don't init workqueues on error
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Jay Vosburgh <j.vosburgh@gmail.com>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-[...]
+On Sat, Dec 14, 2019 at 3:11 AM Jakub Kicinski
+<jakub.kicinski@netronome.com> wrote:
+>
+> On Tue, 10 Dec 2019 16:24:54 +0100, Matteo Croce wrote:
+> > bond_create() initialize six workqueues used later on.
+>
+> Work _entries_ not _queues_ no?
+>
 
-> +static bool sym_is_extern(const GElf_Sym *sym)
-> +{
-> +	int bind = GELF_ST_BIND(sym->st_info);
-> +	/* externs are symbols w/ type=NOTYPE, bind=GLOBAL|WEAK, section=UND */
-> +	return sym->st_shndx == SHN_UNDEF &&
-> +	       (bind == STB_GLOBAL || bind == STB_WEAK) &&
-> +	       GELF_ST_TYPE(sym->st_info) == STT_NOTYPE;
-> +}
+Right
 
-Will this also match function declarations marked as extern? I've
-started looking into how to handle this for the static/dynamic linking
-use cases and am wondering whether it makes sense to pull in this series
-and build on that?
+> > In the unlikely event that the device registration fails, these
+> > structures are initialized unnecessarily, so move the initialization
+> > out of the error path. Also, create an error label to remove some
+> > duplicated code.
+>
+> Does the initialization of work entries matter? Is this prep for further
+> changes?
+>
 
--Toke
+Not a big issue, I just found useless to initialize those data and
+free a bit later.
+Just a cleanup.
+
+> > Signed-off-by: Matteo Croce <mcroce@redhat.com>
+> > ---
+> >  drivers/net/bonding/bond_main.c | 11 +++++++----
+> >  1 file changed, 7 insertions(+), 4 deletions(-)
+> >
+> > diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
+> > index fcb7c2f7f001..8756b6a023d7 100644
+> > --- a/drivers/net/bonding/bond_main.c
+> > +++ b/drivers/net/bonding/bond_main.c
+> > @@ -4889,8 +4889,8 @@ int bond_create(struct net *net, const char *name)
+> >                                  bond_setup, tx_queues);
+> >       if (!bond_dev) {
+> >               pr_err("%s: eek! can't alloc netdev!\n", name);
+>
+> If this is a clean up patch I think this pr_err() could also be removed?
+> Memory allocation usually fail very loudly so there should be no reason
+> to print more errors.
+>
+
+Sure, I just didn't want to alter the behaviour too much.
+
+> > -             rtnl_unlock();
+> > -             return -ENOMEM;
+> > +             res = -ENOMEM;
+> > +             goto out_unlock;
+> >       }
+> >
+> >       /*
+> > @@ -4905,14 +4905,17 @@ int bond_create(struct net *net, const char *name)
+> >       bond_dev->rtnl_link_ops = &bond_link_ops;
+> >
+> >       res = register_netdevice(bond_dev);
+> > +     if (res < 0) {
+> > +             free_netdev(bond_dev);
+> > +             goto out_unlock;
+> > +     }
+> >
+> >       netif_carrier_off(bond_dev);
+> >
+> >       bond_work_init_all(bond);
+> >
+> > +out_unlock:
+> >       rtnl_unlock();
+> > -     if (res < 0)
+> > -             free_netdev(bond_dev);
+> >       return res;
+> >  }
+> >
+>
+> I do appreciate that the change makes the error handling follow a more
+> usual kernel pattern, but IMHO it'd be even better if the error
+> handling was completely moved. IOW the success path should end with
+> return 0; and the error path should contain free_netdev(bond_dev);
+>
+> -       int res;
+> +       int err;
+>
+>         [...]
+>
+>         rtnl_unlock();
+>
+>         return 0;
+>
+> err_free_netdev:
+>         free_netdev(bond_dev);
+> err_unlock:
+>         rtnl_unlock();
+>         return err;
+>
+> I'm just not 100% sold on the improvement made by this patch being
+> worth the code churn, please convince me, respin or get an ack from
+> one of the maintainers? :)
+>
+
+ACK :)
+
+-- 
+Matteo Croce
+per aspera ad upstream
 
