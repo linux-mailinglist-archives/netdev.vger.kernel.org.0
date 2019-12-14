@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 02AC911F39E
-	for <lists+netdev@lfdr.de>; Sat, 14 Dec 2019 20:16:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7821F11F3A3
+	for <lists+netdev@lfdr.de>; Sat, 14 Dec 2019 20:20:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726814AbfLNTIm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 14 Dec 2019 14:08:42 -0500
-Received: from mail-ed1-f67.google.com ([209.85.208.67]:43109 "EHLO
-        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726358AbfLNTIm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 14 Dec 2019 14:08:42 -0500
-Received: by mail-ed1-f67.google.com with SMTP id dc19so1806966edb.10
-        for <netdev@vger.kernel.org>; Sat, 14 Dec 2019 11:08:41 -0800 (PST)
+        id S1726713AbfLNTT7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 14 Dec 2019 14:19:59 -0500
+Received: from mail-ed1-f66.google.com ([209.85.208.66]:47102 "EHLO
+        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726477AbfLNTT7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 14 Dec 2019 14:19:59 -0500
+Received: by mail-ed1-f66.google.com with SMTP id m8so1811845edi.13
+        for <netdev@vger.kernel.org>; Sat, 14 Dec 2019 11:19:57 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=herbertland-com.20150623.gappssmtp.com; s=20150623;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=xl+V+XSiAFEVmw5fCtg75/r9D0U99JGQcElIcJcuNeU=;
-        b=cw8veqWHif2mT6/sDjYfVhKSdvgE3m/1t4Kl0w9V4C5lZY/xueglJCzCX2m10NDezL
-         vOwiNPNGb8OACFLonKk/saihZeDaEaSjlzbSuQey1xXpXhDXsiHahzBv4jPCMu8wUtqN
-         HjTSMfdsKZ/BTWrzNoUKoTWQuODlxVoUMekfLLupOQkvfzPU4h8dZPVyeXkgf6xdGa2u
-         GPZGtNyYR9+uc0MNrVtjiIest3vciIG+cFvj/pWo+V5/ZNR0iX3+sYoS378iZzoCWLxl
-         6KNIgKaYH1JMaqycjDCUrYpLPOebSEva4wF4cCthGldSNkKUHWQ9Q2ZcWh61jkhErYrX
-         7Q5g==
+        bh=O7QCBnhDtGDTW4QxtnwNG/GneoD6pSdnWnmBLV3DbUc=;
+        b=Zf/bmAtf1upUJGSQAoqJg/2hr2bWPc43c225Oto24O/qObtSfVnnWXI1soYZn6m/jt
+         QYgLzYQqOmKhlrTNUCnq4u41a3cJ3sUaEMHavDLEhZsc4rqk+EQM4sdULCis6J9af2kq
+         n1jhGJROOXV4C50bi+GyOUoJ0fpAxjB/ifY2t0L+6IuwY3q7rEK3ZWvTnd6tc7m0UZqe
+         X1oZ6tWnocdt55D1Bhz1PfbnUnlAW0p7PTiLkhMzQtEb6Z9lop6HNngYm+FBFMew1C9a
+         eq6QrUS/CoNhlkndb6GJ6SqUFbVuuAxMsfAoJhsLBxkKk23ESfzwNJqKnm5ctIK9wKfz
+         Sf/A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=xl+V+XSiAFEVmw5fCtg75/r9D0U99JGQcElIcJcuNeU=;
-        b=MpWv6RJuSSruZA8talfUQmkPUwAbr79hoCrbkUcCtIhj+Uv/+7JBBPGUOYLC6IRnT2
-         yXbcWcwfup8de+LPlQwuuR1XsuLO6aAzYBxDJIgvwJ9894t67JtwODy4y5Busvxyp/5a
-         u/hlgjtkghoVHgF7Nl0YBk5yXlvrnX5H7xfX1ag7wwag28Dw1Ytwcne2tLpE/4L+tiEm
-         gduol3ChQdsm7fbklsVYXStMeD7jAZ3enKs8bsVk5OCJDUjSd9yc1MClnk0lmu1wg2ZW
-         DzQH7n88/nxDKtZ/XEd+ntZcMeHf6lag9SIgxFmTWBjvGdv9AWSO4RkiAVilejSnu2/i
-         CbNw==
-X-Gm-Message-State: APjAAAVmgYZGBKQxJ1gK9DnQEu3W1Guss+tiI6whe9amVtPOS8cLthjx
-        MHqY5w3n+yOfwwggNFbxCjIFppFaNsLWectUX9AmYg==
-X-Google-Smtp-Source: APXvYqzIKVDDfoJWa0MaKA9cXIbik+gI26j9zF4x+Aex90Z0Ht6tGyTlGGAsxONTOo7V6hvU7rtPaCTKwzrBKqa7Z3w=
-X-Received: by 2002:a17:906:1e8b:: with SMTP id e11mr24085961ejj.305.1576350520549;
- Sat, 14 Dec 2019 11:08:40 -0800 (PST)
+        bh=O7QCBnhDtGDTW4QxtnwNG/GneoD6pSdnWnmBLV3DbUc=;
+        b=atM/iHJt4IDH0brNc1Ip3uyJ+asIwSvAlAecmY4O6FLI/XoBlA6opfZFiSVdZs+hvr
+         QcEtz+M1dxaW0oAihZJ1Y0fla3BXKRuyi3L+36YGVR4r0rAEB6G7TyuwPeL7CLRjApwd
+         Bt18ayKaNFs/vnhEb3ztHS5WcbJTTBAsbMAJMgD9pWiafYmV2Wp+Vugao5g62uNaISc1
+         +bloyVXB80dN4g+N27PR2dmLFt3QtAgRb5zo0UIAvrqu7lIzWUEJxg7ANU/e/JlEjVD0
+         0CUSYnocoYwOmM2gd842greGxUjnGPfqyhTf/tJBtrhRvE0jgA+wRUSDpRqp2/7GAzqP
+         j5Eg==
+X-Gm-Message-State: APjAAAXieyKvwwe89gH2MD4ZJC4tibgfhNyRiZWXD3DDP3DuCyHE/uiT
+        tvyTDZBYsJdqFpOJtFne70JUZSWEs3IbdzEYgrfsaA==
+X-Google-Smtp-Source: APXvYqyCJqPX7ADnvrFLtuVgOh9PVwAOgTF8YeUo475vbRlMA7iEynUYBrvmGrUmrNEHJOBym2F1rk0HoIgm5+PO9VI=
+X-Received: by 2002:a17:906:1e8b:: with SMTP id e11mr24136337ejj.305.1576351197022;
+ Sat, 14 Dec 2019 11:19:57 -0800 (PST)
 MIME-Version: 1.0
 References: <1570139884-20183-1-git-send-email-tom@herbertland.com>
- <1570139884-20183-4-git-send-email-tom@herbertland.com> <20191006130526.c65ibu5hoizctaq6@netronome.com>
-In-Reply-To: <20191006130526.c65ibu5hoizctaq6@netronome.com>
+ <1570139884-20183-6-git-send-email-tom@herbertland.com> <20191006132547.stdd4hhj3y4dckqf@netronome.com>
+In-Reply-To: <20191006132547.stdd4hhj3y4dckqf@netronome.com>
 From:   Tom Herbert <tom@herbertland.com>
-Date:   Sat, 14 Dec 2019 11:08:28 -0800
-Message-ID: <CALx6S37Mejm1_nbwxJhKC3o5EY0gidTLuY5roepF2dKyXEB1eg@mail.gmail.com>
-Subject: Re: [PATCH v5 net-next 3/7] ipeh: Generic TLV parser
+Date:   Sat, 14 Dec 2019 11:19:46 -0800
+Message-ID: <CALx6S36RXXQgDqGGxnR=DRJyrweh5ARhS2YH1xHj9PJZb0AUNQ@mail.gmail.com>
+Subject: Re: [PATCH v5 net-next 5/7] ip6tlvs: Add TX parameters
 To:     Simon Horman <simon.horman@netronome.com>
 Cc:     "David S. Miller" <davem@davemloft.net>,
         Linux Kernel Network Developers <netdev@vger.kernel.org>,
@@ -58,70 +58,66 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Oct 6, 2019 at 6:05 AM Simon Horman <simon.horman@netronome.com> wrote:
+On Sun, Oct 6, 2019 at 6:25 AM Simon Horman <simon.horman@netronome.com> wrote:
 >
-> On Thu, Oct 03, 2019 at 02:58:00PM -0700, Tom Herbert wrote:
+> On Thu, Oct 03, 2019 at 02:58:02PM -0700, Tom Herbert wrote:
 > > From: Tom Herbert <tom@quantonium.net>
 > >
-> > Create a generic TLV parser. This will be used with various
-> > extension headers that carry options including Destination,
-> > Hop-by-Hop, Segment Routing TLVs, and other cases of simple
-> > stateless parsing.
+> > Define a number of transmit parameters for TLV Parameter table
+> > definitions. These will be used for validating TLVs that are set
+> > on a socket.
 > >
 > > Signed-off-by: Tom Herbert <tom@herbertland.com>
 > > ---
-> >  include/net/ipeh.h        |  25 ++++++++
-> >  net/ipv6/exthdrs.c        | 159 +++++++++++-----------------------------------
-> >  net/ipv6/exthdrs_common.c | 114 +++++++++++++++++++++++++++++++++
-> >  3 files changed, 177 insertions(+), 121 deletions(-)
+> >  include/net/ipeh.h         | 18 ++++++++++++++++
+> >  include/uapi/linux/ipeh.h  |  8 +++++++
+> >  net/ipv6/exthdrs_common.c  | 53 +++++++++++++++++++++++++++++++++++++++++++++-
+> >  net/ipv6/exthdrs_options.c | 45 +++++++++++++++++++++++++++++++++++++++
+> >  4 files changed, 123 insertions(+), 1 deletion(-)
 > >
 > > diff --git a/include/net/ipeh.h b/include/net/ipeh.h
-> > index 3b24831..c1aa7b6 100644
+> > index aaa2910..de6d9d0 100644
 > > --- a/include/net/ipeh.h
 > > +++ b/include/net/ipeh.h
-> > @@ -31,4 +31,29 @@ struct ipv6_txoptions *ipeh_renew_options(struct sock *sk,
-> >  struct ipv6_txoptions *ipeh_fixup_options(struct ipv6_txoptions *opt_space,
-> >                                         struct ipv6_txoptions *opt);
+>
+> ...
+>
+> > @@ -54,6 +65,13 @@ struct tlv_param_table {
 > >
-> > +/* Generic extension header TLV parser */
-> > +
-> > +enum ipeh_parse_errors {
-> > +     IPEH_PARSE_ERR_PAD1,            /* Excessive PAD1 */
-> > +     IPEH_PARSE_ERR_PADN,            /* Excessive PADN */
-> > +     IPEH_PARSE_ERR_PADNZ,           /* Non-zero padding data */
-> > +     IPEH_PARSE_ERR_EH_TOOBIG,       /* Length of EH exceeds limit */
-> > +     IPEH_PARSE_ERR_OPT_TOOBIG,      /* Option size exceeds limit */
-> > +     IPEH_PARSE_ERR_OPT_TOOMANY,     /* Option count exceeds limit */
-> > +     IPEH_PARSE_ERR_OPT_UNK_DISALW,  /* Unknown option disallowed */
-> > +     IPEH_PARSE_ERR_OPT_UNK,         /* Unknown option */
-> > +};
-> > +
-> > +/* The generic TLV parser assumes that the type value of PAD1 is 0, and PADN
-> > + * is 1. This is true for Destination, Hop-by-Hop and current definition
-> > + * of Segment Routing TLVs.
+> >  extern struct tlv_param_table ipv6_tlv_param_table;
+> >
+> > +/* Preferred TLV ordering for HBH and Dest options (placed by increasing order)
 > > + */
-> > +#define IPEH_TLV_PAD1        0
-> > +#define IPEH_TLV_PADN        1
+> > +#define IPEH_TLV_PREF_ORDER_HAO                      10
+> > +#define IPEH_TLV_PREF_ORDER_ROUTERALERT              20
+> > +#define IPEH_TLV_PREF_ORDER_JUMBO            30
+> > +#define IPEH_TLV_PREF_ORDER_CALIPSO          40
 > > +
-> > +bool ipeh_parse_tlv(const struct tlvtype_proc *procs, struct sk_buff *skb,
-> > +                 int max_count, int off, int len,
-> > +                 bool (*parse_error)(struct sk_buff *skb,
-> > +                                     int off, enum ipeh_parse_errors error));
-> > +
-> >  #endif /* _NET_IPEH_H */
 >
 > Hi Tom,
 >
-> Unless I misread things, which is entirely possible, it seems
-> as well as moving code around this patch changes behaviour under
-> some error conditions via the parse_error callback and
-> the ipv6_parse_error() implementation of it below.
+> Could you expand on why thse values were chosen?
 >
-> I think such a change is worth of at lest calling out in the changelog
-> and perhaps braking out into a separate patch.
+Pseudo random selection :-). The idea of having an ordering is to
+constrain the use of TLVs (in some environments there may be TLV
+ordering requirements or optimizations around specific ordering). Note
+that the ordering only applies to validation of TLVs being set to
+send, there are no ordering constraints in RX. Also, in the next patch
+set where application can set individual HBH and DO options on a
+socket, the ordering attribute is used to always produce the same
+order on the wire regardless of the ordering that the application set
+the options. For non-priviledeged applications especially, I believe
+it's good to be conservative and apply reasonable constraints such as
+ordering for TX (i.e. follow robustness principle).
+
+> I can see that this patch implements a specific use of
+> the 255 indexes available. But its not at all clear to me that
+> this use fits expected use-cases (because I don't know what they are).
 >
-Okay, makes sense to split out the parse_error code. I also noticed
-that there's no counter being bumped when we drop a HBH option, I'll
-fix that.
+There are at more 253 non-padding option types. Fortunately the
+protocol designers had the foresight to limit option type to a byte
+and so it's reasonable to represent for lookup in simple arrays. Two
+bytes for type would have been much more painful (compare lookup on
+EtherType to IP protocol numbers for instance).
 
 > ...
