@@ -2,163 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1BE6E11EFE7
-	for <lists+netdev@lfdr.de>; Sat, 14 Dec 2019 03:07:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C82E211EFEA
+	for <lists+netdev@lfdr.de>; Sat, 14 Dec 2019 03:13:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726707AbfLNCGm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Dec 2019 21:06:42 -0500
-Received: from szxga05-in.huawei.com ([45.249.212.191]:7235 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726334AbfLNCGl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 13 Dec 2019 21:06:41 -0500
-Received: from DGGEMS410-HUB.china.huawei.com (unknown [172.30.72.60])
-        by Forcepoint Email with ESMTP id E341D60F9EA61F0C7ED0;
-        Sat, 14 Dec 2019 10:06:38 +0800 (CST)
-Received: from localhost.localdomain (10.69.192.56) by
- DGGEMS410-HUB.china.huawei.com (10.3.19.210) with Microsoft SMTP Server id
- 14.3.439.0; Sat, 14 Dec 2019 10:06:30 +0800
-From:   Huazhong Tan <tanhuazhong@huawei.com>
-To:     <davem@davemloft.net>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <salil.mehta@huawei.com>, <yisen.zhuang@huawei.com>,
-        <linuxarm@huawei.com>, <jakub.kicinski@netronome.com>,
-        Guojia Liao <liaoguojia@huawei.com>,
-        "Huazhong Tan" <tanhuazhong@huawei.com>
-Subject: [PATCH net-next 5/5] net: hns3: do not schedule the periodic task when reset fail
-Date:   Sat, 14 Dec 2019 10:06:41 +0800
-Message-ID: <1576289201-57017-6-git-send-email-tanhuazhong@huawei.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1576289201-57017-1-git-send-email-tanhuazhong@huawei.com>
-References: <1576289201-57017-1-git-send-email-tanhuazhong@huawei.com>
+        id S1726707AbfLNCLC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Dec 2019 21:11:02 -0500
+Received: from mail-lj1-f195.google.com ([209.85.208.195]:44915 "EHLO
+        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726334AbfLNCLC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Dec 2019 21:11:02 -0500
+Received: by mail-lj1-f195.google.com with SMTP id c19so695702lji.11
+        for <netdev@vger.kernel.org>; Fri, 13 Dec 2019 18:11:01 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=ySR7TYBQhTmVu6KMG+j74j9+ZRg88KrNjUFtJErf2/0=;
+        b=SXb/Zp7fUVFOXqfsfn1Ioi/WCk64YO6dsh3bicKU9wV4cG/gEi+dbN5rIl0dnqNrhV
+         hj7Pekuq1K/ayYHab9CbuM/ujPP8uKnHBwwEwB0NYmiMBmcQAgQdGCjKDi6PV941gJrp
+         GbTgKumeOWmxeIRrA432U8eUyQzwl5vuupxwSUlwolCL2LXLTwjdQeLiLMwvTr55s8XK
+         IfyfzAaaN0D3Pjojv/MIQ+Bw/ZGf6wYdEd4WI10MM48Z925uAGyqIHxqQNf/Bqo/2SFe
+         cft5eLFeHCbYDPztS2t7tmfzWLQ9WjLGol5lFyuV3jgdVCNFcp8bSmaM1ILwTSUBpi/V
+         +K/g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=ySR7TYBQhTmVu6KMG+j74j9+ZRg88KrNjUFtJErf2/0=;
+        b=BOQB8B+/N8vq2CL2+FMCiNixqcmosVRVoNlsqK5mj9jnir3FJDN5tyisnBtHKGTy7K
+         L0WHeBolMJx/FpxiLQExUazl+adD0jR+rpgKwwUVUXU+Nz/j/tRLwcfiQuYpFmvE1GYF
+         1FZWMcRT1l0XJoaNoRA+wbyaMhAg4HunPsoPzK98Ah+Zcq+vGJuZTdDz9ZbphF6GVSXG
+         +ss5PZbWE3uqkS01sqYQEYwKVdL9s+JAvCld9yHu4ZBemIZtFz509gmsOCan+ls9M+iL
+         uXs6rM5yBXPwCZc323cYOcC6l9VgNCFeiydRobx0i4KxJiuDrpd6+IKsYsyW2DwJQjyU
+         j2Aw==
+X-Gm-Message-State: APjAAAUIo0kp7OF1LiQ2gAjK7ou5M/dObHEKfLtbogSGORsCe5Up0iBx
+        HCZ4ZV3mi2IKNSMk+wcq3KAW9w==
+X-Google-Smtp-Source: APXvYqx31c9AbeMwEq7DpSSfHmn+XAWX9b/tCrkJXLP1y/F+yXyKvwm6s4HTOnIAjWUHUq9asiCdQQ==
+X-Received: by 2002:a2e:978d:: with SMTP id y13mr11738378lji.103.1576289460426;
+        Fri, 13 Dec 2019 18:11:00 -0800 (PST)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id x13sm5268984lfe.48.2019.12.13.18.10.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 13 Dec 2019 18:11:00 -0800 (PST)
+Date:   Fri, 13 Dec 2019 18:10:51 -0800
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Matteo Croce <mcroce@redhat.com>
+Cc:     netdev@vger.kernel.org, Jay Vosburgh <j.vosburgh@gmail.com>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next] bonding: don't init workqueues on error
+Message-ID: <20191213181051.0f949b17@cakuba.netronome.com>
+In-Reply-To: <20191210152454.86247-1-mcroce@redhat.com>
+References: <20191210152454.86247-1-mcroce@redhat.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.69.192.56]
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Guojia Liao <liaoguojia@huawei.com>
+On Tue, 10 Dec 2019 16:24:54 +0100, Matteo Croce wrote:
+> bond_create() initialize six workqueues used later on.
 
-service_task will be scheduled  per second to do some periodic
-jobs. When reset fails, it means this device is not available
-now, so the periodic jobs do not need to be handled.
+Work _entries_ not _queues_ no?
 
-This patch adds flag HCLGE_STATE_RST_FAIL/HCLGEVF_STATE_RST_FAIL
-to indicate that reset fails, and checks this flag before
-schedule periodic task.
+> In the unlikely event that the device registration fails, these
+> structures are initialized unnecessarily, so move the initialization
+> out of the error path. Also, create an error label to remove some
+> duplicated code.
 
-Signed-off-by: Guojia Liao <liaoguojia@huawei.com>
-Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
----
- drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c   | 7 ++++++-
- drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h   | 1 +
- drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c | 6 +++++-
- drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.h | 1 +
- 4 files changed, 13 insertions(+), 2 deletions(-)
+Does the initialization of work entries matter? Is this prep for further
+changes?
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-index 5129b4a..4e7a078 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-@@ -2683,7 +2683,8 @@ static void hclge_reset_task_schedule(struct hclge_dev *hdev)
- 
- void hclge_task_schedule(struct hclge_dev *hdev, unsigned long delay_time)
- {
--	if (!test_bit(HCLGE_STATE_REMOVING, &hdev->state))
-+	if (!test_bit(HCLGE_STATE_REMOVING, &hdev->state) &&
-+	    !test_bit(HCLGE_STATE_RST_FAIL, &hdev->state))
- 		mod_delayed_work_on(cpumask_first(&hdev->affinity_mask),
- 				    hclge_wq, &hdev->service_task,
- 				    delay_time);
-@@ -3690,6 +3691,8 @@ static bool hclge_reset_err_handle(struct hclge_dev *hdev)
- 
- 	hclge_dbg_dump_rst_info(hdev);
- 
-+	set_bit(HCLGE_STATE_RST_FAIL, &hdev->state);
-+
- 	return false;
- }
- 
-@@ -3843,6 +3846,7 @@ static void hclge_reset(struct hclge_dev *hdev)
- 	hdev->rst_stats.reset_fail_cnt = 0;
- 	hdev->rst_stats.reset_done_cnt++;
- 	ae_dev->reset_type = HNAE3_NONE_RESET;
-+	clear_bit(HCLGE_STATE_RST_FAIL, &hdev->state);
- 
- 	/* if default_reset_request has a higher level reset request,
- 	 * it should be handled as soon as possible. since some errors
-@@ -9303,6 +9307,7 @@ static void hclge_state_init(struct hclge_dev *hdev)
- 	set_bit(HCLGE_STATE_DOWN, &hdev->state);
- 	clear_bit(HCLGE_STATE_RST_SERVICE_SCHED, &hdev->state);
- 	clear_bit(HCLGE_STATE_RST_HANDLING, &hdev->state);
-+	clear_bit(HCLGE_STATE_RST_FAIL, &hdev->state);
- 	clear_bit(HCLGE_STATE_MBX_SERVICE_SCHED, &hdev->state);
- 	clear_bit(HCLGE_STATE_MBX_HANDLING, &hdev->state);
- }
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
-index ad40cf6..3a91397 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
-@@ -215,6 +215,7 @@ enum HCLGE_DEV_STATE {
- 	HCLGE_STATE_STATISTICS_UPDATING,
- 	HCLGE_STATE_CMD_DISABLE,
- 	HCLGE_STATE_LINK_UPDATING,
-+	HCLGE_STATE_RST_FAIL,
- 	HCLGE_STATE_MAX
- };
- 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
-index b56c19a..c33b802 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
-@@ -1598,6 +1598,7 @@ static void hclgevf_reset_err_handle(struct hclgevf_dev *hdev)
- 		set_bit(HCLGEVF_RESET_PENDING, &hdev->reset_state);
- 		hclgevf_reset_task_schedule(hdev);
- 	} else {
-+		set_bit(HCLGEVF_STATE_RST_FAIL, &hdev->state);
- 		hclgevf_dump_rst_info(hdev);
- 	}
- }
-@@ -1659,6 +1660,7 @@ static int hclgevf_reset(struct hclgevf_dev *hdev)
- 	ae_dev->reset_type = HNAE3_NONE_RESET;
- 	hdev->rst_stats.rst_done_cnt++;
- 	hdev->rst_stats.rst_fail_cnt = 0;
-+	clear_bit(HCLGEVF_STATE_RST_FAIL, &hdev->state);
- 
- 	return ret;
- err_reset_lock:
-@@ -1791,7 +1793,8 @@ void hclgevf_mbx_task_schedule(struct hclgevf_dev *hdev)
- static void hclgevf_task_schedule(struct hclgevf_dev *hdev,
- 				  unsigned long delay)
- {
--	if (!test_bit(HCLGEVF_STATE_REMOVING, &hdev->state))
-+	if (!test_bit(HCLGEVF_STATE_REMOVING, &hdev->state) &&
-+	    !test_bit(HCLGEVF_STATE_RST_FAIL, &hdev->state))
- 		mod_delayed_work(hclgevf_wq, &hdev->service_task, delay);
- }
- 
-@@ -2283,6 +2286,7 @@ static void hclgevf_state_init(struct hclgevf_dev *hdev)
- {
- 	clear_bit(HCLGEVF_STATE_MBX_SERVICE_SCHED, &hdev->state);
- 	clear_bit(HCLGEVF_STATE_MBX_HANDLING, &hdev->state);
-+	clear_bit(HCLGEVF_STATE_RST_FAIL, &hdev->state);
- 
- 	INIT_DELAYED_WORK(&hdev->service_task, hclgevf_service_task);
- 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.h b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.h
-index 450e587..003114f 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.h
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.h
-@@ -148,6 +148,7 @@ enum hclgevf_states {
- 	HCLGEVF_STATE_MBX_HANDLING,
- 	HCLGEVF_STATE_CMD_DISABLE,
- 	HCLGEVF_STATE_LINK_UPDATING,
-+	HCLGEVF_STATE_RST_FAIL,
- };
- 
- struct hclgevf_mac {
--- 
-2.7.4
+> Signed-off-by: Matteo Croce <mcroce@redhat.com>
+> ---
+>  drivers/net/bonding/bond_main.c | 11 +++++++----
+>  1 file changed, 7 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
+> index fcb7c2f7f001..8756b6a023d7 100644
+> --- a/drivers/net/bonding/bond_main.c
+> +++ b/drivers/net/bonding/bond_main.c
+> @@ -4889,8 +4889,8 @@ int bond_create(struct net *net, const char *name)
+>  				   bond_setup, tx_queues);
+>  	if (!bond_dev) {
+>  		pr_err("%s: eek! can't alloc netdev!\n", name);
 
+If this is a clean up patch I think this pr_err() could also be removed?
+Memory allocation usually fail very loudly so there should be no reason
+to print more errors.
+
+> -		rtnl_unlock();
+> -		return -ENOMEM;
+> +		res = -ENOMEM;
+> +		goto out_unlock;
+>  	}
+>  
+>  	/*
+> @@ -4905,14 +4905,17 @@ int bond_create(struct net *net, const char *name)
+>  	bond_dev->rtnl_link_ops = &bond_link_ops;
+>  
+>  	res = register_netdevice(bond_dev);
+> +	if (res < 0) {
+> +		free_netdev(bond_dev);
+> +		goto out_unlock;
+> +	}
+>  
+>  	netif_carrier_off(bond_dev);
+>  
+>  	bond_work_init_all(bond);
+>  
+> +out_unlock:
+>  	rtnl_unlock();
+> -	if (res < 0)
+> -		free_netdev(bond_dev);
+>  	return res;
+>  }
+>  
+
+I do appreciate that the change makes the error handling follow a more
+usual kernel pattern, but IMHO it'd be even better if the error
+handling was completely moved. IOW the success path should end with
+return 0; and the error path should contain free_netdev(bond_dev);
+
+-	int res;
++	int err;
+
+	[...]
+
+	rtnl_unlock();
+
+	return 0;
+
+err_free_netdev:
+	free_netdev(bond_dev);
+err_unlock:
+	rtnl_unlock();
+	return err;
+
+I'm just not 100% sold on the improvement made by this patch being
+worth the code churn, please convince me, respin or get an ack from 
+one of the maintainers? :)
