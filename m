@@ -2,98 +2,168 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0341311EF7F
-	for <lists+netdev@lfdr.de>; Sat, 14 Dec 2019 02:27:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7291011EF9C
+	for <lists+netdev@lfdr.de>; Sat, 14 Dec 2019 02:43:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726752AbfLNB14 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Dec 2019 20:27:56 -0500
-Received: from mail-lf1-f65.google.com ([209.85.167.65]:32780 "EHLO
-        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726208AbfLNB14 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Dec 2019 20:27:56 -0500
-Received: by mail-lf1-f65.google.com with SMTP id n25so611189lfl.0
-        for <netdev@vger.kernel.org>; Fri, 13 Dec 2019 17:27:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=ScGB0uaG1N2MTFqjHS89TM7sGKsmj+KybyTlxQc+/kA=;
-        b=urN4yCffQ5LSBNl1Z4RFIiOkL8cXsodyn7ff1+7ETynmlW15+okWCxijdAyaukz+TO
-         gUdfs3pV9ISDCVljmx0R/i3DGQpeHwB6lMvRZGHcBkjjXGodeeGo991HuSzupHSswROS
-         sS3bmtwrvuY/yIQqIKi1nsTc2BTtcnTD9FUfuu6L87zy+XI5oLzdEPkSSTRUj2jRt5cK
-         sTRIVLwSZfAsTPyvAifl7PA80V+1eS0kgmmfaBZIzOHj5S4J6CLjaOaid6I8t8kX9US+
-         MDKiaJ9+9Q7Zpcb2gcyR++s9kvrSn0qyJwtaSpX29QzCX/skTVwfoDYDvveA6Dh+iTlk
-         +bRg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=ScGB0uaG1N2MTFqjHS89TM7sGKsmj+KybyTlxQc+/kA=;
-        b=pYN3lTabqag/TxbV9HNudv2BM+1i7eCFmKcFifBL8jAGy4MCea8HEb3fyJ374sJhxL
-         0DgxDsPMXd/1FwpBmPEcwb1PujlJaulZ48drh3AEQ9scK0mwqp+vCjKqQVZlp/X/3LGr
-         SM7tZvWLeLPFsiAynZ273Tat9jZZnDxAck1vKb8CX0Utr8VqLMjpKYRi9pn0ru2krqhx
-         yU9SOVhrCofwx5A8nGQ5APWrYoFZGEGcX+uUKF7b5smPjNoa28rZJtMtIIAsb6XP5KMW
-         p86wMT1UxE9z1K+LkODoRGgMVWa3jDQ5lDhDtbpqhKpzi4NnmTtPYtIlkAZXGOJ/fA44
-         r8xQ==
-X-Gm-Message-State: APjAAAX21nBWaiZY80iniwZCOKeIDbtpR6ISQf8UE7yPSIM/NZkS8gXY
-        hDJFgttNOmIl7oDm8ZFDL8yemKYf48g=
-X-Google-Smtp-Source: APXvYqw7i7YpZIaz4MAOWDRHBsmcdAJkes1rruFV67i8zLlUBMNNDl+QBJYn9uaGrpWJqtY7TYFyMg==
-X-Received: by 2002:a19:c648:: with SMTP id w69mr10408468lff.44.1576286874277;
-        Fri, 13 Dec 2019 17:27:54 -0800 (PST)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id v2sm5669883ljv.70.2019.12.13.17.27.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 13 Dec 2019 17:27:54 -0800 (PST)
-Date:   Fri, 13 Dec 2019 17:27:47 -0800
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Thomas Falcon <tlfalcon@linux.ibm.com>
-Cc:     netdev@vger.kernel.org, linuxppc-dev@ozlabs.org,
-        julietk@linux.vnet.ibm.com
-Subject: Re: [PATCH net v2] net/ibmvnic: Fix typo in retry check
-Message-ID: <20191213172747.5e5310c9@cakuba.netronome.com>
-In-Reply-To: <1576078719-9604-1-git-send-email-tlfalcon@linux.ibm.com>
-References: <1576078719-9604-1-git-send-email-tlfalcon@linux.ibm.com>
-Organization: Netronome Systems, Ltd.
+        id S1726767AbfLNBnr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Dec 2019 20:43:47 -0500
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:58706 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726170AbfLNBnr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Dec 2019 20:43:47 -0500
+Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xBE1aWSr023509
+        for <netdev@vger.kernel.org>; Fri, 13 Dec 2019 17:43:46 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-type; s=facebook;
+ bh=qvrsnLENNQhCUj8a8R1laUZ8CCB5QyTiCurLQ7mIgek=;
+ b=RvnXSSxOjn54bD815sUVGFmcXgzmE0cqRdoPa6cWhAH4ob5D15LzCSR0DIlvPPJIaB/j
+ hZ8AWV459qPGGPqryZ53mmQsJSZVaw2FUMtOncHhAvnR50FnW3w4DBochHkuczNcEVUp
+ a4aIbBEUtGvJ0PUIF7/NTSS6s04CyQqYKco= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 2wvkm20n0s-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Fri, 13 Dec 2019 17:43:46 -0800
+Received: from intmgw001.41.prn1.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:83::5) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Fri, 13 Dec 2019 17:43:44 -0800
+Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
+        id 910732EC1D51; Fri, 13 Dec 2019 17:43:43 -0800 (PST)
+Smtp-Origin-Hostprefix: devbig
+From:   Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>
+CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Cluster: ftw2c04
+Subject: [PATCH v4 bpf-next 00/17] Add code-generated BPF object skeleton support
+Date:   Fri, 13 Dec 2019 17:43:24 -0800
+Message-ID: <20191214014341.3442258-1-andriin@fb.com>
+X-Mailer: git-send-email 2.17.1
+X-FB-Internal: Safe
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
+ definitions=2019-12-13_09:2019-12-13,2019-12-13 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 impostorscore=0
+ phishscore=0 lowpriorityscore=0 bulkscore=0 priorityscore=1501
+ mlxlogscore=999 malwarescore=0 adultscore=0 spamscore=0 mlxscore=0
+ clxscore=1015 suspectscore=9 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-1910280000 definitions=main-1912140006
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 11 Dec 2019 09:38:39 -0600, Thomas Falcon wrote:
-> This conditional is missing a bang, with the intent
-> being to break when the retry count reaches zero.
-> 
-> Fixes: 476d96ca9c ("ibmvnic: Bound waits for device queries")
-> Suggested-by: Juliet Kim <julietk@linux.vnet.ibm.com>
-> Signed-off-by: Thomas Falcon <tlfalcon@linux.ibm.com>
+This patch set introduces an alternative and complimentary to existing libbpf
+API interface for working with BPF objects, maps, programs, and global data
+from userspace side. This approach is relying on code generation. bpftool
+produces a struct (a.k.a. skeleton) tailored and specific to provided BPF
+object file. It includes hard-coded fields and data structures for every map,
+program, link, and global data present.
 
-Ah damn, looks like this originates from my pseudo code.
+Altogether this approach significantly reduces amount of userspace boilerplate
+code required to open, load, attach, and work with BPF objects. It improves
+attach/detach story, by providing pre-allocated space for bpf_links, and
+ensuring they are properly detached on shutdown. It allows to do away with by
+name/title lookups of maps and programs, because libbpf's skeleton API, in
+conjunction with generated code from bpftool, is filling in hard-coded fields
+with actual pointers to corresponding struct bpf_map/bpf_program/bpf_link.
 
-I had to fix the fixes tag:
+Also, thanks to BPF array mmap() support, working with global data (variables)
+from userspace is now as natural as it is from BPF side: each variable is just
+a struct field inside skeleton struct. Furthermore, this allows to have
+a natural way for userspace to pre-initialize global data (including
+previously impossible to initialize .rodata) by just assigning values to the
+same per-variable fields. Libbpf will carefully take into account this
+initialization image, will use it to pre-populate BPF maps at creation time,
+and will re-mmap() BPF map's contents at exactly the same userspace memory
+address such that it can continue working with all the same pointers without
+any interruptions. If kernel doesn't support mmap(), global data will still be
+successfully initialized, but after map creation global data structures inside
+skeleton will be NULL-ed out. This allows userspace application to gracefully
+handle lack of mmap() support, if necessary.
 
-Commit: 847496ccfa22 ("net/ibmvnic: Fix typo in retry check")
-	Fixes tag: Fixes: 476d96ca9c ("ibmvnic: Bound waits for device queries")
-	Has these problem(s):
-		- SHA1 should be at least 12 digits long
-		  Can be fixed by setting core.abbrev to 12 (or more) or (for git v2.11
-		  or later) just making sure it is not set (or set to "auto").
+A bunch of selftests are also converted to using skeletons, demonstrating
+significant simplification of userspace part of test and reduction in amount
+of code necessary.
 
-Applied to net, thanks!
+v3->v4:
+- add OPTS_VALID check to btf_dump__emit_type_decl (Alexei);
+- expose skeleton as LIBBPF_API functions (Alexei);
+- copyright clean up, update internal map init refactor (Alexei);
 
-> diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
-> index efb0f10..2d84523 100644
-> --- a/drivers/net/ethernet/ibm/ibmvnic.c
-> +++ b/drivers/net/ethernet/ibm/ibmvnic.c
-> @@ -184,7 +184,7 @@ static int ibmvnic_wait_for_completion(struct ibmvnic_adapter *adapter,
->  			netdev_err(netdev, "Device down!\n");
->  			return -ENODEV;
->  		}
-> -		if (retry--)
-> +		if (!retry--)
->  			break;
->  		if (wait_for_completion_timeout(comp_done, div_timeout))
->  			return 0;
+v2->v3:
+- make skeleton part of public API;
+- expose btf_dump__emit_type_decl and btf__align_of APIs;
+- move LIBBPF_API and DECLARE_LIBBPF_OPTS into libbpf_common.h for reuse;
+
+v1->v2:
+- checkpatch.pl and reverse Christmas tree styling (Jakub);
+- sanitize variable names to accomodate in-function static vars;
+
+rfc->v1:
+- runqslower moved out into separate patch set waiting for vmlinux.h
+  improvements;
+- skeleton generation code deals with unknown internal maps more gracefully.
+
+
+Andrii Nakryiko (17):
+  libbpf: don't require root for bpf_object__open()
+  libbpf: add generic bpf_program__attach()
+  libbpf: move non-public APIs from libbpf.h to libbpf_internal.h
+  libbpf: add BPF_EMBED_OBJ macro for embedding BPF .o files
+  libbpf: extract common user-facing helpers
+  libbpf: expose btf__align_of() API
+  libbpf: expose BTF-to-C type declaration emitting API
+  libbpf: expose BPF program's function name
+  libbpf: refactor global data map initialization
+  libbpf: postpone BTF ID finding for TRACING programs to load phase
+  libbpf: reduce log level of supported section names dump
+  libbpf: add BPF object skeleton support
+  bpftool: add skeleton codegen command
+  selftests/bpf: add BPF skeletons selftests and convert attach_probe.c
+  selftests/bpf: convert few more selftest to skeletons
+  selftests/bpf: add test validating data section to struct convertion
+    layout
+  bpftool: add `gen skeleton` BASH completions
+
+ tools/bpf/bpftool/bash-completion/bpftool     |  11 +
+ tools/bpf/bpftool/gen.c                       | 551 ++++++++++++++++
+ tools/bpf/bpftool/main.c                      |   3 +-
+ tools/bpf/bpftool/main.h                      |   1 +
+ tools/bpf/bpftool/net.c                       |   1 +
+ tools/lib/bpf/bpf.h                           |   6 +-
+ tools/lib/bpf/btf.c                           |  39 ++
+ tools/lib/bpf/btf.h                           |  29 +-
+ tools/lib/bpf/btf_dump.c                      | 115 ++--
+ tools/lib/bpf/libbpf.c                        | 588 ++++++++++++++----
+ tools/lib/bpf/libbpf.h                        | 129 ++--
+ tools/lib/bpf/libbpf.map                      |  11 +
+ tools/lib/bpf/libbpf_common.h                 |  38 ++
+ tools/lib/bpf/libbpf_internal.h               |  17 +
+ tools/testing/selftests/bpf/.gitignore        |   2 +
+ tools/testing/selftests/bpf/Makefile          |  36 +-
+ .../selftests/bpf/prog_tests/attach_probe.c   | 154 +----
+ .../selftests/bpf/prog_tests/fentry_fexit.c   | 105 ++--
+ .../selftests/bpf/prog_tests/fentry_test.c    |  72 +--
+ tools/testing/selftests/bpf/prog_tests/mmap.c |  58 +-
+ .../selftests/bpf/prog_tests/probe_user.c     |   6 +-
+ .../selftests/bpf/prog_tests/rdonly_maps.c    |  11 +-
+ .../selftests/bpf/prog_tests/skeleton.c       |  51 ++
+ .../bpf/prog_tests/stacktrace_build_id.c      |  79 +--
+ .../bpf/prog_tests/stacktrace_build_id_nmi.c  |  84 +--
+ .../selftests/bpf/progs/test_attach_probe.c   |  34 +-
+ .../selftests/bpf/progs/test_skeleton.c       |  37 ++
+ 27 files changed, 1598 insertions(+), 670 deletions(-)
+ create mode 100644 tools/bpf/bpftool/gen.c
+ create mode 100644 tools/lib/bpf/libbpf_common.h
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/skeleton.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_skeleton.c
+
+-- 
+2.17.1
 
