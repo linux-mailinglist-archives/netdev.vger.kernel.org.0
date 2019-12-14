@@ -2,78 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A43D111EF75
-	for <lists+netdev@lfdr.de>; Sat, 14 Dec 2019 02:16:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 730C611EF78
+	for <lists+netdev@lfdr.de>; Sat, 14 Dec 2019 02:21:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726676AbfLNBQJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Dec 2019 20:16:09 -0500
-Received: from mail-lf1-f66.google.com ([209.85.167.66]:44869 "EHLO
-        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726208AbfLNBQJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Dec 2019 20:16:09 -0500
-Received: by mail-lf1-f66.google.com with SMTP id v201so560026lfa.11
-        for <netdev@vger.kernel.org>; Fri, 13 Dec 2019 17:16:07 -0800 (PST)
+        id S1726736AbfLNBVI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Dec 2019 20:21:08 -0500
+Received: from mail-qv1-f65.google.com ([209.85.219.65]:43907 "EHLO
+        mail-qv1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726704AbfLNBVI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Dec 2019 20:21:08 -0500
+Received: by mail-qv1-f65.google.com with SMTP id p2so492360qvo.10;
+        Fri, 13 Dec 2019 17:21:07 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=mKfO80HVl7EsV6C4mJyH1H17kBZBpZ6fAqSX07dZXsQ=;
-        b=1+pSDWMjaLMP9KDo7Q1K/eUDDJeZMh0SpUwsYMtlJneTtKAjVXWnNNd8kjC/4/BtcC
-         em0VMyj8CwECm8BbrQukS2hexDZFznx/r27s/NsxqoiC4Ru6s0+czev9OAmRCkxLr7Rz
-         dDexthKVVX3vDQDkIwrd9fMkEx+MHl4zeEQ2qrEk7a0/AZOnkT0aiKU+ePnZ37OnnFvr
-         Tc99Kk+LReyqg24//joLfxKE4jyud9CsWXTUbmX6Gp4hxKXyARlQ6IblZY61cWmpXXg2
-         JD+Lnybza4Rs9MqcerWKKSmyLiiY4r7yjmj/duyct50js36q62C7VG3V/YOlfjEuP+qE
-         VrUA==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=E0H9301ghdZ2dylpyDzeCJfxCEGT/ww6jQxz2tHkrTc=;
+        b=nJ7HlDS+AiFo59FVlQnaK1j7I3sEsgB3OaoH93ZdOAv9T0520PlZWijxhd6x7WgxGG
+         08bR4tKajuStRNsUVyqtexQQGczSaFFAmPFoa4qaez1gjUvp4Qme81AWGv4TG75n10QP
+         LTN/QMLwDzHQD2tFEcVgrHWx2roiMsn3AYjY0JXHNlfI4kU1NhWDmra7cRBmSUF/25V+
+         PifzhHkNmBUDkQ0eUBNsK7iR8bwoDi1+SF1Gsam+ZZPKC0AwpKOWPo9iErhEkR2o4O1X
+         xLnVpxeX5YgeksvYjxxeKVKB3TClrocHhwdpNo/YsoOgg7ju7XbWflm7BUZE07ay49+N
+         8iRQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=mKfO80HVl7EsV6C4mJyH1H17kBZBpZ6fAqSX07dZXsQ=;
-        b=hS683pOxHv3+neKP6UhoiUfdGsSj4A73V+YFwl6Rc9fNk+sqNwDbxw03H47ZF4P02L
-         ZYedEtbFdoyyXtgSL1KIXeGyFBdTxF/Z26qnTdAOaCI9kq0RGp/kSL9wHxOrCE9roREX
-         m04MrAuga69tvd1+sB+bkKMIPSfvQQ5hRe/BqC/r2Lifth4kdPLpxAsnpvfxTNAClq54
-         Yxz7eoQoySCJ3U6rnTeMJcybz11KLwOdGrk2XEjcwuE7wy5PNTVoV5+/e7pcVBqeFYMK
-         Mg0StZA1JuMiqeEu5/lXD9m8/qaZGTk1joTdG4/ILGu1c5aI60Czhn1dxA/fqoKk6YJc
-         lW3g==
-X-Gm-Message-State: APjAAAXtzfI188bSREon3HDbQTrkM2oUFGw4GCru9yVgPmY7fFpTRPKM
-        LBRP3kwehLs13L9wLYLAHvKqEQ==
-X-Google-Smtp-Source: APXvYqwL37eGJJIVXJO6e4ohLwGQiWLLwOwCHScRz3e66u1SNnt3y9McEC8vuulGja/+DJPuZBOknA==
-X-Received: by 2002:ac2:4c98:: with SMTP id d24mr10391549lfl.138.1576286167120;
-        Fri, 13 Dec 2019 17:16:07 -0800 (PST)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id x85sm5874464ljb.20.2019.12.13.17.16.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 13 Dec 2019 17:16:06 -0800 (PST)
-Date:   Fri, 13 Dec 2019 17:15:59 -0800
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Hangbin Liu <liuhangbin@gmail.com>
-Cc:     netdev@vger.kernel.org, Jiri Benc <jbenc@redhat.com>,
-        David Miller <davem@davemloft.net>
-Subject: Re: [PATCH net] ipv6/addrconf: only check invalid header values
- when NETLINK_F_STRICT_CHK is set
-Message-ID: <20191213171559.74d73d6a@cakuba.netronome.com>
-In-Reply-To: <20191211142016.13215-1-liuhangbin@gmail.com>
-References: <20191211142016.13215-1-liuhangbin@gmail.com>
-Organization: Netronome Systems, Ltd.
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=E0H9301ghdZ2dylpyDzeCJfxCEGT/ww6jQxz2tHkrTc=;
+        b=iEVSwuB0M8NERhJ/MZncCZkF9GCDxtB3IJ8Yz+4Hg/0Gv6HR9o91h7UvWIe1IiMCWB
+         uTs0HzBEG1it48rxJrO6Rsr0squ6IHvftooCgLnyMspqOIzr33VJ6ijuAgF/P3X3xyvK
+         N2j5OpvSx/r6jvC67ZQ3HyH4IR8US5hWbXlDgb9yLRmnMY6g+lAijG/tBZz0oZAB0aef
+         A/Xik1+/Y3+vOL5hINdUsHw+uqHSf3HmwJcRu34XrPJlShEZEKxoExg7Wj6556tkrSEf
+         wtm27IL/dHdAD8En7Og7ezHRgCX9jQz2zSwFSEbeimweaq6VOGFyYRbLJLO343X8kGsM
+         p+eA==
+X-Gm-Message-State: APjAAAWBiCahRGZPDrq06g9ClzXN8zuUMy5+NOpUjYJdaHax+KtrYrg9
+        DQqFTyVdqyD1qSAoH3uYRMRggP7AT10hXoj3LxEUug==
+X-Google-Smtp-Source: APXvYqykp1DuThBvMHQudWFHe1i5LDutX+DSoMUZJhvgmyjw83s4vjPFLrSJvhmne+VfIJCDmQ01E4r7RzMGu2GKdoM=
+X-Received: by 2002:a05:6214:38c:: with SMTP id l12mr16328651qvy.224.1576286467044;
+ Fri, 13 Dec 2019 17:21:07 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20191213235144.3063354-1-andriin@fb.com> <20191213235144.3063354-3-andriin@fb.com>
+ <e612995b-ee80-5d22-512c-dfe700c97865@fb.com>
+In-Reply-To: <e612995b-ee80-5d22-512c-dfe700c97865@fb.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 13 Dec 2019 17:20:55 -0800
+Message-ID: <CAEf4BzZO0RH4sYcEznEH7yacB+343NNTOtcCs6Xi9GHqO4EnsA@mail.gmail.com>
+Subject: Re: [PATCH v3 bpf-next 2/4] libbpf: support libbpf-provided extern variables
+To:     Alexei Starovoitov <ast@fb.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        Kernel Team <Kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 11 Dec 2019 22:20:16 +0800, Hangbin Liu wrote:
-> In patch 4b1373de73a3 ("net: ipv6: addr: perform strict checks also for doit
-> handlers") we add strict check for inet6_rtm_getaddr(). But we did the
-> invalid header values check before checking if NETLINK_F_STRICT_CHK is
-> set. This may break backwards compatibility if user already set the
-> ifm->ifa_prefixlen, ifm->ifa_flags, ifm->ifa_scope in their netlink code.
-> 
-> I didn't move the nlmsg_len check becuase I thought it's a valid check.
-> 
-> Reported-by: Jianlin Shi <jishi@redhat.com>
-> Fixes: 4b1373de73a3 ("net: ipv6: addr: perform strict checks also for doit handlers")
-> Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
+On Fri, Dec 13, 2019 at 4:20 PM Alexei Starovoitov <ast@fb.com> wrote:
+>
+> On 12/13/19 3:51 PM, Andrii Nakryiko wrote:
+> >   static int
+> >   bpf_object__init_internal_map(struct bpf_object *obj, enum libbpf_map_type type,
+> > -                           int sec_idx, Elf_Data *data)
+> > +                           int sec_idx, void *data, size_t data_sz)
+>
+> the previous patch set did:
+>   bpf_object__init_internal_map(struct bpf_object *obj, enum
+> libbpf_map_type type,
+> -                             int sec_idx, Elf_Data *data, void **data_buff)
+> +                             int sec_idx, Elf_Data *data)
+>
+> and now this patch set refactors it again from Elf_Data into
+> two individual arguments.
+> Could you do this right away in the previous set and avoid this churn?
 
-Applied, and queued for stable, thanks!
+no problem, will do
+
+> Not a strong opinion though.
+> Just odd to see the function being changed back to back.
+> Thankfully that's internal in .c file.
