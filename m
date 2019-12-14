@@ -2,14 +2,14 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A52411F087
+	by mail.lfdr.de (Postfix) with ESMTP id D302011F088
 	for <lists+netdev@lfdr.de>; Sat, 14 Dec 2019 07:05:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726668AbfLNGEq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 14 Dec 2019 01:04:46 -0500
-Received: from mga06.intel.com ([134.134.136.31]:24724 "EHLO mga06.intel.com"
+        id S1726683AbfLNGEt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 14 Dec 2019 01:04:49 -0500
+Received: from mga06.intel.com ([134.134.136.31]:24723 "EHLO mga06.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726231AbfLNGEh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1726299AbfLNGEh (ORCPT <rfc822;netdev@vger.kernel.org>);
         Sat, 14 Dec 2019 01:04:37 -0500
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
@@ -17,16 +17,17 @@ Received: from orsmga003.jf.intel.com ([10.7.209.27])
   by orsmga104.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 13 Dec 2019 22:04:34 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.69,312,1571727600"; 
-   d="scan'208";a="216855229"
+   d="scan'208";a="216855230"
 Received: from mjmartin-nuc02.mjmartin-nuc02 (HELO mjmartin-nuc02.sea.intel.com) ([10.251.17.224])
   by orsmga003.jf.intel.com with ESMTP; 13 Dec 2019 22:04:34 -0800
 From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
 To:     netdev@vger.kernel.org, mptcp@lists.01.org
-Cc:     Paolo Abeni <pabeni@redhat.com>,
+Cc:     Matthieu Baerts <matthieu.baerts@tessares.net>,
+        Peter Krystad <peter.krystad@linux.intel.com>,
         Mat Martineau <mathew.j.martineau@linux.intel.com>
-Subject: [PATCH net-next 13/15] mptcp: allow collapsing consecutive sendpages on the same substream
-Date:   Fri, 13 Dec 2019 22:04:15 -0800
-Message-Id: <20191214060417.2870-14-mathew.j.martineau@linux.intel.com>
+Subject: [PATCH net-next 14/15] mptcp: new sysctl to control the activation per NS
+Date:   Fri, 13 Dec 2019 22:04:16 -0800
+Message-Id: <20191214060417.2870-15-mathew.j.martineau@linux.intel.com>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20191214060417.2870-1-mathew.j.martineau@linux.intel.com>
 References: <20191214060417.2870-1-mathew.j.martineau@linux.intel.com>
@@ -37,167 +38,245 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Paolo Abeni <pabeni@redhat.com>
+From: Matthieu Baerts <matthieu.baerts@tessares.net>
 
-If the current sendmsg() lands on the same subflow we used last, we
-can try to collapse the data.
+New MPTCP sockets will return -ENOPROTOOPT if MPTCP support is disabled
+for the current net namespace.
 
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+We are providing here a way to control access to the feature for those
+that need to turn it on or off.
+
+The value of this new sysctl can be different per namespace. We can then
+restrict the usage of MPTCP to the selected NS. In case of serious
+issues with MPTCP, administrators can now easily turn MPTCP off.
+
+Co-developed-by: Peter Krystad <peter.krystad@linux.intel.com>
+Signed-off-by: Peter Krystad <peter.krystad@linux.intel.com>
+Signed-off-by: Matthieu Baerts <matthieu.baerts@tessares.net>
 Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
 ---
- net/mptcp/protocol.c | 75 +++++++++++++++++++++++++++++++++++---------
- 1 file changed, 60 insertions(+), 15 deletions(-)
+ net/mptcp/Makefile   |   2 +-
+ net/mptcp/ctrl.c     | 130 +++++++++++++++++++++++++++++++++++++++++++
+ net/mptcp/protocol.c |  16 ++++--
+ net/mptcp/protocol.h |   3 +
+ 4 files changed, 146 insertions(+), 5 deletions(-)
+ create mode 100644 net/mptcp/ctrl.c
 
-diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
-index fd89075bd1c9..7dc27a4f0403 100644
---- a/net/mptcp/protocol.c
-+++ b/net/mptcp/protocol.c
-@@ -123,14 +123,27 @@ static struct sock *mptcp_subflow_recv_lookup(const struct mptcp_sock *msk)
- 	return NULL;
- }
+diff --git a/net/mptcp/Makefile b/net/mptcp/Makefile
+index 178ae81d8b66..4e98d9edfd0a 100644
+--- a/net/mptcp/Makefile
++++ b/net/mptcp/Makefile
+@@ -1,4 +1,4 @@
+ # SPDX-License-Identifier: GPL-2.0
+ obj-$(CONFIG_MPTCP) += mptcp.o
  
-+static inline bool mptcp_skb_can_collapse_to(const struct mptcp_sock *msk,
-+					     const struct sk_buff *skb,
-+					     const struct mptcp_ext *mpext)
-+{
-+	if (!tcp_skb_can_collapse_to(skb))
-+		return false;
+-mptcp-y := protocol.o subflow.o options.o token.o crypto.o
++mptcp-y := protocol.o subflow.o options.o token.o crypto.o ctrl.o
+diff --git a/net/mptcp/ctrl.c b/net/mptcp/ctrl.c
+new file mode 100644
+index 000000000000..8e39585d37f3
+--- /dev/null
++++ b/net/mptcp/ctrl.c
+@@ -0,0 +1,130 @@
++// SPDX-License-Identifier: GPL-2.0
++/* Multipath TCP
++ *
++ * Copyright (c) 2019, Tessares SA.
++ */
 +
-+	/* can collapse only if MPTCP level sequence is in order */
-+	return mpext && mpext->data_seq + mpext->data_len == msk->write_seq;
++#include <linux/sysctl.h>
++
++#include <net/net_namespace.h>
++#include <net/netns/generic.h>
++
++#include "protocol.h"
++
++#define MPTCP_SYSCTL_PATH "net/mptcp"
++
++static int mptcp_pernet_id;
++struct mptcp_pernet {
++	struct ctl_table_header *ctl_table_hdr;
++
++	int mptcp_enabled;
++};
++
++static struct mptcp_pernet *mptcp_get_pernet(struct net *net)
++{
++	return net_generic(net, mptcp_pernet_id);
 +}
 +
- static int mptcp_sendmsg_frag(struct sock *sk, struct sock *ssk,
--			      struct msghdr *msg, long *timeo)
-+			      struct msghdr *msg, long *timeo, int *pmss_now,
-+			      int *ps_goal)
- {
--	int mss_now = 0, size_goal = 0, ret = 0;
-+	int mss_now, avail_size, size_goal, ret;
- 	struct mptcp_sock *msk = mptcp_sk(sk);
- 	struct mptcp_ext *mpext = NULL;
-+	struct sk_buff *skb, *tail;
-+	bool can_collapse = false;
- 	struct page_frag *pfrag;
--	struct sk_buff *skb;
- 	size_t psize;
- 
- 	/* use the mptcp page cache so that we can easily move the data
-@@ -146,8 +159,29 @@ static int mptcp_sendmsg_frag(struct sock *sk, struct sock *ssk,
- 
- 	/* compute copy limit */
- 	mss_now = tcp_send_mss(ssk, &size_goal, msg->msg_flags);
--	psize = min_t(int, pfrag->size - pfrag->offset, size_goal);
-+	*pmss_now = mss_now;
-+	*ps_goal = size_goal;
-+	avail_size = size_goal;
-+	skb = tcp_write_queue_tail(ssk);
-+	if (skb) {
-+		mpext = skb_ext_find(skb, SKB_EXT_MPTCP);
++int mptcp_is_enabled(struct net *net)
++{
++	return mptcp_get_pernet(net)->mptcp_enabled;
++}
 +
-+		/* Limit the write to the size available in the
-+		 * current skb, if any, so that we create at most a new skb.
-+		 * Explicitly tells TCP internals to avoid collapsing on later
-+		 * queue management operation, to avoid breaking the ext <->
-+		 * SSN association set here
++static struct ctl_table mptcp_sysctl_table[] = {
++	{
++		.procname = "enabled",
++		.maxlen = sizeof(int),
++		.mode = 0644,
++		/* users with CAP_NET_ADMIN or root (not and) can change this
++		 * value, same as other sysctl or the 'net' tree.
 +		 */
-+		can_collapse = (size_goal - skb->len > 0) &&
-+			      mptcp_skb_can_collapse_to(msk, skb, mpext);
-+		if (!can_collapse)
-+			TCP_SKB_CB(skb)->eor = 1;
-+		else
-+			avail_size = size_goal - skb->len;
-+	}
-+	psize = min_t(size_t, pfrag->size - pfrag->offset, avail_size);
- 
-+	/* Copy to page */
- 	pr_debug("left=%zu", msg_data_left(msg));
- 	psize = copy_page_from_iter(pfrag->page, pfrag->offset,
- 				    min_t(size_t, msg_data_left(msg), psize),
-@@ -156,14 +190,9 @@ static int mptcp_sendmsg_frag(struct sock *sk, struct sock *ssk,
- 	if (!psize)
- 		return -EINVAL;
- 
--	/* Mark the end of the previous write so the beginning of the
--	 * next write (with its own mptcp skb extension data) is not
--	 * collapsed.
-+	/* tell the TCP stack to delay the push so that we can safely
-+	 * access the skb after the sendpages call
- 	 */
--	skb = tcp_write_queue_tail(ssk);
--	if (skb)
--		TCP_SKB_CB(skb)->eor = 1;
--
- 	ret = do_tcp_sendpages(ssk, pfrag->page, pfrag->offset, psize,
- 			       msg->msg_flags | MSG_SENDPAGE_NOTLAST);
- 	if (ret <= 0)
-@@ -171,6 +200,18 @@ static int mptcp_sendmsg_frag(struct sock *sk, struct sock *ssk,
- 	if (unlikely(ret < psize))
- 		iov_iter_revert(&msg->msg_iter, psize - ret);
- 
-+	/* if the tail skb extension is still the cached one, collapsing
-+	 * really happened. Note: we can't check for 'same skb' as the sk_buff
-+	 * hdr on tail can be transmitted, freed and re-allocated by the
-+	 * do_tcp_sendpages() call
-+	 */
-+	tail = tcp_write_queue_tail(ssk);
-+	if (mpext && tail && mpext == skb_ext_find(tail, SKB_EXT_MPTCP)) {
-+		WARN_ON_ONCE(!can_collapse);
-+		mpext->data_len += ret;
-+		goto out;
++		.proc_handler = proc_dointvec,
++	},
++	{}
++};
++
++static void mptcp_pernet_set_defaults(struct mptcp_pernet *pernet)
++{
++	pernet->mptcp_enabled = 1;
++}
++
++static int mptcp_pernet_new_table(struct net *net, struct mptcp_pernet *pernet)
++{
++	struct ctl_table_header *hdr;
++	struct ctl_table *table;
++
++	table = mptcp_sysctl_table;
++	if (!net_eq(net, &init_net)) {
++		table = kmemdup(table, sizeof(mptcp_sysctl_table), GFP_KERNEL);
++		if (!table)
++			goto err_alloc;
 +	}
 +
- 	skb = tcp_write_queue_tail(ssk);
- 	mpext = __skb_ext_set(skb, SKB_EXT_MPTCP, msk->cached_ext);
- 	msk->cached_ext = NULL;
-@@ -186,11 +227,11 @@ static int mptcp_sendmsg_frag(struct sock *sk, struct sock *ssk,
- 		 mpext->data_seq, mpext->subflow_seq, mpext->data_len,
- 		 mpext->dsn64);
- 
-+out:
- 	pfrag->offset += ret;
- 	msk->write_seq += ret;
- 	mptcp_subflow_ctx(ssk)->rel_write_seq += ret;
- 
--	tcp_push(ssk, msg->msg_flags, mss_now, tcp_sk(ssk)->nonagle, size_goal);
- 	return ret;
++	table[0].data = &pernet->mptcp_enabled;
++
++	hdr = register_net_sysctl(net, MPTCP_SYSCTL_PATH, table);
++	if (!hdr)
++		goto err_reg;
++
++	pernet->ctl_table_hdr = hdr;
++
++	return 0;
++
++err_reg:
++	if (!net_eq(net, &init_net))
++		kfree(table);
++err_alloc:
++	return -ENOMEM;
++}
++
++static void mptcp_pernet_del_table(struct mptcp_pernet *pernet)
++{
++	struct ctl_table *table = pernet->ctl_table_hdr->ctl_table_arg;
++
++	unregister_net_sysctl_table(pernet->ctl_table_hdr);
++
++	kfree(table);
++}
++
++static int __net_init mptcp_net_init(struct net *net)
++{
++	struct mptcp_pernet *pernet = mptcp_get_pernet(net);
++
++	mptcp_pernet_set_defaults(pernet);
++
++	return mptcp_pernet_new_table(net, pernet);
++}
++
++/* Note: the callback will only be called per extra netns */
++static void __net_exit mptcp_net_exit(struct net *net)
++{
++	struct mptcp_pernet *pernet = mptcp_get_pernet(net);
++
++	mptcp_pernet_del_table(pernet);
++}
++
++static struct pernet_operations mptcp_pernet_ops = {
++	.init = mptcp_net_init,
++	.exit = mptcp_net_exit,
++	.id = &mptcp_pernet_id,
++	.size = sizeof(struct mptcp_pernet),
++};
++
++void __init mptcp_init(void)
++{
++	mptcp_proto_init();
++
++	if (register_pernet_subsys(&mptcp_pernet_ops) < 0)
++		panic("Failed to register MPTCP pernet subsystem.\n");
++}
++
++#if IS_ENABLED(CONFIG_MPTCP_IPV6)
++int __init mptcpv6_init(void)
++{
++	int err;
++
++	err = mptcp_proto_v6_init();
++
++	return err;
++}
++#endif
+diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
+index 7dc27a4f0403..7cc7a3bdbdbc 100644
+--- a/net/mptcp/protocol.c
++++ b/net/mptcp/protocol.c
+@@ -521,7 +521,7 @@ static void __mptcp_close_ssk(struct sock *sk, struct sock *ssk,
+ 	}
  }
  
-@@ -212,11 +253,11 @@ static void ssk_check_wmem(struct mptcp_sock *msk, struct sock *ssk)
- 
- static int mptcp_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+-static int mptcp_init_sock(struct sock *sk)
++static int __mptcp_init_sock(struct sock *sk)
  {
-+	int mss_now = 0, size_goal = 0, ret = 0;
  	struct mptcp_sock *msk = mptcp_sk(sk);
- 	struct socket *ssock;
- 	size_t copied = 0;
- 	struct sock *ssk;
--	int ret = 0;
- 	long timeo;
  
- 	if (msg->msg_flags & ~(MSG_MORE | MSG_DONTWAIT | MSG_NOSIGNAL))
-@@ -243,15 +284,19 @@ static int mptcp_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+@@ -531,6 +531,14 @@ static int mptcp_init_sock(struct sock *sk)
+ 	return 0;
+ }
  
++static int mptcp_init_sock(struct sock *sk)
++{
++	if (!mptcp_is_enabled(sock_net(sk)))
++		return -ENOPROTOOPT;
++
++	return __mptcp_init_sock(sk);
++}
++
+ static void mptcp_subflow_shutdown(struct sock *ssk, int how)
+ {
  	lock_sock(ssk);
- 	while (msg_data_left(msg)) {
--		ret = mptcp_sendmsg_frag(sk, ssk, msg, &timeo);
-+		ret = mptcp_sendmsg_frag(sk, ssk, msg, &timeo, &mss_now,
-+					 &size_goal);
- 		if (ret < 0)
- 			break;
+@@ -639,7 +647,7 @@ static struct sock *mptcp_accept(struct sock *sk, int flags, int *err,
+ 			return NULL;
+ 		}
  
- 		copied += ret;
- 	}
+-		mptcp_init_sock(new_mptcp_sock);
++		__mptcp_init_sock(new_mptcp_sock);
  
--	if (copied > 0)
-+	if (copied) {
- 		ret = copied;
-+		tcp_push(ssk, msg->msg_flags, mss_now, tcp_sk(ssk)->nonagle,
-+			 size_goal);
-+	}
+ 		msk = mptcp_sk(new_mptcp_sock);
+ 		msk->remote_key = subflow->remote_key;
+@@ -1081,7 +1089,7 @@ static struct inet_protosw mptcp_protosw = {
+ 	.flags		= INET_PROTOSW_ICSK,
+ };
  
- 	ssk_check_wmem(msk, ssk);
- 	release_sock(ssk);
+-void __init mptcp_init(void)
++void mptcp_proto_init(void)
+ {
+ 	mptcp_prot.h.hashinfo = tcp_prot.h.hashinfo;
+ 	mptcp_stream_ops = inet_stream_ops;
+@@ -1119,7 +1127,7 @@ static struct inet_protosw mptcp_v6_protosw = {
+ 	.flags		= INET_PROTOSW_ICSK,
+ };
+ 
+-int mptcpv6_init(void)
++int mptcp_proto_v6_init(void)
+ {
+ 	int err;
+ 
+diff --git a/net/mptcp/protocol.h b/net/mptcp/protocol.h
+index f02dd5c35ec9..f61b197023e2 100644
+--- a/net/mptcp/protocol.h
++++ b/net/mptcp/protocol.h
+@@ -166,6 +166,9 @@ extern const struct inet_connection_sock_af_ops ipv6_specific;
+ #endif
+ 
+ void mptcp_proto_init(void);
++#if IS_ENABLED(CONFIG_MPTCP_IPV6)
++int mptcp_proto_v6_init(void);
++#endif
+ 
+ struct mptcp_read_arg {
+ 	struct msghdr *msg;
 -- 
 2.24.1
 
