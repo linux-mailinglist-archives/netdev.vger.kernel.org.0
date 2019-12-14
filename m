@@ -2,133 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B191611F401
-	for <lists+netdev@lfdr.de>; Sat, 14 Dec 2019 21:36:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7316011F406
+	for <lists+netdev@lfdr.de>; Sat, 14 Dec 2019 21:42:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726823AbfLNUg1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 14 Dec 2019 15:36:27 -0500
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:34819 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726687AbfLNUg1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 14 Dec 2019 15:36:27 -0500
-Received: by mail-pg1-f193.google.com with SMTP id l24so1320752pgk.2
-        for <netdev@vger.kernel.org>; Sat, 14 Dec 2019 12:36:26 -0800 (PST)
+        id S1726792AbfLNUk3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 14 Dec 2019 15:40:29 -0500
+Received: from mail-ed1-f45.google.com ([209.85.208.45]:46936 "EHLO
+        mail-ed1-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726484AbfLNUk3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 14 Dec 2019 15:40:29 -0500
+Received: by mail-ed1-f45.google.com with SMTP id m8so1894426edi.13
+        for <netdev@vger.kernel.org>; Sat, 14 Dec 2019 12:40:28 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=u5S8AzA/two94BW1QHz+RPP0930vQSWwKoy/1jrejMo=;
-        b=lfGP0h/6gjRV3qM4YEFh2+9XY/Vn700YCuonoJZrLzUvgymJ4AwkVEjYqcRp6LBlMl
-         ptZSe9eEWDPT9Af6pcwB5Rd12R0ps6Rdsue/xR4W7IWtPvk87m9rzCSv7zx66OWmUnnP
-         z+6PZGJ0sQnUihfo3rijoi1qU6NsYEuNgZjWfihTdu/VKqe0oOLBGKVjw5GSBliKtM7i
-         B8kAQFe6vXRShN9qPbBkACTWzJEgjbfxxzPqtB2Ahdyhg/bj+mvtc3xoousWt49dfeu3
-         p30tsbDnEzZFNYY1geeh9It/aYV+mifXhi2O+iNCguBlN7RD1Z9hBxkKccDNUmUpOquF
-         YeoQ==
+        d=herbertland-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=YC53N0b5p75wzufT2htE03AK96NU7OSrHK+pxH9cUUY=;
+        b=O3sumWz7S69K157WwzM7sT5W67T+pneBoGN228Nz4mkYx+jWvQPQLPuODBLc4yjo40
+         BRFo/pGpfnBviahJsX0AwXzZjdWnXovRChMmHLpNuh/eAG+w3IGZlFinGBFk3CHYYGTw
+         fSSVizE0XT5oE2od0wJuGtNBZYuJ6Ck2/hFAxI6grwSSbUbo81QEUlH0C1KO7Q5/++U0
+         1zdHhD4qPV98bCf2YUTYSwhhxW1WIWeZb0+zgRLklXgNdsYGV6839ZyaGXVTBsWumn+v
+         +vb3L+749WmPMJ7uKX1G3n91VPaJC0U4Ds/tdckbHCgMpKZUrhuCBVgCnMX15bS0nbGv
+         RpbA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=u5S8AzA/two94BW1QHz+RPP0930vQSWwKoy/1jrejMo=;
-        b=ebHAMQmpuSpCCcGBAegXsLZpxPFXFFrMC6VROz6jojmPFBpGkT3I67rBzeX+zk09hv
-         fOnYFCN2HzTRjcwT38bl7y/8GzrLs6MTVdN/a2rXPmAQyr1IyuhZb7RPyXVh51ycn22U
-         nRsTTjBxE8OKwbQxyiJH1e0UY3omdyNMPAFmh5zrMXtquJyTzu+V29erl6iUTbkIc6nc
-         61XZQ7xyRILiUWTbkPI55WGSP31v4b1SLHrNCLeMGIONybwNQtH0UIaAnNE9Ch7kWD3h
-         8+SoyEGEIqYfaxfoVvTx53bK/KsOaVd96ibF1xbvQlLBB5YacwV++a5gMX/aYsa4VKvF
-         6mLg==
-X-Gm-Message-State: APjAAAWj94b2m0fM3Qs++8E1uYkmWGOxlGnoBwRt+65BFL0c9beBkA+U
-        Dx6sFZeYwy9nGFlUR8J+H1AGBw==
-X-Google-Smtp-Source: APXvYqyy2Uw5pYrnt7cqN32mxFB1vF+Q9fs1ZY/FlZ7maVgLk5Wicty7+Ay07UDDowWoZgWaopJlaA==
-X-Received: by 2002:a62:ee06:: with SMTP id e6mr7100945pfi.45.1576355786428;
-        Sat, 14 Dec 2019 12:36:26 -0800 (PST)
-Received: from cakuba.netronome.com (c-73-202-202-92.hsd1.ca.comcast.net. [73.202.202.92])
-        by smtp.gmail.com with ESMTPSA id j28sm15493997pgb.36.2019.12.14.12.36.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 14 Dec 2019 12:36:26 -0800 (PST)
-Date:   Sat, 14 Dec 2019 12:36:23 -0800
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Jose Abreu <Jose.Abreu@synopsys.com>
-Cc:     netdev@vger.kernel.org, Joao Pinto <Joao.Pinto@synopsys.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Maxime Ripard <mripard@kernel.org>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next 3/4] net: stmmac: Let TX and RX interrupts be
- independently enabled/disabled
-Message-ID: <20191214123623.1aeb4966@cakuba.netronome.com>
-In-Reply-To: <04c000a3e0356e8bfb63e07490d8de8e081a2afe.1576007149.git.Jose.Abreu@synopsys.com>
-References: <cover.1576007149.git.Jose.Abreu@synopsys.com>
-        <04c000a3e0356e8bfb63e07490d8de8e081a2afe.1576007149.git.Jose.Abreu@synopsys.com>
-Organization: Netronome Systems, Ltd.
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=YC53N0b5p75wzufT2htE03AK96NU7OSrHK+pxH9cUUY=;
+        b=EIPleIgRu+Nc4qB2+NzRtFS6nyNagleG14zf82rcq7Z2GPS4ZLk/KLPC90bEcbucxj
+         Ih7wNHj7othKcDPZtGgKUm3SamDBkWRhIMCa0LFuo43r8QYH+mX99rcnPnGMgvyvmGhz
+         5RCJoBRZu67Ymnj6ngGRsYpKvuy6MSwO2jElbTngbjBMdXsrXN7rnu4Hd8cH5f5ZcjMh
+         ksjtt4bhFvglbvmXlW6pXRf4jNMzk3BsmqwlwSbF9tWhT6IeEwJcqkvUd84wnt8NJnF/
+         AzZES3/5novh8B2b2NX3d81zqZkBYSdNEIcITOE5/6pd2hrz/P1sO7PItP3lpWi4Kt9D
+         91aQ==
+X-Gm-Message-State: APjAAAWmfBTn76ezMoJtOUgp8wFuLXdlDmSq7i7KuIWOeFIhKfMYZvOL
+        IhrihcPMVyLg6CNUs6r0h1Tx3CN568EzuUhDe0sn5sir
+X-Google-Smtp-Source: APXvYqz7vkTLWEpm/YW0vKfviEO+uacrn/n+eTjXEwioTN1oguJ0rr4ZAoIdQPJGHskLq6AeVv4TBN/Gce5y9LHNMf8=
+X-Received: by 2002:a17:906:1e8b:: with SMTP id e11mr24472820ejj.305.1576356027522;
+ Sat, 14 Dec 2019 12:40:27 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <5975583.vpC7qLWE0j@cg-notebook>
+In-Reply-To: <5975583.vpC7qLWE0j@cg-notebook>
+From:   Tom Herbert <tom@herbertland.com>
+Date:   Sat, 14 Dec 2019 12:40:16 -0800
+Message-ID: <CALx6S36PsbRW+Z0Eeh2Dtkb-hzXGekD-PLyML08g4xo5Vddvug@mail.gmail.com>
+Subject: Re: IPv6 Destination Options question
+To:     Christoph Grenz <christophg+lkml@grenz-bonn.de>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 10 Dec 2019 20:54:43 +0100, Jose Abreu wrote:
-> @@ -2278,10 +2286,14 @@ static void stmmac_tx_timer(struct timer_list *t)
->  	 * If NAPI is already running we can miss some events. Let's rearm
->  	 * the timer and try again.
->  	 */
-> -	if (likely(napi_schedule_prep(&ch->tx_napi)))
-> +	if (likely(napi_schedule_prep(&ch->tx_napi))) {
-> +		unsigned long flags;
-> +
-> +		spin_lock_irqsave(&ch->lock, flags);
-> +		stmmac_disable_dma_irq(priv, priv->ioaddr, ch->index, 0, 1);
-> +		spin_unlock_irqrestore(&ch->lock, flags);
->  		__napi_schedule(&ch->tx_napi);
-> -	else
-> -		mod_timer(&tx_q->txtimer, STMMAC_COAL_TIMER(10));
+On Sat, Dec 14, 2019 at 8:19 AM Christoph Grenz
+<christophg+lkml@grenz-bonn.de> wrote:
+>
+> Hello,
+>
+> I'm playing around with Mobile IPv6 and noticed a strange behaviour in the
+> Linux network system when using IPv6 destination options:
+>
+> I'm able to send destination options on SOCK_DGRAM and SOCK_RAW sockets with
+> sendmsg() and IPV6_DSTOPTS ancillary data. The sent packets also look correct
+> in Wireshark.
+>
+> But I'm not able to receive packets with destination options on a socket with
+> the IPV6_RECVDSTOPTS socket option enabled. Both a packet with a Home Address
+> Option and a packet with an empty destination options header (only containing
+> padding) won't be received on a socket for the payload protocol.
 
-You should also remove the comment above the if statement if it's
-really okay to no longer re-arm the timer. No?
+Christoph, Can you post your receive code?
 
-> +	}
->  }
->  
->  /**
+Thanks
 
-> @@ -3759,24 +3777,18 @@ static int stmmac_napi_poll_tx(struct napi_struct *napi, int budget)
->  	struct stmmac_channel *ch =
->  		container_of(napi, struct stmmac_channel, tx_napi);
->  	struct stmmac_priv *priv = ch->priv_data;
-> -	struct stmmac_tx_queue *tx_q;
->  	u32 chan = ch->index;
->  	int work_done;
->  
->  	priv->xstats.napi_poll++;
->  
-> -	work_done = stmmac_tx_clean(priv, DMA_TX_SIZE, chan);
-> -	work_done = min(work_done, budget);
-> -
-> -	if (work_done < budget)
-> -		napi_complete_done(napi, work_done);
-> +	work_done = stmmac_tx_clean(priv, budget, chan);
-> +	if (work_done < budget && napi_complete_done(napi, work_done)) {
-
-Not really related to this patch, but this looks a little suspicious. 
-I think the TX completions should all be processed regardless of the
-budget. The budget is for RX.
-
-> +		unsigned long flags;
->  
-> -	/* Force transmission restart */
-> -	tx_q = &priv->tx_queue[chan];
-> -	if (tx_q->cur_tx != tx_q->dirty_tx) {
-> -		stmmac_enable_dma_transmission(priv, priv->ioaddr);
-> -		stmmac_set_tx_tail_ptr(priv, priv->ioaddr, tx_q->tx_tail_addr,
-> -				       chan);
-> +		spin_lock_irqsave(&ch->lock, flags);
-> +		stmmac_enable_dma_irq(priv, priv->ioaddr, chan, 0, 1);
-> +		spin_unlock_irqrestore(&ch->lock, flags);
->  	}
->  
->  	return work_done;
+>
+> Only a SOCK_RAW socket for IPPROTO_DSTOPTS receives the packet.
+>
+> I tested this on a vanilla 5.4.0 kernel and got the same behaviour. Activating
+> dyndbg for everything in net/ipv6 didn't produce any relevant output in dmesg.
+>
+> Is this expected behaviour or a bug? Or do I maybe need some other socket
+> option or a xfrm policy to receive packets with destination options?
+>
+> Best regards
+> Christoph
+>
