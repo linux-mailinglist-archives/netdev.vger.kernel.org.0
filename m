@@ -2,81 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A7E2511EEF8
-	for <lists+netdev@lfdr.de>; Sat, 14 Dec 2019 01:04:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5517411EEFE
+	for <lists+netdev@lfdr.de>; Sat, 14 Dec 2019 01:06:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726752AbfLNABL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Dec 2019 19:01:11 -0500
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:39160 "EHLO
-        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726404AbfLNABK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Dec 2019 19:01:10 -0500
-Received: by mail-pg1-f195.google.com with SMTP id b137so257798pga.6;
-        Fri, 13 Dec 2019 16:01:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=xVDLFOdiYuZ2gWWU6G2SU+PR3kNuoyF0CB7hOhKkK3A=;
-        b=F4zrlZ58NaT3p+QGxOYglWwmbHf95PFxUF3jKGiP+Hy1TT5Wyzi6PfMuvFASMvRo4T
-         DHKvRwj70bh/7djIsvVq+csuJvvGKMr3dA5JSWjLEvdvUOycRC4ReT5iRTPNGyanDZQV
-         WGGzAbPezA8CjN80dxX7+gfQ45JUuKKpSvzmlnG5FY+OAveJbPuKieA5/3JAMh2+c6RF
-         iRdg/cau7+cvywdzXB+/oYKEMHtCS//I1mPgN8enVZ4qnQmLNHoPNve3Niw3DnqNZ/IZ
-         KEUSi6z8A/8zQCaEAe6ehoKadPNwXdq1gNKg+QKV3ZP9RpHkqArQ3cNX5XV+nmcgcDkq
-         HyMQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=xVDLFOdiYuZ2gWWU6G2SU+PR3kNuoyF0CB7hOhKkK3A=;
-        b=D+QmyF+vtqu3t5rQQIMQpv9nV6ZFhq65euEia7KM+tVE5HESQJFTVsUV9bnt8S9G2e
-         ffc/+qvXVtTxrD7zbq1NT7Ez0d8XcQPzkpUTh1Yfb61hUUQVteBuOqKufqH993Pok38S
-         ODPFmuwVzSj+I6GAvtmY5/BLneJyM8D/Sd52A9wci/aUlU/XaW8b4Nx6wN1jGvW5XVpF
-         H5BbUiCreTHSMI12/4XMqt0ycMhT8usao3ViX5i9Y6Neo31V2Nky8sVHjEgP3uCb1nSZ
-         9Q5HG8GUChMC0QtqfPifIQUFC/hizJA34aWU+7Nzk13xKIaMDTsZUuHCfBK86gvG6csR
-         pP3A==
-X-Gm-Message-State: APjAAAUYnm7QPZjkGGTIzBBtJI0B8gCautMeb93q85Cverlp8HbZXg64
-        YuZnaRekFZ7PHI+0X3JQ1vg=
-X-Google-Smtp-Source: APXvYqxMhnKdtH5xdRAK3T+9o4+yeSm4AJNU/TfGFBtC1Awll2SN4OHp+KZN27j7ZzaNnhV3J7Gz2A==
-X-Received: by 2002:a63:e545:: with SMTP id z5mr2416894pgj.209.1576281670063;
-        Fri, 13 Dec 2019 16:01:10 -0800 (PST)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:200::de66])
-        by smtp.gmail.com with ESMTPSA id z26sm11792382pgu.80.2019.12.13.16.01.08
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 13 Dec 2019 16:01:09 -0800 (PST)
-Date:   Fri, 13 Dec 2019 16:01:08 -0800
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Andrii Nakryiko <andriin@fb.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@fb.com,
-        daniel@iogearbox.net, andrii.nakryiko@gmail.com, kernel-team@fb.com
-Subject: Re: [PATCH v3 bpf-next 15/17] selftests/bpf: convert few more
- selftest to skeletons
-Message-ID: <20191214000107.rvprwvpifsbtoruw@ast-mbp.dhcp.thefacebook.com>
-References: <20191213223214.2791885-1-andriin@fb.com>
- <20191213223214.2791885-16-andriin@fb.com>
+        id S1726642AbfLNAGU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Dec 2019 19:06:20 -0500
+Received: from mga02.intel.com ([134.134.136.20]:20151 "EHLO mga02.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726345AbfLNAGU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 13 Dec 2019 19:06:20 -0500
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga101.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 13 Dec 2019 16:06:19 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.69,311,1571727600"; 
+   d="scan'208";a="216583684"
+Received: from amhui-mobl1.amr.corp.intel.com ([10.251.3.80])
+  by orsmga006.jf.intel.com with ESMTP; 13 Dec 2019 16:06:19 -0800
+Date:   Fri, 13 Dec 2019 16:06:19 -0800 (PST)
+From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
+X-X-Sender: mjmartin@amhui-mobl1.amr.corp.intel.com
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+cc:     netdev@vger.kernel.org, mptcp@lists.01.org
+Subject: Re: [PATCH net-next 02/11] sock: Make sk_protocol a 16-bit value
+In-Reply-To: <9a83715c-92c3-7e3e-304d-34b1d9285138@gmail.com>
+Message-ID: <alpine.OSX.2.21.1912131555280.38100@amhui-mobl1.amr.corp.intel.com>
+References: <20191213230022.28144-1-mathew.j.martineau@linux.intel.com> <20191213230022.28144-3-mathew.j.martineau@linux.intel.com> <9a83715c-92c3-7e3e-304d-34b1d9285138@gmail.com>
+User-Agent: Alpine 2.21 (OSX 202 2017-01-01)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191213223214.2791885-16-andriin@fb.com>
-User-Agent: NeoMutt/20180223
+Content-Type: text/plain; charset=US-ASCII; format=flowed
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Dec 13, 2019 at 02:32:12PM -0800, Andrii Nakryiko wrote:
-> Convert few more selftests to use generated BPF skeletons as a demonstration
-> on how to use it.
-> 
-> Acked-by: Martin KaFai Lau <kafai@fb.com>
-> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
-> ---
->  .../selftests/bpf/prog_tests/fentry_fexit.c   | 105 ++++++------------
->  .../selftests/bpf/prog_tests/fentry_test.c    |  72 +++++-------
->  tools/testing/selftests/bpf/prog_tests/mmap.c |  58 ++++------
->  .../bpf/prog_tests/stacktrace_build_id.c      |  79 +++++--------
->  .../bpf/prog_tests/stacktrace_build_id_nmi.c  |  84 ++++++--------
->  5 files changed, 149 insertions(+), 249 deletions(-)
 
-Another nice diff stat.
+On Fri, 13 Dec 2019, Eric Dumazet wrote:
 
+>
+>
+> On 12/13/19 3:00 PM, Mat Martineau wrote:
+>> Match the 16-bit width of skbuff->protocol. Fills an 8-bit hole so
+>> sizeof(struct sock) does not change.
+>>
+>> Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
+>> ---
+>>  include/net/sock.h          | 4 ++--
+>>  include/trace/events/sock.h | 2 +-
+>>  2 files changed, 3 insertions(+), 3 deletions(-)
+>>
+>> diff --git a/include/net/sock.h b/include/net/sock.h
+>> index 81dc811aad2e..9dd225f62012 100644
+>> --- a/include/net/sock.h
+>> +++ b/include/net/sock.h
+>> @@ -456,10 +456,10 @@ struct sock {
+>>  				sk_no_check_tx : 1,
+>>  				sk_no_check_rx : 1,
+>>  				sk_userlocks : 4,
+>> -				sk_protocol  : 8,
+>> +				sk_pacing_shift : 8,
+>>  				sk_type      : 16;
+>> +	u16			sk_protocol;
+>>  	u16			sk_gso_max_segs;
+>> -	u8			sk_pacing_shift;
+>
+> Unfortunately sk_pacing_shift must not be a bit field.
+>
+> I have a patch to add proper READ_ONCE()/WRITE_ONCE() on it,
+> since an update can be done from a lockless context ( sk_pacing_shift_update())
+
+Ok, thanks for noting this. I'll remove the change to sk_pacing_shift.
+
+--
+Mat Martineau
+Intel
