@@ -2,84 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 730C611EF78
-	for <lists+netdev@lfdr.de>; Sat, 14 Dec 2019 02:21:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0341311EF7F
+	for <lists+netdev@lfdr.de>; Sat, 14 Dec 2019 02:27:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726736AbfLNBVI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Dec 2019 20:21:08 -0500
-Received: from mail-qv1-f65.google.com ([209.85.219.65]:43907 "EHLO
-        mail-qv1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726704AbfLNBVI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Dec 2019 20:21:08 -0500
-Received: by mail-qv1-f65.google.com with SMTP id p2so492360qvo.10;
-        Fri, 13 Dec 2019 17:21:07 -0800 (PST)
+        id S1726752AbfLNB14 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Dec 2019 20:27:56 -0500
+Received: from mail-lf1-f65.google.com ([209.85.167.65]:32780 "EHLO
+        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726208AbfLNB14 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Dec 2019 20:27:56 -0500
+Received: by mail-lf1-f65.google.com with SMTP id n25so611189lfl.0
+        for <netdev@vger.kernel.org>; Fri, 13 Dec 2019 17:27:55 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=E0H9301ghdZ2dylpyDzeCJfxCEGT/ww6jQxz2tHkrTc=;
-        b=nJ7HlDS+AiFo59FVlQnaK1j7I3sEsgB3OaoH93ZdOAv9T0520PlZWijxhd6x7WgxGG
-         08bR4tKajuStRNsUVyqtexQQGczSaFFAmPFoa4qaez1gjUvp4Qme81AWGv4TG75n10QP
-         LTN/QMLwDzHQD2tFEcVgrHWx2roiMsn3AYjY0JXHNlfI4kU1NhWDmra7cRBmSUF/25V+
-         PifzhHkNmBUDkQ0eUBNsK7iR8bwoDi1+SF1Gsam+ZZPKC0AwpKOWPo9iErhEkR2o4O1X
-         xLnVpxeX5YgeksvYjxxeKVKB3TClrocHhwdpNo/YsoOgg7ju7XbWflm7BUZE07ay49+N
-         8iRQ==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=ScGB0uaG1N2MTFqjHS89TM7sGKsmj+KybyTlxQc+/kA=;
+        b=urN4yCffQ5LSBNl1Z4RFIiOkL8cXsodyn7ff1+7ETynmlW15+okWCxijdAyaukz+TO
+         gUdfs3pV9ISDCVljmx0R/i3DGQpeHwB6lMvRZGHcBkjjXGodeeGo991HuSzupHSswROS
+         sS3bmtwrvuY/yIQqIKi1nsTc2BTtcnTD9FUfuu6L87zy+XI5oLzdEPkSSTRUj2jRt5cK
+         sTRIVLwSZfAsTPyvAifl7PA80V+1eS0kgmmfaBZIzOHj5S4J6CLjaOaid6I8t8kX9US+
+         MDKiaJ9+9Q7Zpcb2gcyR++s9kvrSn0qyJwtaSpX29QzCX/skTVwfoDYDvveA6Dh+iTlk
+         +bRg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=E0H9301ghdZ2dylpyDzeCJfxCEGT/ww6jQxz2tHkrTc=;
-        b=iEVSwuB0M8NERhJ/MZncCZkF9GCDxtB3IJ8Yz+4Hg/0Gv6HR9o91h7UvWIe1IiMCWB
-         uTs0HzBEG1it48rxJrO6Rsr0squ6IHvftooCgLnyMspqOIzr33VJ6ijuAgF/P3X3xyvK
-         N2j5OpvSx/r6jvC67ZQ3HyH4IR8US5hWbXlDgb9yLRmnMY6g+lAijG/tBZz0oZAB0aef
-         A/Xik1+/Y3+vOL5hINdUsHw+uqHSf3HmwJcRu34XrPJlShEZEKxoExg7Wj6556tkrSEf
-         wtm27IL/dHdAD8En7Og7ezHRgCX9jQz2zSwFSEbeimweaq6VOGFyYRbLJLO343X8kGsM
-         p+eA==
-X-Gm-Message-State: APjAAAWBiCahRGZPDrq06g9ClzXN8zuUMy5+NOpUjYJdaHax+KtrYrg9
-        DQqFTyVdqyD1qSAoH3uYRMRggP7AT10hXoj3LxEUug==
-X-Google-Smtp-Source: APXvYqykp1DuThBvMHQudWFHe1i5LDutX+DSoMUZJhvgmyjw83s4vjPFLrSJvhmne+VfIJCDmQ01E4r7RzMGu2GKdoM=
-X-Received: by 2002:a05:6214:38c:: with SMTP id l12mr16328651qvy.224.1576286467044;
- Fri, 13 Dec 2019 17:21:07 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=ScGB0uaG1N2MTFqjHS89TM7sGKsmj+KybyTlxQc+/kA=;
+        b=pYN3lTabqag/TxbV9HNudv2BM+1i7eCFmKcFifBL8jAGy4MCea8HEb3fyJ374sJhxL
+         0DgxDsPMXd/1FwpBmPEcwb1PujlJaulZ48drh3AEQ9scK0mwqp+vCjKqQVZlp/X/3LGr
+         SM7tZvWLeLPFsiAynZ273Tat9jZZnDxAck1vKb8CX0Utr8VqLMjpKYRi9pn0ru2krqhx
+         yU9SOVhrCofwx5A8nGQ5APWrYoFZGEGcX+uUKF7b5smPjNoa28rZJtMtIIAsb6XP5KMW
+         p86wMT1UxE9z1K+LkODoRGgMVWa3jDQ5lDhDtbpqhKpzi4NnmTtPYtIlkAZXGOJ/fA44
+         r8xQ==
+X-Gm-Message-State: APjAAAX21nBWaiZY80iniwZCOKeIDbtpR6ISQf8UE7yPSIM/NZkS8gXY
+        hDJFgttNOmIl7oDm8ZFDL8yemKYf48g=
+X-Google-Smtp-Source: APXvYqw7i7YpZIaz4MAOWDRHBsmcdAJkes1rruFV67i8zLlUBMNNDl+QBJYn9uaGrpWJqtY7TYFyMg==
+X-Received: by 2002:a19:c648:: with SMTP id w69mr10408468lff.44.1576286874277;
+        Fri, 13 Dec 2019 17:27:54 -0800 (PST)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id v2sm5669883ljv.70.2019.12.13.17.27.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 13 Dec 2019 17:27:54 -0800 (PST)
+Date:   Fri, 13 Dec 2019 17:27:47 -0800
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Thomas Falcon <tlfalcon@linux.ibm.com>
+Cc:     netdev@vger.kernel.org, linuxppc-dev@ozlabs.org,
+        julietk@linux.vnet.ibm.com
+Subject: Re: [PATCH net v2] net/ibmvnic: Fix typo in retry check
+Message-ID: <20191213172747.5e5310c9@cakuba.netronome.com>
+In-Reply-To: <1576078719-9604-1-git-send-email-tlfalcon@linux.ibm.com>
+References: <1576078719-9604-1-git-send-email-tlfalcon@linux.ibm.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-References: <20191213235144.3063354-1-andriin@fb.com> <20191213235144.3063354-3-andriin@fb.com>
- <e612995b-ee80-5d22-512c-dfe700c97865@fb.com>
-In-Reply-To: <e612995b-ee80-5d22-512c-dfe700c97865@fb.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 13 Dec 2019 17:20:55 -0800
-Message-ID: <CAEf4BzZO0RH4sYcEznEH7yacB+343NNTOtcCs6Xi9GHqO4EnsA@mail.gmail.com>
-Subject: Re: [PATCH v3 bpf-next 2/4] libbpf: support libbpf-provided extern variables
-To:     Alexei Starovoitov <ast@fb.com>
-Cc:     Andrii Nakryiko <andriin@fb.com>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        Kernel Team <Kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Dec 13, 2019 at 4:20 PM Alexei Starovoitov <ast@fb.com> wrote:
->
-> On 12/13/19 3:51 PM, Andrii Nakryiko wrote:
-> >   static int
-> >   bpf_object__init_internal_map(struct bpf_object *obj, enum libbpf_map_type type,
-> > -                           int sec_idx, Elf_Data *data)
-> > +                           int sec_idx, void *data, size_t data_sz)
->
-> the previous patch set did:
->   bpf_object__init_internal_map(struct bpf_object *obj, enum
-> libbpf_map_type type,
-> -                             int sec_idx, Elf_Data *data, void **data_buff)
-> +                             int sec_idx, Elf_Data *data)
->
-> and now this patch set refactors it again from Elf_Data into
-> two individual arguments.
-> Could you do this right away in the previous set and avoid this churn?
+On Wed, 11 Dec 2019 09:38:39 -0600, Thomas Falcon wrote:
+> This conditional is missing a bang, with the intent
+> being to break when the retry count reaches zero.
+> 
+> Fixes: 476d96ca9c ("ibmvnic: Bound waits for device queries")
+> Suggested-by: Juliet Kim <julietk@linux.vnet.ibm.com>
+> Signed-off-by: Thomas Falcon <tlfalcon@linux.ibm.com>
 
-no problem, will do
+Ah damn, looks like this originates from my pseudo code.
 
-> Not a strong opinion though.
-> Just odd to see the function being changed back to back.
-> Thankfully that's internal in .c file.
+I had to fix the fixes tag:
+
+Commit: 847496ccfa22 ("net/ibmvnic: Fix typo in retry check")
+	Fixes tag: Fixes: 476d96ca9c ("ibmvnic: Bound waits for device queries")
+	Has these problem(s):
+		- SHA1 should be at least 12 digits long
+		  Can be fixed by setting core.abbrev to 12 (or more) or (for git v2.11
+		  or later) just making sure it is not set (or set to "auto").
+
+Applied to net, thanks!
+
+> diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
+> index efb0f10..2d84523 100644
+> --- a/drivers/net/ethernet/ibm/ibmvnic.c
+> +++ b/drivers/net/ethernet/ibm/ibmvnic.c
+> @@ -184,7 +184,7 @@ static int ibmvnic_wait_for_completion(struct ibmvnic_adapter *adapter,
+>  			netdev_err(netdev, "Device down!\n");
+>  			return -ENODEV;
+>  		}
+> -		if (retry--)
+> +		if (!retry--)
+>  			break;
+>  		if (wait_for_completion_timeout(comp_done, div_timeout))
+>  			return 0;
+
