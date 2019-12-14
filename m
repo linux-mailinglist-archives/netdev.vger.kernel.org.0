@@ -2,17 +2,17 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C0F611EFE5
-	for <lists+netdev@lfdr.de>; Sat, 14 Dec 2019 03:07:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1BE6E11EFE7
+	for <lists+netdev@lfdr.de>; Sat, 14 Dec 2019 03:07:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726334AbfLNCGm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1726707AbfLNCGm (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Fri, 13 Dec 2019 21:06:42 -0500
-Received: from szxga05-in.huawei.com ([45.249.212.191]:7238 "EHLO huawei.com"
+Received: from szxga05-in.huawei.com ([45.249.212.191]:7235 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726170AbfLNCGl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1726334AbfLNCGl (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 13 Dec 2019 21:06:41 -0500
 Received: from DGGEMS410-HUB.china.huawei.com (unknown [172.30.72.60])
-        by Forcepoint Email with ESMTP id F34151EEAAA3EF4F9F15;
+        by Forcepoint Email with ESMTP id E341D60F9EA61F0C7ED0;
         Sat, 14 Dec 2019 10:06:38 +0800 (CST)
 Received: from localhost.localdomain (10.69.192.56) by
  DGGEMS410-HUB.china.huawei.com (10.3.19.210) with Microsoft SMTP Server id
@@ -22,11 +22,11 @@ To:     <davem@davemloft.net>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <salil.mehta@huawei.com>, <yisen.zhuang@huawei.com>,
         <linuxarm@huawei.com>, <jakub.kicinski@netronome.com>,
-        Yunsheng Lin <linyunsheng@huawei.com>,
-        Huazhong Tan <tanhuazhong@huawei.com>
-Subject: [PATCH net-next 4/5] net: hns3: allocate WQ with WQ_MEM_RECLAIM flag
-Date:   Sat, 14 Dec 2019 10:06:40 +0800
-Message-ID: <1576289201-57017-5-git-send-email-tanhuazhong@huawei.com>
+        Guojia Liao <liaoguojia@huawei.com>,
+        "Huazhong Tan" <tanhuazhong@huawei.com>
+Subject: [PATCH net-next 5/5] net: hns3: do not schedule the periodic task when reset fail
+Date:   Sat, 14 Dec 2019 10:06:41 +0800
+Message-ID: <1576289201-57017-6-git-send-email-tanhuazhong@huawei.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1576289201-57017-1-git-send-email-tanhuazhong@huawei.com>
 References: <1576289201-57017-1-git-send-email-tanhuazhong@huawei.com>
@@ -39,142 +39,126 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Yunsheng Lin <linyunsheng@huawei.com>
+From: Guojia Liao <liaoguojia@huawei.com>
 
-The hns3 driver may be used in memory reclaim path when it
-is the low level transport of a network file system, so it
-needs to guarantee forward progress even under memory pressure.
+service_task will be scheduled  per second to do some periodic
+jobs. When reset fails, it means this device is not available
+now, so the periodic jobs do not need to be handled.
 
-This patch allocates a private WQ with WQ_MEM_RECLAIM set for
-both hclge_main and hclgevf_main modules.
+This patch adds flag HCLGE_STATE_RST_FAIL/HCLGEVF_STATE_RST_FAIL
+to indicate that reset fails, and checks this flag before
+schedule periodic task.
 
-Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
+Signed-off-by: Guojia Liao <liaoguojia@huawei.com>
 Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
 ---
- drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c   | 15 ++++++++++++---
- drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c | 15 ++++++++++++---
- 2 files changed, 24 insertions(+), 6 deletions(-)
+ drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c   | 7 ++++++-
+ drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h   | 1 +
+ drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c | 6 +++++-
+ drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.h | 1 +
+ 4 files changed, 13 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-index a0177e3..5129b4a 100644
+index 5129b4a..4e7a078 100644
 --- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
 +++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-@@ -72,6 +72,8 @@ static int hclge_set_default_loopback(struct hclge_dev *hdev);
- 
- static struct hnae3_ae_algo ae_algo;
- 
-+static struct workqueue_struct *hclge_wq;
-+
- static const struct pci_device_id ae_algo_pci_tbl[] = {
- 	{PCI_VDEVICE(HUAWEI, HNAE3_DEV_ID_GE), 0},
- 	{PCI_VDEVICE(HUAWEI, HNAE3_DEV_ID_25GE), 0},
-@@ -2668,7 +2670,7 @@ static void hclge_mbx_task_schedule(struct hclge_dev *hdev)
- 	if (!test_bit(HCLGE_STATE_REMOVING, &hdev->state) &&
- 	    !test_and_set_bit(HCLGE_STATE_MBX_SERVICE_SCHED, &hdev->state))
- 		mod_delayed_work_on(cpumask_first(&hdev->affinity_mask),
--				    system_wq, &hdev->service_task, 0);
-+				    hclge_wq, &hdev->service_task, 0);
- }
- 
- static void hclge_reset_task_schedule(struct hclge_dev *hdev)
-@@ -2676,14 +2678,14 @@ static void hclge_reset_task_schedule(struct hclge_dev *hdev)
- 	if (!test_bit(HCLGE_STATE_REMOVING, &hdev->state) &&
- 	    !test_and_set_bit(HCLGE_STATE_RST_SERVICE_SCHED, &hdev->state))
- 		mod_delayed_work_on(cpumask_first(&hdev->affinity_mask),
--				    system_wq, &hdev->service_task, 0);
-+				    hclge_wq, &hdev->service_task, 0);
- }
+@@ -2683,7 +2683,8 @@ static void hclge_reset_task_schedule(struct hclge_dev *hdev)
  
  void hclge_task_schedule(struct hclge_dev *hdev, unsigned long delay_time)
  {
- 	if (!test_bit(HCLGE_STATE_REMOVING, &hdev->state))
+-	if (!test_bit(HCLGE_STATE_REMOVING, &hdev->state))
++	if (!test_bit(HCLGE_STATE_REMOVING, &hdev->state) &&
++	    !test_bit(HCLGE_STATE_RST_FAIL, &hdev->state))
  		mod_delayed_work_on(cpumask_first(&hdev->affinity_mask),
--				    system_wq, &hdev->service_task,
-+				    hclge_wq, &hdev->service_task,
+ 				    hclge_wq, &hdev->service_task,
  				    delay_time);
- }
+@@ -3690,6 +3691,8 @@ static bool hclge_reset_err_handle(struct hclge_dev *hdev)
  
-@@ -10652,6 +10654,12 @@ static int hclge_init(void)
- {
- 	pr_info("%s is initializing\n", HCLGE_NAME);
+ 	hclge_dbg_dump_rst_info(hdev);
  
-+	hclge_wq = alloc_workqueue("%s", WQ_MEM_RECLAIM, 0, HCLGE_NAME);
-+	if (!hclge_wq) {
-+		pr_err("%s: failed to create workqueue\n", HCLGE_NAME);
-+		return -ENOMEM;
-+	}
++	set_bit(HCLGE_STATE_RST_FAIL, &hdev->state);
 +
- 	hnae3_register_ae_algo(&ae_algo);
- 
- 	return 0;
-@@ -10660,6 +10668,7 @@ static int hclge_init(void)
- static void hclge_exit(void)
- {
- 	hnae3_unregister_ae_algo(&ae_algo);
-+	destroy_workqueue(hclge_wq);
+ 	return false;
  }
- module_init(hclge_init);
- module_exit(hclge_exit);
+ 
+@@ -3843,6 +3846,7 @@ static void hclge_reset(struct hclge_dev *hdev)
+ 	hdev->rst_stats.reset_fail_cnt = 0;
+ 	hdev->rst_stats.reset_done_cnt++;
+ 	ae_dev->reset_type = HNAE3_NONE_RESET;
++	clear_bit(HCLGE_STATE_RST_FAIL, &hdev->state);
+ 
+ 	/* if default_reset_request has a higher level reset request,
+ 	 * it should be handled as soon as possible. since some errors
+@@ -9303,6 +9307,7 @@ static void hclge_state_init(struct hclge_dev *hdev)
+ 	set_bit(HCLGE_STATE_DOWN, &hdev->state);
+ 	clear_bit(HCLGE_STATE_RST_SERVICE_SCHED, &hdev->state);
+ 	clear_bit(HCLGE_STATE_RST_HANDLING, &hdev->state);
++	clear_bit(HCLGE_STATE_RST_FAIL, &hdev->state);
+ 	clear_bit(HCLGE_STATE_MBX_SERVICE_SCHED, &hdev->state);
+ 	clear_bit(HCLGE_STATE_MBX_HANDLING, &hdev->state);
+ }
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
+index ad40cf6..3a91397 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
+@@ -215,6 +215,7 @@ enum HCLGE_DEV_STATE {
+ 	HCLGE_STATE_STATISTICS_UPDATING,
+ 	HCLGE_STATE_CMD_DISABLE,
+ 	HCLGE_STATE_LINK_UPDATING,
++	HCLGE_STATE_RST_FAIL,
+ 	HCLGE_STATE_MAX
+ };
+ 
 diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
-index 004dbaf..b56c19a 100644
+index b56c19a..c33b802 100644
 --- a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
 +++ b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
-@@ -16,6 +16,8 @@
- static int hclgevf_reset_hdev(struct hclgevf_dev *hdev);
- static struct hnae3_ae_algo ae_algovf;
- 
-+static struct workqueue_struct *hclgevf_wq;
-+
- static const struct pci_device_id ae_algovf_pci_tbl[] = {
- 	{PCI_VDEVICE(HUAWEI, HNAE3_DEV_ID_100G_VF), 0},
- 	{PCI_VDEVICE(HUAWEI, HNAE3_DEV_ID_100G_RDMA_DCB_PFC_VF), 0},
-@@ -1775,7 +1777,7 @@ void hclgevf_reset_task_schedule(struct hclgevf_dev *hdev)
- 	if (!test_bit(HCLGEVF_STATE_REMOVING, &hdev->state) &&
- 	    !test_and_set_bit(HCLGEVF_STATE_RST_SERVICE_SCHED,
- 			      &hdev->state))
--		mod_delayed_work(system_wq, &hdev->service_task, 0);
-+		mod_delayed_work(hclgevf_wq, &hdev->service_task, 0);
+@@ -1598,6 +1598,7 @@ static void hclgevf_reset_err_handle(struct hclgevf_dev *hdev)
+ 		set_bit(HCLGEVF_RESET_PENDING, &hdev->reset_state);
+ 		hclgevf_reset_task_schedule(hdev);
+ 	} else {
++		set_bit(HCLGEVF_STATE_RST_FAIL, &hdev->state);
+ 		hclgevf_dump_rst_info(hdev);
+ 	}
  }
+@@ -1659,6 +1660,7 @@ static int hclgevf_reset(struct hclgevf_dev *hdev)
+ 	ae_dev->reset_type = HNAE3_NONE_RESET;
+ 	hdev->rst_stats.rst_done_cnt++;
+ 	hdev->rst_stats.rst_fail_cnt = 0;
++	clear_bit(HCLGEVF_STATE_RST_FAIL, &hdev->state);
  
- void hclgevf_mbx_task_schedule(struct hclgevf_dev *hdev)
-@@ -1783,14 +1785,14 @@ void hclgevf_mbx_task_schedule(struct hclgevf_dev *hdev)
- 	if (!test_bit(HCLGEVF_STATE_REMOVING, &hdev->state) &&
- 	    !test_and_set_bit(HCLGEVF_STATE_MBX_SERVICE_SCHED,
- 			      &hdev->state))
--		mod_delayed_work(system_wq, &hdev->service_task, 0);
-+		mod_delayed_work(hclgevf_wq, &hdev->service_task, 0);
- }
- 
+ 	return ret;
+ err_reset_lock:
+@@ -1791,7 +1793,8 @@ void hclgevf_mbx_task_schedule(struct hclgevf_dev *hdev)
  static void hclgevf_task_schedule(struct hclgevf_dev *hdev,
  				  unsigned long delay)
  {
- 	if (!test_bit(HCLGEVF_STATE_REMOVING, &hdev->state))
--		mod_delayed_work(system_wq, &hdev->service_task, delay);
-+		mod_delayed_work(hclgevf_wq, &hdev->service_task, delay);
+-	if (!test_bit(HCLGEVF_STATE_REMOVING, &hdev->state))
++	if (!test_bit(HCLGEVF_STATE_REMOVING, &hdev->state) &&
++	    !test_bit(HCLGEVF_STATE_RST_FAIL, &hdev->state))
+ 		mod_delayed_work(hclgevf_wq, &hdev->service_task, delay);
  }
  
- static void hclgevf_reset_service_task(struct hclgevf_dev *hdev)
-@@ -3197,6 +3199,12 @@ static int hclgevf_init(void)
+@@ -2283,6 +2286,7 @@ static void hclgevf_state_init(struct hclgevf_dev *hdev)
  {
- 	pr_info("%s is initializing\n", HCLGEVF_NAME);
+ 	clear_bit(HCLGEVF_STATE_MBX_SERVICE_SCHED, &hdev->state);
+ 	clear_bit(HCLGEVF_STATE_MBX_HANDLING, &hdev->state);
++	clear_bit(HCLGEVF_STATE_RST_FAIL, &hdev->state);
  
-+	hclgevf_wq = alloc_workqueue("%s", WQ_MEM_RECLAIM, 0, HCLGEVF_NAME);
-+	if (!hclgevf_wq) {
-+		pr_err("%s: failed to create workqueue\n", HCLGEVF_NAME);
-+		return -ENOMEM;
-+	}
-+
- 	hnae3_register_ae_algo(&ae_algovf);
+ 	INIT_DELAYED_WORK(&hdev->service_task, hclgevf_service_task);
  
- 	return 0;
-@@ -3205,6 +3213,7 @@ static int hclgevf_init(void)
- static void hclgevf_exit(void)
- {
- 	hnae3_unregister_ae_algo(&ae_algovf);
-+	destroy_workqueue(hclgevf_wq);
- }
- module_init(hclgevf_init);
- module_exit(hclgevf_exit);
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.h b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.h
+index 450e587..003114f 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.h
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.h
+@@ -148,6 +148,7 @@ enum hclgevf_states {
+ 	HCLGEVF_STATE_MBX_HANDLING,
+ 	HCLGEVF_STATE_CMD_DISABLE,
+ 	HCLGEVF_STATE_LINK_UPDATING,
++	HCLGEVF_STATE_RST_FAIL,
+ };
+ 
+ struct hclgevf_mac {
 -- 
 2.7.4
 
