@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1AC0B11EF63
-	for <lists+netdev@lfdr.de>; Sat, 14 Dec 2019 01:48:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1974111EF65
+	for <lists+netdev@lfdr.de>; Sat, 14 Dec 2019 01:48:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726890AbfLNAsP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Dec 2019 19:48:15 -0500
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:41104 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726987AbfLNAsN (ORCPT
+        id S1727049AbfLNAsQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Dec 2019 19:48:16 -0500
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:51236 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726996AbfLNAsN (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 13 Dec 2019 19:48:13 -0500
-Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xBE0UtCk000747
-        for <netdev@vger.kernel.org>; Fri, 13 Dec 2019 16:48:11 -0800
+Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xBE0UVQf009129
+        for <netdev@vger.kernel.org>; Fri, 13 Dec 2019 16:48:12 -0800
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
  : date : message-id : in-reply-to : references : mime-version :
- content-type; s=facebook; bh=MGccbpaS1x/NG3G8e+ps2cay2TtxTMkX+g+I6SGlIXQ=;
- b=cOaMjBg8auR2pbl+/a57s6FCSsL6eR55BXE4eAeSSV4hKcz8GB68aF01zKum6RjUpwLt
- 8xA0PCgzbrsgunz+WZXNv6lTrj2uFdZ66vcV4FBDjXmscsX/gFnlyOSPn8v2TGSzW+Vk
- S3JgyeykSIjSWucHw7kCmtRZP863K7ezjGY= 
-Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by mx0a-00082601.pphosted.com with ESMTP id 2wv1r0vwg4-5
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Fri, 13 Dec 2019 16:48:11 -0800
-Received: from intmgw005.05.ash5.facebook.com (2620:10d:c081:10::13) by
- mail.thefacebook.com (2620:10d:c081:35::127) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
- Fri, 13 Dec 2019 16:48:09 -0800
+ content-type; s=facebook; bh=PAGJ4yDo5B7Ns9C9nuZQq82ivUiRt+F9LvjZhaOJrhg=;
+ b=NsZ+2TJH3UAn3DaD4RIPeWpvzwpuj2HIWP5I1UserQDBD2Tat4ZOTw4ZaYH8qt6d/zWU
+ pA/uNovEMtYkkJQPQxSFpyvQJZu6TnkUHbDKxnwT4zTXi4VfIQBS63I53IoAz0s+oME/
+ fiRxgh1/MOlnLsKj2U+reFSjKZtNxCIhV4E= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 2wvkm20g2d-6
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Fri, 13 Dec 2019 16:48:12 -0800
+Received: from intmgw003.05.ash5.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:83::5) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Fri, 13 Dec 2019 16:48:09 -0800
 Received: by devbig005.ftw2.facebook.com (Postfix, from userid 6611)
-        id AF2392943AB4; Fri, 13 Dec 2019 16:48:05 -0800 (PST)
+        id 062F72943AB4; Fri, 13 Dec 2019 16:48:07 -0800 (PST)
 Smtp-Origin-Hostprefix: devbig
 From:   Martin KaFai Lau <kafai@fb.com>
 Smtp-Origin-Hostname: devbig005.ftw2.facebook.com
@@ -39,9 +39,9 @@ CC:     Alexei Starovoitov <ast@kernel.org>,
         David Miller <davem@davemloft.net>, <kernel-team@fb.com>,
         <netdev@vger.kernel.org>
 Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH bpf-next 12/13] bpf: Add bpf_dctcp example
-Date:   Fri, 13 Dec 2019 16:48:05 -0800
-Message-ID: <20191214004805.1653838-1-kafai@fb.com>
+Subject: [PATCH bpf-next 13/13] bpf: Add bpf_cubic example
+Date:   Fri, 13 Dec 2019 16:48:07 -0800
+Message-ID: <20191214004807.1653955-1-kafai@fb.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20191214004737.1652076-1-kafai@fb.com>
 References: <20191214004737.1652076-1-kafai@fb.com>
@@ -50,10 +50,10 @@ MIME-Version: 1.0
 Content-Type: text/plain
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
  definitions=2019-12-13_09:2019-12-13,2019-12-13 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 adultscore=0
- priorityscore=1501 clxscore=1015 bulkscore=0 spamscore=0 mlxscore=0
- lowpriorityscore=0 malwarescore=0 impostorscore=0 phishscore=0
- mlxlogscore=999 suspectscore=13 classifier=spam adjust=0 reason=mlx
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 impostorscore=0
+ phishscore=0 lowpriorityscore=0 bulkscore=0 priorityscore=1501
+ mlxlogscore=999 malwarescore=0 adultscore=0 spamscore=0 mlxscore=0
+ clxscore=1015 suspectscore=13 classifier=spam adjust=0 reason=mlx
  scancount=1 engine=8.12.0-1910280000 definitions=main-1912140001
 X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
@@ -61,656 +61,562 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds a bpf_dctcp example.  It currently does not do
-no-ECN fallback but the same could be done through the cgrp2-bpf.
+This patch adds the bpf_cubic tcp sample.
+The CONFIG_HZ=1000 requirement will go away when
+the libbpf extern-var support is ready.
 
 Signed-off-by: Martin KaFai Lau <kafai@fb.com>
 ---
- tools/testing/selftests/bpf/bpf_tcp_helpers.h | 228 ++++++++++++++++++
- .../selftests/bpf/prog_tests/bpf_tcp_ca.c     | 198 +++++++++++++++
- tools/testing/selftests/bpf/progs/bpf_dctcp.c | 194 +++++++++++++++
- 3 files changed, 620 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/bpf_tcp_helpers.h
- create mode 100644 tools/testing/selftests/bpf/prog_tests/bpf_tcp_ca.c
- create mode 100644 tools/testing/selftests/bpf/progs/bpf_dctcp.c
+ .../selftests/bpf/prog_tests/bpf_tcp_ca.c     |  22 +
+ tools/testing/selftests/bpf/progs/bpf_cubic.c | 502 ++++++++++++++++++
+ 2 files changed, 524 insertions(+)
+ create mode 100644 tools/testing/selftests/bpf/progs/bpf_cubic.c
 
-diff --git a/tools/testing/selftests/bpf/bpf_tcp_helpers.h b/tools/testing/selftests/bpf/bpf_tcp_helpers.h
-new file mode 100644
-index 000000000000..7ba8c1b4157a
---- /dev/null
-+++ b/tools/testing/selftests/bpf/bpf_tcp_helpers.h
-@@ -0,0 +1,228 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+#ifndef __BPF_TCP_HELPERS_H
-+#define __BPF_TCP_HELPERS_H
-+
-+#include <stdbool.h>
-+#include <linux/types.h>
-+#include <bpf_helpers.h>
-+#include <bpf_core_read.h>
-+#include "bpf_trace_helpers.h"
-+
-+#define BPF_TCP_OPS_0(fname, ret_type, ...) BPF_TRACE_x(0, #fname"_sec", fname, ret_type, __VA_ARGS__)
-+#define BPF_TCP_OPS_1(fname, ret_type, ...) BPF_TRACE_x(1, #fname"_sec", fname, ret_type, __VA_ARGS__)
-+#define BPF_TCP_OPS_2(fname, ret_type, ...) BPF_TRACE_x(2, #fname"_sec", fname, ret_type, __VA_ARGS__)
-+#define BPF_TCP_OPS_3(fname, ret_type, ...) BPF_TRACE_x(3, #fname"_sec", fname, ret_type, __VA_ARGS__)
-+#define BPF_TCP_OPS_4(fname, ret_type, ...) BPF_TRACE_x(4, #fname"_sec", fname, ret_type, __VA_ARGS__)
-+#define BPF_TCP_OPS_5(fname, ret_type, ...) BPF_TRACE_x(5, #fname"_sec", fname, ret_type, __VA_ARGS__)
-+
-+struct sock_common {
-+	unsigned char	skc_state;
-+} __attribute__((preserve_access_index));
-+
-+struct sock {
-+	struct sock_common	__sk_common;
-+} __attribute__((preserve_access_index));
-+
-+struct inet_sock {
-+	struct sock		sk;
-+} __attribute__((preserve_access_index));
-+
-+struct inet_connection_sock {
-+	struct inet_sock	  icsk_inet;
-+	__u8			  icsk_ca_state:6,
-+				  icsk_ca_setsockopt:1,
-+				  icsk_ca_dst_locked:1;
-+	struct {
-+		__u8		  pending;
-+	} icsk_ack;
-+	__u64			  icsk_ca_priv[104 / sizeof(__u64)];
-+} __attribute__((preserve_access_index));
-+
-+struct tcp_sock {
-+	struct inet_connection_sock	inet_conn;
-+
-+	__u32	rcv_nxt;
-+	__u32	snd_nxt;
-+	__u32	snd_una;
-+	__u8	ecn_flags;
-+	__u32	delivered;
-+	__u32	delivered_ce;
-+	__u32	snd_cwnd;
-+	__u32	snd_cwnd_cnt;
-+	__u32	snd_cwnd_clamp;
-+	__u32	snd_ssthresh;
-+	__u8	syn_data:1,	/* SYN includes data */
-+		syn_fastopen:1,	/* SYN includes Fast Open option */
-+		syn_fastopen_exp:1,/* SYN includes Fast Open exp. option */
-+		syn_fastopen_ch:1, /* Active TFO re-enabling probe */
-+		syn_data_acked:1,/* data in SYN is acked by SYN-ACK */
-+		save_syn:1,	/* Save headers of SYN packet */
-+		is_cwnd_limited:1,/* forward progress limited by snd_cwnd? */
-+		syn_smc:1;	/* SYN includes SMC */
-+	__u32	max_packets_out;
-+	__u32	lsndtime;
-+	__u32	prior_cwnd;
-+} __attribute__((preserve_access_index));
-+
-+static __always_inline struct inet_connection_sock *inet_csk(const struct sock *sk)
-+{
-+	return (struct inet_connection_sock *)sk;
-+}
-+
-+static __always_inline void *inet_csk_ca(const struct sock *sk)
-+{
-+	return (void *)inet_csk(sk)->icsk_ca_priv;
-+}
-+
-+static __always_inline struct tcp_sock *tcp_sk(const struct sock *sk)
-+{
-+	return (struct tcp_sock *)sk;
-+}
-+
-+static __always_inline bool before(__u32 seq1, __u32 seq2)
-+{
-+	return (__s32)(seq1-seq2) < 0;
-+}
-+#define after(seq2, seq1) 	before(seq1, seq2)
-+
-+#define	TCP_ECN_OK		1
-+#define	TCP_ECN_QUEUE_CWR	2
-+#define	TCP_ECN_DEMAND_CWR	4
-+#define	TCP_ECN_SEEN		8
-+
-+enum inet_csk_ack_state_t {
-+	ICSK_ACK_SCHED	= 1,
-+	ICSK_ACK_TIMER  = 2,
-+	ICSK_ACK_PUSHED = 4,
-+	ICSK_ACK_PUSHED2 = 8,
-+	ICSK_ACK_NOW = 16	/* Send the next ACK immediately (once) */
-+};
-+
-+enum tcp_ca_event {
-+	CA_EVENT_TX_START = 0,
-+	CA_EVENT_CWND_RESTART = 1,
-+	CA_EVENT_COMPLETE_CWR = 2,
-+	CA_EVENT_LOSS = 3,
-+	CA_EVENT_ECN_NO_CE = 4,
-+	CA_EVENT_ECN_IS_CE = 5,
-+};
-+
-+enum tcp_ca_state {
-+	TCP_CA_Open = 0,
-+	TCP_CA_Disorder = 1,
-+	TCP_CA_CWR = 2,
-+	TCP_CA_Recovery = 3,
-+	TCP_CA_Loss = 4
-+};
-+
-+struct ack_sample {
-+	__u32 pkts_acked;
-+	__s32 rtt_us;
-+	__u32 in_flight;
-+} __attribute__((preserve_access_index));
-+
-+struct rate_sample {
-+	__u64  prior_mstamp; /* starting timestamp for interval */
-+	__u32  prior_delivered;	/* tp->delivered at "prior_mstamp" */
-+	__s32  delivered;		/* number of packets delivered over interval */
-+	long interval_us;	/* time for tp->delivered to incr "delivered" */
-+	__u32 snd_interval_us;	/* snd interval for delivered packets */
-+	__u32 rcv_interval_us;	/* rcv interval for delivered packets */
-+	long rtt_us;		/* RTT of last (S)ACKed packet (or -1) */
-+	int  losses;		/* number of packets marked lost upon ACK */
-+	__u32  acked_sacked;	/* number of packets newly (S)ACKed upon ACK */
-+	__u32  prior_in_flight;	/* in flight before this ACK */
-+	bool is_app_limited;	/* is sample from packet with bubble in pipe? */
-+	bool is_retrans;	/* is sample from retransmission? */
-+	bool is_ack_delayed;	/* is this (likely) a delayed ACK? */
-+} __attribute__((preserve_access_index));
-+
-+#define TCP_CA_NAME_MAX		16
-+#define TCP_CONG_NEEDS_ECN	0x2
-+
-+struct tcp_congestion_ops {
-+	__u32 flags;
-+
-+	/* initialize private data (optional) */
-+	void (*init)(struct sock *sk);
-+	/* cleanup private data  (optional) */
-+	void (*release)(struct sock *sk);
-+
-+	/* return slow start threshold (required) */
-+	__u32 (*ssthresh)(struct sock *sk);
-+	/* do new cwnd calculation (required) */
-+	void (*cong_avoid)(struct sock *sk, __u32 ack, __u32 acked);
-+	/* call before changing ca_state (optional) */
-+	void (*set_state)(struct sock *sk, __u8 new_state);
-+	/* call when cwnd event occurs (optional) */
-+	void (*cwnd_event)(struct sock *sk, enum tcp_ca_event ev);
-+	/* call when ack arrives (optional) */
-+	void (*in_ack_event)(struct sock *sk, __u32 flags);
-+	/* new value of cwnd after loss (required) */
-+	__u32  (*undo_cwnd)(struct sock *sk);
-+	/* hook for packet ack accounting (optional) */
-+	void (*pkts_acked)(struct sock *sk, const struct ack_sample *sample);
-+	/* override sysctl_tcp_min_tso_segs */
-+	__u32 (*min_tso_segs)(struct sock *sk);
-+	/* returns the multiplier used in tcp_sndbuf_expand (optional) */
-+	__u32 (*sndbuf_expand)(struct sock *sk);
-+	/* call when packets are delivered to update cwnd and pacing rate,
-+	 * after all the ca_state processing. (optional)
-+	 */
-+	void (*cong_control)(struct sock *sk, const struct rate_sample *rs);
-+
-+	char 		name[TCP_CA_NAME_MAX];
-+};
-+
-+#define min(a, b) ((a) < (b) ? (a) : (b))
-+#define max(a, b) ((a) > (b) ? (a) : (b))
-+#define min_not_zero(x, y) ({			\
-+	typeof(x) __x = (x);			\
-+	typeof(y) __y = (y);			\
-+	__x == 0 ? __y : ((__y == 0) ? __x : min(__x, __y)); })
-+
-+static __always_inline __u32 tcp_slow_start(struct tcp_sock *tp, __u32 acked)
-+{
-+	__u32 cwnd = min(tp->snd_cwnd + acked, tp->snd_ssthresh);
-+
-+	acked -= cwnd - tp->snd_cwnd;
-+	tp->snd_cwnd = min(cwnd, tp->snd_cwnd_clamp);
-+
-+	return acked;
-+}
-+
-+static __always_inline bool tcp_in_slow_start(const struct tcp_sock *tp)
-+{
-+	return tp->snd_cwnd < tp->snd_ssthresh;
-+}
-+
-+static __always_inline bool tcp_is_cwnd_limited(const struct sock *sk)
-+{
-+	const struct tcp_sock *tp = tcp_sk(sk);
-+
-+	/* If in slow start, ensure cwnd grows to twice what was ACKed. */
-+	if (tcp_in_slow_start(tp))
-+		return tp->snd_cwnd < 2 * tp->max_packets_out;
-+
-+	return !!BPF_CORE_READ_BITFIELD(tp, is_cwnd_limited);
-+}
-+
-+static __always_inline void tcp_cong_avoid_ai(struct tcp_sock *tp, __u32 w, __u32 acked)
-+{
-+	/* If credits accumulated at a higher w, apply them gently now. */
-+	if (tp->snd_cwnd_cnt >= w) {
-+		tp->snd_cwnd_cnt = 0;
-+		tp->snd_cwnd++;
-+	}
-+
-+	tp->snd_cwnd_cnt += acked;
-+	if (tp->snd_cwnd_cnt >= w) {
-+		__u32 delta = tp->snd_cwnd_cnt / w;
-+
-+		tp->snd_cwnd_cnt -= delta * w;
-+		tp->snd_cwnd += delta;
-+	}
-+	tp->snd_cwnd = min(tp->snd_cwnd, tp->snd_cwnd_clamp);
-+}
-+
-+#endif
 diff --git a/tools/testing/selftests/bpf/prog_tests/bpf_tcp_ca.c b/tools/testing/selftests/bpf/prog_tests/bpf_tcp_ca.c
-new file mode 100644
-index 000000000000..035de76bf8ed
---- /dev/null
+index 035de76bf8ed..3d787ecafa4a 100644
+--- a/tools/testing/selftests/bpf/prog_tests/bpf_tcp_ca.c
 +++ b/tools/testing/selftests/bpf/prog_tests/bpf_tcp_ca.c
-@@ -0,0 +1,198 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright (c) 2019 Facebook */
-+#include <linux/err.h>
-+#include <test_progs.h>
-+
-+#define min(a, b) ((a) < (b) ? (a) : (b))
-+
-+static const unsigned int total_bytes = 10 * 1024 * 1024;
-+static const struct timeval timeo_sec = { .tv_sec = 10 };
-+static const size_t timeo_optlen = sizeof(timeo_sec);
-+static int stop, duration;
-+
-+static int settimeo(int fd)
+@@ -178,6 +178,26 @@ static struct bpf_object *load(const char *filename)
+ 	return obj;
+ }
+ 
++static void test_cubic(void)
 +{
++	struct bpf_object *obj;
 +	int err;
 +
-+	err = setsockopt(fd, SOL_SOCKET, SO_RCVTIMEO, &timeo_sec,
-+			 timeo_optlen);
-+	if (CHECK(err == -1, "setsockopt(fd, SO_RCVTIMEO)", "errno:%d\n",
-+		  errno))
-+		return -1;
-+
-+	err = setsockopt(fd, SOL_SOCKET, SO_SNDTIMEO, &timeo_sec,
-+			 timeo_optlen);
-+	if (CHECK(err == -1, "setsockopt(fd, SO_SNDTIMEO)", "errno:%d\n",
-+		  errno))
-+		return -1;
-+
-+	return 0;
-+}
-+
-+static int settcpca(int fd, const char *tcp_ca)
-+{
-+	int err;
-+
-+	err = setsockopt(fd, IPPROTO_TCP, TCP_CONGESTION, tcp_ca, strlen(tcp_ca));
-+	if (CHECK(err == -1, "setsockopt(fd, TCP_CONGESTION)", "errno:%d\n",
-+		  errno))
-+		return -1;
-+
-+	return 0;
-+}
-+
-+static void *server(void *arg)
-+{
-+	int lfd = (int)(long)arg, err = 0, fd;
-+	ssize_t nr_sent = 0, bytes = 0;
-+	char batch[1500];
-+
-+	fd = accept(lfd, NULL, NULL);
-+	while (fd == -1) {
-+		if (errno == EINTR)
-+			continue;
-+		err = -errno;
-+		goto done;
-+	}
-+
-+	if (settimeo(fd)) {
-+		err = -errno;
-+		goto done;
-+	}
-+
-+	while (bytes < total_bytes && !READ_ONCE(stop)) {
-+		nr_sent = send(fd, &batch,
-+			       min(total_bytes - bytes, sizeof(batch)), 0);
-+		if (nr_sent == -1 && errno == EINTR)
-+			continue;
-+		if (nr_sent == -1) {
-+			err = -errno;
-+			break;
-+		}
-+		bytes += nr_sent;
-+	}
-+
-+	CHECK(bytes != total_bytes, "send", "%zd != %u nr_sent:%zd errno:%d\n",
-+	      bytes, total_bytes, nr_sent, errno);
-+
-+done:
-+	if (fd != -1)
-+		close(fd);
++	err = system("zgrep 'CONFIG_HZ=1000$' /proc/config.gz >& /dev/null");
 +	if (err) {
-+		WRITE_ONCE(stop, 1);
-+		return ERR_PTR(err);
-+	}
-+	return NULL;
-+}
-+
-+static void do_test(const char *tcp_ca)
-+{
-+	struct sockaddr_in6 sa6 = {};
-+	ssize_t nr_recv = 0, bytes = 0;
-+	int lfd = -1, fd = -1;
-+	pthread_t srv_thread;
-+	socklen_t addrlen = sizeof(sa6);
-+	void *thread_ret;
-+	char batch[1500];
-+	int err;
-+
-+	WRITE_ONCE(stop, 0);
-+
-+	lfd = socket(AF_INET6, SOCK_STREAM, 0);
-+	if (CHECK(lfd == -1, "socket", "errno:%d\n", errno))
-+		return;
-+	fd = socket(AF_INET6, SOCK_STREAM, 0);
-+	if (CHECK(fd == -1, "socket", "errno:%d\n", errno)) {
-+		close(lfd);
++		test__skip();
 +		return;
 +	}
 +
-+	if (settcpca(lfd, tcp_ca) || settcpca(fd, tcp_ca) ||
-+	    settimeo(lfd) || settimeo(fd))
-+		goto done;
-+
-+	/* bind, listen and start server thread to accept */
-+	sa6.sin6_family = AF_INET6;
-+	sa6.sin6_addr = in6addr_loopback;
-+	err = bind(lfd, (struct sockaddr *)&sa6, addrlen);
-+	if (CHECK(err == -1, "bind", "errno:%d\n", errno))
-+		goto done;
-+	err = getsockname(lfd, (struct sockaddr *)&sa6, &addrlen);
-+	if (CHECK(err == -1, "getsockname", "errno:%d\n", errno))
-+		goto done;
-+	err = listen(lfd, 1);
-+	if (CHECK(err == -1, "listen", "errno:%d\n", errno))
-+		goto done;
-+	err = pthread_create(&srv_thread, NULL, server, (void *)(long)lfd);
-+	if (CHECK(err != 0, "pthread_create", "err:%d\n", err))
-+		goto done;
-+
-+	/* connect to server */
-+	err = connect(fd, (struct sockaddr *)&sa6, addrlen);
-+	if (CHECK(err == -1, "connect", "errno:%d\n", errno))
-+		goto wait_thread;
-+
-+	/* recv total_bytes */
-+	while (bytes < total_bytes && !READ_ONCE(stop)) {
-+		nr_recv = recv(fd, &batch,
-+			       min(total_bytes - bytes, sizeof(batch)), 0);
-+		if (nr_recv == -1 && errno == EINTR)
-+			continue;
-+		if (nr_recv == -1)
-+			break;
-+		bytes += nr_recv;
-+	}
-+
-+	CHECK(bytes != total_bytes, "recv", "%zd != %u nr_recv:%zd errno:%d\n",
-+	      bytes, total_bytes, nr_recv, errno);
-+
-+wait_thread:
-+	WRITE_ONCE(stop, 1);
-+	pthread_join(srv_thread, &thread_ret);
-+	CHECK(IS_ERR(thread_ret), "pthread_join", "thread_ret:%ld",
-+	      PTR_ERR(thread_ret));
-+done:
-+	close(lfd);
-+	close(fd);
-+}
-+
-+static struct bpf_object *load(const char *filename)
-+{
-+	DECLARE_LIBBPF_OPTS(bpf_object_open_opts, open_opts,
-+		.unreg_st_ops = true,
-+	);
-+	struct bpf_object *obj;
-+	int err;
-+
-+	obj = bpf_object__open_file(filename, &open_opts);
-+	if (CHECK(IS_ERR(obj), "bpf_obj__open_file", "obj:%ld\n",
-+		  PTR_ERR(obj)))
-+		return obj;
-+
-+	err = bpf_object__load(obj);
-+	if (CHECK(err, "bpf_object__load", "err:%d\n", err)) {
-+		bpf_object__close(obj);
-+		return ERR_PTR(err);
-+	}
-+
-+	return obj;
-+}
-+
-+static void test_dctcp(void)
-+{
-+	struct bpf_object *obj;
-+
-+	obj = load("bpf_dctcp.o");
++	obj = load("bpf_cubic.o");
 +	if (IS_ERR(obj))
 +		return;
 +
-+	do_test("bpf_dctcp");
++	do_test("bpf_cubic");
 +
 +	bpf_object__close(obj);
 +}
 +
-+void test_bpf_tcp_ca(void)
-+{
-+	if (test__start_subtest("dctcp"))
-+		test_dctcp();
-+}
-diff --git a/tools/testing/selftests/bpf/progs/bpf_dctcp.c b/tools/testing/selftests/bpf/progs/bpf_dctcp.c
+ static void test_dctcp(void)
+ {
+ 	struct bpf_object *obj;
+@@ -195,4 +215,6 @@ void test_bpf_tcp_ca(void)
+ {
+ 	if (test__start_subtest("dctcp"))
+ 		test_dctcp();
++	if (test__start_subtest("cubic"))
++		test_cubic();
+ }
+diff --git a/tools/testing/selftests/bpf/progs/bpf_cubic.c b/tools/testing/selftests/bpf/progs/bpf_cubic.c
 new file mode 100644
-index 000000000000..794954832adc
+index 000000000000..ca77d6a34406
 --- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/bpf_dctcp.c
-@@ -0,0 +1,194 @@
++++ b/tools/testing/selftests/bpf/progs/bpf_cubic.c
+@@ -0,0 +1,502 @@
++// SPDX-License-Identifier: GPL-2.0-only
++
 +#include <linux/bpf.h>
-+#include <linux/types.h>
 +#include "bpf_tcp_helpers.h"
 +
 +char _license[] SEC("license") = "GPL";
 +
-+#define DCTCP_MAX_ALPHA	1024U
++#define clamp(val, lo, hi) min((typeof(val))max(val, lo), hi)
 +
-+struct dctcp {
-+	__u32 old_delivered;
-+	__u32 old_delivered_ce;
-+	__u32 prior_rcv_nxt;
-+	__u32 dctcp_alpha;
-+	__u32 next_seq;
-+	__u32 ce_state;
-+	__u32 loss_cwnd;
++#define BICTCP_BETA_SCALE    1024	/* Scale factor beta calculation
++					 * max_cwnd = snd_cwnd * beta
++					 */
++#define	BICTCP_HZ		10	/* BIC HZ 2^10 = 1024 */
++
++/* Two methods of hybrid slow start */
++#define HYSTART_ACK_TRAIN	0x1
++#define HYSTART_DELAY		0x2
++
++/* Number of delay samples for detecting the increase of delay */
++#define HYSTART_MIN_SAMPLES	8
++#define HYSTART_DELAY_MIN	(4U<<3)
++#define HYSTART_DELAY_MAX	(16U<<3)
++#define HYSTART_DELAY_THRESH(x)	clamp(x, HYSTART_DELAY_MIN, HYSTART_DELAY_MAX)
++
++static int fast_convergence = 1;
++static const int beta = 717;	/* = 717/1024 (BICTCP_BETA_SCALE) */
++static int initial_ssthresh;
++static const int bic_scale = 41;
++static int tcp_friendliness = 1;
++
++static int hystart = 1;
++static int hystart_detect = HYSTART_ACK_TRAIN | HYSTART_DELAY;
++static int hystart_low_window = 16;
++static int hystart_ack_delta = 2;
++
++static __u32 cube_rtt_scale = (bic_scale * 10);	/* 1024*c/rtt */
++static __u32 beta_scale = 8*(BICTCP_BETA_SCALE+beta) / 3
++		/ (BICTCP_BETA_SCALE - beta);
++/* calculate the "K" for (wmax-cwnd) = c/rtt * K^3
++ *  so K = cubic_root( (wmax-cwnd)*rtt/c )
++ * the unit of K is bictcp_HZ=2^10, not HZ
++ *
++ *  c = bic_scale >> 10
++ *  rtt = 100ms
++ *
++ * the following code has been designed and tested for
++ * cwnd < 1 million packets
++ * RTT < 100 seconds
++ * HZ < 1,000,00  (corresponding to 10 nano-second)
++ */
++
++/* 1/c * 2^2*bictcp_HZ * srtt, 2^40 */
++static __u64 cube_factor = (__u64)(1ull << (10+3*BICTCP_HZ)) / (bic_scale * 10);
++
++/* BIC TCP Parameters */
++struct bictcp {
++	__u32	cnt;		/* increase cwnd by 1 after ACKs */
++	__u32	last_max_cwnd;	/* last maximum snd_cwnd */
++	__u32	last_cwnd;	/* the last snd_cwnd */
++	__u32	last_time;	/* time when updated last_cwnd */
++	__u32	bic_origin_point;/* origin point of bic function */
++	__u32	bic_K;		/* time to origin point
++				   from the beginning of the current epoch */
++	__u32	delay_min;	/* min delay (msec << 3) */
++	__u32	epoch_start;	/* beginning of an epoch */
++	__u32	ack_cnt;	/* number of acks */
++	__u32	tcp_cwnd;	/* estimated tcp cwnd */
++	__u16	unused;
++	__u8	sample_cnt;	/* number of samples to decide curr_rtt */
++	__u8	found;		/* the exit point is found? */
++	__u32	round_start;	/* beginning of each round */
++	__u32	end_seq;	/* end_seq of the round */
++	__u32	last_ack;	/* last time when the ACK spacing is close */
++	__u32	curr_rtt;	/* the minimum rtt of current round */
 +};
 +
-+static unsigned int dctcp_shift_g = 4; /* g = 1/2^4 */
-+static unsigned int dctcp_alpha_on_init = DCTCP_MAX_ALPHA;
-+
-+static __always_inline void dctcp_reset(const struct tcp_sock *tp,
-+					struct dctcp *ca)
++static __always_inline void bictcp_reset(struct bictcp *ca)
 +{
-+	ca->next_seq = tp->snd_nxt;
-+
-+	ca->old_delivered = tp->delivered;
-+	ca->old_delivered_ce = tp->delivered_ce;
++	ca->cnt = 0;
++	ca->last_max_cwnd = 0;
++	ca->last_cwnd = 0;
++	ca->last_time = 0;
++	ca->bic_origin_point = 0;
++	ca->bic_K = 0;
++	ca->delay_min = 0;
++	ca->epoch_start = 0;
++	ca->ack_cnt = 0;
++	ca->tcp_cwnd = 0;
++	ca->found = 0;
 +}
 +
-+BPF_TCP_OPS_1(dctcp_init, void, struct sock *, sk)
++#define HZ 1000UL
++#define NSEC_PER_MSEC	1000000UL
++#define USEC_PER_MSEC	1000UL
++
++static __always_inline __u64 msecs_to_jiffies(__u32 m)
 +{
-+	const struct tcp_sock *tp = tcp_sk(sk);
-+	struct dctcp *ca = inet_csk_ca(sk);
-+
-+	ca->prior_rcv_nxt = tp->rcv_nxt;
-+	ca->dctcp_alpha = min(dctcp_alpha_on_init, DCTCP_MAX_ALPHA);
-+	ca->loss_cwnd = 0;
-+	ca->ce_state = 0;
-+
-+	dctcp_reset(tp, ca);
++	return bpf_jiffies((__u64)m * NSEC_PER_MSEC, BPF_F_NS_TO_JIFFIES);
 +}
 +
-+BPF_TCP_OPS_1(dctcp_ssthresh, __u32, struct sock *, sk)
++static __always_inline __u32 bictcp_clock(void)
 +{
-+	struct dctcp *ca = inet_csk_ca(sk);
-+	struct tcp_sock *tp = tcp_sk(sk);
-+
-+	ca->loss_cwnd = tp->snd_cwnd;
-+	return max(tp->snd_cwnd - ((tp->snd_cwnd * ca->dctcp_alpha) >> 11U), 2U);
++	return bpf_jiffies(0, BPF_F_JIFFIES_TO_NS) / NSEC_PER_MSEC;
 +}
 +
-+BPF_TCP_OPS_2(dctcp_update_alpha, void,
-+	      struct sock *, sk, __u32, flags)
-+{
-+	const struct tcp_sock *tp = tcp_sk(sk);
-+	struct dctcp *ca = inet_csk_ca(sk);
++#define tcp_jiffies32 ((__u32)bpf_jiffies(0, 0))
 +
-+	/* Expired RTT */
-+	if (!before(tp->snd_una, ca->next_seq)) {
-+		__u32 delivered_ce = tp->delivered_ce - ca->old_delivered_ce;
-+		__u32 alpha = ca->dctcp_alpha;
-+
-+		/* alpha = (1 - g) * alpha + g * F */
-+
-+		alpha -= min_not_zero(alpha, alpha >> dctcp_shift_g);
-+		if (delivered_ce) {
-+			__u32 delivered = tp->delivered - ca->old_delivered;
-+
-+			/* If dctcp_shift_g == 1, a 32bit value would overflow
-+			 * after 8 M packets.
-+			 */
-+			delivered_ce <<= (10 - dctcp_shift_g);
-+			delivered_ce /= max(1U, delivered);
-+
-+			alpha = min(alpha + delivered_ce, DCTCP_MAX_ALPHA);
-+		}
-+		ca->dctcp_alpha = alpha;
-+		dctcp_reset(tp, ca);
-+	}
-+}
-+
-+static __always_inline void dctcp_react_to_loss(struct sock *sk)
-+{
-+	struct dctcp *ca = inet_csk_ca(sk);
-+	struct tcp_sock *tp = tcp_sk(sk);
-+
-+	ca->loss_cwnd = tp->snd_cwnd;
-+	tp->snd_ssthresh = max(tp->snd_cwnd >> 1U, 2U);
-+}
-+
-+BPF_TCP_OPS_2(dctcp_state, void, struct sock *, sk, __u8, new_state)
-+{
-+	if (new_state == TCP_CA_Recovery &&
-+	    new_state != BPF_CORE_READ_BITFIELD(inet_csk(sk), icsk_ca_state))
-+		dctcp_react_to_loss(sk);
-+	/* We handle RTO in dctcp_cwnd_event to ensure that we perform only
-+	 * one loss-adjustment per RTT.
-+	 */
-+}
-+
-+static __always_inline void dctcp_ece_ack_cwr(struct sock *sk, __u32 ce_state)
++static __always_inline void bictcp_hystart_reset(struct sock *sk)
 +{
 +	struct tcp_sock *tp = tcp_sk(sk);
++	struct bictcp *ca = inet_csk_ca(sk);
 +
-+	if (ce_state == 1)
-+		tp->ecn_flags |= TCP_ECN_DEMAND_CWR;
-+	else
-+		tp->ecn_flags &= ~TCP_ECN_DEMAND_CWR;
++	ca->round_start = ca->last_ack = bictcp_clock();
++	ca->end_seq = tp->snd_nxt;
++	ca->curr_rtt = 0;
++	ca->sample_cnt = 0;
 +}
 +
-+/* Minimal DCTP CE state machine:
-+ *
-+ * S:	0 <- last pkt was non-CE
-+ *	1 <- last pkt was CE
-+ */
-+static __always_inline
-+void dctcp_ece_ack_update(struct sock *sk, enum tcp_ca_event evt,
-+			  __u32 *prior_rcv_nxt, __u32 *ce_state)
++BPF_TCP_OPS_1(bictcp_init, void, struct sock *, sk)
 +{
-+	__u32 new_ce_state = (evt == CA_EVENT_ECN_IS_CE) ? 1 : 0;
++	struct bictcp *ca = inet_csk_ca(sk);
 +
-+	if (*ce_state != new_ce_state) {
-+		/* CE state has changed, force an immediate ACK to
-+		 * reflect the new CE state. If an ACK was delayed,
-+		 * send that first to reflect the prior CE state.
++	bictcp_reset(ca);
++
++	if (hystart)
++		bictcp_hystart_reset(sk);
++
++	if (!hystart && initial_ssthresh)
++		tcp_sk(sk)->snd_ssthresh = initial_ssthresh;
++}
++
++BPF_TCP_OPS_2(bictcp_cwnd_event, void, struct sock *, sk,
++	      enum tcp_ca_event, event)
++{
++	if (event == CA_EVENT_TX_START) {
++		struct bictcp *ca = inet_csk_ca(sk);
++		__u32 now = tcp_jiffies32;
++		__s32 delta;
++
++		delta = now - tcp_sk(sk)->lsndtime;
++
++		/* We were application limited (idle) for a while.
++		 * Shift epoch_start to keep cwnd growth to cubic curve.
 +		 */
-+		if (inet_csk(sk)->icsk_ack.pending & ICSK_ACK_TIMER) {
-+			dctcp_ece_ack_cwr(sk, *ce_state);
-+			bpf_tcp_send_ack(sk, *prior_rcv_nxt);
++		if (ca->epoch_start && delta > 0) {
++			ca->epoch_start += delta;
++			if (after(ca->epoch_start, now))
++				ca->epoch_start = now;
 +		}
-+		inet_csk(sk)->icsk_ack.pending |= ICSK_ACK_NOW;
-+	}
-+	*prior_rcv_nxt = tcp_sk(sk)->rcv_nxt;
-+	*ce_state = new_ce_state;
-+	dctcp_ece_ack_cwr(sk, new_ce_state);
-+}
-+
-+BPF_TCP_OPS_2(dctcp_cwnd_event, void,
-+	      struct sock *, sk, enum tcp_ca_event, ev)
-+{
-+	struct dctcp *ca = inet_csk_ca(sk);
-+
-+	switch (ev) {
-+	case CA_EVENT_ECN_IS_CE:
-+	case CA_EVENT_ECN_NO_CE:
-+		dctcp_ece_ack_update(sk, ev, &ca->prior_rcv_nxt, &ca->ce_state);
-+		break;
-+	case CA_EVENT_LOSS:
-+		dctcp_react_to_loss(sk);
-+		break;
-+	default:
-+		/* Don't care for the rest. */
-+		break;
++		return;
 +	}
 +}
 +
-+BPF_TCP_OPS_1(dctcp_cwnd_undo, __u32, struct sock *, sk)
++#define BITS_PER_LONG (sizeof(long) * 8)
++static __always_inline unsigned long __fls(unsigned long word)
 +{
-+	const struct dctcp *ca = inet_csk_ca(sk);
++	int num = BITS_PER_LONG - 1;
 +
-+	return max(tcp_sk(sk)->snd_cwnd, ca->loss_cwnd);
++	if (!(word & (~0ul << 32))) {
++		num -= 32;
++		word <<= 32;
++	}
++
++	if (!(word & (~0ul << (BITS_PER_LONG-16)))) {
++		num -= 16;
++		word <<= 16;
++	}
++	if (!(word & (~0ul << (BITS_PER_LONG-8)))) {
++		num -= 8;
++		word <<= 8;
++	}
++	if (!(word & (~0ul << (BITS_PER_LONG-4)))) {
++		num -= 4;
++		word <<= 4;
++	}
++	if (!(word & (~0ul << (BITS_PER_LONG-2)))) {
++		num -= 2;
++		word <<= 2;
++	}
++	if (!(word & (~0ul << (BITS_PER_LONG-1))))
++		num -= 1;
++	return num;
 +}
 +
-+BPF_TCP_OPS_3(tcp_reno_cong_avoid, void,
-+	      struct sock *, sk, __u32, ack, __u32, acked)
++static __always_inline int fls64(__u64 x)
++{
++	if (x == 0)
++		return 0;
++	return __fls(x) + 1;
++}
++
++static __always_inline __u64 div64_u64(__u64 dividend, __u64 divisor)
++{
++	return dividend / divisor;
++}
++
++/*
++ * cbrt(x) MSB values for x MSB values in [0..63].
++ * Precomputed then refined by hand - Willy Tarreau
++ *
++ * For x in [0..63],
++ *   v = cbrt(x << 18) - 1
++ *   cbrt(x) = (v[x] + 10) >> 6
++ */
++static const __u8 v[] = {
++	/* 0x00 */    0,   54,   54,   54,  118,  118,  118,  118,
++	/* 0x08 */  123,  129,  134,  138,  143,  147,  151,  156,
++	/* 0x10 */  157,  161,  164,  168,  170,  173,  176,  179,
++	/* 0x18 */  181,  185,  187,  190,  192,  194,  197,  199,
++	/* 0x20 */  200,  202,  204,  206,  209,  211,  213,  215,
++	/* 0x28 */  217,  219,  221,  222,  224,  225,  227,  229,
++	/* 0x30 */  231,  232,  234,  236,  237,  239,  240,  242,
++	/* 0x38 */  244,  245,  246,  248,  250,  251,  252,  254,
++};
++
++/* calculate the cubic root of x using a table lookup followed by one
++ * Newton-Raphson iteration.
++ * Avg err ~= 0.195%
++ */
++static __always_inline __u32 cubic_root(__u64 a)
++{
++	__u32 x, b, shift;
++	b = fls64(a);
++	if (a < 64) {
++		/* a in [0..63] */
++		return ((__u32)v[(__u32)a] + 35) >> 6;
++	}
++
++	/* b >= 7 */
++
++	b = ((b * 84) >> 8) - 1;
++	shift = (a >> (b * 3));
++
++	/* it is needed for verifier's bound check on v */
++	if (shift >= 64)
++		return 0;
++
++	x = ((__u32)(((__u32)v[shift] + 10) << b)) >> 6;
++
++	/*
++	 * Newton-Raphson iteration
++	 *                         2
++	 * x    = ( 2 * x  +  a / x  ) / 3
++	 *  k+1          k         k
++	 */
++	x = (2 * x + (__u32)div64_u64(a, (__u64)x * (__u64)(x - 1)));
++	x = ((x * 341) >> 10);
++	return x;
++}
++
++/*
++ * Compute congestion window to use.
++ */
++static __always_inline void bictcp_update(struct bictcp *ca, __u32 cwnd,
++					  __u32 acked)
++{
++	__u32 delta, bic_target, max_cnt;
++	__u64 offs, t;
++
++	ca->ack_cnt += acked;	/* count the number of ACKed packets */
++
++	if (ca->last_cwnd == cwnd &&
++	    (__s32)(tcp_jiffies32 - ca->last_time) <= HZ / 32)
++		return;
++
++	/* The CUBIC function can update ca->cnt at most once per jiffy.
++	 * On all cwnd reduction events, ca->epoch_start is set to 0,
++	 * which will force a recalculation of ca->cnt.
++	 */
++	if (ca->epoch_start && tcp_jiffies32 == ca->last_time)
++		goto tcp_friendliness;
++
++	ca->last_cwnd = cwnd;
++	ca->last_time = tcp_jiffies32;
++
++	if (ca->epoch_start == 0) {
++		ca->epoch_start = tcp_jiffies32;	/* record beginning */
++		ca->ack_cnt = acked;			/* start counting */
++		ca->tcp_cwnd = cwnd;			/* syn with cubic */
++
++		if (ca->last_max_cwnd <= cwnd) {
++			ca->bic_K = 0;
++			ca->bic_origin_point = cwnd;
++		} else {
++			/* Compute new K based on
++			 * (wmax-cwnd) * (srtt>>3 / HZ) / c * 2^(3*bictcp_HZ)
++			 */
++			ca->bic_K = cubic_root(cube_factor
++					       * (ca->last_max_cwnd - cwnd));
++			ca->bic_origin_point = ca->last_max_cwnd;
++		}
++	}
++
++	/* cubic function - calc*/
++	/* calculate c * time^3 / rtt,
++	 *  while considering overflow in calculation of time^3
++	 * (so time^3 is done by using 64 bit)
++	 * and without the support of division of 64bit numbers
++	 * (so all divisions are done by using 32 bit)
++	 *  also NOTE the unit of those veriables
++	 *	  time  = (t - K) / 2^bictcp_HZ
++	 *	  c = bic_scale >> 10
++	 * rtt  = (srtt >> 3) / HZ
++	 * !!! The following code does not have overflow problems,
++	 * if the cwnd < 1 million packets !!!
++	 */
++
++	t = (__s32)(tcp_jiffies32 - ca->epoch_start);
++	t += msecs_to_jiffies(ca->delay_min >> 3);
++	/* change the unit from HZ to bictcp_HZ */
++	t <<= BICTCP_HZ;
++	t /= HZ;
++
++	if (t < ca->bic_K)		/* t - K */
++		offs = ca->bic_K - t;
++	else
++		offs = t - ca->bic_K;
++
++	/* c/rtt * (t-K)^3 */
++	delta = (cube_rtt_scale * offs * offs * offs) >> (10+3*BICTCP_HZ);
++	if (t < ca->bic_K)                            /* below origin*/
++		bic_target = ca->bic_origin_point - delta;
++	else                                          /* above origin*/
++		bic_target = ca->bic_origin_point + delta;
++
++	/* cubic function - calc bictcp_cnt*/
++	if (bic_target > cwnd) {
++		ca->cnt = cwnd / (bic_target - cwnd);
++	} else {
++		ca->cnt = 100 * cwnd;              /* very small increment*/
++	}
++
++	/*
++	 * The initial growth of cubic function may be too conservative
++	 * when the available bandwidth is still unknown.
++	 */
++	if (ca->last_max_cwnd == 0 && ca->cnt > 20)
++		ca->cnt = 20;	/* increase cwnd 5% per RTT */
++
++tcp_friendliness:
++	/* TCP Friendly */
++	if (tcp_friendliness) {
++		__u32 scale = beta_scale;
++		__u32 n;
++
++		/* update tcp cwnd */
++		delta = (cwnd * scale) >> 3;
++		if (delta) {
++			n = ca->ack_cnt / delta;
++			ca->ack_cnt -= n * delta;
++			ca->tcp_cwnd += n;
++		}
++
++		if (ca->tcp_cwnd > cwnd) {	/* if bic is slower than tcp */
++			delta = ca->tcp_cwnd - cwnd;
++			max_cnt = cwnd / delta;
++			if (ca->cnt > max_cnt)
++				ca->cnt = max_cnt;
++		}
++	}
++
++	/* The maximum rate of cwnd increase CUBIC allows is 1 packet per
++	 * 2 packets ACKed, meaning cwnd grows at 1.5x per RTT.
++	 */
++	ca->cnt = max(ca->cnt, 2U);
++}
++
++BPF_TCP_OPS_3(bictcp_cong_avoid, void, struct sock *, sk,
++	      __u32, ack, __u32, acked)
 +{
 +	struct tcp_sock *tp = tcp_sk(sk);
++	struct bictcp *ca = inet_csk_ca(sk);
 +
 +	if (!tcp_is_cwnd_limited(sk))
 +		return;
 +
-+	/* In "safe" area, increase. */
 +	if (tcp_in_slow_start(tp)) {
++		if (hystart && after(ack, ca->end_seq))
++			bictcp_hystart_reset(sk);
 +		acked = tcp_slow_start(tp, acked);
 +		if (!acked)
 +			return;
 +	}
-+	/* In dangerous area, increase slowly. */
-+	tcp_cong_avoid_ai(tp, tp->snd_cwnd, acked);
++	bictcp_update(ca, tp->snd_cwnd, acked);
++	tcp_cong_avoid_ai(tp, ca->cnt, acked);
++}
++
++BPF_TCP_OPS_1(bictcp_recalc_ssthresh, __u32,
++	      struct sock *, sk)
++{
++	const struct tcp_sock *tp = tcp_sk(sk);
++	struct bictcp *ca = inet_csk_ca(sk);
++
++	ca->epoch_start = 0;	/* end of epoch */
++
++	/* Wmax and fast convergence */
++	if (tp->snd_cwnd < ca->last_max_cwnd && fast_convergence)
++		ca->last_max_cwnd = (tp->snd_cwnd * (BICTCP_BETA_SCALE + beta))
++			/ (2 * BICTCP_BETA_SCALE);
++	else
++		ca->last_max_cwnd = tp->snd_cwnd;
++
++	return max((tp->snd_cwnd * beta) / BICTCP_BETA_SCALE, 2U);
++}
++
++BPF_TCP_OPS_2(bictcp_state, void, struct sock *, sk,
++	      __u8, new_state)
++{
++	if (new_state == TCP_CA_Loss) {
++		bictcp_reset(inet_csk_ca(sk));
++		bictcp_hystart_reset(sk);
++	}
++}
++
++static __always_inline void hystart_update(struct sock *sk, __u32 delay)
++{
++	struct tcp_sock *tp = tcp_sk(sk);
++	struct bictcp *ca = inet_csk_ca(sk);
++
++	if (ca->found & hystart_detect)
++		return;
++
++	if (hystart_detect & HYSTART_ACK_TRAIN) {
++		__u32 now = bictcp_clock();
++
++		/* first detection parameter - ack-train detection */
++		if ((__s32)(now - ca->last_ack) <= hystart_ack_delta) {
++			ca->last_ack = now;
++			if ((__s32)(now - ca->round_start) > ca->delay_min >> 4) {
++				ca->found |= HYSTART_ACK_TRAIN;
++				tp->snd_ssthresh = tp->snd_cwnd;
++			}
++		}
++	}
++
++	if (hystart_detect & HYSTART_DELAY) {
++		/* obtain the minimum delay of more than sampling packets */
++		if (ca->sample_cnt < HYSTART_MIN_SAMPLES) {
++			if (ca->curr_rtt == 0 || ca->curr_rtt > delay)
++				ca->curr_rtt = delay;
++
++			ca->sample_cnt++;
++		} else {
++			if (ca->curr_rtt > ca->delay_min +
++			    HYSTART_DELAY_THRESH(ca->delay_min >> 3)) {
++				ca->found |= HYSTART_DELAY;
++				tp->snd_ssthresh = tp->snd_cwnd;
++			}
++		}
++	}
++}
++
++/* Track delayed acknowledgment ratio using sliding window
++ * ratio = (15*ratio + sample) / 16
++ */
++BPF_TCP_OPS_2(bictcp_acked, void, struct sock *, sk,
++	      const struct ack_sample *, sample)
++{
++	const struct tcp_sock *tp = tcp_sk(sk);
++	struct bictcp *ca = inet_csk_ca(sk);
++	__u32 delay;
++
++	/* Some calls are for duplicates without timetamps */
++	if (sample->rtt_us < 0)
++		return;
++
++	/* Discard delay samples right after fast recovery */
++	if (ca->epoch_start && (__s32)(tcp_jiffies32 - ca->epoch_start) < HZ)
++		return;
++
++	delay = (sample->rtt_us << 3) / USEC_PER_MSEC;
++	if (delay == 0)
++		delay = 1;
++
++	/* first time call or link delay decreases */
++	if (ca->delay_min == 0 || ca->delay_min > delay)
++		ca->delay_min = delay;
++
++	/* hystart triggers when cwnd is larger than some threshold */
++	if (hystart && tcp_in_slow_start(tp) &&
++	    tp->snd_cwnd >= hystart_low_window)
++		hystart_update(sk, delay);
++}
++
++BPF_TCP_OPS_1(tcp_reno_undo_cwnd, __u32, struct sock *, sk)
++{
++	const struct tcp_sock *tp = tcp_sk(sk);
++
++	return max(tp->snd_cwnd, tp->prior_cwnd);
 +}
 +
 +SEC("struct_ops")
-+struct tcp_congestion_ops dctcp = {
-+	.init		= (void *)dctcp_init,
-+	.in_ack_event   = (void *)dctcp_update_alpha,
-+	.cwnd_event	= (void *)dctcp_cwnd_event,
-+	.ssthresh	= (void *)dctcp_ssthresh,
-+	.cong_avoid	= (void *)tcp_reno_cong_avoid,
-+	.undo_cwnd	= (void *)dctcp_cwnd_undo,
-+	.set_state	= (void *)dctcp_state,
-+	.flags		= TCP_CONG_NEEDS_ECN,
-+	.name		= "bpf_dctcp",
++struct tcp_congestion_ops cubictcp = {
++	.init		= (void *)bictcp_init,
++	.ssthresh	= (void *)bictcp_recalc_ssthresh,
++	.cong_avoid	= (void *)bictcp_cong_avoid,
++	.set_state	= (void *)bictcp_state,
++	.undo_cwnd	= (void *)tcp_reno_undo_cwnd,
++	.cwnd_event	= (void *)bictcp_cwnd_event,
++	.pkts_acked     = (void *)bictcp_acked,
++	.name		= "bpf_cubic",
 +};
 -- 
 2.17.1
