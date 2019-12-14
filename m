@@ -2,59 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C82E211EFEA
-	for <lists+netdev@lfdr.de>; Sat, 14 Dec 2019 03:13:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CF5C611EFF5
+	for <lists+netdev@lfdr.de>; Sat, 14 Dec 2019 03:16:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726707AbfLNCLC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Dec 2019 21:11:02 -0500
-Received: from mail-lj1-f195.google.com ([209.85.208.195]:44915 "EHLO
-        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726334AbfLNCLC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Dec 2019 21:11:02 -0500
-Received: by mail-lj1-f195.google.com with SMTP id c19so695702lji.11
-        for <netdev@vger.kernel.org>; Fri, 13 Dec 2019 18:11:01 -0800 (PST)
+        id S1726676AbfLNCQA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Dec 2019 21:16:00 -0500
+Received: from mail-lf1-f68.google.com ([209.85.167.68]:46827 "EHLO
+        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726208AbfLNCQA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Dec 2019 21:16:00 -0500
+Received: by mail-lf1-f68.google.com with SMTP id f15so601700lfl.13
+        for <netdev@vger.kernel.org>; Fri, 13 Dec 2019 18:15:57 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=netronome-com.20150623.gappssmtp.com; s=20150623;
         h=date:from:to:cc:subject:message-id:in-reply-to:references
          :organization:mime-version:content-transfer-encoding;
-        bh=ySR7TYBQhTmVu6KMG+j74j9+ZRg88KrNjUFtJErf2/0=;
-        b=SXb/Zp7fUVFOXqfsfn1Ioi/WCk64YO6dsh3bicKU9wV4cG/gEi+dbN5rIl0dnqNrhV
-         hj7Pekuq1K/ayYHab9CbuM/ujPP8uKnHBwwEwB0NYmiMBmcQAgQdGCjKDi6PV941gJrp
-         GbTgKumeOWmxeIRrA432U8eUyQzwl5vuupxwSUlwolCL2LXLTwjdQeLiLMwvTr55s8XK
-         IfyfzAaaN0D3Pjojv/MIQ+Bw/ZGf6wYdEd4WI10MM48Z925uAGyqIHxqQNf/Bqo/2SFe
-         cft5eLFeHCbYDPztS2t7tmfzWLQ9WjLGol5lFyuV3jgdVCNFcp8bSmaM1ILwTSUBpi/V
-         +K/g==
+        bh=0t+Co+YM2Vcx/HBNqKjw5nNGg/a0Im73bSXvzLiuJZ8=;
+        b=E2TMRWWb8iDGTkjYxqVo5yHuaoTwmFsQwsHm+1/X5tAHb/w14PodXR4JEcKbciWUbb
+         vvLKbHewbIlxnYN+OMEsds3EaCJuSz8rmxOFXsksPtTo62HkVnkV+s9W32BCaYqXglOA
+         /PAyrQbxS4hP++czH4USuI6PUSWxfsoiMGSIDuPzjhF5iAuldo2FC+adErdw2VsT0Iif
+         DBs4raudzhvvxP9mcvGUUo1YfEGfhtCrMPa9JmSLSnlPymbDCp3NPvXoKP1Nl2XLYX8y
+         0HOGjO3FYogxinmpeVEQKdLEjEwLfp7iWi1OmaJbLsgOZ6mXnQZoxrO/LF8SZdTa2csp
+         c+qA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
          :references:organization:mime-version:content-transfer-encoding;
-        bh=ySR7TYBQhTmVu6KMG+j74j9+ZRg88KrNjUFtJErf2/0=;
-        b=BOQB8B+/N8vq2CL2+FMCiNixqcmosVRVoNlsqK5mj9jnir3FJDN5tyisnBtHKGTy7K
-         L0WHeBolMJx/FpxiLQExUazl+adD0jR+rpgKwwUVUXU+Nz/j/tRLwcfiQuYpFmvE1GYF
-         1FZWMcRT1l0XJoaNoRA+wbyaMhAg4HunPsoPzK98Ah+Zcq+vGJuZTdDz9ZbphF6GVSXG
-         +ss5PZbWE3uqkS01sqYQEYwKVdL9s+JAvCld9yHu4ZBemIZtFz509gmsOCan+ls9M+iL
-         uXs6rM5yBXPwCZc323cYOcC6l9VgNCFeiydRobx0i4KxJiuDrpd6+IKsYsyW2DwJQjyU
-         j2Aw==
-X-Gm-Message-State: APjAAAUIo0kp7OF1LiQ2gAjK7ou5M/dObHEKfLtbogSGORsCe5Up0iBx
-        HCZ4ZV3mi2IKNSMk+wcq3KAW9w==
-X-Google-Smtp-Source: APXvYqx31c9AbeMwEq7DpSSfHmn+XAWX9b/tCrkJXLP1y/F+yXyKvwm6s4HTOnIAjWUHUq9asiCdQQ==
-X-Received: by 2002:a2e:978d:: with SMTP id y13mr11738378lji.103.1576289460426;
-        Fri, 13 Dec 2019 18:11:00 -0800 (PST)
+        bh=0t+Co+YM2Vcx/HBNqKjw5nNGg/a0Im73bSXvzLiuJZ8=;
+        b=KHI2RwUehyUQpP6O0uvrEsVlVDBGA92SkxIpLJAi/o/ZXasFPeCdSKs6z0lT+EgfM6
+         ZEZ4oyMeOywxp3hQa9JTvQ97W6v8M/2Q7zNNPsZ84i5oSTrGTBTFsiL3EU0da0rT+gfK
+         sbxzMlpvvQdIWF7gOz6/x3a4q+tprGcWbL+Jcmr+4QV4oPsqRgFeYbKXY42Bsd7IbeHh
+         XY81ury9taEJ74YHeSgrviyYrAJsDmsVAsliJMetmljYcATfndSCeydL947qlItUcEy9
+         YDsZZxZD8qvE1kABqgaYCyVUZ6ANeqzuknDtWNoFl3dCAfJUi/DF+mTmBB6yUJE2Zc83
+         vRmg==
+X-Gm-Message-State: APjAAAUcQe+IgZIwLjmu5WSwXcd7Ad9kCDYuLaXGJrBnRu2BHyDd8v/t
+        ShmkJfFU0L4xAS8FKOkUl9e8Ck/1gzY=
+X-Google-Smtp-Source: APXvYqwOJ++Svs7bR7sotIk75IzIOFWlmXAlrF9jz5LDoMKSLjDK3qVcLnu7a/k+xkZ/0Rn1ayBLJw==
+X-Received: by 2002:a19:8a41:: with SMTP id m62mr10596570lfd.5.1576289756922;
+        Fri, 13 Dec 2019 18:15:56 -0800 (PST)
 Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id x13sm5268984lfe.48.2019.12.13.18.10.58
+        by smtp.gmail.com with ESMTPSA id y7sm5600560ljn.31.2019.12.13.18.15.55
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 13 Dec 2019 18:11:00 -0800 (PST)
-Date:   Fri, 13 Dec 2019 18:10:51 -0800
+        Fri, 13 Dec 2019 18:15:56 -0800 (PST)
+Date:   Fri, 13 Dec 2019 18:15:49 -0800
 From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Matteo Croce <mcroce@redhat.com>
-Cc:     netdev@vger.kernel.org, Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next] bonding: don't init workqueues on error
-Message-ID: <20191213181051.0f949b17@cakuba.netronome.com>
-In-Reply-To: <20191210152454.86247-1-mcroce@redhat.com>
-References: <20191210152454.86247-1-mcroce@redhat.com>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, oss-drivers@netronome.com,
+        John Hurley <john.hurley@netronome.com>
+Subject: Re: [PATCH net-next] Revert "nfp: abm: fix memory leak in
+ nfp_abm_u32_knode_replace"
+Message-ID: <20191213181549.0357de09@cakuba.netronome.com>
+In-Reply-To: <20191210182032.24077-1-jakub.kicinski@netronome.com>
+References: <20191210182032.24077-1-jakub.kicinski@netronome.com>
 Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -64,85 +63,17 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 10 Dec 2019 16:24:54 +0100, Matteo Croce wrote:
-> bond_create() initialize six workqueues used later on.
-
-Work _entries_ not _queues_ no?
-
-> In the unlikely event that the device registration fails, these
-> structures are initialized unnecessarily, so move the initialization
-> out of the error path. Also, create an error label to remove some
-> duplicated code.
-
-Does the initialization of work entries matter? Is this prep for further
-changes?
-
-> Signed-off-by: Matteo Croce <mcroce@redhat.com>
-> ---
->  drivers/net/bonding/bond_main.c | 11 +++++++----
->  1 file changed, 7 insertions(+), 4 deletions(-)
+On Tue, 10 Dec 2019 10:20:32 -0800, Jakub Kicinski wrote:
+> This reverts commit 78beef629fd9 ("nfp: abm: fix memory leak in
+> nfp_abm_u32_knode_replace").
 > 
-> diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
-> index fcb7c2f7f001..8756b6a023d7 100644
-> --- a/drivers/net/bonding/bond_main.c
-> +++ b/drivers/net/bonding/bond_main.c
-> @@ -4889,8 +4889,8 @@ int bond_create(struct net *net, const char *name)
->  				   bond_setup, tx_queues);
->  	if (!bond_dev) {
->  		pr_err("%s: eek! can't alloc netdev!\n", name);
+> The quoted commit does not fix anything and resulted in a bogus
+> CVE-2019-19076.
+> 
+> If match is NULL then it is known there is no matching entry in
+> list, hence, calling nfp_abm_u32_knode_delete() is pointless.
+> 
+> Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+> Reviewed-by: John Hurley <john.hurley@netronome.com>
 
-If this is a clean up patch I think this pr_err() could also be removed?
-Memory allocation usually fail very loudly so there should be no reason
-to print more errors.
-
-> -		rtnl_unlock();
-> -		return -ENOMEM;
-> +		res = -ENOMEM;
-> +		goto out_unlock;
->  	}
->  
->  	/*
-> @@ -4905,14 +4905,17 @@ int bond_create(struct net *net, const char *name)
->  	bond_dev->rtnl_link_ops = &bond_link_ops;
->  
->  	res = register_netdevice(bond_dev);
-> +	if (res < 0) {
-> +		free_netdev(bond_dev);
-> +		goto out_unlock;
-> +	}
->  
->  	netif_carrier_off(bond_dev);
->  
->  	bond_work_init_all(bond);
->  
-> +out_unlock:
->  	rtnl_unlock();
-> -	if (res < 0)
-> -		free_netdev(bond_dev);
->  	return res;
->  }
->  
-
-I do appreciate that the change makes the error handling follow a more
-usual kernel pattern, but IMHO it'd be even better if the error
-handling was completely moved. IOW the success path should end with
-return 0; and the error path should contain free_netdev(bond_dev);
-
--	int res;
-+	int err;
-
-	[...]
-
-	rtnl_unlock();
-
-	return 0;
-
-err_free_netdev:
-	free_netdev(bond_dev);
-err_unlock:
-	rtnl_unlock();
-	return err;
-
-I'm just not 100% sold on the improvement made by this patch being
-worth the code churn, please convince me, respin or get an ack from 
-one of the maintainers? :)
+Applied.
