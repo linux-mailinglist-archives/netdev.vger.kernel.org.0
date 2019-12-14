@@ -2,169 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C35911F1EB
-	for <lists+netdev@lfdr.de>; Sat, 14 Dec 2019 14:15:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4BE5C11F264
+	for <lists+netdev@lfdr.de>; Sat, 14 Dec 2019 16:17:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726636AbfLNNO4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 14 Dec 2019 08:14:56 -0500
-Received: from us-smtp-1.mimecast.com ([205.139.110.61]:36319 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725884AbfLNNO4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 14 Dec 2019 08:14:56 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1576329294;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=tXUYo8Z/1wc5z0Jgm8edXNyqrl3xATvrCgL0TB1nk/w=;
-        b=QgmGlJgk31M3cdPE5A04rioe+FYAY76MlL83lxm5/g1Oqd/tLnKlHImSEgBOGsm2mCg91D
-        N3kEK6hv+JEXt1SkymJmr6hAPQP0GhPNPxQMTJYkscsbxTTRaWXPjAeqT4/jKwDe9/6ABD
-        kZ6TvMD7Mps9pcBIZq24rL1N0t5gtA0=
-Received: from mail-lj1-f200.google.com (mail-lj1-f200.google.com
- [209.85.208.200]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-118-rUQ5ZRhwOgGtKTWQa1kIFQ-1; Sat, 14 Dec 2019 08:14:50 -0500
-X-MC-Unique: rUQ5ZRhwOgGtKTWQa1kIFQ-1
-Received: by mail-lj1-f200.google.com with SMTP id j22so578587lja.20
-        for <netdev@vger.kernel.org>; Sat, 14 Dec 2019 05:14:50 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=tXUYo8Z/1wc5z0Jgm8edXNyqrl3xATvrCgL0TB1nk/w=;
-        b=K6bp81u4TrUe8G2X0M6godDCNsSzwi4JtA5393Q6a7tgNfzvOa5WA+TT6Pe5v6WGr3
-         MUajPfvhP7nW2iUo793AR0sHF+EBYfdtaNDSJzkNvXBapVhsKcmAjpmalS40E2QWQui0
-         gDL6h1HmOWcUb0Fiq+ETGVgiYaHwSdkTidjctrd6svP2I/xCNERuMb/CG9FR2VM6W0k/
-         DvqyUukO8hRKpuP2is9T3NKcpIiiqQjo6ug7s401HJeGMYWrs4WqRLm2pCvpvYIJ4rFL
-         bfafJaNW/SEmxMSTUcHdJbHEN3mrLyKink7nvpHBYdnac7Yt2k0c+wJjL0GYoPY3V4LU
-         Gdrw==
-X-Gm-Message-State: APjAAAX5blcec7FhOvlgcUG7len2IgXhvtnd0bYqaBvM/g2iiIehUPzH
-        o3B2CdGCVSpHYPjdTzUVBSeesm1JHa77F9kEWHreG1FbqtnQgtCqG5FQpHlbxrtu9zEfm/Z8i8o
-        qGO3eMcQm0WSYkZfuyK3SzjK39c8jbVN2
-X-Received: by 2002:a2e:824a:: with SMTP id j10mr13161571ljh.209.1576329289307;
-        Sat, 14 Dec 2019 05:14:49 -0800 (PST)
-X-Google-Smtp-Source: APXvYqxZbGoEbpVT/4Wz1na9eFRLpPfqSek9IjoemkGbe1gb3IsBoF63dOqBqzFEQofQR68ctx7JMlHOmw1geb/Km1Q=
-X-Received: by 2002:a2e:824a:: with SMTP id j10mr13161563ljh.209.1576329289135;
- Sat, 14 Dec 2019 05:14:49 -0800 (PST)
+        id S1726411AbfLNPRP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 14 Dec 2019 10:17:15 -0500
+Received: from mout.kundenserver.de ([217.72.192.75]:50751 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726072AbfLNPRP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 14 Dec 2019 10:17:15 -0500
+Received: from mail-qk1-f175.google.com ([209.85.222.175]) by
+ mrelayeu.kundenserver.de (mreue107 [212.227.15.145]) with ESMTPSA (Nemesis)
+ id 1MDy9C-1iWD0A0pQC-00A28h for <netdev@vger.kernel.org>; Sat, 14 Dec 2019
+ 16:17:14 +0100
+Received: by mail-qk1-f175.google.com with SMTP id z76so1761312qka.2
+        for <netdev@vger.kernel.org>; Sat, 14 Dec 2019 07:17:14 -0800 (PST)
+X-Gm-Message-State: APjAAAV+N0vjKA3UW4qPVIT83Ng9yoH+7cipd4DhzkXJh4UvP3coLSnu
+        raBO0hhTqhSiu39yjuhpfV4nq5JLLDcuBqGLSWI=
+X-Google-Smtp-Source: APXvYqzxeWzQv5rYazLvcBNQABh3fsXIww78G/F3NFHy0y1jXgzEyo9+pIqbjsBHpNJ8pbSqYTr9QcLysu0BdMQ7i6I=
+X-Received: by 2002:a37:4e4e:: with SMTP id c75mr18384162qkb.3.1576336633071;
+ Sat, 14 Dec 2019 07:17:13 -0800 (PST)
 MIME-Version: 1.0
-References: <20191210152454.86247-1-mcroce@redhat.com> <20191213181051.0f949b17@cakuba.netronome.com>
-In-Reply-To: <20191213181051.0f949b17@cakuba.netronome.com>
-From:   Matteo Croce <mcroce@redhat.com>
-Date:   Sat, 14 Dec 2019 14:14:13 +0100
-Message-ID: <CAGnkfhwbp3ZzsMTSuAP9WQhs49PJmPimoX1D-M+0uWuUErO91A@mail.gmail.com>
-Subject: Re: [PATCH net-next] bonding: don't init workqueues on error
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        LKML <linux-kernel@vger.kernel.org>
+References: <20191212171125.9933-1-olteanv@gmail.com>
+In-Reply-To: <20191212171125.9933-1-olteanv@gmail.com>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Sat, 14 Dec 2019 16:16:56 +0100
+X-Gmail-Original-Message-ID: <CAK8P3a1PBa0bcfmPnVGry-6GUQ0WTLJ36MAE89QWXzbnuEf_XQ@mail.gmail.com>
+Message-ID: <CAK8P3a1PBa0bcfmPnVGry-6GUQ0WTLJ36MAE89QWXzbnuEf_XQ@mail.gmail.com>
+Subject: Re: [PATCH] net: mscc: ocelot: hide MSCC_OCELOT_SWITCH and move
+ outside NET_VENDOR_MICROSEMI
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Mao Wenan <maowenan@huawei.com>, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        alexandru.marginean@nxp.com, xiaoliang.yang_1@nxp.com,
+        yangbo lu <yangbo.lu@nxp.com>,
+        Networking <netdev@vger.kernel.org>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        UNGLinuxDriver@microchip.com,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
 Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:0y1wzDjwqK4zF8QLHV1NBZNPuqLqLXyjAqzsaCOxPvWhLp3HtjG
+ qaImHS/MNcEMLqVRBM4AduQBIkO7X9NxEO6kxpW71fnzXqJesoELUWP3DUuMH+gi0q9dTrx
+ X6osLsYce6eyPdW5ZeXkszpHXmTMVgMMhtQKwJbCKVNUj1Mi8Yv/dAuuKCs2U1ggkdKINW/
+ X5Zuz5/z8uvz8HzctUIuQ==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:1BFeOTFeWdQ=:DYC6rl65KFTRlr2Aio53Md
+ 3lNDN/V6fsaz92IzJLkqswrz406bMxXnTVJATrV9u7FqXxTLFu5egf8N68KpXCo4IaLLX0p3d
+ MEAZoT5gRKBlnfKrPvS9344O+csSQyx5txjnIQfWF+xwmzD6n39nEl+sdD0A3xEHMTz+cxHjC
+ QKy59Se85nKvSYscKRCjezzNSPp0POYkDj1J8YpM/QtrQrR0dq3tlTMsyMYDv+Pi1tioUTtpQ
+ 5j/SW8UYvLMj8tLsT5sL1i5LBb+r/Rvzy8oz6q7hkqrft40bvm6N1QiWxaf59m+vBta1o8eBZ
+ i+5+se8qXyOHiYIgUWWLnnqSNiOd87rmCIqUYeVOjN4H97PR3/NHY4lxCVeBzPEo3P9Mg2Ww7
+ fT3ah82B1pvKHKaSsq0yhZTD6H3YfOjt/EHoLpjTUqo2tl/Ry6ZfzC9iNt3tdOXZTfZQ+HWyN
+ gu1/WGAdji90JKc8bl5ujPfoVoE72z7lCecUB+Z1LZizc0/lXgorW+IErU0geNShewsj/TO9y
+ G4NplC3+Ou9iE8gZMrq47ko1osW6VCc9lsP6rfgzC99GrSbB5TaWJlvD8HmEjo/nbr0KJBT/i
+ 7AM0L/hdNu6g2KX2CCGq/XcfX97AVTn8JuDQaX7C3DJ8IDE87qtw5GuIEaQ+9ThBKrx++srNt
+ dEsyE2FbogAR3SnwpJqAmunR8pRxoWKNjpWa+8LURlXQFTAgBGnje96V6gXXEJUTm3U6UnSXP
+ kL1JfsdgcvrufLIyPtGd6Nu1LIFlUteg85+liwYcnSHRlqo3dYDXlhy1NlR9NJ8ArVw3YTC3i
+ R0nDCpk52miB3okOrXrGVhYP6VZrFA6Dv1cXuhorCSOqnIlzZY+B9gCAORz4X6qLmP1QdPK/T
+ eVm8x9jLq0tlV0Ty4Dqg==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Dec 14, 2019 at 3:11 AM Jakub Kicinski
-<jakub.kicinski@netronome.com> wrote:
+On Thu, Dec 12, 2019 at 6:11 PM Vladimir Oltean <olteanv@gmail.com> wrote:
 >
-> On Tue, 10 Dec 2019 16:24:54 +0100, Matteo Croce wrote:
-> > bond_create() initialize six workqueues used later on.
+> From: Vladimir Oltean <vladimir.oltean@nxp.com>
 >
-> Work _entries_ not _queues_ no?
->
+> NET_DSA_MSCC_FELIX and MSCC_OCELOT_SWITCH_OCELOT are 2 different drivers
+> that use the same core operations, compiled under MSCC_OCELOT_SWITCH.
 
-Right
+> Fixes: 56051948773e ("net: dsa: ocelot: add driver for Felix switch family")
+> Reported-by: Arnd Bergmann <arnd@arndb.de>
+> Reported-by: Mao Wenan <maowenan@huawei.com>
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-> > In the unlikely event that the device registration fails, these
-> > structures are initialized unnecessarily, so move the initialization
-> > out of the error path. Also, create an error label to remove some
-> > duplicated code.
->
-> Does the initialization of work entries matter? Is this prep for further
-> changes?
->
+I did some more build testing and ran into another issue now that
+MSCC_OCELOT_SWITCH_OCELOT can be built without
+CONFIG_SWITCHDEV:
 
-Not a big issue, I just found useless to initialize those data and
-free a bit later.
-Just a cleanup.
+WARNING: unmet direct dependencies detected for MSCC_OCELOT_SWITCH
+  Depends on [n]: NETDEVICES [=y] && ETHERNET [=y] && NET_SWITCHDEV
+[=n] && HAS_IOMEM [=y]
+  Selected by [y]:
+  - MSCC_OCELOT_SWITCH_OCELOT [=y] && NETDEVICES [=y] && ETHERNET [=y]
+&& NET_VENDOR_MICROSEMI [=y]
+drivers/net/ethernet/mscc/ocelot_board.c: In function 'ocelot_xtr_irq_handler':
+drivers/net/ethernet/mscc/ocelot_board.c:176:7: error: 'struct
+sk_buff' has no member named 'offload_fwd_mark'
+    skb->offload_fwd_mark = 1;
+       ^~
 
-> > Signed-off-by: Matteo Croce <mcroce@redhat.com>
-> > ---
-> >  drivers/net/bonding/bond_main.c | 11 +++++++----
-> >  1 file changed, 7 insertions(+), 4 deletions(-)
-> >
-> > diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
-> > index fcb7c2f7f001..8756b6a023d7 100644
-> > --- a/drivers/net/bonding/bond_main.c
-> > +++ b/drivers/net/bonding/bond_main.c
-> > @@ -4889,8 +4889,8 @@ int bond_create(struct net *net, const char *name)
-> >                                  bond_setup, tx_queues);
-> >       if (!bond_dev) {
-> >               pr_err("%s: eek! can't alloc netdev!\n", name);
->
-> If this is a clean up patch I think this pr_err() could also be removed?
-> Memory allocation usually fail very loudly so there should be no reason
-> to print more errors.
->
+Adding another "depends on NET_SWITCHDEV"  fixed it for me.
 
-Sure, I just didn't want to alter the behaviour too much.
-
-> > -             rtnl_unlock();
-> > -             return -ENOMEM;
-> > +             res = -ENOMEM;
-> > +             goto out_unlock;
-> >       }
-> >
-> >       /*
-> > @@ -4905,14 +4905,17 @@ int bond_create(struct net *net, const char *name)
-> >       bond_dev->rtnl_link_ops = &bond_link_ops;
-> >
-> >       res = register_netdevice(bond_dev);
-> > +     if (res < 0) {
-> > +             free_netdev(bond_dev);
-> > +             goto out_unlock;
-> > +     }
-> >
-> >       netif_carrier_off(bond_dev);
-> >
-> >       bond_work_init_all(bond);
-> >
-> > +out_unlock:
-> >       rtnl_unlock();
-> > -     if (res < 0)
-> > -             free_netdev(bond_dev);
-> >       return res;
-> >  }
-> >
->
-> I do appreciate that the change makes the error handling follow a more
-> usual kernel pattern, but IMHO it'd be even better if the error
-> handling was completely moved. IOW the success path should end with
-> return 0; and the error path should contain free_netdev(bond_dev);
->
-> -       int res;
-> +       int err;
->
->         [...]
->
->         rtnl_unlock();
->
->         return 0;
->
-> err_free_netdev:
->         free_netdev(bond_dev);
-> err_unlock:
->         rtnl_unlock();
->         return err;
->
-> I'm just not 100% sold on the improvement made by this patch being
-> worth the code churn, please convince me, respin or get an ack from
-> one of the maintainers? :)
->
-
-ACK :)
-
--- 
-Matteo Croce
-per aspera ad upstream
-
+       Arnd
