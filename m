@@ -2,122 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7821F11F3A3
-	for <lists+netdev@lfdr.de>; Sat, 14 Dec 2019 20:20:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9413411F3AD
+	for <lists+netdev@lfdr.de>; Sat, 14 Dec 2019 20:25:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726713AbfLNTT7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 14 Dec 2019 14:19:59 -0500
-Received: from mail-ed1-f66.google.com ([209.85.208.66]:47102 "EHLO
-        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726477AbfLNTT7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 14 Dec 2019 14:19:59 -0500
-Received: by mail-ed1-f66.google.com with SMTP id m8so1811845edi.13
-        for <netdev@vger.kernel.org>; Sat, 14 Dec 2019 11:19:57 -0800 (PST)
+        id S1726781AbfLNTZc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 14 Dec 2019 14:25:32 -0500
+Received: from mail-ot1-f68.google.com ([209.85.210.68]:38853 "EHLO
+        mail-ot1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726541AbfLNTZb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 14 Dec 2019 14:25:31 -0500
+Received: by mail-ot1-f68.google.com with SMTP id h20so3536207otn.5
+        for <netdev@vger.kernel.org>; Sat, 14 Dec 2019 11:25:31 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=herbertland-com.20150623.gappssmtp.com; s=20150623;
+        d=google.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=O7QCBnhDtGDTW4QxtnwNG/GneoD6pSdnWnmBLV3DbUc=;
-        b=Zf/bmAtf1upUJGSQAoqJg/2hr2bWPc43c225Oto24O/qObtSfVnnWXI1soYZn6m/jt
-         QYgLzYQqOmKhlrTNUCnq4u41a3cJ3sUaEMHavDLEhZsc4rqk+EQM4sdULCis6J9af2kq
-         n1jhGJROOXV4C50bi+GyOUoJ0fpAxjB/ifY2t0L+6IuwY3q7rEK3ZWvTnd6tc7m0UZqe
-         X1oZ6tWnocdt55D1Bhz1PfbnUnlAW0p7PTiLkhMzQtEb6Z9lop6HNngYm+FBFMew1C9a
-         eq6QrUS/CoNhlkndb6GJ6SqUFbVuuAxMsfAoJhsLBxkKk23ESfzwNJqKnm5ctIK9wKfz
-         Sf/A==
+        bh=Z+JLub6tSjjD0VYNukHxlnNiCf3LxZUN97TOzGRferM=;
+        b=ZJvhEehw1yFXqi+lWP9b9cl2E0XC6f082DGJD8gnBV6/Opz9r+odAxXuiLFiF86/1D
+         fdI+R4u6fCCVbU5BZZb8LU8YZk2Rw8c3J3XFa4g0pVwPqlCYQSFonp3CVVyb3PXVOXHG
+         5/LV6VUNa3XdvI2w1wDD3gVMjUyxDiHUOycibvUMxUgGsVbrjUnrRoIXPd54XQmi1Pbx
+         li+egwTNYQuShi/eCzq3yjAClZZ55TUIVxXFFNuf+iRlkesI7SesUOMMYI58F5ss6Fhr
+         6m1INRULw3vne6deq1Y3wZbH8/PjCFRJnvhYUfFQx+cVnVBHDcV00cXVGXTybYEQoibd
+         4N5Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=O7QCBnhDtGDTW4QxtnwNG/GneoD6pSdnWnmBLV3DbUc=;
-        b=atM/iHJt4IDH0brNc1Ip3uyJ+asIwSvAlAecmY4O6FLI/XoBlA6opfZFiSVdZs+hvr
-         QcEtz+M1dxaW0oAihZJ1Y0fla3BXKRuyi3L+36YGVR4r0rAEB6G7TyuwPeL7CLRjApwd
-         Bt18ayKaNFs/vnhEb3ztHS5WcbJTTBAsbMAJMgD9pWiafYmV2Wp+Vugao5g62uNaISc1
-         +bloyVXB80dN4g+N27PR2dmLFt3QtAgRb5zo0UIAvrqu7lIzWUEJxg7ANU/e/JlEjVD0
-         0CUSYnocoYwOmM2gd842greGxUjnGPfqyhTf/tJBtrhRvE0jgA+wRUSDpRqp2/7GAzqP
-         j5Eg==
-X-Gm-Message-State: APjAAAXieyKvwwe89gH2MD4ZJC4tibgfhNyRiZWXD3DDP3DuCyHE/uiT
-        tvyTDZBYsJdqFpOJtFne70JUZSWEs3IbdzEYgrfsaA==
-X-Google-Smtp-Source: APXvYqyCJqPX7ADnvrFLtuVgOh9PVwAOgTF8YeUo475vbRlMA7iEynUYBrvmGrUmrNEHJOBym2F1rk0HoIgm5+PO9VI=
-X-Received: by 2002:a17:906:1e8b:: with SMTP id e11mr24136337ejj.305.1576351197022;
- Sat, 14 Dec 2019 11:19:57 -0800 (PST)
+        bh=Z+JLub6tSjjD0VYNukHxlnNiCf3LxZUN97TOzGRferM=;
+        b=esUyTa2fQmX6OoRcaovVhzqv1RVghoWrYT972RF/MLEy6JTEGcF/oBONGtyrf1UcVX
+         4a2M/MRTSVlKHwYRk6QiOnz6Sc0HD1DIxlBRgXcN8m397+PROpN73X4rKSHtQswNspx1
+         R+pKGJ0QwOEK6x5y8nEszH1mPDI+xAEtJ7EFxJ0bkdnIhNkqgyfARi6aN2+Btz8WxPXW
+         O5JtQQJGX/a7J9Tp+gWGN2yv73HJ81P+4mcaQ+eUowjMkCqJWAnMmTm9zI5LYPugmfgb
+         1R5asPTI8lhJGf6Ff/KYgxXXqLSGHgO/H7m8WtkFegcLCu4+gowzOHCdpFyMxNCl8tJl
+         U+7g==
+X-Gm-Message-State: APjAAAXpnIa2eXDn8bZPl8pVmrVmFQKPGplRwcTEij3nmNA+rOAGpJp+
+        KuBuomaQ+QGvzCxgEr630vGlv6ajgBq42DIolVOh5w==
+X-Google-Smtp-Source: APXvYqw2rYLpk9L5q0n/ZsuZpXWvZm9n8UOyRMu3hYSCo+t5nPvK2xICr9ARcUqVVMXjv6l5co0QhzUMARbQzR8kA2I=
+X-Received: by 2002:a9d:480c:: with SMTP id c12mr23269628otf.255.1576351530462;
+ Sat, 14 Dec 2019 11:25:30 -0800 (PST)
 MIME-Version: 1.0
-References: <1570139884-20183-1-git-send-email-tom@herbertland.com>
- <1570139884-20183-6-git-send-email-tom@herbertland.com> <20191006132547.stdd4hhj3y4dckqf@netronome.com>
-In-Reply-To: <20191006132547.stdd4hhj3y4dckqf@netronome.com>
-From:   Tom Herbert <tom@herbertland.com>
-Date:   Sat, 14 Dec 2019 11:19:46 -0800
-Message-ID: <CALx6S36RXXQgDqGGxnR=DRJyrweh5ARhS2YH1xHj9PJZb0AUNQ@mail.gmail.com>
-Subject: Re: [PATCH v5 net-next 5/7] ip6tlvs: Add TX parameters
-To:     Simon Horman <simon.horman@netronome.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Tom Herbert <tom@quantonium.net>
+References: <20191214004737.1652076-1-kafai@fb.com> <20191214004758.1653342-1-kafai@fb.com>
+ <b321412c-1b42-45a9-4dc6-cc268b55cd0d@gmail.com>
+In-Reply-To: <b321412c-1b42-45a9-4dc6-cc268b55cd0d@gmail.com>
+From:   Neal Cardwell <ncardwell@google.com>
+Date:   Sat, 14 Dec 2019 14:25:14 -0500
+Message-ID: <CADVnQy=soQ8KhuUWEQj0n2ge3a43OSgAKS95bmBtp090jqbM_w@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 09/13] bpf: Add BPF_FUNC_jiffies
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     Martin KaFai Lau <kafai@fb.com>, bpf@vger.kernel.org,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        David Miller <davem@davemloft.net>,
+        Kernel Team <kernel-team@fb.com>,
+        Netdev <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Oct 6, 2019 at 6:25 AM Simon Horman <simon.horman@netronome.com> wrote:
+On Fri, Dec 13, 2019 at 9:00 PM Eric Dumazet <eric.dumazet@gmail.com> wrote:
 >
-> On Thu, Oct 03, 2019 at 02:58:02PM -0700, Tom Herbert wrote:
-> > From: Tom Herbert <tom@quantonium.net>
+>
+>
+> On 12/13/19 4:47 PM, Martin KaFai Lau wrote:
+> > This patch adds a helper to handle jiffies.  Some of the
+> > tcp_sock's timing is stored in jiffies.  Although things
+> > could be deduced by CONFIG_HZ, having an easy way to get
+> > jiffies will make the later bpf-tcp-cc implementation easier.
 > >
-> > Define a number of transmit parameters for TLV Parameter table
-> > definitions. These will be used for validating TLVs that are set
-> > on a socket.
-> >
-> > Signed-off-by: Tom Herbert <tom@herbertland.com>
-> > ---
-> >  include/net/ipeh.h         | 18 ++++++++++++++++
-> >  include/uapi/linux/ipeh.h  |  8 +++++++
-> >  net/ipv6/exthdrs_common.c  | 53 +++++++++++++++++++++++++++++++++++++++++++++-
-> >  net/ipv6/exthdrs_options.c | 45 +++++++++++++++++++++++++++++++++++++++
-> >  4 files changed, 123 insertions(+), 1 deletion(-)
-> >
-> > diff --git a/include/net/ipeh.h b/include/net/ipeh.h
-> > index aaa2910..de6d9d0 100644
-> > --- a/include/net/ipeh.h
-> > +++ b/include/net/ipeh.h
 >
 > ...
 >
-> > @@ -54,6 +65,13 @@ struct tlv_param_table {
-> >
-> >  extern struct tlv_param_table ipv6_tlv_param_table;
-> >
-> > +/* Preferred TLV ordering for HBH and Dest options (placed by increasing order)
-> > + */
-> > +#define IPEH_TLV_PREF_ORDER_HAO                      10
-> > +#define IPEH_TLV_PREF_ORDER_ROUTERALERT              20
-> > +#define IPEH_TLV_PREF_ORDER_JUMBO            30
-> > +#define IPEH_TLV_PREF_ORDER_CALIPSO          40
 > > +
+> > +BPF_CALL_2(bpf_jiffies, u64, in, u64, flags)
+> > +{
+> > +     if (!flags)
+> > +             return get_jiffies_64();
+> > +
+> > +     if (flags & BPF_F_NS_TO_JIFFIES) {
+> > +             return nsecs_to_jiffies(in);
+> > +     } else if (flags & BPF_F_JIFFIES_TO_NS) {
+> > +             if (!in)
+> > +                     in = get_jiffies_64();
+> > +             return jiffies_to_nsecs(in);
+> > +     }
+> > +
+> > +     return 0;
+> > +}
 >
-> Hi Tom,
+> This looks a bit convoluted :)
 >
-> Could you expand on why thse values were chosen?
+> Note that we could possibly change net/ipv4/tcp_cubic.c to no longer use jiffies at all.
 >
-Pseudo random selection :-). The idea of having an ordering is to
-constrain the use of TLVs (in some environments there may be TLV
-ordering requirements or optimizations around specific ordering). Note
-that the ordering only applies to validation of TLVs being set to
-send, there are no ordering constraints in RX. Also, in the next patch
-set where application can set individual HBH and DO options on a
-socket, the ordering attribute is used to always produce the same
-order on the wire regardless of the ordering that the application set
-the options. For non-priviledeged applications especially, I believe
-it's good to be conservative and apply reasonable constraints such as
-ordering for TX (i.e. follow robustness principle).
+> We have in tp->tcp_mstamp an accurate timestamp (in usec) that can be converted to ms.
 
-> I can see that this patch implements a specific use of
-> the 255 indexes available. But its not at all clear to me that
-> this use fits expected use-cases (because I don't know what they are).
->
-There are at more 253 non-padding option types. Fortunately the
-protocol designers had the foresight to limit option type to a byte
-and so it's reasonable to represent for lookup in simple arrays. Two
-bytes for type would have been much more painful (compare lookup on
-EtherType to IP protocol numbers for instance).
+If the jiffies functionality stays, how about 3 simple functions that
+correspond to the underlying C functions, perhaps something like:
 
-> ...
+  bpf_nsecs_to_jiffies(nsecs)
+  bpf_jiffies_to_nsecs(jiffies)
+  bpf_get_jiffies_64()
+
+Separate functions might be easier to read/maintain (and may even be
+faster, given the corresponding reduction in branches).
+
+neal
