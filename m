@@ -2,74 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EF3B511F41F
-	for <lists+netdev@lfdr.de>; Sat, 14 Dec 2019 22:04:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5BD0D11F42E
+	for <lists+netdev@lfdr.de>; Sat, 14 Dec 2019 22:13:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727036AbfLNVEm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 14 Dec 2019 16:04:42 -0500
-Received: from mail-pg1-f196.google.com ([209.85.215.196]:35391 "EHLO
-        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726907AbfLNVEm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 14 Dec 2019 16:04:42 -0500
-Received: by mail-pg1-f196.google.com with SMTP id l24so1341439pgk.2
-        for <netdev@vger.kernel.org>; Sat, 14 Dec 2019 13:04:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=GxVk8Us4QX0jIO77zzqxGEHCBtxb+KyT8rmpJGUmZuU=;
-        b=sspMMPMo/UCMTdkijA0v+pMjxer5k5AfsxWwFTW3Al37N9RQwN1LKShOIHhsvicxO0
-         NShCXo+c4GNJSYUB96M/WcBlnDXVCBy33+4PllwNT4i51Whoh8J6A66U5DbkBNy4RL7X
-         gEfODwTvDNQP4Fzae363LZ79emcthEmqaKgd9Xq1W5rbC1MNqTdPOvcC7XI2L8pwKAXw
-         4MIrqbR/qXnzO1AR+2lkU9vQ8QRWFNR1/YeGrTX+Z8/Sv9FrQAm6RiZiWosh9oRLK5z5
-         1LpT6Z8nX3srceLroxJlarvHm3LavjmXdOHZe4K4R+FnFVhlGAD4xqjJJDrT1YCzJCKD
-         O0uA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=GxVk8Us4QX0jIO77zzqxGEHCBtxb+KyT8rmpJGUmZuU=;
-        b=it4cJhAANNOEzqz2EttRs74GPt2MnsWKv7Imlny66chLMLXGwU0fGE0SGoUYLtA4Xd
-         Z8idub1UFf5+XRUkORJXkytT19YBKLXdSqRm8ApEPGblaX/dUH35/+CQ6JAhO3yESea0
-         QqDS0OIIBirkDPNkYw0AQ/mWM66J/8yHppKW7/xzWEcht76EdFWV1xkksi4BpsMcoLJ8
-         H+PghyrVt/odemK90I3Mx92zPf3n2El5N9MTHHE+AtWnaoT4SR5nZ20rK5xCOb4B2jzy
-         yJol82pLFQU3OrLhINCh9bE2EKKCwLM0+xa3iE3EDL1vxEJ/1B7kXEbdbn960r0v5TRD
-         Y4Iw==
-X-Gm-Message-State: APjAAAUjwQ0Vw/a2595sOnhfIccmFv3P50P42ZigkZENEL1Pv8l6W1G2
-        B1DjbRbv9ic4xhRv2Y9zVhf4gZM/aK0=
-X-Google-Smtp-Source: APXvYqxCHO/oDw2VeKW2MmTcvM2fOoJ2mbJGXVi7VMe0pEFuKPJkqMosDRNKsI2AtZPC1Tk5GMR+Qg==
-X-Received: by 2002:a63:9d07:: with SMTP id i7mr8034393pgd.344.1576357481878;
-        Sat, 14 Dec 2019 13:04:41 -0800 (PST)
-Received: from cakuba.netronome.com (c-73-202-202-92.hsd1.ca.comcast.net. [73.202.202.92])
-        by smtp.gmail.com with ESMTPSA id g191sm16103115pfb.19.2019.12.14.13.04.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 14 Dec 2019 13:04:41 -0800 (PST)
-Date:   Sat, 14 Dec 2019 13:04:38 -0800
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Manish Chopra <manishc@marvell.com>
-Cc:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        <aelior@marvell.com>, <skalluru@marvell.com>
-Subject: Re: [PATCH v2 net 0/2] bnx2x: bug fixes
-Message-ID: <20191214130438.34353698@cakuba.netronome.com>
-In-Reply-To: <20191211175956.11948-1-manishc@marvell.com>
-References: <20191211175956.11948-1-manishc@marvell.com>
-Organization: Netronome Systems, Ltd.
+        id S1726837AbfLNVLG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 14 Dec 2019 16:11:06 -0500
+Received: from mail.grenz-bonn.de ([178.33.37.38]:53932 "EHLO
+        mail.grenz-bonn.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726687AbfLNVLG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 14 Dec 2019 16:11:06 -0500
+Received: from cg-notebook.local (unknown [IPv6:2001:41d0:1:c648:b055:ea5:64df:98e7])
+        by ks357529.kimsufi.com (Postfix) with ESMTPSA id C438062283;
+        Sat, 14 Dec 2019 22:11:03 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=grenz-bonn.de;
+        s=201905; t=1576357864;
+        bh=vpLtVM/zXRmIsAQmEcAO99MslPd9rzbzmxrM0cpGLEg=;
+        h=From:To:Subject:Date:In-Reply-To:References:From;
+        b=jYWOszCfgi6EY1NvFQuH0mRv41fpb14VhEmx0nJKPzPCicx5zSp9oOW5v5VYcdVu0
+         llFBdIsBhSVg6geQ+PbuUbkmO3yXo6zeHNREVDCGzJlkUfb05o83E5nZ7qLJL/CC4p
+         rPYS3kM4oEu3NrvjJdtfpb0x7f+z/ZD9/K+T0Qh6jsqqE+XhgTYMVkMuYjukyM5+qq
+         QaQpmJvzS8gpMtn5SzCI+TgS6665x4M6Zzn+R6L3EVY2TmBG7vbBYB4OwFrI9RppmU
+         iiAh8OMuBwVnKouKF1IFt6ptOMbV1sN3HWVaZyFl87I/Iog+frM0wzGoPnv1s5xHLw
+         nW+j3+GTW2/ig==
+From:   Christoph Grenz <christophg+lkml@grenz-bonn.de>
+To:     Tom Herbert <tom@herbertland.com>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>
+Subject: Re: IPv6 Destination Options question
+Date:   Sat, 14 Dec 2019 22:11:01 +0100
+Message-ID: <10108598.co7siHb18S@cg-notebook>
+User-Agent: KMail/5.1.3 (Linux/5.4.0cgnotebook+; KDE/5.18.0; x86_64; ; )
+In-Reply-To: <CALx6S36PsbRW+Z0Eeh2Dtkb-hzXGekD-PLyML08g4xo5Vddvug@mail.gmail.com>
+References: <5975583.vpC7qLWE0j@cg-notebook> <CALx6S36PsbRW+Z0Eeh2Dtkb-hzXGekD-PLyML08g4xo5Vddvug@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 11 Dec 2019 09:59:54 -0800, Manish Chopra wrote:
-> This series has two driver changes, one to fix some unexpected
-> hardware behaviour casued during the parity error recovery in
-> presence of SR-IOV VFs and another one related for fixing resource
-> management in the driver among the PFs configured on an engine.
-> 
-> Please consider applying it to "net".
+Hi Tom,
 
-Applied to net, thank you. I'm not queuing for stable because there
-were no Fixes tags. Please try to provide those, even if they just
-point at the initial driver commit.
+my receive code boils down to this Python script:
+
+--------------------------------------------------------------------
+#!/usr/bin/env python3
+
+from socket import socket, AF_INET6, IPPROTO_IPV6, IPV6_RECVDSTOPTS, SOCK_RAW
+
+IPPROTO_MH = 135 # IPv6 Mobility Header
+
+sock = socket(AF_INET6, SOCK_RAW, IPPROTO_MH)
+sock.setsockopt(IPPROTO_IPV6, IPV6_RECVDSTOPTS, True)
+
+sock.bind(('::',  0))
+
+while True:
+	packet, ancdata, msg_flags, address = sock.recvmsg(1800, 512)
+	print(address[0], packet.hex(), ancdata)
+
+--------------------------------------------------------------------
+
+Best regards,
+Christoph
+
+Am Samstag, 14. Dezember 2019, 12:40:16 CET schrieb Tom Herbert:
+> On Sat, Dec 14, 2019 at 8:19 AM Christoph Grenz
+> 
+> <christophg+lkml@grenz-bonn.de> wrote:
+> > Hello,
+> > 
+> > I'm playing around with Mobile IPv6 and noticed a strange behaviour in the
+> > Linux network system when using IPv6 destination options:
+> > 
+> > I'm able to send destination options on SOCK_DGRAM and SOCK_RAW sockets
+> > with sendmsg() and IPV6_DSTOPTS ancillary data. The sent packets also
+> > look correct in Wireshark.
+> > 
+> > But I'm not able to receive packets with destination options on a socket
+> > with the IPV6_RECVDSTOPTS socket option enabled. Both a packet with a
+> > Home Address Option and a packet with an empty destination options header
+> > (only containing padding) won't be received on a socket for the payload
+> > protocol.
+> 
+> Christoph, Can you post your receive code?
+> 
+> Thanks
+> 
+> > Only a SOCK_RAW socket for IPPROTO_DSTOPTS receives the packet.
+> > 
+> > I tested this on a vanilla 5.4.0 kernel and got the same behaviour.
+> > Activating dyndbg for everything in net/ipv6 didn't produce any relevant
+> > output in dmesg.
+> > 
+> > Is this expected behaviour or a bug? Or do I maybe need some other socket
+> > option or a xfrm policy to receive packets with destination options?
+> > 
+> > Best regards
+> > Christoph
+
+
