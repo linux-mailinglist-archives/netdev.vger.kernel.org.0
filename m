@@ -2,210 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B98D311FA9C
-	for <lists+netdev@lfdr.de>; Sun, 15 Dec 2019 19:56:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CB3A711FAA6
+	for <lists+netdev@lfdr.de>; Sun, 15 Dec 2019 20:02:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726683AbfLOSzT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 15 Dec 2019 13:55:19 -0500
-Received: from mga11.intel.com ([192.55.52.93]:19227 "EHLO mga11.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726219AbfLOSzT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 15 Dec 2019 13:55:19 -0500
-X-Amp-Result: UNKNOWN
-X-Amp-Original-Verdict: FILE UNKNOWN
-X-Amp-File-Uploaded: False
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 15 Dec 2019 10:55:17 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.69,318,1571727600"; 
-   d="scan'208";a="204892037"
-Received: from lkp-server01.sh.intel.com (HELO lkp-server01) ([10.239.97.150])
-  by orsmga007.jf.intel.com with ESMTP; 15 Dec 2019 10:55:15 -0800
-Received: from kbuild by lkp-server01 with local (Exim 4.89)
-        (envelope-from <lkp@intel.com>)
-        id 1igZ2x-0000JG-9Z; Mon, 16 Dec 2019 02:55:15 +0800
-Date:   Mon, 16 Dec 2019 02:54:43 +0800
-From:   kbuild test robot <lkp@intel.com>
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     kbuild-all@lists.01.org, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
-Subject: [vhost:linux-next 12/12] drivers/vhost/vhost.c:1968:25: sparse:
- sparse: incompatible types in comparison expression (different type sizes):
-Message-ID: <201912160233.If8H2c51%lkp@intel.com>
+        id S1726454AbfLOTBf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 15 Dec 2019 14:01:35 -0500
+Received: from mta-p8.oit.umn.edu ([134.84.196.208]:37876 "EHLO
+        mta-p8.oit.umn.edu" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726146AbfLOTBe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 15 Dec 2019 14:01:34 -0500
+Received: from localhost (unknown [127.0.0.1])
+        by mta-p8.oit.umn.edu (Postfix) with ESMTP id 47bYfP5tVGz9vZT1
+        for <netdev@vger.kernel.org>; Sun, 15 Dec 2019 19:01:33 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at umn.edu
+Received: from mta-p8.oit.umn.edu ([127.0.0.1])
+        by localhost (mta-p8.oit.umn.edu [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id 96JgpARsWNX9 for <netdev@vger.kernel.org>;
+        Sun, 15 Dec 2019 13:01:33 -0600 (CST)
+Received: from mail-yb1-f198.google.com (mail-yb1-f198.google.com [209.85.219.198])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mta-p8.oit.umn.edu (Postfix) with ESMTPS id 47bYfP4lt0z9vYwq
+        for <netdev@vger.kernel.org>; Sun, 15 Dec 2019 13:01:33 -0600 (CST)
+Received: by mail-yb1-f198.google.com with SMTP id d191so4846095ybc.17
+        for <netdev@vger.kernel.org>; Sun, 15 Dec 2019 11:01:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=umn.edu; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=qz7hLv3TGqOg26p7ukuVbPc1PJuaHmmS15JJ7SJDcyg=;
+        b=WDeUlTq0RckidAgYO+X9nuaqk8amj5C8qSBi+Bs+62XAkYuTXYBcxgJAV+VCIY3LNs
+         0Qm8E9YIXNNhn/DSgXScWghVmMWjcIHWNRRwc05ezVNjCWM3Uu5+9rjqgF/mqn9SDgC9
+         dSmBX7q6cLSD5LNkShwtklXC/JeVIS+hKSpooT1Qat6uAcWIj2YCvpW6Bdgd1Vrus1G2
+         yvm2GwxdHFE5quzCM0aenozhY75fuuqazgtdWIbx08jNLBHz98XuCb9jRm9ZKytFHgK5
+         3bbjzxm24evQ22vf6Q9xKey05WSxW15DS+lWx0/5MDsUsIF7vNeig4wYergwmtZV7oqn
+         PVUA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=qz7hLv3TGqOg26p7ukuVbPc1PJuaHmmS15JJ7SJDcyg=;
+        b=QHbpeshjnXGZLzJRBxzYc8ImhM4fizia0UIqKJ/X403lSCot8+GN37uvCTN4BPAo53
+         BMi+ta+IWj4EXHfj4MSNrLaY0ZUR5bKcqueTlmDHd33DjmKAnxTvZPuc3eNjXLzcv4Rc
+         Daaf9ki9fTWr93r5Kb/67CJ9smCjzr/C/cCG1ffDhoxM1lzgk1IAdZO1UvlTUiwkCx6t
+         PleePTw0jvBOhmb1nS7pMgQQucQJEmlvNwTKpza5mwPBOzsC/qFGYaPMhsQioanQ+pWY
+         hUjw+7DuoR82aP5LOm9dc33GyIzVUOKer2BMLvt/RpT9yDrTCOUvOM0fhMo2ixCO4fjs
+         tUuA==
+X-Gm-Message-State: APjAAAUxFVSMR3KN9msvk0hClwSB+Ui7Wgu3qhNVGd9aQaDNJNdIDFI8
+        GYQ695WFKjZineqDe0QUY2OdvEYKlYSA2B8vDgXPLQ1k0ULT0dmeyO5RnVHHo3iJ4oHXq76TnzZ
+        JgWIGhQqoBVA359K6WSMy
+X-Received: by 2002:a0d:e253:: with SMTP id l80mr9334259ywe.144.1576436493174;
+        Sun, 15 Dec 2019 11:01:33 -0800 (PST)
+X-Google-Smtp-Source: APXvYqz3YZdwihU43qkPnbxJKmlB06NwItzwFqufpU0Q7+Fs8bphzIW5aEm6q8m735lWJ3DWuSQ7fw==
+X-Received: by 2002:a0d:e253:: with SMTP id l80mr9334241ywe.144.1576436492917;
+        Sun, 15 Dec 2019 11:01:32 -0800 (PST)
+Received: from cs-u-syssec1.dtc.umn.edu (cs-u-syssec1.cs.umn.edu. [128.101.106.66])
+        by smtp.gmail.com with ESMTPSA id l20sm4937468ywa.108.2019.12.15.11.01.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 15 Dec 2019 11:01:32 -0800 (PST)
+From:   Aditya Pakki <pakki001@umn.edu>
+To:     pakki001@umn.edu
+Cc:     kjlu@umn.edu, Robert Baldyga <r.baldyga@samsung.com>,
+        Krzysztof Opasiak <k.opasiak@samsung.com>,
+        linux-nfc@lists.01.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] nfc: s3fwrn5: replace the assertion with a WARN_ON
+Date:   Sun, 15 Dec 2019 13:01:29 -0600
+Message-Id: <20191215190129.1587-1-pakki001@umn.edu>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: NeoMutt/20170113 (1.7.2)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git linux-next
-head:   b072ae74df177c3ad7704c5fbe66e3f10aad9d4e
-commit: b072ae74df177c3ad7704c5fbe66e3f10aad9d4e [12/12] vhost: use vhost_desc instead of vhost_log
-reproduce:
-        # apt-get install sparse
-        # sparse version: v0.6.1-101-g82dee2e-dirty
-        git checkout b072ae74df177c3ad7704c5fbe66e3f10aad9d4e
-        make ARCH=x86_64 allmodconfig
-        make C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__'
+In s3fwrn5_fw_recv_frame, if fw_info->rsp is not empty, the
+current code causes a crash via BUG_ON. However, s3fwrn5_fw_send_msg
+does not crash in such a scenario. The patch replaces the BUG_ON
+by returning the error to the callers.
 
-If you fix the issue, kindly add following tag
-Reported-by: kbuild test robot <lkp@intel.com>
-
-
-sparse warnings: (new ones prefixed by >>)
-
-   drivers/vhost/vhost.c:763:17: sparse: sparse: incorrect type in return expression (different address spaces)
-   drivers/vhost/vhost.c:763:17: sparse:    expected void [noderef] <asn:1> *
-   drivers/vhost/vhost.c:763:17: sparse:    got void *
-   drivers/vhost/vhost.c:763:17: sparse: sparse: incorrect type in return expression (different address spaces)
-   drivers/vhost/vhost.c:763:17: sparse:    expected void [noderef] <asn:1> *
-   drivers/vhost/vhost.c:763:17: sparse:    got void *
-   drivers/vhost/vhost.c:763:17: sparse: sparse: incorrect type in return expression (different address spaces)
-   drivers/vhost/vhost.c:763:17: sparse:    expected void [noderef] <asn:1> *
-   drivers/vhost/vhost.c:763:17: sparse:    got void *
->> drivers/vhost/vhost.c:1968:25: sparse: sparse: incompatible types in comparison expression (different type sizes):
->> drivers/vhost/vhost.c:1968:25: sparse:    unsigned int *
->> drivers/vhost/vhost.c:1968:25: sparse:    unsigned long long *
-   drivers/vhost/vhost.c:947:16: sparse: sparse: incorrect type in argument 2 (different address spaces)
-   drivers/vhost/vhost.c:947:16: sparse:    expected void *addr
-   drivers/vhost/vhost.c:947:16: sparse:    got restricted __virtio16 [noderef] <asn:1> *
-   drivers/vhost/vhost.c:763:17: sparse: sparse: incorrect type in return expression (different address spaces)
-   drivers/vhost/vhost.c:763:17: sparse:    expected void [noderef] <asn:1> *
-   drivers/vhost/vhost.c:763:17: sparse:    got void *
-   drivers/vhost/vhost.c:910:42: sparse: sparse: incorrect type in argument 2 (different address spaces)
-   drivers/vhost/vhost.c:910:42: sparse:    expected void [noderef] <asn:1> *addr
-   drivers/vhost/vhost.c:910:42: sparse:    got void *addr
-   drivers/vhost/vhost.c:932:16: sparse: sparse: incorrect type in argument 2 (different address spaces)
-   drivers/vhost/vhost.c:932:16: sparse:    expected void *addr
-   drivers/vhost/vhost.c:932:16: sparse:    got restricted __virtio16 [noderef] [usertype] <asn:1> *
-   drivers/vhost/vhost.c:763:17: sparse: sparse: incorrect type in return expression (different address spaces)
-   drivers/vhost/vhost.c:763:17: sparse:    expected void [noderef] <asn:1> *
-   drivers/vhost/vhost.c:763:17: sparse:    got void *
-   drivers/vhost/vhost.c:910:42: sparse: sparse: incorrect type in argument 2 (different address spaces)
-   drivers/vhost/vhost.c:910:42: sparse:    expected void [noderef] <asn:1> *addr
-   drivers/vhost/vhost.c:910:42: sparse:    got void *addr
-   drivers/vhost/vhost.c:1024:16: sparse: sparse: incorrect type in argument 2 (different address spaces)
-   drivers/vhost/vhost.c:1024:16: sparse:    expected void *addr
-   drivers/vhost/vhost.c:1024:16: sparse:    got restricted __virtio16 [noderef] <asn:1> *
-   drivers/vhost/vhost.c:763:17: sparse: sparse: incorrect type in return expression (different address spaces)
-   drivers/vhost/vhost.c:763:17: sparse:    expected void [noderef] <asn:1> *
-   drivers/vhost/vhost.c:763:17: sparse:    got void *
-   drivers/vhost/vhost.c:910:42: sparse: sparse: incorrect type in argument 2 (different address spaces)
-   drivers/vhost/vhost.c:910:42: sparse:    expected void [noderef] <asn:1> *addr
-   drivers/vhost/vhost.c:910:42: sparse:    got void *addr
-   drivers/vhost/vhost.c:999:16: sparse: sparse: incorrect type in argument 2 (different address spaces)
-   drivers/vhost/vhost.c:999:16: sparse:    expected void *addr
-   drivers/vhost/vhost.c:999:16: sparse:    got restricted __virtio16 [noderef] <asn:1> *
-   drivers/vhost/vhost.c:763:17: sparse: sparse: incorrect type in return expression (different address spaces)
-   drivers/vhost/vhost.c:763:17: sparse:    expected void [noderef] <asn:1> *
-   drivers/vhost/vhost.c:763:17: sparse:    got void *
-   drivers/vhost/vhost.c:910:42: sparse: sparse: incorrect type in argument 2 (different address spaces)
-   drivers/vhost/vhost.c:910:42: sparse:    expected void [noderef] <asn:1> *addr
-   drivers/vhost/vhost.c:910:42: sparse:    got void *addr
-   drivers/vhost/vhost.c:1005:16: sparse: sparse: incorrect type in argument 2 (different address spaces)
-   drivers/vhost/vhost.c:1005:16: sparse:    expected void *addr
-   drivers/vhost/vhost.c:1005:16: sparse:    got restricted __virtio16 [noderef] <asn:1> *
-   drivers/vhost/vhost.c:763:17: sparse: sparse: incorrect type in return expression (different address spaces)
-   drivers/vhost/vhost.c:763:17: sparse:    expected void [noderef] <asn:1> *
-   drivers/vhost/vhost.c:763:17: sparse:    got void *
-   drivers/vhost/vhost.c:910:42: sparse: sparse: incorrect type in argument 2 (different address spaces)
-   drivers/vhost/vhost.c:910:42: sparse:    expected void [noderef] <asn:1> *addr
-   drivers/vhost/vhost.c:910:42: sparse:    got void *addr
-   drivers/vhost/vhost.c:954:16: sparse: sparse: incorrect type in argument 2 (different address spaces)
-   drivers/vhost/vhost.c:954:16: sparse:    expected void *addr
-   drivers/vhost/vhost.c:954:16: sparse:    got restricted __virtio16 [noderef] <asn:1> *
-   drivers/vhost/vhost.c:763:17: sparse: sparse: incorrect type in return expression (different address spaces)
-   drivers/vhost/vhost.c:763:17: sparse:    expected void [noderef] <asn:1> *
-   drivers/vhost/vhost.c:763:17: sparse:    got void *
-   drivers/vhost/vhost.c:910:42: sparse: sparse: incorrect type in argument 2 (different address spaces)
-   drivers/vhost/vhost.c:910:42: sparse:    expected void [noderef] <asn:1> *addr
-   drivers/vhost/vhost.c:910:42: sparse:    got void *addr
-   drivers/vhost/vhost.c:1012:16: sparse: sparse: incorrect type in argument 2 (different address spaces)
-   drivers/vhost/vhost.c:1012:16: sparse:    expected void *addr
-   drivers/vhost/vhost.c:1012:16: sparse:    got restricted __virtio16 [noderef] <asn:1> *
-   drivers/vhost/vhost.c:763:17: sparse: sparse: incorrect type in return expression (different address spaces)
-   drivers/vhost/vhost.c:763:17: sparse:    expected void [noderef] <asn:1> *
-   drivers/vhost/vhost.c:763:17: sparse:    got void *
-   drivers/vhost/vhost.c:910:42: sparse: sparse: incorrect type in argument 2 (different address spaces)
-   drivers/vhost/vhost.c:910:42: sparse:    expected void [noderef] <asn:1> *addr
-   drivers/vhost/vhost.c:910:42: sparse:    got void *addr
-   drivers/vhost/vhost.c:1018:16: sparse: sparse: incorrect type in argument 2 (different address spaces)
-   drivers/vhost/vhost.c:1018:16: sparse:    expected void *addr
-   drivers/vhost/vhost.c:1018:16: sparse:    got restricted __virtio16 [noderef] [usertype] <asn:1> *
-   drivers/vhost/vhost.c:763:17: sparse: sparse: incorrect type in return expression (different address spaces)
-   drivers/vhost/vhost.c:763:17: sparse:    expected void [noderef] <asn:1> *
-   drivers/vhost/vhost.c:763:17: sparse:    got void *
-   drivers/vhost/vhost.c:910:42: sparse: sparse: incorrect type in argument 2 (different address spaces)
-   drivers/vhost/vhost.c:910:42: sparse:    expected void [noderef] <asn:1> *addr
-   drivers/vhost/vhost.c:910:42: sparse:    got void *addr
-   drivers/vhost/vhost.c:999:16: sparse: sparse: incorrect type in argument 2 (different address spaces)
-   drivers/vhost/vhost.c:999:16: sparse:    expected void *addr
-   drivers/vhost/vhost.c:999:16: sparse:    got restricted __virtio16 [noderef] <asn:1> *
-   drivers/vhost/vhost.c:763:17: sparse: sparse: incorrect type in return expression (different address spaces)
-   drivers/vhost/vhost.c:763:17: sparse:    expected void [noderef] <asn:1> *
-   drivers/vhost/vhost.c:763:17: sparse:    got void *
-   drivers/vhost/vhost.c:910:42: sparse: sparse: incorrect type in argument 2 (different address spaces)
-   drivers/vhost/vhost.c:910:42: sparse:    expected void [noderef] <asn:1> *addr
-   drivers/vhost/vhost.c:910:42: sparse:    got void *addr
-   drivers/vhost/vhost.c:999:16: sparse: sparse: incorrect type in argument 2 (different address spaces)
-   drivers/vhost/vhost.c:999:16: sparse:    expected void *addr
-   drivers/vhost/vhost.c:999:16: sparse:    got restricted __virtio16 [noderef] <asn:1> *
-   drivers/vhost/vhost.c:763:17: sparse: sparse: incorrect type in return expression (different address spaces)
-   drivers/vhost/vhost.c:763:17: sparse:    expected void [noderef] <asn:1> *
-   drivers/vhost/vhost.c:763:17: sparse:    got void *
-   drivers/vhost/vhost.c:910:42: sparse: sparse: incorrect type in argument 2 (different address spaces)
-   drivers/vhost/vhost.c:910:42: sparse:    expected void [noderef] <asn:1> *addr
-   drivers/vhost/vhost.c:910:42: sparse:    got void *addr
-
-vim +1968 drivers/vhost/vhost.c
-
-cc5e710759470b Jason Wang         2019-01-16  1948  
-b072ae74df177c Michael S. Tsirkin 2019-12-11  1949  int vhost_log_write(struct vhost_virtqueue *vq, struct vhost_desc *log,
-cc5e710759470b Jason Wang         2019-01-16  1950  		    unsigned int log_num, u64 len, struct iovec *iov, int count)
-3a4d5c94e95935 Michael S. Tsirkin 2010-01-14  1951  {
-3a4d5c94e95935 Michael S. Tsirkin 2010-01-14  1952  	int i, r;
-3a4d5c94e95935 Michael S. Tsirkin 2010-01-14  1953  
-3a4d5c94e95935 Michael S. Tsirkin 2010-01-14  1954  	/* Make sure data written is seen before log. */
-5659338c88963e Michael S. Tsirkin 2010-02-01  1955  	smp_wmb();
-cc5e710759470b Jason Wang         2019-01-16  1956  
-cc5e710759470b Jason Wang         2019-01-16  1957  	if (vq->iotlb) {
-cc5e710759470b Jason Wang         2019-01-16  1958  		for (i = 0; i < count; i++) {
-cc5e710759470b Jason Wang         2019-01-16  1959  			r = log_write_hva(vq, (uintptr_t)iov[i].iov_base,
-cc5e710759470b Jason Wang         2019-01-16  1960  					  iov[i].iov_len);
-cc5e710759470b Jason Wang         2019-01-16  1961  			if (r < 0)
-cc5e710759470b Jason Wang         2019-01-16  1962  				return r;
-cc5e710759470b Jason Wang         2019-01-16  1963  		}
-cc5e710759470b Jason Wang         2019-01-16  1964  		return 0;
-cc5e710759470b Jason Wang         2019-01-16  1965  	}
-cc5e710759470b Jason Wang         2019-01-16  1966  
-3a4d5c94e95935 Michael S. Tsirkin 2010-01-14  1967  	for (i = 0; i < log_num; ++i) {
-3a4d5c94e95935 Michael S. Tsirkin 2010-01-14 @1968  		u64 l = min(log[i].len, len);
-3a4d5c94e95935 Michael S. Tsirkin 2010-01-14  1969  		r = log_write(vq->log_base, log[i].addr, l);
-3a4d5c94e95935 Michael S. Tsirkin 2010-01-14  1970  		if (r < 0)
-3a4d5c94e95935 Michael S. Tsirkin 2010-01-14  1971  			return r;
-3a4d5c94e95935 Michael S. Tsirkin 2010-01-14  1972  		len -= l;
-5786aee8bf6d74 Michael S. Tsirkin 2010-09-22  1973  		if (!len) {
-3a4d5c94e95935 Michael S. Tsirkin 2010-01-14  1974  			if (vq->log_ctx)
-3a4d5c94e95935 Michael S. Tsirkin 2010-01-14  1975  				eventfd_signal(vq->log_ctx, 1);
-5786aee8bf6d74 Michael S. Tsirkin 2010-09-22  1976  			return 0;
-5786aee8bf6d74 Michael S. Tsirkin 2010-09-22  1977  		}
-5786aee8bf6d74 Michael S. Tsirkin 2010-09-22  1978  	}
-3a4d5c94e95935 Michael S. Tsirkin 2010-01-14  1979  	/* Length written exceeds what we have stored. This is a bug. */
-3a4d5c94e95935 Michael S. Tsirkin 2010-01-14  1980  	BUG();
-3a4d5c94e95935 Michael S. Tsirkin 2010-01-14  1981  	return 0;
-3a4d5c94e95935 Michael S. Tsirkin 2010-01-14  1982  }
-6ac1afbf6132df Asias He           2013-05-06  1983  EXPORT_SYMBOL_GPL(vhost_log_write);
-3a4d5c94e95935 Michael S. Tsirkin 2010-01-14  1984  
-
-:::::: The code at line 1968 was first introduced by commit
-:::::: 3a4d5c94e959359ece6d6b55045c3f046677f55c vhost_net: a kernel-level virtio server
-
-:::::: TO: Michael S. Tsirkin <mst@redhat.com>
-:::::: CC: David S. Miller <davem@davemloft.net>
-
+Signed-off-by: Aditya Pakki <pakki001@umn.edu>
 ---
-0-DAY kernel test infrastructure                 Open Source Technology Center
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org Intel Corporation
+ drivers/nfc/s3fwrn5/firmware.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/nfc/s3fwrn5/firmware.c b/drivers/nfc/s3fwrn5/firmware.c
+index be110d9cef02..cdc7d45237d2 100644
+--- a/drivers/nfc/s3fwrn5/firmware.c
++++ b/drivers/nfc/s3fwrn5/firmware.c
+@@ -507,7 +507,8 @@ int s3fwrn5_fw_recv_frame(struct nci_dev *ndev, struct sk_buff *skb)
+ 	struct s3fwrn5_info *info = nci_get_drvdata(ndev);
+ 	struct s3fwrn5_fw_info *fw_info = &info->fw_info;
+ 
+-	BUG_ON(fw_info->rsp);
++	if (WARN_ON(fw_info->rsp))
++		return -EINVAL;
+ 
+ 	fw_info->rsp = skb;
+ 
+-- 
+2.20.1
+
