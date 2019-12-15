@@ -2,61 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7DB1711F584
-	for <lists+netdev@lfdr.de>; Sun, 15 Dec 2019 05:03:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 76D5E11F5B9
+	for <lists+netdev@lfdr.de>; Sun, 15 Dec 2019 05:28:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726083AbfLOEDf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 14 Dec 2019 23:03:35 -0500
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:42260 "EHLO
+        id S1726052AbfLOE1t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 14 Dec 2019 23:27:49 -0500
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:36367 "EHLO
         mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726005AbfLOEDf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 14 Dec 2019 23:03:35 -0500
-Received: by mail-pf1-f196.google.com with SMTP id 4so3699354pfz.9
-        for <netdev@vger.kernel.org>; Sat, 14 Dec 2019 20:03:35 -0800 (PST)
+        with ESMTP id S1726019AbfLOE1t (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 14 Dec 2019 23:27:49 -0500
+Received: by mail-pf1-f196.google.com with SMTP id x184so3735967pfb.3
+        for <netdev@vger.kernel.org>; Sat, 14 Dec 2019 20:27:49 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=netronome-com.20150623.gappssmtp.com; s=20150623;
         h=date:from:to:cc:subject:message-id:in-reply-to:references
          :organization:mime-version:content-transfer-encoding;
-        bh=xY694KnXGlHwEnM5IxCeasI3CBIwUmkENhRchcSKqBs=;
-        b=jQMDnKdtj5UjOtGBLN76SKHmmIcQU5b7bnWPN53p7CZ/WbEMVXW3UZXOvkSbd2mXpP
-         yKgn65PesyrI4h+gkOOiJ10S0fJBYKYSakWrCTvb7D3QWmQQ3kdNyHO1O7oLeXQKh7m9
-         muFlUcabl/xplTzsi9cevgdgRsTiIbHrhk9xAoIkQe3RBcnl4GH3JBjBc5y7Ga3Bmz8c
-         kfCOckUKF3mctdIZ1/wwZUS7SiRs1JyF4f8rfiD2i8Lw5wbOyipxvr0hwskmRdDAeW+c
-         lvejhZciw3hsja6TWiDD6R2R+r4f/ThG6xjohlwoBEi47ZPXKJjxA2BsrRjKsD0l3LAM
-         OaWA==
+        bh=kC7oENBrcIHmeqoO4HcWKA6Dp+aWK6pRUqc/0qg7pUM=;
+        b=TyieL2OQ4XZsrRl5yaF3UEWOMglWvhXnMEQFrbNmrmX8uBuDO82i2j7r5XiLn4AS99
+         Zxun8jeEiCbVO6AclIRMawu3nreKwHxpu6clGEr71XsNtKpKOMROWVDno4XrjzQOjY27
+         5Qqv3TC5iY4omM4bcxkCNDys0gSUWvZgTL6pISPIKnmHxnAlRB+x2zvN+LOi6NYigEhZ
+         +bxvMqwkWz8ri0vA7ZWGgN5Ub/bZe9+5B0CQ3mBQqWrcNNeXiLM/0mwpo+0LNwmj/MN3
+         xv8/Pd5jyPMwuktacyRfTSCjUlYViL8Ms+WknpuQgLFpR7sZ7COdfHf2fJCNwtnn3r2S
+         JFrA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
          :references:organization:mime-version:content-transfer-encoding;
-        bh=xY694KnXGlHwEnM5IxCeasI3CBIwUmkENhRchcSKqBs=;
-        b=tqhn3jbDsTMNM7sk7oWQXcUguNiqOE5Y/UOj9W3uyMM9jzMNNxfwkWKmvivNvlROmP
-         dye1NqPuQN0zZdMSM+3/UCzGZK9pXqrmBR2P1JnXnfenuN5Fap8j/9yBXUdSWcH2Nnas
-         Kv7G5wOmPgSe51HpYrrk9De2JEwONnWzxfm75rrBa9FtbmW0vCEv93zU1LpMBTOxEWaC
-         Yea5tZCjVI4FVt5dPzyP1H+h8ziZW46tT6FhJ+qkjKsfStFegfJGX/Km2RquOQa9acCB
-         yRAg496swhdo/Ka0BQufNwSanMFXUb6d06kOMvoQnyMvpkGRaiKiApxCtKO4UBqsON4H
-         o3qg==
-X-Gm-Message-State: APjAAAXWBo0yPpPo6H27P3a/UpFJLiAVvDnD+5gHv705rWONEflDcCe4
-        HpNXqEUlIfzeNTbc0U4Jxb7Ciw==
-X-Google-Smtp-Source: APXvYqwbdy+7fNEzR4dEsZoza9VgO6c96pEK2SX1UlMZxBn7OPgObEd/YI7rd8E2ejr7kt1aEJsFVA==
-X-Received: by 2002:a63:3756:: with SMTP id g22mr9734524pgn.375.1576382614756;
-        Sat, 14 Dec 2019 20:03:34 -0800 (PST)
+        bh=kC7oENBrcIHmeqoO4HcWKA6Dp+aWK6pRUqc/0qg7pUM=;
+        b=VAzENomcASdxclVuq1Uig8Z9YifNrJv7FJQrG3iOC1kAjCLoNq7gEt1TKjsXcIsOl1
+         4mA5Mg+rnCWmcfW7OHuCS+evR6XtOab2t2srXMVN+wjN6dmH53QskN2a63YbXbbhK7jy
+         aovpeOYzxDPRBFhBSlnBZMxHDHqpeVd4lLOOwb3YTWYVt+p4EI49fNFpjGh9T7hIs+I0
+         bD+swSCfXQ8dQ3nZERqX7nx7L5Z3+40vqzgY0Q6w2qBA3gNTj9tDlyD7AcsJ6wCBfHBO
+         W5xDiJYKWF30/hg8aAiGEm3JYEMhEWNYsiYb/Kxs1KRXEK/FZ7p1rdpcWL7YaxQ4LC/i
+         +PHQ==
+X-Gm-Message-State: APjAAAXNg4jGuzu/49+wbUEfx+T1KvADOpEGsU+QP6vneowd3YbODQrr
+        4yfhDw3OOnZt0ye9AF81raTAsw==
+X-Google-Smtp-Source: APXvYqxyw3l3xbVWatYuIC61DiT+3wlICRTm78v2DbKdh6jqkJnxRchGAbCJacXZKVo642Q1d0lFMw==
+X-Received: by 2002:a63:f64a:: with SMTP id u10mr9766478pgj.16.1576384068814;
+        Sat, 14 Dec 2019 20:27:48 -0800 (PST)
 Received: from cakuba.netronome.com (c-73-202-202-92.hsd1.ca.comcast.net. [73.202.202.92])
-        by smtp.gmail.com with ESMTPSA id n2sm7403672pgn.71.2019.12.14.20.03.34
+        by smtp.gmail.com with ESMTPSA id h11sm15953529pgv.38.2019.12.14.20.27.47
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 14 Dec 2019 20:03:34 -0800 (PST)
-Date:   Sat, 14 Dec 2019 20:03:32 -0800
+        Sat, 14 Dec 2019 20:27:48 -0800 (PST)
+Date:   Sat, 14 Dec 2019 20:27:45 -0800
 From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Vivien Didelot <vivien.didelot@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Roopa Prabhu <roopa@cumulusnetworks.com>,
-        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
-        netdev@vger.kernel.org, bridge@lists.linux-foundation.org,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        David Ahern <dsahern@gmail.com>
-Subject: Re: [PATCH net-next v3] net: bridge: add STP xstats
-Message-ID: <20191214200332.1c4d414f@cakuba.netronome.com>
-In-Reply-To: <20191212010711.1664000-1-vivien.didelot@gmail.com>
-References: <20191212010711.1664000-1-vivien.didelot@gmail.com>
+To:     Russell King <rmk+kernel@armlinux.org.uk>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Milind Parab <mparab@cadence.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next] net: phylink: propagate phy_attach_direct()
+ return code
+Message-ID: <20191214202745.649bbed2@cakuba.netronome.com>
+In-Reply-To: <E1ifS4S-000706-ON@rmk-PC.armlinux.org.uk>
+References: <E1ifS4S-000706-ON@rmk-PC.armlinux.org.uk>
 Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -66,11 +66,49 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 11 Dec 2019 20:07:10 -0500, Vivien Didelot wrote:
-> This adds rx_bpdu, tx_bpdu, rx_tcn, tx_tcn, transition_blk,
-> transition_fwd xstats counters to the bridge ports copied over via
-> netlink, providing useful information for STP.
+On Thu, 12 Dec 2019 17:16:12 +0000, Russell King wrote:
+> of_phy_attach() hides the return value of phy_attach_direct(), forcing
+> us to return a "generic" ENODEV error code that is indistinguishable
+> from the lack-of-phy-property case.
 > 
-> Signed-off-by: Vivien Didelot <vivien.didelot@gmail.com>
+> Switch to using of_phy_find_device() to find the PHY device, and then
+> propagating any phy_attach_direct() error back to the caller.
+> 
+> Link: https://lore.kernel.org/lkml/20191210113829.GT25745@shell.armlinux.org.uk
+> Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
 
-Applied, thank you!
+Applied thanks, the ref counting is not entirely obvious to a layman.
+In your reply to Milind you said he can immediately of_node_put()
+because the phy_dev is never deferenced in his code, but here it looks
+like it is actually - the reference used to be given up after attach is
+done, now its given up before attach_direct is called.
+
+But I don't know how the refcounting here works, so applied, and on the
+off chance the code is wrong follow up will be fine.
+
+> diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
+> index f7c660bf99d1..8d20cf3ba0b7 100644
+> --- a/drivers/net/phy/phylink.c
+> +++ b/drivers/net/phy/phylink.c
+> @@ -859,14 +859,17 @@ int phylink_of_phy_connect(struct phylink *pl, struct device_node *dn,
+>  		return 0;
+>  	}
+>  
+> -	phy_dev = of_phy_attach(pl->netdev, phy_node, flags,
+> -				pl->link_interface);
+> +	phy_dev = of_phy_find_device(phy_node);
+>  	/* We're done with the phy_node handle */
+>  	of_node_put(phy_node);
+> -
+>  	if (!phy_dev)
+>  		return -ENODEV;
+>  
+> +	ret = phy_attach_direct(pl->netdev, phy_dev, flags,
+> +				pl->link_interface);
+> +	if (ret)
+> +		return ret;
+> +
+>  	ret = phylink_bringup_phy(pl, phy_dev, pl->link_config.interface);
+>  	if (ret)
+>  		phy_detach(phy_dev);
+
