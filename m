@@ -2,78 +2,263 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 509BC11F699
-	for <lists+netdev@lfdr.de>; Sun, 15 Dec 2019 07:02:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 99C0011F6AC
+	for <lists+netdev@lfdr.de>; Sun, 15 Dec 2019 07:31:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726050AbfLOFvz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 15 Dec 2019 00:51:55 -0500
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:42957 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725788AbfLOFvz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 15 Dec 2019 00:51:55 -0500
-Received: by mail-pf1-f196.google.com with SMTP id 4so3775116pfz.9
-        for <netdev@vger.kernel.org>; Sat, 14 Dec 2019 21:51:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=NNALDx0ZF9X5qoKVt34907rnOqErCEuqEOwJBS1O1Os=;
-        b=CgxHaYxdFdUpLcVJ+Jp0XvvuPb2DRHNt0+Kv3kcto86Oo9Xo6Cq49fLIIyQ9uSDOyx
-         3dn9mhwzL3G6V+RxxVzmlHuZCxiWQUnZ2f4/mhOaMmxbDpkXMw1+HewI4an2joS1w74C
-         T45CnKFyXz4gYaLvm0MFrmCzQo2CnHS97zk//x7aa1j2uhRP63WQcadTrQbzPBssFzDm
-         nVfD4S9zd1CsigmTGMIdq8sAvg+AjNfMDeM4PQzErcO6PSLjmbEDGgUIm35wWwD6gzr4
-         KCH9HYQ4v+AW7XJyCggBFuB4d62lVQSGkWjZ6y6FSUuVbMw8Y/8FnsLypBwo755tHEyT
-         ukGA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=NNALDx0ZF9X5qoKVt34907rnOqErCEuqEOwJBS1O1Os=;
-        b=BLlz2ctp2l/vl50SYe0RaQ086BGtDaaCszfrRczrFN2Jmk7gAUlDeEIwgFlwjaEhyz
-         Gt99/7yetePY7ADTYqg8eiSFNZsR518sa6CPMSzxoAt8plNszjpOptcLB47/nPVOcSIa
-         d+dTFAONvWHd1c9KzuzTLeEIqIXTsX3Mgzm/hBolDt3bNLAU7Br7TLEbdI+a9+AVsBth
-         9vIJoovyt/iRNuudgd+a6FXv/cDBwn7vSrS1Nrs1sWHgIikDkKHMhdaRyotWv+NixSMG
-         iv9+cdfny9mx2RTToS5TxGWFeXatCAYZhvdlZQKMMZIwCE+1X0MdAZiC2gi6rMUb3ZFW
-         GIyQ==
-X-Gm-Message-State: APjAAAWT2isSbrWMYn8o4tKmx9q18yxZyTCXQQ2PAwgieeE2LVTjtbc4
-        ZseuskQPcHHaNW8ZdzB6FC3ELg==
-X-Google-Smtp-Source: APXvYqy+wR1tBXm/LOuzMh2eWkIHJIhGKle2BXIR24DS8q/yObL0nNmp5s+pEZ/db4JaPXtYCA3JIA==
-X-Received: by 2002:a65:530d:: with SMTP id m13mr10329035pgq.351.1576389114988;
-        Sat, 14 Dec 2019 21:51:54 -0800 (PST)
-Received: from cakuba.netronome.com (c-73-202-202-92.hsd1.ca.comcast.net. [73.202.202.92])
-        by smtp.gmail.com with ESMTPSA id p16sm16506684pgi.50.2019.12.14.21.51.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 14 Dec 2019 21:51:54 -0800 (PST)
-Date:   Sat, 14 Dec 2019 21:51:51 -0800
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Russell King <rmk+kernel@armlinux.org.uk>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: Re: [PATCH net] net: phylink: fix interface passed to mac_link_up
-Message-ID: <20191214215151.69f0885e@cakuba.netronome.com>
-In-Reply-To: <E1ifhqA-0000NQ-9y@rmk-PC.armlinux.org.uk>
-References: <E1ifhqA-0000NQ-9y@rmk-PC.armlinux.org.uk>
-Organization: Netronome Systems, Ltd.
+        id S1726050AbfLOGaw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 15 Dec 2019 01:30:52 -0500
+Received: from outgoing-auth-1.mit.edu ([18.9.28.11]:47302 "EHLO
+        outgoing.mit.edu" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1725788AbfLOGaw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 15 Dec 2019 01:30:52 -0500
+Received: from callcc.thunk.org (pool-72-93-95-157.bstnma.fios.verizon.net [72.93.95.157])
+        (authenticated bits=0)
+        (User authenticated as tytso@ATHENA.MIT.EDU)
+        by outgoing.mit.edu (8.14.7/8.12.4) with ESMTP id xBF6UL5E023086
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Sun, 15 Dec 2019 01:30:21 -0500
+Received: by callcc.thunk.org (Postfix, from userid 15806)
+        id EA22C4207DF; Sun, 15 Dec 2019 01:30:20 -0500 (EST)
+Date:   Sun, 15 Dec 2019 01:30:20 -0500
+From:   "Theodore Y. Ts'o" <tytso@mit.edu>
+To:     syzbot <syzbot+4a39a025912b265cacef@syzkaller.appspotmail.com>
+Cc:     a@unstable.cc, adilger.kernel@dilger.ca, afd@ti.com,
+        b.a.t.m.a.n@lists.open-mesh.org, chris@lapa.com.au,
+        davem@davemloft.net, linux-ext4@vger.kernel.org,
+        linux-kernel@vger.kernel.org, mareklindner@neomailbox.ch,
+        netdev@vger.kernel.org, pali.rohar@gmail.com, sre@kernel.org,
+        sw@simonwunderlich.de, syzkaller-bugs@googlegroups.com
+Subject: Re: KASAN: use-after-free Read in ext4_xattr_set_entry (2)
+Message-ID: <20191215063020.GA11512@mit.edu>
+References: <000000000000c71dcf0579b0553f@google.com>
+ <000000000000dcc9b10599b3fd5e@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <000000000000dcc9b10599b3fd5e@google.com>
+User-Agent: Mutt/1.12.2 (2019-09-21)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 13 Dec 2019 10:06:30 +0000, Russell King wrote:
-> A mismerge between the following two commits:
+On Sat, Dec 14, 2019 at 05:27:00PM -0800, syzbot wrote:
+> syzbot has bisected this bug to:
 > 
-> c678726305b9 ("net: phylink: ensure consistent phy interface mode")
-> 27755ff88c0e ("net: phylink: Add phylink_mac_link_{up, down} wrapper functions")
+> commit 8835cae5f2abd7f7a3143afe357f416aff5517a4
+> Author: Chris Lapa <chris@lapa.com.au>
+> Date:   Wed Jan 11 01:44:47 2017 +0000
 > 
-> resulted in the wrong interface being passed to the mac_link_up()
-> function. Fix this up.
-> 
-> Fixes: b4b12b0d2f02 ("Merge git://git.kernel.org/pub/scm/linux/kernel/git/davem/net")
-> Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
+>     power: supply: bq27xxx: adds specific support for bq27520-g4 revision.
 
-Applied and queued for stable (5.3, 5.4). Thank you!
+This is pretty clearly nonsense.  However let's try this fix:
+
+#syz test: https://git.kernel.org/pub/scm/linux/kernel/git/tytso/ext4.git master
+
+From 9c962de70a52e0b24fba00ee7b8707964d3d1e37 Mon Sep 17 00:00:00 2001
+From: Theodore Ts'o <tytso@mit.edu>
+Date: Sun, 15 Dec 2019 01:09:03 -0500
+Subject: [PATCH] ext4: validate the debug_want_extra_isize mount option at parse time
+
+Instead of setting s_want_extra_size and then making sure that it is a
+valid value afterwards, validate the field before we set it.  This
+avoids races and other problems when remounting the file system.
+
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Reported-by: syzbot+4a39a025912b265cacef@syzkaller.appspotmail.com
+---
+ fs/ext4/super.c | 143 +++++++++++++++++++++++-------------------------
+ 1 file changed, 69 insertions(+), 74 deletions(-)
+
+diff --git a/fs/ext4/super.c b/fs/ext4/super.c
+index b205112ca051..46b6d5b150ac 100644
+--- a/fs/ext4/super.c
++++ b/fs/ext4/super.c
+@@ -1886,6 +1886,13 @@ static int handle_mount_opt(struct super_block *sb, char *opt, int token,
+ 		}
+ 		sbi->s_commit_interval = HZ * arg;
+ 	} else if (token == Opt_debug_want_extra_isize) {
++		if ((arg & 1) ||
++		    (arg < 4) ||
++		    (arg > (sbi->s_inode_size - EXT4_GOOD_OLD_INODE_SIZE))) {
++			ext4_msg(sb, KERN_ERR,
++				 "Invalid want_extra_isize %d", arg);
++			return -1;
++		}
+ 		sbi->s_want_extra_isize = arg;
+ 	} else if (token == Opt_max_batch_time) {
+ 		sbi->s_max_batch_time = arg;
+@@ -3540,40 +3547,6 @@ int ext4_calculate_overhead(struct super_block *sb)
+ 	return 0;
+ }
+ 
+-static void ext4_clamp_want_extra_isize(struct super_block *sb)
+-{
+-	struct ext4_sb_info *sbi = EXT4_SB(sb);
+-	struct ext4_super_block *es = sbi->s_es;
+-	unsigned def_extra_isize = sizeof(struct ext4_inode) -
+-						EXT4_GOOD_OLD_INODE_SIZE;
+-
+-	if (sbi->s_inode_size == EXT4_GOOD_OLD_INODE_SIZE) {
+-		sbi->s_want_extra_isize = 0;
+-		return;
+-	}
+-	if (sbi->s_want_extra_isize < 4) {
+-		sbi->s_want_extra_isize = def_extra_isize;
+-		if (ext4_has_feature_extra_isize(sb)) {
+-			if (sbi->s_want_extra_isize <
+-			    le16_to_cpu(es->s_want_extra_isize))
+-				sbi->s_want_extra_isize =
+-					le16_to_cpu(es->s_want_extra_isize);
+-			if (sbi->s_want_extra_isize <
+-			    le16_to_cpu(es->s_min_extra_isize))
+-				sbi->s_want_extra_isize =
+-					le16_to_cpu(es->s_min_extra_isize);
+-		}
+-	}
+-	/* Check if enough inode space is available */
+-	if ((sbi->s_want_extra_isize > sbi->s_inode_size) ||
+-	    (EXT4_GOOD_OLD_INODE_SIZE + sbi->s_want_extra_isize >
+-							sbi->s_inode_size)) {
+-		sbi->s_want_extra_isize = def_extra_isize;
+-		ext4_msg(sb, KERN_INFO,
+-			 "required extra inode space not available");
+-	}
+-}
+-
+ static void ext4_set_resv_clusters(struct super_block *sb)
+ {
+ 	ext4_fsblk_t resv_clusters;
+@@ -3781,6 +3754,68 @@ static int ext4_fill_super(struct super_block *sb, void *data, int silent)
+ 	 */
+ 	sbi->s_li_wait_mult = EXT4_DEF_LI_WAIT_MULT;
+ 
++	if (le32_to_cpu(es->s_rev_level) == EXT4_GOOD_OLD_REV) {
++		sbi->s_inode_size = EXT4_GOOD_OLD_INODE_SIZE;
++		sbi->s_first_ino = EXT4_GOOD_OLD_FIRST_INO;
++	} else {
++		sbi->s_inode_size = le16_to_cpu(es->s_inode_size);
++		sbi->s_first_ino = le32_to_cpu(es->s_first_ino);
++		if (sbi->s_first_ino < EXT4_GOOD_OLD_FIRST_INO) {
++			ext4_msg(sb, KERN_ERR, "invalid first ino: %u",
++				 sbi->s_first_ino);
++			goto failed_mount;
++		}
++		if ((sbi->s_inode_size < EXT4_GOOD_OLD_INODE_SIZE) ||
++		    (!is_power_of_2(sbi->s_inode_size)) ||
++		    (sbi->s_inode_size > blocksize)) {
++			ext4_msg(sb, KERN_ERR,
++			       "unsupported inode size: %d",
++			       sbi->s_inode_size);
++			goto failed_mount;
++		}
++		/*
++		 * i_atime_extra is the last extra field available for
++		 * [acm]times in struct ext4_inode. Checking for that
++		 * field should suffice to ensure we have extra space
++		 * for all three.
++		 */
++		if (sbi->s_inode_size >= offsetof(struct ext4_inode, i_atime_extra) +
++			sizeof(((struct ext4_inode *)0)->i_atime_extra)) {
++			sb->s_time_gran = 1;
++			sb->s_time_max = EXT4_EXTRA_TIMESTAMP_MAX;
++		} else {
++			sb->s_time_gran = NSEC_PER_SEC;
++			sb->s_time_max = EXT4_NON_EXTRA_TIMESTAMP_MAX;
++		}
++		sb->s_time_min = EXT4_TIMESTAMP_MIN;
++	}
++	if (sbi->s_inode_size > EXT4_GOOD_OLD_INODE_SIZE) {
++		sbi->s_want_extra_isize = sizeof(struct ext4_inode) -
++			EXT4_GOOD_OLD_INODE_SIZE;
++		if (ext4_has_feature_extra_isize(sb)) {
++			unsigned v, max = (sbi->s_inode_size -
++					   EXT4_GOOD_OLD_INODE_SIZE);
++
++			v = le16_to_cpu(es->s_want_extra_isize);
++			if (v > max) {
++				ext4_msg(sb, KERN_ERR,
++					 "bad s_want_extra_isize: %d", v);
++				goto failed_mount;
++			}
++			if (sbi->s_want_extra_isize < v)
++				sbi->s_want_extra_isize = v;
++
++			v = le16_to_cpu(es->s_min_extra_isize);
++			if (v > max) {
++				ext4_msg(sb, KERN_ERR,
++					 "bad s_min_extra_isize: %d", v);
++				goto failed_mount;
++			}
++			if (sbi->s_want_extra_isize < v)
++				sbi->s_want_extra_isize = v;
++		}
++	}
++
+ 	if (sbi->s_es->s_mount_opts[0]) {
+ 		char *s_mount_opts = kstrndup(sbi->s_es->s_mount_opts,
+ 					      sizeof(sbi->s_es->s_mount_opts),
+@@ -4019,42 +4054,6 @@ static int ext4_fill_super(struct super_block *sb, void *data, int silent)
+ 						      has_huge_files);
+ 	sb->s_maxbytes = ext4_max_size(sb->s_blocksize_bits, has_huge_files);
+ 
+-	if (le32_to_cpu(es->s_rev_level) == EXT4_GOOD_OLD_REV) {
+-		sbi->s_inode_size = EXT4_GOOD_OLD_INODE_SIZE;
+-		sbi->s_first_ino = EXT4_GOOD_OLD_FIRST_INO;
+-	} else {
+-		sbi->s_inode_size = le16_to_cpu(es->s_inode_size);
+-		sbi->s_first_ino = le32_to_cpu(es->s_first_ino);
+-		if (sbi->s_first_ino < EXT4_GOOD_OLD_FIRST_INO) {
+-			ext4_msg(sb, KERN_ERR, "invalid first ino: %u",
+-				 sbi->s_first_ino);
+-			goto failed_mount;
+-		}
+-		if ((sbi->s_inode_size < EXT4_GOOD_OLD_INODE_SIZE) ||
+-		    (!is_power_of_2(sbi->s_inode_size)) ||
+-		    (sbi->s_inode_size > blocksize)) {
+-			ext4_msg(sb, KERN_ERR,
+-			       "unsupported inode size: %d",
+-			       sbi->s_inode_size);
+-			goto failed_mount;
+-		}
+-		/*
+-		 * i_atime_extra is the last extra field available for [acm]times in
+-		 * struct ext4_inode. Checking for that field should suffice to ensure
+-		 * we have extra space for all three.
+-		 */
+-		if (sbi->s_inode_size >= offsetof(struct ext4_inode, i_atime_extra) +
+-			sizeof(((struct ext4_inode *)0)->i_atime_extra)) {
+-			sb->s_time_gran = 1;
+-			sb->s_time_max = EXT4_EXTRA_TIMESTAMP_MAX;
+-		} else {
+-			sb->s_time_gran = NSEC_PER_SEC;
+-			sb->s_time_max = EXT4_NON_EXTRA_TIMESTAMP_MAX;
+-		}
+-
+-		sb->s_time_min = EXT4_TIMESTAMP_MIN;
+-	}
+-
+ 	sbi->s_desc_size = le16_to_cpu(es->s_desc_size);
+ 	if (ext4_has_feature_64bit(sb)) {
+ 		if (sbi->s_desc_size < EXT4_MIN_DESC_SIZE_64BIT ||
+@@ -4503,8 +4502,6 @@ static int ext4_fill_super(struct super_block *sb, void *data, int silent)
+ 	} else if (ret)
+ 		goto failed_mount4a;
+ 
+-	ext4_clamp_want_extra_isize(sb);
+-
+ 	ext4_set_resv_clusters(sb);
+ 
+ 	err = ext4_setup_system_zone(sb);
+@@ -5292,8 +5289,6 @@ static int ext4_remount(struct super_block *sb, int *flags, char *data)
+ 		goto restore_opts;
+ 	}
+ 
+-	ext4_clamp_want_extra_isize(sb);
+-
+ 	if ((old_opts.s_mount_opt & EXT4_MOUNT_JOURNAL_CHECKSUM) ^
+ 	    test_opt(sb, JOURNAL_CHECKSUM)) {
+ 		ext4_msg(sb, KERN_ERR, "changing journal_checksum "
+-- 
+2.24.1
+
