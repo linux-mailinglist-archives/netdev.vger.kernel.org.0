@@ -2,115 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 62FC511FBE6
-	for <lists+netdev@lfdr.de>; Mon, 16 Dec 2019 00:38:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BD3CF11FBE9
+	for <lists+netdev@lfdr.de>; Mon, 16 Dec 2019 00:43:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726470AbfLOXim (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 15 Dec 2019 18:38:42 -0500
-Received: from bilbo.ozlabs.org ([203.11.71.1]:43657 "EHLO ozlabs.org"
+        id S1726470AbfLOXn1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 15 Dec 2019 18:43:27 -0500
+Received: from gloria.sntech.de ([185.11.138.130]:50438 "EHLO gloria.sntech.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726346AbfLOXim (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 15 Dec 2019 18:38:42 -0500
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 47bgp63K7Hz9sP3;
-        Mon, 16 Dec 2019 10:38:37 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1576453120;
-        bh=LWwx46X/jK+HwaSLc5VFTlSHwQrlPJp/QnBR0I2tYV4=;
-        h=Date:From:To:Cc:Subject:From;
-        b=pOXVjKCjN4hLjtbRJ1D7SxprD1wYlQwO4HuY9wtzLoZx9d4mVNwVEOwCqVGcfLOMq
-         xviZOORu1gwywR1q+mJRPXKCBEVfajZwYG9eQ5Oc2rrufoaGYNb3L8FC+r698SJm9D
-         lcipo3E+JvywVnMepC31K9cy5l3xP5NeA2a4PE6tYlQzYYMOaeFVRC5VlCHxxRlOK1
-         vdZM55nLtHh0urlgLGRd166zaXTIAWwQK6WBxTOf3Sy3C0CAG/TNyMLaHT3Rw/G1jI
-         kxwszBr+lyI+m+24CWO3NhdMmV3aTZ3esOyW9l51wRdVwwW5/NZasQJCk+OqBTH66d
-         0+W5IOu/PL8fw==
-Date:   Mon, 16 Dec 2019 10:38:37 +1100
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Steffen Klassert <steffen.klassert@secunet.com>,
-        David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Kirill Tkhai <ktkhai@virtuozzo.com>,
-        Sabrina Dubroca <sd@queasysnail.net>
-Subject: linux-next: manual merge of the ipsec-next tree with the net-next
- tree
-Message-ID: <20191216103837.6b5d856b@canb.auug.org.au>
+        id S1726260AbfLOXn1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 15 Dec 2019 18:43:27 -0500
+Received: from ip5f5a5f74.dynamic.kabel-deutschland.de ([95.90.95.116] helo=diego.localnet)
+        by gloria.sntech.de with esmtpsa (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.89)
+        (envelope-from <heiko@sntech.de>)
+        id 1igdXn-0004g5-FK; Mon, 16 Dec 2019 00:43:23 +0100
+From:   Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
+To:     Soeren Moch <smoch@web.de>
+Cc:     Kalle Valo <kvalo@codeaurora.org>,
+        brcm80211-dev-list.pdl@broadcom.com, netdev@vger.kernel.org,
+        linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-rockchip@lists.infradead.org, brcm80211-dev-list@cypress.com,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH v2 0/9] brcmfmac: add support for BCM4359 SDIO chipset
+Date:   Mon, 16 Dec 2019 00:43:22 +0100
+Message-ID: <2685733.IzV8dBlDb2@diego>
+In-Reply-To: <22526722-1ae8-a018-0e24-81d7ad7512dd@web.de>
+References: <20191211235253.2539-1-smoch@web.de> <1daadfe0-5964-db9b-818c-6e4c75ac6a69@web.de> <22526722-1ae8-a018-0e24-81d7ad7512dd@web.de>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/89HXB6vvh2nRwNy5pbK5wEX";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/89HXB6vvh2nRwNy5pbK5wEX
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+Hi Soeren,
 
-Hi all,
+Am Sonntag, 15. Dezember 2019, 22:24:10 CET schrieb Soeren Moch:
+> On 12.12.19 11:59, Soeren Moch wrote:
+> > On 12.12.19 10:42, Kalle Valo wrote:
+> >> Soeren Moch <smoch@web.de> writes:
+> >>
+> >>> Add support for the BCM4359 chipset with SDIO interface and RSDB support
+> >>> to the brcmfmac wireless network driver in patches 1-7.
+> >>>
+> >>> Enhance devicetree of the RockPro64 arm64/rockchip board to use an
+> >>> AP6359SA based wifi/bt combo module with this chipset in patches 8-9.
+> >>>
+> >>>
+> >>> Chung-Hsien Hsu (1):
+> >>>   brcmfmac: set F2 blocksize and watermark for 4359
+> >>>
+> >>> Soeren Moch (5):
+> >>>   brcmfmac: fix rambase for 4359/9
+> >>>   brcmfmac: make errors when setting roaming parameters non-fatal
+> >>>   brcmfmac: add support for BCM4359 SDIO chipset
+> >>>   arm64: dts: rockchip: RockPro64: enable wifi module at sdio0
+> >>>   arm64: dts: rockchip: RockPro64: hook up bluetooth at uart0
+> >>>
+> >>> Wright Feng (3):
+> >>>   brcmfmac: reset two D11 cores if chip has two D11 cores
+> >>>   brcmfmac: add RSDB condition when setting interface combinations
+> >>>   brcmfmac: not set mbss in vif if firmware does not support MBSS
+> >>>
+> >>>  .../boot/dts/rockchip/rk3399-rockpro64.dts    | 50 +++++++++++---
+> >>>  .../broadcom/brcm80211/brcmfmac/bcmsdh.c      |  8 ++-
+> >>>  .../broadcom/brcm80211/brcmfmac/cfg80211.c    | 68 +++++++++++++++----
+> >>>  .../broadcom/brcm80211/brcmfmac/chip.c        | 54 ++++++++++++++-
+> >>>  .../broadcom/brcm80211/brcmfmac/chip.h        |  1 +
+> >>>  .../broadcom/brcm80211/brcmfmac/pcie.c        |  2 +-
+> >>>  .../broadcom/brcm80211/brcmfmac/sdio.c        | 17 +++++
+> >>>  include/linux/mmc/sdio_ids.h                  |  2 +
+> >>>  8 files changed, 176 insertions(+), 26 deletions(-)
+> >> Just to make sure we are on the same page, I will apply patches 1-7 to
+> >> wireless-drivers-next and patches 8-9 go to some other tree? And there
+> >> are no dependencies between the brcmfmac patches and dts patches?
+> >>
+> > Yes, this also is my understanding. I'm glad if you are fine with
+> > patches 1-7.
+> > Heiko will pick up patches 8-9 later for linux-rockchip independently.
+> > And if we need another round of review for patches 8-9, I think we don't
+> > need to bother linux-wireless with this.
+> 
+> Heiko,
+> 
+> is this OK for you when patches 1-7 are merged now in wireless-drivers,
+> and then I send a v3 for patches 8-9 only for you to merge in
+> linux-rockchip later? Or do you prefer a full v3 for the whole series
+> with only this pending clock name update in patch 9?
 
-Today's linux-next merge of the ipsec-next tree got a conflict in:
+Nope, merging 1-7 from this v2 and then getting a v3 with only the dts
+stuff is perfectly fine :-)
 
-  net/unix/af_unix.c
+Heiko
 
-between commit:
 
-  3c32da19a858 ("unix: Show number of pending scm files of receive queue in=
- fdinfo")
-
-from the net-next tree and commit:
-
-  b50b0580d27b ("net: add queue argument to __skb_wait_for_more_packets and=
- __skb_{,try_}recv_datagram")
-
-from the ipsec-next tree.
-
-I fixed it up (see below) and can carry the fix as necessary. This
-is now fixed as far as linux-next is concerned, but any non trivial
-conflicts should be mentioned to your upstream maintainer when your tree
-is submitted for merging.  You may also want to consider cooperating
-with the maintainer of the conflicting tree to minimise any particularly
-complex conflicts.
-
---=20
-Cheers,
-Stephen Rothwell
-
-diff --cc net/unix/af_unix.c
-index 6756a3ccc392,a7f707fc4cac..000000000000
---- a/net/unix/af_unix.c
-+++ b/net/unix/af_unix.c
-@@@ -2100,8 -2058,8 +2100,8 @@@ static int unix_dgram_recvmsg(struct so
-  		mutex_lock(&u->iolock);
- =20
-  		skip =3D sk_peek_offset(sk, flags);
-- 		skb =3D __skb_try_recv_datagram(sk, flags, scm_stat_del,
-- 					      &skip, &err, &last);
-+ 		skb =3D __skb_try_recv_datagram(sk, &sk->sk_receive_queue, flags,
- -					      NULL, &skip, &err, &last);
-++					      scm_stat_del, &skip, &err, &last);
-  		if (skb)
-  			break;
- =20
-
---Sig_/89HXB6vvh2nRwNy5pbK5wEX
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl32w/0ACgkQAVBC80lX
-0GystAf/VW5r7ZW8n2KvN/QoaDD3atlYHHPaVY3sZUYjfd16rUrPjF/9+3gL1TUb
-xeuYtzjX5+BjTyODk5MPmvjm7Y7XDtzq343xLCpUGvF3IUj2rbaiMx/qdoZDUU80
-7j3Ed42pxJ3S+ORoj/n6Z9Kq1z1mzQDMAXa0/XgchkzisduGy9Jdi+BSZEjdmM0c
-Ow8GA0CnFCi9UgfRx9xRjgqKPO+YL0n6mJEBq03LUY57/cMVHwjOlWQrF4KpX5Ef
-UaMAn2fpp94BalTyf/fSodtDi/kcZZskOC2ENvDgMSXMcAadPBPJgTAwglQDhqAR
-F8Tgu1WOWML+fzL7ejWWUshJmEsnMw==
-=p8Wu
------END PGP SIGNATURE-----
-
---Sig_/89HXB6vvh2nRwNy5pbK5wEX--
