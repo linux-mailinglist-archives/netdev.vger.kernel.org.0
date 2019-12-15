@@ -2,86 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 05DBD11F557
-	for <lists+netdev@lfdr.de>; Sun, 15 Dec 2019 03:05:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B471911F563
+	for <lists+netdev@lfdr.de>; Sun, 15 Dec 2019 03:49:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727052AbfLOCFN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 14 Dec 2019 21:05:13 -0500
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:41695 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726971AbfLOCFN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 14 Dec 2019 21:05:13 -0500
-Received: by mail-pg1-f194.google.com with SMTP id x8so1585074pgk.8
-        for <netdev@vger.kernel.org>; Sat, 14 Dec 2019 18:05:13 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=NPJKZB/MZ31vp9CqIbB5orONwRixLLIIKcw2xgA7Dx4=;
-        b=Dcxds5iXxttcM/C8VZ+0IuUluFLrfcuMHmB4f8l/K+VTzOaDu2oDFFXFu8M3vlF5As
-         I75WU0pDiThlKZNHUkqOfdmFxBL+hIq0IJiWfthxOSWt+NBkfWglkRI81jclrA/ZgFJc
-         wIcQocs1srWuuSZfY9U5rNtRwoaF16LknNseOg9SzBw8mJWM3Jwuvfn1ju+F3TpLSR75
-         92QXWY1BfQ/eYh2EvF/5TsCeALe6Rr8k+pYnA1vzEvpPSioBZwKd8iIWvfuanVifk4CA
-         W6ieDEYNnqkzt0el31drHeG26NdrL3Ebt66J0EjmFNcXe+0ejxtPukQZ27fXRBfY3QgL
-         Y0Ww==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=NPJKZB/MZ31vp9CqIbB5orONwRixLLIIKcw2xgA7Dx4=;
-        b=mzMWTfmgBAF9o7PW7D/cHwgHnJrTZRPm8wob+bFwvC/mgoAz7Jt0KP/JoEIqUYgIGK
-         u/68OAm3iOZYyrtKbpMAPVZfFpPAKGiwre2+FSyY2GGohgMKmrt6LkMqpyZ3xFvWU1Zn
-         fY7v72n0vWjy+2AbNXOIcyhuI/DQEhcX3KRvGSbBcLX+okAUYZ6uNQsoBnuMvEnCCKDZ
-         Gic9qtAdzOoMGPzdMgs2Y2FwgPiATTZK37QqqKxbsOFCxrV0ixNOoxtOMbpzD3Dsy3Wr
-         7qsS0QQJxX/MUlqYUWQCHXzOQPGfTNYkP211KobOjM+7c6t2SYHzUplq96IetrWTwDxX
-         ZV5Q==
-X-Gm-Message-State: APjAAAV2WgShKAtLHahliLLvcEO/5FogZA6ftttpuVu29Xylk1dNnAOn
-        bSvlqf1/OTrUbQ2KVcVo7ztz93EovRo=
-X-Google-Smtp-Source: APXvYqwALjEw0IsJtNPSsz5Q/k1leTojLnnf3en/PFb2MzPTZAbcIz8NFj8OytyHdbnNsB2kikwc0Q==
-X-Received: by 2002:a65:55cc:: with SMTP id k12mr9526368pgs.184.1576375512762;
-        Sat, 14 Dec 2019 18:05:12 -0800 (PST)
-Received: from cakuba.netronome.com (c-73-202-202-92.hsd1.ca.comcast.net. [73.202.202.92])
-        by smtp.gmail.com with ESMTPSA id j18sm15617760pgk.1.2019.12.14.18.05.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 14 Dec 2019 18:05:12 -0800 (PST)
-Date:   Sat, 14 Dec 2019 18:05:09 -0800
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net,
-        Willem de Bruijn <willemb@google.com>,
-        Naresh Kamboju <naresh.kamboju@linaro.org>
-Subject: Re: [PATCH net-next] selftests/net: make so_txtime more robust to
- timer variance
-Message-ID: <20191214180509.2dfd117d@cakuba.netronome.com>
-In-Reply-To: <20191212163646.190982-1-willemdebruijn.kernel@gmail.com>
-References: <20191212163646.190982-1-willemdebruijn.kernel@gmail.com>
-Organization: Netronome Systems, Ltd.
+        id S1727070AbfLOCto (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 14 Dec 2019 21:49:44 -0500
+Received: from Chamillionaire.breakpoint.cc ([193.142.43.52]:45048 "EHLO
+        Chamillionaire.breakpoint.cc" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726865AbfLOCto (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 14 Dec 2019 21:49:44 -0500
+Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
+        (envelope-from <fw@breakpoint.cc>)
+        id 1igJyX-0003uy-94; Sun, 15 Dec 2019 03:49:41 +0100
+From:   Florian Westphal <fw@strlen.de>
+To:     <netfilter-devel@vger.kernel.org>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        syzbot+f68108fed972453a0ad4@syzkaller.appspotmail.com,
+        syzkaller-bugs@googlegroups.com, Florian Westphal <fw@strlen.de>
+Subject: [PATCH nf] netfilter: ebtables: compat: reject all padding in matches/watchers
+Date:   Sun, 15 Dec 2019 03:49:25 +0100
+Message-Id: <20191215024925.10872-1-fw@strlen.de>
+X-Mailer: git-send-email 2.23.0
+In-Reply-To: <000000000000cd9e600599b051e5@google.com>
+References: <000000000000cd9e600599b051e5@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 12 Dec 2019 11:36:46 -0500, Willem de Bruijn wrote:
-> From: Willem de Bruijn <willemb@google.com>
-> 
-> The SO_TXTIME test depends on accurate timers. In some virtualized
-> environments the test has been reported to be flaky. This is easily
-> reproduced by disabling kvm acceleration in Qemu.
-> 
-> Allow greater variance in a run and retry to further reduce flakiness.
-> 
-> Observed errors are one of two kinds: either the packet arrives too
-> early or late at recv(), or it was dropped in the qdisc itself and the
-> recv() call times out.
-> 
-> In the latter case, the qdisc queues a notification to the error
-> queue of the send socket. Also explicitly report this cause.
-> 
-> Link: https://lore.kernel.org/netdev/CA+FuTSdYOnJCsGuj43xwV1jxvYsaoa_LzHQF9qMyhrkLrivxKw@mail.gmail.com
-> Reported-by: Naresh Kamboju <naresh.kamboju@linaro.org>
-> Signed-off-by: Willem de Bruijn <willemb@google.com>
+syzbot reported following splat:
 
-Applied, thank you!
+BUG: KASAN: vmalloc-out-of-bounds in size_entry_mwt net/bridge/netfilter/ebtables.c:2063 [inline]
+BUG: KASAN: vmalloc-out-of-bounds in compat_copy_entries+0x128b/0x1380 net/bridge/netfilter/ebtables.c:2155
+Read of size 4 at addr ffffc900004461f4 by task syz-executor267/7937
+
+CPU: 1 PID: 7937 Comm: syz-executor267 Not tainted 5.5.0-rc1-syzkaller #0
+ size_entry_mwt net/bridge/netfilter/ebtables.c:2063 [inline]
+ compat_copy_entries+0x128b/0x1380 net/bridge/netfilter/ebtables.c:2155
+ compat_do_replace+0x344/0x720 net/bridge/netfilter/ebtables.c:2249
+ compat_do_ebt_set_ctl+0x22f/0x27e net/bridge/netfilter/ebtables.c:2333
+ [..]
+
+Because padding isn't considered during computation of ->buf_user_offset,
+"total" is decremented by fewer bytes than it should.
+
+Therefore, the first part of
+
+if (*total < sizeof(*entry) || entry->next_offset < sizeof(*entry))
+
+will pass, -- it should not have.  This causes oob access:
+entry->next_offset is past the vmalloced size.
+
+Reject padding and check that computed user offset (sum of ebt_entry
+structure plus all individual matches/watchers/targets) is same
+value that userspace gave us as the offset of the next entry.
+
+Reported-by: syzbot+f68108fed972453a0ad4@syzkaller.appspotmail.com
+Fixes: 81e675c227ec ("netfilter: ebtables: add CONFIG_COMPAT support")
+Signed-off-by: Florian Westphal <fw@strlen.de>
+---
+ net/bridge/netfilter/ebtables.c | 33 ++++++++++++++++-----------------
+ 1 file changed, 16 insertions(+), 17 deletions(-)
+
+diff --git a/net/bridge/netfilter/ebtables.c b/net/bridge/netfilter/ebtables.c
+index 4096d8a74a2b..e1256e03a9a8 100644
+--- a/net/bridge/netfilter/ebtables.c
++++ b/net/bridge/netfilter/ebtables.c
+@@ -1867,7 +1867,7 @@ static int ebt_buf_count(struct ebt_entries_buf_state *state, unsigned int sz)
+ }
+ 
+ static int ebt_buf_add(struct ebt_entries_buf_state *state,
+-		       void *data, unsigned int sz)
++		       const void *data, unsigned int sz)
+ {
+ 	if (state->buf_kern_start == NULL)
+ 		goto count_only;
+@@ -1901,7 +1901,7 @@ enum compat_mwt {
+ 	EBT_COMPAT_TARGET,
+ };
+ 
+-static int compat_mtw_from_user(struct compat_ebt_entry_mwt *mwt,
++static int compat_mtw_from_user(const struct compat_ebt_entry_mwt *mwt,
+ 				enum compat_mwt compat_mwt,
+ 				struct ebt_entries_buf_state *state,
+ 				const unsigned char *base)
+@@ -1979,22 +1979,23 @@ static int compat_mtw_from_user(struct compat_ebt_entry_mwt *mwt,
+ /* return size of all matches, watchers or target, including necessary
+  * alignment and padding.
+  */
+-static int ebt_size_mwt(struct compat_ebt_entry_mwt *match32,
++static int ebt_size_mwt(const struct compat_ebt_entry_mwt *match32,
+ 			unsigned int size_left, enum compat_mwt type,
+ 			struct ebt_entries_buf_state *state, const void *base)
+ {
++	const char *buf = (const char *)match32;
+ 	int growth = 0;
+-	char *buf;
+ 
+ 	if (size_left == 0)
+ 		return 0;
+ 
+-	buf = (char *) match32;
+-
+-	while (size_left >= sizeof(*match32)) {
++	do {
+ 		struct ebt_entry_match *match_kern;
+ 		int ret;
+ 
++		if (size_left < sizeof(*match32))
++			return -EINVAL;
++
+ 		match_kern = (struct ebt_entry_match *) state->buf_kern_start;
+ 		if (match_kern) {
+ 			char *tmp;
+@@ -2031,22 +2032,18 @@ static int ebt_size_mwt(struct compat_ebt_entry_mwt *match32,
+ 		if (match_kern)
+ 			match_kern->match_size = ret;
+ 
+-		/* rule should have no remaining data after target */
+-		if (type == EBT_COMPAT_TARGET && size_left)
+-			return -EINVAL;
+-
+ 		match32 = (struct compat_ebt_entry_mwt *) buf;
+-	}
++	} while (size_left);
+ 
+ 	return growth;
+ }
+ 
+ /* called for all ebt_entry structures. */
+-static int size_entry_mwt(struct ebt_entry *entry, const unsigned char *base,
++static int size_entry_mwt(const struct ebt_entry *entry, const unsigned char *base,
+ 			  unsigned int *total,
+ 			  struct ebt_entries_buf_state *state)
+ {
+-	unsigned int i, j, startoff, new_offset = 0;
++	unsigned int i, j, startoff, next_expected_off, new_offset = 0;
+ 	/* stores match/watchers/targets & offset of next struct ebt_entry: */
+ 	unsigned int offsets[4];
+ 	unsigned int *offsets_update = NULL;
+@@ -2132,11 +2129,13 @@ static int size_entry_mwt(struct ebt_entry *entry, const unsigned char *base,
+ 			return ret;
+ 	}
+ 
+-	startoff = state->buf_user_offset - startoff;
++	next_expected_off = state->buf_user_offset - startoff;
++	if (next_expected_off != entry->next_offset)
++		return -EINVAL;
+ 
+-	if (WARN_ON(*total < startoff))
++	if (*total < entry->next_offset)
+ 		return -EINVAL;
+-	*total -= startoff;
++	*total -= entry->next_offset;
+ 	return 0;
+ }
+ 
+-- 
+2.23.0
+
