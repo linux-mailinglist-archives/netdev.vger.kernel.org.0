@@ -2,84 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4940311F52D
-	for <lists+netdev@lfdr.de>; Sun, 15 Dec 2019 01:29:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 42ED411F539
+	for <lists+netdev@lfdr.de>; Sun, 15 Dec 2019 02:11:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726948AbfLOA3R (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 14 Dec 2019 19:29:17 -0500
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:46607 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726783AbfLOA3Q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 14 Dec 2019 19:29:16 -0500
-Received: by mail-pg1-f194.google.com with SMTP id z124so1491444pgb.13
-        for <netdev@vger.kernel.org>; Sat, 14 Dec 2019 16:29:16 -0800 (PST)
+        id S1727070AbfLOBLD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 14 Dec 2019 20:11:03 -0500
+Received: from mail-il1-f195.google.com ([209.85.166.195]:39033 "EHLO
+        mail-il1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726948AbfLOBLD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 14 Dec 2019 20:11:03 -0500
+Received: by mail-il1-f195.google.com with SMTP id n1so2614844ilm.6;
+        Sat, 14 Dec 2019 17:11:02 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=wmVt/esTKXdnuPAuAKVkzDF8McEsa/4PpSxyCcerGEo=;
-        b=FSDNitvgo+gPiPyQqHK2JUU24JkNwojpjt8ezUJ+fELtcCnQpp/kTvBG+ko5IycxDj
-         44Ve9q3hmX7ijkge+x8FX2YW6TyvfyS+zpKCBg0EnvQCUpu+iIQfWa7xQFcKEAc+dPPB
-         hmcy5qzY/crvuzVtIYHO8eaLpnxNqP2T8MkjNVqjjIuEovTcNOp5GXV28RRG9ZFKtMch
-         lO23ionfeyrUAIt1yPdmygiDXSqKums8Py/lcopnk6P3EFR3rwA97XHgWkSxZiCdBNoe
-         EWufK2K+vvc/uUVCvzMA2eNGtAdr3oFVHqohZRs2lhl2IENMr9+1H7wxueHqDOJr4UZy
-         CT1g==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=iCgRvU1WGRJdB8v0mlRWij6VbYbiUNZ9qlhjDWyv8b8=;
+        b=mm8H9mwC/H/B8L0ty+x6fcNvz2ecrsgaucPP5ScxIuULp9xV8c3kSOfLyVGkYoQpn7
+         uPXaE/CijJAssAhAeilkHYXZLa5R/2oicE0u0UnqKFdBpeQUFPDWIE5xaL21KMv3yrKt
+         1joiBx5xrRHuWNl6KMt1g2wW2p5lwVHRxxfFbwcUBJ8F1QSMRkEDGAfWAwx8WvipCkaF
+         NFBphQv26wL4csd5dfB6/GZfyJ4yJEs5yWtfF98WpHkQGeGigkdWbt6K8QLgCssj8PCM
+         0ScrtnuJO3zF57oGe5SIDAeVJV6N/vzck3Y5jtHGa52HTIu+yL2NMDLe6nebM1P8TB1d
+         Osqw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=wmVt/esTKXdnuPAuAKVkzDF8McEsa/4PpSxyCcerGEo=;
-        b=JA7AWE3eijpwdJ5p0uko8z7Esye6kPvbqxYmShggpIz2rHi89mlxVI2isyjD1R0UMG
-         gp1w7DkmCUpofwJV+3AgUBnJf65aEEa3M675RBg48eCIj96JoizvPglCgLJW9qAP5GHO
-         hc959/9xzbEuDCyf+iXcPUj68IkA4pcg+s3Quo33W2r75CwSAPCeyvJK43q9z8iAuy36
-         Lismhg/XCa9UzJcvDhwrrAg3zT+oSOH8THxtyLpsIcvOtFXAcHjOfZip10uZxqWnyhwi
-         g3tqv8946iYqdIZ2GydZftLRIBaRJvhj4WvL2gQY1Ybluu5P7JRL5YYhxfiiSCuzodgs
-         18mg==
-X-Gm-Message-State: APjAAAVVQw12AZkHt4uOoF4KTbmnbUU/G1Gle2wVzvNqt47aWNMb7Hon
-        DJ51kHEuGJZK8eMjv5zYJX5YDA==
-X-Google-Smtp-Source: APXvYqzzjFIFeEOvE+qTD47kQzLuAB31A3879i8QC/8HP8XPyBeW7CkgizYG1N2je7paRTofZOmV0w==
-X-Received: by 2002:a65:644b:: with SMTP id s11mr8934421pgv.332.1576369756202;
-        Sat, 14 Dec 2019 16:29:16 -0800 (PST)
-Received: from cakuba.netronome.com (c-73-202-202-92.hsd1.ca.comcast.net. [73.202.202.92])
-        by smtp.gmail.com with ESMTPSA id v1sm11313664pjy.9.2019.12.14.16.29.15
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=iCgRvU1WGRJdB8v0mlRWij6VbYbiUNZ9qlhjDWyv8b8=;
+        b=M42Cu2hKNcZD2fo2pSOfRKRz/MRNhcOSqKOVZvUAKqcHqOYK6S+jQ8M/5cvjlG1xvP
+         zojyj6YsFMjdy/XWO7liAJTI4CjvjaBYwcyHaqYY5gsTHIHVdvtYDie7gZZRh6uwaEMx
+         2V17Lbjh68P69fWzeaqgUjrzH0jlAx37ib5sm8Oi7Y6QYATyQ3OJF4g9DsAD1bRpSKn+
+         6/0eeNGM5obbv5SoezdkujiGCXidcKVH5daxqqI5h1oI8w0x4jJBUoLUy68w8qzOHTcy
+         8IofWhb+evR9V4xWTcJqMCFIP4lxCpnlNZUOuTyl3MuqYKomIUjEBOF/IyMMzGS7dQUt
+         UXzQ==
+X-Gm-Message-State: APjAAAU6i2Sg0tlbeiZSDjaIF5V/+iAg62T62cxtZnP24od/9cM80INh
+        HVRAGqMKXysHQrSohyJntT4=
+X-Google-Smtp-Source: APXvYqwKeEjguHOSD5k7hXba9znk0S8i3ioaEZxvZ7qBuvFHYAtLl17fRxCyhC2/A6BeFGt22r3lwA==
+X-Received: by 2002:a92:5c8f:: with SMTP id d15mr6913133ilg.102.1576372262269;
+        Sat, 14 Dec 2019 17:11:02 -0800 (PST)
+Received: from cs-dulles.cs.umn.edu (cs-dulles.cs.umn.edu. [128.101.35.54])
+        by smtp.googlemail.com with ESMTPSA id 129sm3173169iox.84.2019.12.14.17.11.01
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 14 Dec 2019 16:29:16 -0800 (PST)
-Date:   Sat, 14 Dec 2019 16:29:12 -0800
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Jay Vosburgh <jay.vosburgh@canonical.com>
-Cc:     =?UTF-8?B?TWFoZXNoIEJhbmRld2FyICjgpK7gpLngpYfgpLYg4KSs4KSC4KSh4KWH4KS14KS+4KSwKQ==?= 
-        <maheshb@google.com>, Andy Gospodarek <andy@greyhouse.net>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        Netdev <netdev@vger.kernel.org>,
-        Mahesh Bandewar <mahesh@bandewar.net>
-Subject: Re: [PATCH net] bonding: fix active-backup transition after link
- failure
-Message-ID: <20191214162912.41936ef1@cakuba.netronome.com>
-In-Reply-To: <26868.1576268917@famine>
-References: <20191206234455.213159-1-maheshb@google.com>
-        <10902.1575756592@famine>
-        <CAF2d9jgjeky0eMgwFZKHO_RLTBNstH1gCq4hn1FfO=TtrMP1ow@mail.gmail.com>
-        <26918.1576132686@famine>
-        <CAF2d9jh7WAydcm79VYZLb=A=fXo7B7RDiMquZRJdP2fnwnLabg@mail.gmail.com>
-        <26868.1576268917@famine>
-Organization: Netronome Systems, Ltd.
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        Sat, 14 Dec 2019 17:11:01 -0800 (PST)
+From:   Navid Emamdoost <navid.emamdoost@gmail.com>
+To:     Hans Ulli Kroll <ulli.kroll@googlemail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        =?UTF-8?q?Micha=C5=82=20Miros=C5=82aw?= <mirq-linux@rere.qmqm.pl>,
+        linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     emamd001@umn.edu, Navid Emamdoost <navid.emamdoost@gmail.com>
+Subject: [PATCH] net: gemini: Fix memory leak in gmac_setup_txqs
+Date:   Sat, 14 Dec 2019 19:10:44 -0600
+Message-Id: <20191215011045.15453-1-navid.emamdoost@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 13 Dec 2019 12:28:37 -0800, Jay Vosburgh wrote:
-> 	Ok, I think I understand, and am fine with the patch as-is.
-> 
-> Acked-by: Jay Vosburgh <jay.vosburgh@canonical.com>
+In the implementation of gmac_setup_txqs() the allocated desc_ring is
+leaked if TX queue base is not aligned. Release it via
+dma_free_coherent.
 
-Okay, applied then, and queued for 4.14+ stable.
+Fixes: 4d5ae32f5e1e ("net: ethernet: Add a driver for Gemini gigabit ethernet")
+Signed-off-by: Navid Emamdoost <navid.emamdoost@gmail.com>
+---
+ drivers/net/ethernet/cortina/gemini.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-Mahesh, I reworded the commit message slightly, checkpatch insists
-that the word "commit" occurs before the hash when quoting.
+diff --git a/drivers/net/ethernet/cortina/gemini.c b/drivers/net/ethernet/cortina/gemini.c
+index a8f4c69252ff..3a796fe099dd 100644
+--- a/drivers/net/ethernet/cortina/gemini.c
++++ b/drivers/net/ethernet/cortina/gemini.c
+@@ -576,6 +576,8 @@ static int gmac_setup_txqs(struct net_device *netdev)
+ 
+ 	if (port->txq_dma_base & ~DMA_Q_BASE_MASK) {
+ 		dev_warn(geth->dev, "TX queue base is not aligned\n");
++		dma_free_coherent(geth->dev, len * sizeof(*desc_ring),
++				  desc_ring, port->txq_dma_base);
+ 		kfree(skb_tab);
+ 		return -ENOMEM;
+ 	}
+-- 
+2.17.1
 
-Thanks!
