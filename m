@@ -2,61 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 76D5E11F5B9
-	for <lists+netdev@lfdr.de>; Sun, 15 Dec 2019 05:28:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A22CF11F5C1
+	for <lists+netdev@lfdr.de>; Sun, 15 Dec 2019 05:35:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726052AbfLOE1t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 14 Dec 2019 23:27:49 -0500
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:36367 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726019AbfLOE1t (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 14 Dec 2019 23:27:49 -0500
-Received: by mail-pf1-f196.google.com with SMTP id x184so3735967pfb.3
-        for <netdev@vger.kernel.org>; Sat, 14 Dec 2019 20:27:49 -0800 (PST)
+        id S1726094AbfLOEdl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 14 Dec 2019 23:33:41 -0500
+Received: from mail-pj1-f68.google.com ([209.85.216.68]:35058 "EHLO
+        mail-pj1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725990AbfLOEdl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 14 Dec 2019 23:33:41 -0500
+Received: by mail-pj1-f68.google.com with SMTP id w23so1509766pjd.2
+        for <netdev@vger.kernel.org>; Sat, 14 Dec 2019 20:33:40 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=netronome-com.20150623.gappssmtp.com; s=20150623;
         h=date:from:to:cc:subject:message-id:in-reply-to:references
          :organization:mime-version:content-transfer-encoding;
-        bh=kC7oENBrcIHmeqoO4HcWKA6Dp+aWK6pRUqc/0qg7pUM=;
-        b=TyieL2OQ4XZsrRl5yaF3UEWOMglWvhXnMEQFrbNmrmX8uBuDO82i2j7r5XiLn4AS99
-         Zxun8jeEiCbVO6AclIRMawu3nreKwHxpu6clGEr71XsNtKpKOMROWVDno4XrjzQOjY27
-         5Qqv3TC5iY4omM4bcxkCNDys0gSUWvZgTL6pISPIKnmHxnAlRB+x2zvN+LOi6NYigEhZ
-         +bxvMqwkWz8ri0vA7ZWGgN5Ub/bZe9+5B0CQ3mBQqWrcNNeXiLM/0mwpo+0LNwmj/MN3
-         xv8/Pd5jyPMwuktacyRfTSCjUlYViL8Ms+WknpuQgLFpR7sZ7COdfHf2fJCNwtnn3r2S
-         JFrA==
+        bh=K51j8K8EN2XPuqttk34dMlLQCvUL9tG6S45o7V+5+MU=;
+        b=rSuoQkCYH6bzYBVjPU8FbqRNmY0YmiIcGj83O2cSsmxSzv22e16yc20L3uKiVbr3nK
+         B52slI9FmgYjesrnwzmnCMtqozUyb7F7j9eyORMMTiB+BIt1vHimX+L+2eQO5LekkMnr
+         koQfyq+dRdKzG/meZ+yw6bU2vO/Q+snYpLPwKD7cfrKBm/ohGaT6sGqDul/3zJQ1mkRn
+         4oaveKo+jwkQaRKBl9hp/LLa4TrEPwAShyzFk5wahuGDyB2x4I9JBjh/KcK1ugyMVQiz
+         8xF3W/J05lu9lQEcUzSpF91II4YLNi3EDZIQ6f99Ngi7L6E9hWPZMoSkhJiftWXuFHY/
+         X8nw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
          :references:organization:mime-version:content-transfer-encoding;
-        bh=kC7oENBrcIHmeqoO4HcWKA6Dp+aWK6pRUqc/0qg7pUM=;
-        b=VAzENomcASdxclVuq1Uig8Z9YifNrJv7FJQrG3iOC1kAjCLoNq7gEt1TKjsXcIsOl1
-         4mA5Mg+rnCWmcfW7OHuCS+evR6XtOab2t2srXMVN+wjN6dmH53QskN2a63YbXbbhK7jy
-         aovpeOYzxDPRBFhBSlnBZMxHDHqpeVd4lLOOwb3YTWYVt+p4EI49fNFpjGh9T7hIs+I0
-         bD+swSCfXQ8dQ3nZERqX7nx7L5Z3+40vqzgY0Q6w2qBA3gNTj9tDlyD7AcsJ6wCBfHBO
-         W5xDiJYKWF30/hg8aAiGEm3JYEMhEWNYsiYb/Kxs1KRXEK/FZ7p1rdpcWL7YaxQ4LC/i
-         +PHQ==
-X-Gm-Message-State: APjAAAXNg4jGuzu/49+wbUEfx+T1KvADOpEGsU+QP6vneowd3YbODQrr
-        4yfhDw3OOnZt0ye9AF81raTAsw==
-X-Google-Smtp-Source: APXvYqxyw3l3xbVWatYuIC61DiT+3wlICRTm78v2DbKdh6jqkJnxRchGAbCJacXZKVo642Q1d0lFMw==
-X-Received: by 2002:a63:f64a:: with SMTP id u10mr9766478pgj.16.1576384068814;
-        Sat, 14 Dec 2019 20:27:48 -0800 (PST)
+        bh=K51j8K8EN2XPuqttk34dMlLQCvUL9tG6S45o7V+5+MU=;
+        b=JT+Jq9L38Kt3YDcgHG4fliEcOV8vfHRLMcuGyFMoyHwGroY+Zttov/e6N38aSNBjJp
+         WMztm81C/S4M0q/E8FmVF7nnxSXZU7DULRo2KNjzEVz7tcGSMUd0uYj61SFIzqLxU+lI
+         Z4egkz4OH+bR+AXBdXfzIEXseMy2bdKICQyQgc9fAW0A0aXFWoaQCW/rxc+WD1FBiUDo
+         1kyJhrPM0MbalOw1su1SAnAeMAfE13cY4P80UzGss1RHFBrwDtcdoLC0oVcqnKzv2ezD
+         HSRxPcoiVJaD5Evq7SaHW8FMwIGAPjGWyE4PxDOaZNEjd2cfyLuGLSQzeJJS/2aopuLZ
+         /iDg==
+X-Gm-Message-State: APjAAAXcftPU8fWDNr5QaqaT66ygWdA6VoEdQxKiA0nHts7uVkkHRT8d
+        Ea/FI4Hy2PfM7XeDmr36vNYt4Q==
+X-Google-Smtp-Source: APXvYqxDxnE+42cDuVy+5iQUU/Tx31SkRqB05+m6gIJ/7lrWfSSLYL1x8M/df2LadQS8e5Ghu7t/Lg==
+X-Received: by 2002:a17:902:209:: with SMTP id 9mr9254119plc.58.1576384420590;
+        Sat, 14 Dec 2019 20:33:40 -0800 (PST)
 Received: from cakuba.netronome.com (c-73-202-202-92.hsd1.ca.comcast.net. [73.202.202.92])
-        by smtp.gmail.com with ESMTPSA id h11sm15953529pgv.38.2019.12.14.20.27.47
+        by smtp.gmail.com with ESMTPSA id r20sm17218140pgu.89.2019.12.14.20.33.39
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 14 Dec 2019 20:27:48 -0800 (PST)
-Date:   Sat, 14 Dec 2019 20:27:45 -0800
+        Sat, 14 Dec 2019 20:33:40 -0800 (PST)
+Date:   Sat, 14 Dec 2019 20:33:37 -0800
 From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Russell King <rmk+kernel@armlinux.org.uk>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Milind Parab <mparab@cadence.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next] net: phylink: propagate phy_attach_direct()
- return code
-Message-ID: <20191214202745.649bbed2@cakuba.netronome.com>
-In-Reply-To: <E1ifS4S-000706-ON@rmk-PC.armlinux.org.uk>
-References: <E1ifS4S-000706-ON@rmk-PC.armlinux.org.uk>
+To:     Milind Parab <mparab@cadence.com>
+Cc:     <nicolas.nerre@microchip.com>, <andrew@lunn.ch>,
+        <antoine.tenart@bootlin.com>, <f.fainelli@gmail.com>,
+        <rmk+kernel@armlinux.org.uk>, <davem@davemloft.net>,
+        <netdev@vger.kernel.org>, <hkallweit1@gmail.com>,
+        <linux-kernel@vger.kernel.org>, <dkangude@cadence.com>,
+        <a.fatoum@pengutronix.de>, <brad.mouring@ni.com>,
+        <pthombar@cadence.com>
+Subject: Re: [PATCH v2 1/3] net: macb: fix for fixed-link mode
+Message-ID: <20191214203337.687ebd6b@cakuba.netronome.com>
+In-Reply-To: <1576230061-11239-1-git-send-email-mparab@cadence.com>
+References: <1576230007-11181-1-git-send-email-mparab@cadence.com>
+        <1576230061-11239-1-git-send-email-mparab@cadence.com>
 Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -66,49 +68,20 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 12 Dec 2019 17:16:12 +0000, Russell King wrote:
-> of_phy_attach() hides the return value of phy_attach_direct(), forcing
-> us to return a "generic" ENODEV error code that is indistinguishable
-> from the lack-of-phy-property case.
+On Fri, 13 Dec 2019 09:41:01 +0000, Milind Parab wrote:
+> This patch fix the issue with fixed link. With fixed-link
+> device opening fails due to macb_phylink_connect not
+> handling fixed-link mode, in which case no MAC-PHY connection
+> is needed and phylink_connect return success (0), however
+> in current driver attempt is made to search and connect to
+> PHY even for fixed-link.
 > 
-> Switch to using of_phy_find_device() to find the PHY device, and then
-> propagating any phy_attach_direct() error back to the caller.
-> 
-> Link: https://lore.kernel.org/lkml/20191210113829.GT25745@shell.armlinux.org.uk
-> Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
+> Signed-off-by: Milind Parab <mparab@cadence.com>
 
-Applied thanks, the ref counting is not entirely obvious to a layman.
-In your reply to Milind you said he can immediately of_node_put()
-because the phy_dev is never deferenced in his code, but here it looks
-like it is actually - the reference used to be given up after attach is
-done, now its given up before attach_direct is called.
-
-But I don't know how the refcounting here works, so applied, and on the
-off chance the code is wrong follow up will be fine.
-
-> diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
-> index f7c660bf99d1..8d20cf3ba0b7 100644
-> --- a/drivers/net/phy/phylink.c
-> +++ b/drivers/net/phy/phylink.c
-> @@ -859,14 +859,17 @@ int phylink_of_phy_connect(struct phylink *pl, struct device_node *dn,
->  		return 0;
->  	}
->  
-> -	phy_dev = of_phy_attach(pl->netdev, phy_node, flags,
-> -				pl->link_interface);
-> +	phy_dev = of_phy_find_device(phy_node);
->  	/* We're done with the phy_node handle */
->  	of_node_put(phy_node);
-> -
->  	if (!phy_dev)
->  		return -ENODEV;
->  
-> +	ret = phy_attach_direct(pl->netdev, phy_dev, flags,
-> +				pl->link_interface);
-> +	if (ret)
-> +		return ret;
-> +
->  	ret = phylink_bringup_phy(pl, phy_dev, pl->link_config.interface);
->  	if (ret)
->  		phy_detach(phy_dev);
-
+We'll wait to give a chance for Russell, Andrew and others to review,
+but this patch looks like a fix and the other ones look like features.
+You should post the fix separately so it's included in Linus'es tree
+ASAP (mark the patch with [PATCH net]), and the rest of the patches can
+wait for the next merge window (mark [PATCH net-next]). Fixes should
+also have an appropriate Fixes tag pointing at the first commit where
+the bug was present.
