@@ -2,106 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id ADD2411F53C
-	for <lists+netdev@lfdr.de>; Sun, 15 Dec 2019 02:11:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 18D4F11F540
+	for <lists+netdev@lfdr.de>; Sun, 15 Dec 2019 02:21:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727170AbfLOBLJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 14 Dec 2019 20:11:09 -0500
-Received: from mail-io1-f70.google.com ([209.85.166.70]:36801 "EHLO
-        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726948AbfLOBLI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 14 Dec 2019 20:11:08 -0500
-Received: by mail-io1-f70.google.com with SMTP id 144so2971006iou.3
-        for <netdev@vger.kernel.org>; Sat, 14 Dec 2019 17:11:08 -0800 (PST)
+        id S1727021AbfLOBVa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 14 Dec 2019 20:21:30 -0500
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:46430 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726865AbfLOBVa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 14 Dec 2019 20:21:30 -0500
+Received: by mail-pg1-f195.google.com with SMTP id z124so1534721pgb.13
+        for <netdev@vger.kernel.org>; Sat, 14 Dec 2019 17:21:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=fMT9Uq8oA7N4cc8A+BqwQHzoKGnygJU6FYugzr2VIag=;
+        b=KEL8/tHDQaGUH7uxzfNpx/uUU3s4ZR+ORlxEazfZo+lqq7HGWpSu6E5v+P8E32beS6
+         xTNxrZ3TwmW7im+hVvhuMlQZ1gUQje34Ghn2x0yVS0L2F313/BMR0a3mfoHs5JP4UFuP
+         2t8A1eMKgIOUWfJ7Xsdnr0VPEJl5DUhbAb0ZFShFdmi2eAxwRn3OT4JJICWeQoY/3TMZ
+         K9AygQL+4lXRPW4eknD1MBFuRI20WfA6fwRymWvlxNX1mqpmwTM3XuRl7/T0bnhQxQE1
+         JNUiivSvpkGfDoo+ZoL5jDGEvRZydugbcL/UB+mKkXmEFBG+gClx/nA65M793Y7tGppO
+         3p5g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=alNfUoEkuWSRZdtIqrjjboQiyrHVQRKKxp0yHeYHVEQ=;
-        b=gq36uJ/AfdIzWH9m/mbdjDiawwwpl0GuQFqEC8kcAZYWGyjIumjxZKHX9Re/is9VI+
-         eXOyQoM4iemnDtEIOu6IrZ1xDdXG0/YP56pYL01fybMtEXZeSpmYLd8/KVgmdINmsiMr
-         TeXC0OR8qQzb4bcjewwKf1MklHJ+id1l6PajZE2sDFt03uQBjrFJfPELatSeIF0LpyjK
-         ZnKixQa97pQ3/fLEAcCRw+MdJGwZLCBZzbVpezXq3peUN+cmqn+A5JmEVrzYyopCMoNG
-         vy03U1CConKGJ+5dYi3y/spXugKA+PhHAxQieerqGGi772apgcwVg0UESxviyIlXtEUI
-         UhQQ==
-X-Gm-Message-State: APjAAAXtZQUzwc1p5fjOG3bfNMHljGKonLleuCqyFZIN0XV9gy6EW5AW
-        M9TVxo/13P+wU4O5V0jKJIOR84OYUlEhJNc7CxzpMkk/QyqY
-X-Google-Smtp-Source: APXvYqx689btpc1Zs3b3Q4nyZddXNrIGdxI5GN8tfxAvKmBfnCtUfVPP/uZ+1LfPmh+730t8JtM6pbT4s0a3lLOT2LO4Y0k/tetw
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=fMT9Uq8oA7N4cc8A+BqwQHzoKGnygJU6FYugzr2VIag=;
+        b=oOybia+Tc1eFmibQkwWiqdXdDBNAwNVN27wEDqFceAebprgyTQb1l3JpciqHLfAMOO
+         R+zADCxcjqIL0pJ70RfvDVZQp4LkJe+kZ36i0CyimQYknVIC36b51ynr2Wic6cfVe0iG
+         ezM59UszRw2/7lvHzWUA8dzb1siZEQA8nIB+qR2N7XdYT5DvDP/Dp65xPlyRN/cHzH0N
+         +O5SRftNRralTXAE2LF9J7YhRNZJVFUOm/ZQ2+fMqU2Kkjx3v+8iKcEqAIyfocBsXxBP
+         B0OEc50JHdfbSIhUoIqdEDH4GmcM0Uoq028xdDOWqcQBlpRE0I/aSPmmw/mG2e1Mzwqz
+         LfXg==
+X-Gm-Message-State: APjAAAVsnk1FvN4WZEfsXK+BP1RzDXhidqWKcq8CrJ7bElLVkBw3Ofe9
+        f2OL7wWZr7CZe4YXz91VlKxOaQOFKRY=
+X-Google-Smtp-Source: APXvYqyNRkNh1NsJ8oLFOFP+NHLe8b5KbJ+8zLzYGQ2/YH/lDvmaRFXrRk5+K6ycUraXoFFAjahcMQ==
+X-Received: by 2002:a63:597:: with SMTP id 145mr8792268pgf.384.1576372889380;
+        Sat, 14 Dec 2019 17:21:29 -0800 (PST)
+Received: from cakuba.netronome.com (c-73-202-202-92.hsd1.ca.comcast.net. [73.202.202.92])
+        by smtp.gmail.com with ESMTPSA id d13sm13282631pjx.21.2019.12.14.17.21.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 14 Dec 2019 17:21:29 -0800 (PST)
+Date:   Sat, 14 Dec 2019 17:21:26 -0800
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Taehee Yoo <ap420073@gmail.com>
+Cc:     davem@davemloft.net, pablo@netfilter.org, laforge@gnumonks.org,
+        osmocom-net-gprs@lists.osmocom.org, netdev@vger.kernel.org
+Subject: Re: [PATCH net 0/4] gtp: fix several bugs in gtp module
+Message-ID: <20191214172126.3f5027a4@cakuba.netronome.com>
+In-Reply-To: <20191211082243.28465-1-ap420073@gmail.com>
+References: <20191211082243.28465-1-ap420073@gmail.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-X-Received: by 2002:a92:3a9b:: with SMTP id i27mr3385385ilf.39.1576372268022;
- Sat, 14 Dec 2019 17:11:08 -0800 (PST)
-Date:   Sat, 14 Dec 2019 17:11:08 -0800
-In-Reply-To: <000000000000ca89a80598db0ae5@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000011c6720599b3c5ae@google.com>
-Subject: Re: general protection fault in gcmaes_crypt_by_sg (2)
-From:   syzbot <syzbot+675c45cea768b3819803@syzkaller.appspotmail.com>
-To:     bp@alien8.de, davem@davemloft.net, herbert@gondor.apana.org.au,
-        hpa@zytor.com, linux-crypto@vger.kernel.org,
-        linux-kernel@vger.kernel.org, mingo@redhat.com,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
-        tglx@linutronix.de, x86@kernel.org
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has found a reproducer for the following crash on:
+On Wed, 11 Dec 2019 08:22:43 +0000, Taehee Yoo wrote:
+> This patchset fixes several bugs in the GTP module.
+> 
+> 1. Do not allow adding duplicate TID and ms_addr pdp context.
+> In the current code, duplicate TID and ms_addr pdp context could be added.
+> So, RX and TX path could find correct pdp context.
+> 
+> 2. Fix wrong condition in ->dumpit() callback.
+> ->dumpit() callback is re-called if dump packet size is too big.  
+> So, before return, it saves last position and then restart from
+> last dump position.
+> TID value is used to find last dump position.
+> GTP module allows adding zero TID value. But ->dumpit() callback ignores
+> zero TID value.
+> So, dump would not work correctly if dump packet size too big.
+> 
+> 3. Fix use-after-free in ipv4_pdp_find().
+> RX and TX patch always uses gtp->tid_hash and gtp->addr_hash.
+> but while packet processing, these hash pointer would be freed.
+> So, use-after-free would occur.
+> 
+> 4. Fix panic because of zero size hashtable
+> GTP hashtable size could be set by user-space.
+> If hashsize is set to 0, hashtable will not work and panic will occur.
 
-HEAD commit:    1d1997db Revert "nfp: abm: fix memory leak in nfp_abm_u32_..
-git tree:       net-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=1051508ee00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=cef1fd5032faee91
-dashboard link: https://syzkaller.appspot.com/bug?extid=675c45cea768b3819803
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=10d635a6e00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=114489a9e00000
-
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+675c45cea768b3819803@syzkaller.appspotmail.com
-
-kasan: CONFIG_KASAN_INLINE enabled
-kasan: GPF could be caused by NULL-ptr deref or user memory access
-general protection fault: 0000 [#1] PREEMPT SMP KASAN
-CPU: 1 PID: 183 Comm: kworker/u4:3 Not tainted 5.5.0-rc1-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
-Google 01/01/2011
-Workqueue: pencrypt_parallel padata_parallel_worker
-RIP: 0010:scatterwalk_start include/crypto/scatterwalk.h:68 [inline]
-RIP: 0010:scatterwalk_pagedone include/crypto/scatterwalk.h:93 [inline]
-RIP: 0010:scatterwalk_done include/crypto/scatterwalk.h:101 [inline]
-RIP: 0010:gcmaes_crypt_by_sg.constprop.0+0x1035/0x1aa0  
-arch/x86/crypto/aesni-intel_glue.c:786
-Code: e8 90 e8 52 02 48 89 84 24 a8 00 00 00 48 83 c0 08 48 89 c2 48 89 84  
-24 90 00 00 00 48 b8 00 00 00 00 00 fc ff df 48 c1 ea 03 <0f> b6 04 02 84  
-c0 74 08 3c 03 0f 8e 30 09 00 00 48 8b 84 24 a8 00
-RSP: 0018:ffffc900012e7750 EFLAGS: 00010202
-RAX: dffffc0000000000 RBX: 0000000000004000 RCX: ffffffff838cc029
-RDX: 0000000000000001 RSI: ffffffff838cc07b RDI: 0000000000000007
-RBP: ffffc900012e7b20 R08: ffff8880a8c46080 R09: 000000000000000d
-R10: ffff8880a3efe660 R11: 00000000000000d0 R12: 0000000000004000
-R13: 0000000000000000 R14: ffff8880a3efe300 R15: 0000000000004000
-FS:  0000000000000000(0000) GS:ffff8880ae900000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007fff220a2d90 CR3: 00000000a8d5d000 CR4: 00000000001406e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
-  gcmaes_encrypt arch/x86/crypto/aesni-intel_glue.c:840 [inline]
-  generic_gcmaes_encrypt+0x10d/0x160 arch/x86/crypto/aesni-intel_glue.c:1019
-  crypto_aead_encrypt+0xaf/0xf0 crypto/aead.c:94
-  simd_aead_encrypt+0x1a6/0x2b0 crypto/simd.c:335
-  crypto_aead_encrypt+0xaf/0xf0 crypto/aead.c:94
-  pcrypt_aead_enc+0x19/0x80 crypto/pcrypt.c:76
-  padata_parallel_worker+0x28f/0x470 kernel/padata.c:81
-  process_one_work+0x9af/0x1740 kernel/workqueue.c:2264
-  worker_thread+0x98/0xe40 kernel/workqueue.c:2410
-  kthread+0x361/0x430 kernel/kthread.c:255
-  ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
-Modules linked in:
-------------[ cut here ]------------
-WARNING: CPU: 1 PID: 183 at kernel/locking/mutex.c:1419  
-mutex_trylock+0x279/0x2f0 kernel/locking/mutex.c:1427
-
+Looks good to me, thank you, applied and queued for stable.
