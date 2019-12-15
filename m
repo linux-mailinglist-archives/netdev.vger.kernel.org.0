@@ -2,106 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 836B311FA3A
-	for <lists+netdev@lfdr.de>; Sun, 15 Dec 2019 18:58:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5655011FA41
+	for <lists+netdev@lfdr.de>; Sun, 15 Dec 2019 19:00:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726514AbfLOR6t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 15 Dec 2019 12:58:49 -0500
-Received: from mta-p5.oit.umn.edu ([134.84.196.205]:39152 "EHLO
-        mta-p5.oit.umn.edu" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726295AbfLOR6s (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 15 Dec 2019 12:58:48 -0500
-Received: from localhost (unknown [127.0.0.1])
-        by mta-p5.oit.umn.edu (Postfix) with ESMTP id 47bXFz6FY1z9vYjJ
-        for <netdev@vger.kernel.org>; Sun, 15 Dec 2019 17:58:47 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at umn.edu
-Received: from mta-p5.oit.umn.edu ([127.0.0.1])
-        by localhost (mta-p5.oit.umn.edu [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id 2_bj_gaBWpJx for <netdev@vger.kernel.org>;
-        Sun, 15 Dec 2019 11:58:47 -0600 (CST)
-Received: from mail-yb1-f197.google.com (mail-yb1-f197.google.com [209.85.219.197])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mta-p5.oit.umn.edu (Postfix) with ESMTPS id 47bXFz5FwLz9vYj0
-        for <netdev@vger.kernel.org>; Sun, 15 Dec 2019 11:58:47 -0600 (CST)
-Received: by mail-yb1-f197.google.com with SMTP id x18so4730886ybr.15
-        for <netdev@vger.kernel.org>; Sun, 15 Dec 2019 09:58:47 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=umn.edu; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=jU+IZfsrbWu2RYKQORP75VmblWiOY4wZRLGbP+XVlQc=;
-        b=K/4WYQMbmQ1wpcHdnuZeoJwrgi1TuSRJxWawgTjssgCRnX8GiJ6iRyBlTqADg15eX0
-         48CwOuD9aEvwjfg8cpARkHqUADVenh2nclXVmA42nA7VHZzjtIYXgH9HSmT/K6mwQ5yQ
-         Wr0g2dZd6zj3FKFJbhcx+2DdrGBIXJX/+dXGuQeJRI4LOMPFLg28QeYB3tWJQ3jOybg1
-         bflpmQLNnlFFZ28wh0+p8QKU7/9g/9yfFDVabGzh3EU8hXJf0FE4RA8kCoIzSbJqvpET
-         vm5r2Xq/Uy50ZVhZ5Q3JTiCITOQZlM33gZGhu0U20c0lz6QudM6oqhn52R2C/x6hppJu
-         YsKA==
+        id S1726540AbfLOSAC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 15 Dec 2019 13:00:02 -0500
+Received: from mail-ot1-f67.google.com ([209.85.210.67]:36147 "EHLO
+        mail-ot1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726346AbfLOSAB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 15 Dec 2019 13:00:01 -0500
+Received: by mail-ot1-f67.google.com with SMTP id i4so5926198otr.3;
+        Sun, 15 Dec 2019 10:00:01 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=jU+IZfsrbWu2RYKQORP75VmblWiOY4wZRLGbP+XVlQc=;
-        b=LMYmE52EXQVN62QipoiqoHENmeJJ7478edcpxBd2vSTPoAnlvE8PKddQNIKeVCWC1p
-         TabELN6j3NOgnPo0YUOV/TGRvPf4uBU+XN2Evwte2aNRsxdRv0sIJsJiKExDsL6/DWri
-         23udC76Nus8ea7apDisgbIoOdx6WJ89QfHl+qJbvozY9zjcNGFE9xbnl4SSy/j2Qqz+g
-         3DkwgJROtmTB/pbKiyzy2lH1qj7HcFPSbL1c7ZhPBnhW3GbX2xOuwORvXtvDnhI3jkvn
-         nYjGO8JnLxHyZjmykOqHasK2BVGumADMdf/1sAHpFBo4gsEcXzTseo7TgKc1b5M1ruMA
-         JXDQ==
-X-Gm-Message-State: APjAAAXVDf2LYrccoakgQoiaI4WK5MTUUTX4r9Va3kPh7eP12V22wLky
-        u4BPLJUC46/K/g3pJtYXV1qnj4vSitVthBxZ/43tEK0qNjqR6Tj/yUyXPwj/B1vsLPMOPv6ND1e
-        pcpqr0zyYBczENUwg9mom
-X-Received: by 2002:a25:c884:: with SMTP id y126mr18656403ybf.406.1576432727235;
-        Sun, 15 Dec 2019 09:58:47 -0800 (PST)
-X-Google-Smtp-Source: APXvYqxLm13Xu0mUMgPfV76cA+1JEcVfLMMY9sBlXwtZ/dJhI+on6PQRm9vQAfnecJEurrKb9n20AQ==
-X-Received: by 2002:a25:c884:: with SMTP id y126mr18656390ybf.406.1576432727025;
-        Sun, 15 Dec 2019 09:58:47 -0800 (PST)
-Received: from cs-u-syssec1.dtc.umn.edu (cs-u-syssec1.cs.umn.edu. [128.101.106.66])
-        by smtp.gmail.com with ESMTPSA id l39sm7400528ywk.36.2019.12.15.09.58.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 15 Dec 2019 09:58:46 -0800 (PST)
-From:   Aditya Pakki <pakki001@umn.edu>
-To:     pakki001@umn.edu
-Cc:     kjlu@umn.edu, "David S. Miller" <davem@davemloft.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Markus Elfring <elfring@users.sourceforge.net>,
-        Richard Fontana <rfontana@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] hdlcdrv: replace assertion with recovery code
-Date:   Sun, 15 Dec 2019 11:58:41 -0600
-Message-Id: <20191215175842.30767-1-pakki001@umn.edu>
-X-Mailer: git-send-email 2.20.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=9fJ0LWYw9AfYu5ktwDXf17s2jDM7dPBu5+xWG/aTJpg=;
+        b=P8rdlsnWDUqLmIGutoirlP2ON30p/BbtEX2fsdBkAXoYUgACve5TS3RDWOsoYDbdRD
+         3OZbpjZxDzr93JPik6Il3WtY2/2zoGOJgMxXcQEJnrAUIPMO6/lH/8YGmZ78i9nvdXA/
+         pEJYvoooM/MVvFX2AgiAYtR2pKErXcvOgqkRM0HLadnGx/0GDUQfuDv+akaTiDH3vnik
+         2WSntiMm7wjhpDFLvRGQ+VKP1ZQYu3IMcqTEm43aqzvR282Ln0KqnO8gz21dVlbWWqEt
+         UTc7+t+imddDjyZ6StKYbQ2qQ5ocFL0y0EdSmPbXlCvk/FgP2N10R5AAJwGP0QK9mP71
+         8ONg==
+X-Gm-Message-State: APjAAAUH+rf2f04UZM1kv0qRhwXZiCOqbqSZL8ZEK6fZ1ubwIv0DQOpZ
+        1LzvjXxy2FczlbaZf5dJDrC+Et2hFXWJpFn4rW8=
+X-Google-Smtp-Source: APXvYqweU6+eLolGhQ1GP76ei4WBc/pILrjGMBaPf/+81RXB8SQJ9StRzVmc9XoykZ8tB9azr+V6L5oIbAyUUkLBrUo=
+X-Received: by 2002:a9d:6c81:: with SMTP id c1mr27915439otr.39.1576432800843;
+ Sun, 15 Dec 2019 10:00:00 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20191215175132.30139-1-pakki001@umn.edu>
+In-Reply-To: <20191215175132.30139-1-pakki001@umn.edu>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Sun, 15 Dec 2019 18:59:49 +0100
+Message-ID: <CAMuHMdWUv+f=b4cMDX7dbK0fW=YnL=L11ODvZc9mh+L-02jo_w@mail.gmail.com>
+Subject: Re: [PATCH] net: caif: replace BUG_ON with recovery code
+To:     Aditya Pakki <pakki001@umn.edu>
+Cc:     Kangjie Lu <kjlu@umn.edu>, "David S. Miller" <davem@davemloft.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Allison Randal <allison@lohutok.net>,
+        Richard Fontana <rfontana@redhat.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Yang Wei <yang.wei9@zte.com.cn>,
+        netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In hdlcdrv_register, failure to register the driver causes a crash.
-However, by returning the error to the caller in case ops is NULL
-can avoid the crash. The patch fixes this issue.
+Hi Aditya,
 
-Signed-off-by: Aditya Pakki <pakki001@umn.edu>
----
- drivers/net/hamradio/hdlcdrv.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+On Sun, Dec 15, 2019 at 6:51 PM Aditya Pakki <pakki001@umn.edu> wrote:
+> In caif_xmit, there is a crash if the ptr dev is NULL. However, by
+> returning the error to the callers, the error can be handled. The
+> patch fixes this issue.
+>
+> Signed-off-by: Aditya Pakki <pakki001@umn.edu>
 
-diff --git a/drivers/net/hamradio/hdlcdrv.c b/drivers/net/hamradio/hdlcdrv.c
-index df495b5595f5..38e5d1e54800 100644
---- a/drivers/net/hamradio/hdlcdrv.c
-+++ b/drivers/net/hamradio/hdlcdrv.c
-@@ -687,7 +687,8 @@ struct net_device *hdlcdrv_register(const struct hdlcdrv_ops *ops,
- 	struct hdlcdrv_state *s;
- 	int err;
- 
--	BUG_ON(ops == NULL);
-+	if (!ops)
-+		return ERR_PTR(-EINVAL);
- 
- 	if (privsize < sizeof(struct hdlcdrv_state))
- 		privsize = sizeof(struct hdlcdrv_state);
+Thanks for your patch!
+
+> --- a/drivers/net/caif/caif_serial.c
+> +++ b/drivers/net/caif/caif_serial.c
+> @@ -270,7 +270,9 @@ static int caif_xmit(struct sk_buff *skb, struct net_device *dev)
+>  {
+>         struct ser_device *ser;
+>
+> -       BUG_ON(dev == NULL);
+> +       if (WARN_ON(!dev))
+
+This will still crash the kernel with panic_on_warn.
+
+> +               return -EINVAL;
+> +
+>         ser = netdev_priv(dev);
+>
+>         /* Send flow off once, on high water mark */
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
 -- 
-2.20.1
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
