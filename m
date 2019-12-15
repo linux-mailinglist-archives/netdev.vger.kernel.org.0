@@ -2,129 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 53C8711F54C
-	for <lists+netdev@lfdr.de>; Sun, 15 Dec 2019 02:46:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DCD7511F550
+	for <lists+netdev@lfdr.de>; Sun, 15 Dec 2019 02:51:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727109AbfLOBp4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 14 Dec 2019 20:45:56 -0500
-Received: from mail-pj1-f68.google.com ([209.85.216.68]:32921 "EHLO
-        mail-pj1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727052AbfLOBpz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 14 Dec 2019 20:45:55 -0500
-Received: by mail-pj1-f68.google.com with SMTP id r67so1424369pjb.0
-        for <netdev@vger.kernel.org>; Sat, 14 Dec 2019 17:45:55 -0800 (PST)
+        id S1727161AbfLOBv2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 14 Dec 2019 20:51:28 -0500
+Received: from mail-il1-f196.google.com ([209.85.166.196]:36782 "EHLO
+        mail-il1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726783AbfLOBv1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 14 Dec 2019 20:51:27 -0500
+Received: by mail-il1-f196.google.com with SMTP id b15so2672306iln.3;
+        Sat, 14 Dec 2019 17:51:27 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=M65BxJYOK/rnPjNwjfEQgQZEBOlii1DHSyoxZ/oRaiQ=;
-        b=e1zofpLxaG8dni4/jt0peUM1YLymh7oC2IwVoMFxRSivLb1v5xwZcKns0DkEEu/hmx
-         17KhKMP4YWw0Q4qj3yPmn35afMbAHyotkViBcQktTJhU8BcHGd3D1roeyAXXaiq6gcWj
-         3zHYdeD+tiwhfIj8RapsvRm23MoAgCb+pstbFCkZDEybbnLE0hQgdJ9MYQgwbMosSM8l
-         Q1aia9QwfQe1z9oVgJw3lBbizolM6Z1Rd735Fjc0Kbyw4kNqQjJ9Ew02O2f/e3ZtYkUs
-         KMigpFdgh7YDeDdNxEF2k0dg3PUkLGF3fgPHv0WDdTGj7W5PyNWdZs2/WiKVp+hDrkCC
-         bJYQ==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=7ila3ACaEBkte0RQGIwBOqqVKb25YlQx6hZbg+XIx7w=;
+        b=M2YznvDUbC+oI2ORLdlKHZU221buG1yFNbL3d3PnZEFpw0MpYpDAoHadWunc3MIeMh
+         nT0ORJwX+0+c/DVfrF3oeUPXw4FvSMd6Z2YuZqHELAJeU0zVbVxMsc6YlopAePA1bmdf
+         ae89PYWru7qVtptShh1y4/02s/JSRIGPPPnYP9cee/+TL7p3g0HBReLP5jPbbxpU1WgT
+         N0T661QXxDElWDGXan5TmfKuts2sSB2IfFLimVM1Bf0VNz671cctClTeDoiR2bLzI8X7
+         TjCt5heNFIMkH+BuwsuQbHW6K3Z7FTr5J5C9qp7reNus4ax1HXWHxR8PBpoPKwExmFU3
+         cH8Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=M65BxJYOK/rnPjNwjfEQgQZEBOlii1DHSyoxZ/oRaiQ=;
-        b=Yo2zd6TT8E5UcdeNba/HFEoOKV84/1k3U/+D0NJR6bn+2VyTXMlcZYAzQ+WIvTWpL6
-         usCCcT3rZtpXjSStJqFgMU/LFt3/GKoLvkW8qHPvbXvIR/UxPRcVam47uOEQdDikvAGW
-         ZaAW0ZN9wG8j7I5M0kaM3QCIAhbPQ+fmHUw34eECU6OVs1gZiMfLA7dOxiVpCDltp2eI
-         qhtZ81u6wOFmeTBIuDbC+/ZvvfcrPH7uGhF0/cwx3QJKi/bnficpb629A+S7bXgLWxCV
-         Y1O+Q2vSV8X6oa3tAHny2syG1LA1Q39tjEyCJZyD9cugIYmU9yeSKfw5laBSJtONmqwp
-         pbyA==
-X-Gm-Message-State: APjAAAXCHcdcJDpOyDdI4PdqsINbU9auurVynPacJAShQBb2lIExcSsH
-        gF8146DhkVQQPupe2fYbVuZ+6g==
-X-Google-Smtp-Source: APXvYqxL+Zjj+1lqExfO43xkuTzMhaGhGaBdeH35bWGVvTF1dHUw3NSwe819d4VO4XJT7SmFGTDJ4A==
-X-Received: by 2002:a17:90a:330c:: with SMTP id m12mr9329248pjb.18.1576374354947;
-        Sat, 14 Dec 2019 17:45:54 -0800 (PST)
-Received: from cakuba.netronome.com (c-73-202-202-92.hsd1.ca.comcast.net. [73.202.202.92])
-        by smtp.gmail.com with ESMTPSA id e16sm16110674pff.181.2019.12.14.17.45.54
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=7ila3ACaEBkte0RQGIwBOqqVKb25YlQx6hZbg+XIx7w=;
+        b=nVFD/yKadg5cBMP1C8/Ilxmf6YTM5YfTK0dW/N9QY558Sf5hIWqT80uKGAF2TxXOSK
+         g3WbTlwgwY88Cv89GoFeCUcoP3HfSobjtoZARR/AS4UQ+9PFL9y5LenumANIeckWdz0J
+         2aalVwsKWSgY4e6UpPfOYdslPdiMZY2KL/K7frjhVmliNNfRYwXTsTYjenp/ZisVbG7F
+         Gbd+xnYXEuvAksOgANLA5RZ2bXD1SBlkgpBfXU8ktBfuiLfd6Pz4tTi/JJ2mGndzBIvb
+         YGZPcr2mN/wi5v58L4Ad4ID+IfwBT+YXRoGTebRSksAap4csjLRqqiQugfK6k19NQrY2
+         Mu4Q==
+X-Gm-Message-State: APjAAAXjNOnYwzWj+M5/5jsoIx10B0nF8v7HXk2hmm24+A68FN14ae90
+        8NckfLTMH+e/nbOkpl0z7LI=
+X-Google-Smtp-Source: APXvYqz0KmdNAXYfzGhk2gPnfOnNtd6IkkcGO0SiadEIk+YNhK3wzwvkU5gjfF4ogx0edteSrt9iew==
+X-Received: by 2002:a92:b506:: with SMTP id f6mr6850648ile.103.1576374686670;
+        Sat, 14 Dec 2019 17:51:26 -0800 (PST)
+Received: from cs-dulles.cs.umn.edu (cs-dulles.cs.umn.edu. [128.101.35.54])
+        by smtp.googlemail.com with ESMTPSA id f16sm4368858ilq.16.2019.12.14.17.51.25
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 14 Dec 2019 17:45:54 -0800 (PST)
-Date:   Sat, 14 Dec 2019 17:45:51 -0800
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Patrick Talbert <ptalbert@redhat.com>,
-        Jarod Wilson <jarod@redhat.com>
-Cc:     netdev@vger.kernel.org
-Subject: Re: [PATCH net-next] net: Use rx_nohandler for unhandled packets
-Message-ID: <20191214174551.16e8df65@cakuba.netronome.com>
-In-Reply-To: <20191211162107.4326-1-ptalbert@redhat.com>
-References: <20191211162107.4326-1-ptalbert@redhat.com>
-Organization: Netronome Systems, Ltd.
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        Sat, 14 Dec 2019 17:51:26 -0800 (PST)
+From:   Navid Emamdoost <navid.emamdoost@gmail.com>
+To:     Arend van Spriel <arend@broadcom.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Chi-Hsien Lin <chi-hsien.lin@cypress.com>,
+        Wright Feng <wright.feng@cypress.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Alwin Beukers <alwin@broadcom.com>,
+        Pieter-Paul Giesberts <pieterpg@broadcom.com>,
+        Kan Yan <kanyan@broadcom.com>,
+        "Franky (Zhenhui) Lin" <frankyl@broadcom.com>,
+        Piotr Figiel <p.figiel@camlintechnologies.com>,
+        =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>,
+        YueHaibing <yuehaibing@huawei.com>, Kangjie Lu <kjlu@umn.edu>,
+        linux-wireless@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        brcm80211-dev-list@cypress.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     emamd001@umn.edu, Navid Emamdoost <navid.emamdoost@gmail.com>
+Subject: [PATCH] brcmfmac: Fix memory leak in brcmf_usbdev_qinit
+Date:   Sat, 14 Dec 2019 19:51:14 -0600
+Message-Id: <20191215015117.21801-1-navid.emamdoost@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 11 Dec 2019 17:21:07 +0100, Patrick Talbert wrote:
-> Since caf586e5f23c ("net: add a core netdev->rx_dropped counter") incoming
-> packets which do not have a handler cause a counter named rx_dropped to be
-> incremented. This can lead to confusion as some see a non-zero "drop"
-> counter as cause for concern.
-> 
-> To avoid any confusion, instead use the existing rx_nohandler counter. Its
-> name more closely aligns with the activity being tracked here.
-> 
-> Signed-off-by: Patrick Talbert <ptalbert@redhat.com>
+In the implementation of brcmf_usbdev_qinit() the allocated memory for
+reqs is leaking if usb_alloc_urb() fails. Release reqs in the error
+handling path.
 
-Looks like commit 6e7333d315a7 ("net: add rx_nohandler stat counter")
-is far more relevant here, it added rx_nohandler but kept using
-rx_dropped for non-exact delivery.
+Fixes: 71bb244ba2fd ("brcm80211: fmac: add USB support for bcm43235/6/8 chipsets")
+Signed-off-by: Navid Emamdoost <navid.emamdoost@gmail.com>
+---
+ drivers/net/wireless/broadcom/brcm80211/brcmfmac/usb.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-Jarod, could you take a look?
-
-> diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-> index 9ef20389622d..3d194cea9859 100644
-> --- a/include/linux/netdevice.h
-> +++ b/include/linux/netdevice.h
-> @@ -1618,8 +1618,9 @@ enum netdev_priv_flags {
->   *			do not use this in drivers
->   *	@tx_dropped:	Dropped packets by core network,
->   *			do not use this in drivers
-> - *	@rx_nohandler:	nohandler dropped packets by core network on
-> - *			inactive devices, do not use this in drivers
-> + *	@rx_nohandler:	Dropped packets by core network when they were not handled
-> + *			by any protocol/socket or the device was inactive,
-> + *			do not use this in drivers.
->   *	@carrier_up_count:	Number of times the carrier has been up
->   *	@carrier_down_count:	Number of times the carrier has been down
->   *
-> diff --git a/net/core/dev.c b/net/core/dev.c
-> index 2c277b8aba38..11e500f8ffa3 100644
-> --- a/net/core/dev.c
-> +++ b/net/core/dev.c
-> @@ -5123,20 +5123,19 @@ static int __netif_receive_skb_core(struct sk_buff *skb, bool pfmemalloc,
->  			goto drop;
->  		*ppt_prev = pt_prev;
->  	} else {
-> -drop:
-> -		if (!deliver_exact)
-> -			atomic_long_inc(&skb->dev->rx_dropped);
-> -		else
-> -			atomic_long_inc(&skb->dev->rx_nohandler);
-> +		/* We have not delivered the skb anywhere */
-> +		atomic_long_inc(&skb->dev->rx_nohandler);
->  		kfree_skb(skb);
-> -		/* Jamal, now you will not able to escape explaining
-> -		 * me how you were going to use this. :-)
-> -		 */
->  		ret = NET_RX_DROP;
->  	}
->  
->  out:
->  	return ret;
-> +drop:
-> +	atomic_long_inc(&skb->dev->rx_dropped);
-> +	kfree_skb(skb);
-> +	ret = NET_RX_DROP;
-> +	goto out;
->  }
->  
->  static int __netif_receive_skb_one_core(struct sk_buff *skb, bool pfmemalloc)
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/usb.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/usb.c
+index 06f3c01f10b3..237c6b491b88 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/usb.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/usb.c
+@@ -430,6 +430,7 @@ brcmf_usbdev_qinit(struct list_head *q, int qsize)
+ 			usb_free_urb(req->urb);
+ 		list_del(q->next);
+ 	}
++	kfree(reqs);
+ 	return NULL;
+ 
+ }
+-- 
+2.17.1
 
