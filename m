@@ -2,102 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B7A0811F9C6
-	for <lists+netdev@lfdr.de>; Sun, 15 Dec 2019 18:40:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4FECA11F9CA
+	for <lists+netdev@lfdr.de>; Sun, 15 Dec 2019 18:42:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726351AbfLORkJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 15 Dec 2019 12:40:09 -0500
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:32860 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726219AbfLORkJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 15 Dec 2019 12:40:09 -0500
-Received: by mail-pf1-f193.google.com with SMTP id y206so4333422pfb.0;
-        Sun, 15 Dec 2019 09:40:08 -0800 (PST)
+        id S1726346AbfLORms (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 15 Dec 2019 12:42:48 -0500
+Received: from mail-lf1-f66.google.com ([209.85.167.66]:37148 "EHLO
+        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726136AbfLORms (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 15 Dec 2019 12:42:48 -0500
+Received: by mail-lf1-f66.google.com with SMTP id b15so2603872lfc.4;
+        Sun, 15 Dec 2019 09:42:46 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=F9UYCtCrGdOk+xKB0MDeZ535mR/2KxCX0dcd2IMnugg=;
-        b=bktz8uT2MCj1SNs3nMc52zA0oP9wqAp2+hvWNHDDXQPf7H/DxpPC92ZB37X8JajhuF
-         sXlesVYDoPnLiolgj8enLsJn3xb81A5PgWtMIon6O2dDtz1/JHPJgrfmE0jGqYW6zFtJ
-         DzEBNfs6gLrpydMSF+5LVgTMpFc8+gwdIqSWbEDOuzi731yB5tXbeUyep2Ydi2Mh0V+M
-         Q24AoZzDkRZFxZnTc/cX1ac6SAKhgb6U3UobloY4Z9izVSZqEjPttwBaVRdDwdLsTmkM
-         CUAxEfjPYQLUtHjKsWbhCq5kcWkYJ/VPIV7S8IKhNQrrmuZBvpu8SqVnDhrw8ST3jPyl
-         AQFw==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=AUhydgvmr8d296EsM44KLtz5TapZKISR8Mk06Hsxmpw=;
+        b=vWFc+ttySOUZBiFE/iWiSppbkP+sqNfBnoBw/J2iL3Hqn4Drlz+PSTvTjKoeD10YhC
+         3csWHOkn+ooTHB0Jf6yLQJCRuUnfL7HGatXc6autez33cqhB0FG6joQQjnyuN1zZJFGO
+         VG4xGVjI4NnpO0FY7fiXhS4h36Qs+khbbqtW69dIboGFkTPAq9zuqXv62BUVzmnNk7Lf
+         ZFHXyQB/piXa+EiXO3wHJnIvjaWy9jG51X1lCbYn2X+UtjRLoFexDBIzDU5O+LCOpoCC
+         OWCDq8F+YucbIjVP8gEqkdbDg+eLOrU6jF9oyLsXSM5uKOK+/xa2gQdTWCnwFrObtfuY
+         ScZg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=F9UYCtCrGdOk+xKB0MDeZ535mR/2KxCX0dcd2IMnugg=;
-        b=sgBBBz/nD14qjIIfKsNw549jAjTEmJ65AIw57b8dwZw0Ovy/plfpbzoYM0DXRVqSF/
-         wklM1AL62SZKfpjRroYmrojl7041Qqf51Ok6u3DxKw5ZESYP2KYLdCPBBfcl5xavYGq9
-         We/BEptPSpe8Gbsjj60Ur2U2dM6GQ5vE8OSdZE+dHldmfEuzsLeCsz60vA9/4AyK16cU
-         Jp9FNt5eDFznlT9+mWNSxLelV1F0cLEqNMMh8JgIpulur2XrUH2+I4J7v44EAjz0A3HT
-         54Y19ZNyfOxHLTeJ+38hocneS6exsK8SxvOzKRl1cGHt3eSU0RK86rr3nwu0XiyPew4O
-         8gsg==
-X-Gm-Message-State: APjAAAWyp6Td24o8KvOCAutGpt8u1xyC7vDex8v/kXyfaeIPi1WWvPQZ
-        M7rrXiKvm89P+SQHXSX77GY=
-X-Google-Smtp-Source: APXvYqzuEhZv9nhnqY4R/y4n0/p/hB+TDzNYzPM9e/llDvpNLtMyey4/BZbu9PbGxgH6FIQDs6T7ZA==
-X-Received: by 2002:aa7:8007:: with SMTP id j7mr11869543pfi.73.1576431608446;
-        Sun, 15 Dec 2019 09:40:08 -0800 (PST)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:180::2157])
-        by smtp.gmail.com with ESMTPSA id h16sm19301094pfn.85.2019.12.15.09.40.06
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 15 Dec 2019 09:40:07 -0800 (PST)
-Date:   Sun, 15 Dec 2019 09:40:05 -0800
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Paul Chaignon <paul.chaignon@orange.com>
-Cc:     bpf@vger.kernel.org, Quentin Monnet <quentin.monnet@netronome.com>,
-        paul.chaignon@gmail.com, netdev@vger.kernel.org,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>
-Subject: Re: [PATCH bpf-next v2 0/3] bpftool: match programs and maps by names
-Message-ID: <20191215174004.57deg3fs7665jokd@ast-mbp.dhcp.thefacebook.com>
-References: <cover.1576263640.git.paul.chaignon@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=AUhydgvmr8d296EsM44KLtz5TapZKISR8Mk06Hsxmpw=;
+        b=f48GNMusi0sWrlaN70M8aiLdES4418h6ZwZA1TMIa/w/h36SariKASxAUUkpJpLuOb
+         3UU10pva5LSyyYe0xC1gicd8krb09eVHw0MSC17a9znqMPDC+b4rLNHQ+lQjKEOG5asw
+         v1q4lzCP3XVveIEOC6oX3Qqbom7l2KplTZN9N0K1daw+a/KeY2kT3qVYZWNgxSMhC45v
+         vb6k5M/jF17bCMV2a+TtZTgU4e0f0W6I6vyhua8ELpdAm3nIfMHXMdXiXrD2eZU9WP8k
+         Id0fgzoSZpx5jTuv4kOKLJmwd/fxeMzHKIkc/CaxsswB+o62FSK/Fc+G41ckxq5PNjkF
+         kuDg==
+X-Gm-Message-State: APjAAAUiDKVB35gp5PpcA4u+2vaekrj6mOsgiP0BZs0skPkdRUms9xEk
+        dutFJ9gkMGXjJ4A8wowc8N5DCaYU2/DGdO1AFFA=
+X-Google-Smtp-Source: APXvYqxB9j2tqO8U7z+jhYOK+V++KM2dx+C8P8/kFICH+Gwd/b/A8Evh9Z1mIuzX8BRExtjVm/sbfnpJEeelvLvd5H8=
+X-Received: by 2002:a19:48c5:: with SMTP id v188mr14502104lfa.100.1576431765980;
+ Sun, 15 Dec 2019 09:42:45 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <cover.1576263640.git.paul.chaignon@gmail.com>
-User-Agent: NeoMutt/20180223
+References: <20191201195728.4161537-1-aurelien@aurel32.net>
+ <87zhgbe0ix.fsf@mpe.ellerman.id.au> <20191202093752.GA1535@localhost.localdomain>
+ <CAFxkdAqg6RaGbRrNN3e_nHfHFR-xxzZgjhi5AnppTxxwdg0VyQ@mail.gmail.com>
+ <20191210222553.GA4580@calabresa> <CAFxkdAp6Up0qSyp0sH0O1yD+5W3LvY-+-iniBrorcz2pMV+y-g@mail.gmail.com>
+ <20191211160133.GB4580@calabresa> <CAFxkdAp9OGjJS1Sdny+TiG2+zU4n0Nj+ZVrZt5J6iVsS_zqqcw@mail.gmail.com>
+ <20191213101114.GA3986@calabresa> <CAEf4BzY-JP+vYNjwShhgMs6sJ+Bdqc8FEd19BVf8uf+jSnX1Jw@mail.gmail.com>
+In-Reply-To: <CAEf4BzY-JP+vYNjwShhgMs6sJ+Bdqc8FEd19BVf8uf+jSnX1Jw@mail.gmail.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Sun, 15 Dec 2019 09:42:34 -0800
+Message-ID: <CAADnVQJY+URQfAk=372TUqVkB4dxNPqNVY8-eSe7mFXuY_XhRA@mail.gmail.com>
+Subject: Re: [PATCH] libbpf: Fix readelf output parsing for Fedora
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Thadeu Lima de Souza Cascardo <cascardo@canonical.com>,
+        Justin Forbes <jmforbes@linuxtx.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Song Liu <songliubraving@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "open list:BPF (Safe dynamic programs and tools)" 
+        <netdev@vger.kernel.org>, Yonghong Song <yhs@fb.com>,
+        "open list:BPF (Safe dynamic programs and tools)" 
+        <bpf@vger.kernel.org>, ppc-dev <linuxppc-dev@lists.ozlabs.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Aurelien Jarno <aurelien@aurel32.net>,
+        debian-kernel@lists.debian.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Dec 13, 2019 at 08:09:52PM +0100, Paul Chaignon wrote:
-> When working with frequently modified BPF programs, both the ID and the
-> tag may change.  bpftool currently doesn't provide a "stable" way to match
-> such programs.  This patchset allows bpftool to match programs and maps by
-> name.
-> 
-> When given a tag that matches several programs, bpftool currently only
-> considers the first match.  The first patch changes that behavior to
-> either process all matching programs (for the show and dump commands) or
-> error out.  The second patch implements program lookup by name, with the
-> same behavior as for tags in case of ambiguity.  The last patch implements
-> map lookup by name.
-> 
-> Changelogs:
->   Changes in v2:
->     - Fix buffer overflow after realloc.
->     - Add example output to commit message.
->     - Properly close JSON arrays on errors.
->     - Fix style errors (line breaks, for loops, exit labels, type for
->       tagname).
->     - Move do_show code for argc == 2 to do_show_subset functions.
->     - Rebase.
+On Fri, Dec 13, 2019 at 9:02 AM Andrii Nakryiko
+<andrii.nakryiko@gmail.com> wrote:
+>
+> On Fri, Dec 13, 2019 at 2:11 AM Thadeu Lima de Souza Cascardo
+> <cascardo@canonical.com> wrote:
+> >
+> > Fedora binutils has been patched to show "other info" for a symbol at the
+> > end of the line. This was done in order to support unmaintained scripts
+> > that would break with the extra info. [1]
+> >
+> > [1] https://src.fedoraproject.org/rpms/binutils/c/b8265c46f7ddae23a792ee8306fbaaeacba83bf8
+> >
+> > This in turn has been done to fix the build of ruby, because of checksec.
+> > [2] Thanks Michael Ellerman for the pointer.
+> >
+> > [2] https://bugzilla.redhat.com/show_bug.cgi?id=1479302
+> >
+> > As libbpf Makefile is not unmaintained, we can simply deal with either
+> > output format, by just removing the "other info" field, as it always comes
+> > inside brackets.
+> >
+> > Cc: Aurelien Jarno <aurelien@aurel32.net>
+> > Fixes: 3464afdf11f9 (libbpf: Fix readelf output parsing on powerpc with recent binutils)
+> > Reported-by: Justin Forbes <jmforbes@linuxtx.org>
+> > Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+> > ---
+>
+> I was briefly playing with it and trying to make it use nm to dump
+> symbols, instead of parsing more human-oriented output of readelf, but
+> somehow nm doesn't output symbols with @@LIBBPF.* suffix at the end,
+> so I just gave up. So I think this one is good.
+>
+> This should go through bpf-next tree.
+>
+> Acked-by: Andrii Nakryiko <andriin@fb.com>
 
-Loogs good. Applied.
-
-I found the exact match logic unintuitive though.
-Since 'prog show' can print multiple may be allow partial match on name?
-So 'bpftool p s name tracepoint__' would print all BCC-based programs
-that attach to tracepoints.
-It would be roughly equivalent to 'bpftool p s |grep tracepoint__',
-but grep captures single line.
-There is 'bpftool perf|grep tracepoint' as well, but since the tool
-matches on name it probably should match partial name too.
-
+Applied. Thanks
