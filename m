@@ -2,83 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F2E211FB8C
-	for <lists+netdev@lfdr.de>; Sun, 15 Dec 2019 22:45:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AD9D411FB94
+	for <lists+netdev@lfdr.de>; Sun, 15 Dec 2019 22:57:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726351AbfLOVo5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 15 Dec 2019 16:44:57 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:44088 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726219AbfLOVo5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 15 Dec 2019 16:44:57 -0500
-Received: from localhost (unknown [IPv6:2603:3023:50c:85e1:5314:1b70:2a53:887e])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 651E515103188;
-        Sun, 15 Dec 2019 13:44:55 -0800 (PST)
-Date:   Sun, 15 Dec 2019 13:44:52 -0800 (PST)
-Message-Id: <20191215.134452.1354053731963113491.davem@davemloft.net>
-To:     antoine.tenart@bootlin.com
-Cc:     sd@queasysnail.net, andrew@lunn.ch, f.fainelli@gmail.com,
-        hkallweit1@gmail.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, thomas.petazzoni@bootlin.com,
-        alexandre.belloni@bootlin.com, allan.nielsen@microchip.com,
-        camelia.groza@nxp.com, Simon.Edelhaus@aquantia.com,
-        Igor.Russkikh@aquantia.com, jakub.kicinski@netronome.com
-Subject: Re: [PATCH net-next v3 06/15] net: macsec: add nla support for
- changing the offloading selection
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20191213154844.635389-7-antoine.tenart@bootlin.com>
-References: <20191213154844.635389-1-antoine.tenart@bootlin.com>
-        <20191213154844.635389-7-antoine.tenart@bootlin.com>
-X-Mailer: Mew version 6.8 on Emacs 26.2
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sun, 15 Dec 2019 13:44:56 -0800 (PST)
+        id S1726470AbfLOV4h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 15 Dec 2019 16:56:37 -0500
+Received: from mail-ed1-f68.google.com ([209.85.208.68]:37149 "EHLO
+        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726146AbfLOV4h (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 15 Dec 2019 16:56:37 -0500
+Received: by mail-ed1-f68.google.com with SMTP id cy15so3457123edb.4
+        for <netdev@vger.kernel.org>; Sun, 15 Dec 2019 13:56:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=hmyEH8CT1hUNd2zzk5cv5R4mBc/mmHBJV5/0o14KKzk=;
+        b=t1qFAKoID9ZGuCjgYmhBR1DT8wsJRwjjPffJZ3aEOqW67nUjV6yperym+qdfNqOw9/
+         tLiVN5z0DJiDXVmv4UBQfjiukybs/vhVh/7c6/J08aDVXdSEqaSZHbUyk309VeTbdoya
+         qP4TBEXBLfwHRKczeoScH80hDcZ0zIeL7Pz0kVewWMcum+8+ohMlKwegZkv2+bYABUyO
+         wadaM6JqODq2mkzxRORXOpYsccGregPARsxLnmLTjUOQimuUhNcMaSK1U1M7SILnjkR+
+         MsSswhgq3GNPOXNC8vnf3YjTF+ItKlXmeOhMYwk/grVO/+uTtdiEPOq9Qoml8A9hq8tk
+         hzBA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=hmyEH8CT1hUNd2zzk5cv5R4mBc/mmHBJV5/0o14KKzk=;
+        b=KJxreGiZyWekEjYBXHK2IpCM0x1UZ6cBh/ZOF0ZuJE6TD+NrA5hdDau0LxJf8gWPAp
+         gzkyUf3w1+TIvc2m2shsbVjbR+5OdG9Tju0M/f1jneJnmjX+NpPYbsGRy/6ML0Cdm/n5
+         5fUv49bDz4EYR4z7oggidjEC+xyzgL+VkNjeWnAv+8QjGr77umZ8AdTQLYF/aJSgcMGC
+         qGvZDteWYiULyC2fd2kRYqaRJP5QJZkbyQkL4obbJ5JEAfomcBUN1/4x1BXSRMY3Urxm
+         jLdDZPmyaozECjxEt5cRuDFbnZbqQYeU7YCAXoc5z62gHdGXRCECzKVeM58PulGQEodI
+         DD0w==
+X-Gm-Message-State: APjAAAV9A2gr+3xw7oPuJsr0r5LjseG5DQzEbOS51c5xBBVL+q8/P2gE
+        kaOdksiFULAcVwxKE4vMdpvC2b/nSYYZ5Q6eaMA=
+X-Google-Smtp-Source: APXvYqwY+qo8cWzZnWKUz1MGRNY5Vz0/c+tjZvNkHulp6xMt529+f7kf69iTnVywNHPJVkx8r5PIbuk4lWgx1fNqMO4=
+X-Received: by 2002:a17:907:11cc:: with SMTP id va12mr30056548ejb.164.1576446995333;
+ Sun, 15 Dec 2019 13:56:35 -0800 (PST)
+MIME-Version: 1.0
+References: <20191212171125.9933-1-olteanv@gmail.com> <CAK8P3a1PBa0bcfmPnVGry-6GUQ0WTLJ36MAE89QWXzbnuEf_XQ@mail.gmail.com>
+ <CAK8P3a0EM0MOsgdCVHS7gPxLk2nvP4Xqs4_tmtPM4Da=M5ZUQA@mail.gmail.com>
+In-Reply-To: <CAK8P3a0EM0MOsgdCVHS7gPxLk2nvP4Xqs4_tmtPM4Da=M5ZUQA@mail.gmail.com>
+From:   Vladimir Oltean <olteanv@gmail.com>
+Date:   Sun, 15 Dec 2019 23:56:24 +0200
+Message-ID: <CA+h21hpLsSHV9M82xxktA83B=dR4rpirnT5-5jAR2eux27n1nw@mail.gmail.com>
+Subject: Re: [PATCH] net: mscc: ocelot: hide MSCC_OCELOT_SWITCH and move
+ outside NET_VENDOR_MICROSEMI
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     David Miller <davem@davemloft.net>,
+        Mao Wenan <maowenan@huawei.com>, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandru Marginean <alexandru.marginean@nxp.com>,
+        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
+        yangbo lu <yangbo.lu@nxp.com>,
+        Networking <netdev@vger.kernel.org>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Antoine Tenart <antoine.tenart@bootlin.com>
-Date: Fri, 13 Dec 2019 16:48:35 +0100
+On Sat, 14 Dec 2019 at 22:49, Arnd Bergmann <arnd@arndb.de> wrote:
+>
+> On Sat, Dec 14, 2019 at 4:16 PM Arnd Bergmann <arnd@arndb.de> wrote:
+> >
+> > On Thu, Dec 12, 2019 at 6:11 PM Vladimir Oltean <olteanv@gmail.com> wrote:
+> > >
+> > > From: Vladimir Oltean <vladimir.oltean@nxp.com>
+> > >
+> > > NET_DSA_MSCC_FELIX and MSCC_OCELOT_SWITCH_OCELOT are 2 different drivers
+> > > that use the same core operations, compiled under MSCC_OCELOT_SWITCH.
+> >
+> > > Fixes: 56051948773e ("net: dsa: ocelot: add driver for Felix switch family")
+> > > Reported-by: Arnd Bergmann <arnd@arndb.de>
+> > > Reported-by: Mao Wenan <maowenan@huawei.com>
+> > > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> >
+> > I did some more build testing and ran into another issue now that
+> > MSCC_OCELOT_SWITCH_OCELOT can be built without
+> > CONFIG_SWITCHDEV:
+>
+> And another one when CONFIG_NET_VENDOR_MICROSEMI is disabled:
+>
+> ERROR: "ocelot_fdb_dump" [drivers/net/dsa/ocelot/mscc_felix.ko] undefined!
+> ERROR: "ocelot_regfields_init" [drivers/net/dsa/ocelot/mscc_felix.ko] undefined!
+> ERROR: "ocelot_regmap_init" [drivers/net/dsa/ocelot/mscc_felix.ko] undefined!
+> ERROR: "ocelot_init" [drivers/net/dsa/ocelot/mscc_felix.ko] undefined!
+> ERROR: "ocelot_fdb_del" [drivers/net/dsa/ocelot/mscc_felix.ko] undefined!
+> ERROR: "__ocelot_write_ix" [drivers/net/dsa/ocelot/mscc_felix.ko] undefined!
+> ERROR: "ocelot_bridge_stp_state_set"
+> [drivers/net/dsa/ocelot/mscc_felix.ko] undefined!
+> ERROR: "ocelot_port_vlan_filtering"
+> [drivers/net/dsa/ocelot/mscc_felix.ko] undefined!
+> ERROR: "ocelot_get_ethtool_stats"
+> [drivers/net/dsa/ocelot/mscc_felix.ko] undefined!
+> ERROR: "ocelot_port_enable" [drivers/net/dsa/ocelot/mscc_felix.ko] undefined!
+> ERROR: "ocelot_vlan_del" [drivers/net/dsa/ocelot/mscc_felix.ko] undefined!
+> ERROR: "ocelot_deinit" [drivers/net/dsa/ocelot/mscc_felix.ko] undefined!
+> ERROR: "ocelot_init_port" [drivers/net/dsa/ocelot/mscc_felix.ko] undefined!
+> ERROR: "ocelot_fdb_add" [drivers/net/dsa/ocelot/mscc_felix.ko] undefined!
+>
+> This fixes it:
+>
+> diff --git a/drivers/net/ethernet/Makefile b/drivers/net/ethernet/Makefile
+> index f8f38dcb5f8a..83351228734a 100644
+> --- a/drivers/net/ethernet/Makefile
+> +++ b/drivers/net/ethernet/Makefile
+> @@ -55,7 +55,7 @@ obj-$(CONFIG_NET_VENDOR_MEDIATEK) += mediatek/
+>  obj-$(CONFIG_NET_VENDOR_MELLANOX) += mellanox/
+>  obj-$(CONFIG_NET_VENDOR_MICREL) += micrel/
+>  obj-$(CONFIG_NET_VENDOR_MICROCHIP) += microchip/
+> -obj-$(CONFIG_NET_VENDOR_MICROSEMI) += mscc/
+> +obj-y += mscc/
 
-> +static int macsec_upd_offload(struct sk_buff *skb, struct genl_info *info)
-> +{
+Thanks Arnd. This is getting out of hand. I'll just opt for the simple
+solution and make it depend on NET_VENDOR_MICROSEMI.
 
-This function is over the top and in fact confusing.
-
-Really, if you want to make semantics sane, you have to require that no
-rules are installed when enabling offloading.  The required sequence of
-events if "enable offloading, add initial rules".
-
-> +	/* Check the physical interface isn't offloading another interface
-> +	 * first.
-> +	 */
-> +	for_each_net(loop_net) {
-> +		for_each_netdev(loop_net, loop_dev) {
-> +			struct macsec_dev *priv;
-> +
-> +			if (!netif_is_macsec(loop_dev))
-> +				continue;
-> +
-> +			priv = macsec_priv(loop_dev);
-> +
-> +			if (!macsec_check_offload(MACSEC_OFFLOAD_PHY, priv))
-> +				continue;
-> +
-> +			if (priv->offload != MACSEC_OFFLOAD_OFF)
-> +				return -EBUSY;
-> +		}
-> +	}
-
-You are rejecting the enabling of offloading on one interface if any
-interface in the entire system is doing macsec offload?  That doesn't
-make any sense at all.
-
-Really, just require that a macsec interface is "clean" (no rules installed
-yet) in order to enable offloading.
-
-Then you don't have to check anything else at all.
+>  obj-$(CONFIG_NET_VENDOR_MOXART) += moxa/
+>  obj-$(CONFIG_NET_VENDOR_MYRI) += myricom/
+>  obj-$(CONFIG_FEALNX) += fealnx.o
+>
+>         Arnd
