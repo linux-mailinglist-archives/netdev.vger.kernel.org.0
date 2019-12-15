@@ -2,89 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 18D4F11F540
-	for <lists+netdev@lfdr.de>; Sun, 15 Dec 2019 02:21:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6860011F544
+	for <lists+netdev@lfdr.de>; Sun, 15 Dec 2019 02:27:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727021AbfLOBVa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 14 Dec 2019 20:21:30 -0500
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:46430 "EHLO
-        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726865AbfLOBVa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 14 Dec 2019 20:21:30 -0500
-Received: by mail-pg1-f195.google.com with SMTP id z124so1534721pgb.13
-        for <netdev@vger.kernel.org>; Sat, 14 Dec 2019 17:21:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=fMT9Uq8oA7N4cc8A+BqwQHzoKGnygJU6FYugzr2VIag=;
-        b=KEL8/tHDQaGUH7uxzfNpx/uUU3s4ZR+ORlxEazfZo+lqq7HGWpSu6E5v+P8E32beS6
-         xTNxrZ3TwmW7im+hVvhuMlQZ1gUQje34Ghn2x0yVS0L2F313/BMR0a3mfoHs5JP4UFuP
-         2t8A1eMKgIOUWfJ7Xsdnr0VPEJl5DUhbAb0ZFShFdmi2eAxwRn3OT4JJICWeQoY/3TMZ
-         K9AygQL+4lXRPW4eknD1MBFuRI20WfA6fwRymWvlxNX1mqpmwTM3XuRl7/T0bnhQxQE1
-         JNUiivSvpkGfDoo+ZoL5jDGEvRZydugbcL/UB+mKkXmEFBG+gClx/nA65M793Y7tGppO
-         3p5g==
+        id S1727070AbfLOB1B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 14 Dec 2019 20:27:01 -0500
+Received: from mail-il1-f200.google.com ([209.85.166.200]:46668 "EHLO
+        mail-il1-f200.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726783AbfLOB1B (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 14 Dec 2019 20:27:01 -0500
+Received: by mail-il1-f200.google.com with SMTP id s85so3200603ild.13
+        for <netdev@vger.kernel.org>; Sat, 14 Dec 2019 17:27:01 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=fMT9Uq8oA7N4cc8A+BqwQHzoKGnygJU6FYugzr2VIag=;
-        b=oOybia+Tc1eFmibQkwWiqdXdDBNAwNVN27wEDqFceAebprgyTQb1l3JpciqHLfAMOO
-         R+zADCxcjqIL0pJ70RfvDVZQp4LkJe+kZ36i0CyimQYknVIC36b51ynr2Wic6cfVe0iG
-         ezM59UszRw2/7lvHzWUA8dzb1siZEQA8nIB+qR2N7XdYT5DvDP/Dp65xPlyRN/cHzH0N
-         +O5SRftNRralTXAE2LF9J7YhRNZJVFUOm/ZQ2+fMqU2Kkjx3v+8iKcEqAIyfocBsXxBP
-         B0OEc50JHdfbSIhUoIqdEDH4GmcM0Uoq028xdDOWqcQBlpRE0I/aSPmmw/mG2e1Mzwqz
-         LfXg==
-X-Gm-Message-State: APjAAAVsnk1FvN4WZEfsXK+BP1RzDXhidqWKcq8CrJ7bElLVkBw3Ofe9
-        f2OL7wWZr7CZe4YXz91VlKxOaQOFKRY=
-X-Google-Smtp-Source: APXvYqyNRkNh1NsJ8oLFOFP+NHLe8b5KbJ+8zLzYGQ2/YH/lDvmaRFXrRk5+K6ycUraXoFFAjahcMQ==
-X-Received: by 2002:a63:597:: with SMTP id 145mr8792268pgf.384.1576372889380;
-        Sat, 14 Dec 2019 17:21:29 -0800 (PST)
-Received: from cakuba.netronome.com (c-73-202-202-92.hsd1.ca.comcast.net. [73.202.202.92])
-        by smtp.gmail.com with ESMTPSA id d13sm13282631pjx.21.2019.12.14.17.21.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 14 Dec 2019 17:21:29 -0800 (PST)
-Date:   Sat, 14 Dec 2019 17:21:26 -0800
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Taehee Yoo <ap420073@gmail.com>
-Cc:     davem@davemloft.net, pablo@netfilter.org, laforge@gnumonks.org,
-        osmocom-net-gprs@lists.osmocom.org, netdev@vger.kernel.org
-Subject: Re: [PATCH net 0/4] gtp: fix several bugs in gtp module
-Message-ID: <20191214172126.3f5027a4@cakuba.netronome.com>
-In-Reply-To: <20191211082243.28465-1-ap420073@gmail.com>
-References: <20191211082243.28465-1-ap420073@gmail.com>
-Organization: Netronome Systems, Ltd.
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=c+s69FUrevmh/qMLgOyZw9GWvtN3ytNCAie8XX1Wio0=;
+        b=kDMrOQBzcN9zaWwi5v+tBVyZ4I6CdvagWMkAQvHt6LaxUtF3tcbhFz/rNVzLRsZtea
+         a8CqH/5qMjKqQB45hpPDNLO2fXIFYO8Ztk8oa6z+TzOnpxe+9K7B09Ut3UcPyqr1VWoq
+         xdtSwdkj5wkipR1AOR53LSz4w3TC3If+KATbSuEBDdJptMGHK6PwvsBonnKTqjUdnh0W
+         JGtPb+OLDrpT95SgkBCjy3mQKOfjYJ1nKaocxGS0p/8Za8FPyO8UVQOMXYUhpWZ1SWjY
+         djjsNEJpYkUnAR8OS05HaW+9r1t2DGgaWaz5ba1GnLU3Av6WeZuRpwf2wM0CKsrOVVCe
+         WMWw==
+X-Gm-Message-State: APjAAAXi+5RE5XRVf8oSC3859jTJAE7fRUsqjpbxZwjXZ1wiB/qk3+Wt
+        Xp1gKXs2U8MMQOhdQqwCqO81NKkMYFj4qf0hZw+FaBbMFvdu
+X-Google-Smtp-Source: APXvYqy7O21f8gr/KcYVDGHHA00H9AO2+CAAcrvPyJbJkQR9bGCOqaPnuFyWq42GKUJVdxRtIb/Aqis0HVOF9COqLeCaOOMD3jTv
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+X-Received: by 2002:a92:5a56:: with SMTP id o83mr2853063ilb.97.1576373220852;
+ Sat, 14 Dec 2019 17:27:00 -0800 (PST)
+Date:   Sat, 14 Dec 2019 17:27:00 -0800
+In-Reply-To: <000000000000c71dcf0579b0553f@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000dcc9b10599b3fd5e@google.com>
+Subject: Re: KASAN: use-after-free Read in ext4_xattr_set_entry (2)
+From:   syzbot <syzbot+4a39a025912b265cacef@syzkaller.appspotmail.com>
+To:     a@unstable.cc, adilger.kernel@dilger.ca, afd@ti.com,
+        b.a.t.m.a.n@lists.open-mesh.org, chris@lapa.com.au,
+        davem@davemloft.net, linux-ext4@vger.kernel.org,
+        linux-kernel@vger.kernel.org, mareklindner@neomailbox.ch,
+        netdev@vger.kernel.org, pali.rohar@gmail.com, sre@kernel.org,
+        sw@simonwunderlich.de, syzkaller-bugs@googlegroups.com,
+        tytso@mit.edu
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 11 Dec 2019 08:22:43 +0000, Taehee Yoo wrote:
-> This patchset fixes several bugs in the GTP module.
-> 
-> 1. Do not allow adding duplicate TID and ms_addr pdp context.
-> In the current code, duplicate TID and ms_addr pdp context could be added.
-> So, RX and TX path could find correct pdp context.
-> 
-> 2. Fix wrong condition in ->dumpit() callback.
-> ->dumpit() callback is re-called if dump packet size is too big.  
-> So, before return, it saves last position and then restart from
-> last dump position.
-> TID value is used to find last dump position.
-> GTP module allows adding zero TID value. But ->dumpit() callback ignores
-> zero TID value.
-> So, dump would not work correctly if dump packet size too big.
-> 
-> 3. Fix use-after-free in ipv4_pdp_find().
-> RX and TX patch always uses gtp->tid_hash and gtp->addr_hash.
-> but while packet processing, these hash pointer would be freed.
-> So, use-after-free would occur.
-> 
-> 4. Fix panic because of zero size hashtable
-> GTP hashtable size could be set by user-space.
-> If hashsize is set to 0, hashtable will not work and panic will occur.
+syzbot has bisected this bug to:
 
-Looks good to me, thank you, applied and queued for stable.
+commit 8835cae5f2abd7f7a3143afe357f416aff5517a4
+Author: Chris Lapa <chris@lapa.com.au>
+Date:   Wed Jan 11 01:44:47 2017 +0000
+
+     power: supply: bq27xxx: adds specific support for bq27520-g4 revision.
+
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=16661f41e00000
+start commit:   ae4b064e Merge tag 'afs-fixes-20191211' of git://git.kerne..
+git tree:       upstream
+final crash:    https://syzkaller.appspot.com/x/report.txt?x=15661f41e00000
+console output: https://syzkaller.appspot.com/x/log.txt?x=11661f41e00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=79f79de2a27d3e3d
+dashboard link: https://syzkaller.appspot.com/bug?extid=4a39a025912b265cacef
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=15ec1332e00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=163455dee00000
+
+Reported-by: syzbot+4a39a025912b265cacef@syzkaller.appspotmail.com
+Fixes: 8835cae5f2ab ("power: supply: bq27xxx: adds specific support for  
+bq27520-g4 revision.")
+
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
