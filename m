@@ -2,96 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F207411FADE
-	for <lists+netdev@lfdr.de>; Sun, 15 Dec 2019 20:54:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7218911FAEA
+	for <lists+netdev@lfdr.de>; Sun, 15 Dec 2019 20:59:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726267AbfLOTyz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 15 Dec 2019 14:54:55 -0500
-Received: from mail-pg1-f202.google.com ([209.85.215.202]:41283 "EHLO
-        mail-pg1-f202.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726146AbfLOTyz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 15 Dec 2019 14:54:55 -0500
-Received: by mail-pg1-f202.google.com with SMTP id r30so3534427pgm.8
-        for <netdev@vger.kernel.org>; Sun, 15 Dec 2019 11:54:54 -0800 (PST)
+        id S1726437AbfLOT7H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 15 Dec 2019 14:59:07 -0500
+Received: from mta-p6.oit.umn.edu ([134.84.196.206]:40376 "EHLO
+        mta-p6.oit.umn.edu" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726260AbfLOT7H (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 15 Dec 2019 14:59:07 -0500
+Received: from localhost (unknown [127.0.0.1])
+        by mta-p6.oit.umn.edu (Postfix) with ESMTP id 47bZwp2JNdz9vZ5l
+        for <netdev@vger.kernel.org>; Sun, 15 Dec 2019 19:59:06 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at umn.edu
+Received: from mta-p6.oit.umn.edu ([127.0.0.1])
+        by localhost (mta-p6.oit.umn.edu [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id iw4gFJnF52f7 for <netdev@vger.kernel.org>;
+        Sun, 15 Dec 2019 13:59:06 -0600 (CST)
+Received: from mail-yw1-f71.google.com (mail-yw1-f71.google.com [209.85.161.71])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mta-p6.oit.umn.edu (Postfix) with ESMTPS id 47bZwp1Fhxz9vZ6K
+        for <netdev@vger.kernel.org>; Sun, 15 Dec 2019 13:59:06 -0600 (CST)
+Received: by mail-yw1-f71.google.com with SMTP id q187so4120091ywg.12
+        for <netdev@vger.kernel.org>; Sun, 15 Dec 2019 11:59:06 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=1aTXxWUQSHKZxIObfpRrS1Mlca/etyjnnsBSZyl/F1g=;
-        b=hDXDe4nBBMOH4dgB6SsUP9GABXWVqM6SCuXsHUjnu73Ox201hTh2Lxg+imuNwbi/bY
-         FhXtkr95x0VkxBuy7LkYn8KJJT0ab5X70ApjsnCAVcInP88dNqW5AgA6Ro9XIO+lfSAo
-         rVgLFXizVQJYjVghML7yMf6u7aKhX4Cm1ZYB5QpaTkJdK8DDPoF/5iDIWnR93HDUD6mX
-         EgratHj7WncFUlQ4YmWAY/oFpzKe286sp30LeXlHBwAxm94Bhldce9HYxiz8WDaI4VpX
-         72bomHdVpSK3Z17mNeRxB8izazFGgetPAbJpXKOmty+B7ZqDmuL9lm6Yz/vuu5P4Qsnl
-         +vBA==
+        d=umn.edu; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=8TUcX1RfgZ492tOYJ5s68irOhl6zZB85wQRSq77/peo=;
+        b=cV5bO+pKRY3btcUkVNBJcD4tq59cy1Fw6Mlknr43a6PVbLbDvgGPoljM6wBB31iIpc
+         GccTGzcaJFMK+3ciJ0/vehKwYAKe2k10CyxyUOykIzZvsAlFGOumqum5zzu2IZo8dpaf
+         8EU+bceJKoUvtPFzXXVDlI2OpZT0FAJIjiHWHSpv65KIHuVKTmMhO4++QXY/aqByf/YM
+         cFkpC8M45swPp8XtL3huRukcVd+wbtMXpS1L4p1icFdHEQ4TGu+9+zCUcPnDK6+PqOtF
+         MyzvvX5jQ1++SHaKIWskUqeJj73fcBFv4ltA2E30iv9uJdI4QGD9IauPZ1j5gGOoOQ77
+         1vIg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=1aTXxWUQSHKZxIObfpRrS1Mlca/etyjnnsBSZyl/F1g=;
-        b=NTG9+q222U/ptclxw6JpBVXF+7QhFrhRoWL3YYtHqecrsPJQCEpVw2Y1IJpHG8o4iI
-         9SQexNkkKL6vA/fE1jTyj+PuP8SfFlFeTIcLt5bLmVydbK5i6HpKUObbdQfdVBrsrgYO
-         DFAgKne9dpuNGPRp89LnTxkVZtmLu6w5DL9UWl1AJUqIvv/zNO+oiDnIZ92tUBTgb+Vk
-         A+lr5X2FSqIPPUsxbdNMOnW6yDUpZuZhr4g8C2CqGgvZZolM3nH1YjCijtO4wTN/LWs6
-         dADB9KlhHmgrvVSj7c9rJ7yEt/OR9Zc//XV1m5qJmuL8rokH2yrGkTGyqHcqb2fk+kvT
-         AiUw==
-X-Gm-Message-State: APjAAAXXUYODEbXgdzrl4371ew0zmxMQLQDcKS+z0c7XLuayNBlrT8FZ
-        LemSO1rV1ZdVzJfJaYd4riE2d/lqV40XEA==
-X-Google-Smtp-Source: APXvYqxeQPVdcx+bUXwB/bveIojGbKfcLPXej/iqkpLX71Mwas+ehKjQhOTeHoI88/HEw/23TNBxvQkpKczv6w==
-X-Received: by 2002:a63:5203:: with SMTP id g3mr13255529pgb.377.1576439694386;
- Sun, 15 Dec 2019 11:54:54 -0800 (PST)
-Date:   Sun, 15 Dec 2019 11:54:51 -0800
-Message-Id: <20191215195451.180553-1-edumazet@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.24.1.735.g03f4e72817-goog
-Subject: [PATCH net-next v2] tcp: Set rcv zerocopy hint correctly if skb last
- frag is < PAGE_SIZE
-From:   Eric Dumazet <edumazet@google.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Arjun Roy <arjunroy@google.com>,
-        Soheil Hassas Yeganeh <soheil@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=8TUcX1RfgZ492tOYJ5s68irOhl6zZB85wQRSq77/peo=;
+        b=L8o0++845/g/am1CrGC4Wpf0MSPQ8GAJyorSPEfyU149X7g6PRAC9bULQ3QA+hE3c5
+         NnvTCxBsgCQ9qc+sD1tJYeBWs30BTkGLJ8aIitF3LxGUNHsf/XbotUKEAhWxJhNKKTwQ
+         ZIuUvKpYlXOw2tik4CFdr5FRdS/2s6PfcjrBFHMS++S3o1t06peY8a5slf6uczNT9ulz
+         bL+xmwKfBPFtoajMaCezxx/noTrMamsX9iOkBPGzj91pEGGdAztkdcABBPVDxWYyHYbD
+         4rq0JZka/EdPQ6vFw4lvF9qLD/2N1miaaUtximXKWsFXYjeuO/KKPLFdhPZEiab7M3Ih
+         By7Q==
+X-Gm-Message-State: APjAAAWBuf023ZzrAO//EtL/OhmgetCkSoFt+wiYtX+BvfOkUU/h/z9r
+        gbFNmQ+XRiGYVQIN2JuJP9TGgkUpcGDDrdJKIMvPGjEvGwhvCXiZZDKDmc5T7eTs5Q65wEcxPv6
+        YtK6tExffwG2Ecjpcr51g
+X-Received: by 2002:a25:3009:: with SMTP id w9mr6023068ybw.47.1576439945684;
+        Sun, 15 Dec 2019 11:59:05 -0800 (PST)
+X-Google-Smtp-Source: APXvYqy5IqUJNnB0dOatc0l9p5iHfoI+NtpfRKhivnJlbv9QIJmKpopWGOVWyNhfXIUi8AuGJKEmdg==
+X-Received: by 2002:a25:3009:: with SMTP id w9mr6023058ybw.47.1576439945472;
+        Sun, 15 Dec 2019 11:59:05 -0800 (PST)
+Received: from cs-u-syssec1.dtc.umn.edu (cs-u-syssec1.cs.umn.edu. [128.101.106.66])
+        by smtp.gmail.com with ESMTPSA id d126sm1059071ywf.28.2019.12.15.11.59.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 15 Dec 2019 11:59:05 -0800 (PST)
+From:   Aditya Pakki <pakki001@umn.edu>
+To:     pakki001@umn.edu
+Cc:     kjlu@umn.edu, Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] orinoco: avoid assertion in case of NULL pointer
+Date:   Sun, 15 Dec 2019 13:58:58 -0600
+Message-Id: <20191215195900.6109-1-pakki001@umn.edu>
+X-Mailer: git-send-email 2.20.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Arjun Roy <arjunroy@google.com>
+In ezusb_init, if upriv is NULL, the code crashes. However, the caller
+in ezusb_probe can handle the error and print the failure message.
+The patch replaces the BUG_ON call to error return.
 
-At present, if the last frag of paged data in a skb has < PAGE_SIZE
-data, we compute the recv_skip_hint as being equal to the size of that
-frag and the entire next skb.
-
-Instead, just return the runt frag size as the hint.
-
-recv_skip_hint is used by the application to skip over
-bytes that can not be mmaped, so returning a too big
-chunk is pessimistic and forces more bytes to be copied.
-
-Signed-off-by: Arjun Roy <arjunroy@google.com>
-Acked-by: Soheil Hassas Yeganeh <soheil@google.com>
-Signed-off-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: Aditya Pakki <pakki001@umn.edu>
 ---
-v2: added more info in the changelog (Jakub)
+ drivers/net/wireless/intersil/orinoco/orinoco_usb.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
- net/ipv4/tcp.c | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index 09e2cae929565a438b298ab6c0df3e2c263e7a11..93fe77c5b02d631ce0f0742f107c570a81d139fe 100644
---- a/net/ipv4/tcp.c
-+++ b/net/ipv4/tcp.c
-@@ -1778,6 +1778,8 @@ static int tcp_zerocopy_receive(struct sock *sk,
- 	while (length + PAGE_SIZE <= zc->length) {
- 		if (zc->recv_skip_hint < PAGE_SIZE) {
- 			if (skb) {
-+				if (zc->recv_skip_hint > 0)
-+					break;
- 				skb = skb->next;
- 				offset = seq - TCP_SKB_CB(skb)->seq;
- 			} else {
+diff --git a/drivers/net/wireless/intersil/orinoco/orinoco_usb.c b/drivers/net/wireless/intersil/orinoco/orinoco_usb.c
+index 40a8b941ad5c..813de06c03de 100644
+--- a/drivers/net/wireless/intersil/orinoco/orinoco_usb.c
++++ b/drivers/net/wireless/intersil/orinoco/orinoco_usb.c
+@@ -1361,7 +1361,8 @@ static int ezusb_init(struct hermes *hw)
+ 	int retval;
+ 
+ 	BUG_ON(in_interrupt());
+-	BUG_ON(!upriv);
++	if (!upriv)
++		return -EINVAL;
+ 
+ 	upriv->reply_count = 0;
+ 	/* Write the MAGIC number on the simulated registers to keep
 -- 
-2.24.1.735.g03f4e72817-goog
+2.20.1
 
