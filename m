@@ -2,70 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F38811F6B5
-	for <lists+netdev@lfdr.de>; Sun, 15 Dec 2019 07:52:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 33B9F11F6BC
+	for <lists+netdev@lfdr.de>; Sun, 15 Dec 2019 08:08:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726089AbfLOGwF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 15 Dec 2019 01:52:05 -0500
-Received: from mail-il1-f200.google.com ([209.85.166.200]:42889 "EHLO
-        mail-il1-f200.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725861AbfLOGwD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 15 Dec 2019 01:52:03 -0500
-Received: by mail-il1-f200.google.com with SMTP id n79so3601745ilh.9
-        for <netdev@vger.kernel.org>; Sat, 14 Dec 2019 22:52:01 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=u5G1wrWjpZdsvluOyjyhr3hFBI3eS6YddfcUNsAZMTM=;
-        b=LiQQ8f6Hx0RGkiA2T114O5T3neL0C3vYYra5ggEB7GrZG2EUbMOAztesdfZOH5+yiD
-         XnfSSWvksJPqg4/g2ewVLvujdSkY+x+UThxJHKOG65+z7nqVO8oGCdfTlhiW2+5eDVmE
-         6gAoFx0BEKp+TjKwBLKIbF34f5Td6KzGFCZexDPIz7PDlZ9aZCizTm39NAJypTBaYxJU
-         ok3Zf5HjuP4/8OqsMeuRr+OInFj1eTxupY9MhgQl1QHOzxbETqBuCSxk08dGr4+JJm3k
-         pWXXjInVE7GtFQLrE4DUBSOgd8CT78lQl/hVnLNegNHb5qpZazAvwNWPBKpp9LRL58p5
-         DJBA==
-X-Gm-Message-State: APjAAAX43tkJrqQQq5Il5DYJK9qqyLxd8UZGWeuivge8gFR+xU7nk+7S
-        6FHuIgKhuUC1CG+DIYoqjNaPlR6iXj137xdrkenHdZ1yNQuf
-X-Google-Smtp-Source: APXvYqxyLGjpjTN0mObYvpOtmBDQtr6uJ7PwrSM6L61lcM5UPHprWuZJancgeOdVtUb3P1pj0JRYbD3+nDwIa7kKTYXjQFKUuwTE
+        id S1726026AbfLOHIv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 15 Dec 2019 02:08:51 -0500
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:60490 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725837AbfLOHIu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 15 Dec 2019 02:08:50 -0500
+Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
+        by m0089730.ppops.net (8.16.0.42/8.16.0.42) with SMTP id xBF77Me5030896
+        for <netdev@vger.kernel.org>; Sat, 14 Dec 2019 23:08:49 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-type; s=facebook;
+ bh=kHZMS/PwvMTKOTlmmhL8ngUxDS3HYRtf2MSxDrn7VaE=;
+ b=eCgWoUjPOiRHVCNo+XbjEcG3kAUKTCRC1fRHAx9YwGmyqSJ0uAiDAZRSJJAWlxvxX3KB
+ Nb2lDUx9v4lW+pWPg3wbewoKMriXHmpd3aF6bfinWvbF7K5lbKk89DAuTlHB7mEaJbEa
+ UNH5rv+jjWgHv6vGJbGUsVplRpOYUmiKw10= 
+Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
+        by m0089730.ppops.net with ESMTP id 2wvv462smv-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Sat, 14 Dec 2019 23:08:49 -0800
+Received: from intmgw004.05.ash5.facebook.com (2620:10d:c081:10::13) by
+ mail.thefacebook.com (2620:10d:c081:35::127) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
+ Sat, 14 Dec 2019 23:08:47 -0800
+Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
+        id 042182EC1683; Sat, 14 Dec 2019 23:08:46 -0800 (PST)
+Smtp-Origin-Hostprefix: devbig
+From:   Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>
+CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Cluster: ftw2c04
+Subject: [PATCH bpf-next 0/2] CO-RE relocation support for flexible arrays
+Date:   Sat, 14 Dec 2019 23:08:42 -0800
+Message-ID: <20191215070844.1014385-1-andriin@fb.com>
+X-Mailer: git-send-email 2.17.1
+X-FB-Internal: Safe
 MIME-Version: 1.0
-X-Received: by 2002:a92:3b98:: with SMTP id n24mr7262387ilh.189.1576392721076;
- Sat, 14 Dec 2019 22:52:01 -0800 (PST)
-Date:   Sat, 14 Dec 2019 22:52:01 -0800
-In-Reply-To: <20191215063020.GA11512@mit.edu>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000002a99070599b888dd@google.com>
-Subject: Re: KASAN: use-after-free Read in ext4_xattr_set_entry (2)
-From:   syzbot <syzbot+4a39a025912b265cacef@syzkaller.appspotmail.com>
-To:     a@unstable.cc, adilger.kernel@dilger.ca, afd@ti.com,
-        b.a.t.m.a.n@lists.open-mesh.org, chris@lapa.com.au,
-        davem@davemloft.net, linux-ext4@vger.kernel.org,
-        linux-kernel@vger.kernel.org, mareklindner@neomailbox.ch,
-        netdev@vger.kernel.org, pali.rohar@gmail.com, sre@kernel.org,
-        sw@simonwunderlich.de, syzkaller-bugs@googlegroups.com,
-        tytso@mit.edu
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
+ definitions=2019-12-15_01:2019-12-13,2019-12-15 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 bulkscore=0
+ suspectscore=8 lowpriorityscore=0 malwarescore=0 priorityscore=1501
+ spamscore=0 phishscore=0 clxscore=1015 impostorscore=0 adultscore=0
+ mlxscore=0 mlxlogscore=595 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-1910280000 definitions=main-1912150066
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Add support for flexible array accesses in a relocatable manner in BPF CO-RE.
+It's a typical pattern in C, and kernel in particular, to provide
+a fixed-length struct with zero-sized or dimensionless array at the end. In
+such cases variable-sized array contents follows immediately after the end of
+a struct. This patch set adds support for such access pattern by allowing
+accesses to such arrays.
 
-syzbot has tested the proposed patch and the reproducer did not trigger  
-crash:
+Patch #1 adds libbpf support. Patch #2 adds few test cases for validation.
 
-Reported-and-tested-by:  
-syzbot+4a39a025912b265cacef@syzkaller.appspotmail.com
+Andrii Nakryiko (2):
+  libbpf: support flexible arrays in CO-RE
+  selftests/bpf: add flexible array relocation tests
 
-Tested on:
+ tools/lib/bpf/libbpf.c                        | 34 +++++++++++++---
+ .../selftests/bpf/prog_tests/core_reloc.c     |  4 ++
+ ...f__core_reloc_arrays___equiv_zero_sz_arr.c |  3 ++
+ ..._core_reloc_arrays___err_bad_zero_sz_arr.c |  3 ++
+ .../btf__core_reloc_arrays___fixed_arr.c      |  3 ++
+ .../selftests/bpf/progs/core_reloc_types.h    | 39 +++++++++++++++++++
+ .../bpf/progs/test_core_reloc_arrays.c        |  8 ++--
+ 7 files changed, 85 insertions(+), 9 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_arrays___equiv_zero_sz_arr.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_arrays___err_bad_zero_sz_arr.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_arrays___fixed_arr.c
 
-commit:         dfdeeb41 Merge branch 'tt/misc' into dev
-git tree:        
-https://git.kernel.org/pub/scm/linux/kernel/git/tytso/ext4.git master
-kernel config:  https://syzkaller.appspot.com/x/.config?x=be3b077056d26622
-dashboard link: https://syzkaller.appspot.com/bug?extid=4a39a025912b265cacef
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-patch:          https://syzkaller.appspot.com/x/patch.diff?x=11b02546e00000
+-- 
+2.17.1
 
-Note: testing is done by a robot and is best-effort only.
