@@ -2,63 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A643E11FB28
-	for <lists+netdev@lfdr.de>; Sun, 15 Dec 2019 21:41:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 52C6011FB5A
+	for <lists+netdev@lfdr.de>; Sun, 15 Dec 2019 22:06:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726445AbfLOUlU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 15 Dec 2019 15:41:20 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:43682 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726146AbfLOUlU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 15 Dec 2019 15:41:20 -0500
-Received: from localhost (unknown [IPv6:2603:3023:50c:85e1:5314:1b70:2a53:887e])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 23C6114D8519A;
-        Sun, 15 Dec 2019 12:41:20 -0800 (PST)
-Date:   Sun, 15 Dec 2019 12:41:19 -0800 (PST)
-Message-Id: <20191215.124119.1034274845955800225.davem@davemloft.net>
-To:     ptalbert@redhat.com
-Cc:     netdev@vger.kernel.org
-Subject: Re: [PATCH net-next] net: Use rx_nohandler for unhandled packets
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20191211162107.4326-1-ptalbert@redhat.com>
-References: <20191211162107.4326-1-ptalbert@redhat.com>
-X-Mailer: Mew version 6.8 on Emacs 26.2
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sun, 15 Dec 2019 12:41:20 -0800 (PST)
+        id S1726299AbfLOVGB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 15 Dec 2019 16:06:01 -0500
+Received: from mx2.suse.de ([195.135.220.15]:34486 "EHLO mx1.suse.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726146AbfLOVGB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 15 Dec 2019 16:06:01 -0500
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx1.suse.de (Postfix) with ESMTP id 87417AD93;
+        Sun, 15 Dec 2019 21:06:00 +0000 (UTC)
+Received: by unicorn.suse.cz (Postfix, from userid 1000)
+        id 15122E0404; Sun, 15 Dec 2019 22:06:00 +0100 (CET)
+Message-Id: <cover.1576443050.git.mkubecek@suse.cz>
+From:   Michal Kubecek <mkubecek@suse.cz>
+Date:   Sun, 15 Dec 2019 21:50:50 +0100
+Subject: [PATCH iproute2-next 0/2] display permanent hardware address
+To:     David Ahern <dsahern@gmail.com>
+Cc:     Stephen Hemminger <stephen@networkplumber.org>,
+        netdev@vger.kernel.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Patrick Talbert <ptalbert@redhat.com>
-Date: Wed, 11 Dec 2019 17:21:07 +0100
+Since kernel commit f74877a5457d ("rtnetlink: provide permanent hardware
+address in RTM_NEWLINK"), in net-next tree at the moment, kernel provides
+the permanent hardware address of a network device (if set). Patch 2 adds
+this information to the output of "ip link show" and "ip address show",
+patch 1 updates UAPI header copies to get IFLA_PERM_ADDRESS constant.
 
-> Since caf586e5f23c ("net: add a core netdev->rx_dropped counter") incoming
-> packets which do not have a handler cause a counter named rx_dropped to be
-> incremented. This can lead to confusion as some see a non-zero "drop"
-> counter as cause for concern.
-> 
-> To avoid any confusion, instead use the existing rx_nohandler counter. Its
-> name more closely aligns with the activity being tracked here.
-> 
-> Signed-off-by: Patrick Talbert <ptalbert@redhat.com>
+Michal Kubecek (2):
+  Update kernel headers
+  ip link: show permanent hardware address
 
-I disagree with this change.
+ include/uapi/linux/if_bonding.h | 10 ++++++++++
+ include/uapi/linux/if_bridge.h  | 10 ++++++++++
+ include/uapi/linux/if_link.h    |  1 +
+ ip/ipaddress.c                  | 18 ++++++++++++++++++
+ 4 files changed, 39 insertions(+)
 
-When deliver_exact is false we try to deliver the packet to an appropriate
-ptype handler.  And we end up in the counter bump if no ptype handler
-exists.
+-- 
+2.24.1
 
-Therefore, the two counters allow to distinguish two very different
-situations and providing that distinction is quite valuable.
-
-I think this distinction was very much intentional.  Having people
-understand that rx_dropped can have this meaning is merely a matter of
-education.
-
-I'm not applying this patch, sorry.
