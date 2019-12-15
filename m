@@ -2,63 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A22CF11F5C1
-	for <lists+netdev@lfdr.de>; Sun, 15 Dec 2019 05:35:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A8A9211F5C2
+	for <lists+netdev@lfdr.de>; Sun, 15 Dec 2019 05:41:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726094AbfLOEdl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 14 Dec 2019 23:33:41 -0500
-Received: from mail-pj1-f68.google.com ([209.85.216.68]:35058 "EHLO
-        mail-pj1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725990AbfLOEdl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 14 Dec 2019 23:33:41 -0500
-Received: by mail-pj1-f68.google.com with SMTP id w23so1509766pjd.2
-        for <netdev@vger.kernel.org>; Sat, 14 Dec 2019 20:33:40 -0800 (PST)
+        id S1726049AbfLOElz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 14 Dec 2019 23:41:55 -0500
+Received: from mail-pj1-f65.google.com ([209.85.216.65]:46145 "EHLO
+        mail-pj1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725990AbfLOElz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 14 Dec 2019 23:41:55 -0500
+Received: by mail-pj1-f65.google.com with SMTP id z21so1493384pjq.13
+        for <netdev@vger.kernel.org>; Sat, 14 Dec 2019 20:41:54 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=netronome-com.20150623.gappssmtp.com; s=20150623;
         h=date:from:to:cc:subject:message-id:in-reply-to:references
          :organization:mime-version:content-transfer-encoding;
-        bh=K51j8K8EN2XPuqttk34dMlLQCvUL9tG6S45o7V+5+MU=;
-        b=rSuoQkCYH6bzYBVjPU8FbqRNmY0YmiIcGj83O2cSsmxSzv22e16yc20L3uKiVbr3nK
-         B52slI9FmgYjesrnwzmnCMtqozUyb7F7j9eyORMMTiB+BIt1vHimX+L+2eQO5LekkMnr
-         koQfyq+dRdKzG/meZ+yw6bU2vO/Q+snYpLPwKD7cfrKBm/ohGaT6sGqDul/3zJQ1mkRn
-         4oaveKo+jwkQaRKBl9hp/LLa4TrEPwAShyzFk5wahuGDyB2x4I9JBjh/KcK1ugyMVQiz
-         8xF3W/J05lu9lQEcUzSpF91II4YLNi3EDZIQ6f99Ngi7L6E9hWPZMoSkhJiftWXuFHY/
-         X8nw==
+        bh=GzqekoSsiJhHhy3QDfssxU42UV2oNZcaqEy6PK6DVjI=;
+        b=LwAzx8LbAiNHAWd6OLd6fZXj2KjcurS1Z0Hl4kIbyEUvw9uW+WhOQXqSqC4k6uo8E8
+         Xft2MYJ+1RUH2QJmkm+nIE/SSwepke0SadXY31Orudr4wMkJYcXy6OUElfMEWnE6khFN
+         zyuDTyqD5ju1LjNaBxkwuRzMZtnc75rk+QoMyC7BcR/pSajOg7Mm1hnVeWm4tE5HRTCy
+         U00F5kVfS4SeXC8L6CkhJBwYTnKI6RbInJogglE+7Ad7d+C4nnxf/zFzpIy7HW6nxiRw
+         w6SdnlwVo17j3MzcZQo8q33lqSMMJ8qU6StBxUBfOtQ23HbQGnkqS3sLLPCo1HG7fjAD
+         uStA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
          :references:organization:mime-version:content-transfer-encoding;
-        bh=K51j8K8EN2XPuqttk34dMlLQCvUL9tG6S45o7V+5+MU=;
-        b=JT+Jq9L38Kt3YDcgHG4fliEcOV8vfHRLMcuGyFMoyHwGroY+Zttov/e6N38aSNBjJp
-         WMztm81C/S4M0q/E8FmVF7nnxSXZU7DULRo2KNjzEVz7tcGSMUd0uYj61SFIzqLxU+lI
-         Z4egkz4OH+bR+AXBdXfzIEXseMy2bdKICQyQgc9fAW0A0aXFWoaQCW/rxc+WD1FBiUDo
-         1kyJhrPM0MbalOw1su1SAnAeMAfE13cY4P80UzGss1RHFBrwDtcdoLC0oVcqnKzv2ezD
-         HSRxPcoiVJaD5Evq7SaHW8FMwIGAPjGWyE4PxDOaZNEjd2cfyLuGLSQzeJJS/2aopuLZ
-         /iDg==
-X-Gm-Message-State: APjAAAXcftPU8fWDNr5QaqaT66ygWdA6VoEdQxKiA0nHts7uVkkHRT8d
-        Ea/FI4Hy2PfM7XeDmr36vNYt4Q==
-X-Google-Smtp-Source: APXvYqxDxnE+42cDuVy+5iQUU/Tx31SkRqB05+m6gIJ/7lrWfSSLYL1x8M/df2LadQS8e5Ghu7t/Lg==
-X-Received: by 2002:a17:902:209:: with SMTP id 9mr9254119plc.58.1576384420590;
-        Sat, 14 Dec 2019 20:33:40 -0800 (PST)
+        bh=GzqekoSsiJhHhy3QDfssxU42UV2oNZcaqEy6PK6DVjI=;
+        b=G4C6GLAk1WdPDOHd+Fsg0pHbwa612Rmf9x0SwTaTbPRY6WY/wPOBoV54DlHUZgNkCJ
+         va5yaD/myiURJ9VQexFGt19yBFg77v9qUwYZvyBCHyDHDpjRmn6HGvaLp620S4r0hn1D
+         Q73v4Fjxdw1RE9VUnv24XxzoJxA4UXWJT+YBxwgnUQ+48Z59T1sups4cjjubBsVNf6KG
+         wu/ABS3sMWssnh2A0F1o+mfA7x3/5Od7O6+lTBjU5L1hUUnoJX6Svy3PNHPjlzwZPCxd
+         ABTGrFKW1NYG3yUNknQ05gjRKxVSu7TBYgVlPLYY4aVXZSVz7lVFbc3e0ErtszKPhcDj
+         5x6w==
+X-Gm-Message-State: APjAAAU0/fd8yXSqU/1dabLzKz9eMvykn1mPtkF8d9gKRzZg76kH9AGa
+        09qbi3LuB5tjgwlsB481ZNBQgxY/+0I=
+X-Google-Smtp-Source: APXvYqxG4TunIjdAc0ToHNxTIhBa/LWC6oxt6HH9RfC/EfT5qzMGxTNn2Fv7Qe6niEvFbd3f3NvSyQ==
+X-Received: by 2002:a17:902:7795:: with SMTP id o21mr9265788pll.64.1576384914292;
+        Sat, 14 Dec 2019 20:41:54 -0800 (PST)
 Received: from cakuba.netronome.com (c-73-202-202-92.hsd1.ca.comcast.net. [73.202.202.92])
-        by smtp.gmail.com with ESMTPSA id r20sm17218140pgu.89.2019.12.14.20.33.39
+        by smtp.gmail.com with ESMTPSA id u1sm16374969pfn.133.2019.12.14.20.41.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 14 Dec 2019 20:33:40 -0800 (PST)
-Date:   Sat, 14 Dec 2019 20:33:37 -0800
+        Sat, 14 Dec 2019 20:41:54 -0800 (PST)
+Date:   Sat, 14 Dec 2019 20:41:51 -0800
 From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Milind Parab <mparab@cadence.com>
-Cc:     <nicolas.nerre@microchip.com>, <andrew@lunn.ch>,
-        <antoine.tenart@bootlin.com>, <f.fainelli@gmail.com>,
-        <rmk+kernel@armlinux.org.uk>, <davem@davemloft.net>,
-        <netdev@vger.kernel.org>, <hkallweit1@gmail.com>,
-        <linux-kernel@vger.kernel.org>, <dkangude@cadence.com>,
-        <a.fatoum@pengutronix.de>, <brad.mouring@ni.com>,
-        <pthombar@cadence.com>
-Subject: Re: [PATCH v2 1/3] net: macb: fix for fixed-link mode
-Message-ID: <20191214203337.687ebd6b@cakuba.netronome.com>
-In-Reply-To: <1576230061-11239-1-git-send-email-mparab@cadence.com>
-References: <1576230007-11181-1-git-send-email-mparab@cadence.com>
-        <1576230061-11239-1-git-send-email-mparab@cadence.com>
+To:     John Hurley <john.hurley@netronome.com>
+Cc:     netdev@vger.kernel.org, simon.horman@netronome.com,
+        oss-drivers@netronome.com
+Subject: Re: [PATCH net-next 0/9] Add ipv6 tunnel support to NFP
+Message-ID: <20191214204151.55c6e4c9@cakuba.netronome.com>
+In-Reply-To: <1576174616-9738-1-git-send-email-john.hurley@netronome.com>
+References: <1576174616-9738-1-git-send-email-john.hurley@netronome.com>
 Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -68,20 +62,14 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 13 Dec 2019 09:41:01 +0000, Milind Parab wrote:
-> This patch fix the issue with fixed link. With fixed-link
-> device opening fails due to macb_phylink_connect not
-> handling fixed-link mode, in which case no MAC-PHY connection
-> is needed and phylink_connect return success (0), however
-> in current driver attempt is made to search and connect to
-> PHY even for fixed-link.
+On Thu, 12 Dec 2019 18:16:47 +0000, John Hurley wrote:
+> The following patches add support for IPv6 tunnel offload to the NFP
+> driver.
 > 
-> Signed-off-by: Milind Parab <mparab@cadence.com>
+> Patches 1-2 do some code tidy up and prepare existing code for reuse in
+> IPv6 tunnels.
+> Patches 3-4 handle IPv6 tunnel decap (match) rules.
+> Patches 5-8 handle encap (action) rules.
+> Patch 9 adds IPv6 support to the merge and pre-tunnel rule functions.
 
-We'll wait to give a chance for Russell, Andrew and others to review,
-but this patch looks like a fix and the other ones look like features.
-You should post the fix separately so it's included in Linus'es tree
-ASAP (mark the patch with [PATCH net]), and the rest of the patches can
-wait for the next merge window (mark [PATCH net-next]). Fixes should
-also have an appropriate Fixes tag pointing at the first commit where
-the bug was present.
+Applied, thanks!
