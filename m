@@ -2,105 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CB3A711FAA6
-	for <lists+netdev@lfdr.de>; Sun, 15 Dec 2019 20:02:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 28AB411FAAB
+	for <lists+netdev@lfdr.de>; Sun, 15 Dec 2019 20:08:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726454AbfLOTBf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 15 Dec 2019 14:01:35 -0500
-Received: from mta-p8.oit.umn.edu ([134.84.196.208]:37876 "EHLO
-        mta-p8.oit.umn.edu" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726146AbfLOTBe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 15 Dec 2019 14:01:34 -0500
-Received: from localhost (unknown [127.0.0.1])
-        by mta-p8.oit.umn.edu (Postfix) with ESMTP id 47bYfP5tVGz9vZT1
-        for <netdev@vger.kernel.org>; Sun, 15 Dec 2019 19:01:33 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at umn.edu
-Received: from mta-p8.oit.umn.edu ([127.0.0.1])
-        by localhost (mta-p8.oit.umn.edu [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id 96JgpARsWNX9 for <netdev@vger.kernel.org>;
-        Sun, 15 Dec 2019 13:01:33 -0600 (CST)
-Received: from mail-yb1-f198.google.com (mail-yb1-f198.google.com [209.85.219.198])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mta-p8.oit.umn.edu (Postfix) with ESMTPS id 47bYfP4lt0z9vYwq
-        for <netdev@vger.kernel.org>; Sun, 15 Dec 2019 13:01:33 -0600 (CST)
-Received: by mail-yb1-f198.google.com with SMTP id d191so4846095ybc.17
-        for <netdev@vger.kernel.org>; Sun, 15 Dec 2019 11:01:33 -0800 (PST)
+        id S1726485AbfLOTIh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 15 Dec 2019 14:08:37 -0500
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:32785 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726454AbfLOTIg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 15 Dec 2019 14:08:36 -0500
+Received: by mail-pg1-f193.google.com with SMTP id 6so2400419pgk.0
+        for <netdev@vger.kernel.org>; Sun, 15 Dec 2019 11:08:36 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=umn.edu; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=qz7hLv3TGqOg26p7ukuVbPc1PJuaHmmS15JJ7SJDcyg=;
-        b=WDeUlTq0RckidAgYO+X9nuaqk8amj5C8qSBi+Bs+62XAkYuTXYBcxgJAV+VCIY3LNs
-         0Qm8E9YIXNNhn/DSgXScWghVmMWjcIHWNRRwc05ezVNjCWM3Uu5+9rjqgF/mqn9SDgC9
-         dSmBX7q6cLSD5LNkShwtklXC/JeVIS+hKSpooT1Qat6uAcWIj2YCvpW6Bdgd1Vrus1G2
-         yvm2GwxdHFE5quzCM0aenozhY75fuuqazgtdWIbx08jNLBHz98XuCb9jRm9ZKytFHgK5
-         3bbjzxm24evQ22vf6Q9xKey05WSxW15DS+lWx0/5MDsUsIF7vNeig4wYergwmtZV7oqn
-         PVUA==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=ffq3e+xNajXiXzf0nKb5DnbnszpStX3STdz1UBDKPPA=;
+        b=r8nG3dCZVubSAmDS3a/inFm9wBMjXR35ZaYMHP5szY/+FViaASj794Tjq16Czcj/IH
+         yaZPdniHUaZ3I66e5QPSsk/jqva4AQbqmf9CQyff6sE8BNK/boiKuStGfNA8/Y+5lbNf
+         FwKjSf04joWMTJcEgN03ssDwjrsXyo31yKSHGXcT3WIKLN0w4kOD0BvVJwjR+mWPIk+a
+         99HZDyCgZ3m0mUjsZ0YRKeBK43fpCw/n3wK1w1c6TU5Qrk/BObKLPrZRiEM7lEzbn5aY
+         7j4KDoAUaHi5YeEdzoefJlyzhbe+EKV1gFktXo+6b9Sk3LhMBQ+6QcmCX79zwa81x9DS
+         Ewrw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=qz7hLv3TGqOg26p7ukuVbPc1PJuaHmmS15JJ7SJDcyg=;
-        b=QHbpeshjnXGZLzJRBxzYc8ImhM4fizia0UIqKJ/X403lSCot8+GN37uvCTN4BPAo53
-         BMi+ta+IWj4EXHfj4MSNrLaY0ZUR5bKcqueTlmDHd33DjmKAnxTvZPuc3eNjXLzcv4Rc
-         Daaf9ki9fTWr93r5Kb/67CJ9smCjzr/C/cCG1ffDhoxM1lzgk1IAdZO1UvlTUiwkCx6t
-         PleePTw0jvBOhmb1nS7pMgQQucQJEmlvNwTKpza5mwPBOzsC/qFGYaPMhsQioanQ+pWY
-         hUjw+7DuoR82aP5LOm9dc33GyIzVUOKer2BMLvt/RpT9yDrTCOUvOM0fhMo2ixCO4fjs
-         tUuA==
-X-Gm-Message-State: APjAAAUxFVSMR3KN9msvk0hClwSB+Ui7Wgu3qhNVGd9aQaDNJNdIDFI8
-        GYQ695WFKjZineqDe0QUY2OdvEYKlYSA2B8vDgXPLQ1k0ULT0dmeyO5RnVHHo3iJ4oHXq76TnzZ
-        JgWIGhQqoBVA359K6WSMy
-X-Received: by 2002:a0d:e253:: with SMTP id l80mr9334259ywe.144.1576436493174;
-        Sun, 15 Dec 2019 11:01:33 -0800 (PST)
-X-Google-Smtp-Source: APXvYqz3YZdwihU43qkPnbxJKmlB06NwItzwFqufpU0Q7+Fs8bphzIW5aEm6q8m735lWJ3DWuSQ7fw==
-X-Received: by 2002:a0d:e253:: with SMTP id l80mr9334241ywe.144.1576436492917;
-        Sun, 15 Dec 2019 11:01:32 -0800 (PST)
-Received: from cs-u-syssec1.dtc.umn.edu (cs-u-syssec1.cs.umn.edu. [128.101.106.66])
-        by smtp.gmail.com with ESMTPSA id l20sm4937468ywa.108.2019.12.15.11.01.31
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=ffq3e+xNajXiXzf0nKb5DnbnszpStX3STdz1UBDKPPA=;
+        b=BbPz5c2czepVoh38ByyEKgtr0wCHq1vpOLmS2Xs4zDklU4pqy7oEbtUfHXDu1kdaoF
+         3Es7xEMdgbWRSrVVhsV9nqcgHF2LbiTvJGD7MwboMHE9K/6MjOxKBikunxCCtD9y0QW3
+         lwRvkAvKn8acIAVWv3uk/S0CfIRujqu8QfTAxziI220nKhioNgk87AqlWtfVn0GuZN7A
+         g9EyEgtFqPJM4QGWUvK871O1aAvECFOj8QCrfB4vLvSlhFinDjjqNEuyM9un8O0eWiuP
+         ViWGJ7BhGbCW3P9W+qGV1TIoBKiGGJr8V2znAMbSy+qos05OpB4be5LIpGuHyNya/Em5
+         Sqbg==
+X-Gm-Message-State: APjAAAWMz9sJyoNBTDdk6X4vV95zCN2y5VyRdOGcEIZhfZfc8UGizIUU
+        b0M2I3sO66hYC9BomlnoQQTvOw==
+X-Google-Smtp-Source: APXvYqz741YqBoBqQerGhr9+w1GwNzsLDWE4OFO8ZBvQdMcLPzd1eHpOlZk9MJiUO/2PApOQ1a5MpA==
+X-Received: by 2002:a62:243:: with SMTP id 64mr12421660pfc.49.1576436916157;
+        Sun, 15 Dec 2019 11:08:36 -0800 (PST)
+Received: from cakuba.netronome.com (c-73-202-202-92.hsd1.ca.comcast.net. [73.202.202.92])
+        by smtp.gmail.com with ESMTPSA id o31sm18258898pgb.56.2019.12.15.11.08.35
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 15 Dec 2019 11:01:32 -0800 (PST)
-From:   Aditya Pakki <pakki001@umn.edu>
-To:     pakki001@umn.edu
-Cc:     kjlu@umn.edu, Robert Baldyga <r.baldyga@samsung.com>,
-        Krzysztof Opasiak <k.opasiak@samsung.com>,
-        linux-nfc@lists.01.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] nfc: s3fwrn5: replace the assertion with a WARN_ON
-Date:   Sun, 15 Dec 2019 13:01:29 -0600
-Message-Id: <20191215190129.1587-1-pakki001@umn.edu>
-X-Mailer: git-send-email 2.20.1
+        Sun, 15 Dec 2019 11:08:36 -0800 (PST)
+Date:   Sun, 15 Dec 2019 11:08:33 -0800
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Karsten Graul <kgraul@linux.ibm.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org, heiko.carstens@de.ibm.com,
+        raspl@linux.ibm.com, ubraun@linux.ibm.com
+Subject: Re: [PATCH net-next] net/smc: shorten lgr_cnt initialization
+Message-ID: <20191215110833.1746428a@cakuba.netronome.com>
+In-Reply-To: <20191212213541.10485-1-kgraul@linux.ibm.com>
+References: <20191212213541.10485-1-kgraul@linux.ibm.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In s3fwrn5_fw_recv_frame, if fw_info->rsp is not empty, the
-current code causes a crash via BUG_ON. However, s3fwrn5_fw_send_msg
-does not crash in such a scenario. The patch replaces the BUG_ON
-by returning the error to the callers.
+On Thu, 12 Dec 2019 22:35:41 +0100, Karsten Graul wrote:
+> From: Ursula Braun <ubraun@linux.ibm.com>
+> 
+> Save a line of code by making use of ATOMIC_INIT() for lgr_cnt.
+> 
+> Suggested-by: David S. Miller <davem@davemloft.net>
+> Signed-off-by: Ursula Braun <ubraun@linux.ibm.com>
+> Signed-off-by: Karsten Graul <kgraul@linux.ibm.com>
 
-Signed-off-by: Aditya Pakki <pakki001@umn.edu>
----
- drivers/nfc/s3fwrn5/firmware.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/nfc/s3fwrn5/firmware.c b/drivers/nfc/s3fwrn5/firmware.c
-index be110d9cef02..cdc7d45237d2 100644
---- a/drivers/nfc/s3fwrn5/firmware.c
-+++ b/drivers/nfc/s3fwrn5/firmware.c
-@@ -507,7 +507,8 @@ int s3fwrn5_fw_recv_frame(struct nci_dev *ndev, struct sk_buff *skb)
- 	struct s3fwrn5_info *info = nci_get_drvdata(ndev);
- 	struct s3fwrn5_fw_info *fw_info = &info->fw_info;
- 
--	BUG_ON(fw_info->rsp);
-+	if (WARN_ON(fw_info->rsp))
-+		return -EINVAL;
- 
- 	fw_info->rsp = skb;
- 
--- 
-2.20.1
-
+Applied, thank you!
