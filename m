@@ -2,58 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9BC0B11FABC
-	for <lists+netdev@lfdr.de>; Sun, 15 Dec 2019 20:22:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6753C11FAC0
+	for <lists+netdev@lfdr.de>; Sun, 15 Dec 2019 20:28:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726514AbfLOTWS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 15 Dec 2019 14:22:18 -0500
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:40450 "EHLO
-        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726267AbfLOTWS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 15 Dec 2019 14:22:18 -0500
-Received: by mail-pg1-f195.google.com with SMTP id k25so2394619pgt.7
-        for <netdev@vger.kernel.org>; Sun, 15 Dec 2019 11:22:18 -0800 (PST)
+        id S1726295AbfLOT2m (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 15 Dec 2019 14:28:42 -0500
+Received: from mail-pl1-f194.google.com ([209.85.214.194]:37659 "EHLO
+        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726219AbfLOT2m (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 15 Dec 2019 14:28:42 -0500
+Received: by mail-pl1-f194.google.com with SMTP id c23so3513002plz.4
+        for <netdev@vger.kernel.org>; Sun, 15 Dec 2019 11:28:42 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=netronome-com.20150623.gappssmtp.com; s=20150623;
         h=date:from:to:cc:subject:message-id:in-reply-to:references
          :organization:mime-version:content-transfer-encoding;
-        bh=F0rXRC47sH0LlMz2dLOYKgOdE43jP9P3n2Oc173UFo8=;
-        b=hCwjUgSX+6QNk3DdS/hcYJq+5f7bBw2Id8mloM7TaJ4FPUddaR2FbEhI2xUhid40F7
-         oXJ+J7tgsXI6BmOOOQc+V9MdwpCClF/ifhER8r4LokKby88vXaod8lIY37QPRQtRe6vX
-         LYAG/O586ISWn4YSCo2mWgk8hlKIo+4CpJsxD/KzAsh8m3CkOreTilQvVA1pyg1WViKo
-         Zq5t8ocUVIkyE0b5KD1S3oyCX1p9eKEGK7kgpSB6PQPVJ3SqdI6fXf6wTYXthoBYOlDJ
-         gun5ob58m5VjCmMJ6UaMq4X/1qnvr2qRokeRh+MbhL2iCpGF5IhF0TnX7Js3Ujr5wFwS
-         AxJw==
+        bh=rPsHgWoVliUzCfoQUS1blic49KbyQ3P6hiA0vlRuwPM=;
+        b=0G2KwDeOvr1PDWkhsZKhj8sJ1DujRF4X9/bHT1Uos4Jh8MPKOhC7vni6/4tLnoHtL7
+         D/Otm24z0mViKDeN9vQq8zOsgqx2+bLs1HfJFilk5SPij+NzgHnXcJfswMRmbKKsNho6
+         NOKktmfpxioWjJ6m/gz5tOQTvMIB9He5hDD7IMPBKFX+WdfeJFcnx+xFNiOu8eyiy9Pl
+         PbLr95+W3BY1P5cOuHqa1BUfr+DDwl/gEFDWd6YFG0D0cXBiuN9S2hHAaXcmJtzKPtDR
+         WZiFuV62EhYsNu0RdJvXCL+0cPTbxJ2lG0SMjk3uMjPGan8H2dTgBFmnal8BZ/HwvooH
+         9cbQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
          :references:organization:mime-version:content-transfer-encoding;
-        bh=F0rXRC47sH0LlMz2dLOYKgOdE43jP9P3n2Oc173UFo8=;
-        b=WVoAk7eWJo3m0eD18+XrNmrhWMVZXeGtoIenMaz7Za7JmwRVXRQS9Y4Q3goSxaJeOH
-         Ya+8OCsqynS+D5a9ueoUAl2NplORDZNeqBImequMIeKssS1MNngloVCV0QlQyB9/W7+4
-         jsIUsUpMQMPHbeSchoJPdeE8k3MYeZ8yYMIvcr4Jq5y5DV84JNoOaUVPFy1D6OUWuo1S
-         2y49FPtN/whhb3ke2d/YxiXatuqOF/Uh3061jf7M611rify+UkS/tlOIdVbfA0nvMAAy
-         yE4YKLSG7CubE9acoXwZtievGIjJujrWgoRNQU+CQ31uGFGJy985LWb4174XQHjnhwDu
-         zO3w==
-X-Gm-Message-State: APjAAAV+7BujM+cx7V1w8snLwrIl2aH+R3Ed3sZsOVjfjvDxjUZq26S6
-        2IYDORpInO2nXCt3tFwXeTnr7Q==
-X-Google-Smtp-Source: APXvYqw/MbNZ/nc+SKPW0c63bTrTlDKDX8Ck6OxS6jWYjnR3ltb4PZAShUAOH/dfCuM2iiaDRvOD8Q==
-X-Received: by 2002:a63:534d:: with SMTP id t13mr13145618pgl.89.1576437737625;
-        Sun, 15 Dec 2019 11:22:17 -0800 (PST)
+        bh=rPsHgWoVliUzCfoQUS1blic49KbyQ3P6hiA0vlRuwPM=;
+        b=q0BaAl5+kP3Sh/dRbmVwNRqWsHobZ5OAxd3cWp27Gmkns/wtXKGwuf/v89CgLq0Kf1
+         ycnjSdTRcBvYQtRBgumPgmOWVfDOVndq1CPllNZnj6kDHIeiDS4mpZympmmIXORubHH1
+         kSxaeA54FUkUuO3jEiRTp+rFVI4p/eM1l0tqNvUbkv/N2NgXJz9vNPzj7S+UfUyGXm4X
+         zbseF3MCrx96pLGg7R4/CP222XeZKn5E9VboqBL09W6eRq9PR+7msIJTNK9fCGgFmc49
+         CurIWlTImZsbkeQFB68dJZcgXJVi9MfMtd3HJfAwmpjdafNnH/+RXTK2yIA17dWNd0Rb
+         uaFA==
+X-Gm-Message-State: APjAAAV0ZVCpJedw1hmbJAVzraZr5L1PovpBh//Stg5FHektAcinl1jg
+        7D3kkuhOr3vYruU6gxXvmAYU7lyMeac=
+X-Google-Smtp-Source: APXvYqyJ6kaEyj5IIfO5+eRuaORTbCt+3SmsHm9xZzq2vSNPweQNYWmpqmYvPksVo0AV5ApDEv+FtQ==
+X-Received: by 2002:a17:90a:3ae3:: with SMTP id b90mr13861251pjc.62.1576438121816;
+        Sun, 15 Dec 2019 11:28:41 -0800 (PST)
 Received: from cakuba.netronome.com (c-73-202-202-92.hsd1.ca.comcast.net. [73.202.202.92])
-        by smtp.gmail.com with ESMTPSA id h9sm19058804pfo.139.2019.12.15.11.22.17
+        by smtp.gmail.com with ESMTPSA id x4sm19056105pfx.68.2019.12.15.11.28.41
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 15 Dec 2019 11:22:17 -0800 (PST)
-Date:   Sun, 15 Dec 2019 11:22:14 -0800
+        Sun, 15 Dec 2019 11:28:41 -0800 (PST)
+Date:   Sun, 15 Dec 2019 11:28:39 -0800
 From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Arjun Roy <arjunroy.kdev@gmail.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, arjunroy@google.com,
-        soheil@google.com, edumazet@google.com
-Subject: Re: [PATCH net-next] tcp: Set rcv zerocopy hint correctly if skb
- last frag is < PAGE_SIZE.
-Message-ID: <20191215112214.3dd72168@cakuba.netronome.com>
-In-Reply-To: <20191212225930.233745-1-arjunroy.kdev@gmail.com>
-References: <20191212225930.233745-1-arjunroy.kdev@gmail.com>
+To:     Vishal Kulkarni <vishal@chelsio.com>
+Cc:     netdev@vger.kernel.org, davem@daveloft.net, nirranjan@chelsio.com,
+        Herat Ramani <herat@chelsio.com>
+Subject: Re: [PATCH net] cxgb4: Fix kernel panic while accessing sge_info
+Message-ID: <20191215112839.7844fbb7@cakuba.netronome.com>
+In-Reply-To: <1576199379-24260-1-git-send-email-vishal@chelsio.com>
+References: <1576199379-24260-1-git-send-email-vishal@chelsio.com>
 Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -63,35 +62,26 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 12 Dec 2019 14:59:30 -0800, Arjun Roy wrote:
-> At present, if the last frag of paged data in a skb has < PAGE_SIZE
-> data, we compute the recv_skip_hint as being equal to the size of that
-> frag and the entire next skb.
+On Fri, 13 Dec 2019 06:39:39 +0530, Vishal Kulkarni wrote:
+> The sge_info debugfs collects offload queue info even when offload capability
+> is disabled and leads to panic.
 > 
-> Instead, just return the runt frag size as the hint.
+> [  144.139871] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [  144.139874] CR2: 0000000000000000 CR3: 000000082d456005 CR4: 00000000001606e0
+> [  144.139876] Call Trace:
+> [  144.139887]  sge_queue_start+0x12/0x30 [cxgb4]
+> [  144.139897]  seq_read+0x1d4/0x3d0
+> [  144.139906]  full_proxy_read+0x50/0x70
+> [  144.139913]  vfs_read+0x89/0x140
+> [  144.139916]  ksys_read+0x55/0xd0
+> [  144.139924]  do_syscall_64+0x5b/0x1d0
+> [  144.139933]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+> [  144.139936] RIP: 0033:0x7f4b01493990
+> 
+> Fix this crash by skipping the offload queue access in sge_qinfo when
+> offload capability is disabled
+> 
+> Signed-off-by: Herat Ramani <herat@chelsio.com>
+> Signed-off-by: Vishal Kulkarni <vishal@chelsio.com>
 
-nit: this commit message doesn't really tell us why or what the effects
-     are going to be.
-
-> Signed-off-by: Arjun Roy <arjunroy@google.com>
-> Acked-by: Soheil Hassas Yeganeh <soheil@google.com>
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
-
-WARNING: Missing Signed-off-by: line by nominal patch author 'Arjun Roy <arjunroy.kdev@gmail.com>'
-
-You gotta send it from the same address you signed it off from.
- 
-> diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-> index 34490d972758..b9623d896469 100644
-> --- a/net/ipv4/tcp.c
-> +++ b/net/ipv4/tcp.c
-> @@ -1904,6 +1904,8 @@ static int tcp_zerocopy_receive(struct sock *sk,
->  	while (length + PAGE_SIZE <= zc->length) {
->  		if (zc->recv_skip_hint < PAGE_SIZE) {
->  			if (skb) {
-> +				if (zc->recv_skip_hint > 0)
-> +					break;
->  				skb = skb->next;
->  				offset = seq - TCP_SKB_CB(skb)->seq;
->  			} else {
-
+Applied, please provide Fixes tag in the future.
