@@ -2,109 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7300F12094A
-	for <lists+netdev@lfdr.de>; Mon, 16 Dec 2019 16:08:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3FDF0120953
+	for <lists+netdev@lfdr.de>; Mon, 16 Dec 2019 16:10:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728252AbfLPPGd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Dec 2019 10:06:33 -0500
-Received: from mail-lj1-f194.google.com ([209.85.208.194]:34899 "EHLO
-        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728209AbfLPPGd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Dec 2019 10:06:33 -0500
-Received: by mail-lj1-f194.google.com with SMTP id j6so7199682lja.2;
-        Mon, 16 Dec 2019 07:06:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=sXR+XaSEkLPT9kSH7VKAdCwPpWDQkSMLm1IXHrgrdUw=;
-        b=GTdiXbgTt30q2Juxsw9eIwtN5mS+t2RYeiFJWzg8c/cG4tqz61JS4mLgVIESdeZbuw
-         FrruhKLZmY9p5erdrlJ6Caiuq0kEhSCgMCkwesJw+nSCy4FGm5d+6+jNDilBnKA9P28G
-         Q6thA3mJmmc3xG4QqX4ObbQ0vabDnGVg1JGWq1rjqkEmcIRpy9tkbhpJ2hm4HR8hzfdC
-         WeeBMMIoiQ8hRmrLMzS4IiBueyp0ExrRg7+vf2vLetSOZKJiS/S7kRm1IcvtEsVBEkgU
-         Nr8Gw5vZQmW1ANiT7qejsRXxHw1ccCzCH68hcjhbnBOEvi7R8qBBpFzkcyl3v6LWzX9y
-         bB2Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=sXR+XaSEkLPT9kSH7VKAdCwPpWDQkSMLm1IXHrgrdUw=;
-        b=cAqIKZVGqw1VjdZRrfSeMn74hK+T55rMgNGMohxMXUtBp7+OoVLGYA5Xts/xOQeT1F
-         H1fmlohGx54JhbDrpbWSXYdpkBlM20mxeoY6b2zJ/dvxQiAFGEnTIO1t2xRUCSbGu913
-         MYIyFycrWvg2Op2xZUE+FBpMjcLQg1XiRzvaVzCejQ9zD6KhdSRixIdFcfPYKLN1bQys
-         FTfDbm/o+K+h6IqtQ19Mvxp9ura1VaFlmaEkgxydT6wvMTkYiR2OlSXEUZKdC4kIlk+6
-         eZRQVngXBCMP7FZqCyRtKa2/jvTPDQwVDhPxBrcNJStqzAVLFK6qB9PK/dvbmV6aOHH4
-         vuCw==
-X-Gm-Message-State: APjAAAVQdp7EYNtSpGY4kO/yKPZWExTaVVVvwdTWcB19fLc7uma9feh3
-        jD/GCc/Ex189GZl4pcSrSQkcdfuM7gW35NtRFeM=
-X-Google-Smtp-Source: APXvYqzn2XixlkwVfQZL19vcyNzrwovTiJEzwIjVzbOs9E8SaAz89Yt6AhH35bETgvqCq84Hl1uirYxSRRStY7v9OXY=
-X-Received: by 2002:a2e:999a:: with SMTP id w26mr20227802lji.142.1576508790901;
- Mon, 16 Dec 2019 07:06:30 -0800 (PST)
+        id S1728230AbfLPPJ6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Dec 2019 10:09:58 -0500
+Received: from www62.your-server.de ([213.133.104.62]:51152 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728109AbfLPPJ6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Dec 2019 10:09:58 -0500
+Received: from sslproxy01.your-server.de ([88.198.220.130])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1igs0R-0004Lt-4j; Mon, 16 Dec 2019 16:09:55 +0100
+Received: from [2001:1620:665:0:5795:5b0a:e5d5:5944] (helo=linux.fritz.box)
+        by sslproxy01.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1igs0Q-0000NE-Ld; Mon, 16 Dec 2019 16:09:54 +0100
+Subject: Re: [PATCH bpf-next v2 6/9] riscv, bpf: provide RISC-V specific JIT
+ image alloc/free
+To:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
+        ast@kernel.org, netdev@vger.kernel.org
+Cc:     linux-riscv@lists.infradead.org, bpf@vger.kernel.org,
+        paul.walmsley@sifive.com, palmer@dabbelt.com, aou@eecs.berkeley.edu
+References: <20191216091343.23260-1-bjorn.topel@gmail.com>
+ <20191216091343.23260-7-bjorn.topel@gmail.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <7ceab77a-92e7-6415-3045-3e16876d4ef8@iogearbox.net>
+Date:   Mon, 16 Dec 2019 16:09:53 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-References: <20191216110742.364456-1-toke@redhat.com> <71b7ba89-7780-8ce1-1b30-67ae6ebc214c@gmail.com>
-In-Reply-To: <71b7ba89-7780-8ce1-1b30-67ae6ebc214c@gmail.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Mon, 16 Dec 2019 07:06:19 -0800
-Message-ID: <CAADnVQKhFzGpA0F_rB4uMh25rbNSXeOTMeTKK8QfokevAK9nGw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] samples/bpf: Attach XDP programs in driver mode
- by default
-To:     David Ahern <dsahern@gmail.com>
-Cc:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>,
-        Jesper Dangaard Brouer <brouer@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20191216091343.23260-7-bjorn.topel@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.101.4/25665/Mon Dec 16 10:52:23 2019)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 16, 2019 at 7:01 AM David Ahern <dsahern@gmail.com> wrote:
->
-> On 12/16/19 4:07 AM, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
-> > When attaching XDP programs, userspace can set flags to request the att=
-ach
-> > mode (generic/SKB mode, driver mode or hw offloaded mode). If no such f=
-lags
-> > are requested, the kernel will attempt to attach in driver mode, and th=
-en
-> > silently fall back to SKB mode if this fails.
-> >
-> > The silent fallback is a major source of user confusion, as users will =
-try
-> > to load a program on a device without XDP support, and instead of an er=
-ror
-> > they will get the silent fallback behaviour, not notice, and then wonde=
-r
-> > why performance is not what they were expecting.
-> >
-> > In an attempt to combat this, let's switch all the samples to default t=
-o
-> > explicitly requesting driver-mode attach. As part of this, ensure that =
-all
-> > the userspace utilities have a switch to enable SKB mode. For those tha=
-t
-> > have a switch to request driver mode, keep it but turn it into a no-op.
-> >
-> > Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
-> > ---
-> >  samples/bpf/xdp1_user.c             |  5 ++++-
-> >  samples/bpf/xdp_adjust_tail_user.c  |  5 ++++-
-> >  samples/bpf/xdp_fwd_user.c          | 17 ++++++++++++++---
-> >  samples/bpf/xdp_redirect_cpu_user.c |  4 ++++
-> >  samples/bpf/xdp_redirect_map_user.c |  5 ++++-
-> >  samples/bpf/xdp_redirect_user.c     |  5 ++++-
-> >  samples/bpf/xdp_router_ipv4_user.c  |  3 +++
-> >  samples/bpf/xdp_rxq_info_user.c     |  4 ++++
-> >  samples/bpf/xdp_sample_pkts_user.c  | 12 +++++++++---
-> >  samples/bpf/xdp_tx_iptunnel_user.c  |  5 ++++-
-> >  samples/bpf/xdpsock_user.c          |  5 ++++-
-> >  11 files changed, 58 insertions(+), 12 deletions(-)
-> >
->
-> Acked-by: David Ahern <dsahern@gmail.com>
+On 12/16/19 10:13 AM, Björn Töpel wrote:
+> This commit makes sure that the JIT images is kept close to the kernel
+> text, so BPF calls can use relative calling with auipc/jalr or jal
+> instead of loading the full 64-bit address and jalr.
+> 
+> The BPF JIT image region is 128 MB before the kernel text.
+> 
+> Signed-off-by: Björn Töpel <bjorn.topel@gmail.com>
+> ---
+>   arch/riscv/include/asm/pgtable.h |  4 ++++
+>   arch/riscv/net/bpf_jit_comp.c    | 13 +++++++++++++
+>   2 files changed, 17 insertions(+)
+> 
+> diff --git a/arch/riscv/include/asm/pgtable.h b/arch/riscv/include/asm/pgtable.h
+> index 7ff0ed4f292e..cc3f49415620 100644
+> --- a/arch/riscv/include/asm/pgtable.h
+> +++ b/arch/riscv/include/asm/pgtable.h
+> @@ -404,6 +404,10 @@ static inline int ptep_clear_flush_young(struct vm_area_struct *vma,
+>   #define VMALLOC_END      (PAGE_OFFSET - 1)
+>   #define VMALLOC_START    (PAGE_OFFSET - VMALLOC_SIZE)
+>   
+> +#define BPF_JIT_REGION_SIZE	(SZ_128M)
+> +#define BPF_JIT_REGION_START	(PAGE_OFFSET - BPF_JIT_REGION_SIZE)
+> +#define BPF_JIT_REGION_END	(VMALLOC_END)
+> +
 
-Applied. Thanks
+Series looks good to me, thanks; I'd like to get an ACK from Palmer/others on this one.
+
+>   /*
+>    * Roughly size the vmemmap space to be large enough to fit enough
+>    * struct pages to map half the virtual address space. Then
+> diff --git a/arch/riscv/net/bpf_jit_comp.c b/arch/riscv/net/bpf_jit_comp.c
+> index 8aa19c846881..46cff093f526 100644
+> --- a/arch/riscv/net/bpf_jit_comp.c
+> +++ b/arch/riscv/net/bpf_jit_comp.c
+> @@ -1656,3 +1656,16 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
+>   					   tmp : orig_prog);
+>   	return prog;
+>   }
+> +
+> +void *bpf_jit_alloc_exec(unsigned long size)
+> +{
+> +	return __vmalloc_node_range(size, PAGE_SIZE, BPF_JIT_REGION_START,
+> +				    BPF_JIT_REGION_END, GFP_KERNEL,
+> +				    PAGE_KERNEL_EXEC, 0, NUMA_NO_NODE,
+> +				    __builtin_return_address(0));
+> +}
+> +
+> +void bpf_jit_free_exec(void *addr)
+> +{
+> +	return vfree(addr);
+> +}
+> 
+
