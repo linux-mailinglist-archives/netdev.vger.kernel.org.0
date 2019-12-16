@@ -2,122 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7775412100A
-	for <lists+netdev@lfdr.de>; Mon, 16 Dec 2019 17:49:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 70DEA121035
+	for <lists+netdev@lfdr.de>; Mon, 16 Dec 2019 17:55:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726445AbfLPQs3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Dec 2019 11:48:29 -0500
-Received: from lelv0143.ext.ti.com ([198.47.23.248]:47842 "EHLO
-        lelv0143.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726181AbfLPQs3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Dec 2019 11:48:29 -0500
-Received: from fllv0035.itg.ti.com ([10.64.41.0])
-        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id xBGGmK7M116658;
-        Mon, 16 Dec 2019 10:48:20 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1576514900;
-        bh=E8cAU7+MB+4BYy8FUXOpTiym8OEe6L9I9E+KPgdjx+I=;
-        h=Subject:To:References:From:Date:In-Reply-To;
-        b=OuYnTK41m/ySQLE+wmmbkA6lh3DRwfeicXIuqYnnzBrVo+KoGNKtkGoVofLpDNK0Y
-         8rof1vJ8eeMoL5+0j25t9xFOxtApMznfBjAz2SlVDBcHUngPkk/HMzbHvG4+65i4z+
-         LN4RQH5HmmRMp77CfEq4ItcybX0rE0YnpBHOdqQc=
-Received: from DFLE109.ent.ti.com (dfle109.ent.ti.com [10.64.6.30])
-        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTP id xBGGmJPq034481;
-        Mon, 16 Dec 2019 10:48:20 -0600
-Received: from DFLE112.ent.ti.com (10.64.6.33) by DFLE109.ent.ti.com
- (10.64.6.30) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3; Mon, 16
- Dec 2019 10:48:19 -0600
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DFLE112.ent.ti.com
- (10.64.6.33) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3 via
- Frontend Transport; Mon, 16 Dec 2019 10:48:19 -0600
-Received: from [158.218.117.45] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id xBGGmIl0046798;
-        Mon, 16 Dec 2019 10:48:18 -0600
-Subject: Re: RSTP with switchdev question
-To:     <netdev@vger.kernel.org>, "Kwok, WingMan" <w-kwok2@ti.com>,
-        <andrew@lunn.ch>, <vivien.didelot@gmail.com>,
-        <f.fainelli@gmail.com>, <jiri@resnulli.us>, <ivecera@redhat.com>
-References: <c234beeb-5511-f33c-1232-638e9c9a3ac2@ti.com>
-From:   Murali Karicheri <m-karicheri2@ti.com>
-Message-ID: <7ca19413-1ac5-946c-c4d0-3d9d5d88e634@ti.com>
-Date:   Mon, 16 Dec 2019 11:55:05 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
- Thunderbird/52.7.0
+        id S1726515AbfLPQzg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Dec 2019 11:55:36 -0500
+Received: from mail-pj1-f68.google.com ([209.85.216.68]:39998 "EHLO
+        mail-pj1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725805AbfLPQzg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Dec 2019 11:55:36 -0500
+Received: by mail-pj1-f68.google.com with SMTP id s35so3228389pjb.7
+        for <netdev@vger.kernel.org>; Mon, 16 Dec 2019 08:55:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=RZ3FMFMV6y5ZTjXPQGyK71brBjPOnI5E8F5urgggObY=;
+        b=CriwyJW8no61Qqq/BRXcxKIGkQlUFjI8xXuvFz6O6+6SOpG8o1gMxSJmxR8IMnmQaZ
+         kRws9XbP7czyQ1SxhgF0Oa1Tqffg5CI1dUbySTnR5HOETNo6B4QnnnCH23Ve16vASaUq
+         mvGpF1gQDROEF0DdLIPL97Dly+G+kwwJlTyiyHQlEuFJkDnwmhGdyfttAeJJtS79Be9W
+         HwkAK2iCAYWLnoUrlKXv7BrQjFhLX2RMvEHMl/VBG7XHIPrxpZRmZBeafHdLCqmKlGo1
+         oT+kgWF04uWjsaRCDm6MNttJzyovoqabVr2IMoEDOYWDl1YqdphROAa7SUJ9dQytEnDq
+         Vu6A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=RZ3FMFMV6y5ZTjXPQGyK71brBjPOnI5E8F5urgggObY=;
+        b=FU2+FLISJI/3zO+VT0H8sTOSDQJnOv7RMEM+ydpU+f6cqbWnn4ImQFN17zvH5brNxt
+         02IRn9yNbNycwEsuxx3kAszsj/R8GUclltYQyq3tbr/Vmcl+6IUFUCQYNDZkZUImt5uh
+         +y4O5l83lhdYq2B2UGqC0UXdcIWcTwbSt2RobtOigzzoTIrsqvSdMvg34NSGZeOgCooB
+         WPG9lka+MoA0QQnusi8OngEc8Bv+p/sscKg6XNtSFMGQLVq9hw/F3S4z015ruQHNuHmZ
+         lUON7exRIprn5L36FvISyVnYFieyib6pWa4vLOL1LdMwffwROwLnVouxL5VKMQ63aCW7
+         qnsQ==
+X-Gm-Message-State: APjAAAVwjmxdffVGgMXgfEXoVcBXX5rIYSnXkZt9oE9IQDJM3W1NeAI8
+        A/O/vjXS0tWS26zXHttmSlM=
+X-Google-Smtp-Source: APXvYqybcxiZem2ukWyW+P89sTBBeEPrS1ooYagqg/Azx3xAMDui6ZKy8ywbKfcFWdvcXsMqC1Hz9A==
+X-Received: by 2002:a17:902:265:: with SMTP id 92mr16850815plc.313.1576515335810;
+        Mon, 16 Dec 2019 08:55:35 -0800 (PST)
+Received: from ?IPv6:2620:15c:2c1:200:55c7:81e6:c7d8:94b? ([2620:15c:2c1:200:55c7:81e6:c7d8:94b])
+        by smtp.gmail.com with ESMTPSA id d22sm22891673pgg.52.2019.12.16.08.55.34
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 16 Dec 2019 08:55:35 -0800 (PST)
+Subject: Re: [MPTCP] Re: [PATCH net-next 09/11] tcp: Check for filled TCP
+ option space before SACK
+To:     Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        netdev@vger.kernel.org, mptcp@lists.01.org
+References: <20191213230022.28144-1-mathew.j.martineau@linux.intel.com>
+ <20191213230022.28144-10-mathew.j.martineau@linux.intel.com>
+ <47545b88-94db-e9cd-2f9f-2c6d665246e2@gmail.com>
+ <b9833b748f61c043a2827daee060d4ad4171996e.camel@redhat.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <d5b3a6ed-fb57-e74d-ef63-ebc4ce49e4b7@gmail.com>
+Date:   Mon, 16 Dec 2019 08:55:34 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-In-Reply-To: <c234beeb-5511-f33c-1232-638e9c9a3ac2@ti.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
+In-Reply-To: <b9833b748f61c043a2827daee060d4ad4171996e.camel@redhat.com>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-+ switchdev/DSA experts
 
-On 12/13/2019 04:18 PM, Murali Karicheri wrote:
-> Hi Netdev experts,
+
+On 12/16/19 4:52 AM, Paolo Abeni wrote:
+
+> Thank you for the feedback!
 > 
-> We are working on a switchdev based switch driver with L2 and stp
-> offload.  Implemented the driver based on
-> Documentation/networking/switchdev.txt
-> Currently seeing an issue with switch over of a link failure. So
-> wondering how this is supposed to work. So any help on this will
-> be highy appreciated.
+> Unfortunatelly, the above commit is not enough when MPTCP is enabled,
+> as, without this patch, we can reach the following code:
 > 
+> 		const unsigned int remaining = MAX_TCP_OPTION_SPACE - size;
+> 		opts->num_sack_blocks =
+> 			min_t(unsigned int, eff_sacks,
+> 			      (remaining - TCPOLEN_SACK_BASE_ALIGNED) /
+> 			      TCPOLEN_SACK_PERBLOCK);
 > 
->                    0     1
->   |-------X---------- B ----------------------|
->   A                                           C root
->   |-------------------------------------------|
-> 
->                   Figure 1)
-> 
-> At the start, A, B and C nodes are brought up and mstpd is started
-> on all nodes and we get a toplogy as above with X marking the link
-> that breaks the loop. We run a Ping from C to A and it works fine
-> and takes the direct path from C to A. We then simulate a link
-> failure to trigger topology change by disconnecting of the link
-> A to C. Switch over happens and the topology gets updated quickly
-> and we get the one below in Figure 2).
-> 
-> Case 2)
->                    0     1
->   |------------------ B ----------------------|
->   A                                           C root
->   |-------------------X-----------------------|
->                  Figure 2)
-> 
-> The ping stops and resume after about 30 seconds instead of right
-> away as expected in rstp case which should be in milliseconds. On
-> debug we found following happening.
-> 
-> 1) In the steady state, the fdb dump at the firmware on B (This
->     implements the switch) shows that both A and C appears on port
->     1 as expected.
-> 2  After switch over, Ping frame from C with A's MAC address gets
->     sent to B.  However B's fdb entry is still showing it is at
->     port 1. Since the frame arrived from C, it drops the frame.
-> 
-> So the question is, in this scenario, how does the data path
-> restored quickly? Looks like for this to happen FDB at the nodes
-> needs to get flushed or re-learned so that it will show all nodes
-> at the correct port in the new topology. So in this case at node
-> B, A should appear on port 0 instead of port 1 so that L2
-> forwarding happens correctly? As expected, if another ping is
-> initiated from A to C, the other ping (C to A) starts working as
-> the FDB at B is updated. But if data path needs to be restored
-> quickly, these fdb update should happen immediately. How does
-> this happen?
-> 
-> Thanks
-> 
-> Murali
+> with 'size == MAX_TCP_OPTION_SPACE' and num_sack_blocks will be
+> miscalculated. So we need 'fix' but only for MPTCP/when MPTCP is
+> enabled. Still ok for a -net commit?
 > 
 
--- 
-Murali Karicheri
-Texas Instruments
+Does it means MPTCP flows can not use SACK at all ? That would be very bad.
+
+What is the size of MPTCP options ?
+
