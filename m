@@ -2,82 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 044D71215EC
-	for <lists+netdev@lfdr.de>; Mon, 16 Dec 2019 19:25:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 830D81215AD
+	for <lists+netdev@lfdr.de>; Mon, 16 Dec 2019 19:23:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732124AbfLPSZU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Dec 2019 13:25:20 -0500
-Received: from mail-qt1-f195.google.com ([209.85.160.195]:37084 "EHLO
-        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731626AbfLPSSL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Dec 2019 13:18:11 -0500
-Received: by mail-qt1-f195.google.com with SMTP id w47so6535631qtk.4;
-        Mon, 16 Dec 2019 10:18:10 -0800 (PST)
+        id S1732049AbfLPSXs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Dec 2019 13:23:48 -0500
+Received: from mail-qk1-f193.google.com ([209.85.222.193]:33344 "EHLO
+        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731580AbfLPSTx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Dec 2019 13:19:53 -0500
+Received: by mail-qk1-f193.google.com with SMTP id d71so4147774qkc.0;
+        Mon, 16 Dec 2019 10:19:52 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=aVIdbmjhSDvYURdJGBO4hrAy6vilyOLyBTa9JUkr1Bc=;
-        b=uNc57GS+pK9ryCHUL2YKrn+2eyUx9v0c7/GcpGykHEXM+J7jI4N7aKP1ir2aZsQ7aM
-         LSiq6oZuIg7lhCngpRn8W21ORm5YdRq2+0xqFkRQNcdOcbbRWwY6hmEjYVS1RkiekbsC
-         Mb/OZYvL5bQ+SIj1ne/rPXGOf9AXs+mJle60CXaXMSoNWP30OdEZ89ZuKeWEhbi0Sljq
-         3Gn6DGbSfI7YZ3Y89wFqDzpcS7724iu/jKYVs9FZeEZ+O4Sb9GwwqhztumFOCQ8MHErJ
-         lonrSxOKVC7+vFGho2O2PmrnJOliDA8RrKiY/bSe5amUGPBBWWZCRl4q1lC3GrO12XP6
-         tj0g==
+         :cc;
+        bh=Bw9AtwUBEToIbGXQOuZTfxn3HP4b1RzcJoAgplBWH2c=;
+        b=cH3p/ut94iaUViO3y6KSqV/aq/x4Rn73X0jksVn0LK2n9cPrIc+V0pEPbzUdeyHGml
+         u9aqjkgCfxMA/FTtPVcEB00vnG25Ut1eD/D05A52OjDRkscktTxR+gFJWZH5aALTuwz5
+         Tts0cBhxS6F7cF65RCW33UfiaMdSm9S9wykAGbjuXk/AwElaY03py4wbXW8tOE4NSlfI
+         /bOU9DkEyHnZRKy8gO2Cy7r3IzJYVOQ2g+vBL4m+BVpOqUyBgAm8a8GX0mLBL8jW5ygJ
+         JaZfUSX81x3CsMAvfHJd0ssZU9NoKkjW3xPATmlppjvkQEx+sJIB9W5QZROABFxionGv
+         nryg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=aVIdbmjhSDvYURdJGBO4hrAy6vilyOLyBTa9JUkr1Bc=;
-        b=PDdnGxliwX/3QU9dwVEw9mFmb0V3Ii6sY/EQ0MWYSUzQ//rq9yOKZrmMNRDE6v0o+T
-         WIxGuNFYSTu+8RWFgSSDnKf4J6rrg5IEIp5ZMCtiaztcaaQ+6Tvn3FZIjSLc9fBcX1KB
-         4M0przYAfPxtrr2FB883OUsm5YeTCTazpeb+7DdFeEbsJo28fdePr49qN/aIfjUElt6q
-         kLllPpvfSPzQCyWqCKuLXNVWsdcKMG/wxRchogQYt9CyzEeH8nCe1bekPZwP2WN4BDZH
-         hRgzBPyj6IVcvmyrCX/m0phaE8t5AR4S7QVBibK3mxs07Kzi+zgifW4w0sjd9z0LWO3C
-         pl/Q==
-X-Gm-Message-State: APjAAAXu2WBkr6v2dGrVMMvKAdBGSKTy0RyOE0LaWJZ63Y+K5HQzgaAk
-        22IG15s4zBPq3m745WepsQo/7I4rB94D0EYKidM=
-X-Google-Smtp-Source: APXvYqwNnMS/sGLMh1yvh3HaMoQe/JLQ94GhBaO27PGikqE7HgtGlM57avSLnco+xhHngt1Qye1+dTrwQFBq7nXFma4=
-X-Received: by 2002:ac8:2310:: with SMTP id a16mr621495qta.46.1576520290280;
- Mon, 16 Dec 2019 10:18:10 -0800 (PST)
+         :message-id:subject:to:cc;
+        bh=Bw9AtwUBEToIbGXQOuZTfxn3HP4b1RzcJoAgplBWH2c=;
+        b=GJJVwZHs6wQLIDDuHshzxtGx9/jYpFgR44zxe3WSc9uL2MWyooxEyvHPvUalWOpj8b
+         H22Jh1RaiiPgLZedFJIMAlVtDAIAniC7hxGAw9iSlzAeX2OIZDPk6ITOH0mLuU8sZPHm
+         IuGSMHQCCGW17Hb1RxMuDg4/AnB9B+R9C5MZN8zWewb84GBklIq6XRCcixYGQEqixpPA
+         iGOa11WBPnn781mrS58bVcXL2k1uzYeZMiqhohGPga+UsWrBhm99IQGiinGr5L8mMHVq
+         bZOTnYTjTtkVlhvi48fVVHNhwbPRmXOsLBRUWdIv7kTJLWs0MC4cUrFwEb4XRzTDLvc3
+         hMHA==
+X-Gm-Message-State: APjAAAVI/AEU62sNs6NLBHBZoCNp/ZttpmI3ECvi0ktdCChdIv6AtTim
+        dqxghcEbr1yNusvmI1xiCH7iGDezsglyT3mkDmI=
+X-Google-Smtp-Source: APXvYqwJpt3UQMEjQS85Yx5PyPIijZpDnPfaLMLs2iNueOb9WoyL5nKMdZY7eJ5tDzg51LiccfXVf/XmgTJm2amIfrc=
+X-Received: by 2002:a37:a685:: with SMTP id p127mr610490qke.449.1576520391767;
+ Mon, 16 Dec 2019 10:19:51 -0800 (PST)
 MIME-Version: 1.0
-References: <20191216152715.711308-1-toke@redhat.com>
-In-Reply-To: <20191216152715.711308-1-toke@redhat.com>
-From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
-Date:   Mon, 16 Dec 2019 19:17:59 +0100
-Message-ID: <CAJ+HfNhYG_hzuFzX5sAH7ReotLtZWTP_9D2jA_iVMg+jUtXXCw@mail.gmail.com>
-Subject: Re: [RFC PATCH bpf-next] xdp: Add tracepoint on XDP program return
-To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Ido Schimmel <idosch@idosch.org>
+References: <20191214014710.3449601-1-andriin@fb.com> <20191214014710.3449601-3-andriin@fb.com>
+ <20191216124347.GB14887@linux.fritz.box>
+In-Reply-To: <20191216124347.GB14887@linux.fritz.box>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 16 Dec 2019 10:19:40 -0800
+Message-ID: <CAEf4BzbQFPX7=QLPAv-A4FtK=bVQaA+=gbSJ1DEQ4y-bfY+ffw@mail.gmail.com>
+Subject: Re: [PATCH v4 bpf-next 2/4] libbpf: support libbpf-provided extern variables
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Kernel Team <kernel-team@fb.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 16 Dec 2019 at 16:28, Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat=
-.com> wrote:
+On Mon, Dec 16, 2019 at 4:43 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
 >
-> This adds a new tracepoint, xdp_prog_return, which is triggered at every
-> XDP program return. This was first discussed back in August[0] as a way t=
-o
-> hook XDP into the kernel drop_monitor framework, to have a one-stop place
-> to find all packet drops in the system.
+> On Fri, Dec 13, 2019 at 05:47:08PM -0800, Andrii Nakryiko wrote:
+> [...]
+> > Config file itself is searched in /boot/config-$(uname -r) location with
+> > fallback to /proc/config.gz, unless config path is specified explicitly
+> > through bpf_object_open_opts' kernel_config_path option. Both gzipped and
+> > plain text formats are supported. Libbpf adds explicit dependency on zlib
+> > because of this, but this shouldn't be a problem, given libelf already depends
+> > on zlib.
 >
-> Because trace/events/xdp.h includes filter.h, some ifdef guarding is need=
-ed
-> to be able to use the tracepoint from bpf_prog_run_xdp(). If anyone has a=
-ny
-> ideas for how to improve on this, please to speak up. Sending this RFC
-> because of this issue, and to get some feedback from Ido on whether this
-> tracepoint has enough data for drop_monitor usage.
+> Hm, given this seems to break the build and is not an essential feature,
+> can't we use the feature detection from tooling infra which you invoke
+> anyway to compile out bpf_object__read_kernel_config() internals and return
+> an error there? Build could warn perf-style what won't be available for
+> the user in that case.
 >
+> https://patchwork.ozlabs.org/patch/1210213/
 
-I get that it would be useful, but can it be solved with BPF tracing
-(i.e. tracing BPF with BPF)? It would be neat not adding another
-tracepoint in the fast-path...
+libz is a dependency of libelf, so this doesn't really add any new
+dependencies. Everywhere where libbpf could be built, both libelf and
+libz should be present already. Unfortunately now that libz is
+directly used by libbpf, though, it needs to be specified explicitly
+in compiler invocation, which I missed for samples/bpf, sorry about
+that.
+
+>
+> Also, does libbpf.pc.template need updating wrt zlib?
+
+Yeah, wasn't aware of it, will post a follow-up patch adding -lz there. Thanks!
