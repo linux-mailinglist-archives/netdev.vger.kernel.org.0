@@ -2,93 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BECEB120FE6
-	for <lists+netdev@lfdr.de>; Mon, 16 Dec 2019 17:45:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5AF4F120FEA
+	for <lists+netdev@lfdr.de>; Mon, 16 Dec 2019 17:45:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726275AbfLPQov (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Dec 2019 11:44:51 -0500
-Received: from mail-qk1-f194.google.com ([209.85.222.194]:41486 "EHLO
-        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725805AbfLPQov (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Dec 2019 11:44:51 -0500
-Received: by mail-qk1-f194.google.com with SMTP id u5so5014277qkf.8
-        for <netdev@vger.kernel.org>; Mon, 16 Dec 2019 08:44:50 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=i4LE41vD04VyJUrDe/wg27Hmmh8eR5NCXNXC2uGBs8s=;
-        b=rlhAIi0J+KRYPt5OoZ3QsGvIIYQezegpvd9rX0uZefpTpiS5AMXa3qYE196T3KNrCK
-         iy3nwv11/LYnmINxJCqgTFn2TtYptHP1FVUL1Jzs3vtu9Qq232R1JJTKbmQ50Y0NTwqN
-         n3XzdEC5EJDt4BEBuuL9h35kSG6aNSomXDjhHjJ4AldMGRe1wwFBolue0rsHl9O7Bb2L
-         ZiedtiYK6RUuwcIVVteCkKh+kogRiR7hAMf8myupsKNUEaZZxmULhnj0pu1QWYsWya/T
-         SmVb6J1YlYrYOPB9Hyqib5oecrKUlDsEL4yO0inzMCvaauSvs7QnckwY3uL32oPZNBy3
-         EDPw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=i4LE41vD04VyJUrDe/wg27Hmmh8eR5NCXNXC2uGBs8s=;
-        b=PbRaiV7k4HnmJlL8D14qTbd27+L9FkHTlFMOnBReXOcekloThziixV+GL8VgcdnJAF
-         ZA/RFL9afsJQg2p1vhXiNgbZ2uFdxCS5yXt1v4EooHe9fYNbRzaplHAwG3lRin4uIDeu
-         YwqHOmITZqpC4oOZFAgMG61/eK6mnJDbRzI4o75OKIXYofHzK/5sURy0Nx42r2jo52Kx
-         7DuKhmYxjj33r5qIpjw/kNhczwlWOxUWKnjyd1+2sS1QaAF0ZNQEIJYvbqFxOMLN4Evv
-         wf7Rtr3QMuLH/jFvcu9MYxSSorwdO9HmXNKxA7JLnxu+Hx0bYGNAeCjG8xCo8THmsC9R
-         bOnA==
-X-Gm-Message-State: APjAAAXi3aZ//GtNBDQvgvMuXbtEgtynUjNP6s/pwcVzPe8jYoNDtD6U
-        B8yfkXCXROGMj78kNLXqYaU=
-X-Google-Smtp-Source: APXvYqxk4QSOrRvVDt/CMTQKx01E/ow6E0C3P9AHUkRt2+6P8pRmVtER6HdNz7Kh9lBcZ7VVMx3IRg==
-X-Received: by 2002:a05:620a:134d:: with SMTP id c13mr147242qkl.322.1576514690427;
-        Mon, 16 Dec 2019 08:44:50 -0800 (PST)
-Received: from ?IPv6:2601:284:8202:10b0:c48d:b570:ebb:18d9? ([2601:284:8202:10b0:c48d:b570:ebb:18d9])
-        by smtp.googlemail.com with ESMTPSA id e130sm6127004qkb.72.2019.12.16.08.44.49
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 16 Dec 2019 08:44:49 -0800 (PST)
-Subject: Re: [PATCH net-next v2 10/10] ipv4: Remove old route notifications
- and convert listeners
-To:     Ido Schimmel <idosch@idosch.org>, netdev@vger.kernel.org
-Cc:     davem@davemloft.net, roopa@cumulusnetworks.com, jiri@mellanox.com,
-        jakub.kicinski@netronome.com, mlxsw@mellanox.com,
-        Ido Schimmel <idosch@mellanox.com>
-References: <20191214155315.613186-1-idosch@idosch.org>
- <20191214155315.613186-11-idosch@idosch.org>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <e6d5c5e7-deeb-69a2-08d3-b1c75b8b92fe@gmail.com>
-Date:   Mon, 16 Dec 2019 09:44:48 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0)
- Gecko/20100101 Thunderbird/68.3.0
-MIME-Version: 1.0
-In-Reply-To: <20191214155315.613186-11-idosch@idosch.org>
-Content-Type: text/plain; charset=utf-8
+        id S1726487AbfLPQpj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Dec 2019 11:45:39 -0500
+Received: from eu-smtp-delivery-151.mimecast.com ([207.82.80.151]:36493 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725805AbfLPQpj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Dec 2019 11:45:39 -0500
+Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ uk-mta-48-DDDIDTkbM2-IdtSXm6boZQ-1; Mon, 16 Dec 2019 16:45:36 +0000
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
+ Server (TLS) id 15.0.1347.2; Mon, 16 Dec 2019 16:45:35 +0000
+Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
+ AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
+ Mon, 16 Dec 2019 16:45:35 +0000
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     =?utf-8?B?J0Jqw7ZybiBUw7ZwZWwn?= <bjorn.topel@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "ast@kernel.org" <ast@kernel.org>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>
+CC:     =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "magnus.karlsson@gmail.com" <magnus.karlsson@gmail.com>,
+        "magnus.karlsson@intel.com" <magnus.karlsson@intel.com>,
+        "jonathan.lemon@gmail.com" <jonathan.lemon@gmail.com>,
+        "ecree@solarflare.com" <ecree@solarflare.com>,
+        "thoiland@redhat.com" <thoiland@redhat.com>,
+        "brouer@redhat.com" <brouer@redhat.com>,
+        "andrii.nakryiko@gmail.com" <andrii.nakryiko@gmail.com>
+Subject: RE: [PATCH bpf-next v5 6/6] bpf, x86: align dispatcher branch targets
+ to 16B
+Thread-Topic: [PATCH bpf-next v5 6/6] bpf, x86: align dispatcher branch
+ targets to 16B
+Thread-Index: AQHVsd4ABA0oC/ymIkOBdFAQgZTG6qe8+uVQ
+Date:   Mon, 16 Dec 2019 16:45:35 +0000
+Message-ID: <1cb77c2dcfeb495c9e7c417edd7f43cc@AcuMS.aculab.com>
+References: <20191213175112.30208-1-bjorn.topel@gmail.com>
+ <20191213175112.30208-7-bjorn.topel@gmail.com>
+In-Reply-To: <20191213175112.30208-7-bjorn.topel@gmail.com>
+Accept-Language: en-GB, en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
+MIME-Version: 1.0
+X-MC-Unique: DDDIDTkbM2-IdtSXm6boZQ-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/14/19 8:53 AM, Ido Schimmel wrote:
-> From: Ido Schimmel <idosch@mellanox.com>
-> 
-> Unlike mlxsw, the other listeners to the FIB notification chain do not
-> require any special modifications as they never considered multiple
-> identical routes.
-> 
-> This patch removes the old route notifications and converts all the
-> listeners to use the new replace / delete notifications.
-> 
-> Signed-off-by: Ido Schimmel <idosch@mellanox.com>
-> ---
->  .../net/ethernet/mellanox/mlx5/core/lag_mp.c  |  4 --
->  .../ethernet/mellanox/mlxsw/spectrum_router.c | 11 +++---
->  drivers/net/ethernet/rocker/rocker_main.c     |  4 +-
->  drivers/net/netdevsim/fib.c                   |  4 +-
->  include/net/fib_notifier.h                    |  2 -
->  net/ipv4/fib_trie.c                           | 38 ++++---------------
->  6 files changed, 16 insertions(+), 47 deletions(-)
-> 
-
-Reviewed-by: David Ahern <dsahern@gmail.com>
-
+RnJvbTogQmrDtnJuIFTDtnBlbA0KPiBTZW50OiAxMyBEZWNlbWJlciAyMDE5IDE3OjUxDQo+IEZy
+b206IEJqw7ZybiBUw7ZwZWwgPGJqb3JuLnRvcGVsQGludGVsLmNvbT4NCj4gDQo+IEZyb20gSW50
+ZWwgNjQgYW5kIElBLTMyIEFyY2hpdGVjdHVyZXMgT3B0aW1pemF0aW9uIFJlZmVyZW5jZSBNYW51
+YWwsDQo+IDMuNC4xLjQgQ29kZSBBbGlnbm1lbnQsIEFzc2VtYmx5L0NvbXBpbGVyIENvZGluZyBS
+dWxlIDExOiBBbGwgYnJhbmNoDQo+IHRhcmdldHMgc2hvdWxkIGJlIDE2LWJ5dGUgYWxpZ25lZC4N
+Cj4gDQo+IFRoaXMgY29tbWl0cyBhbGlnbnMgYnJhbmNoIHRhcmdldHMgYWNjb3JkaW5nIHRvIHRo
+ZSBJbnRlbCBtYW51YWwuDQoNCkknZCBJZ25vcmUgdGhhdCBhZHZpY2UuLi4uDQpJdCBtYWtlcyB2
+ZXJ5IGxpdHRsZSBkaWZmZXJlbmNlLCBhbmQgbm9uZSBhdCBhbGwgb24gbW9yZSByZWNlbnQgY3B1
+Lg0KUmVhZCBodHRwczovL3d3dy5hZ25lci5vcmcvb3B0aW1pemUvbWljcm9hcmNoaXRlY3R1cmUu
+cGRmDQpUaGUgZXh0cmEgY2FjaGUgZm9vdHByaW50IHByb2JhYmx5IG1ha2VzIGEgYmlnZ2VyIGRp
+ZmZlcmVuY2UuDQoNCglEYXZpZA0KDQotDQpSZWdpc3RlcmVkIEFkZHJlc3MgTGFrZXNpZGUsIEJy
+YW1sZXkgUm9hZCwgTW91bnQgRmFybSwgTWlsdG9uIEtleW5lcywgTUsxIDFQVCwgVUsNClJlZ2lz
+dHJhdGlvbiBObzogMTM5NzM4NiAoV2FsZXMpDQo=
 
