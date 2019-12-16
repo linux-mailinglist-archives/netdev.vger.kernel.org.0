@@ -2,164 +2,208 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BD510120958
-	for <lists+netdev@lfdr.de>; Mon, 16 Dec 2019 16:11:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 341141209AB
+	for <lists+netdev@lfdr.de>; Mon, 16 Dec 2019 16:28:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728278AbfLPPKp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Dec 2019 10:10:45 -0500
-Received: from mail-oi1-f194.google.com ([209.85.167.194]:45048 "EHLO
-        mail-oi1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728211AbfLPPKo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Dec 2019 10:10:44 -0500
-Received: by mail-oi1-f194.google.com with SMTP id d62so3517512oia.11;
-        Mon, 16 Dec 2019 07:10:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=7t807zYoSpdLCWGnswiojdM2ajpp5VPd6hbWcLf1dLU=;
-        b=n5MfjoFKQrBfHZwB8rJKUklIAxbDeXhvQlRIohDfUqsxWRDRWNWY0nHUaPZjUytnKR
-         zlCXE0YujnqOZZxlrQ0wSQeEvmfCDCytSJpmxrkVfvmU+zrb64yRbgfAXLSuI+kMPu4P
-         uqi8MizsJeK8ZXxBa9QtR6eGDByImHh2MEFpsI/sA8K4CsdVg7Dh1CTCjSYb34yowRYI
-         t64/zo4KMSfoRMnBT9QmyF1Tmlm9B+wK+GO7osERFdLNKD877BFSkkwOZ67E2GAkRg/g
-         EdhQsbfrXWZQHQJAQp1QS40+10G2vASwEqoFm5wWtTMQavXw/wR+zUSnoVauN6X5pOK6
-         wSxg==
+        id S1728443AbfLPP1w (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Dec 2019 10:27:52 -0500
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:30076 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1728392AbfLPP1v (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Dec 2019 10:27:51 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1576510069;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=p19K4nNZBjlA/2QraodRTLoohxP7l5DJnVKPrMnOfvs=;
+        b=GTWHr/mvq9pR1cCVSMEqUuUa5XGFc8wyPSXQSaH5aHjWmvO2qnLo9CuFjf2SPo1iEVulMM
+        HqPuTO0gkF7hqM8fEtVSxxSqOYzxyWt/qJCH3vzasYjfrMPue7Fl4nk/XJc+9YJICLYA6J
+        32D1dWB1J4mSBcCXXbiTZhq4dVGQP1Q=
+Received: from mail-lj1-f200.google.com (mail-lj1-f200.google.com
+ [209.85.208.200]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-76-cqn18qJKPTmgaDZ103hUlg-1; Mon, 16 Dec 2019 10:27:47 -0500
+X-MC-Unique: cqn18qJKPTmgaDZ103hUlg-1
+Received: by mail-lj1-f200.google.com with SMTP id b12so2254836ljo.11
+        for <netdev@vger.kernel.org>; Mon, 16 Dec 2019 07:27:47 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=7t807zYoSpdLCWGnswiojdM2ajpp5VPd6hbWcLf1dLU=;
-        b=laS2q+RwjrIyw332cl/idQh1aZB+h/KoQDeWG13L+yrAmQqugKdGl4nhsfz+CWlmdZ
-         mzkrhsonJwOsPCv7uNYtfPJcD+fTqytRaHF7U79eLiH1i3Fc48L4ec5SFUGbI+beS8Lo
-         2LOfQdb+1oLZG7xfWNP/VRKu2OTV9MaCIP8paIPeafNue/36fBAxFnQMJJEpfjmwb4SB
-         rtsbsrUSuwOdsRsUTb+/Ru9FHKAU0va7n1r58wDNV9wYKWimYWyK2ctKgJ+LjQx2KCbO
-         kgExBDDedN+yhka0erUV4fGh/ZhnPDRGFLn/+fnBKLZtcizMOWvn9ICCgSCONQcL+gNQ
-         fzEg==
-X-Gm-Message-State: APjAAAWiDbVe2/PA3gGGiRY1n3vgXd509YT4nCsji7FL0PPnCEI8tgAC
-        mKmNVkUaKvYzyCto8w6bHrQSUZC6I96iYo2JiOI=
-X-Google-Smtp-Source: APXvYqxZ/H0q0vqC+r7Mv+s0/6YfPc4JB16yhsM/NSPcGeVFdQ08YP2DGqybOBCMPQZtw0yBvmDp858qxSu8KxtBoVM=
-X-Received: by 2002:aca:54cc:: with SMTP id i195mr9400892oib.126.1576509043134;
- Mon, 16 Dec 2019 07:10:43 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=p19K4nNZBjlA/2QraodRTLoohxP7l5DJnVKPrMnOfvs=;
+        b=ZfIiq3vzzzku4yfrXQUzEppcaHDkZhCYM8HaEOAhs8YgDTBha1zvU6lTX0ippWUjZD
+         w6hYo3Or0MOELDGpYyWdr+0hwfGrm9naSTtWeq3HXiK78bVVEkrlr0/tg5lh7W+BxkM4
+         9SpQjIr6WKTlYaHaiCCfpIY+HFIjlky5fpe3skroycV8q8Pm1b0SpcH5kc5B0OCcrk5m
+         m++3VEYGaZHWGRrKgauhrc+YcTn580diBd7XhB7VXXK40vgQWayrPAJEVw2ZYF6GxWHW
+         I5ZU8WpO9Zh8eKz2tRVWGUJ78EbdpVIDvRX04hnLt/iV6QBLyKe5z3e32qJPdq6xImDT
+         8phg==
+X-Gm-Message-State: APjAAAXEZAyHpIslZoKz5DdKqB4YrGd+yQPh5aMha4ZMfxlvXoUfjO4m
+        UWeNFOVTaIa8GMgOxDE6hLOHb5pU48G+AbO1zO0IVlPUx/CxXL4+eQCMaq4AQLa9oV5ojof5k8F
+        xUvjQQ7VkpUy4Dt98
+X-Received: by 2002:a19:c205:: with SMTP id l5mr16808665lfc.159.1576510066037;
+        Mon, 16 Dec 2019 07:27:46 -0800 (PST)
+X-Google-Smtp-Source: APXvYqzm8TtaRzB4+6ef+vGk4EE5SHs2+z3xeqcnqxvHEW9SpJ2hw3TvrTJVZVPO1YB3qQuitDtLTA==
+X-Received: by 2002:a19:c205:: with SMTP id l5mr16808621lfc.159.1576510065288;
+        Mon, 16 Dec 2019 07:27:45 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id o20sm11033568ljc.35.2019.12.16.07.27.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 16 Dec 2019 07:27:44 -0800 (PST)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 9685D180960; Mon, 16 Dec 2019 16:27:43 +0100 (CET)
+From:   =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Cc:     =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Ido Schimmel <idosch@idosch.org>
+Subject: [RFC PATCH bpf-next] xdp: Add tracepoint on XDP program return
+Date:   Mon, 16 Dec 2019 16:27:15 +0100
+Message-Id: <20191216152715.711308-1-toke@redhat.com>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-References: <000000000000a6f2030598bbe38c@google.com> <0000000000000e32950599ac5a96@google.com>
- <20191216150017.GA27202@linux.fritz.box>
-In-Reply-To: <20191216150017.GA27202@linux.fritz.box>
-From:   Magnus Karlsson <magnus.karlsson@gmail.com>
-Date:   Mon, 16 Dec 2019 16:10:32 +0100
-Message-ID: <CAJ8uoz3nCxcmnPonNunYhswskidn=PnN8=4_jXW4B=Xu4k_DoQ@mail.gmail.com>
-Subject: Re: WARNING in wp_page_copy
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     syzbot <syzbot+9301f2f33873407d5b33@syzkaller.appspotmail.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        bpf <bpf@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>, hawk@kernel.org,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        linux-kernel@vger.kernel.org,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        Network Development <netdev@vger.kernel.org>,
-        Song Liu <songliubraving@fb.com>,
-        syzkaller-bugs@googlegroups.com, Yonghong Song <yhs@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 16, 2019 at 4:00 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
->
-> On Sat, Dec 14, 2019 at 08:20:07AM -0800, syzbot wrote:
-> > syzbot has found a reproducer for the following crash on:
-> >
-> > HEAD commit:    1d1997db Revert "nfp: abm: fix memory leak in nfp_abm_u32_..
-> > git tree:       net-next
-> > console output: https://syzkaller.appspot.com/x/log.txt?x=1029f851e00000
-> > kernel config:  https://syzkaller.appspot.com/x/.config?x=cef1fd5032faee91
-> > dashboard link: https://syzkaller.appspot.com/bug?extid=9301f2f33873407d5b33
-> > compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-> > syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=119d9fb1e00000
-> >
-> > IMPORTANT: if you fix the bug, please add the following tag to the commit:
-> > Reported-by: syzbot+9301f2f33873407d5b33@syzkaller.appspotmail.com
->
-> Bjorn / Magnus, given xsk below, PTAL, thanks!
+This adds a new tracepoint, xdp_prog_return, which is triggered at every
+XDP program return. This was first discussed back in August[0] as a way to
+hook XDP into the kernel drop_monitor framework, to have a one-stop place
+to find all packet drops in the system.
 
-Thanks. I will take a look at it right away.
+Because trace/events/xdp.h includes filter.h, some ifdef guarding is needed
+to be able to use the tracepoint from bpf_prog_run_xdp(). If anyone has any
+ideas for how to improve on this, please to speak up. Sending this RFC
+because of this issue, and to get some feedback from Ido on whether this
+tracepoint has enough data for drop_monitor usage.
 
-/Magnus
+[0] https://lore.kernel.org/netdev/20190809125418.GB2931@splinter/
 
-> > ------------[ cut here ]------------
-> > WARNING: CPU: 0 PID: 9104 at mm/memory.c:2229 cow_user_page mm/memory.c:2229
-> > [inline]
-> > WARNING: CPU: 0 PID: 9104 at mm/memory.c:2229 wp_page_copy+0x10b7/0x1560
-> > mm/memory.c:2414
-> > Kernel panic - not syncing: panic_on_warn set ...
-> > CPU: 0 PID: 9104 Comm: syz-executor.0 Not tainted 5.5.0-rc1-syzkaller #0
-> > Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS
-> > Google 01/01/2011
-> > Call Trace:
-> >  __dump_stack lib/dump_stack.c:77 [inline]
-> >  dump_stack+0x197/0x210 lib/dump_stack.c:118
-> >  panic+0x2e3/0x75c kernel/panic.c:221
-> >  __warn.cold+0x2f/0x3e kernel/panic.c:582
-> >  report_bug+0x289/0x300 lib/bug.c:195
-> >  fixup_bug arch/x86/kernel/traps.c:174 [inline]
-> >  fixup_bug arch/x86/kernel/traps.c:169 [inline]
-> >  do_error_trap+0x11b/0x200 arch/x86/kernel/traps.c:267
-> >  do_invalid_op+0x37/0x50 arch/x86/kernel/traps.c:286
-> >  invalid_op+0x23/0x30 arch/x86/entry/entry_64.S:1027
-> > RIP: 0010:cow_user_page mm/memory.c:2229 [inline]
-> > RIP: 0010:wp_page_copy+0x10b7/0x1560 mm/memory.c:2414
-> > Code: 4c 89 f7 ba 00 10 00 00 48 81 e6 00 f0 ff ff e8 0f e6 22 06 31 ff 41
-> > 89 c7 89 c6 e8 23 03 d3 ff 45 85 ff 74 0f e8 99 01 d3 ff <0f> 0b 4c 89 f7 e8
-> > 3f d8 22 06 e8 8a 01 d3 ff 65 4c 8b 34 25 c0 1e
-> > RSP: 0018:ffffc90002267668 EFLAGS: 00010293
-> > RAX: ffff8880a04c6140 RBX: ffffc90002267918 RCX: ffffffff81a22a0d
-> > RDX: 0000000000000000 RSI: ffffffff81a22a17 RDI: 0000000000000005
-> > RBP: ffffc900022677a8 R08: ffff8880a04c6140 R09: 0000000000000000
-> > R10: ffffed101125cfff R11: ffff8880892e7fff R12: ffff88809e403108
-> > R13: ffffea000224b9c0 R14: ffff8880892e7000 R15: 0000000000001000
-> >  do_wp_page+0x543/0x1540 mm/memory.c:2724
-> >  handle_pte_fault mm/memory.c:3961 [inline]
-> >  __handle_mm_fault+0x327b/0x3da0 mm/memory.c:4075
-> >  handle_mm_fault+0x3b2/0xa50 mm/memory.c:4112
-> >  do_user_addr_fault arch/x86/mm/fault.c:1441 [inline]
-> >  __do_page_fault+0x536/0xd80 arch/x86/mm/fault.c:1506
-> >  do_page_fault+0x38/0x590 arch/x86/mm/fault.c:1530
-> >  page_fault+0x39/0x40 arch/x86/entry/entry_64.S:1203
-> > RIP: 0010:copy_user_generic_unrolled+0x89/0xc0
-> > arch/x86/lib/copy_user_64.S:91
-> > Code: 38 4c 89 47 20 4c 89 4f 28 4c 89 57 30 4c 89 5f 38 48 8d 76 40 48 8d
-> > 7f 40 ff c9 75 b6 89 d1 83 e2 07 c1 e9 03 74 12 4c 8b 06 <4c> 89 07 48 8d 76
-> > 08 48 8d 7f 08 ff c9 75 ee 21 d2 74 10 89 d1 8a
-> > RSP: 0018:ffffc90002267bb8 EFLAGS: 00010206
-> > RAX: 0000000000000001 RBX: 0000000000000018 RCX: 0000000000000003
-> > RDX: 0000000000000000 RSI: ffffc90002267c58 RDI: 0000000020001300
-> > RBP: ffffc90002267bf0 R08: 0000000000000000 R09: fffff5200044cf8e
-> > R10: fffff5200044cf8d R11: ffffc90002267c6f R12: 0000000020001300
-> > R13: ffffc90002267c58 R14: 0000000020001318 R15: 00007ffffffff000
-> >  copy_to_user include/linux/uaccess.h:152 [inline]
-> >  xsk_getsockopt+0x575/0x6c0 net/xdp/xsk.c:898
-> >  __sys_getsockopt+0x16d/0x310 net/socket.c:2174
-> >  __do_sys_getsockopt net/socket.c:2189 [inline]
-> >  __se_sys_getsockopt net/socket.c:2186 [inline]
-> >  __x64_sys_getsockopt+0xbe/0x150 net/socket.c:2186
-> >  do_syscall_64+0xfa/0x790 arch/x86/entry/common.c:294
-> >  entry_SYSCALL_64_after_hwframe+0x49/0xbe
-> > RIP: 0033:0x45a909
-> > Code: ad b6 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 89 f8 48 89 f7
-> > 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff
-> > 0f 83 7b b6 fb ff c3 66 2e 0f 1f 84 00 00 00 00
-> > RSP: 002b:00007f0ec9e9ec78 EFLAGS: 00000246 ORIG_RAX: 0000000000000037
-> > RAX: ffffffffffffffda RBX: 0000000000000005 RCX: 000000000045a909
-> > RDX: 0000000000000007 RSI: 000000000000011b RDI: 000000000000000a
-> > RBP: 000000000075bf20 R08: 0000000020000100 R09: 0000000000000000
-> > R10: 0000000020001300 R11: 0000000000000246 R12: 00007f0ec9e9f6d4
-> > R13: 00000000004c1ab5 R14: 00000000004d5f60 R15: 00000000ffffffff
-> > Kernel Offset: disabled
-> > Rebooting in 86400 seconds..
-> >
+Cc: Ido Schimmel <idosch@idosch.org>
+Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
+---
+ include/linux/filter.h     | 22 +++++++++++++++++--
+ include/trace/events/xdp.h | 45 ++++++++++++++++++++++++++++++++++++++
+ kernel/bpf/core.c          |  2 ++
+ 3 files changed, 67 insertions(+), 2 deletions(-)
+
+diff --git a/include/linux/filter.h b/include/linux/filter.h
+index 37ac7025031d..f5e79171902f 100644
+--- a/include/linux/filter.h
++++ b/include/linux/filter.h
+@@ -704,19 +704,37 @@ static inline u32 bpf_prog_run_clear_cb(const struct bpf_prog *prog,
+ 
+ DECLARE_BPF_DISPATCHER(bpf_dispatcher_xdp)
+ 
++#if defined(_XDP_TRACE_DEF) || defined(_TRACE_XDP_H)
++static void call_trace_xdp_prog_return(const struct xdp_buff *xdp,
++				       const struct bpf_prog *prog,
++				       u32 act);
++#else
++#ifndef _CALL_TRACE_XDP
++#define _CALL_TRACE_XDP
++static inline void call_trace_xdp_prog_return(const struct xdp_buff *xdp,
++					      const struct bpf_prog *prog,
++					      u32 act) {}
++#endif
++#endif
++
+ static __always_inline u32 bpf_prog_run_xdp(const struct bpf_prog *prog,
+ 					    struct xdp_buff *xdp)
+ {
++	u32 ret;
++
+ 	/* Caller needs to hold rcu_read_lock() (!), otherwise program
+ 	 * can be released while still running, or map elements could be
+ 	 * freed early while still having concurrent users. XDP fastpath
+ 	 * already takes rcu_read_lock() when fetching the program, so
+ 	 * it's not necessary here anymore.
+ 	 */
+-	return __BPF_PROG_RUN(prog, xdp,
+-			      BPF_DISPATCHER_FUNC(bpf_dispatcher_xdp));
++	ret = __BPF_PROG_RUN(prog, xdp,
++			     BPF_DISPATCHER_FUNC(bpf_dispatcher_xdp));
++	call_trace_xdp_prog_return(xdp, prog, ret);
++	return ret;
+ }
+ 
++
+ void bpf_prog_change_xdp(struct bpf_prog *prev_prog, struct bpf_prog *prog);
+ 
+ static inline u32 bpf_prog_insn_size(const struct bpf_prog *prog)
+diff --git a/include/trace/events/xdp.h b/include/trace/events/xdp.h
+index a7378bcd9928..e64f4221bd2e 100644
+--- a/include/trace/events/xdp.h
++++ b/include/trace/events/xdp.h
+@@ -50,6 +50,51 @@ TRACE_EVENT(xdp_exception,
+ 		  __entry->ifindex)
+ );
+ 
++TRACE_EVENT(xdp_prog_return,
++
++	TP_PROTO(const struct xdp_buff *xdp,
++		 const struct bpf_prog *pr, u32 act),
++
++	TP_ARGS(xdp, pr, act),
++
++	TP_STRUCT__entry(
++		__field(int, prog_id)
++		__field(u32, act)
++		__field(int, ifindex)
++		__field(int, queue_index)
++		__field(const void *, data_addr)
++		__field(unsigned int, data_len)
++	),
++
++	TP_fast_assign(
++		__entry->prog_id	= pr->aux->id;
++		__entry->act		= act;
++		__entry->ifindex	= xdp->rxq->dev->ifindex;
++		__entry->queue_index	= xdp->rxq->queue_index;
++		__entry->data_addr	= xdp->data;
++		__entry->data_len	= (unsigned int)(xdp->data_end - xdp->data);
++	),
++
++	TP_printk("prog_id=%d action=%s ifindex=%d queue_index=%d data_addr=%p data_len=%u",
++		  __entry->prog_id,
++		  __print_symbolic(__entry->act, __XDP_ACT_SYM_TAB),
++		  __entry->ifindex,
++		  __entry->queue_index,
++		  __entry->data_addr,
++		  __entry->data_len)
++);
++
++#ifndef _CALL_TRACE_XDP
++#define _CALL_TRACE_XDP
++static inline void call_trace_xdp_prog_return(const struct xdp_buff *xdp,
++					      const struct bpf_prog *prog,
++					      u32 act)
++{
++	trace_xdp_prog_return(xdp, prog, act);
++}
++#endif
++
++
+ TRACE_EVENT(xdp_bulk_tx,
+ 
+ 	TP_PROTO(const struct net_device *dev,
+diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
+index 2ff01a716128..a81d3b8d8e5c 100644
+--- a/kernel/bpf/core.c
++++ b/kernel/bpf/core.c
+@@ -17,6 +17,8 @@
+  * Kris Katterjohn - Added many additional checks in bpf_check_classic()
+  */
+ 
++#define _XDP_TRACE_DEF
++
+ #include <uapi/linux/btf.h>
+ #include <linux/filter.h>
+ #include <linux/skbuff.h>
+-- 
+2.24.1
+
