@@ -2,122 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 181EC11FD68
-	for <lists+netdev@lfdr.de>; Mon, 16 Dec 2019 05:02:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C084811FDA3
+	for <lists+netdev@lfdr.de>; Mon, 16 Dec 2019 05:43:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726676AbfLPECK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 15 Dec 2019 23:02:10 -0500
-Received: from mx21.baidu.com ([220.181.3.85]:35752 "EHLO baidu.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726437AbfLPECJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 15 Dec 2019 23:02:09 -0500
-Received: from BC-Mail-Ex14.internal.baidu.com (unknown [172.31.51.54])
-        by Forcepoint Email with ESMTPS id E2AAA99D2612B9F25FA0;
-        Mon, 16 Dec 2019 12:02:04 +0800 (CST)
-Received: from BJHW-Mail-Ex13.internal.baidu.com (10.127.64.36) by
- BC-Mail-Ex14.internal.baidu.com (172.31.51.54) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.1531.3; Mon, 16 Dec 2019 12:02:04 +0800
-Received: from BJHW-Mail-Ex13.internal.baidu.com ([100.100.100.36]) by
- BJHW-Mail-Ex13.internal.baidu.com ([100.100.100.36]) with mapi id
- 15.01.1713.004; Mon, 16 Dec 2019 12:02:04 +0800
-From:   "Li,Rongqing" <lirongqing@baidu.com>
-To:     Yunsheng Lin <linyunsheng@huawei.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>
-CC:     Saeed Mahameed <saeedm@mellanox.com>,
-        "ilias.apalodimas@linaro.org" <ilias.apalodimas@linaro.org>,
-        "jonathan.lemon@gmail.com" <jonathan.lemon@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "mhocko@kernel.org" <mhocko@kernel.org>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "bhelgaas@google.com" <bhelgaas@google.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>
-Subject: =?utf-8?B?562U5aSNOiBbUEFUQ0hdW3YyXSBwYWdlX3Bvb2w6IGhhbmRsZSBwYWdlIHJl?=
- =?utf-8?B?Y3ljbGUgZm9yIE5VTUFfTk9fTk9ERSBjb25kaXRpb24=?=
-Thread-Topic: [PATCH][v2] page_pool: handle page recycle for NUMA_NO_NODE
- condition
-Thread-Index: AQHVsZIrr0J3dgd4XE+VTzKxYVWGCKe7fWqAgACmZRA=
-Date:   Mon, 16 Dec 2019 04:02:04 +0000
-Message-ID: <a5dea60221d84886991168781361b591@baidu.com>
-References: <1575624767-3343-1-git-send-email-lirongqing@baidu.com>
- <9fecbff3518d311ec7c3aee9ae0315a73682a4af.camel@mellanox.com>
- <20191211194933.15b53c11@carbon>
- <831ed886842c894f7b2ffe83fe34705180a86b3b.camel@mellanox.com>
- <0a252066-fdc3-a81d-7a36-8f49d2babc01@huawei.com>
- <20191212111831.2a9f05d3@carbon>
- <7c555cb1-6beb-240d-08f8-7044b9087fe4@huawei.com>
- <1d4f10f4c0f1433bae658df8972a904f@baidu.com>
- <079a0315-efea-9221-8538-47decf263684@huawei.com>
- <20191213094845.56fb42a4@carbon>
- <15be326d-1811-329c-424c-6dd22b0604a8@huawei.com>
-In-Reply-To: <15be326d-1811-329c-424c-6dd22b0604a8@huawei.com>
-Accept-Language: zh-CN, en-US
-Content-Language: zh-CN
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.22.198.6]
-x-baidu-bdmsfe-datecheck: 1_BC-Mail-Ex14_2019-12-16 12:02:04:855
-x-baidu-bdmsfe-viruscheck: BC-Mail-Ex14_GRAY_Inside_WithoutAtta_2019-12-16
- 12:02:04:824
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S1726719AbfLPEm7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 15 Dec 2019 23:42:59 -0500
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:45940 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726437AbfLPEm7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 15 Dec 2019 23:42:59 -0500
+Received: by mail-pf1-f194.google.com with SMTP id 2so4876237pfg.12;
+        Sun, 15 Dec 2019 20:42:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to
+         :user-agent;
+        bh=nZLzgb/ySfUY3dMcXCRyVLhFRQTJDnW4ktEdbCq4fVY=;
+        b=Goq/VUwPGnGUqJqKv5v0G5A9paa04MdAgdlkXO0OkEGMyFJAYszI9+JuC5XzTo5cOi
+         Unjjj6cGxl7/1N9QPvf8CF5WWYfUaWUThG96XNKa3vAtgjTTdI8HIftYSWCJAnc3jq+o
+         0G5E2CfrsZZ0cIUj+BJEk7H3VaKjfXJueL7x4nxNJLtVFR5mgWFnoQ8X8qMtaz68uOpw
+         kiKnMzSxGzJ2DG7ZtvmNlqfizFI0ItmHLhazHKO1E+Rcxe51o/ViNcXDqugSr1mnUrp3
+         AgeqQ94LTf5tU3MHfYHFTYjs4fq4TdAEVkJwyIBgqQraBjkbi655H0VhThVXLKeIs9ef
+         9jng==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to:user-agent;
+        bh=nZLzgb/ySfUY3dMcXCRyVLhFRQTJDnW4ktEdbCq4fVY=;
+        b=GPPNMRtvZyvLrq+IBGWVeCjnWxobvUKEBxLslj+uxk5rpKV/yH3ccORblb49Jysyx5
+         2IB/XVakPoKhkRwAC9tpNnnB4qSbzbRG+Vdu3p//4EHeDiDi7KsypN+Y9vKgNSyYlD9g
+         RG1V/qQlPq5mqkFq+CvSSPjDYpqpuZWGPFjMSU6bm0O3xe0K6xduLxyU3cB/we8+Mu/D
+         IRKoaTQp/wWGiBjkZM8j1nk6u6xE71KeBe0ya6VXjUScH7rHVKxCNQWaKkpRfo6wAD/S
+         dz5uS0XL5Zp0gKMJhlObocMEn/ffzveyzTfKDNIfJlFFRscy1gaOk+X+Yag/xFXd4krl
+         HJCQ==
+X-Gm-Message-State: APjAAAX5rGsrJjJm/tJw3aZcPxRm+SZkFZZjH+THE5N3hsrkkRRJoaS6
+        DFMxYY6ZTg0aXsadFG2vC5k=
+X-Google-Smtp-Source: APXvYqyOdVSC6Fnb9QCuu5MbLw0R4cAzqyD5zMdpRufUFQxYphDNH/z/QcNzRQRYdDEwqQZJ0k/lzQ==
+X-Received: by 2002:a63:1a22:: with SMTP id a34mr15036838pga.403.1576471377889;
+        Sun, 15 Dec 2019 20:42:57 -0800 (PST)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:180::4748])
+        by smtp.gmail.com with ESMTPSA id k19sm20764926pfg.132.2019.12.15.20.42.56
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Sun, 15 Dec 2019 20:42:56 -0800 (PST)
+Date:   Sun, 15 Dec 2019 20:42:55 -0800
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>
+Subject: Re: [PATCH v4 bpf-next 0/4] Add libbpf-provided extern variables
+ support
+Message-ID: <20191216044253.6stsb7nsxf35cujl@ast-mbp.dhcp.thefacebook.com>
+References: <20191214014710.3449601-1-andriin@fb.com>
+ <20191216005209.jqb27p7tptauxn45@ast-mbp.dhcp.thefacebook.com>
+ <CAEf4BzZPGVPFugtDMWaAeaRfxA=+XCNMeUjdN39ZqF9cvpt30w@mail.gmail.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAEf4BzZPGVPFugtDMWaAeaRfxA=+XCNMeUjdN39ZqF9cvpt30w@mail.gmail.com>
+User-Agent: NeoMutt/20180223
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQoNCj4gLS0tLS3pgq7ku7bljp/ku7YtLS0tLQ0KPiDlj5Hku7bkuro6IFl1bnNoZW5nIExpbiBb
-bWFpbHRvOmxpbnl1bnNoZW5nQGh1YXdlaS5jb21dDQo+IOWPkemAgeaXtumXtDogMjAxOeW5tDEy
-5pyIMTbml6UgOTo1MQ0KPiDmlLbku7bkuro6IEplc3BlciBEYW5nYWFyZCBCcm91ZXIgPGJyb3Vl
-ckByZWRoYXQuY29tPg0KPiDmioTpgIE6IExpLFJvbmdxaW5nIDxsaXJvbmdxaW5nQGJhaWR1LmNv
-bT47IFNhZWVkIE1haGFtZWVkDQo+IDxzYWVlZG1AbWVsbGFub3guY29tPjsgaWxpYXMuYXBhbG9k
-aW1hc0BsaW5hcm8ub3JnOw0KPiBqb25hdGhhbi5sZW1vbkBnbWFpbC5jb207IG5ldGRldkB2Z2Vy
-Lmtlcm5lbC5vcmc7IG1ob2Nrb0BrZXJuZWwub3JnOw0KPiBwZXRlcnpAaW5mcmFkZWFkLm9yZzsg
-R3JlZyBLcm9haC1IYXJ0bWFuIDxncmVna2hAbGludXhmb3VuZGF0aW9uLm9yZz47DQo+IGJoZWxn
-YWFzQGdvb2dsZS5jb207IGxpbnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5vcmc7IEJqw7ZybiBUw7Zw
-ZWwNCj4gPGJqb3JuLnRvcGVsQGludGVsLmNvbT4NCj4g5Li76aKYOiBSZTogW1BBVENIXVt2Ml0g
-cGFnZV9wb29sOiBoYW5kbGUgcGFnZSByZWN5Y2xlIGZvciBOVU1BX05PX05PREUNCj4gY29uZGl0
-aW9uDQo+IA0KPiBPbiAyMDE5LzEyLzEzIDE2OjQ4LCBKZXNwZXIgRGFuZ2FhcmQgQnJvdWVyIHdy
-b3RlOj4gWW91IGFyZSBiYXNpY2FsbHkgc2F5aW5nDQo+IHRoYXQgdGhlIE5VTUEgY2hlY2sgc2hv
-dWxkIGJlIG1vdmVkIHRvDQo+ID4gYWxsb2NhdGlvbiB0aW1lLCBhcyBpdCBpcyBydW5uaW5nIHRo
-ZSBSWC1DUFUgKE5BUEkpLiAgQW5kIGV2ZW50dWFsbHkNCj4gPiBhZnRlciBzb21lIHRpbWUgdGhl
-IHBhZ2VzIHdpbGwgY29tZSBmcm9tIGNvcnJlY3QgTlVNQSBub2RlLg0KPiA+DQo+ID4gSSB0aGlu
-ayB3ZSBjYW4gZG8gdGhhdCwgYW5kIG9ubHkgYWZmZWN0IHRoZSBzZW1pLWZhc3QtcGF0aC4NCj4g
-PiBXZSBqdXN0IG5lZWQgdG8gaGFuZGxlIHRoYXQgcGFnZXMgaW4gdGhlIHB0cl9yaW5nIHRoYXQg
-YXJlIHJlY3ljbGVkDQo+ID4gY2FuIGJlIGZyb20gdGhlIHdyb25nIE5VTUEgbm9kZS4gIEluIF9f
-cGFnZV9wb29sX2dldF9jYWNoZWQoKSB3aGVuDQo+ID4gY29uc3VtaW5nIHBhZ2VzIGZyb20gdGhl
-IHB0cl9yaW5nIChfX3B0cl9yaW5nX2NvbnN1bWVfYmF0Y2hlZCksIHRoZW4NCj4gPiB3ZSBjYW4g
-ZXZpY3QgcGFnZXMgZnJvbSB3cm9uZyBOVU1BIG5vZGUuDQo+IA0KPiBZZXMsIHRoYXQncyB3b3Jr
-YWJsZS4NCj4gDQo+ID4NCj4gPiBGb3IgdGhlIHBvb2wtPmFsbG9jLmNhY2hlIHdlIGVpdGhlciBh
-Y2NlcHQsIHRoYXQgaXQgd2lsbCBldmVudHVhbGx5DQo+ID4gYWZ0ZXIgc29tZSB0aW1lIGJlIGVt
-cHRpZWQgKGl0IGlzIG9ubHkgaW4gYSAxMDAlIFhEUF9EUk9QIHdvcmtsb2FkIHRoYXQNCj4gPiBp
-dCB3aWxsIGNvbnRpbnVlIHRvIHJldXNlIHNhbWUgcGFnZXMpLiAgIE9yIHdlIHNpbXBseSBjbGVh
-ciB0aGUNCj4gPiBwb29sLT5hbGxvYy5jYWNoZSB3aGVuIGNhbGxpbmcgcGFnZV9wb29sX3VwZGF0
-ZV9uaWQoKS4NCj4gDQo+IFNpbXBseSBjbGVhcmluZyB0aGUgcG9vbC0+YWxsb2MuY2FjaGUgd2hl
-biBjYWxsaW5nIHBhZ2VfcG9vbF91cGRhdGVfbmlkKCkNCj4gc2VlbXMgYmV0dGVyLg0KPiANCg0K
-SG93IGFib3V0IHRoZSBiZWxvdyBjb2RlcywgdGhlIGRyaXZlciBjYW4gY29uZmlndXJlIHAubmlk
-IHRvIGFueSwgd2hpY2ggd2lsbCBiZSBhZGp1c3RlZCBpbiBOQVBJIHBvbGxpbmcsIGlycSBtaWdy
-YXRpb24gd2lsbCBub3QgYmUgcHJvYmxlbSwgYnV0IGl0IHdpbGwgYWRkIGEgY2hlY2sgaW50byBo
-b3QgcGF0aC4NCg0KZGlmZiAtLWdpdCBhL25ldC9jb3JlL3BhZ2VfcG9vbC5jIGIvbmV0L2NvcmUv
-cGFnZV9wb29sLmMNCmluZGV4IGE2YWVmZTk4OTA0My4uNDM3NGE2MjM5ZDE3IDEwMDY0NA0KLS0t
-IGEvbmV0L2NvcmUvcGFnZV9wb29sLmMNCisrKyBiL25ldC9jb3JlL3BhZ2VfcG9vbC5jDQpAQCAt
-MTA4LDYgKzEwOCwxMCBAQCBzdGF0aWMgc3RydWN0IHBhZ2UgKl9fcGFnZV9wb29sX2dldF9jYWNo
-ZWQoc3RydWN0IHBhZ2VfcG9vbCAqcG9vbCkNCiAgICAgICAgICAgICAgICBpZiAobGlrZWx5KHBv
-b2wtPmFsbG9jLmNvdW50KSkgew0KICAgICAgICAgICAgICAgICAgICAgICAgLyogRmFzdC1wYXRo
-ICovDQogICAgICAgICAgICAgICAgICAgICAgICBwYWdlID0gcG9vbC0+YWxsb2MuY2FjaGVbLS1w
-b29sLT5hbGxvYy5jb3VudF07DQorDQorICAgICAgICAgICAgICAgICAgICAgICBpZiAodW5saWtl
-bHkoUkVBRF9PTkNFKHBvb2wtPnAubmlkKSAhPSBudW1hX21lbV9pZCgpKSkNCisgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgV1JJVEVfT05DRShwb29sLT5wLm5pZCwgbnVtYV9tZW1faWQo
-KSk7DQorDQogICAgICAgICAgICAgICAgICAgICAgICByZXR1cm4gcGFnZTsNCiAgICAgICAgICAg
-ICAgICB9DQogICAgICAgICAgICAgICAgcmVmaWxsID0gdHJ1ZTsNCkBAIC0xNTUsNiArMTU5LDEw
-IEBAIHN0YXRpYyBzdHJ1Y3QgcGFnZSAqX19wYWdlX3Bvb2xfYWxsb2NfcGFnZXNfc2xvdyhzdHJ1
-Y3QgcGFnZV9wb29sICpwb29sLA0KICAgICAgICBpZiAocG9vbC0+cC5vcmRlcikNCiAgICAgICAg
-ICAgICAgICBnZnAgfD0gX19HRlBfQ09NUDsNCiANCisNCisgICAgICAgaWYgKHVubGlrZWx5KFJF
-QURfT05DRShwb29sLT5wLm5pZCkgIT0gbnVtYV9tZW1faWQoKSkpDQorICAgICAgICAgICAgICAg
-V1JJVEVfT05DRShwb29sLT5wLm5pZCwgbnVtYV9tZW1faWQoKSk7DQorDQogICAgICAgIC8qIEZV
-VFVSRSBkZXZlbG9wbWVudDoNCiAgICAgICAgICoNCiAgICAgICAgICogQ3VycmVudCBzbG93LXBh
-dGggZXNzZW50aWFsbHkgZmFsbHMgYmFjayB0byBzaW5nbGUgcGFnZQ0KVGhhbmtzDQoNCi1MaQ0K
-PiA+DQoNCg==
+On Sun, Dec 15, 2019 at 05:47:01PM -0800, Andrii Nakryiko wrote:
+> On Sun, Dec 15, 2019 at 4:52 PM Alexei Starovoitov
+> <alexei.starovoitov@gmail.com> wrote:
+> >
+> > On Fri, Dec 13, 2019 at 05:47:06PM -0800, Andrii Nakryiko wrote:
+> > > It's often important for BPF program to know kernel version or some specific
+> > > config values (e.g., CONFIG_HZ to convert jiffies to seconds) and change or
+> > > adjust program logic based on their values. As of today, any such need has to
+> > > be resolved by recompiling BPF program for specific kernel and kernel
+> > > configuration. In practice this is usually achieved by using BCC and its
+> > > embedded LLVM/Clang. With such set up #ifdef CONFIG_XXX and similar
+> > > compile-time constructs allow to deal with kernel varieties.
+> > >
+> > > With CO-RE (Compile Once – Run Everywhere) approach, this is not an option,
+> > > unfortunately. All such logic variations have to be done as a normal
+> > > C language constructs (i.e., if/else, variables, etc), not a preprocessor
+> > > directives. This patch series add support for such advanced scenarios through
+> > > C extern variables. These extern variables will be recognized by libbpf and
+> > > supplied through extra .extern internal map, similarly to global data. This
+> > > .extern map is read-only, which allows BPF verifier to track its content
+> > > precisely as constants. That gives an opportunity to have pre-compiled BPF
+> > > program, which can potentially use BPF functionality (e.g., BPF helpers) or
+> > > kernel features (types, fields, etc), that are available only on a subset of
+> > > targeted kernels, while effectively eleminating (through verifier's dead code
+> > > detection) such unsupported functionality for other kernels (typically, older
+> > > versions). Patch #3 explicitly tests a scenario of using unsupported BPF
+> > > helper, to validate the approach.
+> > >
+> > > This patch set heavily relies on BTF type information emitted by compiler for
+> > > each extern variable declaration. Based on specific types, libbpf does strict
+> > > checks of config data values correctness. See patch #1 for details.
+> > >
+> > > Outline of the patch set:
+> > > - patch #1 does a small clean up of internal map names contants;
+> > > - patch #2 adds all of the libbpf internal machinery for externs support,
+> > >   including setting up BTF information for .extern data section;
+> > > - patch #3 adds support for .extern into BPF skeleton;
+> > > - patch #4 adds externs selftests, as well as enhances test_skeleton.c test to
+> > >   validate mmap()-ed .extern datasection functionality.
+> >
+> > Applied. Thanks.
+> 
+> Great, thanks!
+> 
+> >
+> > Looking at the tests that do mkstemp()+write() just to pass a file path
+> > as .kconfig_path option into bpf_object_open_opts() it feels that file only
+> > support for externs is unnecessary limiting. I think it will simplify
+> 
+> yeah, it was a bit painful :)
+> 
+> > tests and will make the whole extern support more flexible if in addition to
+> > kconfig_path bpf_object_open_opts() would support in-memory configuration.
+> 
+> I wanted to keep it simple for users, in case libbpf can't find config
+> file, to just specify its location. But given your feedback here, and
+> you mentioned previously that it would be nice to allow users to
+> specify custom kconfig-like configuration to be exposed as externs as
+> well, how about replacing .kconfig_path, which is a patch to config
+> file, with just .kconfig, which is the **contents** of config file.
+> That way we can support all of the above scenarios, if maybe sometime
+> with a tiny bit of extra work for users:
+> 
+> 1. Override real kconfig with custom config (e.g., for testing
+> purposes) - just specify alternative contents.
+> 2. Extend kconfig with some extra configuration - user will have to
+> read real kconfig, then append (or prepend, doesn't matter) custom
+> contents.
+> 
+> What I want to avoid is having multiple ways to do this, having to
+> decide whether to augment real Kconfig or completely override it, etc.
+> So one string-based config override is preferable for simplicity.
+> Agreed?
+
+I think user experience would be better if users don't have to know that
+/proc/config.gz exists and even more so if they don't need to read it. By
+default libbpf should pick all CONFIG_* from known locations and in addition if
+extra text is specified for bpf_object_open_opts() the libbpf can take the
+values from there. So may be .kconfig_path can be replaced with
+.additional_key_value_pairs ? I think override of /proc/config.gz is
+unnecessary. Whereas additional predefined externs are useful for testing and
+passing load-time configuration to bpf progs. Like IP addresses, etc.
