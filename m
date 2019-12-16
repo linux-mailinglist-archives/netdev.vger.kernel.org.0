@@ -2,116 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D2137121E15
-	for <lists+netdev@lfdr.de>; Mon, 16 Dec 2019 23:34:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 08D3D121E93
+	for <lists+netdev@lfdr.de>; Mon, 16 Dec 2019 23:52:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726834AbfLPWeE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Dec 2019 17:34:04 -0500
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:37160 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726699AbfLPWeE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Dec 2019 17:34:04 -0500
-Received: by mail-wr1-f66.google.com with SMTP id w15so9224227wru.4
-        for <netdev@vger.kernel.org>; Mon, 16 Dec 2019 14:34:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=th1e0p8FGxL7h0mubKKoB5RmIzjYmSmgKi+JRiplIlo=;
-        b=OJIuaawVDPIauThoVASo+U8IGE/snQpf0l2CaJ76ZzK9jgeCehnb7Sfglvvbb4yWPT
-         rQzBkg7exiYKyUf89+qnyFxuRlW24q7w1MFd1vR+1tKhXMerKWOe0FSJYcp2DFC0NvPV
-         wWBR917q7iUYHAJojYlFVeypruJG42G4L72vmKYYJf2T6FrmIdGkZFKVkL9Uwx6li7xH
-         gTkST9G3v2+91EQggn/zRbVJJjmdABKH/9fbnyjZklPk12C+TqJDAsJOlG2iC2nbHTPb
-         ZlSVvRpdyY+VprjkFDfTODX4QWRJ4Z7QbTe2o+FJ+rZnJiNubI1rGQUt823Xr5PAL3DD
-         eb+w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=th1e0p8FGxL7h0mubKKoB5RmIzjYmSmgKi+JRiplIlo=;
-        b=VlKjITDDIIYHYveVJwcC2ZeCU5tcBTHF/HzMiBYXbKu+XfO4DDfwGKtojb+kF07lgj
-         SK8i77asaNcU7vGi1Y/n0zOqI8kGFBtvjpkn0D1Aw3sYi/j5bEIOUD7yCr4xMT0qNzJv
-         S3X6XNgZncF1qwHcYyPWhobMjTBTSrQbeqVtUa0hllUkLhxdZLjqYUXTayTEefqSgPwO
-         qgd4o/XnpYo8potwrxFisvzOq3lrnhqD0sRg4pIIQxrrzVfuFBDI5HOM1GrZTwxeuPGs
-         Ht+0r4ntTbfAW0K9PELqJji4yzmpKToOTq1dhsqdOfuCSB/hk2rXxq9n7JVdQ//zDa1e
-         pEPQ==
-X-Gm-Message-State: APjAAAXWfRPAjI7pfceeUZEFIWuzykUEuryBKrr2WP+UM13MEmFsJrAb
-        iy43R1AbmRt8JfN5S/DgQxA=
-X-Google-Smtp-Source: APXvYqwHB9STZe4vbVUqR6pUa0ywvTc9bZvY7vFcleeooOfKtIl+/hEwLJdkGEQ1hwADo7jlAh1ZYw==
-X-Received: by 2002:a5d:4dc9:: with SMTP id f9mr2131964wru.297.1576535642514;
-        Mon, 16 Dec 2019 14:34:02 -0800 (PST)
-Received: from localhost.localdomain ([86.121.29.241])
-        by smtp.gmail.com with ESMTPSA id b16sm23628386wrj.23.2019.12.16.14.34.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 Dec 2019 14:34:01 -0800 (PST)
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     davem@davemloft.net, jakub.kicinski@netronome.com
-Cc:     richardcochran@gmail.com, f.fainelli@gmail.com,
-        vivien.didelot@gmail.com, andrew@lunn.ch, netdev@vger.kernel.org,
-        Vladimir Oltean <olteanv@gmail.com>
-Subject: [PATCH net] net: dsa: sja1105: Fix double delivery of TX timestamps to socket error queue
-Date:   Tue, 17 Dec 2019 00:33:44 +0200
-Message-Id: <20191216223344.2261-1-olteanv@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        id S1727119AbfLPWwe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Dec 2019 17:52:34 -0500
+Received: from mail-eopbgr80072.outbound.protection.outlook.com ([40.107.8.72]:5377
+        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726448AbfLPWwd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 16 Dec 2019 17:52:33 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=SuDM3renKmngPk8NwNuuI8+qUC37IMxGN6fMQXOYJlSjXaisIyylsbNRcX6r2ASrv7YDDqcvZKh4ptcqdhIE9pOTPnhf37tLOrToZFc1588z2MTmWECs8civ7IF2bFb2M/dIrBarrZZoZf80RGr148qfAZsEedzQ4+OD+uYXb2Di79/vam/w7ob9czfuyQgY0i8/ErgM3NPeDLneYU0GK7wZW5YcUI0gAuStrcs249CbhtvhYITnzc9ZtUkK7+RwD9gwVH/+qDb299xYwQR7oS6xuFnU6OwFrbMyioKl1o0ulMydFUYCLUpIIHFHpgMyuRG9uyrrQgb7YSoYbQh7BQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=g7RAXNdZN4S3XzOI5suq+llupLzsi9dfYIVJLo3E4Z0=;
+ b=gNI3ERztDrknVW38YrAHXBh4jtVsFPgINVogUcwW0r0AxVO9ZoGEQ/ZT83+x+Q5Tu1vWAubJ/yHrtI0Kr7QkyCmwqDMFOn+frqSat4Z1HWaC66rL7wI8yeJ0s+vrPDP7J+8wUEzxEE5dftE4glH97qbp18zU35EsO65UFi/2Ienkt5xSkHTWtL/OV4tCJwnuVHePu46dlzIW/6rvwzuGEJ1mW/ZCpiW21nJKePapWI5OV8vhdAD6A20IKU61C4Ij6OrEwSTmIMWDRLLEEQumfoPhFsPrSjjCDMnQdiii9s3o22NpIL1GRZqy0yV0ZROsfpym+Lq3VTU4BxSCmPojig==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=g7RAXNdZN4S3XzOI5suq+llupLzsi9dfYIVJLo3E4Z0=;
+ b=VVZESuob32PytX9J/va5PLvn9hPHapFwNuk6QN1Gzx69bzCHRcwYeylzvZ5mA6avufYaxo+Ny5IHsyInmuZ856P/BriDz7T+5JsM6OEE2dYPPdonWoUtYPW4+/fbWp/T3xAf66ZQi8+f7OK3+VCKDT/1X5EWrMo2lmufFCwWBoY=
+Received: from AM6PR05MB5142.eurprd05.prod.outlook.com (20.177.197.210) by
+ AM6PR05MB4311.eurprd05.prod.outlook.com (52.135.168.149) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2538.17; Mon, 16 Dec 2019 22:52:30 +0000
+Received: from AM6PR05MB5142.eurprd05.prod.outlook.com
+ ([fe80::e8d3:c539:7550:2fdd]) by AM6PR05MB5142.eurprd05.prod.outlook.com
+ ([fe80::e8d3:c539:7550:2fdd%6]) with mapi id 15.20.2538.019; Mon, 16 Dec 2019
+ 22:52:30 +0000
+From:   Yuval Avnery <yuvalav@mellanox.com>
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+CC:     Jiri Pirko <jiri@mellanox.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        Daniel Jurgens <danielj@mellanox.com>,
+        Parav Pandit <parav@mellanox.com>
+Subject: RE: [PATCH net-next] netdevsim: Add max_vfs to bus_dev
+Thread-Topic: [PATCH net-next] netdevsim: Add max_vfs to bus_dev
+Thread-Index: AQHVr871nDBB5hrvy0ak2C7+9Ay1lae1Oa8AgAAB1gCAABOZgIAACO8QgAArtYCAAAxfkIAAC50AgABVJmCAAOJ/gIAAIpgggABa3ACAABH7IIAA/jMAgAAW14CABMvNgIAAB5GA
+Date:   Mon, 16 Dec 2019 22:52:30 +0000
+Message-ID: <AM6PR05MB5142B1D44D6190BBDE19F7E0C5510@AM6PR05MB5142.eurprd05.prod.outlook.com>
+References: <1576033133-18845-1-git-send-email-yuvalav@mellanox.com>
+        <20191211095854.6cd860f1@cakuba.netronome.com>
+        <AM6PR05MB514244DC6D25DDD433C0E238C55A0@AM6PR05MB5142.eurprd05.prod.outlook.com>
+        <20191211111537.416bf078@cakuba.netronome.com>
+        <AM6PR05MB5142CCAB9A06DAC199F7100CC55A0@AM6PR05MB5142.eurprd05.prod.outlook.com>
+        <20191211142401.742189cf@cakuba.netronome.com>
+        <AM6PR05MB51423D365FB5A8DB22B1DE62C55A0@AM6PR05MB5142.eurprd05.prod.outlook.com>
+        <20191211154952.50109494@cakuba.netronome.com>
+        <AM6PR05MB51425B74E736C5D765356DC8C5550@AM6PR05MB5142.eurprd05.prod.outlook.com>
+        <20191212102517.602a8a5d@cakuba.netronome.com>
+        <AM6PR05MB5142F0F18EA6B6F16C5888CEC5550@AM6PR05MB5142.eurprd05.prod.outlook.com>
+        <20191212175418.3b07b7a9@cakuba.netronome.com>
+        <AM6PR05MB514261CD6F95F104C0353A4BC5540@AM6PR05MB5142.eurprd05.prod.outlook.com>
+        <20191213100828.6767de6e@cakuba.netronome.com>
+        <AM6PR05MB51422CE9C249DB03F486CB63C5540@AM6PR05MB5142.eurprd05.prod.outlook.com>
+ <20191216124441.634ea8ea@cakuba.netronome.com>
+In-Reply-To: <20191216124441.634ea8ea@cakuba.netronome.com>
+Accept-Language: he-IL, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=yuvalav@mellanox.com; 
+x-originating-ip: [70.66.202.183]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: ae377e91-dd13-47f4-8bd0-08d7827aa165
+x-ms-traffictypediagnostic: AM6PR05MB4311:|AM6PR05MB4311:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <AM6PR05MB4311FA62F3239F48CEDB9D19C5510@AM6PR05MB4311.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8273;
+x-forefront-prvs: 02530BD3AA
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(136003)(396003)(39860400002)(366004)(376002)(346002)(189003)(199004)(13464003)(2906002)(6916009)(33656002)(64756008)(53546011)(6506007)(26005)(86362001)(76116006)(66556008)(7696005)(316002)(54906003)(478600001)(4326008)(81156014)(8936002)(71200400001)(9686003)(5660300002)(66476007)(52536014)(81166006)(66446008)(186003)(55016002)(8676002)(107886003)(66946007);DIR:OUT;SFP:1101;SCL:1;SRVR:AM6PR05MB4311;H:AM6PR05MB5142.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: oWatwnONs+GHFlTRF2L2Ps3wW7S0hugCGgTCLtFh/JaXvtl2KPThp0AJ9y+qaQgTKVw/O2WaaHfaVsOuudgkKuIiv5Jo4GpGIWv8f2iEDK5xkl2fsTLO0iEgtLto8xWUeJ9KBeNVdK/vvfrzGZA2fsP6ZGRteVr8VNNsYzpDbO4cR8JvJCENKhYNosXeAQVfYQBmFtrO9XdfvTSydgOeIkzfolRRKq3vX1ypgKHvnhtVMTnQiz7LoLZCESPXV9iLCIoij0Reseu2mNHOTB/ElYHUEsRWycMmPrY9njwM6oilE4a4dh7k2PHF96CQ9h6ithOeXgLVQtGQMSWFzIUP5eUv9caJ9swIFVWhUDT4VPKXl+GUbZ+OQUD+lzWfhSZWfSlm8SGZPv5x5aJr0Xw6hKmdfHKD5th2KWWVroQWB2Z7T14u/ek+FtcBVvwHqddO58opcje8BpHlo/afBJueom/8J/yDyuOHH9TDgOcETecR7TU7Jwxy2AufQWkUIiIK
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: ae377e91-dd13-47f4-8bd0-08d7827aa165
+X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Dec 2019 22:52:30.0592
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: Ms0Jq4GTSDnNMHoLSNyy/F+WJQUQr5TMDCqo6uKP/i8aAonhQf/f1STP+YlfGexz3uI1WLWk50c9MFB7VmSfDw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR05MB4311
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On the LS1021A-TSN board, it can be seen that under rare conditions,
-ptp4l gets unexpected extra data in the event socket error queue.
 
-This is because the DSA master driver (gianfar) has TX timestamping
-logic along the lines of:
 
-1. In gfar_start_xmit:
-	do_tstamp = (skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP) &&
-		    priv->hwts_tx_en;
-	(...)
-	if (unlikely(do_tstamp))
-		skb_shinfo(skb)->tx_flags |= SKBTX_IN_PROGRESS;
-2. Later in gfar_clean_tx_ring:
-	if (unlikely(skb_shinfo(skb)->tx_flags & SKBTX_IN_PROGRESS))
-		(...)
-		skb_tstamp_tx(skb, &shhwtstamps);
+> -----Original Message-----
+> From: Jakub Kicinski <jakub.kicinski@netronome.com>
+> Sent: Monday, December 16, 2019 12:45 PM
+> To: Yuval Avnery <yuvalav@mellanox.com>
+> Cc: Jiri Pirko <jiri@mellanox.com>; davem@davemloft.net;
+> netdev@vger.kernel.org; linux-kernel@vger.kernel.org; Andy Gospodarek
+> <andy@greyhouse.net>; Daniel Jurgens <danielj@mellanox.com>
+> Subject: Re: [PATCH net-next] netdevsim: Add max_vfs to bus_dev
+>=20
 
-That is to say, between the first and second check, it drops
-priv->hwts_tx_en (it assumes that it is the only one who can set
-SKBTX_IN_PROGRESS, disregarding stacked net devices such as DSA switches
-or PTP-capable PHY drivers). Any such driver (like sja1105 in this case)
-that would set SKBTX_IN_PROGRESS would trip up this check and gianfar
-would deliver a garbage TX timestamp for this skb too, which can in turn
-have unpredictable and surprising effects to user space.
+> The ip-link API will suddenly start returning errors which may not be
+> expected to the user space. So the question is what the user space is you=
+'re
+> expecting to run/testing with? _Some_ user space should prove this design
+> out before we merge it.
+>=20
+> The alternative design is to "forward" hosts ip-link requests to the NIC =
+CPU
+> and let software running there talk to the cloud back end.
+> Rather than going
+>   customer -> could API -> NIC,
+> go
+>   customer -> NIC -> cloud API
+> That obviously is more complex, but has the big advantage of nothing on t=
+he
+> host CPU having to change.
 
-In fact gianfar is by far not the only driver which uses
-SKBTX_IN_PROGRESS to identify skb's that need special handling. The flag
-used to have a historical purpose and is now evaluated in the networking
-stack in a single place: in __skb_tstamp_tx, only on the software
-timestamping path (hwtstamps == NULL) which is not relevant for us.
+I will try to summarize your comments:
+1. There will always be encapsulation, therefore network management shouldn=
+'t care what MACs customers use.
+2.  Customer is always requesting MAC, it never simply acquires it from the=
+ NIC.
+     There is always going to be an entity running on the host setting MACs=
+ to VFs.
 
-So do the wise thing and drop the unneeded assignment. Even though this
-patch alone will not protect against all classes of Ethernet driver TX
-timestamping bugs, it will circumvent those related to the incorrect
-interpretation of this skb tx flag.
+Is that correct?
 
-Fixes: 47ed985e97f5 ("net: dsa: sja1105: Add logic for TX timestamping")
-Suggested-by: Richard Cochran <richardcochran@gmail.com>
-Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
----
- drivers/net/dsa/sja1105/sja1105_ptp.c | 2 --
- 1 file changed, 2 deletions(-)
 
-diff --git a/drivers/net/dsa/sja1105/sja1105_ptp.c b/drivers/net/dsa/sja1105/sja1105_ptp.c
-index 54258a25031d..038c83fbd9e8 100644
---- a/drivers/net/dsa/sja1105/sja1105_ptp.c
-+++ b/drivers/net/dsa/sja1105/sja1105_ptp.c
-@@ -668,8 +668,6 @@ void sja1105_ptp_txtstamp_skb(struct dsa_switch *ds, int slot,
- 	u64 ticks, ts;
- 	int rc;
- 
--	skb_shinfo(skb)->tx_flags |= SKBTX_IN_PROGRESS;
--
- 	mutex_lock(&ptp_data->lock);
- 
- 	rc = sja1105_ptpclkval_read(priv, &ticks, NULL);
--- 
-2.17.1
+
+
 
