@@ -2,131 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C813012065C
-	for <lists+netdev@lfdr.de>; Mon, 16 Dec 2019 13:55:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1024A120663
+	for <lists+netdev@lfdr.de>; Mon, 16 Dec 2019 13:55:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727605AbfLPMwW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Dec 2019 07:52:22 -0500
-Received: from us-smtp-1.mimecast.com ([205.139.110.61]:22735 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727553AbfLPMwW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Dec 2019 07:52:22 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1576500740;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=zPVhi8m4az+66WjE69dbm65uff7xS22TNy+E1MZ9t4o=;
-        b=JYFgAbDpOHobqcGzmseZ7Mm5/haai9RkzfJCUDobZ9cEI5TTWYeU8gX+2qhas1FPj8tc7G
-        q0eBDdDU0EBbYkAkQYhqcRxp24BMdEjaNUJqOoca59Ba5O0RrNUOUtA28kuFK4FV+tmTm0
-        qcpLk5dJhlk2+wFtRUqRelyRZ9EPGA4=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-404-vkdXEzJ0N42gvEsbQRRYeQ-1; Mon, 16 Dec 2019 07:52:15 -0500
-X-MC-Unique: vkdXEzJ0N42gvEsbQRRYeQ-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 736C5107ACCD;
-        Mon, 16 Dec 2019 12:52:14 +0000 (UTC)
-Received: from ovpn-118-91.ams2.redhat.com (unknown [10.36.118.91])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 6174E6046C;
-        Mon, 16 Dec 2019 12:52:13 +0000 (UTC)
-Message-ID: <b9833b748f61c043a2827daee060d4ad4171996e.camel@redhat.com>
-Subject: Re: [MPTCP] Re: [PATCH net-next 09/11] tcp: Check for filled TCP
- option space before SACK
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Eric Dumazet <eric.dumazet@gmail.com>,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        netdev@vger.kernel.org, mptcp@lists.01.org
-Date:   Mon, 16 Dec 2019 13:52:12 +0100
-In-Reply-To: <47545b88-94db-e9cd-2f9f-2c6d665246e2@gmail.com>
-References: <20191213230022.28144-1-mathew.j.martineau@linux.intel.com>
-         <20191213230022.28144-10-mathew.j.martineau@linux.intel.com>
-         <47545b88-94db-e9cd-2f9f-2c6d665246e2@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.32.5 (3.32.5-1.fc30) 
+        id S1727728AbfLPMyA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Dec 2019 07:54:00 -0500
+Received: from mx2.suse.de ([195.135.220.15]:39022 "EHLO mx1.suse.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727550AbfLPMx7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 16 Dec 2019 07:53:59 -0500
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx1.suse.de (Postfix) with ESMTP id 29D62AFAF;
+        Mon, 16 Dec 2019 12:53:55 +0000 (UTC)
+Received: by quack2.suse.cz (Postfix, from userid 1000)
+        id 69B531E0B2E; Mon, 16 Dec 2019 13:53:53 +0100 (CET)
+Date:   Mon, 16 Dec 2019 13:53:53 +0100
+From:   Jan Kara <jack@suse.cz>
+To:     John Hubbard <jhubbard@nvidia.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@intel.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Dave Chinner <david@fromorbit.com>,
+        David Airlie <airlied@linux.ie>,
+        "David S . Miller" <davem@davemloft.net>,
+        Ira Weiny <ira.weiny@intel.com>, Jan Kara <jack@suse.cz>,
+        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
+        Jonathan Corbet <corbet@lwn.net>,
+        =?iso-8859-1?B?Suly9G1l?= Glisse <jglisse@redhat.com>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Michal Hocko <mhocko@suse.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Paul Mackerras <paulus@samba.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Vlastimil Babka <vbabka@suse.cz>, bpf@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, kvm@vger.kernel.org,
+        linux-block@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        linux-media@vger.kernel.org, linux-rdma@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, netdev@vger.kernel.org,
+        linux-mm@kvack.org, LKML <linux-kernel@vger.kernel.org>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>
+Subject: Re: [PATCH v11 23/25] mm/gup: track FOLL_PIN pages
+Message-ID: <20191216125353.GF22157@quack2.suse.cz>
+References: <20191212101741.GD10065@quack2.suse.cz>
+ <20191214032617.1670759-1-jhubbard@nvidia.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20191214032617.1670759-1-jhubbard@nvidia.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
-
-On Fri, 2019-12-13 at 15:22 -0800, Eric Dumazet wrote:
+On Fri 13-12-19 19:26:17, John Hubbard wrote:
+> Add tracking of pages that were pinned via FOLL_PIN.
 > 
-> On 12/13/19 3:00 PM, Mat Martineau wrote:
-> > The SACK code would potentially add four bytes to the expected
-> > TCP option size even if all option space was already used.
-> > 
-> > Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
-> > ---
-> >  net/ipv4/tcp_output.c | 3 +++
-> >  1 file changed, 3 insertions(+)
-> > 
-> > diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
-> > index 9e04d45bc0e4..710ab45badfa 100644
-> > --- a/net/ipv4/tcp_output.c
-> > +++ b/net/ipv4/tcp_output.c
-> > @@ -748,6 +748,9 @@ static unsigned int tcp_established_options(struct sock *sk, struct sk_buff *skb
-> >  		size += TCPOLEN_TSTAMP_ALIGNED;
-> >  	}
-> >  
-> > +	if (size + TCPOLEN_SACK_BASE_ALIGNED >= MAX_TCP_OPTION_SPACE)
-> > +		return size;
-> > +
-> >  	eff_sacks = tp->rx_opt.num_sacks + tp->rx_opt.dsack;
-> >  	if (unlikely(eff_sacks)) {
-> >  		const unsigned int remaining = MAX_TCP_OPTION_SPACE - size;
-> > 
+> As mentioned in the FOLL_PIN documentation, callers who effectively set
+> FOLL_PIN are required to ultimately free such pages via unpin_user_page().
+> The effect is similar to FOLL_GET, and may be thought of as "FOLL_GET
+> for DIO and/or RDMA use".
 > 
-> Hmmm... I thought I already fixed this issue ?
+> Pages that have been pinned via FOLL_PIN are identifiable via a
+> new function call:
 > 
-> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=9424e2e7ad93ffffa88f882c9bc5023570904b55
+>    bool page_dma_pinned(struct page *page);
 > 
-> Please do not mix fixes (targeting net tree) in a patch series targeting net-next
+> What to do in response to encountering such a page, is left to later
+> patchsets. There is discussion about this in [1], [2], and [3].
+> 
+> This also changes a BUG_ON(), to a WARN_ON(), in follow_page_mask().
+> 
+> [1] Some slow progress on get_user_pages() (Apr 2, 2019):
+>     https://lwn.net/Articles/784574/
+> [2] DMA and get_user_pages() (LPC: Dec 12, 2018):
+>     https://lwn.net/Articles/774411/
+> [3] The trouble with get_user_pages() (Apr 30, 2018):
+>     https://lwn.net/Articles/753027/
+> 
+> Suggested-by: Jan Kara <jack@suse.cz>
+> Suggested-by: Jérôme Glisse <jglisse@redhat.com>
+> Cc: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
+> Signed-off-by: John Hubbard <jhubbard@nvidia.com>
+> ---
+> 
+> Hi Jan,
+> 
+> This should address all of your comments for patch 23!
 
-Thank you for the feedback!
+Thanks. One comment below:
 
-Unfortunatelly, the above commit is not enough when MPTCP is enabled,
-as, without this patch, we can reach the following code:
+> @@ -1486,6 +1500,10 @@ struct page *follow_trans_huge_pmd(struct vm_area_struct *vma,
+>  	VM_BUG_ON_PAGE(!PageHead(page) && !is_zone_device_page(page), page);
+>  	if (flags & FOLL_TOUCH)
+>  		touch_pmd(vma, addr, pmd, flags);
+> +
+> +	if (!try_grab_page(page, flags))
+> +		return ERR_PTR(-ENOMEM);
+> +
+>  	if ((flags & FOLL_MLOCK) && (vma->vm_flags & VM_LOCKED)) {
+>  		/*
+>  		 * We don't mlock() pte-mapped THPs. This way we can avoid
 
-		const unsigned int remaining = MAX_TCP_OPTION_SPACE - size;
-		opts->num_sack_blocks =
-			min_t(unsigned int, eff_sacks,
-			      (remaining - TCPOLEN_SACK_BASE_ALIGNED) /
-			      TCPOLEN_SACK_PERBLOCK);
+I'd move this still a bit higher - just after VM_BUG_ON_PAGE() and before
+if (flags & FOLL_TOUCH) test. Because touch_pmd() can update page tables
+and we don't won't that if we're going to fail the fault.
 
-with 'size == MAX_TCP_OPTION_SPACE' and num_sack_blocks will be
-miscalculated. So we need 'fix' but only for MPTCP/when MPTCP is
-enabled. Still ok for a -net commit?
+With this fixed, the patch looks good to me so you can then add:
 
-Additionally we can clean-up the fix a bit, using something alike the
-following, so that it will never add an additional branching
-istruction.
+Reviewed-by: Jan Kara <jack@suse.cz>
 
----
-+               if (unlikely(remaining < TCPOLEN_SACK_BASE_ALIGNED +
-+                                        TCPOLEN_SACK_PERBLOCK))
-+                       return size;
-+
-                opts->num_sack_blocks =
-                        min_t(unsigned int, eff_sacks,
-                              (remaining - TCPOLEN_SACK_BASE_ALIGNED) /
-                              TCPOLEN_SACK_PERBLOCK);
--               if (likely(opts->num_sack_blocks))
--                       size += TCPOLEN_SACK_BASE_ALIGNED +
--                               opts->num_sack_blocks * TCPOLEN_SACK_PERBLOCK;
-+
-+               size += TCPOLEN_SACK_BASE_ALIGNED +
-+                       opts->num_sack_blocks * TCPOLEN_SACK_PERBLOCK;
----
-
-Thank you!
-
-Paolo
-
+								Honza
+-- 
+Jan Kara <jack@suse.com>
+SUSE Labs, CR
