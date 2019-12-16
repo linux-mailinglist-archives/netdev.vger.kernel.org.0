@@ -2,60 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C34D4120390
-	for <lists+netdev@lfdr.de>; Mon, 16 Dec 2019 12:18:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A4B961203DF
+	for <lists+netdev@lfdr.de>; Mon, 16 Dec 2019 12:27:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727230AbfLPLR7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Dec 2019 06:17:59 -0500
-Received: from www62.your-server.de ([213.133.104.62]:43420 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727059AbfLPLR7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Dec 2019 06:17:59 -0500
-Received: from sslproxy02.your-server.de ([78.47.166.47])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1igoNr-0007sX-Mu; Mon, 16 Dec 2019 12:17:51 +0100
-Received: from [2001:1620:665:0:5795:5b0a:e5d5:5944] (helo=linux.fritz.box)
-        by sslproxy02.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1igoNr-0003C6-BK; Mon, 16 Dec 2019 12:17:51 +0100
-Subject: Re: [PATCH] bpf: Replace BUG_ON when fp_old is NULL
-To:     Yonghong Song <yhs@fb.com>, Aditya Pakki <pakki001@umn.edu>
-Cc:     "kjlu@umn.edu" <kjlu@umn.edu>, Alexei Starovoitov <ast@kernel.org>,
-        Martin Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-References: <20191215154432.22399-1-pakki001@umn.edu>
- <98c13b9c-a73a-6203-4ea1-6b1180d87d97@fb.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <566f206c-f133-6f68-c257-2c0b3ec462fa@iogearbox.net>
-Date:   Mon, 16 Dec 2019 12:17:50 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1727276AbfLPL1g (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Dec 2019 06:27:36 -0500
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:40431 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727256AbfLPL1g (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Dec 2019 06:27:36 -0500
+Received: by mail-wm1-f66.google.com with SMTP id t14so6269358wmi.5;
+        Mon, 16 Dec 2019 03:27:35 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=ryVCsc54wbLULwv2yhD2TV0CloGuzqu6YbJ+JZg2+Bw=;
+        b=B2wZKrqI53sfMzTn1xB9u+IAC8aAlprP6lKyoRjOFv+mAgWyzRZKUPdkllZEgZ+/W8
+         DeMsCEl/DMhiZSPkcv1VniypQlOM9UmrDyedZqf89IgUuW2hPQHGAlyOGxMlbvYlrji4
+         XXvKSSjJP7Ki8gOjCFpsJIilunbNGJ7docT2BrLClswLH/iSXu50XpBLxmBU9tEYhdca
+         lp5M+q8iSvgo+TMjAwY826pkQhTBoLXXvdfH3jXLG6xIscRX90HVzvGVCGrpkpoEAE5U
+         sNcIBDaWY/sXqexrw8PjlnSUCqysQ6CUfC1WWERdw5ZlmsYjkFZtzH2Ykuwp+zR1auUH
+         MYvg==
+X-Gm-Message-State: APjAAAX3GUeIydIzceIaETTjj4pl3zu7ShKIqin5zXTtG7KQhCVujwP+
+        QrxclS4MioGEVz4FJn8F/Lp0rG5R40v0eQ==
+X-Google-Smtp-Source: APXvYqz1BLiG5nMqNCmn72jiVmsafaibGobD6Zl88Jm7HLwR9e20MoalCryrVovJTR9RG8IWR3qSjg==
+X-Received: by 2002:a05:600c:48a:: with SMTP id d10mr13816032wme.87.1576495654385;
+        Mon, 16 Dec 2019 03:27:34 -0800 (PST)
+Received: from Omicron ([217.76.31.1])
+        by smtp.gmail.com with ESMTPSA id c17sm20883601wrr.87.2019.12.16.03.27.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 16 Dec 2019 03:27:33 -0800 (PST)
+Date:   Mon, 16 Dec 2019 12:27:33 +0100
+From:   Paul Chaignon <paul.chaignon@orange.com>
+To:     bpf@vger.kernel.org
+Cc:     paul.chaignon@gmail.com, netdev@vger.kernel.org,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>
+Subject: [PATCH bpf-next] bpftool: Fix compilation warning on shadowed
+ variable
+Message-ID: <20191216112733.GA28366@Omicron>
 MIME-Version: 1.0
-In-Reply-To: <98c13b9c-a73a-6203-4ea1-6b1180d87d97@fb.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.101.4/25665/Mon Dec 16 10:52:23 2019)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/15/19 11:08 PM, Yonghong Song wrote:
-> On 12/15/19 7:44 AM, Aditya Pakki wrote:
->> If fp_old is NULL in bpf_prog_realloc, the program does an assertion
->> and crashes. However, we can continue execution by returning NULL to
->> the upper callers. The patch fixes this issue.
-> 
-> Could you share how to reproduce the assertion and crash? I would
-> like to understand the problem first before making changes in the code.
-> Thanks!
+The ident variable has already been declared at the top of the function
+and doesn't need to be re-declared.
 
-Fully agree, Aditya, please elaborate if you have seen a crash!
+Fixes: 985ead416df39 ("bpftool: Add skeleton codegen command")
+Signed-off-by: Paul Chaignon <paul.chaignon@orange.com>
+---
+ tools/bpf/bpftool/gen.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/tools/bpf/bpftool/gen.c b/tools/bpf/bpftool/gen.c
+index a07c80429c7a..f70088b4c19b 100644
+--- a/tools/bpf/bpftool/gen.c
++++ b/tools/bpf/bpftool/gen.c
+@@ -388,7 +388,7 @@ static int do_skeleton(int argc, char **argv)
+ 		);
+ 		i = 0;
+ 		bpf_object__for_each_map(map, obj) {
+-			const char *ident = get_map_ident(map);
++			ident = get_map_ident(map);
+ 
+ 			if (!ident)
+ 				continue;
+-- 
+2.24.0
+
