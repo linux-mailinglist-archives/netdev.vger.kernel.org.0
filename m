@@ -2,196 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E401211FCB1
-	for <lists+netdev@lfdr.de>; Mon, 16 Dec 2019 03:01:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 42E8211FD26
+	for <lists+netdev@lfdr.de>; Mon, 16 Dec 2019 04:10:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726454AbfLPCB3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 15 Dec 2019 21:01:29 -0500
-Received: from mail-qk1-f194.google.com ([209.85.222.194]:38328 "EHLO
-        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726299AbfLPCB3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 15 Dec 2019 21:01:29 -0500
-Received: by mail-qk1-f194.google.com with SMTP id k6so1676831qki.5;
-        Sun, 15 Dec 2019 18:01:28 -0800 (PST)
+        id S1726620AbfLPDKT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 15 Dec 2019 22:10:19 -0500
+Received: from mail-io1-f68.google.com ([209.85.166.68]:33136 "EHLO
+        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726528AbfLPDKT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 15 Dec 2019 22:10:19 -0500
+Received: by mail-io1-f68.google.com with SMTP id z8so3539493ioh.0
+        for <netdev@vger.kernel.org>; Sun, 15 Dec 2019 19:10:18 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=M/IbV1IcS68t0hn8ZjuIs9f2S9xVeDYxEV+U8+mSQFs=;
-        b=IsySucYz3Ypq5m1h96X47Zrl+ji07AaPVmZ/kJi2tBJDfg7sW6DJT5jyUr4A4gESj+
-         gGQ95Lzl7aGmaa6tV3rjdr/BRXQ6dzWY+FiWCWmpiEZoSmqtcZrxyFAguNS2oxmz0q97
-         jqBo7+nqTUgfES3MmgY5UGvoUCfefRgFwvzOA4rpto+og8Z+jO5XEFlGsDskueJGKmmq
-         a3pP/K31u0+/c36+Ex8fh1mLeu6lsn1JzJ6WCdRcL+PWUyVJ7tDJXQRDSLx4aXJAx7of
-         daKkY+jxjmtUm/AAsyTJE30oihTsFEQ85AYy1XhpgdO0iMjpGQv3bBJt4OsS4Gij4qZz
-         DVKw==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=qJ4yMM1U7B8VPXHSyOGiuEMZuJ2QhhNkENA5uEWq5nE=;
+        b=QUpkl5WRO3n72cM89rUeUmzvCc+TIeMnZNT6GDUCcLKVFdDZ3ZE/1OPP9S8vdyZqK2
+         rrLCRegc3awLX0BTtqoJ9BFKoCyD7uYLzPXANL2qLAPZr9CxiYXg2Mr7/ASIMLIyc6TL
+         GuiSstp1sk4w6hC9WioCdc2qSBi+ls9m3DtqQxFS3Oi6uaFusiPzOkjRgIjaR5B2hXp3
+         1L+GjrkWP98N/13WlGTYfUsti9oMhSrXOWm14Y+fqmfqHXN8GmVDUIAa0ujBs99OJqys
+         1xa7ghR5ptu4I+M6NXgROhRZgAZs9kk6fWj3wdEjYm/AxPtyeHfVmVmPfAfdvlHPW7fL
+         1uGQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=M/IbV1IcS68t0hn8ZjuIs9f2S9xVeDYxEV+U8+mSQFs=;
-        b=L4GSMVTFIDyVAMWXQvrdwVE/mEyArjN7usygXkuYqUoNXfN1KGfau5wtViskhbk73C
-         IFR/vQQ+08tPYjwC4Dp8kexmbx0P74dCL4c2S7ZSr44GqdsD9gfjMihW2RX9wDRAXU14
-         V6cVSK9gHn+DR44BfXBJeYmehymyhpluDq2Sox8HJWhA51GZMRUpogt88eBtJtFChPxJ
-         WM4pVhdhF8UH5OzZklpnop1N5NznBO9ibcMq3Lm4D0k7I9vEGSasBDAkirYCcLaUeRKd
-         4R51gLHB6P5UHNo/FF29UmW17xsKi2mKtXIs4ZMRDHcV3jRvDfWFAEOT8i0PsXGr+Y9L
-         Ne2w==
-X-Gm-Message-State: APjAAAWxkVqDSsTCaGy49wMH9Ii8iK/tIpC0UhcL/7911az7KYTzg5XW
-        b6IhkqKfvaxPQQJSer2tTsjDl0nJeAc4HXM5U40=
-X-Google-Smtp-Source: APXvYqw1djqQweKj1yB2WCa47bGvrzJj7c36bBxtB1pnGEGb8X2bx974sHniiaoOgOvbuFLO51Arxks4sa8KOdDYHgI=
-X-Received: by 2002:a37:a685:: with SMTP id p127mr26102673qke.449.1576461687591;
- Sun, 15 Dec 2019 18:01:27 -0800 (PST)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=qJ4yMM1U7B8VPXHSyOGiuEMZuJ2QhhNkENA5uEWq5nE=;
+        b=DHg25zDXcCem8P6mBCS6mD30qTXP/PDYO0xQOCLMC0vA0nqyLAiWb6464KqkR7zSfA
+         5AeI9Z8UmrHuGQyo3EgbnLTfYfRJFOXBHAM5emdqKPLMpBAy5GlCjx+1C6ixaFVMRmKr
+         pb+pKhX64YjUqOvcFFKqSuiMF8DjWpusZNe8WUzFv+1pWXL5TsL8241hegsytKVe0aCM
+         GI+qTPFbrFH3/3DYxsiqhRu8Wm47QuBqQsur7VBtyJwEKvHbThYqZ9zkO3xzi5qOa1mL
+         7cl7hBwNI/8gITWjj/lmve4TfxfziF+n73oAWkOXfY43Oy/czF/7mCZ9p9AUp45qN/PV
+         vEog==
+X-Gm-Message-State: APjAAAXxOa+RbjrQBeGcsURPTNgNfRS3dPdeyjf220XkFJagTehsNlk8
+        07U6Wt5+xTE39bP+p7lDcFxUG2eCgSI=
+X-Google-Smtp-Source: APXvYqzwYfMB2LTQ51vgQnS9jDktUZcPuHGnqxoPu5Dy6GMnxTuDZs+PV/lky2Z3YEDwM2HFCxcTlA==
+X-Received: by 2002:a6b:b50b:: with SMTP id e11mr47800iof.223.1576465818115;
+        Sun, 15 Dec 2019 19:10:18 -0800 (PST)
+Received: from ?IPv6:2601:284:8202:10b0:6046:f5bd:4635:2d5b? ([2601:284:8202:10b0:6046:f5bd:4635:2d5b])
+        by smtp.googlemail.com with ESMTPSA id c8sm909603ilh.58.2019.12.15.19.10.16
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 15 Dec 2019 19:10:17 -0800 (PST)
+Subject: Re: [PATCH net-next v2] bonding: move 802.3ad port state flags to
+ uapi
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Andy Roulin <aroulin@cumulusnetworks.com>
+Cc:     netdev@vger.kernel.org, nikolay@cumulusnetworks.com,
+        roopa@cumulusnetworks.com, j.vosburgh@gmail.com, vfalico@gmail.com,
+        andy@greyhouse.net, stephen@networkplumber.org
+References: <1576103458-22411-1-git-send-email-aroulin@cumulusnetworks.com>
+ <20191214131809.1f606978@cakuba.netronome.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <1076ce41-2cd5-e1d9-9b9f-ddc01385d343@gmail.com>
+Date:   Sun, 15 Dec 2019 20:10:15 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0)
+ Gecko/20100101 Thunderbird/68.3.0
 MIME-Version: 1.0
-References: <20191214014341.3442258-1-andriin@fb.com> <20191216003052.mdiw5fay37jqoakj@ast-mbp.dhcp.thefacebook.com>
-In-Reply-To: <20191216003052.mdiw5fay37jqoakj@ast-mbp.dhcp.thefacebook.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Sun, 15 Dec 2019 18:01:16 -0800
-Message-ID: <CAEf4BzaiMVZzbQ=weG7Dw1OP6Zd_C9+=AXvv0BH6=TtCqXobdQ@mail.gmail.com>
-Subject: Re: [PATCH v4 bpf-next 00/17] Add code-generated BPF object skeleton support
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20191214131809.1f606978@cakuba.netronome.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Dec 15, 2019 at 4:30 PM Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
->
-> On Fri, Dec 13, 2019 at 05:43:24PM -0800, Andrii Nakryiko wrote:
-> > This patch set introduces an alternative and complimentary to existing =
-libbpf
-> > API interface for working with BPF objects, maps, programs, and global =
-data
-> > from userspace side. This approach is relying on code generation. bpfto=
-ol
-> > produces a struct (a.k.a. skeleton) tailored and specific to provided B=
-PF
-> > object file. It includes hard-coded fields and data structures for ever=
-y map,
-> > program, link, and global data present.
-> >
-> > Altogether this approach significantly reduces amount of userspace boil=
-erplate
-> > code required to open, load, attach, and work with BPF objects. It impr=
-oves
-> > attach/detach story, by providing pre-allocated space for bpf_links, an=
-d
-> > ensuring they are properly detached on shutdown. It allows to do away w=
-ith by
-> > name/title lookups of maps and programs, because libbpf's skeleton API,=
- in
-> > conjunction with generated code from bpftool, is filling in hard-coded =
-fields
-> > with actual pointers to corresponding struct bpf_map/bpf_program/bpf_li=
-nk.
-> >
-> > Also, thanks to BPF array mmap() support, working with global data (var=
-iables)
-> > from userspace is now as natural as it is from BPF side: each variable =
-is just
-> > a struct field inside skeleton struct. Furthermore, this allows to have
-> > a natural way for userspace to pre-initialize global data (including
-> > previously impossible to initialize .rodata) by just assigning values t=
-o the
-> > same per-variable fields. Libbpf will carefully take into account this
-> > initialization image, will use it to pre-populate BPF maps at creation =
-time,
-> > and will re-mmap() BPF map's contents at exactly the same userspace mem=
-ory
-> > address such that it can continue working with all the same pointers wi=
-thout
-> > any interruptions. If kernel doesn't support mmap(), global data will s=
-till be
-> > successfully initialized, but after map creation global data structures=
- inside
-> > skeleton will be NULL-ed out. This allows userspace application to grac=
-efully
-> > handle lack of mmap() support, if necessary.
-> >
-> > A bunch of selftests are also converted to using skeletons, demonstrati=
-ng
-> > significant simplification of userspace part of test and reduction in a=
-mount
-> > of code necessary.
-> >
-> > v3->v4:
-> > - add OPTS_VALID check to btf_dump__emit_type_decl (Alexei);
-> > - expose skeleton as LIBBPF_API functions (Alexei);
-> > - copyright clean up, update internal map init refactor (Alexei);
->
-> Applied. Thanks.
->
-> I really liked how much more concise test_fentry_fexit() test has become.
-> I also liked how renaming global variable s/test1_result/_test1_result/
-> in bpf program became a build time error for user space part:
-> ../prog_tests/fentry_fexit.c:49:35: error: =E2=80=98struct fentry_test__b=
-ss=E2=80=99 has no member named =E2=80=98test1_result=E2=80=99; did you mea=
-n =E2=80=98_test1_result=E2=80=99?
->   printf("%lld\n", fentry_skel->bss->test1_result);
-> Working with global variables is so much easier now.
->
-> I'd like you to consider additional feature request.
-> The following error:
-> -BPF_EMBED_OBJ(fentry, "fentry_test.o");
-> -BPF_EMBED_OBJ(fexit, "fexit_test.o");
-> +BPF_EMBED_OBJ(fexit, "fentry_test.o");
-> +BPF_EMBED_OBJ(fentry, "fexit_test.o");
-> will not be caught.
-> I think skeleton should get smarter somehow to catch that too.
->
-> One option would be to do BPF_EMBED_OBJ() as part of *.skel.h but then
-> accessing the same embedded .o from multiple tests will not be possible a=
-nd
-> what stacktrace_build_id.c and stacktrace_build_id_nmi.c are doing won't =
-work
-> anymore. Some sort of build-id/sha1 of .o can work, but it will be caught
-> in run-time. I think build time would be better.
-> May be generate new macro in skel.h that user space can instantiate
-> instead of using common BPF_EMBED_OBJ ?
->
+On 12/14/19 2:18 PM, Jakub Kicinski wrote:
+> On Wed, 11 Dec 2019 14:30:58 -0800, Andy Roulin wrote:
+>> The bond slave actor/partner operating state is exported as
+>> bitfield to userspace, which lacks a way to interpret it, e.g.,
+>> iproute2 only prints the state as a number:
+>>
+>> ad_actor_oper_port_state 15
+>>
+>> For userspace to interpret the bitfield, the bitfield definitions
+>> should be part of the uapi. The bitfield itself is defined in the
+>> 802.3ad standard.
+>>
+>> This commit moves the 802.3ad bitfield definitions to uapi.
+>>
+>> Related iproute2 patches, soon to be posted upstream, use the new uapi
+>> headers to pretty-print bond slave state, e.g., with ip -d link show
+>>
+>> ad_actor_oper_port_state_str <active,short_timeout,aggregating,in_sync>
+>>
+>> Signed-off-by: Andy Roulin <aroulin@cumulusnetworks.com>
+>> Acked-by: Roopa Prabhu <roopa@cumulusnetworks.com>
+> 
+> Applied, I wonder if it wouldn't be better to rename those
+> s/AD_/BOND_3AD_/ like the prefix the stats have. 
+> But I guess it's unlikely user space has those exact defines 
+> set to a different value so can't cause a clash..
+> 
 
-All those issues are actually very easy to solve. As part of bla.skel.h:
-
-....
-
-#ifndef __BLA__SKEL_EMBEDDED
-#define __BLA__SKEL_EMBEDDED
-BPF_EMBED_OBJ(<some_identifier>, <path_to_.o>);
-#endif
-
-extern struct bpf_embed_data <some_identifier>_embed;
-
-/* we can have a variant of bla__create_skeleton() that just uses
-above <some_identifier>_embed */
-
-....
-
-
-That seems to solve all the problems you mentioned. But it creates the
-problem of knowing/specifying <some_identifier> and <path_to_.o>.
-While we can "dictate" <some_identifier> (e.g., based on object file
-name), <path_to_.o> sometimes might need to be overridden, depending
-on specifics of build system.
-
-
-But I guess we can follow convention-driven way, and in addition to
-above do something like:
-
-
-#ifndef __BLA__SKEL__OBJ_PATH
-#define __BLA__SKEL__OBJ_PATH "<whatever path was provided to bpftool
-to generate skeleton>"
-#endif
-
-
-/* then just use __BLA__SKEL__OBJ_PATH for BPF_EMBED_OBJ,
- * which user can override before including skeleton on userspace side
- */
-
-WDYT?
+I think that would be a better namespace now that it is in the UAPI.
