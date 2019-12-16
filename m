@@ -2,142 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5EF4312085E
-	for <lists+netdev@lfdr.de>; Mon, 16 Dec 2019 15:16:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E82E1208AE
+	for <lists+netdev@lfdr.de>; Mon, 16 Dec 2019 15:33:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728209AbfLPOQN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Dec 2019 09:16:13 -0500
-Received: from www62.your-server.de ([213.133.104.62]:37798 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728015AbfLPOQM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Dec 2019 09:16:12 -0500
-Received: from [2001:1620:665:0:5795:5b0a:e5d5:5944] (helo=localhost)
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1igrAO-0006vu-Vq; Mon, 16 Dec 2019 15:16:09 +0100
-Date:   Mon, 16 Dec 2019 15:16:08 +0100
-From:   Daniel Borkmann <daniel@iogearbox.net>
-To:     Andrii Nakryiko <andriin@fb.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@fb.com,
-        andrii.nakryiko@gmail.com, kernel-team@fb.com
-Subject: Re: [PATCH bpf-next 11/15] bpftool: add skeleton codegen command
-Message-ID: <20191216141608.GE14887@linux.fritz.box>
-References: <20191210011438.4182911-1-andriin@fb.com>
- <20191210011438.4182911-12-andriin@fb.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191210011438.4182911-12-andriin@fb.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.101.4/25665/Mon Dec 16 10:52:23 2019)
+        id S1728087AbfLPOdD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Dec 2019 09:33:03 -0500
+Received: from stargate.chelsio.com ([12.32.117.8]:44003 "EHLO
+        stargate.chelsio.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728014AbfLPOdD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Dec 2019 09:33:03 -0500
+Received: from localhost (scalar.blr.asicdesigners.com [10.193.185.94])
+        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id xBGEWvjT021439;
+        Mon, 16 Dec 2019 06:32:58 -0800
+From:   Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, nirranjan@chelsio.com, vishal@chelsio.com,
+        dt@chelsio.com
+Subject: [PATCH net] cxgb4: fix refcount init for TC-MQPRIO offload
+Date:   Mon, 16 Dec 2019 19:54:02 +0530
+Message-Id: <1576506242-12761-1-git-send-email-rahul.lakkireddy@chelsio.com>
+X-Mailer: git-send-email 2.5.3
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 09, 2019 at 05:14:34PM -0800, Andrii Nakryiko wrote:
-> Add `bpftool gen skeleton` command, which takes in compiled BPF .o object file
-> and dumps a BPF skeleton struct and related code to work with that skeleton.
-> Skeleton itself is tailored to a specific structure of provided BPF object
-> file, containing accessors (just plain struct fields) for every map and
-> program, as well as dedicated space for bpf_links. If BPF program is using
-> global variables, corresponding structure definitions of compatible memory
-> layout are emitted as well, making it possible to initialize and subsequently
-> read/update global variables values using simple and clear C syntax for
-> accessing fields. This skeleton majorly improves usability of
-> opening/loading/attaching of BPF object, as well as interacting with it
-> throughout the lifetime of loaded BPF object.
-> 
-> Generated skeleton struct has the following structure:
-> 
-> struct <object-name> {
-> 	/* used by libbpf's skeleton API */
-> 	struct bpf_object_skeleton *skeleton;
-> 	/* bpf_object for libbpf APIs */
-> 	struct bpf_object *obj;
-> 	struct {
-> 		/* for every defined map in BPF object: */
-> 		struct bpf_map *<map-name>;
-> 	} maps;
-> 	struct {
-> 		/* for every program in BPF object: */
-> 		struct bpf_program *<program-name>;
-> 	} progs;
-> 	struct {
-> 		/* for every program in BPF object: */
-> 		struct bpf_link *<program-name>;
-> 	} links;
-> 	/* for every present global data section: */
-> 	struct <object-name>__<one of bss, data, or rodata> {
-> 		/* memory layout of corresponding data section,
-> 		 * with every defined variable represented as a struct field
-> 		 * with exactly the same type, but without const/volatile
-> 		 * modifiers, e.g.:
-> 		 */
-> 		 int *my_var_1;
-> 		 ...
-> 	} *<one of bss, data, or rodata>;
-> };
-> 
-> This provides great usability improvements:
-> - no need to look up maps and programs by name, instead just
->   my_obj->maps.my_map or my_obj->progs.my_prog would give necessary
->   bpf_map/bpf_program pointers, which user can pass to existing libbpf APIs;
-> - pre-defined places for bpf_links, which will be automatically populated for
->   program types that libbpf knows how to attach automatically (currently
->   tracepoints, kprobe/kretprobe, raw tracepoint and tracing programs). On
->   tearing down skeleton, all active bpf_links will be destroyed (meaning BPF
->   programs will be detached, if they are attached). For cases in which libbpf
->   doesn't know how to auto-attach BPF program, user can manually create link
->   after loading skeleton and they will be auto-detached on skeleton
->   destruction:
-> 
-> 	my_obj->links.my_fancy_prog = bpf_program__attach_cgroup_whatever(
-> 		my_obj->progs.my_fancy_prog, <whatever extra param);
-> 
-> - it's extremely easy and convenient to work with global data from userspace
->   now. Both for read-only and read/write variables, it's possible to
->   pre-initialize them before skeleton is loaded:
-> 
-> 	skel = my_obj__open(raw_embed_data);
-> 	my_obj->rodata->my_var = 123;
-> 	my_obj__load(skel); /* 123 will be initialization value for my_var */
-> 
->   After load, if kernel supports mmap() for BPF arrays, user can still read
->   (and write for .bss and .data) variables values, but at that point it will
->   be directly mmap()-ed to BPF array, backing global variables. This allows to
->   seamlessly exchange data with BPF side. From userspace program's POV, all
->   the pointers and memory contents stay the same, but mapped kernel memory
->   changes to point to created map.
->   If kernel doesn't yet support mmap() for BPF arrays, it's still possible to
->   use those data section structs to pre-initialize .bss, .data, and .rodata,
->   but after load their pointers will be reset to NULL, allowing user code to
->   gracefully handle this condition, if necessary.
-> 
-> Given a big surface area, skeleton is kept as an experimental non-public
-> API for now, until more feedback and real-world experience is collected.
+Properly initialize refcount to 1 before starting refcount increment.
+Otherwise, following warning is observed.
 
-Can you elaborate on the plan here? This is until v5.6 is out and hence a new
-bpftool release implicitly where this becomes frozen / non-experimental?
+[  130.075342] ------------[ cut here ]------------
+[  130.075343] refcount_t: addition on 0; use-after-free.
+[  130.075355] WARNING: CPU: 0 PID: 10870 at lib/refcount.c:25
+refcount_warn_saturate+0xe1/0x100
+[  130.075356] Modules linked in: sch_mqprio iptable_nat ib_iser
+libiscsi scsi_transport_iscsi ib_ipoib rdma_ucm ib_umad iw_cxgb4 libcxgb
+ib_uverbs x86_pkg_temp_thermal cxgb4 igb
+[  130.075361] CPU: 0 PID: 10870 Comm: tc Kdump: loaded Not tainted
+5.5.0-rc1+ #11
+[  130.075362] Hardware name: Supermicro
+X9SRE/X9SRE-3F/X9SRi/X9SRi-3F/X9SRE/X9SRE-3F/X9SRi/X9SRi-3F, BIOS 3.2
+01/16/2015
+[  130.075363] RIP: 0010:refcount_warn_saturate+0xe1/0x100
+[  130.075364] Code: e8 14 41 c1 ff 0f 0b c3 80 3d 44 f4 10 01 00 0f 85
+63 ff ff ff 48 c7 c7 38 9f 83 8c 31 c0 c6 05 2e f4 10 01 01 e8 ef 40 c1
+ff <0f> 0b c3 48 c7 c7 10 9f 83 8c 31 c0 c6 05 17 f4 10 01 01 e8 d7 40
+[  130.075365] RSP: 0018:ffffa48d00c0b768 EFLAGS: 00010286
+[  130.075366] RAX: 0000000000000000 RBX: 0000000000000008 RCX:
+0000000000000001
+[  130.075366] RDX: 0000000000000001 RSI: 0000000000000096 RDI:
+ffff8a2e9fa187d0
+[  130.075367] RBP: ffff8a2e93890000 R08: 0000000000000398 R09:
+000000000000003c
+[  130.075367] R10: 00000000000142a0 R11: 0000000000000397 R12:
+ffffa48d00c0b848
+[  130.075368] R13: ffff8a2e94746498 R14: ffff8a2e966f7000 R15:
+0000000000000031
+[  130.075368] FS:  00007f689015f840(0000) GS:ffff8a2e9fa00000(0000)
+knlGS:0000000000000000
+[  130.075369] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[  130.075369] CR2: 00000000006762a0 CR3: 00000007cf164005 CR4:
+00000000001606f0
+[  130.075370] Call Trace:
+[  130.075377]  cxgb4_setup_tc_mqprio+0xbee/0xc30 [cxgb4]
+[  130.075382]  ? cxgb4_ethofld_restart+0x50/0x50 [cxgb4]
+[  130.075384]  ? pfifo_fast_init+0x7e/0xf0
+[  130.075386]  mqprio_init+0x5f4/0x630 [sch_mqprio]
+[  130.075389]  qdisc_create+0x1bf/0x4a0
+[  130.075390]  tc_modify_qdisc+0x1ff/0x770
+[  130.075392]  rtnetlink_rcv_msg+0x28b/0x350
+[  130.075394]  ? rtnl_calcit.isra.32+0x110/0x110
+[  130.075395]  netlink_rcv_skb+0xc6/0x100
+[  130.075396]  netlink_unicast+0x1db/0x330
+[  130.075397]  netlink_sendmsg+0x2f5/0x460
+[  130.075399]  ? _copy_from_user+0x2e/0x60
+[  130.075400]  sock_sendmsg+0x59/0x70
+[  130.075401]  ____sys_sendmsg+0x1f0/0x230
+[  130.075402]  ? copy_msghdr_from_user+0xd7/0x140
+[  130.075403]  ___sys_sendmsg+0x77/0xb0
+[  130.075404]  ? ___sys_recvmsg+0x84/0xb0
+[  130.075406]  ? __handle_mm_fault+0x377/0xaf0
+[  130.075407]  __sys_sendmsg+0x53/0xa0
+[  130.075409]  do_syscall_64+0x44/0x130
+[  130.075412]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+[  130.075413] RIP: 0033:0x7f688f13af10
+[  130.075414] Code: c3 48 8b 05 82 6f 2c 00 f7 db 64 89 18 48 83 cb ff
+eb dd 0f 1f 80 00 00 00 00 83 3d 8d d0 2c 00 00 75 10 b8 2e 00 00 00 0f
+05 <48> 3d 01 f0 ff ff 73 31 c3 48 83 ec 08 e8 ae cc 00 00 48 89 04 24
+[  130.075414] RSP: 002b:00007ffe6c7d9988 EFLAGS: 00000246 ORIG_RAX:
+000000000000002e
+[  130.075415] RAX: ffffffffffffffda RBX: 00000000006703a0 RCX:
+00007f688f13af10
+[  130.075415] RDX: 0000000000000000 RSI: 00007ffe6c7d99f0 RDI:
+0000000000000003
+[  130.075416] RBP: 000000005df38312 R08: 0000000000000002 R09:
+0000000000008000
+[  130.075416] R10: 00007ffe6c7d93e0 R11: 0000000000000246 R12:
+0000000000000000
+[  130.075417] R13: 00007ffe6c7e9c50 R14: 0000000000000001 R15:
+000000000067c600
+[  130.075418] ---[ end trace 8fbb3bf36a8671db ]---
 
-There is also tools/bpf/bpftool/Documentation/bpftool-gen.rst missing. Given
-you aim to collect more feedback (?), it would be appropriate to document
-everything in there so users have a clue how to use it for getting started.
+Fixes: 2d0cb84dd973 ("cxgb4: add ETHOFLD hardware queue support")
+Signed-off-by: Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>
+---
+ drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_mqprio.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-Also, I think at least some more clarification is needed in such document on
-the following topics:
+diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_mqprio.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_mqprio.c
+index 477973d2e341..ff6a932e9517 100644
+--- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_mqprio.c
++++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_mqprio.c
+@@ -205,7 +205,11 @@ static int cxgb4_mqprio_alloc_hw_resources(struct net_device *dev)
+ 			cxgb4_enable_rx(adap, &eorxq->rspq);
+ 	}
+ 
+-	refcount_inc(&adap->tc_mqprio->refcnt);
++	if (!refcount_read(&adap->tc_mqprio->refcnt))
++		refcount_set(&adap->tc_mqprio->refcnt, 1);
++	else
++		refcount_inc(&adap->tc_mqprio->refcnt);
++
+ 	return 0;
+ 
+ out_free_msix:
+-- 
+2.24.0
 
-- libbpf and bpftool is both 'GPL-2.0-only' or 'BSD-2-Clause'. Given this
-  is a code generator, what license is the `bpftool gen skeleton` result?
-  In any case, should there also be a header comment emitted via do_skeleton()?
-
-- Clear statement that this codegen is an alternative to regular libbpf
-  API usage but that both are always kept feature-complete and hence not
-  disadvantaged in one way or another (to rule out any uncertainties for
-  users e.g. whether they now need to start rewriting their existing code
-  etc); with purpose of the former (codgen) to simplify loader interaction.
-
-Thanks,
-Daniel
