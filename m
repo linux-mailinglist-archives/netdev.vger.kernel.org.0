@@ -2,125 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 563F111FD79
-	for <lists+netdev@lfdr.de>; Mon, 16 Dec 2019 05:08:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 181EC11FD68
+	for <lists+netdev@lfdr.de>; Mon, 16 Dec 2019 05:02:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726841AbfLPEI0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 15 Dec 2019 23:08:26 -0500
-Received: from esa18.fujitsucc.c3s2.iphmx.com ([216.71.158.38]:56274 "EHLO
-        esa18.fujitsucc.c3s2.iphmx.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726682AbfLPEI0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 15 Dec 2019 23:08:26 -0500
-IronPort-SDR: GIXlMhe2733KgcrbtkZDtDLqVAva31E6o7daohjNhgI0l8OpZfOYOXwAewPHTOywBKxG0KB+q/
- o+RFWJf7QMlSlD7ouP5AJ90eV3mbTSN5TwhuPjP2oQe99oYbbrM5TUQMckXlYtUXdNwvmWJXbI
- EvbE6far5cmMLwujm1e335MvWjjNdH+YuAg96Je9ll5ktYEsgM0QLGuQPw0NpSj4EbX3nnBLLz
- OEaWMfa6r+ln/L1l3oTfIH5DAVHWe3ucXGeUW4PMeyAYzU2l4Gn6P3gwOvUlsw07y4ah11NKbi
- /Go=
-X-IronPort-AV: E=McAfee;i="6000,8403,9472"; a="8557731"
-X-IronPort-AV: E=Sophos;i="5.69,320,1571670000"; 
-   d="scan'208";a="8557731"
-Received: from mail-os2jpn01lp2053.outbound.protection.outlook.com (HELO JPN01-OS2-obe.outbound.protection.outlook.com) ([104.47.92.53])
-  by ob1.fujitsucc.c3s2.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Dec 2019 13:01:15 +0900
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=HC2Mj++TbBdD8aiOrhf6S171AQwfQGFMS/WK/k4KRhN3Gq8Nmc5Hy4psVP/MZgWeEJ5mw22wiyly8VOS7/i3nj0J2IbhLRYTMFx6pC6P34tl8K7o2EFS6ZF663yFtxbTCxvQyULXwB5mw1fgr0W/sKXAR5DxGdh2OCTr19czQajbpO9RTAnTOYPiipLNGPWyErQUUh5SosKNUeraJMoH+TG6r8Ir+FZpUYI0s5MNtOYzZNDlOmjMTZ92XnoF55PUPJqMWC8mJpCOUO1aLM/j7LXGscJl5MBFH668fRQIjYehglU5qrylfTheubwcSFQrhemdJUidftt/PaXHyc5S+A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=+mOcFFh/AGSEzM3rd0CK0jY9/7aObZiz/M8ndldu73A=;
- b=GcK3SfHHfD/Njkxv2bUDxNrFr/U/4W3p0kLcnFrCgfvv3gi28/FUqb+nxZ9lnhCTvPonsuh5rQ0gOf4de85G0BccsgXS8xRfDv3/twq581srKvuvQsvmnJ/X6wqlVuhkG0BrhIQdf3osKf1vkWMmV7s+53ow6ClpzcOfIQCdudNh5X1Hrmmym5NcdY5gDluzkyJxATFs+PqmrWjqCtNiS59oI893hCC+FpWn1ZTT/GFidgaE4xEjX/UNkQ5SGF3kP26ygaeuTEuvMrqceVuGQ8hLVw16zpmMPifyjHt1+ZJz7hLDi6FpdIcYymFn6V0bwaTZD4gcQ3x07Gvx1W/UeA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fujitsu.com; dmarc=pass action=none header.from=fujitsu.com;
- dkim=pass header.d=fujitsu.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=fujitsu.onmicrosoft.com; s=selector2-fujitsu-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=+mOcFFh/AGSEzM3rd0CK0jY9/7aObZiz/M8ndldu73A=;
- b=L05jA6JH/wsBhtWMkfFVhmhj0Ngjm3amSGEv3iOiwKN8kL9usJXSUJiRxE93dZ9EYZ/8Z1YLLSOhUW2V4sw7OMskD0nwQ+3KUy4htvhNOelqvilLIl1LIMLY0AWsJH3c2nb+26YVVl8DjWFhNuDO2Ex1d5ZWuHUs9sMZ8TO/B1U=
-Received: from OSBPR01MB3784.jpnprd01.prod.outlook.com (20.178.97.203) by
- OSBPR01MB2696.jpnprd01.prod.outlook.com (52.134.255.209) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2538.18; Mon, 16 Dec 2019 04:01:12 +0000
-Received: from OSBPR01MB3784.jpnprd01.prod.outlook.com
- ([fe80::bc41:1f80:22a5:2779]) by OSBPR01MB3784.jpnprd01.prod.outlook.com
- ([fe80::bc41:1f80:22a5:2779%7]) with mapi id 15.20.2538.019; Mon, 16 Dec 2019
- 04:01:12 +0000
-From:   "mizuta.takeshi@fujitsu.com" <mizuta.takeshi@fujitsu.com>
-To:     "'netdev@vger.kernel.org'" <netdev@vger.kernel.org>,
-        "'davem@davemloft.net'" <davem@davemloft.net>
-CC:     "mizuta.takeshi@fujitsu.com" <mizuta.takeshi@fujitsu.com>
-Subject: [PATCH iproute2 v5 2/2] ip-link: Add white space to "xstats" display
- result
-Thread-Topic: [PATCH iproute2 v5 2/2] ip-link: Add white space to "xstats"
- display result
-Thread-Index: AdWzvDtzRMSyxMt2SLeVHAV81kaMLA==
-Date:   Mon, 16 Dec 2019 04:01:12 +0000
-Message-ID: <OSBPR01MB3784E1EE94AB7FDC7D381C7D8E510@OSBPR01MB3784.jpnprd01.prod.outlook.com>
-Accept-Language: en-US
-Content-Language: ja-JP
+        id S1726676AbfLPECK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 15 Dec 2019 23:02:10 -0500
+Received: from mx21.baidu.com ([220.181.3.85]:35752 "EHLO baidu.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726437AbfLPECJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 15 Dec 2019 23:02:09 -0500
+Received: from BC-Mail-Ex14.internal.baidu.com (unknown [172.31.51.54])
+        by Forcepoint Email with ESMTPS id E2AAA99D2612B9F25FA0;
+        Mon, 16 Dec 2019 12:02:04 +0800 (CST)
+Received: from BJHW-Mail-Ex13.internal.baidu.com (10.127.64.36) by
+ BC-Mail-Ex14.internal.baidu.com (172.31.51.54) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.1531.3; Mon, 16 Dec 2019 12:02:04 +0800
+Received: from BJHW-Mail-Ex13.internal.baidu.com ([100.100.100.36]) by
+ BJHW-Mail-Ex13.internal.baidu.com ([100.100.100.36]) with mapi id
+ 15.01.1713.004; Mon, 16 Dec 2019 12:02:04 +0800
+From:   "Li,Rongqing" <lirongqing@baidu.com>
+To:     Yunsheng Lin <linyunsheng@huawei.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>
+CC:     Saeed Mahameed <saeedm@mellanox.com>,
+        "ilias.apalodimas@linaro.org" <ilias.apalodimas@linaro.org>,
+        "jonathan.lemon@gmail.com" <jonathan.lemon@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "mhocko@kernel.org" <mhocko@kernel.org>,
+        "peterz@infradead.org" <peterz@infradead.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "bhelgaas@google.com" <bhelgaas@google.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>
+Subject: =?utf-8?B?562U5aSNOiBbUEFUQ0hdW3YyXSBwYWdlX3Bvb2w6IGhhbmRsZSBwYWdlIHJl?=
+ =?utf-8?B?Y3ljbGUgZm9yIE5VTUFfTk9fTk9ERSBjb25kaXRpb24=?=
+Thread-Topic: [PATCH][v2] page_pool: handle page recycle for NUMA_NO_NODE
+ condition
+Thread-Index: AQHVsZIrr0J3dgd4XE+VTzKxYVWGCKe7fWqAgACmZRA=
+Date:   Mon, 16 Dec 2019 04:02:04 +0000
+Message-ID: <a5dea60221d84886991168781361b591@baidu.com>
+References: <1575624767-3343-1-git-send-email-lirongqing@baidu.com>
+ <9fecbff3518d311ec7c3aee9ae0315a73682a4af.camel@mellanox.com>
+ <20191211194933.15b53c11@carbon>
+ <831ed886842c894f7b2ffe83fe34705180a86b3b.camel@mellanox.com>
+ <0a252066-fdc3-a81d-7a36-8f49d2babc01@huawei.com>
+ <20191212111831.2a9f05d3@carbon>
+ <7c555cb1-6beb-240d-08f8-7044b9087fe4@huawei.com>
+ <1d4f10f4c0f1433bae658df8972a904f@baidu.com>
+ <079a0315-efea-9221-8538-47decf263684@huawei.com>
+ <20191213094845.56fb42a4@carbon>
+ <15be326d-1811-329c-424c-6dd22b0604a8@huawei.com>
+In-Reply-To: <15be326d-1811-329c-424c-6dd22b0604a8@huawei.com>
+Accept-Language: zh-CN, en-US
+Content-Language: zh-CN
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=mizuta.takeshi@fujitsu.com; 
-x-originating-ip: [210.170.118.168]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: bf882d70-07c4-4086-739e-08d781dc9760
-x-ms-traffictypediagnostic: OSBPR01MB2696:|OSBPR01MB2696:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <OSBPR01MB26964F9155D7EE96A21371D08E510@OSBPR01MB2696.jpnprd01.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:6790;
-x-forefront-prvs: 02530BD3AA
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(136003)(346002)(366004)(39860400002)(376002)(396003)(199004)(189003)(71200400001)(4326008)(33656002)(66946007)(5660300002)(186003)(316002)(66476007)(66556008)(8936002)(52536014)(66446008)(64756008)(55016002)(9686003)(8676002)(81166006)(76116006)(81156014)(7696005)(6506007)(85182001)(110136005)(86362001)(26005)(107886003)(2906002)(478600001)(777600001)(491001);DIR:OUT;SFP:1101;SCL:1;SRVR:OSBPR01MB2696;H:OSBPR01MB3784.jpnprd01.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: Br2poTxd1xVWWrx2vuCGxq7oU+2fDbuuGfEjxNCqvPp+xpY2lO3clpO4mAXert6SQAekLqaFxF2ZIYjgJXJoqEGG+RXA/XUk/ptnLg6uWJjhzlsFmCaYuKCoWjcmhFq9AoaWjLupxhwaaULEk6tJ3Mai0l7+NkuJhCJQoDXROUBR86hCAAi8fLbaW8tqKz916TQu3WcPW5TSmGJX2T3YGf45G0I9fCODHmaCeLyngRDNpalnpmFiJkIvQSmJLtwAjw/qvr3DiQjBiLKN78zf8v6HyHOH1SelG9c0ZtSIn91oNIlZDetVHkxovfpHKsUZbYEipfzoWAE2StiwqaNjwgS9gB0eEgHuVXRbXH3KWY5wqV5g+EAzoPBAp38XXxIqVkf4cw8fenegN79al2XOGdg3jWkl1N77JaERIi9c2rkUfrKSTl8Gp4cjVR29x/YgJyCRDQf5UnFxO9TVJEEOOtsk6QTRTnffnUUOBKEP0Fp3hjTDIIXRjng6tI+LH53S
-Content-Type: text/plain; charset="iso-2022-jp"
-Content-Transfer-Encoding: quoted-printable
+x-originating-ip: [172.22.198.6]
+x-baidu-bdmsfe-datecheck: 1_BC-Mail-Ex14_2019-12-16 12:02:04:855
+x-baidu-bdmsfe-viruscheck: BC-Mail-Ex14_GRAY_Inside_WithoutAtta_2019-12-16
+ 12:02:04:824
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-X-OriginatorOrg: fujitsu.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: bf882d70-07c4-4086-739e-08d781dc9760
-X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Dec 2019 04:01:12.7973
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a19f121d-81e1-4858-a9d8-736e267fd4c7
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: a+Lfx8GE7f0C/E5Fd5gM0Qgke56MpIm56AbGLYKFxx89ePM2iAcd7txDqnXr2SrNbQc4RT1MhUZZ9DfccW2tyHswzy7bWKSmMNt7oVZlGi0=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: OSBPR01MB2696
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Running "ip link xstats type bridge" shows the result of truncating white s=
-pace.
-
-  $ ip link xstats type bridge
-  <snip>
-                      IGMP reports:
-                        RX: v1 0 v2 0 v3 0
-                        TX: v1 0 v2 0v3 0
-
-iproute2 v4 prints one line at a time, but iproute2 v5 prints one line at m=
-ultiple times.
-It seems that the white space in IGMP TX: was lost during this change.
-
-Signed-off-by: MIZUTA Takeshi <mizuta.takeshi@fujitsu.com>
----
- ip/iplink_bridge.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/ip/iplink_bridge.c b/ip/iplink_bridge.c
-index 06f736d..868ea6e 100644
---- a/ip/iplink_bridge.c
-+++ b/ip/iplink_bridge.c
-@@ -742,7 +742,7 @@ static void bridge_print_stats_attr(struct rtattr *attr=
-, int ifindex)
-                        print_string(PRINT_FP, NULL, "%-16s      ", "");
-                        print_u64(PRINT_ANY, "tx_v1", "TX: v1 %llu ",
-                                  mstats->igmp_v1reports[BR_MCAST_DIR_TX]);
--                       print_u64(PRINT_ANY, "tx_v2", "v2 %llu",
-+                       print_u64(PRINT_ANY, "tx_v2", "v2 %llu ",
-                                  mstats->igmp_v2reports[BR_MCAST_DIR_TX]);
-                        print_u64(PRINT_ANY, "tx_v3", "v3 %llu\n",
-                                  mstats->igmp_v3reports[BR_MCAST_DIR_TX]);
---
-2.24.0
+DQoNCj4gLS0tLS3pgq7ku7bljp/ku7YtLS0tLQ0KPiDlj5Hku7bkuro6IFl1bnNoZW5nIExpbiBb
+bWFpbHRvOmxpbnl1bnNoZW5nQGh1YXdlaS5jb21dDQo+IOWPkemAgeaXtumXtDogMjAxOeW5tDEy
+5pyIMTbml6UgOTo1MQ0KPiDmlLbku7bkuro6IEplc3BlciBEYW5nYWFyZCBCcm91ZXIgPGJyb3Vl
+ckByZWRoYXQuY29tPg0KPiDmioTpgIE6IExpLFJvbmdxaW5nIDxsaXJvbmdxaW5nQGJhaWR1LmNv
+bT47IFNhZWVkIE1haGFtZWVkDQo+IDxzYWVlZG1AbWVsbGFub3guY29tPjsgaWxpYXMuYXBhbG9k
+aW1hc0BsaW5hcm8ub3JnOw0KPiBqb25hdGhhbi5sZW1vbkBnbWFpbC5jb207IG5ldGRldkB2Z2Vy
+Lmtlcm5lbC5vcmc7IG1ob2Nrb0BrZXJuZWwub3JnOw0KPiBwZXRlcnpAaW5mcmFkZWFkLm9yZzsg
+R3JlZyBLcm9haC1IYXJ0bWFuIDxncmVna2hAbGludXhmb3VuZGF0aW9uLm9yZz47DQo+IGJoZWxn
+YWFzQGdvb2dsZS5jb207IGxpbnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5vcmc7IEJqw7ZybiBUw7Zw
+ZWwNCj4gPGJqb3JuLnRvcGVsQGludGVsLmNvbT4NCj4g5Li76aKYOiBSZTogW1BBVENIXVt2Ml0g
+cGFnZV9wb29sOiBoYW5kbGUgcGFnZSByZWN5Y2xlIGZvciBOVU1BX05PX05PREUNCj4gY29uZGl0
+aW9uDQo+IA0KPiBPbiAyMDE5LzEyLzEzIDE2OjQ4LCBKZXNwZXIgRGFuZ2FhcmQgQnJvdWVyIHdy
+b3RlOj4gWW91IGFyZSBiYXNpY2FsbHkgc2F5aW5nDQo+IHRoYXQgdGhlIE5VTUEgY2hlY2sgc2hv
+dWxkIGJlIG1vdmVkIHRvDQo+ID4gYWxsb2NhdGlvbiB0aW1lLCBhcyBpdCBpcyBydW5uaW5nIHRo
+ZSBSWC1DUFUgKE5BUEkpLiAgQW5kIGV2ZW50dWFsbHkNCj4gPiBhZnRlciBzb21lIHRpbWUgdGhl
+IHBhZ2VzIHdpbGwgY29tZSBmcm9tIGNvcnJlY3QgTlVNQSBub2RlLg0KPiA+DQo+ID4gSSB0aGlu
+ayB3ZSBjYW4gZG8gdGhhdCwgYW5kIG9ubHkgYWZmZWN0IHRoZSBzZW1pLWZhc3QtcGF0aC4NCj4g
+PiBXZSBqdXN0IG5lZWQgdG8gaGFuZGxlIHRoYXQgcGFnZXMgaW4gdGhlIHB0cl9yaW5nIHRoYXQg
+YXJlIHJlY3ljbGVkDQo+ID4gY2FuIGJlIGZyb20gdGhlIHdyb25nIE5VTUEgbm9kZS4gIEluIF9f
+cGFnZV9wb29sX2dldF9jYWNoZWQoKSB3aGVuDQo+ID4gY29uc3VtaW5nIHBhZ2VzIGZyb20gdGhl
+IHB0cl9yaW5nIChfX3B0cl9yaW5nX2NvbnN1bWVfYmF0Y2hlZCksIHRoZW4NCj4gPiB3ZSBjYW4g
+ZXZpY3QgcGFnZXMgZnJvbSB3cm9uZyBOVU1BIG5vZGUuDQo+IA0KPiBZZXMsIHRoYXQncyB3b3Jr
+YWJsZS4NCj4gDQo+ID4NCj4gPiBGb3IgdGhlIHBvb2wtPmFsbG9jLmNhY2hlIHdlIGVpdGhlciBh
+Y2NlcHQsIHRoYXQgaXQgd2lsbCBldmVudHVhbGx5DQo+ID4gYWZ0ZXIgc29tZSB0aW1lIGJlIGVt
+cHRpZWQgKGl0IGlzIG9ubHkgaW4gYSAxMDAlIFhEUF9EUk9QIHdvcmtsb2FkIHRoYXQNCj4gPiBp
+dCB3aWxsIGNvbnRpbnVlIHRvIHJldXNlIHNhbWUgcGFnZXMpLiAgIE9yIHdlIHNpbXBseSBjbGVh
+ciB0aGUNCj4gPiBwb29sLT5hbGxvYy5jYWNoZSB3aGVuIGNhbGxpbmcgcGFnZV9wb29sX3VwZGF0
+ZV9uaWQoKS4NCj4gDQo+IFNpbXBseSBjbGVhcmluZyB0aGUgcG9vbC0+YWxsb2MuY2FjaGUgd2hl
+biBjYWxsaW5nIHBhZ2VfcG9vbF91cGRhdGVfbmlkKCkNCj4gc2VlbXMgYmV0dGVyLg0KPiANCg0K
+SG93IGFib3V0IHRoZSBiZWxvdyBjb2RlcywgdGhlIGRyaXZlciBjYW4gY29uZmlndXJlIHAubmlk
+IHRvIGFueSwgd2hpY2ggd2lsbCBiZSBhZGp1c3RlZCBpbiBOQVBJIHBvbGxpbmcsIGlycSBtaWdy
+YXRpb24gd2lsbCBub3QgYmUgcHJvYmxlbSwgYnV0IGl0IHdpbGwgYWRkIGEgY2hlY2sgaW50byBo
+b3QgcGF0aC4NCg0KZGlmZiAtLWdpdCBhL25ldC9jb3JlL3BhZ2VfcG9vbC5jIGIvbmV0L2NvcmUv
+cGFnZV9wb29sLmMNCmluZGV4IGE2YWVmZTk4OTA0My4uNDM3NGE2MjM5ZDE3IDEwMDY0NA0KLS0t
+IGEvbmV0L2NvcmUvcGFnZV9wb29sLmMNCisrKyBiL25ldC9jb3JlL3BhZ2VfcG9vbC5jDQpAQCAt
+MTA4LDYgKzEwOCwxMCBAQCBzdGF0aWMgc3RydWN0IHBhZ2UgKl9fcGFnZV9wb29sX2dldF9jYWNo
+ZWQoc3RydWN0IHBhZ2VfcG9vbCAqcG9vbCkNCiAgICAgICAgICAgICAgICBpZiAobGlrZWx5KHBv
+b2wtPmFsbG9jLmNvdW50KSkgew0KICAgICAgICAgICAgICAgICAgICAgICAgLyogRmFzdC1wYXRo
+ICovDQogICAgICAgICAgICAgICAgICAgICAgICBwYWdlID0gcG9vbC0+YWxsb2MuY2FjaGVbLS1w
+b29sLT5hbGxvYy5jb3VudF07DQorDQorICAgICAgICAgICAgICAgICAgICAgICBpZiAodW5saWtl
+bHkoUkVBRF9PTkNFKHBvb2wtPnAubmlkKSAhPSBudW1hX21lbV9pZCgpKSkNCisgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgV1JJVEVfT05DRShwb29sLT5wLm5pZCwgbnVtYV9tZW1faWQo
+KSk7DQorDQogICAgICAgICAgICAgICAgICAgICAgICByZXR1cm4gcGFnZTsNCiAgICAgICAgICAg
+ICAgICB9DQogICAgICAgICAgICAgICAgcmVmaWxsID0gdHJ1ZTsNCkBAIC0xNTUsNiArMTU5LDEw
+IEBAIHN0YXRpYyBzdHJ1Y3QgcGFnZSAqX19wYWdlX3Bvb2xfYWxsb2NfcGFnZXNfc2xvdyhzdHJ1
+Y3QgcGFnZV9wb29sICpwb29sLA0KICAgICAgICBpZiAocG9vbC0+cC5vcmRlcikNCiAgICAgICAg
+ICAgICAgICBnZnAgfD0gX19HRlBfQ09NUDsNCiANCisNCisgICAgICAgaWYgKHVubGlrZWx5KFJF
+QURfT05DRShwb29sLT5wLm5pZCkgIT0gbnVtYV9tZW1faWQoKSkpDQorICAgICAgICAgICAgICAg
+V1JJVEVfT05DRShwb29sLT5wLm5pZCwgbnVtYV9tZW1faWQoKSk7DQorDQogICAgICAgIC8qIEZV
+VFVSRSBkZXZlbG9wbWVudDoNCiAgICAgICAgICoNCiAgICAgICAgICogQ3VycmVudCBzbG93LXBh
+dGggZXNzZW50aWFsbHkgZmFsbHMgYmFjayB0byBzaW5nbGUgcGFnZQ0KVGhhbmtzDQoNCi1MaQ0K
+PiA+DQoNCg==
