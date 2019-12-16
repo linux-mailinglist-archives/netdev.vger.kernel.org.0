@@ -2,132 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8BF5F11FC2F
-	for <lists+netdev@lfdr.de>; Mon, 16 Dec 2019 01:30:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 69AA211FC61
+	for <lists+netdev@lfdr.de>; Mon, 16 Dec 2019 01:52:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726454AbfLPAa6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 15 Dec 2019 19:30:58 -0500
-Received: from mail-pj1-f67.google.com ([209.85.216.67]:36756 "EHLO
-        mail-pj1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726373AbfLPAa5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 15 Dec 2019 19:30:57 -0500
-Received: by mail-pj1-f67.google.com with SMTP id n96so2206143pjc.3;
-        Sun, 15 Dec 2019 16:30:57 -0800 (PST)
+        id S1726551AbfLPAwO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 15 Dec 2019 19:52:14 -0500
+Received: from mail-pj1-f65.google.com ([209.85.216.65]:40682 "EHLO
+        mail-pj1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726299AbfLPAwO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 15 Dec 2019 19:52:14 -0500
+Received: by mail-pj1-f65.google.com with SMTP id s35so2212799pjb.7;
+        Sun, 15 Dec 2019 16:52:13 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:content-transfer-encoding:in-reply-to
          :user-agent;
-        bh=qoyT4VnZpf60nh4iMWARLDY/385v76kr93Iyz32FNE4=;
-        b=rwNK/Tw/ZssSAqFNUrxG+eHWekN9ElkOkXWDCuPHmGjtEuTTN6fXE/QT4fBxksvUeD
-         AdKOGzXqYbh63A1/G9SkcGh4GHoUzut8lkuoVhcLGByMaQeZsI+9uxCDRS55+c1NvrAo
-         Z2aIyrXREqhFagr48lxIlBwlsr7TZzMTvkfQpz+AjScAiXTsij3KDrpbbJe3pxH+8fYP
-         p/6i1Fns3Dcdll6E1s6F8senkBfMPlhzckmkcf2er+bk/2Dr26dvUcAjlHWzOd5Q4mEA
-         SFqZWGru5hG7ajAW+YMWfnNcb69Nyo76jfW95CS5xNajMpk5XeGY6guPl+p5IzANssd3
-         jFeQ==
+        bh=CPLdbzRuwkKuuGWPgiRoDt4wSTfB7r9JqjQNWrhSKhE=;
+        b=eMOoRLUaqH2pWvEN9I/rb255aJLRXbeeVNGuUUk5PHCWRoTf/XuvKVWvZDehIdEC0C
+         H1h3NudDWRZ9vb/R+SucSuMOkdgazAIr5QMOZvST9UhZDf3VjeT7xjMEhch/DTCenuVE
+         6X2giCSaJXd0Mjyha6bBshhQiNlQdGdv9NcRSIinkq0p6v83HNmf3JANDbid+Jo6ZT6E
+         7ZVatDzyzVLcho9J1W2iR503B+hUujr3UT3hpOqCGJqPr0XEv8ycctnQ5OA7QJiuC2mf
+         i7k1PxPBX887aarZMYaRdYEQdIHzWOgKvst/SdTuLaKjkFx254uUB0P9lUIHetQgMkUP
+         eEvw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:content-transfer-encoding
          :in-reply-to:user-agent;
-        bh=qoyT4VnZpf60nh4iMWARLDY/385v76kr93Iyz32FNE4=;
-        b=n77mXHwOpWoY6X0/GgkI3799cLd1NfjWECOC1XyuHATQ5v33/vlqHkKEIcZ+5ThgnC
-         oQfznAXNaMSlhCcI2qQyw1kTcjwWGUG8qLS2t77VqCKcL/Pq/Mkdavlje0YwdGRl4CtR
-         5YlqNpFoL8INEexwd7Ped+Dwg5QLEd8LGgvdkp3OljWIs17DzQ+zYycMdKSf0i0BKren
-         QOfnU+je1I8hQGmnJgV0XBppFwpAPxwRA5lQc262wnND2Kg67ia7/RfLA0FmUEFFpTfk
-         ePo1oM4DQbf7YFX8GjFvJs+w6Mstjt4pzsf0Nsqdlv9TSmb0HOhzl2KvGF0ElEWG0bpA
-         OmiQ==
-X-Gm-Message-State: APjAAAUqmWluoDQVpEJTpLIITxqZmwLg80KavdVY1hDgQ+G5q7UvzI1h
-        Wmo8h8128QQysdaiAQo39rs=
-X-Google-Smtp-Source: APXvYqzhOPOiE32biGY36rlTKShrwlmPFBGja7XNHKvFwsMyiKvJFJXn8cHlSQW3fFW59qD/MjblOg==
-X-Received: by 2002:a17:90a:804a:: with SMTP id e10mr14840386pjw.41.1576456257038;
-        Sun, 15 Dec 2019 16:30:57 -0800 (PST)
+        bh=CPLdbzRuwkKuuGWPgiRoDt4wSTfB7r9JqjQNWrhSKhE=;
+        b=gndZP1jjjEbIFMKBj2wNHJlRC5uCuIhQ49ZWca/8kTvgSunBQF7gsFH7uqQTzyU/RP
+         EXhp3f63bMEIpumTAx7eTXfr2FO9h1/jlgwM66ze+ouUeIUY7QPuvwq3EqB+8WDk1d/X
+         fAEjVlVWy72Sxzeuyoh/VIj+cFwu3jUDZ8mfZ9BUsRPvF+3owXNfGCQxUSYwYt1U8trv
+         5jIBrmqHwjqCstCayVKadjTqnhzpxTFgCUZzJu9kTQHMaYMy5JZS/z6z6R0z61BBUk/D
+         o42NS0a1FY3N0a4HkdZIU3J9+qnwYc7ky0xPr16x/0S0rAlyuVrFwHn0l9XwIQNnJejz
+         rhNA==
+X-Gm-Message-State: APjAAAVcQLHeVyaQH1EUBQSXEioTnUD5eRkVYGC/umoX8b9g1x0NBCJD
+        zZs2d2IzRP94BkjjNdUj+MhF2+Zt
+X-Google-Smtp-Source: APXvYqw5z1Y7EVJXFkeidatp3R44gnye03wjuTTcC1K42WAF8+ixQFti0zvVulhc1/ksFRjaYVZ38w==
+X-Received: by 2002:a17:902:321:: with SMTP id 30mr13036030pld.153.1576457533422;
+        Sun, 15 Dec 2019 16:52:13 -0800 (PST)
 Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:180::935c])
-        by smtp.gmail.com with ESMTPSA id a12sm18046994pga.11.2019.12.15.16.30.55
+        by smtp.gmail.com with ESMTPSA id b22sm19590118pfd.63.2019.12.15.16.52.11
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 15 Dec 2019 16:30:56 -0800 (PST)
-Date:   Sun, 15 Dec 2019 16:30:54 -0800
+        Sun, 15 Dec 2019 16:52:12 -0800 (PST)
+Date:   Sun, 15 Dec 2019 16:52:10 -0800
 From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
 To:     Andrii Nakryiko <andriin@fb.com>
 Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@fb.com,
         daniel@iogearbox.net, andrii.nakryiko@gmail.com, kernel-team@fb.com
-Subject: Re: [PATCH v4 bpf-next 00/17] Add code-generated BPF object skeleton
+Subject: Re: [PATCH v4 bpf-next 0/4] Add libbpf-provided extern variables
  support
-Message-ID: <20191216003052.mdiw5fay37jqoakj@ast-mbp.dhcp.thefacebook.com>
-References: <20191214014341.3442258-1-andriin@fb.com>
+Message-ID: <20191216005209.jqb27p7tptauxn45@ast-mbp.dhcp.thefacebook.com>
+References: <20191214014710.3449601-1-andriin@fb.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20191214014341.3442258-1-andriin@fb.com>
+In-Reply-To: <20191214014710.3449601-1-andriin@fb.com>
 User-Agent: NeoMutt/20180223
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Dec 13, 2019 at 05:43:24PM -0800, Andrii Nakryiko wrote:
-> This patch set introduces an alternative and complimentary to existing libbpf
-> API interface for working with BPF objects, maps, programs, and global data
-> from userspace side. This approach is relying on code generation. bpftool
-> produces a struct (a.k.a. skeleton) tailored and specific to provided BPF
-> object file. It includes hard-coded fields and data structures for every map,
-> program, link, and global data present.
+On Fri, Dec 13, 2019 at 05:47:06PM -0800, Andrii Nakryiko wrote:
+> It's often important for BPF program to know kernel version or some specific
+> config values (e.g., CONFIG_HZ to convert jiffies to seconds) and change or
+> adjust program logic based on their values. As of today, any such need has to
+> be resolved by recompiling BPF program for specific kernel and kernel
+> configuration. In practice this is usually achieved by using BCC and its
+> embedded LLVM/Clang. With such set up #ifdef CONFIG_XXX and similar
+> compile-time constructs allow to deal with kernel varieties.
 > 
-> Altogether this approach significantly reduces amount of userspace boilerplate
-> code required to open, load, attach, and work with BPF objects. It improves
-> attach/detach story, by providing pre-allocated space for bpf_links, and
-> ensuring they are properly detached on shutdown. It allows to do away with by
-> name/title lookups of maps and programs, because libbpf's skeleton API, in
-> conjunction with generated code from bpftool, is filling in hard-coded fields
-> with actual pointers to corresponding struct bpf_map/bpf_program/bpf_link.
+> With CO-RE (Compile Once – Run Everywhere) approach, this is not an option,
+> unfortunately. All such logic variations have to be done as a normal
+> C language constructs (i.e., if/else, variables, etc), not a preprocessor
+> directives. This patch series add support for such advanced scenarios through
+> C extern variables. These extern variables will be recognized by libbpf and
+> supplied through extra .extern internal map, similarly to global data. This
+> .extern map is read-only, which allows BPF verifier to track its content
+> precisely as constants. That gives an opportunity to have pre-compiled BPF
+> program, which can potentially use BPF functionality (e.g., BPF helpers) or
+> kernel features (types, fields, etc), that are available only on a subset of
+> targeted kernels, while effectively eleminating (through verifier's dead code
+> detection) such unsupported functionality for other kernels (typically, older
+> versions). Patch #3 explicitly tests a scenario of using unsupported BPF
+> helper, to validate the approach.
 > 
-> Also, thanks to BPF array mmap() support, working with global data (variables)
-> from userspace is now as natural as it is from BPF side: each variable is just
-> a struct field inside skeleton struct. Furthermore, this allows to have
-> a natural way for userspace to pre-initialize global data (including
-> previously impossible to initialize .rodata) by just assigning values to the
-> same per-variable fields. Libbpf will carefully take into account this
-> initialization image, will use it to pre-populate BPF maps at creation time,
-> and will re-mmap() BPF map's contents at exactly the same userspace memory
-> address such that it can continue working with all the same pointers without
-> any interruptions. If kernel doesn't support mmap(), global data will still be
-> successfully initialized, but after map creation global data structures inside
-> skeleton will be NULL-ed out. This allows userspace application to gracefully
-> handle lack of mmap() support, if necessary.
+> This patch set heavily relies on BTF type information emitted by compiler for
+> each extern variable declaration. Based on specific types, libbpf does strict
+> checks of config data values correctness. See patch #1 for details.
 > 
-> A bunch of selftests are also converted to using skeletons, demonstrating
-> significant simplification of userspace part of test and reduction in amount
-> of code necessary.
-> 
-> v3->v4:
-> - add OPTS_VALID check to btf_dump__emit_type_decl (Alexei);
-> - expose skeleton as LIBBPF_API functions (Alexei);
-> - copyright clean up, update internal map init refactor (Alexei);
+> Outline of the patch set:
+> - patch #1 does a small clean up of internal map names contants;
+> - patch #2 adds all of the libbpf internal machinery for externs support,
+>   including setting up BTF information for .extern data section;
+> - patch #3 adds support for .extern into BPF skeleton;
+> - patch #4 adds externs selftests, as well as enhances test_skeleton.c test to
+>   validate mmap()-ed .extern datasection functionality.
 
 Applied. Thanks.
 
-I really liked how much more concise test_fentry_fexit() test has become.
-I also liked how renaming global variable s/test1_result/_test1_result/
-in bpf program became a build time error for user space part:
-../prog_tests/fentry_fexit.c:49:35: error: ‘struct fentry_test__bss’ has no member named ‘test1_result’; did you mean ‘_test1_result’?
-  printf("%lld\n", fentry_skel->bss->test1_result);
-Working with global variables is so much easier now.
-
-I'd like you to consider additional feature request.
-The following error:
--BPF_EMBED_OBJ(fentry, "fentry_test.o");
--BPF_EMBED_OBJ(fexit, "fexit_test.o");
-+BPF_EMBED_OBJ(fexit, "fentry_test.o");
-+BPF_EMBED_OBJ(fentry, "fexit_test.o");
-will not be caught.
-I think skeleton should get smarter somehow to catch that too.
-
-One option would be to do BPF_EMBED_OBJ() as part of *.skel.h but then
-accessing the same embedded .o from multiple tests will not be possible and
-what stacktrace_build_id.c and stacktrace_build_id_nmi.c are doing won't work
-anymore. Some sort of build-id/sha1 of .o can work, but it will be caught
-in run-time. I think build time would be better.
-May be generate new macro in skel.h that user space can instantiate
-instead of using common BPF_EMBED_OBJ ?
-
+Looking at the tests that do mkstemp()+write() just to pass a file path
+as .kconfig_path option into bpf_object_open_opts() it feels that file only
+support for externs is unnecessary limiting. I think it will simplify
+tests and will make the whole extern support more flexible if in addition to
+kconfig_path bpf_object_open_opts() would support in-memory configuration.
