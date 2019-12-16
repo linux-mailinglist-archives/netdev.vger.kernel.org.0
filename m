@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 07B82121077
-	for <lists+netdev@lfdr.de>; Mon, 16 Dec 2019 18:05:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 68DC3121072
+	for <lists+netdev@lfdr.de>; Mon, 16 Dec 2019 18:05:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726772AbfLPRC1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Dec 2019 12:02:27 -0500
-Received: from mail-eopbgr10084.outbound.protection.outlook.com ([40.107.1.84]:35200
+        id S1726725AbfLPRB7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Dec 2019 12:01:59 -0500
+Received: from mail-eopbgr10062.outbound.protection.outlook.com ([40.107.1.62]:5601
         "EHLO EUR02-HE1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726759AbfLPRC0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 16 Dec 2019 12:02:26 -0500
+        id S1726181AbfLPRB7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 16 Dec 2019 12:01:59 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=dJPb3Rv+pZ/EVovsjTo2LddA2GLStbOnOI0Jj+jAwJ1MnE6DSRXKOJbP4Iha20UTGBxT3DtKPXcXHnk6AEwVQVj1g3PLmwHkbaWEsbtjUI/AmDq6yJuzOUFNehNwRKjnDZ3yvhKKpe3bHqZOpoPkqhqNlG36rvcDQkLXe014sijC699PAolqdIBS/AY8AHKzDQrNtC1OIsyqQu8YYbioni/KCLYIBSknpyxmO9xSv2LD45zO0ebppty42FnUjlTJCMbJW7EWeMNWEdVR/+NlP5iDCa7Ky1qFlUgWSUmNWZNcg5pzi/azApwwOCTtK33j/yqyyo4N99c/le9lyYIMsQ==
+ b=C6X1sXHhu08MyjGi0cb+E1mdiIz0G9ohyxqT/DeLy7Xh71N8qDLTMcvlMV6ZxfdRMrZ4qcKFjCNJe6bzq3HdT49dsdEh8TuOYv8f4e9CvdJIFsNdXTRkuTniWgn6HHOsxxAF6fr0HSKuOP2aVEcVExs+Up3RVM5YjJ3H25rLohdP6CT2RL9EnIU+ywsi3z+oe8njVI+zquJHB6FozxoozIuEhQ2V1BwGomQXZm6UvqV0NwbTGVSlv6PXmSbqpkAW1q337T6dMHbbGblloEc8HJLr7kUNiClS94hz+qQ1jhgVmhSm/876GjaR2eiAAIxl/qXaVaCxLQ1tzrvcH/dUwg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=8Q13+Ntg5OXDwCUK+lPTydu7XxN2nrB+j/eyM4jB7lE=;
- b=n7nvqfoIgzwmuxyqqmXsmd+RIjI9B4WVQPheSn2ZCHi6T3fyqDyM1fMfjn8pqiHMLgyVIocAml0a8fRZ/cRLCzUX/SS9atLR1uY9GlAX0fb4R8ghhH22CTRZ1xLRM9Ri5l/jWtzz3ZJejUaFDLT5zj+LhvOxH6B+enTpEyEUvCcUEi6ivcOOH8KqDikUZo6J1MNpbuwo94DG1BmvFlKSOFc/7Zay5XXD1WtNR37/IXlpYNEZBn3km8Bmt6SGjwH3MpHhSqCy5czDy1YUGvaS54ggA9C+SFaV0vc2L1iINWVQqfwbqQ6YXdl7Rn4uawHclVoWIoYkaEKnVk4K5INoZQ==
+ bh=WkQbSoIy1Vbnfd1SpoXRPW7S8t0d1xrkxX6o6cOD6Ro=;
+ b=H6C/55jD1HzNbgLZdHsFr9XRult7KJAHyf09HtQo8uYcnV62BxhgmaRIyjeSLCH6JPIx7I5gbk/Y3lRxrFOMu6/he2Nb0pwd+CrE97/UUuDNkh3OZVdQjynItGOxEkMBfxJuY79UTcGrk8XaJ+o21jxM6cOzKVfR8XCaNWXW4Ox/ujc2pfzNGiaE88QddIYSSH62bLl5jjYEvdPYAGaU8MGOgEt/ddmogOebaPmocril+B32yTAKcfZf1kHzjgq2vsi9ydilfmCHIOnr4CKtXxTndJADNHZmegfro7BCR6HLYH3g1AWUZmNs9pBrD+8H5LbtKpf7fq9JMQXU2/gvGw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
  dkim=pass header.d=mellanox.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
  s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=8Q13+Ntg5OXDwCUK+lPTydu7XxN2nrB+j/eyM4jB7lE=;
- b=oUmFMIFaDgetNmo6YuTN3Y2yyzspxZj3zZNGQRKnAk52lHpGc3JvmJ7b2vz1A29b7SeXceu0KXSOqSa/2MfDhZEXf4b3Pb0cbZZlsrLzkTv1zAPNL2YlJ9ice7IO00IDWDMkdAW6rFD40r/AfB0gBlvQP96cyiuV2+gY9s0nn/k=
+ bh=WkQbSoIy1Vbnfd1SpoXRPW7S8t0d1xrkxX6o6cOD6Ro=;
+ b=TCviycMVjtdkhTL962rnYG6yzEXMFMDm5NXTDm8UAEtFICvRfN0WN52WI3yi+s1q/5loJ/8qKWjVaCc7G3+dO4TcNm0ByjKzkhNWM7QAj2vTQHVeQMjPkHgKUgR5VyEgA+xaAAzOZ5HGP41wmGq6D94gvdLEYpsut8Id2N88d08=
 Received: from DB6PR0502MB3047.eurprd05.prod.outlook.com (10.172.250.135) by
- DB6PR0502MB3014.eurprd05.prod.outlook.com (10.172.248.136) with Microsoft
+ DB6PR0502MB3110.eurprd05.prod.outlook.com (10.172.246.145) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2538.16; Mon, 16 Dec 2019 17:01:53 +0000
+ 15.20.2538.15; Mon, 16 Dec 2019 17:01:55 +0000
 Received: from DB6PR0502MB3047.eurprd05.prod.outlook.com
  ([fe80::a153:bb4e:c909:d3a1]) by DB6PR0502MB3047.eurprd05.prod.outlook.com
  ([fe80::a153:bb4e:c909:d3a1%7]) with mapi id 15.20.2538.019; Mon, 16 Dec 2019
- 17:01:53 +0000
+ 17:01:55 +0000
 From:   Petr Machata <petrm@mellanox.com>
 To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
 CC:     Petr Machata <petrm@mellanox.com>,
@@ -44,13 +44,13 @@ CC:     Petr Machata <petrm@mellanox.com>,
         Roman Mashak <mrv@mojatatu.com>,
         Ido Schimmel <idosch@mellanox.com>,
         Jiri Pirko <jiri@resnulli.us>, Jiri Pirko <jiri@mellanox.com>
-Subject: [PATCH net-next mlxsw v1 07/10] mlxsw: spectrum_qdisc: Support
- offloading of ETS Qdisc
-Thread-Topic: [PATCH net-next mlxsw v1 07/10] mlxsw: spectrum_qdisc: Support
- offloading of ETS Qdisc
-Thread-Index: AQHVtDKD3WB/HXoMZ0uOs7OLl25uAw==
-Date:   Mon, 16 Dec 2019 17:01:53 +0000
-Message-ID: <ded9ad1ea03fe06eeaba900a20a3d72634c5d471.1576515562.git.petrm@mellanox.com>
+Subject: [PATCH net-next mlxsw v1 08/10] selftests: forwarding: Move
+ start_/stop_traffic from mlxsw to lib.sh
+Thread-Topic: [PATCH net-next mlxsw v1 08/10] selftests: forwarding: Move
+ start_/stop_traffic from mlxsw to lib.sh
+Thread-Index: AQHVtDKFE2MPS9XS6UiIYC3n92v4Kw==
+Date:   Mon, 16 Dec 2019 17:01:55 +0000
+Message-ID: <339e0ce20346608fb2fdc61f582883e82c74ce11.1576515562.git.petrm@mellanox.com>
 References: <cover.1576515562.git.petrm@mellanox.com>
 In-Reply-To: <cover.1576515562.git.petrm@mellanox.com>
 Accept-Language: en-US
@@ -67,206 +67,104 @@ x-ms-exchange-messagesentrepresentingtype: 1
 x-originating-ip: [37.142.13.130]
 x-ms-publictraffictype: Email
 x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 9ef1739b-d15d-45d1-af63-08d78249a62c
-x-ms-traffictypediagnostic: DB6PR0502MB3014:|DB6PR0502MB3014:
+x-ms-office365-filtering-correlation-id: 6585ee50-bfda-474f-a165-08d78249a772
+x-ms-traffictypediagnostic: DB6PR0502MB3110:|DB6PR0502MB3110:
 x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <DB6PR0502MB301412E95614FA6E6CA724E5DB510@DB6PR0502MB3014.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:6430;
+x-microsoft-antispam-prvs: <DB6PR0502MB3110399502F86E31553C46BDDB510@DB6PR0502MB3110.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:3173;
 x-forefront-prvs: 02530BD3AA
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(136003)(366004)(396003)(39860400002)(346002)(376002)(189003)(199004)(186003)(6512007)(26005)(316002)(107886003)(71200400001)(6486002)(81166006)(6506007)(81156014)(8676002)(8936002)(66556008)(66476007)(66446008)(64756008)(66946007)(2906002)(478600001)(54906003)(6916009)(2616005)(86362001)(36756003)(52116002)(4326008)(5660300002);DIR:OUT;SFP:1101;SCL:1;SRVR:DB6PR0502MB3014;H:DB6PR0502MB3047.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(396003)(136003)(346002)(376002)(366004)(39860400002)(189003)(199004)(8936002)(6506007)(26005)(478600001)(2616005)(81166006)(81156014)(8676002)(64756008)(66476007)(54906003)(66556008)(6486002)(36756003)(316002)(66946007)(66446008)(186003)(107886003)(6916009)(4326008)(71200400001)(86362001)(52116002)(2906002)(5660300002)(6512007);DIR:OUT;SFP:1101;SCL:1;SRVR:DB6PR0502MB3110;H:DB6PR0502MB3047.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
 received-spf: None (protection.outlook.com: mellanox.com does not designate
  permitted sender hosts)
 x-ms-exchange-senderadcheck: 1
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: +L/q7DTnqSF99CqX5RLSOnBTTAgZyUQvEz0i2JygxuDzoC2ROiEA/qD4dWKTz6g6lJxRTVtIP9edF0KDgEXssh57JQJ2hw7n7IisuEJWSBkt2Q1UlS4pKpxzCxDedP8McZNMXHy+djA7e4wYyo0vJ1YXaWNoKuh4/szqsdZ+3bqha3Aq8eQydc/sVVldty1NldcrhtQbjzlNou+URFUynsXbzOErd9bL+IlsBXvLZ88Xki20M8dt8p6nJQgO7b5alwaGPTouniZytClxCHKM4OiG3OpiBULjRn80Zp4ixOKQygxIT2WbiZYc8NNUzqc8QRUXafMbpV+gw+GFKXgaPidTN9s5Gi1xg7i6RLRgZ0slRGawqry5M2ZcOeNOYx/XrNTeiRasKoGtHiFDWxBzQOu08MyFH9lMbIkoTGGSRZaCjBd8Al4SYWWw4RWr0Y0P
+x-microsoft-antispam-message-info: R0KxeGdcPpm8GqzBDGCAwhCUlowyls91HzDNxrqCPhAJZbYUwlrPy3af0Wygxwq9PhHkb3/5QsaN1GPaCUzLLCYYl2DUTbyaQjJx88pvblSo7HHTfhl/JcVwpiNnMpDlZIy7PX/U/IOLWc6rDJXMOnqJtyxf89P1y8VNG28Tl9ZjwdMJjh2Pg32RxLsfu/z0fq2LE4pS5BCRaJYNofAPN2bIVCCnxFTKfM9DrP4q3LZZu55mYsUUhuedP2m2aRQCxb7hK/jHHQsKUPGkRo0cWwgHJHle5gHPPtuTY5DP8U4jnsAa9jOj4DsUhBG9g8+5/etbtoUXitrwzaLys8VaIbZDoErnXu4IuaKtDMRPdaGne1TQKgmy0pk8Ik6apVPqW9YFZX+xhPXk9iFGuATDjmmT7ARzZ6oTirkNYt7Li0zgpdILCAF8doPi/0PgBlSW
 Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9ef1739b-d15d-45d1-af63-08d78249a62c
-X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Dec 2019 17:01:53.2652
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6585ee50-bfda-474f-a165-08d78249a772
+X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Dec 2019 17:01:55.3763
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 8tkt8wu3XC+6c93Cd166sE5h/ikQqbrZIcKgAItpxa7ZzWsClfd8C+nBcFEdVnebxJUvDnwjRZ8x6/7lXX+7QA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR0502MB3014
+X-MS-Exchange-CrossTenant-userprincipalname: uAO6+6fFXYAQGA/aJNqdG3XyBXQD4HQhQUUo5JEOY5EKpTEDdpWv/Vz6/gIS2d9dhmllIxG45VIvXIXi5i8RUg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR0502MB3110
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Handle TC_SETUP_QDISC_ETS, add a new ops structure for the ETS Qdisc.
-Invoke the extended prio handlers implemented in the previous patch. For
-stats ops, invoke directly the prio callbacks, which are not sensitive to
-differences between PRIO and ETS.
+These two functions are used for starting several streams of traffic, and
+then stopping them later. They will be handy for the test coverage of ETS
+Qdisc. Move them from mlxsw-specific qos_lib.sh to the generic lib.sh.
 
 Signed-off-by: Petr Machata <petrm@mellanox.com>
-Acked-by: Jiri Pirko <jiri@mellanox.com>
 Reviewed-by: Ido Schimmel <idosch@mellanox.com>
+Acked-by: Jiri Pirko <jiri@mellanox.com>
 ---
+ .../selftests/drivers/net/mlxsw/qos_lib.sh     | 18 ------------------
+ tools/testing/selftests/net/forwarding/lib.sh  | 18 ++++++++++++++++++
+ 2 files changed, 18 insertions(+), 18 deletions(-)
 
-Notes:
-    v3 (internal):
-    - __mlxsw_sp_qdisc_ets_replace(): The "weights" argument passing and
-      weight computation removal are now done in a previous patch.
-    - mlxsw_sp_setup_tc_ets(): Drop case TC_ETS_REPLACE, which is handled
-      earlier in the function.
-   =20
-    v1 (internal):
-    - __mlxsw_sp_qdisc_ets_replace(): Convert syntax of function argument
-      "weights" from an array to a pointer.
-
- .../net/ethernet/mellanox/mlxsw/spectrum.c    |  2 +
- .../net/ethernet/mellanox/mlxsw/spectrum.h    |  2 +
- .../ethernet/mellanox/mlxsw/spectrum_qdisc.c  | 84 +++++++++++++++++++
- 3 files changed, 88 insertions(+)
-
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c b/drivers/net/e=
-thernet/mellanox/mlxsw/spectrum.c
-index 0d8fce749248..ea632042e609 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-@@ -1796,6 +1796,8 @@ static int mlxsw_sp_setup_tc(struct net_device *dev, =
-enum tc_setup_type type,
- 		return mlxsw_sp_setup_tc_red(mlxsw_sp_port, type_data);
- 	case TC_SETUP_QDISC_PRIO:
- 		return mlxsw_sp_setup_tc_prio(mlxsw_sp_port, type_data);
-+	case TC_SETUP_QDISC_ETS:
-+		return mlxsw_sp_setup_tc_ets(mlxsw_sp_port, type_data);
- 	default:
- 		return -EOPNOTSUPP;
- 	}
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.h b/drivers/net/e=
-thernet/mellanox/mlxsw/spectrum.h
-index 347bec9d1ecf..948ef4720d40 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
-@@ -852,6 +852,8 @@ int mlxsw_sp_setup_tc_red(struct mlxsw_sp_port *mlxsw_s=
-p_port,
- 			  struct tc_red_qopt_offload *p);
- int mlxsw_sp_setup_tc_prio(struct mlxsw_sp_port *mlxsw_sp_port,
- 			   struct tc_prio_qopt_offload *p);
-+int mlxsw_sp_setup_tc_ets(struct mlxsw_sp_port *mlxsw_sp_port,
-+			  struct tc_ets_qopt_offload *p);
-=20
- /* spectrum_fid.c */
- bool mlxsw_sp_fid_is_dummy(struct mlxsw_sp *mlxsw_sp, u16 fid_index);
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_qdisc.c b/drivers=
-/net/ethernet/mellanox/mlxsw/spectrum_qdisc.c
-index d513af49c0a8..81a2c087f534 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_qdisc.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_qdisc.c
-@@ -18,6 +18,7 @@ enum mlxsw_sp_qdisc_type {
- 	MLXSW_SP_QDISC_NO_QDISC,
- 	MLXSW_SP_QDISC_RED,
- 	MLXSW_SP_QDISC_PRIO,
-+	MLXSW_SP_QDISC_ETS,
- };
-=20
- struct mlxsw_sp_qdisc_ops {
-@@ -680,6 +681,55 @@ static struct mlxsw_sp_qdisc_ops mlxsw_sp_qdisc_ops_pr=
-io =3D {
- 	.clean_stats =3D mlxsw_sp_setup_tc_qdisc_prio_clean_stats,
- };
-=20
-+static int
-+mlxsw_sp_qdisc_ets_check_params(struct mlxsw_sp_port *mlxsw_sp_port,
-+				struct mlxsw_sp_qdisc *mlxsw_sp_qdisc,
-+				void *params)
-+{
-+	struct tc_ets_qopt_offload_replace_params *p =3D params;
-+
-+	return __mlxsw_sp_qdisc_ets_check_params(p->bands);
-+}
-+
-+static int
-+mlxsw_sp_qdisc_ets_replace(struct mlxsw_sp_port *mlxsw_sp_port,
-+			   struct mlxsw_sp_qdisc *mlxsw_sp_qdisc,
-+			   void *params)
-+{
-+	struct tc_ets_qopt_offload_replace_params *p =3D params;
-+
-+	return __mlxsw_sp_qdisc_ets_replace(mlxsw_sp_port, p->bands,
-+					    p->quanta, p->weights, p->priomap);
-+}
-+
-+static void
-+mlxsw_sp_qdisc_ets_unoffload(struct mlxsw_sp_port *mlxsw_sp_port,
-+			     struct mlxsw_sp_qdisc *mlxsw_sp_qdisc,
-+			     void *params)
-+{
-+	struct tc_ets_qopt_offload_replace_params *p =3D params;
-+
-+	__mlxsw_sp_qdisc_ets_unoffload(mlxsw_sp_port, mlxsw_sp_qdisc,
-+				       p->qstats);
-+}
-+
-+static int
-+mlxsw_sp_qdisc_ets_destroy(struct mlxsw_sp_port *mlxsw_sp_port,
-+			   struct mlxsw_sp_qdisc *mlxsw_sp_qdisc)
-+{
-+	return __mlxsw_sp_qdisc_ets_destroy(mlxsw_sp_port);
-+}
-+
-+static struct mlxsw_sp_qdisc_ops mlxsw_sp_qdisc_ops_ets =3D {
-+	.type =3D MLXSW_SP_QDISC_ETS,
-+	.check_params =3D mlxsw_sp_qdisc_ets_check_params,
-+	.replace =3D mlxsw_sp_qdisc_ets_replace,
-+	.unoffload =3D mlxsw_sp_qdisc_ets_unoffload,
-+	.destroy =3D mlxsw_sp_qdisc_ets_destroy,
-+	.get_stats =3D mlxsw_sp_qdisc_get_prio_stats,
-+	.clean_stats =3D mlxsw_sp_setup_tc_qdisc_prio_clean_stats,
-+};
-+
- /* Linux allows linking of Qdiscs to arbitrary classes (so long as the res=
-ulting
-  * graph is free of cycles). These operations do not change the parent han=
-dle
-  * though, which means it can be incomplete (if there is more than one cla=
-ss
-@@ -772,6 +822,40 @@ int mlxsw_sp_setup_tc_prio(struct mlxsw_sp_port *mlxsw=
-_sp_port,
- 	}
+diff --git a/tools/testing/selftests/drivers/net/mlxsw/qos_lib.sh b/tools/t=
+esting/selftests/drivers/net/mlxsw/qos_lib.sh
+index e80be65799ad..75a3fb3b5663 100644
+--- a/tools/testing/selftests/drivers/net/mlxsw/qos_lib.sh
++++ b/tools/testing/selftests/drivers/net/mlxsw/qos_lib.sh
+@@ -24,24 +24,6 @@ rate()
+ 	echo $((8 * (t1 - t0) / interval))
  }
 =20
-+int mlxsw_sp_setup_tc_ets(struct mlxsw_sp_port *mlxsw_sp_port,
-+			  struct tc_ets_qopt_offload *p)
+-start_traffic()
+-{
+-	local h_in=3D$1; shift    # Where the traffic egresses the host
+-	local sip=3D$1; shift
+-	local dip=3D$1; shift
+-	local dmac=3D$1; shift
+-
+-	$MZ $h_in -p 8000 -A $sip -B $dip -c 0 \
+-		-a own -b $dmac -t udp -q &
+-	sleep 1
+-}
+-
+-stop_traffic()
+-{
+-	# Suppress noise from killing mausezahn.
+-	{ kill %% && wait %%; } 2>/dev/null
+-}
+-
+ check_rate()
+ {
+ 	local rate=3D$1; shift
+diff --git a/tools/testing/selftests/net/forwarding/lib.sh b/tools/testing/=
+selftests/net/forwarding/lib.sh
+index 1f64e7348f69..a0b09bb6995e 100644
+--- a/tools/testing/selftests/net/forwarding/lib.sh
++++ b/tools/testing/selftests/net/forwarding/lib.sh
+@@ -1065,3 +1065,21 @@ flood_test()
+ 	flood_unicast_test $br_port $host1_if $host2_if
+ 	flood_multicast_test $br_port $host1_if $host2_if
+ }
++
++start_traffic()
 +{
-+	struct mlxsw_sp_qdisc *mlxsw_sp_qdisc;
++	local h_in=3D$1; shift    # Where the traffic egresses the host
++	local sip=3D$1; shift
++	local dip=3D$1; shift
++	local dmac=3D$1; shift
 +
-+	mlxsw_sp_qdisc =3D mlxsw_sp_qdisc_find(mlxsw_sp_port, p->parent, true);
-+	if (!mlxsw_sp_qdisc)
-+		return -EOPNOTSUPP;
-+
-+	if (p->command =3D=3D TC_ETS_REPLACE)
-+		return mlxsw_sp_qdisc_replace(mlxsw_sp_port, p->handle,
-+					      mlxsw_sp_qdisc,
-+					      &mlxsw_sp_qdisc_ops_ets,
-+					      &p->replace_params);
-+
-+	if (!mlxsw_sp_qdisc_compare(mlxsw_sp_qdisc, p->handle,
-+				    MLXSW_SP_QDISC_ETS))
-+		return -EOPNOTSUPP;
-+
-+	switch (p->command) {
-+	case TC_ETS_DESTROY:
-+		return mlxsw_sp_qdisc_destroy(mlxsw_sp_port, mlxsw_sp_qdisc);
-+	case TC_ETS_STATS:
-+		return mlxsw_sp_qdisc_get_stats(mlxsw_sp_port, mlxsw_sp_qdisc,
-+						&p->stats);
-+	case TC_ETS_GRAFT:
-+		return __mlxsw_sp_qdisc_ets_graft(mlxsw_sp_port, mlxsw_sp_qdisc,
-+						  p->graft_params.band,
-+						  p->graft_params.child_handle);
-+	default:
-+		return -EOPNOTSUPP;
-+	}
++	$MZ $h_in -p 8000 -A $sip -B $dip -c 0 \
++		-a own -b $dmac -t udp -q &
++	sleep 1
 +}
 +
- int mlxsw_sp_tc_qdisc_init(struct mlxsw_sp_port *mlxsw_sp_port)
- {
- 	struct mlxsw_sp_qdisc *mlxsw_sp_qdisc;
++stop_traffic()
++{
++	# Suppress noise from killing mausezahn.
++	{ kill %% && wait %%; } 2>/dev/null
++}
 --=20
 2.20.1
 
