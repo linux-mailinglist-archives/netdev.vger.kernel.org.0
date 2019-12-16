@@ -2,82 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id ED1AC120FFA
-	for <lists+netdev@lfdr.de>; Mon, 16 Dec 2019 17:47:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B9B5C12100F
+	for <lists+netdev@lfdr.de>; Mon, 16 Dec 2019 17:49:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726663AbfLPQqz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Dec 2019 11:46:55 -0500
-Received: from mail-qt1-f193.google.com ([209.85.160.193]:45320 "EHLO
-        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726077AbfLPQqz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Dec 2019 11:46:55 -0500
-Received: by mail-qt1-f193.google.com with SMTP id l12so6257893qtq.12;
-        Mon, 16 Dec 2019 08:46:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:message-id:from:to:cc:subject:in-reply-to:references
-         :mime-version:content-disposition:content-transfer-encoding;
-        bh=FzQD5NeyjMYjn5GUzVnR8JJ9rnqQehngyUlXZ3ny/LA=;
-        b=myJNU0ohp9NClRjz5DPyP/dp+qDqj+ibPEywlbAAwBbLAxuOWcnhhD211Y9I9/oLfo
-         +yTrf/B9Bcg00ATyx4EfOmDBFF0HD/hJ1x/pO1N7gQoPnd8geBR4L9rtp682YVJW/if+
-         t5LWStvrt0Y9nADtYgyD+om75KE0EebaMp1EidTPi0AIAPchcJI6/mOYmnF0ifJ+y5M4
-         VKb1uDCQl9iwvLet2q2wnL5EDkb7yXhttv37C2iiC8vVTKhOD7j1MhR2odSpDh/BlR3d
-         I96b9vPzMJfRwrEshTT2he+9nE6VpFrtA46lksRWRuqR+rcUrlU+T8YYVZGA0yCnVN0l
-         GNFw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:from:to:cc:subject:in-reply-to
-         :references:mime-version:content-disposition
-         :content-transfer-encoding;
-        bh=FzQD5NeyjMYjn5GUzVnR8JJ9rnqQehngyUlXZ3ny/LA=;
-        b=jDlZmM31yBb/NlI7uhaUORkjEL9sCoPd1f7lE9uBRmpHJB5HWh1Sukk6Cac+E8iKBu
-         k3+njPqgPFL/OwjYgWCUwIl4a8mHH6rM2L7AsVm8rPreBTKLitjIiou41bzzXAiVfqo0
-         Gtt7jrvgePWm7N/wyRgUoJKttF3IhJNzN8LcE1k02O4w1TXZ8rG/SFip6sNAIF+3jQBh
-         2GUM6Flz3lLdfiwoVxQ678K8XAFVo53NuWntT5WvgqFlLrYOISiQzLSRTfUhgz0t4/qw
-         tPs9f6tOdsflPLByyAEdHCnmC5z1SI4Gz/A7yEtlxEvxY3hXuP0RTEoQgsnorYXiOXlT
-         7Mnw==
-X-Gm-Message-State: APjAAAWE/+KEdXBZg3x/dSgWCR/fWNpBK76OQJIHmwJaoE+8VKijG1fc
-        amRp2u5TT7PF6QHqFG2My33Dgm4H
-X-Google-Smtp-Source: APXvYqy1XW6mMY70H5xpe65grZb9SyDfhNylXXrGbRIx1KeEvN9RjkDcnnI02dp3HQHtwhyGu5E0/g==
-X-Received: by 2002:ac8:2d30:: with SMTP id n45mr98014qta.203.1576514814548;
-        Mon, 16 Dec 2019 08:46:54 -0800 (PST)
-Received: from localhost (modemcable249.105-163-184.mc.videotron.ca. [184.163.105.249])
-        by smtp.gmail.com with ESMTPSA id m20sm2627380qkk.15.2019.12.16.08.46.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 Dec 2019 08:46:53 -0800 (PST)
-Date:   Mon, 16 Dec 2019 11:46:52 -0500
-Message-ID: <20191216114652.GB2051941@t480s.localdomain>
-From:   Vivien Didelot <vivien.didelot@gmail.com>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     netdev@vger.kernel.org, Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        "David S. Miller" <davem@davemloft.net>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] net: dsa: b53: Fix egress flooding settings
-In-Reply-To: <20191213200027.20803-1-f.fainelli@gmail.com>
-References: <20191213200027.20803-1-f.fainelli@gmail.com>
+        id S1726725AbfLPQtH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Dec 2019 11:49:07 -0500
+Received: from www62.your-server.de ([213.133.104.62]:50678 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726320AbfLPQtH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Dec 2019 11:49:07 -0500
+Received: from [2001:1620:665:0:5795:5b0a:e5d5:5944] (helo=localhost)
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1igtYP-0004nd-2W; Mon, 16 Dec 2019 17:49:05 +0100
+From:   Daniel Borkmann <daniel@iogearbox.net>
+To:     alexei.starovoitov@gmail.com
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Daniel Borkmann <daniel@iogearbox.net>
+Subject: [PATCH bpf] bpf: fix missing prog untrack in release_maps
+Date:   Mon, 16 Dec 2019 17:49:00 +0100
+Message-Id: <1c2909484ca524ae9f55109b06f22b6213e76376.1576514756.git.daniel@iogearbox.net>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.101.4/25665/Mon Dec 16 10:52:23 2019)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 13 Dec 2019 12:00:27 -0800, Florian Fainelli <f.fainelli@gmail.com> wrote:
-> There were several issues with 53568438e381 ("net: dsa: b53: Add support for port_egress_floods callback") that resulted in breaking connectivity for standalone ports:
-> 
-> - both user and CPU ports must allow unicast and multicast forwarding by
->   default otherwise this just flat out breaks connectivity for
->   standalone DSA ports
-> - IP multicast is treated similarly as multicast, but has separate
->   control registers
-> - the UC, MC and IPMC lookup failure register offsets were wrong, and
->   instead used bit values that are meaningful for the
->   B53_IP_MULTICAST_CTRL register
-> 
-> Fixes: 53568438e381 ("net: dsa: b53: Add support for port_egress_floods callback")
-> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+Commit da765a2f5993 ("bpf: Add poke dependency tracking for prog array
+maps") wrongly assumed that in case of prog load errors, we're cleaning
+up all program tracking via bpf_free_used_maps().
 
-Reviewed-by: Vivien Didelot <vivien.didelot@gmail.com>
+However, it can happen that we're still at the point where we didn't copy
+map pointers into the prog's aux section such that env->prog->aux->used_maps
+is still zero, running into a UAF. In such case, the verifier has similar
+release_maps() helper that drops references to used maps from its env.
+
+Consolidate the release code into __bpf_free_used_maps() and call it from
+all sides to fix it.
+
+Fixes: da765a2f5993 ("bpf: Add poke dependency tracking for prog array maps")
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+---
+ include/linux/bpf.h   |  2 ++
+ kernel/bpf/core.c     | 14 ++++++++++----
+ kernel/bpf/verifier.c | 14 ++------------
+ 3 files changed, 14 insertions(+), 16 deletions(-)
+
+diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+index ac7de5291509..085a59afba85 100644
+--- a/include/linux/bpf.h
++++ b/include/linux/bpf.h
+@@ -818,6 +818,8 @@ struct bpf_prog * __must_check bpf_prog_inc_not_zero(struct bpf_prog *prog);
+ void bpf_prog_put(struct bpf_prog *prog);
+ int __bpf_prog_charge(struct user_struct *user, u32 pages);
+ void __bpf_prog_uncharge(struct user_struct *user, u32 pages);
++void __bpf_free_used_maps(struct bpf_prog_aux *aux,
++			  struct bpf_map **used_maps, u32 len);
+ 
+ void bpf_prog_free_id(struct bpf_prog *prog, bool do_idr_lock);
+ void bpf_map_free_id(struct bpf_map *map, bool do_idr_lock);
+diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
+index 49e32acad7d8..6231858df723 100644
+--- a/kernel/bpf/core.c
++++ b/kernel/bpf/core.c
+@@ -2048,18 +2048,24 @@ static void bpf_free_cgroup_storage(struct bpf_prog_aux *aux)
+ 	}
+ }
+ 
+-static void bpf_free_used_maps(struct bpf_prog_aux *aux)
++void __bpf_free_used_maps(struct bpf_prog_aux *aux,
++			  struct bpf_map **used_maps, u32 len)
+ {
+ 	struct bpf_map *map;
+-	int i;
++	u32 i;
+ 
+ 	bpf_free_cgroup_storage(aux);
+-	for (i = 0; i < aux->used_map_cnt; i++) {
+-		map = aux->used_maps[i];
++	for (i = 0; i < len; i++) {
++		map = used_maps[i];
+ 		if (map->ops->map_poke_untrack)
+ 			map->ops->map_poke_untrack(map, aux);
+ 		bpf_map_put(map);
+ 	}
++}
++
++static void bpf_free_used_maps(struct bpf_prog_aux *aux)
++{
++	__bpf_free_used_maps(aux, aux->used_maps, aux->used_map_cnt);
+ 	kfree(aux->used_maps);
+ }
+ 
+diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+index 034ef81f935b..a1acdce77070 100644
+--- a/kernel/bpf/verifier.c
++++ b/kernel/bpf/verifier.c
+@@ -8298,18 +8298,8 @@ static int replace_map_fd_with_map_ptr(struct bpf_verifier_env *env)
+ /* drop refcnt of maps used by the rejected program */
+ static void release_maps(struct bpf_verifier_env *env)
+ {
+-	enum bpf_cgroup_storage_type stype;
+-	int i;
+-
+-	for_each_cgroup_storage_type(stype) {
+-		if (!env->prog->aux->cgroup_storage[stype])
+-			continue;
+-		bpf_cgroup_storage_release(env->prog,
+-			env->prog->aux->cgroup_storage[stype]);
+-	}
+-
+-	for (i = 0; i < env->used_map_cnt; i++)
+-		bpf_map_put(env->used_maps[i]);
++	__bpf_free_used_maps(env->prog->aux, env->used_maps,
++			     env->used_map_cnt);
+ }
+ 
+ /* convert pseudo BPF_LD_IMM64 into generic BPF_LD_IMM64 */
+-- 
+2.21.0
+
