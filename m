@@ -2,114 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EA8E1120EA7
-	for <lists+netdev@lfdr.de>; Mon, 16 Dec 2019 16:58:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 709E5120EAD
+	for <lists+netdev@lfdr.de>; Mon, 16 Dec 2019 17:01:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727842AbfLPP6B (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Dec 2019 10:58:01 -0500
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:65044 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727723AbfLPP6B (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Dec 2019 10:58:01 -0500
-Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xBGFqH6j050223;
-        Mon, 16 Dec 2019 10:57:56 -0500
-Received: from ppma02wdc.us.ibm.com (aa.5b.37a9.ip4.static.sl-reverse.com [169.55.91.170])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 2wwe609gjd-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 16 Dec 2019 10:57:56 -0500
-Received: from pps.filterd (ppma02wdc.us.ibm.com [127.0.0.1])
-        by ppma02wdc.us.ibm.com (8.16.0.27/8.16.0.27) with SMTP id xBGFsqLS003508;
-        Mon, 16 Dec 2019 15:57:55 GMT
-Received: from b01cxnp22034.gho.pok.ibm.com (b01cxnp22034.gho.pok.ibm.com [9.57.198.24])
-        by ppma02wdc.us.ibm.com with ESMTP id 2wvqc64bsc-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 16 Dec 2019 15:57:55 +0000
-Received: from b01ledav006.gho.pok.ibm.com (b01ledav006.gho.pok.ibm.com [9.57.199.111])
-        by b01cxnp22034.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id xBGFvsFT42795392
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 16 Dec 2019 15:57:54 GMT
-Received: from b01ledav006.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 8D174AC05F;
-        Mon, 16 Dec 2019 15:57:54 +0000 (GMT)
-Received: from b01ledav006.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 3223EAC05E;
-        Mon, 16 Dec 2019 15:57:54 +0000 (GMT)
-Received: from oc7186267434.ibm.com (unknown [9.41.178.211])
-        by b01ledav006.gho.pok.ibm.com (Postfix) with ESMTP;
-        Mon, 16 Dec 2019 15:57:54 +0000 (GMT)
-Subject: Re: [PATCH net v2] net/ibmvnic: Fix typo in retry check
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc:     netdev@vger.kernel.org, linuxppc-dev@ozlabs.org,
-        julietk@linux.vnet.ibm.com
-References: <1576078719-9604-1-git-send-email-tlfalcon@linux.ibm.com>
- <20191213172747.5e5310c9@cakuba.netronome.com>
-From:   Thomas Falcon <tlfalcon@linux.ibm.com>
-Message-ID: <1d4d0ef6-2115-84d6-fcca-e058dca18457@linux.ibm.com>
-Date:   Mon, 16 Dec 2019 09:57:53 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.0
+        id S1727495AbfLPQAI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Dec 2019 11:00:08 -0500
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:46613 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727289AbfLPQAH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Dec 2019 11:00:07 -0500
+Received: by mail-pf1-f194.google.com with SMTP id y14so5795483pfm.13;
+        Mon, 16 Dec 2019 08:00:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to
+         :user-agent;
+        bh=ZfFEz4AMfQHwJUdkaHmeGzk9Gy9NzowUfwE8J24sRPQ=;
+        b=H97PI86u6Y0OtDBGe0xmyYL5Hu+FB3M2Buqky1AVtaAhZyPzqXhZa7CdmoTo4Sz5jk
+         I08nVRtDGbwDV5XyfhY4aSDer9EpeK/7oG28uGrW1Q6VQDWw7ihncMGKihhgzTyF2B9f
+         mZiv5Y/x4aaC9VbS8IhELK35SHc3nz6xqI5kJsbN4OaZcSH68P16X+7fPHbLfgdB4STq
+         q0yJqv7KdQQnKtQrnQ6lO5nU5P6VIrrm7lD32Mr+H4fLFm/rjRBv4ZAxwkhwJEl9lir2
+         FjMP4qyYK6fO25EQIZNl6Q+Sss0VXduUh8jb9wVytsC/rNNu6akFPa0iy9hec/oC2CbX
+         0/Xg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to:user-agent;
+        bh=ZfFEz4AMfQHwJUdkaHmeGzk9Gy9NzowUfwE8J24sRPQ=;
+        b=B06P22d5CH4jSzrpiry7e4E+6jb6fSbFeoI62rFOAzQuerzjs/H6mH2ToOofc4ZOqx
+         C5v2uJSOrWpq08Bk/wNXKfwalXcuB0j0z55OoD/ZP70heJGqcqPArMm3jUMzcFUHWdWE
+         Ao2j61q8thLOvhPtwlIXjB/7FL6tnFgZcFWnJo3KT1ZHB49Cx7MTNUJIAWXnOFQV6q5i
+         M4MsCDbKC2OOnRijtZj3hKDR2seOsV5U4XgxmFOY+60n9YOEO0qtoyGcmXa+uLJBSgnF
+         5UBe+O/LoN3FzdP1o/kLfCJKg1zmWLr6pKsM1uUaHPad9IpaxKMI6O28g03PTD3jSpmq
+         m3Tw==
+X-Gm-Message-State: APjAAAUwVM+B6/kcS06Pnz2MSNxyMU/yPX47QhNqoriH3NZhIMnhYrLc
+        j0FJurA8hD0uP1m/+LQMn/4=
+X-Google-Smtp-Source: APXvYqw7NuCBWp9N/+LmCzQHoewSI+tutaQf5u43gx9FjcJNDA8CC89gCwOJNQOhmkwnQRU44MoFkw==
+X-Received: by 2002:a62:3304:: with SMTP id z4mr15928598pfz.79.1576512006907;
+        Mon, 16 Dec 2019 08:00:06 -0800 (PST)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:200::1:48aa])
+        by smtp.gmail.com with ESMTPSA id h6sm22208257pgq.61.2019.12.16.08.00.05
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 16 Dec 2019 08:00:05 -0800 (PST)
+Date:   Mon, 16 Dec 2019 08:00:04 -0800
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Jesper Dangaard Brouer <brouer@redhat.com>,
+        Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, guro@fb.com, hannes@cmpxchg.org, tj@kernel.org
+Subject: Re: [PATCH bpf-next] libbpf: Print hint about ulimit when getting
+ permission denied error
+Message-ID: <20191216160002.vytwcpremx2e7ae3@ast-mbp.dhcp.thefacebook.com>
+References: <20191216124031.371482-1-toke@redhat.com>
+ <20191216145230.103c1f46@carbon>
+ <20191216155336.GA28925@linux.fritz.box>
 MIME-Version: 1.0
-In-Reply-To: <20191213172747.5e5310c9@cakuba.netronome.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
- definitions=2019-12-16_06:2019-12-16,2019-12-16 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 phishscore=0
- impostorscore=0 suspectscore=0 adultscore=0 bulkscore=0 mlxlogscore=999
- clxscore=1015 priorityscore=1501 spamscore=0 mlxscore=0 lowpriorityscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-1910280000
- definitions=main-1912160139
+In-Reply-To: <20191216155336.GA28925@linux.fritz.box>
+User-Agent: NeoMutt/20180223
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, Dec 16, 2019 at 04:53:36PM +0100, Daniel Borkmann wrote:
+> On Mon, Dec 16, 2019 at 02:52:30PM +0100, Jesper Dangaard Brouer wrote:
+> > On Mon, 16 Dec 2019 13:40:31 +0100
+> > Toke Høiland-Jørgensen <toke@redhat.com> wrote:
+> > 
+> > > Probably the single most common error newcomers to XDP are stumped by is
+> > > the 'permission denied' error they get when trying to load their program
+> > > and 'ulimit -r' is set too low. For examples, see [0], [1].
+> > > 
+> > > Since the error code is UAPI, we can't change that. Instead, this patch
+> > > adds a few heuristics in libbpf and outputs an additional hint if they are
+> > > met: If an EPERM is returned on map create or program load, and geteuid()
+> > > shows we are root, and the current RLIMIT_MEMLOCK is not infinity, we
+> > > output a hint about raising 'ulimit -r' as an additional log line.
+> > > 
+> > > [0] https://marc.info/?l=xdp-newbies&m=157043612505624&w=2
+> > > [1] https://github.com/xdp-project/xdp-tutorial/issues/86
+> > > 
+> > > Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
+> > 
+> > Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
+> > 
+> > This is the top #1 issue users hit again-and-again, too bad we cannot
+> > change the return code as it is UAPI now.  Thanks for taking care of
+> > this mitigation.
+> 
+> It's an annoying error that comes up very often, agree, and tooling then
+> sets it to a high value / inf anyway as next step if it has the rights
+> to do so. Probably time to revisit the idea that if the user has the same
+> rights as being able to set setrlimit() anyway, we should just not account
+> for it ... incomplete hack:
 
-On 12/13/19 7:27 PM, Jakub Kicinski wrote:
-> On Wed, 11 Dec 2019 09:38:39 -0600, Thomas Falcon wrote:
->> This conditional is missing a bang, with the intent
->> being to break when the retry count reaches zero.
->>
->> Fixes: 476d96ca9c ("ibmvnic: Bound waits for device queries")
->> Suggested-by: Juliet Kim <julietk@linux.vnet.ibm.com>
->> Signed-off-by: Thomas Falcon <tlfalcon@linux.ibm.com>
-> Ah damn, looks like this originates from my pseudo code.
->
-> I had to fix the fixes tag:
->
-> Commit: 847496ccfa22 ("net/ibmvnic: Fix typo in retry check")
-> 	Fixes tag: Fixes: 476d96ca9c ("ibmvnic: Bound waits for device queries")
-> 	Has these problem(s):
-> 		- SHA1 should be at least 12 digits long
-> 		  Can be fixed by setting core.abbrev to 12 (or more) or (for git v2.11
-> 		  or later) just making sure it is not set (or set to "auto").
+We cannot drop it quite yet.
+There are services that run under root that are relying on this rlimit
+to prevent other root services from consuming too much memory.
+We need memcg based alternative first before we can remove this limit.
+Otherwise users have no way to restrict.
 
-Thanks, I'll keep that in mind next time.Â  IIRC I was making some last 
-minute cosmetic changes before sending, and it might have slipped in 
-that way.Â  In any case, I should have been more thorough in testing it.
-
-Thanks,
-
-Tom
-
-
-
->
-> Applied to net, thanks!
->
->> diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
->> index efb0f10..2d84523 100644
->> --- a/drivers/net/ethernet/ibm/ibmvnic.c
->> +++ b/drivers/net/ethernet/ibm/ibmvnic.c
->> @@ -184,7 +184,7 @@ static int ibmvnic_wait_for_completion(struct ibmvnic_adapter *adapter,
->>   			netdev_err(netdev, "Device down!\n");
->>   			return -ENODEV;
->>   		}
->> -		if (retry--)
->> +		if (!retry--)
->>   			break;
->>   		if (wait_for_completion_timeout(comp_done, div_timeout))
->>   			return 0;
