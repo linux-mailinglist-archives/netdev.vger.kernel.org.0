@@ -2,89 +2,199 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B750121754
-	for <lists+netdev@lfdr.de>; Mon, 16 Dec 2019 19:36:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 620771216FB
+	for <lists+netdev@lfdr.de>; Mon, 16 Dec 2019 19:34:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730335AbfLPSIy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Dec 2019 13:08:54 -0500
-Received: from nbd.name ([46.4.11.11]:35344 "EHLO nbd.name"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730322AbfLPSIu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 16 Dec 2019 13:08:50 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=nbd.name;
-         s=20160729; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:
-        MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=RUMFaI4CEo7DlvBHv1ccL8MoXo+yyDJGppBym2tES8I=; b=sTxC35+kOxbi3fl8lfAhb/fJwu
-        l22U++CgSUDV6mUyQpM1bu6Kpz5wQyXSZjtgD63qW6Z4wLsdYkQmr25+kk6tjoIP86nNNKeM3Rtfc
-        vYnhn7BCXf/iX1+SGUsm7ceaB6nclikYm1FUkrH26lxx1VmDMfsKnN0SbAcYuUgYx+/w=;
-Received: from p4ff13e83.dip0.t-ipconnect.de ([79.241.62.131] helo=nf.local)
-        by ds12 with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.89)
-        (envelope-from <nbd@nbd.name>)
-        id 1igunQ-0000HK-Ad; Mon, 16 Dec 2019 19:08:40 +0100
-Subject: Re: [PATCH 07/55] staging: wfx: ensure that retry policy always
- fallbacks to MCS0 / 1Mbps
-To:     =?UTF-8?B?SsOpcsO0bWUgUG91aWxsZXI=?= <Jerome.Pouiller@silabs.com>,
-        "devel@driverdev.osuosl.org" <devel@driverdev.osuosl.org>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S . Miller" <davem@davemloft.net>
-References: <20191216170302.29543-1-Jerome.Pouiller@silabs.com>
- <20191216170302.29543-8-Jerome.Pouiller@silabs.com>
-From:   Felix Fietkau <nbd@nbd.name>
-Autocrypt: addr=nbd@nbd.name; prefer-encrypt=mutual; keydata=
- xsDiBEah5CcRBADIY7pu4LIv3jBlyQ/2u87iIZGe6f0f8pyB4UjzfJNXhJb8JylYYRzIOSxh
- ExKsdLCnJqsG1PY1mqTtoG8sONpwsHr2oJ4itjcGHfn5NJSUGTbtbbxLro13tHkGFCoCr4Z5
- Pv+XRgiANSpYlIigiMbOkide6wbggQK32tC20QxUIwCg4k6dtV/4kwEeiOUfErq00TVqIiEE
- AKcUi4taOuh/PQWx/Ujjl/P1LfJXqLKRPa8PwD4j2yjoc9l+7LptSxJThL9KSu6gtXQjcoR2
- vCK0OeYJhgO4kYMI78h1TSaxmtImEAnjFPYJYVsxrhay92jisYc7z5R/76AaELfF6RCjjGeP
- wdalulG+erWju710Bif7E1yjYVWeA/9Wd1lsOmx6uwwYgNqoFtcAunDaMKi9xVQW18FsUusM
- TdRvTZLBpoUAy+MajAL+R73TwLq3LnKpIcCwftyQXK5pEDKq57OhxJVv1Q8XkA9Dn1SBOjNB
- l25vJDFAT9ntp9THeDD2fv15yk4EKpWhu4H00/YX8KkhFsrtUs69+vZQwc0cRmVsaXggRmll
- dGthdSA8bmJkQG5iZC5uYW1lPsJgBBMRAgAgBQJGoeQnAhsjBgsJCAcDAgQVAggDBBYCAwEC
- HgECF4AACgkQ130UHQKnbvXsvgCgjsAIIOsY7xZ8VcSm7NABpi91yTMAniMMmH7FRenEAYMa
- VrwYTIThkTlQzsFNBEah5FQQCACMIep/hTzgPZ9HbCTKm9xN4bZX0JjrqjFem1Nxf3MBM5vN
- CYGBn8F4sGIzPmLhl4xFeq3k5irVg/YvxSDbQN6NJv8o+tP6zsMeWX2JjtV0P4aDIN1pK2/w
- VxcicArw0VYdv2ZCarccFBgH2a6GjswqlCqVM3gNIMI8ikzenKcso8YErGGiKYeMEZLwHaxE
- Y7mTPuOTrWL8uWWRL5mVjhZEVvDez6em/OYvzBwbkhImrryF29e3Po2cfY2n7EKjjr3/141K
- DHBBdgXlPNfDwROnA5ugjjEBjwkwBQqPpDA7AYPvpHh5vLbZnVGu5CwG7NAsrb2isRmjYoqk
- wu++3117AAMFB/9S0Sj7qFFQcD4laADVsabTpNNpaV4wAgVTRHKV/kC9luItzwDnUcsZUPdQ
- f3MueRJ3jIHU0UmRBG3uQftqbZJj3ikhnfvyLmkCNe+/hXhPu9sGvXyi2D4vszICvc1KL4RD
- aLSrOsROx22eZ26KqcW4ny7+va2FnvjsZgI8h4sDmaLzKczVRIiLITiMpLFEU/VoSv0m1F4B
- FtRgoiyjFzigWG0MsTdAN6FJzGh4mWWGIlE7o5JraNhnTd+yTUIPtw3ym6l8P+gbvfoZida0
- TspgwBWLnXQvP5EDvlZnNaKa/3oBes6z0QdaSOwZCRA3QSLHBwtgUsrT6RxRSweLrcabwkkE
- GBECAAkFAkah5FQCGwwACgkQ130UHQKnbvW2GgCfTKx80VvCR/PvsUlrvdOLsIgeRGAAn1ee
- RjMaxwtSdaCKMw3j33ZbsWS4
-Message-ID: <0777ef33-e1f4-148a-40cb-cfe7b42d5364@nbd.name>
-Date:   Mon, 16 Dec 2019 19:08:39 +0100
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0)
- Gecko/20100101 Thunderbird/68.3.0
-MIME-Version: 1.0
-In-Reply-To: <20191216170302.29543-8-Jerome.Pouiller@silabs.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+        id S1730760AbfLPSdC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Dec 2019 13:33:02 -0500
+Received: from mail-pl1-f196.google.com ([209.85.214.196]:35069 "EHLO
+        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729722AbfLPScx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Dec 2019 13:32:53 -0500
+Received: by mail-pl1-f196.google.com with SMTP id g6so2230016plt.2;
+        Mon, 16 Dec 2019 10:32:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=o91fzN2Y/X2pYVVbNINyzWcNsMLhEgfMww7nvU4ja1A=;
+        b=LpTHnZdl+8KeCrOr2LCUVbjlt3LBBk3CS0fa+Uggxd3ak34a+nrJ7TqU1TTPhwxuKO
+         23piv+guYTxrglZcCE9VkkQP0OlBxofzBz8b/9dT51GuRbxOtfI6N2Rt483HAx8w5UyP
+         BClgt6tnFVPd3ODWYxhGnakclB9vjfEk1Z71vtbI0h8TpgSe7NqddxvjRksNg7/8ROP3
+         zErmTtDaXDJCa1+Dhse/2yZt2L+lZKNbqkz8j5oHvDsNlUE7rXNVk1CrDFPUhCodGoSC
+         SIM0EiI1SFRfYh/X5DUr4PZHmBLwyLMsZYyy1k0S8rNl1XH2QVtQ724gQ8aL97GOrL1/
+         dWNA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=o91fzN2Y/X2pYVVbNINyzWcNsMLhEgfMww7nvU4ja1A=;
+        b=l8LRoJlI6KysE78wUnYXAliJu4lCopF/owZs4q4OXzJckDsQMS9hNAC+sdS4a0WZ6v
+         s45LLLZt+DBOh8vYT4X0bn1SqlRq5wMBZWCaKGcTmVKzcme841OT5gHXglOZN+oZZbzo
+         aiNBcKU122wM2JSsIrg9/eSz9+J4gu3yObkaWO50aJLtv1MxA5drfGt7kAg8+UwzChF7
+         OtuDa57FxXklWexfiII/QO2AAUu+XlqTjOqdTk4ZEkjwJ8/9JgGokft7lfqaBRUWho0w
+         /LFQg6F5BKpuFX2OSZ2I/yoaknkWvOAFqXujH/LAGORWepE1tbbUPAgiZxPAG37nrdTP
+         dGzg==
+X-Gm-Message-State: APjAAAWfahXm0+NZihFsoJnZUMobGKiiP/1vinxgWQXMIJBiIA3liEJj
+        bh8Q1+pJBH2HtLn1BDBXGxKau051
+X-Google-Smtp-Source: APXvYqy16E6kEH55xOzJzxaSnsNjzeH6MnSuTTQdSvurBwtB8/c1RsDKm42kYkycQUJJFDs41GK+IQ==
+X-Received: by 2002:a17:902:8641:: with SMTP id y1mr17629802plt.110.1576521172472;
+        Mon, 16 Dec 2019 10:32:52 -0800 (PST)
+Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id s18sm23945761pfs.20.2019.12.16.10.32.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 16 Dec 2019 10:32:51 -0800 (PST)
+From:   Florian Fainelli <f.fainelli@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     rmk+kernel@armlinux.org.uk, ioana.ciornei@nxp.com,
+        olteanv@gmail.com, jakub.kicinski@netronome.com,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Russell King <linux@armlinux.org.uk>,
+        linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH net-next] net: dsa: Make PHYLINK related function static again
+Date:   Mon, 16 Dec 2019 10:32:47 -0800
+Message-Id: <20191216183248.16309-1-f.fainelli@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2019-12-16 18:03, Jérôme Pouiller wrote:
-> From: Jérôme Pouiller <jerome.pouiller@silabs.com>
-> 
-> When not using HT mode, minstrel always includes 1Mbps as fallback rate.
-> But, when using HT mode, this fallback is not included. Yet, it seems
-> that it could save some frames. So, this patch add it unconditionally.
-> 
-> Signed-off-by: Jérôme Pouiller <jerome.pouiller@silabs.com>
-Are you sure that's a good idea? Sometimes a little packet loss can be
-preferable over a larger amount of airtime wasted through using really
-low rates. Especially when you consider bufferbloat.
+Commit 77373d49de22 ("net: dsa: Move the phylink driver calls into
+port.c") moved and exported a bunch of symbols, but they are not used
+outside of net/dsa/port.c at the moment, so no reason to export them.
 
-- Felix
+Reported-by: Russell King <rmk+kernel@armlinux.org.uk>
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+---
+ net/dsa/dsa_priv.h | 16 ----------------
+ net/dsa/port.c     | 38 ++++++++++++++++----------------------
+ 2 files changed, 16 insertions(+), 38 deletions(-)
+
+diff --git a/net/dsa/dsa_priv.h b/net/dsa/dsa_priv.h
+index 2dd86d9bcda9..09ea2fd78c74 100644
+--- a/net/dsa/dsa_priv.h
++++ b/net/dsa/dsa_priv.h
+@@ -150,22 +150,6 @@ int dsa_port_vid_add(struct dsa_port *dp, u16 vid, u16 flags);
+ int dsa_port_vid_del(struct dsa_port *dp, u16 vid);
+ int dsa_port_link_register_of(struct dsa_port *dp);
+ void dsa_port_link_unregister_of(struct dsa_port *dp);
+-void dsa_port_phylink_validate(struct phylink_config *config,
+-			       unsigned long *supported,
+-			       struct phylink_link_state *state);
+-void dsa_port_phylink_mac_pcs_get_state(struct phylink_config *config,
+-					struct phylink_link_state *state);
+-void dsa_port_phylink_mac_config(struct phylink_config *config,
+-				 unsigned int mode,
+-				 const struct phylink_link_state *state);
+-void dsa_port_phylink_mac_an_restart(struct phylink_config *config);
+-void dsa_port_phylink_mac_link_down(struct phylink_config *config,
+-				    unsigned int mode,
+-				    phy_interface_t interface);
+-void dsa_port_phylink_mac_link_up(struct phylink_config *config,
+-				  unsigned int mode,
+-				  phy_interface_t interface,
+-				  struct phy_device *phydev);
+ extern const struct phylink_mac_ops dsa_port_phylink_mac_ops;
+ 
+ /* slave.c */
+diff --git a/net/dsa/port.c b/net/dsa/port.c
+index 46ac9ba21987..ffb5601f7ed6 100644
+--- a/net/dsa/port.c
++++ b/net/dsa/port.c
+@@ -415,9 +415,9 @@ static struct phy_device *dsa_port_get_phy_device(struct dsa_port *dp)
+ 	return phydev;
+ }
+ 
+-void dsa_port_phylink_validate(struct phylink_config *config,
+-			       unsigned long *supported,
+-			       struct phylink_link_state *state)
++static void dsa_port_phylink_validate(struct phylink_config *config,
++				      unsigned long *supported,
++				      struct phylink_link_state *state)
+ {
+ 	struct dsa_port *dp = container_of(config, struct dsa_port, pl_config);
+ 	struct dsa_switch *ds = dp->ds;
+@@ -427,10 +427,9 @@ void dsa_port_phylink_validate(struct phylink_config *config,
+ 
+ 	ds->ops->phylink_validate(ds, dp->index, supported, state);
+ }
+-EXPORT_SYMBOL_GPL(dsa_port_phylink_validate);
+ 
+-void dsa_port_phylink_mac_pcs_get_state(struct phylink_config *config,
+-					struct phylink_link_state *state)
++static void dsa_port_phylink_mac_pcs_get_state(struct phylink_config *config,
++					       struct phylink_link_state *state)
+ {
+ 	struct dsa_port *dp = container_of(config, struct dsa_port, pl_config);
+ 	struct dsa_switch *ds = dp->ds;
+@@ -444,11 +443,10 @@ void dsa_port_phylink_mac_pcs_get_state(struct phylink_config *config,
+ 	if (ds->ops->phylink_mac_link_state(ds, dp->index, state) < 0)
+ 		state->link = 0;
+ }
+-EXPORT_SYMBOL_GPL(dsa_port_phylink_mac_pcs_get_state);
+ 
+-void dsa_port_phylink_mac_config(struct phylink_config *config,
+-				 unsigned int mode,
+-				 const struct phylink_link_state *state)
++static void dsa_port_phylink_mac_config(struct phylink_config *config,
++					unsigned int mode,
++					const struct phylink_link_state *state)
+ {
+ 	struct dsa_port *dp = container_of(config, struct dsa_port, pl_config);
+ 	struct dsa_switch *ds = dp->ds;
+@@ -458,9 +456,8 @@ void dsa_port_phylink_mac_config(struct phylink_config *config,
+ 
+ 	ds->ops->phylink_mac_config(ds, dp->index, mode, state);
+ }
+-EXPORT_SYMBOL_GPL(dsa_port_phylink_mac_config);
+ 
+-void dsa_port_phylink_mac_an_restart(struct phylink_config *config)
++static void dsa_port_phylink_mac_an_restart(struct phylink_config *config)
+ {
+ 	struct dsa_port *dp = container_of(config, struct dsa_port, pl_config);
+ 	struct dsa_switch *ds = dp->ds;
+@@ -470,11 +467,10 @@ void dsa_port_phylink_mac_an_restart(struct phylink_config *config)
+ 
+ 	ds->ops->phylink_mac_an_restart(ds, dp->index);
+ }
+-EXPORT_SYMBOL_GPL(dsa_port_phylink_mac_an_restart);
+ 
+-void dsa_port_phylink_mac_link_down(struct phylink_config *config,
+-				    unsigned int mode,
+-				    phy_interface_t interface)
++static void dsa_port_phylink_mac_link_down(struct phylink_config *config,
++					   unsigned int mode,
++					   phy_interface_t interface)
+ {
+ 	struct dsa_port *dp = container_of(config, struct dsa_port, pl_config);
+ 	struct phy_device *phydev = NULL;
+@@ -491,12 +487,11 @@ void dsa_port_phylink_mac_link_down(struct phylink_config *config,
+ 
+ 	ds->ops->phylink_mac_link_down(ds, dp->index, mode, interface);
+ }
+-EXPORT_SYMBOL_GPL(dsa_port_phylink_mac_link_down);
+ 
+-void dsa_port_phylink_mac_link_up(struct phylink_config *config,
+-				  unsigned int mode,
+-				  phy_interface_t interface,
+-				  struct phy_device *phydev)
++static void dsa_port_phylink_mac_link_up(struct phylink_config *config,
++					 unsigned int mode,
++					 phy_interface_t interface,
++					 struct phy_device *phydev)
+ {
+ 	struct dsa_port *dp = container_of(config, struct dsa_port, pl_config);
+ 	struct dsa_switch *ds = dp->ds;
+@@ -509,7 +504,6 @@ void dsa_port_phylink_mac_link_up(struct phylink_config *config,
+ 
+ 	ds->ops->phylink_mac_link_up(ds, dp->index, mode, interface, phydev);
+ }
+-EXPORT_SYMBOL_GPL(dsa_port_phylink_mac_link_up);
+ 
+ const struct phylink_mac_ops dsa_port_phylink_mac_ops = {
+ 	.validate = dsa_port_phylink_validate,
+-- 
+2.17.1
+
