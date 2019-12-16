@@ -2,85 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 12E21120608
-	for <lists+netdev@lfdr.de>; Mon, 16 Dec 2019 13:43:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 814BB12060A
+	for <lists+netdev@lfdr.de>; Mon, 16 Dec 2019 13:43:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727681AbfLPMnZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Dec 2019 07:43:25 -0500
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:50400 "EHLO
-        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727599AbfLPMnZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Dec 2019 07:43:25 -0500
-Received: by mail-wm1-f65.google.com with SMTP id a5so6566036wmb.0;
-        Mon, 16 Dec 2019 04:43:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Qr2ZAlkjX9hK9BD8ch3tnUVNPovTQcCLq7rKgec9jZI=;
-        b=DFOGEvKSljXP+xUoZlMilinfyWz1/V0mrK0zMC4Ybvs+eOUhtBZgEv3ny8f7ye6qC3
-         j2ovNRmw/NJVxtU8yyZe1mNterCuF6WUYjBihdCCAfNWpX4i8lBvFGzqrfImYO6SIif+
-         31z7kI7pbfpsS3DyLjl7/hPMJNOnITtxDiEL+ETP7myTtarx9KQVmN2/gvGT8nHf589w
-         vh6P6taoWMUUr84NPVyST+10UcxAaLTljW22eLvoWDZ20h4aHFZ1pCsRT+3kpKfxH/Ra
-         FXU3gE2N4EurQSIMKhFTE3u5q7DbOBd9rl34ObYXr63DQrQIDNfUfEuVkNBEcFlnZgZr
-         Oukg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Qr2ZAlkjX9hK9BD8ch3tnUVNPovTQcCLq7rKgec9jZI=;
-        b=Ys69xvxRbAOQfg1IWW+dOToPlfewD58BBQIdVixp/RrCTyTYIW6QHmMJVQyPc/HB6G
-         S7fGDwBo3s9/tlPBSYKKD5XqrCVwTduS8q4wwIuLLsvL3+iB7Uy6cVDx8Qr24m5WkXc9
-         CrpWcCLw9gAu1893FSrYWLN/sJ+rhm3usfLa9JOZWzCWpfiJwWyK6PX1pOiz7XhvRap0
-         X/mbzqFUBBFpaZhD1xAg6MlphA7Cs3kchpPgtSoV6B0dKBDFeXuRktvJxoknYTrqPGmQ
-         ejXnGMcnoZzbjiMnyNpHnuE2HYlzDI11B6qmNohjsdAsmt98MRdyj+TtMk18dkhLSIVO
-         cGDg==
-X-Gm-Message-State: APjAAAUdOt8TuyMYMPnpYU2F537xl628jzv2koPaMaFzllQOIkLr/qvU
-        ecM9XGSvqKUjLA6BpXfCSg==
-X-Google-Smtp-Source: APXvYqw9olDC6f/LpWJY4r+0PjsxH4SSOEyGDyRZEgEkwex24rlbEYe72uxvFjymCRcC11l/WCdghA==
-X-Received: by 2002:a1c:3141:: with SMTP id x62mr29335434wmx.18.1576500202839;
-        Mon, 16 Dec 2019 04:43:22 -0800 (PST)
-Received: from ninjahub.lan (host-92-15-174-53.as43234.net. [92.15.174.53])
-        by smtp.googlemail.com with ESMTPSA id t12sm20537323wrs.96.2019.12.16.04.43.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 Dec 2019 04:43:22 -0800 (PST)
-From:   Jules Irenge <jbi.octave@gmail.com>
-To:     bokun.feng@gmail.com
-Cc:     ast@kernel.org, daniel@iogearbox.net, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Jules Irenge <jbi.octave@gmail.com>
-Subject: [RESEND PATCH] kernel: bpf: add releases() annotation
-Date:   Mon, 16 Dec 2019 12:42:39 +0000
-Message-Id: <20191216124239.19180-1-jbi.octave@gmail.com>
-X-Mailer: git-send-email 2.23.0
+        id S1727630AbfLPMnv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Dec 2019 07:43:51 -0500
+Received: from www62.your-server.de ([213.133.104.62]:38874 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727553AbfLPMnv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Dec 2019 07:43:51 -0500
+Received: from [2001:1620:665:0:5795:5b0a:e5d5:5944] (helo=localhost)
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1igpj1-00078Z-Ux; Mon, 16 Dec 2019 13:43:48 +0100
+Date:   Mon, 16 Dec 2019 13:43:47 +0100
+From:   Daniel Borkmann <daniel@iogearbox.net>
+To:     Andrii Nakryiko <andriin@fb.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@fb.com,
+        andrii.nakryiko@gmail.com, kernel-team@fb.com
+Subject: Re: [PATCH v4 bpf-next 2/4] libbpf: support libbpf-provided extern
+ variables
+Message-ID: <20191216124347.GB14887@linux.fritz.box>
+References: <20191214014710.3449601-1-andriin@fb.com>
+ <20191214014710.3449601-3-andriin@fb.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191214014710.3449601-3-andriin@fb.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.101.4/25665/Mon Dec 16 10:52:23 2019)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add sparse annotation to remove issue detected by sparse tool.
-warning: context imbalance in __bpf_prog_exit - unexpected unlock
+On Fri, Dec 13, 2019 at 05:47:08PM -0800, Andrii Nakryiko wrote:
+[...]
+> Config file itself is searched in /boot/config-$(uname -r) location with
+> fallback to /proc/config.gz, unless config path is specified explicitly
+> through bpf_object_open_opts' kernel_config_path option. Both gzipped and
+> plain text formats are supported. Libbpf adds explicit dependency on zlib
+> because of this, but this shouldn't be a problem, given libelf already depends
+> on zlib.
 
-Signed-off-by: Jules Irenge <jbi.octave@gmail.com>
----
- kernel/bpf/trampoline.c | 1 +
- 1 file changed, 1 insertion(+)
+Hm, given this seems to break the build and is not an essential feature,
+can't we use the feature detection from tooling infra which you invoke
+anyway to compile out bpf_object__read_kernel_config() internals and return
+an error there? Build could warn perf-style what won't be available for
+the user in that case.
 
-diff --git a/kernel/bpf/trampoline.c b/kernel/bpf/trampoline.c
-index 7e89f1f49d77..fb43b7a57e38 100644
---- a/kernel/bpf/trampoline.c
-+++ b/kernel/bpf/trampoline.c
-@@ -213,6 +213,7 @@ u64 notrace __bpf_prog_enter(void)
- }
- 
- void notrace __bpf_prog_exit(struct bpf_prog *prog, u64 start)
-+	__releases(RCU)
- {
- 	struct bpf_prog_stats *stats;
- 
--- 
-2.23.0
+https://patchwork.ozlabs.org/patch/1210213/
 
+Also, does libbpf.pc.template need updating wrt zlib?
