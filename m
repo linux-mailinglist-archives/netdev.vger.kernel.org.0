@@ -2,128 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B9B5C12100F
-	for <lists+netdev@lfdr.de>; Mon, 16 Dec 2019 17:49:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1CBEB12101A
+	for <lists+netdev@lfdr.de>; Mon, 16 Dec 2019 17:52:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726725AbfLPQtH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Dec 2019 11:49:07 -0500
-Received: from www62.your-server.de ([213.133.104.62]:50678 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726320AbfLPQtH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Dec 2019 11:49:07 -0500
-Received: from [2001:1620:665:0:5795:5b0a:e5d5:5944] (helo=localhost)
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1igtYP-0004nd-2W; Mon, 16 Dec 2019 17:49:05 +0100
-From:   Daniel Borkmann <daniel@iogearbox.net>
-To:     alexei.starovoitov@gmail.com
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Daniel Borkmann <daniel@iogearbox.net>
-Subject: [PATCH bpf] bpf: fix missing prog untrack in release_maps
-Date:   Mon, 16 Dec 2019 17:49:00 +0100
-Message-Id: <1c2909484ca524ae9f55109b06f22b6213e76376.1576514756.git.daniel@iogearbox.net>
-X-Mailer: git-send-email 2.21.0
+        id S1726320AbfLPQvG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Dec 2019 11:51:06 -0500
+Received: from mail-qt1-f195.google.com ([209.85.160.195]:45794 "EHLO
+        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725805AbfLPQvF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Dec 2019 11:51:05 -0500
+Received: by mail-qt1-f195.google.com with SMTP id l12so6268842qtq.12;
+        Mon, 16 Dec 2019 08:51:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:message-id:from:to:cc:subject:in-reply-to:references
+         :mime-version:content-disposition:content-transfer-encoding;
+        bh=W4O6k67GfjEXcryRt2BFpux0k7KGkAzksxyGgmCZObI=;
+        b=WkwOuyKnh0BhjsoRSwFvRhyT1WaVvJkcZqYxEpSDAVi3J3jIrqy7j/7xlyv6VCXRGt
+         3wwfk6pFKaqZ3U2Z/KxGtAYlizFb9mpmyopREGI+wLBVlSAXMPlOuumSIuuPwbdegamS
+         0Tunu0zfoL9n9pvKN1twtQHXPDs4Z79Bw8EShQC/yDuNv46VNYEeHWWXwQcd7dQ8y87k
+         WbNxAeqlxgAvsQ6JDHehwefju1x76YPgyF7fwLR1yl3jqLRSONSepfSWXtDpR8OEcKpd
+         b+k4+ouvh6f7e+dHrlbAMBospmbr0n1A9OFjLVLmto+vXaH37ZyHFe/Y8Dr1AI/aNf/k
+         bQpA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:message-id:from:to:cc:subject:in-reply-to
+         :references:mime-version:content-disposition
+         :content-transfer-encoding;
+        bh=W4O6k67GfjEXcryRt2BFpux0k7KGkAzksxyGgmCZObI=;
+        b=TXPjzRRr1v6uVp288Yjrf8wzDURXE0HWjbBhWPtgZhz6WgFyW8brlh0xQcpp/UueDV
+         RDtgjUavYpj9xWpaUnUMi+cnrNGQbMGIz+T/LPqn7FC3CAEILTijgdRMGii1zI5VOrnL
+         P5SPiBs8meWmln5SYq2PaSmiMxTuf9cv3igHg9OWgCRG/ipL1wtdAlXD80osRHfiGNYh
+         wTqUaAc6bdcRpurDjdKnaJ62WMhfYud7k9PHBsCQTWqiCUrXF4XVEB1pDgPl/HStS7KL
+         QbhFkP0ri1xbGZ2Zk4I2qFOOnXBgfcB3+T/bJ6JhvtmEWkP/bHrNlfEEIFCqc5275Wv+
+         1kcA==
+X-Gm-Message-State: APjAAAUwnHQzoq5EHxoa/GV5UHre1xF2LDcmZTsk5IkSwaaRZk1sZGql
+        AqYsnF+xk06whuiN/A+ekII=
+X-Google-Smtp-Source: APXvYqy6tZPu2WmGWY9idlGNMroe5J64lIFHSkS5SMk8g1WTtdP61Exq4/UAlvvkbagvetYBkxYoaw==
+X-Received: by 2002:ac8:7586:: with SMTP id s6mr105053qtq.309.1576515064844;
+        Mon, 16 Dec 2019 08:51:04 -0800 (PST)
+Received: from localhost (modemcable249.105-163-184.mc.videotron.ca. [184.163.105.249])
+        by smtp.gmail.com with ESMTPSA id b3sm7102789qtr.86.2019.12.16.08.51.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 16 Dec 2019 08:51:04 -0800 (PST)
+Date:   Mon, 16 Dec 2019 11:51:03 -0500
+Message-ID: <20191216115103.GD2051941@t480s.localdomain>
+From:   Vivien Didelot <vivien.didelot@gmail.com>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     Andrew Lunn <andrew@lunn.ch>, Chris Snook <chris.snook@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        James Hogan <jhogan@kernel.org>,
+        Jay Cliburn <jcliburn@gmail.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Paul Burton <paul.burton@mips.com>,
+        Ralf Baechle <ralf@linux-mips.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Oleksij Rempel <o.rempel@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-mips@vger.kernel.org, Russell King <linux@armlinux.org.uk>
+Subject: Re: [PATCH v5 4/5] net: dsa: add support for Atheros AR9331 TAG
+ format
+In-Reply-To: <20191216074403.313-5-o.rempel@pengutronix.de>
+References: <20191216074403.313-1-o.rempel@pengutronix.de>
+ <20191216074403.313-5-o.rempel@pengutronix.de>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.101.4/25665/Mon Dec 16 10:52:23 2019)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit da765a2f5993 ("bpf: Add poke dependency tracking for prog array
-maps") wrongly assumed that in case of prog load errors, we're cleaning
-up all program tracking via bpf_free_used_maps().
+On Mon, 16 Dec 2019 08:44:02 +0100, Oleksij Rempel <o.rempel@pengutronix.de> wrote:
+> Add support for tag format used in Atheros AR9331 built-in switch.
+> 
+> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 
-However, it can happen that we're still at the point where we didn't copy
-map pointers into the prog's aux section such that env->prog->aux->used_maps
-is still zero, running into a UAF. In such case, the verifier has similar
-release_maps() helper that drops references to used maps from its env.
-
-Consolidate the release code into __bpf_free_used_maps() and call it from
-all sides to fix it.
-
-Fixes: da765a2f5993 ("bpf: Add poke dependency tracking for prog array maps")
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
----
- include/linux/bpf.h   |  2 ++
- kernel/bpf/core.c     | 14 ++++++++++----
- kernel/bpf/verifier.c | 14 ++------------
- 3 files changed, 14 insertions(+), 16 deletions(-)
-
-diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-index ac7de5291509..085a59afba85 100644
---- a/include/linux/bpf.h
-+++ b/include/linux/bpf.h
-@@ -818,6 +818,8 @@ struct bpf_prog * __must_check bpf_prog_inc_not_zero(struct bpf_prog *prog);
- void bpf_prog_put(struct bpf_prog *prog);
- int __bpf_prog_charge(struct user_struct *user, u32 pages);
- void __bpf_prog_uncharge(struct user_struct *user, u32 pages);
-+void __bpf_free_used_maps(struct bpf_prog_aux *aux,
-+			  struct bpf_map **used_maps, u32 len);
- 
- void bpf_prog_free_id(struct bpf_prog *prog, bool do_idr_lock);
- void bpf_map_free_id(struct bpf_map *map, bool do_idr_lock);
-diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
-index 49e32acad7d8..6231858df723 100644
---- a/kernel/bpf/core.c
-+++ b/kernel/bpf/core.c
-@@ -2048,18 +2048,24 @@ static void bpf_free_cgroup_storage(struct bpf_prog_aux *aux)
- 	}
- }
- 
--static void bpf_free_used_maps(struct bpf_prog_aux *aux)
-+void __bpf_free_used_maps(struct bpf_prog_aux *aux,
-+			  struct bpf_map **used_maps, u32 len)
- {
- 	struct bpf_map *map;
--	int i;
-+	u32 i;
- 
- 	bpf_free_cgroup_storage(aux);
--	for (i = 0; i < aux->used_map_cnt; i++) {
--		map = aux->used_maps[i];
-+	for (i = 0; i < len; i++) {
-+		map = used_maps[i];
- 		if (map->ops->map_poke_untrack)
- 			map->ops->map_poke_untrack(map, aux);
- 		bpf_map_put(map);
- 	}
-+}
-+
-+static void bpf_free_used_maps(struct bpf_prog_aux *aux)
-+{
-+	__bpf_free_used_maps(aux, aux->used_maps, aux->used_map_cnt);
- 	kfree(aux->used_maps);
- }
- 
-diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-index 034ef81f935b..a1acdce77070 100644
---- a/kernel/bpf/verifier.c
-+++ b/kernel/bpf/verifier.c
-@@ -8298,18 +8298,8 @@ static int replace_map_fd_with_map_ptr(struct bpf_verifier_env *env)
- /* drop refcnt of maps used by the rejected program */
- static void release_maps(struct bpf_verifier_env *env)
- {
--	enum bpf_cgroup_storage_type stype;
--	int i;
--
--	for_each_cgroup_storage_type(stype) {
--		if (!env->prog->aux->cgroup_storage[stype])
--			continue;
--		bpf_cgroup_storage_release(env->prog,
--			env->prog->aux->cgroup_storage[stype]);
--	}
--
--	for (i = 0; i < env->used_map_cnt; i++)
--		bpf_map_put(env->used_maps[i]);
-+	__bpf_free_used_maps(env->prog->aux, env->used_maps,
-+			     env->used_map_cnt);
- }
- 
- /* convert pseudo BPF_LD_IMM64 into generic BPF_LD_IMM64 */
--- 
-2.21.0
-
+Reviewed-by: Vivien Didelot <vivien.didelot@gmail.com>
