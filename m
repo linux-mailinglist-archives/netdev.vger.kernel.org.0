@@ -2,199 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 620771216FB
-	for <lists+netdev@lfdr.de>; Mon, 16 Dec 2019 19:34:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6CBAA1216F9
+	for <lists+netdev@lfdr.de>; Mon, 16 Dec 2019 19:34:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730760AbfLPSdC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Dec 2019 13:33:02 -0500
-Received: from mail-pl1-f196.google.com ([209.85.214.196]:35069 "EHLO
-        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729722AbfLPScx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Dec 2019 13:32:53 -0500
-Received: by mail-pl1-f196.google.com with SMTP id g6so2230016plt.2;
-        Mon, 16 Dec 2019 10:32:53 -0800 (PST)
+        id S1730664AbfLPSdA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Dec 2019 13:33:00 -0500
+Received: from mail-pg1-f169.google.com ([209.85.215.169]:41080 "EHLO
+        mail-pg1-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729110AbfLPSc7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Dec 2019 13:32:59 -0500
+Received: by mail-pg1-f169.google.com with SMTP id x8so4185542pgk.8
+        for <netdev@vger.kernel.org>; Mon, 16 Dec 2019 10:32:59 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=o91fzN2Y/X2pYVVbNINyzWcNsMLhEgfMww7nvU4ja1A=;
-        b=LpTHnZdl+8KeCrOr2LCUVbjlt3LBBk3CS0fa+Uggxd3ak34a+nrJ7TqU1TTPhwxuKO
-         23piv+guYTxrglZcCE9VkkQP0OlBxofzBz8b/9dT51GuRbxOtfI6N2Rt483HAx8w5UyP
-         BClgt6tnFVPd3ODWYxhGnakclB9vjfEk1Z71vtbI0h8TpgSe7NqddxvjRksNg7/8ROP3
-         zErmTtDaXDJCa1+Dhse/2yZt2L+lZKNbqkz8j5oHvDsNlUE7rXNVk1CrDFPUhCodGoSC
-         SIM0EiI1SFRfYh/X5DUr4PZHmBLwyLMsZYyy1k0S8rNl1XH2QVtQ724gQ8aL97GOrL1/
-         dWNA==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=AE2V3ALFgXnuM4KH/ZGtq5/DYxigrAH1uDhREjWEoI8=;
+        b=ga7HUHAX1h4QE3PP6mqth/a/7nM8xOS7P58LS+Vr6bsAetaqL0FSKJtf28oL6P4Fl1
+         hq7A3CV5a12ogublSXIppg0lWBlBJvSexXtbKO7E5bxl1mn1kWbq5IWm7gwqd1aSHe22
+         ZZABhwTOBJ9xx3xL6Eui5eVxu6NEvPVaIpIan6fmDKk5L72eYrHRc/G2oiZn65F91xVn
+         5n68sKMxnFxL/L6d0oriN/oQ8foRY2oZDaKcDYTwx5Tp1NjB1J7h1A/Oy7ZHa2mLJp9x
+         2WSUEu6FahP6US6GQ0hAUGCaFceEG7ECWJ+vJni75wenv6V5x+EmtpwOHDsvACSTFYKO
+         U/dQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=o91fzN2Y/X2pYVVbNINyzWcNsMLhEgfMww7nvU4ja1A=;
-        b=l8LRoJlI6KysE78wUnYXAliJu4lCopF/owZs4q4OXzJckDsQMS9hNAC+sdS4a0WZ6v
-         s45LLLZt+DBOh8vYT4X0bn1SqlRq5wMBZWCaKGcTmVKzcme841OT5gHXglOZN+oZZbzo
-         aiNBcKU122wM2JSsIrg9/eSz9+J4gu3yObkaWO50aJLtv1MxA5drfGt7kAg8+UwzChF7
-         OtuDa57FxXklWexfiII/QO2AAUu+XlqTjOqdTk4ZEkjwJ8/9JgGokft7lfqaBRUWho0w
-         /LFQg6F5BKpuFX2OSZ2I/yoaknkWvOAFqXujH/LAGORWepE1tbbUPAgiZxPAG37nrdTP
-         dGzg==
-X-Gm-Message-State: APjAAAWfahXm0+NZihFsoJnZUMobGKiiP/1vinxgWQXMIJBiIA3liEJj
-        bh8Q1+pJBH2HtLn1BDBXGxKau051
-X-Google-Smtp-Source: APXvYqy16E6kEH55xOzJzxaSnsNjzeH6MnSuTTQdSvurBwtB8/c1RsDKm42kYkycQUJJFDs41GK+IQ==
-X-Received: by 2002:a17:902:8641:: with SMTP id y1mr17629802plt.110.1576521172472;
-        Mon, 16 Dec 2019 10:32:52 -0800 (PST)
-Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id s18sm23945761pfs.20.2019.12.16.10.32.51
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=AE2V3ALFgXnuM4KH/ZGtq5/DYxigrAH1uDhREjWEoI8=;
+        b=ex+hf8R0d1iyfsBLWMgc+ZshwpOpenTqZbLT0NwwtNPB6X+MrofYVuS/DB0pv4YL5N
+         uYLkYajuWBW0vf65rOlB7b63NTpqxiRetm0fI+f/2Zt7y1NKKAGZbadV5q1Jcz7i3mBY
+         0DUWQtIbdwexoFsAeZtLn/Y8YzC6oVPVYNmKYDa99HxoEHdZJmSHYMikSaxg0Zby+d39
+         V1x8Z4ciP2Pz7qJh9LltjZj1fdooHcgATAUjcrYwbZ9MWELtOG0CFv9RY/xRPA11QAhO
+         tHVbKUS+4Zu2tb1i3Xn8LmssOvFQFkw6wnc5ckthr9U3DHWW3fHeQmZyeEkFvMzM7Nc4
+         rMJg==
+X-Gm-Message-State: APjAAAUslIW9NOdy0Q+1VFL1Ob6AR+59XWYy+KJIPwOOEFLGvPqlkzzp
+        65CcmjWpSWbmclopqdmw37Y3kXDC
+X-Google-Smtp-Source: APXvYqzpm1tO/KgYTN/EtAsqiBpvTyeVLZuhDUZVaWNPrNhULgxQYSeE4m5xdH5y7ceHy+W7yGStFg==
+X-Received: by 2002:a63:7705:: with SMTP id s5mr19621109pgc.379.1576521178970;
+        Mon, 16 Dec 2019 10:32:58 -0800 (PST)
+Received: from localhost.localdomain (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
+        by smtp.gmail.com with ESMTPSA id d65sm23400738pfa.159.2019.12.16.10.32.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 Dec 2019 10:32:51 -0800 (PST)
-From:   Florian Fainelli <f.fainelli@gmail.com>
+        Mon, 16 Dec 2019 10:32:58 -0800 (PST)
+From:   Richard Cochran <richardcochran@gmail.com>
 To:     netdev@vger.kernel.org
-Cc:     rmk+kernel@armlinux.org.uk, ioana.ciornei@nxp.com,
-        olteanv@gmail.com, jakub.kicinski@netronome.com,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Russell King <linux@armlinux.org.uk>,
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH net-next] net: dsa: Make PHYLINK related function static again
-Date:   Mon, 16 Dec 2019 10:32:47 -0800
-Message-Id: <20191216183248.16309-1-f.fainelli@gmail.com>
-X-Mailer: git-send-email 2.17.1
+Cc:     linux-arm-kernel@lists.infradead.org,
+        David Miller <davem@davemloft.net>,
+        Michal Simek <michal.simek@xilinx.com>,
+        Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
+Subject: [PATCH net-next 0/3] net: axienet: Fix random driver issues.
+Date:   Mon, 16 Dec 2019 10:32:53 -0800
+Message-Id: <cover.1576520432.git.richardcochran@gmail.com>
+X-Mailer: git-send-email 2.20.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit 77373d49de22 ("net: dsa: Move the phylink driver calls into
-port.c") moved and exported a bunch of symbols, but they are not used
-outside of net/dsa/port.c at the moment, so no reason to export them.
+While working on the PTP P2P 1-step series, my hardware under test
+just happened to be connected with an axienet MAC.  This series
+address three unrelated issues in the driver.
 
-Reported-by: Russell King <rmk+kernel@armlinux.org.uk>
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
----
- net/dsa/dsa_priv.h | 16 ----------------
- net/dsa/port.c     | 38 ++++++++++++++++----------------------
- 2 files changed, 16 insertions(+), 38 deletions(-)
+Thanks,
+Richard
 
-diff --git a/net/dsa/dsa_priv.h b/net/dsa/dsa_priv.h
-index 2dd86d9bcda9..09ea2fd78c74 100644
---- a/net/dsa/dsa_priv.h
-+++ b/net/dsa/dsa_priv.h
-@@ -150,22 +150,6 @@ int dsa_port_vid_add(struct dsa_port *dp, u16 vid, u16 flags);
- int dsa_port_vid_del(struct dsa_port *dp, u16 vid);
- int dsa_port_link_register_of(struct dsa_port *dp);
- void dsa_port_link_unregister_of(struct dsa_port *dp);
--void dsa_port_phylink_validate(struct phylink_config *config,
--			       unsigned long *supported,
--			       struct phylink_link_state *state);
--void dsa_port_phylink_mac_pcs_get_state(struct phylink_config *config,
--					struct phylink_link_state *state);
--void dsa_port_phylink_mac_config(struct phylink_config *config,
--				 unsigned int mode,
--				 const struct phylink_link_state *state);
--void dsa_port_phylink_mac_an_restart(struct phylink_config *config);
--void dsa_port_phylink_mac_link_down(struct phylink_config *config,
--				    unsigned int mode,
--				    phy_interface_t interface);
--void dsa_port_phylink_mac_link_up(struct phylink_config *config,
--				  unsigned int mode,
--				  phy_interface_t interface,
--				  struct phy_device *phydev);
- extern const struct phylink_mac_ops dsa_port_phylink_mac_ops;
- 
- /* slave.c */
-diff --git a/net/dsa/port.c b/net/dsa/port.c
-index 46ac9ba21987..ffb5601f7ed6 100644
---- a/net/dsa/port.c
-+++ b/net/dsa/port.c
-@@ -415,9 +415,9 @@ static struct phy_device *dsa_port_get_phy_device(struct dsa_port *dp)
- 	return phydev;
- }
- 
--void dsa_port_phylink_validate(struct phylink_config *config,
--			       unsigned long *supported,
--			       struct phylink_link_state *state)
-+static void dsa_port_phylink_validate(struct phylink_config *config,
-+				      unsigned long *supported,
-+				      struct phylink_link_state *state)
- {
- 	struct dsa_port *dp = container_of(config, struct dsa_port, pl_config);
- 	struct dsa_switch *ds = dp->ds;
-@@ -427,10 +427,9 @@ void dsa_port_phylink_validate(struct phylink_config *config,
- 
- 	ds->ops->phylink_validate(ds, dp->index, supported, state);
- }
--EXPORT_SYMBOL_GPL(dsa_port_phylink_validate);
- 
--void dsa_port_phylink_mac_pcs_get_state(struct phylink_config *config,
--					struct phylink_link_state *state)
-+static void dsa_port_phylink_mac_pcs_get_state(struct phylink_config *config,
-+					       struct phylink_link_state *state)
- {
- 	struct dsa_port *dp = container_of(config, struct dsa_port, pl_config);
- 	struct dsa_switch *ds = dp->ds;
-@@ -444,11 +443,10 @@ void dsa_port_phylink_mac_pcs_get_state(struct phylink_config *config,
- 	if (ds->ops->phylink_mac_link_state(ds, dp->index, state) < 0)
- 		state->link = 0;
- }
--EXPORT_SYMBOL_GPL(dsa_port_phylink_mac_pcs_get_state);
- 
--void dsa_port_phylink_mac_config(struct phylink_config *config,
--				 unsigned int mode,
--				 const struct phylink_link_state *state)
-+static void dsa_port_phylink_mac_config(struct phylink_config *config,
-+					unsigned int mode,
-+					const struct phylink_link_state *state)
- {
- 	struct dsa_port *dp = container_of(config, struct dsa_port, pl_config);
- 	struct dsa_switch *ds = dp->ds;
-@@ -458,9 +456,8 @@ void dsa_port_phylink_mac_config(struct phylink_config *config,
- 
- 	ds->ops->phylink_mac_config(ds, dp->index, mode, state);
- }
--EXPORT_SYMBOL_GPL(dsa_port_phylink_mac_config);
- 
--void dsa_port_phylink_mac_an_restart(struct phylink_config *config)
-+static void dsa_port_phylink_mac_an_restart(struct phylink_config *config)
- {
- 	struct dsa_port *dp = container_of(config, struct dsa_port, pl_config);
- 	struct dsa_switch *ds = dp->ds;
-@@ -470,11 +467,10 @@ void dsa_port_phylink_mac_an_restart(struct phylink_config *config)
- 
- 	ds->ops->phylink_mac_an_restart(ds, dp->index);
- }
--EXPORT_SYMBOL_GPL(dsa_port_phylink_mac_an_restart);
- 
--void dsa_port_phylink_mac_link_down(struct phylink_config *config,
--				    unsigned int mode,
--				    phy_interface_t interface)
-+static void dsa_port_phylink_mac_link_down(struct phylink_config *config,
-+					   unsigned int mode,
-+					   phy_interface_t interface)
- {
- 	struct dsa_port *dp = container_of(config, struct dsa_port, pl_config);
- 	struct phy_device *phydev = NULL;
-@@ -491,12 +487,11 @@ void dsa_port_phylink_mac_link_down(struct phylink_config *config,
- 
- 	ds->ops->phylink_mac_link_down(ds, dp->index, mode, interface);
- }
--EXPORT_SYMBOL_GPL(dsa_port_phylink_mac_link_down);
- 
--void dsa_port_phylink_mac_link_up(struct phylink_config *config,
--				  unsigned int mode,
--				  phy_interface_t interface,
--				  struct phy_device *phydev)
-+static void dsa_port_phylink_mac_link_up(struct phylink_config *config,
-+					 unsigned int mode,
-+					 phy_interface_t interface,
-+					 struct phy_device *phydev)
- {
- 	struct dsa_port *dp = container_of(config, struct dsa_port, pl_config);
- 	struct dsa_switch *ds = dp->ds;
-@@ -509,7 +504,6 @@ void dsa_port_phylink_mac_link_up(struct phylink_config *config,
- 
- 	ds->ops->phylink_mac_link_up(ds, dp->index, mode, interface, phydev);
- }
--EXPORT_SYMBOL_GPL(dsa_port_phylink_mac_link_up);
- 
- const struct phylink_mac_ops dsa_port_phylink_mac_ops = {
- 	.validate = dsa_port_phylink_validate,
+Richard Cochran (3):
+  net: axienet: Propagate registration errors during probe.
+  net: axienet: Support software transmit time stamping.
+  net: axienet: Pass ioctls to the phy.
+
+ .../net/ethernet/xilinx/xilinx_axienet_main.c | 32 ++++++++++++++++---
+ 1 file changed, 28 insertions(+), 4 deletions(-)
+
 -- 
-2.17.1
+2.20.1
 
