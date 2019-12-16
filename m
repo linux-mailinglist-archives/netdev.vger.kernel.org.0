@@ -2,130 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 93F6C12092A
-	for <lists+netdev@lfdr.de>; Mon, 16 Dec 2019 16:00:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C079712092E
+	for <lists+netdev@lfdr.de>; Mon, 16 Dec 2019 16:01:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728265AbfLPPA3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Dec 2019 10:00:29 -0500
-Received: from www62.your-server.de ([213.133.104.62]:48358 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728190AbfLPPA3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Dec 2019 10:00:29 -0500
-Received: from [2001:1620:665:0:5795:5b0a:e5d5:5944] (helo=localhost)
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1igrr8-0002xY-FX; Mon, 16 Dec 2019 16:00:18 +0100
-Date:   Mon, 16 Dec 2019 16:00:17 +0100
-From:   Daniel Borkmann <daniel@iogearbox.net>
-To:     syzbot <syzbot+9301f2f33873407d5b33@syzkaller.appspotmail.com>
-Cc:     andriin@fb.com, ast@kernel.org, bjorn.topel@intel.com,
-        bpf@vger.kernel.org, davem@davemloft.net, hawk@kernel.org,
-        jakub.kicinski@netronome.com, john.fastabend@gmail.com,
-        jonathan.lemon@gmail.com, kafai@fb.com,
-        linux-kernel@vger.kernel.org, magnus.karlsson@intel.com,
-        netdev@vger.kernel.org, songliubraving@fb.com,
-        syzkaller-bugs@googlegroups.com, yhs@fb.com
-Subject: Re: WARNING in wp_page_copy
-Message-ID: <20191216150017.GA27202@linux.fritz.box>
-References: <000000000000a6f2030598bbe38c@google.com>
- <0000000000000e32950599ac5a96@google.com>
+        id S1728202AbfLPPBR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Dec 2019 10:01:17 -0500
+Received: from mail-il1-f196.google.com ([209.85.166.196]:46618 "EHLO
+        mail-il1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728071AbfLPPBR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Dec 2019 10:01:17 -0500
+Received: by mail-il1-f196.google.com with SMTP id t17so5624770ilm.13;
+        Mon, 16 Dec 2019 07:01:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=Zn62EC+SRJNqnlXjqFaeTezjxELxXVZIr2BFFX93d7s=;
+        b=ts/OM7nMG2XyF61v+PSyB7rzRYD2//G6jvqO5r5ysBw9AnsK3+MeY8EuLYDcot1e/q
+         0RDkKUaRCUH9CBA79lbTJRUvBsyHDygqskpkqRvtmvjasx6PmRZnRgpI+g8C6z1N4DQe
+         SPyMhtRlniKzfN/kvz4hkqOsMA8Rr54mVeAsMdRK2KdxGW4H65fQGYob7CHUt+Q41Nfv
+         av5PtUx5qlJGDnAJ3q/ZUaJydJE8LKord5MBJhtRdUKPlyi9a/OsOU6EsmKREFym5xp7
+         qePYwQIWROpCUEAHXsIaogN2iP57zAYlvig62uqGNB8md5AZg0vCZWFVbFcUwO/+jjHX
+         oe+w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=Zn62EC+SRJNqnlXjqFaeTezjxELxXVZIr2BFFX93d7s=;
+        b=SlqM25wV0OprVpVeVq34j5pH1oblJz4ivUMW0OiIJsVbJkcnzgocQppC35oZXujjF7
+         tG1WhINsiI4UGLf6znxPrFYitZ1N3tg9CFXEBR1YLUFFbJSeac+rpTKiZOA+ksoc8hnn
+         g5lb7Smhyk/aOEVJriGUwUVArV3UAiBdqhk7Y6p6PCbzA8EW7JqQLy+Zxklyse6U3doP
+         ohkerFBqvmbL7B0Sfr3Fv3YWgiBOo3ys84h8FBgNR61eymmQKM9LSrun4TN0bwdx65V2
+         aOhGj0C6ZMHuSfXMKGfQysj5h4lJZkGs1iVq3e4wPrxwEYtWhHI/gHoMO5G0hdQODcqX
+         15EQ==
+X-Gm-Message-State: APjAAAWJSnXckgD6lOLnbLegS+U2B6bkkeamQ1QugZJX61gHgWxW95Ij
+        LtxSBFp/sBQ+kxLlspv473Q=
+X-Google-Smtp-Source: APXvYqxpEv++noZ9Rkk/ZXc5tQYObTgkWZ0UitIrJ+OJ5B7JFEPDDmVrNw3QkZg+QUg0nYqVuVr10g==
+X-Received: by 2002:a92:8b03:: with SMTP id i3mr12205907ild.7.1576508476311;
+        Mon, 16 Dec 2019 07:01:16 -0800 (PST)
+Received: from ?IPv6:2601:284:8202:10b0:6046:f5bd:4635:2d5b? ([2601:284:8202:10b0:6046:f5bd:4635:2d5b])
+        by smtp.googlemail.com with ESMTPSA id j17sm5909468ild.45.2019.12.16.07.01.15
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 16 Dec 2019 07:01:15 -0800 (PST)
+Subject: Re: [PATCH bpf-next] samples/bpf: Attach XDP programs in driver mode
+ by default
+To:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Jesper Dangaard Brouer <brouer@redhat.com>
+References: <20191216110742.364456-1-toke@redhat.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <71b7ba89-7780-8ce1-1b30-67ae6ebc214c@gmail.com>
+Date:   Mon, 16 Dec 2019 08:01:14 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0)
+ Gecko/20100101 Thunderbird/68.3.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <0000000000000e32950599ac5a96@google.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.101.4/25665/Mon Dec 16 10:52:23 2019)
+In-Reply-To: <20191216110742.364456-1-toke@redhat.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Dec 14, 2019 at 08:20:07AM -0800, syzbot wrote:
-> syzbot has found a reproducer for the following crash on:
+On 12/16/19 4:07 AM, Toke Høiland-Jørgensen wrote:
+> When attaching XDP programs, userspace can set flags to request the attach
+> mode (generic/SKB mode, driver mode or hw offloaded mode). If no such flags
+> are requested, the kernel will attempt to attach in driver mode, and then
+> silently fall back to SKB mode if this fails.
 > 
-> HEAD commit:    1d1997db Revert "nfp: abm: fix memory leak in nfp_abm_u32_..
-> git tree:       net-next
-> console output: https://syzkaller.appspot.com/x/log.txt?x=1029f851e00000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=cef1fd5032faee91
-> dashboard link: https://syzkaller.appspot.com/bug?extid=9301f2f33873407d5b33
-> compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=119d9fb1e00000
+> The silent fallback is a major source of user confusion, as users will try
+> to load a program on a device without XDP support, and instead of an error
+> they will get the silent fallback behaviour, not notice, and then wonder
+> why performance is not what they were expecting.
 > 
-> IMPORTANT: if you fix the bug, please add the following tag to the commit:
-> Reported-by: syzbot+9301f2f33873407d5b33@syzkaller.appspotmail.com
+> In an attempt to combat this, let's switch all the samples to default to
+> explicitly requesting driver-mode attach. As part of this, ensure that all
+> the userspace utilities have a switch to enable SKB mode. For those that
+> have a switch to request driver mode, keep it but turn it into a no-op.
+> 
+> Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
+> ---
+>  samples/bpf/xdp1_user.c             |  5 ++++-
+>  samples/bpf/xdp_adjust_tail_user.c  |  5 ++++-
+>  samples/bpf/xdp_fwd_user.c          | 17 ++++++++++++++---
+>  samples/bpf/xdp_redirect_cpu_user.c |  4 ++++
+>  samples/bpf/xdp_redirect_map_user.c |  5 ++++-
+>  samples/bpf/xdp_redirect_user.c     |  5 ++++-
+>  samples/bpf/xdp_router_ipv4_user.c  |  3 +++
+>  samples/bpf/xdp_rxq_info_user.c     |  4 ++++
+>  samples/bpf/xdp_sample_pkts_user.c  | 12 +++++++++---
+>  samples/bpf/xdp_tx_iptunnel_user.c  |  5 ++++-
+>  samples/bpf/xdpsock_user.c          |  5 ++++-
+>  11 files changed, 58 insertions(+), 12 deletions(-)
+> 
 
-Bjorn / Magnus, given xsk below, PTAL, thanks!
+Acked-by: David Ahern <dsahern@gmail.com>
 
-> ------------[ cut here ]------------
-> WARNING: CPU: 0 PID: 9104 at mm/memory.c:2229 cow_user_page mm/memory.c:2229
-> [inline]
-> WARNING: CPU: 0 PID: 9104 at mm/memory.c:2229 wp_page_copy+0x10b7/0x1560
-> mm/memory.c:2414
-> Kernel panic - not syncing: panic_on_warn set ...
-> CPU: 0 PID: 9104 Comm: syz-executor.0 Not tainted 5.5.0-rc1-syzkaller #0
-> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS
-> Google 01/01/2011
-> Call Trace:
->  __dump_stack lib/dump_stack.c:77 [inline]
->  dump_stack+0x197/0x210 lib/dump_stack.c:118
->  panic+0x2e3/0x75c kernel/panic.c:221
->  __warn.cold+0x2f/0x3e kernel/panic.c:582
->  report_bug+0x289/0x300 lib/bug.c:195
->  fixup_bug arch/x86/kernel/traps.c:174 [inline]
->  fixup_bug arch/x86/kernel/traps.c:169 [inline]
->  do_error_trap+0x11b/0x200 arch/x86/kernel/traps.c:267
->  do_invalid_op+0x37/0x50 arch/x86/kernel/traps.c:286
->  invalid_op+0x23/0x30 arch/x86/entry/entry_64.S:1027
-> RIP: 0010:cow_user_page mm/memory.c:2229 [inline]
-> RIP: 0010:wp_page_copy+0x10b7/0x1560 mm/memory.c:2414
-> Code: 4c 89 f7 ba 00 10 00 00 48 81 e6 00 f0 ff ff e8 0f e6 22 06 31 ff 41
-> 89 c7 89 c6 e8 23 03 d3 ff 45 85 ff 74 0f e8 99 01 d3 ff <0f> 0b 4c 89 f7 e8
-> 3f d8 22 06 e8 8a 01 d3 ff 65 4c 8b 34 25 c0 1e
-> RSP: 0018:ffffc90002267668 EFLAGS: 00010293
-> RAX: ffff8880a04c6140 RBX: ffffc90002267918 RCX: ffffffff81a22a0d
-> RDX: 0000000000000000 RSI: ffffffff81a22a17 RDI: 0000000000000005
-> RBP: ffffc900022677a8 R08: ffff8880a04c6140 R09: 0000000000000000
-> R10: ffffed101125cfff R11: ffff8880892e7fff R12: ffff88809e403108
-> R13: ffffea000224b9c0 R14: ffff8880892e7000 R15: 0000000000001000
->  do_wp_page+0x543/0x1540 mm/memory.c:2724
->  handle_pte_fault mm/memory.c:3961 [inline]
->  __handle_mm_fault+0x327b/0x3da0 mm/memory.c:4075
->  handle_mm_fault+0x3b2/0xa50 mm/memory.c:4112
->  do_user_addr_fault arch/x86/mm/fault.c:1441 [inline]
->  __do_page_fault+0x536/0xd80 arch/x86/mm/fault.c:1506
->  do_page_fault+0x38/0x590 arch/x86/mm/fault.c:1530
->  page_fault+0x39/0x40 arch/x86/entry/entry_64.S:1203
-> RIP: 0010:copy_user_generic_unrolled+0x89/0xc0
-> arch/x86/lib/copy_user_64.S:91
-> Code: 38 4c 89 47 20 4c 89 4f 28 4c 89 57 30 4c 89 5f 38 48 8d 76 40 48 8d
-> 7f 40 ff c9 75 b6 89 d1 83 e2 07 c1 e9 03 74 12 4c 8b 06 <4c> 89 07 48 8d 76
-> 08 48 8d 7f 08 ff c9 75 ee 21 d2 74 10 89 d1 8a
-> RSP: 0018:ffffc90002267bb8 EFLAGS: 00010206
-> RAX: 0000000000000001 RBX: 0000000000000018 RCX: 0000000000000003
-> RDX: 0000000000000000 RSI: ffffc90002267c58 RDI: 0000000020001300
-> RBP: ffffc90002267bf0 R08: 0000000000000000 R09: fffff5200044cf8e
-> R10: fffff5200044cf8d R11: ffffc90002267c6f R12: 0000000020001300
-> R13: ffffc90002267c58 R14: 0000000020001318 R15: 00007ffffffff000
->  copy_to_user include/linux/uaccess.h:152 [inline]
->  xsk_getsockopt+0x575/0x6c0 net/xdp/xsk.c:898
->  __sys_getsockopt+0x16d/0x310 net/socket.c:2174
->  __do_sys_getsockopt net/socket.c:2189 [inline]
->  __se_sys_getsockopt net/socket.c:2186 [inline]
->  __x64_sys_getsockopt+0xbe/0x150 net/socket.c:2186
->  do_syscall_64+0xfa/0x790 arch/x86/entry/common.c:294
->  entry_SYSCALL_64_after_hwframe+0x49/0xbe
-> RIP: 0033:0x45a909
-> Code: ad b6 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 89 f8 48 89 f7
-> 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff
-> 0f 83 7b b6 fb ff c3 66 2e 0f 1f 84 00 00 00 00
-> RSP: 002b:00007f0ec9e9ec78 EFLAGS: 00000246 ORIG_RAX: 0000000000000037
-> RAX: ffffffffffffffda RBX: 0000000000000005 RCX: 000000000045a909
-> RDX: 0000000000000007 RSI: 000000000000011b RDI: 000000000000000a
-> RBP: 000000000075bf20 R08: 0000000020000100 R09: 0000000000000000
-> R10: 0000000020001300 R11: 0000000000000246 R12: 00007f0ec9e9f6d4
-> R13: 00000000004c1ab5 R14: 00000000004d5f60 R15: 00000000ffffffff
-> Kernel Offset: disabled
-> Rebooting in 86400 seconds..
-> 
+Thanks for doing this, Toke.
+
