@@ -2,208 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 341141209AB
-	for <lists+netdev@lfdr.de>; Mon, 16 Dec 2019 16:28:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 821E31209C4
+	for <lists+netdev@lfdr.de>; Mon, 16 Dec 2019 16:33:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728443AbfLPP1w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Dec 2019 10:27:52 -0500
-Received: from us-smtp-1.mimecast.com ([205.139.110.61]:30076 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728392AbfLPP1v (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Dec 2019 10:27:51 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1576510069;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=p19K4nNZBjlA/2QraodRTLoohxP7l5DJnVKPrMnOfvs=;
-        b=GTWHr/mvq9pR1cCVSMEqUuUa5XGFc8wyPSXQSaH5aHjWmvO2qnLo9CuFjf2SPo1iEVulMM
-        HqPuTO0gkF7hqM8fEtVSxxSqOYzxyWt/qJCH3vzasYjfrMPue7Fl4nk/XJc+9YJICLYA6J
-        32D1dWB1J4mSBcCXXbiTZhq4dVGQP1Q=
-Received: from mail-lj1-f200.google.com (mail-lj1-f200.google.com
- [209.85.208.200]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-76-cqn18qJKPTmgaDZ103hUlg-1; Mon, 16 Dec 2019 10:27:47 -0500
-X-MC-Unique: cqn18qJKPTmgaDZ103hUlg-1
-Received: by mail-lj1-f200.google.com with SMTP id b12so2254836ljo.11
-        for <netdev@vger.kernel.org>; Mon, 16 Dec 2019 07:27:47 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=p19K4nNZBjlA/2QraodRTLoohxP7l5DJnVKPrMnOfvs=;
-        b=ZfIiq3vzzzku4yfrXQUzEppcaHDkZhCYM8HaEOAhs8YgDTBha1zvU6lTX0ippWUjZD
-         w6hYo3Or0MOELDGpYyWdr+0hwfGrm9naSTtWeq3HXiK78bVVEkrlr0/tg5lh7W+BxkM4
-         9SpQjIr6WKTlYaHaiCCfpIY+HFIjlky5fpe3skroycV8q8Pm1b0SpcH5kc5B0OCcrk5m
-         m++3VEYGaZHWGRrKgauhrc+YcTn580diBd7XhB7VXXK40vgQWayrPAJEVw2ZYF6GxWHW
-         I5ZU8WpO9Zh8eKz2tRVWGUJ78EbdpVIDvRX04hnLt/iV6QBLyKe5z3e32qJPdq6xImDT
-         8phg==
-X-Gm-Message-State: APjAAAXEZAyHpIslZoKz5DdKqB4YrGd+yQPh5aMha4ZMfxlvXoUfjO4m
-        UWeNFOVTaIa8GMgOxDE6hLOHb5pU48G+AbO1zO0IVlPUx/CxXL4+eQCMaq4AQLa9oV5ojof5k8F
-        xUvjQQ7VkpUy4Dt98
-X-Received: by 2002:a19:c205:: with SMTP id l5mr16808665lfc.159.1576510066037;
-        Mon, 16 Dec 2019 07:27:46 -0800 (PST)
-X-Google-Smtp-Source: APXvYqzm8TtaRzB4+6ef+vGk4EE5SHs2+z3xeqcnqxvHEW9SpJ2hw3TvrTJVZVPO1YB3qQuitDtLTA==
-X-Received: by 2002:a19:c205:: with SMTP id l5mr16808621lfc.159.1576510065288;
-        Mon, 16 Dec 2019 07:27:45 -0800 (PST)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id o20sm11033568ljc.35.2019.12.16.07.27.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 Dec 2019 07:27:44 -0800 (PST)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 9685D180960; Mon, 16 Dec 2019 16:27:43 +0100 (CET)
-From:   =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Cc:     =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Ido Schimmel <idosch@idosch.org>
-Subject: [RFC PATCH bpf-next] xdp: Add tracepoint on XDP program return
-Date:   Mon, 16 Dec 2019 16:27:15 +0100
-Message-Id: <20191216152715.711308-1-toke@redhat.com>
-X-Mailer: git-send-email 2.24.1
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        id S1728442AbfLPPck (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Dec 2019 10:32:40 -0500
+Received: from inva020.nxp.com ([92.121.34.13]:45474 "EHLO inva020.nxp.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728322AbfLPPck (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 16 Dec 2019 10:32:40 -0500
+Received: from inva020.nxp.com (localhost [127.0.0.1])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id B52E41A0B1E;
+        Mon, 16 Dec 2019 16:32:37 +0100 (CET)
+Received: from inva024.eu-rdc02.nxp.com (inva024.eu-rdc02.nxp.com [134.27.226.22])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id A91AA1A0A37;
+        Mon, 16 Dec 2019 16:32:37 +0100 (CET)
+Received: from fsr-ub1464-137.ea.freescale.net (fsr-ub1464-137.ea.freescale.net [10.171.82.114])
+        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id 7A964205D6;
+        Mon, 16 Dec 2019 16:32:37 +0100 (CET)
+From:   Ioana Ciornei <ioana.ciornei@nxp.com>
+To:     davem@davemloft.net, netdev@vger.kernel.org
+Cc:     Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Yangbo Lu <yangbo.lu@nxp.com>
+Subject: [PATCH net v2] dpaa2-ptp: fix double free of the ptp_qoriq IRQ
+Date:   Mon, 16 Dec 2019 17:32:30 +0200
+Message-Id: <1576510350-28660-1-git-send-email-ioana.ciornei@nxp.com>
+X-Mailer: git-send-email 1.9.1
+Reply-to: ioana.ciornei@nxp.com
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This adds a new tracepoint, xdp_prog_return, which is triggered at every
-XDP program return. This was first discussed back in August[0] as a way to
-hook XDP into the kernel drop_monitor framework, to have a one-stop place
-to find all packet drops in the system.
+Upon reusing the ptp_qoriq driver, the ptp_qoriq_free() function was
+used on the remove path to free any allocated resources.
+The ptp_qoriq IRQ is among these resources that are freed in
+ptp_qoriq_free() even though it is also a managed one (allocated using
+devm_request_threaded_irq).
 
-Because trace/events/xdp.h includes filter.h, some ifdef guarding is needed
-to be able to use the tracepoint from bpf_prog_run_xdp(). If anyone has any
-ideas for how to improve on this, please to speak up. Sending this RFC
-because of this issue, and to get some feedback from Ido on whether this
-tracepoint has enough data for drop_monitor usage.
+Drop the resource managed version of requesting the IRQ in order to not
+trigger a double free of the interrupt as below:
 
-[0] https://lore.kernel.org/netdev/20190809125418.GB2931@splinter/
+[  226.731005] Trying to free already-free IRQ 126
+[  226.735533] WARNING: CPU: 6 PID: 749 at kernel/irq/manage.c:1707
+__free_irq+0x9c/0x2b8
+[  226.743435] Modules linked in:
+[  226.746480] CPU: 6 PID: 749 Comm: bash Tainted: G        W
+5.4.0-03629-gfd7102c32b2c-dirty #912
+[  226.755857] Hardware name: NXP Layerscape LX2160ARDB (DT)
+[  226.761244] pstate: 40000085 (nZcv daIf -PAN -UAO)
+[  226.766022] pc : __free_irq+0x9c/0x2b8
+[  226.769758] lr : __free_irq+0x9c/0x2b8
+[  226.773493] sp : ffff8000125039f0
+(...)
+[  226.856275] Call trace:
+[  226.858710]  __free_irq+0x9c/0x2b8
+[  226.862098]  free_irq+0x30/0x70
+[  226.865229]  devm_irq_release+0x14/0x20
+[  226.869054]  release_nodes+0x1b0/0x220
+[  226.872790]  devres_release_all+0x34/0x50
+[  226.876790]  device_release_driver_internal+0x100/0x1c0
 
-Cc: Ido Schimmel <idosch@idosch.org>
-Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
+Fixes: d346c9e86d86 ("dpaa2-ptp: reuse ptp_qoriq driver")
+Cc: Yangbo Lu <yangbo.lu@nxp.com>
+Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
 ---
- include/linux/filter.h     | 22 +++++++++++++++++--
- include/trace/events/xdp.h | 45 ++++++++++++++++++++++++++++++++++++++
- kernel/bpf/core.c          |  2 ++
- 3 files changed, 67 insertions(+), 2 deletions(-)
+Changes in v2:
+ - change a goto err_free_mc_irq to err_free_threaded_irq
 
-diff --git a/include/linux/filter.h b/include/linux/filter.h
-index 37ac7025031d..f5e79171902f 100644
---- a/include/linux/filter.h
-+++ b/include/linux/filter.h
-@@ -704,19 +704,37 @@ static inline u32 bpf_prog_run_clear_cb(const struct bpf_prog *prog,
+ drivers/net/ethernet/freescale/dpaa2/dpaa2-ptp.c | 14 ++++++++------
+ 1 file changed, 8 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-ptp.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-ptp.c
+index a9503aea527f..6437fe6b9abf 100644
+--- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-ptp.c
++++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-ptp.c
+@@ -160,10 +160,10 @@ static int dpaa2_ptp_probe(struct fsl_mc_device *mc_dev)
+ 	irq = mc_dev->irqs[0];
+ 	ptp_qoriq->irq = irq->msi_desc->irq;
  
- DECLARE_BPF_DISPATCHER(bpf_dispatcher_xdp)
+-	err = devm_request_threaded_irq(dev, ptp_qoriq->irq, NULL,
+-					dpaa2_ptp_irq_handler_thread,
+-					IRQF_NO_SUSPEND | IRQF_ONESHOT,
+-					dev_name(dev), ptp_qoriq);
++	err = request_threaded_irq(ptp_qoriq->irq, NULL,
++				   dpaa2_ptp_irq_handler_thread,
++				   IRQF_NO_SUSPEND | IRQF_ONESHOT,
++				   dev_name(dev), ptp_qoriq);
+ 	if (err < 0) {
+ 		dev_err(dev, "devm_request_threaded_irq(): %d\n", err);
+ 		goto err_free_mc_irq;
+@@ -173,18 +173,20 @@ static int dpaa2_ptp_probe(struct fsl_mc_device *mc_dev)
+ 				   DPRTC_IRQ_INDEX, 1);
+ 	if (err < 0) {
+ 		dev_err(dev, "dprtc_set_irq_enable(): %d\n", err);
+-		goto err_free_mc_irq;
++		goto err_free_threaded_irq;
+ 	}
  
-+#if defined(_XDP_TRACE_DEF) || defined(_TRACE_XDP_H)
-+static void call_trace_xdp_prog_return(const struct xdp_buff *xdp,
-+				       const struct bpf_prog *prog,
-+				       u32 act);
-+#else
-+#ifndef _CALL_TRACE_XDP
-+#define _CALL_TRACE_XDP
-+static inline void call_trace_xdp_prog_return(const struct xdp_buff *xdp,
-+					      const struct bpf_prog *prog,
-+					      u32 act) {}
-+#endif
-+#endif
-+
- static __always_inline u32 bpf_prog_run_xdp(const struct bpf_prog *prog,
- 					    struct xdp_buff *xdp)
- {
-+	u32 ret;
-+
- 	/* Caller needs to hold rcu_read_lock() (!), otherwise program
- 	 * can be released while still running, or map elements could be
- 	 * freed early while still having concurrent users. XDP fastpath
- 	 * already takes rcu_read_lock() when fetching the program, so
- 	 * it's not necessary here anymore.
- 	 */
--	return __BPF_PROG_RUN(prog, xdp,
--			      BPF_DISPATCHER_FUNC(bpf_dispatcher_xdp));
-+	ret = __BPF_PROG_RUN(prog, xdp,
-+			     BPF_DISPATCHER_FUNC(bpf_dispatcher_xdp));
-+	call_trace_xdp_prog_return(xdp, prog, ret);
-+	return ret;
- }
+ 	err = ptp_qoriq_init(ptp_qoriq, base, &dpaa2_ptp_caps);
+ 	if (err)
+-		goto err_free_mc_irq;
++		goto err_free_threaded_irq;
  
-+
- void bpf_prog_change_xdp(struct bpf_prog *prev_prog, struct bpf_prog *prog);
+ 	dpaa2_phc_index = ptp_qoriq->phc_index;
+ 	dev_set_drvdata(dev, ptp_qoriq);
  
- static inline u32 bpf_prog_insn_size(const struct bpf_prog *prog)
-diff --git a/include/trace/events/xdp.h b/include/trace/events/xdp.h
-index a7378bcd9928..e64f4221bd2e 100644
---- a/include/trace/events/xdp.h
-+++ b/include/trace/events/xdp.h
-@@ -50,6 +50,51 @@ TRACE_EVENT(xdp_exception,
- 		  __entry->ifindex)
- );
+ 	return 0;
  
-+TRACE_EVENT(xdp_prog_return,
-+
-+	TP_PROTO(const struct xdp_buff *xdp,
-+		 const struct bpf_prog *pr, u32 act),
-+
-+	TP_ARGS(xdp, pr, act),
-+
-+	TP_STRUCT__entry(
-+		__field(int, prog_id)
-+		__field(u32, act)
-+		__field(int, ifindex)
-+		__field(int, queue_index)
-+		__field(const void *, data_addr)
-+		__field(unsigned int, data_len)
-+	),
-+
-+	TP_fast_assign(
-+		__entry->prog_id	= pr->aux->id;
-+		__entry->act		= act;
-+		__entry->ifindex	= xdp->rxq->dev->ifindex;
-+		__entry->queue_index	= xdp->rxq->queue_index;
-+		__entry->data_addr	= xdp->data;
-+		__entry->data_len	= (unsigned int)(xdp->data_end - xdp->data);
-+	),
-+
-+	TP_printk("prog_id=%d action=%s ifindex=%d queue_index=%d data_addr=%p data_len=%u",
-+		  __entry->prog_id,
-+		  __print_symbolic(__entry->act, __XDP_ACT_SYM_TAB),
-+		  __entry->ifindex,
-+		  __entry->queue_index,
-+		  __entry->data_addr,
-+		  __entry->data_len)
-+);
-+
-+#ifndef _CALL_TRACE_XDP
-+#define _CALL_TRACE_XDP
-+static inline void call_trace_xdp_prog_return(const struct xdp_buff *xdp,
-+					      const struct bpf_prog *prog,
-+					      u32 act)
-+{
-+	trace_xdp_prog_return(xdp, prog, act);
-+}
-+#endif
-+
-+
- TRACE_EVENT(xdp_bulk_tx,
- 
- 	TP_PROTO(const struct net_device *dev,
-diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
-index 2ff01a716128..a81d3b8d8e5c 100644
---- a/kernel/bpf/core.c
-+++ b/kernel/bpf/core.c
-@@ -17,6 +17,8 @@
-  * Kris Katterjohn - Added many additional checks in bpf_check_classic()
-  */
- 
-+#define _XDP_TRACE_DEF
-+
- #include <uapi/linux/btf.h>
- #include <linux/filter.h>
- #include <linux/skbuff.h>
++err_free_threaded_irq:
++	free_irq(ptp_qoriq->irq, ptp_qoriq);
+ err_free_mc_irq:
+ 	fsl_mc_free_irqs(mc_dev);
+ err_unmap:
 -- 
-2.24.1
+1.9.1
 
