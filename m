@@ -2,75 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5AF4F120FEA
-	for <lists+netdev@lfdr.de>; Mon, 16 Dec 2019 17:45:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ED1AC120FFA
+	for <lists+netdev@lfdr.de>; Mon, 16 Dec 2019 17:47:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726487AbfLPQpj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Dec 2019 11:45:39 -0500
-Received: from eu-smtp-delivery-151.mimecast.com ([207.82.80.151]:36493 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725805AbfLPQpj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Dec 2019 11:45:39 -0500
-Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- uk-mta-48-DDDIDTkbM2-IdtSXm6boZQ-1; Mon, 16 Dec 2019 16:45:36 +0000
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
- Server (TLS) id 15.0.1347.2; Mon, 16 Dec 2019 16:45:35 +0000
-Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
- AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
- Mon, 16 Dec 2019 16:45:35 +0000
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     =?utf-8?B?J0Jqw7ZybiBUw7ZwZWwn?= <bjorn.topel@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "ast@kernel.org" <ast@kernel.org>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>
-CC:     =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "magnus.karlsson@gmail.com" <magnus.karlsson@gmail.com>,
-        "magnus.karlsson@intel.com" <magnus.karlsson@intel.com>,
-        "jonathan.lemon@gmail.com" <jonathan.lemon@gmail.com>,
-        "ecree@solarflare.com" <ecree@solarflare.com>,
-        "thoiland@redhat.com" <thoiland@redhat.com>,
-        "brouer@redhat.com" <brouer@redhat.com>,
-        "andrii.nakryiko@gmail.com" <andrii.nakryiko@gmail.com>
-Subject: RE: [PATCH bpf-next v5 6/6] bpf, x86: align dispatcher branch targets
- to 16B
-Thread-Topic: [PATCH bpf-next v5 6/6] bpf, x86: align dispatcher branch
- targets to 16B
-Thread-Index: AQHVsd4ABA0oC/ymIkOBdFAQgZTG6qe8+uVQ
-Date:   Mon, 16 Dec 2019 16:45:35 +0000
-Message-ID: <1cb77c2dcfeb495c9e7c417edd7f43cc@AcuMS.aculab.com>
-References: <20191213175112.30208-1-bjorn.topel@gmail.com>
- <20191213175112.30208-7-bjorn.topel@gmail.com>
-In-Reply-To: <20191213175112.30208-7-bjorn.topel@gmail.com>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        id S1726663AbfLPQqz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Dec 2019 11:46:55 -0500
+Received: from mail-qt1-f193.google.com ([209.85.160.193]:45320 "EHLO
+        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726077AbfLPQqz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Dec 2019 11:46:55 -0500
+Received: by mail-qt1-f193.google.com with SMTP id l12so6257893qtq.12;
+        Mon, 16 Dec 2019 08:46:55 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:message-id:from:to:cc:subject:in-reply-to:references
+         :mime-version:content-disposition:content-transfer-encoding;
+        bh=FzQD5NeyjMYjn5GUzVnR8JJ9rnqQehngyUlXZ3ny/LA=;
+        b=myJNU0ohp9NClRjz5DPyP/dp+qDqj+ibPEywlbAAwBbLAxuOWcnhhD211Y9I9/oLfo
+         +yTrf/B9Bcg00ATyx4EfOmDBFF0HD/hJ1x/pO1N7gQoPnd8geBR4L9rtp682YVJW/if+
+         t5LWStvrt0Y9nADtYgyD+om75KE0EebaMp1EidTPi0AIAPchcJI6/mOYmnF0ifJ+y5M4
+         VKb1uDCQl9iwvLet2q2wnL5EDkb7yXhttv37C2iiC8vVTKhOD7j1MhR2odSpDh/BlR3d
+         I96b9vPzMJfRwrEshTT2he+9nE6VpFrtA46lksRWRuqR+rcUrlU+T8YYVZGA0yCnVN0l
+         GNFw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:message-id:from:to:cc:subject:in-reply-to
+         :references:mime-version:content-disposition
+         :content-transfer-encoding;
+        bh=FzQD5NeyjMYjn5GUzVnR8JJ9rnqQehngyUlXZ3ny/LA=;
+        b=jDlZmM31yBb/NlI7uhaUORkjEL9sCoPd1f7lE9uBRmpHJB5HWh1Sukk6Cac+E8iKBu
+         k3+njPqgPFL/OwjYgWCUwIl4a8mHH6rM2L7AsVm8rPreBTKLitjIiou41bzzXAiVfqo0
+         Gtt7jrvgePWm7N/wyRgUoJKttF3IhJNzN8LcE1k02O4w1TXZ8rG/SFip6sNAIF+3jQBh
+         2GUM6Flz3lLdfiwoVxQ678K8XAFVo53NuWntT5WvgqFlLrYOISiQzLSRTfUhgz0t4/qw
+         tPs9f6tOdsflPLByyAEdHCnmC5z1SI4Gz/A7yEtlxEvxY3hXuP0RTEoQgsnorYXiOXlT
+         7Mnw==
+X-Gm-Message-State: APjAAAWE/+KEdXBZg3x/dSgWCR/fWNpBK76OQJIHmwJaoE+8VKijG1fc
+        amRp2u5TT7PF6QHqFG2My33Dgm4H
+X-Google-Smtp-Source: APXvYqy1XW6mMY70H5xpe65grZb9SyDfhNylXXrGbRIx1KeEvN9RjkDcnnI02dp3HQHtwhyGu5E0/g==
+X-Received: by 2002:ac8:2d30:: with SMTP id n45mr98014qta.203.1576514814548;
+        Mon, 16 Dec 2019 08:46:54 -0800 (PST)
+Received: from localhost (modemcable249.105-163-184.mc.videotron.ca. [184.163.105.249])
+        by smtp.gmail.com with ESMTPSA id m20sm2627380qkk.15.2019.12.16.08.46.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 16 Dec 2019 08:46:53 -0800 (PST)
+Date:   Mon, 16 Dec 2019 11:46:52 -0500
+Message-ID: <20191216114652.GB2051941@t480s.localdomain>
+From:   Vivien Didelot <vivien.didelot@gmail.com>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     netdev@vger.kernel.org, Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        "David S. Miller" <davem@davemloft.net>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] net: dsa: b53: Fix egress flooding settings
+In-Reply-To: <20191213200027.20803-1-f.fainelli@gmail.com>
+References: <20191213200027.20803-1-f.fainelli@gmail.com>
 MIME-Version: 1.0
-X-MC-Unique: DDDIDTkbM2-IdtSXm6boZQ-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RnJvbTogQmrDtnJuIFTDtnBlbA0KPiBTZW50OiAxMyBEZWNlbWJlciAyMDE5IDE3OjUxDQo+IEZy
-b206IEJqw7ZybiBUw7ZwZWwgPGJqb3JuLnRvcGVsQGludGVsLmNvbT4NCj4gDQo+IEZyb20gSW50
-ZWwgNjQgYW5kIElBLTMyIEFyY2hpdGVjdHVyZXMgT3B0aW1pemF0aW9uIFJlZmVyZW5jZSBNYW51
-YWwsDQo+IDMuNC4xLjQgQ29kZSBBbGlnbm1lbnQsIEFzc2VtYmx5L0NvbXBpbGVyIENvZGluZyBS
-dWxlIDExOiBBbGwgYnJhbmNoDQo+IHRhcmdldHMgc2hvdWxkIGJlIDE2LWJ5dGUgYWxpZ25lZC4N
-Cj4gDQo+IFRoaXMgY29tbWl0cyBhbGlnbnMgYnJhbmNoIHRhcmdldHMgYWNjb3JkaW5nIHRvIHRo
-ZSBJbnRlbCBtYW51YWwuDQoNCkknZCBJZ25vcmUgdGhhdCBhZHZpY2UuLi4uDQpJdCBtYWtlcyB2
-ZXJ5IGxpdHRsZSBkaWZmZXJlbmNlLCBhbmQgbm9uZSBhdCBhbGwgb24gbW9yZSByZWNlbnQgY3B1
-Lg0KUmVhZCBodHRwczovL3d3dy5hZ25lci5vcmcvb3B0aW1pemUvbWljcm9hcmNoaXRlY3R1cmUu
-cGRmDQpUaGUgZXh0cmEgY2FjaGUgZm9vdHByaW50IHByb2JhYmx5IG1ha2VzIGEgYmlnZ2VyIGRp
-ZmZlcmVuY2UuDQoNCglEYXZpZA0KDQotDQpSZWdpc3RlcmVkIEFkZHJlc3MgTGFrZXNpZGUsIEJy
-YW1sZXkgUm9hZCwgTW91bnQgRmFybSwgTWlsdG9uIEtleW5lcywgTUsxIDFQVCwgVUsNClJlZ2lz
-dHJhdGlvbiBObzogMTM5NzM4NiAoV2FsZXMpDQo=
+On Fri, 13 Dec 2019 12:00:27 -0800, Florian Fainelli <f.fainelli@gmail.com> wrote:
+> There were several issues with 53568438e381 ("net: dsa: b53: Add support for port_egress_floods callback") that resulted in breaking connectivity for standalone ports:
+> 
+> - both user and CPU ports must allow unicast and multicast forwarding by
+>   default otherwise this just flat out breaks connectivity for
+>   standalone DSA ports
+> - IP multicast is treated similarly as multicast, but has separate
+>   control registers
+> - the UC, MC and IPMC lookup failure register offsets were wrong, and
+>   instead used bit values that are meaningful for the
+>   B53_IP_MULTICAST_CTRL register
+> 
+> Fixes: 53568438e381 ("net: dsa: b53: Add support for port_egress_floods callback")
+> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
 
+Reviewed-by: Vivien Didelot <vivien.didelot@gmail.com>
