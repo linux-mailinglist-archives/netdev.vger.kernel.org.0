@@ -2,122 +2,184 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9E9A212017B
-	for <lists+netdev@lfdr.de>; Mon, 16 Dec 2019 10:51:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1C0E412017E
+	for <lists+netdev@lfdr.de>; Mon, 16 Dec 2019 10:51:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727166AbfLPJvB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Dec 2019 04:51:01 -0500
-Received: from mout.web.de ([217.72.192.78]:41887 "EHLO mout.web.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726959AbfLPJvA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 16 Dec 2019 04:51:00 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
-        s=dbaedf251592; t=1576489847;
-        bh=FUer5ob7MCtjvag5eil5GrqlkSAE6mVJbS7PtyWTrtg=;
-        h=X-UI-Sender-Class:To:Cc:References:Subject:From:Date:In-Reply-To;
-        b=YpzzmwcyQWvfUEVs7QMOFzE3kha0DxoR3pPBpztI497TumZb/NzDYN1k37qbutUgE
-         v6XftzneJQFfV9m4zMH3+KdxpJnubpKrTwI1EBZpHuQCd4Yw81XiVV/j8WlFvYeQRg
-         EUns1F/sD64yYKsUA87W3EoYHeACMJBqsRKSnwpE=
-X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
-Received: from [192.168.1.3] ([78.48.181.202]) by smtp.web.de (mrweb101
- [213.165.67.124]) with ESMTPSA (Nemesis) id 0M5Oct-1hlvi40s4F-00zZIV; Mon, 16
- Dec 2019 10:50:47 +0100
-To:     Aditya Pakki <pakki001@umn.edu>, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Kalle Valo <kvalo@codeaurora.org>, Kangjie Lu <kjlu@umn.edu>
-References: <20191215195900.6109-1-pakki001@umn.edu>
-Subject: Re: [PATCH] orinoco: avoid assertion in case of NULL pointer
-From:   Markus Elfring <Markus.Elfring@web.de>
-Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
- 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 FEE=
-Message-ID: <180574a2-ec2f-cbe0-3458-02b5228db51e@web.de>
-Date:   Mon, 16 Dec 2019 10:50:45 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.3.0
+        id S1727198AbfLPJvV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Dec 2019 04:51:21 -0500
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:18726 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726992AbfLPJvV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Dec 2019 04:51:21 -0500
+Received: from pps.filterd (m0098393.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xBG9lNKJ041449
+        for <netdev@vger.kernel.org>; Mon, 16 Dec 2019 04:51:20 -0500
+Received: from e06smtp07.uk.ibm.com (e06smtp07.uk.ibm.com [195.75.94.103])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 2wwe35uwey-1
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Mon, 16 Dec 2019 04:51:19 -0500
+Received: from localhost
+        by e06smtp07.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
+        for <netdev@vger.kernel.org> from <wenjia@linux.ibm.com>;
+        Mon, 16 Dec 2019 09:51:17 -0000
+Received: from b06cxnps3074.portsmouth.uk.ibm.com (9.149.109.194)
+        by e06smtp07.uk.ibm.com (192.168.101.137) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
+        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
+        Mon, 16 Dec 2019 09:51:14 -0000
+Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
+        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id xBG9pDPI58982488
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 16 Dec 2019 09:51:13 GMT
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 9DD84AE055;
+        Mon, 16 Dec 2019 09:51:13 +0000 (GMT)
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 58C64AE056;
+        Mon, 16 Dec 2019 09:51:13 +0000 (GMT)
+Received: from [9.152.224.25] (unknown [9.152.224.25])
+        by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Mon, 16 Dec 2019 09:51:13 +0000 (GMT)
+Subject: Re: s390 EAGAIN on send{msg,to}()/recvmsg() on small MTU and big
+ packet size
+To:     Petr Vorel <pvorel@suse.cz>, linux-s390@vger.kernel.org
+Cc:     Michal Kubecek <mkubecek@suse.cz>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20190923152558.GA31182@dell5510>
+From:   Wenjia Zhang <wenjia@linux.ibm.com>
+Date:   Mon, 16 Dec 2019 10:51:13 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.1
 MIME-Version: 1.0
-In-Reply-To: <20191215195900.6109-1-pakki001@umn.edu>
+In-Reply-To: <20190923152558.GA31182@dell5510>
 Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
 Content-Language: en-US
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:rbNb/j4I4QA2q8r1n1v2kwPohwIWMgC6x0YCyZ+Q1OFzivnZZl3
- eM+Y4Od6z/SVJzQhMKoASjbqlFCpkwDB9sTo3ndyI74CbhelRbvkzlq4evgz8FFpkBFy39K
- Y6gcZi1zv8u5QHEPyBsHHLinmeQUUyD4l79Nmlv7TSVoBYsuarJCSP4wUF/YK/YjQCO5Vi/
- jI9bD3d2tgx9dDc5PZVfw==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:WqgRjg9WxEA=:UvHqcStWQbC+FCNvt30oCJ
- 0aL84rc+Buz/ykndmWlDVaBh9oflYH7jJfSGs7VE0SU/Szs+TNWB1jJj+mFG25aZfK247JmNO
- 4yOptYTflIp2mS/WRLyAJOmPFE1FIaU31d6TNRm7rCmKWv7o0npYY1JOC3lZlI5ljTCaRnHW1
- hqq5+q2yNlKBd7fuq+aArO+JexJzywuoxAmQbGk7CLdR+tvTTOsMP2IA4yC4PgNoIcnM8obQT
- 03DP3+wv4u+y+PI02NTP8/S+jKP3h0xkhv1/jgfHFdh1SPIpUBsVtFUJTnEDsvX9NNrO3n5nz
- N/Yt+tfoHmmMPZgZyQE5xSsmEFgJsqT5nELR+70eWzylRu0scA4FlKzwX7QgQS13iFjpRjwZ6
- eebC8KaiS92ATwMQnzEgkz03cjPk+Zpg2fQ0YX/3bWHn0mtuD8DM1Fh/WSVtHr5sk/yr8K7Iq
- glycqJn7WGrFmWTPvfpuEkkKyRke3BYjp4ijkoVT0Zj7tl6r5kDi15I3qXrArUczjZoearoj0
- s2eDDXlnLURozr+fFZgTEjqrBHQGPNBsR7BsZp+fZhJfJQ8kXvHx9pu2jggS+ur/y2mUKW9Us
- S1rHfiEF/ba6LM1B74fBAhUNbxtxsMRv/34eSwnl1JeuFq9pi7klPk/tFm+tw4LAMHAH2nrAQ
- onvdN2Ex7X96Hjq6GsK+ifMPY0JbTYKVALNFekUI4/64LI49sNRd371K9UbT1h0oRXLzWWsd6
- RcFFqBlDWt4SzJ5ceAdX8b+qb6vuifA2l/Md7hcubi/aFeYLQhCWVW85ukJ/zHfAaoN81Svlb
- jBJV5B4K1ZsXiEsgT2JWrupOlsTP7T/ESOyiXvlhLNenzo0PllaycLEnI7dpeYKeARdTtas2b
- z7VVHsSDf2zJKzdIos+TLxFdbhctyZdR3oaeaO8OyPvHgUK4+58oCn/dsSs+jScKnFay6Wco5
- b0McMpqvdevrbHZ7keU5PkHQwPBTULZev5/MEtozACdA4eCiyQX+U5xRSTo0uLGfGquCovJdy
- J8+HiF2aPp6IfWrQnNlLmC4ntUKMlpt+ia7VMr407FPNuZ8Wd5nbtBrQP6i1XDz3K0djT4ZWw
- p3+B6YOBbHacaCE30/WgUN1Q20AZHlVc5pY2ZAS7hd9ahMOft4leslcJMOo3m/vu+NZDQ0sQj
- 3CHh6DixUSFd3R9woM1eM947ZWEflsJ4ApbwpvnOytom9ZDNmnFnXWK01VMiLydU6+aQnvWYn
- Nv0XHVujz+lD8OlAiyubDRCb3c0aJbCon5NcKIXQH6Oo0BqXiAp874OLXf3c=
+X-TM-AS-GCONF: 00
+x-cbid: 19121609-0028-0000-0000-000003C90A39
+X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
+x-cbparentid: 19121609-0029-0000-0000-0000248C4D6D
+Message-Id: <ab8289e5-547c-5375-5d0f-e9a363005db1@linux.ibm.com>
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
+ definitions=2019-12-16_02:2019-12-16,2019-12-16 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ bulkscore=0 adultscore=0 lowpriorityscore=0 phishscore=0 spamscore=0
+ impostorscore=0 clxscore=1011 mlxlogscore=944 malwarescore=0 mlxscore=0
+ suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-1910280000 definitions=main-1912160088
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> The patch replaces the BUG_ON call to error return.
+Hi Petr,
 
-Would a wording like =E2=80=9CReplace the BUG_ON() call by a return of an =
-error code
-after a null pointer check=E2=80=9D be nicer for this change description?
+This is not really a bug on s390 but on general linux. A big IP packet is fragmented into small packets according to the MTU size.  Each small packet consumes an amount of system memory, which are recorded in ‘skb->truesize’. And the sum of the space all of the small packets need is limited by ‘2 * sk->sk_sndbuf’ (which you can find in '__ip_append_data' function in net/ipv4/ip_output.c), that is inherited from the system default set during socket initialization. The problem on s390 is that ‘skb->truesize’ is got by aligning the size of the data buffer to the L1 cache line (using SKB_DATA_ALIGN), which on s390 and only on s390 is 256 bytes, while on other processors less than or equal to 128 bytes. So the sum on s390 is much easier to exceed the limit, that the big packet can not be sent successfully.
+Because of the big cache line size on s390, the maximum size of the packet is limited in between 53816 and 64960, if the MTU is set to between 484 and 588.
+However, this problem not only occurs on s390, but also on some other processor e.g. x86. If the MTU is set to less than 340, an IP packet with the theoretical maximum size (65507 bytes) likewise can not be sent successfully.
 
-Will the tag =E2=80=9CFixes=E2=80=9D become helpful here?
+Best,              
 
-Regards,
-Markus
+Wenjia
+
+On 23/09/2019 17:25, Petr Vorel wrote:
+> Hi,
+>
+> I've found a bug on s390 on small MTU combined with big packet size, using ping
+> (of course both within valid ranges, e.g. MTU 552 and packet size 61245).
+>
+> Below is full reproducer on netns.
+>
+> I tested it on vanilla: v5.3-rc8 and v4.16.
+> I reproduced it on current iputils master which uses sendto()/recvmsg() and on
+> older version which uses sendmsg()/recvmsg().
+>
+> As I'm not aware of any s390 specific socket code in kernel I suspect big endian or something else.
+>
+> This bug was find with LTP/if-mtu-change.sh.
+>
+> REPRODUCER:
+> LTP_NS="ip netns exec ltp_ns"
+> ip net add ltp_ns
+> ip li add name ltp_ns_veth1 type veth peer name ltp_ns_veth2
+> ip li set dev ltp_ns_veth1 netns ltp_ns
+> $LTP_NS ip li set lo up
+>
+> ip xfrm policy flush
+> ip xfrm state flush
+> ip link set ltp_ns_veth2 down
+> ip route flush dev ltp_ns_veth2
+> ip addr flush dev ltp_ns_veth2
+> ip link set ltp_ns_veth2 up
+> ip addr add 10.0.0.2/24 dev ltp_ns_veth2
+>
+> $LTP_NS ip xfrm policy flush
+> $LTP_NS ip xfrm state flush
+> $LTP_NS ip link set ltp_ns_veth1 down
+> $LTP_NS ip route flush dev ltp_ns_veth1
+> $LTP_NS ip addr flush dev ltp_ns_veth1
+> $LTP_NS ip link set ltp_ns_veth1 up
+> $LTP_NS ip addr add 10.0.0.1/24 dev ltp_ns_veth1
+>
+> i=552; ip link set dev ltp_ns_veth2 mtu $i; $LTP_NS ip link set dev ltp_ns_veth1 mtu $i # it's enough to set just one of them
+>
+> ping -I 10.0.0.2 -c 1 10.0.0.1 -s 61245 # fail
+> ping -I 10.0.0.2 -c 1 10.0.0.1 -s 61244 # ok
+>
+> FAIL (iputils-s20121221 from package, using sendmsg())
+> ioctl(1, TCGETS, {B38400 opost isig icanon echo ...}) = 0
+> ioctl(1, TIOCGWINSZ, {ws_row=74, ws_col=273, ws_xpixel=1911, ws_ypixel=1050}) = 0
+> sendmsg(3, {msg_name(16)={sa_family=AF_INET, sin_port=htons(0), sin_addr=inet_addr("10.0.0.1")}, msg_iov(1)=[{"\10\0\253_\241\373\0\1\0\0\0\0]wf\330\0\0\0\0\0\6\375\201\20\21\22\23\24\25\26\27"..., 61253}], msg_controllen=0, msg_flags=0}, 0) = 61253
+> setitimer(ITIMER_REAL, {it_interval={0, 0}, it_value={10, 0}}, NULL) = 0
+> recvmsg(3, 0x3fff887b588, 0)            = -1 EAGAIN (Resource temporarily unavailable)
+> recvmsg(3, 0x3fff887b588, 0)            = -1 EAGAIN (Resource temporarily unavailable)
+> recvmsg(3, 0x3fff887b588, 0)            = -1 EAGAIN (Resource temporarily unavailable)
+> recvmsg(3, 0x3fff887b588, 0)            = -1 EAGAIN (Resource temporarily unavailable)
+> recvmsg(3, 0x3fff887b588, 0)            = -1 EAGAIN (Resource temporarily unavailable)
+> recvmsg(3, 0x3fff887b588, 0)            = -1 EAGAIN (Resource temporarily unavailable)
+> recvmsg(3, 0x3fff887b588, 0)            = -1 EAGAIN (Resource temporarily unavailable)
+> recvmsg(3, 0x3fff887b588, 0)            = -1 EAGAIN (Resource temporarily unavailable)
+> recvmsg(3, 0x3fff887b588, 0)            = -1 EAGAIN (Resource temporarily unavailable)
+> recvmsg(3, 0x3fff887b588, 0)            = -1 EINTR (Interrupted system call)
+> --- SIGALRM {si_signo=SIGALRM, si_code=SI_KERNEL} ---
+> sigreturn({mask=[]})                    = -1 EINTR (Interrupted system call)
+>
+> OK (iputils-s20121221 from package, using sendmsg())
+> ioctl(1, TCGETS, {B38400 opost isig icanon echo ...}) = 0
+> ioctl(1, TIOCGWINSZ, {ws_row=74, ws_col=273, ws_xpixel=1911, ws_ypixel=1050}) = 0
+> sendmsg(3, {msg_name(16)={sa_family=AF_INET, sin_port=htons(0), sin_addr=inet_addr("10.0.0.1")}, msg_iov(1)=[{"\10\0\3u\242\266\0\1\0\0\0\0]wgd\0\0\0\0\0\6\340%\20\21\22\23\24\25\26\27"..., 61252}], msg_controllen=0, msg_flags=0}, 0) = 61252
+> setitimer(ITIMER_REAL, {it_interval={0, 0}, it_value={10, 0}}, NULL) = 0
+> recvmsg(3, {msg_name(16)={sa_family=AF_INET, sin_port=htons(0), sin_addr=inet_addr("10.0.0.1")}, msg_iov(1)=[{"E\0\357X2\277\0\0@\1D\343\n\0\0\1\n\0\0\2\0\0\vu\242\266\0\1\0\0\0\0"..., 61380}], msg_controllen=32, [{cmsg_len=32, cmsg_level=SOL_SOCKET, cmsg_type=0x1d /*
+> SCM_??? */, ...}], msg_flags=0}, 0) = 61272
+> write(1, "61252 bytes from 10.0.0.1: icmp_"..., 5961252 bytes from 10.0.0.1: icmp_seq=1 ttl=64 time=0.442 ms
+> ) = 59
+>
+> FAIL (current iputils master, using sendto())
+> ioctl(1, TCGETS, {B38400 opost isig icanon echo ...}) = 0
+> ioctl(1, TIOCGWINSZ, {ws_row=74, ws_col=273, ws_xpixel=1911, ws_ypixel=1050}) = 0
+> sendto(3, "\10\0\2=\313\315\0\1\0\0\0\0]vH;\0\0\0\0\0\7\233o\20\21\22\23\24\25\26\27"..., 61253, 0, {sa_family=AF_INET, sin_port=htons(0), sin_addr=inet_addr("10.0.0.1")}, 16) = 61253
+> setitimer(ITIMER_REAL, {it_interval={0, 0}, it_value={10, 0}}, NULL) = 0
+> recvmsg(3, 0x3ffe7e7b388, 0)            = -1 EAGAIN (Resource temporarily unavailable)
+> recvmsg(3, 0x3ffe7e7b388, 0)            = -1 EAGAIN (Resource temporarily unavailable)
+> recvmsg(3, 0x3ffe7e7b388, 0)            = -1 EAGAIN (Resource temporarily unavailable)
+> recvmsg(3, 0x3ffe7e7b388, 0)            = -1 EAGAIN (Resource temporarily unavailable)
+> recvmsg(3, 0x3ffe7e7b388, 0)            = -1 EAGAIN (Resource temporarily unavailable)
+> recvmsg(3, 0x3ffe7e7b388, 0)            = -1 EAGAIN (Resource temporarily unavailable)
+> recvmsg(3, 0x3ffe7e7b388, 0)            = -1 EAGAIN (Resource temporarily unavailable)
+> recvmsg(3, 0x3ffe7e7b388, 0)            = -1 EAGAIN (Resource temporarily unavailable)
+> recvmsg(3, 0x3ffe7e7b388, 0)            = -1 EAGAIN (Resource temporarily unavailable)
+> recvmsg(3, 0x3ffe7e7b388, 0)            = -1 EINTR (Interrupted system call)
+> --- SIGALRM {si_signo=SIGALRM, si_code=SI_KERNEL} ---
+> sigreturn({mask=[]})                    = -1 EINTR (Interrupted system call)
+>
+> OK (current iputils master, using sendto())
+> ioctl(1, TCGETS, {B38400 opost isig icanon echo ...}) = 0
+> ioctl(1, TIOCGWINSZ, {ws_row=74, ws_col=273, ws_xpixel=1911, ws_ypixel=1050}) = 0
+> sendto(3, "\10\0y\4\313\365\0\1\0\0\0\0]vHw\0\0\0\0\0\4`G\20\21\22\23\24\25\26\27"..., 61252, 0, {sa_family=AF_INET, sin_port=htons(0), sin_addr=inet_addr("10.0.0.1")}, 16) = 61252
+> setitimer(ITIMER_REAL, {it_interval={0, 0}, it_value={10, 0}}, NULL) = 0
+> recvmsg(3, {msg_name(16)={sa_family=AF_INET, sin_port=htons(0), sin_addr=inet_addr("10.0.0.1")}, msg_iov(1)=[{"E\0\357Xc$\0\0@\1\24~\n\0\0\1\n\0\0\2\0\0\201\4\313\365\0\1\0\0\0\0"..., 61380}], msg_controllen=32, [{cmsg_len=32, cmsg_level=SOL_SOCKET, cmsg_type=0x1d /*
+> SCM_??? */, ...}], msg_flags=0}, 0) = 61272
+> write(1, "61252 bytes from 10.0.0.1: icmp_"..., 59) = 59
+>
+> Kind regards,
+> Petr
+
