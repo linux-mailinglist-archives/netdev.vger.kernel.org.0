@@ -2,142 +2,183 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 07CD71200D0
-	for <lists+netdev@lfdr.de>; Mon, 16 Dec 2019 10:19:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F40EB1200D4
+	for <lists+netdev@lfdr.de>; Mon, 16 Dec 2019 10:19:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727070AbfLPJRe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Dec 2019 04:17:34 -0500
-Received: from mail-eopbgr140075.outbound.protection.outlook.com ([40.107.14.75]:45168
-        "EHLO EUR01-VE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726875AbfLPJRd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 16 Dec 2019 04:17:33 -0500
+        id S1727112AbfLPJSz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Dec 2019 04:18:55 -0500
+Received: from smtprelay-out1.synopsys.com ([149.117.73.133]:38794 "EHLO
+        smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726875AbfLPJSz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Dec 2019 04:18:55 -0500
+Received: from mailhost.synopsys.com (badc-mailhost1.synopsys.com [10.192.0.17])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (No client certificate requested)
+        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 86FFF42650;
+        Mon, 16 Dec 2019 09:18:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
+        t=1576487934; bh=TuUBvcwYnuYNXYYCOMVn2LlqQyoLV9WD3AmcOfygKks=;
+        h=From:To:CC:Subject:Date:References:In-Reply-To:From;
+        b=V9+iyQwQAOugzLlIKzmwgZRUk+lUoIBvPA1tFCYUJolPY6eSth5BhQUMNdKqMG+kQ
+         lWh9mtKTzWpsmg5eNieOo2RJqNDp18+hWOqVoA6XFxxw3hznCSPZX3O+pY40uTwrys
+         g3x/oBnTb5/KNJQONO+venasY2Pdl3M9jLfzISUZTCPTbWcZLBe/oamoXGoLpgvB1U
+         QyYesycoewAyMi64vPG07YBTsSBqT/HGqlasRMyX/Qiub7KPkhoow79NX9YEA+rsEl
+         RD+WYhDgW260IiMjTFhe/+pSKuhZ7G832i1HWZEC8jisSIWRnBFdmwLAKJ4eN3vDPr
+         szEtT4757+F8Q==
+Received: from US01WEHTC3.internal.synopsys.com (us01wehtc3.internal.synopsys.com [10.15.84.232])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mailhost.synopsys.com (Postfix) with ESMTPS id 5F3B1A0085;
+        Mon, 16 Dec 2019 09:18:52 +0000 (UTC)
+Received: from us01hybrid1.internal.synopsys.com (10.200.27.51) by
+ US01WEHTC3.internal.synopsys.com (10.15.84.232) with Microsoft SMTP Server
+ (TLS) id 14.3.408.0; Mon, 16 Dec 2019 01:18:52 -0800
+Received: from NAM02-CY1-obe.outbound.protection.outlook.com (10.202.3.67) by
+ mrs.synopsys.com (10.200.27.51) with Microsoft SMTP Server (TLS) id
+ 14.3.408.0; Mon, 16 Dec 2019 01:18:51 -0800
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=clJTtacOj0JPvAuFjwENiWKkU9IeweXt/skTQFY/XQ5vM7DvjI4NjcDZt2AkxZLynLch/hlviGimkUW28ZCKRbbXqeE80yzsxudXw2oIqp7KJpeoNDzFwqnvF/3jtg6gyIBTrx08xmlGIM+Z4yb8m/rIMaHzTiCPizrqdWaCTf07OptCDx8TyN7UEulb78Mn8bZSXDZHGEZL1doi0sAindra/sM5YdpzWec+QFbBYrCztjhgDTS/+RzsZ4/9U0Cmp2V5YJSX2qqkEUGcnYjJjV//+nTw76rDkeLOjv6vVHwBmvFqpR+i1fogNIRXqugt+wer7B7brIfrKSBEBl6DEQ==
+ b=mgPWS41eJ3D1bFWhqlWFBevxA8ktRIDqlQAYqMibL9E/glChgP7YLueMMV50VrINKjRYDzxP8cPrhkk43X1Mf0VfNHZmw7/3yM7wQ6tc+VrVWmSmhluER57IOatQ7hAN5YBaM/pS/hP4pUcJTjdAZ8HnxpYVPGdRWeBpZzN/+5HjDu6kmRAZBHVwQmDTvMdODE649jWz0s66hCE50z0tNNxqfbKjk9psmWUpQ0Ou0ilZl8cHhCGERm8g8WUf8Mm9B3/gdAFQpXIn51qwXcRv73ZlVwJHCTQYjaLcxQLDXroc7V5eQRctihmXKT3dMPx11W4uVACwQVlMiWvuOQBjAw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=p0aa5tqvNJdjQ0mIWMHPH99tHOx4Iw44ovZTAxGEmrw=;
- b=aLd3nB/NII1vscAt8JLHGE6caFxYe3RE/8XwrUtQKuArOnL2T1NROV2nyl9jEotWKMhqWAETOTW8QvMyHH804yBL5cG9WxiITGfWHgNRGc3unF3bHufg1XidqPFNK0OB8V5KSkMB6TWJwnS1WrlyH8ckcvpXOcxKGT7Ax/abSgEpqk7XSvLQZZMFFCujYLh1D9bBPJI8SmXMzdPADFtdbFRc8RYEAGs4rWvVOo4jE/CYviS2RNPyzfofdwDMoWz/ptnWFzhVStZ835hgRgj5Bc0i1NDBDrhcuDhdDivJoZcGnpAdBJRsGvxRFrDDmnzOstIjNXbOUloh8eX5Pt5ymA==
+ bh=oC3dJqay3iflZmkvGKU8yuy9Yrqc7PvExl3sum/ScyE=;
+ b=ja8FyP+NTCO1KFOTGwPG+lioWQ5kGZL4MPvwTYzbWICFt6AbXLrfT6oIf2dwRcAuFgs9upOxntIf6ogIFxDJtObar8LZGG0h7OoEZJfxkwtKOt+2Q811OolUaeA3WRAVHM5AqCB8DzYaoL8s3z6jK5L1CWkFGsYKnp1xk/fsFCZBlY5U2OyOLQ44op93N179X3qz4ameRTYqHfDF4uNyuwJAZx4/m8LsgBd4Wj0nptOJolM3HeibZ0Xk/PUIOb7s3cucwHv2S29w1bcYf2hKuboUPSe8rsYwrbuyZiwkTj51aoRcNB0UgOmN6RPpGJmc4UkGZrX0Nw0SRWhchcM8Tg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
+ smtp.mailfrom=synopsys.com; dmarc=pass action=none header.from=synopsys.com;
+ dkim=pass header.d=synopsys.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=synopsys.onmicrosoft.com; s=selector2-synopsys-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=p0aa5tqvNJdjQ0mIWMHPH99tHOx4Iw44ovZTAxGEmrw=;
- b=XYBfc7WHN7QtJ5FWlMRPrJgIIkS17x86NyC84DLAZqq2z3P0q1KvQymJcVxRMSTHyIuumfoqC+dIXWx2r/msJYyRfQygmgj3lDmko1nc71VlW5fRS1DNX+y5fYUkFgUHmV6chppyD6j0S5PC86q+G1IwjoWXWuHYKbpNq8EcaHU=
-Received: from AM0PR05MB4866.eurprd05.prod.outlook.com (20.176.214.160) by
- AM0PR05MB5922.eurprd05.prod.outlook.com (20.178.119.142) with Microsoft SMTP
+ bh=oC3dJqay3iflZmkvGKU8yuy9Yrqc7PvExl3sum/ScyE=;
+ b=BdhGb3QTiHU/mpzCaIKqBSm0M9G9io7+qgvf4VfmFzyr20Q5Te/WUruyLcHHOL9hiiA2EAO7o8TAay5UT5q5CTYiPSqXlSv+Hz72MHHIOOj5NGwWWg1hDmGxUiDA5b9UaakIQeiJFn9JxCwqyGRFWMd2wwYSXpom/hz406qvkZI=
+Received: from BN8PR12MB3266.namprd12.prod.outlook.com (20.179.67.145) by
+ BN8PR12MB2994.namprd12.prod.outlook.com (20.178.210.145) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2538.18; Mon, 16 Dec 2019 09:17:29 +0000
-Received: from AM0PR05MB4866.eurprd05.prod.outlook.com
- ([fe80::16:9951:5a4b:9ec6]) by AM0PR05MB4866.eurprd05.prod.outlook.com
- ([fe80::16:9951:5a4b:9ec6%7]) with mapi id 15.20.2538.019; Mon, 16 Dec 2019
- 09:17:28 +0000
-From:   Parav Pandit <parav@mellanox.com>
-To:     Greg KH <gregkh@linuxfoundation.org>
-CC:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        Shiraz Saleem <shiraz.saleem@intel.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "nhorman@redhat.com" <nhorman@redhat.com>,
-        "sassmann@redhat.com" <sassmann@redhat.com>,
-        "jgg@ziepe.ca" <jgg@ziepe.ca>,
-        Mustafa Ismail <mustafa.ismail@intel.com>
-Subject: Re: [PATCH v3 04/20] i40e: Register a virtbus device to provide RDMA
-Thread-Topic: [PATCH v3 04/20] i40e: Register a virtbus device to provide RDMA
-Thread-Index: AQHVruL03dhci0tJKEiwh8p1eIZoWaezgmKAgAinFoCAADnbgIAAFpiAgAAGYgCAAAUzAA==
-Date:   Mon, 16 Dec 2019 09:17:28 +0000
-Message-ID: <6c48fe0d-9ddf-ef29-7d5f-0a77944c61b2@mellanox.com>
-References: <20191209224935.1780117-1-jeffrey.t.kirsher@intel.com>
- <20191209224935.1780117-5-jeffrey.t.kirsher@intel.com>
- <20191210153959.GD4053085@kroah.com>
- <4b7ee2ce-1415-7c58-f00e-6fdad08c1e99@mellanox.com>
- <20191216071509.GA916540@kroah.com>
- <b1242f0f-c34d-e6af-1731-fec9c947c478@mellanox.com>
- <20191216085852.GA1139951@kroah.com>
-In-Reply-To: <20191216085852.GA1139951@kroah.com>
+ 15.20.2538.18; Mon, 16 Dec 2019 09:18:50 +0000
+Received: from BN8PR12MB3266.namprd12.prod.outlook.com
+ ([fe80::3d20:3a36:3b64:4510]) by BN8PR12MB3266.namprd12.prod.outlook.com
+ ([fe80::3d20:3a36:3b64:4510%7]) with mapi id 15.20.2538.019; Mon, 16 Dec 2019
+ 09:18:50 +0000
+From:   Jose Abreu <Jose.Abreu@synopsys.com>
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Joao Pinto <Joao.Pinto@synopsys.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Maxime Ripard <mripard@kernel.org>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-stm32@st-md-mailman.stormreply.com" 
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH net-next 3/4] net: stmmac: Let TX and RX interrupts be
+ independently enabled/disabled
+Thread-Topic: [PATCH net-next 3/4] net: stmmac: Let TX and RX interrupts be
+ independently enabled/disabled
+Thread-Index: AQHVr5PIxrei2rB6dEKHZgwzBhKcYqe6HSSAgAJnE7A=
+Date:   Mon, 16 Dec 2019 09:18:50 +0000
+Message-ID: <BN8PR12MB3266288303A6CA6C3CAA5E6CD3510@BN8PR12MB3266.namprd12.prod.outlook.com>
+References: <cover.1576007149.git.Jose.Abreu@synopsys.com>
+        <04c000a3e0356e8bfb63e07490d8de8e081a2afe.1576007149.git.Jose.Abreu@synopsys.com>
+ <20191214123623.1aeb4966@cakuba.netronome.com>
+In-Reply-To: <20191214123623.1aeb4966@cakuba.netronome.com>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
 authentication-results: spf=none (sender IP is )
- smtp.mailfrom=parav@mellanox.com; 
-x-originating-ip: [106.51.20.239]
+ smtp.mailfrom=joabreu@synopsys.com; 
+x-originating-ip: [83.174.63.141]
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 5dd46d94-254a-4e67-c873-08d78208c605
-x-ms-traffictypediagnostic: AM0PR05MB5922:
-x-microsoft-antispam-prvs: <AM0PR05MB59225005EA0C2D6DFF6C9EA7D1510@AM0PR05MB5922.eurprd05.prod.outlook.com>
+x-ms-office365-filtering-correlation-id: d0c33801-ca34-4fff-9c1a-08d78208f695
+x-ms-traffictypediagnostic: BN8PR12MB2994:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <BN8PR12MB29945FDF293216826AA45EA3D3510@BN8PR12MB2994.namprd12.prod.outlook.com>
 x-ms-oob-tlc-oobclassifiers: OLM:9508;
 x-forefront-prvs: 02530BD3AA
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(136003)(396003)(366004)(39860400002)(346002)(376002)(189003)(199004)(55236004)(76116006)(91956017)(64756008)(53546011)(2616005)(6506007)(2906002)(26005)(478600001)(36756003)(54906003)(86362001)(7416002)(71200400001)(8676002)(81156014)(31686004)(6512007)(8936002)(81166006)(4326008)(186003)(6486002)(66946007)(31696002)(6916009)(66446008)(66556008)(66476007)(316002)(5660300002);DIR:OUT;SFP:1101;SCL:1;SRVR:AM0PR05MB5922;H:AM0PR05MB4866.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(376002)(346002)(39860400002)(366004)(396003)(136003)(189003)(199004)(7416002)(186003)(316002)(66946007)(54906003)(6916009)(5660300002)(33656002)(66556008)(66446008)(66476007)(478600001)(76116006)(64756008)(7696005)(6506007)(26005)(2906002)(71200400001)(9686003)(4326008)(55016002)(8936002)(81166006)(52536014)(86362001)(81156014)(8676002);DIR:OUT;SFP:1102;SCL:1;SRVR:BN8PR12MB2994;H:BN8PR12MB3266.namprd12.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: synopsys.com does not designate
  permitted sender hosts)
 x-ms-exchange-senderadcheck: 1
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: yo5rv62yW+8hhgFkEOmo6mekLk6MT53Y9oa4lEZ9h+Q0YluaQsvKmDxrqOnLwAOslbisI6nMwfCLPQ3L+m1YcKfVL94gQC8fYo0Psn52eOWFs/snITdu+QcysV7Vta6yX7XfkOf1guLPgWTxSOoqMPiciBhzjV9abg1B6qGMkQ5TtzvC9SI1UMzncTpMtOyLkj8Xu/ofyh6AbIRGEtZrR7lu6Mg7s/5orUUVZPnr4SNEKGrPgu/+AOqvSWLUyGr08nnDAZI+trOHPyCoPHTiCm/ITKqBGihLNHONzgAZRdcmqycTInJ3ZU8W/MY99cmbQQRLlZA28Nhge1WUO+4TsjX2jtLAieO6ybYEG/dvGgojiex4B/tZ/kS7ibkq/bLHPsCUVDhWMWHWV3DMaEJ1b0kmU3S4JUYEWf3NrzbUYaN6jh3DqFvbp7JNrYCbgVQf
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <A59ACFA9652D914A9AF937EF91B7482A@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: base64
+x-microsoft-antispam-message-info: jCrwCxBOCvWLkIEZAtLoBvcQw/9EOU9GzEynQnO+JcMiD24FbtNSCKzNU7vuDV+8DSi3oP2wU3c9JC9ViHYdRY4srgEnmZYfqZF/xt15W+Ko500tvsVDIJPd5RWIT/CrZ1HtX2FEccAR8JePuGfla2puPTlHabFqprLRzYhsJzXX8d3Ugwlqi+TW97qUyiuvucdhg2I6WbjOKy69KfHtyvk2i3f8aVK4BhvCCj+hLJlakcF7Dc0OLgV2u+KRYrnoy3QGoRshDWEx1jCWC4SqIUQp5wo2XRPEay49bP6G0G+l9ogt8X48q9RD4S7fEKlNbD/TqAJfUEvhk56Cmvq9r6bsy1X4bEv+CaOgzIBXHAtKnZQVeGoOI9pOoKMRaThkr2nZLq8/Y3j4abLzauTl4PuN1vWSe21/EYro+3LnOe6DhFX0vys1wWTnAnYPu+Of
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5dd46d94-254a-4e67-c873-08d78208c605
-X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Dec 2019 09:17:28.8202
+X-MS-Exchange-CrossTenant-Network-Message-Id: d0c33801-ca34-4fff-9c1a-08d78208f695
+X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Dec 2019 09:18:50.1745
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-id: c33c9f88-1eb7-4099-9700-16013fd9e8aa
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: CwjG7Shg8SOawhSJcUtPM9w4Ke1hwljp955xqasc8PUtokS3fgEpNlrmeeVaGvKBI/mLlhl0RiHnqmGQPqSb/A==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR05MB5922
+X-MS-Exchange-CrossTenant-userprincipalname: HyBSdc2fWqfuP1vsWi+qdphg3EOdN234Qg69/QBA5u7XpIeKbs23csbMWMcUMFpbTTYNNVlkdmzkVEthtFidWg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR12MB2994
+X-OriginatorOrg: synopsys.com
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gMTIvMTYvMjAxOSAyOjI4IFBNLCBHcmVnIEtIIHdyb3RlOg0KPiBPbiBNb24sIERlYyAxNiwg
-MjAxOSBhdCAwODozNjowMkFNICswMDAwLCBQYXJhdiBQYW5kaXQgd3JvdGU6DQo+PiBPbiAxMi8x
-Ni8yMDE5IDEyOjQ1IFBNLCBHcmVnIEtIIHdyb3RlOg0KPj4+IE9uIE1vbiwgRGVjIDE2LCAyMDE5
-IGF0IDAzOjQ4OjA1QU0gKzAwMDAsIFBhcmF2IFBhbmRpdCB3cm90ZToNCj4+IFsuLl0NCj4+Pj4+
-IEkgZmVlbCBsaWtlIHRoZSB2aXJ0dWFsIGJ1cyBjb2RlIGlzIGdldHRpbmcgYmV0dGVyLCBidXQg
-dGhpcyB1c2Ugb2YgdGhlDQo+Pj4+PiBjb2RlLCB1bSwgbm8sIG5vdCBvay4NCj4+Pj4+DQo+Pj4+
-PiBFaXRoZXIgd2F5LCB0aGlzIHNlcmllcyBpcyBOT1QgcmVhZHkgdG8gYmUgbWVyZ2VkIGFueXdo
-ZXJlLCBwbGVhc2UgZG8NCj4+Pj4+IG5vdCB0cnkgdG8gcnVzaCB0aGluZ3MuDQo+Pj4+Pg0KPj4+
-Pj4gQWxzbywgd2hhdCBldmVyIGhhcHBlbmVkIHRvIG15ICJZT1UgQUxMIE1VU1QgQUdSRUUgVE8g
-V09SSyBUT0dFVEhFUiINCj4+Pj4+IHJlcXVpcmVtZW50IGJldHdlZW4gdGhpcyBncm91cCwgYW5k
-IHRoZSBvdGhlciBncm91cCB0cnlpbmcgdG8gZG8gdGhlDQo+Pj4+PiBzYW1lIHRoaW5nPyAgSSB3
-YW50IHRvIHNlZSBzaWduZWQtb2ZmLWJ5IGZyb20gRVZFUllPTkUgaW52b2x2ZWQgYmVmb3JlDQo+
-Pj4+PiB3ZSBhcmUgZ29pbmcgdG8gY29uc2lkZXIgdGhpcyB0aGluZy4NCj4+Pj4NCj4+Pj4gSSBh
-bSB3b3JraW5nIG9uIFJGQyB3aGVyZSBQQ0kgZGV2aWNlIGlzIHNsaWNlZCB0byBjcmVhdGUgc3Vi
-LWZ1bmN0aW9ucy4NCj4+Pj4gRWFjaCBzdWItZnVuY3Rpb24vc2xpY2UgaXMgY3JlYXRlZCBkeW5h
-bWljYWxseSBieSB0aGUgdXNlci4NCj4+Pj4gVXNlciBnaXZlcyBzZi1udW1iZXIgYXQgY3JlYXRp
-b24gdGltZSB3aGljaCB3aWxsIGJlIHVzZWQgZm9yIHBsdW1iaW5nIGJ5DQo+Pj4+IHN5c3RlbWQv
-dWRldiwgZGV2bGluayBwb3J0cy4NCj4+Pg0KPj4+IFRoYXQgc291bmRzIGV4YWN0bHkgd2hhdCBp
-cyB3YW50ZWQgaGVyZSBhcyB3ZWxsLCByaWdodD8NCj4+DQo+PiBOb3QgZXhhY3RseS4NCj4+IEhl
-cmUsIGluIGk0MCB1c2UgY2FzZSAtIHRoZXJlIGlzIGEgUENJIGZ1bmN0aW9uLg0KPj4gVGhpcyBQ
-Q0kgZnVuY3Rpb24gaXMgdXNlZCBieSB0d28gZHJpdmVyczoNCj4+ICgxKSB2ZW5kb3JfZm9vX25l
-dGRldi5rbyBjcmVhdGluZyBOZXRkZXZpY2UgKGNsYXNzIG5ldCkNCj4+ICgyKSB2ZW5kb3JfZm9v
-X3JkbWEua28gY3JlYXRpbmcgUkRNQSBkZXZpY2UgKGNsYXNzIGluZmluaWJhbmQpDQo+Pg0KPj4g
-QW5kIGJvdGggZHJpdmVycyBhcmUgbm90aWZpZWQgdXNpbmcgbWF0Y2hpbmcgc2VydmljZSB2aXJ0
-YnVzLCB3aGljaA0KPj4gYXR0ZW1wdHMgdG8gY3JlYXRlIHRvIHR3byB2aXJ0YnVzX2RldmljZXMg
-d2l0aCBkaWZmZXJlbnQgZHJpdmVyLWlkLCBvbmUNCj4+IGZvciBlYWNoIGNsYXNzIG9mIGRldmlj
-ZS4NCj4gDQo+IFllcywgdGhhdCBpcyBmaW5lLg0KPiANCj4+IEhvd2V2ZXIsIGRldmljZXMgb2Yg
-Ym90aCBjbGFzcyAobmV0LCBpbmZpbmliYW5kKSB3aWxsIGhhdmUgcGFyZW50IGRldmljZQ0KPj4g
-YXMgUENJIGRldmljZS4NCj4gDQo+IFRoYXQgaXMgZmluZS4NCj4gDQo+PiBJbiBjYXNlIG9mIHN1
-Yi1mdW5jdGlvbnMsIGNyZWF0ZWQgcmRtYSBhbmQgbmV0ZGV2aWNlIHdpbGwgaGF2ZSBwYXJlbnQg
-YXMNCj4+IHRoZSBzdWItZnVuY3Rpb24gJ3N0cnVjdCBkZXZpY2UnLiBUaGlzIHdheSB0aG9zZSBT
-RnMgZ2V0cyB0aGVpcg0KPj4gc3lzdGVtZC91ZGV2IHBsdW1iaW5nIGRvbmUgcmlnaHRseS4NCj4g
-DQo+IGh1aD8gIFRoZSByZG1hIGFuZCBuZXRkZXZpY2Ugd2lsbCBoYXZlIGFzIHRoZWlyIHBhcmVu
-dCBkZXZpY2UgdGhlDQo+IHZpcnRkZXZpY2UgdGhhdCBpcyBvbiB0aGUgdmlydGJ1cy4gIE5vdCB0
-aGUgUENJIGRldmljZSdzICdzdHJ1Y3QNCj4gZGV2aWNlJy4NCj4gDQpZZXMuIEkgbWVhbnQgc2Ft
-ZSB3aGVuIEkgc2FpZCAic3ViLWZ1bmN0aW9uICdzdHJ1Y3QgZGV2aWNlJyIsIHdoaWNoIGlzDQpu
-b3RoaW5nIGJ1ZyBhIHZpcnRkZXZpY2UuDQoNCm9rLiBHcmVhdC4gV2UgYXJlIG9uIHNhbWUgcGFn
-ZSBub3cuDQoNCkFzIHdlIGRpc2N1c3NlZCwgaWYgc3ViLWZ1bmN0aW9ucyB1c2VzIHRoZSBidXMs
-IGl0IHdpbGwgdXNlIHRoZSB2aXJ0YnVzDQphbmQgdmlydGRldmljZSBkZXZpY2Ugd2l0aCBhYm92
-ZSBkaXNjdXNzZWQgZGlmZmVyZW5jZXMuDQpPbmNlIEkgZmluaXNoIGludGVybmFsIFJGQyByZXZp
-ZXcgZm9yIHN1Yi1mdW5jdGlvbnMsIHdpbGwgcG9zdCBpdCBvbiB0aGUNCmxpc3QuDQpJIGRvIG5v
-dCBleHBlY3QgUkZDIHRvIGZpbmlzaCBiZWZvcmUgQ2hyaXN0bWFzIGhvbGlkYXlzLg0KDQpUaGFu
-a3MsDQpQYXJhdg0KDQo+IHRoYW5rcywNCj4gDQo+IGdyZWcgay1oDQo+IA0KDQo=
+From: Jakub Kicinski <jakub.kicinski@netronome.com>
+Date: Dec/14/2019, 20:36:23 (UTC+00:00)
+
+> On Tue, 10 Dec 2019 20:54:43 +0100, Jose Abreu wrote:
+> > @@ -2278,10 +2286,14 @@ static void stmmac_tx_timer(struct timer_list *=
+t)
+> >  	 * If NAPI is already running we can miss some events. Let's rearm
+> >  	 * the timer and try again.
+> >  	 */
+> > -	if (likely(napi_schedule_prep(&ch->tx_napi)))
+> > +	if (likely(napi_schedule_prep(&ch->tx_napi))) {
+> > +		unsigned long flags;
+> > +
+> > +		spin_lock_irqsave(&ch->lock, flags);
+> > +		stmmac_disable_dma_irq(priv, priv->ioaddr, ch->index, 0, 1);
+> > +		spin_unlock_irqrestore(&ch->lock, flags);
+> >  		__napi_schedule(&ch->tx_napi);
+> > -	else
+> > -		mod_timer(&tx_q->txtimer, STMMAC_COAL_TIMER(10));
+>=20
+> You should also remove the comment above the if statement if it's
+> really okay to no longer re-arm the timer. No?
+
+Yeah, agreed!
+
+>=20
+> > +	}
+> >  }
+> > =20
+> >  /**
+>=20
+> > @@ -3759,24 +3777,18 @@ static int stmmac_napi_poll_tx(struct napi_stru=
+ct *napi, int budget)
+> >  	struct stmmac_channel *ch =3D
+> >  		container_of(napi, struct stmmac_channel, tx_napi);
+> >  	struct stmmac_priv *priv =3D ch->priv_data;
+> > -	struct stmmac_tx_queue *tx_q;
+> >  	u32 chan =3D ch->index;
+> >  	int work_done;
+> > =20
+> >  	priv->xstats.napi_poll++;
+> > =20
+> > -	work_done =3D stmmac_tx_clean(priv, DMA_TX_SIZE, chan);
+> > -	work_done =3D min(work_done, budget);
+> > -
+> > -	if (work_done < budget)
+> > -		napi_complete_done(napi, work_done);
+> > +	work_done =3D stmmac_tx_clean(priv, budget, chan);
+> > +	if (work_done < budget && napi_complete_done(napi, work_done)) {
+>=20
+> Not really related to this patch, but this looks a little suspicious.=20
+> I think the TX completions should all be processed regardless of the
+> budget. The budget is for RX.
+
+Well but this is a TX NAPI ... Shouldn't it be limited to prevent CPU=20
+starvation ?
+
+---
+Thanks,
+Jose Miguel Abreu
