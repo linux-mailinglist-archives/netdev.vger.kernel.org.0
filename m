@@ -2,51 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E917120214
-	for <lists+netdev@lfdr.de>; Mon, 16 Dec 2019 11:14:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E9237120216
+	for <lists+netdev@lfdr.de>; Mon, 16 Dec 2019 11:16:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727289AbfLPKN5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Dec 2019 05:13:57 -0500
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:44849 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727099AbfLPKN5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Dec 2019 05:13:57 -0500
-Received: by mail-wr1-f67.google.com with SMTP id q10so6475085wrm.11
-        for <netdev@vger.kernel.org>; Mon, 16 Dec 2019 02:13:55 -0800 (PST)
+        id S1727198AbfLPKQf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Dec 2019 05:16:35 -0500
+Received: from mail-wr1-f52.google.com ([209.85.221.52]:43891 "EHLO
+        mail-wr1-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727099AbfLPKQf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Dec 2019 05:16:35 -0500
+Received: by mail-wr1-f52.google.com with SMTP id d16so6507821wre.10
+        for <netdev@vger.kernel.org>; Mon, 16 Dec 2019 02:16:34 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to
-         :user-agent;
-        bh=eBj5vDAhcxQNM9h83BAs5ytrCGULuIqcoVqUpd5RXFk=;
-        b=Quv3jFqysyJ/6lmdrPmhuLct+POkHO/NdCIW5wdrnXBWjZ/v0XiPCpZuJTo0iufgxS
-         lJf4tVqDE3M0Sem7rjACmd/3YxIXUjOL9u1UbtMYPsQKKjBgAay1seCy2qNG+K2ZCD7L
-         BTYHDmxWBnacij1qZUlVD0muEPVv4qC4L2EcNtrFua0sXynl6PzlZAr5rt13jkLpTNmt
-         YYd+KRfmqhd3KNdFSI0/+SCgLVDfv4lb6AAHhyLg7/NRPciQJGALsF9IkqRgCYyX8DV1
-         IspCOaj+qN4mdUpbYTpa9Q24fky/KVydhoeXTQut24fu1tRg916udxQ40AjVrSq0fMcG
-         qgKA==
+         :content-disposition:in-reply-to:user-agent;
+        bh=qev6JcA4gAswu34dFI4mXsZfo3KopBps59omzMWQcZo=;
+        b=r1sNV+IqjkdxuYSFtaiJMYJO58gjweAG3frMxtExkbwprE+3jBTzHbhSrIyxOUtImY
+         i5dvHhWsAwmNprFY/oSGFD4X5TLYNV1O4OBCpJtdLAzhFyVsUcgkp7ApHxXFv6AvE47M
+         HQ4KJO++LAFCO7kJKU0RY3nCUBy6hmuO1Lzr6yc9yJH/Ub6gzE1CgmUlzM/4fiRJa+Dq
+         DzESGpc/qbbuPKnDS8v/xKn6/4RaEBJQOVlfUWzaeWlyvofIbBWpJAIUWuhgK/a4rpL5
+         rgxVrGgQSmi2fZmxf9ihWiI9O5Dh6ap+KJJpQFtgD9Ulk7qAEqJkD82ivYkqWoKwU1mg
+         FJJw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to:user-agent;
-        bh=eBj5vDAhcxQNM9h83BAs5ytrCGULuIqcoVqUpd5RXFk=;
-        b=kk6H/HEOSNEMZK+jBMjoG07FVfbWpv/R6ab/CuXvfm4Z3vthdxD5EBeZ5PKAH3SXvL
-         OG49CjTpcjY19fjLiijDjrXMq0lQQhZgEQHfDT8rvmC12NbTeLG+gCEqGPtoaujL1IEP
-         rmeRDnfc8gOTV/nfEj66xjaO8XIC2zPi2gc1zSoXIFvVfrgjdwdAX++Rlyx+zuWuLlUE
-         cvQif8wNyYuZ4CJyZxzt5Qv2SeI05z0pi42+qcHQ7hzf+EdSgVlxvjNdwAK81hagFAfC
-         MnMehoeS8Akc1+Pw7E8mV/8RJaSlcWbK0yriwoIgDfLfnBgGxdn698N+/5dRbKsDWm9v
-         6qAg==
-X-Gm-Message-State: APjAAAWnlhQXvxbobIfoZ9lNSLU1YWY2R0GIX+m93hzQYp2EisXWDX6R
-        IEfDZmkvgmwOt0NvvaKzhJI+/Q==
-X-Google-Smtp-Source: APXvYqzOQAkTF8ma2KJBme5Jd1WneX81bLhbknZI3Sc4bGSIqpT+g/0/pJArgq0fvPs/TzLMcVYsUg==
-X-Received: by 2002:adf:a141:: with SMTP id r1mr29685031wrr.285.1576491234354;
-        Mon, 16 Dec 2019 02:13:54 -0800 (PST)
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=qev6JcA4gAswu34dFI4mXsZfo3KopBps59omzMWQcZo=;
+        b=BI0MVzZO1h5iMjjmotWfb0cuNeEgpEGvsLjdoSio/AlvgZgafDX4OI6roJkSD2DfR6
+         aYYDzbjdCElymmKqArFseX6x4x9c/Y2YtuY1EiXyRJgyksTNSe0EP0C1wv5Cy51AOFyo
+         9aQmo2dQkoBwPJp/oUL11sdiwjMv77Bulo9m2tSBrUomryhKh4ygURAB751FrwlD1UUI
+         sM1Be9ewDceU1CJ8D9hiGaA4selWQMiNKfZdaJUwNO8YFjNHLBiGN72BLnduB72bau1T
+         gTAMacPErvwPq8+IAotByeAqx6EhpFDCkEBrCllD/TMvGXNaxiDqsTrgLY1gQ4ZoWeSo
+         3I+A==
+X-Gm-Message-State: APjAAAWh25rkaqmI1JaRxwCuRSJZsqt1Xuk5JJmCl35wB3IZP4d1dkj8
+        v0trIcwX80ygWKX0edTdDYT1Yg==
+X-Google-Smtp-Source: APXvYqyZzq54XDI8z5XqTqx2eFH5uMiMsWKlk+aJstX6+LwMFV45CiTX2TUgPNKIxyCLMt48aqe+tw==
+X-Received: by 2002:a5d:6b03:: with SMTP id v3mr29435058wrw.289.1576491394127;
+        Mon, 16 Dec 2019 02:16:34 -0800 (PST)
 Received: from apalos.home (ppp-94-66-130-5.home.otenet.gr. [94.66.130.5])
-        by smtp.gmail.com with ESMTPSA id z3sm20936283wrs.94.2019.12.16.02.13.52
+        by smtp.gmail.com with ESMTPSA id a16sm20895577wrt.37.2019.12.16.02.16.32
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 Dec 2019 02:13:53 -0800 (PST)
-Date:   Mon, 16 Dec 2019 12:13:50 +0200
+        Mon, 16 Dec 2019 02:16:33 -0800 (PST)
+Date:   Mon, 16 Dec 2019 12:16:30 +0200
 From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
 To:     "Li,Rongqing" <lirongqing@baidu.com>
 Cc:     Yunsheng Lin <linyunsheng@huawei.com>,
@@ -62,9 +60,8 @@ Cc:     Yunsheng Lin <linyunsheng@huawei.com>,
         =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@intel.com>
 Subject: Re: =?utf-8?B?562U5aSNOiBbUEFUQ0hdW3Yy?= =?utf-8?Q?=5D?= page_pool:
  handle page recycle for NUMA_NO_NODE condition
-Message-ID: <20191216101350.GA6939@apalos.home>
-References: <20191211194933.15b53c11@carbon>
- <831ed886842c894f7b2ffe83fe34705180a86b3b.camel@mellanox.com>
+Message-ID: <20191216101630.GA7102@apalos.home>
+References: <831ed886842c894f7b2ffe83fe34705180a86b3b.camel@mellanox.com>
  <0a252066-fdc3-a81d-7a36-8f49d2babc01@huawei.com>
  <20191212111831.2a9f05d3@carbon>
  <7c555cb1-6beb-240d-08f8-7044b9087fe4@huawei.com>
@@ -73,96 +70,65 @@ References: <20191211194933.15b53c11@carbon>
  <20191213094845.56fb42a4@carbon>
  <15be326d-1811-329c-424c-6dd22b0604a8@huawei.com>
  <a5dea60221d84886991168781361b591@baidu.com>
+ <20191216101350.GA6939@apalos.home>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <a5dea60221d84886991168781361b591@baidu.com>
+In-Reply-To: <20191216101350.GA6939@apalos.home>
 User-Agent: Mutt/1.12.2 (2019-09-21)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 16, 2019 at 04:02:04AM +0000, Li,Rongqing wrote:
+> > > 
+> > > Simply clearing the pool->alloc.cache when calling page_pool_update_nid()
+> > > seems better.
+> > > 
+> > 
+> > How about the below codes, the driver can configure p.nid to any, which will be adjusted in NAPI polling, irq migration will not be problem, but it will add a check into hot path.
 > 
-> 
-> > -----邮件原件-----
-> > 发件人: Yunsheng Lin [mailto:linyunsheng@huawei.com]
-> > 发送时间: 2019年12月16日 9:51
-> > 收件人: Jesper Dangaard Brouer <brouer@redhat.com>
-> > 抄送: Li,Rongqing <lirongqing@baidu.com>; Saeed Mahameed
-> > <saeedm@mellanox.com>; ilias.apalodimas@linaro.org;
-> > jonathan.lemon@gmail.com; netdev@vger.kernel.org; mhocko@kernel.org;
-> > peterz@infradead.org; Greg Kroah-Hartman <gregkh@linuxfoundation.org>;
-> > bhelgaas@google.com; linux-kernel@vger.kernel.org; Björn Töpel
-> > <bjorn.topel@intel.com>
-> > 主题: Re: [PATCH][v2] page_pool: handle page recycle for NUMA_NO_NODE
-> > condition
-> > 
-> > On 2019/12/13 16:48, Jesper Dangaard Brouer wrote:> You are basically saying
-> > that the NUMA check should be moved to
-> > > allocation time, as it is running the RX-CPU (NAPI).  And eventually
-> > > after some time the pages will come from correct NUMA node.
-> > >
-> > > I think we can do that, and only affect the semi-fast-path.
-> > > We just need to handle that pages in the ptr_ring that are recycled
-> > > can be from the wrong NUMA node.  In __page_pool_get_cached() when
-> > > consuming pages from the ptr_ring (__ptr_ring_consume_batched), then
-> > > we can evict pages from wrong NUMA node.
-> > 
-> > Yes, that's workable.
-> > 
-> > >
-> > > For the pool->alloc.cache we either accept, that it will eventually
-> > > after some time be emptied (it is only in a 100% XDP_DROP workload that
-> > > it will continue to reuse same pages).   Or we simply clear the
-> > > pool->alloc.cache when calling page_pool_update_nid().
-> > 
-> > Simply clearing the pool->alloc.cache when calling page_pool_update_nid()
-> > seems better.
-> > 
-> 
-> How about the below codes, the driver can configure p.nid to any, which will be adjusted in NAPI polling, irq migration will not be problem, but it will add a check into hot path.
+> We'll have to check the impact on some high speed (i.e 100gbit) interface
+> between doing anything like that. Saeed's current patch runs once per NAPI. This
+> runs once per packet. The load might be measurable. 
+> The READ_ONCE is needed in case all producers/consumers run on the same CPU
 
-We'll have to check the impact on some high speed (i.e 100gbit) interface
-between doing anything like that. Saeed's current patch runs once per NAPI. This
-runs once per packet. The load might be measurable. 
-The READ_ONCE is needed in case all producers/consumers run on the same CPU
-right?
+I meant different cpus!
 
-
-Thanks
-/Ilias
+> right?
 > 
-> diff --git a/net/core/page_pool.c b/net/core/page_pool.c
-> index a6aefe989043..4374a6239d17 100644
-> --- a/net/core/page_pool.c
-> +++ b/net/core/page_pool.c
-> @@ -108,6 +108,10 @@ static struct page *__page_pool_get_cached(struct page_pool *pool)
->                 if (likely(pool->alloc.count)) {
->                         /* Fast-path */
->                         page = pool->alloc.cache[--pool->alloc.count];
-> +
-> +                       if (unlikely(READ_ONCE(pool->p.nid) != numa_mem_id()))
-> +                               WRITE_ONCE(pool->p.nid, numa_mem_id());
-> +
->                         return page;
->                 }
->                 refill = true;
-> @@ -155,6 +159,10 @@ static struct page *__page_pool_alloc_pages_slow(struct page_pool *pool,
->         if (pool->p.order)
->                 gfp |= __GFP_COMP;
->  
-> +
-> +       if (unlikely(READ_ONCE(pool->p.nid) != numa_mem_id()))
-> +               WRITE_ONCE(pool->p.nid, numa_mem_id());
-> +
->         /* FUTURE development:
->          *
->          * Current slow-path essentially falls back to single page
+> 
 > Thanks
-> 
-> -Li
-> > >
-> 
+> /Ilias
+> > 
+> > diff --git a/net/core/page_pool.c b/net/core/page_pool.c
+> > index a6aefe989043..4374a6239d17 100644
+> > --- a/net/core/page_pool.c
+> > +++ b/net/core/page_pool.c
+> > @@ -108,6 +108,10 @@ static struct page *__page_pool_get_cached(struct page_pool *pool)
+> >                 if (likely(pool->alloc.count)) {
+> >                         /* Fast-path */
+> >                         page = pool->alloc.cache[--pool->alloc.count];
+> > +
+> > +                       if (unlikely(READ_ONCE(pool->p.nid) != numa_mem_id()))
+> > +                               WRITE_ONCE(pool->p.nid, numa_mem_id());
+> > +
+> >                         return page;
+> >                 }
+> >                 refill = true;
+> > @@ -155,6 +159,10 @@ static struct page *__page_pool_alloc_pages_slow(struct page_pool *pool,
+> >         if (pool->p.order)
+> >                 gfp |= __GFP_COMP;
+> >  
+> > +
+> > +       if (unlikely(READ_ONCE(pool->p.nid) != numa_mem_id()))
+> > +               WRITE_ONCE(pool->p.nid, numa_mem_id());
+> > +
+> >         /* FUTURE development:
+> >          *
+> >          * Current slow-path essentially falls back to single page
+> > Thanks
+> > 
+> > -Li
+> > > >
+> > 
