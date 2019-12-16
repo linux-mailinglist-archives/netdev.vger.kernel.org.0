@@ -2,92 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E5B71211BF
-	for <lists+netdev@lfdr.de>; Mon, 16 Dec 2019 18:28:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 59203121333
+	for <lists+netdev@lfdr.de>; Mon, 16 Dec 2019 18:59:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726191AbfLPR2U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Dec 2019 12:28:20 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:60469 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726092AbfLPR2U (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Dec 2019 12:28:20 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1576517298;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=S+OnBpVV8rY44ew+BfGEOQiPkn4U70SDNIQE2X8a82Y=;
-        b=asqKFTtqxzCA+BG79H+rL0dXdgrSOHtLlVSdXC8l5us8KJ4Cmoq6qBCLZjfs4H/JAZAy2g
-        LfJZg4wwrQoVW4QEZYKve08ic2fGeyDubU2o7SkyPWSmYxikKJQWHtmkC1499hxWqB3dIl
-        eVs2Od9z7Y96OlMS4o3zEhyFa35ZrX8=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-321-v1WcVcIaNkSP4kDjcrsa-A-1; Mon, 16 Dec 2019 12:28:17 -0500
-X-MC-Unique: v1WcVcIaNkSP4kDjcrsa-A-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id D65E98017DF;
-        Mon, 16 Dec 2019 17:28:15 +0000 (UTC)
-Received: from ovpn-118-91.ams2.redhat.com (unknown [10.36.118.91])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id B5A155C298;
-        Mon, 16 Dec 2019 17:28:14 +0000 (UTC)
-Message-ID: <efc70920e3dcdb694ad5791b845f4cf05478b07f.camel@redhat.com>
-Subject: Re: [MPTCP] Re: [PATCH net-next 09/11] tcp: Check for filled TCP
- option space before SACK
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Eric Dumazet <eric.dumazet@gmail.com>,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        netdev@vger.kernel.org, mptcp@lists.01.org
-Date:   Mon, 16 Dec 2019 18:28:13 +0100
-In-Reply-To: <d5b3a6ed-fb57-e74d-ef63-ebc4ce49e4b7@gmail.com>
-References: <20191213230022.28144-1-mathew.j.martineau@linux.intel.com>
-         <20191213230022.28144-10-mathew.j.martineau@linux.intel.com>
-         <47545b88-94db-e9cd-2f9f-2c6d665246e2@gmail.com>
-         <b9833b748f61c043a2827daee060d4ad4171996e.camel@redhat.com>
-         <d5b3a6ed-fb57-e74d-ef63-ebc4ce49e4b7@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.32.5 (3.32.5-1.fc30) 
+        id S1728824AbfLPR7r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Dec 2019 12:59:47 -0500
+Received: from mail-qv1-f66.google.com ([209.85.219.66]:35485 "EHLO
+        mail-qv1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728806AbfLPR7p (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Dec 2019 12:59:45 -0500
+Received: by mail-qv1-f66.google.com with SMTP id d17so3089173qvs.2;
+        Mon, 16 Dec 2019 09:59:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=0mHiYS8vPmhVYdFs29lXSPMh3DwpAbBEHbcksJ+EGlc=;
+        b=t6YQC3ShlEYSh53qP/UEJ98kZ9TW1sgNdh59cXONq/YhYq8KlNIpO3APVpnkdnUVrc
+         mFf2xceZnXxQ2ysH+hr/yhvkPt1MIyW6eHhOuB8BCfikkdw5ZKPfnbc/qVHYJvuZDROv
+         n6Wcz6Jk6HZsIiGOitsVBsfiEgHfllVvsQFqNUCEDwKeLzsDJR1XlESwJMCTc2P3O0HX
+         LE2LNDe3xWz564CfBec41Bgx/QcJop5mLbYgF7TmChq1B/dcMwcLGnA/hbyf5CH2oVS/
+         +jgz2FC8eTqW7PKHvhHhnR4w8cBkPDbjHHfx4EBpo4nMpUsCLO8F61YdObPlM2cnXdl5
+         tRtg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=0mHiYS8vPmhVYdFs29lXSPMh3DwpAbBEHbcksJ+EGlc=;
+        b=Pz686NzOoyQqoYTugM4Eq0C4jc4mMTcfPWFGopCKvVSzc9hg1stvbHPE1ALUtIGMqz
+         Xn/7jlWivV5gDubDqoO1uAbhKdBbiDW7ogWes8GiolGLXbfJTOZ/Th4ZSR1cMpyZ1ybJ
+         N6ZDP+niNHGGYvX5p7wFhLhL49hJFGPsVvzCERVFXF/jh660GYImvhcGvk053ewZGenn
+         h2wmOkAxZC9lB7oEGNU25qSeiBdIyH43bI71GPDd87TaWVYvnnOpRYA8HfJ9B/7yIRkE
+         wpjdwe2P1P3Ul6tz0leRVNemdaZP1Jq3eCy/Z+JrWbAyV4QXCFSaG+BfvUPBY77zzgdX
+         RG0Q==
+X-Gm-Message-State: APjAAAUi07yymtiQa4w3+O69ok71LFljaJ3ZmyIBqLNe0wcgBSwoSFnI
+        oALGh02eyVmgSsY7nV7pPIVdCnL747RtnfNJ6fE=
+X-Google-Smtp-Source: APXvYqy+wsuiI63oSEuKZ0yaCdSZdwjPdCKDlLHX9R2NNkzPgjSrpPTCACd6Rrdim5HWkZ1mq25hdOe8zmZ7Y83NQpY=
+X-Received: by 2002:a05:6214:38c:: with SMTP id l12mr518115qvy.224.1576519183880;
+ Mon, 16 Dec 2019 09:59:43 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+References: <20191212013521.1689228-1-andriin@fb.com> <20191216144404.GG14887@linux.fritz.box>
+In-Reply-To: <20191216144404.GG14887@linux.fritz.box>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 16 Dec 2019 09:59:33 -0800
+Message-ID: <CAEf4BzYhmFvhL_DgeXK8xxihcxcguRzox2AXpjBS1BB4n9d7rQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 0/4] Fix perf_buffer creation on systems with
+ offline CPUs
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 2019-12-16 at 08:55 -0800, Eric Dumazet wrote:
-> On 12/16/19 4:52 AM, Paolo Abeni wrote:
-> > Thank you for the feedback!
-> > 
-> > Unfortunatelly, the above commit is not enough when MPTCP is enabled,
-> > as, without this patch, we can reach the following code:
-> > 
-> > 		const unsigned int remaining = MAX_TCP_OPTION_SPACE - size;
-> > 		opts->num_sack_blocks =
-> > 			min_t(unsigned int, eff_sacks,
-> > 			      (remaining - TCPOLEN_SACK_BASE_ALIGNED) /
-> > 			      TCPOLEN_SACK_PERBLOCK);
-> > 
-> > with 'size == MAX_TCP_OPTION_SPACE' and num_sack_blocks will be
-> > miscalculated. So we need 'fix' but only for MPTCP/when MPTCP is
-> > enabled. Still ok for a -net commit?
-> > 
-> 
-> Does it means MPTCP flows can not use SACK at all ? That would be very bad.
-> 
-> What is the size of MPTCP options ?
+On Mon, Dec 16, 2019 at 6:44 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
+>
+> On Wed, Dec 11, 2019 at 05:35:20PM -0800, Andrii Nakryiko wrote:
+> > This patch set fixes perf_buffer__new() behavior on systems which have some of
+> > the CPUs offline/missing (due to difference between "possible" and "online"
+> > sets). perf_buffer will create per-CPU buffer and open/attach to corresponding
+> > perf_event only on CPUs present and online at the moment of perf_buffer
+> > creation. Without this logic, perf_buffer creation has no chances of
+> > succeeding on such systems, preventing valid and correct BPF applications from
+> > starting.
+>
+> Once CPU goes back online and processes BPF events, any attempt to push into
+> perf RB via bpf_perf_event_output() with flag BPF_F_CURRENT_CPU would silently
 
-MPTCP DSS+ACK+csum is up to 28 bytes, but an MPTCP stream does not need
-to attach such option to each packet.
-
-Bare MPTCP ACK are at most 12 bytes, so there is enough room for sack.
-
-The MPTCP specs allow for different opt sizes, because e.g. sequence
-numbers can be either 32 or 64 bits. Currently we only implement 64
-bits seq.
-
-Paolo
+bpf_perf_event_output() will return error code in such case, so it's
+not exactly undetectable by application.
 
 
+> get discarded. Should rather perf API be fixed instead of plain skipping as done
+> here to at least allow creation of ring buffer for BPF to avoid such case?
+
+Can you elaborate on what perf API fix you have in mind? Do you mean
+for perf to allow attaching ring buffer to offline CPU or something
+else?
+
+>
+> > Andrii Nakryiko (4):
+> >   libbpf: extract and generalize CPU mask parsing logic
+> >   selftests/bpf: add CPU mask parsing tests
+> >   libbpf: don't attach perf_buffer to offline/missing CPUs
+> >   selftests/bpf: fix perf_buffer test on systems w/ offline CPUs
+> >
+> >  tools/lib/bpf/libbpf.c                        | 157 ++++++++++++------
+> >  tools/lib/bpf/libbpf_internal.h               |   2 +
+> >  .../selftests/bpf/prog_tests/cpu_mask.c       |  78 +++++++++
+> >  .../selftests/bpf/prog_tests/perf_buffer.c    |  29 +++-
+> >  4 files changed, 213 insertions(+), 53 deletions(-)
+> >  create mode 100644 tools/testing/selftests/bpf/prog_tests/cpu_mask.c
+> >
+> > --
+> > 2.17.1
+> >
