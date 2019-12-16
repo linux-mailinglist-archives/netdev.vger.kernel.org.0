@@ -2,77 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7364E120237
-	for <lists+netdev@lfdr.de>; Mon, 16 Dec 2019 11:21:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ADDCD120248
+	for <lists+netdev@lfdr.de>; Mon, 16 Dec 2019 11:25:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727407AbfLPKUp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Dec 2019 05:20:45 -0500
-Received: from mail-ua1-f67.google.com ([209.85.222.67]:42644 "EHLO
-        mail-ua1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727289AbfLPKUp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Dec 2019 05:20:45 -0500
-Received: by mail-ua1-f67.google.com with SMTP id d8so1872999uak.9
-        for <netdev@vger.kernel.org>; Mon, 16 Dec 2019 02:20:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=MkbL1d/SzqUihRGV9EGxMppkoVLFMzfPIRPZl16fK20=;
-        b=tHE/FqAndfXj+pF3rpKcyZB3P2mC/ivGu+RuNn7h6U8fH6CwMbbwsVUcsp/rTQHd7w
-         SnHZW/qVxTnvRge2orkhtQ9Xsf73XYevjXfqvfdKDkG6TobwnqhLBRLLAqcTfYe0WEYP
-         TemamdhsBonUMSlcJPhpPbtBP1PxXnbcO6gUB921WNamWplR0wZicOySkVBqhLyXZ1Yo
-         5/Wicv3VUbruyGwEo/ySRP7hgpg/Rx9tzYgwHjF/x5Tt0Rb19SDBDqLbx7dadCPp/2w3
-         55sfvzdVwUdtHbd82oEpCim18++9O0mztUBgkt/XgEzxg9/Ghg+3d2LhqjyhP+4MBMHG
-         ziSw==
+        id S1727345AbfLPKYT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Dec 2019 05:24:19 -0500
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:36700 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727319AbfLPKYS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Dec 2019 05:24:18 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1576491857;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=RFU4tPXHiyF5aYxO9pyn8VgUnU9YEjy9VpkSc1zyn5o=;
+        b=eD3vwZADaZVySNwvOZY6vbSTSAOyKTAUFt6E5Ijk4DqoaolGqwrLTcJ9K03jGqJZgOcrHf
+        TlU4TXgR0eaXSWrGZHeYQndqlMzwLEfgUUl5nYviwBOvvAJ6OWt7dCGP/u1C/4br1JhHmL
+        IX60zDIdzT4G6S8YTNF6c9Sqb+0mNlE=
+Received: from mail-lf1-f71.google.com (mail-lf1-f71.google.com
+ [209.85.167.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-29-ECRB_yqzOIyY2Lspus-SCw-1; Mon, 16 Dec 2019 05:24:14 -0500
+X-MC-Unique: ECRB_yqzOIyY2Lspus-SCw-1
+Received: by mail-lf1-f71.google.com with SMTP id v10so475823lfa.14
+        for <netdev@vger.kernel.org>; Mon, 16 Dec 2019 02:24:14 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=MkbL1d/SzqUihRGV9EGxMppkoVLFMzfPIRPZl16fK20=;
-        b=kQWYcF4ElSEImk5PyfKjEokwpObsuIYlXKv7x1i1Fa3FKPv55sp+cajUASk2EPedBc
-         De1ss09OuURaXExtpvhYyL8GtNmtK4tEsNvFPpP3EGE9ZqgO2V/3aTCCZCkw8PzqLVHB
-         R2eBN1CXa87Fp7+GnbtPu6FzxUnXRsbm8xjQ8qh5sgC7V8HoFFHQwYs8qDNwv/B0K5qA
-         94flDuMpjjfYZ24gpRIn1Bsdu2IFyUYOxxKDOKA5DueKn27Fs6J4xXYrUQMke5DPCrTb
-         cmflsy4mTW+Qilve5+rnYrZj38teiAz9eVv1qo4A4ohbDgC8wq9Pc3S7R5CODuQ38/T1
-         rnDg==
-X-Gm-Message-State: APjAAAUSJG0HxRY+r2iHj1Ie3OfHPBgFUcvmg18D7Pjfxi9BlIPjRZHH
-        TxAoczXhHrdOnJ1jnGkR6ZpocNNaVLylToJS/ofvyw==
-X-Google-Smtp-Source: APXvYqytRcaEhtLm4UxsiP0XcQ5WA/lllFA43ewjb5KkmW6LveWszgSmmf6NQVq50n36TRexdsgdRA2S2NxjbZ7+23A=
-X-Received: by 2002:ab0:7219:: with SMTP id u25mr23212467uao.10.1576491644556;
- Mon, 16 Dec 2019 02:20:44 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=RFU4tPXHiyF5aYxO9pyn8VgUnU9YEjy9VpkSc1zyn5o=;
+        b=i+gVu1VdKnEW3awodj7SynUSn04tna3J+AkXhOzJoTTXHKZAHoB0USt+I4bpwm0/+o
+         tQxfk1C3Ml3XJWgByAZXYIjRLx2iPJVzegoZaexWAi2EcxtUO5+JQ6qIbGqvUDqsSw2G
+         8+Tuuy48Pvm2jeBQ4ttxkVpCAMU8e3uLCD9jUW6LxeVaaicjDooTctW2N8xlK3VA07pw
+         tX82jeySwQ7mTxJJ2nVvCpYRjIn8lC3tOY1W83Hewjyksun88gkLW3f7n/ykqQzX1kQd
+         RaC2Bs5P9lktY3LcWxpoi23qEV51325Nc/mKHesYyv2A3+tdkjFK7k4aFrq7R+XtUvz8
+         hVYA==
+X-Gm-Message-State: APjAAAWSv8jWN9W4N3EW1XJhbDkzE4wjFlkx02YpoCaRrhavD6VHe86E
+        wqg+9ZmJejmC1YfLAQNHv+CBQlRIWGcwklAB7mEUUWVU9yMvWplhVlAp7vIYtEXN57CKx4O1hJF
+        13Q0n6VurofY+EPSs
+X-Received: by 2002:a05:6512:48c:: with SMTP id v12mr16580115lfq.56.1576491853422;
+        Mon, 16 Dec 2019 02:24:13 -0800 (PST)
+X-Google-Smtp-Source: APXvYqxyA18z62Rzo+ToA3TXc0ALhkIIhVIByPHlctWEzIt7N3SZiz4XBZPpv3n9nTXEbn8ENAZEVw==
+X-Received: by 2002:a05:6512:48c:: with SMTP id v12mr16580110lfq.56.1576491853282;
+        Mon, 16 Dec 2019 02:24:13 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
+        by smtp.gmail.com with ESMTPSA id u20sm10203028lju.34.2019.12.16.02.24.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 16 Dec 2019 02:24:12 -0800 (PST)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id D1C101819EB; Mon, 16 Dec 2019 11:24:11 +0100 (CET)
+From:   =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Cc:     =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: [PATCH bpf-next] samples/bpf: Add missing -lz to TPROGS_LDLIBS
+Date:   Mon, 16 Dec 2019 11:24:05 +0100
+Message-Id: <20191216102405.353834-1-toke@redhat.com>
+X-Mailer: git-send-email 2.24.0
 MIME-Version: 1.0
-References: <20191215011045.15453-1-navid.emamdoost@gmail.com>
-In-Reply-To: <20191215011045.15453-1-navid.emamdoost@gmail.com>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Mon, 16 Dec 2019 11:20:33 +0100
-Message-ID: <CACRpkdYZDj+rO0WL3wFtVM0Kosx5LWrKDLkUvmqV4EVXtSeO-w@mail.gmail.com>
-Subject: Re: [PATCH] net: gemini: Fix memory leak in gmac_setup_txqs
-To:     Navid Emamdoost <navid.emamdoost@gmail.com>
-Cc:     Hans Ulli Kroll <ulli.kroll@googlemail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        =?UTF-8?B?TWljaGHFgiBNaXJvc8WCYXc=?= <mirq-linux@rere.qmqm.pl>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        netdev <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        emamd001@umn.edu
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Dec 15, 2019 at 2:11 AM Navid Emamdoost
-<navid.emamdoost@gmail.com> wrote:
+Since libbpf now links against zlib, this needs to be included in the
+linker invocation for the userspace programs in samples/bpf that link
+statically against libbpf.
 
-> In the implementation of gmac_setup_txqs() the allocated desc_ring is
-> leaked if TX queue base is not aligned. Release it via
-> dma_free_coherent.
->
-> Fixes: 4d5ae32f5e1e ("net: ethernet: Add a driver for Gemini gigabit ethernet")
-> Signed-off-by: Navid Emamdoost <navid.emamdoost@gmail.com>
+Fixes: 166750bc1dd2 ("libbpf: Support libbpf-provided extern variables")
+Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
+---
+ samples/bpf/Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Looks correct to me,
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+diff --git a/samples/bpf/Makefile b/samples/bpf/Makefile
+index 1fc42ad8ff49..b00651608765 100644
+--- a/samples/bpf/Makefile
++++ b/samples/bpf/Makefile
+@@ -196,7 +196,7 @@ endif
+ 
+ TPROGCFLAGS_bpf_load.o += -Wno-unused-variable
+ 
+-TPROGS_LDLIBS			+= $(LIBBPF) -lelf
++TPROGS_LDLIBS			+= $(LIBBPF) -lelf -lz
+ TPROGLDLIBS_tracex4		+= -lrt
+ TPROGLDLIBS_trace_output	+= -lrt
+ TPROGLDLIBS_map_perf_test	+= -lrt
+-- 
+2.24.0
 
-Yours,
-Linus Walleij
