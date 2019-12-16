@@ -2,112 +2,200 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A225F11FFAD
-	for <lists+netdev@lfdr.de>; Mon, 16 Dec 2019 09:28:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9BF9F11FFB1
+	for <lists+netdev@lfdr.de>; Mon, 16 Dec 2019 09:29:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726772AbfLPI2l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Dec 2019 03:28:41 -0500
-Received: from mail-pg1-f196.google.com ([209.85.215.196]:37968 "EHLO
-        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726077AbfLPI2l (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Dec 2019 03:28:41 -0500
-Received: by mail-pg1-f196.google.com with SMTP id a33so3261897pgm.5;
-        Mon, 16 Dec 2019 00:28:41 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=n+yuMf5nWYBUrNRd22g5pPieaL+STd4Dztgr45WcMBg=;
-        b=dAkDx/5s4OJ3C36pTvAa4LkNcAgnsq0iuNb07xc29PZddLGkmCXT3KsB7z9G4G8KDC
-         y7m8Ehgq+raj7DfOGDpSTNGJOZtZ8EBKUbnGuMfIYLGfRRQuT24jw2V9BhKzJCw5DDTJ
-         d9OJqZunQAsz7cd+uHEEZgHg3Sd2fM7wL8CdkGHUchaRsOqnYe0mIE2WlX6mNrhsPp5p
-         TBWs3Ulg4lcSEgEnpoKKRAG5XXziDkk68W90y+AbixxiGNNVxVQ1YdrV+4G2yr4y7y6X
-         l6kLSPTmSnUFWlv8XPm9GEWL+ZuOT2M6gN83JMkvg6wX94jNPz38EHM9iERrL3QBwXy9
-         XSOA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=n+yuMf5nWYBUrNRd22g5pPieaL+STd4Dztgr45WcMBg=;
-        b=IUQGMv77WLeiDUP7fJlPS7RsY9KWoRGRYwdxY5cYfjXrHa7U1CguGx7aYBpar/d0E2
-         8GlgT2TXEuTcMvibBZURmijuhQYKlJd4gF22ca0tu3CPle2c39M7x6sLqX7P/zA8lsAC
-         6SNC4nb/7pdM60T+GFv8nCPU3RqH319dcj33jLom0awE0SoxQcnoAUJAclj7sPLdwnRr
-         3bOo6/nMXtxxD696KLxWOI2q0AlbiQLLECq+YNhCMKLxggiOKp0f9L/MFO/d27s4Bh30
-         p8ccqfXn5Qggy00hACXx5p2x8VJZskGDKnNiCoMlauTZjip3xqY2BI07CMJ6+Qj/w73R
-         DV/Q==
-X-Gm-Message-State: APjAAAW8lHn20XcGDVCEMbG19J6xF1NbLYiJGft+KGbCtIintUKRSj54
-        NZ2u/w+h/UYi28W5z5nG7j0=
-X-Google-Smtp-Source: APXvYqxS7IgzFZgzl5dLgqw/49FZ6wCwNpLieGppWqUw3ssbzktmK4RQzVEfU5VSmmMOoSxwCjS1mw==
-X-Received: by 2002:a62:a515:: with SMTP id v21mr14769992pfm.128.1576484920803;
-        Mon, 16 Dec 2019 00:28:40 -0800 (PST)
-Received: from localhost.localdomain ([222.151.198.97])
-        by smtp.gmail.com with ESMTPSA id v72sm18383861pjb.25.2019.12.16.00.28.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 Dec 2019 00:28:40 -0800 (PST)
-From:   Prashant Bhole <prashantbhole.linux@gmail.com>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Prashant Bhole <prashantbhole.linux@gmail.com>,
-        Andrii Nakryiko <andriin@fb.com>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: [PATCH bpf-next] libbpf: fix build by renaming variables
-Date:   Mon, 16 Dec 2019 17:27:38 +0900
-Message-Id: <20191216082738.28421-1-prashantbhole.linux@gmail.com>
-X-Mailer: git-send-email 2.21.0
+        id S1726875AbfLPI3b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Dec 2019 03:29:31 -0500
+Received: from mx2.suse.de ([195.135.220.15]:33036 "EHLO mx1.suse.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726846AbfLPI3a (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 16 Dec 2019 03:29:30 -0500
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx1.suse.de (Postfix) with ESMTP id C0203AD35;
+        Mon, 16 Dec 2019 08:29:27 +0000 (UTC)
+Subject: Re: [Xen-devel] [PATCH net-next] xen-netback: get rid of old udev
+ related code
+To:     "Durrant, Paul" <pdurrant@amazon.com>,
+        David Miller <davem@davemloft.net>
+Cc:     "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>,
+        "wei.liu@kernel.org" <wei.liu@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+References: <20191212135406.26229-1-pdurrant@amazon.com>
+ <20191212.110513.1770889236741616001.davem@davemloft.net>
+ <cefcf3a4-fc10-d62a-cac9-81f0e47710a8@suse.com>
+ <9f6d296e94744ce48d3f72fe4d3fd136@EX13D32EUC003.ant.amazon.com>
+ <39762aba-7c47-6b79-b931-771bc16195a2@suse.com>
+ <9c943511cb6b483f8f0da6ce05a614cb@EX13D32EUC003.ant.amazon.com>
+ <169af9ff-9f2a-0fd5-82b5-05e75450445e@suse.com>
+ <09b986c4e89c428da3d9cdd05cd82c54@EX13D32EUC003.ant.amazon.com>
+From:   =?UTF-8?B?SsO8cmdlbiBHcm/Dnw==?= <jgross@suse.com>
+Message-ID: <79a0e144-6e98-9a12-2ad8-89459ae2c426@suse.com>
+Date:   Mon, 16 Dec 2019 09:29:26 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+In-Reply-To: <09b986c4e89c428da3d9cdd05cd82c54@EX13D32EUC003.ant.amazon.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In btf__align_of() variable name 't' is shadowed by inner block
-declaration of another variable with same name. Patch renames
-variables in order to fix it.
+On 16.12.19 09:18, Durrant, Paul wrote:
+>> -----Original Message-----
+>> From: Jürgen Groß <jgross@suse.com>
+>> Sent: 16 December 2019 08:10
+>> To: Durrant, Paul <pdurrant@amazon.com>; David Miller
+>> <davem@davemloft.net>
+>> Cc: xen-devel@lists.xenproject.org; wei.liu@kernel.org; linux-
+>> kernel@vger.kernel.org; netdev@vger.kernel.org
+>> Subject: Re: [Xen-devel] [PATCH net-next] xen-netback: get rid of old udev
+>> related code
+>>
+>> On 13.12.19 11:12, Durrant, Paul wrote:
+>>>> -----Original Message-----
+>>>> From: Jürgen Groß <jgross@suse.com>
+>>>> Sent: 13 December 2019 10:02
+>>>> To: Durrant, Paul <pdurrant@amazon.com>; David Miller
+>>>> <davem@davemloft.net>
+>>>> Cc: xen-devel@lists.xenproject.org; wei.liu@kernel.org; linux-
+>>>> kernel@vger.kernel.org; netdev@vger.kernel.org
+>>>> Subject: Re: [Xen-devel] [PATCH net-next] xen-netback: get rid of old
+>> udev
+>>>> related code
+>>>>
+>>>> On 13.12.19 10:24, Durrant, Paul wrote:
+>>>>>> -----Original Message-----
+>>>>>> From: Jürgen Groß <jgross@suse.com>
+>>>>>> Sent: 13 December 2019 05:41
+>>>>>> To: David Miller <davem@davemloft.net>; Durrant, Paul
+>>>>>> <pdurrant@amazon.com>
+>>>>>> Cc: xen-devel@lists.xenproject.org; wei.liu@kernel.org; linux-
+>>>>>> kernel@vger.kernel.org; netdev@vger.kernel.org
+>>>>>> Subject: Re: [Xen-devel] [PATCH net-next] xen-netback: get rid of old
+>>>> udev
+>>>>>> related code
+>>>>>>
+>>>>>> On 12.12.19 20:05, David Miller wrote:
+>>>>>>> From: Paul Durrant <pdurrant@amazon.com>
+>>>>>>> Date: Thu, 12 Dec 2019 13:54:06 +0000
+>>>>>>>
+>>>>>>>> In the past it used to be the case that the Xen toolstack relied
+>> upon
+>>>>>>>> udev to execute backend hotplug scripts. However this has not been
+>>>> the
+>>>>>>>> case for many releases now and removal of the associated code in
+>>>>>>>> xen-netback shortens the source by more than 100 lines, and removes
+>>>>>> much
+>>>>>>>> complexity in the interaction with the xenstore backend state.
+>>>>>>>>
+>>>>>>>> NOTE: xen-netback is the only xenbus driver to have a functional
+>>>>>> uevent()
+>>>>>>>>           method. The only other driver to have a method at all is
+>>>>>>>>           pvcalls-back, and currently pvcalls_back_uevent() simply
+>>>> returns
+>>>>>> 0.
+>>>>>>>>           Hence this patch also facilitates further cleanup.
+>>>>>>>>
+>>>>>>>> Signed-off-by: Paul Durrant <pdurrant@amazon.com>
+>>>>>>>
+>>>>>>> If userspace ever used this stuff, I seriously doubt you can remove
+>>>> this
+>>>>>>> even if it hasn't been used in 5+ years.
+>>>>>>
+>>>>>> Hmm, depends.
+>>>>>>
+>>>>>> This has been used by Xen tools in dom0 only. If the last usage has
+>>>> been
+>>>>>> in a Xen version which is no longer able to run with current Linux in
+>>>>>> dom0 it could be removed. But I guess this would have to be a rather
+>>>> old
+>>>>>> version of Xen (like 3.x?).
+>>>>>>
+>>>>>> Paul, can you give a hint since which Xen version the toolstack no
+>>>>>> longer relies on udev to start the hotplug scripts?
+>>>>>>
+>>>>>
+>>>>> The udev rules were in a file called tools/hotplug/Linux/xen-
+>>>> backend.rules (in xen.git), and a commit from Roger removed the NIC
+>> rules
+>>>> in 2012:
+>>>>>
+>>>>> commit 57ad6afe2a08a03c40bcd336bfb27e008e1d3e53
+>>>>
+>>>> Xen 4.2
+>>>>
+>>>>> The last commit I could find to that file modified its name to xen-
+>>>> backend.rules.in, and this was finally removed by George in 2015:
+>>>>>
+>>>>> commit 2ba368d13893402b2f1fb3c283ddcc714659dd9b
+>>>>
+>>>> Xen 4.6
+>>>>
+>>>>> So, I think this means anyone using a version of the Xen tools within
+>>>> recent memory will be having their hotplug scripts called directly by
+>>>> libxl (and having udev rules present would actually be counter-
+>> productive,
+>>>> as George's commit states and as I discovered the hard way when the
+>> change
+>>>> was originally made).
+>>>>
+>>>> The problem are systems with either old Xen versions (before Xen 4.2)
+>> or
+>>>> with other toolstacks (e.g. Xen 4.4 with xend) which want to use a new
+>>>> dom0 kernel.
+>>>>
+>>>> And I'm not sure there aren't such systems (especially in case someone
+>>>> wants to stick with xend).
+>>>>
+>>>
+>>> But would someone sticking with such an old toolstack expect to run on
+>> an unmodified upstream dom0? There has to be some way in which we can
+>> retire old code.
+>>
+>> As long as there are no hypervisor interface related issues
+>> prohibiting running dom0 unmodified I think the expectation to be
+>> able to use the kernel in that environment is fine.
+>>
+> 
+> I think we need a better policy in future then otherwise we will only collect baggage.
 
-  CC       sharedobjs/btf.o
-btf.c: In function ‘btf__align_of’:
-btf.c:303:21: error: declaration of ‘t’ shadows a previous local [-Werror=shadow]
-  303 |   int i, align = 1, t;
-      |                     ^
-btf.c:283:25: note: shadowed declaration is here
-  283 |  const struct btf_type *t = btf__type_by_id(btf, id);
-      |
+The Linux kernel policy regarding user interfaces and existing use cases
+is rather clear and we should not deviate without very strong reasons.
 
-Fixes: 3d208f4ca111 ("libbpf: Expose btf__align_of() API")
-Signed-off-by: Prashant Bhole <prashantbhole.linux@gmail.com>
----
- tools/lib/bpf/btf.c | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+> 
+>> Another question coming up would be: how is this handled in a driver
+>> domain running netback? Which component is starting the hotplug script
+>> there? I don't think we can assume a standard Xen toolset in this case.
+>> So I'd rather leave this code as it is instead of breaking some rare
+>> but valid use cases.
+> 
+> I am not sure there is a standard. Do we 'support' driver domains with any sort of tools API or do they really just have to notice things via xenstore? I agree Linux running as a driver domain could indeed use udev.
 
-diff --git a/tools/lib/bpf/btf.c b/tools/lib/bpf/btf.c
-index 520021939d81..5f04f56e1eb6 100644
---- a/tools/lib/bpf/btf.c
-+++ b/tools/lib/bpf/btf.c
-@@ -300,16 +300,16 @@ int btf__align_of(const struct btf *btf, __u32 id)
- 	case BTF_KIND_UNION: {
- 		const struct btf_member *m = btf_members(t);
- 		__u16 vlen = btf_vlen(t);
--		int i, align = 1, t;
-+		int i, max_align = 1, align;
- 
- 		for (i = 0; i < vlen; i++, m++) {
--			t = btf__align_of(btf, m->type);
--			if (t <= 0)
--				return t;
--			align = max(align, t);
-+			align = btf__align_of(btf, m->type);
-+			if (align <= 0)
-+				return align;
-+			max_align = max(max_align, align);
- 		}
- 
--		return align;
-+		return max_align;
- 	}
- 	default:
- 		pr_warn("unsupported BTF_KIND:%u\n", btf_kind(t));
--- 
-2.21.0
+I intend in no way to break projects like Qubes. Disaggregation is
+one of the very big advantages of Xen over KVM, Hyper-V and VMWare.
+We should not give that up "just to get rid of some code". Period.
 
+> 
+>>
+>>>
+>>> Aside from the udev kicks though, I still think the hotplug-status/ring
+>> state interaction is just bogus anyway. As I said in a previous thread,
+>> the hotplug-status ought to be indicated as carrier status, if at all, so
+>> I still think all that code ought to go.
+>>
+>> I agree regarding the future interface, but with the carrier state just
+>> being in the plans to be added now, it is clearly too early to remove
+>> the code with that reasoning.
+> 
+> I don't think so. Like I said, I think the hotplug status has nothing to do with the state of the shared ring. Even with the code as-is, nothing informs the frontend if the netif is subsequently closed or re-plumbed, so why must we continue to maintain this code? AFAICT it is just not fit for purpose.
+
+If it is being used that way we need to continue supporting it.
+
+
+Juergen
