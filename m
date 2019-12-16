@@ -2,68 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9193011FE6A
-	for <lists+netdev@lfdr.de>; Mon, 16 Dec 2019 07:19:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 920D511FE84
+	for <lists+netdev@lfdr.de>; Mon, 16 Dec 2019 07:44:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726638AbfLPGTA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Dec 2019 01:19:00 -0500
-Received: from mail-lf1-f68.google.com ([209.85.167.68]:42030 "EHLO
-        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726054AbfLPGS7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Dec 2019 01:18:59 -0500
-Received: by mail-lf1-f68.google.com with SMTP id y19so3326779lfl.9;
-        Sun, 15 Dec 2019 22:18:57 -0800 (PST)
+        id S1726565AbfLPGng (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Dec 2019 01:43:36 -0500
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:43978 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726054AbfLPGnf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Dec 2019 01:43:35 -0500
+Received: by mail-wr1-f67.google.com with SMTP id d16so5769827wre.10
+        for <netdev@vger.kernel.org>; Sun, 15 Dec 2019 22:43:34 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Lk0BXIIiWqEO9kfeGGGJrJLDU8Vj1PjkOxOAYcW+QLc=;
-        b=nm3RMFhC0srV1g0QGrUSXww7JWUzdFhBP9sMb8Cx8bQkg/0X9t9KWdLtmTiQyWMFbN
-         pVwjq+Oaws8GRuTysRty6CiMsZOYoYlnZJmsQaFfZufrR0I1gcyz9+ywGYGQE56q0eJL
-         SknHfKC83O/XI6KLc/QbHlrzqgH77ko0UkzYsWSBh0nPOVGZ8lO95dJvVo0e1AoD9Dk5
-         8tKU+O8BbvLcg738ZBOnosvOd64ktIDz9GxAhlhttUIjvEczkaq4opElVI1CR7AmQ5N5
-         Iiu+bJZFrGbR+s5eszBAkdDAdlZr1tFin7jOxWjbAZGh4K0qpAPugrDmPagKxEpxzAGI
-         JVMg==
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=zONt8ZotgxIhE9t4ArTHKIpK1jbINy0xMssPTxCotkc=;
+        b=lTSZ9knHXd16SmD5eON9OLY3gpuixyXdTrrj2LMUtrQJqIkn1BWsvFOibWAA88/Gtk
+         KOZGwKK0z2o5bPa4KpKyIYG8BsjnE2IODu0M2M3zD7d7PduR3aBHu0mSQaf4kLyCMnBq
+         89AQxk2H+4CCFB9MuE1B2XL8L/bO96K6z8Rg/31X+7IixCu1UQgWPgoDF5qoIG20Hj8U
+         toRgzDbJewMsJ26kXL1JGgBKT5Onl/L76C8p/50WRWHYuH/YVcASZ+7lSPQmPz8S950S
+         xhDVaxgodWeYZlji3km43xINdIsmWk8l2SBk0x8NsLwP/v02B0s5maTaRmTl89IF0Fzn
+         NBiw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Lk0BXIIiWqEO9kfeGGGJrJLDU8Vj1PjkOxOAYcW+QLc=;
-        b=ndr+zSPXcyXOJtzsdOuHHEJD303Kup87v3gdICmjaCE7G00rpinFdzTrTc/gqCTdmj
-         Kc54glgi23IaJVeXmTby8xvwiobgCqYnVwECPuCOOc2mmFa4qUaNJxnUCgXtNLeksdc6
-         KUNOWOJHIqACE3riBi8t7GkAiSWDvn7CICN+l9LLz9qDqwpPXA4zJkSg1ZxzO2xyPaZ0
-         6lgVac63uSgKmtIAsgS+D6gp2GD5k/fVEqpS+ohX/Ms3vNBSXx7C9VX4LiP2YG7QyUcf
-         BrJkdeC1vpdkn5VvHY58PsGWLe8p6wEDos5ndeiQHp3mMVCt1u+yoqOQ3JWsUupoxL+H
-         g81Q==
-X-Gm-Message-State: APjAAAXeKnBKWuW0FZh284bcwnZhxVALV3M5BoIPO08GrvqAKvF4ByJ5
-        GoUkiX6E53zfE9wzBtPHJtseuN+8MdOUCdmNHNHvbA==
-X-Google-Smtp-Source: APXvYqzVlFw1aI21I6iZcTCXHbdyY0F1kGU9byOxk6ZA2qRNn21TUTU2wODR03Nic4UFqQ7HYHbGEnO5AciswL3pCbE=
-X-Received: by 2002:ac2:47ec:: with SMTP id b12mr14968038lfp.162.1576477137015;
- Sun, 15 Dec 2019 22:18:57 -0800 (PST)
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=zONt8ZotgxIhE9t4ArTHKIpK1jbINy0xMssPTxCotkc=;
+        b=TPCwEZH93K4guoLeBxCoHsuNQFzJcqsBRKEpdvR+IbZmLX6a9Pi/Hp7Lo7T9yRqcEu
+         HTORu0ZSz1nJsNRz/8waP4r5C+/+Drr60glp4soiLOrJpUCGoX9xAzsXpj2mOgqsAfo9
+         0BO54lNlevCpiaEP2XsVUU4H4duD3kQl5m7jcJvoC3T4CYKMqj50KKAbbcxmtpGMg8pZ
+         WbQfnn+KjE/y74JrwGI1bMOsmZWI23JJ6vaWym4X84K5Hc1qfvhFFLOmIibrgnEurP9k
+         T1NgU2RMwLWDJ9I1FSL9eTOvhDIkL34OP+ViOLVNR3ISZvyUwuFiqHmue9d6ivwY3MED
+         0sow==
+X-Gm-Message-State: APjAAAX4pYjLwAi4KSevhXiaJATdpRy3VJcuh4atslM7BMiUMWpw68Ip
+        5CWaq3JTSuD6H0UXfrTQiXzWRwTtPQyAkmin46g=
+X-Google-Smtp-Source: APXvYqzi1LZwOugZLgNPvO///RgC1ZT7oesLYIzA/3q82xAIiwoF5EfkPyllIK1ii8+7dF89DUQYzMyhk1xlrRr1Lok=
+X-Received: by 2002:adf:fa12:: with SMTP id m18mr27243333wrr.309.1576478613881;
+ Sun, 15 Dec 2019 22:43:33 -0800 (PST)
 MIME-Version: 1.0
-References: <20191215233046.78212-1-jbi.octave@gmail.com> <dd0b6577-aaf6-a557-4cdd-ddc490995c38@fb.com>
- <9d195192-551f-377c-d440-8156dfe20b7b@fb.com>
-In-Reply-To: <9d195192-551f-377c-d440-8156dfe20b7b@fb.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Sun, 15 Dec 2019 22:18:45 -0800
-Message-ID: <CAADnVQJYnt4WKMV8hDKAhf3w6Ju0Th3qVJCkbLFOnYPdnQe+pw@mail.gmail.com>
-Subject: Re: [PATCH] kernel: bpf: add __release sparse annotation
-To:     Yonghong Song <yhs@fb.com>
-Cc:     Jules Irenge <jbi.octave@gmail.com>,
-        "bokun.feng@gmail.com" <bokun.feng@gmail.com>,
-        Martin Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Received: by 2002:a05:600c:2190:0:0:0:0 with HTTP; Sun, 15 Dec 2019 22:43:33
+ -0800 (PST)
+Reply-To: malukahobajaluwa@gmail.com
+From:   Mr Malukah Obajaluwa <rhamatouwashidha@gmail.com>
+Date:   Mon, 16 Dec 2019 06:43:33 +0000
+Message-ID: <CAAFd3oe+17oY=mNH1eOoYyX1et+X8WAhPUUdHPwXoZQjjSBjEg@mail.gmail.com>
+Subject: Dear friend.
+To:     undisclosed-recipients:;
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Dec 15, 2019 at 10:17 PM Yonghong Song <yhs@fb.com> wrote:
->
-> Resend due to incorrect bpf vger email address in the original email.
+Dear friend.
+I assume you and your family are in good health. I am the foreign
+operations Manager at one of the leading generation bank here in West
+Africa.
 
-This patch is not in patchworks. Cannot be reviewed/applied.
+This being a wide world in which it can be difficult to make new
+acquaintances and because it is virtually impossible to know who is
+trustworthy and who can be believed, i have decided to repose
+confidence in you after much fasting and prayer. It is only because of
+this that I have decided to confide in you and to share with you this
+confidential business.
+
+In my bank; there resides an overdue and unclaimed sum of $15.5m,
+(Fifteen Million Five Hundred Thousand Dollars Only) when the account
+holder suddenly passed on, he left no beneficiary who would be
+entitled to the receipt of this fund. For this reason, I have found it
+expedient to transfer this fund to a trustworthy individual with
+capacity to act as foreign business partner. Thus i humbly request
+your assistance to claim this fund.
+
+Upon the transfer of this fund in your account, you will take 45% as
+your share from the total fund, 10% will be shared to Charity
+Organizations in both country and 45% will be for me. Please if you
+are really sure you can handle this project, contact me immediately.
+Yours Faithful,Mr Malukah Obajaluwa
+malukahobajaluwa@gmail.com
