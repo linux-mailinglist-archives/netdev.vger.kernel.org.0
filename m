@@ -2,56 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E3F31200A6
-	for <lists+netdev@lfdr.de>; Mon, 16 Dec 2019 10:18:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 817C01200A8
+	for <lists+netdev@lfdr.de>; Mon, 16 Dec 2019 10:18:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727052AbfLPJNx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Dec 2019 04:13:53 -0500
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:38109 "EHLO
-        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726313AbfLPJNx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Dec 2019 04:13:53 -0500
-Received: by mail-pg1-f195.google.com with SMTP id a33so3325332pgm.5;
-        Mon, 16 Dec 2019 01:13:52 -0800 (PST)
+        id S1727067AbfLPJN4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Dec 2019 04:13:56 -0500
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:34832 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726313AbfLPJNz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Dec 2019 04:13:55 -0500
+Received: by mail-pg1-f194.google.com with SMTP id l24so3330854pgk.2;
+        Mon, 16 Dec 2019 01:13:55 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=vpY7MBXQP9D/muTQHYI2tuNdnNT18mzMK9mr9lmyumc=;
-        b=WXf++/PI7Qj1eL7NF3/ysask8jTXfygbq3KmxUxE4Ly3cTk1wkgW9Oh9lRRCCaRqux
-         SlKDDtj6aug//loLK7vPWhfbUKbw0Pw0jawhDC8jAVB6/2TUptn1mXUtLZEDTIQPyHCt
-         yUBIez9eXZJVQPXdOBicsnh8u5wBSTHcmooFYg8N0xFyCxaraVtG3iAxOETh+JzC70ah
-         vdVeV4rDnqq2ZLIlovXlRf7hLcU7HDnTqJy1/oowuIjgyyRPsMALcKMJcDhoD7i2pdTU
-         nYu/fmY7k28qZC3zNCm09EUnRGlMRGUij0DNVh6EIeHfVTFF5OFYhe9t4FlmgbRiAvs6
-         aNlA==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=bYazlit0M4yBFQMfwCbOmC5g6AIzkoA/91yiEDZt7b0=;
+        b=RwRGeVm1aeN2qkJLadfLujw+Gg4mmYcLdCef5IRe1XA0xhjwByucNBCckRiVYY6fLO
+         4296nh+AjY2dK6wlGr86OM9pf7cguH6tlpQf7mVCmE9ZJhFyMvWHH1X5jR8DAxXPdrzK
+         Pq2mcImd24XixdeDeiReoUuU4bH2acto7KmAoYFdMkqUMLAKgT2mJIi3syGlZU4BFC3P
+         TSSxkz5RTMxufDP3glc76F5k57NP/Cxj5MleehiJXmq63EI0qxK7T7GEVKH6gXaZmUFM
+         qbH4Z0myz4VWg3u95JgmzKBXo23KfOmUgkcIZRXNLngGdkYKAf8Vguh9We/lv8iqrVqW
+         D2lA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=vpY7MBXQP9D/muTQHYI2tuNdnNT18mzMK9mr9lmyumc=;
-        b=giB4Kz4OyBRcKtsTs8H6cabtiYKASf1aCiAqGGP3T6TWqvJ2rI281nySZXVmgoxjfI
-         AXAu3IeC2NnjFxuBFG0bNc97unVFsoRP5pJ4zcB9qXpDAnqkRs8Ah+4CIJaysBRGuq1n
-         dEnGlYca71G0tF5IF9qs8eOyyFQVlEq0it/b9Yvsi7nRE42uoG1wvuskvPRZCWmVgmIy
-         CTsMiGDud8cRLCNKQbRqUJLeQnEoftdydT5j8FDem4OdxsiQe+gpYINNQx2E2Pt4DErD
-         0mXHXiUj/AwJ6FTdWJgfJtEdAy1csdQLl1HRegSXFmBo6DhCkFKzOKcto+qEpxy1Zdf6
-         Qe8w==
-X-Gm-Message-State: APjAAAVMURxsCKLdS6nV1OnYFcTznhF9ilBWwuESmknLi0TpEbCW+bL/
-        Vldy5B+P23EJmZ7zSxFXulY=
-X-Google-Smtp-Source: APXvYqzaZ3jJM3dOls1Pof33GJoVy83OTL34tNJngEBHjYW5m38n1ijiIvLP4nD5pePW34rW+GPiFQ==
-X-Received: by 2002:a63:364d:: with SMTP id d74mr16898806pga.408.1576487632409;
-        Mon, 16 Dec 2019 01:13:52 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=bYazlit0M4yBFQMfwCbOmC5g6AIzkoA/91yiEDZt7b0=;
+        b=D3hX6XSBV6FFVSuKxCr31mXnql7hupfJEr1dhdRv0ZDJwJk3edjnSe8ZLcYqeSIP8P
+         1hluffqGxQUXjP6vI4c6BoX9EKH650/4t7+OzB6cAvswsy47Atb1lkAD5wSTfJxYM6Si
+         LM+7nojKxd2/peySVJjlDdsPfJlZd3Aiw1GhzV6LDqNSWhz+QlS8pSZtAIHYm9apHAiF
+         rNq38M8idp4IE8nJRCv/9R49MTdcTHsq+hRig7NgV9V6WDQLjpMVR0JqPJgZpVuMbs+w
+         2Vf/BZMmb1+anZAWd9BQYGTYQKu3NxxRlqSbL09pClyg/EBuEh4jmrxKGM3welIfzv9w
+         oH7A==
+X-Gm-Message-State: APjAAAVF56i/0EI6WKZHMxD6LTaIazhZXlPBDusFlvb5FuPi+4YwKNkV
+        E8D1I4yni4vMde3utFhn2NULE8JGZWg=
+X-Google-Smtp-Source: APXvYqya/ZK/sigSlCk224VfrvfZoRMNqXimX/XMn+BCFUGM3rt7mHAstLVa1xEVZ3DJ9X5w/O85hA==
+X-Received: by 2002:a63:5807:: with SMTP id m7mr15787129pgb.83.1576487634904;
+        Mon, 16 Dec 2019 01:13:54 -0800 (PST)
 Received: from btopel-mobl.ger.intel.com (fmdmzpr04-ext.fm.intel.com. [192.55.55.39])
-        by smtp.gmail.com with ESMTPSA id x21sm12505033pfn.164.2019.12.16.01.13.50
+        by smtp.gmail.com with ESMTPSA id x21sm12505033pfn.164.2019.12.16.01.13.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 Dec 2019 01:13:51 -0800 (PST)
+        Mon, 16 Dec 2019 01:13:54 -0800 (PST)
 From:   =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@gmail.com>
 To:     daniel@iogearbox.net, ast@kernel.org, netdev@vger.kernel.org
 Cc:     =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@gmail.com>,
         linux-riscv@lists.infradead.org, bpf@vger.kernel.org
-Subject: [PATCH bpf-next v2 0/9] riscv: BPF JIT fix, optimizations and far jumps support
-Date:   Mon, 16 Dec 2019 10:13:34 +0100
-Message-Id: <20191216091343.23260-1-bjorn.topel@gmail.com>
+Subject: [PATCH bpf-next v2 1/9] riscv, bpf: fix broken BPF tail calls
+Date:   Mon, 16 Dec 2019 10:13:35 +0100
+Message-Id: <20191216091343.23260-2-bjorn.topel@gmail.com>
 X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20191216091343.23260-1-bjorn.topel@gmail.com>
+References: <20191216091343.23260-1-bjorn.topel@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -60,70 +62,60 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi!
+The BPF JIT incorrectly clobbered the a0 register, and did not flag
+usage of s5 register when BPF stack was being used.
 
-This series contain one non-critical fix, support for far jumps. and
-some optimizations for the BPF JIT.
+Fixes: 2353ecc6f91f ("bpf, riscv: add BPF JIT for RV64G")
+Signed-off-by: Björn Töpel <bjorn.topel@gmail.com>
+---
+ arch/riscv/net/bpf_jit_comp.c | 13 +++++++++++--
+ 1 file changed, 11 insertions(+), 2 deletions(-)
 
-Previously, the JIT only supported 12b branch targets for conditional
-branches, and 21b for unconditional branches. Starting with this
-series, 32b branching is supported.
-
-As part of supporting far jumps, branch relaxation was introduced. The
-idea is to start with a pessimistic jump (e.g. auipc/jalr) and for
-each pass the JIT will have an opportunity to pick a better
-instruction (e.g. jal) and shrink the image. Instead of two passes,
-the JIT requires more passes. It typically converges after 3 passes.
-
-The optimizations mentioned in the subject are for calls and tail
-calls. In the tail call generation we can save one instruction by
-using the offset in jalr. Calls are optimized by doing (auipc)/jal(r)
-relative jumps instead of loading the entire absolute address and
-doing jalr. This required that the JIT image allocator was made RISC-V
-specific, so we can ensure that the JIT image and the kernel text are
-in range (32b).
-
-The last two patches of the series is not critical to the series, but
-are two UAPI build issues for BPF events. A closer look from the
-RV-folks would be much appreciated.
-
-The test_bpf.ko module, selftests/bpf/test_verifier and
-selftests/seccomp/seccomp_bpf pass all tests.
-
-RISC-V is still missing proper kprobe and tracepoint support, so a lot
-of BPF selftests cannot be run.
-
-
-Thanks,
-Björn
-
-v1->v2: [1]
- * Removed unused function parameter from emit_branch()
- * Added patch to support far branch in tail call emit
-
-[1] https://lore.kernel.org/bpf/20191209173136.29615-1-bjorn.topel@gmail.com/
-
-
-Björn Töpel (9):
-  riscv, bpf: fix broken BPF tail calls
-  riscv, bpf: add support for far branching
-  riscv, bpf: add support for far branching when emitting tail call
-  riscv, bpf: add support for far jumps and exits
-  riscv, bpf: optimize BPF tail calls
-  riscv, bpf: provide RISC-V specific JIT image alloc/free
-  riscv, bpf: optimize calls
-  riscv, bpf: add missing uapi header for BPF_PROG_TYPE_PERF_EVENT
-    programs
-  riscv, perf: add arch specific perf_arch_bpf_user_pt_regs
-
- arch/riscv/include/asm/perf_event.h          |   4 +
- arch/riscv/include/asm/pgtable.h             |   4 +
- arch/riscv/include/uapi/asm/bpf_perf_event.h |   9 +
- arch/riscv/net/bpf_jit_comp.c                | 531 ++++++++++---------
- tools/include/uapi/asm/bpf_perf_event.h      |   2 +
- 5 files changed, 312 insertions(+), 238 deletions(-)
- create mode 100644 arch/riscv/include/uapi/asm/bpf_perf_event.h
-
+diff --git a/arch/riscv/net/bpf_jit_comp.c b/arch/riscv/net/bpf_jit_comp.c
+index 5451ef3845f2..1606ebd49666 100644
+--- a/arch/riscv/net/bpf_jit_comp.c
++++ b/arch/riscv/net/bpf_jit_comp.c
+@@ -120,6 +120,11 @@ static bool seen_reg(int reg, struct rv_jit_context *ctx)
+ 	return false;
+ }
+ 
++static void mark_fp(struct rv_jit_context *ctx)
++{
++	__set_bit(RV_CTX_F_SEEN_S5, &ctx->flags);
++}
++
+ static void mark_call(struct rv_jit_context *ctx)
+ {
+ 	__set_bit(RV_CTX_F_SEEN_CALL, &ctx->flags);
+@@ -596,7 +601,8 @@ static void __build_epilogue(u8 reg, struct rv_jit_context *ctx)
+ 
+ 	emit(rv_addi(RV_REG_SP, RV_REG_SP, stack_adjust), ctx);
+ 	/* Set return value. */
+-	emit(rv_addi(RV_REG_A0, RV_REG_A5, 0), ctx);
++	if (reg == RV_REG_RA)
++		emit(rv_addi(RV_REG_A0, RV_REG_A5, 0), ctx);
+ 	emit(rv_jalr(RV_REG_ZERO, reg, 0), ctx);
+ }
+ 
+@@ -1426,6 +1432,10 @@ static void build_prologue(struct rv_jit_context *ctx)
+ {
+ 	int stack_adjust = 0, store_offset, bpf_stack_adjust;
+ 
++	bpf_stack_adjust = round_up(ctx->prog->aux->stack_depth, 16);
++	if (bpf_stack_adjust)
++		mark_fp(ctx);
++
+ 	if (seen_reg(RV_REG_RA, ctx))
+ 		stack_adjust += 8;
+ 	stack_adjust += 8; /* RV_REG_FP */
+@@ -1443,7 +1453,6 @@ static void build_prologue(struct rv_jit_context *ctx)
+ 		stack_adjust += 8;
+ 
+ 	stack_adjust = round_up(stack_adjust, 16);
+-	bpf_stack_adjust = round_up(ctx->prog->aux->stack_depth, 16);
+ 	stack_adjust += bpf_stack_adjust;
+ 
+ 	store_offset = stack_adjust - 8;
 -- 
 2.20.1
 
