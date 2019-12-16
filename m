@@ -2,89 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 66DCE1207D3
+	by mail.lfdr.de (Postfix) with ESMTP id D593D1207D5
 	for <lists+netdev@lfdr.de>; Mon, 16 Dec 2019 15:02:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728056AbfLPOCl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Dec 2019 09:02:41 -0500
-Received: from mail-lj1-f196.google.com ([209.85.208.196]:39572 "EHLO
-        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727987AbfLPOCk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Dec 2019 09:02:40 -0500
-Received: by mail-lj1-f196.google.com with SMTP id e10so6925265ljj.6;
-        Mon, 16 Dec 2019 06:02:39 -0800 (PST)
+        id S1728062AbfLPOCs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Dec 2019 09:02:48 -0500
+Received: from mail-pl1-f194.google.com ([209.85.214.194]:37339 "EHLO
+        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727987AbfLPOCr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Dec 2019 09:02:47 -0500
+Received: by mail-pl1-f194.google.com with SMTP id c23so4514638plz.4
+        for <netdev@vger.kernel.org>; Mon, 16 Dec 2019 06:02:47 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=UhN/eqfKU832dKjc9f7z2JGm23eudeZhMsBeYXMgqeI=;
-        b=P7hQ8ruiCJF2o8Oyvj0Ig9sxCiXH/oKpfbs4IUyJ/OGaRLFUaK4+YnLIkPsPq7oPjF
-         xGkRoE2TUjdenj+AZC6L8R0rFk+quapjQNa3tI+DJZYKoj5qU/OmT/0KePZapjLD0vMp
-         RF5kdrNG3mXF7sR/WXucCB4KQm3kIeN8Za4Z3gpD3LbuEH2Svewc5trUYjkVLwmukMPC
-         SdJD2sRMdM98J1NsCDVJt1nRuC0sWF3AVDPaZjCZ3d7WmGh/hRkiPsyueM0PNTD3VPnD
-         4YG9GEOrskc+nxwx3YdVD1o2JJmZltim/Y9p6G8DsHotVYsyeqa9p+6hJRx8ZUPqOnR/
-         FySg==
+        h=from:to:subject:date:message-id;
+        bh=5Wf9lxGDarzcKvk7KasKep1akX9j40EjO8uZVyq7FP0=;
+        b=llIvvYF5umDeulT2g11AxbrlISDVWOFjL17vBJyxUmhpYZV5lTk9/8uba7+pJU9m/W
+         gkw1PIE2C9UzFC8rox92+QOwWsoN7Fh9icZ8CWOgXPJp90UDtAFy5iW+eP1j1rAol42x
+         LiFh+H89w/OSRQyuHo+RpDdizQPcw4MnztI1HyLWmXHWvzWTdQRbWQljg3F07+mLN4Z7
+         eRxSg05KO2cmvPFFyGdPF2mRwHXlfnkxVNxMUHPz4CbaJH3HrlukLk38eojAtRr1CT5H
+         KlXUPkGUWMf9iqI6fmHCg7MeNuGtL4tWY2p9L+KiqCiNBbI2+1nvEcAlR/U3nmxOxj3Y
+         l5tQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=UhN/eqfKU832dKjc9f7z2JGm23eudeZhMsBeYXMgqeI=;
-        b=Mnl1EiP1LlMHhXG0sWGh+7pj3+iBZQtOCe7vm8VzCTtB79kUM5qnENdG7sBUIrabxd
-         vJkggSCj+OzOS8mVu3zSYCJFOo5H9e7NIcFUgNq2fyRd0p45bbTPhWEUMfS5VoghcebM
-         1a+5vgxXKjPPhuuiFDjUnI6gGhMuHnI7PkRVOImM9pfoAaI5iCfA4EZhaAfK3cZhMdIm
-         z6C6GO3uqIu9SotMmp2B7MgfNlLWwiKjd0hi/hj+b+F2Y0M/ul9TDt8xisjAKKU7pMZl
-         7e/MV0L62ZUaddos3iYubi/hDWrGPqXEq5lWNdPVSkSrBHSpqQss5ye9AbYiK/1NTKv2
-         cwgg==
-X-Gm-Message-State: APjAAAWGGoyyuzOEsq85KqZ6PZcgV+qszB15j2ZYoozGxrGIsxwzi1z3
-        U5h7RZUEG+CVz551dYNfj8cJe2X3c9MoiC2Y+4M=
-X-Google-Smtp-Source: APXvYqxkTe2BTe7bA2An7DZVfw7NaxBtMlGyhFIIEd/zUsJil7vzGMAyfGkQInWzrtE7aMM4LyliPj450+odcsl9PXg=
-X-Received: by 2002:a2e:999a:: with SMTP id w26mr20000807lji.142.1576504958396;
- Mon, 16 Dec 2019 06:02:38 -0800 (PST)
-MIME-Version: 1.0
-References: <20191216082738.28421-1-prashantbhole.linux@gmail.com> <20191216132512.GD14887@linux.fritz.box>
-In-Reply-To: <20191216132512.GD14887@linux.fritz.box>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Mon, 16 Dec 2019 06:02:26 -0800
-Message-ID: <CAADnVQKB7hUmXBMmPfFUH4ZxSQfRtam0aEWykBNMhrKS+HjcwQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] libbpf: fix build by renaming variables
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Prashant Bhole <prashantbhole.linux@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        h=x-gm-message-state:from:to:subject:date:message-id;
+        bh=5Wf9lxGDarzcKvk7KasKep1akX9j40EjO8uZVyq7FP0=;
+        b=gHu1HDoz2a5Z6eSJF7dkcDvmIJ9feFPdNYx7cNpVYQuFxxbrsp4eVOciVl5/2+fFzs
+         hf2b1cLsgAwjrrOPnEEnAK7+M7dekN3RzF2OtVSLvmdcEtKHoclEWzb2ShBT4caes1XR
+         zlFsZZl0FFgfLba7A8t+mZ6RlQJAvsaRoY4eJRLwi02D8l66KU9TSAtjaoCAuOnxFm62
+         7pls2lHZDs1byY1aVByV0gC8Gcgx/VF34VTBq+GXQY/aI4NdG8cpfxUyJeZGF9/2I8im
+         5lCHAANMQMnYF4cjosvna+pbzaP9zzHYnpp7hBgd90GKNPbClqqm/IDTDQY/kDpoAK0k
+         S8RA==
+X-Gm-Message-State: APjAAAUc8MU29LFCOo+qLvaFkj1+I/Co3nWnX34k7JYNfrP69WbaN6Hn
+        /pc3FP2Q8yHOyNjGKAO0w4I8fGCZ
+X-Google-Smtp-Source: APXvYqy/0u1johPYOG2/oAZ8T9fflEnIPt5JE3hk+D4Nnp+MYVRMi5GA+P7K8NOyRdjjg4ATCAdjfg==
+X-Received: by 2002:a17:902:8641:: with SMTP id y1mr16110736plt.110.1576504966667;
+        Mon, 16 Dec 2019 06:02:46 -0800 (PST)
+Received: from martin-VirtualBox.dlink.router ([122.182.209.142])
+        by smtp.gmail.com with ESMTPSA id q102sm12368775pjq.20.2019.12.16.06.02.43
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
+        Mon, 16 Dec 2019 06:02:45 -0800 (PST)
+From:   Martin Varghese <martinvarghesenokia@gmail.com>
+To:     netdev@vger.kernel.org, davem@davemloft.net, pshelar@ovn.org,
+        scott.drennan@nokia.com, jbenc@redhat.com,
+        martin.varghese@nokia.com
+Subject: [PATCH net-next v3 0/3] New openvswitch MPLS actions for layer 2 tunnelling
+Date:   Mon, 16 Dec 2019 19:32:27 +0530
+Message-Id: <cover.1576488935.git.martin.varghese@nokia.com>
+X-Mailer: git-send-email 1.9.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 16, 2019 at 5:25 AM Daniel Borkmann <daniel@iogearbox.net> wrot=
-e:
->
-> On Mon, Dec 16, 2019 at 05:27:38PM +0900, Prashant Bhole wrote:
-> > In btf__align_of() variable name 't' is shadowed by inner block
-> > declaration of another variable with same name. Patch renames
-> > variables in order to fix it.
-> >
-> >   CC       sharedobjs/btf.o
-> > btf.c: In function =E2=80=98btf__align_of=E2=80=99:
-> > btf.c:303:21: error: declaration of =E2=80=98t=E2=80=99 shadows a previ=
-ous local [-Werror=3Dshadow]
-> >   303 |   int i, align =3D 1, t;
-> >       |                     ^
-> > btf.c:283:25: note: shadowed declaration is here
-> >   283 |  const struct btf_type *t =3D btf__type_by_id(btf, id);
-> >       |
-> >
-> > Fixes: 3d208f4ca111 ("libbpf: Expose btf__align_of() API")
-> > Signed-off-by: Prashant Bhole <prashantbhole.linux@gmail.com>
->
-> Applied, thanks!
+From: Martin Varghese <martin.varghese@nokia.com>
 
-Prashant,
-Thanks for the fixes.
-Which compiler do use?
-Sadly I didn't see any of those with my gcc 6.3.0
-Going to upgrade it. Need to decide which one.
+The existing PUSH MPLS action inserts MPLS header between ethernet header
+and the IP header. Though this behaviour is fine for L3 VPN where an IP
+packet is encapsulated inside a MPLS tunnel, it does not suffice the L2
+VPN (l2 tunnelling) requirements. In L2 VPN the MPLS header should
+encapsulate the ethernet packet.
+
+The new mpls action PTAP_PUSH_MPLS inserts MPLS header at the start of the
+packet or at the start of the l3 header depending on the value of l2 tunnel
+flag in the PTAP_PUSH_MPLS arguments.
+
+POP_MPLS action is extended to support ethertype 0x6558
+
+OVS userspace changes -
+---------------------
+Encap & Decap ovs actions are extended to support MPLS packet type. The encap & decap
+adds and removes MPLS header at the start of packet as depicted below.
+
+Actions - encap(mpls(ether_type=0x8847)),encap(ethernet)
+
+Incoming packet -> | ETH | IP | Payload |
+
+1 Actions -  encap(mpls(ether_type=0x8847)) [Kernel action - ptap_push_mpls:0x8847]
+
+        Outgoing packet -> | MPLS | ETH | Payload|
+
+2 Actions - encap(ethernet) [ Kernel action - push_eth ]
+
+        Outgoing packet -> | ETH | MPLS | ETH | Payload|
+
+Decapsulation:
+
+Incoming packet -> | ETH | MPLS | ETH | IP | Payload |
+
+Actions - decap(),decap(packet_type(ns=0,type=0)
+
+1 Actions -  decap() [Kernel action - pop_eth)
+
+        Outgoing packet -> | MPLS | ETH | IP | Payload|
+
+2 Actions - decap(packet_type(ns=0,type=0) [Kernel action - pop_mpls:0]
+
+        Outgoing packet -> | ETH  | IP | Payload
+
+Martin Varghese (3):
+  net: skb_mpls_push() modified to allow MPLS header push at start of
+    packet.
+  net: Rephrased comments section of skb_mpls_pop()
+  openvswitch: New MPLS actions for layer 2 tunnelling
+
+ include/uapi/linux/openvswitch.h | 23 ++++++++++++++++++++++-
+ net/core/skbuff.c                | 10 +++++++---
+ net/openvswitch/actions.c        | 30 ++++++++++++++++++++++++------
+ net/openvswitch/flow_netlink.c   | 34 ++++++++++++++++++++++++++++++++++
+ 4 files changed, 87 insertions(+), 10 deletions(-)
+
+-- 
+1.8.3.1
+
