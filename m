@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D8C75121073
-	for <lists+netdev@lfdr.de>; Mon, 16 Dec 2019 18:05:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 474641210A5
+	for <lists+netdev@lfdr.de>; Mon, 16 Dec 2019 18:05:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726736AbfLPRCF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Dec 2019 12:02:05 -0500
-Received: from mail-eopbgr10062.outbound.protection.outlook.com ([40.107.1.62]:5601
+        id S1727453AbfLPRFF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Dec 2019 12:05:05 -0500
+Received: from mail-eopbgr10062.outbound.protection.outlook.com ([40.107.1.62]:39904
         "EHLO EUR02-HE1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726721AbfLPRCF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 16 Dec 2019 12:02:05 -0500
+        id S1726181AbfLPRFD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 16 Dec 2019 12:05:03 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Q+Hkjtf60c3Pp5fqAX0U+q6or94xMBS5IwB1u00zfqUqCao/mmLOFwqSI7rnAs1rR0k7ykHTrRXBFt7ZCodAu6YxSdkIxK9pHiuez54c+T9WJQYPoaEYdb8HRRXqYvqn6Yn4MW/fe2/lbxK19TKkutN31TiNU6qWuJPQ0H4OKBMAIKqKfhexBq52aCDnkhQIPQ+bnLlyat1Vh0IN/rHaGdBEf1NA2xixue2sdgJofHnr0f6KIPSlW9NjDTRa3yBPC9siHPQAAKod8tK7V4OpHrnoEGW+Yn0fdKH6yfAuEmVpcLjU0NpAdVO8PRiAwZuupjrOdVQw5rqnHDbx0fO2KQ==
+ b=Cv0f9+PgstSDLBVvgHqL4L2k9/QqT8ZNwBDeCSAxMzpyz0iCueFx9xpRk8GH+6PPEEn0JYZQM+yd29K+7X4nJKOKQihtEuG8Hy9LtwnZP+FnJ/zKdne28J+e57KLSMi4/Gx89jhaQtGm56vv8NhNz8Y7RFpZGOw0YQRuV7peIBJGmGOZDjSRmz9Lays+5W4hC/RXfG3wa8uhPlF2LKNRlhYCqiOmU2JXf7C4/0TiNtd17LsI08EJsCTOqITz9+XG17iwNfVndIDvkx2KtKZyICHMBoCh1+mqT7fMIEZP1IHGwuToRnUDPMkdps1ec3FkQSKN+dCW+DjtZU52EUKsaQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=kYuI/xfClcLUftw9BVxj8g1aoSsQKWkOEePRw3gf4ms=;
- b=ZMSNwM3BauErkyAw0kMAsrFBMG4oyp6QfIGGEyLNRdOas8WyslrblwtO4bD1Juku8BCzbO0a70a6wpN18qy61tEjOhDVUtVmQa+1DTz3PI2+ZoHSU2SB+51vm0k4XoRQ7XwHmC+sjwmcNvudbLYis1Ezis6ermAagSUEtwhpJKxw4373kqXhSA4vbnPLtNz3cDcCHFsdaTeOvmiXR8tXitfjbk5hRZSy8P71i4DVSdzVgvi4wDloouVour3y6gfNh1eenyH5mRLNk2tD48+4QnsDRGVObOjt6n6ZCdaEw8fNAaSBdIooSuUxvaSuNPu63O2v3YD9QB8MUbC43pXzlA==
+ bh=jBk7OCKPYiHlbX8vxPSL65WcpDp5Iko8qjSrtFW4TpE=;
+ b=DEY14M/24txPDdZbyuOpQfdHI2oMkK4Ob2gpr8tbjOkbSruf8BXsisI9Zjy0MLJsbaxfKnJ+bRgbszZkncWbolAgmp1ag5htTpu58Sf3J0foakvkqlK1fImQHaN7G3oDoMPPLanEVJB0Gcq2gdHIEjjEXPfd7IFu7vgerXUzESy+czT/zCS1A8DcEm4HVy9RiYBd8/pzQq5utGylZ9l9jid4x8gmqVm9NlPzinqYWKrI/PJiYvKvlo0A/rpQxO0T0PZyNpK/WmM4380IbvB+KqeUSfcbyblIVOsAb11yH5b/3HnaSQ45kQxNck8B9BgGD8Vo/IRiKhn8/xAgBq91pg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
  dkim=pass header.d=mellanox.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
  s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=kYuI/xfClcLUftw9BVxj8g1aoSsQKWkOEePRw3gf4ms=;
- b=iNm9hz4aYNhAIIpcXEg54QybNlniwN5C/gi4uZEeAeZ5dXWo2P/VvQbTNONV3XD4Z6yzCUWfPXa8r+C2p8m0MZfNBgjM3BfZ7/dkXQwRQ4ROzIikK5oqTeoVVeNsdsJkxXduJIcAc+ydWLezt4uCKpgMrbjZMu2s6LYJXXh2m7Q=
+ bh=jBk7OCKPYiHlbX8vxPSL65WcpDp5Iko8qjSrtFW4TpE=;
+ b=Pdj3JvcYn2Dg4RI3vf83P4d0vjOr/ND5y04JifRlIZhljm3sGRaMUcqIAgTH2bK8WPNuM9UbYHDsw48NGQaEALrOz/vcRsIMrgc/fGnwR2B/D8es5fgEcMx4/Syp96lg8VM2XsY8zWz1+mv+sJxQTKm6vDkp03bkptP3kBL6AN8=
 Received: from DB6PR0502MB3047.eurprd05.prod.outlook.com (10.172.250.135) by
  DB6PR0502MB3110.eurprd05.prod.outlook.com (10.172.246.145) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2538.15; Mon, 16 Dec 2019 17:01:57 +0000
+ 15.20.2538.15; Mon, 16 Dec 2019 17:02:00 +0000
 Received: from DB6PR0502MB3047.eurprd05.prod.outlook.com
  ([fe80::a153:bb4e:c909:d3a1]) by DB6PR0502MB3047.eurprd05.prod.outlook.com
  ([fe80::a153:bb4e:c909:d3a1%7]) with mapi id 15.20.2538.019; Mon, 16 Dec 2019
- 17:01:57 +0000
+ 17:02:00 +0000
 From:   Petr Machata <petrm@mellanox.com>
 To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
 CC:     Petr Machata <petrm@mellanox.com>,
@@ -43,14 +43,14 @@ CC:     Petr Machata <petrm@mellanox.com>,
         Jakub Kicinski <jakub.kicinski@netronome.com>,
         Roman Mashak <mrv@mojatatu.com>,
         Ido Schimmel <idosch@mellanox.com>,
-        Jiri Pirko <jiri@resnulli.us>, Jiri Pirko <jiri@mellanox.com>
-Subject: [PATCH net-next mlxsw v1 09/10] selftests: forwarding: sch_ets: Add
- test coverage for ETS Qdisc
-Thread-Topic: [PATCH net-next mlxsw v1 09/10] selftests: forwarding: sch_ets:
- Add test coverage for ETS Qdisc
-Thread-Index: AQHVtDKGvEr2i9RogkaztuqYdPg3Eg==
-Date:   Mon, 16 Dec 2019 17:01:57 +0000
-Message-ID: <85cc2ab8746cb9b63354e0c04b012ca6d9ce52d1.1576515562.git.petrm@mellanox.com>
+        Jiri Pirko <jiri@resnulli.us>
+Subject: [PATCH net-next mlxsw v1 10/10] selftests: qdiscs: Add test coverage
+ for ETS Qdisc
+Thread-Topic: [PATCH net-next mlxsw v1 10/10] selftests: qdiscs: Add test
+ coverage for ETS Qdisc
+Thread-Index: AQHVtDKHyX1iMT/ibky3jiEYYBkrZg==
+Date:   Mon, 16 Dec 2019 17:01:59 +0000
+Message-ID: <1e52ee8f70621825e92a1b96991d4928ef45d327.1576515562.git.petrm@mellanox.com>
 References: <cover.1576515562.git.petrm@mellanox.com>
 In-Reply-To: <cover.1576515562.git.petrm@mellanox.com>
 Accept-Language: en-US
@@ -67,787 +67,1063 @@ x-ms-exchange-messagesentrepresentingtype: 1
 x-originating-ip: [37.142.13.130]
 x-ms-publictraffictype: Email
 x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 30de6270-41c5-44f2-ee67-08d78249a8bb
+x-ms-office365-filtering-correlation-id: 7f517a16-9a4b-49a8-851b-08d78249aa07
 x-ms-traffictypediagnostic: DB6PR0502MB3110:|DB6PR0502MB3110:
 x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <DB6PR0502MB3110380A4D819D9064CAA17DDB510@DB6PR0502MB3110.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:2331;
+x-microsoft-antispam-prvs: <DB6PR0502MB3110F991BF896FAD90F51EAADB510@DB6PR0502MB3110.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:5236;
 x-forefront-prvs: 02530BD3AA
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(396003)(136003)(346002)(376002)(366004)(39860400002)(189003)(199004)(52314003)(8936002)(6506007)(26005)(478600001)(2616005)(81166006)(81156014)(8676002)(64756008)(66476007)(54906003)(66556008)(6486002)(36756003)(316002)(66946007)(66446008)(186003)(107886003)(30864003)(6916009)(4326008)(71200400001)(86362001)(52116002)(2906002)(5660300002)(6512007);DIR:OUT;SFP:1101;SCL:1;SRVR:DB6PR0502MB3110;H:DB6PR0502MB3047.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(396003)(136003)(346002)(376002)(366004)(39860400002)(189003)(199004)(8936002)(6506007)(26005)(478600001)(2616005)(81166006)(81156014)(8676002)(64756008)(66476007)(54906003)(66556008)(6486002)(36756003)(316002)(66946007)(66446008)(186003)(30864003)(6916009)(4326008)(71200400001)(86362001)(52116002)(2906002)(5660300002)(6512007)(559001)(579004)(569006);DIR:OUT;SFP:1101;SCL:1;SRVR:DB6PR0502MB3110;H:DB6PR0502MB3047.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
 received-spf: None (protection.outlook.com: mellanox.com does not designate
  permitted sender hosts)
 x-ms-exchange-senderadcheck: 1
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: TSe6vAh9FxNRE5Mj6UbWyw5thXSdU0fO1aokFgVEneb2lqMZhEXxvR9Mrd9M6PMS50NKf9GIZ2dLKwPuIWNzi5Fzmohk/J4xlQfaAk+LHztvoHaL9ZyRtb4fE4CWVlwZEh0GLisDW4oYpb2PXzGUguWK+JAKqiHyckNRA+yKPYS9RcDOzO4IFTGtRFeaQg25ITmn9KYVQE1av8+qL4CHzOR9vRlVCtP+zfDZcgvFUoIIaCIXYS7/Fw3DmgtXKoplksi4G616e6Vaeu+05jOGq4O6hCZSvbkJKn5dcujpVk6w8tvRckNtMlTW0kt+/RdsbG9aAi9WGr5M9NM9Glp0UgORYGqQmSOLqtPD2+gk1fCEBd6yLUcw3pWQOAgcXlARHxLC4Q1lBn5TyA/HChYGlwH5RETi9+9kuts2Z8Y9qEM6XAEKZwb6+CZpDZlI/ZM2K7Rp51O3k5LAwlnypITr/jrZFmyxJ/2BrrL4MSTIZNcxC5PqBVPso+1utNDMqI0y
+x-microsoft-antispam-message-info: WM9ddxiL8ejLreZysT0P2o7WoVJJUMYtpj6wHndspQKy9axZs+Jj8KvCksASuZukkEX4lJjUSuQS33HABmi7Srz0p80ec0ER5R32cpmYeFrnSVO4KtbixXJVOChEWse4twqj5PI9HH3gKffe/Uf5pTjDn+h6PodLsNEPUQvon4gWK7kuH5O6dZ/3g/QnEjZZwFHXgzXjtCBYFiQVVIcGje89jQjNnsrH/qXBhtEE5danTgzNvGw7pTNlnOlxo0dkQ57l0mYSCUrWmIUKBAcdks9LI04jtSlQ79620Dz7U1I0utJ/7vodT44ozTknpoVN5dJSjfDJe7OqtfTqGiOtTd9+fxY/XnL1O/LHa988qag5XCfa9pphwLSFU5nthLvzO7gDRz232kYBBasO/sWUyztYRNr8+K1ndLjkDIsvbKeIX45BsvfzBcHZWbr2C236jrWRZBYCnspg9mTWgvVw+0yB3QkTL2CTYlR5aHLkc10=
 Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 30de6270-41c5-44f2-ee67-08d78249a8bb
-X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Dec 2019 17:01:57.5894
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7f517a16-9a4b-49a8-851b-08d78249aa07
+X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Dec 2019 17:01:59.7675
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: QBH+QSSPN5llizlPuhVTP7ifdzuyjZ4kj5LLd0hni0Q6WN4RPM1XfvFiasAbu33LPvDtzOO7oM3CGmzL9w+uXQ==
+X-MS-Exchange-CrossTenant-userprincipalname: +aIqO1ZZ4w/hLMzqLqZbVHCl2kpu6UjchKI1lY3ReEfvzrpMcULFchz+bCNN74WF0zj0oHCmyASi1kc+qh4mcA==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR0502MB3110
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This tests the newly-added ETS Qdisc. It runs two to three streams of
-traffic, each with a different priority. ETS Qdisc is supposed to allocate
-bandwidth according to the DRR algorithm and given weights. After running
-the traffic for a while, counters are compared for each stream to check
-that the expected ratio is in fact observed.
-
-In order for the DRR process to kick in, a traffic bottleneck must exist in
-the first place. In slow path, such bottleneck can be implemented by
-wrapping the ETS Qdisc inside a TBF or other shaper. This might however
-make the configuration unoffloadable. Instead, on HW datapath, the
-bottleneck would be set up by lowering port speed and configuring shared
-buffer suitably.
-
-Therefore the test is structured as a core component that implements the
-testing, with two wrapper scripts that implement the details of slow path
-resp. fast path configuration.
+Add TDC coverage for the new ETS Qdisc.
 
 Signed-off-by: Petr Machata <petrm@mellanox.com>
 Reviewed-by: Ido Schimmel <idosch@mellanox.com>
-Acked-by: Jiri Pirko <jiri@mellanox.com>
 ---
 
 Notes:
     v1 (internal):
-    - mlxsw/sch_ets.sh: Add a comment explaining packet prioritization.
-    - Adjust the whole suite to allow testing of traffic classifiers
-      in addition to testing priomap.
+    - Add a number of new tests to test default priomap band, overlarge
+      number of bands, zeroes in quanta, and altogether missing quanta.
 
- .../selftests/drivers/net/mlxsw/qos_lib.sh    |  28 ++
- .../selftests/drivers/net/mlxsw/sch_ets.sh    |  67 ++++
- .../selftests/net/forwarding/sch_ets.sh       |  44 +++
- .../selftests/net/forwarding/sch_ets_core.sh  | 300 ++++++++++++++++++
- .../selftests/net/forwarding/sch_ets_tests.sh | 227 +++++++++++++
- 5 files changed, 666 insertions(+)
- create mode 100755 tools/testing/selftests/drivers/net/mlxsw/sch_ets.sh
- create mode 100755 tools/testing/selftests/net/forwarding/sch_ets.sh
- create mode 100644 tools/testing/selftests/net/forwarding/sch_ets_core.sh
- create mode 100644 tools/testing/selftests/net/forwarding/sch_ets_tests.sh
+ .../tc-testing/tc-tests/qdiscs/ets.json       | 940 ++++++++++++++++++
+ 1 file changed, 940 insertions(+)
+ create mode 100644 tools/testing/selftests/tc-testing/tc-tests/qdiscs/ets.=
+json
 
-diff --git a/tools/testing/selftests/drivers/net/mlxsw/qos_lib.sh b/tools/t=
-esting/selftests/drivers/net/mlxsw/qos_lib.sh
-index 75a3fb3b5663..a5937069ac16 100644
---- a/tools/testing/selftests/drivers/net/mlxsw/qos_lib.sh
-+++ b/tools/testing/selftests/drivers/net/mlxsw/qos_lib.sh
-@@ -78,3 +78,31 @@ measure_rate()
- 	echo $ir $er
- 	return $ret
- }
-+
-+bail_on_lldpad()
-+{
-+	if systemctl is-active --quiet lldpad; then
-+
-+		cat >/dev/stderr <<-EOF
-+		WARNING: lldpad is running
-+
-+			lldpad will likely configure DCB, and this test will
-+			configure Qdiscs. mlxsw does not support both at the
-+			same time, one of them is arbitrarily going to overwrite
-+			the other. That will cause spurious failures (or,
-+			unlikely, passes) of this test.
-+		EOF
-+
-+		if [[ -z $ALLOW_LLDPAD ]]; then
-+			cat >/dev/stderr <<-EOF
-+
-+				If you want to run the test anyway, please set
-+				an environment variable ALLOW_LLDPAD to a
-+				non-empty string.
-+			EOF
-+			exit 1
-+		else
-+			return
-+		fi
-+	fi
-+}
-diff --git a/tools/testing/selftests/drivers/net/mlxsw/sch_ets.sh b/tools/t=
-esting/selftests/drivers/net/mlxsw/sch_ets.sh
-new file mode 100755
-index 000000000000..c9fc4d4885c1
---- /dev/null
-+++ b/tools/testing/selftests/drivers/net/mlxsw/sch_ets.sh
-@@ -0,0 +1,67 @@
-+#!/bin/bash
-+# SPDX-License-Identifier: GPL-2.0
-+
-+# A driver for the ETS selftest that implements testing in offloaded datap=
-ath.
-+lib_dir=3D$(dirname $0)/../../../net/forwarding
-+source $lib_dir/sch_ets_core.sh
-+source $lib_dir/devlink_lib.sh
-+source qos_lib.sh
-+
-+ALL_TESTS=3D"
-+	ping_ipv4
-+	priomap_mode
-+	ets_test_strict
-+	ets_test_mixed
-+	ets_test_dwrr
-+"
-+
-+switch_create()
-+{
-+	ets_switch_create
-+
-+	# Create a bottleneck so that the DWRR process can kick in.
-+	ethtool -s $h2 speed 1000 autoneg off
-+	ethtool -s $swp2 speed 1000 autoneg off
-+
-+	# Set the ingress quota high and use the three egress TCs to limit the
-+	# amount of traffic that is admitted to the shared buffers. This makes
-+	# sure that there is always enough traffic of all types to select from
-+	# for the DWRR process.
-+	devlink_port_pool_th_set $swp1 0 12
-+	devlink_tc_bind_pool_th_set $swp1 0 ingress 0 12
-+	devlink_port_pool_th_set $swp2 4 12
-+	devlink_tc_bind_pool_th_set $swp2 7 egress 4 5
-+	devlink_tc_bind_pool_th_set $swp2 6 egress 4 5
-+	devlink_tc_bind_pool_th_set $swp2 5 egress 4 5
-+
-+	# Note: sch_ets_core.sh uses VLAN ingress-qos-map to assign packet
-+	# priorities at $swp1 based on their 802.1p headers. ingress-qos-map is
-+	# not offloaded by mlxsw as of this writing, but the mapping used is
-+	# 1:1, which is the mapping currently hard-coded by the driver.
-+}
-+
-+switch_destroy()
-+{
-+	devlink_tc_bind_pool_th_restore $swp2 5 egress
-+	devlink_tc_bind_pool_th_restore $swp2 6 egress
-+	devlink_tc_bind_pool_th_restore $swp2 7 egress
-+	devlink_port_pool_th_restore $swp2 4
-+	devlink_tc_bind_pool_th_restore $swp1 0 ingress
-+	devlink_port_pool_th_restore $swp1 0
-+
-+	ethtool -s $swp2 autoneg on
-+	ethtool -s $h2 autoneg on
-+
-+	ets_switch_destroy
-+}
-+
-+# Callback from sch_ets_tests.sh
-+get_stats()
-+{
-+	local band=3D$1; shift
-+
-+	ethtool_stats_get "$h2" rx_octets_prio_$band
-+}
-+
-+bail_on_lldpad
-+ets_run
-diff --git a/tools/testing/selftests/net/forwarding/sch_ets.sh b/tools/test=
-ing/selftests/net/forwarding/sch_ets.sh
-new file mode 100755
-index 000000000000..40e0ad1bc4f2
---- /dev/null
-+++ b/tools/testing/selftests/net/forwarding/sch_ets.sh
-@@ -0,0 +1,44 @@
-+#!/bin/bash
-+# SPDX-License-Identifier: GPL-2.0
-+
-+# A driver for the ETS selftest that implements testing in slowpath.
-+lib_dir=3D.
-+source sch_ets_core.sh
-+
-+ALL_TESTS=3D"
-+	ping_ipv4
-+	priomap_mode
-+	ets_test_strict
-+	ets_test_mixed
-+	ets_test_dwrr
-+	classifier_mode
-+	ets_test_strict
-+	ets_test_mixed
-+	ets_test_dwrr
-+"
-+
-+switch_create()
-+{
-+	ets_switch_create
-+
-+	# Create a bottleneck so that the DWRR process can kick in.
-+	tc qdisc add dev $swp2 root handle 1: tbf \
-+	   rate 1Gbit burst 1Mbit latency 100ms
-+	PARENT=3D"parent 1:"
-+}
-+
-+switch_destroy()
-+{
-+	ets_switch_destroy
-+	tc qdisc del dev $swp2 root
-+}
-+
-+# Callback from sch_ets_tests.sh
-+get_stats()
-+{
-+	local stream=3D$1; shift
-+
-+	link_stats_get $h2.1$stream rx bytes
-+}
-+
-+ets_run
-diff --git a/tools/testing/selftests/net/forwarding/sch_ets_core.sh b/tools=
-/testing/selftests/net/forwarding/sch_ets_core.sh
+diff --git a/tools/testing/selftests/tc-testing/tc-tests/qdiscs/ets.json b/=
+tools/testing/selftests/tc-testing/tc-tests/qdiscs/ets.json
 new file mode 100644
-index 000000000000..f906fcc66572
+index 000000000000..180593010675
 --- /dev/null
-+++ b/tools/testing/selftests/net/forwarding/sch_ets_core.sh
-@@ -0,0 +1,300 @@
-+# SPDX-License-Identifier: GPL-2.0
-+
-+# This is a template for ETS Qdisc test.
-+#
-+# This test sends from H1 several traffic streams with 802.1p-tagged packe=
-ts.
-+# The tags are used at $swp1 to prioritize the traffic. Each stream is the=
-n
-+# queued at a different ETS band according to the assigned priority. After
-+# runnig for a while, counters at H2 are consulted to determine whether th=
-e
-+# traffic scheduling was according to the ETS configuration.
-+#
-+# This template is supposed to be embedded by a test driver, which impleme=
-nts
-+# statistics collection, any HW-specific stuff, and prominently configures=
- the
-+# system to assure that there is overcommitment at $swp2. That is necessar=
-y so
-+# that the ETS traffic selection algorithm kicks in and has to schedule so=
-me
-+# traffic at the expense of other.
-+#
-+# A driver for veth-based testing is in sch_ets.sh, an example of a driver=
- for
-+# an offloaded data path is in selftests/drivers/net/mlxsw/sch_ets.sh.
-+#
-+# +---------------------------------------------------------------------+
-+# | H1                                                                  |
-+# |     + $h1.10              + $h1.11              + $h1.12            |
-+# |     | 192.0.2.1/28        | 192.0.2.17/28       | 192.0.2.33/28     |
-+# |     | egress-qos-map      | egress-qos-map      | egress-qos-map    |
-+# |     |  0:0                |  0:1                |  0:2              |
-+# |     \____________________ | ____________________/                   |
-+# |                          \|/                                        |
-+# |                           + $h1                                     |
-+# +---------------------------|-----------------------------------------+
-+#                             |
-+# +---------------------------|-----------------------------------------+
-+# | SW                        + $swp1                                   |
-+# |                           | >1Gbps                                  |
-+# |      ____________________/|\____________________                    |
-+# |     /                     |                     \                   |
-+# |  +--|----------------+ +--|----------------+ +--|----------------+  |
-+# |  |  + $swp1.10       | |  + $swp1.11       | |  + $swp1.12       |  |
-+# |  |    ingress-qos-map| |    ingress-qos-map| |    ingress-qos-map|  |
-+# |  |     0:0 1:1 2:2   | |     0:0 1:1 2:2   | |     0:0 1:1 2:2   |  |
-+# |  |                   | |                   | |                   |  |
-+# |  |    BR10           | |    BR11           | |    BR12           |  |
-+# |  |                   | |                   | |                   |  |
-+# |  |  + $swp2.10       | |  + $swp2.11       | |  + $swp2.12       |  |
-+# |  +--|----------------+ +--|----------------+ +--|----------------+  |
-+# |     \____________________ | ____________________/                   |
-+# |                          \|/                                        |
-+# |                           + $swp2                                   |
-+# |                           | 1Gbps (ethtool or HTB qdisc)            |
-+# |                           | qdisc ets quanta $W0 $W1 $W2            |
-+# |                           |           priomap 0 1 2                 |
-+# +---------------------------|-----------------------------------------+
-+#                             |
-+# +---------------------------|-----------------------------------------+
-+# | H2                        + $h2                                     |
-+# |      ____________________/|\____________________                    |
-+# |     /                     |                     \                   |
-+# |     + $h2.10              + $h2.11              + $h2.12            |
-+# |       192.0.2.2/28          192.0.2.18/28         192.0.2.34/28     |
-+# +---------------------------------------------------------------------+
-+
-+NUM_NETIFS=3D4
-+CHECK_TC=3Dyes
-+source $lib_dir/lib.sh
-+source $lib_dir/sch_ets_tests.sh
-+
-+PARENT=3Droot
-+QDISC_DEV=3D
-+
-+sip()
-+{
-+	echo 192.0.2.$((16 * $1 + 1))
-+}
-+
-+dip()
-+{
-+	echo 192.0.2.$((16 * $1 + 2))
-+}
-+
-+# Callback from sch_ets_tests.sh
-+ets_start_traffic()
-+{
-+	local dst_mac=3D$(mac_get $h2)
-+	local i=3D$1; shift
-+
-+	start_traffic $h1.1$i $(sip $i) $(dip $i) $dst_mac
-+}
-+
-+ETS_CHANGE_QDISC=3D
-+
-+priomap_mode()
-+{
-+	echo "Running in priomap mode"
-+	ets_delete_qdisc
-+	ETS_CHANGE_QDISC=3Dets_change_qdisc_priomap
-+}
-+
-+classifier_mode()
-+{
-+	echo "Running in classifier mode"
-+	ets_delete_qdisc
-+	ETS_CHANGE_QDISC=3Dets_change_qdisc_classifier
-+}
-+
-+ets_change_qdisc_priomap()
-+{
-+	local dev=3D$1; shift
-+	local nstrict=3D$1; shift
-+	local priomap=3D$1; shift
-+	local quanta=3D("${@}")
-+
-+	local op=3D$(if [[ -n $QDISC_DEV ]]; then echo change; else echo add; fi)
-+
-+	tc qdisc $op dev $dev $PARENT handle 10: ets			       \
-+		$(if ((nstrict)); then echo strict $nstrict; fi)	       \
-+		$(if ((${#quanta[@]})); then echo quanta ${quanta[@]}; fi)     \
-+		priomap $priomap
-+	QDISC_DEV=3D$dev
-+}
-+
-+ets_change_qdisc_classifier()
-+{
-+	local dev=3D$1; shift
-+	local nstrict=3D$1; shift
-+	local priomap=3D$1; shift
-+	local quanta=3D("${@}")
-+
-+	local op=3D$(if [[ -n $QDISC_DEV ]]; then echo change; else echo add; fi)
-+
-+	tc qdisc $op dev $dev $PARENT handle 10: ets			       \
-+		$(if ((nstrict)); then echo strict $nstrict; fi)	       \
-+		$(if ((${#quanta[@]})); then echo quanta ${quanta[@]}; fi)
-+
-+	if [[ $op =3D=3D add ]]; then
-+		local prio=3D0
-+		local band
-+
-+		for band in $priomap; do
-+			tc filter add dev $dev parent 10: basic \
-+				match "meta(priority eq $prio)" \
-+				flowid 10:$((band + 1))
-+			((prio++))
-+		done
-+	fi
-+	QDISC_DEV=3D$dev
-+}
-+
-+# Callback from sch_ets_tests.sh
-+ets_change_qdisc()
-+{
-+	if [[ -z "$ETS_CHANGE_QDISC" ]]; then
-+		exit 1
-+	fi
-+	$ETS_CHANGE_QDISC "$@"
-+}
-+
-+ets_delete_qdisc()
-+{
-+	if [[ -n $QDISC_DEV ]]; then
-+		tc qdisc del dev $QDISC_DEV $PARENT
-+		QDISC_DEV=3D
-+	fi
-+}
-+
-+h1_create()
-+{
-+	local i;
-+
-+	simple_if_init $h1
-+	mtu_set $h1 9900
-+	for i in {0..2}; do
-+		vlan_create $h1 1$i v$h1 $(sip $i)/28
-+		ip link set dev $h1.1$i type vlan egress 0:$i
-+	done
-+}
-+
-+h1_destroy()
-+{
-+	local i
-+
-+	for i in {0..2}; do
-+		vlan_destroy $h1 1$i
-+	done
-+	mtu_restore $h1
-+	simple_if_fini $h1
-+}
-+
-+h2_create()
-+{
-+	local i
-+
-+	simple_if_init $h2
-+	mtu_set $h2 9900
-+	for i in {0..2}; do
-+		vlan_create $h2 1$i v$h2 $(dip $i)/28
-+	done
-+}
-+
-+h2_destroy()
-+{
-+	local i
-+
-+	for i in {0..2}; do
-+		vlan_destroy $h2 1$i
-+	done
-+	mtu_restore $h2
-+	simple_if_fini $h2
-+}
-+
-+ets_switch_create()
-+{
-+	local i
-+
-+	ip link set dev $swp1 up
-+	mtu_set $swp1 9900
-+
-+	ip link set dev $swp2 up
-+	mtu_set $swp2 9900
-+
-+	for i in {0..2}; do
-+		vlan_create $swp1 1$i
-+		ip link set dev $swp1.1$i type vlan ingress 0:0 1:1 2:2
-+
-+		vlan_create $swp2 1$i
-+
-+		ip link add dev br1$i type bridge
-+		ip link set dev $swp1.1$i master br1$i
-+		ip link set dev $swp2.1$i master br1$i
-+
-+		ip link set dev br1$i up
-+		ip link set dev $swp1.1$i up
-+		ip link set dev $swp2.1$i up
-+	done
-+}
-+
-+ets_switch_destroy()
-+{
-+	local i
-+
-+	ets_delete_qdisc
-+
-+	for i in {0..2}; do
-+		ip link del dev br1$i
-+		vlan_destroy $swp2 1$i
-+		vlan_destroy $swp1 1$i
-+	done
-+
-+	mtu_restore $swp2
-+	ip link set dev $swp2 down
-+
-+	mtu_restore $swp1
-+	ip link set dev $swp1 down
-+}
-+
-+setup_prepare()
-+{
-+	h1=3D${NETIFS[p1]}
-+	swp1=3D${NETIFS[p2]}
-+
-+	swp2=3D${NETIFS[p3]}
-+	h2=3D${NETIFS[p4]}
-+
-+	put=3D$swp2
-+	hut=3D$h2
-+
-+	vrf_prepare
-+
-+	h1_create
-+	h2_create
-+	switch_create
-+}
-+
-+cleanup()
-+{
-+	pre_cleanup
-+
-+	switch_destroy
-+	h2_destroy
-+	h1_destroy
-+
-+	vrf_cleanup
-+}
-+
-+ping_ipv4()
-+{
-+	ping_test $h1.10 $(dip 0) " vlan 10"
-+	ping_test $h1.11 $(dip 1) " vlan 11"
-+	ping_test $h1.12 $(dip 2) " vlan 12"
-+}
-+
-+ets_run()
-+{
-+	trap cleanup EXIT
-+
-+	setup_prepare
-+	setup_wait
-+
-+	tests_run
-+
-+	exit $EXIT_STATUS
-+}
-diff --git a/tools/testing/selftests/net/forwarding/sch_ets_tests.sh b/tool=
-s/testing/selftests/net/forwarding/sch_ets_tests.sh
-new file mode 100644
-index 000000000000..3c3b204d47e8
---- /dev/null
-+++ b/tools/testing/selftests/net/forwarding/sch_ets_tests.sh
-@@ -0,0 +1,227 @@
-+# SPDX-License-Identifier: GPL-2.0
-+
-+# Global interface:
-+#  $put -- port under test (e.g. $swp2)
-+#  get_stats($band) -- A function to collect stats for band
-+#  ets_start_traffic($band) -- Start traffic for this band
-+#  ets_change_qdisc($op, $dev, $nstrict, $quanta...) -- Add or change qdis=
-c
-+
-+# WS describes the Qdisc configuration. It has one value per band (so the
-+# number of array elements indicates the number of bands). If the value is
-+# 0, it is a strict band, otherwise the it's a DRR band and the value is
-+# that band's quantum.
-+declare -a WS
-+
-+qdisc_describe()
-+{
-+	local nbands=3D${#WS[@]}
-+	local nstrict=3D0
-+	local i
-+
-+	for ((i =3D 0; i < nbands; i++)); do
-+		if ((!${WS[$i]})); then
-+			: $((nstrict++))
-+		fi
-+	done
-+
-+	echo -n "ets bands $nbands"
-+	if ((nstrict)); then
-+		echo -n " strict $nstrict"
-+	fi
-+	if ((nstrict < nbands)); then
-+		echo -n " quanta"
-+		for ((i =3D nstrict; i < nbands; i++)); do
-+			echo -n " ${WS[$i]}"
-+		done
-+	fi
-+}
-+
-+__strict_eval()
-+{
-+	local desc=3D$1; shift
-+	local d=3D$1; shift
-+	local total=3D$1; shift
-+	local above=3D$1; shift
-+
-+	RET=3D0
-+
-+	if ((! total)); then
-+		check_err 1 "No traffic observed"
-+		log_test "$desc"
-+		return
-+	fi
-+
-+	local ratio=3D$(echo "scale=3D2; 100 * $d / $total" | bc -l)
-+	if ((above)); then
-+		test $(echo "$ratio > 95.0" | bc -l) -eq 1
-+		check_err $? "Not enough traffic"
-+		log_test "$desc"
-+		log_info "Expected ratio >95% Measured ratio $ratio"
-+	else
-+		test $(echo "$ratio < 5" | bc -l) -eq 1
-+		check_err $? "Too much traffic"
-+		log_test "$desc"
-+		log_info "Expected ratio <5% Measured ratio $ratio"
-+	fi
-+}
-+
-+strict_eval()
-+{
-+	__strict_eval "$@" 1
-+}
-+
-+notraf_eval()
-+{
-+	__strict_eval "$@" 0
-+}
-+
-+__ets_dwrr_test()
-+{
-+	local -a streams=3D("$@")
-+
-+	local low_stream=3D${streams[0]}
-+	local seen_strict=3D0
-+	local -a t0 t1 d
-+	local stream
-+	local total
-+	local i
-+
-+	echo "Testing $(qdisc_describe), streams ${streams[@]}"
-+
-+	for stream in ${streams[@]}; do
-+		ets_start_traffic $stream
-+	done
-+
-+	sleep 10
-+
-+	t0=3D($(for stream in ${streams[@]}; do
-+		  get_stats $stream
-+	      done))
-+
-+	sleep 10
-+
-+	t1=3D($(for stream in ${streams[@]}; do
-+		  get_stats $stream
-+	      done))
-+	d=3D($(for ((i =3D 0; i < ${#streams[@]}; i++)); do
-+		 echo $((${t1[$i]} - ${t0[$i]}))
-+	     done))
-+	total=3D$(echo ${d[@]} | sed 's/ /+/g' | bc)
-+
-+	for ((i =3D 0; i < ${#streams[@]}; i++)); do
-+		local stream=3D${streams[$i]}
-+		if ((seen_strict)); then
-+			notraf_eval "band $stream" ${d[$i]} $total
-+		elif ((${WS[$stream]} =3D=3D 0)); then
-+			strict_eval "band $stream" ${d[$i]} $total
-+			seen_strict=3D1
-+		elif ((stream =3D=3D low_stream)); then
-+			# Low stream is used as DWRR evaluation reference.
-+			continue
-+		else
-+			multipath_eval "bands $low_stream:$stream" \
-+				       ${WS[$low_stream]} ${WS[$stream]} \
-+				       ${d[0]} ${d[$i]}
-+		fi
-+	done
-+
-+	for stream in ${streams[@]}; do
-+		stop_traffic
-+	done
-+}
-+
-+ets_dwrr_test_012()
-+{
-+	__ets_dwrr_test 0 1 2
-+}
-+
-+ets_dwrr_test_01()
-+{
-+	__ets_dwrr_test 0 1
-+}
-+
-+ets_dwrr_test_12()
-+{
-+	__ets_dwrr_test 1 2
-+}
-+
-+ets_qdisc_setup()
-+{
-+	local dev=3D$1; shift
-+	local nstrict=3D$1; shift
-+	local -a quanta=3D("$@")
-+
-+	local ndwrr=3D${#quanta[@]}
-+	local nbands=3D$((nstrict + ndwrr))
-+	local nstreams=3D$(if ((nbands > 3)); then echo 3; else echo $nbands; fi)
-+	local priomap=3D$(seq 0 $((nstreams - 1)))
-+	local i
-+
-+	WS=3D($(
-+		for ((i =3D 0; i < nstrict; i++)); do
-+			echo 0
-+		done
-+		for ((i =3D 0; i < ndwrr; i++)); do
-+			echo ${quanta[$i]}
-+		done
-+	))
-+
-+	ets_change_qdisc $dev $nstrict "$priomap" ${quanta[@]}
-+}
-+
-+ets_set_dwrr_uniform()
-+{
-+	ets_qdisc_setup $put 0 3300 3300 3300
-+}
-+
-+ets_set_dwrr_varying()
-+{
-+	ets_qdisc_setup $put 0 5000 3500 1500
-+}
-+
-+ets_set_strict()
-+{
-+	ets_qdisc_setup $put 3
-+}
-+
-+ets_set_mixed()
-+{
-+	ets_qdisc_setup $put 1 5000 2500 1500
-+}
-+
-+ets_change_quantum()
-+{
-+	tc class change dev $put classid 10:2 ets quantum 8000
-+	WS[1]=3D8000
-+}
-+
-+ets_set_dwrr_two_bands()
-+{
-+	ets_qdisc_setup $put 0 5000 2500
-+}
-+
-+ets_test_strict()
-+{
-+	ets_set_strict
-+	ets_dwrr_test_01
-+	ets_dwrr_test_12
-+}
-+
-+ets_test_mixed()
-+{
-+	ets_set_mixed
-+	ets_dwrr_test_01
-+	ets_dwrr_test_12
-+}
-+
-+ets_test_dwrr()
-+{
-+	ets_set_dwrr_uniform
-+	ets_dwrr_test_012
-+	ets_set_dwrr_varying
-+	ets_dwrr_test_012
-+	ets_change_quantum
-+	ets_dwrr_test_012
-+	ets_set_dwrr_two_bands
-+	ets_dwrr_test_01
-+}
++++ b/tools/testing/selftests/tc-testing/tc-tests/qdiscs/ets.json
+@@ -0,0 +1,940 @@
++[
++    {
++        "id": "e90e",
++        "name": "Add ETS qdisc using bands",
++        "category": [
++            "qdisc",
++            "ets"
++        ],
++        "setup": [
++            "$IP link add dev $DUMMY type dummy || /bin/true"
++        ],
++        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root ets bands=
+ 2",
++        "expExitCode": "0",
++        "verifyCmd": "$TC qdisc show dev $DUMMY",
++        "matchPattern": "qdisc ets 1: root .* bands 2",
++        "matchCount": "1",
++        "teardown": [
++            "$TC qdisc del dev $DUMMY handle 1: root",
++            "$IP link del dev $DUMMY type dummy"
++        ]
++    },
++    {
++        "id": "b059",
++        "name": "Add ETS qdisc using quanta",
++        "category": [
++            "qdisc",
++            "ets"
++        ],
++        "setup": [
++            "$IP link add dev $DUMMY type dummy || /bin/true"
++        ],
++        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root ets quant=
+a 1000 900 800 700",
++        "expExitCode": "0",
++        "verifyCmd": "$TC qdisc show dev $DUMMY",
++        "matchPattern": "qdisc ets 1: root .*bands 4 quanta 1000 900 800 7=
+00",
++        "matchCount": "1",
++        "teardown": [
++            "$TC qdisc del dev $DUMMY handle 1: root",
++            "$IP link del dev $DUMMY type dummy"
++        ]
++    },
++    {
++        "id": "e8e7",
++        "name": "Add ETS qdisc using strict",
++        "category": [
++            "qdisc",
++            "ets"
++        ],
++        "setup": [
++            "$IP link add dev $DUMMY type dummy || /bin/true"
++        ],
++        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root ets stric=
+t 3",
++        "expExitCode": "0",
++        "verifyCmd": "$TC qdisc show dev $DUMMY",
++        "matchPattern": "qdisc ets 1: root .*bands 3 strict 3",
++        "matchCount": "1",
++        "teardown": [
++            "$TC qdisc del dev $DUMMY handle 1: root",
++            "$IP link del dev $DUMMY type dummy"
++        ]
++    },
++    {
++        "id": "233c",
++        "name": "Add ETS qdisc using bands + quanta",
++        "category": [
++            "qdisc",
++            "ets"
++        ],
++        "setup": [
++            "$IP link add dev $DUMMY type dummy || /bin/true"
++        ],
++        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root ets bands=
+ 4 quanta 1000 900 800 700",
++        "expExitCode": "0",
++        "verifyCmd": "$TC qdisc show dev $DUMMY",
++        "matchPattern": "qdisc ets 1: root .*bands 4 quanta 1000 900 800 7=
+00 priomap",
++        "matchCount": "1",
++        "teardown": [
++            "$TC qdisc del dev $DUMMY handle 1: root",
++            "$IP link del dev $DUMMY type dummy"
++        ]
++    },
++    {
++        "id": "3d35",
++        "name": "Add ETS qdisc using bands + strict",
++        "category": [
++            "qdisc",
++            "ets"
++        ],
++        "setup": [
++            "$IP link add dev $DUMMY type dummy || /bin/true"
++        ],
++        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root ets bands=
+ 3 strict 3",
++        "expExitCode": "0",
++        "verifyCmd": "$TC qdisc show dev $DUMMY",
++        "matchPattern": "qdisc ets 1: root .*bands 3 strict 3 priomap",
++        "matchCount": "1",
++        "teardown": [
++            "$TC qdisc del dev $DUMMY handle 1: root",
++            "$IP link del dev $DUMMY type dummy"
++        ]
++    },
++    {
++        "id": "7f3b",
++        "name": "Add ETS qdisc using strict + quanta",
++        "category": [
++            "qdisc",
++            "ets"
++        ],
++        "setup": [
++            "$IP link add dev $DUMMY type dummy || /bin/true"
++        ],
++        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root ets stric=
+t 3 quanta 1500 750",
++        "expExitCode": "0",
++        "verifyCmd": "$TC qdisc show dev $DUMMY",
++        "matchPattern": "qdisc ets 1: root .*bands 5 strict 3 quanta 1500 =
+750 priomap",
++        "matchCount": "1",
++        "teardown": [
++            "$TC qdisc del dev $DUMMY handle 1: root",
++            "$IP link del dev $DUMMY type dummy"
++        ]
++    },
++    {
++        "id": "4593",
++        "name": "Add ETS qdisc using strict 0 + quanta",
++        "category": [
++            "qdisc",
++            "ets"
++        ],
++        "setup": [
++            "$IP link add dev $DUMMY type dummy || /bin/true"
++        ],
++        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root ets stric=
+t 0 quanta 1500 750",
++        "expExitCode": "0",
++        "verifyCmd": "$TC qdisc show dev $DUMMY",
++        "matchPattern": "qdisc ets 1: root .*bands 2 quanta 1500 750 priom=
+ap",
++        "matchCount": "1",
++        "teardown": [
++            "$TC qdisc del dev $DUMMY handle 1: root",
++            "$IP link del dev $DUMMY type dummy"
++        ]
++    },
++    {
++        "id": "8938",
++        "name": "Add ETS qdisc using bands + strict + quanta",
++        "category": [
++            "qdisc",
++            "ets"
++        ],
++        "setup": [
++            "$IP link add dev $DUMMY type dummy || /bin/true"
++        ],
++        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root ets bands=
+ 5 strict 3 quanta 1500 750",
++        "expExitCode": "0",
++        "verifyCmd": "$TC qdisc show dev $DUMMY",
++        "matchPattern": "qdisc ets 1: root .*bands 5 .*strict 3 quanta 150=
+0 750 priomap",
++        "matchCount": "1",
++        "teardown": [
++            "$TC qdisc del dev $DUMMY handle 1: root",
++            "$IP link del dev $DUMMY type dummy"
++        ]
++    },
++    {
++        "id": "0782",
++        "name": "Add ETS qdisc with more bands than quanta",
++        "category": [
++            "qdisc",
++            "ets"
++        ],
++        "setup": [
++            "$IP link add dev $DUMMY type dummy || /bin/true"
++        ],
++        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root ets bands=
+ 2 quanta 1000",
++        "expExitCode": "0",
++        "verifyCmd": "$TC qdisc show dev $DUMMY",
++        "matchPattern": "qdisc ets 1: root .*bands 2 .*quanta 1000 [1-9][0=
+-9]* priomap",
++        "matchCount": "1",
++        "teardown": [
++            "$TC qdisc del dev $DUMMY handle 1: root",
++            "$IP link del dev $DUMMY type dummy"
++        ]
++    },
++    {
++        "id": "501b",
++        "name": "Add ETS qdisc with more bands than strict",
++        "category": [
++            "qdisc",
++            "ets"
++        ],
++        "setup": [
++            "$IP link add dev $DUMMY type dummy || /bin/true"
++        ],
++        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root ets bands=
+ 3 strict 1",
++        "expExitCode": "0",
++        "verifyCmd": "$TC qdisc show dev $DUMMY",
++        "matchPattern": "qdisc ets 1: root .*bands 3 strict 1 quanta ([1-9=
+][0-9]* ){2}priomap",
++        "matchCount": "1",
++        "teardown": [
++            "$TC qdisc del dev $DUMMY handle 1: root",
++            "$IP link del dev $DUMMY type dummy"
++        ]
++    },
++    {
++        "id": "671a",
++        "name": "Add ETS qdisc with more bands than strict + quanta",
++        "category": [
++            "qdisc",
++            "ets"
++        ],
++        "setup": [
++            "$IP link add dev $DUMMY type dummy || /bin/true"
++        ],
++        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root ets bands=
+ 3 strict 1 quanta 1000",
++        "expExitCode": "0",
++        "verifyCmd": "$TC qdisc show dev $DUMMY",
++        "matchPattern": "qdisc ets 1: root .*bands 3 strict 1 quanta 1000 =
+[1-9][0-9]* priomap",
++        "matchCount": "1",
++        "teardown": [
++            "$TC qdisc del dev $DUMMY handle 1: root",
++            "$IP link del dev $DUMMY type dummy"
++        ]
++    },
++    {
++        "id": "2a23",
++        "name": "Add ETS qdisc with 16 bands",
++        "category": [
++            "qdisc",
++            "ets"
++        ],
++        "setup": [
++            "$IP link add dev $DUMMY type dummy || /bin/true"
++        ],
++        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root ets bands=
+ 16",
++        "expExitCode": "0",
++        "verifyCmd": "$TC qdisc show dev $DUMMY",
++        "matchPattern": "qdisc ets 1: root .* bands 16",
++        "matchCount": "1",
++        "teardown": [
++            "$TC qdisc del dev $DUMMY handle 1: root",
++            "$IP link del dev $DUMMY type dummy"
++        ]
++    },
++    {
++        "id": "8daf",
++        "name": "Add ETS qdisc with 17 bands",
++        "category": [
++            "qdisc",
++            "ets"
++        ],
++        "setup": [
++            "$IP link add dev $DUMMY type dummy || /bin/true"
++        ],
++        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root ets bands=
+ 17",
++        "expExitCode": "1",
++        "verifyCmd": "$TC qdisc show dev $DUMMY",
++        "matchPattern": "qdisc ets",
++        "matchCount": "0",
++        "teardown": [
++            "$IP link del dev $DUMMY type dummy"
++        ]
++    },
++    {
++        "id": "7f95",
++        "name": "Add ETS qdisc with 17 strict",
++        "category": [
++            "qdisc",
++            "ets"
++        ],
++        "setup": [
++            "$IP link add dev $DUMMY type dummy || /bin/true"
++        ],
++        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root ets stric=
+t 17",
++        "expExitCode": "1",
++        "verifyCmd": "$TC qdisc show dev $DUMMY",
++        "matchPattern": "qdisc ets",
++        "matchCount": "0",
++        "teardown": [
++            "$IP link del dev $DUMMY type dummy"
++        ]
++    },
++    {
++        "id": "837a",
++        "name": "Add ETS qdisc with 16 quanta",
++        "category": [
++            "qdisc",
++            "ets"
++        ],
++        "setup": [
++            "$IP link add dev $DUMMY type dummy || /bin/true"
++        ],
++        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root ets quant=
+a 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16",
++        "expExitCode": "0",
++        "verifyCmd": "$TC qdisc show dev $DUMMY",
++        "matchPattern": "qdisc ets 1: root .* bands 16",
++        "matchCount": "1",
++        "teardown": [
++            "$TC qdisc del dev $DUMMY handle 1: root",
++            "$IP link del dev $DUMMY type dummy"
++        ]
++    },
++    {
++        "id": "65b6",
++        "name": "Add ETS qdisc with 17 quanta",
++        "category": [
++            "qdisc",
++            "ets"
++        ],
++        "setup": [
++            "$IP link add dev $DUMMY type dummy || /bin/true"
++        ],
++        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root ets quant=
+a 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17",
++        "expExitCode": "2",
++        "verifyCmd": "$TC qdisc show dev $DUMMY",
++        "matchPattern": "qdisc ets",
++        "matchCount": "0",
++        "teardown": [
++            "$IP link del dev $DUMMY type dummy"
++        ]
++    },
++    {
++        "id": "b9e9",
++        "name": "Add ETS qdisc with 16 strict + quanta",
++        "category": [
++            "qdisc",
++            "ets"
++        ],
++        "setup": [
++            "$IP link add dev $DUMMY type dummy || /bin/true"
++        ],
++        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root ets stric=
+t 8 quanta 1 2 3 4 5 6 7 8",
++        "expExitCode": "0",
++        "verifyCmd": "$TC qdisc show dev $DUMMY",
++        "matchPattern": "qdisc ets 1: root .* bands 16",
++        "matchCount": "1",
++        "teardown": [
++            "$TC qdisc del dev $DUMMY handle 1: root",
++            "$IP link del dev $DUMMY type dummy"
++        ]
++    },
++    {
++        "id": "9877",
++        "name": "Add ETS qdisc with 17 strict + quanta",
++        "category": [
++            "qdisc",
++            "ets"
++        ],
++        "setup": [
++            "$IP link add dev $DUMMY type dummy || /bin/true"
++        ],
++        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root ets stric=
+t 9 quanta 1 2 3 4 5 6 7 8",
++        "expExitCode": "2",
++        "verifyCmd": "$TC qdisc show dev $DUMMY",
++        "matchPattern": "qdisc ets",
++        "matchCount": "0",
++        "teardown": [
++            "$IP link del dev $DUMMY type dummy"
++        ]
++    },
++    {
++        "id": "c696",
++        "name": "Add ETS qdisc with priomap",
++        "category": [
++            "qdisc",
++            "ets"
++        ],
++        "setup": [
++            "$IP link add dev $DUMMY type dummy || /bin/true"
++        ],
++        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root ets bands=
+ 5 priomap 0 0 1 0 1 2 0 1 2 3 0 1 2 3 4 0",
++        "expExitCode": "0",
++        "verifyCmd": "$TC qdisc show dev $DUMMY",
++        "matchPattern": "qdisc ets 1: root .*priomap 0 0 1 0 1 2 0 1 2 3 0=
+ 1 2 3 4 0",
++        "matchCount": "1",
++        "teardown": [
++            "$TC qdisc del dev $DUMMY handle 1: root",
++            "$IP link del dev $DUMMY type dummy"
++        ]
++    },
++    {
++        "id": "30c4",
++        "name": "Add ETS qdisc with quanta + priomap",
++        "category": [
++            "qdisc",
++            "ets"
++        ],
++        "setup": [
++            "$IP link add dev $DUMMY type dummy || /bin/true"
++        ],
++        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root ets quant=
+a 1000 2000 3000 4000 5000 priomap 0 0 1 0 1 2 0 1 2 3 0 1 2 3 4 0",
++        "expExitCode": "0",
++        "verifyCmd": "$TC qdisc show dev $DUMMY",
++        "matchPattern": "qdisc ets 1: root .*quanta 1000 2000 3000 4000 50=
+00 priomap 0 0 1 0 1 2 0 1 2 3 0 1 2 3 4 0",
++        "matchCount": "1",
++        "teardown": [
++            "$TC qdisc del dev $DUMMY handle 1: root",
++            "$IP link del dev $DUMMY type dummy"
++        ]
++    },
++    {
++        "id": "e8ac",
++        "name": "Add ETS qdisc with strict + priomap",
++        "category": [
++            "qdisc",
++            "ets"
++        ],
++        "setup": [
++            "$IP link add dev $DUMMY type dummy || /bin/true"
++        ],
++        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root ets stric=
+t 5 priomap 0 0 1 0 1 2 0 1 2 3 0 1 2 3 4 0",
++        "expExitCode": "0",
++        "verifyCmd": "$TC qdisc show dev $DUMMY",
++        "matchPattern": "qdisc ets 1: root .*bands 5 strict 5 priomap 0 0 =
+1 0 1 2 0 1 2 3 0 1 2 3 4 0",
++        "matchCount": "1",
++        "teardown": [
++            "$TC qdisc del dev $DUMMY handle 1: root",
++            "$IP link del dev $DUMMY type dummy"
++        ]
++    },
++    {
++        "id": "5a7e",
++        "name": "Add ETS qdisc with quanta + strict + priomap",
++        "category": [
++            "qdisc",
++            "ets"
++        ],
++        "setup": [
++            "$IP link add dev $DUMMY type dummy || /bin/true"
++        ],
++        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root ets stric=
+t 2 quanta 1000 2000 3000 priomap 0 0 1 0 1 2 0 1 2 3 0 1 2 3 4 0",
++        "expExitCode": "0",
++        "verifyCmd": "$TC qdisc show dev $DUMMY",
++        "matchPattern": "qdisc ets 1: root .*strict 2 quanta 1000 2000 300=
+0 priomap 0 0 1 0 1 2 0 1 2 3 0 1 2 3 4 0",
++        "matchCount": "1",
++        "teardown": [
++            "$TC qdisc del dev $DUMMY handle 1: root",
++            "$IP link del dev $DUMMY type dummy"
++        ]
++    },
++    {
++        "id": "cb8b",
++        "name": "Show ETS class :1",
++        "category": [
++            "qdisc",
++            "ets"
++        ],
++        "setup": [
++            "$IP link add dev $DUMMY type dummy || /bin/true"
++        ],
++        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root ets quant=
+a 4000 3000 2000",
++        "expExitCode": "0",
++        "verifyCmd": "$TC class show dev $DUMMY classid 1:1",
++        "matchPattern": "class ets 1:1 root quantum 4000",
++        "matchCount": "1",
++        "teardown": [
++            "$TC qdisc del dev $DUMMY handle 1: root",
++            "$IP link del dev $DUMMY type dummy"
++        ]
++    },
++    {
++        "id": "1b4e",
++        "name": "Show ETS class :2",
++        "category": [
++            "qdisc",
++            "ets"
++        ],
++        "setup": [
++            "$IP link add dev $DUMMY type dummy || /bin/true"
++        ],
++        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root ets quant=
+a 4000 3000 2000",
++        "expExitCode": "0",
++        "verifyCmd": "$TC class show dev $DUMMY classid 1:2",
++        "matchPattern": "class ets 1:2 root quantum 3000",
++        "matchCount": "1",
++        "teardown": [
++            "$TC qdisc del dev $DUMMY handle 1: root",
++            "$IP link del dev $DUMMY type dummy"
++        ]
++    },
++    {
++        "id": "f642",
++        "name": "Show ETS class :3",
++        "category": [
++            "qdisc",
++            "ets"
++        ],
++        "setup": [
++            "$IP link add dev $DUMMY type dummy || /bin/true"
++        ],
++        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root ets quant=
+a 4000 3000 2000",
++        "expExitCode": "0",
++        "verifyCmd": "$TC class show dev $DUMMY classid 1:3",
++        "matchPattern": "class ets 1:3 root quantum 2000",
++        "matchCount": "1",
++        "teardown": [
++            "$TC qdisc del dev $DUMMY handle 1: root",
++            "$IP link del dev $DUMMY type dummy"
++        ]
++    },
++    {
++        "id": "0a5f",
++        "name": "Show ETS strict class",
++        "category": [
++            "qdisc",
++            "ets"
++        ],
++        "setup": [
++            "$IP link add dev $DUMMY type dummy || /bin/true"
++        ],
++        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root ets stric=
+t 3",
++        "expExitCode": "0",
++        "verifyCmd": "$TC class show dev $DUMMY classid 1:1",
++        "matchPattern": "class ets 1:1 root $",
++        "matchCount": "1",
++        "teardown": [
++            "$TC qdisc del dev $DUMMY handle 1: root",
++            "$IP link del dev $DUMMY type dummy"
++        ]
++    },
++    {
++        "id": "f7c8",
++        "name": "Add ETS qdisc with too many quanta",
++        "category": [
++            "qdisc",
++            "ets"
++        ],
++        "setup": [
++            "$IP link add dev $DUMMY type dummy || /bin/true"
++        ],
++        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root ets bands=
+ 2 quanta 1000 2000 3000",
++        "expExitCode": "1",
++        "verifyCmd": "$TC qdisc show dev $DUMMY",
++        "matchPattern": "qdisc ets",
++        "matchCount": "0",
++        "teardown": [
++            "$IP link del dev $DUMMY type dummy"
++        ]
++    },
++    {
++        "id": "2389",
++        "name": "Add ETS qdisc with too many strict",
++        "category": [
++            "qdisc",
++            "ets"
++        ],
++        "setup": [
++            "$IP link add dev $DUMMY type dummy || /bin/true"
++        ],
++        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root ets bands=
+ 2 strict 3",
++        "expExitCode": "1",
++        "verifyCmd": "$TC qdisc show dev $DUMMY",
++        "matchPattern": "qdisc ets",
++        "matchCount": "0",
++        "teardown": [
++            "$IP link del dev $DUMMY type dummy"
++        ]
++    },
++    {
++        "id": "fe3c",
++        "name": "Add ETS qdisc with too many strict + quanta",
++        "category": [
++            "qdisc",
++            "ets"
++        ],
++        "setup": [
++            "$IP link add dev $DUMMY type dummy || /bin/true"
++        ],
++        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root ets bands=
+ 4 strict 2 quanta 1000 2000 3000",
++        "expExitCode": "1",
++        "verifyCmd": "$TC qdisc show dev $DUMMY",
++        "matchPattern": "qdisc ets",
++        "matchCount": "0",
++        "teardown": [
++            "$IP link del dev $DUMMY type dummy"
++        ]
++    },
++    {
++        "id": "cb04",
++        "name": "Add ETS qdisc with excess priomap elements",
++        "category": [
++            "qdisc",
++            "ets"
++        ],
++        "setup": [
++            "$IP link add dev $DUMMY type dummy || /bin/true"
++        ],
++        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root ets bands=
+ 5 priomap 0 0 1 0 1 2 0 1 2 3 0 1 2 3 4 0 1 2",
++        "expExitCode": "1",
++        "verifyCmd": "$TC qdisc show dev $DUMMY",
++        "matchPattern": "qdisc ets",
++        "matchCount": "0",
++        "teardown": [
++            "$IP link del dev $DUMMY type dummy"
++        ]
++    },
++    {
++        "id": "c32e",
++        "name": "Add ETS qdisc with priomap above bands",
++        "category": [
++            "qdisc",
++            "ets"
++        ],
++        "setup": [
++            "$IP link add dev $DUMMY type dummy || /bin/true"
++        ],
++        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root ets bands=
+ 2 priomap 0 1 2",
++        "expExitCode": "1",
++        "verifyCmd": "$TC qdisc show dev $DUMMY",
++        "matchPattern": "qdisc ets",
++        "matchCount": "0",
++        "teardown": [
++            "$IP link del dev $DUMMY type dummy"
++        ]
++    },
++    {
++        "id": "744c",
++        "name": "Add ETS qdisc with priomap above quanta",
++        "category": [
++            "qdisc",
++            "ets"
++        ],
++        "setup": [
++            "$IP link add dev $DUMMY type dummy || /bin/true"
++        ],
++        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root ets quant=
+a 1000 500 priomap 0 1 2",
++        "expExitCode": "1",
++        "verifyCmd": "$TC qdisc show dev $DUMMY",
++        "matchPattern": "qdisc ets",
++        "matchCount": "0",
++        "teardown": [
++            "$IP link del dev $DUMMY type dummy"
++        ]
++    },
++    {
++        "id": "7b33",
++        "name": "Add ETS qdisc with priomap above strict",
++        "category": [
++            "qdisc",
++            "ets"
++        ],
++        "setup": [
++            "$IP link add dev $DUMMY type dummy || /bin/true"
++        ],
++        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root ets stric=
+t 2 priomap 0 1 2",
++        "expExitCode": "1",
++        "verifyCmd": "$TC qdisc show dev $DUMMY",
++        "matchPattern": "qdisc ets",
++        "matchCount": "0",
++        "teardown": [
++            "$IP link del dev $DUMMY type dummy"
++        ]
++    },
++    {
++        "id": "dbe6",
++        "name": "Add ETS qdisc with priomap above strict + quanta",
++        "category": [
++            "qdisc",
++            "ets"
++        ],
++        "setup": [
++            "$IP link add dev $DUMMY type dummy || /bin/true"
++        ],
++        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root ets stric=
+t 1 quanta 1000 500 priomap 0 1 2 3",
++        "expExitCode": "1",
++        "verifyCmd": "$TC qdisc show dev $DUMMY",
++        "matchPattern": "qdisc ets",
++        "matchCount": "0",
++        "teardown": [
++            "$IP link del dev $DUMMY type dummy"
++        ]
++    },
++    {
++        "id": "bdb2",
++        "name": "Add ETS qdisc with priomap within bands with strict + qua=
+nta",
++        "category": [
++            "qdisc",
++            "ets"
++        ],
++        "setup": [
++            "$IP link add dev $DUMMY type dummy || /bin/true"
++        ],
++        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root ets bands=
+ 4 strict 1 quanta 1000 500 priomap 0 1 2 3",
++        "expExitCode": "0",
++        "verifyCmd": "$TC qdisc show dev $DUMMY",
++        "matchPattern": "qdisc ets",
++        "matchCount": "1",
++        "teardown": [
++            "$IP link del dev $DUMMY type dummy"
++        ]
++    },
++    {
++        "id": "39a3",
++        "name": "Add ETS qdisc with priomap above bands with strict + quan=
+ta",
++        "category": [
++            "qdisc",
++            "ets"
++        ],
++        "setup": [
++            "$IP link add dev $DUMMY type dummy || /bin/true"
++        ],
++        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root ets bands=
+ 4 strict 1 quanta 1000 500 priomap 0 1 2 3 4",
++        "expExitCode": "1",
++        "verifyCmd": "$TC qdisc show dev $DUMMY",
++        "matchPattern": "qdisc ets",
++        "matchCount": "0",
++        "teardown": [
++            "$IP link del dev $DUMMY type dummy"
++        ]
++    },
++    {
++        "id": "557c",
++        "name": "Unset priorities default to the last band",
++        "category": [
++            "qdisc",
++            "ets"
++        ],
++        "setup": [
++            "$IP link add dev $DUMMY type dummy || /bin/true"
++        ],
++        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root ets bands=
+ 4 priomap 0 0 0 0",
++        "expExitCode": "0",
++        "verifyCmd": "$TC qdisc show dev $DUMMY",
++        "matchPattern": "qdisc ets .*priomap 0 0 0 0 3 3 3 3 3 3 3 3 3 3 3=
+ 3",
++        "matchCount": "1",
++        "teardown": [
++            "$IP link del dev $DUMMY type dummy"
++        ]
++    },
++    {
++        "id": "a347",
++        "name": "Unset priorities default to the last band -- no priomap",
++        "category": [
++            "qdisc",
++            "ets"
++        ],
++        "setup": [
++            "$IP link add dev $DUMMY type dummy || /bin/true"
++        ],
++        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root ets bands=
+ 4",
++        "expExitCode": "0",
++        "verifyCmd": "$TC qdisc show dev $DUMMY",
++        "matchPattern": "qdisc ets .*priomap 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3=
+ 3",
++        "matchCount": "1",
++        "teardown": [
++            "$IP link del dev $DUMMY type dummy"
++        ]
++    },
++    {
++        "id": "39c4",
++        "name": "Add ETS qdisc with too few bands",
++        "category": [
++            "qdisc",
++            "ets"
++        ],
++        "setup": [
++            "$IP link add dev $DUMMY type dummy || /bin/true"
++        ],
++        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root ets bands=
+ 0",
++        "expExitCode": "1",
++        "verifyCmd": "$TC qdisc show dev $DUMMY",
++        "matchPattern": "qdisc ets",
++        "matchCount": "0",
++        "teardown": [
++            "$IP link del dev $DUMMY type dummy"
++        ]
++    },
++    {
++        "id": "930b",
++        "name": "Add ETS qdisc with too many bands",
++        "category": [
++            "qdisc",
++            "ets"
++        ],
++        "setup": [
++            "$IP link add dev $DUMMY type dummy || /bin/true"
++        ],
++        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root ets bands=
+ 17",
++        "expExitCode": "1",
++        "verifyCmd": "$TC qdisc show dev $DUMMY",
++        "matchPattern": "qdisc ets",
++        "matchCount": "0",
++        "teardown": [
++            "$IP link del dev $DUMMY type dummy"
++        ]
++    },
++    {
++        "id": "406a",
++        "name": "Add ETS qdisc without parameters",
++        "category": [
++            "qdisc",
++            "ets"
++        ],
++        "setup": [
++            "$IP link add dev $DUMMY type dummy || /bin/true"
++        ],
++        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root ets",
++        "expExitCode": "1",
++        "verifyCmd": "$TC qdisc show dev $DUMMY",
++        "matchPattern": "qdisc ets",
++        "matchCount": "0",
++        "teardown": [
++            "$IP link del dev $DUMMY type dummy"
++        ]
++    },
++    {
++        "id": "e51a",
++        "name": "Zero element in quanta",
++        "category": [
++            "qdisc",
++            "ets"
++        ],
++        "setup": [
++            "$IP link add dev $DUMMY type dummy || /bin/true"
++        ],
++        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root ets quant=
+a 1000 0 800 700",
++        "expExitCode": "1",
++        "verifyCmd": "$TC qdisc show dev $DUMMY",
++        "matchPattern": "qdisc ets",
++        "matchCount": "0",
++        "teardown": [
++            "$IP link del dev $DUMMY type dummy"
++        ]
++    },
++    {
++        "id": "e7f2",
++        "name": "Sole zero element in quanta",
++        "category": [
++            "qdisc",
++            "ets"
++        ],
++        "setup": [
++            "$IP link add dev $DUMMY type dummy || /bin/true"
++        ],
++        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root ets quant=
+a 0",
++        "expExitCode": "1",
++        "verifyCmd": "$TC qdisc show dev $DUMMY",
++        "matchPattern": "qdisc ets",
++        "matchCount": "0",
++        "teardown": [
++            "$IP link del dev $DUMMY type dummy"
++        ]
++    },
++    {
++        "id": "d6e6",
++        "name": "No values after the quanta keyword",
++        "category": [
++            "qdisc",
++            "ets"
++        ],
++        "setup": [
++            "$IP link add dev $DUMMY type dummy || /bin/true"
++        ],
++        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root ets quant=
+a",
++        "expExitCode": "255",
++        "verifyCmd": "$TC qdisc show dev $DUMMY",
++        "matchPattern": "qdisc ets",
++        "matchCount": "0",
++        "teardown": [
++            "$IP link del dev $DUMMY type dummy"
++        ]
++    },
++    {
++        "id": "28c6",
++        "name": "Change ETS band quantum",
++        "category": [
++            "qdisc",
++            "ets"
++        ],
++        "setup": [
++            "$IP link add dev $DUMMY type dummy || /bin/true",
++            "$TC qdisc add dev $DUMMY handle 1: root ets quanta 1000 2000 =
+3000"
++        ],
++        "cmdUnderTest": "$TC class change dev $DUMMY classid 1:1 ets quant=
+um 1500",
++        "expExitCode": "0",
++        "verifyCmd": "$TC qdisc show dev $DUMMY",
++        "matchPattern": "qdisc ets 1: root .*quanta 1500 2000 3000 priomap=
+ ",
++        "matchCount": "1",
++        "teardown": [
++            "$IP link del dev $DUMMY type dummy"
++        ]
++    },
++    {
++        "id": "4714",
++        "name": "Change ETS band without quantum",
++        "category": [
++            "qdisc",
++            "ets"
++        ],
++        "setup": [
++            "$IP link add dev $DUMMY type dummy || /bin/true",
++            "$TC qdisc add dev $DUMMY handle 1: root ets quanta 1000 2000 =
+3000"
++        ],
++        "cmdUnderTest": "$TC class change dev $DUMMY classid 1:1 ets",
++        "expExitCode": "0",
++        "verifyCmd": "$TC qdisc show dev $DUMMY",
++        "matchPattern": "qdisc ets 1: root .*quanta 1000 2000 3000 priomap=
+ ",
++        "matchCount": "1",
++        "teardown": [
++            "$IP link del dev $DUMMY type dummy"
++        ]
++    },
++    {
++        "id": "6979",
++        "name": "Change quantum of a strict ETS band",
++        "category": [
++            "qdisc",
++            "ets"
++        ],
++        "setup": [
++            "$IP link add dev $DUMMY type dummy || /bin/true",
++            "$TC qdisc add dev $DUMMY handle 1: root ets strict 5"
++        ],
++        "cmdUnderTest": "$TC class change dev $DUMMY classid 1:2 ets quant=
+um 1500",
++        "expExitCode": "2",
++        "verifyCmd": "$TC qdisc show dev $DUMMY",
++        "matchPattern": "qdisc ets .*bands 5 .*strict 5",
++        "matchCount": "1",
++        "teardown": [
++            "$IP link del dev $DUMMY type dummy"
++        ]
++    },
++    {
++        "id": "9a7d",
++        "name": "Change ETS strict band without quantum",
++        "category": [
++            "qdisc",
++            "ets"
++        ],
++        "setup": [
++            "$IP link add dev $DUMMY type dummy || /bin/true",
++            "$TC qdisc add dev $DUMMY handle 1: root ets strict 5"
++        ],
++        "cmdUnderTest": "$TC class change dev $DUMMY classid 1:2 ets",
++        "expExitCode": "0",
++        "verifyCmd": "$TC qdisc show dev $DUMMY",
++        "matchPattern": "qdisc ets .*bands 5 .*strict 5",
++        "matchCount": "1",
++        "teardown": [
++            "$IP link del dev $DUMMY type dummy"
++        ]
++    }
++]
 --=20
 2.20.1
 
