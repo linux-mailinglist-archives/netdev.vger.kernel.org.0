@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 97D5111FE8F
+	by mail.lfdr.de (Postfix) with ESMTP id 27F8E11FE8E
 	for <lists+netdev@lfdr.de>; Mon, 16 Dec 2019 07:45:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726772AbfLPGo3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Dec 2019 01:44:29 -0500
-Received: from mail-pj1-f53.google.com ([209.85.216.53]:33625 "EHLO
-        mail-pj1-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726754AbfLPGoT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Dec 2019 01:44:19 -0500
-Received: by mail-pj1-f53.google.com with SMTP id r67so2551583pjb.0
-        for <netdev@vger.kernel.org>; Sun, 15 Dec 2019 22:44:18 -0800 (PST)
+        id S1726808AbfLPGoW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Dec 2019 01:44:22 -0500
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:43240 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726772AbfLPGoU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Dec 2019 01:44:20 -0500
+Received: by mail-pg1-f194.google.com with SMTP id k197so3091119pga.10
+        for <netdev@vger.kernel.org>; Sun, 15 Dec 2019 22:44:20 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=cumulusnetworks.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=IGmMiS7hY2bdt/WHCzHFZ8jUomL6IBEPbbcC5INKHlA=;
-        b=apD1J9SA7lLC9yECks+p/+WPspQiu27Rpc3kQj19B8JgE1oEcJeJlfDnL/VCHVDBBj
-         gUDrjhcGeZ4sMWeRorSB/vwy3wSazfp8qw8++nHdlySHsG+CbhLAnaeMYsLGqGWZGwt8
-         ln8p6HmY1k+hHvXyemOP4K5k9zPMLIQ1tS2G8=
+        bh=gz2BNQEQle/snIzzzykIMEMiJleVtr/0NhSNW2Xd9+Y=;
+        b=hETkzQSljMonMitbuMQNYpR0OQst1o4y7q4LbSFW5CidMpOqDr/lZJS6bfNl34y6F3
+         ww2AQT6b6h1aieu5j4kn/FIDugRaEMY9SVsitwauzXFCljmSNiijGtWPf+CEPM2oPWzq
+         +0Kd1xRVe+ZDO9ec9tandbxTskTYstU8gfJBw=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=IGmMiS7hY2bdt/WHCzHFZ8jUomL6IBEPbbcC5INKHlA=;
-        b=uHOcg1PSwAOnlPV4U/lmokivOUKGTncHKjvwlqWKSEcYM7WCBFTPA8eHa0CclqoPzR
-         9oCufaDR9sa/i3VTXrFkl5NyLOqmyzyziSdBn2njfseVSxJE9I9+ufd+ui1VZDSH2rhU
-         ICmVSkJqCZnji4jpURXHTmsN+V3AMSEJsHStCpSi07hjHqpiqvbSHKiVqFNYCFq3AZ/l
-         LVg4Q255MCxdO3AR/e2tPBSdLwPkEQjOFmtaX7hvj1I04A+H+Of8G6L0OF0V8W3chUwu
-         u9ihWq1lAkGDSHGlXfnERB2FZrBuBzy9wJoGOockg2WTGW2FPedlr3oaag4hILO2aNHN
-         yVrQ==
-X-Gm-Message-State: APjAAAUS/ppz+pfaAs9/NuhrSQp6x+tfHxJ07ITkmqvGXYqbRPWj5FcB
-        thxn9KW61pDQJnrGQJ6aGu46DjaMnjI=
-X-Google-Smtp-Source: APXvYqyGpP8Bm0nV4kxB6qou0U+uopokyvQ0l0Q72ZzKy3kE5iDLhuRYYL2UCnkVT/JHB3K4jDMAoA==
-X-Received: by 2002:a17:902:9a04:: with SMTP id v4mr14557791plp.192.1576478658000;
-        Sun, 15 Dec 2019 22:44:18 -0800 (PST)
+        bh=gz2BNQEQle/snIzzzykIMEMiJleVtr/0NhSNW2Xd9+Y=;
+        b=IH0O/4aPcfpqQwFlkyk0GLAbmwKDVsWzr9i/L6MgPV9MyVY6QsyITBQUQB4AzCLdM4
+         danJBRUw2Rw1Uug55hdohMr4cISRUld2xb3j3v/8gd6YPzIc4PN5qbSZeyIPAWjWd5A5
+         g+fQuzK+yqfzqiCHQuOvDbez8VHygQ0lqzhER8oB7g6FQe3ekw7piiZkFmtZsHu1vxoE
+         uB01oCYuENAD89SiProkUcEgrIvUKmdCFckL6xFXCHuXHL5FH9QNBYxFEovVrpSm3YHO
+         WP6a1NvOwOLQQt9b++KOq5ZyBFfm+ON3b2/Q6/odSfkMRL8Hud+fGYfeaeb5U6+cN4h4
+         CdeQ==
+X-Gm-Message-State: APjAAAXXuZ2vf7J4v924wRjF6SU07KEL0/941ZKTx9SWJjCi6SMyxFpw
+        63xPvfz0Ks7N4tZvpT8S24p+ILp/Jrk=
+X-Google-Smtp-Source: APXvYqxsqHzbTof8ekx+rVIOVxmIR/ifdh8NvgQwY3Lv7oqP16LtPafszlOVe22h6DpY7Y6cTZ+3RQ==
+X-Received: by 2002:a63:2949:: with SMTP id p70mr16456935pgp.191.1576478659601;
+        Sun, 15 Dec 2019 22:44:19 -0800 (PST)
 Received: from f3.synalogic.ca (ag061063.dynamic.ppp.asahi-net.or.jp. [157.107.61.63])
-        by smtp.gmail.com with ESMTPSA id y62sm21881502pfg.45.2019.12.15.22.44.15
+        by smtp.gmail.com with ESMTPSA id y62sm21881502pfg.45.2019.12.15.22.44.18
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 15 Dec 2019 22:44:16 -0800 (PST)
+        Sun, 15 Dec 2019 22:44:19 -0800 (PST)
 From:   Benjamin Poirier <bpoirier@cumulusnetworks.com>
 To:     netdev@vger.kernel.org
 Cc:     Roopa Prabhu <roopa@cumulusnetworks.com>
-Subject: [PATCH iproute2 7/8] bridge: Deduplicate vlan show functions
-Date:   Mon, 16 Dec 2019 15:43:43 +0900
-Message-Id: <20191216064344.1470824-8-bpoirier@cumulusnetworks.com>
+Subject: [PATCH iproute2 8/8] bridge: Fix tunnelshow json output
+Date:   Mon, 16 Dec 2019 15:43:44 +0900
+Message-Id: <20191216064344.1470824-9-bpoirier@cumulusnetworks.com>
 X-Mailer: git-send-email 2.24.0
 In-Reply-To: <20191216064344.1470824-1-bpoirier@cumulusnetworks.com>
 References: <20191216064344.1470824-1-bpoirier@cumulusnetworks.com>
@@ -57,198 +57,110 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-print_vlan() and print_vlan_tunnel() are almost identical copies, save for
-a missing newline in the latter which leads to broken output of "vlan
-tunnelshow" in normal mode.
+repeats for "vlan tunnelshow" what commit 0f36267485e3 ("bridge: fix vlan
+show formatting") did for "vlan show". This fixes problems in json output.
+
+Note that the resulting json output format of "vlan tunnelshow" is not the
+same as the original, introduced in commit 8652eeb3ab12 ("bridge: vlan:
+support for per vlan tunnel info"). Changes similar to the ones done for
+"vlan show" in commit 0f36267485e3 ("bridge: fix vlan show formatting") are
+carried over to "vlan tunnelshow".
 
 Fixes: c7c1a1ef51ae ("bridge: colorize output and use JSON print library")
+Fixes: 0f36267485e3 ("bridge: fix vlan show formatting")
 Signed-off-by: Benjamin Poirier <bpoirier@cumulusnetworks.com>
 ---
- bridge/vlan.c                            | 91 +++++++-----------------
- testsuite/tests/bridge/vlan/tunnelshow.t |  7 ++
- 2 files changed, 34 insertions(+), 64 deletions(-)
+ bridge/vlan.c                            | 27 +++++++-----------------
+ testsuite/tests/bridge/vlan/tunnelshow.t |  2 ++
+ 2 files changed, 10 insertions(+), 19 deletions(-)
 
 diff --git a/bridge/vlan.c b/bridge/vlan.c
-index 428eeee3..19283bca 100644
+index 19283bca..205851e4 100644
 --- a/bridge/vlan.c
 +++ b/bridge/vlan.c
-@@ -16,7 +16,11 @@
- #include "utils.h"
- 
- static unsigned int filter_index, filter_vlan;
--static int show_vlan_tunnel_info = 0;
-+
-+enum vlan_show_subject {
-+	VLAN_SHOW_VLAN,
-+	VLAN_SHOW_TUNNELINFO,
-+};
- 
- static void usage(void)
- {
-@@ -278,7 +282,7 @@ static void print_range(const char *name, __u32 start, __u32 id)
- 
+@@ -256,12 +256,14 @@ static int filter_vlan_check(__u16 vid, __u16 flags)
+ 	return 1;
  }
  
--static void print_vlan_tunnel_info(FILE *fp, struct rtattr *tb, int ifindex)
-+static void print_vlan_tunnel_info(struct rtattr *tb, int ifindex)
+-static void open_vlan_port(int ifi_index, const char *fmt)
++static void open_vlan_port(int ifi_index, const char *fmt,
++			   enum vlan_show_subject subject)
  {
- 	struct rtattr *i, *list = tb;
- 	int rem = RTA_PAYLOAD(list);
-@@ -347,52 +351,9 @@ static void print_vlan_tunnel_info(FILE *fp, struct rtattr *tb, int ifindex)
- 		close_vlan_port();
+ 	open_json_object(NULL);
+ 	print_color_string(PRINT_ANY, COLOR_IFNAME, "ifname", fmt,
+ 			   ll_index_to_name(ifi_index));
+-	open_json_array(PRINT_JSON, "vlans");
++	open_json_array(PRINT_JSON,
++			subject == VLAN_SHOW_VLAN ? "vlans": "tunnels");
  }
  
--static int print_vlan_tunnel(struct nlmsghdr *n, void *arg)
--{
--	struct ifinfomsg *ifm = NLMSG_DATA(n);
--	struct rtattr *tb[IFLA_MAX+1];
--	int len = n->nlmsg_len;
--	FILE *fp = arg;
+ static void close_vlan_port(void)
+@@ -289,10 +291,8 @@ static void print_vlan_tunnel_info(struct rtattr *tb, int ifindex)
+ 	__u16 last_vid_start = 0;
+ 	__u32 last_tunid_start = 0;
+ 
+-	if (!filter_vlan)
+-		open_vlan_port(ifindex, "%s");
++	open_vlan_port(ifindex, "%s", VLAN_SHOW_TUNNELINFO);
+ 
+-	open_json_array(PRINT_JSON, "tunnel");
+ 	for (i = RTA_DATA(list); RTA_OK(i, rem); i = RTA_NEXT(i, rem)) {
+ 		struct rtattr *ttb[IFLA_BRIDGE_VLAN_TUNNEL_MAX+1];
+ 		__u32 tunnel_id = 0;
+@@ -331,24 +331,13 @@ static void print_vlan_tunnel_info(struct rtattr *tb, int ifindex)
+ 		else if (vcheck_ret == 0)
+ 			continue;
+ 
+-		if (tunnel_flags & BRIDGE_VLAN_INFO_RANGE_BEGIN)
+-			continue;
 -
--	if (n->nlmsg_type != RTM_NEWLINK) {
--		fprintf(stderr, "Not RTM_NEWLINK: %08x %08x %08x\n",
--			n->nlmsg_len, n->nlmsg_type, n->nlmsg_flags);
--		return 0;
--	}
+-		if (filter_vlan)
+-			open_vlan_port(ifindex, "%s");
 -
--	len -= NLMSG_LENGTH(sizeof(*ifm));
--	if (len < 0) {
--		fprintf(stderr, "BUG: wrong nlmsg len %d\n", len);
--		return -1;
--	}
+ 		open_json_object(NULL);
+ 		print_range("vlan", last_vid_start, tunnel_vid);
+ 		print_range("tunid", last_tunid_start, tunnel_id);
+ 		close_json_object();
 -
--	if (ifm->ifi_family != AF_BRIDGE)
--		return 0;
+ 		print_string(PRINT_FP, NULL, "%s", _SL_);
+-		if (filter_vlan)
+-			close_vlan_port();
+ 	}
 -
--	if (filter_index && filter_index != ifm->ifi_index)
--		return 0;
--
--	parse_rtattr(tb, IFLA_MAX, IFLA_RTA(ifm), len);
--
--	/* if AF_SPEC isn't there, vlan table is not preset for this port */
--	if (!tb[IFLA_AF_SPEC]) {
--		if (!filter_vlan && !is_json_context()) {
--			color_fprintf(fp, COLOR_IFNAME, "%s",
--				      ll_index_to_name(ifm->ifi_index));
--			fprintf(fp, "\tNone\n");
--		}
--		return 0;
--	}
--
--	print_vlan_tunnel_info(fp, tb[IFLA_AF_SPEC], ifm->ifi_index);
--
--	fflush(fp);
--	return 0;
--}
--
+-	if (!filter_vlan)
+-		close_vlan_port();
++	close_vlan_port();
+ }
+ 
  static int print_vlan(struct nlmsghdr *n, void *arg)
- {
--	FILE *fp = arg;
-+	enum vlan_show_subject *subject = arg;
- 	struct ifinfomsg *ifm = NLMSG_DATA(n);
- 	int len = n->nlmsg_len;
- 	struct rtattr *tb[IFLA_MAX+1];
-@@ -420,17 +381,24 @@ static int print_vlan(struct nlmsghdr *n, void *arg)
- 	/* if AF_SPEC isn't there, vlan table is not preset for this port */
- 	if (!tb[IFLA_AF_SPEC]) {
- 		if (!filter_vlan && !is_json_context()) {
--			color_fprintf(fp, COLOR_IFNAME, "%s",
-+			color_fprintf(stdout, COLOR_IFNAME, "%s",
- 				      ll_index_to_name(ifm->ifi_index));
--			fprintf(fp, "\tNone\n");
-+			fprintf(stdout, "\tNone\n");
- 		}
- 		return 0;
- 	}
+@@ -467,7 +456,7 @@ static void print_vlan_stats_attr(struct rtattr *attr, int ifindex)
  
--	print_vlan_info(tb[IFLA_AF_SPEC], ifm->ifi_index);
-+	switch (*subject) {
-+	case VLAN_SHOW_VLAN:
-+		print_vlan_info(tb[IFLA_AF_SPEC], ifm->ifi_index);
-+		break;
-+	case VLAN_SHOW_TUNNELINFO:
-+		print_vlan_tunnel_info(tb[IFLA_AF_SPEC], ifm->ifi_index);
-+		break;
-+	}
- 	print_string(PRINT_FP, NULL, "%s", _SL_);
+ 		/* found vlan stats, first time print the interface name */
+ 		if (!found_vlan) {
+-			open_vlan_port(ifindex, "%-16s");
++			open_vlan_port(ifindex, "%-16s", VLAN_SHOW_VLAN);
+ 			found_vlan = true;
+ 		} else {
+ 			print_string(PRINT_FP, NULL, "%-16s", "");
+@@ -600,7 +589,7 @@ void print_vlan_info(struct rtattr *tb, int ifindex)
+ 	int rem = RTA_PAYLOAD(list);
+ 	__u16 last_vid_start = 0;
  
--	fflush(fp);
-+	fflush(stdout);
- 	return 0;
- }
+-	open_vlan_port(ifindex, "%s");
++	open_vlan_port(ifindex, "%s", VLAN_SHOW_VLAN);
  
-@@ -543,7 +511,7 @@ static int print_vlan_stats(struct nlmsghdr *n, void *arg)
- 	return 0;
- }
- 
--static int vlan_show(int argc, char **argv)
-+static int vlan_show(int argc, char **argv, int subject)
- {
- 	char *filter_dev = NULL;
- 	int ret = 0;
-@@ -581,17 +549,13 @@ static int vlan_show(int argc, char **argv)
- 		}
- 
- 		if (!is_json_context()) {
--			if (show_vlan_tunnel_info)
--				printf("port\tvlan ids\ttunnel id\n");
--			else
--				printf("port\tvlan ids\n");
-+			printf("port\tvlan ids");
-+			if (subject == VLAN_SHOW_TUNNELINFO)
-+				printf("\ttunnel id");
-+			printf("\n");
- 		}
- 
--		if (show_vlan_tunnel_info)
--			ret = rtnl_dump_filter(&rth, print_vlan_tunnel,
--					       stdout);
--		else
--			ret = rtnl_dump_filter(&rth, print_vlan, stdout);
-+		ret = rtnl_dump_filter(&rth, print_vlan, &subject);
- 		if (ret < 0) {
- 			fprintf(stderr, "Dump ternminated\n");
- 			exit(1);
-@@ -677,15 +641,14 @@ int do_vlan(int argc, char **argv)
- 		if (matches(*argv, "show") == 0 ||
- 		    matches(*argv, "lst") == 0 ||
- 		    matches(*argv, "list") == 0)
--			return vlan_show(argc-1, argv+1);
-+			return vlan_show(argc-1, argv+1, VLAN_SHOW_VLAN);
- 		if (matches(*argv, "tunnelshow") == 0) {
--			show_vlan_tunnel_info = 1;
--			return vlan_show(argc-1, argv+1);
-+			return vlan_show(argc-1, argv+1, VLAN_SHOW_TUNNELINFO);
- 		}
- 		if (matches(*argv, "help") == 0)
- 			usage();
- 	} else {
--		return vlan_show(0, NULL);
-+		return vlan_show(0, NULL, VLAN_SHOW_VLAN);
- 	}
- 
- 	fprintf(stderr, "Command \"%s\" is unknown, try \"bridge vlan help\".\n", *argv);
+ 	for (i = RTA_DATA(list); RTA_OK(i, rem); i = RTA_NEXT(i, rem)) {
+ 		struct bridge_vlan_info *vinfo;
 diff --git a/testsuite/tests/bridge/vlan/tunnelshow.t b/testsuite/tests/bridge/vlan/tunnelshow.t
-index 1583abb9..b2141e7c 100755
+index b2141e7c..fd41bfcb 100755
 --- a/testsuite/tests/bridge/vlan/tunnelshow.t
 +++ b/testsuite/tests/bridge/vlan/tunnelshow.t
-@@ -16,9 +16,16 @@ ts_ip "$0" "Enslave $VX_DEV under $BR_DEV" \
- ts_ip "$0" "Set vlan_tunnel on $VX_DEV" \
- 	link set dev $VX_DEV type bridge_slave vlan_tunnel on
- 
-+ts_bridge "$0" "Add single vlan" vlan add dev $VX_DEV vid 1000
-+ts_bridge "$0" "Add single tunnel" \
-+	vlan add dev $VX_DEV vid 1000 tunnel_info id 1000
-+ts_bridge "$0" "Add vlan range" vlan add dev $VX_DEV vid 1010-1020
-+ts_bridge "$0" "Add tunnel range" \
-+	vlan add dev $VX_DEV vid 1010-1020 tunnel_info id 1010-1020
- ts_bridge "$0" "Add single vlan" vlan add dev $VX_DEV vid 1030
- ts_bridge "$0" "Add tunnel with vni > 16k" \
- 	vlan add dev $VX_DEV vid 1030 tunnel_info id 65556
- 
+@@ -29,3 +29,5 @@ ts_bridge "$0" "Add tunnel with vni > 16k" \
  ts_bridge "$0" "Show tunnel info" vlan tunnelshow dev $VX_DEV
  test_on "1030\s+65556"
-+test_lines_count 5
+ test_lines_count 5
++
++ts_bridge "$0" "Dump tunnel info" -j vlan tunnelshow dev $VX_DEV
 -- 
 2.24.0
 
