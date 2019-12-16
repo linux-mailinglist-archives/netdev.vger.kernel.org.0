@@ -2,118 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A9B68120E9B
-	for <lists+netdev@lfdr.de>; Mon, 16 Dec 2019 16:55:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EA8E1120EA7
+	for <lists+netdev@lfdr.de>; Mon, 16 Dec 2019 16:58:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728556AbfLPPxj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Dec 2019 10:53:39 -0500
-Received: from www62.your-server.de ([213.133.104.62]:35992 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728524AbfLPPxj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Dec 2019 10:53:39 -0500
-Received: from [2001:1620:665:0:5795:5b0a:e5d5:5944] (helo=localhost)
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1igsgi-00089A-Q4; Mon, 16 Dec 2019 16:53:36 +0100
-Date:   Mon, 16 Dec 2019 16:53:36 +0100
-From:   Daniel Borkmann <daniel@iogearbox.net>
-To:     Jesper Dangaard Brouer <brouer@redhat.com>
-Cc:     Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: Re: [PATCH bpf-next] libbpf: Print hint about ulimit when getting
- permission denied error
-Message-ID: <20191216155336.GA28925@linux.fritz.box>
-References: <20191216124031.371482-1-toke@redhat.com>
- <20191216145230.103c1f46@carbon>
+        id S1727842AbfLPP6B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Dec 2019 10:58:01 -0500
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:65044 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727723AbfLPP6B (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Dec 2019 10:58:01 -0500
+Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xBGFqH6j050223;
+        Mon, 16 Dec 2019 10:57:56 -0500
+Received: from ppma02wdc.us.ibm.com (aa.5b.37a9.ip4.static.sl-reverse.com [169.55.91.170])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 2wwe609gjd-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 16 Dec 2019 10:57:56 -0500
+Received: from pps.filterd (ppma02wdc.us.ibm.com [127.0.0.1])
+        by ppma02wdc.us.ibm.com (8.16.0.27/8.16.0.27) with SMTP id xBGFsqLS003508;
+        Mon, 16 Dec 2019 15:57:55 GMT
+Received: from b01cxnp22034.gho.pok.ibm.com (b01cxnp22034.gho.pok.ibm.com [9.57.198.24])
+        by ppma02wdc.us.ibm.com with ESMTP id 2wvqc64bsc-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 16 Dec 2019 15:57:55 +0000
+Received: from b01ledav006.gho.pok.ibm.com (b01ledav006.gho.pok.ibm.com [9.57.199.111])
+        by b01cxnp22034.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id xBGFvsFT42795392
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 16 Dec 2019 15:57:54 GMT
+Received: from b01ledav006.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 8D174AC05F;
+        Mon, 16 Dec 2019 15:57:54 +0000 (GMT)
+Received: from b01ledav006.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 3223EAC05E;
+        Mon, 16 Dec 2019 15:57:54 +0000 (GMT)
+Received: from oc7186267434.ibm.com (unknown [9.41.178.211])
+        by b01ledav006.gho.pok.ibm.com (Postfix) with ESMTP;
+        Mon, 16 Dec 2019 15:57:54 +0000 (GMT)
+Subject: Re: [PATCH net v2] net/ibmvnic: Fix typo in retry check
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     netdev@vger.kernel.org, linuxppc-dev@ozlabs.org,
+        julietk@linux.vnet.ibm.com
+References: <1576078719-9604-1-git-send-email-tlfalcon@linux.ibm.com>
+ <20191213172747.5e5310c9@cakuba.netronome.com>
+From:   Thomas Falcon <tlfalcon@linux.ibm.com>
+Message-ID: <1d4d0ef6-2115-84d6-fcca-e058dca18457@linux.ibm.com>
+Date:   Mon, 16 Dec 2019 09:57:53 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
+In-Reply-To: <20191213172747.5e5310c9@cakuba.netronome.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20191216145230.103c1f46@carbon>
-User-Agent: Mutt/1.12.1 (2019-06-15)
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.101.4/25665/Mon Dec 16 10:52:23 2019)
+Content-Language: en-US
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
+ definitions=2019-12-16_06:2019-12-16,2019-12-16 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 phishscore=0
+ impostorscore=0 suspectscore=0 adultscore=0 bulkscore=0 mlxlogscore=999
+ clxscore=1015 priorityscore=1501 spamscore=0 mlxscore=0 lowpriorityscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-1910280000
+ definitions=main-1912160139
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 16, 2019 at 02:52:30PM +0100, Jesper Dangaard Brouer wrote:
-> On Mon, 16 Dec 2019 13:40:31 +0100
-> Toke Høiland-Jørgensen <toke@redhat.com> wrote:
-> 
-> > Probably the single most common error newcomers to XDP are stumped by is
-> > the 'permission denied' error they get when trying to load their program
-> > and 'ulimit -r' is set too low. For examples, see [0], [1].
-> > 
-> > Since the error code is UAPI, we can't change that. Instead, this patch
-> > adds a few heuristics in libbpf and outputs an additional hint if they are
-> > met: If an EPERM is returned on map create or program load, and geteuid()
-> > shows we are root, and the current RLIMIT_MEMLOCK is not infinity, we
-> > output a hint about raising 'ulimit -r' as an additional log line.
-> > 
-> > [0] https://marc.info/?l=xdp-newbies&m=157043612505624&w=2
-> > [1] https://github.com/xdp-project/xdp-tutorial/issues/86
-> > 
-> > Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
-> 
-> Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
-> 
-> This is the top #1 issue users hit again-and-again, too bad we cannot
-> change the return code as it is UAPI now.  Thanks for taking care of
-> this mitigation.
 
-It's an annoying error that comes up very often, agree, and tooling then
-sets it to a high value / inf anyway as next step if it has the rights
-to do so. Probably time to revisit the idea that if the user has the same
-rights as being able to set setrlimit() anyway, we should just not account
-for it ... incomplete hack:
+On 12/13/19 7:27 PM, Jakub Kicinski wrote:
+> On Wed, 11 Dec 2019 09:38:39 -0600, Thomas Falcon wrote:
+>> This conditional is missing a bang, with the intent
+>> being to break when the retry count reaches zero.
+>>
+>> Fixes: 476d96ca9c ("ibmvnic: Bound waits for device queries")
+>> Suggested-by: Juliet Kim <julietk@linux.vnet.ibm.com>
+>> Signed-off-by: Thomas Falcon <tlfalcon@linux.ibm.com>
+> Ah damn, looks like this originates from my pseudo code.
+>
+> I had to fix the fixes tag:
+>
+> Commit: 847496ccfa22 ("net/ibmvnic: Fix typo in retry check")
+> 	Fixes tag: Fixes: 476d96ca9c ("ibmvnic: Bound waits for device queries")
+> 	Has these problem(s):
+> 		- SHA1 should be at least 12 digits long
+> 		  Can be fixed by setting core.abbrev to 12 (or more) or (for git v2.11
+> 		  or later) just making sure it is not set (or set to "auto").
 
- kernel/bpf/syscall.c | 17 +++++++++++------
- 1 file changed, 11 insertions(+), 6 deletions(-)
+Thanks, I'll keep that in mind next time.Â  IIRC I was making some last 
+minute cosmetic changes before sending, and it might have slipped in 
+that way.Â  In any case, I should have been more thorough in testing it.
 
-diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-index b08c362f4e02..116581c32848 100644
---- a/kernel/bpf/syscall.c
-+++ b/kernel/bpf/syscall.c
-@@ -203,12 +203,17 @@ void bpf_map_init_from_attr(struct bpf_map *map, union bpf_attr *attr)
+Thanks,
 
- static int bpf_charge_memlock(struct user_struct *user, u32 pages)
- {
--	unsigned long memlock_limit = rlimit(RLIMIT_MEMLOCK) >> PAGE_SHIFT;
-+	unsigned long memlock_limit;
+Tom
 
-+	if (capable(CAP_SYS_RESOURCE))
-+		return 0;
-+
-+	memlock_limit = rlimit(RLIMIT_MEMLOCK) >> PAGE_SHIFT;
- 	if (atomic_long_add_return(pages, &user->locked_vm) > memlock_limit) {
- 		atomic_long_sub(pages, &user->locked_vm);
- 		return -EPERM;
- 	}
-+
- 	return 0;
- }
 
-@@ -1339,12 +1344,12 @@ static void bpf_audit_prog(const struct bpf_prog *prog, unsigned int op)
 
- int __bpf_prog_charge(struct user_struct *user, u32 pages)
- {
--	unsigned long memlock_limit = rlimit(RLIMIT_MEMLOCK) >> PAGE_SHIFT;
--	unsigned long user_bufs;
-+	unsigned long memlock_limit;
-
--	if (user) {
--		user_bufs = atomic_long_add_return(pages, &user->locked_vm);
--		if (user_bufs > memlock_limit) {
-+	if (user && !capable(CAP_SYS_RESOURCE)) {
-+		memlock_limit = rlimit(RLIMIT_MEMLOCK) >> PAGE_SHIFT;
-+		if (atomic_long_add_return(pages, &user->locked_vm) >
-+		    memlock_limit) {
- 			atomic_long_sub(pages, &user->locked_vm);
- 			return -EPERM;
- 		}
---
-2.21.0
+>
+> Applied to net, thanks!
+>
+>> diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
+>> index efb0f10..2d84523 100644
+>> --- a/drivers/net/ethernet/ibm/ibmvnic.c
+>> +++ b/drivers/net/ethernet/ibm/ibmvnic.c
+>> @@ -184,7 +184,7 @@ static int ibmvnic_wait_for_completion(struct ibmvnic_adapter *adapter,
+>>   			netdev_err(netdev, "Device down!\n");
+>>   			return -ENODEV;
+>>   		}
+>> -		if (retry--)
+>> +		if (!retry--)
+>>   			break;
+>>   		if (wait_for_completion_timeout(comp_done, div_timeout))
+>>   			return 0;
