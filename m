@@ -2,137 +2,216 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C6E6E120825
-	for <lists+netdev@lfdr.de>; Mon, 16 Dec 2019 15:10:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E62512082A
+	for <lists+netdev@lfdr.de>; Mon, 16 Dec 2019 15:10:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728103AbfLPOH3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Dec 2019 09:07:29 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:54814 "EHLO
+        id S1728154AbfLPOHn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Dec 2019 09:07:43 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:26273 "EHLO
         us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1727965AbfLPOH3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Dec 2019 09:07:29 -0500
+        with ESMTP id S1727916AbfLPOHm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Dec 2019 09:07:42 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1576505248;
+        s=mimecast20190719; t=1576505261;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=Q6xfs5d0sUaAOLG2FMbBQ5nuZn6Q3LreuQaI/PtssqI=;
-        b=e0OuEop80kxYoXkA1ZgEe53Q1WZeJtm/hZTRddbwARozJcPxKWVk7ujyk+jv3sOROLABEE
-        +7aVwxcQFd2xTiHhLIohlVh0GkPOJhwCZEkjOfTn3wC/WWeHgCgjx9hwXE2wmsL0zExOIZ
-        wiNMUHqvA5EmeM6IxOEB9TVyaMj7IQo=
-Received: from mail-ua1-f71.google.com (mail-ua1-f71.google.com
- [209.85.222.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-256-DV4_6a02NjWb3z8LHo94hQ-1; Mon, 16 Dec 2019 09:07:27 -0500
-X-MC-Unique: DV4_6a02NjWb3z8LHo94hQ-1
-Received: by mail-ua1-f71.google.com with SMTP id r17so1580081uak.14
-        for <netdev@vger.kernel.org>; Mon, 16 Dec 2019 06:07:26 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Q6xfs5d0sUaAOLG2FMbBQ5nuZn6Q3LreuQaI/PtssqI=;
-        b=QLe6BzgBNGsLYWHD6t4d+ihGOquLrrwLVRSShqSxBopknGDuD8mnRX7B+5DnA/VZQ7
-         cyqPM5SJPDAQq5i2Etuz7xy8ShjHDvsnoZM1AtxJR+Z4q0lQNWoKVhf4OG3+D1cV5pKK
-         TapWT+CMEWT2Ti8aeIZelhG2jDlNBoW1q+JvuZDuJPGm/YNnrdBFq/tFdRqkxLNuaQHc
-         gSw/iSoSk9j/kVfps913Vl3ADiDrqbnk4BHkcm6bJ/I5/koha5LlxOtMl0NdBSB/yfin
-         O0wbSV3BQDUnjM3GEgv5ryo1nta4qYqRdeyH3r7U5mwVIzQ2hFGUIBuT65Lci4hsnHzm
-         n93Q==
-X-Gm-Message-State: APjAAAUjo/BePogm6mOpDUk6UlCHxn00j648YNrA6c8GmthVQ+q++IFC
-        zG1NXi2/S5EnHxqg/+G2pn6VSFyDckMWoDBicRTJbMAI/qUmIUo04mMouGy3yBPyVkUsg8DHsSx
-        a+4DPRZuznn/CcMamccS1xv5ZaDrLH7vV
-X-Received: by 2002:a67:ed07:: with SMTP id l7mr19491114vsp.47.1576505246093;
-        Mon, 16 Dec 2019 06:07:26 -0800 (PST)
-X-Google-Smtp-Source: APXvYqzOxFOghhoHFPJUjds+UqzmW8x3ScdL8Im/pHWCndVhIiV1TYcaCDkHYzHk5G8xIdmY7CXM/tshOac1rzzFRs0=
-X-Received: by 2002:a67:ed07:: with SMTP id l7mr19491076vsp.47.1576505245636;
- Mon, 16 Dec 2019 06:07:25 -0800 (PST)
+        bh=drbKTmIeF4DHtRpcMrnxSn2S4ieQP2IV44CecCK7uVU=;
+        b=Cw7wdGTI9JZgrFf4+JQlIPb6c56lXCPyx0uB8JTxDKNfWmNbbvOuuOyRmStCzsaJjIgX7D
+        2wz/nY4EueNo6FKIxOm4GCBpl8FTu8y41KEtiRDEw4VmQJ9MVKYCNsEEJYMN83QKG9Ozpm
+        TL5ih0YjJX+NRNguR2yc3zWIZ83+cVU=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-187-mse-cJ3iNq-VDhio0UtHdg-1; Mon, 16 Dec 2019 09:07:40 -0500
+X-MC-Unique: mse-cJ3iNq-VDhio0UtHdg-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 2B71618557C6;
+        Mon, 16 Dec 2019 14:07:38 +0000 (UTC)
+Received: from carbon (ovpn-200-37.brq.redhat.com [10.40.200.37])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 06B5D5C1D6;
+        Mon, 16 Dec 2019 14:07:29 +0000 (UTC)
+Date:   Mon, 16 Dec 2019 15:07:28 +0100
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     "Jubran, Samih" <sameehj@amazon.com>
+Cc:     "Machulsky, Zorik" <zorik@amazon.com>,
+        Daniel Borkmann <borkmann@iogearbox.net>,
+        David Miller <davem@davemloft.net>,
+        "Tzalik, Guy" <gtzalik@amazon.com>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>,
+        "Kiyanovski, Arthur" <akiyano@amazon.com>, brouer@redhat.com,
+        Alexei Starovoitov <ast@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        David Ahern <dsahern@gmail.com>
+Subject: XDP multi-buffer design discussion
+Message-ID: <20191216150728.38c50822@carbon>
+In-Reply-To: <ec2fd7f6da44410fbaeb021cf984f2f6@EX13D11EUC003.ant.amazon.com>
+References: <BA8DC06A-C508-402D-8A18-B715FBA674A2@amazon.com>
+        <b28504a3-4a55-d302-91fe-63915e4568d3@iogearbox.net>
+        <5FA3F980-29E6-4B91-8150-9F28C0E09C45@amazon.com>
+        <20190823084704.075aeebd@carbon>
+        <67C7F66A-A3F7-408F-9C9E-C53982BCCD40@amazon.com>
+        <20191204155509.6b517f75@carbon>
+        <ec2fd7f6da44410fbaeb021cf984f2f6@EX13D11EUC003.ant.amazon.com>
 MIME-Version: 1.0
-References: <20191211162107.4326-1-ptalbert@redhat.com> <20191215.124119.1034274845955800225.davem@davemloft.net>
-In-Reply-To: <20191215.124119.1034274845955800225.davem@davemloft.net>
-From:   Patrick Talbert <ptalbert@redhat.com>
-Date:   Mon, 16 Dec 2019 15:07:14 +0100
-Message-ID: <CAPRrrxVJjKJ0eE_Xd78DNfyixjr=iTSfVQ1FsAssek-+XMWKUQ@mail.gmail.com>
-Subject: Re: [PATCH net-next] net: Use rx_nohandler for unhandled packets
-To:     David Miller <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Dec 15, 2019 at 9:41 PM David Miller <davem@davemloft.net> wrote:
->
-> From: Patrick Talbert <ptalbert@redhat.com>
-> Date: Wed, 11 Dec 2019 17:21:07 +0100
->
-> > Since caf586e5f23c ("net: add a core netdev->rx_dropped counter") incoming
-> > packets which do not have a handler cause a counter named rx_dropped to be
-> > incremented. This can lead to confusion as some see a non-zero "drop"
-> > counter as cause for concern.
-> >
-> > To avoid any confusion, instead use the existing rx_nohandler counter. Its
-> > name more closely aligns with the activity being tracked here.
-> >
-> > Signed-off-by: Patrick Talbert <ptalbert@redhat.com>
->
-> I disagree with this change.
 
-Thank you for the review and consideration.
+See answers inlined below (please get an email client that support
+inline replies... to interact with this community)
 
->
-> When deliver_exact is false we try to deliver the packet to an appropriate
-> ptype handler.  And we end up in the counter bump if no ptype handler
-> exists.
+On Sun, 15 Dec 2019 13:57:12 +0000
+"Jubran, Samih" <sameehj@amazon.com> wrote:
 
-If we get to this point in __netif_receive_skb_core() it means the
-packet was not passed on to any handler or socket but it is not
-because anything went wrong. It simply means no one cared about it. I
-suppose a counter named rx_nothandled or rx_ignored would fit better
-but for now, the existing rx_nohandler counter much more closely
-describes what has happened. Lumping these discards into rx_dropped
-along with buffer errors and that ilk is misleading at best.
+> I am currently working on writing a design document for the XDP multi
+> buff and I am using your proposal as a base.=20
 
->
-> Therefore, the two counters allow to distinguish two very different
-> situations and providing that distinction is quite valuable.
+[Base-doc]: https://github.com/xdp-project/xdp-project/blob/master/areas/co=
+re/xdp-multi-buffer01-design.org
 
-As is, we have packets which are not handled due to no fault and
-packets which were discarded due to some fault lumped into rx_dropped.
-I think it is much more useful to clarify that distinction by
-utilizing separate counters versus worrying that someone might miss
-the distinction between an inactive slave drop and any other drop.
+I will really appreciate if you can write your design document in a
+text-based format, and that this can be included in the XDP-project
+git-repo.  If you don't want to update the existing document
+xdp-multi-buffer01-design.org, I suggest that you instead create
+xdp-multi-buffer02-design.org to layout your design proposal.
 
->
-> I think this distinction was very much intentional.  Having people
-> understand that rx_dropped can have this meaning is merely a matter of
-> education.
+That said, don't write a huge document... instead interact with
+netdev@vger.kernel.org as early as possible, and then update the design
+doc with the input you get.  Lets start it now... Cc'ing netdev as this
+discussion should also be public.
 
-From what I recall, the patch to add rx_nohandler was a reaction to
-caf586e5f23c ("net: add a core netdev->rx_dropped counter") being
-backported to RHEL7 and customers suddenly seeing rx_dopped piling up
-on inactive bond slaves. I wish it had been more broad to trap all the
-unhandled traffic, not just inactive slave traffic, but it wasn't.
 
-I appreciate netdev rx_dropped by itself should not be considered a
-count of errors but I argue that is not at all common knowledge. At
-Red Hat it is a weekly, if not daily, occurrence that a customer opens
-a case to ask about a non-zero rx_dropped counter. Whether they
-noticed it themselves or some 3rd party monitoring software
-highlighted it. Sometimes it reflects a real problem but more often
-than not it turns out there is some benign LLC traffic (or the like)
-arriving on the interface. That's a seemingly simple and nice answer
-but it often takes a good bit of time to convince people they can
-ignore a non-zero rx_dropped (if not ignore, at least appreciate it is
-not a fault of the NIC/OS). For example, with pcaps and by monitoring
-the counter you can show a 1:1 correlation between specific types of
-traffic which do not match /proc/net/ptype and increases in
-rx_dropped. Its neat but it takes time and often distracts from
-whatever the real problem is.
+> I have few questions in mind that weren't addressed in your draft and
+> it would be great if you share your thoughts on them.
+>=20
+> * Why should we provide the fragments to the bpf program if the
+> program doesn't access them? If validating the length is what
+> matters, we can provide only the full length info to the user with no
+> issues.
 
->
-> I'm not applying this patch, sorry.
->
+My Proposal#1 (in [base-doc]) is that XDP only get access to the
+first-buffer.  People are welcome to challenge this choice.
 
-If you do not agree with adjusting the purpose of rx_nohandler to
-track these events then would you agree to a new counter?
+There are a several sub-questions and challenges hidden inside this
+choice.
+
+As you hint, the total length... spawns some questions we should answer:
+
+ (1) is it relevant to the BPF program to know this, explain the use-case.
+
+ (2) if so, how does BPF prog access info (without slowdown baseline)
+
+ (3) if so, implies driver need to collect frags before calling bpf_prog
+    (this influence driver RX-loop design).
+
+
+> * In case we do need the fragments, should they be modifiable
+> (Without helpers) by the xdp developer?=20
+
+It is okay to think about, how we can give access to fragments in the
+future. But IMHO we should avoid going too far down that path...
+If we just make sure we can extend it later, then it should be enough.
+
+
+> * What about data_end? I believe it should point to the end of the
+> first buffer, correct?
+
+Yes, because this is part of BPF-verifier checks.
+
+
+> * Should the kernel indicate to the driver somehow that it supports
+> multi buf? I suppose this shouldn't be an issue unless somehow the
+> patches were back patched to old kernels.
+>=20
+
+The other way around.  The driver need to indicate to kernel that is
+supports/enabled XDP multi-buffer.  This feature "indication" interface
+is unfortunately not available today...
+
+The reason this is needed: the BPF-helper bpf_xdp_adjust_tail() is
+allowed to modify xdp_buff->data_end (as also desc in [base-doc]).
+Even-though this is only shrink, then it seems very wrong to
+change/shrink the first-fragment.
+
+IMHO the BPF-loader (or XDP-attach) should simply reject programs using
+bpf_xdp_adjust_tail() on a driver that have enabled XDP-multi-buffer.
+This basically also happens today, if trying to attach XDP on a NIC
+with large MTU (that requires >=3D two pages).
+
+--Jesper
+
+
+
+> > -----Original Message-----
+> > From: Jesper Dangaard Brouer <brouer@redhat.com>
+> > Sent: Wednesday, December 4, 2019 4:55 PM
+> > To: Machulsky, Zorik <zorik@amazon.com>
+> > Cc: Daniel Borkmann <borkmann@iogearbox.net>; David Miller
+> > <davem@davemloft.net>; Jubran, Samih <sameehj@amazon.com>; Tzalik,
+> > Guy <gtzalik@amazon.com>; brouer@redhat.com; Ilias Apalodimas
+> > <ilias.apalodimas@linaro.org>; Toke H=C3=B8iland-J=C3=B8rgensen <toke@r=
+edhat.com>
+> > Subject: Re: XDP_TX in ENA
+> >=20
+> > On Mon, 2 Dec 2019 08:17:08 +0000
+> > "Machulsky, Zorik" <zorik@amazon.com> wrote:
+> >  =20
+> > > Hi Jesper,
+> > >
+> > > Just wanted to inform you that Samih (cc-ed) started working on
+> > > multi-buffer packets support. I hope it will be OK to reach out to
+> > > this forum in case there will be questions during this work. =20
+> >=20
+> > Great to hear that you are continuing the work.
+> >=20
+> > I did notice the patchset ("Introduce XDP to ena") from Sameeh, but net-
+> > next is currently closed.  I will appreciate if you can Cc both me
+> > (brouer@redhat.com) and Ilias Apalodimas <ilias.apalodimas@linaro.org>.
+> >=20
+> > Ilias have signed up for doing driver XDP reviews.
+> >=20
+> > --Jesper
+> >=20
+> >  =20
+> > > =EF=BB=BFOn 8/22/19, 11:47 PM, "Jesper Dangaard Brouer" <brouer@redha=
+t.com> =20
+> > wrote: =20
+> > >
+> > >     Hi Zorik,
+> > >
+> > >     How do you plan to handle multi-buffer packets (a.k.a jumbo-frame=
+s, and =20
+> > >     more)?
+> > >
+> > >     Most drivers, when XDP gets loaded, just limit the MTU and disabl=
+e TSO
+> > >     (notice GRO in software is still done). Or reject XDP loading if
+> > >     MTU > 3520 or TSO is enabled.
+> > >
+> > >     You seemed to want XDP multi-buffer support.  For this to happen
+> > >     someone needs to work on this.  I've written up a design proposal
+> > >     here[1], but I don't have time to work on this... Can you allocate
+> > >     resources to work on this?
+> > >
+> > >     [1] https://github.com/xdp-project/xdp-project/blob/master/areas/=
+core/xdp-multi-buffer01-design.org
+> > >
+> > >     --Jesper
+> > >     (top-post as your email client seems to be challenged ;-))
+
+
+--=20
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
 
