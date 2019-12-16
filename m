@@ -2,64 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DECB4120FE5
-	for <lists+netdev@lfdr.de>; Mon, 16 Dec 2019 17:44:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BECEB120FE6
+	for <lists+netdev@lfdr.de>; Mon, 16 Dec 2019 17:45:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726092AbfLPQoA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Dec 2019 11:44:00 -0500
-Received: from mail-qk1-f193.google.com ([209.85.222.193]:45439 "EHLO
-        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725805AbfLPQn7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Dec 2019 11:43:59 -0500
-Received: by mail-qk1-f193.google.com with SMTP id x1so5714974qkl.12
-        for <netdev@vger.kernel.org>; Mon, 16 Dec 2019 08:43:59 -0800 (PST)
+        id S1726275AbfLPQov (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Dec 2019 11:44:51 -0500
+Received: from mail-qk1-f194.google.com ([209.85.222.194]:41486 "EHLO
+        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725805AbfLPQov (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Dec 2019 11:44:51 -0500
+Received: by mail-qk1-f194.google.com with SMTP id u5so5014277qkf.8
+        for <netdev@vger.kernel.org>; Mon, 16 Dec 2019 08:44:50 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=giWyTFAPwDtufMlSK4ZUn2U0mRssejITXnVtTgJpDNY=;
-        b=KcvVK8mJw0ahEKynNX69yOCeFTJ6zfpQA/G9XAss/yjj+t/VpyRA92oBDbOvHtQFv+
-         Cz5ck9bC5QrVILfuNSf4M5nG0lK0BY1Jr+HD6lSyT0lvBR10d4jqlzktiTrpiodq3cD6
-         dD69K7Q7BF5aXaYf7Lff6cSF0sBhd6WSE4gN5SxGwC5mRS3U76aI0+f2I6fj+dPh75dH
-         FKciuRXOi04/vchqwZFO9nZx9lIDP1r6w/blRZrmO2rApsbq04g2QHdda0mGr99xjjht
-         UkR0omdVSPgfSO3wE3e+izav2jCU1tbb5Vo5BqmYu6WH2bLdyHDdxQculDerNXCuwIgl
-         DynA==
+        bh=i4LE41vD04VyJUrDe/wg27Hmmh8eR5NCXNXC2uGBs8s=;
+        b=rlhAIi0J+KRYPt5OoZ3QsGvIIYQezegpvd9rX0uZefpTpiS5AMXa3qYE196T3KNrCK
+         iy3nwv11/LYnmINxJCqgTFn2TtYptHP1FVUL1Jzs3vtu9Qq232R1JJTKbmQ50Y0NTwqN
+         n3XzdEC5EJDt4BEBuuL9h35kSG6aNSomXDjhHjJ4AldMGRe1wwFBolue0rsHl9O7Bb2L
+         ZiedtiYK6RUuwcIVVteCkKh+kogRiR7hAMf8myupsKNUEaZZxmULhnj0pu1QWYsWya/T
+         SmVb6J1YlYrYOPB9Hyqib5oecrKUlDsEL4yO0inzMCvaauSvs7QnckwY3uL32oPZNBy3
+         EDPw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=giWyTFAPwDtufMlSK4ZUn2U0mRssejITXnVtTgJpDNY=;
-        b=bE3fnljbTOrZn4GgjPGSONHuCqaee+yEyLZgfV5rFPbvKA5naFf7Ik1BY3mY9df9PH
-         e1E7/RkTpXPmEHEvNAIBa00nh47cE7ATnbJcbXnyFzAjFyO082TWeTkfX0L7UrTjoEUV
-         ENhUrxvdHKYpcxXc3Ulm4FgaeuujNcyM+u7YePamY1N4FEZlDcdD+frRoLnLq8r9Tozd
-         cMvCWJ0AXt8g/Q/aqEDmH/2cdJenxBZhHRUWMWaLbxZ4cZc6FhHKVJTXrTy4DlxyejC6
-         pCnb/D2DapKxW53WCK+L3EEAoLKuW+6RYkjHCcLrkdBVFjHzciQko58wl3LAwWUvEdJH
-         2sbg==
-X-Gm-Message-State: APjAAAV3jfs6mImcl/+j3UxN4CJ5XjVLByvwvK9Hb8T+xNO6yanhzED4
-        Q6ErCvi5GVeCcCYC5jNKeXs=
-X-Google-Smtp-Source: APXvYqw6YzkLYAyOKGboWII+7mzc2PDdw5WEQQBBuxeCQiKqOHn+O/XUf2iqWJK5xwdFmeQNKDc5AQ==
-X-Received: by 2002:a37:ae07:: with SMTP id x7mr177568qke.28.1576514638917;
-        Mon, 16 Dec 2019 08:43:58 -0800 (PST)
+        bh=i4LE41vD04VyJUrDe/wg27Hmmh8eR5NCXNXC2uGBs8s=;
+        b=PbRaiV7k4HnmJlL8D14qTbd27+L9FkHTlFMOnBReXOcekloThziixV+GL8VgcdnJAF
+         ZA/RFL9afsJQg2p1vhXiNgbZ2uFdxCS5yXt1v4EooHe9fYNbRzaplHAwG3lRin4uIDeu
+         YwqHOmITZqpC4oOZFAgMG61/eK6mnJDbRzI4o75OKIXYofHzK/5sURy0Nx42r2jo52Kx
+         7DuKhmYxjj33r5qIpjw/kNhczwlWOxUWKnjyd1+2sS1QaAF0ZNQEIJYvbqFxOMLN4Evv
+         wf7Rtr3QMuLH/jFvcu9MYxSSorwdO9HmXNKxA7JLnxu+Hx0bYGNAeCjG8xCo8THmsC9R
+         bOnA==
+X-Gm-Message-State: APjAAAXi3aZ//GtNBDQvgvMuXbtEgtynUjNP6s/pwcVzPe8jYoNDtD6U
+        B8yfkXCXROGMj78kNLXqYaU=
+X-Google-Smtp-Source: APXvYqxk4QSOrRvVDt/CMTQKx01E/ow6E0C3P9AHUkRt2+6P8pRmVtER6HdNz7Kh9lBcZ7VVMx3IRg==
+X-Received: by 2002:a05:620a:134d:: with SMTP id c13mr147242qkl.322.1576514690427;
+        Mon, 16 Dec 2019 08:44:50 -0800 (PST)
 Received: from ?IPv6:2601:284:8202:10b0:c48d:b570:ebb:18d9? ([2601:284:8202:10b0:c48d:b570:ebb:18d9])
-        by smtp.googlemail.com with ESMTPSA id l49sm7121380qtk.7.2019.12.16.08.43.57
+        by smtp.googlemail.com with ESMTPSA id e130sm6127004qkb.72.2019.12.16.08.44.49
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 16 Dec 2019 08:43:57 -0800 (PST)
-Subject: Re: [PATCH net-next v2 06/10] ipv4: Handle route deletion
- notification
+        Mon, 16 Dec 2019 08:44:49 -0800 (PST)
+Subject: Re: [PATCH net-next v2 10/10] ipv4: Remove old route notifications
+ and convert listeners
 To:     Ido Schimmel <idosch@idosch.org>, netdev@vger.kernel.org
 Cc:     davem@davemloft.net, roopa@cumulusnetworks.com, jiri@mellanox.com,
         jakub.kicinski@netronome.com, mlxsw@mellanox.com,
         Ido Schimmel <idosch@mellanox.com>
 References: <20191214155315.613186-1-idosch@idosch.org>
- <20191214155315.613186-7-idosch@idosch.org>
+ <20191214155315.613186-11-idosch@idosch.org>
 From:   David Ahern <dsahern@gmail.com>
-Message-ID: <5897ce43-0475-b9b9-4508-40914a27977b@gmail.com>
-Date:   Mon, 16 Dec 2019 09:43:55 -0700
+Message-ID: <e6d5c5e7-deeb-69a2-08d3-b1c75b8b92fe@gmail.com>
+Date:   Mon, 16 Dec 2019 09:44:48 -0700
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0)
  Gecko/20100101 Thunderbird/68.3.0
 MIME-Version: 1.0
-In-Reply-To: <20191214155315.613186-7-idosch@idosch.org>
+In-Reply-To: <20191214155315.613186-11-idosch@idosch.org>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -71,18 +71,22 @@ X-Mailing-List: netdev@vger.kernel.org
 On 12/14/19 8:53 AM, Ido Schimmel wrote:
 > From: Ido Schimmel <idosch@mellanox.com>
 > 
-> When a route is deleted we potentially need to promote the next route in
-> the FIB alias list (e.g., with an higher metric). In case we find such a
-> route, a replace notification is emitted. Otherwise, a delete
-> notification for the deleted route.
+> Unlike mlxsw, the other listeners to the FIB notification chain do not
+> require any special modifications as they never considered multiple
+> identical routes.
 > 
-> v2:
-> * Convert to use fib_find_alias() instead of fib_find_first_alias()
+> This patch removes the old route notifications and converts all the
+> listeners to use the new replace / delete notifications.
 > 
 > Signed-off-by: Ido Schimmel <idosch@mellanox.com>
 > ---
->  net/ipv4/fib_trie.c | 31 +++++++++++++++++++++++++++++++
->  1 file changed, 31 insertions(+)
+>  .../net/ethernet/mellanox/mlx5/core/lag_mp.c  |  4 --
+>  .../ethernet/mellanox/mlxsw/spectrum_router.c | 11 +++---
+>  drivers/net/ethernet/rocker/rocker_main.c     |  4 +-
+>  drivers/net/netdevsim/fib.c                   |  4 +-
+>  include/net/fib_notifier.h                    |  2 -
+>  net/ipv4/fib_trie.c                           | 38 ++++---------------
+>  6 files changed, 16 insertions(+), 47 deletions(-)
 > 
 
 Reviewed-by: David Ahern <dsahern@gmail.com>
