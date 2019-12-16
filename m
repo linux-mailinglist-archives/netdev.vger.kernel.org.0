@@ -2,135 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F5D11219FD
-	for <lists+netdev@lfdr.de>; Mon, 16 Dec 2019 20:34:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 24F5C121A01
+	for <lists+netdev@lfdr.de>; Mon, 16 Dec 2019 20:34:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727256AbfLPTdE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Dec 2019 14:33:04 -0500
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:44677 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726752AbfLPTdE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Dec 2019 14:33:04 -0500
-Received: by mail-pf1-f194.google.com with SMTP id d199so6139893pfd.11;
-        Mon, 16 Dec 2019 11:33:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=QFjL5myRIeG9APkgin0CHrAVKzFukbXJqbz2mhi0ULI=;
-        b=HqWGZeBT95RQyh/jlcBII89oK9Eq/t9rAUBuX2J1yCY24GkIW9i20TRWMy8ZCr81Sa
-         GDnJND/Q+2PHCSTSVPYTWw1rRtMVimwg4r1fmr9VdbKfPk1RrLQqDiYlzUVrJL5aLEK+
-         /CFI8xVwp5Kw4YSO9LFK92GX/BKFEat8cKFgledcWUWzUfywz7F7hxWywSuzRpHD4/6D
-         OviNbdsnc4w8vL03fkXK4IHnugCZKRW5+05XoVtx8C0cBcaEtGVK/8aoyn/WN/qFz9IC
-         OmFTJCvHIfbsnSusqCPXJImMnRVKFxWx6Jk1GgxVuWFbJY69r6GV2MbEKXzwE8NVyLY6
-         iKKw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=QFjL5myRIeG9APkgin0CHrAVKzFukbXJqbz2mhi0ULI=;
-        b=oc7E8hD2JpHwfjcN8gZl1Vk4a+gzVKD0j1GCdHFF5jxW9f7bbxcnmSpkusf2/91+iU
-         JCOWEAdwzaWV8eWSUlLdunGwBwJmWwr82OcH7onEDuwNFphMWFlqFVSMKPhyoc2D9Let
-         jSBtLz5qO39+e5a0AqIvpcQZLW9j/cLP7qoml5PZn9w2VW5U7zDxVTpqDJD/7xElX7AB
-         oAegFMBi2/V8JlWW4KBBqdUsyw7NXN2TS0SLi+VIg1hAbdyTR6tRf6LYBSFGma9KW8TI
-         tORy9dAwfpAXF5FQCNWr8qZZG7aBmgaDku/zJGkXVnvrQbg4quFsKsBkjF2OFyUSSbaN
-         d2cw==
-X-Gm-Message-State: APjAAAVRYM17t1e+jQThg9iZTBB/e37scV8n5/AB+IcqcSLtoPbgcfKt
-        NgnBYYsnt18iTdyj1hCXSCwjLYVa
-X-Google-Smtp-Source: APXvYqwzkY23p8Z4wjVyAfXloqd8aiuPtFfhMBVLE+xURH/PJisRzUMUKtxtkuMul0FPdYilGFHd6A==
-X-Received: by 2002:a63:48d:: with SMTP id 135mr20174520pge.66.1576524783377;
-        Mon, 16 Dec 2019 11:33:03 -0800 (PST)
-Received: from ?IPv6:2620:15c:2c1:200:55c7:81e6:c7d8:94b? ([2620:15c:2c1:200:55c7:81e6:c7d8:94b])
-        by smtp.gmail.com with ESMTPSA id k23sm23491920pgg.7.2019.12.16.11.33.02
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 16 Dec 2019 11:33:02 -0800 (PST)
-Subject: Re: [PATCH bpf-next 09/13] bpf: Add BPF_FUNC_jiffies
-To:     Martin Lau <kafai@fb.com>, Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        David Miller <davem@davemloft.net>,
+        id S1726776AbfLPTeJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Dec 2019 14:34:09 -0500
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:35414 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726133AbfLPTeJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Dec 2019 14:34:09 -0500
+Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xBGJPPKN015823;
+        Mon, 16 Dec 2019 11:33:51 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : references : in-reply-to : content-type : content-id
+ : content-transfer-encoding : mime-version; s=facebook;
+ bh=AYh3YjksU1Fjkdc3+frvUqOjppsbzLY4diTV/M6Cops=;
+ b=ozFsavC5Lv+giUGLPISJEFv6CRkPleLryKjkGIIGbAn70h2GXpH0rTt5GsyMFZTj6D3Q
+ HXzVW94y1OicYN/E6JSSIYXgMw4moLEz24MewSz98wj6SMLjsKWxGFL+5TtmynEewJud
+ IvRkDKFuwocyrgw2WehEPvorqbj0lKhSetk= 
+Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
+        by mx0a-00082601.pphosted.com with ESMTP id 2wwtq14b1t-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Mon, 16 Dec 2019 11:33:51 -0800
+Received: from prn-hub05.TheFacebook.com (2620:10d:c081:35::129) by
+ prn-hub02.TheFacebook.com (2620:10d:c081:35::126) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.1.1713.5; Mon, 16 Dec 2019 11:33:50 -0800
+Received: from NAM04-CO1-obe.outbound.protection.outlook.com (192.168.54.28)
+ by o365-in.thefacebook.com (192.168.16.29) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.1.1713.5
+ via Frontend Transport; Mon, 16 Dec 2019 11:33:50 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=SQA9jtC2gq6AQ7ssoD8ozfZaHzp6+lFXyeBjN/9vZ9DghjAcqsxEs+hqkgV4HCrVCpZmvtVZkFoK/OlS7AXwliTqWvvX5zT2jZvnnrjrGEQA66XF1psaVgg1vpwncsNJociUmZ9/Uf2PRJjEMx4KmMpxA+GUnJJoeT1YsbNv5n8nZRU+SJ3iSe96RNeElJxLlex9YMdEz+jcRZWblXLwsaArztkP22X4Z2hIZchNEeMus0klBFt17RCmppHUp+a+x83K2ZS4Q7c6kEc/vTtslFYUHVmjP7Ug8HNIINc+Q4D/expgtLkYU+CqJg33DFhwoKuqS/EuQmUJaYTsP7uICw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=AYh3YjksU1Fjkdc3+frvUqOjppsbzLY4diTV/M6Cops=;
+ b=oWmipoUyyUGnWRU8U9NHBkcRdbGtkKqbi0xW+7h8cSWYDzgOtF4WM9sO+ye1/Szj6BLCFH7AHxsnWIxBf5HrUBVt2XiUuSJvkt/3t8isX6GM1G4HrpBY/sKCo3Li+xjb8PQ8ubPE9ykTPxtpTCiyEaHA9Gv3DEiH1F7ZOVs+BfWHsvNhezGV7/rL6q23mHGIplEoLzYNin7ecad4sQiYx10gew+q5i8i5jdwYwSXOkFMKZbinPCU1qVTbT+Z0sfH5IPcJwH6xkasjXu+ByjuazreWfJ+uZ1o16xVPhIG9lFuq98DNfay8Gy0gQzpnaQbGSbgzmKUyBvpLUgYA6cZNQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=AYh3YjksU1Fjkdc3+frvUqOjppsbzLY4diTV/M6Cops=;
+ b=GU3npQ66EKgWq0rxQq49nWMPU8yFHnMzBCXzVfFKShqjuBoQZPtU9oBMviS9EFkjllAdnTTXttpNT8t7txD0cl3sunls2iUv1G62wqhK8IHEjUto53+p/83r/FsZgQg7tCwUn7hJKHF+0yka1MK7QEF9krfVbor8b113CILRErs=
+Received: from DM5PR15MB1675.namprd15.prod.outlook.com (10.175.107.145) by
+ DM5PR15MB1626.namprd15.prod.outlook.com (10.175.105.7) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2538.15; Mon, 16 Dec 2019 19:33:49 +0000
+Received: from DM5PR15MB1675.namprd15.prod.outlook.com
+ ([fe80::2844:b18d:c296:c23]) by DM5PR15MB1675.namprd15.prod.outlook.com
+ ([fe80::2844:b18d:c296:c23%8]) with mapi id 15.20.2538.019; Mon, 16 Dec 2019
+ 19:33:49 +0000
+From:   Yonghong Song <yhs@fb.com>
+To:     Andrii Nakryiko <andriin@fb.com>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>
+CC:     "andrii.nakryiko@gmail.com" <andrii.nakryiko@gmail.com>,
         Kernel Team <Kernel-team@fb.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <20191214004737.1652076-1-kafai@fb.com>
- <20191214004758.1653342-1-kafai@fb.com>
- <b321412c-1b42-45a9-4dc6-cc268b55cd0d@gmail.com>
- <20191216191357.ftadvchztbpggcus@kafai-mbp.dhcp.thefacebook.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <a2d8d888-16e1-243d-92c9-56ba3a3e1b18@gmail.com>
-Date:   Mon, 16 Dec 2019 11:33:01 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
-MIME-Version: 1.0
-In-Reply-To: <20191216191357.ftadvchztbpggcus@kafai-mbp.dhcp.thefacebook.com>
-Content-Type: text/plain; charset=utf-8
+        Luca Boccassi <bluca@debian.org>
+Subject: Re: [PATCH bpf-next] libbpf: add zlib as a dependency in pkg-config
+ template
+Thread-Topic: [PATCH bpf-next] libbpf: add zlib as a dependency in pkg-config
+ template
+Thread-Index: AQHVtEASVSOXUEeCZEOUZ24TxYRvpae9JvcA
+Date:   Mon, 16 Dec 2019 19:33:49 +0000
+Message-ID: <b50659cb-4dcc-110e-e770-31615a11b5e7@fb.com>
+References: <20191216183830.3972964-1-andriin@fb.com>
+In-Reply-To: <20191216183830.3972964-1-andriin@fb.com>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: MWHPR1601CA0006.namprd16.prod.outlook.com
+ (2603:10b6:300:da::16) To DM5PR15MB1675.namprd15.prod.outlook.com
+ (2603:10b6:3:11f::17)
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [2620:10d:c090:200::dd8d]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 3a1affd5-46b8-43a7-6202-08d7825ee00b
+x-ms-traffictypediagnostic: DM5PR15MB1626:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <DM5PR15MB1626414340B777BA0F75402AD3510@DM5PR15MB1626.namprd15.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:4125;
+x-forefront-prvs: 02530BD3AA
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(39860400002)(396003)(376002)(346002)(136003)(366004)(189003)(199004)(186003)(5660300002)(86362001)(54906003)(110136005)(71200400001)(31696002)(316002)(6506007)(53546011)(66446008)(64756008)(66946007)(66556008)(52116002)(81166006)(81156014)(4326008)(2906002)(478600001)(31686004)(36756003)(8676002)(2616005)(6512007)(6486002)(66476007)(8936002);DIR:OUT;SFP:1102;SCL:1;SRVR:DM5PR15MB1626;H:DM5PR15MB1675.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: fb.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: wKz+N5VkyWJu+X2mH/ta2IHwD1kU+chiVI2ztFu3eVt5FMGBFdVfxz3+yOI23L6INwWEcGm+aq3PM1P8UlWcqeLNJB1+dMtXqeI4tdSwriWLnTf5v36kXOHhgM2kpLDN/lyDgh2WplLvCR8fU+gVa/CUBqJX+O4v6aV7WIB/+94Pci+5g6MVRvkYni0dJQpufuib+Pa8Bd9kMAZcHg16jei1pMVDTsLVkq4NzIMknXU4sMBcp/PRZOd/iRIxqetVK/RRatQlb4GVc/6CkZcTFOgg93NFAsvRrhCLnyn/+xdB8bZl7wBXGWO3pD3y8xi87HkRfB0Epf0rS4YqmoVpcrdr3Ir3k2jBu/tCJPlj/LTXnKdLYqdYpb174GbIURR2XtzQzphn/7p6VD/5EK1MbZ8tX9q8U+6+/BcOSaNbFrb3XUjLXPWRzmpxSN81ed5q
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <E6092F117CBE9F41B06B34B4E0855DF7@namprd15.prod.outlook.com>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3a1affd5-46b8-43a7-6202-08d7825ee00b
+X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Dec 2019 19:33:49.5642
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: mBrHXvfyqO3wYc/CXJH3HK1H0Wmh26WtF2kKgu4ypmA0bOlztNWOuHBfkwYDX49H
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR15MB1626
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
+ definitions=2019-12-16_07:2019-12-16,2019-12-16 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 adultscore=0
+ suspectscore=0 phishscore=0 impostorscore=0 lowpriorityscore=0
+ priorityscore=1501 clxscore=1011 bulkscore=0 spamscore=0 mlxlogscore=862
+ mlxscore=0 malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-1910280000 definitions=main-1912160164
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 12/16/19 11:14 AM, Martin Lau wrote:
-> On Fri, Dec 13, 2019 at 05:59:54PM -0800, Eric Dumazet wrote:
->>
->>
->> On 12/13/19 4:47 PM, Martin KaFai Lau wrote:
->>> This patch adds a helper to handle jiffies.  Some of the
->>> tcp_sock's timing is stored in jiffies.  Although things
->>> could be deduced by CONFIG_HZ, having an easy way to get
->>> jiffies will make the later bpf-tcp-cc implementation easier.
->>>
->>
->> ...
->>
->>> +
->>> +BPF_CALL_2(bpf_jiffies, u64, in, u64, flags)
->>> +{
->>> +	if (!flags)
->>> +		return get_jiffies_64();
->>> +
->>> +	if (flags & BPF_F_NS_TO_JIFFIES) {
->>> +		return nsecs_to_jiffies(in);
->>> +	} else if (flags & BPF_F_JIFFIES_TO_NS) {
->>> +		if (!in)
->>> +			in = get_jiffies_64();
->>> +		return jiffies_to_nsecs(in);
->>> +	}
->>> +
->>> +	return 0;
->>> +}
->>
->> This looks a bit convoluted :)
->>
->> Note that we could possibly change net/ipv4/tcp_cubic.c to no longer use jiffies at all.
->>
->> We have in tp->tcp_mstamp an accurate timestamp (in usec) that can be converted to ms.
-> Thanks for the feedbacks!
-> 
-> I have a few questions that need some helps.
-> 
-> Does it mean tp->tcp_mstamp can be used as the "now" in cubic?
-
-TCP makes sure to update tp->tcp_mstamp at least once when handling
-a particular packet. We did that to avoid calling possibly expensive
-kernel time service (Some platforms do not have fast TSC) 
-
-> or tcp_clock_ns() should still be called in cubic, e.g. to replace
-> bictcp_clock() and tcp_jiffies32?
-
-Yeah, there is this lsndtime and tcp_jiffies32 thing, but maybe
-we can find a way to fetch jiffies32 without having to call a bpf helper ?
-
-> 
-> BPF currently has a helper calling ktime_get_mono_fast_ns() which looks
-> different from tcp_clock_ns().
-
-That's maybe because of NMI requirements. 
-
-TCP in the other hand is in process or BH context.
-
-But it should not matter, cubic could should not have to call them.
+DQoNCk9uIDEyLzE2LzE5IDEwOjM4IEFNLCBBbmRyaWkgTmFrcnlpa28gd3JvdGU6DQo+IExpc3Qg
+emxpYiBhcyBhbm90aGVyIGRlcGVuZGVuY3kgb2YgbGliYnBmIGluIHBrZy1jb25maWcgdGVtcGxh
+dGUuDQo+IFZlcmlmaWVkIGl0IGlzIGNvcnJlY3RseSByZXNvbHZlZCB0byBwcm9wZXIgLWx6IGZs
+YWc6DQo+IA0KPiAkIG1ha2UgREVTVERJUj0vdG1wL2xpYmJwZi1pbnN0YWxsIGluc3RhbGwNCj4g
+JCBwa2ctY29uZmlnIC0tbGlicyAvdG1wL2xpYmJwZi1pbnN0YWxsL3Vzci9sb2NhbC9saWI2NC9w
+a2djb25maWcvbGliYnBmLnBjDQo+IC1ML3Vzci9sb2NhbC9saWI2NCAtbGJwZg0KPiAkIHBrZy1j
+b25maWcgLS1saWJzIC0tc3RhdGljIC90bXAvbGliYnBmLWluc3RhbGwvdXNyL2xvY2FsL2xpYjY0
+L3BrZ2NvbmZpZy9saWJicGYucGMNCj4gLUwvdXNyL2xvY2FsL2xpYjY0IC1sYnBmIC1sZWxmIC1s
+eg0KDQpFdmVuIHdpdGhvdXQgdGhpcyBwYXRjaCwgSSBhbHJlYWR5IGdvdCAtbHogZm9yIHN0YXRp
+YyBsaW5rIGxpYnJhcmllczoNCg0KLWJhc2gtNC40JCBjYXQgbGliYnBmLnBjLnRlbXBsYXRlDQou
+Li4NClJlcXVpcmVzLnByaXZhdGU6IGxpYmVsZg0KLi4uDQotYmFzaC00LjQkIHBrZy1jb25maWcg
+LS1saWJzIC0tc3RhdGljIA0KL3RtcC9saWJicGYtaW5zdGFsbC91c3IvbG9jYWwvbGliNjQvcGtn
+Y29uZmlnL2xpYmJwZi5wYw0KLUwvdXNyL2xvY2FsL2xpYjY0IC1sYnBmIC1sZWxmIC1seg0KDQps
+aWJlbGYgZGVwZW5kaW5nIG9uIHpsaWIuIE1heWJlIC1seiBpcyBpbnRyb2R1Y2VkIGR1ZSB0byBs
+aWJlbGYuDQoNCkJ1dCBpbiBhbnkgY2FzZSwgYWRkIGV4cGxpY2l0IGRlcGVuZGVuY3kgdG8gemxp
+YiBmcm9tIGxpYmJwZiBwcm9iYWJseQ0KYSBnb29kIHRoaW5nIHNpbmNlIGxpYmJwZiBkaXJlY3Rs
+eSB1c2VzIGl0cyBBUEkgZnVuY3Rpb25zLg0KDQpBY2tlZC1ieTogWW9uZ2hvbmcgU29uZyA8eWhz
+QGZiLmNvbT4NCg0KDQpbLi4uXQ0KPiBkaWZmIC0tZ2l0IGEvdG9vbHMvbGliL2JwZi9saWJicGYu
+cGMudGVtcGxhdGUgYi90b29scy9saWIvYnBmL2xpYmJwZi5wYy50ZW1wbGF0ZQ0KPiBpbmRleCBh
+YzE3ZmNlZjIxMDguLmI0NWVkNTM0YmRmYiAxMDA2NDQNCj4gLS0tIGEvdG9vbHMvbGliL2JwZi9s
+aWJicGYucGMudGVtcGxhdGUNCj4gKysrIGIvdG9vbHMvbGliL2JwZi9saWJicGYucGMudGVtcGxh
+dGUNCj4gQEAgLTgsNSArOCw1IEBAIE5hbWU6IGxpYmJwZg0KPiAgIERlc2NyaXB0aW9uOiBCUEYg
+bGlicmFyeQ0KPiAgIFZlcnNpb246IEBWRVJTSU9OQA0KPiAgIExpYnM6IC1MJHtsaWJkaXJ9IC1s
+YnBmDQo+IC1SZXF1aXJlcy5wcml2YXRlOiBsaWJlbGYNCj4gK1JlcXVpcmVzLnByaXZhdGU6IGxp
+YmVsZiB6bGliDQo+ICAgQ2ZsYWdzOiAtSSR7aW5jbHVkZWRpcn0NCj4gDQo=
