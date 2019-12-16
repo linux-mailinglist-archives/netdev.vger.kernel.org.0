@@ -2,127 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1024A120663
-	for <lists+netdev@lfdr.de>; Mon, 16 Dec 2019 13:55:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ABCCD1206A0
+	for <lists+netdev@lfdr.de>; Mon, 16 Dec 2019 14:08:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727728AbfLPMyA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Dec 2019 07:54:00 -0500
-Received: from mx2.suse.de ([195.135.220.15]:39022 "EHLO mx1.suse.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727550AbfLPMx7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 16 Dec 2019 07:53:59 -0500
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id 29D62AFAF;
-        Mon, 16 Dec 2019 12:53:55 +0000 (UTC)
-Received: by quack2.suse.cz (Postfix, from userid 1000)
-        id 69B531E0B2E; Mon, 16 Dec 2019 13:53:53 +0100 (CET)
-Date:   Mon, 16 Dec 2019 13:53:53 +0100
-From:   Jan Kara <jack@suse.cz>
-To:     John Hubbard <jhubbard@nvidia.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@intel.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Dave Chinner <david@fromorbit.com>,
-        David Airlie <airlied@linux.ie>,
-        "David S . Miller" <davem@davemloft.net>,
-        Ira Weiny <ira.weiny@intel.com>, Jan Kara <jack@suse.cz>,
-        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
-        Jonathan Corbet <corbet@lwn.net>,
-        =?iso-8859-1?B?Suly9G1l?= Glisse <jglisse@redhat.com>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Michal Hocko <mhocko@suse.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Paul Mackerras <paulus@samba.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Vlastimil Babka <vbabka@suse.cz>, bpf@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, kvm@vger.kernel.org,
-        linux-block@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        linux-media@vger.kernel.org, linux-rdma@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, netdev@vger.kernel.org,
-        linux-mm@kvack.org, LKML <linux-kernel@vger.kernel.org>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>
-Subject: Re: [PATCH v11 23/25] mm/gup: track FOLL_PIN pages
-Message-ID: <20191216125353.GF22157@quack2.suse.cz>
-References: <20191212101741.GD10065@quack2.suse.cz>
- <20191214032617.1670759-1-jhubbard@nvidia.com>
+        id S1727688AbfLPNIt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Dec 2019 08:08:49 -0500
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:40471 "EHLO
+        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727576AbfLPNIt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Dec 2019 08:08:49 -0500
+Received: by mail-wm1-f68.google.com with SMTP id t14so6612504wmi.5;
+        Mon, 16 Dec 2019 05:08:47 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=R9aFaAcGCVcst6+88KA41zQjrKH9qVtbZfnVDJrAXeA=;
+        b=fcwdeodEtXF1FVw8+hw4TY+lh7I6pV2jDU2l06kwenUTWL0zjSM7eSaNed0VM/ULR2
+         lTFQV8pU6AHnYRX1qE70Rv6bgrfdzHohKrhaUvu8FNDjrpoetwYnBI+FOSii1y8/Z4K2
+         COgEPQCrqCradG4Ri3rp1kPnXNHe9O+WIWzBBS98Eg7eL3PFvYrfDZ3e/O8CDysTQ6mW
+         eS+tCaNfDJRtS5yCf1kfVCcPa0ybyu3HuwLlhz+6TiDApH8kOBJdZV7GOtieWVyuYLYc
+         RF1BWm//rQQvi/CWFs6UNCvHqUWZS+ZgW+qR/KnFfwGkx5961LMWhr9q84Ie1YgUUHm2
+         1M5w==
+X-Gm-Message-State: APjAAAUjHNa0oIItvlc500fyCEuUBmZHjWCPvQ4whndD2cgk454KYnIa
+        rSvTbOAiIxfPufskW18joJA=
+X-Google-Smtp-Source: APXvYqy8gtSuQntZrQPzWn5lxIMk8mNr9xbOxQPZlJfg1nVxsqUCeU6NgB9SUAeVSAMe7A+IQxynug==
+X-Received: by 2002:a7b:cf26:: with SMTP id m6mr28538441wmg.17.1576501727108;
+        Mon, 16 Dec 2019 05:08:47 -0800 (PST)
+Received: from localhost (prg-ext-pat.suse.com. [213.151.95.130])
+        by smtp.gmail.com with ESMTPSA id q3sm21924045wrn.33.2019.12.16.05.08.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 16 Dec 2019 05:08:46 -0800 (PST)
+Date:   Mon, 16 Dec 2019 14:08:45 +0100
+From:   Michal Hocko <mhocko@kernel.org>
+To:     Ilias Apalodimas <ilias.apalodimas@linaro.org>
+Cc:     Yunsheng Lin <linyunsheng@huawei.com>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        "brouer@redhat.com" <brouer@redhat.com>,
+        "jonathan.lemon@gmail.com" <jonathan.lemon@gmail.com>,
+        Li Rongqing <lirongqing@baidu.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        peterz@infradead.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        bhelgaas@google.com,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH][v2] page_pool: handle page recycle for NUMA_NO_NODE
+ condition
+Message-ID: <20191216130845.GF30281@dhcp22.suse.cz>
+References: <1575624767-3343-1-git-send-email-lirongqing@baidu.com>
+ <9fecbff3518d311ec7c3aee9ae0315a73682a4af.camel@mellanox.com>
+ <20191211194933.15b53c11@carbon>
+ <831ed886842c894f7b2ffe83fe34705180a86b3b.camel@mellanox.com>
+ <0a252066-fdc3-a81d-7a36-8f49d2babc01@huawei.com>
+ <20191216121557.GE30281@dhcp22.suse.cz>
+ <20191216123426.GA18663@apalos.home>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20191214032617.1670759-1-jhubbard@nvidia.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20191216123426.GA18663@apalos.home>
+User-Agent: Mutt/1.12.2 (2019-09-21)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri 13-12-19 19:26:17, John Hubbard wrote:
-> Add tracking of pages that were pinned via FOLL_PIN.
+On Mon 16-12-19 14:34:26, Ilias Apalodimas wrote:
+> Hi Michal, 
+> On Mon, Dec 16, 2019 at 01:15:57PM +0100, Michal Hocko wrote:
+> > On Thu 12-12-19 09:34:14, Yunsheng Lin wrote:
+> > > +CC Michal, Peter, Greg and Bjorn
+> > > Because there has been disscusion about where and how the NUMA_NO_NODE
+> > > should be handled before.
+> > 
+> > I do not have a full context. What is the question here?
 > 
-> As mentioned in the FOLL_PIN documentation, callers who effectively set
-> FOLL_PIN are required to ultimately free such pages via unpin_user_page().
-> The effect is similar to FOLL_GET, and may be thought of as "FOLL_GET
-> for DIO and/or RDMA use".
-> 
-> Pages that have been pinned via FOLL_PIN are identifiable via a
-> new function call:
-> 
->    bool page_dma_pinned(struct page *page);
-> 
-> What to do in response to encountering such a page, is left to later
-> patchsets. There is discussion about this in [1], [2], and [3].
-> 
-> This also changes a BUG_ON(), to a WARN_ON(), in follow_page_mask().
-> 
-> [1] Some slow progress on get_user_pages() (Apr 2, 2019):
->     https://lwn.net/Articles/784574/
-> [2] DMA and get_user_pages() (LPC: Dec 12, 2018):
->     https://lwn.net/Articles/774411/
-> [3] The trouble with get_user_pages() (Apr 30, 2018):
->     https://lwn.net/Articles/753027/
-> 
-> Suggested-by: Jan Kara <jack@suse.cz>
-> Suggested-by: Jérôme Glisse <jglisse@redhat.com>
-> Cc: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
-> Signed-off-by: John Hubbard <jhubbard@nvidia.com>
-> ---
-> 
-> Hi Jan,
-> 
-> This should address all of your comments for patch 23!
+> When we allocate pages for the page_pool API, during the init, the driver writer
+> decides which NUMA node to use. The API can,  in some cases recycle the memory,
+> instead of freeing it and re-allocating it. If the NUMA node has changed (irq
+> affinity for example), we forbid recycling and free the memory, since recycling
+> and using memory on far NUMA nodes is more expensive (more expensive than
+> recycling, at least on the architectures we tried anyway).
+> Since this would be expensive to do it per packet, the burden falls on the 
+> driver writer for that. Drivers *have* to call page_pool_update_nid() or 
+> page_pool_nid_changed() if they want to check for that which runs once
+> per NAPI cycle.
 
-Thanks. One comment below:
+Thanks for the clarification.
 
-> @@ -1486,6 +1500,10 @@ struct page *follow_trans_huge_pmd(struct vm_area_struct *vma,
->  	VM_BUG_ON_PAGE(!PageHead(page) && !is_zone_device_page(page), page);
->  	if (flags & FOLL_TOUCH)
->  		touch_pmd(vma, addr, pmd, flags);
-> +
-> +	if (!try_grab_page(page, flags))
-> +		return ERR_PTR(-ENOMEM);
-> +
->  	if ((flags & FOLL_MLOCK) && (vma->vm_flags & VM_LOCKED)) {
->  		/*
->  		 * We don't mlock() pte-mapped THPs. This way we can avoid
+> The current code in the API though does not account for NUMA_NO_NODE. That's
+> what this is trying to fix.
+> If the page_pool params are initialized with that, we *never* recycle
+> the memory. This is happening because the API is allocating memory with 
+> 'nid = numa_mem_id()' if NUMA_NO_NODE is configured so the current if statement
+> 'page_to_nid(page) == pool->p.nid' will never trigger.
 
-I'd move this still a bit higher - just after VM_BUG_ON_PAGE() and before
-if (flags & FOLL_TOUCH) test. Because touch_pmd() can update page tables
-and we don't won't that if we're going to fail the fault.
+OK. There is no explicit mention of the expected behavior for
+NUMA_NO_NODE. The semantic is usually that there is no NUMA placement
+requirement and the MM code simply starts the allocate from a local node
+in that case. But the memory might come from any node so there is no
+"local node" guarantee.
 
-With this fixed, the patch looks good to me so you can then add:
+So the main question is what is the expected semantic? Do people expect
+that NUMA_NO_NODE implies locality? Why don't you simply always reuse
+when there was no explicit numa requirement?
 
-Reviewed-by: Jan Kara <jack@suse.cz>
+> The initial proposal was to check:
+> pool->p.nid == NUMA_NO_NODE && page_to_nid(page) == numa_mem_id()));
 
-								Honza
+> After that the thread span out of control :)
+> My question is do we *really* have to check for 
+> page_to_nid(page) == numa_mem_id()? if the architecture is not NUMA aware
+> wouldn't pool->p.nid == NUMA_NO_NODE be enough?
+
+If the architecture is !NUMA then numa_mem_id and page_to_nid should
+always equal and be both zero.
+
 -- 
-Jan Kara <jack@suse.com>
-SUSE Labs, CR
+Michal Hocko
+SUSE Labs
