@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1AB48121075
+	by mail.lfdr.de (Postfix) with ESMTP id 8AC89121076
 	for <lists+netdev@lfdr.de>; Mon, 16 Dec 2019 18:05:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726756AbfLPRCU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Dec 2019 12:02:20 -0500
+        id S1726762AbfLPRCY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Dec 2019 12:02:24 -0500
 Received: from mail-eopbgr10084.outbound.protection.outlook.com ([40.107.1.84]:35200
         "EHLO EUR02-HE1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726743AbfLPRCU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 16 Dec 2019 12:02:20 -0500
+        id S1726747AbfLPRCY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 16 Dec 2019 12:02:24 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=RkekjoZR5+NKB+VUUoDB2XknOsUHbxiR6TLFktE7Ygg/Rga+eFSYD6tCvpSlWP+j50g559ez20h++w8wkmwpPaCTOzl5DQFRLUgJnMd3YTMh5gpD0/Xa8T0Czgrg9oUTgdmJ/HvFgBbuV4LqwH6YVzZopUUap2MLie1y2woNWWSF9Cl8DU99UujvjahVJW5cQu9I8Kd2tJyHYImmcU2uaMvJl2/+lqHLkrz6Mam6x4EFmpTJU3Fu2/1+UgwXo4lxlhcbIlH2mfNsiFQXJVRjBGja18Fem/jXQr5RTiHCQMdMoGrSaQj/sX+Ug2OBNlZ8NlmEEazn2X+dQF1aN0NgEA==
+ b=K7Bh/OrX2wyybymAhmlYGHNhsK5po/CaC7ctd1zQXFzV6jDdsXR51QoRwy9df777RUo8Z7a800UpY92nQjL8Rws7glBoFuzpD9txCLzclWmc9TN+441LbNQ3AclI2RnONikn8NfTQSNSkTpVrNmYz/E+fLdxvkSkz6K+K/FSWQ6qNx9bMp9+leod4OBlSrEk4T82xqEOskQJ7vSDFpFqrN6UZaDYl2BEDVmGllBcTfGvPFpTnKWQDNcyyOJv50TeRsbN+j/fJQ9lUs/5PRm9ls/Zq2vLTTHHL+Y+wkVuhLvPCZ4mMLTKU4RS9BHvv5QEw1i2cfM37OMx6g5tjOW9dQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=MP64AKfMjner+/ANrXLr6yU55AtMNyuPfJeahK+W98c=;
- b=bX+TWpxyCqNTxSZVPwz5Nmz8SX1vlHyDLjKJmC0cautn71rubiJaJywu9QVT8uwOjBLI0En8l/QSoPmDknmUnsns9xw1sCBvZl1WRAngsaJ8pQkrcd0J/g4Mb1h7nXUGLu6/JC/7ErTu8hbKWwk/ouAZvMF622TMY6H0zSYjRmrWPG3VcCOkGhEBJ9VeLPa+yHZJCpOkOVnj950JpGMiB4DcOWYc3K6omf95rq0BdDRPlxQwhuzGmm42KMUD7XNDQF4G/8Q6BlXjOf8EXjPg+NKGQkoTEe4UAlXXSpvQ4SCMN5dd7AJMO5CdsyxfnblIfCiuY3KoQ2MSKfJecKXxDQ==
+ bh=sFW9YhSHjR0JWaX99Z/w0JB5GS0LNCGSxmwoj+AFL5o=;
+ b=aXxy9aNmlmxzhAZCN2JiLuPJzCB+uLvpYj9+b2cLwgG72q5gDg9CLUtw9BK+VeoAK/gh5dUHh7ilOcTNYwy6ogXX00gbWQWfHYE8PVpbzM6SfJo3XFT/YoZLkBvO3TKWFHxmpnEPSI6pMp/SJI6qCAK5j2hZaFS92GNL2yxK0x3UdfOKQB4AO+ShIq2qpT8NGXuXbir1ntttOaELKO7tWuABmn5789dSH/KA2hLOSPp03YjEHSC2e2TPQEyQjBsMgVot8yNdLa0l52jppFBSEDiaQjqkmFqDbCQtLITCm6Y5kKimYYaB8LSmz9i76NVYyKH535jS95h5p/f0cSiRbA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
  dkim=pass header.d=mellanox.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
  s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=MP64AKfMjner+/ANrXLr6yU55AtMNyuPfJeahK+W98c=;
- b=hyizOncwqeLHMxCOn4v99FCMs/ekRFaEs+cLDdjSUY1IQIcY312VBiOFtC0Nt/Yh5OxCNJT6f+O9kQSJEXzmxrl0rx82pN8Zc65RWhxJMcxNzTqWJvQpk4mWPTY7LHZTusOucMABfZjL0oZVydSUSmuPfP/QsTd0cEFxRKlw/UA=
+ bh=sFW9YhSHjR0JWaX99Z/w0JB5GS0LNCGSxmwoj+AFL5o=;
+ b=k1V81gLoqIryjUaJekN+FXeLuKIEdmucqc3yUxQGalHAkKQQ0Bz7A/984dhP0uK4SIU+pRG5pOEwogV8uZZio1x/oTHpfhY4cDDnLAThUB2U9CgkziiOoQZwYc+7cCt9h2rru5b0d/c64NJaKKl9sL8hsQN0x7/5bRZyIMVXqNU=
 Received: from DB6PR0502MB3047.eurprd05.prod.outlook.com (10.172.250.135) by
  DB6PR0502MB3014.eurprd05.prod.outlook.com (10.172.248.136) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2538.16; Mon, 16 Dec 2019 17:01:49 +0000
+ 15.20.2538.16; Mon, 16 Dec 2019 17:01:51 +0000
 Received: from DB6PR0502MB3047.eurprd05.prod.outlook.com
  ([fe80::a153:bb4e:c909:d3a1]) by DB6PR0502MB3047.eurprd05.prod.outlook.com
  ([fe80::a153:bb4e:c909:d3a1%7]) with mapi id 15.20.2538.019; Mon, 16 Dec 2019
- 17:01:49 +0000
+ 17:01:51 +0000
 From:   Petr Machata <petrm@mellanox.com>
 To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
 CC:     Petr Machata <petrm@mellanox.com>,
@@ -44,13 +44,13 @@ CC:     Petr Machata <petrm@mellanox.com>,
         Roman Mashak <mrv@mojatatu.com>,
         Ido Schimmel <idosch@mellanox.com>,
         Jiri Pirko <jiri@resnulli.us>, Jiri Pirko <jiri@mellanox.com>
-Subject: [PATCH net-next mlxsw v1 05/10] net: sch_ets: Make the ETS qdisc
- offloadable
-Thread-Topic: [PATCH net-next mlxsw v1 05/10] net: sch_ets: Make the ETS qdisc
- offloadable
-Thread-Index: AQHVtDKB2+fFvVIgvkO3mYr66kz1Jg==
-Date:   Mon, 16 Dec 2019 17:01:49 +0000
-Message-ID: <22a2b146c7443d9303c7051a2ac6b2c52c00b74e.1576515562.git.petrm@mellanox.com>
+Subject: [PATCH net-next mlxsw v1 06/10] mlxsw: spectrum_qdisc: Generalize
+ PRIO offload to support ETS
+Thread-Topic: [PATCH net-next mlxsw v1 06/10] mlxsw: spectrum_qdisc:
+ Generalize PRIO offload to support ETS
+Thread-Index: AQHVtDKCtP1+FO+gGUeTx8JCyiJBBw==
+Date:   Mon, 16 Dec 2019 17:01:51 +0000
+Message-ID: <b22486cf0eb0da08789589876f754ccdab53c882.1576515562.git.petrm@mellanox.com>
 References: <cover.1576515562.git.petrm@mellanox.com>
 In-Reply-To: <cover.1576515562.git.petrm@mellanox.com>
 Accept-Language: en-US
@@ -67,37 +67,43 @@ x-ms-exchange-messagesentrepresentingtype: 1
 x-originating-ip: [37.142.13.130]
 x-ms-publictraffictype: Email
 x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 415ebf00-3b91-45f4-18ad-08d78249a3bc
+x-ms-office365-filtering-correlation-id: abc0b9bd-60c0-4a0b-6a19-08d78249a503
 x-ms-traffictypediagnostic: DB6PR0502MB3014:|DB6PR0502MB3014:
 x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <DB6PR0502MB30146764724DA4B2BAE107DEDB510@DB6PR0502MB3014.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:1824;
+x-microsoft-antispam-prvs: <DB6PR0502MB3014B67DA3F2891348121A4FDB510@DB6PR0502MB3014.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:3383;
 x-forefront-prvs: 02530BD3AA
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(136003)(366004)(396003)(39860400002)(346002)(376002)(189003)(199004)(186003)(6512007)(26005)(316002)(107886003)(71200400001)(6486002)(81166006)(6506007)(81156014)(8676002)(8936002)(66556008)(66476007)(66446008)(64756008)(66946007)(2906002)(478600001)(54906003)(6916009)(2616005)(86362001)(36756003)(52116002)(4326008)(5660300002);DIR:OUT;SFP:1101;SCL:1;SRVR:DB6PR0502MB3014;H:DB6PR0502MB3047.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(136003)(366004)(396003)(39860400002)(346002)(376002)(189003)(199004)(186003)(6512007)(26005)(316002)(107886003)(71200400001)(6486002)(81166006)(6506007)(81156014)(8676002)(8936002)(66556008)(66476007)(66446008)(64756008)(66946007)(2906002)(478600001)(54906003)(6916009)(2616005)(86362001)(36756003)(52116002)(4326008)(5660300002)(309714004);DIR:OUT;SFP:1101;SCL:1;SRVR:DB6PR0502MB3014;H:DB6PR0502MB3047.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
 received-spf: None (protection.outlook.com: mellanox.com does not designate
  permitted sender hosts)
 x-ms-exchange-senderadcheck: 1
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: EAL+RSGOzgLBUR4J7bDNWCekyKVW8fuMXSmrj0dxDrc7PBK1y/Loag2sSj6WTYDW5l/bJOY/1FJC9ngeTudnP6tTvMUDOAIvhmlIgZhYHR5VOu3NK+zhQlTZ4ZFO6LBiSjV8oHy54/TcTzqTo88v7lfrzXJoGy/hiaJBkLV0G18TMw0+waR+DUmKohqj1LkdilmUbbjpS5HmX7hHBbxdhOuloCrO9gWqzT+290Qpqqvxh1dTn5lUHw6qIYZ6MRSC8VT6x320d2VNC4wHMamPBWr/Pv+2JTSujx2hTeWbtDcvonMp1J8aFkeXQH6g75+I9uSnzEhcXIUYBSkpNhaofKNekEGTwuOtH2yNvOv8zIbXPj1gxqL5xAqy9GFHUaKJb7Ntvb2+KLhID5ZK36BhgLvud8cZpNilUN1ud5GVmodcpPIXPSrMIbXnrGi6iqQV
+x-microsoft-antispam-message-info: km9rBRpvoJf09SP23kIbiFH8Or2dln0WQSPn1i2pGDF4+nSsbqOXlgZRvKaZRbBBdxQMYCc12OI2SOEMx0lvsyq72E7Vig+N7Zqrc8HVAD1P1TT/HOppSiD6xEm+e3Qpb3XvxNv+mkyAaqibccWhBSgk8td5WK2TMAtURXcAFkgCjD6DQYyAsXB5POGlqb1XlR6reyKQUB9qdnI5Mb0EjXVgt0gnSNwXtGZqERpDXM2dOd/OeBnmT5jFW4qulXo/NNJpzcz6eMMxESXgHVbJ0MOgwy3JiA4EtOnDVfxxLiDkhmfJcnsELsXC7Fb2mWAoCQxjyI6dPFVYGGP7+FmiYbbAsj6PJ4N7wZ1mkY04Y0fwG1LT8OBBrpsVlluUqfsqQ9doFkT+9Dom21tx87gI+vjHQEc/Ks+kwbnsIjQeN/pqN4qSs3MW3M+igfxamWWpEkS+6Feo7djw6WDCefdKsHS5L+nYBOGuQ+s6IC81LsNLt/3TE5L2zeyNBAHQDR9u
 Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 415ebf00-3b91-45f4-18ad-08d78249a3bc
-X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Dec 2019 17:01:49.1859
+X-MS-Exchange-CrossTenant-Network-Message-Id: abc0b9bd-60c0-4a0b-6a19-08d78249a503
+X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Dec 2019 17:01:51.2171
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: B5VntxljtmQKOyE1CDYjQTnHS3PmmtOWYP/K+4fgvQjVqb9h+pzl5Te+IJqOilUVXa5iHX96hTAlFsIzF/SO+Q==
+X-MS-Exchange-CrossTenant-userprincipalname: N5JMUTVcFKF3i0y044KhbTw5AR7R2jDcJIXLu85GdRvOspAn/+aJOiyFkIG9tO6OrIInT1c/jf+md2Wg7wTX4g==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR0502MB3014
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add hooks at appropriate points to make it possible to offload the ETS
-Qdisc.
+Thanks to the similarity between PRIO and ETS it is possible to simply
+reuse most of the code for offloading PRIO Qdisc. Extract the common
+functionality into separate functions, making the current PRIO handlers
+thin API adapters.
+
+Extend the new functions to pass quanta for individual bands, which allows
+configuring a subset of bands as WRR. Invoke mlxsw_sp_port_ets_set() as
+appropriate to de/configure WRR-ness and weight of individual bands.
 
 Signed-off-by: Petr Machata <petrm@mellanox.com>
 Acked-by: Jiri Pirko <jiri@mellanox.com>
@@ -105,214 +111,221 @@ Reviewed-by: Ido Schimmel <idosch@mellanox.com>
 ---
 
 Notes:
+    v3 (internal):
+    - __mlxsw_sp_qdisc_ets_replace(): Pass the weights argument to this
+      function in this patch already. Drop the weight computation.
+    - mlxsw_sp_qdisc_prio_replace(): Rename "quanta" to "zeroes" and
+      pass for the abovementioned "weights".
+    - mlxsw_sp_qdisc_prio_graft(): Convert to a wrapper around
+      __mlxsw_sp_qdisc_ets_graft(), instead of invoking the latter
+      directly from mlxsw_sp_setup_tc_prio().
+    - Update to follow the _HIERACHY_ -> _HR_ renaming.
+   =20
     v1 (internal):
-    - pkt_cls.h: Note that quantum=3D0 signifies a strict band.
-    - Fix error path handling when ets_offload_dump() fails.
+    - __mlxsw_sp_qdisc_ets_replace(): Convert syntax of function arguments
+      "quanta" and "priomap" from arrays to pointers.
 
- include/linux/netdevice.h |  1 +
- include/net/pkt_cls.h     | 31 +++++++++++++
- net/sched/sch_ets.c       | 95 +++++++++++++++++++++++++++++++++++++++
- 3 files changed, 127 insertions(+)
+ .../ethernet/mellanox/mlxsw/spectrum_qdisc.c  | 104 ++++++++++++++----
+ 1 file changed, 81 insertions(+), 23 deletions(-)
 
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index 30745068fb39..7a8ed11f5d45 100644
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -849,6 +849,7 @@ enum tc_setup_type {
- 	TC_SETUP_QDISC_GRED,
- 	TC_SETUP_QDISC_TAPRIO,
- 	TC_SETUP_FT,
-+	TC_SETUP_QDISC_ETS,
- };
-=20
- /* These structures hold the attributes of bpf state that are being passed
-diff --git a/include/net/pkt_cls.h b/include/net/pkt_cls.h
-index a7c5d492bc04..47b115e2012a 100644
---- a/include/net/pkt_cls.h
-+++ b/include/net/pkt_cls.h
-@@ -823,4 +823,35 @@ struct tc_root_qopt_offload {
- 	bool ingress;
- };
-=20
-+enum tc_ets_command {
-+	TC_ETS_REPLACE,
-+	TC_ETS_DESTROY,
-+	TC_ETS_STATS,
-+	TC_ETS_GRAFT,
-+};
-+
-+struct tc_ets_qopt_offload_replace_params {
-+	unsigned int bands;
-+	u8 priomap[TC_PRIO_MAX + 1];
-+	unsigned int quanta[TCQ_ETS_MAX_BANDS];	/* 0 for strict bands. */
-+	unsigned int weights[TCQ_ETS_MAX_BANDS];
-+	struct gnet_stats_queue *qstats;
-+};
-+
-+struct tc_ets_qopt_offload_graft_params {
-+	u8 band;
-+	u32 child_handle;
-+};
-+
-+struct tc_ets_qopt_offload {
-+	enum tc_ets_command command;
-+	u32 handle;
-+	u32 parent;
-+	union {
-+		struct tc_ets_qopt_offload_replace_params replace_params;
-+		struct tc_qopt_offload_stats stats;
-+		struct tc_ets_qopt_offload_graft_params graft_params;
-+	};
-+};
-+
- #endif
-diff --git a/net/sched/sch_ets.c b/net/sched/sch_ets.c
-index 3c4fe78af1f9..749c240948ec 100644
---- a/net/sched/sch_ets.c
-+++ b/net/sched/sch_ets.c
-@@ -76,6 +76,91 @@ static u32 ets_class_id(struct Qdisc *sch, const struct =
-ets_class *cl)
- 	return TC_H_MAKE(sch->handle, band + 1);
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_qdisc.c b/drivers=
+/net/ethernet/mellanox/mlxsw/spectrum_qdisc.c
+index 135fef6c54b1..d513af49c0a8 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_qdisc.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_qdisc.c
+@@ -471,14 +471,16 @@ int mlxsw_sp_setup_tc_red(struct mlxsw_sp_port *mlxsw=
+_sp_port,
  }
 =20
-+static void ets_offload_change(struct Qdisc *sch)
-+{
-+	struct net_device *dev =3D qdisc_dev(sch);
-+	struct ets_sched *q =3D qdisc_priv(sch);
-+	struct tc_ets_qopt_offload qopt;
-+	unsigned int w_psum_prev =3D 0;
-+	unsigned int q_psum =3D 0;
-+	unsigned int q_sum =3D 0;
-+	unsigned int quantum;
-+	unsigned int w_psum;
-+	unsigned int weight;
-+	unsigned int i;
-+
-+	if (!tc_can_offload(dev) || !dev->netdev_ops->ndo_setup_tc)
-+		return;
-+
-+	qopt.command =3D TC_ETS_REPLACE;
-+	qopt.handle =3D sch->handle;
-+	qopt.parent =3D sch->parent;
-+	qopt.replace_params.bands =3D q->nbands;
-+	qopt.replace_params.qstats =3D &sch->qstats;
-+	memcpy(&qopt.replace_params.priomap,
-+	       q->prio2band, sizeof(q->prio2band));
-+
-+	for (i =3D 0; i < q->nbands; i++)
-+		q_sum +=3D q->classes[i].quantum;
-+
-+	for (i =3D 0; i < q->nbands; i++) {
-+		quantum =3D q->classes[i].quantum;
-+		q_psum +=3D quantum;
-+		w_psum =3D quantum ? q_psum * 100 / q_sum : 0;
-+		weight =3D w_psum - w_psum_prev;
-+		w_psum_prev =3D w_psum;
-+
-+		qopt.replace_params.quanta[i] =3D quantum;
-+		qopt.replace_params.weights[i] =3D weight;
-+	}
-+
-+	dev->netdev_ops->ndo_setup_tc(dev, TC_SETUP_QDISC_ETS, &qopt);
-+}
-+
-+static void ets_offload_destroy(struct Qdisc *sch)
-+{
-+	struct net_device *dev =3D qdisc_dev(sch);
-+	struct tc_ets_qopt_offload qopt;
-+
-+	if (!tc_can_offload(dev) || !dev->netdev_ops->ndo_setup_tc)
-+		return;
-+
-+	qopt.command =3D TC_ETS_DESTROY;
-+	qopt.handle =3D sch->handle;
-+	qopt.parent =3D sch->parent;
-+	dev->netdev_ops->ndo_setup_tc(dev, TC_SETUP_QDISC_ETS, &qopt);
-+}
-+
-+static void ets_offload_graft(struct Qdisc *sch, struct Qdisc *new,
-+			      struct Qdisc *old, unsigned long arg,
-+			      struct netlink_ext_ack *extack)
-+{
-+	struct net_device *dev =3D qdisc_dev(sch);
-+	struct tc_ets_qopt_offload qopt;
-+
-+	qopt.command =3D TC_ETS_GRAFT;
-+	qopt.handle =3D sch->handle;
-+	qopt.parent =3D sch->parent;
-+	qopt.graft_params.band =3D arg - 1;
-+	qopt.graft_params.child_handle =3D new->handle;
-+
-+	qdisc_offload_graft_helper(dev, sch, new, old, TC_SETUP_QDISC_ETS,
-+				   &qopt, extack);
-+}
-+
-+static int ets_offload_dump(struct Qdisc *sch)
-+{
-+	struct tc_ets_qopt_offload qopt;
-+
-+	qopt.command =3D TC_ETS_STATS;
-+	qopt.handle =3D sch->handle;
-+	qopt.parent =3D sch->parent;
-+	qopt.stats.bstats =3D &sch->bstats;
-+	qopt.stats.qstats =3D &sch->qstats;
-+
-+	return qdisc_offload_dump_helper(sch, TC_SETUP_QDISC_ETS, &qopt);
-+}
-+
- static bool ets_class_is_strict(struct ets_sched *q, const struct ets_clas=
-s *cl)
+ static int
+-mlxsw_sp_qdisc_prio_destroy(struct mlxsw_sp_port *mlxsw_sp_port,
+-			    struct mlxsw_sp_qdisc *mlxsw_sp_qdisc)
++__mlxsw_sp_qdisc_ets_destroy(struct mlxsw_sp_port *mlxsw_sp_port)
  {
- 	unsigned int band =3D cl - q->classes;
-@@ -128,6 +213,8 @@ static int ets_class_change(struct Qdisc *sch, u32 clas=
-sid, u32 parentid,
- 	sch_tree_lock(sch);
- 	cl->quantum =3D quantum;
- 	sch_tree_unlock(sch);
-+
-+	ets_offload_change(sch);
+ 	int i;
+=20
+ 	for (i =3D 0; i < IEEE_8021QAZ_MAX_TCS; i++) {
+ 		mlxsw_sp_port_prio_tc_set(mlxsw_sp_port, i,
+ 					  MLXSW_SP_PORT_DEFAULT_TCLASS);
++		mlxsw_sp_port_ets_set(mlxsw_sp_port,
++				      MLXSW_REG_QEEC_HR_SUBGROUP,
++				      i, 0, false, 0);
+ 		mlxsw_sp_qdisc_destroy(mlxsw_sp_port,
+ 				       &mlxsw_sp_port->tclass_qdiscs[i]);
+ 		mlxsw_sp_port->tclass_qdiscs[i].prio_bitmap =3D 0;
+@@ -487,6 +489,22 @@ mlxsw_sp_qdisc_prio_destroy(struct mlxsw_sp_port *mlxs=
+w_sp_port,
  	return 0;
  }
 =20
-@@ -147,6 +234,7 @@ static int ets_class_graft(struct Qdisc *sch, unsigned =
-long arg,
++static int
++mlxsw_sp_qdisc_prio_destroy(struct mlxsw_sp_port *mlxsw_sp_port,
++			    struct mlxsw_sp_qdisc *mlxsw_sp_qdisc)
++{
++	return __mlxsw_sp_qdisc_ets_destroy(mlxsw_sp_port);
++}
++
++static int
++__mlxsw_sp_qdisc_ets_check_params(unsigned int nbands)
++{
++	if (nbands > IEEE_8021QAZ_MAX_TCS)
++		return -EOPNOTSUPP;
++
++	return 0;
++}
++
+ static int
+ mlxsw_sp_qdisc_prio_check_params(struct mlxsw_sp_port *mlxsw_sp_port,
+ 				 struct mlxsw_sp_qdisc *mlxsw_sp_qdisc,
+@@ -494,30 +512,36 @@ mlxsw_sp_qdisc_prio_check_params(struct mlxsw_sp_port=
+ *mlxsw_sp_port,
+ {
+ 	struct tc_prio_qopt_offload_params *p =3D params;
+=20
+-	if (p->bands > IEEE_8021QAZ_MAX_TCS)
+-		return -EOPNOTSUPP;
+-
+-	return 0;
++	return __mlxsw_sp_qdisc_ets_check_params(p->bands);
+ }
+=20
+ static int
+-mlxsw_sp_qdisc_prio_replace(struct mlxsw_sp_port *mlxsw_sp_port,
+-			    struct mlxsw_sp_qdisc *mlxsw_sp_qdisc,
+-			    void *params)
++__mlxsw_sp_qdisc_ets_replace(struct mlxsw_sp_port *mlxsw_sp_port,
++			     unsigned int nbands,
++			     const unsigned int *quanta,
++			     const unsigned int *weights,
++			     const u8 *priomap)
+ {
+-	struct tc_prio_qopt_offload_params *p =3D params;
+ 	struct mlxsw_sp_qdisc *child_qdisc;
+ 	int tclass, i, band, backlog;
+ 	u8 old_priomap;
+ 	int err;
+=20
+-	for (band =3D 0; band < p->bands; band++) {
++	for (band =3D 0; band < nbands; band++) {
+ 		tclass =3D MLXSW_SP_PRIO_BAND_TO_TCLASS(band);
+ 		child_qdisc =3D &mlxsw_sp_port->tclass_qdiscs[tclass];
+ 		old_priomap =3D child_qdisc->prio_bitmap;
+ 		child_qdisc->prio_bitmap =3D 0;
++
++		err =3D mlxsw_sp_port_ets_set(mlxsw_sp_port,
++					    MLXSW_REG_QEEC_HR_SUBGROUP,
++					    tclass, 0, !!quanta[band],
++					    weights[band]);
++		if (err)
++			return err;
++
+ 		for (i =3D 0; i < IEEE_8021QAZ_MAX_TCS; i++) {
+-			if (p->priomap[i] =3D=3D band) {
++			if (priomap[i] =3D=3D band) {
+ 				child_qdisc->prio_bitmap |=3D BIT(i);
+ 				if (BIT(i) & old_priomap)
+ 					continue;
+@@ -540,21 +564,46 @@ mlxsw_sp_qdisc_prio_replace(struct mlxsw_sp_port *mlx=
+sw_sp_port,
+ 		child_qdisc =3D &mlxsw_sp_port->tclass_qdiscs[tclass];
+ 		child_qdisc->prio_bitmap =3D 0;
+ 		mlxsw_sp_qdisc_destroy(mlxsw_sp_port, child_qdisc);
++		mlxsw_sp_port_ets_set(mlxsw_sp_port,
++				      MLXSW_REG_QEEC_HR_SUBGROUP,
++				      tclass, 0, false, 0);
  	}
-=20
- 	*old =3D qdisc_replace(sch, new, &cl->qdisc);
-+	ets_offload_graft(sch, new, *old, arg, extack);
  	return 0;
  }
 =20
-@@ -563,6 +651,7 @@ static int ets_qdisc_change(struct Qdisc *sch, struct n=
-lattr *opt,
-=20
- 	sch_tree_unlock(sch);
-=20
-+	ets_offload_change(sch);
- 	for (i =3D q->nbands; i < oldbands; i++) {
- 		qdisc_put(q->classes[i].qdisc);
- 		memset(&q->classes[i], 0, sizeof(q->classes[i]));
-@@ -607,6 +696,7 @@ static void ets_qdisc_destroy(struct Qdisc *sch)
- 	struct ets_sched *q =3D qdisc_priv(sch);
- 	int band;
-=20
-+	ets_offload_destroy(sch);
- 	tcf_block_put(q->block);
- 	for (band =3D 0; band < q->nbands; band++)
- 		qdisc_put(q->classes[band].qdisc);
-@@ -619,6 +709,11 @@ static int ets_qdisc_dump(struct Qdisc *sch, struct sk=
-_buff *skb)
- 	struct nlattr *nest;
- 	int band;
- 	int prio;
-+	int err;
++static int
++mlxsw_sp_qdisc_prio_replace(struct mlxsw_sp_port *mlxsw_sp_port,
++			    struct mlxsw_sp_qdisc *mlxsw_sp_qdisc,
++			    void *params)
++{
++	struct tc_prio_qopt_offload_params *p =3D params;
++	unsigned int zeroes[TCQ_ETS_MAX_BANDS] =3D {0};
 +
-+	err =3D ets_offload_dump(sch);
-+	if (err)
-+		return err;
++	return __mlxsw_sp_qdisc_ets_replace(mlxsw_sp_port, p->bands,
++					    zeroes, zeroes, p->priomap);
++}
++
++static void
++__mlxsw_sp_qdisc_ets_unoffload(struct mlxsw_sp_port *mlxsw_sp_port,
++			       struct mlxsw_sp_qdisc *mlxsw_sp_qdisc,
++			       struct gnet_stats_queue *qstats)
++{
++	u64 backlog;
++
++	backlog =3D mlxsw_sp_cells_bytes(mlxsw_sp_port->mlxsw_sp,
++				       mlxsw_sp_qdisc->stats_base.backlog);
++	qstats->backlog -=3D backlog;
++}
++
+ static void
+ mlxsw_sp_qdisc_prio_unoffload(struct mlxsw_sp_port *mlxsw_sp_port,
+ 			      struct mlxsw_sp_qdisc *mlxsw_sp_qdisc,
+ 			      void *params)
+ {
+ 	struct tc_prio_qopt_offload_params *p =3D params;
+-	u64 backlog;
 =20
- 	opts =3D nla_nest_start_noflag(skb, TCA_OPTIONS);
- 	if (!opts)
+-	backlog =3D mlxsw_sp_cells_bytes(mlxsw_sp_port->mlxsw_sp,
+-				       mlxsw_sp_qdisc->stats_base.backlog);
+-	p->qstats->backlog -=3D backlog;
++	__mlxsw_sp_qdisc_ets_unoffload(mlxsw_sp_port, mlxsw_sp_qdisc,
++				       p->qstats);
+ }
+=20
+ static int
+@@ -657,22 +706,22 @@ static struct mlxsw_sp_qdisc_ops mlxsw_sp_qdisc_ops_p=
+rio =3D {
+  * unoffload the child.
+  */
+ static int
+-mlxsw_sp_qdisc_prio_graft(struct mlxsw_sp_port *mlxsw_sp_port,
+-			  struct mlxsw_sp_qdisc *mlxsw_sp_qdisc,
+-			  struct tc_prio_qopt_offload_graft_params *p)
++__mlxsw_sp_qdisc_ets_graft(struct mlxsw_sp_port *mlxsw_sp_port,
++			   struct mlxsw_sp_qdisc *mlxsw_sp_qdisc,
++			   u8 band, u32 child_handle)
+ {
+-	int tclass_num =3D MLXSW_SP_PRIO_BAND_TO_TCLASS(p->band);
++	int tclass_num =3D MLXSW_SP_PRIO_BAND_TO_TCLASS(band);
+ 	struct mlxsw_sp_qdisc *old_qdisc;
+=20
+-	if (p->band < IEEE_8021QAZ_MAX_TCS &&
+-	    mlxsw_sp_port->tclass_qdiscs[tclass_num].handle =3D=3D p->child_handl=
+e)
++	if (band < IEEE_8021QAZ_MAX_TCS &&
++	    mlxsw_sp_port->tclass_qdiscs[tclass_num].handle =3D=3D child_handle)
+ 		return 0;
+=20
+ 	/* See if the grafted qdisc is already offloaded on any tclass. If so,
+ 	 * unoffload it.
+ 	 */
+ 	old_qdisc =3D mlxsw_sp_qdisc_find_by_handle(mlxsw_sp_port,
+-						  p->child_handle);
++						  child_handle);
+ 	if (old_qdisc)
+ 		mlxsw_sp_qdisc_destroy(mlxsw_sp_port, old_qdisc);
+=20
+@@ -681,6 +730,15 @@ mlxsw_sp_qdisc_prio_graft(struct mlxsw_sp_port *mlxsw_=
+sp_port,
+ 	return -EOPNOTSUPP;
+ }
+=20
++static int
++mlxsw_sp_qdisc_prio_graft(struct mlxsw_sp_port *mlxsw_sp_port,
++			  struct mlxsw_sp_qdisc *mlxsw_sp_qdisc,
++			  struct tc_prio_qopt_offload_graft_params *p)
++{
++	return __mlxsw_sp_qdisc_ets_graft(mlxsw_sp_port, mlxsw_sp_qdisc,
++					  p->band, p->child_handle);
++}
++
+ int mlxsw_sp_setup_tc_prio(struct mlxsw_sp_port *mlxsw_sp_port,
+ 			   struct tc_prio_qopt_offload *p)
+ {
 --=20
 2.20.1
 
