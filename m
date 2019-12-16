@@ -2,116 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9135E1205D5
-	for <lists+netdev@lfdr.de>; Mon, 16 Dec 2019 13:34:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BD38F1205FA
+	for <lists+netdev@lfdr.de>; Mon, 16 Dec 2019 13:41:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727585AbfLPMec (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Dec 2019 07:34:32 -0500
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:39487 "EHLO
-        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727241AbfLPMec (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Dec 2019 07:34:32 -0500
-Received: by mail-wm1-f65.google.com with SMTP id b72so4471843wme.4
-        for <netdev@vger.kernel.org>; Mon, 16 Dec 2019 04:34:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=LjylN+xwqpiOEYUIAODHdEfp1RhameawFOEhG12zND4=;
-        b=jFRSyWF7g1/v+4v//G0uoZDanZOM2kJxBdkXAujWQvGnkoP7v3ZjK4EpK2FMC6rNQ5
-         vp1ei7epaGKOmRpyWvuOUafQzaywC6xwVDScrZp9rPr6BMNDqZFgNr0RGCfvnsWvfS42
-         ryHFmNhyMAR8uYYN5oopDB0Uf+ICk5Qh+YIKRfHsX5TeJP+pMXWClTWK5tatrLRV9tXX
-         VmG+atszLRnaImUy8ORIT75JrIBTittbvgtwSlNcsK0vgE/zpw2ZEH/35L2Wnarh4Dmb
-         vymkSlc5XqbZ6GBrvXwJklUtyioHhpaMChwE2B8WVt9ky5mjJuCgYOQZ40T75mGIUfPH
-         MENA==
+        id S1727579AbfLPMk4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Dec 2019 07:40:56 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:35590 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1727512AbfLPMk4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Dec 2019 07:40:56 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1576500055;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=ga25dRd639NpZwMHra87nl2NBkSSmC+ikkph5ObqM3A=;
+        b=TipOKZQpdr89QcwvBmJCoTQzljKUYf1RkItRZTSSLjfwRMEa7PR1htIfQDTmsCqv+2YUQL
+        X0Sb5M8Xt9YRnLQAq0AEwdJDfASE3FkfoGuBJ9LlDl755X8OPo7eIRL9uz7zWe0kZMusdT
+        A7AMAaKWVDVwj4lwh79H+cfFilermwY=
+Received: from mail-lj1-f199.google.com (mail-lj1-f199.google.com
+ [209.85.208.199]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-14-SQWfP_kSNcGnJPuTaRFjrA-1; Mon, 16 Dec 2019 07:40:50 -0500
+X-MC-Unique: SQWfP_kSNcGnJPuTaRFjrA-1
+Received: by mail-lj1-f199.google.com with SMTP id g16so2087626ljj.12
+        for <netdev@vger.kernel.org>; Mon, 16 Dec 2019 04:40:49 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=LjylN+xwqpiOEYUIAODHdEfp1RhameawFOEhG12zND4=;
-        b=pqPVEYdxasHPcwgMDMeDMIX2c3pbq3W5ZnVf5JgzP+ng/DPnMrBYD/84QttMtrv6eA
-         bhso6Hlk7OupSdTSaeE/TDdjV8Fx8SJiwMz8aTV1hItnHbF2qTf99Q14GB3xdIw/1Mut
-         Tbp0aTzW6S8Lb/nx0gKYKX9pjQictjMtSxabKqLzjbb+oX0tRtTt0lQYRbWLG1yoJ1bI
-         czYw6wwD5Der4WfgBg3lOMJPwRh23Nc01WPtk7kSj12pf+iutSc3uAvFftXaagn0qRwD
-         gGNQdb1wzbOiNALKhbLJ45I7A9S5UP35D2NcTEnWk1AmWz7qvfDhePsu1phDNOb5CYVi
-         zXjA==
-X-Gm-Message-State: APjAAAUOYA6BkH7PQwAYJCLS7u2dhqjT6/tZSwpGgfTnuwAvFz1ouLaY
-        ciRxq5hntyjlOYhlWFsVroeTgkcyxpE=
-X-Google-Smtp-Source: APXvYqzIJepKT6pt/cHMDxWVpvUc6YXMm8GATaacHLho3xvEAB4sBIZqdQ0fdQu01iS0K+YFibon+g==
-X-Received: by 2002:a7b:c957:: with SMTP id i23mr10195380wml.49.1576499670297;
-        Mon, 16 Dec 2019 04:34:30 -0800 (PST)
-Received: from apalos.home (ppp-94-66-130-5.home.otenet.gr. [94.66.130.5])
-        by smtp.gmail.com with ESMTPSA id k4sm21382343wmk.26.2019.12.16.04.34.28
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ga25dRd639NpZwMHra87nl2NBkSSmC+ikkph5ObqM3A=;
+        b=LfYGoH4YY/9OeGsh81wdM/GQS+Rdrtum9mi5OP2jcQxeE2927KAlFBDZ+NdRjLhwv4
+         yHjCb7JKiN+8WvZVQs9GerayaPMbPN3dOJJybN6HPtzzahz8KtL7J0e0xLx21AnKVAYF
+         e4s9O75foXvsiH8xnBosfSqwJWobYIL3y+mROOzDJeYG+MEjptX9mly590YPkEhemOa8
+         ySa4ykKnX12kiGmdMwOpb1CUn8fUmI0Yc/SwBo+3eh/ZbWBOVeUH3KMyIfzbYYaIjwP6
+         tgq8tpkF2/nXrW9V0O9IUTinY5Yy4nQR/o4Gq1eGbmqoTNvvqfIDMBcaAToAqiPq9GPu
+         A+0Q==
+X-Gm-Message-State: APjAAAUxtm63t2UJytVBBKCHtNr9acaKGKo9Sbf3is8/Qdmqh9hLJwtw
+        ixXY+jmbu53GL3P2fP2q1UmSnxLPeXfpmTO59frob7pSpsXimcqjedXSXaz7CSmmpf1haPLJvRJ
+        83ve9x2TpZtJ1j/BT
+X-Received: by 2002:a19:4208:: with SMTP id p8mr16045227lfa.160.1576500048043;
+        Mon, 16 Dec 2019 04:40:48 -0800 (PST)
+X-Google-Smtp-Source: APXvYqyRG7zZhx/Z8Qe2lgFK3QowY1/YYgxsIUndMH11wegrireBYpr4pLUe9RKZYXJOgXBEjJEi5w==
+X-Received: by 2002:a19:4208:: with SMTP id p8mr16045214lfa.160.1576500047842;
+        Mon, 16 Dec 2019 04:40:47 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
+        by smtp.gmail.com with ESMTPSA id u13sm8839046lfq.19.2019.12.16.04.40.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 Dec 2019 04:34:29 -0800 (PST)
-Date:   Mon, 16 Dec 2019 14:34:26 +0200
-From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
-To:     Michal Hocko <mhocko@kernel.org>
-Cc:     Yunsheng Lin <linyunsheng@huawei.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        "brouer@redhat.com" <brouer@redhat.com>,
-        "jonathan.lemon@gmail.com" <jonathan.lemon@gmail.com>,
-        Li Rongqing <lirongqing@baidu.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        peterz@infradead.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        bhelgaas@google.com,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH][v2] page_pool: handle page recycle for NUMA_NO_NODE
- condition
-Message-ID: <20191216123426.GA18663@apalos.home>
-References: <1575624767-3343-1-git-send-email-lirongqing@baidu.com>
- <9fecbff3518d311ec7c3aee9ae0315a73682a4af.camel@mellanox.com>
- <20191211194933.15b53c11@carbon>
- <831ed886842c894f7b2ffe83fe34705180a86b3b.camel@mellanox.com>
- <0a252066-fdc3-a81d-7a36-8f49d2babc01@huawei.com>
- <20191216121557.GE30281@dhcp22.suse.cz>
+        Mon, 16 Dec 2019 04:40:46 -0800 (PST)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 2436D1819EB; Mon, 16 Dec 2019 13:40:46 +0100 (CET)
+From:   =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Cc:     =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Jesper Dangaard Brouer <brouer@redhat.com>
+Subject: [PATCH bpf-next] libbpf: Print hint about ulimit when getting permission denied error
+Date:   Mon, 16 Dec 2019 13:40:31 +0100
+Message-Id: <20191216124031.371482-1-toke@redhat.com>
+X-Mailer: git-send-email 2.24.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191216121557.GE30281@dhcp22.suse.cz>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Michal, 
-On Mon, Dec 16, 2019 at 01:15:57PM +0100, Michal Hocko wrote:
-> On Thu 12-12-19 09:34:14, Yunsheng Lin wrote:
-> > +CC Michal, Peter, Greg and Bjorn
-> > Because there has been disscusion about where and how the NUMA_NO_NODE
-> > should be handled before.
-> 
-> I do not have a full context. What is the question here?
+Probably the single most common error newcomers to XDP are stumped by is
+the 'permission denied' error they get when trying to load their program
+and 'ulimit -r' is set too low. For examples, see [0], [1].
 
-When we allocate pages for the page_pool API, during the init, the driver writer
-decides which NUMA node to use. The API can,  in some cases recycle the memory,
-instead of freeing it and re-allocating it. If the NUMA node has changed (irq
-affinity for example), we forbid recycling and free the memory, since recycling
-and using memory on far NUMA nodes is more expensive (more expensive than
-recycling, at least on the architectures we tried anyway).
-Since this would be expensive to do it per packet, the burden falls on the 
-driver writer for that. Drivers *have* to call page_pool_update_nid() or 
-page_pool_nid_changed() if they want to check for that which runs once
-per NAPI cycle.
+Since the error code is UAPI, we can't change that. Instead, this patch
+adds a few heuristics in libbpf and outputs an additional hint if they are
+met: If an EPERM is returned on map create or program load, and geteuid()
+shows we are root, and the current RLIMIT_MEMLOCK is not infinity, we
+output a hint about raising 'ulimit -r' as an additional log line.
 
-The current code in the API though does not account for NUMA_NO_NODE. That's
-what this is trying to fix.
-If the page_pool params are initialized with that, we *never* recycle
-the memory. This is happening because the API is allocating memory with 
-'nid = numa_mem_id()' if NUMA_NO_NODE is configured so the current if statement
-'page_to_nid(page) == pool->p.nid' will never trigger.
+[0] https://marc.info/?l=xdp-newbies&m=157043612505624&w=2
+[1] https://github.com/xdp-project/xdp-tutorial/issues/86
 
-The initial proposal was to check:
-pool->p.nid == NUMA_NO_NODE && page_to_nid(page) == numa_mem_id()));
+Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
+---
+ tools/lib/bpf/libbpf.c | 21 +++++++++++++++++++++
+ 1 file changed, 21 insertions(+)
 
-After that the thread span out of control :)
-My question is do we *really* have to check for 
-page_to_nid(page) == numa_mem_id()? if the architecture is not NUMA aware
-wouldn't pool->p.nid == NUMA_NO_NODE be enough?
+diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+index a2cc7313763a..aec7995674d2 100644
+--- a/tools/lib/bpf/libbpf.c
++++ b/tools/lib/bpf/libbpf.c
+@@ -41,6 +41,7 @@
+ #include <sys/types.h>
+ #include <sys/vfs.h>
+ #include <sys/utsname.h>
++#include <sys/resource.h>
+ #include <tools/libc_compat.h>
+ #include <libelf.h>
+ #include <gelf.h>
+@@ -100,6 +101,24 @@ void libbpf_print(enum libbpf_print_level level, const char *format, ...)
+ 	va_end(args);
+ }
+ 
++static void pr_perm_msg(int err)
++{
++	struct rlimit limit;
++
++	if (err != -EPERM || geteuid() != 0)
++		return;
++
++	err = getrlimit(RLIMIT_MEMLOCK, &limit);
++	if (err)
++		return;
++
++	if (limit.rlim_cur == RLIM_INFINITY)
++		return;
++
++	pr_warn("permission error while running as root; try raising 'ulimit -r'? current value: %lu\n",
++		limit.rlim_cur);
++}
++
+ #define STRERR_BUFSIZE  128
+ 
+ /* Copied from tools/perf/util/util.h */
+@@ -2983,6 +3002,7 @@ bpf_object__create_maps(struct bpf_object *obj)
+ 			cp = libbpf_strerror_r(err, errmsg, sizeof(errmsg));
+ 			pr_warn("failed to create map (name: '%s'): %s(%d)\n",
+ 				map->name, cp, err);
++			pr_perm_msg(err);
+ 			for (j = 0; j < i; j++)
+ 				zclose(obj->maps[j].fd);
+ 			return err;
+@@ -4381,6 +4401,7 @@ load_program(struct bpf_program *prog, struct bpf_insn *insns, int insns_cnt,
+ 	ret = -errno;
+ 	cp = libbpf_strerror_r(errno, errmsg, sizeof(errmsg));
+ 	pr_warn("load bpf program failed: %s\n", cp);
++	pr_perm_msg(ret);
+ 
+ 	if (log_buf && log_buf[0] != '\0') {
+ 		ret = -LIBBPF_ERRNO__VERIFY;
+-- 
+2.24.0
 
-Thanks
-/Ilias
-> -- 
-> Michal Hocko
-> SUSE Labs
