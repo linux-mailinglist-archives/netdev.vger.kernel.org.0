@@ -2,121 +2,250 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id ABCCD1206A0
-	for <lists+netdev@lfdr.de>; Mon, 16 Dec 2019 14:08:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E5EF1206A6
+	for <lists+netdev@lfdr.de>; Mon, 16 Dec 2019 14:09:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727688AbfLPNIt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Dec 2019 08:08:49 -0500
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:40471 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727576AbfLPNIt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Dec 2019 08:08:49 -0500
-Received: by mail-wm1-f68.google.com with SMTP id t14so6612504wmi.5;
-        Mon, 16 Dec 2019 05:08:47 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=R9aFaAcGCVcst6+88KA41zQjrKH9qVtbZfnVDJrAXeA=;
-        b=fcwdeodEtXF1FVw8+hw4TY+lh7I6pV2jDU2l06kwenUTWL0zjSM7eSaNed0VM/ULR2
-         lTFQV8pU6AHnYRX1qE70Rv6bgrfdzHohKrhaUvu8FNDjrpoetwYnBI+FOSii1y8/Z4K2
-         COgEPQCrqCradG4Ri3rp1kPnXNHe9O+WIWzBBS98Eg7eL3PFvYrfDZ3e/O8CDysTQ6mW
-         eS+tCaNfDJRtS5yCf1kfVCcPa0ybyu3HuwLlhz+6TiDApH8kOBJdZV7GOtieWVyuYLYc
-         RF1BWm//rQQvi/CWFs6UNCvHqUWZS+ZgW+qR/KnFfwGkx5961LMWhr9q84Ie1YgUUHm2
-         1M5w==
-X-Gm-Message-State: APjAAAUjHNa0oIItvlc500fyCEuUBmZHjWCPvQ4whndD2cgk454KYnIa
-        rSvTbOAiIxfPufskW18joJA=
-X-Google-Smtp-Source: APXvYqy8gtSuQntZrQPzWn5lxIMk8mNr9xbOxQPZlJfg1nVxsqUCeU6NgB9SUAeVSAMe7A+IQxynug==
-X-Received: by 2002:a7b:cf26:: with SMTP id m6mr28538441wmg.17.1576501727108;
-        Mon, 16 Dec 2019 05:08:47 -0800 (PST)
-Received: from localhost (prg-ext-pat.suse.com. [213.151.95.130])
-        by smtp.gmail.com with ESMTPSA id q3sm21924045wrn.33.2019.12.16.05.08.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 Dec 2019 05:08:46 -0800 (PST)
-Date:   Mon, 16 Dec 2019 14:08:45 +0100
-From:   Michal Hocko <mhocko@kernel.org>
-To:     Ilias Apalodimas <ilias.apalodimas@linaro.org>
-Cc:     Yunsheng Lin <linyunsheng@huawei.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        "brouer@redhat.com" <brouer@redhat.com>,
-        "jonathan.lemon@gmail.com" <jonathan.lemon@gmail.com>,
-        Li Rongqing <lirongqing@baidu.com>,
+        id S1727766AbfLPNJ3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Dec 2019 08:09:29 -0500
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:39344 "EHLO
+        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727743AbfLPNJ2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Dec 2019 08:09:28 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=CfyoaQveQuKz3lIciCR6AFFu66FHd5f6ltQUk7hTEXQ=; b=W4xq/rtlHZtDvWWVO3NJoxg5X
+        Fx2A0IB0zLTpnT3Sq36iN1rVXTytS7ydAvhNCmB1OTgG9fPfwRKI1LE7oJdaEuzB93/xFxXVxV01d
+        ZNhXhFCiTdn92FWCFTZLprEAePG27+DVv/bmUeqKR5AHCkiTXA5YL0IHkuN3/iFKvY1zAZ0d5w9yR
+        5cV9vmSDdPqFaCp2UGJpLgB0wMRyRzhqhPxfD3Wvqy06+0SmYPg3DOYPstiG+mYgezoqVBfvS3m/m
+        LOzw7eV/wbhdjWfxfkiUf0ff3eAeDQof58CUm5p4kaAcma4O/t8yYRjb++4k24umRKOCk4e31Y9nW
+        WhiwUY1DA==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:53776)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1igq7e-0007aU-Id; Mon, 16 Dec 2019 13:09:14 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1igq7Y-0002QR-H8; Mon, 16 Dec 2019 13:09:08 +0000
+Date:   Mon, 16 Dec 2019 13:09:08 +0000
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Milind Parab <mparab@cadence.com>
+Cc:     "nicolas.nerre@microchip.com" <nicolas.nerre@microchip.com>,
+        "andrew@lunn.ch" <andrew@lunn.ch>,
+        "antoine.tenart@bootlin.com" <antoine.tenart@bootlin.com>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        peterz@infradead.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        bhelgaas@google.com,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH][v2] page_pool: handle page recycle for NUMA_NO_NODE
- condition
-Message-ID: <20191216130845.GF30281@dhcp22.suse.cz>
-References: <1575624767-3343-1-git-send-email-lirongqing@baidu.com>
- <9fecbff3518d311ec7c3aee9ae0315a73682a4af.camel@mellanox.com>
- <20191211194933.15b53c11@carbon>
- <831ed886842c894f7b2ffe83fe34705180a86b3b.camel@mellanox.com>
- <0a252066-fdc3-a81d-7a36-8f49d2babc01@huawei.com>
- <20191216121557.GE30281@dhcp22.suse.cz>
- <20191216123426.GA18663@apalos.home>
+        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Dhananjay Vilasrao Kangude <dkangude@cadence.com>,
+        "a.fatoum@pengutronix.de" <a.fatoum@pengutronix.de>,
+        "brad.mouring@ni.com" <brad.mouring@ni.com>,
+        Parshuram Raju Thombare <pthombar@cadence.com>
+Subject: Re: [PATCH v2 3/3] net: macb: add support for high speed interface
+Message-ID: <20191216130908.GI25745@shell.armlinux.org.uk>
+References: <1576230007-11181-1-git-send-email-mparab@cadence.com>
+ <1576230177-11404-1-git-send-email-mparab@cadence.com>
+ <20191215151249.GA25745@shell.armlinux.org.uk>
+ <20191215152000.GW1344@shell.armlinux.org.uk>
+ <BY5PR07MB65143D385836FF49966F5F6AD3510@BY5PR07MB6514.namprd07.prod.outlook.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20191216123426.GA18663@apalos.home>
-User-Agent: Mutt/1.12.2 (2019-09-21)
+In-Reply-To: <BY5PR07MB65143D385836FF49966F5F6AD3510@BY5PR07MB6514.namprd07.prod.outlook.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon 16-12-19 14:34:26, Ilias Apalodimas wrote:
-> Hi Michal, 
-> On Mon, Dec 16, 2019 at 01:15:57PM +0100, Michal Hocko wrote:
-> > On Thu 12-12-19 09:34:14, Yunsheng Lin wrote:
-> > > +CC Michal, Peter, Greg and Bjorn
-> > > Because there has been disscusion about where and how the NUMA_NO_NODE
-> > > should be handled before.
-> > 
-> > I do not have a full context. What is the question here?
+On Mon, Dec 16, 2019 at 12:49:59PM +0000, Milind Parab wrote:
+> >> > +	if (bp->phy_interface == PHY_INTERFACE_MODE_USXGMII) {
+> >>
+> >> Why bp->phy_interface and not state->interface?
 > 
-> When we allocate pages for the page_pool API, during the init, the driver writer
-> decides which NUMA node to use. The API can,  in some cases recycle the memory,
-> instead of freeing it and re-allocating it. If the NUMA node has changed (irq
-> affinity for example), we forbid recycling and free the memory, since recycling
-> and using memory on far NUMA nodes is more expensive (more expensive than
-> recycling, at least on the architectures we tried anyway).
-> Since this would be expensive to do it per packet, the burden falls on the 
-> driver writer for that. Drivers *have* to call page_pool_update_nid() or 
-> page_pool_nid_changed() if they want to check for that which runs once
-> per NAPI cycle.
+> okay, this needs to change to state->interface
+> 
+> >>
+> >> If you don't support selecting between USXGMII and other modes at
+> >> runtime, should macb_validate() be allowing ethtool link modes for
+> >> it when it's different from the configured setting?
+> 
+> We have separate SGMII and USXGMII PCS, which are enabled and programmed 
+> by MAC driver. Also, there are separate low speed (up to 1G) and high 
+> speed MAC which can be programmed though MAC driver. 
+> As long as, PHY (PMA, external to Cadence MAC controller) can handle 
+> this change, GEM can work with interface changes at a runtime.
+> 
+> >>
+> >> > +		if (gem_mac_usx_configure(bp, state) < 0) {
+> >> > +			spin_unlock_irqrestore(&bp->lock, flags);
+> >> > +			phylink_mac_change(bp->phylink, false);
+> >>
+> >> I guess this is the reason you're waiting for the USXGMII block
+> >> to lock - do you not have any way to raise an interrupt when
+> >> something changes with the USXGMII (or for that matter SGMII)
+> >> blocks?  Without that, you're fixed to a single speed.
+> 
+> Yes, we need to wait (poll) until USXGMII block lock is set.
+> Interrupt for USXGMII block lock set event is not supported.
 
-Thanks for the clarification.
+You should poll for that status. We already have some polling support
+in phylink (in the case of a fixed link using the callback, or a GPIO
+that has no interrupt support) so it probably makes sense to extend
+that functionality for MACs that do not provide status interrupts.
 
-> The current code in the API though does not account for NUMA_NO_NODE. That's
-> what this is trying to fix.
-> If the page_pool params are initialized with that, we *never* recycle
-> the memory. This is happening because the API is allocating memory with 
-> 'nid = numa_mem_id()' if NUMA_NO_NODE is configured so the current if statement
-> 'page_to_nid(page) == pool->p.nid' will never trigger.
+> >BTW, if you don't have an macb_mac_pcs_get_state() implementation,
+> >and from what you described last time around, I don't see how SGMII
+> >nor this new addition of USXGMII can work for you. Both these
+> >protocols use in-band control words, which should be read and
+> >interpreted in macb_mac_pcs_get_state().
+> >
+> >What I think you're trying to do is to use your PCS PHY as a normal
+> >PHY, or maybe you're ignoring the PCS PHY completely and relying on
+> >an external PHY (and hence always using MLO_AN_PHY or MLO_AN_FIXED
+> >mode.)
+> 
+> We are limiting our functionality to 10G fixed link using PCS and SFP+
+> Though the Cadence MAC is a full functional ethernet MAC controller, 
+> we are not sure what PHY or PCS be used in the end system.
+> Hence we are using PCS PHY as a normal PHY and not dependent on 
+> macb_mac_pcs_get_state().
 
-OK. There is no explicit mention of the expected behavior for
-NUMA_NO_NODE. The semantic is usually that there is no NUMA placement
-requirement and the MM code simply starts the allocate from a local node
-in that case. But the memory might come from any node so there is no
-"local node" guarantee.
+If you use the PCS PHY as a normal PHY, then this knocks out the
+idea below of using phylib to access the external PHY - it is not
+possible to stack two phylib controlled PHYs sanely on one network
+device.
 
-So the main question is what is the expected semantic? Do people expect
-that NUMA_NO_NODE implies locality? Why don't you simply always reuse
-when there was no explicit numa requirement?
+> Also it should be noted that we are 
+> not doing any change in SGMII. Status available in PCS is 
+> just a "status transferred" from PHY. So in case of SGMII, whether 
+> we read from PCS or from PHY, it is the same information.
 
-> The initial proposal was to check:
-> pool->p.nid == NUMA_NO_NODE && page_to_nid(page) == numa_mem_id()));
+So how do you plan to deal with a PHY that you can't read the
+status from? This is where the SGMII in-band is required.  Such
+SFP modules do exist.
 
-> After that the thread span out of control :)
-> My question is do we *really* have to check for 
-> page_to_nid(page) == numa_mem_id()? if the architecture is not NUMA aware
-> wouldn't pool->p.nid == NUMA_NO_NODE be enough?
+> Below are listed all the possible use cases of Cadence GEM 10G controller
+> 
+> Basic MII MAC/PHY interconnect using MDIO for link status xfer.
+>  +-------------+                                    +--------+
+>  |             |                                    |        |
+>  | GEM MAC/DMA | <------ GMII/RGMII/RMII/MII -----> |  PHY   |
+>  |             |                                    |        |
+>  +-------------+                                    +--------+
+>        ^                                                 ^
+>        |_____________________ MDIO ______________________|
+> 
+> No PHY. No status xfer required. GEM PCS responsible for auto-negotiation
+> across link. Driver must interrogate PCS registers within GEM.
+>  +-------------+                                    +--------+
+>  |             |       |        |                   |        |
+>  | GEM MAC/DMA | <---> | SerDes | <- 1000BASE-X ->  |  SFP   |
+>  |    PCS      |       | (PMA)  |                   |        |
+>  +-------------+                                    +--------+      
 
-If the architecture is !NUMA then numa_mem_id and page_to_nid should
-always equal and be both zero.
+This setup requires macb_mac_pcs_get_state() to be implemented to
+interrogate the PCS at the MAC.  Note that some SFPs require SGMII,
+and others can also operate at 2500baseX.
+
+> SGMII MAC/PHY interconnect using MDIO for link status xfer.
+>  +-------------+                                    +--------+
+>  |             |       |        |                   |        |
+>  | GEM MAC/DMA | <---> | SerDes | <--- SGMII --->   |  PHY   |
+>  |  SGMII PCS  |       | (PMA)  |                   |        |
+>  +-------------+                                    +--------+
+>        ^                                                 ^
+>        |_____________________ MDIO ______________________|
+> 
+> SGMII MAC/PHY interconnect using inline status xfer. Multi-rate.
+> Driver must interrogate PCS registers within GEM.
+>  +-------------+                                    +--------+
+>  |             |       |        |                   |        |
+>  | GEM MAC/DMA | <---> | SerDes | <--- SGMII --->   |  PHY   |
+>  |  SGMII PCS  |       | (PMA)  |                   |        |
+>  +-------------+                                    +--------+
+
+This setup requires macb_mac_pcs_get_state() to be implemented to
+interogate the SGMII PCS at the MAC.
+
+> Up to 2.5G. MAC/PHY interconnect. Rate determined by 2.5GBASE-T PHY capability.
+>  +--------------+                                  +-----------+
+>  |              |       |        |                 |           |
+>  | GEM MAC/DMA  | <---> | SerDes | <-2500BASE-X->  |2.5GBASE-T |
+>  |2.5GBASE-X PCS|       | (PMA)  |                 |   PHY     |
+>  +--------------+                                  +-----------+
+
+This is fixed at 2.5G speeds.
+
+> No ability for host to interrogate Optical.
+>  +--------------+                                  +-----------+
+>  |              |       |        |                 |  SFP+     |
+>  | GEM MAC/DMA  | <---> | SerDes | <---- SFI-----> | Optical   |
+>  |   USX PCS|   |       | (PMA)  |                 | Module    |
+>  +--------------+                                  +-----------+
+> 
+> Additional 3rd party I2C IP required (not part of GEM) for module
+> interrogation (MDIO to I2C handled by SW
+>  +--------------+                                  +-----------+
+>  |              |       |        |                 |  SFP+     |
+>  | GEM MAC/DMA  | <---> | SerDes | <---- SFI-----> | Optical   |
+>  |   USX PCS|   |       | (PMA)  |                 | Module    |
+>  +--------------+                                  +-----------+
+>                                                          ^
+>         +--------+                                       |
+>         | I2C    |                                       |
+>         | Master | <-------------------------------------|
+>         +--------+
+
+The kernel supports this through the sfp and phylink support. SFI is
+more commonly known as 10GBASE-R. Note that this is *not* USXGMII.
+Link status needs to come from the MAC side, so macb_mac_pcs_get_state()
+is required.
+
+> Rate determined by 10GBASE-T PHY capability through auto-negotiation. 
+> I2C IP required
+>  +--------------+                                  +-----------+
+>  |              |       |        |                 |  SFP+ to  |
+>  | GEM MAC/DMA  | <---> | SerDes | <---- SFI-----> | 10GBASE-T |
+>  |   USX PCS|   |       | (PMA)  |                 |           |
+>  +--------------+                                  +-----------+
+>                                                          ^
+>         +--------+                                       |
+>         | I2C    |                                       |
+>         | Master | <-------------------------------------|
+>         +--------+
+
+The 10G copper module I have uses 10GBASE-R, 5000BASE-X, 2500BASE-X,
+and SGMII (without in-band status), dynamically switching between
+these depending on the results of the copper side negotiation.
+
+> USXGMII PHY. Uses MDIO or equivalent for status xfer
+>  +-------------+                                    +--------+
+>  |             |       |        |                   |        |
+>  | GEM MAC/DMA | <---> | SerDes | <--- USXGMII ---> |  PHY   |
+>  |  USX PCS    |       | (PMA)  |                   |        |
+>  +-------------+                                    +--------+
+>        ^                                                 ^
+>        |_____________________ MDIO ______________________|
+
+Overall, please implement phylink properly for your MAC, rather than
+the current half-hearted approach that *will* break in various
+circumstances.
+
+I think part of the problem here is that you have a different view how
+phylink should be used to cover all these cases from my view. I'm not
+prepared to guarantee that the phylink code will work with your view
+into the future. I would much prefer there to be consistency in the
+way phylink is used between implementations so we don't end up with
+major maintanence problems into the future, so having consistency is
+important.
 
 -- 
-Michal Hocko
-SUSE Labs
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
+According to speedtest.net: 11.9Mbps down 500kbps up
