@@ -2,102 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 59203121333
-	for <lists+netdev@lfdr.de>; Mon, 16 Dec 2019 18:59:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 820B2121595
+	for <lists+netdev@lfdr.de>; Mon, 16 Dec 2019 19:23:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728824AbfLPR7r (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Dec 2019 12:59:47 -0500
-Received: from mail-qv1-f66.google.com ([209.85.219.66]:35485 "EHLO
-        mail-qv1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728806AbfLPR7p (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Dec 2019 12:59:45 -0500
-Received: by mail-qv1-f66.google.com with SMTP id d17so3089173qvs.2;
-        Mon, 16 Dec 2019 09:59:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=0mHiYS8vPmhVYdFs29lXSPMh3DwpAbBEHbcksJ+EGlc=;
-        b=t6YQC3ShlEYSh53qP/UEJ98kZ9TW1sgNdh59cXONq/YhYq8KlNIpO3APVpnkdnUVrc
-         mFf2xceZnXxQ2ysH+hr/yhvkPt1MIyW6eHhOuB8BCfikkdw5ZKPfnbc/qVHYJvuZDROv
-         n6Wcz6Jk6HZsIiGOitsVBsfiEgHfllVvsQFqNUCEDwKeLzsDJR1XlESwJMCTc2P3O0HX
-         LE2LNDe3xWz564CfBec41Bgx/QcJop5mLbYgF7TmChq1B/dcMwcLGnA/hbyf5CH2oVS/
-         +jgz2FC8eTqW7PKHvhHhnR4w8cBkPDbjHHfx4EBpo4nMpUsCLO8F61YdObPlM2cnXdl5
-         tRtg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=0mHiYS8vPmhVYdFs29lXSPMh3DwpAbBEHbcksJ+EGlc=;
-        b=Pz686NzOoyQqoYTugM4Eq0C4jc4mMTcfPWFGopCKvVSzc9hg1stvbHPE1ALUtIGMqz
-         Xn/7jlWivV5gDubDqoO1uAbhKdBbiDW7ogWes8GiolGLXbfJTOZ/Th4ZSR1cMpyZ1ybJ
-         N6ZDP+niNHGGYvX5p7wFhLhL49hJFGPsVvzCERVFXF/jh660GYImvhcGvk053ewZGenn
-         h2wmOkAxZC9lB7oEGNU25qSeiBdIyH43bI71GPDd87TaWVYvnnOpRYA8HfJ9B/7yIRkE
-         wpjdwe2P1P3Ul6tz0leRVNemdaZP1Jq3eCy/Z+JrWbAyV4QXCFSaG+BfvUPBY77zzgdX
-         RG0Q==
-X-Gm-Message-State: APjAAAUi07yymtiQa4w3+O69ok71LFljaJ3ZmyIBqLNe0wcgBSwoSFnI
-        oALGh02eyVmgSsY7nV7pPIVdCnL747RtnfNJ6fE=
-X-Google-Smtp-Source: APXvYqy+wsuiI63oSEuKZ0yaCdSZdwjPdCKDlLHX9R2NNkzPgjSrpPTCACd6Rrdim5HWkZ1mq25hdOe8zmZ7Y83NQpY=
-X-Received: by 2002:a05:6214:38c:: with SMTP id l12mr518115qvy.224.1576519183880;
- Mon, 16 Dec 2019 09:59:43 -0800 (PST)
+        id S1732095AbfLPSUa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Dec 2019 13:20:30 -0500
+Received: from mail.kernel.org ([198.145.29.99]:50750 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1732088AbfLPSUa (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 16 Dec 2019 13:20:30 -0500
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id B5B9720717;
+        Mon, 16 Dec 2019 18:20:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1576520429;
+        bh=EwT10ETY9MI/NdSUuESri3Es+yuKxE44eF/VBhE5Dkg=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=GodSTTnSBZhzF6WptlEJxHxmtcwN4qGjGeNdbNk2h9/61X8I32euIuPj8sHacT5K2
+         /Iqmqa7bhm+FEkaoGqdpOqCCYPVTALPieMjpmZhkyLn/L/UvH5INbVrwVCGqopOCcr
+         zwG5SjOz4nhGZ2JVJuLlSHLd+3SjlVovMxgi9tcg=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Christian Brauner <christian.brauner@ubuntu.com>,
+        Tyler Hicks <tyhicks@canonical.com>,
+        Andy Lutomirski <luto@amacapital.net>,
+        Will Drewry <wad@chromium.org>, Shuah Khan <shuah@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Tycho Andersen <tycho@tycho.ws>,
+        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, Kees Cook <keescook@chromium.org>
+Subject: [PATCH 5.4 151/177] seccomp: avoid overflow in implicit constant conversion
+Date:   Mon, 16 Dec 2019 18:50:07 +0100
+Message-Id: <20191216174847.985672730@linuxfoundation.org>
+X-Mailer: git-send-email 2.24.1
+In-Reply-To: <20191216174811.158424118@linuxfoundation.org>
+References: <20191216174811.158424118@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-References: <20191212013521.1689228-1-andriin@fb.com> <20191216144404.GG14887@linux.fritz.box>
-In-Reply-To: <20191216144404.GG14887@linux.fritz.box>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 16 Dec 2019 09:59:33 -0800
-Message-ID: <CAEf4BzYhmFvhL_DgeXK8xxihcxcguRzox2AXpjBS1BB4n9d7rQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 0/4] Fix perf_buffer creation on systems with
- offline CPUs
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 16, 2019 at 6:44 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
->
-> On Wed, Dec 11, 2019 at 05:35:20PM -0800, Andrii Nakryiko wrote:
-> > This patch set fixes perf_buffer__new() behavior on systems which have some of
-> > the CPUs offline/missing (due to difference between "possible" and "online"
-> > sets). perf_buffer will create per-CPU buffer and open/attach to corresponding
-> > perf_event only on CPUs present and online at the moment of perf_buffer
-> > creation. Without this logic, perf_buffer creation has no chances of
-> > succeeding on such systems, preventing valid and correct BPF applications from
-> > starting.
->
-> Once CPU goes back online and processes BPF events, any attempt to push into
-> perf RB via bpf_perf_event_output() with flag BPF_F_CURRENT_CPU would silently
+From: Christian Brauner <christian.brauner@ubuntu.com>
 
-bpf_perf_event_output() will return error code in such case, so it's
-not exactly undetectable by application.
+commit 223e660bc7638d126a0e4fbace4f33f2895788c4 upstream.
+
+USER_NOTIF_MAGIC is assigned to int variables in this test so set it to INT_MAX
+to avoid warnings:
+
+seccomp_bpf.c: In function ‘user_notification_continue’:
+seccomp_bpf.c:3088:26: warning: overflow in implicit constant conversion [-Woverflow]
+ #define USER_NOTIF_MAGIC 116983961184613L
+                          ^
+seccomp_bpf.c:3572:15: note: in expansion of macro ‘USER_NOTIF_MAGIC’
+  resp.error = USER_NOTIF_MAGIC;
+               ^~~~~~~~~~~~~~~~
+
+Fixes: 6a21cc50f0c7 ("seccomp: add a return code to trap to userspace")
+Signed-off-by: Christian Brauner <christian.brauner@ubuntu.com>
+Reviewed-by: Tyler Hicks <tyhicks@canonical.com>
+Cc: Andy Lutomirski <luto@amacapital.net>
+Cc: Will Drewry <wad@chromium.org>
+Cc: Shuah Khan <shuah@kernel.org>
+Cc: Alexei Starovoitov <ast@kernel.org>
+Cc: Daniel Borkmann <daniel@iogearbox.net>
+Cc: Martin KaFai Lau <kafai@fb.com>
+Cc: Song Liu <songliubraving@fb.com>
+Cc: Yonghong Song <yhs@fb.com>
+Cc: Tycho Andersen <tycho@tycho.ws>
+Cc: stable@vger.kernel.org
+Cc: linux-kselftest@vger.kernel.org
+Cc: netdev@vger.kernel.org
+Cc: bpf@vger.kernel.org
+Reviewed-by: Tycho Andersen <tycho@tycho.ws>
+Link: https://lore.kernel.org/r/20190920083007.11475-3-christian.brauner@ubuntu.com
+Signed-off-by: Kees Cook <keescook@chromium.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+---
+ tools/testing/selftests/seccomp/seccomp_bpf.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+--- a/tools/testing/selftests/seccomp/seccomp_bpf.c
++++ b/tools/testing/selftests/seccomp/seccomp_bpf.c
+@@ -35,6 +35,7 @@
+ #include <stdbool.h>
+ #include <string.h>
+ #include <time.h>
++#include <limits.h>
+ #include <linux/elf.h>
+ #include <sys/uio.h>
+ #include <sys/utsname.h>
+@@ -3077,7 +3078,7 @@ static int user_trap_syscall(int nr, uns
+ 	return seccomp(SECCOMP_SET_MODE_FILTER, flags, &prog);
+ }
+ 
+-#define USER_NOTIF_MAGIC 116983961184613L
++#define USER_NOTIF_MAGIC INT_MAX
+ TEST(user_notification_basic)
+ {
+ 	pid_t pid;
 
 
-> get discarded. Should rather perf API be fixed instead of plain skipping as done
-> here to at least allow creation of ring buffer for BPF to avoid such case?
-
-Can you elaborate on what perf API fix you have in mind? Do you mean
-for perf to allow attaching ring buffer to offline CPU or something
-else?
-
->
-> > Andrii Nakryiko (4):
-> >   libbpf: extract and generalize CPU mask parsing logic
-> >   selftests/bpf: add CPU mask parsing tests
-> >   libbpf: don't attach perf_buffer to offline/missing CPUs
-> >   selftests/bpf: fix perf_buffer test on systems w/ offline CPUs
-> >
-> >  tools/lib/bpf/libbpf.c                        | 157 ++++++++++++------
-> >  tools/lib/bpf/libbpf_internal.h               |   2 +
-> >  .../selftests/bpf/prog_tests/cpu_mask.c       |  78 +++++++++
-> >  .../selftests/bpf/prog_tests/perf_buffer.c    |  29 +++-
-> >  4 files changed, 213 insertions(+), 53 deletions(-)
-> >  create mode 100644 tools/testing/selftests/bpf/prog_tests/cpu_mask.c
-> >
-> > --
-> > 2.17.1
-> >
