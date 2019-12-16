@@ -2,135 +2,177 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BEEF1120901
-	for <lists+netdev@lfdr.de>; Mon, 16 Dec 2019 15:56:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7909C120908
+	for <lists+netdev@lfdr.de>; Mon, 16 Dec 2019 15:57:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728158AbfLPO4E (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Dec 2019 09:56:04 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:54378 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1728014AbfLPO4D (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Dec 2019 09:56:03 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1576508163;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=80cPIrEPrAz8MQFVQ8nJfsh1nESLSt1pzoh4IiK7L4I=;
-        b=WprQpgZPvv7PKlxtB0A9jPsrV8BtglO1JZA2Nsc4ITMRlEKMtMwff4cimWu4TYbbIhIH+V
-        13k1hJ/NxKGgehPH6R2rOuXDVS93CzfttoG8LySEhsmziYF/sF978H/aGtRBflvuFsLBoP
-        7dJPkUPfCGvvRS5h27d0Snfk2ZRIyQo=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-15-hllR0CC2MqyQIy99aJVs3g-1; Mon, 16 Dec 2019 09:55:58 -0500
-X-MC-Unique: hllR0CC2MqyQIy99aJVs3g-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 94BB5108BD0D;
-        Mon, 16 Dec 2019 14:55:57 +0000 (UTC)
-Received: from carbon (ovpn-200-37.brq.redhat.com [10.40.200.37])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 138935D9C9;
-        Mon, 16 Dec 2019 14:55:50 +0000 (UTC)
-Date:   Mon, 16 Dec 2019 15:55:49 +0100
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, David Ahern <dsahern@gmail.com>,
-        brouer@redhat.com
-Subject: Re: [PATCH bpf-next] samples/bpf: Attach XDP programs in driver
- mode by default
-Message-ID: <20191216155549.14d2a661@carbon>
-In-Reply-To: <20191216153501.0c5c036a@carbon>
-References: <20191216110742.364456-1-toke@redhat.com>
-        <20191216153501.0c5c036a@carbon>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+        id S1728206AbfLPO4j (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Dec 2019 09:56:39 -0500
+Received: from mail-eopbgr70049.outbound.protection.outlook.com ([40.107.7.49]:5179
+        "EHLO EUR04-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1728008AbfLPO4i (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 16 Dec 2019 09:56:38 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=U4xhnsOcTEM3k0G9fJ04jAGxZItUeVHutKv6jljj5Ffa8yMW+21YuLCbWADwApBO09XtVwqJ20IvDQGKS//ILtzITP8XpcQN1lBs/PqXPQ26qaIRgFek1eV/EanWpiJikCjc3d8GbswrRjBdYcTDmRWm2keRu60LkpR0yAMb72kYy/KBN0ameqIRgtoYv99Ti8mBz15OhX/SqoDGEl9OmjObTyH5SfC0PBw7GJDnmQqU55sWdfzYDRttnsgWiEbWimxOWq66QQlXxAiEp4tPFUEUgYa0HpfivadKRMO+S9muphFn45EtHGSggvXiC/wzIAvppfSEIs0mrSs/1ffAhA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=HBvs46xgWWdN05u3ZFeGgG93Q6f1WHn9ptGyfId3DJE=;
+ b=Xu7dm3URqt8B4fw9vo+0U0R34R0wdtSOdD1MxdwVLjnB+ONrpyPBDdXy4Q75/pK+Jra6b502XN3n0yEdJAEVXSf9gKUG5uxUjkjSko0Zp3Y7ArmH5hk8UqGC+7jiJuilT1Fans7Im1NyFEa6f/Zat/1DA3FgZguOJRRB/t/jrsIExG0efbCAJIQ3w8riaDELY/TiU9CF+/zCfyJIkUN/nIMk1pDgyxolUuZxkDIP07eZFgZMOddWKZ16+s5fC2ZHNBsZcy1iHSqj/ipkxse84d8nwLzia2eMFbU2wqG1tjiHMzhZ1ZYsV1vz3G6OTLUuH7lbZcEKE3BzkccrA9q7Lg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=HBvs46xgWWdN05u3ZFeGgG93Q6f1WHn9ptGyfId3DJE=;
+ b=kPlgFCTTJA0FuIcb1BjKE8hJaFUnS/nWwgufBLMjN/qXafrN3WerlVPRjnEk6WnjSHxUD98Hq0bibmKNopmnx53pd6+H5JqGZehGyS1aOtngxmH1iSo8C1SioGnHejZL28y0Nkyo4TXPvYDHEEdCclNAk3zH2p29AMoXAapEYSY=
+Received: from VI1PR0402MB2800.eurprd04.prod.outlook.com (10.175.24.138) by
+ VI1PR0402MB2720.eurprd04.prod.outlook.com (10.175.22.16) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2538.15; Mon, 16 Dec 2019 14:55:52 +0000
+Received: from VI1PR0402MB2800.eurprd04.prod.outlook.com
+ ([fe80::5cc0:798:7cb8:9661]) by VI1PR0402MB2800.eurprd04.prod.outlook.com
+ ([fe80::5cc0:798:7cb8:9661%11]) with mapi id 15.20.2538.019; Mon, 16 Dec 2019
+ 14:55:52 +0000
+From:   Ioana Ciornei <ioana.ciornei@nxp.com>
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+CC:     "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "Y.b. Lu" <yangbo.lu@nxp.com>
+Subject: RE: [PATCH net] dpaa2-ptp: fix double free of the ptp_qoriq IRQ
+Thread-Topic: [PATCH net] dpaa2-ptp: fix double free of the ptp_qoriq IRQ
+Thread-Index: AQHVsZzeTOmGzp1q7E6r6qYw9b889Ke6ri+AgAIwBLA=
+Date:   Mon, 16 Dec 2019 14:55:52 +0000
+Message-ID: <VI1PR0402MB2800732700E97A1ECB98202EE0510@VI1PR0402MB2800.eurprd04.prod.outlook.com>
+References: <1576231462-23886-1-git-send-email-ioana.ciornei@nxp.com>
+ <20191214213005.701756d0@cakuba.netronome.com>
+In-Reply-To: <20191214213005.701756d0@cakuba.netronome.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=ioana.ciornei@nxp.com; 
+x-originating-ip: [212.146.100.6]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: c44ab15e-0c80-4ead-36bb-08d782380bc2
+x-ms-traffictypediagnostic: VI1PR0402MB2720:|VI1PR0402MB2720:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <VI1PR0402MB2720D52BD48DE2FB007FC5BCE0510@VI1PR0402MB2720.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-forefront-prvs: 02530BD3AA
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(396003)(366004)(39860400002)(346002)(376002)(136003)(199004)(189003)(2906002)(6506007)(5660300002)(9686003)(44832011)(6916009)(45080400002)(66446008)(33656002)(81166006)(7696005)(71200400001)(66946007)(478600001)(186003)(316002)(55016002)(54906003)(76116006)(81156014)(4326008)(52536014)(8936002)(86362001)(66476007)(66556008)(8676002)(64756008)(26005);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR0402MB2720;H:VI1PR0402MB2800.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: nxp.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: mQcIK69GQZspmdNfT6yGtQ1PPjP9r4acsDJFqiSFrmkFXr0uUwVzkFbz4KdccQaEE4z88KgLCO7pDowLE01zbXbsSZpQB/BUsKVh8AF0CG/i8lJa+CT91qQLmHyvTSUoRaXC/UyHFTT9b2JSlWk9osLBFAIbV1f2A53mLG3YIzNtImlUa6iPBH+DlJbCkl03iNIk8Ga5wf5rrb0ak4tPMqJYORM3Oro+nIh3ghiv/6n332isK6bnix/bvRmjqRnacq31xI2MOmjfLJuNRAG4BnQHg7Ucik0peJpyxwLBuPvaNuegB3M0la4Xjr/QQKnGB97cAub4mA1hcVF6vfArR+FNJ9KYlutp1HxNqudTkLp/3H06z7DClnyJHg0v/t2sG4hX7ZKuT9SMHrnHXFzzCGHdBor19ZpEXDmO54YKnTAYkpnhNV/TJqsNQLYx1WYv
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+MIME-Version: 1.0
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c44ab15e-0c80-4ead-36bb-08d782380bc2
+X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Dec 2019 14:55:52.2351
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: ugOJ05bwVwxcxkj3LrlDMZHFikWKMK1gaLB5xdUFxUsRKJfZKSeRfQvzFoLvo5+gBg7VD+Cl8rccxvhuwKZyZA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB2720
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 16 Dec 2019 15:35:01 +0100
-Jesper Dangaard Brouer <brouer@redhat.com> wrote:
-
-> On Mon, 16 Dec 2019 12:07:42 +0100
-> Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com> wrote:
+> Subject: Re: [PATCH net] dpaa2-ptp: fix double free of the ptp_qoriq IRQ
 >=20
-> > When attaching XDP programs, userspace can set flags to request the att=
-ach
-> > mode (generic/SKB mode, driver mode or hw offloaded mode). If no such f=
-lags
-> > are requested, the kernel will attempt to attach in driver mode, and th=
-en
-> > silently fall back to SKB mode if this fails.
-> >=20
-> > The silent fallback is a major source of user confusion, as users will =
-try
-> > to load a program on a device without XDP support, and instead of an er=
-ror
-> > they will get the silent fallback behaviour, not notice, and then wonder
-> > why performance is not what they were expecting.
-> >=20
-> > In an attempt to combat this, let's switch all the samples to default to
-> > explicitly requesting driver-mode attach. As part of this, ensure that =
-all
-> > the userspace utilities have a switch to enable SKB mode. For those that
-> > have a switch to request driver mode, keep it but turn it into a no-op.
-> >=20
-> > Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
-> > --- =20
->=20
-> I agree, that this is a good way forward.
->=20
-> What is the observed behavior / error-message after this change?
-
-The error message looks fine:
-
- $ sudo ./xdp1 enp0s31f6
- libbpf: Kernel error message: underlying driver does not support XDP in na=
-tive mode
- link set xdp fd failed
-=20
-Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
-
-> I wanted to test this myself, but compiling samples/bpf/ is breaking
-> (again) on my system...
-
-I saw your other compile fixes on the list and used those... thanks!
-
-
-> > diff --git a/samples/bpf/xdp1_user.c b/samples/bpf/xdp1_user.c
-> > index 3e553eed95a7..38a8852cb57f 100644
-> > --- a/samples/bpf/xdp1_user.c
-> > +++ b/samples/bpf/xdp1_user.c
-> > @@ -98,7 +98,7 @@ int main(int argc, char **argv)
-> >  			xdp_flags |=3D XDP_FLAGS_SKB_MODE;
-> >  			break;
-> >  		case 'N':
-> > -			xdp_flags |=3D XDP_FLAGS_DRV_MODE;
-> > +			/* default, set below */
-> >  			break;
-> >  		case 'F':
-> >  			xdp_flags &=3D ~XDP_FLAGS_UPDATE_IF_NOEXIST;
-> > @@ -109,6 +109,9 @@ int main(int argc, char **argv)
-> >  		}
+> On Fri, 13 Dec 2019 12:04:22 +0200, Ioana Ciornei wrote:
+> > Upon reusing the ptp_qoriq driver, the ptp_qoriq_free() function was
+> > used on the remove path to free any allocated resources.
+> > The ptp_qoriq IRQ is among these resources that are freed in
+> > ptp_qoriq_free() even though it is also a managed one (allocated using
+> > devm_request_threaded_irq).
+> >
+> > Drop the resource managed version of requesting the IRQ in order to
+> > not trigger a double free of the interrupt as below:
+> >
+> > [  226.731005] Trying to free already-free IRQ 126 [  226.735533]
+> > WARNING: CPU: 6 PID: 749 at kernel/irq/manage.c:1707
+> > __free_irq+0x9c/0x2b8
+> > [  226.743435] Modules linked in:
+> > [  226.746480] CPU: 6 PID: 749 Comm: bash Tainted: G        W
+> > 5.4.0-03629-gfd7102c32b2c-dirty #912
+> > [  226.755857] Hardware name: NXP Layerscape LX2160ARDB (DT) [
+> > 226.761244] pstate: 40000085 (nZcv daIf -PAN -UAO) [  226.766022] pc :
+> > __free_irq+0x9c/0x2b8 [  226.769758] lr : __free_irq+0x9c/0x2b8 [
+> > 226.773493] sp : ffff8000125039f0
+> > (...)
+> > [  226.856275] Call trace:
+> > [  226.858710]  __free_irq+0x9c/0x2b8
+> > [  226.862098]  free_irq+0x30/0x70
+> > [  226.865229]  devm_irq_release+0x14/0x20 [  226.869054]
+> > release_nodes+0x1b0/0x220 [  226.872790]  devres_release_all+0x34/0x50
+> > [  226.876790]  device_release_driver_internal+0x100/0x1c0
+> >
+> > Fixes: d346c9e86d86 ("dpaa2-ptp: reuse ptp_qoriq driver")
+> > Cc: Yangbo Lu <yangbo.lu@nxp.com>
+> > Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
+> > ---
+> >  drivers/net/ethernet/freescale/dpaa2/dpaa2-ptp.c | 12 +++++++-----
+> >  1 file changed, 7 insertions(+), 5 deletions(-)
+> >
+> > diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-ptp.c
+> > b/drivers/net/ethernet/freescale/dpaa2/dpaa2-ptp.c
+> > index a9503aea527f..04a4b316f1dc 100644
+> > --- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-ptp.c
+> > +++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-ptp.c
+> > @@ -160,10 +160,10 @@ static int dpaa2_ptp_probe(struct fsl_mc_device
+> *mc_dev)
+> >  	irq =3D mc_dev->irqs[0];
+> >  	ptp_qoriq->irq =3D irq->msi_desc->irq;
+> >
+> > -	err =3D devm_request_threaded_irq(dev, ptp_qoriq->irq, NULL,
+> > -					dpaa2_ptp_irq_handler_thread,
+> > -					IRQF_NO_SUSPEND | IRQF_ONESHOT,
+> > -					dev_name(dev), ptp_qoriq);
+> > +	err =3D request_threaded_irq(ptp_qoriq->irq, NULL,
+> > +				   dpaa2_ptp_irq_handler_thread,
+> > +				   IRQF_NO_SUSPEND | IRQF_ONESHOT,
+> > +				   dev_name(dev), ptp_qoriq);
+> >  	if (err < 0) {
+> >  		dev_err(dev, "devm_request_threaded_irq(): %d\n", err);
+> >  		goto err_free_mc_irq;
+> > @@ -173,7 +173,7 @@ static int dpaa2_ptp_probe(struct fsl_mc_device
+> *mc_dev)
+> >  				   DPRTC_IRQ_INDEX, 1);
+> >  	if (err < 0) {
+> >  		dev_err(dev, "dprtc_set_irq_enable(): %d\n", err);
+> > -		goto err_free_mc_irq;
+> > +		goto err_free_threaded_irq;
 > >  	}
-> > =20
-> > +	if (!(xdp_flags & XDP_FLAGS_SKB_MODE))
-> > +		xdp_flags |=3D XDP_FLAGS_DRV_MODE;
-> > +
-> >  	if (optind =3D=3D argc) {
-> >  		usage(basename(argv[0]));
-> >  		return 1; =20
+> >
+> >  	err =3D ptp_qoriq_init(ptp_qoriq, base, &dpaa2_ptp_caps);
+>=20
+> There is another goto right here which still jumps to err_free_mc_irq rat=
+her than
+> err_free_threaded_irq. Is that intentional?
 
---=20
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
+No, that is an oversight from my part. Will fix in v2.
+
+Thanks,
+Ioana
+
+
+>=20
+> > @@ -185,6 +185,8 @@ static int dpaa2_ptp_probe(struct fsl_mc_device
+> > *mc_dev)
+> >
+> >  	return 0;
+> >
+> > +err_free_threaded_irq:
+> > +	free_irq(ptp_qoriq->irq, ptp_qoriq);
+> >  err_free_mc_irq:
+> >  	fsl_mc_free_irqs(mc_dev);
+> >  err_unmap:
 
