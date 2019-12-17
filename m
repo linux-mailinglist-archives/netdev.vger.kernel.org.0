@@ -2,167 +2,181 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E4B9E1221DF
-	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 03:11:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 03E511221ED
+	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 03:24:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726698AbfLQCLU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Dec 2019 21:11:20 -0500
-Received: from szxga04-in.huawei.com ([45.249.212.190]:8131 "EHLO huawei.com"
+        id S1726448AbfLQCYS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Dec 2019 21:24:18 -0500
+Received: from mail-eopbgr30064.outbound.protection.outlook.com ([40.107.3.64]:29767
+        "EHLO EUR03-AM5-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726445AbfLQCLU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 16 Dec 2019 21:11:20 -0500
-Received: from DGGEMS413-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id 6519298E236B0F6128C0;
-        Tue, 17 Dec 2019 10:11:17 +0800 (CST)
-Received: from [127.0.0.1] (10.74.191.121) by DGGEMS413-HUB.china.huawei.com
- (10.3.19.213) with Microsoft SMTP Server id 14.3.439.0; Tue, 17 Dec 2019
- 10:11:12 +0800
-Subject: Re: [PATCH][v2] page_pool: handle page recycle for NUMA_NO_NODE
- condition
-To:     Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Michal Hocko <mhocko@kernel.org>
-CC:     Saeed Mahameed <saeedm@mellanox.com>,
-        "brouer@redhat.com" <brouer@redhat.com>,
-        "jonathan.lemon@gmail.com" <jonathan.lemon@gmail.com>,
-        Li Rongqing <lirongqing@baidu.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        <peterz@infradead.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        <bhelgaas@google.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-References: <1575624767-3343-1-git-send-email-lirongqing@baidu.com>
- <9fecbff3518d311ec7c3aee9ae0315a73682a4af.camel@mellanox.com>
- <20191211194933.15b53c11@carbon>
- <831ed886842c894f7b2ffe83fe34705180a86b3b.camel@mellanox.com>
- <0a252066-fdc3-a81d-7a36-8f49d2babc01@huawei.com>
- <20191216121557.GE30281@dhcp22.suse.cz> <20191216123426.GA18663@apalos.home>
- <20191216130845.GF30281@dhcp22.suse.cz> <20191216132128.GA19355@apalos.home>
-From:   Yunsheng Lin <linyunsheng@huawei.com>
-Message-ID: <9041ea7f-0ca6-d0fe-9942-8907222ead5e@huawei.com>
-Date:   Tue, 17 Dec 2019 10:11:12 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:52.0) Gecko/20100101
- Thunderbird/52.2.0
-MIME-Version: 1.0
-In-Reply-To: <20191216132128.GA19355@apalos.home>
-Content-Type: text/plain; charset="utf-8"
+        id S1726313AbfLQCYS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 16 Dec 2019 21:24:18 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=PzvagCUqpMWm1GKggnhpNabSA9MlqKQiwKEXl5KVAI5SLo8tgM7gI+v5ZvKlKv1zrhMhHDlJCWxzmruydI+pE+6JgoGiZ8UXF7soD7kzx9ETU9Ny4+A9VM8aDUDdAoMyitHDdVbbrhHB4644e1vUhzhijX370qYWCnV6CveU6JA2Ma93x20lAmv6iXJHM8JvQOYiqMwtp92FOZ/3405vH7cJLuItmvGJYb7nWLxrIZKdZM8RKp1/ozag/WA5HOLQXTI254D9Ml2wkhMLHpg8YKSltAvrf71BRMJHYgF/nw3v+uNBhQDSrg4RTUYxbgWCNDjrExMOcuKQAQLc1kEjGA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=+cA1PVCeNjy+Ss9R3tmZhAl84GRP7r01z4MT0ZXU1D0=;
+ b=UTKIUrrpu6r79Swbd1qv9Pq4UEIv3VrrgNCVtpVh3LhKSrY06Ji4soByVnUwafNu+1PWnLPVFlQWvDnE0lwQEdpT9ZeEJKna78IOiVek1vtXL0/o0LmS4NXvMGBCfOIc2lEAFFp6kcSbclIKPaX84KV+MVAsMew0vi28eYkzU8am+wNNnyVdSHjC7QU0k0MOHH1lAFwJMP4hqXpbKrYn9x89hkmbWOlyhqdLN9rkMlX62pLiI+r8fSD5UxC2utvVHu7Ff9IxX2lelzlq3+g+kZUv5yLt62eWZhlJPcfRQ+gQysPMnC6/wAXDIGenXvpsMEEnClEdxu9ZGhGiaxPPKQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=+cA1PVCeNjy+Ss9R3tmZhAl84GRP7r01z4MT0ZXU1D0=;
+ b=pTdPEWCX1r+PN+nP4w2NSnDeMrGVV3qHJb0QJONlSOom6AwL2kcA1HbkFu3rztTj1a8s7gbURPJEsX/LZpHKVMQqUmvgq6V7r82i9p94LNkJjGf5jHDHDqetT1ChXVecNFWlUhkGx9FaiaGNbSNA9cw17X5yZK2RxCO0D1jwEC0=
+Received: from VI1PR0401MB2237.eurprd04.prod.outlook.com (10.169.132.138) by
+ VI1PR0401MB2333.eurprd04.prod.outlook.com (10.169.133.24) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2538.16; Tue, 17 Dec 2019 02:24:14 +0000
+Received: from VI1PR0401MB2237.eurprd04.prod.outlook.com
+ ([fe80::b9ca:8e9c:39e6:8d5f]) by VI1PR0401MB2237.eurprd04.prod.outlook.com
+ ([fe80::b9ca:8e9c:39e6:8d5f%7]) with mapi id 15.20.2559.012; Tue, 17 Dec 2019
+ 02:24:14 +0000
+From:   "Y.b. Lu" <yangbo.lu@nxp.com>
+To:     Ioana Ciornei <ioana.ciornei@nxp.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: RE: [PATCH net v2] dpaa2-ptp: fix double free of the ptp_qoriq IRQ
+Thread-Topic: [PATCH net v2] dpaa2-ptp: fix double free of the ptp_qoriq IRQ
+Thread-Index: AQHVtCYMQFVIeYxyLkSR+ox4Z08Prqe9mZ1g
+Date:   Tue, 17 Dec 2019 02:24:13 +0000
+Message-ID: <VI1PR0401MB22378203BDAE222A6FDCCD09F8500@VI1PR0401MB2237.eurprd04.prod.outlook.com>
+References: <1576510350-28660-1-git-send-email-ioana.ciornei@nxp.com>
+In-Reply-To: <1576510350-28660-1-git-send-email-ioana.ciornei@nxp.com>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.74.191.121]
-X-CFilter-Loop: Reflected
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=yangbo.lu@nxp.com; 
+x-originating-ip: [92.121.36.198]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 17444dac-20d0-4cf0-cc6b-08d782983584
+x-ms-traffictypediagnostic: VI1PR0401MB2333:|VI1PR0401MB2333:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <VI1PR0401MB2333D20266925054E53CBCE0F8500@VI1PR0401MB2333.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8882;
+x-forefront-prvs: 02543CD7CD
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(136003)(396003)(39860400002)(366004)(376002)(346002)(189003)(199004)(13464003)(2906002)(33656002)(6506007)(53546011)(26005)(45080400002)(86362001)(64756008)(66946007)(66476007)(66556008)(7696005)(76116006)(110136005)(316002)(478600001)(71200400001)(81156014)(8936002)(9686003)(5660300002)(52536014)(81166006)(66446008)(186003)(8676002)(55016002);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR0401MB2333;H:VI1PR0401MB2237.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: nxp.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: C/3j70Ir5vtBJ6+sLFL/PVrmPsR+eGto8pz/oG432CxQdOB482OJcYF6Wb1nWPgWz9etFNVYxv9TL5mqWzn09Ggk+pXdmFqsmfOQi6putUnJq+pHDCUWR9uL9cDowploQSlqmG8wbxToGxr6gMEi5umu0wuW44Z0IzR09KEODIGoFCy5VoW9pu109yMBbVprCmAE1IcDzlJodCk+qjtuIyLAkFAYc8PzPsGSITlh5yRoNw6lI2qeQ/OyetfuicDJtbgEBGejxaRm+9+K8IoeEsHlmJf+ljz92PQhahcJzWISsZbVlSwVdfDb3Vlh6gx5oLNJ9qf4YpQhAqaDcUcHzK/jeiOXvUX7eOgmqxegYMcmS1frc4LhtYilH8hYIa+uQDU752d6xTBTK1oEA+SNMjouyww3zMJfvBdUwnGospL8bEM5n+rVt28ryrez2MczVQljGEeulx+HUc8fkyxFQcqIx8vk4eDys8bQfzfvvk82UG8tFhbOwW/xnYb9PLNO
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 17444dac-20d0-4cf0-cc6b-08d782983584
+X-MS-Exchange-CrossTenant-originalarrivaltime: 17 Dec 2019 02:24:13.9790
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: yRiJjnHYzt/wrerpvXy0x3CsTI/lLDK6Lm+yaqmWbB3eV35U2jFNHAWEFxTv8vYg4BXqOvptvr9ESyDy3fh+3w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0401MB2333
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2019/12/16 21:21, Ilias Apalodimas wrote:
-> On Mon, Dec 16, 2019 at 02:08:45PM +0100, Michal Hocko wrote:
->> On Mon 16-12-19 14:34:26, Ilias Apalodimas wrote:
->>> Hi Michal, 
->>> On Mon, Dec 16, 2019 at 01:15:57PM +0100, Michal Hocko wrote:
->>>> On Thu 12-12-19 09:34:14, Yunsheng Lin wrote:
->>>>> +CC Michal, Peter, Greg and Bjorn
->>>>> Because there has been disscusion about where and how the NUMA_NO_NODE
->>>>> should be handled before.
->>>>
->>>> I do not have a full context. What is the question here?
->>>
->>> When we allocate pages for the page_pool API, during the init, the driver writer
->>> decides which NUMA node to use. The API can,  in some cases recycle the memory,
->>> instead of freeing it and re-allocating it. If the NUMA node has changed (irq
->>> affinity for example), we forbid recycling and free the memory, since recycling
->>> and using memory on far NUMA nodes is more expensive (more expensive than
->>> recycling, at least on the architectures we tried anyway).
->>> Since this would be expensive to do it per packet, the burden falls on the 
->>> driver writer for that. Drivers *have* to call page_pool_update_nid() or 
->>> page_pool_nid_changed() if they want to check for that which runs once
->>> per NAPI cycle.
->>
->> Thanks for the clarification.
->>
->>> The current code in the API though does not account for NUMA_NO_NODE. That's
->>> what this is trying to fix.
->>> If the page_pool params are initialized with that, we *never* recycle
->>> the memory. This is happening because the API is allocating memory with 
->>> 'nid = numa_mem_id()' if NUMA_NO_NODE is configured so the current if statement
->>> 'page_to_nid(page) == pool->p.nid' will never trigger.
->>
->> OK. There is no explicit mention of the expected behavior for
->> NUMA_NO_NODE. The semantic is usually that there is no NUMA placement
->> requirement and the MM code simply starts the allocate from a local node
->> in that case. But the memory might come from any node so there is no
->> "local node" guarantee.
->>
->> So the main question is what is the expected semantic? Do people expect
->> that NUMA_NO_NODE implies locality? Why don't you simply always reuse
->> when there was no explicit numa requirement?
+> -----Original Message-----
+> From: Ioana Ciornei <ioana.ciornei@nxp.com>
+> Sent: Monday, December 16, 2019 11:33 PM
+> To: davem@davemloft.net; netdev@vger.kernel.org
+> Cc: Ioana Ciornei <ioana.ciornei@nxp.com>; Y.b. Lu <yangbo.lu@nxp.com>
+> Subject: [PATCH net v2] dpaa2-ptp: fix double free of the ptp_qoriq IRQ
 
-For driver that has not supported page pool yet, NUMA_NO_NODE seems to
-imply locality, see [1].
+[Y.b. Lu] Reviewed-by: Yangbo Lu <yangbo.lu@nxp.com>
 
-And for those drivers, locality is decided by rx interrupt affinity, not
-dev_to_node(). So when rx interrupt affinity changes, the old page from old
-node will not be recycled(by checking page_to_nid(page) == numa_mem_id()),
-new pages will be allocated to replace the old pages and the new pages will
-be recycled because allocation and recycling happens in the same context,
-which means numa_mem_id() returns the same node of new page allocated, see
-[2].
-
-As why not allocate and recycle page based on dev_to_node(), Jesper had
-explained it better than me, see [3]:
-
-"(Based on the optimizations done for Facebook (the reason we added this))
-What seems to matter is the NUMA node of CPU that runs RX NAPI-polling,
-this is the first CPU that touch the packet memory and struct-page
-memory.  For these drivers, it is also the same "RX-CPU" that does the
-allocation of new pages (to refill the RX-ring), and these "new" pages
-can come from the page_pool."
-
-So maybe the tricky part for page pool is to find the same context to
-allocate and recycle pages, so that NUMA_NO_NODE can be used to allocate
-pages and numa_mem_id() can be used to decide recycling. Or update the
-node dynamically as proposed by Rongqing, see [4].
-
-
-[1] https://elixir.bootlin.com/linux/v5.5-rc1/ident/dev_alloc_pages
-[2] https://elixir.bootlin.com/linux/v5.5-rc1/source/drivers/net/ethernet/intel/i40e/i40e_txrx.c#L1856
-[3] https://lkml.org/lkml/2019/12/13/132
-[4] https://lkml.org/lkml/2019/12/15/353
->>
-> 
-> Well they shouldn't. Hence my next proposal. I think we are pretty much saying
-> the same thing here. 
-> If the driver defines NUMA_NO_NODE, just blindly recycle memory.
-
-Not really. see above.
-
-> 
->>> The initial proposal was to check:
->>> pool->p.nid == NUMA_NO_NODE && page_to_nid(page) == numa_mem_id()));
->>
->>> After that the thread span out of control :)
->>> My question is do we *really* have to check for 
->>> page_to_nid(page) == numa_mem_id()? if the architecture is not NUMA aware
->>> wouldn't pool->p.nid == NUMA_NO_NODE be enough?
->>
->> If the architecture is !NUMA then numa_mem_id and page_to_nid should
->> always equal and be both zero.
-
-The tricky one is that dev_to_node() always return -1 when CONFIG_NUMA is
-not defined, and some driver may use that to allocte page, and the node of
-page may be checked with dev_to_node() to decide whether to recycle.
-
->>
-> 
-> Ditto
-> 
->> -- 
->> Michal Hocko
->> SUSE Labs
-> 
-> 
-> Thanks
-> /Ilias
-> 
-> .
-> 
+>=20
+> Upon reusing the ptp_qoriq driver, the ptp_qoriq_free() function was used=
+ on
+> the remove path to free any allocated resources.
+> The ptp_qoriq IRQ is among these resources that are freed in
+> ptp_qoriq_free() even though it is also a managed one (allocated using
+> devm_request_threaded_irq).
+>=20
+> Drop the resource managed version of requesting the IRQ in order to not
+> trigger a double free of the interrupt as below:
+>=20
+> [  226.731005] Trying to free already-free IRQ 126 [  226.735533] WARNING=
+:
+> CPU: 6 PID: 749 at kernel/irq/manage.c:1707
+> __free_irq+0x9c/0x2b8
+> [  226.743435] Modules linked in:
+> [  226.746480] CPU: 6 PID: 749 Comm: bash Tainted: G        W
+> 5.4.0-03629-gfd7102c32b2c-dirty #912
+> [  226.755857] Hardware name: NXP Layerscape LX2160ARDB (DT)
+> [  226.761244] pstate: 40000085 (nZcv daIf -PAN -UAO) [  226.766022] pc :
+> __free_irq+0x9c/0x2b8 [  226.769758] lr : __free_irq+0x9c/0x2b8
+> [  226.773493] sp : ffff8000125039f0
+> (...)
+> [  226.856275] Call trace:
+> [  226.858710]  __free_irq+0x9c/0x2b8
+> [  226.862098]  free_irq+0x30/0x70
+> [  226.865229]  devm_irq_release+0x14/0x20 [  226.869054]
+> release_nodes+0x1b0/0x220 [  226.872790]  devres_release_all+0x34/0x50
+> [  226.876790]  device_release_driver_internal+0x100/0x1c0
+>=20
+> Fixes: d346c9e86d86 ("dpaa2-ptp: reuse ptp_qoriq driver")
+> Cc: Yangbo Lu <yangbo.lu@nxp.com>
+> Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
+> ---
+> Changes in v2:
+>  - change a goto err_free_mc_irq to err_free_threaded_irq
+>=20
+>  drivers/net/ethernet/freescale/dpaa2/dpaa2-ptp.c | 14 ++++++++------
+>  1 file changed, 8 insertions(+), 6 deletions(-)
+>=20
+> diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-ptp.c
+> b/drivers/net/ethernet/freescale/dpaa2/dpaa2-ptp.c
+> index a9503aea527f..6437fe6b9abf 100644
+> --- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-ptp.c
+> +++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-ptp.c
+> @@ -160,10 +160,10 @@ static int dpaa2_ptp_probe(struct fsl_mc_device
+> *mc_dev)
+>  	irq =3D mc_dev->irqs[0];
+>  	ptp_qoriq->irq =3D irq->msi_desc->irq;
+>=20
+> -	err =3D devm_request_threaded_irq(dev, ptp_qoriq->irq, NULL,
+> -					dpaa2_ptp_irq_handler_thread,
+> -					IRQF_NO_SUSPEND | IRQF_ONESHOT,
+> -					dev_name(dev), ptp_qoriq);
+> +	err =3D request_threaded_irq(ptp_qoriq->irq, NULL,
+> +				   dpaa2_ptp_irq_handler_thread,
+> +				   IRQF_NO_SUSPEND | IRQF_ONESHOT,
+> +				   dev_name(dev), ptp_qoriq);
+>  	if (err < 0) {
+>  		dev_err(dev, "devm_request_threaded_irq(): %d\n", err);
+>  		goto err_free_mc_irq;
+> @@ -173,18 +173,20 @@ static int dpaa2_ptp_probe(struct fsl_mc_device
+> *mc_dev)
+>  				   DPRTC_IRQ_INDEX, 1);
+>  	if (err < 0) {
+>  		dev_err(dev, "dprtc_set_irq_enable(): %d\n", err);
+> -		goto err_free_mc_irq;
+> +		goto err_free_threaded_irq;
+>  	}
+>=20
+>  	err =3D ptp_qoriq_init(ptp_qoriq, base, &dpaa2_ptp_caps);
+>  	if (err)
+> -		goto err_free_mc_irq;
+> +		goto err_free_threaded_irq;
+>=20
+>  	dpaa2_phc_index =3D ptp_qoriq->phc_index;
+>  	dev_set_drvdata(dev, ptp_qoriq);
+>=20
+>  	return 0;
+>=20
+> +err_free_threaded_irq:
+> +	free_irq(ptp_qoriq->irq, ptp_qoriq);
+>  err_free_mc_irq:
+>  	fsl_mc_free_irqs(mc_dev);
+>  err_unmap:
+> --
+> 1.9.1
 
