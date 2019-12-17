@@ -2,66 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A72CC123AB3
-	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 00:21:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A4934123AB8
+	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 00:21:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726382AbfLQXVa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Dec 2019 18:21:30 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:44428 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725886AbfLQXVa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 18:21:30 -0500
-Received: from localhost (unknown [IPv6:2601:601:9f00:1c3::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id BD4F714A6F7E9;
-        Tue, 17 Dec 2019 15:21:29 -0800 (PST)
-Date:   Tue, 17 Dec 2019 15:21:26 -0800 (PST)
-Message-Id: <20191217.152126.1428798833164203299.davem@davemloft.net>
-To:     f.fainelli@gmail.com
-Cc:     opendmb@gmail.com, bcm-kernel-feedback-list@broadcom.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next 3/8] net: bcmgenet: use CHECKSUM_COMPLETE for
- NETIF_F_RXCSUM
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <042fad13-f6a2-6d1b-ba7a-61c60e394115@gmail.com>
-References: <1576616549-39097-4-git-send-email-opendmb@gmail.com>
-        <20191217.131631.2246524906428878009.davem@davemloft.net>
-        <042fad13-f6a2-6d1b-ba7a-61c60e394115@gmail.com>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 17 Dec 2019 15:21:30 -0800 (PST)
+        id S1726594AbfLQXVx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Dec 2019 18:21:53 -0500
+Received: from www62.your-server.de ([213.133.104.62]:40852 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726561AbfLQXVx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 18:21:53 -0500
+Received: from sslproxy01.your-server.de ([88.198.220.130])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1ihM9w-000678-W7; Wed, 18 Dec 2019 00:21:45 +0100
+Received: from [178.197.249.31] (helo=pc-9.home)
+        by sslproxy01.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1ihM9w-0005Ir-5Q; Wed, 18 Dec 2019 00:21:44 +0100
+Subject: Re: [PATCH bpf-next] libbpf: Fix libbpf_common.h when installing
+ libbpf through 'make install'
+To:     Yonghong Song <yhs@fb.com>,
+        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>
+References: <20191217112810.768078-1-toke@redhat.com>
+ <c6a49edd-3992-6ddc-58d9-2c37acdeeece@fb.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <7e88179c-155e-ce8c-4641-debad4ca0631@iogearbox.net>
+Date:   Wed, 18 Dec 2019 00:21:43 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
+MIME-Version: 1.0
+In-Reply-To: <c6a49edd-3992-6ddc-58d9-2c37acdeeece@fb.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.101.4/25666/Tue Dec 17 10:54:52 2019)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Florian Fainelli <f.fainelli@gmail.com>
-Date: Tue, 17 Dec 2019 14:52:07 -0800
-
-> On 12/17/19 1:16 PM, David Miller wrote:
->> From: Doug Berger <opendmb@gmail.com>
->> Date: Tue, 17 Dec 2019 13:02:24 -0800
->> 
->>> This commit updates the Rx checksum offload behavior of the driver
->>> to use the more generic CHECKSUM_COMPLETE method that supports all
->>> protocols over the CHECKSUM_UNNECESSARY method that only applies
->>> to some protocols known by the hardware.
->>>
->>> This behavior is perceived to be superior.
->>>
->>> Signed-off-by: Doug Berger <opendmb@gmail.com>
->> 
->> This has to be done in the same patch that you change to use
->> the NETIF_F_HW_CSUM feature flag.
+On 12/17/19 10:58 PM, Yonghong Song wrote:
+> On 12/17/19 3:28 AM, Toke Høiland-Jørgensen wrote:
+>> This fixes two issues with the newly introduced libbpf_common.h file:
+>>
+>> - The header failed to include <string.h> for the definition of memset()
+>> - The new file was not included in the install_headers rule in the Makefile
+>>
+>> Both of these issues cause breakage when installing libbpf with 'make
+>> install' and trying to use it in applications.
+>>
+>> Fixes: 544402d4b493 ("libbpf: Extract common user-facing helpers")
+>> Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
 > 
-> Even if we were already advertising support for NETIF_F_RXCSUM before
-> patch #2? Not questioning your comment, just trying to understand why
-> this is deemed necessary here since it does not affect the same "direction".
+> Acked-by: Yonghong Song <yhs@fb.com>
 
-My bad... I misunderstood the situation.
-
-Ignore me :-)
+Applied, thanks!
