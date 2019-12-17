@@ -2,152 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A4431228B2
-	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 11:30:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8BE701228C2
+	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 11:32:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727144AbfLQK37 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 17 Dec 2019 05:29:59 -0500
-Received: from us-smtp-2.mimecast.com ([205.139.110.61]:43886 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726191AbfLQK37 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 05:29:59 -0500
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-376-7QV9dpS_PDGVEsxhTRpn8A-1; Tue, 17 Dec 2019 05:29:55 -0500
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id B75208017DF;
-        Tue, 17 Dec 2019 10:29:53 +0000 (UTC)
-Received: from p50.redhat.com (unknown [10.36.118.71])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 1C41D51;
-        Tue, 17 Dec 2019 10:29:51 +0000 (UTC)
-From:   Stefan Assmann <sassmann@kpanic.de>
-To:     intel-wired-lan@lists.osuosl.org
-Cc:     netdev@vger.kernel.org, davem@davemloft.net,
-        jeffrey.t.kirsher@intel.com, lihong.yang@intel.com,
-        sassmann@kpanic.de
-Subject: [PATCH] iavf: remove current MAC address filter on VF reset
-Date:   Tue, 17 Dec 2019 11:29:23 +0100
-Message-Id: <20191217102923.3274961-1-sassmann@kpanic.de>
+        id S1727223AbfLQKb6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Dec 2019 05:31:58 -0500
+Received: from new3-smtp.messagingengine.com ([66.111.4.229]:38269 "EHLO
+        new3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725940AbfLQKb5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 05:31:57 -0500
+Received: from compute6.internal (compute6.nyi.internal [10.202.2.46])
+        by mailnew.nyi.internal (Postfix) with ESMTP id CBD7B6C1D;
+        Tue, 17 Dec 2019 05:31:55 -0500 (EST)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute6.internal (MEProxy); Tue, 17 Dec 2019 05:31:55 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kroah.com; h=
+        date:from:to:cc:subject:message-id:references:mime-version
+        :content-type:in-reply-to; s=fm2; bh=WVOKI5Xa8ynfxOHUH8uTfezXeuU
+        ofMPbouYAeeiBwfo=; b=bmijsgR9pBP2Ebh5XRA1uJIvaotKaT0uunVjVlY8l1C
+        aoxODXf2Z/oIfgaiOn3GfxvN12hOlmxSVrt/DaUn2ui5y4YWSoDc09CpwSTSPvtv
+        EpCAVbR4ENthlY2tusERvGdA4V9WukWKml4U8LbisXwsFqGk1MgOy+dKLHjxHdSZ
+        tyhvxw41ZOLsopmAjnd9nL0d0uAsWaB51tldwy0lqX74f4dbGKrZ/mRVPrNLxV+M
+        svbfpDgHzf/aKOcs6RlMmOlKIh1N8lDoWOt+0RBjBAS6nPLpU/KfKRRvelNIHB04
+        GM/lHpfosT7/ny01Wzi9gelg9d+2McwmJLd6HiJHazw==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=WVOKI5
+        Xa8ynfxOHUH8uTfezXeuUofMPbouYAeeiBwfo=; b=JQpNJtE7YDoUUklw9zvFjP
+        wZ9Ih3qPBkDVD9rCoT5gWFxZZMwAusismfQXbuYWFxuPirAhMF5u+liubo54g2f9
+        VSPkmDIF7Z97Skk7gKtoH/EFJbwhbIq5myFJfZ1wZMfnXUVwYdTnTdbRYh7eeVJZ
+        gJr09v+76QbaX2xWEI3SPIzQs13zYK+p0ljuNvrE/AQuYI3MW6dLZmiD5Z7rxO48
+        XkEdENERvqJHzLTz0PGGUNfi9qhPrrHD1byP+9dNJtTDnPd2NMWkBFlCPwUsYFit
+        JZjF92wtLbfZEF63mps1svac1aKgx7nquB1ubhn+c8c1T9KtwpDHE9SUMhQ+u0pA
+        ==
+X-ME-Sender: <xms:mq74XbTn4Mg9VZkNfMUDm5tvQnvEyJ2uURgkgoUYXKa8WCLK8XbTTw>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedufedrvddtjedgudehucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucenucfjughrpeffhffvuffkfhggtggujgesthdtre
+    dttddtvdenucfhrhhomhepifhrvghgucfmjfcuoehgrhgvgheskhhrohgrhhdrtghomheq
+    necukfhppeekfedrkeeirdekledruddtjeenucfrrghrrghmpehmrghilhhfrhhomhepgh
+    hrvghgsehkrhhorghhrdgtohhmnecuvehluhhsthgvrhfuihiivgeptd
+X-ME-Proxy: <xmx:mq74XU4x3XQ7_I5tSP0AKITnKCi65jdaYkOmpNjBtanvDdZYLiOoiQ>
+    <xmx:mq74XQUg-13Hasut9Vfn0iVM61swGMfn27ddmuXCObXilt8-pdnw2g>
+    <xmx:mq74Xa-et88YfpMZI-Zc-HV_sTQU6ySLnoywFpS3bcb4zJHuXMgkdg>
+    <xmx:m674Xe8EJYjeh9FVPEltY81zCiKvaT4ZKJ8GAjBTR6L8hMaNwuJDaQ>
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 4E5FF8005C;
+        Tue, 17 Dec 2019 05:31:54 -0500 (EST)
+Date:   Tue, 17 Dec 2019 11:31:52 +0100
+From:   Greg KH <greg@kroah.com>
+To:     "Enrico Weigelt, metux IT consult" <info@metux.net>
+Cc:     linux-kernel@vger.kernel.org, linus.walleij@linaro.org,
+        bgolaszewski@baylibre.com, dmitry.torokhov@gmail.com,
+        jacek.anaszewski@gmail.com, pavel@ucw.cz, dmurphy@ti.com,
+        arnd@arndb.de, masahiroy@kernel.org, michal.lkml@markovi.net,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
+        linux-gpio@vger.kernel.org, linux-input@vger.kernel.org,
+        linux-leds@vger.kernel.org, linux-arch@vger.kernel.org,
+        linux-kbuild@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: Re: [PATCH] RFC: platform driver registering via initcall tables
+Message-ID: <20191217103152.GB2914497@kroah.com>
+References: <20191217102219.29223-1-info@metux.net>
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
-X-MC-Unique: 7QV9dpS_PDGVEsxhTRpn8A-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=WINDOWS-1252
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191217102219.29223-1-info@metux.net>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently MAC filters are not altered during a VF reset event. This may
-lead to a stale filter when an administratively set MAC is forced by the
-PF.
+On Tue, Dec 17, 2019 at 11:22:19AM +0100, Enrico Weigelt, metux IT consult wrote:
+> A large portion of platform drivers doesn't need their own init/exit
+> functions. At source level, the boilerplate is already replaced by
+> module_platform_driver() macro call, which creates this code under
+> the hood. But in the binary, the code is still there.
+> 
+> This patch is an attempt to remove them it, by the same approach
+> already used for the init functions: collect pointers to the driver
+> structs in special sections, which are then processed by the init
+> code which already calls the init function vectors. For each level,
+> the structs are processed right after the init funcs, so we guarantee
+> the existing order, and explicit inits always come before the automatic
+> registering.
 
-For an administratively set MAC the PF driver deletes the VFs filters,
-overwrites the VFs MAC address and triggers a VF reset. However
-the VF driver itself is not aware of the filter removal, which is what
-the VF reset is for.
-The VF reset queues all filters present in the VF driver to be re-added
-to the PF filter list (including the filter for the now stale VF MAC
-address) and triggers a VIRTCHNL_OP_GET_VF_RESOURCES event, which
-provides the new MAC address to the VF.
+No, what is so "special" about platform drivers that they require this?
 
-When this happens i40e will complain and reject the stale MAC filter,
-at least in the untrusted VF case.
-i40e 0000:08:00.0: Setting MAC 3c:fa:fa:fa:fa:01 on VF 0
-iavf 0000:08:02.0: Reset warning received from the PF
-iavf 0000:08:02.0: Scheduling reset task
-i40e 0000:08:00.0: Bring down and up the VF interface to make this change effective.
-i40e 0000:08:00.0: VF attempting to override administratively set MAC address, bring down and up the VF interface to resume normal operation
-i40e 0000:08:00.0: VF 0 failed opcode 10, retval: -1
-iavf 0000:08:02.0: Failed to add MAC filter, error IAVF_ERR_NVM
+If anything, we should be moving _AWAY_ from platform drivers and use
+real bus drivers instead.
 
-To avoid re-adding the stale MAC filter it needs to be removed from the
-VF driver's filter list before queuing the existing filters. Then during
-the VIRTCHNL_OP_GET_VF_RESOURCES event the correct filter needs to be
-added again, at which point the MAC address has been updated.
+> Downside of apprach: cluttering init code w/ a little bit knowledge
+> about driver related stuff (calls to platform_driver_register(), etc).
 
-As a bonus this change makes bringing the VF down and up again
-superfluous for the administratively set MAC case.
+Exactly, don't.
 
-Signed-off-by: Stefan Assmann <sassmann@kpanic.de>
----
- drivers/net/ethernet/intel/iavf/iavf.h          |  2 ++
- drivers/net/ethernet/intel/iavf/iavf_main.c     | 17 +++++++++++++----
- drivers/net/ethernet/intel/iavf/iavf_virtchnl.c |  3 +++
- 3 files changed, 18 insertions(+), 4 deletions(-)
+> For now, only implemented for the built-in case (modules still go the
+> old route). The module case is a little bit trickier: either we have to
+> extend the module header (and modpost tool) or do some dynamic symbol
+> lookup.
+> 
+> This patch is just a PoC for further discussions, not ready for mainline.
+> It also changes a few drivers, just for illustration. In case the general
+> approach is accepted, it will be cleaned up and splitted.
 
-diff --git a/drivers/net/ethernet/intel/iavf/iavf.h b/drivers/net/ethernet/intel/iavf/iavf.h
-index 29de3ae96ef2..bd1b1ed323f4 100644
---- a/drivers/net/ethernet/intel/iavf/iavf.h
-+++ b/drivers/net/ethernet/intel/iavf/iavf.h
-@@ -415,4 +415,6 @@ void iavf_enable_channels(struct iavf_adapter *adapter);
- void iavf_disable_channels(struct iavf_adapter *adapter);
- void iavf_add_cloud_filter(struct iavf_adapter *adapter);
- void iavf_del_cloud_filter(struct iavf_adapter *adapter);
-+struct iavf_mac_filter *iavf_add_filter(struct iavf_adapter *adapter,
-+					const u8 *macaddr);
- #endif /* _IAVF_H_ */
-diff --git a/drivers/net/ethernet/intel/iavf/iavf_main.c b/drivers/net/ethernet/intel/iavf/iavf_main.c
-index 0a8824871618..62fe56ddcb6e 100644
---- a/drivers/net/ethernet/intel/iavf/iavf_main.c
-+++ b/drivers/net/ethernet/intel/iavf/iavf_main.c
-@@ -743,9 +743,8 @@ iavf_mac_filter *iavf_find_filter(struct iavf_adapter *adapter,
-  *
-  * Returns ptr to the filter object or NULL when no memory available.
-  **/
--static struct
--iavf_mac_filter *iavf_add_filter(struct iavf_adapter *adapter,
--				 const u8 *macaddr)
-+struct iavf_mac_filter *iavf_add_filter(struct iavf_adapter *adapter,
-+					const u8 *macaddr)
- {
- 	struct iavf_mac_filter *f;
- 
-@@ -2065,9 +2064,9 @@ static void iavf_reset_task(struct work_struct *work)
- 	struct virtchnl_vf_resource *vfres = adapter->vf_res;
- 	struct net_device *netdev = adapter->netdev;
- 	struct iavf_hw *hw = &adapter->hw;
-+	struct iavf_mac_filter *f, *ftmp;
- 	struct iavf_vlan_filter *vlf;
- 	struct iavf_cloud_filter *cf;
--	struct iavf_mac_filter *f;
- 	u32 reg_val;
- 	int i = 0, err;
- 	bool running;
-@@ -2181,6 +2180,16 @@ static void iavf_reset_task(struct work_struct *work)
- 
- 	spin_lock_bh(&adapter->mac_vlan_list_lock);
- 
-+	/* Delete filter for the current MAC address, it could have
-+	 * been changed by the PF via administratively set MAC.
-+	 * Will be re-added via VIRTCHNL_OP_GET_VF_RESOURCES.
-+	 */
-+	list_for_each_entry_safe(f, ftmp, &adapter->mac_filter_list, list) {
-+		if (ether_addr_equal(f->macaddr, adapter->hw.mac.addr)) {
-+			list_del(&f->list);
-+			kfree(f);
-+		}
-+	}
- 	/* re-add all MAC filters */
- 	list_for_each_entry(f, &adapter->mac_filter_list, list) {
- 		f->add = true;
-diff --git a/drivers/net/ethernet/intel/iavf/iavf_virtchnl.c b/drivers/net/ethernet/intel/iavf/iavf_virtchnl.c
-index c46770eba320..1ab9cb339acb 100644
---- a/drivers/net/ethernet/intel/iavf/iavf_virtchnl.c
-+++ b/drivers/net/ethernet/intel/iavf/iavf_virtchnl.c
-@@ -1359,6 +1359,9 @@ void iavf_virtchnl_completion(struct iavf_adapter *adapter,
- 			ether_addr_copy(netdev->perm_addr,
- 					adapter->hw.mac.addr);
- 		}
-+		spin_lock_bh(&adapter->mac_vlan_list_lock);
-+		iavf_add_filter(adapter, adapter->hw.mac.addr);
-+		spin_unlock_bh(&adapter->mac_vlan_list_lock);
- 		iavf_process_config(adapter);
- 		}
- 		break;
--- 
-2.23.0
+Please no, I don't see why this is even needed.
 
+greg k-h
