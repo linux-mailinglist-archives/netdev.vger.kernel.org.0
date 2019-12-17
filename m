@@ -2,134 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2BDFB122DD5
-	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 15:00:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2BAD0122DD7
+	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 15:00:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728752AbfLQN7v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Dec 2019 08:59:51 -0500
-Received: from hqnvemgate26.nvidia.com ([216.228.121.65]:15008 "EHLO
-        hqnvemgate26.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728539AbfLQN7u (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 08:59:50 -0500
-Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate26.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
-        id <B5df8df4b0000>; Tue, 17 Dec 2019 05:59:40 -0800
-Received: from hqmail.nvidia.com ([172.20.161.6])
-  by hqpgpgate101.nvidia.com (PGP Universal service);
-  Tue, 17 Dec 2019 05:59:49 -0800
-X-PGP-Universal: processed;
-        by hqpgpgate101.nvidia.com on Tue, 17 Dec 2019 05:59:49 -0800
-Received: from [10.2.165.11] (10.124.1.5) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Tue, 17 Dec
- 2019 13:59:48 +0000
-Subject: Re: [RFC PATCH] mm/gup: try_pin_compound_head() can be static
-To:     kbuild test robot <lkp@intel.com>
-CC:     <kbuild-all@lists.01.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Dave Chinner <david@fromorbit.com>,
-        David Airlie <airlied@linux.ie>,
-        "David S . Miller" <davem@davemloft.net>,
-        Ira Weiny <ira.weiny@intel.com>, Jan Kara <jack@suse.cz>,
-        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
-        Jonathan Corbet <corbet@lwn.net>,
-        =?UTF-8?B?SsOpcsO0bWUgR2xpc3Nl?= <jglisse@redhat.com>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Michal Hocko <mhocko@suse.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Paul Mackerras <paulus@samba.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Vlastimil Babka <vbabka@suse.cz>, <bpf@vger.kernel.org>,
-        <dri-devel@lists.freedesktop.org>, <kvm@vger.kernel.org>,
-        <linux-block@vger.kernel.org>, <linux-doc@vger.kernel.org>,
-        <linux-fsdevel@vger.kernel.org>, <linux-kselftest@vger.kernel.org>,
-        <linux-media@vger.kernel.org>, <linux-rdma@vger.kernel.org>,
-        <linuxppc-dev@lists.ozlabs.org>, <netdev@vger.kernel.org>,
-        <linux-mm@kvack.org>, LKML <linux-kernel@vger.kernel.org>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>
-References: <20191211025318.457113-24-jhubbard@nvidia.com>
- <20191217080358.q3k57ta62txvip5h@4978f4969bb8>
-From:   John Hubbard <jhubbard@nvidia.com>
-X-Nvconfidentiality: public
-Message-ID: <7828a101-e422-8e2a-ef9b-9c0285065ed5@nvidia.com>
-Date:   Tue, 17 Dec 2019 05:56:56 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.3.0
+        id S1728763AbfLQN7y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Dec 2019 08:59:54 -0500
+Received: from mail-ot1-f67.google.com ([209.85.210.67]:36801 "EHLO
+        mail-ot1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728539AbfLQN7w (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 08:59:52 -0500
+Received: by mail-ot1-f67.google.com with SMTP id i4so13883207otr.3
+        for <netdev@vger.kernel.org>; Tue, 17 Dec 2019 05:59:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=3JFzHxjQ2yXiUgqg4VdPQUanEYQkHg0ZMyEFwN+45s4=;
+        b=lS/R1cgXKw0EMgwBzI/JKvW1DtLX6a+/TQ3p7RfAm9+HPlN20/KsmUVQcRQwEe/Vm/
+         QGniWUH1Ngw8V4cI44pKlZdkaQDxPc8bUhiqgCkfbnEQ+I+aJ38rAiusebOqHAfD1EN3
+         iXPr/IEETpHrgDCmOE4PPbCfj4K+HzcV1wb78XVNGKYtYwWSOiQ2kLxf7ugqVUgBaBNM
+         hYtXvuPlA2W8doB5cIzHiSLv+ecnh7z7SqmhW9RZZTKGIXb1hve5Lk78YNN0oLVRDdku
+         JEpmk1vZmthzziA/OwPWycoZxfG1dVgpd1+1l8Le6JQzT77hRFvnMYocXJRnCFzSKOM3
+         /Wzg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=3JFzHxjQ2yXiUgqg4VdPQUanEYQkHg0ZMyEFwN+45s4=;
+        b=km9oHDbWum6IA0CTIWnx2he4/zOHJ81MkxAVZllH6vaMkgu17IFiBioVlLxlO+42G8
+         UuUCg6dr0m9l1PYHysE/YZGrmsZpth/zzCRoZYFsEPPoNJfWL7m4NSpzRT/CaLjmvU0D
+         0ZRXjk2OauSu9TtOl16mU9BAxghzvNY2YZaTp6LR+UPZErQ3g/U3AkAfDpgMKQHAOqqd
+         3P2kdtIxweVnyZ3VyGai16algpV+eO680tQ0Is+W+tY9HYEpMnoxth+EzeL16/P7UZ67
+         ZLzclJHYNaPp6TAj4XDxVYUX0G1+WV4I31ebnFKwZAaV6ieO+pXRKUfoBnqhlddmRSUK
+         +XCA==
+X-Gm-Message-State: APjAAAVYvIoHbie6yR4SDay9dvnw9SG3vBBUc20e9AovV5k7trQuT2Fg
+        G1mfpVtnfbvJWjpcmFMvukKSdpxqjpKGgU9YMdk=
+X-Google-Smtp-Source: APXvYqyiK5Io6kDsC1bK9ZSAH6iPfcp5FktxC9TkX1qqX9gBnhghKNSlogyhVx9+8FMcdeZDRYKFCtnEkh/2vDBuQ6s=
+X-Received: by 2002:a05:6830:1b78:: with SMTP id d24mr35924993ote.174.1576591192234;
+ Tue, 17 Dec 2019 05:59:52 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20191217080358.q3k57ta62txvip5h@4978f4969bb8>
-X-Originating-IP: [10.124.1.5]
-X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
- HQMAIL107.nvidia.com (172.20.187.13)
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1576591180; bh=+kY6WrbKA7lSfaR6JiJsMhpW0kY3DW4edAlAk5Ve1Ws=;
-        h=X-PGP-Universal:Subject:To:CC:References:From:X-Nvconfidentiality:
-         Message-ID:Date:User-Agent:MIME-Version:In-Reply-To:
-         X-Originating-IP:X-ClientProxiedBy:Content-Type:Content-Language:
-         Content-Transfer-Encoding;
-        b=GbGZzaEh7giluV7bpN/IIAOj3Mc18AXcjLeuEGsTgM8/schRNFGUqCq00YAc4ARRK
-         0PVe1s7+qdvFmh1Ttru614AJtLodM6wJzZ2UNnA1jIm2+JCvQssDVh7rwrwji91hSp
-         Dmomrx8a2mkRdKDi+zuehTjS+cK+ceZUGuV2qS+Q00TgS6unnj2J/spZ+jPwNEGl3X
-         xJTAKof+O0alRzDH3cC7VTlXjNJwIWhcBZya8mbb62MvfcrAHYE78VekfobHefcZXx
-         ueLyg5p/jxUNWHBbbcLlFxuQBAi3TiHxhM/GsO23RipjSLUTZwruxA+61/WfeUhUby
-         xcvllM2I0K27A==
+Received: by 2002:a9d:826:0:0:0:0:0 with HTTP; Tue, 17 Dec 2019 05:59:51 -0800 (PST)
+Reply-To: mrssshaniee@gmail.com
+From:   Miss Shanie Edwards Lorna <mrs.lllllllll.hhhhhhhhh@gmail.com>
+Date:   Tue, 17 Dec 2019 05:59:51 -0800
+Message-ID: <CALP6Zz_22n8fJW0pmR9NdaP5UgTTR5nTikLN_+Up8MkYwcxvPg@mail.gmail.com>
+Subject: Good day
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/17/19 12:03 AM, kbuild test robot wrote:
-> 
-> Fixes: 8086d1c61970 ("mm/gup: track FOLL_PIN pages")
-> Signed-off-by: kbuild test robot <lkp@intel.com>
-> ---
->   gup.c |    2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/mm/gup.c b/mm/gup.c
-> index 038b71165a761..849a6f55938e6 100644
-> --- a/mm/gup.c
-> +++ b/mm/gup.c
-> @@ -75,7 +75,7 @@ static inline struct page *try_get_compound_head(struct page *page, int refs)
->    * @Return:	the compound head page, with ref appropriately incremented,
->    * or NULL upon failure.
->    */
-> -__must_check struct page *try_pin_compound_head(struct page *page, int refs)
-> +static __must_check struct page *try_pin_compound_head(struct page *page, int refs)
->   {
->   	struct page *head = try_get_compound_head(page,
->   						  GUP_PIN_COUNTING_BIAS * refs);
-> 
+Only Faithful Believe.
 
-Yes, it should have been declared static. And this also applies to the latest version
-(v11). The preferred fix would stay within 80 columns, like this:
+How are you? Hope everything goes well.
 
-diff --git a/mm/gup.c b/mm/gup.c
-index c2793a86450e..39b2f683bd2e 100644
---- a/mm/gup.c
-+++ b/mm/gup.c
-@@ -75,7 +75,8 @@ static inline struct page *try_get_compound_head(struct page *page, int refs)
-   * @Return:    the compound head page, with ref appropriately incremented,
-   * or NULL upon failure.
-   */
--__must_check struct page *try_pin_compound_head(struct page *page, int refs)
-+static __must_check struct page *try_pin_compound_head(struct page *page,
-+                                                      int refs)
-  {
-         struct page *head = try_get_compound_head(page,
-                                                   GUP_PIN_COUNTING_BIAS * refs);
+Although I am not comfortable to send this proposal to you because of
+increase in SCAM and FRAUD especially in Africa. It's my pleasure to
+brief you with this. I am writing this mail to you with heavy tears In
+my eyes and great sorrow in my heart, I want to tell you this because
+I don't have any other option than to tell you as I was touched to
+open up to you, I married to Mr.Sangoule Godooi who was exporter of
+Gold from Burkina Faso mining to worldwide for ten years before he
+died in the year 2010.We were married for 16 years without a child. He
+died after a brief illness that lasted for only six days. Since his
+death I decided not to remarry, when my late husband was alive he
+deposited the sum of US$ 8.5M (eight million five hundred united
+dollars) in bank and presently this money is still in bank, He made
+this money available for exportation of Gold from Burkina Faso mining
+to worldwide.
 
+Recently, I suffer from throat cancer terminally ill. My Doctor told
+me that I am condemned to certain death due to cancer problem. The one
+that disturbs me most is my stroke sickness .Having known my condition
+I decided to hand you over this money to take care of the
+less-privileged people, you will utilize this money the way I am going
+to instruct herein.
 
-thanks,
--- 
-John Hubbard
-NVIDIA
+As soon a s I receive your reply I will instruct the Bank Manger to
+immediately transfer you the fund.
+I await your prompt reply.Please send the following: Reply To This
+E-mail Address msluizagodoi99@yahoo.com
+
+Yours sincerely.
+
+Mrs. Luiza Godooi
