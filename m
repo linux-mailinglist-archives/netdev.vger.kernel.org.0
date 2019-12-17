@@ -2,132 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7EF6D12338C
-	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 18:30:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B8E5612338D
+	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 18:30:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727145AbfLQRaL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Dec 2019 12:30:11 -0500
-Received: from mail-ed1-f67.google.com ([209.85.208.67]:42202 "EHLO
-        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726191AbfLQRaL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 12:30:11 -0500
-Received: by mail-ed1-f67.google.com with SMTP id e10so8662668edv.9
-        for <netdev@vger.kernel.org>; Tue, 17 Dec 2019 09:30:09 -0800 (PST)
+        id S1727444AbfLQRag (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Dec 2019 12:30:36 -0500
+Received: from mail-lf1-f65.google.com ([209.85.167.65]:34122 "EHLO
+        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726191AbfLQRaf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 12:30:35 -0500
+Received: by mail-lf1-f65.google.com with SMTP id l18so7558607lfc.1
+        for <netdev@vger.kernel.org>; Tue, 17 Dec 2019 09:30:34 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=ue/O7pVIVksi3fbsucjsTcTPRaRfwz9jC5S+XdxwRe8=;
-        b=pEl6/kx+EtEt73cwEg0YfzLmubt9kHMt5vKYmQ4azZQ61xAh5dhFioMiG4/e1Ec024
-         O+aJfE2Bj3QGu9jAOCjhSCGkqtyi+kDxhEvkjA+XHO2lrFzx8mErF1/wukuXq9vmFJHa
-         w9ovVCqN09FvhUu89EYDvmMZ5t1NnekUBPxIKqPW4ZqU0pYibX3IEidhWHk0LDe1dWWN
-         1qtNW15YK9H6GxsFR9S2YDrI+IjO39+UgcJBTwJy+Crj689NGSSvVbfzXDSuG6ireink
-         66hfKqjtAFW+dcx8Zuu6uBDfGE+WkKvJ9Dp79exXCVgdkRE0NYyKuQxCMEOPJNi+0ZYI
-         BL6w==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=RzyER/QDVJv6afvNMUdBdyKn1bNRVFH/qXMpNB5w+Co=;
+        b=Oj9UUdKoB0v3LM5+wH2DWOKLEfpttTrYMty1G0s+aE7bRd7YSlkQwShEBjwVbJe25l
+         Sd+cj7rrkNcsf/0kZls2vkLJ/1NDja5N6qOEyz6ukuMeeQbTpIKKhoEjp7iCohdpoZso
+         QdMUEFG01a3zTRD8ot0TGJfIUNY2zxEZ4S3TI4AMR0qkKah9tCue7zLEyKoy1uOgrVed
+         vIeAOeon8I5k7/1HljniYfRHMTwgoTwJqDqFyZ2dW5Z2EpCbdUA0MiPH3X5TccNZ4P5J
+         9ZQaZ8S6VzNcn9cGEmt/Q5akni0czGVWjBu3YTkulOM0kPAPgNH+tIB2pyTQy5j7gSfk
+         k20g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:autocrypt
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=ue/O7pVIVksi3fbsucjsTcTPRaRfwz9jC5S+XdxwRe8=;
-        b=juRHmg3pSfYoUWS8zOJ42UvBO4h6aLq6ndAFS6PXz+/6hPEJTsg4TPdMpig4xYxE3J
-         pn7ZCJ+zppNgVUhf/fNyxeRcqVL9a9xOWMYs+0Uf9yVdRnaB19y3FASBEfhflg0mJEht
-         xtEHVKII7gHxvoIO+7Y/ZtLPrj0PBHrDECSaEUGJbLCDZpUWe7S6NaOLSK/5yOdZXRpC
-         d8PbQxYTPLA6AHrz1rRSyz6o7aQuXJdAdMTFvyUeKCi+KF4T1wbq5c2IBNVolYwXc9Rh
-         wtFuj2aj+WA6o98IJ6Blj5yQtHXoIoXi0YFW6nyX3NXkFYL2eUPbopCwHCMlqRU6W9ew
-         Yu/A==
-X-Gm-Message-State: APjAAAU/vM88+nAwV0LpwTfHNdaewT1TQ4TlNRveaocJo2UJ98OZFra9
-        4ai1JAWB0rixH6bgQMV5cJBfAYBw
-X-Google-Smtp-Source: APXvYqxTucdIQGe19RBZP1aF0z8cCU7KtJffKeYj16L/N1ayuTDjM4ZNZeJoEFN8JrhtPUJ48RbYUA==
-X-Received: by 2002:a17:906:c7d5:: with SMTP id dc21mr6481875ejb.316.1576603808876;
-        Tue, 17 Dec 2019 09:30:08 -0800 (PST)
-Received: from [10.67.50.53] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id g4sm40524edl.6.2019.12.17.09.30.05
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 17 Dec 2019 09:30:07 -0800 (PST)
-Subject: Re: [PATCH net-next 05/11] net: phy: marvell: rearrange to use
- genphy_read_lpa()
-To:     Russell King <rmk+kernel@armlinux.org.uk>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-References: <20191217133827.GQ25745@shell.armlinux.org.uk>
- <E1ihD4L-0001ym-FK@rmk-PC.armlinux.org.uk>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
- 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
- G10n8gCguORqNGMsVRxrlLs7/himep7MrCc=
-Message-ID: <681bdb3f-acf0-6289-499d-4365437664f8@gmail.com>
-Date:   Tue, 17 Dec 2019 09:30:03 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=RzyER/QDVJv6afvNMUdBdyKn1bNRVFH/qXMpNB5w+Co=;
+        b=OlEjOCkRk4FcGJnwYivainVU0Y1hjKu8F9dl4lz0SdYjxdl6RkVz4s7iTkqVwhDmid
+         RFI0sACU+ZzKAlnZcRlQC8njMbb8T1rIA67JCM7i2qa34S0VX75saQRT6HG0t/oZINzq
+         tpYk304asFIcATe4fxmvo/DZPbnefzXU3T1lwD4nkCWtBncZTCFSNW0BSNYLGWvsewJA
+         6uLt1sFFmT92JHp0izPTHEbpdCJMbaNifYg9nENAecUeddJp+SK67a4nZwbd3e7F8Dzl
+         AVBSKts+Q7TfRLfQIgWAwBg636sb+fAZl9iZDyVKW5ZnFXy8vzyLvTbeJ6VS3NqXogJy
+         ybAg==
+X-Gm-Message-State: APjAAAV7svGr7Nlf5lwRToMQmt+EKtATA0X21p9gSJXOztIPNoM45RUp
+        bcZ3iP2efSHndB9OOnSYPM93DA==
+X-Google-Smtp-Source: APXvYqz3uEXKrijfIdS3iiSnsr9vmHOgrVB3EFB4Ov3eW6scOFHqhQOqNUsdFeimE9LZuQOPUf2sVw==
+X-Received: by 2002:ac2:5088:: with SMTP id f8mr3436286lfm.163.1576603833604;
+        Tue, 17 Dec 2019 09:30:33 -0800 (PST)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id a21sm11071105lfg.44.2019.12.17.09.30.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 17 Dec 2019 09:30:33 -0800 (PST)
+Date:   Tue, 17 Dec 2019 09:30:25 -0800
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Martin Varghese <martinvarghesenokia@gmail.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, pshelar@ovn.org,
+        scott.drennan@nokia.com, jbenc@redhat.com,
+        martin.varghese@nokia.com
+Subject: Re: [PATCH net-next v3 3/3] openvswitch: New MPLS actions for layer
+ 2 tunnelling
+Message-ID: <20191217093025.71f33a09@cakuba.netronome.com>
+In-Reply-To: <20191217171539.GA16538@martin-VirtualBox>
+References: <cover.1576488935.git.martin.varghese@nokia.com>
+        <9e3b73cd6967927fc6654cbdcd7b9e7431441c3f.1576488935.git.martin.varghese@nokia.com>
+        <20191216161355.0d37a897@cakuba.netronome.com>
+        <20191217171539.GA16538@martin-VirtualBox>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-In-Reply-To: <E1ihD4L-0001ym-FK@rmk-PC.armlinux.org.uk>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/17/19 5:39 AM, Russell King wrote:
-> Rearrange the Marvell PHY driver to use genphy_read_lpa() rather than
-> open-coding this functionality.
-> 
-> Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
+On Tue, 17 Dec 2019 22:45:39 +0530, Martin Varghese wrote:
+> On Mon, Dec 16, 2019 at 04:13:55PM -0800, Jakub Kicinski wrote:
+> > On Mon, 16 Dec 2019 19:33:43 +0530, Martin Varghese wrote: =20
+> > > diff --git a/include/uapi/linux/openvswitch.h b/include/uapi/linux/op=
+envswitch.h
+> > > index a87b44c..b7221ad 100644
+> > > --- a/include/uapi/linux/openvswitch.h
+> > > +++ b/include/uapi/linux/openvswitch.h
+> > > @@ -673,6 +673,25 @@ struct ovs_action_push_mpls {
+> > >  };
+> > > =20
+> > >  /**
+> > > + * struct ovs_action_ptap_push_mpls - %OVS_ACTION_ATTR_PTAP_PUSH_MPL=
+S action
+> > > + * argument.
+> > > + * @mpls_lse: MPLS label stack entry to push.
+> > > + * @mpls_ethertype: Ethertype to set in the encapsulating ethernet f=
+rame.
+> > > + * @l2_tun: Flag to specify the place of insertion of MPLS header.
+> > > + * When true, the MPLS header will be inserted at the start of the p=
+acket.
+> > > + * When false, the MPLS header will be inserted at the start of the =
+l3 header.
+> > > + *
+> > > + * The only values @mpls_ethertype should ever be given are %ETH_P_M=
+PLS_UC and
+> > > + * %ETH_P_MPLS_MC, indicating MPLS unicast or multicast. Other are r=
+ejected.
+> > > + */
+> > > +struct ovs_action_ptap_push_mpls {
+> > > +	__be32 mpls_lse;
+> > > +	__be16 mpls_ethertype; /* Either %ETH_P_MPLS_UC or %ETH_P_MPLS_MC */
+> > > +	bool l2_tun; =20
+> >=20
+> > In file included from <command-line>:32:                               =
+        =20
+> > ./usr/include/linux/openvswitch.h:674:2: error: unknown type name =E2=
+=80=98bool=E2=80=99       =20
+> >   674 |  bool l2_tun;                                                  =
+        =20
+> >       |  ^~~~                                                          =
+        =20
+> > make[3]: *** [usr/include/linux/openvswitch.hdrtest] Error 1 =20
+> >  =20
+>=20
+> Does that mean bool cannot be used in interface header files ? but what is
+> the alternative u8?
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
--- 
-Florian
+I think you have a 16 bit hole there anyway due to the alignment, so
+I'd declare the space as __u16 (underscores needed since this is the
+user space type), and then validate in the kernel that the higher bits
+are unused i.e. return -EINVAL if the field is not 0 or 1, to allow for
+a future use of those bits.
