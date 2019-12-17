@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6CED8123830
-	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 22:05:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8DDEE12382C
+	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 22:03:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728118AbfLQVDX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Dec 2019 16:03:23 -0500
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:38766 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727906AbfLQVDW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 16:03:22 -0500
-Received: by mail-wr1-f68.google.com with SMTP id y17so12834201wrh.5;
-        Tue, 17 Dec 2019 13:03:21 -0800 (PST)
+        id S1728214AbfLQVDZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Dec 2019 16:03:25 -0500
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:37110 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726608AbfLQVDY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 16:03:24 -0500
+Received: by mail-wr1-f67.google.com with SMTP id w15so12870668wru.4;
+        Tue, 17 Dec 2019 13:03:23 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=UEz81YOfOgBDrXB7OBw3GPro4KGLJ3XN1bscFo4nSHA=;
-        b=UW7u8lc4UrnlQsYqvTM5O8wp4aApvF3HHuSPVVE8kShJFzS9keNU+nrzSJ/OIakMz7
-         fCrtDfUlR1zsDjKHEIpaVvTNeM3vjeypRhfqoKgIHZ2gTcqzrhFCN9tqiKsZFAtxLS6T
-         h8Z2uh3tmJTwO6zMVd5R/k65XLu+Nav5giW9RrR84PT6KD8qcfvm5YzgyzC20naOrRb5
-         AHrMMr5+D/m5l81BkzXcmZqnfTMrViHbyjCFdeHM+7D8BCCxel0sXOzzQ0WCv25XcVcG
-         jXBV1E9s5D5Wjy/7XoCmLLTgVX68T7ucxh+yo2aztUUQ/dvzLUvfDMwHdXrGhyr0KKB6
-         EyQQ==
+        bh=NP+Ttt9H3Ex0HBO5rDc8Vmumcq1LoDHKpxYSLTwm1P0=;
+        b=NsZ6qiSCk+Z0J0Or9c6jYCMK5yMn2LzlesEWp/9oKIUaym28dH+2omB2g3Jn7G0G4b
+         Dq8TzJm8zcp+uHfM7e2dmjMN44ixOx6vl1RjJ216dzRBQCsis6+KKEiy4m4tmLA4QtLu
+         xNk1ZFYHjIm6O7lVBXWnSeBqUYY6YDgJhlBysiJDGTSxIrLwQVUFrd3KhskDkPYHEzKh
+         1b7WW2xL+5mRS/b92z89O+/vXjc7IrL+FG93cjeE36x3zkezYmZiDwaMnhF/bHCUS2RP
+         GeuACJduejzSf1ec8un6gG/UDd+5c8I7kBDsYvw6ypbsB0E9rB5z8fjvDEshlaYZr46l
+         0s2w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=UEz81YOfOgBDrXB7OBw3GPro4KGLJ3XN1bscFo4nSHA=;
-        b=LXErbKSA4RmbMJ1BKYKI0hvhRZMZJJW9PP4tDy5o1BywPiY1Pqxe0DfIbblyBK5vQ/
-         DhU+YqfedgLhYOdull+erHwFmQlYH5GcrjDim/QyB2yx0037zH3d1CZoAbb6+dwAph0L
-         kP5R+qKUdtb4BgyItj+9mt3/pJH2et+aobnfiFdFiv8VlasemWlX39s8D6VWZ5yQ0Dd2
-         QnaqsOa2zUPUy8wcpa280Ty+pbyCnwrxB7a7L8qLU4dpSWyrsYaESr8bLaBaLuFsYbO7
-         KSg+PNEuqvgZlkZeKiBK62DOG8clijrq80pij4xG0AO7c4SqEX/mTwNbYyTK5bojxjha
-         GHDw==
-X-Gm-Message-State: APjAAAU6GV67p56s0scNgirpQgAYhD03KOhYu5bFopetz+AmbiqzuBfl
-        uwYzKqt7aD3ygxdmqiBzEXg=
-X-Google-Smtp-Source: APXvYqwkOwdxPepwdqVfFroGEWL76TWFApWlfrJJioALoFLCcNgqmUhPw1gYUlzqbe8/6KUp+pULmg==
-X-Received: by 2002:adf:bc87:: with SMTP id g7mr40599814wrh.121.1576616600781;
-        Tue, 17 Dec 2019 13:03:20 -0800 (PST)
+        bh=NP+Ttt9H3Ex0HBO5rDc8Vmumcq1LoDHKpxYSLTwm1P0=;
+        b=a/9HVdZVFWZZDxj9+pq1hFukrfpgGN6hVOwidwr3+P+sohkS6uX6gcOwTNCJKU7KuM
+         cQnJ4WoEv4yRfZX49NPRLZa+OMPxuzRH52zitsuMULCrIGwHwgs3iYPQrVEs8uJ1m6Jj
+         nISeInroNsmJDx6jtc18VjTmn7sltqFCyEerpR+u8EgZeOAN2iB7G9AcbBfGMaldGwGu
+         ULJvagJXeB2XGiJyA1dGc7rBVuICVDZOzXqO4N64Y+7Vtt8iaEk7Hi9ydHfyMjhG3uWb
+         2UaumAiT7VrGFKlkhN2rd86BKiULkUCxoVtOT74WHz0TVGrGZpNkVlX+ml5uNw0y0rPA
+         DuFg==
+X-Gm-Message-State: APjAAAWYKSj6+zGtgpEY3AR4jg1UlAougQEzuZwyCXikpGyle09e2MKo
+        8bbDuFYOUdSTRAX5Pzd9K64KnMBt
+X-Google-Smtp-Source: APXvYqwTl5T93JBbBujZpQbJJ87DKzF3MndmVunsjotBOKrFeCBbWfmP5Pz+VPaD44oRAqDS/xVenw==
+X-Received: by 2002:adf:f103:: with SMTP id r3mr38126416wro.295.1576616602771;
+        Tue, 17 Dec 2019 13:03:22 -0800 (PST)
 Received: from stbirv-lnx-3.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id i5sm37856wml.31.2019.12.17.13.03.18
+        by smtp.gmail.com with ESMTPSA id i5sm37856wml.31.2019.12.17.13.03.20
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Tue, 17 Dec 2019 13:03:20 -0800 (PST)
+        Tue, 17 Dec 2019 13:03:22 -0800 (PST)
 From:   Doug Berger <opendmb@gmail.com>
 To:     "David S. Miller" <davem@davemloft.net>
 Cc:     Florian Fainelli <f.fainelli@gmail.com>,
         bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, Doug Berger <opendmb@gmail.com>
-Subject: [PATCH net-next 2/8] net: bcmgenet: enable NETIF_F_HW_CSUM feature
-Date:   Tue, 17 Dec 2019 13:02:23 -0800
-Message-Id: <1576616549-39097-3-git-send-email-opendmb@gmail.com>
+Subject: [PATCH net-next 3/8] net: bcmgenet: use CHECKSUM_COMPLETE for NETIF_F_RXCSUM
+Date:   Tue, 17 Dec 2019 13:02:24 -0800
+Message-Id: <1576616549-39097-4-git-send-email-opendmb@gmail.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1576616549-39097-1-git-send-email-opendmb@gmail.com>
 References: <1576616549-39097-1-git-send-email-opendmb@gmail.com>
@@ -59,81 +59,82 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The GENET hardware should be capable of generating IP checksums
-using the NETIF_F_HW_CSUM feature, so switch to using that feature
-instead of the depricated NETIF_F_IP_CSUM and NETIF_F_IPV6_CSUM.
+This commit updates the Rx checksum offload behavior of the driver
+to use the more generic CHECKSUM_COMPLETE method that supports all
+protocols over the CHECKSUM_UNNECESSARY method that only applies
+to some protocols known by the hardware.
+
+This behavior is perceived to be superior.
 
 Signed-off-by: Doug Berger <opendmb@gmail.com>
 ---
- drivers/net/ethernet/broadcom/genet/bcmgenet.c | 29 +++++++++++---------------
- 1 file changed, 12 insertions(+), 17 deletions(-)
+ drivers/net/ethernet/broadcom/genet/bcmgenet.c | 13 +++++--------
+ drivers/net/ethernet/broadcom/genet/bcmgenet.h |  1 +
+ 2 files changed, 6 insertions(+), 8 deletions(-)
 
 diff --git a/drivers/net/ethernet/broadcom/genet/bcmgenet.c b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-index d9defb8b1e5f..cd07b3ad1d53 100644
+index cd07b3ad1d53..5674dc304032 100644
 --- a/drivers/net/ethernet/broadcom/genet/bcmgenet.c
 +++ b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-@@ -549,7 +549,7 @@ static int bcmgenet_set_tx_csum(struct net_device *dev,
- 	tbuf_ctrl = bcmgenet_tbuf_ctrl_get(priv);
- 	rbuf_ctrl = bcmgenet_rbuf_readl(priv, RBUF_CTRL);
+@@ -521,7 +521,7 @@ static int bcmgenet_set_rx_csum(struct net_device *dev,
  
--	desc_64b_en = !!(wanted & (NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM));
-+	desc_64b_en = !!(wanted & NETIF_F_HW_CSUM);
+ 	/* enable rx checksumming */
+ 	if (rx_csum_en)
+-		rbuf_chk_ctrl |= RBUF_RXCHK_EN;
++		rbuf_chk_ctrl |= RBUF_RXCHK_EN | RBUF_L3_PARSE_DIS;
+ 	else
+ 		rbuf_chk_ctrl &= ~RBUF_RXCHK_EN;
+ 	priv->desc_rxchk_en = rx_csum_en;
+@@ -1739,7 +1739,6 @@ static unsigned int bcmgenet_desc_rx(struct bcmgenet_rx_ring *ring,
+ 	unsigned int bytes_processed = 0;
+ 	unsigned int p_index, mask;
+ 	unsigned int discards;
+-	unsigned int chksum_ok = 0;
  
- 	/* enable 64 bytes descriptor in both directions (RBUF and TBUF) */
- 	if (desc_64b_en) {
-@@ -574,7 +574,7 @@ static int bcmgenet_set_features(struct net_device *dev,
- 	netdev_features_t wanted = dev->wanted_features;
- 	int ret = 0;
+ 	/* Clear status before servicing to reduce spurious interrupts */
+ 	if (ring->index == DESC_INDEX) {
+@@ -1793,6 +1792,10 @@ static unsigned int bcmgenet_desc_rx(struct bcmgenet_rx_ring *ring,
  
--	if (changed & (NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM))
-+	if (changed & NETIF_F_HW_CSUM)
- 		ret = bcmgenet_set_tx_csum(dev, wanted);
- 	if (changed & (NETIF_F_RXCSUM))
- 		ret = bcmgenet_set_rx_csum(dev, wanted);
-@@ -1516,24 +1516,19 @@ static struct sk_buff *bcmgenet_put_tx_csum(struct net_device *dev,
- 			ip_proto = ipv6_hdr(skb)->nexthdr;
- 			break;
- 		default:
--			return skb;
-+			/* don't use UDP flag */
-+			ip_proto = 0;
-+			break;
+ 			status = (struct status_64 *)skb->data;
+ 			dma_length_status = status->length_status;
++			if (priv->desc_rxchk_en) {
++				skb->csum = ntohs(status->rx_csum & 0xffff);
++				skb->ip_summed = CHECKSUM_COMPLETE;
++			}
  		}
  
- 		offset = skb_checksum_start_offset(skb) - sizeof(*status);
- 		tx_csum_info = (offset << STATUS_TX_CSUM_START_SHIFT) |
--				(offset + skb->csum_offset);
-+				(offset + skb->csum_offset) |
-+				STATUS_TX_CSUM_LV;
+ 		/* DMA flags and length are still valid no matter how
+@@ -1835,18 +1838,12 @@ static unsigned int bcmgenet_desc_rx(struct bcmgenet_rx_ring *ring,
+ 			goto next;
+ 		} /* error packet */
  
--		/* Set the length valid bit for TCP and UDP and just set
--		 * the special UDP flag for IPv4, else just set to 0.
--		 */
--		if (ip_proto == IPPROTO_TCP || ip_proto == IPPROTO_UDP) {
--			tx_csum_info |= STATUS_TX_CSUM_LV;
--			if (ip_proto == IPPROTO_UDP &&
--			    ip_ver == htons(ETH_P_IP))
--				tx_csum_info |= STATUS_TX_CSUM_PROTO_UDP;
--		} else {
--			tx_csum_info = 0;
--		}
-+		/* Set the special UDP flag for UDP */
-+		if (ip_proto == IPPROTO_UDP)
-+			tx_csum_info |= STATUS_TX_CSUM_PROTO_UDP;
+-		chksum_ok = (dma_flag & priv->dma_rx_chk_bit) &&
+-			     priv->desc_rxchk_en;
+-
+ 		skb_put(skb, len);
+ 		if (priv->desc_64b_en) {
+ 			skb_pull(skb, 64);
+ 			len -= 64;
+ 		}
  
- 		status->tx_csum_info = tx_csum_info;
- 	}
-@@ -3536,8 +3531,8 @@ static int bcmgenet_probe(struct platform_device *pdev)
- 	priv->msg_enable = netif_msg_init(-1, GENET_MSG_DEFAULT);
+-		if (likely(chksum_ok))
+-			skb->ip_summed = CHECKSUM_UNNECESSARY;
+-
+ 		/* remove hardware 2bytes added for IP alignment */
+ 		skb_pull(skb, 2);
+ 		len -= 2;
+diff --git a/drivers/net/ethernet/broadcom/genet/bcmgenet.h b/drivers/net/ethernet/broadcom/genet/bcmgenet.h
+index a5659197598f..11645cccc207 100644
+--- a/drivers/net/ethernet/broadcom/genet/bcmgenet.h
++++ b/drivers/net/ethernet/broadcom/genet/bcmgenet.h
+@@ -251,6 +251,7 @@ struct bcmgenet_mib_counters {
+ #define RBUF_CHK_CTRL			0x14
+ #define  RBUF_RXCHK_EN			(1 << 0)
+ #define  RBUF_SKIP_FCS			(1 << 4)
++#define  RBUF_L3_PARSE_DIS		(1 << 5)
  
- 	/* Set hardware features */
--	dev->hw_features |= NETIF_F_SG | NETIF_F_IP_CSUM |
--		NETIF_F_IPV6_CSUM | NETIF_F_HIGHDMA | NETIF_F_RXCSUM;
-+	dev->hw_features |= NETIF_F_SG | NETIF_F_HIGHDMA | NETIF_F_HW_CSUM |
-+		NETIF_F_RXCSUM;
- 
- 	/* Request the WOL interrupt and advertise suspend if available */
- 	priv->wol_irq_disabled = true;
+ #define RBUF_ENERGY_CTRL		0x9c
+ #define  RBUF_EEE_EN			(1 << 0)
 -- 
 2.7.4
 
