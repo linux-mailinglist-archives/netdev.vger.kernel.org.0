@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B0D5123A44
-	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 23:52:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B0406123A46
+	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 23:52:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726754AbfLQWwL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Dec 2019 17:52:11 -0500
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:35103 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725975AbfLQWwK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 17:52:10 -0500
-Received: by mail-pf1-f196.google.com with SMTP id b19so65202pfo.2;
-        Tue, 17 Dec 2019 14:52:10 -0800 (PST)
+        id S1726637AbfLQWwn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Dec 2019 17:52:43 -0500
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:46266 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725975AbfLQWwm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 17:52:42 -0500
+Received: by mail-pg1-f195.google.com with SMTP id z124so95587pgb.13;
+        Tue, 17 Dec 2019 14:52:42 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=43dL0S1+ZbpbhxK/aXB66QvsZ6ZYsRiAxB07/k7CzJg=;
-        b=alSVTcLlBYiwu1/uz/4koQUlH+z2+YU570VCDe7gACD+8FkvyL9E14y0BOQ6Lg0wZt
-         5HlcSpVkFGXcvCFAGPrI1Hx9cahhwFOOCB187578naBLPt+5WAc8Su3jgYJ0zUMV2Sj8
-         4r8YQzKspY4x1si+XNmUgJp76KXkPB8xTySWfe9Wkyh/i+YGitS9brLZ+eEZ23U6ntvb
-         /g5/AyfE/WjDpSuqYFy4PE2jwzs6JkdVa2ZivGHbzoDCMphM3WFJTHWK/2Ueq7Iw/GAA
-         /iSaSz2pX0uvfTqB90XIW9FtPShF+zzmY2BnoNPrzR8WqboPZWcb2AKaYJc3o9CCYsd5
-         OAtw==
+        bh=DqXU9U11e/cIhG1/vrSxl1P+GLoygWeGqN5Nv8GZRew=;
+        b=jQjnZxEXdUdFadVGDp8bQ5P845JBsazDbmiwrW4ghL0qEZ/iz2FE/RWhD0Vwu0truz
+         m7Ve3mOo/WG3O38hcSjwsFL9W/J1d6nh+6e32iOgNKbXMHdMx8Y69OYwlgNOWqlhwwLn
+         rqBo4qXnRyFtzSUxSVVwnVkfz5P45FVK2nHEThRlV/9NfF3hUMvdOgJOSk4ou3XZZwMI
+         fcsuW9MOfRNYX2mQH9mg2p77W+CWK6zoMhtmXD1QZJBAx6/gKqT7awF+BDW1F/uDehtg
+         xQFm3r5MlNOP2LDLo2wW6wMykDrcrnJidA6Wi4TXpXXizNzvkOCVoS8GWXhALHMGT6f/
+         EL2g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=43dL0S1+ZbpbhxK/aXB66QvsZ6ZYsRiAxB07/k7CzJg=;
-        b=T3fgC9clUKU+OVyaCKGKSIjhyzooXkKt2HdmNWhb3yW4DqYJ44zxC8E5hQZsapfD3N
-         Gw5LDjQzxlBKTAwIkmTt8/lqBVxYt9TtSSJcttGOdF9C6dQTx8wAtR5A1hp0m5Nbx2h0
-         MEbH7b9JDgNoulc7fZ1Yux6YEuWjYVEii3fq0daZWRR/poHRRlSznbEmUSSLd1gtzXJ0
-         EpEWoKmXA82Rxhe4vE+5psKfx4EeeNR1Rd9UCFW52dydbuTHbVJ2cYgoBW8Z+EZr/BJA
-         d3oj1GA+nowN1ddQ0QfIV0Z5eePvxl9bo72SskckcGpEhjRKZ6n8ZLWVMZHuhd2OQ4bS
-         La2g==
-X-Gm-Message-State: APjAAAWxghTRfulQIKHoN95+ob9zNDqQ/81FX2qzlFZkNlbec3aTswd5
-        LMqyYhtoMAjMbdEcy7OcXLkLNyRM
-X-Google-Smtp-Source: APXvYqypKxsddQba+a9CY+gMEud33YEWDdVtSg9vuKaEkUs1MpWIURcQ5MT3SK38fh1ORaM/yll19g==
-X-Received: by 2002:a63:66c6:: with SMTP id a189mr26057698pgc.401.1576623129476;
-        Tue, 17 Dec 2019 14:52:09 -0800 (PST)
+        bh=DqXU9U11e/cIhG1/vrSxl1P+GLoygWeGqN5Nv8GZRew=;
+        b=RIXyPqorXmW1uJqxdmqhy9Qi1GNN3aD3eLj7l/hJVNI+6dIXF6u69YTUVOn2VZklCr
+         uUqH/qiySw8lrNXQxTDZTK6cfgxG/krQiIQxwO5A6x9cy9guxjajpY4abx8pRvuALYnd
+         I3bwPPypRbuW2J2QrolLa8ma3mQaThQP2ge10ZDR5whHFnvfNKw663rZAtJJmhwPTGIy
+         Oz38eulJM/wVqNqWutSwRCFe6BMuZQUL0mVvAOCfr0RDZsyjRWFo/UfhhdgLwsN0b2aC
+         L7uuYlsBCjzDZQS33PEBEPareFV/vmB7+0dawazd4I6WieDQzmxE7fosZAOP0lbHJPJn
+         a47g==
+X-Gm-Message-State: APjAAAUpV+xoS1pQl+Ys/vsgIwT5RPqpPMgWzyg/EPCGOtS6Ne/SmzOB
+        qtuGHtQRUSCV+WOsVhN6AZRQM6nm
+X-Google-Smtp-Source: APXvYqzBCAtZYc5rRKiywKEjqmg4kqFJC7VVuzLRnp6wH/uFO5Enp34DcPsLZt0RvW16t0EuIbm6lQ==
+X-Received: by 2002:a63:2e07:: with SMTP id u7mr27831535pgu.295.1576623161703;
+        Tue, 17 Dec 2019 14:52:41 -0800 (PST)
 Received: from [10.67.50.53] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id s1sm14796pgv.87.2019.12.17.14.52.08
+        by smtp.googlemail.com with ESMTPSA id u18sm30834pgi.44.2019.12.17.14.52.40
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 17 Dec 2019 14:52:09 -0800 (PST)
+        Tue, 17 Dec 2019 14:52:41 -0800 (PST)
 Subject: Re: [PATCH net-next 3/8] net: bcmgenet: use CHECKSUM_COMPLETE for
  NETIF_F_RXCSUM
-To:     David Miller <davem@davemloft.net>, opendmb@gmail.com
+To:     Doug Berger <opendmb@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>
 Cc:     bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
 References: <1576616549-39097-1-git-send-email-opendmb@gmail.com>
  <1576616549-39097-4-git-send-email-opendmb@gmail.com>
- <20191217.131631.2246524906428878009.davem@davemloft.net>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  xsDiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
@@ -108,12 +108,12 @@ Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  HvsHIcv4lxCWkFXkwsuWqzEKK6kxVpRDoEQPDj+Oy/ZJ5fYuMbkdHrlegwoQ64LrqdmiVVPC
  TwQYEQIADwIbDAUCVF/S8QUJHlwd3wAKCRBhV5kVtWN2Do+FAJ956xSz2XpDHql+Wg/2qv3b
  G10n8gCguORqNGMsVRxrlLs7/himep7MrCc=
-Message-ID: <042fad13-f6a2-6d1b-ba7a-61c60e394115@gmail.com>
-Date:   Tue, 17 Dec 2019 14:52:07 -0800
+Message-ID: <43c460b7-9091-6306-3d39-a4ff1fdc0d5d@gmail.com>
+Date:   Tue, 17 Dec 2019 14:52:40 -0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.2.2
 MIME-Version: 1.0
-In-Reply-To: <20191217.131631.2246524906428878009.davem@davemloft.net>
+In-Reply-To: <1576616549-39097-4-git-send-email-opendmb@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -122,24 +122,19 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/17/19 1:16 PM, David Miller wrote:
-> From: Doug Berger <opendmb@gmail.com>
-> Date: Tue, 17 Dec 2019 13:02:24 -0800
+On 12/17/19 1:02 PM, Doug Berger wrote:
+> This commit updates the Rx checksum offload behavior of the driver
+> to use the more generic CHECKSUM_COMPLETE method that supports all
+> protocols over the CHECKSUM_UNNECESSARY method that only applies
+> to some protocols known by the hardware.
 > 
->> This commit updates the Rx checksum offload behavior of the driver
->> to use the more generic CHECKSUM_COMPLETE method that supports all
->> protocols over the CHECKSUM_UNNECESSARY method that only applies
->> to some protocols known by the hardware.
->>
->> This behavior is perceived to be superior.
->>
->> Signed-off-by: Doug Berger <opendmb@gmail.com>
+> This behavior is perceived to be superior.
 > 
-> This has to be done in the same patch that you change to use
-> the NETIF_F_HW_CSUM feature flag.
+> Signed-off-by: Doug Berger <opendmb@gmail.com>
 
-Even if we were already advertising support for NETIF_F_RXCSUM before
-patch #2? Not questioning your comment, just trying to understand why
-this is deemed necessary here since it does not affect the same "direction".
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+
+You could also remove priv->dma_rx_chk_bit which is now write only after
+this patch and not used anymore.
 -- 
 Florian
