@@ -2,63 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8FEE112329B
-	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 17:35:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1EDC512329F
+	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 17:36:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728522AbfLQQf3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Dec 2019 11:35:29 -0500
-Received: from mail-qt1-f196.google.com ([209.85.160.196]:46034 "EHLO
-        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727802AbfLQQf3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 11:35:29 -0500
-Received: by mail-qt1-f196.google.com with SMTP id l12so9176702qtq.12
-        for <netdev@vger.kernel.org>; Tue, 17 Dec 2019 08:35:29 -0800 (PST)
+        id S1728242AbfLQQgp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Dec 2019 11:36:45 -0500
+Received: from mail-qk1-f194.google.com ([209.85.222.194]:33123 "EHLO
+        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727766AbfLQQgp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 11:36:45 -0500
+Received: by mail-qk1-f194.google.com with SMTP id d71so6903230qkc.0
+        for <netdev@vger.kernel.org>; Tue, 17 Dec 2019 08:36:44 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=iFfFtOu+kp1N2gM6HFBL3ZIm3uazNPzFl3mKzC+i4HI=;
-        b=U7pmlz432/B0RvqJ/CxnNQWBVOmgdZseaobcQ3AWyTj+7Bu8MhXyTp3fEQromNUtWc
-         Z9d1EVSu+JZXdnkYOfwyonkciP3uvKXWZVpyQAOLMfbWh4da95UCLuuyVQeaJ8mS5bp8
-         dwh0rNDe0kHyAWSujMo9GZR3g7VJAB1UI0jo5N8H0pFPXnNVgwJdChjN+2thlzd3KmDO
-         2gPFQpKIilSECewzXzMeKjtdLG2+PBqzzBZGoV9QC4q82wlb7xkZjS4lO+02gPvm6TnN
-         Jw+JwRfjwr8R+OSvKTx411Hgz2BUbfOV2rPykDFmClFVmJEgTglyKbMuUAHBoIiZIQ2o
-         iaiA==
+        bh=ilrPrGODat9njllzbpa2mFweinR9gf7X7kNZv6BES2U=;
+        b=hv/TO69nSquJWgY0sgSRPcpLwQD34K/LJZaOG0Wr1jnRWlJVQjYAZcxRl9LgZ+asTT
+         ABUXQ7xypnLYiv/OEi7IMRqWrqpxkJmwVx4Rq7MtHTv1Mf+YIr3mBolbhYBPNiscgN4e
+         9IVQeaD1ONimpf+hynmC0pjcgykzUzNPUAA7aXhEf+UhqT/uqbs3xh4AXCvO4fmrIBaW
+         JGBVIDELReMm3oW1ymZCPway7Z1F8MNUHrE/0J1H37jrwLCYTlrIQ4fgHI8JpcM+BssW
+         DuZAeEL987gE4ZLG2IUl7lahQLqlrc2s+THX/PZCEKqtJblk+gkG71GbfLEr2/isC+mI
+         nAEg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=iFfFtOu+kp1N2gM6HFBL3ZIm3uazNPzFl3mKzC+i4HI=;
-        b=NT6MtvmnywVDl3l73+BWAnSMMIui/LFKeKZciQhZFQE0+2zKlKZFKjK/VlHxVIwb32
-         mWV/tSPKFaOCuV7+bZH08CqM5lOKv0XBr8AnmeADMknnLVLrxJ9ev5afEsqEQNBDNVem
-         p1DXRcXJu36yrMtFoFGEHZF1ODBrNr9pWKYwn4riazNTz44S4DeNMkRQTO5pP5M7UpR+
-         DvXcQBZCY7HFSU615rsaZNRiq/SgIt5l3E6R0hjXI8DdmA327gsK/Hv9P7t+DRuKSdBz
-         5funqBMn063RJLfKFMzTdwHIjbE2TqGrHCKH9DyzhwcvWya8iIx74NKhHqvz+798lEA4
-         lGWg==
-X-Gm-Message-State: APjAAAVYE0K/2qB7PDKdbQ0sxMgI6z+x+1934Uk51I/SdJ5FtnIyuCgm
-        +EEnpaWpEn6gNEumKcn0af2yzf1nQ+I=
-X-Google-Smtp-Source: APXvYqyNyR/9VISlTmLaZGLT52nUAd2nQzfwcGyb+IbTiK2c87cS/Zr5CC8qRP7CTkGdzNGOZyF1pw==
-X-Received: by 2002:ac8:383d:: with SMTP id q58mr5225871qtb.45.1576600528301;
-        Tue, 17 Dec 2019 08:35:28 -0800 (PST)
+        bh=ilrPrGODat9njllzbpa2mFweinR9gf7X7kNZv6BES2U=;
+        b=UKmLK0t7SAtrH0qKSbrxcDJre4D9f7/tmqeCYgv9YTcbP66B/aFAPwRjHeK4Rcd64U
+         ajpa9nQF/NpG2Wq1g0R6/e45F3og4ChV5EdQjuvaBigaN8KvbOOYHkx1mJGRQ/lFnnYp
+         LMwykPXfP9QGzsoi4zVb9wyoyn+dgmf/G6hBKVv7FS9PDLCjs11RdfLlFr3G75vUYnpV
+         7TvT1WqEC/HC6EqgYrH1ne0sH2cQHhu8q4OSRIq4jrNmDpuzzAEYiZay7qRgNFxCJ4KC
+         zkxAoqyr7JEASS9e6x61QhTFWy81B2zh/7+BTqOGlUKs8NFUBfCfNR51CldVQhXp7/0P
+         S7FQ==
+X-Gm-Message-State: APjAAAXbyIYhiW0yTw5SEi03luwyT7CG3g8F8p0P6HpJAdLeDhpdmU64
+        YHMKXprTOZGjbCidaJfF3qk=
+X-Google-Smtp-Source: APXvYqwsSeFcyzJcOhi3tqDSJGPKALtsnkVdQciAcltWERDoXevmjqyh9qgqGOQgtofSUzIwUOJI3g==
+X-Received: by 2002:a37:4dc1:: with SMTP id a184mr6027115qkb.62.1576600604362;
+        Tue, 17 Dec 2019 08:36:44 -0800 (PST)
 Received: from ?IPv6:2601:284:8202:10b0:b136:c627:c416:750? ([2601:284:8202:10b0:b136:c627:c416:750])
-        by smtp.googlemail.com with ESMTPSA id l19sm2771320qtq.48.2019.12.17.08.35.26
+        by smtp.googlemail.com with ESMTPSA id o17sm8027120qtq.93.2019.12.17.08.36.42
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 17 Dec 2019 08:35:27 -0800 (PST)
-Subject: Re: [PATCH iproute2-next 2/2] ip link: show permanent hardware
- address
-To:     Michal Kubecek <mkubecek@suse.cz>, David Ahern <dsahern@gmail.com>
-Cc:     Stephen Hemminger <stephen@networkplumber.org>,
-        netdev@vger.kernel.org
-References: <cover.1576443050.git.mkubecek@suse.cz>
- <b924dfca0572f87df953743e1ea26270eb251672.1576443050.git.mkubecek@suse.cz>
+        Tue, 17 Dec 2019 08:36:43 -0800 (PST)
+Subject: Re: [PATCH iproute2-next v2 2/2] iplink: bond: print 3ad
+ actor/partner oper states as strings
+To:     Andy Roulin <aroulin@cumulusnetworks.com>, netdev@vger.kernel.org
+Cc:     dsahern@gmail.com, nikolay@cumulusnetworks.com,
+        roopa@cumulusnetworks.com, j.vosburgh@gmail.com, vfalico@gmail.com,
+        andy@greyhouse.net, stephen@networkplumber.org
+References: <1576103595-23138-1-git-send-email-aroulin@cumulusnetworks.com>
+ <1576103595-23138-3-git-send-email-aroulin@cumulusnetworks.com>
 From:   David Ahern <dsahern@gmail.com>
-Message-ID: <8982ab75-2fa6-c409-ed2a-077b39e804f2@gmail.com>
-Date:   Tue, 17 Dec 2019 09:35:26 -0700
+Message-ID: <74e45193-2882-cc47-e53b-1373e6a26205@gmail.com>
+Date:   Tue, 17 Dec 2019 09:36:42 -0700
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0)
  Gecko/20100101 Thunderbird/68.3.0
 MIME-Version: 1.0
-In-Reply-To: <b924dfca0572f87df953743e1ea26270eb251672.1576443050.git.mkubecek@suse.cz>
+In-Reply-To: <1576103595-23138-3-git-send-email-aroulin@cumulusnetworks.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -67,17 +68,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/15/19 2:06 PM, Michal Kubecek wrote:
-> Display permanent hardware address of an interface in output of
-> "ip link show" and "ip addr show". To reduce noise, permanent address is
-> only shown if it is different from current one.
+On 12/11/19 3:33 PM, Andy Roulin wrote:
+> The 802.3ad actor/partner operating states are only printed as
+> numbers, e.g,
 > 
-> Signed-off-by: Michal Kubecek <mkubecek@suse.cz>
+> ad_actor_oper_port_state 15
+> 
+> Add an additional output in ip link show that prints a string describing
+> the individual 3ad bit meanings in the following way:
+> 
+> ad_actor_oper_port_state_str <active,short_timeout,aggregating,in_sync>
+> 
+> JSON output is also supported, the field becomes a json array:
+> 
+> "ad_actor_oper_port_state_str":
+> 	["active","short_timeout","aggregating","in_sync"]
+> 
+> Signed-off-by: Andy Roulin <aroulin@cumulusnetworks.com>
+> Acked-by: Roopa Prabhu <roopa@cumulusnetworks.com>
 > ---
->  ip/ipaddress.c | 18 ++++++++++++++++++
->  1 file changed, 18 insertions(+)
+>  ip/iplink_bond_slave.c | 36 ++++++++++++++++++++++++++++++++----
+>  1 file changed, 32 insertions(+), 4 deletions(-)
 > 
 
-applied to iproute2-next. Thanks
-
-
+Andy: Update the uapi file per the comments on that thread and resubmit
+this patch with the updated names.
