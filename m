@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1118C12338E
-	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 18:30:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D53EA123394
+	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 18:31:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727587AbfLQRas (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Dec 2019 12:30:48 -0500
-Received: from mail-ed1-f68.google.com ([209.85.208.68]:35990 "EHLO
+        id S1727101AbfLQRbd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Dec 2019 12:31:33 -0500
+Received: from mail-ed1-f68.google.com ([209.85.208.68]:35324 "EHLO
         mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726191AbfLQRar (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 12:30:47 -0500
-Received: by mail-ed1-f68.google.com with SMTP id j17so8727401edp.3
-        for <netdev@vger.kernel.org>; Tue, 17 Dec 2019 09:30:46 -0800 (PST)
+        with ESMTP id S1726191AbfLQRbd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 12:31:33 -0500
+Received: by mail-ed1-f68.google.com with SMTP id f8so8724721edv.2
+        for <netdev@vger.kernel.org>; Tue, 17 Dec 2019 09:31:32 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=cc0jdGmRxR/t1gFpm4gNj4gslDLPTu+rgEMKwhgC04I=;
-        b=Pgs4eSITcBqHl3fMofragdWbL0U4ZvgMTEeoZBs+oqHI0xYh+bhOH2B+24rVEQmPd7
-         VrEnaU/z5weLJUABIFF7r2aFKM+A58snVW2aMHmz/BeKpakayRaLVWQeRKGQbBPEfNZE
-         zD8soGWOtxl5MUvdj9uWdLm9jVpxUUIu9BjhVXLFsYzp22oqV09n5eoYdx4L+e/N3VE5
-         0Wl3saYjEJ2rWLbLYN1AT8VK1TWip/Gzq/nD7PgWdJ+nO5IRt4ejHwG0AlbFwa+gqcph
-         7KDBZ0S2sSZEvNwPHT65rLoyLwQ3cnu5G2N+i9RJIP26eBXr8Pu3LkEghblTKS6q6mQ1
-         Q4zw==
+        bh=5de0ByLrL0EVCOBIuJmkMoln3YtZdDZGau9DtZAG6Z0=;
+        b=eUIOCnnILpgWHX4I8Udyy4qiBEQwsIwLULAntm2ji/gtLzjL4MjLWwDFYcI1XkyxkY
+         65BLmPMCqt+Ws07GE42biw8ITXJQMs418RJZe/CHCW6sGH5H54nkcrjRqMleTgnIYjxK
+         kNGqyoVXYKgC/YtgNDyCdMJVWdsEgcffgHgPufYaVrCN5F71zF+/2XPtOGdPR98u1SpL
+         i4zNOsP94zgQZaK3RpYisxrI7HpPMyTrS1mHkjf1adKI9HaI2h7wvu+A3CspfhStmHQt
+         hE1wn2s04GTDHpMdqJx8wWdBCvUKOSVjgOSqD1L0OKKfTmybv7vVnSGztShD2b4todQr
+         JjYA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=cc0jdGmRxR/t1gFpm4gNj4gslDLPTu+rgEMKwhgC04I=;
-        b=uXm9KBKwO4XoLgASb4DOrSvp85u2b/DYqLo8SRcRnp0D+oY+Y4gtdAOdSrktt93JRW
-         kEbipXTJ+JtcYOp9xjjbBxRg3tCjeX48gwar6d799yWikp73gpt32tXMh7RNCcbpFsBJ
-         8srE8Q//0LZSlGGzN3rynRM7OmiI+wfY8uO3kC++HF4JtRFfRkydEZk+3fcoA6uOCtB8
-         xw8DAcpXmqO58fYQPRtVie1J/Gzm0Z+LwpnIGjauT/lsPt8wn0WvIv/QF+MqIaeRF3g1
-         htJ4JuFXIf9yAJhi0hpRgOGAHUWTZVEuKm2ovEmI0eUbhEx/gXJTFN0WDSoW3+GvySVm
-         pYFQ==
-X-Gm-Message-State: APjAAAWUW4MjSpJXlQyG4JM0Xb4HGhnBQqt49lT8EH1w2U3YJO6dJmMR
-        WIKPvK6nYdX0f6S5+oMpnVPTqSBU
-X-Google-Smtp-Source: APXvYqwlBPLopkkxVVc0LJO5NQTwqhKKQfXvG6tsomeV2Cb2jjbSWYZfHUeTETHNbLp/BRDbIooxDw==
-X-Received: by 2002:a05:6402:1a25:: with SMTP id be5mr6479805edb.220.1576603845246;
-        Tue, 17 Dec 2019 09:30:45 -0800 (PST)
+        bh=5de0ByLrL0EVCOBIuJmkMoln3YtZdDZGau9DtZAG6Z0=;
+        b=STZE0Xpfd91oEqO1BICOp75vGbVx4lnzqxFeiAO+bfilFU9dDg3nOV4nvucqXZfZCG
+         rscdWMAAOuidkeJIBU1iNRfEPpTqsgpjSNrK/f+l+17QaWW9lkmW9NUIK5JN7jmplEAk
+         caXBRF7EzS7oCPqqg4Z7U4LV8x5sC3xzwRqK911gcC1TtxF+E0Q3+YKf5ayVGvl9i0Qj
+         /ZAxM9GJYRdFKhPr1pimQkGwZitgRfxbELiHkD+ftXUyOSxw0p8K6sxkNijvvwPrm4ZS
+         lXK/dwTNg4BcX1RttnDH0WtluDXnh+w7m2OeQIf1MsojWWxqNpPiJz94zDrqSUPjcQwe
+         vqrg==
+X-Gm-Message-State: APjAAAUHHHclGUnPf8mv0vsK6z2XdO3HnJAc0YfKjSVzBZAOH4ttk4AI
+        gTi7+9NIJyN4QxD8Gh6VMJm4WLzd
+X-Google-Smtp-Source: APXvYqyD0YVagqz0qSIXAwUEcELxkjceEbpsqcw/0wDMpVmZP9fqlo65jro/M+bbF0v5rUWubQ5G7w==
+X-Received: by 2002:a17:906:8386:: with SMTP id p6mr6425902ejx.163.1576603891133;
+        Tue, 17 Dec 2019 09:31:31 -0800 (PST)
 Received: from [10.67.50.53] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id k5sm791892edx.58.2019.12.17.09.30.43
+        by smtp.googlemail.com with ESMTPSA id e22sm23591edq.75.2019.12.17.09.31.28
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 17 Dec 2019 09:30:44 -0800 (PST)
-Subject: Re: [PATCH net-next 06/11] net: phy: marvell: initialise link partner
- state earlier
+        Tue, 17 Dec 2019 09:31:30 -0800 (PST)
+Subject: Re: [PATCH net-next 07/11] net: phy: marvell: use positive logic for
+ link state
 To:     Russell King <rmk+kernel@armlinux.org.uk>,
         Andrew Lunn <andrew@lunn.ch>,
         Heiner Kallweit <hkallweit1@gmail.com>
 Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
 References: <20191217133827.GQ25745@shell.armlinux.org.uk>
- <E1ihD4Q-0001yt-JM@rmk-PC.armlinux.org.uk>
+ <E1ihD4V-0001z2-O5@rmk-PC.armlinux.org.uk>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  xsDiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
@@ -108,12 +108,12 @@ Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  HvsHIcv4lxCWkFXkwsuWqzEKK6kxVpRDoEQPDj+Oy/ZJ5fYuMbkdHrlegwoQ64LrqdmiVVPC
  TwQYEQIADwIbDAUCVF/S8QUJHlwd3wAKCRBhV5kVtWN2Do+FAJ956xSz2XpDHql+Wg/2qv3b
  G10n8gCguORqNGMsVRxrlLs7/himep7MrCc=
-Message-ID: <8bf81637-2b80-6614-db83-2a65787c0a4b@gmail.com>
-Date:   Tue, 17 Dec 2019 09:30:41 -0800
+Message-ID: <17d184a2-0f81-fcfa-db34-c85b11c919fd@gmail.com>
+Date:   Tue, 17 Dec 2019 09:31:27 -0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.2.2
 MIME-Version: 1.0
-In-Reply-To: <E1ihD4Q-0001yt-JM@rmk-PC.armlinux.org.uk>
+In-Reply-To: <E1ihD4V-0001z2-O5@rmk-PC.armlinux.org.uk>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -123,14 +123,19 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On 12/17/19 5:39 AM, Russell King wrote:
-> Move the initialisation of the link partner state earlier, inside
-> marvell_read_status_page(), so we don't have the same initialisation
-> scattered amongst the other files.  This is in a similar place to
-> the genphy implementation, so would result in the same behaviour if
-> a PHY read error occurs.
+> Rather than using negative logic:
 > 
-> This allows us to get rid of marvell_read_status_page_fixed(), which
-> became a pointless wrapper around genphy_read_status_fixed().
+> 	if (there is no link)
+> 		set link = 0
+> 	else
+> 		set link = 1
+> 
+> use the more natural positive logic:
+> 
+> 	if (there is link)
+> 		set link = 1
+> 	else
+> 		set link = 0
 > 
 > Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
 
