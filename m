@@ -2,147 +2,174 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DFCB41234CD
-	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 19:26:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 63149123534
+	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 19:46:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727070AbfLQS0s (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Dec 2019 13:26:48 -0500
-Received: from guitar.tcltek.co.il ([192.115.133.116]:36758 "EHLO
-        mx.tkos.co.il" rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726191AbfLQS0r (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 17 Dec 2019 13:26:47 -0500
-Received: from sapphire.tkos.co.il (unknown [192.168.100.188])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1727843AbfLQSqH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Dec 2019 13:46:07 -0500
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:32929 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726742AbfLQSqE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 13:46:04 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1576608362;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=H79yMoU9qnqTpnGyCiPFGRjbb3Bng6e8cO8SsBozoBg=;
+        b=ORRPrdl6DhPSA4NWthxOX9hqd67oUTeq04ShPrqiiczr/aR6U8RZdEoMY5tktaci82KeG0
+        QsVVpAt2BFt84VUN9zD5pMKsfs4i4Vm4HkQixk89i1OOfIWUR0B1lmQ6O9UVdrJOurEuzy
+        qH2x6nog61zs0/ONewcwucFpoW16Jbs=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-48-SVmOSpCgMTGqhS9dZj20XA-1; Tue, 17 Dec 2019 13:46:00 -0500
+X-MC-Unique: SVmOSpCgMTGqhS9dZj20XA-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mx.tkos.co.il (Postfix) with ESMTPS id 56910440567;
-        Tue, 17 Dec 2019 20:26:44 +0200 (IST)
-Date:   Tue, 17 Dec 2019 20:26:43 +0200
-From:   Baruch Siach <baruch@tkos.co.il>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Marek Behun <marek.behun@nic.cz>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        netdev@vger.kernel.org,
-        Denis Odintsov <d.odintsov@traviangames.com>,
-        Hubert Feurstein <h.feurstein@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: [BUG] mv88e6xxx: tx regression in v5.3
-Message-ID: <20191217182643.augknhx57pafnelv@sapphire.tkos.co.il>
-References: <20191212152355.iiepmi4cjriddeon@sapphire.tkos.co.il>
- <20191212193611.63111051@nic.cz>
- <20191212190640.6vki2pjfacdnxihh@sapphire.tkos.co.il>
- <20191212193129.GF30053@lunn.ch>
- <20191212204141.16a406cd@nic.cz>
- <8736dlucai.fsf@tarshish>
- <871rt5u9no.fsf@tarshish>
- <20191215145349.GB22725@lunn.ch>
- <87y2vdsk32.fsf@tarshish>
- <20191215161423.GE22725@lunn.ch>
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 3F0B81800D42;
+        Tue, 17 Dec 2019 18:45:57 +0000 (UTC)
+Received: from madcap2.tricolour.ca (ovpn-112-28.phx2.redhat.com [10.3.112.28])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 27F125C1C3;
+        Tue, 17 Dec 2019 18:45:43 +0000 (UTC)
+Date:   Tue, 17 Dec 2019 13:45:41 -0500
+From:   Richard Guy Briggs <rgb@redhat.com>
+To:     Paul Moore <paul@paul-moore.com>
+Cc:     Neil Horman <nhorman@tuxdriver.com>,
+        containers@lists.linux-foundation.org, linux-api@vger.kernel.org,
+        Linux-Audit Mailing List <linux-audit@redhat.com>,
+        linux-fsdevel@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
+        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        sgrubb@redhat.com, omosnace@redhat.com, dhowells@redhat.com,
+        simo@redhat.com, Eric Paris <eparis@parisplace.org>,
+        Serge Hallyn <serge@hallyn.com>, ebiederm@xmission.com,
+        Dan Walsh <dwalsh@redhat.com>, mpatel@redhat.com
+Subject: Re: [PATCH ghak90 V7 06/21] audit: contid limit of 32k imposed to
+ avoid DoS
+Message-ID: <20191217184541.tagssqt4zujbanf6@madcap2.tricolour.ca>
+References: <cover.1568834524.git.rgb@redhat.com>
+ <230e91cd3e50a3d8015daac135c24c4c58cf0a21.1568834524.git.rgb@redhat.com>
+ <20190927125142.GA25764@hmswarspite.think-freely.org>
+ <CAHC9VhRbSUCB0OZorC4+y+5uJDR5uMXdRn2LOTYGu2gcFJSrcA@mail.gmail.com>
+ <20191024212335.y4ou7g4tsxnotvnk@madcap2.tricolour.ca>
+ <CAHC9VhTrKVQNvTPoX5xdx-TUX_ukpMv2tNFFqLa2Njs17GuQMg@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20191215161423.GE22725@lunn.ch>
+In-Reply-To: <CAHC9VhTrKVQNvTPoX5xdx-TUX_ukpMv2tNFFqLa2Njs17GuQMg@mail.gmail.com>
+User-Agent: NeoMutt/20180716
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Andrew,
-
-On Sun, Dec 15, 2019 at 05:14:23PM +0100, Andrew Lunn wrote:
-> On Sun, Dec 15, 2019 at 05:08:01PM +0200, Baruch Siach wrote:
-> > On Sun, Dec 15 2019, Andrew Lunn wrote:
-> > >> This fixes cpu port configuration for me:
-> > >>
-> > >> diff --git a/drivers/net/dsa/mv88e6xxx/port.c b/drivers/net/dsa/mv88e6xxx/port.c
-> > >> index 7fe256c5739d..a6c320978bcf 100644
-> > >> --- a/drivers/net/dsa/mv88e6xxx/port.c
-> > >> +++ b/drivers/net/dsa/mv88e6xxx/port.c
-> > >> @@ -427,10 +427,6 @@ static int mv88e6xxx_port_set_cmode(struct mv88e6xxx_chip *chip, int port,
-> > >>  		cmode = 0;
-> > >>  	}
-> > >>
-> > >> -	/* cmode doesn't change, nothing to do for us */
-> > >> -	if (cmode == chip->ports[port].cmode)
-> > >> -		return 0;
-> > >> -
-> > >>  	lane = mv88e6xxx_serdes_get_lane(chip, port);
-> > >>  	if (lane) {
-> > >>  		if (chip->ports[port].serdes_irq) {
-> > >>
-> > >> Does that make sense?
+On 2019-11-08 12:49, Paul Moore wrote:
+> On Thu, Oct 24, 2019 at 5:23 PM Richard Guy Briggs <rgb@redhat.com> wrote:
+> > On 2019-10-10 20:38, Paul Moore wrote:
+> > > On Fri, Sep 27, 2019 at 8:52 AM Neil Horman <nhorman@tuxdriver.com> wrote:
+> > > > On Wed, Sep 18, 2019 at 09:22:23PM -0400, Richard Guy Briggs wrote:
+> > > > > Set an arbitrary limit on the number of audit container identifiers to
+> > > > > limit abuse.
+> > > > >
+> > > > > Signed-off-by: Richard Guy Briggs <rgb@redhat.com>
+> > > > > ---
+> > > > >  kernel/audit.c | 8 ++++++++
+> > > > >  kernel/audit.h | 4 ++++
+> > > > >  2 files changed, 12 insertions(+)
+> > > > >
+> > > > > diff --git a/kernel/audit.c b/kernel/audit.c
+> > > > > index 53d13d638c63..329916534dd2 100644
+> > > > > --- a/kernel/audit.c
+> > > > > +++ b/kernel/audit.c
 > > >
-> > > This needs testing on a 6390, with a port 9 or 10 using fixed link. We
-> > > have had issues in the past where mac_config() has been called once
-> > > per second, and each time it reconfigured the MAC, causing the link to
-> > > go down/up. So we try to avoid doing work which is not requires and
-> > > which could upset the link.
-> > 
-> > You refer to ed8fe20205ac ("net: dsa: mv88e6xxx: prevent interrupt storm
-> > caused by mv88e6390x_port_set_cmode") that introduced this code.
-> > 
-> > The alternative is to call ->port_get_cmode() to refresh the cmode cache
-> > after mv88e6xxx_port_hidden_write().
+> > > ...
+> > >
+> > > > > @@ -2465,6 +2472,7 @@ int audit_set_contid(struct task_struct *task, u64 contid)
+> > > > >                               newcont->owner = current;
+> > > > >                               refcount_set(&newcont->refcount, 1);
+> > > > >                               list_add_rcu(&newcont->list, &audit_contid_hash[h]);
+> > > > > +                             audit_contid_count++;
+> > > > >                       } else {
+> > > > >                               rc = -ENOMEM;
+> > > > >                               goto conterror;
+> > > > > diff --git a/kernel/audit.h b/kernel/audit.h
+> > > > > index 162de8366b32..543f1334ba47 100644
+> > > > > --- a/kernel/audit.h
+> > > > > +++ b/kernel/audit.h
+> > > > > @@ -219,6 +219,10 @@ static inline int audit_hash_contid(u64 contid)
+> > > > >       return (contid & (AUDIT_CONTID_BUCKETS-1));
+> > > > >  }
+> > > > >
+> > > > > +extern int audit_contid_count;
+> > > > > +
+> > > > > +#define AUDIT_CONTID_COUNT   1 << 16
+> > > > > +
+> > > >
+> > > > Just to ask the question, since it wasn't clear in the changelog, what
+> > > > abuse are you avoiding here?  Ostensibly you should be able to create as
+> > > > many container ids as you have space for, and the simple creation of
+> > > > container ids doesn't seem like the resource strain I would be concerned
+> > > > about here, given that an orchestrator can still create as many
+> > > > containers as the system will otherwise allow, which will consume
+> > > > significantly more ram/disk/etc.
+> > >
+> > > I've got a similar question.  Up to this point in the patchset, there
+> > > is a potential issue of hash bucket chain lengths and traversing them
+> > > with a spinlock held, but it seems like we shouldn't be putting an
+> > > arbitrary limit on audit container IDs unless we have a good reason
+> > > for it.  If for some reason we do want to enforce a limit, it should
+> > > probably be a tunable value like a sysctl, or similar.
+> >
+> > Can you separate and clarify the concerns here?
 > 
-> Refreshing the cmode after mv88e6xxx_port_hidden_write() sounds like a
-> good idea. But please limit it to just switches which need to make
-> cmode writable. cmode is rather fragile and the 6390 family is easy to
-> break in this area.
+> "Why are you doing this?" is about as simple as I can pose the question.
 
-This turned out to be much harder than expected. cmode update after 
-mv88e6xxx_port_hidden_write() breaks the serdes configuration. The link change 
-irq does not trigger on serdes interface up. The strange thing is that if I 
-add 10ms delay after cmode read (or anywhere before the mv88e6xxx_port_write() 
-call in mv88e6xxx_port_set_cmode()) it works again. I have no idea what is 
-going on here. The cmode cache is used in many places, so maybe setting it to 
-an invalid value (6) is not a good idea.
+It was more of a concern for total system resources, primarily memory,
+but this is self-limiting and an arbitrary concern.
 
-I ended up with cmode write force in mv88e6341_port_set_cmode_writable() like 
-this:
+The other limit of depth of nesting has different concerns that arise
+depending on how reporting is done.
 
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.h b/drivers/net/dsa/mv88e6xxx/chip.h
-index 8a8e38bfb161..70284f100d87 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.h
-+++ b/drivers/net/dsa/mv88e6xxx/chip.h
-@@ -233,6 +233,7 @@ struct mv88e6xxx_port {
- 	u64 vtu_member_violation;
- 	u64 vtu_miss_violation;
- 	u8 cmode;
-+	bool force_cmode;
- 	bool mirror_ingress;
- 	bool mirror_egress;
- 	unsigned int serdes_irq;
-diff --git a/drivers/net/dsa/mv88e6xxx/port.c b/drivers/net/dsa/mv88e6xxx/port.c
-index 7fe256c5739d..8e8724eb5669 100644
---- a/drivers/net/dsa/mv88e6xxx/port.c
-+++ b/drivers/net/dsa/mv88e6xxx/port.c
-@@ -427,9 +427,10 @@ static int mv88e6xxx_port_set_cmode(struct mv88e6xxx_chip *chip, int port,
- 		cmode = 0;
- 	}
- 
--	/* cmode doesn't change, nothing to do for us */
--	if (cmode == chip->ports[port].cmode)
-+	/* cmode doesn't change, nothing to do for us unless forced */
-+	if (cmode == chip->ports[port].cmode && !chip->ports[port].force_cmode)
- 		return 0;
-+	chip->ports[port].force_cmode = false;
- 
- 	lane = mv88e6xxx_serdes_get_lane(chip, port);
- 	if (lane) {
-@@ -516,6 +517,8 @@ static int mv88e6341_port_set_cmode_writable(struct mv88e6xxx_chip *chip,
- 	if (port != 5)
- 		return -EOPNOTSUPP;
- 
-+	chip->ports[port].force_cmode = true;
-+
- 	addr = chip->info->port_base_addr + port;
- 
- 	err = mv88e6xxx_port_hidden_read(chip, 0x7, addr, 0, &reg);
+> > I plan to move this patch to the end of the patchset and make it
+> > optional, possibly adding a tuning mechanism.  Like the migration from
+> > /proc to netlink for loginuid/sessionid/contid/capcontid, this was Eric
+> > Biederman's concern and suggested mitigation.
+> 
+> Okay, let's just drop it.  I *really* don't like this approach of
+> tossing questionable stuff at the end of the patchset; I get why you
+> are doing it, but I think we really need to focus on keeping this
+> changeset small.  If the number of ACIDs (heh) become unwieldy the
+> right solution is to improve the algorithms/structures, if we can't do
+> that for some reason, *then* we can fall back to a limiting knob in a
+> latter release.
 
-Does that look right?
+Ok, I've dropped it.  There are mitigations in place for large numbers
+of contids and it can be limited later without breaking anything.
 
-baruch
+> > As for the first issue of the bucket chain length traversal while
+> > holding the list spin-lock, would you prefer to use the rcu lock to
+> > traverse the list and then only hold the spin-lock when modifying the
+> > list, and possibly even make the spin-lock more fine-grained per list?
+> 
+> Until we have a better idea of how this is going to be used, I think
+> it's okay for now.  It's also internal to the kernel so we can change
+> it at any time.  My comments about the locking/structs was only to try
+> and think of some reason why one might want to limit the number of
+> ACIDs since neither you or Eric provided any reasoning that I could
+> see.
 
--- 
-     http://baruch.siach.name/blog/                  ~. .~   Tk Open Systems
-=}------------------------------------------------ooO--U--Ooo------------{=
-   - baruch@tkos.co.il - tel: +972.2.679.5364, http://www.tkos.co.il -
+I've switched to using an rcu read lock on the list traversal and
+spin-lock on list update.
+
+> paul moore
+
+- RGB
+
+--
+Richard Guy Briggs <rgb@redhat.com>
+Sr. S/W Engineer, Kernel Security, Base Operating Systems
+Remote, Ottawa, Red Hat Canada
+IRC: rgb, SunRaycer
+Voice: +1.647.777.2635, Internal: (81) 32635
+
