@@ -2,113 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 26253123AEC
-	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 00:34:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A9A1123AF3
+	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 00:36:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726636AbfLQXep (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Dec 2019 18:34:45 -0500
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:35618 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726587AbfLQXep (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 18:34:45 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=OWRvkLldopufA1A7D3zUMCr/VA92tMCUQEEVY3rdwyI=; b=u9TtMELyOey5YSSG6hg8GTWJH
-        CuLbM9Y/I2ZyoXVgl5w3fHzU7A/iH1P+682HNkupjxbB1qNz+CP/gSd0XKoaopGL6wK8bBUlKxref
-        beY+JS4JTihDZSWlyFszXQeRp79Lfhn+IOn0MjNdfs/hMM4a/Nw6lU+nMPraYHLwhEPMGLQJRFNeD
-        PSjgiidD9e/Gvt9uVW6p0si0CT2wRr7c8BolfTqEKi4CetsUiHOb8M6Z8uPRF5x7BFN+K+VgoeHr4
-        JmmKvOrm6jaPPmelUl+8VwcjoTSuEaAbWoP4uFk8JgoOpLz0z9+XBraN9tcKmIq9PULxT0YCHrHnE
-        N2fpwvpWA==;
-Received: from shell.armlinux.org.uk ([2001:4d48:ad52:3201:5054:ff:fe00:4ec]:42738)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1ihMMQ-0000Re-DI; Tue, 17 Dec 2019 23:34:38 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1ihMMP-0003mX-0r; Tue, 17 Dec 2019 23:34:37 +0000
-Date:   Tue, 17 Dec 2019 23:34:36 +0000
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: Re: [PATCH net] net: phy: make phy_error() report which PHY has
- failed
-Message-ID: <20191217233436.GS25745@shell.armlinux.org.uk>
-References: <E1ihCLZ-0001Vo-Nw@rmk-PC.armlinux.org.uk>
- <c96f14cd-7139-ebc7-9562-2f92d8b044fc@gmail.com>
+        id S1726487AbfLQXgf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Dec 2019 18:36:35 -0500
+Received: from mail-pl1-f193.google.com ([209.85.214.193]:38070 "EHLO
+        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726143AbfLQXgf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 18:36:35 -0500
+Received: by mail-pl1-f193.google.com with SMTP id f20so98655plj.5;
+        Tue, 17 Dec 2019 15:36:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=xkuE0Re50X58qMcOOTpNENDS+WqmBfa58nlwdeEP/sg=;
+        b=RhJaSLhDCOZDRdViIhV0f6JTBvsiMe1QEkv8QulUVRvfHBvOOhC7vqSo8iwqr7odEC
+         w1jHw8URrrbi0yQFiIaTYcMUXoewUx3jHYzSonGIGbqN6SYTdACAM483cvZkjgga0HhB
+         t3h9nuAtFQ/7aZMgSQvVWs2huX5EYb3uEEtZsydxxGofeme9Hxn5tELy5ER+7Sh0mEDJ
+         kjnYMy9VZRd8uHcrTxbPnqrj4nO1rfcWK9UOMdFCR+mA5PObNwicJS3XmCrxvb2aCutZ
+         r69PTtYe5RKcsTQgsVjPK+Tbm7kAWoZQMCliZCjvMZHv7k6TrNuPlAh3RCcuhQoP7avJ
+         PZ2A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:autocrypt
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=xkuE0Re50X58qMcOOTpNENDS+WqmBfa58nlwdeEP/sg=;
+        b=lyAvJAVZjzDBQ1MjCv2qPrWCYQd1sn5oXtY5pg8vyzRY0WB+wx44s+31Y4wazNukbS
+         1fpvFthX3MV/FotVPBsHEWnv/Jptt88SmUfPPmGPZk05pKEH6UAvfHOCsGqXvK6v0Kp1
+         mDHFAqmW9sIA/OHedGpmZpxdeFrQKzoF2B7UK5NIpxSV2iJx3OMpriFHlFvMD7f0RI5W
+         jWjDzs6mJTO6NRy5VXVBBFEOSEYpJGLaD6m69lHQTA/Z9QfFF1XvydChAaHv02nS9j2P
+         JBax6pH3gz+DX3DaZMSF548tubboaF1SKv6k8NlEif7TEr/IUjR4iOoyR8G8JKPy08j7
+         Geew==
+X-Gm-Message-State: APjAAAWLQpajkInXh4/5V643ZGEpSj30yMrA9n+mgF+//04bMf9pF0sh
+        ZMhKHpyPDzDeZP6O/WsO/EhM2xb0
+X-Google-Smtp-Source: APXvYqwsmxSvCnlCnOWQZbZDEub7d8RLvy0B/w08aUO3aBV43AnXtZ1a8L2bQfNc9LzYPnRvBvkc8A==
+X-Received: by 2002:a17:90b:3115:: with SMTP id gc21mr79930pjb.54.1576625794394;
+        Tue, 17 Dec 2019 15:36:34 -0800 (PST)
+Received: from [10.67.49.112] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id g19sm125791pfh.134.2019.12.17.15.36.33
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 17 Dec 2019 15:36:33 -0800 (PST)
+Subject: Re: [PATCH net-next 3/8] net: bcmgenet: use CHECKSUM_COMPLETE for
+ NETIF_F_RXCSUM
+To:     Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <1576616549-39097-1-git-send-email-opendmb@gmail.com>
+ <1576616549-39097-4-git-send-email-opendmb@gmail.com>
+ <43c460b7-9091-6306-3d39-a4ff1fdc0d5d@gmail.com>
+From:   Doug Berger <opendmb@gmail.com>
+Autocrypt: addr=opendmb@gmail.com; prefer-encrypt=mutual; keydata=
+ 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
+ rQQYjNSD8+NSdOsIpGNCZ9xhWw==
+Message-ID: <60fdef3f-3926-d960-f0ce-7effd9578495@gmail.com>
+Date:   Tue, 17 Dec 2019 15:36:33 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <c96f14cd-7139-ebc7-9562-2f92d8b044fc@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <43c460b7-9091-6306-3d39-a4ff1fdc0d5d@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 17, 2019 at 10:41:34PM +0100, Heiner Kallweit wrote:
-> On 17.12.2019 13:53, Russell King wrote:
-> > phy_error() is called from phy_interrupt() or phy_state_machine(), and
-> > uses WARN_ON() to print a backtrace. The backtrace is not useful when
-> > reporting a PHY error.
-> > 
-> > However, a system may contain multiple ethernet PHYs, and phy_error()
-> > gives no clue which one caused the problem.
-> > 
-> > Replace WARN_ON() with a call to phydev_err() so that we can see which
-> > PHY had an error, and also inform the user that we are halting the PHY.
-> > 
-> > Fixes: fa7b28c11bbf ("net: phy: print stack trace in phy_error")
-> > Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
-> > ---
-> > There is another related problem in this area. If an error is detected
-> > while the PHY is running, phy_error() moves to PHY_HALTED state. If we
-> > try to take the network device down, then:
-> > 
-> > void phy_stop(struct phy_device *phydev)
-> > {
-> >         if (!phy_is_started(phydev)) {
-> >                 WARN(1, "called from state %s\n",
-> >                      phy_state_to_str(phydev->state));
-> >                 return;
-> >         }
-> > 
-> > triggers, and we never do any of the phy_stop() cleanup. I'm not sure
-> > what the best way to solve this is - introducing a PHY_ERROR state may
-> > be a solution, but I think we want some phy_is_started() sites to
-> > return true for it and others to return false.
-> > 
-> > Heiner - you introduced the above warning, could you look at improving
-> > this case so we don't print a warning and taint the kernel when taking
-> > a network device down after phy_error() please?
-> > 
-> I think we need both types of information:
-> - the affected PHY device
-> - the stack trace to see where the issue was triggered
+On 12/17/19 2:52 PM, Florian Fainelli wrote:
+> On 12/17/19 1:02 PM, Doug Berger wrote:
+>> This commit updates the Rx checksum offload behavior of the driver
+>> to use the more generic CHECKSUM_COMPLETE method that supports all
+>> protocols over the CHECKSUM_UNNECESSARY method that only applies
+>> to some protocols known by the hardware.
+>>
+>> This behavior is perceived to be superior.
+>>
+>> Signed-off-by: Doug Berger <opendmb@gmail.com>
+> 
+> Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+> 
+> You could also remove priv->dma_rx_chk_bit which is now write only after
+> this patch and not used anymore.
+> 
+Good idea. I'll resubmit shortly.
 
-Can you please explain why the stack trace is useful.  For the paths
-that are reachable, all it tells you is whether it was reached via
-the interrupt or the workqueue.
-
-If it's via the interrupt, the rest of the backtrace beyond that is
-irrelevant.  If it's the workqueue, the backtrace doesn't go back
-very far, and doesn't tell you what operation triggered it.
-
-If it's important to see where or why phy_error() was called, there
-are much better ways of doing that, notably passing a string into
-phy_error() to describe the actual error itself.  That would convey
-way more useful information than the backtrace does.
-
-I have been faced with these backtraces, and they have not been at
-all useful for diagnosing the problem.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-According to speedtest.net: 11.9Mbps down 500kbps up
+-Doug
