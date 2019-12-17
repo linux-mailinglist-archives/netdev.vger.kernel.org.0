@@ -2,114 +2,217 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B4079123342
-	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 18:15:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 36492123358
+	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 18:19:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726885AbfLQRPr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Dec 2019 12:15:47 -0500
-Received: from mail-pg1-f196.google.com ([209.85.215.196]:42710 "EHLO
-        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726856AbfLQRPq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 12:15:46 -0500
-Received: by mail-pg1-f196.google.com with SMTP id s64so6003126pgb.9
-        for <netdev@vger.kernel.org>; Tue, 17 Dec 2019 09:15:46 -0800 (PST)
+        id S1727667AbfLQRTB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Dec 2019 12:19:01 -0500
+Received: from mail-lf1-f65.google.com ([209.85.167.65]:45856 "EHLO
+        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727642AbfLQRTA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 12:19:00 -0500
+Received: by mail-lf1-f65.google.com with SMTP id 203so7510474lfa.12
+        for <netdev@vger.kernel.org>; Tue, 17 Dec 2019 09:18:58 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to
-         :user-agent;
-        bh=xF3Ny7ZnnbPuXpJw2vfE6lN5ovTpLxU4+wWaGrKXERY=;
-        b=CfZ0zRQ1qIuyS98KtHka1G6zOW+A2YgtxOjfIwu1J2b32kJF5mwwCS9pKHx6z5uyhO
-         uciHjmN0ESlz2Xau+KeYIC86qgNFouKwpi9lgJpzkdzQVfzDpqP75OqmhEVSwz0NTlkh
-         eGWczGMyAlCIZiN5pu0TN++2qIGDV7Vfe3YCV2noOfD3Wy45fl8IPoPAlDsH3b9plEPU
-         1Fme4z0EaXxTipLbUfLK6T3LexpPwIp9HhT4t0VtE5tKtirVXS2HqrV17rUvwev29sBH
-         QfwS9M1beVgWSAzTG2WCQJkcJ940D1Y3RyIsrcG7cyz4odYtgNyIbG1RpGjmwiboNrTN
-         DSQg==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=r6dqBNObWr4LYfk35E/sthMAiwdIizF7BAYUklEVa2g=;
+        b=GJAQ8eMCgnCnz1aPscQ0DAtkpg8VWR5miJdKtP53dopJAPWYnM/MCSvBMd8ugJmup1
+         yMv+bEGBI8MXFoPeZUiJzzpWaGiWOTEdURVGcNSWGbA8UWiJZKrEFPVMlAABWoAPIjIm
+         +PCOCwQh5iYA+htgwpx7+5aeNyy0ZPKHCc4rIhYA9rlFI/6LzZEJpsUX2K/H54h6tyR9
+         dgsFFVB0QMDU/sxhuQvIyK/d8OG9Rmzy9+sMO+IaG8MCdmqKFyUv8NW2Bn9mkpq2DUd3
+         ySxh7TEaCm2Tc0lahskeBMRYCH6Iv9Psp3Wx1Omc947VO3geUX2XGjx89EBQYT1Qcjib
+         pvJA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to:user-agent;
-        bh=xF3Ny7ZnnbPuXpJw2vfE6lN5ovTpLxU4+wWaGrKXERY=;
-        b=qjLa72Z6cg3Sqy+WhMx6JgGL5Pd3JcNkTID13vBble9OZpiJh4XNtqxd4eVbYQITpK
-         I+6yhKhLOS6Nm0EyM5g5E9b3HuZW41Q9hTaB1dJ4Eg6jo3o8b7o5l9CppJg+calInGJt
-         MKuq1Nd78aKFd3yhv3M0Ys6HubZothMacpc/1ETui606sJPxVsxsw3jILW+wsDHaVn94
-         nGM02GsvN3F+W3oWi3VWXRvqpztFFbKBHFYQpGCjaHjFPuCl3itLxNxAtfjqhM+6Tb87
-         AM3QcLRaxJ4phFJIXVoYhPzyZaX+oA0cSupXab4cESGiFzCPBqNuTv40RUvUzoMxfneM
-         y4jQ==
-X-Gm-Message-State: APjAAAUq0LOWWucEZ7dTeZ5fgphSzFj8rDozXAQeXg6Dz4HmeV6Y1+aQ
-        wsRSmyRwRYeqZf2zVkeWN0M=
-X-Google-Smtp-Source: APXvYqz/pRdjlnBp3aS18IDqgUZ3mDsHox8+M0GkiAwtOAPPPWpTK0poBA6wCGmU1Ci1wqNBVDB5WA==
-X-Received: by 2002:a63:2355:: with SMTP id u21mr25801992pgm.179.1576602945979;
-        Tue, 17 Dec 2019 09:15:45 -0800 (PST)
-Received: from martin-VirtualBox ([122.182.209.142])
-        by smtp.gmail.com with ESMTPSA id f127sm25165583pfa.112.2019.12.17.09.15.44
-        (version=TLS1 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Tue, 17 Dec 2019 09:15:45 -0800 (PST)
-Date:   Tue, 17 Dec 2019 22:45:39 +0530
-From:   Martin Varghese <martinvarghesenokia@gmail.com>
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, pshelar@ovn.org,
-        scott.drennan@nokia.com, jbenc@redhat.com,
-        martin.varghese@nokia.com
-Subject: Re: [PATCH net-next v3 3/3] openvswitch: New MPLS actions for layer
- 2 tunnelling
-Message-ID: <20191217171539.GA16538@martin-VirtualBox>
-References: <cover.1576488935.git.martin.varghese@nokia.com>
- <9e3b73cd6967927fc6654cbdcd7b9e7431441c3f.1576488935.git.martin.varghese@nokia.com>
- <20191216161355.0d37a897@cakuba.netronome.com>
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=r6dqBNObWr4LYfk35E/sthMAiwdIizF7BAYUklEVa2g=;
+        b=SZktSDjvCnCLmNn86mFSehZqzCaueGMJeCrBq7C1e3HNMQ/53jkIuk0I3RIrlT4JrJ
+         By3KJ1Lq4MYE2a9oMcpP0F9IDCECALTKxeunTN3xMHDaU3UTEyr65zwjC3pceFBhIZHr
+         Ny+q82RAg/9EL9jnuDRNjmB/Wi6fZ9Aqt5E8+gm71s14qhUeK6wbHZy9SFOi+FbesE9z
+         gz6RQ+WswUz0BQnN7ovy+6bJ8s6fEYJ/T1pnVylMxdMeA8Xl3vyQlppmsYYZewx75pRo
+         rRxeSTYLoPkN3OMfwhgQp1bnMk6+nFsMBCwW7ZqD5dIsOljeDGjUUplXifQuMvgYQplD
+         ix2w==
+X-Gm-Message-State: APjAAAWmm+q3jlh8OQtRR/pvJQbrP7RNvxjEJb/d3YedCYLsBNbNaECd
+        6JUJ+ewZu7SQ7/tigKDo+BQYBA==
+X-Google-Smtp-Source: APXvYqzAaXJowj+LMQ1NkOlZ0KLppeaekgoexuXFUA+9sXKsB7TLWCwIPJxK/Wj2tE2cMaOin3iSFA==
+X-Received: by 2002:a05:6512:1dd:: with SMTP id f29mr3485778lfp.106.1576603137675;
+        Tue, 17 Dec 2019 09:18:57 -0800 (PST)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id v9sm13586121lfe.18.2019.12.17.09.18.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 17 Dec 2019 09:18:57 -0800 (PST)
+Date:   Tue, 17 Dec 2019 09:18:46 -0800
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Richard Cochran <richardcochran@gmail.com>
+Cc:     netdev@vger.kernel.org, David Miller <davem@davemloft.net>,
+        devicetree@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Jacob Keller <jacob.e.keller@intel.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Miroslav Lichvar <mlichvar@redhat.com>,
+        Murali Karicheri <m-karicheri2@ti.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Willem de Bruijn <willemb@google.com>,
+        Wingman Kwok <w-kwok2@ti.com>
+Subject: Re: [PATCH V6 net-next 11/11] ptp: Add a driver for InES time
+ stamping IP core.
+Message-ID: <20191217091846.1ce6ef81@cakuba.netronome.com>
+In-Reply-To: <20191217043433.GA1363@localhost>
+References: <cover.1576511937.git.richardcochran@gmail.com>
+        <33afc113fa0b301d289522971c83dbbf0d36c8ba.1576511937.git.richardcochran@gmail.com>
+        <20191216161114.3604d45d@cakuba.netronome.com>
+        <20191217043433.GA1363@localhost>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20191216161355.0d37a897@cakuba.netronome.com>
-User-Agent: Mutt/1.5.21 (2010-09-15)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 16, 2019 at 04:13:55PM -0800, Jakub Kicinski wrote:
-> On Mon, 16 Dec 2019 19:33:43 +0530, Martin Varghese wrote:
-> > diff --git a/include/uapi/linux/openvswitch.h b/include/uapi/linux/openvswitch.h
-> > index a87b44c..b7221ad 100644
-> > --- a/include/uapi/linux/openvswitch.h
-> > +++ b/include/uapi/linux/openvswitch.h
-> > @@ -673,6 +673,25 @@ struct ovs_action_push_mpls {
-> >  };
-> >  
-> >  /**
-> > + * struct ovs_action_ptap_push_mpls - %OVS_ACTION_ATTR_PTAP_PUSH_MPLS action
-> > + * argument.
-> > + * @mpls_lse: MPLS label stack entry to push.
-> > + * @mpls_ethertype: Ethertype to set in the encapsulating ethernet frame.
-> > + * @l2_tun: Flag to specify the place of insertion of MPLS header.
-> > + * When true, the MPLS header will be inserted at the start of the packet.
-> > + * When false, the MPLS header will be inserted at the start of the l3 header.
-> > + *
-> > + * The only values @mpls_ethertype should ever be given are %ETH_P_MPLS_UC and
-> > + * %ETH_P_MPLS_MC, indicating MPLS unicast or multicast. Other are rejected.
-> > + */
-> > +struct ovs_action_ptap_push_mpls {
-> > +	__be32 mpls_lse;
-> > +	__be16 mpls_ethertype; /* Either %ETH_P_MPLS_UC or %ETH_P_MPLS_MC */
-> > +	bool l2_tun;
+On Mon, 16 Dec 2019 20:34:33 -0800, Richard Cochran wrote:
+> On Mon, Dec 16, 2019 at 04:11:14PM -0800, Jakub Kicinski wrote:
+> > On Mon, 16 Dec 2019 08:13:26 -0800, Richard Cochran wrote:  
+> > > +	clkid = (u64 *)(data + offset + OFF_PTP_CLOCK_ID);
+> > > +	portn = (u16 *)(data + offset + OFF_PTP_PORT_NUM);
+> > > +	seqid = (u16 *)(data + offset + OFF_PTP_SEQUENCE_ID);  
+> > 
+> > These should perhaps be __be types?
+> > 
+> > Looks like there is a few other sparse warnings in ptp_ines.c, would
+> > you mind addressing those?  
 > 
-> In file included from <command-line>:32:                                        
-> ./usr/include/linux/openvswitch.h:674:2: error: unknown type name ‘bool’        
->   674 |  bool l2_tun;                                                           
->       |  ^~~~                                                                   
-> make[3]: *** [usr/include/linux/openvswitch.hdrtest] Error 1  
+> I saw the sparse warnings before (from one of the robots), but I
+> decided that they are false positives.  Or perhaps I don't appreciate
+> what the warnings mean...
 > 
-
-Does that mean bool cannot be used in interface header files ? but what is
-the alternative u8?
-> > +};
-> > +
-> > +
+> Take the 'clkid' pointer for example:
+>  
+> > > +	if (cpu_to_be64(ts->clkid) != *clkid) {
+> > > +		pr_debug("clkid mismatch ts %llx != skb %llx\n",
+> > > +			 cpu_to_be64(ts->clkid), *clkid);
+> > > +		return false;
+> > > +	}  
 > 
-> Why the double new line? Please use checkpatch --strict.
+> The field that to which 'clkid' points is in network byte order.  The
+> code correctly converts ts->clkid (in CPU byte order) to network byte
+> order before comparing it with the field.
+> 
+> So where is the error?
 
-Noted
+Not necessarily an error as much as a sparse warning, if the type of
+clkid was __be64 that'd make sparse happy.
 
-Thanks for your time.
+This is what my build system spat out for a W=1 C=1 build:
+
+../drivers/ptp/ptp_ines.c:490:13: warning: restricted __be64 degrades to integer
+../drivers/ptp/ptp_ines.c:495:28: warning: cast to restricted __be16
+../drivers/ptp/ptp_ines.c:495:28: warning: cast to restricted __be16
+../drivers/ptp/ptp_ines.c:495:28: warning: cast to restricted __be16
+../drivers/ptp/ptp_ines.c:495:28: warning: cast to restricted __be16
+../drivers/ptp/ptp_ines.c:496:17: warning: cast to restricted __be16
+../drivers/ptp/ptp_ines.c:496:17: warning: cast to restricted __be16
+../drivers/ptp/ptp_ines.c:496:17: warning: cast to restricted __be16
+../drivers/ptp/ptp_ines.c:496:17: warning: cast to restricted __be16
+../drivers/ptp/ptp_ines.c:500:26: warning: cast to restricted __be16
+../drivers/ptp/ptp_ines.c:500:26: warning: cast to restricted __be16
+../drivers/ptp/ptp_ines.c:500:26: warning: cast to restricted __be16
+../drivers/ptp/ptp_ines.c:500:26: warning: cast to restricted __be16
+../drivers/ptp/ptp_ines.c:501:17: warning: cast to restricted __be16
+../drivers/ptp/ptp_ines.c:501:17: warning: cast to restricted __be16
+../drivers/ptp/ptp_ines.c:501:17: warning: cast to restricted __be16
+../drivers/ptp/ptp_ines.c:501:17: warning: cast to restricted __be16
+../drivers/ptp/ptp_ines.c:543:28: warning: incorrect type in argument 1 (different address spaces)
+../drivers/ptp/ptp_ines.c:543:28:    expected void const volatile [noderef] <asn:2> *addr
+../drivers/ptp/ptp_ines.c:543:28:    got unsigned int *
+../drivers/ptp/ptp_ines.c:547:30: warning: incorrect type in argument 1 (different address spaces)
+../drivers/ptp/ptp_ines.c:547:30:    expected void const volatile [noderef] <asn:2> *addr
+../drivers/ptp/ptp_ines.c:547:30:    got unsigned int *
+../drivers/ptp/ptp_ines.c:557:31: warning: incorrect type in argument 1 (different address spaces)
+../drivers/ptp/ptp_ines.c:557:31:    expected void const volatile [noderef] <asn:2> *addr
+../drivers/ptp/ptp_ines.c:557:31:    got unsigned int *
+../drivers/ptp/ptp_ines.c:561:31: warning: incorrect type in argument 1 (different address spaces)
+../drivers/ptp/ptp_ines.c:561:31:    expected void const volatile [noderef] <asn:2> *addr
+../drivers/ptp/ptp_ines.c:561:31:    got unsigned int *
+../drivers/ptp/ptp_ines.c:562:31: warning: incorrect type in argument 1 (different address spaces)
+../drivers/ptp/ptp_ines.c:562:31:    expected void const volatile [noderef] <asn:2> *addr
+../drivers/ptp/ptp_ines.c:562:31:    got unsigned int *
+../drivers/ptp/ptp_ines.c:579:16: warning: incorrect type in argument 1 (different address spaces)
+../drivers/ptp/ptp_ines.c:579:16:    expected void const volatile [noderef] <asn:2> *addr
+../drivers/ptp/ptp_ines.c:579:16:    got unsigned int *
+../drivers/ptp/ptp_ines.c:583:24: warning: incorrect type in argument 1 (different address spaces)
+../drivers/ptp/ptp_ines.c:583:24:    expected void const volatile [noderef] <asn:2> *addr
+../drivers/ptp/ptp_ines.c:583:24:    got unsigned int *
+../drivers/ptp/ptp_ines.c:626:16: warning: incorrect type in argument 1 (different address spaces)
+../drivers/ptp/ptp_ines.c:626:16:    expected void const volatile [noderef] <asn:2> *addr
+../drivers/ptp/ptp_ines.c:626:16:    got unsigned int *
+../drivers/ptp/ptp_ines.c:630:24: warning: incorrect type in argument 1 (different address spaces)
+../drivers/ptp/ptp_ines.c:630:24:    expected void const volatile [noderef] <asn:2> *addr
+../drivers/ptp/ptp_ines.c:630:24:    got unsigned int *
+../drivers/ptp/ptp_ines.c:208:21: warning: incorrect type in assignment (different address spaces)
+../drivers/ptp/ptp_ines.c:208:21:    expected struct ines_global_registers *regs
+../drivers/ptp/ptp_ines.c:208:21:    got void [noderef] <asn:2> *base
+../drivers/ptp/ptp_ines.c:225:9: warning: incorrect type in argument 2 (different address spaces)
+../drivers/ptp/ptp_ines.c:225:9:    expected void volatile [noderef] <asn:2> *addr
+../drivers/ptp/ptp_ines.c:225:9:    got unsigned int *
+../drivers/ptp/ptp_ines.c:226:9: warning: incorrect type in argument 2 (different address spaces)
+../drivers/ptp/ptp_ines.c:226:9:    expected void volatile [noderef] <asn:2> *addr
+../drivers/ptp/ptp_ines.c:226:9:    got unsigned int *
+../drivers/ptp/ptp_ines.c:228:9: warning: incorrect type in argument 1 (different address spaces)
+../drivers/ptp/ptp_ines.c:228:9:    expected void const volatile [noderef] <asn:2> *addr
+../drivers/ptp/ptp_ines.c:228:9:    got unsigned int *
+../drivers/ptp/ptp_ines.c:229:9: warning: incorrect type in argument 1 (different address spaces)
+../drivers/ptp/ptp_ines.c:229:9:    expected void const volatile [noderef] <asn:2> *addr
+../drivers/ptp/ptp_ines.c:229:9:    got unsigned int *
+../drivers/ptp/ptp_ines.c:230:9: warning: incorrect type in argument 1 (different address spaces)
+../drivers/ptp/ptp_ines.c:230:9:    expected void const volatile [noderef] <asn:2> *addr
+../drivers/ptp/ptp_ines.c:230:9:    got unsigned int *
+../drivers/ptp/ptp_ines.c:231:9: warning: incorrect type in argument 1 (different address spaces)
+../drivers/ptp/ptp_ines.c:231:9:    expected void const volatile [noderef] <asn:2> *addr
+../drivers/ptp/ptp_ines.c:231:9:    got unsigned int *
+../drivers/ptp/ptp_ines.c:235:17: warning: incorrect type in argument 2 (different address spaces)
+../drivers/ptp/ptp_ines.c:235:17:    expected void volatile [noderef] <asn:2> *addr
+../drivers/ptp/ptp_ines.c:235:17:    got unsigned int *
+../drivers/ptp/ptp_ines.c:313:28: warning: incorrect type in argument 1 (different address spaces)
+../drivers/ptp/ptp_ines.c:313:28:    expected void const volatile [noderef] <asn:2> *addr
+../drivers/ptp/ptp_ines.c:313:28:    got unsigned int *
+../drivers/ptp/ptp_ines.c:318:30: warning: incorrect type in argument 1 (different address spaces)
+../drivers/ptp/ptp_ines.c:318:30:    expected void const volatile [noderef] <asn:2> *addr
+../drivers/ptp/ptp_ines.c:318:30:    got unsigned int *
+../drivers/ptp/ptp_ines.c:326:30: warning: incorrect type in argument 1 (different address spaces)
+../drivers/ptp/ptp_ines.c:326:30:    expected void const volatile [noderef] <asn:2> *addr
+../drivers/ptp/ptp_ines.c:326:30:    got unsigned int *
+../drivers/ptp/ptp_ines.c:330:30: warning: incorrect type in argument 1 (different address spaces)
+../drivers/ptp/ptp_ines.c:330:30:    expected void const volatile [noderef] <asn:2> *addr
+../drivers/ptp/ptp_ines.c:330:30:    got unsigned int *
+../drivers/ptp/ptp_ines.c:331:30: warning: incorrect type in argument 1 (different address spaces)
+../drivers/ptp/ptp_ines.c:331:30:    expected void const volatile [noderef] <asn:2> *addr
+../drivers/ptp/ptp_ines.c:331:30:    got unsigned int *
+../drivers/ptp/ptp_ines.c:401:21: warning: incorrect type in argument 1 (different address spaces)
+../drivers/ptp/ptp_ines.c:401:21:    expected void const volatile [noderef] <asn:2> *addr
+../drivers/ptp/ptp_ines.c:401:21:    got unsigned int *
+../drivers/ptp/ptp_ines.c:405:9: warning: incorrect type in argument 2 (different address spaces)
+../drivers/ptp/ptp_ines.c:405:9:    expected void volatile [noderef] <asn:2> *addr
+../drivers/ptp/ptp_ines.c:405:9:    got unsigned int *
+../drivers/ptp/ptp_ines.c:406:9: warning: incorrect type in argument 2 (different address spaces)
+../drivers/ptp/ptp_ines.c:406:9:    expected void volatile [noderef] <asn:2> *addr
+../drivers/ptp/ptp_ines.c:406:9:    got unsigned int *
+../drivers/ptp/ptp_ines.c:407:9: warning: incorrect type in argument 2 (different address spaces)
+../drivers/ptp/ptp_ines.c:407:9:    expected void volatile [noderef] <asn:2> *addr
+../drivers/ptp/ptp_ines.c:407:9:    got unsigned int *
+../drivers/ptp/ptp_ines.c:440:21: warning: incorrect type in argument 1 (different address spaces)
+../drivers/ptp/ptp_ines.c:440:21:    expected void const volatile [noderef] <asn:2> *addr
+../drivers/ptp/ptp_ines.c:440:21:    got unsigned int *
+../drivers/ptp/ptp_ines.c:444:9: warning: incorrect type in argument 2 (different address spaces)
+../drivers/ptp/ptp_ines.c:444:9:    expected void volatile [noderef] <asn:2> *addr
+../drivers/ptp/ptp_ines.c:444:9:    got unsigned int *
+../drivers/ptp/ptp_ines.c:643:21: warning: incorrect type in argument 1 (different address spaces)
+../drivers/ptp/ptp_ines.c:643:21:    expected void const volatile [noderef] <asn:2> *addr
+../drivers/ptp/ptp_ines.c:643:21:    got unsigned int *
+
+New errors added
