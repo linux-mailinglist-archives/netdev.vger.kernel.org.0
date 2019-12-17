@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 63F89123A6D
-	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 00:01:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 87B96123A73
+	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 00:02:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726749AbfLQXBZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Dec 2019 18:01:25 -0500
-Received: from mail-ed1-f66.google.com ([209.85.208.66]:37471 "EHLO
-        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725946AbfLQXBY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 18:01:24 -0500
-Received: by mail-ed1-f66.google.com with SMTP id cy15so30789edb.4;
-        Tue, 17 Dec 2019 15:01:23 -0800 (PST)
+        id S1726825AbfLQXCI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Dec 2019 18:02:08 -0500
+Received: from mail-ed1-f65.google.com ([209.85.208.65]:38472 "EHLO
+        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725946AbfLQXCI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 18:02:08 -0500
+Received: by mail-ed1-f65.google.com with SMTP id i16so28705edr.5;
+        Tue, 17 Dec 2019 15:02:06 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=21/orN2LmeqYYduLnFssDpW4KMaZFUCIkFPESxIhb2w=;
-        b=SOlMKiKPhAaQcJKGnZqJ/rFCkMuooJuVXO8JkbNpfHgD3SsG/BR+T+f5RxVV39Ihop
-         Nq4a34dmerjoQSO3uMg8yrGhFXCFt6/pydb4MRfgMuY6EXHYIMu7iwZ+iQOwL+OsLu6o
-         r5+Hm3wDFID1Aide/68ag+1AHOFyzPr7uH488IgHELgnryrshoWfzcKri5Nhmn6gOnfs
-         iillK+cocKnSQf9LnlwxhzvGDt0eT1ooU5auf5LF2Fx8oKSWtrfpOgO2K/lNaElpwaOl
-         cQ/uXURYtZJU6oR5r9fdri+I19kF4igvHCyhkJu9Lr2IQjTxgg1npZ0PXOcQ8U/QbZbP
-         k9cQ==
+        bh=N0wRB9Mym60DpZRlYXOTffJklqCKiOBdjKUDUAB82n0=;
+        b=AQPIoR+SOXzfjiX3yK6kK2+s3xMNQcrejP84NWS4glNmDfgNmb2wuv/ca7vyBPBjxi
+         6MZcQ/VRJT7hbmkdd3v0KGQ1NNErO7lNtU6f6vmOOwLyeIKanGJMeap7h5ZPXN538ytP
+         AbqjEnRBCUSbR/UyxS6+7hUTSnLTwJWoXlmrhsPEeQ90Q+9vb7G6+NCygOMOYYAwYNpv
+         +Xrkn4/td2KX2nZ8Zs9xL6PnywNGgs7aSCk/Mpg27cPbXIFPD/8nWahH1GxBepG7TlSh
+         IX5xUIddaAQNeIOlDtFzeDtIUereyeXy4AGBDvrkwL6kx7GtgUZlsuBo7fy9ARxMmPAw
+         jBXg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=21/orN2LmeqYYduLnFssDpW4KMaZFUCIkFPESxIhb2w=;
-        b=QMwCETTzAl9TvHQ4u0dGG2Q2FZxTkC+FxBWwiHbU/hdE5ECLNKTP2aktlyvtoqaBsd
-         Rk30ht1IU95URH/HjP3rwHYGHJE9w3gmGqvCO5oTKLWn0OT1LA+7KidTWb8XFNdhwf67
-         1UMUiGKyDOWH3bY169okFjGEGtC/M4lMhTLnDp8rZwl+rkEahdr+LF8pEIfV3WjWx5QR
-         QyBDSIzpqxOznCsypy8qoXXV+k6r0YCKmz7+jj2zgFBtRyzlYhTWnERr7x6bOc2aL/Eu
-         4Ob5VFZY8dgDOmrFt3HdBxeBn20ppD4c7M3HQSjJqKQ0tfPAH89v1mPw2GZ9GIeqe5AE
-         LD0Q==
-X-Gm-Message-State: APjAAAVi11kZRR/4LCOftXkjGkgqxilcaczlAFL3IZGLKsqXUHgSBCHl
-        087xJJyVT2YRpJp6yvExq7Byk0pU
-X-Google-Smtp-Source: APXvYqyWfX9G4++o2XlwbsghDIwY4Ul4CaZkeJKBMd81ieEZ9R5bSmsa7rEnDIC6Tk6zqa21l8VJBw==
-X-Received: by 2002:a17:906:7848:: with SMTP id p8mr629950ejm.19.1576623682340;
-        Tue, 17 Dec 2019 15:01:22 -0800 (PST)
+        bh=N0wRB9Mym60DpZRlYXOTffJklqCKiOBdjKUDUAB82n0=;
+        b=jm9piFJFdhFGMWvFa4BCF6m65l726cTTe8cmBl0EDIsNmzEiDp57jWS6Q0mHVdaZwK
+         rYbw03rFNyf3w/h8Jp22ciuf6IkJ8AyfgpFrs50ZTv3/a3bHHL2RMD92pj+yKp8YNaiy
+         e8+PtM68t8rOKZswH5D8D6Zsb4sqvrdIQrM4/Ao+3ejtFLMddjjx5sMA8cxHQiTz06IJ
+         bNYNpeGpSwFyl1Bz0wIymJwb5uZICy/sDotent0TtNSYq7+00csNS4bTGL16Tm1JuSOj
+         gfvgSMyYn1HE+pv3fJla43KST08NqhelQXdZtjsBX4xhlimR52NWCZ6Nup8qhmHDBMpP
+         cLIw==
+X-Gm-Message-State: APjAAAXxnSh0haGS2xsk7bCjkg6lv4QUPQZAfji5DwJkhQCZf1XV+djQ
+        spESKdlMr25Wua7xa/OoGIOEYHXR
+X-Google-Smtp-Source: APXvYqwdMOpyKVtY6S19JIsueEg/rF1wgrmWtlH0TXPO2KUt9DZSgWeSG1f3TSfVTLQ3TDDoW9d76g==
+X-Received: by 2002:a17:906:f852:: with SMTP id ks18mr656183ejb.260.1576623725761;
+        Tue, 17 Dec 2019 15:02:05 -0800 (PST)
 Received: from [10.67.50.53] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id b27sm15247ejg.40.2019.12.17.15.01.20
+        by smtp.googlemail.com with ESMTPSA id gl17sm14730ejb.72.2019.12.17.15.02.03
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 17 Dec 2019 15:01:21 -0800 (PST)
-Subject: Re: [PATCH net-next 5/8] net: bcmgenet: Utilize
- bcmgenet_set_features() during resume/open
+        Tue, 17 Dec 2019 15:02:05 -0800 (PST)
+Subject: Re: [PATCH net-next 4/8] net: bcmgenet: Refactor
+ bcmgenet_set_features()
 To:     Doug Berger <opendmb@gmail.com>,
         "David S. Miller" <davem@davemloft.net>
 Cc:     bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
 References: <1576616549-39097-1-git-send-email-opendmb@gmail.com>
- <1576616549-39097-6-git-send-email-opendmb@gmail.com>
+ <1576616549-39097-5-git-send-email-opendmb@gmail.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  xsDiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
@@ -108,12 +108,12 @@ Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  HvsHIcv4lxCWkFXkwsuWqzEKK6kxVpRDoEQPDj+Oy/ZJ5fYuMbkdHrlegwoQ64LrqdmiVVPC
  TwQYEQIADwIbDAUCVF/S8QUJHlwd3wAKCRBhV5kVtWN2Do+FAJ956xSz2XpDHql+Wg/2qv3b
  G10n8gCguORqNGMsVRxrlLs7/himep7MrCc=
-Message-ID: <3ae4b0af-323f-fe8e-c4ef-eb6783826a3c@gmail.com>
-Date:   Tue, 17 Dec 2019 15:01:18 -0800
+Message-ID: <7e39e089-659e-c685-f2c1-152f3b97df5f@gmail.com>
+Date:   Tue, 17 Dec 2019 15:02:02 -0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.2.2
 MIME-Version: 1.0
-In-Reply-To: <1576616549-39097-6-git-send-email-opendmb@gmail.com>
+In-Reply-To: <1576616549-39097-5-git-send-email-opendmb@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -123,9 +123,21 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On 12/17/19 1:02 PM, Doug Berger wrote:
-> During driver resume and open, the HW may have lost its context/state,
-> utilize bcmgenet_set_features() to make sure we do restore the correct
-> set of features that were previously configured.
+> In preparation for unconditionally enabling TX and RX checksum
+> offloads, refactor bcmgenet_set_features() a bit such that
+> __netdev_update_features() during register_netdev() can make sure
+> that features are correctly programmed during network device
+> registration.
+> 
+> Since we can now be called during register_netdev() with clocks
+> gated, we need to temporarily turn them on/off in order to have a
+> successful register programming.
+> 
+> We also move the CRC forward setting read into
+> bcmgenet_set_features() since priv->crc_fwd_en matters while
+> turning on RX checksum offload, that way we are guaranteed they
+> are in sync in case we ever add support for NETIF_F_RXFCS at some
+> point in the future.
 > 
 > Signed-off-by: Doug Berger <opendmb@gmail.com>
 
