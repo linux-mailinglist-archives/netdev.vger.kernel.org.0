@@ -2,57 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D856123376
-	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 18:25:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9241812337B
+	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 18:26:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727587AbfLQRZg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Dec 2019 12:25:36 -0500
-Received: from mail-ed1-f67.google.com ([209.85.208.67]:40691 "EHLO
-        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726723AbfLQRZg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 12:25:36 -0500
-Received: by mail-ed1-f67.google.com with SMTP id b8so6048453edx.7
-        for <netdev@vger.kernel.org>; Tue, 17 Dec 2019 09:25:34 -0800 (PST)
+        id S1727690AbfLQR0k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Dec 2019 12:26:40 -0500
+Received: from mail-ed1-f66.google.com ([209.85.208.66]:33386 "EHLO
+        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727145AbfLQR0k (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 12:26:40 -0500
+Received: by mail-ed1-f66.google.com with SMTP id r21so8720601edq.0
+        for <netdev@vger.kernel.org>; Tue, 17 Dec 2019 09:26:38 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=EffLHG03JZK8tCwEAuOuGq9sGbF2K4ir1XcqEgte4J8=;
-        b=CqS5dxriMrr34UNm3QucVrAzc88bfuRA+Vfzb4xvu5cZiSoCOjwHpW/u/MiWXtVzV2
-         K7gTnptLtvcPHXsRnYPIDPdyZdHch91A/8AU3ZEMJ0KQrfZK8wP1pSWjowSetvHo49Bj
-         U9SOt9cRxwF4cjVBt8ywUNmFS4O1AjJRB2aPm7S7eoxcBeS+CWmzCNCyY8RE4OvPuefD
-         n42yHR8WZHdOWcpgwVVbqVYeVW5cNb0M6loPon4YbkaLr/z4e+66V0+iwmhjmARIaDKo
-         N+wMyCED4RogCmysIv950MbTa62/oZCVOv6DbA5sMTEQPQ0NzcY6TPaLyiwcdlrA7SCv
-         nCig==
+        bh=g07DMLLUXmrbSR+di4/tHlH+FCa5+GzQWLoZY1zSigY=;
+        b=qMKj4hE7PYh4HJFxKQF5PP7W+wHrhWjzbJJYQ3LHg6AIuiu4GGh0KMkrMSNTTcwxr9
+         0NMZt60EMyY0eaK9ItAoDp1lcUf2wk51ndzmb0JTB4Q05J4kLjDK3zin5rShTI2gctN8
+         28vFGok2SQr1NcJPOcbWq6Mlmi/K8vR/sJOPLsAeQuRoizcUbwIaNLtRy0x0prXliyqn
+         taILyXl13XdvQBLy5F3f/4qTijkm69FXQlEKm79dgXyp5yCKeZpafkiZWAOHFxYhwyJ3
+         aGAJNNL0VRWiZOJuh+vrb7zxeoPAIUm+tFCmBEm40BPD/+1GNYGo/w8L5a344ON5YoIS
+         Dajw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=EffLHG03JZK8tCwEAuOuGq9sGbF2K4ir1XcqEgte4J8=;
-        b=KAGinggv5u1jy0ba2In7tPyMmK/ahQvr18ThN5y9jtDRGJd0E+e7/xkoXPoIVyorEV
-         HnK5NqW0fNIIuFgeq7z77+yTZI2jpNtRduEWjCCX2X+pcHfiNkpR/i1uwVUHllczrof7
-         Jh9xobqguqmJs2bDiEClx56MTPYI+PDK3G0sJpN17s6GZr7MgU0szj+0672BlmeydVI1
-         bpMwMtE4ldYVgo1r4oedZmfhJlLF6z43Hr4GG9hwdss9JLxtBaOepelPhm1bejqAGjr+
-         AJikyzbUAtQn2r9FdQ0SuRpQzlDTFJ7l90eG1R0lTKs7iaxi7fDqwDkaGADG6T7r/tde
-         Ldqw==
-X-Gm-Message-State: APjAAAUtP1IEB76aX4t8Ld0Dyfi1lShX1zD+DDpNeKdFZSrrPqwHGJNy
-        Va5WM9sX0ttrIDuSfKgyAPfU90Xa
-X-Google-Smtp-Source: APXvYqy3wZws1mrmm8jQZ4ZvyWKNoj41unesPAeU7JCju5eawVFfErPiRfvnXpIgcnkSxbPKxCrdcg==
-X-Received: by 2002:a05:6402:3c5:: with SMTP id t5mr6458826edw.217.1576603532807;
-        Tue, 17 Dec 2019 09:25:32 -0800 (PST)
+        bh=g07DMLLUXmrbSR+di4/tHlH+FCa5+GzQWLoZY1zSigY=;
+        b=JxgEQdEM1vpo+MLABzIYiP+e1yl3KabTNCh4JsUq4BUxM0SoohX5UKL8KPLwu0sVgp
+         S2MXeJMzT8RMweZ9k5mue8FAe9jMUNk4ppYHBk4+kA4hBlpNZBTtDe6T4akh5CsgKDVG
+         lz3NdwbZEspm8EWdqRkKn1Ey/OMUM7XbTnnXvJMsDso5/IGlxbwxE4ZcFSO0UQRE4oFY
+         50Sa3JQtRnEhiDwEvmmUCI8Oh6marwYVvI21GKyDdV2Yx7mAAGBIzdfhuIvUys8GlFwE
+         2SZ5j/3d/zxWtHvAmJNaQuONLTs1t5VxofhUSMeF7t/aDJP4kC+kFRqGu+x2/z+0ONDt
+         ZXuw==
+X-Gm-Message-State: APjAAAWUt2lHD065zZE95W1M8EDvPqrjAXFyvm0Ta14uv0jg6twc0N5p
+        grdRv68ma7ISkSHCQckYgLKmk3WP
+X-Google-Smtp-Source: APXvYqx7vjfF4PPOOvESgoU3y65IAzlzJAhVCkZ20HHnC52Jyi+2z+jMrHSqnThrjzir9tFjlcvI2A==
+X-Received: by 2002:a17:906:7708:: with SMTP id q8mr6386274ejm.33.1576603597971;
+        Tue, 17 Dec 2019 09:26:37 -0800 (PST)
 Received: from [10.67.50.53] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id sa9sm1161898ejb.28.2019.12.17.09.25.30
+        by smtp.googlemail.com with ESMTPSA id x8sm798991eds.88.2019.12.17.09.26.35
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 17 Dec 2019 09:25:32 -0800 (PST)
-Subject: Re: [PATCH net-next 01/11] net: phy: remove redundant .aneg_done
- initialisers
+        Tue, 17 Dec 2019 09:26:37 -0800 (PST)
+Subject: Re: [PATCH net-next 02/11] net: phy: use phy_resolve_aneg_pause()
 To:     Russell King <rmk+kernel@armlinux.org.uk>,
         Andrew Lunn <andrew@lunn.ch>,
         Heiner Kallweit <hkallweit1@gmail.com>
 Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
 References: <20191217133827.GQ25745@shell.armlinux.org.uk>
- <E1ihD40-0001yI-Ss@rmk-PC.armlinux.org.uk>
+ <E1ihD46-0001yP-0u@rmk-PC.armlinux.org.uk>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  xsDiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
@@ -108,12 +107,12 @@ Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  HvsHIcv4lxCWkFXkwsuWqzEKK6kxVpRDoEQPDj+Oy/ZJ5fYuMbkdHrlegwoQ64LrqdmiVVPC
  TwQYEQIADwIbDAUCVF/S8QUJHlwd3wAKCRBhV5kVtWN2Do+FAJ956xSz2XpDHql+Wg/2qv3b
  G10n8gCguORqNGMsVRxrlLs7/himep7MrCc=
-Message-ID: <1ef8d043-5339-cbbc-a0c5-8159fc266985@gmail.com>
-Date:   Tue, 17 Dec 2019 09:25:29 -0800
+Message-ID: <46298d6a-df73-cdaf-8b69-24206b8c2c77@gmail.com>
+Date:   Tue, 17 Dec 2019 09:26:34 -0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.2.2
 MIME-Version: 1.0
-In-Reply-To: <E1ihD40-0001yI-Ss@rmk-PC.armlinux.org.uk>
+In-Reply-To: <E1ihD46-0001yP-0u@rmk-PC.armlinux.org.uk>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -123,8 +122,9 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On 12/17/19 5:39 AM, Russell King wrote:
-> Remove initialisers that set .aneg_done to genphy_aneg_done - this is
-> the default for clause 22 PHYs, so the initialiser is redundant.
+> Several drivers code their own version of this, working from the LPA
+> register, after setting the ethtool link partner advertisement bitmask.
+> Use the generic function instead.
 > 
 > Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
 
