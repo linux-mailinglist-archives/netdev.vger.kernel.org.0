@@ -2,34 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DE5DE123766
-	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 21:38:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 156451237EF
+	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 21:43:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728322AbfLQUih (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Dec 2019 15:38:37 -0500
-Received: from mga18.intel.com ([134.134.136.126]:16399 "EHLO mga18.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728143AbfLQUib (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 17 Dec 2019 15:38:31 -0500
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga106.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 17 Dec 2019 12:38:30 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.69,326,1571727600"; 
-   d="scan'208";a="298171948"
-Received: from mjmartin-nuc02.mjmartin-nuc02 (HELO mjmartin-nuc02.sea.intel.com) ([10.251.1.107])
-  by orsmga001.jf.intel.com with ESMTP; 17 Dec 2019 12:38:26 -0800
-From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
-To:     netdev@vger.kernel.org, mptcp@lists.01.org
-Cc:     Paolo Abeni <pabeni@redhat.com>,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>
-Subject: [PATCH net-next v3 11/11] skb: add helpers to allocate ext independently from sk_buff
-Date:   Tue, 17 Dec 2019 12:38:07 -0800
-Message-Id: <20191217203807.12579-12-mathew.j.martineau@linux.intel.com>
-X-Mailer: git-send-email 2.24.1
-In-Reply-To: <20191217203807.12579-1-mathew.j.martineau@linux.intel.com>
-References: <20191217203807.12579-1-mathew.j.martineau@linux.intel.com>
+        id S1728224AbfLQUnG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Dec 2019 15:43:06 -0500
+Received: from mta-p6.oit.umn.edu ([134.84.196.206]:33476 "EHLO
+        mta-p6.oit.umn.edu" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726866AbfLQUnG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 15:43:06 -0500
+Received: from localhost (unknown [127.0.0.1])
+        by mta-p6.oit.umn.edu (Postfix) with ESMTP id 47cqpd3TbHz9vYTl
+        for <netdev@vger.kernel.org>; Tue, 17 Dec 2019 20:43:05 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at umn.edu
+Received: from mta-p6.oit.umn.edu ([127.0.0.1])
+        by localhost (mta-p6.oit.umn.edu [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id lCHmUxFmwiNN for <netdev@vger.kernel.org>;
+        Tue, 17 Dec 2019 14:43:05 -0600 (CST)
+Received: from mail-yb1-f197.google.com (mail-yb1-f197.google.com [209.85.219.197])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mta-p6.oit.umn.edu (Postfix) with ESMTPS id 47cqpd1S8Qz9vYV7
+        for <netdev@vger.kernel.org>; Tue, 17 Dec 2019 14:43:05 -0600 (CST)
+Received: by mail-yb1-f197.google.com with SMTP id t12so8546258ybc.0
+        for <netdev@vger.kernel.org>; Tue, 17 Dec 2019 12:43:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=umn.edu; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=LHRpA8yRAnpMeohn/UFdPWTBWzHvpiDJXOI1dqhcReE=;
+        b=CTtWiJ7ZynxyBiVgl7haMTiSAZMraAf25CTEbBmXZbWSCpGPk9w4OP1unNmqZPcLu7
+         T1rvwMQoHik5BXZOa6QZ0yKouot0SnzJaqzc0VcAjeywu13qAUPUE13DQOfaiF+WSUc+
+         3kKYtLMazrzTRA8evIeSWobfHCmwnmjQ/fvbSahMt+s/2Y0GaiijGYD8+WQWzTAU7AOh
+         f8yGtNCKjHZcG4e8ldpSrAT6+yXUe5kPJh+nLdlqAI7blqf+YTJL0OQQTpd61jv2Y7Ej
+         jXmhGBiCVILebE2E5pu267FKYXC5TSJ1o84GNr5zwjSu2+V+SZXIU4oNHDJ3pC30+woi
+         9Sig==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=LHRpA8yRAnpMeohn/UFdPWTBWzHvpiDJXOI1dqhcReE=;
+        b=la4FDrm6X9b8g4ci4PASCJYfkgAB+SuJtuo9muvxrAEs0C/TnuVoQ7ocSl0xAhuQK5
+         ElXGK7tswAfVsjMpS5VOBOuSq9Sa8wuLs+Bcvx6klNpj7zjuQkb/8g7lTpmwIK6oEnQQ
+         YeNigG7bD7Du97SPy9K4tByO1WoPNmREjvWinP/UtlongJgLrb6xo3kXXC0m3K2Cysuc
+         XKn3RRkOiMigT/foevKFCisbmct9+ec6PNk+eCIRzcr4OzyX/87w5OiqjBEbI/XMUbbo
+         jVLq9uCHH6z8Wvqs54C4TYNgKykCDyb+rM4JyuJERH6jVSEfHhwYi2tk7bKle59E+Oov
+         12eQ==
+X-Gm-Message-State: APjAAAWBPi9H89hCugJUvmzWqqnhifu8xZSJfcx0inTVic8F3l//VI+V
+        VEWIKVxWSWUlDrOg116tLNPFYFOW4Bp8uBD0TNIyMeCJLjSIagmFOtlNkJiOM+/EX8E5UZqi4Uo
+        K6qFfzcapy21xPeM3k3GU
+X-Received: by 2002:a81:a8c1:: with SMTP id f184mr500661ywh.29.1576615384611;
+        Tue, 17 Dec 2019 12:43:04 -0800 (PST)
+X-Google-Smtp-Source: APXvYqyXIOXh9OMCS6/U1az+abjHX1IWifPSH0LicBhZb60OQ7I/lxSkDp2DHmDJ21iYOY8fXBSOkQ==
+X-Received: by 2002:a81:a8c1:: with SMTP id f184mr500638ywh.29.1576615384392;
+        Tue, 17 Dec 2019 12:43:04 -0800 (PST)
+Received: from cs-u-syssec1.dtc.umn.edu (cs-u-syssec1.cs.umn.edu. [128.101.106.66])
+        by smtp.gmail.com with ESMTPSA id p62sm10125054ywc.44.2019.12.17.12.43.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 17 Dec 2019 12:43:04 -0800 (PST)
+From:   Aditya Pakki <pakki001@umn.edu>
+To:     pakki001@umn.edu
+Cc:     kjlu@umn.edu, Robert Baldyga <r.baldyga@samsung.com>,
+        Krzysztof Opasiak <k.opasiak@samsung.com>,
+        linux-nfc@lists.01.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2] nfc: s3fwrn5: replace the assertion with a WARN_ON
+Date:   Tue, 17 Dec 2019 14:43:00 -0600
+Message-Id: <20191217204300.28616-1-pakki001@umn.edu>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -37,93 +77,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Paolo Abeni <pabeni@redhat.com>
+In s3fwrn5_fw_recv_frame, if fw_info->rsp is not empty, the
+current code causes a crash via BUG_ON. However, s3fwrn5_fw_send_msg
+does not crash in such a scenario. The patch replaces the BUG_ON
+by returning the error to the callers and frees up skb.
 
-Currently we can allocate the extension only after the skb,
-this change allows the user to do the opposite, will simplify
-allocation failure handling from MPTCP.
-
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
+Signed-off-by: Aditya Pakki <pakki001@umn.edu>
 ---
- include/linux/skbuff.h |  3 +++
- net/core/skbuff.c      | 35 +++++++++++++++++++++++++++++++++--
- 2 files changed, 36 insertions(+), 2 deletions(-)
+v1: Failed to free memory of skb, identified by David Miller
+---
+ drivers/nfc/s3fwrn5/firmware.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index 1a261c3ee074..af9b6cf79a65 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -4115,6 +4115,9 @@ struct skb_ext {
- 	char data[0] __aligned(8);
- };
+diff --git a/drivers/nfc/s3fwrn5/firmware.c b/drivers/nfc/s3fwrn5/firmware.c
+index be110d9cef02..de613c623a2c 100644
+--- a/drivers/nfc/s3fwrn5/firmware.c
++++ b/drivers/nfc/s3fwrn5/firmware.c
+@@ -507,7 +507,10 @@ int s3fwrn5_fw_recv_frame(struct nci_dev *ndev, struct sk_buff *skb)
+ 	struct s3fwrn5_info *info = nci_get_drvdata(ndev);
+ 	struct s3fwrn5_fw_info *fw_info = &info->fw_info;
  
-+struct skb_ext *__skb_ext_alloc(void);
-+void *__skb_ext_set(struct sk_buff *skb, enum skb_ext_id id,
-+		    struct skb_ext *ext);
- void *skb_ext_add(struct sk_buff *skb, enum skb_ext_id id);
- void __skb_ext_del(struct sk_buff *skb, enum skb_ext_id id);
- void __skb_ext_put(struct skb_ext *ext);
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index fa67036dd928..504e9bd5ebce 100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -5983,7 +5983,14 @@ static void *skb_ext_get_ptr(struct skb_ext *ext, enum skb_ext_id id)
- 	return (void *)ext + (ext->offset[id] * SKB_EXT_ALIGN_VALUE);
- }
+-	BUG_ON(fw_info->rsp);
++	if (WARN_ON(fw_info->rsp)) {
++		kfree_skb(skb);
++		return -EINVAL;
++	}
  
--static struct skb_ext *skb_ext_alloc(void)
-+/**
-+ * __skb_ext_alloc - allocate a new skb extensions storage
-+ *
-+ * Returns the newly allocated pointer. The pointer can later attached to a
-+ * skb via __skb_ext_set().
-+ * Note: caller must handle the skb_ext as an opaque data.
-+ */
-+struct skb_ext *__skb_ext_alloc(void)
- {
- 	struct skb_ext *new = kmem_cache_alloc(skbuff_ext_cache, GFP_ATOMIC);
+ 	fw_info->rsp = skb;
  
-@@ -6023,6 +6030,30 @@ static struct skb_ext *skb_ext_maybe_cow(struct skb_ext *old,
- 	return new;
- }
- 
-+/**
-+ * __skb_ext_set - attach the specified extension storage to this skb
-+ * @skb: buffer
-+ * @id: extension id
-+ * @ext: extension storage previously allocated via __skb_ext_alloc()
-+ *
-+ * Existing extensions, if any, are cleared.
-+ *
-+ * Returns the pointer to the extension.
-+ */
-+void *__skb_ext_set(struct sk_buff *skb, enum skb_ext_id id,
-+		    struct skb_ext *ext)
-+{
-+	unsigned int newlen, newoff = SKB_EXT_CHUNKSIZEOF(*ext);
-+
-+	skb_ext_put(skb);
-+	newlen = newoff + skb_ext_type_len[id];
-+	ext->chunks = newlen;
-+	ext->offset[id] = newoff;
-+	skb->extensions = ext;
-+	skb->active_extensions = 1 << id;
-+	return skb_ext_get_ptr(ext, id);
-+}
-+
- /**
-  * skb_ext_add - allocate space for given extension, COW if needed
-  * @skb: buffer
-@@ -6056,7 +6087,7 @@ void *skb_ext_add(struct sk_buff *skb, enum skb_ext_id id)
- 	} else {
- 		newoff = SKB_EXT_CHUNKSIZEOF(*new);
- 
--		new = skb_ext_alloc();
-+		new = __skb_ext_alloc();
- 		if (!new)
- 			return NULL;
- 	}
 -- 
-2.24.1
+2.20.1
 
