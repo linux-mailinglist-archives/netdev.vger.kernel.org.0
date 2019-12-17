@@ -2,280 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F178E1224A4
-	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 07:27:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CE5AB1224B5
+	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 07:33:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727976AbfLQG12 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Dec 2019 01:27:28 -0500
-Received: from mail-vk1-f195.google.com ([209.85.221.195]:45954 "EHLO
-        mail-vk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725886AbfLQG11 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 01:27:27 -0500
-Received: by mail-vk1-f195.google.com with SMTP id g7so2358663vkl.12;
-        Mon, 16 Dec 2019 22:27:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=rRT3iF8tiAD/fMzZxCKDxrX3Va8NsfDy0k2l5J1L/zo=;
-        b=FoVyQ0UerMF3ZOP1WAQO1pcvKYoV4vme2H2aUcnuvDC16k6w/BrpEuTGKkLOJMGJIi
-         P7m2XMcnIthociy/SwMV1uWxDEkDFw002DKDGdhwua/mbo0eyai9gdqx2nXuSanGvnjW
-         Kc2GfhkdEx83pVZzbbZxQzcttiveGaQ6+gLatE0WKWoIaeXRJnOKkTQ0ZbtMgHCjOTp0
-         ynLe0t7yFODBjqMyZcyz1sygTIWXcICFyJOZ93XMgzk0vKydOPugEl10/gMdsO9H2T5p
-         CTrotwlgu90i1lD1TpWkVfhZyaDWF65CuEbb6GRhxH7nR62StmFb8KL5eYJjai5XQXtU
-         8nTg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=rRT3iF8tiAD/fMzZxCKDxrX3Va8NsfDy0k2l5J1L/zo=;
-        b=grJR8xxL0JJSKndQI2FJFI6Bvq4xqAUic60IGXHjTVGUcrXe/p/auX3K4gDaPIsqXi
-         JUumGtwkU3amE9mUF3TNAatT2fy061ywEomxR6+pE690U6gYFh+xAtBR+e+GKCJxY1Fq
-         Y6lPRgltXYWlngDd7dPyV1eoSHqPRihqJsP1xl2b171bm2enzykv68NnxLBAQ3acf9+k
-         WGDOVt3yyClLLbrOcKU3S450PUDbgx2mfMftk+ZKGW3qx9ZcvOvu5dSCti1EcYoR70TO
-         odF4YD2pXFTfrW9QFD3aM4XmGQF8cLTq3yytzfuyDx5HLqS4DrOS+NS5E0V4XwYglHcZ
-         9vUw==
-X-Gm-Message-State: APjAAAWLm+sve2sjqmWa1wGyF68gKf9DZpZuSbSLUt699ilVTu46PLmY
-        1M8EWPzqdDcTXu2B13M/7B6kHnaL+S2VgyWxCSY=
-X-Google-Smtp-Source: APXvYqw56F679tB9V+Jfa8kVC1fY5l77M1vbSAv6Tj846U5r9A3B0ARtsAunAOR+95rvXSq3kAwFQje7WVQFXfzq0P8=
-X-Received: by 2002:a1f:2197:: with SMTP id h145mr2196283vkh.75.1576564046164;
- Mon, 16 Dec 2019 22:27:26 -0800 (PST)
-MIME-Version: 1.0
-References: <cover.1576381511.git.ethercflow@gmail.com> <0117d6e17ba8b3b1273e5a964f87a71c1b2d8741.1576381512.git.ethercflow@gmail.com>
- <aa4bf1b3-0411-1a04-6156-3fb97add1f2c@fb.com>
-In-Reply-To: <aa4bf1b3-0411-1a04-6156-3fb97add1f2c@fb.com>
-From:   Wenbo Zhang <ethercflow@gmail.com>
-Date:   Tue, 17 Dec 2019 14:27:15 +0800
-Message-ID: <CABtjQmZF-+B=05MtyVF=7tbesMS9KJ4iQrQF8WS-E8UAG+YABg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v12 1/2] bpf: add new helper get_file_path for
- mapping a file descriptor to a pathname
-To:     Yonghong Song <yhs@fb.com>
-Cc:     "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        id S1727545AbfLQGd1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Dec 2019 01:33:27 -0500
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:17914 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725856AbfLQGd1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 01:33:27 -0500
+Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xBH6UNQs032190;
+        Mon, 16 Dec 2019 22:33:14 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : references : in-reply-to : content-type : content-id
+ : content-transfer-encoding : mime-version; s=facebook;
+ bh=T2gJ8HvI6SDe3XCrIwZx+ZUNIZyHas5tlf+WracFoyU=;
+ b=hDgUq56WyhN0Fy5GmQCeOFxtkE6goEapClQjk5I3+/AP98DUHaGsvoeBby3Tb+svNErA
+ ji8cEQ5mGPtB0MutoVLW3RaXwOqph9oCObmiJ9MqI+6Upx5YkSu5xr/KuLRuXOFCtUJT
+ 0ioQPfI08OKemnuAEatubM+onoQoDLije+s= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 2wxcwy3ddb-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Mon, 16 Dec 2019 22:33:14 -0800
+Received: from ash-exhub201.TheFacebook.com (2620:10d:c0a8:83::7) by
+ ash-exhub104.TheFacebook.com (2620:10d:c0a8:82::d) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Mon, 16 Dec 2019 22:33:13 -0800
+Received: from NAM02-SN1-obe.outbound.protection.outlook.com (100.104.31.183)
+ by o365-in.thefacebook.com (100.104.36.101) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1713.5
+ via Frontend Transport; Mon, 16 Dec 2019 22:33:13 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=m1/3/+7DWoR4N3B5C7vioHdjPqolbem7FRvr/abvi0UYiflEMWJIGyRQdTEgZ6zpHK8Bklt+ntgCu50hgjAasnMKgUf/QOugO6hGgJEUVc9DIE1QNahIPL9UcDE+vR++jDVhuke3JUq5IOUko5pt/KD54TO/d6a5eobN0Ljknbze52Tq5uj9V/Syk6hAHsOI9wpkVxEHWkkpYTXdDAj5oATcWQ8gOiMkk4Oilvj6+Mwj+ppaJ+JGlMDTG0tA0lf6+AgY2q2OdaYJFBSHdfgTw+mCl4rf64ae7XixK6bgeA1z8YegttRWS7lA0uvuLsyRS6aOC8cZ11/NGVEU+2YynA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=T2gJ8HvI6SDe3XCrIwZx+ZUNIZyHas5tlf+WracFoyU=;
+ b=ET8R+FixUkahwMhhN9cQ8BmDwuIZ1Nz04LEI41egxW0pCsjx6ehDiODYp4dLNdSyw8tPkuP/pBm6ZoeTUWi4aa9OgIxZeGrueJ5nL7XsJW0j5pDhx38n3y7BKrxFtLN9IHoePNPM+zvZm9JNst8ejgtwW7IeIHmrUdzoUPTGh4ioIzq/VxaKebNCrUr/JJK8+/P5jJKvqyvgZVUyOJjVhRB78xqenE7YZ1d3rbj1oN+zasHlUycbcGA/J5ejHDTtPnNARb8J/KhW19uLK+k9H3Tbfw7SCdSGIGAZcMBWF4Mb9wRKVEvIhREZZ8jKEJbA3a6QMnpjdwI7ca4hB9Yanw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=T2gJ8HvI6SDe3XCrIwZx+ZUNIZyHas5tlf+WracFoyU=;
+ b=SzpZvQukIcORqmd5+mcJKt4JhvhiZs9v9LdGJOIB6cQjTwXoYwkWtoVkX+XRBfkqI817ItNgdjFCqcIF90obwsOQLh4fhsqRO2SDlaHxa4MlHw1jSbTbBD5DrW7KBftuyHpGptOmr05QnTX8yvTZAvR3fkFfd9zIzdjlLUFJFQQ=
+Received: from DM5PR15MB1675.namprd15.prod.outlook.com (10.175.107.145) by
+ DM5PR15MB1419.namprd15.prod.outlook.com (10.173.221.148) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2538.15; Tue, 17 Dec 2019 06:33:12 +0000
+Received: from DM5PR15MB1675.namprd15.prod.outlook.com
+ ([fe80::2844:b18d:c296:c23]) by DM5PR15MB1675.namprd15.prod.outlook.com
+ ([fe80::2844:b18d:c296:c23%8]) with mapi id 15.20.2538.019; Tue, 17 Dec 2019
+ 06:33:12 +0000
+From:   Yonghong Song <yhs@fb.com>
+To:     Wenbo Zhang <ethercflow@gmail.com>
+CC:     "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
         "ast@kernel.org" <ast@kernel.org>,
         "daniel@iogearbox.net" <daniel@iogearbox.net>,
         "andrii.nakryiko@gmail.com" <andrii.nakryiko@gmail.com>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Subject: Re: [PATCH bpf-next v12 1/2] bpf: add new helper get_file_path for
+ mapping a file descriptor to a pathname
+Thread-Topic: [PATCH bpf-next v12 1/2] bpf: add new helper get_file_path for
+ mapping a file descriptor to a pathname
+Thread-Index: AQHVsvxXzJN9aTKnK0ael6l0VjzbR6e7XQUAgAKC0QCAAAHiAA==
+Date:   Tue, 17 Dec 2019 06:33:12 +0000
+Message-ID: <fecf759e-2941-3920-82d5-45a556f4dd1d@fb.com>
+References: <cover.1576381511.git.ethercflow@gmail.com>
+ <0117d6e17ba8b3b1273e5a964f87a71c1b2d8741.1576381512.git.ethercflow@gmail.com>
+ <e3ff90c1-6024-ec9f-061c-195e9def9c0c@fb.com>
+ <CABtjQmZcbhcab0a7ksuggg3ZoDwM5s3ucjeA_baPTpAJQvKQLA@mail.gmail.com>
+In-Reply-To: <CABtjQmZcbhcab0a7ksuggg3ZoDwM5s3ucjeA_baPTpAJQvKQLA@mail.gmail.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: MWHPR13CA0035.namprd13.prod.outlook.com
+ (2603:10b6:300:95::21) To DM5PR15MB1675.namprd15.prod.outlook.com
+ (2603:10b6:3:11f::17)
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [2620:10d:c090:180::8f07]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: c55328bd-71f0-4ba2-5af0-08d782bafd42
+x-ms-traffictypediagnostic: DM5PR15MB1419:
+x-microsoft-antispam-prvs: <DM5PR15MB1419B0D9C0776CB9E3E3B2A0D3500@DM5PR15MB1419.namprd15.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-forefront-prvs: 02543CD7CD
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(346002)(396003)(376002)(136003)(39860400002)(366004)(189003)(199004)(71200400001)(2906002)(5660300002)(86362001)(53546011)(186003)(2616005)(478600001)(31686004)(31696002)(54906003)(52116002)(6916009)(8676002)(8936002)(81166006)(81156014)(6486002)(6506007)(66446008)(36756003)(6512007)(4326008)(316002)(66476007)(64756008)(66946007)(66556008);DIR:OUT;SFP:1102;SCL:1;SRVR:DM5PR15MB1419;H:DM5PR15MB1675.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: fb.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: Pc4CDJbiShM2sTFnrOrFmuXc3Tqeg6PTpMu+yTSjnN1nvqODwJV/KQkbbluSq7IyvsmgdqAaW0MDqfNlGEkTYfNLGSwE3sUskVSyvabeH4C0E5QLwb06g7xWTRDi+e6Tw1Ac4iZPupv7oVgMv7n1M1ClJe3WRhjYWiTPA6xbhzylY5jqVvEPcwoqbc+mPXche7DasEjKEZER47qh5qtD7QRgqduN0ExBer4sfqHBMrb4vAXMyKmU3ajhdj4lFpoGxwlVrPgzNB/VgVtjh/4FH1kQTFsKHQ98bVtckWyYdxAESwBgClhNitLKp81WzQnZfE6I3kTCOSMfaw+4wHQnaiL9XpJSv3ZteCXlhACmNxOULVTF20fhiCJZUwAOBJtm9A3qImMC/14lU4eprCXD6JLa2NNkc/2YccgpNUncWaoP8p23u0XtjiCDIqK0nm/L
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <41E12A535DA67C4A8FC4B0525FAA06A1@namprd15.prod.outlook.com>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-Network-Message-Id: c55328bd-71f0-4ba2-5af0-08d782bafd42
+X-MS-Exchange-CrossTenant-originalarrivaltime: 17 Dec 2019 06:33:12.2376
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: IvvkWLCoUUxwBkoH+TlLpj63LCDc5ME16tgNg5eYMxzSA6LBlEo/7/dIQpq2RVzM
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR15MB1419
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
+ definitions=2019-12-17_01:2019-12-16,2019-12-16 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxscore=0
+ lowpriorityscore=0 malwarescore=0 spamscore=0 impostorscore=0
+ clxscore=1015 adultscore=0 bulkscore=0 mlxlogscore=867 phishscore=0
+ suspectscore=0 priorityscore=1501 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-1910280000 definitions=main-1912170056
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > +BPF_CALL_3(bpf_get_file_path, char *, dst, u32, size, int, fd)
-> > +{
-> > +     struct file *f;
-> > +     char *p;
-> > +     int ret =3D -EBADF;
-
-> please try to use reverse Christmas tree for declarations.
-
-Thank you, I'll fix this.
-
-Yonghong Song <yhs@fb.com> =E4=BA=8E2019=E5=B9=B412=E6=9C=8816=E6=97=A5=E5=
-=91=A8=E4=B8=80 =E4=B8=8A=E5=8D=8812:10=E5=86=99=E9=81=93=EF=BC=9A
->
->
->
-> On 12/14/19 8:01 PM, Wenbo Zhang wrote:
-> > When people want to identify which file system files are being opened,
-> > read, and written to, they can use this helper with file descriptor as
-> > input to achieve this goal. Other pseudo filesystems are also supported=
-.
-> >
-> > This requirement is mainly discussed here:
-> >
-> >    https://github.com/iovisor/bcc/issues/237
-> >
-> > v11->v12: addressed Alexei's feedback
-> > - only allow tracepoints to make sure it won't dead lock
-> >
-> > v10->v11: addressed Al and Alexei's feedback
-> > - fix missing fput()
-> >
-> > v9->v10: addressed Andrii's feedback
-> > - send this patch together with the patch selftests as one patch series
-> >
-> > v8->v9:
-> > - format helper description
-> >
-> > v7->v8: addressed Alexei's feedback
-> > - use fget_raw instead of fdget_raw, as fdget_raw is only used inside f=
-s/
-> > - ensure we're in user context which is safe fot the help to run
-> > - filter unmountable pseudo filesystem, because they don't have real pa=
-th
-> > - supplement the description of this helper function
-> >
-> > v6->v7:
-> > - fix missing signed-off-by line
-> >
-> > v5->v6: addressed Andrii's feedback
-> > - avoid unnecessary goto end by having two explicit returns
-> >
-> > v4->v5: addressed Andrii and Daniel's feedback
-> > - rename bpf_fd2path to bpf_get_file_path to be consistent with other
-> > helper's names
-> > - when fdget_raw fails, set ret to -EBADF instead of -EINVAL
-> > - remove fdput from fdget_raw's error path
-> > - use IS_ERR instead of IS_ERR_OR_NULL as d_path ether returns a pointe=
-r
-> > into the buffer or an error code if the path was too long
-> > - modify the normal path's return value to return copied string length
-> > including NUL
-> > - update this helper description's Return bits.
-> >
-> > v3->v4: addressed Daniel's feedback
-> > - fix missing fdput()
-> > - move fd2path from kernel/bpf/trace.c to kernel/trace/bpf_trace.c
-> > - move fd2path's test code to another patch
-> > - add comment to explain why use fdget_raw instead of fdget
-> >
-> > v2->v3: addressed Yonghong's feedback
-> > - remove unnecessary LOCKDOWN_BPF_READ
-> > - refactor error handling section for enhanced readability
-> > - provide a test case in tools/testing/selftests/bpf
-> >
-> > v1->v2: addressed Daniel's feedback
-> > - fix backward compatibility
-> > - add this helper description
-> > - fix signed-off name
-> >
-> > Signed-off-by: Wenbo Zhang <ethercflow@gmail.com>
-> > ---
-> >   include/uapi/linux/bpf.h       | 29 +++++++++++++-
-> >   kernel/trace/bpf_trace.c       | 70 +++++++++++++++++++++++++++++++++=
-+
-> >   tools/include/uapi/linux/bpf.h | 29 +++++++++++++-
-> >   3 files changed, 126 insertions(+), 2 deletions(-)
-> >
-> > diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-> > index dbbcf0b02970..71d9705df120 100644
-> > --- a/include/uapi/linux/bpf.h
-> > +++ b/include/uapi/linux/bpf.h
-> > @@ -2821,6 +2821,32 @@ union bpf_attr {
-> >    *  Return
-> >    *          On success, the strictly positive length of the string, i=
-ncluding
-> >    *          the trailing NUL character. On error, a negative value.
-> > + *
-> > + * int bpf_get_file_path(char *path, u32 size, int fd)
-> > + *   Description
-> > + *           Get **file** atrribute from the current task by *fd*, the=
-n call
-> > + *           **d_path** to get it's absolute path and copy it as strin=
-g into
-> > + *           *path* of *size*. Notice the **path** don't support unmou=
-ntable
-> > + *           pseudo filesystems as they don't have path (eg: SOCKFS, P=
-IPEFS).
-> > + *           The *size* must be strictly positive. On success, the hel=
-per
-> > + *           makes sure that the *path* is NUL-terminated, and the buf=
-fer
-> > + *           could be:
-> > + *           - a regular full path (include mountable fs eg: /proc, /s=
-ys)
-> > + *           - a regular full path with "(deleted)" at the end.
-> > + *           On failure, it is filled with zeroes.
-> > + *   Return
-> > + *           On success, returns the length of the copied string INCLU=
-DING
-> > + *           the trailing NUL.
-> > + *
-> > + *           On failure, the returned value is one of the following:
-> > + *
-> > + *           **-EPERM** if no permission to get the path (eg: in irq c=
-tx).
-> > + *
-> > + *           **-EBADF** if *fd* is invalid.
-> > + *
-> > + *           **-EINVAL** if *fd* corresponds to a unmountable pseudo f=
-s
-> > + *
-> > + *           **-ENAMETOOLONG** if full path is longer than *size*
-> >    */
-> >   #define __BPF_FUNC_MAPPER(FN)               \
-> >       FN(unspec),                     \
-> > @@ -2938,7 +2964,8 @@ union bpf_attr {
-> >       FN(probe_read_user),            \
-> >       FN(probe_read_kernel),          \
-> >       FN(probe_read_user_str),        \
-> > -     FN(probe_read_kernel_str),
-> > +     FN(probe_read_kernel_str),      \
-> > +     FN(get_file_path),
-> >
-> >   /* integer value in 'imm' field of BPF_CALL instruction selects which=
- helper
-> >    * function eBPF program intends to call
-> > diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
-> > index e5ef4ae9edb5..db9c0ec46a5d 100644
-> > --- a/kernel/trace/bpf_trace.c
-> > +++ b/kernel/trace/bpf_trace.c
-> > @@ -762,6 +762,72 @@ static const struct bpf_func_proto bpf_send_signal=
-_proto =3D {
-> >       .arg1_type      =3D ARG_ANYTHING,
-> >   };
-> >
-> > +BPF_CALL_3(bpf_get_file_path, char *, dst, u32, size, int, fd)
-> > +{
-> > +     struct file *f;
-> > +     char *p;
-> > +     int ret =3D -EBADF;
->
-> please try to use reverse Christmas tree for declarations.
->
-> > +
-> > +     /* Ensure we're in user context which is safe for the helper to
-> > +      * run. This helper has no business in a kthread.
-> > +      */
-> > +     if (unlikely(in_interrupt() ||
-> > +                  current->flags & (PF_KTHREAD | PF_EXITING))) {
-> > +             ret =3D -EPERM;
-> > +             goto error;
-> > +     }
-> > +
-> > +     /* Use fget_raw instead of fget to support O_PATH, and it doesn't
-> > +      * have any sleepable code, so it's ok to be here.
-> > +      */
-> > +     f =3D fget_raw(fd);
-> > +     if (!f)
-> > +             goto error;
-> > +
-> > +     /* For unmountable pseudo filesystem, it seems to have no meaning
-> > +      * to get their fake paths as they don't have path, and to be no
-> > +      * way to validate this function pointer can be always safe to ca=
-ll
-> > +      * in the current context.
-> > +      */
-> > +     if (f->f_path.dentry->d_op && f->f_path.dentry->d_op->d_dname) {
-> > +             ret =3D -EINVAL;
-> > +             fput(f);
-> > +             goto error;
-> > +     }
-> > +
-> > +     /* After filter unmountable pseudo filesytem, d_path won't call
-> > +      * dentry->d_op->d_name(), the normally path doesn't have any
-> > +      * sleepable code, and despite it uses the current macro to get
-> > +      * fs_struct (current->fs), we've already ensured we're in user
-> > +      * context, so it's ok to be here.
-> > +      */
-> > +     p =3D d_path(&f->f_path, dst, size);
-> > +     if (IS_ERR(p)) {
-> > +             ret =3D PTR_ERR(p);
-> > +             fput(f);
-> > +             goto error;
-> > +     }
-> > +
-> > +     ret =3D strlen(p);
-> > +     memmove(dst, p, ret);
-> > +     dst[ret++] =3D '\0';
-> > +     fput(f);
-> > +     return ret;
-> > +
-> > +error:
-> > +     memset(dst, '0', size);
-> > +     return ret;
-> > +}
-> > +
-> [...]
+DQoNCk9uIDEyLzE2LzE5IDEwOjI2IFBNLCBXZW5ibyBaaGFuZyB3cm90ZToNCj4+PiArICogICAg
+ICAgICAgIC0gYSByZWd1bGFyIGZ1bGwgcGF0aCAoaW5jbHVkZSBtb3VudGFibGUgZnMgZWc6IC9w
+cm9jLCAvc3lzKQ0KPj4+ICsgKiAgICAgICAgICAgLSBhIHJlZ3VsYXIgZnVsbCBwYXRoIHdpdGgg
+IihkZWxldGVkKSIgYXQgdGhlIGVuZC4NCj4gDQo+PiBMZXQgdXMgc2F5IHdpdGggIiAoZGVsZXRl
+ZCkiIGlzIGFwcGVuZGVkIHRvIGJlIGNvbnNpc3RlbnQgd2l0aCBjb21tZW50cw0KPj4gaW4gZF9w
+YXRoKCkgYW5kIGlzIG1vcmUgY2xlYXIgdG8gdXNlciB3aGF0IHRoZSBmb3JtYXQgd2lsbCBsb29r
+cyBsaWtlLg0KPiANCj4gVGhhbmsgeW91LCBJJ2xsIGZpeCB0aGlzLg0KPiANCj4+PiArICAgICBy
+ZXQgPSBzdHJsZW4ocCk7DQo+Pj4gKyAgICAgbWVtbW92ZShkc3QsIHAsIHJldCk7DQo+Pj4gKyAg
+ICAgZHN0W3JldCsrXSA9ICdcMCc7DQo+IA0KPj4gbml0OiB5b3UgY291bGQgZG8gbWVtbW92ZShk
+c3QsIHAsIHJldCArIDEpPw0KPiANCj4gSSBkaWQgd2l0aCBgZHN0W3JldCsrXT0nXDAnO2AgIHRv
+IHJldHVybiB2YWx1ZSBsZW5ndGggaW5jbHVkaW5nDQo+IHRyYWlsaW5nICdcMCcuIGFzIHlvdSBt
+ZW50aW9uZWQgYmVsb3c6DQo+IA0KPj4+ICsgICAgIGZwdXQoZik7DQo+Pj4gKyAgICAgcmV0dXJu
+IHJldDsNCj4gDQo+PiBUaGUgZGVzY3JpcHRpb24gc2F5cyB0aGUgcmV0dXJuIHZhbHVlIGxlbmd0
+aCBpbmNsdWRpbmcgdHJhaWxpbmcgJ1wwJy4NCj4+IFRoZSBhYm92ZSAncmV0JyBkb2VzIG5vdCBp
+bmNsdWRlIHRyYWlsaW5nICdcMCcuDQo+IA0KPiBJdCBzZWVtcyBgW3JldCsrXWAgbm90IHZlcnkg
+Y2xlYXIgdG8gcmVhZCBhbmQgJ1wwJyBjYW4gYmUgZG9uZSBieQ0KPiBgbWVtbW92ZWAuIEkgdGhp
+bmsgSSdsbCByZWZhY3RvciB0bw0KPiANCj4gYGBgDQo+IHJldCA9IHN0cmxlbihwKSArIDE7DQo+
+IG1lbW1vdmUoZHN0LCBwLCByZXQpOw0KPiBmcHV0KGYpOw0KPiByZXR1cm4gcmV0Ow0KPiBgYGAN
+Cj4gDQo+IElzIHRoaXMgYmV0dGVyPw0KDQpBaCwgSSBtaXNzZWQgcmV0KysgaW4gZHN0W3JldCsr
+XS4gSW5kZWVkIHRoZSBhYm92ZSBjb2RlIGlzIGJldHRlci4NCg==
