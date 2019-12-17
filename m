@@ -2,388 +2,231 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A3E21222D6
-	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 05:06:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BAF231222F3
+	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 05:17:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727039AbfLQEGK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Dec 2019 23:06:10 -0500
-Received: from mail-ua1-f66.google.com ([209.85.222.66]:38564 "EHLO
-        mail-ua1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726296AbfLQEGK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Dec 2019 23:06:10 -0500
-Received: by mail-ua1-f66.google.com with SMTP id z17so2950295uac.5;
-        Mon, 16 Dec 2019 20:06:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=rZR4WxfTXLuZhywVifXRiInVzhtxjrgCpN59zPaZHeo=;
-        b=rNjt5GfRgReG+Nc4mKj4f4clWHMEGLEyTlaDb3vm8H+bEgZFSfQJULvvQvcEhPexRi
-         Sb5KCoWBgxYfxkIs5bol6e4zB/PUbZEk/J8TUTaVoumu/2/MFvLogX9WAcy/OdahYGrn
-         XrpiGMDBCqyACGemUl0Jv/uYScu/X0sMgQmRRPopSOLBM4aQ5+qL+wLbsVtu7eSLzQKr
-         EWN0axJGHB6o6LNpHTMrBTdjlzI+eKviRbYPhmHXbHkluabX2D7Gya03hjLh9i9V14jA
-         fBBxVXA1CPBQXrPsAND2WJwc+K78roFdqYJnXfk/UyZHBsxPo4phdtdKLTjNZJbqt45d
-         k8xw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=rZR4WxfTXLuZhywVifXRiInVzhtxjrgCpN59zPaZHeo=;
-        b=m2rFziPK9haDnSoc5S8VpvlgMINnwbShm6jiiqz/YP9H8FWuSbvn/Tn/rMlMH1z1Nr
-         u/xyD6cpc8nBfYGnH6QvlHsDeA7eF6vPXiuhdcOmxGeybKuXvV6lCNklJpksiVIbBOFE
-         Qp57OzT56ohu59/Ma2s6NaAWdU50/W0vLF2FCbiMUIhNb4SdaH9fZQNX3ZJwIg+8xMEh
-         CnrpzKcKJ0DEqlUXrh1l70FFvGpAAtu3L+AbrCqMGas0ufrM+yTM+Q1tqKdWFO3IfexP
-         ElPvIUBNXhhT3/dcU0PuSt6I0f1D+qV2VRhuGc5DyIyyq1/ahAdljC6zB5NrSqyBwU0q
-         DvZw==
-X-Gm-Message-State: APjAAAUKDrEMyt7pOgFeUUhmfkyhhvw4SdXny6uYsQn5uUSVCpufc64W
-        LGUUz96jFLUgS944Y9ZEj1QPO+uYABV+qztxK4E=
-X-Google-Smtp-Source: APXvYqxNoTQnB5p5K+Yx3oEfF3F/hDOhk/vV0pzSaGL83oQsOSkOB0y6/SVSt6bPfUiw22zNLD140zYjFxyDA3BrejY=
-X-Received: by 2002:ab0:b12:: with SMTP id b18mr1883895uak.90.1576555568966;
- Mon, 16 Dec 2019 20:06:08 -0800 (PST)
+        id S1727417AbfLQEOU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Dec 2019 23:14:20 -0500
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:23236 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726296AbfLQEOU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Dec 2019 23:14:20 -0500
+Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xBH4E27X005694;
+        Mon, 16 Dec 2019 20:14:03 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : references : in-reply-to : content-type : content-id
+ : content-transfer-encoding : mime-version; s=facebook;
+ bh=S96yMpNRIrd5wdbMOJOVvQwtFgeRuj9GQmidIdVflDU=;
+ b=qvlrlmoRLiDNrEzfFaOhcBUXfnhLwtbf189RgmgmQbm3qPjFLhkRICZO6xSy0wTPfZcE
+ y8sYQ0ZHK+xzJss+PVxDtP2ilxzR2rNmniSldzHlt2RUKwvDXwoeH3GZY/etkbHL9jiT
+ usMGyfcu+2KxHelu3KlvPSju0M1TDDMpX3o= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 2wwgayqpsq-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Mon, 16 Dec 2019 20:14:02 -0800
+Received: from ash-exhub101.TheFacebook.com (2620:10d:c0a8:82::e) by
+ ash-exhub103.TheFacebook.com (2620:10d:c0a8:82::c) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Mon, 16 Dec 2019 20:13:59 -0800
+Received: from NAM02-BL2-obe.outbound.protection.outlook.com (100.104.31.183)
+ by o365-in.thefacebook.com (100.104.35.173) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1713.5
+ via Frontend Transport; Mon, 16 Dec 2019 20:13:58 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=YXkvRxctfKAxYHg7NbMFeY7T4yOk1KFaXZ/C/Odch7t6WcBHP989UK5K3BsFRSz+JVM0USbAB4DGLTN75Y1FxNMiQBGBBPllQWEIAq0YEFg8deOSUDTmoZ0dxnXAVxg/bQ8QSSxox7zRcf+5xBscT7blhLgoKpM4tdUZR7VqPgIPdcraWiX1Bld58zWPoe5iMueYsB/WcnJBj5Kb3ThZ835hsa4F8KaR5VK3ERNzHjSKJ5OwTD9K+Ng+pkGYtc5beVLNhdTxYqRzFPUnbQ5mcxHO0xeVQj7FoRwufm25unDuAZX/pkCoGBwGwr51fsaDXlrnJKqYXhJ7yciCfUvuzA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=S96yMpNRIrd5wdbMOJOVvQwtFgeRuj9GQmidIdVflDU=;
+ b=LcIZQ9IHMJlsgS1BS9+wWj3Sb9AjQ3wCiEc+bOnrLo3jQlbBFPjkYvSoq0hHIZeP+JyzBjQOYZSyWFXEryV2gerqSvIcqXMJrvzWizLUxL2w1PfKgKYEpjGcgRAWI/FxbsVACGSfNV/i9Lzjj7/fOsYl7ohr3fVylHWrIgmPrf2lUkkea28WPMHpSbOlCL1ghraZsNtpeWP+B5xAXYEracQGVKNFflHzNdtV3sfmZ4qEYf6jOnU2nEzyTzWCtQls0LztaSnHtNpL+HFoG2Cbxs68B9icOt4f0i+Z2+BKcM4RBqzwN29IKilnja9myF2froywwXAHcY8i6+qWeKrymQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=S96yMpNRIrd5wdbMOJOVvQwtFgeRuj9GQmidIdVflDU=;
+ b=ATGQjWL2pZ9RoJfasCWb/oyygGf1HFUk5r5j3yL0P7x7IgvtHUwXYDQ8lx4hIPgWc/cHlnbJh7hxFkNRG6iI9ACqo4L1NFLAgC61quDgVl8Digu/D6s9EZzGIS5Mkp+0TERUjALjEap840Gql2aJ4Wn9cKqZXH25KrqfFTe0vDM=
+Received: from DM5PR15MB1675.namprd15.prod.outlook.com (10.175.107.145) by
+ DM5PR15MB1641.namprd15.prod.outlook.com (10.175.105.150) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2538.18; Tue, 17 Dec 2019 04:13:44 +0000
+Received: from DM5PR15MB1675.namprd15.prod.outlook.com
+ ([fe80::2844:b18d:c296:c23]) by DM5PR15MB1675.namprd15.prod.outlook.com
+ ([fe80::2844:b18d:c296:c23%8]) with mapi id 15.20.2538.019; Tue, 17 Dec 2019
+ 04:13:44 +0000
+From:   Yonghong Song <yhs@fb.com>
+To:     Wenbo Zhang <ethercflow@gmail.com>
+CC:     "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "ast@kernel.org" <ast@kernel.org>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "andrii.nakryiko@gmail.com" <andrii.nakryiko@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH bpf-next v12 2/2] selftests/bpf: test for
+ bpf_get_file_path() from tracepoint
+Thread-Topic: [PATCH bpf-next v12 2/2] selftests/bpf: test for
+ bpf_get_file_path() from tracepoint
+Thread-Index: AQHVsvxYmrJNxRpypU29QIi+fvaSJ6e7YkuAgAJVDoCAAANcgA==
+Date:   Tue, 17 Dec 2019 04:13:44 +0000
+Message-ID: <71c53be6-add4-2557-bc8f-8acb8e4a2f39@fb.com>
+References: <cover.1576381511.git.ethercflow@gmail.com>
+ <088f1485865016d639cadc891957918060261405.1576381512.git.ethercflow@gmail.com>
+ <737b90af-aa51-bd7d-8f68-b68050cbb028@fb.com>
+ <CABtjQmZtzZT+OmZCn=eL9pvTeeCQ+TzKUMGgFJcGzwJDqyk6vw@mail.gmail.com>
+In-Reply-To: <CABtjQmZtzZT+OmZCn=eL9pvTeeCQ+TzKUMGgFJcGzwJDqyk6vw@mail.gmail.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: MWHPR2201CA0041.namprd22.prod.outlook.com
+ (2603:10b6:301:16::15) To DM5PR15MB1675.namprd15.prod.outlook.com
+ (2603:10b6:3:11f::17)
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [2620:10d:c090:180::7395]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 2a955118-0c53-4840-1211-08d782a78175
+x-ms-traffictypediagnostic: DM5PR15MB1641:
+x-microsoft-antispam-prvs: <DM5PR15MB164112591B6FA0E8E7249A92D3500@DM5PR15MB1641.namprd15.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-forefront-prvs: 02543CD7CD
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(346002)(376002)(366004)(396003)(39860400002)(136003)(199004)(189003)(6512007)(36756003)(31696002)(71200400001)(52116002)(6486002)(2906002)(81166006)(6916009)(186003)(66946007)(66476007)(66556008)(64756008)(66446008)(5660300002)(316002)(8936002)(478600001)(4326008)(54906003)(2616005)(31686004)(81156014)(6506007)(53546011)(8676002)(86362001);DIR:OUT;SFP:1102;SCL:1;SRVR:DM5PR15MB1641;H:DM5PR15MB1675.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: fb.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 69dDFTPPL9hzvCkHBZxPkoMPZ3KuluiYL3PtU7Ve9xCwFYIekoUYT0bXFzafHVyDFci5a2RQ6Eeuc5gbXT1rDYBoQiJNcOHFUVVfOi5mwrJ3y+5DRtp4BSdOC+TprSqgx/7kYa4ZEDk4etnYtBNC/OrIDgewmELFQYq2JrE2hRNFtiY7QNT0zCyF+xp+RjNnvpND/XwpSV4Zvm8MWRZsTrXsZ7eIkqulNh7GQzKXgrhgZuFI8pNMq4nCdnqvvlbpIne97cgGxYI0gSdFa8AQmVb546Y1PRQGq+q50nMkEErpDGhuUioystg9fWcqXZa6zXXZxgo8Qttmi53zi+agCtk02B6C9lJ7IwbhM4YdRi5GfQj/LNdFds7NQD4m0dc6jdDS+FpE2MUXtu/Ro60NiKYeDusXh20YAWvc9E3g8e4WZwz6IjtBiWvZ6Huh0s+u
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <B6BF108299374542957E1987BF385CFA@namprd15.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <afe4deb020b781c76e9df8403a744f88a8725cd2.1575517685.git.ethercflow@gmail.com>
- <cover.1576381511.git.ethercflow@gmail.com> <0117d6e17ba8b3b1273e5a964f87a71c1b2d8741.1576381512.git.ethercflow@gmail.com>
- <CAJN39ohooPboU_ydys8rPbfwCEZabw3bLBGBnfz2EmJ6P8PGmg@mail.gmail.com>
-In-Reply-To: <CAJN39ohooPboU_ydys8rPbfwCEZabw3bLBGBnfz2EmJ6P8PGmg@mail.gmail.com>
-From:   Wenbo Zhang <ethercflow@gmail.com>
-Date:   Tue, 17 Dec 2019 12:05:58 +0800
-Message-ID: <CABtjQmYNx8NNkTLf87tX+CpsDaAf3APEcTSqfX0kRbAsFECVfQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v12 1/2] bpf: add new helper get_file_path for
- mapping a file descriptor to a pathname
-To:     Brendan Gregg <bgregg@netflix.com>
-Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Networking <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2a955118-0c53-4840-1211-08d782a78175
+X-MS-Exchange-CrossTenant-originalarrivaltime: 17 Dec 2019 04:13:44.1935
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: cMsMwm7QVdezDC23R7jRa/s9wzO8/ZWm8mNZ2pbSrqEsocgB+tkK1T097tRLAR1a
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR15MB1641
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
+ definitions=2019-12-17_01:2019-12-16,2019-12-16 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 spamscore=0
+ suspectscore=0 clxscore=1015 malwarescore=0 priorityscore=1501
+ mlxlogscore=999 phishscore=0 mlxscore=0 lowpriorityscore=0 bulkscore=0
+ adultscore=0 impostorscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-1910280000 definitions=main-1912170037
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> I just realized that among my tools that want the path, the input is eith=
-er:
-
-> A) syscall tracepoints: int fd
-> B) kprobes: struct file *
-
-> This serves (A). If we ever add a different helper for (B), we might
-> think that this helper was misnamed. Should it be called get_fd_path
-> instead? That leaves get_file_path available for a later "struct file
-> *" -> pathname helper.
-
-+1, I'll rename it in the next version.
-
-Brendan Gregg <bgregg@netflix.com> =E4=BA=8E2019=E5=B9=B412=E6=9C=8817=E6=
-=97=A5=E5=91=A8=E4=BA=8C =E4=B8=8A=E5=8D=886:09=E5=86=99=E9=81=93=EF=BC=9A
->
-> On Sat, Dec 14, 2019 at 8:01 PM Wenbo Zhang <ethercflow@gmail.com> wrote:
-> >
-> > When people want to identify which file system files are being opened,
-> > read, and written to, they can use this helper with file descriptor as
-> > input to achieve this goal. Other pseudo filesystems are also supported=
-.
-> >
-> > This requirement is mainly discussed here:
-> >
-> >   https://github.com/iovisor/bcc/issues/237
-> >
-> > v11->v12: addressed Alexei's feedback
-> > - only allow tracepoints to make sure it won't dead lock
-> >
-> > v10->v11: addressed Al and Alexei's feedback
-> > - fix missing fput()
-> >
-> > v9->v10: addressed Andrii's feedback
-> > - send this patch together with the patch selftests as one patch series
-> >
-> > v8->v9:
-> > - format helper description
-> >
-> > v7->v8: addressed Alexei's feedback
-> > - use fget_raw instead of fdget_raw, as fdget_raw is only used inside f=
-s/
-> > - ensure we're in user context which is safe fot the help to run
-> > - filter unmountable pseudo filesystem, because they don't have real pa=
-th
-> > - supplement the description of this helper function
-> >
-> > v6->v7:
-> > - fix missing signed-off-by line
-> >
-> > v5->v6: addressed Andrii's feedback
-> > - avoid unnecessary goto end by having two explicit returns
-> >
-> > v4->v5: addressed Andrii and Daniel's feedback
-> > - rename bpf_fd2path to bpf_get_file_path to be consistent with other
-> > helper's names
-> > - when fdget_raw fails, set ret to -EBADF instead of -EINVAL
-> > - remove fdput from fdget_raw's error path
-> > - use IS_ERR instead of IS_ERR_OR_NULL as d_path ether returns a pointe=
-r
-> > into the buffer or an error code if the path was too long
-> > - modify the normal path's return value to return copied string length
-> > including NUL
-> > - update this helper description's Return bits.
-> >
-> > v3->v4: addressed Daniel's feedback
-> > - fix missing fdput()
-> > - move fd2path from kernel/bpf/trace.c to kernel/trace/bpf_trace.c
-> > - move fd2path's test code to another patch
-> > - add comment to explain why use fdget_raw instead of fdget
-> >
-> > v2->v3: addressed Yonghong's feedback
-> > - remove unnecessary LOCKDOWN_BPF_READ
-> > - refactor error handling section for enhanced readability
-> > - provide a test case in tools/testing/selftests/bpf
-> >
-> > v1->v2: addressed Daniel's feedback
-> > - fix backward compatibility
-> > - add this helper description
-> > - fix signed-off name
-> >
-> > Signed-off-by: Wenbo Zhang <ethercflow@gmail.com>
-> > ---
-> >  include/uapi/linux/bpf.h       | 29 +++++++++++++-
-> >  kernel/trace/bpf_trace.c       | 70 ++++++++++++++++++++++++++++++++++
-> >  tools/include/uapi/linux/bpf.h | 29 +++++++++++++-
-> >  3 files changed, 126 insertions(+), 2 deletions(-)
-> >
-> > diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-> > index dbbcf0b02970..71d9705df120 100644
-> > --- a/include/uapi/linux/bpf.h
-> > +++ b/include/uapi/linux/bpf.h
-> > @@ -2821,6 +2821,32 @@ union bpf_attr {
-> >   *     Return
-> >   *             On success, the strictly positive length of the string,=
- including
-> >   *             the trailing NUL character. On error, a negative value.
-> > + *
-> > + * int bpf_get_file_path(char *path, u32 size, int fd)
-> > + *     Description
-> > + *             Get **file** atrribute from the current task by *fd*, t=
-hen call
-> > + *             **d_path** to get it's absolute path and copy it as str=
-ing into
-> > + *             *path* of *size*. Notice the **path** don't support unm=
-ountable
-> > + *             pseudo filesystems as they don't have path (eg: SOCKFS,=
- PIPEFS).
-> > + *             The *size* must be strictly positive. On success, the h=
-elper
-> > + *             makes sure that the *path* is NUL-terminated, and the b=
-uffer
-> > + *             could be:
-> > + *             - a regular full path (include mountable fs eg: /proc, =
-/sys)
-> > + *             - a regular full path with "(deleted)" at the end.
-> > + *             On failure, it is filled with zeroes.
-> > + *     Return
-> > + *             On success, returns the length of the copied string INC=
-LUDING
-> > + *             the trailing NUL.
-> > + *
-> > + *             On failure, the returned value is one of the following:
-> > + *
-> > + *             **-EPERM** if no permission to get the path (eg: in irq=
- ctx).
-> > + *
-> > + *             **-EBADF** if *fd* is invalid.
-> > + *
-> > + *             **-EINVAL** if *fd* corresponds to a unmountable pseudo=
- fs
-> > + *
-> > + *             **-ENAMETOOLONG** if full path is longer than *size*
-> >   */
-> >  #define __BPF_FUNC_MAPPER(FN)          \
-> >         FN(unspec),                     \
-> > @@ -2938,7 +2964,8 @@ union bpf_attr {
-> >         FN(probe_read_user),            \
-> >         FN(probe_read_kernel),          \
-> >         FN(probe_read_user_str),        \
-> > -       FN(probe_read_kernel_str),
-> > +       FN(probe_read_kernel_str),      \
-> > +       FN(get_file_path),
-> >
-> >  /* integer value in 'imm' field of BPF_CALL instruction selects which =
-helper
-> >   * function eBPF program intends to call
-> > diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
-> > index e5ef4ae9edb5..db9c0ec46a5d 100644
-> > --- a/kernel/trace/bpf_trace.c
-> > +++ b/kernel/trace/bpf_trace.c
-> > @@ -762,6 +762,72 @@ static const struct bpf_func_proto bpf_send_signal=
-_proto =3D {
-> >         .arg1_type      =3D ARG_ANYTHING,
-> >  };
-> >
-> > +BPF_CALL_3(bpf_get_file_path, char *, dst, u32, size, int, fd)
-> > +{
-> > +       struct file *f;
-> > +       char *p;
-> > +       int ret =3D -EBADF;
-> > +
-> > +       /* Ensure we're in user context which is safe for the helper to
-> > +        * run. This helper has no business in a kthread.
-> > +        */
-> > +       if (unlikely(in_interrupt() ||
-> > +                    current->flags & (PF_KTHREAD | PF_EXITING))) {
-> > +               ret =3D -EPERM;
-> > +               goto error;
-> > +       }
-> > +
-> > +       /* Use fget_raw instead of fget to support O_PATH, and it doesn=
-'t
-> > +        * have any sleepable code, so it's ok to be here.
-> > +        */
-> > +       f =3D fget_raw(fd);
-> > +       if (!f)
-> > +               goto error;
-> > +
-> > +       /* For unmountable pseudo filesystem, it seems to have no meani=
-ng
-> > +        * to get their fake paths as they don't have path, and to be n=
-o
-> > +        * way to validate this function pointer can be always safe to =
-call
-> > +        * in the current context.
-> > +        */
-> > +       if (f->f_path.dentry->d_op && f->f_path.dentry->d_op->d_dname) =
-{
-> > +               ret =3D -EINVAL;
-> > +               fput(f);
-> > +               goto error;
-> > +       }
-> > +
-> > +       /* After filter unmountable pseudo filesytem, d_path won't call
-> > +        * dentry->d_op->d_name(), the normally path doesn't have any
-> > +        * sleepable code, and despite it uses the current macro to get
-> > +        * fs_struct (current->fs), we've already ensured we're in user
-> > +        * context, so it's ok to be here.
-> > +        */
-> > +       p =3D d_path(&f->f_path, dst, size);
-> > +       if (IS_ERR(p)) {
-> > +               ret =3D PTR_ERR(p);
-> > +               fput(f);
-> > +               goto error;
-> > +       }
-> > +
-> > +       ret =3D strlen(p);
-> > +       memmove(dst, p, ret);
-> > +       dst[ret++] =3D '\0';
-> > +       fput(f);
-> > +       return ret;
-> > +
-> > +error:
-> > +       memset(dst, '0', size);
-> > +       return ret;
-> > +}
-> > +
-> > +static const struct bpf_func_proto bpf_get_file_path_proto =3D {
-> > +       .func       =3D bpf_get_file_path,
-> > +       .gpl_only   =3D true,
-> > +       .ret_type   =3D RET_INTEGER,
-> > +       .arg1_type  =3D ARG_PTR_TO_UNINIT_MEM,
-> > +       .arg2_type  =3D ARG_CONST_SIZE,
-> > +       .arg3_type  =3D ARG_ANYTHING,
-> > +};
-> > +
-> >  static const struct bpf_func_proto *
-> >  tracing_func_proto(enum bpf_func_id func_id, const struct bpf_prog *pr=
-og)
-> >  {
-> > @@ -953,6 +1019,8 @@ tp_prog_func_proto(enum bpf_func_id func_id, const=
- struct bpf_prog *prog)
-> >                 return &bpf_get_stackid_proto_tp;
-> >         case BPF_FUNC_get_stack:
-> >                 return &bpf_get_stack_proto_tp;
-> > +       case BPF_FUNC_get_file_path:
-> > +               return &bpf_get_file_path_proto;
-> >         default:
-> >                 return tracing_func_proto(func_id, prog);
-> >         }
-> > @@ -1146,6 +1214,8 @@ raw_tp_prog_func_proto(enum bpf_func_id func_id, =
-const struct bpf_prog *prog)
-> >                 return &bpf_get_stackid_proto_raw_tp;
-> >         case BPF_FUNC_get_stack:
-> >                 return &bpf_get_stack_proto_raw_tp;
-> > +       case BPF_FUNC_get_file_path:
-> > +               return &bpf_get_file_path_proto;
-> >         default:
-> >                 return tracing_func_proto(func_id, prog);
-> >         }
-> > diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/=
-bpf.h
-> > index dbbcf0b02970..71d9705df120 100644
-> > --- a/tools/include/uapi/linux/bpf.h
-> > +++ b/tools/include/uapi/linux/bpf.h
-> > @@ -2821,6 +2821,32 @@ union bpf_attr {
-> >   *     Return
-> >   *             On success, the strictly positive length of the string,=
- including
-> >   *             the trailing NUL character. On error, a negative value.
-> > + *
-> > + * int bpf_get_file_path(char *path, u32 size, int fd)
-> > + *     Description
-> > + *             Get **file** atrribute from the current task by *fd*, t=
-hen call
-> > + *             **d_path** to get it's absolute path and copy it as str=
-ing into
-> > + *             *path* of *size*. Notice the **path** don't support unm=
-ountable
-> > + *             pseudo filesystems as they don't have path (eg: SOCKFS,=
- PIPEFS).
-> > + *             The *size* must be strictly positive. On success, the h=
-elper
-> > + *             makes sure that the *path* is NUL-terminated, and the b=
-uffer
-> > + *             could be:
-> > + *             - a regular full path (include mountable fs eg: /proc, =
-/sys)
-> > + *             - a regular full path with "(deleted)" at the end.
-> > + *             On failure, it is filled with zeroes.
-> > + *     Return
-> > + *             On success, returns the length of the copied string INC=
-LUDING
-> > + *             the trailing NUL.
-> > + *
-> > + *             On failure, the returned value is one of the following:
-> > + *
-> > + *             **-EPERM** if no permission to get the path (eg: in irq=
- ctx).
-> > + *
-> > + *             **-EBADF** if *fd* is invalid.
-> > + *
-> > + *             **-EINVAL** if *fd* corresponds to a unmountable pseudo=
- fs
-> > + *
-> > + *             **-ENAMETOOLONG** if full path is longer than *size*
-> >   */
-> >  #define __BPF_FUNC_MAPPER(FN)          \
-> >         FN(unspec),                     \
-> > @@ -2938,7 +2964,8 @@ union bpf_attr {
-> >         FN(probe_read_user),            \
-> >         FN(probe_read_kernel),          \
-> >         FN(probe_read_user_str),        \
-> > -       FN(probe_read_kernel_str),
-> > +       FN(probe_read_kernel_str),      \
-> > +       FN(get_file_path),
->
->
-> I just realized that among my tools that want the path, the input is eith=
-er:
->
-> A) syscall tracepoints: int fd
-> B) kprobes: struct file *
->
-> This serves (A). If we ever add a different helper for (B), we might
-> think that this helper was misnamed. Should it be called get_fd_path
-> instead? That leaves get_file_path available for a later "struct file
-> *" -> pathname helper.
->
-> Brendan
->
-> --
-> Brendan Gregg, Senior Performance Architect, Netflix
+DQoNCk9uIDEyLzE2LzE5IDg6MDEgUE0sIFdlbmJvIFpoYW5nIHdyb3RlOg0KPj4gSW4gbm9uLWJw
+ZiAuYyBmaWxlLCB0eXBpY2FsbHkgd2UgZG8gbm90IGFkZCAnaW5saW5lJyBhdHRyaWJ1dGUuDQo+
+PiBJdCBpcyB1cCB0byBjb21waWxlciB0byBkZWNpZGUgd2hldGhlciBpdCBzaG91bGQgYmUgaW5s
+aW5lZC4NCj4gDQo+IFRoYW5rIHlvdSwgSSdsbCBmaXggdGhpcy4NCj4gDQo+Pj4gK3N0cnVjdCBz
+eXNfZW50ZXJfbmV3ZnN0YXRfYXJncyB7DQo+Pj4gKyAgICAgdW5zaWduZWQgbG9uZyBsb25nIHBh
+ZDE7DQo+Pj4gKyAgICAgdW5zaWduZWQgbG9uZyBsb25nIHBhZDI7DQo+Pj4gKyAgICAgdW5zaWdu
+ZWQgaW50IGZkOw0KPj4+ICt9Ow0KPiANCj4+IFRoZSBCVEYgZ2VuZXJhdGVkIHZtbGludXguaCBo
+YXMgdGhlIGZvbGxvd2luZyBzdHJ1Y3R1cmUsDQo+PiBzdHJ1Y3QgdHJhY2VfZW50cnkgew0KPj4g
+ICAgICAgICAgIHNob3J0IHVuc2lnbmVkIGludCB0eXBlOw0KPj4gICAgICAgICAgIHVuc2lnbmVk
+IGNoYXIgZmxhZ3M7DQo+PiAgICAgICAgICAgdW5zaWduZWQgY2hhciBwcmVlbXB0X2NvdW50Ow0K
+Pj4gICAgICAgICAgIGludCBwaWQ7DQo+PiB9Ow0KPj4gc3RydWN0IHRyYWNlX2V2ZW50X3Jhd19z
+eXNfZW50ZXIgew0KPj4gICAgICAgICAgIHN0cnVjdCB0cmFjZV9lbnRyeSBlbnQ7DQo+PiAgICAg
+ICAgICAgbG9uZyBpbnQgaWQ7DQo+PiAgICAgICAgICAgbG9uZyB1bnNpZ25lZCBpbnQgYXJnc1s2
+XTsNCj4+ICAgICAgICAgICBjaGFyIF9fZGF0YVswXTsNCj4+IH07DQo+IA0KPj4gVGhlIHRoaXJk
+IHBhcmFtZXRlciB0eXBlIHNob3VsZCBiZSBsb25nLCBvdGhlcndpc2UsDQo+PiBpdCBtYXkgaGF2
+ZSBpc3N1ZSBvbiBiaWcgZW5kaWFuIG1hY2hpbmVzPw0KPiANCj4gU29ycnksIEkgZG9uJ3QgdW5k
+ZXJzdGFuZCB3aHkgdGhlcmUgaXMgYSBwcm9ibGVtIG9uIGJpZy1lbmRpYW4gbWFjaGluZXMuDQo+
+IFdvdWxkIHlvdSBwbGVhc2UgZXhwbGFpbiB0aGF0IGluIG1vcmUgZGV0YWlsPyBUaGFuayB5b3Uu
+DQoNClRoZSBrZXJuZWwgd2lsbCBhY3R1YWxseSBoYXZlIDggYnl0ZXMgb2YgbWVtb3J5IHRvIHN0
+b3JlIGZkDQpiYXNlZCBvbiB0cmFjZV9ldmVudF9yYXdfc3lzX2VudGVyLg0KDQpGb3IgbGl0dGxl
+IGVuZGlhbiBtYWNoaW5lLCB0aGUgbG93ZXIgNCBieXRlcyBhcmUgcmVhZCBiYXNlZCBvbg0KeW91
+ciBzeXNfZW50ZXJfbmV3ZnN0YXRfYXJncywgd2hpY2ggaXMgImFjY2lkZW50YWxseSIgdGhlIGxv
+d2VyDQo0IGJ5dGVzIGluIHU2NCwgc28geW91IGdldCB0aGUgY29ycmVjdCBhbnN3ZXIuDQoNCkZv
+ciBiaWcgZW5kaWFuIG1hY2hpbmUsIHRoZSBsb3dlciA0IGJ5dGVzIHJlYWQgYmFzZWQgb24NCnlv
+dXIgc3lzX2VudGVyX25ld2ZzdGF0X2FyZ3Mgd2lsbCBiZSBoaWdoIDQgYnl0ZXMgaW4gdTY0LCB3
+aGljaA0KaXMgaW5jb3JyZWN0Lg0KDQo+IA0KPiBZb25naG9uZyBTb25nIDx5aHNAZmIuY29tPiDk
+uo4yMDE55bm0MTLmnIgxNuaXpeWRqOS4gCDkuIrljYgxMjoyNeWGmemBk++8mg0KPj4NCj4+DQo+
+Pg0KPj4gT24gMTIvMTQvMTkgODowMSBQTSwgV2VuYm8gWmhhbmcgd3JvdGU6DQo+Pj4gdHJhY2Ug
+ZnN0YXQgZXZlbnRzIGJ5IHRyYWNlcG9pbnQgc3lzY2FsbHMvc3lzX2VudGVyX25ld2ZzdGF0LCBh
+bmQgaGFuZGxlDQo+Pj4gZXZlbnRzIG9ubHkgcHJvZHVjZWQgYnkgdGVzdF9maWxlX2dldF9wYXRo
+LCB3aGljaCBjYWxsIGZzdGF0IG9uIHNldmVyYWwNCj4+PiBkaWZmZXJlbnQgdHlwZXMgb2YgZmls
+ZXMgdG8gdGVzdCBicGZfZ2V0X2ZpbGVfcGF0aCdzIGZlYXR1cmUuDQo+Pj4NCj4+PiB2NC0+djU6
+IGFkZHJlc3NlZCBBbmRyaWkncyBmZWVkYmFjaw0KPj4+IC0gcGFzcyBOVUxMIGZvciBvcHRzIGFz
+IGJwZl9vYmplY3RfX29wZW5fZmlsZSdzIFBBUkFNMiwgYXMgbm90IHJlYWxseQ0KPj4+IHVzaW5n
+IGFueQ0KPj4+IC0gbW9kaWZ5IHBhdGNoIHN1YmplY3QgdG8ga2VlcCB1cCB3aXRoIHRlc3QgY29k
+ZQ0KPj4+IC0gYXMgdGhpcyB0ZXN0IGlzIHNpbmdsZS10aHJlYWRlZCwgc28gdXNlIGdldHBpZCBp
+bnN0ZWFkIG9mIFNZU19nZXR0aWQNCj4+PiAtIHJlbW92ZSB1bm5lY2Vzc2FyeSBwYXJlbnMgYXJv
+dW5kIGNoZWNrIHdoaWNoIGFmdGVyIGlmIChpIDwgMykNCj4+PiAtIGluIGtlcm4gdXNlIGJwZl9n
+ZXRfY3VycmVudF9waWRfdGdpZCgpID4+IDMyIHRvIGZpdCBnZXRwaWQoKSBpbg0KPj4+IHVzZXJz
+cGFjZSBwYXJ0DQo+Pj4gLSB3aXRoIHRoZSBwYXRjaCBhZGRpbmcgaGVscGVyIGFzIG9uZSBwYXRj
+aCBzZXJpZXMNCj4+Pg0KPj4+IHYzLT52NDogYWRkcmVzc2VkIEFuZHJpaSdzIGZlZWRiYWNrDQo+
+Pj4gLSB1c2UgYSBzZXQgb2YgZmQgaW5zdGVhZCBvZiBmZHMgYXJyYXkNCj4+PiAtIHVzZSBnbG9i
+YWwgdmFyaWFibGVzIGluc3RlYWQgb2YgbWFwcyAoaW4gdjMsIEkgbWlzdGFrZW5seSB0aG91Z2h0
+IHRoYXQNCj4+PiB0aGUgYnBmIG1hcHMgYXJlIGdsb2JhbCB2YXJpYWJsZXMuKQ0KPj4+IC0gcmVt
+b3ZlIHVuY2Vzc2FyeSBnbG9iYWwgdmFyaWFibGUgcGF0aF9pbmZvX2luZGV4DQo+Pj4gLSByZW1v
+dmUgZmQgY29tcGFyZSBhcyB0aGUgZnN0YXQncyBvcmRlciBpcyBmaXhlZA0KPj4+DQo+Pj4gdjIt
+PnYzOiBhZGRyZXNzZWQgQW5kcmlpJ3MgZmVlZGJhY2sNCj4+PiAtIHVzZSBnbG9iYWwgZGF0YSBp
+bnN0ZWFkIG9mIHBlcmZfYnVmZmVyIHRvIHNpbXBsaWZpZWQgY29kZQ0KPj4+DQo+Pj4gdjEtPnYy
+OiBhZGRyZXNzZWQgRGFuaWVsJ3MgZmVlZGJhY2sNCj4+PiAtIHJlbmFtZSBicGZfZmQycGF0aCB0
+byBicGZfZ2V0X2ZpbGVfcGF0aCB0byBiZSBjb25zaXN0ZW50IHdpdGggb3RoZXINCj4+PiBoZWxw
+ZXIncyBuYW1lcw0KPj4+DQo+Pj4gU2lnbmVkLW9mZi1ieTogV2VuYm8gWmhhbmcgPGV0aGVyY2Zs
+b3dAZ21haWwuY29tPg0KPj4+IC0tLQ0KPj4+ICAgIC4uLi9zZWxmdGVzdHMvYnBmL3Byb2dfdGVz
+dHMvZ2V0X2ZpbGVfcGF0aC5jICB8IDE3MSArKysrKysrKysrKysrKysrKysNCj4+PiAgICAuLi4v
+c2VsZnRlc3RzL2JwZi9wcm9ncy90ZXN0X2dldF9maWxlX3BhdGguYyAgfCAgNDMgKysrKysNCj4+
+PiAgICAyIGZpbGVzIGNoYW5nZWQsIDIxNCBpbnNlcnRpb25zKCspDQo+Pj4gICAgY3JlYXRlIG1v
+ZGUgMTAwNjQ0IHRvb2xzL3Rlc3Rpbmcvc2VsZnRlc3RzL2JwZi9wcm9nX3Rlc3RzL2dldF9maWxl
+X3BhdGguYw0KPj4+ICAgIGNyZWF0ZSBtb2RlIDEwMDY0NCB0b29scy90ZXN0aW5nL3NlbGZ0ZXN0
+cy9icGYvcHJvZ3MvdGVzdF9nZXRfZmlsZV9wYXRoLmMNCj4+Pg0KPj4+IGRpZmYgLS1naXQgYS90
+b29scy90ZXN0aW5nL3NlbGZ0ZXN0cy9icGYvcHJvZ190ZXN0cy9nZXRfZmlsZV9wYXRoLmMgYi90
+b29scy90ZXN0aW5nL3NlbGZ0ZXN0cy9icGYvcHJvZ190ZXN0cy9nZXRfZmlsZV9wYXRoLmMNCj4+
+PiBuZXcgZmlsZSBtb2RlIDEwMDY0NA0KPj4+IGluZGV4IDAwMDAwMDAwMDAwMC4uN2VjMTFlNDNl
+MGZjDQo+Pj4gLS0tIC9kZXYvbnVsbA0KPj4+ICsrKyBiL3Rvb2xzL3Rlc3Rpbmcvc2VsZnRlc3Rz
+L2JwZi9wcm9nX3Rlc3RzL2dldF9maWxlX3BhdGguYw0KPj4+IEBAIC0wLDAgKzEsMTcxIEBADQo+
+Pj4gKy8vIFNQRFgtTGljZW5zZS1JZGVudGlmaWVyOiBHUEwtMi4wDQo+Pj4gKyNkZWZpbmUgX0dO
+VV9TT1VSQ0UNCj4+PiArI2luY2x1ZGUgPHRlc3RfcHJvZ3MuaD4NCj4+PiArI2luY2x1ZGUgPHN5
+cy9zdGF0Lmg+DQo+Pj4gKyNpbmNsdWRlIDxsaW51eC9zY2hlZC5oPg0KPj4+ICsjaW5jbHVkZSA8
+c3lzL3N5c2NhbGwuaD4NCj4+PiArDQo+Pj4gKyNkZWZpbmUgTUFYX1BBVEhfTEVOICAgICAgICAg
+MTI4DQo+Pj4gKyNkZWZpbmUgTUFYX0ZEUyAgICAgICAgICAgICAgICAgICAgICA3DQo+Pj4gKyNk
+ZWZpbmUgTUFYX0VWRU5UX05VTSAgICAgICAgICAgICAgICAxNg0KPj4+ICsNCj4+PiArc3RhdGlj
+IHN0cnVjdCBmaWxlX3BhdGhfdGVzdF9kYXRhIHsNCj4+PiArICAgICBwaWRfdCBwaWQ7DQo+Pj4g
+KyAgICAgX191MzIgY250Ow0KPj4+ICsgICAgIF9fdTMyIGZkc1tNQVhfRVZFTlRfTlVNXTsNCj4+
+PiArICAgICBjaGFyIHBhdGhzW01BWF9FVkVOVF9OVU1dW01BWF9QQVRIX0xFTl07DQo+Pj4gK30g
+c3JjLCBkc3Q7DQo+Pj4gKw0KPj4+ICtzdGF0aWMgaW5saW5lIGludCBzZXRfcGF0aG5hbWUoaW50
+IGZkKQ0KPj4NCj4+IEluIG5vbi1icGYgLmMgZmlsZSwgdHlwaWNhbGx5IHdlIGRvIG5vdCBhZGQg
+J2lubGluZScgYXR0cmlidXRlLg0KPj4gSXQgaXMgdXAgdG8gY29tcGlsZXIgdG8gZGVjaWRlIHdo
+ZXRoZXIgaXQgc2hvdWxkIGJlIGlubGluZWQuDQo+Pg0KPj4+ICt7DQo+Pj4gKyAgICAgY2hhciBi
+dWZbTUFYX1BBVEhfTEVOXTsNCj4+PiArDQo+Pj4gKyAgICAgc25wcmludGYoYnVmLCBNQVhfUEFU
+SF9MRU4sICIvcHJvYy8lZC9mZC8lZCIsIHNyYy5waWQsIGZkKTsNCj4+PiArICAgICBzcmMuZmRz
+W3NyYy5jbnRdID0gZmQ7DQo+Pj4gKyAgICAgcmV0dXJuIHJlYWRsaW5rKGJ1Ziwgc3JjLnBhdGhz
+W3NyYy5jbnQrK10sIE1BWF9QQVRIX0xFTik7DQo+Pj4gK30NCj4+PiArDQo+PiBbLi4uXQ0KPj4+
+IGRpZmYgLS1naXQgYS90b29scy90ZXN0aW5nL3NlbGZ0ZXN0cy9icGYvcHJvZ3MvdGVzdF9nZXRf
+ZmlsZV9wYXRoLmMgYi90b29scy90ZXN0aW5nL3NlbGZ0ZXN0cy9icGYvcHJvZ3MvdGVzdF9nZXRf
+ZmlsZV9wYXRoLmMNCj4+PiBuZXcgZmlsZSBtb2RlIDEwMDY0NA0KPj4+IGluZGV4IDAwMDAwMDAw
+MDAwMC4uZWFlNjYzYzEyNjJhDQo+Pj4gLS0tIC9kZXYvbnVsbA0KPj4+ICsrKyBiL3Rvb2xzL3Rl
+c3Rpbmcvc2VsZnRlc3RzL2JwZi9wcm9ncy90ZXN0X2dldF9maWxlX3BhdGguYw0KPj4+IEBAIC0w
+LDAgKzEsNDMgQEANCj4+PiArLy8gU1BEWC1MaWNlbnNlLUlkZW50aWZpZXI6IEdQTC0yLjANCj4+
+PiArDQo+Pj4gKyNpbmNsdWRlIDxsaW51eC9icGYuaD4NCj4+PiArI2luY2x1ZGUgPGxpbnV4L3B0
+cmFjZS5oPg0KPj4+ICsjaW5jbHVkZSA8c3RyaW5nLmg+DQo+Pj4gKyNpbmNsdWRlIDx1bmlzdGQu
+aD4NCj4+PiArI2luY2x1ZGUgImJwZl9oZWxwZXJzLmgiDQo+Pj4gKyNpbmNsdWRlICJicGZfdHJh
+Y2luZy5oIg0KPj4+ICsNCj4+PiArI2RlZmluZSBNQVhfUEFUSF9MRU4gICAgICAgICAxMjgNCj4+
+PiArI2RlZmluZSBNQVhfRVZFTlRfTlVNICAgICAgICAgICAgICAgIDE2DQo+Pj4gKw0KPj4+ICtz
+dGF0aWMgc3RydWN0IGZpbGVfcGF0aF90ZXN0X2RhdGEgew0KPj4+ICsgICAgIHBpZF90IHBpZDsN
+Cj4+PiArICAgICBfX3UzMiBjbnQ7DQo+Pj4gKyAgICAgX191MzIgZmRzW01BWF9FVkVOVF9OVU1d
+Ow0KPj4+ICsgICAgIGNoYXIgcGF0aHNbTUFYX0VWRU5UX05VTV1bTUFYX1BBVEhfTEVOXTsNCj4+
+PiArfSBkYXRhOw0KPj4+ICsNCj4+PiArc3RydWN0IHN5c19lbnRlcl9uZXdmc3RhdF9hcmdzIHsN
+Cj4+PiArICAgICB1bnNpZ25lZCBsb25nIGxvbmcgcGFkMTsNCj4+PiArICAgICB1bnNpZ25lZCBs
+b25nIGxvbmcgcGFkMjsNCj4+PiArICAgICB1bnNpZ25lZCBpbnQgZmQ7DQo+Pj4gK307DQo+Pg0K
+Pj4gVGhlIEJURiBnZW5lcmF0ZWQgdm1saW51eC5oIGhhcyB0aGUgZm9sbG93aW5nIHN0cnVjdHVy
+ZSwNCj4+IHN0cnVjdCB0cmFjZV9lbnRyeSB7DQo+PiAgICAgICAgICAgc2hvcnQgdW5zaWduZWQg
+aW50IHR5cGU7DQo+PiAgICAgICAgICAgdW5zaWduZWQgY2hhciBmbGFnczsNCj4+ICAgICAgICAg
+ICB1bnNpZ25lZCBjaGFyIHByZWVtcHRfY291bnQ7DQo+PiAgICAgICAgICAgaW50IHBpZDsNCj4+
+IH07DQo+PiBzdHJ1Y3QgdHJhY2VfZXZlbnRfcmF3X3N5c19lbnRlciB7DQo+PiAgICAgICAgICAg
+c3RydWN0IHRyYWNlX2VudHJ5IGVudDsNCj4+ICAgICAgICAgICBsb25nIGludCBpZDsNCj4+ICAg
+ICAgICAgICBsb25nIHVuc2lnbmVkIGludCBhcmdzWzZdOw0KPj4gICAgICAgICAgIGNoYXIgX19k
+YXRhWzBdOw0KPj4gfTsNCj4+DQo+PiBUaGUgdGhpcmQgcGFyYW1ldGVyIHR5cGUgc2hvdWxkIGJl
+IGxvbmcsIG90aGVyd2lzZSwNCj4+IGl0IG1heSBoYXZlIGlzc3VlIG9uIGJpZyBlbmRpYW4gbWFj
+aGluZXM/DQo=
