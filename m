@@ -2,185 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AFC0B1234B5
-	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 19:23:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DFCB41234CD
+	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 19:26:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727005AbfLQSXK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Dec 2019 13:23:10 -0500
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:16890 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726646AbfLQSXK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 13:23:10 -0500
-Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xBHIMeaF019078;
-        Tue, 17 Dec 2019 10:22:52 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type : content-id
- : content-transfer-encoding : mime-version; s=facebook;
- bh=JvcUnFwWIM3DIgv3X7+Fyn0MOKEI/rzSrowA2OxAwH8=;
- b=qQ/LOcLHy3m1HGsLMJr31+21T2rl8lHSOycQYzwXRXgsO2UTHQOYNCAyz2i3O1rzr8HB
- cuHlIDD+ViY6z0yRor1MHme2hJ+Rs7olU8TAXZj6yzZH/e3etDdv50CfVt7roH2+wat2
- Zk01/LYa6Lja9aKJcef3mzbTxSePM2YrS/4= 
-Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by mx0a-00082601.pphosted.com with ESMTP id 2wxcwy65w5-19
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Tue, 17 Dec 2019 10:22:52 -0800
-Received: from prn-hub03.TheFacebook.com (2620:10d:c081:35::127) by
- prn-hub06.TheFacebook.com (2620:10d:c081:35::130) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.1.1713.5; Tue, 17 Dec 2019 10:22:33 -0800
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (192.168.54.28)
- by o365-in.thefacebook.com (192.168.16.27) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.1.1713.5
- via Frontend Transport; Tue, 17 Dec 2019 10:22:32 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=LhSHlastRViWoNTY5DmPvMVPwOejT1TuMH8tYlIxy6jYinitLr9BoMquysa0PX8lL6hhnDryOVY20q1IPlheX9oiaU8uC5bNL5n/9fPIOjB/TtPoxV1XslwFKL7psTcIVvZqX0ivt4/Lc+x1TvdaslcaHOzgpyjFeAI/7hjietzsEoaMKZhKaXTRJVZ39lHOb7TYBNGs77NMC4x3t2XA9WBLkdAqUlxMEmTFdG71MHh9xjU0z80eVt8T5e6nEJsF2bjTrlvloBCnU4UqStMBvcLRYrH3ZffkDj8o9Spw2xZ6NBEKq10qylkyU5oim8MDY7+3Tswgmz77MDhFMlfldw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=JvcUnFwWIM3DIgv3X7+Fyn0MOKEI/rzSrowA2OxAwH8=;
- b=K+dI+FjzHfW67C/jSWsJpMfb/+hM4UWEcYE2PmUQ7vxu5VG7bMPnsvvK9Q32CrHRTSasaJNIUXxn6YqoFYIUb8hpCXmPybu+lm7dvpfI+KwI6vpSVAS392S1/2VcupbgJTIhH/OcEHP/1ygzYFLia9yBDoFgoLRRFWJAhbd+EH3HO3O2Fle5otv5DEOann6410JrrrlFMNlKRaWY22juOmAia+R4wEsF+uzVcfSwdk4mZydWE30gk+QnJ7yDsmFdIWUkmCL657T+iURXpuw5IAmLNyx12BfxuAWDV0VD49N2bkK7sb0+aU2Y2XnZwkiAr/AZZnzagG9x/LQWvYAABQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=JvcUnFwWIM3DIgv3X7+Fyn0MOKEI/rzSrowA2OxAwH8=;
- b=KwHzUnuhTUDaUpLBEGx6/OD3pwOfMyNWlt4SiOls1Ed0ValLlWjpbVkm0pdzEbESc72tukKJfm9XZeBg18tTeqNaesnAGXI2+IaOOj5EaULNTmCPrXIjomgpBVfBCapcq8h4iHXFI8QcSqhSOPXOtwDla6WThvM5xfL+aiz/8hI=
-Received: from MN2PR15MB3213.namprd15.prod.outlook.com (20.179.21.76) by
- MN2PR15MB3424.namprd15.prod.outlook.com (20.179.23.150) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2538.16; Tue, 17 Dec 2019 18:22:31 +0000
-Received: from MN2PR15MB3213.namprd15.prod.outlook.com
- ([fe80::6d1e:f2f7:d36:a42f]) by MN2PR15MB3213.namprd15.prod.outlook.com
- ([fe80::6d1e:f2f7:d36:a42f%4]) with mapi id 15.20.2538.019; Tue, 17 Dec 2019
- 18:22:31 +0000
-From:   Martin Lau <kafai@fb.com>
-To:     Jakub Sitnicki <jakub@cloudflare.com>
-CC:     Eric Dumazet <eric.dumazet@gmail.com>,
-        Neal Cardwell <ncardwell@google.com>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "Alexei Starovoitov" <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "David Miller" <davem@davemloft.net>,
-        Kernel Team <Kernel-team@fb.com>,
-        Netdev <netdev@vger.kernel.org>
-Subject: Re: [PATCH bpf-next 09/13] bpf: Add BPF_FUNC_jiffies
-Thread-Topic: [PATCH bpf-next 09/13] bpf: Add BPF_FUNC_jiffies
-Thread-Index: AQHVsiI0ihgHNw98P02gRrT2dQLnz6e6BCYAgAP+9ICAAKaBAA==
-Date:   Tue, 17 Dec 2019 18:22:31 +0000
-Message-ID: <20191217182228.icbttiozdcmveutq@kafai-mbp.dhcp.thefacebook.com>
-References: <20191214004737.1652076-1-kafai@fb.com>
- <20191214004758.1653342-1-kafai@fb.com>
- <b321412c-1b42-45a9-4dc6-cc268b55cd0d@gmail.com>
- <CADVnQy=soQ8KhuUWEQj0n2ge3a43OSgAKS95bmBtp090jqbM_w@mail.gmail.com>
- <87o8w7fjd4.fsf@cloudflare.com>
-In-Reply-To: <87o8w7fjd4.fsf@cloudflare.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: MWHPR17CA0056.namprd17.prod.outlook.com
- (2603:10b6:300:93::18) To MN2PR15MB3213.namprd15.prod.outlook.com
- (2603:10b6:208:3d::12)
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [2620:10d:c090:200::1:77de]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: a4b643c3-cd3b-470d-2609-08d7831e149f
-x-ms-traffictypediagnostic: MN2PR15MB3424:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <MN2PR15MB34247F8A2E3959F47C1FF4E4D5500@MN2PR15MB3424.namprd15.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8882;
-x-forefront-prvs: 02543CD7CD
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(39860400002)(136003)(396003)(346002)(376002)(366004)(199004)(189003)(4326008)(6916009)(66446008)(64756008)(66556008)(66476007)(5660300002)(3716004)(316002)(52116002)(1076003)(8936002)(8676002)(86362001)(6486002)(6506007)(66946007)(2906002)(186003)(81166006)(71200400001)(53546011)(81156014)(6512007)(9686003)(54906003)(478600001);DIR:OUT;SFP:1102;SCL:1;SRVR:MN2PR15MB3424;H:MN2PR15MB3213.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: fb.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: roEfc20808k68Pr7lX39VJyM+Lf3t8dAJBka7muS3P4eZ30Rszr2kdMKqMfc3G+JJoqmur28MpjwqW0Y18GXBTMSRE8tCnlFi5x1dNK9qtHAZt78duSoM+WpzZXEnCFkVrCPFuU0HckveZJUil4qAsbAVhsJR6ltaXz9s3OkQO2I0vRzIniOEokpD5hKmrjmeNmiNx0vTkErBxEvUXT/85pDshtrZWB6TcKvwzuqEifruDRGlPM/yK0FNmaAToEZF555dg9/Mdw4okWi/QWBI39MpnCFTktR+ayQ8k3AhXzR19mQy44uTzAAfzK8RDzuGNtaGydzGhFS4VSDjvnXSWq7ZA8caOTgw42XDHQ6n1GVcnXdGqaNJ3mR5F2DusMzCBhBkpq8e3ifqAJ5gw9DV7V/dySlqw6nOAY/kF2jbXFvhMqEoL2aSWQuwi1d6hT0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <65C18DE0A523E640BE79333D95E7AAA9@namprd15.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        id S1727070AbfLQS0s (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Dec 2019 13:26:48 -0500
+Received: from guitar.tcltek.co.il ([192.115.133.116]:36758 "EHLO
+        mx.tkos.co.il" rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726191AbfLQS0r (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 17 Dec 2019 13:26:47 -0500
+Received: from sapphire.tkos.co.il (unknown [192.168.100.188])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx.tkos.co.il (Postfix) with ESMTPS id 56910440567;
+        Tue, 17 Dec 2019 20:26:44 +0200 (IST)
+Date:   Tue, 17 Dec 2019 20:26:43 +0200
+From:   Baruch Siach <baruch@tkos.co.il>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Marek Behun <marek.behun@nic.cz>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        netdev@vger.kernel.org,
+        Denis Odintsov <d.odintsov@traviangames.com>,
+        Hubert Feurstein <h.feurstein@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: [BUG] mv88e6xxx: tx regression in v5.3
+Message-ID: <20191217182643.augknhx57pafnelv@sapphire.tkos.co.il>
+References: <20191212152355.iiepmi4cjriddeon@sapphire.tkos.co.il>
+ <20191212193611.63111051@nic.cz>
+ <20191212190640.6vki2pjfacdnxihh@sapphire.tkos.co.il>
+ <20191212193129.GF30053@lunn.ch>
+ <20191212204141.16a406cd@nic.cz>
+ <8736dlucai.fsf@tarshish>
+ <871rt5u9no.fsf@tarshish>
+ <20191215145349.GB22725@lunn.ch>
+ <87y2vdsk32.fsf@tarshish>
+ <20191215161423.GE22725@lunn.ch>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: a4b643c3-cd3b-470d-2609-08d7831e149f
-X-MS-Exchange-CrossTenant-originalarrivaltime: 17 Dec 2019 18:22:31.6844
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: ZrGO7Yb7VxULAG1NQSY84gzJ6Gsa0on1t9oUqD1X+LOlpgdSdCehntqGpdaCnah+
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR15MB3424
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
- definitions=2019-12-17_03:2019-12-17,2019-12-17 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxscore=0
- lowpriorityscore=0 malwarescore=0 spamscore=0 impostorscore=0
- clxscore=1015 adultscore=0 bulkscore=0 mlxlogscore=617 phishscore=0
- suspectscore=0 priorityscore=1501 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-1910280000 definitions=main-1912170144
-X-FB-Internal: deliver
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191215161423.GE22725@lunn.ch>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 17, 2019 at 09:26:31AM +0100, Jakub Sitnicki wrote:
-> On Sat, Dec 14, 2019 at 08:25 PM CET, Neal Cardwell wrote:
-> > On Fri, Dec 13, 2019 at 9:00 PM Eric Dumazet <eric.dumazet@gmail.com> w=
-rote:
-> >>
-> >>
-> >>
-> >> On 12/13/19 4:47 PM, Martin KaFai Lau wrote:
-> >> > This patch adds a helper to handle jiffies.  Some of the
-> >> > tcp_sock's timing is stored in jiffies.  Although things
-> >> > could be deduced by CONFIG_HZ, having an easy way to get
-> >> > jiffies will make the later bpf-tcp-cc implementation easier.
-> >> >
-> >>
-> >> ...
-> >>
-> >> > +
-> >> > +BPF_CALL_2(bpf_jiffies, u64, in, u64, flags)
-> >> > +{
-> >> > +     if (!flags)
-> >> > +             return get_jiffies_64();
-> >> > +
-> >> > +     if (flags & BPF_F_NS_TO_JIFFIES) {
-> >> > +             return nsecs_to_jiffies(in);
-> >> > +     } else if (flags & BPF_F_JIFFIES_TO_NS) {
-> >> > +             if (!in)
-> >> > +                     in =3D get_jiffies_64();
-> >> > +             return jiffies_to_nsecs(in);
-> >> > +     }
-> >> > +
-> >> > +     return 0;
-> >> > +}
-> >>
-> >> This looks a bit convoluted :)
-> >>
-> >> Note that we could possibly change net/ipv4/tcp_cubic.c to no longer u=
-se jiffies at all.
-> >>
-> >> We have in tp->tcp_mstamp an accurate timestamp (in usec) that can be =
-converted to ms.
-> >
-> > If the jiffies functionality stays, how about 3 simple functions that
-> > correspond to the underlying C functions, perhaps something like:
-> >
-> >   bpf_nsecs_to_jiffies(nsecs)
-> >   bpf_jiffies_to_nsecs(jiffies)
-> >   bpf_get_jiffies_64()
-> >
-> > Separate functions might be easier to read/maintain (and may even be
-> > faster, given the corresponding reduction in branches).
->=20
-> Having bpf_nsecs_to_jiffies() would be also handy for BPF sockops progs
-> that configure SYN-RTO timeout (BPF_SOCK_OPS_TIMEOUT_INIT).
->=20
-> Right now user-space needs to go look for CONFIG_HZ in /proc/config.gz
-Andrii's extern variable work (already landed) allows a bpf_prog
-to read CONFIG_HZ as a global variable.  It is the path that I am
-pursuing now for jiffies/nsecs conversion without relying on
-a helper.
+Hi Andrew,
+
+On Sun, Dec 15, 2019 at 05:14:23PM +0100, Andrew Lunn wrote:
+> On Sun, Dec 15, 2019 at 05:08:01PM +0200, Baruch Siach wrote:
+> > On Sun, Dec 15 2019, Andrew Lunn wrote:
+> > >> This fixes cpu port configuration for me:
+> > >>
+> > >> diff --git a/drivers/net/dsa/mv88e6xxx/port.c b/drivers/net/dsa/mv88e6xxx/port.c
+> > >> index 7fe256c5739d..a6c320978bcf 100644
+> > >> --- a/drivers/net/dsa/mv88e6xxx/port.c
+> > >> +++ b/drivers/net/dsa/mv88e6xxx/port.c
+> > >> @@ -427,10 +427,6 @@ static int mv88e6xxx_port_set_cmode(struct mv88e6xxx_chip *chip, int port,
+> > >>  		cmode = 0;
+> > >>  	}
+> > >>
+> > >> -	/* cmode doesn't change, nothing to do for us */
+> > >> -	if (cmode == chip->ports[port].cmode)
+> > >> -		return 0;
+> > >> -
+> > >>  	lane = mv88e6xxx_serdes_get_lane(chip, port);
+> > >>  	if (lane) {
+> > >>  		if (chip->ports[port].serdes_irq) {
+> > >>
+> > >> Does that make sense?
+> > >
+> > > This needs testing on a 6390, with a port 9 or 10 using fixed link. We
+> > > have had issues in the past where mac_config() has been called once
+> > > per second, and each time it reconfigured the MAC, causing the link to
+> > > go down/up. So we try to avoid doing work which is not requires and
+> > > which could upset the link.
+> > 
+> > You refer to ed8fe20205ac ("net: dsa: mv88e6xxx: prevent interrupt storm
+> > caused by mv88e6390x_port_set_cmode") that introduced this code.
+> > 
+> > The alternative is to call ->port_get_cmode() to refresh the cmode cache
+> > after mv88e6xxx_port_hidden_write().
+> 
+> Refreshing the cmode after mv88e6xxx_port_hidden_write() sounds like a
+> good idea. But please limit it to just switches which need to make
+> cmode writable. cmode is rather fragile and the 6390 family is easy to
+> break in this area.
+
+This turned out to be much harder than expected. cmode update after 
+mv88e6xxx_port_hidden_write() breaks the serdes configuration. The link change 
+irq does not trigger on serdes interface up. The strange thing is that if I 
+add 10ms delay after cmode read (or anywhere before the mv88e6xxx_port_write() 
+call in mv88e6xxx_port_set_cmode()) it works again. I have no idea what is 
+going on here. The cmode cache is used in many places, so maybe setting it to 
+an invalid value (6) is not a good idea.
+
+I ended up with cmode write force in mv88e6341_port_set_cmode_writable() like 
+this:
+
+diff --git a/drivers/net/dsa/mv88e6xxx/chip.h b/drivers/net/dsa/mv88e6xxx/chip.h
+index 8a8e38bfb161..70284f100d87 100644
+--- a/drivers/net/dsa/mv88e6xxx/chip.h
++++ b/drivers/net/dsa/mv88e6xxx/chip.h
+@@ -233,6 +233,7 @@ struct mv88e6xxx_port {
+ 	u64 vtu_member_violation;
+ 	u64 vtu_miss_violation;
+ 	u8 cmode;
++	bool force_cmode;
+ 	bool mirror_ingress;
+ 	bool mirror_egress;
+ 	unsigned int serdes_irq;
+diff --git a/drivers/net/dsa/mv88e6xxx/port.c b/drivers/net/dsa/mv88e6xxx/port.c
+index 7fe256c5739d..8e8724eb5669 100644
+--- a/drivers/net/dsa/mv88e6xxx/port.c
++++ b/drivers/net/dsa/mv88e6xxx/port.c
+@@ -427,9 +427,10 @@ static int mv88e6xxx_port_set_cmode(struct mv88e6xxx_chip *chip, int port,
+ 		cmode = 0;
+ 	}
+ 
+-	/* cmode doesn't change, nothing to do for us */
+-	if (cmode == chip->ports[port].cmode)
++	/* cmode doesn't change, nothing to do for us unless forced */
++	if (cmode == chip->ports[port].cmode && !chip->ports[port].force_cmode)
+ 		return 0;
++	chip->ports[port].force_cmode = false;
+ 
+ 	lane = mv88e6xxx_serdes_get_lane(chip, port);
+ 	if (lane) {
+@@ -516,6 +517,8 @@ static int mv88e6341_port_set_cmode_writable(struct mv88e6xxx_chip *chip,
+ 	if (port != 5)
+ 		return -EOPNOTSUPP;
+ 
++	chip->ports[port].force_cmode = true;
++
+ 	addr = chip->info->port_base_addr + port;
+ 
+ 	err = mv88e6xxx_port_hidden_read(chip, 0x7, addr, 0, &reg);
+
+Does that look right?
+
+baruch
+
+-- 
+     http://baruch.siach.name/blog/                  ~. .~   Tk Open Systems
+=}------------------------------------------------ooO--U--Ooo------------{=
+   - baruch@tkos.co.il - tel: +972.2.679.5364, http://www.tkos.co.il -
