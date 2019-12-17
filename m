@@ -2,112 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1284F1221EE
-	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 03:26:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EF01312222C
+	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 03:51:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726548AbfLQCZ6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Dec 2019 21:25:58 -0500
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:41070 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726313AbfLQCZ6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Dec 2019 21:25:58 -0500
-Received: by mail-pf1-f196.google.com with SMTP id s18so6665774pfd.8
-        for <netdev@vger.kernel.org>; Mon, 16 Dec 2019 18:25:57 -0800 (PST)
+        id S1726976AbfLQCvI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Dec 2019 21:51:08 -0500
+Received: from mail-pj1-f73.google.com ([209.85.216.73]:50758 "EHLO
+        mail-pj1-f73.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726616AbfLQCvH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Dec 2019 21:51:07 -0500
+Received: by mail-pj1-f73.google.com with SMTP id e5so5641373pjr.17
+        for <netdev@vger.kernel.org>; Mon, 16 Dec 2019 18:51:07 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=Cvy7msiU/EIcDSl9XPhMgZQJb5Hqfp0t8LdYrFOUdgI=;
-        b=bafiHx71PfwIUoJ1dg+rvCm9W9pWV0RtDTlS/i88PtZ6uHqJnMCXql6af6PatImuUJ
-         2tG8mSAeFUd+kcFCkQr4RS6u5yrrs/9+Dn/J9vE6G+u7b8RInmChMDoGYCT8vgE0nzEM
-         2DmwWpHmm5ef2rGXtyUx/SKjv52p6vLl19F1QvfNKC0OMEC57oVG175RtN9TtHkBZ/mZ
-         IgfdScyHgKLmqBUY5bYYP86kUcezoOs18Hu9wQKy1rsRkjBUsmz4B1dgJXlMwvwtRdZe
-         e7f+0s2p08RTNfEqWIZDSl1uOvaM67+82IAVPtkKQsqtiWXLfyDGn7yci5csYehFYc2E
-         GA6w==
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=nu9gySL5m0Kb0igy+KeuP4w9+RzXKH6C2Y3nSI8p9+I=;
+        b=BHJ1U4XDzP96eZTtMyQsycKTf/stjJBjN9wk4abttxftuOFvHLJYNpHNlJAcJoDc+W
+         B8YZNEGANZMfHL9gJ8hIN9QtLWqdSfb5aflO8EOfXEmSll619TuYdOj4Bj7OU4gGCgQx
+         LaecmfKjwjWYZPaA9l0SWzQbzrKuLZGYFrL3v+cw2fO/s28y7l1Xx5NztRLXeYGXrvSN
+         YRtNRSiNrCZURqMwwEUSXVJA2GdabOXCu0MV+Q5NQDHwCLxeILd4MhvkhWa/pLZLCX9A
+         jhpXgjaX1u0Q2UT5d4AW96IdPUPWpLbi6cpGSS6EItQfDkujTwKBABtlzN5BwcdTvDmz
+         JmRA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=Cvy7msiU/EIcDSl9XPhMgZQJb5Hqfp0t8LdYrFOUdgI=;
-        b=t+75ehL/RlnAQciiP6MVb5Zec2ETt7rX0w+MRqqZBrOQ87xUyuh5LOGBEU9qIQt9m7
-         Fo6z2/iMSDvCXAH8Zle/qGn8BqmC49JWrKMtb8HwFxPCerr80ofLHPKaq6/245cyk30w
-         KBHmf/NdLFPATipIGbT8tMlmez0ybpyOsjDd4dk+YfM5rdGW0AsDRyIt+4XDeerOW8fA
-         UeXhfkrQBwmRRkdy9YTyQd0qtNKU8ztqSW4HwOEE1MUbc04YlsV+9PHtSTdhk47mK+e8
-         +Xfx+QB6jipQjaR0cxW98iVY+CndsGi/SLWz8FbQNxEh52y+i6TMwesoegOvIE1cOWpn
-         RzWQ==
-X-Gm-Message-State: APjAAAX+JgUGaiMGOJ7/CGpZ53C58gZ1JKxd2ASE0wZaQswKrwbn5Lkv
-        0hEXXTObK+uUyf7xg+/dIRs=
-X-Google-Smtp-Source: APXvYqxZMZ/56451tfibsDssK5dnF+sOqzwoJfWaMcPgRrtAyOINAhapK0+hn9LyfpGhlMhYGA5OAQ==
-X-Received: by 2002:a63:d543:: with SMTP id v3mr21874310pgi.285.1576549557192;
-        Mon, 16 Dec 2019 18:25:57 -0800 (PST)
-Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id y197sm15527255pfc.79.2019.12.16.18.25.56
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 16 Dec 2019 18:25:56 -0800 (PST)
-Subject: Re: [PATCH net-next v2 02/11] sock: Make sk_protocol a 16-bit value
-To:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        netdev@vger.kernel.org, mptcp@lists.01.org
-Cc:     Paolo Abeni <pabeni@redhat.com>
-References: <20191217002455.24849-1-mathew.j.martineau@linux.intel.com>
- <20191217002455.24849-3-mathew.j.martineau@linux.intel.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <03207138-4067-d3dc-c904-e9ff4a8ed197@gmail.com>
-Date:   Mon, 16 Dec 2019 18:25:55 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
-MIME-Version: 1.0
-In-Reply-To: <20191217002455.24849-3-mathew.j.martineau@linux.intel.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=nu9gySL5m0Kb0igy+KeuP4w9+RzXKH6C2Y3nSI8p9+I=;
+        b=Y3BAStuQtj1fTwkTPZM1WhpPWb7UYBIgWOejqLGTdDj6Dw+VLftn4fY5xyuJa2Jj/c
+         X+jENgKIyVaxiputJ3ubectlnMbqve1lqm6v4ifkLpVOxxcxs5jEAs5JcRqf3CpQSMy5
+         NJnAxGLuHnSWM3PhvMsfWLffohv/22ovaAZ9Fw/VsciMuUbF49qzPzsxfWSNtguHuWLY
+         PSyRiTKZEe8mOSECfrOj6b+Qhrh2n/oIWIkFnr8A/6pPGZx9xihNAtYbmukLmOMlWPaL
+         PJGCMTbdPmasmAT8y9NwQzw0luE5nx8rPJynBIK+uePId62f5FV5i89oCvBF38dpoTWg
+         s3cA==
+X-Gm-Message-State: APjAAAXGdAPeuEZK17meZJ+5bArrRt+EhXR+KcmU920p/h5gIbItVo+f
+        TgJjzqdhgdVnTmBVvFrlVHTBaX3ms5xepA==
+X-Google-Smtp-Source: APXvYqzhgXkp65GBDfBTSj2UVdFKqMY9POvyEPlP72MQVEBk72q7/+IULv+XGt3HMJefTxudi2gVX8bKugZWWg==
+X-Received: by 2002:a63:5b59:: with SMTP id l25mr22866504pgm.382.1576551066708;
+ Mon, 16 Dec 2019 18:51:06 -0800 (PST)
+Date:   Mon, 16 Dec 2019 18:51:03 -0800
+Message-Id: <20191217025103.252578-1-edumazet@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.24.1.735.g03f4e72817-goog
+Subject: [PATCH net] net: annotate lockless accesses to sk->sk_pacing_shift
+From:   Eric Dumazet <edumazet@google.com>
+To:     "David S . Miller" <davem@davemloft.net>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+sk->sk_pacing_shift can be read and written without lock
+synchronization. This patch adds annotations to
+document this fact and avoid future syzbot complains.
 
+This might also avoid unexpected false sharing
+in sk_pacing_shift_update(), as the compiler
+could remove the conditional check and always
+write over sk->sk_pacing_shift :
 
-On 12/16/19 4:24 PM, Mat Martineau wrote:
-> Match the 16-bit width of skbuff->protocol. Fills an 8-bit hole so
-> sizeof(struct sock) does not change.
-> 
-> Co-developed-by: Paolo Abeni <pabeni@redhat.com>
-> Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-> Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
-> ---
-> 
-> Changes for v2:
-> 
-> Moved sk_pacing_shift back to a regular struct member, adjacent to the
-> bitfield. gcc then packs the bitfield and the u8 in a single 32-bit word.
-> 
-> 
->  include/net/sock.h          | 4 ++--
->  include/trace/events/sock.h | 2 +-
->  2 files changed, 3 insertions(+), 3 deletions(-)
-> 
-> diff --git a/include/net/sock.h b/include/net/sock.h
-> index 81dc811aad2e..0930f46c600c 100644
-> --- a/include/net/sock.h
-> +++ b/include/net/sock.h
-> @@ -456,10 +456,10 @@ struct sock {
->  				sk_no_check_tx : 1,
->  				sk_no_check_rx : 1,
->  				sk_userlocks : 4,
-> -				sk_protocol  : 8,
->  				sk_type      : 16;
-> -	u16			sk_gso_max_segs;
->  	u8			sk_pacing_shift;
-> +	u16			sk_protocol;
-> +	u16			sk_gso_max_segs;
->  	unsigned long	        sk_lingertime;
->  	struct proto		*sk_prot_creator;
->  	rwlock_t		sk_callback_lock;
+if (sk->sk_pacing_shift != val)
+	sk->sk_pacing_shift = val;
 
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+---
+ include/net/sock.h    | 4 ++--
+ net/core/sock.c       | 2 +-
+ net/ipv4/tcp_bbr.c    | 3 ++-
+ net/ipv4/tcp_output.c | 4 ++--
+ 4 files changed, 7 insertions(+), 6 deletions(-)
 
-sk_type is no longer at a 16bit (u16) aligned location, which might force the compiler
-to do extra operations to fetch sk->sk_type on some arches.
-
-Note that I do not even know why sk_type is a 16bit field, we might be able to convert it to 8bit.
+diff --git a/include/net/sock.h b/include/net/sock.h
+index 87d54ef57f0040fd7bbd4344db0d3af7e6f6d992..09d56673c9e7fbe85699b07aa1e52f715632678b 100644
+--- a/include/net/sock.h
++++ b/include/net/sock.h
+@@ -2583,9 +2583,9 @@ static inline int sk_get_rmem0(const struct sock *sk, const struct proto *proto)
+  */
+ static inline void sk_pacing_shift_update(struct sock *sk, int val)
+ {
+-	if (!sk || !sk_fullsock(sk) || sk->sk_pacing_shift == val)
++	if (!sk || !sk_fullsock(sk) || READ_ONCE(sk->sk_pacing_shift) == val)
+ 		return;
+-	sk->sk_pacing_shift = val;
++	WRITE_ONCE(sk->sk_pacing_shift, val);
+ }
+ 
+ /* if a socket is bound to a device, check that the given device
+diff --git a/net/core/sock.c b/net/core/sock.c
+index 043db3ce023e592e9f1b6602376097c28f529cfd..8459ad579f735ce724b559f7114d1b77f360e5b2 100644
+--- a/net/core/sock.c
++++ b/net/core/sock.c
+@@ -2916,7 +2916,7 @@ void sock_init_data(struct socket *sock, struct sock *sk)
+ 
+ 	sk->sk_max_pacing_rate = ~0UL;
+ 	sk->sk_pacing_rate = ~0UL;
+-	sk->sk_pacing_shift = 10;
++	WRITE_ONCE(sk->sk_pacing_shift, 10);
+ 	sk->sk_incoming_cpu = -1;
+ 
+ 	sk_rx_queue_clear(sk);
+diff --git a/net/ipv4/tcp_bbr.c b/net/ipv4/tcp_bbr.c
+index 32772d6ded4ed359aa4d09ba67071e88a79ebdeb..a6545ef0d27b66d310b02affe14f41ab536243eb 100644
+--- a/net/ipv4/tcp_bbr.c
++++ b/net/ipv4/tcp_bbr.c
+@@ -306,7 +306,8 @@ static u32 bbr_tso_segs_goal(struct sock *sk)
+ 	/* Sort of tcp_tso_autosize() but ignoring
+ 	 * driver provided sk_gso_max_size.
+ 	 */
+-	bytes = min_t(unsigned long, sk->sk_pacing_rate >> sk->sk_pacing_shift,
++	bytes = min_t(unsigned long,
++		      sk->sk_pacing_rate >> READ_ONCE(sk->sk_pacing_shift),
+ 		      GSO_MAX_SIZE - 1 - MAX_TCP_HEADER);
+ 	segs = max_t(u32, bytes / tp->mss_cache, bbr_min_tso_segs(sk));
+ 
+diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
+index b184f03d743715ef4b2d166ceae651529be77953..e5a0071039e1cc0f86cc14e168ec3ab3be8cf864 100644
+--- a/net/ipv4/tcp_output.c
++++ b/net/ipv4/tcp_output.c
+@@ -1725,7 +1725,7 @@ static u32 tcp_tso_autosize(const struct sock *sk, unsigned int mss_now,
+ 	u32 bytes, segs;
+ 
+ 	bytes = min_t(unsigned long,
+-		      sk->sk_pacing_rate >> sk->sk_pacing_shift,
++		      sk->sk_pacing_rate >> READ_ONCE(sk->sk_pacing_shift),
+ 		      sk->sk_gso_max_size - 1 - MAX_TCP_HEADER);
+ 
+ 	/* Goal is to send at least one packet per ms,
+@@ -2260,7 +2260,7 @@ static bool tcp_small_queue_check(struct sock *sk, const struct sk_buff *skb,
+ 
+ 	limit = max_t(unsigned long,
+ 		      2 * skb->truesize,
+-		      sk->sk_pacing_rate >> sk->sk_pacing_shift);
++		      sk->sk_pacing_rate >> READ_ONCE(sk->sk_pacing_shift));
+ 	if (sk->sk_pacing_status == SK_PACING_NONE)
+ 		limit = min_t(unsigned long, limit,
+ 			      sock_net(sk)->ipv4.sysctl_tcp_limit_output_bytes);
+-- 
+2.24.1.735.g03f4e72817-goog
 
