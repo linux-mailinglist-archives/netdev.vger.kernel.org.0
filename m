@@ -2,185 +2,206 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 45D3C1230F4
-	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 16:57:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1CFB6123247
+	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 17:21:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727728AbfLQP5r (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Dec 2019 10:57:47 -0500
-Received: from mail-oi1-f196.google.com ([209.85.167.196]:36135 "EHLO
-        mail-oi1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726933AbfLQP5q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 10:57:46 -0500
-Received: by mail-oi1-f196.google.com with SMTP id c16so4972618oic.3;
-        Tue, 17 Dec 2019 07:57:45 -0800 (PST)
+        id S1728274AbfLQQOb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Dec 2019 11:14:31 -0500
+Received: from mail-eopbgr770078.outbound.protection.outlook.com ([40.107.77.78]:1089
+        "EHLO NAM02-SN1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726858AbfLQQOb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 17 Dec 2019 11:14:31 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ZiMDn/mexsqYSGj6CjGhRXzj6bPaOZP2RbJpMZpMMPMCYwb5D45lP8POMNhjufz+/oRepYBgQ8WP8aYnXF/EERQeCttiK4xnY+lXYsgVNWkNpRCm7ihvvsXVEXqx96fpCEQ+yh+KDUkwlG9i5WnhlR2/30czokkVSIj+gSaaRiV9O+5r+dT0Cq98Z5xfUXJq9JHD+JdYtaYILvbkMu8IhiAryyBqvs5aJBOJCd0OOOO23Vs7XTkck/B2q7Y8M28OdAoT3H5CGVQdiI4mVnCoZFZTYXTXDWlzfEQnslwkVZ2+JWCxVcm4hz4T6HuZgowji4P0JVdDCTG5J7GQ902rOw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=G9sf6uxYBqVnhHIwr4AEGVfLgcNH20xLFhJFPAO+Tvo=;
+ b=cOO9DgzhhOXIKJJbTNoS0FLBGm/ZJs7ANwbv3eq39ZlMJ24JnhHKwACsYAWyyP4kdWIkldwGsbU0faeWpOv/mXCmeDTIZ5gOkzyuk2AbBrdH0Cp2xsobHGmjCB49DubaMggCpMEHEh68u2Kqz+p52hAlNKp4rjW+Kft5ft4q/pso9R8xW3wXY+8ArT6rDiWRKfAdM86tiUl/SYjIu/SHsWYSmp5N5tkQdFky1Wk1wwYtIAH8P+BDntgo0SDBtiDYWWVzHcAls2jVw97oYSIi7isYHuxaaWh8J1jZ4oSA4yTc3U1qGaJEh5YLLVISvu22qJ1gcdD8/hHv1Z+enjfK6Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=silabs.com; dmarc=pass action=none header.from=silabs.com;
+ dkim=pass header.d=silabs.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=xgsJlsnEOSDd3+anDElz+/MLtJOX8bL3V5H2TOhN4zU=;
-        b=ONl1GkVupx/9vxFQ/42Bu9QIieHlkn+bNwJ0gGzbXw/rgAVP7AB4cxjTMcKfWKpXCI
-         BElqfDMLtktOIHQnKG+kmP/1OvG+jVmS34f/YTqhFat86sKxgMxV2pk634IVmYx8PNG0
-         hYj0HXPwV3UehLmmF1FpUp8ISMoeOlM0vr6vqrZa7Yo+qgjAJeThVYdOhRyGPOyAYacn
-         ornVtCCSEPzU2apT8nHRCy9ubbxNKeVUJ5rof9oJrSNkMHOYyj6NLYRytzcv6iJ/RmRQ
-         SfXq3OZcsHX+R7kPHxsv3iu0ftQN6qZmf97cohFF75Y69cfdxPSPRBUTEkvtAPK+lD2B
-         9iyg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=xgsJlsnEOSDd3+anDElz+/MLtJOX8bL3V5H2TOhN4zU=;
-        b=HV6EmZYs5FOVmaNW6Au7rDm3tcc0Xd0ZdQDD3cN09YO/TH9Zi4SCe1JxY0AH6hQWnk
-         XIwqj3pIRc2USBd02lwwPbT2/1e3r9c1EZouRCN7xW2tIMqDJEncW5gl3tEeVzs+ZfK9
-         3Tdndx4CYc4WZNMkYUGdzUwx3ILz1kUsPJEao7PbkfaAwT2U64+0QSaPs8SpIlB7BiAS
-         9EbB/Fm9S4vJGrDdo8d89fO7LdR1qA5KenT4G3GeekkHkVRPOBNBUQHAelkgkah+x5XB
-         BdPF8p8bhIPHqK9xXxEEX779919BdIBSq0UXzIk5sODmcaUziE/zQo4A6Nr/VjDIYR1r
-         FFew==
-X-Gm-Message-State: APjAAAX24sFM1qa27iDvf3aI2Msg5SHh1Dq6DRXeyHscRLHB/u+EO8vS
-        sn+MwnxxmHKq8B8S6OhV1W7nGdk+Kv5C/canHh8=
-X-Google-Smtp-Source: APXvYqy+H4AjSCMbsIFUw3s5H9RuLkB1/H+/canhjchlOwoGIzP563muGoFOj/jvQ21OvmLFhpAB1KMBKCkr3N9gDWM=
-X-Received: by 2002:aca:54cc:: with SMTP id i195mr1825342oib.126.1576598265181;
- Tue, 17 Dec 2019 07:57:45 -0800 (PST)
+ d=silabs.onmicrosoft.com; s=selector2-silabs-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=G9sf6uxYBqVnhHIwr4AEGVfLgcNH20xLFhJFPAO+Tvo=;
+ b=ZwzI5KSRwLx/uUp1bQgRIzqfBFhQb0PU2c0SCIkw1RNA+eLJN7D3VDXIB9Q/HfLg2j2RLme2Yh9/pAqL8n5VC6ghIdWotsQhNYwZdSZ4Zn5LyNjYBTHLfHVP8k0uQ69NX3UsQ6G+6/LknYxlv1dpFTbeRAM+7/zh+PilGbQVl8w=
+Received: from MN2PR11MB4063.namprd11.prod.outlook.com (10.255.180.22) by
+ MN2PR11MB3678.namprd11.prod.outlook.com (20.178.254.11) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2538.16; Tue, 17 Dec 2019 16:14:26 +0000
+Received: from MN2PR11MB4063.namprd11.prod.outlook.com
+ ([fe80::f46c:e5b4:2a85:f0bf]) by MN2PR11MB4063.namprd11.prod.outlook.com
+ ([fe80::f46c:e5b4:2a85:f0bf%4]) with mapi id 15.20.2538.019; Tue, 17 Dec 2019
+ 16:14:26 +0000
+From:   =?utf-8?B?SsOpcsO0bWUgUG91aWxsZXI=?= <Jerome.Pouiller@silabs.com>
+To:     "devel@driverdev.osuosl.org" <devel@driverdev.osuosl.org>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        =?utf-8?B?SsOpcsO0bWUgUG91aWxsZXI=?= <Jerome.Pouiller@silabs.com>
+Subject: [PATCH v2 00/55] Improve wfx driver
+Thread-Topic: [PATCH v2 00/55] Improve wfx driver
+Thread-Index: AQHVtPUN97auvOsN5kugh2/rPbsjIw==
+Date:   Tue, 17 Dec 2019 16:14:26 +0000
+Message-ID: <20191217161318.31402-1-Jerome.Pouiller@silabs.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: PR0P264CA0174.FRAP264.PROD.OUTLOOK.COM
+ (2603:10a6:100:1c::18) To MN2PR11MB4063.namprd11.prod.outlook.com
+ (2603:10b6:208:13f::22)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=Jerome.Pouiller@silabs.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-mailer: git-send-email 2.24.0
+x-originating-ip: [37.71.187.125]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 0434cd04-502c-4932-d222-08d7830c2fdc
+x-ms-traffictypediagnostic: MN2PR11MB3678:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <MN2PR11MB36787CB3D8CF501B15121B0293500@MN2PR11MB3678.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:6430;
+x-forefront-prvs: 02543CD7CD
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(376002)(346002)(396003)(39840400004)(366004)(136003)(53754006)(43544003)(199004)(189003)(6512007)(66574012)(1076003)(478600001)(86362001)(8936002)(110136005)(316002)(2616005)(26005)(6506007)(5660300002)(36756003)(6486002)(66946007)(66476007)(66556008)(64756008)(66446008)(71200400001)(52116002)(85182001)(81166006)(81156014)(8676002)(54906003)(107886003)(2906002)(4326008)(186003)(85202003);DIR:OUT;SFP:1101;SCL:1;SRVR:MN2PR11MB3678;H:MN2PR11MB4063.namprd11.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: silabs.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: Pjj+jeG9A5ypTwgTkk1Ny8nrX6VPGI/0mpKmeDp4hAx9k+Wn/n/37ABZBPxioXkDtVSp2KdRalvtghn6bWhsyZ6jqbnfFejKNyeFbui/u/H1BNPTHE4ISg8KcUzb7dw734ibq+m6z29+lA5nYX+/S4ZHrCC3rtw/ESQF+GJVTVM38mNRhKZ6J6QZMam06YER9TFcu1RGEKGLGvcGxQNM9Peyaq6biofUewc/712yx9uFF4YuKbJx2wgRHV360ID+GSiHXZf23entaoyMkdrbZzrJc2I1BH/Ibv5F5K0bg307vuaxo7MEOU6CrtIbs/Kb8E1WG2grooicHLAe0k7tmo/Faz/c3cSw1GeDypxNRFYQ9W7MGbioJck8Aw9TMEjzuf7hHOFgrD5Ifr1FrjzEyTl23rV+4+tIQXcks/Pk4fTQp7ZceF+eSg1NPw6JYnIiNeM5fStVkK2KVsFIamwx7BuEC1K8vhHEazJCXneULPYSf89Q4nt5N/pT25FQ1gv0jmZbJVRykJ/nRA/I43rH2A==
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <27B5DEA8D623804783FD0D8FE69D1801@namprd11.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <000000000000a6f2030598bbe38c@google.com> <0000000000000e32950599ac5a96@google.com>
- <20191216150017.GA27202@linux.fritz.box> <CAJ8uoz3nCxcmnPonNunYhswskidn=PnN8=4_jXW4B=Xu4k_DoQ@mail.gmail.com>
- <CAJ8uoz312gDBGpqOJiKqrXn456sy6u+Gnvcvv_+0=EimasRoUw@mail.gmail.com> <20191217154031.GI5624@arrakis.emea.arm.com>
-In-Reply-To: <20191217154031.GI5624@arrakis.emea.arm.com>
-From:   Magnus Karlsson <magnus.karlsson@gmail.com>
-Date:   Tue, 17 Dec 2019 16:57:34 +0100
-Message-ID: <CAJ8uoz3yDK8sEE05cKA8siBi-Dc0wtbe1-zYgbz_-pd5t69j8w@mail.gmail.com>
-Subject: Re: WARNING in wp_page_copy
-To:     Catalin Marinas <catalin.marinas@arm.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        kirill.shutemov@linux.intel.com, justin.he@arm.com,
-        linux-mm@kvack.org,
-        syzbot <syzbot+9301f2f33873407d5b33@syzkaller.appspotmail.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        bpf <bpf@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>, hawk@kernel.org,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        linux-kernel@vger.kernel.org,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        Network Development <netdev@vger.kernel.org>,
-        Song Liu <songliubraving@fb.com>,
-        syzkaller-bugs@googlegroups.com, Yonghong Song <yhs@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+X-OriginatorOrg: silabs.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0434cd04-502c-4932-d222-08d7830c2fdc
+X-MS-Exchange-CrossTenant-originalarrivaltime: 17 Dec 2019 16:14:26.5019
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 54dbd822-5231-4b20-944d-6f4abcd541fb
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: WEFvtyiybsu1YoG+/WS9JLlRdf6IUKd9EppEU6QQJJznc0jaQ5rtAWjmQDKuy4ewotV/Do7YdJ91jBumG2Tw2w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR11MB3678
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 17, 2019 at 4:40 PM Catalin Marinas <catalin.marinas@arm.com> wrote:
->
-> Hi Magnus,
->
-> Thanks for investigating this. I have more questions below rather than a
-> solution.
->
-> On Tue, Dec 17, 2019 at 02:27:22PM +0100, Magnus Karlsson wrote:
-> > On Mon, Dec 16, 2019 at 4:10 PM Magnus Karlsson
-> > <magnus.karlsson@gmail.com> wrote:
-> > > On Mon, Dec 16, 2019 at 4:00 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
-> > > >
-> > > > On Sat, Dec 14, 2019 at 08:20:07AM -0800, syzbot wrote:
-> > > > > syzbot has found a reproducer for the following crash on:
-> > > > >
-> > > > > HEAD commit:    1d1997db Revert "nfp: abm: fix memory leak in nfp_abm_u32_..
-> > > > > git tree:       net-next
-> > > > > console output: https://syzkaller.appspot.com/x/log.txt?x=1029f851e00000
-> > > > > kernel config:  https://syzkaller.appspot.com/x/.config?x=cef1fd5032faee91
-> > > > > dashboard link: https://syzkaller.appspot.com/bug?extid=9301f2f33873407d5b33
-> > > > > compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-> > > > > syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=119d9fb1e00000
-> > > > >
-> > > > > IMPORTANT: if you fix the bug, please add the following tag to the commit:
-> > > > > Reported-by: syzbot+9301f2f33873407d5b33@syzkaller.appspotmail.com
-> > > >
-> > > > Bjorn / Magnus, given xsk below, PTAL, thanks!
-> > >
-> > > Thanks. I will take a look at it right away.
-> > >
-> > > /Magnus
-> >
-> > After looking through the syzcaller report, I have the following
-> > hypothesis that would dearly need some comments from MM-savy people
-> > out there. Syzcaller creates, using mmap, a memory area that is
->
-> I guess that's not an anonymous mmap() since we don't seem to have a
-> struct page for src in cow_user_page() (the WARN_ON_ONCE path). Do you
-> have more information on the mmap() call?
-
-I have this from the syzcaller logs:
-
-mmap(&(0x7f0000001000/0x2000)=nil, 0x2000, 0xfffffe, 0x12, r8, 0x0)
-getsockopt$XDP_MMAP_OFFSETS(r8, 0x11b, 0x7, &(0x7f0000001300),
-&(0x7f0000000100)=0x60)
-
-The full log can be found at:
-https://syzkaller.appspot.com/x/repro.syz?x=119d9fb1e00000
-
-Hope this helps.
-
-> > write-only and supplies this to a getsockopt call (in this case
-> > XDP_STATISTICS, but probably does not matter really) as the area where
-> > it wants the values to be stored. When the getsockopt implementation
-> > gets to copy_to_user() to write out the values to user space, it
-> > encounters a page fault when accessing this write-only page. When
-> > servicing this, it gets to the following piece of code that triggers
-> > the warning that syzcaller reports:
-> >
-> > static inline bool cow_user_page(struct page *dst, struct page *src,
-> >                                  struct vm_fault *vmf)
-> > {
-> > ....
-> > snip
-> > ....
-> >        /*
-> >          * This really shouldn't fail, because the page is there
-> >          * in the page tables. But it might just be unreadable,
-> >          * in which case we just give up and fill the result with
-> >          * zeroes.
-> >          */
-> >         if (__copy_from_user_inatomic(kaddr, uaddr, PAGE_SIZE)) {
-> >                 /*
-> >                  * Give a warn in case there can be some obscure
-> >                  * use-case
-> >                  */
-> >                 WARN_ON_ONCE(1);
-> >                 clear_page(kaddr);
-> >         }
->
-> So on x86, a PROT_WRITE-only private page is mapped as non-readable? I
-> had the impression that write-only still allows reading by looking at
-> the __P010 definition.
->
-> Anyway, if it's not an anonymous mmap(), whoever handled the mapping may
-> have changed the permissions (e.g. some device).
->
-> > So without a warning. My hypothesis is that if we create a page in the
-> > same way as syzcaller then any getsockopt that does a copy_to_user()
-> > (pretty much all of them I guess) will get this warning.
->
-> The copy_to_user() only triggers the do_wp_page() fault handling. If
-> this is a CoW page (private read-only presumably, or at least not
-> writeable), the kernel tries to copy the original page given to
-> getsockopt into a new page and restart the copy_to_user(). Since the
-> kernel doesn't have a struct page for this (e.g. PFN mapping), it uses
-> __copy_from_user_inatomic() which fails because of the read permission.
->
-> > I have not tried this, so I might be wrong. If this is true, then the
-> > question is what to do about it. One possible fix would be just to
-> > remove the warning to get the same behavior as before. But it was
-> > probably put there for a reason.
->
-> It was there for some obscure cases, as the comment says ;). If the
-> above is a valid scenario that the user can trigger, we should probably
-> remove the WARN_ON.
->
-> --
-> Catalin
->
+RnJvbTogSsOpcsO0bWUgUG91aWxsZXIgPGplcm9tZS5wb3VpbGxlckBzaWxhYnMuY29tPgoKSGVs
+bG8gYWxsLAoKVGhpcyBwdWxsIHJlcXVlc3QgY29udGludWUgdG8gY2xlYW4gdXAgdGhlIHdmeCBk
+cml2ZXIuIEl0IGNhbiBiZSBtb3JlIG9yCmxlc3MgZGl2aWRlZCBpbiBmb3VyIHBhcnRzOgogIC0g
+MDAwMSB0byAwMDA5IGZpeCBzb21lIGlzc3VlcyAoc2hvdWxkIGJlIGluY2x1ZGVkIGluIDUuNT8p
+CiAgLSAwMDEwIHRvIDAwMjggbW9zdGx5IGNvbnRhaW5zIGNvc21ldGljcyBjaGFuZ2VzCiAgLSAw
+MDI5IHRvIDAwNDMgcmUtd29yayBwb3dlciBzYXZlIChpbiBzdGF0aW9uIG1vZGUpIGFuZCBRb1MK
+ICAtIDAwNDQgdG8gMDA1NCByZS13b3JrIHRoZSBzY2FuIHByb2Nlc3MKClRoZSBsYXN0IHBhdGNo
+IHVwZGF0ZXMgdGhlIFRPRE8gd2l0aCBhIG1vcmUgcHJlY2lzZSBsaXN0LiBJIGluY2x1ZGVkCnJl
+ZmVyZW5jZXMgdG8gZGlzY3Vzc2lvbnMgSSBoYXZlIGhhZCBvbiBtYWlsaW5nIGxpc3RzLCBpbiBv
+cmRlciB0byBub3QKZm9yZ2V0IHRoZW0uIEkgc3RhcnRlZCB0aGUgZmlyc3QgaXRlbXMgb2YgdGhl
+IGxpc3QgYW5kIEkgaG9wZSB0byBiZSBhYmxlCnRvIHNlbmQgYW5vdGhlciAoc21hbGxlcikgcHVs
+bCByZXF1ZXN0IGluIDItMyB3ZWVrcy4KClRoaXMgc2VyaWVzIGFsc28gdHJ5IGNsYXJpZnkgdGhl
+IG92ZXJhbGwgYXJjaGl0ZWN0dXJlOgoKICAgICwtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0uCiAgICB8ICAgICAgICAgICAgICAgIG1hYzgwMjExICAgICAgICAgICAgfAogICAg
+YC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLScKICAgICwtLS0tLS0tLS0tLS0r
+LS0tLS0tLS0tLS0rLS0tLS0tLS0tLS0uCiAgICB8ICAgIHN0YSAgICAgfCAgICAgICAgICAgfCAg
+ICAgICAgICAgfAogICAgfCAgICBzY2FuICAgIHwgICAgICAgICAgIHwgICAgICAgICAgIHwKICAg
+IHwgICAgbWFpbiAgICB8ICAgICAgICAgICB8ICAgICAgICAgICB8CiAgICArLS0tLS0tLS0tLS0t
+KyAgZGF0YV90eCAgfCAgICAgICAgICAgfAogICAgfCAgICBrZXkgICAgIHwgICAgICAgICAgIHwg
+IGRhdGFfcnggIHwKICAgIHwgaGlmX3R4X21pYiB8ICAgcXVldWUgICB8ICAgICAgICAgICB8CiAg
+ICB8ICAgaGlmX3R4ICAgfCAgICAgICAgICAgfCAgICAgICAgICAgfAogICAgfCAgIGhpZl9yeCAg
+IHwgICAgICAgICAgIHwgICAgICAgICAgIHwKICAgIHwgIGhpZl9hcGlfKiB8ICAgICAgICAgICB8
+ICAgICAgICAgICB8CiAgICArLS0tLS0tLS0tLS0tKy0tLS0tLS0tLS0tKy0tLS0tLS0tLS0tKy0t
+LS0tLS0tLgogICAgfCAgICAgICAgICAgICAgICAgIGJoICAgICAgICAgICAgICAgIHwgIGZ3aW8g
+IHwKICAgIHwgICAgICAgICAgICAgIHNlY3VyZV9saW5rICAgICAgICAgICB8ICAgICAgICB8CiAg
+ICArLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tKy0tLS0tLS0tKwogICAgfCAg
+ICAgICAgICAgICAgICAgICAgIGh3aW8gICAgICAgICAgICAgICAgICAgIHwKICAgICstLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0rCiAgICB8ICAgICAgICAgICAg
+ICAgICAgIGJ1c19zZGlvICAgICAgICAgICAgICAgICAgfAogICAgfCAgICAgICAgICAgICAgICAg
+ICBidXNfc3BpICAgICAgICAgICAgICAgICAgIHwKICAgIHwgICAgICAgICAgICAgICAgICAgIGh3
+YnVzICAgICAgICAgICAgICAgICAgICB8CiAgICBgLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tJwogICAgLC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS4KICAgIHwgICAgICAgICAgICAgICAgICAgc2Rpby9zcGkgICAgICAgICAg
+ICAgICAgICB8CiAgICArLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tKwogICAgfCAgICAgICAgICAgICAgICAgICBoYXJkd2FyZSAgICAgICAgICAgICAgICAgIHwK
+ICAgIGAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0nCgpJdCB0
+cnkgdG8gbWFrZSBhIGNsZWFyIHNlcGFyYXRpb24gYmV0d2VlbiBmdW5jdGlvbnMgdGhhdCB0YWtl
+IGNhcmUgb2YKaGFyZHdhcmUgY29tbXVuaWNhdGlvbiAoaGlmXyopIGFuZCBmdW5jdGlvbnMgdGhh
+dCB3b3JrIHdpdGggbWFjODAyMTEKKHN0YS5jIGFuZCBzY2FuLmMpLgoKdjI6CiAgLSBGaXggbGlu
+ZSBlbmRzCiAgLSBVcGRhdGUgVE9ETyB3aXRoIEZlbGl4IGlkZWEKICAtIEFkZCBhcmNoaXRlY3R1
+cmUgc2NoZW1hdGljcyBpbiBjb3ZlciBsZXR0ZXIKCgpKw6lyw7RtZSBQb3VpbGxlciAoNTUpOgog
+IHN0YWdpbmc6IHdmeDogZml4IHRoZSBjYWNoZSBvZiByYXRlIHBvbGljaWVzIG9uIGludGVyZmFj
+ZSByZXNldAogIHN0YWdpbmc6IHdmeDogZml4IGNhc2Ugb2YgbGFjayBvZiB0eF9yZXRyeV9wb2xp
+Y2llcwogIHN0YWdpbmc6IHdmeDogZml4IGNvdW50ZXIgb3ZlcmZsb3cKICBzdGFnaW5nOiB3Zng6
+IHVzZSBib29sZWFuIGFwcHJvcHJpYXRlbHkKICBzdGFnaW5nOiB3Zng6IGZpcm13YXJlIGRvZXMg
+bm90IHN1cHBvcnQgbW9yZSB0aGFuIDMyIHRvdGFsIHJldHJpZXMKICBzdGFnaW5nOiB3Zng6IGZp
+eCByYXRlIGNvbnRyb2wgaGFuZGxpbmcKICBzdGFnaW5nOiB3Zng6IGVuc3VyZSB0aGF0IHJldHJ5
+IHBvbGljeSBhbHdheXMgZmFsbGJhY2tzIHRvIE1DUzAgLwogICAgMU1icHMKICBzdGFnaW5nOiB3
+Zng6IGRldGVjdCByYWNlIGNvbmRpdGlvbiBpbiBXRVAgYXV0aGVudGljYXRpb24KICBzdGFnaW5n
+OiB3Zng6IGZpeCBoaWZfc2V0X21mcCgpIHdpdGggYmlnIGVuZGlhbiBob3N0cwogIHN0YWdpbmc6
+IHdmeDogZml4IHdyb25nIGVycm9yIG1lc3NhZ2UKICBzdGFnaW5nOiB3Zng6IGluY3JlYXNlIFNQ
+SSBidXMgZnJlcXVlbmN5IGxpbWl0CiAgc3RhZ2luZzogd2Z4OiBkb24ndCBwcmludCB1c2VsZXNz
+IGVycm9yIG1lc3NhZ2VzCiAgc3RhZ2luZzogd2Z4OiBhdm9pZCBkb3VibGUgd2FybmluZyB3aGVu
+IG5vIG1vcmUgdHggcG9saWN5IGFyZQogICAgYXZhaWxhYmxlCiAgc3RhZ2luZzogd2Z4OiBpbXBy
+b3ZlIGVycm9yIG1lc3NhZ2Ugb24gdW5leHBlY3RlZCBjb25maXJtYXRpb24KICBzdGFnaW5nOiB3
+Zng6IHRha2UgYWR2YW50YWdlIG9mIElTX0VSUl9PUl9OVUxMKCkKICBzdGFnaW5nOiB3Zng6IHVu
+aWZvcm1pemUgbmFtaW5nIHJ1bGUKICBzdGFnaW5nOiB3Zng6IHVzZSBtZWFuaW5nZnVsIG5hbWVz
+IGZvciBDRkdfQllURV9PUkRFUl8qCiAgc3RhZ2luZzogd2Z4OiByZW1vdmUgdXNlbGVzcyBpbmNs
+dWRlCiAgc3RhZ2luZzogd2Z4OiBzaW1wbGlmeSB2YXJpYWJsZSBhc3NpZ25tZW50CiAgc3RhZ2lu
+Zzogd2Z4OiBtYWtlIGNvbmRpdGlvbnMgZWFzaWVyIHRvIHJlYWQKICBzdGFnaW5nOiB3Zng6IGVu
+c3VyZSB0aGF0IHRyYWNlcyBuZXZlciBtb2RpZnkgYXJndW1lbnRzCiAgc3RhZ2luZzogd2Z4OiBl
+bnN1cmUgdGhhdCByZWNlaXZlZCBoaWYgbWVzc2FnZXMgYXJlIG5ldmVyIG1vZGlmaWVkCiAgc3Rh
+Z2luZzogd2Z4OiBmaXggdHlwbyBpbiAibnVtX29mX3NzaV9kcyIKICBzdGFnaW5nOiB3Zng6IGZp
+eCB0eXBvIGluICJudW1faV9lcyIKICBzdGFnaW5nOiB3Zng6IGZpeCBuYW1lIG9mIHN0cnVjdCBo
+aWZfcmVxX3N0YXJ0X3NjYW5fYWx0CiAgc3RhZ2luZzogd2Z4OiBpbXByb3ZlIEFQSSBvZiBoaWZf
+cmVxX2pvaW4tPmluZnJhc3RydWN0dXJlX2Jzc19tb2RlCiAgc3RhZ2luZzogd2Z4OiBiZXR0ZXIg
+bmFtaW5nIGZvciBoaWZfcmVxX2pvaW4tPnNob3J0X3ByZWFtYmxlCiAgc3RhZ2luZzogd2Z4OiBi
+ZXR0ZXIgbmFtaW5nIGZvcgogICAgaGlmX21pYl9zZXRfYXNzb2NpYXRpb25fbW9kZS0+Z3JlZW5m
+aWVsZAogIHN0YWdpbmc6IHdmeDogc2ltcGxpZnkgaGFuZGxpbmcgb2YgdHhfbG9jayBpbiB3Znhf
+ZG9fam9pbigpCiAgc3RhZ2luZzogd2Z4OiBmaXJtd2FyZSBhbHJlYWR5IGhhbmRsZSBwb3dlcnNh
+dmUgbW9kZSBkdXJpbmcgc2NhbgogIHN0YWdpbmc6IHdmeDogZGVjbGFyZSB3Znhfc2V0X3BtKCkg
+c3RhdGljCiAgc3RhZ2luZzogd2Z4OiBkcm9wIHVzZWxlc3MgYXJndW1lbnQgZnJvbSB3Znhfc2V0
+X3BtKCkKICBzdGFnaW5nOiB3Zng6IHJlbW92ZSByZWR1bmRhbnQgdGVzdCB3aGlsZSBjYWxsaW5n
+IHdmeF91cGRhdGVfcG0oKQogIHN0YWdpbmc6IHdmeDogZHJvcCB1bm5lY2Vzc2FyeSB3dmlmLT5w
+b3dlcnNhdmVfbW9kZQogIHN0YWdpbmc6IHdmeDogZG8gbm90IHRyeSB0byBzYXZlIGNhbGwgdG8g
+aGlmX3NldF9wbSgpCiAgc3RhZ2luZzogd2Z4OiBmaXggcG1fbW9kZSB0aW1lb3V0CiAgc3RhZ2lu
+Zzogd2Z4OiBzaW1wbGlmeSB3ZnhfY29uZl90eCgpCiAgc3RhZ2luZzogd2Z4OiBwcmVmZXIgYSBi
+aXRtYXNrIGluc3RlYWQgb2YgYW4gYXJyYXkgb2YgYm9vbGVhbgogIHN0YWdpbmc6IHdmeDogc2lt
+cGxpZnkgaGlmX3NldF91YXBzZF9pbmZvKCkgdXNhZ2UKICBzdGFnaW5nOiB3Zng6IHNpbXBsaWZ5
+IGhpZl9zZXRfcG0oKSB1c2FnZQogIHN0YWdpbmc6IHdmeDogZHJvcCBzdHJ1Y3Qgd2Z4X2VkY2Ff
+cGFyYW1zCiAgc3RhZ2luZzogd2Z4OiByZW1vdmUgdW5uZWNlc3NhcnkgRURDQSBpbml0aWFsaXNh
+dGlvbgogIHN0YWdpbmc6IHdmeDogc2ltcGxpZnkgaGlmX3NldF9lZGNhX3F1ZXVlX3BhcmFtcygp
+IHVzYWdlCiAgc3RhZ2luZzogd2Z4OiBoaWZfc2NhbigpIG5ldmVyIGZhaWxzCiAgc3RhZ2luZzog
+d2Z4OiBkZXZpY2UgYWxyZWFkeSBoYW5kbGUgc2xlZXAgbW9kZSBkdXJpbmcgc2NhbgogIHN0YWdp
+bmc6IHdmeDogZHJvcCB1c2VsZXNzIHdmeF9zY2FuX2NvbXBsZXRlKCkKICBzdGFnaW5nOiB3Zng6
+IHNpbXBsaWZ5IGhpZl9zY2FuKCkgdXNhZ2UKICBzdGFnaW5nOiB3Zng6IGludHJvZHVjZSB1cGRh
+dGVfcHJvYmVfdG1wbCgpCiAgc3RhZ2luZzogd2Z4OiBzaW1wbGlmeSBoaWZfc2V0X3RlbXBsYXRl
+X2ZyYW1lKCkgdXNhZ2UKICBzdGFnaW5nOiB3Zng6IHJld3JpdGUgd2Z4X2h3X3NjYW4oKQogIHN0
+YWdpbmc6IHdmeDogd29ya2Fyb3VuZCBidWcgd2l0aCAiaXcgc2NhbiIKICBzdGFnaW5nOiB3Zng6
+IGRlbGF5ZWRfdW5qb2luIGNhbm5vdCBoYXBwZW4KICBzdGFnaW5nOiB3Zng6IGRlbGF5ZWRfbGlu
+a19sb3NzIGNhbm5vdCBoYXBwZW4KICBzdGFnaW5nOiB3Zng6IGltcGxlbWVudCBjYW5jZWxfaHdf
+c2NhbigpCiAgc3RhZ2luZzogd2Z4OiB1cGRhdGUgVE9ETwoKIGRyaXZlcnMvc3RhZ2luZy93Zngv
+VE9ETyAgICAgICAgICB8ICA4MSArKysrKy0tCiBkcml2ZXJzL3N0YWdpbmcvd2Z4L2JoLmMgICAg
+ICAgICAgfCAgIDMgKy0KIGRyaXZlcnMvc3RhZ2luZy93ZngvYnVzX3NwaS5jICAgICB8ICAgOSAr
+LQogZHJpdmVycy9zdGFnaW5nL3dmeC9kYXRhX3J4LmMgICAgIHwgICA4ICstCiBkcml2ZXJzL3N0
+YWdpbmcvd2Z4L2RhdGFfcnguaCAgICAgfCAgIDQgKy0KIGRyaXZlcnMvc3RhZ2luZy93ZngvZGF0
+YV90eC5jICAgICB8ICA0MCArKystCiBkcml2ZXJzL3N0YWdpbmcvd2Z4L2RhdGFfdHguaCAgICAg
+fCAgIDcgKy0KIGRyaXZlcnMvc3RhZ2luZy93ZngvZndpby5jICAgICAgICB8ICAyOCArLS0KIGRy
+aXZlcnMvc3RhZ2luZy93ZngvaGlmX2FwaV9jbWQuaCB8ICAzMiArLS0KIGRyaXZlcnMvc3RhZ2lu
+Zy93ZngvaGlmX2FwaV9taWIuaCB8ICAxMyArLQogZHJpdmVycy9zdGFnaW5nL3dmeC9oaWZfcngu
+YyAgICAgIHwgMTAzICsrKysrLS0tLQogZHJpdmVycy9zdGFnaW5nL3dmeC9oaWZfdHguYyAgICAg
+IHwgMTA5ICsrKysrLS0tLQogZHJpdmVycy9zdGFnaW5nL3dmeC9oaWZfdHguaCAgICAgIHwgIDE3
+ICstCiBkcml2ZXJzL3N0YWdpbmcvd2Z4L2hpZl90eF9taWIuaCAgfCAgMjcgKystCiBkcml2ZXJz
+L3N0YWdpbmcvd2Z4L2h3aW8uaCAgICAgICAgfCAgMTUgKy0KIGRyaXZlcnMvc3RhZ2luZy93Zngv
+bWFpbi5jICAgICAgICB8ICAgNSArLQogZHJpdmVycy9zdGFnaW5nL3dmeC9xdWV1ZS5jICAgICAg
+IHwgICA5ICstCiBkcml2ZXJzL3N0YWdpbmcvd2Z4L3NjYW4uYyAgICAgICAgfCAzMjMgKysrKysr
+Ky0tLS0tLS0tLS0tLS0tLS0tLS0tCiBkcml2ZXJzL3N0YWdpbmcvd2Z4L3NjYW4uaCAgICAgICAg
+fCAgMjUgKy0tCiBkcml2ZXJzL3N0YWdpbmcvd2Z4L3NlY3VyZV9saW5rLmggfCAgIDggKy0KIGRy
+aXZlcnMvc3RhZ2luZy93Zngvc3RhLmMgICAgICAgICB8IDM1MyArKysrKysrKy0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0KIGRyaXZlcnMvc3RhZ2luZy93Zngvc3RhLmggICAgICAgICB8ICAgOSArLQog
+ZHJpdmVycy9zdGFnaW5nL3dmeC90cmFjZXMuaCAgICAgIHwgIDE0ICstCiBkcml2ZXJzL3N0YWdp
+bmcvd2Z4L3dmeC5oICAgICAgICAgfCAgMTggKy0KIDI0IGZpbGVzIGNoYW5nZWQsIDUwOSBpbnNl
+cnRpb25zKCspLCA3NTEgZGVsZXRpb25zKC0pCgotLSAKMi4yNC4wCgo=
