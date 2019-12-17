@@ -2,29 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 59DDE122648
-	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 09:06:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C9B4D12263E
+	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 09:05:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727188AbfLQIF3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Dec 2019 03:05:29 -0500
-Received: from mga09.intel.com ([134.134.136.24]:26976 "EHLO mga09.intel.com"
+        id S1727096AbfLQIFG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Dec 2019 03:05:06 -0500
+Received: from mga09.intel.com ([134.134.136.24]:26948 "EHLO mga09.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725946AbfLQIF2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 17 Dec 2019 03:05:28 -0500
+        id S1726401AbfLQIFF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 17 Dec 2019 03:05:05 -0500
 X-Amp-Result: UNKNOWN
 X-Amp-Original-Verdict: FILE UNKNOWN
 X-Amp-File-Uploaded: False
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga102.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 17 Dec 2019 00:05:27 -0800
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga102.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 17 Dec 2019 00:05:04 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.69,324,1571727600"; 
-   d="scan'208";a="247347300"
+   d="scan'208";a="217691035"
 Received: from lkp-server01.sh.intel.com (HELO lkp-server01) ([10.239.97.150])
-  by fmsmga002.fm.intel.com with ESMTP; 17 Dec 2019 00:05:21 -0800
+  by orsmga003.jf.intel.com with ESMTP; 17 Dec 2019 00:04:57 -0800
 Received: from kbuild by lkp-server01 with local (Exim 4.89)
         (envelope-from <lkp@intel.com>)
-        id 1ih7qn-0006kj-6U; Tue, 17 Dec 2019 16:05:01 +0800
-Date:   Tue, 17 Dec 2019 16:03:56 +0800
+        id 1ih7qi-0006Px-ST; Tue, 17 Dec 2019 16:04:56 +0800
+Date:   Tue, 17 Dec 2019 16:03:58 +0800
 From:   kbuild test robot <lkp@intel.com>
 To:     John Hubbard <jhubbard@nvidia.com>
 Cc:     kbuild-all@lists.01.org, Andrew Morton <akpm@linux-foundation.org>,
@@ -58,48 +58,37 @@ Cc:     kbuild-all@lists.01.org, Andrew Morton <akpm@linux-foundation.org>,
         linux-mm@kvack.org, LKML <linux-kernel@vger.kernel.org>,
         John Hubbard <jhubbard@nvidia.com>,
         "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>
-Subject: Re: [PATCH v9 23/25] mm/gup: track FOLL_PIN pages
-Message-ID: <201912171520.rTYbJvYF%lkp@intel.com>
+Subject: [RFC PATCH] mm/gup: try_pin_compound_head() can be static
+Message-ID: <20191217080358.q3k57ta62txvip5h@4978f4969bb8>
 References: <20191211025318.457113-24-jhubbard@nvidia.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 In-Reply-To: <20191211025318.457113-24-jhubbard@nvidia.com>
+X-Patchwork-Hint: ignore
 User-Agent: NeoMutt/20170113 (1.7.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi John,
 
-Thank you for the patch! Perhaps something to improve:
-
-[auto build test WARNING on rdma/for-next]
-[also build test WARNING on linus/master v5.5-rc2 next-20191216]
-[cannot apply to mmotm/master vfio/next]
-[if your patch is applied to the wrong git tree, please drop us a note to help
-improve the system. BTW, we also suggest to use '--base' option to specify the
-base tree in git format-patch, please see https://stackoverflow.com/a/37406982]
-
-url:    https://github.com/0day-ci/linux/commits/John-Hubbard/mm-gup-track-dma-pinned-pages-FOLL_PIN/20191212-013238
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/rdma/rdma.git for-next
-reproduce:
-        # apt-get install sparse
-        # sparse version: v0.6.1-104-gf934193-dirty
-        make ARCH=x86_64 allmodconfig
-        make C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__'
-
-If you fix the issue, kindly add following tag
-Reported-by: kbuild test robot <lkp@intel.com>
-
-
-sparse warnings: (new ones prefixed by >>)
-
->> mm/gup.c:78:26: sparse: sparse: symbol 'try_pin_compound_head' was not declared. Should it be static?
-
-Please review and possibly fold the followup patch.
-
+Fixes: 8086d1c61970 ("mm/gup: track FOLL_PIN pages")
+Signed-off-by: kbuild test robot <lkp@intel.com>
 ---
-0-DAY kernel test infrastructure                 Open Source Technology Center
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org Intel Corporation
+ gup.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/mm/gup.c b/mm/gup.c
+index 038b71165a761..849a6f55938e6 100644
+--- a/mm/gup.c
++++ b/mm/gup.c
+@@ -75,7 +75,7 @@ static inline struct page *try_get_compound_head(struct page *page, int refs)
+  * @Return:	the compound head page, with ref appropriately incremented,
+  * or NULL upon failure.
+  */
+-__must_check struct page *try_pin_compound_head(struct page *page, int refs)
++static __must_check struct page *try_pin_compound_head(struct page *page, int refs)
+ {
+ 	struct page *head = try_get_compound_head(page,
+ 						  GUP_PIN_COUNTING_BIAS * refs);
