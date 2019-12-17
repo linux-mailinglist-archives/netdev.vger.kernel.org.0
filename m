@@ -2,103 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 754E9123AFE
-	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 00:39:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9DCB4123B01
+	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 00:42:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726382AbfLQXj2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Dec 2019 18:39:28 -0500
-Received: from mail-lf1-f67.google.com ([209.85.167.67]:34444 "EHLO
-        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725886AbfLQXj2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 18:39:28 -0500
-Received: by mail-lf1-f67.google.com with SMTP id l18so287214lfc.1
-        for <netdev@vger.kernel.org>; Tue, 17 Dec 2019 15:39:27 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=pfdx4gVnPOyl5tZEyGcgXnZJq2bTo7hynLp5HRZNbP4=;
-        b=nldqNSdJFuKfzJfsJ2Fpb4lmORbAfIn0+rY0VrTX93vksbi3wPUvcIZc778/8vtfO2
-         LHiJE3p3e+8cJd0fGl8qCd7MTbgzCAsX1JKs6I/fVS/7Wqrxp1p4CcMsFtSovEwBnN3N
-         4WF1InkZN+lDvYs0IvasYh/Nl93SEDGDZafuhAE+3ZPcyLsMZw0G9osihVwGo3zIYabK
-         tVPMWeAPbPKKU05qCebwaYuJWQuU8FtJlbaDy/u1Sg34+lXBzR1qGWOWR1d2dLYaBSMZ
-         AngtW2hzF5lo6rERSK+M0X1sQ2tdQSii9k13k49wQ+dD9e2y92URdQIa/6B7EY+xf15v
-         goLg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=pfdx4gVnPOyl5tZEyGcgXnZJq2bTo7hynLp5HRZNbP4=;
-        b=Vtu/j7FSWHaMS6V9Z4HPR/NgonN3yQSY8C8+b2aJQQt6YO4hb5v6Hb2JpzBe3iwJ09
-         jFVlLVLqqifij1XoEbikFshe3csknOgFQEcSSSeYAQDuUY96XV3Ow+VnkEiqb6RvyhYN
-         KQ3VEa4qSIhftTzbBahMNsLFvGN1bwT1QFdy+Jv7Of6tGBQBbsCtjMhn0vl84nhb1Esy
-         AcCDcMkfq0et1GFy7uwuSXb12XKSmTA27+7/hdOAsmb19Gm0RLF9zBtjY5AtbSZgJA/u
-         QpCIJ9c8aoDUwZanrRc66ciDGs19QmyEUoLNSFHuyCJdS9uZsTEB4Snw9RtV+YXcXtEV
-         HHCA==
-X-Gm-Message-State: APjAAAVF+DDi9GUkhVLqRaoUvpiX2Y1bwv+CJLZ0yjLT1CYskf7tLoNX
-        Gyqrk2bmMYNh8lNqnReBnQKoOQ==
-X-Google-Smtp-Source: APXvYqz/nO4z9QfTMfxSYGcQWQAspEflWH0mYRc1p8btjXDi2e6FrdMClvOPzC8LLVuSx+H0qMSbLA==
-X-Received: by 2002:ac2:4c98:: with SMTP id d24mr76741lfl.138.1576625966034;
-        Tue, 17 Dec 2019 15:39:26 -0800 (PST)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id t29sm98069lfg.84.2019.12.17.15.39.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 Dec 2019 15:39:25 -0800 (PST)
-Date:   Tue, 17 Dec 2019 15:39:16 -0800
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     davem@davemloft.net, linux@armlinux.org.uk, andrew@lunn.ch,
-        f.fainelli@gmail.com, vivien.didelot@gmail.com,
-        alexandru.marginean@nxp.com, claudiu.manoil@nxp.com,
-        xiaoliang.yang_1@nxp.com, yangbo.lu@nxp.com,
-        netdev@vger.kernel.org, alexandre.belloni@bootlin.com,
-        horatiu.vultur@microchip.com,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: Re: [RFC PATCH v2 4/8] enetc: Make MDIO accessors more generic and
- export to include/linux/fsl
-Message-ID: <20191217153916.1e8c4f4a@cakuba.netronome.com>
-In-Reply-To: <20191217221831.10923-5-olteanv@gmail.com>
-References: <20191217221831.10923-1-olteanv@gmail.com>
-        <20191217221831.10923-5-olteanv@gmail.com>
-Organization: Netronome Systems, Ltd.
+        id S1726383AbfLQXme (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Dec 2019 18:42:34 -0500
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:41582 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726143AbfLQXme (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 18:42:34 -0500
+Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xBHNUPQh014706
+        for <netdev@vger.kernel.org>; Tue, 17 Dec 2019 15:42:33 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-type; s=facebook;
+ bh=4cgWGlB9/h19dutJ9eZqwoN3DG9e6wfF4VOhWGjp2h4=;
+ b=LWDMT7J9ei586goWvGIY5wGIvjSMMx0iMTgsDCA7LSTksImQJPabH4V5JFExagRw+rzT
+ hlqEbh7Oan+AL6SN5Ijx8TXW0zx8L61EnzEbLsAWxOkFYklAg/Ug0F5/JUkwgipm4+jP
+ 445f6/s0mrx7W951ZWMS1Eb5iOKNj9/b1yo= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 2wxg74pjny-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Tue, 17 Dec 2019 15:42:33 -0800
+Received: from intmgw004.05.ash5.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:82::c) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Tue, 17 Dec 2019 15:42:31 -0800
+Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
+        id 892B92EC1A54; Tue, 17 Dec 2019 15:42:30 -0800 (PST)
+Smtp-Origin-Hostprefix: devbig
+From:   Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>
+CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Cluster: ftw2c04
+Subject: [PATCH bpf-next] libbpf: reduce log level for custom section names
+Date:   Tue, 17 Dec 2019 15:42:28 -0800
+Message-ID: <20191217234228.1739308-1-andriin@fb.com>
+X-Mailer: git-send-email 2.17.1
+X-FB-Internal: Safe
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
+ definitions=2019-12-17_05:2019-12-17,2019-12-17 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 malwarescore=0
+ suspectscore=25 bulkscore=0 mlxscore=0 phishscore=0 priorityscore=1501
+ spamscore=0 impostorscore=0 clxscore=1015 lowpriorityscore=0 adultscore=0
+ mlxlogscore=837 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-1910280000 definitions=main-1912170188
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 18 Dec 2019 00:18:27 +0200, Vladimir Oltean wrote:
-> From: Claudiu Manoil <claudiu.manoil@nxp.com>
-> 
-> Within the LS1028A SoC, the register map for the ENETC MDIO controller
-> is instantiated a few times: for the central (external) MDIO controller,
-> for the internal bus of each standalone ENETC port, and for the internal
-> bus of the Felix switch.
-> 
-> Refactoring is needed to support multiple MDIO buses from multiple
-> drivers. The enetc_hw structure is made an opaque type and a smaller
-> enetc_mdio_priv is created.
-> 
-> 'mdio_base' - MDIO registers base address - is being parameterized, to
-> be able to work with different MDIO register bases.
+Libbpf is trying to recognize BPF program type based on its section name
+during bpf_object__open() phase. This is not strictly enforced and user code
+has ability to specify/override correct BPF program type after open.  But if
+BPF program is using custom section name, libbpf will still emit warnings,
+which can be quite annoying to users. This patch reduces log level of
+information messages emitted by libbpf if section name is not canonical. User
+can still get a list of all supported section names as debug-level message.
 
-I'm getting these on a W=1 C=1 allmodconfig build:
+Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+---
+ tools/lib/bpf/libbpf.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-WARNING: drivers/net/ethernet/freescale/enetc/fsl-enetc-mdio: 'enetc_mdio_write' exported twice. Previous export was in drivers/net/ethernet/freescale/enetc/fsl-enetc.ko
-WARNING: drivers/net/ethernet/freescale/enetc/fsl-enetc-mdio: 'enetc_mdio_read' exported twice. Previous export was in drivers/net/ethernet/freescale/enetc/fsl-enetc.ko
-WARNING: drivers/net/ethernet/freescale/enetc/fsl-enetc-mdio: 'enetc_hw_alloc' exported twice. Previous export was in drivers/net/ethernet/freescale/enetc/fsl-enetc.ko
+diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+index 3fe42d6b0c2f..906bbbf7b2e4 100644
+--- a/tools/lib/bpf/libbpf.c
++++ b/tools/lib/bpf/libbpf.c
+@@ -5883,7 +5883,7 @@ int libbpf_prog_type_by_name(const char *name, enum bpf_prog_type *prog_type,
+ 		return 0;
+ 	}
+ 
+-	pr_warn("failed to guess program type from ELF section '%s'\n", name);
++	pr_debug("failed to guess program type from ELF section '%s'\n", name);
+ 	type_names = libbpf_get_type_names(false);
+ 	if (type_names != NULL) {
+ 		pr_debug("supported section(type) names are:%s\n", type_names);
+@@ -6001,10 +6001,10 @@ int libbpf_attach_type_by_name(const char *name,
+ 		*attach_type = section_defs[i].attach_type;
+ 		return 0;
+ 	}
+-	pr_warn("failed to guess attach type based on ELF section name '%s'\n", name);
++	pr_debug("failed to guess attach type based on ELF section name '%s'\n", name);
+ 	type_names = libbpf_get_type_names(true);
+ 	if (type_names != NULL) {
+-		pr_info("attachable section(type) names are:%s\n", type_names);
++		pr_debug("attachable section(type) names are:%s\n", type_names);
+ 		free(type_names);
+ 	}
+ 
+-- 
+2.17.1
 
-> -#define enetc_mdio_rd(hw, off) \
-> -	enetc_port_rd(hw, ENETC_##off + ENETC_MDIO_REG_OFFSET)
-> -#define enetc_mdio_wr(hw, off, val) \
-> -	enetc_port_wr(hw, ENETC_##off + ENETC_MDIO_REG_OFFSET, val)
-> -#define enetc_mdio_rd_reg(off)	enetc_mdio_rd(hw, off)
-> +static inline u32 _enetc_mdio_rd(struct enetc_mdio_priv *mdio_priv, int off)
-> +{
-> +	return enetc_port_rd(mdio_priv->hw, mdio_priv->mdio_base + off);
-> +}
-
-Please no static inline in source files. Compiler will know to inline
-this.
