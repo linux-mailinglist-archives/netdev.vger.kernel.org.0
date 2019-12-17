@@ -2,159 +2,381 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 30019122816
-	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 10:58:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BED8912281D
+	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 11:00:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727161AbfLQJ6G (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Dec 2019 04:58:06 -0500
-Received: from fllv0016.ext.ti.com ([198.47.19.142]:42508 "EHLO
-        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725870AbfLQJ6F (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 04:58:05 -0500
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id xBH9vrgG002303;
-        Tue, 17 Dec 2019 03:57:53 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1576576673;
-        bh=kte7BVuYVqY32RjMAWvDS4mgoVABOxfQA3f+71NU83s=;
-        h=Subject:From:To:CC:References:Date:In-Reply-To;
-        b=OGsiv4nDN8AQcCdF0Vxp5mNaBT0spklX0Dp0ZJNBZcZy+IplPBUf+lGnTz9jrbaP1
-         Nhno2exXdboT4l7PZnUu5gg6ZqluvmoMXRwfSzbUnwVLaKJD1xQUURlIIJL4AMZemv
-         dRjEA6wPS2zFB8ewJCHA+WS9hcVcOiTjMNfJwk7o=
-Received: from DFLE103.ent.ti.com (dfle103.ent.ti.com [10.64.6.24])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id xBH9vrNX015072
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 17 Dec 2019 03:57:53 -0600
-Received: from DFLE114.ent.ti.com (10.64.6.35) by DFLE103.ent.ti.com
- (10.64.6.24) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3; Tue, 17
- Dec 2019 03:57:53 -0600
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE114.ent.ti.com
- (10.64.6.35) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3 via
- Frontend Transport; Tue, 17 Dec 2019 03:57:53 -0600
-Received: from [10.250.100.73] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id xBH9vpN1058862;
-        Tue, 17 Dec 2019 03:57:51 -0600
-Subject: Re: [PATCH] dt-bindings: net: mdio: use non vendor specific
- compatible string in example
-From:   Grygorii Strashko <grygorii.strashko@ti.com>
-To:     Rob Herring <robh+dt@kernel.org>
-CC:     "David S. Miller" <davem@davemloft.net>,
-        Andrew Lunn <andrew@lunn.ch>,
+        id S1727344AbfLQKAb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Dec 2019 05:00:31 -0500
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:53962 "EHLO
+        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726700AbfLQKAa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 05:00:30 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=HXRBJPJTNAD25xDwFkoiiYxthmx1p2vZ/XIAdrrAPNo=; b=AH7kX/Nark6A/qqYijTLIAiLS
+        FGJjoWYKZhoon2hF9hW80bPPlhTL55ChD7PTZUXF4kXlCr2I9bYvlvB6sv9IlkvossMs1CWZH1dpf
+        vB+p9R/Rb0BlzMDTpM+uGAiweqIe3Ggtlq0o0So89LrFZnolW4O2ravGBIiYj6FExc79hINV/jt0K
+        XRoVjLVpxbb3TdPHnihzntNhMAehm5dRUvAESXUH31O1X5O2zgNtQLGjvn9A6rnlXF1KnIRciUjO4
+        ah0UQVeftQw37IP/gTEw7HUKreU1IZ/XmiPEHE9gkBxpj4/WgrCoDRJG87AIJDr62bWlHG7+dsr4Y
+        7znNL6gsw==;
+Received: from shell.armlinux.org.uk ([2002:4e20:1eda:1:5054:ff:fe00:4ec]:50020)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1ih9eD-0005DW-Tj; Tue, 17 Dec 2019 10:00:10 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1ih9e9-0003J0-Dy; Tue, 17 Dec 2019 10:00:05 +0000
+Date:   Tue, 17 Dec 2019 10:00:05 +0000
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     Andrew Lunn <andrew@lunn.ch>, Chris Snook <chris.snook@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
+        James Hogan <jhogan@kernel.org>,
+        Jay Cliburn <jcliburn@gmail.com>,
         Mark Rutland <mark.rutland@arm.com>,
-        <devicetree@vger.kernel.org>,
-        Simon Horman <simon.horman@netronome.com>,
-        netdev <netdev@vger.kernel.org>
-References: <20191127153928.22408-1-grygorii.strashko@ti.com>
- <CAL_Jsq+viKkF4FFgpMhTjKCMLeGOX1o9Uq-StU6xwFuTcpCL2Q@mail.gmail.com>
- <eb3cb685-5ddc-8e06-1e26-0f6bc43b294c@ti.com>
- <CAL_JsqKZ5qexJMSm5MZYQp5LutyHHHObbfA3r2_XQa7E6kjqpg@mail.gmail.com>
- <72fc7152-abb8-e0b4-0e0f-c8afe649a2c7@ti.com>
-Message-ID: <41f9a362-0eb2-dca9-5975-62a6497ca826@ti.com>
-Date:   Tue, 17 Dec 2019 11:57:54 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        Paul Burton <paul.burton@mips.com>,
+        Ralf Baechle <ralf@linux-mips.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-mips@vger.kernel.org
+Subject: Re: [PATCH v6 1/5] net: ag71xx: port to phylink
+Message-ID: <20191217100005.GO25745@shell.armlinux.org.uk>
+References: <20191217072325.4177-1-o.rempel@pengutronix.de>
+ <20191217072325.4177-2-o.rempel@pengutronix.de>
 MIME-Version: 1.0
-In-Reply-To: <72fc7152-abb8-e0b4-0e0f-c8afe649a2c7@ti.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191217072325.4177-2-o.rempel@pengutronix.de>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Rob,
+On Tue, Dec 17, 2019 at 08:23:21AM +0100, Oleksij Rempel wrote:
+> The port to phylink was done as close as possible to initial
+> functionality.
+> Theoretically this HW can support flow control, practically seems to be not
+> enough to just enable it. So, more work should be done.
+> 
+> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+> ---
+>  drivers/net/ethernet/atheros/Kconfig  |   2 +-
+>  drivers/net/ethernet/atheros/ag71xx.c | 147 ++++++++++++++++----------
+>  2 files changed, 90 insertions(+), 59 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/atheros/Kconfig b/drivers/net/ethernet/atheros/Kconfig
+> index 0058051ba925..2720bde5034e 100644
+> --- a/drivers/net/ethernet/atheros/Kconfig
+> +++ b/drivers/net/ethernet/atheros/Kconfig
+> @@ -20,7 +20,7 @@ if NET_VENDOR_ATHEROS
+>  config AG71XX
+>  	tristate "Atheros AR7XXX/AR9XXX built-in ethernet mac support"
+>  	depends on ATH79
+> -	select PHYLIB
+> +	select PHYLINK
+>  	help
+>  	  If you wish to compile a kernel for AR7XXX/91XXX and enable
+>  	  ethernet support, then you should always answer Y to this.
+> diff --git a/drivers/net/ethernet/atheros/ag71xx.c b/drivers/net/ethernet/atheros/ag71xx.c
+> index ad8b0e3fcd2c..37a62283719e 100644
+> --- a/drivers/net/ethernet/atheros/ag71xx.c
+> +++ b/drivers/net/ethernet/atheros/ag71xx.c
+> @@ -32,6 +32,7 @@
+>  #include <linux/of_mdio.h>
+>  #include <linux/of_net.h>
+>  #include <linux/of_platform.h>
+> +#include <linux/phylink.h>
+>  #include <linux/regmap.h>
+>  #include <linux/reset.h>
+>  #include <linux/clk.h>
+> @@ -315,6 +316,9 @@ struct ag71xx {
+>  
+>  	int phy_if_mode;
+>  
+> +	struct phylink *phylink;
+> +	struct phylink_config phylink_config;
+> +
+>  	struct delayed_work restart_work;
+>  	struct timer_list oom_timer;
+>  
+> @@ -845,24 +849,23 @@ static void ag71xx_hw_start(struct ag71xx *ag)
+>  	netif_wake_queue(ag->ndev);
+>  }
+>  
+> -static void ag71xx_link_adjust(struct ag71xx *ag, bool update)
+> +static void ag71xx_mac_config(struct phylink_config *config, unsigned int mode,
+> +			      const struct phylink_link_state *state)
+>  {
+> -	struct phy_device *phydev = ag->ndev->phydev;
+> +	struct ag71xx *ag = netdev_priv(to_net_dev(config->dev));
+>  	u32 cfg2;
+>  	u32 ifctl;
+>  	u32 fifo5;
+>  
+> -	if (!phydev->link && update) {
+> -		ag71xx_hw_stop(ag);
+> +	if (phylink_autoneg_inband(mode))
+>  		return;
+> -	}
+>  
+>  	if (!ag71xx_is(ag, AR7100) && !ag71xx_is(ag, AR9130))
+>  		ag71xx_fast_reset(ag);
+>  
+>  	cfg2 = ag71xx_rr(ag, AG71XX_REG_MAC_CFG2);
+>  	cfg2 &= ~(MAC_CFG2_IF_1000 | MAC_CFG2_IF_10_100 | MAC_CFG2_FDX);
+> -	cfg2 |= (phydev->duplex) ? MAC_CFG2_FDX : 0;
+> +	cfg2 |= (state->duplex) ? MAC_CFG2_FDX : 0;
+>  
+>  	ifctl = ag71xx_rr(ag, AG71XX_REG_MAC_IFCTL);
+>  	ifctl &= ~(MAC_IFCTL_SPEED);
+> @@ -870,7 +873,7 @@ static void ag71xx_link_adjust(struct ag71xx *ag, bool update)
+>  	fifo5 = ag71xx_rr(ag, AG71XX_REG_FIFO_CFG5);
+>  	fifo5 &= ~FIFO_CFG5_BM;
+>  
+> -	switch (phydev->speed) {
+> +	switch (state->speed) {
+>  	case SPEED_1000:
+>  		cfg2 |= MAC_CFG2_IF_1000;
+>  		fifo5 |= FIFO_CFG5_BM;
+> @@ -883,7 +886,6 @@ static void ag71xx_link_adjust(struct ag71xx *ag, bool update)
+>  		cfg2 |= MAC_CFG2_IF_10_100;
+>  		break;
+>  	default:
+> -		WARN(1, "not supported speed %i\n", phydev->speed);
+>  		return;
+>  	}
+>  
+> @@ -897,58 +899,79 @@ static void ag71xx_link_adjust(struct ag71xx *ag, bool update)
+>  	ag71xx_wr(ag, AG71XX_REG_MAC_CFG2, cfg2);
+>  	ag71xx_wr(ag, AG71XX_REG_FIFO_CFG5, fifo5);
+>  	ag71xx_wr(ag, AG71XX_REG_MAC_IFCTL, ifctl);
+> -
+> -	ag71xx_hw_start(ag);
+> -
+> -	if (update)
+> -		phy_print_status(phydev);
+>  }
+>  
+> -static void ag71xx_phy_link_adjust(struct net_device *ndev)
+> +static void ag71xx_mac_validate(struct phylink_config *config,
+> +			    unsigned long *supported,
+> +			    struct phylink_link_state *state)
+>  {
+> -	struct ag71xx *ag = netdev_priv(ndev);
+> +	__ETHTOOL_DECLARE_LINK_MODE_MASK(mask) = { 0, };
+> +
+> +	if (state->interface != PHY_INTERFACE_MODE_NA &&
+> +	    state->interface != PHY_INTERFACE_MODE_GMII &&
+> +	    state->interface != PHY_INTERFACE_MODE_MII) {
+> +		bitmap_zero(supported, __ETHTOOL_LINK_MODE_MASK_NBITS);
+> +		return;
+> +	}
+> +
+> +	phylink_set(mask, MII);
+> +
+> +	/* flow control is not supported */
 
-On 06/12/2019 17:44, Grygorii Strashko wrote:
-> 
-> 
-> On 06/12/2019 17:09, Rob Herring wrote:
->> On Fri, Dec 6, 2019 at 5:14 AM Grygorii Strashko
->> <grygorii.strashko@ti.com> wrote:
->>>
->>>
->>>
->>> On 05/12/2019 19:59, Rob Herring wrote:
->>>> On Wed, Nov 27, 2019 at 9:39 AM Grygorii Strashko
->>>> <grygorii.strashko@ti.com> wrote:
->>>>>
->>>>> Use non vendor specific compatible string in example, otherwise DT YAML
->>>>> schemas validation may trigger warnings specific to TI ti,davinci_mdio
->>>>> and not to the generic MDIO example.
->>>>>
->>>>> Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
->>>>> ---
->>>>>    Documentation/devicetree/bindings/net/mdio.yaml | 2 +-
->>>>>    1 file changed, 1 insertion(+), 1 deletion(-)
->>>>>
->>>>> diff --git a/Documentation/devicetree/bindings/net/mdio.yaml b/Documentation/devicetree/bindings/net/mdio.yaml
->>>>> index 5d08d2ffd4eb..524f062c6973 100644
->>>>> --- a/Documentation/devicetree/bindings/net/mdio.yaml
->>>>> +++ b/Documentation/devicetree/bindings/net/mdio.yaml
->>>>> @@ -56,7 +56,7 @@ patternProperties:
->>>>>    examples:
->>>>>      - |
->>>>>        davinci_mdio: mdio@5c030000 {
->>>>> -        compatible = "ti,davinci_mdio";
->>>>> +        compatible = "vendor,mdio";
->>>>
->>>> The problem with this is eventually 'vendor,mdio' will get flagged as
->>>> an undocumented compatible. We're a ways off from being able to enable
->>>> that until we have a majority of bindings converted. Though maybe
->>>> examples can be enabled sooner rather than later.
->>>>
->>>
->>> May be some generic compatible string be used for all examples,
->>> like: "vendor,example-ip". What do you think?
->>
->> I'm still not clear what problem you are trying to solve. 'may trigger
->> warnings' doesn't sound like an actual problem.
-> 
-> oh. sry.
-> it's like this
->   - mdio.yaml describes generic MDIO properties, but uses compatible = "ti,davinci_mdio";
->   - davinci_mdio (or other IPs) has some custom properties.
->     Some of them can be marked as required - for example bus_freq.
->     And in the feature i need to add clocks.
-> 
->    Now "bus_freq" is required for davinci_mdio, but not required for generic mdio example.
->    As result, by default, following warning will be produced:
-> /home/grygorii/kernel.org/linux-master/linux/Documentation/devicetree/bindings/net/mdio.example.dt.yaml: mdio@5c030000: 'bus_freq' is a required property
-> 
->   to w/a above I've added for davinci_mdio:
-> if:
->    properties:
->      compatible:
->        contains:
->          const: ti,davinci_mdio
->    required:
->      - bus_freq
->   (by the way above is incorrect and if i add "then:" it will still produce warning :), but
->    it is different story)
-> 
->   Next if I add "clocks" as required for davinci_mdio I'll get warning again and
->   will need to hack ti,davinci-mdio.yaml or update example in mdio.yaml.
-> 
->   So, I'm the position of lucky persons who is working on some HW module which bindings
->   where occasionally selected as generic example. :)
-> 
-> FYI, below is example from power-domain.yaml:
-> 
->      parent3: power-controller@12340000 {
->          compatible = "foo,power-controller";
->          reg = <0x12340000 0x1000>;
->          #power-domain-cells = <0>;
->          domain-idle-states = <&DOMAIN_RET>, <&DOMAIN_PWR_DN>;
->      };
-> 
+You should also set set the autoneg bit.
 
-May be it would be acceptable to just drop "compatible" property from generic MDIO example?
+> +
+> +	phylink_set(mask, 10baseT_Half);
+> +	phylink_set(mask, 10baseT_Full);
+> +	phylink_set(mask, 100baseT_Half);
+> +	phylink_set(mask, 100baseT_Full);
+>  
+> -	ag71xx_link_adjust(ag, true);
+> +	if (state->interface == PHY_INTERFACE_MODE_NA ||
+> +	    state->interface == PHY_INTERFACE_MODE_GMII) {
+> +		phylink_set(mask, 1000baseT_Full);
+> +		phylink_set(mask, 1000baseX_Full);
+> +	}
+> +
+> +	bitmap_and(supported, supported, mask,
+> +		   __ETHTOOL_LINK_MODE_MASK_NBITS);
+> +	bitmap_and(state->advertising, state->advertising, mask,
+> +		   __ETHTOOL_LINK_MODE_MASK_NBITS);
+>  }
+>  
+> -static int ag71xx_phy_connect(struct ag71xx *ag)
+> +static void ag71xx_mac_link_down(struct phylink_config *config,
+> +				 unsigned int mode, phy_interface_t interface)
+>  {
+> -	struct device_node *np = ag->pdev->dev.of_node;
+> -	struct net_device *ndev = ag->ndev;
+> -	struct device_node *phy_node;
+> -	struct phy_device *phydev;
+> -	int ret;
+> +	struct ag71xx *ag = netdev_priv(to_net_dev(config->dev));
+>  
+> -	if (of_phy_is_fixed_link(np)) {
+> -		ret = of_phy_register_fixed_link(np);
+> -		if (ret < 0) {
+> -			netif_err(ag, probe, ndev, "Failed to register fixed PHY link: %d\n",
+> -				  ret);
+> -			return ret;
+> -		}
+> +	ag71xx_hw_stop(ag);
+> +}
+>  
+> -		phy_node = of_node_get(np);
+> -	} else {
+> -		phy_node = of_parse_phandle(np, "phy-handle", 0);
+> -	}
+> +static void ag71xx_mac_link_up(struct phylink_config *config, unsigned int mode,
+> +			       phy_interface_t interface,
+> +			       struct phy_device *phy)
+> +{
+> +	struct ag71xx *ag = netdev_priv(to_net_dev(config->dev));
+>  
+> -	if (!phy_node) {
+> -		netif_err(ag, probe, ndev, "Could not find valid phy node\n");
+> -		return -ENODEV;
+> -	}
+> +	ag71xx_hw_start(ag);
+> +}
+>  
+> -	phydev = of_phy_connect(ag->ndev, phy_node, ag71xx_phy_link_adjust,
+> -				0, ag->phy_if_mode);
+> +static const struct phylink_mac_ops ag71xx_phylink_mac_ops = {
+> +	.validate = ag71xx_mac_validate,
+> +	.mac_config = ag71xx_mac_config,
+> +	.mac_link_down = ag71xx_mac_link_down,
+> +	.mac_link_up = ag71xx_mac_link_up,
+
+Please provide implementations for the mac_pcs_get_state and
+mac_an_restart methods; these are not optional, and if phylink
+decides it wants to call them, without anything here the kernel
+will oops.  If you don't have anything to do for mac_pcs_get_state,
+please set state->link to false.
+
+> +};
+>  
+> -	of_node_put(phy_node);
+> +static int ag71xx_phy_setup(struct ag71xx *ag)
+> +{
+> +	struct phylink *phylink;
+>  
+> -	if (!phydev) {
+> -		netif_err(ag, probe, ndev, "Could not connect to PHY device\n");
+> -		return -ENODEV;
+> -	}
+> +	ag->phylink_config.dev = &ag->ndev->dev;
+> +	ag->phylink_config.type = PHYLINK_NETDEV;
+>  
+> -	phy_attached_info(phydev);
+> +	phylink = phylink_create(&ag->phylink_config, ag->pdev->dev.fwnode,
+> +				 ag->phy_if_mode, &ag71xx_phylink_mac_ops);
+> +	if (IS_ERR(phylink))
+> +		return PTR_ERR(phylink);
+>  
+> +	ag->phylink = phylink;
+>  	return 0;
+>  }
+>  
+> @@ -1239,6 +1262,13 @@ static int ag71xx_open(struct net_device *ndev)
+>  	unsigned int max_frame_len;
+>  	int ret;
+>  
+> +	ret = phylink_of_phy_connect(ag->phylink, ag->pdev->dev.of_node, 0);
+> +	if (ret) {
+> +		netif_err(ag, link, ndev, "phylink_of_phy_connect filed with err: %i\n",
+> +			  ret);
+> +		goto err;
+> +	}
+> +
+>  	max_frame_len = ag71xx_max_frame_len(ndev->mtu);
+>  	ag->rx_buf_size =
+>  		SKB_DATA_ALIGN(max_frame_len + NET_SKB_PAD + NET_IP_ALIGN);
+> @@ -1251,11 +1281,7 @@ static int ag71xx_open(struct net_device *ndev)
+>  	if (ret)
+>  		goto err;
+>  
+> -	ret = ag71xx_phy_connect(ag);
+> -	if (ret)
+> -		goto err;
+> -
+> -	phy_start(ndev->phydev);
+> +	phylink_start(ag->phylink);
+>  
+>  	return 0;
+>  
+> @@ -1268,8 +1294,7 @@ static int ag71xx_stop(struct net_device *ndev)
+>  {
+>  	struct ag71xx *ag = netdev_priv(ndev);
+>  
+> -	phy_stop(ndev->phydev);
+> -	phy_disconnect(ndev->phydev);
+> +	phylink_stop(ag->phylink);
+
+You connect to the phy in _open() but don't disconnect it in _stop().
+
+>  	ag71xx_hw_disable(ag);
+>  
+>  	return 0;
+> @@ -1396,10 +1421,9 @@ static netdev_tx_t ag71xx_hard_start_xmit(struct sk_buff *skb,
+>  
+>  static int ag71xx_do_ioctl(struct net_device *ndev, struct ifreq *ifr, int cmd)
+>  {
+> -	if (!ndev->phydev)
+> -		return -EINVAL;
+> +	struct ag71xx *ag = netdev_priv(ndev);
+>  
+> -	return phy_mii_ioctl(ndev->phydev, ifr, cmd);
+> +	return phylink_mii_ioctl(ag->phylink, ifr, cmd);
+>  }
+>  
+>  static void ag71xx_oom_timer_handler(struct timer_list *t)
+> @@ -1422,13 +1446,14 @@ static void ag71xx_restart_work_func(struct work_struct *work)
+>  {
+>  	struct ag71xx *ag = container_of(work, struct ag71xx,
+>  					 restart_work.work);
+> -	struct net_device *ndev = ag->ndev;
+>  
+>  	rtnl_lock();
+>  	ag71xx_hw_disable(ag);
+>  	ag71xx_hw_enable(ag);
+> -	if (ndev->phydev->link)
+> -		ag71xx_link_adjust(ag, false);
+> +
+> +	phylink_stop(ag->phylink);
+> +	phylink_start(ag->phylink);
+> +
+>  	rtnl_unlock();
+>  }
+>  
+> @@ -1768,6 +1793,12 @@ static int ag71xx_probe(struct platform_device *pdev)
+>  
+>  	platform_set_drvdata(pdev, ndev);
+>  
+> +	err = ag71xx_phy_setup(ag);
+
+I think this function would be better called ag71xx_phylink_setup() as
+it doesn't seem to be setting up the phy at all (which happens in
+_open()).
+
+> +	if (err) {
+> +		netif_err(ag, probe, ndev, "failed to setup phy (%d)\n", err);
+> +		goto err_mdio_remove;
+> +	}
+> +
+>  	err = register_netdev(ndev);
+>  	if (err) {
+>  		netif_err(ag, probe, ndev, "unable to register net device\n");
+> -- 
+> 2.24.0
+> 
+> 
 
 -- 
-Best regards,
-grygorii
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
+According to speedtest.net: 11.9Mbps down 500kbps up
