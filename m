@@ -2,148 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CE9B7123233
-	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 17:21:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F381123261
+	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 17:26:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729467AbfLQQUy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Dec 2019 11:20:54 -0500
-Received: from mail-eopbgr150048.outbound.protection.outlook.com ([40.107.15.48]:52522
-        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728527AbfLQQUw (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 17 Dec 2019 11:20:52 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=DnmwTkkPdMXq4qmuns+z0QRn0EimT/siyQIzO0EgMwWCTo/0sFySx/H/kYDTOY+ynqVNCzwVY76/jKwqv2z17VCR3Iz9HAFKg2pG+NO+j2b9FA6n6C2vwzrKeoGDrM+U6lIzKZ/a++qn/N/wqDgGdSqtDNM60mniJtC+YSMWy0zALHfbtr/fJEEZWFjmjhsQ/J1JDVMX2DLQVIt7rC/c6AR0R+vVKrF6eeyWredhAdvkNkBEL5Pd6OD0o5ZBhixaWY0gu0wbMBtiUs29lMpDIbWWNWIyhEcE5Gf/WEBljm2SvNOXmT1QVbFtKuhyJyKlA3mWG9aCAosB8U5k/kA+bg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=oxCkWBSS9ERmXz2+SQhzVIbnCx811MoNC5e/TdqjHYU=;
- b=HoQGZnlwGBrD3B6tgYShTCj7Nqzm7KHdlAEiqSxe35hc6UfQLAWRgWAMAI0sNIe9Z1b0uL4XL+2+zNOMhHZ4/DVFXDD1dorvdetC3vu9x6lNvlLL0C/STx/con31UqT7bHQIB8D4aQG/tFeKuCmpKyz5NtV+0qlnseZ+ODv1bwmmce2KdwUIPRhqbDYnEVzmmxOseBMna7yl5z/m0jIdx+IVyIxX3whe/i7JVw8bVcoBE2u9gyUeWzJaDDLQm8dysIXKEa15Fj1UPHbFibRF75OmH+2ND8R/HHueSVhR/cEuv8kMAn+hgZfOtvU7ftCyrqfIs0F8+4YznevJrygFWQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=oxCkWBSS9ERmXz2+SQhzVIbnCx811MoNC5e/TdqjHYU=;
- b=CqesdECiQq1iFwCUiV4L3r5rFNlmFh4FR+77UzUoiQNPUZ8wbnZQb0YlTJX5eqb9cIzcvBObfc8kwkVNYrontTZMPLlkJIvhkC5GzRevtwmWsgOvLWaRUKrwJkTaKCvpKmA+5jp0cCt7mPjDF+p0CtlaaZwTbbLpXSU/CoOB9yE=
-Received: from AM0PR05MB5875.eurprd05.prod.outlook.com (20.178.119.159) by
- AM0PR05MB4259.eurprd05.prod.outlook.com (52.134.126.24) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2538.18; Tue, 17 Dec 2019 16:20:47 +0000
-Received: from AM0PR05MB5875.eurprd05.prod.outlook.com
- ([fe80::259f:70b4:dab1:8f2]) by AM0PR05MB5875.eurprd05.prod.outlook.com
- ([fe80::259f:70b4:dab1:8f2%5]) with mapi id 15.20.2538.019; Tue, 17 Dec 2019
- 16:20:47 +0000
-From:   Maxim Mikityanskiy <maximmi@mellanox.com>
-To:     =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-CC:     "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Maxim Mikityanskiy <maximmi@mellanox.com>
-Subject: [PATCH bpf v2 4/4] net/ixgbe: Fix concurrency issues between config
- flow and XSK
-Thread-Topic: [PATCH bpf v2 4/4] net/ixgbe: Fix concurrency issues between
- config flow and XSK
-Thread-Index: AQHVtPXw51X2BxHsYEiQil4hifDEQw==
-Date:   Tue, 17 Dec 2019 16:20:47 +0000
-Message-ID: <20191217162023.16011-5-maximmi@mellanox.com>
-References: <20191217162023.16011-1-maximmi@mellanox.com>
-In-Reply-To: <20191217162023.16011-1-maximmi@mellanox.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: AM0PR02CA0106.eurprd02.prod.outlook.com
- (2603:10a6:208:154::47) To AM0PR05MB5875.eurprd05.prod.outlook.com
- (2603:10a6:208:12d::31)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=maximmi@mellanox.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-mailer: git-send-email 2.20.1
-x-originating-ip: [94.188.199.18]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: a25a66de-3e86-41fd-5169-08d7830d12c6
-x-ms-traffictypediagnostic: AM0PR05MB4259:|AM0PR05MB4259:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <AM0PR05MB425972E7B55E66F300A11388D1500@AM0PR05MB4259.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:2331;
-x-forefront-prvs: 02543CD7CD
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(376002)(136003)(366004)(346002)(396003)(39860400002)(199004)(189003)(54906003)(26005)(66556008)(6506007)(110136005)(66476007)(2906002)(7416002)(64756008)(186003)(5660300002)(66446008)(36756003)(52116002)(1076003)(8676002)(81166006)(71200400001)(86362001)(81156014)(6486002)(107886003)(2616005)(478600001)(316002)(66946007)(6512007)(66574012)(8936002)(4326008);DIR:OUT;SFP:1101;SCL:1;SRVR:AM0PR05MB4259;H:AM0PR05MB5875.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: keh7RuEFwRVuXpmogXbkiob6E7axQFPPr0YQ1tpkTmKChD3Cr5+2VLAK8JH4XzyTXQGDlAKPV9InPQ33wddy/0Xo9e64feQ/WWg8pGYVzW+84YWQkUCd2wuDP537YWvLfD0rYWJklTgM5WtZisOdBcmXgrpSUKH/mjvEFOp+LQSlUt9/CzGEqlCjqPUcA1yjGXUAhL21Hrmk+SYQS9qsg0h6ao2FkveTbvqvIWL4FHjalP00TsfdxnIZJv6krUCtNTo6jYHo20acbHIYuzQRkFWDHPBto60OIc4k8Gft83OkV+UK9k8QLKbhUm2NoDZVym4m2Q9AGFZ6MxqR80RS443ZfjJfkckbVyz+pJ6S4v2CnF6A6c9P59sAHBR8ltJVyiaVW9d5n9Q2/jOIL1DdrdJZ0Ig84oGW1CqNgwmJF6EFBrzRZG3CloO1Aa45R9+4
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <B44FA52414F4E04C8B6638B0D7453DE2@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S1728727AbfLQQ0U (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Dec 2019 11:26:20 -0500
+Received: from sonic307-2.consmr.mail.bf2.yahoo.com ([74.6.134.41]:33194 "EHLO
+        sonic307-2.consmr.mail.bf2.yahoo.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728534AbfLQQ0U (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 11:26:20 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1576599978; bh=rLzamwWDU6w+ljUNz15IdfH92SpsSZVAbr+GO8Whobg=; h=Date:From:Reply-To:Subject:References:From:Subject; b=sBW1X6V7IlrDL7aUOhWWKCRDXVKtgW4Ti4gzBVEhdAiif9C7kaXS7X0fDfr1EqRFg/sPtrji9iEI/7ChrzwSAK1EsAQAmYLdblaQZm/4ElhBK8tJiAzg2NlKw+bdNrvWePb6kIjgPlpdrMkO03iVNBgdQAIp+3wn+YhZ71qR77hqLFVQ0h/hxxlQLGicyWKSgZqX5u+gqxlnOMr7g3/j/etPeiyqXsiwdeU3//93C5vBNuxRuN2dHECAmrsYlubMkpPHGmAij7yipzscyItCLMj4ENDTAHfFzuWUT66T9QfOT/cTZFh6gBfNJwZerqfaQU93o3R6C5m8dJAkranTjQ==
+X-YMail-OSG: chwBMN8VM1lhQ2gtBCjO_UzcUTq6TuCZM7cAk.YYR_rjh7K2MUJwwEbgbe0Eyjl
+ ve3rou6AFBL8cOjsadJoR9lmZMk1Ba35_0AZP.rW2tOSWRpsMjl7O2EnnrCW_4skD631UbjrDQ2a
+ uqVFK3DsCp50Wy6RCOYyTmFdx06pVyro8vHsK_rECWLy4.KOhQ4p6eNKyzZU4p25jfpiXHEAdWRp
+ KL5tp6N7eZKrXEYbwhYKKegiGq5rdU7tFi39ALJu4ukISLU5kPvWH6CVbS4vYrl3rbzypvV_CLKb
+ 8O10S1k551_uKF8H6EOmcq8kk.ZJTxirUOjYPSgyYcI5wruQA7xGVHT6ZPww2ZtSvnIDnrLTM7.p
+ tK8CndyXD7sGB9TR0P5kkaeu0gMKBtTJiv2bDLflpQ.maIMgco5UfWpvf8dUyk3KdCbhJKitOaJz
+ IDOjrTqe6MwUd8nWeWH_bkhYepkluZY7O4ku_wv5iZA3SZPmT5hXwB.t67vK0rDE8qeS0l3j2X8O
+ XjPydBXWBJzDszoeSMEEQI9EyWNImz5jpEUrOYX9s59wA.zPbYuUBkZ6hndI69me99qBqVD1K67K
+ AWBp9cb1yJHfPGoJaQaV_61QHgmYb30I6WqSj.wJDlo_TgI6hF27.5Ub2NJNfq2xO18fjtWVVdTL
+ uUqOSj.cgtkJul81qJB_98oDfsMy_7tsnIcdbBKmEfwlcjKanaBpW_EUdoVKsnZSBqe7DNtVKCQE
+ YskXtcvKEPk6smeJUbjCRTDW_kTKUshe3.fKLBNJ9NjOfnRsNdoUqZrfQGX_ZsXuzAyJm1yp9Rmf
+ IjsQ7tICthQbkdOmU2il0wHM4ugnc_d8kwk2EqOs9HWdJaZ3GEgSvL9jC19Yr4zHH7XEOlQtQPM1
+ u1.XtyxtZGhFZ8BzuaNe3d_IPRnCZM5bL7z5WjsQpxbBA1j1FAdpgeZ6GFoKanv9b5GNMUweYZFm
+ lueyZ.K5eeceM37EXFuUk2OZFeK4C2dEom7aZpmYVf9HUQ.w0g3fohxe25Fc0ioZPskO52iDLb00
+ MryLS9Z.PaeLxvgpGRn2jo1a2d1uEEp3RTA42ZmXVKtxwT6TVzIiFTjmohsrpyUhSnNQucvEhpKZ
+ KuKY0b.TT5WvHOUUtuYL5Ddm5ETz23GeGErwWlh9kaubq_kU.x9_lMf2JQFY9Zh0aZTOyTd6so76
+ k1Zb8.PLt8G375TQP4fGz_26aXQ6GWROvlhpJjL_XIqhbtqgA30pEI939D6qIBR3TayOk3SvWGsI
+ KPTSxH10hxeK6K3PjfempqS4YHIIhpXV1rclLhJgLzpLSC93IWAzBSHPzOlXi4LBGBU1Tx0.R3Ye
+ q1YMlh9OrwZ93
+Received: from sonic.gate.mail.ne1.yahoo.com by sonic307.consmr.mail.bf2.yahoo.com with HTTP; Tue, 17 Dec 2019 16:26:18 +0000
+Date:   Tue, 17 Dec 2019 16:26:16 +0000 (UTC)
+From:   "MR.Abderazack Zebdani" <zebdanimrabderazack@gmail.com>
+Reply-To: zebdanimrabderazack@gmail.com
+Message-ID: <1310125084.214050.1576599976270@mail.yahoo.com>
+Subject: MY CONDOLENT GREETINGS TO YOUR FAMILY
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a25a66de-3e86-41fd-5169-08d7830d12c6
-X-MS-Exchange-CrossTenant-originalarrivaltime: 17 Dec 2019 16:20:47.1063
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: Glq5VOsYcXNC7vu4/jv6NXo/zvWRNIbXDUOtlElY50oC2Nlb+1sD0BXVv5BlqInBp7txhitP7kdEzkbxM9/ftg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR05MB4259
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+References: <1310125084.214050.1576599976270.ref@mail.yahoo.com>
+X-Mailer: WebService/1.1.14873 YMailNodin Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36
+To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-VXNlIHN5bmNocm9uaXplX3JjdSB0byB3YWl0IHVudGlsIHRoZSBYU0sgd2FrZXVwIGZ1bmN0aW9u
-IGZpbmlzaGVzDQpiZWZvcmUgZGVzdHJveWluZyB0aGUgcmVzb3VyY2VzIGl0IHVzZXM6DQoNCjEu
-IGl4Z2JlX2Rvd24gYWxyZWFkeSBjYWxscyBzeW5jaHJvbml6ZV9yY3UgYWZ0ZXIgc2V0dGluZyBf
-X0lYR0JFX0RPV04uDQoNCjIuIEFmdGVyIHN3aXRjaGluZyB0aGUgWERQIHByb2dyYW0sIGNhbGwg
-c3luY2hyb25pemVfcmN1IHRvIGxldA0KaXhnYmVfeHNrX3dha2V1cCBleGl0IGJlZm9yZSB0aGUg
-WERQIHByb2dyYW0gaXMgZnJlZWQuDQoNCjMuIENoYW5naW5nIHRoZSBudW1iZXIgb2YgY2hhbm5l
-bHMgYnJpbmdzIHRoZSBpbnRlcmZhY2UgZG93bi4NCg0KNC4gRGlzYWJsaW5nIFVNRU0gc2V0cyBf
-X0lYR0JFX1RYX0RJU0FCTEVEIGJlZm9yZSBjbG9zaW5nIGhhcmR3YXJlDQpyZXNvdXJjZXMgYW5k
-IHJlc2V0dGluZyB4c2tfdW1lbS4gQ2hlY2sgdGhhdCBiaXQgaW4gaXhnYmVfeHNrX3dha2V1cCB0
-bw0KYXZvaWQgdXNpbmcgdGhlIFhEUCByaW5nIHdoZW4gaXQncyBhbHJlYWR5IGRlc3Ryb3llZC4g
-c3luY2hyb25pemVfcmN1IGlzDQpjYWxsZWQgZnJvbSBpeGdiZV90eHJ4X3JpbmdfZGlzYWJsZS4N
-Cg0KU2lnbmVkLW9mZi1ieTogTWF4aW0gTWlraXR5YW5za2l5IDxtYXhpbW1pQG1lbGxhbm94LmNv
-bT4NClNpZ25lZC1vZmYtYnk6IEJqw7ZybiBUw7ZwZWwgPGJqb3JuLnRvcGVsQGludGVsLmNvbT4N
-Ci0tLQ0KIGRyaXZlcnMvbmV0L2V0aGVybmV0L2ludGVsL2l4Z2JlL2l4Z2JlX21haW4uYyB8IDcg
-KysrKysrLQ0KIGRyaXZlcnMvbmV0L2V0aGVybmV0L2ludGVsL2l4Z2JlL2l4Z2JlX3hzay5jICB8
-IDggKysrKysrLS0NCiAyIGZpbGVzIGNoYW5nZWQsIDEyIGluc2VydGlvbnMoKyksIDMgZGVsZXRp
-b25zKC0pDQoNCmRpZmYgLS1naXQgYS9kcml2ZXJzL25ldC9ldGhlcm5ldC9pbnRlbC9peGdiZS9p
-eGdiZV9tYWluLmMgYi9kcml2ZXJzL25ldC9ldGhlcm5ldC9pbnRlbC9peGdiZS9peGdiZV9tYWlu
-LmMNCmluZGV4IDI1YzA5N2NkODEwMC4uODJhMzBiNTk3Y2Y5IDEwMDY0NA0KLS0tIGEvZHJpdmVy
-cy9uZXQvZXRoZXJuZXQvaW50ZWwvaXhnYmUvaXhnYmVfbWFpbi5jDQorKysgYi9kcml2ZXJzL25l
-dC9ldGhlcm5ldC9pbnRlbC9peGdiZS9peGdiZV9tYWluLmMNCkBAIC0xMDI2MSw3ICsxMDI2MSwx
-MiBAQCBzdGF0aWMgaW50IGl4Z2JlX3hkcF9zZXR1cChzdHJ1Y3QgbmV0X2RldmljZSAqZGV2LCBz
-dHJ1Y3QgYnBmX3Byb2cgKnByb2cpDQogDQogCS8qIElmIHRyYW5zaXRpb25pbmcgWERQIG1vZGVz
-IHJlY29uZmlndXJlIHJpbmdzICovDQogCWlmIChuZWVkX3Jlc2V0KSB7DQotCQlpbnQgZXJyID0g
-aXhnYmVfc2V0dXBfdGMoZGV2LCBhZGFwdGVyLT5od190Y3MpOw0KKwkJaW50IGVycjsNCisNCisJ
-CWlmICghcHJvZykNCisJCQkvKiBXYWl0IHVudGlsIG5kb194c2tfd2FrZXVwIGNvbXBsZXRlcy4g
-Ki8NCisJCQlzeW5jaHJvbml6ZV9yY3UoKTsNCisJCWVyciA9IGl4Z2JlX3NldHVwX3RjKGRldiwg
-YWRhcHRlci0+aHdfdGNzKTsNCiANCiAJCWlmIChlcnIpIHsNCiAJCQlyY3VfYXNzaWduX3BvaW50
-ZXIoYWRhcHRlci0+eGRwX3Byb2csIG9sZF9wcm9nKTsNCmRpZmYgLS1naXQgYS9kcml2ZXJzL25l
-dC9ldGhlcm5ldC9pbnRlbC9peGdiZS9peGdiZV94c2suYyBiL2RyaXZlcnMvbmV0L2V0aGVybmV0
-L2ludGVsL2l4Z2JlL2l4Z2JlX3hzay5jDQppbmRleCBkNmZlYWFjZmJmODkuLmI0M2JlOWYxNDEw
-NSAxMDA2NDQNCi0tLSBhL2RyaXZlcnMvbmV0L2V0aGVybmV0L2ludGVsL2l4Z2JlL2l4Z2JlX3hz
-ay5jDQorKysgYi9kcml2ZXJzL25ldC9ldGhlcm5ldC9pbnRlbC9peGdiZS9peGdiZV94c2suYw0K
-QEAgLTcwOSwxMCArNzA5LDE0IEBAIGludCBpeGdiZV94c2tfd2FrZXVwKHN0cnVjdCBuZXRfZGV2
-aWNlICpkZXYsIHUzMiBxaWQsIHUzMiBmbGFncykNCiAJaWYgKHFpZCA+PSBhZGFwdGVyLT5udW1f
-eGRwX3F1ZXVlcykNCiAJCXJldHVybiAtRU5YSU87DQogDQotCWlmICghYWRhcHRlci0+eGRwX3Jp
-bmdbcWlkXS0+eHNrX3VtZW0pDQorCXJpbmcgPSBhZGFwdGVyLT54ZHBfcmluZ1txaWRdOw0KKw0K
-KwlpZiAodGVzdF9iaXQoX19JWEdCRV9UWF9ESVNBQkxFRCwgJnJpbmctPnN0YXRlKSkNCisJCXJl
-dHVybiAtRU5FVERPV047DQorDQorCWlmICghcmluZy0+eHNrX3VtZW0pDQogCQlyZXR1cm4gLUVO
-WElPOw0KIA0KLQlyaW5nID0gYWRhcHRlci0+eGRwX3JpbmdbcWlkXTsNCiAJaWYgKCFuYXBpX2lm
-X3NjaGVkdWxlZF9tYXJrX21pc3NlZCgmcmluZy0+cV92ZWN0b3ItPm5hcGkpKSB7DQogCQl1NjQg
-ZWljcyA9IEJJVF9VTEwocmluZy0+cV92ZWN0b3ItPnZfaWR4KTsNCiANCi0tIA0KMi4yMC4xDQoN
-Cg==
+
+
+Greetings My Dear Friend,
+
+Before I introduce myself, I wish to inform you that this letter is not a h=
+oax mail and I urge you to treat it serious.This letter must come to you as=
+ a big surprise, but I believe it is only a day that people meet and become=
+ great friends and business partners. Please I want you to read this letter=
+ very carefully and I must apologize for barging this message into your mai=
+l box without any formal introduction due to the urgency and confidentialit=
+y of this business. I make this contact with you as I believe that you can =
+be of great assistance to me. My name is Mr.Abderazack Zebdani, from Burkin=
+a Faso, West Africa. I work in Bank Of Africa (BOA) as telex manager, pleas=
+e see this as a confidential message and do not reveal it to another person=
+ and let me know whether you can be of assistance regarding my proposal bel=
+ow because it is top secret.
+
+I am about to retire from active Banking service to start a new life but I =
+am skeptical to reveal this particular secret to a stranger. You must assur=
+e me that everything will be handled confidentially because we are not goin=
+g to suffer again in life. It has been 10 years now that most of the greedy=
+ African Politicians used our bank to launder money overseas through the he=
+lp of their Political advisers. Most of the funds which they transferred ou=
+t of the shores of Africa were gold and oil money that was supposed to have=
+ been used to develop the continent. Their Political advisers always inflat=
+ed the amounts before transferring to foreign accounts, so I also used the =
+opportunity to divert part of the funds hence I am aware that there is no o=
+fficial trace of how much was transferred as all the accounts used for such=
+ transfers were being closed after transfer. I acted as the Bank Officer to=
+ most of the politicians and when I discovered that they were using me to s=
+ucceed in their greedy act; I also cleaned some of their banking records fr=
+om the Bank files and no one cared to ask me because the money was too much=
+ for them to control. They laundered over $5billion Dollars during the proc=
+ess.
+
+Before I send this message to you, I have already diverted ($10.5million Do=
+llars) to an escrow account belonging to no one in the bank. The bank is an=
+xious now to know who the beneficiary to the funds because they have made a=
+ lot of profits with the funds. It is more than Eight years now and most of=
+ the politicians are no longer using our bank to transfer funds overseas. T=
+he ($10.5million Dollars) has been laying waste in our bank and I don=E2=80=
+=99t want to retire from the bank without transferring the funds to a forei=
+gn account to enable me share the proceeds with the receiver (a foreigner).=
+ The money will be shared 60% for me and 40% for you. There is no one comin=
+g to ask you about the funds because I secured everything. I only want you =
+to assist me by providing a reliable bank account where the funds can be tr=
+ansferred.
+
+You are not to face any difficulties or legal implications as I am going to=
+ handle the transfer personally. If you are capable of receiving the funds,=
+ do let me know immediately to enable me give you a detailed information on=
+ what to do. For me, I have not stolen the money from anyone because the ot=
+her people that took the whole money did not face any problems. This is my =
+chance to grab my own life opportunity but you must keep the details of the=
+ funds secret to avoid any leakages as no one in the bank knows about my pl=
+ans.Please get back to me if you are interested and capable to handle this =
+project, I am looking forward to hear from you immediately for further info=
+rmation.
+Thanks with my best regards.
+Mr.Abderazack Zebdani.
+Telex Manager
+Bank Of Africa (BOA)
+Burkina Faso.
