@@ -2,105 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 60E40123336
-	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 18:10:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B4079123342
+	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 18:15:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727751AbfLQRKG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Dec 2019 12:10:06 -0500
-Received: from relay8-d.mail.gandi.net ([217.70.183.201]:50243 "EHLO
-        relay8-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726859AbfLQRKF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 12:10:05 -0500
-X-Originating-IP: 90.76.143.236
-Received: from localhost (lfbn-tou-1-1075-236.w90-76.abo.wanadoo.fr [90.76.143.236])
-        (Authenticated sender: antoine.tenart@bootlin.com)
-        by relay8-d.mail.gandi.net (Postfix) with ESMTPSA id 0709C1BF206;
-        Tue, 17 Dec 2019 17:10:02 +0000 (UTC)
-From:   Antoine Tenart <antoine.tenart@bootlin.com>
-To:     davem@davemloft.net
-Cc:     Antoine Tenart <antoine.tenart@bootlin.com>, andrew@lunn.ch,
-        f.fainelli@gmail.com, hkallweit1@gmail.com,
-        alexandre.belloni@bootlin.com, nicolas.ferre@microchip.com,
-        netdev@vger.kernel.org, thomas.petazzoni@bootlin.com
-Subject: [PATCH net 2/2] net: macb: fix probing of PHY not described in the dt
-Date:   Tue, 17 Dec 2019 18:07:42 +0100
-Message-Id: <20191217170742.1166139-3-antoine.tenart@bootlin.com>
-X-Mailer: git-send-email 2.23.0
-In-Reply-To: <20191217170742.1166139-1-antoine.tenart@bootlin.com>
-References: <20191217170742.1166139-1-antoine.tenart@bootlin.com>
+        id S1726885AbfLQRPr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Dec 2019 12:15:47 -0500
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:42710 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726856AbfLQRPq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 12:15:46 -0500
+Received: by mail-pg1-f196.google.com with SMTP id s64so6003126pgb.9
+        for <netdev@vger.kernel.org>; Tue, 17 Dec 2019 09:15:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to
+         :user-agent;
+        bh=xF3Ny7ZnnbPuXpJw2vfE6lN5ovTpLxU4+wWaGrKXERY=;
+        b=CfZ0zRQ1qIuyS98KtHka1G6zOW+A2YgtxOjfIwu1J2b32kJF5mwwCS9pKHx6z5uyhO
+         uciHjmN0ESlz2Xau+KeYIC86qgNFouKwpi9lgJpzkdzQVfzDpqP75OqmhEVSwz0NTlkh
+         eGWczGMyAlCIZiN5pu0TN++2qIGDV7Vfe3YCV2noOfD3Wy45fl8IPoPAlDsH3b9plEPU
+         1Fme4z0EaXxTipLbUfLK6T3LexpPwIp9HhT4t0VtE5tKtirVXS2HqrV17rUvwev29sBH
+         QfwS9M1beVgWSAzTG2WCQJkcJ940D1Y3RyIsrcG7cyz4odYtgNyIbG1RpGjmwiboNrTN
+         DSQg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to:user-agent;
+        bh=xF3Ny7ZnnbPuXpJw2vfE6lN5ovTpLxU4+wWaGrKXERY=;
+        b=qjLa72Z6cg3Sqy+WhMx6JgGL5Pd3JcNkTID13vBble9OZpiJh4XNtqxd4eVbYQITpK
+         I+6yhKhLOS6Nm0EyM5g5E9b3HuZW41Q9hTaB1dJ4Eg6jo3o8b7o5l9CppJg+calInGJt
+         MKuq1Nd78aKFd3yhv3M0Ys6HubZothMacpc/1ETui606sJPxVsxsw3jILW+wsDHaVn94
+         nGM02GsvN3F+W3oWi3VWXRvqpztFFbKBHFYQpGCjaHjFPuCl3itLxNxAtfjqhM+6Tb87
+         AM3QcLRaxJ4phFJIXVoYhPzyZaX+oA0cSupXab4cESGiFzCPBqNuTv40RUvUzoMxfneM
+         y4jQ==
+X-Gm-Message-State: APjAAAUq0LOWWucEZ7dTeZ5fgphSzFj8rDozXAQeXg6Dz4HmeV6Y1+aQ
+        wsRSmyRwRYeqZf2zVkeWN0M=
+X-Google-Smtp-Source: APXvYqz/pRdjlnBp3aS18IDqgUZ3mDsHox8+M0GkiAwtOAPPPWpTK0poBA6wCGmU1Ci1wqNBVDB5WA==
+X-Received: by 2002:a63:2355:: with SMTP id u21mr25801992pgm.179.1576602945979;
+        Tue, 17 Dec 2019 09:15:45 -0800 (PST)
+Received: from martin-VirtualBox ([122.182.209.142])
+        by smtp.gmail.com with ESMTPSA id f127sm25165583pfa.112.2019.12.17.09.15.44
+        (version=TLS1 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
+        Tue, 17 Dec 2019 09:15:45 -0800 (PST)
+Date:   Tue, 17 Dec 2019 22:45:39 +0530
+From:   Martin Varghese <martinvarghesenokia@gmail.com>
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, pshelar@ovn.org,
+        scott.drennan@nokia.com, jbenc@redhat.com,
+        martin.varghese@nokia.com
+Subject: Re: [PATCH net-next v3 3/3] openvswitch: New MPLS actions for layer
+ 2 tunnelling
+Message-ID: <20191217171539.GA16538@martin-VirtualBox>
+References: <cover.1576488935.git.martin.varghese@nokia.com>
+ <9e3b73cd6967927fc6654cbdcd7b9e7431441c3f.1576488935.git.martin.varghese@nokia.com>
+ <20191216161355.0d37a897@cakuba.netronome.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20191216161355.0d37a897@cakuba.netronome.com>
+User-Agent: Mutt/1.5.21 (2010-09-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch fixes the case where the PHY isn't described in the device
-tree. This is due to the way the MDIO bus is registered in the driver:
-whether the PHY is described in the device tree or not, the bus is
-registered through of_mdiobus_register. The function masks all the PHYs
-and only allow probing the ones described in the device tree. Prior to
-the Phylink conversion this was also done but later on in the driver
-the MDIO bus was manually scanned to circumvent the fact that the PHY
-wasn't described.
+On Mon, Dec 16, 2019 at 04:13:55PM -0800, Jakub Kicinski wrote:
+> On Mon, 16 Dec 2019 19:33:43 +0530, Martin Varghese wrote:
+> > diff --git a/include/uapi/linux/openvswitch.h b/include/uapi/linux/openvswitch.h
+> > index a87b44c..b7221ad 100644
+> > --- a/include/uapi/linux/openvswitch.h
+> > +++ b/include/uapi/linux/openvswitch.h
+> > @@ -673,6 +673,25 @@ struct ovs_action_push_mpls {
+> >  };
+> >  
+> >  /**
+> > + * struct ovs_action_ptap_push_mpls - %OVS_ACTION_ATTR_PTAP_PUSH_MPLS action
+> > + * argument.
+> > + * @mpls_lse: MPLS label stack entry to push.
+> > + * @mpls_ethertype: Ethertype to set in the encapsulating ethernet frame.
+> > + * @l2_tun: Flag to specify the place of insertion of MPLS header.
+> > + * When true, the MPLS header will be inserted at the start of the packet.
+> > + * When false, the MPLS header will be inserted at the start of the l3 header.
+> > + *
+> > + * The only values @mpls_ethertype should ever be given are %ETH_P_MPLS_UC and
+> > + * %ETH_P_MPLS_MC, indicating MPLS unicast or multicast. Other are rejected.
+> > + */
+> > +struct ovs_action_ptap_push_mpls {
+> > +	__be32 mpls_lse;
+> > +	__be16 mpls_ethertype; /* Either %ETH_P_MPLS_UC or %ETH_P_MPLS_MC */
+> > +	bool l2_tun;
+> 
+> In file included from <command-line>:32:                                        
+> ./usr/include/linux/openvswitch.h:674:2: error: unknown type name ‘bool’        
+>   674 |  bool l2_tun;                                                           
+>       |  ^~~~                                                                   
+> make[3]: *** [usr/include/linux/openvswitch.hdrtest] Error 1  
+> 
 
-This patch fixes it in a proper way, by registering the MDIO bus based
-on if the PHY attached to a given interface is described in the device
-tree or not.
+Does that mean bool cannot be used in interface header files ? but what is
+the alternative u8?
+> > +};
+> > +
+> > +
+> 
+> Why the double new line? Please use checkpatch --strict.
 
-Fixes: 7897b071ac3b ("net: macb: convert to phylink")
-Signed-off-by: Antoine Tenart <antoine.tenart@bootlin.com>
----
- drivers/net/ethernet/cadence/macb_main.c | 27 ++++++++++++++++++++----
- 1 file changed, 23 insertions(+), 4 deletions(-)
+Noted
 
-diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
-index 9c767ee252ac..c5ee363ca5dc 100644
---- a/drivers/net/ethernet/cadence/macb_main.c
-+++ b/drivers/net/ethernet/cadence/macb_main.c
-@@ -664,9 +664,30 @@ static int macb_mii_probe(struct net_device *dev)
- 	return 0;
- }
- 
-+static int macb_mdiobus_register(struct macb *bp)
-+{
-+	struct device_node *child, *np = bp->pdev->dev.of_node;
-+
-+	/* Only create the PHY from the device tree if at least one PHY is
-+	 * described. Otherwise scan the entire MDIO bus. We do this to support
-+	 * old device tree that did not follow the best practices and did not
-+	 * describe their network PHYs.
-+	 */
-+	for_each_available_child_of_node(np, child)
-+		if (of_mdiobus_child_is_phy(child)) {
-+			/* The loop increments the child refcount,
-+			 * decrement it before returning.
-+			 */
-+			of_node_put(child);
-+
-+			return of_mdiobus_register(bp->mii_bus, np);
-+		}
-+
-+	return mdiobus_register(bp->mii_bus);
-+}
-+
- static int macb_mii_init(struct macb *bp)
- {
--	struct device_node *np;
- 	int err = -ENXIO;
- 
- 	/* Enable management port */
-@@ -688,9 +709,7 @@ static int macb_mii_init(struct macb *bp)
- 
- 	dev_set_drvdata(&bp->dev->dev, bp->mii_bus);
- 
--	np = bp->pdev->dev.of_node;
--
--	err = of_mdiobus_register(bp->mii_bus, np);
-+	err = macb_mdiobus_register(bp);
- 	if (err)
- 		goto err_out_free_mdiobus;
- 
--- 
-2.23.0
-
+Thanks for your time.
