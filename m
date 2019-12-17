@@ -2,47 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C1961239BE
-	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 23:21:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B1341239B0
+	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 23:19:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727337AbfLQWT7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Dec 2019 17:19:59 -0500
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:38532 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726798AbfLQWT5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 17:19:57 -0500
-Received: by mail-wr1-f66.google.com with SMTP id y17so145425wrh.5
+        id S1727031AbfLQWT4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Dec 2019 17:19:56 -0500
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:56219 "EHLO
+        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726841AbfLQWTz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 17:19:55 -0500
+Received: by mail-wm1-f67.google.com with SMTP id q9so54959wmj.5
         for <netdev@vger.kernel.org>; Tue, 17 Dec 2019 14:19:51 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=WcDSUn1CFc+dZWX8jx2FOj8jHZgQi7q+4UF1Lip0IxU=;
-        b=g/SD6TsnnrTiSTJ5LSfP+ZCCpvgbJMvgC/Vjn2caD4XojxYYtPzcqDMsHGBlVt0+cn
-         mdnFeiaH/U0h/GRiUd071wtO4POlDc2xN8ekYEkMIaXl2e01rS4AFlHySkp3qFGn6GiN
-         AB5kqguJMXLMyJYX39l4Kjlt5hCORLcGvlm4pT0releGfSDdakTmhxNMHtDgHJiJ0yMh
-         6H2CmF2sy80Ebpb0LYhgU/kwM8sFHzoKy5XC2I7h0FdLM/IklP60VVFIZ5O7gab5mMJE
-         zMTmazQjZ7vBWZmFjb1kaWAiXup5hmtTSZo3HLOd5JckBKe2Qnjgy5rnBBogS7z/Bjd4
-         bGOw==
+        bh=4gjpCRWwt5ERYRKgEjQg8RjqfD6v/izIFM0DEXTbsWI=;
+        b=tI3vCrb1BnbFiyvrBsQudVEh9PRk5S6eVY5hOkIzOICcqKomFH9P3WjnqpJY6ftXNq
+         3VwgyD8/xk83PheTxuPR5lChTcA0NtctMGLLRVq95V6cDh4P9wok80U3AWAdXqhDs1f5
+         sycfgaL8n+LGyaBIZWC95I+pOqLoskazkWoGdBDk48GKCvFO0eWTHQpuL5fl27aiKwU2
+         q15dzSyIrX1AWZqitIjF8vaVZzAP8ihfSgcoi5IWPGa0Cx0DXVlJ4jUBVwix+KdclTue
+         ZOSYiMLwVmscFKso0dgfyqAkJnM4KNIEocDidecLLGHFrICQBUBOQmPxTb9TIiQaH4po
+         4YFw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=WcDSUn1CFc+dZWX8jx2FOj8jHZgQi7q+4UF1Lip0IxU=;
-        b=KR8ttdc8RtmCE053d+2i2MdmbfeVTn8zujUcOBGGf5uRpEDlgupWQyYBXVZI6bIOCb
-         tmCLKP7QFEA4dyrAj8SQZXUuu7KYgVjezmhJlRb9Kkm02r2beKCs5sGM9ONjmgYh78b1
-         gU8gZtoPUC+0uKjvit/CYCnM9wNTwuyGINillpGhE+Piz6jo/6m1fD19YD+AJ2tLyXxJ
-         zHoMcWonzl2BvKX/tqaHTNSEjWFKmD0VfVRNPVBg0NHxr7ojWwn0Zz7zYhzg7CiRINuI
-         99fminJD+4xo1qMZnvE+g+KCfO56kwAjDbuJHm1GikrfYF/DeGGEELiVuDmIZ+ZuXd/3
-         YItA==
-X-Gm-Message-State: APjAAAWtynna32o/3c+OlTU7qHOLeWwTf+LIY25XcjmzH8bzAsHuta/A
-        qZCbvXEX+4tshSyxeW3GibI=
-X-Google-Smtp-Source: APXvYqwqduLsgwIacxq2ZujGnZpLAxvLqjHRHYqze1oT6pa2I1ModNQNJQLuX7hWnbXMybx8iUPriQ==
-X-Received: by 2002:adf:f7c4:: with SMTP id a4mr244958wrq.332.1576621189070;
-        Tue, 17 Dec 2019 14:19:49 -0800 (PST)
+        bh=4gjpCRWwt5ERYRKgEjQg8RjqfD6v/izIFM0DEXTbsWI=;
+        b=Ydui2H4ulWoSW0YQy/ZYbhvXVs6kWPC7L9aVyyWJtzpfCmqb0iRsBJkdIthoS33qZF
+         ES59RrZSYl/HJ6wve2WI9OlAUf+SzgyENELUtIfUOLVJ16IK4eFnXO013dDJnHb38VXX
+         YRA0rv9CUlZ47tPKx4WKLJNanyy10UO7plkqrG8Sq12AhgmieYbL1hKMtyJZbsS14v6U
+         +FL8EnuhdraTcEqPjvl3vDsmxEKYkk7lMQO/h6/+dk/ffdLrG/Mwnm7nLFbbDqITUJrH
+         oukjY276+OeDnnizH/zwxUFsy2nag3SJQaUcXasTDu+Hh1durw2DffM0bg2efFE8XdBJ
+         WEdA==
+X-Gm-Message-State: APjAAAXCX5tX0h2XfvJLSaPak2m+pGb4qQrzKEPtxShCuzjERy6uK1/k
+        gC9p36LQiInFGd8icAJmXlA=
+X-Google-Smtp-Source: APXvYqwTGdQxpgjtWZMoBn7NGH/iU1h7SHwLmxSGUr2lDRB1w6eLN/PW1cfdCR6fd6C4ClFdR1VR9g==
+X-Received: by 2002:a1c:48c1:: with SMTP id v184mr8250234wma.5.1576621190380;
+        Tue, 17 Dec 2019 14:19:50 -0800 (PST)
 Received: from localhost.localdomain ([86.121.29.241])
-        by smtp.gmail.com with ESMTPSA id e6sm196808wru.44.2019.12.17.14.19.46
+        by smtp.gmail.com with ESMTPSA id e6sm196808wru.44.2019.12.17.14.19.49
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 Dec 2019 14:19:48 -0800 (PST)
+        Tue, 17 Dec 2019 14:19:49 -0800 (PST)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     davem@davemloft.net, jakub.kicinski@netronome.com,
         linux@armlinux.org.uk, andrew@lunn.ch, f.fainelli@gmail.com,
@@ -52,9 +52,9 @@ Cc:     alexandru.marginean@nxp.com, claudiu.manoil@nxp.com,
         netdev@vger.kernel.org, alexandre.belloni@bootlin.com,
         horatiu.vultur@microchip.com,
         Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [RFC PATCH v2 7/8] net: mscc: ocelot: export ANA, DEV and QSYS registers to include/soc/mscc
-Date:   Wed, 18 Dec 2019 00:18:30 +0200
-Message-Id: <20191217221831.10923-8-olteanv@gmail.com>
+Subject: [RFC PATCH v2 8/8] net: dsa: felix: Add PCS operations for PHYLINK
+Date:   Wed, 18 Dec 2019 00:18:31 +0200
+Message-Id: <20191217221831.10923-9-olteanv@gmail.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20191217221831.10923-1-olteanv@gmail.com>
 References: <20191217221831.10923-1-olteanv@gmail.com>
@@ -65,2422 +65,1046 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Since the Felix DSA driver is implementing its own PHYLINK instance due
-to SoC differences, it needs access to the few registers that are
-common, mainly for flow control.
+Layerscape SoCs traditionally expose the SerDes configuration/status for
+Ethernet protocols (PCS for SGMII/XFI/USXGMII etc etc) in a register
+format that is compatible with clause 22 or clause 45 (depending on
+SerDes protocol). Each MAC has its own internal MDIO bus on which there
+is one or more of these PCS's, responding to commands at a configurable
+PHY address. The per-port internal MDIO bus (which is just for PCSs) is
+totally separate and has nothing to do with the dedicated external MDIO
+controller (which is just for PHYs), but the register map for the MDIO
+controller is the same.
+
+The VSC9959 (Felix) switch instantiated in the LS1028A is integrated
+in hardware with the ENETC PCS of its DSA master, and reuses its MDIO
+controller driver, so Felix has been made to depend on it in Kconfig.
+
++------------------------------------------------------------------------+
+|                   +--------+ GMII (typically disabled via RCW)         |
+| ENETC PCI         |  ENETC |--------------------------+                |
+| Root Complex      | port 3 |-----------------------+  |                |
+| Integrated        +--------+                       |  |                |
+| Endpoint                                           |  |                |
+|                   +--------+ 2.5G GMII             |  |                |
+|                   |  ENETC |--------------+        |  |                |
+|                   | port 2 |-----------+  |        |  |                |
+|                   +--------+           |  |        |  |                |
+|                                     +--------+  +--------+             |
+|                                     |  Felix |  |  Felix |             |
+|                                     | port 4 |  | port 5 |             |
+|                                     +--------+  +--------+             |
+|                                                                        |
+| +--------+  +--------+  +--------+  +--------+  +--------+  +--------+ |
+| |  ENETC |  |  ENETC |  |  Felix |  |  Felix |  |  Felix |  |  Felix | |
+| | port 0 |  | port 1 |  | port 0 |  | port 1 |  | port 2 |  | port 3 | |
++------------------------------------------------------------------------+
+|    ||||  SerDes |          ||||        ||||        ||||        ||||    |
+| +--------+block |       +--------------------------------------------+ |
+| |  ENETC |      |       |       ENETC port 2 internal MDIO bus       | |
+| | port 0 |      |       |  PCS         PCS          PCS        PCS   | |
+| |   PCS  |      |       |   0           1            2          3    | |
++-----------------|------------------------------------------------------+
+       v          v           v           v            v          v
+    SGMII/      RGMII    QSGMII/QSXGMII/4xSGMII/4x100Base-X/4x2500Base-X
+   USXGMII/   (bypasses
+ 1000Base-X/   SerDes)
+ 2500Base-X
+
+In the LS1028A SoC described above, the VSC9959 Felix switch is PF5 of
+the ENETC root complex, and has 2 BARs:
+- BAR 4: the switch's effective registers
+- BAR 0: the MDIO controller register map lended from ENETC port 2
+         (PF2), for accessing its associated PCS's.
+
+This explanation is necessary because the patch does some renaming
+"pci_bar" -> "switch_pci_bar" for clarity, which would otherwise appear
+a bit obtuse.
+
+The fact that the internal MDIO bus is "borrowed" is relevant because
+the register map is found in PF5 (the switch) but it triggers an access
+fault if PF2 (the ENETC DSA master) is not enabled. This is not treated
+in any way (and I don't think it can be treated).
+
+All of this is so SoC-specific, that it was contained as much as
+possible in the platform-integration file felix_vsc9959.c.
+
+We need to parse and pre-validate the device tree because of 2 reasons:
+- The PHY mode (SerDes protocol) cannot change at runtime due to SoC
+  design.
+- There is a circular dependency in that we need to know what clause the
+  PCS speaks in order to find it on the internal MDIO bus. But the
+  clause of the PCS depends on what phy-mode it is configured for.
+
+The goal of this patch is to make steps towards removing the bootloader
+dependency for SGMII PCS pre-configuration, as well as to add support
+for monitoring the in-band SGMII AN between the PCS and the system-side
+link partner (PHY or other MAC).
+
+In practice the bootloader dependency is not completely removed. U-Boot
+pre-programs the PHY address at which each PCS can be found on the
+internal MDIO bus (MDEV_PORT). This is needed because the PCS of each
+port has the same out-of-reset PHY address of zero. The SerDes register
+for changing MDEV_PORT is pretty deep in the SoC (outside the addresses
+of the ENETC PCI BARs) and therefore inaccessible to us from here.
+
+Felix VSC9959 and Ocelot VSC7514 are integrated very differently in
+their respective SoCs, and for that reason Felix does not use the Ocelot
+core library for PHYLINK. On one hand we don't want to impose the
+fixed phy-mode limitation to Ocelot, and on the other hand Felix doesn't
+need to force the MAC link speed the way Ocelot does, since the MAC is
+connected to the PCS through a fixed GMII, and the PCS is the one who
+does the rate adaptation at lower link speeds, which the MAC does not
+even need to know about. In fact changing the GMII speed for Felix
+irrecoverably breaks transmission through that port until a reset.
+
+Yet another reason for wanting to convert Felix to PHYLINK is to
+configure the MAC of port 5 (the one that is typically disabled, in the
+setup with ENETC 2 as DSA master it doesn't support tagging so when it's
+enabled it is a regular fixed-link slave port, something that DSA PHYLIB
+doesn't control with .adjust_link).
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- drivers/net/ethernet/mscc/ocelot.h      |   6 +-
- drivers/net/ethernet/mscc/ocelot_ana.h  | 625 --------------------------------
- drivers/net/ethernet/mscc/ocelot_dev.h  | 275 --------------
- drivers/net/ethernet/mscc/ocelot_qsys.h | 270 --------------
- include/soc/mscc/ocelot_ana.h           | 625 ++++++++++++++++++++++++++++++++
- include/soc/mscc/ocelot_dev.h           | 275 ++++++++++++++
- include/soc/mscc/ocelot_qsys.h          | 270 ++++++++++++++
- 7 files changed, 1173 insertions(+), 1173 deletions(-)
- delete mode 100644 drivers/net/ethernet/mscc/ocelot_ana.h
- delete mode 100644 drivers/net/ethernet/mscc/ocelot_dev.h
- delete mode 100644 drivers/net/ethernet/mscc/ocelot_qsys.h
- create mode 100644 include/soc/mscc/ocelot_ana.h
- create mode 100644 include/soc/mscc/ocelot_dev.h
- create mode 100644 include/soc/mscc/ocelot_qsys.h
+ drivers/net/dsa/ocelot/Kconfig         |   1 +
+ drivers/net/dsa/ocelot/felix.c         | 260 ++++++++++++++++--
+ drivers/net/dsa/ocelot/felix.h         |  16 +-
+ drivers/net/dsa/ocelot/felix_vsc9959.c | 475 ++++++++++++++++++++++++++++++++-
+ 4 files changed, 735 insertions(+), 17 deletions(-)
 
-diff --git a/drivers/net/ethernet/mscc/ocelot.h b/drivers/net/ethernet/mscc/ocelot.h
-index 7b77d44ed7cf..04372ba72fec 100644
---- a/drivers/net/ethernet/mscc/ocelot.h
-+++ b/drivers/net/ethernet/mscc/ocelot.h
-@@ -18,11 +18,11 @@
- #include <linux/ptp_clock_kernel.h>
- #include <linux/regmap.h>
- 
+diff --git a/drivers/net/dsa/ocelot/Kconfig b/drivers/net/dsa/ocelot/Kconfig
+index 0031ca814346..03794d2a7fd5 100644
+--- a/drivers/net/dsa/ocelot/Kconfig
++++ b/drivers/net/dsa/ocelot/Kconfig
+@@ -4,6 +4,7 @@ config NET_DSA_MSCC_FELIX
+ 	depends on NET_DSA && PCI
+ 	select MSCC_OCELOT_SWITCH
+ 	select NET_DSA_TAG_OCELOT
++	select FSL_ENETC_MDIO
+ 	help
+ 	  This driver supports the VSC9959 network switch, which is a member of
+ 	  the Vitesse / Microsemi / Microchip Ocelot family of switching cores.
+diff --git a/drivers/net/dsa/ocelot/felix.c b/drivers/net/dsa/ocelot/felix.c
+index b7f92464815d..3bbe142ccfe2 100644
+--- a/drivers/net/dsa/ocelot/felix.c
++++ b/drivers/net/dsa/ocelot/felix.c
+@@ -2,9 +2,14 @@
+ /* Copyright 2019 NXP Semiconductors
+  */
+ #include <uapi/linux/if_bridge.h>
 +#include <soc/mscc/ocelot_qsys.h>
- #include <soc/mscc/ocelot_sys.h>
++#include <soc/mscc/ocelot_sys.h>
 +#include <soc/mscc/ocelot_dev.h>
 +#include <soc/mscc/ocelot_ana.h>
  #include <soc/mscc/ocelot.h>
--#include "ocelot_ana.h"
--#include "ocelot_dev.h"
--#include "ocelot_qsys.h"
- #include "ocelot_rew.h"
- #include "ocelot_qs.h"
- #include "ocelot_tc.h"
-diff --git a/drivers/net/ethernet/mscc/ocelot_ana.h b/drivers/net/ethernet/mscc/ocelot_ana.h
-deleted file mode 100644
-index 841c6ec22b64..000000000000
---- a/drivers/net/ethernet/mscc/ocelot_ana.h
-+++ /dev/null
-@@ -1,625 +0,0 @@
--/* SPDX-License-Identifier: (GPL-2.0 OR MIT) */
--/*
-- * Microsemi Ocelot Switch driver
-- *
-- * Copyright (c) 2017 Microsemi Corporation
-- */
--
--#ifndef _MSCC_OCELOT_ANA_H_
--#define _MSCC_OCELOT_ANA_H_
--
--#define ANA_ANAGEFIL_B_DOM_EN                             BIT(22)
--#define ANA_ANAGEFIL_B_DOM_VAL                            BIT(21)
--#define ANA_ANAGEFIL_AGE_LOCKED                           BIT(20)
--#define ANA_ANAGEFIL_PID_EN                               BIT(19)
--#define ANA_ANAGEFIL_PID_VAL(x)                           (((x) << 14) & GENMASK(18, 14))
--#define ANA_ANAGEFIL_PID_VAL_M                            GENMASK(18, 14)
--#define ANA_ANAGEFIL_PID_VAL_X(x)                         (((x) & GENMASK(18, 14)) >> 14)
--#define ANA_ANAGEFIL_VID_EN                               BIT(13)
--#define ANA_ANAGEFIL_VID_VAL(x)                           ((x) & GENMASK(12, 0))
--#define ANA_ANAGEFIL_VID_VAL_M                            GENMASK(12, 0)
--
--#define ANA_STORMLIMIT_CFG_RSZ                            0x4
--
--#define ANA_STORMLIMIT_CFG_STORM_RATE(x)                  (((x) << 3) & GENMASK(6, 3))
--#define ANA_STORMLIMIT_CFG_STORM_RATE_M                   GENMASK(6, 3)
--#define ANA_STORMLIMIT_CFG_STORM_RATE_X(x)                (((x) & GENMASK(6, 3)) >> 3)
--#define ANA_STORMLIMIT_CFG_STORM_UNIT                     BIT(2)
--#define ANA_STORMLIMIT_CFG_STORM_MODE(x)                  ((x) & GENMASK(1, 0))
--#define ANA_STORMLIMIT_CFG_STORM_MODE_M                   GENMASK(1, 0)
--
--#define ANA_AUTOAGE_AGE_FAST                              BIT(21)
--#define ANA_AUTOAGE_AGE_PERIOD(x)                         (((x) << 1) & GENMASK(20, 1))
--#define ANA_AUTOAGE_AGE_PERIOD_M                          GENMASK(20, 1)
--#define ANA_AUTOAGE_AGE_PERIOD_X(x)                       (((x) & GENMASK(20, 1)) >> 1)
--#define ANA_AUTOAGE_AUTOAGE_LOCKED                        BIT(0)
--
--#define ANA_MACTOPTIONS_REDUCED_TABLE                     BIT(1)
--#define ANA_MACTOPTIONS_SHADOW                            BIT(0)
--
--#define ANA_AGENCTRL_FID_MASK(x)                          (((x) << 12) & GENMASK(23, 12))
--#define ANA_AGENCTRL_FID_MASK_M                           GENMASK(23, 12)
--#define ANA_AGENCTRL_FID_MASK_X(x)                        (((x) & GENMASK(23, 12)) >> 12)
--#define ANA_AGENCTRL_IGNORE_DMAC_FLAGS                    BIT(11)
--#define ANA_AGENCTRL_IGNORE_SMAC_FLAGS                    BIT(10)
--#define ANA_AGENCTRL_FLOOD_SPECIAL                        BIT(9)
--#define ANA_AGENCTRL_FLOOD_IGNORE_VLAN                    BIT(8)
--#define ANA_AGENCTRL_MIRROR_CPU                           BIT(7)
--#define ANA_AGENCTRL_LEARN_CPU_COPY                       BIT(6)
--#define ANA_AGENCTRL_LEARN_FWD_KILL                       BIT(5)
--#define ANA_AGENCTRL_LEARN_IGNORE_VLAN                    BIT(4)
--#define ANA_AGENCTRL_CPU_CPU_KILL_ENA                     BIT(3)
--#define ANA_AGENCTRL_GREEN_COUNT_MODE                     BIT(2)
--#define ANA_AGENCTRL_YELLOW_COUNT_MODE                    BIT(1)
--#define ANA_AGENCTRL_RED_COUNT_MODE                       BIT(0)
--
--#define ANA_FLOODING_RSZ                                  0x4
--
--#define ANA_FLOODING_FLD_UNICAST(x)                       (((x) << 12) & GENMASK(17, 12))
--#define ANA_FLOODING_FLD_UNICAST_M                        GENMASK(17, 12)
--#define ANA_FLOODING_FLD_UNICAST_X(x)                     (((x) & GENMASK(17, 12)) >> 12)
--#define ANA_FLOODING_FLD_BROADCAST(x)                     (((x) << 6) & GENMASK(11, 6))
--#define ANA_FLOODING_FLD_BROADCAST_M                      GENMASK(11, 6)
--#define ANA_FLOODING_FLD_BROADCAST_X(x)                   (((x) & GENMASK(11, 6)) >> 6)
--#define ANA_FLOODING_FLD_MULTICAST(x)                     ((x) & GENMASK(5, 0))
--#define ANA_FLOODING_FLD_MULTICAST_M                      GENMASK(5, 0)
--
--#define ANA_FLOODING_IPMC_FLD_MC4_CTRL(x)                 (((x) << 18) & GENMASK(23, 18))
--#define ANA_FLOODING_IPMC_FLD_MC4_CTRL_M                  GENMASK(23, 18)
--#define ANA_FLOODING_IPMC_FLD_MC4_CTRL_X(x)               (((x) & GENMASK(23, 18)) >> 18)
--#define ANA_FLOODING_IPMC_FLD_MC4_DATA(x)                 (((x) << 12) & GENMASK(17, 12))
--#define ANA_FLOODING_IPMC_FLD_MC4_DATA_M                  GENMASK(17, 12)
--#define ANA_FLOODING_IPMC_FLD_MC4_DATA_X(x)               (((x) & GENMASK(17, 12)) >> 12)
--#define ANA_FLOODING_IPMC_FLD_MC6_CTRL(x)                 (((x) << 6) & GENMASK(11, 6))
--#define ANA_FLOODING_IPMC_FLD_MC6_CTRL_M                  GENMASK(11, 6)
--#define ANA_FLOODING_IPMC_FLD_MC6_CTRL_X(x)               (((x) & GENMASK(11, 6)) >> 6)
--#define ANA_FLOODING_IPMC_FLD_MC6_DATA(x)                 ((x) & GENMASK(5, 0))
--#define ANA_FLOODING_IPMC_FLD_MC6_DATA_M                  GENMASK(5, 0)
--
--#define ANA_SFLOW_CFG_RSZ                                 0x4
--
--#define ANA_SFLOW_CFG_SF_RATE(x)                          (((x) << 2) & GENMASK(13, 2))
--#define ANA_SFLOW_CFG_SF_RATE_M                           GENMASK(13, 2)
--#define ANA_SFLOW_CFG_SF_RATE_X(x)                        (((x) & GENMASK(13, 2)) >> 2)
--#define ANA_SFLOW_CFG_SF_SAMPLE_RX                        BIT(1)
--#define ANA_SFLOW_CFG_SF_SAMPLE_TX                        BIT(0)
--
--#define ANA_PORT_MODE_RSZ                                 0x4
--
--#define ANA_PORT_MODE_REDTAG_PARSE_CFG                    BIT(3)
--#define ANA_PORT_MODE_VLAN_PARSE_CFG(x)                   (((x) << 1) & GENMASK(2, 1))
--#define ANA_PORT_MODE_VLAN_PARSE_CFG_M                    GENMASK(2, 1)
--#define ANA_PORT_MODE_VLAN_PARSE_CFG_X(x)                 (((x) & GENMASK(2, 1)) >> 1)
--#define ANA_PORT_MODE_L3_PARSE_CFG                        BIT(0)
--
--#define ANA_CUT_THRU_CFG_RSZ                              0x4
--
--#define ANA_PGID_PGID_RSZ                                 0x4
--
--#define ANA_PGID_PGID_PGID(x)                             ((x) & GENMASK(11, 0))
--#define ANA_PGID_PGID_PGID_M                              GENMASK(11, 0)
--#define ANA_PGID_PGID_CPUQ_DST_PGID(x)                    (((x) << 27) & GENMASK(29, 27))
--#define ANA_PGID_PGID_CPUQ_DST_PGID_M                     GENMASK(29, 27)
--#define ANA_PGID_PGID_CPUQ_DST_PGID_X(x)                  (((x) & GENMASK(29, 27)) >> 27)
--
--#define ANA_TABLES_MACHDATA_VID(x)                        (((x) << 16) & GENMASK(28, 16))
--#define ANA_TABLES_MACHDATA_VID_M                         GENMASK(28, 16)
--#define ANA_TABLES_MACHDATA_VID_X(x)                      (((x) & GENMASK(28, 16)) >> 16)
--#define ANA_TABLES_MACHDATA_MACHDATA(x)                   ((x) & GENMASK(15, 0))
--#define ANA_TABLES_MACHDATA_MACHDATA_M                    GENMASK(15, 0)
--
--#define ANA_TABLES_STREAMDATA_SSID_VALID                  BIT(16)
--#define ANA_TABLES_STREAMDATA_SSID(x)                     (((x) << 9) & GENMASK(15, 9))
--#define ANA_TABLES_STREAMDATA_SSID_M                      GENMASK(15, 9)
--#define ANA_TABLES_STREAMDATA_SSID_X(x)                   (((x) & GENMASK(15, 9)) >> 9)
--#define ANA_TABLES_STREAMDATA_SFID_VALID                  BIT(8)
--#define ANA_TABLES_STREAMDATA_SFID(x)                     ((x) & GENMASK(7, 0))
--#define ANA_TABLES_STREAMDATA_SFID_M                      GENMASK(7, 0)
--
--#define ANA_TABLES_MACACCESS_MAC_CPU_COPY                 BIT(15)
--#define ANA_TABLES_MACACCESS_SRC_KILL                     BIT(14)
--#define ANA_TABLES_MACACCESS_IGNORE_VLAN                  BIT(13)
--#define ANA_TABLES_MACACCESS_AGED_FLAG                    BIT(12)
--#define ANA_TABLES_MACACCESS_VALID                        BIT(11)
--#define ANA_TABLES_MACACCESS_ENTRYTYPE(x)                 (((x) << 9) & GENMASK(10, 9))
--#define ANA_TABLES_MACACCESS_ENTRYTYPE_M                  GENMASK(10, 9)
--#define ANA_TABLES_MACACCESS_ENTRYTYPE_X(x)               (((x) & GENMASK(10, 9)) >> 9)
--#define ANA_TABLES_MACACCESS_DEST_IDX(x)                  (((x) << 3) & GENMASK(8, 3))
--#define ANA_TABLES_MACACCESS_DEST_IDX_M                   GENMASK(8, 3)
--#define ANA_TABLES_MACACCESS_DEST_IDX_X(x)                (((x) & GENMASK(8, 3)) >> 3)
--#define ANA_TABLES_MACACCESS_MAC_TABLE_CMD(x)             ((x) & GENMASK(2, 0))
--#define ANA_TABLES_MACACCESS_MAC_TABLE_CMD_M              GENMASK(2, 0)
--#define MACACCESS_CMD_IDLE                     0
--#define MACACCESS_CMD_LEARN                    1
--#define MACACCESS_CMD_FORGET                   2
--#define MACACCESS_CMD_AGE                      3
--#define MACACCESS_CMD_GET_NEXT                 4
--#define MACACCESS_CMD_INIT                     5
--#define MACACCESS_CMD_READ                     6
--#define MACACCESS_CMD_WRITE                    7
--
--#define ANA_TABLES_VLANACCESS_VLAN_PORT_MASK(x)           (((x) << 2) & GENMASK(13, 2))
--#define ANA_TABLES_VLANACCESS_VLAN_PORT_MASK_M            GENMASK(13, 2)
--#define ANA_TABLES_VLANACCESS_VLAN_PORT_MASK_X(x)         (((x) & GENMASK(13, 2)) >> 2)
--#define ANA_TABLES_VLANACCESS_VLAN_TBL_CMD(x)             ((x) & GENMASK(1, 0))
--#define ANA_TABLES_VLANACCESS_VLAN_TBL_CMD_M              GENMASK(1, 0)
--#define ANA_TABLES_VLANACCESS_CMD_IDLE                    0x0
--#define ANA_TABLES_VLANACCESS_CMD_WRITE                   0x2
--#define ANA_TABLES_VLANACCESS_CMD_INIT                    0x3
--
--#define ANA_TABLES_VLANTIDX_VLAN_SEC_FWD_ENA              BIT(17)
--#define ANA_TABLES_VLANTIDX_VLAN_FLOOD_DIS                BIT(16)
--#define ANA_TABLES_VLANTIDX_VLAN_PRIV_VLAN                BIT(15)
--#define ANA_TABLES_VLANTIDX_VLAN_LEARN_DISABLED           BIT(14)
--#define ANA_TABLES_VLANTIDX_VLAN_MIRROR                   BIT(13)
--#define ANA_TABLES_VLANTIDX_VLAN_SRC_CHK                  BIT(12)
--#define ANA_TABLES_VLANTIDX_V_INDEX(x)                    ((x) & GENMASK(11, 0))
--#define ANA_TABLES_VLANTIDX_V_INDEX_M                     GENMASK(11, 0)
--
--#define ANA_TABLES_ISDXACCESS_ISDX_PORT_MASK(x)           (((x) << 2) & GENMASK(8, 2))
--#define ANA_TABLES_ISDXACCESS_ISDX_PORT_MASK_M            GENMASK(8, 2)
--#define ANA_TABLES_ISDXACCESS_ISDX_PORT_MASK_X(x)         (((x) & GENMASK(8, 2)) >> 2)
--#define ANA_TABLES_ISDXACCESS_ISDX_TBL_CMD(x)             ((x) & GENMASK(1, 0))
--#define ANA_TABLES_ISDXACCESS_ISDX_TBL_CMD_M              GENMASK(1, 0)
--
--#define ANA_TABLES_ISDXTIDX_ISDX_SDLBI(x)                 (((x) << 21) & GENMASK(28, 21))
--#define ANA_TABLES_ISDXTIDX_ISDX_SDLBI_M                  GENMASK(28, 21)
--#define ANA_TABLES_ISDXTIDX_ISDX_SDLBI_X(x)               (((x) & GENMASK(28, 21)) >> 21)
--#define ANA_TABLES_ISDXTIDX_ISDX_MSTI(x)                  (((x) << 15) & GENMASK(20, 15))
--#define ANA_TABLES_ISDXTIDX_ISDX_MSTI_M                   GENMASK(20, 15)
--#define ANA_TABLES_ISDXTIDX_ISDX_MSTI_X(x)                (((x) & GENMASK(20, 15)) >> 15)
--#define ANA_TABLES_ISDXTIDX_ISDX_ES0_KEY_ENA              BIT(14)
--#define ANA_TABLES_ISDXTIDX_ISDX_FORCE_ENA                BIT(10)
--#define ANA_TABLES_ISDXTIDX_ISDX_INDEX(x)                 ((x) & GENMASK(7, 0))
--#define ANA_TABLES_ISDXTIDX_ISDX_INDEX_M                  GENMASK(7, 0)
--
--#define ANA_TABLES_ENTRYLIM_RSZ                           0x4
--
--#define ANA_TABLES_ENTRYLIM_ENTRYLIM(x)                   (((x) << 14) & GENMASK(17, 14))
--#define ANA_TABLES_ENTRYLIM_ENTRYLIM_M                    GENMASK(17, 14)
--#define ANA_TABLES_ENTRYLIM_ENTRYLIM_X(x)                 (((x) & GENMASK(17, 14)) >> 14)
--#define ANA_TABLES_ENTRYLIM_ENTRYSTAT(x)                  ((x) & GENMASK(13, 0))
--#define ANA_TABLES_ENTRYLIM_ENTRYSTAT_M                   GENMASK(13, 0)
--
--#define ANA_TABLES_STREAMACCESS_GEN_REC_SEQ_NUM(x)        (((x) << 4) & GENMASK(31, 4))
--#define ANA_TABLES_STREAMACCESS_GEN_REC_SEQ_NUM_M         GENMASK(31, 4)
--#define ANA_TABLES_STREAMACCESS_GEN_REC_SEQ_NUM_X(x)      (((x) & GENMASK(31, 4)) >> 4)
--#define ANA_TABLES_STREAMACCESS_SEQ_GEN_REC_ENA           BIT(3)
--#define ANA_TABLES_STREAMACCESS_GEN_REC_TYPE              BIT(2)
--#define ANA_TABLES_STREAMACCESS_STREAM_TBL_CMD(x)         ((x) & GENMASK(1, 0))
--#define ANA_TABLES_STREAMACCESS_STREAM_TBL_CMD_M          GENMASK(1, 0)
--
--#define ANA_TABLES_STREAMTIDX_SEQ_GEN_ERR_STATUS(x)       (((x) << 30) & GENMASK(31, 30))
--#define ANA_TABLES_STREAMTIDX_SEQ_GEN_ERR_STATUS_M        GENMASK(31, 30)
--#define ANA_TABLES_STREAMTIDX_SEQ_GEN_ERR_STATUS_X(x)     (((x) & GENMASK(31, 30)) >> 30)
--#define ANA_TABLES_STREAMTIDX_S_INDEX(x)                  (((x) << 16) & GENMASK(22, 16))
--#define ANA_TABLES_STREAMTIDX_S_INDEX_M                   GENMASK(22, 16)
--#define ANA_TABLES_STREAMTIDX_S_INDEX_X(x)                (((x) & GENMASK(22, 16)) >> 16)
--#define ANA_TABLES_STREAMTIDX_FORCE_SF_BEHAVIOUR          BIT(14)
--#define ANA_TABLES_STREAMTIDX_SEQ_HISTORY_LEN(x)          (((x) << 8) & GENMASK(13, 8))
--#define ANA_TABLES_STREAMTIDX_SEQ_HISTORY_LEN_M           GENMASK(13, 8)
--#define ANA_TABLES_STREAMTIDX_SEQ_HISTORY_LEN_X(x)        (((x) & GENMASK(13, 8)) >> 8)
--#define ANA_TABLES_STREAMTIDX_RESET_ON_ROGUE              BIT(7)
--#define ANA_TABLES_STREAMTIDX_REDTAG_POP                  BIT(6)
--#define ANA_TABLES_STREAMTIDX_STREAM_SPLIT                BIT(5)
--#define ANA_TABLES_STREAMTIDX_SEQ_SPACE_LOG2(x)           ((x) & GENMASK(4, 0))
--#define ANA_TABLES_STREAMTIDX_SEQ_SPACE_LOG2_M            GENMASK(4, 0)
--
--#define ANA_TABLES_SEQ_MASK_SPLIT_MASK(x)                 (((x) << 16) & GENMASK(22, 16))
--#define ANA_TABLES_SEQ_MASK_SPLIT_MASK_M                  GENMASK(22, 16)
--#define ANA_TABLES_SEQ_MASK_SPLIT_MASK_X(x)               (((x) & GENMASK(22, 16)) >> 16)
--#define ANA_TABLES_SEQ_MASK_INPUT_PORT_MASK(x)            ((x) & GENMASK(6, 0))
--#define ANA_TABLES_SEQ_MASK_INPUT_PORT_MASK_M             GENMASK(6, 0)
--
--#define ANA_TABLES_SFID_MASK_IGR_PORT_MASK(x)             (((x) << 1) & GENMASK(7, 1))
--#define ANA_TABLES_SFID_MASK_IGR_PORT_MASK_M              GENMASK(7, 1)
--#define ANA_TABLES_SFID_MASK_IGR_PORT_MASK_X(x)           (((x) & GENMASK(7, 1)) >> 1)
--#define ANA_TABLES_SFID_MASK_IGR_SRCPORT_MATCH_ENA        BIT(0)
--
--#define ANA_TABLES_SFIDACCESS_IGR_PRIO_MATCH_ENA          BIT(22)
--#define ANA_TABLES_SFIDACCESS_IGR_PRIO(x)                 (((x) << 19) & GENMASK(21, 19))
--#define ANA_TABLES_SFIDACCESS_IGR_PRIO_M                  GENMASK(21, 19)
--#define ANA_TABLES_SFIDACCESS_IGR_PRIO_X(x)               (((x) & GENMASK(21, 19)) >> 19)
--#define ANA_TABLES_SFIDACCESS_FORCE_BLOCK                 BIT(18)
--#define ANA_TABLES_SFIDACCESS_MAX_SDU_LEN(x)              (((x) << 2) & GENMASK(17, 2))
--#define ANA_TABLES_SFIDACCESS_MAX_SDU_LEN_M               GENMASK(17, 2)
--#define ANA_TABLES_SFIDACCESS_MAX_SDU_LEN_X(x)            (((x) & GENMASK(17, 2)) >> 2)
--#define ANA_TABLES_SFIDACCESS_SFID_TBL_CMD(x)             ((x) & GENMASK(1, 0))
--#define ANA_TABLES_SFIDACCESS_SFID_TBL_CMD_M              GENMASK(1, 0)
--
--#define ANA_TABLES_SFIDTIDX_SGID_VALID                    BIT(26)
--#define ANA_TABLES_SFIDTIDX_SGID(x)                       (((x) << 18) & GENMASK(25, 18))
--#define ANA_TABLES_SFIDTIDX_SGID_M                        GENMASK(25, 18)
--#define ANA_TABLES_SFIDTIDX_SGID_X(x)                     (((x) & GENMASK(25, 18)) >> 18)
--#define ANA_TABLES_SFIDTIDX_POL_ENA                       BIT(17)
--#define ANA_TABLES_SFIDTIDX_POL_IDX(x)                    (((x) << 8) & GENMASK(16, 8))
--#define ANA_TABLES_SFIDTIDX_POL_IDX_M                     GENMASK(16, 8)
--#define ANA_TABLES_SFIDTIDX_POL_IDX_X(x)                  (((x) & GENMASK(16, 8)) >> 8)
--#define ANA_TABLES_SFIDTIDX_SFID_INDEX(x)                 ((x) & GENMASK(7, 0))
--#define ANA_TABLES_SFIDTIDX_SFID_INDEX_M                  GENMASK(7, 0)
--
--#define ANA_MSTI_STATE_RSZ                                0x4
--
--#define ANA_OAM_UPM_LM_CNT_RSZ                            0x4
--
--#define ANA_SG_ACCESS_CTRL_SGID(x)                        ((x) & GENMASK(7, 0))
--#define ANA_SG_ACCESS_CTRL_SGID_M                         GENMASK(7, 0)
--#define ANA_SG_ACCESS_CTRL_CONFIG_CHANGE                  BIT(28)
--
--#define ANA_SG_CONFIG_REG_3_BASE_TIME_SEC_MSB(x)          ((x) & GENMASK(15, 0))
--#define ANA_SG_CONFIG_REG_3_BASE_TIME_SEC_MSB_M           GENMASK(15, 0)
--#define ANA_SG_CONFIG_REG_3_LIST_LENGTH(x)                (((x) << 16) & GENMASK(18, 16))
--#define ANA_SG_CONFIG_REG_3_LIST_LENGTH_M                 GENMASK(18, 16)
--#define ANA_SG_CONFIG_REG_3_LIST_LENGTH_X(x)              (((x) & GENMASK(18, 16)) >> 16)
--#define ANA_SG_CONFIG_REG_3_GATE_ENABLE                   BIT(20)
--#define ANA_SG_CONFIG_REG_3_INIT_IPS(x)                   (((x) << 24) & GENMASK(27, 24))
--#define ANA_SG_CONFIG_REG_3_INIT_IPS_M                    GENMASK(27, 24)
--#define ANA_SG_CONFIG_REG_3_INIT_IPS_X(x)                 (((x) & GENMASK(27, 24)) >> 24)
--#define ANA_SG_CONFIG_REG_3_INIT_GATE_STATE               BIT(28)
--
--#define ANA_SG_GCL_GS_CONFIG_RSZ                          0x4
--
--#define ANA_SG_GCL_GS_CONFIG_IPS(x)                       ((x) & GENMASK(3, 0))
--#define ANA_SG_GCL_GS_CONFIG_IPS_M                        GENMASK(3, 0)
--#define ANA_SG_GCL_GS_CONFIG_GATE_STATE                   BIT(4)
--
--#define ANA_SG_GCL_TI_CONFIG_RSZ                          0x4
--
--#define ANA_SG_STATUS_REG_3_CFG_CHG_TIME_SEC_MSB(x)       ((x) & GENMASK(15, 0))
--#define ANA_SG_STATUS_REG_3_CFG_CHG_TIME_SEC_MSB_M        GENMASK(15, 0)
--#define ANA_SG_STATUS_REG_3_GATE_STATE                    BIT(16)
--#define ANA_SG_STATUS_REG_3_IPS(x)                        (((x) << 20) & GENMASK(23, 20))
--#define ANA_SG_STATUS_REG_3_IPS_M                         GENMASK(23, 20)
--#define ANA_SG_STATUS_REG_3_IPS_X(x)                      (((x) & GENMASK(23, 20)) >> 20)
--#define ANA_SG_STATUS_REG_3_CONFIG_PENDING                BIT(24)
--
--#define ANA_PORT_VLAN_CFG_GSZ                             0x100
--
--#define ANA_PORT_VLAN_CFG_VLAN_VID_AS_ISDX                BIT(21)
--#define ANA_PORT_VLAN_CFG_VLAN_AWARE_ENA                  BIT(20)
--#define ANA_PORT_VLAN_CFG_VLAN_POP_CNT(x)                 (((x) << 18) & GENMASK(19, 18))
--#define ANA_PORT_VLAN_CFG_VLAN_POP_CNT_M                  GENMASK(19, 18)
--#define ANA_PORT_VLAN_CFG_VLAN_POP_CNT_X(x)               (((x) & GENMASK(19, 18)) >> 18)
--#define ANA_PORT_VLAN_CFG_VLAN_INNER_TAG_ENA              BIT(17)
--#define ANA_PORT_VLAN_CFG_VLAN_TAG_TYPE                   BIT(16)
--#define ANA_PORT_VLAN_CFG_VLAN_DEI                        BIT(15)
--#define ANA_PORT_VLAN_CFG_VLAN_PCP(x)                     (((x) << 12) & GENMASK(14, 12))
--#define ANA_PORT_VLAN_CFG_VLAN_PCP_M                      GENMASK(14, 12)
--#define ANA_PORT_VLAN_CFG_VLAN_PCP_X(x)                   (((x) & GENMASK(14, 12)) >> 12)
--#define ANA_PORT_VLAN_CFG_VLAN_VID(x)                     ((x) & GENMASK(11, 0))
--#define ANA_PORT_VLAN_CFG_VLAN_VID_M                      GENMASK(11, 0)
--
--#define ANA_PORT_DROP_CFG_GSZ                             0x100
--
--#define ANA_PORT_DROP_CFG_DROP_UNTAGGED_ENA               BIT(6)
--#define ANA_PORT_DROP_CFG_DROP_S_TAGGED_ENA               BIT(5)
--#define ANA_PORT_DROP_CFG_DROP_C_TAGGED_ENA               BIT(4)
--#define ANA_PORT_DROP_CFG_DROP_PRIO_S_TAGGED_ENA          BIT(3)
--#define ANA_PORT_DROP_CFG_DROP_PRIO_C_TAGGED_ENA          BIT(2)
--#define ANA_PORT_DROP_CFG_DROP_NULL_MAC_ENA               BIT(1)
--#define ANA_PORT_DROP_CFG_DROP_MC_SMAC_ENA                BIT(0)
--
--#define ANA_PORT_QOS_CFG_GSZ                              0x100
--
--#define ANA_PORT_QOS_CFG_DP_DEFAULT_VAL                   BIT(8)
--#define ANA_PORT_QOS_CFG_QOS_DEFAULT_VAL(x)               (((x) << 5) & GENMASK(7, 5))
--#define ANA_PORT_QOS_CFG_QOS_DEFAULT_VAL_M                GENMASK(7, 5)
--#define ANA_PORT_QOS_CFG_QOS_DEFAULT_VAL_X(x)             (((x) & GENMASK(7, 5)) >> 5)
--#define ANA_PORT_QOS_CFG_QOS_DSCP_ENA                     BIT(4)
--#define ANA_PORT_QOS_CFG_QOS_PCP_ENA                      BIT(3)
--#define ANA_PORT_QOS_CFG_DSCP_TRANSLATE_ENA               BIT(2)
--#define ANA_PORT_QOS_CFG_DSCP_REWR_CFG(x)                 ((x) & GENMASK(1, 0))
--#define ANA_PORT_QOS_CFG_DSCP_REWR_CFG_M                  GENMASK(1, 0)
--
--#define ANA_PORT_VCAP_CFG_GSZ                             0x100
--
--#define ANA_PORT_VCAP_CFG_S1_ENA                          BIT(14)
--#define ANA_PORT_VCAP_CFG_S1_DMAC_DIP_ENA(x)              (((x) << 11) & GENMASK(13, 11))
--#define ANA_PORT_VCAP_CFG_S1_DMAC_DIP_ENA_M               GENMASK(13, 11)
--#define ANA_PORT_VCAP_CFG_S1_DMAC_DIP_ENA_X(x)            (((x) & GENMASK(13, 11)) >> 11)
--#define ANA_PORT_VCAP_CFG_S1_VLAN_INNER_TAG_ENA(x)        (((x) << 8) & GENMASK(10, 8))
--#define ANA_PORT_VCAP_CFG_S1_VLAN_INNER_TAG_ENA_M         GENMASK(10, 8)
--#define ANA_PORT_VCAP_CFG_S1_VLAN_INNER_TAG_ENA_X(x)      (((x) & GENMASK(10, 8)) >> 8)
--#define ANA_PORT_VCAP_CFG_PAG_VAL(x)                      ((x) & GENMASK(7, 0))
--#define ANA_PORT_VCAP_CFG_PAG_VAL_M                       GENMASK(7, 0)
--
--#define ANA_PORT_VCAP_S1_KEY_CFG_GSZ                      0x100
--#define ANA_PORT_VCAP_S1_KEY_CFG_RSZ                      0x4
--
--#define ANA_PORT_VCAP_S1_KEY_CFG_S1_KEY_IP6_CFG(x)        (((x) << 4) & GENMASK(6, 4))
--#define ANA_PORT_VCAP_S1_KEY_CFG_S1_KEY_IP6_CFG_M         GENMASK(6, 4)
--#define ANA_PORT_VCAP_S1_KEY_CFG_S1_KEY_IP6_CFG_X(x)      (((x) & GENMASK(6, 4)) >> 4)
--#define ANA_PORT_VCAP_S1_KEY_CFG_S1_KEY_IP4_CFG(x)        (((x) << 2) & GENMASK(3, 2))
--#define ANA_PORT_VCAP_S1_KEY_CFG_S1_KEY_IP4_CFG_M         GENMASK(3, 2)
--#define ANA_PORT_VCAP_S1_KEY_CFG_S1_KEY_IP4_CFG_X(x)      (((x) & GENMASK(3, 2)) >> 2)
--#define ANA_PORT_VCAP_S1_KEY_CFG_S1_KEY_OTHER_CFG(x)      ((x) & GENMASK(1, 0))
--#define ANA_PORT_VCAP_S1_KEY_CFG_S1_KEY_OTHER_CFG_M       GENMASK(1, 0)
--
--#define ANA_PORT_VCAP_S2_CFG_GSZ                          0x100
--
--#define ANA_PORT_VCAP_S2_CFG_S2_UDP_PAYLOAD_ENA(x)        (((x) << 17) & GENMASK(18, 17))
--#define ANA_PORT_VCAP_S2_CFG_S2_UDP_PAYLOAD_ENA_M         GENMASK(18, 17)
--#define ANA_PORT_VCAP_S2_CFG_S2_UDP_PAYLOAD_ENA_X(x)      (((x) & GENMASK(18, 17)) >> 17)
--#define ANA_PORT_VCAP_S2_CFG_S2_ETYPE_PAYLOAD_ENA(x)      (((x) << 15) & GENMASK(16, 15))
--#define ANA_PORT_VCAP_S2_CFG_S2_ETYPE_PAYLOAD_ENA_M       GENMASK(16, 15)
--#define ANA_PORT_VCAP_S2_CFG_S2_ETYPE_PAYLOAD_ENA_X(x)    (((x) & GENMASK(16, 15)) >> 15)
--#define ANA_PORT_VCAP_S2_CFG_S2_ENA                       BIT(14)
--#define ANA_PORT_VCAP_S2_CFG_S2_SNAP_DIS(x)               (((x) << 12) & GENMASK(13, 12))
--#define ANA_PORT_VCAP_S2_CFG_S2_SNAP_DIS_M                GENMASK(13, 12)
--#define ANA_PORT_VCAP_S2_CFG_S2_SNAP_DIS_X(x)             (((x) & GENMASK(13, 12)) >> 12)
--#define ANA_PORT_VCAP_S2_CFG_S2_ARP_DIS(x)                (((x) << 10) & GENMASK(11, 10))
--#define ANA_PORT_VCAP_S2_CFG_S2_ARP_DIS_M                 GENMASK(11, 10)
--#define ANA_PORT_VCAP_S2_CFG_S2_ARP_DIS_X(x)              (((x) & GENMASK(11, 10)) >> 10)
--#define ANA_PORT_VCAP_S2_CFG_S2_IP_TCPUDP_DIS(x)          (((x) << 8) & GENMASK(9, 8))
--#define ANA_PORT_VCAP_S2_CFG_S2_IP_TCPUDP_DIS_M           GENMASK(9, 8)
--#define ANA_PORT_VCAP_S2_CFG_S2_IP_TCPUDP_DIS_X(x)        (((x) & GENMASK(9, 8)) >> 8)
--#define ANA_PORT_VCAP_S2_CFG_S2_IP_OTHER_DIS(x)           (((x) << 6) & GENMASK(7, 6))
--#define ANA_PORT_VCAP_S2_CFG_S2_IP_OTHER_DIS_M            GENMASK(7, 6)
--#define ANA_PORT_VCAP_S2_CFG_S2_IP_OTHER_DIS_X(x)         (((x) & GENMASK(7, 6)) >> 6)
--#define ANA_PORT_VCAP_S2_CFG_S2_IP6_CFG(x)                (((x) << 2) & GENMASK(5, 2))
--#define ANA_PORT_VCAP_S2_CFG_S2_IP6_CFG_M                 GENMASK(5, 2)
--#define ANA_PORT_VCAP_S2_CFG_S2_IP6_CFG_X(x)              (((x) & GENMASK(5, 2)) >> 2)
--#define ANA_PORT_VCAP_S2_CFG_S2_OAM_DIS(x)                ((x) & GENMASK(1, 0))
--#define ANA_PORT_VCAP_S2_CFG_S2_OAM_DIS_M                 GENMASK(1, 0)
--
--#define ANA_PORT_PCP_DEI_MAP_GSZ                          0x100
--#define ANA_PORT_PCP_DEI_MAP_RSZ                          0x4
--
--#define ANA_PORT_PCP_DEI_MAP_DP_PCP_DEI_VAL               BIT(3)
--#define ANA_PORT_PCP_DEI_MAP_QOS_PCP_DEI_VAL(x)           ((x) & GENMASK(2, 0))
--#define ANA_PORT_PCP_DEI_MAP_QOS_PCP_DEI_VAL_M            GENMASK(2, 0)
--
--#define ANA_PORT_CPU_FWD_CFG_GSZ                          0x100
--
--#define ANA_PORT_CPU_FWD_CFG_CPU_VRAP_REDIR_ENA           BIT(7)
--#define ANA_PORT_CPU_FWD_CFG_CPU_MLD_REDIR_ENA            BIT(6)
--#define ANA_PORT_CPU_FWD_CFG_CPU_IGMP_REDIR_ENA           BIT(5)
--#define ANA_PORT_CPU_FWD_CFG_CPU_IPMC_CTRL_COPY_ENA       BIT(4)
--#define ANA_PORT_CPU_FWD_CFG_CPU_SRC_COPY_ENA             BIT(3)
--#define ANA_PORT_CPU_FWD_CFG_CPU_ALLBRIDGE_DROP_ENA       BIT(2)
--#define ANA_PORT_CPU_FWD_CFG_CPU_ALLBRIDGE_REDIR_ENA      BIT(1)
--#define ANA_PORT_CPU_FWD_CFG_CPU_OAM_ENA                  BIT(0)
--
--#define ANA_PORT_CPU_FWD_BPDU_CFG_GSZ                     0x100
--
--#define ANA_PORT_CPU_FWD_BPDU_CFG_BPDU_DROP_ENA(x)        (((x) << 16) & GENMASK(31, 16))
--#define ANA_PORT_CPU_FWD_BPDU_CFG_BPDU_DROP_ENA_M         GENMASK(31, 16)
--#define ANA_PORT_CPU_FWD_BPDU_CFG_BPDU_DROP_ENA_X(x)      (((x) & GENMASK(31, 16)) >> 16)
--#define ANA_PORT_CPU_FWD_BPDU_CFG_BPDU_REDIR_ENA(x)       ((x) & GENMASK(15, 0))
--#define ANA_PORT_CPU_FWD_BPDU_CFG_BPDU_REDIR_ENA_M        GENMASK(15, 0)
--
--#define ANA_PORT_CPU_FWD_GARP_CFG_GSZ                     0x100
--
--#define ANA_PORT_CPU_FWD_GARP_CFG_GARP_DROP_ENA(x)        (((x) << 16) & GENMASK(31, 16))
--#define ANA_PORT_CPU_FWD_GARP_CFG_GARP_DROP_ENA_M         GENMASK(31, 16)
--#define ANA_PORT_CPU_FWD_GARP_CFG_GARP_DROP_ENA_X(x)      (((x) & GENMASK(31, 16)) >> 16)
--#define ANA_PORT_CPU_FWD_GARP_CFG_GARP_REDIR_ENA(x)       ((x) & GENMASK(15, 0))
--#define ANA_PORT_CPU_FWD_GARP_CFG_GARP_REDIR_ENA_M        GENMASK(15, 0)
--
--#define ANA_PORT_CPU_FWD_CCM_CFG_GSZ                      0x100
--
--#define ANA_PORT_CPU_FWD_CCM_CFG_CCM_DROP_ENA(x)          (((x) << 16) & GENMASK(31, 16))
--#define ANA_PORT_CPU_FWD_CCM_CFG_CCM_DROP_ENA_M           GENMASK(31, 16)
--#define ANA_PORT_CPU_FWD_CCM_CFG_CCM_DROP_ENA_X(x)        (((x) & GENMASK(31, 16)) >> 16)
--#define ANA_PORT_CPU_FWD_CCM_CFG_CCM_REDIR_ENA(x)         ((x) & GENMASK(15, 0))
--#define ANA_PORT_CPU_FWD_CCM_CFG_CCM_REDIR_ENA_M          GENMASK(15, 0)
--
--#define ANA_PORT_PORT_CFG_GSZ                             0x100
--
--#define ANA_PORT_PORT_CFG_SRC_MIRROR_ENA                  BIT(15)
--#define ANA_PORT_PORT_CFG_LIMIT_DROP                      BIT(14)
--#define ANA_PORT_PORT_CFG_LIMIT_CPU                       BIT(13)
--#define ANA_PORT_PORT_CFG_LOCKED_PORTMOVE_DROP            BIT(12)
--#define ANA_PORT_PORT_CFG_LOCKED_PORTMOVE_CPU             BIT(11)
--#define ANA_PORT_PORT_CFG_LEARNDROP                       BIT(10)
--#define ANA_PORT_PORT_CFG_LEARNCPU                        BIT(9)
--#define ANA_PORT_PORT_CFG_LEARNAUTO                       BIT(8)
--#define ANA_PORT_PORT_CFG_LEARN_ENA                       BIT(7)
--#define ANA_PORT_PORT_CFG_RECV_ENA                        BIT(6)
--#define ANA_PORT_PORT_CFG_PORTID_VAL(x)                   (((x) << 2) & GENMASK(5, 2))
--#define ANA_PORT_PORT_CFG_PORTID_VAL_M                    GENMASK(5, 2)
--#define ANA_PORT_PORT_CFG_PORTID_VAL_X(x)                 (((x) & GENMASK(5, 2)) >> 2)
--#define ANA_PORT_PORT_CFG_USE_B_DOM_TBL                   BIT(1)
--#define ANA_PORT_PORT_CFG_LSR_MODE                        BIT(0)
--
--#define ANA_PORT_POL_CFG_GSZ                              0x100
--
--#define ANA_PORT_POL_CFG_POL_CPU_REDIR_8021               BIT(19)
--#define ANA_PORT_POL_CFG_POL_CPU_REDIR_IP                 BIT(18)
--#define ANA_PORT_POL_CFG_PORT_POL_ENA                     BIT(17)
--#define ANA_PORT_POL_CFG_QUEUE_POL_ENA(x)                 (((x) << 9) & GENMASK(16, 9))
--#define ANA_PORT_POL_CFG_QUEUE_POL_ENA_M                  GENMASK(16, 9)
--#define ANA_PORT_POL_CFG_QUEUE_POL_ENA_X(x)               (((x) & GENMASK(16, 9)) >> 9)
--#define ANA_PORT_POL_CFG_POL_ORDER(x)                     ((x) & GENMASK(8, 0))
--#define ANA_PORT_POL_CFG_POL_ORDER_M                      GENMASK(8, 0)
--
--#define ANA_PORT_PTP_CFG_GSZ                              0x100
--
--#define ANA_PORT_PTP_CFG_PTP_BACKPLANE_MODE               BIT(0)
--
--#define ANA_PORT_PTP_DLY1_CFG_GSZ                         0x100
--
--#define ANA_PORT_PTP_DLY2_CFG_GSZ                         0x100
--
--#define ANA_PORT_SFID_CFG_GSZ                             0x100
--#define ANA_PORT_SFID_CFG_RSZ                             0x4
--
--#define ANA_PORT_SFID_CFG_SFID_VALID                      BIT(8)
--#define ANA_PORT_SFID_CFG_SFID(x)                         ((x) & GENMASK(7, 0))
--#define ANA_PORT_SFID_CFG_SFID_M                          GENMASK(7, 0)
--
--#define ANA_PFC_PFC_CFG_GSZ                               0x40
--
--#define ANA_PFC_PFC_CFG_RX_PFC_ENA(x)                     (((x) << 2) & GENMASK(9, 2))
--#define ANA_PFC_PFC_CFG_RX_PFC_ENA_M                      GENMASK(9, 2)
--#define ANA_PFC_PFC_CFG_RX_PFC_ENA_X(x)                   (((x) & GENMASK(9, 2)) >> 2)
--#define ANA_PFC_PFC_CFG_FC_LINK_SPEED(x)                  ((x) & GENMASK(1, 0))
--#define ANA_PFC_PFC_CFG_FC_LINK_SPEED_M                   GENMASK(1, 0)
--
--#define ANA_PFC_PFC_TIMER_GSZ                             0x40
--#define ANA_PFC_PFC_TIMER_RSZ                             0x4
--
--#define ANA_IPT_OAM_MEP_CFG_GSZ                           0x8
--
--#define ANA_IPT_OAM_MEP_CFG_MEP_IDX_P(x)                  (((x) << 6) & GENMASK(10, 6))
--#define ANA_IPT_OAM_MEP_CFG_MEP_IDX_P_M                   GENMASK(10, 6)
--#define ANA_IPT_OAM_MEP_CFG_MEP_IDX_P_X(x)                (((x) & GENMASK(10, 6)) >> 6)
--#define ANA_IPT_OAM_MEP_CFG_MEP_IDX(x)                    (((x) << 1) & GENMASK(5, 1))
--#define ANA_IPT_OAM_MEP_CFG_MEP_IDX_M                     GENMASK(5, 1)
--#define ANA_IPT_OAM_MEP_CFG_MEP_IDX_X(x)                  (((x) & GENMASK(5, 1)) >> 1)
--#define ANA_IPT_OAM_MEP_CFG_MEP_IDX_ENA                   BIT(0)
--
--#define ANA_IPT_IPT_GSZ                                   0x8
--
--#define ANA_IPT_IPT_IPT_CFG(x)                            (((x) << 15) & GENMASK(16, 15))
--#define ANA_IPT_IPT_IPT_CFG_M                             GENMASK(16, 15)
--#define ANA_IPT_IPT_IPT_CFG_X(x)                          (((x) & GENMASK(16, 15)) >> 15)
--#define ANA_IPT_IPT_ISDX_P(x)                             (((x) << 7) & GENMASK(14, 7))
--#define ANA_IPT_IPT_ISDX_P_M                              GENMASK(14, 7)
--#define ANA_IPT_IPT_ISDX_P_X(x)                           (((x) & GENMASK(14, 7)) >> 7)
--#define ANA_IPT_IPT_PPT_IDX(x)                            ((x) & GENMASK(6, 0))
--#define ANA_IPT_IPT_PPT_IDX_M                             GENMASK(6, 0)
--
--#define ANA_PPT_PPT_RSZ                                   0x4
--
--#define ANA_FID_MAP_FID_MAP_RSZ                           0x4
--
--#define ANA_FID_MAP_FID_MAP_FID_C_VAL(x)                  (((x) << 6) & GENMASK(11, 6))
--#define ANA_FID_MAP_FID_MAP_FID_C_VAL_M                   GENMASK(11, 6)
--#define ANA_FID_MAP_FID_MAP_FID_C_VAL_X(x)                (((x) & GENMASK(11, 6)) >> 6)
--#define ANA_FID_MAP_FID_MAP_FID_B_VAL(x)                  ((x) & GENMASK(5, 0))
--#define ANA_FID_MAP_FID_MAP_FID_B_VAL_M                   GENMASK(5, 0)
--
--#define ANA_AGGR_CFG_AC_RND_ENA                           BIT(7)
--#define ANA_AGGR_CFG_AC_DMAC_ENA                          BIT(6)
--#define ANA_AGGR_CFG_AC_SMAC_ENA                          BIT(5)
--#define ANA_AGGR_CFG_AC_IP6_FLOW_LBL_ENA                  BIT(4)
--#define ANA_AGGR_CFG_AC_IP6_TCPUDP_ENA                    BIT(3)
--#define ANA_AGGR_CFG_AC_IP4_SIPDIP_ENA                    BIT(2)
--#define ANA_AGGR_CFG_AC_IP4_TCPUDP_ENA                    BIT(1)
--#define ANA_AGGR_CFG_AC_ISDX_ENA                          BIT(0)
--
--#define ANA_CPUQ_CFG_CPUQ_MLD(x)                          (((x) << 27) & GENMASK(29, 27))
--#define ANA_CPUQ_CFG_CPUQ_MLD_M                           GENMASK(29, 27)
--#define ANA_CPUQ_CFG_CPUQ_MLD_X(x)                        (((x) & GENMASK(29, 27)) >> 27)
--#define ANA_CPUQ_CFG_CPUQ_IGMP(x)                         (((x) << 24) & GENMASK(26, 24))
--#define ANA_CPUQ_CFG_CPUQ_IGMP_M                          GENMASK(26, 24)
--#define ANA_CPUQ_CFG_CPUQ_IGMP_X(x)                       (((x) & GENMASK(26, 24)) >> 24)
--#define ANA_CPUQ_CFG_CPUQ_IPMC_CTRL(x)                    (((x) << 21) & GENMASK(23, 21))
--#define ANA_CPUQ_CFG_CPUQ_IPMC_CTRL_M                     GENMASK(23, 21)
--#define ANA_CPUQ_CFG_CPUQ_IPMC_CTRL_X(x)                  (((x) & GENMASK(23, 21)) >> 21)
--#define ANA_CPUQ_CFG_CPUQ_ALLBRIDGE(x)                    (((x) << 18) & GENMASK(20, 18))
--#define ANA_CPUQ_CFG_CPUQ_ALLBRIDGE_M                     GENMASK(20, 18)
--#define ANA_CPUQ_CFG_CPUQ_ALLBRIDGE_X(x)                  (((x) & GENMASK(20, 18)) >> 18)
--#define ANA_CPUQ_CFG_CPUQ_LOCKED_PORTMOVE(x)              (((x) << 15) & GENMASK(17, 15))
--#define ANA_CPUQ_CFG_CPUQ_LOCKED_PORTMOVE_M               GENMASK(17, 15)
--#define ANA_CPUQ_CFG_CPUQ_LOCKED_PORTMOVE_X(x)            (((x) & GENMASK(17, 15)) >> 15)
--#define ANA_CPUQ_CFG_CPUQ_SRC_COPY(x)                     (((x) << 12) & GENMASK(14, 12))
--#define ANA_CPUQ_CFG_CPUQ_SRC_COPY_M                      GENMASK(14, 12)
--#define ANA_CPUQ_CFG_CPUQ_SRC_COPY_X(x)                   (((x) & GENMASK(14, 12)) >> 12)
--#define ANA_CPUQ_CFG_CPUQ_MAC_COPY(x)                     (((x) << 9) & GENMASK(11, 9))
--#define ANA_CPUQ_CFG_CPUQ_MAC_COPY_M                      GENMASK(11, 9)
--#define ANA_CPUQ_CFG_CPUQ_MAC_COPY_X(x)                   (((x) & GENMASK(11, 9)) >> 9)
--#define ANA_CPUQ_CFG_CPUQ_LRN(x)                          (((x) << 6) & GENMASK(8, 6))
--#define ANA_CPUQ_CFG_CPUQ_LRN_M                           GENMASK(8, 6)
--#define ANA_CPUQ_CFG_CPUQ_LRN_X(x)                        (((x) & GENMASK(8, 6)) >> 6)
--#define ANA_CPUQ_CFG_CPUQ_MIRROR(x)                       (((x) << 3) & GENMASK(5, 3))
--#define ANA_CPUQ_CFG_CPUQ_MIRROR_M                        GENMASK(5, 3)
--#define ANA_CPUQ_CFG_CPUQ_MIRROR_X(x)                     (((x) & GENMASK(5, 3)) >> 3)
--#define ANA_CPUQ_CFG_CPUQ_SFLOW(x)                        ((x) & GENMASK(2, 0))
--#define ANA_CPUQ_CFG_CPUQ_SFLOW_M                         GENMASK(2, 0)
--
--#define ANA_CPUQ_8021_CFG_RSZ                             0x4
--
--#define ANA_CPUQ_8021_CFG_CPUQ_BPDU_VAL(x)                (((x) << 6) & GENMASK(8, 6))
--#define ANA_CPUQ_8021_CFG_CPUQ_BPDU_VAL_M                 GENMASK(8, 6)
--#define ANA_CPUQ_8021_CFG_CPUQ_BPDU_VAL_X(x)              (((x) & GENMASK(8, 6)) >> 6)
--#define ANA_CPUQ_8021_CFG_CPUQ_GARP_VAL(x)                (((x) << 3) & GENMASK(5, 3))
--#define ANA_CPUQ_8021_CFG_CPUQ_GARP_VAL_M                 GENMASK(5, 3)
--#define ANA_CPUQ_8021_CFG_CPUQ_GARP_VAL_X(x)              (((x) & GENMASK(5, 3)) >> 3)
--#define ANA_CPUQ_8021_CFG_CPUQ_CCM_VAL(x)                 ((x) & GENMASK(2, 0))
--#define ANA_CPUQ_8021_CFG_CPUQ_CCM_VAL_M                  GENMASK(2, 0)
--
--#define ANA_DSCP_CFG_RSZ                                  0x4
--
--#define ANA_DSCP_CFG_DP_DSCP_VAL                          BIT(11)
--#define ANA_DSCP_CFG_QOS_DSCP_VAL(x)                      (((x) << 8) & GENMASK(10, 8))
--#define ANA_DSCP_CFG_QOS_DSCP_VAL_M                       GENMASK(10, 8)
--#define ANA_DSCP_CFG_QOS_DSCP_VAL_X(x)                    (((x) & GENMASK(10, 8)) >> 8)
--#define ANA_DSCP_CFG_DSCP_TRANSLATE_VAL(x)                (((x) << 2) & GENMASK(7, 2))
--#define ANA_DSCP_CFG_DSCP_TRANSLATE_VAL_M                 GENMASK(7, 2)
--#define ANA_DSCP_CFG_DSCP_TRANSLATE_VAL_X(x)              (((x) & GENMASK(7, 2)) >> 2)
--#define ANA_DSCP_CFG_DSCP_TRUST_ENA                       BIT(1)
--#define ANA_DSCP_CFG_DSCP_REWR_ENA                        BIT(0)
--
--#define ANA_DSCP_REWR_CFG_RSZ                             0x4
--
--#define ANA_VCAP_RNG_TYPE_CFG_RSZ                         0x4
--
--#define ANA_VCAP_RNG_VAL_CFG_RSZ                          0x4
--
--#define ANA_VCAP_RNG_VAL_CFG_VCAP_RNG_MIN_VAL(x)          (((x) << 16) & GENMASK(31, 16))
--#define ANA_VCAP_RNG_VAL_CFG_VCAP_RNG_MIN_VAL_M           GENMASK(31, 16)
--#define ANA_VCAP_RNG_VAL_CFG_VCAP_RNG_MIN_VAL_X(x)        (((x) & GENMASK(31, 16)) >> 16)
--#define ANA_VCAP_RNG_VAL_CFG_VCAP_RNG_MAX_VAL(x)          ((x) & GENMASK(15, 0))
--#define ANA_VCAP_RNG_VAL_CFG_VCAP_RNG_MAX_VAL_M           GENMASK(15, 0)
--
--#define ANA_VRAP_CFG_VRAP_VLAN_AWARE_ENA                  BIT(12)
--#define ANA_VRAP_CFG_VRAP_VID(x)                          ((x) & GENMASK(11, 0))
--#define ANA_VRAP_CFG_VRAP_VID_M                           GENMASK(11, 0)
--
--#define ANA_DISCARD_CFG_DROP_TAGGING_ISDX0                BIT(3)
--#define ANA_DISCARD_CFG_DROP_CTRLPROT_ISDX0               BIT(2)
--#define ANA_DISCARD_CFG_DROP_TAGGING_S2_ENA               BIT(1)
--#define ANA_DISCARD_CFG_DROP_CTRLPROT_S2_ENA              BIT(0)
--
--#define ANA_FID_CFG_VID_MC_ENA                            BIT(0)
--
--#define ANA_POL_PIR_CFG_GSZ                               0x20
--
--#define ANA_POL_PIR_CFG_PIR_RATE(x)                       (((x) << 6) & GENMASK(20, 6))
--#define ANA_POL_PIR_CFG_PIR_RATE_M                        GENMASK(20, 6)
--#define ANA_POL_PIR_CFG_PIR_RATE_X(x)                     (((x) & GENMASK(20, 6)) >> 6)
--#define ANA_POL_PIR_CFG_PIR_BURST(x)                      ((x) & GENMASK(5, 0))
--#define ANA_POL_PIR_CFG_PIR_BURST_M                       GENMASK(5, 0)
--
--#define ANA_POL_CIR_CFG_GSZ                               0x20
--
--#define ANA_POL_CIR_CFG_CIR_RATE(x)                       (((x) << 6) & GENMASK(20, 6))
--#define ANA_POL_CIR_CFG_CIR_RATE_M                        GENMASK(20, 6)
--#define ANA_POL_CIR_CFG_CIR_RATE_X(x)                     (((x) & GENMASK(20, 6)) >> 6)
--#define ANA_POL_CIR_CFG_CIR_BURST(x)                      ((x) & GENMASK(5, 0))
--#define ANA_POL_CIR_CFG_CIR_BURST_M                       GENMASK(5, 0)
--
--#define ANA_POL_MODE_CFG_GSZ                              0x20
--
--#define ANA_POL_MODE_CFG_IPG_SIZE(x)                      (((x) << 5) & GENMASK(9, 5))
--#define ANA_POL_MODE_CFG_IPG_SIZE_M                       GENMASK(9, 5)
--#define ANA_POL_MODE_CFG_IPG_SIZE_X(x)                    (((x) & GENMASK(9, 5)) >> 5)
--#define ANA_POL_MODE_CFG_FRM_MODE(x)                      (((x) << 3) & GENMASK(4, 3))
--#define ANA_POL_MODE_CFG_FRM_MODE_M                       GENMASK(4, 3)
--#define ANA_POL_MODE_CFG_FRM_MODE_X(x)                    (((x) & GENMASK(4, 3)) >> 3)
--#define ANA_POL_MODE_CFG_DLB_COUPLED                      BIT(2)
--#define ANA_POL_MODE_CFG_CIR_ENA                          BIT(1)
--#define ANA_POL_MODE_CFG_OVERSHOOT_ENA                    BIT(0)
--
--#define ANA_POL_PIR_STATE_GSZ                             0x20
--
--#define ANA_POL_CIR_STATE_GSZ                             0x20
--
--#define ANA_POL_STATE_GSZ                                 0x20
--
--#define ANA_POL_FLOWC_RSZ                                 0x4
--
--#define ANA_POL_FLOWC_POL_FLOWC                           BIT(0)
--
--#define ANA_POL_HYST_POL_FC_HYST(x)                       (((x) << 4) & GENMASK(9, 4))
--#define ANA_POL_HYST_POL_FC_HYST_M                        GENMASK(9, 4)
--#define ANA_POL_HYST_POL_FC_HYST_X(x)                     (((x) & GENMASK(9, 4)) >> 4)
--#define ANA_POL_HYST_POL_STOP_HYST(x)                     ((x) & GENMASK(3, 0))
--#define ANA_POL_HYST_POL_STOP_HYST_M                      GENMASK(3, 0)
--
--#define ANA_POL_MISC_CFG_POL_CLOSE_ALL                    BIT(1)
--#define ANA_POL_MISC_CFG_POL_LEAK_DIS                     BIT(0)
--
--#endif
-diff --git a/drivers/net/ethernet/mscc/ocelot_dev.h b/drivers/net/ethernet/mscc/ocelot_dev.h
-deleted file mode 100644
-index 0a50d53bbd3f..000000000000
---- a/drivers/net/ethernet/mscc/ocelot_dev.h
-+++ /dev/null
-@@ -1,275 +0,0 @@
--/* SPDX-License-Identifier: (GPL-2.0 OR MIT) */
--/*
-- * Microsemi Ocelot Switch driver
-- *
-- * Copyright (c) 2017 Microsemi Corporation
-- */
--
--#ifndef _MSCC_OCELOT_DEV_H_
--#define _MSCC_OCELOT_DEV_H_
--
--#define DEV_CLOCK_CFG                                     0x0
--
--#define DEV_CLOCK_CFG_MAC_TX_RST                          BIT(7)
--#define DEV_CLOCK_CFG_MAC_RX_RST                          BIT(6)
--#define DEV_CLOCK_CFG_PCS_TX_RST                          BIT(5)
--#define DEV_CLOCK_CFG_PCS_RX_RST                          BIT(4)
--#define DEV_CLOCK_CFG_PORT_RST                            BIT(3)
--#define DEV_CLOCK_CFG_PHY_RST                             BIT(2)
--#define DEV_CLOCK_CFG_LINK_SPEED(x)                       ((x) & GENMASK(1, 0))
--#define DEV_CLOCK_CFG_LINK_SPEED_M                        GENMASK(1, 0)
--
--#define DEV_PORT_MISC                                     0x4
--
--#define DEV_PORT_MISC_FWD_ERROR_ENA                       BIT(4)
--#define DEV_PORT_MISC_FWD_PAUSE_ENA                       BIT(3)
--#define DEV_PORT_MISC_FWD_CTRL_ENA                        BIT(2)
--#define DEV_PORT_MISC_DEV_LOOP_ENA                        BIT(1)
--#define DEV_PORT_MISC_HDX_FAST_DIS                        BIT(0)
--
--#define DEV_EVENTS                                        0x8
--
--#define DEV_EEE_CFG                                       0xc
--
--#define DEV_EEE_CFG_EEE_ENA                               BIT(22)
--#define DEV_EEE_CFG_EEE_TIMER_AGE(x)                      (((x) << 15) & GENMASK(21, 15))
--#define DEV_EEE_CFG_EEE_TIMER_AGE_M                       GENMASK(21, 15)
--#define DEV_EEE_CFG_EEE_TIMER_AGE_X(x)                    (((x) & GENMASK(21, 15)) >> 15)
--#define DEV_EEE_CFG_EEE_TIMER_WAKEUP(x)                   (((x) << 8) & GENMASK(14, 8))
--#define DEV_EEE_CFG_EEE_TIMER_WAKEUP_M                    GENMASK(14, 8)
--#define DEV_EEE_CFG_EEE_TIMER_WAKEUP_X(x)                 (((x) & GENMASK(14, 8)) >> 8)
--#define DEV_EEE_CFG_EEE_TIMER_HOLDOFF(x)                  (((x) << 1) & GENMASK(7, 1))
--#define DEV_EEE_CFG_EEE_TIMER_HOLDOFF_M                   GENMASK(7, 1)
--#define DEV_EEE_CFG_EEE_TIMER_HOLDOFF_X(x)                (((x) & GENMASK(7, 1)) >> 1)
--#define DEV_EEE_CFG_PORT_LPI                              BIT(0)
--
--#define DEV_RX_PATH_DELAY                                 0x10
--
--#define DEV_TX_PATH_DELAY                                 0x14
--
--#define DEV_PTP_PREDICT_CFG                               0x18
--
--#define DEV_PTP_PREDICT_CFG_PTP_PHY_PREDICT_CFG(x)        (((x) << 4) & GENMASK(11, 4))
--#define DEV_PTP_PREDICT_CFG_PTP_PHY_PREDICT_CFG_M         GENMASK(11, 4)
--#define DEV_PTP_PREDICT_CFG_PTP_PHY_PREDICT_CFG_X(x)      (((x) & GENMASK(11, 4)) >> 4)
--#define DEV_PTP_PREDICT_CFG_PTP_PHASE_PREDICT_CFG(x)      ((x) & GENMASK(3, 0))
--#define DEV_PTP_PREDICT_CFG_PTP_PHASE_PREDICT_CFG_M       GENMASK(3, 0)
--
--#define DEV_MAC_ENA_CFG                                   0x1c
--
--#define DEV_MAC_ENA_CFG_RX_ENA                            BIT(4)
--#define DEV_MAC_ENA_CFG_TX_ENA                            BIT(0)
--
--#define DEV_MAC_MODE_CFG                                  0x20
--
--#define DEV_MAC_MODE_CFG_FC_WORD_SYNC_ENA                 BIT(8)
--#define DEV_MAC_MODE_CFG_GIGA_MODE_ENA                    BIT(4)
--#define DEV_MAC_MODE_CFG_FDX_ENA                          BIT(0)
--
--#define DEV_MAC_MAXLEN_CFG                                0x24
--
--#define DEV_MAC_TAGS_CFG                                  0x28
--
--#define DEV_MAC_TAGS_CFG_TAG_ID(x)                        (((x) << 16) & GENMASK(31, 16))
--#define DEV_MAC_TAGS_CFG_TAG_ID_M                         GENMASK(31, 16)
--#define DEV_MAC_TAGS_CFG_TAG_ID_X(x)                      (((x) & GENMASK(31, 16)) >> 16)
--#define DEV_MAC_TAGS_CFG_VLAN_LEN_AWR_ENA                 BIT(2)
--#define DEV_MAC_TAGS_CFG_PB_ENA                           BIT(1)
--#define DEV_MAC_TAGS_CFG_VLAN_AWR_ENA                     BIT(0)
--
--#define DEV_MAC_ADV_CHK_CFG                               0x2c
--
--#define DEV_MAC_ADV_CHK_CFG_LEN_DROP_ENA                  BIT(0)
--
--#define DEV_MAC_IFG_CFG                                   0x30
--
--#define DEV_MAC_IFG_CFG_RESTORE_OLD_IPG_CHECK             BIT(17)
--#define DEV_MAC_IFG_CFG_REDUCED_TX_IFG                    BIT(16)
--#define DEV_MAC_IFG_CFG_TX_IFG(x)                         (((x) << 8) & GENMASK(12, 8))
--#define DEV_MAC_IFG_CFG_TX_IFG_M                          GENMASK(12, 8)
--#define DEV_MAC_IFG_CFG_TX_IFG_X(x)                       (((x) & GENMASK(12, 8)) >> 8)
--#define DEV_MAC_IFG_CFG_RX_IFG2(x)                        (((x) << 4) & GENMASK(7, 4))
--#define DEV_MAC_IFG_CFG_RX_IFG2_M                         GENMASK(7, 4)
--#define DEV_MAC_IFG_CFG_RX_IFG2_X(x)                      (((x) & GENMASK(7, 4)) >> 4)
--#define DEV_MAC_IFG_CFG_RX_IFG1(x)                        ((x) & GENMASK(3, 0))
--#define DEV_MAC_IFG_CFG_RX_IFG1_M                         GENMASK(3, 0)
--
--#define DEV_MAC_HDX_CFG                                   0x34
--
--#define DEV_MAC_HDX_CFG_BYPASS_COL_SYNC                   BIT(26)
--#define DEV_MAC_HDX_CFG_OB_ENA                            BIT(25)
--#define DEV_MAC_HDX_CFG_WEXC_DIS                          BIT(24)
--#define DEV_MAC_HDX_CFG_SEED(x)                           (((x) << 16) & GENMASK(23, 16))
--#define DEV_MAC_HDX_CFG_SEED_M                            GENMASK(23, 16)
--#define DEV_MAC_HDX_CFG_SEED_X(x)                         (((x) & GENMASK(23, 16)) >> 16)
--#define DEV_MAC_HDX_CFG_SEED_LOAD                         BIT(12)
--#define DEV_MAC_HDX_CFG_RETRY_AFTER_EXC_COL_ENA           BIT(8)
--#define DEV_MAC_HDX_CFG_LATE_COL_POS(x)                   ((x) & GENMASK(6, 0))
--#define DEV_MAC_HDX_CFG_LATE_COL_POS_M                    GENMASK(6, 0)
--
--#define DEV_MAC_DBG_CFG                                   0x38
--
--#define DEV_MAC_DBG_CFG_TBI_MODE                          BIT(4)
--#define DEV_MAC_DBG_CFG_IFG_CRS_EXT_CHK_ENA               BIT(0)
--
--#define DEV_MAC_FC_MAC_LOW_CFG                            0x3c
--
--#define DEV_MAC_FC_MAC_HIGH_CFG                           0x40
--
--#define DEV_MAC_STICKY                                    0x44
--
--#define DEV_MAC_STICKY_RX_IPG_SHRINK_STICKY               BIT(9)
--#define DEV_MAC_STICKY_RX_PREAM_SHRINK_STICKY             BIT(8)
--#define DEV_MAC_STICKY_RX_CARRIER_EXT_STICKY              BIT(7)
--#define DEV_MAC_STICKY_RX_CARRIER_EXT_ERR_STICKY          BIT(6)
--#define DEV_MAC_STICKY_RX_JUNK_STICKY                     BIT(5)
--#define DEV_MAC_STICKY_TX_RETRANSMIT_STICKY               BIT(4)
--#define DEV_MAC_STICKY_TX_JAM_STICKY                      BIT(3)
--#define DEV_MAC_STICKY_TX_FIFO_OFLW_STICKY                BIT(2)
--#define DEV_MAC_STICKY_TX_FRM_LEN_OVR_STICKY              BIT(1)
--#define DEV_MAC_STICKY_TX_ABORT_STICKY                    BIT(0)
--
--#define PCS1G_CFG                                         0x48
--
--#define PCS1G_CFG_LINK_STATUS_TYPE                        BIT(4)
--#define PCS1G_CFG_AN_LINK_CTRL_ENA                        BIT(1)
--#define PCS1G_CFG_PCS_ENA                                 BIT(0)
--
--#define PCS1G_MODE_CFG                                    0x4c
--
--#define PCS1G_MODE_CFG_UNIDIR_MODE_ENA                    BIT(4)
--#define PCS1G_MODE_CFG_SGMII_MODE_ENA                     BIT(0)
--
--#define PCS1G_SD_CFG                                      0x50
--
--#define PCS1G_SD_CFG_SD_SEL                               BIT(8)
--#define PCS1G_SD_CFG_SD_POL                               BIT(4)
--#define PCS1G_SD_CFG_SD_ENA                               BIT(0)
--
--#define PCS1G_ANEG_CFG                                    0x54
--
--#define PCS1G_ANEG_CFG_ADV_ABILITY(x)                     (((x) << 16) & GENMASK(31, 16))
--#define PCS1G_ANEG_CFG_ADV_ABILITY_M                      GENMASK(31, 16)
--#define PCS1G_ANEG_CFG_ADV_ABILITY_X(x)                   (((x) & GENMASK(31, 16)) >> 16)
--#define PCS1G_ANEG_CFG_SW_RESOLVE_ENA                     BIT(8)
--#define PCS1G_ANEG_CFG_ANEG_RESTART_ONE_SHOT              BIT(1)
--#define PCS1G_ANEG_CFG_ANEG_ENA                           BIT(0)
--
--#define PCS1G_ANEG_NP_CFG                                 0x58
--
--#define PCS1G_ANEG_NP_CFG_NP_TX(x)                        (((x) << 16) & GENMASK(31, 16))
--#define PCS1G_ANEG_NP_CFG_NP_TX_M                         GENMASK(31, 16)
--#define PCS1G_ANEG_NP_CFG_NP_TX_X(x)                      (((x) & GENMASK(31, 16)) >> 16)
--#define PCS1G_ANEG_NP_CFG_NP_LOADED_ONE_SHOT              BIT(0)
--
--#define PCS1G_LB_CFG                                      0x5c
--
--#define PCS1G_LB_CFG_RA_ENA                               BIT(4)
--#define PCS1G_LB_CFG_GMII_PHY_LB_ENA                      BIT(1)
--#define PCS1G_LB_CFG_TBI_HOST_LB_ENA                      BIT(0)
--
--#define PCS1G_DBG_CFG                                     0x60
--
--#define PCS1G_DBG_CFG_UDLT                                BIT(0)
--
--#define PCS1G_CDET_CFG                                    0x64
--
--#define PCS1G_CDET_CFG_CDET_ENA                           BIT(0)
--
--#define PCS1G_ANEG_STATUS                                 0x68
--
--#define PCS1G_ANEG_STATUS_LP_ADV_ABILITY(x)               (((x) << 16) & GENMASK(31, 16))
--#define PCS1G_ANEG_STATUS_LP_ADV_ABILITY_M                GENMASK(31, 16)
--#define PCS1G_ANEG_STATUS_LP_ADV_ABILITY_X(x)             (((x) & GENMASK(31, 16)) >> 16)
--#define PCS1G_ANEG_STATUS_PR                              BIT(4)
--#define PCS1G_ANEG_STATUS_PAGE_RX_STICKY                  BIT(3)
--#define PCS1G_ANEG_STATUS_ANEG_COMPLETE                   BIT(0)
--
--#define PCS1G_ANEG_NP_STATUS                              0x6c
--
--#define PCS1G_LINK_STATUS                                 0x70
--
--#define PCS1G_LINK_STATUS_DELAY_VAR(x)                    (((x) << 12) & GENMASK(15, 12))
--#define PCS1G_LINK_STATUS_DELAY_VAR_M                     GENMASK(15, 12)
--#define PCS1G_LINK_STATUS_DELAY_VAR_X(x)                  (((x) & GENMASK(15, 12)) >> 12)
--#define PCS1G_LINK_STATUS_SIGNAL_DETECT                   BIT(8)
--#define PCS1G_LINK_STATUS_LINK_STATUS                     BIT(4)
--#define PCS1G_LINK_STATUS_SYNC_STATUS                     BIT(0)
--
--#define PCS1G_LINK_DOWN_CNT                               0x74
--
--#define PCS1G_STICKY                                      0x78
--
--#define PCS1G_STICKY_LINK_DOWN_STICKY                     BIT(4)
--#define PCS1G_STICKY_OUT_OF_SYNC_STICKY                   BIT(0)
--
--#define PCS1G_DEBUG_STATUS                                0x7c
--
--#define PCS1G_LPI_CFG                                     0x80
--
--#define PCS1G_LPI_CFG_QSGMII_MS_SEL                       BIT(20)
--#define PCS1G_LPI_CFG_RX_LPI_OUT_DIS                      BIT(17)
--#define PCS1G_LPI_CFG_LPI_TESTMODE                        BIT(16)
--#define PCS1G_LPI_CFG_LPI_RX_WTIM(x)                      (((x) << 4) & GENMASK(5, 4))
--#define PCS1G_LPI_CFG_LPI_RX_WTIM_M                       GENMASK(5, 4)
--#define PCS1G_LPI_CFG_LPI_RX_WTIM_X(x)                    (((x) & GENMASK(5, 4)) >> 4)
--#define PCS1G_LPI_CFG_TX_ASSERT_LPIDLE                    BIT(0)
--
--#define PCS1G_LPI_WAKE_ERROR_CNT                          0x84
--
--#define PCS1G_LPI_STATUS                                  0x88
--
--#define PCS1G_LPI_STATUS_RX_LPI_FAIL                      BIT(16)
--#define PCS1G_LPI_STATUS_RX_LPI_EVENT_STICKY              BIT(12)
--#define PCS1G_LPI_STATUS_RX_QUIET                         BIT(9)
--#define PCS1G_LPI_STATUS_RX_LPI_MODE                      BIT(8)
--#define PCS1G_LPI_STATUS_TX_LPI_EVENT_STICKY              BIT(4)
--#define PCS1G_LPI_STATUS_TX_QUIET                         BIT(1)
--#define PCS1G_LPI_STATUS_TX_LPI_MODE                      BIT(0)
--
--#define PCS1G_TSTPAT_MODE_CFG                             0x8c
--
--#define PCS1G_TSTPAT_STATUS                               0x90
--
--#define PCS1G_TSTPAT_STATUS_JTP_ERR_CNT(x)                (((x) << 8) & GENMASK(15, 8))
--#define PCS1G_TSTPAT_STATUS_JTP_ERR_CNT_M                 GENMASK(15, 8)
--#define PCS1G_TSTPAT_STATUS_JTP_ERR_CNT_X(x)              (((x) & GENMASK(15, 8)) >> 8)
--#define PCS1G_TSTPAT_STATUS_JTP_ERR                       BIT(4)
--#define PCS1G_TSTPAT_STATUS_JTP_LOCK                      BIT(0)
--
--#define DEV_PCS_FX100_CFG                                 0x94
--
--#define DEV_PCS_FX100_CFG_SD_SEL                          BIT(26)
--#define DEV_PCS_FX100_CFG_SD_POL                          BIT(25)
--#define DEV_PCS_FX100_CFG_SD_ENA                          BIT(24)
--#define DEV_PCS_FX100_CFG_LOOPBACK_ENA                    BIT(20)
--#define DEV_PCS_FX100_CFG_SWAP_MII_ENA                    BIT(16)
--#define DEV_PCS_FX100_CFG_RXBITSEL(x)                     (((x) << 12) & GENMASK(15, 12))
--#define DEV_PCS_FX100_CFG_RXBITSEL_M                      GENMASK(15, 12)
--#define DEV_PCS_FX100_CFG_RXBITSEL_X(x)                   (((x) & GENMASK(15, 12)) >> 12)
--#define DEV_PCS_FX100_CFG_SIGDET_CFG(x)                   (((x) << 9) & GENMASK(10, 9))
--#define DEV_PCS_FX100_CFG_SIGDET_CFG_M                    GENMASK(10, 9)
--#define DEV_PCS_FX100_CFG_SIGDET_CFG_X(x)                 (((x) & GENMASK(10, 9)) >> 9)
--#define DEV_PCS_FX100_CFG_LINKHYST_TM_ENA                 BIT(8)
--#define DEV_PCS_FX100_CFG_LINKHYSTTIMER(x)                (((x) << 4) & GENMASK(7, 4))
--#define DEV_PCS_FX100_CFG_LINKHYSTTIMER_M                 GENMASK(7, 4)
--#define DEV_PCS_FX100_CFG_LINKHYSTTIMER_X(x)              (((x) & GENMASK(7, 4)) >> 4)
--#define DEV_PCS_FX100_CFG_UNIDIR_MODE_ENA                 BIT(3)
--#define DEV_PCS_FX100_CFG_FEFCHK_ENA                      BIT(2)
--#define DEV_PCS_FX100_CFG_FEFGEN_ENA                      BIT(1)
--#define DEV_PCS_FX100_CFG_PCS_ENA                         BIT(0)
--
--#define DEV_PCS_FX100_STATUS                              0x98
--
--#define DEV_PCS_FX100_STATUS_EDGE_POS_PTP(x)              (((x) << 8) & GENMASK(11, 8))
--#define DEV_PCS_FX100_STATUS_EDGE_POS_PTP_M               GENMASK(11, 8)
--#define DEV_PCS_FX100_STATUS_EDGE_POS_PTP_X(x)            (((x) & GENMASK(11, 8)) >> 8)
--#define DEV_PCS_FX100_STATUS_PCS_ERROR_STICKY             BIT(7)
--#define DEV_PCS_FX100_STATUS_FEF_FOUND_STICKY             BIT(6)
--#define DEV_PCS_FX100_STATUS_SSD_ERROR_STICKY             BIT(5)
--#define DEV_PCS_FX100_STATUS_SYNC_LOST_STICKY             BIT(4)
--#define DEV_PCS_FX100_STATUS_FEF_STATUS                   BIT(2)
--#define DEV_PCS_FX100_STATUS_SIGNAL_DETECT                BIT(1)
--#define DEV_PCS_FX100_STATUS_SYNC_STATUS                  BIT(0)
--
--#endif
-diff --git a/drivers/net/ethernet/mscc/ocelot_qsys.h b/drivers/net/ethernet/mscc/ocelot_qsys.h
-deleted file mode 100644
-index d8c63aa761be..000000000000
---- a/drivers/net/ethernet/mscc/ocelot_qsys.h
-+++ /dev/null
-@@ -1,270 +0,0 @@
--/* SPDX-License-Identifier: (GPL-2.0 OR MIT) */
--/*
-- * Microsemi Ocelot Switch driver
-- *
-- * Copyright (c) 2017 Microsemi Corporation
-- */
--
--#ifndef _MSCC_OCELOT_QSYS_H_
--#define _MSCC_OCELOT_QSYS_H_
--
--#define QSYS_PORT_MODE_RSZ                                0x4
--
--#define QSYS_PORT_MODE_DEQUEUE_DIS                        BIT(1)
--#define QSYS_PORT_MODE_DEQUEUE_LATE                       BIT(0)
--
--#define QSYS_SWITCH_PORT_MODE_RSZ                         0x4
--
--#define QSYS_SWITCH_PORT_MODE_PORT_ENA                    BIT(14)
--#define QSYS_SWITCH_PORT_MODE_SCH_NEXT_CFG(x)             (((x) << 11) & GENMASK(13, 11))
--#define QSYS_SWITCH_PORT_MODE_SCH_NEXT_CFG_M              GENMASK(13, 11)
--#define QSYS_SWITCH_PORT_MODE_SCH_NEXT_CFG_X(x)           (((x) & GENMASK(13, 11)) >> 11)
--#define QSYS_SWITCH_PORT_MODE_YEL_RSRVD                   BIT(10)
--#define QSYS_SWITCH_PORT_MODE_INGRESS_DROP_MODE           BIT(9)
--#define QSYS_SWITCH_PORT_MODE_TX_PFC_ENA(x)               (((x) << 1) & GENMASK(8, 1))
--#define QSYS_SWITCH_PORT_MODE_TX_PFC_ENA_M                GENMASK(8, 1)
--#define QSYS_SWITCH_PORT_MODE_TX_PFC_ENA_X(x)             (((x) & GENMASK(8, 1)) >> 1)
--#define QSYS_SWITCH_PORT_MODE_TX_PFC_MODE                 BIT(0)
--
--#define QSYS_STAT_CNT_CFG_TX_GREEN_CNT_MODE               BIT(5)
--#define QSYS_STAT_CNT_CFG_TX_YELLOW_CNT_MODE              BIT(4)
--#define QSYS_STAT_CNT_CFG_DROP_GREEN_CNT_MODE             BIT(3)
--#define QSYS_STAT_CNT_CFG_DROP_YELLOW_CNT_MODE            BIT(2)
--#define QSYS_STAT_CNT_CFG_DROP_COUNT_ONCE                 BIT(1)
--#define QSYS_STAT_CNT_CFG_DROP_COUNT_EGRESS               BIT(0)
--
--#define QSYS_EEE_CFG_RSZ                                  0x4
--
--#define QSYS_EEE_THRES_EEE_HIGH_BYTES(x)                  (((x) << 8) & GENMASK(15, 8))
--#define QSYS_EEE_THRES_EEE_HIGH_BYTES_M                   GENMASK(15, 8)
--#define QSYS_EEE_THRES_EEE_HIGH_BYTES_X(x)                (((x) & GENMASK(15, 8)) >> 8)
--#define QSYS_EEE_THRES_EEE_HIGH_FRAMES(x)                 ((x) & GENMASK(7, 0))
--#define QSYS_EEE_THRES_EEE_HIGH_FRAMES_M                  GENMASK(7, 0)
--
--#define QSYS_SW_STATUS_RSZ                                0x4
--
--#define QSYS_EXT_CPU_CFG_EXT_CPU_PORT(x)                  (((x) << 8) & GENMASK(12, 8))
--#define QSYS_EXT_CPU_CFG_EXT_CPU_PORT_M                   GENMASK(12, 8)
--#define QSYS_EXT_CPU_CFG_EXT_CPU_PORT_X(x)                (((x) & GENMASK(12, 8)) >> 8)
--#define QSYS_EXT_CPU_CFG_EXT_CPUQ_MSK(x)                  ((x) & GENMASK(7, 0))
--#define QSYS_EXT_CPU_CFG_EXT_CPUQ_MSK_M                   GENMASK(7, 0)
--
--#define QSYS_QMAP_GSZ                                     0x4
--
--#define QSYS_QMAP_SE_BASE(x)                              (((x) << 5) & GENMASK(12, 5))
--#define QSYS_QMAP_SE_BASE_M                               GENMASK(12, 5)
--#define QSYS_QMAP_SE_BASE_X(x)                            (((x) & GENMASK(12, 5)) >> 5)
--#define QSYS_QMAP_SE_IDX_SEL(x)                           (((x) << 2) & GENMASK(4, 2))
--#define QSYS_QMAP_SE_IDX_SEL_M                            GENMASK(4, 2)
--#define QSYS_QMAP_SE_IDX_SEL_X(x)                         (((x) & GENMASK(4, 2)) >> 2)
--#define QSYS_QMAP_SE_INP_SEL(x)                           ((x) & GENMASK(1, 0))
--#define QSYS_QMAP_SE_INP_SEL_M                            GENMASK(1, 0)
--
--#define QSYS_ISDX_SGRP_GSZ                                0x4
--
--#define QSYS_TIMED_FRAME_ENTRY_GSZ                        0x4
--
--#define QSYS_TFRM_MISC_TIMED_CANCEL_SLOT(x)               (((x) << 9) & GENMASK(18, 9))
--#define QSYS_TFRM_MISC_TIMED_CANCEL_SLOT_M                GENMASK(18, 9)
--#define QSYS_TFRM_MISC_TIMED_CANCEL_SLOT_X(x)             (((x) & GENMASK(18, 9)) >> 9)
--#define QSYS_TFRM_MISC_TIMED_CANCEL_1SHOT                 BIT(8)
--#define QSYS_TFRM_MISC_TIMED_SLOT_MODE_MC                 BIT(7)
--#define QSYS_TFRM_MISC_TIMED_ENTRY_FAST_CNT(x)            ((x) & GENMASK(6, 0))
--#define QSYS_TFRM_MISC_TIMED_ENTRY_FAST_CNT_M             GENMASK(6, 0)
--
--#define QSYS_RED_PROFILE_RSZ                              0x4
--
--#define QSYS_RED_PROFILE_WM_RED_LOW(x)                    (((x) << 8) & GENMASK(15, 8))
--#define QSYS_RED_PROFILE_WM_RED_LOW_M                     GENMASK(15, 8)
--#define QSYS_RED_PROFILE_WM_RED_LOW_X(x)                  (((x) & GENMASK(15, 8)) >> 8)
--#define QSYS_RED_PROFILE_WM_RED_HIGH(x)                   ((x) & GENMASK(7, 0))
--#define QSYS_RED_PROFILE_WM_RED_HIGH_M                    GENMASK(7, 0)
--
--#define QSYS_RES_CFG_GSZ                                  0x8
--
--#define QSYS_RES_STAT_GSZ                                 0x8
--
--#define QSYS_RES_STAT_INUSE(x)                            (((x) << 12) & GENMASK(23, 12))
--#define QSYS_RES_STAT_INUSE_M                             GENMASK(23, 12)
--#define QSYS_RES_STAT_INUSE_X(x)                          (((x) & GENMASK(23, 12)) >> 12)
--#define QSYS_RES_STAT_MAXUSE(x)                           ((x) & GENMASK(11, 0))
--#define QSYS_RES_STAT_MAXUSE_M                            GENMASK(11, 0)
--
--#define QSYS_EVENTS_CORE_EV_FDC(x)                        (((x) << 2) & GENMASK(4, 2))
--#define QSYS_EVENTS_CORE_EV_FDC_M                         GENMASK(4, 2)
--#define QSYS_EVENTS_CORE_EV_FDC_X(x)                      (((x) & GENMASK(4, 2)) >> 2)
--#define QSYS_EVENTS_CORE_EV_FRD(x)                        ((x) & GENMASK(1, 0))
--#define QSYS_EVENTS_CORE_EV_FRD_M                         GENMASK(1, 0)
--
--#define QSYS_QMAXSDU_CFG_0_RSZ                            0x4
--
--#define QSYS_QMAXSDU_CFG_1_RSZ                            0x4
--
--#define QSYS_QMAXSDU_CFG_2_RSZ                            0x4
--
--#define QSYS_QMAXSDU_CFG_3_RSZ                            0x4
--
--#define QSYS_QMAXSDU_CFG_4_RSZ                            0x4
--
--#define QSYS_QMAXSDU_CFG_5_RSZ                            0x4
--
--#define QSYS_QMAXSDU_CFG_6_RSZ                            0x4
--
--#define QSYS_QMAXSDU_CFG_7_RSZ                            0x4
--
--#define QSYS_PREEMPTION_CFG_RSZ                           0x4
--
--#define QSYS_PREEMPTION_CFG_P_QUEUES(x)                   ((x) & GENMASK(7, 0))
--#define QSYS_PREEMPTION_CFG_P_QUEUES_M                    GENMASK(7, 0)
--#define QSYS_PREEMPTION_CFG_MM_ADD_FRAG_SIZE(x)           (((x) << 8) & GENMASK(9, 8))
--#define QSYS_PREEMPTION_CFG_MM_ADD_FRAG_SIZE_M            GENMASK(9, 8)
--#define QSYS_PREEMPTION_CFG_MM_ADD_FRAG_SIZE_X(x)         (((x) & GENMASK(9, 8)) >> 8)
--#define QSYS_PREEMPTION_CFG_STRICT_IPG(x)                 (((x) << 12) & GENMASK(13, 12))
--#define QSYS_PREEMPTION_CFG_STRICT_IPG_M                  GENMASK(13, 12)
--#define QSYS_PREEMPTION_CFG_STRICT_IPG_X(x)               (((x) & GENMASK(13, 12)) >> 12)
--#define QSYS_PREEMPTION_CFG_HOLD_ADVANCE(x)               (((x) << 16) & GENMASK(31, 16))
--#define QSYS_PREEMPTION_CFG_HOLD_ADVANCE_M                GENMASK(31, 16)
--#define QSYS_PREEMPTION_CFG_HOLD_ADVANCE_X(x)             (((x) & GENMASK(31, 16)) >> 16)
--
--#define QSYS_CIR_CFG_GSZ                                  0x80
--
--#define QSYS_CIR_CFG_CIR_RATE(x)                          (((x) << 6) & GENMASK(20, 6))
--#define QSYS_CIR_CFG_CIR_RATE_M                           GENMASK(20, 6)
--#define QSYS_CIR_CFG_CIR_RATE_X(x)                        (((x) & GENMASK(20, 6)) >> 6)
--#define QSYS_CIR_CFG_CIR_BURST(x)                         ((x) & GENMASK(5, 0))
--#define QSYS_CIR_CFG_CIR_BURST_M                          GENMASK(5, 0)
--
--#define QSYS_EIR_CFG_GSZ                                  0x80
--
--#define QSYS_EIR_CFG_EIR_RATE(x)                          (((x) << 7) & GENMASK(21, 7))
--#define QSYS_EIR_CFG_EIR_RATE_M                           GENMASK(21, 7)
--#define QSYS_EIR_CFG_EIR_RATE_X(x)                        (((x) & GENMASK(21, 7)) >> 7)
--#define QSYS_EIR_CFG_EIR_BURST(x)                         (((x) << 1) & GENMASK(6, 1))
--#define QSYS_EIR_CFG_EIR_BURST_M                          GENMASK(6, 1)
--#define QSYS_EIR_CFG_EIR_BURST_X(x)                       (((x) & GENMASK(6, 1)) >> 1)
--#define QSYS_EIR_CFG_EIR_MARK_ENA                         BIT(0)
--
--#define QSYS_SE_CFG_GSZ                                   0x80
--
--#define QSYS_SE_CFG_SE_DWRR_CNT(x)                        (((x) << 6) & GENMASK(9, 6))
--#define QSYS_SE_CFG_SE_DWRR_CNT_M                         GENMASK(9, 6)
--#define QSYS_SE_CFG_SE_DWRR_CNT_X(x)                      (((x) & GENMASK(9, 6)) >> 6)
--#define QSYS_SE_CFG_SE_RR_ENA                             BIT(5)
--#define QSYS_SE_CFG_SE_AVB_ENA                            BIT(4)
--#define QSYS_SE_CFG_SE_FRM_MODE(x)                        (((x) << 2) & GENMASK(3, 2))
--#define QSYS_SE_CFG_SE_FRM_MODE_M                         GENMASK(3, 2)
--#define QSYS_SE_CFG_SE_FRM_MODE_X(x)                      (((x) & GENMASK(3, 2)) >> 2)
--#define QSYS_SE_CFG_SE_EXC_ENA                            BIT(1)
--#define QSYS_SE_CFG_SE_EXC_FWD                            BIT(0)
--
--#define QSYS_SE_DWRR_CFG_GSZ                              0x80
--#define QSYS_SE_DWRR_CFG_RSZ                              0x4
--
--#define QSYS_SE_CONNECT_GSZ                               0x80
--
--#define QSYS_SE_CONNECT_SE_OUTP_IDX(x)                    (((x) << 17) & GENMASK(24, 17))
--#define QSYS_SE_CONNECT_SE_OUTP_IDX_M                     GENMASK(24, 17)
--#define QSYS_SE_CONNECT_SE_OUTP_IDX_X(x)                  (((x) & GENMASK(24, 17)) >> 17)
--#define QSYS_SE_CONNECT_SE_INP_IDX(x)                     (((x) << 9) & GENMASK(16, 9))
--#define QSYS_SE_CONNECT_SE_INP_IDX_M                      GENMASK(16, 9)
--#define QSYS_SE_CONNECT_SE_INP_IDX_X(x)                   (((x) & GENMASK(16, 9)) >> 9)
--#define QSYS_SE_CONNECT_SE_OUTP_CON(x)                    (((x) << 5) & GENMASK(8, 5))
--#define QSYS_SE_CONNECT_SE_OUTP_CON_M                     GENMASK(8, 5)
--#define QSYS_SE_CONNECT_SE_OUTP_CON_X(x)                  (((x) & GENMASK(8, 5)) >> 5)
--#define QSYS_SE_CONNECT_SE_INP_CNT(x)                     (((x) << 1) & GENMASK(4, 1))
--#define QSYS_SE_CONNECT_SE_INP_CNT_M                      GENMASK(4, 1)
--#define QSYS_SE_CONNECT_SE_INP_CNT_X(x)                   (((x) & GENMASK(4, 1)) >> 1)
--#define QSYS_SE_CONNECT_SE_TERMINAL                       BIT(0)
--
--#define QSYS_SE_DLB_SENSE_GSZ                             0x80
--
--#define QSYS_SE_DLB_SENSE_SE_DLB_PRIO(x)                  (((x) << 11) & GENMASK(13, 11))
--#define QSYS_SE_DLB_SENSE_SE_DLB_PRIO_M                   GENMASK(13, 11)
--#define QSYS_SE_DLB_SENSE_SE_DLB_PRIO_X(x)                (((x) & GENMASK(13, 11)) >> 11)
--#define QSYS_SE_DLB_SENSE_SE_DLB_SPORT(x)                 (((x) << 7) & GENMASK(10, 7))
--#define QSYS_SE_DLB_SENSE_SE_DLB_SPORT_M                  GENMASK(10, 7)
--#define QSYS_SE_DLB_SENSE_SE_DLB_SPORT_X(x)               (((x) & GENMASK(10, 7)) >> 7)
--#define QSYS_SE_DLB_SENSE_SE_DLB_DPORT(x)                 (((x) << 3) & GENMASK(6, 3))
--#define QSYS_SE_DLB_SENSE_SE_DLB_DPORT_M                  GENMASK(6, 3)
--#define QSYS_SE_DLB_SENSE_SE_DLB_DPORT_X(x)               (((x) & GENMASK(6, 3)) >> 3)
--#define QSYS_SE_DLB_SENSE_SE_DLB_PRIO_ENA                 BIT(2)
--#define QSYS_SE_DLB_SENSE_SE_DLB_SPORT_ENA                BIT(1)
--#define QSYS_SE_DLB_SENSE_SE_DLB_DPORT_ENA                BIT(0)
--
--#define QSYS_CIR_STATE_GSZ                                0x80
--
--#define QSYS_CIR_STATE_CIR_LVL(x)                         (((x) << 4) & GENMASK(25, 4))
--#define QSYS_CIR_STATE_CIR_LVL_M                          GENMASK(25, 4)
--#define QSYS_CIR_STATE_CIR_LVL_X(x)                       (((x) & GENMASK(25, 4)) >> 4)
--#define QSYS_CIR_STATE_SHP_TIME(x)                        ((x) & GENMASK(3, 0))
--#define QSYS_CIR_STATE_SHP_TIME_M                         GENMASK(3, 0)
--
--#define QSYS_EIR_STATE_GSZ                                0x80
--
--#define QSYS_SE_STATE_GSZ                                 0x80
--
--#define QSYS_SE_STATE_SE_OUTP_LVL(x)                      (((x) << 1) & GENMASK(2, 1))
--#define QSYS_SE_STATE_SE_OUTP_LVL_M                       GENMASK(2, 1)
--#define QSYS_SE_STATE_SE_OUTP_LVL_X(x)                    (((x) & GENMASK(2, 1)) >> 1)
--#define QSYS_SE_STATE_SE_WAS_YEL                          BIT(0)
--
--#define QSYS_HSCH_MISC_CFG_SE_CONNECT_VLD                 BIT(8)
--#define QSYS_HSCH_MISC_CFG_FRM_ADJ(x)                     (((x) << 3) & GENMASK(7, 3))
--#define QSYS_HSCH_MISC_CFG_FRM_ADJ_M                      GENMASK(7, 3)
--#define QSYS_HSCH_MISC_CFG_FRM_ADJ_X(x)                   (((x) & GENMASK(7, 3)) >> 3)
--#define QSYS_HSCH_MISC_CFG_LEAK_DIS                       BIT(2)
--#define QSYS_HSCH_MISC_CFG_QSHP_EXC_ENA                   BIT(1)
--#define QSYS_HSCH_MISC_CFG_PFC_BYP_UPD                    BIT(0)
--
--#define QSYS_TAG_CONFIG_RSZ                               0x4
--
--#define QSYS_TAG_CONFIG_ENABLE                            BIT(0)
--#define QSYS_TAG_CONFIG_LINK_SPEED(x)                     (((x) << 4) & GENMASK(5, 4))
--#define QSYS_TAG_CONFIG_LINK_SPEED_M                      GENMASK(5, 4)
--#define QSYS_TAG_CONFIG_LINK_SPEED_X(x)                   (((x) & GENMASK(5, 4)) >> 4)
--#define QSYS_TAG_CONFIG_INIT_GATE_STATE(x)                (((x) << 8) & GENMASK(15, 8))
--#define QSYS_TAG_CONFIG_INIT_GATE_STATE_M                 GENMASK(15, 8)
--#define QSYS_TAG_CONFIG_INIT_GATE_STATE_X(x)              (((x) & GENMASK(15, 8)) >> 8)
--#define QSYS_TAG_CONFIG_SCH_TRAFFIC_QUEUES(x)             (((x) << 16) & GENMASK(23, 16))
--#define QSYS_TAG_CONFIG_SCH_TRAFFIC_QUEUES_M              GENMASK(23, 16)
--#define QSYS_TAG_CONFIG_SCH_TRAFFIC_QUEUES_X(x)           (((x) & GENMASK(23, 16)) >> 16)
--
--#define QSYS_TAS_PARAM_CFG_CTRL_PORT_NUM(x)               ((x) & GENMASK(7, 0))
--#define QSYS_TAS_PARAM_CFG_CTRL_PORT_NUM_M                GENMASK(7, 0)
--#define QSYS_TAS_PARAM_CFG_CTRL_ALWAYS_GUARD_BAND_SCH_Q   BIT(8)
--#define QSYS_TAS_PARAM_CFG_CTRL_CONFIG_CHANGE             BIT(16)
--
--#define QSYS_PORT_MAX_SDU_RSZ                             0x4
--
--#define QSYS_PARAM_CFG_REG_3_BASE_TIME_SEC_MSB(x)         ((x) & GENMASK(15, 0))
--#define QSYS_PARAM_CFG_REG_3_BASE_TIME_SEC_MSB_M          GENMASK(15, 0)
--#define QSYS_PARAM_CFG_REG_3_LIST_LENGTH(x)               (((x) << 16) & GENMASK(31, 16))
--#define QSYS_PARAM_CFG_REG_3_LIST_LENGTH_M                GENMASK(31, 16)
--#define QSYS_PARAM_CFG_REG_3_LIST_LENGTH_X(x)             (((x) & GENMASK(31, 16)) >> 16)
--
--#define QSYS_GCL_CFG_REG_1_GCL_ENTRY_NUM(x)               ((x) & GENMASK(5, 0))
--#define QSYS_GCL_CFG_REG_1_GCL_ENTRY_NUM_M                GENMASK(5, 0)
--#define QSYS_GCL_CFG_REG_1_GATE_STATE(x)                  (((x) << 8) & GENMASK(15, 8))
--#define QSYS_GCL_CFG_REG_1_GATE_STATE_M                   GENMASK(15, 8)
--#define QSYS_GCL_CFG_REG_1_GATE_STATE_X(x)                (((x) & GENMASK(15, 8)) >> 8)
--
--#define QSYS_PARAM_STATUS_REG_3_BASE_TIME_SEC_MSB(x)      ((x) & GENMASK(15, 0))
--#define QSYS_PARAM_STATUS_REG_3_BASE_TIME_SEC_MSB_M       GENMASK(15, 0)
--#define QSYS_PARAM_STATUS_REG_3_LIST_LENGTH(x)            (((x) << 16) & GENMASK(31, 16))
--#define QSYS_PARAM_STATUS_REG_3_LIST_LENGTH_M             GENMASK(31, 16)
--#define QSYS_PARAM_STATUS_REG_3_LIST_LENGTH_X(x)          (((x) & GENMASK(31, 16)) >> 16)
--
--#define QSYS_PARAM_STATUS_REG_8_CFG_CHG_TIME_SEC_MSB(x)   ((x) & GENMASK(15, 0))
--#define QSYS_PARAM_STATUS_REG_8_CFG_CHG_TIME_SEC_MSB_M    GENMASK(15, 0)
--#define QSYS_PARAM_STATUS_REG_8_OPER_GATE_STATE(x)        (((x) << 16) & GENMASK(23, 16))
--#define QSYS_PARAM_STATUS_REG_8_OPER_GATE_STATE_M         GENMASK(23, 16)
--#define QSYS_PARAM_STATUS_REG_8_OPER_GATE_STATE_X(x)      (((x) & GENMASK(23, 16)) >> 16)
--#define QSYS_PARAM_STATUS_REG_8_CONFIG_PENDING            BIT(24)
--
--#define QSYS_GCL_STATUS_REG_1_GCL_ENTRY_NUM(x)            ((x) & GENMASK(5, 0))
--#define QSYS_GCL_STATUS_REG_1_GCL_ENTRY_NUM_M             GENMASK(5, 0)
--#define QSYS_GCL_STATUS_REG_1_GATE_STATE(x)               (((x) << 8) & GENMASK(15, 8))
--#define QSYS_GCL_STATUS_REG_1_GATE_STATE_M                GENMASK(15, 8)
--#define QSYS_GCL_STATUS_REG_1_GATE_STATE_X(x)             (((x) & GENMASK(15, 8)) >> 8)
--
--#endif
-diff --git a/include/soc/mscc/ocelot_ana.h b/include/soc/mscc/ocelot_ana.h
-new file mode 100644
-index 000000000000..841c6ec22b64
---- /dev/null
-+++ b/include/soc/mscc/ocelot_ana.h
-@@ -0,0 +1,625 @@
-+/* SPDX-License-Identifier: (GPL-2.0 OR MIT) */
-+/*
-+ * Microsemi Ocelot Switch driver
-+ *
-+ * Copyright (c) 2017 Microsemi Corporation
+ #include <linux/packing.h>
+ #include <linux/module.h>
++#include <linux/of_net.h>
+ #include <linux/pci.h>
+ #include <linux/of.h>
+ #include <net/dsa.h>
+@@ -26,14 +31,6 @@ static int felix_set_ageing_time(struct dsa_switch *ds,
+ 	return 0;
+ }
+ 
+-static void felix_adjust_link(struct dsa_switch *ds, int port,
+-			      struct phy_device *phydev)
+-{
+-	struct ocelot *ocelot = ds->priv;
+-
+-	ocelot_adjust_link(ocelot, port, phydev);
+-}
+-
+ static int felix_fdb_dump(struct dsa_switch *ds, int port,
+ 			  dsa_fdb_dump_cb_t *cb, void *data)
+ {
+@@ -155,6 +152,139 @@ static void felix_port_disable(struct dsa_switch *ds, int port)
+ 	return ocelot_port_disable(ocelot, port);
+ }
+ 
++static void felix_phylink_validate(struct dsa_switch *ds, int port,
++				   unsigned long *supported,
++				   struct phylink_link_state *state)
++{
++	struct ocelot *ocelot = ds->priv;
++	struct ocelot_port *ocelot_port = ocelot->ports[port];
++	__ETHTOOL_DECLARE_LINK_MODE_MASK(mask) = { 0, };
++
++	if (state->interface != PHY_INTERFACE_MODE_NA &&
++	    state->interface != ocelot_port->phy_mode) {
++		bitmap_zero(supported, __ETHTOOL_LINK_MODE_MASK_NBITS);
++		return;
++	}
++
++	/* No half-duplex. */
++	phylink_set_port_modes(mask);
++	phylink_set(mask, Autoneg);
++	phylink_set(mask, Pause);
++	phylink_set(mask, Asym_Pause);
++	if (state->interface != PHY_INTERFACE_MODE_2500BASEX) {
++		phylink_set(mask, 10baseT_Full);
++		phylink_set(mask, 100baseT_Full);
++		phylink_set(mask, 1000baseT_Full);
++	}
++	/* The internal ports that run at 2.5G are overclocked GMII */
++	if (state->interface == PHY_INTERFACE_MODE_GMII ||
++	    state->interface == PHY_INTERFACE_MODE_2500BASEX ||
++	    state->interface == PHY_INTERFACE_MODE_USXGMII) {
++		phylink_set(mask, 2500baseT_Full);
++		phylink_set(mask, 2500baseX_Full);
++	}
++
++	bitmap_and(supported, supported, mask,
++		   __ETHTOOL_LINK_MODE_MASK_NBITS);
++	bitmap_and(state->advertising, state->advertising, mask,
++		   __ETHTOOL_LINK_MODE_MASK_NBITS);
++}
++
++static int felix_phylink_mac_pcs_get_state(struct dsa_switch *ds, int port,
++					   struct phylink_link_state *state)
++{
++	struct ocelot *ocelot = ds->priv;
++	struct felix *felix = ocelot_to_felix(ocelot);
++
++	if (felix->info->pcs_link_state)
++		felix->info->pcs_link_state(ocelot, port, state);
++
++	return 0;
++}
++
++static void felix_phylink_mac_config(struct dsa_switch *ds, int port,
++				     unsigned int link_an_mode,
++				     const struct phylink_link_state *state)
++{
++	struct ocelot *ocelot = ds->priv;
++	struct ocelot_port *ocelot_port = ocelot->ports[port];
++	struct felix *felix = ocelot_to_felix(ocelot);
++	u32 mac_fc_cfg;
++
++	/* Take MAC, Port, Phy (intern) and PCS (SGMII/Serdes) clock out of
++	 * reset */
++	ocelot_port_writel(ocelot_port, DEV_CLOCK_CFG_LINK_SPEED(state->speed),
++			   DEV_CLOCK_CFG);
++
++	/* No PFC */
++	ocelot_write_gix(ocelot, ANA_PFC_PFC_CFG_FC_LINK_SPEED(state->speed),
++			 ANA_PFC_PFC_CFG, port);
++
++	/* Core: Enable port for frame transfer */
++	ocelot_write_rix(ocelot, QSYS_SWITCH_PORT_MODE_INGRESS_DROP_MODE |
++			 QSYS_SWITCH_PORT_MODE_SCH_NEXT_CFG(1) |
++			 QSYS_SWITCH_PORT_MODE_PORT_ENA,
++			 QSYS_SWITCH_PORT_MODE, port);
++
++	/* Flow control */
++	mac_fc_cfg = SYS_MAC_FC_CFG_FC_LINK_SPEED(state->speed);
++	if (state->pause & MLO_PAUSE_RX)
++		mac_fc_cfg |= SYS_MAC_FC_CFG_RX_FC_ENA;
++	if (state->pause & MLO_PAUSE_TX)
++		mac_fc_cfg |= SYS_MAC_FC_CFG_TX_FC_ENA |
++			      SYS_MAC_FC_CFG_PAUSE_VAL_CFG(0xffff) |
++			      SYS_MAC_FC_CFG_FC_LATENCY_CFG(0x7) |
++			      SYS_MAC_FC_CFG_ZERO_PAUSE_ENA;
++	ocelot_write_rix(ocelot, mac_fc_cfg, SYS_MAC_FC_CFG, port);
++
++	ocelot_write_rix(ocelot, 0, ANA_POL_FLOWC, port);
++
++	if (felix->info->pcs_init)
++		felix->info->pcs_init(ocelot, port, link_an_mode, state);
++}
++
++static void felix_phylink_mac_an_restart(struct dsa_switch *ds, int port)
++{
++	struct ocelot *ocelot = ds->priv;
++	struct felix *felix = ocelot_to_felix(ocelot);
++
++	if (felix->info->pcs_an_restart)
++		felix->info->pcs_an_restart(ocelot, port);
++}
++
++static void felix_phylink_mac_link_down(struct dsa_switch *ds, int port,
++					unsigned int link_an_mode,
++					phy_interface_t interface)
++{
++	struct ocelot *ocelot = ds->priv;
++	struct ocelot_port *ocelot_port = ocelot->ports[port];
++
++	ocelot_port_writel(ocelot_port, 0, DEV_MAC_ENA_CFG);
++	ocelot_rmw_rix(ocelot, 0, QSYS_SWITCH_PORT_MODE_PORT_ENA,
++		       QSYS_SWITCH_PORT_MODE, port);
++}
++
++static void felix_phylink_mac_link_up(struct dsa_switch *ds, int port,
++				      unsigned int link_an_mode,
++				      phy_interface_t interface,
++				      struct phy_device *phydev)
++{
++	struct ocelot *ocelot = ds->priv;
++	struct ocelot_port *ocelot_port = ocelot->ports[port];
++
++	/* Enable MAC module */
++	ocelot_port_writel(ocelot_port, DEV_MAC_ENA_CFG_RX_ENA |
++			   DEV_MAC_ENA_CFG_TX_ENA, DEV_MAC_ENA_CFG);
++
++	/* Enable receiving frames on the port, and activate auto-learning of
++	 * MAC addresses.
++	 */
++	ocelot_write_gix(ocelot, ANA_PORT_PORT_CFG_LEARNAUTO |
++			 ANA_PORT_PORT_CFG_RECV_ENA |
++			 ANA_PORT_PORT_CFG_PORTID_VAL(port),
++			 ANA_PORT_PORT_CFG, port);
++}
++
+ static void felix_get_strings(struct dsa_switch *ds, int port,
+ 			      u32 stringset, u8 *data)
+ {
+@@ -185,10 +315,76 @@ static int felix_get_ts_info(struct dsa_switch *ds, int port,
+ 	return ocelot_get_ts_info(ocelot, port, info);
+ }
+ 
++static int felix_parse_ports_node(struct felix *felix,
++				  struct device_node *ports_node,
++				  phy_interface_t *port_phy_modes)
++{
++	struct ocelot *ocelot = &felix->ocelot;
++	struct device *dev = felix->ocelot.dev;
++	struct device_node *child;
++
++	for_each_child_of_node(ports_node, child) {
++		phy_interface_t phy_mode;
++		u32 port;
++		int err;
++
++		/* Get switch port number from DT */
++		if (of_property_read_u32(child, "reg", &port) < 0) {
++			dev_err(dev, "Port number not defined in device tree "
++				"(property \"reg\")\n");
++			of_node_put(child);
++			return -ENODEV;
++		}
++
++		/* Get PHY mode from DT */
++		err = of_get_phy_mode(child, &phy_mode);
++		if (err) {
++			dev_err(dev, "Failed to read phy-mode or "
++				"phy-interface-type property for port %d\n",
++				port);
++			of_node_put(child);
++			return -ENODEV;
++		}
++
++		err = felix->info->prevalidate_phy_mode(ocelot, port, phy_mode);
++		if (err < 0) {
++			dev_err(dev, "Unsupported PHY mode %s on port %d\n",
++				phy_modes(phy_mode), port);
++			return err;
++		}
++
++		port_phy_modes[port] = phy_mode;
++	}
++
++	return 0;
++}
++
++static int felix_parse_dt(struct felix *felix, phy_interface_t *port_phy_modes)
++{
++	struct device *dev = felix->ocelot.dev;
++	struct device_node *switch_node;
++	struct device_node *ports_node;
++	int err;
++
++	switch_node = dev->of_node;
++
++	ports_node = of_get_child_by_name(switch_node, "ports");
++	if (!ports_node) {
++		dev_err(dev, "Incorrect bindings: absent \"ports\" node\n");
++		return -ENODEV;
++	}
++
++	err = felix_parse_ports_node(felix, ports_node, port_phy_modes);
++	of_node_put(ports_node);
++
++	return err;
++}
++
+ static int felix_init_structs(struct felix *felix, int num_phys_ports)
+ {
+ 	struct ocelot *ocelot = &felix->ocelot;
+-	resource_size_t base;
++	phy_interface_t *port_phy_modes;
++	resource_size_t switch_base;
+ 	int port, i, err;
+ 
+ 	ocelot->num_phys_ports = num_phys_ports;
+@@ -203,7 +399,19 @@ static int felix_init_structs(struct felix *felix, int num_phys_ports)
+ 	ocelot->shared_queue_sz	= felix->info->shared_queue_sz;
+ 	ocelot->ops		= felix->info->ops;
+ 
+-	base = pci_resource_start(felix->pdev, felix->info->pci_bar);
++	port_phy_modes = kcalloc(num_phys_ports, sizeof(phy_interface_t),
++				 GFP_KERNEL);
++	if (!port_phy_modes)
++		return -ENOMEM;
++
++	err = felix_parse_dt(felix, port_phy_modes);
++	if (err) {
++		kfree(port_phy_modes);
++		return err;
++	}
++
++	switch_base = pci_resource_start(felix->pdev,
++					 felix->info->switch_pci_bar);
+ 
+ 	for (i = 0; i < TARGET_MAX; i++) {
+ 		struct regmap *target;
+@@ -214,13 +422,14 @@ static int felix_init_structs(struct felix *felix, int num_phys_ports)
+ 
+ 		res = &felix->info->target_io_res[i];
+ 		res->flags = IORESOURCE_MEM;
+-		res->start += base;
+-		res->end += base;
++		res->start += switch_base;
++		res->end += switch_base;
+ 
+ 		target = ocelot_regmap_init(ocelot, res);
+ 		if (IS_ERR(target)) {
+ 			dev_err(ocelot->dev,
+ 				"Failed to map device memory space\n");
++			kfree(port_phy_modes);
+ 			return PTR_ERR(target);
+ 		}
+ 
+@@ -230,6 +439,7 @@ static int felix_init_structs(struct felix *felix, int num_phys_ports)
+ 	err = ocelot_regfields_init(ocelot, felix->info->regfields);
+ 	if (err) {
+ 		dev_err(ocelot->dev, "failed to init reg fields map\n");
++		kfree(port_phy_modes);
+ 		return err;
+ 	}
+ 
+@@ -244,26 +454,37 @@ static int felix_init_structs(struct felix *felix, int num_phys_ports)
+ 		if (!ocelot_port) {
+ 			dev_err(ocelot->dev,
+ 				"failed to allocate port memory\n");
++			kfree(port_phy_modes);
+ 			return -ENOMEM;
+ 		}
+ 
+ 		res = &felix->info->port_io_res[port];
+ 		res->flags = IORESOURCE_MEM;
+-		res->start += base;
+-		res->end += base;
++		res->start += switch_base;
++		res->end += switch_base;
+ 
+ 		port_regs = devm_ioremap_resource(ocelot->dev, res);
+ 		if (IS_ERR(port_regs)) {
+ 			dev_err(ocelot->dev,
+ 				"failed to map registers for port %d\n", port);
++			kfree(port_phy_modes);
+ 			return PTR_ERR(port_regs);
+ 		}
+ 
++		ocelot_port->phy_mode = port_phy_modes[port];
+ 		ocelot_port->ocelot = ocelot;
+ 		ocelot_port->regs = port_regs;
+ 		ocelot->ports[port] = ocelot_port;
+ 	}
+ 
++	kfree(port_phy_modes);
++
++	if (felix->info->mdio_bus_alloc) {
++		err = felix->info->mdio_bus_alloc(ocelot);
++		if (err < 0)
++			return err;
++	}
++
+ 	return 0;
+ }
+ 
+@@ -299,6 +520,10 @@ static int felix_setup(struct dsa_switch *ds)
+ static void felix_teardown(struct dsa_switch *ds)
+ {
+ 	struct ocelot *ocelot = ds->priv;
++	struct felix *felix = ocelot_to_felix(ocelot);
++
++	if (felix->info->mdio_bus_free)
++		felix->info->mdio_bus_free(ocelot);
+ 
+ 	/* stop workqueue thread */
+ 	ocelot_deinit(ocelot);
+@@ -369,7 +594,12 @@ static const struct dsa_switch_ops felix_switch_ops = {
+ 	.get_ethtool_stats	= felix_get_ethtool_stats,
+ 	.get_sset_count		= felix_get_sset_count,
+ 	.get_ts_info		= felix_get_ts_info,
+-	.adjust_link		= felix_adjust_link,
++	.phylink_validate	= felix_phylink_validate,
++	.phylink_mac_link_state	= felix_phylink_mac_pcs_get_state,
++	.phylink_mac_config	= felix_phylink_mac_config,
++	.phylink_mac_an_restart	= felix_phylink_mac_an_restart,
++	.phylink_mac_link_down	= felix_phylink_mac_link_down,
++	.phylink_mac_link_up	= felix_phylink_mac_link_up,
+ 	.port_enable		= felix_port_enable,
+ 	.port_disable		= felix_port_disable,
+ 	.port_fdb_dump		= felix_fdb_dump,
+diff --git a/drivers/net/dsa/ocelot/felix.h b/drivers/net/dsa/ocelot/felix.h
+index 204296e51d0c..3a7580015b62 100644
+--- a/drivers/net/dsa/ocelot/felix.h
++++ b/drivers/net/dsa/ocelot/felix.h
+@@ -10,6 +10,7 @@
+ struct felix_info {
+ 	struct resource			*target_io_res;
+ 	struct resource			*port_io_res;
++	struct resource			*imdio_res;
+ 	const struct reg_field		*regfields;
+ 	const u32 *const		*map;
+ 	const struct ocelot_ops		*ops;
+@@ -17,7 +18,18 @@ struct felix_info {
+ 	const struct ocelot_stat_layout	*stats_layout;
+ 	unsigned int			num_stats;
+ 	int				num_ports;
+-	int				pci_bar;
++	int				switch_pci_bar;
++	int				imdio_pci_bar;
++	int	(*mdio_bus_alloc)(struct ocelot *ocelot);
++	void	(*mdio_bus_free)(struct ocelot *ocelot);
++	void	(*pcs_init)(struct ocelot *ocelot, int port,
++			    unsigned int link_an_mode,
++			    const struct phylink_link_state *state);
++	void	(*pcs_an_restart)(struct ocelot *ocelot, int port);
++	void	(*pcs_link_state)(struct ocelot *ocelot, int port,
++				  struct phylink_link_state *state);
++	int	(*prevalidate_phy_mode)(struct ocelot *ocelot, int port,
++					phy_interface_t phy_mode);
+ };
+ 
+ extern struct felix_info		felix_info_vsc9959;
+@@ -32,6 +44,8 @@ struct felix {
+ 	struct pci_dev			*pdev;
+ 	struct felix_info		*info;
+ 	struct ocelot			ocelot;
++	struct mii_bus			*imdio;
++	struct phy_device		**pcs;
+ };
+ 
+ #endif
+diff --git a/drivers/net/dsa/ocelot/felix_vsc9959.c b/drivers/net/dsa/ocelot/felix_vsc9959.c
+index b9758b0d18c7..42d931a21dde 100644
+--- a/drivers/net/dsa/ocelot/felix_vsc9959.c
++++ b/drivers/net/dsa/ocelot/felix_vsc9959.c
+@@ -2,12 +2,33 @@
+ /* Copyright 2017 Microsemi Corporation
+  * Copyright 2018-2019 NXP Semiconductors
+  */
++#include <linux/fsl/enetc_mdio.h>
+ #include <soc/mscc/ocelot_sys.h>
+ #include <soc/mscc/ocelot.h>
+ #include <linux/iopoll.h>
+ #include <linux/pci.h>
+ #include "felix.h"
+ 
++/* TODO: should find a better place for these */
++#define USXGMII_BMCR_RESET		BIT(15)
++#define USXGMII_BMCR_AN_EN		BIT(12)
++#define USXGMII_BMCR_RST_AN		BIT(9)
++#define USXGMII_BMSR_LNKS(status)	(((status) & GENMASK(2, 2)) >> 2)
++#define USXGMII_BMSR_AN_CMPL(status)	(((status) & GENMASK(5, 5)) >> 5)
++#define USXGMII_ADVERTISE_LNKS(x)	(((x) << 15) & BIT(15))
++#define USXGMII_ADVERTISE_FDX		BIT(12)
++#define USXGMII_ADVERTISE_SPEED(x)	(((x) << 9) & GENMASK(11, 9))
++#define USXGMII_LPA_LNKS(lpa)		((lpa) >> 15)
++#define USXGMII_LPA_DUPLEX(lpa)		(((lpa) & GENMASK(12, 12)) >> 12)
++#define USXGMII_LPA_SPEED(lpa)		(((lpa) & GENMASK(11, 9)) >> 9)
++
++enum usxgmii_speed {
++	USXGMII_SPEED_10	= 0,
++	USXGMII_SPEED_100	= 1,
++	USXGMII_SPEED_1000	= 2,
++	USXGMII_SPEED_2500	= 4,
++};
++
+ static const u32 vsc9959_ana_regmap[] = {
+ 	REG(ANA_ADVLEARN,			0x0089a0),
+ 	REG(ANA_VLANMASK,			0x0089a4),
+@@ -386,6 +407,15 @@ static struct resource vsc9959_port_io_res[] = {
+ 	},
+ };
+ 
++/* Port MAC 0 Internal MDIO bus through which the SerDes acting as an
++ * SGMII/QSGMII MAC PCS can be found.
 + */
-+
-+#ifndef _MSCC_OCELOT_ANA_H_
-+#define _MSCC_OCELOT_ANA_H_
-+
-+#define ANA_ANAGEFIL_B_DOM_EN                             BIT(22)
-+#define ANA_ANAGEFIL_B_DOM_VAL                            BIT(21)
-+#define ANA_ANAGEFIL_AGE_LOCKED                           BIT(20)
-+#define ANA_ANAGEFIL_PID_EN                               BIT(19)
-+#define ANA_ANAGEFIL_PID_VAL(x)                           (((x) << 14) & GENMASK(18, 14))
-+#define ANA_ANAGEFIL_PID_VAL_M                            GENMASK(18, 14)
-+#define ANA_ANAGEFIL_PID_VAL_X(x)                         (((x) & GENMASK(18, 14)) >> 14)
-+#define ANA_ANAGEFIL_VID_EN                               BIT(13)
-+#define ANA_ANAGEFIL_VID_VAL(x)                           ((x) & GENMASK(12, 0))
-+#define ANA_ANAGEFIL_VID_VAL_M                            GENMASK(12, 0)
-+
-+#define ANA_STORMLIMIT_CFG_RSZ                            0x4
-+
-+#define ANA_STORMLIMIT_CFG_STORM_RATE(x)                  (((x) << 3) & GENMASK(6, 3))
-+#define ANA_STORMLIMIT_CFG_STORM_RATE_M                   GENMASK(6, 3)
-+#define ANA_STORMLIMIT_CFG_STORM_RATE_X(x)                (((x) & GENMASK(6, 3)) >> 3)
-+#define ANA_STORMLIMIT_CFG_STORM_UNIT                     BIT(2)
-+#define ANA_STORMLIMIT_CFG_STORM_MODE(x)                  ((x) & GENMASK(1, 0))
-+#define ANA_STORMLIMIT_CFG_STORM_MODE_M                   GENMASK(1, 0)
-+
-+#define ANA_AUTOAGE_AGE_FAST                              BIT(21)
-+#define ANA_AUTOAGE_AGE_PERIOD(x)                         (((x) << 1) & GENMASK(20, 1))
-+#define ANA_AUTOAGE_AGE_PERIOD_M                          GENMASK(20, 1)
-+#define ANA_AUTOAGE_AGE_PERIOD_X(x)                       (((x) & GENMASK(20, 1)) >> 1)
-+#define ANA_AUTOAGE_AUTOAGE_LOCKED                        BIT(0)
-+
-+#define ANA_MACTOPTIONS_REDUCED_TABLE                     BIT(1)
-+#define ANA_MACTOPTIONS_SHADOW                            BIT(0)
-+
-+#define ANA_AGENCTRL_FID_MASK(x)                          (((x) << 12) & GENMASK(23, 12))
-+#define ANA_AGENCTRL_FID_MASK_M                           GENMASK(23, 12)
-+#define ANA_AGENCTRL_FID_MASK_X(x)                        (((x) & GENMASK(23, 12)) >> 12)
-+#define ANA_AGENCTRL_IGNORE_DMAC_FLAGS                    BIT(11)
-+#define ANA_AGENCTRL_IGNORE_SMAC_FLAGS                    BIT(10)
-+#define ANA_AGENCTRL_FLOOD_SPECIAL                        BIT(9)
-+#define ANA_AGENCTRL_FLOOD_IGNORE_VLAN                    BIT(8)
-+#define ANA_AGENCTRL_MIRROR_CPU                           BIT(7)
-+#define ANA_AGENCTRL_LEARN_CPU_COPY                       BIT(6)
-+#define ANA_AGENCTRL_LEARN_FWD_KILL                       BIT(5)
-+#define ANA_AGENCTRL_LEARN_IGNORE_VLAN                    BIT(4)
-+#define ANA_AGENCTRL_CPU_CPU_KILL_ENA                     BIT(3)
-+#define ANA_AGENCTRL_GREEN_COUNT_MODE                     BIT(2)
-+#define ANA_AGENCTRL_YELLOW_COUNT_MODE                    BIT(1)
-+#define ANA_AGENCTRL_RED_COUNT_MODE                       BIT(0)
-+
-+#define ANA_FLOODING_RSZ                                  0x4
-+
-+#define ANA_FLOODING_FLD_UNICAST(x)                       (((x) << 12) & GENMASK(17, 12))
-+#define ANA_FLOODING_FLD_UNICAST_M                        GENMASK(17, 12)
-+#define ANA_FLOODING_FLD_UNICAST_X(x)                     (((x) & GENMASK(17, 12)) >> 12)
-+#define ANA_FLOODING_FLD_BROADCAST(x)                     (((x) << 6) & GENMASK(11, 6))
-+#define ANA_FLOODING_FLD_BROADCAST_M                      GENMASK(11, 6)
-+#define ANA_FLOODING_FLD_BROADCAST_X(x)                   (((x) & GENMASK(11, 6)) >> 6)
-+#define ANA_FLOODING_FLD_MULTICAST(x)                     ((x) & GENMASK(5, 0))
-+#define ANA_FLOODING_FLD_MULTICAST_M                      GENMASK(5, 0)
-+
-+#define ANA_FLOODING_IPMC_FLD_MC4_CTRL(x)                 (((x) << 18) & GENMASK(23, 18))
-+#define ANA_FLOODING_IPMC_FLD_MC4_CTRL_M                  GENMASK(23, 18)
-+#define ANA_FLOODING_IPMC_FLD_MC4_CTRL_X(x)               (((x) & GENMASK(23, 18)) >> 18)
-+#define ANA_FLOODING_IPMC_FLD_MC4_DATA(x)                 (((x) << 12) & GENMASK(17, 12))
-+#define ANA_FLOODING_IPMC_FLD_MC4_DATA_M                  GENMASK(17, 12)
-+#define ANA_FLOODING_IPMC_FLD_MC4_DATA_X(x)               (((x) & GENMASK(17, 12)) >> 12)
-+#define ANA_FLOODING_IPMC_FLD_MC6_CTRL(x)                 (((x) << 6) & GENMASK(11, 6))
-+#define ANA_FLOODING_IPMC_FLD_MC6_CTRL_M                  GENMASK(11, 6)
-+#define ANA_FLOODING_IPMC_FLD_MC6_CTRL_X(x)               (((x) & GENMASK(11, 6)) >> 6)
-+#define ANA_FLOODING_IPMC_FLD_MC6_DATA(x)                 ((x) & GENMASK(5, 0))
-+#define ANA_FLOODING_IPMC_FLD_MC6_DATA_M                  GENMASK(5, 0)
-+
-+#define ANA_SFLOW_CFG_RSZ                                 0x4
-+
-+#define ANA_SFLOW_CFG_SF_RATE(x)                          (((x) << 2) & GENMASK(13, 2))
-+#define ANA_SFLOW_CFG_SF_RATE_M                           GENMASK(13, 2)
-+#define ANA_SFLOW_CFG_SF_RATE_X(x)                        (((x) & GENMASK(13, 2)) >> 2)
-+#define ANA_SFLOW_CFG_SF_SAMPLE_RX                        BIT(1)
-+#define ANA_SFLOW_CFG_SF_SAMPLE_TX                        BIT(0)
-+
-+#define ANA_PORT_MODE_RSZ                                 0x4
-+
-+#define ANA_PORT_MODE_REDTAG_PARSE_CFG                    BIT(3)
-+#define ANA_PORT_MODE_VLAN_PARSE_CFG(x)                   (((x) << 1) & GENMASK(2, 1))
-+#define ANA_PORT_MODE_VLAN_PARSE_CFG_M                    GENMASK(2, 1)
-+#define ANA_PORT_MODE_VLAN_PARSE_CFG_X(x)                 (((x) & GENMASK(2, 1)) >> 1)
-+#define ANA_PORT_MODE_L3_PARSE_CFG                        BIT(0)
-+
-+#define ANA_CUT_THRU_CFG_RSZ                              0x4
-+
-+#define ANA_PGID_PGID_RSZ                                 0x4
-+
-+#define ANA_PGID_PGID_PGID(x)                             ((x) & GENMASK(11, 0))
-+#define ANA_PGID_PGID_PGID_M                              GENMASK(11, 0)
-+#define ANA_PGID_PGID_CPUQ_DST_PGID(x)                    (((x) << 27) & GENMASK(29, 27))
-+#define ANA_PGID_PGID_CPUQ_DST_PGID_M                     GENMASK(29, 27)
-+#define ANA_PGID_PGID_CPUQ_DST_PGID_X(x)                  (((x) & GENMASK(29, 27)) >> 27)
-+
-+#define ANA_TABLES_MACHDATA_VID(x)                        (((x) << 16) & GENMASK(28, 16))
-+#define ANA_TABLES_MACHDATA_VID_M                         GENMASK(28, 16)
-+#define ANA_TABLES_MACHDATA_VID_X(x)                      (((x) & GENMASK(28, 16)) >> 16)
-+#define ANA_TABLES_MACHDATA_MACHDATA(x)                   ((x) & GENMASK(15, 0))
-+#define ANA_TABLES_MACHDATA_MACHDATA_M                    GENMASK(15, 0)
-+
-+#define ANA_TABLES_STREAMDATA_SSID_VALID                  BIT(16)
-+#define ANA_TABLES_STREAMDATA_SSID(x)                     (((x) << 9) & GENMASK(15, 9))
-+#define ANA_TABLES_STREAMDATA_SSID_M                      GENMASK(15, 9)
-+#define ANA_TABLES_STREAMDATA_SSID_X(x)                   (((x) & GENMASK(15, 9)) >> 9)
-+#define ANA_TABLES_STREAMDATA_SFID_VALID                  BIT(8)
-+#define ANA_TABLES_STREAMDATA_SFID(x)                     ((x) & GENMASK(7, 0))
-+#define ANA_TABLES_STREAMDATA_SFID_M                      GENMASK(7, 0)
-+
-+#define ANA_TABLES_MACACCESS_MAC_CPU_COPY                 BIT(15)
-+#define ANA_TABLES_MACACCESS_SRC_KILL                     BIT(14)
-+#define ANA_TABLES_MACACCESS_IGNORE_VLAN                  BIT(13)
-+#define ANA_TABLES_MACACCESS_AGED_FLAG                    BIT(12)
-+#define ANA_TABLES_MACACCESS_VALID                        BIT(11)
-+#define ANA_TABLES_MACACCESS_ENTRYTYPE(x)                 (((x) << 9) & GENMASK(10, 9))
-+#define ANA_TABLES_MACACCESS_ENTRYTYPE_M                  GENMASK(10, 9)
-+#define ANA_TABLES_MACACCESS_ENTRYTYPE_X(x)               (((x) & GENMASK(10, 9)) >> 9)
-+#define ANA_TABLES_MACACCESS_DEST_IDX(x)                  (((x) << 3) & GENMASK(8, 3))
-+#define ANA_TABLES_MACACCESS_DEST_IDX_M                   GENMASK(8, 3)
-+#define ANA_TABLES_MACACCESS_DEST_IDX_X(x)                (((x) & GENMASK(8, 3)) >> 3)
-+#define ANA_TABLES_MACACCESS_MAC_TABLE_CMD(x)             ((x) & GENMASK(2, 0))
-+#define ANA_TABLES_MACACCESS_MAC_TABLE_CMD_M              GENMASK(2, 0)
-+#define MACACCESS_CMD_IDLE                     0
-+#define MACACCESS_CMD_LEARN                    1
-+#define MACACCESS_CMD_FORGET                   2
-+#define MACACCESS_CMD_AGE                      3
-+#define MACACCESS_CMD_GET_NEXT                 4
-+#define MACACCESS_CMD_INIT                     5
-+#define MACACCESS_CMD_READ                     6
-+#define MACACCESS_CMD_WRITE                    7
-+
-+#define ANA_TABLES_VLANACCESS_VLAN_PORT_MASK(x)           (((x) << 2) & GENMASK(13, 2))
-+#define ANA_TABLES_VLANACCESS_VLAN_PORT_MASK_M            GENMASK(13, 2)
-+#define ANA_TABLES_VLANACCESS_VLAN_PORT_MASK_X(x)         (((x) & GENMASK(13, 2)) >> 2)
-+#define ANA_TABLES_VLANACCESS_VLAN_TBL_CMD(x)             ((x) & GENMASK(1, 0))
-+#define ANA_TABLES_VLANACCESS_VLAN_TBL_CMD_M              GENMASK(1, 0)
-+#define ANA_TABLES_VLANACCESS_CMD_IDLE                    0x0
-+#define ANA_TABLES_VLANACCESS_CMD_WRITE                   0x2
-+#define ANA_TABLES_VLANACCESS_CMD_INIT                    0x3
-+
-+#define ANA_TABLES_VLANTIDX_VLAN_SEC_FWD_ENA              BIT(17)
-+#define ANA_TABLES_VLANTIDX_VLAN_FLOOD_DIS                BIT(16)
-+#define ANA_TABLES_VLANTIDX_VLAN_PRIV_VLAN                BIT(15)
-+#define ANA_TABLES_VLANTIDX_VLAN_LEARN_DISABLED           BIT(14)
-+#define ANA_TABLES_VLANTIDX_VLAN_MIRROR                   BIT(13)
-+#define ANA_TABLES_VLANTIDX_VLAN_SRC_CHK                  BIT(12)
-+#define ANA_TABLES_VLANTIDX_V_INDEX(x)                    ((x) & GENMASK(11, 0))
-+#define ANA_TABLES_VLANTIDX_V_INDEX_M                     GENMASK(11, 0)
-+
-+#define ANA_TABLES_ISDXACCESS_ISDX_PORT_MASK(x)           (((x) << 2) & GENMASK(8, 2))
-+#define ANA_TABLES_ISDXACCESS_ISDX_PORT_MASK_M            GENMASK(8, 2)
-+#define ANA_TABLES_ISDXACCESS_ISDX_PORT_MASK_X(x)         (((x) & GENMASK(8, 2)) >> 2)
-+#define ANA_TABLES_ISDXACCESS_ISDX_TBL_CMD(x)             ((x) & GENMASK(1, 0))
-+#define ANA_TABLES_ISDXACCESS_ISDX_TBL_CMD_M              GENMASK(1, 0)
-+
-+#define ANA_TABLES_ISDXTIDX_ISDX_SDLBI(x)                 (((x) << 21) & GENMASK(28, 21))
-+#define ANA_TABLES_ISDXTIDX_ISDX_SDLBI_M                  GENMASK(28, 21)
-+#define ANA_TABLES_ISDXTIDX_ISDX_SDLBI_X(x)               (((x) & GENMASK(28, 21)) >> 21)
-+#define ANA_TABLES_ISDXTIDX_ISDX_MSTI(x)                  (((x) << 15) & GENMASK(20, 15))
-+#define ANA_TABLES_ISDXTIDX_ISDX_MSTI_M                   GENMASK(20, 15)
-+#define ANA_TABLES_ISDXTIDX_ISDX_MSTI_X(x)                (((x) & GENMASK(20, 15)) >> 15)
-+#define ANA_TABLES_ISDXTIDX_ISDX_ES0_KEY_ENA              BIT(14)
-+#define ANA_TABLES_ISDXTIDX_ISDX_FORCE_ENA                BIT(10)
-+#define ANA_TABLES_ISDXTIDX_ISDX_INDEX(x)                 ((x) & GENMASK(7, 0))
-+#define ANA_TABLES_ISDXTIDX_ISDX_INDEX_M                  GENMASK(7, 0)
-+
-+#define ANA_TABLES_ENTRYLIM_RSZ                           0x4
-+
-+#define ANA_TABLES_ENTRYLIM_ENTRYLIM(x)                   (((x) << 14) & GENMASK(17, 14))
-+#define ANA_TABLES_ENTRYLIM_ENTRYLIM_M                    GENMASK(17, 14)
-+#define ANA_TABLES_ENTRYLIM_ENTRYLIM_X(x)                 (((x) & GENMASK(17, 14)) >> 14)
-+#define ANA_TABLES_ENTRYLIM_ENTRYSTAT(x)                  ((x) & GENMASK(13, 0))
-+#define ANA_TABLES_ENTRYLIM_ENTRYSTAT_M                   GENMASK(13, 0)
-+
-+#define ANA_TABLES_STREAMACCESS_GEN_REC_SEQ_NUM(x)        (((x) << 4) & GENMASK(31, 4))
-+#define ANA_TABLES_STREAMACCESS_GEN_REC_SEQ_NUM_M         GENMASK(31, 4)
-+#define ANA_TABLES_STREAMACCESS_GEN_REC_SEQ_NUM_X(x)      (((x) & GENMASK(31, 4)) >> 4)
-+#define ANA_TABLES_STREAMACCESS_SEQ_GEN_REC_ENA           BIT(3)
-+#define ANA_TABLES_STREAMACCESS_GEN_REC_TYPE              BIT(2)
-+#define ANA_TABLES_STREAMACCESS_STREAM_TBL_CMD(x)         ((x) & GENMASK(1, 0))
-+#define ANA_TABLES_STREAMACCESS_STREAM_TBL_CMD_M          GENMASK(1, 0)
-+
-+#define ANA_TABLES_STREAMTIDX_SEQ_GEN_ERR_STATUS(x)       (((x) << 30) & GENMASK(31, 30))
-+#define ANA_TABLES_STREAMTIDX_SEQ_GEN_ERR_STATUS_M        GENMASK(31, 30)
-+#define ANA_TABLES_STREAMTIDX_SEQ_GEN_ERR_STATUS_X(x)     (((x) & GENMASK(31, 30)) >> 30)
-+#define ANA_TABLES_STREAMTIDX_S_INDEX(x)                  (((x) << 16) & GENMASK(22, 16))
-+#define ANA_TABLES_STREAMTIDX_S_INDEX_M                   GENMASK(22, 16)
-+#define ANA_TABLES_STREAMTIDX_S_INDEX_X(x)                (((x) & GENMASK(22, 16)) >> 16)
-+#define ANA_TABLES_STREAMTIDX_FORCE_SF_BEHAVIOUR          BIT(14)
-+#define ANA_TABLES_STREAMTIDX_SEQ_HISTORY_LEN(x)          (((x) << 8) & GENMASK(13, 8))
-+#define ANA_TABLES_STREAMTIDX_SEQ_HISTORY_LEN_M           GENMASK(13, 8)
-+#define ANA_TABLES_STREAMTIDX_SEQ_HISTORY_LEN_X(x)        (((x) & GENMASK(13, 8)) >> 8)
-+#define ANA_TABLES_STREAMTIDX_RESET_ON_ROGUE              BIT(7)
-+#define ANA_TABLES_STREAMTIDX_REDTAG_POP                  BIT(6)
-+#define ANA_TABLES_STREAMTIDX_STREAM_SPLIT                BIT(5)
-+#define ANA_TABLES_STREAMTIDX_SEQ_SPACE_LOG2(x)           ((x) & GENMASK(4, 0))
-+#define ANA_TABLES_STREAMTIDX_SEQ_SPACE_LOG2_M            GENMASK(4, 0)
-+
-+#define ANA_TABLES_SEQ_MASK_SPLIT_MASK(x)                 (((x) << 16) & GENMASK(22, 16))
-+#define ANA_TABLES_SEQ_MASK_SPLIT_MASK_M                  GENMASK(22, 16)
-+#define ANA_TABLES_SEQ_MASK_SPLIT_MASK_X(x)               (((x) & GENMASK(22, 16)) >> 16)
-+#define ANA_TABLES_SEQ_MASK_INPUT_PORT_MASK(x)            ((x) & GENMASK(6, 0))
-+#define ANA_TABLES_SEQ_MASK_INPUT_PORT_MASK_M             GENMASK(6, 0)
-+
-+#define ANA_TABLES_SFID_MASK_IGR_PORT_MASK(x)             (((x) << 1) & GENMASK(7, 1))
-+#define ANA_TABLES_SFID_MASK_IGR_PORT_MASK_M              GENMASK(7, 1)
-+#define ANA_TABLES_SFID_MASK_IGR_PORT_MASK_X(x)           (((x) & GENMASK(7, 1)) >> 1)
-+#define ANA_TABLES_SFID_MASK_IGR_SRCPORT_MATCH_ENA        BIT(0)
-+
-+#define ANA_TABLES_SFIDACCESS_IGR_PRIO_MATCH_ENA          BIT(22)
-+#define ANA_TABLES_SFIDACCESS_IGR_PRIO(x)                 (((x) << 19) & GENMASK(21, 19))
-+#define ANA_TABLES_SFIDACCESS_IGR_PRIO_M                  GENMASK(21, 19)
-+#define ANA_TABLES_SFIDACCESS_IGR_PRIO_X(x)               (((x) & GENMASK(21, 19)) >> 19)
-+#define ANA_TABLES_SFIDACCESS_FORCE_BLOCK                 BIT(18)
-+#define ANA_TABLES_SFIDACCESS_MAX_SDU_LEN(x)              (((x) << 2) & GENMASK(17, 2))
-+#define ANA_TABLES_SFIDACCESS_MAX_SDU_LEN_M               GENMASK(17, 2)
-+#define ANA_TABLES_SFIDACCESS_MAX_SDU_LEN_X(x)            (((x) & GENMASK(17, 2)) >> 2)
-+#define ANA_TABLES_SFIDACCESS_SFID_TBL_CMD(x)             ((x) & GENMASK(1, 0))
-+#define ANA_TABLES_SFIDACCESS_SFID_TBL_CMD_M              GENMASK(1, 0)
-+
-+#define ANA_TABLES_SFIDTIDX_SGID_VALID                    BIT(26)
-+#define ANA_TABLES_SFIDTIDX_SGID(x)                       (((x) << 18) & GENMASK(25, 18))
-+#define ANA_TABLES_SFIDTIDX_SGID_M                        GENMASK(25, 18)
-+#define ANA_TABLES_SFIDTIDX_SGID_X(x)                     (((x) & GENMASK(25, 18)) >> 18)
-+#define ANA_TABLES_SFIDTIDX_POL_ENA                       BIT(17)
-+#define ANA_TABLES_SFIDTIDX_POL_IDX(x)                    (((x) << 8) & GENMASK(16, 8))
-+#define ANA_TABLES_SFIDTIDX_POL_IDX_M                     GENMASK(16, 8)
-+#define ANA_TABLES_SFIDTIDX_POL_IDX_X(x)                  (((x) & GENMASK(16, 8)) >> 8)
-+#define ANA_TABLES_SFIDTIDX_SFID_INDEX(x)                 ((x) & GENMASK(7, 0))
-+#define ANA_TABLES_SFIDTIDX_SFID_INDEX_M                  GENMASK(7, 0)
-+
-+#define ANA_MSTI_STATE_RSZ                                0x4
-+
-+#define ANA_OAM_UPM_LM_CNT_RSZ                            0x4
-+
-+#define ANA_SG_ACCESS_CTRL_SGID(x)                        ((x) & GENMASK(7, 0))
-+#define ANA_SG_ACCESS_CTRL_SGID_M                         GENMASK(7, 0)
-+#define ANA_SG_ACCESS_CTRL_CONFIG_CHANGE                  BIT(28)
-+
-+#define ANA_SG_CONFIG_REG_3_BASE_TIME_SEC_MSB(x)          ((x) & GENMASK(15, 0))
-+#define ANA_SG_CONFIG_REG_3_BASE_TIME_SEC_MSB_M           GENMASK(15, 0)
-+#define ANA_SG_CONFIG_REG_3_LIST_LENGTH(x)                (((x) << 16) & GENMASK(18, 16))
-+#define ANA_SG_CONFIG_REG_3_LIST_LENGTH_M                 GENMASK(18, 16)
-+#define ANA_SG_CONFIG_REG_3_LIST_LENGTH_X(x)              (((x) & GENMASK(18, 16)) >> 16)
-+#define ANA_SG_CONFIG_REG_3_GATE_ENABLE                   BIT(20)
-+#define ANA_SG_CONFIG_REG_3_INIT_IPS(x)                   (((x) << 24) & GENMASK(27, 24))
-+#define ANA_SG_CONFIG_REG_3_INIT_IPS_M                    GENMASK(27, 24)
-+#define ANA_SG_CONFIG_REG_3_INIT_IPS_X(x)                 (((x) & GENMASK(27, 24)) >> 24)
-+#define ANA_SG_CONFIG_REG_3_INIT_GATE_STATE               BIT(28)
-+
-+#define ANA_SG_GCL_GS_CONFIG_RSZ                          0x4
-+
-+#define ANA_SG_GCL_GS_CONFIG_IPS(x)                       ((x) & GENMASK(3, 0))
-+#define ANA_SG_GCL_GS_CONFIG_IPS_M                        GENMASK(3, 0)
-+#define ANA_SG_GCL_GS_CONFIG_GATE_STATE                   BIT(4)
-+
-+#define ANA_SG_GCL_TI_CONFIG_RSZ                          0x4
-+
-+#define ANA_SG_STATUS_REG_3_CFG_CHG_TIME_SEC_MSB(x)       ((x) & GENMASK(15, 0))
-+#define ANA_SG_STATUS_REG_3_CFG_CHG_TIME_SEC_MSB_M        GENMASK(15, 0)
-+#define ANA_SG_STATUS_REG_3_GATE_STATE                    BIT(16)
-+#define ANA_SG_STATUS_REG_3_IPS(x)                        (((x) << 20) & GENMASK(23, 20))
-+#define ANA_SG_STATUS_REG_3_IPS_M                         GENMASK(23, 20)
-+#define ANA_SG_STATUS_REG_3_IPS_X(x)                      (((x) & GENMASK(23, 20)) >> 20)
-+#define ANA_SG_STATUS_REG_3_CONFIG_PENDING                BIT(24)
-+
-+#define ANA_PORT_VLAN_CFG_GSZ                             0x100
-+
-+#define ANA_PORT_VLAN_CFG_VLAN_VID_AS_ISDX                BIT(21)
-+#define ANA_PORT_VLAN_CFG_VLAN_AWARE_ENA                  BIT(20)
-+#define ANA_PORT_VLAN_CFG_VLAN_POP_CNT(x)                 (((x) << 18) & GENMASK(19, 18))
-+#define ANA_PORT_VLAN_CFG_VLAN_POP_CNT_M                  GENMASK(19, 18)
-+#define ANA_PORT_VLAN_CFG_VLAN_POP_CNT_X(x)               (((x) & GENMASK(19, 18)) >> 18)
-+#define ANA_PORT_VLAN_CFG_VLAN_INNER_TAG_ENA              BIT(17)
-+#define ANA_PORT_VLAN_CFG_VLAN_TAG_TYPE                   BIT(16)
-+#define ANA_PORT_VLAN_CFG_VLAN_DEI                        BIT(15)
-+#define ANA_PORT_VLAN_CFG_VLAN_PCP(x)                     (((x) << 12) & GENMASK(14, 12))
-+#define ANA_PORT_VLAN_CFG_VLAN_PCP_M                      GENMASK(14, 12)
-+#define ANA_PORT_VLAN_CFG_VLAN_PCP_X(x)                   (((x) & GENMASK(14, 12)) >> 12)
-+#define ANA_PORT_VLAN_CFG_VLAN_VID(x)                     ((x) & GENMASK(11, 0))
-+#define ANA_PORT_VLAN_CFG_VLAN_VID_M                      GENMASK(11, 0)
-+
-+#define ANA_PORT_DROP_CFG_GSZ                             0x100
-+
-+#define ANA_PORT_DROP_CFG_DROP_UNTAGGED_ENA               BIT(6)
-+#define ANA_PORT_DROP_CFG_DROP_S_TAGGED_ENA               BIT(5)
-+#define ANA_PORT_DROP_CFG_DROP_C_TAGGED_ENA               BIT(4)
-+#define ANA_PORT_DROP_CFG_DROP_PRIO_S_TAGGED_ENA          BIT(3)
-+#define ANA_PORT_DROP_CFG_DROP_PRIO_C_TAGGED_ENA          BIT(2)
-+#define ANA_PORT_DROP_CFG_DROP_NULL_MAC_ENA               BIT(1)
-+#define ANA_PORT_DROP_CFG_DROP_MC_SMAC_ENA                BIT(0)
-+
-+#define ANA_PORT_QOS_CFG_GSZ                              0x100
-+
-+#define ANA_PORT_QOS_CFG_DP_DEFAULT_VAL                   BIT(8)
-+#define ANA_PORT_QOS_CFG_QOS_DEFAULT_VAL(x)               (((x) << 5) & GENMASK(7, 5))
-+#define ANA_PORT_QOS_CFG_QOS_DEFAULT_VAL_M                GENMASK(7, 5)
-+#define ANA_PORT_QOS_CFG_QOS_DEFAULT_VAL_X(x)             (((x) & GENMASK(7, 5)) >> 5)
-+#define ANA_PORT_QOS_CFG_QOS_DSCP_ENA                     BIT(4)
-+#define ANA_PORT_QOS_CFG_QOS_PCP_ENA                      BIT(3)
-+#define ANA_PORT_QOS_CFG_DSCP_TRANSLATE_ENA               BIT(2)
-+#define ANA_PORT_QOS_CFG_DSCP_REWR_CFG(x)                 ((x) & GENMASK(1, 0))
-+#define ANA_PORT_QOS_CFG_DSCP_REWR_CFG_M                  GENMASK(1, 0)
-+
-+#define ANA_PORT_VCAP_CFG_GSZ                             0x100
-+
-+#define ANA_PORT_VCAP_CFG_S1_ENA                          BIT(14)
-+#define ANA_PORT_VCAP_CFG_S1_DMAC_DIP_ENA(x)              (((x) << 11) & GENMASK(13, 11))
-+#define ANA_PORT_VCAP_CFG_S1_DMAC_DIP_ENA_M               GENMASK(13, 11)
-+#define ANA_PORT_VCAP_CFG_S1_DMAC_DIP_ENA_X(x)            (((x) & GENMASK(13, 11)) >> 11)
-+#define ANA_PORT_VCAP_CFG_S1_VLAN_INNER_TAG_ENA(x)        (((x) << 8) & GENMASK(10, 8))
-+#define ANA_PORT_VCAP_CFG_S1_VLAN_INNER_TAG_ENA_M         GENMASK(10, 8)
-+#define ANA_PORT_VCAP_CFG_S1_VLAN_INNER_TAG_ENA_X(x)      (((x) & GENMASK(10, 8)) >> 8)
-+#define ANA_PORT_VCAP_CFG_PAG_VAL(x)                      ((x) & GENMASK(7, 0))
-+#define ANA_PORT_VCAP_CFG_PAG_VAL_M                       GENMASK(7, 0)
-+
-+#define ANA_PORT_VCAP_S1_KEY_CFG_GSZ                      0x100
-+#define ANA_PORT_VCAP_S1_KEY_CFG_RSZ                      0x4
-+
-+#define ANA_PORT_VCAP_S1_KEY_CFG_S1_KEY_IP6_CFG(x)        (((x) << 4) & GENMASK(6, 4))
-+#define ANA_PORT_VCAP_S1_KEY_CFG_S1_KEY_IP6_CFG_M         GENMASK(6, 4)
-+#define ANA_PORT_VCAP_S1_KEY_CFG_S1_KEY_IP6_CFG_X(x)      (((x) & GENMASK(6, 4)) >> 4)
-+#define ANA_PORT_VCAP_S1_KEY_CFG_S1_KEY_IP4_CFG(x)        (((x) << 2) & GENMASK(3, 2))
-+#define ANA_PORT_VCAP_S1_KEY_CFG_S1_KEY_IP4_CFG_M         GENMASK(3, 2)
-+#define ANA_PORT_VCAP_S1_KEY_CFG_S1_KEY_IP4_CFG_X(x)      (((x) & GENMASK(3, 2)) >> 2)
-+#define ANA_PORT_VCAP_S1_KEY_CFG_S1_KEY_OTHER_CFG(x)      ((x) & GENMASK(1, 0))
-+#define ANA_PORT_VCAP_S1_KEY_CFG_S1_KEY_OTHER_CFG_M       GENMASK(1, 0)
-+
-+#define ANA_PORT_VCAP_S2_CFG_GSZ                          0x100
-+
-+#define ANA_PORT_VCAP_S2_CFG_S2_UDP_PAYLOAD_ENA(x)        (((x) << 17) & GENMASK(18, 17))
-+#define ANA_PORT_VCAP_S2_CFG_S2_UDP_PAYLOAD_ENA_M         GENMASK(18, 17)
-+#define ANA_PORT_VCAP_S2_CFG_S2_UDP_PAYLOAD_ENA_X(x)      (((x) & GENMASK(18, 17)) >> 17)
-+#define ANA_PORT_VCAP_S2_CFG_S2_ETYPE_PAYLOAD_ENA(x)      (((x) << 15) & GENMASK(16, 15))
-+#define ANA_PORT_VCAP_S2_CFG_S2_ETYPE_PAYLOAD_ENA_M       GENMASK(16, 15)
-+#define ANA_PORT_VCAP_S2_CFG_S2_ETYPE_PAYLOAD_ENA_X(x)    (((x) & GENMASK(16, 15)) >> 15)
-+#define ANA_PORT_VCAP_S2_CFG_S2_ENA                       BIT(14)
-+#define ANA_PORT_VCAP_S2_CFG_S2_SNAP_DIS(x)               (((x) << 12) & GENMASK(13, 12))
-+#define ANA_PORT_VCAP_S2_CFG_S2_SNAP_DIS_M                GENMASK(13, 12)
-+#define ANA_PORT_VCAP_S2_CFG_S2_SNAP_DIS_X(x)             (((x) & GENMASK(13, 12)) >> 12)
-+#define ANA_PORT_VCAP_S2_CFG_S2_ARP_DIS(x)                (((x) << 10) & GENMASK(11, 10))
-+#define ANA_PORT_VCAP_S2_CFG_S2_ARP_DIS_M                 GENMASK(11, 10)
-+#define ANA_PORT_VCAP_S2_CFG_S2_ARP_DIS_X(x)              (((x) & GENMASK(11, 10)) >> 10)
-+#define ANA_PORT_VCAP_S2_CFG_S2_IP_TCPUDP_DIS(x)          (((x) << 8) & GENMASK(9, 8))
-+#define ANA_PORT_VCAP_S2_CFG_S2_IP_TCPUDP_DIS_M           GENMASK(9, 8)
-+#define ANA_PORT_VCAP_S2_CFG_S2_IP_TCPUDP_DIS_X(x)        (((x) & GENMASK(9, 8)) >> 8)
-+#define ANA_PORT_VCAP_S2_CFG_S2_IP_OTHER_DIS(x)           (((x) << 6) & GENMASK(7, 6))
-+#define ANA_PORT_VCAP_S2_CFG_S2_IP_OTHER_DIS_M            GENMASK(7, 6)
-+#define ANA_PORT_VCAP_S2_CFG_S2_IP_OTHER_DIS_X(x)         (((x) & GENMASK(7, 6)) >> 6)
-+#define ANA_PORT_VCAP_S2_CFG_S2_IP6_CFG(x)                (((x) << 2) & GENMASK(5, 2))
-+#define ANA_PORT_VCAP_S2_CFG_S2_IP6_CFG_M                 GENMASK(5, 2)
-+#define ANA_PORT_VCAP_S2_CFG_S2_IP6_CFG_X(x)              (((x) & GENMASK(5, 2)) >> 2)
-+#define ANA_PORT_VCAP_S2_CFG_S2_OAM_DIS(x)                ((x) & GENMASK(1, 0))
-+#define ANA_PORT_VCAP_S2_CFG_S2_OAM_DIS_M                 GENMASK(1, 0)
-+
-+#define ANA_PORT_PCP_DEI_MAP_GSZ                          0x100
-+#define ANA_PORT_PCP_DEI_MAP_RSZ                          0x4
-+
-+#define ANA_PORT_PCP_DEI_MAP_DP_PCP_DEI_VAL               BIT(3)
-+#define ANA_PORT_PCP_DEI_MAP_QOS_PCP_DEI_VAL(x)           ((x) & GENMASK(2, 0))
-+#define ANA_PORT_PCP_DEI_MAP_QOS_PCP_DEI_VAL_M            GENMASK(2, 0)
-+
-+#define ANA_PORT_CPU_FWD_CFG_GSZ                          0x100
-+
-+#define ANA_PORT_CPU_FWD_CFG_CPU_VRAP_REDIR_ENA           BIT(7)
-+#define ANA_PORT_CPU_FWD_CFG_CPU_MLD_REDIR_ENA            BIT(6)
-+#define ANA_PORT_CPU_FWD_CFG_CPU_IGMP_REDIR_ENA           BIT(5)
-+#define ANA_PORT_CPU_FWD_CFG_CPU_IPMC_CTRL_COPY_ENA       BIT(4)
-+#define ANA_PORT_CPU_FWD_CFG_CPU_SRC_COPY_ENA             BIT(3)
-+#define ANA_PORT_CPU_FWD_CFG_CPU_ALLBRIDGE_DROP_ENA       BIT(2)
-+#define ANA_PORT_CPU_FWD_CFG_CPU_ALLBRIDGE_REDIR_ENA      BIT(1)
-+#define ANA_PORT_CPU_FWD_CFG_CPU_OAM_ENA                  BIT(0)
-+
-+#define ANA_PORT_CPU_FWD_BPDU_CFG_GSZ                     0x100
-+
-+#define ANA_PORT_CPU_FWD_BPDU_CFG_BPDU_DROP_ENA(x)        (((x) << 16) & GENMASK(31, 16))
-+#define ANA_PORT_CPU_FWD_BPDU_CFG_BPDU_DROP_ENA_M         GENMASK(31, 16)
-+#define ANA_PORT_CPU_FWD_BPDU_CFG_BPDU_DROP_ENA_X(x)      (((x) & GENMASK(31, 16)) >> 16)
-+#define ANA_PORT_CPU_FWD_BPDU_CFG_BPDU_REDIR_ENA(x)       ((x) & GENMASK(15, 0))
-+#define ANA_PORT_CPU_FWD_BPDU_CFG_BPDU_REDIR_ENA_M        GENMASK(15, 0)
-+
-+#define ANA_PORT_CPU_FWD_GARP_CFG_GSZ                     0x100
-+
-+#define ANA_PORT_CPU_FWD_GARP_CFG_GARP_DROP_ENA(x)        (((x) << 16) & GENMASK(31, 16))
-+#define ANA_PORT_CPU_FWD_GARP_CFG_GARP_DROP_ENA_M         GENMASK(31, 16)
-+#define ANA_PORT_CPU_FWD_GARP_CFG_GARP_DROP_ENA_X(x)      (((x) & GENMASK(31, 16)) >> 16)
-+#define ANA_PORT_CPU_FWD_GARP_CFG_GARP_REDIR_ENA(x)       ((x) & GENMASK(15, 0))
-+#define ANA_PORT_CPU_FWD_GARP_CFG_GARP_REDIR_ENA_M        GENMASK(15, 0)
-+
-+#define ANA_PORT_CPU_FWD_CCM_CFG_GSZ                      0x100
-+
-+#define ANA_PORT_CPU_FWD_CCM_CFG_CCM_DROP_ENA(x)          (((x) << 16) & GENMASK(31, 16))
-+#define ANA_PORT_CPU_FWD_CCM_CFG_CCM_DROP_ENA_M           GENMASK(31, 16)
-+#define ANA_PORT_CPU_FWD_CCM_CFG_CCM_DROP_ENA_X(x)        (((x) & GENMASK(31, 16)) >> 16)
-+#define ANA_PORT_CPU_FWD_CCM_CFG_CCM_REDIR_ENA(x)         ((x) & GENMASK(15, 0))
-+#define ANA_PORT_CPU_FWD_CCM_CFG_CCM_REDIR_ENA_M          GENMASK(15, 0)
-+
-+#define ANA_PORT_PORT_CFG_GSZ                             0x100
-+
-+#define ANA_PORT_PORT_CFG_SRC_MIRROR_ENA                  BIT(15)
-+#define ANA_PORT_PORT_CFG_LIMIT_DROP                      BIT(14)
-+#define ANA_PORT_PORT_CFG_LIMIT_CPU                       BIT(13)
-+#define ANA_PORT_PORT_CFG_LOCKED_PORTMOVE_DROP            BIT(12)
-+#define ANA_PORT_PORT_CFG_LOCKED_PORTMOVE_CPU             BIT(11)
-+#define ANA_PORT_PORT_CFG_LEARNDROP                       BIT(10)
-+#define ANA_PORT_PORT_CFG_LEARNCPU                        BIT(9)
-+#define ANA_PORT_PORT_CFG_LEARNAUTO                       BIT(8)
-+#define ANA_PORT_PORT_CFG_LEARN_ENA                       BIT(7)
-+#define ANA_PORT_PORT_CFG_RECV_ENA                        BIT(6)
-+#define ANA_PORT_PORT_CFG_PORTID_VAL(x)                   (((x) << 2) & GENMASK(5, 2))
-+#define ANA_PORT_PORT_CFG_PORTID_VAL_M                    GENMASK(5, 2)
-+#define ANA_PORT_PORT_CFG_PORTID_VAL_X(x)                 (((x) & GENMASK(5, 2)) >> 2)
-+#define ANA_PORT_PORT_CFG_USE_B_DOM_TBL                   BIT(1)
-+#define ANA_PORT_PORT_CFG_LSR_MODE                        BIT(0)
-+
-+#define ANA_PORT_POL_CFG_GSZ                              0x100
-+
-+#define ANA_PORT_POL_CFG_POL_CPU_REDIR_8021               BIT(19)
-+#define ANA_PORT_POL_CFG_POL_CPU_REDIR_IP                 BIT(18)
-+#define ANA_PORT_POL_CFG_PORT_POL_ENA                     BIT(17)
-+#define ANA_PORT_POL_CFG_QUEUE_POL_ENA(x)                 (((x) << 9) & GENMASK(16, 9))
-+#define ANA_PORT_POL_CFG_QUEUE_POL_ENA_M                  GENMASK(16, 9)
-+#define ANA_PORT_POL_CFG_QUEUE_POL_ENA_X(x)               (((x) & GENMASK(16, 9)) >> 9)
-+#define ANA_PORT_POL_CFG_POL_ORDER(x)                     ((x) & GENMASK(8, 0))
-+#define ANA_PORT_POL_CFG_POL_ORDER_M                      GENMASK(8, 0)
-+
-+#define ANA_PORT_PTP_CFG_GSZ                              0x100
-+
-+#define ANA_PORT_PTP_CFG_PTP_BACKPLANE_MODE               BIT(0)
-+
-+#define ANA_PORT_PTP_DLY1_CFG_GSZ                         0x100
-+
-+#define ANA_PORT_PTP_DLY2_CFG_GSZ                         0x100
-+
-+#define ANA_PORT_SFID_CFG_GSZ                             0x100
-+#define ANA_PORT_SFID_CFG_RSZ                             0x4
-+
-+#define ANA_PORT_SFID_CFG_SFID_VALID                      BIT(8)
-+#define ANA_PORT_SFID_CFG_SFID(x)                         ((x) & GENMASK(7, 0))
-+#define ANA_PORT_SFID_CFG_SFID_M                          GENMASK(7, 0)
-+
-+#define ANA_PFC_PFC_CFG_GSZ                               0x40
-+
-+#define ANA_PFC_PFC_CFG_RX_PFC_ENA(x)                     (((x) << 2) & GENMASK(9, 2))
-+#define ANA_PFC_PFC_CFG_RX_PFC_ENA_M                      GENMASK(9, 2)
-+#define ANA_PFC_PFC_CFG_RX_PFC_ENA_X(x)                   (((x) & GENMASK(9, 2)) >> 2)
-+#define ANA_PFC_PFC_CFG_FC_LINK_SPEED(x)                  ((x) & GENMASK(1, 0))
-+#define ANA_PFC_PFC_CFG_FC_LINK_SPEED_M                   GENMASK(1, 0)
-+
-+#define ANA_PFC_PFC_TIMER_GSZ                             0x40
-+#define ANA_PFC_PFC_TIMER_RSZ                             0x4
-+
-+#define ANA_IPT_OAM_MEP_CFG_GSZ                           0x8
-+
-+#define ANA_IPT_OAM_MEP_CFG_MEP_IDX_P(x)                  (((x) << 6) & GENMASK(10, 6))
-+#define ANA_IPT_OAM_MEP_CFG_MEP_IDX_P_M                   GENMASK(10, 6)
-+#define ANA_IPT_OAM_MEP_CFG_MEP_IDX_P_X(x)                (((x) & GENMASK(10, 6)) >> 6)
-+#define ANA_IPT_OAM_MEP_CFG_MEP_IDX(x)                    (((x) << 1) & GENMASK(5, 1))
-+#define ANA_IPT_OAM_MEP_CFG_MEP_IDX_M                     GENMASK(5, 1)
-+#define ANA_IPT_OAM_MEP_CFG_MEP_IDX_X(x)                  (((x) & GENMASK(5, 1)) >> 1)
-+#define ANA_IPT_OAM_MEP_CFG_MEP_IDX_ENA                   BIT(0)
-+
-+#define ANA_IPT_IPT_GSZ                                   0x8
-+
-+#define ANA_IPT_IPT_IPT_CFG(x)                            (((x) << 15) & GENMASK(16, 15))
-+#define ANA_IPT_IPT_IPT_CFG_M                             GENMASK(16, 15)
-+#define ANA_IPT_IPT_IPT_CFG_X(x)                          (((x) & GENMASK(16, 15)) >> 15)
-+#define ANA_IPT_IPT_ISDX_P(x)                             (((x) << 7) & GENMASK(14, 7))
-+#define ANA_IPT_IPT_ISDX_P_M                              GENMASK(14, 7)
-+#define ANA_IPT_IPT_ISDX_P_X(x)                           (((x) & GENMASK(14, 7)) >> 7)
-+#define ANA_IPT_IPT_PPT_IDX(x)                            ((x) & GENMASK(6, 0))
-+#define ANA_IPT_IPT_PPT_IDX_M                             GENMASK(6, 0)
-+
-+#define ANA_PPT_PPT_RSZ                                   0x4
-+
-+#define ANA_FID_MAP_FID_MAP_RSZ                           0x4
-+
-+#define ANA_FID_MAP_FID_MAP_FID_C_VAL(x)                  (((x) << 6) & GENMASK(11, 6))
-+#define ANA_FID_MAP_FID_MAP_FID_C_VAL_M                   GENMASK(11, 6)
-+#define ANA_FID_MAP_FID_MAP_FID_C_VAL_X(x)                (((x) & GENMASK(11, 6)) >> 6)
-+#define ANA_FID_MAP_FID_MAP_FID_B_VAL(x)                  ((x) & GENMASK(5, 0))
-+#define ANA_FID_MAP_FID_MAP_FID_B_VAL_M                   GENMASK(5, 0)
-+
-+#define ANA_AGGR_CFG_AC_RND_ENA                           BIT(7)
-+#define ANA_AGGR_CFG_AC_DMAC_ENA                          BIT(6)
-+#define ANA_AGGR_CFG_AC_SMAC_ENA                          BIT(5)
-+#define ANA_AGGR_CFG_AC_IP6_FLOW_LBL_ENA                  BIT(4)
-+#define ANA_AGGR_CFG_AC_IP6_TCPUDP_ENA                    BIT(3)
-+#define ANA_AGGR_CFG_AC_IP4_SIPDIP_ENA                    BIT(2)
-+#define ANA_AGGR_CFG_AC_IP4_TCPUDP_ENA                    BIT(1)
-+#define ANA_AGGR_CFG_AC_ISDX_ENA                          BIT(0)
-+
-+#define ANA_CPUQ_CFG_CPUQ_MLD(x)                          (((x) << 27) & GENMASK(29, 27))
-+#define ANA_CPUQ_CFG_CPUQ_MLD_M                           GENMASK(29, 27)
-+#define ANA_CPUQ_CFG_CPUQ_MLD_X(x)                        (((x) & GENMASK(29, 27)) >> 27)
-+#define ANA_CPUQ_CFG_CPUQ_IGMP(x)                         (((x) << 24) & GENMASK(26, 24))
-+#define ANA_CPUQ_CFG_CPUQ_IGMP_M                          GENMASK(26, 24)
-+#define ANA_CPUQ_CFG_CPUQ_IGMP_X(x)                       (((x) & GENMASK(26, 24)) >> 24)
-+#define ANA_CPUQ_CFG_CPUQ_IPMC_CTRL(x)                    (((x) << 21) & GENMASK(23, 21))
-+#define ANA_CPUQ_CFG_CPUQ_IPMC_CTRL_M                     GENMASK(23, 21)
-+#define ANA_CPUQ_CFG_CPUQ_IPMC_CTRL_X(x)                  (((x) & GENMASK(23, 21)) >> 21)
-+#define ANA_CPUQ_CFG_CPUQ_ALLBRIDGE(x)                    (((x) << 18) & GENMASK(20, 18))
-+#define ANA_CPUQ_CFG_CPUQ_ALLBRIDGE_M                     GENMASK(20, 18)
-+#define ANA_CPUQ_CFG_CPUQ_ALLBRIDGE_X(x)                  (((x) & GENMASK(20, 18)) >> 18)
-+#define ANA_CPUQ_CFG_CPUQ_LOCKED_PORTMOVE(x)              (((x) << 15) & GENMASK(17, 15))
-+#define ANA_CPUQ_CFG_CPUQ_LOCKED_PORTMOVE_M               GENMASK(17, 15)
-+#define ANA_CPUQ_CFG_CPUQ_LOCKED_PORTMOVE_X(x)            (((x) & GENMASK(17, 15)) >> 15)
-+#define ANA_CPUQ_CFG_CPUQ_SRC_COPY(x)                     (((x) << 12) & GENMASK(14, 12))
-+#define ANA_CPUQ_CFG_CPUQ_SRC_COPY_M                      GENMASK(14, 12)
-+#define ANA_CPUQ_CFG_CPUQ_SRC_COPY_X(x)                   (((x) & GENMASK(14, 12)) >> 12)
-+#define ANA_CPUQ_CFG_CPUQ_MAC_COPY(x)                     (((x) << 9) & GENMASK(11, 9))
-+#define ANA_CPUQ_CFG_CPUQ_MAC_COPY_M                      GENMASK(11, 9)
-+#define ANA_CPUQ_CFG_CPUQ_MAC_COPY_X(x)                   (((x) & GENMASK(11, 9)) >> 9)
-+#define ANA_CPUQ_CFG_CPUQ_LRN(x)                          (((x) << 6) & GENMASK(8, 6))
-+#define ANA_CPUQ_CFG_CPUQ_LRN_M                           GENMASK(8, 6)
-+#define ANA_CPUQ_CFG_CPUQ_LRN_X(x)                        (((x) & GENMASK(8, 6)) >> 6)
-+#define ANA_CPUQ_CFG_CPUQ_MIRROR(x)                       (((x) << 3) & GENMASK(5, 3))
-+#define ANA_CPUQ_CFG_CPUQ_MIRROR_M                        GENMASK(5, 3)
-+#define ANA_CPUQ_CFG_CPUQ_MIRROR_X(x)                     (((x) & GENMASK(5, 3)) >> 3)
-+#define ANA_CPUQ_CFG_CPUQ_SFLOW(x)                        ((x) & GENMASK(2, 0))
-+#define ANA_CPUQ_CFG_CPUQ_SFLOW_M                         GENMASK(2, 0)
-+
-+#define ANA_CPUQ_8021_CFG_RSZ                             0x4
-+
-+#define ANA_CPUQ_8021_CFG_CPUQ_BPDU_VAL(x)                (((x) << 6) & GENMASK(8, 6))
-+#define ANA_CPUQ_8021_CFG_CPUQ_BPDU_VAL_M                 GENMASK(8, 6)
-+#define ANA_CPUQ_8021_CFG_CPUQ_BPDU_VAL_X(x)              (((x) & GENMASK(8, 6)) >> 6)
-+#define ANA_CPUQ_8021_CFG_CPUQ_GARP_VAL(x)                (((x) << 3) & GENMASK(5, 3))
-+#define ANA_CPUQ_8021_CFG_CPUQ_GARP_VAL_M                 GENMASK(5, 3)
-+#define ANA_CPUQ_8021_CFG_CPUQ_GARP_VAL_X(x)              (((x) & GENMASK(5, 3)) >> 3)
-+#define ANA_CPUQ_8021_CFG_CPUQ_CCM_VAL(x)                 ((x) & GENMASK(2, 0))
-+#define ANA_CPUQ_8021_CFG_CPUQ_CCM_VAL_M                  GENMASK(2, 0)
-+
-+#define ANA_DSCP_CFG_RSZ                                  0x4
-+
-+#define ANA_DSCP_CFG_DP_DSCP_VAL                          BIT(11)
-+#define ANA_DSCP_CFG_QOS_DSCP_VAL(x)                      (((x) << 8) & GENMASK(10, 8))
-+#define ANA_DSCP_CFG_QOS_DSCP_VAL_M                       GENMASK(10, 8)
-+#define ANA_DSCP_CFG_QOS_DSCP_VAL_X(x)                    (((x) & GENMASK(10, 8)) >> 8)
-+#define ANA_DSCP_CFG_DSCP_TRANSLATE_VAL(x)                (((x) << 2) & GENMASK(7, 2))
-+#define ANA_DSCP_CFG_DSCP_TRANSLATE_VAL_M                 GENMASK(7, 2)
-+#define ANA_DSCP_CFG_DSCP_TRANSLATE_VAL_X(x)              (((x) & GENMASK(7, 2)) >> 2)
-+#define ANA_DSCP_CFG_DSCP_TRUST_ENA                       BIT(1)
-+#define ANA_DSCP_CFG_DSCP_REWR_ENA                        BIT(0)
-+
-+#define ANA_DSCP_REWR_CFG_RSZ                             0x4
-+
-+#define ANA_VCAP_RNG_TYPE_CFG_RSZ                         0x4
-+
-+#define ANA_VCAP_RNG_VAL_CFG_RSZ                          0x4
-+
-+#define ANA_VCAP_RNG_VAL_CFG_VCAP_RNG_MIN_VAL(x)          (((x) << 16) & GENMASK(31, 16))
-+#define ANA_VCAP_RNG_VAL_CFG_VCAP_RNG_MIN_VAL_M           GENMASK(31, 16)
-+#define ANA_VCAP_RNG_VAL_CFG_VCAP_RNG_MIN_VAL_X(x)        (((x) & GENMASK(31, 16)) >> 16)
-+#define ANA_VCAP_RNG_VAL_CFG_VCAP_RNG_MAX_VAL(x)          ((x) & GENMASK(15, 0))
-+#define ANA_VCAP_RNG_VAL_CFG_VCAP_RNG_MAX_VAL_M           GENMASK(15, 0)
-+
-+#define ANA_VRAP_CFG_VRAP_VLAN_AWARE_ENA                  BIT(12)
-+#define ANA_VRAP_CFG_VRAP_VID(x)                          ((x) & GENMASK(11, 0))
-+#define ANA_VRAP_CFG_VRAP_VID_M                           GENMASK(11, 0)
-+
-+#define ANA_DISCARD_CFG_DROP_TAGGING_ISDX0                BIT(3)
-+#define ANA_DISCARD_CFG_DROP_CTRLPROT_ISDX0               BIT(2)
-+#define ANA_DISCARD_CFG_DROP_TAGGING_S2_ENA               BIT(1)
-+#define ANA_DISCARD_CFG_DROP_CTRLPROT_S2_ENA              BIT(0)
-+
-+#define ANA_FID_CFG_VID_MC_ENA                            BIT(0)
-+
-+#define ANA_POL_PIR_CFG_GSZ                               0x20
-+
-+#define ANA_POL_PIR_CFG_PIR_RATE(x)                       (((x) << 6) & GENMASK(20, 6))
-+#define ANA_POL_PIR_CFG_PIR_RATE_M                        GENMASK(20, 6)
-+#define ANA_POL_PIR_CFG_PIR_RATE_X(x)                     (((x) & GENMASK(20, 6)) >> 6)
-+#define ANA_POL_PIR_CFG_PIR_BURST(x)                      ((x) & GENMASK(5, 0))
-+#define ANA_POL_PIR_CFG_PIR_BURST_M                       GENMASK(5, 0)
-+
-+#define ANA_POL_CIR_CFG_GSZ                               0x20
-+
-+#define ANA_POL_CIR_CFG_CIR_RATE(x)                       (((x) << 6) & GENMASK(20, 6))
-+#define ANA_POL_CIR_CFG_CIR_RATE_M                        GENMASK(20, 6)
-+#define ANA_POL_CIR_CFG_CIR_RATE_X(x)                     (((x) & GENMASK(20, 6)) >> 6)
-+#define ANA_POL_CIR_CFG_CIR_BURST(x)                      ((x) & GENMASK(5, 0))
-+#define ANA_POL_CIR_CFG_CIR_BURST_M                       GENMASK(5, 0)
-+
-+#define ANA_POL_MODE_CFG_GSZ                              0x20
-+
-+#define ANA_POL_MODE_CFG_IPG_SIZE(x)                      (((x) << 5) & GENMASK(9, 5))
-+#define ANA_POL_MODE_CFG_IPG_SIZE_M                       GENMASK(9, 5)
-+#define ANA_POL_MODE_CFG_IPG_SIZE_X(x)                    (((x) & GENMASK(9, 5)) >> 5)
-+#define ANA_POL_MODE_CFG_FRM_MODE(x)                      (((x) << 3) & GENMASK(4, 3))
-+#define ANA_POL_MODE_CFG_FRM_MODE_M                       GENMASK(4, 3)
-+#define ANA_POL_MODE_CFG_FRM_MODE_X(x)                    (((x) & GENMASK(4, 3)) >> 3)
-+#define ANA_POL_MODE_CFG_DLB_COUPLED                      BIT(2)
-+#define ANA_POL_MODE_CFG_CIR_ENA                          BIT(1)
-+#define ANA_POL_MODE_CFG_OVERSHOOT_ENA                    BIT(0)
-+
-+#define ANA_POL_PIR_STATE_GSZ                             0x20
-+
-+#define ANA_POL_CIR_STATE_GSZ                             0x20
-+
-+#define ANA_POL_STATE_GSZ                                 0x20
-+
-+#define ANA_POL_FLOWC_RSZ                                 0x4
-+
-+#define ANA_POL_FLOWC_POL_FLOWC                           BIT(0)
-+
-+#define ANA_POL_HYST_POL_FC_HYST(x)                       (((x) << 4) & GENMASK(9, 4))
-+#define ANA_POL_HYST_POL_FC_HYST_M                        GENMASK(9, 4)
-+#define ANA_POL_HYST_POL_FC_HYST_X(x)                     (((x) & GENMASK(9, 4)) >> 4)
-+#define ANA_POL_HYST_POL_STOP_HYST(x)                     ((x) & GENMASK(3, 0))
-+#define ANA_POL_HYST_POL_STOP_HYST_M                      GENMASK(3, 0)
-+
-+#define ANA_POL_MISC_CFG_POL_CLOSE_ALL                    BIT(1)
-+#define ANA_POL_MISC_CFG_POL_LEAK_DIS                     BIT(0)
-+
-+#endif
-diff --git a/include/soc/mscc/ocelot_dev.h b/include/soc/mscc/ocelot_dev.h
-new file mode 100644
-index 000000000000..0a50d53bbd3f
---- /dev/null
-+++ b/include/soc/mscc/ocelot_dev.h
-@@ -0,0 +1,275 @@
-+/* SPDX-License-Identifier: (GPL-2.0 OR MIT) */
-+/*
-+ * Microsemi Ocelot Switch driver
-+ *
-+ * Copyright (c) 2017 Microsemi Corporation
++static struct resource vsc9959_imdio_res = {
++	.start		= 0x8030,
++	.end		= 0x8040,
++	.name		= "imdio",
++};
++
+ static const struct reg_field vsc9959_regfields[] = {
+ 	[ANA_ADVLEARN_VLAN_CHK] = REG_FIELD(ANA_ADVLEARN, 6, 6),
+ 	[ANA_ADVLEARN_LEARN_MIRROR] = REG_FIELD(ANA_ADVLEARN, 0, 5),
+@@ -565,13 +595,449 @@ static int vsc9959_reset(struct ocelot *ocelot)
+ 	return 0;
+ }
+ 
++static void vsc9959_pcs_an_restart_sgmii(struct phy_device *pcs)
++{
++	phy_set_bits(pcs, MII_BMCR, BMCR_ANRESTART);
++}
++
++static void vsc9959_pcs_an_restart_usxgmii(struct phy_device *pcs)
++{
++	phy_write_mmd(pcs, MDIO_MMD_VEND2, MII_BMCR,
++		      USXGMII_BMCR_RESET |
++		      USXGMII_BMCR_AN_EN |
++		      USXGMII_BMCR_RST_AN);
++}
++
++static void vsc9959_pcs_an_restart(struct ocelot *ocelot, int port)
++{
++	struct felix *felix = ocelot_to_felix(ocelot);
++	struct phy_device *pcs = felix->pcs[port];
++
++	if (!pcs)
++		return;
++
++	switch (pcs->interface) {
++	case PHY_INTERFACE_MODE_SGMII:
++	case PHY_INTERFACE_MODE_QSGMII:
++		vsc9959_pcs_an_restart_sgmii(pcs);
++		break;
++	case PHY_INTERFACE_MODE_USXGMII:
++		vsc9959_pcs_an_restart_usxgmii(pcs);
++		break;
++	default:
++		dev_err(ocelot->dev, "Invalid PCS interface type %s\n",
++			phy_modes(pcs->interface));
++		break;
++	}
++}
++
++/* TODO: Should we enable SGMII AN only when link_an_mode == MLO_AN_INBAND?  If
++ * in MLO_AN_PHY mode, we have the option of programming directly state->speed
++ * into the PCS, which is retrieved out-of-band over MDIO. This would also have
++ * the benefit of working with SGMII fixed-links, like switches, where both
++ * link partners attempt to operate as AN masters and therefore AN never
++ * completes.
++ * But some PHY drivers like at803x explicitly check that we acknowledged the
++ * SGMII AN word sent to us, and print "803x_aneg_done: SGMII link is not ok"
++ * otherwise.
++ * The implication is that we would need to explicitly add managed =
++ * "in-band-status" to all SGMII PHY bindings, otherwise SGMII AN would be
++ * disabled by default.
 + */
-+
-+#ifndef _MSCC_OCELOT_DEV_H_
-+#define _MSCC_OCELOT_DEV_H_
-+
-+#define DEV_CLOCK_CFG                                     0x0
-+
-+#define DEV_CLOCK_CFG_MAC_TX_RST                          BIT(7)
-+#define DEV_CLOCK_CFG_MAC_RX_RST                          BIT(6)
-+#define DEV_CLOCK_CFG_PCS_TX_RST                          BIT(5)
-+#define DEV_CLOCK_CFG_PCS_RX_RST                          BIT(4)
-+#define DEV_CLOCK_CFG_PORT_RST                            BIT(3)
-+#define DEV_CLOCK_CFG_PHY_RST                             BIT(2)
-+#define DEV_CLOCK_CFG_LINK_SPEED(x)                       ((x) & GENMASK(1, 0))
-+#define DEV_CLOCK_CFG_LINK_SPEED_M                        GENMASK(1, 0)
-+
-+#define DEV_PORT_MISC                                     0x4
-+
-+#define DEV_PORT_MISC_FWD_ERROR_ENA                       BIT(4)
-+#define DEV_PORT_MISC_FWD_PAUSE_ENA                       BIT(3)
-+#define DEV_PORT_MISC_FWD_CTRL_ENA                        BIT(2)
-+#define DEV_PORT_MISC_DEV_LOOP_ENA                        BIT(1)
-+#define DEV_PORT_MISC_HDX_FAST_DIS                        BIT(0)
-+
-+#define DEV_EVENTS                                        0x8
-+
-+#define DEV_EEE_CFG                                       0xc
-+
-+#define DEV_EEE_CFG_EEE_ENA                               BIT(22)
-+#define DEV_EEE_CFG_EEE_TIMER_AGE(x)                      (((x) << 15) & GENMASK(21, 15))
-+#define DEV_EEE_CFG_EEE_TIMER_AGE_M                       GENMASK(21, 15)
-+#define DEV_EEE_CFG_EEE_TIMER_AGE_X(x)                    (((x) & GENMASK(21, 15)) >> 15)
-+#define DEV_EEE_CFG_EEE_TIMER_WAKEUP(x)                   (((x) << 8) & GENMASK(14, 8))
-+#define DEV_EEE_CFG_EEE_TIMER_WAKEUP_M                    GENMASK(14, 8)
-+#define DEV_EEE_CFG_EEE_TIMER_WAKEUP_X(x)                 (((x) & GENMASK(14, 8)) >> 8)
-+#define DEV_EEE_CFG_EEE_TIMER_HOLDOFF(x)                  (((x) << 1) & GENMASK(7, 1))
-+#define DEV_EEE_CFG_EEE_TIMER_HOLDOFF_M                   GENMASK(7, 1)
-+#define DEV_EEE_CFG_EEE_TIMER_HOLDOFF_X(x)                (((x) & GENMASK(7, 1)) >> 1)
-+#define DEV_EEE_CFG_PORT_LPI                              BIT(0)
-+
-+#define DEV_RX_PATH_DELAY                                 0x10
-+
-+#define DEV_TX_PATH_DELAY                                 0x14
-+
-+#define DEV_PTP_PREDICT_CFG                               0x18
-+
-+#define DEV_PTP_PREDICT_CFG_PTP_PHY_PREDICT_CFG(x)        (((x) << 4) & GENMASK(11, 4))
-+#define DEV_PTP_PREDICT_CFG_PTP_PHY_PREDICT_CFG_M         GENMASK(11, 4)
-+#define DEV_PTP_PREDICT_CFG_PTP_PHY_PREDICT_CFG_X(x)      (((x) & GENMASK(11, 4)) >> 4)
-+#define DEV_PTP_PREDICT_CFG_PTP_PHASE_PREDICT_CFG(x)      ((x) & GENMASK(3, 0))
-+#define DEV_PTP_PREDICT_CFG_PTP_PHASE_PREDICT_CFG_M       GENMASK(3, 0)
-+
-+#define DEV_MAC_ENA_CFG                                   0x1c
-+
-+#define DEV_MAC_ENA_CFG_RX_ENA                            BIT(4)
-+#define DEV_MAC_ENA_CFG_TX_ENA                            BIT(0)
-+
-+#define DEV_MAC_MODE_CFG                                  0x20
-+
-+#define DEV_MAC_MODE_CFG_FC_WORD_SYNC_ENA                 BIT(8)
-+#define DEV_MAC_MODE_CFG_GIGA_MODE_ENA                    BIT(4)
-+#define DEV_MAC_MODE_CFG_FDX_ENA                          BIT(0)
-+
-+#define DEV_MAC_MAXLEN_CFG                                0x24
-+
-+#define DEV_MAC_TAGS_CFG                                  0x28
-+
-+#define DEV_MAC_TAGS_CFG_TAG_ID(x)                        (((x) << 16) & GENMASK(31, 16))
-+#define DEV_MAC_TAGS_CFG_TAG_ID_M                         GENMASK(31, 16)
-+#define DEV_MAC_TAGS_CFG_TAG_ID_X(x)                      (((x) & GENMASK(31, 16)) >> 16)
-+#define DEV_MAC_TAGS_CFG_VLAN_LEN_AWR_ENA                 BIT(2)
-+#define DEV_MAC_TAGS_CFG_PB_ENA                           BIT(1)
-+#define DEV_MAC_TAGS_CFG_VLAN_AWR_ENA                     BIT(0)
-+
-+#define DEV_MAC_ADV_CHK_CFG                               0x2c
-+
-+#define DEV_MAC_ADV_CHK_CFG_LEN_DROP_ENA                  BIT(0)
-+
-+#define DEV_MAC_IFG_CFG                                   0x30
-+
-+#define DEV_MAC_IFG_CFG_RESTORE_OLD_IPG_CHECK             BIT(17)
-+#define DEV_MAC_IFG_CFG_REDUCED_TX_IFG                    BIT(16)
-+#define DEV_MAC_IFG_CFG_TX_IFG(x)                         (((x) << 8) & GENMASK(12, 8))
-+#define DEV_MAC_IFG_CFG_TX_IFG_M                          GENMASK(12, 8)
-+#define DEV_MAC_IFG_CFG_TX_IFG_X(x)                       (((x) & GENMASK(12, 8)) >> 8)
-+#define DEV_MAC_IFG_CFG_RX_IFG2(x)                        (((x) << 4) & GENMASK(7, 4))
-+#define DEV_MAC_IFG_CFG_RX_IFG2_M                         GENMASK(7, 4)
-+#define DEV_MAC_IFG_CFG_RX_IFG2_X(x)                      (((x) & GENMASK(7, 4)) >> 4)
-+#define DEV_MAC_IFG_CFG_RX_IFG1(x)                        ((x) & GENMASK(3, 0))
-+#define DEV_MAC_IFG_CFG_RX_IFG1_M                         GENMASK(3, 0)
-+
-+#define DEV_MAC_HDX_CFG                                   0x34
-+
-+#define DEV_MAC_HDX_CFG_BYPASS_COL_SYNC                   BIT(26)
-+#define DEV_MAC_HDX_CFG_OB_ENA                            BIT(25)
-+#define DEV_MAC_HDX_CFG_WEXC_DIS                          BIT(24)
-+#define DEV_MAC_HDX_CFG_SEED(x)                           (((x) << 16) & GENMASK(23, 16))
-+#define DEV_MAC_HDX_CFG_SEED_M                            GENMASK(23, 16)
-+#define DEV_MAC_HDX_CFG_SEED_X(x)                         (((x) & GENMASK(23, 16)) >> 16)
-+#define DEV_MAC_HDX_CFG_SEED_LOAD                         BIT(12)
-+#define DEV_MAC_HDX_CFG_RETRY_AFTER_EXC_COL_ENA           BIT(8)
-+#define DEV_MAC_HDX_CFG_LATE_COL_POS(x)                   ((x) & GENMASK(6, 0))
-+#define DEV_MAC_HDX_CFG_LATE_COL_POS_M                    GENMASK(6, 0)
-+
-+#define DEV_MAC_DBG_CFG                                   0x38
-+
-+#define DEV_MAC_DBG_CFG_TBI_MODE                          BIT(4)
-+#define DEV_MAC_DBG_CFG_IFG_CRS_EXT_CHK_ENA               BIT(0)
-+
-+#define DEV_MAC_FC_MAC_LOW_CFG                            0x3c
-+
-+#define DEV_MAC_FC_MAC_HIGH_CFG                           0x40
-+
-+#define DEV_MAC_STICKY                                    0x44
-+
-+#define DEV_MAC_STICKY_RX_IPG_SHRINK_STICKY               BIT(9)
-+#define DEV_MAC_STICKY_RX_PREAM_SHRINK_STICKY             BIT(8)
-+#define DEV_MAC_STICKY_RX_CARRIER_EXT_STICKY              BIT(7)
-+#define DEV_MAC_STICKY_RX_CARRIER_EXT_ERR_STICKY          BIT(6)
-+#define DEV_MAC_STICKY_RX_JUNK_STICKY                     BIT(5)
-+#define DEV_MAC_STICKY_TX_RETRANSMIT_STICKY               BIT(4)
-+#define DEV_MAC_STICKY_TX_JAM_STICKY                      BIT(3)
-+#define DEV_MAC_STICKY_TX_FIFO_OFLW_STICKY                BIT(2)
-+#define DEV_MAC_STICKY_TX_FRM_LEN_OVR_STICKY              BIT(1)
-+#define DEV_MAC_STICKY_TX_ABORT_STICKY                    BIT(0)
-+
-+#define PCS1G_CFG                                         0x48
-+
-+#define PCS1G_CFG_LINK_STATUS_TYPE                        BIT(4)
-+#define PCS1G_CFG_AN_LINK_CTRL_ENA                        BIT(1)
-+#define PCS1G_CFG_PCS_ENA                                 BIT(0)
-+
-+#define PCS1G_MODE_CFG                                    0x4c
-+
-+#define PCS1G_MODE_CFG_UNIDIR_MODE_ENA                    BIT(4)
-+#define PCS1G_MODE_CFG_SGMII_MODE_ENA                     BIT(0)
-+
-+#define PCS1G_SD_CFG                                      0x50
-+
-+#define PCS1G_SD_CFG_SD_SEL                               BIT(8)
-+#define PCS1G_SD_CFG_SD_POL                               BIT(4)
-+#define PCS1G_SD_CFG_SD_ENA                               BIT(0)
-+
-+#define PCS1G_ANEG_CFG                                    0x54
-+
-+#define PCS1G_ANEG_CFG_ADV_ABILITY(x)                     (((x) << 16) & GENMASK(31, 16))
-+#define PCS1G_ANEG_CFG_ADV_ABILITY_M                      GENMASK(31, 16)
-+#define PCS1G_ANEG_CFG_ADV_ABILITY_X(x)                   (((x) & GENMASK(31, 16)) >> 16)
-+#define PCS1G_ANEG_CFG_SW_RESOLVE_ENA                     BIT(8)
-+#define PCS1G_ANEG_CFG_ANEG_RESTART_ONE_SHOT              BIT(1)
-+#define PCS1G_ANEG_CFG_ANEG_ENA                           BIT(0)
-+
-+#define PCS1G_ANEG_NP_CFG                                 0x58
-+
-+#define PCS1G_ANEG_NP_CFG_NP_TX(x)                        (((x) << 16) & GENMASK(31, 16))
-+#define PCS1G_ANEG_NP_CFG_NP_TX_M                         GENMASK(31, 16)
-+#define PCS1G_ANEG_NP_CFG_NP_TX_X(x)                      (((x) & GENMASK(31, 16)) >> 16)
-+#define PCS1G_ANEG_NP_CFG_NP_LOADED_ONE_SHOT              BIT(0)
-+
-+#define PCS1G_LB_CFG                                      0x5c
-+
-+#define PCS1G_LB_CFG_RA_ENA                               BIT(4)
-+#define PCS1G_LB_CFG_GMII_PHY_LB_ENA                      BIT(1)
-+#define PCS1G_LB_CFG_TBI_HOST_LB_ENA                      BIT(0)
-+
-+#define PCS1G_DBG_CFG                                     0x60
-+
-+#define PCS1G_DBG_CFG_UDLT                                BIT(0)
-+
-+#define PCS1G_CDET_CFG                                    0x64
-+
-+#define PCS1G_CDET_CFG_CDET_ENA                           BIT(0)
-+
-+#define PCS1G_ANEG_STATUS                                 0x68
-+
-+#define PCS1G_ANEG_STATUS_LP_ADV_ABILITY(x)               (((x) << 16) & GENMASK(31, 16))
-+#define PCS1G_ANEG_STATUS_LP_ADV_ABILITY_M                GENMASK(31, 16)
-+#define PCS1G_ANEG_STATUS_LP_ADV_ABILITY_X(x)             (((x) & GENMASK(31, 16)) >> 16)
-+#define PCS1G_ANEG_STATUS_PR                              BIT(4)
-+#define PCS1G_ANEG_STATUS_PAGE_RX_STICKY                  BIT(3)
-+#define PCS1G_ANEG_STATUS_ANEG_COMPLETE                   BIT(0)
-+
-+#define PCS1G_ANEG_NP_STATUS                              0x6c
-+
-+#define PCS1G_LINK_STATUS                                 0x70
-+
-+#define PCS1G_LINK_STATUS_DELAY_VAR(x)                    (((x) << 12) & GENMASK(15, 12))
-+#define PCS1G_LINK_STATUS_DELAY_VAR_M                     GENMASK(15, 12)
-+#define PCS1G_LINK_STATUS_DELAY_VAR_X(x)                  (((x) & GENMASK(15, 12)) >> 12)
-+#define PCS1G_LINK_STATUS_SIGNAL_DETECT                   BIT(8)
-+#define PCS1G_LINK_STATUS_LINK_STATUS                     BIT(4)
-+#define PCS1G_LINK_STATUS_SYNC_STATUS                     BIT(0)
-+
-+#define PCS1G_LINK_DOWN_CNT                               0x74
-+
-+#define PCS1G_STICKY                                      0x78
-+
-+#define PCS1G_STICKY_LINK_DOWN_STICKY                     BIT(4)
-+#define PCS1G_STICKY_OUT_OF_SYNC_STICKY                   BIT(0)
-+
-+#define PCS1G_DEBUG_STATUS                                0x7c
-+
-+#define PCS1G_LPI_CFG                                     0x80
-+
-+#define PCS1G_LPI_CFG_QSGMII_MS_SEL                       BIT(20)
-+#define PCS1G_LPI_CFG_RX_LPI_OUT_DIS                      BIT(17)
-+#define PCS1G_LPI_CFG_LPI_TESTMODE                        BIT(16)
-+#define PCS1G_LPI_CFG_LPI_RX_WTIM(x)                      (((x) << 4) & GENMASK(5, 4))
-+#define PCS1G_LPI_CFG_LPI_RX_WTIM_M                       GENMASK(5, 4)
-+#define PCS1G_LPI_CFG_LPI_RX_WTIM_X(x)                    (((x) & GENMASK(5, 4)) >> 4)
-+#define PCS1G_LPI_CFG_TX_ASSERT_LPIDLE                    BIT(0)
-+
-+#define PCS1G_LPI_WAKE_ERROR_CNT                          0x84
-+
-+#define PCS1G_LPI_STATUS                                  0x88
-+
-+#define PCS1G_LPI_STATUS_RX_LPI_FAIL                      BIT(16)
-+#define PCS1G_LPI_STATUS_RX_LPI_EVENT_STICKY              BIT(12)
-+#define PCS1G_LPI_STATUS_RX_QUIET                         BIT(9)
-+#define PCS1G_LPI_STATUS_RX_LPI_MODE                      BIT(8)
-+#define PCS1G_LPI_STATUS_TX_LPI_EVENT_STICKY              BIT(4)
-+#define PCS1G_LPI_STATUS_TX_QUIET                         BIT(1)
-+#define PCS1G_LPI_STATUS_TX_LPI_MODE                      BIT(0)
-+
-+#define PCS1G_TSTPAT_MODE_CFG                             0x8c
-+
-+#define PCS1G_TSTPAT_STATUS                               0x90
-+
-+#define PCS1G_TSTPAT_STATUS_JTP_ERR_CNT(x)                (((x) << 8) & GENMASK(15, 8))
-+#define PCS1G_TSTPAT_STATUS_JTP_ERR_CNT_M                 GENMASK(15, 8)
-+#define PCS1G_TSTPAT_STATUS_JTP_ERR_CNT_X(x)              (((x) & GENMASK(15, 8)) >> 8)
-+#define PCS1G_TSTPAT_STATUS_JTP_ERR                       BIT(4)
-+#define PCS1G_TSTPAT_STATUS_JTP_LOCK                      BIT(0)
-+
-+#define DEV_PCS_FX100_CFG                                 0x94
-+
-+#define DEV_PCS_FX100_CFG_SD_SEL                          BIT(26)
-+#define DEV_PCS_FX100_CFG_SD_POL                          BIT(25)
-+#define DEV_PCS_FX100_CFG_SD_ENA                          BIT(24)
-+#define DEV_PCS_FX100_CFG_LOOPBACK_ENA                    BIT(20)
-+#define DEV_PCS_FX100_CFG_SWAP_MII_ENA                    BIT(16)
-+#define DEV_PCS_FX100_CFG_RXBITSEL(x)                     (((x) << 12) & GENMASK(15, 12))
-+#define DEV_PCS_FX100_CFG_RXBITSEL_M                      GENMASK(15, 12)
-+#define DEV_PCS_FX100_CFG_RXBITSEL_X(x)                   (((x) & GENMASK(15, 12)) >> 12)
-+#define DEV_PCS_FX100_CFG_SIGDET_CFG(x)                   (((x) << 9) & GENMASK(10, 9))
-+#define DEV_PCS_FX100_CFG_SIGDET_CFG_M                    GENMASK(10, 9)
-+#define DEV_PCS_FX100_CFG_SIGDET_CFG_X(x)                 (((x) & GENMASK(10, 9)) >> 9)
-+#define DEV_PCS_FX100_CFG_LINKHYST_TM_ENA                 BIT(8)
-+#define DEV_PCS_FX100_CFG_LINKHYSTTIMER(x)                (((x) << 4) & GENMASK(7, 4))
-+#define DEV_PCS_FX100_CFG_LINKHYSTTIMER_M                 GENMASK(7, 4)
-+#define DEV_PCS_FX100_CFG_LINKHYSTTIMER_X(x)              (((x) & GENMASK(7, 4)) >> 4)
-+#define DEV_PCS_FX100_CFG_UNIDIR_MODE_ENA                 BIT(3)
-+#define DEV_PCS_FX100_CFG_FEFCHK_ENA                      BIT(2)
-+#define DEV_PCS_FX100_CFG_FEFGEN_ENA                      BIT(1)
-+#define DEV_PCS_FX100_CFG_PCS_ENA                         BIT(0)
-+
-+#define DEV_PCS_FX100_STATUS                              0x98
-+
-+#define DEV_PCS_FX100_STATUS_EDGE_POS_PTP(x)              (((x) << 8) & GENMASK(11, 8))
-+#define DEV_PCS_FX100_STATUS_EDGE_POS_PTP_M               GENMASK(11, 8)
-+#define DEV_PCS_FX100_STATUS_EDGE_POS_PTP_X(x)            (((x) & GENMASK(11, 8)) >> 8)
-+#define DEV_PCS_FX100_STATUS_PCS_ERROR_STICKY             BIT(7)
-+#define DEV_PCS_FX100_STATUS_FEF_FOUND_STICKY             BIT(6)
-+#define DEV_PCS_FX100_STATUS_SSD_ERROR_STICKY             BIT(5)
-+#define DEV_PCS_FX100_STATUS_SYNC_LOST_STICKY             BIT(4)
-+#define DEV_PCS_FX100_STATUS_FEF_STATUS                   BIT(2)
-+#define DEV_PCS_FX100_STATUS_SIGNAL_DETECT                BIT(1)
-+#define DEV_PCS_FX100_STATUS_SYNC_STATUS                  BIT(0)
-+
-+#endif
-diff --git a/include/soc/mscc/ocelot_qsys.h b/include/soc/mscc/ocelot_qsys.h
-new file mode 100644
-index 000000000000..d8c63aa761be
---- /dev/null
-+++ b/include/soc/mscc/ocelot_qsys.h
-@@ -0,0 +1,270 @@
-+/* SPDX-License-Identifier: (GPL-2.0 OR MIT) */
-+/*
-+ * Microsemi Ocelot Switch driver
-+ *
-+ * Copyright (c) 2017 Microsemi Corporation
++static void vsc9959_pcs_init_sgmii(struct phy_device *pcs,
++				   unsigned int link_an_mode,
++				   const struct phylink_link_state *state)
++{
++	/* SGMII spec requires tx_config_Reg[15:0] to be exactly 0x4001
++	 * for the MAC PCS in order to acknowledge the AN.
++	 */
++	phy_write(pcs, MII_ADVERTISE, ADVERTISE_SGMII | ADVERTISE_LPACK);
++
++	phy_write(pcs, ENETC_PCS_IF_MODE, ENETC_PCS_IF_MODE_SGMII_EN |
++					  ENETC_PCS_IF_MODE_USE_SGMII_AN);
++
++	/* Adjust link timer for SGMII */
++	phy_write(pcs, ENETC_PCS_LINK_TIMER1, ENETC_PCS_LINK_TIMER1_VAL);
++	phy_write(pcs, ENETC_PCS_LINK_TIMER2, ENETC_PCS_LINK_TIMER2_VAL);
++
++	phy_write(pcs, MII_BMCR, BMCR_SPEED1000 |
++				 BMCR_FULLDPLX |
++				 BMCR_ANENABLE);
++}
++
++/* 2500Base-X is SerDes protocol 7 on Felix and 6 on ENETC. It is a SerDes lane
++ * clocked at 3.125 GHz which encodes symbols with 8b/10b and does not have
++ * auto-negotiation of any link parameters. Electrically it is compatible with
++ * a single lane of XAUI.
++ * The hardware reference manual wants to call this mode SGMII, but it isn't
++ * really, since the fundamental features of SGMII:
++ * - Downgrading the link speed by duplicating symbols
++ * - Auto-negotiation
++ * are not there.
++ * The speed is configured at 1000 in the IF_MODE and BMCR MDIO registers
++ * because the clock frequency is actually given by a PLL configured in the
++ * Reset Configuration Word (RCW).
++ * Since there is no difference between fixed speed SGMII w/o AN and 802.3z w/o
++ * AN, we call this PHY interface type 2500Base-X. In case a PHY negotiates a
++ * lower link speed on line side, the system-side interface remains fixed at
++ * 2500 Mbps and we do rate adaptation through pause frames.
 + */
++static void vsc9959_pcs_init_2500basex(struct phy_device *pcs,
++				       unsigned int link_an_mode,
++				       const struct phylink_link_state *state)
++{
++	if (link_an_mode == MLO_AN_INBAND) {
++		phydev_err(pcs, "AN not supported on 3.125GHz SerDes lane\n");
++		return;
++	}
 +
-+#ifndef _MSCC_OCELOT_QSYS_H_
-+#define _MSCC_OCELOT_QSYS_H_
++	phy_write(pcs, ENETC_PCS_IF_MODE,
++		  ENETC_PCS_IF_MODE_SGMII_EN |
++		  ENETC_PCS_IF_MODE_SGMII_SPEED(ENETC_PCS_SPEED_2500));
 +
-+#define QSYS_PORT_MODE_RSZ                                0x4
++	phy_write(pcs, MII_BMCR, BMCR_SPEED1000 |
++				 BMCR_FULLDPLX |
++				 BMCR_RESET);
++}
 +
-+#define QSYS_PORT_MODE_DEQUEUE_DIS                        BIT(1)
-+#define QSYS_PORT_MODE_DEQUEUE_LATE                       BIT(0)
++static void vsc9959_pcs_init_usxgmii(struct phy_device *pcs,
++				     unsigned int link_an_mode,
++				     const struct phylink_link_state *state)
++{
++	/* Configure device ability for the USXGMII Replicator */
++	phy_write_mmd(pcs, MDIO_MMD_VEND2, MII_ADVERTISE,
++		      USXGMII_ADVERTISE_SPEED(USXGMII_SPEED_2500) |
++		      USXGMII_ADVERTISE_LNKS(1) |
++		      ADVERTISE_SGMII |
++		      ADVERTISE_LPACK |
++		      USXGMII_ADVERTISE_FDX);
++}
 +
-+#define QSYS_SWITCH_PORT_MODE_RSZ                         0x4
++static void vsc9959_pcs_init(struct ocelot *ocelot, int port,
++			     unsigned int link_an_mode,
++			     const struct phylink_link_state *state)
++{
++	struct felix *felix = ocelot_to_felix(ocelot);
++	struct phy_device *pcs = felix->pcs[port];
 +
-+#define QSYS_SWITCH_PORT_MODE_PORT_ENA                    BIT(14)
-+#define QSYS_SWITCH_PORT_MODE_SCH_NEXT_CFG(x)             (((x) << 11) & GENMASK(13, 11))
-+#define QSYS_SWITCH_PORT_MODE_SCH_NEXT_CFG_M              GENMASK(13, 11)
-+#define QSYS_SWITCH_PORT_MODE_SCH_NEXT_CFG_X(x)           (((x) & GENMASK(13, 11)) >> 11)
-+#define QSYS_SWITCH_PORT_MODE_YEL_RSRVD                   BIT(10)
-+#define QSYS_SWITCH_PORT_MODE_INGRESS_DROP_MODE           BIT(9)
-+#define QSYS_SWITCH_PORT_MODE_TX_PFC_ENA(x)               (((x) << 1) & GENMASK(8, 1))
-+#define QSYS_SWITCH_PORT_MODE_TX_PFC_ENA_M                GENMASK(8, 1)
-+#define QSYS_SWITCH_PORT_MODE_TX_PFC_ENA_X(x)             (((x) & GENMASK(8, 1)) >> 1)
-+#define QSYS_SWITCH_PORT_MODE_TX_PFC_MODE                 BIT(0)
++	if (!pcs)
++		return;
 +
-+#define QSYS_STAT_CNT_CFG_TX_GREEN_CNT_MODE               BIT(5)
-+#define QSYS_STAT_CNT_CFG_TX_YELLOW_CNT_MODE              BIT(4)
-+#define QSYS_STAT_CNT_CFG_DROP_GREEN_CNT_MODE             BIT(3)
-+#define QSYS_STAT_CNT_CFG_DROP_YELLOW_CNT_MODE            BIT(2)
-+#define QSYS_STAT_CNT_CFG_DROP_COUNT_ONCE                 BIT(1)
-+#define QSYS_STAT_CNT_CFG_DROP_COUNT_EGRESS               BIT(0)
++	/* The PCS does not implement the BMSR register fully, so capability
++	 * detection via genphy_read_abilities does not work. Since we can get
++	 * the PHY config word from the LPA register though, there is still
++	 * value in using the generic phy_resolve_aneg_linkmode function. So
++	 * populate the supported and advertising link modes manually here.
++	 */
++	linkmode_set_bit_array(phy_basic_ports_array,
++			       ARRAY_SIZE(phy_basic_ports_array),
++			       pcs->supported);
++	linkmode_set_bit(ETHTOOL_LINK_MODE_10baseT_Full_BIT, pcs->supported);
++	linkmode_set_bit(ETHTOOL_LINK_MODE_100baseT_Full_BIT, pcs->supported);
++	linkmode_set_bit(ETHTOOL_LINK_MODE_1000baseT_Full_BIT, pcs->supported);
++	if (pcs->interface == PHY_INTERFACE_MODE_2500BASEX ||
++	    pcs->interface == PHY_INTERFACE_MODE_USXGMII)
++		linkmode_set_bit(ETHTOOL_LINK_MODE_2500baseX_Full_BIT,
++				 pcs->supported);
++	if (pcs->interface != PHY_INTERFACE_MODE_2500BASEX)
++		linkmode_set_bit(ETHTOOL_LINK_MODE_Autoneg_BIT,
++				 pcs->supported);
++	phy_advertise_supported(pcs);
 +
-+#define QSYS_EEE_CFG_RSZ                                  0x4
++	switch (pcs->interface) {
++	case PHY_INTERFACE_MODE_SGMII:
++	case PHY_INTERFACE_MODE_QSGMII:
++		vsc9959_pcs_init_sgmii(pcs, link_an_mode, state);
++		break;
++	case PHY_INTERFACE_MODE_2500BASEX:
++		vsc9959_pcs_init_2500basex(pcs, link_an_mode, state);
++		break;
++	case PHY_INTERFACE_MODE_USXGMII:
++		vsc9959_pcs_init_usxgmii(pcs, link_an_mode, state);
++		break;
++	default:
++		dev_err(ocelot->dev, "Unsupported link mode %s\n",
++			phy_modes(pcs->interface));
++	}
++}
 +
-+#define QSYS_EEE_THRES_EEE_HIGH_BYTES(x)                  (((x) << 8) & GENMASK(15, 8))
-+#define QSYS_EEE_THRES_EEE_HIGH_BYTES_M                   GENMASK(15, 8)
-+#define QSYS_EEE_THRES_EEE_HIGH_BYTES_X(x)                (((x) & GENMASK(15, 8)) >> 8)
-+#define QSYS_EEE_THRES_EEE_HIGH_FRAMES(x)                 ((x) & GENMASK(7, 0))
-+#define QSYS_EEE_THRES_EEE_HIGH_FRAMES_M                  GENMASK(7, 0)
++static void vsc9959_pcs_link_state_resolve(struct phy_device *pcs,
++					   struct phylink_link_state *state)
++{
++	state->an_complete = pcs->autoneg_complete;
++	state->an_enabled = pcs->autoneg;
++	state->link = pcs->link;
++	state->duplex = pcs->duplex;
++	state->speed = pcs->speed;
++	/* SGMII AN does not negotiate flow control, but that's ok,
++	 * since phylink already knows that, and does:
++	 *	link_state.pause |= pl->phy_state.pause;
++	 */
++	state->pause = MLO_PAUSE_NONE;
 +
-+#define QSYS_SW_STATUS_RSZ                                0x4
++	phydev_dbg(pcs,
++		   "mode=%s/%s/%s adv=%*pb lpa=%*pb link=%u an_enabled=%u an_complete=%u\n",
++		   phy_modes(pcs->interface),
++		   phy_speed_to_str(pcs->speed),
++		   phy_duplex_to_str(pcs->duplex),
++		   __ETHTOOL_LINK_MODE_MASK_NBITS, pcs->advertising,
++		   __ETHTOOL_LINK_MODE_MASK_NBITS, pcs->lp_advertising,
++		   pcs->link, pcs->autoneg, pcs->autoneg_complete);
++}
 +
-+#define QSYS_EXT_CPU_CFG_EXT_CPU_PORT(x)                  (((x) << 8) & GENMASK(12, 8))
-+#define QSYS_EXT_CPU_CFG_EXT_CPU_PORT_M                   GENMASK(12, 8)
-+#define QSYS_EXT_CPU_CFG_EXT_CPU_PORT_X(x)                (((x) & GENMASK(12, 8)) >> 8)
-+#define QSYS_EXT_CPU_CFG_EXT_CPUQ_MSK(x)                  ((x) & GENMASK(7, 0))
-+#define QSYS_EXT_CPU_CFG_EXT_CPUQ_MSK_M                   GENMASK(7, 0)
++static void vsc9959_pcs_link_state_sgmii(struct phy_device *pcs,
++					 struct phylink_link_state *state)
++{
++	int err;
 +
-+#define QSYS_QMAP_GSZ                                     0x4
++	err = genphy_update_link(pcs);
++	if (err < 0)
++		return;
 +
-+#define QSYS_QMAP_SE_BASE(x)                              (((x) << 5) & GENMASK(12, 5))
-+#define QSYS_QMAP_SE_BASE_M                               GENMASK(12, 5)
-+#define QSYS_QMAP_SE_BASE_X(x)                            (((x) & GENMASK(12, 5)) >> 5)
-+#define QSYS_QMAP_SE_IDX_SEL(x)                           (((x) << 2) & GENMASK(4, 2))
-+#define QSYS_QMAP_SE_IDX_SEL_M                            GENMASK(4, 2)
-+#define QSYS_QMAP_SE_IDX_SEL_X(x)                         (((x) & GENMASK(4, 2)) >> 2)
-+#define QSYS_QMAP_SE_INP_SEL(x)                           ((x) & GENMASK(1, 0))
-+#define QSYS_QMAP_SE_INP_SEL_M                            GENMASK(1, 0)
++	if (pcs->autoneg_complete) {
++		u16 lpa = phy_read(pcs, MII_LPA);
 +
-+#define QSYS_ISDX_SGRP_GSZ                                0x4
++		mii_lpa_to_linkmode_lpa_sgmii(pcs->lp_advertising, lpa);
 +
-+#define QSYS_TIMED_FRAME_ENTRY_GSZ                        0x4
++		phy_resolve_aneg_linkmode(pcs);
++	}
++}
 +
-+#define QSYS_TFRM_MISC_TIMED_CANCEL_SLOT(x)               (((x) << 9) & GENMASK(18, 9))
-+#define QSYS_TFRM_MISC_TIMED_CANCEL_SLOT_M                GENMASK(18, 9)
-+#define QSYS_TFRM_MISC_TIMED_CANCEL_SLOT_X(x)             (((x) & GENMASK(18, 9)) >> 9)
-+#define QSYS_TFRM_MISC_TIMED_CANCEL_1SHOT                 BIT(8)
-+#define QSYS_TFRM_MISC_TIMED_SLOT_MODE_MC                 BIT(7)
-+#define QSYS_TFRM_MISC_TIMED_ENTRY_FAST_CNT(x)            ((x) & GENMASK(6, 0))
-+#define QSYS_TFRM_MISC_TIMED_ENTRY_FAST_CNT_M             GENMASK(6, 0)
++static void vsc9959_pcs_link_state_2500basex(struct phy_device *pcs,
++					     struct phylink_link_state *state)
++{
++	int err;
 +
-+#define QSYS_RED_PROFILE_RSZ                              0x4
++	err = genphy_update_link(pcs);
++	if (err < 0)
++		return;
 +
-+#define QSYS_RED_PROFILE_WM_RED_LOW(x)                    (((x) << 8) & GENMASK(15, 8))
-+#define QSYS_RED_PROFILE_WM_RED_LOW_M                     GENMASK(15, 8)
-+#define QSYS_RED_PROFILE_WM_RED_LOW_X(x)                  (((x) & GENMASK(15, 8)) >> 8)
-+#define QSYS_RED_PROFILE_WM_RED_HIGH(x)                   ((x) & GENMASK(7, 0))
-+#define QSYS_RED_PROFILE_WM_RED_HIGH_M                    GENMASK(7, 0)
++	pcs->speed = SPEED_2500;
++	pcs->asym_pause = true;
++	pcs->pause = true;
++}
 +
-+#define QSYS_RES_CFG_GSZ                                  0x8
++static void vsc9959_pcs_link_state_usxgmii(struct phy_device *pcs,
++					   struct phylink_link_state *state)
++{
++	int status, lpa;
 +
-+#define QSYS_RES_STAT_GSZ                                 0x8
++	status = phy_read_mmd(pcs, MDIO_MMD_VEND2, MII_BMSR);
++	if (status < 0)
++		return;
 +
-+#define QSYS_RES_STAT_INUSE(x)                            (((x) << 12) & GENMASK(23, 12))
-+#define QSYS_RES_STAT_INUSE_M                             GENMASK(23, 12)
-+#define QSYS_RES_STAT_INUSE_X(x)                          (((x) & GENMASK(23, 12)) >> 12)
-+#define QSYS_RES_STAT_MAXUSE(x)                           ((x) & GENMASK(11, 0))
-+#define QSYS_RES_STAT_MAXUSE_M                            GENMASK(11, 0)
++	pcs->autoneg = true;
++	pcs->autoneg_complete = USXGMII_BMSR_AN_CMPL(status);
++	pcs->link = USXGMII_BMSR_LNKS(status);
 +
-+#define QSYS_EVENTS_CORE_EV_FDC(x)                        (((x) << 2) & GENMASK(4, 2))
-+#define QSYS_EVENTS_CORE_EV_FDC_M                         GENMASK(4, 2)
-+#define QSYS_EVENTS_CORE_EV_FDC_X(x)                      (((x) & GENMASK(4, 2)) >> 2)
-+#define QSYS_EVENTS_CORE_EV_FRD(x)                        ((x) & GENMASK(1, 0))
-+#define QSYS_EVENTS_CORE_EV_FRD_M                         GENMASK(1, 0)
++	if (!pcs->link || !pcs->autoneg_complete)
++		return;
 +
-+#define QSYS_QMAXSDU_CFG_0_RSZ                            0x4
++	lpa = phy_read_mmd(pcs, MDIO_MMD_VEND2, MII_LPA);
++	if (lpa < 0)
++		return;
 +
-+#define QSYS_QMAXSDU_CFG_1_RSZ                            0x4
++	switch (USXGMII_LPA_SPEED(lpa)) {
++	case USXGMII_SPEED_10:
++		pcs->speed = SPEED_10;
++		break;
++	case USXGMII_SPEED_100:
++		pcs->speed = SPEED_100;
++		break;
++	case USXGMII_SPEED_1000:
++		pcs->speed = SPEED_1000;
++		break;
++	case USXGMII_SPEED_2500:
++		pcs->speed = SPEED_2500;
++		break;
++	default:
++		break;
++	}
 +
-+#define QSYS_QMAXSDU_CFG_2_RSZ                            0x4
++	pcs->link = USXGMII_LPA_LNKS(lpa);
++	if (USXGMII_LPA_DUPLEX(lpa))
++		pcs->duplex = DUPLEX_FULL;
++	else
++		pcs->duplex = DUPLEX_HALF;
++}
 +
-+#define QSYS_QMAXSDU_CFG_3_RSZ                            0x4
++static void vsc9959_pcs_link_state(struct ocelot *ocelot, int port,
++				   struct phylink_link_state *state)
++{
++	struct felix *felix = ocelot_to_felix(ocelot);
++	struct phy_device *pcs = felix->pcs[port];
++	int tries = 3;
 +
-+#define QSYS_QMAXSDU_CFG_4_RSZ                            0x4
++	if (!pcs)
++		return;
 +
-+#define QSYS_QMAXSDU_CFG_5_RSZ                            0x4
++	pcs->speed = SPEED_UNKNOWN;
++	pcs->duplex = DUPLEX_UNKNOWN;
++	pcs->pause = 0;
++	pcs->asym_pause = 0;
 +
-+#define QSYS_QMAXSDU_CFG_6_RSZ                            0x4
++	/* It looks like the MAC/PCS interrupt register - PM0_IEVENT (0x8040)
++	 * isn't instantiated for the Felix PF.
++	 * In-band AN may take a while to complete, so we need to poll.
++	 */
++	do {
++		switch (pcs->interface) {
++		case PHY_INTERFACE_MODE_SGMII:
++		case PHY_INTERFACE_MODE_QSGMII:
++			vsc9959_pcs_link_state_sgmii(pcs, state);
++			break;
++		case PHY_INTERFACE_MODE_2500BASEX:
++			vsc9959_pcs_link_state_2500basex(pcs, state);
++			break;
++		case PHY_INTERFACE_MODE_USXGMII:
++			vsc9959_pcs_link_state_usxgmii(pcs, state);
++			break;
++		default:
++			return;
++		}
 +
-+#define QSYS_QMAXSDU_CFG_7_RSZ                            0x4
++		if (pcs->link)
++			break;
 +
-+#define QSYS_PREEMPTION_CFG_RSZ                           0x4
++		msleep(1);
++	} while (tries--);
 +
-+#define QSYS_PREEMPTION_CFG_P_QUEUES(x)                   ((x) & GENMASK(7, 0))
-+#define QSYS_PREEMPTION_CFG_P_QUEUES_M                    GENMASK(7, 0)
-+#define QSYS_PREEMPTION_CFG_MM_ADD_FRAG_SIZE(x)           (((x) << 8) & GENMASK(9, 8))
-+#define QSYS_PREEMPTION_CFG_MM_ADD_FRAG_SIZE_M            GENMASK(9, 8)
-+#define QSYS_PREEMPTION_CFG_MM_ADD_FRAG_SIZE_X(x)         (((x) & GENMASK(9, 8)) >> 8)
-+#define QSYS_PREEMPTION_CFG_STRICT_IPG(x)                 (((x) << 12) & GENMASK(13, 12))
-+#define QSYS_PREEMPTION_CFG_STRICT_IPG_M                  GENMASK(13, 12)
-+#define QSYS_PREEMPTION_CFG_STRICT_IPG_X(x)               (((x) & GENMASK(13, 12)) >> 12)
-+#define QSYS_PREEMPTION_CFG_HOLD_ADVANCE(x)               (((x) << 16) & GENMASK(31, 16))
-+#define QSYS_PREEMPTION_CFG_HOLD_ADVANCE_M                GENMASK(31, 16)
-+#define QSYS_PREEMPTION_CFG_HOLD_ADVANCE_X(x)             (((x) & GENMASK(31, 16)) >> 16)
++	vsc9959_pcs_link_state_resolve(pcs, state);
++}
 +
-+#define QSYS_CIR_CFG_GSZ                                  0x80
++static int vsc9959_prevalidate_phy_mode(struct ocelot *ocelot, int port,
++					phy_interface_t phy_mode)
++{
++	switch (phy_mode) {
++	case PHY_INTERFACE_MODE_GMII:
++		/* Only supported on internal to-CPU ports */
++		if (port != 4 && port != 5)
++			return -ENOTSUPP;
++		return 0;
++	case PHY_INTERFACE_MODE_SGMII:
++	case PHY_INTERFACE_MODE_QSGMII:
++	case PHY_INTERFACE_MODE_USXGMII:
++	case PHY_INTERFACE_MODE_2500BASEX:
++		/* Not supported on internal to-CPU ports */
++		if (port == 4 || port == 5)
++			return -ENOTSUPP;
++		return 0;
++	default:
++		return -ENOTSUPP;
++	}
++}
 +
-+#define QSYS_CIR_CFG_CIR_RATE(x)                          (((x) << 6) & GENMASK(20, 6))
-+#define QSYS_CIR_CFG_CIR_RATE_M                           GENMASK(20, 6)
-+#define QSYS_CIR_CFG_CIR_RATE_X(x)                        (((x) & GENMASK(20, 6)) >> 6)
-+#define QSYS_CIR_CFG_CIR_BURST(x)                         ((x) & GENMASK(5, 0))
-+#define QSYS_CIR_CFG_CIR_BURST_M                          GENMASK(5, 0)
+ static const struct ocelot_ops vsc9959_ops = {
+ 	.reset			= vsc9959_reset,
+ };
+ 
++static int vsc9959_mdio_bus_alloc(struct ocelot *ocelot)
++{
++	struct felix *felix = ocelot_to_felix(ocelot);
++	struct enetc_mdio_priv *mdio_priv;
++	struct device *dev = ocelot->dev;
++	resource_size_t imdio_base;
++	void __iomem *imdio_regs;
++	struct resource *res;
++	struct enetc_hw *hw;
++	struct mii_bus *bus;
++	int port;
++	int rc;
 +
-+#define QSYS_EIR_CFG_GSZ                                  0x80
++	felix->pcs = devm_kcalloc(dev, felix->info->num_ports,
++				  sizeof(struct phy_device *),
++				  GFP_KERNEL);
++	if (!felix->pcs) {
++		dev_err(dev, "failed to allocate array for PCS PHYs\n");
++		return -ENOMEM;
++	}
 +
-+#define QSYS_EIR_CFG_EIR_RATE(x)                          (((x) << 7) & GENMASK(21, 7))
-+#define QSYS_EIR_CFG_EIR_RATE_M                           GENMASK(21, 7)
-+#define QSYS_EIR_CFG_EIR_RATE_X(x)                        (((x) & GENMASK(21, 7)) >> 7)
-+#define QSYS_EIR_CFG_EIR_BURST(x)                         (((x) << 1) & GENMASK(6, 1))
-+#define QSYS_EIR_CFG_EIR_BURST_M                          GENMASK(6, 1)
-+#define QSYS_EIR_CFG_EIR_BURST_X(x)                       (((x) & GENMASK(6, 1)) >> 1)
-+#define QSYS_EIR_CFG_EIR_MARK_ENA                         BIT(0)
++	imdio_base = pci_resource_start(felix->pdev,
++					felix->info->imdio_pci_bar);
 +
-+#define QSYS_SE_CFG_GSZ                                   0x80
++	res = felix->info->imdio_res;
++	res->flags = IORESOURCE_MEM;
++	res->start += imdio_base;
++	res->end += imdio_base;
 +
-+#define QSYS_SE_CFG_SE_DWRR_CNT(x)                        (((x) << 6) & GENMASK(9, 6))
-+#define QSYS_SE_CFG_SE_DWRR_CNT_M                         GENMASK(9, 6)
-+#define QSYS_SE_CFG_SE_DWRR_CNT_X(x)                      (((x) & GENMASK(9, 6)) >> 6)
-+#define QSYS_SE_CFG_SE_RR_ENA                             BIT(5)
-+#define QSYS_SE_CFG_SE_AVB_ENA                            BIT(4)
-+#define QSYS_SE_CFG_SE_FRM_MODE(x)                        (((x) << 2) & GENMASK(3, 2))
-+#define QSYS_SE_CFG_SE_FRM_MODE_M                         GENMASK(3, 2)
-+#define QSYS_SE_CFG_SE_FRM_MODE_X(x)                      (((x) & GENMASK(3, 2)) >> 2)
-+#define QSYS_SE_CFG_SE_EXC_ENA                            BIT(1)
-+#define QSYS_SE_CFG_SE_EXC_FWD                            BIT(0)
++	imdio_regs = devm_ioremap_resource(dev, res);
++	if (IS_ERR(imdio_regs)) {
++		dev_err(dev, "failed to map internal MDIO registers\n");
++		return PTR_ERR(imdio_regs);
++	}
 +
-+#define QSYS_SE_DWRR_CFG_GSZ                              0x80
-+#define QSYS_SE_DWRR_CFG_RSZ                              0x4
++	hw = enetc_hw_alloc(dev, imdio_regs);
++	if (IS_ERR(hw)) {
++		dev_err(dev, "failed to allocate ENETC HW structure\n");
++		return PTR_ERR(hw);
++	}
 +
-+#define QSYS_SE_CONNECT_GSZ                               0x80
++	bus = devm_mdiobus_alloc_size(dev, sizeof(*mdio_priv));
++	if (!bus)
++		return -ENOMEM;
 +
-+#define QSYS_SE_CONNECT_SE_OUTP_IDX(x)                    (((x) << 17) & GENMASK(24, 17))
-+#define QSYS_SE_CONNECT_SE_OUTP_IDX_M                     GENMASK(24, 17)
-+#define QSYS_SE_CONNECT_SE_OUTP_IDX_X(x)                  (((x) & GENMASK(24, 17)) >> 17)
-+#define QSYS_SE_CONNECT_SE_INP_IDX(x)                     (((x) << 9) & GENMASK(16, 9))
-+#define QSYS_SE_CONNECT_SE_INP_IDX_M                      GENMASK(16, 9)
-+#define QSYS_SE_CONNECT_SE_INP_IDX_X(x)                   (((x) & GENMASK(16, 9)) >> 9)
-+#define QSYS_SE_CONNECT_SE_OUTP_CON(x)                    (((x) << 5) & GENMASK(8, 5))
-+#define QSYS_SE_CONNECT_SE_OUTP_CON_M                     GENMASK(8, 5)
-+#define QSYS_SE_CONNECT_SE_OUTP_CON_X(x)                  (((x) & GENMASK(8, 5)) >> 5)
-+#define QSYS_SE_CONNECT_SE_INP_CNT(x)                     (((x) << 1) & GENMASK(4, 1))
-+#define QSYS_SE_CONNECT_SE_INP_CNT_M                      GENMASK(4, 1)
-+#define QSYS_SE_CONNECT_SE_INP_CNT_X(x)                   (((x) & GENMASK(4, 1)) >> 1)
-+#define QSYS_SE_CONNECT_SE_TERMINAL                       BIT(0)
++	bus->name = "VSC9959 internal MDIO bus";
++	bus->read = enetc_mdio_read;
++	bus->write = enetc_mdio_write;
++	bus->parent = dev;
++	mdio_priv = bus->priv;
++	mdio_priv->hw = hw;
++	/* This gets added to imdio_regs, which already maps addresses
++	 * starting with the proper offset.
++	 */
++	mdio_priv->mdio_base = 0;
++	snprintf(bus->id, MII_BUS_ID_SIZE, "%s-imdio", dev_name(dev));
 +
-+#define QSYS_SE_DLB_SENSE_GSZ                             0x80
++	/* Needed in order to initialize the bus mutex lock */
++	rc = mdiobus_register(bus);
++	if (rc < 0) {
++		dev_err(dev, "failed to register MDIO bus\n");
++		return rc;
++	}
 +
-+#define QSYS_SE_DLB_SENSE_SE_DLB_PRIO(x)                  (((x) << 11) & GENMASK(13, 11))
-+#define QSYS_SE_DLB_SENSE_SE_DLB_PRIO_M                   GENMASK(13, 11)
-+#define QSYS_SE_DLB_SENSE_SE_DLB_PRIO_X(x)                (((x) & GENMASK(13, 11)) >> 11)
-+#define QSYS_SE_DLB_SENSE_SE_DLB_SPORT(x)                 (((x) << 7) & GENMASK(10, 7))
-+#define QSYS_SE_DLB_SENSE_SE_DLB_SPORT_M                  GENMASK(10, 7)
-+#define QSYS_SE_DLB_SENSE_SE_DLB_SPORT_X(x)               (((x) & GENMASK(10, 7)) >> 7)
-+#define QSYS_SE_DLB_SENSE_SE_DLB_DPORT(x)                 (((x) << 3) & GENMASK(6, 3))
-+#define QSYS_SE_DLB_SENSE_SE_DLB_DPORT_M                  GENMASK(6, 3)
-+#define QSYS_SE_DLB_SENSE_SE_DLB_DPORT_X(x)               (((x) & GENMASK(6, 3)) >> 3)
-+#define QSYS_SE_DLB_SENSE_SE_DLB_PRIO_ENA                 BIT(2)
-+#define QSYS_SE_DLB_SENSE_SE_DLB_SPORT_ENA                BIT(1)
-+#define QSYS_SE_DLB_SENSE_SE_DLB_DPORT_ENA                BIT(0)
++	felix->imdio = bus;
 +
-+#define QSYS_CIR_STATE_GSZ                                0x80
++	for (port = 0; port < felix->info->num_ports; port++) {
++		struct ocelot_port *ocelot_port = ocelot->ports[port];
++		struct phy_device *pcs;
++		bool is_c45 = false;
 +
-+#define QSYS_CIR_STATE_CIR_LVL(x)                         (((x) << 4) & GENMASK(25, 4))
-+#define QSYS_CIR_STATE_CIR_LVL_M                          GENMASK(25, 4)
-+#define QSYS_CIR_STATE_CIR_LVL_X(x)                       (((x) & GENMASK(25, 4)) >> 4)
-+#define QSYS_CIR_STATE_SHP_TIME(x)                        ((x) & GENMASK(3, 0))
-+#define QSYS_CIR_STATE_SHP_TIME_M                         GENMASK(3, 0)
++		if (ocelot_port->phy_mode == PHY_INTERFACE_MODE_USXGMII)
++			is_c45 = true;
 +
-+#define QSYS_EIR_STATE_GSZ                                0x80
++		pcs = get_phy_device(felix->imdio, port, is_c45);
++		if (IS_ERR(pcs))
++			continue;
 +
-+#define QSYS_SE_STATE_GSZ                                 0x80
++		pcs->interface = ocelot_port->phy_mode;
++		felix->pcs[port] = pcs;
 +
-+#define QSYS_SE_STATE_SE_OUTP_LVL(x)                      (((x) << 1) & GENMASK(2, 1))
-+#define QSYS_SE_STATE_SE_OUTP_LVL_M                       GENMASK(2, 1)
-+#define QSYS_SE_STATE_SE_OUTP_LVL_X(x)                    (((x) & GENMASK(2, 1)) >> 1)
-+#define QSYS_SE_STATE_SE_WAS_YEL                          BIT(0)
++		dev_info(dev, "Found PCS at internal MDIO address %d\n", port);
++	}
 +
-+#define QSYS_HSCH_MISC_CFG_SE_CONNECT_VLD                 BIT(8)
-+#define QSYS_HSCH_MISC_CFG_FRM_ADJ(x)                     (((x) << 3) & GENMASK(7, 3))
-+#define QSYS_HSCH_MISC_CFG_FRM_ADJ_M                      GENMASK(7, 3)
-+#define QSYS_HSCH_MISC_CFG_FRM_ADJ_X(x)                   (((x) & GENMASK(7, 3)) >> 3)
-+#define QSYS_HSCH_MISC_CFG_LEAK_DIS                       BIT(2)
-+#define QSYS_HSCH_MISC_CFG_QSHP_EXC_ENA                   BIT(1)
-+#define QSYS_HSCH_MISC_CFG_PFC_BYP_UPD                    BIT(0)
++	return 0;
++}
 +
-+#define QSYS_TAG_CONFIG_RSZ                               0x4
++static void vsc9959_mdio_bus_free(struct ocelot *ocelot)
++{
++	struct felix *felix = ocelot_to_felix(ocelot);
++	int port;
 +
-+#define QSYS_TAG_CONFIG_ENABLE                            BIT(0)
-+#define QSYS_TAG_CONFIG_LINK_SPEED(x)                     (((x) << 4) & GENMASK(5, 4))
-+#define QSYS_TAG_CONFIG_LINK_SPEED_M                      GENMASK(5, 4)
-+#define QSYS_TAG_CONFIG_LINK_SPEED_X(x)                   (((x) & GENMASK(5, 4)) >> 4)
-+#define QSYS_TAG_CONFIG_INIT_GATE_STATE(x)                (((x) << 8) & GENMASK(15, 8))
-+#define QSYS_TAG_CONFIG_INIT_GATE_STATE_M                 GENMASK(15, 8)
-+#define QSYS_TAG_CONFIG_INIT_GATE_STATE_X(x)              (((x) & GENMASK(15, 8)) >> 8)
-+#define QSYS_TAG_CONFIG_SCH_TRAFFIC_QUEUES(x)             (((x) << 16) & GENMASK(23, 16))
-+#define QSYS_TAG_CONFIG_SCH_TRAFFIC_QUEUES_M              GENMASK(23, 16)
-+#define QSYS_TAG_CONFIG_SCH_TRAFFIC_QUEUES_X(x)           (((x) & GENMASK(23, 16)) >> 16)
++	for (port = 0; port < ocelot->num_phys_ports; port++) {
++		struct phy_device *pcs = felix->pcs[port];
 +
-+#define QSYS_TAS_PARAM_CFG_CTRL_PORT_NUM(x)               ((x) & GENMASK(7, 0))
-+#define QSYS_TAS_PARAM_CFG_CTRL_PORT_NUM_M                GENMASK(7, 0)
-+#define QSYS_TAS_PARAM_CFG_CTRL_ALWAYS_GUARD_BAND_SCH_Q   BIT(8)
-+#define QSYS_TAS_PARAM_CFG_CTRL_CONFIG_CHANGE             BIT(16)
++		if (!pcs)
++			continue;
 +
-+#define QSYS_PORT_MAX_SDU_RSZ                             0x4
++		put_device(&pcs->mdio.dev);
++	}
++	mdiobus_unregister(felix->imdio);
++}
 +
-+#define QSYS_PARAM_CFG_REG_3_BASE_TIME_SEC_MSB(x)         ((x) & GENMASK(15, 0))
-+#define QSYS_PARAM_CFG_REG_3_BASE_TIME_SEC_MSB_M          GENMASK(15, 0)
-+#define QSYS_PARAM_CFG_REG_3_LIST_LENGTH(x)               (((x) << 16) & GENMASK(31, 16))
-+#define QSYS_PARAM_CFG_REG_3_LIST_LENGTH_M                GENMASK(31, 16)
-+#define QSYS_PARAM_CFG_REG_3_LIST_LENGTH_X(x)             (((x) & GENMASK(31, 16)) >> 16)
-+
-+#define QSYS_GCL_CFG_REG_1_GCL_ENTRY_NUM(x)               ((x) & GENMASK(5, 0))
-+#define QSYS_GCL_CFG_REG_1_GCL_ENTRY_NUM_M                GENMASK(5, 0)
-+#define QSYS_GCL_CFG_REG_1_GATE_STATE(x)                  (((x) << 8) & GENMASK(15, 8))
-+#define QSYS_GCL_CFG_REG_1_GATE_STATE_M                   GENMASK(15, 8)
-+#define QSYS_GCL_CFG_REG_1_GATE_STATE_X(x)                (((x) & GENMASK(15, 8)) >> 8)
-+
-+#define QSYS_PARAM_STATUS_REG_3_BASE_TIME_SEC_MSB(x)      ((x) & GENMASK(15, 0))
-+#define QSYS_PARAM_STATUS_REG_3_BASE_TIME_SEC_MSB_M       GENMASK(15, 0)
-+#define QSYS_PARAM_STATUS_REG_3_LIST_LENGTH(x)            (((x) << 16) & GENMASK(31, 16))
-+#define QSYS_PARAM_STATUS_REG_3_LIST_LENGTH_M             GENMASK(31, 16)
-+#define QSYS_PARAM_STATUS_REG_3_LIST_LENGTH_X(x)          (((x) & GENMASK(31, 16)) >> 16)
-+
-+#define QSYS_PARAM_STATUS_REG_8_CFG_CHG_TIME_SEC_MSB(x)   ((x) & GENMASK(15, 0))
-+#define QSYS_PARAM_STATUS_REG_8_CFG_CHG_TIME_SEC_MSB_M    GENMASK(15, 0)
-+#define QSYS_PARAM_STATUS_REG_8_OPER_GATE_STATE(x)        (((x) << 16) & GENMASK(23, 16))
-+#define QSYS_PARAM_STATUS_REG_8_OPER_GATE_STATE_M         GENMASK(23, 16)
-+#define QSYS_PARAM_STATUS_REG_8_OPER_GATE_STATE_X(x)      (((x) & GENMASK(23, 16)) >> 16)
-+#define QSYS_PARAM_STATUS_REG_8_CONFIG_PENDING            BIT(24)
-+
-+#define QSYS_GCL_STATUS_REG_1_GCL_ENTRY_NUM(x)            ((x) & GENMASK(5, 0))
-+#define QSYS_GCL_STATUS_REG_1_GCL_ENTRY_NUM_M             GENMASK(5, 0)
-+#define QSYS_GCL_STATUS_REG_1_GATE_STATE(x)               (((x) << 8) & GENMASK(15, 8))
-+#define QSYS_GCL_STATUS_REG_1_GATE_STATE_M                GENMASK(15, 8)
-+#define QSYS_GCL_STATUS_REG_1_GATE_STATE_X(x)             (((x) & GENMASK(15, 8)) >> 8)
-+
-+#endif
+ struct felix_info felix_info_vsc9959 = {
+ 	.target_io_res		= vsc9959_target_io_res,
+ 	.port_io_res		= vsc9959_port_io_res,
++	.imdio_res		= &vsc9959_imdio_res,
+ 	.regfields		= vsc9959_regfields,
+ 	.map			= vsc9959_regmap,
+ 	.ops			= &vsc9959_ops,
+@@ -579,5 +1045,12 @@ struct felix_info felix_info_vsc9959 = {
+ 	.num_stats		= ARRAY_SIZE(vsc9959_stats_layout),
+ 	.shared_queue_sz	= 128 * 1024,
+ 	.num_ports		= 6,
+-	.pci_bar		= 4,
++	.switch_pci_bar		= 4,
++	.imdio_pci_bar		= 0,
++	.mdio_bus_alloc		= vsc9959_mdio_bus_alloc,
++	.mdio_bus_free		= vsc9959_mdio_bus_free,
++	.pcs_init		= vsc9959_pcs_init,
++	.pcs_an_restart		= vsc9959_pcs_an_restart,
++	.pcs_link_state		= vsc9959_pcs_link_state,
++	.prevalidate_phy_mode	= vsc9959_prevalidate_phy_mode,
+ };
 -- 
 2.7.4
 
