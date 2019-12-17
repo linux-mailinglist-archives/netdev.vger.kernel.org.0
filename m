@@ -2,78 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2CB62123029
-	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 16:23:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 47A1C123063
+	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 16:33:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728483AbfLQPXU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Dec 2019 10:23:20 -0500
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:38164 "EHLO
-        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727681AbfLQPXU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 10:23:20 -0500
-Received: by mail-wm1-f65.google.com with SMTP id u2so3613329wmc.3;
-        Tue, 17 Dec 2019 07:23:18 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=j8BDIpO9Zy1hRZoBINSyR5TXnQqjD5E22aWmsf8ruxo=;
-        b=UGTXGKzYVc92j9svo2QPONDpjxKYdC+YMbRjWlp6OQ+pbSTxgMQ6Hb2XoibEcy/KNV
-         YUn++t4ETC2w5ufGVLe0FgyCycb2BW4FVucz1tz/qlRAgb/U5W8jJXnToWSArUsifzp8
-         WN5SOk0CMvBXVOKkR7lWzasZhCXXwWz7l+9FpZhuwlyopUsTFFEpCcvxfzhK1xNJ0HDp
-         smaEiJH4lVW9bCSWK1Fh9+Ipdxmoda+F23lGj/i652rhAMaW+AneVr4jwuviJZwwH7zG
-         PqaMK4UoofRY1BLjreTX/053ttHcaWBbi+YEA2Fe+LC+lYzeLg/ZFV0Zut3bfBod6R4y
-         t1aw==
-X-Gm-Message-State: APjAAAUU94TS7NWQQq5LrYMLROdaPjJnrdp+6fnSCLwCk6NJh3HdpUkq
-        gwoq9Gav0dAG0jh43g8Sho8=
-X-Google-Smtp-Source: APXvYqxykdupmaaJlCGhZTu9d3ZjUfBJpeEMVH/5yMAA143BPmfWgEIabGlr18MOEXLHNQaeKr3mGA==
-X-Received: by 2002:a7b:c051:: with SMTP id u17mr6042189wmc.174.1576596197992;
-        Tue, 17 Dec 2019 07:23:17 -0800 (PST)
-Received: from debian (38.163.200.146.dyn.plus.net. [146.200.163.38])
-        by smtp.gmail.com with ESMTPSA id w13sm25989787wru.38.2019.12.17.07.23.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 Dec 2019 07:23:17 -0800 (PST)
-Date:   Tue, 17 Dec 2019 15:23:15 +0000
-From:   Wei Liu <wei.liu@kernel.org>
-To:     Paul Durrant <pdurrant@amazon.com>
-Cc:     xen-devel@lists.xenproject.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Wei Liu <wei.liu@kernel.org>,
-        Paul Durrant <paul@xen.org>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH net-next 2/3] xen-netback: switch state to InitWait at
- the end of netback_probe()...
-Message-ID: <20191217152315.gxsi4idfxnmloe6u@debian>
-References: <20191217133218.27085-1-pdurrant@amazon.com>
- <20191217133218.27085-3-pdurrant@amazon.com>
+        id S1728483AbfLQPdw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Dec 2019 10:33:52 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:57616 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727466AbfLQPdw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 17 Dec 2019 10:33:52 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=eNSZ2YlqsQ+8/4kfMXq2jNeud44WmFuO1gpjKs3kWTY=; b=3I/JsA+RDT/54VL2OCnzMtu8f9
+        m/pCPfaRCxl/KjwmxFvnz4thYlragEXlo04p7+1woJUrGRYnHB++fB4TOiPK36cGVUA+SNF/SfOPW
+        2QCfKnMROGn+S2MG89amCN4TSF6MdQHw8OkOIctd5Uxvc50rxph+u6yzDsP3ufreOFlk=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.92.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1ihEr3-0002Xn-QY; Tue, 17 Dec 2019 16:33:45 +0100
+Date:   Tue, 17 Dec 2019 16:33:45 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Richard Cochran <richardcochran@gmail.com>
+Cc:     netdev@vger.kernel.org, David Miller <davem@davemloft.net>,
+        devicetree@vger.kernel.org,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Jacob Keller <jacob.e.keller@intel.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Miroslav Lichvar <mlichvar@redhat.com>,
+        Murali Karicheri <m-karicheri2@ti.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Willem de Bruijn <willemb@google.com>,
+        Wingman Kwok <w-kwok2@ti.com>
+Subject: Re: [PATCH V6 net-next 11/11] ptp: Add a driver for InES time
+ stamping IP core.
+Message-ID: <20191217153345.GH17965@lunn.ch>
+References: <cover.1576511937.git.richardcochran@gmail.com>
+ <33afc113fa0b301d289522971c83dbbf0d36c8ba.1576511937.git.richardcochran@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20191217133218.27085-3-pdurrant@amazon.com>
-User-Agent: NeoMutt/20180716
+In-Reply-To: <33afc113fa0b301d289522971c83dbbf0d36c8ba.1576511937.git.richardcochran@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 17, 2019 at 01:32:17PM +0000, Paul Durrant wrote:
-> ...as the comment above the function states.
-> 
-> The switch to Initialising at the start of the function is somewhat bogus
-> as the toolstack will have set that initial state anyway. To behave
-> correctly, a backend should switch to InitWait once it has set up all
-> xenstore values that may be required by a initialising frontend. This
-> patch calls backend_switch_state() to make the transition at the
-> appropriate point.
-> 
-> NOTE: backend_switch_state() ignores errors from xenbus_switch_state()
->       and so this patch removes an error path from netback_probe(). This
->       means a failure to change state at this stage (in the absence of
->       other failures) will leave the device instantiated. This is highly
->       unlikley to happen as a failure to change state would indicate a
->       failure to write to xenstore, and that will trigger other error
->       paths. Also, a 'stuck' device can still be cleaned up using 'unbind'
->       in any case.
-> 
-> Signed-off-by: Paul Durrant <pdurrant@amazon.com>
+> +static int ines_clock_init(struct ines_clock *clock, struct device_node *node,
+> +			   void __iomem *addr)
+> +{
+> +	unsigned long port_addr;
+> +	struct ines_port *port;
+> +	int i, j;
+> +
+> +	INIT_LIST_HEAD(&clock->list);
+> +	clock->node = node;
+> +	clock->base = addr;
+> +	clock->regs = clock->base;
+> +
+> +	for (i = 0; i < INES_N_PORTS; i++) {
+> +		port = &clock->port[i];
+> +		port_addr = (unsigned long) clock->base +
+> +			INES_PORT_OFFSET + i * INES_PORT_SIZE;
+> +		port->regs = (struct ines_port_registers *) port_addr;
+> +		port->clock = clock;
+> +		port->index = i;
+> +		INIT_DELAYED_WORK(&port->ts_work, ines_txtstamp_work);
+> +		spin_lock_init(&port->lock);
+> +		INIT_LIST_HEAD(&port->events);
+> +		INIT_LIST_HEAD(&port->pool);
+> +		for (j = 0; j < INES_MAX_EVENTS; j++)
+> +			list_add(&port->pool_data[j].list, &port->pool);
+> +	}
+> +
+> +	ines_write32(clock, 0xBEEF, test);
+> +	ines_write32(clock, 0xBEEF, test2);
+> +
+> +	pr_debug("ID      0x%x\n", ines_read32(clock, id));
+> +	pr_debug("TEST    0x%x\n", ines_read32(clock, test));
+> +	pr_debug("VERSION 0x%x\n", ines_read32(clock, version));
+> +	pr_debug("TEST2   0x%x\n", ines_read32(clock, test2));
+> +
 
-Acked-by: Wei Liu <wei.liu@kernel.org>
+Hi Richard
+
+Using pr_ functions is frowned upon. You have a device, since this is
+a platform driver, please use dev_debug() etc.
+
+> +	for (i = 0; i < INES_N_PORTS; i++) {
+> +		port = &clock->port[i];
+> +		ines_write32(port, PORT_CONF, port_conf);
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +static void ines_dump_ts(char *label, struct ines_timestamp *ts)
+> +{
+> +#ifdef DEBUG
+> +	pr_err("%s timestamp, tag=0x%04hx t=%llu.%9llu c=0x%llx p=%hu s=%hu\n",
+> +	       label, ts->tag, ts->sec, ts->nsec,
+> +	       ts->clkid, ts->portnum, ts->seqid);
+> +#endif
+
+DEBUG using pr_err() is a bit unusual. dev_dbg() would be normal.
+
+> +static int ines_ptp_ctrl_probe(struct platform_device *pld)
+> +{
+> +	struct ines_clock *clock;
+> +	struct resource *res;
+> +	void __iomem *addr;
+> +	int err = 0;
+> +
+> +	res = platform_get_resource(pld, IORESOURCE_MEM, 0);
+> +	if (!res) {
+> +		dev_err(&pld->dev, "missing memory resource\n");
+> +		return -EINVAL;
+> +	}
+> +	addr = devm_ioremap_resource(&pld->dev, res);
+> +	if (IS_ERR(addr)) {
+> +		err = PTR_ERR(addr);
+> +		goto out;
+> +	}
+> +	clock = kzalloc(sizeof(*clock), GFP_KERNEL);
+
+Do the different memory life cycles allow devm_ to be used here?
+
