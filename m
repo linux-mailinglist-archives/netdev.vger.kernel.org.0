@@ -2,79 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 82633123ABA
-	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 00:22:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 424B2123AC1
+	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 00:25:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726618AbfLQXWJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Dec 2019 18:22:09 -0500
-Received: from www62.your-server.de ([213.133.104.62]:40902 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726561AbfLQXWJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 18:22:09 -0500
-Received: from sslproxy01.your-server.de ([88.198.220.130])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1ihMAE-000697-0j; Wed, 18 Dec 2019 00:22:02 +0100
-Received: from [178.197.249.31] (helo=pc-9.home)
-        by sslproxy01.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1ihMAD-0005zl-HP; Wed, 18 Dec 2019 00:22:01 +0100
-Subject: Re: [PATCH bpf-next] selftests/bpf: more succinct Makefile output
-To:     Yonghong Song <yhs@fb.com>, Andrii Nakryiko <andriin@fb.com>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>
-Cc:     "andrii.nakryiko@gmail.com" <andrii.nakryiko@gmail.com>,
-        Kernel Team <Kernel-team@fb.com>
-References: <20191217061425.2346359-1-andriin@fb.com>
- <b0e81ae2-9155-e878-1193-3e7ecfab1983@fb.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <a5d8e424-0e23-3211-dc1a-3d556dfe43c2@iogearbox.net>
-Date:   Wed, 18 Dec 2019 00:22:00 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1726536AbfLQXZf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Dec 2019 18:25:35 -0500
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:35502 "EHLO
+        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726072AbfLQXZe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 18:25:34 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=+ZRgwQu/8qI//tu+qKKPwWQ1BDjAVgEdedDApeEuiZE=; b=x2msvNHUyof3OiOD7rm/owvx/
+        GYhGhesmWA4ThYMegAxSZDkg48O9V23bbMVm8hppJRr3CXP4JJFwRC2ujRLwn4VP9UkZ0OdLmhy2f
+        3wN8UA+/mBi7FV4LihERQQw6+jneYC1OXUCvh8pytZ3I7f8YMuAdGQhhSfQ032z7GSEtfZ+Oz22sy
+        Glu9m6XDY4tSGiXJagB9iyS2QIUYFSVS8IGLF4TXMolD/McNJc0u5QP+2x07dIvD8VRFnlkp88Qq6
+        BccwBYpnOMMqB4bdD8OOuzzAVmGQzHzZvhi7oasYfcgw9Om2FbKqh8A55eeQSJMBUKYmRO2/ETtdy
+        uF8a43l5Q==;
+Received: from shell.armlinux.org.uk ([2002:4e20:1eda:1:5054:ff:fe00:4ec]:50250)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1ihMDQ-0000PL-UH; Tue, 17 Dec 2019 23:25:21 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1ihMDL-0003mN-Q1; Tue, 17 Dec 2019 23:25:15 +0000
+Date:   Tue, 17 Dec 2019 23:25:15 +0000
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     davem@davemloft.net, jakub.kicinski@netronome.com, andrew@lunn.ch,
+        f.fainelli@gmail.com, vivien.didelot@gmail.com,
+        alexandru.marginean@nxp.com, claudiu.manoil@nxp.com,
+        xiaoliang.yang_1@nxp.com, yangbo.lu@nxp.com,
+        netdev@vger.kernel.org, alexandre.belloni@bootlin.com,
+        horatiu.vultur@microchip.com,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: Re: [RFC PATCH v2 3/8] net: phylink: call mac_an_restart for
+ SGMII/QSGMII inband interfaces too
+Message-ID: <20191217232515.GR25745@shell.armlinux.org.uk>
+References: <20191217221831.10923-1-olteanv@gmail.com>
+ <20191217221831.10923-4-olteanv@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <b0e81ae2-9155-e878-1193-3e7ecfab1983@fb.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.101.4/25666/Tue Dec 17 10:54:52 2019)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191217221831.10923-4-olteanv@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/17/19 10:54 PM, Yonghong Song wrote:
-> On 12/16/19 10:14 PM, Andrii Nakryiko wrote:
->> Similarly to bpftool/libbpf output, make selftests/bpf output succinct
->> per-item output line. Output is roughly as follows:
->>
->> $ make
->> ...
->>     CLANG-LLC [test_maps] pyperf600.o
->>     CLANG-LLC [test_maps] strobemeta.o
->>     CLANG-LLC [test_maps] pyperf100.o
->>     EXTRA-OBJ [test_progs] cgroup_helpers.o
->>     EXTRA-OBJ [test_progs] trace_helpers.o
->>        BINARY test_align
->>        BINARY test_verifier_log
->>      GEN-SKEL [test_progs] fexit_bpf2bpf.skel.h
->>      GEN-SKEL [test_progs] test_global_data.skel.h
->>      GEN-SKEL [test_progs] sendmsg6_prog.skel.h
->> ...
->>
->> To see the actual command invocation, verbose mode can be turned on with V=1
->> argument:
->>
->> $ make V=1
->>
->> ... very verbose output ...
->>
->> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+On Wed, Dec 18, 2019 at 12:18:26AM +0200, Vladimir Oltean wrote:
+> From: Vladimir Oltean <vladimir.oltean@nxp.com>
 > 
-> Acked-by: Yonghong Song <yhs@fb.com>
+> It doesn't quite make sense why restarting the AN process should be
+> unique to 802.3z (1000Base-X) modes. It is valid to put an SGMII PCS in
+> in-band AN mode, therefore also make PHYLINK re-trigger an
+> auto-negotiation if needed.
 
-Applied, thanks!
+The question I'd ask is how is that actually achieved on the link?
+
+It makes sense for 1000base-X because either end can drop the ACK bit
+to cause a renegotiation to occur, but it makes no sense for SGMII.
+
+In SGMII:
+1) there is no advertisement from the MAC to the PHY
+2) the PHY is merely informing the MAC of the results of negotiation
+
+Attempting to trigger a renegotiation at the MAC end does nothing
+useful for SGMII, it doesn't cause the PHY to renegotiate with its
+link partner.
+
+The whole point of SGMII over 1000base-X is that the PHY informs the
+MAC using in-band signalling what the results of negotiation were on
+the media side of the PHY. SGMII provides no way to control the
+advertisement.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
+According to speedtest.net: 11.9Mbps down 500kbps up
