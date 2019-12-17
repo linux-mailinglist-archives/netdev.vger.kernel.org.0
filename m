@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 879F712337C
-	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 18:27:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 77FF812337E
+	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 18:28:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727531AbfLQR1L (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Dec 2019 12:27:11 -0500
-Received: from mail-ed1-f67.google.com ([209.85.208.67]:46741 "EHLO
-        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727145AbfLQR1L (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 12:27:11 -0500
-Received: by mail-ed1-f67.google.com with SMTP id m8so8649528edi.13
-        for <netdev@vger.kernel.org>; Tue, 17 Dec 2019 09:27:10 -0800 (PST)
+        id S1727649AbfLQR16 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Dec 2019 12:27:58 -0500
+Received: from mail-ed1-f66.google.com ([209.85.208.66]:39973 "EHLO
+        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727007AbfLQR16 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 12:27:58 -0500
+Received: by mail-ed1-f66.google.com with SMTP id b8so6054320edx.7
+        for <netdev@vger.kernel.org>; Tue, 17 Dec 2019 09:27:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=2itO+0SGZEcj/wPCEkukwcEPLLX7lEaDT8PLhybm99c=;
-        b=TNY7YP4QXCrza1WreBZQ8G/mRG3ro5syJMahBVpD2B0clK0+gNLXPMw6UImmvksKHY
-         sacwFPhclLXm4YUWvGajtmztxPBIkfLShIksffmORa7ubCj335La/zQERufyWYo67blr
-         DQ6hWDnP5/Lqsy7CfKj5pibLq5Rjq5hYvH0Z6i8SLN51hPteuHbrYPql2x5BlUDiWZu/
-         G1EV/9Uq3HRpfVo5oHslmPINWdWSy47ETjqwr7VihwoLE8KKmBsGyyQt4NAk3fj37E45
-         QAVe5YYydFFxZp6roL3fcYxZYuYFZ4mZ6sqRpjNGrEpBEsvinUCC0rNhsJwMdmUJ0hC2
-         qDBA==
+        bh=iPI5SBkVBhv0h3ryAURabj4QEVm1HjddPZFq7MvN8II=;
+        b=L5aEMcInRuyKE+QuTvpKb7WbuYFHSBQYPYEYScceL2wYrLZ4IanEhB9d/y7tIbrPxD
+         zoCOZmX5KFYo12FsISw1hi4++W+ohm9OLoktTQKw/V3MvsN5ThrlICv7d1hHWhqVRN85
+         /+xSsp+hZ6XqpCI9F1RG+GHbjjsuGVOnvf30qbTcWQ4lMSO42e8ElAfleDXpb+oLS6ej
+         on1RLd/wAxX9tO7UAxeXuoD5OXWMKZ+jt4VXcAx32kJpwbCXrNvS2T+pVdKlIgYzZiC2
+         uMQZlTkCUA7PyqW0zm1zcLxsHa40ANUy1kxSVq2i7zQ6pDH/kHsVcjKbsFE3Ci0NMHnX
+         lHWA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=2itO+0SGZEcj/wPCEkukwcEPLLX7lEaDT8PLhybm99c=;
-        b=fy61G3S+TnEK7q2hmyLw+WMIedM5X7gRxk7EcfwTyvd0hgb/+QV3FW9EIQTXoDx0Jv
-         85CNq6xFwd4L7ZvI6DeT+ZvIkIkdJ4+zuV2r2hkt0rjLA4Ug1mSKyXI0/wkZ59/f3Phd
-         vNoum+5BSVzOUl0zWa5mmM1AuqBDwTuaKkMjFvITv5b9n/SVT2OnCEJXASVzjUSngoZN
-         obrjyEMzZasoLRC2nQcHw6zglB8EHMt/EAFM3gaujUXh+VAJrdDkNYNcCVOWC0CgZV2i
-         uLWPfBUokYqd6zjGWSIwzvCs+WIA40ZSxQ/4ByD1xFPzMAo94f2pXFU3P3I5GnyPqUqa
-         nJoQ==
-X-Gm-Message-State: APjAAAVeUroGlYsRO2t+uT5X9jkPIH43jsIZ3NA8+vk6qdFk/p7jzVPY
-        k1evNEVk1kpl1a94u0/LUa7eOF0i
-X-Google-Smtp-Source: APXvYqx51cnVLFQbfsJ8LEYlzjP8JRICOwIfx+1xjdlYdVw1v5Z/QWdlr3H9Ufoxjy705DZ4ZAqUyQ==
-X-Received: by 2002:a50:93a2:: with SMTP id o31mr6586733eda.160.1576603629545;
-        Tue, 17 Dec 2019 09:27:09 -0800 (PST)
+        bh=iPI5SBkVBhv0h3ryAURabj4QEVm1HjddPZFq7MvN8II=;
+        b=ZQC13VJG0i/Q5ZeAdC/XcICOunmlixdNDkk1q4TYuZ3xDX4JNTijqaGkFSBROL8Hy9
+         rZ+g5hm5BBJSxz3N+JTQu8LdZxM/eAHloTSPpae1uRe5fUiGFmmii6ln0Jye5eoCrvwC
+         fCWLpbwyx1A5/+4irnpXRTrIafXQwNrkQQKfAWlr8eaLPARfcXhgoZD4Wz2s8TsCiTur
+         ZORGbYt/Ia5M0oktkCs7tWsSa0BQNE8dCkf41Xe1uZdB0eMYwXgSMCnqnhO84pDTActu
+         df6vAObSkF+aHWtS9cIP+Rq45mLObDRN2tbLMYZPH9EFvpa9MbH2cQx05L6wYWDKTl5H
+         OoBA==
+X-Gm-Message-State: APjAAAXA+kUVx4vqeWt0gHXztvILfOKY+93rkP2zJcR07lCor6JKIlE6
+        bsRS9c08lpixWsT6jdNyCk85jGMd
+X-Google-Smtp-Source: APXvYqwiNvS9kxSEm2MbSV+l6p1aLAAH2uQt9/IYAZcX+GjE4+JYOvWCOzAavAy+RlpJU/jmyH5Ryg==
+X-Received: by 2002:a17:906:80b:: with SMTP id e11mr6416786ejd.278.1576603676039;
+        Tue, 17 Dec 2019 09:27:56 -0800 (PST)
 Received: from [10.67.50.53] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id p6sm1085740eja.63.2019.12.17.09.27.07
+        by smtp.googlemail.com with ESMTPSA id mh16sm1121806ejb.46.2019.12.17.09.27.54
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 17 Dec 2019 09:27:08 -0800 (PST)
-Subject: Re: [PATCH net-next 03/11] net: phy: add
- genphy_check_and_restart_aneg()
+        Tue, 17 Dec 2019 09:27:55 -0800 (PST)
+Subject: Re: [PATCH net-next 04/11] net: phy: provide and use
+ genphy_read_status_fixed()
 To:     Russell King <rmk+kernel@armlinux.org.uk>,
         Andrew Lunn <andrew@lunn.ch>,
         Heiner Kallweit <hkallweit1@gmail.com>
 Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
 References: <20191217133827.GQ25745@shell.armlinux.org.uk>
- <E1ihD4B-0001yY-7I@rmk-PC.armlinux.org.uk>
+ <E1ihD4G-0001yf-BK@rmk-PC.armlinux.org.uk>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  xsDiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
@@ -108,12 +108,12 @@ Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  HvsHIcv4lxCWkFXkwsuWqzEKK6kxVpRDoEQPDj+Oy/ZJ5fYuMbkdHrlegwoQ64LrqdmiVVPC
  TwQYEQIADwIbDAUCVF/S8QUJHlwd3wAKCRBhV5kVtWN2Do+FAJ956xSz2XpDHql+Wg/2qv3b
  G10n8gCguORqNGMsVRxrlLs7/himep7MrCc=
-Message-ID: <b148d553-1d33-4683-b5ef-d848053c9f83@gmail.com>
-Date:   Tue, 17 Dec 2019 09:27:05 -0800
+Message-ID: <ae521ee0-cc66-3773-1448-601940bea27e@gmail.com>
+Date:   Tue, 17 Dec 2019 09:27:52 -0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.2.2
 MIME-Version: 1.0
-In-Reply-To: <E1ihD4B-0001yY-7I@rmk-PC.armlinux.org.uk>
+In-Reply-To: <E1ihD4G-0001yf-BK@rmk-PC.armlinux.org.uk>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -123,8 +123,10 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On 12/17/19 5:39 AM, Russell King wrote:
-> Add a helper for restarting autonegotiation(), similar to the clause 45
-> variant.  Use it in __genphy_config_aneg()
+> There are two drivers and generic code which contain exactly the same
+> code to read the status of a PHY operating without autonegotiation
+> enabled. Rather than duplicate this code, provide a helper to read
+> this information.
 > 
 > Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
 
