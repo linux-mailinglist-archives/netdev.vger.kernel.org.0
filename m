@@ -2,100 +2,296 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C201122F80
-	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 15:59:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 49D75122FA7
+	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 16:06:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727976AbfLQO7b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Dec 2019 09:59:31 -0500
-Received: from nbd.name ([46.4.11.11]:44488 "EHLO nbd.name"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726560AbfLQO7b (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 17 Dec 2019 09:59:31 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=nbd.name;
-         s=20160729; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:
-        MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=+8L1lSnnK7nL4n5raeEmDmK4NyWmLIl9WA4sSDwK8jc=; b=IpUKUVmyJkWbdN9lK7cDmd9D4J
-        QR4qMW/VReCCQfTHbjgaPcsUzxxYz+T46GgnyWeKD0w5m5vrH1Klt3reSte6ZWql86dJ3rxtqKIr3
-        HRHjaJhOOvjL1diFYWZyDISzzpCSmt60vCl3xRwEPVWUtMoljzJjjWSN3WDl0r5AfPuA=;
-Received: from [178.162.209.142] (helo=nf.local)
-        by ds12 with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.89)
-        (envelope-from <nbd@nbd.name>)
-        id 1ihEJm-00046H-Vc; Tue, 17 Dec 2019 15:59:23 +0100
-Subject: Re: [PATCH] mt76: fix LED link time failure
-To:     Kalle Valo <kvalo@codeaurora.org>, Arnd Bergmann <arnd@arndb.de>
-Cc:     Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Ryder Lee <ryder.lee@mediatek.com>,
-        Roy Luo <royluo@google.com>,
-        Stanislaw Gruszka <sgruszka@redhat.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <20191216131902.3251040-1-arnd@arndb.de>
- <87lfrbaull.fsf@kamboji.qca.qualcomm.com>
-From:   Felix Fietkau <nbd@nbd.name>
-Autocrypt: addr=nbd@nbd.name; prefer-encrypt=mutual; keydata=
- xsDiBEah5CcRBADIY7pu4LIv3jBlyQ/2u87iIZGe6f0f8pyB4UjzfJNXhJb8JylYYRzIOSxh
- ExKsdLCnJqsG1PY1mqTtoG8sONpwsHr2oJ4itjcGHfn5NJSUGTbtbbxLro13tHkGFCoCr4Z5
- Pv+XRgiANSpYlIigiMbOkide6wbggQK32tC20QxUIwCg4k6dtV/4kwEeiOUfErq00TVqIiEE
- AKcUi4taOuh/PQWx/Ujjl/P1LfJXqLKRPa8PwD4j2yjoc9l+7LptSxJThL9KSu6gtXQjcoR2
- vCK0OeYJhgO4kYMI78h1TSaxmtImEAnjFPYJYVsxrhay92jisYc7z5R/76AaELfF6RCjjGeP
- wdalulG+erWju710Bif7E1yjYVWeA/9Wd1lsOmx6uwwYgNqoFtcAunDaMKi9xVQW18FsUusM
- TdRvTZLBpoUAy+MajAL+R73TwLq3LnKpIcCwftyQXK5pEDKq57OhxJVv1Q8XkA9Dn1SBOjNB
- l25vJDFAT9ntp9THeDD2fv15yk4EKpWhu4H00/YX8KkhFsrtUs69+vZQwc0cRmVsaXggRmll
- dGthdSA8bmJkQG5iZC5uYW1lPsJgBBMRAgAgBQJGoeQnAhsjBgsJCAcDAgQVAggDBBYCAwEC
- HgECF4AACgkQ130UHQKnbvXsvgCgjsAIIOsY7xZ8VcSm7NABpi91yTMAniMMmH7FRenEAYMa
- VrwYTIThkTlQzsFNBEah5FQQCACMIep/hTzgPZ9HbCTKm9xN4bZX0JjrqjFem1Nxf3MBM5vN
- CYGBn8F4sGIzPmLhl4xFeq3k5irVg/YvxSDbQN6NJv8o+tP6zsMeWX2JjtV0P4aDIN1pK2/w
- VxcicArw0VYdv2ZCarccFBgH2a6GjswqlCqVM3gNIMI8ikzenKcso8YErGGiKYeMEZLwHaxE
- Y7mTPuOTrWL8uWWRL5mVjhZEVvDez6em/OYvzBwbkhImrryF29e3Po2cfY2n7EKjjr3/141K
- DHBBdgXlPNfDwROnA5ugjjEBjwkwBQqPpDA7AYPvpHh5vLbZnVGu5CwG7NAsrb2isRmjYoqk
- wu++3117AAMFB/9S0Sj7qFFQcD4laADVsabTpNNpaV4wAgVTRHKV/kC9luItzwDnUcsZUPdQ
- f3MueRJ3jIHU0UmRBG3uQftqbZJj3ikhnfvyLmkCNe+/hXhPu9sGvXyi2D4vszICvc1KL4RD
- aLSrOsROx22eZ26KqcW4ny7+va2FnvjsZgI8h4sDmaLzKczVRIiLITiMpLFEU/VoSv0m1F4B
- FtRgoiyjFzigWG0MsTdAN6FJzGh4mWWGIlE7o5JraNhnTd+yTUIPtw3ym6l8P+gbvfoZida0
- TspgwBWLnXQvP5EDvlZnNaKa/3oBes6z0QdaSOwZCRA3QSLHBwtgUsrT6RxRSweLrcabwkkE
- GBECAAkFAkah5FQCGwwACgkQ130UHQKnbvW2GgCfTKx80VvCR/PvsUlrvdOLsIgeRGAAn1ee
- RjMaxwtSdaCKMw3j33ZbsWS4
-Message-ID: <c029f35a-6fd9-fc69-aa8f-16b66235f71e@nbd.name>
-Date:   Tue, 17 Dec 2019 15:59:22 +0100
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0)
- Gecko/20100101 Thunderbird/68.3.0
+        id S1728278AbfLQPGi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Dec 2019 10:06:38 -0500
+Received: from mail-lf1-f65.google.com ([209.85.167.65]:41979 "EHLO
+        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727412AbfLQPGg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 10:06:36 -0500
+Received: by mail-lf1-f65.google.com with SMTP id m30so7196714lfp.8
+        for <netdev@vger.kernel.org>; Tue, 17 Dec 2019 07:06:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=references:user-agent:from:to:cc:subject:in-reply-to:date
+         :message-id:mime-version;
+        bh=EY4jLBMvLeQadan6EjqkhpxwO29/0R68SZ9o81QWu58=;
+        b=uJYXeeWy4RYFOFqEf17xl7gnVK/0FgU+AhTHa2PKK69M8wC33ddO3IaM4waNUxcB1h
+         8hOR0yPIkhHgkLTPAufPHrulROIclWok6hjHvHnIQ1bAsIBH/O0ZLGsLL5Y8ABBZTvIP
+         2+xJdN5bz0i5sz7wKy8coKutJkhiTEfpXIn7o=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:references:user-agent:from:to:cc:subject
+         :in-reply-to:date:message-id:mime-version;
+        bh=EY4jLBMvLeQadan6EjqkhpxwO29/0R68SZ9o81QWu58=;
+        b=MTtwpgyYAOpbw8rrBbt1TXTmk1spofNxvMmL8w6cjo2cDK+VE/z8qa0K3G9XmoGh4N
+         pSZsWV7RgC49SBvZ0tOnX0WaKFVF51m5uEYlgofnQKDx73sxI2985t/1YqjOuBYj5RTQ
+         hh3zaYArG1s6VvzFTc0Jx89arkUSpBZgn13wRNU1IzQQZkNfKgH26qAFM42RjOTiEZ/n
+         G2yOFNIJnJWIJiST4Y15wHLFTjmEQ4QVFvo6ZccUKQhRzggUSu/X5zhIgp7gAUkh5m1D
+         6Nr6Cffk2iGfoDMR8R6AXIsYskXDihntD2jVX/oHsb7VRYmDURqqwDdyVIpE4ConQTCY
+         QwhA==
+X-Gm-Message-State: APjAAAWM+oeTqVtqTA1COfkCVlmgjSEqk5fxvsT3nB4gHvQ+WdF7z9i9
+        SUHz7d21KQXAq+e5rylfNvHmYQsDzYooaQ==
+X-Google-Smtp-Source: APXvYqxF/+Ng+orHICPm7K+4KlpIt9y0iuxkDQbUEY4m5+eaJwNmzU/PPTc4L0ZLfWBx3JLHMNRJcA==
+X-Received: by 2002:ac2:4834:: with SMTP id 20mr2791723lft.166.1576595193577;
+        Tue, 17 Dec 2019 07:06:33 -0800 (PST)
+Received: from cloudflare.com ([176.221.114.230])
+        by smtp.gmail.com with ESMTPSA id g6sm12889267lja.10.2019.12.17.07.06.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 17 Dec 2019 07:06:32 -0800 (PST)
+References: <20191123110751.6729-1-jakub@cloudflare.com> <20191123110751.6729-5-jakub@cloudflare.com> <20191125223845.6t6xoqcwcqxuqbdf@kafai-mbp> <87ftiaocp2.fsf@cloudflare.com> <20191126171607.pzrg5qhbavh7enwh@kafai-mbp.dhcp.thefacebook.com> <87d0deo57q.fsf@cloudflare.com> <87sglsfdda.fsf@cloudflare.com> <20191211172051.clnwh5n5vdeovayy@kafai-mbp> <87pngtg4x4.fsf@cloudflare.com> <20191212192354.umerwea5z4fpwbkq@kafai-mbp>
+User-agent: mu4e 1.1.0; emacs 26.2
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     Martin Lau <kafai@fb.com>
+Cc:     John Fastabend <john.fastabend@gmail.com>,
+        "bpf\@vger.kernel.org" <bpf@vger.kernel.org>,
+        "netdev\@vger.kernel.org" <netdev@vger.kernel.org>,
+        "kernel-team\@cloudflare.com" <kernel-team@cloudflare.com>
+Subject: Re: [PATCH bpf-next 4/8] bpf, sockmap: Don't let child socket inherit psock or its ops on copy
+In-reply-to: <20191212192354.umerwea5z4fpwbkq@kafai-mbp>
+Date:   Tue, 17 Dec 2019 16:06:31 +0100
+Message-ID: <87k16vf0ug.fsf@cloudflare.com>
 MIME-Version: 1.0
-In-Reply-To: <87lfrbaull.fsf@kamboji.qca.qualcomm.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2019-12-17 15:35, Kalle Valo wrote:
-> Arnd Bergmann <arnd@arndb.de> writes:
-> 
->> The mt76_led_cleanup() function is called unconditionally, which
->> leads to a link error when CONFIG_LEDS is a loadable module or
->> disabled but mt76 is built-in:
+On Thu, Dec 12, 2019 at 08:23 PM CET, Martin Lau wrote:
+> On Thu, Dec 12, 2019 at 12:27:19PM +0100, Jakub Sitnicki wrote:
+>> On Wed, Dec 11, 2019 at 06:20 PM CET, Martin Lau wrote:
+>> > On Tue, Dec 10, 2019 at 03:45:37PM +0100, Jakub Sitnicki wrote:
+>> >> John, Martin,
+>> >>
+>> >> On Tue, Nov 26, 2019 at 07:36 PM CET, Jakub Sitnicki wrote:
+>> >> > On Tue, Nov 26, 2019 at 06:16 PM CET, Martin Lau wrote:
+>> >> >> On Tue, Nov 26, 2019 at 04:54:33PM +0100, Jakub Sitnicki wrote:
+>> >> >>> On Mon, Nov 25, 2019 at 11:38 PM CET, Martin Lau wrote:
+>> >> >>> > On Sat, Nov 23, 2019 at 12:07:47PM +0100, Jakub Sitnicki wrote:
+>> >> >>> > [ ... ]
+>> >> >>> >
+>> >> >>> >> @@ -370,6 +378,11 @@ static inline void sk_psock_restore_proto(struct sock *sk,
+>> >> >>> >>  			sk->sk_prot = psock->sk_proto;
+>> >> >>> >>  		psock->sk_proto = NULL;
+>> >> >>> >>  	}
+>> >> >>> >> +
+>> >> >>> >> +	if (psock->icsk_af_ops) {
+>> >> >>> >> +		icsk->icsk_af_ops = psock->icsk_af_ops;
+>> >> >>> >> +		psock->icsk_af_ops = NULL;
+>> >> >>> >> +	}
+>> >> >>> >>  }
+>> >> >>> >
+>> >> >>> > [ ... ]
+>> >> >>> >
+>> >> >>> >> +static struct sock *tcp_bpf_syn_recv_sock(const struct sock *sk,
+>> >> >>> >> +					  struct sk_buff *skb,
+>> >> >>> >> +					  struct request_sock *req,
+>> >> >>> >> +					  struct dst_entry *dst,
+>> >> >>> >> +					  struct request_sock *req_unhash,
+>> >> >>> >> +					  bool *own_req)
+>> >> >>> >> +{
+>> >> >>> >> +	const struct inet_connection_sock_af_ops *ops;
+>> >> >>> >> +	void (*write_space)(struct sock *sk);
+>> >> >>> >> +	struct sk_psock *psock;
+>> >> >>> >> +	struct proto *proto;
+>> >> >>> >> +	struct sock *child;
+>> >> >>> >> +
+>> >> >>> >> +	rcu_read_lock();
+>> >> >>> >> +	psock = sk_psock(sk);
+>> >> >>> >> +	if (likely(psock)) {
+>> >> >>> >> +		proto = psock->sk_proto;
+>> >> >>> >> +		write_space = psock->saved_write_space;
+>> >> >>> >> +		ops = psock->icsk_af_ops;
+>> >> >>> > It is not immediately clear to me what ensure
+>> >> >>> > ops is not NULL here.
+>> >> >>> >
+>> >> >>> > It is likely I missed something.  A short comment would
+>> >> >>> > be very useful here.
+>> >> >>>
+>> >> >>> I can see the readability problem. Looking at it now, perhaps it should
+>> >> >>> be rewritten, to the same effect, as:
+>> >> >>>
+>> >> >>> static struct sock *tcp_bpf_syn_recv_sock(...)
+>> >> >>> {
+>> >> >>> 	const struct inet_connection_sock_af_ops *ops = NULL;
+>> >> >>>         ...
+>> >> >>>
+>> >> >>>         rcu_read_lock();
+>> >> >>> 	psock = sk_psock(sk);
+>> >> >>> 	if (likely(psock)) {
+>> >> >>> 		proto = psock->sk_proto;
+>> >> >>> 		write_space = psock->saved_write_space;
+>> >> >>> 		ops = psock->icsk_af_ops;
+>> >> >>> 	}
+>> >> >>> 	rcu_read_unlock();
+>> >> >>>
+>> >> >>>         if (!ops)
+>> >> >>> 		ops = inet_csk(sk)->icsk_af_ops;
+>> >> >>>         child = ops->syn_recv_sock(sk, skb, req, dst, req_unhash, own_req);
+>> >> >>>
+>> >> >>> If psock->icsk_af_ops were NULL, it would mean we haven't initialized it
+>> >> >>> properly. To double check what happens here:
+>> >> >> I did not mean the init path.  The init path is fine since it init
+>> >> >> eveything on psock before publishing the sk to the sock_map.
+>> >> >>
+>> >> >> I was thinking the delete path (e.g. sock_map_delete_elem).  It is not clear
+>> >> >> to me what prevent the earlier pasted sk_psock_restore_proto() which sets
+>> >> >> psock->icsk_af_ops to NULL from running in parallel with
+>> >> >> tcp_bpf_syn_recv_sock()?  An explanation would be useful.
+>> >> >
+>> >> > Ah, I misunderstood. Nothing prevents the race, AFAIK.
+>> >> >
+>> >> > Setting psock->icsk_af_ops to null on restore and not checking for it
+>> >> > here was a bad move on my side.  Also I need to revisit what to do about
+>> >> > psock->sk_proto so the child socket doesn't end up with null sk_proto.
+>> >> >
+>> >> > This race should be easy enough to trigger. Will give it a shot.
+>> >>
+>> >> I've convinced myself that this approach is racy beyond repair.
+>> >>
+>> >> Once syn_recv_sock() has returned it is too late to reset the child
+>> >> sk_user_data and restore its callbacks. It has been already inserted
+>> >> into ehash and ingress path can invoke its callbacks.
+>> >>
+>> >> The race can be triggered with with a reproducer where:
+>> >>
+>> >> thread-1:
+>> >>
+>> >>         p = accept(s, ...);
+>> >>         close(p);
+>> >>
+>> >> thread-2:
+>> >>
+>> >> 	bpf_map_update_elem(mapfd, &key, &s, BPF_NOEXIST);
+>> >> 	bpf_map_delete_elem(mapfd, &key);
+>> >>
+>> >> This a dead-end because we can't have the parent and the child share the
+>> >> psock state. Even though psock itself is refcounted, and potentially we
+>> >> could grab a reference before cloning the parent, link into the map that
+>> >> psock holds is not.
+>> >>
+>> >> Two ways out come to mind. Both involve touching TCP code, which I was
+>> >> hoping to avoid:
+>> >>
+>> >> 1) reset sk_user_data when initializing the child
+>> >>
+>> >>    This is problematic because tcp_bpf callbacks are not designed to
+>> >>    handle sockets with no psock _and_ with overridden sk_prot
+>> >>    callbacks. (Although, I think they could if the fallback was directly
+>> >>    on {tcp,tcpv6}_prot based on socket domain.)
+>> >>
+>> >>    Also, there are other sk_user_data users like DRBD which rely on
+>> >>    sharing the sk_user_data pointer between parent and child, if I read
+>> >>    the code correctly [0]. If anything, clearing the sk_user_data on
+>> >>    clone would have to be guarded by a flag.
+>> > Can the copy/not-to-copy sk_user_data decision be made in
+>> > sk_clone_lock()?
 >>
->> drivers/net/wireless/mediatek/mt76/mac80211.o: In function `mt76_unregister_device':
->> mac80211.c:(.text+0x2ac): undefined reference to `led_classdev_unregister'
->>
->> Use the same trick that is guarding the registration, using an
->> IS_ENABLED() check for the CONFIG_MT76_LEDS symbol that indicates
->> whether LEDs can be used or not.
->>
->> Fixes: 36f7e2b2bb1d ("mt76: do not use devm API for led classdev")
->> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-> 
-> Felix, as this is a regression in v5.5-rc1 can I take this directly to
-> wireless-drivers?
-Yes. Please add:
-Acked-by: Felix Fietkau <nbd@nbd.name>
+>> Yes, this could be pushed down to sk_clone_lock(), where we do similar
+>> work (reset sk_reuseport_cb and clone bpf_sk_storage):
+> aha.  I missed your eariler "clearing the sk_user_data on clone would have
+> to be guarded by a flag..." part.  It turns out we were talking the same
+> thing on (1).  sock_flag works better if there is still bit left (and it
+> seems there is one),  although I was thinking more like adding
+> something (e.g. a func ptr) to 'struct proto' to mangle sk_user_data
+> before returning newsk....but not sure this kind of logic
+> belongs to 'struct proto'
 
-- Felix
+Sorry for late reply.
+
+We have 4 bits left by my count. The multi-line comment for SOCK_NOFCS
+is getting in the way of counting them line-for-bit.
+
+A callback invoked on socket clone is something I was considering too.
+I'm not sure either where it belongs. At risk of being too use-case
+specific, perhaps it could live together with sk_user_data and sk_prot,
+which it would mangle on sk_clone_lock():
+
+struct sock {
+        ...
+	void			*sk_user_data;
+	void			(*sk_clone)(struct sock *sk,
+					    struct sock *newsk);
+        ...
+}
+
+But, I feel adding a new sock field just for this wouldn't be justified.
+I can get by with a sock flag. Unless we have other uses for it?
+
+>
+>>
+>> 	/* User data can hold reference. Child must not
+>> 	 * inherit the pointer without acquiring a reference.
+>> 	 */
+>> 	if (sock_flag(sk, SOCK_OWNS_USER_DATA)) {
+>> 		sock_reset_flag(newsk, SOCK_OWNS_USER_DATA);
+>> 		RCU_INIT_POINTER(newsk->sk_user_data, NULL);
+>> 	}
+>>
+>> I belive this would still need to be guarded by a flag.  Do you see
+>> value in clearing child sk_user_data on clone as opposed to dealying
+>> that work until accept() time?
+> It seems to me clearing things up front at the very beginning is more
+> straight forward, such that it does not have to worry about the
+> sk_user_data may be used in a wrong way before it gets a chance
+> to be cleared in accept().
+>
+> Just something to consider, if it is obvious that there is no hole in
+> clearing it in accept(), it is fine too.
+
+Just when I thought I could get away with lazily clearing the
+sk_user_data at accept() time, it occurred to me that it is not enough.
+
+Listening socket could get deleted from sockmap before a child socket
+that inherited a copy of sk_user_data pointer gets accept()'ed. In such
+scenario the pointer would not get NULL'ed on accept(), because
+listening socket would have it's sk_prot->accept restored by then.
+
+I will need that flag after all...
+
+-jkbs
+
+>
+>> >>
+>> >> 2) Restore sk_prot callbacks on clone to {tcp,tcpv6}_prot
+>> >>
+>> >>    The simpler way out. tcp_bpf callbacks never get invoked on the child
+>> >>    socket so the copied psock reference is no longer a problem. We can
+>> >>    clear the pointer on accept().
+>> >>
+>> >>    So far I wasn't able poke any holes in it and it comes down to
+>> >>    patching tcp_create_openreq_child() with:
+>> >>
+>> >> 	/* sk_msg and ULP frameworks can override the callbacks into
+>> >> 	 * protocol. We don't assume they are intended to be inherited
+>> >> 	 * by the child. Frameworks can re-install the callbacks on
+>> >> 	 * accept() if needed.
+>> >> 	 */
+>> >> 	WRITE_ONCE(newsk->sk_prot, sk->sk_prot_creator);
+>> >>
+>> >>    That's what I'm going with for v2.
+>> >>
+>> >> Open to suggestions.
+>> >>
+>> >> Thanks,
+>> >> Jakub
+>> >>
+>> >> BTW. Reading into kTLS code, I noticed it has been limited down to just
+>> >> established sockets due to the same problem I'm struggling with here:
+>> >>
+>> >> static int tls_init(struct sock *sk)
+>> >> {
+>> >> ...
+>> >> 	/* The TLS ulp is currently supported only for TCP sockets
+>> >> 	 * in ESTABLISHED state.
+>> >> 	 * Supporting sockets in LISTEN state will require us
+>> >> 	 * to modify the accept implementation to clone rather then
+>> >> 	 * share the ulp context.
+>> >> 	 */
+>> >> 	if (sk->sk_state != TCP_ESTABLISHED)
+>> >> 		return -ENOTCONN;
+>> >>
+>> >> [0] https://urldefense.proofpoint.com/v2/url?u=https-3A__elixir.bootlin.com_linux_v5.5-2Drc1_source_drivers_block_drbd_drbd-5Freceiver.c-23L682&d=DwIBAg&c=5VD0RTtNlTh3ycd41b3MUw&r=VQnoQ7LvghIj0gVEaiQSUw&m=z2Cz1gEcqiw-8YqVOluxlUHh_CBs6PJWQN2vgirOyFk&s=WAiM0asZN0OkqrW02xm2mCMIzWhKQCc3KiY7pzMKNg4&e=
