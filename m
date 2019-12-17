@@ -2,111 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 763FB1226ED
-	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 09:47:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B3B501226EF
+	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 09:48:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726863AbfLQIrj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Dec 2019 03:47:39 -0500
-Received: from out30-54.freemail.mail.aliyun.com ([115.124.30.54]:43147 "EHLO
-        out30-54.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725893AbfLQIri (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 03:47:38 -0500
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R341e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04394;MF=dust.li@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0TlBMkDQ_1576572449;
-Received: from localhost(mailfrom:dust.li@linux.alibaba.com fp:SMTPD_---0TlBMkDQ_1576572449)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Tue, 17 Dec 2019 16:47:34 +0800
-From:   Dust Li <dust.li@linux.alibaba.com>
-To:     Cong Wang <xiyou.wangcong@gmail.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>
-Cc:     Tony Lu <tonylu@linux.alibaba.com>, netdev@vger.kernel.org
-Subject: [PATCH net-next 2/2] net: sched: fix wrong class stats dumping in sch_mqprio
-Date:   Tue, 17 Dec 2019 16:47:18 +0800
-Message-Id: <20191217084718.52098-3-dust.li@linux.alibaba.com>
-X-Mailer: git-send-email 2.19.1.3.ge56e4f7
-In-Reply-To: <20191217084718.52098-1-dust.li@linux.alibaba.com>
-References: <20191217084718.52098-1-dust.li@linux.alibaba.com>
+        id S1726881AbfLQIsP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Dec 2019 03:48:15 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:56744 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725893AbfLQIsP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 17 Dec 2019 03:48:15 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=fk5coEWZoUakPk9isbntxQ0NicFavEX2mmDm+uQBIiQ=; b=z4B7Ahn8JD/hrye1oKWmadAPos
+        3OZnYX1pT/yRZ+Cfe6409GGxguO6FkAkKR2HRulNd/qSrncFt05MVxSJ/ZgUt56okqEFU9TNxnpsP
+        binVEkk3HFMEaYtdxlZ1GAZXnnKSrNBnW9qpHt1Tu9JsbnS2IcyfGq3rUncZv4LHNCgg=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.92.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1ih8WT-00029X-9z; Tue, 17 Dec 2019 09:48:05 +0100
+Date:   Tue, 17 Dec 2019 09:48:05 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     Chris Snook <chris.snook@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        James Hogan <jhogan@kernel.org>,
+        Jay Cliburn <jcliburn@gmail.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Paul Burton <paul.burton@mips.com>,
+        Ralf Baechle <ralf@linux-mips.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-mips@vger.kernel.org, Russell King <linux@armlinux.org.uk>
+Subject: Re: [PATCH v5 2/5] dt-bindings: net: dsa: qca,ar9331 switch
+ documentation
+Message-ID: <20191217084805.GD6994@lunn.ch>
+References: <20191216074403.313-1-o.rempel@pengutronix.de>
+ <20191216074403.313-3-o.rempel@pengutronix.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191216074403.313-3-o.rempel@pengutronix.de>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Actually, the stack variables bstats and qstats in
-mqprio_dump_class_stats() are not really used. As a result,
-'tc -s class show' for the mqprio class always return 0 for
-both bstats and qstats.
-This patch make them(bstats/qstats) storing the child qdisc's
-stats, and add them up to a tbstats/tqstats which will store
-the result mqprio class.
+On Mon, Dec 16, 2019 at 08:44:00AM +0100, Oleksij Rempel wrote:
+> Atheros AR9331 has built-in 5 port switch. The switch can be configured
+> to use all 5 or 4 ports. One of built-in PHYs can be used by first built-in
+> ethernet controller or to be used directly by the switch over second ethernet
+> controller.
+> 
+> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 
-Fixes: ce679e8df7ed ("net: sched: add support for TCQ_F_NOLOCK subqueues to sch_mqprio")
-Signed-off-by: Dust Li <dust.li@linux.alibaba.com>
-Signed-off-by: Tony Lu <tonylu@linux.alibaba.com>
----
- net/sched/sch_mqprio.c | 23 ++++++++++++++++-------
- 1 file changed, 16 insertions(+), 7 deletions(-)
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-diff --git a/net/sched/sch_mqprio.c b/net/sched/sch_mqprio.c
-index ce95e9b4a796..b356517c6ef4 100644
---- a/net/sched/sch_mqprio.c
-+++ b/net/sched/sch_mqprio.c
-@@ -511,8 +511,8 @@ static int mqprio_dump_class_stats(struct Qdisc *sch, unsigned long cl,
- 	if (cl >= TC_H_MIN_PRIORITY) {
- 		int i;
- 		__u32 qlen = 0;
--		struct gnet_stats_queue qstats = {0};
--		struct gnet_stats_basic_packed bstats = {0};
-+		struct gnet_stats_queue tqstats = {0};
-+		struct gnet_stats_basic_packed tbstats = {0};
- 		struct net_device *dev = qdisc_dev(sch);
- 		struct netdev_tc_txq tc = dev->tc_to_txq[cl & TC_BITMASK];
- 
-@@ -529,6 +529,8 @@ static int mqprio_dump_class_stats(struct Qdisc *sch, unsigned long cl,
- 			struct Qdisc *qdisc = rtnl_dereference(q->qdisc);
- 			struct gnet_stats_basic_cpu __percpu *cpu_bstats = NULL;
- 			struct gnet_stats_queue __percpu *cpu_qstats = NULL;
-+			struct gnet_stats_queue qstats = {0};
-+			struct gnet_stats_basic_packed bstats = {0};
- 
- 			spin_lock_bh(qdisc_lock(qdisc));
- 			if (qdisc_is_percpu_stats(qdisc)) {
-@@ -536,21 +538,28 @@ static int mqprio_dump_class_stats(struct Qdisc *sch, unsigned long cl,
- 				cpu_qstats = qdisc->cpu_qstats;
- 			}
- 
--			qlen = qdisc_qlen_sum(qdisc);
--			__gnet_stats_copy_basic(NULL, &sch->bstats,
-+			qlen += qdisc_qlen_sum(qdisc);
-+			__gnet_stats_copy_basic(NULL, &bstats,
- 						cpu_bstats, &qdisc->bstats);
--			__gnet_stats_copy_queue(&sch->qstats,
-+			__gnet_stats_copy_queue(&qstats,
- 						cpu_qstats,
- 						&qdisc->qstats,
- 						qlen);
- 			spin_unlock_bh(qdisc_lock(qdisc));
-+
-+			tbstats.bytes		+= bstats.bytes;
-+			tbstats.packets		+= bstats.packets;
-+			tqstats.backlog		+= qstats.backlog;
-+			tqstats.drops		+= qstats.drops;
-+			tqstats.requeues	+= qstats.requeues;
-+			tqstats.overlimits	+= qstats.overlimits;
- 		}
- 
- 		/* Reclaim root sleeping lock before completing stats */
- 		if (d->lock)
- 			spin_lock_bh(d->lock);
--		if (gnet_stats_copy_basic(NULL, d, NULL, &bstats) < 0 ||
--		    gnet_stats_copy_queue(d, NULL, &qstats, qlen) < 0)
-+		if (gnet_stats_copy_basic(NULL, d, NULL, &tbstats) < 0 ||
-+		    gnet_stats_copy_queue(d, NULL, &tqstats, qlen) < 0)
- 			return -1;
- 	} else {
- 		struct netdev_queue *dev_queue = mqprio_queue_get(sch, cl);
--- 
-2.19.1.3.ge56e4f7
-
+    Andrew
