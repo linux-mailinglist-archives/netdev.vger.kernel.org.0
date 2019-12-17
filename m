@@ -2,93 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C9B4D12263E
-	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 09:05:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E94A1226A6
+	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 09:26:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727096AbfLQIFG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Dec 2019 03:05:06 -0500
-Received: from mga09.intel.com ([134.134.136.24]:26948 "EHLO mga09.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726401AbfLQIFF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 17 Dec 2019 03:05:05 -0500
-X-Amp-Result: UNKNOWN
-X-Amp-Original-Verdict: FILE UNKNOWN
-X-Amp-File-Uploaded: False
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga102.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 17 Dec 2019 00:05:04 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.69,324,1571727600"; 
-   d="scan'208";a="217691035"
-Received: from lkp-server01.sh.intel.com (HELO lkp-server01) ([10.239.97.150])
-  by orsmga003.jf.intel.com with ESMTP; 17 Dec 2019 00:04:57 -0800
-Received: from kbuild by lkp-server01 with local (Exim 4.89)
-        (envelope-from <lkp@intel.com>)
-        id 1ih7qi-0006Px-ST; Tue, 17 Dec 2019 16:04:56 +0800
-Date:   Tue, 17 Dec 2019 16:03:58 +0800
-From:   kbuild test robot <lkp@intel.com>
-To:     John Hubbard <jhubbard@nvidia.com>
-Cc:     kbuild-all@lists.01.org, Andrew Morton <akpm@linux-foundation.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@intel.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Dave Chinner <david@fromorbit.com>,
-        David Airlie <airlied@linux.ie>,
-        "David S . Miller" <davem@davemloft.net>,
-        Ira Weiny <ira.weiny@intel.com>, Jan Kara <jack@suse.cz>,
-        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
-        Jonathan Corbet <corbet@lwn.net>,
-        =?iso-8859-1?B?Suly9G1l?= Glisse <jglisse@redhat.com>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Michal Hocko <mhocko@suse.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Paul Mackerras <paulus@samba.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Vlastimil Babka <vbabka@suse.cz>, bpf@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, kvm@vger.kernel.org,
-        linux-block@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        linux-media@vger.kernel.org, linux-rdma@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, netdev@vger.kernel.org,
-        linux-mm@kvack.org, LKML <linux-kernel@vger.kernel.org>,
-        John Hubbard <jhubbard@nvidia.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>
-Subject: [RFC PATCH] mm/gup: try_pin_compound_head() can be static
-Message-ID: <20191217080358.q3k57ta62txvip5h@4978f4969bb8>
-References: <20191211025318.457113-24-jhubbard@nvidia.com>
+        id S1726496AbfLQI0f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Dec 2019 03:26:35 -0500
+Received: from mail-lj1-f195.google.com ([209.85.208.195]:35574 "EHLO
+        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726275AbfLQI0f (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 03:26:35 -0500
+Received: by mail-lj1-f195.google.com with SMTP id j6so9922567lja.2
+        for <netdev@vger.kernel.org>; Tue, 17 Dec 2019 00:26:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=references:user-agent:from:to:cc:subject:in-reply-to:date
+         :message-id:mime-version;
+        bh=S2HWEnfNx14SXY1HnKJhWOptQA0SVJJU0TqB07h1faM=;
+        b=Bug4Nf08piVyLoD3c99gL62iecZ2ijJjbIHj/9AaI3XtVt1JKuhH92l5fTTCFfTSDz
+         it/tX3FCFNjr7VL1QWmsOi1FQp1RHYLVihSCf14IygVY6QL0f/IHXMwqvRX+kjxwS1P9
+         S+LQYy4yXlI/uoZuI26yJwiMNwmj4LNaUmNqg=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:references:user-agent:from:to:cc:subject
+         :in-reply-to:date:message-id:mime-version;
+        bh=S2HWEnfNx14SXY1HnKJhWOptQA0SVJJU0TqB07h1faM=;
+        b=PNMIeZn5nQsw2Z+/UdivuWWI60jqiNiRIq5acTrsFGduo/JNgWridVup9Sdc7q9Es2
+         oqlxjQuV2/vlyC5RKvjISZFhNuE4bs1k2PT7Pr1cM4PfP5UVt56zobHhQQBaLIhwQ8XO
+         lZoJ8KahDNRPIR1syBbDOUHq+Do/DKmeyI7dPEN3P+rK6ghPRDT2HxA9PhAukZ5J8T0D
+         LG9XBdfb9BiV43JbgxxJGBYqzPrq9tEWwy/S1DJ02bTAQhMVgoDhyIRLx5tJaIkLC/qw
+         MGCjTKkioaP1OoMonRhFwQv4LZfQvsTO2bnW0iLHYyUzOJXacnEVk4lagB5MfiA7bzo6
+         J6zQ==
+X-Gm-Message-State: APjAAAXZko8yBAiNbS6XzBidCi0IewEEFXZ6BClRWgGfPWss8lIKXqZL
+        hjgUIkmw4Sa6asZLwqyVwJag4A==
+X-Google-Smtp-Source: APXvYqwOaZ3V0e7e1ht3nZykyxicFylkfmNXt0Yj5dWyZOWLC21Bqvng7/Ce2BPdmBascUTrFbvtZw==
+X-Received: by 2002:a2e:6e03:: with SMTP id j3mr2372004ljc.27.1576571193476;
+        Tue, 17 Dec 2019 00:26:33 -0800 (PST)
+Received: from cloudflare.com ([2a02:a310:c262:aa00:b35e:8938:2c2a:ba8b])
+        by smtp.gmail.com with ESMTPSA id a12sm12063052ljk.48.2019.12.17.00.26.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 17 Dec 2019 00:26:32 -0800 (PST)
+References: <20191214004737.1652076-1-kafai@fb.com> <20191214004758.1653342-1-kafai@fb.com> <b321412c-1b42-45a9-4dc6-cc268b55cd0d@gmail.com> <CADVnQy=soQ8KhuUWEQj0n2ge3a43OSgAKS95bmBtp090jqbM_w@mail.gmail.com>
+User-agent: mu4e 1.1.0; emacs 26.2
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     Martin KaFai Lau <kafai@fb.com>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
+        Neal Cardwell <ncardwell@google.com>, bpf@vger.kernel.org,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        David Miller <davem@davemloft.net>,
+        Kernel Team <kernel-team@fb.com>,
+        Netdev <netdev@vger.kernel.org>
+Subject: Re: [PATCH bpf-next 09/13] bpf: Add BPF_FUNC_jiffies
+In-reply-to: <CADVnQy=soQ8KhuUWEQj0n2ge3a43OSgAKS95bmBtp090jqbM_w@mail.gmail.com>
+Date:   Tue, 17 Dec 2019 09:26:31 +0100
+Message-ID: <87o8w7fjd4.fsf@cloudflare.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191211025318.457113-24-jhubbard@nvidia.com>
-X-Patchwork-Hint: ignore
-User-Agent: NeoMutt/20170113 (1.7.2)
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Sat, Dec 14, 2019 at 08:25 PM CET, Neal Cardwell wrote:
+> On Fri, Dec 13, 2019 at 9:00 PM Eric Dumazet <eric.dumazet@gmail.com> wrote:
+>>
+>>
+>>
+>> On 12/13/19 4:47 PM, Martin KaFai Lau wrote:
+>> > This patch adds a helper to handle jiffies.  Some of the
+>> > tcp_sock's timing is stored in jiffies.  Although things
+>> > could be deduced by CONFIG_HZ, having an easy way to get
+>> > jiffies will make the later bpf-tcp-cc implementation easier.
+>> >
+>>
+>> ...
+>>
+>> > +
+>> > +BPF_CALL_2(bpf_jiffies, u64, in, u64, flags)
+>> > +{
+>> > +     if (!flags)
+>> > +             return get_jiffies_64();
+>> > +
+>> > +     if (flags & BPF_F_NS_TO_JIFFIES) {
+>> > +             return nsecs_to_jiffies(in);
+>> > +     } else if (flags & BPF_F_JIFFIES_TO_NS) {
+>> > +             if (!in)
+>> > +                     in = get_jiffies_64();
+>> > +             return jiffies_to_nsecs(in);
+>> > +     }
+>> > +
+>> > +     return 0;
+>> > +}
+>>
+>> This looks a bit convoluted :)
+>>
+>> Note that we could possibly change net/ipv4/tcp_cubic.c to no longer use jiffies at all.
+>>
+>> We have in tp->tcp_mstamp an accurate timestamp (in usec) that can be converted to ms.
+>
+> If the jiffies functionality stays, how about 3 simple functions that
+> correspond to the underlying C functions, perhaps something like:
+>
+>   bpf_nsecs_to_jiffies(nsecs)
+>   bpf_jiffies_to_nsecs(jiffies)
+>   bpf_get_jiffies_64()
+>
+> Separate functions might be easier to read/maintain (and may even be
+> faster, given the corresponding reduction in branches).
 
-Fixes: 8086d1c61970 ("mm/gup: track FOLL_PIN pages")
-Signed-off-by: kbuild test robot <lkp@intel.com>
----
- gup.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Having bpf_nsecs_to_jiffies() would be also handy for BPF sockops progs
+that configure SYN-RTO timeout (BPF_SOCK_OPS_TIMEOUT_INIT).
 
-diff --git a/mm/gup.c b/mm/gup.c
-index 038b71165a761..849a6f55938e6 100644
---- a/mm/gup.c
-+++ b/mm/gup.c
-@@ -75,7 +75,7 @@ static inline struct page *try_get_compound_head(struct page *page, int refs)
-  * @Return:	the compound head page, with ref appropriately incremented,
-  * or NULL upon failure.
-  */
--__must_check struct page *try_pin_compound_head(struct page *page, int refs)
-+static __must_check struct page *try_pin_compound_head(struct page *page, int refs)
- {
- 	struct page *head = try_get_compound_head(page,
- 						  GUP_PIN_COUNTING_BIAS * refs);
+Right now user-space needs to go look for CONFIG_HZ in /proc/config.gz
+or /boot/config-`uname -r`, or derive it from clock resolution [0]
+
+        clock_getres(CLOCK_REALTIME_COARSE, &res);
+        jiffy = res.tv_nsec / 1000000;
+
+to pass timeout in jiffies to the BPF prog.
+
+-jkbs
+
+[0] https://www.mail-archive.com/kernelnewbies@nl.linux.org/msg08850.html
+
