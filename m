@@ -2,62 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D52AF122FFE
-	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 16:19:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 10700123023
+	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 16:23:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727681AbfLQPTd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Dec 2019 10:19:33 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:57584 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727384AbfLQPTd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 17 Dec 2019 10:19:33 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=x0tBjWTkEEptH8DLU+ypbOyVxnViHKO5btFKlu5EOBI=; b=rCel2fFho5IWcRSftdFqOdw0ZY
-        B0qWQJCifklk6JBoK/HkOxDnF0nlAzm0VHYYmVJwP2iu711wM3mDcfwM6bcqA8rTVMu7EAJ6Rh7LT
-        MZf7Fh7lz/prfHO1hCDYXqtCuMO7CvGFR9AqwaLvCt16kn5vBrBuzCNsNES+xVcN40+o=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.92.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1ihEdF-0002ME-UB; Tue, 17 Dec 2019 16:19:29 +0100
-Date:   Tue, 17 Dec 2019 16:19:29 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Richard Cochran <richardcochran@gmail.com>
-Cc:     netdev@vger.kernel.org, David Miller <davem@davemloft.net>,
-        devicetree@vger.kernel.org,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Jacob Keller <jacob.e.keller@intel.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Miroslav Lichvar <mlichvar@redhat.com>,
-        Murali Karicheri <m-karicheri2@ti.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Willem de Bruijn <willemb@google.com>,
-        Wingman Kwok <w-kwok2@ti.com>
-Subject: Re: [PATCH V6 net-next 09/11] net: mdio: of: Register discovered MII
- time stampers.
-Message-ID: <20191217151929.GG17965@lunn.ch>
-References: <cover.1576511937.git.richardcochran@gmail.com>
- <4abb37f501cb51bf84cb5512f637747d73dcd3cc.1576511937.git.richardcochran@gmail.com>
+        id S1728303AbfLQPXG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Dec 2019 10:23:06 -0500
+Received: from mail-wr1-f68.google.com ([209.85.221.68]:46177 "EHLO
+        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727723AbfLQPXG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 10:23:06 -0500
+Received: by mail-wr1-f68.google.com with SMTP id z7so11699004wrl.13;
+        Tue, 17 Dec 2019 07:23:05 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=b3WyKVkMgpCH/40qULLwIPwhylmii2eDFQ3btP1Ui98=;
+        b=WId7/BAl4Dfe/Sfanp0HbvWmqo97XtoegspW2Y1M5D+izJBoF/glPn6te6nYLe5VOn
+         VnjWZO+wEw4GGRpCjtQyU1Xr1i7CBMN5vfUXF+rfUfpTaGnwwUQjqWyecvRgp5qsFHed
+         by9yma4+LF3kljhriKdwu23ec2sL507Udu6gJC2TZYvVoiueyRjdA0cLdS5DYohphy/P
+         B4dR48zE7Q+px9tQYgsh7NuU1+OQ+ZwF7xJ4lDRkpcAMUs37qy6f4hgctSHveu22j4v4
+         wgj4p9WGbuLCx7GCI0ThH7j3nAqt+frRxg2TGdj9Ea5VgyCgWJRDgV1ziJG+4BjQ2N3z
+         S4Ow==
+X-Gm-Message-State: APjAAAVuVINSCOVVqTCssG8t5y3UZ3ylN09x1lg/x4nYIGperUdKTAFK
+        aUPeZX2rTr/o47EyoVmUVkE=
+X-Google-Smtp-Source: APXvYqzMPuGW1YTYUDf7FTtAnzKOABQxNzRUjTLlFXNh8Hu1qA5HED1iFEzMQpFh8aO9yV6cPWvN2Q==
+X-Received: by 2002:a5d:6a8e:: with SMTP id s14mr38758076wru.150.1576596184766;
+        Tue, 17 Dec 2019 07:23:04 -0800 (PST)
+Received: from debian (38.163.200.146.dyn.plus.net. [146.200.163.38])
+        by smtp.gmail.com with ESMTPSA id o66sm3465489wmo.20.2019.12.17.07.23.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 17 Dec 2019 07:23:04 -0800 (PST)
+Date:   Tue, 17 Dec 2019 15:23:02 +0000
+From:   Wei Liu <wei.liu@kernel.org>
+To:     Paul Durrant <pdurrant@amazon.com>
+Cc:     xen-devel@lists.xenproject.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Wei Liu <wei.liu@kernel.org>,
+        Paul Durrant <paul@xen.org>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [PATCH net-next 3/3] xen-netback: remove 'hotplug-status' once
+ it has served its purpose
+Message-ID: <20191217152302.i4fp62mevawabwjd@debian>
+References: <20191217133218.27085-1-pdurrant@amazon.com>
+ <20191217133218.27085-4-pdurrant@amazon.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <4abb37f501cb51bf84cb5512f637747d73dcd3cc.1576511937.git.richardcochran@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20191217133218.27085-4-pdurrant@amazon.com>
+User-Agent: NeoMutt/20180716
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 16, 2019 at 08:13:24AM -0800, Richard Cochran wrote:
-> When parsing a PHY node, register its time stamper, if any, and attach
-> the instance to the PHY device.
+On Tue, Dec 17, 2019 at 01:32:18PM +0000, Paul Durrant wrote:
+> Removing the 'hotplug-status' node in netback_remove() is wrong; the script
+> may not have completed. Only remove the node once the watch has fired and
+> has been unregistered.
 > 
-> Signed-off-by: Richard Cochran <richardcochran@gmail.com>
+> Signed-off-by: Paul Durrant <pdurrant@amazon.com>
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-
-    Andrew
+Acked-by: Wei Liu <wei.liu@kernel.org>
