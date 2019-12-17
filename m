@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 054FC1238F3
-	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 22:57:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 599531238F7
+	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 22:57:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726623AbfLQV5l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Dec 2019 16:57:41 -0500
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:40683 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726561AbfLQV5k (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 16:57:40 -0500
-Received: by mail-wr1-f65.google.com with SMTP id c14so84112wrn.7
-        for <netdev@vger.kernel.org>; Tue, 17 Dec 2019 13:57:37 -0800 (PST)
+        id S1726618AbfLQV5k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Dec 2019 16:57:40 -0500
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:38451 "EHLO
+        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726569AbfLQV5j (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 16:57:39 -0500
+Received: by mail-wm1-f68.google.com with SMTP id u2so21794wmc.3
+        for <netdev@vger.kernel.org>; Tue, 17 Dec 2019 13:57:38 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=netronome-com.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=11u7/cc3s7vXvLoxR+XBCjrHe9WBejj9VSJXotb7DNU=;
-        b=l53wKOKLSxwxhvz75Wwcjeb4/e0/ngikWIIm1fE6J2HTU54KGvHc4nZi58DMbIh2XB
-         I0x5WOxTsysjDX92DdNgacrv0olrStpQDkubl/a4zv6IjB3eOswAZDUc+WrZBdHx4vkS
-         zDUJBDoqlddIwduQYHGSGVbvsT4AWjhbSsJbaWP9VD2YgVPJPhsk6U/FMgEP8gi9vVJr
-         HaPlrJejLbcsY+VhO3dAVhO1Ozuftp7ik0oIF+E8sTLsKaJH7uO8Nj9bJaZkQdtADP1R
-         i0P+evSThgu9S+eBO62C2BrKGboRMpoY/KWkEmPWoS/8Fnc8YyochQyxuF2sDaOcXqi1
-         c97Q==
+        bh=Znn61YMXtttrGIektzWxjMHVzMhceBavE0nMBLBtEuU=;
+        b=BjJT3jKlcpOKCmZP+V/6oSmkZaT36IHdDPY/pNQHqKxCdN6j95o/4/qO70RekCzSai
+         PVNEdRX07DsyizNx25eQL1bCGtfgNCqVhtwtdKWLBkzlkkqTMZTDUvfdsc+Xm4FYFdV9
+         McYCe0SrNGtJp5MfSw5GUTsTiMOjQW/wa+uRuPZ93JWf2IlZQZY2eVTK3mvj4zvKShBr
+         ToCSwItHivoDyLbHotgEALHHZN3SxKGnp/QOObHZZ+KYCKu03Qvoa/AreZEAxrKXZwtG
+         TjXsajZjXEXJhk0nGxsRuQeOqHXeN8k4E7mJBgKhjnRwspVFiUiK+VNX6hGMzje2P+WQ
+         vlbw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=11u7/cc3s7vXvLoxR+XBCjrHe9WBejj9VSJXotb7DNU=;
-        b=bgzpeaNup6sToEzPLbyZhhjhpfdYokTLZ3mbsLI7QeUVNA/ogfp2ZrrrLaxIlRcT1M
-         j97XNdyuHyaObitrYffGULMaqFySksIU2yVkh7mCDSljyP7/70D0fEc3jnhcQL6oCINJ
-         5LtrG18F9XklIyfqx/erM3I9C1WUFyFiAPeLYEy8/MgbnKCUuh19cxE85YbaNDZ35Xiw
-         C0Twzdh2OJchxLpsjoTHHfZ/azgv+tsYMHP/R2/CyHs6rb14mGJK0vsQgbBrajEbJWTw
-         IRBxp4YISpvFcf/QUJl5MmHx6Xj96Fy+bB5otKSp1Ig8pK/3iFyRYnu7T/DNEZ1R7YWH
-         PQuA==
-X-Gm-Message-State: APjAAAVHKcCBk7RN+DDfT+GRJ763YpQQ9mcVVtpa9kQwann3cqZhh0Ud
-        W9GOSNxsMD0Ig3G30CaufSSrpvhIedCNMSfLI4BQs6j/7uW64n7sIGKcEmznAaVK0fBtn2W3WCT
-        ic11WmrLB5U+MTkgCxUrM9enIIaHLlfwuDEP1zFqR7sqScMudSblSB4J94tA4LbpiSpqPZAV0Aw
+        bh=Znn61YMXtttrGIektzWxjMHVzMhceBavE0nMBLBtEuU=;
+        b=AOBsjYWpSJX3uUHN1QkxW1fW782dcjwcGzPUuOc2kbF/yKIuZ/i8kPweJiSQfwxfs8
+         AGh8XpBnOVBBRq7M8Lnc3doObGsXwn8dUd0EGcG35qwztDHFT5AMN0DHuXQ/s2jFOTYY
+         mxmTO5+yWUjGGxwEyjE7gsI/4l7TVHc0i3LfRIlsC9+Q/kEnrtr5pGh7w55yxHqO/xAR
+         qhe5bhaIy7r9zP7YaFTVWeAP61tJRjIEeNAj5xFpPBENgRKKhDnnoMqC/r6o7nm3xgAi
+         Wd6yqZBCAwS3pZaxjil1zn4O9sANguuwsFIwaPK+BuDYClIOHUdRgY/Ofmc2ejR5WT9O
+         qICw==
+X-Gm-Message-State: APjAAAWl4rCJqhXAeBAG1x9y+Ck1nqEFAXPiV1zg7hauajD6lH+/FPPU
+        KUYvw8NFTrYi35+tpW2Wk3bRdo52QtN+Rpj1Z/JKB8V7PGXG8ExHQZWCxTs/sdCZ3i3yY9LECAo
+        dweApvKPPxavzeQnH2HAa62XkFExBOBXFT89jNinmq1gWmSFvF2eCR0hxfcP4LOHJD8ig4QRM5Q
         ==
-X-Google-Smtp-Source: APXvYqz7lmcVqpTR3z190kJV6Q6BlrQsyOe/zoLjyouGTDuRiDVMXQsLiexrtt//UQMOpUpkN9hIQw==
-X-Received: by 2002:adf:e40f:: with SMTP id g15mr41613620wrm.223.1576619856246;
-        Tue, 17 Dec 2019 13:57:36 -0800 (PST)
+X-Google-Smtp-Source: APXvYqy7q3W2wfLMRfsji6JJ8YjwdowxAIFOI9h3bifRv0RifCOOst6o5EBs6kO5RtKw5QdiXFt3Wg==
+X-Received: by 2002:a1c:3189:: with SMTP id x131mr6618244wmx.59.1576619857124;
+        Tue, 17 Dec 2019 13:57:37 -0800 (PST)
 Received: from jhurley-Precision-Tower-3420.netronome.com ([80.76.204.157])
-        by smtp.gmail.com with ESMTPSA id u22sm157109wru.30.2019.12.17.13.57.35
+        by smtp.gmail.com with ESMTPSA id u22sm157109wru.30.2019.12.17.13.57.36
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Tue, 17 Dec 2019 13:57:35 -0800 (PST)
+        Tue, 17 Dec 2019 13:57:36 -0800 (PST)
 From:   John Hurley <john.hurley@netronome.com>
 To:     netdev@vger.kernel.org
 Cc:     simon.horman@netronome.com, jakub.kicinski@netronome.com,
         oss-drivers@netronome.com, John Hurley <john.hurley@netronome.com>
-Subject: [PATCH net-next v2 3/9] nfp: flower: compile match for IPv6 tunnels
-Date:   Tue, 17 Dec 2019 21:57:18 +0000
-Message-Id: <1576619844-25413-4-git-send-email-john.hurley@netronome.com>
+Subject: [PATCH net-next v2 4/9] nfp: flower: offload list of IPv6 tunnel endpoint addresses
+Date:   Tue, 17 Dec 2019 21:57:19 +0000
+Message-Id: <1576619844-25413-5-git-send-email-john.hurley@netronome.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1576619844-25413-1-git-send-email-john.hurley@netronome.com>
 References: <1576619844-25413-1-git-send-email-john.hurley@netronome.com>
@@ -60,492 +60,304 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-IPv6 tunnel matches are now supported by firmware. Modify the NFP driver
-to compile these match rules. IPv6 matches are handled similar to IPv4
-tunnels with the difference the address length. The type of tunnel is
-indicated by the same bitmap that is used in IPv4 with an extra bit
-signifying that the IPv6 variation should be used.
+Fw requires a list of IPv6 addresses that are used as tunnel endpoints to
+enable correct decap of tunneled packets.
 
-Only compile IPv6 tunnel matches when the fw features symbol indicated
-that they are compatible with the currently loaded fw.
+Store a list of IPv6 endpoints used in rules with a ref counter to track
+how many times it is in use. Offload the entire list any time a new IPv6
+address is added or when an address is removed (ref count is 0).
 
 Signed-off-by: John Hurley <john.hurley@netronome.com>
 Reviewed-by: Simon Horman <simon.horman@netronome.com>
 Reviewed-by: Jakub Kicinski <jakub.kicinski@netronome.com>
 ---
- drivers/net/ethernet/netronome/nfp/flower/cmsg.h   |  83 +++++++++++++++
- drivers/net/ethernet/netronome/nfp/flower/main.h   |   1 +
- drivers/net/ethernet/netronome/nfp/flower/match.c  | 111 ++++++++++++++++-----
- .../net/ethernet/netronome/nfp/flower/offload.c    | 102 ++++++++++++++-----
- 4 files changed, 246 insertions(+), 51 deletions(-)
+ drivers/net/ethernet/netronome/nfp/flower/cmsg.h   |  1 +
+ drivers/net/ethernet/netronome/nfp/flower/main.h   | 21 +++++
+ drivers/net/ethernet/netronome/nfp/flower/match.c  | 24 ++++++
+ .../net/ethernet/netronome/nfp/flower/offload.c    |  6 ++
+ .../ethernet/netronome/nfp/flower/tunnel_conf.c    | 90 +++++++++++++++++++++-
+ 5 files changed, 141 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/net/ethernet/netronome/nfp/flower/cmsg.h b/drivers/net/ethernet/netronome/nfp/flower/cmsg.h
-index 7eb2ec8..8d12805 100644
+index 8d12805..cbb94cf 100644
 --- a/drivers/net/ethernet/netronome/nfp/flower/cmsg.h
 +++ b/drivers/net/ethernet/netronome/nfp/flower/cmsg.h
-@@ -26,6 +26,7 @@
- #define NFP_FLOWER_LAYER2_GRE		BIT(0)
- #define NFP_FLOWER_LAYER2_GENEVE	BIT(5)
- #define NFP_FLOWER_LAYER2_GENEVE_OP	BIT(6)
-+#define NFP_FLOWER_LAYER2_TUN_IPV6	BIT(7)
- 
- #define NFP_FLOWER_MASK_VLAN_PRIO	GENMASK(15, 13)
- #define NFP_FLOWER_MASK_VLAN_PRESENT	BIT(12)
-@@ -63,6 +64,7 @@
- #define NFP_FL_MAX_GENEVE_OPT_ACT	32
- #define NFP_FL_MAX_GENEVE_OPT_CNT	64
- #define NFP_FL_MAX_GENEVE_OPT_KEY	32
-+#define NFP_FL_MAX_GENEVE_OPT_KEY_V6	8
- 
- /* Action opcodes */
- #define NFP_FL_ACTION_OPCODE_OUTPUT		0
-@@ -387,6 +389,11 @@ struct nfp_flower_tun_ipv4 {
- 	__be32 dst;
+@@ -568,6 +568,7 @@ enum nfp_flower_cmsg_type_port {
+ 	NFP_FLOWER_CMSG_TYPE_QOS_DEL =		19,
+ 	NFP_FLOWER_CMSG_TYPE_QOS_STATS =	20,
+ 	NFP_FLOWER_CMSG_TYPE_PRE_TUN_RULE =	21,
++	NFP_FLOWER_CMSG_TYPE_TUN_IPS_V6 =	22,
+ 	NFP_FLOWER_CMSG_TYPE_MAX =		32,
  };
  
-+struct nfp_flower_tun_ipv6 {
-+	struct in6_addr src;
-+	struct in6_addr dst;
-+};
-+
- struct nfp_flower_tun_ip_ext {
- 	u8 tos;
- 	u8 ttl;
-@@ -416,6 +423,42 @@ struct nfp_flower_ipv4_udp_tun {
- 	__be32 tun_id;
- };
- 
-+/* Flow Frame IPv6 UDP TUNNEL --> Tunnel details (11W/44B)
-+ * -----------------------------------------------------------------
-+ *    3                   2                   1
-+ *  1 0 9 8 7 6 5 4 3 2 1 0 9 8 7 6 5 4 3 2 1 0 9 8 7 6 5 4 3 2 1 0
-+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-+ * |                  ipv6_addr_src,   31 - 0                      |
-+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-+ * |                  ipv6_addr_src,  63 - 32                      |
-+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-+ * |                  ipv6_addr_src,  95 - 64                      |
-+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-+ * |                  ipv6_addr_src, 127 - 96                      |
-+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-+ * |                  ipv6_addr_dst,   31 - 0                      |
-+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-+ * |                  ipv6_addr_dst,  63 - 32                      |
-+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-+ * |                  ipv6_addr_dst,  95 - 64                      |
-+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-+ * |                  ipv6_addr_dst, 127 - 96                      |
-+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-+ * |           Reserved            |      tos      |      ttl      |
-+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-+ * |                            Reserved                           |
-+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-+ * |                     VNI                       |   Reserved    |
-+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-+ */
-+struct nfp_flower_ipv6_udp_tun {
-+	struct nfp_flower_tun_ipv6 ipv6;
-+	__be16 reserved1;
-+	struct nfp_flower_tun_ip_ext ip_ext;
-+	__be32 reserved2;
-+	__be32 tun_id;
-+};
-+
- /* Flow Frame GRE TUNNEL --> Tunnel details (6W/24B)
-  * -----------------------------------------------------------------
-  *    3                   2                   1
-@@ -445,6 +488,46 @@ struct nfp_flower_ipv4_gre_tun {
- 	__be32 reserved2;
- };
- 
-+/* Flow Frame GRE TUNNEL V6 --> Tunnel details (12W/48B)
-+ * -----------------------------------------------------------------
-+ *    3                   2                   1
-+ *  1 0 9 8 7 6 5 4 3 2 1 0 9 8 7 6 5 4 3 2 1 0 9 8 7 6 5 4 3 2 1 0
-+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-+ * |                  ipv6_addr_src,   31 - 0                      |
-+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-+ * |                  ipv6_addr_src,  63 - 32                      |
-+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-+ * |                  ipv6_addr_src,  95 - 64                      |
-+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-+ * |                  ipv6_addr_src, 127 - 96                      |
-+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-+ * |                  ipv6_addr_dst,   31 - 0                      |
-+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-+ * |                  ipv6_addr_dst,  63 - 32                      |
-+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-+ * |                  ipv6_addr_dst,  95 - 64                      |
-+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-+ * |                  ipv6_addr_dst, 127 - 96                      |
-+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-+ * |           tun_flags           |       tos     |       ttl     |
-+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-+ * |            Reserved           |           Ethertype           |
-+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-+ * |                              Key                              |
-+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-+ * |                           Reserved                            |
-+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-+ */
-+struct nfp_flower_ipv6_gre_tun {
-+	struct nfp_flower_tun_ipv6 ipv6;
-+	__be16 tun_flags;
-+	struct nfp_flower_tun_ip_ext ip_ext;
-+	__be16 reserved1;
-+	__be16 ethertype;
-+	__be32 tun_key;
-+	__be32 reserved2;
-+};
-+
- struct nfp_flower_geneve_options {
- 	u8 data[NFP_FL_MAX_GENEVE_OPT_KEY];
- };
 diff --git a/drivers/net/ethernet/netronome/nfp/flower/main.h b/drivers/net/ethernet/netronome/nfp/flower/main.h
-index 31d9459..386d629 100644
+index 386d629..bd288e2 100644
 --- a/drivers/net/ethernet/netronome/nfp/flower/main.h
 +++ b/drivers/net/ethernet/netronome/nfp/flower/main.h
-@@ -43,6 +43,7 @@ struct nfp_app;
- #define NFP_FL_FEATS_VF_RLIM		BIT(4)
- #define NFP_FL_FEATS_FLOW_MOD		BIT(5)
- #define NFP_FL_FEATS_PRE_TUN_RULES	BIT(6)
-+#define NFP_FL_FEATS_IPV6_TUN		BIT(7)
- #define NFP_FL_FEATS_FLOW_MERGE		BIT(30)
- #define NFP_FL_FEATS_LAG		BIT(31)
+@@ -63,8 +63,10 @@ struct nfp_fl_stats_id {
+  * struct nfp_fl_tunnel_offloads - priv data for tunnel offloads
+  * @offloaded_macs:	Hashtable of the offloaded MAC addresses
+  * @ipv4_off_list:	List of IPv4 addresses to offload
++ * @ipv6_off_list:	List of IPv6 addresses to offload
+  * @neigh_off_list:	List of neighbour offloads
+  * @ipv4_off_lock:	Lock for the IPv4 address list
++ * @ipv6_off_lock:	Lock for the IPv6 address list
+  * @neigh_off_lock:	Lock for the neighbour address list
+  * @mac_off_ids:	IDA to manage id assignment for offloaded MACs
+  * @neigh_nb:		Notifier to monitor neighbour state
+@@ -72,8 +74,10 @@ struct nfp_fl_stats_id {
+ struct nfp_fl_tunnel_offloads {
+ 	struct rhashtable offloaded_macs;
+ 	struct list_head ipv4_off_list;
++	struct list_head ipv6_off_list;
+ 	struct list_head neigh_off_list;
+ 	struct mutex ipv4_off_lock;
++	struct mutex ipv6_off_lock;
+ 	spinlock_t neigh_off_lock;
+ 	struct ida mac_off_ids;
+ 	struct notifier_block neigh_nb;
+@@ -274,12 +278,25 @@ struct nfp_fl_stats {
+ 	u64 used;
+ };
  
++/**
++ * struct nfp_ipv6_addr_entry - cached IPv6 addresses
++ * @ipv6_addr:	IP address
++ * @ref_count:	number of rules currently using this IP
++ * @list:	list pointer
++ */
++struct nfp_ipv6_addr_entry {
++	struct in6_addr ipv6_addr;
++	int ref_count;
++	struct list_head list;
++};
++
+ struct nfp_fl_payload {
+ 	struct nfp_fl_rule_metadata meta;
+ 	unsigned long tc_flower_cookie;
+ 	struct rhash_head fl_node;
+ 	struct rcu_head rcu;
+ 	__be32 nfp_tun_ipv4_addr;
++	struct nfp_ipv6_addr_entry *nfp_tun_ipv6;
+ 	struct net_device *ingress_dev;
+ 	char *unmasked_data;
+ 	char *mask_data;
+@@ -397,6 +414,10 @@ int nfp_tunnel_mac_event_handler(struct nfp_app *app,
+ 				 unsigned long event, void *ptr);
+ void nfp_tunnel_del_ipv4_off(struct nfp_app *app, __be32 ipv4);
+ void nfp_tunnel_add_ipv4_off(struct nfp_app *app, __be32 ipv4);
++void
++nfp_tunnel_put_ipv6_off(struct nfp_app *app, struct nfp_ipv6_addr_entry *entry);
++struct nfp_ipv6_addr_entry *
++nfp_tunnel_add_ipv6_off(struct nfp_app *app, struct in6_addr *ipv6);
+ void nfp_tunnel_request_route(struct nfp_app *app, struct sk_buff *skb);
+ void nfp_tunnel_keep_alive(struct nfp_app *app, struct sk_buff *skb);
+ void nfp_flower_lag_init(struct nfp_fl_lag *lag);
 diff --git a/drivers/net/ethernet/netronome/nfp/flower/match.c b/drivers/net/ethernet/netronome/nfp/flower/match.c
-index 1cf8eae..2410ead 100644
+index 2410ead..546bc01 100644
 --- a/drivers/net/ethernet/netronome/nfp/flower/match.c
 +++ b/drivers/net/ethernet/netronome/nfp/flower/match.c
-@@ -282,6 +282,22 @@ nfp_flower_compile_tun_ipv4_addrs(struct nfp_flower_tun_ipv4 *ext,
- }
- 
- static void
-+nfp_flower_compile_tun_ipv6_addrs(struct nfp_flower_tun_ipv6 *ext,
-+				  struct nfp_flower_tun_ipv6 *msk,
-+				  struct flow_rule *rule)
-+{
-+	if (flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_ENC_IPV6_ADDRS)) {
-+		struct flow_match_ipv6_addrs match;
-+
-+		flow_rule_match_enc_ipv6_addrs(rule, &match);
-+		ext->src = match.key->src;
-+		ext->dst = match.key->dst;
-+		msk->src = match.mask->src;
-+		msk->dst = match.mask->dst;
-+	}
-+}
-+
-+static void
- nfp_flower_compile_tun_ip_ext(struct nfp_flower_tun_ip_ext *ext,
- 			      struct nfp_flower_tun_ip_ext *msk,
- 			      struct flow_rule *rule)
-@@ -360,6 +376,37 @@ nfp_flower_compile_ipv4_udp_tun(struct nfp_flower_ipv4_udp_tun *ext,
- 	nfp_flower_compile_tun_udp_key(&ext->tun_id, &msk->tun_id, rule);
- }
- 
-+static void
-+nfp_flower_compile_ipv6_udp_tun(struct nfp_flower_ipv6_udp_tun *ext,
-+				struct nfp_flower_ipv6_udp_tun *msk,
-+				struct flow_rule *rule)
-+{
-+	memset(ext, 0, sizeof(struct nfp_flower_ipv6_udp_tun));
-+	memset(msk, 0, sizeof(struct nfp_flower_ipv6_udp_tun));
-+
-+	nfp_flower_compile_tun_ipv6_addrs(&ext->ipv6, &msk->ipv6, rule);
-+	nfp_flower_compile_tun_ip_ext(&ext->ip_ext, &msk->ip_ext, rule);
-+	nfp_flower_compile_tun_udp_key(&ext->tun_id, &msk->tun_id, rule);
-+}
-+
-+static void
-+nfp_flower_compile_ipv6_gre_tun(struct nfp_flower_ipv6_gre_tun *ext,
-+				struct nfp_flower_ipv6_gre_tun *msk,
-+				struct flow_rule *rule)
-+{
-+	memset(ext, 0, sizeof(struct nfp_flower_ipv6_gre_tun));
-+	memset(msk, 0, sizeof(struct nfp_flower_ipv6_gre_tun));
-+
-+	/* NVGRE is the only supported GRE tunnel type */
-+	ext->ethertype = cpu_to_be16(ETH_P_TEB);
-+	msk->ethertype = cpu_to_be16(~0);
-+
-+	nfp_flower_compile_tun_ipv6_addrs(&ext->ipv6, &msk->ipv6, rule);
-+	nfp_flower_compile_tun_ip_ext(&ext->ip_ext, &msk->ip_ext, rule);
-+	nfp_flower_compile_tun_gre_key(&ext->tun_key, &msk->tun_key,
-+				       &ext->tun_flags, &msk->tun_flags, rule);
-+}
-+
- int nfp_flower_compile_flow_match(struct nfp_app *app,
- 				  struct flow_cls_offload *flow,
- 				  struct nfp_fl_key_ls *key_ls,
-@@ -446,34 +493,50 @@ int nfp_flower_compile_flow_match(struct nfp_app *app,
- 	}
+@@ -494,10 +494,22 @@ int nfp_flower_compile_flow_match(struct nfp_app *app,
  
  	if (key_ls->key_layer_two & NFP_FLOWER_LAYER2_GRE) {
--		__be32 tun_dst;
--
--		nfp_flower_compile_ipv4_gre_tun((void *)ext, (void *)msk, rule);
--		tun_dst = ((struct nfp_flower_ipv4_gre_tun *)ext)->ipv4.dst;
--		ext += sizeof(struct nfp_flower_ipv4_gre_tun);
--		msk += sizeof(struct nfp_flower_ipv4_gre_tun);
--
--		/* Store the tunnel destination in the rule data.
--		 * This must be present and be an exact match.
--		 */
--		nfp_flow->nfp_tun_ipv4_addr = tun_dst;
--		nfp_tunnel_add_ipv4_off(app, tun_dst);
-+		if (key_ls->key_layer_two & NFP_FLOWER_LAYER2_TUN_IPV6) {
-+			nfp_flower_compile_ipv6_gre_tun((void *)ext,
-+							(void *)msk, rule);
-+			ext += sizeof(struct nfp_flower_ipv6_gre_tun);
-+			msk += sizeof(struct nfp_flower_ipv6_gre_tun);
-+		} else {
-+			__be32 dst;
+ 		if (key_ls->key_layer_two & NFP_FLOWER_LAYER2_TUN_IPV6) {
++			struct nfp_flower_ipv6_gre_tun *gre_match;
++			struct nfp_ipv6_addr_entry *entry;
++			struct in6_addr *dst;
 +
-+			nfp_flower_compile_ipv4_gre_tun((void *)ext,
-+							(void *)msk, rule);
-+			dst = ((struct nfp_flower_ipv4_gre_tun *)ext)->ipv4.dst;
-+			ext += sizeof(struct nfp_flower_ipv4_gre_tun);
-+			msk += sizeof(struct nfp_flower_ipv4_gre_tun);
+ 			nfp_flower_compile_ipv6_gre_tun((void *)ext,
+ 							(void *)msk, rule);
++			gre_match = (struct nfp_flower_ipv6_gre_tun *)ext;
++			dst = &gre_match->ipv6.dst;
+ 			ext += sizeof(struct nfp_flower_ipv6_gre_tun);
+ 			msk += sizeof(struct nfp_flower_ipv6_gre_tun);
 +
-+			/* Store the tunnel destination in the rule data.
-+			 * This must be present and be an exact match.
-+			 */
-+			nfp_flow->nfp_tun_ipv4_addr = dst;
-+			nfp_tunnel_add_ipv4_off(app, dst);
-+		}
- 	}
++			entry = nfp_tunnel_add_ipv6_off(app, dst);
++			if (!entry)
++				return -EOPNOTSUPP;
++
++			nfp_flow->nfp_tun_ipv6 = entry;
+ 		} else {
+ 			__be32 dst;
  
+@@ -518,10 +530,22 @@ int nfp_flower_compile_flow_match(struct nfp_app *app,
  	if (key_ls->key_layer & NFP_FLOWER_LAYER_VXLAN ||
  	    key_ls->key_layer_two & NFP_FLOWER_LAYER2_GENEVE) {
--		__be32 tun_dst;
--
--		nfp_flower_compile_ipv4_udp_tun((void *)ext, (void *)msk, rule);
--		tun_dst = ((struct nfp_flower_ipv4_udp_tun *)ext)->ipv4.dst;
--		ext += sizeof(struct nfp_flower_ipv4_udp_tun);
--		msk += sizeof(struct nfp_flower_ipv4_udp_tun);
--
--		/* Store the tunnel destination in the rule data.
--		 * This must be present and be an exact match.
--		 */
--		nfp_flow->nfp_tun_ipv4_addr = tun_dst;
--		nfp_tunnel_add_ipv4_off(app, tun_dst);
-+		if (key_ls->key_layer_two & NFP_FLOWER_LAYER2_TUN_IPV6) {
-+			nfp_flower_compile_ipv6_udp_tun((void *)ext,
-+							(void *)msk, rule);
-+			ext += sizeof(struct nfp_flower_ipv6_udp_tun);
-+			msk += sizeof(struct nfp_flower_ipv6_udp_tun);
-+		} else {
-+			__be32 dst;
+ 		if (key_ls->key_layer_two & NFP_FLOWER_LAYER2_TUN_IPV6) {
++			struct nfp_flower_ipv6_udp_tun *udp_match;
++			struct nfp_ipv6_addr_entry *entry;
++			struct in6_addr *dst;
 +
-+			nfp_flower_compile_ipv4_udp_tun((void *)ext,
-+							(void *)msk, rule);
-+			dst = ((struct nfp_flower_ipv4_udp_tun *)ext)->ipv4.dst;
-+			ext += sizeof(struct nfp_flower_ipv4_udp_tun);
-+			msk += sizeof(struct nfp_flower_ipv4_udp_tun);
+ 			nfp_flower_compile_ipv6_udp_tun((void *)ext,
+ 							(void *)msk, rule);
++			udp_match = (struct nfp_flower_ipv6_udp_tun *)ext;
++			dst = &udp_match->ipv6.dst;
+ 			ext += sizeof(struct nfp_flower_ipv6_udp_tun);
+ 			msk += sizeof(struct nfp_flower_ipv6_udp_tun);
 +
-+			/* Store the tunnel destination in the rule data.
-+			 * This must be present and be an exact match.
-+			 */
-+			nfp_flow->nfp_tun_ipv4_addr = dst;
-+			nfp_tunnel_add_ipv4_off(app, dst);
-+		}
++			entry = nfp_tunnel_add_ipv6_off(app, dst);
++			if (!entry)
++				return -EOPNOTSUPP;
++
++			nfp_flow->nfp_tun_ipv6 = entry;
+ 		} else {
+ 			__be32 dst;
  
- 		if (key_ls->key_layer_two & NFP_FLOWER_LAYER2_GENEVE_OP) {
- 			err = nfp_flower_compile_geneve_opt(ext, msk, rule);
 diff --git a/drivers/net/ethernet/netronome/nfp/flower/offload.c b/drivers/net/ethernet/netronome/nfp/flower/offload.c
-index 987ae22..0997350 100644
+index 0997350..83ada1b 100644
 --- a/drivers/net/ethernet/netronome/nfp/flower/offload.c
 +++ b/drivers/net/ethernet/netronome/nfp/flower/offload.c
-@@ -54,6 +54,10 @@
- 	(BIT(FLOW_DISSECTOR_KEY_ENC_CONTROL) | \
- 	 BIT(FLOW_DISSECTOR_KEY_ENC_IPV4_ADDRS))
+@@ -539,6 +539,7 @@ nfp_flower_allocate_new(struct nfp_fl_key_ls *key_layer)
+ 		goto err_free_mask;
  
-+#define NFP_FLOWER_WHITELIST_TUN_DISSECTOR_V6_R \
-+	(BIT(FLOW_DISSECTOR_KEY_ENC_CONTROL) | \
-+	 BIT(FLOW_DISSECTOR_KEY_ENC_IPV6_ADDRS))
+ 	flow_pay->nfp_tun_ipv4_addr = 0;
++	flow_pay->nfp_tun_ipv6 = NULL;
+ 	flow_pay->meta.flags = 0;
+ 	INIT_LIST_HEAD(&flow_pay->linked_flows);
+ 	flow_pay->in_hw = false;
+@@ -1243,6 +1244,8 @@ nfp_flower_add_offload(struct nfp_app *app, struct net_device *netdev,
+ err_release_metadata:
+ 	nfp_modify_flow_metadata(app, flow_pay);
+ err_destroy_flow:
++	if (flow_pay->nfp_tun_ipv6)
++		nfp_tunnel_put_ipv6_off(app, flow_pay->nfp_tun_ipv6);
+ 	kfree(flow_pay->action_data);
+ 	kfree(flow_pay->mask_data);
+ 	kfree(flow_pay->unmasked_data);
+@@ -1359,6 +1362,9 @@ nfp_flower_del_offload(struct nfp_app *app, struct net_device *netdev,
+ 	if (nfp_flow->nfp_tun_ipv4_addr)
+ 		nfp_tunnel_del_ipv4_off(app, nfp_flow->nfp_tun_ipv4_addr);
+ 
++	if (nfp_flow->nfp_tun_ipv6)
++		nfp_tunnel_put_ipv6_off(app, nfp_flow->nfp_tun_ipv6);
 +
- #define NFP_FLOWER_MERGE_FIELDS \
- 	(NFP_FLOWER_LAYER_PORT | \
- 	 NFP_FLOWER_LAYER_MAC | \
-@@ -146,10 +150,11 @@ static bool nfp_flower_check_higher_than_l3(struct flow_cls_offload *f)
+ 	if (!nfp_flow->in_hw) {
+ 		err = 0;
+ 		goto err_free_merge_flow;
+diff --git a/drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.c b/drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.c
+index 2600ce4..eddb52d 100644
+--- a/drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.c
++++ b/drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.c
+@@ -116,6 +116,18 @@ struct nfp_ipv4_addr_entry {
+ 	struct list_head list;
+ };
  
++#define NFP_FL_IPV6_ADDRS_MAX        4
++
++/**
++ * struct nfp_tun_ipv6_addr - set the IP address list on the NFP
++ * @count:	number of IPs populated in the array
++ * @ipv6_addr:	array of IPV6_ADDRS_MAX 128 bit IPv6 addresses
++ */
++struct nfp_tun_ipv6_addr {
++	__be32 count;
++	struct in6_addr ipv6_addr[NFP_FL_IPV6_ADDRS_MAX];
++};
++
+ #define NFP_TUN_MAC_OFFLOAD_DEL_FLAG	0x2
+ 
+ /**
+@@ -502,6 +514,78 @@ void nfp_tunnel_del_ipv4_off(struct nfp_app *app, __be32 ipv4)
+ 	nfp_tun_write_ipv4_list(app);
+ }
+ 
++static void nfp_tun_write_ipv6_list(struct nfp_app *app)
++{
++	struct nfp_flower_priv *priv = app->priv;
++	struct nfp_ipv6_addr_entry *entry;
++	struct nfp_tun_ipv6_addr payload;
++	int count = 0;
++
++	memset(&payload, 0, sizeof(struct nfp_tun_ipv6_addr));
++	mutex_lock(&priv->tun.ipv6_off_lock);
++	list_for_each_entry(entry, &priv->tun.ipv6_off_list, list) {
++		if (count >= NFP_FL_IPV6_ADDRS_MAX) {
++			nfp_flower_cmsg_warn(app, "Too many IPv6 tunnel endpoint addresses, some cannot be offloaded.\n");
++			break;
++		}
++		payload.ipv6_addr[count++] = entry->ipv6_addr;
++	}
++	mutex_unlock(&priv->tun.ipv6_off_lock);
++	payload.count = cpu_to_be32(count);
++
++	nfp_flower_xmit_tun_conf(app, NFP_FLOWER_CMSG_TYPE_TUN_IPS_V6,
++				 sizeof(struct nfp_tun_ipv6_addr),
++				 &payload, GFP_KERNEL);
++}
++
++struct nfp_ipv6_addr_entry *
++nfp_tunnel_add_ipv6_off(struct nfp_app *app, struct in6_addr *ipv6)
++{
++	struct nfp_flower_priv *priv = app->priv;
++	struct nfp_ipv6_addr_entry *entry;
++
++	mutex_lock(&priv->tun.ipv6_off_lock);
++	list_for_each_entry(entry, &priv->tun.ipv6_off_list, list)
++		if (!memcmp(&entry->ipv6_addr, ipv6, sizeof(*ipv6))) {
++			entry->ref_count++;
++			mutex_unlock(&priv->tun.ipv6_off_lock);
++			return entry;
++		}
++
++	entry = kmalloc(sizeof(*entry), GFP_KERNEL);
++	if (!entry) {
++		mutex_unlock(&priv->tun.ipv6_off_lock);
++		nfp_flower_cmsg_warn(app, "Mem error when offloading IP address.\n");
++		return NULL;
++	}
++	entry->ipv6_addr = *ipv6;
++	entry->ref_count = 1;
++	list_add_tail(&entry->list, &priv->tun.ipv6_off_list);
++	mutex_unlock(&priv->tun.ipv6_off_lock);
++
++	nfp_tun_write_ipv6_list(app);
++
++	return entry;
++}
++
++void
++nfp_tunnel_put_ipv6_off(struct nfp_app *app, struct nfp_ipv6_addr_entry *entry)
++{
++	struct nfp_flower_priv *priv = app->priv;
++	bool freed = false;
++
++	mutex_lock(&priv->tun.ipv6_off_lock);
++	if (!--entry->ref_count) {
++		list_del(&entry->list);
++		kfree(entry);
++		freed = true;
++	}
++	mutex_unlock(&priv->tun.ipv6_off_lock);
++
++	if (freed)
++		nfp_tun_write_ipv6_list(app);
++}
++
  static int
- nfp_flower_calc_opt_layer(struct flow_dissector_key_enc_opts *enc_opts,
--			  u32 *key_layer_two, int *key_size,
-+			  u32 *key_layer_two, int *key_size, bool ipv6,
- 			  struct netlink_ext_ack *extack)
+ __nfp_tunnel_offload_mac(struct nfp_app *app, u8 *mac, u16 idx, bool del)
  {
--	if (enc_opts->len > NFP_FL_MAX_GENEVE_OPT_KEY) {
-+	if (enc_opts->len > NFP_FL_MAX_GENEVE_OPT_KEY ||
-+	    (ipv6 && enc_opts->len > NFP_FL_MAX_GENEVE_OPT_KEY_V6)) {
- 		NL_SET_ERR_MSG_MOD(extack, "unsupported offload: geneve options exceed maximum length");
- 		return -EOPNOTSUPP;
+@@ -1013,9 +1097,11 @@ int nfp_tunnel_config_start(struct nfp_app *app)
+ 
+ 	ida_init(&priv->tun.mac_off_ids);
+ 
+-	/* Initialise priv data for IPv4 offloading. */
++	/* Initialise priv data for IPv4/v6 offloading. */
+ 	mutex_init(&priv->tun.ipv4_off_lock);
+ 	INIT_LIST_HEAD(&priv->tun.ipv4_off_list);
++	mutex_init(&priv->tun.ipv6_off_lock);
++	INIT_LIST_HEAD(&priv->tun.ipv6_off_list);
+ 
+ 	/* Initialise priv data for neighbour offloading. */
+ 	spin_lock_init(&priv->tun.neigh_off_lock);
+@@ -1050,6 +1136,8 @@ void nfp_tunnel_config_stop(struct nfp_app *app)
+ 		kfree(ip_entry);
  	}
-@@ -167,7 +172,7 @@ nfp_flower_calc_udp_tun_layer(struct flow_dissector_key_ports *enc_ports,
- 			      struct flow_dissector_key_enc_opts *enc_op,
- 			      u32 *key_layer_two, u8 *key_layer, int *key_size,
- 			      struct nfp_flower_priv *priv,
--			      enum nfp_flower_tun_type *tun_type,
-+			      enum nfp_flower_tun_type *tun_type, bool ipv6,
- 			      struct netlink_ext_ack *extack)
- {
- 	int err;
-@@ -176,7 +181,15 @@ nfp_flower_calc_udp_tun_layer(struct flow_dissector_key_ports *enc_ports,
- 	case htons(IANA_VXLAN_UDP_PORT):
- 		*tun_type = NFP_FL_TUNNEL_VXLAN;
- 		*key_layer |= NFP_FLOWER_LAYER_VXLAN;
--		*key_size += sizeof(struct nfp_flower_ipv4_udp_tun);
+ 
++	mutex_destroy(&priv->tun.ipv6_off_lock);
 +
-+		if (ipv6) {
-+			*key_layer |= NFP_FLOWER_LAYER_EXT_META;
-+			*key_size += sizeof(struct nfp_flower_ext_meta);
-+			*key_layer_two |= NFP_FLOWER_LAYER2_TUN_IPV6;
-+			*key_size += sizeof(struct nfp_flower_ipv6_udp_tun);
-+		} else {
-+			*key_size += sizeof(struct nfp_flower_ipv4_udp_tun);
-+		}
- 
- 		if (enc_op) {
- 			NL_SET_ERR_MSG_MOD(extack, "unsupported offload: encap options not supported on vxlan tunnels");
-@@ -192,7 +205,13 @@ nfp_flower_calc_udp_tun_layer(struct flow_dissector_key_ports *enc_ports,
- 		*key_layer |= NFP_FLOWER_LAYER_EXT_META;
- 		*key_size += sizeof(struct nfp_flower_ext_meta);
- 		*key_layer_two |= NFP_FLOWER_LAYER2_GENEVE;
--		*key_size += sizeof(struct nfp_flower_ipv4_udp_tun);
-+
-+		if (ipv6) {
-+			*key_layer_two |= NFP_FLOWER_LAYER2_TUN_IPV6;
-+			*key_size += sizeof(struct nfp_flower_ipv6_udp_tun);
-+		} else {
-+			*key_size += sizeof(struct nfp_flower_ipv4_udp_tun);
-+		}
- 
- 		if (!enc_op)
- 			break;
-@@ -200,8 +219,8 @@ nfp_flower_calc_udp_tun_layer(struct flow_dissector_key_ports *enc_ports,
- 			NL_SET_ERR_MSG_MOD(extack, "unsupported offload: loaded firmware does not support geneve option offload");
- 			return -EOPNOTSUPP;
- 		}
--		err = nfp_flower_calc_opt_layer(enc_op, key_layer_two,
--						key_size, extack);
-+		err = nfp_flower_calc_opt_layer(enc_op, key_layer_two, key_size,
-+						ipv6, extack);
- 		if (err)
- 			return err;
- 		break;
-@@ -237,6 +256,8 @@ nfp_flower_calculate_key_layers(struct nfp_app *app,
- 
- 	/* If any tun dissector is used then the required set must be used. */
- 	if (dissector->used_keys & NFP_FLOWER_WHITELIST_TUN_DISSECTOR &&
-+	    (dissector->used_keys & NFP_FLOWER_WHITELIST_TUN_DISSECTOR_V6_R)
-+	    != NFP_FLOWER_WHITELIST_TUN_DISSECTOR_V6_R &&
- 	    (dissector->used_keys & NFP_FLOWER_WHITELIST_TUN_DISSECTOR_R)
- 	    != NFP_FLOWER_WHITELIST_TUN_DISSECTOR_R) {
- 		NL_SET_ERR_MSG_MOD(extack, "unsupported offload: tunnel match not supported");
-@@ -268,8 +289,10 @@ nfp_flower_calculate_key_layers(struct nfp_app *app,
- 	if (flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_ENC_CONTROL)) {
- 		struct flow_match_enc_opts enc_op = { NULL, NULL };
- 		struct flow_match_ipv4_addrs ipv4_addrs;
-+		struct flow_match_ipv6_addrs ipv6_addrs;
- 		struct flow_match_control enc_ctl;
- 		struct flow_match_ports enc_ports;
-+		bool ipv6_tun = false;
- 
- 		flow_rule_match_enc_control(rule, &enc_ctl);
- 
-@@ -277,38 +300,62 @@ nfp_flower_calculate_key_layers(struct nfp_app *app,
- 			NL_SET_ERR_MSG_MOD(extack, "unsupported offload: wildcarded protocols on tunnels are not supported");
- 			return -EOPNOTSUPP;
- 		}
--		if (enc_ctl.key->addr_type != FLOW_DISSECTOR_KEY_IPV4_ADDRS) {
--			NL_SET_ERR_MSG_MOD(extack, "unsupported offload: only IPv4 tunnels are supported");
-+
-+		ipv6_tun = enc_ctl.key->addr_type ==
-+				FLOW_DISSECTOR_KEY_IPV6_ADDRS;
-+		if (ipv6_tun &&
-+		    !(priv->flower_ext_feats & NFP_FL_FEATS_IPV6_TUN)) {
-+			NL_SET_ERR_MSG_MOD(extack, "unsupported offload: firmware does not support IPv6 tunnels");
- 			return -EOPNOTSUPP;
- 		}
- 
--		/* These fields are already verified as used. */
--		flow_rule_match_enc_ipv4_addrs(rule, &ipv4_addrs);
--		if (ipv4_addrs.mask->dst != cpu_to_be32(~0)) {
--			NL_SET_ERR_MSG_MOD(extack, "unsupported offload: only an exact match IPv4 destination address is supported");
-+		if (!ipv6_tun &&
-+		    enc_ctl.key->addr_type != FLOW_DISSECTOR_KEY_IPV4_ADDRS) {
-+			NL_SET_ERR_MSG_MOD(extack, "unsupported offload: tunnel address type not IPv4 or IPv6");
- 			return -EOPNOTSUPP;
- 		}
- 
-+		if (ipv6_tun) {
-+			flow_rule_match_enc_ipv6_addrs(rule, &ipv6_addrs);
-+			if (memchr_inv(&ipv6_addrs.mask->dst, 0xff,
-+				       sizeof(ipv6_addrs.mask->dst))) {
-+				NL_SET_ERR_MSG_MOD(extack, "unsupported offload: only an exact match IPv6 destination address is supported");
-+				return -EOPNOTSUPP;
-+			}
-+		} else {
-+			flow_rule_match_enc_ipv4_addrs(rule, &ipv4_addrs);
-+			if (ipv4_addrs.mask->dst != cpu_to_be32(~0)) {
-+				NL_SET_ERR_MSG_MOD(extack, "unsupported offload: only an exact match IPv4 destination address is supported");
-+				return -EOPNOTSUPP;
-+			}
-+		}
-+
- 		if (flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_ENC_OPTS))
- 			flow_rule_match_enc_opts(rule, &enc_op);
- 
--
- 		if (!flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_ENC_PORTS)) {
- 			/* check if GRE, which has no enc_ports */
--			if (netif_is_gretap(netdev)) {
--				*tun_type = NFP_FL_TUNNEL_GRE;
--				key_layer |= NFP_FLOWER_LAYER_EXT_META;
--				key_size += sizeof(struct nfp_flower_ext_meta);
--				key_layer_two |= NFP_FLOWER_LAYER2_GRE;
--				key_size +=
--					sizeof(struct nfp_flower_ipv4_gre_tun);
-+			if (!netif_is_gretap(netdev)) {
-+				NL_SET_ERR_MSG_MOD(extack, "unsupported offload: an exact match on L4 destination port is required for non-GRE tunnels");
-+				return -EOPNOTSUPP;
-+			}
- 
--				if (enc_op.key) {
--					NL_SET_ERR_MSG_MOD(extack, "unsupported offload: encap options not supported on GRE tunnels");
--					return -EOPNOTSUPP;
--				}
-+			*tun_type = NFP_FL_TUNNEL_GRE;
-+			key_layer |= NFP_FLOWER_LAYER_EXT_META;
-+			key_size += sizeof(struct nfp_flower_ext_meta);
-+			key_layer_two |= NFP_FLOWER_LAYER2_GRE;
-+
-+			if (ipv6_tun) {
-+				key_layer_two |= NFP_FLOWER_LAYER2_TUN_IPV6;
-+				key_size +=
-+					sizeof(struct nfp_flower_ipv6_udp_tun);
- 			} else {
--				NL_SET_ERR_MSG_MOD(extack, "unsupported offload: an exact match on L4 destination port is required for non-GRE tunnels");
-+				key_size +=
-+					sizeof(struct nfp_flower_ipv4_udp_tun);
-+			}
-+
-+			if (enc_op.key) {
-+				NL_SET_ERR_MSG_MOD(extack, "unsupported offload: encap options not supported on GRE tunnels");
- 				return -EOPNOTSUPP;
- 			}
- 		} else {
-@@ -323,7 +370,8 @@ nfp_flower_calculate_key_layers(struct nfp_app *app,
- 							    &key_layer_two,
- 							    &key_layer,
- 							    &key_size, priv,
--							    tun_type, extack);
-+							    tun_type, ipv6_tun,
-+							    extack);
- 			if (err)
- 				return err;
- 
+ 	/* Free any memory that may be occupied by the route list. */
+ 	list_for_each_safe(ptr, storage, &priv->tun.neigh_off_list) {
+ 		route_entry = list_entry(ptr, struct nfp_ipv4_route_entry,
 -- 
 2.7.4
 
