@@ -2,89 +2,181 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3A5BC122D6B
-	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 14:50:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F4FB122DC0
+	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 14:59:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728493AbfLQNuh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Dec 2019 08:50:37 -0500
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:56972 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726962AbfLQNuh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 08:50:37 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
-        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:Reply-To:Content-ID
-        :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
-        Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=3ZYg62xTh5gFE4K8Xb1O0oUMxhzGaoygLSKa3n1bb8o=; b=S8do0kEugq5TE8I3YH3/m8LA/2
-        KBz6BywYJUj+c/mlEHXf5sFMYSx+IPakFtplduUhIDmPqRu5O//Gvt8MX6HF9dUnoVyca87wj5A3t
-        MNTmcvEaOtZcsuQQSOb8nOAW8z/tXmwiLEE6NJbEOSr4l/dOFoMWcjm7Sg4+78Gs9JtSRPyLmmUQS
-        HXiuhEZ+h56XzGLPz9THs6+LSWnDu2lDphcFDMW3S9aTbSyleEs7lGlNwqHDZ2C7cGzzk6Ml/H3l/
-        b0j/elQXohjEei/wOqbMJ4R2BbAGWy2HnDXoOKczgOdJaiory7UX3y2DFYNXloYvdFFD7iZBj8F53
-        Fuvdo06w==;
-Received: from e0022681537dd.dyn.armlinux.org.uk ([2002:4e20:1eda:1:222:68ff:fe15:37dd]:35726 helo=rmk-PC.armlinux.org.uk)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1ihDF8-0006JK-EG; Tue, 17 Dec 2019 13:50:30 +0000
-Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1ihDF7-0002Hr-S3; Tue, 17 Dec 2019 13:50:29 +0000
-From:   Russell King <rmk+kernel@armlinux.org.uk>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: [PATCH net-next] net: sfp: report error on failure to read sfp soft
- status
+        id S1728634AbfLQN71 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Dec 2019 08:59:27 -0500
+Received: from www62.your-server.de ([213.133.104.62]:60250 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728539AbfLQN71 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 08:59:27 -0500
+Received: from sslproxy01.your-server.de ([88.198.220.130])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1ihDNj-0006QE-67; Tue, 17 Dec 2019 14:59:23 +0100
+Received: from [178.197.249.31] (helo=pc-9.home)
+        by sslproxy01.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1ihDNi-0005qq-Ot; Tue, 17 Dec 2019 14:59:22 +0100
+Subject: Re: [PATCH bpf-next 11/15] bpftool: add skeleton codegen command
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Kernel Team <kernel-team@fb.com>
+References: <20191210011438.4182911-1-andriin@fb.com>
+ <20191210011438.4182911-12-andriin@fb.com>
+ <20191216141608.GE14887@linux.fritz.box>
+ <CAEf4Bzb2=R0+D0XXrH0N1n1X+7i6aFkACS2gb0xAQFwcBHjVQA@mail.gmail.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <448ba7d2-40c7-5175-c295-8ac123c40a84@iogearbox.net>
+Date:   Tue, 17 Dec 2019 14:59:21 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain; charset="utf-8"
-Message-Id: <E1ihDF7-0002Hr-S3@rmk-PC.armlinux.org.uk>
-Date:   Tue, 17 Dec 2019 13:50:29 +0000
+In-Reply-To: <CAEf4Bzb2=R0+D0XXrH0N1n1X+7i6aFkACS2gb0xAQFwcBHjVQA@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.101.4/25666/Tue Dec 17 10:54:52 2019)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Report a rate-limited error if we fail to read the SFP soft status,
-and preserve the current status in that case. This avoids I2C bus
-errors from triggering a link flap.
+On 12/16/19 7:53 PM, Andrii Nakryiko wrote:
+> On Mon, Dec 16, 2019 at 6:16 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
+>> On Mon, Dec 09, 2019 at 05:14:34PM -0800, Andrii Nakryiko wrote:
+>>> Add `bpftool gen skeleton` command, which takes in compiled BPF .o object file
+>>> and dumps a BPF skeleton struct and related code to work with that skeleton.
+>>> Skeleton itself is tailored to a specific structure of provided BPF object
+>>> file, containing accessors (just plain struct fields) for every map and
+>>> program, as well as dedicated space for bpf_links. If BPF program is using
+>>> global variables, corresponding structure definitions of compatible memory
+>>> layout are emitted as well, making it possible to initialize and subsequently
+>>> read/update global variables values using simple and clear C syntax for
+>>> accessing fields. This skeleton majorly improves usability of
+>>> opening/loading/attaching of BPF object, as well as interacting with it
+>>> throughout the lifetime of loaded BPF object.
+>>>
+>>> Generated skeleton struct has the following structure:
+>>>
+>>> struct <object-name> {
+>>>        /* used by libbpf's skeleton API */
+>>>        struct bpf_object_skeleton *skeleton;
+>>>        /* bpf_object for libbpf APIs */
+>>>        struct bpf_object *obj;
+>>>        struct {
+>>>                /* for every defined map in BPF object: */
+>>>                struct bpf_map *<map-name>;
+>>>        } maps;
+>>>        struct {
+>>>                /* for every program in BPF object: */
+>>>                struct bpf_program *<program-name>;
+>>>        } progs;
+>>>        struct {
+>>>                /* for every program in BPF object: */
+>>>                struct bpf_link *<program-name>;
+>>>        } links;
+>>>        /* for every present global data section: */
+>>>        struct <object-name>__<one of bss, data, or rodata> {
+>>>                /* memory layout of corresponding data section,
+>>>                 * with every defined variable represented as a struct field
+>>>                 * with exactly the same type, but without const/volatile
+>>>                 * modifiers, e.g.:
+>>>                 */
+>>>                 int *my_var_1;
+>>>                 ...
+>>>        } *<one of bss, data, or rodata>;
+>>> };
+>>>
+>>> This provides great usability improvements:
+>>> - no need to look up maps and programs by name, instead just
+>>>    my_obj->maps.my_map or my_obj->progs.my_prog would give necessary
+>>>    bpf_map/bpf_program pointers, which user can pass to existing libbpf APIs;
+>>> - pre-defined places for bpf_links, which will be automatically populated for
+>>>    program types that libbpf knows how to attach automatically (currently
+>>>    tracepoints, kprobe/kretprobe, raw tracepoint and tracing programs). On
+>>>    tearing down skeleton, all active bpf_links will be destroyed (meaning BPF
+>>>    programs will be detached, if they are attached). For cases in which libbpf
+>>>    doesn't know how to auto-attach BPF program, user can manually create link
+>>>    after loading skeleton and they will be auto-detached on skeleton
+>>>    destruction:
+>>>
+>>>        my_obj->links.my_fancy_prog = bpf_program__attach_cgroup_whatever(
+>>>                my_obj->progs.my_fancy_prog, <whatever extra param);
+>>>
+>>> - it's extremely easy and convenient to work with global data from userspace
+>>>    now. Both for read-only and read/write variables, it's possible to
+>>>    pre-initialize them before skeleton is loaded:
+>>>
+>>>        skel = my_obj__open(raw_embed_data);
+>>>        my_obj->rodata->my_var = 123;
+>>>        my_obj__load(skel); /* 123 will be initialization value for my_var */
+>>>
+>>>    After load, if kernel supports mmap() for BPF arrays, user can still read
+>>>    (and write for .bss and .data) variables values, but at that point it will
+>>>    be directly mmap()-ed to BPF array, backing global variables. This allows to
+>>>    seamlessly exchange data with BPF side. From userspace program's POV, all
+>>>    the pointers and memory contents stay the same, but mapped kernel memory
+>>>    changes to point to created map.
+>>>    If kernel doesn't yet support mmap() for BPF arrays, it's still possible to
+>>>    use those data section structs to pre-initialize .bss, .data, and .rodata,
+>>>    but after load their pointers will be reset to NULL, allowing user code to
+>>>    gracefully handle this condition, if necessary.
+>>>
+>>> Given a big surface area, skeleton is kept as an experimental non-public
+>>> API for now, until more feedback and real-world experience is collected.
+>>
+>> Can you elaborate on the plan here? This is until v5.6 is out and hence a new
+>> bpftool release implicitly where this becomes frozen / non-experimental?
+> 
+> Yes, I've exposed all those interfaces as public, thus they are going
+> to stabilize with new release of libbpf/bpftool. I've received some
+> good usability feedback from Alexei after he tried it out locally, so
+> I'm going to adjust auto-generated part a bit. Libbpf APIs were
+> designed with extensibility built in, so we can extend them as any
+> other APIs, if need be.
+> 
+>> There is also tools/bpf/bpftool/Documentation/bpftool-gen.rst missing. Given
+>> you aim to collect more feedback (?), it would be appropriate to document
+>> everything in there so users have a clue how to use it for getting started.
+> 
+> sure, will add it
 
-Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
----
- drivers/net/phy/sfp.c | 11 +++++++++--
- 1 file changed, 9 insertions(+), 2 deletions(-)
+Thanks!
 
-diff --git a/drivers/net/phy/sfp.c b/drivers/net/phy/sfp.c
-index e54aef921038..73c2969f11a4 100644
---- a/drivers/net/phy/sfp.c
-+++ b/drivers/net/phy/sfp.c
-@@ -442,13 +442,20 @@ static unsigned int sfp_soft_get_state(struct sfp *sfp)
- {
- 	unsigned int state = 0;
- 	u8 status;
-+	int ret;
- 
--	if (sfp_read(sfp, true, SFP_STATUS, &status, sizeof(status)) ==
--		     sizeof(status)) {
-+	ret = sfp_read(sfp, true, SFP_STATUS, &status, sizeof(status));
-+	if (ret == sizeof(status)) {
- 		if (status & SFP_STATUS_RX_LOS)
- 			state |= SFP_F_LOS;
- 		if (status & SFP_STATUS_TX_FAULT)
- 			state |= SFP_F_TX_FAULT;
-+	} else {
-+		dev_err_ratelimited(sfp->dev,
-+				    "failed to read SFP soft status: %d\n",
-+				    ret);
-+		/* Preserve the current state */
-+		state = sfp->state;
- 	}
- 
- 	return state & sfp->state_soft_mask;
--- 
-2.20.1
+>> Also, I think at least some more clarification is needed in such document on
+>> the following topics:
+>>
+>> - libbpf and bpftool is both 'GPL-2.0-only' or 'BSD-2-Clause'. Given this
+>>    is a code generator, what license is the `bpftool gen skeleton` result?
+>>    In any case, should there also be a header comment emitted via do_skeleton()?
+> 
+> Not a lawyer here, I assumed auto-generated code isn't copyrighted,
+> but how about I just emit SPDX header with the same license as libbpf
+> itself:
+> 
+> SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause)
+
+Given this is mere output of the program and not derivative work of bpftool
+itself, as in bpftool copying chunks of its own code into the generated one,
+this should not need any restriction, but then you'd still need linking
+against libbpf itself to make everything work.
+
+>> - Clear statement that this codegen is an alternative to regular libbpf
+>>    API usage but that both are always kept feature-complete and hence not
+>>    disadvantaged in one way or another (to rule out any uncertainties for
+>>    users e.g. whether they now need to start rewriting their existing code
+>>    etc); with purpose of the former (codgen) to simplify loader interaction.
+> 
+> ok, will add that as well
+> 
+>>
+>> Thanks,
+>> Daniel
 
