@@ -2,126 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E94A1226A6
-	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 09:26:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D6FDF1226B2
+	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 09:30:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726496AbfLQI0f (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Dec 2019 03:26:35 -0500
-Received: from mail-lj1-f195.google.com ([209.85.208.195]:35574 "EHLO
-        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726275AbfLQI0f (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 03:26:35 -0500
-Received: by mail-lj1-f195.google.com with SMTP id j6so9922567lja.2
-        for <netdev@vger.kernel.org>; Tue, 17 Dec 2019 00:26:34 -0800 (PST)
+        id S1726536AbfLQIaI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Dec 2019 03:30:08 -0500
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:52135 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725893AbfLQIaH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 03:30:07 -0500
+Received: by mail-wm1-f66.google.com with SMTP id d73so1988073wmd.1;
+        Tue, 17 Dec 2019 00:30:06 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=references:user-agent:from:to:cc:subject:in-reply-to:date
-         :message-id:mime-version;
-        bh=S2HWEnfNx14SXY1HnKJhWOptQA0SVJJU0TqB07h1faM=;
-        b=Bug4Nf08piVyLoD3c99gL62iecZ2ijJjbIHj/9AaI3XtVt1JKuhH92l5fTTCFfTSDz
-         it/tX3FCFNjr7VL1QWmsOi1FQp1RHYLVihSCf14IygVY6QL0f/IHXMwqvRX+kjxwS1P9
-         S+LQYy4yXlI/uoZuI26yJwiMNwmj4LNaUmNqg=
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=rXSSQVCYj/Qad5tcQJvjedfS+geoMZX3z+6qpzpCYqc=;
+        b=JGdn24bfnay/sw6Sj4AByxjgWNolog285GnUzNGVgaJbiWLnrX7hAf61xAOfqz/YmG
+         s+zBHHVcbSRgpz1/4v8PV5keLuRgspQ9XvcKOIqWsXztVAZxxQbvm31wqcDji9QhdNg9
+         XaPG5xAtud1Jyl0YaFqW2BfY90jXut0a3gO1ZtYR/BgxmnPlXlqZXrZLUsx41uQjNpSP
+         G/2cg0I8qaBU8CWZ20vadwodPxW3FcX9TkEKkbyUh5sLuKiIk6+Ajfqljf6SsE5Ue/Gv
+         Rnp1boFVAiV/ViiZ2Myes34i0de+mmtcWu5ldodd2rZ8NMamUuarrQ6ulCEt6iMsj/vN
+         c51A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:references:user-agent:from:to:cc:subject
-         :in-reply-to:date:message-id:mime-version;
-        bh=S2HWEnfNx14SXY1HnKJhWOptQA0SVJJU0TqB07h1faM=;
-        b=PNMIeZn5nQsw2Z+/UdivuWWI60jqiNiRIq5acTrsFGduo/JNgWridVup9Sdc7q9Es2
-         oqlxjQuV2/vlyC5RKvjISZFhNuE4bs1k2PT7Pr1cM4PfP5UVt56zobHhQQBaLIhwQ8XO
-         lZoJ8KahDNRPIR1syBbDOUHq+Do/DKmeyI7dPEN3P+rK6ghPRDT2HxA9PhAukZ5J8T0D
-         LG9XBdfb9BiV43JbgxxJGBYqzPrq9tEWwy/S1DJ02bTAQhMVgoDhyIRLx5tJaIkLC/qw
-         MGCjTKkioaP1OoMonRhFwQv4LZfQvsTO2bnW0iLHYyUzOJXacnEVk4lagB5MfiA7bzo6
-         J6zQ==
-X-Gm-Message-State: APjAAAXZko8yBAiNbS6XzBidCi0IewEEFXZ6BClRWgGfPWss8lIKXqZL
-        hjgUIkmw4Sa6asZLwqyVwJag4A==
-X-Google-Smtp-Source: APXvYqwOaZ3V0e7e1ht3nZykyxicFylkfmNXt0Yj5dWyZOWLC21Bqvng7/Ce2BPdmBascUTrFbvtZw==
-X-Received: by 2002:a2e:6e03:: with SMTP id j3mr2372004ljc.27.1576571193476;
-        Tue, 17 Dec 2019 00:26:33 -0800 (PST)
-Received: from cloudflare.com ([2a02:a310:c262:aa00:b35e:8938:2c2a:ba8b])
-        by smtp.gmail.com with ESMTPSA id a12sm12063052ljk.48.2019.12.17.00.26.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 Dec 2019 00:26:32 -0800 (PST)
-References: <20191214004737.1652076-1-kafai@fb.com> <20191214004758.1653342-1-kafai@fb.com> <b321412c-1b42-45a9-4dc6-cc268b55cd0d@gmail.com> <CADVnQy=soQ8KhuUWEQj0n2ge3a43OSgAKS95bmBtp090jqbM_w@mail.gmail.com>
-User-agent: mu4e 1.1.0; emacs 26.2
-From:   Jakub Sitnicki <jakub@cloudflare.com>
-To:     Martin KaFai Lau <kafai@fb.com>
-Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
-        Neal Cardwell <ncardwell@google.com>, bpf@vger.kernel.org,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        David Miller <davem@davemloft.net>,
-        Kernel Team <kernel-team@fb.com>,
-        Netdev <netdev@vger.kernel.org>
-Subject: Re: [PATCH bpf-next 09/13] bpf: Add BPF_FUNC_jiffies
-In-reply-to: <CADVnQy=soQ8KhuUWEQj0n2ge3a43OSgAKS95bmBtp090jqbM_w@mail.gmail.com>
-Date:   Tue, 17 Dec 2019 09:26:31 +0100
-Message-ID: <87o8w7fjd4.fsf@cloudflare.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=rXSSQVCYj/Qad5tcQJvjedfS+geoMZX3z+6qpzpCYqc=;
+        b=UB5WJklXJ/ZIrS9UT0uO6eO7Pe/FeGi35q+7yeA0Dp7oF923YLr0XALMBuaaL6zsrS
+         AYfHzq5LNZz0S1MyFkOIbAeZHrd4b34Jnuv/ipgu93XnlUcf5pvyGF7op+Fo9pXu21hS
+         EAxMWoG89BzvwwCPy1w7k9REn5r3Ho+8+9ZQAg/qYaoTJzAXLGdRXh4gmJ5gU/wNpZnE
+         ua4w1QAhvDIc/fyRNSimHFXGGQH8aisAE3t7xzcJlWghUacYHW+rPYARY2emrRiDEii9
+         N9GpkIk8p0yvr/+ca2gsDBAFN/zyQGU+nKNKKIztvbitLFWjppFNZh+VzxH5uHrLb3Y6
+         /CHg==
+X-Gm-Message-State: APjAAAU9GuhT3eZaplcrafuRyQTwHmQ88dYed7eJR7wNk8gZGA1IdsMs
+        ywMqEhiode1k8ZxY0YMLtvmsHUZj3s97B46HCa4=
+X-Google-Smtp-Source: APXvYqwDMNUK3OKFsWVYbzgCoH0wK8oU52YXX2wIeCTFm4nojCFbhpB1F3J9gqJ5fceKm/F9K0aH+nP6Ejz7mVHtX3w=
+X-Received: by 2002:a05:600c:d7:: with SMTP id u23mr3699213wmm.145.1576571405512;
+ Tue, 17 Dec 2019 00:30:05 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain
+References: <2a040bc8a75c67164a3d0e30726477c1a268c6d7.1576544284.git.marcelo.leitner@gmail.com>
+In-Reply-To: <2a040bc8a75c67164a3d0e30726477c1a268c6d7.1576544284.git.marcelo.leitner@gmail.com>
+From:   Xin Long <lucien.xin@gmail.com>
+Date:   Tue, 17 Dec 2019 16:30:58 +0800
+Message-ID: <CADvbK_ePttg_D841q0fM2Qa5Ksa+wGq+eWhwzy3FToC9wsF5rw@mail.gmail.com>
+Subject: Re: [PATCH net] sctp: fix memleak on err handling of stream initialization
+To:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Cc:     network dev <netdev@vger.kernel.org>,
+        Kent Overstreet <kent.overstreet@gmail.com>,
+        Neil Horman <nhorman@tuxdriver.com>, linux-sctp@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Dec 14, 2019 at 08:25 PM CET, Neal Cardwell wrote:
-> On Fri, Dec 13, 2019 at 9:00 PM Eric Dumazet <eric.dumazet@gmail.com> wrote:
->>
->>
->>
->> On 12/13/19 4:47 PM, Martin KaFai Lau wrote:
->> > This patch adds a helper to handle jiffies.  Some of the
->> > tcp_sock's timing is stored in jiffies.  Although things
->> > could be deduced by CONFIG_HZ, having an easy way to get
->> > jiffies will make the later bpf-tcp-cc implementation easier.
->> >
->>
->> ...
->>
->> > +
->> > +BPF_CALL_2(bpf_jiffies, u64, in, u64, flags)
->> > +{
->> > +     if (!flags)
->> > +             return get_jiffies_64();
->> > +
->> > +     if (flags & BPF_F_NS_TO_JIFFIES) {
->> > +             return nsecs_to_jiffies(in);
->> > +     } else if (flags & BPF_F_JIFFIES_TO_NS) {
->> > +             if (!in)
->> > +                     in = get_jiffies_64();
->> > +             return jiffies_to_nsecs(in);
->> > +     }
->> > +
->> > +     return 0;
->> > +}
->>
->> This looks a bit convoluted :)
->>
->> Note that we could possibly change net/ipv4/tcp_cubic.c to no longer use jiffies at all.
->>
->> We have in tp->tcp_mstamp an accurate timestamp (in usec) that can be converted to ms.
+On Tue, Dec 17, 2019 at 9:01 AM Marcelo Ricardo Leitner
+<marcelo.leitner@gmail.com> wrote:
 >
-> If the jiffies functionality stays, how about 3 simple functions that
-> correspond to the underlying C functions, perhaps something like:
+> syzbot reported a memory leak when an allocation fails within
+> genradix_prealloc() for output streams. That's because
+> genradix_prealloc() leaves initialized members initialized when the
+> issue happens and SCTP stack will abort the current initialization but
+> without cleaning up such members.
 >
->   bpf_nsecs_to_jiffies(nsecs)
->   bpf_jiffies_to_nsecs(jiffies)
->   bpf_get_jiffies_64()
+> The fix here is to always call genradix_free() when genradix_prealloc()
+> fails, for output and also input streams, as it suffers from the same
+> issue.
 >
-> Separate functions might be easier to read/maintain (and may even be
-> faster, given the corresponding reduction in branches).
-
-Having bpf_nsecs_to_jiffies() would be also handy for BPF sockops progs
-that configure SYN-RTO timeout (BPF_SOCK_OPS_TIMEOUT_INIT).
-
-Right now user-space needs to go look for CONFIG_HZ in /proc/config.gz
-or /boot/config-`uname -r`, or derive it from clock resolution [0]
-
-        clock_getres(CLOCK_REALTIME_COARSE, &res);
-        jiffy = res.tv_nsec / 1000000;
-
-to pass timeout in jiffies to the BPF prog.
-
--jkbs
-
-[0] https://www.mail-archive.com/kernelnewbies@nl.linux.org/msg08850.html
-
+> Reported-by: syzbot+772d9e36c490b18d51d1@syzkaller.appspotmail.com
+> Fixes: 2075e50caf5e ("sctp: convert to genradix")
+> Signed-off-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+> ---
+>  net/sctp/stream.c | 8 ++++++--
+>  1 file changed, 6 insertions(+), 2 deletions(-)
+>
+> diff --git a/net/sctp/stream.c b/net/sctp/stream.c
+> index df60b5ef24cbf5c6f628ab8ed88a6faaaa422b6d..e0b01bf912b3f3cdbc3f713bcfa50868e4802929 100644
+> --- a/net/sctp/stream.c
+> +++ b/net/sctp/stream.c
+> @@ -84,8 +84,10 @@ static int sctp_stream_alloc_out(struct sctp_stream *stream, __u16 outcnt,
+>                 return 0;
+>
+>         ret = genradix_prealloc(&stream->out, outcnt, gfp);
+> -       if (ret)
+> +       if (ret) {
+> +               genradix_free(&stream->out);
+>                 return ret;
+> +       }
+>
+>         stream->outcnt = outcnt;
+>         return 0;
+> @@ -100,8 +102,10 @@ static int sctp_stream_alloc_in(struct sctp_stream *stream, __u16 incnt,
+>                 return 0;
+>
+>         ret = genradix_prealloc(&stream->in, incnt, gfp);
+> -       if (ret)
+> +       if (ret) {
+> +               genradix_free(&stream->in);
+>                 return ret;
+> +       }
+>
+>         stream->incnt = incnt;
+>         return 0;
+> --
+> 2.23.0
+>
+Tested-by: Xin Long <lucien.xin@gmail.com>
