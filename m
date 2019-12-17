@@ -2,71 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C2DA122612
-	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 09:01:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 66B86122624
+	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 09:03:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726877AbfLQIA6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Dec 2019 03:00:58 -0500
-Received: from mail.kernel.org ([198.145.29.99]:56354 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726072AbfLQIA5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 17 Dec 2019 03:00:57 -0500
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 50F60207FF;
-        Tue, 17 Dec 2019 08:00:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1576569656;
-        bh=S2ZJz3dmg/iV/HXN0K8nTRakpRHEekt71LuYRmWiS1o=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=gNomV5mbcvv6DBQ0Ba/ZgFDnLZqCa8UqHlhj/bJQH+uSJ/fDGF5JFB9e+MnsqJ366
-         mZIiNTdgquVMQdFuXEUrWzSApd4Uxn23bahmTxIHJDGOdWi8kZXW1OsI/oX7zDDVTH
-         mWSdKWSdRI1TDLubAzAfG0mMas7CxRCpBMHvRke0=
-Date:   Tue, 17 Dec 2019 09:00:54 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     kbuild test robot <lkp@intel.com>,
-        "kernelci . org bot" <bot@kernelci.org>,
-        Olof's autobuilder <build@lixom.net>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Karsten Keil <isdn@linux-pingi.de>,
-        David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] [staging-next] isdn: don't mark kcapi_proc_exit as __exit
-Message-ID: <20191217080054.GA2525210@kroah.com>
-References: <20191216194909.1983639-1-arnd@arndb.de>
+        id S1726852AbfLQIDG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Dec 2019 03:03:06 -0500
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:53491 "EHLO
+        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726281AbfLQIDE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 03:03:04 -0500
+Received: by mail-wm1-f67.google.com with SMTP id m24so1891349wmc.3
+        for <netdev@vger.kernel.org>; Tue, 17 Dec 2019 00:03:02 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to
+         :user-agent;
+        bh=GxAFSM9qrfBqACDVyobZG3sgGdlMNsybGzr6qpdZuFY=;
+        b=sneGlw/w17D4z5M6a5bR6Y0d/z3VSpK4ImjvIeXZaztzsV4sKewPmhnDCtmQYaTmlV
+         YEqBwbCUZFtj5uIFQsJ21OzjN/E//jv2SfHJwUy/0NR42KPymWIdC/xmAgzf+8A++Yn4
+         eEVZOAYagbwnNN9NzZKIXw3wbBs8XCEwEdOFXZ/gi5Rl4atj3f719kXLCGWPV9c7Sacg
+         NG3EKXamr8YyxcBkbngr9KLoE066VzOQNwr8QGF5kFyuwBtD9zqKm9xslgq0mwKFt3L3
+         gkHo2nde5j/rsRY0YIN9JVN/ebNuqhinr5Ltkp3zVYpUw/SxUBGq1K36V3C2++3LFK2I
+         BJMw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to:user-agent;
+        bh=GxAFSM9qrfBqACDVyobZG3sgGdlMNsybGzr6qpdZuFY=;
+        b=ln9q8zM8VkuY/q6W30P6BVlKX1NOgIyyXzxajOmlJZAQW+MXN4r9nUgbBVNt0+wJ/1
+         73G7JLRaAxTkc/tO6vs6O3WdalJobpIF+Fr2GiNdjjwuczn1FxQwC6vruhylI4NEWBE9
+         50amAmqztLyTAodiMNON+tTWHGbhwGHnq4ZeBxP4/WcW5/vXpH8jruIetItwlLJyfj9O
+         2jHEfquFQRExJ0qsxXdNteNJzufKS2UCEYxZhPm/NnpD9nhobCBH+1mKYNBCfM7tZYzt
+         1JPvlX/i1VLTFSbGUws6q+oNcMOW0WlrBRsCWmicy1k/L2IRh6cQffSxC2IReDrsPSC8
+         mipQ==
+X-Gm-Message-State: APjAAAVGLiAwNcHJVbtvh7sHwjuUW7uFR8iYuPbGX2+b0OrUIdUyigZC
+        BImkmJ62VTm/lKlEUQSklXEUnQ==
+X-Google-Smtp-Source: APXvYqzMTCBlFqbqARJevmlw9QY8QwE36fi/Ore5Eu5RwK95seTip0NwxVQTJa/pqHoFIqktYKfywA==
+X-Received: by 2002:a05:600c:d7:: with SMTP id u23mr3568868wmm.145.1576569781740;
+        Tue, 17 Dec 2019 00:03:01 -0800 (PST)
+Received: from dell (h185-20-99-142.host.redstation.co.uk. [185.20.99.142])
+        by smtp.gmail.com with ESMTPSA id c9sm2020290wmc.47.2019.12.17.00.02.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 17 Dec 2019 00:03:00 -0800 (PST)
+Date:   Tue, 17 Dec 2019 08:02:55 +0000
+From:   Lee Jones <lee.jones@linaro.org>
+To:     Thomas Bogendoerfer <tbogendoerfer@suse.de>
+Cc:     Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Ralf Baechle <ralf@linux-mips.org>,
+        Paul Burton <paulburton@kernel.org>,
+        James Hogan <jhogan@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Alessandro Zummo <a.zummo@towertech.it>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>, linux-mips@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-rtc@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: Re: [PATCH v11 net-next 2/2] mfd: ioc3: Add driver for SGI IOC3 chip
+Message-ID: <20191217080255.GF18955@dell>
+References: <20191213124221.25775-1-tbogendoerfer@suse.de>
+ <20191213124221.25775-3-tbogendoerfer@suse.de>
+ <20191215122745.219fa951@cakuba.netronome.com>
+ <20191216170005.afdbbb3845a87dc835165250@suse.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20191216194909.1983639-1-arnd@arndb.de>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20191216170005.afdbbb3845a87dc835165250@suse.de>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 16, 2019 at 08:48:56PM +0100, Arnd Bergmann wrote:
-> As everybody pointed out by now, my patch to clean up CAPI introduced
-> a link time warning, as the two parts of the capi driver are now in
-> one module and the exit function may need to be called in the error
-> path of the init function:
-> 
-> >> WARNING: drivers/isdn/capi/kernelcapi.o(.text+0xea4): Section mismatch in reference from the function kcapi_exit() to the function .exit.text:kcapi_proc_exit()
->    The function kcapi_exit() references a function in an exit section.
->    Often the function kcapi_proc_exit() has valid usage outside the exit section
->    and the fix is to remove the __exit annotation of kcapi_proc_exit.
-> 
-> Remove the incorrect __exit annotation.
-> 
-> Reported-by: kbuild test robot <lkp@intel.com>
-> Reported-by: kernelci.org bot <bot@kernelci.org>
-> Reported-by: Olof's autobuilder <build@lixom.net>
-> Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-> ---
->  drivers/isdn/capi/kcapi_proc.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+On Mon, 16 Dec 2019, Thomas Bogendoerfer wrote:
 
-Thanks for this, now applied.
+> On Sun, 15 Dec 2019 12:27:45 -0800
+> Jakub Kicinski <jakub.kicinski@netronome.com> wrote:
+> 
+> > On Fri, 13 Dec 2019 13:42:20 +0100, Thomas Bogendoerfer wrote:
+> > > SGI IOC3 chip has integrated ethernet, keyboard and mouse interface.
+> > > It also supports connecting a SuperIO chip for serial and parallel
+> > > interfaces. IOC3 is used inside various SGI systemboards and add-on
+> > > cards with different equipped external interfaces.
+> > > 
+> > > Support for ethernet and serial interfaces were implemented inside
+> > > the network driver. This patchset moves out the not network related
+> > > parts to a new MFD driver, which takes care of card detection,
+> > > setup of platform devices and interrupt distribution for the subdevices.
+> > > 
+> > > Serial portion: Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> > > Acked-for-MFD-by: Lee Jones <lee.jones@linaro.org>
+> > > 
+> > > Signed-off-by: Thomas Bogendoerfer <tbogendoerfer@suse.de>
+> > 
+> > For networking:
+> > 
+> > Reviewed-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+> > 
+> > I think you wanted this to go via the MIPS tree, so consider this an
+> > ack.
+> 
+> well, it can go to net-next as well. Paul, what's your preference ?
 
-greg k-h
+Whomever takes it should send out a pull-request to an immutable
+branch for everyone else to pull from (if they so desire).
+
+-- 
+Lee Jones [李琼斯]
+Linaro Services Technical Lead
+Linaro.org │ Open source software for ARM SoCs
+Follow Linaro: Facebook | Twitter | Blog
