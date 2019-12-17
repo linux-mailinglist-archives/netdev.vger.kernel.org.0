@@ -2,56 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 91C24122345
-	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 05:51:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 96C2F122349
+	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 05:54:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727128AbfLQEvz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Dec 2019 23:51:55 -0500
-Received: from mail-pg1-f196.google.com ([209.85.215.196]:45786 "EHLO
-        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725836AbfLQEvz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Dec 2019 23:51:55 -0500
-Received: by mail-pg1-f196.google.com with SMTP id b9so4943212pgk.12
-        for <netdev@vger.kernel.org>; Mon, 16 Dec 2019 20:51:55 -0800 (PST)
+        id S1727313AbfLQEyI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Dec 2019 23:54:08 -0500
+Received: from mail-pj1-f65.google.com ([209.85.216.65]:41599 "EHLO
+        mail-pj1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726296AbfLQEyH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Dec 2019 23:54:07 -0500
+Received: by mail-pj1-f65.google.com with SMTP id ca19so3993016pjb.8
+        for <netdev@vger.kernel.org>; Mon, 16 Dec 2019 20:54:07 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
         h=date:from:to:cc:subject:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=BjknurcRoJCC+C5E234vTfPEQKC2nq0BNOmSSdGPDyk=;
-        b=cuyyU8RLGLo8elujr6I0xLm9oi5A4O/laA3MkTrsDraN8hphIcBkD3Uh7tlGUn2B+Y
-         eurcrqN1diQt7hLIazeGHN+LHUwEAJd3wBxmZIxhMg+9pGDM+3VN2DeguhUKJqORgHbO
-         4GD2QkN9xZJG4f9UlSdFqQp0QXulC/SrJVmv9aU1gxZ9kOa9LmH3ScGHeGCZKZOe5x7P
-         ujf5j55f0qn85MN8voESqsjTxNmAcYzldRn3rKtomepusFiVk4kewqgBclTb9V3WmbAe
-         8zD2gzdt57RinJVggMw6tXi06/wmAQaZybBauxA5oFud5kqsf5/0ts2nwIKlaYGMd+7B
-         28PA==
+        bh=ZXoGXsFN0fsYNcjgwQxsCqvxbFgm9nLOO1FjTN27brQ=;
+        b=VJ6bj5oYCxDaO6XY/xOIAOF4Y+9gosAry28wKGwpUGSuxoROGlAvQHkL44kyRxMObc
+         rny6toAW/rC5AduLszZATEzXhZgviTuNFQVqsDlg1KcAgYGT/oX2dlG5Cdc5IiV1dd/Z
+         gLAZodJaD0B4f6HWAlR5lgaSsDwTxOOxHu5mXur5JUIXObkdvbJr5Aecn0YIFOpmgrkB
+         xflmrdobRTUPBBBWFYLlmXPt5HTL6LDwiVGv9zhSJtChhu1n51AsG7ecREmCmFayTwV4
+         yrnf7i/CstjfTLO31E+RN66kbaxpsqZeFP4tu3ShtzGVJc93ybaq/7zVXDmSIGSHv+6D
+         L+qQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=BjknurcRoJCC+C5E234vTfPEQKC2nq0BNOmSSdGPDyk=;
-        b=Pe8ZbzhFicRJv+rErpylUp3oK3oSfghnKFyCV6TnPEmYD50xy7Q95DXt75mOkGavgB
-         PzMOiJgJZrDEPTluzwq1Cl4MsIHZsb8XoNPHqLE7cAJS5yU3pa2iX3AFM+t/7D5Yt3E1
-         eTaYMEhJnrvOJ6SCdTNqzmW3umzC4O93OWptP3w1FhG6OSgeQir72r1hNj6SPW3GPut3
-         W1nV9N1NXnkdfFTT6vJHyA36kUz8jfa6kEnKq/hKWQg9qMnSBXIBirTEkpePkSbU0G4V
-         GWLCvWkjNKpWRP0GLaDXSYad5ketDF+XrPe6hcuN6bHPiio0ZG047Fzp/0rL8R0RXl+e
-         VzTQ==
-X-Gm-Message-State: APjAAAXKQ9PX7T42Q5HVMJI5nlZ5bMcWwqw9M8UlMrDJjLEf6dWuT1ai
-        LlhyFQtpGw9qvX5fLFcQpksNOw==
-X-Google-Smtp-Source: APXvYqyzzXgHrURuFWhKSrRhJLp0i4i3LLIIGFGAxBsLb+twDRXaDrEMu8fI0FzXgARDmZXwECfOVg==
-X-Received: by 2002:aa7:8ad9:: with SMTP id b25mr20239021pfd.70.1576558314814;
-        Mon, 16 Dec 2019 20:51:54 -0800 (PST)
+        bh=ZXoGXsFN0fsYNcjgwQxsCqvxbFgm9nLOO1FjTN27brQ=;
+        b=gj5BmPA37NztF44KatlR0PU8SGY/y05cuBxNWk2NFQHd3o/5LWwGQiXB7qAj6lTz79
+         AX1dRXbR2Ldr4G8pr+UjEgXdjKbNmsTftUeRbTtvf9Rz361060QzWOSpCPhRdCKR/arb
+         Ag/bRNsdayGVgjqNX1tL7PmyoY83ih8G9SxTCOUjZMNz+WHlAn6eWG/Dw1WLJwxySmeW
+         rFRuBJjXQytRIIZdqSmI+RIsPOVkXiB6p6bJrClsHHiTDVZul33kbVhos1BPKNnanLgZ
+         eUjx4MtQi48uQwYs6oB2xu3WornlrI88txwBNqZKoaAG6FO8NnrUvuFo9jqaHrSn3Fv2
+         KWZg==
+X-Gm-Message-State: APjAAAXhg6kIdx5uugOSoRKKcSaMFrjder6hma2aXpcNZxKpYlvDl3UM
+        DzLfV3vTkwOdzZvO4SBAUOCcDw==
+X-Google-Smtp-Source: APXvYqzonrrUR6oBnI0rDLTkR+BNbvxndCauQaGQzHRij5pPUaZWy+PqoNh+hZgWLYe368V4Ug4gkg==
+X-Received: by 2002:a17:902:8309:: with SMTP id bd9mr19998598plb.113.1576558447101;
+        Mon, 16 Dec 2019 20:54:07 -0800 (PST)
 Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id y17sm24403893pfn.86.2019.12.16.20.51.54
+        by smtp.gmail.com with ESMTPSA id f30sm24905124pga.20.2019.12.16.20.54.06
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 Dec 2019 20:51:54 -0800 (PST)
-Date:   Mon, 16 Dec 2019 20:51:46 -0800
+        Mon, 16 Dec 2019 20:54:06 -0800 (PST)
+Date:   Mon, 16 Dec 2019 20:53:51 -0800
 From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Benjamin Poirier <bpoirier@cumulusnetworks.com>
-Cc:     netdev@vger.kernel.org, Roopa Prabhu <roopa@cumulusnetworks.com>
-Subject: Re: [PATCH iproute2 0/8] bridge vlan tunnelshow fixes
-Message-ID: <20191216205146.3cfd561b@hermes.lan>
-In-Reply-To: <20191216064344.1470824-1-bpoirier@cumulusnetworks.com>
-References: <20191216064344.1470824-1-bpoirier@cumulusnetworks.com>
+To:     Tariq Toukan <tariqt@mellanox.com>
+Cc:     David Ahern <dsahern@gmail.com>, netdev@vger.kernel.org,
+        ayal@mellanox.com, moshe@mellanox.com, jiri@mellanox.com
+Subject: Re: [PATCH iproute2 0/3] Devlink health reporter's issues
+Message-ID: <20191216205351.1afb8c75@hermes.lan>
+In-Reply-To: <20191211154536.5701-1-tariqt@mellanox.com>
+References: <20191211154536.5701-1-tariqt@mellanox.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -60,44 +61,43 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 16 Dec 2019 15:43:36 +0900
-Benjamin Poirier <bpoirier@cumulusnetworks.com> wrote:
+On Wed, 11 Dec 2019 17:45:33 +0200
+Tariq Toukan <tariqt@mellanox.com> wrote:
 
-> Fix various problems in and around normal and json output of `bridge vlan
-> tunnelshow`.
+> Hi,
 > 
-> Can be tested using:
-> ip link add bridge type bridge
+> This patchset by Aya fixes two issues: wrong time-stamp on a dump in
+> devlink health reporter and messy display of non JSON output in devlink
+> health diagnostics and dump.
 > 
-> ip link add vxlan0 type vxlan dstport 4789 external
-> ip link set dev vxlan0 master bridge
-> ip link set dev vxlan0 type bridge_slave vlan_tunnel on
+> 1) Wrong time-stamp on a dump in devlink health reporter: 
+> This bug fix consist of 2 patches. First patch refactors the current
+> implementation of helper function which displays the reporter's dump
+> time-stamp and add the actual print to the function's body.
+> The second patch introduces a new attribute which is the time-stamp in
+> current time in nsec instead of jiffies. When the new attribute is
+> present try and translate the time-stamp according to 'current time'.
 > 
-> bridge vlan add dev vxlan0 vid 1000
-> bridge vlan add dev vxlan0 vid 1000 tunnel_info id 1000
-> bridge vlan add dev vxlan0 vid 1010-1020
-> bridge vlan add dev vxlan0 vid 1010-1020 tunnel_info id 1010-1020
-> bridge vlan add dev vxlan0 vid 1030
-> bridge vlan add dev vxlan0 vid 1030 tunnel_info id 65556
+> 2) Messy display of non-JSON output in devlink health diagnostics and dump:
+> This patch mainly deals with dynamic object and array opening. The
+> label is stored and only when the proceeding value arrives the name is
+> printed with regards to the context. 
 > 
-> Benjamin Poirier (8):
->   json_print: Remove declaration without implementation
->   testsuite: Fix line count test
->   bridge: Fix typo in error messages
->   bridge: Fix src_vni argument in man page
->   bridge: Fix BRIDGE_VLAN_TUNNEL attribute sizes
->   bridge: Fix vni printing
->   bridge: Deduplicate vlan show functions
->   bridge: Fix tunnelshow json output
+> Series generated against the shared master/net-next head:
+> 24bee3bf9752 tipc: add new commands to set TIPC AEAD key
 > 
->  bridge/vlan.c                            | 138 ++++++++---------------
->  include/json_print.h                     |   2 -
->  man/man8/bridge.8                        |   4 +-
->  testsuite/Makefile                       |   3 +-
->  testsuite/lib/generic.sh                 |   8 +-
->  testsuite/tests/bridge/vlan/tunnelshow.t |  33 ++++++
->  6 files changed, 88 insertions(+), 100 deletions(-)
->  create mode 100755 testsuite/tests/bridge/vlan/tunnelshow.t
+> Regards,
+> Tariq
+> 
+> Aya Levin (3):
+>   devlink: Print health reporter's dump time-stamp in a helper function
+>   devlink: Add a new time-stamp format for health reporter's dump
+>   devlink: Fix fmsg nesting in non JSON output
+> 
+>  devlink/devlink.c | 153 +++++++++++++++++++++++++++++++++++-----------
+>  1 file changed, 119 insertions(+), 34 deletions(-)
 > 
 
-Thanks for cleaning this up. Applied
+Applied, devlink really needs to get converted to same json
+library as rest of iproute2.
+
