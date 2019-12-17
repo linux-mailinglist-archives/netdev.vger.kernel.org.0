@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 77FF812337E
-	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 18:28:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7EF6D12338C
+	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 18:30:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727649AbfLQR16 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Dec 2019 12:27:58 -0500
-Received: from mail-ed1-f66.google.com ([209.85.208.66]:39973 "EHLO
-        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727007AbfLQR16 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 12:27:58 -0500
-Received: by mail-ed1-f66.google.com with SMTP id b8so6054320edx.7
-        for <netdev@vger.kernel.org>; Tue, 17 Dec 2019 09:27:56 -0800 (PST)
+        id S1727145AbfLQRaL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Dec 2019 12:30:11 -0500
+Received: from mail-ed1-f67.google.com ([209.85.208.67]:42202 "EHLO
+        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726191AbfLQRaL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 12:30:11 -0500
+Received: by mail-ed1-f67.google.com with SMTP id e10so8662668edv.9
+        for <netdev@vger.kernel.org>; Tue, 17 Dec 2019 09:30:09 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=iPI5SBkVBhv0h3ryAURabj4QEVm1HjddPZFq7MvN8II=;
-        b=L5aEMcInRuyKE+QuTvpKb7WbuYFHSBQYPYEYScceL2wYrLZ4IanEhB9d/y7tIbrPxD
-         zoCOZmX5KFYo12FsISw1hi4++W+ohm9OLoktTQKw/V3MvsN5ThrlICv7d1hHWhqVRN85
-         /+xSsp+hZ6XqpCI9F1RG+GHbjjsuGVOnvf30qbTcWQ4lMSO42e8ElAfleDXpb+oLS6ej
-         on1RLd/wAxX9tO7UAxeXuoD5OXWMKZ+jt4VXcAx32kJpwbCXrNvS2T+pVdKlIgYzZiC2
-         uMQZlTkCUA7PyqW0zm1zcLxsHa40ANUy1kxSVq2i7zQ6pDH/kHsVcjKbsFE3Ci0NMHnX
-         lHWA==
+        bh=ue/O7pVIVksi3fbsucjsTcTPRaRfwz9jC5S+XdxwRe8=;
+        b=pEl6/kx+EtEt73cwEg0YfzLmubt9kHMt5vKYmQ4azZQ61xAh5dhFioMiG4/e1Ec024
+         O+aJfE2Bj3QGu9jAOCjhSCGkqtyi+kDxhEvkjA+XHO2lrFzx8mErF1/wukuXq9vmFJHa
+         w9ovVCqN09FvhUu89EYDvmMZ5t1NnekUBPxIKqPW4ZqU0pYibX3IEidhWHk0LDe1dWWN
+         1qtNW15YK9H6GxsFR9S2YDrI+IjO39+UgcJBTwJy+Crj689NGSSvVbfzXDSuG6ireink
+         66hfKqjtAFW+dcx8Zuu6uBDfGE+WkKvJ9Dp79exXCVgdkRE0NYyKuQxCMEOPJNi+0ZYI
+         BL6w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=iPI5SBkVBhv0h3ryAURabj4QEVm1HjddPZFq7MvN8II=;
-        b=ZQC13VJG0i/Q5ZeAdC/XcICOunmlixdNDkk1q4TYuZ3xDX4JNTijqaGkFSBROL8Hy9
-         rZ+g5hm5BBJSxz3N+JTQu8LdZxM/eAHloTSPpae1uRe5fUiGFmmii6ln0Jye5eoCrvwC
-         fCWLpbwyx1A5/+4irnpXRTrIafXQwNrkQQKfAWlr8eaLPARfcXhgoZD4Wz2s8TsCiTur
-         ZORGbYt/Ia5M0oktkCs7tWsSa0BQNE8dCkf41Xe1uZdB0eMYwXgSMCnqnhO84pDTActu
-         df6vAObSkF+aHWtS9cIP+Rq45mLObDRN2tbLMYZPH9EFvpa9MbH2cQx05L6wYWDKTl5H
-         OoBA==
-X-Gm-Message-State: APjAAAXA+kUVx4vqeWt0gHXztvILfOKY+93rkP2zJcR07lCor6JKIlE6
-        bsRS9c08lpixWsT6jdNyCk85jGMd
-X-Google-Smtp-Source: APXvYqwiNvS9kxSEm2MbSV+l6p1aLAAH2uQt9/IYAZcX+GjE4+JYOvWCOzAavAy+RlpJU/jmyH5Ryg==
-X-Received: by 2002:a17:906:80b:: with SMTP id e11mr6416786ejd.278.1576603676039;
-        Tue, 17 Dec 2019 09:27:56 -0800 (PST)
+        bh=ue/O7pVIVksi3fbsucjsTcTPRaRfwz9jC5S+XdxwRe8=;
+        b=juRHmg3pSfYoUWS8zOJ42UvBO4h6aLq6ndAFS6PXz+/6hPEJTsg4TPdMpig4xYxE3J
+         pn7ZCJ+zppNgVUhf/fNyxeRcqVL9a9xOWMYs+0Uf9yVdRnaB19y3FASBEfhflg0mJEht
+         xtEHVKII7gHxvoIO+7Y/ZtLPrj0PBHrDECSaEUGJbLCDZpUWe7S6NaOLSK/5yOdZXRpC
+         d8PbQxYTPLA6AHrz1rRSyz6o7aQuXJdAdMTFvyUeKCi+KF4T1wbq5c2IBNVolYwXc9Rh
+         wtFuj2aj+WA6o98IJ6Blj5yQtHXoIoXi0YFW6nyX3NXkFYL2eUPbopCwHCMlqRU6W9ew
+         Yu/A==
+X-Gm-Message-State: APjAAAU/vM88+nAwV0LpwTfHNdaewT1TQ4TlNRveaocJo2UJ98OZFra9
+        4ai1JAWB0rixH6bgQMV5cJBfAYBw
+X-Google-Smtp-Source: APXvYqxTucdIQGe19RBZP1aF0z8cCU7KtJffKeYj16L/N1ayuTDjM4ZNZeJoEFN8JrhtPUJ48RbYUA==
+X-Received: by 2002:a17:906:c7d5:: with SMTP id dc21mr6481875ejb.316.1576603808876;
+        Tue, 17 Dec 2019 09:30:08 -0800 (PST)
 Received: from [10.67.50.53] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id mh16sm1121806ejb.46.2019.12.17.09.27.54
+        by smtp.googlemail.com with ESMTPSA id g4sm40524edl.6.2019.12.17.09.30.05
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 17 Dec 2019 09:27:55 -0800 (PST)
-Subject: Re: [PATCH net-next 04/11] net: phy: provide and use
- genphy_read_status_fixed()
+        Tue, 17 Dec 2019 09:30:07 -0800 (PST)
+Subject: Re: [PATCH net-next 05/11] net: phy: marvell: rearrange to use
+ genphy_read_lpa()
 To:     Russell King <rmk+kernel@armlinux.org.uk>,
         Andrew Lunn <andrew@lunn.ch>,
         Heiner Kallweit <hkallweit1@gmail.com>
 Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
 References: <20191217133827.GQ25745@shell.armlinux.org.uk>
- <E1ihD4G-0001yf-BK@rmk-PC.armlinux.org.uk>
+ <E1ihD4L-0001ym-FK@rmk-PC.armlinux.org.uk>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  xsDiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
@@ -108,12 +108,12 @@ Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  HvsHIcv4lxCWkFXkwsuWqzEKK6kxVpRDoEQPDj+Oy/ZJ5fYuMbkdHrlegwoQ64LrqdmiVVPC
  TwQYEQIADwIbDAUCVF/S8QUJHlwd3wAKCRBhV5kVtWN2Do+FAJ956xSz2XpDHql+Wg/2qv3b
  G10n8gCguORqNGMsVRxrlLs7/himep7MrCc=
-Message-ID: <ae521ee0-cc66-3773-1448-601940bea27e@gmail.com>
-Date:   Tue, 17 Dec 2019 09:27:52 -0800
+Message-ID: <681bdb3f-acf0-6289-499d-4365437664f8@gmail.com>
+Date:   Tue, 17 Dec 2019 09:30:03 -0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.2.2
 MIME-Version: 1.0
-In-Reply-To: <E1ihD4G-0001yf-BK@rmk-PC.armlinux.org.uk>
+In-Reply-To: <E1ihD4L-0001ym-FK@rmk-PC.armlinux.org.uk>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -123,10 +123,8 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On 12/17/19 5:39 AM, Russell King wrote:
-> There are two drivers and generic code which contain exactly the same
-> code to read the status of a PHY operating without autonegotiation
-> enabled. Rather than duplicate this code, provide a helper to read
-> this information.
+> Rearrange the Marvell PHY driver to use genphy_read_lpa() rather than
+> open-coding this functionality.
 > 
 > Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
 
