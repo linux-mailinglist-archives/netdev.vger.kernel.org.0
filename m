@@ -2,104 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 84B01122C4F
-	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 13:53:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F13D122C6E
+	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 14:00:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727936AbfLQMxO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Dec 2019 07:53:14 -0500
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:56176 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727700AbfLQMxO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 07:53:14 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
-        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:Reply-To:Content-ID
-        :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
-        Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=bIkKGkHFeCYPYnsvx+1+EU4iFYImAov+HqBbvJzJx3s=; b=DNz8i9QNngKAsfgZ0kUDhx8eQM
-        LA++y26GZ0XBuokqx9yBBx59Js2LHhF1YHFbmQz5UABQf1n+wMHIJRPGrWlY+RyxX5XktNX0iBH6q
-        A8Lyck1CFsVGEB7R9FNdF2ihRZJlElxQ9ajioBb2sVnezFrdunB3AIeGDblclQwIFRxP1QHiGlWQ/
-        Ygm5aexUx6d6tysQ/lfqgEnEH/3+neQqSoCtu4P7yPVu855U1r3YsPotc8ePcy5UdHIhnrfmAQ0MV
-        jT6EtA1k7BBj6DZVbMHaWeXCnnyNOdYNL1OaUfchoMHrO8ZNUlFsdq3OBjPxWwrNI+IHBGwpOl64g
-        yOU++U3w==;
-Received: from e0022681537dd.dyn.armlinux.org.uk ([2001:4d48:ad52:3201:222:68ff:fe15:37dd]:51508 helo=rmk-PC.armlinux.org.uk)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1ihCLa-00061q-CW; Tue, 17 Dec 2019 12:53:06 +0000
-Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1ihCLZ-0001Vo-Nw; Tue, 17 Dec 2019 12:53:05 +0000
-From:   Russell King <rmk+kernel@armlinux.org.uk>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: [PATCH net] net: phy: make phy_error() report which PHY has failed
+        id S1727152AbfLQNAO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Dec 2019 08:00:14 -0500
+Received: from www62.your-server.de ([213.133.104.62]:44582 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726920AbfLQNAO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 08:00:14 -0500
+Received: from sslproxy05.your-server.de ([78.46.172.2])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1ihCSR-00016t-Ig; Tue, 17 Dec 2019 14:00:11 +0100
+Received: from [178.197.249.31] (helo=pc-9.home)
+        by sslproxy05.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1ihCSR-0002ZD-82; Tue, 17 Dec 2019 14:00:11 +0100
+Subject: Re: [PATCH bpf-next 0/4] Fix perf_buffer creation on systems with
+ offline CPUs
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Kernel Team <kernel-team@fb.com>
+References: <20191212013521.1689228-1-andriin@fb.com>
+ <20191216144404.GG14887@linux.fritz.box>
+ <CAEf4BzYhmFvhL_DgeXK8xxihcxcguRzox2AXpjBS1BB4n9d7rQ@mail.gmail.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <dfb31c60-3c8c-94a2-5302-569096428e9b@iogearbox.net>
+Date:   Tue, 17 Dec 2019 14:00:10 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain; charset="utf-8"
-Message-Id: <E1ihCLZ-0001Vo-Nw@rmk-PC.armlinux.org.uk>
-Date:   Tue, 17 Dec 2019 12:53:05 +0000
+In-Reply-To: <CAEf4BzYhmFvhL_DgeXK8xxihcxcguRzox2AXpjBS1BB4n9d7rQ@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.101.4/25666/Tue Dec 17 10:54:52 2019)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-phy_error() is called from phy_interrupt() or phy_state_machine(), and
-uses WARN_ON() to print a backtrace. The backtrace is not useful when
-reporting a PHY error.
+On 12/16/19 6:59 PM, Andrii Nakryiko wrote:
+> On Mon, Dec 16, 2019 at 6:44 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
+>> On Wed, Dec 11, 2019 at 05:35:20PM -0800, Andrii Nakryiko wrote:
+>>> This patch set fixes perf_buffer__new() behavior on systems which have some of
+>>> the CPUs offline/missing (due to difference between "possible" and "online"
+>>> sets). perf_buffer will create per-CPU buffer and open/attach to corresponding
+>>> perf_event only on CPUs present and online at the moment of perf_buffer
+>>> creation. Without this logic, perf_buffer creation has no chances of
+>>> succeeding on such systems, preventing valid and correct BPF applications from
+>>> starting.
+>>
+>> Once CPU goes back online and processes BPF events, any attempt to push into
+>> perf RB via bpf_perf_event_output() with flag BPF_F_CURRENT_CPU would silently
+> 
+> bpf_perf_event_output() will return error code in such case, so it's
+> not exactly undetectable by application.
 
-However, a system may contain multiple ethernet PHYs, and phy_error()
-gives no clue which one caused the problem.
+Yeah, true, given there would be no element in the perf map at that slot, the
+program would receive -ENOENT and we could account for missed events via per
+CPU map or such.
 
-Replace WARN_ON() with a call to phydev_err() so that we can see which
-PHY had an error, and also inform the user that we are halting the PHY.
+>> get discarded. Should rather perf API be fixed instead of plain skipping as done
+>> here to at least allow creation of ring buffer for BPF to avoid such case?
+> 
+> Can you elaborate on what perf API fix you have in mind? Do you mean
+> for perf to allow attaching ring buffer to offline CPU or something
+> else?
 
-Fixes: fa7b28c11bbf ("net: phy: print stack trace in phy_error")
-Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
----
-There is another related problem in this area. If an error is detected
-while the PHY is running, phy_error() moves to PHY_HALTED state. If we
-try to take the network device down, then:
+Yes, was wondering about the former, meaning, possibility to attach ring buffer
+to offline CPU.
 
-void phy_stop(struct phy_device *phydev)
-{
-        if (!phy_is_started(phydev)) {
-                WARN(1, "called from state %s\n",
-                     phy_state_to_str(phydev->state));
-                return;
-        }
-
-triggers, and we never do any of the phy_stop() cleanup. I'm not sure
-what the best way to solve this is - introducing a PHY_ERROR state may
-be a solution, but I think we want some phy_is_started() sites to
-return true for it and others to return false.
-
-Heiner - you introduced the above warning, could you look at improving
-this case so we don't print a warning and taint the kernel when taking
-a network device down after phy_error() please?
-
-Thanks.
-
- drivers/net/phy/phy.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/phy/phy.c b/drivers/net/phy/phy.c
-index 49300fb59757..06fbca959383 100644
---- a/drivers/net/phy/phy.c
-+++ b/drivers/net/phy/phy.c
-@@ -663,7 +663,7 @@ void phy_stop_machine(struct phy_device *phydev)
-  */
- static void phy_error(struct phy_device *phydev)
- {
--	WARN_ON(1);
-+	phydev_err(phydev, "Error detected, halting PHY\n");
- 
- 	mutex_lock(&phydev->lock);
- 	phydev->state = PHY_HALTED;
--- 
-2.20.1
+>>> Andrii Nakryiko (4):
+>>>    libbpf: extract and generalize CPU mask parsing logic
+>>>    selftests/bpf: add CPU mask parsing tests
+>>>    libbpf: don't attach perf_buffer to offline/missing CPUs
+>>>    selftests/bpf: fix perf_buffer test on systems w/ offline CPUs
+>>>
+>>>   tools/lib/bpf/libbpf.c                        | 157 ++++++++++++------
+>>>   tools/lib/bpf/libbpf_internal.h               |   2 +
+>>>   .../selftests/bpf/prog_tests/cpu_mask.c       |  78 +++++++++
+>>>   .../selftests/bpf/prog_tests/perf_buffer.c    |  29 +++-
+>>>   4 files changed, 213 insertions(+), 53 deletions(-)
+>>>   create mode 100644 tools/testing/selftests/bpf/prog_tests/cpu_mask.c
+>>>
+>>> --
+>>> 2.17.1
+>>>
 
