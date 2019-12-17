@@ -2,94 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D10012344D
-	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 19:04:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 14BCC123463
+	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 19:07:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727940AbfLQSE1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Dec 2019 13:04:27 -0500
-Received: from relay3-d.mail.gandi.net ([217.70.183.195]:49765 "EHLO
-        relay3-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727918AbfLQSE1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 13:04:27 -0500
-X-Originating-IP: 90.76.143.236
-Received: from localhost (lfbn-tou-1-1075-236.w90-76.abo.wanadoo.fr [90.76.143.236])
-        (Authenticated sender: antoine.tenart@bootlin.com)
-        by relay3-d.mail.gandi.net (Postfix) with ESMTPSA id 8DA8560005;
-        Tue, 17 Dec 2019 18:04:24 +0000 (UTC)
-Date:   Tue, 17 Dec 2019 19:04:23 +0100
-From:   Antoine Tenart <antoine.tenart@bootlin.com>
-To:     Russell King <rmk+kernel@armlinux.org.uk>
-Cc:     Antoine Tenart <antoine.tenart@bootlin.com>,
-        maxime.chevallier@bootlin.com, Willy Tarreau <w@1wt.eu>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next] net: mvpp2: cycle comphy to power it down
-Message-ID: <20191217180423.GI3160@kwain>
-References: <E1ihF4S-0000gt-1B@rmk-PC.armlinux.org.uk>
+        id S1728281AbfLQSHP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Dec 2019 13:07:15 -0500
+Received: from mo4-p04-ob.smtp.rzone.de ([85.215.255.124]:27127 "EHLO
+        mo4-p04-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727797AbfLQSHO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 13:07:14 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1576606032;
+        s=strato-dkim-0002; d=goldelico.com;
+        h=Message-Id:Date:Subject:Cc:To:From:X-RZG-CLASS-ID:X-RZG-AUTH:From:
+        Subject:Sender;
+        bh=zx0YDlR/trXt7d035s0fPd4tf/CdkjzXq0uVaRx8Chg=;
+        b=Dt/CIMZE09JpjmIAhOV68Cp6d2OwzPfeSEvP9a5x9YjWI0+ni+5TYu2nurtabiPvKM
+        0rSDkjL2F0ERvUyBSn9Zbnos3qaSlTy6r4f7VEWWy3X6fw0xQqqpq7IG7QAvgDtIe2s0
+        jBk/6ReFPKGnstlkFNKLYSTc+yGJ2YjGS+kaEZ8lxu2gXj5ZNPRsiB56dUS5w3gsPt8G
+        TQ7mo1/hOBvbZDRS2pdLqana0YsFdA2t8w8N1mhwMW5a9NyhW/7nE48OZQ1ZYT/kO8O3
+        edFmBUYLctd2MspeOx4Y35/m/aH1tovqicGmfbGjN8pXOjdEjmIAHA3RRwNd0XJqNw4p
+        i/iA==
+X-RZG-AUTH: ":JGIXVUS7cutRB/49FwqZ7WcJeFKiMhflhwDubTJ9o1mfYzBGHXH5Hd8HaSCa"
+X-RZG-CLASS-ID: mo00
+Received: from iMac.fritz.box
+        by smtp.strato.de (RZmta 46.0.7 DYNA|AUTH)
+        with ESMTPSA id q020e2vBHI712eS
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+        (Client did not present a certificate);
+        Tue, 17 Dec 2019 19:07:01 +0100 (CET)
+From:   "H. Nikolaus Schaller" <hns@goldelico.com>
+To:     Ulf Hansson <ulf.hansson@linaro.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        "H. Nikolaus Schaller" <hns@goldelico.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Alexios Zavras <alexios.zavras@intel.com>
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        letux-kernel@openphoenux.org, kernel@pyra-handheld.com
+Subject: [PATCH v2 0/2] wl1251: remove ti,power-gpio for sdio mode
+Date:   Tue, 17 Dec 2019 19:06:58 +0100
+Message-Id: <cover.1576606020.git.hns@goldelico.com>
+X-Mailer: git-send-email 2.23.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <E1ihF4S-0000gt-1B@rmk-PC.armlinux.org.uk>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Russell,
+* use just "wl1251: " as title prefix - by Kalle Valo <kvalo@codeaurora.org>
+* fix error handling: we still have to check for wl->irq returning -EPROBE_DEFER
 
-On Tue, Dec 17, 2019 at 03:47:36PM +0000, Russell King wrote:
-> Presently, at boot time, the comphys are enabled. For firmware
-> compatibility reasons, the comphy driver does not power down the
-> comphys at boot. Consequently, the ethernet comphys are left active
-> until the network interfaces are brought through an up/down cycle.
-> 
-> If the port is never used, the port wastes power needlessly. Arrange
-> for the ethernet comphys to be cycled by the mvpp2 driver as if the
-> interface went through an up/down cycle during driver probe, thereby
-> powering them down.
-> 
-> This saves:
->   270mW per 10G SFP+ port on the Macchiatobin Single Shot (eth0/eth1)
->   370mW per 10G PHY port on the Macchiatobin Double Shot (eth0/eth1)
->   160mW on the SFP port on either Macchiatobin flavour (eth3)
-> 
-> Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
+PATCH V1 2019-11-24 11:35:48:
+The driver has been updated to use the mmc/sdio core
+which does full power control. So we do no longer need
+the power control gipo.
 
-Acked-by: Antoine Tenart <antoine.tenart@bootlin.com>
+Note that it is still needed for the SPI based interface
+(N900).
 
-Thanks!
-Antoine
+Suggested by: Ulf Hansson <ulf.hansson@linaro.org>
+Tested by: H. Nikolaus Schaller <hns@goldelico.com> # OpenPandora 600MHz
 
-> ---
->  drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 10 ++++++++++
->  1 file changed, 10 insertions(+)
-> 
-> diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-> index c17b6cafef07..88a475606f19 100644
-> --- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-> +++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-> @@ -5546,6 +5546,16 @@ static int mvpp2_port_probe(struct platform_device *pdev,
->  		port->phylink = NULL;
->  	}
->  
-> +	/* Cycle the comphy to power it down, saving 270mW per port -
-> +	 * don't worry about an error powering it up. When the comphy
-> +	 * driver does this, we can remove this code.
-> +	 */
-> +	if (port->comphy) {
-> +		err = mvpp22_comphy_init(port);
-> +		if (err == 0)
-> +			phy_power_off(port->comphy);
-> +	}
-> +
->  	err = register_netdev(dev);
->  	if (err < 0) {
->  		dev_err(&pdev->dev, "failed to register netdev\n");
-> -- 
-> 2.20.1
-> 
+H. Nikolaus Schaller (2):
+  DTS: bindings: wl1251: mark ti,power-gpio as optional
+  wl1251: remove ti,power-gpio for SDIO mode
+
+ .../bindings/net/wireless/ti,wl1251.txt       |  3 +-
+ drivers/net/wireless/ti/wl1251/sdio.c         | 32 ++-----------------
+ 2 files changed, 4 insertions(+), 31 deletions(-)
 
 -- 
-Antoine Ténart, Bootlin
-Embedded Linux and Kernel engineering
-https://bootlin.com
+2.23.0
+
