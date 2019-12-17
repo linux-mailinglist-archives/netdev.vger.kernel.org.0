@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 18D6A122A78
-	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 12:43:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 07952122A72
+	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 12:43:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727793AbfLQLn1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Dec 2019 06:43:27 -0500
-Received: from us03-smtprelay2.synopsys.com ([149.117.87.133]:36534 "EHLO
+        id S1727735AbfLQLnJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Dec 2019 06:43:09 -0500
+Received: from smtprelay-out1.synopsys.com ([149.117.87.133]:36564 "EHLO
         smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727216AbfLQLmy (ORCPT
+        by vger.kernel.org with ESMTP id S1727462AbfLQLmy (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 06:42:54 -0500
 Received: from mailhost.synopsys.com (mdc-mailhost2.synopsys.com [10.225.0.210])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 3B7D0C00AE;
+        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 468BFC00C9;
         Tue, 17 Dec 2019 11:42:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
-        t=1576582973; bh=4JXJjVE53ev4CfJxLlgwEg4UYykJKXcBztnhJOlrhd4=;
+        t=1576582973; bh=f1Z6qt0mb0aaiO7Qwt8NRz1uEqZUguBjtTVaqKFAPHo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:In-Reply-To:
          References:From;
-        b=XSN08CLAx/e8IwL0UGtZXT6EP42WewjKso9AIB/RVn6GD5J2EVHtPfizHOqlu4Aft
-         5eqSdhtSytTv/LSydejeKa/9F70NZzB2E7obdowhLyCFE9hMsooor4XO0mH++AV13L
-         SXNd7ASjMJ+oMhQ4aSkbmDhQqEwDogntMbt77vdDjHSalyENM51EJtFjNVGnIULOjX
-         EOWdfNfxrAoGUjwTeC/WC0+S992Qkf7r5OG2Aj+/xomg8YgAw5oBYySBEL5IJispv3
-         90s8f+BCCMSpsBclZ8M16Oudl3vpHRLhFKwFF1+wZ4XS03gX/rSspPjqoYtKvEnUfG
-         vcEUr0OLLLRVw==
+        b=HUyKFvzZJAAt+XNo3+Y9YwUOiBhMr5dTGPi2tkXQ/26o7xIMYbb6+i3tfFgNBbK1g
+         nNInt3QHc0y2Uf3pyn7+GhqLSgInSyovg6QnADrXmII4ZVzGOSx5zo+UCPVoR9JaDL
+         Qf8NFRsCKIcyQvMJoEgjf8ZY6r0tC6kmns1jGsIk+uZANwEKorC6cheqf/5Ngx/chi
+         QU2PHvQe8Gdsp5L/kMiwooMu0RWQQSkIYmlyGbBTk0vIJVGktbUoO89sNo9tRdVUzd
+         00hMsHwE7isysKebHfUxHwYe/hHn9WPLK5yUKiVZgsShZ/ykA37bWYHVYeZGHNuuu7
+         RfUGiKO4Jbu7Q==
 Received: from de02dwia024.internal.synopsys.com (de02dwia024.internal.synopsys.com [10.225.19.81])
-        by mailhost.synopsys.com (Postfix) with ESMTP id E4488A0095;
+        by mailhost.synopsys.com (Postfix) with ESMTP id ED9B2A0099;
         Tue, 17 Dec 2019 11:42:50 +0000 (UTC)
 From:   Jose Abreu <Jose.Abreu@synopsys.com>
 To:     netdev@vger.kernel.org
@@ -41,9 +41,9 @@ Cc:     Joao Pinto <Joao.Pinto@synopsys.com>,
         Maxime Coquelin <mcoquelin.stm32@gmail.com>,
         linux-stm32@st-md-mailman.stormreply.com,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net v2 4/8] net: stmmac: Only the last buffer has the FCS field
-Date:   Tue, 17 Dec 2019 12:42:34 +0100
-Message-Id: <b8e23536316451076155f4de5cc25516ab679e2e.1576581853.git.Jose.Abreu@synopsys.com>
+Subject: [PATCH net v2 5/8] net: stmmac: xgmac: Clear previous RX buffer size
+Date:   Tue, 17 Dec 2019 12:42:35 +0100
+Message-Id: <bd962deb502987964ee33d5281fa66afd6316d95.1576581853.git.Jose.Abreu@synopsys.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <cover.1576581853.git.Jose.Abreu@synopsys.com>
 References: <cover.1576581853.git.Jose.Abreu@synopsys.com>
@@ -54,10 +54,9 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Only the last received buffer contains the FCS field. Check for end of
-packet before trying to strip the FCS field.
+When switching between buffer sizes we need to clear the previous value.
 
-Fixes: 88ebe2cf7f3f ("net: stmmac: Rework stmmac_rx()")
+Fixes: d6ddfacd95c7 ("net: stmmac: Add DMA related callbacks for XGMAC2")
 Signed-off-by: Jose Abreu <Jose.Abreu@synopsys.com>
 
 ---
@@ -71,25 +70,37 @@ Cc: linux-stm32@st-md-mailman.stormreply.com
 Cc: linux-arm-kernel@lists.infradead.org
 Cc: linux-kernel@vger.kernel.org
 ---
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/stmicro/stmmac/dwxgmac2.h     | 2 ++
+ drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c | 3 ++-
+ 2 files changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index 2ebac89049ed..8c191e4d35d0 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -3644,8 +3644,9 @@ static int stmmac_rx(struct stmmac_priv *priv, int limit, u32 queue)
- 		 * feature is always disabled and packets need to be
- 		 * stripped manually.
- 		 */
--		if (unlikely(priv->synopsys_id >= DWMAC_CORE_4_00) ||
--		    unlikely(status != llc_snap)) {
-+		if (likely(!(status & rx_not_ls)) &&
-+		    (likely(priv->synopsys_id >= DWMAC_CORE_4_00) ||
-+		     unlikely(status != llc_snap))) {
- 			if (buf2_len)
- 				buf2_len -= ETH_FCS_LEN;
- 			else
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwxgmac2.h b/drivers/net/ethernet/stmicro/stmmac/dwxgmac2.h
+index 3b6e559aa0b9..ef8a07c68ca7 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwxgmac2.h
++++ b/drivers/net/ethernet/stmicro/stmmac/dwxgmac2.h
+@@ -343,6 +343,8 @@
+ #define XGMAC_DMA_CH_RX_CONTROL(x)	(0x00003108 + (0x80 * (x)))
+ #define XGMAC_RxPBL			GENMASK(21, 16)
+ #define XGMAC_RxPBL_SHIFT		16
++#define XGMAC_RBSZ			GENMASK(14, 1)
++#define XGMAC_RBSZ_SHIFT		1
+ #define XGMAC_RXST			BIT(0)
+ #define XGMAC_DMA_CH_TxDESC_HADDR(x)	(0x00003110 + (0x80 * (x)))
+ #define XGMAC_DMA_CH_TxDESC_LADDR(x)	(0x00003114 + (0x80 * (x)))
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c b/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c
+index 22a7f0cc1b90..f3f08ccc379b 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c
+@@ -482,7 +482,8 @@ static void dwxgmac2_set_bfsize(void __iomem *ioaddr, int bfsize, u32 chan)
+ 	u32 value;
+ 
+ 	value = readl(ioaddr + XGMAC_DMA_CH_RX_CONTROL(chan));
+-	value |= bfsize << 1;
++	value &= ~XGMAC_RBSZ;
++	value |= bfsize << XGMAC_RBSZ_SHIFT;
+ 	writel(value, ioaddr + XGMAC_DMA_CH_RX_CONTROL(chan));
+ }
+ 
 -- 
 2.7.4
 
