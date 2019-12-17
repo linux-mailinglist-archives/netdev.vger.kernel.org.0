@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 14F9B123A6B
-	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 00:01:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 63F89123A6D
+	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 00:01:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726721AbfLQXBG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Dec 2019 18:01:06 -0500
-Received: from mail-ed1-f68.google.com ([209.85.208.68]:44805 "EHLO
-        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726708AbfLQXBF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 18:01:05 -0500
-Received: by mail-ed1-f68.google.com with SMTP id bx28so5218edb.11;
-        Tue, 17 Dec 2019 15:01:03 -0800 (PST)
+        id S1726749AbfLQXBZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Dec 2019 18:01:25 -0500
+Received: from mail-ed1-f66.google.com ([209.85.208.66]:37471 "EHLO
+        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725946AbfLQXBY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 18:01:24 -0500
+Received: by mail-ed1-f66.google.com with SMTP id cy15so30789edb.4;
+        Tue, 17 Dec 2019 15:01:23 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=9Il9exxfboVo/7JjOIOwbqvNMX9EC3xwCCWSbXwsL9Y=;
-        b=G153WBlav7lsGeX1Q4tVAV9IbnxET76NUbYWMPGEWd8tXJTZGWiFQuTr20aI7Q+5eP
-         utl7GFFHXE+nNcj5JyngkVjny9SeQhudtWoz4vGHnWfcjXFu8UUtLTHhcGXdcCi0G8wO
-         dwM1zaLWfAxZ5sQnfG3xtvvD2iHK+z25VCsDtbOl826VshDb2yNnokRXBpFEmWts+HEv
-         qEyMKgFxEjJyI4f415lb/qkZRd1uFJ6A/wfkPaFyRK/a/jyCckS5KJcshK/sHTu7Cml1
-         boCuFrbH0bRg1+YN4kmmHoOvNPuUep6jj7+ZHTiIyArkhiQ+fYQbEL1SFwhETRoPD3bb
-         pv2Q==
+        bh=21/orN2LmeqYYduLnFssDpW4KMaZFUCIkFPESxIhb2w=;
+        b=SOlMKiKPhAaQcJKGnZqJ/rFCkMuooJuVXO8JkbNpfHgD3SsG/BR+T+f5RxVV39Ihop
+         Nq4a34dmerjoQSO3uMg8yrGhFXCFt6/pydb4MRfgMuY6EXHYIMu7iwZ+iQOwL+OsLu6o
+         r5+Hm3wDFID1Aide/68ag+1AHOFyzPr7uH488IgHELgnryrshoWfzcKri5Nhmn6gOnfs
+         iillK+cocKnSQf9LnlwxhzvGDt0eT1ooU5auf5LF2Fx8oKSWtrfpOgO2K/lNaElpwaOl
+         cQ/uXURYtZJU6oR5r9fdri+I19kF4igvHCyhkJu9Lr2IQjTxgg1npZ0PXOcQ8U/QbZbP
+         k9cQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=9Il9exxfboVo/7JjOIOwbqvNMX9EC3xwCCWSbXwsL9Y=;
-        b=GpdMvLGhxmGrB6RgStIzUrUEF9mSvOgmrsfkeil7ZBep1GWeYTJy3KL9DXQ4+4iKWQ
-         O1UOa/xK1pG0iKHkvXRX/HPEp21SnR3+e6/RwlazX32mpd20yjaBK3ZZGZJx9vzCNYvj
-         fPpKuCScamAUGt0Ugu7+crq6Vlapx0i1nJ4l4GXufvHYvqHtZYMrkTU6xSJzRy++4s+G
-         8e1S7AQtvz+tmwKAzTHMZ5/e6bSCJdkLaAGOjcohQ+dL9gItebCEjVB/cwbUkIA3Xnj1
-         axpqNAocurlBgWqNdAYwLdcSrCiR3D6ydMPwsmuPScCIdz7/dpeRyArJdxPkQsSnDCeT
-         amsA==
-X-Gm-Message-State: APjAAAXZKMn2WVej4b1s+tky6pwsKr09aEdxGmUqJlYsrU3PEC/d9ZYl
-        1IwaV3Ux/0g31fk/RvE99n1uXcv1
-X-Google-Smtp-Source: APXvYqzcG9zS0LZEFGNctlt+naCqyjQ7kZBfb6I+yLyibKmz283yXSuLAAFu83azFX/Pgrss7JL9jA==
-X-Received: by 2002:a17:906:29cb:: with SMTP id y11mr606575eje.67.1576623660807;
-        Tue, 17 Dec 2019 15:01:00 -0800 (PST)
+        bh=21/orN2LmeqYYduLnFssDpW4KMaZFUCIkFPESxIhb2w=;
+        b=QMwCETTzAl9TvHQ4u0dGG2Q2FZxTkC+FxBWwiHbU/hdE5ECLNKTP2aktlyvtoqaBsd
+         Rk30ht1IU95URH/HjP3rwHYGHJE9w3gmGqvCO5oTKLWn0OT1LA+7KidTWb8XFNdhwf67
+         1UMUiGKyDOWH3bY169okFjGEGtC/M4lMhTLnDp8rZwl+rkEahdr+LF8pEIfV3WjWx5QR
+         QyBDSIzpqxOznCsypy8qoXXV+k6r0YCKmz7+jj2zgFBtRyzlYhTWnERr7x6bOc2aL/Eu
+         4Ob5VFZY8dgDOmrFt3HdBxeBn20ppD4c7M3HQSjJqKQ0tfPAH89v1mPw2GZ9GIeqe5AE
+         LD0Q==
+X-Gm-Message-State: APjAAAVi11kZRR/4LCOftXkjGkgqxilcaczlAFL3IZGLKsqXUHgSBCHl
+        087xJJyVT2YRpJp6yvExq7Byk0pU
+X-Google-Smtp-Source: APXvYqyWfX9G4++o2XlwbsghDIwY4Ul4CaZkeJKBMd81ieEZ9R5bSmsa7rEnDIC6Tk6zqa21l8VJBw==
+X-Received: by 2002:a17:906:7848:: with SMTP id p8mr629950ejm.19.1576623682340;
+        Tue, 17 Dec 2019 15:01:22 -0800 (PST)
 Received: from [10.67.50.53] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id la19sm14498ejb.76.2019.12.17.15.00.58
+        by smtp.googlemail.com with ESMTPSA id b27sm15247ejg.40.2019.12.17.15.01.20
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 17 Dec 2019 15:01:00 -0800 (PST)
-Subject: Re: [PATCH net-next 7/8] net: bcmgenet: Be drop monitor friendly
- while re-allocating headroom
+        Tue, 17 Dec 2019 15:01:21 -0800 (PST)
+Subject: Re: [PATCH net-next 5/8] net: bcmgenet: Utilize
+ bcmgenet_set_features() during resume/open
 To:     Doug Berger <opendmb@gmail.com>,
         "David S. Miller" <davem@davemloft.net>
 Cc:     bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
 References: <1576616549-39097-1-git-send-email-opendmb@gmail.com>
- <1576616549-39097-8-git-send-email-opendmb@gmail.com>
+ <1576616549-39097-6-git-send-email-opendmb@gmail.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  xsDiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
@@ -108,12 +108,12 @@ Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  HvsHIcv4lxCWkFXkwsuWqzEKK6kxVpRDoEQPDj+Oy/ZJ5fYuMbkdHrlegwoQ64LrqdmiVVPC
  TwQYEQIADwIbDAUCVF/S8QUJHlwd3wAKCRBhV5kVtWN2Do+FAJ956xSz2XpDHql+Wg/2qv3b
  G10n8gCguORqNGMsVRxrlLs7/himep7MrCc=
-Message-ID: <2f6f9374-6b23-db29-f938-159e57bbc5e5@gmail.com>
-Date:   Tue, 17 Dec 2019 15:00:57 -0800
+Message-ID: <3ae4b0af-323f-fe8e-c4ef-eb6783826a3c@gmail.com>
+Date:   Tue, 17 Dec 2019 15:01:18 -0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.2.2
 MIME-Version: 1.0
-In-Reply-To: <1576616549-39097-8-git-send-email-opendmb@gmail.com>
+In-Reply-To: <1576616549-39097-6-git-send-email-opendmb@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -123,9 +123,9 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On 12/17/19 1:02 PM, Doug Berger wrote:
-> During bcmgenet_put_tx_csum() make sure we differentiate a SKB
-> headroom re-allocation failure from the normal swap and replace
-> path.
+> During driver resume and open, the HW may have lost its context/state,
+> utilize bcmgenet_set_features() to make sure we do restore the correct
+> set of features that were previously configured.
 > 
 > Signed-off-by: Doug Berger <opendmb@gmail.com>
 
