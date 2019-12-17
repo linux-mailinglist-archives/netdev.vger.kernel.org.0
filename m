@@ -2,224 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5FE8112248A
-	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 07:14:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 303B4122491
+	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 07:20:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727807AbfLQGO6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Dec 2019 01:14:58 -0500
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:26228 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725836AbfLQGO5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 01:14:57 -0500
-Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xBH6AD1b023333
-        for <netdev@vger.kernel.org>; Mon, 16 Dec 2019 22:14:56 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-type; s=facebook;
- bh=zEAPZ00dgAfQpetaVxX1P1hxvWQMrrVSaFMstS9jsP8=;
- b=G2ICYaT2DWcPEyi0vFknPVypTi5CvxUuNAW7bQCAPuRNUy3MCLpIXBoXeB1EZk++l+Q6
- pFrRraITEDmkaVI3e6OHZ9hZ+sZoJR8x5GBMOFEDqptLdig5OE6lErT1Wz5XVmM8/mnu
- IxOkZDq2Qd4MfCto35G6RvP/qbe6D3yME4Q= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 2wwgayr1wj-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Mon, 16 Dec 2019 22:14:56 -0800
-Received: from intmgw002.08.frc2.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:83::5) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Mon, 16 Dec 2019 22:14:55 -0800
-Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
-        id 2D2902EC1A0D; Mon, 16 Dec 2019 22:14:54 -0800 (PST)
-Smtp-Origin-Hostprefix: devbig
-From:   Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
-        <daniel@iogearbox.net>
-CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH bpf-next] selftests/bpf: more succinct Makefile output
-Date:   Mon, 16 Dec 2019 22:14:25 -0800
-Message-ID: <20191217061425.2346359-1-andriin@fb.com>
-X-Mailer: git-send-email 2.17.1
-X-FB-Internal: Safe
+        id S1727687AbfLQGTu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Dec 2019 01:19:50 -0500
+Received: from mail-eopbgr770057.outbound.protection.outlook.com ([40.107.77.57]:1344
+        "EHLO NAM02-SN1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726609AbfLQGTu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 17 Dec 2019 01:19:50 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=CLadBOlkAIFObRM4x4eX9G9Kl4Y7FTm0rq9pVaW+VaJ9OMYwKCV3O0c6+zApYp3XGVupPUXLfkpFEY7PaypOiKtr0qUV/JBY9xIWBCL7VINmooJOTp4orhVZ547RzIgugc32HAsvsHjl57x2uzoHnyNGrswCCFkFMwHXNr0kdM7kYXvVzuN7seMhzzq5YuSw6+NyJ6vmpVY8boubrwENcZPosY+J6tLaJbGEDtzKETUaK/FjGXzFG1wipXoCBbkxVZ7zN//WRbGBIzFWf7lWeQo6kXqmLYHjtZRR0NMf+qbOyaPrs/L7yn5HZsAGKSGk9zCHhMAIyOHeCwwyz1nyWw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=bn3AftZ8aEQ6YBn1crep78sVVHw+eqyfnUX3pyYDo2o=;
+ b=I5oey8oFhpD4Q3jTlBGwMR4cHr6atyWt0MajsQFkNPNiVuQG2kC4wldIfbgpp76gF5iq6KAiHqAznN/5tYjun6Q1yd4jk5JVm1Erhm8GPsKpkOnjwGyw7ZZDeyrb9Gx07aT9ToF6Ak6ijM80UFMIdtEZe/DLIALprn25J4MM5X29/t9YSfWJ+OdDD1676onE2xo+T9hdiTPMSAf1BKWwFefUcuye5WdfVkVeh6yYAsLUeHlsgAEtK4YB/t3xPHZ124xCqN0cIU72Zi5u5Cus+wZhkOGjAahynZz9sOADcg+BF6N+Al1Wfpg9xpKspPvmLEzca15rfrJl3Ufxi6nG5Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=xilinx.com; dmarc=pass action=none header.from=xilinx.com;
+ dkim=pass header.d=xilinx.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=bn3AftZ8aEQ6YBn1crep78sVVHw+eqyfnUX3pyYDo2o=;
+ b=suvUOvnGorVyBlbzq5qL1zUG/5Qos6YEtsF5HbDtSQ5BLYNoCgxtAST7F9XSn4237u8WFCC+3gDGSZBWoxmp4drZflkzX3jOtQUXdFvvxBZC31QyCMjBUrGPEeNFj1A0wJtQ+BA7sQTMmwe3gV4r8bKl+fLgVGuT08udMJNP3LY=
+Received: from CH2PR02MB7000.namprd02.prod.outlook.com (20.180.9.216) by
+ CH2PR02MB7095.namprd02.prod.outlook.com (20.180.11.80) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2538.15; Tue, 17 Dec 2019 06:19:48 +0000
+Received: from CH2PR02MB7000.namprd02.prod.outlook.com
+ ([fe80::5d66:1c32:4c41:b087]) by CH2PR02MB7000.namprd02.prod.outlook.com
+ ([fe80::5d66:1c32:4c41:b087%3]) with mapi id 15.20.2538.019; Tue, 17 Dec 2019
+ 06:19:47 +0000
+From:   Radhey Shyam Pandey <radheys@xilinx.com>
+To:     Richard Cochran <richardcochran@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        David Miller <davem@davemloft.net>,
+        Michal Simek <michals@xilinx.com>
+Subject: RE: [PATCH net-next 1/3] net: axienet: Propagate registration errors
+ during probe.
+Thread-Topic: [PATCH net-next 1/3] net: axienet: Propagate registration errors
+ during probe.
+Thread-Index: AQHVtD8/PHqqoL6sF0eYA6GsnGF+CKe92YtQ
+Date:   Tue, 17 Dec 2019 06:19:47 +0000
+Message-ID: <CH2PR02MB70009FEE62CD2AB6B40911E5C7500@CH2PR02MB7000.namprd02.prod.outlook.com>
+References: <cover.1576520432.git.richardcochran@gmail.com>
+ <42ed0fb7ef99101d6fd8b799bccb6e2d746939c2.1576520432.git.richardcochran@gmail.com>
+In-Reply-To: <42ed0fb7ef99101d6fd8b799bccb6e2d746939c2.1576520432.git.richardcochran@gmail.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=radheys@xilinx.com; 
+x-originating-ip: [149.199.50.133]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 48e50fea-5039-460e-31ce-08d782b91dec
+x-ms-traffictypediagnostic: CH2PR02MB7095:|CH2PR02MB7095:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <CH2PR02MB7095B51D88DE50C413F49168C7500@CH2PR02MB7095.namprd02.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:3826;
+x-forefront-prvs: 02543CD7CD
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(39860400002)(136003)(396003)(366004)(376002)(346002)(13464003)(199004)(189003)(71200400001)(6506007)(478600001)(316002)(4326008)(33656002)(107886003)(8936002)(8676002)(81156014)(81166006)(110136005)(9686003)(76116006)(54906003)(52536014)(55016002)(66476007)(66556008)(66446008)(64756008)(66946007)(26005)(7696005)(5660300002)(86362001)(53546011)(2906002)(186003);DIR:OUT;SFP:1101;SCL:1;SRVR:CH2PR02MB7095;H:CH2PR02MB7000.namprd02.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: xilinx.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 7/akhXLfIYA9BbgZhV991FxQN0UzIBK3tCWNQ74nT2lHaOVTSlmyW1f5taT9c1+LXOVWVLt5bjAvMcfyhLgiEZBom9hn878o/p0dZm6+y1SRQ9TkL12s2C5HqicDJ0HHWQdmX1uFdxqHNjaYbwecUfbG4zc4W2SNei0lmnO+BD7kUdXvttj5YDrecnLL0JD7ojkSpmbww1SWqQUehFmzu9FVYPUk3adv5XmjqPCKI2Jsp1mD0+PlrsWLdUOJ/olR9dgo0TTJIiYGbZ3V1wZ67ttiVyFZBVUbDyQQOgRt5xWv6jYRY7W4HxaTyMyYbzpyDxfA3vPSVr1a2s4NOoHJ0RG9VNMgFxlLAFyZwfPiIai7FIazhBkrjyNbBAAdWVSuYykVkufywvS0AGL/IZ7SuVrKfo+iuvBXx05zYU80M075WVHENRX0LAqbWzUeIhkaWD64d1Jb0JJGSLzFEmnYE+6x9JLyUnIWDopqOZUSzMrqHgpXwkTkt0Fo04TbMi7s
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
- definitions=2019-12-17_01:2019-12-16,2019-12-16 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 spamscore=0
- suspectscore=9 clxscore=1015 malwarescore=0 priorityscore=1501
- mlxlogscore=999 phishscore=0 mlxscore=0 lowpriorityscore=0 bulkscore=0
- adultscore=0 impostorscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-1910280000 definitions=main-1912170055
-X-FB-Internal: deliver
+X-OriginatorOrg: xilinx.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 48e50fea-5039-460e-31ce-08d782b91dec
+X-MS-Exchange-CrossTenant-originalarrivaltime: 17 Dec 2019 06:19:47.6085
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 657af505-d5df-48d0-8300-c31994686c5c
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 5IR5qIMVkgRRrpEoN6wkkQJrWwlHhD8P4OqppcK+j8qBHIGn4w7C9jEKMJ9mFSZN6923X2i981PWHsEuVxWhng==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR02MB7095
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Similarly to bpftool/libbpf output, make selftests/bpf output succinct
-per-item output line. Output is roughly as follows:
+> -----Original Message-----
+> From: Richard Cochran <richardcochran@gmail.com>
+> Sent: Tuesday, December 17, 2019 12:03 AM
+> To: netdev@vger.kernel.org
+> Cc: linux-arm-kernel@lists.infradead.org; David Miller
+> <davem@davemloft.net>; Michal Simek <michals@xilinx.com>; Radhey
+> Shyam Pandey <radheys@xilinx.com>
+> Subject: [PATCH net-next 1/3] net: axienet: Propagate registration errors
+> during probe.
+>=20
+> The function, axienet_mdio_setup(), calls of_mdiobus_register() which
+> might return EDEFER_PROBE.  However, this error is not propagated to
+EPROBE_DEFER.  In which scenario we are hitting probe_defer?
 
-$ make
-...
-  CLANG-LLC [test_maps] pyperf600.o
-  CLANG-LLC [test_maps] strobemeta.o
-  CLANG-LLC [test_maps] pyperf100.o
-  EXTRA-OBJ [test_progs] cgroup_helpers.o
-  EXTRA-OBJ [test_progs] trace_helpers.o
-     BINARY test_align
-     BINARY test_verifier_log
-   GEN-SKEL [test_progs] fexit_bpf2bpf.skel.h
-   GEN-SKEL [test_progs] test_global_data.skel.h
-   GEN-SKEL [test_progs] sendmsg6_prog.skel.h
-...
+> the driver's probe method, and so deferred registration cannot happen.
+> This patch fixes the issue by handling the error code properly.
+>=20
+> Signed-off-by: Richard Cochran <richardcochran@gmail.com>
+> ---
+>  drivers/net/ethernet/xilinx/xilinx_axienet_main.c | 7 ++++---
+>  1 file changed, 4 insertions(+), 3 deletions(-)
+>=20
+> diff --git a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
+> b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
+> index 20746b801959..53644abe52da 100644
+> --- a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
+> +++ b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
+> @@ -1835,9 +1835,10 @@ static int axienet_probe(struct platform_device
+> *pdev)
+>  		}
+>=20
+>  		ret =3D axienet_mdio_setup(lp);
+> -		if (ret)
+> -			dev_warn(&pdev->dev,
+> -				 "error registering MDIO bus: %d\n", ret);
+> +		if (ret) {
+> +			dev_err(&pdev->dev, "error registering MDIO
+> bus\n");
+Error handling for _mdio_setup failure seems ok. Minor nit- skip printing=20
+message " error registering MDIO bus" for defer case.
 
-To see the actual command invocation, verbose mode can be turned on with V=1
-argument:
-
-$ make V=1
-
-... very verbose output ...
-
-Signed-off-by: Andrii Nakryiko <andriin@fb.com>
----
- tools/testing/selftests/bpf/Makefile | 36 ++++++++++++++++++++++++++++
- 1 file changed, 36 insertions(+)
-
-diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
-index ba90621617a8..c652bd84ef0e 100644
---- a/tools/testing/selftests/bpf/Makefile
-+++ b/tools/testing/selftests/bpf/Makefile
-@@ -77,6 +77,24 @@ TEST_GEN_PROGS_EXTENDED = test_sock_addr test_skb_cgroup_id_user \
- 
- TEST_CUSTOM_PROGS = urandom_read
- 
-+# Emit succinct information message describing current building step
-+# $1 - generic step name (e.g., CC, LINK, etc);
-+# $2 - optional "flavor" specifier; if provided, will be emitted as [flavor];
-+# $3 - target (assumed to be file); only file name will be emitted;
-+# $4 - optional extra arg, emitted as-is, if provided.
-+ifeq ($(V),1)
-+msg =
-+else
-+msg = @$(info $(1)$(if $(2), [$(2)]) $(notdir $(3)))$(if $(4), $(4))
-+endif
-+
-+# override lib.mk's default rules
-+OVERRIDE_TARGETS := 1
-+override define CLEAN
-+	$(call msg,    CLEAN)
-+	$(RM) -r $(TEST_GEN_PROGS) $(TEST_GEN_PROGS_EXTENDED) $(TEST_GEN_FILES) $(EXTRA_CLEAN)
-+endef
-+
- include ../lib.mk
- 
- # Define simple and short `make test_progs`, `make test_sysctl`, etc targets
-@@ -89,10 +107,16 @@ $(notdir $(TEST_GEN_PROGS)						\
- 	 $(TEST_GEN_PROGS_EXTENDED)					\
- 	 $(TEST_CUSTOM_PROGS)): %: $(OUTPUT)/% ;
- 
-+$(OUTPUT)/%:%.c
-+	$(call msg,     BINARY,,$@)
-+	$(LINK.c) $^ $(LDLIBS) -o $@
-+
- $(OUTPUT)/urandom_read: urandom_read.c
-+	$(call msg,     BINARY,,$@)
- 	$(CC) -o $@ $< -Wl,--build-id
- 
- $(OUTPUT)/test_stub.o: test_stub.c
-+	$(call msg,         CC,,$@)
- 	$(CC) -c $(CFLAGS) -o $@ $<
- 
- BPFOBJ := $(OUTPUT)/libbpf.a
-@@ -167,24 +191,28 @@ $(OUTPUT)/flow_dissector_load.o: flow_dissector_load.h
- # $3 - CFLAGS
- # $4 - LDFLAGS
- define CLANG_BPF_BUILD_RULE
-+	$(call msg,  CLANG-LLC,$(TRUNNER_BINARY),$2)
- 	($(CLANG) $3 -O2 -target bpf -emit-llvm				\
- 		-c $1 -o - || echo "BPF obj compilation failed") | 	\
- 	$(LLC) -mattr=dwarfris -march=bpf -mcpu=probe $4 -filetype=obj -o $2
- endef
- # Similar to CLANG_BPF_BUILD_RULE, but with disabled alu32
- define CLANG_NOALU32_BPF_BUILD_RULE
-+	$(call msg,  CLANG-LLC,$(TRUNNER_BINARY),$2)
- 	($(CLANG) $3 -O2 -target bpf -emit-llvm				\
- 		-c $1 -o - || echo "BPF obj compilation failed") | 	\
- 	$(LLC) -march=bpf -mcpu=v2 $4 -filetype=obj -o $2
- endef
- # Similar to CLANG_BPF_BUILD_RULE, but using native Clang and bpf LLC
- define CLANG_NATIVE_BPF_BUILD_RULE
-+	$(call msg,  CLANG-BPF,$(TRUNNER_BINARY),$2)
- 	($(CLANG) $3 -O2 -emit-llvm					\
- 		-c $1 -o - || echo "BPF obj compilation failed") | 	\
- 	$(LLC) -march=bpf -mcpu=probe $4 -filetype=obj -o $2
- endef
- # Build BPF object using GCC
- define GCC_BPF_BUILD_RULE
-+	$(call msg,    GCC-BPF,$(TRUNNER_BINARY),$2)
- 	$(BPF_GCC) $3 $4 -O2 -c $1 -o $2
- endef
- 
-@@ -243,6 +271,7 @@ $(TRUNNER_BPF_OBJS): $(TRUNNER_OUTPUT)/%.o:				\
- $(TRUNNER_BPF_SKELS): $(TRUNNER_OUTPUT)/%.skel.h:			\
- 		      $(TRUNNER_OUTPUT)/%.o				\
- 		      | $(BPFTOOL) $(TRUNNER_OUTPUT)
-+	$$(call msg,   GEN-SKEL,$(TRUNNER_BINARY),$$@)
- 	$$(BPFTOOL) gen skeleton $$< > $$@
- endif
- 
-@@ -250,6 +279,7 @@ endif
- ifeq ($($(TRUNNER_TESTS_DIR)-tests-hdr),)
- $(TRUNNER_TESTS_DIR)-tests-hdr := y
- $(TRUNNER_TESTS_HDR): $(TRUNNER_TESTS_DIR)/*.c
-+	$$(call msg,   TEST-HDR,$(TRUNNER_BINARY),$$@)
- 	$$(shell ( cd $(TRUNNER_TESTS_DIR);				\
- 		  echo '/* Generated header, do not edit */';		\
- 		  ls *.c 2> /dev/null |					\
-@@ -265,6 +295,7 @@ $(TRUNNER_TEST_OBJS): $(TRUNNER_OUTPUT)/%.test.o:			\
- 		      $(TRUNNER_BPF_OBJS)				\
- 		      $(TRUNNER_BPF_SKELS)				\
- 		      $$(BPFOBJ) | $(TRUNNER_OUTPUT)
-+	$$(call msg,   TEST-OBJ,$(TRUNNER_BINARY),$$@)
- 	cd $$(@D) && $$(CC) $$(CFLAGS) -c $(CURDIR)/$$< $$(LDLIBS) -o $$(@F)
- 
- $(TRUNNER_EXTRA_OBJS): $(TRUNNER_OUTPUT)/%.o:				\
-@@ -272,17 +303,20 @@ $(TRUNNER_EXTRA_OBJS): $(TRUNNER_OUTPUT)/%.o:				\
- 		       $(TRUNNER_EXTRA_HDRS)				\
- 		       $(TRUNNER_TESTS_HDR)				\
- 		       $$(BPFOBJ) | $(TRUNNER_OUTPUT)
-+	$$(call msg,  EXTRA-OBJ,$(TRUNNER_BINARY),$$@)
- 	$$(CC) $$(CFLAGS) -c $$< $$(LDLIBS) -o $$@
- 
- # only copy extra resources if in flavored build
- $(TRUNNER_BINARY)-extras: $(TRUNNER_EXTRA_FILES) | $(TRUNNER_OUTPUT)
- ifneq ($2,)
-+	$$(call msg,  EXTRAS-CP,$(TRUNNER_BINARY),$(TRUNNER_EXTRA_FILES))
- 	cp -a $$^ $(TRUNNER_OUTPUT)/
- endif
- 
- $(OUTPUT)/$(TRUNNER_BINARY): $(TRUNNER_TEST_OBJS)			\
- 			     $(TRUNNER_EXTRA_OBJS) $$(BPFOBJ)		\
- 			     | $(TRUNNER_BINARY)-extras
-+	$$(call msg,     BINARY,,$$@)
- 	$$(CC) $$(CFLAGS) $$(filter %.a %.o,$$^) $$(LDLIBS) -o $$@
- 
- endef
-@@ -334,10 +368,12 @@ verifier/tests.h: verifier/*.c
- 		  echo '#endif' \
- 		) > verifier/tests.h)
- $(OUTPUT)/test_verifier: test_verifier.c verifier/tests.h $(BPFOBJ) | $(OUTPUT)
-+	$(call msg,     BINARY,,$@)
- 	$(CC) $(CFLAGS) $(filter %.a %.o %.c,$^) $(LDLIBS) -o $@
- 
- # Make sure we are able to include and link libbpf against c++.
- $(OUTPUT)/test_cpp: test_cpp.cpp $(BPFOBJ)
-+	$(call msg,        CXX,,$@)
- 	$(CXX) $(CFLAGS) $^ $(LDLIBS) -o $@
- 
- EXTRA_CLEAN := $(TEST_CUSTOM_PROGS)					\
--- 
-2.17.1
+> +			goto free_netdev;
+> +		}
+>  	}
+>=20
+>  	lp->phylink_config.dev =3D &ndev->dev;
+> --
+> 2.20.1
 
