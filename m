@@ -2,58 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 19E6512392C
-	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 23:12:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F2E5412392D
+	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 23:12:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726496AbfLQWMg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Dec 2019 17:12:36 -0500
-Received: from mail-lf1-f65.google.com ([209.85.167.65]:33293 "EHLO
-        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725805AbfLQWMg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 17:12:36 -0500
-Received: by mail-lf1-f65.google.com with SMTP id n25so171407lfl.0
-        for <netdev@vger.kernel.org>; Tue, 17 Dec 2019 14:12:34 -0800 (PST)
+        id S1726539AbfLQWMj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Dec 2019 17:12:39 -0500
+Received: from mail-lf1-f68.google.com ([209.85.167.68]:39073 "EHLO
+        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726512AbfLQWMj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 17:12:39 -0500
+Received: by mail-lf1-f68.google.com with SMTP id y1so149175lfb.6
+        for <netdev@vger.kernel.org>; Tue, 17 Dec 2019 14:12:37 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=VKzEutmQkj442xG4QYwCfewDTbDd/w0Y8fetglGnNkM=;
-        b=HD67M/SjW1hrU5fu4qzA4k0XyUQVP05q6ma4X0uH2nnFEmKAshXXg8GFhhw0FvQJID
-         FrewhBOWFTd7o3alGSIm3u63MlzG4DQl7w92vfXpVuDViOlHf0qFgO3mREXaOXwDD2DN
-         LkhOYA4HG5kL4YU5W9pW2Zg2ohjug+iEL1KtB0oHK3QYMmULb1UZJqFEAzLN2U/wYvDA
-         tuyesE9FQXvpY0lbYFY4rUwWYWvRLV0fMje2FsyBRXzmPN/lcdH5oOAFg0zuXEJL4wnC
-         ctPRbJpfP4M2WlPMGSecyLUxpyNuyq3OMqYy2pkLBaHSstCBPLM2L36/XbCDKJKfffp+
-         y20Q==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=+VxjxeAv2t9rsmhLG5vd4txDaJ2R/vecyIcH3T4Q9hE=;
+        b=EnGUkdVDhptludmZ76o1klnD3F/+HFYq1Y5qf6wgSUJmJNWnsA9nbg+sbsZjdP57ja
+         zMvO/72lYIm8rqejsl02m2QZg3bio234mQfwmbF5u8Pjdo/YH05WSs951pQtuJ0NUTrg
+         F62z4wukaceEAK3hFu6z3m+V//yZk29Ew66nN8H+VmRz/mVMJ+KfnMRj5iP5rj4i14hY
+         0BdBmq8Li0pnnUGBHQ9YCmvQP6q0bBqJtSabWZdgecryqbn8bjqsbY3lOv5FV2JGz/mN
+         WhYfuhRiw8w/Q5sZN9G8hzepxF7dEvW6smS1xKgz4Qu25Y3qpWZZIbMhUTsxp8XrG/tj
+         W9lQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=VKzEutmQkj442xG4QYwCfewDTbDd/w0Y8fetglGnNkM=;
-        b=OwqEg13UDdjHnWqUYSEr6HW3EhfYCtOgE69x+nSEaRkY0XOWwMgIZcad7dhqdE4rFg
-         enRaaWB1lKGQmNetPM9t/qLA4DgDmW4813DWksg8ymtzTLErJwF42kxz7Rcpdd6xiFdQ
-         FRlI1EKaObZWMw541gOF49hhqQxKp/iNhLcwDkXh4FFoLEFLdRFlVLI8KoetTku9I8d/
-         qAUStk7yzbU9mtBx2X9RGTdepTquW1jVF1PPuSkQmlUBoNyZejX6JC1/iX0StHG7po+T
-         TNjC9MXr1snq2ixNo1OKqmgQEe/rJd7PkOAOk4SqtcsTldehXGqa0W47tvDoP60S9xK/
-         Qhbg==
-X-Gm-Message-State: APjAAAVxjyIWJIBYPOmbCkz3ujgOsWWoZVJSuS0N3QVnaA/qQXe4/8H3
-        PNytltQIcGRUWetbieh/lEXNNw==
-X-Google-Smtp-Source: APXvYqzx8rfFm6M08AfGHHWq+SSajgtkUurmYXwS7sG9S3P6sWdpuE1Ceg+cmbeYCST1DGzKHFMtjQ==
-X-Received: by 2002:ac2:4add:: with SMTP id m29mr4148699lfp.190.1576620753913;
-        Tue, 17 Dec 2019 14:12:33 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=+VxjxeAv2t9rsmhLG5vd4txDaJ2R/vecyIcH3T4Q9hE=;
+        b=QO5LnlL9TdGN428ZV8aYJWqlDicJpYtKtLqMx5lkV64mU1mfppIGM7pj0maa8DavN7
+         bL5nXYCOtTDdofsBg5bE6Y7MooXxcVMssDI0TriKUSHTgpO1j7JQrJ0QDFePSNbdFTcG
+         INsYqt4pdChGlpH96qfmv75//+2irOANig8nGC0TdIKkM26rJq8iXqibhyO+EzWQ52ap
+         z1/isHF1ZwwBPETyf/hoTUHjhz1jfZASMjHN+HLurhAe3vBDewQYX6AtNN8lPbcKFInE
+         5cz9TRZiG6nJlnVMR97UlVW58ftHdurNNlWRkUSD+E9yL3D3smVgy784NDHOylRU2tpy
+         ILbA==
+X-Gm-Message-State: APjAAAWajBztWl2tKrbSb+c9YBBbL7mDwdXSpOn3lcfgBK+M4BnkSs3y
+        EGRz7Ncn67kOO1tx7F6Idi0eZg==
+X-Google-Smtp-Source: APXvYqwx8VuApWKYJabNsFFkZTk2RNmp7SyClGkQ9uz9CtT2TNw1lTEEMKrVtuUWRHe+Fg+zQ/fJhQ==
+X-Received: by 2002:a19:40d8:: with SMTP id n207mr4258395lfa.4.1576620756873;
+        Tue, 17 Dec 2019 14:12:36 -0800 (PST)
 Received: from jkicinski-Precision-T1700.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id u9sm13333440lju.95.2019.12.17.14.12.30
+        by smtp.gmail.com with ESMTPSA id u9sm13333440lju.95.2019.12.17.14.12.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 Dec 2019 14:12:33 -0800 (PST)
+        Tue, 17 Dec 2019 14:12:36 -0800 (PST)
 From:   Jakub Kicinski <jakub.kicinski@netronome.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, oss-drivers@netronome.com,
         borisp@mellanox.com, aviadye@mellanox.com,
         john.fastabend@gmail.com, daniel@iogearbox.net,
         Jakub Kicinski <jakub.kicinski@netronome.com>
-Subject: [PATCH net-next 0/3] nfp: tls: implement the stream sync RX resync
-Date:   Tue, 17 Dec 2019 14:11:59 -0800
-Message-Id: <20191217221202.12611-1-jakub.kicinski@netronome.com>
+Subject: [PATCH net-next 1/3] nfp: pass packet pointer to nfp_net_parse_meta()
+Date:   Tue, 17 Dec 2019 14:12:00 -0800
+Message-Id: <20191217221202.12611-2-jakub.kicinski@netronome.com>
 X-Mailer: git-send-email 2.23.0
+In-Reply-To: <20191217221202.12611-1-jakub.kicinski@netronome.com>
+References: <20191217221202.12611-1-jakub.kicinski@netronome.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -61,32 +63,64 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi!
+Make nfp_net_parse_meta() take a packet pointer and return
+a drop/no drop decision. Right now it returns the end of
+metadata and caller compares it to the packet pointer.
 
-This small series adds support for using the device
-in stream scan RX resync mode which improves the RX
-resync success rate. Without stream scan it's pretty
-much impossible to successfully resync a continuous
-stream.
+Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+---
+ .../ethernet/netronome/nfp/nfp_net_common.c    | 18 ++++++++----------
+ 1 file changed, 8 insertions(+), 10 deletions(-)
 
-Jakub Kicinski (3):
-  nfp: pass packet pointer to nfp_net_parse_meta()
-  net/tls: add helper for testing if socket is RX offloaded
-  nfp: tls: implement the stream sync RX resync
-
- drivers/net/ethernet/netronome/nfp/ccm.h      |  1 +
- .../ethernet/netronome/nfp/crypto/crypto.h    | 15 ++++
- .../net/ethernet/netronome/nfp/crypto/fw.h    |  8 ++
- .../net/ethernet/netronome/nfp/crypto/tls.c   | 89 +++++++++++++++++--
- drivers/net/ethernet/netronome/nfp/nfp_net.h  |  6 ++
- .../ethernet/netronome/nfp/nfp_net_common.c   | 25 +++---
- .../net/ethernet/netronome/nfp/nfp_net_ctrl.c | 41 +++++++--
- .../net/ethernet/netronome/nfp/nfp_net_ctrl.h |  9 ++
- .../ethernet/netronome/nfp/nfp_net_ethtool.c  |  8 +-
- include/net/tls.h                             |  9 ++
- net/tls/tls_device.c                          |  5 +-
- 11 files changed, 190 insertions(+), 26 deletions(-)
-
+diff --git a/drivers/net/ethernet/netronome/nfp/nfp_net_common.c b/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
+index d4eeb3b3cf35..780bd1daa601 100644
+--- a/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
++++ b/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
+@@ -1661,9 +1661,9 @@ nfp_net_set_hash_desc(struct net_device *netdev, struct nfp_meta_parsed *meta,
+ 			 &rx_hash->hash);
+ }
+ 
+-static void *
++static bool
+ nfp_net_parse_meta(struct net_device *netdev, struct nfp_meta_parsed *meta,
+-		   void *data, int meta_len)
++		   void *data, void *pkt, int meta_len)
+ {
+ 	u32 meta_info;
+ 
+@@ -1694,13 +1694,13 @@ nfp_net_parse_meta(struct net_device *netdev, struct nfp_meta_parsed *meta,
+ 			data += 4;
+ 			break;
+ 		default:
+-			return NULL;
++			return true;
+ 		}
+ 
+ 		meta_info >>= NFP_NET_META_FIELD_SIZE;
+ 	}
+ 
+-	return data;
++	return data != pkt;
+ }
+ 
+ static void
+@@ -1885,12 +1885,10 @@ static int nfp_net_rx(struct nfp_net_rx_ring *rx_ring, int budget)
+ 			nfp_net_set_hash_desc(dp->netdev, &meta,
+ 					      rxbuf->frag + meta_off, rxd);
+ 		} else if (meta_len) {
+-			void *end;
+-
+-			end = nfp_net_parse_meta(dp->netdev, &meta,
+-						 rxbuf->frag + meta_off,
+-						 meta_len);
+-			if (unlikely(end != rxbuf->frag + pkt_off)) {
++			if (unlikely(nfp_net_parse_meta(dp->netdev, &meta,
++							rxbuf->frag + meta_off,
++							rxbuf->frag + pkt_off,
++							meta_len))) {
+ 				nn_dp_warn(dp, "invalid RX packet metadata\n");
+ 				nfp_net_rx_drop(dp, r_vec, rx_ring, rxbuf,
+ 						NULL);
 -- 
 2.23.0
 
