@@ -2,224 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 20511122DEE
-	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 15:04:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2BDFB122DD5
+	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 15:00:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728752AbfLQOEm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Dec 2019 09:04:42 -0500
-Received: from sitav-80046.hsr.ch ([152.96.80.46]:60864 "EHLO
-        mail.strongswan.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728546AbfLQOEj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 09:04:39 -0500
-Received: from obook.wlp.is (unknown [185.12.128.225])
-        by mail.strongswan.org (Postfix) with ESMTPSA id C098A405F4;
-        Tue, 17 Dec 2019 14:56:22 +0100 (CET)
-From:   Martin Willi <martin@strongswan.org>
-To:     netfilter-devel@vger.kernel.org
-Cc:     netdev@vger.kernel.org
-Subject: [PATCH iptables] extensions: Add new xt_slavedev input interface match extension
-Date:   Tue, 17 Dec 2019 14:56:16 +0100
-Message-Id: <20191217135616.25751-3-martin@strongswan.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20191217135616.25751-1-martin@strongswan.org>
-References: <20191217135616.25751-1-martin@strongswan.org>
+        id S1728752AbfLQN7v (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Dec 2019 08:59:51 -0500
+Received: from hqnvemgate26.nvidia.com ([216.228.121.65]:15008 "EHLO
+        hqnvemgate26.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728539AbfLQN7u (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 08:59:50 -0500
+Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate26.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
+        id <B5df8df4b0000>; Tue, 17 Dec 2019 05:59:40 -0800
+Received: from hqmail.nvidia.com ([172.20.161.6])
+  by hqpgpgate101.nvidia.com (PGP Universal service);
+  Tue, 17 Dec 2019 05:59:49 -0800
+X-PGP-Universal: processed;
+        by hqpgpgate101.nvidia.com on Tue, 17 Dec 2019 05:59:49 -0800
+Received: from [10.2.165.11] (10.124.1.5) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Tue, 17 Dec
+ 2019 13:59:48 +0000
+Subject: Re: [RFC PATCH] mm/gup: try_pin_compound_head() can be static
+To:     kbuild test robot <lkp@intel.com>
+CC:     <kbuild-all@lists.01.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Dave Chinner <david@fromorbit.com>,
+        David Airlie <airlied@linux.ie>,
+        "David S . Miller" <davem@davemloft.net>,
+        Ira Weiny <ira.weiny@intel.com>, Jan Kara <jack@suse.cz>,
+        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
+        Jonathan Corbet <corbet@lwn.net>,
+        =?UTF-8?B?SsOpcsO0bWUgR2xpc3Nl?= <jglisse@redhat.com>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Michal Hocko <mhocko@suse.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Paul Mackerras <paulus@samba.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Vlastimil Babka <vbabka@suse.cz>, <bpf@vger.kernel.org>,
+        <dri-devel@lists.freedesktop.org>, <kvm@vger.kernel.org>,
+        <linux-block@vger.kernel.org>, <linux-doc@vger.kernel.org>,
+        <linux-fsdevel@vger.kernel.org>, <linux-kselftest@vger.kernel.org>,
+        <linux-media@vger.kernel.org>, <linux-rdma@vger.kernel.org>,
+        <linuxppc-dev@lists.ozlabs.org>, <netdev@vger.kernel.org>,
+        <linux-mm@kvack.org>, LKML <linux-kernel@vger.kernel.org>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>
+References: <20191211025318.457113-24-jhubbard@nvidia.com>
+ <20191217080358.q3k57ta62txvip5h@4978f4969bb8>
+From:   John Hubbard <jhubbard@nvidia.com>
+X-Nvconfidentiality: public
+Message-ID: <7828a101-e422-8e2a-ef9b-9c0285065ed5@nvidia.com>
+Date:   Tue, 17 Dec 2019 05:56:56 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.3.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20191217080358.q3k57ta62txvip5h@4978f4969bb8>
+X-Originating-IP: [10.124.1.5]
+X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1576591180; bh=+kY6WrbKA7lSfaR6JiJsMhpW0kY3DW4edAlAk5Ve1Ws=;
+        h=X-PGP-Universal:Subject:To:CC:References:From:X-Nvconfidentiality:
+         Message-ID:Date:User-Agent:MIME-Version:In-Reply-To:
+         X-Originating-IP:X-ClientProxiedBy:Content-Type:Content-Language:
+         Content-Transfer-Encoding;
+        b=GbGZzaEh7giluV7bpN/IIAOj3Mc18AXcjLeuEGsTgM8/schRNFGUqCq00YAc4ARRK
+         0PVe1s7+qdvFmh1Ttru614AJtLodM6wJzZ2UNnA1jIm2+JCvQssDVh7rwrwji91hSp
+         Dmomrx8a2mkRdKDi+zuehTjS+cK+ceZUGuV2qS+Q00TgS6unnj2J/spZ+jPwNEGl3X
+         xJTAKof+O0alRzDH3cC7VTlXjNJwIWhcBZya8mbb62MvfcrAHYE78VekfobHefcZXx
+         ueLyg5p/jxUNWHBbbcLlFxuQBAi3TiHxhM/GsO23RipjSLUTZwruxA+61/WfeUhUby
+         xcvllM2I0K27A==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When filtering in INPUT or FORWARD within a VRF domain, input interface
-matching is done against the VRF device name instead of the real input
-interface. This makes interface based filtering difficult if the interface
-is associated to a VRF or some other layer 3 master device. While
-PREROUTING can match against the real input interface, using it for
-filtering is often inconvenient.
+On 12/17/19 12:03 AM, kbuild test robot wrote:
+> 
+> Fixes: 8086d1c61970 ("mm/gup: track FOLL_PIN pages")
+> Signed-off-by: kbuild test robot <lkp@intel.com>
+> ---
+>   gup.c |    2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/mm/gup.c b/mm/gup.c
+> index 038b71165a761..849a6f55938e6 100644
+> --- a/mm/gup.c
+> +++ b/mm/gup.c
+> @@ -75,7 +75,7 @@ static inline struct page *try_get_compound_head(struct page *page, int refs)
+>    * @Return:	the compound head page, with ref appropriately incremented,
+>    * or NULL upon failure.
+>    */
+> -__must_check struct page *try_pin_compound_head(struct page *page, int refs)
+> +static __must_check struct page *try_pin_compound_head(struct page *page, int refs)
+>   {
+>   	struct page *head = try_get_compound_head(page,
+>   						  GUP_PIN_COUNTING_BIAS * refs);
+> 
 
-To allow filtering in INPUT/FORWARD against the real input interface,
-add a match extension for this specific purpose. It is very similar
-to the layer 2 slave device match implemented in xt_physdev to match
-against bridge ports, but matches on layer 3 slave devices.
+Yes, it should have been declared static. And this also applies to the latest version
+(v11). The preferred fix would stay within 80 columns, like this:
 
-As an option, the user may specify a "strict" flag, limiting matches to
-interfaces that strictly are layer 3 slave devices.
+diff --git a/mm/gup.c b/mm/gup.c
+index c2793a86450e..39b2f683bd2e 100644
+--- a/mm/gup.c
++++ b/mm/gup.c
+@@ -75,7 +75,8 @@ static inline struct page *try_get_compound_head(struct page *page, int refs)
+   * @Return:    the compound head page, with ref appropriately incremented,
+   * or NULL upon failure.
+   */
+-__must_check struct page *try_pin_compound_head(struct page *page, int refs)
++static __must_check struct page *try_pin_compound_head(struct page *page,
++                                                      int refs)
+  {
+         struct page *head = try_get_compound_head(page,
+                                                   GUP_PIN_COUNTING_BIAS * refs);
 
-Signed-off-by: Martin Willi <martin@strongswan.org>
----
- extensions/libxt_slavedev.c           | 98 +++++++++++++++++++++++++++
- extensions/libxt_slavedev.man         | 19 ++++++
- extensions/libxt_slavedev.t           |  4 ++
- include/linux/netfilter/xt_slavedev.h | 18 +++++
- 4 files changed, 139 insertions(+)
- create mode 100644 extensions/libxt_slavedev.c
- create mode 100644 extensions/libxt_slavedev.man
- create mode 100644 extensions/libxt_slavedev.t
- create mode 100644 include/linux/netfilter/xt_slavedev.h
 
-diff --git a/extensions/libxt_slavedev.c b/extensions/libxt_slavedev.c
-new file mode 100644
-index 000000000000..d957c889e1a1
---- /dev/null
-+++ b/extensions/libxt_slavedev.c
-@@ -0,0 +1,98 @@
-+#include <stdio.h>
-+#include <string.h>
-+#include <xtables.h>
-+#include <linux/netfilter/xt_slavedev.h>
-+
-+enum {
-+	O_SLAVEDEV_IN = 0,
-+	O_SLAVEDEV_IN_STRICT,
-+};
-+
-+static void slavedev_help(void)
-+{
-+	printf(
-+"slavedev match options:\n"
-+" [!] --slavedev-in inputname[+]	input device name ([+] for wildcard)\n"
-+"     --slavedev-in-strict		input device must be layer 3 slave device\n");
-+}
-+
-+static const struct xt_option_entry slavedev_opts[] = {
-+	{.name = "slavedev-in", .id = O_SLAVEDEV_IN, .type = XTTYPE_STRING,
-+	 .flags = XTOPT_INVERT | XTOPT_PUT,
-+	 XTOPT_POINTER(struct xt_slavedev_info, iniface)},
-+	{.name = "slavedev-in-strict", .id = O_SLAVEDEV_IN_STRICT,
-+	 .type = XTTYPE_NONE},
-+	XTOPT_TABLEEND,
-+};
-+
-+static void slavedev_parse(struct xt_option_call *cb)
-+{
-+	struct xt_slavedev_info *info = cb->data;
-+
-+	xtables_option_parse(cb);
-+	switch (cb->entry->id) {
-+	case O_SLAVEDEV_IN:
-+		xtables_parse_interface(cb->arg, info->iniface,
-+					info->iniface_mask);
-+		if (cb->invert)
-+			info->flags |= XT_SLAVEDEV_IN_INV;
-+		break;
-+	case O_SLAVEDEV_IN_STRICT:
-+		info->flags |= XT_SLAVEDEV_IN_STRICT;
-+		break;
-+	}
-+}
-+
-+static bool slavedev_has_iniface(const struct xt_slavedev_info *info)
-+{
-+	int i;
-+
-+	for (i = 0; i < sizeof(info->iniface_mask); i++)
-+		if (info->iniface_mask[i])
-+			return true;
-+	return false;
-+}
-+
-+static void
-+slavedev_print(const void *ip, const struct xt_entry_match *match, int numeric)
-+{
-+	const struct xt_slavedev_info *info = (const void *)match->data;
-+
-+	printf(" slavedev");
-+	if (slavedev_has_iniface(info))
-+		printf("%s in %s",
-+		       (info->flags & XT_SLAVEDEV_IN_INV) ? " !" : "",
-+		       info->iniface);
-+	if (info->flags & XT_SLAVEDEV_IN_STRICT)
-+		printf(" in-strict");
-+}
-+
-+static void slavedev_save(const void *ip, const struct xt_entry_match *match)
-+{
-+	const struct xt_slavedev_info *info = (const void *)match->data;
-+
-+	if (slavedev_has_iniface(info))
-+		printf("%s --slavedev-in %s",
-+		       (info->flags & XT_SLAVEDEV_IN_INV) ? " !" : "",
-+		       info->iniface);
-+	if (info->flags & XT_SLAVEDEV_IN_STRICT)
-+		printf(" --slavedev-in-strict");
-+}
-+
-+static struct xtables_match slavedev_match = {
-+	.family		= NFPROTO_UNSPEC,
-+	.name		= "slavedev",
-+	.version	= XTABLES_VERSION,
-+	.size		= XT_ALIGN(sizeof(struct xt_slavedev_info)),
-+	.userspacesize	= XT_ALIGN(sizeof(struct xt_slavedev_info)),
-+	.help		= slavedev_help,
-+	.print		= slavedev_print,
-+	.save		= slavedev_save,
-+	.x6_parse	= slavedev_parse,
-+	.x6_options	= slavedev_opts,
-+};
-+
-+void _init(void)
-+{
-+	xtables_register_match(&slavedev_match);
-+}
-diff --git a/extensions/libxt_slavedev.man b/extensions/libxt_slavedev.man
-new file mode 100644
-index 000000000000..127eab4872f4
---- /dev/null
-+++ b/extensions/libxt_slavedev.man
-@@ -0,0 +1,19 @@
-+This module matches on the real input interface enslaved to layer 3 master
-+devices. For devices associated to VRF interfaces, the standard matching in
-+\fBINPUT\fP and \fBFORWARD\fP chains can match against the VRF interface
-+name, only. The slavedev match can match against the real input interface
-+instead.
-+.PP
-+The slavedef match is valid in the \fBINPUT\fP and \fBFORWARD\fP chains
-+only, as \fBPREROUTING\fP always matches against the real input interface.
-+.TP
-+[\fB!\fP] \fB\-\-slavedev\-in\fP \fIname\fP
-+Name of a slave device the packet has been received on. If the interface name
-+ends in a "+", then any interface which begins with this name will match.
-+Not specifying an input interface can be used to match any packet that
-+was received over a layer 3 slave device if the strict flag below is given.
-+.TP
-+\fB\-\-slavedev\-in\-strict\fP
-+Matches only if the input interface is actually a layer 3 slave device,
-+i.e. is associated to a VRF domain. If this flag is omitted, it also
-+matches input interfaces without a layer 3 master device.
-diff --git a/extensions/libxt_slavedev.t b/extensions/libxt_slavedev.t
-new file mode 100644
-index 000000000000..80b0ff3b4264
---- /dev/null
-+++ b/extensions/libxt_slavedev.t
-@@ -0,0 +1,4 @@
-+:INPUT,FORWARD
-+-m slavedev --slavedev-in lo;=;OK
-+-m slavedev --slavedev-in-strict;=;OK
-+-m slavedev --slavedev-in eth+ --slavedev-in-strict;=;OK
-diff --git a/include/linux/netfilter/xt_slavedev.h b/include/linux/netfilter/xt_slavedev.h
-new file mode 100644
-index 000000000000..d35785b04c4b
---- /dev/null
-+++ b/include/linux/netfilter/xt_slavedev.h
-@@ -0,0 +1,18 @@
-+/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
-+#ifndef _UAPI_XT_SLAVEDEV_H
-+#define _UAPI_XT_SLAVEDEV_H
-+
-+#include <linux/types.h>
-+#include <linux/if.h>
-+
-+#define XT_SLAVEDEV_IN_INV	0x01	/* invert interface match */
-+#define XT_SLAVEDEV_IN_STRICT	0x02	/* require iif to be enslaved */
-+#define XT_SLAVEDEV_MASK	(0x04 - 1)
-+
-+struct xt_slavedev_info {
-+	char iniface[IFNAMSIZ];
-+	unsigned char iniface_mask[IFNAMSIZ];
-+	__u8 flags;
-+};
-+
-+#endif /* _UAPI_XT_SLAVEDEV_H */
+thanks,
 -- 
-2.20.1
-
+John Hubbard
+NVIDIA
