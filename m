@@ -2,90 +2,178 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id ECFEA122F16
-	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 15:44:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3D732122F2E
+	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 15:49:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728949AbfLQOop (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Dec 2019 09:44:45 -0500
-Received: from mout.kundenserver.de ([212.227.126.130]:36969 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728573AbfLQOoo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 09:44:44 -0500
-Received: from [192.168.1.155] ([95.114.21.161]) by mrelayeu.kundenserver.de
- (mreue009 [212.227.15.167]) with ESMTPSA (Nemesis) id
- 1MuUvS-1hqm5e2k0Q-00rXXn; Tue, 17 Dec 2019 15:44:28 +0100
-Subject: Re: [PATCH] RFC: platform driver registering via initcall tables
-To:     Greg KH <greg@kroah.com>
-Cc:     "Enrico Weigelt, metux IT consult" <info@metux.net>,
-        linux-kernel@vger.kernel.org, linus.walleij@linaro.org,
-        bgolaszewski@baylibre.com, dmitry.torokhov@gmail.com,
-        jacek.anaszewski@gmail.com, pavel@ucw.cz, dmurphy@ti.com,
-        arnd@arndb.de, masahiroy@kernel.org, michal.lkml@markovi.net,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
-        linux-gpio@vger.kernel.org, linux-input@vger.kernel.org,
-        linux-leds@vger.kernel.org, linux-arch@vger.kernel.org,
-        linux-kbuild@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-References: <20191217102219.29223-1-info@metux.net>
- <20191217103152.GB2914497@kroah.com>
- <6422bc88-6d0a-7b51-aaa7-640c6961b177@metux.net>
- <20191217140646.GC3489463@kroah.com>
-From:   "Enrico Weigelt, metux IT consult" <lkml@metux.net>
-Message-ID: <d938b8e1-d9ce-9ad6-4178-86219e99d4df@metux.net>
-Date:   Tue, 17 Dec 2019 15:43:56 +0100
-User-Agent: Mozilla/5.0 (X11; Linux i686 on x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        id S1729285AbfLQOtJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Dec 2019 09:49:09 -0500
+Received: from mail.kernel.org ([198.145.29.99]:41170 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729268AbfLQOtI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 17 Dec 2019 09:49:08 -0500
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 0D93024655;
+        Tue, 17 Dec 2019 14:49:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1576594146;
+        bh=kjSq6GCWlR5cgLYp1VuhTVE6QJ803IsXfUb8J/asdM0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=DG0rks66psWTR9lUXDkU3SUigPmJC7OpRztb/JUgHDhgMZ/piK2G0XCsyOhbk4VKZ
+         BSNR0FoXH0PLLogfSZ6/mayUBtCgVI7XtMGOkCGVUTx4rPjVfR0s58FK9pY6kJAiht
+         nbIiilJFf0E26fT+s/oS+/dZVLiduKwkM0gNxvVw=
+Date:   Tue, 17 Dec 2019 15:49:04 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     =?iso-8859-1?B?Suly9G1l?= Pouiller <Jerome.Pouiller@silabs.com>
+Cc:     "devel@driverdev.osuosl.org" <devel@driverdev.osuosl.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Kalle Valo <kvalo@codeaurora.org>
+Subject: Re: [PATCH 01/55] staging: wfx: fix the cache of rate policies on
+ interface reset
+Message-ID: <20191217144904.GA3639802@kroah.com>
+References: <20191216170302.29543-1-Jerome.Pouiller@silabs.com>
+ <20191216170302.29543-2-Jerome.Pouiller@silabs.com>
+ <20191217115211.GA3141324@kroah.com>
+ <3810318.2NmXUpVtm0@pc-42>
 MIME-Version: 1.0
-In-Reply-To: <20191217140646.GC3489463@kroah.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: tl
-Content-Transfer-Encoding: 7bit
-X-Provags-ID: V03:K1:w0io69mBkaf+1h5xS2clNhiKVEe0x4xPMiO1d6eDOgUuj5grIk6
- So0gw1+GpivSUVTFQR/DDSbg+QPfwUh7WmxUQSwRGfkUPGn5UuLFc7ZXrVgMiGCWcvV7EnZ
- YcouJJBHv4s14A2UoTWwsoWv1v7AXM1bV8eKUMEFutfAUA0OO6kYs7L0qW0jC11eMqimXtO
- a6XJNpIUDfbJJ14c1ttfw==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:sYdPWCf9KOc=:0AdzDPaTOQKhydTgTxPD3i
- 7vxT1r6DXk1q3sntultkN3yeyfwZO1L5/I1tey9mzWV4VA+QtLhy8j/GxOIkVoro6LseGlci6
- W12X0KPN6zHyzUFSEN+WudCDKhMSlfHeKZFry+8utzzVh6X9+igOSGELwhRWwdqQJiZOcu0oO
- QZ05ieWKgwvl2Uh/MTg3RL2rBdrdsEAyemNTcVIECVbSPuHPq8auHKLK93V7iegjvA0alhL1U
- /WaxrxT+hXtjLC5Y831LJC9pTnymxqwddhRor0yitiemCO20+Mt4kNnapMMvBDlgit3U9kCWQ
- ghGaWfk2sB8r7OhNMqgF4AcETtelNyx8ZQjuxDdhj3ikLhlIf4dSz/5U1KyusXwnJ7lk0EX8V
- dPLRb30N/xbIpSx44Lhd6/rgXBKpZ7FH12J/8gAAyWIKwO+w0pwFu8U8MTiUnCLlpDB7s67q8
- Tq14Jj4cBz5vzTEHK1X6ZMsayDQl4Lm9NCbf+JrbqipltyHENFei9Roxzr27MBzuTGO7qSiT+
- IDmX9O+smuMCUheOjOxXAWdsli6m+5yHIx4jWjyt9GNlGerF+YvMktccX/fSzS+5MhHH9zJqy
- DgtqxPSJhnAd5M/YSfD7Ivsjhoxx6G5V2BHwwGwEhVxZWIK6leQxc9x7ntbA+ploa4GgA/8Mv
- AOdgb5DGJbfqvDiIjJyE3Kq6vR97PhyIOT4HY9flUCSa1gKkPC5p/WvWC6mpXlfXCRgzt3IF+
- 3oVArTRk9F1Kc+K0wuTuPBtt4Kgs+Un9XjZUDiZdMnIqH1J2Ed29wURCgNhD6S8guCL7jAL7I
- Z0z8+jHTBIU3qT6HA9SqRQtKynKLt5/00XkPx6phElHcm7JrtRgFPVAz1gTlfHSQr6qUSFbrz
- q03NkMAgx3EPRvOQwR7w==
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <3810318.2NmXUpVtm0@pc-42>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 17.12.19 15:06, Greg KH wrote:
+On Tue, Dec 17, 2019 at 02:35:13PM +0000, Jérôme Pouiller wrote:
+> On Tuesday 17 December 2019 12:52:11 CET Greg Kroah-Hartman wrote:
+> > On Mon, Dec 16, 2019 at 05:03:33PM +0000, Jérôme Pouiller wrote:
+> > > From: Jérôme Pouiller <jerome.pouiller@silabs.com>
+> > >
+> > > Device and driver maintain a cache of rate policies (aka.
+> > > tx_retry_policy in hardware API).
+> > >
+> > > When hif_reset() is sent to hardware, device resets its cache of rate
+> > > policies. In order to keep driver in sync, it is necessary to do the
+> > > same on driver.
+> > >
+> > > Note, when driver tries to use a rate policy that has not been defined
+> > > on device, data is sent at 1Mbps. So, this patch should fix abnormal
+> > > throughput observed sometime after a reset of the interface.
+> > >
+> > > Signed-off-by: Jérôme Pouiller <jerome.pouiller@silabs.com>
+> > > ---
+> > >  drivers/staging/wfx/data_tx.c | 3 +--
+> > >  drivers/staging/wfx/data_tx.h | 1 +
+> > >  drivers/staging/wfx/sta.c     | 6 +++++-
+> > >  3 files changed, 7 insertions(+), 3 deletions(-)
+> > >
+> > > diff --git a/drivers/staging/wfx/data_tx.c b/drivers/staging/wfx/data_tx.c
+> > > index b722e9773232..02f001dab62b 100644
+> > > --- a/drivers/staging/wfx/data_tx.c
+> > > +++ b/drivers/staging/wfx/data_tx.c
+> > > @@ -249,7 +249,7 @@ static int wfx_tx_policy_upload(struct wfx_vif *wvif)
+> > >       return 0;
+> > >  }
+> > >
+> > > -static void wfx_tx_policy_upload_work(struct work_struct *work)
+> > > +void wfx_tx_policy_upload_work(struct work_struct *work)
+> > >  {
+> > >       struct wfx_vif *wvif =
+> > >               container_of(work, struct wfx_vif, tx_policy_upload_work);
+> > > @@ -270,7 +270,6 @@ void wfx_tx_policy_init(struct wfx_vif *wvif)
+> > >       spin_lock_init(&cache->lock);
+> > >       INIT_LIST_HEAD(&cache->used);
+> > >       INIT_LIST_HEAD(&cache->free);
+> > > -     INIT_WORK(&wvif->tx_policy_upload_work, wfx_tx_policy_upload_work);
+> > >
+> > >       for (i = 0; i < HIF_MIB_NUM_TX_RATE_RETRY_POLICIES; ++i)
+> > >               list_add(&cache->cache[i].link, &cache->free);
+> > > diff --git a/drivers/staging/wfx/data_tx.h b/drivers/staging/wfx/data_tx.h
+> > > index 29faa5640516..a0f9ae69baf5 100644
+> > > --- a/drivers/staging/wfx/data_tx.h
+> > > +++ b/drivers/staging/wfx/data_tx.h
+> > > @@ -61,6 +61,7 @@ struct wfx_tx_priv {
+> > >  } __packed;
+> > >
+> > >  void wfx_tx_policy_init(struct wfx_vif *wvif);
+> > > +void wfx_tx_policy_upload_work(struct work_struct *work);
+> > >
+> > >  void wfx_tx(struct ieee80211_hw *hw, struct ieee80211_tx_control *control,
+> > >           struct sk_buff *skb);
+> > > diff --git a/drivers/staging/wfx/sta.c b/drivers/staging/wfx/sta.c
+> > > index 29848a202ab4..471dd15b227f 100644
+> > > --- a/drivers/staging/wfx/sta.c
+> > > +++ b/drivers/staging/wfx/sta.c
+> > > @@ -592,6 +592,7 @@ static void wfx_do_unjoin(struct wfx_vif *wvif)
+> > >       wfx_tx_flush(wvif->wdev);
+> > >       hif_keep_alive_period(wvif, 0);
+> > >       hif_reset(wvif, false);
+> > > +     wfx_tx_policy_init(wvif);
+> > >       hif_set_output_power(wvif, wvif->wdev->output_power * 10);
+> > >       wvif->dtim_period = 0;
+> > >       hif_set_macaddr(wvif, wvif->vif->addr);
+> > > @@ -880,8 +881,10 @@ static int wfx_update_beaconing(struct wfx_vif *wvif)
+> > >               if (wvif->state != WFX_STATE_AP ||
+> > >                   wvif->beacon_int != conf->beacon_int) {
+> > >                       wfx_tx_lock_flush(wvif->wdev);
+> > > -                     if (wvif->state != WFX_STATE_PASSIVE)
+> > > +                     if (wvif->state != WFX_STATE_PASSIVE) {
+> > >                               hif_reset(wvif, false);
+> > > +                             wfx_tx_policy_init(wvif);
+> > > +                     }
+> > >                       wvif->state = WFX_STATE_PASSIVE;
+> > >                       wfx_start_ap(wvif);
+> > >                       wfx_tx_unlock(wvif->wdev);
+> > > @@ -1567,6 +1570,7 @@ int wfx_add_interface(struct ieee80211_hw *hw, struct ieee80211_vif *vif)
+> > >       INIT_WORK(&wvif->set_cts_work, wfx_set_cts_work);
+> > >       INIT_WORK(&wvif->unjoin_work, wfx_unjoin_work);
+> > >
+> > > +     INIT_WORK(&wvif->tx_policy_upload_work, wfx_tx_policy_upload_work);
+> > >       mutex_unlock(&wdev->conf_mutex);
+> > >
+> > >       hif_set_macaddr(wvif, vif->addr);
+> > 
+> > Meta-comment here.
+> > 
+> > I've been having to hand-edit your patches to get them to be able to
+> > apply so far, which is fine for 1-10 patches at a time, but when staring
+> > down a 55-patch series, that's not ok for my end.
+> > 
+> > The problem is that your email client is turning everything into base64
+> > text.  On it's own, that's fine, but when doing so it turns the
+> > line-ends from unix ones, into dos line-ends.  So, when git decodes the
+> > base64 text into "plain text" the patch obviously does not apply due to
+> > the line-ends not matching up.
+> > 
+> > Any chance you can fix your email client to not convert the line-ends?
+> 
+> Arg... I apologize for that. Yes, I will fix it and re-send the
+> pull-request.
 
-> That's not needed, and you are going to break the implicit ordering we
-> already have with link order.  
+thank you.
 
-Ups, 10 points for you - I didn't consider that.
+> For the record:
+> 
+> In fact, the conversions to CR-LF and to base64 is done by the SMTP
+> server that I use (Microsoft Exchange... useless to say that I do not
+> administrate this server).
 
-> You are going to have to figure out what
-> bus type the driver is, to determine what segment it was in, to figure
-> out what was loaded before what.
+Ah, I was wondering of that is why it happened.
 
-hmm, if it's just the ordering by bus type (but not within one bus
-type), then it shouldn't be the big deal to fix, as I'll need one table
-and register-loop per bus-type anyways.
+> I have already noticed that my SMTP server did weird things. So, I
+> configured git to encode in base64 itself.
+> However, the configuration line "sendemail.transferEncoding" is ignored
+> in my version of git (2.20) (--transfer-encoding=base64 continue to
+> work). Fortunately, the problem seems fixed with git 2.24.
 
-By the way: how is there init order ensured with dynamically loaded
-modules ? (for cases where there aren't explicit symbol dependencies)
+Oh good, I was trying to duplicate this with 2.24 and couldn't, glad
+they have fixed this there.
 
+thanks,
 
---mtx
-
----
-Enrico Weigelt, metux IT consult
-Free software and Linux embedded engineering
-info@metux.net -- +49-151-27565287
+greg k-h
