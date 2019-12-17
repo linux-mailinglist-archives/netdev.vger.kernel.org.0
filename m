@@ -2,88 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 448E4121F52
-	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 01:15:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 98E1B121F5E
+	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 01:21:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727417AbfLQAPO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Dec 2019 19:15:14 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:57632 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726556AbfLQAPO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Dec 2019 19:15:14 -0500
-Received: from localhost (unknown [IPv6:2601:601:9f00:1c3::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id D154B1556D69B;
-        Mon, 16 Dec 2019 16:15:13 -0800 (PST)
-Date:   Mon, 16 Dec 2019 16:15:13 -0800 (PST)
-Message-Id: <20191216.161513.1612649885729019096.davem@davemloft.net>
-To:     idosch@idosch.org
-Cc:     netdev@vger.kernel.org, dsahern@gmail.com,
-        roopa@cumulusnetworks.com, jiri@mellanox.com,
-        jakub.kicinski@netronome.com, mlxsw@mellanox.com,
-        idosch@mellanox.com
-Subject: Re: [PATCH net-next v2 00/10] Simplify IPv4 route offload API
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20191214155315.613186-1-idosch@idosch.org>
-References: <20191214155315.613186-1-idosch@idosch.org>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 16 Dec 2019 16:15:14 -0800 (PST)
+        id S1727370AbfLQARB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Dec 2019 19:17:01 -0500
+Received: from mail-pj1-f68.google.com ([209.85.216.68]:40509 "EHLO
+        mail-pj1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726556AbfLQARA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Dec 2019 19:17:00 -0500
+Received: by mail-pj1-f68.google.com with SMTP id s35so3736708pjb.7;
+        Mon, 16 Dec 2019 16:17:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=1OROaEYGJ7cU9PndUkdU7ASlSknQD2Li+EEBqp17mis=;
+        b=K2DrdXAgGAFjco7WkxUE9hCAVr1APCFMiBh8o7ZzruvvHrXLykJ6r9uY9wleDoCkZJ
+         GUsj3lJiNDYtvhLNDr1ifkivSWMzqX9X8ku+6014LviMyW/P8YcSJbqWU/j9IZiIFyjC
+         nvo5hw3AcXxkSlmm3MgyAVQkWCS9locoWAoxzCS0m65YARSbKg3bKGMdB1sbnUY/f1dX
+         WPKg8V7050dPgNoOOCM/A3Vr2OCVp0Js9Rk5qNTSDGsSowTTEUpUVbGPKTy39267Zvq1
+         S3t9PYVipSvKKpmWBUu+wc4TI+Qn2Oa+vueDpcjIk8wEIh9qVIL6WmnVDYaI/phCl/ve
+         2B/Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=1OROaEYGJ7cU9PndUkdU7ASlSknQD2Li+EEBqp17mis=;
+        b=LU30HSbntPHNPqHn/isOJrfiqpSx73uJDcHeFm8JVMNggH1gMNyeM09LfffwRZYGNt
+         AaVezjrbtfbnjTlE1PdCVcevG576kYjOXrX+GGzlLjKObrTgQG4udcqstUvb6VYS/6kS
+         L3qcUOZ4ClqibExiGrHLCRmNOZH9W2cfQT6/1YkyuMDJRGnpW2surkGLY1zaL8sTGvAT
+         RlznKjIiUVL8pEE28B1TbsJFtAwah4Lbsjr/2ndQzN+xiP0i2PZj3nwio8Bbia7m22Ti
+         +KddS5Lcun1yzpoyuxHSpdwHfvVRmC1jc0giVZ8aQIvZ6MLHHGDwXWHbjpdjzLXPx1oC
+         mSgw==
+X-Gm-Message-State: APjAAAUprOmDF/HVKgtR0PVW/Zj7q1+P++Af6D5Mkdjbkmjbesi2EBSM
+        RcX3GjEdAoFJDzoq4zHf3uHUi2nQ
+X-Google-Smtp-Source: APXvYqxC3G4URmrFBTRdkP1iZgsz1qAv3ai0g/6DHQuslJs48zwF2M9S7CqlRaxMN6RJxWTuqpc5lQ==
+X-Received: by 2002:a17:90a:a004:: with SMTP id q4mr2608777pjp.106.1576541819819;
+        Mon, 16 Dec 2019 16:16:59 -0800 (PST)
+Received: from [172.20.20.156] ([222.151.198.97])
+        by smtp.gmail.com with ESMTPSA id p38sm660834pjp.27.2019.12.16.16.16.57
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 16 Dec 2019 16:16:59 -0800 (PST)
+Subject: Re: [PATCH bpf-next] libbpf: fix build by renaming variables
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>
+References: <20191216082738.28421-1-prashantbhole.linux@gmail.com>
+ <20191216132512.GD14887@linux.fritz.box>
+ <CAADnVQKB7hUmXBMmPfFUH4ZxSQfRtam0aEWykBNMhrKS+HjcwQ@mail.gmail.com>
+From:   Prashant Bhole <prashantbhole.linux@gmail.com>
+Message-ID: <caf893fb-e574-7a67-1e4e-4ce5d7836172@gmail.com>
+Date:   Tue, 17 Dec 2019 09:15:59 +0900
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
+MIME-Version: 1.0
+In-Reply-To: <CAADnVQKB7hUmXBMmPfFUH4ZxSQfRtam0aEWykBNMhrKS+HjcwQ@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ido Schimmel <idosch@idosch.org>
-Date: Sat, 14 Dec 2019 17:53:05 +0200
 
-> Motivation
-> ==========
-> 
-> The aim of this patch set is to simplify the IPv4 route offload API by
-> making the stack a bit smarter about the notifications it is generating.
-> This allows driver authors to focus on programming the underlying device
-> instead of having to duplicate the IPv4 route insertion logic in their
-> driver, which is error-prone.
-> 
-> This is the first patch set out of a series of four. Subsequent patch
-> sets will simplify the IPv6 API, add offload/trap indication to routes
-> and add tests for all the code paths (including error paths). Available
-> here [1].
-> 
-> Details
-> =======
-> 
-> Today, whenever an IPv4 route is added or deleted a notification is sent
-> in the FIB notification chain and it is up to offload drivers to decide
-> if the route should be programmed to the hardware or not. This is not an
-> easy task as in hardware routes are keyed by {prefix, prefix length,
-> table id}, whereas the kernel can store multiple such routes that only
-> differ in metric / TOS / nexthop info.
-> 
-> This series makes sure that only routes that are actually used in the
-> data path are notified to offload drivers. This greatly simplifies the
-> work these drivers need to do, as they are now only concerned with
-> programming the hardware and do not need to replicate the IPv4 route
-> insertion logic and store multiple identical routes.
-> 
-> The route that is notified is the first FIB alias in the FIB node with
-> the given {prefix, prefix length, table ID}. In case the route is
-> deleted and there is another route with the same key, a replace
-> notification is emitted. Otherwise, a delete notification is emitted.
-> 
-> The above means that in the case of multiple routes with the same key,
-> but different TOS, only the route with the highest TOS is notified.
-> While the kernel can route a packet based on its TOS, this is not
-> supported by any hardware devices I am familiar with. Moreover, this is
-> not supported by IPv6 nor by BIRD/FRR from what I could see. Offload
-> drivers should therefore use the presence of a non-zero TOS as an
-> indication to trap packets matching the route and let the kernel route
-> them instead. mlxsw has been doing it for the past two years.
- ...
 
-Series applied, thanks!
+On 12/16/19 11:02 PM, Alexei Starovoitov wrote:
+> On Mon, Dec 16, 2019 at 5:25 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
+>>
+>> On Mon, Dec 16, 2019 at 05:27:38PM +0900, Prashant Bhole wrote:
+>>> In btf__align_of() variable name 't' is shadowed by inner block
+>>> declaration of another variable with same name. Patch renames
+>>> variables in order to fix it.
+>>>
+>>>    CC       sharedobjs/btf.o
+>>> btf.c: In function ‘btf__align_of’:
+>>> btf.c:303:21: error: declaration of ‘t’ shadows a previous local [-Werror=shadow]
+>>>    303 |   int i, align = 1, t;
+>>>        |                     ^
+>>> btf.c:283:25: note: shadowed declaration is here
+>>>    283 |  const struct btf_type *t = btf__type_by_id(btf, id);
+>>>        |
+>>>
+>>> Fixes: 3d208f4ca111 ("libbpf: Expose btf__align_of() API")
+>>> Signed-off-by: Prashant Bhole <prashantbhole.linux@gmail.com>
+>>
+>> Applied, thanks!
+> 
+> Prashant,
+> Thanks for the fixes.
+> Which compiler do use?
+
+gcc (GCC) 9.1.1 20190503 (Red Hat 9.1.1-1)
+
+> Sadly I didn't see any of those with my gcc 6.3.0
+> Going to upgrade it. Need to decide which one.
+> 
