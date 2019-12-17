@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C34E122C29
-	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 13:46:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 78172122C43
+	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 13:47:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728392AbfLQMq2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Dec 2019 07:46:28 -0500
-Received: from mail.kernel.org ([198.145.29.99]:48720 "EHLO mail.kernel.org"
+        id S1728415AbfLQMrs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Dec 2019 07:47:48 -0500
+Received: from mail.kernel.org ([198.145.29.99]:49888 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727621AbfLQMq2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 17 Dec 2019 07:46:28 -0500
+        id S1727948AbfLQMrs (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 17 Dec 2019 07:47:48 -0500
 Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 2366024685;
-        Tue, 17 Dec 2019 12:46:25 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 1292F21582;
+        Tue, 17 Dec 2019 12:47:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1576586785;
-        bh=/gq2ENt0qurcVlUyxnvb9suA8Oq34sFd4ycuAWG0OYw=;
+        s=default; t=1576586867;
+        bh=z7oBYF73hiM4+JZfpN9QcVp0Bvl6HTa99jdFLXSVlik=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=j8I3PCZJ3SBxmKHTk5I21xBg/zjO931JgqSvclKg/dys27/ayvnvyj9VRwtpI3RfW
-         RC+9m+kZcpSc9UwqPOZrvDV2/Ao6o2w4ckwBk1pjRx+sUaN7vvwT0BsjnCG5fsY6bG
-         8ovygytVqyQpjU06fqAsbjAT2T8vRsNozJjCCLr8=
-Date:   Tue, 17 Dec 2019 13:46:23 +0100
+        b=zcq0bHZkXt0iU8MP1KqengI8DiCFbVMy5z/xWRGNAOnUadsdmFNPScK+YTaq0uZMV
+         Piq/WK4eGZ4DV4f7lXAdwEBu3VDdUFJjNkmiCm+9d9tD+JJ5RC6R9n0lGvfuvyTEB+
+         mlCP7sYOMgRITSPkrUg41MIToF7k0SGLSaoW3JUM=
+Date:   Tue, 17 Dec 2019 13:47:45 +0100
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     Mika Westerberg <mika.westerberg@linux.intel.com>
 Cc:     linux-usb@vger.kernel.org,
@@ -42,7 +42,7 @@ Cc:     linux-usb@vger.kernel.org,
         linux-kernel@vger.kernel.org
 Subject: Re: [PATCH v2 3/9] thunderbolt: Populate PG field in hot plug
  acknowledgment packet
-Message-ID: <20191217124623.GB3175457@kroah.com>
+Message-ID: <20191217124745.GC3175457@kroah.com>
 References: <20191217123345.31850-1-mika.westerberg@linux.intel.com>
  <20191217123345.31850-4-mika.westerberg@linux.intel.com>
 MIME-Version: 1.0
@@ -69,94 +69,11 @@ On Tue, Dec 17, 2019 at 03:33:39PM +0300, Mika Westerberg wrote:
 > events.
 > 
 > Signed-off-by: Mika Westerberg <mika.westerberg@linux.intel.com>
-> ---
->  drivers/thunderbolt/ctl.c     | 19 +++++++++++++------
->  drivers/thunderbolt/ctl.h     |  3 +--
->  drivers/thunderbolt/tb.c      |  3 +--
->  drivers/thunderbolt/tb_msgs.h |  6 +++++-
->  4 files changed, 20 insertions(+), 11 deletions(-)
-> 
-> diff --git a/drivers/thunderbolt/ctl.c b/drivers/thunderbolt/ctl.c
-> index d97813e80e5f..f77ceae5c7d7 100644
-> --- a/drivers/thunderbolt/ctl.c
-> +++ b/drivers/thunderbolt/ctl.c
-> @@ -708,19 +708,26 @@ void tb_ctl_stop(struct tb_ctl *ctl)
->  /* public interface, commands */
->  
->  /**
-> - * tb_cfg_error() - send error packet
-> + * tb_cfg_ack_plug() - Ack hot plug/unplug event
-> + * @ctl: Control channel to use
-> + * @route: Router that originated the event
-> + * @port: Port where the hot plug/unplug happened
-> + * @unplug: Ack hot plug or unplug
->   *
-> - * Return: Returns 0 on success or an error code on failure.
-> + * Call this as response for hot plug/unplug event to ack it.
-> + * Returns %0 on success or an error code on failure.
->   */
-> -int tb_cfg_error(struct tb_ctl *ctl, u64 route, u32 port,
-> -		 enum tb_cfg_error error)
-> +int tb_cfg_ack_plug(struct tb_ctl *ctl, u64 route, u32 port, bool unplug)
->  {
->  	struct cfg_error_pkg pkg = {
->  		.header = tb_cfg_make_header(route),
->  		.port = port,
-> -		.error = error,
-> +		.error = TB_CFG_ERROR_ACK_PLUG_EVENT,
-> +		.pg = unplug ? TB_CFG_ERROR_PG_HOT_UNPLUG
-> +			     : TB_CFG_ERROR_PG_HOT_PLUG,
->  	};
-> -	tb_ctl_dbg(ctl, "resetting error on %llx:%x.\n", route, port);
-> +	tb_ctl_dbg(ctl, "acking hot %splug event on %llx:%x\n",
-> +		   unplug ? "un" : "", route, port);
->  	return tb_ctl_tx(ctl, &pkg, sizeof(pkg), TB_CFG_PKG_ERROR);
->  }
->  
-> diff --git a/drivers/thunderbolt/ctl.h b/drivers/thunderbolt/ctl.h
-> index 2f1a1e111110..97cb03b38953 100644
-> --- a/drivers/thunderbolt/ctl.h
-> +++ b/drivers/thunderbolt/ctl.h
-> @@ -123,8 +123,7 @@ static inline struct tb_cfg_header tb_cfg_make_header(u64 route)
->  	return header;
->  }
->  
-> -int tb_cfg_error(struct tb_ctl *ctl, u64 route, u32 port,
-> -		 enum tb_cfg_error error);
-> +int tb_cfg_ack_plug(struct tb_ctl *ctl, u64 route, u32 port, bool unplug);
->  struct tb_cfg_result tb_cfg_reset(struct tb_ctl *ctl, u64 route,
->  				  int timeout_msec);
->  struct tb_cfg_result tb_cfg_read_raw(struct tb_ctl *ctl, void *buffer,
-> diff --git a/drivers/thunderbolt/tb.c b/drivers/thunderbolt/tb.c
-> index 54085f67810a..e54d0d89a32d 100644
-> --- a/drivers/thunderbolt/tb.c
-> +++ b/drivers/thunderbolt/tb.c
-> @@ -768,8 +768,7 @@ static void tb_handle_event(struct tb *tb, enum tb_cfg_pkg_type type,
->  
->  	route = tb_cfg_get_route(&pkg->header);
->  
-> -	if (tb_cfg_error(tb->ctl, route, pkg->port,
-> -			 TB_CFG_ERROR_ACK_PLUG_EVENT)) {
-> +	if (tb_cfg_ack_plug(tb->ctl, route, pkg->port, pkg->unplug)) {
->  		tb_warn(tb, "could not ack plug event on %llx:%x\n", route,
->  			pkg->port);
->  	}
-> diff --git a/drivers/thunderbolt/tb_msgs.h b/drivers/thunderbolt/tb_msgs.h
-> index 3705057723b6..fc208c567953 100644
-> --- a/drivers/thunderbolt/tb_msgs.h
-> +++ b/drivers/thunderbolt/tb_msgs.h
-> @@ -67,9 +67,13 @@ struct cfg_error_pkg {
->  	u32 zero1:4;
->  	u32 port:6;
->  	u32 zero2:2; /* Both should be zero, still they are different fields. */
-> -	u32 zero3:16;
-> +	u32 zero3:14;
-> +	u32 pg:2;
->  } __packed;
 
-Meta-comment, how does this work for endian issues?  gcc will "always"
-pack these in the correct way such that they match up to the bits on the
-wire?
+First 3 patches look "trivial" enough for me to take right now, any
+objection to that?
+
+Should I be using my usb tree for this?
 
 thanks,
 
