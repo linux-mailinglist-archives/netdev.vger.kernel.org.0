@@ -2,111 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B3ED412213C
-	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 02:01:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 251F21221C4
+	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 02:58:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728216AbfLQBBe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Dec 2019 20:01:34 -0500
-Received: from mail-pj1-f65.google.com ([209.85.216.65]:42534 "EHLO
-        mail-pj1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726383AbfLQBBd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Dec 2019 20:01:33 -0500
-Received: by mail-pj1-f65.google.com with SMTP id o11so3767853pjp.9;
-        Mon, 16 Dec 2019 17:01:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=WTJW9Ivzk5hRbe09ReOHLigQO4MTulCH6iX48/5aFlI=;
-        b=A1gNJR7/wb+DHKDZ4diBI7qh8o7kRNr9Ys0wUBo38OIxTIYY+tiGSwm1PrRQZJ0JdK
-         zP4ZMZEeV2Z15b9hWwtfCYYJxgBd1u3XXiUwCK4mJH9y7lcTYsj+pAWz7tJn8XJe2YJp
-         2NO/D8dCq921rcZru6aYddXbEzLDffRDZ1AKtnydQctxKnt7bmxGR/EX1Tof8jPQmB8o
-         z/8VSJ+Pf7iORkeXiEmibmveJTkGEw25v/bxECKU0y/13eG24ub2qjr/7+yZVCDHXTFi
-         vCdc+MzeFCROJi5ANyuzfhIlFhxtCCLU7di2/hQIhA9VkXeVudzn2ewfSlYT/rCR8C5h
-         DWQA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=WTJW9Ivzk5hRbe09ReOHLigQO4MTulCH6iX48/5aFlI=;
-        b=Sk37hcstxwplmjIxKFa2pTM2f/1gjSoAEifMSIamhl+5K9cAWoIxWhFuhTw6Wsx7kH
-         Z8iycOVXlsk5lZaVrmITeCmlkKzDIXkFgh0avXr4UjyKZvY0k49slaFFVeW67jt/JHc5
-         oPGTP6g1ndjZ6WwDNvGVf6hWj0v3rWPDwvFUALtJg2S9Dwlf0bZdTYrCtCXgS23naQP+
-         mcbFYmA9whsXy6mXN3QCCAnVt4FTNAAYLjJjxVq/RgVS61CK743MAyRlCkRgqYsq9T7F
-         JiBljXWbI5DcrJjEqA1feHRN/1sZITUkCfuDSowq1T+dWFgnbqf/25cINF9y1oBh0C6P
-         0OHg==
-X-Gm-Message-State: APjAAAUQBCDzm7VHI+VouiUPOSnD6L9NYBJ+dCVTehDCn79wsQjIbGr8
-        laEyVYCpiPcVte4feLCRh3w=
-X-Google-Smtp-Source: APXvYqz0Rrlx4/+4Jy+hIf1QJwF8mKYG67PVSm9bQN7w8aRH2Ea6sEUGrXCqn7VoUUsPL8GDXgk5Xg==
-X-Received: by 2002:a17:90b:1115:: with SMTP id gi21mr2787225pjb.95.1576544491991;
-        Mon, 16 Dec 2019 17:01:31 -0800 (PST)
-Received: from localhost.localdomain ([177.220.172.83])
-        by smtp.gmail.com with ESMTPSA id q13sm758706pjc.4.2019.12.16.17.01.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 Dec 2019 17:01:31 -0800 (PST)
-Received: by localhost.localdomain (Postfix, from userid 1000)
-        id 2B557C0DB9; Mon, 16 Dec 2019 22:01:28 -0300 (-03)
-From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+        id S1726536AbfLQB5m (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Dec 2019 20:57:42 -0500
+Received: from shadbolt.e.decadent.org.uk ([88.96.1.126]:36600 "EHLO
+        shadbolt.e.decadent.org.uk" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726133AbfLQB5m (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Dec 2019 20:57:42 -0500
+Received: from [192.168.4.242] (helo=deadeye)
+        by shadbolt.decadent.org.uk with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.89)
+        (envelope-from <ben@decadent.org.uk>)
+        id 1ih27I-0007JG-LN; Tue, 17 Dec 2019 01:57:40 +0000
+Received: from ben by deadeye with local (Exim 4.93-RC7)
+        (envelope-from <ben@decadent.org.uk>)
+        id 1ih27I-0008Cw-7g; Tue, 17 Dec 2019 01:57:40 +0000
+Date:   Tue, 17 Dec 2019 01:57:40 +0000
+From:   Ben Hutchings <ben@decadent.org.uk>
 To:     netdev@vger.kernel.org
-Cc:     Xin Long <lucien.xin@gmail.com>,
-        Kent Overstreet <kent.overstreet@gmail.com>,
-        Neil Horman <nhorman@tuxdriver.com>, linux-sctp@vger.kernel.org
-Subject: [PATCH net] sctp: fix memleak on err handling of stream initialization
-Date:   Mon, 16 Dec 2019 22:01:16 -0300
-Message-Id: <2a040bc8a75c67164a3d0e30726477c1a268c6d7.1576544284.git.marcelo.leitner@gmail.com>
-X-Mailer: git-send-email 2.23.0
+Cc:     GR-Linux-NIC-Dev@marvell.com,
+        Navid Emamdoost <navid.emamdoost@gmail.com>
+Subject: [PATCH net] net: qlogic: Fix error paths in ql_alloc_large_buffers()
+Message-ID: <20191217015740.GA31381@decadent.org.uk>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="EVF5PPMfhYS0aIcm"
+Content-Disposition: inline
+User-Agent: Mutt/1.12.2 (2019-09-21)
+X-SA-Exim-Connect-IP: 192.168.4.242
+X-SA-Exim-Mail-From: ben@decadent.org.uk
+X-SA-Exim-Scanned: No (on shadbolt.decadent.org.uk); SAEximRunCond expanded to false
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot reported a memory leak when an allocation fails within
-genradix_prealloc() for output streams. That's because
-genradix_prealloc() leaves initialized members initialized when the
-issue happens and SCTP stack will abort the current initialization but
-without cleaning up such members.
 
-The fix here is to always call genradix_free() when genradix_prealloc()
-fails, for output and also input streams, as it suffers from the same
-issue.
+--EVF5PPMfhYS0aIcm
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Reported-by: syzbot+772d9e36c490b18d51d1@syzkaller.appspotmail.com
-Fixes: 2075e50caf5e ("sctp: convert to genradix")
-Signed-off-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+ql_alloc_large_buffers() has the usual RX buffer allocation
+loop where it allocates skbs and maps them for DMA.  It also
+treats failure as a fatal error.
+
+There are (at least) three bugs in the error paths:
+
+1. ql_free_large_buffers() assumes that the lrg_buf[] entry for the
+first buffer that couldn't be allocated will have .skb =3D=3D NULL.
+But the qla_buf[] array is not zero-initialised.
+
+2. ql_free_large_buffers() DMA-unmaps all skbs in lrg_buf[].  This is
+incorrect for the last allocated skb, if DMA mapping failed.
+
+3. Commit 1acb8f2a7a9f ("net: qlogic: Fix memory leak in
+ql_alloc_large_buffers") added a direct call to dev_kfree_skb_any()
+after the skb is recorded in lrg_buf[], so ql_free_large_buffers()
+will double-free it.
+
+The bugs are somewhat inter-twined, so fix them all at once:
+
+* Clear each entry in qla_buf[] before attempting to allocate
+  an skb for it.  This goes half-way to fixing bug 1.
+* Set the .skb field only after the skb is DMA-mapped.  This
+  fixes the rest.
+
+Fixes: 1357bfcf7106 ("qla3xxx: Dynamically size the rx buffer queue ...")
+Fixes: 0f8ab89e825f ("qla3xxx: Check return code from pci_map_single() ...")
+Fixes: 1acb8f2a7a9f ("net: qlogic: Fix memory leak in ql_alloc_large_buffer=
+s")
+Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
 ---
- net/sctp/stream.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+This is compile-tested only, unfortunately.  But if it's correct, it
+needs to go to stable.
 
-diff --git a/net/sctp/stream.c b/net/sctp/stream.c
-index df60b5ef24cbf5c6f628ab8ed88a6faaaa422b6d..e0b01bf912b3f3cdbc3f713bcfa50868e4802929 100644
---- a/net/sctp/stream.c
-+++ b/net/sctp/stream.c
-@@ -84,8 +84,10 @@ static int sctp_stream_alloc_out(struct sctp_stream *stream, __u16 outcnt,
- 		return 0;
- 
- 	ret = genradix_prealloc(&stream->out, outcnt, gfp);
--	if (ret)
-+	if (ret) {
-+		genradix_free(&stream->out);
- 		return ret;
-+	}
- 
- 	stream->outcnt = outcnt;
- 	return 0;
-@@ -100,8 +102,10 @@ static int sctp_stream_alloc_in(struct sctp_stream *stream, __u16 incnt,
- 		return 0;
- 
- 	ret = genradix_prealloc(&stream->in, incnt, gfp);
--	if (ret)
-+	if (ret) {
-+		genradix_free(&stream->in);
- 		return ret;
-+	}
- 
- 	stream->incnt = incnt;
- 	return 0;
--- 
-2.23.0
+Ben.
 
+ drivers/net/ethernet/qlogic/qla3xxx.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/net/ethernet/qlogic/qla3xxx.c b/drivers/net/ethernet/q=
+logic/qla3xxx.c
+index b4b8ba00ee01..986f26578d34 100644
+--- a/drivers/net/ethernet/qlogic/qla3xxx.c
++++ b/drivers/net/ethernet/qlogic/qla3xxx.c
+@@ -2756,6 +2756,9 @@ static int ql_alloc_large_buffers(struct ql3_adapter =
+*qdev)
+ 	int err;
+=20
+ 	for (i =3D 0; i < qdev->num_large_buffers; i++) {
++		lrg_buf_cb =3D &qdev->lrg_buf[i];
++		memset(lrg_buf_cb, 0, sizeof(struct ql_rcv_buf_cb));
++
+ 		skb =3D netdev_alloc_skb(qdev->ndev,
+ 				       qdev->lrg_buffer_len);
+ 		if (unlikely(!skb)) {
+@@ -2766,11 +2769,7 @@ static int ql_alloc_large_buffers(struct ql3_adapter=
+ *qdev)
+ 			ql_free_large_buffers(qdev);
+ 			return -ENOMEM;
+ 		} else {
+-
+-			lrg_buf_cb =3D &qdev->lrg_buf[i];
+-			memset(lrg_buf_cb, 0, sizeof(struct ql_rcv_buf_cb));
+ 			lrg_buf_cb->index =3D i;
+-			lrg_buf_cb->skb =3D skb;
+ 			/*
+ 			 * We save some space to copy the ethhdr from first
+ 			 * buffer
+@@ -2792,6 +2791,7 @@ static int ql_alloc_large_buffers(struct ql3_adapter =
+*qdev)
+ 				return -ENOMEM;
+ 			}
+=20
++			lrg_buf_cb->skb =3D skb;
+ 			dma_unmap_addr_set(lrg_buf_cb, mapaddr, map);
+ 			dma_unmap_len_set(lrg_buf_cb, maplen,
+ 					  qdev->lrg_buffer_len -
+
+--EVF5PPMfhYS0aIcm
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEErCspvTSmr92z9o8157/I7JWGEQkFAl34Ng8ACgkQ57/I7JWG
+EQnrURAAktiYl1Y5C107OiELke07AMNieraO6+3rzDF/Kcc9Q2xV7Yua9vSuGHeU
+cnlybYKcL5s9vUNK5MKiSoWZ3xu/S3NexhXoimrxxbr5V2zQCILfRldGVoz+Og71
+hPaRe36YxgwMKMXGMj8RFFxcV3Al+LfbBmsYvpwVA8LdlOS8yv1a0dvagFKCHX0Y
+PaMXim3bvNjEHYWYkbvgqKGc6qna06c99cgMnLIzzE5CrkZeT9qA1XWx7uFk0x1+
+mEF2WkNKILwCOXao5JXI+5U29Ou9gKstZ3BZeS33W5V1Qf46fDVceaHd2eY0tkWF
+vaABl1vVB6DNK2RDTOQEbrAlfZnrUsPe8ziqraUK3fGa8yMJUHji8VUX6e3RCqm+
+XP4eemkWgEs9ctWsytFD4KP2or5mg8pepLp9n5Z8sU0Ks/k+TqlyMICr6q/JfFg1
+GCGR/zAHXlmGalqK55uzP1SSPxQNG9o8wunsxrtlm21qYuq/0I/AWEfNrLaOf1vl
+Tm/lIe+VA1WoW7SFt1IjmP1v3egUOaou6DaFlc7wdHd6Wu6uQcZDkt8T/cztYe8r
+Ofok6dsVkxO46pUiYmgMIqFwBNBS3OQ6rQs8v2GYMk4tN7Q1q5mR3821ABFwMcN9
+AJNzoDpTck81BGTo8W+8sDDR6yix6VIidud+mtGdg98yf2T5zVY=
+=tuja
+-----END PGP SIGNATURE-----
+
+--EVF5PPMfhYS0aIcm--
