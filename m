@@ -2,94 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1EDC512329F
-	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 17:36:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 877101232AF
+	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 17:39:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728242AbfLQQgp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Dec 2019 11:36:45 -0500
-Received: from mail-qk1-f194.google.com ([209.85.222.194]:33123 "EHLO
-        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727766AbfLQQgp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 11:36:45 -0500
-Received: by mail-qk1-f194.google.com with SMTP id d71so6903230qkc.0
-        for <netdev@vger.kernel.org>; Tue, 17 Dec 2019 08:36:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=ilrPrGODat9njllzbpa2mFweinR9gf7X7kNZv6BES2U=;
-        b=hv/TO69nSquJWgY0sgSRPcpLwQD34K/LJZaOG0Wr1jnRWlJVQjYAZcxRl9LgZ+asTT
-         ABUXQ7xypnLYiv/OEi7IMRqWrqpxkJmwVx4Rq7MtHTv1Mf+YIr3mBolbhYBPNiscgN4e
-         9IVQeaD1ONimpf+hynmC0pjcgykzUzNPUAA7aXhEf+UhqT/uqbs3xh4AXCvO4fmrIBaW
-         JGBVIDELReMm3oW1ymZCPway7Z1F8MNUHrE/0J1H37jrwLCYTlrIQ4fgHI8JpcM+BssW
-         DuZAeEL987gE4ZLG2IUl7lahQLqlrc2s+THX/PZCEKqtJblk+gkG71GbfLEr2/isC+mI
-         nAEg==
+        id S1728575AbfLQQjt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Dec 2019 11:39:49 -0500
+Received: from mail-oi1-f196.google.com ([209.85.167.196]:35786 "EHLO
+        mail-oi1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727766AbfLQQjt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 11:39:49 -0500
+Received: by mail-oi1-f196.google.com with SMTP id k4so1506411oik.2;
+        Tue, 17 Dec 2019 08:39:48 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=ilrPrGODat9njllzbpa2mFweinR9gf7X7kNZv6BES2U=;
-        b=UKmLK0t7SAtrH0qKSbrxcDJre4D9f7/tmqeCYgv9YTcbP66B/aFAPwRjHeK4Rcd64U
-         ajpa9nQF/NpG2Wq1g0R6/e45F3og4ChV5EdQjuvaBigaN8KvbOOYHkx1mJGRQ/lFnnYp
-         LMwykPXfP9QGzsoi4zVb9wyoyn+dgmf/G6hBKVv7FS9PDLCjs11RdfLlFr3G75vUYnpV
-         7TvT1WqEC/HC6EqgYrH1ne0sH2cQHhu8q4OSRIq4jrNmDpuzzAEYiZay7qRgNFxCJ4KC
-         zkxAoqyr7JEASS9e6x61QhTFWy81B2zh/7+BTqOGlUKs8NFUBfCfNR51CldVQhXp7/0P
-         S7FQ==
-X-Gm-Message-State: APjAAAXbyIYhiW0yTw5SEi03luwyT7CG3g8F8p0P6HpJAdLeDhpdmU64
-        YHMKXprTOZGjbCidaJfF3qk=
-X-Google-Smtp-Source: APXvYqwsSeFcyzJcOhi3tqDSJGPKALtsnkVdQciAcltWERDoXevmjqyh9qgqGOQgtofSUzIwUOJI3g==
-X-Received: by 2002:a37:4dc1:: with SMTP id a184mr6027115qkb.62.1576600604362;
-        Tue, 17 Dec 2019 08:36:44 -0800 (PST)
-Received: from ?IPv6:2601:284:8202:10b0:b136:c627:c416:750? ([2601:284:8202:10b0:b136:c627:c416:750])
-        by smtp.googlemail.com with ESMTPSA id o17sm8027120qtq.93.2019.12.17.08.36.42
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 17 Dec 2019 08:36:43 -0800 (PST)
-Subject: Re: [PATCH iproute2-next v2 2/2] iplink: bond: print 3ad
- actor/partner oper states as strings
-To:     Andy Roulin <aroulin@cumulusnetworks.com>, netdev@vger.kernel.org
-Cc:     dsahern@gmail.com, nikolay@cumulusnetworks.com,
-        roopa@cumulusnetworks.com, j.vosburgh@gmail.com, vfalico@gmail.com,
-        andy@greyhouse.net, stephen@networkplumber.org
-References: <1576103595-23138-1-git-send-email-aroulin@cumulusnetworks.com>
- <1576103595-23138-3-git-send-email-aroulin@cumulusnetworks.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <74e45193-2882-cc47-e53b-1373e6a26205@gmail.com>
-Date:   Tue, 17 Dec 2019 09:36:42 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0)
- Gecko/20100101 Thunderbird/68.3.0
+        bh=FQXepPjODALKwBSGmvnI626nvPCyXuF/Gz5QtqNwjz0=;
+        b=m/l1gF9g80kMTKpqAleJet4slwjphXO/hXSkyk1WSp4GJk9j5JP7vitw+UecYBu2P/
+         SOVfMWNJtOqo1OEnf38N3tEdMcYxPL9goVWLuyxggmA+QIPYF+UrhswEIeLULhRh47n0
+         t1PTO6tdID/frITGv46kQz5LoX+qNelsPIQm9C/cw22hZIH04n5yx52dGpx9SeNrzpue
+         bOUr947Y1+cDLgPpFgSb+cy1wunK+5QJ9QrDXNVhsw4rVWpOG26ySwUxEeO0ncUqobAW
+         14HUxdhOx2GDvIBVXFk4uGMy0c0EjnCgpMSHMIP0d+mZc1KT/swEb3mrO/VkOJ9sN2rV
+         LLOQ==
+X-Gm-Message-State: APjAAAUlCr+XW+K0FoMnHHQtf+cEXOTrv1GF24bCZrvBIchhPY2GKjvw
+        n2jjus+9QicQdLwqbpUVkhZVBuM=
+X-Google-Smtp-Source: APXvYqzVlefm3KM6A23hWqlPPbDdTcYce3iPL46mvJF3fNG92N17VS6twDJQbqt/xZskF6mWsj6jSg==
+X-Received: by 2002:aca:a9c5:: with SMTP id s188mr925723oie.154.1576600787852;
+        Tue, 17 Dec 2019 08:39:47 -0800 (PST)
+Received: from xps15.herring.priv (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
+        by smtp.googlemail.com with ESMTPSA id 15sm8040164oix.46.2019.12.17.08.39.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 17 Dec 2019 08:39:47 -0800 (PST)
+From:   Rob Herring <robh@kernel.org>
+To:     devicetree@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Jose Abreu <joabreu@synopsys.com>, netdev@vger.kernel.org,
+        Maxime Ripard <mripard@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH] dt-bindings: Add missing 'properties' keyword enclosing 'snps,tso'
+Date:   Tue, 17 Dec 2019 10:39:46 -0600
+Message-Id: <20191217163946.25052-1-robh@kernel.org>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-In-Reply-To: <1576103595-23138-3-git-send-email-aroulin@cumulusnetworks.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/11/19 3:33 PM, Andy Roulin wrote:
-> The 802.3ad actor/partner operating states are only printed as
-> numbers, e.g,
-> 
-> ad_actor_oper_port_state 15
-> 
-> Add an additional output in ip link show that prints a string describing
-> the individual 3ad bit meanings in the following way:
-> 
-> ad_actor_oper_port_state_str <active,short_timeout,aggregating,in_sync>
-> 
-> JSON output is also supported, the field becomes a json array:
-> 
-> "ad_actor_oper_port_state_str":
-> 	["active","short_timeout","aggregating","in_sync"]
-> 
-> Signed-off-by: Andy Roulin <aroulin@cumulusnetworks.com>
-> Acked-by: Roopa Prabhu <roopa@cumulusnetworks.com>
-> ---
->  ip/iplink_bond_slave.c | 36 ++++++++++++++++++++++++++++++++----
->  1 file changed, 32 insertions(+), 4 deletions(-)
-> 
+DT property definitions must be under a 'properties' keyword. This was
+missing for 'snps,tso' in an if/then clause. A meta-schema fix will
+catch future errors like this.
 
-Andy: Update the uapi file per the comments on that thread and resubmit
-this patch with the updated names.
+Fixes: 7db3545aef5f ("dt-bindings: net: stmmac: Convert the binding to a schemas")
+Cc: Maxime Ripard <mripard@kernel.org>
+Cc: "David S. Miller" <davem@davemloft.net>
+Signed-off-by: Rob Herring <robh@kernel.org>
+---
+ Documentation/devicetree/bindings/net/snps,dwmac.yaml | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/Documentation/devicetree/bindings/net/snps,dwmac.yaml b/Documentation/devicetree/bindings/net/snps,dwmac.yaml
+index 4845e29411e4..e08cd4c4d568 100644
+--- a/Documentation/devicetree/bindings/net/snps,dwmac.yaml
++++ b/Documentation/devicetree/bindings/net/snps,dwmac.yaml
+@@ -347,6 +347,7 @@ allOf:
+               - st,spear600-gmac
+ 
+     then:
++      properties:
+         snps,tso:
+           $ref: /schemas/types.yaml#definitions/flag
+           description:
+-- 
+2.20.1
+
