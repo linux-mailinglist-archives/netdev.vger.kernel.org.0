@@ -2,394 +2,197 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 96BC81223E2
-	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 06:36:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 72B6612244B
+	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 06:53:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727513AbfLQFgj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Dec 2019 00:36:39 -0500
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:59068 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727130AbfLQFgi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 00:36:38 -0500
-Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xBH5UNod024611
-        for <netdev@vger.kernel.org>; Mon, 16 Dec 2019 21:36:37 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-type; s=facebook; bh=U2FnVVd88r9vKq3mERSqE+BEIVPJPGLLu3y42olYkjc=;
- b=NOmgbJ6RPbsxC42uOejz0V8doS++6C6KCR+VTfJQHkfjER2uLWFPRLLFoTZ0WMlymy+p
- sd9LrD9n7byqwc31Y4E8w1P8RALzgRdboNxqhN+mFLWGcNrWjp7q2SZXYjgA9r+It/yT
- Tx9WG7WSO8JRTt/h1fmR6l0bY/4HPchSDmo= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 2wxcwy37v8-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Mon, 16 Dec 2019 21:36:37 -0800
-Received: from intmgw003.06.prn3.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:83::7) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Mon, 16 Dec 2019 21:36:36 -0800
-Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
-        id 08E272EC1AFA; Mon, 16 Dec 2019 21:36:35 -0800 (PST)
-Smtp-Origin-Hostprefix: devbig
-From:   Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
-        <daniel@iogearbox.net>
-CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH bpf-next 3/3] bpftool: add gen subcommand manpage
-Date:   Mon, 16 Dec 2019 21:36:26 -0800
-Message-ID: <20191217053626.2158870-4-andriin@fb.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20191217053626.2158870-1-andriin@fb.com>
-References: <20191217053626.2158870-1-andriin@fb.com>
-X-FB-Internal: Safe
+        id S1727771AbfLQFwr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Dec 2019 00:52:47 -0500
+Received: from rcdn-iport-9.cisco.com ([173.37.86.80]:22238 "EHLO
+        rcdn-iport-9.cisco.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727175AbfLQFwr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 00:52:47 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=cisco.com; i=@cisco.com; l=5700; q=dns/txt; s=iport;
+  t=1576561966; x=1577771566;
+  h=from:to:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=EByTS1NeHg5rIZQojn0N2gp7tLRr+BgsY7QmVpevBI4=;
+  b=hHOiDAhnZWi8JgkcbMRuo2oaUh7oWeMoeNB3hhv3IDZmk/YoeQB+6p2X
+   xaorPGaIPRuPibGfjfQK0u+dlkMyQSSEstte4piBrCKkjcLX7BVJcfvoD
+   G+gQLHC+AZmoO5rloLWdUE7sII/X/1srGnQB5hOdR3WtOZvgAP/VfwmvE
+   w=;
+X-IronPort-AV: E=Sophos;i="5.69,324,1571702400"; 
+   d="scan'208";a="597724430"
+Received: from rcdn-core-12.cisco.com ([173.37.93.148])
+  by rcdn-iport-9.cisco.com with ESMTP/TLS/DHE-RSA-SEED-SHA; 17 Dec 2019 05:52:46 +0000
+Received: from sjc-ads-7483.cisco.com (sjc-ads-7483.cisco.com [10.30.221.19])
+        by rcdn-core-12.cisco.com (8.15.2/8.15.2) with ESMTP id xBH5qjXT012240;
+        Tue, 17 Dec 2019 05:52:46 GMT
+Received: by sjc-ads-7483.cisco.com (Postfix, from userid 838444)
+        id AA81E1679; Mon, 16 Dec 2019 21:52:45 -0800 (PST)
+From:   Aviraj CJ <acj@cisco.com>
+To:     peppe.cavallaro@st.com, gregkh@linuxfoundation.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org, xe-linux-external@cisco.com, acj@cisco.com
+Subject: [PATCH stable v4.4 1/2] net: stmmac: use correct DMA buffer size in the RX descriptor
+Date:   Mon, 16 Dec 2019 21:52:27 -0800
+Message-Id: <20191217055228.57282-1-acj@cisco.com>
+X-Mailer: git-send-email 2.19.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
- definitions=2019-12-17_01:2019-12-16,2019-12-16 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxscore=0
- lowpriorityscore=0 malwarescore=0 spamscore=0 impostorscore=0
- clxscore=1015 adultscore=0 bulkscore=0 mlxlogscore=999 phishscore=0
- suspectscore=25 priorityscore=1501 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-1910280000 definitions=main-1912170049
-X-FB-Internal: deliver
+Content-Transfer-Encoding: 8bit
+X-Auto-Response-Suppress: DR, OOF, AutoReply
+X-Outbound-SMTP-Client: 10.30.221.19, sjc-ads-7483.cisco.com
+X-Outbound-Node: rcdn-core-12.cisco.com
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add bpftool-gen.rst describing skeleton on the high level. Also include
-a small, but complete, example BPF app (BPF side, userspace side, generated
-skeleton) in example section to demonstrate skeleton API and its usage.
+upstream 583e6361414903c5206258a30e5bd88cb03c0254 commit
 
-Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+We always program the maximum DMA buffer size into the receive descriptor,
+although the allocated size may be less. E.g. with the default MTU size
+we allocate only 1536 bytes. If somebody sends us a bigger frame, then
+memory may get corrupted.
+
+Program DMA using exact buffer sizes.
+
+Signed-off-by: Aaro Koskinen <aaro.koskinen@nokia.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+[acj: backport to v4.4 -stable :
+- Modified patch since v4.4 driver has no support for Big endian
+- Skipped the section modifying non-existent functions in dwmac4_descs.c and
+dwxgmac2_descs.c ]
+Signed-off-by: Aviraj CJ <acj@cisco.com>
 ---
- .../bpf/bpftool/Documentation/bpftool-gen.rst | 302 ++++++++++++++++++
- tools/bpf/bpftool/Documentation/bpftool.rst   |   3 +-
- 2 files changed, 304 insertions(+), 1 deletion(-)
- create mode 100644 tools/bpf/bpftool/Documentation/bpftool-gen.rst
+ drivers/net/ethernet/stmicro/stmmac/common.h      |  2 +-
+ drivers/net/ethernet/stmicro/stmmac/descs_com.h   | 14 ++++++++++----
+ drivers/net/ethernet/stmicro/stmmac/enh_desc.c    | 10 +++++++---
+ drivers/net/ethernet/stmicro/stmmac/norm_desc.c   | 10 +++++++---
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c |  4 ++--
+ 5 files changed, 27 insertions(+), 13 deletions(-)
 
-diff --git a/tools/bpf/bpftool/Documentation/bpftool-gen.rst b/tools/bpf/bpftool/Documentation/bpftool-gen.rst
-new file mode 100644
-index 000000000000..855d03b88590
---- /dev/null
-+++ b/tools/bpf/bpftool/Documentation/bpftool-gen.rst
-@@ -0,0 +1,302 @@
-+================
-+bpftool-gen
-+================
-+-------------------------------------------------------------------------------
-+tool for BPF code-generation
-+-------------------------------------------------------------------------------
+diff --git a/drivers/net/ethernet/stmicro/stmmac/common.h b/drivers/net/ethernet/stmicro/stmmac/common.h
+index 623c6ed8764a..803df6a32ba9 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/common.h
++++ b/drivers/net/ethernet/stmicro/stmmac/common.h
+@@ -301,7 +301,7 @@ struct dma_features {
+ struct stmmac_desc_ops {
+ 	/* DMA RX descriptor ring initialization */
+ 	void (*init_rx_desc) (struct dma_desc *p, int disable_rx_ic, int mode,
+-			      int end);
++			      int end, int bfsize);
+ 	/* DMA TX descriptor ring initialization */
+ 	void (*init_tx_desc) (struct dma_desc *p, int mode, int end);
+ 
+diff --git a/drivers/net/ethernet/stmicro/stmmac/descs_com.h b/drivers/net/ethernet/stmicro/stmmac/descs_com.h
+index 6f2cc78c5cf5..6b83fc8e6fbe 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/descs_com.h
++++ b/drivers/net/ethernet/stmicro/stmmac/descs_com.h
+@@ -33,9 +33,10 @@
+ /* Specific functions used for Ring mode */
+ 
+ /* Enhanced descriptors */
+-static inline void ehn_desc_rx_set_on_ring(struct dma_desc *p, int end)
++static inline void ehn_desc_rx_set_on_ring(struct dma_desc *p, int end, int bfsize)
+ {
+-	p->des01.erx.buffer2_size = BUF_SIZE_8KiB - 1;
++	if (bfsize == BUF_SIZE_16KiB)
++		p->des01.erx.buffer2_size = BUF_SIZE_8KiB - 1;
+ 	if (end)
+ 		p->des01.erx.end_ring = 1;
+ }
+@@ -61,9 +62,14 @@ static inline void enh_set_tx_desc_len_on_ring(struct dma_desc *p, int len)
+ }
+ 
+ /* Normal descriptors */
+-static inline void ndesc_rx_set_on_ring(struct dma_desc *p, int end)
++static inline void ndesc_rx_set_on_ring(struct dma_desc *p, int end, int bfsize)
+ {
+-	p->des01.rx.buffer2_size = BUF_SIZE_2KiB - 1;
++	int size;
 +
-+:Manual section: 8
++	if (bfsize >= BUF_SIZE_2KiB) {
++		size = min(bfsize - BUF_SIZE_2KiB + 1, BUF_SIZE_2KiB - 1);
++		p->des01.rx.buffer2_size = size;
++	}
+ 	if (end)
+ 		p->des01.rx.end_ring = 1;
+ }
+diff --git a/drivers/net/ethernet/stmicro/stmmac/enh_desc.c b/drivers/net/ethernet/stmicro/stmmac/enh_desc.c
+index 7d944449f5ef..9ecb3a948f86 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/enh_desc.c
++++ b/drivers/net/ethernet/stmicro/stmmac/enh_desc.c
+@@ -238,16 +238,20 @@ static int enh_desc_get_rx_status(void *data, struct stmmac_extra_stats *x,
+ }
+ 
+ static void enh_desc_init_rx_desc(struct dma_desc *p, int disable_rx_ic,
+-				  int mode, int end)
++				  int mode, int end, int bfsize)
+ {
++	int bfsize1;
 +
-+SYNOPSIS
-+========
+ 	p->des01.all_flags = 0;
+ 	p->des01.erx.own = 1;
+-	p->des01.erx.buffer1_size = BUF_SIZE_8KiB - 1;
 +
-+	**bpftool** [*OPTIONS*] **gen** *COMMAND*
++	bfsize1 = min(bfsize, BUF_SIZE_8KiB - 1);
++	p->des01.erx.buffer1_size = bfsize1;
+ 
+ 	if (mode == STMMAC_CHAIN_MODE)
+ 		ehn_desc_rx_set_on_chain(p, end);
+ 	else
+-		ehn_desc_rx_set_on_ring(p, end);
++		ehn_desc_rx_set_on_ring(p, end, bfsize);
+ 
+ 	if (disable_rx_ic)
+ 		p->des01.erx.disable_ic = 1;
+diff --git a/drivers/net/ethernet/stmicro/stmmac/norm_desc.c b/drivers/net/ethernet/stmicro/stmmac/norm_desc.c
+index 48c3456445b2..07e0c03cfb10 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/norm_desc.c
++++ b/drivers/net/ethernet/stmicro/stmmac/norm_desc.c
+@@ -121,16 +121,20 @@ static int ndesc_get_rx_status(void *data, struct stmmac_extra_stats *x,
+ }
+ 
+ static void ndesc_init_rx_desc(struct dma_desc *p, int disable_rx_ic, int mode,
+-			       int end)
++			       int end, int bfsize)
+ {
++	int bfsize1;
 +
-+	*OPTIONS* := { { **-j** | **--json** } [{ **-p** | **--pretty** }] }
+ 	p->des01.all_flags = 0;
+ 	p->des01.rx.own = 1;
+-	p->des01.rx.buffer1_size = BUF_SIZE_2KiB - 1;
 +
-+	*COMMAND* := { **skeleton | **help** }
-+
-+GEN COMMANDS
-+=============
-+
-+|	**bpftool** **gen skeleton** *FILE*
-+|	**bpftool** **gen help**
-+
-+DESCRIPTION
-+===========
-+	**bpftool gen skeleton** *FILE*
-+		  Generate BPF skeleton C header file for a given *FILE*.
-+
-+		  BPF skeleton is an alternative interface to existing libbpf
-+		  APIs for working with BPF objects. Skeleton code is intended
-+		  to significantly shorten and simplify code to load and work
-+		  with BPF programs from userspace side. Generated code is
-+		  tailored to specific input BPF object *FILE*, reflecting its
-+		  structure by listing out available maps, program, variables,
-+		  etc. Skeleton eliminates the need to lookup mentioned
-+		  components by name. Instead, if skeleton instantiation
-+		  succeeds, they are populated in skeleton structure as valid
-+		  libbpf types (e.g., struct bpf_map pointer) and can be
-+		  passed to existing generic libbpf APIs.
-+
-+		  In addition to simple and reliable access to maps and
-+		  programs, skeleton provides a storage for BPF links (struct
-+		  bpf_link) for each BPF program within BPF object. When
-+		  requested, supported BPF programs will be automatically
-+		  attached and resulting BPF links stored for further use by
-+		  user in pre-allocated fields in skeleton struct. For BPF
-+		  programs that can't be automatically attached by libbpf,
-+		  user can attach them manually, but store resulting BPF link
-+		  in per-program link field. All such set up links will be
-+		  automatically destroyed on BPF skeleton destruction. This
-+		  eliminates the need for users to manage links manually and
-+		  rely on libbpf support to detach programs and free up
-+		  resources.
-+
-+		  Another facility provided by BPF skeleton is an interface to
-+		  global variables of all supported kinds: mutable, read-only,
-+		  as well as extern ones. This interface allows to pre-setup
-+		  initial values of variables before BPF object is loaded and
-+		  verified by kernel. For non-read-only variables, the same
-+		  interface can be used to fetch values of global variables on
-+		  userspace side, even if they are modified by BPF code.
-+
-+		  During skeleton generation, contents of source BPF object
-+		  *FILE* is embedded within generated code and is thus not
-+		  necessary to keep around. This ensures skeleton and BPF
-+		  object file are matching 1-to-1 and always stay in sync.
-+		  Generated code is dual-licensed under LGPL-2.1 and
-+		  BSD-2-Clause licenses.
-+
-+		  It is a design goal and guarantee that skeleton interfaces
-+		  are interoperable with generic libbpf APIs. User should
-+		  always be able to use skeleton API to create and load BPF
-+		  object, and later use libbpf APIs to keep working with
-+		  specific maps, programs, etc.
-+
-+		  As part of skeleton, few custom functions are generated.
-+		  Each of them is prefixed with object name, derived from
-+		  object file name. I.e., if BPF object file name is
-+		  **example.o**, BPF object name will be **example**. The
-+		  following custom functions are provided in such case:
-+
-+		  - **example__open** and **example__open_opts**.
-+		    These functions are used to instantiate skeleton. It
-+		    corresponds to libbpf's **bpf_object__open()** API.
-+		    **_opts** variants accepts extra **bpf_object_open_opts**
-+		    options.
-+
-+		  - **example__load**.
-+		    This functions creates maps, loads and verifies BPF
-+		    programs, initializes global data maps. It corresponds to
-+		    libppf's **bpf_object__load** API.
-+
-+		  - **example__open_and_load** combines **example__open** and
-+		    **example__load** invocations in one commonly used
-+		    operation.
-+
-+		  - **example__attach** and **example__detach**
-+		    This pair of functions allow to attach and detach,
-+		    correspondingly, already loaded BPF object. Only BPF
-+		    programs of types supported by libbpf for auto-attachment
-+		    will be auto-attached and their corresponding BPF links
-+		    instantiated. For other BPF programs, user can manually
-+		    create a BPF link and assign it to corresponding fields in
-+		    skeleton struct. **example__detach** will detach both
-+		    links created automatically, as well as those populated by
-+		    user manually.
-+
-+		  - **example__destroy**
-+		    Detach and unload BPF programs, free up all the resources
-+		    used by skeleton and BPF object.
-+
-+		  If BPF object has global variables, corresponding structs
-+		  with memory layout corresponding to global data datasection
-+		  layout will be created. Currently supported ones are: .data,
-+		  .bss, .rodata, and .extern structs/datasections. These
-+		  datasections/structs can be used to set up initial values of
-+		  variables, if set before **example__load**. Afterwards, if
-+		  target kernel supports memory-mapped BPF arrays, same
-+		  structs can be used to fetch and update (non-read-only)
-+		  data from userspace, with same simplicity as for BPF side.
-+
-+	**bpftool gen help**
-+		  Print short help message.
-+
-+OPTIONS
-+=======
-+	-h, --help
-+		  Print short generic help message (similar to **bpftool help**).
-+
-+	-V, --version
-+		  Print version number (similar to **bpftool version**).
-+
-+	-j, --json
-+		  Generate JSON output. For commands that cannot produce JSON,
-+		  this option has no effect.
-+
-+	-p, --pretty
-+		  Generate human-readable JSON output. Implies **-j**.
-+
-+	-d, --debug
-+		  Print all logs available from libbpf, including debug-level
-+		  information.
-+
-+EXAMPLES
-+========
-+**$ cat example.c**
-+::
-+
-+  #include <stdbool.h>
-+  #include <linux/ptrace.h>
-+  #include <linux/bpf.h>
-+  #include "bpf_helpers.h"
-+  
-+  const volatile int param1 = 42;
-+  bool global_flag = true;
-+  struct { int x; } data = {};
-+  
-+  struct {
-+  	__uint(type, BPF_MAP_TYPE_HASH);
-+  	__uint(max_entries, 128);
-+  	__type(key, int);
-+  	__type(value, long);
-+  } my_map SEC(".maps");
-+  
-+  SEC("raw_tp/sys_enter")
-+  int handle_sys_enter(struct pt_regs *ctx)
-+  {
-+  	static long my_static_var;
-+  	if (global_flag)
-+  		my_static_var++;
-+  	else
-+  		data.x += param1;
-+  	return 0;
-+  }
-+  
-+  SEC("raw_tp/sys_exit")
-+  int handle_sys_exit(struct pt_regs *ctx)
-+  {
-+  	int zero = 0;
-+  	bpf_map_lookup_elem(&my_map, &zero);
-+  	return 0;
-+  }
-+
-+This is example BPF application with two BPF programs and a mix of BPF maps
-+and global variables.
-+
-+**$ bpftool gen skeleton example.o**
-+::
-+
-+  /* SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause) */
-+  
-+  /* THIS FILE IS AUTOGENERATED! */
-+  #ifndef __EXAMPLE_SKEL_H__
-+  #define __EXAMPLE_SKEL_H__
-+  
-+  #include <stdlib.h>
-+  #include <libbpf.h>
-+  
-+  struct example {
-+  	struct bpf_object_skeleton *skeleton;
-+  	struct bpf_object *obj;
-+  	struct {
-+  		struct bpf_map *rodata;
-+  		struct bpf_map *data;
-+  		struct bpf_map *bss;
-+  		struct bpf_map *my_map;
-+  	} maps;
-+  	struct {
-+  		struct bpf_program *handle_sys_enter;
-+  		struct bpf_program *handle_sys_exit;
-+  	} progs;
-+  	struct {
-+  		struct bpf_link *handle_sys_enter;
-+  		struct bpf_link *handle_sys_exit;
-+  	} links;
-+  	struct example__bss {
-+  		struct {
-+  			int x;
-+  		} data;
-+  	} *bss;
-+  	struct example__data {
-+  		_Bool global_flag;
-+  		long int handle_sys_enter_my_static_var;
-+  	} *data;
-+  	struct example__rodata {
-+  		int param1;
-+  	} *rodata;
-+  };
-+  
-+  static void example__destroy(struct example *obj);
-+  static inline struct example *example__open_opts(
-+                const struct bpf_object_open_opts *opts);
-+  static inline struct example *example__open();
-+  static inline int example__load(struct example *obj);
-+  static inline struct example *example__open_and_load();
-+  static inline int example__attach(struct example *obj);
-+  static inline void example__detach(struct example *obj);
-+
-+  #endif /* __EXAMPLE_SKEL_H__ */
-+
-+**$ cat example_user.c**
-+::
-+  #include "example.skel.h"
-+  
-+  int main()
-+  {
-+  	struct example *skel;
-+  	int err = 0;
-+  
-+  	skel = example__open();
-+  	if (!skel)
-+  		goto cleanup;
-+  
-+  	skel->rodata->param1 = 128;
-+  
-+  	err = example__load(skel);
-+  	if (err)
-+  		goto cleanup;
-+  
-+  	err = example__attach(skel);
-+  	if (err)
-+  		goto cleanup;
-+  
-+  	/* all libbpf APIs are usable */
-+  	printf("my_map name: %s\n", bpf_map__name(skel->maps.my_map));
-+  	printf("sys_enter prog FD: %d\n",
-+  	       bpf_program__fd(skel->progs.handle_sys_enter));
-+  
-+  	/* detach and re-attach sys_exit program */
-+  	bpf_link__destroy(skel->links.handle_sys_exit);
-+  	skel->links.handle_sys_exit =
-+  		bpf_program__attach(skel->progs.handle_sys_exit);
-+  
-+  	printf("my_static_var: %ld\n",
-+  	       skel->bss->handle_sys_enter_my_static_var);
-+  
-+  cleanup:
-+  	example__destroy(skel);
-+  	return err;
-+  }
-+
-+**# ./example_user**
-+::
-+  my_map name: my_map
-+  sys_enter prog FD: 8
-+  my_static_var: 7
-+
-+This is a stripped-out version of skeleton generated for above example code.
-+
-+SEE ALSO
-+========
-+	**bpf**\ (2),
-+	**bpf-helpers**\ (7),
-+	**bpftool**\ (8),
-+	**bpftool-map**\ (8),
-+	**bpftool-prog**\ (8),
-+	**bpftool-cgroup**\ (8),
-+	**bpftool-feature**\ (8),
-+	**bpftool-net**\ (8),
-+	**bpftool-perf**\ (8),
-+	**bpftool-btf**\ (8)
-diff --git a/tools/bpf/bpftool/Documentation/bpftool.rst b/tools/bpf/bpftool/Documentation/bpftool.rst
-index 6a9c52ef84a9..34239fda69ed 100644
---- a/tools/bpf/bpftool/Documentation/bpftool.rst
-+++ b/tools/bpf/bpftool/Documentation/bpftool.rst
-@@ -81,4 +81,5 @@ SEE ALSO
- 	**bpftool-feature**\ (8),
- 	**bpftool-net**\ (8),
- 	**bpftool-perf**\ (8),
--	**bpftool-btf**\ (8)
-+	**bpftool-btf**\ (8),
-+	**bpftool-gen**\ (8),
++	bfsize1 = min(bfsize, (BUF_SIZE_2KiB - 1));
++	p->des01.rx.buffer1_size = bfsize1;
+ 
+ 	if (mode == STMMAC_CHAIN_MODE)
+ 		ndesc_rx_set_on_chain(p, end);
+ 	else
+-		ndesc_rx_set_on_ring(p, end);
++		ndesc_rx_set_on_ring(p, end, bfsize);
+ 
+ 	if (disable_rx_ic)
+ 		p->des01.rx.disable_ic = 1;
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+index f4d6512f066c..e9d41e03121c 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+@@ -964,11 +964,11 @@ static void stmmac_clear_descriptors(struct stmmac_priv *priv)
+ 		if (priv->extend_desc)
+ 			priv->hw->desc->init_rx_desc(&priv->dma_erx[i].basic,
+ 						     priv->use_riwt, priv->mode,
+-						     (i == rxsize - 1));
++						     (i == rxsize - 1), priv->dma_buf_sz);
+ 		else
+ 			priv->hw->desc->init_rx_desc(&priv->dma_rx[i],
+ 						     priv->use_riwt, priv->mode,
+-						     (i == rxsize - 1));
++						     (i == rxsize - 1), priv->dma_buf_sz);
+ 	for (i = 0; i < txsize; i++)
+ 		if (priv->extend_desc)
+ 			priv->hw->desc->init_tx_desc(&priv->dma_etx[i].basic,
 -- 
-2.17.1
+2.19.1
 
