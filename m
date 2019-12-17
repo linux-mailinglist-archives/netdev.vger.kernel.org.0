@@ -2,93 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C3DD122A6B
-	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 12:43:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EDD79122A8F
+	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 12:46:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727704AbfLQLnC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Dec 2019 06:43:02 -0500
-Received: from sv2-smtprelay2.synopsys.com ([149.117.73.133]:48824 "EHLO
-        smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727626AbfLQLmz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 06:42:55 -0500
-Received: from mailhost.synopsys.com (mdc-mailhost2.synopsys.com [10.225.0.210])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (No client certificate requested)
-        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 9863C4266E;
-        Tue, 17 Dec 2019 11:42:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
-        t=1576582974; bh=bM8T9PSP5GnAoUaQXQaEg95xhnvdUPdNYJTNEqJMPNo=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:In-Reply-To:
-         References:From;
-        b=iyb7DJjqreUutfvIo0Kn0KK0dzIjdXKCcY4xXyPbtZskqAKeK+LMwgtUvjiUtKzaG
-         1EhWj+M1LZv8WwEs3mXb/eZBNjxPni+p76G7boxlYguceuUySL6vHqQs92NAe1ittp
-         pUS/ySlg/gQCWABqyiaZM8xShvH1hxWGcdEPILGMyKHNxDcUFEyUuD3ExN79gvtkcz
-         zpDKMBjIxF6NdKMz7ngc4eWb6V0J/hv4T7I4PrCKGX5BGy56Z4Gi6WBLBFIXF/4hCl
-         WaTmeOdq3V7mpjFq1T7f+3UzLd49OBe+vfJE3jzT+glH2vXfkp9pwG2+O4wonouyNQ
-         qOrNtFQJL6fZw==
-Received: from de02dwia024.internal.synopsys.com (de02dwia024.internal.synopsys.com [10.225.19.81])
-        by mailhost.synopsys.com (Postfix) with ESMTP id 2A42FA00AE;
-        Tue, 17 Dec 2019 11:42:51 +0000 (UTC)
-From:   Jose Abreu <Jose.Abreu@synopsys.com>
+        id S1727433AbfLQLqt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Dec 2019 06:46:49 -0500
+Received: from mail-lj1-f194.google.com ([209.85.208.194]:46776 "EHLO
+        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726383AbfLQLqs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 06:46:48 -0500
+Received: by mail-lj1-f194.google.com with SMTP id z17so10524564ljk.13
+        for <netdev@vger.kernel.org>; Tue, 17 Dec 2019 03:46:47 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=unikie-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id;
+        bh=AFL4QcknGHjxO2FTQDYNilNBXs3j45wi3MjuY5Jhgjs=;
+        b=0Ij+xd7detohgBBkrDNSTSOaEtCND+t39Xj7vRHjwzP1ODLFmQYS3A8ixlCA31Do09
+         kIZV3YQCmDy1j2r2M9GlaAE/YJSfUqXEJ+iuUiA7KhRbxsOqqhO/R7dxwgx+lhgOrylU
+         tYt2GmEBFR84nXOfxEFsrZA8zOK5+e1AnrAfSACJXjwHuycxhtQ10YKDlf4ao4S8K2ud
+         L4+Z+Ua2Y7FRwyoroqDcw7kUkBbHiJ1ikObrZzsnDEyAbOkCOPnQBH9UzbEXcTj2NQiR
+         mdhq18JNDnLaIiXqDlbseVYWfBDSjfQLDN6Bd8FPELiGyIaQBzKNNUra3SOBOkI6NHx5
+         5yJA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=AFL4QcknGHjxO2FTQDYNilNBXs3j45wi3MjuY5Jhgjs=;
+        b=ZCjuDD21iymTiTYz5F88tIUJSJHByywjCYNuRINsydSERiGsm37iU29KDYpizlbNxt
+         L7Zo/syO4rKBcOaql3hKJWzsyBUA5a3BBwOFGmE/HTNaMADTVhtEEMuOAeL5P+9WZLCj
+         K+m6nLSKgzZYsD407Yss2SDccRGkpRPXrQMsVVWoNtAkSwiq1Gd2PCJJht5YOfESzEg5
+         Ym7raEuwdqldNFA1qA1O6psTcSRX/hcTr2E8h7Hqlz+JFERYT/hsSXq46b3eSIx0NMW3
+         YCr4nzpWl2qggcz6uP0m7K2DA2E/Bn50YiVtYXnLWMaNYsdG1L84lxt7imgavhp77I9v
+         BsAw==
+X-Gm-Message-State: APjAAAX0Sulk5R6ZtsdXRH0cW4vinGGMTGlrxKhg3ENcOqvLWZCEbAUb
+        acs2c+dr8nhKve4nXD/1OX3DN+mEL48=
+X-Google-Smtp-Source: APXvYqzEVevvsbi8/4Eb5Qv1VFh9welvdj4nXDsrSgJvrUQqO8k//lSU8HZh7V45BU5GAbMjJIsgFQ==
+X-Received: by 2002:a2e:8152:: with SMTP id t18mr2811717ljg.255.1576583206223;
+        Tue, 17 Dec 2019 03:46:46 -0800 (PST)
+Received: from localhost.localdomain ([109.204.235.119])
+        by smtp.gmail.com with ESMTPSA id m11sm10729269lfj.89.2019.12.17.03.46.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 17 Dec 2019 03:46:45 -0800 (PST)
+From:   jouni.hogander@unikie.com
 To:     netdev@vger.kernel.org
-Cc:     Joao Pinto <Joao.Pinto@synopsys.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Jose Abreu <Jose.Abreu@synopsys.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <Jose.Abreu@synopsys.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net v2 8/8] net: stmmac: Enable 16KB buffer size
-Date:   Tue, 17 Dec 2019 12:42:38 +0100
-Message-Id: <54641d0f06e56ff2470f0575fc901477306a54c6.1576581853.git.Jose.Abreu@synopsys.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <cover.1576581853.git.Jose.Abreu@synopsys.com>
-References: <cover.1576581853.git.Jose.Abreu@synopsys.com>
-In-Reply-To: <cover.1576581853.git.Jose.Abreu@synopsys.com>
-References: <cover.1576581853.git.Jose.Abreu@synopsys.com>
+Cc:     Jouni Hogander <jouni.hogander@unikie.com>,
+        Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
+        David Miller <davem@davemloft.net>,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Subject: [PATCH] net-sysfs: Call dev_hold always in rx_queue_add_kobject
+Date:   Tue, 17 Dec 2019 13:46:34 +0200
+Message-Id: <20191217114634.9428-1-jouni.hogander@unikie.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-XGMAC supports maximum MTU that can go to 16KB. Lets add this check in
-the calculation of RX buffer size.
+From: Jouni Hogander <jouni.hogander@unikie.com>
 
-Fixes: 7ac6653a085b ("stmmac: Move the STMicroelectronics driver")
-Signed-off-by: Jose Abreu <Jose.Abreu@synopsys.com>
+Dev_hold has to be called always in rx_queue_add_kobject.
+Otherwise usage count drops below 0 in case of failure in
+kobject_init_and_add.
 
+Fixes: b8eb718348b8 ("net-sysfs: Fix reference count leak in rx|netdev_queue_add_kobject")
+Reported-by: syzbot <syzbot+30209ea299c09d8785c9@syzkaller.appspotmail.com>
+Cc: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+Cc: David Miller <davem@davemloft.net>
+Cc: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Signed-off-by: Jouni Hogander <jouni.hogander@unikie.com>
 ---
-Cc: Giuseppe Cavallaro <peppe.cavallaro@st.com>
-Cc: Alexandre Torgue <alexandre.torgue@st.com>
-Cc: Jose Abreu <joabreu@synopsys.com>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Maxime Coquelin <mcoquelin.stm32@gmail.com>
-Cc: netdev@vger.kernel.org
-Cc: linux-stm32@st-md-mailman.stormreply.com
-Cc: linux-arm-kernel@lists.infradead.org
-Cc: linux-kernel@vger.kernel.org
----
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ net/core/net-sysfs.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index eb31d7fb321c..082eeff9f54b 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -1109,7 +1109,9 @@ static int stmmac_set_bfsize(int mtu, int bufsize)
- {
- 	int ret = bufsize;
+diff --git a/net/core/net-sysfs.c b/net/core/net-sysfs.c
+index 5c4624298996..4c826b8bf9b1 100644
+--- a/net/core/net-sysfs.c
++++ b/net/core/net-sysfs.c
+@@ -919,14 +919,17 @@ static int rx_queue_add_kobject(struct net_device *dev, int index)
+ 	struct kobject *kobj = &queue->kobj;
+ 	int error = 0;
  
--	if (mtu >= BUF_SIZE_4KiB)
-+	if (mtu >= BUF_SIZE_8KiB)
-+		ret = BUF_SIZE_16KiB;
-+	else if (mtu >= BUF_SIZE_4KiB)
- 		ret = BUF_SIZE_8KiB;
- 	else if (mtu >= BUF_SIZE_2KiB)
- 		ret = BUF_SIZE_4KiB;
++	/* Kobject_put later will trigger rx_queue_release call which
++	 * decreases dev refcount: Take that reference here
++	 */
++	dev_hold(queue->dev);
++
+ 	kobj->kset = dev->queues_kset;
+ 	error = kobject_init_and_add(kobj, &rx_queue_ktype, NULL,
+ 				     "rx-%u", index);
+ 	if (error)
+ 		goto err;
+ 
+-	dev_hold(queue->dev);
+-
+ 	if (dev->sysfs_rx_queue_group) {
+ 		error = sysfs_create_group(kobj, dev->sysfs_rx_queue_group);
+ 		if (error)
 -- 
-2.7.4
+2.17.1
 
