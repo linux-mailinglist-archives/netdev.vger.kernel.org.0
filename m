@@ -2,74 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AD0191225E4
-	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 08:54:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C2DA122612
+	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 09:01:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726721AbfLQHvf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Dec 2019 02:51:35 -0500
-Received: from mail.kernel.org ([198.145.29.99]:50778 "EHLO mail.kernel.org"
+        id S1726877AbfLQIA6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Dec 2019 03:00:58 -0500
+Received: from mail.kernel.org ([198.145.29.99]:56354 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725730AbfLQHvf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 17 Dec 2019 02:51:35 -0500
+        id S1726072AbfLQIA5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 17 Dec 2019 03:00:57 -0500
 Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 2B26F206D8;
-        Tue, 17 Dec 2019 07:51:34 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 50F60207FF;
+        Tue, 17 Dec 2019 08:00:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1576569094;
-        bh=1E8uWoPIbWivZlT6LMDRe7vHB1L2KARa+dNYQ093htA=;
+        s=default; t=1576569656;
+        bh=S2ZJz3dmg/iV/HXN0K8nTRakpRHEekt71LuYRmWiS1o=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=t5cTRKtVmcgVlKyPf/+Fq4NZ+a142ya2cOGUf2jqac16wYpl17JcmEhE6lVbW1E0G
-         TSAw+4C26bJwSP5USnIf9leKB2cR/wpxTUlPIQ6G35x7YXAqB/QIA4vD8vHL/AmExi
-         MOjHYC52jYgvFRzZXvvXHkENMJtJY04E6KPegZB0=
-Date:   Tue, 17 Dec 2019 08:51:32 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Aviraj CJ <acj@cisco.com>
-Cc:     peppe.cavallaro@st.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        xe-linux-external@cisco.com
-Subject: Re: [PATCH stable v4.4 1/2] net: stmmac: use correct DMA buffer size
- in the RX descriptor
-Message-ID: <20191217075132.GC2474507@kroah.com>
-References: <20191217055228.57282-1-acj@cisco.com>
+        b=gNomV5mbcvv6DBQ0Ba/ZgFDnLZqCa8UqHlhj/bJQH+uSJ/fDGF5JFB9e+MnsqJ366
+         mZIiNTdgquVMQdFuXEUrWzSApd4Uxn23bahmTxIHJDGOdWi8kZXW1OsI/oX7zDDVTH
+         mWSdKWSdRI1TDLubAzAfG0mMas7CxRCpBMHvRke0=
+Date:   Tue, 17 Dec 2019 09:00:54 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     kbuild test robot <lkp@intel.com>,
+        "kernelci . org bot" <bot@kernelci.org>,
+        Olof's autobuilder <build@lixom.net>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Karsten Keil <isdn@linux-pingi.de>,
+        David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] [staging-next] isdn: don't mark kcapi_proc_exit as __exit
+Message-ID: <20191217080054.GA2525210@kroah.com>
+References: <20191216194909.1983639-1-arnd@arndb.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20191217055228.57282-1-acj@cisco.com>
+In-Reply-To: <20191216194909.1983639-1-arnd@arndb.de>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 16, 2019 at 09:52:27PM -0800, Aviraj CJ wrote:
-> upstream 583e6361414903c5206258a30e5bd88cb03c0254 commit
+On Mon, Dec 16, 2019 at 08:48:56PM +0100, Arnd Bergmann wrote:
+> As everybody pointed out by now, my patch to clean up CAPI introduced
+> a link time warning, as the two parts of the capi driver are now in
+> one module and the exit function may need to be called in the error
+> path of the init function:
 > 
-> We always program the maximum DMA buffer size into the receive descriptor,
-> although the allocated size may be less. E.g. with the default MTU size
-> we allocate only 1536 bytes. If somebody sends us a bigger frame, then
-> memory may get corrupted.
+> >> WARNING: drivers/isdn/capi/kernelcapi.o(.text+0xea4): Section mismatch in reference from the function kcapi_exit() to the function .exit.text:kcapi_proc_exit()
+>    The function kcapi_exit() references a function in an exit section.
+>    Often the function kcapi_proc_exit() has valid usage outside the exit section
+>    and the fix is to remove the __exit annotation of kcapi_proc_exit.
 > 
-> Program DMA using exact buffer sizes.
+> Remove the incorrect __exit annotation.
 > 
-> Signed-off-by: Aaro Koskinen <aaro.koskinen@nokia.com>
-> Signed-off-by: David S. Miller <davem@davemloft.net>
-> [acj: backport to v4.4 -stable :
-> - Modified patch since v4.4 driver has no support for Big endian
-> - Skipped the section modifying non-existent functions in dwmac4_descs.c and
-> dwxgmac2_descs.c ]
-> Signed-off-by: Aviraj CJ <acj@cisco.com>
+> Reported-by: kbuild test robot <lkp@intel.com>
+> Reported-by: kernelci.org bot <bot@kernelci.org>
+> Reported-by: Olof's autobuilder <build@lixom.net>
+> Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+> ---
+>  drivers/isdn/capi/kcapi_proc.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 
-I can't take stable patches for an older tree and have it "skip" newer
-stable trees.  To be specific, this patch is already in the 4.19.41
-release, but if I were to take it into the 4.4.y tree, then anyone
-upgrading to 4.9.y or 4.14.y afterward would run into the same issue.
-
-So can you also send backports to 4.9.y and 4.14.y so that I can take
-this fix into all trees?
-
-Same for patch 2/2.
-
-thanks,
+Thanks for this, now applied.
 
 greg k-h
