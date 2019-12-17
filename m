@@ -2,25 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 908C0122DEB
-	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 15:04:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 20511122DEE
+	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 15:04:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728745AbfLQOEk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Dec 2019 09:04:40 -0500
-Received: from sitav-80046.hsr.ch ([152.96.80.46]:60862 "EHLO
+        id S1728752AbfLQOEm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Dec 2019 09:04:42 -0500
+Received: from sitav-80046.hsr.ch ([152.96.80.46]:60864 "EHLO
         mail.strongswan.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728380AbfLQOEj (ORCPT
+        with ESMTP id S1728546AbfLQOEj (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 09:04:39 -0500
-X-Greylist: delayed 494 seconds by postgrey-1.27 at vger.kernel.org; Tue, 17 Dec 2019 09:04:37 EST
 Received: from obook.wlp.is (unknown [185.12.128.225])
-        by mail.strongswan.org (Postfix) with ESMTPSA id B6BD44053B;
+        by mail.strongswan.org (Postfix) with ESMTPSA id C098A405F4;
         Tue, 17 Dec 2019 14:56:22 +0100 (CET)
 From:   Martin Willi <martin@strongswan.org>
 To:     netfilter-devel@vger.kernel.org
 Cc:     netdev@vger.kernel.org
-Subject: [PATCH nf-next] netfilter: xt_slavedev: Add new L3master slave input device match
-Date:   Tue, 17 Dec 2019 14:56:15 +0100
-Message-Id: <20191217135616.25751-2-martin@strongswan.org>
+Subject: [PATCH iptables] extensions: Add new xt_slavedev input interface match extension
+Date:   Tue, 17 Dec 2019 14:56:16 +0100
+Message-Id: <20191217135616.25751-3-martin@strongswan.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191217135616.25751-1-martin@strongswan.org>
 References: <20191217135616.25751-1-martin@strongswan.org>
@@ -48,33 +47,160 @@ interfaces that strictly are layer 3 slave devices.
 
 Signed-off-by: Martin Willi <martin@strongswan.org>
 ---
- include/net/ip.h                           |  2 +-
- include/uapi/linux/netfilter/xt_slavedev.h | 18 +++++
- net/netfilter/Kconfig                      | 12 ++++
- net/netfilter/Makefile                     |  1 +
- net/netfilter/xt_slavedev.c                | 80 ++++++++++++++++++++++
- 5 files changed, 112 insertions(+), 1 deletion(-)
- create mode 100644 include/uapi/linux/netfilter/xt_slavedev.h
- create mode 100644 net/netfilter/xt_slavedev.c
+ extensions/libxt_slavedev.c           | 98 +++++++++++++++++++++++++++
+ extensions/libxt_slavedev.man         | 19 ++++++
+ extensions/libxt_slavedev.t           |  4 ++
+ include/linux/netfilter/xt_slavedev.h | 18 +++++
+ 4 files changed, 139 insertions(+)
+ create mode 100644 extensions/libxt_slavedev.c
+ create mode 100644 extensions/libxt_slavedev.man
+ create mode 100644 extensions/libxt_slavedev.t
+ create mode 100644 include/linux/netfilter/xt_slavedev.h
 
-diff --git a/include/net/ip.h b/include/net/ip.h
-index 5b317c9f4470..12cd3971f4cf 100644
---- a/include/net/ip.h
-+++ b/include/net/ip.h
-@@ -98,7 +98,7 @@ static inline void ipcm_init_sk(struct ipcm_cookie *ipcm,
- #define PKTINFO_SKB_CB(skb) ((struct in_pktinfo *)((skb)->cb))
- 
- /* return enslaved device index if relevant */
--static inline int inet_sdif(struct sk_buff *skb)
-+static inline int inet_sdif(const struct sk_buff *skb)
- {
- #if IS_ENABLED(CONFIG_NET_L3_MASTER_DEV)
- 	if (skb && ipv4_l3mdev_skb(IPCB(skb)->flags))
-diff --git a/include/uapi/linux/netfilter/xt_slavedev.h b/include/uapi/linux/netfilter/xt_slavedev.h
+diff --git a/extensions/libxt_slavedev.c b/extensions/libxt_slavedev.c
+new file mode 100644
+index 000000000000..d957c889e1a1
+--- /dev/null
++++ b/extensions/libxt_slavedev.c
+@@ -0,0 +1,98 @@
++#include <stdio.h>
++#include <string.h>
++#include <xtables.h>
++#include <linux/netfilter/xt_slavedev.h>
++
++enum {
++	O_SLAVEDEV_IN = 0,
++	O_SLAVEDEV_IN_STRICT,
++};
++
++static void slavedev_help(void)
++{
++	printf(
++"slavedev match options:\n"
++" [!] --slavedev-in inputname[+]	input device name ([+] for wildcard)\n"
++"     --slavedev-in-strict		input device must be layer 3 slave device\n");
++}
++
++static const struct xt_option_entry slavedev_opts[] = {
++	{.name = "slavedev-in", .id = O_SLAVEDEV_IN, .type = XTTYPE_STRING,
++	 .flags = XTOPT_INVERT | XTOPT_PUT,
++	 XTOPT_POINTER(struct xt_slavedev_info, iniface)},
++	{.name = "slavedev-in-strict", .id = O_SLAVEDEV_IN_STRICT,
++	 .type = XTTYPE_NONE},
++	XTOPT_TABLEEND,
++};
++
++static void slavedev_parse(struct xt_option_call *cb)
++{
++	struct xt_slavedev_info *info = cb->data;
++
++	xtables_option_parse(cb);
++	switch (cb->entry->id) {
++	case O_SLAVEDEV_IN:
++		xtables_parse_interface(cb->arg, info->iniface,
++					info->iniface_mask);
++		if (cb->invert)
++			info->flags |= XT_SLAVEDEV_IN_INV;
++		break;
++	case O_SLAVEDEV_IN_STRICT:
++		info->flags |= XT_SLAVEDEV_IN_STRICT;
++		break;
++	}
++}
++
++static bool slavedev_has_iniface(const struct xt_slavedev_info *info)
++{
++	int i;
++
++	for (i = 0; i < sizeof(info->iniface_mask); i++)
++		if (info->iniface_mask[i])
++			return true;
++	return false;
++}
++
++static void
++slavedev_print(const void *ip, const struct xt_entry_match *match, int numeric)
++{
++	const struct xt_slavedev_info *info = (const void *)match->data;
++
++	printf(" slavedev");
++	if (slavedev_has_iniface(info))
++		printf("%s in %s",
++		       (info->flags & XT_SLAVEDEV_IN_INV) ? " !" : "",
++		       info->iniface);
++	if (info->flags & XT_SLAVEDEV_IN_STRICT)
++		printf(" in-strict");
++}
++
++static void slavedev_save(const void *ip, const struct xt_entry_match *match)
++{
++	const struct xt_slavedev_info *info = (const void *)match->data;
++
++	if (slavedev_has_iniface(info))
++		printf("%s --slavedev-in %s",
++		       (info->flags & XT_SLAVEDEV_IN_INV) ? " !" : "",
++		       info->iniface);
++	if (info->flags & XT_SLAVEDEV_IN_STRICT)
++		printf(" --slavedev-in-strict");
++}
++
++static struct xtables_match slavedev_match = {
++	.family		= NFPROTO_UNSPEC,
++	.name		= "slavedev",
++	.version	= XTABLES_VERSION,
++	.size		= XT_ALIGN(sizeof(struct xt_slavedev_info)),
++	.userspacesize	= XT_ALIGN(sizeof(struct xt_slavedev_info)),
++	.help		= slavedev_help,
++	.print		= slavedev_print,
++	.save		= slavedev_save,
++	.x6_parse	= slavedev_parse,
++	.x6_options	= slavedev_opts,
++};
++
++void _init(void)
++{
++	xtables_register_match(&slavedev_match);
++}
+diff --git a/extensions/libxt_slavedev.man b/extensions/libxt_slavedev.man
+new file mode 100644
+index 000000000000..127eab4872f4
+--- /dev/null
++++ b/extensions/libxt_slavedev.man
+@@ -0,0 +1,19 @@
++This module matches on the real input interface enslaved to layer 3 master
++devices. For devices associated to VRF interfaces, the standard matching in
++\fBINPUT\fP and \fBFORWARD\fP chains can match against the VRF interface
++name, only. The slavedev match can match against the real input interface
++instead.
++.PP
++The slavedef match is valid in the \fBINPUT\fP and \fBFORWARD\fP chains
++only, as \fBPREROUTING\fP always matches against the real input interface.
++.TP
++[\fB!\fP] \fB\-\-slavedev\-in\fP \fIname\fP
++Name of a slave device the packet has been received on. If the interface name
++ends in a "+", then any interface which begins with this name will match.
++Not specifying an input interface can be used to match any packet that
++was received over a layer 3 slave device if the strict flag below is given.
++.TP
++\fB\-\-slavedev\-in\-strict\fP
++Matches only if the input interface is actually a layer 3 slave device,
++i.e. is associated to a VRF domain. If this flag is omitted, it also
++matches input interfaces without a layer 3 master device.
+diff --git a/extensions/libxt_slavedev.t b/extensions/libxt_slavedev.t
+new file mode 100644
+index 000000000000..80b0ff3b4264
+--- /dev/null
++++ b/extensions/libxt_slavedev.t
+@@ -0,0 +1,4 @@
++:INPUT,FORWARD
++-m slavedev --slavedev-in lo;=;OK
++-m slavedev --slavedev-in-strict;=;OK
++-m slavedev --slavedev-in eth+ --slavedev-in-strict;=;OK
+diff --git a/include/linux/netfilter/xt_slavedev.h b/include/linux/netfilter/xt_slavedev.h
 new file mode 100644
 index 000000000000..d35785b04c4b
 --- /dev/null
-+++ b/include/uapi/linux/netfilter/xt_slavedev.h
++++ b/include/linux/netfilter/xt_slavedev.h
 @@ -0,0 +1,18 @@
 +/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
 +#ifndef _UAPI_XT_SLAVEDEV_H
@@ -94,127 +220,6 @@ index 000000000000..d35785b04c4b
 +};
 +
 +#endif /* _UAPI_XT_SLAVEDEV_H */
-diff --git a/net/netfilter/Kconfig b/net/netfilter/Kconfig
-index 91efae88e8c2..a259192bdb2e 100644
---- a/net/netfilter/Kconfig
-+++ b/net/netfilter/Kconfig
-@@ -1530,6 +1530,18 @@ config NETFILTER_XT_MATCH_SCTP
- 	  If you want to compile it as a module, say M here and read
- 	  <file:Documentation/kbuild/modules.rst>.  If unsure, say `N'.
- 
-+config NETFILTER_XT_MATCH_SLAVEDEV
-+	tristate '"slavedev" match support'
-+	depends on NET_L3_MASTER_DEV
-+	depends on NETFILTER_ADVANCED
-+	help
-+	  Slavedev packet matching matches against the input slave interface
-+	  if the IP packet arrived on a layer 3 master device. It allows
-+	  matching against the input interface if that interface is
-+	  associated to a VRF master device.
-+
-+	  To compile it as a module, choose M here.  If unsure, say N.
-+
- config NETFILTER_XT_MATCH_SOCKET
- 	tristate '"socket" match support'
- 	depends on NETFILTER_XTABLES
-diff --git a/net/netfilter/Makefile b/net/netfilter/Makefile
-index 5e9b2eb24349..9650d1d5216c 100644
---- a/net/netfilter/Makefile
-+++ b/net/netfilter/Makefile
-@@ -197,6 +197,7 @@ obj-$(CONFIG_NETFILTER_XT_MATCH_RATEEST) += xt_rateest.o
- obj-$(CONFIG_NETFILTER_XT_MATCH_REALM) += xt_realm.o
- obj-$(CONFIG_NETFILTER_XT_MATCH_RECENT) += xt_recent.o
- obj-$(CONFIG_NETFILTER_XT_MATCH_SCTP) += xt_sctp.o
-+obj-$(CONFIG_NETFILTER_XT_MATCH_SLAVEDEV) += xt_slavedev.o
- obj-$(CONFIG_NETFILTER_XT_MATCH_SOCKET) += xt_socket.o
- obj-$(CONFIG_NETFILTER_XT_MATCH_STATE) += xt_state.o
- obj-$(CONFIG_NETFILTER_XT_MATCH_STATISTIC) += xt_statistic.o
-diff --git a/net/netfilter/xt_slavedev.c b/net/netfilter/xt_slavedev.c
-new file mode 100644
-index 000000000000..a53466dfb10b
---- /dev/null
-+++ b/net/netfilter/xt_slavedev.c
-@@ -0,0 +1,80 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+
-+#include <net/ip.h>
-+#include <net/ipv6.h>
-+#include <linux/module.h>
-+#include <linux/netfilter/x_tables.h>
-+#include <uapi/linux/netfilter/xt_slavedev.h>
-+
-+static bool
-+slavedev_mt(const struct sk_buff *skb, struct xt_action_param *par)
-+{
-+	const struct xt_slavedev_info *info = par->matchinfo;
-+	struct net_device *sd;
-+	unsigned long ret = 1;
-+	int sdif = 0;
-+
-+	switch (xt_family(par)) {
-+	case NFPROTO_IPV4:
-+		sdif = inet_sdif(skb);
-+		break;
-+	case NFPROTO_IPV6:
-+		sdif = inet6_sdif(skb);
-+		break;
-+	}
-+	if (sdif) {
-+		sd = dev_get_by_index_rcu(xt_net(par), sdif);
-+		if (sd)
-+			ret = ifname_compare_aligned(sd->name, info->iniface,
-+						     info->iniface_mask);
-+	} else if (!(info->flags & XT_SLAVEDEV_IN_STRICT) && xt_in(par)) {
-+		ret = ifname_compare_aligned(xt_inname(par), info->iniface,
-+					     info->iniface_mask);
-+	}
-+
-+	if (!ret ^ !(info->flags & XT_SLAVEDEV_IN_INV))
-+		return false;
-+
-+	return true;
-+}
-+
-+static int slavedev_mt_check(const struct xt_mtchk_param *par)
-+{
-+	const struct xt_slavedev_info *info = par->matchinfo;
-+
-+	if (info->flags & ~XT_SLAVEDEV_MASK)
-+		return -EINVAL;
-+
-+	return 0;
-+}
-+
-+static struct xt_match slavedev_mt_reg __read_mostly = {
-+	.name		= "slavedev",
-+	.revision	= 0,
-+	.family		= NFPROTO_UNSPEC,
-+	.checkentry	= slavedev_mt_check,
-+	.match		= slavedev_mt,
-+	.matchsize	= sizeof(struct xt_slavedev_info),
-+	.hooks		= (1 << NF_INET_LOCAL_IN) |
-+			  (1 << NF_INET_FORWARD),
-+	.me		= THIS_MODULE,
-+};
-+
-+static int __init slavedev_mt_init(void)
-+{
-+	return xt_register_match(&slavedev_mt_reg);
-+}
-+
-+static void __exit slavedev_mt_exit(void)
-+{
-+	xt_unregister_match(&slavedev_mt_reg);
-+}
-+
-+module_init(slavedev_mt_init);
-+module_exit(slavedev_mt_exit);
-+
-+MODULE_LICENSE("GPL");
-+MODULE_AUTHOR("Martin Willi <martin@strongswan.org>");
-+MODULE_DESCRIPTION("Xtables: L3master input slave device match");
-+MODULE_ALIAS("ipt_slavedev");
-+MODULE_ALIAS("ip6t_slavedev");
 -- 
 2.20.1
 
