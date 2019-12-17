@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F269D123A69
-	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 00:01:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 14F9B123A6B
+	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 00:01:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726587AbfLQXAw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Dec 2019 18:00:52 -0500
-Received: from mail-ed1-f66.google.com ([209.85.208.66]:46775 "EHLO
-        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725886AbfLQXAw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 18:00:52 -0500
-Received: by mail-ed1-f66.google.com with SMTP id m8so9372903edi.13;
-        Tue, 17 Dec 2019 15:00:50 -0800 (PST)
+        id S1726721AbfLQXBG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Dec 2019 18:01:06 -0500
+Received: from mail-ed1-f68.google.com ([209.85.208.68]:44805 "EHLO
+        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726708AbfLQXBF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 18:01:05 -0500
+Received: by mail-ed1-f68.google.com with SMTP id bx28so5218edb.11;
+        Tue, 17 Dec 2019 15:01:03 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=uKab++1jquwTpkqEiE5OldyM/+qvtHDYf7xzh93P2+s=;
-        b=Lpg5ySFzelJX55IDGnKbLQcNmqqT1F7WGvYkcp+yiVtwQA6MMj0rS998D4sRJomjsW
-         QWspWA7+UoQ8XOdSTfL9WocYFx7oUabDiNdlAnQEWAj8AFdoLG0F/N7H48MvlgxXRK8d
-         NguKwj9QkyygQsG2sjOJUH3MgqKqXrli4UR9Bw+7qkzQ+71/xGcDlIiHsGfKoLyJLgHe
-         lodUcKYQQeSsbObCUyalV4WQ0D7SxV5U/KCGVeS/9OeqFDxzfkx6zZOKfQc3cieFlvTb
-         tF03Y6zRk6VDXJWcELr2rLWra+5vSLXGLPsD9cElbKpSp7Hiza1MoCTx476A1qmTuC08
-         KITg==
+        bh=9Il9exxfboVo/7JjOIOwbqvNMX9EC3xwCCWSbXwsL9Y=;
+        b=G153WBlav7lsGeX1Q4tVAV9IbnxET76NUbYWMPGEWd8tXJTZGWiFQuTr20aI7Q+5eP
+         utl7GFFHXE+nNcj5JyngkVjny9SeQhudtWoz4vGHnWfcjXFu8UUtLTHhcGXdcCi0G8wO
+         dwM1zaLWfAxZ5sQnfG3xtvvD2iHK+z25VCsDtbOl826VshDb2yNnokRXBpFEmWts+HEv
+         qEyMKgFxEjJyI4f415lb/qkZRd1uFJ6A/wfkPaFyRK/a/jyCckS5KJcshK/sHTu7Cml1
+         boCuFrbH0bRg1+YN4kmmHoOvNPuUep6jj7+ZHTiIyArkhiQ+fYQbEL1SFwhETRoPD3bb
+         pv2Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=uKab++1jquwTpkqEiE5OldyM/+qvtHDYf7xzh93P2+s=;
-        b=A7PHiTDLKuhpHZ3zsfMz6uemK4zZiZEusop5p+HU+15MqCWQ26iivDQ/2lZ4mDl15n
-         IwoqMtSQRCLG4D0ninjt8R/zhZ+LlDifPcBxQmj3f3aZ+DnlrGf9N9B/j+DR/mFly28+
-         HSJD0efcOTeaefjZzCuElEuF+/hiGNLA64INF3AjxzS6n/4CqcG06q/MRhP2swoAWpjD
-         QugPV5z9MM4lmsZ6l2HCT1pkPE/g/07PqnAG5JTgCvqgU69dxLV4FAC/e1fFDSw0+ryB
-         +28V0BmqtAB6QLBIkViDMLZ7AhsBOXKEgn2lT9IqIFX+rQLccvYM6uxtug31pmKA85Um
-         Z3ZQ==
-X-Gm-Message-State: APjAAAV6t/25nukmVzofD8X46Xbya+N3sqO3yD8sb1ZZ8X01q/O1kl/J
-        qZsJJ5AGrYA9Yvv/V87wAJzpYzTi
-X-Google-Smtp-Source: APXvYqycOd7y+rvh8I73toqHYUSe8lA6sgDXzPp1y9cJvGce/xIhTdyKhQllrhYWoR+oSOS2lWhgmQ==
-X-Received: by 2002:a50:ed94:: with SMTP id h20mr195228edr.17.1576623649290;
-        Tue, 17 Dec 2019 15:00:49 -0800 (PST)
+        bh=9Il9exxfboVo/7JjOIOwbqvNMX9EC3xwCCWSbXwsL9Y=;
+        b=GpdMvLGhxmGrB6RgStIzUrUEF9mSvOgmrsfkeil7ZBep1GWeYTJy3KL9DXQ4+4iKWQ
+         O1UOa/xK1pG0iKHkvXRX/HPEp21SnR3+e6/RwlazX32mpd20yjaBK3ZZGZJx9vzCNYvj
+         fPpKuCScamAUGt0Ugu7+crq6Vlapx0i1nJ4l4GXufvHYvqHtZYMrkTU6xSJzRy++4s+G
+         8e1S7AQtvz+tmwKAzTHMZ5/e6bSCJdkLaAGOjcohQ+dL9gItebCEjVB/cwbUkIA3Xnj1
+         axpqNAocurlBgWqNdAYwLdcSrCiR3D6ydMPwsmuPScCIdz7/dpeRyArJdxPkQsSnDCeT
+         amsA==
+X-Gm-Message-State: APjAAAXZKMn2WVej4b1s+tky6pwsKr09aEdxGmUqJlYsrU3PEC/d9ZYl
+        1IwaV3Ux/0g31fk/RvE99n1uXcv1
+X-Google-Smtp-Source: APXvYqzcG9zS0LZEFGNctlt+naCqyjQ7kZBfb6I+yLyibKmz283yXSuLAAFu83azFX/Pgrss7JL9jA==
+X-Received: by 2002:a17:906:29cb:: with SMTP id y11mr606575eje.67.1576623660807;
+        Tue, 17 Dec 2019 15:01:00 -0800 (PST)
 Received: from [10.67.50.53] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id h16sm12858ejc.89.2019.12.17.15.00.47
+        by smtp.googlemail.com with ESMTPSA id la19sm14498ejb.76.2019.12.17.15.00.58
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 17 Dec 2019 15:00:48 -0800 (PST)
-Subject: Re: [PATCH net-next 8/8] net: bcmgenet: Add software counters to
- track reallocations
+        Tue, 17 Dec 2019 15:01:00 -0800 (PST)
+Subject: Re: [PATCH net-next 7/8] net: bcmgenet: Be drop monitor friendly
+ while re-allocating headroom
 To:     Doug Berger <opendmb@gmail.com>,
         "David S. Miller" <davem@davemloft.net>
 Cc:     bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
 References: <1576616549-39097-1-git-send-email-opendmb@gmail.com>
- <1576616549-39097-9-git-send-email-opendmb@gmail.com>
+ <1576616549-39097-8-git-send-email-opendmb@gmail.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  xsDiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
@@ -108,12 +108,12 @@ Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  HvsHIcv4lxCWkFXkwsuWqzEKK6kxVpRDoEQPDj+Oy/ZJ5fYuMbkdHrlegwoQ64LrqdmiVVPC
  TwQYEQIADwIbDAUCVF/S8QUJHlwd3wAKCRBhV5kVtWN2Do+FAJ956xSz2XpDHql+Wg/2qv3b
  G10n8gCguORqNGMsVRxrlLs7/himep7MrCc=
-Message-ID: <393c61ac-9c79-ad14-52dc-2edcccc28fa9@gmail.com>
-Date:   Tue, 17 Dec 2019 15:00:46 -0800
+Message-ID: <2f6f9374-6b23-db29-f938-159e57bbc5e5@gmail.com>
+Date:   Tue, 17 Dec 2019 15:00:57 -0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.2.2
 MIME-Version: 1.0
-In-Reply-To: <1576616549-39097-9-git-send-email-opendmb@gmail.com>
+In-Reply-To: <1576616549-39097-8-git-send-email-opendmb@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -123,9 +123,9 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On 12/17/19 1:02 PM, Doug Berger wrote:
-> When inserting the TSB, keep track of how many times we had to do
-> it and if there was a failure in doing so, this helps profile the
-> driver for possibly incorrect headroom settings.
+> During bcmgenet_put_tx_csum() make sure we differentiate a SKB
+> headroom re-allocation failure from the normal swap and replace
+> path.
 > 
 > Signed-off-by: Doug Berger <opendmb@gmail.com>
 
