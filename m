@@ -2,124 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7FBCA12292C
-	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 11:48:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CEA8C12295E
+	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 11:59:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727334AbfLQKsw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Dec 2019 05:48:52 -0500
-Received: from relay2-d.mail.gandi.net ([217.70.183.194]:45293 "EHLO
-        relay2-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725870AbfLQKsw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 05:48:52 -0500
-X-Originating-IP: 90.76.143.236
-Received: from localhost (lfbn-tou-1-1075-236.w90-76.abo.wanadoo.fr [90.76.143.236])
-        (Authenticated sender: antoine.tenart@bootlin.com)
-        by relay2-d.mail.gandi.net (Postfix) with ESMTPSA id CDF0240004;
-        Tue, 17 Dec 2019 10:48:49 +0000 (UTC)
-Date:   Tue, 17 Dec 2019 11:48:49 +0100
-From:   Antoine Tenart <antoine.tenart@bootlin.com>
-To:     Russell King <rmk+kernel@armlinux.org.uk>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Antoine Tenart <antoine.tenart@bootlin.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next v2 3/3] net: mvpp2: update mvpp2 validate()
- implementation
-Message-ID: <20191217104849.GH3160@kwain>
-References: <20191213175415.GW25745@shell.armlinux.org.uk>
- <E1ifpZs-0005kJ-Ll@rmk-PC.armlinux.org.uk>
+        id S1726571AbfLQK7t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Dec 2019 05:59:49 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:57056 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726383AbfLQK7s (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 17 Dec 2019 05:59:48 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=j+kDSnNZibDPGmGiavTo8MBbX0StIr3Q6zqHd8Wr8m8=; b=RWR5ySgH5WF0N8DME7aypZQWpM
+        QRnSlcwOD2YVcxgoz1DTu1qgN8s4UuejHEbgewyeE8nZQgb8bkUcoLDA/A1o1WugxM/YG3RjPlI6T
+        BYwFOkjiYqUwiJZ+DSd0CZt9k3USMvWFk0v9BltXNQHX3crx2JsPL0HTmXcVTdRG7tVA=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.92.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1ihAZt-0007CG-CF; Tue, 17 Dec 2019 11:59:45 +0100
+Date:   Tue, 17 Dec 2019 11:59:45 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Richard Cochran <richardcochran@gmail.com>
+Cc:     netdev@vger.kernel.org,
+        Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>,
+        David Miller <davem@davemloft.net>,
+        linux-arm-kernel@lists.infradead.org,
+        Michal Simek <michal.simek@xilinx.com>
+Subject: Re: [PATCH net-next 3/3] net: axienet: Pass ioctls to the phy.
+Message-ID: <20191217105945.GA17965@lunn.ch>
+References: <cover.1576520432.git.richardcochran@gmail.com>
+ <361f63095be92df10e8e953af3b981cdac58d98e.1576520432.git.richardcochran@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <E1ifpZs-0005kJ-Ll@rmk-PC.armlinux.org.uk>
+In-Reply-To: <361f63095be92df10e8e953af3b981cdac58d98e.1576520432.git.richardcochran@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Russell,
-
-On Fri, Dec 13, 2019 at 06:22:12PM +0000, Russell King wrote:
-> Fix up the mvpp2 validate implementation to adopt the same behaviour as
-> mvneta:
-> - only allow the link modes that the specified PHY interface mode
->   supports with the exception of 1000base-X and 2500base-X.
-> - use the basex helper to deal with SFP modules that can be switched
->   between 1000base-X vs 2500base-X.
-> 
-> This gives consistent behaviour between mvneta and mvpp2.
-> 
-> This commit depends on "net: phylink: extend clause 45 PHY validation
-> workaround" so is not marked for backporting to stable kernels.
-> 
-> Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
-
-Acked-by: Antoine Tenart <antoine.tenart@bootlin.com>
-
-Thanks!
-Antoine
-
-> ---
->  .../net/ethernet/marvell/mvpp2/mvpp2_main.c   | 22 +++++++++++++++----
->  1 file changed, 18 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-> index 111b3b8239e1..f09fcbe6ea88 100644
-> --- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-> +++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-> @@ -4786,6 +4786,8 @@ static void mvpp2_phylink_validate(struct phylink_config *config,
->  			phylink_set(mask, 10000baseER_Full);
->  			phylink_set(mask, 10000baseKR_Full);
->  		}
-> +		if (state->interface != PHY_INTERFACE_MODE_NA)
-> +			break;
->  		/* Fall-through */
->  	case PHY_INTERFACE_MODE_RGMII:
->  	case PHY_INTERFACE_MODE_RGMII_ID:
-> @@ -4796,13 +4798,23 @@ static void mvpp2_phylink_validate(struct phylink_config *config,
->  		phylink_set(mask, 10baseT_Full);
->  		phylink_set(mask, 100baseT_Half);
->  		phylink_set(mask, 100baseT_Full);
-> +		phylink_set(mask, 1000baseT_Full);
-> +		phylink_set(mask, 1000baseX_Full);
-> +		if (state->interface != PHY_INTERFACE_MODE_NA)
-> +			break;
->  		/* Fall-through */
->  	case PHY_INTERFACE_MODE_1000BASEX:
->  	case PHY_INTERFACE_MODE_2500BASEX:
-> -		phylink_set(mask, 1000baseT_Full);
-> -		phylink_set(mask, 1000baseX_Full);
-> -		phylink_set(mask, 2500baseT_Full);
-> -		phylink_set(mask, 2500baseX_Full);
-> +		if (port->comphy ||
-> +		    state->interface != PHY_INTERFACE_MODE_2500BASEX) {
-> +			phylink_set(mask, 1000baseT_Full);
-> +			phylink_set(mask, 1000baseX_Full);
-> +		}
-> +		if (port->comphy ||
-> +		    state->interface == PHY_INTERFACE_MODE_2500BASEX) {
-> +			phylink_set(mask, 2500baseT_Full);
-> +			phylink_set(mask, 2500baseX_Full);
-> +		}
->  		break;
->  	default:
->  		goto empty_set;
-> @@ -4811,6 +4823,8 @@ static void mvpp2_phylink_validate(struct phylink_config *config,
->  	bitmap_and(supported, supported, mask, __ETHTOOL_LINK_MODE_MASK_NBITS);
->  	bitmap_and(state->advertising, state->advertising, mask,
->  		   __ETHTOOL_LINK_MODE_MASK_NBITS);
+> +static int axienet_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
+> +{
+> +	if (!netif_running(dev))
+> +		return -EINVAL;
 > +
-> +	phylink_helper_basex_speed(state);
->  	return;
->  
->  empty_set:
-> -- 
-> 2.20.1
-> 
+> +	switch (cmd) {
+> +	case SIOCGMIIPHY:
+> +	case SIOCGMIIREG:
+> +	case SIOCSMIIREG:
+> +	case SIOCSHWTSTAMP:
+> +	case SIOCGHWTSTAMP:
+> +		return phy_mii_ioctl(dev->phydev, rq, cmd);
+> +	default:
+> +		return -EOPNOTSUPP;
+> +	}
+> +}
 
--- 
-Antoine Ténart, Bootlin
-Embedded Linux and Kernel engineering
-https://bootlin.com
+Hi Richard
+
+You don't need to be conditional. phy_mii_ioctl() and
+phylink_mii_ioctl() will return -EOPNOTSUPP for anything it does not
+support.
+
+	Andrew
