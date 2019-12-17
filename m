@@ -2,174 +2,225 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 63149123534
-	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 19:46:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E7CE9123559
+	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 20:03:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727843AbfLQSqH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Dec 2019 13:46:07 -0500
-Received: from us-smtp-1.mimecast.com ([205.139.110.61]:32929 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726742AbfLQSqE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 13:46:04 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1576608362;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=H79yMoU9qnqTpnGyCiPFGRjbb3Bng6e8cO8SsBozoBg=;
-        b=ORRPrdl6DhPSA4NWthxOX9hqd67oUTeq04ShPrqiiczr/aR6U8RZdEoMY5tktaci82KeG0
-        QsVVpAt2BFt84VUN9zD5pMKsfs4i4Vm4HkQixk89i1OOfIWUR0B1lmQ6O9UVdrJOurEuzy
-        qH2x6nog61zs0/ONewcwucFpoW16Jbs=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-48-SVmOSpCgMTGqhS9dZj20XA-1; Tue, 17 Dec 2019 13:46:00 -0500
-X-MC-Unique: SVmOSpCgMTGqhS9dZj20XA-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 3F0B81800D42;
-        Tue, 17 Dec 2019 18:45:57 +0000 (UTC)
-Received: from madcap2.tricolour.ca (ovpn-112-28.phx2.redhat.com [10.3.112.28])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 27F125C1C3;
-        Tue, 17 Dec 2019 18:45:43 +0000 (UTC)
-Date:   Tue, 17 Dec 2019 13:45:41 -0500
-From:   Richard Guy Briggs <rgb@redhat.com>
-To:     Paul Moore <paul@paul-moore.com>
-Cc:     Neil Horman <nhorman@tuxdriver.com>,
-        containers@lists.linux-foundation.org, linux-api@vger.kernel.org,
-        Linux-Audit Mailing List <linux-audit@redhat.com>,
-        linux-fsdevel@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
-        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        sgrubb@redhat.com, omosnace@redhat.com, dhowells@redhat.com,
-        simo@redhat.com, Eric Paris <eparis@parisplace.org>,
-        Serge Hallyn <serge@hallyn.com>, ebiederm@xmission.com,
-        Dan Walsh <dwalsh@redhat.com>, mpatel@redhat.com
-Subject: Re: [PATCH ghak90 V7 06/21] audit: contid limit of 32k imposed to
- avoid DoS
-Message-ID: <20191217184541.tagssqt4zujbanf6@madcap2.tricolour.ca>
-References: <cover.1568834524.git.rgb@redhat.com>
- <230e91cd3e50a3d8015daac135c24c4c58cf0a21.1568834524.git.rgb@redhat.com>
- <20190927125142.GA25764@hmswarspite.think-freely.org>
- <CAHC9VhRbSUCB0OZorC4+y+5uJDR5uMXdRn2LOTYGu2gcFJSrcA@mail.gmail.com>
- <20191024212335.y4ou7g4tsxnotvnk@madcap2.tricolour.ca>
- <CAHC9VhTrKVQNvTPoX5xdx-TUX_ukpMv2tNFFqLa2Njs17GuQMg@mail.gmail.com>
+        id S1727571AbfLQTDv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Dec 2019 14:03:51 -0500
+Received: from mail-qk1-f194.google.com ([209.85.222.194]:35895 "EHLO
+        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726731AbfLQTDv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 14:03:51 -0500
+Received: by mail-qk1-f194.google.com with SMTP id a203so8170843qkc.3;
+        Tue, 17 Dec 2019 11:03:50 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Z0QJIGyUGn5BEJc8rg5MhNb/nTRQiFDqhn9BJB2B5gk=;
+        b=DCu/zH4XrFRbPyzKoavf03lYkM3nYSbQfgM+r1QvnbPCJncVQZRvNV7rKA+dNjN1rj
+         FnOt0JsLFY7PTo1bVP8DYUms0aZgs1TEjwnGrW9olrr+P78I2mR2Y2pG0CRCJoeMNwjD
+         B/Mf7BwmGORgU89/VdZRQi1MWBab7ISG22wW/KiCgVSnQdzYg90MZSXTc5T4vJ6VDva7
+         RD1FvUX0Mv+jx055PaXgJlyO2U8xO69OmZVDjgMxuHXUZD4gTfQDcdr3Bb7/rIXUZHgN
+         OTx9obMElAviZ1vf3RkBrGTLh7QhJ2vxVBOErQoqR7VPScrNDmlDij5EgtRHhGFHcSzc
+         JNcA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Z0QJIGyUGn5BEJc8rg5MhNb/nTRQiFDqhn9BJB2B5gk=;
+        b=DmgrZO23R0Ajmw8JY8Ixs+DIAxHdodkKGZVJ2o9Yt8NcgzOv30s3DOFG5nzkxFJIca
+         7QY9lFeyNvpqSdxU7i6q7gEt8tW83CrYr1aYR/CjPLdll82ZeDMxLI9MIPI4pnmsxwuf
+         /0GPBBx/dDal5Mew+Ues+hwsn8bHJjhRIQJtH4bCO93rbkFPFr4j+lip5oNfiOWsCKxR
+         dA7NtCZCMNvp5MariiJ/aPgjAy0haiNsaXPj82zZtpyyAyfI5FT0UUjYQGGLxw/yfVIj
+         lcuNQdVUmue1pCUxxeQBlcczsCaM+nH1wuscsT9MTSoQkDBcKthXTkoltOrP6EPhofaN
+         9DkQ==
+X-Gm-Message-State: APjAAAWMGiHSrcLm1hQIN/r0TG/DUSLmWMPu8cDt6kxPjs5iB3hnMIa7
+        sTpdXx90X2I4xhF0gBQv6NpsKfloggU2bAZTpH8kGA==
+X-Google-Smtp-Source: APXvYqzP+FnkvIIXpdqOc68VnTFndenTIEi8Pn8kfHEOxb2u3iRIQ8Qnbny0WKcWl6GdwtqF4negIDFdzaAFtVWhrb0=
+X-Received: by 2002:a05:620a:14a2:: with SMTP id x2mr6827045qkj.36.1576609429907;
+ Tue, 17 Dec 2019 11:03:49 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAHC9VhTrKVQNvTPoX5xdx-TUX_ukpMv2tNFFqLa2Njs17GuQMg@mail.gmail.com>
-User-Agent: NeoMutt/20180716
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+References: <20191214014710.3449601-1-andriin@fb.com> <20191214014710.3449601-3-andriin@fb.com>
+ <20191216111736.GA14887@linux.fritz.box> <CAEf4Bzbx+2Fot9NYzGJS-pUF5x5zvcfBnb7fcO_s9_gCQQVuLg@mail.gmail.com>
+ <7bf339cf-c746-a780-3117-3348fb5997f1@iogearbox.net>
+In-Reply-To: <7bf339cf-c746-a780-3117-3348fb5997f1@iogearbox.net>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Tue, 17 Dec 2019 11:03:38 -0800
+Message-ID: <CAEf4BzYAWknN1HGHd0vREtQLHU-z3iTLJWBteRK6q7zkhySBBg@mail.gmail.com>
+Subject: Re: [PATCH v4 bpf-next 2/4] libbpf: support libbpf-provided extern variables
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2019-11-08 12:49, Paul Moore wrote:
-> On Thu, Oct 24, 2019 at 5:23 PM Richard Guy Briggs <rgb@redhat.com> wrote:
-> > On 2019-10-10 20:38, Paul Moore wrote:
-> > > On Fri, Sep 27, 2019 at 8:52 AM Neil Horman <nhorman@tuxdriver.com> wrote:
-> > > > On Wed, Sep 18, 2019 at 09:22:23PM -0400, Richard Guy Briggs wrote:
-> > > > > Set an arbitrary limit on the number of audit container identifiers to
-> > > > > limit abuse.
-> > > > >
-> > > > > Signed-off-by: Richard Guy Briggs <rgb@redhat.com>
-> > > > > ---
-> > > > >  kernel/audit.c | 8 ++++++++
-> > > > >  kernel/audit.h | 4 ++++
-> > > > >  2 files changed, 12 insertions(+)
-> > > > >
-> > > > > diff --git a/kernel/audit.c b/kernel/audit.c
-> > > > > index 53d13d638c63..329916534dd2 100644
-> > > > > --- a/kernel/audit.c
-> > > > > +++ b/kernel/audit.c
-> > >
-> > > ...
-> > >
-> > > > > @@ -2465,6 +2472,7 @@ int audit_set_contid(struct task_struct *task, u64 contid)
-> > > > >                               newcont->owner = current;
-> > > > >                               refcount_set(&newcont->refcount, 1);
-> > > > >                               list_add_rcu(&newcont->list, &audit_contid_hash[h]);
-> > > > > +                             audit_contid_count++;
-> > > > >                       } else {
-> > > > >                               rc = -ENOMEM;
-> > > > >                               goto conterror;
-> > > > > diff --git a/kernel/audit.h b/kernel/audit.h
-> > > > > index 162de8366b32..543f1334ba47 100644
-> > > > > --- a/kernel/audit.h
-> > > > > +++ b/kernel/audit.h
-> > > > > @@ -219,6 +219,10 @@ static inline int audit_hash_contid(u64 contid)
-> > > > >       return (contid & (AUDIT_CONTID_BUCKETS-1));
-> > > > >  }
-> > > > >
-> > > > > +extern int audit_contid_count;
-> > > > > +
-> > > > > +#define AUDIT_CONTID_COUNT   1 << 16
-> > > > > +
-> > > >
-> > > > Just to ask the question, since it wasn't clear in the changelog, what
-> > > > abuse are you avoiding here?  Ostensibly you should be able to create as
-> > > > many container ids as you have space for, and the simple creation of
-> > > > container ids doesn't seem like the resource strain I would be concerned
-> > > > about here, given that an orchestrator can still create as many
-> > > > containers as the system will otherwise allow, which will consume
-> > > > significantly more ram/disk/etc.
-> > >
-> > > I've got a similar question.  Up to this point in the patchset, there
-> > > is a potential issue of hash bucket chain lengths and traversing them
-> > > with a spinlock held, but it seems like we shouldn't be putting an
-> > > arbitrary limit on audit container IDs unless we have a good reason
-> > > for it.  If for some reason we do want to enforce a limit, it should
-> > > probably be a tunable value like a sysctl, or similar.
+On Tue, Dec 17, 2019 at 6:42 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
+>
+> On 12/16/19 8:29 PM, Andrii Nakryiko wrote:
+> > On Mon, Dec 16, 2019 at 3:17 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
+> >> On Fri, Dec 13, 2019 at 05:47:08PM -0800, Andrii Nakryiko wrote:
+> >>> Add support for extern variables, provided to BPF program by libbpf. Currently
+> >>> the following extern variables are supported:
+> >>>    - LINUX_KERNEL_VERSION; version of a kernel in which BPF program is
+> >>>      executing, follows KERNEL_VERSION() macro convention, can be 4- and 8-byte
+> >>>      long;
+> >>>    - CONFIG_xxx values; a set of values of actual kernel config. Tristate,
+> >>>      boolean, strings, and integer values are supported.
+> >>>
+> >> [...]
+> >>>
+> >>> All detected extern variables, are put into a separate .extern internal map.
+> >>> It, similarly to .rodata map, is marked as read-only from BPF program side, as
+> >>> well as is frozen on load. This allows BPF verifier to track extern values as
+> >>> constants and perform enhanced branch prediction and dead code elimination.
+> >>> This can be relied upon for doing kernel version/feature detection and using
+> >>> potentially unsupported field relocations or BPF helpers in a CO-RE-based BPF
+> >>> program, while still having a single version of BPF program running on old and
+> >>> new kernels. Selftests are validating this explicitly for unexisting BPF
+> >>> helper.
+> >>>
+> >>> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+> >> [...]
+> >>> +static int bpf_object__resolve_externs(struct bpf_object *obj,
+> >>> +                                    const char *config_path)
+> >>> +{
+> >>> +     bool need_config = false;
+> >>> +     struct extern_desc *ext;
+> >>> +     int err, i;
+> >>> +     void *data;
+> >>> +
+> >>> +     if (obj->nr_extern == 0)
+> >>> +             return 0;
+> >>> +
+> >>> +     data = obj->maps[obj->extern_map_idx].mmaped;
+> >>> +
+> >>> +     for (i = 0; i < obj->nr_extern; i++) {
+> >>> +             ext = &obj->externs[i];
+> >>> +
+> >>> +             if (strcmp(ext->name, "LINUX_KERNEL_VERSION") == 0) {
+> >>> +                     void *ext_val = data + ext->data_off;
+> >>> +                     __u32 kver = get_kernel_version();
+> >>> +
+> >>> +                     if (!kver) {
+> >>> +                             pr_warn("failed to get kernel version\n");
+> >>> +                             return -EINVAL;
+> >>> +                     }
+> >>> +                     err = set_ext_value_num(ext, ext_val, kver);
+> >>> +                     if (err)
+> >>> +                             return err;
+> >>> +                     pr_debug("extern %s=0x%x\n", ext->name, kver);
+> >>> +             } else if (strncmp(ext->name, "CONFIG_", 7) == 0) {
+> >>> +                     need_config = true;
+> >>> +             } else {
+> >>> +                     pr_warn("unrecognized extern '%s'\n", ext->name);
+> >>> +                     return -EINVAL;
+> >>> +             }
+> >>
+> >> I don't quite like that this is (mainly) tracing-only specific, and that
+> >> for everything else we just bail out - there is much more potential than
+> >> just completing above vars. But also, there is also no way to opt-out
+> >> for application developers of /this specific/ semi-magic auto-completion
+> >> of externs.
 > >
-> > Can you separate and clarify the concerns here?
-> 
-> "Why are you doing this?" is about as simple as I can pose the question.
+> > What makes you think it's tracing only? While non-tracing apps
+> > probably don't need to care about LINUX_KERNEL_VERSION, all of the
+> > CONFIG_ stuff is useful and usable for any type of application.
+>
+> Ok, just curious, do you have a concrete example e.g. for tc/xdp networking
+> programs where you have a specific CONFIG_* extern that you're using in your
+> programs currently?
 
-It was more of a concern for total system resources, primarily memory,
-but this is self-limiting and an arbitrary concern.
+So one good example will be CONFIG_HZ, used by latest Martin's work on
+tcp_congestion_ops, as well as used by other networking BPF programs
+for network stats.
 
-The other limit of depth of nesting has different concerns that arise
-depending on how reporting is done.
+>
+> > As for opt-out, you can easily opt out by not using extern variables.
+> >
+> >> bpf_object__resolve_externs() should be changed instead to invoke a
+> >> callback obj->resolve_externs(). Former can be passed by the application
+> >> developer to allow them to take care of extern resolution all by themself,
+> >> and if no callback has been passed, then we default to the one above
+> >> being set as obj->resolve_externs.
+> >
+> > Can you elaborate on the use case you have in mind? The way I always
+> > imagined BPF applications provide custom read-only parameters to BPF
+> > side is through using .rodata variables. With skeleton it's super easy
+> > to initialize them before BPF program is loaded, and their values will
+> > be well-known by verifier and potentially optimized.
+>
+> We do set the map with .extern contents as read-only memory as well in
+> libbpf as I understand it. So same dead code optimization from the
+> verifier as well in this case. It feels the line with passing external
+> config via .rodata variables vs .extern variables gets therefore a bit
+> blurry.
+>
+> Are we saying that in libbpf convention is that .extern contents must
+> *only* ever be kernel-provided but cannot come from some other configuration
+> data such as env/daemon?
 
-> > I plan to move this patch to the end of the patchset and make it
-> > optional, possibly adding a tuning mechanism.  Like the migration from
-> > /proc to netlink for loginuid/sessionid/contid/capcontid, this was Eric
-> > Biederman's concern and suggested mitigation.
-> 
-> Okay, let's just drop it.  I *really* don't like this approach of
-> tossing questionable stuff at the end of the patchset; I get why you
-> are doing it, but I think we really need to focus on keeping this
-> changeset small.  If the number of ACIDs (heh) become unwieldy the
-> right solution is to improve the algorithms/structures, if we can't do
-> that for some reason, *then* we can fall back to a limiting knob in a
-> latter release.
+You are right that .rodata and .extern are both read-only and allow
+dead code optimization, which was a requirement for both. The line is
+between who "owns" the data. .rodata should be parameters owned and
+set up by BPF program and its userspace counterpart. While .extern is
+something that's owned and provided by some external party. It is
+libbpf for Kconfig, in the future it might be also kernel variables
+(e.g., jiffies). With static and dynamic linking, extern variables
+will be variables defined in some other BPF object, that we are
+linking with.
 
-Ok, I've dropped it.  There are mitigations in place for large numbers
-of contids and it can be limited later without breaking anything.
+>
+> [...]
+> > So for application-specific stuff, there isn't really a need to use
+> > externs to do that. Furthermore, I think allowing using externs as
+> > just another way to specify application-specific configuration is
+> > going to create a problem, potentially, as we'll have higher
+> > probability of collisions with kernel-provided extersn (variables
+> > and/or functions), or even externs provided by other
+> > dynamically/statically linked BPF programs (once we have dynamic and
+> > static linking, of course).
+>
+> Yes, that makes more sense, but then we are already potentially colliding
+> with current CONFIG_* variables once we handle dynamically / statically
+> linked BPF programs. Perhaps that's my confusion in the first place. Would
+> have been good if 166750bc1dd2 had a discussion on that as part of the
+> commit message.
+>
+> So, naive question, what's the rationale of not using .rodata variables
+> for CONFIG_* case and how do we handle these .extern collisions in future?
+> Should these vars rather have had some sort of annotation or be moved into
+> special ".extern.config" section or the like where we explicitly know that
+> these are handled differently so they don't collide with future ".extern"
+> content once we have linked BPF programs?
 
-> > As for the first issue of the bucket chain length traversal while
-> > holding the list spin-lock, would you prefer to use the rcu lock to
-> > traverse the list and then only hold the spin-lock when modifying the
-> > list, and possibly even make the spin-lock more fine-grained per list?
-> 
-> Until we have a better idea of how this is going to be used, I think
-> it's okay for now.  It's also internal to the kernel so we can change
-> it at any time.  My comments about the locking/structs was only to try
-> and think of some reason why one might want to limit the number of
-> ACIDs since neither you or Eric provided any reasoning that I could
-> see.
+Yes, name collision is a possibility, which means users should
+restrain from using LINUX_KERNEL_VERSION and CONFIG_XXX names for
+their variables. But if that is ever actually the problem, the way to
+resolve this collision/ambiguity would be to put externs in a separate
+sections. It's possible to annotate extern variable with custom
+section.
 
-I've switched to using an rcu read lock on the list traversal and
-spin-lock on list update.
+But I guess putting Kconfig-provided externs into ".extern.kconfig"
+might be a good idea, actually. That will make it possible to have
+writable externs in the future.
 
-> paul moore
-
-- RGB
-
---
-Richard Guy Briggs <rgb@redhat.com>
-Sr. S/W Engineer, Kernel Security, Base Operating Systems
-Remote, Ottawa, Red Hat Canada
-IRC: rgb, SunRaycer
-Voice: +1.647.777.2635, Internal: (81) 32635
-
+>
+> > So if you still insist we need user to provide custom extern-parsing
+> > logic, can you please elaborate on the use case details?
+> >
+> > BTW, from discussion w/ Alexei on another thread, I think I'm going to
+> > change kconfig_path option to just `kconfig`, which will specify
+> > additional config in Kconfig format. This could be used by
+> > applications to provide their own config, augmenting Kconfig with
+> > custom overrides.
+>
+> Ok.
+>
+> Thanks,
+> Daniel
