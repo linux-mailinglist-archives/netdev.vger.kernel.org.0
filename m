@@ -2,65 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D24D81229C7
-	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 12:21:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8B71B1229F6
+	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 12:28:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727452AbfLQLVZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Dec 2019 06:21:25 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:57102 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726496AbfLQLVY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 17 Dec 2019 06:21:24 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=z5d7ttAQmg9NPpPdL8a9T+/K/2VIeDMQQma3/Qf1p6o=; b=K/uNbt6R8eE3UsPrU1Fwkh+/5W
-        SANFn4pfrnh8hQ1mBVzAhOQTeYooFqOUcQysbC5yBBT+9Q2iV3lPsyb9BE6f4GFq4jXQTe4qxjs6q
-        AkrFkwXWbmRQNxr2BFpV311IPZs1MRuDNmjNfQyy+CCtM1SY8D3fZMj54KFbprLsNzdg=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.92.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1ihAuo-0007Ua-2t; Tue, 17 Dec 2019 12:21:22 +0100
-Date:   Tue, 17 Dec 2019 12:21:22 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Murali Karicheri <m-karicheri2@ti.com>
-Cc:     netdev@vger.kernel.org, "Kwok, WingMan" <w-kwok2@ti.com>,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com, jiri@resnulli.us,
-        ivecera@redhat.com
-Subject: Re: RSTP with switchdev question
-Message-ID: <20191217112122.GB17965@lunn.ch>
-References: <c234beeb-5511-f33c-1232-638e9c9a3ac2@ti.com>
- <7ca19413-1ac5-946c-c4d0-3d9d5d88e634@ti.com>
+        id S1727611AbfLQL2Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Dec 2019 06:28:24 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:28696 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1727132AbfLQL2X (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 06:28:23 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1576582102;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=Q61b8NZiNglATLygY8DSz74dZVTZ21KejyMo2z3MExs=;
+        b=dqDHkaV8BNM9pzgfiCNExkSoLNPj1WD7CiRUXXJihEdI9BCroQAh5aA8pBhqi1m9XenkyG
+        vblWSHFhXmLTpiy/tPREAFERPx9gF8ZHUuJ40hoqOjf5KndbezNx2QgSJNmn51wMTz1Y7H
+        +0kQOtGP3nMEQwElM4N2ZbMHznqwc98=
+Received: from mail-lj1-f198.google.com (mail-lj1-f198.google.com
+ [209.85.208.198]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-211-eVnkX0pENRqBlgB24wvwDw-1; Tue, 17 Dec 2019 06:28:20 -0500
+X-MC-Unique: eVnkX0pENRqBlgB24wvwDw-1
+Received: by mail-lj1-f198.google.com with SMTP id s25so3132908ljm.9
+        for <netdev@vger.kernel.org>; Tue, 17 Dec 2019 03:28:20 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Q61b8NZiNglATLygY8DSz74dZVTZ21KejyMo2z3MExs=;
+        b=twFUbJA2ZKBBuhn/lP3gPuporg5YxqvChAf4C2wKezgPTyftxKj+fTQDOeDSsK+St4
+         fGzEnnMJSjoaLSQw9B6yej42nPeTVsm68ok3Gw9Vh3PaPd6CdDtnVtrKS9fj2w7zAxPx
+         D6W8SWTTzaIFcHeqwmZrY1g0qrh6S9JFnmMr08hcunHqK176pJEKEid1AgVA4tXLPwt6
+         Pvwt7cr2D3wDAIlFh5StpBQMbjYCRKNSaWlbttznkqDnvXFzty/EQlSiSEhMf3J5WyXw
+         yGZTtGDeq/JnrlezYnx0tt1GzO8pMrjpGIRIl0Al0hfFMVVmyQQrwGBGBo/uYZFoxWAC
+         s2pg==
+X-Gm-Message-State: APjAAAX8+Ge7i8XijURsFWEp2gv4HtdsSFkpytF3AD4LpYrdPK90ILgl
+        noc3N1R1tktZwu13f/ml9GgdeaY3zggHDkQDBAlOXlVyaq1eQWPQ43rDAF9Vr3+vibGpZ68gH21
+        VZ6QRHC7mm2pg/JXY
+X-Received: by 2002:a2e:b010:: with SMTP id y16mr2836013ljk.238.1576582099210;
+        Tue, 17 Dec 2019 03:28:19 -0800 (PST)
+X-Google-Smtp-Source: APXvYqyIH5Q5OdQH6gcERzOp/eAcntIeffs5mFBn4uuIFZewUEQ+Uus+enM8p4BfdhFU/HZqLE/fQw==
+X-Received: by 2002:a2e:b010:: with SMTP id y16mr2835998ljk.238.1576582098973;
+        Tue, 17 Dec 2019 03:28:18 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
+        by smtp.gmail.com with ESMTPSA id b6sm7289731lfq.11.2019.12.17.03.28.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 17 Dec 2019 03:28:18 -0800 (PST)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 943471800B3; Tue, 17 Dec 2019 12:28:16 +0100 (CET)
+From:   =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Cc:     =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: [PATCH bpf-next] libbpf: Fix libbpf_common.h when installing libbpf through 'make install'
+Date:   Tue, 17 Dec 2019 12:28:10 +0100
+Message-Id: <20191217112810.768078-1-toke@redhat.com>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <7ca19413-1ac5-946c-c4d0-3d9d5d88e634@ti.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 16, 2019 at 11:55:05AM -0500, Murali Karicheri wrote:
-> + switchdev/DSA experts
+This fixes two issues with the newly introduced libbpf_common.h file:
 
-Hi Murali
+- The header failed to include <string.h> for the definition of memset()
+- The new file was not included in the install_headers rule in the Makefile
 
-I did not reply before because this is a pure switchdev issue. DSA
-does things differently. The kernel FDB and the switches FDB are not
-kept in sync. With DSA, when a port changes state, we flush the switch
-FDB. For STP, that seems to be sufficient. There have been reports for
-RSTP this might not be enough, but that conversation did not go very
-far.
+Both of these issues cause breakage when installing libbpf with 'make
+install' and trying to use it in applications.
 
-I've no idea how this is supposed to work with a pure switchdev
-driver. Often, to answer a question like this, you need to take a step
-backwards. How is this supposed to work for a machine with two e1000e
-cards and a plain software bridge? What ever APIs user space RSTP is
-using in a pure software case should be used in a switchdev setup as
-well, but extra plumbing in the kernel might be required, and it
-sounds like it may be missing...
+Fixes: 544402d4b493 ("libbpf: Extract common user-facing helpers")
+Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
+---
+ tools/lib/bpf/Makefile        | 1 +
+ tools/lib/bpf/libbpf_common.h | 2 ++
+ 2 files changed, 3 insertions(+)
 
-      Andrew
+diff --git a/tools/lib/bpf/Makefile b/tools/lib/bpf/Makefile
+index a3718cb275f2..d4790121adf4 100644
+--- a/tools/lib/bpf/Makefile
++++ b/tools/lib/bpf/Makefile
+@@ -251,6 +251,7 @@ install_headers: bpf_helper_defs.h
+ 		$(call do_install,libbpf.h,$(prefix)/include/bpf,644); \
+ 		$(call do_install,btf.h,$(prefix)/include/bpf,644); \
+ 		$(call do_install,libbpf_util.h,$(prefix)/include/bpf,644); \
++		$(call do_install,libbpf_common.h,$(prefix)/include/bpf,644); \
+ 		$(call do_install,xsk.h,$(prefix)/include/bpf,644); \
+ 		$(call do_install,bpf_helpers.h,$(prefix)/include/bpf,644); \
+ 		$(call do_install,bpf_helper_defs.h,$(prefix)/include/bpf,644); \
+diff --git a/tools/lib/bpf/libbpf_common.h b/tools/lib/bpf/libbpf_common.h
+index 4fb833840961..a23ae1ac27eb 100644
+--- a/tools/lib/bpf/libbpf_common.h
++++ b/tools/lib/bpf/libbpf_common.h
+@@ -9,6 +9,8 @@
+ #ifndef __LIBBPF_LIBBPF_COMMON_H
+ #define __LIBBPF_LIBBPF_COMMON_H
+ 
++#include <string.h>
++
+ #ifndef LIBBPF_API
+ #define LIBBPF_API __attribute__((visibility("default")))
+ #endif
+-- 
+2.24.1
+
