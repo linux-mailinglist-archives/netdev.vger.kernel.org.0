@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8B1C7122D1D
-	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 14:40:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A3B25122D1F
+	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 14:40:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728527AbfLQNkB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Dec 2019 08:40:01 -0500
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:56814 "EHLO
+        id S1728530AbfLQNkF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Dec 2019 08:40:05 -0500
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:56824 "EHLO
         pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728324AbfLQNj7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 08:39:59 -0500
+        with ESMTP id S1728011AbfLQNkE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 08:40:04 -0500
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
         Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:References:
         In-Reply-To:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
         Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
         List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=R2zZxufNdCK4YqPWcNLwIkLf4iLLF5qYE6/RwycXjIM=; b=oprd7NR7I5V5c7aKg5/dPKFWVc
-        mHGfhavq5GnfLHuf7feZlOTA9hWyJf0suixbullyG5SiKnggYRQ+czxYEP8jcbpfPfLsiIuGhZaA8
-        M45tCtHQrEEXxBr3ew4kk4AvHfgAFL+IkKzQdAfmr/ZKlmRPUA23DZbff163tHfHhwdDkOtVXzeXS
-        O37Sj0Z+n/g2q03V+J4Qoc06UFy5S/o1KJJ6hfUNZvrfMoS1dfH4RTGQYebLB6V/mxWuqN1EzWVml
-        giW5OpHeT/ynKTj/88Un9SF+abs0kfQg8a6nFM31RtW8Es6o+qlK0oWnnhmIUc1NkPSLLg8TxzJ0+
-        /GM4HKwg==;
-Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:39836 helo=rmk-PC.armlinux.org.uk)
+        bh=etQeDQ9OrLLxyMchQ/o8ppJAOYpHgRhGeECGkopaBqA=; b=yNmdloBmd/xCsrPd/eOQmSbFkr
+        PO0b7GNTZC55+gMClWdjJOyaQA1d+FMmDATqYPGhY+NmsTXJuyhZ672DY37nMxdaotL54IIgLmaP2
+        JfkSm+Pj52k49AbK6BC7A0mA2hUzJm4vZYU9UKJZ94iZ1EfhYYDTTo7nOlbYWdjQ7fwpoeWRngI5K
+        W75iAMwKA1+L3ir737GULwXO/JL6G2tt1wnEQqOyAvMRsDoqu/5HBrPuR7x541cSFTKv0Dw3lUaik
+        4npnK2kqRaT5iGwGH1zHpVN45+1r+lmXzMWCBFJsjjF3ypEz5nWtMOw9Ayo5hl1JvrrAp+MRC7wu8
+        JpZWd00Q==;
+Received: from e0022681537dd.dyn.armlinux.org.uk ([2001:4d48:ad52:3201:222:68ff:fe15:37dd]:51640 helo=rmk-PC.armlinux.org.uk)
         by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
         (Exim 4.90_1)
         (envelope-from <rmk@armlinux.org.uk>)
-        id 1ihD4i-0006Fk-Jn; Tue, 17 Dec 2019 13:39:44 +0000
+        id 1ihD4n-0006Fr-42; Tue, 17 Dec 2019 13:39:49 +0000
 Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.92)
         (envelope-from <rmk@armlinux.org.uk>)
-        id 1ihD4g-0001zI-0E; Tue, 17 Dec 2019 13:39:42 +0000
+        id 1ihD4l-0001zP-48; Tue, 17 Dec 2019 13:39:47 +0000
 In-Reply-To: <20191217133827.GQ25745@shell.armlinux.org.uk>
 References: <20191217133827.GQ25745@shell.armlinux.org.uk>
 From:   Russell King <rmk+kernel@armlinux.org.uk>
@@ -38,95 +38,72 @@ To:     Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Heiner Kallweit <hkallweit1@gmail.com>
 Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: [PATCH net-next 09/11] net: phy: marvell: use existing clause 37
- definitions
+Subject: [PATCH net-next 10/11] net: phy: marvell: use phy_modify_changed()
 MIME-Version: 1.0
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain; charset="utf-8"
-Message-Id: <E1ihD4g-0001zI-0E@rmk-PC.armlinux.org.uk>
-Date:   Tue, 17 Dec 2019 13:39:42 +0000
+Message-Id: <E1ihD4l-0001zP-48@rmk-PC.armlinux.org.uk>
+Date:   Tue, 17 Dec 2019 13:39:47 +0000
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use existing clause 37 advertising/link partner definitions rather than
-private ones for the advertisement registers.
+Use phy_modify_changed() to change the fiber advertisement register
+rather than open coding this functionality.
 
 Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
 ---
- drivers/net/phy/marvell.c | 26 ++++++++------------------
- 1 file changed, 8 insertions(+), 18 deletions(-)
+ drivers/net/phy/marvell.c | 26 ++++++++++----------------
+ 1 file changed, 10 insertions(+), 16 deletions(-)
 
 diff --git a/drivers/net/phy/marvell.c b/drivers/net/phy/marvell.c
-index b25eee9314a7..2d30653ddf4b 100644
+index 2d30653ddf4b..c40d49523719 100644
 --- a/drivers/net/phy/marvell.c
 +++ b/drivers/net/phy/marvell.c
-@@ -156,18 +156,9 @@
- #define MII_88E1510_GEN_CTRL_REG_1_MODE_SGMII	0x1	/* SGMII to copper */
- #define MII_88E1510_GEN_CTRL_REG_1_RESET	0x8000	/* Soft reset */
- 
--#define LPA_FIBER_1000HALF	0x40
--#define LPA_FIBER_1000FULL	0x20
--
- #define LPA_PAUSE_FIBER		0x180
- #define LPA_PAUSE_ASYM_FIBER	0x100
- 
--#define ADVERTISE_FIBER_1000HALF	0x40
--#define ADVERTISE_FIBER_1000FULL	0x20
--
--#define ADVERTISE_PAUSE_FIBER		0x180
--#define ADVERTISE_PAUSE_ASYM_FIBER	0x100
--
- #define NB_FIBER_STATS	1
- 
- MODULE_DESCRIPTION("Marvell PHY driver");
-@@ -507,16 +498,15 @@ static inline u32 linkmode_adv_to_fiber_adv_t(unsigned long *advertise)
- 	u32 result = 0;
- 
- 	if (linkmode_test_bit(ETHTOOL_LINK_MODE_1000baseT_Half_BIT, advertise))
--		result |= ADVERTISE_FIBER_1000HALF;
-+		result |= ADVERTISE_1000XHALF;
- 	if (linkmode_test_bit(ETHTOOL_LINK_MODE_1000baseT_Full_BIT, advertise))
--		result |= ADVERTISE_FIBER_1000FULL;
-+		result |= ADVERTISE_1000XFULL;
- 
- 	if (linkmode_test_bit(ETHTOOL_LINK_MODE_Asym_Pause_BIT, advertise) &&
- 	    linkmode_test_bit(ETHTOOL_LINK_MODE_Pause_BIT, advertise))
--		result |= LPA_PAUSE_ASYM_FIBER;
-+		result |= ADVERTISE_1000XPSE_ASYM;
- 	else if (linkmode_test_bit(ETHTOOL_LINK_MODE_Pause_BIT, advertise))
--		result |= (ADVERTISE_PAUSE_FIBER
--			   & (~ADVERTISE_PAUSE_ASYM_FIBER));
-+		result |= ADVERTISE_1000XPAUSE;
- 
- 	return result;
- }
-@@ -549,8 +539,8 @@ static int marvell_config_aneg_fiber(struct phy_device *phydev)
- 		return adv;
- 
- 	oldadv = adv;
--	adv &= ~(ADVERTISE_FIBER_1000HALF | ADVERTISE_FIBER_1000FULL
--		| LPA_PAUSE_FIBER);
-+	adv &= ~(ADVERTISE_1000XHALF | ADVERTISE_1000XFULL |
-+		 ADVERTISE_1000XPAUSE | ADVERTISE_1000XPSE_ASYM);
- 	adv |= linkmode_adv_to_fiber_adv_t(phydev->advertising);
- 
- 	if (adv != oldadv) {
-@@ -1177,10 +1167,10 @@ static int m88e6390_config_aneg(struct phy_device *phydev)
- static void fiber_lpa_mod_linkmode_lpa_t(unsigned long *advertising, u32 lpa)
+@@ -524,7 +524,7 @@ static int marvell_config_aneg_fiber(struct phy_device *phydev)
  {
- 	linkmode_mod_bit(ETHTOOL_LINK_MODE_1000baseT_Half_BIT,
--			 advertising, lpa & LPA_FIBER_1000HALF);
-+			 advertising, lpa & LPA_1000XHALF);
+ 	int changed = 0;
+ 	int err;
+-	int adv, oldadv;
++	u16 adv;
  
- 	linkmode_mod_bit(ETHTOOL_LINK_MODE_1000baseT_Full_BIT,
--			 advertising, lpa & LPA_FIBER_1000FULL);
-+			 advertising, lpa & LPA_1000XFULL);
- }
+ 	if (phydev->autoneg != AUTONEG_ENABLE)
+ 		return genphy_setup_forced(phydev);
+@@ -533,23 +533,17 @@ static int marvell_config_aneg_fiber(struct phy_device *phydev)
+ 	linkmode_and(phydev->advertising, phydev->advertising,
+ 		     phydev->supported);
  
- static int marvell_read_status_page_an(struct phy_device *phydev,
+-	/* Setup fiber advertisement */
+-	adv = phy_read(phydev, MII_ADVERTISE);
+-	if (adv < 0)
+-		return adv;
+-
+-	oldadv = adv;
+-	adv &= ~(ADVERTISE_1000XHALF | ADVERTISE_1000XFULL |
+-		 ADVERTISE_1000XPAUSE | ADVERTISE_1000XPSE_ASYM);
+-	adv |= linkmode_adv_to_fiber_adv_t(phydev->advertising);
+-
+-	if (adv != oldadv) {
+-		err = phy_write(phydev, MII_ADVERTISE, adv);
+-		if (err < 0)
+-			return err;
++	adv = linkmode_adv_to_fiber_adv_t(phydev->advertising);
+ 
++	/* Setup fiber advertisement */
++	err = phy_modify_changed(phydev, MII_ADVERTISE,
++				 ADVERTISE_1000XHALF | ADVERTISE_1000XFULL |
++				 ADVERTISE_1000XPAUSE | ADVERTISE_1000XPSE_ASYM,
++				 adv);
++	if (err < 0)
++		return err;
++	if (err > 0)
+ 		changed = 1;
+-	}
+ 
+ 	if (changed == 0) {
+ 		/* Advertisement hasn't changed, but maybe aneg was never on to
 -- 
 2.20.1
 
