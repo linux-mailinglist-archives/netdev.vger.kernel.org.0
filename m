@@ -2,104 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 98E1B121F5E
-	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 01:21:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D223121FA5
+	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 01:25:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727370AbfLQARB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Dec 2019 19:17:01 -0500
-Received: from mail-pj1-f68.google.com ([209.85.216.68]:40509 "EHLO
-        mail-pj1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726556AbfLQARA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Dec 2019 19:17:00 -0500
-Received: by mail-pj1-f68.google.com with SMTP id s35so3736708pjb.7;
-        Mon, 16 Dec 2019 16:17:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=1OROaEYGJ7cU9PndUkdU7ASlSknQD2Li+EEBqp17mis=;
-        b=K2DrdXAgGAFjco7WkxUE9hCAVr1APCFMiBh8o7ZzruvvHrXLykJ6r9uY9wleDoCkZJ
-         GUsj3lJiNDYtvhLNDr1ifkivSWMzqX9X8ku+6014LviMyW/P8YcSJbqWU/j9IZiIFyjC
-         nvo5hw3AcXxkSlmm3MgyAVQkWCS9locoWAoxzCS0m65YARSbKg3bKGMdB1sbnUY/f1dX
-         WPKg8V7050dPgNoOOCM/A3Vr2OCVp0Js9Rk5qNTSDGsSowTTEUpUVbGPKTy39267Zvq1
-         S3t9PYVipSvKKpmWBUu+wc4TI+Qn2Oa+vueDpcjIk8wEIh9qVIL6WmnVDYaI/phCl/ve
-         2B/Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=1OROaEYGJ7cU9PndUkdU7ASlSknQD2Li+EEBqp17mis=;
-        b=LU30HSbntPHNPqHn/isOJrfiqpSx73uJDcHeFm8JVMNggH1gMNyeM09LfffwRZYGNt
-         AaVezjrbtfbnjTlE1PdCVcevG576kYjOXrX+GGzlLjKObrTgQG4udcqstUvb6VYS/6kS
-         L3qcUOZ4ClqibExiGrHLCRmNOZH9W2cfQT6/1YkyuMDJRGnpW2surkGLY1zaL8sTGvAT
-         RlznKjIiUVL8pEE28B1TbsJFtAwah4Lbsjr/2ndQzN+xiP0i2PZj3nwio8Bbia7m22Ti
-         +KddS5Lcun1yzpoyuxHSpdwHfvVRmC1jc0giVZ8aQIvZ6MLHHGDwXWHbjpdjzLXPx1oC
-         mSgw==
-X-Gm-Message-State: APjAAAUprOmDF/HVKgtR0PVW/Zj7q1+P++Af6D5Mkdjbkmjbesi2EBSM
-        RcX3GjEdAoFJDzoq4zHf3uHUi2nQ
-X-Google-Smtp-Source: APXvYqxC3G4URmrFBTRdkP1iZgsz1qAv3ai0g/6DHQuslJs48zwF2M9S7CqlRaxMN6RJxWTuqpc5lQ==
-X-Received: by 2002:a17:90a:a004:: with SMTP id q4mr2608777pjp.106.1576541819819;
-        Mon, 16 Dec 2019 16:16:59 -0800 (PST)
-Received: from [172.20.20.156] ([222.151.198.97])
-        by smtp.gmail.com with ESMTPSA id p38sm660834pjp.27.2019.12.16.16.16.57
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 16 Dec 2019 16:16:59 -0800 (PST)
-Subject: Re: [PATCH bpf-next] libbpf: fix build by renaming variables
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>
-References: <20191216082738.28421-1-prashantbhole.linux@gmail.com>
- <20191216132512.GD14887@linux.fritz.box>
- <CAADnVQKB7hUmXBMmPfFUH4ZxSQfRtam0aEWykBNMhrKS+HjcwQ@mail.gmail.com>
-From:   Prashant Bhole <prashantbhole.linux@gmail.com>
-Message-ID: <caf893fb-e574-7a67-1e4e-4ce5d7836172@gmail.com>
-Date:   Tue, 17 Dec 2019 09:15:59 +0900
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S1727604AbfLQAY7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Dec 2019 19:24:59 -0500
+Received: from mga07.intel.com ([134.134.136.100]:21147 "EHLO mga07.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726960AbfLQAY6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 16 Dec 2019 19:24:58 -0500
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga105.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 16 Dec 2019 16:24:57 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.69,323,1571727600"; 
+   d="scan'208";a="217599725"
+Received: from mjmartin-nuc01.amr.corp.intel.com ([10.241.98.42])
+  by orsmga003.jf.intel.com with ESMTP; 16 Dec 2019 16:24:57 -0800
+From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
+To:     netdev@vger.kernel.org, mptcp@lists.01.org
+Cc:     Mat Martineau <mathew.j.martineau@linux.intel.com>
+Subject: [PATCH net-next v2 00/11] Multipath TCP: Prerequisites
+Date:   Mon, 16 Dec 2019 16:24:44 -0800
+Message-Id: <20191217002455.24849-1-mathew.j.martineau@linux.intel.com>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-In-Reply-To: <CAADnVQKB7hUmXBMmPfFUH4ZxSQfRtam0aEWykBNMhrKS+HjcwQ@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+v2 changes: sk_pacing_shift left as a regular struct member, and modified SACK
+space check based on recent -net fix.
 
 
-On 12/16/19 11:02 PM, Alexei Starovoitov wrote:
-> On Mon, Dec 16, 2019 at 5:25 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
->>
->> On Mon, Dec 16, 2019 at 05:27:38PM +0900, Prashant Bhole wrote:
->>> In btf__align_of() variable name 't' is shadowed by inner block
->>> declaration of another variable with same name. Patch renames
->>> variables in order to fix it.
->>>
->>>    CC       sharedobjs/btf.o
->>> btf.c: In function ‘btf__align_of’:
->>> btf.c:303:21: error: declaration of ‘t’ shadows a previous local [-Werror=shadow]
->>>    303 |   int i, align = 1, t;
->>>        |                     ^
->>> btf.c:283:25: note: shadowed declaration is here
->>>    283 |  const struct btf_type *t = btf__type_by_id(btf, id);
->>>        |
->>>
->>> Fixes: 3d208f4ca111 ("libbpf: Expose btf__align_of() API")
->>> Signed-off-by: Prashant Bhole <prashantbhole.linux@gmail.com>
->>
->> Applied, thanks!
-> 
-> Prashant,
-> Thanks for the fixes.
-> Which compiler do use?
+The MPTCP upstreaming community has been collaborating on an
+upstreamable MPTCP implementation that complies with RFC 8684. A minimal
+set of features to comply with the specification involves a sizeable set
+of code changes, so David requested that we split this work in to
+multiple, smaller patch sets to build up MPTCP infrastructure.
 
-gcc (GCC) 9.1.1 20190503 (Red Hat 9.1.1-1)
+The minimal MPTCP feature set we are proposing for review in the v5.6
+timeframe begins with these three parts:
 
-> Sadly I didn't see any of those with my gcc 6.3.0
-> Going to upgrade it. Need to decide which one.
-> 
+Part 1 (this patch set): MPTCP prerequisites. Introduce some MPTCP
+definitions, additional ULP and skb extension features, TCP option space
+checking, and a few exported symbols.
+
+Part 2: Single subflow implementation and self tests.
+
+Part 3: Switch from MPTCP v0 (RFC 6824) to MPTCP v1 (new RFC 8684,
+publication expected in the next few days).
+
+We plan to send those over the next week. Additional patches for
+multiple subflow support, path management, active backup, and other
+features are in the pipeline for submission after making progress with
+the above reviews.
+
+Clone/fetch:
+https://github.com/multipath-tcp/mptcp_net-next.git (tag: netdev-v2-part1)
+
+Browse:
+https://github.com/multipath-tcp/mptcp_net-next/tree/netdev-v2-part1
+
+Thank you for your review. You can find us at mptcp@lists.01.org and
+https://is.gd/mptcp_upstream
+
+
+Mat Martineau (9):
+  net: Make sock protocol value checks more specific
+  sock: Make sk_protocol a 16-bit value
+  tcp: Define IPPROTO_MPTCP
+  tcp: Add MPTCP option number
+  tcp, ulp: Add clone operation to tcp_ulp_ops
+  mptcp: Add MPTCP to skb extensions
+  tcp: Prevent coalesce/collapse when skb has MPTCP extensions
+  tcp: Export TCP functions and ops struct
+  tcp: Check for filled TCP option space before SACK
+
+Paolo Abeni (2):
+  tcp: clean ext on tx recycle
+  skb: add helpers to allocate ext independently from sk_buff
+
+ MAINTAINERS                     | 10 ++++++++
+ include/linux/skbuff.h          |  6 +++++
+ include/net/mptcp.h             | 43 +++++++++++++++++++++++++++++++++
+ include/net/sock.h              |  6 ++---
+ include/net/tcp.h               | 22 +++++++++++++++++
+ include/trace/events/sock.h     |  5 ++--
+ include/uapi/linux/in.h         |  2 ++
+ net/ax25/af_ax25.c              |  2 +-
+ net/core/skbuff.c               | 42 ++++++++++++++++++++++++++++++--
+ net/decnet/af_decnet.c          |  2 +-
+ net/ipv4/inet_connection_sock.c |  2 ++
+ net/ipv4/tcp.c                  |  6 ++---
+ net/ipv4/tcp_input.c            | 10 ++++++--
+ net/ipv4/tcp_ipv4.c             |  2 +-
+ net/ipv4/tcp_output.c           | 12 ++++++---
+ net/ipv4/tcp_ulp.c              | 12 +++++++++
+ net/ipv6/tcp_ipv6.c             |  6 ++---
+ tools/include/uapi/linux/in.h   |  2 ++
+ 18 files changed, 170 insertions(+), 22 deletions(-)
+ create mode 100644 include/net/mptcp.h
+
+-- 
+2.24.1
+
