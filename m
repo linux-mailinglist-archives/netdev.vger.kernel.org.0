@@ -2,334 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2521C123279
-	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 17:30:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A78912328B
+	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 17:32:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728454AbfLQQae (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Dec 2019 11:30:34 -0500
-Received: from mail-lj1-f193.google.com ([209.85.208.193]:41812 "EHLO
-        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728188AbfLQQae (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 11:30:34 -0500
-Received: by mail-lj1-f193.google.com with SMTP id h23so11634037ljc.8
-        for <netdev@vger.kernel.org>; Tue, 17 Dec 2019 08:30:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cumulusnetworks.com; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=Hxtg+YPeEh/CJ4PM9f7LQ6pCe3SqbPbTeTT9Ww5LcjE=;
-        b=HT6uRgsiNb/eThMajw5UupWJSOZmSdm5zNrkj23Tsf6mkEvs0+V91gmlDj0tsNb/5b
-         O4wlb6h6ufbaft78jUOoCukes8g83GHtwpw/JQTNliicZDVkG1mBq4XU5j31J9d9YZMF
-         ARscxprCG2s1mQXQA1tCmxQOxXcsJBpT4NWRU=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=Hxtg+YPeEh/CJ4PM9f7LQ6pCe3SqbPbTeTT9Ww5LcjE=;
-        b=HgxU4C3jwNjds/j1PHVoOOMCk+cYGpUHQodRQtGR8nV2uE/mDxJ5Dr5MQujBxsPyy8
-         A8GI50cA+LcpoDLtWHoRefHc8jd4vFDxhIBVtQDAcFITbZLpIWGOdTNKe8mkim3oeU5H
-         LzPZjbeKfKFwfF21ftlhm/4IoxNcD5hSWjCjlx7dl006yzRUDHKs51wG8P6oqKUi0kwd
-         LAUpxnlVOAwd+GKy5voxu4i7UipD8V4ilY06eFa2rDmrhy+txsbLn0c70fnC/xPwDh7x
-         zOaC18dnSl8abdsbwkowmeXQ6FAsdYEVR/zmDLTCNR6NEbUbeHCg1BrarJrD76BAPzmU
-         x/mg==
-X-Gm-Message-State: APjAAAVl8eD7U0mlgG0N+5uAMxHI6B6AptS3DahjOOVAx+bjkRUZBiXG
-        xxUK+cdd3lpnjKczf1C6xuRleg==
-X-Google-Smtp-Source: APXvYqxUjwrZS0rHP0TdP+4SpIDpWvHE3HfzPqlbo+em+QsQDIE+wfhwdoLWbJXBYrutq/V/OuY4MQ==
-X-Received: by 2002:a2e:9886:: with SMTP id b6mr3880532ljj.47.1576600231473;
-        Tue, 17 Dec 2019 08:30:31 -0800 (PST)
-Received: from [192.168.0.107] (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
-        by smtp.gmail.com with ESMTPSA id y29sm12866981ljd.88.2019.12.17.08.30.29
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 17 Dec 2019 08:30:30 -0800 (PST)
-Subject: Re: [PATCH net-next v2] openvswitch: add TTL decrement action
-To:     Matteo Croce <mcroce@redhat.com>, netdev@vger.kernel.org,
-        dev@openvswitch.org
-Cc:     linux-kernel@vger.kernel.org, Pravin B Shelar <pshelar@ovn.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Bindiya Kurle <bindiyakurle@gmail.com>,
-        Simon Horman <simon.horman@netronome.com>,
-        Ben Pfaff <blp@ovn.org>
-References: <20191217155102.46039-1-mcroce@redhat.com>
-From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-Message-ID: <cf5b01f8-b4e4-90da-0ee7-b1d81ee6d342@cumulusnetworks.com>
-Date:   Tue, 17 Dec 2019 18:30:29 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.1.1
-MIME-Version: 1.0
-In-Reply-To: <20191217155102.46039-1-mcroce@redhat.com>
-Content-Type: text/plain; charset=utf-8
+        id S1728657AbfLQQcn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Dec 2019 11:32:43 -0500
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:23772 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728368AbfLQQcn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 11:32:43 -0500
+Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xBHGMEb3029471;
+        Tue, 17 Dec 2019 08:32:27 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : references : in-reply-to : content-type : content-id
+ : content-transfer-encoding : mime-version; s=facebook;
+ bh=qAeqN+CyyzXoUS0+HXx5WKDkSdwjbwncvQ0tElXpKrY=;
+ b=QqRekEgXjAbVey0aXfumGbjCm4oKZ7Lh3TUNlOfQP153ZFG8BnngJURymDICU+DaI0rj
+ hQnPGwJ7xr3LILvpb2delWr2pDCh0GWonLcnCa4tpps2omnK0/j0ceWfu2OUwpUDSWud
+ CZcYksTpf9sgYRlJH4ewSd0bJ3/Lzq7rG9I= 
+Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
+        by mx0a-00082601.pphosted.com with ESMTP id 2wy1qrg9gx-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Tue, 17 Dec 2019 08:32:26 -0800
+Received: from prn-mbx03.TheFacebook.com (2620:10d:c081:6::17) by
+ prn-hub03.TheFacebook.com (2620:10d:c081:35::127) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.1.1713.5; Tue, 17 Dec 2019 08:32:26 -0800
+Received: from prn-hub06.TheFacebook.com (2620:10d:c081:35::130) by
+ prn-mbx03.TheFacebook.com (2620:10d:c081:6::17) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.1.1713.5; Tue, 17 Dec 2019 08:32:25 -0800
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (192.168.54.28)
+ by o365-in.thefacebook.com (192.168.16.30) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.1.1713.5
+ via Frontend Transport; Tue, 17 Dec 2019 08:32:25 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=IYDPUm1C0arR7y3fyeUKfOOLRwTYfdQXBBgpX8DBfnsFQ7n2qmew0QLPKxBVl8zazrgS9iBSext39wL66nYbWwb/WhboJJU0QL4L8M3pdmtdZZI0BqNH7v5Wz1ABgNkyN07NPOxFfO+/DX1bRyS97/uEba/8XrJAq0rm3KJkWvCz+cuvdlEvf/VVLFRf+CXZp7Lg+WU+X/29yuvdIQw8Y2c4hJtEeDqe/2bjkBpny3ivGxLrp5xWisLGCyI+ela3UCvqBXrbkRaOjHuCpJh4iNpcFIgRfD5W9UHQIwGibAB5vlf7nHdMUbkmBJPvQmgTIoii0WLcucKbFs3MQVmsTg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=qAeqN+CyyzXoUS0+HXx5WKDkSdwjbwncvQ0tElXpKrY=;
+ b=XfABqr/H2H6AkM5Xmi9G6Q+Zx+DHiRTJGDX2fwzB4bjasRh6vK3JZOniOijXaVU7GKSUJVnSFpGDOhAVzp3VRsZ7CAQL3oqKf8sJQ4ZYeIEsm6mLyyyXu7EU5jQd3R9TJpkFWBKcoM+kQi+vf9DWwCzpu0J4r1HsN/M/VlNw8fX4CCWOIlZs7JpEH9gJIkybLZBpxnZZms98NssXa+ECrYD+2tbFFe0HyJqQehmNBYhUXs9JtzS7sRYLYIchQjhcZAy7EiDol0cjEc8fatu5btPEGDQPywekScQwm6ugbgM0a+l6ALMfBKCQfnU+TUcJTjJlHzg+rZloRHTlUuqeTg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=qAeqN+CyyzXoUS0+HXx5WKDkSdwjbwncvQ0tElXpKrY=;
+ b=d8eQJjjda+MPMZBfEiKz0vEMsjK/4sMdu/nDG0THQvNtOlnYZlLxZ4eJFxYcyzhj87yewy7/iNUC2DX8ZAvumF1egwJ7fK2lZbUiNWgmFs24SLaNTwLUxrYnU68xjReAEnAUBFMs0J2eIxubDdoOfwBPSdCYWWheHQZy3T9P0jk=
+Received: from DM5PR15MB1675.namprd15.prod.outlook.com (10.175.107.145) by
+ DM5PR15MB1868.namprd15.prod.outlook.com (10.174.247.147) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2559.14; Tue, 17 Dec 2019 16:32:24 +0000
+Received: from DM5PR15MB1675.namprd15.prod.outlook.com
+ ([fe80::2844:b18d:c296:c23]) by DM5PR15MB1675.namprd15.prod.outlook.com
+ ([fe80::2844:b18d:c296:c23%8]) with mapi id 15.20.2538.019; Tue, 17 Dec 2019
+ 16:32:24 +0000
+From:   Yonghong Song <yhs@fb.com>
+To:     Wenbo Zhang <ethercflow@gmail.com>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>
+CC:     "ast@kernel.org" <ast@kernel.org>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "bgregg@netflix.com" <bgregg@netflix.com>,
+        "andrii.nakryiko@gmail.com" <andrii.nakryiko@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH bpf-next v13 2/2] selftests/bpf: test for
+ bpf_get_fd_path() from tracepoint
+Thread-Topic: [PATCH bpf-next v13 2/2] selftests/bpf: test for
+ bpf_get_fd_path() from tracepoint
+Thread-Index: AQHVtL8D6uRFXy8CYEi4ZKSUfUmCc6e+hZMA
+Date:   Tue, 17 Dec 2019 16:32:24 +0000
+Message-ID: <3ca73db9-3ed4-c655-7540-852dfa624bd1@fb.com>
+References: <cover.1576575253.git.ethercflow@gmail.com>
+ <56f0db8d7556bf84ccb3705b58d4e88ead04c894.1576575253.git.ethercflow@gmail.com>
+In-Reply-To: <56f0db8d7556bf84ccb3705b58d4e88ead04c894.1576575253.git.ethercflow@gmail.com>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: CO2PR05CA0084.namprd05.prod.outlook.com
+ (2603:10b6:102:2::52) To DM5PR15MB1675.namprd15.prod.outlook.com
+ (2603:10b6:3:11f::17)
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [2620:10d:c090:200::1:c02c]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: fbe31b61-5eb4-4601-9ef0-08d7830eb244
+x-ms-traffictypediagnostic: DM5PR15MB1868:
+x-microsoft-antispam-prvs: <DM5PR15MB1868FDC7FAA423BE7F98F6E2D3500@DM5PR15MB1868.namprd15.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:4714;
+x-forefront-prvs: 02543CD7CD
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(39860400002)(346002)(376002)(396003)(136003)(366004)(189003)(199004)(36756003)(66946007)(31686004)(31696002)(5660300002)(66476007)(478600001)(66446008)(64756008)(66556008)(316002)(6506007)(53546011)(2616005)(2906002)(86362001)(186003)(8936002)(71200400001)(54906003)(52116002)(4326008)(8676002)(81166006)(81156014)(6512007)(6486002)(110136005);DIR:OUT;SFP:1102;SCL:1;SRVR:DM5PR15MB1868;H:DM5PR15MB1675.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: fb.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: R0la/P7RFUrch7yk6MChMVs9CBtxy0lGvOubnalrDPJ55udByIr90omrjCbW3ui9L1x3AcwiqhPQAkJmIncPw+lmGq6QaknJ/eRb4FmgkI6wrmRGG5RsXCtj9a1gaQMJKYFTdOT6/cYtLpJd1vIWgkQdJxlFBadb2CGQyEcbWs7ztOTfOcZ4+E9C6vTzP9Wmj4ehevISKzqEMXCUVo+rZCyXhY2C0nJYLEJT46oQ5ORTgK+OjhVUZTslkJAJ+ZGzIaarVopvr1JWYuU8m2YVb7jOmMQiNHDN0f48CMA13Jerb6geL8aoyv08N7PG0ajRTR3/kwpwmaY4TPCTpS49oxUNxoaaCvHSasFc0o317LRdCtcdCPH58vzjlaHnIMh5JA1nRz+jMBjoZdhoKK3s/QnBeL/RC7lYgM7chZp/hEd6CxhdQ47Q4pcA9NEpIKuR
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <D16A39522948AF4FB840BDD1775F9CA6@namprd15.prod.outlook.com>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-Network-Message-Id: fbe31b61-5eb4-4601-9ef0-08d7830eb244
+X-MS-Exchange-CrossTenant-originalarrivaltime: 17 Dec 2019 16:32:24.1476
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: gjtISIQCa4j5Pef8s7QM8BRC9l59Fv2h1KHG5Qlx3ceF60K2yQmYIcRFpPFqFrDt
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR15MB1868
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
+ definitions=2019-12-17_02:2019-12-17,2019-12-17 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 suspectscore=0
+ lowpriorityscore=0 adultscore=0 bulkscore=0 priorityscore=1501
+ clxscore=1015 mlxlogscore=999 spamscore=0 mlxscore=0 phishscore=0
+ malwarescore=0 impostorscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-1910280000 definitions=main-1912170133
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 17/12/2019 17:51, Matteo Croce wrote:
-> New action to decrement TTL instead of setting it to a fixed value.
-> This action will decrement the TTL and, in case of expired TTL, drop it
-> or execute an action passed via a nested attribute.
-> The default TTL expired action is to drop the packet.
-> 
-> Supports both IPv4 and IPv6 via the ttl and hop_limit fields, respectively.
-> 
-> Tested with a corresponding change in the userspace:
-> 
->     # ovs-dpctl dump-flows
->     in_port(2),eth(),eth_type(0x0800), packets:0, bytes:0, used:never, actions:dec_ttl{ttl<=1 action:(drop)},1,1
->     in_port(1),eth(),eth_type(0x0800), packets:0, bytes:0, used:never, actions:dec_ttl{ttl<=1 action:(drop)},1,2
->     in_port(1),eth(),eth_type(0x0806), packets:0, bytes:0, used:never, actions:2
->     in_port(2),eth(),eth_type(0x0806), packets:0, bytes:0, used:never, actions:1
-> 
->     # ping -c1 192.168.0.2 -t 42
->     IP (tos 0x0, ttl 41, id 61647, offset 0, flags [DF], proto ICMP (1), length 84)
->         192.168.0.1 > 192.168.0.2: ICMP echo request, id 386, seq 1, length 64
->     # ping -c1 192.168.0.2 -t 120
->     IP (tos 0x0, ttl 119, id 62070, offset 0, flags [DF], proto ICMP (1), length 84)
->         192.168.0.1 > 192.168.0.2: ICMP echo request, id 388, seq 1, length 64
->     # ping -c1 192.168.0.2 -t 1
->     #
-> 
-> Co-authored-by: Bindiya Kurle <bindiyakurle@gmail.com>
-> Signed-off-by: Bindiya Kurle <bindiyakurle@gmail.com>
-> Signed-off-by: Matteo Croce <mcroce@redhat.com>
-> ---
->  include/uapi/linux/openvswitch.h |  22 +++++++
->  net/openvswitch/actions.c        |  71 +++++++++++++++++++++
->  net/openvswitch/flow_netlink.c   | 105 +++++++++++++++++++++++++++++++
->  3 files changed, 198 insertions(+)
-> 
-
-Hi Matteo,
-
-[snip]
-> +}
-> +
->  /* When 'last' is true, sample() should always consume the 'skb'.
->   * Otherwise, sample() should keep 'skb' intact regardless what
->   * actions are executed within sample().
-> @@ -1176,6 +1201,44 @@ static int execute_check_pkt_len(struct datapath *dp, struct sk_buff *skb,
->  			     nla_len(actions), last, clone_flow_key);
->  }
->  
-> +static int execute_dec_ttl(struct sk_buff *skb, struct sw_flow_key *key)
-> +{
-> +	int err;
-> +
-> +	if (skb->protocol == htons(ETH_P_IPV6)) {
-> +		struct ipv6hdr *nh = ipv6_hdr(skb);
-> +
-> +		err = skb_ensure_writable(skb, skb_network_offset(skb) +
-> +					  sizeof(*nh));
-
-skb_ensure_writable() calls pskb_may_pull() which may reallocate so nh might become invalid.
-It seems the IPv4 version below is ok as the ptr is reloaded.
-
-One q as I don't know ovs that much - can this action be called only with
-skb->protocol ==  ETH_P_IP/IPV6 ? I.e. Are we sure that if it's not v6, then it must be v4 ?
-
-
-Thanks,
- Nik
-
-> +		if (unlikely(err))
-> +			return err;
-> +
-> +		if (nh->hop_limit <= 1)
-> +			return -EHOSTUNREACH;
-> +
-> +		key->ip.ttl = --nh->hop_limit;
-> +	} else {
-> +		struct iphdr *nh = ip_hdr(skb);
-> +		u8 old_ttl;
-> +
-> +		err = skb_ensure_writable(skb, skb_network_offset(skb) +
-> +					  sizeof(*nh));
-> +		if (unlikely(err))
-> +			return err;
-> +
-> +		nh = ip_hdr(skb);
-> +		if (nh->ttl <= 1)
-> +			return -EHOSTUNREACH;
-> +
-> +		old_ttl = nh->ttl--;
-> +		csum_replace2(&nh->check, htons(old_ttl << 8),
-> +			      htons(nh->ttl << 8));
-> +		key->ip.ttl = nh->ttl;
-> +	}
-> +
-> +	return 0;
-> +}
-> +
->  /* Execute a list of actions against 'skb'. */
->  static int do_execute_actions(struct datapath *dp, struct sk_buff *skb,
->  			      struct sw_flow_key *key,
-> @@ -1347,6 +1410,14 @@ static int do_execute_actions(struct datapath *dp, struct sk_buff *skb,
->  
->  			break;
->  		}
-> +
-> +		case OVS_ACTION_ATTR_DEC_TTL:
-> +			err = execute_dec_ttl(skb, key);
-> +			if (err == -EHOSTUNREACH) {
-> +				err = dec_ttl(dp, skb, key, a, true);
-> +				return err;
-> +			}
-> +			break;
->  		}
->  
->  		if (unlikely(err)) {
-> diff --git a/net/openvswitch/flow_netlink.c b/net/openvswitch/flow_netlink.c
-> index 65c2e3458ff5..a9eea2ffb8b0 100644
-> --- a/net/openvswitch/flow_netlink.c
-> +++ b/net/openvswitch/flow_netlink.c
-> @@ -61,6 +61,7 @@ static bool actions_may_change_flow(const struct nlattr *actions)
->  		case OVS_ACTION_ATTR_RECIRC:
->  		case OVS_ACTION_ATTR_TRUNC:
->  		case OVS_ACTION_ATTR_USERSPACE:
-> +		case OVS_ACTION_ATTR_DEC_TTL:
->  			break;
->  
->  		case OVS_ACTION_ATTR_CT:
-> @@ -2494,6 +2495,59 @@ static int validate_and_copy_sample(struct net *net, const struct nlattr *attr,
->  	return 0;
->  }
->  
-> +static int validate_and_copy_dec_ttl(struct net *net, const struct nlattr *attr,
-> +				     const struct sw_flow_key *key,
-> +				     struct sw_flow_actions **sfa,
-> +				     __be16 eth_type, __be16 vlan_tci,
-> +				     u32 mpls_label_count, bool log)
-> +{
-> +	struct nlattr *attrs[OVS_DEC_TTL_ATTR_MAX + 1] = { 0 };
-> +	const struct nlattr *action_type, *action;
-> +	struct nlattr *a;
-> +	int rem, start, err;
-> +	struct dec_ttl_arg arg;
-> +
-> +	nla_for_each_nested(a, attr, rem) {
-> +		int type = nla_type(a);
-> +
-> +		if (!type || type > OVS_DEC_TTL_ATTR_MAX || attrs[type])
-> +			return -EINVAL;
-> +
-> +		attrs[type] = a;
-> +	}
-> +	if (rem)
-> +		return -EINVAL;
-> +
-> +	action_type = attrs[OVS_DEC_TTL_ATTR_ACTION_TYPE];
-> +	if (!action_type || nla_len(action_type) != sizeof(u32))
-> +		return -EINVAL;
-> +
-> +	start = add_nested_action_start(sfa, OVS_ACTION_ATTR_DEC_TTL, log);
-> +	if (start < 0)
-> +		return start;
-> +
-> +	arg.action_type = nla_get_u32(action_type);
-> +	err = ovs_nla_add_action(sfa, OVS_DEC_TTL_ATTR_ARG,
-> +				 &arg, sizeof(arg), log);
-> +	if (err)
-> +		return err;
-> +
-> +	if (arg.action_type == OVS_DEC_TTL_ACTION_USER_SPACE) {
-> +		action = attrs[OVS_DEC_TTL_ATTR_ACTION];
-> +		if (!action || (nla_len(action) && nla_len(action) < NLA_HDRLEN))
-> +			return -EINVAL;
-> +
-> +		err = __ovs_nla_copy_actions(net, action, key, sfa, eth_type,
-> +					     vlan_tci, mpls_label_count, log);
-> +		if (err)
-> +			return err;
-> +	}
-> +
-> +	add_nested_action_end(*sfa, start);
-> +
-> +	return 0;
-> +}
-> +
->  static int validate_and_copy_clone(struct net *net,
->  				   const struct nlattr *attr,
->  				   const struct sw_flow_key *key,
-> @@ -3005,6 +3059,7 @@ static int __ovs_nla_copy_actions(struct net *net, const struct nlattr *attr,
->  			[OVS_ACTION_ATTR_METER] = sizeof(u32),
->  			[OVS_ACTION_ATTR_CLONE] = (u32)-1,
->  			[OVS_ACTION_ATTR_CHECK_PKT_LEN] = (u32)-1,
-> +			[OVS_ACTION_ATTR_DEC_TTL] = (u32)-1,
->  		};
->  		const struct ovs_action_push_vlan *vlan;
->  		int type = nla_type(a);
-> @@ -3233,6 +3288,15 @@ static int __ovs_nla_copy_actions(struct net *net, const struct nlattr *attr,
->  			break;
->  		}
->  
-> +		case OVS_ACTION_ATTR_DEC_TTL:
-> +			err = validate_and_copy_dec_ttl(net, a, key, sfa,
-> +							eth_type, vlan_tci,
-> +							mpls_label_count, log);
-> +			if (err)
-> +				return err;
-> +			skip_copy = true;
-> +			break;
-> +
->  		default:
->  			OVS_NLERR(log, "Unknown Action type %d", type);
->  			return -EINVAL;
-> @@ -3404,6 +3468,41 @@ static int check_pkt_len_action_to_attr(const struct nlattr *attr,
->  	return err;
->  }
->  
-> +static int dec_ttl_action_to_attr(const struct nlattr *att, struct sk_buff *skb)
-> +{
-> +	struct nlattr *start, *ac_start = NULL, *dec_ttl;
-> +	int err = 0, rem = nla_len(att);
-> +	const struct dec_ttl_arg *arg;
-> +	struct nlattr *actions;
-> +
-> +	start = nla_nest_start_noflag(skb, OVS_ACTION_ATTR_DEC_TTL);
-> +	if (!start)
-> +		return -EMSGSIZE;
-> +
-> +	dec_ttl = nla_data(att);
-> +	arg = nla_data(dec_ttl);
-> +	actions = nla_next(dec_ttl, &rem);
-> +
-> +	if (nla_put_u32(skb, OVS_DEC_TTL_ATTR_ACTION_TYPE, arg->action_type)) {
-> +		nla_nest_cancel(skb, start);
-> +		return -EMSGSIZE;
-> +	}
-> +
-> +	if (arg->action_type == OVS_DEC_TTL_ACTION_USER_SPACE) {
-> +		ac_start = nla_nest_start_noflag(skb, OVS_DEC_TTL_ATTR_ACTION);
-> +		if (!ac_start) {
-> +			nla_nest_cancel(skb, ac_start);
-> +			nla_nest_cancel(skb, start);
-> +			return -EMSGSIZE;
-> +		}
-> +		err = ovs_nla_put_actions(actions, rem, skb);
-> +		nla_nest_end(skb, ac_start);
-> +	}
-> +	nla_nest_end(skb, start);
-> +
-> +	return err;
-> +}
-> +
->  static int set_action_to_attr(const struct nlattr *a, struct sk_buff *skb)
->  {
->  	const struct nlattr *ovs_key = nla_data(a);
-> @@ -3504,6 +3603,12 @@ int ovs_nla_put_actions(const struct nlattr *attr, int len, struct sk_buff *skb)
->  				return err;
->  			break;
->  
-> +		case OVS_ACTION_ATTR_DEC_TTL:
-> +			err = dec_ttl_action_to_attr(a, skb);
-> +			if (err)
-> +				return err;
-> +			break;
-> +
->  		default:
->  			if (nla_put(skb, type, nla_len(a), nla_data(a)))
->  				return -EMSGSIZE;
-> 
-
+DQoNCk9uIDEyLzE3LzE5IDE6NDcgQU0sIFdlbmJvIFpoYW5nIHdyb3RlOg0KPiB0cmFjZSBmc3Rh
+dCBldmVudHMgYnkgdHJhY2Vwb2ludCBzeXNjYWxscy9zeXNfZW50ZXJfbmV3ZnN0YXQsIGFuZCBo
+YW5kbGUNCj4gZXZlbnRzIG9ubHkgcHJvZHVjZWQgYnkgdGVzdF9maWxlX2ZkX3BhdGgsIHdoaWNo
+IGNhbGwgZnN0YXQgb24gc2V2ZXJhbA0KPiBkaWZmZXJlbnQgdHlwZXMgb2YgZmlsZXMgdG8gdGVz
+dCBicGZfZmRfZmlsZV9wYXRoJ3MgZmVhdHVyZS4NCj4gDQo+IHY1LT52NjogYWRkcmVzc2VkIEdy
+ZWdnIGFuZCBZb25naG9uZydzIGZlZWRiYWNrDQo+IC0gcmVuYW1lIHRvIGdldF9mZF9wYXRoDQo+
+IC0gY2hhbmdlIHN5c19lbnRlcl9uZXdmc3RhdF9hcmdzJ3MgZmQgdHlwZSB0byBsb25nIHRvIGZp
+eCBpc3N1ZSBvbg0KPiBiaWctZW5kaWFuIG1hY2hpbmVzDQo+IA0KPiB2NC0+djU6IGFkZHJlc3Nl
+ZCBBbmRyaWkncyBmZWVkYmFjaw0KPiAtIHBhc3MgTlVMTCBmb3Igb3B0cyBhcyBicGZfb2JqZWN0
+X19vcGVuX2ZpbGUncyBQQVJBTTIsIGFzIG5vdCByZWFsbHkNCj4gdXNpbmcgYW55DQo+IC0gbW9k
+aWZ5IHBhdGNoIHN1YmplY3QgdG8ga2VlcCB1cCB3aXRoIHRlc3QgY29kZQ0KPiAtIGFzIHRoaXMg
+dGVzdCBpcyBzaW5nbGUtdGhyZWFkZWQsIHNvIHVzZSBnZXRwaWQgaW5zdGVhZCBvZiBTWVNfZ2V0
+dGlkDQo+IC0gcmVtb3ZlIHVubmVjZXNzYXJ5IHBhcmVucyBhcm91bmQgY2hlY2sgd2hpY2ggYWZ0
+ZXIgaWYgKGkgPCAzKQ0KPiAtIGluIGtlcm4gdXNlIGJwZl9nZXRfY3VycmVudF9waWRfdGdpZCgp
+ID4+IDMyIHRvIGZpdCBnZXRwaWQoKSBpbg0KPiB1c2Vyc3BhY2UgcGFydA0KPiAtIHdpdGggdGhl
+IHBhdGNoIGFkZGluZyBoZWxwZXIgYXMgb25lIHBhdGNoIHNlcmllcw0KPiANCj4gdjMtPnY0OiBh
+ZGRyZXNzZWQgQW5kcmlpJ3MgZmVlZGJhY2sNCj4gLSB1c2UgYSBzZXQgb2YgZmQgaW5zdGVhZCBv
+ZiBmZHMgYXJyYXkNCj4gLSB1c2UgZ2xvYmFsIHZhcmlhYmxlcyBpbnN0ZWFkIG9mIG1hcHMgKGlu
+IHYzLCBJIG1pc3Rha2VubHkgdGhvdWdodCB0aGF0DQo+IHRoZSBicGYgbWFwcyBhcmUgZ2xvYmFs
+IHZhcmlhYmxlcy4pDQo+IC0gcmVtb3ZlIHVuY2Vzc2FyeSBnbG9iYWwgdmFyaWFibGUgcGF0aF9p
+bmZvX2luZGV4DQo+IC0gcmVtb3ZlIGZkIGNvbXBhcmUgYXMgdGhlIGZzdGF0J3Mgb3JkZXIgaXMg
+Zml4ZWQNCj4gDQo+IHYyLT52MzogYWRkcmVzc2VkIEFuZHJpaSdzIGZlZWRiYWNrDQo+IC0gdXNl
+IGdsb2JhbCBkYXRhIGluc3RlYWQgb2YgcGVyZl9idWZmZXIgdG8gc2ltcGxpZmllZCBjb2RlDQo+
+IA0KPiB2MS0+djI6IGFkZHJlc3NlZCBEYW5pZWwncyBmZWVkYmFjaw0KPiAtIHJlbmFtZSBicGZf
+ZmQycGF0aCB0byBicGZfZ2V0X2ZpbGVfcGF0aCB0byBiZSBjb25zaXN0ZW50IHdpdGggb3RoZXIN
+Cj4gaGVscGVyJ3MgbmFtZXMNCj4gDQo+IFNpZ25lZC1vZmYtYnk6IFdlbmJvIFpoYW5nIDxldGhl
+cmNmbG93QGdtYWlsLmNvbT4NCg0KQWNrZWQtYnk6IFlvbmdob25nIFNvbmcgPHloc0BmYi5jb20+
+DQo=
