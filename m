@@ -2,83 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CBA9F1225A0
-	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 08:39:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 87F4E1225BC
+	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 08:43:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728189AbfLQHj5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Dec 2019 02:39:57 -0500
-Received: from mx2.suse.de ([195.135.220.15]:45328 "EHLO mx2.suse.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726072AbfLQHj4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 17 Dec 2019 02:39:56 -0500
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id CC5EBADB3;
-        Tue, 17 Dec 2019 07:39:52 +0000 (UTC)
-Received: by quack2.suse.cz (Postfix, from userid 1000)
-        id 937DF1E0B35; Tue, 17 Dec 2019 08:39:51 +0100 (CET)
-Date:   Tue, 17 Dec 2019 08:39:51 +0100
-From:   Jan Kara <jack@suse.cz>
-To:     John Hubbard <jhubbard@nvidia.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@intel.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Dave Chinner <david@fromorbit.com>,
-        David Airlie <airlied@linux.ie>,
-        "David S . Miller" <davem@davemloft.net>,
-        Ira Weiny <ira.weiny@intel.com>, Jan Kara <jack@suse.cz>,
-        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
-        Jonathan Corbet <corbet@lwn.net>,
-        =?iso-8859-1?B?Suly9G1l?= Glisse <jglisse@redhat.com>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Michal Hocko <mhocko@suse.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Paul Mackerras <paulus@samba.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Vlastimil Babka <vbabka@suse.cz>, bpf@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, kvm@vger.kernel.org,
-        linux-block@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        linux-media@vger.kernel.org, linux-rdma@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, netdev@vger.kernel.org,
-        linux-mm@kvack.org, LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v11 00/25] mm/gup: track dma-pinned pages: FOLL_PIN
-Message-ID: <20191217073951.GC16051@quack2.suse.cz>
-References: <20191216222537.491123-1-jhubbard@nvidia.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191216222537.491123-1-jhubbard@nvidia.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        id S1727039AbfLQHnK convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 17 Dec 2019 02:43:10 -0500
+Received: from coyote.holtmann.net ([212.227.132.17]:54973 "EHLO
+        mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725868AbfLQHnK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 02:43:10 -0500
+Received: from marcel-macbook.fritz.box (p4FF9F0D1.dip0.t-ipconnect.de [79.249.240.209])
+        by mail.holtmann.org (Postfix) with ESMTPSA id D2372CED3F;
+        Tue, 17 Dec 2019 08:52:19 +0100 (CET)
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 13.0 \(3608.40.2.2.4\))
+Subject: Re: [PATCH v5 2/2] bluetooth: hci_bcm: enable IRQ capability from
+ devicetree
+From:   Marcel Holtmann <marcel@holtmann.org>
+In-Reply-To: <7ho8wc87vy.fsf@baylibre.com>
+Date:   Tue, 17 Dec 2019 08:43:07 +0100
+Cc:     Guillaume La Roque <glaroque@baylibre.com>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        linux-bluetooth@vger.kernel.org, devicetree@vger.kernel.org,
+        netdev@vger.kernel.org, nsaenzjulienne@suse.de,
+        linux-kernel@vger.kernel.org
+Content-Transfer-Encoding: 8BIT
+Message-Id: <18AAF11E-26CA-4753-8F16-C90DCBC15D38@holtmann.org>
+References: <20191213150622.14162-1-glaroque@baylibre.com>
+ <20191213150622.14162-3-glaroque@baylibre.com> <7ho8wc87vy.fsf@baylibre.com>
+To:     Kevin Hilman <khilman@baylibre.com>
+X-Mailer: Apple Mail (2.3608.40.2.2.4)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi!
+Hi Guillaume,
 
-On Mon 16-12-19 14:25:12, John Hubbard wrote:
-> Hi,
+>> Actually IRQ can be found from GPIO but all platforms don't support
+>> gpiod_to_irq, it's the case on amlogic chip.
+>> so to have possibility to use interrupt mode we need to add interrupts
+>> property in devicetree and support it in driver.
 > 
-> This implements an API naming change (put_user_page*() -->
-> unpin_user_page*()), and also implements tracking of FOLL_PIN pages. It
-> extends that tracking to a few select subsystems. More subsystems will
-> be added in follow up work.
+> I would reword this slightly (leaving out the amlogic specifics):
+> 
+> """
+> Add support for getting IRQ directly from DT instead of relying on
+> converting a GPIO to IRQ. This is needed for platforms with GPIO
+> controllers that that do not support gpiod_to_irq().
+> """
+> 
+> Other than that, this looks good to me and now it's clear that it only
+> affects the DT path.
+> 
+> Reviewed-by: Kevin Hilman <khilman@baylibre.com>
 
-Just a note for Andrew and others watching this series: At this point I'm fine
-with the series so if someone still has some review feedback or wants to
-check the series, now is the right time. Otherwise I think Andrew can push
-the series to MM tree so that it will get wider testing exposure and is
-prepared for the next merge window.
+I reverted the broken patch and now I am waiting for v6 with proper reviewed-by or acked-by tags.
 
-								Honza
--- 
-Jan Kara <jack@suse.com>
-SUSE Labs, CR
+Regards
+
+Marcel
+
