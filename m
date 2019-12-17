@@ -2,139 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D8A49123680
-	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 21:08:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C6EB31236DA
+	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 21:16:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727652AbfLQUHQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Dec 2019 15:07:16 -0500
-Received: from mail-ed1-f66.google.com ([209.85.208.66]:43935 "EHLO
-        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727036AbfLQUHQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 15:07:16 -0500
-Received: by mail-ed1-f66.google.com with SMTP id dc19so9030485edb.10
-        for <netdev@vger.kernel.org>; Tue, 17 Dec 2019 12:07:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=lxKMm+Q20QpTaRO4OM0l94NjyUta3v7Pm5It/ZvcpMc=;
-        b=Po1+5Iqaoit9nvlvySgvkgknEE9UjJiih8lLQwXmhioUq8IAZ5Y5vzL6Go++oFRU7/
-         X0hUekDwSqbhBM5+VfEBmqnX80p6J9rOPEgh3oPAtO0XfDiX7N3/EbJRrwv83DanJduV
-         282gVLFWzF+R9spnuai0Tm5hgtKjmnjeQTtx/kNuxqZtuJZQvxtH22TPDXa461J5zHV/
-         gfemkUUJmdW0khonMe98gvP3niMNYxh48LFHdaUNTeGCCMxOlp9YLZ8xsjIC1xGwRsva
-         2MVZI8ZczsdOfmsyT+OnMkhlUmU3GsdWfsn+TZdYprLWsM1wvvIoiur6dgCsF4zObMvR
-         m1Xw==
+        id S1727987AbfLQUQD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Dec 2019 15:16:03 -0500
+Received: from mail-il1-f197.google.com ([209.85.166.197]:37869 "EHLO
+        mail-il1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727577AbfLQUQC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 15:16:02 -0500
+Received: by mail-il1-f197.google.com with SMTP id t19so10364732ila.4
+        for <netdev@vger.kernel.org>; Tue, 17 Dec 2019 12:16:02 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=lxKMm+Q20QpTaRO4OM0l94NjyUta3v7Pm5It/ZvcpMc=;
-        b=VQPImniuoBoGVhuNjoBOf2a9z+7RHQIsG9pCAYCrEKNo+/IZz3wVewxoeFlQHjrLQi
-         Jtsro1dT8ytlj2LM+rPD6DsF/sxzqi4cJpo0Li+NTTiin7x4tV3QaTHhMKLxPMeZwZ+H
-         LPeQwSb7xS4Yg4oCjKxEnjz3oibictgJvLACAIy73vBzHKccU6TkxiBkmtcybAYkG+FW
-         UiQyByMi1x+Tc5YvtiYH43aiIbsWfbpV7EceEgYd+q3WZNG3eEc4bUHCrzPwv7Ay0IeF
-         Eq7qalxpOxBJt2sZtXxebzfqvXIGpXsK2Tq+Dcuqr4clF4WR2PrYl4CDsu05VijXkUyq
-         MysQ==
-X-Gm-Message-State: APjAAAXNhQHAri+O4TMxgo8x9XaQCDnHe5KCs3WXN6xuI584E+JxNntF
-        bjQhuzuAmKhbbneI35SdVrKlZnUfrm1IklCws3U=
-X-Google-Smtp-Source: APXvYqx4dIv6pu1SgEx7abFkfLl+YDR/mZ7UCyzdsWagMVUqtV0N/9sNmQ0bm4TOysZ8RuW+QF2yyHhfXXvi5VIRNo8=
-X-Received: by 2002:a50:fb96:: with SMTP id e22mr7463470edq.18.1576613234876;
- Tue, 17 Dec 2019 12:07:14 -0800 (PST)
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=Zl7jDCng4WsJS3fDlSVM0kBHR2q0XfgZ7N4MzVpx9q0=;
+        b=E03wW+dszkghSOxFmZ9UAdfaNXLbEyFk/o1kQXETCgcRW3p965plSi5Cj3XPj4Qiwz
+         KndTiZnUUYbsM2cPTF6rSzDp/c4np7H1ElJIbUm3hwtTRWP2EgVoigE1PMSTcWv+fGGj
+         fi0hA1J32UCL/2qduREbi0/Yq4Qphzi6QwptKSAB4vP9GvxJAf4IWSQJ9IWuiz5zKpGz
+         PB8waE/cuRQn0h8W4BqBGOnZZZE/cYt9ED0GEW+9NmoMtlh5Q5E+RS7+SxkWyvdlAJmQ
+         SAC/NnIvVdyPhPEOl2whDwuS1nmVqSmrjp2HHGzfR4Y21EveQYgmvcZSDxyaqOfeI0Mj
+         SX6A==
+X-Gm-Message-State: APjAAAWlMj8lHMQfKOeRRUgvwPxmVSNp+8afrna/RsMiDdAPWBCyVi7z
+        5L/h2DZmPOuyow7WOM/E0h8W7ioDPjJOlkY7ULNlHfUi/ziD
+X-Google-Smtp-Source: APXvYqzICrG8Yo/ALydErrhDqX93YfSSAQ85FdUg4jalGroBJiT3BB12c6HUe2ZyNSlzlRnSA4l2+EVqSg+tk5rH2iwmoObAicm0
 MIME-Version: 1.0
-References: <20191216223344.2261-1-olteanv@gmail.com> <02874ECE860811409154E81DA85FBB58B26DEDC3@fmsmsx101.amr.corp.intel.com>
-In-Reply-To: <02874ECE860811409154E81DA85FBB58B26DEDC3@fmsmsx101.amr.corp.intel.com>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Tue, 17 Dec 2019 22:07:03 +0200
-Message-ID: <CA+h21hob3FmbQYyXMeLTtbHF1SeFO=LZVGyQt4jniS9-VXEO-w@mail.gmail.com>
-Subject: Re: [PATCH net] net: dsa: sja1105: Fix double delivery of TX
- timestamps to socket error queue
-To:     "Keller, Jacob E" <jacob.e.keller@intel.com>
-Cc:     "davem@davemloft.net" <davem@davemloft.net>,
-        "jakub.kicinski@netronome.com" <jakub.kicinski@netronome.com>,
-        "richardcochran@gmail.com" <richardcochran@gmail.com>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>,
-        "andrew@lunn.ch" <andrew@lunn.ch>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-Received: by 2002:a05:6602:25cb:: with SMTP id d11mr3095867iop.263.1576613761732;
+ Tue, 17 Dec 2019 12:16:01 -0800 (PST)
+Date:   Tue, 17 Dec 2019 12:16:01 -0800
+In-Reply-To: <000000000000a6f2030598bbe38c@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000037571c0599ebff87@google.com>
+Subject: Re: WARNING in wp_page_copy
+From:   syzbot <syzbot+9301f2f33873407d5b33@syzkaller.appspotmail.com>
+To:     andriin@fb.com, ast@kernel.org, bjorn.topel@intel.com,
+        bpf@vger.kernel.org, catalin.marinas@arm.com, daniel@iogearbox.net,
+        davem@davemloft.net, hawk@kernel.org, jakub.kicinski@netronome.com,
+        john.fastabend@gmail.com, jonathan.lemon@gmail.com,
+        justin.he@arm.com, kafai@fb.com, kirill.shutemov@linux.intel.com,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        magnus.karlsson@gmail.com, magnus.karlsson@intel.com,
+        netdev@vger.kernel.org, songliubraving@fb.com,
+        syzkaller-bugs@googlegroups.com, yhs@fb.com
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jake,
+syzbot has bisected this bug to:
 
-On Tue, 17 Dec 2019 at 21:57, Keller, Jacob E <jacob.e.keller@intel.com> wr=
-ote:
->
-> > -----Original Message-----
-> > From: netdev-owner@vger.kernel.org <netdev-owner@vger.kernel.org> On
-> > Behalf Of Vladimir Oltean
-> > Sent: Monday, December 16, 2019 2:34 PM
-> > To: davem@davemloft.net; jakub.kicinski@netronome.com
-> > Cc: richardcochran@gmail.com; f.fainelli@gmail.com; vivien.didelot@gmai=
-l.com;
-> > andrew@lunn.ch; netdev@vger.kernel.org; Vladimir Oltean
-> > <olteanv@gmail.com>
-> > Subject: [PATCH net] net: dsa: sja1105: Fix double delivery of TX times=
-tamps to
-> > socket error queue
-> >
-> > On the LS1021A-TSN board, it can be seen that under rare conditions,
-> > ptp4l gets unexpected extra data in the event socket error queue.
-> >
-> > This is because the DSA master driver (gianfar) has TX timestamping
-> > logic along the lines of:
-> >
-> > 1. In gfar_start_xmit:
-> >       do_tstamp =3D (skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP) &&
-> >                   priv->hwts_tx_en;
-> >       (...)
-> >       if (unlikely(do_tstamp))
-> >               skb_shinfo(skb)->tx_flags |=3D SKBTX_IN_PROGRESS;
-> > 2. Later in gfar_clean_tx_ring:
-> >       if (unlikely(skb_shinfo(skb)->tx_flags & SKBTX_IN_PROGRESS))
-> >               (...)
-> >               skb_tstamp_tx(skb, &shhwtstamps);
->
-> I'm not sure I fully understand the problem.
->
-> I thought the point of SKBTX_IN_PROGRESS was to inform the stack that a t=
-imestamp was pending. By not setting it, you no longer do this.
->
-> Maybe that has changed since the original implementation? Or am I misunde=
-rstanding this patch..?
->
+commit 83d116c53058d505ddef051e90ab27f57015b025
+Author: Jia He <justin.he@arm.com>
+Date:   Fri Oct 11 14:09:39 2019 +0000
 
-I am not quite sure what the point of SKBTX_IN_PROGRESS is. If you
-search through the kernel you will find a single occurrence right now
-that is supposed to do something (I don't understand what exactly)
-when there is a concurrent sw and hw timestamp.
+     mm: fix double page fault on arm64 if PTE_AF is cleared
 
-> You're removing the sja1105 assignment, not the one from the gianfar. Hmm
->
-> Ok, so the issue is that sja1105_ptp.c was incorrectly setting the flag.
->
-> Would it make more sense for gianfar to set SKBTX_IN_PROGRESS, but then u=
-se some other indicator internally, so that other callers who set it don't =
-cause the gianfar driver to behave incorrectly? I believe we handle it in t=
-he Intel drivers that way by storing the skb. Then we don't check the SKBTX=
-_IN_PROGRESS later.
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=1378f5b6e00000
+start commit:   e31736d9 Merge tag 'nios2-v5.5-rc2' of git://git.kernel.or..
+git tree:       upstream
+final crash:    https://syzkaller.appspot.com/x/report.txt?x=10f8f5b6e00000
+console output: https://syzkaller.appspot.com/x/log.txt?x=1778f5b6e00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=79f79de2a27d3e3d
+dashboard link: https://syzkaller.appspot.com/bug?extid=9301f2f33873407d5b33
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=10fd9fb1e00000
 
-Yes, the point is that it should check priv->hwts_tx_en &&
-(skb_shinfo(skb)->tx_flags & SKBTX_IN_PROGRESS). That was my initial
-fix for the bug, but Richard argued that setting SKBTX_IN_PROGRESS in
-itself isn't needed.
+Reported-by: syzbot+9301f2f33873407d5b33@syzkaller.appspotmail.com
+Fixes: 83d116c53058 ("mm: fix double page fault on arm64 if PTE_AF is  
+cleared")
 
-There are many more drivers that are in principle broken with DSA PTP,
-since they don't even have the equivalent check for priv->hwts_tx_en.
-
->
-> Thanks,
-> Jake
->
->
-
-Thanks,
--Vladimir
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
