@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F2E5412392D
-	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 23:12:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E476612392E
+	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 23:12:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726539AbfLQWMj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Dec 2019 17:12:39 -0500
-Received: from mail-lf1-f68.google.com ([209.85.167.68]:39073 "EHLO
+        id S1726565AbfLQWMm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Dec 2019 17:12:42 -0500
+Received: from mail-lf1-f68.google.com ([209.85.167.68]:40091 "EHLO
         mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726512AbfLQWMj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 17:12:39 -0500
-Received: by mail-lf1-f68.google.com with SMTP id y1so149175lfb.6
-        for <netdev@vger.kernel.org>; Tue, 17 Dec 2019 14:12:37 -0800 (PST)
+        with ESMTP id S1726512AbfLQWMl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 17:12:41 -0500
+Received: by mail-lf1-f68.google.com with SMTP id i23so144840lfo.7
+        for <netdev@vger.kernel.org>; Tue, 17 Dec 2019 14:12:40 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=netronome-com.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=+VxjxeAv2t9rsmhLG5vd4txDaJ2R/vecyIcH3T4Q9hE=;
-        b=EnGUkdVDhptludmZ76o1klnD3F/+HFYq1Y5qf6wgSUJmJNWnsA9nbg+sbsZjdP57ja
-         zMvO/72lYIm8rqejsl02m2QZg3bio234mQfwmbF5u8Pjdo/YH05WSs951pQtuJ0NUTrg
-         F62z4wukaceEAK3hFu6z3m+V//yZk29Ew66nN8H+VmRz/mVMJ+KfnMRj5iP5rj4i14hY
-         0BdBmq8Li0pnnUGBHQ9YCmvQP6q0bBqJtSabWZdgecryqbn8bjqsbY3lOv5FV2JGz/mN
-         WhYfuhRiw8w/Q5sZN9G8hzepxF7dEvW6smS1xKgz4Qu25Y3qpWZZIbMhUTsxp8XrG/tj
-         W9lQ==
+        bh=8aJo+Pqt93YpauF0t70ymnZLX9h+nAd22h2MN3t34OQ=;
+        b=JBeHpRXoGu/DT/Cu71XEFK2Z4GaUTuJnx44VhnKw504MJzzKxJ5aXuY9d95JZzY7s7
+         cZmXMws7+5sfRpZzpAUgwgg2mVjBbkVkEcZlAvc2OSp1HzmG4iNsLX0cTkbngz3QqkAC
+         Hkxa3G7PeMcgfiqulJVg6gloawKtPPrpcRyaNApUGuexD81AmpXshejoAiGxC69mGkzi
+         641Mb88j6JwoKXfQrIjD+wS5AkQUT0ss6ehWW8iYvCDxfJBdInKKp5uIEmfuxh1UWkwQ
+         Ty8Pjqi76fber6W++sSIau2+w+A8+H4by+X75ZsdsWI+EO6QbT00C7RNpOwvJR/fuo32
+         c9YA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=+VxjxeAv2t9rsmhLG5vd4txDaJ2R/vecyIcH3T4Q9hE=;
-        b=QO5LnlL9TdGN428ZV8aYJWqlDicJpYtKtLqMx5lkV64mU1mfppIGM7pj0maa8DavN7
-         bL5nXYCOtTDdofsBg5bE6Y7MooXxcVMssDI0TriKUSHTgpO1j7JQrJ0QDFePSNbdFTcG
-         INsYqt4pdChGlpH96qfmv75//+2irOANig8nGC0TdIKkM26rJq8iXqibhyO+EzWQ52ap
-         z1/isHF1ZwwBPETyf/hoTUHjhz1jfZASMjHN+HLurhAe3vBDewQYX6AtNN8lPbcKFInE
-         5cz9TRZiG6nJlnVMR97UlVW58ftHdurNNlWRkUSD+E9yL3D3smVgy784NDHOylRU2tpy
-         ILbA==
-X-Gm-Message-State: APjAAAWajBztWl2tKrbSb+c9YBBbL7mDwdXSpOn3lcfgBK+M4BnkSs3y
-        EGRz7Ncn67kOO1tx7F6Idi0eZg==
-X-Google-Smtp-Source: APXvYqwx8VuApWKYJabNsFFkZTk2RNmp7SyClGkQ9uz9CtT2TNw1lTEEMKrVtuUWRHe+Fg+zQ/fJhQ==
-X-Received: by 2002:a19:40d8:: with SMTP id n207mr4258395lfa.4.1576620756873;
-        Tue, 17 Dec 2019 14:12:36 -0800 (PST)
+        bh=8aJo+Pqt93YpauF0t70ymnZLX9h+nAd22h2MN3t34OQ=;
+        b=YpZBUA6OcDeHg6+uJj9qQzbfjmMiR4Kb94lDxLMyzENaKEWhUEr1nhvtxG2KW8+uWV
+         ZUDua7ezvh0+mqJbmQTMDWJsIbAWqFK4s5hJl+7CSNP+gPbVnbk/i9MWoQKGepDFgr+b
+         r6LXcfRG0OPzcWiVibuf8JeID2Kc6yLblWwr/bRMPTl/jC1XGopbLlPA7kn09Pk+cuc8
+         jTLxaq3x6pisWI1R2H8P8te+nS7aCLwCJ4EeWYognc+Vrlim3tC6a/qvPvX98CG/yD4j
+         2tR4oBv75Su/m14Da25EckmJNuwKmquIrpnh4b49Z0NaosUz/HG9qLp2nWhvwtMwou/z
+         Mvig==
+X-Gm-Message-State: APjAAAWNsU3uqQUrUhqlwK+DBrGccOQRz/GlAIHAZCepQOxG44+WGP/V
+        BsIQXDr1dBA0PEwFAIDy9V9tjCyjr+w=
+X-Google-Smtp-Source: APXvYqy0z4lkESRFOEW1dobs69AOd/DMi488dW0MfF3KYPnpD0gSJ0snNgOXqrQo4l3D3GUw500jVg==
+X-Received: by 2002:ac2:5983:: with SMTP id w3mr4258957lfn.137.1576620759867;
+        Tue, 17 Dec 2019 14:12:39 -0800 (PST)
 Received: from jkicinski-Precision-T1700.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id u9sm13333440lju.95.2019.12.17.14.12.34
+        by smtp.gmail.com with ESMTPSA id u9sm13333440lju.95.2019.12.17.14.12.37
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 Dec 2019 14:12:36 -0800 (PST)
+        Tue, 17 Dec 2019 14:12:39 -0800 (PST)
 From:   Jakub Kicinski <jakub.kicinski@netronome.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, oss-drivers@netronome.com,
         borisp@mellanox.com, aviadye@mellanox.com,
         john.fastabend@gmail.com, daniel@iogearbox.net,
         Jakub Kicinski <jakub.kicinski@netronome.com>
-Subject: [PATCH net-next 1/3] nfp: pass packet pointer to nfp_net_parse_meta()
-Date:   Tue, 17 Dec 2019 14:12:00 -0800
-Message-Id: <20191217221202.12611-2-jakub.kicinski@netronome.com>
+Subject: [PATCH net-next 2/3] net/tls: add helper for testing if socket is RX offloaded
+Date:   Tue, 17 Dec 2019 14:12:01 -0800
+Message-Id: <20191217221202.12611-3-jakub.kicinski@netronome.com>
 X-Mailer: git-send-email 2.23.0
 In-Reply-To: <20191217221202.12611-1-jakub.kicinski@netronome.com>
 References: <20191217221202.12611-1-jakub.kicinski@netronome.com>
@@ -63,64 +63,73 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Make nfp_net_parse_meta() take a packet pointer and return
-a drop/no drop decision. Right now it returns the end of
-metadata and caller compares it to the packet pointer.
+There is currently no way for driver to reliably check that
+the socket it has looked up is in fact RX offloaded. Add
+a helper. This allows drivers to catch misbehaving firmware.
 
 Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
 ---
- .../ethernet/netronome/nfp/nfp_net_common.c    | 18 ++++++++----------
- 1 file changed, 8 insertions(+), 10 deletions(-)
+ include/net/tls.h    | 9 +++++++++
+ net/tls/tls_device.c | 5 +++--
+ 2 files changed, 12 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/netronome/nfp/nfp_net_common.c b/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
-index d4eeb3b3cf35..780bd1daa601 100644
---- a/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
-+++ b/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
-@@ -1661,9 +1661,9 @@ nfp_net_set_hash_desc(struct net_device *netdev, struct nfp_meta_parsed *meta,
- 			 &rx_hash->hash);
- }
- 
--static void *
-+static bool
- nfp_net_parse_meta(struct net_device *netdev, struct nfp_meta_parsed *meta,
--		   void *data, int meta_len)
-+		   void *data, void *pkt, int meta_len)
+diff --git a/include/net/tls.h b/include/net/tls.h
+index df630f5fc723..bf9eb4823933 100644
+--- a/include/net/tls.h
++++ b/include/net/tls.h
+@@ -641,6 +641,7 @@ int tls_sw_fallback_init(struct sock *sk,
+ #ifdef CONFIG_TLS_DEVICE
+ void tls_device_init(void);
+ void tls_device_cleanup(void);
++void tls_device_sk_destruct(struct sock *sk);
+ int tls_set_device_offload(struct sock *sk, struct tls_context *ctx);
+ void tls_device_free_resources_tx(struct sock *sk);
+ int tls_set_device_offload_rx(struct sock *sk, struct tls_context *ctx);
+@@ -649,6 +650,14 @@ void tls_device_rx_resync_new_rec(struct sock *sk, u32 rcd_len, u32 seq);
+ void tls_offload_tx_resync_request(struct sock *sk, u32 got_seq, u32 exp_seq);
+ int tls_device_decrypted(struct sock *sk, struct tls_context *tls_ctx,
+ 			 struct sk_buff *skb, struct strp_msg *rxm);
++
++static inline bool tls_is_sk_rx_device_offloaded(struct sock *sk)
++{
++	if (!sk_fullsock(sk) ||
++	    smp_load_acquire(&sk->sk_destruct) != tls_device_sk_destruct)
++		return false;
++	return tls_get_ctx(sk)->rx_conf == TLS_HW;
++}
+ #else
+ static inline void tls_device_init(void) {}
+ static inline void tls_device_cleanup(void) {}
+diff --git a/net/tls/tls_device.c b/net/tls/tls_device.c
+index cd91ad812291..1ba5a92832bb 100644
+--- a/net/tls/tls_device.c
++++ b/net/tls/tls_device.c
+@@ -178,7 +178,7 @@ static void tls_icsk_clean_acked(struct sock *sk, u32 acked_seq)
+  * socket and no in-flight SKBs associated with this
+  * socket, so it is safe to free all the resources.
+  */
+-static void tls_device_sk_destruct(struct sock *sk)
++void tls_device_sk_destruct(struct sock *sk)
  {
- 	u32 meta_info;
+ 	struct tls_context *tls_ctx = tls_get_ctx(sk);
+ 	struct tls_offload_context_tx *ctx = tls_offload_ctx_tx(tls_ctx);
+@@ -196,6 +196,7 @@ static void tls_device_sk_destruct(struct sock *sk)
+ 	if (refcount_dec_and_test(&tls_ctx->refcount))
+ 		tls_device_queue_ctx_destruction(tls_ctx);
+ }
++EXPORT_SYMBOL_GPL(tls_device_sk_destruct);
  
-@@ -1694,13 +1694,13 @@ nfp_net_parse_meta(struct net_device *netdev, struct nfp_meta_parsed *meta,
- 			data += 4;
- 			break;
- 		default:
--			return NULL;
-+			return true;
- 		}
+ void tls_device_free_resources_tx(struct sock *sk)
+ {
+@@ -903,7 +904,7 @@ static void tls_device_attach(struct tls_context *ctx, struct sock *sk,
+ 		spin_unlock_irq(&tls_device_lock);
  
- 		meta_info >>= NFP_NET_META_FIELD_SIZE;
+ 		ctx->sk_destruct = sk->sk_destruct;
+-		sk->sk_destruct = tls_device_sk_destruct;
++		smp_store_release(&sk->sk_destruct, tls_device_sk_destruct);
  	}
- 
--	return data;
-+	return data != pkt;
  }
  
- static void
-@@ -1885,12 +1885,10 @@ static int nfp_net_rx(struct nfp_net_rx_ring *rx_ring, int budget)
- 			nfp_net_set_hash_desc(dp->netdev, &meta,
- 					      rxbuf->frag + meta_off, rxd);
- 		} else if (meta_len) {
--			void *end;
--
--			end = nfp_net_parse_meta(dp->netdev, &meta,
--						 rxbuf->frag + meta_off,
--						 meta_len);
--			if (unlikely(end != rxbuf->frag + pkt_off)) {
-+			if (unlikely(nfp_net_parse_meta(dp->netdev, &meta,
-+							rxbuf->frag + meta_off,
-+							rxbuf->frag + pkt_off,
-+							meta_len))) {
- 				nn_dp_warn(dp, "invalid RX packet metadata\n");
- 				nfp_net_rx_drop(dp, r_vec, rx_ring, rxbuf,
- 						NULL);
 -- 
 2.23.0
 
