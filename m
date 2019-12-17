@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 07952122A72
-	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 12:43:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 78237122A6E
+	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 12:43:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727735AbfLQLnJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Dec 2019 06:43:09 -0500
-Received: from smtprelay-out1.synopsys.com ([149.117.87.133]:36564 "EHLO
+        id S1727572AbfLQLmy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Dec 2019 06:42:54 -0500
+Received: from smtprelay-out1.synopsys.com ([149.117.87.133]:36486 "EHLO
         smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727462AbfLQLmy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 06:42:54 -0500
+        by vger.kernel.org with ESMTP id S1726275AbfLQLmx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 06:42:53 -0500
 Received: from mailhost.synopsys.com (mdc-mailhost2.synopsys.com [10.225.0.210])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 468BFC00C9;
+        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 5F029C00CC;
         Tue, 17 Dec 2019 11:42:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
-        t=1576582973; bh=f1Z6qt0mb0aaiO7Qwt8NRz1uEqZUguBjtTVaqKFAPHo=;
+        t=1576582973; bh=4HnZAoZdscSffoLRQAaVEBPU8XsY4emx6y4nwnhMNOU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:In-Reply-To:
          References:From;
-        b=HUyKFvzZJAAt+XNo3+Y9YwUOiBhMr5dTGPi2tkXQ/26o7xIMYbb6+i3tfFgNBbK1g
-         nNInt3QHc0y2Uf3pyn7+GhqLSgInSyovg6QnADrXmII4ZVzGOSx5zo+UCPVoR9JaDL
-         Qf8NFRsCKIcyQvMJoEgjf8ZY6r0tC6kmns1jGsIk+uZANwEKorC6cheqf/5Ngx/chi
-         QU2PHvQe8Gdsp5L/kMiwooMu0RWQQSkIYmlyGbBTk0vIJVGktbUoO89sNo9tRdVUzd
-         00hMsHwE7isysKebHfUxHwYe/hHn9WPLK5yUKiVZgsShZ/ykA37bWYHVYeZGHNuuu7
-         RfUGiKO4Jbu7Q==
+        b=iFvfqZE+ri6Zxkv0ZNvJVIK7B8BqwBjDU0xdO8thZMK4mzGk/WVw5vnpyxplnzQfZ
+         XOQPBZibCT3cfUSLr4zWGLVM6GoCmDIddsgaN6rgT9gxYTW4T/w8AQ2ChgxWDUM5At
+         NCERTO4bAybLoR8/L/dBeXIVZ3a4OJ3u6JC88yZQEX9P/PDmVeE8yTDlIWvOiYfhWS
+         KvY25GMfYlTcISHJ3ODEoWvJn0vwZof1BXPZ7zKqFrUCMLeRJurnDOtsj9ACEmQ5Ik
+         Tj44Qq2pBZ0VI6obs8udowrWyoNJniIOTY0NiK6bcynwHUGpxXTq6jD3JktvL/skaZ
+         0wCchpWovsRWQ==
 Received: from de02dwia024.internal.synopsys.com (de02dwia024.internal.synopsys.com [10.225.19.81])
-        by mailhost.synopsys.com (Postfix) with ESMTP id ED9B2A0099;
-        Tue, 17 Dec 2019 11:42:50 +0000 (UTC)
+        by mailhost.synopsys.com (Postfix) with ESMTP id 045F9A00A7;
+        Tue, 17 Dec 2019 11:42:51 +0000 (UTC)
 From:   Jose Abreu <Jose.Abreu@synopsys.com>
 To:     netdev@vger.kernel.org
 Cc:     Joao Pinto <Joao.Pinto@synopsys.com>,
@@ -41,9 +41,9 @@ Cc:     Joao Pinto <Joao.Pinto@synopsys.com>,
         Maxime Coquelin <mcoquelin.stm32@gmail.com>,
         linux-stm32@st-md-mailman.stormreply.com,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net v2 5/8] net: stmmac: xgmac: Clear previous RX buffer size
-Date:   Tue, 17 Dec 2019 12:42:35 +0100
-Message-Id: <bd962deb502987964ee33d5281fa66afd6316d95.1576581853.git.Jose.Abreu@synopsys.com>
+Subject: [PATCH net v2 6/8] net: stmmac: RX buffer size must be 16 byte aligned
+Date:   Tue, 17 Dec 2019 12:42:36 +0100
+Message-Id: <8d7b87265a2727a28896203f5569d7039c2c34c8.1576581853.git.Jose.Abreu@synopsys.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <cover.1576581853.git.Jose.Abreu@synopsys.com>
 References: <cover.1576581853.git.Jose.Abreu@synopsys.com>
@@ -54,9 +54,10 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When switching between buffer sizes we need to clear the previous value.
+We need to align the RX buffer size to at least 16 byte so that IP
+doesn't mis-behave. This is required by HW.
 
-Fixes: d6ddfacd95c7 ("net: stmmac: Add DMA related callbacks for XGMAC2")
+Fixes: 7ac6653a085b ("stmmac: Move the STMicroelectronics driver")
 Signed-off-by: Jose Abreu <Jose.Abreu@synopsys.com>
 
 ---
@@ -70,37 +71,22 @@ Cc: linux-stm32@st-md-mailman.stormreply.com
 Cc: linux-arm-kernel@lists.infradead.org
 Cc: linux-kernel@vger.kernel.org
 ---
- drivers/net/ethernet/stmicro/stmmac/dwxgmac2.h     | 2 ++
- drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c | 3 ++-
- 2 files changed, 4 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwxgmac2.h b/drivers/net/ethernet/stmicro/stmmac/dwxgmac2.h
-index 3b6e559aa0b9..ef8a07c68ca7 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwxgmac2.h
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwxgmac2.h
-@@ -343,6 +343,8 @@
- #define XGMAC_DMA_CH_RX_CONTROL(x)	(0x00003108 + (0x80 * (x)))
- #define XGMAC_RxPBL			GENMASK(21, 16)
- #define XGMAC_RxPBL_SHIFT		16
-+#define XGMAC_RBSZ			GENMASK(14, 1)
-+#define XGMAC_RBSZ_SHIFT		1
- #define XGMAC_RXST			BIT(0)
- #define XGMAC_DMA_CH_TxDESC_HADDR(x)	(0x00003110 + (0x80 * (x)))
- #define XGMAC_DMA_CH_TxDESC_LADDR(x)	(0x00003114 + (0x80 * (x)))
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c b/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c
-index 22a7f0cc1b90..f3f08ccc379b 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c
-@@ -482,7 +482,8 @@ static void dwxgmac2_set_bfsize(void __iomem *ioaddr, int bfsize, u32 chan)
- 	u32 value;
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+index 8c191e4d35d0..eb31d7fb321c 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+@@ -46,7 +46,7 @@
+ #include "dwxgmac2.h"
+ #include "hwif.h"
  
- 	value = readl(ioaddr + XGMAC_DMA_CH_RX_CONTROL(chan));
--	value |= bfsize << 1;
-+	value &= ~XGMAC_RBSZ;
-+	value |= bfsize << XGMAC_RBSZ_SHIFT;
- 	writel(value, ioaddr + XGMAC_DMA_CH_RX_CONTROL(chan));
- }
+-#define	STMMAC_ALIGN(x)		__ALIGN_KERNEL(x, SMP_CACHE_BYTES)
++#define	STMMAC_ALIGN(x)		ALIGN_DOWN(ALIGN_DOWN(x, SMP_CACHE_BYTES), 16)
+ #define	TSO_MAX_BUFF_SIZE	(SZ_16K - 1)
  
+ /* Module parameters */
 -- 
 2.7.4
 
