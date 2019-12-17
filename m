@@ -2,116 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 66B86122624
-	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 09:03:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 59DDE122648
+	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 09:06:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726852AbfLQIDG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Dec 2019 03:03:06 -0500
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:53491 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726281AbfLQIDE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 03:03:04 -0500
-Received: by mail-wm1-f67.google.com with SMTP id m24so1891349wmc.3
-        for <netdev@vger.kernel.org>; Tue, 17 Dec 2019 00:03:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to
-         :user-agent;
-        bh=GxAFSM9qrfBqACDVyobZG3sgGdlMNsybGzr6qpdZuFY=;
-        b=sneGlw/w17D4z5M6a5bR6Y0d/z3VSpK4ImjvIeXZaztzsV4sKewPmhnDCtmQYaTmlV
-         YEqBwbCUZFtj5uIFQsJ21OzjN/E//jv2SfHJwUy/0NR42KPymWIdC/xmAgzf+8A++Yn4
-         eEVZOAYagbwnNN9NzZKIXw3wbBs8XCEwEdOFXZ/gi5Rl4atj3f719kXLCGWPV9c7Sacg
-         NG3EKXamr8YyxcBkbngr9KLoE066VzOQNwr8QGF5kFyuwBtD9zqKm9xslgq0mwKFt3L3
-         gkHo2nde5j/rsRY0YIN9JVN/ebNuqhinr5Ltkp3zVYpUw/SxUBGq1K36V3C2++3LFK2I
-         BJMw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to:user-agent;
-        bh=GxAFSM9qrfBqACDVyobZG3sgGdlMNsybGzr6qpdZuFY=;
-        b=ln9q8zM8VkuY/q6W30P6BVlKX1NOgIyyXzxajOmlJZAQW+MXN4r9nUgbBVNt0+wJ/1
-         73G7JLRaAxTkc/tO6vs6O3WdalJobpIF+Fr2GiNdjjwuczn1FxQwC6vruhylI4NEWBE9
-         50amAmqztLyTAodiMNON+tTWHGbhwGHnq4ZeBxP4/WcW5/vXpH8jruIetItwlLJyfj9O
-         2jHEfquFQRExJ0qsxXdNteNJzufKS2UCEYxZhPm/NnpD9nhobCBH+1mKYNBCfM7tZYzt
-         1JPvlX/i1VLTFSbGUws6q+oNcMOW0WlrBRsCWmicy1k/L2IRh6cQffSxC2IReDrsPSC8
-         mipQ==
-X-Gm-Message-State: APjAAAVGLiAwNcHJVbtvh7sHwjuUW7uFR8iYuPbGX2+b0OrUIdUyigZC
-        BImkmJ62VTm/lKlEUQSklXEUnQ==
-X-Google-Smtp-Source: APXvYqzMTCBlFqbqARJevmlw9QY8QwE36fi/Ore5Eu5RwK95seTip0NwxVQTJa/pqHoFIqktYKfywA==
-X-Received: by 2002:a05:600c:d7:: with SMTP id u23mr3568868wmm.145.1576569781740;
-        Tue, 17 Dec 2019 00:03:01 -0800 (PST)
-Received: from dell (h185-20-99-142.host.redstation.co.uk. [185.20.99.142])
-        by smtp.gmail.com with ESMTPSA id c9sm2020290wmc.47.2019.12.17.00.02.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 Dec 2019 00:03:00 -0800 (PST)
-Date:   Tue, 17 Dec 2019 08:02:55 +0000
-From:   Lee Jones <lee.jones@linaro.org>
-To:     Thomas Bogendoerfer <tbogendoerfer@suse.de>
-Cc:     Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Ralf Baechle <ralf@linux-mips.org>,
-        Paul Burton <paulburton@kernel.org>,
-        James Hogan <jhogan@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>, linux-mips@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-rtc@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: Re: [PATCH v11 net-next 2/2] mfd: ioc3: Add driver for SGI IOC3 chip
-Message-ID: <20191217080255.GF18955@dell>
-References: <20191213124221.25775-1-tbogendoerfer@suse.de>
- <20191213124221.25775-3-tbogendoerfer@suse.de>
- <20191215122745.219fa951@cakuba.netronome.com>
- <20191216170005.afdbbb3845a87dc835165250@suse.de>
+        id S1727188AbfLQIF3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Dec 2019 03:05:29 -0500
+Received: from mga09.intel.com ([134.134.136.24]:26976 "EHLO mga09.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725946AbfLQIF2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 17 Dec 2019 03:05:28 -0500
+X-Amp-Result: UNKNOWN
+X-Amp-Original-Verdict: FILE UNKNOWN
+X-Amp-File-Uploaded: False
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orsmga102.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 17 Dec 2019 00:05:27 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.69,324,1571727600"; 
+   d="scan'208";a="247347300"
+Received: from lkp-server01.sh.intel.com (HELO lkp-server01) ([10.239.97.150])
+  by fmsmga002.fm.intel.com with ESMTP; 17 Dec 2019 00:05:21 -0800
+Received: from kbuild by lkp-server01 with local (Exim 4.89)
+        (envelope-from <lkp@intel.com>)
+        id 1ih7qn-0006kj-6U; Tue, 17 Dec 2019 16:05:01 +0800
+Date:   Tue, 17 Dec 2019 16:03:56 +0800
+From:   kbuild test robot <lkp@intel.com>
+To:     John Hubbard <jhubbard@nvidia.com>
+Cc:     kbuild-all@lists.01.org, Andrew Morton <akpm@linux-foundation.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@intel.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Dave Chinner <david@fromorbit.com>,
+        David Airlie <airlied@linux.ie>,
+        "David S . Miller" <davem@davemloft.net>,
+        Ira Weiny <ira.weiny@intel.com>, Jan Kara <jack@suse.cz>,
+        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
+        Jonathan Corbet <corbet@lwn.net>,
+        =?iso-8859-1?B?Suly9G1l?= Glisse <jglisse@redhat.com>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Michal Hocko <mhocko@suse.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Paul Mackerras <paulus@samba.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Vlastimil Babka <vbabka@suse.cz>, bpf@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, kvm@vger.kernel.org,
+        linux-block@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        linux-media@vger.kernel.org, linux-rdma@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, netdev@vger.kernel.org,
+        linux-mm@kvack.org, LKML <linux-kernel@vger.kernel.org>,
+        John Hubbard <jhubbard@nvidia.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>
+Subject: Re: [PATCH v9 23/25] mm/gup: track FOLL_PIN pages
+Message-ID: <201912171520.rTYbJvYF%lkp@intel.com>
+References: <20191211025318.457113-24-jhubbard@nvidia.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20191216170005.afdbbb3845a87dc835165250@suse.de>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20191211025318.457113-24-jhubbard@nvidia.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 16 Dec 2019, Thomas Bogendoerfer wrote:
+Hi John,
 
-> On Sun, 15 Dec 2019 12:27:45 -0800
-> Jakub Kicinski <jakub.kicinski@netronome.com> wrote:
-> 
-> > On Fri, 13 Dec 2019 13:42:20 +0100, Thomas Bogendoerfer wrote:
-> > > SGI IOC3 chip has integrated ethernet, keyboard and mouse interface.
-> > > It also supports connecting a SuperIO chip for serial and parallel
-> > > interfaces. IOC3 is used inside various SGI systemboards and add-on
-> > > cards with different equipped external interfaces.
-> > > 
-> > > Support for ethernet and serial interfaces were implemented inside
-> > > the network driver. This patchset moves out the not network related
-> > > parts to a new MFD driver, which takes care of card detection,
-> > > setup of platform devices and interrupt distribution for the subdevices.
-> > > 
-> > > Serial portion: Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> > > Acked-for-MFD-by: Lee Jones <lee.jones@linaro.org>
-> > > 
-> > > Signed-off-by: Thomas Bogendoerfer <tbogendoerfer@suse.de>
-> > 
-> > For networking:
-> > 
-> > Reviewed-by: Jakub Kicinski <jakub.kicinski@netronome.com>
-> > 
-> > I think you wanted this to go via the MIPS tree, so consider this an
-> > ack.
-> 
-> well, it can go to net-next as well. Paul, what's your preference ?
+Thank you for the patch! Perhaps something to improve:
 
-Whomever takes it should send out a pull-request to an immutable
-branch for everyone else to pull from (if they so desire).
+[auto build test WARNING on rdma/for-next]
+[also build test WARNING on linus/master v5.5-rc2 next-20191216]
+[cannot apply to mmotm/master vfio/next]
+[if your patch is applied to the wrong git tree, please drop us a note to help
+improve the system. BTW, we also suggest to use '--base' option to specify the
+base tree in git format-patch, please see https://stackoverflow.com/a/37406982]
 
--- 
-Lee Jones [李琼斯]
-Linaro Services Technical Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
+url:    https://github.com/0day-ci/linux/commits/John-Hubbard/mm-gup-track-dma-pinned-pages-FOLL_PIN/20191212-013238
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/rdma/rdma.git for-next
+reproduce:
+        # apt-get install sparse
+        # sparse version: v0.6.1-104-gf934193-dirty
+        make ARCH=x86_64 allmodconfig
+        make C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__'
+
+If you fix the issue, kindly add following tag
+Reported-by: kbuild test robot <lkp@intel.com>
+
+
+sparse warnings: (new ones prefixed by >>)
+
+>> mm/gup.c:78:26: sparse: sparse: symbol 'try_pin_compound_head' was not declared. Should it be static?
+
+Please review and possibly fold the followup patch.
+
+---
+0-DAY kernel test infrastructure                 Open Source Technology Center
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org Intel Corporation
