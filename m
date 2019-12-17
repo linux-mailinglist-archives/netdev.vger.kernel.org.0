@@ -2,127 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4305B1221D3
-	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 03:08:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E4B9E1221DF
+	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 03:11:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726634AbfLQCHV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Dec 2019 21:07:21 -0500
-Received: from mail-lf1-f67.google.com ([209.85.167.67]:43166 "EHLO
-        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726180AbfLQCHV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Dec 2019 21:07:21 -0500
-Received: by mail-lf1-f67.google.com with SMTP id 9so5743251lfq.10;
-        Mon, 16 Dec 2019 18:07:19 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=JyYnLdraZ3i9mAbNELTDahCGz48WPnWVPKPIPNY5hKg=;
-        b=r9cZVoN+YFl3+BZILKRst0PzNyYWJlbPwl0O7Otp8uj/9YdzBzN8/+cRgAF/b8JLZT
-         8MvfF4nnBENkks3F5kNVc8XkNPu8FuK51fC1JdZiDlgTECEMtEEguCx7vNorozjOrjTj
-         G3t2M968DuoWVYpuBYAgtuv6+MVeaLu2QXOILQAHW+Ooxg6Dv7Hx+qqqKaeJEal4Au5F
-         /gQ25CKswtNrY2YgwwwVvkW8oLHcUhN0d5jDALjGP/zRAhqXEFdu9sLkM1o9C8eVYl96
-         32IpWL1lxdfitsVz9w0iTtA6ker/fY4072kNhU/DbuOEQdQ3xMd767tJtp1xvqAowFV7
-         TDtw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=JyYnLdraZ3i9mAbNELTDahCGz48WPnWVPKPIPNY5hKg=;
-        b=RyRSjTZoAM07+gOpY8ll6RqjVF1MFQP1c704OHf6A2zRwYh+cFsEy1oGZ59O63WLo5
-         QHd9fqi2lm6/KNypDhVc8gfzgRdV6t2LI5nMG8L8yRwxYBQGIUJsfhUeSCG1rABiBaP6
-         4F1NC3rIWMdUZGXccSdCt+1CFl/oFdAkpo2UvzVvycFxVHSQ71n02oBeXbLMyS50AW8s
-         w0TnPVPyQA9ELy16v+hBDJ7b26k1hFNGyxDofABN70eVPOfdWAL8p74Y12jJra7lNv/E
-         HrlAnjZI8SL5rDyZqf9W5DtsuN5Lx1UYE3iL2tcdk4COZoiJVtdhm/8WGl/fZILn4MMu
-         CoCw==
-X-Gm-Message-State: APjAAAXQ+zA6ehYb7Xu/cuxDVzozUheenTWctmO8BNcwLoO+PjLF5m60
-        SKhZHTy1jMKTMzxDfpz1Zk4bzzwY24y5uaLdWtU=
-X-Google-Smtp-Source: APXvYqx8XtOM7Ecfx9GE0h8Mejdo5Rsgcl7suDbjTfcESRRDsZy98q/R6+/sOhxqfpegbA4acAI1oU0rqet8E5iTPAM=
-X-Received: by 2002:a19:6d13:: with SMTP id i19mr1319229lfc.6.1576548438829;
- Mon, 16 Dec 2019 18:07:18 -0800 (PST)
+        id S1726698AbfLQCLU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Dec 2019 21:11:20 -0500
+Received: from szxga04-in.huawei.com ([45.249.212.190]:8131 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726445AbfLQCLU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 16 Dec 2019 21:11:20 -0500
+Received: from DGGEMS413-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id 6519298E236B0F6128C0;
+        Tue, 17 Dec 2019 10:11:17 +0800 (CST)
+Received: from [127.0.0.1] (10.74.191.121) by DGGEMS413-HUB.china.huawei.com
+ (10.3.19.213) with Microsoft SMTP Server id 14.3.439.0; Tue, 17 Dec 2019
+ 10:11:12 +0800
+Subject: Re: [PATCH][v2] page_pool: handle page recycle for NUMA_NO_NODE
+ condition
+To:     Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Michal Hocko <mhocko@kernel.org>
+CC:     Saeed Mahameed <saeedm@mellanox.com>,
+        "brouer@redhat.com" <brouer@redhat.com>,
+        "jonathan.lemon@gmail.com" <jonathan.lemon@gmail.com>,
+        Li Rongqing <lirongqing@baidu.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        <peterz@infradead.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        <bhelgaas@google.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <1575624767-3343-1-git-send-email-lirongqing@baidu.com>
+ <9fecbff3518d311ec7c3aee9ae0315a73682a4af.camel@mellanox.com>
+ <20191211194933.15b53c11@carbon>
+ <831ed886842c894f7b2ffe83fe34705180a86b3b.camel@mellanox.com>
+ <0a252066-fdc3-a81d-7a36-8f49d2babc01@huawei.com>
+ <20191216121557.GE30281@dhcp22.suse.cz> <20191216123426.GA18663@apalos.home>
+ <20191216130845.GF30281@dhcp22.suse.cz> <20191216132128.GA19355@apalos.home>
+From:   Yunsheng Lin <linyunsheng@huawei.com>
+Message-ID: <9041ea7f-0ca6-d0fe-9942-8907222ead5e@huawei.com>
+Date:   Tue, 17 Dec 2019 10:11:12 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.0
 MIME-Version: 1.0
-References: <20191216082738.28421-1-prashantbhole.linux@gmail.com>
- <20191216132512.GD14887@linux.fritz.box> <CAADnVQKB7hUmXBMmPfFUH4ZxSQfRtam0aEWykBNMhrKS+HjcwQ@mail.gmail.com>
- <caf893fb-e574-7a67-1e4e-4ce5d7836172@gmail.com>
-In-Reply-To: <caf893fb-e574-7a67-1e4e-4ce5d7836172@gmail.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Mon, 16 Dec 2019 18:07:07 -0800
-Message-ID: <CAADnVQJXK6TykmFx2axj9Z2yjNMRU9VbO98koneUiEQ-dLwu-Q@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] libbpf: fix build by renaming variables
-To:     Prashant Bhole <prashantbhole.linux@gmail.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20191216132128.GA19355@apalos.home>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.74.191.121]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 16, 2019 at 4:17 PM Prashant Bhole
-<prashantbhole.linux@gmail.com> wrote:
->
->
->
-> On 12/16/19 11:02 PM, Alexei Starovoitov wrote:
-> > On Mon, Dec 16, 2019 at 5:25 AM Daniel Borkmann <daniel@iogearbox.net> =
-wrote:
-> >>
-> >> On Mon, Dec 16, 2019 at 05:27:38PM +0900, Prashant Bhole wrote:
-> >>> In btf__align_of() variable name 't' is shadowed by inner block
-> >>> declaration of another variable with same name. Patch renames
-> >>> variables in order to fix it.
-> >>>
-> >>>    CC       sharedobjs/btf.o
-> >>> btf.c: In function =E2=80=98btf__align_of=E2=80=99:
-> >>> btf.c:303:21: error: declaration of =E2=80=98t=E2=80=99 shadows a pre=
-vious local [-Werror=3Dshadow]
-> >>>    303 |   int i, align =3D 1, t;
-> >>>        |                     ^
-> >>> btf.c:283:25: note: shadowed declaration is here
-> >>>    283 |  const struct btf_type *t =3D btf__type_by_id(btf, id);
-> >>>        |
-> >>>
-> >>> Fixes: 3d208f4ca111 ("libbpf: Expose btf__align_of() API")
-> >>> Signed-off-by: Prashant Bhole <prashantbhole.linux@gmail.com>
-> >>
-> >> Applied, thanks!
-> >
-> > Prashant,
-> > Thanks for the fixes.
-> > Which compiler do use?
->
-> gcc (GCC) 9.1.1 20190503 (Red Hat 9.1.1-1)
+On 2019/12/16 21:21, Ilias Apalodimas wrote:
+> On Mon, Dec 16, 2019 at 02:08:45PM +0100, Michal Hocko wrote:
+>> On Mon 16-12-19 14:34:26, Ilias Apalodimas wrote:
+>>> Hi Michal, 
+>>> On Mon, Dec 16, 2019 at 01:15:57PM +0100, Michal Hocko wrote:
+>>>> On Thu 12-12-19 09:34:14, Yunsheng Lin wrote:
+>>>>> +CC Michal, Peter, Greg and Bjorn
+>>>>> Because there has been disscusion about where and how the NUMA_NO_NODE
+>>>>> should be handled before.
+>>>>
+>>>> I do not have a full context. What is the question here?
+>>>
+>>> When we allocate pages for the page_pool API, during the init, the driver writer
+>>> decides which NUMA node to use. The API can,  in some cases recycle the memory,
+>>> instead of freeing it and re-allocating it. If the NUMA node has changed (irq
+>>> affinity for example), we forbid recycling and free the memory, since recycling
+>>> and using memory on far NUMA nodes is more expensive (more expensive than
+>>> recycling, at least on the architectures we tried anyway).
+>>> Since this would be expensive to do it per packet, the burden falls on the 
+>>> driver writer for that. Drivers *have* to call page_pool_update_nid() or 
+>>> page_pool_nid_changed() if they want to check for that which runs once
+>>> per NAPI cycle.
+>>
+>> Thanks for the clarification.
+>>
+>>> The current code in the API though does not account for NUMA_NO_NODE. That's
+>>> what this is trying to fix.
+>>> If the page_pool params are initialized with that, we *never* recycle
+>>> the memory. This is happening because the API is allocating memory with 
+>>> 'nid = numa_mem_id()' if NUMA_NO_NODE is configured so the current if statement
+>>> 'page_to_nid(page) == pool->p.nid' will never trigger.
+>>
+>> OK. There is no explicit mention of the expected behavior for
+>> NUMA_NO_NODE. The semantic is usually that there is no NUMA placement
+>> requirement and the MM code simply starts the allocate from a local node
+>> in that case. But the memory might come from any node so there is no
+>> "local node" guarantee.
+>>
+>> So the main question is what is the expected semantic? Do people expect
+>> that NUMA_NO_NODE implies locality? Why don't you simply always reuse
+>> when there was no explicit numa requirement?
 
-I've tried devtoolset-8 and devtoolset-9.
-Which is
-gcc version 9.1.1 20190605 (Red Hat 9.1.1-2) (GCC)
+For driver that has not supported page pool yet, NUMA_NO_NODE seems to
+imply locality, see [1].
 
-make clean;make doesn't produce that warning.
-make V=3D1 tells me:
-gcc -O2 -W -Wall -Wextra -Wno-unused-parameter
--Wno-missing-field-initializers -Wbad-function-cast
--Wdeclaration-after-statement -Wformat-security -Wformat-y2k
--Winit-self -Wmissing-declarations -Wmissing-prototypes
--Wnested-externs -Wno-system-headers -Wold-style-definition -Wpacked
--Wredundant-decls -Wstrict-prototypes -Wswitch-default -Wundef
--Wwrite-strings -Wformat -Wstrict-aliasing=3D3 -fno-strict-aliasing
--Wno-shadow
-... -c -MMD -o gen.o gen.c
+And for those drivers, locality is decided by rx interrupt affinity, not
+dev_to_node(). So when rx interrupt affinity changes, the old page from old
+node will not be recycled(by checking page_to_nid(page) == numa_mem_id()),
+new pages will be allocated to replace the old pages and the new pages will
+be recycled because allocation and recycling happens in the same context,
+which means numa_mem_id() returns the same node of new page allocated, see
+[2].
 
-For some odd reason this check is failing for me
-$ tools/scripts/Makefile.include
-ifneq ($(filter 3.%,$(MAKE_VERSION)),)  # make-3
-EXTRA_WARNINGS +=3D -fno-strict-aliasing
-EXTRA_WARNINGS +=3D -Wno-shadow
-else
-EXTRA_WARNINGS +=3D -Wshadow
-endif
+As why not allocate and recycle page based on dev_to_node(), Jesper had
+explained it better than me, see [3]:
 
-$ make -v
-GNU Make 3.82
+"(Based on the optimizations done for Facebook (the reason we added this))
+What seems to matter is the NUMA node of CPU that runs RX NAPI-polling,
+this is the first CPU that touch the packet memory and struct-page
+memory.  For these drivers, it is also the same "RX-CPU" that does the
+allocation of new pages (to refill the RX-ring), and these "new" pages
+can come from the page_pool."
 
-Not sure how to fix this.
+So maybe the tricky part for page pool is to find the same context to
+allocate and recycle pages, so that NUMA_NO_NODE can be used to allocate
+pages and numa_mem_id() can be used to decide recycling. Or update the
+node dynamically as proposed by Rongqing, see [4].
+
+
+[1] https://elixir.bootlin.com/linux/v5.5-rc1/ident/dev_alloc_pages
+[2] https://elixir.bootlin.com/linux/v5.5-rc1/source/drivers/net/ethernet/intel/i40e/i40e_txrx.c#L1856
+[3] https://lkml.org/lkml/2019/12/13/132
+[4] https://lkml.org/lkml/2019/12/15/353
+>>
+> 
+> Well they shouldn't. Hence my next proposal. I think we are pretty much saying
+> the same thing here. 
+> If the driver defines NUMA_NO_NODE, just blindly recycle memory.
+
+Not really. see above.
+
+> 
+>>> The initial proposal was to check:
+>>> pool->p.nid == NUMA_NO_NODE && page_to_nid(page) == numa_mem_id()));
+>>
+>>> After that the thread span out of control :)
+>>> My question is do we *really* have to check for 
+>>> page_to_nid(page) == numa_mem_id()? if the architecture is not NUMA aware
+>>> wouldn't pool->p.nid == NUMA_NO_NODE be enough?
+>>
+>> If the architecture is !NUMA then numa_mem_id and page_to_nid should
+>> always equal and be both zero.
+
+The tricky one is that dev_to_node() always return -1 when CONFIG_NUMA is
+not defined, and some driver may use that to allocte page, and the node of
+page may be checked with dev_to_node() to decide whether to recycle.
+
+>>
+> 
+> Ditto
+> 
+>> -- 
+>> Michal Hocko
+>> SUSE Labs
+> 
+> 
+> Thanks
+> /Ilias
+> 
+> .
+> 
+
