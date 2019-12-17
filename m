@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 48D2A12339F
-	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 18:33:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8BCE61233A3
+	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 18:35:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727692AbfLQRds (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Dec 2019 12:33:48 -0500
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:44575 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727007AbfLQRds (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 12:33:48 -0500
-Received: by mail-pf1-f193.google.com with SMTP id d199so7909044pfd.11
-        for <netdev@vger.kernel.org>; Tue, 17 Dec 2019 09:33:47 -0800 (PST)
+        id S1727007AbfLQRf4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Dec 2019 12:35:56 -0500
+Received: from mail-pj1-f66.google.com ([209.85.216.66]:39599 "EHLO
+        mail-pj1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726764AbfLQRfz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 12:35:55 -0500
+Received: by mail-pj1-f66.google.com with SMTP id t101so169837pjb.4
+        for <netdev@vger.kernel.org>; Tue, 17 Dec 2019 09:35:54 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=Vfjhleu11uIGqbhBbRje6SCWgHLzsyj2ST3zZVCF0ts=;
-        b=m+xKvki+G+dCnU1wdgMYA0wFzM6rEjJk+9BcepZQL7ns1zaNgpHC8AQXhGkIVIrgbG
-         SESJNukM330A5cxktqx55GPee1Lp2rQA1ZQm63hktICZVKJ5VPqieUDKNs9qvaCCFfN+
-         eFRDRrNMF0EvpcU5RfRWWW9Hi8wueKkGT889y+SWIiUTibtE65uK19yDSfEcxawq1G2z
-         Z/aqza52xCN/oRDFYwGOvJzFMWfDmBIl0Mcj3GVmEBpOnmjCzbo8L7wEhYv4RIxb2+Tj
-         YXlAHikrTllJgRYOIMqw11nMVK5XlKx3tDENedcyR70swuh0RXpo6v4mOtMrVTk/15mX
-         W1kw==
+        bh=I/UwgPGNknCl9suwHP0BDzIHmMOkQ2wug+HpxPTF7uQ=;
+        b=Td7SOdKDU0bE4a0mGiLIwUmnNLDDppsxFiyMz3JU3vvcfJ3dvPhwOm/IhMM7SyAjjJ
+         gSMt/J1SeQh/zsF+UhzhtmnBk+OaHTMS2uevHqokpEUq4Ph0za8EzxAPvEc5IS28LXKb
+         czZDzbyESOGYeC0jlSoR41kMQncGKZbDhIB6I1DOLd/3buSZMKapkyPFcSeJnOlU+gUX
+         R8PsfbFP3XT1BPhWC3zRWHmoVq6ghPXvleTiHYUQTlZoC3grJUHgQDzC64+++aThactH
+         ho06hCF67DheTPtjNVYxFFJOjXWUl3vw34OEZSpfpMVHrLDRJXkR7G2B+QWwANR3tQV/
+         czbg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=Vfjhleu11uIGqbhBbRje6SCWgHLzsyj2ST3zZVCF0ts=;
-        b=HW+Yq36veSnqEin/geLdn60NyZKlhTBufCX/rKkxuYjLlm0q3M+6wo4b8jx0LaAWHX
-         P2dwTPDaqhYfSNMsgtPGc/LedPg1fc/zSiBda/d2Q3tHW/DWA0iVtzveew8dsTHd/x2g
-         zm+LIL2nwNnyvS6Cz9HSAZLtCiI/+sIpXB3PYVncl37rps+U09jQ+L1lkz6MH/l3wWqV
-         lWbrZ8opyXV7XFfgkEvyIkbsgP5vabIGli2FThPgcCe2N8ydLEkXqZMM3xitJTP2rNuj
-         eFQVzTujVMUFawgDUNPLyt5gEHG9d8gQmz4b8yx7X94qF7+YQs3oGhGWsdkLyT4JLnch
-         +t8g==
-X-Gm-Message-State: APjAAAUJdX91wnSgOFwDeVTSjbou1y9YuagJKz56/PkgMyxJeONu6Wwt
-        Arb0QKRQEGodFldBIirNISJcjxoo
-X-Google-Smtp-Source: APXvYqx78UBZ9agjYapvceEpmY4qVHq5oxod4IjPAJ4kyKaUvg1Lo2S8hBxPBPJ2moJyiHHmnRqk3A==
-X-Received: by 2002:a63:48d:: with SMTP id 135mr26264189pge.66.1576604026921;
-        Tue, 17 Dec 2019 09:33:46 -0800 (PST)
+        bh=I/UwgPGNknCl9suwHP0BDzIHmMOkQ2wug+HpxPTF7uQ=;
+        b=dcv8gy/Vz5lQsMsWGs+4KLJpzTS1CHPnFSceVV/VF2caCqbd0E8Eb4LDGwN9N7mDEK
+         3HkEfu0G+THoVr5x7A/XhUCN+CkQqrMZFixMr7DlXOVuTJhwardhdRSBAe4PWdE2Gn4e
+         t6647hsCoGpzlBdH/p6l6HdTUfN+f+sb4lKtU84MtGm+uVnlQHlZSW29GV2MWX6a+Uth
+         Q7Gv2tY6mE3cfS2HXb7HQeOn8pJwSSbRBUfojf6tfX/EQRJz/1pEfAJn5e9BzfP29mE8
+         xl3G18gxxlI42ERq/YGz5zni/bGlxvPSMO7gu7jUxUes1RAzaeQVpQRno8hyT8rwkeka
+         wFhg==
+X-Gm-Message-State: APjAAAWgS78Urjm2TsTdrVGxZSyTjyb0lDDrAyL5t7aHcdQrIhCokeK+
+        Ac1+kisvgcB7ocZ8Qe5Sujfn/8mU
+X-Google-Smtp-Source: APXvYqxZ40XPpPsPNRkZb1Kxks89e8jqOoEzpZTVdwwKu2hfyrdAIymHfb9d/Em7xlI4SL7FOWQ35A==
+X-Received: by 2002:a17:90a:ba91:: with SMTP id t17mr7687953pjr.74.1576604154300;
+        Tue, 17 Dec 2019 09:35:54 -0800 (PST)
 Received: from [10.67.50.53] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id d22sm27733105pfo.187.2019.12.17.09.33.45
+        by smtp.googlemail.com with ESMTPSA id o7sm29922138pfg.138.2019.12.17.09.35.53
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 17 Dec 2019 09:33:46 -0800 (PST)
-Subject: Re: [PATCH net-next 09/11] net: phy: marvell: use existing clause 37
- definitions
+        Tue, 17 Dec 2019 09:35:53 -0800 (PST)
+Subject: Re: [PATCH net-next 10/11] net: phy: marvell: use
+ phy_modify_changed()
 To:     Russell King <rmk+kernel@armlinux.org.uk>,
         Andrew Lunn <andrew@lunn.ch>,
         Heiner Kallweit <hkallweit1@gmail.com>
 Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
 References: <20191217133827.GQ25745@shell.armlinux.org.uk>
- <E1ihD4g-0001zI-0E@rmk-PC.armlinux.org.uk>
+ <E1ihD4l-0001zP-48@rmk-PC.armlinux.org.uk>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  xsDiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
@@ -108,12 +108,12 @@ Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  HvsHIcv4lxCWkFXkwsuWqzEKK6kxVpRDoEQPDj+Oy/ZJ5fYuMbkdHrlegwoQ64LrqdmiVVPC
  TwQYEQIADwIbDAUCVF/S8QUJHlwd3wAKCRBhV5kVtWN2Do+FAJ956xSz2XpDHql+Wg/2qv3b
  G10n8gCguORqNGMsVRxrlLs7/himep7MrCc=
-Message-ID: <9db02700-7f73-fb56-c59d-763fb250b895@gmail.com>
-Date:   Tue, 17 Dec 2019 09:33:45 -0800
+Message-ID: <c962338f-facd-9aa9-0689-cecdf30d0ef6@gmail.com>
+Date:   Tue, 17 Dec 2019 09:35:53 -0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.2.2
 MIME-Version: 1.0
-In-Reply-To: <E1ihD4g-0001zI-0E@rmk-PC.armlinux.org.uk>
+In-Reply-To: <E1ihD4l-0001zP-48@rmk-PC.armlinux.org.uk>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -123,8 +123,8 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On 12/17/19 5:39 AM, Russell King wrote:
-> Use existing clause 37 advertising/link partner definitions rather than
-> private ones for the advertisement registers.
+> Use phy_modify_changed() to change the fiber advertisement register
+> rather than open coding this functionality.
 > 
 > Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
 
