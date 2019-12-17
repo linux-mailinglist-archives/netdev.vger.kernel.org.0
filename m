@@ -2,318 +2,224 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BB9AC122487
-	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 07:14:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5FE8112248A
+	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 07:14:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727604AbfLQGOe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Dec 2019 01:14:34 -0500
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:55864 "EHLO
+        id S1727807AbfLQGO6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Dec 2019 01:14:58 -0500
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:26228 "EHLO
         mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725812AbfLQGOd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 01:14:33 -0500
-Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xBH6BvDj004113;
-        Mon, 16 Dec 2019 22:14:13 -0800
+        by vger.kernel.org with ESMTP id S1725836AbfLQGO5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 01:14:57 -0500
+Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xBH6AD1b023333
+        for <netdev@vger.kernel.org>; Mon, 16 Dec 2019 22:14:56 -0800
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type : content-id
- : content-transfer-encoding : mime-version; s=facebook;
- bh=sj4JQP5/YsSZMnqSaEC54F/XJi/5rksVv1bhHeDJ5ZI=;
- b=CF/Nqu4M/AMZsySQDxvr6wTDt/JNJZ6WhO8KrEOMYR3qLyNrR46rwGwfZoNmPNy69NSq
- VV9ILX64NxYz36Slnfj6An+ocuQZFiNhp3znBakvk+W+unHyujYAmnYNnPr6KL0PSegd
- qZUslhV3kVp+KaQJZn6k7HeL85J7W1tFpJQ= 
-Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by mx0a-00082601.pphosted.com with ESMTP id 2wwgsmr044-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Mon, 16 Dec 2019 22:14:13 -0800
-Received: from prn-hub02.TheFacebook.com (2620:10d:c081:35::126) by
- prn-hub04.TheFacebook.com (2620:10d:c081:35::128) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.1.1713.5; Mon, 16 Dec 2019 22:14:12 -0800
-Received: from NAM04-BN3-obe.outbound.protection.outlook.com (192.168.54.28)
- by o365-in.thefacebook.com (192.168.16.26) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.1.1713.5
- via Frontend Transport; Mon, 16 Dec 2019 22:14:12 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=WTcQ5n9f5KRHCeneDKFquyDhzW4WMYLE5OcMLXv3siJBk7GACaIRY5AcEmNx72m0uYB7goP+LCTMWWXHtIowe4Gqf+RJMHlY7X0dGC62+X+DYak117wPYVXOETAC/bOOVXXg0h5PFQhMdQ6r+J7LVKU7U9MfZJzDahiaadCENeNkrG2Ov99dbHyTLA1tEBGDsg50+8FqzmcRDwPhRbJPdYuDcrI61cMny+u07b3WKmrYFHrFaBMroHoJW+Vardf2ahAEnm81yU865QvXf6E8uyYNguayw83cso5oN28YcIgHl2O5co2Fxx5N4ZenfPwDYP1MOL0EWWWJ3iNKVpnTUQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=sj4JQP5/YsSZMnqSaEC54F/XJi/5rksVv1bhHeDJ5ZI=;
- b=E4aL0b402oGFAFnMz0Gcmh0c2pIvo5R/1JE2wQSU/JmKpnsE4zewS8FDLjW8qvRbQCR+bVHj091ojQUiVSKdOgAMlVy33wRXGTuJ6CFtkX9lkLeUxChuZv8EIH9VlRQ59fqDIz8btDGhuEHMHJLuYoZRBnOvGC+g/vRH3zHbMdJUzH5qpr2yaelJWD/LwUsuj/jKWfBbjtuNKNkIKpxOPAgakdBBI0kh1/eyg+V/psorzqGcXkH3J/lz7KQHsVGsKXE3/lc6+STpKNFz92KEj6D3jDrMrcbPG5Dphh4vltt672cLhzBh/x3qEKkEXYTAo1ni3kH+CnjDz4rZt5GRLw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=sj4JQP5/YsSZMnqSaEC54F/XJi/5rksVv1bhHeDJ5ZI=;
- b=Rfh0BC/pMThTikHcUBiFosVtRMo4BZ+YKqdt/njTjMqUb8JqRiDNu3GYLRFZrmsKz9mz/plj7HA/I6oSUcos50iRRPUf1m6bzM+RsxVsPAi90Cjd15e4zXRuA5Bb/QkBb248Y7NCutFy5qbhIUztACUWbN8dPtBYgUNdhrLu5DQ=
-Received: from DM5PR15MB1675.namprd15.prod.outlook.com (10.175.107.145) by
- DM5PR15MB1306.namprd15.prod.outlook.com (10.173.215.146) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2538.14; Tue, 17 Dec 2019 06:14:10 +0000
-Received: from DM5PR15MB1675.namprd15.prod.outlook.com
- ([fe80::2844:b18d:c296:c23]) by DM5PR15MB1675.namprd15.prod.outlook.com
- ([fe80::2844:b18d:c296:c23%8]) with mapi id 15.20.2538.019; Tue, 17 Dec 2019
- 06:14:10 +0000
-From:   Yonghong Song <yhs@fb.com>
-To:     Martin Lau <kafai@fb.com>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>
-CC:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        David Miller <davem@davemloft.net>,
-        Kernel Team <Kernel-team@fb.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH bpf-next 05/13] bpf: Introduce BPF_PROG_TYPE_STRUCT_OPS
-Thread-Topic: [PATCH bpf-next 05/13] bpf: Introduce BPF_PROG_TYPE_STRUCT_OPS
-Thread-Index: AQHVshgrDDuhNYfIlUStlKxYhfElx6e93i2A
-Date:   Tue, 17 Dec 2019 06:14:09 +0000
-Message-ID: <5864844f-db69-d025-1eb3-f856257415be@fb.com>
-References: <20191214004737.1652076-1-kafai@fb.com>
- <20191214004748.1652668-1-kafai@fb.com>
-In-Reply-To: <20191214004748.1652668-1-kafai@fb.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: MWHPR21CA0050.namprd21.prod.outlook.com
- (2603:10b6:300:db::12) To DM5PR15MB1675.namprd15.prod.outlook.com
- (2603:10b6:3:11f::17)
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [2620:10d:c090:180::8f07]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 0f0beac7-ba45-49f8-932c-08d782b8543a
-x-ms-traffictypediagnostic: DM5PR15MB1306:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <DM5PR15MB1306E64CDD2F3FFF091B4932D3500@DM5PR15MB1306.namprd15.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:3276;
-x-forefront-prvs: 02543CD7CD
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(136003)(346002)(396003)(366004)(39860400002)(376002)(199004)(189003)(66946007)(110136005)(66476007)(53546011)(8676002)(66556008)(2616005)(2906002)(6512007)(54906003)(66446008)(64756008)(6486002)(4326008)(36756003)(6506007)(8936002)(186003)(71200400001)(5660300002)(81156014)(86362001)(478600001)(31696002)(31686004)(30864003)(52116002)(81166006)(316002);DIR:OUT;SFP:1102;SCL:1;SRVR:DM5PR15MB1306;H:DM5PR15MB1675.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: fb.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: XCItfj1wDutKOzPT+YqHLcKo00WL2xc1vGtnQms4xKAKOLXBVIZ0AxdLi7tCJW/syuBCEaDzdd1xBuCRILlNSUp0/iyMwEUrYyypeATI6IQhmG/XpGY8mpELXjUIjNqPYVwMp8CzZyfXaAWtZ2ziCNxBH6OOkHFQWyiin/HARVubyV3BofaZ44WiFwbBaNxD6A66qVs0/omFA28FZAFMl+dQGw8fdruy4GKRyFuLJjo8Wk5QRB4b/GNLc/Nk2ec+bfPPUW3tk7fIGlypkUR9D7jam3FYP6nvl3Nm+TDoXOnckjGpza/yzAiR0kC3PHwy6sw5Qmx1QAXVwSg5s19fPp77cNrY0rSPhnWCbFjSgTGddopLu+xgigc1VnGfueZakQchQJBsxmVhAphW8RQGLPnX6vP3lYDakUnWhatqqooW8mPqzcdLgmLxTpbKiTKk
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <6EC0357566F5914896DAEC50DCBD4D29@namprd15.prod.outlook.com>
-Content-Transfer-Encoding: base64
+ : date : message-id : mime-version : content-type; s=facebook;
+ bh=zEAPZ00dgAfQpetaVxX1P1hxvWQMrrVSaFMstS9jsP8=;
+ b=G2ICYaT2DWcPEyi0vFknPVypTi5CvxUuNAW7bQCAPuRNUy3MCLpIXBoXeB1EZk++l+Q6
+ pFrRraITEDmkaVI3e6OHZ9hZ+sZoJR8x5GBMOFEDqptLdig5OE6lErT1Wz5XVmM8/mnu
+ IxOkZDq2Qd4MfCto35G6RvP/qbe6D3yME4Q= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 2wwgayr1wj-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Mon, 16 Dec 2019 22:14:56 -0800
+Received: from intmgw002.08.frc2.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:83::5) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Mon, 16 Dec 2019 22:14:55 -0800
+Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
+        id 2D2902EC1A0D; Mon, 16 Dec 2019 22:14:54 -0800 (PST)
+Smtp-Origin-Hostprefix: devbig
+From:   Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>
+CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Cluster: ftw2c04
+Subject: [PATCH bpf-next] selftests/bpf: more succinct Makefile output
+Date:   Mon, 16 Dec 2019 22:14:25 -0800
+Message-ID: <20191217061425.2346359-1-andriin@fb.com>
+X-Mailer: git-send-email 2.17.1
+X-FB-Internal: Safe
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0f0beac7-ba45-49f8-932c-08d782b8543a
-X-MS-Exchange-CrossTenant-originalarrivaltime: 17 Dec 2019 06:14:10.0730
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: Jtr/xx2GK57sIwG4np4oU/9EztVl5WTDMv+I3FUQbXatW3vjnUm0eh49EtnnLe5q
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR15MB1306
-X-OriginatorOrg: fb.com
+Content-Type: text/plain
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
  definitions=2019-12-17_01:2019-12-16,2019-12-16 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
- adultscore=0 impostorscore=0 clxscore=1015 spamscore=0 bulkscore=0
- mlxlogscore=999 malwarescore=0 lowpriorityscore=0 mlxscore=0 phishscore=0
- suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-1910280000 definitions=main-1912170055
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 spamscore=0
+ suspectscore=9 clxscore=1015 malwarescore=0 priorityscore=1501
+ mlxlogscore=999 phishscore=0 mlxscore=0 lowpriorityscore=0 bulkscore=0
+ adultscore=0 impostorscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-1910280000 definitions=main-1912170055
 X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQoNCk9uIDEyLzEzLzE5IDQ6NDcgUE0sIE1hcnRpbiBLYUZhaSBMYXUgd3JvdGU6DQo+IFRoaXMg
-cGF0Y2ggYWxsb3dzIHRoZSBrZXJuZWwncyBzdHJ1Y3Qgb3BzIChpLmUuIGZ1bmMgcHRyKSB0byBi
-ZQ0KPiBpbXBsZW1lbnRlZCBpbiBCUEYuICBUaGUgZmlyc3QgdXNlIGNhc2UgaW4gdGhpcyBzZXJp
-ZXMgaXMgdGhlDQo+ICJzdHJ1Y3QgdGNwX2Nvbmdlc3Rpb25fb3BzIiB3aGljaCB3aWxsIGJlIGlu
-dHJvZHVjZWQgaW4gYQ0KPiBsYXR0ZXIgcGF0Y2guDQo+IA0KPiBUaGlzIHBhdGNoIGludHJvZHVj
-ZXMgYSBuZXcgcHJvZyB0eXBlIEJQRl9QUk9HX1RZUEVfU1RSVUNUX09QUy4NCj4gVGhlIEJQRl9Q
-Uk9HX1RZUEVfU1RSVUNUX09QUyBwcm9nIGlzIHZlcmlmaWVkIGFnYWluc3QgYSBwYXJ0aWN1bGFy
-DQo+IGZ1bmMgcHRyIG9mIGEga2VybmVsIHN0cnVjdC4gIFRoZSBhdHRyLT5hdHRhY2hfYnRmX2lk
-IGlzIHRoZSBidGYgaWQNCj4gb2YgYSBrZXJuZWwgc3RydWN0LiAgVGhlIGF0dHItPmV4cGVjdGVk
-X2F0dGFjaF90eXBlIGlzIHRoZSBtZW1iZXINCj4gImluZGV4IiBvZiB0aGF0IGtlcm5lbCBzdHJ1
-Y3QuICBUaGUgZmlyc3QgbWVtYmVyIG9mIGEgc3RydWN0IHN0YXJ0cw0KPiB3aXRoIG1lbWJlciBp
-bmRleCAwLiAgVGhhdCB3aWxsIGF2b2lkIGFtYmlndWl0eSB3aGVuIGEga2VybmVsIHN0cnVjdA0K
-PiBoYXMgbXVsdGlwbGUgZnVuYyBwdHJzIHdpdGggdGhlIHNhbWUgZnVuYyBzaWduYXR1cmUuDQo+
-IA0KPiBGb3IgZXhhbXBsZSwgYSBCUEZfUFJPR19UWVBFX1NUUlVDVF9PUFMgcHJvZyBpcyB3cml0
-dGVuDQo+IHRvIGltcGxlbWVudCB0aGUgImluaXQiIGZ1bmMgcHRyIG9mIHRoZSAic3RydWN0IHRj
-cF9jb25nZXN0aW9uX29wcyIuDQo+IFRoZSBhdHRyLT5hdHRhY2hfYnRmX2lkIGlzIHRoZSBidGYg
-aWQgb2YgdGhlICJzdHJ1Y3QgdGNwX2Nvbmdlc3Rpb25fb3BzIg0KPiBvZiB0aGUgX3J1bm5pbmdf
-IGtlcm5lbC4gIFRoZSBhdHRyLT5leHBlY3RlZF9hdHRhY2hfdHlwZSBpcyAzLg0KPiANCj4gVGhl
-IGN0eCBvZiBCUEZfUFJPR19UWVBFX1NUUlVDVF9PUFMgaXMgYW4gYXJyYXkgb2YgdTY0IGFyZ3Mg
-c2F2ZWQNCj4gYnkgYXJjaF9wcmVwYXJlX2JwZl90cmFtcG9saW5lIHRoYXQgd2lsbCBiZSBkb25l
-IGluIHRoZSBuZXh0DQo+IHBhdGNoIHdoZW4gaW50cm9kdWNpbmcgQlBGX01BUF9UWVBFX1NUUlVD
-VF9PUFMuDQo+IA0KPiAic3RydWN0IGJwZl9zdHJ1Y3Rfb3BzIiBpcyBpbnRyb2R1Y2VkIGFzIGEg
-Y29tbW9uIGludGVyZmFjZSBmb3IgdGhlIGtlcm5lbA0KPiBzdHJ1Y3QgdGhhdCBzdXBwb3J0cyBC
-UEZfUFJPR19UWVBFX1NUUlVDVF9PUFMgcHJvZy4gIFRoZSBzdXBwb3J0aW5nIGtlcm5lbA0KPiBz
-dHJ1Y3Qgd2lsbCBuZWVkIHRvIGltcGxlbWVudCBhbiBpbnN0YW5jZSBvZiB0aGUgInN0cnVjdCBi
-cGZfc3RydWN0X29wcyIuDQo+IA0KPiBUaGUgc3VwcG9ydGluZyBrZXJuZWwgc3RydWN0IGFsc28g
-bmVlZHMgdG8gaW1wbGVtZW50IGEgYnBmX3ZlcmlmaWVyX29wcy4NCj4gRHVyaW5nIEJQRl9QUk9H
-X0xPQUQsIGJwZl9zdHJ1Y3Rfb3BzX2ZpbmQoKSB3aWxsIGZpbmQgdGhlIHJpZ2h0DQo+IGJwZl92
-ZXJpZmllcl9vcHMgYnkgc2VhcmNoaW5nIHRoZSBhdHRyLT5hdHRhY2hfYnRmX2lkLg0KPiANCj4g
-QSBuZXcgImJ0Zl9zdHJ1Y3RfYWNjZXNzIiBpcyBhbHNvIGFkZGVkIHRvIHRoZSBicGZfdmVyaWZp
-ZXJfb3BzIHN1Y2gNCj4gdGhhdCB0aGUgc3VwcG9ydGluZyBrZXJuZWwgc3RydWN0IGNhbiBvcHRp
-b25hbGx5IHByb3ZpZGUgaXRzIG93biBzcGVjaWZpYw0KPiBjaGVjayBvbiBhY2Nlc3NpbmcgdGhl
-IGZ1bmMgYXJnIChlLmcuIHByb3ZpZGUgbGltaXRlZCB3cml0ZSBhY2Nlc3MpLg0KPiANCj4gQWZ0
-ZXIgYnRmX3ZtbGludXggaXMgcGFyc2VkLCB0aGUgbmV3IGJwZl9zdHJ1Y3Rfb3BzX2luaXQoKSBp
-cyBjYWxsZWQNCj4gdG8gaW5pdGlhbGl6ZSBzb21lIHZhbHVlcyAoZS5nLiB0aGUgYnRmIGlkIG9m
-IHRoZSBzdXBwb3J0aW5nIGtlcm5lbA0KPiBzdHJ1Y3QpIGFuZCBpdCBjYW4gb25seSBiZSBkb25l
-IG9uY2UgdGhlIGJ0Zl92bWxpbnV4IGlzIGF2YWlsYWJsZS4NCj4gDQo+IFRoZSBSMCBjaGVja3Mg
-YXQgQlBGX0VYSVQgaXMgZXhjbHVkZWQgZm9yIHRoZSBCUEZfUFJPR19UWVBFX1NUUlVDVF9PUFMg
-cHJvZw0KPiBpZiB0aGUgcmV0dXJuIHR5cGUgb2YgdGhlIHByb2ctPmF1eC0+YXR0YWNoX2Z1bmNf
-cHJvdG8gaXMgInZvaWQiLg0KPiANCj4gU2lnbmVkLW9mZi1ieTogTWFydGluIEthRmFpIExhdSA8
-a2FmYWlAZmIuY29tPg0KPiAtLS0NCj4gICBpbmNsdWRlL2xpbnV4L2JwZi5oICAgICAgICAgICAg
-ICAgfCAgMzAgKysrKysrKw0KPiAgIGluY2x1ZGUvbGludXgvYnBmX3R5cGVzLmggICAgICAgICB8
-ICAgNCArDQo+ICAgaW5jbHVkZS9saW51eC9idGYuaCAgICAgICAgICAgICAgIHwgIDM0ICsrKysr
-KysrDQo+ICAgaW5jbHVkZS91YXBpL2xpbnV4L2JwZi5oICAgICAgICAgIHwgICAxICsNCj4gICBr
-ZXJuZWwvYnBmL01ha2VmaWxlICAgICAgICAgICAgICAgfCAgIDIgKy0NCj4gICBrZXJuZWwvYnBm
-L2JwZl9zdHJ1Y3Rfb3BzLmMgICAgICAgfCAxMjQgKysrKysrKysrKysrKysrKysrKysrKysrKysr
-DQo+ICAga2VybmVsL2JwZi9icGZfc3RydWN0X29wc190eXBlcy5oIHwgICA0ICsNCj4gICBrZXJu
-ZWwvYnBmL2J0Zi5jICAgICAgICAgICAgICAgICAgfCAgODggKysrKysrKysrKysrKystLS0tLS0N
-Cj4gICBrZXJuZWwvYnBmL3N5c2NhbGwuYyAgICAgICAgICAgICAgfCAgMTcgKystLQ0KPiAgIGtl
-cm5lbC9icGYvdmVyaWZpZXIuYyAgICAgICAgICAgICB8IDEzNCArKysrKysrKysrKysrKysrKysr
-KysrKy0tLS0tLS0NCj4gICAxMCBmaWxlcyBjaGFuZ2VkLCAzNzQgaW5zZXJ0aW9ucygrKSwgNjQg
-ZGVsZXRpb25zKC0pDQo+ICAgY3JlYXRlIG1vZGUgMTAwNjQ0IGtlcm5lbC9icGYvYnBmX3N0cnVj
-dF9vcHMuYw0KPiAgIGNyZWF0ZSBtb2RlIDEwMDY0NCBrZXJuZWwvYnBmL2JwZl9zdHJ1Y3Rfb3Bz
-X3R5cGVzLmgNCj4gDQo+IGRpZmYgLS1naXQgYS9pbmNsdWRlL2xpbnV4L2JwZi5oIGIvaW5jbHVk
-ZS9saW51eC9icGYuaA0KPiBpbmRleCBkNDY3OTgzZTYxYmIuLjFmMGE1ZmM4YzVlZSAxMDA2NDQN
-Cj4gLS0tIGEvaW5jbHVkZS9saW51eC9icGYuaA0KPiArKysgYi9pbmNsdWRlL2xpbnV4L2JwZi5o
-DQo+IEBAIC0zNDksNiArMzQ5LDEwIEBAIHN0cnVjdCBicGZfdmVyaWZpZXJfb3BzIHsNCj4gICAJ
-CQkJICBjb25zdCBzdHJ1Y3QgYnBmX2luc24gKnNyYywNCj4gICAJCQkJICBzdHJ1Y3QgYnBmX2lu
-c24gKmRzdCwNCj4gICAJCQkJICBzdHJ1Y3QgYnBmX3Byb2cgKnByb2csIHUzMiAqdGFyZ2V0X3Np
-emUpOw0KPiArCWludCAoKmJ0Zl9zdHJ1Y3RfYWNjZXNzKShzdHJ1Y3QgYnBmX3ZlcmlmaWVyX2xv
-ZyAqbG9nLA0KPiArCQkJCSBjb25zdCBzdHJ1Y3QgYnRmX3R5cGUgKnQsIGludCBvZmYsIGludCBz
-aXplLA0KPiArCQkJCSBlbnVtIGJwZl9hY2Nlc3NfdHlwZSBhdHlwZSwNCj4gKwkJCQkgdTMyICpu
-ZXh0X2J0Zl9pZCk7DQo+ICAgfTsNCj4gICANCj4gICBzdHJ1Y3QgYnBmX3Byb2dfb2ZmbG9hZF9v
-cHMgew0KPiBAQCAtNjY3LDYgKzY3MSwzMiBAQCBzdHJ1Y3QgYnBmX2FycmF5X2F1eCB7DQo+ICAg
-CXN0cnVjdCB3b3JrX3N0cnVjdCB3b3JrOw0KPiAgIH07DQo+ICAgDQo+ICtzdHJ1Y3QgYnRmX3R5
-cGU7DQo+ICtzdHJ1Y3QgYnRmX21lbWJlcjsNCj4gKw0KPiArI2RlZmluZSBCUEZfU1RSVUNUX09Q
-U19NQVhfTlJfTUVNQkVSUyA2NA0KPiArc3RydWN0IGJwZl9zdHJ1Y3Rfb3BzIHsNCj4gKwljb25z
-dCBzdHJ1Y3QgYnBmX3ZlcmlmaWVyX29wcyAqdmVyaWZpZXJfb3BzOw0KPiArCWludCAoKmluaXQp
-KHN0cnVjdCBidGYgKl9idGZfdm1saW51eCk7DQo+ICsJaW50ICgqY2hlY2tfbWVtYmVyKShjb25z
-dCBzdHJ1Y3QgYnRmX3R5cGUgKnQsDQo+ICsJCQkgICAgY29uc3Qgc3RydWN0IGJ0Zl9tZW1iZXIg
-Km1lbWJlcik7DQo+ICsJY29uc3Qgc3RydWN0IGJ0Zl90eXBlICp0eXBlOw0KPiArCWNvbnN0IGNo
-YXIgKm5hbWU7DQo+ICsJc3RydWN0IGJ0Zl9mdW5jX21vZGVsIGZ1bmNfbW9kZWxzW0JQRl9TVFJV
-Q1RfT1BTX01BWF9OUl9NRU1CRVJTXTsNCj4gKwl1MzIgdHlwZV9pZDsNCj4gK307DQo+ICsNCj4g
-KyNpZiBkZWZpbmVkKENPTkZJR19CUEZfSklUKQ0KPiArY29uc3Qgc3RydWN0IGJwZl9zdHJ1Y3Rf
-b3BzICpicGZfc3RydWN0X29wc19maW5kKHUzMiB0eXBlX2lkKTsNCj4gK3ZvaWQgYnBmX3N0cnVj
-dF9vcHNfaW5pdChzdHJ1Y3QgYnRmICpfYnRmX3ZtbGludXgpOw0KPiArI2Vsc2UNCj4gK3N0YXRp
-YyBpbmxpbmUgY29uc3Qgc3RydWN0IGJwZl9zdHJ1Y3Rfb3BzICpicGZfc3RydWN0X29wc19maW5k
-KHUzMiB0eXBlX2lkKQ0KPiArew0KPiArCXJldHVybiBOVUxMOw0KPiArfQ0KPiArc3RhdGljIGlu
-bGluZSB2b2lkIGJwZl9zdHJ1Y3Rfb3BzX2luaXQoc3RydWN0IGJ0ZiAqX2J0Zl92bWxpbnV4KSB7
-IH0NCj4gKyNlbmRpZg0KPiArDQo+ICAgc3RydWN0IGJwZl9hcnJheSB7DQo+ICAgCXN0cnVjdCBi
-cGZfbWFwIG1hcDsNCj4gICAJdTMyIGVsZW1fc2l6ZTsNClsuLi5dDQo+ICtjb25zdCBzdHJ1Y3Qg
-YnBmX3ZlcmlmaWVyX29wcyBicGZfc3RydWN0X29wc192ZXJpZmllcl9vcHMgPSB7DQo+ICt9Ow0K
-PiArDQo+ICtjb25zdCBzdHJ1Y3QgYnBmX3Byb2dfb3BzIGJwZl9zdHJ1Y3Rfb3BzX3Byb2dfb3Bz
-ID0gew0KPiArfTsNCj4gKw0KPiArdm9pZCBicGZfc3RydWN0X29wc19pbml0KHN0cnVjdCBidGYg
-Kl9idGZfdm1saW51eCkNCj4gK3sNCj4gKwljb25zdCBzdHJ1Y3QgYnRmX21lbWJlciAqbWVtYmVy
-Ow0KPiArCXN0cnVjdCBicGZfc3RydWN0X29wcyAqc3Rfb3BzOw0KPiArCXN0cnVjdCBicGZfdmVy
-aWZpZXJfbG9nIGxvZyA9IHt9Ow0KPiArCWNvbnN0IHN0cnVjdCBidGZfdHlwZSAqdDsNCj4gKwlj
-b25zdCBjaGFyICptbmFtZTsNCj4gKwlzMzIgdHlwZV9pZDsNCj4gKwl1MzIgaSwgajsNCj4gKw0K
-PiArCWZvciAoaSA9IDA7IGkgPCBBUlJBWV9TSVpFKGJwZl9zdHJ1Y3Rfb3BzKTsgaSsrKSB7DQo+
-ICsJCXN0X29wcyA9IGJwZl9zdHJ1Y3Rfb3BzW2ldOw0KPiArDQo+ICsJCXR5cGVfaWQgPSBidGZf
-ZmluZF9ieV9uYW1lX2tpbmQoX2J0Zl92bWxpbnV4LCBzdF9vcHMtPm5hbWUsDQo+ICsJCQkJCQlC
-VEZfS0lORF9TVFJVQ1QpOw0KPiArCQlpZiAodHlwZV9pZCA8IDApIHsNCj4gKwkJCXByX3dhcm4o
-IkNhbm5vdCBmaW5kIHN0cnVjdCAlcyBpbiBidGZfdm1saW51eFxuIiwNCj4gKwkJCQlzdF9vcHMt
-Pm5hbWUpOw0KPiArCQkJY29udGludWU7DQo+ICsJCX0NCj4gKwkJdCA9IGJ0Zl90eXBlX2J5X2lk
-KF9idGZfdm1saW51eCwgdHlwZV9pZCk7DQo+ICsJCWlmIChidGZfdHlwZV92bGVuKHQpID4gQlBG
-X1NUUlVDVF9PUFNfTUFYX05SX01FTUJFUlMpIHsNCj4gKwkJCXByX3dhcm4oIkNhbm5vdCBzdXBw
-b3J0ICMldSBtZW1iZXJzIGluIHN0cnVjdCAlc1xuIiwNCj4gKwkJCQlidGZfdHlwZV92bGVuKHQp
-LCBzdF9vcHMtPm5hbWUpOw0KPiArCQkJY29udGludWU7DQo+ICsJCX0NCj4gKw0KPiArCQlmb3Jf
-ZWFjaF9tZW1iZXIoaiwgdCwgbWVtYmVyKSB7DQo+ICsJCQljb25zdCBzdHJ1Y3QgYnRmX3R5cGUg
-KmZ1bmNfcHJvdG87DQo+ICsNCj4gKwkJCW1uYW1lID0gYnRmX25hbWVfYnlfb2Zmc2V0KF9idGZf
-dm1saW51eCwNCj4gKwkJCQkJCSAgIG1lbWJlci0+bmFtZV9vZmYpOw0KPiArCQkJaWYgKCEqbW5h
-bWUpIHsNCj4gKwkJCQlwcl93YXJuKCJhbm9uIG1lbWJlciBpbiBzdHJ1Y3QgJXMgaXMgbm90IHN1
-cHBvcnRlZFxuIiwNCj4gKwkJCQkJc3Rfb3BzLT5uYW1lKTsNCj4gKwkJCQlicmVhazsNCj4gKwkJ
-CX0NCj4gKw0KPiArCQkJaWYgKGJ0Zl9tZW1iZXJfYml0ZmllbGRfc2l6ZSh0LCBtZW1iZXIpKSB7
-DQo+ICsJCQkJcHJfd2FybigiYml0IGZpZWxkIG1lbWJlciAlcyBpbiBzdHJ1Y3QgJXMgaXMgbm90
-IHN1cHBvcnRlZFxuIiwNCj4gKwkJCQkJbW5hbWUsIHN0X29wcy0+bmFtZSk7DQo+ICsJCQkJYnJl
-YWs7DQo+ICsJCQl9DQo+ICsNCj4gKwkJCWZ1bmNfcHJvdG8gPSBidGZfdHlwZV9yZXNvbHZlX2Z1
-bmNfcHRyKF9idGZfdm1saW51eCwNCj4gKwkJCQkJCQkgICAgICAgbWVtYmVyLT50eXBlLA0KPiAr
-CQkJCQkJCSAgICAgICBOVUxMKTsNCj4gKwkJCWlmIChmdW5jX3Byb3RvICYmDQo+ICsJCQkgICAg
-YnRmX2Rpc3RpbGxfZnVuY19wcm90bygmbG9nLCBfYnRmX3ZtbGludXgsDQo+ICsJCQkJCQkgICBm
-dW5jX3Byb3RvLCBtbmFtZSwNCj4gKwkJCQkJCSAgICZzdF9vcHMtPmZ1bmNfbW9kZWxzW2pdKSkg
-ew0KPiArCQkJCXByX3dhcm4oIkVycm9yIGluIHBhcnNpbmcgZnVuYyBwdHIgJXMgaW4gc3RydWN0
-ICVzXG4iLA0KPiArCQkJCQltbmFtZSwgc3Rfb3BzLT5uYW1lKTsNCj4gKwkJCQlicmVhazsNCj4g
-KwkJCX0NCj4gKwkJfQ0KPiArDQo+ICsJCWlmIChqID09IGJ0Zl90eXBlX3ZsZW4odCkpIHsNCj4g
-KwkJCWlmIChzdF9vcHMtPmluaXQoX2J0Zl92bWxpbnV4KSkgew0KDQppcyBpdCBwb3NzaWJsZSB0
-aGF0IHN0X29wcy0+aW5pdCBtaWdodCBiZSBhIE5VTEwgcG9pbnRlcj8NCg0KPiArCQkJCXByX3dh
-cm4oIkVycm9yIGluIGluaXQgYnBmX3N0cnVjdF9vcHMgJXNcbiIsDQo+ICsJCQkJCXN0X29wcy0+
-bmFtZSk7DQo+ICsJCQl9IGVsc2Ugew0KPiArCQkJCXN0X29wcy0+dHlwZV9pZCA9IHR5cGVfaWQ7
-DQo+ICsJCQkJc3Rfb3BzLT50eXBlID0gdDsNCj4gKwkJCX0NCj4gKwkJfQ0KPiArCX0NCj4gK30N
-Cj4gKw0KPiArZXh0ZXJuIHN0cnVjdCBidGYgKmJ0Zl92bWxpbnV4Ow0KPiArDQpbLi4uXQ0KPiBp
-bmRleCA0MDgyNjRjMWQ1NWIuLjRjMWVhYTFhMjk2NSAxMDA2NDQNCj4gLS0tIGEva2VybmVsL2Jw
-Zi92ZXJpZmllci5jDQo+ICsrKyBiL2tlcm5lbC9icGYvdmVyaWZpZXIuYw0KPiBAQCAtMjg1OCwx
-MSArMjg1OCw2IEBAIHN0YXRpYyBpbnQgY2hlY2tfcHRyX3RvX2J0Zl9hY2Nlc3Moc3RydWN0IGJw
-Zl92ZXJpZmllcl9lbnYgKmVudiwNCj4gICAJdTMyIGJ0Zl9pZDsNCj4gICAJaW50IHJldDsNCj4g
-ICANCj4gLQlpZiAoYXR5cGUgIT0gQlBGX1JFQUQpIHsNCj4gLQkJdmVyYm9zZShlbnYsICJvbmx5
-IHJlYWQgaXMgc3VwcG9ydGVkXG4iKTsNCj4gLQkJcmV0dXJuIC1FQUNDRVM7DQo+IC0JfQ0KPiAt
-DQo+ICAgCWlmIChvZmYgPCAwKSB7DQo+ICAgCQl2ZXJib3NlKGVudiwNCj4gICAJCQkiUiVkIGlz
-IHB0cl8lcyBpbnZhbGlkIG5lZ2F0aXZlIGFjY2Vzczogb2ZmPSVkXG4iLA0KPiBAQCAtMjg3OSwx
-NyArMjg3NCwzMiBAQCBzdGF0aWMgaW50IGNoZWNrX3B0cl90b19idGZfYWNjZXNzKHN0cnVjdCBi
-cGZfdmVyaWZpZXJfZW52ICplbnYsDQo+ICAgCQlyZXR1cm4gLUVBQ0NFUzsNCj4gICAJfQ0KPiAg
-IA0KPiAtCXJldCA9IGJ0Zl9zdHJ1Y3RfYWNjZXNzKCZlbnYtPmxvZywgdCwgb2ZmLCBzaXplLCBh
-dHlwZSwgJmJ0Zl9pZCk7DQo+ICsJaWYgKGVudi0+b3BzLT5idGZfc3RydWN0X2FjY2Vzcykgew0K
-PiArCQlyZXQgPSBlbnYtPm9wcy0+YnRmX3N0cnVjdF9hY2Nlc3MoJmVudi0+bG9nLCB0LCBvZmYs
-IHNpemUsDQo+ICsJCQkJCQkgIGF0eXBlLCAmYnRmX2lkKTsNCj4gKwl9IGVsc2Ugew0KPiArCQlp
-ZiAoYXR5cGUgIT0gQlBGX1JFQUQpIHsNCj4gKwkJCXZlcmJvc2UoZW52LCAib25seSByZWFkIGlz
-IHN1cHBvcnRlZFxuIik7DQo+ICsJCQlyZXR1cm4gLUVBQ0NFUzsNCj4gKwkJfQ0KPiArDQo+ICsJ
-CXJldCA9IGJ0Zl9zdHJ1Y3RfYWNjZXNzKCZlbnYtPmxvZywgdCwgb2ZmLCBzaXplLCBhdHlwZSwN
-Cj4gKwkJCQkJJmJ0Zl9pZCk7DQo+ICsJfQ0KPiArDQo+ICAgCWlmIChyZXQgPCAwKQ0KPiAgIAkJ
-cmV0dXJuIHJldDsNCj4gICANCj4gLQlpZiAocmV0ID09IFNDQUxBUl9WQUxVRSkgew0KPiAtCQlt
-YXJrX3JlZ191bmtub3duKGVudiwgcmVncywgdmFsdWVfcmVnbm8pOw0KPiAtCQlyZXR1cm4gMDsN
-Cj4gKwlpZiAoYXR5cGUgPT0gQlBGX1JFQUQpIHsNCj4gKwkJaWYgKHJldCA9PSBTQ0FMQVJfVkFM
-VUUpIHsNCj4gKwkJCW1hcmtfcmVnX3Vua25vd24oZW52LCByZWdzLCB2YWx1ZV9yZWdubyk7DQo+
-ICsJCQlyZXR1cm4gMDsNCj4gKwkJfQ0KPiArCQltYXJrX3JlZ19rbm93bl96ZXJvKGVudiwgcmVn
-cywgdmFsdWVfcmVnbm8pOw0KPiArCQlyZWdzW3ZhbHVlX3JlZ25vXS50eXBlID0gUFRSX1RPX0JU
-Rl9JRDsNCj4gKwkJcmVnc1t2YWx1ZV9yZWdub10uYnRmX2lkID0gYnRmX2lkOw0KPiAgIAl9DQo+
-IC0JbWFya19yZWdfa25vd25femVybyhlbnYsIHJlZ3MsIHZhbHVlX3JlZ25vKTsNCj4gLQlyZWdz
-W3ZhbHVlX3JlZ25vXS50eXBlID0gUFRSX1RPX0JURl9JRDsNCj4gLQlyZWdzW3ZhbHVlX3JlZ25v
-XS5idGZfaWQgPSBidGZfaWQ7DQo+ICsNCj4gICAJcmV0dXJuIDA7DQo+ICAgfQ0KPiAgIA0KPiBA
-QCAtNjM0Myw4ICs2MzUzLDMwIEBAIHN0YXRpYyBpbnQgY2hlY2tfbGRfYWJzKHN0cnVjdCBicGZf
-dmVyaWZpZXJfZW52ICplbnYsIHN0cnVjdCBicGZfaW5zbiAqaW5zbikNCj4gICBzdGF0aWMgaW50
-IGNoZWNrX3JldHVybl9jb2RlKHN0cnVjdCBicGZfdmVyaWZpZXJfZW52ICplbnYpDQo+ICAgew0K
-PiAgIAlzdHJ1Y3QgdG51bSBlbmZvcmNlX2F0dGFjaF90eXBlX3JhbmdlID0gdG51bV91bmtub3du
-Ow0KPiArCWNvbnN0IHN0cnVjdCBicGZfcHJvZyAqcHJvZyA9IGVudi0+cHJvZzsNCj4gICAJc3Ry
-dWN0IGJwZl9yZWdfc3RhdGUgKnJlZzsNCj4gICAJc3RydWN0IHRudW0gcmFuZ2UgPSB0bnVtX3Jh
-bmdlKDAsIDEpOw0KPiArCWludCBlcnI7DQo+ICsNCj4gKwkvKiBUaGUgc3RydWN0X29wcyBmdW5j
-LXB0cidzIHJldHVybiB0eXBlIGNvdWxkIGJlICJ2b2lkIiAqLw0KPiArCWlmIChlbnYtPnByb2ct
-PnR5cGUgPT0gQlBGX1BST0dfVFlQRV9TVFJVQ1RfT1BTICYmDQo+ICsJICAgICFwcm9nLT5hdXgt
-PmF0dGFjaF9mdW5jX3Byb3RvLT50eXBlKQ0KPiArCQlyZXR1cm4gMDsNCj4gKw0KPiArCS8qIGVC
-UEYgY2FsbGluZyBjb252ZXRpb24gaXMgc3VjaCB0aGF0IFIwIGlzIHVzZWQNCj4gKwkgKiB0byBy
-ZXR1cm4gdGhlIHZhbHVlIGZyb20gZUJQRiBwcm9ncmFtLg0KPiArCSAqIE1ha2Ugc3VyZSB0aGF0
-IGl0J3MgcmVhZGFibGUgYXQgdGhpcyB0aW1lDQo+ICsJICogb2YgYnBmX2V4aXQsIHdoaWNoIG1l
-YW5zIHRoYXQgcHJvZ3JhbSB3cm90ZQ0KPiArCSAqIHNvbWV0aGluZyBpbnRvIGl0IGVhcmxpZXIN
-Cj4gKwkgKi8NCj4gKwllcnIgPSBjaGVja19yZWdfYXJnKGVudiwgQlBGX1JFR18wLCBTUkNfT1Ap
-Ow0KPiArCWlmIChlcnIpDQo+ICsJCXJldHVybiBlcnI7DQo+ICsNCj4gKwlpZiAoaXNfcG9pbnRl
-cl92YWx1ZShlbnYsIEJQRl9SRUdfMCkpIHsNCj4gKwkJdmVyYm9zZShlbnYsICJSMCBsZWFrcyBh
-ZGRyIGFzIHJldHVybiB2YWx1ZVxuIik7DQo+ICsJCXJldHVybiAtRUFDQ0VTOw0KPiArCX0NCj4g
-ICANCj4gICAJc3dpdGNoIChlbnYtPnByb2ctPnR5cGUpIHsNCj4gICAJY2FzZSBCUEZfUFJPR19U
-WVBFX0NHUk9VUF9TT0NLX0FERFI6DQo+IEBAIC04MDEwLDIxICs4MDQyLDYgQEAgc3RhdGljIGlu
-dCBkb19jaGVjayhzdHJ1Y3QgYnBmX3ZlcmlmaWVyX2VudiAqZW52KQ0KPiAgIAkJCQlpZiAoZXJy
-KQ0KPiAgIAkJCQkJcmV0dXJuIGVycjsNCj4gICANCj4gLQkJCQkvKiBlQlBGIGNhbGxpbmcgY29u
-dmV0aW9uIGlzIHN1Y2ggdGhhdCBSMCBpcyB1c2VkDQo+IC0JCQkJICogdG8gcmV0dXJuIHRoZSB2
-YWx1ZSBmcm9tIGVCUEYgcHJvZ3JhbS4NCj4gLQkJCQkgKiBNYWtlIHN1cmUgdGhhdCBpdCdzIHJl
-YWRhYmxlIGF0IHRoaXMgdGltZQ0KPiAtCQkJCSAqIG9mIGJwZl9leGl0LCB3aGljaCBtZWFucyB0
-aGF0IHByb2dyYW0gd3JvdGUNCj4gLQkJCQkgKiBzb21ldGhpbmcgaW50byBpdCBlYXJsaWVyDQo+
-IC0JCQkJICovDQo+IC0JCQkJZXJyID0gY2hlY2tfcmVnX2FyZyhlbnYsIEJQRl9SRUdfMCwgU1JD
-X09QKTsNCj4gLQkJCQlpZiAoZXJyKQ0KPiAtCQkJCQlyZXR1cm4gZXJyOw0KPiAtDQo+IC0JCQkJ
-aWYgKGlzX3BvaW50ZXJfdmFsdWUoZW52LCBCUEZfUkVHXzApKSB7DQo+IC0JCQkJCXZlcmJvc2Uo
-ZW52LCAiUjAgbGVha3MgYWRkciBhcyByZXR1cm4gdmFsdWVcbiIpOw0KPiAtCQkJCQlyZXR1cm4g
-LUVBQ0NFUzsNCj4gLQkJCQl9DQo+IC0NCj4gICAJCQkJZXJyID0gY2hlY2tfcmV0dXJuX2NvZGUo
-ZW52KTsNCj4gICAJCQkJaWYgKGVycikNCj4gICAJCQkJCXJldHVybiBlcnI7DQo+IEBAIC04ODMz
-LDEyICs4ODUwLDE0IEBAIHN0YXRpYyBpbnQgY29udmVydF9jdHhfYWNjZXNzZXMoc3RydWN0IGJw
-Zl92ZXJpZmllcl9lbnYgKmVudikNCj4gICAJCQljb252ZXJ0X2N0eF9hY2Nlc3MgPSBicGZfeGRw
-X3NvY2tfY29udmVydF9jdHhfYWNjZXNzOw0KPiAgIAkJCWJyZWFrOw0KPiAgIAkJY2FzZSBQVFJf
-VE9fQlRGX0lEOg0KPiAtCQkJaWYgKHR5cGUgPT0gQlBGX1dSSVRFKSB7DQo+ICsJCQlpZiAodHlw
-ZSA9PSBCUEZfUkVBRCkgew0KPiArCQkJCWluc24tPmNvZGUgPSBCUEZfTERYIHwgQlBGX1BST0JF
-X01FTSB8DQo+ICsJCQkJCUJQRl9TSVpFKChpbnNuKS0+Y29kZSk7DQo+ICsJCQkJZW52LT5wcm9n
-LT5hdXgtPm51bV9leGVudHJpZXMrKzsNCj4gKwkJCX0gZWxzZSBpZiAoZW52LT5wcm9nLT50eXBl
-ICE9IEJQRl9QUk9HX1RZUEVfU1RSVUNUX09QUykgew0KPiAgIAkJCQl2ZXJib3NlKGVudiwgIldy
-aXRlcyB0aHJvdWdoIEJURiBwb2ludGVycyBhcmUgbm90IGFsbG93ZWRcbiIpOw0KPiAgIAkJCQly
-ZXR1cm4gLUVJTlZBTDsNCj4gICAJCQl9DQo+IC0JCQlpbnNuLT5jb2RlID0gQlBGX0xEWCB8IEJQ
-Rl9QUk9CRV9NRU0gfCBCUEZfU0laRSgoaW5zbiktPmNvZGUpOw0KPiAtCQkJZW52LT5wcm9nLT5h
-dXgtPm51bV9leGVudHJpZXMrKzsNCg0KRG8gd2UgbmVlZCB0byBpbmNyZWFzZSBudW1fZXhlbnRy
-aWVzIGZvciBCUEZfV1JJVEUgYXMgd2VsbD8NCg0KPiAgIAkJCWNvbnRpbnVlOw0KPiAgIAkJZGVm
-YXVsdDoNCj4gICAJCQljb250aW51ZTsNCj4gQEAgLTk1MDUsNiArOTUyNCw1OCBAQCBzdGF0aWMg
-dm9pZCBwcmludF92ZXJpZmljYXRpb25fc3RhdHMoc3RydWN0IGJwZl92ZXJpZmllcl9lbnYgKmVu
-dikNCj4gICAJCWVudi0+cGVha19zdGF0ZXMsIGVudi0+bG9uZ2VzdF9tYXJrX3JlYWRfd2Fsayk7
-DQo+ICAgfQ0KPiAgIA0KWy4uLl0NCg==
+Similarly to bpftool/libbpf output, make selftests/bpf output succinct
+per-item output line. Output is roughly as follows:
+
+$ make
+...
+  CLANG-LLC [test_maps] pyperf600.o
+  CLANG-LLC [test_maps] strobemeta.o
+  CLANG-LLC [test_maps] pyperf100.o
+  EXTRA-OBJ [test_progs] cgroup_helpers.o
+  EXTRA-OBJ [test_progs] trace_helpers.o
+     BINARY test_align
+     BINARY test_verifier_log
+   GEN-SKEL [test_progs] fexit_bpf2bpf.skel.h
+   GEN-SKEL [test_progs] test_global_data.skel.h
+   GEN-SKEL [test_progs] sendmsg6_prog.skel.h
+...
+
+To see the actual command invocation, verbose mode can be turned on with V=1
+argument:
+
+$ make V=1
+
+... very verbose output ...
+
+Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+---
+ tools/testing/selftests/bpf/Makefile | 36 ++++++++++++++++++++++++++++
+ 1 file changed, 36 insertions(+)
+
+diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
+index ba90621617a8..c652bd84ef0e 100644
+--- a/tools/testing/selftests/bpf/Makefile
++++ b/tools/testing/selftests/bpf/Makefile
+@@ -77,6 +77,24 @@ TEST_GEN_PROGS_EXTENDED = test_sock_addr test_skb_cgroup_id_user \
+ 
+ TEST_CUSTOM_PROGS = urandom_read
+ 
++# Emit succinct information message describing current building step
++# $1 - generic step name (e.g., CC, LINK, etc);
++# $2 - optional "flavor" specifier; if provided, will be emitted as [flavor];
++# $3 - target (assumed to be file); only file name will be emitted;
++# $4 - optional extra arg, emitted as-is, if provided.
++ifeq ($(V),1)
++msg =
++else
++msg = @$(info $(1)$(if $(2), [$(2)]) $(notdir $(3)))$(if $(4), $(4))
++endif
++
++# override lib.mk's default rules
++OVERRIDE_TARGETS := 1
++override define CLEAN
++	$(call msg,    CLEAN)
++	$(RM) -r $(TEST_GEN_PROGS) $(TEST_GEN_PROGS_EXTENDED) $(TEST_GEN_FILES) $(EXTRA_CLEAN)
++endef
++
+ include ../lib.mk
+ 
+ # Define simple and short `make test_progs`, `make test_sysctl`, etc targets
+@@ -89,10 +107,16 @@ $(notdir $(TEST_GEN_PROGS)						\
+ 	 $(TEST_GEN_PROGS_EXTENDED)					\
+ 	 $(TEST_CUSTOM_PROGS)): %: $(OUTPUT)/% ;
+ 
++$(OUTPUT)/%:%.c
++	$(call msg,     BINARY,,$@)
++	$(LINK.c) $^ $(LDLIBS) -o $@
++
+ $(OUTPUT)/urandom_read: urandom_read.c
++	$(call msg,     BINARY,,$@)
+ 	$(CC) -o $@ $< -Wl,--build-id
+ 
+ $(OUTPUT)/test_stub.o: test_stub.c
++	$(call msg,         CC,,$@)
+ 	$(CC) -c $(CFLAGS) -o $@ $<
+ 
+ BPFOBJ := $(OUTPUT)/libbpf.a
+@@ -167,24 +191,28 @@ $(OUTPUT)/flow_dissector_load.o: flow_dissector_load.h
+ # $3 - CFLAGS
+ # $4 - LDFLAGS
+ define CLANG_BPF_BUILD_RULE
++	$(call msg,  CLANG-LLC,$(TRUNNER_BINARY),$2)
+ 	($(CLANG) $3 -O2 -target bpf -emit-llvm				\
+ 		-c $1 -o - || echo "BPF obj compilation failed") | 	\
+ 	$(LLC) -mattr=dwarfris -march=bpf -mcpu=probe $4 -filetype=obj -o $2
+ endef
+ # Similar to CLANG_BPF_BUILD_RULE, but with disabled alu32
+ define CLANG_NOALU32_BPF_BUILD_RULE
++	$(call msg,  CLANG-LLC,$(TRUNNER_BINARY),$2)
+ 	($(CLANG) $3 -O2 -target bpf -emit-llvm				\
+ 		-c $1 -o - || echo "BPF obj compilation failed") | 	\
+ 	$(LLC) -march=bpf -mcpu=v2 $4 -filetype=obj -o $2
+ endef
+ # Similar to CLANG_BPF_BUILD_RULE, but using native Clang and bpf LLC
+ define CLANG_NATIVE_BPF_BUILD_RULE
++	$(call msg,  CLANG-BPF,$(TRUNNER_BINARY),$2)
+ 	($(CLANG) $3 -O2 -emit-llvm					\
+ 		-c $1 -o - || echo "BPF obj compilation failed") | 	\
+ 	$(LLC) -march=bpf -mcpu=probe $4 -filetype=obj -o $2
+ endef
+ # Build BPF object using GCC
+ define GCC_BPF_BUILD_RULE
++	$(call msg,    GCC-BPF,$(TRUNNER_BINARY),$2)
+ 	$(BPF_GCC) $3 $4 -O2 -c $1 -o $2
+ endef
+ 
+@@ -243,6 +271,7 @@ $(TRUNNER_BPF_OBJS): $(TRUNNER_OUTPUT)/%.o:				\
+ $(TRUNNER_BPF_SKELS): $(TRUNNER_OUTPUT)/%.skel.h:			\
+ 		      $(TRUNNER_OUTPUT)/%.o				\
+ 		      | $(BPFTOOL) $(TRUNNER_OUTPUT)
++	$$(call msg,   GEN-SKEL,$(TRUNNER_BINARY),$$@)
+ 	$$(BPFTOOL) gen skeleton $$< > $$@
+ endif
+ 
+@@ -250,6 +279,7 @@ endif
+ ifeq ($($(TRUNNER_TESTS_DIR)-tests-hdr),)
+ $(TRUNNER_TESTS_DIR)-tests-hdr := y
+ $(TRUNNER_TESTS_HDR): $(TRUNNER_TESTS_DIR)/*.c
++	$$(call msg,   TEST-HDR,$(TRUNNER_BINARY),$$@)
+ 	$$(shell ( cd $(TRUNNER_TESTS_DIR);				\
+ 		  echo '/* Generated header, do not edit */';		\
+ 		  ls *.c 2> /dev/null |					\
+@@ -265,6 +295,7 @@ $(TRUNNER_TEST_OBJS): $(TRUNNER_OUTPUT)/%.test.o:			\
+ 		      $(TRUNNER_BPF_OBJS)				\
+ 		      $(TRUNNER_BPF_SKELS)				\
+ 		      $$(BPFOBJ) | $(TRUNNER_OUTPUT)
++	$$(call msg,   TEST-OBJ,$(TRUNNER_BINARY),$$@)
+ 	cd $$(@D) && $$(CC) $$(CFLAGS) -c $(CURDIR)/$$< $$(LDLIBS) -o $$(@F)
+ 
+ $(TRUNNER_EXTRA_OBJS): $(TRUNNER_OUTPUT)/%.o:				\
+@@ -272,17 +303,20 @@ $(TRUNNER_EXTRA_OBJS): $(TRUNNER_OUTPUT)/%.o:				\
+ 		       $(TRUNNER_EXTRA_HDRS)				\
+ 		       $(TRUNNER_TESTS_HDR)				\
+ 		       $$(BPFOBJ) | $(TRUNNER_OUTPUT)
++	$$(call msg,  EXTRA-OBJ,$(TRUNNER_BINARY),$$@)
+ 	$$(CC) $$(CFLAGS) -c $$< $$(LDLIBS) -o $$@
+ 
+ # only copy extra resources if in flavored build
+ $(TRUNNER_BINARY)-extras: $(TRUNNER_EXTRA_FILES) | $(TRUNNER_OUTPUT)
+ ifneq ($2,)
++	$$(call msg,  EXTRAS-CP,$(TRUNNER_BINARY),$(TRUNNER_EXTRA_FILES))
+ 	cp -a $$^ $(TRUNNER_OUTPUT)/
+ endif
+ 
+ $(OUTPUT)/$(TRUNNER_BINARY): $(TRUNNER_TEST_OBJS)			\
+ 			     $(TRUNNER_EXTRA_OBJS) $$(BPFOBJ)		\
+ 			     | $(TRUNNER_BINARY)-extras
++	$$(call msg,     BINARY,,$$@)
+ 	$$(CC) $$(CFLAGS) $$(filter %.a %.o,$$^) $$(LDLIBS) -o $$@
+ 
+ endef
+@@ -334,10 +368,12 @@ verifier/tests.h: verifier/*.c
+ 		  echo '#endif' \
+ 		) > verifier/tests.h)
+ $(OUTPUT)/test_verifier: test_verifier.c verifier/tests.h $(BPFOBJ) | $(OUTPUT)
++	$(call msg,     BINARY,,$@)
+ 	$(CC) $(CFLAGS) $(filter %.a %.o %.c,$^) $(LDLIBS) -o $@
+ 
+ # Make sure we are able to include and link libbpf against c++.
+ $(OUTPUT)/test_cpp: test_cpp.cpp $(BPFOBJ)
++	$(call msg,        CXX,,$@)
+ 	$(CXX) $(CFLAGS) $^ $(LDLIBS) -o $@
+ 
+ EXTRA_CLEAN := $(TEST_CUSTOM_PROGS)					\
+-- 
+2.17.1
+
