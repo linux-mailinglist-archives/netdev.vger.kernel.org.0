@@ -2,139 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 25F20123845
-	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 22:05:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B91E2123863
+	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 22:07:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728681AbfLQVEJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Dec 2019 16:04:09 -0500
-Received: from mail-qk1-f193.google.com ([209.85.222.193]:39226 "EHLO
-        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728493AbfLQVEJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 16:04:09 -0500
-Received: by mail-qk1-f193.google.com with SMTP id c16so5736515qko.6
-        for <netdev@vger.kernel.org>; Tue, 17 Dec 2019 13:04:08 -0800 (PST)
+        id S1728300AbfLQVGZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Dec 2019 16:06:25 -0500
+Received: from mta-p6.oit.umn.edu ([134.84.196.206]:52454 "EHLO
+        mta-p6.oit.umn.edu" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727908AbfLQVGZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 16:06:25 -0500
+Received: from localhost (unknown [127.0.0.1])
+        by mta-p6.oit.umn.edu (Postfix) with ESMTP id 47crKX3PpCz9vK12
+        for <netdev@vger.kernel.org>; Tue, 17 Dec 2019 21:06:24 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at umn.edu
+Received: from mta-p6.oit.umn.edu ([127.0.0.1])
+        by localhost (mta-p6.oit.umn.edu [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id uSI5mUybxGSu for <netdev@vger.kernel.org>;
+        Tue, 17 Dec 2019 15:06:24 -0600 (CST)
+Received: from mail-yw1-f71.google.com (mail-yw1-f71.google.com [209.85.161.71])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mta-p6.oit.umn.edu (Postfix) with ESMTPS id 47crKX20xjz9vK1d
+        for <netdev@vger.kernel.org>; Tue, 17 Dec 2019 15:06:24 -0600 (CST)
+Received: by mail-yw1-f71.google.com with SMTP id l12so9121782ywk.6
+        for <netdev@vger.kernel.org>; Tue, 17 Dec 2019 13:06:24 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=6basBJ6bM0j6BIPp8FG95aWLrLObNXSRO6/Wx7nPGjY=;
-        b=MqyUdMfDcn1codoO31HcLME2le2sLXyLFynO1aor9WdcSUUHFJj8e7WJ1wlScWOt8V
-         ds9acIoM8rNyPBicQN1yW3twnBov9xjL32hPtQQebZF+vSHvcSonwS/aTmamMuPP47t7
-         x6TvFdqpQIpBKUp0sUj+10F71lrKsyoBu/brC+NpWN9TqOZuPZzIf/FcAa942WpjiWo8
-         xI1xwP8SHgi20M+kLpmTcZ3pxmDS61XuYw4dxQJBuJOGGwStQMbbstPcTCpyV1wwnP4h
-         md45sLBNYkiJ/E3Sj0/nhHn859WhF+7XFog3lmxGbfSxwhvIgdIJAqG3qnhNBCc035Y2
-         e/ig==
+        d=umn.edu; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=RVnukGaiui+du4+M3rktd/RcuLA80ABz3WVIbi2xHtI=;
+        b=KBmfJyYowdx1h9k2Ktvy/CuZa7KBLKl+kv2WSWq4E1LLh/iGH1BZ2uKtukY/W2uzVo
+         TpOpE0M/TjXJBydFNILe7JcWTtYgiVQq2UeznWuReLZCjbu5K78i6Cls+VL3XtsWT2fQ
+         XqEb708qgSlCd/b2D+Rd3w2WrFn4lkITSTNECAMlkziteLnFv3NCZJMSGRpMZxt7LFwz
+         qrHA64qCQ192u2heFfyU9uhQM/LWbb68NUezxaKZnEDdVrKoyC2KtmnmQWcdvb07iARW
+         PMlTvvt7+lbf30tRWppvhTekxCkugnWrCjXMRCIrRGISPvcs/vncRp/4eZWU732GnxE0
+         U0gA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=6basBJ6bM0j6BIPp8FG95aWLrLObNXSRO6/Wx7nPGjY=;
-        b=k4zxMcHVbwse+WItzHeRkf1aJ/81HEqP2LY/uy1H1xVZCLRu8zrcpH9KwUI/vPg2+a
-         Y7yK+SPojrLVNSDFmJLfhfXKxZVBB/3mcUMKwIgrzGEGgUGUdxOKPmHud/1nI8Nci579
-         X/02fy1V3kMBEsvrVO2GUbPreWghS7/LAyy8EV9HW64z7kvZ3VcdVmsAtJESNf2K4H/B
-         lpPwPaoD10+Iz9I+Ko/SP87sXmXrBAAOU/RAMzUwrliqXYJWK+iN8yZ6h7I5We2vDl9B
-         3PVrCsxLajycczCBzU1j8J4FTTqvtCOPdPwUD7QV0JGVMeYQO0jd1f+zKInjw+1seNqL
-         YHyQ==
-X-Gm-Message-State: APjAAAU4JK6teOSDYyEqX3FfDT9Rtuyoph3b28PxJRPjNO3tIufM0vG6
-        Mx0Xd0pvy7TRSnMA4MLMvu7rJQ==
-X-Google-Smtp-Source: APXvYqyzYJJV+qjvB1KgzPsRbFym4uUi8J69hEABpIIEYSve0pHQPh+4NJELcoakOoShpzx0k97Ukw==
-X-Received: by 2002:a37:b93:: with SMTP id 141mr7106576qkl.54.1576616648005;
-        Tue, 17 Dec 2019 13:04:08 -0800 (PST)
-Received: from ziepe.ca (hlfxns017vw-142-68-57-212.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.57.212])
-        by smtp.gmail.com with ESMTPSA id g18sm4128qtc.83.2019.12.17.13.04.07
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Tue, 17 Dec 2019 13:04:07 -0800 (PST)
-Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)
-        (envelope-from <jgg@ziepe.ca>)
-        id 1ihK0k-0002IT-KH; Tue, 17 Dec 2019 17:04:06 -0400
-Date:   Tue, 17 Dec 2019 17:04:06 -0400
-From:   Jason Gunthorpe <jgg@ziepe.ca>
-To:     "Saleem, Shiraz" <shiraz.saleem@intel.com>
-Cc:     "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "nhorman@redhat.com" <nhorman@redhat.com>,
-        "sassmann@redhat.com" <sassmann@redhat.com>,
-        "parav@mellanox.com" <parav@mellanox.com>
-Subject: Re: [PATCH v3 19/20] RDMA: Add irdma Kconfig/Makefile and remove
- i40iw
-Message-ID: <20191217210406.GC17227@ziepe.ca>
-References: <20191209224935.1780117-1-jeffrey.t.kirsher@intel.com>
- <20191209224935.1780117-20-jeffrey.t.kirsher@intel.com>
- <20191211200200.GA13279@ziepe.ca>
- <9DD61F30A802C4429A01CA4200E302A7B6B9343F@fmsmsx124.amr.corp.intel.com>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=RVnukGaiui+du4+M3rktd/RcuLA80ABz3WVIbi2xHtI=;
+        b=Qhu4FW0sV+57meWvSRDRYfgfIK7ESrXokz1xb1IfyzxYsGkey/rtby6uZUgRtopRKJ
+         k9RnSCe1gSfOJj7js66JAWXP22uOZjLdieXCBrq9ubXHFdV/aAylQzK/wqEc90NxnXu+
+         Eaag3fSXyEUgKXvs1aUcfSUEDNS+dqvkxDpJzhBg8XH13IJwE/3hbYAjQBZBTjrO2/1b
+         lqXZNHQcYBeYrsb7VH9s+6MfavpYHkuO7UYVQGpZ9BbkYhGHn1Bs4ZDZCwoSYOuG9CfO
+         9YKynKvHX3UBz1s3c9V0FCJ/kezQTP+KUzWOEzQk0A/fMqmxGuah1HGuApVgqhU0uC+X
+         CPEQ==
+X-Gm-Message-State: APjAAAXu9Hk6qNDhiCN6enSXo2v0a8DwHUYeq5CtqdCudLRw0WKB0RgU
+        jy/4/08w05IJLXh/Z6VfwJxC/sAxNuj/FN3UQVw9tzYP55qebxyBZjnJUbAvuuGEFm7Ifo4MD4F
+        nz34+4wt6/OGkAUd7Sq5X
+X-Received: by 2002:a0d:dbd5:: with SMTP id d204mr640597ywe.22.1576616783708;
+        Tue, 17 Dec 2019 13:06:23 -0800 (PST)
+X-Google-Smtp-Source: APXvYqxobVgJolFCbVUp/qKSoQ1G1fQbOomuh913hWdYuOGTVfl6p/BvJ6GamqZF59q/3T4hYM6AfA==
+X-Received: by 2002:a0d:dbd5:: with SMTP id d204mr640571ywe.22.1576616783505;
+        Tue, 17 Dec 2019 13:06:23 -0800 (PST)
+Received: from cs-u-syssec1.dtc.umn.edu (cs-u-syssec1.cs.umn.edu. [128.101.106.66])
+        by smtp.gmail.com with ESMTPSA id w138sm6913670ywd.89.2019.12.17.13.06.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 17 Dec 2019 13:06:23 -0800 (PST)
+From:   Aditya Pakki <pakki001@umn.edu>
+To:     pakki001@umn.edu
+Cc:     kjlu@umn.edu, "David S. Miller" <davem@davemloft.net>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Markus Elfring <elfring@users.sourceforge.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Kate Stewart <kstewart@linuxfoundation.org>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v2] hdlcdrv: replace unnecessary assertion in hdlcdrv_register
+Date:   Tue, 17 Dec 2019 15:06:19 -0600
+Message-Id: <20191217210620.29775-1-pakki001@umn.edu>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <9DD61F30A802C4429A01CA4200E302A7B6B9343F@fmsmsx124.amr.corp.intel.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Dec 13, 2019 at 11:06:45PM +0000, Saleem, Shiraz wrote:
-> > Subject: Re: [PATCH v3 19/20] RDMA: Add irdma Kconfig/Makefile and remove
-> > i40iw
-> > 
-> > On Mon, Dec 09, 2019 at 02:49:34PM -0800, Jeff Kirsher wrote:
-> > > From: Shiraz Saleem <shiraz.saleem@intel.com>
-> > >
-> > > Add Kconfig and Makefile to build irdma driver.
-> > >
-> > > Remove i40iw driver. irdma is the replacement driver that supports
-> > > X722.
-> > 
-> > I looked through this for a litle while, it is very very big. I'd like some of the other
-> > people who have sent drivers lately to give it a go over as well..
-> > 
-> > A few broad comments
-> >  - Do not use the 'err1', 'err2', etc labels for goto unwind
-> >  - Please check all uses of rcu, I could not see why some existed
-> >  - Use the new rdma mmap api. The whole mmap flow looked wonky to me
-> Presume your referring to this series?
-> https://github.com/jgunthorpe/linux/commits/rdma_mmap
+In hdlcdrv_register, failure to register the driver causes a crash.
+The three callers of hdlcdrv_register all pass valid pointers and
+do not fail. The patch eliminates the unnecessary BUG_ON assertion.
 
-Yes, it is merged now
+Signed-off-by: Aditya Pakki <pakki001@umn.edu>
+---
+v1: Changed from returning -EINVAL to deleting BUG_ON as identified
+by Stephen Hemminger.
+---
+ drivers/net/hamradio/hdlcdrv.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-> At the time it was published, I didn't think it applied to irdma, but rather
-> benefit those drivers that keyed off an mmap database in their mmap function.
+diff --git a/drivers/net/hamradio/hdlcdrv.c b/drivers/net/hamradio/hdlcdrv.c
+index df495b5595f5..e7413a643929 100644
+--- a/drivers/net/hamradio/hdlcdrv.c
++++ b/drivers/net/hamradio/hdlcdrv.c
+@@ -687,8 +687,6 @@ struct net_device *hdlcdrv_register(const struct hdlcdrv_ops *ops,
+ 	struct hdlcdrv_state *s;
+ 	int err;
+ 
+-	BUG_ON(ops == NULL);
+-
+ 	if (privsize < sizeof(struct hdlcdrv_state))
+ 		privsize = sizeof(struct hdlcdrv_state);
+ 
+-- 
+2.20.1
 
-All drivers using mmap should be using it.
-
-New drivers should not be using mmap via hard coded keys. The offset
-to pass to mmap should always be returned from a system call.
-
-For compatibility insert the hard coded key with the mmap stuff and
-use the APIs for lifetime management.
-
-> In irdma, there is a doorbell and a push page that are mapped. 
-
-Pretty much all hardware requires these to be per-security domain, so
-you have a lifecycle model that matches what the mmap API is now
-providing.
-
-> >  - New drivers should use the ops->driver_unregister flow
-> https://www.spinics.net/lists/linux-rdma/msg75466.html
-> "These APIs are intended to support drivers that exist outside the usual
-> driver core probe()/remove() callbacks. Normally the driver core will
-> prevent remove() from running concurrently with probe(), once this safety
-> is lost drivers need more support to get the locking and lifetimes right."
-> 
-> As per this description, it seems ib_unregister_driver() would be
-> redundant for irdma to use in module exit? 
-
-Yes, this driver doesn't need that call
-
-> Or did you mean just instrument ops->dealloc_driver?
-
-Yes
-
-> >  - The whole cqp_compl_thread thing looks really weird
-> What is the concern?
-
-It looks like an open coded work queue
-
-Jason
