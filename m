@@ -2,395 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 82A12123A68
+	by mail.lfdr.de (Postfix) with ESMTP id F269D123A69
 	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 00:01:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726707AbfLQXA7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Dec 2019 18:00:59 -0500
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:8656 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725892AbfLQXA5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 18:00:57 -0500
-Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xBHMxZMK022918
-        for <netdev@vger.kernel.org>; Tue, 17 Dec 2019 15:00:56 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-type; s=facebook; bh=j/j+YVqM444S4Kq4R2aX+OMXxVeLxFWjyyQxIwWRFZQ=;
- b=XmF6EqI7ZwL8Io8+ao3DeINNhaadUlk3PPF/6o6zWFeYo1t4+uq0+NeyDm3c8BaQRad4
- /6ysJODEcug+xyIc0zPUdnec7RJcGOLSUHhcIhHGmlmFZlGvmLf5zzw7jBY/EHL538yJ
- E6iGwYdJEmH9U9Bx1E3DlC/7PFN0IzPX/Tg= 
-Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by mx0a-00082601.pphosted.com with ESMTP id 2wy0vt2e4k-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Tue, 17 Dec 2019 15:00:56 -0800
-Received: from intmgw002.41.prn1.facebook.com (2620:10d:c081:10::13) by
- mail.thefacebook.com (2620:10d:c081:35::128) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
- Tue, 17 Dec 2019 15:00:51 -0800
-Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
-        id EDE372EC1C52; Tue, 17 Dec 2019 15:00:50 -0800 (PST)
-Smtp-Origin-Hostprefix: devbig
-From:   Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
-        <daniel@iogearbox.net>
-CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH v2 bpf-next 3/3] bpftool: add gen subcommand manpage
-Date:   Tue, 17 Dec 2019 15:00:38 -0800
-Message-ID: <20191217230038.1562848-4-andriin@fb.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20191217230038.1562848-1-andriin@fb.com>
-References: <20191217230038.1562848-1-andriin@fb.com>
-X-FB-Internal: Safe
+        id S1726587AbfLQXAw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Dec 2019 18:00:52 -0500
+Received: from mail-ed1-f66.google.com ([209.85.208.66]:46775 "EHLO
+        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725886AbfLQXAw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 18:00:52 -0500
+Received: by mail-ed1-f66.google.com with SMTP id m8so9372903edi.13;
+        Tue, 17 Dec 2019 15:00:50 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=uKab++1jquwTpkqEiE5OldyM/+qvtHDYf7xzh93P2+s=;
+        b=Lpg5ySFzelJX55IDGnKbLQcNmqqT1F7WGvYkcp+yiVtwQA6MMj0rS998D4sRJomjsW
+         QWspWA7+UoQ8XOdSTfL9WocYFx7oUabDiNdlAnQEWAj8AFdoLG0F/N7H48MvlgxXRK8d
+         NguKwj9QkyygQsG2sjOJUH3MgqKqXrli4UR9Bw+7qkzQ+71/xGcDlIiHsGfKoLyJLgHe
+         lodUcKYQQeSsbObCUyalV4WQ0D7SxV5U/KCGVeS/9OeqFDxzfkx6zZOKfQc3cieFlvTb
+         tF03Y6zRk6VDXJWcELr2rLWra+5vSLXGLPsD9cElbKpSp7Hiza1MoCTx476A1qmTuC08
+         KITg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:autocrypt
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=uKab++1jquwTpkqEiE5OldyM/+qvtHDYf7xzh93P2+s=;
+        b=A7PHiTDLKuhpHZ3zsfMz6uemK4zZiZEusop5p+HU+15MqCWQ26iivDQ/2lZ4mDl15n
+         IwoqMtSQRCLG4D0ninjt8R/zhZ+LlDifPcBxQmj3f3aZ+DnlrGf9N9B/j+DR/mFly28+
+         HSJD0efcOTeaefjZzCuElEuF+/hiGNLA64INF3AjxzS6n/4CqcG06q/MRhP2swoAWpjD
+         QugPV5z9MM4lmsZ6l2HCT1pkPE/g/07PqnAG5JTgCvqgU69dxLV4FAC/e1fFDSw0+ryB
+         +28V0BmqtAB6QLBIkViDMLZ7AhsBOXKEgn2lT9IqIFX+rQLccvYM6uxtug31pmKA85Um
+         Z3ZQ==
+X-Gm-Message-State: APjAAAV6t/25nukmVzofD8X46Xbya+N3sqO3yD8sb1ZZ8X01q/O1kl/J
+        qZsJJ5AGrYA9Yvv/V87wAJzpYzTi
+X-Google-Smtp-Source: APXvYqycOd7y+rvh8I73toqHYUSe8lA6sgDXzPp1y9cJvGce/xIhTdyKhQllrhYWoR+oSOS2lWhgmQ==
+X-Received: by 2002:a50:ed94:: with SMTP id h20mr195228edr.17.1576623649290;
+        Tue, 17 Dec 2019 15:00:49 -0800 (PST)
+Received: from [10.67.50.53] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id h16sm12858ejc.89.2019.12.17.15.00.47
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 17 Dec 2019 15:00:48 -0800 (PST)
+Subject: Re: [PATCH net-next 8/8] net: bcmgenet: Add software counters to
+ track reallocations
+To:     Doug Berger <opendmb@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <1576616549-39097-1-git-send-email-opendmb@gmail.com>
+ <1576616549-39097-9-git-send-email-opendmb@gmail.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
+ 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
+ G10n8gCguORqNGMsVRxrlLs7/himep7MrCc=
+Message-ID: <393c61ac-9c79-ad14-52dc-2edcccc28fa9@gmail.com>
+Date:   Tue, 17 Dec 2019 15:00:46 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
- definitions=2019-12-17_04:2019-12-17,2019-12-17 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 clxscore=1015
- priorityscore=1501 impostorscore=0 lowpriorityscore=0 malwarescore=0
- adultscore=0 mlxlogscore=999 spamscore=0 suspectscore=25 phishscore=0
- mlxscore=0 bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-1910280000 definitions=main-1912170184
-X-FB-Internal: deliver
+In-Reply-To: <1576616549-39097-9-git-send-email-opendmb@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add bpftool-gen.rst describing skeleton on the high level. Also include
-a small, but complete, example BPF app (BPF side, userspace side, generated
-skeleton) in example section to demonstrate skeleton API and its usage.
+On 12/17/19 1:02 PM, Doug Berger wrote:
+> When inserting the TSB, keep track of how many times we had to do
+> it and if there was a failure in doing so, this helps profile the
+> driver for possibly incorrect headroom settings.
+> 
+> Signed-off-by: Doug Berger <opendmb@gmail.com>
 
-Acked-by: Yonghong Song <yhs@fb.com>
-Signed-off-by: Andrii Nakryiko <andriin@fb.com>
----
- .../bpf/bpftool/Documentation/bpftool-gen.rst | 302 ++++++++++++++++++
- tools/bpf/bpftool/Documentation/bpftool.rst   |   3 +-
- 2 files changed, 304 insertions(+), 1 deletion(-)
- create mode 100644 tools/bpf/bpftool/Documentation/bpftool-gen.rst
-
-diff --git a/tools/bpf/bpftool/Documentation/bpftool-gen.rst b/tools/bpf/bpftool/Documentation/bpftool-gen.rst
-new file mode 100644
-index 000000000000..24c7b80448b7
---- /dev/null
-+++ b/tools/bpf/bpftool/Documentation/bpftool-gen.rst
-@@ -0,0 +1,302 @@
-+================
-+bpftool-gen
-+================
-+-------------------------------------------------------------------------------
-+tool for BPF code-generation
-+-------------------------------------------------------------------------------
-+
-+:Manual section: 8
-+
-+SYNOPSIS
-+========
-+
-+	**bpftool** [*OPTIONS*] **gen** *COMMAND*
-+
-+	*OPTIONS* := { { **-j** | **--json** } [{ **-p** | **--pretty** }] }
-+
-+	*COMMAND* := { **skeleton | **help** }
-+
-+GEN COMMANDS
-+=============
-+
-+|	**bpftool** **gen skeleton** *FILE*
-+|	**bpftool** **gen help**
-+
-+DESCRIPTION
-+===========
-+	**bpftool gen skeleton** *FILE*
-+		  Generate BPF skeleton C header file for a given *FILE*.
-+
-+		  BPF skeleton is an alternative interface to existing libbpf
-+		  APIs for working with BPF objects. Skeleton code is intended
-+		  to significantly shorten and simplify code to load and work
-+		  with BPF programs from userspace side. Generated code is
-+		  tailored to specific input BPF object *FILE*, reflecting its
-+		  structure by listing out available maps, program, variables,
-+		  etc. Skeleton eliminates the need to lookup mentioned
-+		  components by name. Instead, if skeleton instantiation
-+		  succeeds, they are populated in skeleton structure as valid
-+		  libbpf types (e.g., struct bpf_map pointer) and can be
-+		  passed to existing generic libbpf APIs.
-+
-+		  In addition to simple and reliable access to maps and
-+		  programs, skeleton provides a storage for BPF links (struct
-+		  bpf_link) for each BPF program within BPF object. When
-+		  requested, supported BPF programs will be automatically
-+		  attached and resulting BPF links stored for further use by
-+		  user in pre-allocated fields in skeleton struct. For BPF
-+		  programs that can't be automatically attached by libbpf,
-+		  user can attach them manually, but store resulting BPF link
-+		  in per-program link field. All such set up links will be
-+		  automatically destroyed on BPF skeleton destruction. This
-+		  eliminates the need for users to manage links manually and
-+		  rely on libbpf support to detach programs and free up
-+		  resources.
-+
-+		  Another facility provided by BPF skeleton is an interface to
-+		  global variables of all supported kinds: mutable, read-only,
-+		  as well as extern ones. This interface allows to pre-setup
-+		  initial values of variables before BPF object is loaded and
-+		  verified by kernel. For non-read-only variables, the same
-+		  interface can be used to fetch values of global variables on
-+		  userspace side, even if they are modified by BPF code.
-+
-+		  During skeleton generation, contents of source BPF object
-+		  *FILE* is embedded within generated code and is thus not
-+		  necessary to keep around. This ensures skeleton and BPF
-+		  object file are matching 1-to-1 and always stay in sync.
-+		  Generated code is dual-licensed under LGPL-2.1 and
-+		  BSD-2-Clause licenses.
-+
-+		  It is a design goal and guarantee that skeleton interfaces
-+		  are interoperable with generic libbpf APIs. User should
-+		  always be able to use skeleton API to create and load BPF
-+		  object, and later use libbpf APIs to keep working with
-+		  specific maps, programs, etc.
-+
-+		  As part of skeleton, few custom functions are generated.
-+		  Each of them is prefixed with object name, derived from
-+		  object file name. I.e., if BPF object file name is
-+		  **example.o**, BPF object name will be **example**. The
-+		  following custom functions are provided in such case:
-+
-+		  - **example__open** and **example__open_opts**.
-+		    These functions are used to instantiate skeleton. It
-+		    corresponds to libbpf's **bpf_object__open()** API.
-+		    **_opts** variants accepts extra **bpf_object_open_opts**
-+		    options.
-+
-+		  - **example__load**.
-+		    This functions creates maps, loads and verifies BPF
-+		    programs, initializes global data maps. It corresponds to
-+		    libppf's **bpf_object__load** API.
-+
-+		  - **example__open_and_load** combines **example__open** and
-+		    **example__load** invocations in one commonly used
-+		    operation.
-+
-+		  - **example__attach** and **example__detach**
-+		    This pair of functions allow to attach and detach,
-+		    correspondingly, already loaded BPF object. Only BPF
-+		    programs of types supported by libbpf for auto-attachment
-+		    will be auto-attached and their corresponding BPF links
-+		    instantiated. For other BPF programs, user can manually
-+		    create a BPF link and assign it to corresponding fields in
-+		    skeleton struct. **example__detach** will detach both
-+		    links created automatically, as well as those populated by
-+		    user manually.
-+
-+		  - **example__destroy**
-+		    Detach and unload BPF programs, free up all the resources
-+		    used by skeleton and BPF object.
-+
-+		  If BPF object has global variables, corresponding structs
-+		  with memory layout corresponding to global data datasection
-+		  layout will be created. Currently supported ones are: .data,
-+		  .bss, .rodata, and .extern structs/datasections. These
-+		  datasections/structs can be used to set up initial values of
-+		  variables, if set before **example__load**. Afterwards, if
-+		  target kernel supports memory-mapped BPF arrays, same
-+		  structs can be used to fetch and update (non-read-only)
-+		  data from userspace, with same simplicity as for BPF side.
-+
-+	**bpftool gen help**
-+		  Print short help message.
-+
-+OPTIONS
-+=======
-+	-h, --help
-+		  Print short generic help message (similar to **bpftool help**).
-+
-+	-V, --version
-+		  Print version number (similar to **bpftool version**).
-+
-+	-j, --json
-+		  Generate JSON output. For commands that cannot produce JSON,
-+		  this option has no effect.
-+
-+	-p, --pretty
-+		  Generate human-readable JSON output. Implies **-j**.
-+
-+	-d, --debug
-+		  Print all logs available from libbpf, including debug-level
-+		  information.
-+
-+EXAMPLES
-+========
-+**$ cat example.c**
-+::
-+
-+  #include <stdbool.h>
-+  #include <linux/ptrace.h>
-+  #include <linux/bpf.h>
-+  #include "bpf_helpers.h"
-+
-+  const volatile int param1 = 42;
-+  bool global_flag = true;
-+  struct { int x; } data = {};
-+
-+  struct {
-+  	__uint(type, BPF_MAP_TYPE_HASH);
-+  	__uint(max_entries, 128);
-+  	__type(key, int);
-+  	__type(value, long);
-+  } my_map SEC(".maps");
-+
-+  SEC("raw_tp/sys_enter")
-+  int handle_sys_enter(struct pt_regs *ctx)
-+  {
-+  	static long my_static_var;
-+  	if (global_flag)
-+  		my_static_var++;
-+  	else
-+  		data.x += param1;
-+  	return 0;
-+  }
-+
-+  SEC("raw_tp/sys_exit")
-+  int handle_sys_exit(struct pt_regs *ctx)
-+  {
-+  	int zero = 0;
-+  	bpf_map_lookup_elem(&my_map, &zero);
-+  	return 0;
-+  }
-+
-+This is example BPF application with two BPF programs and a mix of BPF maps
-+and global variables.
-+
-+**$ bpftool gen skeleton example.o**
-+::
-+
-+  /* SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause) */
-+
-+  /* THIS FILE IS AUTOGENERATED! */
-+  #ifndef __EXAMPLE_SKEL_H__
-+  #define __EXAMPLE_SKEL_H__
-+
-+  #include <stdlib.h>
-+  #include <libbpf.h>
-+
-+  struct example {
-+  	struct bpf_object_skeleton *skeleton;
-+  	struct bpf_object *obj;
-+  	struct {
-+  		struct bpf_map *rodata;
-+  		struct bpf_map *data;
-+  		struct bpf_map *bss;
-+  		struct bpf_map *my_map;
-+  	} maps;
-+  	struct {
-+  		struct bpf_program *handle_sys_enter;
-+  		struct bpf_program *handle_sys_exit;
-+  	} progs;
-+  	struct {
-+  		struct bpf_link *handle_sys_enter;
-+  		struct bpf_link *handle_sys_exit;
-+  	} links;
-+  	struct example__bss {
-+  		struct {
-+  			int x;
-+  		} data;
-+  	} *bss;
-+  	struct example__data {
-+  		_Bool global_flag;
-+  		long int handle_sys_enter_my_static_var;
-+  	} *data;
-+  	struct example__rodata {
-+  		int param1;
-+  	} *rodata;
-+  };
-+
-+  static void example__destroy(struct example *obj);
-+  static inline struct example *example__open_opts(
-+                const struct bpf_object_open_opts *opts);
-+  static inline struct example *example__open();
-+  static inline int example__load(struct example *obj);
-+  static inline struct example *example__open_and_load();
-+  static inline int example__attach(struct example *obj);
-+  static inline void example__detach(struct example *obj);
-+
-+  #endif /* __EXAMPLE_SKEL_H__ */
-+
-+**$ cat example_user.c**
-+::
-+  #include "example.skel.h"
-+
-+  int main()
-+  {
-+  	struct example *skel;
-+  	int err = 0;
-+
-+  	skel = example__open();
-+  	if (!skel)
-+  		goto cleanup;
-+
-+  	skel->rodata->param1 = 128;
-+
-+  	err = example__load(skel);
-+  	if (err)
-+  		goto cleanup;
-+
-+  	err = example__attach(skel);
-+  	if (err)
-+  		goto cleanup;
-+
-+  	/* all libbpf APIs are usable */
-+  	printf("my_map name: %s\n", bpf_map__name(skel->maps.my_map));
-+  	printf("sys_enter prog FD: %d\n",
-+  	       bpf_program__fd(skel->progs.handle_sys_enter));
-+
-+  	/* detach and re-attach sys_exit program */
-+  	bpf_link__destroy(skel->links.handle_sys_exit);
-+  	skel->links.handle_sys_exit =
-+  		bpf_program__attach(skel->progs.handle_sys_exit);
-+
-+  	printf("my_static_var: %ld\n",
-+  	       skel->bss->handle_sys_enter_my_static_var);
-+
-+  cleanup:
-+  	example__destroy(skel);
-+  	return err;
-+  }
-+
-+**# ./example_user**
-+::
-+  my_map name: my_map
-+  sys_enter prog FD: 8
-+  my_static_var: 7
-+
-+This is a stripped-out version of skeleton generated for above example code.
-+
-+SEE ALSO
-+========
-+	**bpf**\ (2),
-+	**bpf-helpers**\ (7),
-+	**bpftool**\ (8),
-+	**bpftool-map**\ (8),
-+	**bpftool-prog**\ (8),
-+	**bpftool-cgroup**\ (8),
-+	**bpftool-feature**\ (8),
-+	**bpftool-net**\ (8),
-+	**bpftool-perf**\ (8),
-+	**bpftool-btf**\ (8)
-diff --git a/tools/bpf/bpftool/Documentation/bpftool.rst b/tools/bpf/bpftool/Documentation/bpftool.rst
-index 6a9c52ef84a9..34239fda69ed 100644
---- a/tools/bpf/bpftool/Documentation/bpftool.rst
-+++ b/tools/bpf/bpftool/Documentation/bpftool.rst
-@@ -81,4 +81,5 @@ SEE ALSO
- 	**bpftool-feature**\ (8),
- 	**bpftool-net**\ (8),
- 	**bpftool-perf**\ (8),
--	**bpftool-btf**\ (8)
-+	**bpftool-btf**\ (8),
-+	**bpftool-gen**\ (8),
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
-2.17.1
-
+Florian
