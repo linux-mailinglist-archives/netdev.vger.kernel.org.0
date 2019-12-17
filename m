@@ -2,72 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 28C721238C2
-	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 22:39:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 526851238C7
+	for <lists+netdev@lfdr.de>; Tue, 17 Dec 2019 22:41:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727929AbfLQVju (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Dec 2019 16:39:50 -0500
-Received: from correo.us.es ([193.147.175.20]:34828 "EHLO mail.us.es"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727704AbfLQVju (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 17 Dec 2019 16:39:50 -0500
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id 7E6D9C4809
-        for <netdev@vger.kernel.org>; Tue, 17 Dec 2019 22:39:47 +0100 (CET)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 719BFDA70F
-        for <netdev@vger.kernel.org>; Tue, 17 Dec 2019 22:39:47 +0100 (CET)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id 67433DA70B; Tue, 17 Dec 2019 22:39:47 +0100 (CET)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 779E1DA703;
-        Tue, 17 Dec 2019 22:39:45 +0100 (CET)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Tue, 17 Dec 2019 22:39:45 +0100 (CET)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from us.es (sys.soleta.eu [212.170.55.40])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: 1984lsi)
-        by entrada.int (Postfix) with ESMTPSA id 5977C4265A5A;
-        Tue, 17 Dec 2019 22:39:45 +0100 (CET)
-Date:   Tue, 17 Dec 2019 22:39:45 +0100
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     Simon Horman <simon.horman@netronome.com>
-Cc:     Xin Long <lucien.xin@gmail.com>,
-        network dev <netdev@vger.kernel.org>,
-        netfilter-devel@vger.kernel.org, davem@davemloft.net
-Subject: Re: [PATCHv2 nf-next 2/5] netfilter: nft_tunnel: add the missing
- ERSPAN_VERSION nla_policy
-Message-ID: <20191217213945.5ti7ktxc725emec3@salvia>
-References: <cover.1576226965.git.lucien.xin@gmail.com>
- <7bcaa9e0507fa9a5b6a48f56768a179281bf4ab2.1576226965.git.lucien.xin@gmail.com>
- <20191214082630.GB5926@netronome.com>
+        id S1727452AbfLQVlq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Dec 2019 16:41:46 -0500
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:36365 "EHLO
+        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726874AbfLQVlq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 16:41:46 -0500
+Received: by mail-wm1-f68.google.com with SMTP id p17so4817748wma.1
+        for <netdev@vger.kernel.org>; Tue, 17 Dec 2019 13:41:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=wSevUZ1HTWvpeHJqJgkVc94Zkc+nnOpyxSg2dlwqu7w=;
+        b=PZR+VPGp6U1xOx1+VnO938Iw5GNusaK8kejbaRjJVDEkRWjTZEvGCtqZAneP6GVJcQ
+         gCFsDFgFx+KFFLZr5ShPJuTG/ZcT/wMnLA7fO3R8x1B5owFZPqSAKCT4omeYf/fLIkkS
+         73zMGGoc2ZwiW/3nBA390Lk/CA62En4fxkvMILMbWkHCD295LVElB4foiplwyiucQbzX
+         WJNmepEX5/rQCNnfkGFphICYQTTyypBTEXnYYRLHyOKT2FSBlEQ8q0USGD9As5fmPbJU
+         AgxL5CQqBB0GXYXKJ+vHespBqrAE1GuNfionii8reui7ADataO89+o7p8gaWrEjuV1Un
+         7PzA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=wSevUZ1HTWvpeHJqJgkVc94Zkc+nnOpyxSg2dlwqu7w=;
+        b=A+YGw6M1m14YbEXN33N46vv3JqQSMAWKbjeZL7gBO0rev2FgKNjnLzZWcmE2WslTKL
+         PTc4BDDrTBOCqJ7FcEvtxD7z7aKQtDOS0L4hwaC9KSaULU7MhO1gt9bMglqtJMffZhxd
+         fVGgjG6GdVdPlfILx9P7fDIqvQtsLjrOK4Q4p1pnef93zUW9uVvRkp2lS5A0V54zDPt0
+         WZukMYJ6tmBg10fZbdk5h1jYvydXnxgHj4o/CbwRS/PDYuVEyQQkQp0ELDo7LMuNUBvW
+         1Nz0d2uIHEiuwLuqKLnZ/yusCMSXnjXf20WBKFyhg266eJtMYtE/Tpjpt+TFBkRGr7Ol
+         fkiw==
+X-Gm-Message-State: APjAAAULObkT3dGP/Tso0N2JoBQ2C4ddtzTLKRaX1RuSG92OkFyy78G6
+        p1/g//XRU3tqSEo+UAaOT8pFa8v6
+X-Google-Smtp-Source: APXvYqw5/PBRpR510zzBtqMR9bO7dl9T3QTzaFxPrm3FAwbqQ9UYyFt86nuCQh7XVUS9qFaWngLStA==
+X-Received: by 2002:a1c:7d92:: with SMTP id y140mr7253334wmc.145.1576618903988;
+        Tue, 17 Dec 2019 13:41:43 -0800 (PST)
+Received: from ?IPv6:2003:ea:8f4a:6300:29f3:c6e3:2b98:f1a3? (p200300EA8F4A630029F3C6E32B98F1A3.dip0.t-ipconnect.de. [2003:ea:8f4a:6300:29f3:c6e3:2b98:f1a3])
+        by smtp.googlemail.com with ESMTPSA id h8sm84806wrx.63.2019.12.17.13.41.43
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 17 Dec 2019 13:41:43 -0800 (PST)
+Subject: Re: [PATCH net] net: phy: make phy_error() report which PHY has
+ failed
+To:     Russell King <rmk+kernel@armlinux.org.uk>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+References: <E1ihCLZ-0001Vo-Nw@rmk-PC.armlinux.org.uk>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Message-ID: <c96f14cd-7139-ebc7-9562-2f92d8b044fc@gmail.com>
+Date:   Tue, 17 Dec 2019 22:41:34 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191214082630.GB5926@netronome.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-Virus-Scanned: ClamAV using ClamSMTP
+In-Reply-To: <E1ihCLZ-0001Vo-Nw@rmk-PC.armlinux.org.uk>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Dec 14, 2019 at 09:26:31AM +0100, Simon Horman wrote:
-> On Fri, Dec 13, 2019 at 04:53:06PM +0800, Xin Long wrote:
-> > ERSPAN_VERSION is an attribute parsed in kernel side, nla_policy
-> > type should be added for it, like other attributes.
-> > 
-> > Fixes: af308b94a2a4 ("netfilter: nf_tables: add tunnel support")
+On 17.12.2019 13:53, Russell King wrote:
+> phy_error() is called from phy_interrupt() or phy_state_machine(), and
+> uses WARN_ON() to print a backtrace. The backtrace is not useful when
+> reporting a PHY error.
 > 
-> Is this really a fix?
+> However, a system may contain multiple ethernet PHYs, and phy_error()
+> gives no clue which one caused the problem.
+> 
+> Replace WARN_ON() with a call to phydev_err() so that we can see which
+> PHY had an error, and also inform the user that we are halting the PHY.
+> 
+> Fixes: fa7b28c11bbf ("net: phy: print stack trace in phy_error")
+> Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
+> ---
+> There is another related problem in this area. If an error is detected
+> while the PHY is running, phy_error() moves to PHY_HALTED state. If we
+> try to take the network device down, then:
+> 
+> void phy_stop(struct phy_device *phydev)
+> {
+>         if (!phy_is_started(phydev)) {
+>                 WARN(1, "called from state %s\n",
+>                      phy_state_to_str(phydev->state));
+>                 return;
+>         }
+> 
+> triggers, and we never do any of the phy_stop() cleanup. I'm not sure
+> what the best way to solve this is - introducing a PHY_ERROR state may
+> be a solution, but I think we want some phy_is_started() sites to
+> return true for it and others to return false.
+> 
+> Heiner - you introduced the above warning, could you look at improving
+> this case so we don't print a warning and taint the kernel when taking
+> a network device down after phy_error() please?
+> 
+I think we need both types of information:
+- the affected PHY device
+- the stack trace to see where the issue was triggered
 
-I think so. Netlink attribute validation for
-NFTA_TUNNEL_KEY_ERSPAN_VERSION is missing.
+In general it's not fully clear yet what's the appropriate reaction
+after a PHY error. Few reasons for PHY errors I see:
+- MDIO bus may not be accessible, e.g. because parent device is in
+  power-down mode
+- Frequently polling is used to determine end of a MDIO operation.
+  If timeout for polling is too low, then we may end up with an
+  -ETIMEDOUT.
+
+In case of singular timeouts they may be acceptable or not.
+- If we miss a single PHY status poll, then this may be acceptable.
+- But if e.g. a relevant setting in config_init fails, then this
+  may not be acceptable.
+
+The current behavior has been existing for the last 15 years,
+and I'm just aware of one issue with PHY errors. The case I've
+seen was triggered by timeouts, and adjusting the timeouts
+fixed it: c3b084c24c8a (net: fec: Adjust ENET MDIO timeouts)
+
+> Thanks.
+> 
+>  drivers/net/phy/phy.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/phy/phy.c b/drivers/net/phy/phy.c
+> index 49300fb59757..06fbca959383 100644
+> --- a/drivers/net/phy/phy.c
+> +++ b/drivers/net/phy/phy.c
+> @@ -663,7 +663,7 @@ void phy_stop_machine(struct phy_device *phydev)
+>   */
+>  static void phy_error(struct phy_device *phydev)
+>  {
+> -	WARN_ON(1);
+> +	phydev_err(phydev, "Error detected, halting PHY\n");
+>  
+>  	mutex_lock(&phydev->lock);
+>  	phydev->state = PHY_HALTED;
+> 
+
