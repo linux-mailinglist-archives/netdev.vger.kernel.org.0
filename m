@@ -2,115 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EF5E1124139
-	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 09:13:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CFEDD124216
+	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 09:44:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726851AbfLRING (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Dec 2019 03:13:06 -0500
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:44378 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725797AbfLRINF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Dec 2019 03:13:05 -0500
-Received: by mail-pf1-f194.google.com with SMTP id d199so772510pfd.11
-        for <netdev@vger.kernel.org>; Wed, 18 Dec 2019 00:13:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=qW0E3wcV0L7QSVwg9hdIctam4C3/RzO9fOEnybevMdg=;
-        b=NHxS+v3F7/yI6+Xeibk9yX8naLh9aPg2TwtKH9+zx/Uth3yYvBC2aUOvKF4WMoRMDX
-         HrAeqHe6CCN+41lyATsp8/tK1DVt5T1GiTo12GI1zGNtRHRmPKIZy7vcpcXfDmmXOrtJ
-         oF7E7jK/LJvGtWuvP6LbrzC/V9DUYLl7nUiUpfV9pNaGfdKDhaigndomtB+a2OsXHIs0
-         dW3FvcNoymQnTwkfxkwQdXLuhGwU/QMuawUcWI/xR4xPyjSZQl3a4+RM01KoCiES51St
-         ztHvcsW7Z0R4lZuW9/ow2WB/k7ic+Rsz+gyBUDx9bcGfEKMMImXVaERGLYotSFfyY5/N
-         iHAg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=qW0E3wcV0L7QSVwg9hdIctam4C3/RzO9fOEnybevMdg=;
-        b=N1A/KQ5JjY4dfuOZNuvG3+PbLnE1Ek490URyhkGsjd/fwn4SFwTHR4bBZcyv55nEkG
-         lflF4GT3FoMluh9dy4Oy5ZoEmfboYQMj2UR/htj8dEevSUT20OuIScU+rkp11Br8ZAKE
-         wUvQTVCDJSRUq673pj2ziZdnqQ0NqhRdAH+ZcETofIWnM0BBPoNtlJ5RPzcE5Cxa4g74
-         SBsrJPzN7pw1HUhbgK2d5nLVf2Tf9sH7EtCoavt5TXV4LNqNc25k86WHJTVGn0DjUrzy
-         3d8OQuqdlOVqS/1GzwGl3zCCztn18+SIy70ZZOS09fQo8SyCR6zunSQsnS+ld0bpByzC
-         xr9Q==
-X-Gm-Message-State: APjAAAULIgI+udSjUlDDGXLDGlTg80IOkVAAj74s3KvnlYwAqh2/m4XN
-        5RmlqEqgH3ix07EGU8hFCXs=
-X-Google-Smtp-Source: APXvYqyYSxaqrRD3/splVPY9DZ8/hT2HwngO8lj+4I9JyP7fcOMllfeJ3EDfilMICG1PEs0BW6aSAw==
-X-Received: by 2002:a62:e814:: with SMTP id c20mr1721548pfi.2.1576656785057;
-        Wed, 18 Dec 2019 00:13:05 -0800 (PST)
-Received: from localhost.localdomain ([222.151.198.97])
-        by smtp.gmail.com with ESMTPSA id s1sm1799181pgv.87.2019.12.18.00.13.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 18 Dec 2019 00:13:04 -0800 (PST)
-From:   Prashant Bhole <prashantbhole.linux@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        "Michael S . Tsirkin" <mst@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>
-Cc:     Prashant Bhole <prashantbhole.linux@gmail.com>,
-        Jason Wang <jasowang@redhat.com>,
-        David Ahern <dsahern@gmail.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Toshiaki Makita <toshiaki.makita1@gmail.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>, netdev@vger.kernel.org
-Subject: [RFC net-next 14/14] tun: run xdp prog when tun is read from file interface
-Date:   Wed, 18 Dec 2019 17:10:50 +0900
-Message-Id: <20191218081050.10170-15-prashantbhole.linux@gmail.com>
-X-Mailer: git-send-email 2.21.0
-In-Reply-To: <20191218081050.10170-1-prashantbhole.linux@gmail.com>
-References: <20191218081050.10170-1-prashantbhole.linux@gmail.com>
+        id S1726768AbfLRIoD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Dec 2019 03:44:03 -0500
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:34367 "EHLO
+        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726638AbfLRIoD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Dec 2019 03:44:03 -0500
+Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1ihUw2-0001ph-43; Wed, 18 Dec 2019 09:43:58 +0100
+Received: from ore by dude.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1ihUw1-0006MW-1B; Wed, 18 Dec 2019 09:43:57 +0100
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     dev.kurt@vandijck-laurijssen.be, mkl@pengutronix.de,
+        wg@grandegger.com
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH v1] can: j1939: transport: j1939_simple_recv(): ignore local J1939 messages send not by J1939 stack
+Date:   Wed, 18 Dec 2019 09:43:55 +0100
+Message-Id: <20191218084355.24398-1-o.rempel@pengutronix.de>
+X-Mailer: git-send-email 2.24.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It handles the case when qemu performs read on tun using file
-operations.
+In current J1939 stack implementation, we process all locally send
+messages as own messages. Even if it was send by CAN_RAW socket.
 
-Signed-off-by: Prashant Bhole <prashantbhole.linux@gmail.com>
+To reproduce it use following commands:
+testj1939 -P -r can0:0x80 &
+cansend can0 18238040#0123
+
+This step will trigger false positive not critical warning:
+j1939_simple_recv: Received already invalidated message
+
+With this patch we add additional check to make sure, related skb is own
+echo message.
+
+Fixes: 9d71dd0c7009 ("can: add support of SAE J1939 protocol")
+Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 ---
- drivers/net/tun.c | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+ net/can/j1939/socket.c    | 1 +
+ net/can/j1939/transport.c | 4 ++++
+ 2 files changed, 5 insertions(+)
 
-diff --git a/drivers/net/tun.c b/drivers/net/tun.c
-index 8e2fe0ad7955..0a9ac380c1b4 100644
---- a/drivers/net/tun.c
-+++ b/drivers/net/tun.c
-@@ -2335,8 +2335,10 @@ static ssize_t tun_do_read(struct tun_struct *tun, struct tun_file *tfile,
- 			   struct iov_iter *to,
- 			   int noblock, void *ptr)
- {
-+	struct xdp_frame *frame;
- 	ssize_t ret;
- 	int err;
-+	u32 act;
+diff --git a/net/can/j1939/socket.c b/net/can/j1939/socket.c
+index f7587428febd..b9a17c2ee16f 100644
+--- a/net/can/j1939/socket.c
++++ b/net/can/j1939/socket.c
+@@ -398,6 +398,7 @@ static int j1939_sk_init(struct sock *sk)
+ 	spin_lock_init(&jsk->sk_session_queue_lock);
+ 	INIT_LIST_HEAD(&jsk->sk_session_queue);
+ 	sk->sk_destruct = j1939_sk_sock_destruct;
++	sk->sk_protocol = CAN_J1939;
  
- 	tun_debug(KERN_INFO, tun, "tun_do_read\n");
+ 	return 0;
+ }
+diff --git a/net/can/j1939/transport.c b/net/can/j1939/transport.c
+index 9f99af5b0b11..b135c5e2a86e 100644
+--- a/net/can/j1939/transport.c
++++ b/net/can/j1939/transport.c
+@@ -2017,6 +2017,10 @@ void j1939_simple_recv(struct j1939_priv *priv, struct sk_buff *skb)
+ 	if (!skb->sk)
+ 		return;
  
-@@ -2350,6 +2352,15 @@ static ssize_t tun_do_read(struct tun_struct *tun, struct tun_file *tfile,
- 		ptr = tun_ring_recv(tfile, noblock, &err);
- 		if (!ptr)
- 			return err;
++	if (skb->sk->sk_family != AF_CAN ||
++	    skb->sk->sk_protocol != CAN_J1939)
++		return;
 +
-+		if (tun_is_xdp_frame(ptr)) {
-+			frame = tun_ptr_to_xdp(ptr);
-+			act = tun_do_xdp_tx(tun, tfile, frame);
-+		} else {
-+			act = tun_do_xdp_tx_generic(tun, ptr);
-+		}
-+		if (act != XDP_PASS)
-+			return err;
- 	}
- 
- 	if (tun_is_xdp_frame(ptr)) {
+ 	j1939_session_list_lock(priv);
+ 	session = j1939_session_get_simple(priv, skb);
+ 	j1939_session_list_unlock(priv);
 -- 
-2.21.0
+2.24.0
 
