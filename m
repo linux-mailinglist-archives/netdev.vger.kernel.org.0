@@ -2,89 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CBC02125406
-	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 22:00:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D5D012540B
+	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 22:02:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726582AbfLRVAl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Dec 2019 16:00:41 -0500
-Received: from mail-ua1-f50.google.com ([209.85.222.50]:43684 "EHLO
-        mail-ua1-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726092AbfLRVAk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Dec 2019 16:00:40 -0500
-Received: by mail-ua1-f50.google.com with SMTP id o42so1162515uad.10
-        for <netdev@vger.kernel.org>; Wed, 18 Dec 2019 13:00:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=SfLOPDRTBdF/lcpFJdFkw/ySmkMTjkmNjlIgvA/uTXs=;
-        b=cLET42C8Hv5e/U2Eyd/ivw5Hz0nB/+M7FuDgCzuTbOhU57punGNKVOwd4wMzjHu6Rk
-         cQ4mtimuJeXg1cnCTveWZuvpv6x7xKMYiANmZvNUQMCj3CgC6LJTbwCxsk9phN0MyEMC
-         Tmz4F1ScLac5zEUWeTDinVF2lzqoP5PUQSeJoxSXEydqqGQ8aqq4FJf5uHkGqsC4t3Ka
-         GJ8d62sF2iVgjpcpDJMv+ZWp1ySsouDw0yXUqt+mCEDEVC6GmZ/Wkhfo3+x3YqxWwCJG
-         mAwn+KtwwrKYrNrCixkqTUyje5ri88IfjXVUOkuQ3TwE79WmqbA8lCbXVgcJhRTyiugB
-         avEA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=SfLOPDRTBdF/lcpFJdFkw/ySmkMTjkmNjlIgvA/uTXs=;
-        b=BUDNf+DxRWg1TcXidOBthcAShFLEVc3y5RpPYn+bnK7Gz99IgagDKyCggS1YZDlZUu
-         fz4nUuUxano9eUkLAEzkFRR5yQbkuwZ44wXfxtlGPFbmfh8B3uKp3oa9ff+i/PEiTZzW
-         WPVUp8nnk3sxSOicFpz6Xml3GVd9jXYzI39j474UJXxru9fZX0W8q4YDhQMTJ1UNOE1a
-         DDSeaLLuXd/3PFRudsGOiKmmdXwbG0P6KOkOlHXhWU90o9eFRFv1CMDve6kWaQl/bOfy
-         3YuO+EpYD2Mr85m9lpokqmDPg7WUVaYr9iZqgjHK6UwFOahmeQ/4LV7ioyrMBqPG8Gg1
-         Qsvg==
-X-Gm-Message-State: APjAAAVzHztHxCL9sQcM2QvuSw2bXc78YvM2Wbf+SDyhjSxLV5A8/zCz
-        LWBQEouP05tb0LP17E3rb9qAD4yt+h/sbY4viQ==
-X-Google-Smtp-Source: APXvYqznK97Kc89MLanUFKXLl3kDM1icF9z9EaNRyPemGd0o1RASqUDCkxTVgVFaxwj1SR3/vKy1trWBhPfEiUIXFNk=
-X-Received: by 2002:ab0:53c9:: with SMTP id l9mr3058312uaa.27.1576702839764;
- Wed, 18 Dec 2019 13:00:39 -0800 (PST)
+        id S1726385AbfLRVCw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Dec 2019 16:02:52 -0500
+Received: from mga05.intel.com ([192.55.52.43]:6672 "EHLO mga05.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725991AbfLRVCw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 18 Dec 2019 16:02:52 -0500
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 18 Dec 2019 13:02:51 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.69,330,1571727600"; 
+   d="scan'208";a="365859209"
+Received: from unknown (HELO [10.241.98.36]) ([10.241.98.36])
+  by orsmga004.jf.intel.com with ESMTP; 18 Dec 2019 13:02:51 -0800
+Date:   Wed, 18 Dec 2019 13:02:51 -0800 (PST)
+From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
+X-X-Sender: mjmartin@mjmartin-mac01.local
+To:     David Miller <davem@davemloft.net>
+cc:     eric.dumazet@gmail.com, netdev@vger.kernel.org, mptcp@lists.01.org
+Subject: Re: [PATCH net-next v3 07/11] tcp: Prevent coalesce/collapse when
+ skb has MPTCP extensions
+In-Reply-To: <20191218.124510.1971632024371398726.davem@davemloft.net>
+Message-ID: <alpine.OSX.2.21.1912181251550.32925@mjmartin-mac01.local>
+References: <20191217203807.12579-1-mathew.j.martineau@linux.intel.com> <20191217203807.12579-8-mathew.j.martineau@linux.intel.com> <5fc0d4bd-5172-298d-6bbb-00f75c7c0dc9@gmail.com> <20191218.124510.1971632024371398726.davem@davemloft.net>
+User-Agent: Alpine 2.21 (OSX 202 2017-01-01)
 MIME-Version: 1.0
-References: <CACwWb3CYP9MENZJAzBt5buMNxkck7+Qig9yYG8nTYrdBw1fk5A@mail.gmail.com>
-In-Reply-To: <CACwWb3CYP9MENZJAzBt5buMNxkck7+Qig9yYG8nTYrdBw1fk5A@mail.gmail.com>
-From:   Stephen Suryaputra <ssuryaextr@gmail.com>
-Date:   Wed, 18 Dec 2019 16:00:28 -0500
-Message-ID: <CAHapkUgCWS4DxGVL2qJsXmiAEq4rGY+sPTROx4iftO6mD_261g@mail.gmail.com>
-Subject: Re: IPv6 test fail
-To:     Levente <leventelist@gmail.com>,
-        Captain Wiggum <captwiggum@gmail.com>
-Cc:     netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII; format=flowed
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I am curious: what kernel version are you testing?
-I recall that several months ago there is a thread on TAHI IPv6.
-Including the person who started the thread.
 
-Stephen.
+On Wed, 18 Dec 2019, David Miller wrote:
 
-On Thu, Oct 24, 2019 at 7:43 AM Levente <leventelist@gmail.com> wrote:
+> From: Eric Dumazet <eric.dumazet@gmail.com>
+> Date: Wed, 18 Dec 2019 11:50:24 -0800
 >
-> Dear list,
+>> On 12/17/19 12:38 PM, Mat Martineau wrote:
+>>> The MPTCP extension data needs to be preserved as it passes through the
+>>> TCP stack. Make sure that these skbs are not appended to others during
+>>> coalesce or collapse, so the data remains associated with the payload of
+>>> the given skb.
+>>
+>> This seems a very pessimistic change to me.
+>>
+>> Are you planing later to refine this limitation ?
+>>
+>> Surely if a sender sends TSO packet, we allow all the segments
+>> being aggregated at receive side either by GRO or TCP coalescing.
 >
+> This turns off absolutely crucial functional elements of our TCP
+> stack, and will avoid all of the machinery that avoids wastage in TCP
+> packets sitting in the various queues.  skb->truesize management, etc.
 >
-> We are testing IPv6 again against the test specification of ipv6forum.
+> I will not apply these patches with such a non-trivial regression in
+> place for MPTCP streams, sorry.
 >
-> https://www.ipv6ready.org/?page=documents&tag=ipv6-core-protocols
->
-> The test house state that some certain packages doesn't arrive to the
-> device under test. We fail test cases
->
-> V6LC.1.2.2: No Next Header After Extension Header
-> V6LC.1.2.3: Unreacognized Next Header in Extension Header - End Node
-> V6LC.1.2.4: Extension Header Processing Order
-> V6LC.1.2.5: Option Processing Order
-> V6LC.1.2.8: Option Processing Destination Options Header
->
-> The question is that is it possible that the this is the intended way
-> of operation? I.e. the kernel swallows those malformed packages? We
-> use tcpdump to log the traffic.
->
->
-> Thank you for your help.
->
-> Levente
+
+Ok, understood. Not every packet has this MPTCP extension data so 
+coalescing was not always turned off, but given the importance of avoiding 
+this memory waste I'll confirm GRO behavior and work on maintaining 
+coalesce/collapse with identical MPTCP extension data.
+
+--
+Mat Martineau
+Intel
