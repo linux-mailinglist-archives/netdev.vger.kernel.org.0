@@ -2,87 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B26BC1249CE
-	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 15:35:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E51451249D1
+	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 15:36:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727226AbfLROfg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Dec 2019 09:35:36 -0500
-Received: from mail.kernel.org ([198.145.29.99]:41830 "EHLO mail.kernel.org"
+        id S1727205AbfLROgP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Dec 2019 09:36:15 -0500
+Received: from mail.kernel.org ([198.145.29.99]:41970 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727114AbfLROfg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 18 Dec 2019 09:35:36 -0500
+        id S1727108AbfLROgP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 18 Dec 2019 09:36:15 -0500
 Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 65F6621582;
-        Wed, 18 Dec 2019 14:35:35 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id BE05021582;
+        Wed, 18 Dec 2019 14:36:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1576679735;
-        bh=G9LOa7DDtMFx6fo5UNpdN4LqcfbHJ8Jh2m+0GPeXuW4=;
+        s=default; t=1576679774;
+        bh=FpUdA1QKWT2FMoEcuoACKH1w02F3qC9LrxYVeOcepE0=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=EPDQCciNs0RAV9AJVWl23tHKtSKOkMBOLKuP3kEpUcXdTsZtQUwwogVgKAkGL/HS1
-         UQqgpSY/vhYN1FntjSRk3E55/X8RxbOGsn09dgwC0FeiW2G4HomiMTKl66gpXmQmYo
-         oxUbVn3C+jija+IcvpdVLIbt1rJB51EaKgt7Wdtg=
-Date:   Wed, 18 Dec 2019 15:35:33 +0100
+        b=Z5JFSoDvpzTAXEgxhZ7iNHCLZuS4ul/I/bJ9fRGugJEaqGuSVh++cYgwa1TfAVnbv
+         vH3NhLDpEGPmGVktvsZcR0DZsrZIb8gKL4o2X/eFyY9ICzUcbTBUhiliW/X6jogrLa
+         puk47+4oaztkf/u+YpulP7S+2dY2IMw+V4FiFy1Y=
+Date:   Wed, 18 Dec 2019 15:36:12 +0100
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Mika Westerberg <mika.westerberg@linux.intel.com>
-Cc:     linux-usb@vger.kernel.org,
+To:     Nicholas Johnson <nicholas.johnson-opensource@outlook.com.au>
+Cc:     Mika Westerberg <mika.westerberg@linux.intel.com>,
+        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
         Andreas Noever <andreas.noever@gmail.com>,
         Michael Jamet <michael.jamet@intel.com>,
         Yehezkel Bernat <YehezkelShB@gmail.com>,
         Rajmohan Mani <rajmohan.mani@intel.com>,
-        Nicholas Johnson <nicholas.johnson-opensource@outlook.com.au>,
         Lukas Wunner <lukas@wunner.de>,
         Alan Stern <stern@rowland.harvard.edu>,
-        Mario.Limonciello@dell.com,
+        "Mario.Limonciello@dell.com" <Mario.Limonciello@dell.com>,
         Anthony Wong <anthony.wong@canonical.com>,
         Oliver Neukum <oneukum@suse.com>,
         Christian Kellner <ckellner@redhat.com>,
-        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 3/9] thunderbolt: Populate PG field in hot plug
- acknowledgment packet
-Message-ID: <20191218143533.GA262880@kroah.com>
+        "David S . Miller" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2 4/9] thunderbolt: Add initial support for USB4
+Message-ID: <20191218143612.GB262880@kroah.com>
 References: <20191217123345.31850-1-mika.westerberg@linux.intel.com>
- <20191217123345.31850-4-mika.westerberg@linux.intel.com>
- <20191217124745.GC3175457@kroah.com>
- <20191217145632.GM2913417@lahna.fi.intel.com>
+ <20191217123345.31850-5-mika.westerberg@linux.intel.com>
+ <PSXP216MB043843D1E5E4A65780272FB480530@PSXP216MB0438.KORP216.PROD.OUTLOOK.COM>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20191217145632.GM2913417@lahna.fi.intel.com>
+In-Reply-To: <PSXP216MB043843D1E5E4A65780272FB480530@PSXP216MB0438.KORP216.PROD.OUTLOOK.COM>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 17, 2019 at 04:56:32PM +0200, Mika Westerberg wrote:
-> On Tue, Dec 17, 2019 at 01:47:45PM +0100, Greg Kroah-Hartman wrote:
-> > On Tue, Dec 17, 2019 at 03:33:39PM +0300, Mika Westerberg wrote:
-> > > USB4 1.0 section 6.4.2.7 specifies a new field (PG) in notification
-> > > packet that is sent as response of hot plug/unplug events. This field
-> > > tells whether the acknowledgment is for plug or unplug event. This needs
-> > > to be set accordingly in order the router to send further hot plug
-> > > notifications.
-> > > 
-> > > To make it simpler we fill the field unconditionally. Legacy devices do
-> > > not look at this field so there should be no problems with them.
-> > > 
-> > > While there rename tb_cfg_error() to tb_cfg_ack_plug() and update the
-> > > log message accordingly. The function is only used to ack plug/unplug
-> > > events.
-> > > 
-> > > Signed-off-by: Mika Westerberg <mika.westerberg@linux.intel.com>
+On Wed, Dec 18, 2019 at 09:34:45AM +0000, Nicholas Johnson wrote:
+> On Tue, Dec 17, 2019 at 03:33:40PM +0300, Mika Westerberg wrote:
+> > USB4 is the public specification based on Thunderbolt 3 protocol. There
+> > are some differences in register layouts and flows. In addition to PCIe
+> > and DP tunneling, USB4 supports tunneling of USB 3.x. USB4 is also
+> > backward compatible with Thunderbolt 3 (and older generations but the
+> > spec only talks about 3rd generation). USB4 compliant devices can be
+> > identified by checking USB4 version field in router configuration space.
 > > 
-> > First 3 patches look "trivial" enough for me to take right now, any
-> > objection to that?
-> 
-> No objections from my side :)
-> 
-> > Should I be using my usb tree for this?
-> 
-> Yes, I think it makes sense now that this is also under USB IF umbrella.
+> > This patch adds initial support for USB4 compliant hosts and devices
+> > which enables following features provided by the existing functionality
+> > in the driver:
+> > 
+> >   - PCIe tunneling
+> >   - Display Port tunneling
+> Nitpick: DisplayPort is a single word.
 
-Ok, now done, thanks.
+Please learn to trim replies, it was a pain to read this message :(
 
-greg k-h
