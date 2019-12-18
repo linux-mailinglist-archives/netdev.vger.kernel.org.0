@@ -2,111 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D3301256D4
-	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 23:35:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 94EC6125709
+	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 23:38:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726617AbfLRWfm convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 18 Dec 2019 17:35:42 -0500
-Received: from mga14.intel.com ([192.55.52.115]:37654 "EHLO mga14.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726387AbfLRWfl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 18 Dec 2019 17:35:41 -0500
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 18 Dec 2019 14:35:41 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.69,330,1571727600"; 
-   d="scan'208";a="240942503"
-Received: from fmsmsx104.amr.corp.intel.com ([10.18.124.202])
-  by fmsmga004.fm.intel.com with ESMTP; 18 Dec 2019 14:35:41 -0800
-Received: from fmsmsx602.amr.corp.intel.com (10.18.126.82) by
- fmsmsx104.amr.corp.intel.com (10.18.124.202) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Wed, 18 Dec 2019 14:35:41 -0800
-Received: from fmsmsx602.amr.corp.intel.com (10.18.126.82) by
- fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Wed, 18 Dec 2019 14:35:40 -0800
-Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82]) by
- fmsmsx602.amr.corp.intel.com ([10.18.126.82]) with mapi id 15.01.1713.004;
- Wed, 18 Dec 2019 14:35:40 -0800
-From:   "Bowers, AndrewX" <andrewx.bowers@intel.com>
-To:     "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: RE: [Intel-wired-lan] [PATCH] iavf: remove current MAC address filter
- on VF reset
-Thread-Topic: [Intel-wired-lan] [PATCH] iavf: remove current MAC address
- filter on VF reset
-Thread-Index: AQHVtMX3NxmzdEVU1UaG8vQUI1l3fKfAfVHg
-Date:   Wed, 18 Dec 2019 22:35:40 +0000
-Message-ID: <0b5c9869aadd45f9b3643ab6b63704c9@intel.com>
-References: <20191217102923.3274961-1-sassmann@kpanic.de>
-In-Reply-To: <20191217102923.3274961-1-sassmann@kpanic.de>
+        id S1726700AbfLRWiX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Dec 2019 17:38:23 -0500
+Received: from us03-smtprelay2.synopsys.com ([149.117.87.133]:39558 "EHLO
+        smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726512AbfLRWiX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Dec 2019 17:38:23 -0500
+Received: from mailhost.synopsys.com (badc-mailhost1.synopsys.com [10.192.0.17])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (No client certificate requested)
+        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id C4D96C008D;
+        Wed, 18 Dec 2019 22:38:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
+        t=1576708702; bh=rhcARhaq9PtHOKpDYqJnbyuiB8xGFhbVuzgrbNENRAg=;
+        h=From:To:CC:Subject:Date:References:In-Reply-To:From;
+        b=GrL+prKtrOR3SSp7ayAAnEqfaTV8k+rPZ87buH67EuZK6daFbJfxw1E2dD7osU1Wy
+         QtN0scLZFagz6lr+R+XAY+2U6cF1Q6NCc862wbHST5gVIzATxB5ACE8TWuWIjBal9U
+         lho7+fVWoYAq5r8FKLMJfKuRaEjPVBAU9BksJyM7Rh/uxMts4+4O8cmdBmWT+Lvuyu
+         ydxSdSPuMywo8uVdNHAlQEaG/+MKBAcGkqXbw4QfHqFdENHUzk/UeAlFUcPgPkhKxs
+         b1WJxKw2e3lutNzHKtzRlSs8BMw4TV7ys1+b+gGfyRhT9FHyGbT2vW9wa46FXD2hl+
+         wrfELYcuRbhrg==
+Received: from US01WEHTC3.internal.synopsys.com (us01wehtc3.internal.synopsys.com [10.15.84.232])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mailhost.synopsys.com (Postfix) with ESMTPS id 31BE0A007F;
+        Wed, 18 Dec 2019 22:38:19 +0000 (UTC)
+Received: from us01hybrid1.internal.synopsys.com (10.200.27.51) by
+ US01WEHTC3.internal.synopsys.com (10.15.84.232) with Microsoft SMTP Server
+ (TLS) id 14.3.408.0; Wed, 18 Dec 2019 14:38:18 -0800
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (10.202.3.67) by
+ mrs.synopsys.com (10.200.27.51) with Microsoft SMTP Server (TLS) id
+ 14.3.408.0; Wed, 18 Dec 2019 14:38:18 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=WeTWDHEygYet0/FEoUOATjCxCwWnZ/M+TfpzrWh/5zpyKG7uC5foR9g5+J4jBuMNJ/VYnThw7gMY+NVPkPeudVK12QQ/6ic1qoonBPGFn6ysjJZHkibpSPH3d0rKqWBDrblQKnycODYIY39r+W6vrxZ56d58JekIMl8npG65Dq0ZnnOLE7226jbEu4fbDR56Q8yw0dADvLZR62x+YZAOgShhyfU+nWIBMq8B7xS8lc6G9MPDLTYTgQ3SNGj5kD/P/aWq8gcFN0JRNPTR7DQo7mgcEO6AbB7LJh+tpNaoA8Li+N+RMwDoZvO3DJCn+5e3+m/EBlvCSXSfdBxNhnCRzw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Sj2zKfKb7AAxlhU5wQKBPgBgqHKnwERs1JwyQ+oofeY=;
+ b=XNzSR2kHtD+oxqKu/EjhW9UFWoXpNGaj9HyP7xB9e8jShP04nLZjp1ZvHOvQbdJeUU7CTBwMRShLbGXvaNA4p8Ue6UIk22qRDAXPpsV0Vazl+zfu/sPaF8Ou/457AIELLS25Xk8We4SHZpTtFs9IPT0dMD2otpKOSbcDZb/QobcyEg271C8Jw2qHTIkKvO0r6lqV5FWCzOr3AtjvXXOrsD1OxOzB6Fud/gsBm6Vkx19DB+SGsHN2yFlgW+EJhzKPTfzQPe93zakCrwzGnpFag/xBFlhJYBI6/s3OjeJegvv6JC9YcisLg8mr7196Dw7jnxSDGTgllY98F+blxWwGYg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=synopsys.com; dmarc=pass action=none header.from=synopsys.com;
+ dkim=pass header.d=synopsys.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=synopsys.onmicrosoft.com; s=selector2-synopsys-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Sj2zKfKb7AAxlhU5wQKBPgBgqHKnwERs1JwyQ+oofeY=;
+ b=ILmIPpiNinwjQ+W7OFnDL8JJMvy4yfWVAHzxor2psp9GQWvEeXrT9fPHR/MCVBVyW278J9E7Ciy6MGXDp8yDmoCbW6NUxP44c/qGY/qZUMiHC/FGlaFkxelsV9oMS35i6s401jLPK/tdHHggueA0F9S2DZ4fOs07zIPnppiVI6Y=
+Received: from BN8PR12MB3266.namprd12.prod.outlook.com (20.179.67.145) by
+ BN8PR12MB3540.namprd12.prod.outlook.com (20.179.67.33) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2538.18; Wed, 18 Dec 2019 22:38:16 +0000
+Received: from BN8PR12MB3266.namprd12.prod.outlook.com
+ ([fe80::3d20:3a36:3b64:4510]) by BN8PR12MB3266.namprd12.prod.outlook.com
+ ([fe80::3d20:3a36:3b64:4510%7]) with mapi id 15.20.2559.012; Wed, 18 Dec 2019
+ 22:38:16 +0000
+From:   Jose Abreu <Jose.Abreu@synopsys.com>
+To:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>
+CC:     Linux Next Mailing List <linux-next@vger.kernel.org>,
+        "Linux Kernel Mailing List" <linux-kernel@vger.kernel.org>
+Subject: RE: linux-next: build failure after merge of the net-next tree
+Thread-Topic: linux-next: build failure after merge of the net-next tree
+Thread-Index: AQHVtfMckJGbhj9DeECqpvEANajkfqfAe4tA
+Date:   Wed, 18 Dec 2019 22:38:16 +0000
+Message-ID: <BN8PR12MB3266A7474D06616B7770AAEBD3530@BN8PR12MB3266.namprd12.prod.outlook.com>
+References: <20191219093218.1c1d06f2@canb.auug.org.au>
+In-Reply-To: <20191219093218.1c1d06f2@canb.auug.org.au>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
-dlp-product: dlpe-windows
-x-ctpclassification: CTP_NT
-x-titus-metadata-40: eyJDYXRlZ29yeUxhYmVscyI6IiIsIk1ldGFkYXRhIjp7Im5zIjoiaHR0cDpcL1wvd3d3LnRpdHVzLmNvbVwvbnNcL0ludGVsMyIsImlkIjoiOWNjMjRiZWItZTE0MS00MDdiLWI4NmEtZDY0ZGY1NmNkNjRmIiwicHJvcHMiOlt7Im4iOiJDVFBDbGFzc2lmaWNhdGlvbiIsInZhbHMiOlt7InZhbHVlIjoiQ1RQX05UIn1dfV19LCJTdWJqZWN0TGFiZWxzIjpbXSwiVE1DVmVyc2lvbiI6IjE3LjEwLjE4MDQuNDkiLCJUcnVzdGVkTGFiZWxIYXNoIjoiTnQrRUhqRXRxYml5Q1wvRFB4QTVscU0wVFlSR3NFaFBuY3U3dzdQdEFjcXBCUWh5YnhcL2loWXdmRXdJWk1BT1VwIn0=
-dlp-reaction: no-action
-dlp-version: 11.0.400.15
-x-originating-ip: [10.22.254.132]
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=joabreu@synopsys.com; 
+x-originating-ip: [198.182.37.200]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: c10890ee-8c7f-4a0a-a865-08d7840af97d
+x-ms-traffictypediagnostic: BN8PR12MB3540:
+x-microsoft-antispam-prvs: <BN8PR12MB3540B0A3F52F70680FEBB120D3530@BN8PR12MB3540.namprd12.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:1284;
+x-forefront-prvs: 0255DF69B9
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(366004)(346002)(39860400002)(136003)(376002)(396003)(53754006)(189003)(199004)(478600001)(110136005)(71200400001)(9686003)(8676002)(6506007)(54906003)(66556008)(5660300002)(86362001)(4744005)(64756008)(26005)(2906002)(7696005)(33656002)(186003)(4326008)(81166006)(81156014)(76116006)(66446008)(66946007)(66476007)(8936002)(55016002)(52536014)(316002);DIR:OUT;SFP:1102;SCL:1;SRVR:BN8PR12MB3540;H:BN8PR12MB3266.namprd12.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: synopsys.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: xV38m5uk7dw3vM7XkeW7SMJn4wDipFTAbrXy91AmPaRFKLMe8zVfYi/1odmoCNfZARIl6esUmkaT5pnHag2maS/NfQqfM5wsHp2g4s3kB2knnPVxlbKu9ZTt2Ma48aRuaAMNpr1O8qxNz4vifrZlz2BbEQeedlmGgeQEr4UkW5DthZQrQ0C9jNiIiQ+VoEkUCS2GevZtSc9KE0loRlrNPRwMKVb5Iy0Ux8lOrsJws3/ubBZOfXQX8iu6zUmhEUVbNQOav418t2Edk9dWxFAX8bwr3Qk+4fNRLvXDt2/P1plIClAnVOGxZpi6EU1SG02fBkRVpFEMty3lY69U9EdBnqe8wg7xKfgF9jfoe4Pxkc0gaspWHWu2ypot1EhYJxQlUz+TSanSA6Ao79CBLxrc0mFXHf/wkoSWrAxGTWnyN/tug1osk1rCdYkrgkmjwIoptPQyiu/Nv8hvcOflUEgOtgsl59+VM/bhbJqE/QcsZYuWV2P8Gw3B8q95F61SQa56
+x-ms-exchange-transport-forked: True
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-Network-Message-Id: c10890ee-8c7f-4a0a-a865-08d7840af97d
+X-MS-Exchange-CrossTenant-originalarrivaltime: 18 Dec 2019 22:38:16.5576
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: c33c9f88-1eb7-4099-9700-16013fd9e8aa
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: Myuy1lOTltx4dWQWTIkM/K17KMSYCLG1rn4jh2Ng/pwrHaC7EFjX+n6BX885BwETmpJIRPQy54x5lx7jTzV4Ug==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR12MB3540
+X-OriginatorOrg: synopsys.com
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> -----Original Message-----
-> From: Intel-wired-lan [mailto:intel-wired-lan-bounces@osuosl.org] On
-> Behalf Of Stefan Assmann
-> Sent: Tuesday, December 17, 2019 2:29 AM
-> To: intel-wired-lan@lists.osuosl.org
-> Cc: netdev@vger.kernel.org; davem@davemloft.net; sassmann@kpanic.de
-> Subject: [Intel-wired-lan] [PATCH] iavf: remove current MAC address filter
-> on VF reset
-> 
-> Currently MAC filters are not altered during a VF reset event. This may lead
-> to a stale filter when an administratively set MAC is forced by the PF.
-> 
-> For an administratively set MAC the PF driver deletes the VFs filters,
-> overwrites the VFs MAC address and triggers a VF reset. However the VF
-> driver itself is not aware of the filter removal, which is what the VF reset is
-> for.
-> The VF reset queues all filters present in the VF driver to be re-added to the
-> PF filter list (including the filter for the now stale VF MAC
-> address) and triggers a VIRTCHNL_OP_GET_VF_RESOURCES event, which
-> provides the new MAC address to the VF.
-> 
-> When this happens i40e will complain and reject the stale MAC filter, at least
-> in the untrusted VF case.
-> i40e 0000:08:00.0: Setting MAC 3c:fa:fa:fa:fa:01 on VF 0 iavf 0000:08:02.0:
-> Reset warning received from the PF iavf 0000:08:02.0: Scheduling reset task
-> i40e 0000:08:00.0: Bring down and up the VF interface to make this change
-> effective.
-> i40e 0000:08:00.0: VF attempting to override administratively set MAC
-> address, bring down and up the VF interface to resume normal operation
-> i40e 0000:08:00.0: VF 0 failed opcode 10, retval: -1 iavf 0000:08:02.0: Failed to
-> add MAC filter, error IAVF_ERR_NVM
-> 
-> To avoid re-adding the stale MAC filter it needs to be removed from the VF
-> driver's filter list before queuing the existing filters. Then during the
-> VIRTCHNL_OP_GET_VF_RESOURCES event the correct filter needs to be
-> added again, at which point the MAC address has been updated.
-> 
-> As a bonus this change makes bringing the VF down and up again superfluous
-> for the administratively set MAC case.
-> 
-> Signed-off-by: Stefan Assmann <sassmann@kpanic.de>
-> ---
->  drivers/net/ethernet/intel/iavf/iavf.h          |  2 ++
->  drivers/net/ethernet/intel/iavf/iavf_main.c     | 17 +++++++++++++----
->  drivers/net/ethernet/intel/iavf/iavf_virtchnl.c |  3 +++
->  3 files changed, 18 insertions(+), 4 deletions(-)
+From: Stephen Rothwell <sfr@canb.auug.org.au>
+Date: Dec/18/2019, 22:32:18 (UTC+00:00)
 
-Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
+> Hi all,
+>=20
+> After merging the net-next tree, today's linux-next build (arm
+> multi_v7_defconfig) failed like this:
+>=20
+> arm-linux-gnueabi-ld: drivers/net/ethernet/stmicro/stmmac/stmmac_tc.o: in=
+ function `tc_setup_taprio':
+> stmmac_tc.c:(.text+0x4e8): undefined reference to `__aeabi_uldivmod'
+> arm-linux-gnueabi-ld: stmmac_tc.c:(.text+0x508): undefined reference to `=
+__aeabi_uldivmod'
+>=20
+> Caused by commit
+>=20
+>   b60189e0392f ("net: stmmac: Integrate EST with TAPRIO scheduler API")
+>=20
+> I have used the net-nest tree from next-20191218 for today.
+> --=20
+> Cheers,
+> Stephen Rothwell
 
+Hi Stephen,
 
+I'll try to fix it still today. Sorry for the mess.
+
+---
+Thanks,
+Jose Miguel Abreu
