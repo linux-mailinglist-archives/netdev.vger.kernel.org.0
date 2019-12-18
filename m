@@ -2,127 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A9D812425A
-	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 10:03:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AB86112425C
+	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 10:03:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726360AbfLRJDa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Dec 2019 04:03:30 -0500
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:43809 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725799AbfLRJDa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Dec 2019 04:03:30 -0500
-Received: by mail-wr1-f68.google.com with SMTP id d16so1347354wre.10
-        for <netdev@vger.kernel.org>; Wed, 18 Dec 2019 01:03:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=references:user-agent:from:to:cc:subject:in-reply-to:date
-         :message-id:mime-version;
-        bh=cs9psSZDFsvJWPM8fhGastj+FaAmA+j3qYLmR+w6Po8=;
-        b=TCtu3cRxGwR7MauzVnqFxKgmVWrb+Vx+mgLit1UtmJqKGakMvHDuH75/ZBquZ+T2Ix
-         RO53zAyA4RE554vVc8W5GWKEh8W13TaxwbNDV/+wDKQlFmo13K5TiIRGVTWj57nTVMHG
-         5ZC+ru3PFj2+oTxieq4ERcD5tNK/cSqhQcOrk=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:references:user-agent:from:to:cc:subject
-         :in-reply-to:date:message-id:mime-version;
-        bh=cs9psSZDFsvJWPM8fhGastj+FaAmA+j3qYLmR+w6Po8=;
-        b=NOd0pZACslUFMpMDkxa7t1g9Oy2qM5XbINgqvS+zaNyG4GY7T434Zx+RhLMaGkN1MH
-         BPzOco0023WPZ0PTTa7B/RGFZqM+LZuXXsLnsKSCxKTsSjf8dd2Ky20VrSJ2+fr1DFqN
-         87/mNMkZl9Fhwf5sHLEU13tIsZI5s3WzAR+BuZiNv+D58/40AWszOVIwkDZdOIL7jzYG
-         LqnKdkkzY/bttKwu8Se6BCNkNsHeDVOq+IdoDzolxwhStR1s2me4Z+CP7S2n+M0a7jlR
-         E6Ccn2YJvGyageIPZbSKDOhB02+mGRxCMRvanuBqmwxWJFsDOvdilGBCO1E32xkvXWuS
-         5z5A==
-X-Gm-Message-State: APjAAAXUYJHKzswfiDUbKDePsHtrnZD6MA/AzCfE0pW4EoSEwZ22Hxj9
-        7cQULvLcXaSKoy0Dyjn0PzklTw==
-X-Google-Smtp-Source: APXvYqzEagSk/iQCF5+XWWrMzd08Wnc6HIKO/HnoSgTbdRaAk6GuCxvXuMpcw3lmRHmAMcGwihFjKg==
-X-Received: by 2002:adf:ea88:: with SMTP id s8mr1487699wrm.293.1576659807426;
-        Wed, 18 Dec 2019 01:03:27 -0800 (PST)
-Received: from cloudflare.com ([176.221.114.230])
-        by smtp.gmail.com with ESMTPSA id g18sm1658013wmh.48.2019.12.18.01.03.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 18 Dec 2019 01:03:26 -0800 (PST)
-References: <20191214004737.1652076-1-kafai@fb.com> <20191214004758.1653342-1-kafai@fb.com> <b321412c-1b42-45a9-4dc6-cc268b55cd0d@gmail.com> <CADVnQy=soQ8KhuUWEQj0n2ge3a43OSgAKS95bmBtp090jqbM_w@mail.gmail.com> <87o8w7fjd4.fsf@cloudflare.com> <20191217182228.icbttiozdcmveutq@kafai-mbp.dhcp.thefacebook.com>
-User-agent: mu4e 1.1.0; emacs 26.3
-From:   Jakub Sitnicki <jakub@cloudflare.com>
-To:     Martin Lau <kafai@fb.com>
-Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
-        Neal Cardwell <ncardwell@google.com>,
-        "bpf\@vger.kernel.org" <bpf@vger.kernel.org>,
-        "Alexei Starovoitov" <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "David Miller" <davem@davemloft.net>,
-        Kernel Team <Kernel-team@fb.com>,
-        Netdev <netdev@vger.kernel.org>
-Subject: Re: [PATCH bpf-next 09/13] bpf: Add BPF_FUNC_jiffies
-In-reply-to: <20191217182228.icbttiozdcmveutq@kafai-mbp.dhcp.thefacebook.com>
-Date:   Wed, 18 Dec 2019 10:03:25 +0100
-Message-ID: <87o8w63t0i.fsf@cloudflare.com>
+        id S1726591AbfLRJDo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Dec 2019 04:03:44 -0500
+Received: from mo4-p01-ob.smtp.rzone.de ([85.215.255.50]:35616 "EHLO
+        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725930AbfLRJDo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Dec 2019 04:03:44 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1576659822;
+        s=strato-dkim-0002; d=hartkopp.net;
+        h=In-Reply-To:Date:Message-ID:From:References:Cc:To:Subject:
+        X-RZG-CLASS-ID:X-RZG-AUTH:From:Subject:Sender;
+        bh=E5EK+nZyMM8i0OBv88VCVdNSE8sqZomIq7L1cCPL+eY=;
+        b=ZQXUEIZUvPZ3PaUJnCv8nG+HzUxhFp4Ql5GX3RA5ZEh3w93VAtWVItjSfuTc5fQsmx
+        S+4fJmkeLAK4Jiqdx807pxLR27dnMz+x6F6y2rIneUML32nuAVuZ6a1ptU2RWNmwIIzg
+        L7XP0ScWGbmeE7NLyZ8gzRV2TLn1quaesTDNfbd8Iu5KSEzxtiLZ10CYYHVFvalzLM57
+        LPqP0CaHzn5FHWfvrGZZeYpNH5ttTeIeKZ9lqlUY2ZLAFboQ2LigUPJK8QXABxgRJoCc
+        cm+dDDDhaHldpeUzz4+axwc93M/33NhaeRpLVvQWhN04Wu+EgcIq6UFGon1CvmEbk1I9
+        2JuQ==
+X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1q3jXdVqE32oRVrGn+26OxA=="
+X-RZG-CLASS-ID: mo00
+Received: from [10.180.55.161]
+        by smtp.strato.de (RZmta 46.0.7 AUTH)
+        with ESMTPSA id j0a0eavBI93W39R
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+        (Client did not present a certificate);
+        Wed, 18 Dec 2019 10:03:32 +0100 (CET)
+Subject: Re: [PATCH v1] can: j1939: transport: j1939_simple_recv(): ignore
+ local J1939 messages send not by J1939 stack
+To:     Oleksij Rempel <o.rempel@pengutronix.de>,
+        dev.kurt@vandijck-laurijssen.be, mkl@pengutronix.de,
+        wg@grandegger.com
+Cc:     kernel@pengutronix.de, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org
+References: <20191218084355.24398-1-o.rempel@pengutronix.de>
+From:   Oliver Hartkopp <socketcan@hartkopp.net>
+Message-ID: <c2e25142-8104-872e-3e33-63307a2d34ab@hartkopp.net>
+Date:   Wed, 18 Dec 2019 10:03:27 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.3.0
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <20191218084355.24398-1-o.rempel@pengutronix.de>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 17, 2019 at 07:22 PM CET, Martin Lau wrote:
-> On Tue, Dec 17, 2019 at 09:26:31AM +0100, Jakub Sitnicki wrote:
->> On Sat, Dec 14, 2019 at 08:25 PM CET, Neal Cardwell wrote:
->> > On Fri, Dec 13, 2019 at 9:00 PM Eric Dumazet <eric.dumazet@gmail.com> wrote:
->> >>
->> >>
->> >>
->> >> On 12/13/19 4:47 PM, Martin KaFai Lau wrote:
->> >> > This patch adds a helper to handle jiffies.  Some of the
->> >> > tcp_sock's timing is stored in jiffies.  Although things
->> >> > could be deduced by CONFIG_HZ, having an easy way to get
->> >> > jiffies will make the later bpf-tcp-cc implementation easier.
->> >> >
->> >>
->> >> ...
->> >>
->> >> > +
->> >> > +BPF_CALL_2(bpf_jiffies, u64, in, u64, flags)
->> >> > +{
->> >> > +     if (!flags)
->> >> > +             return get_jiffies_64();
->> >> > +
->> >> > +     if (flags & BPF_F_NS_TO_JIFFIES) {
->> >> > +             return nsecs_to_jiffies(in);
->> >> > +     } else if (flags & BPF_F_JIFFIES_TO_NS) {
->> >> > +             if (!in)
->> >> > +                     in = get_jiffies_64();
->> >> > +             return jiffies_to_nsecs(in);
->> >> > +     }
->> >> > +
->> >> > +     return 0;
->> >> > +}
->> >>
->> >> This looks a bit convoluted :)
->> >>
->> >> Note that we could possibly change net/ipv4/tcp_cubic.c to no longer use jiffies at all.
->> >>
->> >> We have in tp->tcp_mstamp an accurate timestamp (in usec) that can be converted to ms.
->> >
->> > If the jiffies functionality stays, how about 3 simple functions that
->> > correspond to the underlying C functions, perhaps something like:
->> >
->> >   bpf_nsecs_to_jiffies(nsecs)
->> >   bpf_jiffies_to_nsecs(jiffies)
->> >   bpf_get_jiffies_64()
->> >
->> > Separate functions might be easier to read/maintain (and may even be
->> > faster, given the corresponding reduction in branches).
->>
->> Having bpf_nsecs_to_jiffies() would be also handy for BPF sockops progs
->> that configure SYN-RTO timeout (BPF_SOCK_OPS_TIMEOUT_INIT).
->>
->> Right now user-space needs to go look for CONFIG_HZ in /proc/config.gz
-> Andrii's extern variable work (already landed) allows a bpf_prog
-> to read CONFIG_HZ as a global variable.  It is the path that I am
-> pursuing now for jiffies/nsecs conversion without relying on
-> a helper.
+Hi Oleksij,
 
-Thank yor for the pointer, and Andrii for implementing it.
-Selftest [0] from extern-var-support series demonstrates it nicely.
+On 18/12/2019 09.43, Oleksij Rempel wrote:
+> In current J1939 stack implementation, we process all locally send
+> messages as own messages. Even if it was send by CAN_RAW socket.
+> 
+> To reproduce it use following commands:
+> testj1939 -P -r can0:0x80 &
+> cansend can0 18238040#0123
+> 
+> This step will trigger false positive not critical warning:
+> j1939_simple_recv: Received already invalidated message
+> 
+> With this patch we add additional check to make sure, related skb is own
+> echo message.
 
-[0] https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git/commit/?id=330a73a7b6ca93a415de1b7da68d7a0698fe4937
+in net/can/raw.c we check whether the CAN has been sent from that socket 
+(an by default suppress our own transmitted data):
+
+https://elixir.bootlin.com/linux/v5.4.3/source/net/can/raw.c#L124
+
+would checking against the 'sk' work for you too?
+
+What happens if someone runs a J1939 implementation on a CAN_RAW socket 
+in addition to the in-kernel implementation? Can they talk to each other?
+
+Regards,
+Oliver
+
+> Fixes: 9d71dd0c7009 ("can: add support of SAE J1939 protocol")
+> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+> ---
+>   net/can/j1939/socket.c    | 1 +
+>   net/can/j1939/transport.c | 4 ++++
+>   2 files changed, 5 insertions(+)
+> 
+> diff --git a/net/can/j1939/socket.c b/net/can/j1939/socket.c
+> index f7587428febd..b9a17c2ee16f 100644
+> --- a/net/can/j1939/socket.c
+> +++ b/net/can/j1939/socket.c
+> @@ -398,6 +398,7 @@ static int j1939_sk_init(struct sock *sk)
+>   	spin_lock_init(&jsk->sk_session_queue_lock);
+>   	INIT_LIST_HEAD(&jsk->sk_session_queue);
+>   	sk->sk_destruct = j1939_sk_sock_destruct;
+> +	sk->sk_protocol = CAN_J1939;
+>   
+>   	return 0;
+>   }
+> diff --git a/net/can/j1939/transport.c b/net/can/j1939/transport.c
+> index 9f99af5b0b11..b135c5e2a86e 100644
+> --- a/net/can/j1939/transport.c
+> +++ b/net/can/j1939/transport.c
+> @@ -2017,6 +2017,10 @@ void j1939_simple_recv(struct j1939_priv *priv, struct sk_buff *skb)
+>   	if (!skb->sk)
+>   		return;
+>   
+> +	if (skb->sk->sk_family != AF_CAN ||
+> +	    skb->sk->sk_protocol != CAN_J1939)
+> +		return;
+> +
+>   	j1939_session_list_lock(priv);
+>   	session = j1939_session_get_simple(priv, skb);
+>   	j1939_session_list_unlock(priv);
+> 
