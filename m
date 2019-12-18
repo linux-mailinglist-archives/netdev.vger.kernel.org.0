@@ -2,106 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E35C123B59
-	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 01:08:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C9B6A123B60
+	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 01:11:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726530AbfLRAIz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Dec 2019 19:08:55 -0500
-Received: from mail-qv1-f65.google.com ([209.85.219.65]:46510 "EHLO
-        mail-qv1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726072AbfLRAIy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 19:08:54 -0500
-Received: by mail-qv1-f65.google.com with SMTP id t9so16594qvh.13;
-        Tue, 17 Dec 2019 16:08:54 -0800 (PST)
+        id S1726382AbfLRALq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Dec 2019 19:11:46 -0500
+Received: from mail-vs1-f66.google.com ([209.85.217.66]:36605 "EHLO
+        mail-vs1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726072AbfLRALq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 19:11:46 -0500
+Received: by mail-vs1-f66.google.com with SMTP id u14so268892vsu.3;
+        Tue, 17 Dec 2019 16:11:45 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=oK4nV+3VPMZcYLPAG8D2X7eS3apOnuJLGFzeKqqC1Lg=;
-        b=Ua8HqqZuApHD4UiYR0o/cHGxjgMpEMsDplERFp1pDkBHHlzBM8p5lOwbVGJwSB2gli
-         A+Gn3lV7xTTuxqbceG4VX/6CGnsqZ10yvkXtYad5UFKls7txm1aa7nHYAFQfSE0ovbnt
-         UKpo5x84j50JZnSnLMV720p98JDcbldhiB55ufNzvePVILucvQk4BTtSXjtO8j+82ujw
-         MWJ9kDKmlCrNG6zDZz1wMp5m3qFJwm4R4IuPfJ/5smDO84ui6JCizHfsdBYquzYtPieM
-         j2VRw/vfO04V8jGyGYnYaWMOOxSug8tbtTbl9cnIDBWPCyvTDKpNLe+pUUXnuXYexQ1V
-         JmOw==
+         :cc:content-transfer-encoding;
+        bh=VWM8CMVOeBatrfOgBjv+cpzRBfAT4uJ14z7HgHVWfw0=;
+        b=U5Yw8w3uZIW5xU0Toxi2Vd6V6p3aC/zxVPQZX8xYN6bt0EKulTekGVvEU0rGtYiCqE
+         QNqlkkpZEMWl1h+YdFMImpivxtG1UrPdnOOkc0UqupADLYZkaESAQukkKBYCE0eCmOMn
+         zE4LtmXRLwAOteBnU+jJScWDzf27JHjhz8t+y1/oga95s3M9UTn/3ByMsf4vHX4w9CoY
+         efyj/0o/0O94ai+g099ytTR9sy0jBH3QmJbJH2Ob6z8qjYqPIuR1r+g9NXHFjM5w3m+y
+         hJ4WzbfnVCDpkaXaQ5pZs0CJImydg5pVL2A8cQrSRgj+HmtW3rdJN7lf+2niKE7y3yfR
+         Yy/w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=oK4nV+3VPMZcYLPAG8D2X7eS3apOnuJLGFzeKqqC1Lg=;
-        b=TXhuiHMGZmkJ1yfDPC9hQfCPd9j0BTU/y5u2Mbl2ypZswodq2SNXjJT/p5C1qDjttF
-         bosjeZFebfSJC6+emKUiz/Weum9Vij6SU58+CXF/bZl+YM42sVNQsk75nDu8zfc6L9sl
-         SsDNwSTdXiMfcpEKWQyMYvkmPiPO8r4zcBbCWWBs0qWdj1olJfjRqCeXeioLXn4D9+9+
-         8GSBZ/hLDg220SHa9S+dWs0bc02IWbwNcKDCdHNOyumqN1GGOd2pvdn5MOKHpT9mZEEG
-         fVBG2M05gDFaes2yBxs5wVs6HPmVKsoe1vAqIS3KfK/8ttLZ/56lWa9XYFpSWW0uofI0
-         eaMQ==
-X-Gm-Message-State: APjAAAV7RlpIKbrY9FEKm5l4MGQGk3QG8XFBAJTFNs6+/EYQd71moVo+
-        rQVcj+LrqOW8NvqLt4V9llvapPchMX0ng9eJA7g=
-X-Google-Smtp-Source: APXvYqyh9ao9RrcrumMwY3aliImlVyJ0dXaeaU23xpDr7IaKwC61B7tpiMAWX7w4RgRRUYMXkG9Xsf/kGQ7HQwHaukQ=
-X-Received: by 2002:ad4:4e34:: with SMTP id dm20mr400160qvb.163.1576627733679;
- Tue, 17 Dec 2019 16:08:53 -0800 (PST)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=VWM8CMVOeBatrfOgBjv+cpzRBfAT4uJ14z7HgHVWfw0=;
+        b=kemsP3YYiOTjWihCTWwRIsBd+B/qvxuHzza9WPsJ14dfNGwYUIYEQCzRMUYYExpKP3
+         pWb4D5cC9wYQJUpiTBQ6CqmfZM1J044R6j45OCJ0wbs/FU1loLUyM9QNIDXDV22wMHsC
+         pQtvGbGP+MlmjdykFz+VIMaoLQdLOQ6DkdXF2OZ07I77Bitaw+a/u42ii4cbYKEhDS1j
+         sQROKxMrrkhyn9weC6yOT4eYwyOdSo2+I8ioh3Iz0YgnnIQuB0rGXNkktVpxKOrsKd5n
+         7WZEFkbOgiNfCOWIrVrR/NhlRqW/jaHzpUvJqGw6dQ5aKTCZatZZ/V9rmSQdLCkAt85y
+         g5Wg==
+X-Gm-Message-State: APjAAAX5HGA2mvxiGt/UE7dtMeMOc2ZpnZG+Se20c6krpDEfc3fkKptc
+        LCIEL0Lb0LK4yQqawJ6XlCtBAIB9vHjmVVFeOzc=
+X-Google-Smtp-Source: APXvYqy60ySVdAZpYAil4uJAJEhmBQOaQpuj30YPduVL2wJYi9bS8/sA9HoNvjZ2CxUag6RpXWDSvkBw01Cq6NJpdhw=
+X-Received: by 2002:a67:fa89:: with SMTP id f9mr4902652vsq.145.1576627905462;
+ Tue, 17 Dec 2019 16:11:45 -0800 (PST)
 MIME-Version: 1.0
-References: <20191214014710.3449601-1-andriin@fb.com> <20191214014710.3449601-3-andriin@fb.com>
- <20191216111736.GA14887@linux.fritz.box> <CAEf4Bzbx+2Fot9NYzGJS-pUF5x5zvcfBnb7fcO_s9_gCQQVuLg@mail.gmail.com>
- <7bf339cf-c746-a780-3117-3348fb5997f1@iogearbox.net> <CAEf4BzYAWknN1HGHd0vREtQLHU-z3iTLJWBteRK6q7zkhySBBg@mail.gmail.com>
- <e569134e-68a9-9c69-e894-b21640334bb0@iogearbox.net> <20191217201613.iccqsqwuhitsyqyl@ast-mbp.dhcp.thefacebook.com>
- <6be56761-5e4c-2922-bd93-761c0dbd773f@iogearbox.net>
-In-Reply-To: <6be56761-5e4c-2922-bd93-761c0dbd773f@iogearbox.net>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 17 Dec 2019 16:08:42 -0800
-Message-ID: <CAEf4BzZFbMUd_xHQZD00a3cDyf_B6HgYrSm7Ww+ZZnPGjtOsxg@mail.gmail.com>
-Subject: Re: [PATCH v4 bpf-next 2/4] libbpf: support libbpf-provided extern variables
+References: <cover.1576575253.git.ethercflow@gmail.com> <8f6b8979fb64bedf5cb406ba29146c5fa2539267.1576575253.git.ethercflow@gmail.com>
+ <f54e3df6-626f-e9c4-f2c2-a63fb9953944@fb.com> <a8a763e2-65d2-7c71-e99d-ffae1523f0f0@iogearbox.net>
+In-Reply-To: <a8a763e2-65d2-7c71-e99d-ffae1523f0f0@iogearbox.net>
+From:   Wenbo Zhang <ethercflow@gmail.com>
+Date:   Wed, 18 Dec 2019 08:11:34 +0800
+Message-ID: <CABtjQmZW1AEFZcq1=EF61d9TSmSpBD0-0rzGUWS-azg=1m1cEw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v13 1/2] bpf: add new helper get_fd_path for
+ mapping a file descriptor to a pathname
 To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Kernel Team <kernel-team@fb.com>
+Cc:     Yonghong Song <yhs@fb.com>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "ast@kernel.org" <ast@kernel.org>,
+        "bgregg@netflix.com" <bgregg@netflix.com>,
+        "andrii.nakryiko@gmail.com" <andrii.nakryiko@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 17, 2019 at 3:37 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
->
-> On 12/17/19 9:16 PM, Alexei Starovoitov wrote:
-> > On Tue, Dec 17, 2019 at 08:50:31PM +0100, Daniel Borkmann wrote:
-> >>>
-> >>> Yes, name collision is a possibility, which means users should
-> >>> restrain from using LINUX_KERNEL_VERSION and CONFIG_XXX names for
-> >>> their variables. But if that is ever actually the problem, the way to
-> >>> resolve this collision/ambiguity would be to put externs in a separate
-> >>> sections. It's possible to annotate extern variable with custom
-> >>> section.
-> >>>
-> >>> But I guess putting Kconfig-provided externs into ".extern.kconfig"
-> >>> might be a good idea, actually. That will make it possible to have
-> >>> writable externs in the future.
-> >>
-> >> Yep, and as mentioned it will make it more clear that these get special
-> >> loader treatment as opposed to regular externs we need to deal with in
-> >> future. A '.extern.kconfig' section sounds good to me and the BPF helper
-> >> header could provide a __kconfig annotation for that as well.
-> >
-> > I think annotating all extern vars into special section name will be quite
-> > cumbersome from bpf program writer pov.
-> > imo capital case extern variables LINUX_KERNEL_VERSION and CONFIG_XXX are
-> > distinct enough and make it clear they should come from something other than
-> > normal C. Traditional C coding style uses all capital letters for macroses. So
-> > all capital extern variables are unlikely to conflict with any normal extern
-> > vars. Like vars in vmlinux and vars in other bpf elf files.
->
-> But still, how many of the LINUX_KERNEL_VERSION or CONFIG_XXX vars are actually
-> used per program. I bet just a handful. And I don't think adding a __kconfig is
-> cumbersome, it would make it more self-documenting in fact, denoting that this
-> var is not treated the usual way once prog linking is in place. Even if all
-> capital letters. Tomorrow, we'd be adding 'extern unsigned long jiffies' as
-> another potential example, and then it gets even more confusing on the 'collision'
-> side with regular BPF ELF. Same here, instead of __kconfig, this could have a
-> __vmlinux or __kernel annotation in order to document its source for the loader
-> (and developer) more clearly and also gives flexibility wrt ".extern.xyz"
-> subsections on how we want to map them.
+> [...]
+>>> + *          On failure, it is filled with zeroes.
+> [...]
+> You fill it with 0x30's ...
 
-Sounds reasonable and clean enough. Let me play a bit with this and
-see how this all plays together.
+So sorry about this, I'll submit another revision to fix this. Thanks
+again for your
+preciseness and patience.
+
+Daniel Borkmann <daniel@iogearbox.net> =E4=BA=8E2019=E5=B9=B412=E6=9C=8818=
+=E6=97=A5=E5=91=A8=E4=B8=89 =E4=B8=8A=E5=8D=883:39=E5=86=99=E9=81=93=EF=BC=
+=9A
+>
+> On 12/17/19 5:29 PM, Yonghong Song wrote:
+> > On 12/17/19 1:47 AM, Wenbo Zhang wrote:
+> [...]
+> >> + *          On failure, it is filled with zeroes.
+> [...]
+> >>     */
+> >>    #define __BPF_FUNC_MAPPER(FN)             \
+> >>      FN(unspec),                     \
+> >> @@ -2938,7 +2964,8 @@ union bpf_attr {
+> >>      FN(probe_read_user),            \
+> >>      FN(probe_read_kernel),          \
+> >>      FN(probe_read_user_str),        \
+> >> -    FN(probe_read_kernel_str),
+> >> +    FN(probe_read_kernel_str),      \
+> >> +    FN(get_fd_path),
+> >>
+> >>    /* integer value in 'imm' field of BPF_CALL instruction selects whi=
+ch helper
+> >>     * function eBPF program intends to call
+> >> diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
+> >> index e5ef4ae9edb5..43a6aa6ad967 100644
+> >> --- a/kernel/trace/bpf_trace.c
+> >> +++ b/kernel/trace/bpf_trace.c
+> >> @@ -762,6 +762,71 @@ static const struct bpf_func_proto bpf_send_signa=
+l_proto =3D {
+> >>      .arg1_type      =3D ARG_ANYTHING,
+> >>    };
+> >>
+> >> +BPF_CALL_3(bpf_get_fd_path, char *, dst, u32, size, int, fd)
+> >> +{
+> >> +    int ret =3D -EBADF;
+> >> +    struct file *f;
+> >> +    char *p;
+> >> +
+> >> +    /* Ensure we're in user context which is safe for the helper to
+> >> +     * run. This helper has no business in a kthread.
+> >> +     */
+> >> +    if (unlikely(in_interrupt() ||
+> >> +                 current->flags & (PF_KTHREAD | PF_EXITING))) {
+> >> +            ret =3D -EPERM;
+> >> +            goto error;
+> >> +    }
+> >> +
+> >> +    /* Use fget_raw instead of fget to support O_PATH, and it doesn't
+> >> +     * have any sleepable code, so it's ok to be here.
+> >> +     */
+> >> +    f =3D fget_raw(fd);
+> >> +    if (!f)
+> >> +            goto error;
+> >> +
+> >> +    /* For unmountable pseudo filesystem, it seems to have no meaning
+> >> +     * to get their fake paths as they don't have path, and to be no
+> >> +     * way to validate this function pointer can be always safe to ca=
+ll
+> >> +     * in the current context.
+> >> +     */
+> >> +    if (f->f_path.dentry->d_op && f->f_path.dentry->d_op->d_dname) {
+> >> +            ret =3D -EINVAL;
+> >> +            fput(f);
+> >> +            goto error;
+> >> +    }
+> >> +
+> >> +    /* After filter unmountable pseudo filesytem, d_path won't call
+> >> +     * dentry->d_op->d_name(), the normally path doesn't have any
+> >> +     * sleepable code, and despite it uses the current macro to get
+> >> +     * fs_struct (current->fs), we've already ensured we're in user
+> >> +     * context, so it's ok to be here.
+> >> +     */
+> >> +    p =3D d_path(&f->f_path, dst, size);
+> >> +    if (IS_ERR(p)) {
+> >> +            ret =3D PTR_ERR(p);
+> >> +            fput(f);
+> >> +            goto error;
+> >> +    }
+> >> +
+> >> +    ret =3D strlen(p) + 1;
+> >> +    memmove(dst, p, ret);
+> >> +    fput(f);
+> >> +    return ret;
+> >> +
+> >> +error:
+> >> +    memset(dst, '0', size);
+>
+> You fill it with 0x30's ...
+>
+> >> +    return ret;
+> >> +}
