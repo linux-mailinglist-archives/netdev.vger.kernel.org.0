@@ -2,61 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F372F124C5D
-	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 17:03:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 49472124C5F
+	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 17:03:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727393AbfLRQDT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Dec 2019 11:03:19 -0500
-Received: from mail-yw1-f65.google.com ([209.85.161.65]:44909 "EHLO
-        mail-yw1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727215AbfLRQDT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Dec 2019 11:03:19 -0500
-Received: by mail-yw1-f65.google.com with SMTP id t141so941014ywc.11
-        for <netdev@vger.kernel.org>; Wed, 18 Dec 2019 08:03:19 -0800 (PST)
+        id S1727397AbfLRQDs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Dec 2019 11:03:48 -0500
+Received: from mail-yw1-f66.google.com ([209.85.161.66]:40926 "EHLO
+        mail-yw1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727021AbfLRQDs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Dec 2019 11:03:48 -0500
+Received: by mail-yw1-f66.google.com with SMTP id i126so953824ywe.7
+        for <netdev@vger.kernel.org>; Wed, 18 Dec 2019 08:03:47 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=QDDj2bPFlOtGlF3M9/vLbZ2kwUPQJ1HVK7IQbgej6OA=;
-        b=MU5LH+b6bl31s9xppUdea3Q3gQk1pQsK65hMDxUVeSDlUUADyuc6HpfkvzIspKaa/r
-         gOLoDAiJY4lQulWr+dPcM/unySJgEzPdlsU/9YHb4emiN86X8WUpoJOWTmV+5C8BrTPH
-         +4i+/S7E44V6X9AJ47eQ62BhyEx8NZCPkgTyJQFJnWv9sYRw+q4rtmRXp3dnFC7SB4qK
-         iFJ7gVV3HjnYIq3iPFxxrPfB83PfqegTsa5V7WimaFjFTZxYchwTK5HbR3BpVyv+nYJC
-         TnlCSWA6q/Ntakp2+A3Ezg1pLrvyDaUmi4WxsbspDIRviqbYvG3qTSl55y72fyUTjhNy
-         Ggyw==
+        bh=BsdOtnfA6X4lGR/BI0rp+eyaU4W8tfaltjNBF4imU+I=;
+        b=kPGpQu5OUPoWMUfC6xql0arlmf0UQTTgLy/ZNxL8j0jDZqhUrXqUZ/VG3mU+e4jObV
+         W8EV61xpOsZnaTvXkQhB/H/ScH1lrv3J8FaruLBhHi2Ob5Ib+tv/YsKppYZYwx/93mqa
+         MGzYjRoRZhRUIDPlgkwxinwiBWKGL1tx3rZCdyeJ/NXZgrOrFZrnRlRZ//pD2grO0CEU
+         s1ujD7l9GEfKXvAq+VPO5oV9TavmCzLLhCAqy0Yp5WCqcuzXbwiiCVx0KiIgD0o2BA3N
+         GL6xsfAkYiXd7r2o+ldYScKBJXXAJ3acMjH+pwtmJFSrX8jFyifNWIbJ7Uv1BwDvjkbD
+         f2AQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=QDDj2bPFlOtGlF3M9/vLbZ2kwUPQJ1HVK7IQbgej6OA=;
-        b=tG4V2edaTRZXEWOGiO7fNUARfeJdr3itz8WpCTvgSY4NEeFq1ngUGoJDBIagOHG/bM
-         OQIv7Wm+3woJ6Z6X2cq2BQgTGJbUktzHnhHfuazvb9MaVZZsZT1iOc1WbrwvvJgfgpvo
-         TmO0zT+7QyrQeOO0l9s6Ea1nIeZVShtgsPp2jbux/sR1dtls86x6G3bSdbOTK/Fb3iby
-         rLe4UIUWCN9i+hE69IzCNskntdtWfDtNx7HKvidu1HhAc4hzm0BcOuExnVQodlJhu8LU
-         TlQTo3FoALZxFm1Za2anT185d6JDNBmS3t9loMI9PWTJIw3tgQsOHM68KEmnCzAzgucw
-         ulnQ==
-X-Gm-Message-State: APjAAAWki/4BKF2LTWUqKAwFG/1B72M4cGuf9Fmz+OP5Ikf5cGI72Vpm
-        6dxojbgq5uahSsymE/Vx1rnxOM1o
-X-Google-Smtp-Source: APXvYqxyPytqGvW66Pg/FSiPBnJVdaXNlpb3n+mbRBZL837lSnSoCTsGVGRxlAkaypPOQYOtHpCR2w==
-X-Received: by 2002:a0d:d306:: with SMTP id v6mr2530423ywd.415.1576684997822;
-        Wed, 18 Dec 2019 08:03:17 -0800 (PST)
-Received: from mail-yw1-f43.google.com (mail-yw1-f43.google.com. [209.85.161.43])
-        by smtp.gmail.com with ESMTPSA id y17sm1128814ywd.23.2019.12.18.08.03.16
+        bh=BsdOtnfA6X4lGR/BI0rp+eyaU4W8tfaltjNBF4imU+I=;
+        b=gcvYRXdf4jqT80rRnncR4VEgwSDmL+Rxf/A8Z0a1JAKpTydNvva3MAYJdVGVRe2rP+
+         JK50mqmXDhn0moFuc9vWLXRfY88gZd86GyLWEB7jJC9VVy+KiNYxRz+pTjYarJVtwc+d
+         8kiPO05e05sRPfJkvQ9RI3yXozXOLigN3B49mhcj+vqqm/X5T3pgANudoK1WHFWm/tzq
+         eSei1LuvUoeyPqKboHiRpHNSOJW6bL3ODJ62LykykBSa6sKdrTgqUkcDu7fMufVpjFr6
+         oFzXpYoLaqVGP9NgweRWG38+mxDVQfv48aizkngeyijERI1ij0F71P6buFEeYf0sePiM
+         1BBw==
+X-Gm-Message-State: APjAAAW+V6q4lXUmJ9wAHQpqib30a50oxGqdHB4hzfwhNC7DSLnpFNL2
+        ylxSx6JJ2ejZfDFSFo1SsSvCURUR
+X-Google-Smtp-Source: APXvYqzSX9M65EXjNQ5cn2+K5jGM/Hj0xnxv4aIrQwVq07n/0UwbgVGhxfRm2Prue4apAHd2p6AGng==
+X-Received: by 2002:a0d:f685:: with SMTP id g127mr2768723ywf.412.1576685026982;
+        Wed, 18 Dec 2019 08:03:46 -0800 (PST)
+Received: from mail-yw1-f45.google.com (mail-yw1-f45.google.com. [209.85.161.45])
+        by smtp.gmail.com with ESMTPSA id k6sm1092428ywh.56.2019.12.18.08.03.46
         for <netdev@vger.kernel.org>
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 18 Dec 2019 08:03:17 -0800 (PST)
-Received: by mail-yw1-f43.google.com with SMTP id i190so962975ywc.2
-        for <netdev@vger.kernel.org>; Wed, 18 Dec 2019 08:03:16 -0800 (PST)
-X-Received: by 2002:a0d:cac3:: with SMTP id m186mr2526276ywd.275.1576684996215;
- Wed, 18 Dec 2019 08:03:16 -0800 (PST)
+        Wed, 18 Dec 2019 08:03:46 -0800 (PST)
+Received: by mail-yw1-f45.google.com with SMTP id v126so945255ywc.10
+        for <netdev@vger.kernel.org>; Wed, 18 Dec 2019 08:03:46 -0800 (PST)
+X-Received: by 2002:a0d:f481:: with SMTP id d123mr2451398ywf.411.1576685025562;
+ Wed, 18 Dec 2019 08:03:45 -0800 (PST)
 MIME-Version: 1.0
-References: <20191218133458.14533-1-steffen.klassert@secunet.com> <20191218133458.14533-4-steffen.klassert@secunet.com>
-In-Reply-To: <20191218133458.14533-4-steffen.klassert@secunet.com>
+References: <20191218133458.14533-1-steffen.klassert@secunet.com> <20191218133458.14533-5-steffen.klassert@secunet.com>
+In-Reply-To: <20191218133458.14533-5-steffen.klassert@secunet.com>
 From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Wed, 18 Dec 2019 11:02:39 -0500
-X-Gmail-Original-Message-ID: <CA+FuTScnux23Gj1WTEXHmZkiFG3RQsgmSz19TOWdWByM4Rd15Q@mail.gmail.com>
-Message-ID: <CA+FuTScnux23Gj1WTEXHmZkiFG3RQsgmSz19TOWdWByM4Rd15Q@mail.gmail.com>
-Subject: Re: [PATCH net-next 3/4] net: Support GRO/GSO fraglist chaining.
+Date:   Wed, 18 Dec 2019 11:03:09 -0500
+X-Gmail-Original-Message-ID: <CA+FuTScaqg8whAaS35n9TT+=7S38Sn_sMEN=KstYF6i83keSsw@mail.gmail.com>
+Message-ID: <CA+FuTScaqg8whAaS35n9TT+=7S38Sn_sMEN=KstYF6i83keSsw@mail.gmail.com>
+Subject: Re: [PATCH net-next 4/4] udp: Support UDP fraglist GRO/GSO.
 To:     Steffen Klassert <steffen.klassert@secunet.com>
 Cc:     David Miller <davem@davemloft.net>,
         Paolo Abeni <pabeni@redhat.com>,
@@ -72,82 +72,64 @@ X-Mailing-List: netdev@vger.kernel.org
 On Wed, Dec 18, 2019 at 8:35 AM Steffen Klassert
 <steffen.klassert@secunet.com> wrote:
 >
-> This patch adds the core functions to chain/unchain
-> GSO skbs at the frag_list pointer. This also adds
-> a new GSO type SKB_GSO_FRAGLIST and a is_flist
-> flag to napi_gro_cb which indicates that this
-> flow will be GROed by fraglist chaining.
+> This patch extends UDP GRO to support fraglist GRO/GSO
+> by using the previously introduced infrastructure.
+> If the feature is enabled, all UDP packets are going to
+> fraglist GRO (local input and forward).
 >
 > Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
 
-> +struct sk_buff *skb_segment_list(struct sk_buff *skb,
-> +                                netdev_features_t features,
-> +                                unsigned int offset)
-> +{
-> +       struct sk_buff *list_skb = skb_shinfo(skb)->frag_list;
-> +       unsigned int tnl_hlen = skb_tnl_header_len(skb);
-> +       unsigned int delta_truesize = 0;
-> +       unsigned int delta_len = 0;
-> +       struct sk_buff *tail = NULL;
-> +       struct sk_buff *nskb;
-> +
-> +       skb_push(skb, -skb_network_offset(skb) + offset);
-> +
-> +       skb_shinfo(skb)->frag_list = NULL;
-> +
-> +       do {
-> +               nskb = list_skb;
-> +               list_skb = list_skb->next;
-> +
-> +               if (!tail)
-> +                       skb->next = nskb;
-> +               else
-> +                       tail->next = nskb;
-> +
-> +               tail = nskb;
-> +
-> +               delta_len += nskb->len;
-> +               delta_truesize += nskb->truesize;
-> +
-> +               skb_push(nskb, -skb_network_offset(nskb) + offset);
-> +
-> +               if (!secpath_exists(nskb))
-> +                       __skb_ext_copy(nskb, skb);
+> -INDIRECT_CALLABLE_DECLARE(struct sock *udp6_lib_lookup_skb(struct sk_buff *skb,
+> -                                                  __be16 sport, __be16 dport));
+>  struct sk_buff *udp_gro_receive(struct list_head *head, struct sk_buff *skb,
+> -                               struct udphdr *uh, udp_lookup_t lookup)
+> +                               struct udphdr *uh, struct sock *sk)
+>  {
+>         struct sk_buff *pp = NULL;
+>         struct sk_buff *p;
+>         struct udphdr *uh2;
+>         unsigned int off = skb_gro_offset(skb);
+>         int flush = 1;
+> -       struct sock *sk;
+>
+> -       rcu_read_lock();
+> -       sk = INDIRECT_CALL_INET(lookup, udp6_lib_lookup_skb,
+> -                               udp4_lib_lookup_skb, skb, uh->source, uh->dest);
+> -       if (!sk)
+> -               goto out_unlock;
+> +       if (skb->dev->features & NETIF_F_GRO_FRAGLIST)
+> +               NAPI_GRO_CB(skb)->is_flist = sk ? !udp_sk(sk)->gro_enabled: 1;
+>
+> -       if (udp_sk(sk)->gro_enabled) {
+> +       if ((sk && udp_sk(sk)->gro_enabled) ||  NAPI_GRO_CB(skb)->is_flist) {
 
-Of all the possible extensions, why is this only relevant to secpath?
+nit: two spaces before NAPI_GRO_CB
 
-More in general, this function open codes a variety of skb fields that
-carry over from skb to nskb. How did you select this subset of fields?
+> @@ -544,6 +585,18 @@ INDIRECT_CALLABLE_SCOPE int udp4_gro_complete(struct sk_buff *skb, int nhoff)
+>         const struct iphdr *iph = ip_hdr(skb);
+>         struct udphdr *uh = (struct udphdr *)(skb->data + nhoff);
+>
+> +       if (NAPI_GRO_CB(skb)->is_flist) {
+> +               uh->len = htons(skb->len - nhoff);
+> +
+> +               skb_shinfo(skb)->gso_type |= (SKB_GSO_FRAGLIST|SKB_GSO_UDP_L4);
+> +               skb_shinfo(skb)->gso_segs = NAPI_GRO_CB(skb)->count;
+> +
+> +               skb->ip_summed = CHECKSUM_UNNECESSARY;
+> +               skb->csum_level = ~0;
 
-> +
-> +               memcpy(nskb->cb, skb->cb, sizeof(skb->cb));
-> +
-> +               nskb->tstamp = skb->tstamp;
-> +               nskb->dev = skb->dev;
-> +               nskb->queue_mapping = skb->queue_mapping;
-> +
-> +               nskb->mac_len = skb->mac_len;
-> +               nskb->mac_header = skb->mac_header;
-> +               nskb->transport_header = skb->transport_header;
-> +               nskb->network_header = skb->network_header;
-> +               skb_dst_copy(nskb, skb);
-> +
-> +               skb_headers_offset_update(nskb, skb_headroom(nskb) - skb_headroom(skb));
-> +               skb_copy_from_linear_data_offset(skb, -tnl_hlen,
-> +                                                nskb->data - tnl_hlen,
-> +                                                offset + tnl_hlen);
-> +
-> +               if (skb_needs_linearize(nskb, features) &&
-> +                   __skb_linearize(nskb))
-> +                       goto err_linearize;
-> +
-> +       } while (list_skb);
-> +
-> +       skb->truesize = skb->truesize - delta_truesize;
-> +       skb->data_len = skb->data_len - delta_len;
-> +       skb->len = skb->len - delta_len;
-> +       skb->ip_summed = nskb->ip_summed;
-> +       skb->csum_level = nskb->csum_level;
+why is this needed for ipv4 only?
 
-This changed from the previous version, where nskb inherited ip_summed
-and csum_level from skb. Why is that?
+
+> @@ -144,6 +150,15 @@ INDIRECT_CALLABLE_SCOPE int udp6_gro_complete(struct sk_buff *skb, int nhoff)
+>         const struct ipv6hdr *ipv6h = ipv6_hdr(skb);
+>         struct udphdr *uh = (struct udphdr *)(skb->data + nhoff);
+>
+> +       if (NAPI_GRO_CB(skb)->is_flist) {
+> +               uh->len = htons(skb->len - nhoff);
+> +
+> +               skb_shinfo(skb)->gso_type |= (SKB_GSO_FRAGLIST|SKB_GSO_UDP_L4);
+> +               skb_shinfo(skb)->gso_segs = NAPI_GRO_CB(skb)->count;
+> +
+> +               return 0;
+> +       }
