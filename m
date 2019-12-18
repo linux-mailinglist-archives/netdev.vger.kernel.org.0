@@ -2,78 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 78442123D58
-	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 03:45:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BC1B3123DAA
+	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 04:05:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726656AbfLRCox (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Dec 2019 21:44:53 -0500
-Received: from mail-oi1-f196.google.com ([209.85.167.196]:41486 "EHLO
-        mail-oi1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726467AbfLRCow (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 21:44:52 -0500
-Received: by mail-oi1-f196.google.com with SMTP id i1so326102oie.8;
-        Tue, 17 Dec 2019 18:44:52 -0800 (PST)
+        id S1726636AbfLRDFc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Dec 2019 22:05:32 -0500
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:42074 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726520AbfLRDFc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 22:05:32 -0500
+Received: by mail-pg1-f193.google.com with SMTP id s64so419595pgb.9;
+        Tue, 17 Dec 2019 19:05:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=ohfyr+zZvxbHch88tHdJFopb0g8Us055PRfGJqR30WE=;
+        b=owHW/8YIXzqQX0nUEf3GIrtCHHNnpZOUiJ7HAnxpXSHsZDssJTu/dIoURIK4xRkIqJ
+         vgQMvNAUEAT9TnuCf5hy5r0foEbRS+gjlezXaKbwij9AjY8/uf6eKHXkeSor+yRa5lzS
+         KXWxDqB3bhMCex/fiL4WbfzvFKyoe345zDGvXwu7aLYileQqI07nX7oQfEemU+0VwCo3
+         GHcVBcHgEYyz7rVrddEERDhIccAjL71zxfP48vpRJbkB3X4+MhAUsfE/u4kc2dJBhXOj
+         KPbcz9IvleAsr8j8ogQozwDJI1figlBgDZMjHsSV3HLW5zmPt5ezQ2WQJZj5q4+4qcAE
+         0LiA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=YWi3K95SEBeRjnRWdOK8Q10pTSn780ACt51k9yfRaVQ=;
-        b=uEM2uJKscLsW4BGK+h1L5KosmppEqpFqhf/nEyRZEazhQQTxrTVkL+x6lE/qePg1RB
-         Ss/6QlSPbg3jXY3Jh/93xYH2VJ0xP2eL/kOSBj8Cr1QbO1uIN+OsB29Cncf60OAhJR6e
-         Ct6Nt6mbYPG/DqdgZMBijlnXJuUAXRV3Q45CEPJPlQETUIPIkmnjFXTfM9r4FgqF1LRD
-         fRM6yFUSA03051I9m4odXihLrd47e78yzXZZ+2fb/7cKtkjirDRXOVe15NPrOVfsHx4n
-         uZRwBLG9kmVtZuz7ym8ZQWtSCZAn+1E6aj773fl2/+zOTGjpMSny/3IEoNDpGij8f7ne
-         Lwcw==
-X-Gm-Message-State: APjAAAXk+X2neKX8ZQ6xCXVVHdeaoX8eU0AfYRUfJ7pO+rm6tIKfwP1f
-        ByHTQqItxNGbdFIQC+JUBQ==
-X-Google-Smtp-Source: APXvYqwbuB7pYmy0hdiMv22z/UrvUpDb35O8l0zgFDaeOBoJW3aVKuVSZpMkhpjI26lPsEtoxw2/jA==
-X-Received: by 2002:aca:2b1a:: with SMTP id i26mr172079oik.64.1576637091733;
-        Tue, 17 Dec 2019 18:44:51 -0800 (PST)
-Received: from localhost (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
-        by smtp.gmail.com with ESMTPSA id m7sm286278otl.20.2019.12.17.18.44.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 Dec 2019 18:44:51 -0800 (PST)
-Date:   Tue, 17 Dec 2019 20:44:50 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     "H. Nikolaus Schaller" <hns@goldelico.com>
-Cc:     Ulf Hansson <ulf.hansson@linaro.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        "H. Nikolaus Schaller" <hns@goldelico.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Alexios Zavras <alexios.zavras@intel.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        letux-kernel@openphoenux.org, kernel@pyra-handheld.com
-Subject: Re: [PATCH v2 1/2] DTS: bindings: wl1251: mark ti,power-gpio as
- optional
-Message-ID: <20191218024450.GA5993@bogus>
-References: <cover.1576606020.git.hns@goldelico.com>
- <de42cdd5c5d2c46978c15cd2f27b49fa144ae6a7.1576606020.git.hns@goldelico.com>
+        bh=ohfyr+zZvxbHch88tHdJFopb0g8Us055PRfGJqR30WE=;
+        b=AyGutshZ9RIty82/UYr7t4ZBSPNS8LlizlAcCNS2sdXaIBlbGLdd4qXd1IQpOTIhWa
+         hREv3hKzPwPAgaZkPIAibJh0pUw/VzNmhS4monb2dXwMzebHjA5niy6ToKnfbG6/gqNy
+         wr6i4uwME+addBn3yCRd9bLCoTBumQRKmz82fYk8z6HHaWDBDxRj+pu1rWBwMmLXl/Rr
+         31kkecRi27HBC4Pw2HUg5jxofO7nXGnvHUUrUJqpxllp7HE6hMrlk7RIOnW9UdL9OsbM
+         OX5WesCVTObEGsOdaduc6Qt/L7iWcEtwngb85CthZZk1XjsmzNUTvaumVvAXme5PXx81
+         Waqg==
+X-Gm-Message-State: APjAAAU26bO/+HDiYX9oFup/syeoxDGZSKi9H1Ocn/rEZRaH6SKm2+ko
+        xkYAL25RmAugHF6SAUBQL4Al8r23
+X-Google-Smtp-Source: APXvYqwPSDpf/83WQKadKJs8w1lTR6a8zHoYFrlDWKzgi1MJpiJxScoUq9zLCHW6OZdFpkVYbtNvEw==
+X-Received: by 2002:a62:ea13:: with SMTP id t19mr386199pfh.189.1576638331480;
+        Tue, 17 Dec 2019 19:05:31 -0800 (PST)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:180::fb75])
+        by smtp.gmail.com with ESMTPSA id a19sm532713pfn.50.2019.12.17.19.05.29
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 17 Dec 2019 19:05:30 -0800 (PST)
+Date:   Tue, 17 Dec 2019 19:05:27 -0800
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Andrii Nakryiko <andriin@fb.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@fb.com,
+        daniel@iogearbox.net, andrii.nakryiko@gmail.com, kernel-team@fb.com
+Subject: Re: [PATCH v2 bpf-next 3/3] bpftool: add gen subcommand manpage
+Message-ID: <20191218030525.lhxuieceglidv3jf@ast-mbp.dhcp.thefacebook.com>
+References: <20191217230038.1562848-1-andriin@fb.com>
+ <20191217230038.1562848-4-andriin@fb.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <de42cdd5c5d2c46978c15cd2f27b49fa144ae6a7.1576606020.git.hns@goldelico.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20191217230038.1562848-4-andriin@fb.com>
+User-Agent: NeoMutt/20180223
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 17 Dec 2019 19:06:59 +0100, "H. Nikolaus Schaller" wrote:
-> It is now only useful for SPI interface.
-> Power control of SDIO mode is done through mmc core.
+On Tue, Dec 17, 2019 at 03:00:38PM -0800, Andrii Nakryiko wrote:
+> Add bpftool-gen.rst describing skeleton on the high level. Also include
+> a small, but complete, example BPF app (BPF side, userspace side, generated
+> skeleton) in example section to demonstrate skeleton API and its usage.
 > 
-> Suggested by: Ulf Hansson <ulf.hansson@linaro.org>
-> Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
+> Acked-by: Yonghong Song <yhs@fb.com>
+> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
 > ---
->  Documentation/devicetree/bindings/net/wireless/ti,wl1251.txt | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
-> 
+>  .../bpf/bpftool/Documentation/bpftool-gen.rst | 302 ++++++++++++++++++
 
-Please add Acked-by/Reviewed-by tags when posting new versions. However,
-there's no need to repost patches *only* to add the tags. The upstream
-maintainer will do that for acks received on the version they apply.
+Please test it more thoroughly.
 
-If a tag was not added on purpose, please state why and what changed.
+  GEN      bpftool-gen.8
+bpftool-gen.rst:244: (ERROR/3) Unexpected indentation.
+bpftool-gen.rst:285: (ERROR/3) Unexpected indentation.
+
+Patch 1 probably needs foo(void) instead of just foo().
+I think some compilers warn on it.
+
