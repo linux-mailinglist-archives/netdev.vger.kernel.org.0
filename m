@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 894BF124477
-	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 11:25:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 17C041244AA
+	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 11:33:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726793AbfLRKYw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Dec 2019 05:24:52 -0500
-Received: from us03-smtprelay2.synopsys.com ([149.117.87.133]:37412 "EHLO
+        id S1726932AbfLRKdj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Dec 2019 05:33:39 -0500
+Received: from smtprelay-out1.synopsys.com ([149.117.73.133]:46438 "EHLO
         smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726360AbfLRKYw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Dec 2019 05:24:52 -0500
+        by vger.kernel.org with ESMTP id S1726671AbfLRKdW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Dec 2019 05:33:22 -0500
 Received: from mailhost.synopsys.com (mdc-mailhost2.synopsys.com [10.225.0.210])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 4C2DCC0D6D;
-        Wed, 18 Dec 2019 10:24:51 +0000 (UTC)
+        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id BF0BA40346;
+        Wed, 18 Dec 2019 10:33:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
-        t=1576664691; bh=n3XfXSTqrBIgJ9C3cTxiIkAqHlPFFDIqON8t4hOiKtc=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:In-Reply-To:
-         References:From;
-        b=Sw5uTCHXM2iL2X0IWNX/a0JhMtuqPlMDaaA5S57bZJoyAmNU4AwarWBSw+xOp0cp2
-         y16hvOdbEmDVcjKJqg0Vgx3Rls7rQncLpWajR/5N+O+aDfT9JIu/mjKgwLHrwGSjIA
-         b2HLZo+8S4wP0VRGUj8zR0Jx9aN2rv9I8ReefEqsQIj1G9Of+4D+21V8gz591/RX8H
-         8C4QEan1RDa9B/kPSaVOtJ5z83pga7wGsix7CIUNTTryQZ/TH4rgW1JlknIIR7R1sH
-         N+bEPddMWXswTUtxehL7YZVMCFwlkB2Ep4B1aqlg72SiZDvZcqUkJ3zTpom4ZPH+AY
-         wpvq1nsfQs/hA==
+        t=1576665201; bh=0M9mYY6dp+dohtIQdCtyeu3ar+st+lmwIwwIyzmrtEs=;
+        h=From:To:Cc:Subject:Date:From;
+        b=Oqr9YdTMq7rKi76ubUYqeeAZPBqhy9xYt+pcgaPQCjCillvkAX8cd7xDoBVbKNIiA
+         wZXIGHoXGM0um9oi7FSdwc2DzhHbNbNlGI2fWta06r9fospEE/vrMjUPZ01GFGKNiC
+         DLSN3H7FvMmlySIuSFqXTw539a/5mjdzzCrENMCE3FHojVZYb33YR0CvKOTlSc52Y6
+         62EsFBN7cxGhI36BwclRX2ZoYWlB1z7NkQHG3olyty1PttwTygNL7jBca2JWY9xKc0
+         z7TriHFtjmqZDNiWMJLUICYE73uXk1SWxqJqmHDnmMXghTp+TvsgdbGN0wBpqGSHNx
+         LGxrRd7SU0pCQ==
 Received: from de02dwia024.internal.synopsys.com (de02dwia024.internal.synopsys.com [10.225.19.81])
-        by mailhost.synopsys.com (Postfix) with ESMTP id F38EFA008E;
-        Wed, 18 Dec 2019 10:24:49 +0000 (UTC)
+        by mailhost.synopsys.com (Postfix) with ESMTP id 68555A0066;
+        Wed, 18 Dec 2019 10:33:18 +0000 (UTC)
 From:   Jose Abreu <Jose.Abreu@synopsys.com>
 To:     netdev@vger.kernel.org
 Cc:     Joao Pinto <Joao.Pinto@synopsys.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Andre Guedes <andre.guedes@linux.intel.com>,
+        Richard.Ong@synopsys.com, Boon Leong <boon.leong.ong@intel.com>,
         Jose Abreu <Jose.Abreu@synopsys.com>,
         Giuseppe Cavallaro <peppe.cavallaro@st.com>,
         Alexandre Torgue <alexandre.torgue@st.com>,
@@ -41,31 +41,31 @@ Cc:     Joao Pinto <Joao.Pinto@synopsys.com>,
         Maxime Coquelin <mcoquelin.stm32@gmail.com>,
         linux-stm32@st-md-mailman.stormreply.com,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next v3 3/3] net: stmmac: Always use TX coalesce timer value when rescheduling
-Date:   Wed, 18 Dec 2019 11:24:45 +0100
-Message-Id: <e82066e0161edd50ee0542a9d464fd3c937bdfb0.1576664538.git.Jose.Abreu@synopsys.com>
+Subject: [PATCH net-next 0/7] net: stmmac: TSN support using TAPRIO API
+Date:   Wed, 18 Dec 2019 11:33:04 +0100
+Message-Id: <cover.1576664870.git.Jose.Abreu@synopsys.com>
 X-Mailer: git-send-email 2.7.4
-In-Reply-To: <cover.1576664538.git.Jose.Abreu@synopsys.com>
-References: <cover.1576664538.git.Jose.Abreu@synopsys.com>
-In-Reply-To: <cover.1576664538.git.Jose.Abreu@synopsys.com>
-References: <cover.1576664538.git.Jose.Abreu@synopsys.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When we have pending packets we re-arm the TX timer with a magic value.
+This series adds TSN support (EST and Frame Preemption) for stmmac driver.
 
-This changes the re-arm of the timer from 10us to the user-defined
-coalesce value. As we support different speeds, having a magic value of
-10us can be either too short or to large depending on the speed so we
-let user configure it. The default value of the timer is 1ms but it can
-be reconfigured by ethtool.
+1) Adds the HW specific support for EST in GMAC5+ cores.
 
-Changes from v1:
-- Reword commit message (Jakub)
+2) Adds the HW specific support for EST in XGMAC3+ cores.
 
-Signed-off-by: Jose Abreu <Jose.Abreu@synopsys.com>
+3) Integrates EST HW specific support with TAPRIO scheduler API.
+
+4) Adds the Frame Preemption suppor on stmmac TAPRIO implementation.
+
+5) Adds the HW specific support for Frame Preemption in GMAC5+ cores.
+
+6) Adds the HW specific support for Frame Preemption in XGMAC3+ cores.
+
+7) Adds support for HW debug counters for Frame Preemption available in
+GMAC5+ cores.
 
 ---
 Cc: Giuseppe Cavallaro <peppe.cavallaro@st.com>
@@ -78,22 +78,32 @@ Cc: linux-stm32@st-md-mailman.stormreply.com
 Cc: linux-arm-kernel@lists.infradead.org
 Cc: linux-kernel@vger.kernel.org
 ---
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index d1a22c4fe67b..ecb89c609fb2 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -1975,7 +1975,7 @@ static int stmmac_tx_clean(struct stmmac_priv *priv, int budget, u32 queue)
- 
- 	/* We still have pending packets, let's call for a new scheduling */
- 	if (tx_q->dirty_tx != tx_q->cur_tx)
--		mod_timer(&tx_q->txtimer, STMMAC_COAL_TIMER(10));
-+		mod_timer(&tx_q->txtimer, STMMAC_COAL_TIMER(priv->tx_coal_timer));
- 
- 	__netif_tx_unlock_bh(netdev_get_tx_queue(priv->dev, queue));
- 
+Jose Abreu (7):
+  net: stmmac: Add basic EST support for GMAC5+
+  net: stmmac: Add basic EST support for XGMAC
+  net: stmmac: Integrate EST with TAPRIO scheduler API
+  net: stmmac: Add Frame Preemption support using TAPRIO API
+  net: stmmac: gmac5+: Add support for Frame Preemption
+  net: stmmac: xgmac3+: Add support for Frame Preemption
+  net: stmmac: mmc: Add Frame Preemption counters on GMAC5+ cores
+
+ drivers/net/ethernet/stmicro/stmmac/common.h       |   5 +
+ drivers/net/ethernet/stmicro/stmmac/dwmac4.h       |  12 ++
+ drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c  |   4 +
+ drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.c   |   4 +
+ drivers/net/ethernet/stmicro/stmmac/dwmac5.c       | 118 ++++++++++++++++++
+ drivers/net/ethernet/stmicro/stmmac/dwmac5.h       |  24 ++++
+ drivers/net/ethernet/stmicro/stmmac/dwxgmac2.h     |  25 ++++
+ .../net/ethernet/stmicro/stmmac/dwxgmac2_core.c    |  76 ++++++++++++
+ drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c |   4 +
+ drivers/net/ethernet/stmicro/stmmac/hwif.h         |  14 +++
+ drivers/net/ethernet/stmicro/stmmac/mmc_core.c     |  16 +++
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c  |   2 +
+ drivers/net/ethernet/stmicro/stmmac/stmmac_tc.c    | 135 +++++++++++++++++++++
+ include/linux/stmmac.h                             |  13 ++
+ 14 files changed, 452 insertions(+)
+
 -- 
 2.7.4
 
