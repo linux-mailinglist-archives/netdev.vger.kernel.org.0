@@ -2,148 +2,197 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A74F61250CB
-	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 19:38:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D694C1250FF
+	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 19:51:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727499AbfLRSi4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Dec 2019 13:38:56 -0500
-Received: from mail-qv1-f67.google.com ([209.85.219.67]:37345 "EHLO
-        mail-qv1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726699AbfLRSi4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Dec 2019 13:38:56 -0500
-Received: by mail-qv1-f67.google.com with SMTP id f16so1158040qvi.4
-        for <netdev@vger.kernel.org>; Wed, 18 Dec 2019 10:38:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=m3KJbj/2ipgtN2cLNIjJ62WUMegElStcycrQCWUakW4=;
-        b=MSod8UrmGdVJcpGg5iDEGZEtucemBJMcZxQmQYHXEpGTzHGcU2uAmJ23swilPdBgKA
-         +fQOyPNtm2TiqHF+nx+b44JXeIbxxgj6RJ1iClk6Ms1xWT/sfZ15KotqZaIe0rNU7ZJj
-         LNZNLuCZFH2LRkVnNPiYyMljy50xh7TIYIpVrJm9dRi+f+eevOF+SnrausJSM7WHHxMP
-         FC0NckbJHpEhLKYBthPX4C6NWog8fMbqYlsVFGTra/n5KuECW3apBwB3ZoNqHbpbQQLj
-         4eeSQmSUpOOfLoo160Ld0ZbqjEG6mtBHciR9aE3RMI5bbPXOmv6axh1GzLsBxR54Ylxk
-         H+bQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=m3KJbj/2ipgtN2cLNIjJ62WUMegElStcycrQCWUakW4=;
-        b=KpQLwVPn5j0arxx3Lp5MijcNdIywB0H+eFcTdtLf+PPsEpCwE59TnmQHsZ9nx60Y2G
-         Ew3tv92go1L4No/LldKnNDL3ibPOwNAt3hW927KZbd1oNdzrCNQ8AhU2KRT6TwrI48nt
-         HHlmuj5QwMZlYioWL27ZPgBNa+GGUtXVmmVAW239XQ3gd+ptE41gsSXYlksGgZ3HwV46
-         OLthI2a/zag5rIJ8BYsdjfhixVs0kuQrA4M4NMmRnEe+n2znNNWMfl/s94bRy5JzSuWl
-         SD+gnru9efqieOoIFFcAh/Iv4kQFfhyomO0SmMfOdRnAsXGEZCUzYKhHsLouffJnb/WD
-         5IRg==
-X-Gm-Message-State: APjAAAVC8xE0XFwlhYsk7gFJ+xZN6nil6qnQpVFU8ILXjErJXM8Y3pOF
-        1Knn5Sq+6zTYgUtEYX2+IojIipYe
-X-Google-Smtp-Source: APXvYqyZCbO5O2rsw8OAW3WcqAf9alCRDuH3LbXiMGAi+iRjJ0DPd94k6pVWzpzcTnZOMphkvFTv8g==
-X-Received: by 2002:a0c:8d0a:: with SMTP id r10mr3586051qvb.7.1576694334723;
-        Wed, 18 Dec 2019 10:38:54 -0800 (PST)
-Received: from ubuntu.default (201-42-108-210.dsl.telesp.net.br. [201.42.108.210])
-        by smtp.gmail.com with ESMTPSA id s11sm890049qkg.99.2019.12.18.10.38.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 18 Dec 2019 10:38:54 -0800 (PST)
-From:   Julio Faracco <jcfaracco@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     jeffrey.t.kirsher@intel.com, davem@davemloft.net,
-        intel-wired-lan@lists.osuosl.org
-Subject: [PATCH net-next 2/2] drivers: net: ice: Removing hung_queue variable to use txqueue function parameter
-Date:   Wed, 18 Dec 2019 15:38:45 -0300
-Message-Id: <20191218183845.20038-3-jcfaracco@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20191218183845.20038-1-jcfaracco@gmail.com>
-References: <20191218183845.20038-1-jcfaracco@gmail.com>
+        id S1727189AbfLRSvY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Dec 2019 13:51:24 -0500
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:49688 "EHLO
+        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727049AbfLRSvX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Dec 2019 13:51:23 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=istVMsUTDbX1P2iLAe7DawIao28f9aLgW/Ri8qiYKjY=; b=Oeavx8mcWCwp1WWvfLNsoISH2
+        AbxW+Cy5UT/CNi+4Y5cYZPgketroeclGBeUKdyont1jMb2K7CSvMiG4nU9sYDsVKmmr0TfxbPv4PC
+        +rWYISQr4WILmVPzfTN08Rz2F00V4FqODvpANrx2TNFay1Dy0e60VIrqcL2Zoftrb427dWngTuk+M
+        CTsPoImGu03npnpIPB3QeFa0dKaGE37jxKQ2sB91dyxrq0yWgEaP1d092Y1ovJECgKe++IYgGYUqJ
+        iVyEN1/l/FCrQvxI+1a/wtEofwGHbG8bqaYsIdinfzn4pXTRUE3kpZY8bQaUwGdx7Txc6klE7f561
+        Q7AP2sHBA==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:54742)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1ihePY-0005mk-EF; Wed, 18 Dec 2019 18:51:04 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1ihePT-0004bD-0R; Wed, 18 Dec 2019 18:50:59 +0000
+Date:   Wed, 18 Dec 2019 18:50:58 +0000
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     davem@davemloft.net, jakub.kicinski@netronome.com, andrew@lunn.ch,
+        f.fainelli@gmail.com, vivien.didelot@gmail.com,
+        alexandru.marginean@nxp.com, claudiu.manoil@nxp.com,
+        xiaoliang.yang_1@nxp.com, yangbo.lu@nxp.com,
+        netdev@vger.kernel.org, alexandre.belloni@bootlin.com,
+        horatiu.vultur@microchip.com,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: Re: [RFC PATCH v2 1/8] mii: Add helpers for parsing SGMII
+ auto-negotiation
+Message-ID: <20191218185058.GW25745@shell.armlinux.org.uk>
+References: <20191217221831.10923-1-olteanv@gmail.com>
+ <20191217221831.10923-2-olteanv@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191217221831.10923-2-olteanv@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The scope of function .ndo_tx_timeout was changed to include the hang
-queue when a TX timeout event occurs. See commit 0290bd291cc0
-("netdev: pass the stuck queue to the timeout handler") for more
-details. Now, drivers don't need to identify which queue is stopped.
-Drivers can simply use the queue index provided bt dev_watchdog and
-execute all actions needed to restore network traffic. This commit do
-some cleanups into Intel ice driver to remove a redundant loop to find
-stopped queue.
+On Wed, Dec 18, 2019 at 12:18:24AM +0200, Vladimir Oltean wrote:
+> From: Vladimir Oltean <vladimir.oltean@nxp.com>
+> 
+> Typically a MAC PCS auto-configures itself after it receives the
+> negotiated copper-side link settings from the PHY, but some MAC devices
+> are more special and need manual interpretation of the SGMII AN result.
+> 
+> In other cases, the PCS exposes the entire tx_config_reg base page as it
+> is transmitted on the wire during auto-negotiation, so it makes sense to
+> be able to decode the equivalent lp_advertised bit mask from the raw u16
+> (of course, "lp" considering the PCS to be the local PHY).
+> 
+> Therefore, add the bit definitions for the SGMII registers 4 and 5
+> (local device ability, link partner ability), as well as a link_mode
+> conversion helper that can be used to feed the AN results into
+> phy_resolve_aneg_linkmode.
+> 
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> ---
+>  include/linux/mii.h      | 50 ++++++++++++++++++++++++++++++++++++++++++++++++
+>  include/uapi/linux/mii.h | 10 ++++++++++
+>  2 files changed, 60 insertions(+)
+> 
+> diff --git a/include/linux/mii.h b/include/linux/mii.h
+> index 4ce8901a1af6..18c6208f56fc 100644
+> --- a/include/linux/mii.h
+> +++ b/include/linux/mii.h
+> @@ -373,6 +373,56 @@ static inline u32 mii_lpa_to_ethtool_lpa_x(u32 lpa)
+>  }
+>  
+>  /**
+> + * mii_lpa_mod_linkmode_adv_sgmii
+> + * @lp_advertising: pointer to destination link mode.
+> + * @lpa: value of the MII_LPA register
+> + *
+> + * A small helper function that translates MII_LPA bits to
+> + * linkmode advertisement settings for SGMII.
+> + * Leaves other bits unchanged.
+> + */
+> +static inline void
+> +mii_lpa_mod_linkmode_lpa_sgmii(unsigned long *lp_advertising, u32 lpa)
+> +{
+> +	u32 speed_duplex = lpa & LPA_SGMII_DPX_SPD_MASK;
+> +
+> +	linkmode_mod_bit(ETHTOOL_LINK_MODE_1000baseT_Half_BIT, lp_advertising,
+> +			 speed_duplex == LPA_SGMII_1000HALF);
+> +
+> +	linkmode_mod_bit(ETHTOOL_LINK_MODE_1000baseT_Full_BIT, lp_advertising,
+> +			 speed_duplex == LPA_SGMII_1000FULL);
+> +
+> +	linkmode_mod_bit(ETHTOOL_LINK_MODE_100baseT_Half_BIT, lp_advertising,
+> +			 speed_duplex == LPA_SGMII_100HALF);
+> +
+> +	linkmode_mod_bit(ETHTOOL_LINK_MODE_100baseT_Full_BIT, lp_advertising,
+> +			 speed_duplex == LPA_SGMII_100FULL);
+> +
+> +	linkmode_mod_bit(ETHTOOL_LINK_MODE_10baseT_Half_BIT, lp_advertising,
+> +			 speed_duplex == LPA_SGMII_10HALF);
+> +
+> +	linkmode_mod_bit(ETHTOOL_LINK_MODE_10baseT_Full_BIT, lp_advertising,
+> +			 speed_duplex == LPA_SGMII_10FULL);
+> +}
+> +
+> +/**
+> + * mii_lpa_to_linkmode_adv_sgmii
+> + * @advertising: pointer to destination link mode.
+> + * @lpa: value of the MII_LPA register
+> + *
+> + * A small helper function that translates MII_ADVERTISE bits
+> + * to linkmode advertisement settings when in SGMII mode.
+> + * Clears the old value of advertising.
+> + */
+> +static inline void mii_lpa_to_linkmode_lpa_sgmii(unsigned long *lp_advertising,
+> +						 u32 lpa)
+> +{
+> +	linkmode_zero(lp_advertising);
+> +
+> +	mii_lpa_mod_linkmode_lpa_sgmii(lp_advertising, lpa);
+> +}
+> +
+> +/**
+>   * mii_adv_mod_linkmode_adv_t
+>   * @advertising:pointer to destination link mode.
+>   * @adv: value of the MII_ADVERTISE register
+> diff --git a/include/uapi/linux/mii.h b/include/uapi/linux/mii.h
+> index 51b48e4be1f2..dc3b5d635beb 100644
+> --- a/include/uapi/linux/mii.h
+> +++ b/include/uapi/linux/mii.h
+> @@ -71,6 +71,7 @@
+>  /* Advertisement control register. */
+>  #define ADVERTISE_SLCT		0x001f	/* Selector bits               */
+>  #define ADVERTISE_CSMA		0x0001	/* Only selector supported     */
+> +#define ADVERTISE_SGMII		0x0001	/* Can do SGMII                */
+>  #define ADVERTISE_10HALF	0x0020	/* Try for 10mbps half-duplex  */
+>  #define ADVERTISE_1000XFULL	0x0020	/* Try for 1000BASE-X full-duplex */
+>  #define ADVERTISE_10FULL	0x0040	/* Try for 10mbps full-duplex  */
+> @@ -94,6 +95,7 @@
+>  
+>  /* Link partner ability register. */
+>  #define LPA_SLCT		0x001f	/* Same as advertise selector  */
+> +#define LPA_SGMII		0x0001	/* Can do SGMII                */
+>  #define LPA_10HALF		0x0020	/* Can do 10mbps half-duplex   */
+>  #define LPA_1000XFULL		0x0020	/* Can do 1000BASE-X full-duplex */
+>  #define LPA_10FULL		0x0040	/* Can do 10mbps full-duplex   */
+> @@ -104,11 +106,19 @@
+>  #define LPA_1000XPAUSE_ASYM	0x0100	/* Can do 1000BASE-X pause asym*/
+>  #define LPA_100BASE4		0x0200	/* Can do 100mbps 4k packets   */
+>  #define LPA_PAUSE_CAP		0x0400	/* Can pause                   */
+> +#define LPA_SGMII_DPX_SPD_MASK	0x1C00	/* SGMII duplex and speed bits */
+> +#define LPA_SGMII_10HALF	0x0000	/* Can do SGMII 10mbps half-duplex */
+> +#define LPA_SGMII_10FULL	0x1000	/* Can do SGMII 10mbps full-duplex */
+> +#define LPA_SGMII_100HALF	0x0400	/* Can do SGMII 100mbps half-duplex */
+> +#define LPA_SGMII_100FULL	0x1400	/* Can do SGMII 100mbps full-duplex */
+>  #define LPA_PAUSE_ASYM		0x0800	/* Can pause asymetrically     */
+> +#define LPA_SGMII_1000HALF	0x0800	/* Can do SGMII 1000mbps half-duplex */
+> +#define LPA_SGMII_1000FULL	0x1800	/* Can do SGMII 1000mbps full-duplex */
+>  #define LPA_RESV		0x1000	/* Unused...                   */
+>  #define LPA_RFAULT		0x2000	/* Link partner faulted        */
+>  #define LPA_LPACK		0x4000	/* Link partner acked us       */
+>  #define LPA_NPAGE		0x8000	/* Next page bit               */
+> +#define LPA_SGMII_LINK		0x8000	/* Link partner has link       */
 
-Signed-off-by: Julio Faracco <jcfaracco@gmail.com>
----
- drivers/net/ethernet/intel/ice/ice_main.c | 41 ++++++-----------------
- 1 file changed, 11 insertions(+), 30 deletions(-)
+I wonder whether mixing these definitions together is really such a
+good idea, or whether separately grouping them would be better.
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
-index 4d5220c9c721..2d7ecdc157be 100644
---- a/drivers/net/ethernet/intel/ice/ice_main.c
-+++ b/drivers/net/ethernet/intel/ice/ice_main.c
-@@ -5066,36 +5066,17 @@ static void ice_tx_timeout(struct net_device *netdev, unsigned int txqueue)
- 	struct ice_ring *tx_ring = NULL;
- 	struct ice_vsi *vsi = np->vsi;
- 	struct ice_pf *pf = vsi->back;
--	int hung_queue = -1;
- 	u32 i;
- 
- 	pf->tx_timeout_count++;
- 
--	/* find the stopped queue the same way dev_watchdog() does */
--	for (i = 0; i < netdev->num_tx_queues; i++) {
--		unsigned long trans_start;
--		struct netdev_queue *q;
--
--		q = netdev_get_tx_queue(netdev, i);
--		trans_start = q->trans_start;
--		if (netif_xmit_stopped(q) &&
--		    time_after(jiffies,
--			       trans_start + netdev->watchdog_timeo)) {
--			hung_queue = i;
--			break;
--		}
--	}
--
--	if (i == netdev->num_tx_queues)
--		netdev_info(netdev, "tx_timeout: no netdev hung queue found\n");
--	else
--		/* now that we have an index, find the tx_ring struct */
--		for (i = 0; i < vsi->num_txq; i++)
--			if (vsi->tx_rings[i] && vsi->tx_rings[i]->desc)
--				if (hung_queue == vsi->tx_rings[i]->q_index) {
--					tx_ring = vsi->tx_rings[i];
--					break;
--				}
-+	/* now that we have an index, find the tx_ring struct */
-+	for (i = 0; i < vsi->num_txq; i++)
-+		if (vsi->tx_rings[i] && vsi->tx_rings[i]->desc)
-+			if (txqueue == vsi->tx_rings[i]->q_index) {
-+				tx_ring = vsi->tx_rings[i];
-+				break;
-+			}
- 
- 	/* Reset recovery level if enough time has elapsed after last timeout.
- 	 * Also ensure no new reset action happens before next timeout period.
-@@ -5110,19 +5091,19 @@ static void ice_tx_timeout(struct net_device *netdev, unsigned int txqueue)
- 		struct ice_hw *hw = &pf->hw;
- 		u32 head, val = 0;
- 
--		head = (rd32(hw, QTX_COMM_HEAD(vsi->txq_map[hung_queue])) &
-+		head = (rd32(hw, QTX_COMM_HEAD(vsi->txq_map[txqueue])) &
- 			QTX_COMM_HEAD_HEAD_M) >> QTX_COMM_HEAD_HEAD_S;
- 		/* Read interrupt register */
- 		val = rd32(hw, GLINT_DYN_CTL(tx_ring->q_vector->reg_idx));
- 
- 		netdev_info(netdev, "tx_timeout: VSI_num: %d, Q %d, NTC: 0x%x, HW_HEAD: 0x%x, NTU: 0x%x, INT: 0x%x\n",
--			    vsi->vsi_num, hung_queue, tx_ring->next_to_clean,
-+			    vsi->vsi_num, txqueue, tx_ring->next_to_clean,
- 			    head, tx_ring->next_to_use, val);
- 	}
- 
- 	pf->tx_timeout_last_recovery = jiffies;
--	netdev_info(netdev, "tx_timeout recovery level %d, hung_queue %d\n",
--		    pf->tx_timeout_recovery_level, hung_queue);
-+	netdev_info(netdev, "tx_timeout recovery level %d, txqueue %d\n",
-+		    pf->tx_timeout_recovery_level, txqueue);
- 
- 	switch (pf->tx_timeout_recovery_level) {
- 	case 1:
+I already find the mixture of Clause 37 and Clause 22 definitions to
+be a little difficult to spot which are which.
+
+>  
+>  #define LPA_DUPLEX		(LPA_10FULL | LPA_100FULL)
+>  #define LPA_100			(LPA_100FULL | LPA_100HALF | LPA_100BASE4)
+> -- 
+> 2.7.4
+> 
+> 
+
 -- 
-2.17.1
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
+According to speedtest.net: 11.9Mbps down 500kbps up
