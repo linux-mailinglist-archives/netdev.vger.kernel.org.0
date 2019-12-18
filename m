@@ -2,149 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 753A612564D
-	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 23:09:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3D671125673
+	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 23:18:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726520AbfLRWJS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Dec 2019 17:09:18 -0500
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:52190 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726463AbfLRWJS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Dec 2019 17:09:18 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=vI5UevTqcA5mwLf5SCTpIKzJ5O8gTKfGiTuphzXWWYw=; b=PFNB4n4lTOJw3Fubuk5HE78oK
-        uwzvWzJ34f254//mdvLmvuO7+svTGVzFHUwyQtoxTLRbJCHCDs3se2HXS5b+VShT4nRKunvXnO7Ag
-        NbC2MDXKxGkhZJt8t6nt5CHcDOh+cf2JaVtSnTvT3osrsih1al8MHDj3SltOfSeHNwp7iHkhTQXJ2
-        LWOfa44ZqcxueMicRu5QbJlg5AexUr5FfPjJQjSfDZ+B8vupt0hDDmMKWiSX7E1jdQinV9oyMIA9c
-        uSml4ZwePakgYThiLGB4HMNcevwNIgV/HgN3kkM4uJY1rxJd+8HQYHTX5EOTnRhYzn9IyoJlAHy6M
-        J/9VJW++A==;
-Received: from shell.armlinux.org.uk ([2001:4d48:ad52:3201:5054:ff:fe00:4ec]:43142)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1ihhVH-0006iW-3b; Wed, 18 Dec 2019 22:09:11 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1ihhVE-0004ib-8T; Wed, 18 Dec 2019 22:09:08 +0000
-Date:   Wed, 18 Dec 2019 22:09:08 +0000
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: Re: [PATCH net] net: phy: make phy_error() report which PHY has
- failed
-Message-ID: <20191218220908.GX25745@shell.armlinux.org.uk>
-References: <E1ihCLZ-0001Vo-Nw@rmk-PC.armlinux.org.uk>
- <c96f14cd-7139-ebc7-9562-2f92d8b044fc@gmail.com>
- <20191217233436.GS25745@shell.armlinux.org.uk>
- <61f23d43-1c4d-a11e-a798-c938a896ddb3@gmail.com>
+        id S1726730AbfLRWSh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Dec 2019 17:18:37 -0500
+Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:8890 "EHLO
+        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726387AbfLRWSg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Dec 2019 17:18:36 -0500
+Received: from hqpgpgate102.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
+        id <B5dfaa5ad0000>; Wed, 18 Dec 2019 14:18:21 -0800
+Received: from hqmail.nvidia.com ([172.20.161.6])
+  by hqpgpgate102.nvidia.com (PGP Universal service);
+  Wed, 18 Dec 2019 14:18:31 -0800
+X-PGP-Universal: processed;
+        by hqpgpgate102.nvidia.com on Wed, 18 Dec 2019 14:18:31 -0800
+Received: from [10.2.165.11] (10.124.1.5) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Wed, 18 Dec
+ 2019 22:18:30 +0000
+Subject: Re: [PATCH v11 06/25] mm: fix get_user_pages_remote()'s handling of
+ FOLL_LONGTERM
+To:     "Kirill A. Shutemov" <kirill@shutemov.name>
+CC:     Andrew Morton <akpm@linux-foundation.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Dave Chinner <david@fromorbit.com>,
+        David Airlie <airlied@linux.ie>,
+        "David S . Miller" <davem@davemloft.net>,
+        Ira Weiny <ira.weiny@intel.com>, Jan Kara <jack@suse.cz>,
+        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
+        Jonathan Corbet <corbet@lwn.net>,
+        =?UTF-8?B?SsOpcsO0bWUgR2xpc3Nl?= <jglisse@redhat.com>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Michal Hocko <mhocko@suse.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Paul Mackerras <paulus@samba.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Vlastimil Babka <vbabka@suse.cz>, <bpf@vger.kernel.org>,
+        <dri-devel@lists.freedesktop.org>, <kvm@vger.kernel.org>,
+        <linux-block@vger.kernel.org>, <linux-doc@vger.kernel.org>,
+        <linux-fsdevel@vger.kernel.org>, <linux-kselftest@vger.kernel.org>,
+        <linux-media@vger.kernel.org>, <linux-rdma@vger.kernel.org>,
+        <linuxppc-dev@lists.ozlabs.org>, <netdev@vger.kernel.org>,
+        <linux-mm@kvack.org>, LKML <linux-kernel@vger.kernel.org>,
+        Jason Gunthorpe <jgg@mellanox.com>
+References: <20191216222537.491123-1-jhubbard@nvidia.com>
+ <20191216222537.491123-7-jhubbard@nvidia.com>
+ <20191218161907.yczbijr3ngm7wwnj@box>
+From:   John Hubbard <jhubbard@nvidia.com>
+X-Nvconfidentiality: public
+Message-ID: <c8d746ff-f544-6c9f-110b-215514fb4b5c@nvidia.com>
+Date:   Wed, 18 Dec 2019 14:15:40 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.3.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <61f23d43-1c4d-a11e-a798-c938a896ddb3@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20191218161907.yczbijr3ngm7wwnj@box>
+X-Originating-IP: [10.124.1.5]
+X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1576707501; bh=sxjwJVdMWX10qxIPxn4THVxS9SYzoQiX2+nIJ9/LG7I=;
+        h=X-PGP-Universal:Subject:To:CC:References:From:X-Nvconfidentiality:
+         Message-ID:Date:User-Agent:MIME-Version:In-Reply-To:
+         X-Originating-IP:X-ClientProxiedBy:Content-Type:Content-Language:
+         Content-Transfer-Encoding;
+        b=UZ8jBMwY32NgWwiJjZwTAPW3ja6CuPOAfe4SpG+9/CDwknPqX5qccd7q+WCVa0kre
+         Av1FM/rgDWBJQowSF6blVYewBi40/EoGKov0KLTmsD25hxZXVoFAuUTjqD9AjunTuW
+         zOw8acZ6PbPZg9ggfzbvjmuiESVGaX+/zsYCSMAQZrWJGMuf5ikxNna4ygsE1Jk8cJ
+         dHbTfbTsY5cfH+d0VRIX71N/Dllb+k91MxmporXWGxV5JQ3DVwfnyQEVBsHmZwuyup
+         I9epWsR1kc8VLnGg3SRALlsRj1gICz0/x78ascTmPUjlda17XHeoBT+12qtVoXpcGN
+         AwPIbnNqxY2bw==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 18, 2019 at 09:54:32PM +0100, Heiner Kallweit wrote:
-> On 18.12.2019 00:34, Russell King - ARM Linux admin wrote:
-> > On Tue, Dec 17, 2019 at 10:41:34PM +0100, Heiner Kallweit wrote:
-> >> On 17.12.2019 13:53, Russell King wrote:
-> >>> phy_error() is called from phy_interrupt() or phy_state_machine(), and
-> >>> uses WARN_ON() to print a backtrace. The backtrace is not useful when
-> >>> reporting a PHY error.
-> >>>
-> >>> However, a system may contain multiple ethernet PHYs, and phy_error()
-> >>> gives no clue which one caused the problem.
-> >>>
-> >>> Replace WARN_ON() with a call to phydev_err() so that we can see which
-> >>> PHY had an error, and also inform the user that we are halting the PHY.
-> >>>
-> >>> Fixes: fa7b28c11bbf ("net: phy: print stack trace in phy_error")
-> >>> Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
-> >>> ---
-> >>> There is another related problem in this area. If an error is detected
-> >>> while the PHY is running, phy_error() moves to PHY_HALTED state. If we
-> >>> try to take the network device down, then:
-> >>>
-> >>> void phy_stop(struct phy_device *phydev)
-> >>> {
-> >>>         if (!phy_is_started(phydev)) {
-> >>>                 WARN(1, "called from state %s\n",
-> >>>                      phy_state_to_str(phydev->state));
-> >>>                 return;
-> >>>         }
-> >>>
-> >>> triggers, and we never do any of the phy_stop() cleanup. I'm not sure
-> >>> what the best way to solve this is - introducing a PHY_ERROR state may
-> >>> be a solution, but I think we want some phy_is_started() sites to
-> >>> return true for it and others to return false.
-> >>>
-> >>> Heiner - you introduced the above warning, could you look at improving
-> >>> this case so we don't print a warning and taint the kernel when taking
-> >>> a network device down after phy_error() please?
-> >>>
-> >> I think we need both types of information:
-> >> - the affected PHY device
-> >> - the stack trace to see where the issue was triggered
-> > 
-> > Can you please explain why the stack trace is useful.  For the paths
-> > that are reachable, all it tells you is whether it was reached via
-> > the interrupt or the workqueue.
-> > 
-> > If it's via the interrupt, the rest of the backtrace beyond that is
-> > irrelevant.  If it's the workqueue, the backtrace doesn't go back
-> > very far, and doesn't tell you what operation triggered it.
-> > 
-> > If it's important to see where or why phy_error() was called, there
-> > are much better ways of doing that, notably passing a string into
-> > phy_error() to describe the actual error itself.  That would convey
-> > way more useful information than the backtrace does.
-> > 
-> > I have been faced with these backtraces, and they have not been at
-> > all useful for diagnosing the problem.
-> > 
-> "The problem" comes in two flavors:
-> 1. The problem that caused the PHY error
-> 2. The problem caused by the PHY error (if we decide to not
->    always switch to HALTED state)
+On 12/18/19 8:19 AM, Kirill A. Shutemov wrote:
+...
+>> diff --git a/mm/gup.c b/mm/gup.c
+>> index 3ecce297a47f..c0c56888e7cc 100644
+>> --- a/mm/gup.c
+>> +++ b/mm/gup.c
+>> @@ -29,6 +29,13 @@ struct follow_page_context {
+>>   	unsigned int page_mask;
+>>   };
+>>   
+>> +static __always_inline long __gup_longterm_locked(struct task_struct *tsk,
+>> +						  struct mm_struct *mm,
+>> +						  unsigned long start,
+>> +						  unsigned long nr_pages,
+>> +						  struct page **pages,
+>> +						  struct vm_area_struct **vmas,
+>> +						  unsigned int flags);
 > 
-> We can't do much for case 1, maybe we could add an errno argument
-> to phy_error(). To facilitate analyzing case 2 we'd need to change
-> code pieces like the following.
+> Any particular reason for the forward declaration? Maybe move
+> get_user_pages_remote() down?
 > 
-> case a:
-> err = f1();
-> case b:
-> err = f2();
-> 
-> if (err)
-> 	phy_error()
-> 
-> For my understanding: What caused the PHY error in your case(s)?
-> Which info would have been useful for analyzing the error?
 
-Errors reading/writing from the PHY.
+Yes, that's exactly why: I was thinking it would be cleaner to put in the
+forward declaration, rather than moving code blocks, but either way seems
+reasonable. I'll go ahead and move the code blocks and delete the forward
+declaration, now that someone has weighed in in favor of that.
 
-The problem with a backtrace from phy_error() is it doesn't tell you
-where the error actually occurred, it only tells you where the error
-is reported - which is one of two different paths at the moment.
-That can be achieved with much more elegance and simplicity by
-passing a string into phy_error() to describe the call site if that's
-even relevant.
-
-I would say, however, that knowing where the error occurred would be
-far better information.
-
+thanks,
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-According to speedtest.net: 11.9Mbps down 500kbps up
+John Hubbard
+NVIDIA
