@@ -2,126 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 36E2D124528
-	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 11:54:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D4DC124529
+	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 11:56:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726882AbfLRKym (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Dec 2019 05:54:42 -0500
-Received: from mail-pf1-f195.google.com ([209.85.210.195]:46751 "EHLO
-        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726699AbfLRKym (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Dec 2019 05:54:42 -0500
-Received: by mail-pf1-f195.google.com with SMTP id y14so983320pfm.13;
-        Wed, 18 Dec 2019 02:54:42 -0800 (PST)
+        id S1726734AbfLRK4L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Dec 2019 05:56:11 -0500
+Received: from mail-wr1-f68.google.com ([209.85.221.68]:45116 "EHLO
+        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726545AbfLRK4K (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Dec 2019 05:56:10 -0500
+Received: by mail-wr1-f68.google.com with SMTP id j42so1735253wrj.12
+        for <netdev@vger.kernel.org>; Wed, 18 Dec 2019 02:56:09 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=nOoyfv29tdJB4Cs2FbUE63tPrsUbwCLUOgeYj7AkNpw=;
-        b=sXxYQ7OFkbeLBwrv7XlGtpc7WKBBp/am6dU7zwMn2JLT+DNeyeVLLyGWS5n9tnZBVH
-         s7CLWdnr2Wsv7n+vNB9r78jCR/88fUeb15dSlznMWHDfZV4T5mEeI+YmLSMCeDfZzcjZ
-         tKGw4+fgkuH6AZeQgHuDMdPZ/aMD9Uf4pZBJWzvZ59qTALg1ObDYMzT8qIMi4FJOgja2
-         TRz/B26E9vHcekNxEKwvXP7+H+sF75om0nlkOSxzZAbwZ8TSSGLErRDZG2XmKRoDdU9T
-         LKROOBFO5eSZ/aeSdtn/7rgn12AnnQNJoFtGSXJS9FIyN+AU1zcJ5Cz0j5pEj+8g6txR
-         zdPw==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=BpUElI+M5C9/ta9jhQbbZ9gDwxVwC3xb7CVY6634APs=;
+        b=n4jKZSdafpLMH3vl3g2Lh1wPl3Cxbhb5440RlqnVagUVhB78LKsS3tX3+IC98oBtYS
+         oV04ymIi7LpLDGEBPi0nfH5/ALZhwbZ4NQ1rMT/3VTc6SD/QK8+P2vB0zS/fdPuA7Ya7
+         RZzWFzR1GQ9ooq0WcG5A2BByOG3/P0ukVZ5DCbbFfAMekPdBNk6b3NiNNeG3IzJRFK+0
+         ylxVtXEbQJHh0Hl4rvAn0/tKCOXzx3Hago9XDnetWtdlS0zFfGXb7LR5g93Ow8ccyqU3
+         bLkDhbVg3C3AOfWifuohjDrh9eLYXnUAbY4GPh2rENhWaVRvwHdMjJ572fP3Or2qebvf
+         qF8Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=nOoyfv29tdJB4Cs2FbUE63tPrsUbwCLUOgeYj7AkNpw=;
-        b=j7Y8SApdMwrwrtGZPj4qcsmen0UyLHNmWH1UjbO4QerWkGOUYAfUJoNnrdtsy3ehrQ
-         xjBS9UMtv9QhavIHbEfUtFOqDEdCXG9xIQYcfm44acqIsJRceG5c8LixiRcjN5uRgxGr
-         GsltyFo9RfCVVAJd0OAWVqwf3iatSLsOK+s8kSMFQ9G5uTecS1m1F2KOH8Y5SqZwunqp
-         KeTBfitcJLcxYHTirmVugU1OlELMsGVqHhC/8ocoOdrVmCVCZc3mDG3PaSUHaYA5ZG0N
-         lWdKnpN8i1cYa8bn8l1ChuWU5KQ6SSL0MjQfBcImsioIIoqb6s7ZhnL+b1kgqxK1/l05
-         ruhg==
-X-Gm-Message-State: APjAAAUftpRJMkTduwIakQuekn+c3xC+zF8tCKYvxP07TjdRFrRI60HY
-        hVthiJi6A5g657aeMbTJoZOTNm/WEFKEsw==
-X-Google-Smtp-Source: APXvYqz5AWUhF8otd0DX09ERUQqvzpklTKXj3rtZoEZowWQjaT1ZIYXzww66RXXMUIVJK9TQ9Qktlw==
-X-Received: by 2002:a63:5062:: with SMTP id q34mr2311286pgl.378.1576666481581;
-        Wed, 18 Dec 2019 02:54:41 -0800 (PST)
-Received: from btopel-mobl.ger.intel.com ([192.55.55.41])
-        by smtp.gmail.com with ESMTPSA id k9sm2339000pje.26.2019.12.18.02.54.38
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=BpUElI+M5C9/ta9jhQbbZ9gDwxVwC3xb7CVY6634APs=;
+        b=HI7U5cbJeAeihthxVRtdpQbc94ZvM8B5bYyr4ZI0UQBIXYEH/XDGaD/2RfAtM3Fj2+
+         xxnFJFq24cWJY71fGhRnGLu7a4YqGXl5iLS52FI4HKbQATSpmBB+Zj7HzWa1Uu2vAPGk
+         Em1oywMoiBi+ANoSdCjQoEyX2zDuT79qqZyeWXAXOUIROYMru3dFrnuFIutK++UjMA8X
+         oUwlAfMBws95tftWpKYqJwatZtJJUY8wrmGL12EqIMtV1YeQNiJa9Iln6DCbcG8HpJ+8
+         TQsTI9uMDM5+kiGfabeUxFfasRDEfdgjli2nReeTurrGCrmeE9grBCp8XLLP87Nxzir3
+         FfQw==
+X-Gm-Message-State: APjAAAXO07Iw0VXp8+Y3RwYkQuvED7evCzl6tSig6uBnr5A7Bdi9uo1D
+        VFZ/WQSjn0IanGsmI55xPZ3dxA==
+X-Google-Smtp-Source: APXvYqw+5rNTsHbenZOc7LF/GXTG1sTSaY29qzZp2BqHMVQfzUMdqZDpUsBy8BSw4WvCpvt8NL+0HA==
+X-Received: by 2002:adf:f1d0:: with SMTP id z16mr2010714wro.209.1576666568487;
+        Wed, 18 Dec 2019 02:56:08 -0800 (PST)
+Received: from netronome.com ([2001:982:756:703:d63d:7eff:fe99:ac9d])
+        by smtp.gmail.com with ESMTPSA id u24sm2043343wml.10.2019.12.18.02.56.07
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 18 Dec 2019 02:54:41 -0800 (PST)
-From:   =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@gmail.com>
-To:     netdev@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net
-Cc:     =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@intel.com>,
-        bpf@vger.kernel.org, davem@davemloft.net,
-        jakub.kicinski@netronome.com, hawk@kernel.org,
-        john.fastabend@gmail.com, magnus.karlsson@intel.com,
-        jonathan.lemon@gmail.com
-Subject: [PATCH bpf-next 8/8] xdp: simplify __bpf_tx_xdp_map()
-Date:   Wed, 18 Dec 2019 11:54:00 +0100
-Message-Id: <20191218105400.2895-9-bjorn.topel@gmail.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20191218105400.2895-1-bjorn.topel@gmail.com>
-References: <20191218105400.2895-1-bjorn.topel@gmail.com>
+        Wed, 18 Dec 2019 02:56:07 -0800 (PST)
+Date:   Wed, 18 Dec 2019 11:56:07 +0100
+From:   Simon Horman <simon.horman@netronome.com>
+To:     Tom Herbert <tom@herbertland.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Tom Herbert <tom@quantonium.net>
+Subject: Re: [PATCH v5 net-next 2/7] ipeh: Move generic EH functions to
+ exthdrs_common.c
+Message-ID: <20191218105606.GB22367@netronome.com>
+References: <1570139884-20183-1-git-send-email-tom@herbertland.com>
+ <1570139884-20183-3-git-send-email-tom@herbertland.com>
+ <20191006130030.rv4tjcu2qkk7baf6@netronome.com>
+ <CALx6S36wkNaWhHhgkTs12Zphm+u6OZjWucrUkByYxBZA2aGE+w@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CALx6S36wkNaWhHhgkTs12Zphm+u6OZjWucrUkByYxBZA2aGE+w@mail.gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Björn Töpel <bjorn.topel@intel.com>
+On Sat, Dec 14, 2019 at 10:47:17AM -0800, Tom Herbert wrote:
+> On Sun, Oct 6, 2019 at 6:00 AM Simon Horman <simon.horman@netronome.com> wrote:
+> >
+> > On Thu, Oct 03, 2019 at 02:57:59PM -0700, Tom Herbert wrote:
+> > > From: Tom Herbert <tom@quantonium.net>
+> > >
+> > > Move generic functions in exthdrs.c to new exthdrs_common.c so that
+> > > exthdrs.c only contains functions that are specific to IPv6 processing,
+> > > and exthdrs_common.c contains functions that are generic. These
+> > > functions include those that will be used with IPv4 extension headers.
+> > > Generic extension header related functions are prefixed by ipeh_.
+> > >
+> > > Signed-off-by: Tom Herbert <tom@herbertland.com>
+> >
+> > ...
+> >
+> > > diff --git a/net/dccp/ipv6.c b/net/dccp/ipv6.c
+> > > index 25aab67..b8843c1 100644
+> > > --- a/net/dccp/ipv6.c
+> > > +++ b/net/dccp/ipv6.c
+> > > @@ -515,7 +515,7 @@ static struct sock *dccp_v6_request_recv_sock(const struct sock *sk,
+> > >       if (!opt)
+> > >               opt = rcu_dereference(np->opt);
+> > >       if (opt) {
+> > > -             opt = ipv6_dup_options(newsk, opt);
+> > > +             opt = ipeh_dup_options(newsk, opt);
+> > >               RCU_INIT_POINTER(newnp->opt, opt);
+> > >       }
+> > >       inet_csk(newsk)->icsk_ext_hdr_len = 0;
+> > > diff --git a/net/ipv6/Kconfig b/net/ipv6/Kconfig
+> > > index ae1344e..700fcea 100644
+> > > --- a/net/ipv6/Kconfig
+> > > +++ b/net/ipv6/Kconfig
+> > > @@ -3,9 +3,13 @@
+> > >  # IPv6 configuration
+> > >  #
+> > >
+> > > +config EXTHDRS
+> > > +     bool
+> > > +
+> > >  #   IPv6 as module will cause a CRASH if you try to unload it
+> > >  menuconfig IPV6
+> > >       tristate "The IPv6 protocol"
+> > > +     select EXTHDRS
+> > >       default y
+> > >       ---help---
+> > >         Support for IP version 6 (IPv6).
+> >
+> > Hi Tom,
+> >
+> > could you expand on the motivation for this new Kconfig symbol.
+> > It seems that at this time exthdrs_common.o could simply depend on IPV6.
+> >
+> It anticipates other uses cases of extension headers, in particular
+> IPv4 extension headers
+> (https://tools.ietf.org/html/draft-herbert-ipv4-hbh-destopt-00)
 
-The explicit error checking is not needed. Simply return the error
-instead.
+Thanks Tom,
 
-Signed-off-by: Björn Töpel <bjorn.topel@intel.com>
----
- net/core/filter.c | 33 +++++++--------------------------
- 1 file changed, 7 insertions(+), 26 deletions(-)
+I would lean towards adding the new Kconfig option when it is needed,
+but I don't feel strongly aout this.
 
-diff --git a/net/core/filter.c b/net/core/filter.c
-index d9caa3e57ea1..217af9974c86 100644
---- a/net/core/filter.c
-+++ b/net/core/filter.c
-@@ -3510,35 +3510,16 @@ xdp_do_redirect_slow(struct net_device *dev, struct xdp_buff *xdp,
- }
- 
- static int __bpf_tx_xdp_map(struct net_device *dev_rx, void *fwd,
--			    struct bpf_map *map,
--			    struct xdp_buff *xdp)
-+			    struct bpf_map *map, struct xdp_buff *xdp)
- {
--	int err;
--
- 	switch (map->map_type) {
- 	case BPF_MAP_TYPE_DEVMAP:
--	case BPF_MAP_TYPE_DEVMAP_HASH: {
--		struct bpf_dtab_netdev *dst = fwd;
--
--		err = dev_map_enqueue(dst, xdp, dev_rx);
--		if (unlikely(err))
--			return err;
--		break;
--	}
--	case BPF_MAP_TYPE_CPUMAP: {
--		struct bpf_cpu_map_entry *rcpu = fwd;
--
--		err = cpu_map_enqueue(rcpu, xdp, dev_rx);
--		if (unlikely(err))
--			return err;
--		break;
--	}
--	case BPF_MAP_TYPE_XSKMAP: {
--		struct xdp_sock *xs = fwd;
--
--		err = __xsk_map_redirect(xs, xdp);
--		return err;
--	}
-+	case BPF_MAP_TYPE_DEVMAP_HASH:
-+		return dev_map_enqueue(fwd, xdp, dev_rx);
-+	case BPF_MAP_TYPE_CPUMAP:
-+		return cpu_map_enqueue(fwd, xdp, dev_rx);
-+	case BPF_MAP_TYPE_XSKMAP:
-+		return __xsk_map_redirect(fwd, xdp);
- 	default:
- 		break;
- 	}
--- 
-2.20.1
-
+> > Otherwise this patch seems fine to me.
+> >
+> > > diff --git a/net/ipv6/Makefile b/net/ipv6/Makefile
+> > > index df3919b..0bcab81 100644
+> > > --- a/net/ipv6/Makefile
+> > > +++ b/net/ipv6/Makefile
+> > > @@ -44,6 +44,7 @@ obj-$(CONFIG_IPV6_SIT) += sit.o
+> > >  obj-$(CONFIG_IPV6_TUNNEL) += ip6_tunnel.o
+> > >  obj-$(CONFIG_IPV6_GRE) += ip6_gre.o
+> > >  obj-$(CONFIG_IPV6_FOU) += fou6.o
+> > > +obj-$(CONFIG_EXTHDRS) += exthdrs_common.o
+> > >
+> > >  obj-y += addrconf_core.o exthdrs_core.o ip6_checksum.o ip6_icmp.o
+> > >  obj-$(CONFIG_INET) += output_core.o protocol.o $(ipv6-offload)
+> >
+> > ...
+> 
