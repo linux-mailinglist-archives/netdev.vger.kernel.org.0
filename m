@@ -2,82 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7781F124A92
-	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 16:02:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AAEA4124A98
+	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 16:05:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727264AbfLRPCI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Dec 2019 10:02:08 -0500
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:44085 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726996AbfLRPCI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Dec 2019 10:02:08 -0500
-Received: by mail-wr1-f66.google.com with SMTP id q10so2623937wrm.11
-        for <netdev@vger.kernel.org>; Wed, 18 Dec 2019 07:02:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=blXtr+em+3S6ZxBybSMKzqKVW2qNVrHiESxiu52Em9Y=;
-        b=SFxJqUL42stNk1p/Hi24opcnee8JZFJ9DBqqDAm3+1GrkcJriD5FPsXUkZnO3zk/Ct
-         2Lbbb9QxEXStLp7Itzb3RWa1WM4dpmyYudA2tS6yNWVVnLmBi2zxzX8bx42cLj5Z7nja
-         OQTWi95i6MSBaYFmzW8JFZAUTBw3T0xMDHg2GQdBRjeEV+cB+JQQu+Ybqc/PJCKi60P4
-         o46mmIBbcDdMW4MZC7fjukJ0r9KoPAD1g3iJYgBISYAoHvKLR4MGvE0S6Gdy4d0oF5DF
-         gptgiSV6uyrYzoFyY97fYUtVCtfnLFSlCbgzhpPc80b0a/3LYtfde8KnthJ9DJgLPpw6
-         TzPQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=blXtr+em+3S6ZxBybSMKzqKVW2qNVrHiESxiu52Em9Y=;
-        b=hOA/P3AOgTZQ5T8rWvkIOB6VXif3c/twqedEUM5LnIkpleqPhJwRPcBvZRRkEbGIfV
-         0/br/6lahC5Hr1n/ZfJX69r8X1jVyo/qv+DZIpBonrkyE2gN5yr/6vVCnXQTJVuZZ0EZ
-         Z24NUvu4GYwUhOgyfOaTersGoyaAfk2cpPwJ9tDfP0B38gO8QiVtlybleR8n52KEqeRK
-         SmaRIgVAoVsUvGgVex2da0/Wlar9yvK23KwzbF/7K/28pRNaYc2wkPV3hIthQqmn8r8M
-         oN3G+LaCiymyQNYHGohugYPX9J8MzqwWVzKcgrm9+h5bPp3YaZjei6+jzyCMduwpGY1Z
-         sd5Q==
-X-Gm-Message-State: APjAAAWoKvoEyIjfsoHvePa7qoPQeKVKSpvnoyAsIfS//QHxjnAAT25M
-        slglbgomamRTurxjIXXXDVFJJS2RgH8=
-X-Google-Smtp-Source: APXvYqxWeicwVLruUQOXoutDbmf7PdSgQE3XzVPFRVUqBgMyL9gR9l9g2p1GboEQsLBLhEb0VHmCLA==
-X-Received: by 2002:adf:dfc9:: with SMTP id q9mr3598837wrn.219.1576681326480;
-        Wed, 18 Dec 2019 07:02:06 -0800 (PST)
-Received: from localhost ([85.163.43.78])
-        by smtp.gmail.com with ESMTPSA id y7sm6974790wmd.1.2019.12.18.07.02.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 18 Dec 2019 07:02:06 -0800 (PST)
-Date:   Wed, 18 Dec 2019 16:02:05 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Petr Machata <petrm@mellanox.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Roopa Prabhu <roopa@cumulusnetworks.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Roman Mashak <mrv@mojatatu.com>,
-        Ido Schimmel <idosch@mellanox.com>
-Subject: Re: [PATCH net-next mlxsw v2 04/10] net: sch_ets: Add a new Qdisc
-Message-ID: <20191218150205.GD2209@nanopsycho>
-References: <cover.1576679650.git.petrm@mellanox.com>
- <0c126a45dcf8ec23c25c98b2ce5a9a1599ea3a85.1576679651.git.petrm@mellanox.com>
+        id S1727186AbfLRPE4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Dec 2019 10:04:56 -0500
+Received: from mail.kernel.org ([198.145.29.99]:51318 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727114AbfLRPE4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 18 Dec 2019 10:04:56 -0500
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 79E8820684;
+        Wed, 18 Dec 2019 15:04:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1576681496;
+        bh=/Xwy0EYDAWm9IUmqarXi6RASHE7DRX2pjkg+940R3xc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=TjnG36vCL53/t2504//iSgiNAM2/Nb8XGdqdkMkqNuLbwx0OAbgmdvZwdVXhj5B0y
+         vNhc3zZjTbwHJZFlgrL4vdbLoSBKNy2CmrhB/0ecaApmQg2RnmRwWyYPEubtpUK3y8
+         7JDRqjgC1xASB3MQ27ehzPSYiHnGPa+1EJU+BN0k=
+Date:   Wed, 18 Dec 2019 16:03:46 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     =?iso-8859-1?B?Suly9G1l?= Pouiller <Jerome.Pouiller@silabs.com>
+Cc:     "devel@driverdev.osuosl.org" <devel@driverdev.osuosl.org>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Kalle Valo <kvalo@codeaurora.org>
+Subject: Re: [PATCH v2 00/55] Improve wfx driver
+Message-ID: <20191218150346.GA431628@kroah.com>
+References: <20191217161318.31402-1-Jerome.Pouiller@silabs.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <0c126a45dcf8ec23c25c98b2ce5a9a1599ea3a85.1576679651.git.petrm@mellanox.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20191217161318.31402-1-Jerome.Pouiller@silabs.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Wed, Dec 18, 2019 at 03:55:13PM CET, petrm@mellanox.com wrote:
->Introduces a new Qdisc, which is based on 802.1Q-2014 wording. It is
->PRIO-like in how it is configured, meaning one needs to specify how many
->bands there are, how many are strict and how many are dwrr, quanta for the
->latter, and priomap.
->
->The new Qdisc operates like the PRIO / DRR combo would when configured as
->per the standard. The strict classes, if any, are tried for traffic first.
->When there's no traffic in any of the strict queues, the ETS ones (if any)
->are treated in the same way as in DRR.
->
->Signed-off-by: Petr Machata <petrm@mellanox.com>
+On Tue, Dec 17, 2019 at 04:14:26PM +0000, Jérôme Pouiller wrote:
+> From: Jérôme Pouiller <jerome.pouiller@silabs.com>
+> 
+> Hello all,
+> 
+> This pull request continue to clean up the wfx driver. It can be more or
+> less divided in four parts:
+>   - 0001 to 0009 fix some issues (should be included in 5.5?)
+>   - 0010 to 0028 mostly contains cosmetics changes
 
-Acked-by: Jiri Pirko <jiri@mellanox.com>
+I took the first 10 to staging-linus to get into 5.5-final.
+
+>   - 0029 to 0043 re-work power save (in station mode) and QoS
+>   - 0044 to 0054 re-work the scan process
+
+all the rest of these I've queued up "normally" in staging-next.
+
+And thanks for fixing up the mime issue, these applied with no problems
+at all.
+
+greg k-h
