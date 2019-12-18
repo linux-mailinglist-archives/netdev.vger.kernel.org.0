@@ -2,132 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F24F9124FF7
-	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 19:00:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B09EE125056
+	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 19:09:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727256AbfLRSAs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Dec 2019 13:00:48 -0500
-Received: from mail-pj1-f67.google.com ([209.85.216.67]:54120 "EHLO
-        mail-pj1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727025AbfLRSAr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Dec 2019 13:00:47 -0500
-Received: by mail-pj1-f67.google.com with SMTP id n96so1220735pjc.3;
-        Wed, 18 Dec 2019 10:00:47 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=kiwngbDlyS6BqmtksKNN+BZ598T1YrYs4t1Vv+9Myr0=;
-        b=PXX5IC8pNhCalJLIgvMQ9SIjzlR018PlQ1JbEVIne4Yth6MZxg9wnUOhvZk4+kIzG+
-         iXvs7+qFFDkXdA88vyTomJlu07314xkKI68kpS9xASj1/QuCJJESo2v3zkATraJtaTBJ
-         hyo7F1jMQHI0GYkEfVneHAoODvL6efGLeW4554PHsL6z50eoHu+1ty0n6GbwJtWECJCd
-         bzzoQc0WeHfTI4o7lwacGN9hlKhLm3Qof8/IhlxVP8EOAfc5T5qRbJCfdiu58Gt14+oc
-         /nAFmeSzn2kgd72ZwSqgzFsfMOSTPNw1ojRI7LgTW8odtgukTAW4x+5iIdVGTf9QNMlh
-         lw9g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=kiwngbDlyS6BqmtksKNN+BZ598T1YrYs4t1Vv+9Myr0=;
-        b=jZ6MIKgQ8hjjivOKhean9xc6o8kpggiosiAVDkYjESFDtOjYg+/KAf6MmhmlJs3ENR
-         iNmLR4jX/dXc0rBsw7EYLWQIRcrfuPpVRDBqEZiEijJrCJ9QgBjB1rYUK/7CTVZpxHWd
-         QGR5EysC/uqa04In471k0SI2MYNG6FoSGaU4T+5iLZu4Q6BZ7uqHvNxWL2lphZoRE0Xz
-         qvgBniptCY/TOfkGVdU89aJVKn0HTVcg0SAoisKTLOxp629rH78miMJDVvsyZbYKDDPF
-         m74Bw9W6Cl+ssYY7p7i8J6EgS462hUnrvrNplGQ7gB1owCezCBEmNLCdLRv5y9GQm0mK
-         V5Dg==
-X-Gm-Message-State: APjAAAVhtO8YOAZSxqDUiJR9efahDDtpqCyZn14+qz8Qlam3m3Vq7HPB
-        iC0hE0VdqInV6tWoEMcdFqk=
-X-Google-Smtp-Source: APXvYqxhv1TnRe03QCYFcaO69PhSNvKECZBoJM0ccNleoBHyw3Sou26hi99GDh30RtV5t1lbdHKElg==
-X-Received: by 2002:a17:90a:ba98:: with SMTP id t24mr4373790pjr.12.1576692046910;
-        Wed, 18 Dec 2019 10:00:46 -0800 (PST)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:200::4108])
-        by smtp.gmail.com with ESMTPSA id c184sm4276544pfa.39.2019.12.18.10.00.45
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 18 Dec 2019 10:00:45 -0800 (PST)
-Date:   Wed, 18 Dec 2019 10:00:44 -0800
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Paul Chaignon <paul.chaignon@orange.com>
-Cc:     bpf@vger.kernel.org, paul.chaignon@gmail.com,
-        netdev@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>
-Subject: Re: [PATCH bpf-next 1/3] bpf: Single-cpu updates for per-cpu maps
-Message-ID: <20191218180042.2ktkmok5ugeahczn@ast-mbp.dhcp.thefacebook.com>
-References: <cover.1576673841.git.paul.chaignon@orange.com>
- <ec8fd77bb20881e7149f7444e731c510790191ce.1576673842.git.paul.chaignon@orange.com>
+        id S1727749AbfLRSIq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Dec 2019 13:08:46 -0500
+Received: from us-smtp-2.mimecast.com ([205.139.110.61]:60218 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727346AbfLRSH0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Dec 2019 13:07:26 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1576692445;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=nmdGUwTvoHp9zBzsfUh31MNBzW9ZhcHvi1/dZfx3TSc=;
+        b=alv/XHTQ1KgJFx03lzHymIYJVHBWkdQ98n1X09YzyJFuLots2ClgFqAn7CuxEHljqTJpSs
+        HrMrh6g+ltr7IUvQyMWmd8rK09CcYuMPE0oTFEgXom3py2mg+MSLPX/oMD9nn10iudFwBg
+        dTQc84cctCtCe2vXvILN+xJyncAuYNQ=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-50-bjYQnByeNymkKKOVYrH73A-1; Wed, 18 Dec 2019 13:07:17 -0500
+X-MC-Unique: bjYQnByeNymkKKOVYrH73A-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 1626E1088381;
+        Wed, 18 Dec 2019 18:07:16 +0000 (UTC)
+Received: from steredhat.redhat.com (ovpn-117-218.ams2.redhat.com [10.36.117.218])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 1592E5D9E2;
+        Wed, 18 Dec 2019 18:07:08 +0000 (UTC)
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     davem@davemloft.net
+Cc:     Jorgen Hansen <jhansen@vmware.com>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Dexuan Cui <decui@microsoft.com>, netdev@vger.kernel.org,
+        virtualization@lists.linux-foundation.org,
+        Stefano Garzarella <sgarzare@redhat.com>
+Subject: [PATCH net-next v3 00/11] VSOCK: add vsock_test test suite
+Date:   Wed, 18 Dec 2019 19:06:57 +0100
+Message-Id: <20191218180708.120337-1-sgarzare@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ec8fd77bb20881e7149f7444e731c510790191ce.1576673842.git.paul.chaignon@orange.com>
-User-Agent: NeoMutt/20180223
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 18, 2019 at 03:23:04PM +0100, Paul Chaignon wrote:
-> Currently, userspace programs have to update the values of all CPUs at
-> once when updating per-cpu maps.  This limitation prevents the update of
-> a single CPU's value without the risk of missing concurrent updates on
-> other CPU's values.
-> 
-> This patch allows userspace to update the value of a specific CPU in
-> per-cpu maps.  The CPU whose value should be updated is encoded in the
-> 32 upper-bits of the flags argument, as follows.  The new BPF_CPU flag
-> can be combined with existing flags.
+The vsock_diag.ko module already has a test suite but the core AF_VSOCK
+functionality has no tests. This patch series adds several test cases tha=
+t
+exercise AF_VSOCK SOCK_STREAM socket semantics (send/recv, connect/accept=
+,
+half-closed connections, simultaneous connections).
 
-In general makes sense. Could you elaborate more on concrete issue?
+The v1 of this series was originally sent by Stefan.
 
->   bpf_map_update_elem(..., cpuid << 32 | BPF_CPU)
-> 
-> Signed-off-by: Paul Chaignon <paul.chaignon@orange.com>
-> ---
->  include/uapi/linux/bpf.h       |  4 +++
->  kernel/bpf/arraymap.c          | 19 ++++++++-----
->  kernel/bpf/hashtab.c           | 49 ++++++++++++++++++++--------------
->  kernel/bpf/local_storage.c     | 16 +++++++----
->  kernel/bpf/syscall.c           | 17 +++++++++---
->  tools/include/uapi/linux/bpf.h |  4 +++
->  6 files changed, 74 insertions(+), 35 deletions(-)
-> 
-> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-> index dbbcf0b02970..2efb17d2c77a 100644
-> --- a/include/uapi/linux/bpf.h
-> +++ b/include/uapi/linux/bpf.h
-> @@ -316,6 +316,10 @@ enum bpf_attach_type {
->  #define BPF_NOEXIST	1 /* create new element if it didn't exist */
->  #define BPF_EXIST	2 /* update existing element */
->  #define BPF_F_LOCK	4 /* spin_lock-ed map_lookup/map_update */
-> +#define BPF_CPU		8 /* single-cpu update for per-cpu maps */
+v3:
+- Patch 6:
+  * check the byte received in the recv_byte()
+  * use send(2)/recv(2) instead of write(2)/read(2) to test also flags
+    (e.g. MSG_PEEK)
+- Patch 8:
+  * removed unnecessary control_expectln("CLOSED") [Stefan].
+- removed patches 9,10,11 added in the v2
+- new Patch 9 add parameters to list and skip tests (e.g. useful for vmci
+  that doesn't support half-closed socket in the host)
+- new Patch 10 prints a list of options in the help
+- new Patch 11 tests MSG_PEEK flags of recv(2)
 
-BPF_F_CPU would be more consistent with the rest of flags.
+v2: https://patchwork.ozlabs.org/cover/1140538/
+v1: https://patchwork.ozlabs.org/cover/847998/
 
-Can BPF_F_CURRENT_CPU be supported as well?
+Stefan Hajnoczi (7):
+  VSOCK: fix header include in vsock_diag_test
+  VSOCK: add SPDX identifiers to vsock tests
+  VSOCK: extract utility functions from vsock_diag_test.c
+  VSOCK: extract connect/accept functions from vsock_diag_test.c
+  VSOCK: add full barrier between test cases
+  VSOCK: add send_byte()/recv_byte() test utilities
+  VSOCK: add AF_VSOCK test cases
 
-And for consistency support this flag in map_lookup_elem too?
+Stefano Garzarella (4):
+  vsock_test: wait for the remote to close the connection
+  testing/vsock: add parameters to list and skip tests
+  testing/vsock: print list of options and description
+  vsock_test: add SOCK_STREAM MSG_PEEK test
 
-> +
-> +/* CPU mask for single-cpu updates */
-> +#define BPF_CPU_MASK	0xFFFFFFFF00000000ULL
+ tools/testing/vsock/.gitignore        |   1 +
+ tools/testing/vsock/Makefile          |   9 +-
+ tools/testing/vsock/README            |   3 +-
+ tools/testing/vsock/control.c         |  15 +-
+ tools/testing/vsock/control.h         |   2 +
+ tools/testing/vsock/timeout.h         |   1 +
+ tools/testing/vsock/util.c            | 376 +++++++++++++++++++++++++
+ tools/testing/vsock/util.h            |  49 ++++
+ tools/testing/vsock/vsock_diag_test.c | 202 ++++----------
+ tools/testing/vsock/vsock_test.c      | 379 ++++++++++++++++++++++++++
+ 10 files changed, 883 insertions(+), 154 deletions(-)
+ create mode 100644 tools/testing/vsock/util.c
+ create mode 100644 tools/testing/vsock/util.h
+ create mode 100644 tools/testing/vsock/vsock_test.c
 
-what is the reason to expose this in uapi?
-
->  /* flags for BPF_MAP_CREATE command */
->  #define BPF_F_NO_PREALLOC	(1U << 0)
-> diff --git a/kernel/bpf/arraymap.c b/kernel/bpf/arraymap.c
-> index f0d19bbb9211..a96e94696819 100644
-> --- a/kernel/bpf/arraymap.c
-> +++ b/kernel/bpf/arraymap.c
-> @@ -302,7 +302,8 @@ static int array_map_update_elem(struct bpf_map *map, void *key, void *value,
->  	u32 index = *(u32 *)key;
->  	char *val;
->  
-> -	if (unlikely((map_flags & ~BPF_F_LOCK) > BPF_EXIST))
-> +	if (unlikely((map_flags & ~BPF_CPU_MASK & ~BPF_F_LOCK &
-> +				  ~BPF_CPU) > BPF_EXIST))
-
-that reads odd.
-More traditional would be ~ (A | B | C)
+--=20
+2.24.1
 
