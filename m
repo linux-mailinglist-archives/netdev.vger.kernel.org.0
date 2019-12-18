@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id ABB8B12412F
-	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 09:12:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C9B12124130
+	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 09:13:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726793AbfLRIMy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Dec 2019 03:12:54 -0500
-Received: from mail-pg1-f196.google.com ([209.85.215.196]:34725 "EHLO
-        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726786AbfLRIMy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Dec 2019 03:12:54 -0500
-Received: by mail-pg1-f196.google.com with SMTP id r11so870427pgf.1
-        for <netdev@vger.kernel.org>; Wed, 18 Dec 2019 00:12:54 -0800 (PST)
+        id S1726795AbfLRIM6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Dec 2019 03:12:58 -0500
+Received: from mail-pl1-f195.google.com ([209.85.214.195]:46137 "EHLO
+        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725797AbfLRIM6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Dec 2019 03:12:58 -0500
+Received: by mail-pl1-f195.google.com with SMTP id y8so617030pll.13
+        for <netdev@vger.kernel.org>; Wed, 18 Dec 2019 00:12:58 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=dAlaZyCa1d1/7R6nqGa0pGAEkYvGJcj7IgrbAu+7dr8=;
-        b=QnDCYfF38bPu+CH5kSktGivJwWDSuNVzTQNLglrI1+RzSXbdPZtqDE0zC3LWJqCA47
-         QWWq7PAAHtHm6U4tsO6MPxQ09RrdVXnzg4Y3Tm2AQJPlS6zPuOdJbPxHl+FKv6jH7Fbr
-         0i+QkP3R9khCyer9I026a4izp+DGnBskbZLnAgFCVoo9PSrxfO69XCXwzgzBvfwrSupr
-         BdflVkNtVf22XH5TfXz2bb88Dm3hyJqpPVWRTopnv8W2kxxXoHaST0HBdAioR0XbJ3kG
-         8mkFL0FP36fVd7HcuCl35EZsPk66NtQp6NWY5E+1PfEYux7ZxRxizqiau7FwlYpGUP13
-         H3yA==
+        bh=/mUI1AQBodTW/whqD89bfFNjiWJm4/Lgx7fxoFto6oI=;
+        b=NQzKMBPw3pzTYNHTdDY4fARfwM3I/3t+OMA1/VdbIfJYvX0rqvBUjYjE4qxpNRU9zA
+         QkYUvcvlPR/qJiICGSvYyf07MBDaDRo+9xhuehOs+4LO5z47ISBF7jbQnb2B4T9RTTkv
+         fPGuHJRLDmuE1++J3mDsOGqs5voXQTKMte3uD+5l2nrJxPKxi5LGNc0DlEOR7FkwryGI
+         m48+jUnUdoukmqJX6tgh+FPbt/3HfLqhIU24Thp0wRs/C4tBCo0jBJzoQ81XEr7Xnz+k
+         zh86Pabd+utDYoX3nqQtz6rcZnP7yidgxP3T3ZWM0Q5ZKsaFFOnTdUJqKbV4Zn2a6F1j
+         ONGQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=dAlaZyCa1d1/7R6nqGa0pGAEkYvGJcj7IgrbAu+7dr8=;
-        b=CrTMxg5Kd45+AC1p2946ukMBwwpkZDwV7WPo/QP2sXi8gcdahCYRfk/avFTT/byusO
-         AywoRHMpIqVyeNboAtAXtr4bZwE2La4ddubKyqDIuc8hUTdGDgGcMLbWOP8pJUe4hUnm
-         8TkGgu9jvwfU4zGN0OQ6qOUrV+xrwpM4A9yAz8DC/yvm6zJm7iD/8agAluMhpZsJ2sVa
-         YwwvlCXQ6pzwblrrFIk0q/9X0nGXZqx0hLtL4zTULUhYkJayvYsd2VN7J8g8jKb1+4tV
-         juARMKJYYOJ9ZXy1El73eCNgu/t3yvCexw6yzCJIyUGH/EKxog06RdMlafEdcNhBOzza
-         3+TA==
-X-Gm-Message-State: APjAAAUemF0TpYylT9Zbi9z9apR7iLpe+Cau8yljaeRUEvKdpnCWdb8b
-        F6mxjyBFf10Cys7mDuUFQhQ=
-X-Google-Smtp-Source: APXvYqyN+tuFWf+fn9BIA1CqRVcHUQKgZCrrg6nIkzB65gR7+kZtwak1Yz00AwsMZYMmkOI5yFyPIA==
-X-Received: by 2002:aa7:9098:: with SMTP id i24mr1631084pfa.58.1576656773896;
-        Wed, 18 Dec 2019 00:12:53 -0800 (PST)
+        bh=/mUI1AQBodTW/whqD89bfFNjiWJm4/Lgx7fxoFto6oI=;
+        b=Kx3HphC11jGl45encIU6aqAOJxpVc0L85tohdP8poDWDJ/55AxHl6+6sWED1R6nlpp
+         8/0VqPUJfk7y59XJm4NHqnIHJ7Kzru3jvNWq/GO7pnaCNvI4J8a+XwBlvlMSG49MGILT
+         NavehXP1VqwxWti/CCW+DisTBPLq6tJuQPPjEqXLn8xPd+wTXI8/jyoYmWWJ9Ck/6mWT
+         nlVykTliGyHZfmqukTc6wYUliUBOJtimpfhFZGE6k43NlFvM6UCJxONJotyoJ5adI+Ao
+         TnBjBrnO7WoWnRV8AvnRM67Psqj189VPgOdcZtqq2AVVh0n+HuzAnV6VFHK3yGENpROR
+         +hdw==
+X-Gm-Message-State: APjAAAWQAGpgdkAoQ/8Sn+I397N0sQxP9un2h/Lv6JNfP01LpSSDicCS
+        hyKbgiZ5M3EeWMSAx3y5mhgPynHD
+X-Google-Smtp-Source: APXvYqxFr7ySbhxIPw9XE1RrFs6/1iClBcQpkwNrqHdgvtj83/2DR5ndxiqAz0C/IkmGRCKacZhRUw==
+X-Received: by 2002:a17:902:d893:: with SMTP id b19mr1327708plz.93.1576656777717;
+        Wed, 18 Dec 2019 00:12:57 -0800 (PST)
 Received: from localhost.localdomain ([222.151.198.97])
-        by smtp.gmail.com with ESMTPSA id s1sm1799181pgv.87.2019.12.18.00.12.50
+        by smtp.gmail.com with ESMTPSA id s1sm1799181pgv.87.2019.12.18.00.12.54
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 18 Dec 2019 00:12:53 -0800 (PST)
+        Wed, 18 Dec 2019 00:12:57 -0800 (PST)
 From:   Prashant Bhole <prashantbhole.linux@gmail.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         "Michael S . Tsirkin" <mst@redhat.com>,
@@ -59,9 +59,9 @@ Cc:     Prashant Bhole <prashantbhole.linux@gmail.com>,
         Martin KaFai Lau <kafai@fb.com>,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
         Andrii Nakryiko <andriin@fb.com>, netdev@vger.kernel.org
-Subject: [RFC net-next 11/14] tun: run XDP program in tx path
-Date:   Wed, 18 Dec 2019 17:10:47 +0900
-Message-Id: <20191218081050.10170-12-prashantbhole.linux@gmail.com>
+Subject: [RFC net-next 12/14] tun: add a way to inject tx path packet into Rx path
+Date:   Wed, 18 Dec 2019 17:10:48 +0900
+Message-Id: <20191218081050.10170-13-prashantbhole.linux@gmail.com>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20191218081050.10170-1-prashantbhole.linux@gmail.com>
 References: <20191218081050.10170-1-prashantbhole.linux@gmail.com>
@@ -72,198 +72,100 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Run the XDP program as soon as packet is removed from the ptr
-ring. Since this is XDP in tx path, the traditional handling of
-XDP actions XDP_TX/REDIRECT isn't valid. For this reason we call
-do_xdp_generic_core instead of do_xdp_generic. do_xdp_generic_core
-just runs the program and leaves the action handling to us.
+In order to support XDP_TX from tx path XDP program, we need a way
+to inject tx path packet into RX path. Let's modify the RX path
+function tun_xdp_one() for this purpose.
+
+This patch adds a parameter to pass information whether packet has
+virtio_net header.
 
 Signed-off-by: Prashant Bhole <prashantbhole.linux@gmail.com>
 ---
- drivers/net/tun.c | 149 +++++++++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 146 insertions(+), 3 deletions(-)
+ drivers/net/tun.c | 41 +++++++++++++++++++++++++++++++----------
+ 1 file changed, 31 insertions(+), 10 deletions(-)
 
 diff --git a/drivers/net/tun.c b/drivers/net/tun.c
-index 8aee7abd53a2..1afded9252f5 100644
+index 1afded9252f5..0701a7a80346 100644
 --- a/drivers/net/tun.c
 +++ b/drivers/net/tun.c
-@@ -131,6 +131,7 @@ struct tap_filter {
- /* MAX_TAP_QUEUES 256 is chosen to allow rx/tx queues to be equal
-  * to max number of VCPUs in guest. */
- #define MAX_TAP_QUEUES 256
-+#define MAX_TAP_BATCH 64
- #define MAX_TAP_FLOWS  4096
- 
- #define TUN_FLOW_EXPIRE (3 * HZ)
-@@ -2173,6 +2174,109 @@ static ssize_t tun_put_user(struct tun_struct *tun,
- 	return total;
+@@ -2238,6 +2238,13 @@ static u32 tun_do_xdp_tx_generic(struct tun_struct *tun,
+ 	return act;
  }
  
-+static struct sk_buff *tun_prepare_xdp_skb(struct sk_buff *skb)
-+{
-+	struct sk_buff *nskb;
++static int tun_xdp_one(struct tun_struct *tun,
++		       struct tun_file *tfile,
++		       struct xdp_buff *xdp, int *flush,
++		       struct tun_page *tpage, int has_hdr);
 +
-+	if (skb_shared(skb) || skb_cloned(skb)) {
-+		nskb = skb_copy(skb, GFP_ATOMIC);
-+		consume_skb(skb);
-+		return nskb;
-+	}
++static void tun_put_page(struct tun_page *tpage);
 +
-+	return skb;
-+}
-+
-+static u32 tun_do_xdp_tx_generic(struct tun_struct *tun,
-+				 struct sk_buff *skb)
-+{
-+	struct bpf_prog *xdp_prog;
-+	struct xdp_buff xdp;
-+	u32 act = XDP_PASS;
-+
-+	xdp_prog = rcu_dereference(tun->xdp_tx_prog);
-+	if (xdp_prog) {
-+		skb = tun_prepare_xdp_skb(skb);
-+		if (!skb) {
-+			act = XDP_DROP;
-+			kfree_skb(skb);
-+			goto drop;
-+		}
-+
-+		act = do_xdp_generic_core(skb, &xdp, xdp_prog);
-+		switch (act) {
-+		case XDP_TX:
-+			/* Rx path generic XDP will be called in this path
-+			 */
-+			local_bh_disable();
-+			netif_receive_skb(skb);
-+			local_bh_enable();
-+			break;
-+		case XDP_PASS:
-+			break;
-+		case XDP_REDIRECT:
-+			/* Since we are not handling this case yet, let's free
-+			 * skb here. In case of XDP_DROP/XDP_ABORTED, the skb
-+			 * was already freed in do_xdp_generic_core()
-+			 */
-+			kfree_skb(skb);
-+			/* fall through */
-+		default:
-+			bpf_warn_invalid_xdp_action(act);
-+			/* fall through */
-+		case XDP_ABORTED:
-+			trace_xdp_exception(tun->dev, xdp_prog, act);
-+			/* fall through */
-+		case XDP_DROP:
-+			goto drop;
-+		}
-+	}
-+
-+	return act;
-+drop:
-+	this_cpu_inc(tun->pcpu_stats->tx_dropped);
-+	return act;
-+}
-+
-+static u32 tun_do_xdp_tx(struct tun_struct *tun, struct tun_file *tfile,
-+			 struct xdp_frame *frame)
-+{
-+	struct bpf_prog *xdp_prog;
-+	struct tun_page tpage;
-+	struct xdp_buff xdp;
-+	u32 act = XDP_PASS;
-+	int flush = 0;
-+
-+	xdp_prog = rcu_dereference(tun->xdp_tx_prog);
-+	if (xdp_prog) {
-+		xdp.data_hard_start = frame->data - frame->headroom;
-+		xdp.data = frame->data;
-+		xdp.data_end = xdp.data + frame->len;
-+		xdp.data_meta = xdp.data - frame->metasize;
-+
-+		act = bpf_prog_run_xdp(xdp_prog, &xdp);
-+		switch (act) {
-+		case XDP_PASS:
-+			break;
-+		case XDP_TX:
-+			/* fall through */
-+		case XDP_REDIRECT:
-+			/* fall through */
-+		default:
-+			bpf_warn_invalid_xdp_action(act);
-+			/* fall through */
-+		case XDP_ABORTED:
-+			trace_xdp_exception(tun->dev, xdp_prog, act);
-+			/* fall through */
-+		case XDP_DROP:
-+			xdp_return_frame_rx_napi(frame);
-+			break;
-+		}
-+	}
-+
-+	return act;
-+}
-+
- static void *tun_ring_recv(struct tun_file *tfile, int noblock, int *err)
+ static u32 tun_do_xdp_tx(struct tun_struct *tun, struct tun_file *tfile,
+ 			 struct xdp_frame *frame)
  {
- 	DECLARE_WAITQUEUE(wait, current);
-@@ -2590,6 +2694,47 @@ static int tun_sendmsg(struct socket *sock, struct msghdr *m, size_t total_len)
- 	return ret;
- }
+@@ -2543,23 +2550,36 @@ static void tun_put_page(struct tun_page *tpage)
+ static int tun_xdp_one(struct tun_struct *tun,
+ 		       struct tun_file *tfile,
+ 		       struct xdp_buff *xdp, int *flush,
+-		       struct tun_page *tpage)
++		       struct tun_page *tpage, int has_hdr)
+ {
+ 	unsigned int datasize = xdp->data_end - xdp->data;
+-	struct tun_xdp_hdr *hdr = xdp->data_hard_start;
+-	struct virtio_net_hdr *gso = &hdr->gso;
++	struct virtio_net_hdr *gso = NULL;
+ 	struct tun_pcpu_stats *stats;
+-	struct bpf_prog *xdp_prog;
+ 	struct sk_buff *skb = NULL;
+-	u32 rxhash = 0, act;
+-	int buflen = hdr->buflen;
+-	int err = 0;
++	struct bpf_prog *xdp_prog;
++	struct tun_xdp_hdr *hdr;
++	unsigned int headroom;
+ 	bool skb_xdp = false;
++	u32 rxhash = 0, act;
+ 	struct page *page;
++	int err = 0;
++	int buflen;
++
++	if (has_hdr) {
++		hdr = xdp->data_hard_start;
++		gso = &hdr->gso;
++		buflen = hdr->buflen;
++	} else {
++		/* came here from tun tx path */
++		xdp->data_hard_start -= sizeof(struct xdp_frame);
++		headroom = xdp->data - xdp->data_hard_start;
++		buflen = datasize + headroom +
++			 SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
++	}
  
-+static int tun_consume_packets(struct tun_file *tfile, void **ptr_array, int n)
-+{
-+	struct xdp_frame *frame;
-+	struct tun_struct *tun;
-+	int i, num_ptrs;
-+	int pkt_cnt = 0;
-+	void *pkts[MAX_TAP_BATCH];
-+	void *ptr;
-+	u32 act;
-+
-+	if (unlikely(!tfile))
-+		return 0;
-+
-+	if (n > MAX_TAP_BATCH)
-+		n = MAX_TAP_BATCH;
-+
-+	rcu_read_lock();
-+	tun = rcu_dereference(tfile->tun);
-+	if (unlikely(!tun)) {
-+		rcu_read_unlock();
-+		return 0;
-+	}
-+
-+	num_ptrs = ptr_ring_consume_batched(&tfile->tx_ring, pkts, n);
-+	for (i = 0; i < num_ptrs; i++) {
-+		ptr = pkts[i];
-+		if (tun_is_xdp_frame(ptr)) {
-+			frame = tun_ptr_to_xdp(ptr);
-+			act = tun_do_xdp_tx(tun, tfile, frame);
-+		} else {
-+			act = tun_do_xdp_tx_generic(tun, ptr);
-+		}
-+
-+		if (act == XDP_PASS)
-+			ptr_array[pkt_cnt++] = ptr;
-+	}
-+
-+	rcu_read_unlock();
-+	return pkt_cnt;
-+}
-+
- static int tun_recvmsg(struct socket *sock, struct msghdr *m, size_t total_len,
- 		       int flags)
- {
-@@ -2610,9 +2755,7 @@ static int tun_recvmsg(struct socket *sock, struct msghdr *m, size_t total_len,
- 			ptr = ctl->ptr;
- 			break;
- 		case TUN_MSG_CONSUME_PKTS:
--			ret = ptr_ring_consume_batched(&tfile->tx_ring,
--						       ctl->ptr,
--						       ctl->num);
-+			ret = tun_consume_packets(tfile, ctl->ptr, ctl->num);
- 			goto out;
- 		case TUN_MSG_UNCONSUME_PKTS:
- 			ptr_ring_unconsume(&tfile->tx_ring, ctl->ptr,
+ 	xdp_prog = rcu_dereference(tun->xdp_prog);
+ 	if (xdp_prog) {
+-		if (gso->gso_type) {
++		if (has_hdr && gso->gso_type) {
+ 			skb_xdp = true;
+ 			goto build;
+ 		}
+@@ -2604,7 +2624,8 @@ static int tun_xdp_one(struct tun_struct *tun,
+ 	skb_reserve(skb, xdp->data - xdp->data_hard_start);
+ 	skb_put(skb, xdp->data_end - xdp->data);
+ 
+-	if (virtio_net_hdr_to_skb(skb, gso, tun_is_little_endian(tun))) {
++	if (has_hdr &&
++	    virtio_net_hdr_to_skb(skb, gso, tun_is_little_endian(tun))) {
+ 		this_cpu_inc(tun->pcpu_stats->rx_frame_errors);
+ 		kfree_skb(skb);
+ 		err = -EINVAL;
+@@ -2668,7 +2689,7 @@ static int tun_sendmsg(struct socket *sock, struct msghdr *m, size_t total_len)
+ 
+ 		for (i = 0; i < n; i++) {
+ 			xdp = &((struct xdp_buff *)ctl->ptr)[i];
+-			tun_xdp_one(tun, tfile, xdp, &flush, &tpage);
++			tun_xdp_one(tun, tfile, xdp, &flush, &tpage, true);
+ 		}
+ 
+ 		if (flush)
 -- 
 2.21.0
 
