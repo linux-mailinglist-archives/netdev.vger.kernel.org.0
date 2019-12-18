@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CB0EF1252DB
-	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 21:12:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E0B81252EA
+	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 21:14:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727277AbfLRULy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Dec 2019 15:11:54 -0500
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:45182 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726463AbfLRULx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Dec 2019 15:11:53 -0500
-Received: by mail-pf1-f196.google.com with SMTP id 2so1809638pfg.12
-        for <netdev@vger.kernel.org>; Wed, 18 Dec 2019 12:11:52 -0800 (PST)
+        id S1726571AbfLRUOB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Dec 2019 15:14:01 -0500
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:37037 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725818AbfLRUOA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Dec 2019 15:14:00 -0500
+Received: by mail-pf1-f193.google.com with SMTP id p14so1830307pfn.4
+        for <netdev@vger.kernel.org>; Wed, 18 Dec 2019 12:14:00 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=9wciPbcXtj2MBzGjG6yNL/2BvIq4+omNDZd76yZtfRw=;
-        b=Y8inFDQYtNvftMmoGKSn/lMA3jypyMPLdgC8TnD6SdQzDqvTMYQbog9tvdCQWwuwXF
-         MGSleKplvQwnaoos4ddmRz2nSJjaCHQXJV8iJY9HDaKpcc6cpFjll9FzGUMZFuQO+vAV
-         2bTfoXUcUyouaacqyWcSBMl1VImynyCT+SjIyGLdDbAzrWCFjtYa49rVe4mp28RHToEz
-         5g+yRkv2cX/bZlNFZ8B7aDxFtOtVa6Y/3RUeCbWd2B1o7ZSY9Mt8sH1zuYO67irLJhuM
-         dFSsR6sJIMWRW/ExaHSo84U+5AZtSOD5D6/r2IYtn+DODzbzIZBQAc9Bc8ymVre0s8sm
-         3Opg==
+        bh=goVwvgfEALDba2bxUcigCHz3uXjYe0D5EBgDksiBi3w=;
+        b=cpniEbvgcAtfKz7fSj3k24e83XLraASqwqnrBlZ7LWkrRJHD2jzRrQehMUGDEGB7Pu
+         JJy3vUJub5EWYIrDinMTQQCYIPTLfRB5AafRY1ty9v++75RzbX4Ap85McZXo3h+GdwLW
+         cFWf4itApJoELbQo8aQhes6aW0vetFQZuZiLjIp7cPJx4WuJuNSDu787chM2GVpkvyk0
+         IL0OvjC/3qyknq2uTcsTtpIQ5frZ3A6O0nSjO0a015i0UXFNbLE6N42wL90lIMHRFe6Z
+         mnEKPBtfF3z8OH2z1P3hqe3u4Bd3e99uPmHptxMHicngT8wCSm56eLoISTOfMZP/jhtn
+         RJ4w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=9wciPbcXtj2MBzGjG6yNL/2BvIq4+omNDZd76yZtfRw=;
-        b=asoS2wxZS8t6V6+sLYGxfECJa6Ge4cp7+KGJz0Qt5rD4BcrT77sbXprtuiAWZQSwdD
-         j8cnKh3W2wt/4e4JquKnuXqE7acC3YAdLKKNYfEbSLZ999eistga4lHzX6A7yz8A0WUp
-         xQwAz/da+V/d+mbm/6MIULsmsbOiBvBA1W3uZR3aSwXgNcvnZLe5Ng/bsQGJpn9Yz/C7
-         1+8mg82d0Y0LCV2xwvMDlqi5IDZLDNxPi679ozY5NIYgWJGCQfhSDKcvsdYqWsRW8U8F
-         BaNjZqo4yb81pqPp8y0JBk0eH44TX6E4xwsjt/yUQ2YHMb0/hfJHUx1Z+X/cBg4rjF/I
-         /IMw==
-X-Gm-Message-State: APjAAAV5Ap4qSONC4xqnl4psLLE897JIKrgg1ZjUAQpsRhRqLy0exQEt
-        gzElxcTUwzFKDFTFIeIJwNxcvviG
-X-Google-Smtp-Source: APXvYqxyxTsiZd77Jfo1t7m3pfLEefigHi3x1vUCeWsu/XB0OsYnLQJVnpk+JaYa4RosDKRjCZRG/g==
-X-Received: by 2002:a63:4465:: with SMTP id t37mr4297231pgk.256.1576699912430;
-        Wed, 18 Dec 2019 12:11:52 -0800 (PST)
+        bh=goVwvgfEALDba2bxUcigCHz3uXjYe0D5EBgDksiBi3w=;
+        b=eWHfSf6yhFfK5Bi1/d49N2Legbt6riLT8idKeTIYsMe3I59QQ80aIJWanQrBGnOaEa
+         RsMnBwoHRH6fGRu+/XXDs6+rj2RpKLM32SkcCCoA4ot2tbwWbVrbmxHSNkdL+0db67Lj
+         8hKkELxfR0mdbDWBEVmQx4rsLvdyH4uIebh42L+Pe+1EZZVGFh+jPAQ1WfvCr+PuJT+0
+         EHdOJkJiBrmaX/WVfXiD3tH3/oFlDJozLeg4QHEWBwJzpuzrZlwN4Q2P7NbKUPLB20pq
+         s04IQH0b4V0NM9bSDYwHikZvlUvuOYXbJbm7rGJIb7kQ7qzt00tgLdPjA5X/Qi5+vLr0
+         FauQ==
+X-Gm-Message-State: APjAAAV6b0ux2lFlQaUB9KCm1ptkM6DzIwyDBr1Hrff8E3dQ7rrttV8L
+        JHCCZVf4MxbB5j4DmVRdXOk=
+X-Google-Smtp-Source: APXvYqxoWAFgb37hFbaCCOupefbxmo6c6boDTVgfN60EPh5BLsF9u38tqgkYL7SB1o+3pNPCOAnyjg==
+X-Received: by 2002:a62:2c52:: with SMTP id s79mr5173935pfs.8.1576700039742;
+        Wed, 18 Dec 2019 12:13:59 -0800 (PST)
 Received: from [10.67.50.49] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id g18sm4425469pfi.80.2019.12.18.12.11.51
+        by smtp.googlemail.com with ESMTPSA id k15sm4515498pfa.153.2019.12.18.12.13.58
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 18 Dec 2019 12:11:51 -0800 (PST)
-Subject: Re: [PATCH v2 1/4] micrel: fix config_aneg for ksz886x
+        Wed, 18 Dec 2019 12:13:59 -0800 (PST)
+Subject: Re: [PATCH v2 2/4] net: tag: ksz: Add KSZ8863 tag code
 To:     Michael Grzeschik <m.grzeschik@pengutronix.de>, andrew@lunn.ch
 Cc:     netdev@vger.kernel.org, davem@davemloft.net, kernel@pengutronix.de
 References: <20191218200831.13796-1-m.grzeschik@pengutronix.de>
- <20191218200831.13796-2-m.grzeschik@pengutronix.de>
+ <20191218200831.13796-3-m.grzeschik@pengutronix.de>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  xsDiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
@@ -105,12 +105,12 @@ Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  HvsHIcv4lxCWkFXkwsuWqzEKK6kxVpRDoEQPDj+Oy/ZJ5fYuMbkdHrlegwoQ64LrqdmiVVPC
  TwQYEQIADwIbDAUCVF/S8QUJHlwd3wAKCRBhV5kVtWN2Do+FAJ956xSz2XpDHql+Wg/2qv3b
  G10n8gCguORqNGMsVRxrlLs7/himep7MrCc=
-Message-ID: <5955cbf1-f16c-4a37-af6e-726f9519e6b1@gmail.com>
-Date:   Wed, 18 Dec 2019 12:11:50 -0800
+Message-ID: <d4f84071-7478-d8a2-bb3e-56ce3b80c306@gmail.com>
+Date:   Wed, 18 Dec 2019 12:13:58 -0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.2.2
 MIME-Version: 1.0
-In-Reply-To: <20191218200831.13796-2-m.grzeschik@pengutronix.de>
+In-Reply-To: <20191218200831.13796-3-m.grzeschik@pengutronix.de>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -120,51 +120,31 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On 12/18/19 12:08 PM, Michael Grzeschik wrote:
-> The third port of the ksz886x is fixed to be connected to the
-> cpu. This port has no possibility to do auto negotiation.
-
-Then this may not the PHY driver you would want to use, but rather use a
-fixed-link which would use the Generic PHY driver and take care of
-setting the appropriate speed/duplex/pause settings the way you defined
-them in Device Tree.
-
+> Add DSA tag code for Microchip KSZ8863 switch.
 > 
 > Signed-off-by: Michael Grzeschik <m.grzeschik@pengutronix.de>
 > ---
->  drivers/net/phy/micrel.c | 11 +++++++++++
->  1 file changed, 11 insertions(+)
-> 
-> diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
-> index 63dedec0433de..913a8b68da350 100644
-> --- a/drivers/net/phy/micrel.c
-> +++ b/drivers/net/phy/micrel.c
-> @@ -841,6 +841,16 @@ static int ksz8873mll_config_aneg(struct phy_device *phydev)
->  	return 0;
->  }
->  
-> +static int ksz886x_config_aneg(struct phy_device *phydev)
-> +{
-> +	if (phydev->mdio.addr == 3) {
-> +		phydev->autoneg = AUTONEG_DISABLE;
-> +		genphy_read_status(phydev);
-> +	}
-> +
-> +	return genphy_config_aneg(phydev);
-> +}
-> +
->  static int kszphy_get_sset_count(struct phy_device *phydev)
->  {
->  	return ARRAY_SIZE(kszphy_hw_stats);
-> @@ -1171,6 +1181,7 @@ static struct phy_driver ksphy_driver[] = {
->  	.name		= "Micrel KSZ886X Switch",
->  	/* PHY_BASIC_FEATURES */
->  	.config_init	= kszphy_config_init,
-> +	.config_aneg	= ksz886x_config_aneg,
->  	.suspend	= genphy_suspend,
->  	.resume		= genphy_resume,
->  }, {
-> 
 
+[snip]
+> +/* For ingress (Host -> KSZ8863), 1 byte is added before FCS.
+> + * ---------------------------------------------------------------------------
+> + * DA(6bytes)|SA(6bytes)|....|Data(nbytes)|tag0(1byte)|tag1(1byte)|FCS(4bytes)
+> + * ---------------------------------------------------------------------------
+> + * tag0[1,0] : represents port
+> + *             (e.g. 0b00=addr-lookup 0b01=port1, 0b10=port2, 0b11=port1+port2)
+> + * tag0[3,2] : bits two and three represent prioritization
+> + *             (e.g. 0b00xx=prio0, 0b01xx=prio1, 0b10xx=prio2, 0b11xx=prio3)
+> + *
+> + * For egress (KSZ8873 -> Host), 1 byte is added before FCS.
+> + * ---------------------------------------------------------------------------
+> + * DA(6bytes)|SA(6bytes)|....|Data(nbytes)|tag0(1byte)|FCS(4bytes)
+> + * ---------------------------------------------------------------------------
+> + * tag0[0]   : zero-based value represents port
+> + *             (eg, 0b0=port1, 0b1=port2)
+> + */
 
+And another way to define a tag, snowflake after snowflake... anyway:
+
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
 Florian
