@@ -2,250 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 045BC124902
-	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 15:05:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B921124941
+	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 15:17:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726959AbfLROFV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Dec 2019 09:05:21 -0500
-Received: from mail-eopbgr140057.outbound.protection.outlook.com ([40.107.14.57]:64466
-        "EHLO EUR01-VE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726856AbfLROFU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 18 Dec 2019 09:05:20 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=R3H6ZLUFp0o/kCv/SHpdPqWq6H0dgPlxNO3f2sz+UcAye8hoaxgMF5qxGMq11Jl+Fqm+wKmlOwWp7RLbJWG6OoywofLhZUEPrp4OxIAYmTEIOz1Kyu0rZZjaBrVdkFCix2zWqMRoTIZnj6UUKXlZl1aqYPtsb1ixe4fJO0gt06vjyC3rid6ZOjR5eJt8LVVQd4aqzP3Xgbiw69bLFD8weJWtRXoAk4dwnaS7FZ2UAroEkzrrCjLq2ybumQ1swGDZxZyG501d/NFUN64OFGxmQzVT4cXHIkhnOQgaNS+6yv3HI6sCQcsFHtc3e8//dUBv38ZRhCZ+qc7hGSjSnEE2zg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=y5R1rxzzYiSbRNI8mY55S0xSHIAupGCauvCAChUqVs0=;
- b=FP3aDmkMtuhvPqYarYshTpnu9WIuf0Vs+lxSB3tpqH0kkbJk0k+czg6wqtyniD6REa0uEuwepYNM7I9WcwpvCRbWy+jtVsoFinf0eWke4WgYYbQhQC7NWB2H659slUok2B5b1CUmORApSrlJNOJvng59mSGoU2O7FpcBASGPTsVx5YX607EcqrSY5HP3ghBP9h+rcqt8OmDUCIdeeY7qrJ08ry5VQqqW6CBSDCDXz2glNfQi2kC0BH738Yl1L7wybOBJHCGLNFc4v9kVNEiU0y7IC+f961PIP435bX6TLdpgeivf+2c/yMc6fPznSgLWPK4jwdyK12ohhHVCx/vVUQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=darbyshire-bryant.me.uk; dmarc=pass action=none
- header.from=darbyshire-bryant.me.uk; dkim=pass
- header.d=darbyshire-bryant.me.uk; arc=none
+        id S1727121AbfLRORI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Dec 2019 09:17:08 -0500
+Received: from mail-pl1-f196.google.com ([209.85.214.196]:36910 "EHLO
+        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727001AbfLRORG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Dec 2019 09:17:06 -0500
+Received: by mail-pl1-f196.google.com with SMTP id c23so1040575plz.4;
+        Wed, 18 Dec 2019 06:17:06 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=darbyshire-bryant.me.uk; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=y5R1rxzzYiSbRNI8mY55S0xSHIAupGCauvCAChUqVs0=;
- b=F2jn97azVggV7PmuqiRTu7lVtZyGjiRaJt4e6flCLslCH7ZQ2ezx69hWnV1fz2Nu7Q2hmCCYwDsLNNmaUFUp0X2Mw0jX9OP+cKt5RmdlffnV0Ht9ukpgRYyxqh8eFBoqY0bRVZ0XiMKFO7086VZsp9BHi52Mhtm1UCKXkY2zdOQ=
-Received: from VI1PR0302MB2750.eurprd03.prod.outlook.com (10.171.106.21) by
- VI1PR0302MB3358.eurprd03.prod.outlook.com (52.134.13.25) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2538.14; Wed, 18 Dec 2019 14:05:13 +0000
-Received: from VI1PR0302MB2750.eurprd03.prod.outlook.com
- ([fe80::7585:5ab6:a348:de46]) by VI1PR0302MB2750.eurprd03.prod.outlook.com
- ([fe80::7585:5ab6:a348:de46%7]) with mapi id 15.20.2538.019; Wed, 18 Dec 2019
- 14:05:13 +0000
-From:   Kevin 'ldir' Darbyshire-Bryant <ldir@darbyshire-bryant.me.uk>
-To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     Kevin 'ldir' Darbyshire-Bryant <ldir@darbyshire-bryant.me.uk>
-Subject: [PATCH net-next v2] sch_cake: drop unused variable tin_quantum_prio
-Thread-Topic: [PATCH net-next v2] sch_cake: drop unused variable
- tin_quantum_prio
-Thread-Index: AQHVtawqU01I35ZFf0y7jA/tdJ+eDA==
-Date:   Wed, 18 Dec 2019 14:05:13 +0000
-Message-ID: <20191218140459.24992-1-ldir@darbyshire-bryant.me.uk>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: LO2P123CA0061.GBRP123.PROD.OUTLOOK.COM
- (2603:10a6:600:1::25) To VI1PR0302MB2750.eurprd03.prod.outlook.com
- (2603:10a6:800:e3::21)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=ldir@darbyshire-bryant.me.uk; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-mailer: git-send-email 2.21.0 (Apple Git-122.2)
-x-originating-ip: [2a02:c7f:1243:8e00::dc83]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: da47056b-1d82-43e8-7d14-08d783c34d20
-x-ms-traffictypediagnostic: VI1PR0302MB3358:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VI1PR0302MB33580477E3A75F47D4B05902C9530@VI1PR0302MB3358.eurprd03.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:6790;
-x-forefront-prvs: 0255DF69B9
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(376002)(366004)(396003)(346002)(39830400003)(136003)(199004)(189003)(36756003)(8676002)(81166006)(86362001)(81156014)(6916009)(508600001)(316002)(52116002)(6486002)(107886003)(66446008)(64756008)(66946007)(66556008)(2906002)(66476007)(186003)(6512007)(71200400001)(8936002)(6506007)(5660300002)(1076003)(4326008)(2616005);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR0302MB3358;H:VI1PR0302MB2750.eurprd03.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: darbyshire-bryant.me.uk does not
- designate permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: n+4Dr6HKPFKkcvv1SJrRCCPzscdlvAo/KObjCots+rkRLHCT/TMvm2dH4kVtW00ho2oI86a2kzxJ2RBciAjmioQYOhpqpmZhfQbeqvpqcjz8mBp3TzMuVOn3p48uDSOpgl+DoTndq6v7hSO9nbS4W3Y4+w5v1/z2sCW0JuvrfsKZWhMmVPaKm94kakcNT10Cx+wzGxaM4PAil9XU/Bbkeq9PBOwqM3z48nBzskXaX7ELNew5QVbHZXND5sOP4ADayqpJ3T1UiaWUjw0Xli73ZFSQKVX9V5t0TRBcEaDJRBAOVlHmObTvx+pgelx6qAJlrSFt+75RPOKUH/pBrJFkHyJAB52PUMFAhUnDsUvejIl1F/9KCxsbT4o/g+rE53Gl3+aapfKulZFEpuw/2trn/69W6MCgze//9WoM2xjq9Puvq5oUh2kwMa2n4tg/8hSr
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-MIME-Version: 1.0
-X-OriginatorOrg: darbyshire-bryant.me.uk
-X-MS-Exchange-CrossTenant-Network-Message-Id: da47056b-1d82-43e8-7d14-08d783c34d20
-X-MS-Exchange-CrossTenant-originalarrivaltime: 18 Dec 2019 14:05:13.5409
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 9151708b-c553-406f-8e56-694f435154a4
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: hG6ZHJcaHpm5oNMwewNlm9T4SXO2RXr+k+9AYRzsgktCbxoJidsuDK8VrAdLxhwFhu0C4csnXoXzKVxjXT4y8jbERKs3yWl+bthAoNZEb8Q=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0302MB3358
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=L3jQPTQ2R5MiyMCuFQ28/QWm5v0842TnhDYDEhmSL3A=;
+        b=AUgHnCwjrq2NwEEG1Av211jYafr70uh5ebuUs9nuRl2qxREry4BoHzgTAYFsMv3wmB
+         a5YHGLTtY98yx+j9Q8b0+FfGt3JAt9UXBE5Tc2ZKcoONX9VI2nvpvdLs3RQVZ0ZWg3D/
+         wGNTH8LtR+5ExwolcnWmnJPdNKSBdOlHYInW34Z4F1Q+/IjyVPyQbqT6/6epI1U9qcjK
+         hIq0wWqyQAIsz3YtV0XUhJMTjyxbmzkECW3oVzbsKmYy5ylphCqEF7EEeRZ5ip1KDtCF
+         7fKH461scRZnfR6yLog37fd6vf7hZU9n927npHCGxC1sOUrPpxn197u0alXAG8w6IXUR
+         tr8A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=L3jQPTQ2R5MiyMCuFQ28/QWm5v0842TnhDYDEhmSL3A=;
+        b=V/eXzXEvfyC4+NyQrTdwAlkV2OagB+tyo1iBpGNyDeNQ5KKLUYgLxlK4ciOYm4sCsw
+         vJJaJYV8exYQzvIxxaNhI58j0Z/7Z6yXie/dsgWrR5lJwUUo6WvJGFVug7AxpxwpPuxV
+         H4yNCqXLBKFwLI7dh2haYQOOiwXbIpDl4qlprDoHKDMbBVuiZg1UScT97esbu2+LDvGP
+         NrKz/W35LjVgAnrurPLlORTc0SFxjtlHqWhPG0V8THL2PHoG2ShDiGJyPVPhauTz3pij
+         fEysX0kuanQZaebyxe5vmdzBXc57iwmm2FG67Ycks2w9u7SL+/QholjXEcPUEh73J7V9
+         N6TA==
+X-Gm-Message-State: APjAAAXLYeteL9b53VWxaTVVCXUTI8DrmqXwFo98JJsPicpvTpkwMq7O
+        k5JEcqRGeNYIGwsLNaFaVk0=
+X-Google-Smtp-Source: APXvYqxrumjb/MCyv+nqkhnIWzKh4Ue6ATLhMTvMUn7j3d3USRqbMhKU5djbDU374OD2VrPmFbBudQ==
+X-Received: by 2002:a17:90a:a386:: with SMTP id x6mr3205472pjp.116.1576678625582;
+        Wed, 18 Dec 2019 06:17:05 -0800 (PST)
+Received: from oslab.tsinghua.edu.cn ([166.111.139.172])
+        by smtp.gmail.com with ESMTPSA id t187sm3546560pfd.21.2019.12.18.06.17.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 18 Dec 2019 06:17:05 -0800 (PST)
+From:   Jia-Ju Bai <baijiaju1990@gmail.com>
+To:     jeffrey.t.kirsher@intel.com, davem@davemloft.net
+Cc:     intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Jia-Ju Bai <baijiaju1990@gmail.com>
+Subject: [PATCH] net: intel: e1000e: fix possible sleep-in-atomic-context bugs in e1000e_get_hw_semaphore()
+Date:   Wed, 18 Dec 2019 22:16:56 +0800
+Message-Id: <20191218141656.12416-1-baijiaju1990@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Turns out tin_quantum_prio isn't used anymore and is a leftover from a
-previous implementation of diffserv tins.  Since the variable isn't used
-in any calculations it can be eliminated.
+The driver may sleep while holding a spinlock.
+The function call path (from bottom to top) in Linux 4.19 is:
 
-Drop variable and places where it was set.  Rename remaining variable
-and consolidate naming of intermediate variables that set it.
+drivers/net/ethernet/intel/e1000e/mac.c, 1366: 
+	usleep_range in e1000e_get_hw_semaphore
+drivers/net/ethernet/intel/e1000e/80003es2lan.c, 322:
+	e1000e_get_hw_semaphore in e1000_release_swfw_sync_80003es2lan
+drivers/net/ethernet/intel/e1000e/80003es2lan.c, 197:
+	e1000_release_swfw_sync_80003es2lan in e1000_release_phy_80003es2lan
+drivers/net/ethernet/intel/e1000e/netdev.c, 4883: 
+	(FUNC_PTR) e1000_release_phy_80003es2lan in e1000e_update_phy_stats
+drivers/net/ethernet/intel/e1000e/netdev.c, 4917:
+	e1000e_update_phy_stats in e1000e_update_stats
+drivers/net/ethernet/intel/e1000e/netdev.c, 5945: 
+	e1000e_update_stats in e1000e_get_stats64
+drivers/net/ethernet/intel/e1000e/netdev.c, 5944: 
+	spin_lock in e1000e_get_stats64
 
-Signed-off-by: Kevin Darbyshire-Bryant <ldir@darbyshire-bryant.me.uk>
+drivers/net/ethernet/intel/e1000e/mac.c, 1384: 
+	usleep_range in e1000e_get_hw_semaphore
+drivers/net/ethernet/intel/e1000e/80003es2lan.c, 322:
+	e1000e_get_hw_semaphore in e1000_release_swfw_sync_80003es2lan
+drivers/net/ethernet/intel/e1000e/80003es2lan.c, 197:
+	e1000_release_swfw_sync_80003es2lan in e1000_release_phy_80003es2lan
+drivers/net/ethernet/intel/e1000e/netdev.c, 4883: 
+	(FUNC_PTR) e1000_release_phy_80003es2lan in e1000e_update_phy_stats
+drivers/net/ethernet/intel/e1000e/netdev.c, 4917:
+	e1000e_update_phy_stats in e1000e_update_stats
+drivers/net/ethernet/intel/e1000e/netdev.c, 5945: 
+	e1000e_update_stats in e1000e_get_stats64
+drivers/net/ethernet/intel/e1000e/netdev.c, 5944: 
+	spin_lock in e1000e_get_stats64
+
+(FUNC_PTR) means a function pointer is called.
+
+To fix these bugs, usleep_range() is replaced with udelay().
+
+These bugs are found by a static analysis tool STCheck written by myself.
+
+Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
 ---
-v2 - rename intermediate 'quantum1' variables to just 'quantum' since
-there's only one of them left now.  Also rename remaining
-tin_quantum_band to tin_quantum since there's now only 1 type of
-quantum.
+ drivers/net/ethernet/intel/e1000e/mac.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Please drop the v1 patch
-
- net/sched/sch_cake.c | 59 ++++++++++++++------------------------------
- 1 file changed, 18 insertions(+), 41 deletions(-)
-
-diff --git a/net/sched/sch_cake.c b/net/sched/sch_cake.c
-index 53a80bc6b13a..9ce85b97169c 100644
---- a/net/sched/sch_cake.c
-+++ b/net/sched/sch_cake.c
-@@ -173,8 +173,7 @@ struct cake_tin_data {
- 	u64	tin_rate_bps;
- 	u16	tin_rate_shft;
-=20
--	u16	tin_quantum_prio;
--	u16	tin_quantum_band;
-+	u16	tin_quantum;
- 	s32	tin_deficit;
- 	u32	tin_backlog;
- 	u32	tin_dropped;
-@@ -1919,7 +1918,7 @@ static struct sk_buff *cake_dequeue(struct Qdisc *sch=
-)
- 		while (b->tin_deficit < 0 ||
- 		       !(b->sparse_flow_count + b->bulk_flow_count)) {
- 			if (b->tin_deficit <=3D 0)
--				b->tin_deficit +=3D b->tin_quantum_band;
-+				b->tin_deficit +=3D b->tin_quantum;
- 			if (b->sparse_flow_count + b->bulk_flow_count)
- 				empty =3D false;
-=20
-@@ -2240,8 +2239,7 @@ static int cake_config_besteffort(struct Qdisc *sch)
-=20
- 	cake_set_rate(b, rate, mtu,
- 		      us_to_ns(q->target), us_to_ns(q->interval));
--	b->tin_quantum_band =3D 65535;
--	b->tin_quantum_prio =3D 65535;
-+	b->tin_quantum =3D 65535;
-=20
- 	return 0;
- }
-@@ -2252,8 +2250,7 @@ static int cake_config_precedence(struct Qdisc *sch)
- 	struct cake_sched_data *q =3D qdisc_priv(sch);
- 	u32 mtu =3D psched_mtu(qdisc_dev(sch));
- 	u64 rate =3D q->rate_bps;
--	u32 quantum1 =3D 256;
--	u32 quantum2 =3D 256;
-+	u32 quantum =3D 256;
- 	u32 i;
-=20
- 	q->tin_cnt =3D 8;
-@@ -2266,18 +2263,14 @@ static int cake_config_precedence(struct Qdisc *sch=
-)
- 		cake_set_rate(b, rate, mtu, us_to_ns(q->target),
- 			      us_to_ns(q->interval));
-=20
--		b->tin_quantum_prio =3D max_t(u16, 1U, quantum1);
--		b->tin_quantum_band =3D max_t(u16, 1U, quantum2);
-+		b->tin_quantum =3D max_t(u16, 1U, quantum);
-=20
- 		/* calculate next class's parameters */
- 		rate  *=3D 7;
- 		rate >>=3D 3;
-=20
--		quantum1  *=3D 3;
--		quantum1 >>=3D 1;
--
--		quantum2  *=3D 7;
--		quantum2 >>=3D 3;
-+		quantum  *=3D 7;
-+		quantum >>=3D 3;
+diff --git a/drivers/net/ethernet/intel/e1000e/mac.c b/drivers/net/ethernet/intel/e1000e/mac.c
+index e531976f8a67..51512a73fdd0 100644
+--- a/drivers/net/ethernet/intel/e1000e/mac.c
++++ b/drivers/net/ethernet/intel/e1000e/mac.c
+@@ -1363,7 +1363,7 @@ s32 e1000e_get_hw_semaphore(struct e1000_hw *hw)
+ 		if (!(swsm & E1000_SWSM_SMBI))
+ 			break;
+ 
+-		usleep_range(50, 100);
++		udelay(100);
+ 		i++;
  	}
-=20
- 	return 0;
-@@ -2346,8 +2339,7 @@ static int cake_config_diffserv8(struct Qdisc *sch)
- 	struct cake_sched_data *q =3D qdisc_priv(sch);
- 	u32 mtu =3D psched_mtu(qdisc_dev(sch));
- 	u64 rate =3D q->rate_bps;
--	u32 quantum1 =3D 256;
--	u32 quantum2 =3D 256;
-+	u32 quantum =3D 256;
- 	u32 i;
-=20
- 	q->tin_cnt =3D 8;
-@@ -2363,18 +2355,14 @@ static int cake_config_diffserv8(struct Qdisc *sch)
- 		cake_set_rate(b, rate, mtu, us_to_ns(q->target),
- 			      us_to_ns(q->interval));
-=20
--		b->tin_quantum_prio =3D max_t(u16, 1U, quantum1);
--		b->tin_quantum_band =3D max_t(u16, 1U, quantum2);
-+		b->tin_quantum =3D max_t(u16, 1U, quantum);
-=20
- 		/* calculate next class's parameters */
- 		rate  *=3D 7;
- 		rate >>=3D 3;
-=20
--		quantum1  *=3D 3;
--		quantum1 >>=3D 1;
--
--		quantum2  *=3D 7;
--		quantum2 >>=3D 3;
-+		quantum  *=3D 7;
-+		quantum >>=3D 3;
+ 
+@@ -1381,7 +1381,7 @@ s32 e1000e_get_hw_semaphore(struct e1000_hw *hw)
+ 		if (er32(SWSM) & E1000_SWSM_SWESMBI)
+ 			break;
+ 
+-		usleep_range(50, 100);
++		udelay(100);
  	}
-=20
- 	return 0;
-@@ -2413,17 +2401,11 @@ static int cake_config_diffserv4(struct Qdisc *sch)
- 	cake_set_rate(&q->tins[3], rate >> 2, mtu,
- 		      us_to_ns(q->target), us_to_ns(q->interval));
-=20
--	/* priority weights */
--	q->tins[0].tin_quantum_prio =3D quantum;
--	q->tins[1].tin_quantum_prio =3D quantum >> 4;
--	q->tins[2].tin_quantum_prio =3D quantum << 2;
--	q->tins[3].tin_quantum_prio =3D quantum << 4;
--
- 	/* bandwidth-sharing weights */
--	q->tins[0].tin_quantum_band =3D quantum;
--	q->tins[1].tin_quantum_band =3D quantum >> 4;
--	q->tins[2].tin_quantum_band =3D quantum >> 1;
--	q->tins[3].tin_quantum_band =3D quantum >> 2;
-+	q->tins[0].tin_quantum =3D quantum;
-+	q->tins[1].tin_quantum =3D quantum >> 4;
-+	q->tins[2].tin_quantum =3D quantum >> 1;
-+	q->tins[3].tin_quantum =3D quantum >> 2;
-=20
- 	return 0;
- }
-@@ -2454,15 +2436,10 @@ static int cake_config_diffserv3(struct Qdisc *sch)
- 	cake_set_rate(&q->tins[2], rate >> 2, mtu,
- 		      us_to_ns(q->target), us_to_ns(q->interval));
-=20
--	/* priority weights */
--	q->tins[0].tin_quantum_prio =3D quantum;
--	q->tins[1].tin_quantum_prio =3D quantum >> 4;
--	q->tins[2].tin_quantum_prio =3D quantum << 4;
--
- 	/* bandwidth-sharing weights */
--	q->tins[0].tin_quantum_band =3D quantum;
--	q->tins[1].tin_quantum_band =3D quantum >> 4;
--	q->tins[2].tin_quantum_band =3D quantum >> 2;
-+	q->tins[0].tin_quantum =3D quantum;
-+	q->tins[1].tin_quantum =3D quantum >> 4;
-+	q->tins[2].tin_quantum =3D quantum >> 2;
-=20
- 	return 0;
- }
---=20
-2.21.0 (Apple Git-122.2)
+ 
+ 	if (i == timeout) {
+-- 
+2.17.1
 
