@@ -2,135 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0FFEC1248D9
-	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 15:00:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A63F41248DC
+	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 15:01:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727080AbfLROAy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Dec 2019 09:00:54 -0500
-Received: from first.geanix.com ([116.203.34.67]:41288 "EHLO first.geanix.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726985AbfLROAy (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 18 Dec 2019 09:00:54 -0500
-Received: from [192.168.100.95] (unknown [95.138.208.137])
-        by first.geanix.com (Postfix) with ESMTPSA id 9468D443;
-        Wed, 18 Dec 2019 13:59:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=geanix.com; s=first;
-        t=1576677592; bh=kuycr8hED4rp8SK3gJ4VVTSvYPoy8oaGmuBCQhjvU6Q=;
-        h=Subject:To:Cc:References:From:Date:In-Reply-To;
-        b=bXOAxeIgZU8LtULSqTnAgDi6lSV2j3BLQfUGQKKh854IiJXgQVLJvPelDoqZ80U6v
-         KanoQzRgKsKvr0Hr93fIKS/wt6icixT/97W+a3JFdGaImrOeluSd5kDdU+GxFq2BS7
-         jFftA9C2gMwcYS11k8dpvtBJ+ZI6f5MtFMOmk0rlN0w8GpASJQHlDgT9yGH4CkHHed
-         B8jvxdE4YlC0vUkd3IOq6aH3ujJ5u1rc/21tZFsZeyrL4E9aICq/JCRHbJZfBpi+Qg
-         MCN6nXTB88HyeCC/5hRG3Wm301zj/DkLrp2RZKBj+40KEusrjONKm0VF3PJ+6Nblox
-         DdCFLoTP+PuTg==
-Subject: Re: [PATCH V2 2/2] can: flexcan: disable clocks during stop mode
-To:     Joakim Zhang <qiangqing.zhang@nxp.com>,
-        "mkl@pengutronix.de" <mkl@pengutronix.de>,
-        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>
-Cc:     dl-linux-imx <linux-imx@nxp.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <20191210085721.9853-1-qiangqing.zhang@nxp.com>
- <20191210085721.9853-2-qiangqing.zhang@nxp.com>
-From:   Sean Nyekjaer <sean@geanix.com>
-Message-ID: <e9afd8dd-1953-307e-6b5d-a8236381690b@geanix.com>
-Date:   Wed, 18 Dec 2019 15:00:50 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.3.0
-MIME-Version: 1.0
-In-Reply-To: <20191210085721.9853-2-qiangqing.zhang@nxp.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US-large
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.1 required=4.0 tests=ALL_TRUSTED,BAYES_00,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,URIBL_BLOCKED
-        autolearn=disabled version=3.4.2
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on 8b5b6f358cc9
+        id S1727089AbfLROBN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Dec 2019 09:01:13 -0500
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:40261 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726825AbfLROBN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Dec 2019 09:01:13 -0500
+Received: by mail-pf1-f194.google.com with SMTP id q8so1261761pfh.7;
+        Wed, 18 Dec 2019 06:01:12 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=DFCnoBm3aJ4yBdlgfovQA6oA3BnQmF1k6xZZgru1lck=;
+        b=B20ej4mZOi5gLgjfFgNoUVSHyV8P35/33fTDKxA5YmemAVZk5Qdmcm92RshrqEa7Sk
+         sTPnUSpSauLGWD+Db556aQJmSwl0ZAZ14YM4lgRYuQ1Gvtj6cShj2I8Ne/m54goqNaDO
+         1XqsfwezGHEcyMpJa0LKFjQEF4hdhCMxigdl/fkJpryRTTJnnQgQspoiqRFi7XrQ4BYc
+         GxZyTHeT2leu91F8pvWyhan6TqK6iFXvvbp8iN90NZnvuuyO3lzgT6oRVtrkh89GPjHc
+         Zp2V223j0Y/xLuREkjMRGB6ekUZsas8uA4Qc3E7eknGZyE19voXRGGhsRb0kgNn8nECy
+         hLmA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=DFCnoBm3aJ4yBdlgfovQA6oA3BnQmF1k6xZZgru1lck=;
+        b=Yrab/qHk32of2WpUg1PEn4tiQ5p7i6sZqrXnwlz8Ht+NcCb7mH7EfMxnM9RZ0yI3qh
+         T5zfmOBEKhg+cyfuvVIIbnUgOSLbxzHOXuSIeiBs9IoeLj5t/PtlZ5DrTTMiw1oAuvBg
+         wttxJpHqFgtAfrBJrPySatLsHT3ZB4xXH69WcV06ZLW+Mu8mevuSnjMrEf7ouVyOsE5c
+         +eOqDGHvVlscallU0VbguSKQMCnlfa6lTxMw3zx0nQefeejo0gdj/ooE1OSmPi5qnEpL
+         JSC9jVhc75o4ywNkvgpO15OTdNWKKrvOjZFJi/K4DgSAKZm/3XNm4aS4ZHkg1eJS9MJv
+         ZVXA==
+X-Gm-Message-State: APjAAAUpfO2ovUVpj+Rg0xuv0BBZYZZIO2Xo0rIvc6wvaY9b0FdZrJbw
+        NN35gAkwlV8AFtDRoN+NIFk=
+X-Google-Smtp-Source: APXvYqwxjCJcdPd2xsTBHgah7u883gmPlr5xfXoWL1tYk7k1Gb2MINKxCgQnpEygPSN6qgrhCUOh/w==
+X-Received: by 2002:a63:f455:: with SMTP id p21mr3198893pgk.436.1576677672115;
+        Wed, 18 Dec 2019 06:01:12 -0800 (PST)
+Received: from oslab.tsinghua.edu.cn ([166.111.139.172])
+        by smtp.gmail.com with ESMTPSA id l66sm3486691pga.30.2019.12.18.06.01.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 18 Dec 2019 06:01:11 -0800 (PST)
+From:   Jia-Ju Bai <baijiaju1990@gmail.com>
+To:     thomas.lendacky@amd.com, davem@davemloft.net
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jia-Ju Bai <baijiaju1990@gmail.com>
+Subject: [PATCH] net: amd: xgbe: fix possible sleep-in-atomic-context bugs in xgbe_powerdown()
+Date:   Wed, 18 Dec 2019 22:01:02 +0800
+Message-Id: <20191218140102.11579-1-baijiaju1990@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+The driver may sleep while holding a spinlock.
+The function call path (from bottom to top) in Linux 4.19 is:
 
+drivers/net/ethernet/amd/xgbe/xgbe-drv.c, 1261: 
+	flush_workqueue in xgbe_powerdown
+drivers/net/ethernet/amd/xgbe/xgbe-drv.c, 1253: 
+	_raw_spin_lock_irqsave in xgbe_powerdown
 
-On 10/12/2019 10.00, Joakim Zhang wrote:
-> Disable clocks during CAN in stop mode.
-> 
-> Signed-off-by: Joakim Zhang <qiangqing.zhang@nxp.com>
-Tested-by: Sean Nyekjaer <sean@geanix.com>
-> ------
-> ChangeLog:
-> 	V1->V2: * moving the pm_runtime_force_suspend() call for both
-> 	cases "device_may_wakeup()" and "!device_may_wakeup()" into the
-> 	flexcan_noirq_suspend() handler
-> ---
->   drivers/net/can/flexcan.c | 32 +++++++++++++++++++-------------
->   1 file changed, 19 insertions(+), 13 deletions(-)
-> 
-> diff --git a/drivers/net/can/flexcan.c b/drivers/net/can/flexcan.c
-> index 6c1ccf9f6c08..63b2f47635cf 100644
-> --- a/drivers/net/can/flexcan.c
-> +++ b/drivers/net/can/flexcan.c
-> @@ -1718,10 +1718,6 @@ static int __maybe_unused flexcan_suspend(struct device *device)
->   			if (err)
->   				return err;
->   
-> -			err = pm_runtime_force_suspend(device);
-> -			if (err)
-> -				return err;
-> -
->   			err = pinctrl_pm_select_sleep_state(device);
->   			if (err)
->   				return err;
-> @@ -1751,10 +1747,6 @@ static int __maybe_unused flexcan_resume(struct device *device)
->   			if (err)
->   				return err;
->   
-> -			err = pm_runtime_force_resume(device);
-> -			if (err)
-> -				return err;
-> -
->   			err = flexcan_chip_start(dev);
->   			if (err)
->   				return err;
-> @@ -1786,9 +1778,16 @@ static int __maybe_unused flexcan_noirq_suspend(struct device *device)
->   {
->   	struct net_device *dev = dev_get_drvdata(device);
->   	struct flexcan_priv *priv = netdev_priv(dev);
-> +	int err;
->   
-> -	if (netif_running(dev) && device_may_wakeup(device))
-> -		flexcan_enable_wakeup_irq(priv, true);
-> +	if (netif_running(dev)) {
-> +		if (device_may_wakeup(device))
-> +			flexcan_enable_wakeup_irq(priv, true);
-> +
-> +		err = pm_runtime_force_suspend(device);
-> +		if (err)
-> +			return err;
-> +	}
->   
->   	return 0;
->   }
-> @@ -1799,11 +1798,18 @@ static int __maybe_unused flexcan_noirq_resume(struct device *device)
->   	struct flexcan_priv *priv = netdev_priv(dev);
->   	int err;
->   
-> -	if (netif_running(dev) && device_may_wakeup(device)) {
-> -		flexcan_enable_wakeup_irq(priv, false);
-> -		err = flexcan_exit_stop_mode(priv);
-> +	if (netif_running(dev)) {
-> +		err = pm_runtime_force_resume(device);
->   		if (err)
->   			return err;
-> +
-> +		if (device_may_wakeup(device)) {
-> +			flexcan_enable_wakeup_irq(priv, false);
-> +
-> +			err = flexcan_exit_stop_mode(priv);
-> +			if (err)
-> +				return err;
-> +		}
->   	}
->   
->   	return 0;
-> 
+drivers/net/ethernet/amd/xgbe/xgbe-drv.c, 1055: 
+	napi_disable in xgbe_napi_disable
+drivers/net/ethernet/amd/xgbe/xgbe-drv.c, 1266: 
+	xgbe_napi_disable in xgbe_powerdown
+drivers/net/ethernet/amd/xgbe/xgbe-drv.c, 1253: 
+	_raw_spin_lock_irqsave in xgbe_powerdown
+
+drivers/net/ethernet/amd/xgbe/xgbe-drv.c, 1049: 
+	napi_disable in xgbe_napi_disable
+drivers/net/ethernet/amd/xgbe/xgbe-drv.c, 1266: 
+	xgbe_napi_disable in xgbe_powerdown
+drivers/net/ethernet/amd/xgbe/xgbe-drv.c, 1253: 
+	_raw_spin_lock_irqsave in xgbe_powerdown
+
+flush_workqueue() and napi_disable() can sleep at runtime.
+
+To fix these bugs, flush_workqueue() and xgbe_napi_disable() are called
+without holding the spinlock.
+
+These bugs are found by a static analysis tool STCheck written by
+myself.
+
+Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
+---
+ drivers/net/ethernet/amd/xgbe/xgbe-drv.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/net/ethernet/amd/xgbe/xgbe-drv.c b/drivers/net/ethernet/amd/xgbe/xgbe-drv.c
+index 98f8f2033154..328361d0e190 100644
+--- a/drivers/net/ethernet/amd/xgbe/xgbe-drv.c
++++ b/drivers/net/ethernet/amd/xgbe/xgbe-drv.c
+@@ -1257,17 +1257,18 @@ int xgbe_powerdown(struct net_device *netdev, unsigned int caller)
+ 	netif_tx_stop_all_queues(netdev);
+ 
+ 	xgbe_stop_timers(pdata);
+-	flush_workqueue(pdata->dev_workqueue);
+ 
+ 	hw_if->powerdown_tx(pdata);
+ 	hw_if->powerdown_rx(pdata);
+ 
+-	xgbe_napi_disable(pdata, 0);
+-
+ 	pdata->power_down = 1;
+ 
+ 	spin_unlock_irqrestore(&pdata->lock, flags);
+ 
++	flush_workqueue(pdata->dev_workqueue);
++
++	xgbe_napi_disable(pdata, 0);
++
+ 	DBGPR("<--xgbe_powerdown\n");
+ 
+ 	return 0;
+-- 
+2.17.1
+
