@@ -2,79 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 00A41124FC5
-	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 18:53:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 90E36124FD6
+	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 18:54:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727483AbfLRRxo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Dec 2019 12:53:44 -0500
-Received: from mail-pj1-f65.google.com ([209.85.216.65]:52537 "EHLO
-        mail-pj1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727180AbfLRRxn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Dec 2019 12:53:43 -0500
-Received: by mail-pj1-f65.google.com with SMTP id w23so1214760pjd.2
-        for <netdev@vger.kernel.org>; Wed, 18 Dec 2019 09:53:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=Oik0EX3Aqw3caiUjtSTJsDT0wCPAO4IzgU6Jm9GlGbE=;
-        b=ldVh2IxVBvguky0dNxxII6zQJUCGZQ25N7135UYWYkLg1fZmshTiFgDBi9Ne1X9SNH
-         crbnB2RHwe80ReCYfjBNXvELQ6euMi8IIVFZHTAK7SrS/jr+QByvj4GCscg3hyaaNa+G
-         v6YMfQ1EcsuMaLRIEjXzGJHW032VSRQyNr9RXZgZRsjT2iq864mqRSrs1Xj1A484EMS4
-         Zwrd0YXTLzxgMTFvT2rw2phdjSy7tcHDsepDOGGtmD/hjPnT7y+9WEM06nXDfh6M2v+3
-         K4lqdVDgYJrNdheCweh+n/eFts6dX2jQozH4yTiLhoNwx0NFrnKcmjW6gHCPD64Kga2m
-         6PLQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=Oik0EX3Aqw3caiUjtSTJsDT0wCPAO4IzgU6Jm9GlGbE=;
-        b=qJgsleguIx7yiJ0vow/ZLaGsq+7eD3QeUrFyOPnx92gSjjQmBNpnf5wCkbFbCh2+XV
-         W1HQYXu5ckA8WJ5//buOdghu2tpgMgNeVIp+GqUqXYzb3HDhA3ACCjFWuoDxQQs79cBC
-         w8fKCUfN8f5aMf740pk5Pozxxoe1fpGzRQfcvvvkJzxHBwIn4m+ZHCHZyH96RGLDpOi2
-         QWQPsBkSOTRWLw/elemsNwMDC5G+GRnubpA7uPfBzicjsQbnheLPWylLLoIkn1sEY8h0
-         eFtKXCtPlYyvGxv6HDxsHiqHWsJ+rHBHNnjXl9JjHVUP9dQgxt7fGo7J144xEbFJDjbf
-         1rxw==
-X-Gm-Message-State: APjAAAXVxqQ/TkRq+8WpB8UGBTht8XaXMjw25fiTXRr8YMO6s1z0081V
-        J3+QA0FnXf5/nWuhV5+/roYq0g==
-X-Google-Smtp-Source: APXvYqz4UbkjLS2z85PDVYB05YvZzVsUQElzcrPuN8R2CvxQ/yIdke4rJeVo2iHz5Oqe/SJ/n1rYWw==
-X-Received: by 2002:a17:902:968f:: with SMTP id n15mr4224537plp.12.1576691622895;
-        Wed, 18 Dec 2019 09:53:42 -0800 (PST)
-Received: from cakuba.netronome.com ([2601:646:8e00:e18::5])
-        by smtp.gmail.com with ESMTPSA id f43sm2676764pje.23.2019.12.18.09.53.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 18 Dec 2019 09:53:42 -0800 (PST)
-Date:   Wed, 18 Dec 2019 09:53:40 -0800
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Kevin 'ldir' Darbyshire-Bryant <ldir@darbyshire-bryant.me.uk>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH net-next v2] sch_cake: drop unused variable
- tin_quantum_prio
-Message-ID: <20191218095340.7a26e391@cakuba.netronome.com>
-In-Reply-To: <20191218140459.24992-1-ldir@darbyshire-bryant.me.uk>
-References: <20191218140459.24992-1-ldir@darbyshire-bryant.me.uk>
-Organization: Netronome Systems, Ltd.
+        id S1727536AbfLRRyP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Dec 2019 12:54:15 -0500
+Received: from mail26.static.mailgun.info ([104.130.122.26]:10233 "EHLO
+        mail26.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727175AbfLRRyO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Dec 2019 12:54:14 -0500
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1576691654; h=Date: Message-Id: Cc: To: References:
+ In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
+ Content-Type: Sender; bh=ajjyd3Yo3+ZsBvu259j63q3wagxykCtDZbUspQRGj2g=;
+ b=CjPuGy12TRb62D4vOFBrIepypoNFr3D+s3NJSrJulAf66QZaA3BFmQvTWKnpKxxvbEqf+wR9
+ bpF7wqdfvo871ff0XZazzNy5a7yS8k0FB/u/GTlOzmTr8CoMpCxteZ04aCKkP3aGbKhiMhLh
+ 0iyEo/bDF7mKa+7cuQ1IzIbKyhU=
+X-Mailgun-Sending-Ip: 104.130.122.26
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
+ by mxa.mailgun.org with ESMTP id 5dfa67c4.7f3ccedcf688-smtp-out-n01;
+ Wed, 18 Dec 2019 17:54:12 -0000 (UTC)
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id CA98AC43383; Wed, 18 Dec 2019 17:54:11 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=0.5 required=2.0 tests=ALL_TRUSTED,MISSING_DATE,
+        MISSING_MID,SPF_NONE,URIBL_BLOCKED autolearn=no autolearn_force=no
+        version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 14D29C433CB;
+        Wed, 18 Dec 2019 17:54:08 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 14D29C433CB
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH] ath11k: fix missing free of skb on error return path
+From:   Kalle Valo <kvalo@codeaurora.org>
+In-Reply-To: <20191212194251.108343-1-colin.king@canonical.com>
+References: <20191212194251.108343-1-colin.king@canonical.com>
+To:     Colin King <colin.king@canonical.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Pradeep Kumar Chitrapu <pradeepc@codeaurora.org>,
+        Ganesh Sesetti <gseset@codeaurora.org>,
+        Karthikeyan Periyasamy <periyasa@codeaurora.org>,
+        John Crispin <john@phrozen.org>, ath11k@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+User-Agent: pwcli/0.0.0-git (https://github.com/kvalo/pwcli/) Python/2.7.12
+Message-Id: <20191218175411.CA98AC43383@smtp.codeaurora.org>
+Date:   Wed, 18 Dec 2019 17:54:11 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 18 Dec 2019 14:05:13 +0000, Kevin 'ldir' Darbyshire-Bryant
-wrote:
-> Turns out tin_quantum_prio isn't used anymore and is a leftover from a
-> previous implementation of diffserv tins.  Since the variable isn't used
-> in any calculations it can be eliminated.
+Colin King <colin.king@canonical.com> wrote:
+
+> The error handling when the call to ath11k_hal_srng_get_entrysize fails
+> leaks skb, fix this by returning via the err_free return path that will
+> ensure the skb is free'd.
 > 
-> Drop variable and places where it was set.  Rename remaining variable
-> and consolidate naming of intermediate variables that set it.
-> 
-> Signed-off-by: Kevin Darbyshire-Bryant <ldir@darbyshire-bryant.me.uk>
+> Addresses-Coverity: ("Resource leak")
+> Fixes: d5c65159f289 ("ath11k: driver for Qualcomm IEEE 802.11ax devices")
+> Signed-off-by: Colin Ian King <colin.king@canonical.com>
+> Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
 
-Checkpatch sayeth:
+Patch applied to ath-next branch of ath.git, thanks.
 
-WARNING: Missing Signed-off-by: line by nominal patch author 'Kevin 'ldir' Darbyshire-Bryant <ldir@darbyshire-bryant.me.uk>'
+4358bcb54bb9 ath11k: fix missing free of skb on error return path
 
-total: 0 errors, 1 warnings, 0 checks, 125 lines checked
+-- 
+https://patchwork.kernel.org/patch/11289341/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
