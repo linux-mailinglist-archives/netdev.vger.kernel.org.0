@@ -2,86 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 446381245F5
-	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 12:40:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AD70E12460E
+	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 12:46:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726885AbfLRLkF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Dec 2019 06:40:05 -0500
-Received: from mail-qk1-f193.google.com ([209.85.222.193]:42562 "EHLO
-        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726799AbfLRLkF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Dec 2019 06:40:05 -0500
-Received: by mail-qk1-f193.google.com with SMTP id z14so12023qkg.9;
-        Wed, 18 Dec 2019 03:40:04 -0800 (PST)
+        id S1726922AbfLRLqx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Dec 2019 06:46:53 -0500
+Received: from mail-pj1-f67.google.com ([209.85.216.67]:40048 "EHLO
+        mail-pj1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725930AbfLRLqx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Dec 2019 06:46:53 -0500
+Received: by mail-pj1-f67.google.com with SMTP id bg7so262124pjb.5;
+        Wed, 18 Dec 2019 03:46:53 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=VF7M74iFDEHbLjZXvVpR+B4z1bMLQ5N+ZnbxO5V4x1M=;
-        b=sr3hQCaUK6+I78wkwY2fL5lSYcDA3pM2lHkQQAWHZx2gTcjVPS5ruYxv6NaiP+xAO7
-         Yh/vZdNmDxu+b3A4V17ssylpAv8ILdm+tX5u4VvfNLXm2+SR7DLSg1tezQIDRF3FByR2
-         Fv8AAoqIjgh75B1R7/8foCqTFeBr1nvfrXW89LUfju1NbO9J5/Yi0RFMiLnfWF9/UdDZ
-         kKAPa8JStIsAbxCagI/aopUoqupGoRoXzr1AF2tVDvpxHMJwzxVNK/LMQOq5pmzeCISV
-         Cyr6a9SZEeIN4RzPMLhKi98NMlAOEVADrjwAWYsv8no10yxqJP3Jfrv9hdjMTMLIrg6b
-         GPvA==
+        h=from:to:cc:subject:date:message-id;
+        bh=8Rm3PGAG4ZjJjxffgjZO01XuGdZ5Se+lxRoTd65jV/I=;
+        b=ZqdU5bMscFQvm8p09tXvtNABGBJq3yux1pRvAaSqHYWoBHsvLzpx40uJaQXuXESBMy
+         uFXxFSZYelsqKFR9u97FntWyBuRrNZSiUzu5UUXshbqPHsStjihAGvW+ajqEG1EbOfPo
+         CduQ2IZkIVxIZeAaHojbbW/tuxGxmxAllFCZKTj9CAH1CuO8lkcQszADJvRwU7fQhyzU
+         zhkiN/jm65g1GHgd/qp5N+glagyd4JzNwME+ofMcnZvqiltufXLulTwnVoZM4j6hTuWe
+         D2NNi9Gtqt/tAooIXZqAb9wUAVNgMtXyikiC/W49ZmSFYqVsituX+OOu/u1AAbxR5XtM
+         O3rw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=VF7M74iFDEHbLjZXvVpR+B4z1bMLQ5N+ZnbxO5V4x1M=;
-        b=WmkzKFGlcjHrztSduxXwZMrvYgAE0NIB8TKFDNiil23XojKFm2vKyl4Pminjl7WCks
-         GXrdhoT/530y+DeW6TY2XA0FEEUxgFFVI47G8x3S3ONaP6s6XSWRbxBOxEEIZF/Bnk39
-         SWWlZSRNisZc5zHt6LRGvaMuQoBAFG4EYt2GeZFNj+Ein6tNHMa6UXRh4ysoF632n50q
-         oZO1ahQb7hkyUOyJDQg7xBJtRltZio9kLzXwYKmpnpU2cCzXABu4nF4LAEayMgI2eI1F
-         V5pbSFKP+Xig3Trt47kU1C3IBYzryA8iOYVBZKFqfaN1yLuClcAgkZFG3LJqyrscrVIA
-         Qq2A==
-X-Gm-Message-State: APjAAAVfSc+/jq2V7fwCnJtwU3qwlcaFYWUtQ4ObNIvqd7QbH4AaxCDD
-        5WTHj/vOl2FZXVs5vatUKkKRIJ2cNhrTp5rrW2c=
-X-Google-Smtp-Source: APXvYqwqnREVQhP8q0TvGBJAlWnsBJhh54GWFwZh0nhNX7SdWgQkCeD+Mq9q9Rt+0VPy5o6a/RI2MF7ffei7zSvzkvI=
-X-Received: by 2002:a37:9c0f:: with SMTP id f15mr1958886qke.297.1576669204235;
- Wed, 18 Dec 2019 03:40:04 -0800 (PST)
-MIME-Version: 1.0
-References: <20191218105400.2895-1-bjorn.topel@gmail.com> <20191218121132.4023f4f1@carbon>
-In-Reply-To: <20191218121132.4023f4f1@carbon>
-From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
-Date:   Wed, 18 Dec 2019 12:39:53 +0100
-Message-ID: <CAJ+HfNgKsPN7V9r=N=hDoVb23-nk3q=y+Nv4jB3koPw0+4Zw9A@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 0/8] Simplify xdp_do_redirect_map()/xdp_do_flush_map()
- and XDP maps
-To:     Jesper Dangaard Brouer <brouer@redhat.com>
-Cc:     Netdev <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        bpf <bpf@vger.kernel.org>, David Miller <davem@davemloft.net>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=8Rm3PGAG4ZjJjxffgjZO01XuGdZ5Se+lxRoTd65jV/I=;
+        b=T/kq+1VwOU6ilo7BaSX9S8t5v4WVpkKCYB6rpGzfrqhmaHpM+QvAM4T52KLDA8x/Kn
+         ECp3W8vi643Lyxr4A2LOnrUtKGiq1w+e1pz4prMZKRfDqTmtOAXh9V+3IzRIhJlCBlFI
+         ovQWu+Ig1TPVqjVs1Q7/KHQ20nF5WPJvibodvfjTGqSyxj/0XjF2EZu06ZyCmtnlGTx+
+         ZmhqkDRp3bbr1UCV07ZK2hhO+1CF2jbVxytb5eCAAmsC0yWuadAYn8hRx9EXgOhyrJoo
+         qsWBzY7MlvHdScvrKb2B1SPEQDpUX1s8J7DSUCxN3z0yCQqSliWlCPqDIxN3opwp8kJy
+         Hzpw==
+X-Gm-Message-State: APjAAAXP+xh6xULQY3yg+9pqglGZuKsTeKKQnUt4Gjpme3pFA/UFmmt4
+        a3xtIWq4A+8suFB22TCqEig=
+X-Google-Smtp-Source: APXvYqwRkgvw8jDHziQzj693orxCe6AxRD4tkkS6Jhb3GveNfnhdDXtHvoza5yByb4hW1lEpWrgvUA==
+X-Received: by 2002:a17:902:bd93:: with SMTP id q19mr52436pls.134.1576669612673;
+        Wed, 18 Dec 2019 03:46:52 -0800 (PST)
+Received: from oslab.tsinghua.edu.cn ([166.111.139.172])
+        by smtp.gmail.com with ESMTPSA id a10sm2913237pgm.81.2019.12.18.03.46.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 18 Dec 2019 03:46:52 -0800 (PST)
+From:   Jia-Ju Bai <baijiaju1990@gmail.com>
+To:     ath9k-devel@qca.qualcomm.com, kvalo@codeaurora.org,
+        davem@davemloft.net
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Jia-Ju Bai <baijiaju1990@gmail.com>
+Subject: [PATCH] ath9k: fix possible sleep-in-atomic-context bugs in hif_usb_send_regout()
+Date:   Wed, 18 Dec 2019 19:45:33 +0800
+Message-Id: <20191218114533.9268-1-baijiaju1990@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 18 Dec 2019 at 12:11, Jesper Dangaard Brouer <brouer@redhat.com> wr=
-ote:
->
-> On Wed, 18 Dec 2019 11:53:52 +0100
-> Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail.com> wrote:
->
-> >   $ sudo ./xdp_redirect_cpu --dev enp134s0f0 --cpu 22 xdp_cpu_map0
-> >
-> >   Running XDP/eBPF prog_name:xdp_cpu_map5_lb_hash_ip_pairs
-> >   XDP-cpumap      CPU:to  pps            drop-pps    extra-info
-> >   XDP-RX          20      7723038        0           0
-> >   XDP-RX          total   7723038        0
-> >   cpumap_kthread  total   0              0           0
-> >   redirect_err    total   0              0
-> >   xdp_exception   total   0              0
->
-> Hmm... I'm missing some counters on the kthread side.
->
+The driver may sleep while holding a spinlock.
+The function call path (from bottom to top) in Linux 4.19 is:
 
-Oh? Any ideas why? I just ran the upstream sample straight off.
+drivers/net/wireless/ath/ath9k/hif_usb.c, 108: 
+	usb_alloc_urb(GFP_KERNEL) in hif_usb_send_regout
+drivers/net/wireless/ath/ath9k/hif_usb.c, 470: 
+	hif_usb_send_regout in hif_usb_send
+drivers/net/wireless/ath/ath9k/htc_hst.c, 34: 
+	(FUNC_PTR)hif_usb_send in htc_issue_send
+drivers/net/wireless/ath/ath9k/htc_hst.c, 295: 
+	htc_issue_send in htc_send
+drivers/net/wireless/ath/ath9k/htc_drv_beacon.c, 250: 
+	htc_send in ath9k_htc_send_beacon
+drivers/net/wireless/ath/ath9k/htc_drv_beacon.c, 207: 
+	spin_lock_bh in ath9k_htc_send_beacon
+
+drivers/net/wireless/ath/ath9k/hif_usb.c, 112: 
+	kzalloc(GFP_KERNEL) in hif_usb_send_regout
+drivers/net/wireless/ath/ath9k/hif_usb.c, 470: 
+	hif_usb_send_regout in hif_usb_send
+drivers/net/wireless/ath/ath9k/htc_hst.c, 34: 
+	(FUNC_PTR)hif_usb_send in htc_issue_send
+drivers/net/wireless/ath/ath9k/htc_hst.c, 295: 
+	htc_issue_send in htc_send
+drivers/net/wireless/ath/ath9k/htc_drv_beacon.c, 250: 
+	htc_send in ath9k_htc_send_beacon
+drivers/net/wireless/ath/ath9k/htc_drv_beacon.c, 207: 
+	spin_lock_bh in ath9k_htc_send_beacon
+
+drivers/net/wireless/ath/ath9k/hif_usb.c, 127: 
+	usb_submit_urb(GFP_KERNEL) in hif_usb_send_regout
+drivers/net/wireless/ath/ath9k/hif_usb.c, 470: 
+	hif_usb_send_regout in hif_usb_send
+drivers/net/wireless/ath/ath9k/htc_hst.c, 34: 
+	(FUNC_PTR)hif_usb_send in htc_issue_send
+drivers/net/wireless/ath/ath9k/htc_hst.c, 295: 
+	htc_issue_send in htc_send
+drivers/net/wireless/ath/ath9k/htc_drv_beacon.c, 250: 
+	htc_send in ath9k_htc_send_beacon
+drivers/net/wireless/ath/ath9k/htc_drv_beacon.c, 207: 
+	spin_lock_bh in ath9k_htc_send_beacon
+
+(FUNC_PTR) means a function pointer is called.
+
+To fix these bugs, GFP_KERNEL is replaced with GFP_ATOMIC.
+
+These bugs are found by a static analysis tool STCheck written by myself.
+
+Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
+---
+ drivers/net/wireless/ath/ath9k/hif_usb.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/net/wireless/ath/ath9k/hif_usb.c b/drivers/net/wireless/ath/ath9k/hif_usb.c
+index fb649d85b8fc..37231fde102d 100644
+--- a/drivers/net/wireless/ath/ath9k/hif_usb.c
++++ b/drivers/net/wireless/ath/ath9k/hif_usb.c
+@@ -105,11 +105,11 @@ static int hif_usb_send_regout(struct hif_device_usb *hif_dev,
+ 	struct cmd_buf *cmd;
+ 	int ret = 0;
+ 
+-	urb = usb_alloc_urb(0, GFP_KERNEL);
++	urb = usb_alloc_urb(0, GFP_ATOMIC);
+ 	if (urb == NULL)
+ 		return -ENOMEM;
+ 
+-	cmd = kzalloc(sizeof(*cmd), GFP_KERNEL);
++	cmd = kzalloc(sizeof(*cmd), GFP_ATOMIC);
+ 	if (cmd == NULL) {
+ 		usb_free_urb(urb);
+ 		return -ENOMEM;
+@@ -124,7 +124,7 @@ static int hif_usb_send_regout(struct hif_device_usb *hif_dev,
+ 			 hif_usb_regout_cb, cmd, 1);
+ 
+ 	usb_anchor_urb(urb, &hif_dev->regout_submitted);
+-	ret = usb_submit_urb(urb, GFP_KERNEL);
++	ret = usb_submit_urb(urb, GFP_ATOMIC);
+ 	if (ret) {
+ 		usb_unanchor_urb(urb);
+ 		kfree(cmd);
+-- 
+2.17.1
+
