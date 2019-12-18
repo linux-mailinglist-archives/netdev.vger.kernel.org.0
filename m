@@ -2,86 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 19A981245A1
-	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 12:20:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A9B031245B5
+	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 12:25:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726902AbfLRLUt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Dec 2019 06:20:49 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:36894 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726551AbfLRLUt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Dec 2019 06:20:49 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1576668048;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=3as0fMepjXKiH9hYeKlkTzZXSRWa3b2rrvx/TlzOdnc=;
-        b=N/2mNdOYgLGSM4M1KKfqpyYASic9rTGK3xW/1wSsBJjimlvK762f48Y3Ogi9694xmO85gi
-        P+5sf8gnGdc1daIHpp7sKlpUK0s1Mnk44+PZuxHCsE+UvHuBguI/NzhKjQNs6LRkvU+AsQ
-        ysBX7iv7zD5imYOoANo2gL6C5o52KRY=
-Received: from mail-lj1-f197.google.com (mail-lj1-f197.google.com
- [209.85.208.197]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-87-qnSziQt0NW6kwZoNQe6gkA-1; Wed, 18 Dec 2019 06:20:45 -0500
-X-MC-Unique: qnSziQt0NW6kwZoNQe6gkA-1
-Received: by mail-lj1-f197.google.com with SMTP id j23so576532lji.23
-        for <netdev@vger.kernel.org>; Wed, 18 Dec 2019 03:20:44 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=3as0fMepjXKiH9hYeKlkTzZXSRWa3b2rrvx/TlzOdnc=;
-        b=WcVlLidZ7oZaz0izSFNPn6+7Av7O3zCj5CLQ7fXg4AvQk589F62WFRUJCKnw9Dunnd
-         hWnnErGk33oHawihAYMiliDYewxlqW8sdGFtueV4qgV5i/bomkqfYBG/wOXMESgvynYN
-         y9SodVHbQSsbPNY2nMKDTz2rIn/VJ60j/j2IVX/fTRpHCBxQSSlwhIyQFWY4UIjfs7jG
-         TkeuiDYayvnJUVDVRN1ijmPbqA+NUSFNvmnAmIGm1GjFC2yhHapNU+J3NrfYMKH7jdNz
-         vnGmt6ddn4hddQI9DkWKv2x7QyRlCGJ4ADhQW1ELLPGoXvYfxY/RiQIPH7HCir0DYxBY
-         +awQ==
-X-Gm-Message-State: APjAAAW+azY6Pp0vhNEX8K3zf/dDQWZjRMC22KcR02OlNV+1KzgZ4EyJ
-        yKu5U7YQKZwTn5hMlGcFpCDBGEggSGc0gE6mX0P+vCbXNQGaCPVkPvZ3tKE2UYsGV0ZMExWaQsk
-        zcd2sYS64Nk5ItBsR
-X-Received: by 2002:a2e:8745:: with SMTP id q5mr1365606ljj.208.1576668043912;
-        Wed, 18 Dec 2019 03:20:43 -0800 (PST)
-X-Google-Smtp-Source: APXvYqwT0sB2A0HN5RirCpDjdI6buBQBKUL1wmyz2cbpK4RtNgJzszK5rudZ2tx2g/YsmVeUorBvew==
-X-Received: by 2002:a2e:8745:: with SMTP id q5mr1365592ljj.208.1576668043811;
-        Wed, 18 Dec 2019 03:20:43 -0800 (PST)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id c8sm968308lfm.65.2019.12.18.03.20.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 18 Dec 2019 03:20:43 -0800 (PST)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 98EAD180969; Wed, 18 Dec 2019 12:20:42 +0100 (CET)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
-        netdev@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net
-Cc:     =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        bpf@vger.kernel.org, davem@davemloft.net,
-        jakub.kicinski@netronome.com, hawk@kernel.org,
-        john.fastabend@gmail.com, magnus.karlsson@intel.com,
-        jonathan.lemon@gmail.com
-Subject: Re: [PATCH bpf-next 8/8] xdp: simplify __bpf_tx_xdp_map()
-In-Reply-To: <20191218105400.2895-9-bjorn.topel@gmail.com>
-References: <20191218105400.2895-1-bjorn.topel@gmail.com> <20191218105400.2895-9-bjorn.topel@gmail.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Wed, 18 Dec 2019 12:20:42 +0100
-Message-ID: <87immd6fsl.fsf@toke.dk>
+        id S1726726AbfLRLZU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Dec 2019 06:25:20 -0500
+Received: from nbd.name ([46.4.11.11]:59968 "EHLO nbd.name"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725930AbfLRLZU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 18 Dec 2019 06:25:20 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=nbd.name;
+         s=20160729; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:
+        MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=ahKETmSCdf4Aufhf/pe09Jyk6OW5gLzkRqCRss+g1CU=; b=QxUj7/YJsLaThVaFFFbPdWLy+e
+        N+MGkOb+ZWgYVK2o6d/98gsDkGi88LZhVIcZUnnq7R4I2eW2PHO0OTZ8JoND/aE31GYuYdX+0fMPr
+        isRSUxPE27n+xsx0BjYIThpxFZwSLU3pcJ3DpI2SPQ06I3RTjwF272Ff1/ExetHEQvz0=;
+Received: from [80.255.7.118] (helo=nf.local)
+        by ds12 with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.89)
+        (envelope-from <nbd@nbd.name>)
+        id 1ihXS3-0004br-Cs; Wed, 18 Dec 2019 12:25:11 +0100
+Subject: Re: [PATCH 07/55] staging: wfx: ensure that retry policy always
+ fallbacks to MCS0 / 1Mbps
+To:     =?UTF-8?B?SsOpcsO0bWUgUG91aWxsZXI=?= <Jerome.Pouiller@silabs.com>
+Cc:     "devel@driverdev.osuosl.org" <devel@driverdev.osuosl.org>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Alban Jeantheau <Alban.Jeantheau@silabs.com>
+References: <20191216170302.29543-1-Jerome.Pouiller@silabs.com>
+ <3755885.sodJc2dsoe@pc-42> <f5a6b1b4-6000-04c9-f3a6-c2be8e5dcc61@nbd.name>
+ <3099559.gv3Q75KnN1@pc-42>
+From:   Felix Fietkau <nbd@nbd.name>
+Autocrypt: addr=nbd@nbd.name; prefer-encrypt=mutual; keydata=
+ xsDiBEah5CcRBADIY7pu4LIv3jBlyQ/2u87iIZGe6f0f8pyB4UjzfJNXhJb8JylYYRzIOSxh
+ ExKsdLCnJqsG1PY1mqTtoG8sONpwsHr2oJ4itjcGHfn5NJSUGTbtbbxLro13tHkGFCoCr4Z5
+ Pv+XRgiANSpYlIigiMbOkide6wbggQK32tC20QxUIwCg4k6dtV/4kwEeiOUfErq00TVqIiEE
+ AKcUi4taOuh/PQWx/Ujjl/P1LfJXqLKRPa8PwD4j2yjoc9l+7LptSxJThL9KSu6gtXQjcoR2
+ vCK0OeYJhgO4kYMI78h1TSaxmtImEAnjFPYJYVsxrhay92jisYc7z5R/76AaELfF6RCjjGeP
+ wdalulG+erWju710Bif7E1yjYVWeA/9Wd1lsOmx6uwwYgNqoFtcAunDaMKi9xVQW18FsUusM
+ TdRvTZLBpoUAy+MajAL+R73TwLq3LnKpIcCwftyQXK5pEDKq57OhxJVv1Q8XkA9Dn1SBOjNB
+ l25vJDFAT9ntp9THeDD2fv15yk4EKpWhu4H00/YX8KkhFsrtUs69+vZQwc0cRmVsaXggRmll
+ dGthdSA8bmJkQG5iZC5uYW1lPsJgBBMRAgAgBQJGoeQnAhsjBgsJCAcDAgQVAggDBBYCAwEC
+ HgECF4AACgkQ130UHQKnbvXsvgCgjsAIIOsY7xZ8VcSm7NABpi91yTMAniMMmH7FRenEAYMa
+ VrwYTIThkTlQzsFNBEah5FQQCACMIep/hTzgPZ9HbCTKm9xN4bZX0JjrqjFem1Nxf3MBM5vN
+ CYGBn8F4sGIzPmLhl4xFeq3k5irVg/YvxSDbQN6NJv8o+tP6zsMeWX2JjtV0P4aDIN1pK2/w
+ VxcicArw0VYdv2ZCarccFBgH2a6GjswqlCqVM3gNIMI8ikzenKcso8YErGGiKYeMEZLwHaxE
+ Y7mTPuOTrWL8uWWRL5mVjhZEVvDez6em/OYvzBwbkhImrryF29e3Po2cfY2n7EKjjr3/141K
+ DHBBdgXlPNfDwROnA5ugjjEBjwkwBQqPpDA7AYPvpHh5vLbZnVGu5CwG7NAsrb2isRmjYoqk
+ wu++3117AAMFB/9S0Sj7qFFQcD4laADVsabTpNNpaV4wAgVTRHKV/kC9luItzwDnUcsZUPdQ
+ f3MueRJ3jIHU0UmRBG3uQftqbZJj3ikhnfvyLmkCNe+/hXhPu9sGvXyi2D4vszICvc1KL4RD
+ aLSrOsROx22eZ26KqcW4ny7+va2FnvjsZgI8h4sDmaLzKczVRIiLITiMpLFEU/VoSv0m1F4B
+ FtRgoiyjFzigWG0MsTdAN6FJzGh4mWWGIlE7o5JraNhnTd+yTUIPtw3ym6l8P+gbvfoZida0
+ TspgwBWLnXQvP5EDvlZnNaKa/3oBes6z0QdaSOwZCRA3QSLHBwtgUsrT6RxRSweLrcabwkkE
+ GBECAAkFAkah5FQCGwwACgkQ130UHQKnbvW2GgCfTKx80VvCR/PvsUlrvdOLsIgeRGAAn1ee
+ RjMaxwtSdaCKMw3j33ZbsWS4
+Message-ID: <220d3638-f500-eee8-8e00-2abd44282310@nbd.name>
+Date:   Wed, 18 Dec 2019 12:25:10 +0100
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0)
+ Gecko/20100101 Thunderbird/68.3.0
 MIME-Version: 1.0
+In-Reply-To: <3099559.gv3Q75KnN1@pc-42>
 Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail.com> writes:
+On 2019-12-17 16:15, Jérôme Pouiller wrote:
+> On Tuesday 17 December 2019 12:20:40 CET Felix Fietkau wrote:
+> [...]
+>> Instead of using per-packet rate info, implement the
+>> .sta_rate_tbl_update callback to maintain a primary tx policy used for
+>> all non-probing non-fixed-rate packets, which you can alter while
+>> packets using it are queued already.
+>> The existing approach using per-packet tx_info data should then be used
+>> only for probing or fixed-rate packets.
+>> You then probably have to be a bit clever in the tx status path for
+>> figuring out what rates were actually used.
+> 
+> Indeed, I have noticed that we are are to react to any changes on the
+> link quality. Your idea may helps a lot. Thank you.
+> 
+> Do you know if I can safely rely on IEEE80211_TX_CTL_RATE_CTRL_PROBE and
+> IEEE80211_TX_CTL_USE_MINRATE to detect probing and fixed-rate packets?
+Set the hw flag SUPPORTS_RC_TABLE. That way the skb tx_info will only
+have control->rates set for if there are overrides, probing rate, fixed
+rate, etc.
+That way you can use the default policy if info->control.rates[0].idx == -1
 
-> From: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
->
-> The explicit error checking is not needed. Simply return the error
-> instead.
->
-> Signed-off-by: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
+> I currently work on others parts, but I think I will try your suggestion
+> in January.
+> 
+> One last thing, do you know why minstrel appends the lowest rate and
+> minstrel_ht don't? They should be identical, not?
+The minstrel_ht algorithm is newer and minstrel just hasn't been updated
+for a number of algorithm changes yet.
 
-Acked-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
-
+- Felix
