@@ -2,127 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 75F2B123CEE
-	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 03:11:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E9C4A123CF3
+	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 03:13:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726518AbfLRCLt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Dec 2019 21:11:49 -0500
-Received: from szxga05-in.huawei.com ([45.249.212.191]:7702 "EHLO huawei.com"
+        id S1726587AbfLRCMH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Dec 2019 21:12:07 -0500
+Received: from mail-eopbgr150071.outbound.protection.outlook.com ([40.107.15.71]:14438
+        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726467AbfLRCLt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 17 Dec 2019 21:11:49 -0500
-Received: from DGGEMS403-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id C70C7F0E2C8D5F89BDA7;
-        Wed, 18 Dec 2019 10:11:46 +0800 (CST)
-Received: from huawei.com (10.67.189.167) by DGGEMS403-HUB.china.huawei.com
- (10.3.19.203) with Microsoft SMTP Server id 14.3.439.0; Wed, 18 Dec 2019
- 10:11:38 +0800
-From:   Jiangfeng Xiao <xiaojiangfeng@huawei.com>
-To:     <davem@davemloft.net>, <yisen.zhuang@huawei.com>,
-        <salil.mehta@huawei.com>, <zhangfei.gao@linaro.org>,
-        <arnd@arndb.de>, <dingtianhong@huawei.com>,
-        <xiaojiangfeng@huawei.com>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <leeyou.li@huawei.com>, <nixiaoming@huawei.com>
-Subject: [PATCH v3] net: hisilicon: Fix a BUG trigered by wrong bytes_compl
-Date:   Wed, 18 Dec 2019 10:11:33 +0800
-Message-ID: <1576635093-60466-1-git-send-email-xiaojiangfeng@huawei.com>
-X-Mailer: git-send-email 1.8.5.6
+        id S1726296AbfLRCMG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 17 Dec 2019 21:12:06 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=OQLHRktkHdpYgmM6hQ+/ltqwbIeHHfPwSngBV62dsZody/R4DTxt+lN1bmlIqyDMw2rSAV/Y/fMAu0R0O5mMtUejS0GuCHiZErkz8RuAmQAy2pw3VmU2U1qDWbQ4lMP8O+t83x9qU+YLGySZaxyJ3j7Q3JOx2AJ79VvqbFjNWiwlXmaNiES44Pcnokm/bMPJF04lrahZVQbm3bxtY8vjPMHRyiqrq/F/vAhxLQZWjjJVSr6gT4OmuOpBr1o0v8sxc7NE4XYNCY5jTflE27tD4yJLptF9YlYZ1c3APS7AG+rSAXqOQ4RcxlKHY9cfuq1Pphg7r/qPXaz91KX3U0Dbag==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=NDcAmZlKf4vLdwxBOhWnNv8xHCFuY48VgjtwAev235I=;
+ b=Aejcpzxpp9BlfghzdJtmuD//rDmLpVueiZHThpipYsVn8E8aaOpA8lTHSDjbToVBxR6p8mKiVz9UMq1/szin8otK83hwZPBorpVGKUH6KNZ861NWEIuWwjkP5CDUPCrGS4M8LWHjjbhxXxXboNpsBRKQnjKnHkpGgMxNVLnvQ61ABWWU4FfMhpKb76pdK5cT4SxFchkgdpW4tff/0KBdmgGosdwfUSSXgAXBODhwDAtzwXdeKbUItnkcCjf/5lNEzjhjjYz6wvVSp5Ccr8VzwJysq0gU7ir/yn06NMl6mPtvk/n+m+bhMk+81zQSWISvurAyJtn/QYlV/fCzXlLIMg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=NDcAmZlKf4vLdwxBOhWnNv8xHCFuY48VgjtwAev235I=;
+ b=gwGA+HcVKeQLBJblDt1XHffrMYQyXg8G/uXIIVC2ozQY1OyFaxeXlCHXk1V1zgseFpEJrwoILGr87+wSvb4kXs/PM6y3nNiTeZi4grchfiq2vqaKdgzV6QYRgYpqQbtAROYPFpbGjLcardSVNtFe2LR5DEybqJjdoTokwuaYjCk=
+Received: from VI1PR0401MB2237.eurprd04.prod.outlook.com (10.169.132.138) by
+ VI1PR0401MB2480.eurprd04.prod.outlook.com (10.168.61.17) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2538.15; Wed, 18 Dec 2019 02:11:58 +0000
+Received: from VI1PR0401MB2237.eurprd04.prod.outlook.com
+ ([fe80::b9ca:8e9c:39e6:8d5f]) by VI1PR0401MB2237.eurprd04.prod.outlook.com
+ ([fe80::b9ca:8e9c:39e6:8d5f%7]) with mapi id 15.20.2559.012; Wed, 18 Dec 2019
+ 02:11:58 +0000
+From:   "Y.b. Lu" <yangbo.lu@nxp.com>
+To:     David Miller <davem@davemloft.net>
+CC:     Ioana Ciornei <ioana.ciornei@nxp.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: RE: [PATCH net v2] dpaa2-ptp: fix double free of the ptp_qoriq IRQ
+Thread-Topic: [PATCH net v2] dpaa2-ptp: fix double free of the ptp_qoriq IRQ
+Thread-Index: AQHVtCYMQFVIeYxyLkSR+ox4Z08Prqe9mZ1ggAANmgCAAANlIIABOymAgABCHvA=
+Date:   Wed, 18 Dec 2019 02:11:58 +0000
+Message-ID: <VI1PR0401MB2237EAFE8E7964DE6C3DFD97F8530@VI1PR0401MB2237.eurprd04.prod.outlook.com>
+References: <VI1PR0401MB22378203BDAE222A6FDCCD09F8500@VI1PR0401MB2237.eurprd04.prod.outlook.com>
+        <20191216.191204.2265139317972153148.davem@davemloft.net>
+        <VI1PR0401MB223794F3A1B1D4ED622A3419F8500@VI1PR0401MB2237.eurprd04.prod.outlook.com>
+ <20191217.141213.638446762932310525.davem@davemloft.net>
+In-Reply-To: <20191217.141213.638446762932310525.davem@davemloft.net>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=yangbo.lu@nxp.com; 
+x-originating-ip: [92.121.36.197]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 982276af-412c-4ae6-1e5f-08d7835fa97d
+x-ms-traffictypediagnostic: VI1PR0401MB2480:|VI1PR0401MB2480:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <VI1PR0401MB2480928A1DAC4E6C82D96BC4F8530@VI1PR0401MB2480.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:6430;
+x-forefront-prvs: 0255DF69B9
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(346002)(396003)(376002)(136003)(39860400002)(366004)(13464003)(189003)(199004)(71200400001)(2906002)(66446008)(5660300002)(86362001)(66476007)(64756008)(478600001)(54906003)(52536014)(26005)(33656002)(55016002)(81156014)(81166006)(8936002)(8676002)(186003)(7696005)(6506007)(53546011)(4326008)(76116006)(316002)(66946007)(66556008)(6916009)(9686003);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR0401MB2480;H:VI1PR0401MB2237.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: nxp.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: LmFrVP9OylbEXCmQ3QfswXnqwfi3yr8Cd6zy98QDzgNo5k2gPTDm6TOkinkStXSrRSj3k3CX5VV3kT8UcBHKEHCMzfjY9SXD8Emfbffr3+9J2ClqkhEZxFfrefrrlbYH1eFvCsI3rSLTcDdMINDy9wy6MHB0G1pxWLAv1EOCY/3/IxwhumadffApm8yeLk2TedO65UBWJtX7lLvjgk5kTFHrcT9nb4u7UpYZKqA51bgfradyvDWLWw7uUO7VLio9KVRKTs7NOVLV4x/KHAZQ1hjd0Mirn8US6ySxrBnEq9Gfoj18bS14Ffsu03Tuid3BiJiJPrx8bEnCS643Of0fVIx36OJrMeqTTdx622vmUMVz2rvAb7+DelU1l5nYO0Jh+fR4WssraeNUBvVJvCau7AuQ81Cvz4hhncyh+FIn2o1se+1jcP0rudpKiBZ9SiE1NjflnxJlEDQer5OEDUrEGYHfKr4kZnHPYdXkgE0DqvWBSdOSbKD0YSbyn5I+GBGo
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.67.189.167]
-X-CFilter-Loop: Reflected
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 982276af-412c-4ae6-1e5f-08d7835fa97d
+X-MS-Exchange-CrossTenant-originalarrivaltime: 18 Dec 2019 02:11:58.3186
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: oPDqa5xFbB+sD9QdOrsGgp0LL0O7ogO+rSGY0FANnaFq+r9DT9vmjVfPl+0o7nUsrdmYRrL7XA5qIUNEHQjHXg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0401MB2480
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When doing stress test, we get the following trace:
-kernel BUG at lib/dynamic_queue_limits.c:26!
-Internal error: Oops - BUG: 0 [#1] SMP ARM
-Modules linked in: hip04_eth
-CPU: 0 PID: 2003 Comm: tDblStackPcap0 Tainted: G           O L  4.4.197 #1
-Hardware name: Hisilicon A15
-task: c3637668 task.stack: de3bc000
-PC is at dql_completed+0x18/0x154
-LR is at hip04_tx_reclaim+0x110/0x174 [hip04_eth]
-pc : [<c041abfc>]    lr : [<bf0003a8>]    psr: 800f0313
-sp : de3bdc2c  ip : 00000000  fp : c020fb10
-r10: 00000000  r9 : c39b4224  r8 : 00000001
-r7 : 00000046  r6 : c39b4000  r5 : 0078f392  r4 : 0078f392
-r3 : 00000047  r2 : 00000000  r1 : 00000046  r0 : df5d5c80
-Flags: Nzcv  IRQs on  FIQs on  Mode SVC_32  ISA ARM  Segment user
-Control: 32c5387d  Table: 1e189b80  DAC: 55555555
-Process tDblStackPcap0 (pid: 2003, stack limit = 0xde3bc190)
-Stack: (0xde3bdc2c to 0xde3be000)
-[<c041abfc>] (dql_completed) from [<bf0003a8>] (hip04_tx_reclaim+0x110/0x174 [hip04_eth])
-[<bf0003a8>] (hip04_tx_reclaim [hip04_eth]) from [<bf0012c0>] (hip04_rx_poll+0x20/0x388 [hip04_eth])
-[<bf0012c0>] (hip04_rx_poll [hip04_eth]) from [<c04c8d9c>] (net_rx_action+0x120/0x374)
-[<c04c8d9c>] (net_rx_action) from [<c021eaf4>] (__do_softirq+0x218/0x318)
-[<c021eaf4>] (__do_softirq) from [<c021eea0>] (irq_exit+0x88/0xac)
-[<c021eea0>] (irq_exit) from [<c0240130>] (msa_irq_exit+0x11c/0x1d4)
-[<c0240130>] (msa_irq_exit) from [<c0267ba8>] (__handle_domain_irq+0x110/0x148)
-[<c0267ba8>] (__handle_domain_irq) from [<c0201588>] (gic_handle_irq+0xd4/0x118)
-[<c0201588>] (gic_handle_irq) from [<c0558360>] (__irq_svc+0x40/0x58)
-Exception stack(0xde3bdde0 to 0xde3bde28)
-dde0: 00000000 00008001 c3637668 00000000 00000000 a00f0213 dd3627a0 c0af6380
-de00: c086d380 a00f0213 c0a22a50 de3bde6c 00000002 de3bde30 c0558138 c055813c
-de20: 600f0213 ffffffff
-[<c0558360>] (__irq_svc) from [<c055813c>] (_raw_spin_unlock_irqrestore+0x44/0x54)
-Kernel panic - not syncing: Fatal exception in interrupt
+> -----Original Message-----
+> From: David Miller <davem@davemloft.net>
+> Sent: Wednesday, December 18, 2019 6:12 AM
+> To: Y.b. Lu <yangbo.lu@nxp.com>
+> Cc: Ioana Ciornei <ioana.ciornei@nxp.com>; netdev@vger.kernel.org
+> Subject: Re: [PATCH net v2] dpaa2-ptp: fix double free of the ptp_qoriq I=
+RQ
+>=20
+> From: "Y.b. Lu" <yangbo.lu@nxp.com>
+> Date: Tue, 17 Dec 2019 03:25:23 +0000
+>=20
+> >> -----Original Message-----
+> >> From: David Miller <davem@davemloft.net>
+> >> Sent: Tuesday, December 17, 2019 11:12 AM
+> >> To: Y.b. Lu <yangbo.lu@nxp.com>
+> >> Cc: Ioana Ciornei <ioana.ciornei@nxp.com>; netdev@vger.kernel.org
+> >> Subject: Re: [PATCH net v2] dpaa2-ptp: fix double free of the
+> >> ptp_qoriq IRQ
+> >>
+> >> From: "Y.b. Lu" <yangbo.lu@nxp.com>
+> >> Date: Tue, 17 Dec 2019 02:24:13 +0000
+> >>
+> >> >> -----Original Message-----
+> >> >> From: Ioana Ciornei <ioana.ciornei@nxp.com>
+> >> >> Sent: Monday, December 16, 2019 11:33 PM
+> >> >> To: davem@davemloft.net; netdev@vger.kernel.org
+> >> >> Cc: Ioana Ciornei <ioana.ciornei@nxp.com>; Y.b. Lu
+> >> >> <yangbo.lu@nxp.com>
+> >> >> Subject: [PATCH net v2] dpaa2-ptp: fix double free of the
+> >> >> ptp_qoriq IRQ
+> >> >
+> >> > [Y.b. Lu] Reviewed-by: Yangbo Lu <yangbo.lu@nxp.com>
+> >>
+> >> Please start your tags on the first column of the line, do not add
+> >> these "[Y.b. Lu] " prefixes as it can confuse automated tools that
+> >> look for the tags.
+> >
+> > [Y.b. Lu] Sorry, David. I will remember that :)
+>=20
+> How about completely not using these silly prefixes in your replies?
+>=20
+> Nobody else does this, and the quoting of the email says clearly what you=
+ are
+> saying in reply and what is the content you are replying to.
 
-Pre-modification code:
-int hip04_mac_start_xmit(struct sk_buff *skb, struct net_device *ndev)
-{
-[...]
-[1]	priv->tx_head = TX_NEXT(tx_head);
-[2]	count++;
-[3]	netdev_sent_queue(ndev, skb->len);
-[...]
-}
-An rx interrupt occurs if hip04_mac_start_xmit just executes to the line 2,
-tx_head has been updated, but corresponding 'skb->len' has not been
-added to dql_queue.
+Sure. This is a habit for company internal emails, but I will drop the pref=
+ixes for linux community discussion.
+Thanks:)
 
-And then
-hip04_mac_interrupt->__napi_schedule->hip04_rx_poll->hip04_tx_reclaim
-
-In hip04_tx_reclaim, because tx_head has been updated,
-bytes_compl will plus an additional "skb-> len"
-which has not been added to dql_queue. And then
-trigger the BUG_ON(bytes_compl > num_queued - dql->num_completed).
-
-To solve the problem described above, we put
-"priv->tx_head = TX_NEXT(tx_head);"
-after
-"netdev_sent_queue(ndev, skb->len);"
-
-Fixes: a41ea46a9 ("net: hisilicon: new hip04 ethernet driver")
-Signed-off-by: Jiangfeng Xiao <xiaojiangfeng@huawei.com>
----
-ChangeLog v1->v2
-- Provide an appropriate Fixes: tag
-ChangeLog v2->v3
-- Remove unrelated cleanup
----
- drivers/net/ethernet/hisilicon/hip04_eth.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/hisilicon/hip04_eth.c b/drivers/net/ethernet/hisilicon/hip04_eth.c
-index 3e9b6d5..150a8cc 100644
---- a/drivers/net/ethernet/hisilicon/hip04_eth.c
-+++ b/drivers/net/ethernet/hisilicon/hip04_eth.c
-@@ -543,9 +543,9 @@ static void hip04_start_tx_timer(struct hip04_priv *priv)
- 	skb_tx_timestamp(skb);
- 
- 	hip04_set_xmit_desc(priv, phys);
--	priv->tx_head = TX_NEXT(tx_head);
- 	count++;
- 	netdev_sent_queue(ndev, skb->len);
-+	priv->tx_head = TX_NEXT(tx_head);
- 
- 	stats->tx_bytes += skb->len;
- 	stats->tx_packets++;
--- 
-1.8.5.6
+Best regards,
+Yangbo Lu
 
