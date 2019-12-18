@@ -2,104 +2,194 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C968F124620
-	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 12:50:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B3AF1124630
+	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 12:53:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726863AbfLRLue (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Dec 2019 06:50:34 -0500
-Received: from frisell.zx2c4.com ([192.95.5.64]:57757 "EHLO frisell.zx2c4.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726710AbfLRLud (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 18 Dec 2019 06:50:33 -0500
-Received: by frisell.zx2c4.com (ZX2C4 Mail Server) with ESMTP id e37716a2;
-        Wed, 18 Dec 2019 10:53:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=zx2c4.com; h=mime-version
-        :references:in-reply-to:from:date:message-id:subject:to:cc
-        :content-type; s=mail; bh=dF+343L+TdlkZkv3XYQxJv3zHkU=; b=TjcPQ6
-        hXxWKK2YLj+bHj6e8MKS1+2/s45ZVpmfXnTRAP1x36bgHNVA6rckobNs6oHmicFd
-        XiP/F98tGiMcdphyibDkPyNM3ucsuyyYPPAraTVtOwcvz84uSrcyf8PJSQIT6k51
-        yd9h0ujCeDpb2ttx5JyV6jDI/7J/HsGmHTft5s6NGqpsJ9zsoQhMjM5jKDOVVC4F
-        w7wz4KmEIYLotJ2iSrq/ZriiJaQpvN8u2Zem9eoNk6F8EcDVYoc7AyUYdzSOWJSk
-        hbbMFOpNMsQEpqrG4q0zsJV0dvE3rGRIRxflVEYNsoHn0eC30/kquA8HHym3jGdA
-        v0d1ajk3Jv+IHiFg==
-Received: by frisell.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 9bcc9931 (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256:NO);
-        Wed, 18 Dec 2019 10:53:58 +0000 (UTC)
-Received: by mail-ot1-f47.google.com with SMTP id p8so2172391oth.10;
-        Wed, 18 Dec 2019 03:50:31 -0800 (PST)
-X-Gm-Message-State: APjAAAXvqXk7MkqOYS2B2sTTrImQkkRen5kmslxVvgR5gWWHsBJIlpoh
-        c2DJwSBgJ5iT6z/ZalZuY0ZpH5xXCngdJsS8y3I=
-X-Google-Smtp-Source: APXvYqzhY12iR5m2kOBPfSFcgyM7ph/qjcMRfYbool+Jo+GJ1pt8ESvldAOSFjtQuspfXp9ad3F2iB9gc7l+lqvEedc=
-X-Received: by 2002:a9d:4f0f:: with SMTP id d15mr2218022otl.179.1576669831047;
- Wed, 18 Dec 2019 03:50:31 -0800 (PST)
-MIME-Version: 1.0
-References: <20191208232734.225161-1-Jason@zx2c4.com> <CACT4Y+bsJVmgbD-WogwU=LfWiPN1JgjBrwx4s8Y14hDd7vqqhQ@mail.gmail.com>
- <CAHmME9o0AparjaaOSoZD14RAW8_AJTfKfcx3Y2ndDAPFNC-MeQ@mail.gmail.com> <CACT4Y+Zssd6OZ2-U4kjw18mNthQyzPWZV_gkH3uATnSv1SVDfA@mail.gmail.com>
-In-Reply-To: <CACT4Y+Zssd6OZ2-U4kjw18mNthQyzPWZV_gkH3uATnSv1SVDfA@mail.gmail.com>
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-Date:   Wed, 18 Dec 2019 12:50:20 +0100
-X-Gmail-Original-Message-ID: <CAHmME9oM=YHMZyg23WEzmZAof=7iv-A01VazB3ihhR99f6X1cg@mail.gmail.com>
-Message-ID: <CAHmME9oM=YHMZyg23WEzmZAof=7iv-A01VazB3ihhR99f6X1cg@mail.gmail.com>
-Subject: Re: [PATCH net-next v2] net: WireGuard secure network tunnel
-To:     Dmitry Vyukov <dvyukov@google.com>
-Cc:     netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
+        id S1726924AbfLRLxn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Dec 2019 06:53:43 -0500
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:46721 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726856AbfLRLxn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Dec 2019 06:53:43 -0500
+Received: by mail-pf1-f193.google.com with SMTP id y14so1063207pfm.13
+        for <netdev@vger.kernel.org>; Wed, 18 Dec 2019 03:53:42 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=9sPANbPAl+E3uP3x6sXINIt01H+sSnhfDdo/0WQiL+w=;
+        b=YuOoAmM4l0NlLsXoO1UflGRHo18DIb+Tjj6z0TyhXGXzet/UmVkeoCefO8Px7qTyZk
+         rIR0fN5Y7b4K3wRvZu4PP2vCx3zrInMKefJjdC6J3jzbuczAtQsAHiXHu++5gJ+CDDj9
+         nBjYh9go9k/XRUJcQLTrTEsgC9sff957rr9xlVylLt8NVkW9oEctqPbmiu1eleIpUgbx
+         IhQdvNaxOD5v8lG0J5MThLM41Cys5zEfNPjaFuXZTI4zJ/vzyOnnIKPRUdd80f2jBlFz
+         0q71oiXJxk7xjs5/eMn+aFqmW3Myet/bgljk3A1FowAkjGCdaWAwE0b8iQqL0cngLVmu
+         qTdQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=9sPANbPAl+E3uP3x6sXINIt01H+sSnhfDdo/0WQiL+w=;
+        b=JQ/1LsYnGaEA/rCDI130FRx/BDekeRB9F58TEJ/aNN+Be4jZmVHMCD+oUrW9T4nhpi
+         qMvKG75hu74up+87+kn7uTXufu6386u0/6xjUlBSYLCmyTXF+QXqkbK0w4XQ1Fn+yyIy
+         jbjxrqMY/0yodDH7omhlRaGQ5NAwtR+nvfQrbPoMpZBCn+ZcCPw6zmUEFNe2cIbzIjU+
+         D7ovT4s0Htq/iSO1FQKkszVq41syktFTm4jkMxV4I23qu7y09txg8iuoHtIM7E0VTh04
+         Y5kW9cnZlm35NityvR1/xiaIXMEy8RRmNe41W5Z2jiZuFtyS2ZHuigbvMRyzJILFFp/z
+         W4lg==
+X-Gm-Message-State: APjAAAVoRC8P2E4Hka4EE3b2hnYBnr9uT4ANF2KRTiDGg+iJhXAFapHk
+        B335099pT/VpWnQtRIEGH1FdbyKLaDE=
+X-Google-Smtp-Source: APXvYqxQX8l03OjfxuVXMrcngHYd+N9FVjYSROI7/F9aLM0wT1EVjohqXeCETL4Bu6JTOVC0swyW1A==
+X-Received: by 2002:a63:1756:: with SMTP id 22mr2655055pgx.109.1576670021979;
+        Wed, 18 Dec 2019 03:53:41 -0800 (PST)
+Received: from dhcp-12-139.nay.redhat.com ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id x33sm2961067pga.86.2019.12.18.03.53.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 18 Dec 2019 03:53:41 -0800 (PST)
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Julian Anastasov <ja@ssi.bg>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        David Ahern <dsahern@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Guillaume Nault <gnault@redhat.com>,
         David Miller <davem@davemloft.net>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "open list:HARDWARE RANDOM NUMBER GENERATOR CORE" 
-        <linux-crypto@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Pablo Neira <pablo@netfilter.org>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Alexey Kodanev <alexey.kodanev@oracle.com>,
+        Hangbin Liu <liuhangbin@gmail.com>
+Subject: [PATCH net-next 0/8] disable neigh update for tunnels during pmtu update
+Date:   Wed, 18 Dec 2019 19:53:05 +0800
+Message-Id: <20191218115313.19352-1-liuhangbin@gmail.com>
+X-Mailer: git-send-email 2.19.2
+In-Reply-To: <20191203021137.26809-1-liuhangbin@gmail.com>
+References: <20191203021137.26809-1-liuhangbin@gmail.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Dmitry,
+When we setup a pair of gretap, ping each other and create neighbour cache.
+Then delete and recreate one side. We will never be able to ping6 to the new
+created gretap.
 
-On Wed, Dec 18, 2019 at 12:37 PM Dmitry Vyukov <dvyukov@google.com> wrote:
-> > Actually with WireGuard, I think that's not the case. The WireGuard
-> > logging has been written with DoS in mind. You /should/ be able to
-> > safely run it on a production system exposed to the wild Internet, and
-> > while there will be some additional things in your dmesg, an attacker
-> > isn't supposed to be able to totally flood it without ratelimiting or
-> > inject malicious strings into it (such as ANSI escape sequence). In
-> > other words, I consider the logging to be fair game attack surface. If
-> > your fuzzer manages to craft some nasty sequence of packets that
-> > tricks some rate limiting logic and lets you litter all over dmesg
-> > totally unbounded, I'd consider that a real security bug worth
-> > stressing out about. So from the perspective of letting your fuzzers
-> > loose on WireGuard, I'd actually like to see this option kept on.
->
-> This is the case even with CONFIG_WIREGUARD_DEBUG turned on, right? Or without?
+The reason is when we ping6 remote via gretap, we will call like
 
-Turned on.
+gre_tap_xmit()
+ - ip_tunnel_xmit()
+   - tnl_update_pmtu()
+     - skb_dst_update_pmtu()
+       - ip6_rt_update_pmtu()
+         - __ip6_rt_update_pmtu()
+           - dst_confirm_neigh()
+             - ip6_confirm_neigh()
+               - __ipv6_confirm_neigh()
+                 - n->confirmed = now
 
-> Well, it may be able to trigger unbounded printing, but that won't be
-> detected as a bug and won't be reported. To be reported it needs to
-> fall into a set of predefined bug cases (e.g. "BUG:" or "WARNING:" on
-> console). Unless of course it triggers total stall/hang.
+As the confirmed time updated, in neigh_timer_handler() the check for
+NUD_DELAY confirm time will pass and the neigh state will back to
+NUD_REACHABLE. So the old/wrong mac address will be used again.
 
-Bummer. Well, at least the stall case is interesting.
+If we do not update the confirmed time, the neigh state will go to
+neigh->nud_state = NUD_PROBE; then go to NUD_FAILED and re-create the
+neigh later, which is what IPv4 does.
 
-> But I'm
-> afraid it will just dirty dmesg, make reading crashes harder and slow
-> down everything without benefit.
+We couldn't remove the ip6_confirm_neigh() directly as we still need it
+for TCP flows. To fix it, we have to pass a bool parameter to
+dst_ops.update_pmtu() and only disable neighbor update for tunnels.
 
-Actually the point of the logging is usually to make it more obvious
-why a crash has come about, to provide some trail about the sequence
-of events. This was especially helpful in fixing old race conditions
-where subtle packet timing caused WireGuard's timer-based state
-machine to go haywire. Is syzkaller able to backtrack from crashes to
-the packets and packet timing that caused them, in order to make a
-test case to replay the crash? Is this precise enough for race
-condition bugs? If so, then when debugging the crashes I could always
-replay it later with logging turned on, in which case it might make
-sense to split out the debug logging into CONFIG_WIREGUARD_VERBOSE_LOG
-or similar (unless the logging itself changes the timing constraints
-and I can't repro that way). If this isn't possible, then it seems
-like logging might be something we would benefit from having in the
-crash reports, right? Or am I missing some other detail of how the
-system works?
+v2: remove dst_confirm_neigh directly
+v3: add bool confirm_neigh parameter for all dst_ops.update_pmtu and
+    disable neigh update on each tunnel device.
 
-Jason
+---
+Reproducer:
+
+#!/bin/bash
+set -x
+ip -a netns del
+modprobe -r veth
+modprobe -r bridge
+
+ip netns add ha
+ip netns add hb
+ip link add br0 type bridge
+ip link set br0 up
+ip link add br_ha type veth peer name veth0 netns ha
+ip link add br_hb type veth peer name veth0 netns hb
+ip link set br_ha up
+ip link set br_hb up
+ip link set br_ha master br0
+ip link set br_hb master br0
+ip netns exec ha ip link set veth0 up
+ip netns exec hb ip link set veth0 up
+ip netns exec ha ip addr add 192.168.0.1/24 dev veth0
+ip netns exec hb ip addr add 192.168.0.2/24 dev veth0
+
+ip netns exec ha ip link add gretap1 type gretap local 192.168.0.1 remote 192.168.0.2
+ip netns exec ha ip link set gretap1 up
+ip netns exec ha ip addr add 1.1.1.1/24 dev gretap1
+ip netns exec ha ip addr add 1111::1/64 dev gretap1
+
+ip netns exec hb ip link add gretap1 type gretap local 192.168.0.2 remote 192.168.0.1
+ip netns exec hb ip link set gretap1 up
+ip netns exec hb ip addr add 1.1.1.2/24 dev gretap1
+ip netns exec hb ip addr add 1111::2/64 dev gretap1
+
+ip netns exec ha ping 1.1.1.2 -c 4
+ip netns exec ha ping6 1111::2 -c 4
+sleep 30
+
+# recreate gretap
+ip netns exec hb ip link del gretap1
+ip netns exec hb ip link add gretap1 type gretap local 192.168.0.2 remote 192.168.0.1
+ip netns exec hb ip link set gretap1 up
+ip netns exec hb ip addr add 1.1.1.2/24 dev gretap1
+ip netns exec hb ip addr add 1111::2/64 dev gretap1
+ip netns exec hb ip link show dev gretap1
+
+ip netns exec ha ip neigh show dev gretap1
+ip netns exec ha ping 1.1.1.2 -c 4
+ip netns exec ha ping6 1111::2 -c 4
+ip netns exec ha ip neigh show dev gretap1
+sleep 10
+ip netns exec ha ip neigh show dev gretap1
+ip netns exec ha ping 1.1.1.2 -c 4
+ip netns exec ha ping6 1111::2 -c 4
+ip netns exec ha ip neigh show dev gretap1
+---
+
+Hangbin Liu (8):
+  net: add bool confirm_neigh parameter for dst_ops.update_pmtu
+  ip6_gre: do not confirm neighbor when do pmtu update
+  gtp: do not confirm neighbor when do pmtu update
+  net/dst: add new function skb_dst_update_pmtu_no_confirm
+  tunnel: do not confirm neighbor when do pmtu update
+  vti: do not confirm neighbor when do pmtu update
+  sit: do not confirm neighbor when do pmtu update
+  net/dst: do not confirm neighbor for vxlan and geneve pmtu update
+
+ drivers/net/gtp.c                |  2 +-
+ include/net/dst.h                | 13 +++++++++++--
+ include/net/dst_ops.h            |  3 ++-
+ net/bridge/br_nf_core.c          |  3 ++-
+ net/decnet/dn_route.c            |  6 ++++--
+ net/ipv4/inet_connection_sock.c  |  2 +-
+ net/ipv4/ip_tunnel.c             |  2 +-
+ net/ipv4/ip_vti.c                |  2 +-
+ net/ipv4/route.c                 |  9 ++++++---
+ net/ipv4/xfrm4_policy.c          |  5 +++--
+ net/ipv6/inet6_connection_sock.c |  2 +-
+ net/ipv6/ip6_gre.c               |  2 +-
+ net/ipv6/ip6_tunnel.c            |  4 ++--
+ net/ipv6/ip6_vti.c               |  2 +-
+ net/ipv6/route.c                 | 22 +++++++++++++++-------
+ net/ipv6/sit.c                   |  2 +-
+ net/ipv6/xfrm6_policy.c          |  5 +++--
+ net/netfilter/ipvs/ip_vs_xmit.c  |  2 +-
+ net/sctp/transport.c             |  2 +-
+ 19 files changed, 58 insertions(+), 32 deletions(-)
+
+-- 
+2.19.2
+
