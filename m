@@ -2,246 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5668A124967
-	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 15:23:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 554C212496D
+	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 15:24:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727141AbfLROXw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Dec 2019 09:23:52 -0500
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:33524 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726856AbfLROXv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Dec 2019 09:23:51 -0500
-Received: by mail-wr1-f67.google.com with SMTP id b6so2528171wrq.0;
-        Wed, 18 Dec 2019 06:23:49 -0800 (PST)
+        id S1727217AbfLROYB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Dec 2019 09:24:01 -0500
+Received: from mail-il1-f196.google.com ([209.85.166.196]:39697 "EHLO
+        mail-il1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726998AbfLROYB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Dec 2019 09:24:01 -0500
+Received: by mail-il1-f196.google.com with SMTP id x5so1838424ila.6
+        for <netdev@vger.kernel.org>; Wed, 18 Dec 2019 06:24:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=I8xsC4KqqdJv76nf3R8l7PTNtZop40ZjK9SGrrFfcfI=;
+        b=hT96SFHY4+cbtTjfGc1eVxWOLr+B4nCbFllPZywLqbB257CAnxu80Fv0XuchXmrsVI
+         fXxGcpqcfPY3ipb+JoYnXGPx9vzw2zNGrUIxDOlkPJdgadi4ZZUdjnL5B9k70/b2czld
+         XJEwZErQPFygMvDYG273w6ySCGUGP3wRt14/ACEXIsnTapO/x2TyxIZjhuTIXFB6AmzA
+         5DP0e/EPGgeHQjiFgjJAV2jYJCIPyjBWXr42ZpAcnH6JWMtAC0qcjiUu31D82Kn/oSuF
+         Fih/qy063rgCP7XZWWsmaDY2a5bxAsOykTkKuWrrTcmD+XRkaz5tKgXLsrBHWyBHlAuE
+         A3PQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=qmE71Trq36jHx4Xg3DkVQdACDKp8yxbFOBYUuZJd0+0=;
-        b=SuJoKzzy4FAV1HhaVwWY0lxgBiC4RYvRuU2IxGHNGpC6dlVwaMiL/A90hpPM/IfyEa
-         iD7tjxdJMzYY74VJ8RNkmtG0IkVytU/45W1bCqWjyVl3IeOLgVr4W8dOiRrVqGqTR2/I
-         hHmbJ7wEOS1XuqBsjmvDks/ITaCzPcmcMsySYYRn2HJTWTrX9oZjMrLjr8vktuCrjwko
-         6J6LDylivWN/4c2ufEkXTw0BpvqrioH9/HS2RH3M1g4Xxk7Ruyvh0dJnG1TmVZdS3Gvi
-         Xs+UD2gxFhl60DTuCBA3M44efeEoMHXNK+l3o5aOMYyPXF3zGhxdGw4/z6+Svt67+zBV
-         7J5A==
-X-Gm-Message-State: APjAAAVOKXvmTHhfgURPFcmRNZiR6GS8pYSVkjuXdQyWV5g/rTksKM5H
-        Tdfe5mA/kR5a8OaNkpkLh40=
-X-Google-Smtp-Source: APXvYqwUjJgkCyOeuFc/yaSnZME/ZmeiCCPVMIyCnYHk45cIOibOv7j/ifQiWL4Y5wJ8789jozAzfA==
-X-Received: by 2002:a5d:4807:: with SMTP id l7mr3308415wrq.64.1576679028754;
-        Wed, 18 Dec 2019 06:23:48 -0800 (PST)
-Received: from Omicron ([217.76.31.1])
-        by smtp.gmail.com with ESMTPSA id w13sm2778926wru.38.2019.12.18.06.23.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 18 Dec 2019 06:23:47 -0800 (PST)
-Date:   Wed, 18 Dec 2019 15:23:47 +0100
-From:   Paul Chaignon <paul.chaignon@orange.com>
-To:     bpf@vger.kernel.org
-Cc:     paul.chaignon@gmail.com, netdev@vger.kernel.org,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>
-Subject: [PATCH bpf-next 3/3] bpftool: Support single-cpu updates for per-cpu
- maps
-Message-ID: <7adf11a446e02080d84eb4c7152078d1912a5454.1576673843.git.paul.chaignon@orange.com>
-References: <cover.1576673841.git.paul.chaignon@orange.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=I8xsC4KqqdJv76nf3R8l7PTNtZop40ZjK9SGrrFfcfI=;
+        b=P+S1orQN/ZEgGQq/PJ55lM7eOAaSoxlGRYNFqQMAjbbYjV9RrFxPKcbFb1O0rcYeiR
+         89ULaQsJZQzesS60WpMsBWZWfFFycmHm5F3OsoWDdp7bMvpOWw84QNwZWXKqY6hrjP0t
+         zS1PPIlaqD/MoaZfEm8i8m3DMFrqrBvFa/xlvaPQCh10tevKVdKvlnN1MtrdcDYL+0L0
+         mRB9WUz6wkzxbQfZfGGwqPTzOwvDdyKfL4dUJpAsx3vK2dekgJpb97lgNL9tj9Kp++n7
+         IKHiS9W2GFAnlJ2NdXqUpoPG8Wo2SpnqBC34U9sVXIoFKHnE209CSjy62IVltOpU3mih
+         Rv8A==
+X-Gm-Message-State: APjAAAVAo0mGlEnNJGld2pDPZRY3AXHel03hV/dpx53uwbqo1pYez6Rp
+        rReELtaXVK06MX4xxEyGpCmmCA==
+X-Google-Smtp-Source: APXvYqyHrmoiRbpO5lsIRi97ddPyTbvvUrXfFAvymqG7nQBfaHrweh+chsdJFuT01oFi7B66kWw0Mg==
+X-Received: by 2002:a92:3a58:: with SMTP id h85mr2046413ila.245.1576679040199;
+        Wed, 18 Dec 2019 06:24:00 -0800 (PST)
+Received: from [192.168.0.101] (198-84-204-252.cpe.teksavvy.com. [198.84.204.252])
+        by smtp.googlemail.com with ESMTPSA id b1sm698706ilc.33.2019.12.18.06.23.58
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 18 Dec 2019 06:23:59 -0800 (PST)
+Subject: Re: [PATCH net 1/2] net/sched: cls_u32: fix refcount leak in the
+ error path of u32_change()
+To:     Davide Caratti <dcaratti@redhat.com>, netdev@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>
+Cc:     Vlad Buslov <vladbu@mellanox.com>, Roman Mashak <mrv@mojatatu.com>
+References: <cover.1576623250.git.dcaratti@redhat.com>
+ <ae83c6dc89f8642166dc32debc6ea7444eb3671d.1576623250.git.dcaratti@redhat.com>
+From:   Jamal Hadi Salim <jhs@mojatatu.com>
+Message-ID: <bafb52ff-1ced-91a4-05d0-07d3fdc4f3e4@mojatatu.com>
+Date:   Wed, 18 Dec 2019 09:23:50 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.3.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <cover.1576673841.git.paul.chaignon@orange.com>
+In-Reply-To: <ae83c6dc89f8642166dc32debc6ea7444eb3671d.1576623250.git.dcaratti@redhat.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-GB
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds support for the new BPF_CPU flag in bpftool, to enable
-single-cpu updates of per-cpu maps.  It can be combined with existing
-flags; for example, to update the value for key 0 on CPU 9 only if it
-doesn't already exist:
 
-  bpftool map update key 0 0 0 0 value 1 0 0 0 noexist cpu 9
+On 2019-12-17 6:00 p.m., Davide Caratti wrote:
+> when users replace cls_u32 filters with new ones having wrong parameters,
+> so that u32_change() fails to validate them, the kernel doesn't roll-back
+> correctly, and leaves semi-configured rules.
+> 
+> Fix this in u32_walk(), avoiding a call to the walker function on filters
+> that don't have a match rule connected. The side effect is, these "empty"
+> filters are not even dumped when present; but that shouldn't be a problem
+> as long as we are restoring the original behaviour, where semi-configured
+> filters were not even added in the error path of u32_change().
+> 
+> Fixes: 6676d5e416ee ("net: sched: set dedicated tcf_walker flag when tp is empty")
+> Signed-off-by: Davide Caratti <dcaratti@redhat.com>
 
-Signed-off-by: Paul Chaignon <paul.chaignon@orange.com>
----
- .../bpf/bpftool/Documentation/bpftool-map.rst | 13 ++--
- tools/bpf/bpftool/bash-completion/bpftool     |  2 +-
- tools/bpf/bpftool/map.c                       | 70 ++++++++++++++-----
- 3 files changed, 61 insertions(+), 24 deletions(-)
+Hi Davide,
 
-diff --git a/tools/bpf/bpftool/Documentation/bpftool-map.rst b/tools/bpf/bpftool/Documentation/bpftool-map.rst
-index cdeae8ae90ba..72aa9b72f08f 100644
---- a/tools/bpf/bpftool/Documentation/bpftool-map.rst
-+++ b/tools/bpf/bpftool/Documentation/bpftool-map.rst
-@@ -25,7 +25,7 @@ MAP COMMANDS
- |	**bpftool** **map create**     *FILE* **type** *TYPE* **key** *KEY_SIZE* **value** *VALUE_SIZE* \
- |		**entries** *MAX_ENTRIES* **name** *NAME* [**flags** *FLAGS*] [**dev** *NAME*]
- |	**bpftool** **map dump**       *MAP*
--|	**bpftool** **map update**     *MAP* [**key** *DATA*] [**value** *VALUE*] [*UPDATE_FLAGS*]
-+|	**bpftool** **map update**     *MAP* [**key** *DATA*] [**value** *VALUE*] [*UPDATE_FLAGS*]...
- |	**bpftool** **map lookup**     *MAP* [**key** *DATA*]
- |	**bpftool** **map getnext**    *MAP* [**key** *DATA*]
- |	**bpftool** **map delete**     *MAP*  **key** *DATA*
-@@ -43,7 +43,7 @@ MAP COMMANDS
- |	*DATA* := { [**hex**] *BYTES* }
- |	*PROG* := { **id** *PROG_ID* | **pinned** *FILE* | **tag** *PROG_TAG* | **name** *PROG_NAME* }
- |	*VALUE* := { *DATA* | *MAP* | *PROG* }
--|	*UPDATE_FLAGS* := { **any** | **exist** | **noexist** }
-+|	*UPDATE_FLAGS* := { **any** | **exist** | **noexist** | **cpu** *CPU_ID* }
- |	*TYPE* := { **hash** | **array** | **prog_array** | **perf_event_array** | **percpu_hash**
- |		| **percpu_array** | **stack_trace** | **cgroup_array** | **lru_hash**
- |		| **lru_percpu_hash** | **lpm_trie** | **array_of_maps** | **hash_of_maps**
-@@ -73,9 +73,12 @@ DESCRIPTION
- 	**bpftool map update**  *MAP* [**key** *DATA*] [**value** *VALUE*] [*UPDATE_FLAGS*]
- 		  Update map entry for a given *KEY*.
- 
--		  *UPDATE_FLAGS* can be one of: **any** update existing entry
--		  or add if doesn't exit; **exist** update only if entry already
--		  exists; **noexist** update only if entry doesn't exist.
-+		  *UPDATE_FLAGS* can be: **any** update existing entry or add
-+		  if doesn't exit; **exist** update only if entry already
-+		  exists; **noexist** update only if entry doesn't exist;
-+		  **cpu** update only value for given *CPU_ID* in per-CPU map.
-+		  Only one of **any**, **exist**, and **noexist** can be
-+		  specified.
- 
- 		  If the **hex** keyword is provided in front of the bytes
- 		  sequence, the bytes are parsed as hexadeximal values, even if
-diff --git a/tools/bpf/bpftool/bash-completion/bpftool b/tools/bpf/bpftool/bash-completion/bpftool
-index 754d8395e451..116bf3dffb47 100644
---- a/tools/bpf/bpftool/bash-completion/bpftool
-+++ b/tools/bpf/bpftool/bash-completion/bpftool
-@@ -689,7 +689,7 @@ _bpftool()
-                             esac
- 
-                             _bpftool_once_attr 'key'
--                            local UPDATE_FLAGS='any exist noexist'
-+                            local UPDATE_FLAGS='any exist noexist cpu'
-                             for (( idx=3; idx < ${#words[@]}-1; idx++ )); do
-                                 if [[ ${words[idx]} == 'value' ]]; then
-                                     # 'value' is present, but is not the last
-diff --git a/tools/bpf/bpftool/map.c b/tools/bpf/bpftool/map.c
-index c01f76fa6876..da1455f460b1 100644
---- a/tools/bpf/bpftool/map.c
-+++ b/tools/bpf/bpftool/map.c
-@@ -470,9 +470,10 @@ static void fill_per_cpu_value(struct bpf_map_info *info, void *value)
- 		memcpy(value + i * step, value, info->value_size);
- }
- 
--static int parse_elem(char **argv, struct bpf_map_info *info,
--		      void *key, void *value, __u32 key_size, __u32 value_size,
--		      __u32 *flags, __u32 **value_fd)
-+static int
-+__parse_elem(char **argv, struct bpf_map_info *info, void *key, void *value,
-+	     __u32 key_size, __u32 value_size, __u64 *flags, __u32 **value_fd,
-+	     bool any_flag)
- {
- 	if (!*argv) {
- 		if (!key && !value)
-@@ -494,8 +495,8 @@ static int parse_elem(char **argv, struct bpf_map_info *info,
- 		if (!argv)
- 			return -1;
- 
--		return parse_elem(argv, info, NULL, value, key_size, value_size,
--				  flags, value_fd);
-+		return __parse_elem(argv, info, NULL, value, key_size,
-+				    value_size, flags, value_fd, any_flag);
- 	} else if (is_prefix(*argv, "value")) {
- 		int fd;
- 
-@@ -556,30 +557,63 @@ static int parse_elem(char **argv, struct bpf_map_info *info,
- 			fill_per_cpu_value(info, value);
- 		}
- 
--		return parse_elem(argv, info, key, NULL, key_size, value_size,
--				  flags, NULL);
-+		return __parse_elem(argv, info, key, NULL, key_size,
-+				    value_size, flags, NULL, any_flag);
- 	} else if (is_prefix(*argv, "any") || is_prefix(*argv, "noexist") ||
- 		   is_prefix(*argv, "exist")) {
--		if (!flags) {
-+		if (any_flag || *flags & (BPF_NOEXIST | BPF_EXIST)) {
- 			p_err("flags specified multiple times: %s", *argv);
- 			return -1;
- 		}
- 
--		if (is_prefix(*argv, "any"))
--			*flags = BPF_ANY;
--		else if (is_prefix(*argv, "noexist"))
--			*flags = BPF_NOEXIST;
--		else if (is_prefix(*argv, "exist"))
--			*flags = BPF_EXIST;
-+		if (is_prefix(*argv, "any")) {
-+			*flags |= BPF_ANY;
-+			any_flag = true;
-+		} else if (is_prefix(*argv, "noexist")) {
-+			*flags |= BPF_NOEXIST;
-+		} else if (is_prefix(*argv, "exist")) {
-+			*flags |= BPF_EXIST;
-+		}
-+
-+		return __parse_elem(argv + 1, info, key, value, key_size,
-+				    value_size, flags, value_fd, any_flag);
-+	} else if (is_prefix(*argv, "cpu")) {
-+		unsigned long long cpuid;
-+		char *endptr;
-+
-+		if (*flags & BPF_CPU) {
-+			p_err("flags specified multiple times: %s", *argv);
-+			return -1;
-+		}
- 
--		return parse_elem(argv + 1, info, key, value, key_size,
--				  value_size, NULL, value_fd);
-+		cpuid = strtoull(*(argv + 1), &endptr, 0);
-+		if (*endptr) {
-+			p_err("can't parse CPU id %s", *(argv + 1));
-+			return -1;
-+		}
-+		if (cpuid >= get_possible_cpus()) {
-+			p_err("incorrect value for CPU id");
-+			return -1;
-+		}
-+
-+		*flags |= (cpuid << 32) | BPF_CPU;
-+
-+		return __parse_elem(argv + 2, info, key, value, key_size,
-+				    value_size, flags, value_fd, any_flag);
- 	}
- 
- 	p_err("expected key or value, got: %s", *argv);
- 	return -1;
- }
- 
-+static int
-+parse_elem(char **argv, struct bpf_map_info *info, void *key, void *value,
-+	   __u32 key_size, __u32 value_size, __u64 *flags, __u32 **value_fd)
-+{
-+	return __parse_elem(argv, info, key, value, key_size, value_size,
-+			    flags, value_fd, false);
-+}
-+
- static void show_map_header_json(struct bpf_map_info *info, json_writer_t *wtr)
- {
- 	jsonw_uint_field(wtr, "id", info->id);
-@@ -1114,7 +1148,7 @@ static int do_update(int argc, char **argv)
- 	struct bpf_map_info info = {};
- 	__u32 len = sizeof(info);
- 	__u32 *value_fd = NULL;
--	__u32 flags = BPF_ANY;
-+	__u64 flags = BPF_ANY;
- 	void *key, *value;
- 	int fd, err;
- 
-@@ -1558,7 +1592,7 @@ static int do_help(int argc, char **argv)
- 		"       DATA := { [hex] BYTES }\n"
- 		"       " HELP_SPEC_PROGRAM "\n"
- 		"       VALUE := { DATA | MAP | PROG }\n"
--		"       UPDATE_FLAGS := { any | exist | noexist }\n"
-+		"       UPDATE_FLAGS := { any | exist | noexist | cpu CPU_ID }\n"
- 		"       TYPE := { hash | array | prog_array | perf_event_array | percpu_hash |\n"
- 		"                 percpu_array | stack_trace | cgroup_array | lru_hash |\n"
- 		"                 lru_percpu_hash | lpm_trie | array_of_maps | hash_of_maps |\n"
--- 
-2.24.0
+Great catch (and good test case addition),
+but I am not sure about the fix.
+
+Unless I am  misunderstanding the flow is:
+You enter bad rules, validation fails, partial state had already been
+created (in this case root hts) before validation failure, you then
+leave the partial state in the kernel but when someone dumps you hide
+these bad tables?
+
+It sounds like the root cause is there is a missing destroy()
+invocation somewhere during the create/validation failure - which is
+what needs fixing... Those dangling tables should not have been
+inserted; maybe somewhere along the code path for tc_new_tfilter().
+Note "replace" is essentially "create if it doesnt
+exist" semantic therefore NLM_F_CREATE will be set.
+
+Since this is a core cls issue - I would check all other classifiers
+with similar aggrevation - make some attribute fail in the middle or
+end.
+Very likely only u32 is the victim.
+
+cheers,
+jamal
 
