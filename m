@@ -2,335 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BC48312487E
-	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 14:35:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D0BBB12488D
+	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 14:41:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727126AbfLRNfR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Dec 2019 08:35:17 -0500
-Received: from a.mx.secunet.com ([62.96.220.36]:34890 "EHLO a.mx.secunet.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726774AbfLRNfL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 18 Dec 2019 08:35:11 -0500
-Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id 2EC7F200A7;
-        Wed, 18 Dec 2019 14:35:10 +0100 (CET)
-X-Virus-Scanned: by secunet
-Received: from a.mx.secunet.com ([127.0.0.1])
-        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id hTGlPLb4rcnQ; Wed, 18 Dec 2019 14:35:09 +0100 (CET)
-Received: from mail-essen-01.secunet.de (mail-essen-01.secunet.de [10.53.40.204])
-        (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id 7E5102008D;
-        Wed, 18 Dec 2019 14:35:09 +0100 (CET)
-Received: from gauss2.secunet.de (10.182.7.193) by mail-essen-01.secunet.de
- (10.53.40.204) with Microsoft SMTP Server id 14.3.439.0; Wed, 18 Dec 2019
- 14:35:09 +0100
-Received: by gauss2.secunet.de (Postfix, from userid 1000)      id 4A9FF31809F4;
- Wed, 18 Dec 2019 14:35:09 +0100 (CET)
-From:   Steffen Klassert <steffen.klassert@secunet.com>
-To:     David Miller <davem@davemloft.net>
-CC:     Steffen Klassert <steffen.klassert@secunet.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "Subash Abhinov Kasiviswanathan" <subashab@codeaurora.org>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        <netdev@vger.kernel.org>
-Subject: [PATCH net-next 4/4] udp: Support UDP fraglist GRO/GSO.
-Date:   Wed, 18 Dec 2019 14:34:58 +0100
-Message-ID: <20191218133458.14533-5-steffen.klassert@secunet.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20191218133458.14533-1-steffen.klassert@secunet.com>
-References: <20191218133458.14533-1-steffen.klassert@secunet.com>
+        id S1727025AbfLRNk6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Dec 2019 08:40:58 -0500
+Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:62482 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726749AbfLRNk6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Dec 2019 08:40:58 -0500
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xBIDZFox004395;
+        Wed, 18 Dec 2019 05:40:42 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : references : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=pfpt0818;
+ bh=lz7wXeCaSuMx+4efNzilGpGg+dyyBxPqgYi+kf1r71I=;
+ b=Vc7kMCOVOjLw76SvTZHxJgPem/pVyLkn7Wfo6AJ+3LWVAqTPyE8mn8qK8yp3ua1cL54M
+ 4TzPxjZ84aZ92ARywLxB2ig5cDp8bzVJsI93tUMlY0izMDIr267U2g1UQyRd8wN40Ui/
+ x+R7A28GBPu/tmXN7Hl7xrMdPNVA7/8D7tz+AF2opk593ZB+Z/05ZH6wk6+tmB78atGI
+ wNESp4i4vz5Q3VC9nxrVYWViXIoPbnlESXYI3TRIXCb6KqKihWcFNbmYISysM/JUSNC0
+ t1YqjVRxjqtTWE5fMa1RLwD3gjUuRx+ZrW1MDUk230VnaOXCGaL9M1u8vXMpWvIw+rU/ Vg== 
+Received: from sc-exch04.marvell.com ([199.233.58.184])
+        by mx0a-0016f401.pphosted.com with ESMTP id 2wxneaxpm7-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Wed, 18 Dec 2019 05:40:42 -0800
+Received: from SC-EXCH03.marvell.com (10.93.176.83) by SC-EXCH04.marvell.com
+ (10.93.176.84) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 18 Dec
+ 2019 05:40:41 -0800
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (104.47.58.109)
+ by SC-EXCH03.marvell.com (10.93.176.83) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2 via Frontend Transport; Wed, 18 Dec 2019 05:40:41 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Vv52L9+JeAeJhShmXgJkDvqWI5La+ocw4rGiUb4axgAoDA4sc6YPMxpuMAzRrTyfCGsI82zmo/UaMlos2oTrOpRFeWhqQfSjw5EvjzIiMm5pxSmeHpmpHAflkULqVzGfC+YSVBUQbTGbKyARm2ZpAnS4NKJB75IaKki70oFOYQgS03S3Ec1clPEAQZaN7x/HN8tXo78iX6TMdpcvhpWUGrViK7eFxA/SbxGjVkzOf2pqJVyUD+m06qotsRQPLDamNIILDS2xzbraMY007WGEMmN1XnKD0sAMT7wg4PmavQXg5Zkt3KoFy3Oo/RqNfFgvy/wvNtwwMp6nsGa8r2uYPw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=lz7wXeCaSuMx+4efNzilGpGg+dyyBxPqgYi+kf1r71I=;
+ b=DDyM/8GS9mU/w5gnumwo5YacVj4lRp4vIjoXi9/phI4L7u24qoVguZdYWsgsDF7Nk/8LVIrF10brpMUVcQilNuGeYCcAoVqvOQJoKbBhYS5miRWNPZMU+vjgKIGfh3C9PQJMf5cMcmqNTJsijVX3OMNOWJkWvM9KeIDVr6wLON3qwnvhGasFFcQiBR4pu/6ez/TUvq9FPJeNPFau3WnIK+dEn2qCQ0qIOK/siJZgRZMkLbDYXV4m7KMmyuFuAlZd1K6LB++oC7/ZFLpA+RDmE9nu9PZ9sAHJSAz9efALZEu7C86KAun7tbQ8KoUCXttQ+7gUYNyiTUMsdOzrgvMCIQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=marvell.com; dmarc=pass action=none header.from=marvell.com;
+ dkim=pass header.d=marvell.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=marvell.onmicrosoft.com; s=selector1-marvell-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=lz7wXeCaSuMx+4efNzilGpGg+dyyBxPqgYi+kf1r71I=;
+ b=jLIN4egSnHtqpPbPjDapwfO04YrtMHeGB+B02NBQDtThZED7vwX250RQD0up4/yGqHq7iHViLhIgQmlO+TKbNGODAqxdN9RmS2b8GBCKmprTO2+pdlt0mJRAkUubzCRZ7ULi1hrcWPqkNljiZNynpFlkordBRAEI3/sO9KfWb34=
+Received: from BYAPR18MB2630.namprd18.prod.outlook.com (20.179.92.161) by
+ BYAPR18MB2565.namprd18.prod.outlook.com (20.179.92.217) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2559.14; Wed, 18 Dec 2019 13:40:39 +0000
+Received: from BYAPR18MB2630.namprd18.prod.outlook.com
+ ([fe80::d5c3:4c58:1bf3:46fc]) by BYAPR18MB2630.namprd18.prod.outlook.com
+ ([fe80::d5c3:4c58:1bf3:46fc%5]) with mapi id 15.20.2559.012; Wed, 18 Dec 2019
+ 13:40:39 +0000
+From:   Igor Russkikh <irusskikh@marvell.com>
+To:     Antoine Tenart <antoine.tenart@bootlin.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "sd@queasysnail.net" <sd@queasysnail.net>,
+        "andrew@lunn.ch" <andrew@lunn.ch>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "hkallweit1@gmail.com" <hkallweit1@gmail.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "thomas.petazzoni@bootlin.com" <thomas.petazzoni@bootlin.com>,
+        "alexandre.belloni@bootlin.com" <alexandre.belloni@bootlin.com>,
+        "allan.nielsen@microchip.com" <allan.nielsen@microchip.com>,
+        "camelia.groza@nxp.com" <camelia.groza@nxp.com>,
+        "Simon.Edelhaus@aquantia.com" <Simon.Edelhaus@aquantia.com>,
+        Dmitry Bogdanov <dbogdanov@marvell.com>,
+        "jakub.kicinski@netronome.com" <jakub.kicinski@netronome.com>,
+        Igor Russkikh <Igor.Russkikh@aquantia.com>
+Subject: Re: [EXT] [PATCH net-next v3 05/15] net: macsec: hardware offloading
+ infrastructure
+Thread-Topic: [EXT] [PATCH net-next v3 05/15] net: macsec: hardware offloading
+ infrastructure
+Thread-Index: AQG0FHNA1O9KaxSfL8ZHV6wV77yymQFvulN/AgkMaZM=
+Date:   Wed, 18 Dec 2019 13:40:39 +0000
+Message-ID: <BYAPR18MB2630684FD194F179E718E198B7530@BYAPR18MB2630.namprd18.prod.outlook.com>
+References: <20191213154844.635389-1-antoine.tenart@bootlin.com>
+ <20191213154844.635389-6-antoine.tenart@bootlin.com>
+In-Reply-To: <20191213154844.635389-6-antoine.tenart@bootlin.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [95.79.108.179]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 2d506415-43ba-4a1a-e934-08d783bfdebd
+x-ms-traffictypediagnostic: BYAPR18MB2565:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <BYAPR18MB2565ED83AEC6C7331E068170B7530@BYAPR18MB2565.namprd18.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8273;
+x-forefront-prvs: 0255DF69B9
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(366004)(136003)(396003)(376002)(346002)(39860400002)(199004)(189003)(33656002)(110136005)(52536014)(81166006)(8676002)(81156014)(4326008)(9686003)(7696005)(71200400001)(54906003)(66476007)(4744005)(478600001)(316002)(76116006)(66556008)(66446008)(64756008)(5660300002)(66946007)(26005)(86362001)(2906002)(7416002)(186003)(55016002)(8936002)(6506007);DIR:OUT;SFP:1101;SCL:1;SRVR:BYAPR18MB2565;H:BYAPR18MB2630.namprd18.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: marvell.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: bjIoAMQJaHkeKfQzukcPP3S2wAMiRig55Y5xpK/hR+UheFgZRrfIT18CgFk5kB3bPR9Xa2LfhUlpDVopaURa+j0pnJkulzykVLxo/cMa/u+47jS20WAL52bKisnP9OKLBVF1/to9ntwP7ToF7LTjGEvowFF9zL0Nl55gpVkPTLy5ZdLqYnHFEDr4BsF0x+Nwuabb/E4szurgblXZEk/i3XNm2NrlkeIzxc7/ohl01V9eysXTmU0TmYSMm1e65COrxfySFn+e3u63Mc+TMQqgZmTmO7bE7mv049lVeIZTVxL4R+7vMJQwbsMoJiPgMQ0OAaki05rwTMxbI71iZKpqW6WJapFlZ+/XFeoXaiIxptvZuwxwc6AfNUTYy0QFMNmtU4n0t6TW5Hy7ZxPXPqSMWKOSSReIKbcoqov5ZD/6kHYltl/pxR1ByE63/XN124oS
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2d506415-43ba-4a1a-e934-08d783bfdebd
+X-MS-Exchange-CrossTenant-originalarrivaltime: 18 Dec 2019 13:40:39.4215
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 70e1fb47-1155-421d-87fc-2e58f638b6e0
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: C0U66tnp+jDX+/pBdngc5kDUtZ8oR0KQ+2b5U3RXyWNLqhpKeugdujE0eoLNB1tNoCWbYybyK9cHwCeBX1AGcA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR18MB2565
+X-OriginatorOrg: marvell.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
+ definitions=2019-12-18_03:2019-12-17,2019-12-18 signatures=0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch extends UDP GRO to support fraglist GRO/GSO
-by using the previously introduced infrastructure.
-If the feature is enabled, all UDP packets are going to
-fraglist GRO (local input and forward).
-
-Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
----
- include/net/udp.h      |  2 +-
- net/ipv4/udp_offload.c | 99 ++++++++++++++++++++++++++++++++----------
- net/ipv6/udp_offload.c | 19 +++++++-
- 3 files changed, 94 insertions(+), 26 deletions(-)
-
-diff --git a/include/net/udp.h b/include/net/udp.h
-index bad74f780831..44e0e52b585c 100644
---- a/include/net/udp.h
-+++ b/include/net/udp.h
-@@ -167,7 +167,7 @@ typedef struct sock *(*udp_lookup_t)(struct sk_buff *skb, __be16 sport,
- 				     __be16 dport);
- 
- struct sk_buff *udp_gro_receive(struct list_head *head, struct sk_buff *skb,
--				struct udphdr *uh, udp_lookup_t lookup);
-+				struct udphdr *uh, struct sock *sk);
- int udp_gro_complete(struct sk_buff *skb, int nhoff, udp_lookup_t lookup);
- 
- struct sk_buff *__udp_gso_segment(struct sk_buff *gso_skb,
-diff --git a/net/ipv4/udp_offload.c b/net/ipv4/udp_offload.c
-index a3908e55ed89..03c67d37a5e5 100644
---- a/net/ipv4/udp_offload.c
-+++ b/net/ipv4/udp_offload.c
-@@ -184,6 +184,20 @@ struct sk_buff *skb_udp_tunnel_segment(struct sk_buff *skb,
- }
- EXPORT_SYMBOL(skb_udp_tunnel_segment);
- 
-+static struct sk_buff *__udp_gso_segment_list(struct sk_buff *skb,
-+					      netdev_features_t features)
-+{
-+	unsigned int mss = skb_shinfo(skb)->gso_size;
-+
-+	skb = skb_segment_list(skb, features, skb_mac_header_len(skb));
-+	if (IS_ERR(skb))
-+		return skb;
-+
-+	udp_hdr(skb)->len = htons(sizeof(struct udphdr) + mss);
-+
-+	return skb;
-+}
-+
- struct sk_buff *__udp_gso_segment(struct sk_buff *gso_skb,
- 				  netdev_features_t features)
- {
-@@ -196,6 +210,9 @@ struct sk_buff *__udp_gso_segment(struct sk_buff *gso_skb,
- 	__sum16 check;
- 	__be16 newlen;
- 
-+	if (skb_shinfo(gso_skb)->gso_type & SKB_GSO_FRAGLIST)
-+		return __udp_gso_segment_list(gso_skb, features);
-+
- 	mss = skb_shinfo(gso_skb)->gso_size;
- 	if (gso_skb->len <= sizeof(*uh) + mss)
- 		return ERR_PTR(-EINVAL);
-@@ -354,6 +371,7 @@ static struct sk_buff *udp_gro_receive_segment(struct list_head *head,
- 	struct udphdr *uh2;
- 	struct sk_buff *p;
- 	unsigned int ulen;
-+	int ret = 0;
- 
- 	/* requires non zero csum, for symmetry with GSO */
- 	if (!uh->check) {
-@@ -369,7 +387,6 @@ static struct sk_buff *udp_gro_receive_segment(struct list_head *head,
- 	}
- 	/* pull encapsulating udp header */
- 	skb_gro_pull(skb, sizeof(struct udphdr));
--	skb_gro_postpull_rcsum(skb, uh, sizeof(struct udphdr));
- 
- 	list_for_each_entry(p, head, list) {
- 		if (!NAPI_GRO_CB(p)->same_flow)
-@@ -383,14 +400,40 @@ static struct sk_buff *udp_gro_receive_segment(struct list_head *head,
- 			continue;
- 		}
- 
-+		if (NAPI_GRO_CB(skb)->is_flist != NAPI_GRO_CB(p)->is_flist) {
-+			NAPI_GRO_CB(skb)->flush = 1;
-+			return p;
-+		}
-+
- 		/* Terminate the flow on len mismatch or if it grow "too much".
- 		 * Under small packet flood GRO count could elsewhere grow a lot
- 		 * leading to excessive truesize values.
- 		 * On len mismatch merge the first packet shorter than gso_size,
- 		 * otherwise complete the GRO packet.
- 		 */
--		if (ulen > ntohs(uh2->len) || skb_gro_receive(p, skb) ||
--		    ulen != ntohs(uh2->len) ||
-+		if (ulen > ntohs(uh2->len)) {
-+			pp = p;
-+		} else {
-+			if (NAPI_GRO_CB(skb)->is_flist) {
-+				if (!pskb_may_pull(skb, skb_gro_offset(skb))) {
-+					NAPI_GRO_CB(skb)->flush = 1;
-+					return NULL;
-+				}
-+				if ((skb->ip_summed != p->ip_summed) ||
-+				    (skb->csum_level != p->csum_level)) {
-+					NAPI_GRO_CB(skb)->flush = 1;
-+					return NULL;
-+				}
-+				ret = skb_gro_receive_list(p, skb);
-+			} else {
-+				skb_gro_postpull_rcsum(skb, uh,
-+						       sizeof(struct udphdr));
-+
-+				ret = skb_gro_receive(p, skb);
-+			}
-+		}
-+
-+		if (ret || ulen != ntohs(uh2->len) ||
- 		    NAPI_GRO_CB(p)->count >= UDP_GRO_CNT_MAX)
- 			pp = p;
- 
-@@ -401,36 +444,29 @@ static struct sk_buff *udp_gro_receive_segment(struct list_head *head,
- 	return NULL;
- }
- 
--INDIRECT_CALLABLE_DECLARE(struct sock *udp6_lib_lookup_skb(struct sk_buff *skb,
--						   __be16 sport, __be16 dport));
- struct sk_buff *udp_gro_receive(struct list_head *head, struct sk_buff *skb,
--				struct udphdr *uh, udp_lookup_t lookup)
-+				struct udphdr *uh, struct sock *sk)
- {
- 	struct sk_buff *pp = NULL;
- 	struct sk_buff *p;
- 	struct udphdr *uh2;
- 	unsigned int off = skb_gro_offset(skb);
- 	int flush = 1;
--	struct sock *sk;
- 
--	rcu_read_lock();
--	sk = INDIRECT_CALL_INET(lookup, udp6_lib_lookup_skb,
--				udp4_lib_lookup_skb, skb, uh->source, uh->dest);
--	if (!sk)
--		goto out_unlock;
-+	if (skb->dev->features & NETIF_F_GRO_FRAGLIST)
-+		NAPI_GRO_CB(skb)->is_flist = sk ? !udp_sk(sk)->gro_enabled: 1;
- 
--	if (udp_sk(sk)->gro_enabled) {
-+	if ((sk && udp_sk(sk)->gro_enabled) ||  NAPI_GRO_CB(skb)->is_flist) {
- 		pp = call_gro_receive(udp_gro_receive_segment, head, skb);
--		rcu_read_unlock();
- 		return pp;
- 	}
- 
--	if (NAPI_GRO_CB(skb)->encap_mark ||
-+	if (!sk || NAPI_GRO_CB(skb)->encap_mark ||
- 	    (skb->ip_summed != CHECKSUM_PARTIAL &&
- 	     NAPI_GRO_CB(skb)->csum_cnt == 0 &&
- 	     !NAPI_GRO_CB(skb)->csum_valid) ||
- 	    !udp_sk(sk)->gro_receive)
--		goto out_unlock;
-+		goto out;
- 
- 	/* mark that this skb passed once through the tunnel gro layer */
- 	NAPI_GRO_CB(skb)->encap_mark = 1;
-@@ -457,8 +493,7 @@ struct sk_buff *udp_gro_receive(struct list_head *head, struct sk_buff *skb,
- 	skb_gro_postpull_rcsum(skb, uh, sizeof(struct udphdr));
- 	pp = call_gro_receive_sk(udp_sk(sk)->gro_receive, sk, head, skb);
- 
--out_unlock:
--	rcu_read_unlock();
-+out:
- 	skb_gro_flush_final(skb, pp, flush);
- 	return pp;
- }
-@@ -468,8 +503,10 @@ INDIRECT_CALLABLE_SCOPE
- struct sk_buff *udp4_gro_receive(struct list_head *head, struct sk_buff *skb)
- {
- 	struct udphdr *uh = udp_gro_udphdr(skb);
-+	struct sk_buff *pp;
-+	struct sock *sk;
- 
--	if (unlikely(!uh) || !static_branch_unlikely(&udp_encap_needed_key))
-+	if (unlikely(!uh))
- 		goto flush;
- 
- 	/* Don't bother verifying checksum if we're going to flush anyway. */
-@@ -484,7 +521,11 @@ struct sk_buff *udp4_gro_receive(struct list_head *head, struct sk_buff *skb)
- 					     inet_gro_compute_pseudo);
- skip:
- 	NAPI_GRO_CB(skb)->is_ipv6 = 0;
--	return udp_gro_receive(head, skb, uh, udp4_lib_lookup_skb);
-+	rcu_read_lock();
-+	sk = static_branch_unlikely(&udp_encap_needed_key) ? udp4_lib_lookup_skb(skb, uh->source, uh->dest) : NULL;
-+	pp = udp_gro_receive(head, skb, uh, sk);
-+	rcu_read_unlock();
-+	return pp;
- 
- flush:
- 	NAPI_GRO_CB(skb)->flush = 1;
-@@ -517,9 +558,7 @@ int udp_gro_complete(struct sk_buff *skb, int nhoff,
- 	rcu_read_lock();
- 	sk = INDIRECT_CALL_INET(lookup, udp6_lib_lookup_skb,
- 				udp4_lib_lookup_skb, skb, uh->source, uh->dest);
--	if (sk && udp_sk(sk)->gro_enabled) {
--		err = udp_gro_complete_segment(skb);
--	} else if (sk && udp_sk(sk)->gro_complete) {
-+	if (sk && udp_sk(sk)->gro_complete) {
- 		skb_shinfo(skb)->gso_type = uh->check ? SKB_GSO_UDP_TUNNEL_CSUM
- 					: SKB_GSO_UDP_TUNNEL;
- 
-@@ -529,6 +568,8 @@ int udp_gro_complete(struct sk_buff *skb, int nhoff,
- 		skb->encapsulation = 1;
- 		err = udp_sk(sk)->gro_complete(sk, skb,
- 				nhoff + sizeof(struct udphdr));
-+	} else {
-+		err = udp_gro_complete_segment(skb);
- 	}
- 	rcu_read_unlock();
- 
-@@ -544,6 +585,18 @@ INDIRECT_CALLABLE_SCOPE int udp4_gro_complete(struct sk_buff *skb, int nhoff)
- 	const struct iphdr *iph = ip_hdr(skb);
- 	struct udphdr *uh = (struct udphdr *)(skb->data + nhoff);
- 
-+	if (NAPI_GRO_CB(skb)->is_flist) {
-+		uh->len = htons(skb->len - nhoff);
-+
-+		skb_shinfo(skb)->gso_type |= (SKB_GSO_FRAGLIST|SKB_GSO_UDP_L4);
-+		skb_shinfo(skb)->gso_segs = NAPI_GRO_CB(skb)->count;
-+
-+		skb->ip_summed = CHECKSUM_UNNECESSARY;
-+		skb->csum_level = ~0;
-+
-+		return 0;
-+	}
-+
- 	if (uh->check)
- 		uh->check = ~udp_v4_check(skb->len - nhoff, iph->saddr,
- 					  iph->daddr, 0);
-diff --git a/net/ipv6/udp_offload.c b/net/ipv6/udp_offload.c
-index 64b8f05d6735..8836f2b69ef3 100644
---- a/net/ipv6/udp_offload.c
-+++ b/net/ipv6/udp_offload.c
-@@ -115,8 +115,10 @@ INDIRECT_CALLABLE_SCOPE
- struct sk_buff *udp6_gro_receive(struct list_head *head, struct sk_buff *skb)
- {
- 	struct udphdr *uh = udp_gro_udphdr(skb);
-+	struct sk_buff *pp;
-+	struct sock *sk;
- 
--	if (unlikely(!uh) || !static_branch_unlikely(&udpv6_encap_needed_key))
-+	if (unlikely(!uh))
- 		goto flush;
- 
- 	/* Don't bother verifying checksum if we're going to flush anyway. */
-@@ -132,7 +134,11 @@ struct sk_buff *udp6_gro_receive(struct list_head *head, struct sk_buff *skb)
- 
- skip:
- 	NAPI_GRO_CB(skb)->is_ipv6 = 1;
--	return udp_gro_receive(head, skb, uh, udp6_lib_lookup_skb);
-+	rcu_read_lock();
-+	sk = static_branch_unlikely(&udpv6_encap_needed_key) ? udp6_lib_lookup_skb(skb, uh->source, uh->dest) : NULL;
-+	pp = udp_gro_receive(head, skb, uh, sk);
-+	rcu_read_unlock();
-+	return pp;
- 
- flush:
- 	NAPI_GRO_CB(skb)->flush = 1;
-@@ -144,6 +150,15 @@ INDIRECT_CALLABLE_SCOPE int udp6_gro_complete(struct sk_buff *skb, int nhoff)
- 	const struct ipv6hdr *ipv6h = ipv6_hdr(skb);
- 	struct udphdr *uh = (struct udphdr *)(skb->data + nhoff);
- 
-+	if (NAPI_GRO_CB(skb)->is_flist) {
-+		uh->len = htons(skb->len - nhoff);
-+
-+		skb_shinfo(skb)->gso_type |= (SKB_GSO_FRAGLIST|SKB_GSO_UDP_L4);
-+		skb_shinfo(skb)->gso_segs = NAPI_GRO_CB(skb)->count;
-+
-+		return 0;
-+	}
-+
- 	if (uh->check)
- 		uh->check = ~udp_v6_check(skb->len - nhoff, &ipv6h->saddr,
- 					  &ipv6h->daddr, 0);
--- 
-2.17.1
-
+SGkgQW50b2luZSwNCg0KPiBAQCAtMjkyMiw3ICszMzAwLDI3IEBAIHN0YXRpYyBpbnQgbWFjc2Vj
+X2NoYW5nZWxpbmsoc3RydWN0IG5ldF9kZXZpY2UNCj4gKmRldiwgc3RydWN0IG5sYXR0ciAqdGJb
+XSwNCj4gIAkgICAgZGF0YVtJRkxBX01BQ1NFQ19QT1JUXSkNCj4gIAkJcmV0dXJuIC1FSU5WQUw7
+DQo+ICANCj4gLQlyZXR1cm4gbWFjc2VjX2NoYW5nZWxpbmtfY29tbW9uKGRldiwgZGF0YSk7DQo+
+ICsJLyogSWYgaC93IG9mZmxvYWRpbmcgaXMgYXZhaWxhYmxlLCBwcm9wYWdhdGUgdG8gdGhlIGRl
+dmljZSAqLw0KPiArCWlmIChtYWNzZWNfaXNfb2ZmbG9hZGVkKG1hY3NlYykpIHsNCj4gKwkJY29u
+c3Qgc3RydWN0IG1hY3NlY19vcHMgKm9wczsNCj4gKwkJc3RydWN0IG1hY3NlY19jb250ZXh0IGN0
+eDsNCj4gKwkJaW50IHJldDsNCj4gKw0KPiArCQlvcHMgPSBtYWNzZWNfZ2V0X29wcyhuZXRkZXZf
+cHJpdihkZXYpLCAmY3R4KTsNCj4gKwkJaWYgKCFvcHMpDQo+ICsJCQlyZXR1cm4gLUVPUE5PVFNV
+UFA7DQo+ICsNCj4gKwkJY3R4LnNlY3kgPSAmbWFjc2VjLT5zZWN5Ow0KPiArCQlyZXQgPSBtYWNz
+ZWNfb2ZmbG9hZChvcHMtPm1kb191cGRfc2VjeSwgJmN0eCk7DQo+ICsJCWlmIChyZXQpDQo+ICsJ
+CQlyZXR1cm4gcmV0Ow0KPiArCX0NCj4gKw0KPiArCXJldCA9IG1hY3NlY19jaGFuZ2VsaW5rX2Nv
+bW1vbihkZXYsIGRhdGEpOw0KDQpJbiBvdXIgbWFjIGRyaXZlciB2ZXJpZmljYXRpb24gd2Ugc2Vl
+IHRoYXQgcHJvcGFnYXRpbmcgdXBkX3NlY3kgdG8gZGV2aWNlIGJlZm9yZSBkb2luZw0KbWFjc2Vj
+X2NoYW5nZWxpbmtfY29tbW9uIGlzIGFjdHVhbGx5IHVzZWxlc3MsIHNpbmNlIGluIHRoaXMgY2Fz
+ZSB1bmRlcmx5aW5nIGRldmljZQ0KY2FuJ3QgZmV0Y2ggYW55IG9mIHRoZSB1cGRhdGVkIHBhcmFt
+ZXRlcnMgZnJvbSB0aGUgbWFjc2VjIHN0cnVjdHVyZXMuDQoNCklzbid0IGl0IGxvZ2ljYWwgZmly
+c3QgZG9pbmcgYG1hY3NlY19jaGFuZ2VsaW5rX2NvbW1vbmAgYW5kIHRoZW4gcHJvcGFnYXRlIHRo
+ZSBldmVudD8NCg0KLS0gDQoNClJlZ2FyZHMsDQogIElnb3INCg==
