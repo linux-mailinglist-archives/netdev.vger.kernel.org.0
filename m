@@ -2,95 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6BA6E123EA1
-	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 05:40:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BD019123EE2
+	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 06:22:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726709AbfLREkr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Dec 2019 23:40:47 -0500
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:41599 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726387AbfLREkq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 23:40:46 -0500
-Received: by mail-pf1-f196.google.com with SMTP id w62so489442pfw.8;
-        Tue, 17 Dec 2019 20:40:46 -0800 (PST)
+        id S1725985AbfLRFWz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Dec 2019 00:22:55 -0500
+Received: from mail-qt1-f196.google.com ([209.85.160.196]:38866 "EHLO
+        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725797AbfLRFWz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Dec 2019 00:22:55 -0500
+Received: by mail-qt1-f196.google.com with SMTP id n15so1000611qtp.5;
+        Tue, 17 Dec 2019 21:22:54 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=GrKfPHWlzDEJvr5AEBo/fYlRUfRELTxwLkCTPqqmL5k=;
-        b=XDX7OygWR3o/AaSRFcMaG6KBpndn7POmPbXa0ahnXYjdD1xRPgLVAHFsUVHeV4E3Pn
-         rcWCicvO3NFdRtdGEzchqV7808Mpl148Jls3F2Xte9cjATYJeh60kZ9YsiDTf9hjp8+p
-         ATm3f+mEXaYhz7gqfYxL7ybnsncdHz7WICz5Yjm2XAKPRuEK2Owqge+1/7Q6Y/ijXhbz
-         JNCNv6+z3nSI1J5sYDn4cL7fUpP05fVkQPeM40fxXy+15VByQORdRoluMEqlffXYKnG6
-         lYckpOKKMl7YZueSMsVqK1lSoLIGRL1LU6smOWAn+f+rCanWu20zfE6Kg931oxO0TEkU
-         8Dvw==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Ng6Q3HDN7Tu8qlJXEbrJWkk5dh68heNprHCqJ1DjbDI=;
+        b=Ot9G/o1lFjVjUw8iKWA303GvM/d1ePWP+zOWPgmT/nz00+Ei98TVqBBsxDT1hLobDH
+         ZdCQ071VuQH0Rzwjf0lhu3fDxESwvnRQnjIajmzO/u8Yf402DAs9J6XaMmVIsBhF+Bbr
+         QvSa55I5BG4bRZtDpYtHDmBTQvKDla8CZoK3L1dwS2f9tsig7szW363z+fi8zSJGb8ys
+         yUVhMOan6CZAOR+NHEP/jgurg7viX5nesTuE0JX/qLAhLHICbEVCLUrFWsH7EjhQcowb
+         +9NYmlruQjZ1QEzbC5xODDvGPdm07vYksS/vyj+k/QN5ozFYLJ7SIB1YZ893DQc4oPia
+         d8WA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=GrKfPHWlzDEJvr5AEBo/fYlRUfRELTxwLkCTPqqmL5k=;
-        b=dGzM8DW+xk6N3a1nxsUl2D7MMDB+goNMQ4VXCT8Oqmw3R728V6amsmkmzf67JFgXT0
-         PGW1zkZX29ToP+CvkoqxPwsHVSEo9g3Af7Ttz6CxWXJYFoi2ahvqzKGMcnO9JjBYUnSB
-         Nax5Lo2gaOMtzMZjrF0W3OgNXG4zpv4TEzoY0MCms0VoeqK2VH7D59QypKw81Mk19CWl
-         ckx7P311QAsj2k3AEEELgEESEWUp4/XS0MlzqPUQVvnRb8ANa7lZdNYzQ1TPQFU//1tG
-         12/eCH4AFKUhoMal2+hJKk9FOEeNRMc6nDoTY4BN9uPCqIRxjmM+sijxPI4+XAiL+6+3
-         57hw==
-X-Gm-Message-State: APjAAAWaP/vMBPl8GzS+KLzxlSLqTFR9lMk/F5chV7z8DcUgY1ySvBXW
-        UqI0dgimepTL4KPfMCJLT/U=
-X-Google-Smtp-Source: APXvYqyyzxV7dEGa56Cg6K8AAx/tV3UCABXTF2we4KGAO9kAqp1sqWnzMe0COs+F87LFNJAdPquDyQ==
-X-Received: by 2002:a63:1402:: with SMTP id u2mr701402pgl.224.1576644045967;
-        Tue, 17 Dec 2019 20:40:45 -0800 (PST)
-Received: from localhost ([2401:fa00:8f:203:250d:e71d:5a0a:9afe])
-        by smtp.gmail.com with ESMTPSA id k60sm633881pjh.22.2019.12.17.20.40.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 Dec 2019 20:40:45 -0800 (PST)
-Date:   Wed, 18 Dec 2019 13:40:43 +0900
-From:   Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
-To:     Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
-Cc:     Andrey Zhizhikin <andrey.z@gmail.com>, ast@kernel.org,
-        daniel@iogearbox.net, kafai@fb.com, songliubraving@fb.com,
-        yhs@fb.com, andriin@fb.com, pmladek@suse.com,
-        wangkefeng.wang@huawei.com, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Andrey Zhizhikin <andrey.zhizhikin@leica-geosystems.com>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>,
-        Jiri Olsa <jolsa@kernel.org>
-Subject: Re: [PATCH] tools lib api fs: fix gcc9 compilation error
-Message-ID: <20191218044043.GB88635@google.com>
-References: <20191211080109.18765-1-andrey.zhizhikin@leica-geosystems.com>
- <20191218031019.GB419@tigerII.localdomain>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Ng6Q3HDN7Tu8qlJXEbrJWkk5dh68heNprHCqJ1DjbDI=;
+        b=ht8oBNnhBQtcwN9XbXBOsGfprzydrP8tGzaZ3Kl/BWG90uBn4U2RtM5kBaWtMhJd1E
+         7+AE8zSTz52Jm1IR+pPpRWCkwMIZecFEYVdtcUfuwdRmwGEqGOPfggTdUnu7ReHhMMS2
+         M9froT0yf8VpVP+qGa0nCK/JYQa3zPve7TsNarRioehHpyMR83ELdiFkMYR9EUnSTRBg
+         PY7XhP71GbqEZ1OMeAj8ZTYr0B7wfSHfgUPYQYlcB0S6dU96TSTWYd0E4Hx6kMYyV3Qt
+         26KE5fwwXJMj9cKSH5apJafzXpnTcfq+MzII+kVXMFaCf00LiOVHFrYAVLjJ0lvYs+ds
+         +h8Q==
+X-Gm-Message-State: APjAAAW72zhPgBp4JyxOpi6BhRz+bvBHx6YqB2nd54zyDc3wbUtlRVcy
+        lTzuN6JU2nyS4IBIKeZgQJr8EtxKQI4qamwafCw=
+X-Google-Smtp-Source: APXvYqy/hFG3npesbFucaROfPlfZ4qfcglKqFQ6KePKJrR1OWjWk9G0aOUJ2rLpc8Ovg9lk1IMt7IOj4rBXnCmJV0P8=
+X-Received: by 2002:ac8:7b29:: with SMTP id l9mr648045qtu.141.1576646572911;
+ Tue, 17 Dec 2019 21:22:52 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191218031019.GB419@tigerII.localdomain>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20191217230038.1562848-1-andriin@fb.com> <20191217230038.1562848-4-andriin@fb.com>
+ <20191218030525.lhxuieceglidv3jf@ast-mbp.dhcp.thefacebook.com>
+In-Reply-To: <20191218030525.lhxuieceglidv3jf@ast-mbp.dhcp.thefacebook.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Tue, 17 Dec 2019 21:22:41 -0800
+Message-ID: <CAEf4BzayD4Luv3=LivvJo3XK3+PNhjsd5T0B8p8JJ=T1dQspmg@mail.gmail.com>
+Subject: Re: [PATCH v2 bpf-next 3/3] bpftool: add gen subcommand manpage
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On (19/12/18 12:10), Sergey Senozhatsky wrote:
-> On (19/12/11 08:01), Andrey Zhizhikin wrote:
-> [..]
-> > @@ -210,6 +210,7 @@ static bool fs__env_override(struct fs *fs)
-> >  	size_t name_len = strlen(fs->name);
-> >  	/* name + "_PATH" + '\0' */
-> >  	char upper_name[name_len + 5 + 1];
-> > +
-> >  	memcpy(upper_name, fs->name, name_len);
-> >  	mem_toupper(upper_name, name_len);
-> >  	strcpy(&upper_name[name_len], "_PATH");
-> > @@ -219,7 +220,8 @@ static bool fs__env_override(struct fs *fs)
-> >  		return false;
-> >  
-> >  	fs->found = true;
-> > -	strncpy(fs->path, override_path, sizeof(fs->path));
-> > +	strncpy(fs->path, override_path, sizeof(fs->path) - 1);
-> > +	fs->path[sizeof(fs->path) - 1] = '\0';
-> 
-> I think the trend these days is to prefer stracpy/strscpy over
-> strcpy/strlcpy/strncpy.
+On Tue, Dec 17, 2019 at 7:05 PM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
+>
+> On Tue, Dec 17, 2019 at 03:00:38PM -0800, Andrii Nakryiko wrote:
+> > Add bpftool-gen.rst describing skeleton on the high level. Also include
+> > a small, but complete, example BPF app (BPF side, userspace side, generated
+> > skeleton) in example section to demonstrate skeleton API and its usage.
+> >
+> > Acked-by: Yonghong Song <yhs@fb.com>
+> > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+> > ---
+> >  .../bpf/bpftool/Documentation/bpftool-gen.rst | 302 ++++++++++++++++++
+>
+> Please test it more thoroughly.
+>
+>   GEN      bpftool-gen.8
+> bpftool-gen.rst:244: (ERROR/3) Unexpected indentation.
+> bpftool-gen.rst:285: (ERROR/3) Unexpected indentation.
 
-Scratch that. This is user-space, I should pay more attention.
+yep, my bad, didn't realize there is Makefile I'm supposed to run...
 
-	-ss
+Fixed those two errors, reStructuredText is strict about code blocks.
+
+>
+> Patch 1 probably needs foo(void) instead of just foo().
+> I think some compilers warn on it.
+>
+
+Added. Also simplified xxx__create_skeleton() a bit.
