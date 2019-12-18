@@ -2,146 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3800C1253EB
-	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 21:54:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D8DF1253FB
+	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 21:59:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726959AbfLRUyq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Dec 2019 15:54:46 -0500
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:44319 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726454AbfLRUyp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Dec 2019 15:54:45 -0500
-Received: by mail-wr1-f68.google.com with SMTP id q10so3746216wrm.11
-        for <netdev@vger.kernel.org>; Wed, 18 Dec 2019 12:54:44 -0800 (PST)
+        id S1726591AbfLRU7g (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Dec 2019 15:59:36 -0500
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:46470 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726463AbfLRU7g (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Dec 2019 15:59:36 -0500
+Received: by mail-pg1-f194.google.com with SMTP id z124so1885463pgb.13
+        for <netdev@vger.kernel.org>; Wed, 18 Dec 2019 12:59:36 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=Qiq9bAzZk96ASAHv2wH2pKZjOhYUuw0z9J/8CeLBiMo=;
-        b=LddmMH8QuG6aQ1e3uZon69TroG3SAoMMXCt30FKzLkSv1k3lgmxRKKNEvSLlu8V2lp
-         IvUX//X/lLeW41rBpi++RS3TFfbFp6rl61cLjF04SkymMGf2eCSEbfWCSOgCRxbw0QiB
-         KvYryKH6t1i5gVT9m1qaIYgDWm2mXxuR/8Us0pLp0iqVHm1rRA6NzUc5ojWVkeXmFnHJ
-         pY/ewEvMBrE2NeG4lcphkL6F5TtVkEIzYSZfKOINeong+7tV6w2aSMYKVguUmCwO3sJJ
-         gtegz3sjzy/SBPjtB1T2VJQeUFk4iaHv+DFvIeu9nzERTSmfMAmiAGgiqNvEXppclwId
-         0TjA==
+        d=tehnerd-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id;
+        bh=lb/ixr1m+45xtCqPRmjvhdcCjstQd1ipG5JtVMM9d1g=;
+        b=Bef2IopS49vtVLjD2Rvhhsf8K94aU1nyGWPFRSYjV2pu85vGgQ+n5dpdrdJu8St5gh
+         +a6pReNCrl4gHXNP0A4FO436uKAS3SF4Aahp9exK6UQ29PXKke67ECU/IGbNo9auTqqq
+         AR612B0P/I3Hr+S6nJ3/L97XJT6qR+BWeMOf1FIPIkebwSD76gpIdCdh+TXXSaKvNR4m
+         PJ3+U5Huk4EC9krutY56oX7/oCd96mJcbBEW8JyPLOeMWUarel22JCXxwGtW0LW5GVOd
+         cBbToVedlgOU0oGHT0CIIlOVVkB/2HIfCTOYcE3flWv99XcXvBbjpXnBq9KllcSGh7QK
+         P4bg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=Qiq9bAzZk96ASAHv2wH2pKZjOhYUuw0z9J/8CeLBiMo=;
-        b=p+L4h+enAEJiRjIwARimAia9Y5HalnUVPeVuB2mgKFe4XK744q672FRmk6rwZfc8e2
-         4SnyMW5Q+o0vgMM+ClHv2enFHahmHnICgvt1T7hFhqMa/9s2grHP7fBoVdRID/CTjS/v
-         ecHkvdm9cfGR5lxoHZnofz/MokQ92+caiCb89zJDiEmwNGZWxXHoBNgqxW8riSDNaG/a
-         Je6HN3KFKBXGyjfthNxhr0pXVBP34FdyBchBQJ0bWyLTe4xMUR5rl/Nosx8G59i/Tbp2
-         yU8AtiwJvuXXl5X65nTEnVqV9+Hz5iZ3zIyHM0aK7HaGMaVOeZ6dF8Z6ogARNLffrSlH
-         3dnw==
-X-Gm-Message-State: APjAAAUgfTldjhXlwlnPfl8TxKVcCmBXFaE9v1EImpYdM35MdkGruq0/
-        xCAzH5k6tOVVof83Gf6xIjRbxMMu
-X-Google-Smtp-Source: APXvYqzaBzWZeu6kF94A4cIeU1s3wo7xSmk7eYhGpwj72itfildBUfURC9sI9G65vg02zmog6cT9Ig==
-X-Received: by 2002:a5d:4e0a:: with SMTP id p10mr4929248wrt.229.1576702483309;
-        Wed, 18 Dec 2019 12:54:43 -0800 (PST)
-Received: from ?IPv6:2003:ea:8f4a:6300:b9f6:1ac9:d482:7fd2? (p200300EA8F4A6300B9F61AC9D4827FD2.dip0.t-ipconnect.de. [2003:ea:8f4a:6300:b9f6:1ac9:d482:7fd2])
-        by smtp.googlemail.com with ESMTPSA id x18sm3905415wrr.75.2019.12.18.12.54.42
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 18 Dec 2019 12:54:42 -0800 (PST)
-Subject: Re: [PATCH net] net: phy: make phy_error() report which PHY has
- failed
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-References: <E1ihCLZ-0001Vo-Nw@rmk-PC.armlinux.org.uk>
- <c96f14cd-7139-ebc7-9562-2f92d8b044fc@gmail.com>
- <20191217233436.GS25745@shell.armlinux.org.uk>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <61f23d43-1c4d-a11e-a798-c938a896ddb3@gmail.com>
-Date:   Wed, 18 Dec 2019 21:54:32 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.1
-MIME-Version: 1.0
-In-Reply-To: <20191217233436.GS25745@shell.armlinux.org.uk>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=lb/ixr1m+45xtCqPRmjvhdcCjstQd1ipG5JtVMM9d1g=;
+        b=Nbjpr06RrNtbKgpP4qhrFN8wgWy/WgG28A/dITPLG3u7vzOUze8nktb2XGQPWYVK/B
+         +b7Dub+mvjKnXMRbZ8Rz0iEWZsD2Wm7mnfG03DMSk+gsh1lrGLcYD2ehZvPLkKxz+0Ae
+         HIdNA6kthCJcV6EnKKr5jQoUXG0ObwISVxWmKv9J2g4uQowACNW84WxXYTt0mpIEJenW
+         spF/jCDz/aCGtEW61PnzIu1vPgoofNfJKcq7/9zdqr4NNI6WkWjHhbSXvtu93wdwBNUu
+         ovjr0wvov37ic0EiJHuavEoFxOc2Z50EsXvVj9VJ2wZp8ih3MY4eGpYiAEjD282uwmMY
+         TYBA==
+X-Gm-Message-State: APjAAAXGCRUc9hzYKue3z5QllRbEN0oyFtFRvcdJpw6LD3lqnB5d+ZBX
+        /A9cOT4YFO5vW2XUtWnNGcrAFg==
+X-Google-Smtp-Source: APXvYqy1JzVXsbGhoagZUggzXCoHg7B0PRTSeNRmpgjwjUt5nB5HaTq1jHF/EArXG4OBds/RQjzWCA==
+X-Received: by 2002:aa7:968d:: with SMTP id f13mr5124215pfk.67.1576702775762;
+        Wed, 18 Dec 2019 12:59:35 -0800 (PST)
+Received: from localhost.localdomain ([205.189.0.106])
+        by smtp.gmail.com with ESMTPSA id i127sm4754874pfc.55.2019.12.18.12.59.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 18 Dec 2019 12:59:35 -0800 (PST)
+From:   "Nikita V. Shirokov" <tehnerd@tehnerd.com>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Stanislav Fomichev <sdf@google.com>
+Cc:     netdev@vger.kernel.org, "Nikita V. Shirokov" <tehnerd@tehnerd.com>
+Subject: [PATCH bpf-next] bpf: allow to change skb mark in test_run
+Date:   Wed, 18 Dec 2019 12:57:47 -0800
+Message-Id: <20191218205747.107438-1-tehnerd@tehnerd.com>
+X-Mailer: git-send-email 2.15.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 18.12.2019 00:34, Russell King - ARM Linux admin wrote:
-> On Tue, Dec 17, 2019 at 10:41:34PM +0100, Heiner Kallweit wrote:
->> On 17.12.2019 13:53, Russell King wrote:
->>> phy_error() is called from phy_interrupt() or phy_state_machine(), and
->>> uses WARN_ON() to print a backtrace. The backtrace is not useful when
->>> reporting a PHY error.
->>>
->>> However, a system may contain multiple ethernet PHYs, and phy_error()
->>> gives no clue which one caused the problem.
->>>
->>> Replace WARN_ON() with a call to phydev_err() so that we can see which
->>> PHY had an error, and also inform the user that we are halting the PHY.
->>>
->>> Fixes: fa7b28c11bbf ("net: phy: print stack trace in phy_error")
->>> Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
->>> ---
->>> There is another related problem in this area. If an error is detected
->>> while the PHY is running, phy_error() moves to PHY_HALTED state. If we
->>> try to take the network device down, then:
->>>
->>> void phy_stop(struct phy_device *phydev)
->>> {
->>>         if (!phy_is_started(phydev)) {
->>>                 WARN(1, "called from state %s\n",
->>>                      phy_state_to_str(phydev->state));
->>>                 return;
->>>         }
->>>
->>> triggers, and we never do any of the phy_stop() cleanup. I'm not sure
->>> what the best way to solve this is - introducing a PHY_ERROR state may
->>> be a solution, but I think we want some phy_is_started() sites to
->>> return true for it and others to return false.
->>>
->>> Heiner - you introduced the above warning, could you look at improving
->>> this case so we don't print a warning and taint the kernel when taking
->>> a network device down after phy_error() please?
->>>
->> I think we need both types of information:
->> - the affected PHY device
->> - the stack trace to see where the issue was triggered
-> 
-> Can you please explain why the stack trace is useful.  For the paths
-> that are reachable, all it tells you is whether it was reached via
-> the interrupt or the workqueue.
-> 
-> If it's via the interrupt, the rest of the backtrace beyond that is
-> irrelevant.  If it's the workqueue, the backtrace doesn't go back
-> very far, and doesn't tell you what operation triggered it.
-> 
-> If it's important to see where or why phy_error() was called, there
-> are much better ways of doing that, notably passing a string into
-> phy_error() to describe the actual error itself.  That would convey
-> way more useful information than the backtrace does.
-> 
-> I have been faced with these backtraces, and they have not been at
-> all useful for diagnosing the problem.
-> 
-"The problem" comes in two flavors:
-1. The problem that caused the PHY error
-2. The problem caused by the PHY error (if we decide to not
-   always switch to HALTED state)
+allow to pass skb's mark field into bpf_prog_test_run ctx
+for BPF_PROG_TYPE_SCHED_CLS prog type. that would allow
+to test bpf programs which are doing decision based on this
+field
 
-We can't do much for case 1, maybe we could add an errno argument
-to phy_error(). To facilitate analyzing case 2 we'd need to change
-code pieces like the following.
+Signed-off-by: Nikita V. Shirokov <tehnerd@tehnerd.com>
+---
+ net/bpf/test_run.c                               | 10 +++++++++-
+ tools/testing/selftests/bpf/prog_tests/skb_ctx.c |  5 +++++
+ tools/testing/selftests/bpf/progs/test_skb_ctx.c |  1 +
+ 3 files changed, 15 insertions(+), 1 deletion(-)
 
-case a:
-err = f1();
-case b:
-err = f2();
+diff --git a/net/bpf/test_run.c b/net/bpf/test_run.c
+index 93a9c87787e0..d555c0d8657d 100644
+--- a/net/bpf/test_run.c
++++ b/net/bpf/test_run.c
+@@ -251,7 +251,13 @@ static int convert___skb_to_skb(struct sk_buff *skb, struct __sk_buff *__skb)
+ 		return 0;
+ 
+ 	/* make sure the fields we don't use are zeroed */
+-	if (!range_is_zero(__skb, 0, offsetof(struct __sk_buff, priority)))
++	if (!range_is_zero(__skb, 0, offsetof(struct __sk_buff, mark)))
++		return -EINVAL;
++
++	/* mark is allowed */
++
++	if (!range_is_zero(__skb, offsetofend(struct __sk_buff, mark),
++			   offsetof(struct __sk_buff, priority)))
+ 		return -EINVAL;
+ 
+ 	/* priority is allowed */
+@@ -274,6 +280,7 @@ static int convert___skb_to_skb(struct sk_buff *skb, struct __sk_buff *__skb)
+ 			   sizeof(struct __sk_buff)))
+ 		return -EINVAL;
+ 
++	skb->mark = __skb->mark;
+ 	skb->priority = __skb->priority;
+ 	skb->tstamp = __skb->tstamp;
+ 	memcpy(&cb->data, __skb->cb, QDISC_CB_PRIV_LEN);
+@@ -301,6 +308,7 @@ static void convert_skb_to___skb(struct sk_buff *skb, struct __sk_buff *__skb)
+ 	if (!__skb)
+ 		return;
+ 
++	__skb->mark = skb->mark;
+ 	__skb->priority = skb->priority;
+ 	__skb->tstamp = skb->tstamp;
+ 	memcpy(__skb->cb, &cb->data, QDISC_CB_PRIV_LEN);
+diff --git a/tools/testing/selftests/bpf/prog_tests/skb_ctx.c b/tools/testing/selftests/bpf/prog_tests/skb_ctx.c
+index edf5e8c7d400..c6d6b685a946 100644
+--- a/tools/testing/selftests/bpf/prog_tests/skb_ctx.c
++++ b/tools/testing/selftests/bpf/prog_tests/skb_ctx.c
+@@ -13,6 +13,7 @@ void test_skb_ctx(void)
+ 		.tstamp = 7,
+ 		.wire_len = 100,
+ 		.gso_segs = 8,
++		.mark = 9,
+ 	};
+ 	struct bpf_prog_test_run_attr tattr = {
+ 		.data_in = &pkt_v4,
+@@ -93,4 +94,8 @@ void test_skb_ctx(void)
+ 		   "ctx_out_tstamp",
+ 		   "skb->tstamp == %lld, expected %d\n",
+ 		   skb.tstamp, 8);
++	CHECK_ATTR(skb.mark != 10,
++		   "ctx_out_mark",
++		   "skb->mark == %u, expected %d\n",
++		   skb.mark, 10);
+ }
+diff --git a/tools/testing/selftests/bpf/progs/test_skb_ctx.c b/tools/testing/selftests/bpf/progs/test_skb_ctx.c
+index 534fbf9a7344..e18da87fe84f 100644
+--- a/tools/testing/selftests/bpf/progs/test_skb_ctx.c
++++ b/tools/testing/selftests/bpf/progs/test_skb_ctx.c
+@@ -17,6 +17,7 @@ int process(struct __sk_buff *skb)
+ 	}
+ 	skb->priority++;
+ 	skb->tstamp++;
++	skb->mark++;
+ 
+ 	if (skb->wire_len != 100)
+ 		return 1;
+-- 
+2.15.1
 
-if (err)
-	phy_error()
-
-For my understanding: What caused the PHY error in your case(s)?
-Which info would have been useful for analyzing the error?
