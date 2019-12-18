@@ -2,108 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D3BA4124BB5
-	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 16:30:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4CF6D124BC4
+	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 16:32:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727135AbfLRPaJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Dec 2019 10:30:09 -0500
-Received: from mga05.intel.com ([192.55.52.43]:46393 "EHLO mga05.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726913AbfLRPaJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 18 Dec 2019 10:30:09 -0500
-X-Amp-Result: UNKNOWN
-X-Amp-Original-Verdict: FILE UNKNOWN
-X-Amp-File-Uploaded: False
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 18 Dec 2019 07:30:07 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.69,330,1571727600"; 
-   d="scan'208";a="222031283"
-Received: from lahna.fi.intel.com (HELO lahna) ([10.237.72.163])
-  by fmsmga001.fm.intel.com with SMTP; 18 Dec 2019 07:30:03 -0800
-Received: by lahna (sSMTP sendmail emulation); Wed, 18 Dec 2019 17:30:02 +0200
-Date:   Wed, 18 Dec 2019 17:30:02 +0200
-From:   Mika Westerberg <mika.westerberg@linux.intel.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-usb@vger.kernel.org,
-        Andreas Noever <andreas.noever@gmail.com>,
-        Michael Jamet <michael.jamet@intel.com>,
-        Yehezkel Bernat <YehezkelShB@gmail.com>,
-        Rajmohan Mani <rajmohan.mani@intel.com>,
-        Nicholas Johnson <nicholas.johnson-opensource@outlook.com.au>,
-        Lukas Wunner <lukas@wunner.de>,
-        Alan Stern <stern@rowland.harvard.edu>,
-        Mario.Limonciello@dell.com,
-        Anthony Wong <anthony.wong@canonical.com>,
-        Oliver Neukum <oneukum@suse.com>,
-        Christian Kellner <ckellner@redhat.com>,
-        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 0/9] thunderbolt: Add support for USB4
-Message-ID: <20191218153002.GY2913417@lahna.fi.intel.com>
-References: <20191217123345.31850-1-mika.westerberg@linux.intel.com>
- <20191218144316.GA321016@kroah.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191218144316.GA321016@kroah.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
-User-Agent: Mutt/1.12.1 (2019-06-15)
+        id S1727334AbfLRPci (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Dec 2019 10:32:38 -0500
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:55918 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727313AbfLRPch (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Dec 2019 10:32:37 -0500
+Received: from pps.filterd (m0098410.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xBIFSWpj117553
+        for <netdev@vger.kernel.org>; Wed, 18 Dec 2019 10:32:36 -0500
+Received: from e06smtp02.uk.ibm.com (e06smtp02.uk.ibm.com [195.75.94.98])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 2wykb70ja3-1
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Wed, 18 Dec 2019 10:32:36 -0500
+Received: from localhost
+        by e06smtp02.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
+        for <netdev@vger.kernel.org> from <jwi@linux.ibm.com>;
+        Wed, 18 Dec 2019 15:32:33 -0000
+Received: from b06avi18878370.portsmouth.uk.ibm.com (9.149.26.194)
+        by e06smtp02.uk.ibm.com (192.168.101.132) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
+        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
+        Wed, 18 Dec 2019 15:32:31 -0000
+Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
+        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id xBIFWUjG40239506
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 18 Dec 2019 15:32:30 GMT
+Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 2EF4F5204F;
+        Wed, 18 Dec 2019 15:32:30 +0000 (GMT)
+Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
+        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id D812152050;
+        Wed, 18 Dec 2019 15:32:29 +0000 (GMT)
+From:   Julian Wiedmann <jwi@linux.ibm.com>
+To:     David Miller <davem@davemloft.net>
+Cc:     <netdev@vger.kernel.org>, <linux-s390@vger.kernel.org>,
+        Heiko Carstens <heiko.carstens@de.ibm.com>,
+        Stefan Raspl <raspl@linux.ibm.com>,
+        Ursula Braun <ubraun@linux.ibm.com>,
+        Julian Wiedmann <jwi@linux.ibm.com>
+Subject: [PATCH net 0/3] s390/qeth: fixes 2019-12-18
+Date:   Wed, 18 Dec 2019 16:32:25 +0100
+X-Mailer: git-send-email 2.17.1
+X-TM-AS-GCONF: 00
+x-cbid: 19121815-0008-0000-0000-000003423BB4
+X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
+x-cbparentid: 19121815-0009-0000-0000-00004A625157
+Message-Id: <20191218153228.29908-1-jwi@linux.ibm.com>
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
+ definitions=2019-12-18_04:2019-12-17,2019-12-18 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 suspectscore=0
+ clxscore=1015 lowpriorityscore=0 bulkscore=0 impostorscore=0
+ mlxlogscore=536 adultscore=0 malwarescore=0 phishscore=0 spamscore=0
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-1910280000 definitions=main-1912180127
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 18, 2019 at 03:43:16PM +0100, Greg Kroah-Hartman wrote:
-> On Tue, Dec 17, 2019 at 03:33:36PM +0300, Mika Westerberg wrote:
-> > Hi all,
-> > 
-> > USB4 is the public specification of Thunderbolt 3 protocol and can be
-> > downloaded here:
-> > 
-> >   https://www.usb.org/sites/default/files/USB4%20Specification_1.zip
-> > 
-> > USB4 is about tunneling different protocols over a single cable (in the
-> > same way as Thunderbolt). The current USB4 spec supports PCIe, Display Port
-> > and USB 3.x, and also software based protocols such as networking between
-> > domains (hosts).
-> > 
-> > So far PCs have been using firmware based Connection Manager (FW CM, ICM)
-> > and Apple systems have been using software based one (SW CM, ECM). A
-> > Connection Manager is the entity that handles creation of different tunnel
-> > types through the USB4 (and Thunderbolt) fabric. With USB4 the plan is to
-> > have software based Connection Manager everywhere but some early systems
-> > will come with firmware based connection manager.
-> > 
-> > Current Linux Thunderbolt driver supports both "modes" and can detect which
-> > one to use dynamically.
-> > 
-> > This series extends the Linux Thunderbolt driver to support USB4 compliant
-> > hosts and devices (this applies to both firmware and software based
-> > connection managers). USB4 Features enabled by this series include:
-> > 
-> >   - PCIe tunneling
-> >   - Display Port tunneling
-> >   - USB 3.x tunneling
-> >   - P2P networking (implemented in drivers/net/thunderbolt.c)
-> >   - Host and device NVM firmware upgrade
-> > 
-> > Power management support is still work in progress. It will be submitted
-> > later on once properly tested.
-> > 
-> > The previous versions of the series can be seen here:
-> > 
-> >   v1: https://lore.kernel.org/linux-usb/20191023112154.64235-1-mika.westerberg@linux.intel.com/
-> >   RFC: https://lore.kernel.org/lkml/20191001113830.13028-1-mika.westerberg@linux.intel.com/
-> > 
-> > Changes from v1:
-> > 
-> >   * Rebased on top of v5.5-rc2.
-> >   * Add a new patch to populate PG field in hotplug ack packet.
-> >   * Rename the networking driver Kconfig symbol to CONFIG_USB4_NET to
-> >     follow the driver itself (CONFIG_USB4).
-> 
-> At a quick glance, this looks nice and sane, good job.  I've taken all
-> of these into my tree, let's see if 0-day has any problems with it :)
+Hi Dave,
 
-Thanks :)
+please apply the following patch series to your net tree.
+This brings two fixes for initialization / teardown issues, and one
+ENOTSUPP cleanup.
+
+Thanks,
+Julian
+
+
+Julian Wiedmann (3):
+  s390/qeth: handle error due to unsupported transport mode
+  s390/qeth: fix promiscuous mode after reset
+  s390/qeth: don't return -ENOTSUPP to userspace
+
+ drivers/s390/net/qeth_core_main.c | 14 +++++++-------
+ drivers/s390/net/qeth_core_mpc.h  |  5 +++++
+ drivers/s390/net/qeth_core_sys.c  |  2 +-
+ drivers/s390/net/qeth_l2_main.c   |  1 +
+ drivers/s390/net/qeth_l2_sys.c    |  3 ++-
+ drivers/s390/net/qeth_l3_main.c   |  1 +
+ 6 files changed, 17 insertions(+), 9 deletions(-)
+
+-- 
+2.17.1
+
