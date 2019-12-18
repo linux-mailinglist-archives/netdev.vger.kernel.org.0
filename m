@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0716F1244A4
-	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 11:33:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1906B1244A6
+	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 11:33:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726817AbfLRKdW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1726764AbfLRKdW (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Wed, 18 Dec 2019 05:33:22 -0500
-Received: from smtprelay-out1.synopsys.com ([149.117.73.133]:46422 "EHLO
+Received: from sv2-smtprelay2.synopsys.com ([149.117.73.133]:46362 "EHLO
         smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726551AbfLRKdW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Dec 2019 05:33:22 -0500
+        by vger.kernel.org with ESMTP id S1725828AbfLRKdV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Dec 2019 05:33:21 -0500
 Received: from mailhost.synopsys.com (mdc-mailhost2.synopsys.com [10.225.0.210])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id E7474405C2;
+        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id EF7C9405C6;
         Wed, 18 Dec 2019 10:33:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
-        t=1576665201; bh=Fw/wxllDxuOcPqlon9LuMR4ARnCLZnT8SI3l2BMKDYk=;
+        t=1576665201; bh=wj6sCtmNcy6nxZMnDQRmD3lTcMPEpv2f8Ae23zQUnfM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:In-Reply-To:
          References:From;
-        b=ZtbEWVVeMXkCkkyp9rBWVFP/98649syGf8d00FYFKv69EXDuZIyBgWNVCtPrhsZw1
-         lQ9WvWq6OSGc3ienSS6ZWMmYKIKB7wwk1bp0AiMkj2Mc99H9v51PO4mS/jb/zKrh8M
-         0F7SPp6IUaHT/GnXpWaM1sePlHT6O+0R5WywJaaXBWhZFgyTOY14nhhClD8v8kozWZ
-         4KB5CXJFhd/gU8MHhWHMrquxGtLvMUGra0qFar93n/P4jt29pwzzcCHvxCnXYhfE2G
-         DUtOdWLmaLLWBuh5fPo6r+IwAxKMNnMlZ65/9LabdF8Eu7zmK6lzlBYTW69QzQxU+E
-         dQEfM6hq4g+gQ==
+        b=Al6xwfkkTpgN6/CIyhzEPpgQjYPsmXRxyahxOokpKKehlePwbBQkQvqTYLOwkvsVI
+         tLDow+F5u09U73gJqSMVOBlhZrRk5z/WkpFJTQ7TOCREUXwOAWxsUm65VtDn5D2Fn/
+         b/0adpvs/op5hUURgh4Bd5iEdxvVHiFsd1uJVs9VBPI1dIuLeDF0qo/FEdSPSc2FrZ
+         RuwIkGm6Sd9e8cOYqLdVq+ne1xbqEauoGCaNeX3PHuhgvn0QB/NXxGbZ9Glmx/IEtE
+         hFgfey8rwVvgwz3O6eDPmaDQI1m9jn1iFqLqVQ2nVqTErWZU8uf83nvj/BDoDyrGtQ
+         FllDaFBzkceVQ==
 Received: from de02dwia024.internal.synopsys.com (de02dwia024.internal.synopsys.com [10.225.19.81])
-        by mailhost.synopsys.com (Postfix) with ESMTP id B31B1A00AC;
+        by mailhost.synopsys.com (Postfix) with ESMTP id BE22CA00B1;
         Wed, 18 Dec 2019 10:33:19 +0000 (UTC)
 From:   Jose Abreu <Jose.Abreu@synopsys.com>
 To:     netdev@vger.kernel.org
@@ -42,9 +42,9 @@ Cc:     Joao Pinto <Joao.Pinto@synopsys.com>,
         Maxime Coquelin <mcoquelin.stm32@gmail.com>,
         linux-stm32@st-md-mailman.stormreply.com,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 6/7] net: stmmac: xgmac3+: Add support for Frame Preemption
-Date:   Wed, 18 Dec 2019 11:33:10 +0100
-Message-Id: <25588fca643d1f837b35eda49653b974ef9e5ae4.1576664870.git.Jose.Abreu@synopsys.com>
+Subject: [PATCH net-next 7/7] net: stmmac: mmc: Add Frame Preemption counters on GMAC5+ cores
+Date:   Wed, 18 Dec 2019 11:33:11 +0100
+Message-Id: <fd0742e12751ee0d2b54aba9464b4ff5387628aa.1576664870.git.Jose.Abreu@synopsys.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <cover.1576664870.git.Jose.Abreu@synopsys.com>
 References: <cover.1576664870.git.Jose.Abreu@synopsys.com>
@@ -55,7 +55,8 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adds the HW specific support for Frame Preemption on XGMAC3+ cores.
+This can be useful for debug. Add these counters on GMAC5+ cores just
+like we did for XGMAC.
 
 Signed-off-by: Jose Abreu <Jose.Abreu@synopsys.com>
 
@@ -70,96 +71,43 @@ Cc: linux-stm32@st-md-mailman.stormreply.com
 Cc: linux-arm-kernel@lists.infradead.org
 Cc: linux-kernel@vger.kernel.org
 ---
- drivers/net/ethernet/stmicro/stmmac/dwxgmac2.h     |  6 ++++++
- .../net/ethernet/stmicro/stmmac/dwxgmac2_core.c    | 24 ++++++++++++++++++++++
- drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c |  1 +
- 3 files changed, 31 insertions(+)
+ drivers/net/ethernet/stmicro/stmmac/mmc_core.c | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwxgmac2.h b/drivers/net/ethernet/stmicro/stmmac/dwxgmac2.h
-index 77a48dece556..d8f2c5b24278 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwxgmac2.h
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwxgmac2.h
-@@ -73,6 +73,9 @@
- #define XGMAC_RXQ_CTRL0			0x000000a0
- #define XGMAC_RXQEN(x)			GENMASK((x) * 2 + 1, (x) * 2)
- #define XGMAC_RXQEN_SHIFT(x)		((x) * 2)
-+#define XGMAC_RXQ_CTRL1			0x000000a4
-+#define XGMAC_RQ			GENMASK(7, 4)
-+#define XGMAC_RQ_SHIFT			4
- #define XGMAC_RXQ_CTRL2			0x000000a8
- #define XGMAC_RXQ_CTRL3			0x000000ac
- #define XGMAC_PSRQ(x)			GENMASK((x) * 8 + 7, (x) * 8)
-@@ -136,6 +139,7 @@
- #define XGMAC_HWFEAT_TXQCNT		GENMASK(9, 6)
- #define XGMAC_HWFEAT_RXQCNT		GENMASK(3, 0)
- #define XGMAC_HW_FEATURE3		0x00000128
-+#define XGMAC_HWFEAT_FPESEL		BIT(26)
- #define XGMAC_HWFEAT_ESTWID		GENMASK(24, 23)
- #define XGMAC_HWFEAT_ESTDEP		GENMASK(22, 20)
- #define XGMAC_HWFEAT_ESTSEL		BIT(19)
-@@ -151,6 +155,8 @@
- #define XGMAC_MDIO_ADDR			0x00000200
- #define XGMAC_MDIO_DATA			0x00000204
- #define XGMAC_MDIO_C22P			0x00000220
-+#define XGMAC_FPE_CTRL_STS		0x00000280
-+#define XGMAC_EFPE			BIT(0)
- #define XGMAC_ADDRx_HIGH(x)		(0x00000300 + (x) * 0x8)
- #define XGMAC_ADDR_MAX			32
- #define XGMAC_AE			BIT(31)
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_core.c b/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_core.c
-index 2f6e960947d9..307105e8dea0 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_core.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_core.c
-@@ -1410,6 +1410,29 @@ static int dwxgmac3_est_configure(void __iomem *ioaddr, struct stmmac_est *cfg,
- 	return 0;
+diff --git a/drivers/net/ethernet/stmicro/stmmac/mmc_core.c b/drivers/net/ethernet/stmicro/stmmac/mmc_core.c
+index 252cf48c5816..a57b0fa815ab 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/mmc_core.c
++++ b/drivers/net/ethernet/stmicro/stmmac/mmc_core.c
+@@ -119,6 +119,13 @@
+ #define MMC_RX_ICMP_GD_OCTETS		0x180
+ #define MMC_RX_ICMP_ERR_OCTETS		0x184
+ 
++#define MMC_TX_FPE_FRAG			0x1a8
++#define MMC_TX_HOLD_REQ			0x1ac
++#define MMC_RX_PKT_ASSEMBLY_ERR		0x1c8
++#define MMC_RX_PKT_SMD_ERR		0x1cc
++#define MMC_RX_PKT_ASSEMBLY_OK		0x1d0
++#define MMC_RX_FPE_FRAG			0x1d4
++
+ /* XGMAC MMC Registers */
+ #define MMC_XGMAC_TX_OCTET_GB		0x14
+ #define MMC_XGMAC_TX_PKT_GB		0x1c
+@@ -315,6 +322,15 @@ static void dwmac_mmc_read(void __iomem *mmcaddr, struct stmmac_counters *mmc)
+ 	mmc->mmc_rx_tcp_err_octets += readl(mmcaddr + MMC_RX_TCP_ERR_OCTETS);
+ 	mmc->mmc_rx_icmp_gd_octets += readl(mmcaddr + MMC_RX_ICMP_GD_OCTETS);
+ 	mmc->mmc_rx_icmp_err_octets += readl(mmcaddr + MMC_RX_ICMP_ERR_OCTETS);
++
++	mmc->mmc_tx_fpe_fragment_cntr += readl(mmcaddr + MMC_TX_FPE_FRAG);
++	mmc->mmc_tx_hold_req_cntr += readl(mmcaddr + MMC_TX_HOLD_REQ);
++	mmc->mmc_rx_packet_assembly_err_cntr +=
++		readl(mmcaddr + MMC_RX_PKT_ASSEMBLY_ERR);
++	mmc->mmc_rx_packet_smd_err_cntr += readl(mmcaddr + MMC_RX_PKT_SMD_ERR);
++	mmc->mmc_rx_packet_assembly_ok_cntr +=
++		readl(mmcaddr + MMC_RX_PKT_ASSEMBLY_OK);
++	mmc->mmc_rx_fpe_fragment_cntr += readl(mmcaddr + MMC_RX_FPE_FRAG);
  }
  
-+static void dwxgmac3_fpe_configure(void __iomem *ioaddr, u32 num_txq,
-+				   u32 num_rxq, bool enable)
-+{
-+	u32 value;
-+
-+	if (!enable) {
-+		value = readl(ioaddr + XGMAC_FPE_CTRL_STS);
-+
-+		value &= ~XGMAC_EFPE;
-+
-+		writel(value, ioaddr + XGMAC_FPE_CTRL_STS);
-+	}
-+
-+	value = readl(ioaddr + XGMAC_RXQ_CTRL1);
-+	value &= ~XGMAC_RQ;
-+	value |= (num_rxq - 1) << XGMAC_RQ_SHIFT;
-+	writel(value, ioaddr + XGMAC_RXQ_CTRL1);
-+
-+	value = readl(ioaddr + XGMAC_FPE_CTRL_STS);
-+	value |= XGMAC_EFPE;
-+	writel(value, ioaddr + XGMAC_FPE_CTRL_STS);
-+}
-+
- const struct stmmac_ops dwxgmac210_ops = {
- 	.core_init = dwxgmac2_core_init,
- 	.set_mac = dwxgmac2_set_mac,
-@@ -1454,6 +1477,7 @@ const struct stmmac_ops dwxgmac210_ops = {
- 	.config_l4_filter = dwxgmac2_config_l4_filter,
- 	.set_arp_offload = dwxgmac2_set_arp_offload,
- 	.est_configure = dwxgmac3_est_configure,
-+	.fpe_configure = dwxgmac3_fpe_configure,
- };
- 
- int dwxgmac2_setup(struct stmmac_priv *priv)
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c b/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c
-index 3b8887243803..5b62417ad9a4 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c
-@@ -413,6 +413,7 @@ static void dwxgmac2_get_hw_feature(void __iomem *ioaddr,
- 
- 	/* MAC HW feature 3 */
- 	hw_cap = readl(ioaddr + XGMAC_HW_FEATURE3);
-+	dma_cap->fpesel = (hw_cap & XGMAC_HWFEAT_FPESEL) >> 26;
- 	dma_cap->estwid = (hw_cap & XGMAC_HWFEAT_ESTWID) >> 23;
- 	dma_cap->estdep = (hw_cap & XGMAC_HWFEAT_ESTDEP) >> 20;
- 	dma_cap->estsel = (hw_cap & XGMAC_HWFEAT_ESTSEL) >> 19;
+ const struct stmmac_mmc_ops dwmac_mmc_ops = {
 -- 
 2.7.4
 
