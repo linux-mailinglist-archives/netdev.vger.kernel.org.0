@@ -2,87 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C847012551A
-	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 22:52:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 753A612564D
+	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 23:09:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726539AbfLRVwm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Dec 2019 16:52:42 -0500
-Received: from us-smtp-1.mimecast.com ([207.211.31.81]:38455 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726387AbfLRVwl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Dec 2019 16:52:41 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1576705960;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=yRUJBmZBX5I2Quvhv35YiDu9LJ31CJC6zvSs/gKguzA=;
-        b=Zc8I3QliTVKGxwP6LZbkgHCNgD7P7ET683mI0v8IMQRV2/+8bAiYAByZ5260vBzJEz+mhc
-        dgWDPM8CfBbP45GUaB2QWcP5FX1gV2giXsd+p0EgCBlikumxew8HExLx/suo1Io0WF3pm4
-        Ak1OZfgSQGS3+n7YQVnV6kmH3RCl3EA=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-211-wtj0NxmANJSLODmbSH_odg-1; Wed, 18 Dec 2019 16:52:29 -0500
-X-MC-Unique: wtj0NxmANJSLODmbSH_odg-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 88FEA593A1;
-        Wed, 18 Dec 2019 21:52:27 +0000 (UTC)
-Received: from ovpn-116-48.ams2.redhat.com (ovpn-116-48.ams2.redhat.com [10.36.116.48])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id BD1015D9E2;
-        Wed, 18 Dec 2019 21:52:25 +0000 (UTC)
-Message-ID: <518dc6a3c77f51a9d56b66ac80ffb883d80ceedf.camel@redhat.com>
-Subject: Re: [PATCH net-next v3 07/11] tcp: Prevent coalesce/collapse when
- skb has MPTCP extensions
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     subashab@codeaurora.org,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>
-Cc:     David Miller <davem@davemloft.net>, eric.dumazet@gmail.com,
-        netdev@vger.kernel.org, mptcp@lists.01.org,
-        netdev-owner@vger.kernel.org
-Date:   Wed, 18 Dec 2019 22:52:24 +0100
-In-Reply-To: <6411d0366a6ec6a30f9dbf4117ea6d1f@codeaurora.org>
-References: <20191217203807.12579-1-mathew.j.martineau@linux.intel.com>
-         <20191217203807.12579-8-mathew.j.martineau@linux.intel.com>
-         <5fc0d4bd-5172-298d-6bbb-00f75c7c0dc9@gmail.com>
-         <20191218.124510.1971632024371398726.davem@davemloft.net>
-         <alpine.OSX.2.21.1912181251550.32925@mjmartin-mac01.local>
-         <6411d0366a6ec6a30f9dbf4117ea6d1f@codeaurora.org>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.32.5 (3.32.5-1.fc30) 
+        id S1726520AbfLRWJS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Dec 2019 17:09:18 -0500
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:52190 "EHLO
+        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726463AbfLRWJS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Dec 2019 17:09:18 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=vI5UevTqcA5mwLf5SCTpIKzJ5O8gTKfGiTuphzXWWYw=; b=PFNB4n4lTOJw3Fubuk5HE78oK
+        uwzvWzJ34f254//mdvLmvuO7+svTGVzFHUwyQtoxTLRbJCHCDs3se2HXS5b+VShT4nRKunvXnO7Ag
+        NbC2MDXKxGkhZJt8t6nt5CHcDOh+cf2JaVtSnTvT3osrsih1al8MHDj3SltOfSeHNwp7iHkhTQXJ2
+        LWOfa44ZqcxueMicRu5QbJlg5AexUr5FfPjJQjSfDZ+B8vupt0hDDmMKWiSX7E1jdQinV9oyMIA9c
+        uSml4ZwePakgYThiLGB4HMNcevwNIgV/HgN3kkM4uJY1rxJd+8HQYHTX5EOTnRhYzn9IyoJlAHy6M
+        J/9VJW++A==;
+Received: from shell.armlinux.org.uk ([2001:4d48:ad52:3201:5054:ff:fe00:4ec]:43142)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1ihhVH-0006iW-3b; Wed, 18 Dec 2019 22:09:11 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1ihhVE-0004ib-8T; Wed, 18 Dec 2019 22:09:08 +0000
+Date:   Wed, 18 Dec 2019 22:09:08 +0000
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Subject: Re: [PATCH net] net: phy: make phy_error() report which PHY has
+ failed
+Message-ID: <20191218220908.GX25745@shell.armlinux.org.uk>
+References: <E1ihCLZ-0001Vo-Nw@rmk-PC.armlinux.org.uk>
+ <c96f14cd-7139-ebc7-9562-2f92d8b044fc@gmail.com>
+ <20191217233436.GS25745@shell.armlinux.org.uk>
+ <61f23d43-1c4d-a11e-a798-c938a896ddb3@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <61f23d43-1c4d-a11e-a798-c938a896ddb3@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2019-12-18 at 14:36 -0700, subashab@codeaurora.org wrote:
-> > Ok, understood. Not every packet has this MPTCP extension data so
-> > coalescing was not always turned off, but given the importance of
-> > avoiding
+On Wed, Dec 18, 2019 at 09:54:32PM +0100, Heiner Kallweit wrote:
+> On 18.12.2019 00:34, Russell King - ARM Linux admin wrote:
+> > On Tue, Dec 17, 2019 at 10:41:34PM +0100, Heiner Kallweit wrote:
+> >> On 17.12.2019 13:53, Russell King wrote:
+> >>> phy_error() is called from phy_interrupt() or phy_state_machine(), and
+> >>> uses WARN_ON() to print a backtrace. The backtrace is not useful when
+> >>> reporting a PHY error.
+> >>>
+> >>> However, a system may contain multiple ethernet PHYs, and phy_error()
+> >>> gives no clue which one caused the problem.
+> >>>
+> >>> Replace WARN_ON() with a call to phydev_err() so that we can see which
+> >>> PHY had an error, and also inform the user that we are halting the PHY.
+> >>>
+> >>> Fixes: fa7b28c11bbf ("net: phy: print stack trace in phy_error")
+> >>> Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
+> >>> ---
+> >>> There is another related problem in this area. If an error is detected
+> >>> while the PHY is running, phy_error() moves to PHY_HALTED state. If we
+> >>> try to take the network device down, then:
+> >>>
+> >>> void phy_stop(struct phy_device *phydev)
+> >>> {
+> >>>         if (!phy_is_started(phydev)) {
+> >>>                 WARN(1, "called from state %s\n",
+> >>>                      phy_state_to_str(phydev->state));
+> >>>                 return;
+> >>>         }
+> >>>
+> >>> triggers, and we never do any of the phy_stop() cleanup. I'm not sure
+> >>> what the best way to solve this is - introducing a PHY_ERROR state may
+> >>> be a solution, but I think we want some phy_is_started() sites to
+> >>> return true for it and others to return false.
+> >>>
+> >>> Heiner - you introduced the above warning, could you look at improving
+> >>> this case so we don't print a warning and taint the kernel when taking
+> >>> a network device down after phy_error() please?
+> >>>
+> >> I think we need both types of information:
+> >> - the affected PHY device
+> >> - the stack trace to see where the issue was triggered
 > > 
-> > this memory waste I'll confirm GRO behavior and work on maintaining
-> > coalesce/collapse with identical MPTCP extension data.
+> > Can you please explain why the stack trace is useful.  For the paths
+> > that are reachable, all it tells you is whether it was reached via
+> > the interrupt or the workqueue.
 > > 
+> > If it's via the interrupt, the rest of the backtrace beyond that is
+> > irrelevant.  If it's the workqueue, the backtrace doesn't go back
+> > very far, and doesn't tell you what operation triggered it.
+> > 
+> > If it's important to see where or why phy_error() was called, there
+> > are much better ways of doing that, notably passing a string into
+> > phy_error() to describe the actual error itself.  That would convey
+> > way more useful information than the backtrace does.
+> > 
+> > I have been faced with these backtraces, and they have not been at
+> > all useful for diagnosing the problem.
+> > 
+> "The problem" comes in two flavors:
+> 1. The problem that caused the PHY error
+> 2. The problem caused by the PHY error (if we decide to not
+>    always switch to HALTED state)
 > 
-> Hi Mat
+> We can't do much for case 1, maybe we could add an errno argument
+> to phy_error(). To facilitate analyzing case 2 we'd need to change
+> code pieces like the following.
 > 
-> Are identical MPTCP extensions a common case?
+> case a:
+> err = f1();
+> case b:
+> err = f2();
+> 
+> if (err)
+> 	phy_error()
+> 
+> For my understanding: What caused the PHY error in your case(s)?
+> Which info would have been useful for analyzing the error?
 
-Yes, they are.
+Errors reading/writing from the PHY.
 
-> AFAIK the data sequence number and the subflow sequence number change
-> per packet even in a single stream scenario.
+The problem with a backtrace from phy_error() is it doesn't tell you
+where the error actually occurred, it only tells you where the error
+is reported - which is one of two different paths at the moment.
+That can be achieved with much more elegance and simplicity by
+passing a string into phy_error() to describe the call site if that's
+even relevant.
 
-What actually change on per packet basis is the TCP sequence number.
-The DSS mapping can spawn on multiple packets, and will have constand
-(base) sequence number and length.
+I would say, however, that knowing where the error occurred would be
+far better information.
 
-Cheers,
-
-Paolo
-
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
+According to speedtest.net: 11.9Mbps down 500kbps up
