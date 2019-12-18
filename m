@@ -2,31 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B5C2C125258
-	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 20:55:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 30E3D125259
+	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 20:55:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727512AbfLRTzM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Dec 2019 14:55:12 -0500
+        id S1727531AbfLRTzN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Dec 2019 14:55:13 -0500
 Received: from mga05.intel.com ([192.55.52.43]:2222 "EHLO mga05.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726831AbfLRTzM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 18 Dec 2019 14:55:12 -0500
+        id S1727490AbfLRTzN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 18 Dec 2019 14:55:13 -0500
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
   by fmsmga105.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 18 Dec 2019 11:55:12 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.69,330,1571727600"; 
-   d="scan'208";a="213019936"
+   d="scan'208";a="213019937"
 Received: from mjmartin-nuc01.amr.corp.intel.com ([10.241.98.42])
   by fmsmga008.fm.intel.com with ESMTP; 18 Dec 2019 11:55:12 -0800
 From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
 To:     netdev@vger.kernel.org, mptcp@lists.01.org
-Cc:     Mat Martineau <mathew.j.martineau@linux.intel.com>
-Subject: [PATCH net-next v2 00/15] Multipath TCP part 2: Single subflow
-Date:   Wed, 18 Dec 2019 11:54:55 -0800
-Message-Id: <20191218195510.7782-1-mathew.j.martineau@linux.intel.com>
+Cc:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        Florian Westphal <fw@strlen.de>,
+        Peter Krystad <peter.krystad@linux.intel.com>,
+        Matthieu Baerts <matthieu.baerts@tessares.net>,
+        Paolo Abeni <pabeni@redhat.com>
+Subject: [PATCH net-next v2 01/15] mptcp: Add MPTCP socket stubs
+Date:   Wed, 18 Dec 2019 11:54:56 -0800
+Message-Id: <20191218195510.7782-2-mathew.j.martineau@linux.intel.com>
 X-Mailer: git-send-email 2.24.1
+In-Reply-To: <20191218195510.7782-1-mathew.j.martineau@linux.intel.com>
+References: <20191218195510.7782-1-mathew.j.martineau@linux.intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -34,92 +40,362 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-v1 -> v2: Rebased on latest "Multipath TCP: Prerequisites" v3 series
+Implements the infrastructure for MPTCP sockets.
 
+MPTCP sockets open one in-kernel TCP socket per subflow. These subflow
+sockets are only managed by the MPTCP socket that owns them and are not
+visible from userspace. This commit allows a userspace program to open
+an MPTCP socket with:
 
-This set adds MPTCP connection establishment, writing & reading MPTCP
-options on data packets, a sysctl to allow MPTCP per-namespace, and self
-tests. This is sufficient to establish and maintain a connection with a
-MPTCP peer, but will not yet allow or initiate establishment of
-additional MPTCP subflows.
+  sock = socket(AF_INET, SOCK_STREAM, IPPROTO_MPTCP);
 
-Clone/fetch:
-https://github.com/multipath-tcp/mptcp_net-next.git (tag: netdev-v2-part2)
+The resulting socket is simply a wrapper around a single regular TCP
+socket, without any of the MPTCP protocol implemented over the wire.
 
-Browse:
-https://github.com/multipath-tcp/mptcp_net-next/tree/netdev-v2-part2
-
-Thank you for your review. You can find us at mptcp@lists.01.org and
-https://is.gd/mptcp_upstream
-
-
-Florian Westphal (2):
-  mptcp: add subflow write space signalling and mptcp_poll
-  mptcp: add basic kselftest for mptcp
-
-Mat Martineau (3):
-  mptcp: Add MPTCP socket stubs
-  mptcp: Write MPTCP DSS headers to outgoing data packets
-  mptcp: Implement MPTCP receive path
-
-Matthieu Baerts (1):
-  mptcp: new sysctl to control the activation per NS
-
-Paolo Abeni (2):
-  mptcp: recvmsg() can drain data from multiple subflows
-  mptcp: allow collapsing consecutive sendpages on the same substream
-
-Peter Krystad (7):
-  mptcp: Handle MPTCP TCP options
-  mptcp: Associate MPTCP context with TCP socket
-  mptcp: Handle MP_CAPABLE options for outgoing connections
-  mptcp: Create SUBFLOW socket for incoming connections
-  mptcp: Add key generation and token tree
-  mptcp: Add shutdown() socket operation
-  mptcp: Add setsockopt()/getsockopt() socket operations
-
- MAINTAINERS                                   |    2 +
- include/linux/tcp.h                           |   34 +
- include/net/mptcp.h                           |   98 ++
- net/Kconfig                                   |    1 +
- net/Makefile                                  |    1 +
- net/ipv4/tcp.c                                |    2 +
- net/ipv4/tcp_input.c                          |   19 +-
- net/ipv4/tcp_output.c                         |   57 +
- net/ipv6/tcp_ipv6.c                           |    7 +
- net/mptcp/Kconfig                             |   16 +
- net/mptcp/Makefile                            |    4 +
- net/mptcp/crypto.c                            |  122 ++
- net/mptcp/ctrl.c                              |  130 ++
- net/mptcp/options.c                           |  520 ++++++++
- net/mptcp/protocol.c                          | 1159 +++++++++++++++++
- net/mptcp/protocol.h                          |  220 ++++
- net/mptcp/subflow.c                           |  763 +++++++++++
- net/mptcp/token.c                             |  195 +++
- tools/testing/selftests/Makefile              |    1 +
- tools/testing/selftests/net/mptcp/.gitignore  |    2 +
- tools/testing/selftests/net/mptcp/Makefile    |   13 +
- tools/testing/selftests/net/mptcp/config      |    2 +
- .../selftests/net/mptcp/mptcp_connect.c       |  832 ++++++++++++
- .../selftests/net/mptcp/mptcp_connect.sh      |  595 +++++++++
- tools/testing/selftests/net/mptcp/settings    |    1 +
- 25 files changed, 4795 insertions(+), 1 deletion(-)
+Co-developed-by: Florian Westphal <fw@strlen.de>
+Signed-off-by: Florian Westphal <fw@strlen.de>
+Co-developed-by: Peter Krystad <peter.krystad@linux.intel.com>
+Signed-off-by: Peter Krystad <peter.krystad@linux.intel.com>
+Co-developed-by: Matthieu Baerts <matthieu.baerts@tessares.net>
+Signed-off-by: Matthieu Baerts <matthieu.baerts@tessares.net>
+Co-developed-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
+---
+ MAINTAINERS          |   1 +
+ include/net/mptcp.h  |  16 +++++
+ net/Kconfig          |   1 +
+ net/Makefile         |   1 +
+ net/ipv4/tcp.c       |   2 +
+ net/ipv6/tcp_ipv6.c  |   7 +++
+ net/mptcp/Kconfig    |  16 +++++
+ net/mptcp/Makefile   |   4 ++
+ net/mptcp/protocol.c | 142 +++++++++++++++++++++++++++++++++++++++++++
+ net/mptcp/protocol.h |  22 +++++++
+ 10 files changed, 212 insertions(+)
  create mode 100644 net/mptcp/Kconfig
  create mode 100644 net/mptcp/Makefile
- create mode 100644 net/mptcp/crypto.c
- create mode 100644 net/mptcp/ctrl.c
- create mode 100644 net/mptcp/options.c
  create mode 100644 net/mptcp/protocol.c
  create mode 100644 net/mptcp/protocol.h
- create mode 100644 net/mptcp/subflow.c
- create mode 100644 net/mptcp/token.c
- create mode 100644 tools/testing/selftests/net/mptcp/.gitignore
- create mode 100644 tools/testing/selftests/net/mptcp/Makefile
- create mode 100644 tools/testing/selftests/net/mptcp/config
- create mode 100644 tools/testing/selftests/net/mptcp/mptcp_connect.c
- create mode 100755 tools/testing/selftests/net/mptcp/mptcp_connect.sh
- create mode 100644 tools/testing/selftests/net/mptcp/settings
 
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 132eb3f9fbb7..b11e234dc833 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -11577,6 +11577,7 @@ W:	https://github.com/multipath-tcp/mptcp_net-next/wiki
+ B:	https://github.com/multipath-tcp/mptcp_net-next/issues
+ S:	Maintained
+ F:	include/net/mptcp.h
++F:	net/mptcp/
+ 
+ NETWORKING [TCP]
+ M:	Eric Dumazet <edumazet@google.com>
+diff --git a/include/net/mptcp.h b/include/net/mptcp.h
+index 43ddfdf9e4a3..4113e063f728 100644
+--- a/include/net/mptcp.h
++++ b/include/net/mptcp.h
+@@ -27,6 +27,8 @@ struct mptcp_ext {
+ 
+ #ifdef CONFIG_MPTCP
+ 
++void mptcp_init(void);
++
+ static inline bool mptcp_skb_ext_exist(const struct sk_buff *skb)
+ {
+ 	return skb_ext_exist(skb, SKB_EXT_MPTCP);
+@@ -34,10 +36,24 @@ static inline bool mptcp_skb_ext_exist(const struct sk_buff *skb)
+ 
+ #else
+ 
++static inline void mptcp_init(void)
++{
++}
++
+ static inline bool mptcp_skb_ext_exist(const struct sk_buff *skb)
+ {
+ 	return false;
+ }
+ 
+ #endif /* CONFIG_MPTCP */
++
++#if IS_ENABLED(CONFIG_MPTCP_IPV6)
++int mptcpv6_init(void);
++#elif IS_ENABLED(CONFIG_IPV6)
++static inline int mptcpv6_init(void)
++{
++	return 0;
++}
++#endif
++
+ #endif /* __NET_MPTCP_H */
+diff --git a/net/Kconfig b/net/Kconfig
+index bd191f978a23..6648779f184b 100644
+--- a/net/Kconfig
++++ b/net/Kconfig
+@@ -91,6 +91,7 @@ if INET
+ source "net/ipv4/Kconfig"
+ source "net/ipv6/Kconfig"
+ source "net/netlabel/Kconfig"
++source "net/mptcp/Kconfig"
+ 
+ endif # if INET
+ 
+diff --git a/net/Makefile b/net/Makefile
+index 848303d98d3d..07ea48160874 100644
+--- a/net/Makefile
++++ b/net/Makefile
+@@ -87,3 +87,4 @@ endif
+ obj-$(CONFIG_QRTR)		+= qrtr/
+ obj-$(CONFIG_NET_NCSI)		+= ncsi/
+ obj-$(CONFIG_XDP_SOCKETS)	+= xdp/
++obj-$(CONFIG_MPTCP)		+= mptcp/
+diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+index dc9bd27f4222..f310cfae2e28 100644
+--- a/net/ipv4/tcp.c
++++ b/net/ipv4/tcp.c
+@@ -271,6 +271,7 @@
+ #include <net/icmp.h>
+ #include <net/inet_common.h>
+ #include <net/tcp.h>
++#include <net/mptcp.h>
+ #include <net/xfrm.h>
+ #include <net/ip.h>
+ #include <net/sock.h>
+@@ -4023,4 +4024,5 @@ void __init tcp_init(void)
+ 	tcp_metrics_init();
+ 	BUG_ON(tcp_register_congestion_control(&tcp_reno) != 0);
+ 	tcp_tasklet_init();
++	mptcp_init();
+ }
+diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
+index 30dceac8a608..e1cae9770788 100644
+--- a/net/ipv6/tcp_ipv6.c
++++ b/net/ipv6/tcp_ipv6.c
+@@ -2108,9 +2108,16 @@ int __init tcpv6_init(void)
+ 	ret = register_pernet_subsys(&tcpv6_net_ops);
+ 	if (ret)
+ 		goto out_tcpv6_protosw;
++
++	ret = mptcpv6_init();
++	if (ret)
++		goto out_tcpv6_pernet_subsys;
++
+ out:
+ 	return ret;
+ 
++out_tcpv6_pernet_subsys:
++	unregister_pernet_subsys(&tcpv6_net_ops);
+ out_tcpv6_protosw:
+ 	inet6_unregister_protosw(&tcpv6_protosw);
+ out_tcpv6_protocol:
+diff --git a/net/mptcp/Kconfig b/net/mptcp/Kconfig
+new file mode 100644
+index 000000000000..c1a99f07a4cd
+--- /dev/null
++++ b/net/mptcp/Kconfig
+@@ -0,0 +1,16 @@
++
++config MPTCP
++	bool "MPTCP: Multipath TCP"
++	depends on INET
++	select SKB_EXTENSIONS
++	help
++	  Multipath TCP (MPTCP) connections send and receive data over multiple
++	  subflows in order to utilize multiple network paths. Each subflow
++	  uses the TCP protocol, and TCP options carry header information for
++	  MPTCP.
++
++config MPTCP_IPV6
++	bool "MPTCP: IPv6 support for Multipath TCP"
++	depends on MPTCP
++	select IPV6
++	default y
+diff --git a/net/mptcp/Makefile b/net/mptcp/Makefile
+new file mode 100644
+index 000000000000..659129d1fcbf
+--- /dev/null
++++ b/net/mptcp/Makefile
+@@ -0,0 +1,4 @@
++# SPDX-License-Identifier: GPL-2.0
++obj-$(CONFIG_MPTCP) += mptcp.o
++
++mptcp-y := protocol.o
+diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
+new file mode 100644
+index 000000000000..5e24e7cf7d70
+--- /dev/null
++++ b/net/mptcp/protocol.c
+@@ -0,0 +1,142 @@
++// SPDX-License-Identifier: GPL-2.0
++/* Multipath TCP
++ *
++ * Copyright (c) 2017 - 2019, Intel Corporation.
++ */
++
++#define pr_fmt(fmt) "MPTCP: " fmt
++
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/netdevice.h>
++#include <net/sock.h>
++#include <net/inet_common.h>
++#include <net/inet_hashtables.h>
++#include <net/protocol.h>
++#include <net/tcp.h>
++#include <net/mptcp.h>
++#include "protocol.h"
++
++static int mptcp_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
++{
++	struct mptcp_sock *msk = mptcp_sk(sk);
++	struct socket *subflow = msk->subflow;
++
++	if (msg->msg_flags & ~(MSG_MORE | MSG_DONTWAIT | MSG_NOSIGNAL))
++		return -EOPNOTSUPP;
++
++	return sock_sendmsg(subflow, msg);
++}
++
++static int mptcp_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
++			 int nonblock, int flags, int *addr_len)
++{
++	struct mptcp_sock *msk = mptcp_sk(sk);
++	struct socket *subflow = msk->subflow;
++
++	if (msg->msg_flags & ~(MSG_WAITALL | MSG_DONTWAIT))
++		return -EOPNOTSUPP;
++
++	return sock_recvmsg(subflow, msg, flags);
++}
++
++static int mptcp_init_sock(struct sock *sk)
++{
++	return 0;
++}
++
++static void mptcp_close(struct sock *sk, long timeout)
++{
++	struct mptcp_sock *msk = mptcp_sk(sk);
++
++	inet_sk_state_store(sk, TCP_CLOSE);
++
++	if (msk->subflow) {
++		pr_debug("subflow=%p", msk->subflow->sk);
++		sock_release(msk->subflow);
++	}
++
++	sock_orphan(sk);
++	sock_put(sk);
++}
++
++static int mptcp_connect(struct sock *sk, struct sockaddr *saddr, int len)
++{
++	struct mptcp_sock *msk = mptcp_sk(sk);
++	int err;
++
++	saddr->sa_family = AF_INET;
++
++	pr_debug("msk=%p, subflow=%p", msk, msk->subflow->sk);
++
++	err = kernel_connect(msk->subflow, saddr, len, 0);
++
++	sk->sk_state = TCP_ESTABLISHED;
++
++	return err;
++}
++
++static struct proto mptcp_prot = {
++	.name		= "MPTCP",
++	.owner		= THIS_MODULE,
++	.init		= mptcp_init_sock,
++	.close		= mptcp_close,
++	.accept		= inet_csk_accept,
++	.connect	= mptcp_connect,
++	.shutdown	= tcp_shutdown,
++	.sendmsg	= mptcp_sendmsg,
++	.recvmsg	= mptcp_recvmsg,
++	.hash		= inet_hash,
++	.unhash		= inet_unhash,
++	.get_port	= inet_csk_get_port,
++	.obj_size	= sizeof(struct mptcp_sock),
++	.no_autobind	= true,
++};
++
++static struct inet_protosw mptcp_protosw = {
++	.type		= SOCK_STREAM,
++	.protocol	= IPPROTO_MPTCP,
++	.prot		= &mptcp_prot,
++	.ops		= &inet_stream_ops,
++};
++
++void __init mptcp_init(void)
++{
++	if (proto_register(&mptcp_prot, 1) != 0)
++		panic("Failed to register MPTCP proto.\n");
++
++	inet_register_protosw(&mptcp_protosw);
++}
++
++#if IS_ENABLED(CONFIG_MPTCP_IPV6)
++static struct proto mptcp_v6_prot;
++
++static struct inet_protosw mptcp_v6_protosw = {
++	.type		= SOCK_STREAM,
++	.protocol	= IPPROTO_MPTCP,
++	.prot		= &mptcp_v6_prot,
++	.ops		= &inet6_stream_ops,
++	.flags		= INET_PROTOSW_ICSK,
++};
++
++int mptcpv6_init(void)
++{
++	int err;
++
++	mptcp_v6_prot = mptcp_prot;
++	strcpy(mptcp_v6_prot.name, "MPTCPv6");
++	mptcp_v6_prot.slab = NULL;
++	mptcp_v6_prot.obj_size = sizeof(struct mptcp_sock) +
++				 sizeof(struct ipv6_pinfo);
++
++	err = proto_register(&mptcp_v6_prot, 1);
++	if (err)
++		return err;
++
++	err = inet6_register_protosw(&mptcp_v6_protosw);
++	if (err)
++		proto_unregister(&mptcp_v6_prot);
++
++	return err;
++}
++#endif
+diff --git a/net/mptcp/protocol.h b/net/mptcp/protocol.h
+new file mode 100644
+index 000000000000..ee04a01bffd3
+--- /dev/null
++++ b/net/mptcp/protocol.h
+@@ -0,0 +1,22 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/* Multipath TCP
++ *
++ * Copyright (c) 2017 - 2019, Intel Corporation.
++ */
++
++#ifndef __MPTCP_PROTOCOL_H
++#define __MPTCP_PROTOCOL_H
++
++/* MPTCP connection sock */
++struct mptcp_sock {
++	/* inet_connection_sock must be the first member */
++	struct inet_connection_sock sk;
++	struct socket	*subflow; /* outgoing connect/listener/!mp_capable */
++};
++
++static inline struct mptcp_sock *mptcp_sk(const struct sock *sk)
++{
++	return (struct mptcp_sock *)sk;
++}
++
++#endif /* __MPTCP_PROTOCOL_H */
 -- 
 2.24.1
 
