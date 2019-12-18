@@ -2,85 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D7D31123FAE
-	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 07:35:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 409A6123FBA
+	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 07:39:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726526AbfLRGf3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Dec 2019 01:35:29 -0500
-Received: from ozlabs.org ([203.11.71.1]:50729 "EHLO ozlabs.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725799AbfLRGf3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 18 Dec 2019 01:35:29 -0500
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 47d4y61nmGz9sS3;
-        Wed, 18 Dec 2019 17:35:26 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1576650926;
-        bh=BRsF0Dl7f917DVhX5qy9xBkJQ4N03Gdm7hNrZ69WciI=;
-        h=Date:From:To:Cc:Subject:From;
-        b=bj+js8MB9gKbOsTdmpIh3sLO838ozUpHQJnp//wi5xa/EXVG5SOE/c9YFihy+BTy6
-         pfrSNmvPIrt88q7yq+A8Ounqn4njaAs5isXcqjcnR9ZWmpwCyuAIE/Wq4oPxkRIXW3
-         i48J4GG8jsYBf1/Am3h8M2Y7cLiCte5tE8/CbhXbBOaa/r9wrrtCxHcEaidPwj2i1c
-         Zbord9/uVA9wMRu6QtYfS19Ml0mBJNQv3d7b9mNS2ieXbX8h5e1SfuvDifn2A3xvbC
-         IRHA1MT2eF0TkWa+0iN+KDuWDEvRFC032mlNDn36vF6iXtjiSk6v7Spv9GhcG4+PiQ
-         ElRECGBwFzUwQ==
-Date:   Wed, 18 Dec 2019 17:35:24 +1100
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Jon Maloy <jon.maloy@ericsson.com>
-Subject: linux-next: Fixes tag needs some work in the net-next tree
-Message-ID: <20191218173524.7080b228@canb.auug.org.au>
-MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/xE=+se5c9PhkgCY=hDadDfc";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+        id S1726496AbfLRGjW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Dec 2019 01:39:22 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:47348 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725797AbfLRGjW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Dec 2019 01:39:22 -0500
+Received: from localhost (unknown [IPv6:2601:601:9f00:1c3::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 762971500BB50;
+        Tue, 17 Dec 2019 22:39:21 -0800 (PST)
+Date:   Tue, 17 Dec 2019 22:39:20 -0800 (PST)
+Message-Id: <20191217.223920.2253637492180028793.davem@davemloft.net>
+To:     o.rempel@pengutronix.de
+Cc:     jcliburn@gmail.com, chris.snook@gmail.com, andrew@lunn.ch,
+        kernel@pengutronix.de, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] net: ag71xx: fix compile warnings
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20191217065145.9329-1-o.rempel@pengutronix.de>
+References: <20191217065145.9329-1-o.rempel@pengutronix.de>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 17 Dec 2019 22:39:21 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/xE=+se5c9PhkgCY=hDadDfc
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+From: Oleksij Rempel <o.rempel@pengutronix.de>
+Date: Tue, 17 Dec 2019 07:51:45 +0100
 
-Hi all,
+> drivers/net/ethernet/atheros/ag71xx.c: In function 'ag71xx_probe':
+> drivers/net/ethernet/atheros/ag71xx.c:1776:30: warning: passing argument 2 of
+>  'of_get_phy_mode' makes pointer from integer without a cast [-Wint-conversion]
+> In file included from drivers/net/ethernet/atheros/ag71xx.c:33:
+> ./include/linux/of_net.h:15:69: note: expected 'phy_interface_t *'
+>  {aka 'enum <anonymous> *'} but argument is of type 'int'
+> 
+> Fixes: 0c65b2b90d13c1 ("net: of_get_phy_mode: Change API to solve int/unit warnings")
+> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-In commit
-
-  b7ffa045e700 ("tipc: don't send gap blocks in ACK messages")
-
-Fixes tag
-
-  Fixes: commit 02288248b051 ("tipc: eliminate gap indicator from ACK messa=
-ges")
-
-has these problem(s):
-
-  - leading word 'commit' unexpected
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/xE=+se5c9PhkgCY=hDadDfc
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl35yKwACgkQAVBC80lX
-0GyR1QgAk7mKLSurBOrrAxNbqswLck4/KF9aT4gamZKT3RjO+2dzpKixCFb5TnR7
-YLiiyjFPS6QPy5EqrECZhB7szAOXceHOYHDccUjtqCvDLZ9VvK1ee1xMlstosBP4
-pyQkcEyECezgDjHrem8q/sSwI1fL5gsWGWu0yuQk4zQFMtzztKH35lt5l18bg3SR
-WrIKA6MTYnVslkO7xBYkIwFfnuCyGetFDTOqxk3jvAQg5Tkdi6LBiUkwHfqXZIFu
-4GmqOybgbFLM95GjHb1EjFkYKUUmnhyFkO3Wm1OdFIrFBDZ9sPz0oQaoFRrhHVCM
-wN+LC3qCJ9m/GiHyCIV2iTZMJPuYEA==
-=MbNd
------END PGP SIGNATURE-----
-
---Sig_/xE=+se5c9PhkgCY=hDadDfc--
+Applied, thank you.
