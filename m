@@ -2,140 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AD70E12460E
-	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 12:46:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CA33F124618
+	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 12:49:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726922AbfLRLqx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Dec 2019 06:46:53 -0500
-Received: from mail-pj1-f67.google.com ([209.85.216.67]:40048 "EHLO
-        mail-pj1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725930AbfLRLqx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Dec 2019 06:46:53 -0500
-Received: by mail-pj1-f67.google.com with SMTP id bg7so262124pjb.5;
-        Wed, 18 Dec 2019 03:46:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=8Rm3PGAG4ZjJjxffgjZO01XuGdZ5Se+lxRoTd65jV/I=;
-        b=ZqdU5bMscFQvm8p09tXvtNABGBJq3yux1pRvAaSqHYWoBHsvLzpx40uJaQXuXESBMy
-         uFXxFSZYelsqKFR9u97FntWyBuRrNZSiUzu5UUXshbqPHsStjihAGvW+ajqEG1EbOfPo
-         CduQ2IZkIVxIZeAaHojbbW/tuxGxmxAllFCZKTj9CAH1CuO8lkcQszADJvRwU7fQhyzU
-         zhkiN/jm65g1GHgd/qp5N+glagyd4JzNwME+ofMcnZvqiltufXLulTwnVoZM4j6hTuWe
-         D2NNi9Gtqt/tAooIXZqAb9wUAVNgMtXyikiC/W49ZmSFYqVsituX+OOu/u1AAbxR5XtM
-         O3rw==
+        id S1726825AbfLRLtH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Dec 2019 06:49:07 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:30747 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726141AbfLRLtH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Dec 2019 06:49:07 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1576669746;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=egYOGWy6QuGOqruF/PAxFQigclnCwZ7828zF8NwrS/w=;
+        b=DlZvlPVMcA6a6SSJUDeC7qs0BVGXSrGxC38WfV46bhOWHTq8k/s4bfophshvrvhCzWFXBZ
+        HsXZyvCr4NTPiuEy0H1cbar5F55864XvPBHPFgFMlPz3LSKL7kbN9H9Z8V3CChwCDy3c0R
+        ljb7oSJhuTcASjai7XTh6VCnYyVFtHs=
+Received: from mail-lj1-f199.google.com (mail-lj1-f199.google.com
+ [209.85.208.199]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-402-96Sb0VSSMMe6fzg6p4pRxQ-1; Wed, 18 Dec 2019 06:49:03 -0500
+X-MC-Unique: 96Sb0VSSMMe6fzg6p4pRxQ-1
+Received: by mail-lj1-f199.google.com with SMTP id z17so615170ljz.2
+        for <netdev@vger.kernel.org>; Wed, 18 Dec 2019 03:49:03 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=8Rm3PGAG4ZjJjxffgjZO01XuGdZ5Se+lxRoTd65jV/I=;
-        b=T/kq+1VwOU6ilo7BaSX9S8t5v4WVpkKCYB6rpGzfrqhmaHpM+QvAM4T52KLDA8x/Kn
-         ECp3W8vi643Lyxr4A2LOnrUtKGiq1w+e1pz4prMZKRfDqTmtOAXh9V+3IzRIhJlCBlFI
-         ovQWu+Ig1TPVqjVs1Q7/KHQ20nF5WPJvibodvfjTGqSyxj/0XjF2EZu06ZyCmtnlGTx+
-         ZmhqkDRp3bbr1UCV07ZK2hhO+1CF2jbVxytb5eCAAmsC0yWuadAYn8hRx9EXgOhyrJoo
-         qsWBzY7MlvHdScvrKb2B1SPEQDpUX1s8J7DSUCxN3z0yCQqSliWlCPqDIxN3opwp8kJy
-         Hzpw==
-X-Gm-Message-State: APjAAAXP+xh6xULQY3yg+9pqglGZuKsTeKKQnUt4Gjpme3pFA/UFmmt4
-        a3xtIWq4A+8suFB22TCqEig=
-X-Google-Smtp-Source: APXvYqwRkgvw8jDHziQzj693orxCe6AxRD4tkkS6Jhb3GveNfnhdDXtHvoza5yByb4hW1lEpWrgvUA==
-X-Received: by 2002:a17:902:bd93:: with SMTP id q19mr52436pls.134.1576669612673;
-        Wed, 18 Dec 2019 03:46:52 -0800 (PST)
-Received: from oslab.tsinghua.edu.cn ([166.111.139.172])
-        by smtp.gmail.com with ESMTPSA id a10sm2913237pgm.81.2019.12.18.03.46.47
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=egYOGWy6QuGOqruF/PAxFQigclnCwZ7828zF8NwrS/w=;
+        b=ZCJSu91hwuEAIzkcy2HRRekttCJTmEaMGshPjBJVgjSf5rG7Uj/yooGiEuHWf4CvRp
+         U0oo0pfwYje4x7Ilg+2eIDyjONfGoePLK9UjjUE5xDxhTKmgxEOZuuJsG6N8MQNHy3mU
+         XRIUfn+WFDQrb1SryOfwnikXXr9X83d5QbZ9iH+bj3fHzBai49So7L0+qJs3WpDuo9Aw
+         1bYQ9YDvMNUWgs3Tv58GH0AJbL/MH0qS3Sj+7QbPEibCxtRVvQZRaQx53GLd47GvLhi1
+         QT3CON2QWBrBNfkwltj/2c18yeiXtweo6eBfaYmGLwjnthoAjWcowRl7dFWMrLlbEeNa
+         dzDg==
+X-Gm-Message-State: APjAAAUPw+1N3ZK/JL3jLFs31QEQpHV5g3ZfpUgV+Fm+n2q9j8J1nXCq
+        cz4wr/iBtMRFgjMkbwbGSg7bif4XHi/4vFy58VkhYwmzvwAFZcgPD0wPh+aiZzDJbKaY4MgNo8i
+        c/nVa+aenWVnGYA3N
+X-Received: by 2002:a2e:9d9a:: with SMTP id c26mr1422772ljj.225.1576669742264;
+        Wed, 18 Dec 2019 03:49:02 -0800 (PST)
+X-Google-Smtp-Source: APXvYqy1XBeaMuC/GIsbID57JHYXnBQqcoPycgnEC9PNR0ydGmsG2xu0u82SwhY9bI+GYCsO32PygA==
+X-Received: by 2002:a2e:9d9a:: with SMTP id c26mr1422748ljj.225.1576669742067;
+        Wed, 18 Dec 2019 03:49:02 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
+        by smtp.gmail.com with ESMTPSA id l28sm998862lfk.21.2019.12.18.03.49.01
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 18 Dec 2019 03:46:52 -0800 (PST)
-From:   Jia-Ju Bai <baijiaju1990@gmail.com>
-To:     ath9k-devel@qca.qualcomm.com, kvalo@codeaurora.org,
-        davem@davemloft.net
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Jia-Ju Bai <baijiaju1990@gmail.com>
-Subject: [PATCH] ath9k: fix possible sleep-in-atomic-context bugs in hif_usb_send_regout()
-Date:   Wed, 18 Dec 2019 19:45:33 +0800
-Message-Id: <20191218114533.9268-1-baijiaju1990@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        Wed, 18 Dec 2019 03:49:01 -0800 (PST)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id BC922180969; Wed, 18 Dec 2019 12:48:59 +0100 (CET)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Jesper Dangaard Brouer <jbrouer@redhat.com>,
+        Prashant Bhole <prashantbhole.linux@gmail.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        "Michael S . Tsirkin" <mst@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Jason Wang <jasowang@redhat.com>,
+        David Ahern <dsahern@gmail.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Toshiaki Makita <toshiaki.makita1@gmail.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>, netdev@vger.kernel.org,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>
+Subject: Re: [RFC net-next 11/14] tun: run XDP program in tx path
+In-Reply-To: <20191218110732.33494957@carbon>
+References: <20191218081050.10170-1-prashantbhole.linux@gmail.com> <20191218081050.10170-12-prashantbhole.linux@gmail.com> <20191218110732.33494957@carbon>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Wed, 18 Dec 2019 12:48:59 +0100
+Message-ID: <87fthh6ehg.fsf@toke.dk>
+MIME-Version: 1.0
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The driver may sleep while holding a spinlock.
-The function call path (from bottom to top) in Linux 4.19 is:
+Jesper Dangaard Brouer <jbrouer@redhat.com> writes:
 
-drivers/net/wireless/ath/ath9k/hif_usb.c, 108: 
-	usb_alloc_urb(GFP_KERNEL) in hif_usb_send_regout
-drivers/net/wireless/ath/ath9k/hif_usb.c, 470: 
-	hif_usb_send_regout in hif_usb_send
-drivers/net/wireless/ath/ath9k/htc_hst.c, 34: 
-	(FUNC_PTR)hif_usb_send in htc_issue_send
-drivers/net/wireless/ath/ath9k/htc_hst.c, 295: 
-	htc_issue_send in htc_send
-drivers/net/wireless/ath/ath9k/htc_drv_beacon.c, 250: 
-	htc_send in ath9k_htc_send_beacon
-drivers/net/wireless/ath/ath9k/htc_drv_beacon.c, 207: 
-	spin_lock_bh in ath9k_htc_send_beacon
+> On Wed, 18 Dec 2019 17:10:47 +0900
+> Prashant Bhole <prashantbhole.linux@gmail.com> wrote:
+>
+>> +static u32 tun_do_xdp_tx(struct tun_struct *tun, struct tun_file *tfile,
+>> +			 struct xdp_frame *frame)
+>> +{
+>> +	struct bpf_prog *xdp_prog;
+>> +	struct tun_page tpage;
+>> +	struct xdp_buff xdp;
+>> +	u32 act = XDP_PASS;
+>> +	int flush = 0;
+>> +
+>> +	xdp_prog = rcu_dereference(tun->xdp_tx_prog);
+>> +	if (xdp_prog) {
+>> +		xdp.data_hard_start = frame->data - frame->headroom;
+>> +		xdp.data = frame->data;
+>> +		xdp.data_end = xdp.data + frame->len;
+>> +		xdp.data_meta = xdp.data - frame->metasize;
+>
+> You have not configured xdp.rxq, thus a BPF-prog accessing this will crash.
+>
+> For an XDP TX hook, I want us to provide/give BPF-prog access to some
+> more information about e.g. the current tx-queue length, or TC-q number.
+>
+> Question to Daniel or Alexei, can we do this and still keep BPF_PROG_TYPE_XDP?
+> Or is it better to introduce a new BPF prog type (enum bpf_prog_type)
+> for XDP TX-hook ?
 
-drivers/net/wireless/ath/ath9k/hif_usb.c, 112: 
-	kzalloc(GFP_KERNEL) in hif_usb_send_regout
-drivers/net/wireless/ath/ath9k/hif_usb.c, 470: 
-	hif_usb_send_regout in hif_usb_send
-drivers/net/wireless/ath/ath9k/htc_hst.c, 34: 
-	(FUNC_PTR)hif_usb_send in htc_issue_send
-drivers/net/wireless/ath/ath9k/htc_hst.c, 295: 
-	htc_issue_send in htc_send
-drivers/net/wireless/ath/ath9k/htc_drv_beacon.c, 250: 
-	htc_send in ath9k_htc_send_beacon
-drivers/net/wireless/ath/ath9k/htc_drv_beacon.c, 207: 
-	spin_lock_bh in ath9k_htc_send_beacon
+I think a new program type would make the most sense. If/when we
+introduce an XDP TX hook[0], it should have different semantics than the
+regular XDP hook. I view the XDP TX hook as a hook that executes as the
+very last thing before packets leave the interface. It should have
+access to different context data as you say, but also I don't think it
+makes sense to have XDP_TX and XDP_REDIRECT in an XDP_TX hook. And we
+may also want to have a "throttle" return code; or maybe that could be
+done via a helper?
 
-drivers/net/wireless/ath/ath9k/hif_usb.c, 127: 
-	usb_submit_urb(GFP_KERNEL) in hif_usb_send_regout
-drivers/net/wireless/ath/ath9k/hif_usb.c, 470: 
-	hif_usb_send_regout in hif_usb_send
-drivers/net/wireless/ath/ath9k/htc_hst.c, 34: 
-	(FUNC_PTR)hif_usb_send in htc_issue_send
-drivers/net/wireless/ath/ath9k/htc_hst.c, 295: 
-	htc_issue_send in htc_send
-drivers/net/wireless/ath/ath9k/htc_drv_beacon.c, 250: 
-	htc_send in ath9k_htc_send_beacon
-drivers/net/wireless/ath/ath9k/htc_drv_beacon.c, 207: 
-	spin_lock_bh in ath9k_htc_send_beacon
+In any case, I don't think this "emulated RX hook on the other end of a
+virtual device" model that this series introduces is the right semantics
+for an XDP TX hook. I can see what you're trying to do, and for virtual
+point-to-point links I think it may make sense to emulate the RX hook of
+the "other end" on TX. However, form a UAPI perspective, I don't think
+we should be calling this a TX hook; logically, it's still an RX hook
+on the receive end.
 
-(FUNC_PTR) means a function pointer is called.
+If you guys are up for evolving this design into a "proper" TX hook (as
+outlined above an in [0]), that would be awesome, of course. But not
+sure what constraints you have on your original problem? Do you
+specifically need the "emulated RX hook for unmodified XDP programs"
+semantics, or could your problem be solved with a TX hook with different
+semantics?
 
-To fix these bugs, GFP_KERNEL is replaced with GFP_ATOMIC.
+-Toke
 
-These bugs are found by a static analysis tool STCheck written by myself.
 
-Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
----
- drivers/net/wireless/ath/ath9k/hif_usb.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/net/wireless/ath/ath9k/hif_usb.c b/drivers/net/wireless/ath/ath9k/hif_usb.c
-index fb649d85b8fc..37231fde102d 100644
---- a/drivers/net/wireless/ath/ath9k/hif_usb.c
-+++ b/drivers/net/wireless/ath/ath9k/hif_usb.c
-@@ -105,11 +105,11 @@ static int hif_usb_send_regout(struct hif_device_usb *hif_dev,
- 	struct cmd_buf *cmd;
- 	int ret = 0;
- 
--	urb = usb_alloc_urb(0, GFP_KERNEL);
-+	urb = usb_alloc_urb(0, GFP_ATOMIC);
- 	if (urb == NULL)
- 		return -ENOMEM;
- 
--	cmd = kzalloc(sizeof(*cmd), GFP_KERNEL);
-+	cmd = kzalloc(sizeof(*cmd), GFP_ATOMIC);
- 	if (cmd == NULL) {
- 		usb_free_urb(urb);
- 		return -ENOMEM;
-@@ -124,7 +124,7 @@ static int hif_usb_send_regout(struct hif_device_usb *hif_dev,
- 			 hif_usb_regout_cb, cmd, 1);
- 
- 	usb_anchor_urb(urb, &hif_dev->regout_submitted);
--	ret = usb_submit_urb(urb, GFP_KERNEL);
-+	ret = usb_submit_urb(urb, GFP_ATOMIC);
- 	if (ret) {
- 		usb_unanchor_urb(urb);
- 		kfree(cmd);
--- 
-2.17.1
+[0] We've suggested this in the past, see
+https://github.com/xdp-project/xdp-project/blob/master/xdp-project.org#xdp-hook-at-tx
 
