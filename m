@@ -2,59 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3DE74124518
-	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 11:54:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CD2C512451A
+	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 11:54:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726749AbfLRKyO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Dec 2019 05:54:14 -0500
-Received: from mail-pg1-f196.google.com ([209.85.215.196]:41560 "EHLO
-        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726726AbfLRKyO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Dec 2019 05:54:14 -0500
-Received: by mail-pg1-f196.google.com with SMTP id x8so1065801pgk.8;
-        Wed, 18 Dec 2019 02:54:13 -0800 (PST)
+        id S1726757AbfLRKyS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Dec 2019 05:54:18 -0500
+Received: from mail-pl1-f193.google.com ([209.85.214.193]:44422 "EHLO
+        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725785AbfLRKyS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Dec 2019 05:54:18 -0500
+Received: by mail-pl1-f193.google.com with SMTP id az3so795122plb.11;
+        Wed, 18 Dec 2019 02:54:17 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=hwpsUhyZsfHCNjF4eNiWzpTYwTbv88FHlBd9oVRH0pE=;
-        b=om7cunqP96nf6trFocxjZWI4Xx3VUf5dQbESRPBLMZWof4rg99kN8wpk17n+2Zm5KY
-         VoI3RP8A+arAoKlNenMMIdeEvXXyUMgrV/H4/lvuFdgiLUkw0jJNFNYmdmBeih1FIXDz
-         M1E0c6y80Y+HGtsTZpr10JciXJ9/9hEt4LiwJVC0BLj3Z+IxDj3kIH6rh+K+yJ3cTttf
-         lvH5ljonxS3HXGsU8OoivjtPUFRpWCeiuthYIm+xPTe3GNvh6f8siZElY1ZMicbJWjdS
-         3ZlmWchAsLtC0MuSyxCrDd09aIJRJ/a6RniAdRcODsS4cxkJK7qOFtKUx5aqTyERbMhd
-         GE7A==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=aMb2WPe0/U7BL/joSYeG447Xvcg/coxoX4bqpvpwhVk=;
+        b=Pq3TZgRth15hoVfIa0UPSIxdrezpkG/tiuRRMiOh6e13kcuCaVf/3QgLmKZC8edtgk
+         ykj8mpXu00I0dJjlec1AXPSvRw+mQpLvT7LiJR9icDiS9O5WCffcXsbZy/OMOHCzDQma
+         NjeVTAdDqH6T6vkuRlC3U3nod59FsR/f0rmZnRZtPmTx1DIC2t3YYhRoZ4/FZVpADewe
+         aqom7Mauw92t9TQkD69jtwhqMjHYK3rMKLjp2T0mBLzHpw8pA4tdXFxOj5+nrKtFSS7E
+         IlVfUaCjpDG0/JVn6fawL4kXcAMUEDCMrWdkryUJVyNFMoMRqzfQmzyQZf8pQHEPOPkU
+         Rl2w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=hwpsUhyZsfHCNjF4eNiWzpTYwTbv88FHlBd9oVRH0pE=;
-        b=GE4M4y1TXL3zKyl+vewhDESOz31WNgkHoPvPhAZQl8uog0ZMp0utAQlvD2sMR7DMgH
-         xW6wtaCajqb1LUbYXgTxTIvJ+oVGPNpl6Go33feWvVewE2Q1Ut1P+1+aT2D6h95Qs+Pc
-         ZVfrn3F5nYr4RRvdzPe1Bj7zLszOl5CfvfybQVuv8iAfUvhYJ6+cOMNykYluWQJ0gv3t
-         Oj29XvUihFAbQeczlfySjXGoXftjYmX5FSI1Q9AFEfkC69w6kDKHculN41xoZPD1Tz0F
-         1a5S5Jn7EOjmA9o3yrvPxaAgNKSYm6ct9GQ9+PAPR+RO4N9zIA40KVyhGtnUC8CMAa3P
-         953w==
-X-Gm-Message-State: APjAAAWGcn2KEc8ALdx15dSJGpYWMvnhm5qFwK9/MMIOvutBzdUUaK/X
-        mJA1+0/hcr/aU6WmA9F396XQ8+J/y1aIDQ==
-X-Google-Smtp-Source: APXvYqwuc592zteIatBecsGu/KvnMOiQhY9KWS34GG6Sjzv93msd+8PW1nMg2ZMn/p/N2wKsNT/RhQ==
-X-Received: by 2002:aa7:9118:: with SMTP id 24mr2394656pfh.182.1576666453164;
-        Wed, 18 Dec 2019 02:54:13 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=aMb2WPe0/U7BL/joSYeG447Xvcg/coxoX4bqpvpwhVk=;
+        b=bwNTIYSxhcs/yVwvQNng3HZyK6UuOmSA7knp/SjMS0/y4L/a0wTDNo4S6umqfkYCoX
+         +QyUrOmH1FMwF8knhplG422qFrcbEjJZr3CLAFi3VwE8UI64iZfkKWJ/lN1xHOCZb3Lk
+         DHYaZ5p6+335nn1HjQK9uYphfbejl2spSBEyDySgKr0HZDi+PeHKs+t+c4mdh3EU5dmP
+         srdK00tklLgNorPBfGHyJw7vEKQdTqK6yph//K/vRpjK/OaNUd/LWJNaAtIemMseEJYy
+         WGFaRuFavjh9X8J0vWsumGF0pQQXrdJ8+MwKlWv5T+KcCBGH6HarpNQbU+EARSeeEf4H
+         VdBA==
+X-Gm-Message-State: APjAAAXfPkpuDFaMAa5yAacX5lXbhWPMdoEUqJPZg3SUMkXVCsb4+10+
+        v94su4tl5ibUHoEHUBLNUpcDFlJVXnbHlw==
+X-Google-Smtp-Source: APXvYqyEpFB6noiD5LTD6gcS7Tjimry7RrZ4cdAVo7MV52gnrPa/7IjBLt+d62iReh24Ws7nuQkpKw==
+X-Received: by 2002:a17:902:7896:: with SMTP id q22mr1874545pll.219.1576666456654;
+        Wed, 18 Dec 2019 02:54:16 -0800 (PST)
 Received: from btopel-mobl.ger.intel.com ([192.55.55.41])
-        by smtp.gmail.com with ESMTPSA id k9sm2339000pje.26.2019.12.18.02.54.09
+        by smtp.gmail.com with ESMTPSA id k9sm2339000pje.26.2019.12.18.02.54.13
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 18 Dec 2019 02:54:12 -0800 (PST)
+        Wed, 18 Dec 2019 02:54:16 -0800 (PST)
 From:   =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@gmail.com>
 To:     netdev@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net
-Cc:     =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@gmail.com>,
+Cc:     =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@intel.com>,
         bpf@vger.kernel.org, davem@davemloft.net,
         jakub.kicinski@netronome.com, hawk@kernel.org,
         john.fastabend@gmail.com, magnus.karlsson@intel.com,
         jonathan.lemon@gmail.com
-Subject: [PATCH bpf-next 0/8] Simplify xdp_do_redirect_map()/xdp_do_flush_map() and XDP maps
-Date:   Wed, 18 Dec 2019 11:53:52 +0100
-Message-Id: <20191218105400.2895-1-bjorn.topel@gmail.com>
+Subject: [PATCH bpf-next 1/8] xdp: simplify devmap cleanup
+Date:   Wed, 18 Dec 2019 11:53:53 +0100
+Message-Id: <20191218105400.2895-2-bjorn.topel@gmail.com>
 X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20191218105400.2895-1-bjorn.topel@gmail.com>
+References: <20191218105400.2895-1-bjorn.topel@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -63,78 +65,121 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This series aims to simplify the XDP maps and
-xdp_do_redirect_map()/xdp_do_flush_map(), and to crank out some more
-performance from XDP_REDIRECT scenarios.
+From: Björn Töpel <bjorn.topel@intel.com>
 
-The first part of the series simplifies all XDP_REDIRECT capable maps,
-so that __XXX_flush_map() does not require the map parameter, by
-moving the flush list from the map to global scope.
+After the RCU flavor consolidation [1], call_rcu() and
+synchronize_rcu() waits for preempt-disable regions (NAPI) in addition
+to the read-side critical sections. As a result of this, the cleanup
+code in devmap can be simplified
 
-This results in that the map_to_flush member can be removed from
-struct bpf_redirect_info, and its corresponding logic.
+* There is no longer a need to flush in __dev_map_entry_free, since we
+  know that this has been done when the call_rcu() callback is
+  triggered.
 
-Simpler code, and more performance due to that checks/code per-packet
-is moved to flush.
+* When freeing the map, there is no need to explicitly wait for a
+  flush. It's guaranteed to be done after the synchronize_rcu() call
+  in dev_map_free(). The rcu_barrier() is still needed, so that the
+  map is not freed prior the elements.
 
-Pre-series performance:
-  $ sudo taskset -c 22 ./xdpsock -i enp134s0f0 -q 20 -n 1 -r -z
-  
-   sock0@enp134s0f0:20 rxdrop xdp-drv 
-                  pps         pkts        1.00       
-  rx              20,797,350  230,942,399
-  tx              0           0          
-  
-  $ sudo ./xdp_redirect_cpu --dev enp134s0f0 --cpu 22 xdp_cpu_map0
-  
-  Running XDP/eBPF prog_name:xdp_cpu_map5_lb_hash_ip_pairs
-  XDP-cpumap      CPU:to  pps            drop-pps    extra-info
-  XDP-RX          20      7723038        0           0
-  XDP-RX          total   7723038        0
-  cpumap_kthread  total   0              0           0
-  redirect_err    total   0              0
-  xdp_exception   total   0              0
+[1] https://lwn.net/Articles/777036/
 
-Post-series performance:
-  $ sudo taskset -c 22 ./xdpsock -i enp134s0f0 -q 20 -n 1 -r -z
+Signed-off-by: Björn Töpel <bjorn.topel@intel.com>
+---
+ kernel/bpf/devmap.c | 41 ++++-------------------------------------
+ 1 file changed, 4 insertions(+), 37 deletions(-)
 
-   sock0@enp134s0f0:20 rxdrop xdp-drv 
-                  pps         pkts        1.00       
-  rx              21,524,979  86,835,327 
-  tx              0           0          
-  
-  $ sudo ./xdp_redirect_cpu --dev enp134s0f0 --cpu 22 xdp_cpu_map0
-
-  Running XDP/eBPF prog_name:xdp_cpu_map5_lb_hash_ip_pairs
-  XDP-cpumap      CPU:to  pps            drop-pps    extra-info
-  XDP-RX          20      7840124        0           0          
-  XDP-RX          total   7840124        0          
-  cpumap_kthread  total   0              0           0          
-  redirect_err    total   0              0          
-  xdp_exception   total   0              0          
-  
-Results: +3.5% and +1.5% for the ubenchmarks.
-
-Björn Töpel (8):
-  xdp: simplify devmap cleanup
-  xdp: simplify cpumap cleanup
-  xdp: fix graze->grace type-o in cpumap comments
-  xsk: make xskmap flush_list common for all map instances
-  xdp: make devmap flush_list common for all map instances
-  xdp: make cpumap flush_list common for all map instances
-  xdp: remove map_to_flush and map swap detection
-  xdp: simplify __bpf_tx_xdp_map()
-
- include/linux/bpf.h    |  8 ++---
- include/linux/filter.h |  1 -
- include/net/xdp_sock.h | 11 +++---
- kernel/bpf/cpumap.c    | 76 ++++++++++++++--------------------------
- kernel/bpf/devmap.c    | 78 ++++++++++--------------------------------
- kernel/bpf/xskmap.c    | 16 ++-------
- net/core/filter.c      | 63 ++++++----------------------------
- net/xdp/xsk.c          | 17 ++++-----
- 8 files changed, 74 insertions(+), 196 deletions(-)
-
+diff --git a/kernel/bpf/devmap.c b/kernel/bpf/devmap.c
+index 3d3d61b5985b..1fcafc641c12 100644
+--- a/kernel/bpf/devmap.c
++++ b/kernel/bpf/devmap.c
+@@ -221,18 +221,6 @@ static void dev_map_free(struct bpf_map *map)
+ 	/* Make sure prior __dev_map_entry_free() have completed. */
+ 	rcu_barrier();
+ 
+-	/* To ensure all pending flush operations have completed wait for flush
+-	 * list to empty on _all_ cpus.
+-	 * Because the above synchronize_rcu() ensures the map is disconnected
+-	 * from the program we can assume no new items will be added.
+-	 */
+-	for_each_online_cpu(cpu) {
+-		struct list_head *flush_list = per_cpu_ptr(dtab->flush_list, cpu);
+-
+-		while (!list_empty(flush_list))
+-			cond_resched();
+-	}
+-
+ 	if (dtab->map.map_type == BPF_MAP_TYPE_DEVMAP_HASH) {
+ 		for (i = 0; i < dtab->n_buckets; i++) {
+ 			struct bpf_dtab_netdev *dev;
+@@ -345,8 +333,7 @@ static int dev_map_hash_get_next_key(struct bpf_map *map, void *key,
+ 	return -ENOENT;
+ }
+ 
+-static int bq_xmit_all(struct xdp_bulk_queue *bq, u32 flags,
+-		       bool in_napi_ctx)
++static int bq_xmit_all(struct xdp_bulk_queue *bq, u32 flags)
+ {
+ 	struct bpf_dtab_netdev *obj = bq->obj;
+ 	struct net_device *dev = obj->dev;
+@@ -384,11 +371,7 @@ static int bq_xmit_all(struct xdp_bulk_queue *bq, u32 flags,
+ 	for (i = 0; i < bq->count; i++) {
+ 		struct xdp_frame *xdpf = bq->q[i];
+ 
+-		/* RX path under NAPI protection, can return frames faster */
+-		if (likely(in_napi_ctx))
+-			xdp_return_frame_rx_napi(xdpf);
+-		else
+-			xdp_return_frame(xdpf);
++		xdp_return_frame_rx_napi(xdpf);
+ 		drops++;
+ 	}
+ 	goto out;
+@@ -409,7 +392,7 @@ void __dev_map_flush(struct bpf_map *map)
+ 
+ 	rcu_read_lock();
+ 	list_for_each_entry_safe(bq, tmp, flush_list, flush_node)
+-		bq_xmit_all(bq, XDP_XMIT_FLUSH, true);
++		bq_xmit_all(bq, XDP_XMIT_FLUSH);
+ 	rcu_read_unlock();
+ }
+ 
+@@ -440,7 +423,7 @@ static int bq_enqueue(struct bpf_dtab_netdev *obj, struct xdp_frame *xdpf,
+ 	struct xdp_bulk_queue *bq = this_cpu_ptr(obj->bulkq);
+ 
+ 	if (unlikely(bq->count == DEV_MAP_BULK_SIZE))
+-		bq_xmit_all(bq, 0, true);
++		bq_xmit_all(bq, 0);
+ 
+ 	/* Ingress dev_rx will be the same for all xdp_frame's in
+ 	 * bulk_queue, because bq stored per-CPU and must be flushed
+@@ -509,27 +492,11 @@ static void *dev_map_hash_lookup_elem(struct bpf_map *map, void *key)
+ 	return dev ? &dev->ifindex : NULL;
+ }
+ 
+-static void dev_map_flush_old(struct bpf_dtab_netdev *dev)
+-{
+-	if (dev->dev->netdev_ops->ndo_xdp_xmit) {
+-		struct xdp_bulk_queue *bq;
+-		int cpu;
+-
+-		rcu_read_lock();
+-		for_each_online_cpu(cpu) {
+-			bq = per_cpu_ptr(dev->bulkq, cpu);
+-			bq_xmit_all(bq, XDP_XMIT_FLUSH, false);
+-		}
+-		rcu_read_unlock();
+-	}
+-}
+-
+ static void __dev_map_entry_free(struct rcu_head *rcu)
+ {
+ 	struct bpf_dtab_netdev *dev;
+ 
+ 	dev = container_of(rcu, struct bpf_dtab_netdev, rcu);
+-	dev_map_flush_old(dev);
+ 	free_percpu(dev->bulkq);
+ 	dev_put(dev->dev);
+ 	kfree(dev);
 -- 
 2.20.1
 
