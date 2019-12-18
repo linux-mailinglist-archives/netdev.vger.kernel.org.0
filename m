@@ -2,81 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 18E94124FA7
-	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 18:48:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3A52D124FAE
+	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 18:51:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727173AbfLRRse (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Dec 2019 12:48:34 -0500
-Received: from mga05.intel.com ([192.55.52.43]:57578 "EHLO mga05.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727031AbfLRRse (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 18 Dec 2019 12:48:34 -0500
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 18 Dec 2019 09:48:33 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.69,330,1571727600"; 
-   d="scan'208";a="218219842"
-Received: from cbenkese-mobl1.ger.corp.intel.com (HELO btopel-mobl.ger.intel.com) ([10.249.34.236])
-  by orsmga003.jf.intel.com with ESMTP; 18 Dec 2019 09:48:30 -0800
-Subject: Re: [PATCH bpf-next 2/8] xdp: simplify cpumap cleanup
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
-Cc:     netdev@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        bpf@vger.kernel.org, davem@davemloft.net, hawk@kernel.org,
-        john.fastabend@gmail.com, magnus.karlsson@intel.com,
-        jonathan.lemon@gmail.com
-References: <20191218105400.2895-1-bjorn.topel@gmail.com>
- <20191218105400.2895-3-bjorn.topel@gmail.com>
- <20191218094723.13ab0d54@cakuba.netronome.com>
-From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>
-Message-ID: <77fabe3b-2314-8826-a5a3-3a530f41eb0c@intel.com>
-Date:   Wed, 18 Dec 2019 18:48:28 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        id S1727289AbfLRRuz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Dec 2019 12:50:55 -0500
+Received: from mail26.static.mailgun.info ([104.130.122.26]:28249 "EHLO
+        mail26.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727130AbfLRRuz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Dec 2019 12:50:55 -0500
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1576691454; h=Date: Message-Id: Cc: To: References:
+ In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
+ Content-Type: Sender; bh=bFXvzXoFTxvglZdtYZicMRuOxhYqT/9wAIQNclYB/7Y=;
+ b=XVy5uyzWklDOgpaM+0/RTZV/Gd8Ygf3H2S74Wk0vFI6EkpqdhYyiKPflr9nakmLx+iI+iHWy
+ kBmWw50C5+ID4TyMLAwRmtdq5PhIP05h/3akwpSSl34gWN3NidGVcMkSySiY70iiw2KNup/U
+ p4M8Kv5J6Wv/riP0jtJr2BQrOiI=
+X-Mailgun-Sending-Ip: 104.130.122.26
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
+ by mxa.mailgun.org with ESMTP id 5dfa66fd.7f7b8042da40-smtp-out-n02;
+ Wed, 18 Dec 2019 17:50:53 -0000 (UTC)
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 099A7C4479C; Wed, 18 Dec 2019 17:50:52 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=0.5 required=2.0 tests=ALL_TRUSTED,MISSING_DATE,
+        MISSING_MID,SPF_NONE,URIBL_BLOCKED autolearn=no autolearn_force=no
+        version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id CC4D0C433CB;
+        Wed, 18 Dec 2019 17:50:49 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org CC4D0C433CB
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-In-Reply-To: <20191218094723.13ab0d54@cakuba.netronome.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH][next] ath11k: fix several spelling mistakes
+From:   Kalle Valo <kvalo@codeaurora.org>
+In-Reply-To: <20191211083443.372506-1-colin.king@canonical.com>
+References: <20191211083443.372506-1-colin.king@canonical.com>
+To:     Colin King <colin.king@canonical.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        ath11k@lists.infradead.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+User-Agent: pwcli/0.0.0-git (https://github.com/kvalo/pwcli/) Python/2.7.12
+Message-Id: <20191218175052.099A7C4479C@smtp.codeaurora.org>
+Date:   Wed, 18 Dec 2019 17:50:52 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2019-12-18 18:47, Jakub Kicinski wrote:
-> On Wed, 18 Dec 2019 11:53:54 +0100, Björn Töpel wrote:
->> From: Björn Töpel <bjorn.topel@intel.com>
->>
->> After the RCU flavor consolidation [1], call_rcu() and
->> synchronize_rcu() waits for preempt-disable regions (NAPI) in addition
->> to the read-side critical sections. As a result of this, the cleanup
->> code in cpumap can be simplified
->>
->> * There is no longer a need to flush in __cpu_map_entry_free, since we
->>    know that this has been done when the call_rcu() callback is
->>    triggered.
->>
->> * When freeing the map, there is no need to explicitly wait for a
->>    flush. It's guaranteed to be done after the synchronize_rcu() call
->>    in cpu_map_free().
->>
->> [1] https://lwn.net/Articles/777036/
->>
->> Signed-off-by: Björn Töpel <bjorn.topel@intel.com>
-> 
-> Probably transient but:
-> 
-> ../kernel/bpf/cpumap.c: In function "cpu_map_free":
-> ../kernel/bpf/cpumap.c:502:6: warning: unused variable "cpu" [-Wunused-variable]
->    502 |  int cpu;
->        |      ^~~
-> 
-> I think there are also warnings in patch 4.
-> 
+Colin King <colin.king@canonical.com> wrote:
 
-Ugh. Thanks, I'll respin!
+> There are several spelling mistakes in warning and debug messages,
+> fix them.
+> 
+> Signed-off-by: Colin Ian King <colin.king@canonical.com>
+> Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
 
+Patch applied to ath-next branch of ath.git, thanks.
 
-Björn
+345a4f223a7c ath11k: fix several spelling mistakes
+
+-- 
+https://patchwork.kernel.org/patch/11284409/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
