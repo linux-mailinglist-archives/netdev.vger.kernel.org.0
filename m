@@ -2,103 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C77EF125664
-	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 23:17:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 346F51256C7
+	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 23:32:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726565AbfLRWRU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Dec 2019 17:17:20 -0500
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:56438 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726463AbfLRWRT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Dec 2019 17:17:19 -0500
-Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xBIMHCCk017285
-        for <netdev@vger.kernel.org>; Wed, 18 Dec 2019 14:17:18 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-type; s=facebook;
- bh=6oVoRIUSx1VS5czrR0Dgk46K3WidI6qmXRlUZSbYIvI=;
- b=V6ZRHO4eTgUN1DGkMUCRPvG8nN+z+wgbdUNTbBaWvn9Erhc0QG+zlPStahKUj0nJgpp6
- u6vOV4eoJHBmhzo7Ip5Q2hNbbxC9mSlTuxSTofmEQQyMf5FF3MyrDxA4haqEh95WJeQ2
- mBTwAFy26QFRvQzUzzhaKDGVBBXVIc4Lp14= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 2wykmqk041-4
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 18 Dec 2019 14:17:18 -0800
-Received: from intmgw004.05.ash5.facebook.com (2620:10d:c085:208::11) by
- mail.thefacebook.com (2620:10d:c085:21d::4) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1779.2; Wed, 18 Dec 2019 14:17:10 -0800
-Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
-        id CAD252EC1761; Wed, 18 Dec 2019 14:17:08 -0800 (PST)
-Smtp-Origin-Hostprefix: devbig
-From:   Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
-        <daniel@iogearbox.net>
-CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH bpf-next] bpftool: work-around rst2man conversion bug
-Date:   Wed, 18 Dec 2019 14:17:07 -0800
-Message-ID: <20191218221707.2552199-1-andriin@fb.com>
-X-Mailer: git-send-email 2.17.1
-X-FB-Internal: Safe
+        id S1726623AbfLRWca (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Dec 2019 17:32:30 -0500
+Received: from bilbo.ozlabs.org ([203.11.71.1]:55527 "EHLO ozlabs.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726387AbfLRWca (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 18 Dec 2019 17:32:30 -0500
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 47dVBL3pzLz9sNH;
+        Thu, 19 Dec 2019 09:32:25 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1576708347;
+        bh=FGnzLAbggJk4K5oNheKXf8Yw8oOCRUFvVWzB4jYqwSA=;
+        h=Date:From:To:Cc:Subject:From;
+        b=Vu3EZ3xEAuvetUK+DhSdcIH5ocx2WuktadrhCIQfGi8lQFvJrf5AO5jnUVsW8vBfz
+         /Zeu9dRQG0+lhbsEEyfu0Wn4J6C+3XSVatKmmxClt/rXwOz1V87MtG5pVxwBPbyNY0
+         dpA1f8Y+gIZyfVnOl26hZZ3W2L/XXQtHOQMafEFsSGkK4MeMMp43+6N3vtpkeCq8vh
+         PJyJU2iwZdLhWwYFTs5nrCdQN+mVChQVuHv4EO4nIW5wkYE+hrOj+XbhkbpjeUTXlc
+         FYKCm0wCA38y+NgdDghBNNDrh0OMLuiVA87gQRiqls57FQlM8BX3Ppnj0y+ntQCqVX
+         Hyk3KkU841Tpg==
+Date:   Thu, 19 Dec 2019 09:32:18 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>
+Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Jose Abreu <Jose.Abreu@synopsys.com>
+Subject: linux-next: build failure after merge of the net-next tree
+Message-ID: <20191219093218.1c1d06f2@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
- definitions=2019-12-18_07:2019-12-17,2019-12-18 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 adultscore=0
- suspectscore=8 priorityscore=1501 malwarescore=0 mlxlogscore=774
- impostorscore=0 bulkscore=0 lowpriorityscore=0 mlxscore=0 spamscore=0
- clxscore=1015 phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-1910280000 definitions=main-1912180169
-X-FB-Internal: deliver
+Content-Type: multipart/signed; boundary="Sig_/L03AUYJ7v_h6KH65+iT+3ss";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Work-around what appears to be a bug in rst2man convertion tool, used to
-create man pages out of reStructureText-formatted documents. If text line
-starts with dot, rst2man will put it in resulting man file verbatim. This
-seems to cause man tool to interpret it as a directive/command (e.g., `.bs`), and
-subsequently not render entire line because it's unrecognized one.
+--Sig_/L03AUYJ7v_h6KH65+iT+3ss
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Enclose '.xxx' words in extra formatting to work around.
+Hi all,
 
-Fixes: cb21ac588546 ("bpftool: Add gen subcommand manpage")
-Reported-by: Alexei Starovoitov <ast@kernel.org>
-Signed-off-by: Andrii Nakryiko <andriin@fb.com>
----
- tools/bpf/bpftool/Documentation/bpftool-gen.rst | 15 ++++++++-------
- 1 file changed, 8 insertions(+), 7 deletions(-)
+After merging the net-next tree, today's linux-next build (arm
+multi_v7_defconfig) failed like this:
 
-diff --git a/tools/bpf/bpftool/Documentation/bpftool-gen.rst b/tools/bpf/bpftool/Documentation/bpftool-gen.rst
-index b6a114bf908d..86a87da97d0b 100644
---- a/tools/bpf/bpftool/Documentation/bpftool-gen.rst
-+++ b/tools/bpf/bpftool/Documentation/bpftool-gen.rst
-@@ -112,13 +112,14 @@ DESCRIPTION
- 
- 		  If BPF object has global variables, corresponding structs
- 		  with memory layout corresponding to global data data section
--		  layout will be created. Currently supported ones are: .data,
--		  .bss, .rodata, and .extern structs/data sections. These
--		  data sections/structs can be used to set up initial values of
--		  variables, if set before **example__load**. Afterwards, if
--		  target kernel supports memory-mapped BPF arrays, same
--		  structs can be used to fetch and update (non-read-only)
--		  data from userspace, with same simplicity as for BPF side.
-+		  layout will be created. Currently supported ones are: *.data*,
-+		  *.bss*, *.rodata*, and *.kconfig* structs/data sections.
-+		  These data sections/structs can be used to set up initial
-+		  values of variables, if set before **example__load**.
-+		  Afterwards, if target kernel supports memory-mapped BPF
-+		  arrays, same structs can be used to fetch and update
-+		  (non-read-only) data from userspace, with same simplicity
-+		  as for BPF side.
- 
- 	**bpftool gen help**
- 		  Print short help message.
--- 
-2.17.1
+arm-linux-gnueabi-ld: drivers/net/ethernet/stmicro/stmmac/stmmac_tc.o: in f=
+unction `tc_setup_taprio':
+stmmac_tc.c:(.text+0x4e8): undefined reference to `__aeabi_uldivmod'
+arm-linux-gnueabi-ld: stmmac_tc.c:(.text+0x508): undefined reference to `__=
+aeabi_uldivmod'
 
+Caused by commit
+
+  b60189e0392f ("net: stmmac: Integrate EST with TAPRIO scheduler API")
+
+I have used the net-nest tree from next-20191218 for today.
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/L03AUYJ7v_h6KH65+iT+3ss
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl36qPIACgkQAVBC80lX
+0GzURAf/fpRbnxSSolJBIez5KLl5OecRQH9u8F+k3NfRupCbU16/BlgyfQU3cWJI
+m6lcN+XHqjqOgCKpEEqeL+FBl60aaZerlDXl8bHFfnRMm5mv5QjXjscHUioKuAu3
+V7ZCaboZoPMqgSvMT3nCJUpatHE6mXEyA6rJ5T3ekpL2XQoM7gA1jQ3L1mbjX5mv
+6gI2VSyWrktWvMHpVNxIVNSVEZuEwqsz9stZanRG/QKyQQAUM2H4ZaOkhFNy09gp
+dFdPAB4C6KNjnFnj5S+Cx5rLDqMrjBW/9m1SH28QiN3xVFKQK97IrU5PF+sP3U6t
+AAUTbZZ7ssGz2xMGnSVN7W4wug1j/w==
+=Wfjr
+-----END PGP SIGNATURE-----
+
+--Sig_/L03AUYJ7v_h6KH65+iT+3ss--
