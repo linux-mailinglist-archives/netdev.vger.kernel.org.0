@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EFD5E124637
-	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 12:54:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BEEB3124638
+	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 12:54:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726985AbfLRLyG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Dec 2019 06:54:06 -0500
-Received: from mail-pf1-f195.google.com ([209.85.210.195]:46763 "EHLO
-        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726718AbfLRLyF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Dec 2019 06:54:05 -0500
-Received: by mail-pf1-f195.google.com with SMTP id y14so1063729pfm.13
-        for <netdev@vger.kernel.org>; Wed, 18 Dec 2019 03:54:05 -0800 (PST)
+        id S1726992AbfLRLyK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Dec 2019 06:54:10 -0500
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:39240 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726718AbfLRLyJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Dec 2019 06:54:09 -0500
+Received: by mail-pg1-f196.google.com with SMTP id b137so1156094pga.6
+        for <netdev@vger.kernel.org>; Wed, 18 Dec 2019 03:54:09 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=R+7EVsXGkDvkBgcesT7DXdsTGOKp1DInf6xnwnn+Hkw=;
-        b=t/OHf/1yK96OWqX0P1MmyMZRUyWe2k17X1IlA83d3VX8RnQlkSd1jD0C9ZDABW1FDl
-         SE8UNN5tV/WWIqUDUFwV3wkK/PkWFowQAg4Cuudpicywumcn0p79sWw4dwa3iK2+h8SE
-         OR0qg9jVi0SDehcYSzCehW6eF2HOGYmMm3SfHat93ODG7EInSCCTFdMq3KFzHDdTlxNV
-         apZ8vYQS8kPDcWPRJHfhq1yvDJC1B5iFPF1ifrW8F5RUO92+8ApQsYeOwcEQz083sirI
-         Gn44hTMyJRZd+s74KjPw1XTzyZ3CykKOyiZYZXJYWbDUlpLAyNiQRtG1xPST/elfUgvk
-         ju4A==
+        bh=+rHj5u3iMCCxJRY2ucHo6msf9NxCYuFCALQA7T/CkCg=;
+        b=ZvyIrqblWXWx61afEjzZF8ODKbhdlcrxzY86JOibzhFH8en4Wm6KITby3ypWOYPkoT
+         /Fu8dCiXmRqriMk+8eIQPs1jvcpUs6cs4Xroibt+tIIXjEKG3m8L1HAatAacbaXD2iQu
+         Ou9Hq+Nqb5JegUc+UFLt8H6EedbADcHyl+AW0O+e9msZATJzsmzeZNH4k01ABetLtfy/
+         BknmdGXON8+uLHPY8i0SWvmlPlet6NMkyD2QufOanmPvDeLAh2UsRhL1E3plpjYUMCUm
+         EFtT1TDz0Z+uyZ/5+Kp7iHVuOs7cDo0bS4hBuCS0Ys4QSyBtQKrlGny/YEiKTyjC5l6x
+         wh3g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=R+7EVsXGkDvkBgcesT7DXdsTGOKp1DInf6xnwnn+Hkw=;
-        b=bRGFL/m+2mKzdt7CF1HgmDXD7y1FN0AIL4jK12M3//rTfZOCAIJIuzGdi+o/XK5Mq7
-         x7T1P9vGQS2UZwda9iWaxlY1X7tC/D8llt3/u0HT5Qz+EBZDAI+EGaI+eL+PqT6Pyyim
-         4Elv0suLE3trhXuirL0qCDgcrPLgowcB9BSrywvC/IYWA+GQ1uj/zdnoR0CpXOf17VVx
-         hDwVQeZkbJ0aai8kK0klj331Hc20Rq3b3DfenvfTrZq9AuXX/s45exVkX0LNobTrbtCK
-         T+XILmZ88qj216SMgYE9WUyutmPO6UsK+4ardFBsZC9J9m6uOANYUAJKIkc9edFCHnzM
-         Ek5w==
-X-Gm-Message-State: APjAAAXVcyrtObZ/vRZwBgrO9wtL4HELDSvO6DX4BhphtnxWk6JYqmUE
-        xyfF6xy2lePyvsuvlfXyMqoZ66Ts/QQ=
-X-Google-Smtp-Source: APXvYqzg32dGTZ8FuIA1arYy2As9slUyd6WqgF6jQaSINt/f/P/tv4584uEdmVaxmxeeEIHZo3/+Qw==
-X-Received: by 2002:a63:d153:: with SMTP id c19mr2588843pgj.78.1576670044923;
-        Wed, 18 Dec 2019 03:54:04 -0800 (PST)
+        bh=+rHj5u3iMCCxJRY2ucHo6msf9NxCYuFCALQA7T/CkCg=;
+        b=CPv5vvmtbStCitjyetkMsOzGDTtXVgMm+V9/IwpZ3ugpH/oJv6lspT9YZDUT04sA3R
+         ZgdRhyjsPPiqdR6wcnFnkIUFbnEPJnkDAWJqYJfyCK9Xjz2YUpFKmkjXwL7ThJefpPsN
+         RL5t7dHnw8lUT/tl1yRK5d2HCWFsZMXQbFGnZgMXKZEQHYKSPc8rRHY2rppBfiZpMeOl
+         uZew975lmfF30ZhYf9Bcfw7LJ/KbcdY8EZXvGYjlNdaBc7BQJf0bd5ZA1iwr+aL0K88j
+         OjLDU1c++vrpuAobbm4aViALasN2TVKMh4rdkjOUCHYBlg6KYSijsX6BkdWgQ0u0tp/0
+         aAIA==
+X-Gm-Message-State: APjAAAU37U5N0tt9i0N9ZuJzRtKgv15PgdenCaLS6yCmXRDJa7Sn1Owf
+        mR8RIUGX36dXEM1XwyW0dK9pBi6uz8E=
+X-Google-Smtp-Source: APXvYqz0Lfbaadb4AlKpcUgtzW3su+7nObK4896gG9tKUaR2BeVqYn9n1DkSm+qrzPuA3o7jLhxHbQ==
+X-Received: by 2002:aa7:8ad9:: with SMTP id b25mr2589443pfd.70.1576670049050;
+        Wed, 18 Dec 2019 03:54:09 -0800 (PST)
 Received: from dhcp-12-139.nay.redhat.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id x33sm2961067pga.86.2019.12.18.03.54.01
+        by smtp.gmail.com with ESMTPSA id x33sm2961067pga.86.2019.12.18.03.54.05
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 18 Dec 2019 03:54:04 -0800 (PST)
+        Wed, 18 Dec 2019 03:54:08 -0800 (PST)
 From:   Hangbin Liu <liuhangbin@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     Julian Anastasov <ja@ssi.bg>,
@@ -56,9 +56,9 @@ Cc:     Julian Anastasov <ja@ssi.bg>,
         Stephen Hemminger <stephen@networkplumber.org>,
         Alexey Kodanev <alexey.kodanev@oracle.com>,
         Hangbin Liu <liuhangbin@gmail.com>
-Subject: [PATCH net-next 6/8] vti: do not confirm neighbor when do pmtu update
-Date:   Wed, 18 Dec 2019 19:53:11 +0800
-Message-Id: <20191218115313.19352-7-liuhangbin@gmail.com>
+Subject: [PATCH net-next 7/8] sit: do not confirm neighbor when do pmtu update
+Date:   Wed, 18 Dec 2019 19:53:12 +0800
+Message-Id: <20191218115313.19352-8-liuhangbin@gmail.com>
 X-Mailer: git-send-email 2.19.2
 In-Reply-To: <20191218115313.19352-1-liuhangbin@gmail.com>
 References: <20191203021137.26809-1-liuhangbin@gmail.com>
@@ -73,42 +73,24 @@ X-Mailing-List: netdev@vger.kernel.org
 When do IPv6 tunnel PMTU update and calls __ip6_rt_update_pmtu() in the end,
 we should not call dst_confirm_neigh() as there is no two-way communication.
 
-Although ip vti is not affected as __ip_rt_update_pmtu() does not call
-dst_confirm_neigh(), we still not do neigh confirm to keep consistency with
-IPv6 code.
-
 Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
 ---
- net/ipv4/ip_vti.c  | 2 +-
- net/ipv6/ip6_vti.c | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ net/ipv6/sit.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/ipv4/ip_vti.c b/net/ipv4/ip_vti.c
-index cfb025606793..fb9f6d60c27c 100644
---- a/net/ipv4/ip_vti.c
-+++ b/net/ipv4/ip_vti.c
-@@ -214,7 +214,7 @@ static netdev_tx_t vti_xmit(struct sk_buff *skb, struct net_device *dev,
+diff --git a/net/ipv6/sit.c b/net/ipv6/sit.c
+index b2ccbc473127..98954830c40b 100644
+--- a/net/ipv6/sit.c
++++ b/net/ipv6/sit.c
+@@ -944,7 +944,7 @@ static netdev_tx_t ipip6_tunnel_xmit(struct sk_buff *skb,
+ 		}
  
- 	mtu = dst_mtu(dst);
- 	if (skb->len > mtu) {
--		skb_dst_update_pmtu(skb, mtu);
-+		skb_dst_update_pmtu_no_confirm(skb, mtu);
- 		if (skb->protocol == htons(ETH_P_IP)) {
- 			icmp_send(skb, ICMP_DEST_UNREACH, ICMP_FRAG_NEEDED,
- 				  htonl(mtu));
-diff --git a/net/ipv6/ip6_vti.c b/net/ipv6/ip6_vti.c
-index 024db17386d2..6f08b760c2a7 100644
---- a/net/ipv6/ip6_vti.c
-+++ b/net/ipv6/ip6_vti.c
-@@ -479,7 +479,7 @@ vti6_xmit(struct sk_buff *skb, struct net_device *dev, struct flowi *fl)
+ 		if (tunnel->parms.iph.daddr)
+-			skb_dst_update_pmtu(skb, mtu);
++			skb_dst_update_pmtu_no_confirm(skb, mtu);
  
- 	mtu = dst_mtu(dst);
- 	if (skb->len > mtu) {
--		skb_dst_update_pmtu(skb, mtu);
-+		skb_dst_update_pmtu_no_confirm(skb, mtu);
- 
- 		if (skb->protocol == htons(ETH_P_IPV6)) {
- 			if (mtu < IPV6_MIN_MTU)
+ 		if (skb->len > mtu && !skb_is_gso(skb)) {
+ 			icmpv6_send(skb, ICMPV6_PKT_TOOBIG, 0, mtu);
 -- 
 2.19.2
 
