@@ -2,53 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 409A6123FBA
-	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 07:39:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 577EC123FC7
+	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 07:41:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726496AbfLRGjW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Dec 2019 01:39:22 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:47348 "EHLO
+        id S1726707AbfLRGkw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Dec 2019 01:40:52 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:47368 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725797AbfLRGjW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Dec 2019 01:39:22 -0500
+        with ESMTP id S1726638AbfLRGkw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Dec 2019 01:40:52 -0500
 Received: from localhost (unknown [IPv6:2601:601:9f00:1c3::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 762971500BB50;
-        Tue, 17 Dec 2019 22:39:21 -0800 (PST)
-Date:   Tue, 17 Dec 2019 22:39:20 -0800 (PST)
-Message-Id: <20191217.223920.2253637492180028793.davem@davemloft.net>
-To:     o.rempel@pengutronix.de
-Cc:     jcliburn@gmail.com, chris.snook@gmail.com, andrew@lunn.ch,
-        kernel@pengutronix.de, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] net: ag71xx: fix compile warnings
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 258F41500C698;
+        Tue, 17 Dec 2019 22:40:52 -0800 (PST)
+Date:   Tue, 17 Dec 2019 22:40:51 -0800 (PST)
+Message-Id: <20191217.224051.85490096962356922.davem@davemloft.net>
+To:     ben.dooks@codethink.co.uk
+Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH] net: dsa: make unexported dsa_link_touch() static
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20191217065145.9329-1-o.rempel@pengutronix.de>
-References: <20191217065145.9329-1-o.rempel@pengutronix.de>
+In-Reply-To: <20191217112038.2069386-1-ben.dooks@codethink.co.uk>
+References: <20191217112038.2069386-1-ben.dooks@codethink.co.uk>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 17 Dec 2019 22:39:21 -0800 (PST)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 17 Dec 2019 22:40:52 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Oleksij Rempel <o.rempel@pengutronix.de>
-Date: Tue, 17 Dec 2019 07:51:45 +0100
+From: "Ben Dooks (Codethink)" <ben.dooks@codethink.co.uk>
+Date: Tue, 17 Dec 2019 11:20:38 +0000
 
-> drivers/net/ethernet/atheros/ag71xx.c: In function 'ag71xx_probe':
-> drivers/net/ethernet/atheros/ag71xx.c:1776:30: warning: passing argument 2 of
->  'of_get_phy_mode' makes pointer from integer without a cast [-Wint-conversion]
-> In file included from drivers/net/ethernet/atheros/ag71xx.c:33:
-> ./include/linux/of_net.h:15:69: note: expected 'phy_interface_t *'
->  {aka 'enum <anonymous> *'} but argument is of type 'int'
+> dsa_link_touch() is not exported, or defined outside of the
+> file it is in so make it static to avoid the following warning:
 > 
-> Fixes: 0c65b2b90d13c1 ("net: of_get_phy_mode: Change API to solve int/unit warnings")
-> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+> net/dsa/dsa2.c:127:17: warning: symbol 'dsa_link_touch' was not declared. Should it be static?
+> 
+> Signed-off-by: Ben Dooks (Codethink) <ben.dooks@codethink.co.uk>
 
-Applied, thank you.
+Applied.
