@@ -2,54 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1749C123FD2
-	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 07:55:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 821B9123FD3
+	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 07:55:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726613AbfLRGy7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Dec 2019 01:54:59 -0500
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:41379 "EHLO
+        id S1726497AbfLRGz1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Dec 2019 01:55:27 -0500
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:38943 "EHLO
         mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725797AbfLRGy6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Dec 2019 01:54:58 -0500
-Received: by mail-pf1-f193.google.com with SMTP id w62so668784pfw.8
-        for <netdev@vger.kernel.org>; Tue, 17 Dec 2019 22:54:58 -0800 (PST)
+        with ESMTP id S1725797AbfLRGz1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Dec 2019 01:55:27 -0500
+Received: by mail-pf1-f193.google.com with SMTP id q10so674934pfs.6
+        for <netdev@vger.kernel.org>; Tue, 17 Dec 2019 22:55:26 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:subject:date:message-id;
-        bh=mKccIRzS7L8pXaNK1gob15ECc3YRRTJEJcMvgprwiyU=;
-        b=F4wTvUI8xTYqYLObnzC6YBzwawLg/l6eZypbkHJOQ+h1Kkrog1GvlNEnHAn+oZ33xg
-         nMhXF6J4fFZ5F79Yf/57psovofyAnwfv5xUaH4IsDIqTnMvgGB6LIcpymRm0h4sCgKVR
-         LEU+Va4ZEEsy8tIIl4dVVGbKsWRIuSPYV9iUMHX4iecdwJOp4fuueqSQ0EuaQFjc/1pK
-         IEyR7+n+3GnCnajY8ZEjfEJ4VQlBUl6v5gvrguqud+j4KgSe2rgTa0aZXHbhDn/X0juK
-         Qmf1F9EPUZNaOmcjVQvUv5GFnVFw8e8bOgaIT433ovzHx5tbTYWhCri0g6ldi0QOG8YG
-         Iuzg==
+        h=from:to:subject:date:message-id:in-reply-to:references;
+        bh=bzIfo5QToARCZWLeqG3x/wMqUmg7NXaLyDxKE0gqU2E=;
+        b=WpiFi+P243pgZwyZZX1fE4hheEMWsNjMJ2xiHkNJvjgWmVYBWKCgtgcAO/AhFJXr1M
+         CkgOe4ne7PWJKswPpIIrgUj2B7oNrejXMO3726H1CiDJ7uMbZsTrGrGf+/DNB4yX3mW5
+         eZbM35DyLAiYcqEqp5beVXIGjtRKHpkC82aqbXk2kY91vzyesmLNl4o9Z2iac/ahJUly
+         Ds1to5xwBiQsy6WzaYHdufG5xh5Kw95Hew0uFmtGud0eZbMLgAQbIqhtdFZGuCnux6eH
+         bFHgvUu0UQZVGsQGJiYNhxV52Ejk12Yi4HVlUbdP+/48yR/R3SeHosuwvzkPlQoYnOf+
+         GZXg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:subject:date:message-id;
-        bh=mKccIRzS7L8pXaNK1gob15ECc3YRRTJEJcMvgprwiyU=;
-        b=W9BMmc9XU71e+g56tYhQ8rwGtZl2BHNuAYudO1L4/YuteQxUHltE4+t4tpwDzXT0qI
-         l3o8la7Ii91zO5o6Pd7OMmt6laBGmHPwNQGlSIpuZEZ3yxFGJIOIBmgb2tgSxXwRTIoN
-         KiCm9tcqf5vkcFN8jURXVbsCagy5JCg4CobK1jpyuebNbsNgf4AvNeJOquk2qMfYxkmM
-         DAvms12L2jRTnz3yyj0NEwWXfrBwH9/Wmg8V7LCsFNUJ8IE2A8snwr8Zj0JLw5OHf/d/
-         uqbk1QYijRb5tBYj1w/FZtPZgE361CkD72A+5p3vy8vESlxQJfgra2ZnzO+Y2Xjrg2tW
-         1j0Q==
-X-Gm-Message-State: APjAAAWmHic2Nzlk8doDO3B72hO+sQcVItjVkgyMNYeoBqBjeN83zgU3
-        Bn8Ev/3Ue0s66qFSQCMsAohOCN/i
-X-Google-Smtp-Source: APXvYqxXISZNDAJ/fgk59C8P/SbYNdQaxeLbxIzZkV9DKUi3zAuyUGfgAgN4WbXdo68QOyfFtESedA==
-X-Received: by 2002:a62:3781:: with SMTP id e123mr1343686pfa.98.1576652097869;
-        Tue, 17 Dec 2019 22:54:57 -0800 (PST)
+        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
+         :references;
+        bh=bzIfo5QToARCZWLeqG3x/wMqUmg7NXaLyDxKE0gqU2E=;
+        b=TJce1y3gqa4QoqhMRUplDNMfC3jXWw/KBkv46uIUDNWTC1j/KtTPopaTJOB5iUlFWe
+         UXC+AcD2ouHE8RFS61CnKmAgpOLj4UZBz6JwzkJhKWoDLeZ/9yz6gaaPtza4gim8howt
+         RAiMc6Y/e3vYzKs03hW/Sw9BIvFIzuWZ6JtDj2bpOt1InyV/3SFPejJqWXemasUMuK2L
+         I6W03IwVwndx+0Hc3p46poj16YZQFbGhUd7HnXrvX/fVYJrn4WlqQ1fg0duKS4W+wDMB
+         KeBig3AG7SsRSHFzCT6NmzJDtlo0s87IsmDe4knaHPpwNB2TEm8AqxJ16SeJxYqiqXhp
+         T7Kg==
+X-Gm-Message-State: APjAAAVcEFR5o4VIXPQ3cPkXQaSQRCdOgO35LGKbfwsAJidmC+WIVzTv
+        nXoLtv5DtvrvYU8M+Wt7geyOLlDq
+X-Google-Smtp-Source: APXvYqzjcUizAzcj4XiqmGBTd60EDhwTT5rN9brGZgQ8vXQSlVVsswIppMOe4PwC6PlfU0Ud73P2NQ==
+X-Received: by 2002:a62:4ec6:: with SMTP id c189mr1293397pfb.159.1576652126399;
+        Tue, 17 Dec 2019 22:55:26 -0800 (PST)
 Received: from localhost.localdomain ([122.182.209.142])
-        by smtp.gmail.com with ESMTPSA id n2sm1431176pgn.71.2019.12.17.22.54.55
+        by smtp.gmail.com with ESMTPSA id d24sm1555570pfq.75.2019.12.17.22.55.24
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Tue, 17 Dec 2019 22:54:57 -0800 (PST)
+        Tue, 17 Dec 2019 22:55:25 -0800 (PST)
 From:   Martin Varghese <martinvarghesenokia@gmail.com>
 To:     netdev@vger.kernel.org, davem@davemloft.net, pshelar@ovn.org,
         scott.drennan@nokia.com, jbenc@redhat.com,
         martin.varghese@nokia.com
-Subject: [PATCH net-next v4 0/3] New openvswitch MPLS actions for layer 2 tunnelling
-Date:   Wed, 18 Dec 2019 12:17:21 +0530
-Message-Id: <cover.1576648350.git.martin.varghese@nokia.com>
+Subject: [PATCH net-next v4 1/3] net: skb_mpls_push() modified to allow MPLS header push at start of packet.
+Date:   Wed, 18 Dec 2019 12:17:50 +0530
+Message-Id: <5dbc2dbc222ff778861ef08b4e0a68a49a7afeb1.1576648350.git.martin.varghese@nokia.com>
 X-Mailer: git-send-email 1.9.1
+In-Reply-To: <cover.1576648350.git.martin.varghese@nokia.com>
+References: <cover.1576648350.git.martin.varghese@nokia.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -57,61 +60,59 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Martin Varghese <martin.varghese@nokia.com>
 
-The existing PUSH MPLS action inserts MPLS header between ethernet header
-and the IP header. Though this behaviour is fine for L3 VPN where an IP
-packet is encapsulated inside a MPLS tunnel, it does not suffice the L2
-VPN (l2 tunnelling) requirements. In L2 VPN the MPLS header should
-encapsulate the ethernet packet.
+The existing skb_mpls_push() implementation always inserts mpls header
+after the mac header. L2 VPN use cases requires MPLS header to be
+inserted before the ethernet header as the ethernet packet gets tunnelled
+inside MPLS header in those cases.
 
-The new mpls action PTAP_PUSH_MPLS inserts MPLS header at the start of the
-packet or at the start of the l3 header depending on the value of l2 tunnel
-flag in the PTAP_PUSH_MPLS arguments.
+Signed-off-by: Martin Varghese <martin.varghese@nokia.com>
+---
+Changes in v2:
+    - Fixed comments section of skb_mpls_push().
+    - Added skb_reset_mac_len() in skb_mpls_push(). The mac len changes
+      when MPLS header in inserted at the start of the packet.
 
-POP_MPLS action is extended to support ethertype 0x6558
+ net/core/skbuff.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-OVS userspace changes -
----------------------
-Encap & Decap ovs actions are extended to support MPLS packet type. The encap & decap
-adds and removes MPLS header at the start of packet as depicted below.
-
-Actions - encap(mpls(ether_type=0x8847)),encap(ethernet)
-
-Incoming packet -> | ETH | IP | Payload |
-
-1 Actions -  encap(mpls(ether_type=0x8847)) [Kernel action - ptap_push_mpls:0x8847]
-
-        Outgoing packet -> | MPLS | ETH | Payload|
-
-2 Actions - encap(ethernet) [ Kernel action - push_eth ]
-
-        Outgoing packet -> | ETH | MPLS | ETH | Payload|
-
-Decapsulation:
-
-Incoming packet -> | ETH | MPLS | ETH | IP | Payload |
-
-Actions - decap(),decap(packet_type(ns=0,type=0)
-
-1 Actions -  decap() [Kernel action - pop_eth)
-
-        Outgoing packet -> | MPLS | ETH | IP | Payload|
-
-2 Actions - decap(packet_type(ns=0,type=0) [Kernel action - pop_mpls:0]
-
-        Outgoing packet -> | ETH  | IP | Payload
-
-Martin Varghese (3):
-  net: skb_mpls_push() modified to allow MPLS header push at start of
-    packet.
-  net: Rephrased comments section of skb_mpls_pop()
-  openvswitch: New MPLS actions for layer 2 tunnelling
-
- include/uapi/linux/openvswitch.h | 31 +++++++++++++++++++++++++++++++
- net/core/skbuff.c                | 10 +++++++---
- net/openvswitch/actions.c        | 30 ++++++++++++++++++++++++------
- net/openvswitch/flow_netlink.c   | 34 ++++++++++++++++++++++++++++++++++
- 4 files changed, 96 insertions(+), 9 deletions(-)
-
+diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+index 973a71f..d90c827 100644
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -5472,12 +5472,15 @@ static void skb_mod_eth_type(struct sk_buff *skb, struct ethhdr *hdr,
+ }
+ 
+ /**
+- * skb_mpls_push() - push a new MPLS header after the mac header
++ * skb_mpls_push() - push a new MPLS header after mac_len bytes from start of
++ *                   the packet
+  *
+  * @skb: buffer
+  * @mpls_lse: MPLS label stack entry to push
+  * @mpls_proto: ethertype of the new MPLS header (expects 0x8847 or 0x8848)
+  * @mac_len: length of the MAC header
++ * @ethernet: flag to indicate if the resulting packet after skb_mpls_push is
++ *            ethernet
+  *
+  * Expects skb->data at mac header.
+  *
+@@ -5501,7 +5504,7 @@ int skb_mpls_push(struct sk_buff *skb, __be32 mpls_lse, __be16 mpls_proto,
+ 		return err;
+ 
+ 	if (!skb->inner_protocol) {
+-		skb_set_inner_network_header(skb, mac_len);
++		skb_set_inner_network_header(skb, skb_network_offset(skb));
+ 		skb_set_inner_protocol(skb, skb->protocol);
+ 	}
+ 
+@@ -5510,6 +5513,7 @@ int skb_mpls_push(struct sk_buff *skb, __be32 mpls_lse, __be16 mpls_proto,
+ 		mac_len);
+ 	skb_reset_mac_header(skb);
+ 	skb_set_network_header(skb, mac_len);
++	skb_reset_mac_len(skb);
+ 
+ 	lse = mpls_hdr(skb);
+ 	lse->label_stack_entry = mpls_lse;
 -- 
 1.8.3.1
 
