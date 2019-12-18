@@ -2,77 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EB299124569
-	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 12:11:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 74642124573
+	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 12:15:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726831AbfLRLLr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Dec 2019 06:11:47 -0500
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:27383 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726674AbfLRLLr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Dec 2019 06:11:47 -0500
+        id S1726701AbfLRLPH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Dec 2019 06:15:07 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:24959 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1725930AbfLRLPH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Dec 2019 06:15:07 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1576667506;
+        s=mimecast20190719; t=1576667706;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=J7XzD5ev6iIeajtEJ8QU1QYPQhlO4elODv38UFwEHGc=;
-        b=HcKFkj/wHS4jalS94jLsKSML5fztkfNh20j8l/k0YCf9FkzQ1UhuzrKWFbebaWPtRB/6CE
-        B0Wbr88QUuNgOnhPy1ROixAqIgYjA28MdyG4d4+dzNyNdlUaZOAwbKoHau2ukINpQ8dCzi
-        hzgEgSzpJT7tXG+nZq/+YZInmQY17+Y=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-15-5yVgNrTaP-aue4WSK1GGMg-1; Wed, 18 Dec 2019 06:11:42 -0500
-X-MC-Unique: 5yVgNrTaP-aue4WSK1GGMg-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id B043A19057B2;
-        Wed, 18 Dec 2019 11:11:40 +0000 (UTC)
-Received: from carbon (ovpn-200-37.brq.redhat.com [10.40.200.37])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 1E4CF6888B;
-        Wed, 18 Dec 2019 11:11:34 +0000 (UTC)
-Date:   Wed, 18 Dec 2019 12:11:32 +0100
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
-Cc:     brouer@redhat.com, netdev@vger.kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, bpf@vger.kernel.org, davem@davemloft.net,
+        bh=pDExBp6N2KqojXTPG0+Gp10QLUPfm8Ox8GErnJhVPNw=;
+        b=GZKz0MYSGVP5/8MDKhHJnzAreIa3705nOhZ/TNwZ2nRdaaAMcf6p4tY/9n7cjzuFv6QvUg
+        NUi4QWStMmNaxWWvnjUgyJ5ow8LKHc7A+R1itGgPSEyL6EoNBQYIKqRdxwiy1ZD+MIFo4p
+        XDEASIRG52K7fCjzys7OhoQDUGRnadk=
+Received: from mail-lf1-f72.google.com (mail-lf1-f72.google.com
+ [209.85.167.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-399-Y2swDBVYNJuetzuo83acqw-1; Wed, 18 Dec 2019 06:15:02 -0500
+X-MC-Unique: Y2swDBVYNJuetzuo83acqw-1
+Received: by mail-lf1-f72.google.com with SMTP id d7so185851lfk.9
+        for <netdev@vger.kernel.org>; Wed, 18 Dec 2019 03:15:02 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=pDExBp6N2KqojXTPG0+Gp10QLUPfm8Ox8GErnJhVPNw=;
+        b=PH476IT9jwm7p61Vwyg6COZtTi/3R47UiocdUM0jkD4ik2pt5103sfecNshwQOCIsV
+         wvXZzkW3XdXz5CPKonx1isCFrcUGumn0CjR8BBinFDjvpbl+5dbCICRCdTQKmj4dKt2H
+         OjNKbgMaWTJNm0bg23jrR2R7mHbQant7mkanRx7Kwi+yd5VsJYDM/ZDctzDo8TZKURhz
+         QjfhnMHzaEcgNKeC/rF+bVLHdtibm8l1lGFpZhMD1LyzP7MZXSP5+d57Wa0GgSNDlQv+
+         Ch2d0//EKtnVskUvWFHWBmFcaC5Cv7yrmkAdlqeAEuKJZPgUc7/szFFJqTXi/SqoCL8F
+         IH6w==
+X-Gm-Message-State: APjAAAXrcnC/rD6uxJS4oQHO5NEgVz5Yur7fqLN8/CEImss3UrSwc2DJ
+        zu4jFaGRnXiJ1y4cFcELLr90WFEJ2Zy0ndVoL8Y9DfqAIOzQ0cBWq0bI7j9XOo6J7ujyOMjy2L1
+        Sd7/R6DyC71deQmmo
+X-Received: by 2002:a2e:a408:: with SMTP id p8mr1299968ljn.145.1576667701608;
+        Wed, 18 Dec 2019 03:15:01 -0800 (PST)
+X-Google-Smtp-Source: APXvYqxu/QsFi5ppTKWgJ/GsTNk/uvuIeU95JnusduZ6XHkMbBeYOQHZNK5HbKXRf+fHg9S9LJb4BA==
+X-Received: by 2002:a2e:a408:: with SMTP id p8mr1299950ljn.145.1576667701304;
+        Wed, 18 Dec 2019 03:15:01 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
+        by smtp.gmail.com with ESMTPSA id q186sm978511ljq.14.2019.12.18.03.14.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 18 Dec 2019 03:15:00 -0800 (PST)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 70216180969; Wed, 18 Dec 2019 12:14:59 +0100 (CET)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
+        netdev@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net
+Cc:     =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        bpf@vger.kernel.org, davem@davemloft.net,
         jakub.kicinski@netronome.com, hawk@kernel.org,
         john.fastabend@gmail.com, magnus.karlsson@intel.com,
         jonathan.lemon@gmail.com
-Subject: Re: [PATCH bpf-next 0/8] Simplify
- xdp_do_redirect_map()/xdp_do_flush_map() and XDP maps
-Message-ID: <20191218121132.4023f4f1@carbon>
-In-Reply-To: <20191218105400.2895-1-bjorn.topel@gmail.com>
-References: <20191218105400.2895-1-bjorn.topel@gmail.com>
+Subject: Re: [PATCH bpf-next 1/8] xdp: simplify devmap cleanup
+In-Reply-To: <20191218105400.2895-2-bjorn.topel@gmail.com>
+References: <20191218105400.2895-1-bjorn.topel@gmail.com> <20191218105400.2895-2-bjorn.topel@gmail.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Wed, 18 Dec 2019 12:14:59 +0100
+Message-ID: <8736dh7umk.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 18 Dec 2019 11:53:52 +0100
-Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail.com> wrote:
+Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail.com> writes:
 
->   $ sudo ./xdp_redirect_cpu --dev enp134s0f0 --cpu 22 xdp_cpu_map0
->  =20
->   Running XDP/eBPF prog_name:xdp_cpu_map5_lb_hash_ip_pairs
->   XDP-cpumap      CPU:to  pps            drop-pps    extra-info
->   XDP-RX          20      7723038        0           0
->   XDP-RX          total   7723038        0
->   cpumap_kthread  total   0              0           0
->   redirect_err    total   0              0
->   xdp_exception   total   0              0
+> From: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
+>
+> After the RCU flavor consolidation [1], call_rcu() and
+> synchronize_rcu() waits for preempt-disable regions (NAPI) in addition
+> to the read-side critical sections. As a result of this, the cleanup
+> code in devmap can be simplified
+>
+> * There is no longer a need to flush in __dev_map_entry_free, since we
+>   know that this has been done when the call_rcu() callback is
+>   triggered.
+>
+> * When freeing the map, there is no need to explicitly wait for a
+>   flush. It's guaranteed to be done after the synchronize_rcu() call
+>   in dev_map_free(). The rcu_barrier() is still needed, so that the
+>   map is not freed prior the elements.
+>
+> [1] https://lwn.net/Articles/777036/
+>
+> Signed-off-by: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
 
-Hmm... I'm missing some counters on the kthread side.
-
---=20
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
+Acked-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
 
