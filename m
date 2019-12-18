@@ -2,76 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DB88F1257E7
-	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 00:41:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 34B5D12580B
+	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 00:54:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726652AbfLRXlq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Dec 2019 18:41:46 -0500
-Received: from mail-ot1-f65.google.com ([209.85.210.65]:42836 "EHLO
-        mail-ot1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725948AbfLRXlp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Dec 2019 18:41:45 -0500
-Received: by mail-ot1-f65.google.com with SMTP id 66so4591104otd.9;
-        Wed, 18 Dec 2019 15:41:45 -0800 (PST)
+        id S1726741AbfLRXx6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Dec 2019 18:53:58 -0500
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:44974 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726620AbfLRXx6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Dec 2019 18:53:58 -0500
+Received: by mail-pg1-f195.google.com with SMTP id x7so2102878pgl.11
+        for <netdev@vger.kernel.org>; Wed, 18 Dec 2019 15:53:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=7Q7+ngoxGHulcvPYWZfpmuI44mIQd4qNwFvocQ6UeyE=;
+        b=vHwWJMgadN5EiuG0ZoK3Dz8PBDovBTvVOhUIDn/IekItG+R5GBJZ9U74qfxDIs3MtY
+         4F7G7skWYb26dN4wjLMny/l7/T7YJmmtsTquDzQS4gFKUMdzOucbhYZ1sdW4Y3A/I1VH
+         3ojtwGfm2rvXD3E3fdzaCAboSGaDMAgR3CF/RQlTCne7sHQxzOv5RLvT5UDoEq821UNt
+         kikMbjOyVCnCDrpmO4xiRO80tjOf2p9gsDeoLMzVn738xaAbmym/2927YhIeSrOmKEOk
+         hxeFnYBTd1WON4Fx5htXcYa0a09oOdvJ+me5z+VmN+SvY/Ot1b2qdY94qWXYrcJyKG1I
+         6prg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=R29Btnzag73VkeWSdz4euQtuxJFOTMdR3dZXl1nXjuI=;
-        b=OpQefdOsR2Mu0IX1E5nCyTWzp5WWfFk6FEhYa6g5AknvZudkYbgIAqHDhu9hQ+gFej
-         0WCvGlXEeAZoiQtntHZ2TCSn1eHMQULX+HiNMn4qRJ0WTEiNoFan5jZfZfJxnQnjl1tB
-         m9E1LLRC5hHVEa7JcfvP/IAiElSATEN4BY/Q/mnzsxuADYZcqsQYJMFZxs+TRaUFke3d
-         cXNbWg7JeaUZV/jnWWcs7iXTCkoNP40IxSjoW/jb3F9Q0zP0O+xH+DmH/eZSUaIZJ686
-         nXVcpSudaXjpZaF+7o0wulwxvZ3tZ+muK1pOjI06+jXxtWZ5MwRpY/Z0rWmYCi1svxkF
-         WqcQ==
-X-Gm-Message-State: APjAAAU7IlKeeRtm00c/Sy+47UAVKQOsTzjzyruE9EinEbBg+JFqzrMA
-        AHxNf1x8XUcoQ1aLs6cnp3y956q9LQ==
-X-Google-Smtp-Source: APXvYqxT21uP5Hd4ruqKQC1yFjEgpvgeZ8PPRxzwneE1wkiyWFUxWmXFpMHBXDmzot1rNAsfdwbojg==
-X-Received: by 2002:a9d:7a88:: with SMTP id l8mr5673731otn.187.1576712504917;
-        Wed, 18 Dec 2019 15:41:44 -0800 (PST)
-Received: from localhost (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
-        by smtp.gmail.com with ESMTPSA id q1sm1455743otr.40.2019.12.18.15.41.44
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=7Q7+ngoxGHulcvPYWZfpmuI44mIQd4qNwFvocQ6UeyE=;
+        b=gDrb3dz03k4DJafUedHEoW/++fN9t1PUHic0/uVA1UgwbJsM3/dZpOaVgpvLoYgLJM
+         VYeRF2xR3HbOm0At0hPx8S6tiGjBuGrW86Tpv5DzhpZBhlAl27N41+UxOT4FClEo7u8d
+         /khiKyzTGrWZZ1QFPdGsfbeQXxOIfVCwDpOybJdC8mfXV+dBtwm4qgjpMtUCzd3XHPFi
+         I/+/wgnbCdCcD4yCIM+uOV5IWsP0W2/dlZUBySiP92xpMLpkcI9mWXFqyY6RpHAgcf+y
+         cd4j0mvHSLr95gLgxgl1R4QAtYycVhBtF+ueLXN0sgM2ZEzGzoyyi1dXTW7q2IatxHiJ
+         GI4Q==
+X-Gm-Message-State: APjAAAUaE//gCTuIVQMMDZgOr/P62acBlWUE+gj/J697oP3XG7LoIQ+O
+        vkmuzgjrpQ31OzGWf3EOUmeijL/e67I=
+X-Google-Smtp-Source: APXvYqwKg3JkOYHR38ux4hW6JP9eTNleJfh4Oab9ocDpoo7p3hgNWPBUCizuAiXclupj3Q8e6pliBQ==
+X-Received: by 2002:a62:754b:: with SMTP id q72mr5241346pfc.102.1576713237437;
+        Wed, 18 Dec 2019 15:53:57 -0800 (PST)
+Received: from cakuba.netronome.com ([216.9.110.3])
+        by smtp.gmail.com with ESMTPSA id e10sm4991277pfm.3.2019.12.18.15.53.56
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 18 Dec 2019 15:41:44 -0800 (PST)
-Date:   Wed, 18 Dec 2019 17:41:43 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Matthias Kaehlcke <mka@chromium.org>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Matthias Kaehlcke <mka@chromium.org>,
-        devicetree@vger.kernel.org, Rocky Liao <rjliao@codeaurora.org>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Harish Bandi <c-hbandi@codeaurora.org>,
-        Balakrishna Godavarthi <bgodavar@codeaurora.org>
-Subject: Re: [PATCH] dt-bindings: net: bluetooth: Add compatible string for
- WCN3991
-Message-ID: <20191218234143.GA15666@bogus>
-References: <20191205122241.1.I6c86a40ce133428b6fab21f24f6ff6fec7e74e62@changeid>
+        Wed, 18 Dec 2019 15:53:57 -0800 (PST)
+Date:   Wed, 18 Dec 2019 15:52:05 -0800
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     David Miller <davem@davemloft.net>
+Cc:     ldir@darbyshire-bryant.me.uk, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next v2] sch_cake: drop unused variable
+ tin_quantum_prio
+Message-ID: <20191218155205.6b0d724c@cakuba.netronome.com>
+In-Reply-To: <20191218.123716.1806707418521871245.davem@davemloft.net>
+References: <20191218140459.24992-1-ldir@darbyshire-bryant.me.uk>
+        <20191218095340.7a26e391@cakuba.netronome.com>
+        <20191218.123716.1806707418521871245.davem@davemloft.net>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191205122241.1.I6c86a40ce133428b6fab21f24f6ff6fec7e74e62@changeid>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu,  5 Dec 2019 12:22:59 -0800, Matthias Kaehlcke wrote:
-> Commit 7d250a062f75 ("Bluetooth: hci_qca: Add support for Qualcomm
-> Bluetooth SoC WCN3991") added the compatible string 'qcom,wcn3991-bt'
-> to the Qualcomm Bluetooth driver, however the string is not listed
-> in the binding. Add the 'qcom,wcn3991-bt' to the supported compatible
-> strings.
+On Wed, 18 Dec 2019 12:37:16 -0800 (PST), David Miller wrote:
+> From: Jakub Kicinski <jakub.kicinski@netronome.com>
+> Date: Wed, 18 Dec 2019 09:53:40 -0800
 > 
-> Signed-off-by: Matthias Kaehlcke <mka@chromium.org>
-> ---
+> > On Wed, 18 Dec 2019 14:05:13 +0000, Kevin 'ldir' Darbyshire-Bryant
+> > wrote:  
+> >> Turns out tin_quantum_prio isn't used anymore and is a leftover from a
+> >> previous implementation of diffserv tins.  Since the variable isn't used
+> >> in any calculations it can be eliminated.
+> >> 
+> >> Drop variable and places where it was set.  Rename remaining variable
+> >> and consolidate naming of intermediate variables that set it.
+> >> 
+> >> Signed-off-by: Kevin Darbyshire-Bryant <ldir@darbyshire-bryant.me.uk>  
+> > 
+> > Checkpatch sayeth:
+> > 
+> > WARNING: Missing Signed-off-by: line by nominal patch author 'Kevin 'ldir' Darbyshire-Bryant <ldir@darbyshire-bryant.me.uk>'  
 > 
->  Documentation/devicetree/bindings/net/qualcomm-bluetooth.txt | 1 +
->  1 file changed, 1 insertion(+)
+> Which is kinda rediculous wouldn't you say? :-)
 > 
+> The warning stops to be useful if it's going to be applied in situations
+> like this where merely a nickname 'ldir' is added to the middle of the
+> person's formal name.
+> 
+> I would never push back on a patch on these grounds, it just wastes time.
 
-Applied, thanks.
+Yup, just tuning the checks, this one I wasn't 100% sure :-)
 
-Rob
+Looks like Greg's script only complains if both name and address are
+different, but checkpatch expects the exact same thing. I'll stick to
+Greg's method.
+
+Feedback is very welcome :-)
