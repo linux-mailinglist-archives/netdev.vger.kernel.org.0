@@ -2,79 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 65A1C124663
-	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 13:02:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D5BA124660
+	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 13:02:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726939AbfLRMCa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Dec 2019 07:02:30 -0500
-Received: from mail-pl1-f194.google.com ([209.85.214.194]:41976 "EHLO
-        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726749AbfLRMC3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Dec 2019 07:02:29 -0500
-Received: by mail-pl1-f194.google.com with SMTP id bd4so875568plb.8
-        for <netdev@vger.kernel.org>; Wed, 18 Dec 2019 04:02:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=pKDPIj7dKOkneEQstS9kmIONL5L79ApxNsEgnINeAsk=;
-        b=EijYv16XFdhCOErVNrYVWq65cSZ0y6HRanalzCzYLI0BR2EAuzFYb0YOZuWr2syqau
-         at86l8kW+ju66BAZqx5RnoztxpN9tzxCoxa+CeXr/NFgNc6LYmYHJ01mGD8h5oqjdsMk
-         bQoOQRxSTUNzz7AbfkIxYWsFZDXu5wghxV2YGjxS8X6328JJI03LjOBJPzRzt9p/4zDP
-         mRQKHzdbcSQGaMLgemRssExK54cebRUpXSetclAn4rPtePdbWAMcPCGmfCs/Q242g3HX
-         AnBq/rArbb5X2ZLlAjCxVPGwZmIPrr5PX+VCtAuH+QJCsG6dF0oiXUq6JXclQ+5NEj75
-         48cA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=pKDPIj7dKOkneEQstS9kmIONL5L79ApxNsEgnINeAsk=;
-        b=tVHjO33k+INOQhExoMSfwld81j+h0VotyAPd87hXLoIBoVrNo1OpB6uVuZV+2QxtFG
-         3LxVgPtycMsvhkKPntHyeS0l6J606fYy1EI3ZetCVa82er1x33phe9A9JlcLUn1lCdDH
-         w51YR4nWQfFf2d0+ioaEmbfeHWqU7Y7aF3Bis3Z9+hU2sftFjP0/uyzEo4QeuusjcvPt
-         JnpFMZTNPcRsGsnPwpQ3tLkAXQ2m6WwEm6/Il5E7zrmZiVGSim86X2M6EJml0bYRM6QT
-         H9Eic3aPmiKagYHdbVL1hX+h4Lz0XsP7R0NURqECpH7N2uhhq1dhsLxz4TS53OJtiDQX
-         7Khg==
-X-Gm-Message-State: APjAAAVSLLlcEyDrFJ/28Ra+yfC7xBlG4+TYSKeF+VJgZS7RiQ9Rqi3J
-        qqV/UwmMab7nvRZfoHMtyUfDdhzcyXc=
-X-Google-Smtp-Source: APXvYqxeQkjihUaEVDmMeeSgd5vOuy+X0HtYqLs7gQ5mA4IIVW/Ln81eSim8FJuQzf7t82j1hj2MaA==
-X-Received: by 2002:a17:90a:a4c4:: with SMTP id l4mr917677pjw.48.1576670548826;
-        Wed, 18 Dec 2019 04:02:28 -0800 (PST)
-Received: from dhcp-12-139.nay.redhat.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id z14sm3157009pfg.57.2019.12.18.04.02.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 18 Dec 2019 04:02:23 -0800 (PST)
-Date:   Wed, 18 Dec 2019 20:01:48 +0800
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Julian Anastasov <ja@ssi.bg>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        David Ahern <dsahern@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Guillaume Nault <gnault@redhat.com>,
-        David Miller <davem@davemloft.net>,
-        Pablo Neira <pablo@netfilter.org>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Alexey Kodanev <alexey.kodanev@oracle.com>
-Subject: Re: [PATCH net-next 0/8] disable neigh update for tunnels during
- pmtu update
-Message-ID: <20191218120147.GA27948@dhcp-12-139.nay.redhat.com>
-References: <20191203021137.26809-1-liuhangbin@gmail.com>
- <20191218115313.19352-1-liuhangbin@gmail.com>
+        id S1726922AbfLRMC1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Dec 2019 07:02:27 -0500
+Received: from mail25.static.mailgun.info ([104.130.122.25]:63482 "EHLO
+        mail25.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726591AbfLRMC1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Dec 2019 07:02:27 -0500
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1576670546; h=Content-Type: MIME-Version: Message-ID:
+ In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
+ bh=B4/RlwWd+D6Up8aRuxBevuGNVTwp4B7x7EDttVNYIiA=; b=JzmkTD4gJHSur/m0zYaxnSqfCHiu13B1y00q04C1xuTJNO6Kwy6jbQqBxJOvn2SmFqqcAZ9J
+ wLT0s1CLr8PkBiQT+1AaI5SI9XMG489N/T7PvjwY5GcvgnCDuiHuGi/9N1055XSuAdvIsmv4
+ QMw8KvUxTRIApx+6lA0UdSfCt50=
+X-Mailgun-Sending-Ip: 104.130.122.25
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
+ by mxa.mailgun.org with ESMTP id 5dfa1551.7fd173ba7420-smtp-out-n02;
+ Wed, 18 Dec 2019 12:02:25 -0000 (UTC)
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 76B02C4479F; Wed, 18 Dec 2019 12:02:24 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,SPF_NONE
+        autolearn=unavailable autolearn_force=no version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 2EA18C43383;
+        Wed, 18 Dec 2019 12:02:20 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 2EA18C43383
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
+From:   Kalle Valo <kvalo@codeaurora.org>
+To:     Jia-Ju Bai <baijiaju1990@gmail.com>
+Cc:     ath9k-devel@qca.qualcomm.com, davem@davemloft.net,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] ath9k: fix possible sleep-in-atomic-context bugs in hif_usb_send_regout()
+References: <20191218114533.9268-1-baijiaju1990@gmail.com>
+Date:   Wed, 18 Dec 2019 14:02:19 +0200
+In-Reply-To: <20191218114533.9268-1-baijiaju1990@gmail.com> (Jia-Ju Bai's
+        message of "Wed, 18 Dec 2019 19:45:33 +0800")
+Message-ID: <87h81xc050.fsf@kamboji.qca.qualcomm.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191218115313.19352-1-liuhangbin@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 18, 2019 at 07:53:05PM +0800, Hangbin Liu wrote:
-> When we setup a pair of gretap, ping each other and create neighbour cache.
-> Then delete and recreate one side. We will never be able to ping6 to the new
-> created gretap.
-> 
+Jia-Ju Bai <baijiaju1990@gmail.com> writes:
 
-Oh... Sorry I forgot to add PATCHv3 in the subject...
+> The driver may sleep while holding a spinlock.
+> The function call path (from bottom to top) in Linux 4.19 is:
+>
+> drivers/net/wireless/ath/ath9k/hif_usb.c, 108: 
+> 	usb_alloc_urb(GFP_KERNEL) in hif_usb_send_regout
+> drivers/net/wireless/ath/ath9k/hif_usb.c, 470: 
+> 	hif_usb_send_regout in hif_usb_send
+> drivers/net/wireless/ath/ath9k/htc_hst.c, 34: 
+> 	(FUNC_PTR)hif_usb_send in htc_issue_send
+> drivers/net/wireless/ath/ath9k/htc_hst.c, 295: 
+> 	htc_issue_send in htc_send
+> drivers/net/wireless/ath/ath9k/htc_drv_beacon.c, 250: 
+> 	htc_send in ath9k_htc_send_beacon
+> drivers/net/wireless/ath/ath9k/htc_drv_beacon.c, 207: 
+> 	spin_lock_bh in ath9k_htc_send_beacon
+>
+> drivers/net/wireless/ath/ath9k/hif_usb.c, 112: 
+> 	kzalloc(GFP_KERNEL) in hif_usb_send_regout
+> drivers/net/wireless/ath/ath9k/hif_usb.c, 470: 
+> 	hif_usb_send_regout in hif_usb_send
+> drivers/net/wireless/ath/ath9k/htc_hst.c, 34: 
+> 	(FUNC_PTR)hif_usb_send in htc_issue_send
+> drivers/net/wireless/ath/ath9k/htc_hst.c, 295: 
+> 	htc_issue_send in htc_send
+> drivers/net/wireless/ath/ath9k/htc_drv_beacon.c, 250: 
+> 	htc_send in ath9k_htc_send_beacon
+> drivers/net/wireless/ath/ath9k/htc_drv_beacon.c, 207: 
+> 	spin_lock_bh in ath9k_htc_send_beacon
+>
+> drivers/net/wireless/ath/ath9k/hif_usb.c, 127: 
+> 	usb_submit_urb(GFP_KERNEL) in hif_usb_send_regout
+> drivers/net/wireless/ath/ath9k/hif_usb.c, 470: 
+> 	hif_usb_send_regout in hif_usb_send
+> drivers/net/wireless/ath/ath9k/htc_hst.c, 34: 
+> 	(FUNC_PTR)hif_usb_send in htc_issue_send
+> drivers/net/wireless/ath/ath9k/htc_hst.c, 295: 
+> 	htc_issue_send in htc_send
+> drivers/net/wireless/ath/ath9k/htc_drv_beacon.c, 250: 
+> 	htc_send in ath9k_htc_send_beacon
+> drivers/net/wireless/ath/ath9k/htc_drv_beacon.c, 207: 
+> 	spin_lock_bh in ath9k_htc_send_beacon
+>
+> (FUNC_PTR) means a function pointer is called.
+>
+> To fix these bugs, GFP_KERNEL is replaced with GFP_ATOMIC.
+>
+> These bugs are found by a static analysis tool STCheck written by myself.
+>
+> Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
+
+Can someone else verify this and provide Reviewed-by?
+
+-- 
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
