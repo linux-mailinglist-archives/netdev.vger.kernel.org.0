@@ -2,235 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 97CB9125118
-	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 19:57:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 12B1C12511A
+	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 19:58:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727049AbfLRS5M convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 18 Dec 2019 13:57:12 -0500
-Received: from mga09.intel.com ([134.134.136.24]:9014 "EHLO mga09.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726824AbfLRS5M (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 18 Dec 2019 13:57:12 -0500
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga102.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 18 Dec 2019 10:57:11 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.69,330,1571727600"; 
-   d="scan'208";a="218238744"
-Received: from fmsmsx104.amr.corp.intel.com ([10.18.124.202])
-  by orsmga003.jf.intel.com with ESMTP; 18 Dec 2019 10:57:10 -0800
-Received: from fmsmsx118.amr.corp.intel.com (10.18.116.18) by
- fmsmsx104.amr.corp.intel.com (10.18.124.202) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Wed, 18 Dec 2019 10:57:10 -0800
-Received: from fmsmsx124.amr.corp.intel.com ([169.254.8.10]) by
- fmsmsx118.amr.corp.intel.com ([169.254.1.58]) with mapi id 14.03.0439.000;
- Wed, 18 Dec 2019 10:57:10 -0800
-From:   "Saleem, Shiraz" <shiraz.saleem@intel.com>
-To:     'Greg KH' <gregkh@linuxfoundation.org>
-CC:     "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "nhorman@redhat.com" <nhorman@redhat.com>,
-        "sassmann@redhat.com" <sassmann@redhat.com>,
-        "jgg@ziepe.ca" <jgg@ziepe.ca>,
-        "parav@mellanox.com" <parav@mellanox.com>,
-        "Ismail, Mustafa" <mustafa.ismail@intel.com>
-Subject: RE: [PATCH v3 04/20] i40e: Register a virtbus device to provide RDMA
-Thread-Topic: [PATCH v3 04/20] i40e: Register a virtbus device to provide
- RDMA
-Thread-Index: AQHVruLyruZaK+NBaUahwsdRBRLbTKe0CH+AgAR/tTCAAVOvgIAE7IIg
-Date:   Wed, 18 Dec 2019 18:57:10 +0000
-Message-ID: <9DD61F30A802C4429A01CA4200E302A7B6B9AFF7@fmsmsx124.amr.corp.intel.com>
-References: <20191209224935.1780117-1-jeffrey.t.kirsher@intel.com>
- <20191209224935.1780117-5-jeffrey.t.kirsher@intel.com>
- <20191210153959.GD4053085@kroah.com>
- <9DD61F30A802C4429A01CA4200E302A7B6B9345E@fmsmsx124.amr.corp.intel.com>
- <20191214083753.GB3318534@kroah.com>
-In-Reply-To: <20191214083753.GB3318534@kroah.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ctpclassification: CTP_NT
-x-titus-metadata-40: eyJDYXRlZ29yeUxhYmVscyI6IiIsIk1ldGFkYXRhIjp7Im5zIjoiaHR0cDpcL1wvd3d3LnRpdHVzLmNvbVwvbnNcL0ludGVsMyIsImlkIjoiZDU5NWQ3ZWQtYTI4My00NjUzLTkxN2YtNmI5YTg5YTJlZjExIiwicHJvcHMiOlt7Im4iOiJDVFBDbGFzc2lmaWNhdGlvbiIsInZhbHMiOlt7InZhbHVlIjoiQ1RQX05UIn1dfV19LCJTdWJqZWN0TGFiZWxzIjpbXSwiVE1DVmVyc2lvbiI6IjE3LjEwLjE4MDQuNDkiLCJUcnVzdGVkTGFiZWxIYXNoIjoiQjJaeGVFbnR3V242eW1UbkdwaWUyNGROMFhpM2ZscTdcL0dpSWJqVmcwVCtKSFlBeEJTSXhVNTJ5d1BtYjliQUsifQ==
-dlp-product: dlpe-windows
-dlp-version: 11.2.0.6
-dlp-reaction: no-action
-x-originating-ip: [10.1.200.108]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        id S1727260AbfLRS56 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Dec 2019 13:57:58 -0500
+Received: from mail25.static.mailgun.info ([104.130.122.25]:13925 "EHLO
+        mail25.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726831AbfLRS56 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Dec 2019 13:57:58 -0500
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1576695477; h=Date: Message-Id: Cc: To: References:
+ In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
+ Content-Type: Sender; bh=zTaMZ3kQXu+Ya8E5RyL/aG69wJByyfY1IdXqZNDCwxM=;
+ b=NNIWEWMXws0S7APVfAP1YOe0L6tmKyE7oM3iY4Tz0QpdGRKTU/ZXsRos/kt0zkDD7B5zSuft
+ do6Rl4yD1Bqvg2uUjcv10H7OcnWuyK9B20MmV5QglxEB2GZOc/p60JNgbbKV2JBcwIIreIq3
+ stOdDUHgrk47DdXRKlCyANIU15Q=
+X-Mailgun-Sending-Ip: 104.130.122.25
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
+ by mxa.mailgun.org with ESMTP id 5dfa76b3.7faa08d38228-smtp-out-n02;
+ Wed, 18 Dec 2019 18:57:55 -0000 (UTC)
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 0D780C4479F; Wed, 18 Dec 2019 18:57:55 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=0.5 required=2.0 tests=ALL_TRUSTED,MISSING_DATE,
+        MISSING_MID,SPF_NONE,URIBL_BLOCKED autolearn=no autolearn_force=no
+        version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 6DAFFC433CB;
+        Wed, 18 Dec 2019 18:57:51 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 6DAFFC433CB
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH 1/5] rsi: fix use-after-free on failed probe and unbind
+From:   Kalle Valo <kvalo@codeaurora.org>
+In-Reply-To: <20191128172204.26600-2-johan@kernel.org>
+References: <20191128172204.26600-2-johan@kernel.org>
+To:     Johan Hovold <johan@kernel.org>
+Cc:     Amitkumar Karwar <amitkarwar@gmail.com>,
+        Siva Rebbagondla <siva8118@gmail.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
+        Johan Hovold <johan@kernel.org>,
+        syzbot+b563b7f8dbe8223a51e8@syzkaller.appspotmail.com,
+        stable <stable@vger.kernel.org>,
+        Siva Rebbagondla <siva.rebbagondla@redpinesignals.com>,
+        Prameela Rani Garnepudi <prameela.j04cs@gmail.com>,
+        Amitkumar Karwar <amit.karwar@redpinesignals.com>,
+        Fariya Fatima <fariyaf@gmail.com>
+User-Agent: pwcli/0.0.0-git (https://github.com/kvalo/pwcli/) Python/2.7.12
+Message-Id: <20191218185755.0D780C4479F@smtp.codeaurora.org>
+Date:   Wed, 18 Dec 2019 18:57:55 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > > Subject: Re: [PATCH v3 04/20] i40e: Register a virtbus device to
-> > > provide RDMA
-[.....]
+Johan Hovold <johan@kernel.org> wrote:
 
-> > >
-> > > And who owns the memory of this thing that is supposed to be
-> > > dynamically controlled by something OUTSIDE of this driver?  Who
-> > > created that thing 3 pointers deep?  What happens when you leak the
-> > > memory below (hint, you did), and who is supposed to clean it up if
-> > > you need to properly clean it up if something bad happens?
-> >
-> > The i40e_info object memory is tied to the PF driver.
+> Make sure to stop both URBs before returning after failed probe as well
+> as on disconnect to avoid use-after-free in the completion handler.
 > 
-> What is a "PF"?
+> Reported-by: syzbot+b563b7f8dbe8223a51e8@syzkaller.appspotmail.com
+> Fixes: a4302bff28e2 ("rsi: add bluetooth rx endpoint")
+> Fixes: dad0d04fa7ba ("rsi: Add RS9113 wireless driver")
+> Cc: stable <stable@vger.kernel.org>     # 3.15
+> Cc: Siva Rebbagondla <siva.rebbagondla@redpinesignals.com>
+> Cc: Prameela Rani Garnepudi <prameela.j04cs@gmail.com>
+> Cc: Amitkumar Karwar <amit.karwar@redpinesignals.com>
+> Cc: Fariya Fatima <fariyaf@gmail.com>
+> Signed-off-by: Johan Hovold <johan@kernel.org>
 
-physical function.
+5 patches applied to wireless-drivers-next.git, thanks.
 
-> 
-> > The object hierarchy is,
-> >
-> > i40e_pf: pointer to i40e_client_instance
-> > 	----- i40e_client_instance: i40e_info
-> > 		----- i40e_info: virtbus_device
-> 
-> So you are 3 pointers deep to get a structure that is dynamically controlled?  Why
-> are those "3 pointers" not also represented in sysfs?
-> You have a heiarchy within the kernel that is not being represented that way to
-> userspace, why?
-> 
-> Hint, I think this is totally wrong, you need to rework this to be sane.
-> 
-> > For each PF, there is a client_instance object allocated.
-> 
-> Great, make it dynamic and in the device tree.
-> 
-> > The i40e_info object is populated and the virtbus_device hanging off this object
-> is registered.
-> 
-> Great, make that dynamic and inthe device tree.
-> 
-> If you think this is too much, then your whole mess here is too much and needs to
-> be made a lot simpler.
->
+e93cd35101b6 rsi: fix use-after-free on failed probe and unbind
+92aafe77123a rsi: fix use-after-free on probe errors
+477682974811 rsi: fix memory leak on failed URB submission
+b9b9f9fea218 rsi: fix non-atomic allocation in completion handler
+960da557f435 rsi: add missing endpoint sanity checks
 
-I think we can decouple the virtbus_device object from i40e_info object.
+-- 
+https://patchwork.kernel.org/patch/11266455/
 
-Instead allocate a i40e_virtbus_device object which contains
-the virtbus_device and a pointer to i40e_info object for the
-RDMA driver to consume on probe(). Register it the virtbus, and provide
-a release callback to free up its memory.
-
-Sending a patch snippet to hopefully make it clearer.
-
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_client.c b/drivers/net/ethernet/intel/i40e/i40e_client.c
-index b80ffaf..c6cf2eb 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_client.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_client.c
-@@ -281,6 +281,42 @@ void i40e_client_update_msix_info(struct i40e_pf *pf)
- 	cdev->lan_info.msix_entries = &pf->msix_entries[pf->iwarp_base_vector];
- }
- 
-+static void i40e_virtdev_release(struct device *dev)
-+{
-+	struct virtbus_device *vdev = container_of(dev, struct virtbus_device, dev);
-+	struct i40e_virtbus_device *i40e_vdev =
-+		container_of(vdev, struct i40e_virtbus_device, vdev);
-+
-+	kfree(i40e_vdev);
-+}
-+
-+static int i40e_init_client_virtdev(struct i40e_info *ldev)
-+{
-+	struct pci_dev *pdev = ldev->pcidev;
-+	struct i40e_virtbus_device *i40e_vdev;
-+	int ret;
-+
-+	i40e_vdev = kzalloc(sizeof(*i40e_vdev), GFP_KERNEL);
-+	if (!i40e_vdev)
-+		return -ENOMEM;
-+
-+	i40e_vdev->vdev.name = I40E_PEER_RDMA_NAME;
-+	i40e_vdev->vdev.dev.parent = &pdev->dev;
-+	i40e_vdev->vdev.dev.release = i40e_virtdev_release;
-+	i40e_vdev->ldev = ldev;
-+
-+	ret = virtbus_dev_register(&i40e_vdev->vdev);
-+	if (ret)
-+		/* TBD: Assuming virtbus_dev_register() does put_device
-+		 * on err clean-up
-+		 */
-+		return ret;
-+
-+	ldev->vdev = &i40e_vdev->vdev;
-+
-+	return 0;
-+}
-+
- /**
-  * i40e_client_add_instance - add a client instance struct to the instance list
-  * @pf: pointer to the board struct
-@@ -313,11 +349,8 @@ static void i40e_client_add_instance(struct i40e_pf *pf)
- 	cdev->lan_info.fw_build = pf->hw.aq.fw_build;
- 	set_bit(__I40E_CLIENT_INSTANCE_NONE, &cdev->state);
- 
--	if (i40e_client_get_params(vsi, &cdev->lan_info.params)) {
--		kfree(cdev);
--		cdev = NULL;
--		return;
--	}
-+	if (i40e_client_get_params(vsi, &cdev->lan_info.params))
-+		goto free_cdev;
- 
- 	mac = list_first_entry(&cdev->lan_info.netdev->dev_addrs.list,
- 			       struct netdev_hw_addr, list);
-@@ -332,6 +365,14 @@ static void i40e_client_add_instance(struct i40e_pf *pf)
- 	cdev->lan_info.msix_count = pf->num_iwarp_msix;
- 	cdev->lan_info.msix_entries = &pf->msix_entries[pf->iwarp_base_vector];
- 
-+	if (i40e_init_client_virtdev(&cdev->lan_info))
-+		goto free_cdev;
-+
-+	return;
-+
-+free_cdev:
-+	kfree(cdev);
-+	cdev = NULL;
- }
- 
- /**
-@@ -452,7 +493,7 @@ int i40e_lan_del_device(struct i40e_pf *pf)
- 	struct i40e_device *ldev, *tmp;
- 	int ret = -ENODEV;
- 
--	virtbus_dev_unregister(&pf->cinst->lan_info.vdev);
-+	virtbus_dev_unregister(pf->cinst->lan_info.vdev);
- 
- 	/* First, remove any client instance. */
- 	i40e_client_del_instance(pf);
-diff --git a/include/linux/net/intel/i40e_client.h b/include/linux/net/intel/i40e_client.h
-index 7e147d3..5c81261 100644
---- a/include/linux/net/intel/i40e_client.h
-+++ b/include/linux/net/intel/i40e_client.h
-@@ -83,11 +83,11 @@ struct i40e_params {
- 
- /* Structure to hold Lan device info for a client device */
- struct i40e_info {
- 	struct i40e_client_version version;
- 	u8 lanmac[6];
- 	struct net_device *netdev;
- 	struct pci_dev *pcidev;
-+	struct virtbus_device *vdev;
- 	u8 __iomem *hw_addr;
- 	u8 fid;	/* function id, PF id or VF id */
- #define I40E_CLIENT_FTYPE_PF 0
-@@ -112,6 +112,11 @@ struct i40e_info {
- 	u32 fw_build;                   /* firmware build number */
- };
- 
-+struct i40e_virtbus_device {
-+	struct virtbus_device vdev;
-+	struct i40e_info *ldev;
-+};
-+
-
-Is this more in line with correct usage and what you're expecting?
-
-Shiraz
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
