@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 85EBC123C48
-	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 02:16:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A7475123C61
+	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 02:22:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726512AbfLRBPz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Dec 2019 20:15:55 -0500
-Received: from mail-ot1-f67.google.com ([209.85.210.67]:40816 "EHLO
-        mail-ot1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726227AbfLRBPz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 20:15:55 -0500
-Received: by mail-ot1-f67.google.com with SMTP id i15so263739oto.7;
-        Tue, 17 Dec 2019 17:15:54 -0800 (PST)
+        id S1726492AbfLRBV5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Dec 2019 20:21:57 -0500
+Received: from mail-oi1-f196.google.com ([209.85.167.196]:42110 "EHLO
+        mail-oi1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726072AbfLRBV5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 20:21:57 -0500
+Received: by mail-oi1-f196.google.com with SMTP id j22so236638oij.9;
+        Tue, 17 Dec 2019 17:21:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=d+ndbyvc/xD98taLiNNXwi7PgRFqCDT7vLcEGC7qSs0=;
-        b=klfD6ikoFcBcQTz83KNWoTyZ3DWEyEpYlYh420dAZkyObXgJYGu+A7bbLmBULVM/fr
-         VOhKZJHI63y5oNRdCC81ooP6oIfGBAKtQGngys2D4isGSmUHJTQ50RYpWkbkZaKIy0Y3
-         hBYpNUSesVnLVTCu1LR6I+2o6trC05hzbujAGHz7dxMMliEtiJcxSVCSRyj9d4NqhFjt
-         o6NT2CtbLtj0o+ufN4mXKcBHhVYvNO4nqimaTBVsR+FzN4IDWlXYfJf1a09VxbgRAHlN
-         OODXoNk+puIAM66JXIZ+Z9m0A9U96BRQUftCHn5EBVycPDFNw0XfetdlBfFuLXSEATEM
-         ArZw==
+        bh=ZcjIbQOSWhikOPzlHM6ZEWQw/5oRTb6+fvho9ILg6nc=;
+        b=ewGSI+bn9pFKrQB/G1ML4P5eLVhHbyWN3IAJc1iIjVNte/l8Xk634f6ODBfxTQJWDg
+         /dpQLpULVFho3Q5K7J66qDov9VlHj1zbn/Uv8oH6gGwYXP0ziIL/WfCIuMKCk0hQnuFG
+         Gty1scprHPFs+kP7bZ9iNvszjusD9ZrzF562jC/JaGXQi1EZERcIvOHCyCkr9uaQuhmu
+         4dCW0zwNl7UViiHfNuXaT4ozLzMTEBZ06EISOYbWfGaCeaVrnKMTQ+FbP8iiFLeJlz51
+         dwWrAUqbqtI9tSsa6f2Q8WkRyfDj4yZx+ytkAHwOoc3X5csrBLpB0DZZel/z50580oWj
+         g6ag==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=d+ndbyvc/xD98taLiNNXwi7PgRFqCDT7vLcEGC7qSs0=;
-        b=QAHf1aYsC7kWaaA2aUicA2twbn0ukQnT50ChrCRDItvGsszx5MdbxgiPbWPdCk1i1t
-         yhLVmAb0q52crfZJYsyEFkuHhIYq4rZwGH2PGhoZKeRoEnuzZVOAoOLeNZl5HPQ4V9pC
-         jIgzCIqH6qCzn83mOsCix0hKwxJt/KYi2xCoqFrONpgDhssDMJBVp+40rUr6eR0TYQkG
-         aUKqtIgf1GXv4vB3KjHbVeVxEgzjr8UbNNMw8AMy5jmrJP9DatHnKoOJfiaxOeDC5zD6
-         MqX3WV79GBBMDHpitpRxairICJOE4NGuoJeN496Paq4BBdnBbDxAv/mB8bxD+UTDXeN6
-         WpUQ==
-X-Gm-Message-State: APjAAAVO29EfS/tFyAMwsOqicaPskI/Yc9dTJyks5ZPD4mgGH/er2DAp
-        XdDKPMNvS6GoiqBuEP3X1eE=
-X-Google-Smtp-Source: APXvYqxrNwmRwujD+Yy4djLv6WsgbcLhkN1LpMKWV/Q29CvujkUrnsk3sIX6i+0NCjpzzGU0irxPHw==
-X-Received: by 2002:a05:6830:1e84:: with SMTP id n4mr115298otr.267.1576631754206;
-        Tue, 17 Dec 2019 17:15:54 -0800 (PST)
+        bh=ZcjIbQOSWhikOPzlHM6ZEWQw/5oRTb6+fvho9ILg6nc=;
+        b=Cr+iVZqTcBbtt0SM9oocmHXiAXQTE+k+2NkYbSUDruS3zoybHsLZCbxcLNWxsjAY3p
+         zbYz0xKFZ2WJzZREE5O6vLQxwVc5rYPrDS6nqvlWXHI/pwqsCPoZB12PzdfGDNaOUoZ6
+         V9VVJrDY3WWqNYfjnG44+EELz6VFGHZJbPRyw8QGew2EjZg8GIpQEgGZo93BJ0MvlBOb
+         k2urZ0JxQyG/WBxNo26tZQqRrVHpEXyX96E04clxkWKV2fODAyktl2cYPLzxMwQ3rGOg
+         a0Em2bjSx7iBwD3KcGaeFMt4gzBkeEYA41nqHjNHTgbHLkyr/70Lg8wysdjE6OSoJ5X8
+         UU7A==
+X-Gm-Message-State: APjAAAWlOksQLg2B5pQevFTBFBuQXAL/k6B0OL0muUj7gDw5L3hwb5ag
+        uglXr72YfwKPFC5SI6qnKHY=
+X-Google-Smtp-Source: APXvYqxKuwWlc4EgT7EUo1OnCAvhDkLBWgjLMkVF0EAZhWLUsyOxyHlwf/0zGrCbLyZQeythINshIA==
+X-Received: by 2002:aca:c415:: with SMTP id u21mr34515oif.49.1576632116439;
+        Tue, 17 Dec 2019 17:21:56 -0800 (PST)
 Received: from localhost.localdomain ([2604:1380:4111:8b00::1])
-        by smtp.gmail.com with ESMTPSA id w12sm186001otk.75.2019.12.17.17.15.53
+        by smtp.gmail.com with ESMTPSA id p184sm240395oic.40.2019.12.17.17.21.55
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 Dec 2019 17:15:53 -0800 (PST)
+        Tue, 17 Dec 2019 17:21:55 -0800 (PST)
 From:   Nathan Chancellor <natechancellor@gmail.com>
-To:     Kalle Valo <kvalo@codeaurora.org>
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, clang-built-linux@googlegroups.com,
+To:     "David S. Miller" <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        clang-built-linux@googlegroups.com,
         Nathan Chancellor <natechancellor@gmail.com>
-Subject: [PATCH] hostap: Adjust indentation in prism2_hostapd_add_sta
-Date:   Tue, 17 Dec 2019 18:15:46 -0700
-Message-Id: <20191218011545.40557-1-natechancellor@gmail.com>
+Subject: [PATCH] NFC: pn544: Adjust indentation in pn544_hci_check_presence
+Date:   Tue, 17 Dec 2019 18:21:52 -0700
+Message-Id: <20191218012152.15570-1-natechancellor@gmail.com>
 X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
 X-Patchwork-Bot: notify
@@ -61,48 +61,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Clang warns:
+Clang warns
 
-../drivers/net/wireless/intersil/hostap/hostap_ap.c:2511:3: warning:
-misleading indentation; statement is not part of the previous 'if'
-[-Wmisleading-indentation]
-        if (sta->tx_supp_rates & WLAN_RATE_5M5)
-        ^
-../drivers/net/wireless/intersil/hostap/hostap_ap.c:2509:2: note:
-previous statement is here
-        if (sta->tx_supp_rates & WLAN_RATE_2M)
-        ^
+../drivers/nfc/pn544/pn544.c:696:4: warning: misleading indentation;
+statement is not part of the previous 'if' [-Wmisleading-indentation]
+                 return nfc_hci_send_cmd(hdev, NFC_HCI_RF_READER_A_GATE,
+                 ^
+../drivers/nfc/pn544/pn544.c:692:3: note: previous statement is here
+                if (target->nfcid1_len != 4 && target->nfcid1_len != 7 &&
+                ^
 1 warning generated.
 
-This warning occurs because there is a space before the tab on this
-line. Remove it so that the indentation is consistent with the Linux
-kernel coding style and clang no longer warns.
+This warning occurs because there is a space after the tab on this line.
+Remove it so that the indentation is consistent with the Linux kernel
+coding style and clang no longer warns.
 
-Fixes: ff1d2767d5a4 ("Add HostAP wireless driver.")
-Link: https://github.com/ClangBuiltLinux/linux/issues/813
+Fixes: da052850b911 ("NFC: Add pn544 presence check for different targets")
+Link: https://github.com/ClangBuiltLinux/linux/issues/814
 Signed-off-by: Nathan Chancellor <natechancellor@gmail.com>
 ---
-
-Sorry for sending a patch for an "Obselete" driver (especially one as
-trivial as this) but it is still a warning from clang and shows up on
-all{yes,mod}config.
-
- drivers/net/wireless/intersil/hostap/hostap_ap.c | 2 +-
+ drivers/nfc/pn544/pn544.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/intersil/hostap/hostap_ap.c b/drivers/net/wireless/intersil/hostap/hostap_ap.c
-index 0094b1d2b577..3ec46f48cfde 100644
---- a/drivers/net/wireless/intersil/hostap/hostap_ap.c
-+++ b/drivers/net/wireless/intersil/hostap/hostap_ap.c
-@@ -2508,7 +2508,7 @@ static int prism2_hostapd_add_sta(struct ap_data *ap,
- 		sta->supported_rates[0] = 2;
- 	if (sta->tx_supp_rates & WLAN_RATE_2M)
- 		sta->supported_rates[1] = 4;
-- 	if (sta->tx_supp_rates & WLAN_RATE_5M5)
-+	if (sta->tx_supp_rates & WLAN_RATE_5M5)
- 		sta->supported_rates[2] = 11;
- 	if (sta->tx_supp_rates & WLAN_RATE_11M)
- 		sta->supported_rates[3] = 22;
+diff --git a/drivers/nfc/pn544/pn544.c b/drivers/nfc/pn544/pn544.c
+index cda996f6954e..2b83156efe3f 100644
+--- a/drivers/nfc/pn544/pn544.c
++++ b/drivers/nfc/pn544/pn544.c
+@@ -693,7 +693,7 @@ static int pn544_hci_check_presence(struct nfc_hci_dev *hdev,
+ 		    target->nfcid1_len != 10)
+ 			return -EOPNOTSUPP;
+ 
+-		 return nfc_hci_send_cmd(hdev, NFC_HCI_RF_READER_A_GATE,
++		return nfc_hci_send_cmd(hdev, NFC_HCI_RF_READER_A_GATE,
+ 				     PN544_RF_READER_CMD_ACTIVATE_NEXT,
+ 				     target->nfcid1, target->nfcid1_len, NULL);
+ 	} else if (target->supported_protocols & (NFC_PROTO_JEWEL_MASK |
 -- 
 2.24.1
 
