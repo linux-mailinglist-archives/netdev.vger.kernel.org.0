@@ -2,135 +2,193 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9285D1243F3
-	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 11:07:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B9EAF124408
+	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 11:13:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726764AbfLRKHv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Dec 2019 05:07:51 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:51705 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1725930AbfLRKHv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Dec 2019 05:07:51 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1576663670;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=L2H+WkKsc/l2bx/U7wmjbiwWkRg7u/WvDk1Xhf9L5O0=;
-        b=Q9uodE0kJ4N7EnALqHLK3ufGvHrLEWVjMc52nGUY7MfatzYsVUXCO4SHglzKIw/HFS0D7T
-        zf/aKJli4/L2A2OK+wOuyile5RJBOykUA+f9VLEU5Rs4YJFbUruOdMvIw+RPB7ARzkbd3d
-        z5pKf1ymZJJT/UNh9xQs5gWlkGITaek=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-224-tTPURtjAPKGsJctcGRmscg-1; Wed, 18 Dec 2019 05:07:46 -0500
-X-MC-Unique: tTPURtjAPKGsJctcGRmscg-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 1240880256D;
-        Wed, 18 Dec 2019 10:07:44 +0000 (UTC)
-Received: from carbon (ovpn-200-37.brq.redhat.com [10.40.200.37])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id AAF397D8FA;
-        Wed, 18 Dec 2019 10:07:36 +0000 (UTC)
-Date:   Wed, 18 Dec 2019 11:07:32 +0100
-From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
-To:     Prashant Bhole <prashantbhole.linux@gmail.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        "Michael S . Tsirkin" <mst@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Jason Wang <jasowang@redhat.com>,
-        David Ahern <dsahern@gmail.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Toshiaki Makita <toshiaki.makita1@gmail.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>, netdev@vger.kernel.org,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>
-Subject: Re: [RFC net-next 11/14] tun: run XDP program in tx path
-Message-ID: <20191218110732.33494957@carbon>
-In-Reply-To: <20191218081050.10170-12-prashantbhole.linux@gmail.com>
-References: <20191218081050.10170-1-prashantbhole.linux@gmail.com>
-        <20191218081050.10170-12-prashantbhole.linux@gmail.com>
-Organization: Red Hat Inc.
+        id S1726813AbfLRKM7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Dec 2019 05:12:59 -0500
+Received: from mail-qt1-f195.google.com ([209.85.160.195]:38329 "EHLO
+        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726676AbfLRKM7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Dec 2019 05:12:59 -0500
+Received: by mail-qt1-f195.google.com with SMTP id n15so1519010qtp.5
+        for <netdev@vger.kernel.org>; Wed, 18 Dec 2019 02:12:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ws9LGLaoc3+Hm+PZ5CI8rYmVt90u1n7ZUCQR2tNutFk=;
+        b=Mmfco3fvj38HtPlrRpC6OWceno0UGchQsnFEUuj30sDWL7f5S1cWZNjicm9tNKOHDx
+         0UCCd7rSVPIJlXhYG1FLDxnCjs6n1pLE5x9irdfNa+OaYxE9X5x2EgzTFJOr4wkm6HCi
+         fxEstdYMF/Nn+3ocy++q8Zq9njFEKgTpbnFR6RdlEjc/uPDLTu0XOe7cnwSLk1c0tTvJ
+         GXjYqkqJ0zYrzx93fdlCHqsZZ4NCyFgNkh9bCK05CEtqJwrdGllS1QcTrOvUVAJCJuCz
+         JJtNlHyGTSPG2ksEmpvfoB4ee1AP0MHnT3wL9x/C/9phcxvsjXv0J6f8yIS/qQq4CGyG
+         uQ3A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ws9LGLaoc3+Hm+PZ5CI8rYmVt90u1n7ZUCQR2tNutFk=;
+        b=COSO+BT6XBZCqTUjUYPVNX0/nrY7lwk1Rvum687KcEp8io1wuulPzWhsuz+G86C0d+
+         w13mTIbu7nSTobxGOa8U+me79EgaI5nO4iL+D3x5Df2ZyretFtIsOYOKx8e2UeKXXA5y
+         F97GUtlUE7w939XIqlBJp+RlPcK624JDL50f9fLo997DWJz1A8pv9llXx8ER07/crob8
+         7t69lbe9Uv7eK/mcdlC/Zh6fs+sWEAMbLcIWYMhiaS+ohr5GjZcmYJzQmFF9xzeNaRKJ
+         x5U+JkR51ZIUlcGVNBZt0USod15nAW6pV5tPoxcXUu1JXEnTEjTUfG9BZNcIt0I0v3xq
+         Nm7A==
+X-Gm-Message-State: APjAAAVeUZhWl4MQfBqMi0KEjp4jlyhA/CwgpmZsNQApMivYVLFNq97F
+        +b6qwhO9Ww1OoMweQszmNuec3clsnNwxjTXBZWz/Cw==
+X-Google-Smtp-Source: APXvYqypdYEsGrKFOy8FIj3tJ3oEE00rNcAYDvs1HpbdD3RFNsMIqLxEt1d2URPTxJCc/7+w+KwLHGiDud0X4uFJ5q0=
+X-Received: by 2002:ac8:24c1:: with SMTP id t1mr1375386qtt.257.1576663977714;
+ Wed, 18 Dec 2019 02:12:57 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+References: <20191208232734.225161-1-Jason@zx2c4.com>
+In-Reply-To: <20191208232734.225161-1-Jason@zx2c4.com>
+From:   Dmitry Vyukov <dvyukov@google.com>
+Date:   Wed, 18 Dec 2019 11:12:46 +0100
+Message-ID: <CACT4Y+bsJVmgbD-WogwU=LfWiPN1JgjBrwx4s8Y14hDd7vqqhQ@mail.gmail.com>
+Subject: Re: [PATCH net-next v2] net: WireGuard secure network tunnel
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "open list:HARDWARE RANDOM NUMBER GENERATOR CORE" 
+        <linux-crypto@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 18 Dec 2019 17:10:47 +0900
-Prashant Bhole <prashantbhole.linux@gmail.com> wrote:
+On Mon, Dec 9, 2019 at 12:28 AM Jason A. Donenfeld <Jason@zx2c4.com> wrote:
+>
+> WireGuard is a layer 3 secure networking tunnel made specifically for
+> the kernel, that aims to be much simpler and easier to audit than IPsec.
+> Extensive documentation and description of the protocol and
+> considerations, along with formal proofs of the cryptography, are
+> available at:
+>
+>   * https://www.wireguard.com/
+>   * https://www.wireguard.com/papers/wireguard.pdf
+>
+> This commit implements WireGuard as a simple network device driver,
+> accessible in the usual RTNL way used by virtual network drivers. It
+> makes use of the udp_tunnel APIs, GRO, GSO, NAPI, and the usual set of
+> networking subsystem APIs. It has a somewhat novel multicore queueing
+> system designed for maximum throughput and minimal latency of encryption
+> operations, but it is implemented modestly using workqueues and NAPI.
+> Configuration is done via generic Netlink, and following a review from
+> the Netlink maintainer a year ago, several high profile userspace tools
+> have already implemented the API.
+>
+> This commit also comes with several different tests, both in-kernel
+> tests and out-of-kernel tests based on network namespaces, taking profit
+> of the fact that sockets used by WireGuard intentionally stay in the
+> namespace the WireGuard interface was originally created, exactly like
+> the semantics of userspace tun devices. See wireguard.com/netns/ for
+> pictures and examples.
+>
+> The source code is fairly short, but rather than combining everything
+> into a single file, WireGuard is developed as cleanly separable files,
+> making auditing and comprehension easier. Things are laid out as
+> follows:
+>
+>   * noise.[ch], cookie.[ch], messages.h: These implement the bulk of the
+>     cryptographic aspects of the protocol, and are mostly data-only in
+>     nature, taking in buffers of bytes and spitting out buffers of
+>     bytes. They also handle reference counting for their various shared
+>     pieces of data, like keys and key lists.
+>
+>   * ratelimiter.[ch]: Used as an integral part of cookie.[ch] for
+>     ratelimiting certain types of cryptographic operations in accordance
+>     with particular WireGuard semantics.
+>
+>   * allowedips.[ch], peerlookup.[ch]: The main lookup structures of
+>     WireGuard, the former being trie-like with particular semantics, an
+>     integral part of the design of the protocol, and the latter just
+>     being nice helper functions around the various hashtables we use.
+>
+>   * device.[ch]: Implementation of functions for the netdevice and for
+>     rtnl, responsible for maintaining the life of a given interface and
+>     wiring it up to the rest of WireGuard.
+>
+>   * peer.[ch]: Each interface has a list of peers, with helper functions
+>     available here for creation, destruction, and reference counting.
+>
+>   * socket.[ch]: Implementation of functions related to udp_socket and
+>     the general set of kernel socket APIs, for sending and receiving
+>     ciphertext UDP packets, and taking care of WireGuard-specific sticky
+>     socket routing semantics for the automatic roaming.
+>
+>   * netlink.[ch]: Userspace API entry point for configuring WireGuard
+>     peers and devices. The API has been implemented by several userspace
+>     tools and network management utility, and the WireGuard project
+>     distributes the basic wg(8) tool.
+>
+>   * queueing.[ch]: Shared function on the rx and tx path for handling
+>     the various queues used in the multicore algorithms.
+>
+>   * send.c: Handles encrypting outgoing packets in parallel on
+>     multiple cores, before sending them in order on a single core, via
+>     workqueues and ring buffers. Also handles sending handshake and cookie
+>     messages as part of the protocol, in parallel.
+>
+>   * receive.c: Handles decrypting incoming packets in parallel on
+>     multiple cores, before passing them off in order to be ingested via
+>     the rest of the networking subsystem with GRO via the typical NAPI
+>     poll function. Also handles receiving handshake and cookie messages
+>     as part of the protocol, in parallel.
+>
+>   * timers.[ch]: Uses the timer wheel to implement protocol particular
+>     event timeouts, and gives a set of very simple event-driven entry
+>     point functions for callers.
+>
+>   * main.c, version.h: Initialization and deinitialization of the module.
+>
+>   * selftest/*.h: Runtime unit tests for some of the most security
+>     sensitive functions.
+>
+>   * tools/testing/selftests/wireguard/netns.sh: Aforementioned testing
+>     script using network namespaces.
+>
+> This commit aims to be as self-contained as possible, implementing
+> WireGuard as a standalone module not needing much special handling or
+> coordination from the network subsystem. I expect for future
+> optimizations to the network stack to positively improve WireGuard, and
+> vice-versa, but for the time being, this exists as intentionally
+> standalone.
+>
+> We introduce a menu option for CONFIG_WIREGUARD, as well as providing a
+> verbose debug log and self-tests via CONFIG_WIREGUARD_DEBUG.
 
-> +static u32 tun_do_xdp_tx(struct tun_struct *tun, struct tun_file *tfile,
-> +			 struct xdp_frame *frame)
-> +{
-> +	struct bpf_prog *xdp_prog;
-> +	struct tun_page tpage;
-> +	struct xdp_buff xdp;
-> +	u32 act = XDP_PASS;
-> +	int flush = 0;
-> +
-> +	xdp_prog = rcu_dereference(tun->xdp_tx_prog);
-> +	if (xdp_prog) {
-> +		xdp.data_hard_start = frame->data - frame->headroom;
-> +		xdp.data = frame->data;
-> +		xdp.data_end = xdp.data + frame->len;
-> +		xdp.data_meta = xdp.data - frame->metasize;
+Hi Jason, Dave,
 
-You have not configured xdp.rxq, thus a BPF-prog accessing this will crash.
+Some late feedback on CONFIG_WIREGUARD_DEBUG.
 
-For an XDP TX hook, I want us to provide/give BPF-prog access to some
-more information about e.g. the current tx-queue length, or TC-q number.
+Does it really do "verbose debug log"? I only see it is used for
+self-tests and debug checks:
 
-Question to Daniel or Alexei, can we do this and still keep BPF_PROG_TYPE_XDP?
-Or is it better to introduce a new BPF prog type (enum bpf_prog_type)
-for XDP TX-hook ?
+linux$ grep DEBUG drivers/net/wireguard/*.c
+drivers/net/wireguard/allowedips.c: WARN_ON(IS_ENABLED(DEBUG) && *len >= 128);
+drivers/net/wireguard/allowedips.c: WARN_ON(IS_ENABLED(DEBUG) && len
+>= 128);                      \
+drivers/net/wireguard/main.c:#ifdef DEBUG
+drivers/net/wireguard/noise.c: WARN_ON(IS_ENABLED(DEBUG) &&
 
-To Prashant, look at net/core/filter.c in xdp_convert_ctx_access() on
-how the BPF instruction rewrites are done, when accessing xdp_rxq_info.
+There are 3 different things:
+ - boot self-tests
+ - additional debug checks
+ - verbose logging
 
-
-> +		act = bpf_prog_run_xdp(xdp_prog, &xdp);
-> +		switch (act) {
-> +		case XDP_PASS:
-> +			break;
-> +		case XDP_TX:
-> +			/* fall through */
-> +		case XDP_REDIRECT:
-> +			/* fall through */
-> +		default:
-> +			bpf_warn_invalid_xdp_action(act);
-> +			/* fall through */
-> +		case XDP_ABORTED:
-> +			trace_xdp_exception(tun->dev, xdp_prog, act);
-> +			/* fall through */
-> +		case XDP_DROP:
-> +			xdp_return_frame_rx_napi(frame);
-
-I'm not sure that it is safe to use "napi" variant here, as you have to
-be under same RX-NAPI processing loop for this to be safe.
-
-Notice the "rx" part of the name "xdp_return_frame_rx_napi". 
-
-
-> +			break;
-> +		}
-> +	}
-> +
-> +	return act;
-> +}
-
-
--- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
-
+In different contexts one may enable different sets of these.
+In particular in fuzzing context one absolutely wants additional debug
+checks, but not self tests and definitely no verbose logging. CI and
+various manual scenarios will require different sets as well.
+If this does verbose logging, we won't get debug checks as well during
+fuzzing, which is unfortunate.
+Can make sense splitting CONFIG_WIREGUARD_DEBUG into 2 or 3 separate
+configs (that's what I see frequently). Unfortunately there is no
+standard conventions for anything of this, so CIs will never find your
+boot tests and fuzzing won't find the additional checks...
