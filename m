@@ -2,142 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CA33F124618
-	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 12:49:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C968F124620
+	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 12:50:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726825AbfLRLtH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Dec 2019 06:49:07 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:30747 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726141AbfLRLtH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Dec 2019 06:49:07 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1576669746;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=egYOGWy6QuGOqruF/PAxFQigclnCwZ7828zF8NwrS/w=;
-        b=DlZvlPVMcA6a6SSJUDeC7qs0BVGXSrGxC38WfV46bhOWHTq8k/s4bfophshvrvhCzWFXBZ
-        HsXZyvCr4NTPiuEy0H1cbar5F55864XvPBHPFgFMlPz3LSKL7kbN9H9Z8V3CChwCDy3c0R
-        ljb7oSJhuTcASjai7XTh6VCnYyVFtHs=
-Received: from mail-lj1-f199.google.com (mail-lj1-f199.google.com
- [209.85.208.199]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-402-96Sb0VSSMMe6fzg6p4pRxQ-1; Wed, 18 Dec 2019 06:49:03 -0500
-X-MC-Unique: 96Sb0VSSMMe6fzg6p4pRxQ-1
-Received: by mail-lj1-f199.google.com with SMTP id z17so615170ljz.2
-        for <netdev@vger.kernel.org>; Wed, 18 Dec 2019 03:49:03 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=egYOGWy6QuGOqruF/PAxFQigclnCwZ7828zF8NwrS/w=;
-        b=ZCJSu91hwuEAIzkcy2HRRekttCJTmEaMGshPjBJVgjSf5rG7Uj/yooGiEuHWf4CvRp
-         U0oo0pfwYje4x7Ilg+2eIDyjONfGoePLK9UjjUE5xDxhTKmgxEOZuuJsG6N8MQNHy3mU
-         XRIUfn+WFDQrb1SryOfwnikXXr9X83d5QbZ9iH+bj3fHzBai49So7L0+qJs3WpDuo9Aw
-         1bYQ9YDvMNUWgs3Tv58GH0AJbL/MH0qS3Sj+7QbPEibCxtRVvQZRaQx53GLd47GvLhi1
-         QT3CON2QWBrBNfkwltj/2c18yeiXtweo6eBfaYmGLwjnthoAjWcowRl7dFWMrLlbEeNa
-         dzDg==
-X-Gm-Message-State: APjAAAUPw+1N3ZK/JL3jLFs31QEQpHV5g3ZfpUgV+Fm+n2q9j8J1nXCq
-        cz4wr/iBtMRFgjMkbwbGSg7bif4XHi/4vFy58VkhYwmzvwAFZcgPD0wPh+aiZzDJbKaY4MgNo8i
-        c/nVa+aenWVnGYA3N
-X-Received: by 2002:a2e:9d9a:: with SMTP id c26mr1422772ljj.225.1576669742264;
-        Wed, 18 Dec 2019 03:49:02 -0800 (PST)
-X-Google-Smtp-Source: APXvYqy1XBeaMuC/GIsbID57JHYXnBQqcoPycgnEC9PNR0ydGmsG2xu0u82SwhY9bI+GYCsO32PygA==
-X-Received: by 2002:a2e:9d9a:: with SMTP id c26mr1422748ljj.225.1576669742067;
-        Wed, 18 Dec 2019 03:49:02 -0800 (PST)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id l28sm998862lfk.21.2019.12.18.03.49.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 18 Dec 2019 03:49:01 -0800 (PST)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id BC922180969; Wed, 18 Dec 2019 12:48:59 +0100 (CET)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Jesper Dangaard Brouer <jbrouer@redhat.com>,
-        Prashant Bhole <prashantbhole.linux@gmail.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        "Michael S . Tsirkin" <mst@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Jason Wang <jasowang@redhat.com>,
-        David Ahern <dsahern@gmail.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Toshiaki Makita <toshiaki.makita1@gmail.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>, netdev@vger.kernel.org,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>
-Subject: Re: [RFC net-next 11/14] tun: run XDP program in tx path
-In-Reply-To: <20191218110732.33494957@carbon>
-References: <20191218081050.10170-1-prashantbhole.linux@gmail.com> <20191218081050.10170-12-prashantbhole.linux@gmail.com> <20191218110732.33494957@carbon>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Wed, 18 Dec 2019 12:48:59 +0100
-Message-ID: <87fthh6ehg.fsf@toke.dk>
+        id S1726863AbfLRLue (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Dec 2019 06:50:34 -0500
+Received: from frisell.zx2c4.com ([192.95.5.64]:57757 "EHLO frisell.zx2c4.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726710AbfLRLud (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 18 Dec 2019 06:50:33 -0500
+Received: by frisell.zx2c4.com (ZX2C4 Mail Server) with ESMTP id e37716a2;
+        Wed, 18 Dec 2019 10:53:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=zx2c4.com; h=mime-version
+        :references:in-reply-to:from:date:message-id:subject:to:cc
+        :content-type; s=mail; bh=dF+343L+TdlkZkv3XYQxJv3zHkU=; b=TjcPQ6
+        hXxWKK2YLj+bHj6e8MKS1+2/s45ZVpmfXnTRAP1x36bgHNVA6rckobNs6oHmicFd
+        XiP/F98tGiMcdphyibDkPyNM3ucsuyyYPPAraTVtOwcvz84uSrcyf8PJSQIT6k51
+        yd9h0ujCeDpb2ttx5JyV6jDI/7J/HsGmHTft5s6NGqpsJ9zsoQhMjM5jKDOVVC4F
+        w7wz4KmEIYLotJ2iSrq/ZriiJaQpvN8u2Zem9eoNk6F8EcDVYoc7AyUYdzSOWJSk
+        hbbMFOpNMsQEpqrG4q0zsJV0dvE3rGRIRxflVEYNsoHn0eC30/kquA8HHym3jGdA
+        v0d1ajk3Jv+IHiFg==
+Received: by frisell.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 9bcc9931 (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256:NO);
+        Wed, 18 Dec 2019 10:53:58 +0000 (UTC)
+Received: by mail-ot1-f47.google.com with SMTP id p8so2172391oth.10;
+        Wed, 18 Dec 2019 03:50:31 -0800 (PST)
+X-Gm-Message-State: APjAAAXvqXk7MkqOYS2B2sTTrImQkkRen5kmslxVvgR5gWWHsBJIlpoh
+        c2DJwSBgJ5iT6z/ZalZuY0ZpH5xXCngdJsS8y3I=
+X-Google-Smtp-Source: APXvYqzhY12iR5m2kOBPfSFcgyM7ph/qjcMRfYbool+Jo+GJ1pt8ESvldAOSFjtQuspfXp9ad3F2iB9gc7l+lqvEedc=
+X-Received: by 2002:a9d:4f0f:: with SMTP id d15mr2218022otl.179.1576669831047;
+ Wed, 18 Dec 2019 03:50:31 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain
+References: <20191208232734.225161-1-Jason@zx2c4.com> <CACT4Y+bsJVmgbD-WogwU=LfWiPN1JgjBrwx4s8Y14hDd7vqqhQ@mail.gmail.com>
+ <CAHmME9o0AparjaaOSoZD14RAW8_AJTfKfcx3Y2ndDAPFNC-MeQ@mail.gmail.com> <CACT4Y+Zssd6OZ2-U4kjw18mNthQyzPWZV_gkH3uATnSv1SVDfA@mail.gmail.com>
+In-Reply-To: <CACT4Y+Zssd6OZ2-U4kjw18mNthQyzPWZV_gkH3uATnSv1SVDfA@mail.gmail.com>
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date:   Wed, 18 Dec 2019 12:50:20 +0100
+X-Gmail-Original-Message-ID: <CAHmME9oM=YHMZyg23WEzmZAof=7iv-A01VazB3ihhR99f6X1cg@mail.gmail.com>
+Message-ID: <CAHmME9oM=YHMZyg23WEzmZAof=7iv-A01VazB3ihhR99f6X1cg@mail.gmail.com>
+Subject: Re: [PATCH net-next v2] net: WireGuard secure network tunnel
+To:     Dmitry Vyukov <dvyukov@google.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "open list:HARDWARE RANDOM NUMBER GENERATOR CORE" 
+        <linux-crypto@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jesper Dangaard Brouer <jbrouer@redhat.com> writes:
+Hi Dmitry,
 
-> On Wed, 18 Dec 2019 17:10:47 +0900
-> Prashant Bhole <prashantbhole.linux@gmail.com> wrote:
+On Wed, Dec 18, 2019 at 12:37 PM Dmitry Vyukov <dvyukov@google.com> wrote:
+> > Actually with WireGuard, I think that's not the case. The WireGuard
+> > logging has been written with DoS in mind. You /should/ be able to
+> > safely run it on a production system exposed to the wild Internet, and
+> > while there will be some additional things in your dmesg, an attacker
+> > isn't supposed to be able to totally flood it without ratelimiting or
+> > inject malicious strings into it (such as ANSI escape sequence). In
+> > other words, I consider the logging to be fair game attack surface. If
+> > your fuzzer manages to craft some nasty sequence of packets that
+> > tricks some rate limiting logic and lets you litter all over dmesg
+> > totally unbounded, I'd consider that a real security bug worth
+> > stressing out about. So from the perspective of letting your fuzzers
+> > loose on WireGuard, I'd actually like to see this option kept on.
 >
->> +static u32 tun_do_xdp_tx(struct tun_struct *tun, struct tun_file *tfile,
->> +			 struct xdp_frame *frame)
->> +{
->> +	struct bpf_prog *xdp_prog;
->> +	struct tun_page tpage;
->> +	struct xdp_buff xdp;
->> +	u32 act = XDP_PASS;
->> +	int flush = 0;
->> +
->> +	xdp_prog = rcu_dereference(tun->xdp_tx_prog);
->> +	if (xdp_prog) {
->> +		xdp.data_hard_start = frame->data - frame->headroom;
->> +		xdp.data = frame->data;
->> +		xdp.data_end = xdp.data + frame->len;
->> +		xdp.data_meta = xdp.data - frame->metasize;
->
-> You have not configured xdp.rxq, thus a BPF-prog accessing this will crash.
->
-> For an XDP TX hook, I want us to provide/give BPF-prog access to some
-> more information about e.g. the current tx-queue length, or TC-q number.
->
-> Question to Daniel or Alexei, can we do this and still keep BPF_PROG_TYPE_XDP?
-> Or is it better to introduce a new BPF prog type (enum bpf_prog_type)
-> for XDP TX-hook ?
+> This is the case even with CONFIG_WIREGUARD_DEBUG turned on, right? Or without?
 
-I think a new program type would make the most sense. If/when we
-introduce an XDP TX hook[0], it should have different semantics than the
-regular XDP hook. I view the XDP TX hook as a hook that executes as the
-very last thing before packets leave the interface. It should have
-access to different context data as you say, but also I don't think it
-makes sense to have XDP_TX and XDP_REDIRECT in an XDP_TX hook. And we
-may also want to have a "throttle" return code; or maybe that could be
-done via a helper?
+Turned on.
 
-In any case, I don't think this "emulated RX hook on the other end of a
-virtual device" model that this series introduces is the right semantics
-for an XDP TX hook. I can see what you're trying to do, and for virtual
-point-to-point links I think it may make sense to emulate the RX hook of
-the "other end" on TX. However, form a UAPI perspective, I don't think
-we should be calling this a TX hook; logically, it's still an RX hook
-on the receive end.
+> Well, it may be able to trigger unbounded printing, but that won't be
+> detected as a bug and won't be reported. To be reported it needs to
+> fall into a set of predefined bug cases (e.g. "BUG:" or "WARNING:" on
+> console). Unless of course it triggers total stall/hang.
 
-If you guys are up for evolving this design into a "proper" TX hook (as
-outlined above an in [0]), that would be awesome, of course. But not
-sure what constraints you have on your original problem? Do you
-specifically need the "emulated RX hook for unmodified XDP programs"
-semantics, or could your problem be solved with a TX hook with different
-semantics?
+Bummer. Well, at least the stall case is interesting.
 
--Toke
+> But I'm
+> afraid it will just dirty dmesg, make reading crashes harder and slow
+> down everything without benefit.
 
+Actually the point of the logging is usually to make it more obvious
+why a crash has come about, to provide some trail about the sequence
+of events. This was especially helpful in fixing old race conditions
+where subtle packet timing caused WireGuard's timer-based state
+machine to go haywire. Is syzkaller able to backtrack from crashes to
+the packets and packet timing that caused them, in order to make a
+test case to replay the crash? Is this precise enough for race
+condition bugs? If so, then when debugging the crashes I could always
+replay it later with logging turned on, in which case it might make
+sense to split out the debug logging into CONFIG_WIREGUARD_VERBOSE_LOG
+or similar (unless the logging itself changes the timing constraints
+and I can't repro that way). If this isn't possible, then it seems
+like logging might be something we would benefit from having in the
+crash reports, right? Or am I missing some other detail of how the
+system works?
 
-[0] We've suggested this in the past, see
-https://github.com/xdp-project/xdp-project/blob/master/xdp-project.org#xdp-hook-at-tx
-
+Jason
