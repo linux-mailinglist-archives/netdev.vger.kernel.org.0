@@ -2,114 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D5BA124660
-	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 13:02:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8396B124668
+	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 13:04:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726922AbfLRMC1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Dec 2019 07:02:27 -0500
-Received: from mail25.static.mailgun.info ([104.130.122.25]:63482 "EHLO
-        mail25.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726591AbfLRMC1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Dec 2019 07:02:27 -0500
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1576670546; h=Content-Type: MIME-Version: Message-ID:
- In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
- bh=B4/RlwWd+D6Up8aRuxBevuGNVTwp4B7x7EDttVNYIiA=; b=JzmkTD4gJHSur/m0zYaxnSqfCHiu13B1y00q04C1xuTJNO6Kwy6jbQqBxJOvn2SmFqqcAZ9J
- wLT0s1CLr8PkBiQT+1AaI5SI9XMG489N/T7PvjwY5GcvgnCDuiHuGi/9N1055XSuAdvIsmv4
- QMw8KvUxTRIApx+6lA0UdSfCt50=
-X-Mailgun-Sending-Ip: 104.130.122.25
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
- by mxa.mailgun.org with ESMTP id 5dfa1551.7fd173ba7420-smtp-out-n02;
- Wed, 18 Dec 2019 12:02:25 -0000 (UTC)
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 76B02C4479F; Wed, 18 Dec 2019 12:02:24 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        id S1726932AbfLRMEB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Dec 2019 07:04:01 -0500
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:38103 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726551AbfLRMEB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Dec 2019 07:04:01 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1576670640;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=u9oNiKDgk5MckkZyQbcIpTr/UDbrx/rihO1sn62VSoM=;
+        b=B9yXTdG1bJC3O0V/jza86Nw9oSQskt+xce2aKcc01sSFUEW1tWy1dkDrcqzSHnkeRGoWAJ
+        oFa2P82nvL3MUjrqrmsEBMrxQ8p+y7QnR+xKIBpgD+lMZPZULzJYaOq2SLwqo1XqKOPxgq
+        nrIk4qhl5CL3n0nhOGfxBq/kPhAu5R8=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-14-0QdREHYNP_KmiqODgNd6mQ-1; Wed, 18 Dec 2019 07:03:55 -0500
+X-MC-Unique: 0QdREHYNP_KmiqODgNd6mQ-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 2EA18C43383;
-        Wed, 18 Dec 2019 12:02:20 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 2EA18C43383
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     Jia-Ju Bai <baijiaju1990@gmail.com>
-Cc:     ath9k-devel@qca.qualcomm.com, davem@davemloft.net,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] ath9k: fix possible sleep-in-atomic-context bugs in hif_usb_send_regout()
-References: <20191218114533.9268-1-baijiaju1990@gmail.com>
-Date:   Wed, 18 Dec 2019 14:02:19 +0200
-In-Reply-To: <20191218114533.9268-1-baijiaju1990@gmail.com> (Jia-Ju Bai's
-        message of "Wed, 18 Dec 2019 19:45:33 +0800")
-Message-ID: <87h81xc050.fsf@kamboji.qca.qualcomm.com>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 0F868800EBF;
+        Wed, 18 Dec 2019 12:03:54 +0000 (UTC)
+Received: from carbon (ovpn-200-37.brq.redhat.com [10.40.200.37])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id C04AB5C28D;
+        Wed, 18 Dec 2019 12:03:47 +0000 (UTC)
+Date:   Wed, 18 Dec 2019 13:03:46 +0100
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
+Cc:     Netdev <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        bpf <bpf@vger.kernel.org>, David Miller <davem@davemloft.net>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>, brouer@redhat.com,
+        Maciej Fijalkowski <maciejromanfijalkowski@gmail.com>
+Subject: Re: [PATCH bpf-next 0/8] Simplify
+ xdp_do_redirect_map()/xdp_do_flush_map() and XDP maps
+Message-ID: <20191218130346.1a346606@carbon>
+In-Reply-To: <CAJ+HfNgKsPN7V9r=N=hDoVb23-nk3q=y+Nv4jB3koPw0+4Zw9A@mail.gmail.com>
+References: <20191218105400.2895-1-bjorn.topel@gmail.com>
+        <20191218121132.4023f4f1@carbon>
+        <CAJ+HfNgKsPN7V9r=N=hDoVb23-nk3q=y+Nv4jB3koPw0+4Zw9A@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jia-Ju Bai <baijiaju1990@gmail.com> writes:
+On Wed, 18 Dec 2019 12:39:53 +0100
+Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail.com> wrote:
 
-> The driver may sleep while holding a spinlock.
-> The function call path (from bottom to top) in Linux 4.19 is:
->
-> drivers/net/wireless/ath/ath9k/hif_usb.c, 108: 
-> 	usb_alloc_urb(GFP_KERNEL) in hif_usb_send_regout
-> drivers/net/wireless/ath/ath9k/hif_usb.c, 470: 
-> 	hif_usb_send_regout in hif_usb_send
-> drivers/net/wireless/ath/ath9k/htc_hst.c, 34: 
-> 	(FUNC_PTR)hif_usb_send in htc_issue_send
-> drivers/net/wireless/ath/ath9k/htc_hst.c, 295: 
-> 	htc_issue_send in htc_send
-> drivers/net/wireless/ath/ath9k/htc_drv_beacon.c, 250: 
-> 	htc_send in ath9k_htc_send_beacon
-> drivers/net/wireless/ath/ath9k/htc_drv_beacon.c, 207: 
-> 	spin_lock_bh in ath9k_htc_send_beacon
->
-> drivers/net/wireless/ath/ath9k/hif_usb.c, 112: 
-> 	kzalloc(GFP_KERNEL) in hif_usb_send_regout
-> drivers/net/wireless/ath/ath9k/hif_usb.c, 470: 
-> 	hif_usb_send_regout in hif_usb_send
-> drivers/net/wireless/ath/ath9k/htc_hst.c, 34: 
-> 	(FUNC_PTR)hif_usb_send in htc_issue_send
-> drivers/net/wireless/ath/ath9k/htc_hst.c, 295: 
-> 	htc_issue_send in htc_send
-> drivers/net/wireless/ath/ath9k/htc_drv_beacon.c, 250: 
-> 	htc_send in ath9k_htc_send_beacon
-> drivers/net/wireless/ath/ath9k/htc_drv_beacon.c, 207: 
-> 	spin_lock_bh in ath9k_htc_send_beacon
->
-> drivers/net/wireless/ath/ath9k/hif_usb.c, 127: 
-> 	usb_submit_urb(GFP_KERNEL) in hif_usb_send_regout
-> drivers/net/wireless/ath/ath9k/hif_usb.c, 470: 
-> 	hif_usb_send_regout in hif_usb_send
-> drivers/net/wireless/ath/ath9k/htc_hst.c, 34: 
-> 	(FUNC_PTR)hif_usb_send in htc_issue_send
-> drivers/net/wireless/ath/ath9k/htc_hst.c, 295: 
-> 	htc_issue_send in htc_send
-> drivers/net/wireless/ath/ath9k/htc_drv_beacon.c, 250: 
-> 	htc_send in ath9k_htc_send_beacon
-> drivers/net/wireless/ath/ath9k/htc_drv_beacon.c, 207: 
-> 	spin_lock_bh in ath9k_htc_send_beacon
->
-> (FUNC_PTR) means a function pointer is called.
->
-> To fix these bugs, GFP_KERNEL is replaced with GFP_ATOMIC.
->
-> These bugs are found by a static analysis tool STCheck written by myself.
->
-> Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
+> On Wed, 18 Dec 2019 at 12:11, Jesper Dangaard Brouer <brouer@redhat.com> =
+wrote:
+> >
+> > On Wed, 18 Dec 2019 11:53:52 +0100
+> > Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail.com> wrote:
+> > =20
+> > >   $ sudo ./xdp_redirect_cpu --dev enp134s0f0 --cpu 22 xdp_cpu_map0
+> > >
+> > >   Running XDP/eBPF prog_name:xdp_cpu_map5_lb_hash_ip_pairs
+> > >   XDP-cpumap      CPU:to  pps            drop-pps    extra-info
+> > >   XDP-RX          20      7723038        0           0
+> > >   XDP-RX          total   7723038        0
+> > >   cpumap_kthread  total   0              0           0
+> > >   redirect_err    total   0              0
+> > >   xdp_exception   total   0              0 =20
+> >
+> > Hmm... I'm missing some counters on the kthread side.
+> > =20
+>=20
+> Oh? Any ideas why? I just ran the upstream sample straight off.
 
-Can someone else verify this and provide Reviewed-by?
+Looks like it happened in commit: bbaf6029c49c ("samples/bpf: Convert
+XDP samples to libbpf usage") (Cc Maciej).
 
--- 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+The old bpf_load.c will auto attach the tracepoints... for and libbpf
+you have to be explicit about it.
+
+Can I ask you to also run a test with --stress-mode for
+./xdp_redirect_cpu, to flush out any potential RCU race-conditions
+(don't provide output, this is just a robustness test).
+
+--=20
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
+
