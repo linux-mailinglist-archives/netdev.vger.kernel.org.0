@@ -2,55 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 45AF8123F6E
-	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 07:13:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A4CE123F73
+	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 07:14:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726526AbfLRGNx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Dec 2019 01:13:53 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:47158 "EHLO
+        id S1726682AbfLRGO3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Dec 2019 01:14:29 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:47170 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725799AbfLRGNx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Dec 2019 01:13:53 -0500
+        with ESMTP id S1725811AbfLRGO3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Dec 2019 01:14:29 -0500
 Received: from localhost (unknown [IPv6:2601:601:9f00:1c3::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 7BCDE15004EAC;
-        Tue, 17 Dec 2019 22:13:52 -0800 (PST)
-Date:   Tue, 17 Dec 2019 22:13:51 -0800 (PST)
-Message-Id: <20191217.221351.137832734104800157.davem@davemloft.net>
-To:     edumazet@google.com
-Cc:     netdev@vger.kernel.org, eric.dumazet@gmail.com
-Subject: Re: [PATCH net] net: annotate lockless accesses to
- sk->sk_pacing_shift
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 2FB0B15004EB7;
+        Tue, 17 Dec 2019 22:14:29 -0800 (PST)
+Date:   Tue, 17 Dec 2019 22:14:28 -0800 (PST)
+Message-Id: <20191217.221428.938880317822545293.davem@davemloft.net>
+To:     rdunlap@infradead.org
+Cc:     netdev@vger.kernel.org, ap420073@gmail.com
+Subject: Re: [PATCH] net: fix kernel-doc warning in <linux/netdevice.h>
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20191217025103.252578-1-edumazet@google.com>
-References: <20191217025103.252578-1-edumazet@google.com>
+In-Reply-To: <c576bade-11b1-8962-2330-c7ea72088b18@infradead.org>
+References: <c576bade-11b1-8962-2330-c7ea72088b18@infradead.org>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 17 Dec 2019 22:13:52 -0800 (PST)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 17 Dec 2019 22:14:29 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
-Date: Mon, 16 Dec 2019 18:51:03 -0800
+From: Randy Dunlap <rdunlap@infradead.org>
+Date: Mon, 16 Dec 2019 18:52:45 -0800
 
-> sk->sk_pacing_shift can be read and written without lock
-> synchronization. This patch adds annotations to
-> document this fact and avoid future syzbot complains.
+> From: Randy Dunlap <rdunlap@infradead.org>
 > 
-> This might also avoid unexpected false sharing
-> in sk_pacing_shift_update(), as the compiler
-> could remove the conditional check and always
-> write over sk->sk_pacing_shift :
+> Fix missing '*' kernel-doc notation that causes this warning:
 > 
-> if (sk->sk_pacing_shift != val)
-> 	sk->sk_pacing_shift = val;
+> ../include/linux/netdevice.h:1779: warning: bad line:                                 spinlock
 > 
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
+> Fixes: ab92d68fc22f ("net: core: add generic lockdep keys")
+> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+> Cc: Taehee Yoo <ap420073@gmail.com>
 
-Applied, thanks Eric.
+Applied, thanks.
