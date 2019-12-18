@@ -2,123 +2,187 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 708C3123BEB
-	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 01:51:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AF42E123C09
+	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 01:56:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726841AbfLRAvj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Dec 2019 19:51:39 -0500
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:38727 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726797AbfLRAve (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 19:51:34 -0500
-Received: by mail-pf1-f194.google.com with SMTP id x185so210465pfc.5;
-        Tue, 17 Dec 2019 16:51:33 -0800 (PST)
+        id S1726539AbfLRA4k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Dec 2019 19:56:40 -0500
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:33382 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726333AbfLRA4k (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Dec 2019 19:56:40 -0500
+Received: by mail-pf1-f193.google.com with SMTP id z16so229800pfk.0;
+        Tue, 17 Dec 2019 16:56:39 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=lIjsvF9IAOKO/y9eAPFaGirPoWCV8dxZZXU9yHmkvfQ=;
-        b=qmW/1GT7rwoMEFROf0tuZO/TNcV775jnRSkCS+it7yLw59eK7Y1L43a+g6+fLSWG9b
-         SWv1c8DzoiqPdynrpgYLWmcUPh6EUkPbVBmWbnp4VvVkeXaTRdvypbgwk+TG/V6NBR2h
-         b4jZ3BoJGQh2iGNuM5aBYvvPV8DSFCcFgL2XpTuONZn5Q8QQ9CzoCnC0uUhNrdRtSPua
-         VAnHhXdl4U1HGS9EnUOW64gVihWaQUfx3RNom3BE9YmDhompVgHI7F1M+2VKKbiQOZdg
-         SITxEV5bTN1gKcRlL4xJids5KsCKftXxWUeVjCLpWp9uPjVsUmPi+QNMip5j5b1Jbnx3
-         OtdA==
+        bh=AYCZBK/F6WXc/6GYxQqzgfcNB0CkdTjluO37WmZm4bg=;
+        b=JMmkHFibHV/Qjd++iy7CzXnIrEWKHwQHiy9ugEV8EdxRMZ5pZAfkGrCxuno8qB7cR1
+         2xVSltgvIF+fWOd08xrNSV5Kp17LgCzxaXgp56kMkVsCjgL4ojSSEU0vDq9e8U8A+BbZ
+         pknqxT+LrnMobHPcpFLUQfnI2DV67ehyAn1rfU12cH4+mSKOOtnS6i00XGejV1LVQbKk
+         IXwGhPNqZPE8qh5t8f7UvQhV1S2d5ebAgtxQ4M/oLvlTe1tW964eFAexw6MczSEYf+yv
+         P+YD9/itm8QtCGw+z0p/EuOYEkWnacwMfqZjxvOGHV05gLit/yE/qWtP0am6yvjsmj/B
+         HkSQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=lIjsvF9IAOKO/y9eAPFaGirPoWCV8dxZZXU9yHmkvfQ=;
-        b=UsZi+e9/vZhtfYUPmfPFqOwx44ixKn1AOgRQgpHyB0E9CrZf9Q8BRZlu5jHV7XKmzy
-         L8Rf2W3yfHiFC2DpY7X3oM/1X576I/vdvRynnzFHN8dQKSABg9dw7uGdajtEDFRHxn/J
-         ieEUZHr4FD4HjoyGITkEy4gKm224gg4BwbupdQRihfgcKIRe3RdqJPWASQ2yyxjePG5G
-         ICLS+0DALA9TDUjEV97r/EWbMaq6Nz9J+UYBfhCzVDsvokNQEW9LdhbCGFeezdB1AQPb
-         XkXKFMcH/DDKrrCrM5YmY8smQa6weVwyXAGKVocwobpXjExhlMxB6Dz2EUN2JbBXCUP+
-         fSYg==
-X-Gm-Message-State: APjAAAUsBtzsfJN67l+Y79SDAmQrN9DvV1fUM+N3Hpix33rUM+WySvcF
-        3N/rbDpJtguBXKY4CWI085A=
-X-Google-Smtp-Source: APXvYqwKGOZaAQfUtUBJtD/vxKXoV8SgggpyDu6VySrj1IUnPf+QUgUexIcyJuZXBY/qUmNXPbGJ2w==
-X-Received: by 2002:a63:5b0a:: with SMTP id p10mr871386pgb.228.1576630293350;
-        Tue, 17 Dec 2019 16:51:33 -0800 (PST)
-Received: from stbirv-lnx-3.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id 81sm274819pfx.30.2019.12.17.16.51.32
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Tue, 17 Dec 2019 16:51:33 -0800 (PST)
-From:   Doug Berger <opendmb@gmail.com>
-To:     "David S. Miller" <davem@davemloft.net>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Doug Berger <opendmb@gmail.com>
-Subject: [PATCH net-next v2 8/8] net: bcmgenet: Add software counters to track reallocations
-Date:   Tue, 17 Dec 2019 16:51:15 -0800
-Message-Id: <1576630275-17591-9-git-send-email-opendmb@gmail.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1576630275-17591-1-git-send-email-opendmb@gmail.com>
-References: <1576630275-17591-1-git-send-email-opendmb@gmail.com>
+        bh=AYCZBK/F6WXc/6GYxQqzgfcNB0CkdTjluO37WmZm4bg=;
+        b=ZBWPr/b1BNji9nhSUEbQ7PTpHCavWIHIeYPjnLYggD9oQ8g6Y0keGrFmW/1qdc0prT
+         TATXG6pMMV6EriNU3TU3+xOGLChZx+WRGAY9F7E7t/8C+h2hjOZr3ez7L5orxoaVKUvE
+         AAwWn+xhcLDkGzVXE/UPkIIE+bcVuSL74r4avRa1ZO7tCzcA24ESQR3oPSk7/nO3WGsY
+         mxsgL/Xe9zZ22/sqJdZ3OPkSwmV4uaT2DSYd90Pt9jUl9xwhjbRIyGjd8KIDDUgejQrB
+         Md2UqgINZQXO2giWoa4qbkVwLc89DsHWJwEQ9BwdaiVohdEEj2HlIAo9Zq96kCjuFPTr
+         pHsg==
+X-Gm-Message-State: APjAAAW8xNbyceqewIlwP4EEQxstsNLO88vj6bSXsG3qmemEkx1gQxM9
+        8UkXnjfAA32bSznf8WTeo0Axl36OHF8=
+X-Google-Smtp-Source: APXvYqy7JR51ctyTBRBHjvDLIPP1yR9e/KW+TDV95QBD2Xu0qDOu5MFxKyA5Jee6TwUu40fS/qU5lA==
+X-Received: by 2002:a63:455a:: with SMTP id u26mr343846pgk.282.1576630599365;
+        Tue, 17 Dec 2019 16:56:39 -0800 (PST)
+Received: from ubuntu-18.04-x8664 ([128.1.49.85])
+        by smtp.gmail.com with ESMTPSA id z129sm278464pfb.67.2019.12.17.16.56.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 17 Dec 2019 16:56:39 -0800 (PST)
+From:   Wenbo Zhang <ethercflow@gmail.com>
+To:     bpf@vger.kernel.org
+Cc:     ast@kernel.org, daniel@iogearbox.net, yhs@fb.com,
+        bgregg@netflix.com, andrii.nakryiko@gmail.com,
+        netdev@vger.kernel.org
+Subject: [PATCH bpf-next v14 0/2] bpf: adding get_fd_path helper
+Date:   Tue, 17 Dec 2019 19:56:27 -0500
+Message-Id: <cover.1576629200.git.ethercflow@gmail.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <8f6b8979fb64bedf5cb406ba29146c5fa2539267.1576575253.git.ethercflow@gmail.com>
+References: <8f6b8979fb64bedf5cb406ba29146c5fa2539267.1576575253.git.ethercflow@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When inserting the TSB, keep track of how many times we had to do
-it and if there was a failure in doing so, this helps profile the
-driver for possibly incorrect headroom settings.
+This patch series introduce a bpf helper that can be used to map a file
+descriptor to a pathname.
 
-Signed-off-by: Doug Berger <opendmb@gmail.com>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
----
- drivers/net/ethernet/broadcom/genet/bcmgenet.c | 6 ++++++
- drivers/net/ethernet/broadcom/genet/bcmgenet.h | 2 ++
- 2 files changed, 8 insertions(+)
+This requirement is mainly discussed here:
 
-diff --git a/drivers/net/ethernet/broadcom/genet/bcmgenet.c b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-index e2bca19bf10b..3ee7917e3fc0 100644
---- a/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-+++ b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-@@ -861,6 +861,9 @@ static const struct bcmgenet_stats bcmgenet_gstrings_stats[] = {
- 	STAT_GENET_SOFT_MIB("alloc_rx_buff_failed", mib.alloc_rx_buff_failed),
- 	STAT_GENET_SOFT_MIB("rx_dma_failed", mib.rx_dma_failed),
- 	STAT_GENET_SOFT_MIB("tx_dma_failed", mib.tx_dma_failed),
-+	STAT_GENET_SOFT_MIB("tx_realloc_tsb", mib.tx_realloc_tsb),
-+	STAT_GENET_SOFT_MIB("tx_realloc_tsb_failed",
-+			    mib.tx_realloc_tsb_failed),
- 	/* Per TX queues */
- 	STAT_GENET_Q(0),
- 	STAT_GENET_Q(1),
-@@ -1487,6 +1490,7 @@ static void bcmgenet_tx_reclaim_all(struct net_device *dev)
- static struct sk_buff *bcmgenet_put_tx_csum(struct net_device *dev,
- 					    struct sk_buff *skb)
- {
-+	struct bcmgenet_priv *priv = netdev_priv(dev);
- 	struct status_64 *status = NULL;
- 	struct sk_buff *new_skb;
- 	u16 offset;
-@@ -1501,11 +1505,13 @@ static struct sk_buff *bcmgenet_put_tx_csum(struct net_device *dev,
- 		new_skb = skb_realloc_headroom(skb, sizeof(*status));
- 		if (!new_skb) {
- 			dev_kfree_skb_any(skb);
-+			priv->mib.tx_realloc_tsb_failed++;
- 			dev->stats.tx_dropped++;
- 			return NULL;
- 		}
- 		dev_consume_skb_any(skb);
- 		skb = new_skb;
-+		priv->mib.tx_realloc_tsb++;
- 	}
+  https://github.com/iovisor/bcc/issues/237
+
+This implementation supports both local and mountable pseudo file systems,
+and ensure we're in user context which is safe for this helper to run.
+
+Changes since v13:
+
+* Fix this helper's description to be consistent with comments in d_path
+
+* Fix error handling logic fill zeroes not '0's
+
+
+Changes since v12:
+
+* Rename to get_fd_patch
+
+* Fix test issue on big-endian machines
+
+
+Changes since v11:
+
+* Only allow tracepoints to make sure it won't dead lock
+
+
+Changes since v10:
+
+* Fix missing fput
+
+
+Changes since v9:
+
+* Associate help patch with its selftests patch to this series
+
+* Refactor selftests code for further simplification  
+
+
+Changes since v8:
+
+* Format helper description 
  
- 	skb_push(skb, sizeof(*status));
-diff --git a/drivers/net/ethernet/broadcom/genet/bcmgenet.h b/drivers/net/ethernet/broadcom/genet/bcmgenet.h
-index d33c0d093f82..61a6fe9f4cec 100644
---- a/drivers/net/ethernet/broadcom/genet/bcmgenet.h
-+++ b/drivers/net/ethernet/broadcom/genet/bcmgenet.h
-@@ -144,6 +144,8 @@ struct bcmgenet_mib_counters {
- 	u32	alloc_rx_buff_failed;
- 	u32	rx_dma_failed;
- 	u32	tx_dma_failed;
-+	u32	tx_realloc_tsb;
-+	u32	tx_realloc_tsb_failed;
- };
- 
- #define UMAC_HD_BKP_CTRL		0x004
+
+Changes since v7:
+
+* Use fget_raw instead of fdget_raw, as fdget_raw is only used inside fs/
+
+* Ensure we're in user context which is safe fot the help to run
+
+* Filter unmountable pseudo filesystem, because they don't have real path
+
+* Supplement the description of this helper function
+
+
+Changes since v6:
+
+* Fix missing signed-off-by line
+
+
+Changes since v5:
+
+* Refactor helper avoid unnecessary goto end by having two explicit returns
+
+
+Changes since v4:
+
+* Rename bpf_fd2path to bpf_get_file_path to be consistent with other
+helper's names
+
+* When fdget_raw fails, set ret to -EBADF instead of -EINVAL
+
+* Remove fdput from fdget_raw's error path
+
+* Use IS_ERR instead of IS_ERR_OR_NULL as d_path ether returns a pointer
+into the buffer or an error code if the path was too long
+
+* Modify the normal path's return value to return copied string length
+including NUL
+
+* Update helper description's Return bits.
+
+* Refactor selftests code for further simplification  
+
+
+Changes since v3:
+
+* Remove unnecessary LOCKDOWN_BPF_READ
+
+* Refactor error handling section for enhanced readability
+
+* Provide a test case in tools/testing/selftests/bpf
+
+* Refactor sefltests code to use real global variables instead of maps
+
+
+Changes since v2:
+
+* Fix backward compatibility
+
+* Add helper description
+
+* Refactor selftests use global data instead of perf_buffer to simplified
+code
+
+* Fix signed-off name
+
+
+Wenbo Zhang (2):
+  bpf: add new helper get_fd_path for mapping a file descriptor to a
+    pathname
+  selftests/bpf: test for bpf_get_fd_path() from tracepoint
+
+ include/uapi/linux/bpf.h                      |  29 ++-
+ kernel/trace/bpf_trace.c                      |  69 +++++++
+ tools/include/uapi/linux/bpf.h                |  29 ++-
+ .../selftests/bpf/prog_tests/get_fd_path.c    | 171 ++++++++++++++++++
+ .../selftests/bpf/progs/test_get_fd_path.c    |  43 +++++
+ 5 files changed, 339 insertions(+), 2 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/get_fd_path.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_get_fd_path.c
+
 -- 
-2.7.4
+2.17.1
 
