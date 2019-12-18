@@ -2,87 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 765861254F0
-	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 22:43:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C847012551A
+	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 22:52:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726518AbfLRVnx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Dec 2019 16:43:53 -0500
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:36010 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726463AbfLRVnx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Dec 2019 16:43:53 -0500
-Received: from pps.filterd (m0109331.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xBILhmMD003640
-        for <netdev@vger.kernel.org>; Wed, 18 Dec 2019 13:43:52 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-type; s=facebook;
- bh=4yUfY7Tjj7WNz8PiEy97qP9OQCzQNpzSlGf2IrDbw7w=;
- b=fwp1ManFKmbK+As9yZoqTl4ZnWQyc+L7u5fOQ9Zc8f7DTJm/AEv/MOJygbrJrMl0a5Kt
- MiXLpTSPeMCdWWiL1IqHDlDTZ9OwrpAE35eBzIxUCp15liqbto19VizftAW+wMvTXo7E
- ESbBaeAVGSY35QsCW71NuMEPLLGkLgWX0XU= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 2wypvwhwqa-11
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 18 Dec 2019 13:43:51 -0800
-Received: from intmgw004.05.ash5.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:83::4) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Wed, 18 Dec 2019 13:43:19 -0800
-Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
-        id 2E5AA2EC1DF5; Wed, 18 Dec 2019 13:43:18 -0800 (PST)
-Smtp-Origin-Hostprefix: devbig
-From:   Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
-        <daniel@iogearbox.net>
-CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH bpf-next] bpftool: simplify format string to not use positional args
-Date:   Wed, 18 Dec 2019 13:43:14 -0800
-Message-ID: <20191218214314.2403729-1-andriin@fb.com>
-X-Mailer: git-send-email 2.17.1
-X-FB-Internal: Safe
+        id S1726539AbfLRVwm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Dec 2019 16:52:42 -0500
+Received: from us-smtp-1.mimecast.com ([207.211.31.81]:38455 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726387AbfLRVwl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Dec 2019 16:52:41 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1576705960;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=yRUJBmZBX5I2Quvhv35YiDu9LJ31CJC6zvSs/gKguzA=;
+        b=Zc8I3QliTVKGxwP6LZbkgHCNgD7P7ET683mI0v8IMQRV2/+8bAiYAByZ5260vBzJEz+mhc
+        dgWDPM8CfBbP45GUaB2QWcP5FX1gV2giXsd+p0EgCBlikumxew8HExLx/suo1Io0WF3pm4
+        Ak1OZfgSQGS3+n7YQVnV6kmH3RCl3EA=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-211-wtj0NxmANJSLODmbSH_odg-1; Wed, 18 Dec 2019 16:52:29 -0500
+X-MC-Unique: wtj0NxmANJSLODmbSH_odg-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 88FEA593A1;
+        Wed, 18 Dec 2019 21:52:27 +0000 (UTC)
+Received: from ovpn-116-48.ams2.redhat.com (ovpn-116-48.ams2.redhat.com [10.36.116.48])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id BD1015D9E2;
+        Wed, 18 Dec 2019 21:52:25 +0000 (UTC)
+Message-ID: <518dc6a3c77f51a9d56b66ac80ffb883d80ceedf.camel@redhat.com>
+Subject: Re: [PATCH net-next v3 07/11] tcp: Prevent coalesce/collapse when
+ skb has MPTCP extensions
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     subashab@codeaurora.org,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>
+Cc:     David Miller <davem@davemloft.net>, eric.dumazet@gmail.com,
+        netdev@vger.kernel.org, mptcp@lists.01.org,
+        netdev-owner@vger.kernel.org
+Date:   Wed, 18 Dec 2019 22:52:24 +0100
+In-Reply-To: <6411d0366a6ec6a30f9dbf4117ea6d1f@codeaurora.org>
+References: <20191217203807.12579-1-mathew.j.martineau@linux.intel.com>
+         <20191217203807.12579-8-mathew.j.martineau@linux.intel.com>
+         <5fc0d4bd-5172-298d-6bbb-00f75c7c0dc9@gmail.com>
+         <20191218.124510.1971632024371398726.davem@davemloft.net>
+         <alpine.OSX.2.21.1912181251550.32925@mjmartin-mac01.local>
+         <6411d0366a6ec6a30f9dbf4117ea6d1f@codeaurora.org>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.32.5 (3.32.5-1.fc30) 
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
- definitions=2019-12-18_07:2019-12-17,2019-12-18 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 bulkscore=0
- priorityscore=1501 impostorscore=0 adultscore=0 mlxscore=0 phishscore=0
- mlxlogscore=866 malwarescore=0 suspectscore=8 lowpriorityscore=0
- clxscore=1015 spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-1910280000 definitions=main-1912180166
-X-FB-Internal: deliver
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Change format string referring to just single argument out of two available.
-Some versions of libc can reject such format string.
+On Wed, 2019-12-18 at 14:36 -0700, subashab@codeaurora.org wrote:
+> > Ok, understood. Not every packet has this MPTCP extension data so
+> > coalescing was not always turned off, but given the importance of
+> > avoiding
+> > 
+> > this memory waste I'll confirm GRO behavior and work on maintaining
+> > coalesce/collapse with identical MPTCP extension data.
+> > 
+> 
+> Hi Mat
+> 
+> Are identical MPTCP extensions a common case?
 
-Reported-by: Nikita Shirokov <tehnerd@tehnerd.com>
-Signed-off-by: Andrii Nakryiko <andriin@fb.com>
----
- tools/bpf/bpftool/gen.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Yes, they are.
 
-diff --git a/tools/bpf/bpftool/gen.c b/tools/bpf/bpftool/gen.c
-index 8d93c8f90f82..851c465f99dc 100644
---- a/tools/bpf/bpftool/gen.c
-+++ b/tools/bpf/bpftool/gen.c
-@@ -567,9 +567,9 @@ static int do_skeleton(int argc, char **argv)
- 			return -1;					    \n\
- 		}							    \n\
- 									    \n\
--		#endif /* %2$s */					    \n\
-+		#endif /* %s */						    \n\
- 		",
--		obj_name, header_guard);
-+		header_guard);
- 	err = 0;
- out:
- 	bpf_object__close(obj);
--- 
-2.17.1
+> AFAIK the data sequence number and the subflow sequence number change
+> per packet even in a single stream scenario.
+
+What actually change on per packet basis is the TCP sequence number.
+The DSS mapping can spawn on multiple packets, and will have constand
+(base) sequence number and length.
+
+Cheers,
+
+Paolo
 
