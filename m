@@ -2,92 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D877123F83
-	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 07:23:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 38559123F95
+	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 07:30:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726695AbfLRGXk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Dec 2019 01:23:40 -0500
-Received: from mail-pl1-f193.google.com ([209.85.214.193]:35902 "EHLO
-        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725810AbfLRGXk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Dec 2019 01:23:40 -0500
-Received: by mail-pl1-f193.google.com with SMTP id d15so514205pll.3;
-        Tue, 17 Dec 2019 22:23:39 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=eX0CXj2vhPUQYL0CTUJZnkl/It94Ri0r5UvRz15Iqwc=;
-        b=fUFvsrMDb2TYCG4L/sBjPW2tPnhsw2AHEvxM1rzONmUwYJi3APJtNU1iOijUghMVWa
-         C+tPMPiZqGKedRqfeqLnkVAxDNT2c2ARUfi1klKljHi7puYkoxxOw284HgGcyWfW4nrd
-         T+qIgAoB/QQ2u9WbEJ7M3gPA+YjTdfZVVcG/lCnhFiw8PF6ckoZ/caQNXDVDNcme6IbH
-         Gl7Vk/n6EUkxxDyZOa9/RnvRYjiNZQiRsPY7Wj7eAaWpo67FQ3AtI3nn187RSuucRcwe
-         hjTvCsN4q8hxTY+EZfzqRQiI3n8zt614sJ8eelWQHIMkifqfaKyRarU7xNEi/QwnMeOe
-         bFEg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=eX0CXj2vhPUQYL0CTUJZnkl/It94Ri0r5UvRz15Iqwc=;
-        b=V57qM48ZF/Yoy8fXNm5x6ffnubL6CHG9YdwOcVi//RkNdQV/lgCg0ads7AtVKxJhMH
-         hoON9UAfHMm2r62z5lXcvsuKjbNnfsZd+CJ/XMTFCWZay1Lr8GkQ9UzgdeVXkxaVcd+6
-         tgRQQczVp8WglMI9lkeKH1n9AcaWrwcdWWyGNx1muOABpbx6421iIwtdfz0YwSxy5XHs
-         IsNbbik7X+jxMY/VZJ3Bv69aB6XzCt1+1zp9YuCNdyvSZIMDMtkRoTSpSPmscGBQ4yTj
-         YbwZdJ/pw4XDhclGAU5aAO2ue49qLkYR7lQUMWkB2npmTebj/H2YZlfibt5U2pjr5Ve2
-         wXzw==
-X-Gm-Message-State: APjAAAUNkj75vd5bIJGVkoKL5V59BFrHI+63QExAyAlf+05W3vbhtMy0
-        T0G4nRsu8LP/gwwHKGGPoD8=
-X-Google-Smtp-Source: APXvYqw6b4/2U7BRQP1m5oZv2gcGd5wM3Bjcpyzjt33YRO7k5n5TP22Z0d2506fyVyMF9IFY+mgv6g==
-X-Received: by 2002:a17:902:be10:: with SMTP id r16mr814986pls.169.1576650219475;
-        Tue, 17 Dec 2019 22:23:39 -0800 (PST)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:180::9922])
-        by smtp.gmail.com with ESMTPSA id y62sm1375490pfg.45.2019.12.17.22.23.37
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 17 Dec 2019 22:23:38 -0800 (PST)
-Date:   Tue, 17 Dec 2019 22:23:36 -0800
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Andrii Nakryiko <andriin@fb.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@fb.com,
-        daniel@iogearbox.net, andrii.nakryiko@gmail.com, kernel-team@fb.com
-Subject: Re: [PATCH v3 bpf-next 0/3] Skeleton improvements and documentation
-Message-ID: <20191218062335.folwsve44bkawsvi@ast-mbp.dhcp.thefacebook.com>
-References: <20191218052552.2915188-1-andriin@fb.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191218052552.2915188-1-andriin@fb.com>
-User-Agent: NeoMutt/20180223
+        id S1726638AbfLRG36 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Dec 2019 01:29:58 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:47278 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725881AbfLRG36 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Dec 2019 01:29:58 -0500
+Received: from localhost (unknown [IPv6:2601:601:9f00:1c3::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 0DEC41500796D;
+        Tue, 17 Dec 2019 22:29:57 -0800 (PST)
+Date:   Tue, 17 Dec 2019 22:29:56 -0800 (PST)
+Message-Id: <20191217.222956.2055609890870202125.davem@davemloft.net>
+To:     vincent.cheng.xh@renesas.com
+Cc:     robh+dt@kernel.org, mark.rutland@arm.com, richardcochran@gmail.com,
+        devicetree@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next 2/3] ptp: clockmatrix: Remove IDT references
+ or replace with Renesas.
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <1576558988-20837-3-git-send-email-vincent.cheng.xh@renesas.com>
+References: <1576558988-20837-1-git-send-email-vincent.cheng.xh@renesas.com>
+        <1576558988-20837-3-git-send-email-vincent.cheng.xh@renesas.com>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 17 Dec 2019 22:29:57 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 17, 2019 at 09:25:49PM -0800, Andrii Nakryiko wrote:
-> Simplify skeleton usage by embedding source BPF object file inside skeleton
-> itself. This allows to keep skeleton and object file in sync at all times with
-> no chance of confusion.
-> 
-> Also, add bpftool-gen.rst manpage, explaining concepts and ideas behind
-> skeleton. In examples section it also includes a complete small BPF
-> application utilizing skeleton, as a demonstration of API.
-> 
-> Patch #2 also removes BPF_EMBED_OBJ, as there is currently no use of it.
-> 
-> v2->v3:
-> - (void) in no-args function (Alexei);
-> - bpftool-gen.rst code block formatting fix (Alexei);
-> - simplified xxx__create_skeleton to fill in obj and return error code;
-> 
-> v1->v2:
-> - remove whitespace from empty lines in code blocks (Yonghong).
+From: vincent.cheng.xh@renesas.com
+Date: Tue, 17 Dec 2019 00:03:07 -0500
 
-Applied. Thanks.
+> From: Vincent Cheng <vincent.cheng.xh@renesas.com>
+> 
+> Renesas Electronics Corporation completed acquisition of IDT in 2019.
+> 
+> This patch removes IDT references or replaces IDT with Renesas.
+> Renamed idt8a340_reg.h to clockmatrix_reg.h.
+> There were no functional changes.
+> 
+> Signed-off-by: Vincent Cheng <vincent.cheng.xh@renesas.com>
 
-This bit:
-+		  layout will be created. Currently supported ones are: .data,
-+		  .bss, .rodata, and .extern structs/data sections. These
-didn't render correctly in the man page for me.
-Not sure whehther it's an issue in my setup or .rst is invalid.
-Please take a look.
-Overall new man page looks great.
+Sorry, we don't do stuff like this.
 
+The driver shall keep the reference to it's old vendor name, and
+this is how we've handled similar situations in the past.
+
+And do you know the worst part about this?  You DID in fact
+functionally change this driver:
+
+> -#define FW_FILENAME	"idtcm.bin"
+> +#define FW_FILENAME	"cm_tcs.bin"
+
+Now everyone would have missing firmware.
+
+So not only is this unacceptable on precedence grounds, and how we
+always handle situations like this, it's functionally wrong and would
+break things for users.
+
+Please remove this patch and resubmit #1 and #3 as a series for
+re-review.
+
+Thank you.
