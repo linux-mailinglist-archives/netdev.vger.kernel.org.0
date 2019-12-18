@@ -2,29 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 89C63125145
-	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 20:05:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8ECA912514A
+	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 20:06:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727487AbfLRTFr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Dec 2019 14:05:47 -0500
-Received: from mail25.static.mailgun.info ([104.130.122.25]:22074 "EHLO
+        id S1727473AbfLRTGi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Dec 2019 14:06:38 -0500
+Received: from mail25.static.mailgun.info ([104.130.122.25]:11171 "EHLO
         mail25.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727391AbfLRTFr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Dec 2019 14:05:47 -0500
+        by vger.kernel.org with ESMTP id S1726698AbfLRTGh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Dec 2019 14:06:37 -0500
 DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1576695947; h=Date: Message-Id: Cc: To: References:
+ s=smtp; t=1576695997; h=Date: Message-Id: Cc: To: References:
  In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
- Content-Type: Sender; bh=BqYctTn38rjNZLKCLP3wcdlqM7zOfIhkILzWxq9gFhI=;
- b=XV4sqUQdFzIRa8cN/yOmzWmFu9a15jma0abP0xyBkQbiCTBA2ZI0hTOoU9m3TpvO8jDoKveO
- FM5r58EV3u9lluPv5bGNW4VG7mPZDzyTK5WohTOC4I5xSxEGdx9rlpawZw2g62bKBUlNGQZT
- lu1Ulh7X5cLiWlUzPorlD66dCZQ=
+ Content-Type: Sender; bh=7NiU3hLTXWzHEhyJIYMdxnxbeihs4foH5jdP5okwMbc=;
+ b=A+f8V2pW27nECTIS7JNIKLvB11OTpixkh25oRCnuZN48BNFG0r9muxDYzItCdZtarWjbPX3q
+ fUmnw3qp8jvXqbdFJBS37qQekFAD9mR7QdV3I02RM5rUrV/MuxHLkVvv40NlJ7XitMn7ThCS
+ ZE7lofakmwm+QVHO5W9LAJfiQ/c=
 X-Mailgun-Sending-Ip: 104.130.122.25
 X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
 Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
- by mxa.mailgun.org with ESMTP id 5dfa7889.7f2ca1cd27d8-smtp-out-n02;
- Wed, 18 Dec 2019 19:05:45 -0000 (UTC)
+ by mxa.mailgun.org with ESMTP id 5dfa78b7.7f46ea6e81f0-smtp-out-n03;
+ Wed, 18 Dec 2019 19:06:31 -0000 (UTC)
 Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 878ABC4479C; Wed, 18 Dec 2019 19:05:44 +0000 (UTC)
+        id 3F453C433CB; Wed, 18 Dec 2019 19:06:31 +0000 (UTC)
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
         aws-us-west-2-caf-mail-1.web.codeaurora.org
 X-Spam-Level: 
@@ -34,53 +34,59 @@ Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
         (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 5B7B7C43383;
-        Wed, 18 Dec 2019 19:05:41 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 5B7B7C43383
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 12E94C43383;
+        Wed, 18 Dec 2019 19:06:26 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 12E94C43383
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] brcmfmac: set interface carrier to off by default
+Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH 2/7] at76c50x-usb: fix endpoint debug message
 From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20191210113555.1868-1-zajec5@gmail.com>
-References: <20191210113555.1868-1-zajec5@gmail.com>
-To:     =?utf-8?b?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>
-Cc:     Arend van Spriel <arend.vanspriel@broadcom.com>,
+In-Reply-To: <20191210114426.4713-3-johan@kernel.org>
+References: <20191210114426.4713-3-johan@kernel.org>
+To:     Johan Hovold <johan@kernel.org>
+Cc:     QCA ath9k Development <ath9k-devel@qca.qualcomm.com>,
+        Arend van Spriel <arend@broadcom.com>,
         Franky Lin <franky.lin@broadcom.com>,
         Hante Meuleman <hante.meuleman@broadcom.com>,
         Chi-Hsien Lin <chi-hsien.lin@cypress.com>,
         Wright Feng <wright.feng@cypress.com>,
-        Pieter-Paul Giesberts <pieter-paul.giesberts@broadcom.com>,
-        Winnie Chang <winnie.chang@cypress.com>,
-        linux-wireless@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com,
-        brcm80211-dev-list@cypress.com, netdev@vger.kernel.org,
-        =?utf-8?b?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>
+        Jes Sorensen <Jes.Sorensen@redhat.com>,
+        Amitkumar Karwar <amitkarwar@gmail.com>,
+        Siva Rebbagondla <siva8118@gmail.com>,
+        Daniel Drake <dsd@gentoo.org>,
+        Ulrich Kunitz <kune@deine-taler.de>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Johan Hovold <johan@kernel.org>
 User-Agent: pwcli/0.0.0-git (https://github.com/kvalo/pwcli/) Python/2.7.12
-Message-Id: <20191218190544.878ABC4479C@smtp.codeaurora.org>
-Date:   Wed, 18 Dec 2019 19:05:44 +0000 (UTC)
+Message-Id: <20191218190631.3F453C433CB@smtp.codeaurora.org>
+Date:   Wed, 18 Dec 2019 19:06:31 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Rafał Miłecki wrote:
+Johan Hovold <johan@kernel.org> wrote:
 
-> From: Rafał Miłecki <rafal@milecki.pl>
+> Make sure to use the current alternate setting, which may not be the
+> same as the first alternate setting, also when printing the number of
+> endpoints at probe.
 > 
-> It's important as brcmfmac creates one main interface for each PHY and
-> doesn't allow deleting it. Not setting carrier could result in other
-> subsystems misbehaving (e.g. LEDs "netdev" trigger turning LED on).
-> 
-> Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
+> Signed-off-by: Johan Hovold <johan@kernel.org>
 
-Patch applied to wireless-drivers-next.git, thanks.
+6 patches applied to wireless-drivers-next.git, thanks.
 
-8d9627b05b2c brcmfmac: set interface carrier to off by default
+af615abd1596 at76c50x-usb: fix endpoint debug message
+3428fbcd6e6c brcmfmac: fix interface sanity check
+b73e05aa543c orinoco_usb: fix interface sanity check
+39a4281c312f rtl8xxxu: fix interface sanity check
+3139b180906a rsi_91x_usb: fix interface sanity check
+2d68bb2687ab zd1211rw: fix storage endpoint lookup
 
 -- 
-https://patchwork.kernel.org/patch/11281933/
+https://patchwork.kernel.org/patch/11282005/
 
 https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
