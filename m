@@ -2,116 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 35B521242E5
-	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 10:19:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C9AF11242ED
+	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 10:22:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726905AbfLRJTQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Dec 2019 04:19:16 -0500
-Received: from mail.dlink.ru ([178.170.168.18]:57768 "EHLO fd.dlink.ru"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726551AbfLRJTP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 18 Dec 2019 04:19:15 -0500
-Received: by fd.dlink.ru (Postfix, from userid 5000)
-        id F1EC31B20120; Wed, 18 Dec 2019 12:19:10 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 fd.dlink.ru F1EC31B20120
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dlink.ru; s=mail;
-        t=1576660751; bh=dacXOshgO7/LdPb/5UECyNXY1P7mbC7VYs/cQiweRR8=;
-        h=From:To:Cc:Subject:Date;
-        b=DOq9x7S1dsO5H3WvE5Cu5xnECZ5E7Lg6u/KgEDo7VD//WoXfboKcSX84oXGuMQnyL
-         0vAaLvoXqKYs//aIwhjkkTTPHWUse+WRxzpqd/elp6g+DE2AYemImG643xE9PBh085
-         TUi8fy57RN8M+/a207IEGM813GxzkggZk3q2D2uY=
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.dlink.ru
-X-Spam-Level: 
-X-Spam-Status: No, score=-99.2 required=7.5 tests=BAYES_50,URIBL_BLOCKED,
-        USER_IN_WHITELIST autolearn=disabled version=3.4.2
-Received: from mail.rzn.dlink.ru (mail.rzn.dlink.ru [178.170.168.13])
-        by fd.dlink.ru (Postfix) with ESMTP id 244C61B20380;
-        Wed, 18 Dec 2019 12:18:57 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 fd.dlink.ru 244C61B20380
-Received: from mail.rzn.dlink.ru (localhost [127.0.0.1])
-        by mail.rzn.dlink.ru (Postfix) with ESMTP id 5BD631B20367;
-        Wed, 18 Dec 2019 12:18:55 +0300 (MSK)
-Received: from localhost.localdomain (unknown [196.196.203.126])
-        by mail.rzn.dlink.ru (Postfix) with ESMTPA;
-        Wed, 18 Dec 2019 12:18:55 +0300 (MSK)
-From:   Alexander Lobakin <alobakin@dlink.ru>
-To:     "David S. Miller" <davem@davemloft.net>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Soheil Hassas Yeganeh <soheil@google.com>,
-        Aaron Tomlin <atomlin@redhat.com>,
-        Matteo Croce <mcroce@redhat.com>,
-        Alexander Lobakin <alobakin@dlink.ru>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Edward Cree <ecree@solarflare.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, bpf@vger.kernel.org
-Subject: [PATCH net] net: core: sysctl: fix compiler warning when only cBPF is present
-Date:   Wed, 18 Dec 2019 12:18:21 +0300
-Message-Id: <20191218091821.7080-1-alobakin@dlink.ru>
-X-Mailer: git-send-email 2.24.1
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        id S1726551AbfLRJWK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Dec 2019 04:22:10 -0500
+Received: from mail-pf1-f195.google.com ([209.85.210.195]:43488 "EHLO
+        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725799AbfLRJWK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Dec 2019 04:22:10 -0500
+Received: by mail-pf1-f195.google.com with SMTP id h14so865520pfe.10;
+        Wed, 18 Dec 2019 01:22:09 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=pM1qXop/PoC0sEV0RB5zbkScR7IGdTIvAdEtSE45QfY=;
+        b=H62fJvyd5y2t3TgS1HNAfZDkrKcq/AV1/IB4vL7B59uneUVCZTwae9p2QeZSH958uP
+         4W2IZt/2r2EXz4/MthcjmOIS6OJY0geOV7ZB5YsrCFnQ/8LmAls/YXwjNiG9cpwWVM7D
+         /WFPfIOQoG59MpOc61kgkO3yyXc8X7MUk+jYmmmWQ621z9GyrX6ucf4qSbxoV5eXTuXi
+         gN0S4n4Dv93y7z9S0Nz0Wa+lDHwacCpm2HfnUmYYdhi3ge+cmtiCuuyXmXfZjOoTUqO/
+         0AwF0VvxCq9u7sxowYHvqysjfDsF0Hode1vWi2K5ZkjMcfaN179hDd4zOfJ3wo2eFRBe
+         1Maw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=pM1qXop/PoC0sEV0RB5zbkScR7IGdTIvAdEtSE45QfY=;
+        b=CH3YroQJup+2/TjEGRQcOct+bZS2i0UToM2yOg5clszuNfi8pYN80x2DFeQ5hBw8lm
+         J4WgbZgVo+7Y7tM0CsiB80EKnco6s+I03s/9vp1/uFt5th7AtRgFkBxQMaQkynwmBAOs
+         4I7WykXSnZybdlMNCFCLcG6CEHI6AD/B9T+xADBm7Fcf2ToiFrPUQj2X1LncNOSi/JKV
+         k+TQbCffXiw2YcsRK65sfTcM0dTbJOOenXWF3gFBFgMgGm9JtK0qBdh+vUqDia9cIFrx
+         2ZpymSc6skVBzPItxAtNlSLzhJc0Zp9DT5VTk1iVujpGDm/IWcxFX2NQQfqpQ3z7I5pZ
+         YY6Q==
+X-Gm-Message-State: APjAAAV975gMUFvDJA8aWo3tUihRRVkE1dvAyyW42mKOqGv+UippOwj4
+        5r2XW02WeuMWEvWQmKfxaFY=
+X-Google-Smtp-Source: APXvYqz0ZyCAJcqBD5q1TowmXPojeOkedvwBM0Dkqz/EeWgBCWB3rD9GXdcZVYa0nxFvi8mWzlCyOQ==
+X-Received: by 2002:a63:a34b:: with SMTP id v11mr1829976pgn.229.1576660929292;
+        Wed, 18 Dec 2019 01:22:09 -0800 (PST)
+Received: from oslab.tsinghua.edu.cn ([166.111.139.172])
+        by smtp.gmail.com with ESMTPSA id v29sm2167295pgl.88.2019.12.18.01.22.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 18 Dec 2019 01:22:08 -0800 (PST)
+From:   Jia-Ju Bai <baijiaju1990@gmail.com>
+To:     davem@davemloft.net, gregkh@linuxfoundation.org,
+        tglx@linutronix.de, allison@lohutok.net, alexios.zavras@intel.com,
+        alexandru.ardelean@analog.com, albin_yang@163.com,
+        dan.carpenter@oracle.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jia-Ju Bai <baijiaju1990@gmail.com>
+Subject: [PATCH] net: nfc: nci: fix a possible sleep-in-atomic-context bug in nci_uart_tty_receive()
+Date:   Wed, 18 Dec 2019 17:21:55 +0800
+Message-Id: <20191218092155.5030-1-baijiaju1990@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-proc_dointvec_minmax_bpf_restricted() has been firstly introduced
-in commit 2e4a30983b0f ("bpf: restrict access to core bpf sysctls")
-under CONFIG_HAVE_EBPF_JIT. Then, this ifdef has been removed in
-ede95a63b5e8 ("bpf: add bpf_jit_limit knob to restrict unpriv
-allocations"), because a new sysctl, bpf_jit_limit, made use of it.
-Finally, this parameter has become long instead of integer with
-fdadd04931c2 ("bpf: fix bpf_jit_limit knob for PAGE_SIZE >= 64K")
-and thus, a new proc_dolongvec_minmax_bpf_restricted() has been
-added.
-With this last change, we got back to that
-proc_dointvec_minmax_bpf_restricted() is used only under
-CONFIG_HAVE_EBPF_JIT, but the corresponding ifdef has not been
-brought back.
+The kernel may sleep while holding a spinlock.
+The function call path (from bottom to top) in Linux 4.19 is:
 
-So, in configurations like CONFIG_BPF_JIT=y && CONFIG_HAVE_EBPF_JIT=n
-since v4.20 we have:
+net/nfc/nci/uart.c, 349: 
+	nci_skb_alloc in nci_uart_default_recv_buf
+net/nfc/nci/uart.c, 255: 
+	(FUNC_PTR)nci_uart_default_recv_buf in nci_uart_tty_receive
+net/nfc/nci/uart.c, 254: 
+	spin_lock in nci_uart_tty_receive
 
-  CC      net/core/sysctl_net_core.o
-net/core/sysctl_net_core.c:292:1: warning: ‘proc_dointvec_minmax_bpf_restricted’ defined but not used [-Wunused-function]
-  292 | proc_dointvec_minmax_bpf_restricted(struct ctl_table *table, int write,
-      | ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+nci_skb_alloc(GFP_KERNEL) can sleep at runtime.
+(FUNC_PTR) means a function pointer is called.
 
-Suppress this by guarding it with CONFIG_HAVE_EBPF_JIT again.
+To fix this bug, GFP_KERNEL is replaced with GFP_ATOMIC for
+nci_skb_alloc().
 
-Fixes: fdadd04931c2 ("bpf: fix bpf_jit_limit knob for PAGE_SIZE >= 64K")
-Signed-off-by: Alexander Lobakin <alobakin@dlink.ru>
+This bug is found by a static analysis tool STCheck written by myself.
+
+Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
 ---
- net/core/sysctl_net_core.c | 2 ++
- 1 file changed, 2 insertions(+)
+ net/nfc/nci/uart.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/core/sysctl_net_core.c b/net/core/sysctl_net_core.c
-index eb29e5adc84d..70211c9edb02 100644
---- a/net/core/sysctl_net_core.c
-+++ b/net/core/sysctl_net_core.c
-@@ -288,6 +288,7 @@ static int proc_dointvec_minmax_bpf_enable(struct ctl_table *table, int write,
- 	return ret;
- }
- 
-+#ifdef CONFIG_HAVE_EBPF_JIT
- static int
- proc_dointvec_minmax_bpf_restricted(struct ctl_table *table, int write,
- 				    void __user *buffer, size_t *lenp,
-@@ -298,6 +299,7 @@ proc_dointvec_minmax_bpf_restricted(struct ctl_table *table, int write,
- 
- 	return proc_dointvec_minmax(table, write, buffer, lenp, ppos);
- }
-+#endif /* CONFIG_HAVE_EBPF_JIT */
- 
- static int
- proc_dolongvec_minmax_bpf_restricted(struct ctl_table *table, int write,
+diff --git a/net/nfc/nci/uart.c b/net/nfc/nci/uart.c
+index 78fe622eba65..11b554ce07ff 100644
+--- a/net/nfc/nci/uart.c
++++ b/net/nfc/nci/uart.c
+@@ -346,7 +346,7 @@ static int nci_uart_default_recv_buf(struct nci_uart *nu, const u8 *data,
+ 			nu->rx_packet_len = -1;
+ 			nu->rx_skb = nci_skb_alloc(nu->ndev,
+ 						   NCI_MAX_PACKET_SIZE,
+-						   GFP_KERNEL);
++						   GFP_ATOMIC);
+ 			if (!nu->rx_skb)
+ 				return -ENOMEM;
+ 		}
 -- 
-2.24.1
+2.17.1
 
