@@ -2,56 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2AEFD124F7F
-	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 18:38:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 90E4A124F81
+	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 18:38:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727368AbfLRRil (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Dec 2019 12:38:41 -0500
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:43701 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727031AbfLRRik (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Dec 2019 12:38:40 -0500
-Received: by mail-pf1-f194.google.com with SMTP id x6so510818pfo.10;
-        Wed, 18 Dec 2019 09:38:40 -0800 (PST)
+        id S1727417AbfLRRin (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Dec 2019 12:38:43 -0500
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:32832 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727031AbfLRRim (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Dec 2019 12:38:42 -0500
+Received: by mail-pg1-f195.google.com with SMTP id 6so1654066pgk.0;
+        Wed, 18 Dec 2019 09:38:42 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=JeVljfXt+9SF34AxwW1FoItcy/91qpaXVmwI2wwDlZE=;
-        b=hA1Jj2cp6fHyCmFC77gPBW+M2nPOY4jjdTasBDMyHW9pbCG0c8B3It+PP1YJKlJuKN
-         XcHHZqulBNXpRgR6jALnkvhaJVsPwZSV2O0xAr1Pirh0tQVysSpJVCFMjHAdBpqq3L1g
-         jglxPWNzlMvWAbYulNQL09kyIZd4Qpi8FW/eKLPEcRnPS0HsQ7h+N1a9NmDE5BO2Mqod
-         ZLhtDF/CbJRs3J7vj+JXbK8/m12vWsestIkP5+iIgCo0FrQUkcSfuKqL7OtL9/g4zzOY
-         QQcr6loFxN0tRI6VWqNGJbKB23nhYvxXXroXcFnhWThhZJEmio1G4F/n7XTke3R3KJ5c
-         efGA==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=AhKfE6tOCfM1Lz5a/uUPR4TRFtdWhoskXzdYNzZtSYA=;
+        b=c72qmGJltw78P+qY1SAll2shY2/dWvkPIu9YhRgzgO+nqz3mTpC3GHHRJmQxeMbAwG
+         KDdvdRrdV2Re7lInYUrXYG2miSji1dQWRUdwmV2ToD5MaffDERWw7UUnFttQtpjL2TxT
+         RO7kKIffQkntsNaPb24ZimA9RCl+4qzUXhEFzwEqW5ng7YhFAczPHNBIHqYee1ELx17b
+         4YR14KWxoVGNkt5h08wut6hxOrSVdQO3GxNW9apc+fVKbO8XVq+0+PGHqE+QF3+uOEfn
+         IBBKgcdIjSJeaFUJsxGbTaL8HZorJYbJF9RUXYMX8Xu0Xypm6Fhn+lxhloTymst4zTNs
+         DvuA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=JeVljfXt+9SF34AxwW1FoItcy/91qpaXVmwI2wwDlZE=;
-        b=ds9BuCcLuq+18oFbiZP7xpx0iOs1wznzM33aBJU9skKakMWHbbRehDjLPjgvdgfAj1
-         wf69/brvhgUEsl1Qdd8fHTq7ar45DJJvQkOElQtJs98hkB60dSEC4Mqajz6CSPRLarlj
-         1jLJvN8d7h5YaZ4Kw530jK7vnTwC0F8gHd7evZayuEXCd6PPsij5RunPMCSSA/km3r2F
-         jqwhdMrxBoswdDQjYCuv6YGmk3jVHlYKCt6IE10sjps7j80BpD84F9U0hEZV/xAJH1Ei
-         xU4JZnebyt5z56bn/7hFCbBsioqIDMsbyLn7W55/iJC2d/UsjZMxX8VtDnAEQAUFm1la
-         5wWg==
-X-Gm-Message-State: APjAAAVArs8ZfPNACvaBDcSUIpm698TnmydJO2nYFbgv/D2RodBlMB18
-        6rr+JLxZuJdhixSqgaZDfa+W1NOv1r4=
-X-Google-Smtp-Source: APXvYqxfi0bZ0D+y9AQIuGRFklFuGMv6JQbcerF/mzxLcsvBagLz/gWJ719T91FWTg/QGg2an3p7vA==
-X-Received: by 2002:a63:4e06:: with SMTP id c6mr4265578pgb.187.1576690719711;
-        Wed, 18 Dec 2019 09:38:39 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=AhKfE6tOCfM1Lz5a/uUPR4TRFtdWhoskXzdYNzZtSYA=;
+        b=XzUbiTGRXzXsllBRjW2BDxlOzANTObf7M8qh66ADJ7NaahhOrdaN5gaOPXVqekPESG
+         9F/12+mkMgzCNPjJ3IpQRTZW30TJVqa0tPqxUyB8k+8UtBlbjXxRjDV2XbZSlJiFao7z
+         h6Y4c3fPZbQll1cWw81vAvOKwP3pamsgwAAUsJkaBzF2A3xChf9N9SvfV5Y8y+1ZG1wL
+         40qgqTgl7ahjwAdVJMBF4AZjUm2Z6nd9yhMvSR1T0CFDQcEkMQXKbD4k9wu1SW8/HJlo
+         C700XtWED02PgGv36AhrEGYLLvyki7h4Yg7nwFqpRpQttjtcV0iTQ0kulxZJ91Znkn8o
+         6yGA==
+X-Gm-Message-State: APjAAAVs7+2EOGxkkjNxlCn6E7qXUwdvwikzMJ8J2gVz+gMdRfF71GBJ
+        0uA4JTPKSgMi+Y+EoOfnN4DZEubmAVE=
+X-Google-Smtp-Source: APXvYqxpIsgMw+l2pFtasN0rzHIiZy5Fn+lNPjmRsGtq6pNX7/NwO2TR90EdIcrSZzAtDzLq4RYYvw==
+X-Received: by 2002:a63:904c:: with SMTP id a73mr4339807pge.335.1576690721771;
+        Wed, 18 Dec 2019 09:38:41 -0800 (PST)
 Received: from bpf-kern-dev.byteswizards.com (pc-184-104-160-190.cm.vtr.net. [190.160.104.184])
-        by smtp.googlemail.com with ESMTPSA id s15sm3991925pgq.4.2019.12.18.09.38.37
+        by smtp.googlemail.com with ESMTPSA id s15sm3991925pgq.4.2019.12.18.09.38.39
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 18 Dec 2019 09:38:39 -0800 (PST)
+        Wed, 18 Dec 2019 09:38:41 -0800 (PST)
 From:   Carlos Neira <cneirabustos@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     yhs@fb.com, ebiederm@xmission.com, brouer@redhat.com,
         bpf@vger.kernel.org, cneirabustos@gmail.com
-Subject: [PATCH v16 0/5]  BPF: New helper to obtain namespace data from current task
-Date:   Wed, 18 Dec 2019 14:38:22 -0300
-Message-Id: <20191218173827.20584-1-cneirabustos@gmail.com>
+Subject: [PATCH v16 1/5] fs/nsfs.c: added ns_match
+Date:   Wed, 18 Dec 2019 14:38:23 -0300
+Message-Id: <20191218173827.20584-2-cneirabustos@gmail.com>
 X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20191218173827.20584-1-cneirabustos@gmail.com>
+References: <20191218173827.20584-1-cneirabustos@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -59,46 +61,53 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently bpf_get_current_pid_tgid(), is used to do pid filtering in bcc's
-scripts but this helper returns the pid as seen by the root namespace which is
-fine when a bcc script is not executed inside a container.
-When the process of interest is inside a container, pid filtering will not work
-if bpf_get_current_pid_tgid() is used.
-This helper addresses this limitation returning the pid as it's seen by the current
-namespace where the script is executing.
-
-In the future different pid_ns files may belong to different devices, according to the
-discussion between Eric Biederman and Yonghong in 2017 Linux plumbers conference.
-To address that situation the helper requires inum and dev_t from /proc/self/ns/pid.
-This helper has the same use cases as bpf_get_current_pid_tgid() as it can be
-used to do pid filtering even inside a container.
+ns_match returns true if the namespace inode and dev_t matches the ones
+provided by the caller.
 
 Signed-off-by: Carlos Neira <cneirabustos@gmail.com>
+---
+ fs/nsfs.c               | 14 ++++++++++++++
+ include/linux/proc_ns.h |  2 ++
+ 2 files changed, 16 insertions(+)
 
-
-Carlos Neira (5):
-  fs/nsfs.c: added ns_match
-  bpf: added new helper bpf_get_ns_current_pid_tgid
-  tools: Added bpf_get_ns_current_pid_tgid helper
-  tools/testing/selftests/bpf: Add self-tests for new helper
-    bpf_get_ns_current_pid_tgid.
-  bpf_helpers_doc.py: Add struct bpf_pidns_info to known types
-
- fs/nsfs.c                                     | 14 +++
- include/linux/bpf.h                           |  1 +
- include/linux/proc_ns.h                       |  2 +
- include/uapi/linux/bpf.h                      | 19 +++-
- kernel/bpf/core.c                             |  1 +
- kernel/bpf/helpers.c                          | 45 ++++++++++
- kernel/trace/bpf_trace.c                      |  2 +
- scripts/bpf_helpers_doc.py                    |  1 +
- tools/include/uapi/linux/bpf.h                | 19 +++-
- .../bpf/prog_tests/ns_current_pid_tgid.c      | 88 +++++++++++++++++++
- .../bpf/progs/test_ns_current_pid_tgid.c      | 37 ++++++++
- 11 files changed, 227 insertions(+), 2 deletions(-)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/ns_current_pid_tgid.c
- create mode 100644 tools/testing/selftests/bpf/progs/test_ns_current_pid_tgid.c
-
+diff --git a/fs/nsfs.c b/fs/nsfs.c
+index a0431642c6b5..ef59cf347285 100644
+--- a/fs/nsfs.c
++++ b/fs/nsfs.c
+@@ -245,6 +245,20 @@ struct file *proc_ns_fget(int fd)
+ 	return ERR_PTR(-EINVAL);
+ }
+ 
++/**
++ * ns_match() - Returns true if current namespace matches dev/ino provided.
++ * @ns_common: current ns
++ * @dev: dev_t from nsfs that will be matched against current nsfs
++ * @ino: ino_t from nsfs that will be matched against current nsfs
++ *
++ * Return: true if dev and ino matches the current nsfs.
++ */
++bool ns_match(const struct ns_common *ns, dev_t dev, ino_t ino)
++{
++	return (ns->inum == ino) && (nsfs_mnt->mnt_sb->s_dev == dev);
++}
++
++
+ static int nsfs_show_path(struct seq_file *seq, struct dentry *dentry)
+ {
+ 	struct inode *inode = d_inode(dentry);
+diff --git a/include/linux/proc_ns.h b/include/linux/proc_ns.h
+index d31cb6215905..1da9f33489f3 100644
+--- a/include/linux/proc_ns.h
++++ b/include/linux/proc_ns.h
+@@ -82,6 +82,8 @@ typedef struct ns_common *ns_get_path_helper_t(void *);
+ extern void *ns_get_path_cb(struct path *path, ns_get_path_helper_t ns_get_cb,
+ 			    void *private_data);
+ 
++extern bool ns_match(const struct ns_common *ns, dev_t dev, ino_t ino);
++
+ extern int ns_get_name(char *buf, size_t size, struct task_struct *task,
+ 			const struct proc_ns_operations *ns_ops);
+ extern void nsfs_init(void);
 -- 
 2.20.1
 
