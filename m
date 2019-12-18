@@ -2,77 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 011EA1249AF
-	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 15:30:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D32F81249B4
+	for <lists+netdev@lfdr.de>; Wed, 18 Dec 2019 15:31:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727205AbfLROan (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Dec 2019 09:30:43 -0500
-Received: from mail-vk1-f196.google.com ([209.85.221.196]:45510 "EHLO
-        mail-vk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727181AbfLROam (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Dec 2019 09:30:42 -0500
-Received: by mail-vk1-f196.google.com with SMTP id g7so668737vkl.12
-        for <netdev@vger.kernel.org>; Wed, 18 Dec 2019 06:30:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=CeeDtpjMokJukuH1miomF5Oz08aqVjt3ots/YpdA6R8=;
-        b=r1KvxAtdQhustQozNaJYEi20sqrxgumQgyMs2x3s4g3ITZ8eFniU+gd0cQasFCTCbe
-         /h/owWL1V2lzQD+49WQrCAOp6B/qmX7MgaQ+9eRZtwqsvrjI51ipT5TG3TEmYzzug/+O
-         mP3cYoefkJp0PKwc9f6ZlHEP+WjYcGhUI6eFXxhl0VeGK/h21HgDZt8fQfYxOjSgZ/sx
-         yVH91vBeFFjPeZGTqA5Iu/CnKUISIM1++HWB7ikUR/x6WC3izY5QkaltSjoQywSVe6jP
-         /6lhSqgGl8GVw4V6Oa6dWMv29WU4wbPFXfVDyBCqpwpb4PuopQ7u8GuiCrOu5IqHfbd+
-         PZ7A==
+        id S1727191AbfLRObP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Dec 2019 09:31:15 -0500
+Received: from us-smtp-1.mimecast.com ([207.211.31.81]:57901 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727053AbfLRObO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Dec 2019 09:31:14 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1576679473;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=XPZ5STmd82dYjlTU9aBDA8S9wmhHM+cLVCjYGpyXvSA=;
+        b=jCfrJWQ/4906X38Nx7Y+lOIUojCPjzPU0d4/OuX5ji8AheHrqm7a6zLVkVmw/wWlXaHGQ6
+        NdGk8Nb9lnWkF6DwEaktKtMSLNyUoUEg9LzQaCUlpso6Wpe8NCkUXnDDPETVOL1d0UGw6a
+        dIRqWfnm0x/iRgaDbGaA4fA8EGVUM6E=
+Received: from mail-lj1-f197.google.com (mail-lj1-f197.google.com
+ [209.85.208.197]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-191-27NmS2CFNLS8GjZ4-Fp9tQ-1; Wed, 18 Dec 2019 09:31:12 -0500
+X-MC-Unique: 27NmS2CFNLS8GjZ4-Fp9tQ-1
+Received: by mail-lj1-f197.google.com with SMTP id y24so767055ljc.19
+        for <netdev@vger.kernel.org>; Wed, 18 Dec 2019 06:31:12 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to:content-transfer-encoding;
-        bh=CeeDtpjMokJukuH1miomF5Oz08aqVjt3ots/YpdA6R8=;
-        b=dHqAg0IvH6tjtOaqCFGzBr0grXWfHu18r7PIMgvPvXiGurmd8Hg+5ytVf5h8t/FELF
-         wEdudbc9PTRM2BAp+hhMs4xiZIR0atZTSSynYy3xE+CB8ILy1cQgmTm7mNVK4eo/8nmD
-         kzzyoh32/QK3UCMVnNcdLELdaYVuqLUei/UCuk2Q9z7MIkl6H29aswEtGj4Y+zKhxl+0
-         PLVcXaJ0eIGNKdkbNadFGvlqtQDg7gkW+UKdnXgUPOyNTz3cAM5jSry9lqAmPpedrtZh
-         pmQ860VEcWhoj8x7b8aODMCP2EyWLdtAOlMBm8TPPUR8Ow8uTXXl0+7Rf/uENCcxKw9M
-         7YWg==
-X-Gm-Message-State: APjAAAVLPLV9LpgK/M1Qsa1G69XtCtr17joszNe468G4i2AneuhoQto6
-        QjOY9NXdy2PUqNE8kkkYoeuPf6ps5zjt+gPS3j0=
-X-Google-Smtp-Source: APXvYqzlRSa2UbT/WiNzF1PYEZWowkSjBgTZxAtNRBHor1mawh7LOtGG4Dttu6ZwEFjPlQOFHLt7ZqYxahEcg717AN4=
-X-Received: by 2002:a1f:18cf:: with SMTP id 198mr1868464vky.61.1576679441612;
- Wed, 18 Dec 2019 06:30:41 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=XPZ5STmd82dYjlTU9aBDA8S9wmhHM+cLVCjYGpyXvSA=;
+        b=lWLVfZ/mX0hGDlZv2qy/5bsjtlS2KdpxTrsG8W1ZymQXbob5UWEwx9GBiub4ieMTTp
+         9GPATJG35b9VGKANhbStwzNayIIxaVMLw0CwxBj8sdH6+0/e97JiG+z2p4tA7xormNy7
+         H8Iq/KpoEVntvRuGDuJ5gA94OMxBeEtMskk3ahF3wqaQeOhZeSLxixy+xHBEiaHpNvIF
+         otexyaQGBepF73hJ4qbnc925Cg3I/tVk1+Qi1oeClaFBVfs4r5gCVsHCbUWvVJJ88HMw
+         ba1qLIruo29WKWEaoNKR2lP20coJJYMKOwm7bvb4yeXIaKf8A/OoCpWQuOoZ2qpPPIP2
+         QevA==
+X-Gm-Message-State: APjAAAUiERCauohBuefULYnFP2xlU9UfI13uE3beCcQZaynoKg3Hoig8
+        yUhK6SmeRSZUWJFH7x6xS+3JcXftZjE5C4Lya4nDPIFwAyD6camMTNsTfaNwmdVYtbuMafNZG0b
+        xQV7TWIXfEmhlFZYC
+X-Received: by 2002:a2e:8016:: with SMTP id j22mr2100645ljg.24.1576679470674;
+        Wed, 18 Dec 2019 06:31:10 -0800 (PST)
+X-Google-Smtp-Source: APXvYqy46J2+tUxZIy8aeDOt3xDai2xBCBqtJ/9cfAWdtzQPQou7oEmhZZ9Sl+iu4eXWPSNCrMioOA==
+X-Received: by 2002:a2e:8016:: with SMTP id j22mr2100632ljg.24.1576679470543;
+        Wed, 18 Dec 2019 06:31:10 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
+        by smtp.gmail.com with ESMTPSA id s2sm1242617lji.33.2019.12.18.06.31.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 18 Dec 2019 06:31:09 -0800 (PST)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 3C459180969; Wed, 18 Dec 2019 15:31:09 +0100 (CET)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Kevin 'ldir' Darbyshire-Bryant <ldir@darbyshire-bryant.me.uk>,
+        "netdev\@vger.kernel.org" <netdev@vger.kernel.org>
+Cc:     Kevin 'ldir' Darbyshire-Bryant <ldir@darbyshire-bryant.me.uk>
+Subject: Re: [PATCH net-next v1] sch_cake: drop unused variable tin_quantum_prio
+In-Reply-To: <87tv5x4sj2.fsf@toke.dk>
+References: <20191217214554.27435-1-ldir@darbyshire-bryant.me.uk> <87tv5x4sj2.fsf@toke.dk>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Wed, 18 Dec 2019 15:31:09 +0100
+Message-ID: <87o8w54seq.fsf@toke.dk>
 MIME-Version: 1.0
-Received: by 2002:a9f:2924:0:0:0:0:0 with HTTP; Wed, 18 Dec 2019 06:30:40
- -0800 (PST)
-Reply-To: aakkaavvii@gmail.com
-From:   Abraham Morrison <mrbid001@gmail.com>
-Date:   Wed, 18 Dec 2019 06:30:40 -0800
-Message-ID: <CAJbTw5_yVVoMbw=N9s6ezYcB_bosucPbht8d79J+9fALVYkRVw@mail.gmail.com>
-Subject: Good day!
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RGVhciBGcmllbmQsDQpJIGFtIEJhcnJpc3RlciBBYnJhaGFtIE1vcnJpc29uLCBEaWQgeW91IHJl
-Y2VpdmUgbXkgcHJldmlvdXMgbWVzc2FnZQ0KdG8geW91PyBJIGhhdmUgYW4gaW1wb3J0YW50IGlu
-Zm9ybWF0aW9uIGZvciB5b3UgYWJvdXQgeW91ciBpbmhlcml0YW5jZQ0KZnVuZCB3b3J0aCBvZiAo
-JDIwLDUwMCwwMDAuMDApIE1pbGxpb24gd2hpY2ggd2FzIGxlZnQgZm9yIHlvdSBieSB5b3VyDQps
-YXRlIHJlbGF0aXZlLCBNci4gQ2FybG9zLiBTbyBpZiB5b3UgYXJlIGludGVyZXN0ZWQgZ2V0IGJh
-Y2sgdG8gbWUgZm9yDQptb3JlIGRldGFpbHMuDQpUaGFuayB5b3UuDQpCYXJyaXN0ZXIgQWJyYWhh
-bSBNb3JyaXNvbi4NCi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4u
-Li4uLi4uLi4uLi4uLi4uDQrQlNC+0YDQvtCz0L7QuSDQtNGA0YPQsywNCtCvINCR0LDRgNGA0LjR
-gdGC0LXRgCDQkNCy0YDQsNCw0Lwg0JzQvtGA0YDQuNGB0L7QvSwg0JLRiyDQv9C+0LvRg9GH0LjQ
-u9C4INC80L7QtSDQv9GA0LXQtNGL0LTRg9GJ0LXQtSDRgdC+0L7QsdGJ0LXQvdC40LUg0LTQu9GP
-DQrQstCw0YE/INCjINC80LXQvdGPINC10YHRgtGMINC00LvRjyDQstCw0YEg0LLQsNC20L3QsNGP
-INC40L3RhNC+0YDQvNCw0YbQuNGPINC+INCy0LDRiNC10Lwg0L3QsNGB0LvQtdC00YHRgtCy0LXQ
-vdC90L7QvA0K0YTQvtC90LTQtSDQvdCwINGB0YPQvNC80YMgKDIwIDUwMCAwMDAsMDAg0LTQvtC7
-0LvQsNGA0L7QsiDQodCo0JApLCDQutC+0YLQvtGA0YvQuSDQvtGB0YLQsNCy0LjQuyDQstCw0Lwg
-0LLQsNGIDQrQv9C+0LrQvtC50L3Ri9C5INGA0L7QtNGB0YLQstC10L3QvdC40LosINC80LjRgdGC
-0LXRgCDQmtCw0YDQu9C+0YEuINCi0LDQuiDRh9GC0L4sINC10YHQu9C4INCy0Ysg0LfQsNC40L3R
-gtC10YDQtdGB0L7QstCw0L3RiywNCtGB0LLRj9C20LjRgtC10YHRjCDRgdC+INC80L3QvtC5INC0
-0LvRjyDQsdC+0LvQtdC1INC/0L7QtNGA0L7QsdC90L7QuSDQuNC90YTQvtGA0LzQsNGG0LjQuC4N
-CtCh0L/QsNGB0LjQsdC+Lg0K0JHQsNGA0YDQuNGB0YLQtdGAINCQ0LLRgNCw0LDQvCDQnNC+0YDR
-gNC40YHQvtC9Lg0K
+Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com> writes:
+
+> Kevin 'ldir' Darbyshire-Bryant <ldir@darbyshire-bryant.me.uk> writes:
+>
+>> Turns out tin_quantum_prio isn't used anymore and is a leftover from a
+>> previous implementation of diffserv tins.  Since the variable isn't used
+>> in any calculations it can be eliminated.
+>>
+>> Drop variable and places where it was set.
+>>
+>> Signed-off-by: Kevin Darbyshire-Bryant <ldir@darbyshire-bryant.me.uk>
+>
+> Acked-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+
+And that last ACK was supposed to be for the v2... sorry for the noise :/
+
+-Toke
+
