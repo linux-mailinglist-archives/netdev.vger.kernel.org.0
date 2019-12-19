@@ -2,102 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D6F3126F63
-	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 22:08:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3AEFD126F61
+	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 22:07:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727344AbfLSVHv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Dec 2019 16:07:51 -0500
-Received: from mail-qk1-f194.google.com ([209.85.222.194]:40357 "EHLO
-        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727221AbfLSVHu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Dec 2019 16:07:50 -0500
-Received: by mail-qk1-f194.google.com with SMTP id c17so5840672qkg.7;
-        Thu, 19 Dec 2019 13:07:49 -0800 (PST)
+        id S1727217AbfLSVHr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Dec 2019 16:07:47 -0500
+Received: from mail-qt1-f196.google.com ([209.85.160.196]:40659 "EHLO
+        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726959AbfLSVHq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Dec 2019 16:07:46 -0500
+Received: by mail-qt1-f196.google.com with SMTP id e6so6256164qtq.7
+        for <netdev@vger.kernel.org>; Thu, 19 Dec 2019 13:07:46 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Gw2cUT0gO+tOSfarptnq9Cj/zfsTvMJWTDDp9AgTfKg=;
-        b=IAxPQKZDbH2iBDyiiI4yRwD92LDcYxduJI9DpRpYcmKHSYcqpeSYPlOu7Yp7V7D2hA
-         xD4PkdsESXFlF4TEhb/Vsz0Dbxi8rhFY54Fmz8+abl6Z1HtLxwYUWXisvgUdamWIEZVs
-         QuSf8rQ6nRiUkPGzQ6kNJTqDzlIKGVK6ywknYKwOk7XWTNELh4i+loXHAwdlS6JSl4pM
-         930kyXumwp3J7fOOquPPHp2byuCib/KfxQp+xHTiJhHHJ9pGMM4QqqaOnbL6BZCDKbLe
-         DF9mfnbzMLec3hK7Nnlyt+vJZvjutOFVFtXJWxqtxfW6V3jUVn7my1S+Cx8dnTHMoY3w
-         MhPQ==
+        d=ziepe.ca; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=b1m6ooTcPBF03IyS8tXbQFWmui5q38MZyl7sgcWDrVc=;
+        b=I0eeHPXEKyhR6F3+w0uZp8nZL74lZ+A5yJ1jcW4KB5MO7vY9ONwJPcIUEGlT8SbUeO
+         LH81YaW3GC7SMUuObdRRRlnGzTOYLS475Sg1mUPvLmi4JlCQaPrNqV+lDtlEr4ByHobI
+         ZOHWHIxyfXKwjF07HIG3BbuRvW3BGN4Y76jyGe62WEFR0v3gEx92h1yDdyRSLYhNDwBJ
+         tpCIZrQ8KxYH2/vN+ZSvjy5imMLbf+TFj3Y+cP0N+OLWwhHVLOxCMvkJX7OZ7EDojcBc
+         GAxbNt0FBcreyN8pFhlQHApx98BWQ2R7K6v8eS90taP+fCjutUcn9h1snaULI5tTj6Dz
+         Afvg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Gw2cUT0gO+tOSfarptnq9Cj/zfsTvMJWTDDp9AgTfKg=;
-        b=Kn2IdnhHia4+eukGhZH/Ldn4OTPUGyHblzDMe1Wg4QMlWukI/+XAMZJldZPe84rLLH
-         +ohvafVCyfkBi1RI2XTZhBvDemznFnbYY/X+G3WTNLlzuAuE8ic4GPCQBlvpeHDQPYMa
-         MpHec7ios35oZq7q6vU7DAggWIlJpSO6i5IsQL8WAfXdNX0JuIQ0y5CWvEQL5+2kD9uK
-         xKUCb3jzCiUfU60LMI9RzOyK67n9N9fOWKsF0JbeKyG0a6RVh6m6eARFgKQRGcu8qzV8
-         vNfT7hf1NG8zfDU5VxnrRTgfObMWTZsnLIdlBOMgXPgXthQoU8l9ILWDgwBnSphCoeUu
-         Dd9g==
-X-Gm-Message-State: APjAAAU/SVS9KbYXp+UIaB2B9dKZRFB/CsTQCI6/SYG7ue8tprdxu8lx
-        CLh3CWD7pFuOcboepI/L90mwW153Z8WAYC5pc6Q=
-X-Google-Smtp-Source: APXvYqzt9DHABWv+HAjEa9rncnVBXlyD8m5l7IFIqf94FA06fmGYaLmbvCH2D0TThzKubch8QBJneS74MYwlBc8aRs4=
-X-Received: by 2002:a05:620a:5ae:: with SMTP id q14mr10479524qkq.437.1576789669239;
- Thu, 19 Dec 2019 13:07:49 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=b1m6ooTcPBF03IyS8tXbQFWmui5q38MZyl7sgcWDrVc=;
+        b=H7oBqO/UGqXWwDCPhZIo1E1spxhojZ7+WGG1M9D6ZqICgQTOwj7bBzzBPyk5rCkNoK
+         709t5mAHd+emLAN5BIpnRlIUZ3GftqUDi82QWg2GCyypC4TTY3kEKpRadmUe35tB1c5G
+         5GAfg5rewo7I84yPoyY+FH+JGZxoYrLEGHUtI+vHOh2JAOYH9UnWq52bQJVXc1aYU200
+         PJdblR8TQMNC6goJPoGuSs6vb8NsU/XmRpGfqt7mP6YGQIyBnQWG3R8bDwmgF4nRm4t5
+         V7BfTPMQiA1MNiyNiAcjFTD4owi86/nOSEt3btYBpP6agRlClwnVYM/Qh8oAJX6zO3Kw
+         SZeA==
+X-Gm-Message-State: APjAAAVIxq+48cgUYvor9pWxh7OJyL8T9ueHZ+AhPxvTjXZXaSpU+WvQ
+        M4LuEeY6qy8Fb+/Cwtn+7OiSGQ==
+X-Google-Smtp-Source: APXvYqxVnwIXGsi0o/bO9dZGQ7XuTOfFwgCWi/4t790OZPxPymgdPJt3SfFmZqkv2903tXMsYUoGBQ==
+X-Received: by 2002:ac8:2d30:: with SMTP id n45mr8586782qta.203.1576789665577;
+        Thu, 19 Dec 2019 13:07:45 -0800 (PST)
+Received: from ziepe.ca (hlfxns017vw-142-68-57-212.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.57.212])
+        by smtp.gmail.com with ESMTPSA id m20sm2085982qkk.15.2019.12.19.13.07.44
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Thu, 19 Dec 2019 13:07:44 -0800 (PST)
+Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)
+        (envelope-from <jgg@ziepe.ca>)
+        id 1ii31L-0007mU-Uf; Thu, 19 Dec 2019 17:07:43 -0400
+Date:   Thu, 19 Dec 2019 17:07:43 -0400
+From:   Jason Gunthorpe <jgg@ziepe.ca>
+To:     John Hubbard <jhubbard@nvidia.com>
+Cc:     Leon Romanovsky <leon@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Dave Chinner <david@fromorbit.com>,
+        David Airlie <airlied@linux.ie>,
+        "David S . Miller" <davem@davemloft.net>,
+        Ira Weiny <ira.weiny@intel.com>, Jan Kara <jack@suse.cz>,
+        Jens Axboe <axboe@kernel.dk>, Jonathan Corbet <corbet@lwn.net>,
+        =?utf-8?B?SsOpcsO0bWU=?= Glisse <jglisse@redhat.com>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Michal Hocko <mhocko@suse.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Paul Mackerras <paulus@samba.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Vlastimil Babka <vbabka@suse.cz>, bpf@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, kvm@vger.kernel.org,
+        linux-block@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        linux-media@vger.kernel.org, linux-rdma@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, netdev@vger.kernel.org,
+        linux-mm@kvack.org, LKML <linux-kernel@vger.kernel.org>,
+        Maor Gottlieb <maorg@mellanox.com>
+Subject: Re: [PATCH v11 00/25] mm/gup: track dma-pinned pages: FOLL_PIN
+Message-ID: <20191219210743.GN17227@ziepe.ca>
+References: <20191216222537.491123-1-jhubbard@nvidia.com>
+ <20191219132607.GA410823@unreal>
+ <a4849322-8e17-119e-a664-80d9f95d850b@nvidia.com>
 MIME-Version: 1.0
-References: <20191219070659.424273-1-andriin@fb.com> <20191219070659.424273-2-andriin@fb.com>
- <20191219170602.4xkljpjowi4i2e3q@ast-mbp.dhcp.thefacebook.com>
-In-Reply-To: <20191219170602.4xkljpjowi4i2e3q@ast-mbp.dhcp.thefacebook.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 19 Dec 2019 13:07:38 -0800
-Message-ID: <CAEf4BzYKf=+WNZv5HMv=W8robWWTab1L5NURAT=N7LQNW4oeGQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 1/3] bpftool: add extra CO-RE mode to btf dump command
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <a4849322-8e17-119e-a664-80d9f95d850b@nvidia.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 19, 2019 at 9:06 AM Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
->
-> On Wed, Dec 18, 2019 at 11:06:56PM -0800, Andrii Nakryiko wrote:
-> > +     if (core_mode) {
-> > +             printf("#if defined(__has_attribute) && __has_attribute(preserve_access_index)\n");
-> > +             printf("#define __CLANG_BPF_CORE_SUPPORTED\n");
-> > +             printf("#pragma clang attribute push (__attribute__((preserve_access_index)), apply_to = record)\n");
-> > +             printf("#endif\n\n");
->
-> I think it's dangerous to automatically opt-out when clang is not new enough.
-> bpf prog will compile fine, but it will be missing co-re relocations.
-> How about doing something like:
->   printf("#ifdef NEEDS_CO_RE\n");
->   printf("#pragma clang attribute push (__attribute__((preserve_access_index)), apply_to = record)\n");
->   printf("#endif\n\n");
-> and emit it always when 'format c'.
-> Then on the program side it will look:
-> #define NEEDS_CO_RE
-> #include "vmlinux.h"
-> If clang is too old there will be a compile time error which is a good thing.
-> Future features will have different NEEDS_ macros.
+On Thu, Dec 19, 2019 at 12:30:31PM -0800, John Hubbard wrote:
+> On 12/19/19 5:26 AM, Leon Romanovsky wrote:
+> > On Mon, Dec 16, 2019 at 02:25:12PM -0800, John Hubbard wrote:
+> > > Hi,
+> > > 
+> > > This implements an API naming change (put_user_page*() -->
+> > > unpin_user_page*()), and also implements tracking of FOLL_PIN pages. It
+> > > extends that tracking to a few select subsystems. More subsystems will
+> > > be added in follow up work.
+> > 
+> > Hi John,
+> > 
+> > The patchset generates kernel panics in our IB testing. In our tests, we
+> > allocated single memory block and registered multiple MRs using the single
+> > block.
+> > 
+> > The possible bad flow is:
+> >   ib_umem_geti() ->
+> >    pin_user_pages_fast(FOLL_WRITE) ->
+> >     internal_get_user_pages_fast(FOLL_WRITE) ->
+> >      gup_pgd_range() ->
+> >       gup_huge_pd() ->
+> >        gup_hugepte() ->
+> >         try_grab_compound_head() ->
+> 
+> Hi Leon,
+> 
+> Thanks very much for the detailed report! So we're overflowing...
+> 
+> At first look, this seems likely to be hitting a weak point in the
+> GUP_PIN_COUNTING_BIAS-based design, one that I believed could be deferred
+> (there's a writeup in Documentation/core-api/pin_user_page.rst, lines
+> 99-121). Basically it's pretty easy to overflow the page->_refcount
+> with huge pages if the pages have a *lot* of subpages.
+> 
+> We can only do about 7 pins on 1GB huge pages that use 4KB subpages.
 
-Wouldn't it be cleaner to separate vanilla C types dump vs
-CO-RE-specific one? I'd prefer to have them separate and not require
-every application to specify this #define NEEDS_CO_RE macro.
-Furthermore, later we probably are going to add some additional
-auto-generated types, definitions, etc, so plain C types dump and
-CO-RE-specific one will deviate quite a bit. So it feels cleaner to
-separate them now instead of polluting `format c` with irrelevant
-noise.
+Considering that establishing these pins is entirely under user
+control, we can't have a limit here.
 
-I can unconditionally assume preserve_access_index availability,
-though, because Clang 10 release is going to have all those features
-needed for BPF CO-RE. I can also add nicer compiler error, if this
-feature is not detected. Ok?
+If the number of allowed pins are exhausted then the
+pin_user_pages_fast() must fail back to the user.
 
-BTW, the reason I added this opt-out is because if you use
-bpf_core_read() and BPF_CORE_READ() macros, you don't really need
-those structs marked as relocatable. But again, I think it's fine to
-just assume it has to be supported by compiler.
+> 3. It would be nice if I could reproduce this. I have a two-node mlx5 Infiniband
+> test setup, but I have done only the tiniest bit of user space IB coding, so
+> if you have any test programs that aren't too hard to deal with that could
+> possibly hit this, or be tweaked to hit it, I'd be grateful. Keeping in mind
+> that I'm not an advanced IB programmer. At all. :)
+
+Clone this:
+
+https://github.com/linux-rdma/rdma-core.git
+
+Install all the required deps to build it (notably cython), see the README.md
+
+$ ./build.sh
+$ build/bin/run_tests.py 
+
+If you get things that far I think Leon can get a reproduction for you
+
+Jason
