@@ -2,100 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E8C29125D2E
-	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 10:02:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 965D3125D36
+	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 10:04:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726652AbfLSJC4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Dec 2019 04:02:56 -0500
-Received: from us-smtp-1.mimecast.com ([207.211.31.81]:29067 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726609AbfLSJCz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Dec 2019 04:02:55 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1576746174;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=QxDIaWdT8batw2rKwD3TMKwDU+xiK4PL5KHw6ZGQad8=;
-        b=Ebe9uCj658u0sb8tVELVDAywYMu9UgQcaAjoz9pRbinnu2eEZQfH0oA1aU7BjZ5SGkacl0
-        Uly/73pomZ5tEbN2AfB2U5LfQYSziL3bZJIxYKlklypmfMpWdPXPu07TQXsPjfgZSXJWqV
-        uJB+CEnwKUZX4uPBrL7YkFBEL78GMOU=
-Received: from mail-lf1-f70.google.com (mail-lf1-f70.google.com
- [209.85.167.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-103-rsm-lvq_NJmROM1Zw2yykA-1; Thu, 19 Dec 2019 04:02:53 -0500
-X-MC-Unique: rsm-lvq_NJmROM1Zw2yykA-1
-Received: by mail-lf1-f70.google.com with SMTP id x23so485594lfc.5
-        for <netdev@vger.kernel.org>; Thu, 19 Dec 2019 01:02:51 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=QxDIaWdT8batw2rKwD3TMKwDU+xiK4PL5KHw6ZGQad8=;
-        b=d/2gASSoF6tfHRd+bYFCrw8h4JyPLKAMcjbKJkXrJ04nDGziBXivdxIu3z7o7T3dcx
-         H2tAEbpNs+83DplgocbF8VquNgDLRDv+RgBNBCGTvGQmI9w6xnqqugcWsXQ6WUiXmc5i
-         ApdqWMQOtDKcIq5qt3LB3YnlbPgYCcpYN0Ch8Ei/whnt0BH8sxITc1WGQMrmgqzg/zqz
-         w9pob3CX0N7lXwsIa5+XF7ClUSiBfxgyJEUuUDv1lp4TEumjMsQLWaavbPDDGnVI/MPd
-         YWz0ABqtWjKGwKlC1VoLaDOBIfH8sA0vM2lcCW4JJxBL+WD0u5fRD61eNvnOHkz0lWEm
-         VMow==
-X-Gm-Message-State: APjAAAUI9sA3DXVLd2Xje2AWwPCAriSfDQomy9REIjOLSerQuQj805fh
-        LyHQ40+CyIFDWehZu+CbS7zz+4kr/KRuqUfXxiP/cCZGBNs/QP/v4I+yEOofRvBa5tGKvw4U/fU
-        RRBPbMt/oyskNrakv
-X-Received: by 2002:a2e:8745:: with SMTP id q5mr5223636ljj.208.1576746170738;
-        Thu, 19 Dec 2019 01:02:50 -0800 (PST)
-X-Google-Smtp-Source: APXvYqyZ+C/Pil77EjYzmhfrYVbigzr+NO1QGwq89zUMQ8vsExgbh4KpvgbQCNNxUhznT0vQHIKypA==
-X-Received: by 2002:a2e:8745:: with SMTP id q5mr5223627ljj.208.1576746170531;
-        Thu, 19 Dec 2019 01:02:50 -0800 (PST)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id i4sm3089417lji.0.2019.12.19.01.02.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 19 Dec 2019 01:02:49 -0800 (PST)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 3D17D180969; Thu, 19 Dec 2019 10:02:49 +0100 (CET)
-From:   =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Cc:     =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Naresh Kamboju <naresh.kamboju@linaro.org>
-Subject: [PATCH bpf-next v2] libbpf: Fix printing of ulimit value
-Date:   Thu, 19 Dec 2019 10:02:36 +0100
-Message-Id: <20191219090236.905059-1-toke@redhat.com>
-X-Mailer: git-send-email 2.24.1
+        id S1726715AbfLSJEo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Dec 2019 04:04:44 -0500
+Received: from guitar.tcltek.co.il ([192.115.133.116]:36909 "EHLO
+        mx.tkos.co.il" rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726692AbfLSJEm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 19 Dec 2019 04:04:42 -0500
+Received: from sapphire.tkos.co.il (unknown [192.168.100.188])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx.tkos.co.il (Postfix) with ESMTPS id C015A440044;
+        Thu, 19 Dec 2019 11:04:39 +0200 (IST)
+Date:   Thu, 19 Dec 2019 11:04:38 +0200
+From:   Baruch Siach <baruch@tkos.co.il>
+To:     Marek =?utf-8?B?QmVow7pu?= <marek.behun@nic.cz>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        netdev@vger.kernel.org,
+        Denis Odintsov <d.odintsov@traviangames.com>,
+        Hubert Feurstein <h.feurstein@gmail.com>
+Subject: Re: [BUG] mv88e6xxx: tx regression in v5.3
+Message-ID: <20191219090438.4jnfd3fqjc2pmivw@sapphire.tkos.co.il>
+References: <20191212131448.GA9959@lunn.ch>
+ <20191212150810.zx6o26jnk5croh4r@sapphire.tkos.co.il>
+ <20191212151355.GE30053@lunn.ch>
+ <20191212152355.iiepmi4cjriddeon@sapphire.tkos.co.il>
+ <20191212193611.63111051@nic.cz>
+ <20191212190640.6vki2pjfacdnxihh@sapphire.tkos.co.il>
+ <20191212193129.GF30053@lunn.ch>
+ <20191212204141.16a406cd@nic.cz>
+ <8736dlucai.fsf@tarshish>
+ <20191218153035.11c3486d@dellmb>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20191218153035.11c3486d@dellmb>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Naresh pointed out that libbpf builds fail on 32-bit architectures because
-rlimit.rlim_cur is defined as 'unsigned long long' on those architectures.
-Fix this by using %zu in printf and casting to size_t.
+Hi Marek,
 
-Fixes: dc3a2d254782 ("libbpf: Print hint about ulimit when getting permission denied error")
-Reported-by: Naresh Kamboju <naresh.kamboju@linaro.org>
-Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
----
-v2:
-  - Use %zu instead of PRIu64
-  
- tools/lib/bpf/libbpf.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+On Wed, Dec 18, 2019 at 03:30:35PM +0100, Marek Beh�n wrote:
+> On Sun, 15 Dec 2019 12:13:25 +0200
+> Baruch Siach <baruch@tkos.co.il> wrote:
+> 
+> > Thanks. That is enough to fix the phylink issue triggered by commit
+> > 7fb5a711545 ("net: dsa: mv88e6xxx: drop adjust_link to enabled
+> > phylink").
+> > 
+> > The Clearfog GT-8K DT has also this on the cpu side:
+> > 
+> > &cp1_eth2 {
+> >         status = "okay";
+> >         phy-mode = "2500base-x";
+> >         phys = <&cp1_comphy5 2>;
+> >         fixed-link {
+> >                 speed = <2500>;
+> >                 full-duplex;
+> >         };
+> > };
+> > 
+> > Should I drop fixed-link here as well?
+> 
+> I would think yes. phy-mode = 2500base-x should already force 2500mbps,
+> the fixed-link should be irrelevant. Whether this is truly the case I
+> do not know, but on Turris Mox I do not use fixed-link with these.
 
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index c69a3745ecb0..59bae2cac449 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -117,7 +117,7 @@ static void pr_perm_msg(int err)
- 		return;
- 
- 	if (limit.rlim_cur < 1024)
--		snprintf(buf, sizeof(buf), "%lu bytes", limit.rlim_cur);
-+		snprintf(buf, sizeof(buf), "%zu bytes", (size_t)limit.rlim_cur);
- 	else if (limit.rlim_cur < 1024*1024)
- 		snprintf(buf, sizeof(buf), "%.1f KiB", (double)limit.rlim_cur / 1024);
- 	else
+It doesn't work here without fixed-link. The link state remains down.
+
+baruch
+
+> > The call to mv88e6341_port_set_cmode() introduced in commit
+> > 7a3007d22e8 ("net: dsa: mv88e6xxx: fully support SERDES on Topaz
+> > family") still breaks port 5 (cpu) configuration. When called, its
+> > mode parameter is set to PHY_INTERFACE_MODE_2500BASEX (19).
+> > 
+> > Any idea?
+> 
+> I shall look into this. On Turris Mox this works, so I will have to do
+> some experiments.
+
 -- 
-2.24.1
-
+     http://baruch.siach.name/blog/                  ~. .~   Tk Open Systems
+=}------------------------------------------------ooO--U--Ooo------------{=
+   - baruch@tkos.co.il - tel: +972.2.679.5364, http://www.tkos.co.il -
