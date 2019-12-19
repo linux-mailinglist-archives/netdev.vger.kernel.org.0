@@ -2,121 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 80A0512701B
-	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 22:58:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CF5FA12702F
+	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 23:01:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727071AbfLSV6R (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Dec 2019 16:58:17 -0500
-Received: from www62.your-server.de ([213.133.104.62]:37282 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726866AbfLSV6R (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Dec 2019 16:58:17 -0500
-Received: from 31.249.197.178.dynamic.dsl-lte-bonding.lssmb00p-msn.res.cust.swisscom.ch ([178.197.249.31] helo=localhost)
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1ii3oD-0007Lh-5b; Thu, 19 Dec 2019 22:58:13 +0100
-From:   Daniel Borkmann <daniel@iogearbox.net>
-To:     davem@davemloft.net
-Cc:     jakub.kicinski@netronome.com, daniel@iogearbox.net, ast@kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: pull-request: bpf 2019-12-19
-Date:   Thu, 19 Dec 2019 22:58:12 +0100
-Message-Id: <20191219215812.20451-1-daniel@iogearbox.net>
-X-Mailer: git-send-email 2.21.0
+        id S1727162AbfLSWBe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Dec 2019 17:01:34 -0500
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:52543 "EHLO
+        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726866AbfLSWBd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Dec 2019 17:01:33 -0500
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mgr@pengutronix.de>)
+        id 1ii3rP-0003mI-L1; Thu, 19 Dec 2019 23:01:31 +0100
+Received: from mgr by ptx.hi.pengutronix.de with local (Exim 4.89)
+        (envelope-from <mgr@pengutronix.de>)
+        id 1ii3rO-0005Dg-7A; Thu, 19 Dec 2019 23:01:30 +0100
+Date:   Thu, 19 Dec 2019 23:01:30 +0100
+From:   Michael Grzeschik <mgr@pengutronix.de>
+To:     Andrew Lunn <andrew@lunn.ch>, g@pengutronix.de
+Cc:     f.fainelli@gmail.com, netdev@vger.kernel.org, davem@davemloft.net,
+        kernel@pengutronix.de
+Subject: Re: [PATCH] mdio-bitbang: add support for lowlevel mdio read/write
+Message-ID: <20191219220130.pedtll3nvtdcy657@pengutronix.de>
+References: <20191107154201.GF7344@lunn.ch>
+ <20191218162919.5293-1-m.grzeschik@pengutronix.de>
+ <20191219203931.GN17475@lunn.ch>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.101.4/25668/Thu Dec 19 10:55:58 2019)
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="4qyc6bbxskpf77vt"
+Content-Disposition: inline
+In-Reply-To: <20191219203931.GN17475@lunn.ch>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-IRC:  #ptxdist @freenode
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+X-Uptime: 22:56:29 up 165 days,  4:06, 64 users,  load average: 0.13, 0.12,
+ 0.16
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: mgr@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi David,
 
-The following pull-request contains BPF updates for your *net* tree.
+--4qyc6bbxskpf77vt
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-We've added 10 non-merge commits during the last 8 day(s) which contain
-a total of 21 files changed, 269 insertions(+), 108 deletions(-).
+On Thu, Dec 19, 2019 at 09:39:31PM +0100, Andrew Lunn wrote:
+> On Wed, Dec 18, 2019 at 05:29:19PM +0100, Michael Grzeschik wrote:
+> > Some phys support special opcode handling when communicating via mdio.
+> > This patch introduces mdio_ll_read/write which makes it possible to set
+> > the opcode. It implements these functions in the gpio-bitbang driver,
+> > which is capable of setting the opcode on read and write.
+> >=20
+> > Signed-off-by: Michael Grzeschik <m.grzeschik@pengutronix.de>
+>=20
+> Hi Michael
+>=20
+> It is normal to post the user of a new API at the same time as a new
+> API. I'm having trouble working out how this is supposed to be used.
 
-The main changes are:
+Hi Andrew,
 
-1) Fix lack of synchronization between xsk wakeup and destroying resources
-   used by xsk wakeup, from Maxim Mikityanskiy.
+so this patch should have been in the series with the ksz8863 driver,
+which is using the API. I will send the series again as v3 including
+this patch, so it will be clear how this is ment.
 
-2) Fix pruning with tail call patching, untrack programs in case of verifier
-   error and fix a cgroup local storage tracking bug, from Daniel Borkmann.
+Thanks,
+Michael
 
-3) Fix clearing skb->tstamp in bpf_redirect() when going from ingress to
-   egress which otherwise cause issues e.g. on fq qdisc, from Lorenz Bauer.
+--=20
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
 
-4) Fix compile warning of unused proc_dointvec_minmax_bpf_restricted() when
-   only cBPF is present, from Alexander Lobakin.
+--4qyc6bbxskpf77vt
+Content-Type: application/pgp-signature; name="signature.asc"
 
-Please consider pulling these changes from:
+-----BEGIN PGP SIGNATURE-----
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git
+iQIzBAABCAAdFiEElXvEUs6VPX6mDPT8C+njFXoeLGQFAl378zYACgkQC+njFXoe
+LGTFfg//VcJrCjdpggD5Ug5jqtLF+mEs6dbLOwhSs+86rmaMVqBFYrRC/E1vSph7
+ipLA5BtqJMsnJDJ8/hu2/I+8mgHON5kcuJVd4+SuidQAj/oSi15OyIiyygnwpvxS
+mcTEaURK2VlhxKR3zkVBnKK6lS7umE4+UGJATV4pJEYqjTZMduwXLMUtvdAcggYq
+CpZQPMHucBssnJyJjMPoMv+dI+4RAd1mJs1Ju/aQ+nMvHSXgTNHKNSmFV3rOffDh
+spUmBK9sfBqDoAPKr7WYbWYuvKGxiVnNJmlSwewcpjiY57PURhX+IGYdSZ4IYUDM
+XSSNRdvu12h5mglnXAYB5eP2j5gdtNHP+pqScAYOM7n95gK5vnGs+pMe/op9X0Nv
+O28z3n80sxqq4zC/dGnWlCMilkPbGlQUyPyJbnYSEZLPFzpiwz0DvDDHYmjHCWFn
+xSVzaotN/b9Ew9TE/wkBm1j2qXvdqqLNp8AfLVJig/nRTQ1yOWzUbNUOZu+XzWsD
+wZ8Ux7J8vc1kW5T/ylzCYeYjDU8R5uDC++kAvmJgcPgKLG2obsq7PDfuzV1rTMfu
+oeNk9CfNZLxLqqOiFv2Tn6JSTw/eBUbdZzoUWjdKpcp1YwZACR1KB5QPnjEd5QUJ
+ui0dGHKdAqa+dbqxy4yHyiaUS3T7qzjFjLm/EzmOoS2CLUXeW+o=
+=7iRK
+-----END PGP SIGNATURE-----
 
-Thanks a lot!
-
-Also thanks to reporters, reviewers and testers of commits in this pull-request:
-
-Eric Dumazet, Yonghong Song
-
-----------------------------------------------------------------
-
-The following changes since commit 0af67e49b018e7280a4227bfe7b6005bc9d3e442:
-
-  qede: Fix multicast mac configuration (2019-12-12 11:08:36 -0800)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git 
-
-for you to fetch changes up to 3123d8018d4686cf193806c4e27a9853550ed895:
-
-  bpf: Add further test_verifier cases for record_func_key (2019-12-19 13:39:22 -0800)
-
-----------------------------------------------------------------
-Alexander Lobakin (1):
-      net, sysctl: Fix compiler warning when only cBPF is present
-
-Daniel Borkmann (5):
-      bpf: Fix missing prog untrack in release_maps
-      bpf: Fix cgroup local storage prog tracking
-      Merge branch 'bpf-fix-xsk-wakeup'
-      bpf: Fix record_func_key to perform backtracking on r3
-      bpf: Add further test_verifier cases for record_func_key
-
-Lorenz Bauer (1):
-      bpf: Clear skb->tstamp in bpf_redirect when necessary
-
-Maxim Mikityanskiy (4):
-      xsk: Add rcu_read_lock around the XSK wakeup
-      net/mlx5e: Fix concurrency issues between config flow and XSK
-      net/i40e: Fix concurrency issues between config flow and XSK
-      net/ixgbe: Fix concurrency issues between config flow and XSK
-
- drivers/net/ethernet/intel/i40e/i40e.h             |   2 +-
- drivers/net/ethernet/intel/i40e/i40e_main.c        |  10 +-
- drivers/net/ethernet/intel/i40e/i40e_xsk.c         |   4 +
- drivers/net/ethernet/intel/ixgbe/ixgbe_main.c      |   7 +-
- drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c       |   8 +-
- drivers/net/ethernet/mellanox/mlx5/core/en.h       |   2 +-
- drivers/net/ethernet/mellanox/mlx5/core/en/xdp.h   |  22 ++-
- .../net/ethernet/mellanox/mlx5/core/en/xsk/setup.c |   1 +
- .../net/ethernet/mellanox/mlx5/core/en/xsk/tx.c    |   2 +-
- drivers/net/ethernet/mellanox/mlx5/core/en_main.c  |  19 +--
- include/linux/bpf-cgroup.h                         |   8 +-
- include/linux/bpf.h                                |   2 +
- kernel/bpf/core.c                                  |  17 ++-
- kernel/bpf/local_storage.c                         |  24 ++--
- kernel/bpf/verifier.c                              |  24 ++--
- net/core/filter.c                                  |   1 +
- net/core/sysctl_net_core.c                         |   2 +
- net/xdp/xsk.c                                      |  22 +--
- tools/testing/selftests/bpf/test_verifier.c        |  43 +++---
- .../testing/selftests/bpf/verifier/ref_tracking.c  |   6 +-
- tools/testing/selftests/bpf/verifier/runtime_jit.c | 151 +++++++++++++++++++++
- 21 files changed, 269 insertions(+), 108 deletions(-)
+--4qyc6bbxskpf77vt--
