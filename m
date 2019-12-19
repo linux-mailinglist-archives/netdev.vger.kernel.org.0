@@ -2,76 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 99396126868
-	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 18:48:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DEA1E12686B
+	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 18:49:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726971AbfLSRsN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Dec 2019 12:48:13 -0500
-Received: from www62.your-server.de ([213.133.104.62]:47084 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726855AbfLSRsN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Dec 2019 12:48:13 -0500
-Received: from sslproxy02.your-server.de ([78.47.166.47])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1ihzuC-0004b3-RS; Thu, 19 Dec 2019 18:48:08 +0100
-Received: from [2001:1620:665:0:5795:5b0a:e5d5:5944] (helo=linux-9.fritz.box)
-        by sslproxy02.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1ihzuC-000QZD-Ft; Thu, 19 Dec 2019 18:48:08 +0100
-Subject: Re: [PATCH] bpf: Replace BUG_ON when fp_old is NULL
-To:     Aditya Pakki <pakki001@umn.edu>, Yonghong Song <yhs@fb.com>
-Cc:     "kjlu@umn.edu" <kjlu@umn.edu>, Alexei Starovoitov <ast@kernel.org>,
-        Martin Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-References: <20191215154432.22399-1-pakki001@umn.edu>
- <98c13b9c-a73a-6203-4ea1-6b1180d87d97@fb.com>
- <566f206c-f133-6f68-c257-2c0b3ec462fa@iogearbox.net>
- <51dcca79-f819-8ebb-308e-210a0d76b1cc@umn.edu>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <d1175d95-f279-ce29-f1bd-c0984626f3a4@iogearbox.net>
-Date:   Thu, 19 Dec 2019 18:48:07 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1726875AbfLSRtm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Dec 2019 12:49:42 -0500
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:45165 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726797AbfLSRtl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Dec 2019 12:49:41 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1576777780;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=s+ovPJ+hvapwys+/gMM51YuhqSLMiuF3aJhHrRXS7YY=;
+        b=MY58kUFXkaiLgSZb3gOLAnbB6e1EdCP0FAB5aBuveaYeH2KdvCPRD4b71hj0l9FUtITYow
+        YyReoakuP1yJzrGR7hIGvn5HqbxWFIrZpDpE9BKf9jaEZDTk8sP20Y48PjHJk3HBYvpp7v
+        rcW8GsMaN8sefTB8szsyJCeR1a1rMvk=
+Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
+ [209.85.221.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-238-6hbWjCm3NUKwYWuFlfa8MA-1; Thu, 19 Dec 2019 12:49:38 -0500
+X-MC-Unique: 6hbWjCm3NUKwYWuFlfa8MA-1
+Received: by mail-wr1-f71.google.com with SMTP id b13so2629138wrx.22
+        for <netdev@vger.kernel.org>; Thu, 19 Dec 2019 09:49:38 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=s+ovPJ+hvapwys+/gMM51YuhqSLMiuF3aJhHrRXS7YY=;
+        b=ip8ngfFkB3ENuwWzEEzHcgW7yMjPSE5Ey0CE80qpECYNuoNh1OmQi3Clu3oVpv+Wtz
+         MK73qUvtmexXafLvbZ2oQUV1KxFGaKV/HA9yqLv0j51lhh89tWDIK+k2w97M8oqJQbWk
+         wvudVS1259iLb5qQCTXfLfPz6eojvgZssMBhKtvZYSGhz/mQL1Y6gSJ6ZGTUBP/Qw1GP
+         CEed8S481hE49sf/FWQo6CPmMsbsC2XJ7PO01UKRnP8B/E7lrzSDn/d4DA73GkUWxoiF
+         WYMiFKnPxJaWATeC3z5z+G/w4GVS18YANMVUmJ+iYJl5tVdoXFMqigtr/0uIqzIeA6gs
+         kXgw==
+X-Gm-Message-State: APjAAAUv291LNVgCfDCRASIIvedacbkTepvhfxkpOlBNliIxl1HydisI
+        S802Ze5KHyviSZaCO4PTr12wnclk0xeo6SsrjmtLiXxp196yFo7RyDFXGdC+S1Yz8OBwZ/B3Zo7
+        4JcRZXuUngGG2ZkcZ
+X-Received: by 2002:adf:dfc2:: with SMTP id q2mr10345789wrn.251.1576777777753;
+        Thu, 19 Dec 2019 09:49:37 -0800 (PST)
+X-Google-Smtp-Source: APXvYqx7+fh+2k3iZKBzT1mog4ewMVa4J0vVG724KQDTW+uGrsTq3tdxOjOZ6P0eQj+DM75Jej4Seg==
+X-Received: by 2002:adf:dfc2:: with SMTP id q2mr10345774wrn.251.1576777777588;
+        Thu, 19 Dec 2019 09:49:37 -0800 (PST)
+Received: from linux.home (2a01cb0585290000c08fcfaf4969c46f.ipv6.abo.wanadoo.fr. [2a01:cb05:8529:0:c08f:cfaf:4969:c46f])
+        by smtp.gmail.com with ESMTPSA id p18sm7132240wmb.8.2019.12.19.09.49.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 19 Dec 2019 09:49:37 -0800 (PST)
+Date:   Thu, 19 Dec 2019 18:49:35 +0100
+From:   Guillaume Nault <gnault@redhat.com>
+To:     Hangbin Liu <liuhangbin@gmail.com>
+Cc:     netdev@vger.kernel.org, Julian Anastasov <ja@ssi.bg>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        David Ahern <dsahern@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        David Miller <davem@davemloft.net>,
+        Pablo Neira <pablo@netfilter.org>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Alexey Kodanev <alexey.kodanev@oracle.com>
+Subject: Re: [PATCH net-next 8/8] net/dst: do not confirm neighbor for vxlan
+ and geneve pmtu update
+Message-ID: <20191219174935.GB14566@linux.home>
+References: <20191203021137.26809-1-liuhangbin@gmail.com>
+ <20191218115313.19352-1-liuhangbin@gmail.com>
+ <20191218115313.19352-9-liuhangbin@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <51dcca79-f819-8ebb-308e-210a0d76b1cc@umn.edu>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.101.4/25668/Thu Dec 19 10:55:58 2019)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191218115313.19352-9-liuhangbin@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/19/19 6:39 PM, Aditya Pakki wrote:
-> On 12/16/19 5:17 AM, Daniel Borkmann wrote:
->> On 12/15/19 11:08 PM, Yonghong Song wrote:
->>> On 12/15/19 7:44 AM, Aditya Pakki wrote:
->>>> If fp_old is NULL in bpf_prog_realloc, the program does an assertion
->>>> and crashes. However, we can continue execution by returning NULL to
->>>> the upper callers. The patch fixes this issue.
->>>
->>> Could you share how to reproduce the assertion and crash? I would
->>> like to understand the problem first before making changes in the code.
->>> Thanks!
->>
->> Fully agree, Aditya, please elaborate if you have seen a crash!
+On Wed, Dec 18, 2019 at 07:53:13PM +0800, Hangbin Liu wrote:
+> When do IPv6 tunnel PMTU update and calls __ip6_rt_update_pmtu() in the end,
+> we should not call dst_confirm_neigh() as there is no two-way communication.
 > 
-> Thanks for your responses Alexei and Daniel. We identified this issue via static analysis
-> and have not seen a crash. However, by looking at the callers of bpf_prog_realloc, I do
-> agree that fp_old is never NULL.
+> So disable the neigh confirm for vxlan and geneve pmtu update.
 > 
-> Would you recommend removing the BUG_ON assertion altogether ?
+> Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
+> ---
+>  include/net/dst.h | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/include/net/dst.h b/include/net/dst.h
+> index 208e7c0c89d8..626cf614ad86 100644
+> --- a/include/net/dst.h
+> +++ b/include/net/dst.h
+> @@ -535,7 +535,7 @@ static inline void skb_tunnel_check_pmtu(struct sk_buff *skb,
+>  	u32 encap_mtu = dst_mtu(encap_dst);
+>  
+>  	if (skb->len > encap_mtu - headroom)
+> -		skb_dst_update_pmtu(skb, encap_mtu - headroom);
+> +		skb_dst_update_pmtu_no_confirm(skb, encap_mtu - headroom);
+>  }
+>  
 
-If it would ever happen, we'd already crash in fp_old->pages there, so yes,
-lets remove the unneeded BUG_ON().
+Fixes: a93bf0ff4490 ("vxlan: update skb dst pmtu on tx path")
+Fixes: 52a589d51f10 ("geneve: update skb dst pmtu on tx path")
 
-Thanks,
-Daniel
