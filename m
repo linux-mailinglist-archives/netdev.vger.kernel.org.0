@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 34E92125B4B
-	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 07:10:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 63225125B4D
+	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 07:10:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726836AbfLSGKi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Dec 2019 01:10:38 -0500
-Received: from mail-pl1-f196.google.com ([209.85.214.196]:33791 "EHLO
-        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725821AbfLSGKh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Dec 2019 01:10:37 -0500
-Received: by mail-pl1-f196.google.com with SMTP id c13so2075798pls.0;
-        Wed, 18 Dec 2019 22:10:37 -0800 (PST)
+        id S1726855AbfLSGKm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Dec 2019 01:10:42 -0500
+Received: from mail-pj1-f66.google.com ([209.85.216.66]:53551 "EHLO
+        mail-pj1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725821AbfLSGKl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Dec 2019 01:10:41 -0500
+Received: by mail-pj1-f66.google.com with SMTP id n96so1990635pjc.3;
+        Wed, 18 Dec 2019 22:10:41 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=+vgdd+bX2QVgDu2mRDHMMkCHnmBd8piReaVXlrpd7kU=;
-        b=oSOeQ2rCt1/vBvguKls45RJeOW2apqWzpG8PO2tPpsdyGwx+v80wxKsNW9kQPlpHjU
-         NbRJ4j0QR/oDE2+ot1D3fLTYQCE0CwUrX/mQ98xILuhBsjZwj8flRJKeJ4D4rOVTH7hD
-         SGb8jxf9JXFhgDV17bcd5PLX+MSl24KqFkN3ENMgAhn6luw540zIZsi6kmfqK0pjBmnM
-         ux2EclVB2iwDP9ccnGnytmD5yP/gSeqrLcglTlam4tnJYquJheF80jPXuQAtYGUREePi
-         S5MZe2GQhtNDJidQvw7WrASlxqJbd9hUcOx0x7qj8isvJc+3siPzXoBPPTVL196K7Exw
-         +66A==
+        bh=IwWd16qrLebRkrBZgWKlA2mgtaHvdjRxS9SE17qY/xQ=;
+        b=l0KZUrR+7MiFKxZWum8jdjuMavhdkY9qsGo/YJqZOrKqETeRtnhm6E2SaBEg8Fl8ti
+         yc97ZmSX6wqUwfRb9aUXtlT23vRr9pUDtZLAQNq2vB0hazTgCppvYwmrRVIm1/Nn6x/e
+         ChuDllW4twicJHoHfs5evUSphh0N8pGBIJfJsteFQe3mAbAwMvR7yB1XZTExMXb22sjC
+         Yr0ew+1hOvk9yS1HfLYgaIBgKpv48Zzqjn8D9mNrd16aMtAHBFFfKaUc/r6GCc8cV1AQ
+         /JjTUSmetdacxgtHjGVmMYC8PuOTmmkmOtHiOROBo5ZMSHC+cuGPvmD5m9nccxoRs1KE
+         hsnA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=+vgdd+bX2QVgDu2mRDHMMkCHnmBd8piReaVXlrpd7kU=;
-        b=Vu/v5DYC1FUqrMp0HpWWgSk7gmDKCZN4GdpAtWRug1Ft8yRA9i7bGR99bfEB1MTiwJ
-         VBDE6OXBU4Bqz8PJyBOI+XSS8dob0wus0cEFusRJCewsuy48ZQuIP5Gmct7JN+ssiQFP
-         V9oYzE8EAu5IT+jpx0JIOwx9L/hzl7bEUt+B8+PmbPb6gOqsdKncE2HKEAe4c/Fao/j8
-         6LwJKk3/lIxBB6dD8GW7w1cwmLHnHbaCWJIymIOhfZ3GMt8U72/0OWOMsyFn68c2tEgw
-         ME6Aw/cjpPNqgEf2cecMdrYWFbszM8FYd5yGj43jx7l00bQQZuS2Svqk5aBf8BVsqteD
-         iO7A==
-X-Gm-Message-State: APjAAAUz3uYyJ0Kr/ZyXZZVZ3nyupRON7xoaYXd51lYlCSl86wRyeUeX
-        V00G1pJyT9eqHifGMIqe0z252bXJkPirjw==
-X-Google-Smtp-Source: APXvYqyFAIHcr5JdPsMD6iUfLwQiDMe1BF4gh1BVN+hjo8vXfGe9qdan0r55/tcA5ZYAmjnT5jvIPw==
-X-Received: by 2002:a17:902:8eca:: with SMTP id x10mr7378459plo.248.1576735836794;
-        Wed, 18 Dec 2019 22:10:36 -0800 (PST)
+        bh=IwWd16qrLebRkrBZgWKlA2mgtaHvdjRxS9SE17qY/xQ=;
+        b=srGO/cOeMZz3nl4iIQu4QKa2GlAEfSPEQGfBo2bJ91oBtO0K44XFrB/ksIsCArUALN
+         L8xevv58F492/lZ255b+v/zXabQF6mc67nlJkbGu3vH44Cx8M1UOYQ+u5MU0TUXuQYFV
+         EmHcSzz6gM7D1K+nUzMw+GEy/cgiOGN64CJGTa4mR3a/MqGevELGwUsArUvgMwXDoLlS
+         fKuXgKgONezu9ymMFLk1S4KhXUVxgYZ3OBRROSe7sJhr5FerW6ILT40mP7K+JlZSwiih
+         0WmpqOrRI7Z6Tf7kT++PWZCRSbSLWic8fZHYTabN36Y+MWQrvhtmNIKj6JqaF47SRU20
+         FKpw==
+X-Gm-Message-State: APjAAAVvw8bUHdxrJ8DyEmKwNng3wqKhWHDOH3cj7lp4oaGmHMRMPNNM
+        X+B4PFNsK2g2SNDHr7+UQcwEaBv4LNNUXg==
+X-Google-Smtp-Source: APXvYqyGeu2/zbRzxWdXLaQTJ3w6i6p9+cVx2TzETGGOSiKMl8EmfQr3sbAe972nZK4DVNdaHu+jRA==
+X-Received: by 2002:a17:90a:2486:: with SMTP id i6mr8015270pje.9.1576735840641;
+        Wed, 18 Dec 2019 22:10:40 -0800 (PST)
 Received: from btopel-mobl.ger.intel.com (fmdmzpr04-ext.fm.intel.com. [192.55.55.39])
-        by smtp.gmail.com with ESMTPSA id t23sm6465062pfq.106.2019.12.18.22.10.33
+        by smtp.gmail.com with ESMTPSA id t23sm6465062pfq.106.2019.12.18.22.10.37
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 18 Dec 2019 22:10:36 -0800 (PST)
+        Wed, 18 Dec 2019 22:10:40 -0800 (PST)
 From:   =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@gmail.com>
 To:     netdev@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net
 Cc:     =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@intel.com>,
@@ -52,9 +52,9 @@ Cc:     =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@intel.com>,
         john.fastabend@gmail.com, magnus.karlsson@intel.com,
         jonathan.lemon@gmail.com,
         =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-Subject: [PATCH bpf-next v2 4/8] xsk: make xskmap flush_list common for all map instances
-Date:   Thu, 19 Dec 2019 07:10:02 +0100
-Message-Id: <20191219061006.21980-5-bjorn.topel@gmail.com>
+Subject: [PATCH bpf-next v2 5/8] xdp: make devmap flush_list common for all map instances
+Date:   Thu, 19 Dec 2019 07:10:03 +0100
+Message-Id: <20191219061006.21980-6-bjorn.topel@gmail.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191219061006.21980-1-bjorn.topel@gmail.com>
 References: <20191219061006.21980-1-bjorn.topel@gmail.com>
@@ -68,212 +68,176 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Björn Töpel <bjorn.topel@intel.com>
 
-The xskmap flush list is used to track entries that need to flushed
+The devmap flush list is used to track entries that need to flushed
 from via the xdp_do_flush_map() function. This list used to be
 per-map, but there is really no reason for that. Instead make the
-flush list global for all xskmaps, which simplifies __xsk_map_flush()
-and xsk_map_alloc().
+flush list global for all devmaps, which simplifies __dev_map_flush()
+and dev_map_init_map().
 
 Acked-by: Toke Høiland-Jørgensen <toke@redhat.com>
 Signed-off-by: Björn Töpel <bjorn.topel@intel.com>
 ---
- include/net/xdp_sock.h | 11 ++++-------
- kernel/bpf/xskmap.c    | 18 +++---------------
- net/core/filter.c      |  9 ++++-----
- net/xdp/xsk.c          | 17 +++++++++--------
- 4 files changed, 20 insertions(+), 35 deletions(-)
+ include/linux/bpf.h |  4 ++--
+ kernel/bpf/devmap.c | 35 +++++++++++++----------------------
+ net/core/filter.c   |  2 +-
+ 3 files changed, 16 insertions(+), 25 deletions(-)
 
-diff --git a/include/net/xdp_sock.h b/include/net/xdp_sock.h
-index e3780e4b74e1..48594740d67c 100644
---- a/include/net/xdp_sock.h
-+++ b/include/net/xdp_sock.h
-@@ -72,7 +72,6 @@ struct xdp_umem {
+diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+index d467983e61bb..31191804ca09 100644
+--- a/include/linux/bpf.h
++++ b/include/linux/bpf.h
+@@ -959,7 +959,7 @@ struct sk_buff;
  
- struct xsk_map {
+ struct bpf_dtab_netdev *__dev_map_lookup_elem(struct bpf_map *map, u32 key);
+ struct bpf_dtab_netdev *__dev_map_hash_lookup_elem(struct bpf_map *map, u32 key);
+-void __dev_map_flush(struct bpf_map *map);
++void __dev_map_flush(void);
+ int dev_map_enqueue(struct bpf_dtab_netdev *dst, struct xdp_buff *xdp,
+ 		    struct net_device *dev_rx);
+ int dev_map_generic_redirect(struct bpf_dtab_netdev *dst, struct sk_buff *skb,
+@@ -1068,7 +1068,7 @@ static inline struct net_device  *__dev_map_hash_lookup_elem(struct bpf_map *map
+ 	return NULL;
+ }
+ 
+-static inline void __dev_map_flush(struct bpf_map *map)
++static inline void __dev_map_flush(void)
+ {
+ }
+ 
+diff --git a/kernel/bpf/devmap.c b/kernel/bpf/devmap.c
+index b7595de6a91a..da9c832fc5c8 100644
+--- a/kernel/bpf/devmap.c
++++ b/kernel/bpf/devmap.c
+@@ -75,7 +75,6 @@ struct bpf_dtab_netdev {
+ struct bpf_dtab {
  	struct bpf_map map;
+ 	struct bpf_dtab_netdev **netdev_map; /* DEVMAP type only */
 -	struct list_head __percpu *flush_list;
- 	spinlock_t lock; /* Synchronize map updates */
- 	struct xdp_sock *xsk_map[];
+ 	struct list_head list;
+ 
+ 	/* these are only used for DEVMAP_HASH type maps */
+@@ -85,6 +84,7 @@ struct bpf_dtab {
+ 	u32 n_buckets;
  };
-@@ -139,9 +138,8 @@ void xsk_map_try_sock_delete(struct xsk_map *map, struct xdp_sock *xs,
- 			     struct xdp_sock **map_entry);
- int xsk_map_inc(struct xsk_map *map);
- void xsk_map_put(struct xsk_map *map);
--int __xsk_map_redirect(struct bpf_map *map, struct xdp_buff *xdp,
--		       struct xdp_sock *xs);
--void __xsk_map_flush(struct bpf_map *map);
-+int __xsk_map_redirect(struct xdp_sock *xs, struct xdp_buff *xdp);
-+void __xsk_map_flush(void);
  
- static inline struct xdp_sock *__xsk_map_lookup_elem(struct bpf_map *map,
- 						     u32 key)
-@@ -369,13 +367,12 @@ static inline u64 xsk_umem_adjust_offset(struct xdp_umem *umem, u64 handle,
- 	return 0;
- }
++static DEFINE_PER_CPU(struct list_head, dev_map_flush_list);
+ static DEFINE_SPINLOCK(dev_map_lock);
+ static LIST_HEAD(dev_map_list);
  
--static inline int __xsk_map_redirect(struct bpf_map *map, struct xdp_buff *xdp,
--				     struct xdp_sock *xs)
-+static inline int __xsk_map_redirect(struct xdp_sock *xs, struct xdp_buff *xdp)
+@@ -109,8 +109,8 @@ static inline struct hlist_head *dev_map_index_hash(struct bpf_dtab *dtab,
+ 
+ static int dev_map_init_map(struct bpf_dtab *dtab, union bpf_attr *attr)
  {
- 	return -EOPNOTSUPP;
- }
+-	int err, cpu;
+-	u64 cost;
++	u64 cost = 0;
++	int err;
  
--static inline void __xsk_map_flush(struct bpf_map *map)
-+static inline void __xsk_map_flush(void)
- {
- }
+ 	/* check sanity of attributes */
+ 	if (attr->max_entries == 0 || attr->key_size != 4 ||
+@@ -125,9 +125,6 @@ static int dev_map_init_map(struct bpf_dtab *dtab, union bpf_attr *attr)
  
-diff --git a/kernel/bpf/xskmap.c b/kernel/bpf/xskmap.c
-index 90c4fce1c981..2cc5c8f4c800 100644
---- a/kernel/bpf/xskmap.c
-+++ b/kernel/bpf/xskmap.c
-@@ -72,9 +72,9 @@ static void xsk_map_sock_delete(struct xdp_sock *xs,
- static struct bpf_map *xsk_map_alloc(union bpf_attr *attr)
- {
- 	struct bpf_map_memory mem;
--	int cpu, err, numa_node;
-+	int err, numa_node;
- 	struct xsk_map *m;
--	u64 cost, size;
-+	u64 size;
+ 	bpf_map_init_from_attr(&dtab->map, attr);
  
- 	if (!capable(CAP_NET_ADMIN))
- 		return ERR_PTR(-EPERM);
-@@ -86,9 +86,8 @@ static struct bpf_map *xsk_map_alloc(union bpf_attr *attr)
+-	/* make sure page count doesn't overflow */
+-	cost = (u64) sizeof(struct list_head) * num_possible_cpus();
+-
+ 	if (attr->map_type == BPF_MAP_TYPE_DEVMAP_HASH) {
+ 		dtab->n_buckets = roundup_pow_of_two(dtab->map.max_entries);
  
- 	numa_node = bpf_map_attr_numa_node(attr);
- 	size = struct_size(m, xsk_map, attr->max_entries);
--	cost = size + array_size(sizeof(*m->flush_list), num_possible_cpus());
+@@ -143,17 +140,10 @@ static int dev_map_init_map(struct bpf_dtab *dtab, union bpf_attr *attr)
+ 	if (err)
+ 		return -EINVAL;
  
--	err = bpf_map_charge_init(&mem, cost);
-+	err = bpf_map_charge_init(&mem, size);
- 	if (err < 0)
- 		return ERR_PTR(err);
- 
-@@ -102,16 +101,6 @@ static struct bpf_map *xsk_map_alloc(union bpf_attr *attr)
- 	bpf_map_charge_move(&m->map.memory, &mem);
- 	spin_lock_init(&m->lock);
- 
--	m->flush_list = alloc_percpu(struct list_head);
--	if (!m->flush_list) {
--		bpf_map_charge_finish(&m->map.memory);
--		bpf_map_area_free(m);
--		return ERR_PTR(-ENOMEM);
--	}
+-	dtab->flush_list = alloc_percpu(struct list_head);
+-	if (!dtab->flush_list)
+-		goto free_charge;
 -
 -	for_each_possible_cpu(cpu)
--		INIT_LIST_HEAD(per_cpu_ptr(m->flush_list, cpu));
+-		INIT_LIST_HEAD(per_cpu_ptr(dtab->flush_list, cpu));
 -
- 	return &m->map;
+ 	if (attr->map_type == BPF_MAP_TYPE_DEVMAP_HASH) {
+ 		dtab->dev_index_head = dev_map_create_hash(dtab->n_buckets);
+ 		if (!dtab->dev_index_head)
+-			goto free_percpu;
++			goto free_charge;
+ 
+ 		spin_lock_init(&dtab->index_lock);
+ 	} else {
+@@ -161,13 +151,11 @@ static int dev_map_init_map(struct bpf_dtab *dtab, union bpf_attr *attr)
+ 						      sizeof(struct bpf_dtab_netdev *),
+ 						      dtab->map.numa_node);
+ 		if (!dtab->netdev_map)
+-			goto free_percpu;
++			goto free_charge;
+ 	}
+ 
+ 	return 0;
+ 
+-free_percpu:
+-	free_percpu(dtab->flush_list);
+ free_charge:
+ 	bpf_map_charge_finish(&dtab->map.memory);
+ 	return -ENOMEM;
+@@ -254,7 +242,6 @@ static void dev_map_free(struct bpf_map *map)
+ 		bpf_map_area_free(dtab->netdev_map);
+ 	}
+ 
+-	free_percpu(dtab->flush_list);
+ 	kfree(dtab);
  }
  
-@@ -121,7 +110,6 @@ static void xsk_map_free(struct bpf_map *map)
+@@ -384,10 +371,9 @@ static int bq_xmit_all(struct xdp_bulk_queue *bq, u32 flags)
+  * net device can be torn down. On devmap tear down we ensure the flush list
+  * is empty before completing to ensure all flush operations have completed.
+  */
+-void __dev_map_flush(struct bpf_map *map)
++void __dev_map_flush(void)
+ {
+-	struct bpf_dtab *dtab = container_of(map, struct bpf_dtab, map);
+-	struct list_head *flush_list = this_cpu_ptr(dtab->flush_list);
++	struct list_head *flush_list = this_cpu_ptr(&dev_map_flush_list);
+ 	struct xdp_bulk_queue *bq, *tmp;
  
- 	bpf_clear_redirect_map(map);
- 	synchronize_net();
--	free_percpu(m->flush_list);
- 	bpf_map_area_free(m);
+ 	rcu_read_lock();
+@@ -419,7 +405,7 @@ static int bq_enqueue(struct bpf_dtab_netdev *obj, struct xdp_frame *xdpf,
+ 		      struct net_device *dev_rx)
+ 
+ {
+-	struct list_head *flush_list = this_cpu_ptr(obj->dtab->flush_list);
++	struct list_head *flush_list = this_cpu_ptr(&dev_map_flush_list);
+ 	struct xdp_bulk_queue *bq = this_cpu_ptr(obj->bulkq);
+ 
+ 	if (unlikely(bq->count == DEV_MAP_BULK_SIZE))
+@@ -777,10 +763,15 @@ static struct notifier_block dev_map_notifier = {
+ 
+ static int __init dev_map_init(void)
+ {
++	int cpu;
++
+ 	/* Assure tracepoint shadow struct _bpf_dtab_netdev is in sync */
+ 	BUILD_BUG_ON(offsetof(struct bpf_dtab_netdev, dev) !=
+ 		     offsetof(struct _bpf_dtab_netdev, dev));
+ 	register_netdevice_notifier(&dev_map_notifier);
++
++	for_each_possible_cpu(cpu)
++		INIT_LIST_HEAD(&per_cpu(dev_map_flush_list, cpu));
+ 	return 0;
  }
  
 diff --git a/net/core/filter.c b/net/core/filter.c
-index a411f7835dee..c51678c473c5 100644
+index c51678c473c5..b7570cb84902 100644
 --- a/net/core/filter.c
 +++ b/net/core/filter.c
-@@ -3511,8 +3511,7 @@ xdp_do_redirect_slow(struct net_device *dev, struct xdp_buff *xdp,
- 
- static int __bpf_tx_xdp_map(struct net_device *dev_rx, void *fwd,
- 			    struct bpf_map *map,
--			    struct xdp_buff *xdp,
--			    u32 index)
-+			    struct xdp_buff *xdp)
- {
- 	int err;
- 
-@@ -3537,7 +3536,7 @@ static int __bpf_tx_xdp_map(struct net_device *dev_rx, void *fwd,
- 	case BPF_MAP_TYPE_XSKMAP: {
- 		struct xdp_sock *xs = fwd;
- 
--		err = __xsk_map_redirect(map, xdp, xs);
-+		err = __xsk_map_redirect(xs, xdp);
- 		return err;
- 	}
- 	default:
-@@ -3562,7 +3561,7 @@ void xdp_do_flush_map(void)
+@@ -3555,7 +3555,7 @@ void xdp_do_flush_map(void)
+ 		switch (map->map_type) {
+ 		case BPF_MAP_TYPE_DEVMAP:
+ 		case BPF_MAP_TYPE_DEVMAP_HASH:
+-			__dev_map_flush(map);
++			__dev_map_flush();
+ 			break;
+ 		case BPF_MAP_TYPE_CPUMAP:
  			__cpu_map_flush(map);
- 			break;
- 		case BPF_MAP_TYPE_XSKMAP:
--			__xsk_map_flush(map);
-+			__xsk_map_flush();
- 			break;
- 		default:
- 			break;
-@@ -3619,7 +3618,7 @@ static int xdp_do_redirect_map(struct net_device *dev, struct xdp_buff *xdp,
- 	if (ri->map_to_flush && unlikely(ri->map_to_flush != map))
- 		xdp_do_flush_map();
- 
--	err = __bpf_tx_xdp_map(dev, fwd, map, xdp, index);
-+	err = __bpf_tx_xdp_map(dev, fwd, map, xdp);
- 	if (unlikely(err))
- 		goto err;
- 
-diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
-index 956793893c9d..e45c27f5cfca 100644
---- a/net/xdp/xsk.c
-+++ b/net/xdp/xsk.c
-@@ -31,6 +31,8 @@
- 
- #define TX_BATCH_SIZE 16
- 
-+static DEFINE_PER_CPU(struct list_head, xskmap_flush_list);
-+
- bool xsk_is_setup_for_bpf_map(struct xdp_sock *xs)
- {
- 	return READ_ONCE(xs->rx) &&  READ_ONCE(xs->umem) &&
-@@ -264,11 +266,9 @@ int xsk_generic_rcv(struct xdp_sock *xs, struct xdp_buff *xdp)
- 	return err;
- }
- 
--int __xsk_map_redirect(struct bpf_map *map, struct xdp_buff *xdp,
--		       struct xdp_sock *xs)
-+int __xsk_map_redirect(struct xdp_sock *xs, struct xdp_buff *xdp)
- {
--	struct xsk_map *m = container_of(map, struct xsk_map, map);
--	struct list_head *flush_list = this_cpu_ptr(m->flush_list);
-+	struct list_head *flush_list = this_cpu_ptr(&xskmap_flush_list);
- 	int err;
- 
- 	err = xsk_rcv(xs, xdp);
-@@ -281,10 +281,9 @@ int __xsk_map_redirect(struct bpf_map *map, struct xdp_buff *xdp,
- 	return 0;
- }
- 
--void __xsk_map_flush(struct bpf_map *map)
-+void __xsk_map_flush(void)
- {
--	struct xsk_map *m = container_of(map, struct xsk_map, map);
--	struct list_head *flush_list = this_cpu_ptr(m->flush_list);
-+	struct list_head *flush_list = this_cpu_ptr(&xskmap_flush_list);
- 	struct xdp_sock *xs, *tmp;
- 
- 	list_for_each_entry_safe(xs, tmp, flush_list, flush_node) {
-@@ -1177,7 +1176,7 @@ static struct pernet_operations xsk_net_ops = {
- 
- static int __init xsk_init(void)
- {
--	int err;
-+	int err, cpu;
- 
- 	err = proto_register(&xsk_proto, 0 /* no slab */);
- 	if (err)
-@@ -1195,6 +1194,8 @@ static int __init xsk_init(void)
- 	if (err)
- 		goto out_pernet;
- 
-+	for_each_possible_cpu(cpu)
-+		INIT_LIST_HEAD(&per_cpu(xskmap_flush_list, cpu));
- 	return 0;
- 
- out_pernet:
 -- 
 2.20.1
 
