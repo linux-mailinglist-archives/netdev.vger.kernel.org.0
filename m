@@ -2,136 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4038F125EAF
-	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 11:15:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 37C8C125EB2
+	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 11:15:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726664AbfLSKPH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Dec 2019 05:15:07 -0500
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:60184 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726609AbfLSKPH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Dec 2019 05:15:07 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=UESy3mIwqghVP1fRUufEFJMVIWQZLgeNc0gbqddcABA=; b=uEZRQJn6nKCZHZ2UKk6m/e41M
-        akjypVz4+iNv7+GllBZVGLLGH9vSnT55xidlGx63brixAWWHKy3eQqv1+Q2FPqEeAiqS1aWIyBsO8
-        prFgL5Pmv+eMUlk6z1xMoNRzs1IWC5k0YLAhmLGblKqUOR/BCiVxty3hyLX2CRibDtklMuY/Pj3Lb
-        db7SwvH6k4SmKKQY6AeI+nxcq9u9vrPGF5tl0VGAh2rsPpFpJW/vqfJWe2+kcfRp8cEXIyC9g62bG
-        CzyTLUeh2o/yhqJ2AnZLZ4NyYQbRukh9/1E0VBqcZVenvxQ/e4axU5FENkvboNJ1/+8uxEjjQrtyX
-        lbGuuVfgw==;
-Received: from shell.armlinux.org.uk ([2001:4d48:ad52:3201:5054:ff:fe00:4ec]:43378)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1ihspg-0001p3-5p; Thu, 19 Dec 2019 10:15:00 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1ihspc-0005I7-Ea; Thu, 19 Dec 2019 10:14:56 +0000
-Date:   Thu, 19 Dec 2019 10:14:56 +0000
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Ioana Ciornei <ioana.ciornei@nxp.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        laurentiu.tudor@nxp.com, andrew@lunn.ch, f.fainelli@gmail.com
-Subject: Re: [PATCH net-next v4 0/5] dpaa2-eth: add MAC/PHY support through
- phylink
-Message-ID: <20191219101456.GZ1344@shell.armlinux.org.uk>
-References: <1572477512-4618-1-git-send-email-ioana.ciornei@nxp.com>
- <20191117160443.GG1344@shell.armlinux.org.uk>
+        id S1726704AbfLSKPk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Dec 2019 05:15:40 -0500
+Received: from mail-lf1-f67.google.com ([209.85.167.67]:42687 "EHLO
+        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726609AbfLSKPk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Dec 2019 05:15:40 -0500
+Received: by mail-lf1-f67.google.com with SMTP id y19so3923150lfl.9;
+        Thu, 19 Dec 2019 02:15:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:from:to:cc:references:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding:content-language;
+        bh=Rj2q3wD6aajz3PdA1FLrek6nU5zhW+vEBFUB4MYLIYs=;
+        b=VYe/tjzPHNpyq9kN24qr+0wfOwumba6bmciRVLa+9L5NEuwXAUQgygIBNEwsMvxx2A
+         5Sg/FAQKikTm1I6zgD3Pfq46QC69Fc4LaxF9XYMgsjj5m5DWD41kn7ShaJs9Hp/a0BfW
+         8+MYUQ9/VfDCVH6sY0bhMFCQPTPvGw8IrrwXoyYxUesoqKWMpmZh/ltZjqVVR2arkFwe
+         0yisTx5w/UZcNm/Zj4SWqhfR/xQVoWtjbLyBBi/iTAkAB5rxnbCp+QwSphWccc79DSi4
+         AMgYBzY/A3xL/PWG24tLgjNzZn2hBJPqCs3WfUMJ1XApJqo090kvepcXm2XyV0t9mqWB
+         r5MA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=Rj2q3wD6aajz3PdA1FLrek6nU5zhW+vEBFUB4MYLIYs=;
+        b=POuZyLbRHk4Hu5hZesNlsNL9sys7iZCrhOdvF7cuSBlSNqwHJlyi9Q6aeS39Vyd4hw
+         k1+2DW2J8OmHLpQfx8nymj5pD/MWs9Xx3eYwgA0Svrudiwnu5bUmCsE2Sp9h8sw8lEKf
+         yCRrLvOlAPBqj45bK+djTD1N9pzL85VNhH9XEXeWbHhOGSO5FTg2iF09B7HOl1wveo1P
+         69oUsR8Rref3dQRC0C3Z+RR7J9ewrnw8/z9vpL8Cx9/KDxDO6lndVwpmHkPAmEwFMmr6
+         GiwUROFfN/WC4iRHpcOolsoHjqSLAZ/3WT/SXJBXTw9sG5b1lU5A5ik7xd1eJKqamaJz
+         +RFA==
+X-Gm-Message-State: APjAAAXZuztYZgI188mo1xSv0YvPaNqBcs9d854QOkkVJbzkKBF6+Ulv
+        da5MukE3q3d0pSpgM4IZdeNMBoQDqsyDgw==
+X-Google-Smtp-Source: APXvYqya/tgd7VQnmbu9lTExcsRK48yqlOicy53+7Ka2wVmIDOYpJUSfB1plClM8Ws9/ZUmRYzQX1A==
+X-Received: by 2002:ac2:4834:: with SMTP id 20mr4443150lft.166.1576750537756;
+        Thu, 19 Dec 2019 02:15:37 -0800 (PST)
+Received: from [192.168.43.60] ([176.227.99.155])
+        by smtp.gmail.com with ESMTPSA id g24sm2384473lfb.85.2019.12.19.02.15.34
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 19 Dec 2019 02:15:36 -0800 (PST)
+Subject: Re: [PATCH] Revert "iwlwifi: mvm: fix scan config command size"
+From:   Mehmet Akif Tasova <makiftasova@gmail.com>
+To:     Roman Gilg <subdiff@gmail.com>
+Cc:     Johannes Berg <johannes.berg@intel.com>,
+        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Intel Linux Wireless <linuxwifi@intel.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Shahar S Matityahu <shahar.s.matityahu@intel.com>,
+        Tova Mussai <tova.mussai@intel.com>,
+        Ayala Beker <ayala.beker@intel.com>,
+        Sara Sharon <sara.sharon@intel.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20191213203512.8250-1-makiftasova@gmail.com>
+ <CAJcyoyusgtw0++KsEHK-t=EFGx2v9GKv7+BSViUCaB3nyDr2Jw@mail.gmail.com>
+ <CAP=YcKGLDx_coFsY7ej6BkdBJT+FELGSOMM6YM_r7jgqEsvChw@mail.gmail.com>
+Message-ID: <8b895e5a-745b-a9f1-2bc8-8a1fac61129f@gmail.com>
+Date:   Thu, 19 Dec 2019 13:15:32 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.3.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191117160443.GG1344@shell.armlinux.org.uk>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <CAP=YcKGLDx_coFsY7ej6BkdBJT+FELGSOMM6YM_r7jgqEsvChw@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Nov 17, 2019 at 04:04:43PM +0000, Russell King - ARM Linux admin wrote:
-> The other thing I see is that with dpmac.7 added, I get all the iommu
-> group messages, and buried in there is:
-> 
-> fsl_dpaa2_eth dpni.1: Probed interface eth1
-> 
-> as expected.  When I issue the dpmac.8 command (which is when all those
-> warnings are spat out) I see:
-> 
-> fsl_dpaa2_eth dpni.2: Probed interface eth1
-> 
-> So dpni.1 has gone, eth1 has gone to be replaced by dpni.2 bound to eth1.
-> 
-> Looking in /sys/bus/fsl-mc/devices/dpni.[12]/ it seems that both
-> devices still exist, but dpni.1 has been unbound from the dpaa2 eth
-> driver.
+Hello,
 
-I'm seeing this again, it's very annoying because it means one of the
-interfaces vanishes and can't then be resurected.
+Because I used gmail mobile app to response and the app decided that 
+always using HTML is a valid choice for every one, my previous mail 
+rejected by mailing lists.
 
-[  161.573637] fsl_mc_allocator dpbp.2: Adding to iommu group 0
-[  161.579289] fsl_mc_allocator dpmcp.36: Adding to iommu group 0
-[  161.668060] fsl_mc_allocator dpcon.32: Adding to iommu group 0
-[  161.752477] fsl_mc_allocator dpcon.37: Adding to iommu group 0
-[  161.757221] fsl_mc_allocator dpcon.36: Adding to iommu group 0
-[  161.761981] fsl_mc_allocator dpcon.35: Adding to iommu group 0
-[  161.766704] fsl_mc_allocator dpcon.34: Adding to iommu group 0
-[  161.771453] fsl_mc_allocator dpcon.33: Adding to iommu group 0
-[  161.932117] fsl-mc dpcon.2: Removing from iommu group 0
-[  161.936171] fsl-mc dpcon.1: Removing from iommu group 0
-[  161.940239] fsl-mc dpcon.0: Removing from iommu group 0
-[  161.945283] fsl_mc_allocator dpcon.44: Adding to iommu group 0
-[  161.950074] fsl_mc_allocator dpcon.43: Adding to iommu group 0
-[  161.954807] fsl_mc_allocator dpcon.42: Adding to iommu group 0
-[  161.959513] fsl_mc_allocator dpcon.41: Adding to iommu group 0
-[  161.964236] fsl_mc_allocator dpcon.40: Adding to iommu group 0
-[  161.968933] fsl_mc_allocator dpcon.39: Adding to iommu group 0
-[  161.973642] fsl_mc_allocator dpcon.38: Adding to iommu group 0
-[  162.051949] fsl_dpaa2_eth dpni.1: Adding to iommu group 0
-[  162.206770] fsl_dpaa2_eth dpni.1: Probed interface eth1
-[  162.211811] fsl_mc_allocator dpcon.47: Adding to iommu group 0
-[  162.216544] fsl_mc_allocator dpcon.46: Adding to iommu group 0
-[  162.221260] fsl_mc_allocator dpcon.45: Adding to iommu group 0
-[  162.227232] fsl_mc_allocator dpcon.2: Adding to iommu group 0
-[  162.231864] fsl_mc_allocator dpcon.1: Adding to iommu group 0
-[  162.236497] fsl_mc_allocator dpcon.0: Adding to iommu group 0
+Because of that I am (re)sending this mail. You can find contents of my 
+previous mail below.
 
-[  167.581066] fsl_mc_allocator dpbp.3: Adding to iommu group 0
-[  167.586802] fsl_mc_allocator dpmcp.37: Adding to iommu group 0
-[  167.592368] fsl_mc_allocator dpcon.51: Adding to iommu group 0
-[  167.597120] fsl_mc_allocator dpcon.50: Adding to iommu group 0
-[  167.601869] fsl_mc_allocator dpcon.49: Adding to iommu group 0
-[  167.606604] fsl_mc_allocator dpcon.48: Adding to iommu group 0
-[  168.304644] fsl-mc dpcon.4: Removing from iommu group 0
-[  168.308710] fsl-mc dpcon.3: Removing from iommu group 0
-[  168.312783] fsl-mc dpcon.2: Removing from iommu group 0
-[  168.316828] fsl-mc dpcon.1: Removing from iommu group 0
-[  168.320874] fsl-mc dpcon.0: Removing from iommu group 0
-[  168.325946] fsl_mc_allocator dpcon.59: Adding to iommu group 0
-[  168.330682] fsl_mc_allocator dpcon.58: Adding to iommu group 0
-[  168.335393] fsl_mc_allocator dpcon.57: Adding to iommu group 0
-[  168.340105] fsl_mc_allocator dpcon.56: Adding to iommu group 0
-[  168.344816] fsl_mc_allocator dpcon.55: Adding to iommu group 0
-[  168.349530] fsl_mc_allocator dpcon.54: Adding to iommu group 0
-[  168.354256] fsl_mc_allocator dpcon.53: Adding to iommu group 0
-[  168.358981] fsl_mc_allocator dpcon.52: Adding to iommu group 0
-[  168.435784] fsl_dpaa2_eth dpni.2: Adding to iommu group 0
-[  168.600151] fsl_dpaa2_eth dpni.2: Probed interface eth1
-[  168.605298] fsl_mc_allocator dpcon.63: Adding to iommu group 0
-[  168.610023] fsl_mc_allocator dpcon.62: Adding to iommu group 0
-[  168.614751] fsl_mc_allocator dpcon.61: Adding to iommu group 0
-[  168.619470] fsl_mc_allocator dpcon.60: Adding to iommu group 0
-[  168.625990] fsl_mc_allocator dpcon.4: Adding to iommu group 0
-[  168.630614] fsl_mc_allocator dpcon.3: Adding to iommu group 0
-[  168.635251] fsl_mc_allocator dpcon.2: Adding to iommu group 0
-[  168.639890] fsl_mc_allocator dpcon.1: Adding to iommu group 0
-[  168.644539] fsl_mc_allocator dpcon.0: Adding to iommu group 0
+Regards,
+Mehmet Akif.
 
-Any ideas?
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-According to speedtest.net: 11.9Mbps down 500kbps up
+> Hi Roman,
+>
+> Unfortunately I don't have XPS 13 and tested the patch on Dell Vostro 
+> 5481 and this patch is the result of bisection on Vostro.
+>
+> At first, the Archlinux bug report I shared looked similar thus that 
+> bug report contains lots of dmesg outputs from different users. But 
+> yes probably there is 2 distinct issue which should be solved separately.
+>
+> I will update commit message accordingly as soon as possible.
+>
+> Regards,
+> Mehmet Akif
+>
+>
+> On Wed, Dec 18, 2019, 22:12 Roman Gilg <subdiff@gmail.com 
+> <mailto:subdiff@gmail.com>> wrote:
+>
+>     On Fri, Dec 13, 2019 at 9:36 PM Mehmet Akif Tasova
+>     <makiftasova@gmail.com <mailto:makiftasova@gmail.com>> wrote:
+>     >
+>     > Since Linux 5.4.1 released, iwlwifi could not initialize
+>     Intel(R) Dual Band
+>     > Wireless AC 9462 firmware, failing with following error in dmesg:
+>     >
+>     > iwlwifi 0000:00:14.3: FW error in SYNC CMD SCAN_CFG_CMD
+>     >
+>     > whole dmesg output of error can be found at:
+>     > https://gist.github.com/makiftasova/354e46439338f4ab3fba0b77ad5c19ec
+>     >
+>     > also bug report from ArchLinux bug tracker (contains more info):
+>     > https://bugs.archlinux.org/task/64703
+>
+>     Since this bug report is about the Dell XPS 13 2-in1: I tested your
+>     revert with this device, but the issue persists at least on this
+>     device. So these might be two different issues, one for your device
+>     and another one for the XPS.
+>
+>     > Reverting commit 06eb547c4ae4 ("iwlwifi: mvm: fix scan config
+>     command
+>     > size") seems to fix this issue  until proper solution is found.
+>     >
+>     > This reverts commit 06eb547c4ae4382e70d556ba213d13c95ca1801b.
+>     >
+>     > Signed-off-by: Mehmet Akif Tasova <makiftasova@gmail.com
+>     <mailto:makiftasova@gmail.com>>
+>     > ---
+>     >  drivers/net/wireless/intel/iwlwifi/mvm/scan.c | 2 +-
+>     >  1 file changed, 1 insertion(+), 1 deletion(-)
+>     >
+>     > diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/scan.c
+>     b/drivers/net/wireless/intel/iwlwifi/mvm/scan.c
+>     > index a046ac9fa852..a5af8f4128b1 100644
+>     > --- a/drivers/net/wireless/intel/iwlwifi/mvm/scan.c
+>     > +++ b/drivers/net/wireless/intel/iwlwifi/mvm/scan.c
+>     > @@ -1213,7 +1213,7 @@ static int
+>     iwl_mvm_legacy_config_scan(struct iwl_mvm *mvm)
+>     >                 cmd_size = sizeof(struct iwl_scan_config_v2);
+>     >         else
+>     >                 cmd_size = sizeof(struct iwl_scan_config_v1);
+>     > -       cmd_size += num_channels;
+>     > +       cmd_size += mvm->fw->ucode_capa.n_scan_channels;
+>     >
+>     >         cfg = kzalloc(cmd_size, GFP_KERNEL);
+>     >         if (!cfg)
+>     > --
+>     > 2.24.1
+>     >
+>
