@@ -2,128 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 76498125B52
-	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 07:10:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 979BE125B5A
+	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 07:17:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726887AbfLSGKx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Dec 2019 01:10:53 -0500
-Received: from mail-pj1-f65.google.com ([209.85.216.65]:33995 "EHLO
-        mail-pj1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725821AbfLSGKx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Dec 2019 01:10:53 -0500
-Received: by mail-pj1-f65.google.com with SMTP id s94so2163410pjc.1;
-        Wed, 18 Dec 2019 22:10:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=utd1Hqu7RRNBlQe9bT/Ku0KqdnYMgvtr/pTMjx58tKw=;
-        b=FLvvq0k2z5q+440WameVkfcrOa8VeXMzqwSzNe1r9ndjPo8sAbPGE2E3qYARAesrdc
-         W6NMRvO9hQrNEz6NiTrovrJ4Bo8+wa3xcTTkhU7KrvL56mg7XJICs+gfAqcATWw+fJTk
-         ltpFCoCeuXM1uOiwJ268gbObOgumLubSKh6KILHxBsj2les82guw5adOPP7fhTMNHJtN
-         z3/D+dykrXWvumNYrnQr8fnroiEJ1fVmPJqQUfmrWLM9JwVjORm8acqItT20C40Y9wNK
-         o9wV4PHZd97y+GpuDYpm4hhOYh9hmyN87jGP2YP6Ys7/Ewdsu3nY2LUPNLlHzqRlIlbR
-         Ifyw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=utd1Hqu7RRNBlQe9bT/Ku0KqdnYMgvtr/pTMjx58tKw=;
-        b=Ak4IHzqWJucqntGlXdtDV+yrYB6OXKu/9YHDEnNFMsNTbP5tHmfQyk0Lfclo6jEWyM
-         ca+dFY2odFShoRcKOhwQefTYXTGW5kTMsupOyD9e+zQzyXVXtA+CBKbk3Xt9+0K0ynrB
-         u1j+b2zm7WKypQ6bAhp9Fjdh2gPFTZEbW95a9mI0EtgF/VED4ofhreJ4pc/qx6f+eUbw
-         N1044xijt/whu2h/PhIAHA2SPDijUKy9h/2kNNfiiysHBCG+Q6yuDRIUp57CWQ5lkTMP
-         0suDgra5QKN8W7USzoIoNDf1hO4+ceq0TC5SPEGKtR9IjwCKzvZyAQfTSOfX1CEdDCiy
-         zD1Q==
-X-Gm-Message-State: APjAAAUlizqxdcrnc8z8NmxkmIDBbsBzBNZKlpVE4BuKyA6KuAFBfMpq
-        4Bft7uCQJPyQXXGkmVo2oqKrlz4lj9P1Yw==
-X-Google-Smtp-Source: APXvYqwefORJJxeEsXsY2YBiZP2QtNcGKKl53AaMiPREUyLPaX3xjtCIwm7IpWbf8scImVwHjiZTHA==
-X-Received: by 2002:a17:902:b704:: with SMTP id d4mr6989162pls.54.1576735852284;
-        Wed, 18 Dec 2019 22:10:52 -0800 (PST)
-Received: from btopel-mobl.ger.intel.com (fmdmzpr04-ext.fm.intel.com. [192.55.55.39])
-        by smtp.gmail.com with ESMTPSA id t23sm6465062pfq.106.2019.12.18.22.10.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 18 Dec 2019 22:10:51 -0800 (PST)
-From:   =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@gmail.com>
-To:     netdev@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net
-Cc:     =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@intel.com>,
-        bpf@vger.kernel.org, davem@davemloft.net,
-        jakub.kicinski@netronome.com, hawk@kernel.org,
-        john.fastabend@gmail.com, magnus.karlsson@intel.com,
-        jonathan.lemon@gmail.com,
-        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-Subject: [PATCH bpf-next v2 8/8] xdp: simplify __bpf_tx_xdp_map()
-Date:   Thu, 19 Dec 2019 07:10:06 +0100
-Message-Id: <20191219061006.21980-9-bjorn.topel@gmail.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20191219061006.21980-1-bjorn.topel@gmail.com>
-References: <20191219061006.21980-1-bjorn.topel@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        id S1726609AbfLSGQ4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Dec 2019 01:16:56 -0500
+Received: from ybironout2a.netvigator.com ([210.87.250.75]:8674 "EHLO
+        ybironout2a.netvigator.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726294AbfLSGQ4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Dec 2019 01:16:56 -0500
+X-IronPort-Anti-Spam-Filtered: true
+X-IronPort-Anti-Spam-Result: =?us-ascii?q?A0AuAABZFftd/5YXxstlGwEBAQEBAQEFA?=
+ =?us-ascii?q?QEBEQEBAwMBAQGBaQUBAQELAYIhgUEgEhoQpByFEoUogXsJAQEBOwIBAYMtgRO?=
+ =?us-ascii?q?CHSQ1CA4CEAEBBAEBAQIBBQRthGtYhVY2UigIgSFbgkcBgnYGriMzGgKKM4E2A?=
+ =?us-ascii?q?Yc/hFkUBj+BQYFHgihzh22CSgSXU5c2CoI1lhQCGY5qA4tjAS2ELaRBggACNYF?=
+ =?us-ascii?q?YgQWBWQqBRFAYjHMBNxcVjhs0M4EEkAAB?=
+X-IronPort-AV: E=Sophos;i="5.69,330,1571673600"; 
+   d="scan'208";a="171344086"
+Received: from unknown (HELO ybironoah04.netvigator.com) ([203.198.23.150])
+  by ybironout2v1.netvigator.com with ESMTP; 19 Dec 2019 14:16:52 +0800
+Received: from unknown (HELO rhel76.localdomain) ([42.200.157.25])
+  by ybironoah04.netvigator.com with ESMTP; 19 Dec 2019 14:16:52 +0800
+From:   "Chan Shu Tak, Alex" <alexchan@task.com.hk>
+Cc:     "Chan Shu Tak, Alex" <alexchan@task.com.hk>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] llc2: Fix return statement of llc_stat_ev_rx_null_dsap_xid_c (and _test_c)
+Date:   Thu, 19 Dec 2019 14:16:18 +0800
+Message-Id: <1576736179-7129-1-git-send-email-alexchan@task.com.hk>
+X-Mailer: git-send-email 1.8.3.1
+To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Björn Töpel <bjorn.topel@intel.com>
+From: "Chan Shu Tak, Alex" <alexchan@task.com.hk>
 
-The explicit error checking is not needed. Simply return the error
-instead.
+When a frame with NULL DSAP is received, llc_station_rcv is called.
+In turn, llc_stat_ev_rx_null_dsap_xid_c is called to check if it is a NULL
+XID frame. The return statement of llc_stat_ev_rx_null_dsap_xid_c returns 1
+when the incoming frame is not a NULL XID frame and 0 otherwise. Hence, a
+NULL XID response is returned unexpectedly, e.g. when the incoming frame is
+a NULL TEST command.
 
-Acked-by: Toke Høiland-Jørgensen <toke@redhat.com>
-Signed-off-by: Björn Töpel <bjorn.topel@intel.com>
+To fix the error, simply remove the conditional operator.
+
+A similar error in llc_stat_ev_rx_null_dsap_test_c is also fixed.
+
+Signed-off-by: Chan Shu Tak, Alex <alexchan@task.com.hk>
 ---
- net/core/filter.c | 33 +++++++--------------------------
- 1 file changed, 7 insertions(+), 26 deletions(-)
+ net/llc/llc_station.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/net/core/filter.c b/net/core/filter.c
-index d9caa3e57ea1..217af9974c86 100644
---- a/net/core/filter.c
-+++ b/net/core/filter.c
-@@ -3510,35 +3510,16 @@ xdp_do_redirect_slow(struct net_device *dev, struct xdp_buff *xdp,
+diff --git a/net/llc/llc_station.c b/net/llc/llc_station.c
+index 204a835..c29170e 100644
+--- a/net/llc/llc_station.c
++++ b/net/llc/llc_station.c
+@@ -32,7 +32,7 @@ static int llc_stat_ev_rx_null_dsap_xid_c(struct sk_buff *skb)
+ 	return LLC_PDU_IS_CMD(pdu) &&			/* command PDU */
+ 	       LLC_PDU_TYPE_IS_U(pdu) &&		/* U type PDU */
+ 	       LLC_U_PDU_CMD(pdu) == LLC_1_PDU_CMD_XID &&
+-	       !pdu->dsap ? 0 : 1;			/* NULL DSAP value */
++	       !pdu->dsap;				/* NULL DSAP value */
  }
  
- static int __bpf_tx_xdp_map(struct net_device *dev_rx, void *fwd,
--			    struct bpf_map *map,
--			    struct xdp_buff *xdp)
-+			    struct bpf_map *map, struct xdp_buff *xdp)
- {
--	int err;
--
- 	switch (map->map_type) {
- 	case BPF_MAP_TYPE_DEVMAP:
--	case BPF_MAP_TYPE_DEVMAP_HASH: {
--		struct bpf_dtab_netdev *dst = fwd;
--
--		err = dev_map_enqueue(dst, xdp, dev_rx);
--		if (unlikely(err))
--			return err;
--		break;
--	}
--	case BPF_MAP_TYPE_CPUMAP: {
--		struct bpf_cpu_map_entry *rcpu = fwd;
--
--		err = cpu_map_enqueue(rcpu, xdp, dev_rx);
--		if (unlikely(err))
--			return err;
--		break;
--	}
--	case BPF_MAP_TYPE_XSKMAP: {
--		struct xdp_sock *xs = fwd;
--
--		err = __xsk_map_redirect(xs, xdp);
--		return err;
--	}
-+	case BPF_MAP_TYPE_DEVMAP_HASH:
-+		return dev_map_enqueue(fwd, xdp, dev_rx);
-+	case BPF_MAP_TYPE_CPUMAP:
-+		return cpu_map_enqueue(fwd, xdp, dev_rx);
-+	case BPF_MAP_TYPE_XSKMAP:
-+		return __xsk_map_redirect(fwd, xdp);
- 	default:
- 		break;
- 	}
+ static int llc_stat_ev_rx_null_dsap_test_c(struct sk_buff *skb)
+@@ -42,7 +42,7 @@ static int llc_stat_ev_rx_null_dsap_test_c(struct sk_buff *skb)
+ 	return LLC_PDU_IS_CMD(pdu) &&			/* command PDU */
+ 	       LLC_PDU_TYPE_IS_U(pdu) &&		/* U type PDU */
+ 	       LLC_U_PDU_CMD(pdu) == LLC_1_PDU_CMD_TEST &&
+-	       !pdu->dsap ? 0 : 1;			/* NULL DSAP */
++	       !pdu->dsap;				/* NULL DSAP */
+ }
+ 
+ static int llc_station_ac_send_xid_r(struct sk_buff *skb)
 -- 
-2.20.1
+1.8.3.1
 
