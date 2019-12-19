@@ -2,82 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F3139126FE5
-	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 22:45:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D4D75126FEF
+	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 22:46:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727456AbfLSVpr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Dec 2019 16:45:47 -0500
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:40224 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726963AbfLSVpr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Dec 2019 16:45:47 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=NrrT83GvuR/JbUpashKGqACiwN6b9MbvU6upd5vrNds=; b=Aws8nI23KaED39lpo/Ba5jlne
-        4qhOzotycZhir6S3gMJEhVdzPP0M8gOlL9Cv0Hz/9YSibrE6rteeuYTjYKbva9zrGVL9rUNih9DK9
-        +TEiljHHWIO7Lg7nVK0dy05uPthIlQ2MtJDcOKrtDuZccGhYXM4Nih3KfYLv+mr8E/1fIti74r5pJ
-        6VJaLVWmflVQSjrYT65H1vfplv1fd1AzEeCqTrQ8NzeriJJckfH8NjTKJjsRDztWIJjAc+UTmsEMV
-        qXbdevTq5mNzO6gpdnrHH5jdJBtxOMx6pXiHQBk8sknpFcnwsK8uf4lRX3HHRBFk3KorGgKtASx2F
-        ED6Daa/7Q==;
-Received: from shell.armlinux.org.uk ([2001:4d48:ad52:3201:5054:ff:fe00:4ec]:43586)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1ii3c3-0004wy-PY; Thu, 19 Dec 2019 21:45:39 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1ii3c1-0005hQ-Ls; Thu, 19 Dec 2019 21:45:37 +0000
-Date:   Thu, 19 Dec 2019 21:45:37 +0000
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     David Miller <davem@davemloft.net>
-Cc:     andrew@lunn.ch, f.fainelli@gmail.com, hkallweit1@gmail.com,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net] net: phy: make phy_error() report which PHY has
- failed
-Message-ID: <20191219214537.GF25745@shell.armlinux.org.uk>
-References: <E1ihCLZ-0001Vo-Nw@rmk-PC.armlinux.org.uk>
- <20191219.125010.1105219757379875134.davem@davemloft.net>
+        id S1727563AbfLSVq2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Dec 2019 16:46:28 -0500
+Received: from mail-qt1-f176.google.com ([209.85.160.176]:41483 "EHLO
+        mail-qt1-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726880AbfLSVq2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Dec 2019 16:46:28 -0500
+Received: by mail-qt1-f176.google.com with SMTP id k40so6343370qtk.8
+        for <netdev@vger.kernel.org>; Thu, 19 Dec 2019 13:46:28 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=mime-version:from:date:message-id:subject:to:cc;
+        bh=VO6Oa9byymwyW6n23ILZAJDl6f5Ys1IOFf5yRPmHuPo=;
+        b=LzRhNFGA5iZor0jf32Zm9YWEhI87EluLTGg6MUh3iGNs6XNwn0UTbGxldDCEF4IOfz
+         3DsLwGj94OyxxRUwEXEOz683yvpPPgpXQ8XvqTJ/DnFPn/0tYWAff+ABqyS6abz0CkeH
+         cHPthvsyIRSJL8qxrYA9agRd7wyidVd/liGYo=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
+        bh=VO6Oa9byymwyW6n23ILZAJDl6f5Ys1IOFf5yRPmHuPo=;
+        b=IuyTS/C13Fij6547EAr/GsQYks8MTfUVgXLtZvwlB4hlaUO/62Hbq+scHUwwApQdMp
+         tsBkhxGGFzV1OFyZGBtzXqNFkVCPozzRl4iA7zZF1YDRMsQ1+8qdXRxOIqKgGKZx2mn9
+         DJ0UI7cklfYCevkoIgsRWSD+xKSlgSl9ylHBSd9Ziiu84zAmyX25EdVeEgxJbu1UkSo4
+         v5MozCNsG6FSfreMAONvR3opdvncTX0w8JsQHFk+UNRZShY+wl+MaJJ5Pte5CRy+hTcl
+         iM42F7YmTflMyWsJ7cU19MthgdlkoQzZQR0nR2+0o/jwB6E0ghXxcqy4OeWSNiEzrMTx
+         zIQA==
+X-Gm-Message-State: APjAAAWMcbVXbeCtZ87BxdUamONGFWZuInfoFiWstY8F+uyM+bKqZVV8
+        Nkw5N8HO6b3pS70cvO4qiR4NUdEUCYNpcY2Ae+M7tt0+sW7NTA==
+X-Google-Smtp-Source: APXvYqwpqC74xeUMj8yQEwAE+ZczgnB/Uh/jOqqfs4iRaiimV06OcME38a4mJLo8X5ezJq61ccNR97lNfS0+INihS/4=
+X-Received: by 2002:ac8:602:: with SMTP id d2mr9200816qth.245.1576791987660;
+ Thu, 19 Dec 2019 13:46:27 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191219.125010.1105219757379875134.davem@davemloft.net>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+From:   Alex Forster <aforster@cloudflare.com>
+Date:   Thu, 19 Dec 2019 15:46:16 -0600
+Message-ID: <CAKxSbF2XaqwLAby0BBbhT_8vBviMvkA_7fiK-ivAs2DHWqARxw@mail.gmail.com>
+Subject: getsockopt(XDP_MMAP_OFFSETS) syscall ABI breakage?
+To:     bpf@vger.kernel.org
+Cc:     netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 19, 2019 at 12:50:10PM -0800, David Miller wrote:
-> From: Russell King <rmk+kernel@armlinux.org.uk>
-> Date: Tue, 17 Dec 2019 12:53:05 +0000
-> 
-> > phy_error() is called from phy_interrupt() or phy_state_machine(), and
-> > uses WARN_ON() to print a backtrace. The backtrace is not useful when
-> > reporting a PHY error.
-> > 
-> > However, a system may contain multiple ethernet PHYs, and phy_error()
-> > gives no clue which one caused the problem.
-> > 
-> > Replace WARN_ON() with a call to phydev_err() so that we can see which
-> > PHY had an error, and also inform the user that we are halting the PHY.
-> > 
-> > Fixes: fa7b28c11bbf ("net: phy: print stack trace in phy_error")
-> > Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
-> 
-> I think I agree with Heiner that it is valuable to know whether the
-> error occurred from the interrupt handler or the state machine (and
-> if the state machine, where that got called from).
+The getsockopt(XDP_MMAP_OFFSETS) socket option returns a struct
+xdp_mmap_offsets (from uapi/linux/if_xdp.h) which is defined as:
 
-Would you accept, then, passing a string to indicate where phy_error()
-was called from, which would do the same job without tainting the
-kernel for something that becomes a _normal_ event when removing a
-SFP?
+    struct xdp_mmap_offsets {
+        struct xdp_ring_offset rx;
+        struct xdp_ring_offset tx;
+        struct xdp_ring_offset fr; /* Fill */
+        struct xdp_ring_offset cr; /* Completion */
+    };
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-According to speedtest.net: 11.9Mbps down 500kbps up
+Prior to kernel 5.4, struct xdp_ring_offset (from the same header) was
+defined as:
+
+    struct xdp_ring_offset {
+        __u64 producer;
+        __u64 consumer;
+        __u64 desc;
+    };
+
+A few months ago, in 77cd0d7, it was changed to the following:
+
+    struct xdp_ring_offset {
+        __u64 producer;
+        __u64 consumer;
+        __u64 desc;
+        __u64 flags;
+    };
+
+I believe this constitutes a syscall ABI breakage, which I did not
+think was allowed. Have I misunderstood the current stability
+guarantees for AF_XDP?
+
+Alex Forster
