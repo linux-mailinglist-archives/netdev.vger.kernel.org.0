@@ -2,149 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D6EE9125C0B
-	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 08:36:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2EE0F125C53
+	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 08:57:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726695AbfLSHg3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Dec 2019 02:36:29 -0500
-Received: from hqnvemgate26.nvidia.com ([216.228.121.65]:4230 "EHLO
-        hqnvemgate26.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726340AbfLSHg3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Dec 2019 02:36:29 -0500
-Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate26.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
-        id <B5dfb28710000>; Wed, 18 Dec 2019 23:36:17 -0800
-Received: from hqmail.nvidia.com ([172.20.161.6])
-  by hqpgpgate101.nvidia.com (PGP Universal service);
-  Wed, 18 Dec 2019 23:36:27 -0800
-X-PGP-Universal: processed;
-        by hqpgpgate101.nvidia.com on Wed, 18 Dec 2019 23:36:27 -0800
-Received: from [10.2.165.11] (10.124.1.5) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Thu, 19 Dec
- 2019 07:36:25 +0000
-Subject: Re: [PATCH v11 04/25] mm: devmap: refactor 1-based refcounting for
- ZONE_DEVICE pages
-To:     Dan Williams <dan.j.williams@intel.com>
-CC:     Andrew Morton <akpm@linux-foundation.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Dave Chinner <david@fromorbit.com>,
-        David Airlie <airlied@linux.ie>,
-        "David S . Miller" <davem@davemloft.net>,
-        Ira Weiny <ira.weiny@intel.com>, Jan Kara <jack@suse.cz>,
-        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
-        Jonathan Corbet <corbet@lwn.net>,
-        =?UTF-8?B?SsOpcsO0bWUgR2xpc3Nl?= <jglisse@redhat.com>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Michal Hocko <mhocko@suse.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Paul Mackerras <paulus@samba.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Vlastimil Babka <vbabka@suse.cz>, <bpf@vger.kernel.org>,
-        Maling list - DRI developers 
-        <dri-devel@lists.freedesktop.org>, KVM list <kvm@vger.kernel.org>,
-        <linux-block@vger.kernel.org>,
-        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
-        <linux-kselftest@vger.kernel.org>,
-        "Linux-media@vger.kernel.org" <linux-media@vger.kernel.org>,
-        linux-rdma <linux-rdma@vger.kernel.org>,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        Netdev <netdev@vger.kernel.org>, Linux MM <linux-mm@kvack.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Christoph Hellwig <hch@lst.de>
-References: <20191216222537.491123-1-jhubbard@nvidia.com>
- <20191216222537.491123-5-jhubbard@nvidia.com>
- <CAPcyv4hQBMxYMurxG=Vwh0=FKWoT3z-Kf=dqES1-icRV5bLwKg@mail.gmail.com>
- <d0a99e75-0175-0f31-f176-8c37c18a4108@nvidia.com>
- <CAPcyv4j+Zgom17UZ-6Njkij1R0UQ=vUQdnaEZj9qDezEUJSZGg@mail.gmail.com>
-From:   John Hubbard <jhubbard@nvidia.com>
-X-Nvconfidentiality: public
-Message-ID: <a9782048-0c6a-b906-2bd6-3800269f4b01@nvidia.com>
-Date:   Wed, 18 Dec 2019 23:33:36 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.3.0
+        id S1726648AbfLSH5h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Dec 2019 02:57:37 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:56380 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726439AbfLSH5h (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Dec 2019 02:57:37 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1576742256;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=PYvhhfdfRXcH4jO+EP53VpwP3E/K4rAyanO/djc7fbc=;
+        b=KabaoI+moD9kmGoioydznj3xewa99O4SAhB57J8rQgbHMeLpISzXAS4bx560g2DNYZT642
+        djJw3F+iNYfPodwqOX7MwZybUo0Kr42byu7V68ALaXFWCHgG+tl71+m/Ph9Ih0NOKXsd/7
+        wAGSLx+ejj1gWuUfxAHo4cV142414AI=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-287-UkhMKIxTMPm8eSJTniRGqw-1; Thu, 19 Dec 2019 02:57:32 -0500
+X-MC-Unique: UkhMKIxTMPm8eSJTniRGqw-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id DDB2A107ACE3;
+        Thu, 19 Dec 2019 07:57:28 +0000 (UTC)
+Received: from carbon (ovpn-200-37.brq.redhat.com [10.40.200.37])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 4B0861000330;
+        Thu, 19 Dec 2019 07:57:24 +0000 (UTC)
+Date:   Thu, 19 Dec 2019 08:57:22 +0100
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     David Laight <David.Laight@ACULAB.COM>
+Cc:     'Marek Majkowski' <marek@cloudflare.com>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        network dev <netdev@vger.kernel.org>,
+        kernel-team <kernel-team@cloudflare.com>,
+        Paolo Abeni <pabeni@redhat.com>, brouer@redhat.com
+Subject: Re: epoll_wait() performance
+Message-ID: <20191219085722.23e39028@carbon>
+In-Reply-To: <b71441bb2fa14bc7b583de643a1ccf8b@AcuMS.aculab.com>
+References: <bc84e68c0980466096b0d2f6aec95747@AcuMS.aculab.com>
+        <CAJPywTJYDxGQtDWLferh8ObjGp3JsvOn1om1dCiTOtY6S3qyVg@mail.gmail.com>
+        <5f4028c48a1a4673bd3b38728e8ade07@AcuMS.aculab.com>
+        <20191127164821.1c41deff@carbon>
+        <5eecf41c7e124d7dbc0ab363d94b7d13@AcuMS.aculab.com>
+        <20191128121205.65c8dea1@carbon>
+        <b71441bb2fa14bc7b583de643a1ccf8b@AcuMS.aculab.com>
 MIME-Version: 1.0
-In-Reply-To: <CAPcyv4j+Zgom17UZ-6Njkij1R0UQ=vUQdnaEZj9qDezEUJSZGg@mail.gmail.com>
-X-Originating-IP: [10.124.1.5]
-X-ClientProxiedBy: HQMAIL111.nvidia.com (172.20.187.18) To
- HQMAIL107.nvidia.com (172.20.187.13)
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1576740978; bh=AwGIHszd33R/kLZlUt1Z4JwwlD2NSoQAiltNw2UIah0=;
-        h=X-PGP-Universal:Subject:To:CC:References:From:X-Nvconfidentiality:
-         Message-ID:Date:User-Agent:MIME-Version:In-Reply-To:
-         X-Originating-IP:X-ClientProxiedBy:Content-Type:Content-Language:
-         Content-Transfer-Encoding;
-        b=rn2yGjgwQ9+/2v2mcxWjrZFxdrk3/eEgjxRU1LJiuOVyjVOa62J0tvoTcmLOK6fXS
-         xTiiEKdaSrRaYvKoHJFISdC+5xDr9wuGKGy6eL+p8mnXTv3WmxTBQ5uSD1vNUHW7Zv
-         FL1u5zml1dT0aGOGbVIB8FGZRe/vZmwx0E0SfZqPp5XPLjqF6k+D7FwuHs+yKnEljh
-         6K2DgflrDdhvNm7j657NcorkWkt+15POYkE/QPPC6A7qk9vcVVLh/jftFFqBiaLSef
-         +CbFHF0Oi6KJR9YDOdsjceXX460BQcgisIE59hm4mMu6iV3pT5dz1gvUWjcugiRrZC
-         tT/WLbmWB9r/w==
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/18/19 10:52 PM, Dan Williams wrote:
-> On Wed, Dec 18, 2019 at 9:51 PM John Hubbard <jhubbard@nvidia.com> wrote:
->>
->> On 12/18/19 9:27 PM, Dan Williams wrote:
->> ...
->>>> @@ -461,5 +449,5 @@ void __put_devmap_managed_page(struct page *page)
->>>>           page->mapping = NULL;
->>>>           page->pgmap->ops->page_free(page);
->>>>    }
->>>> -EXPORT_SYMBOL(__put_devmap_managed_page);
->>>> +EXPORT_SYMBOL(free_devmap_managed_page);
->>>
->>> This patch does not have a module consumer for
->>> free_devmap_managed_page(), so the export should move to the patch
->>> that needs the new export.
->>
->> Hi Dan,
->>
->> OK, I know that's a policy--although it seems quite pointless here given
->> that this is definitely going to need an EXPORT.
->>
->> At the moment, the series doesn't use it in any module at all, so I'll just
->> delete the EXPORT for now.
->>
->>>
->>> Also the only reason that put_devmap_managed_page() is EXPORT_SYMBOL
->>> instead of EXPORT_SYMBOL_GPL is that there was no practical way to
->>> hide the devmap details from evey module in the kernel that did
->>> put_page(). I would expect free_devmap_managed_page() to
->>> EXPORT_SYMBOL_GPL if it is not inlined into an existing exported
->>> static inline api.
->>>
->>
->> Sure, I'll change it to EXPORT_SYMBOL_GPL when the time comes. We do have
->> to be careful that we don't shut out normal put_page() types of callers,
->> but...glancing through the current callers, that doesn't look to be a problem.
->> Good. So it should be OK to do EXPORT_SYMBOL_GPL here.
->>
->> Are you *sure* you don't want to just pre-emptively EXPORT now, and save
->> looking at it again?
+On Thu, 28 Nov 2019 16:37:01 +0000
+David Laight <David.Laight@ACULAB.COM> wrote:
+
+> From: Jesper Dangaard Brouer
+> > Sent: 28 November 2019 11:12  
+> ...
+> > > Can you test recv() as well?  
+> > 
+> > Sure: https://github.com/netoptimizer/network-testing/commit/9e3c8b86a2d662
+> > 
+> > $ sudo taskset -c 1 ./udp_sink --port 9  --count $((10**6*2))
+> >           	run      count   	ns/pkt	pps		cycles	payload
+> > recvMmsg/32  	run:  0	 2000000	653.29	1530704.29	2351	18	 demux:1
+> > recvmsg   	run:  0	 2000000	631.01	1584760.06	2271	18	 demux:1
+> > read      	run:  0	 2000000	582.24	1717518.16	2096	18	 demux:1
+> > recvfrom  	run:  0	 2000000	547.26	1827269.12	1970	18	 demux:1
+> > recv      	run:  0	 2000000	547.37	1826930.39	1970	18	 demux:1
+> >   
+> > > I think it might be faster than read().  
+> > 
+> > Slightly, but same speed as recvfrom.  
 > 
-> I'm positive. There is enough history for "trust me the consumer is
-> coming" turning out not to be true to justify the hassle in my mind. I
-> do trust you, but things happen.
-> 
+> I notice that you recvfrom() code doesn't request the source address.
+> So is probably identical to recv().
 
-OK, it's deleted locally. Thanks for looking at the patch. I'll post a v12 series
-that includes the change, once it looks like reviews are slowing down.
+Created a GitHub issue/bug on this:
+ https://github.com/netoptimizer/network-testing/issues/5
 
+Feel free to fix this and send a patch/PR.
 
-thanks,
 -- 
-John Hubbard
-NVIDIA
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
+
