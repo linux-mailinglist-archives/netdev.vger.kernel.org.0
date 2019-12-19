@@ -2,299 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6EDE61261CB
-	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 13:15:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6AAD512624E
+	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 13:39:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726840AbfLSMPU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Dec 2019 07:15:20 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:53780 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726668AbfLSMPS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Dec 2019 07:15:18 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1576757716;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=bwteTCqO+mZi96HO2yiYUl6ee0bLkbJPNd/nB67orPw=;
-        b=K111hXBFikRJE6ADum7dj+3Be5/5vJLAe1VTr7xesAmCBqcSujx26LLbqoeIH0Xoyp9Nyi
-        U4gwzYS/HRUbwMsBya6ij/BZsmgcpN2PZAwmlsS+y1SZ3hGa/ZFHotPm6isG8Al+kATK0H
-        dPFUjEZRt+zPfL14VqQ560y25dhwFYQ=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-143-zpb069LyMcKDp20xgdC-mA-1; Thu, 19 Dec 2019 07:15:10 -0500
-X-MC-Unique: zpb069LyMcKDp20xgdC-mA-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 79A75800EB8;
-        Thu, 19 Dec 2019 12:15:08 +0000 (UTC)
-Received: from carbon (ovpn-200-37.brq.redhat.com [10.40.200.37])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 7F4731001281;
-        Thu, 19 Dec 2019 12:15:02 +0000 (UTC)
-Date:   Thu, 19 Dec 2019 13:15:00 +0100
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Yunsheng Lin <linyunsheng@huawei.com>
-Cc:     <netdev@vger.kernel.org>, <lirongqing@baidu.com>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Saeed Mahameed <saeedm@mellanox.com>, <mhocko@kernel.org>,
-        <peterz@infradead.org>, <linux-kernel@vger.kernel.org>,
-        brouer@redhat.com
-Subject: Re: [net-next v4 PATCH] page_pool: handle page recycle for
- NUMA_NO_NODE condition
-Message-ID: <20191219131500.47970427@carbon>
-In-Reply-To: <40fb6aff-beec-f186-2bc0-187ad370cf0b@huawei.com>
-References: <20191218084437.6db92d32@carbon>
-        <157665609556.170047.13435503155369210509.stgit@firesoul>
-        <40fb6aff-beec-f186-2bc0-187ad370cf0b@huawei.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+        id S1726797AbfLSMji (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Dec 2019 07:39:38 -0500
+Received: from mga11.intel.com ([192.55.52.93]:27930 "EHLO mga11.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726695AbfLSMjh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 19 Dec 2019 07:39:37 -0500
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 19 Dec 2019 04:39:37 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.69,331,1571727600"; 
+   d="scan'208";a="366062462"
+Received: from mkarlsso-mobl.ger.corp.intel.com (HELO localhost.localdomain) ([10.252.49.245])
+  by orsmga004.jf.intel.com with ESMTP; 19 Dec 2019 04:39:33 -0800
+From:   Magnus Karlsson <magnus.karlsson@intel.com>
+To:     magnus.karlsson@intel.com, bjorn.topel@intel.com, ast@kernel.org,
+        daniel@iogearbox.net, netdev@vger.kernel.org,
+        jonathan.lemon@gmail.com
+Cc:     bpf@vger.kernel.org, saeedm@mellanox.com,
+        jeffrey.t.kirsher@intel.com, maciej.fijalkowski@intel.com,
+        maciejromanfijalkowski@gmail.com
+Subject: [PATCH bpf-next v2 00/12] xsk: clean up ring access functions
+Date:   Thu, 19 Dec 2019 13:39:19 +0100
+Message-Id: <1576759171-28550-1-git-send-email-magnus.karlsson@intel.com>
+X-Mailer: git-send-email 2.7.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 19 Dec 2019 09:52:14 +0800
-Yunsheng Lin <linyunsheng@huawei.com> wrote:
+This patch set cleans up the ring access functions of AF_XDP in hope
+that it will now be easier to understand and maintain. I used to get a
+headache every time I looked at this code in order to really understand it,
+but now I do think it is a lot less painful.
 
-> On 2019/12/18 16:01, Jesper Dangaard Brouer wrote:
-> > The check in pool_page_reusable (page_to_nid(page) == pool->p.nid) is
-> > not valid if page_pool was configured with pool->p.nid = NUMA_NO_NODE.
-> > 
-> > The goal of the NUMA changes in commit d5394610b1ba ("page_pool: Don't
-> > recycle non-reusable pages"), were to have RX-pages that belongs to the
-> > same NUMA node as the CPU processing RX-packet during softirq/NAPI. As
-> > illustrated by the performance measurements.
-> > 
-> > This patch moves the NAPI checks out of fast-path, and at the same time
-> > solves the NUMA_NO_NODE issue.
-> > 
-> > First realize that alloc_pages_node() with pool->p.nid = NUMA_NO_NODE
-> > will lookup current CPU nid (Numa ID) via numa_mem_id(), which is used
-> > as the the preferred nid.  It is only in rare situations, where
-> > e.g. NUMA zone runs dry, that page gets doesn't get allocated from
-> > preferred nid.  The page_pool API allows drivers to control the nid
-> > themselves via controlling pool->p.nid.
-> > 
-> > This patch moves the NAPI check to when alloc cache is refilled, via
-> > dequeuing/consuming pages from the ptr_ring. Thus, we can allow placing
-> > pages from remote NUMA into the ptr_ring, as the dequeue/consume step
-> > will check the NUMA node. All current drivers using page_pool will
-> > alloc/refill RX-ring from same CPU running softirq/NAPI process.
-> > 
-> > Drivers that control the nid explicitly, also use page_pool_update_nid
-> > when changing nid runtime.  To speed up transision to new nid the alloc
-> > cache is now flushed on nid changes.  This force pages to come from
-> > ptr_ring, which does the appropate nid check.
-> > 
-> > For the NUMA_NO_NODE case, when a NIC IRQ is moved to another NUMA
-> > node, then ptr_ring will be emptied in 65 (PP_ALLOC_CACHE_REFILL+1)
-> > chunks per allocation and allocation fall-through to the real
-> > page-allocator with the new nid derived from numa_mem_id(). We accept
-> > that transitioning the alloc cache doesn't happen immediately.
-> > 
-> > Fixes: d5394610b1ba ("page_pool: Don't recycle non-reusable pages")
-> > Reported-by: Li RongQing <lirongqing@baidu.com>
-> > Reported-by: Yunsheng Lin <linyunsheng@huawei.com>
-> > Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
-> > ---
-> >  net/core/page_pool.c |   82 ++++++++++++++++++++++++++++++++++++++------------
-> >  1 file changed, 63 insertions(+), 19 deletions(-)
-> > 
-> > diff --git a/net/core/page_pool.c b/net/core/page_pool.c
-> > index a6aefe989043..bd4f8b2c46b6 100644
-> > --- a/net/core/page_pool.c
-> > +++ b/net/core/page_pool.c
-> > @@ -96,10 +96,61 @@ struct page_pool *page_pool_create(const struct page_pool_params *params)
-> >  }
-> >  EXPORT_SYMBOL(page_pool_create);
-> >  
-> > +static void __page_pool_return_page(struct page_pool *pool, struct page *page);  
-> 
-> It is possible to avoid forword-declare it by move the __page_pool_return_page()?
-> Maybe it is ok since this patch is targetting net-next?
-> 
-> > +
-> > +noinline
-> > +static struct page *page_pool_refill_alloc_cache(struct page_pool *pool,
-> > +						 bool refill)
-> > +{
-> > +	struct ptr_ring *r = &pool->ring;
-> > +	struct page *first_page, *page;
-> > +	int i, curr_nid;
-> > +
-> > +	/* Quicker fallback, avoid locks when ring is empty */
-> > +	if (__ptr_ring_empty(r))
-> > +		return NULL;
-> > +
-> > +	/* Softirq guarantee CPU and thus NUMA node is stable. This,
-> > +	 * assumes CPU refilling driver RX-ring will also run RX-NAPI.
-> > +	 */
-> > +	curr_nid = numa_mem_id();
-> > +
-> > +	/* Slower-path: Get pages from locked ring queue */
-> > +	spin_lock(&r->consumer_lock);
-> > +	first_page = __ptr_ring_consume(r);
-> > +
-> > +	/* Fallback to page-allocator if NUMA node doesn't match */
-> > +	if (first_page && unlikely(!(page_to_nid(first_page) == curr_nid))) {
-> > +		__page_pool_return_page(pool, first_page);
-> > +		first_page = NULL;
-> > +	}
-> > +
-> > +	if (unlikely(!refill))
-> > +		goto out;
-> > +
-> > +	/* Refill alloc array, but only if NUMA node match */
-> > +	for (i = 0; i < PP_ALLOC_CACHE_REFILL; i++) {
-> > +		page = __ptr_ring_consume(r);
-> > +		if (unlikely(!page))
-> > +			break;
-> > +
-> > +		if (likely(page_to_nid(page) == curr_nid)) {
-> > +			pool->alloc.cache[pool->alloc.count++] = page;
-> > +		} else {
-> > +			/* Release page to page-allocator, assume
-> > +			 * refcnt == 1 invariant of cached pages
-> > +			 */
-> > +			__page_pool_return_page(pool, page);
-> > +		}
-> > +	}  
-> 
-> The above code seems to not clear all the pages in the ptr_ring that
-> is not in the local node in some case?
-> 
-> I am not so familiar with asm, but does below code make sense and
-> generate better asm code?
+The code has been simplified a lot and as a bonus we get better
+performance in nearly all cases. On my new 2.1 GHz Cascade Lake
+machine with a standard default config plus AF_XDP support and
+CONFIG_PREEMPT on I get the following results in percent performance
+increases with this patch set compared to without it:
 
-I'm not too concerned with ASM-level optimization for this function
-call, as it only happens once every 64 packets.
+Zero-copy (-N):
+          rxdrop        txpush        l2fwd
+1 core:    -2%            0%            3%
+2 cores:    4%            0%            3%
 
+Zero-copy with poll() (-N -p):
+          rxdrop        txpush        l2fwd
+1 core:     3%            0%            1%
+2 cores:   21%            0%            9%
 
-> 	struct page *page = NULL;
-> 
-> 	while (pool->alloc.count < PP_ALLOC_CACHE_REFILL || !refill) {
-> 		page = __ptr_ring_consume(r);
-> 
-> 		if (unlikely(!page || !refill))
-> 			break;
-> 
-> 		if (likely(page_to_nid(page) == curr_nid)) {
-> 			pool->alloc.cache[pool->alloc.count++] = page;
-> 		} else {
-> 			/* Release page to page-allocator, assume
-> 			 * refcnt == 1 invariant of cached pages
-> 			 */
-> 			__page_pool_return_page(pool, page);
-> 		}
-> 	}
-> 
-> out:
-> 	if (likely(refill && pool->alloc.count > 0))
-> 		page = pool->alloc.cache[--pool->alloc.count];
-> 
-> 	spin_unlock(&r->consumer_lock);
-> 	
-> 	return page;
->
-> 
-> "The above code does not compile or test yet".
-> 
-> the above will clear all the pages in the ptr_ring that is not in the
-> local node and treat the refill and !refill case consistently.
+Skb mode (-S):
+Shows a 0% to 5% performance improvement over the same benchmarks as
+above.
 
-I don't want to empty the entire ptr_ring in one go.  That is
-problematic, because we are running in Softirq with bh + preemption
-disabled.  Returning 1024 pages will undoubtedly trigger some page
-buddy coalescing work.  That is why I choose to max return 65 pages (I
-felt this detail was important enought to mention it in the description
-above).
+Here 1 core means that we are running the driver processing and the
+application on the same core, while 2 cores means that they execute on
+separate cores. The applications are from the xdpsock sample app.
 
-I do acknowledge that the code can be improved.  What I don't like with
-my own code, is that I handle the 'first_page' as a special case.  You
-code did solve that case, so I'll try to improve my code and send V5.
+On my older 2.0 Ghz Broadwell machine that I used for the v1, I get
+the following results:
 
+Zero-copy (-N):
+          rxdrop        txpush        l2fwd
+1 core:     4%            5%            4%
+2 cores:    1%            0%            2%
 
-> 
-> But for the refill case, the pool->alloc.count may be PP_ALLOC_CACHE_REFILL - 1
-> after page_pool_refill_alloc_cache() returns.
-> 
-> 
-> > +out:
-> > +	spin_unlock(&r->consumer_lock);
-> > +	return first_page;
-> > +}
-> > +
-> >  /* fast path */
-> >  static struct page *__page_pool_get_cached(struct page_pool *pool)
-> >  {
-> > -	struct ptr_ring *r = &pool->ring;
-> >  	bool refill = false;
-> >  	struct page *page;
-> >  
-> > @@ -113,20 +164,7 @@ static struct page *__page_pool_get_cached(struct page_pool *pool)
-> >  		refill = true;
-> >  	}
-> >  
-> > -	/* Quicker fallback, avoid locks when ring is empty */
-> > -	if (__ptr_ring_empty(r))
-> > -		return NULL;
-> > -
-> > -	/* Slow-path: Get page from locked ring queue,
-> > -	 * refill alloc array if requested.
-> > -	 */
-> > -	spin_lock(&r->consumer_lock);
-> > -	page = __ptr_ring_consume(r);
-> > -	if (refill)
-> > -		pool->alloc.count = __ptr_ring_consume_batched(r,
-> > -							pool->alloc.cache,
-> > -							PP_ALLOC_CACHE_REFILL);
-> > -	spin_unlock(&r->consumer_lock);
-> > +	page = page_pool_refill_alloc_cache(pool, refill);
-> >  	return page;
-> >  }
-> >  
-> > @@ -311,13 +349,10 @@ static bool __page_pool_recycle_direct(struct page *page,
-> >  
-> >  /* page is NOT reusable when:
-> >   * 1) allocated when system is under some pressure. (page_is_pfmemalloc)
-> > - * 2) belongs to a different NUMA node than pool->p.nid.
-> > - *
-> > - * To update pool->p.nid users must call page_pool_update_nid.
-> >   */
-> >  static bool pool_page_reusable(struct page_pool *pool, struct page *page)
-> >  {
-> > -	return !page_is_pfmemalloc(page) && page_to_nid(page) == pool->p.nid;
-> > +	return !page_is_pfmemalloc(page);
-> >  }
-> >  
-> >  void __page_pool_put_page(struct page_pool *pool, struct page *page,
-> > @@ -484,7 +519,16 @@ EXPORT_SYMBOL(page_pool_destroy);
-> >  /* Caller must provide appropriate safe context, e.g. NAPI. */
-> >  void page_pool_update_nid(struct page_pool *pool, int new_nid)
-> >  {
-> > +	struct page *page;
-> > +
-> > +	WARN_ON(!in_serving_softirq());
-> >  	trace_page_pool_update_nid(pool, new_nid);
-> >  	pool->p.nid = new_nid;
-> > +
-> > +	/* Flush pool alloc cache, as refill will check NUMA node */
-> > +	while (pool->alloc.count) {
-> > +		page = pool->alloc.cache[--pool->alloc.count];
-> > +		__page_pool_return_page(pool, page);
-> > +	}
-> >  }
-> >  EXPORT_SYMBOL(page_pool_update_nid);
-> > 
+Zero-copy with poll() (-N -p):
+          rxdrop        txpush        l2fwd
+1 core:     1%            3%            3%
+2 cores:   22%            0%            5%
 
+Skb mode (-S):
+Shows a 0% to 1% performance improvement over the same benchmarks as
+above.
 
--- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
+When a results says 21 or 22% better, as in the case of poll mode with
+2 cores and rxdrop, my first reaction is that it must be a
+bug. Everything else shows between 0% and 5% performance
+improvement. What is giving rise to 22%? A quick bisect indicates that
+it is patches 2, 3, 4, 5, and 6 that are giving rise to most of this
+improvement. So not one patch in particular, but something around 4%
+improvement from each one of them. Note that exactly this benchmark
+has previously had an extraordinary slow down compared to when running
+without poll syscalls. For all the other poll tests above, the
+slowdown has always been around 4% for using poll syscalls. But with
+the bad performing test in question, it was above 25%. Interestingly,
+after this clean up, the slow down is 4%, just like all the other poll
+tests. Please take an extra peek at this so I have not messed up
+something.
 
+The 0% for several txpush results are due to the test bottlenecking on
+a non-CPU HW resource. If I eliminated that bottleneck on my system, I
+would expect to see an increase there too.
+
+Changes v1 -> v2:
+* Corrected textual errors in the commit logs (Sergei and Martin)
+* Fixed the functions that detect empty and full rings so that they
+  now operate on the global ring state (Maxim)
+
+This patch has been applied against commit a352a82496d1 ("Merge branch 'libbpf-extern-followups'")
+
+Structure of the patch set:
+
+Patch 1: Eliminate the lazy update threshold used when preallocating
+         entries in the completion ring
+Patch 2: Simplify the detection of empty and full rings
+Patch 3: Consolidate the two local producer pointers into one
+Patch 4: Standardize the naming of the producer ring access functions
+Patch 5: Eliminate the Rx batch size used for the fill ring
+Patch 6: Simplify the functions xskq_nb_avail and xskq_nb_free
+Patch 7: Simplify and standardize the naming of the consumer ring
+         access functions
+Patch 8: Change the names of the validation functions to improve
+         readability and also the return value of these functions
+Patch 9: Change the name of xsk_umem_discard_addr() to
+         xsk_umem_release_addr() to better reflect the new
+         names. Requires a name change in the drivers that support AF_XDP
+         zero-copy.
+Patch 10: Remove unnecessary READ_ONCE of data in the ring
+Patch 11: Add overall function naming comment and reorder the functions
+          for easier reference
+Patch 12: Use the struct_size helper function when allocating rings
+
+Thanks: Magnus
+
+Magnus Karlsson (12):
+  xsk: eliminate the lazy update threshold
+  xsk: simplify detection of empty and full rings
+  xsk: consolidate to one single cached producer pointer
+  xsk: standardize naming of producer ring access functions
+  xsk: eliminate the RX batch size
+  xsk: simplify xskq_nb_avail and xskq_nb_free
+  xsk: simplify the consumer ring access functions
+  xsk: change names of validation functions
+  xsk: ixgbe: i40e: ice: mlx5: xsk_umem_discard_addr to
+    xsk_umem_release_addr
+  xsk: remove unnecessary READ_ONCE of data
+  xsk: add function naming comments and reorder functions
+  xsk: use struct_size() helper
+
+ drivers/net/ethernet/intel/i40e/i40e_xsk.c         |   4 +-
+ drivers/net/ethernet/intel/ice/ice_xsk.c           |   4 +-
+ drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c       |   4 +-
+ .../net/ethernet/mellanox/mlx5/core/en/xsk/rx.c    |   2 +-
+ include/net/xdp_sock.h                             |  14 +-
+ net/xdp/xsk.c                                      |  62 ++--
+ net/xdp/xsk_queue.c                                |  15 +-
+ net/xdp/xsk_queue.h                                | 371 +++++++++++----------
+ 8 files changed, 246 insertions(+), 230 deletions(-)
+
+--
+2.7.4
