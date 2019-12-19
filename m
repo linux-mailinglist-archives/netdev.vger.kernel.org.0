@@ -2,63 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4232D1270AF
-	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 23:29:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C19EF1270BB
+	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 23:34:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727020AbfLSW3w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Dec 2019 17:29:52 -0500
-Received: from mail-qk1-f195.google.com ([209.85.222.195]:42356 "EHLO
-        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726818AbfLSW3v (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Dec 2019 17:29:51 -0500
-Received: by mail-qk1-f195.google.com with SMTP id z14so4766976qkg.9
-        for <netdev@vger.kernel.org>; Thu, 19 Dec 2019 14:29:51 -0800 (PST)
+        id S1727029AbfLSWep (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Dec 2019 17:34:45 -0500
+Received: from mail-ua1-f66.google.com ([209.85.222.66]:35222 "EHLO
+        mail-ua1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726818AbfLSWep (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Dec 2019 17:34:45 -0500
+Received: by mail-ua1-f66.google.com with SMTP id y23so2571868ual.2
+        for <netdev@vger.kernel.org>; Thu, 19 Dec 2019 14:34:44 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
+        d=linaro.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=XsmZBNUHHCXNS0fS7nTCTITHP4EPFsvNRDCD9lzBi+w=;
-        b=Eif7wPUhZhBXMbOxcCVIswCva/mJdhNlrsuySiCKIsGVgAwqU2+iXh8mFqr1Ly77XZ
-         3zrlNnVfxN8cmFagAZzCQxkFZc5muSCRZIWQP8lohsbiOw0LOiLeHiWMKr6iEGSNusnk
-         nmGYzxrqB8oInl31JkeAFmM1Y/DZedeZOVuyI=
+        bh=VpboOSsAlEGLRQwjGYSM66BWhiuHg2YpYtx8W6AcQ7c=;
+        b=v0Ee1MglQDxW/nV3ZAPV6ZkzzbCsYZIV0nkQgFwwyZqft+qKhyc3A1q60nRn2Z7v+v
+         +95B1KXIZF/2xtIBsQ1tOTE7GRzYr/4TrZfiBdXZ5zB8gy66p+tgSf+4XUKrOzgjH6v/
+         ooHr0OAn9QOrksN6K9LeN9e6zABJ2f9YqlzMemt6jRXPdZXZ+/p0PJMcPA8uZrsSf//G
+         xGxQ00uYLa5+95NU76wVLr/ur4etzWC8MW6URrtdk26vGqrykglS4mGoSpjJpf3Xwl+H
+         4IzyQzh27Z7ZUZI5K4msC5UqeOBLzLY56vfxIe5XMXM/tslMW5iRqK1vi+NlUnbfqAQL
+         Fzgw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=XsmZBNUHHCXNS0fS7nTCTITHP4EPFsvNRDCD9lzBi+w=;
-        b=XVZvMk/zyVPByvl1mBRIbwQXQxM//y0V/KQTMDyeb2DoLqMcw86QO2J85Q1tTD4Cmx
-         Uu12srULSryn7UQ1Hjv/M/YZHxtaXNKQXdz+oCp3j7OrK05WxwwWJLiqqlPLALu0pZM/
-         Du8840tTp7xveDksNfKy+OZRkXYz31AxA7ntsdBTFwGymYmNHCJ2EIVrpFWeJ3NB1N8y
-         YD0i/BYNC4gCxNdoTmgOh2Tynbn7VCvFvc+SUv+ycBTDyBQ3DZCVqJpPrlo6bDcxZ8/g
-         7eapbUy5R+sls8IRL7jIU4yu5GKOuj31FaQr2lNuuKK0hHHUVjjYYqrR8pobrPNb6oNh
-         MftA==
-X-Gm-Message-State: APjAAAViJtXs3hmkdY+P4NxDD6IwGI8Evohq//+KSVFhSNDmoTrq8Vdf
-        VuHciFkxCKFZ6/chZIgdwL/yJggOPp6rvv7NukLfXQ==
-X-Google-Smtp-Source: APXvYqxtFJZffZC3OR8xTVwXjUOlIiGd63DxAjijFLC1qabFOPp4JBCYMvJ6UkYGbSpHsGZPZsp2ah9pH2Cx2WhdDsc=
-X-Received: by 2002:a05:620a:102c:: with SMTP id a12mr10051027qkk.95.1576794590648;
- Thu, 19 Dec 2019 14:29:50 -0800 (PST)
+        bh=VpboOSsAlEGLRQwjGYSM66BWhiuHg2YpYtx8W6AcQ7c=;
+        b=BK5hOdeWHbl268RsvHkK6k82ZM19c7G4BXsQqftBskX8XAFw1ijxUajRE9jmCExiER
+         j3ALfZcmRIPt8kFs82NSWo9eHTt11KiKKzqoy6HEvuSIx3cy0wH22A3CcvB90fRNbHXp
+         bRR6UOu1MXOWE38oFCe8X6L7taljHEzIq7mCs/BCBWELShzlMzJ108Hw6sNRojC0frGR
+         miaiVE4dYDGLYdhwOV91MWQVBay+VNUfzDWvlOR2snCDP5nCxcRvUXhM9rmddK7h2fW1
+         I6uDSOrCoo4QNaFMKPfjijCuxFvO0SkXcSHKiv48YuXFwvuvslZs68cdMTiSxvvctuE1
+         vLCg==
+X-Gm-Message-State: APjAAAXKvLcXxXnyT+u3Nf9XUIwHMX3CXkpgdzv+lNIaRlBkBqpsGxRR
+        hmObNhd7qv6DUAxfXIRYy4Thx9YKb4lKQBSE8uAgLQ==
+X-Google-Smtp-Source: APXvYqwK+EshQqhWAuEP+FIGWSdW4fSf4XVcb1H0wkkA0gtNccGHWZPwmpTELUU72DjKZh9h2rxmwDp4F1Myi6CEF/g=
+X-Received: by 2002:ab0:e16:: with SMTP id g22mr7016060uak.129.1576794884226;
+ Thu, 19 Dec 2019 14:34:44 -0800 (PST)
 MIME-Version: 1.0
-References: <20191219201601.7378-1-aforster@cloudflare.com> <CAADnVQLrsgGzVcBea68gf+yZ2R-iYzCJupE6jzaqR5ctbCKxNw@mail.gmail.com>
-In-Reply-To: <CAADnVQLrsgGzVcBea68gf+yZ2R-iYzCJupE6jzaqR5ctbCKxNw@mail.gmail.com>
-From:   Alex Forster <aforster@cloudflare.com>
-Date:   Thu, 19 Dec 2019 16:29:39 -0600
-Message-ID: <CAKxSbF19OsyE8B9mM+nB6676R6oA0duXSLn6_GGr1A+tCKhY9w@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] libbpf: fix AF_XDP helper program to support
- kernels without the JMP32 eBPF instruction class
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>
+References: <cover.1576606020.git.hns@goldelico.com>
+In-Reply-To: <cover.1576606020.git.hns@goldelico.com>
+From:   Ulf Hansson <ulf.hansson@linaro.org>
+Date:   Thu, 19 Dec 2019 23:34:08 +0100
+Message-ID: <CAPDyKFoRe1Nzu74BACNMCZDVoS4Dd3w0Bk3K-Mstw4WAvMtiLg@mail.gmail.com>
+Subject: Re: [PATCH v2 0/2] wl1251: remove ti,power-gpio for sdio mode
+To:     "H. Nikolaus Schaller" <hns@goldelico.com>
+Cc:     Kalle Valo <kvalo@codeaurora.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Alexios Zavras <alexios.zavras@intel.com>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        DTML <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Discussions about the Letux Kernel 
+        <letux-kernel@openphoenux.org>, kernel@pyra-handheld.com
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> I though af_xdp landed after jmp32 ?
+On Tue, 17 Dec 2019 at 19:07, H. Nikolaus Schaller <hns@goldelico.com> wrote:
+>
+> * use just "wl1251: " as title prefix - by Kalle Valo <kvalo@codeaurora.org>
+> * fix error handling: we still have to check for wl->irq returning -EPROBE_DEFER
+>
+> PATCH V1 2019-11-24 11:35:48:
+> The driver has been updated to use the mmc/sdio core
+> which does full power control. So we do no longer need
+> the power control gipo.
+>
+> Note that it is still needed for the SPI based interface
+> (N900).
+>
+> Suggested by: Ulf Hansson <ulf.hansson@linaro.org>
+> Tested by: H. Nikolaus Schaller <hns@goldelico.com> # OpenPandora 600MHz
+>
+> H. Nikolaus Schaller (2):
+>   DTS: bindings: wl1251: mark ti,power-gpio as optional
+>   wl1251: remove ti,power-gpio for SDIO mode
+>
+>  .../bindings/net/wireless/ti,wl1251.txt       |  3 +-
+>  drivers/net/wireless/ti/wl1251/sdio.c         | 32 ++-----------------
+>  2 files changed, 4 insertions(+), 31 deletions(-)
+>
+> --
+> 2.23.0
+>
 
-They were indeed pretty close together, but AF_XDP became usable in
-late 2018 with either 4.18 or 4.19. JMP32 landed in early 2019 with
-5.1.
+Reviewed-by: Ulf Hansson <ulf.hansson@linaro.org>
 
-Alex Forster
+Kind regards
+Uffe
