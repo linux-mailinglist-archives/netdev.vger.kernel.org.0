@@ -2,84 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D4941267A7
-	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 18:06:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 345321267AB
+	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 18:07:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727072AbfLSRGI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Dec 2019 12:06:08 -0500
-Received: from mail-pl1-f194.google.com ([209.85.214.194]:37021 "EHLO
-        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726760AbfLSRGI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Dec 2019 12:06:08 -0500
-Received: by mail-pl1-f194.google.com with SMTP id c23so2831917plz.4;
-        Thu, 19 Dec 2019 09:06:07 -0800 (PST)
+        id S1727110AbfLSRGv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Dec 2019 12:06:51 -0500
+Received: from mail-pj1-f68.google.com ([209.85.216.68]:32814 "EHLO
+        mail-pj1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726760AbfLSRGu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Dec 2019 12:06:50 -0500
+Received: by mail-pj1-f68.google.com with SMTP id u63so2815578pjb.0
+        for <netdev@vger.kernel.org>; Thu, 19 Dec 2019 09:06:50 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=XA55rnPiD5VnRa+mIp3j0LMWkAaLQc68hKMnHswUhU4=;
-        b=Vx83zgmgCS0J6uG2ryd0wXh7MG6w+jAPCHg0iNJ7cos7v1rOAlTiNXyIA9dM9QwERc
-         SMlNhFtMtHWSyTG38mjwLYQtZfHSUIjun7l1rdCgy72dcgJO6BPj+cDDKd5dLw5hD+Zs
-         cq9EqolL3ah8iLRWH7Ys+gt2/vvTtm2oqtq/EMazxfsxXVBS6VoPfwpsRxSnBv0eAPuc
-         LFgJ5rEiyqQt4/S+gXKSMlMwqqQFyri2sSGibSz7KO1k+KzCDoC4tezMtxON10RJInah
-         cDxCCC+DKFrhcK9jqiLdiMS0dI/uUdoajNKkJKIZO+UADJ25bzY0Bnp2l+HWGePychFv
-         ZXuA==
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ggI/u1Hdyu9CCu5/c+HTrd/ZpT0m9d7Vzr8WRuTSKCk=;
+        b=r/pPQutHWlw6VyAXT2bxHLFev0H77LHp66kYaujlhy2o/5XPZsJkCza1NueqSMvjEu
+         Gfn9MrWzJrPce9mN4Bilc40mvgfzFP8McDHK1PnY0IXO/OSgnwi5SRCqzgdxoj8vOVYg
+         JGhEJ06OTFGsQP4VTCnUz0aT9hwY0kNFczwWppHEX1v62UTsIK8JI6q+TWiZLA2B9ibf
+         OQWNovQd5GsCjBjjNcjeUu1pdQLQj23MTufOY5GeueFFn8VACLt85aPFPnV7NiFby4mV
+         In5qUzMSPj1ld61/PaIYVAxDq3EMfhc3h6wHsAmMhJjayWoPHALPPtp8zgOGPnLNzwbL
+         VuPw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=XA55rnPiD5VnRa+mIp3j0LMWkAaLQc68hKMnHswUhU4=;
-        b=V6I1eMeG6z76IJmNDUiWQgKnKknuM7wtHROcnH9yYLO2qtJyXkYtTy4RV8hMle7REu
-         weERScmFcO+pD5XaqgcZzpp5ARGued5U6IwuhqFXz4xA0AEi10dssicgUokD2iUHeseH
-         bWqAZxD44fBbQe1WdTUuOd+sQz3QRgQgRS0FFRFz/1xB/yZwO9PNSdcY3Yv9MsgcvFv+
-         CAazVpeRJheSlmo65SXBDyYtmTC0u/oH5j2dOf0nvyMeenm9b66vhbj4XF8ib45uLY5l
-         rt79ZiwKctxe8/N7Wa2afSU+bhKrdf3iXEocXCo2qGzXjx+U+nwp2PusgsCDP565afrn
-         BthA==
-X-Gm-Message-State: APjAAAXeMeJNu8yWlZ2/rtt4R/8djv5J/EDs/benT2NbrU3dLmy5M9a/
-        T0Vb+3gVyv8e6TZJxoURDjw=
-X-Google-Smtp-Source: APXvYqyBSosMeJSZI0uU5VE5Up6x6lhN/AF6DOuokbHul/Qbi/lBms9M4kzQ+6X9Wzzb1kBX4Tl1vA==
-X-Received: by 2002:a17:90a:660d:: with SMTP id l13mr9325220pjj.23.1576775167245;
-        Thu, 19 Dec 2019 09:06:07 -0800 (PST)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:180::6b48])
-        by smtp.gmail.com with ESMTPSA id u26sm8682977pfn.46.2019.12.19.09.06.05
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 19 Dec 2019 09:06:05 -0800 (PST)
-Date:   Thu, 19 Dec 2019 09:06:04 -0800
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Andrii Nakryiko <andriin@fb.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@fb.com,
-        daniel@iogearbox.net, andrii.nakryiko@gmail.com, kernel-team@fb.com
-Subject: Re: [PATCH bpf-next 1/3] bpftool: add extra CO-RE mode to btf dump
- command
-Message-ID: <20191219170602.4xkljpjowi4i2e3q@ast-mbp.dhcp.thefacebook.com>
-References: <20191219070659.424273-1-andriin@fb.com>
- <20191219070659.424273-2-andriin@fb.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ggI/u1Hdyu9CCu5/c+HTrd/ZpT0m9d7Vzr8WRuTSKCk=;
+        b=jel9O3TRDnM9yhFhxOw2P65wpAcGnl+DHLnNPaXmgg06+p4QqlYmFZxgyPOaA6wziE
+         AaxtsOGYN23hPQzSDu0txoBIyI42+cDIx4p0gjMTckfAV5AJ/OR2uMAeY3f42zIwlmIi
+         +5vAvX2d+sHmFbUT2XomNoFW1tXrwXzBClR5dvMNUUozzshh0kK7KP1Fn0itzmEmQ14e
+         XE0u1bwWz054EW51Ep/ZejQn0rdpMB4deEpdjwKDxBSwoSe6J3McmWiOk+W17Pq6SSCF
+         Uot6xR24skDWjUEHVmiKfIWuyZhJmKoPkZJchCNVZFSGW1yD2wEge6EKfWRhqKNiO/6W
+         rL1Q==
+X-Gm-Message-State: APjAAAXRmwOomcSpbbN5H6/BjMYHPkfP9/mgg16emW1pcOUDwal5BKCq
+        H0f4FVG7lXdWVFz9pf7T4G684X/p7Df8X0glGchveg+z3zSoiA==
+X-Google-Smtp-Source: APXvYqxqxsEj2OttOz43YW9dsdsZ9JH2CzkLhBO906Jga6l6c3H9XIl47GBiSOLZiapTHFUKrg0ydPLQ+JWIDI9HDIw=
+X-Received: by 2002:a17:902:6948:: with SMTP id k8mr9829302plt.223.1576775209535;
+ Thu, 19 Dec 2019 09:06:49 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191219070659.424273-2-andriin@fb.com>
-User-Agent: NeoMutt/20180223
+References: <20191211192252.35024-1-natechancellor@gmail.com>
+ <CAKwvOdmQp+Rjgh49kbTp1ocLCjv4SUACEO4+tX5vz4stX-pPpg@mail.gmail.com> <87a77o786o.fsf@kamboji.qca.qualcomm.com>
+In-Reply-To: <87a77o786o.fsf@kamboji.qca.qualcomm.com>
+From:   Nick Desaulniers <ndesaulniers@google.com>
+Date:   Thu, 19 Dec 2019 09:06:37 -0800
+Message-ID: <CAKwvOdk3EPurHLMf81VHowauRYZ4FZXxNg98hJvp8CLgu=SSPw@mail.gmail.com>
+Subject: Re: [PATCH] ath11k: Remove unnecessary enum scan_priority
+To:     Kalle Valo <kvalo@codeaurora.org>
+Cc:     Nathan Chancellor <natechancellor@gmail.com>,
+        Network Development <netdev@vger.kernel.org>,
+        linux-wireless@vger.kernel.org,
+        LKML <linux-kernel@vger.kernel.org>,
+        clang-built-linux <clang-built-linux@googlegroups.com>,
+        ath11k@lists.infradead.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 18, 2019 at 11:06:56PM -0800, Andrii Nakryiko wrote:
-> +	if (core_mode) {
-> +		printf("#if defined(__has_attribute) && __has_attribute(preserve_access_index)\n");
-> +		printf("#define __CLANG_BPF_CORE_SUPPORTED\n");
-> +		printf("#pragma clang attribute push (__attribute__((preserve_access_index)), apply_to = record)\n");
-> +		printf("#endif\n\n");
+On Thu, Dec 19, 2019 at 5:32 AM Kalle Valo <kvalo@codeaurora.org> wrote:
+>
+> Nick Desaulniers <ndesaulniers@google.com> writes:
+>
+> > On Wed, Dec 11, 2019 at 11:23 AM Nathan Chancellor
+> > <natechancellor@gmail.com> wrote:
+> >> wmi_scan_priority and scan_priority have the same values but the wmi one
+> >> has WMI prefixed to the names. Since that enum is already being used,
+> >> get rid of scan_priority and switch its one use to wmi_scan_priority to
+> >> fix this warning.
+> >>
+> > Also, I don't know if the more concisely named enum is preferable?
+>
+> I didn't get this comment.
 
-I think it's dangerous to automatically opt-out when clang is not new enough.
-bpf prog will compile fine, but it will be missing co-re relocations.
-How about doing something like:
-  printf("#ifdef NEEDS_CO_RE\n");
-  printf("#pragma clang attribute push (__attribute__((preserve_access_index)), apply_to = record)\n");
-  printf("#endif\n\n");
-and emit it always when 'format c'.
-Then on the program side it will look:
-#define NEEDS_CO_RE
-#include "vmlinux.h"
-If clang is too old there will be a compile time error which is a good thing.
-Future features will have different NEEDS_ macros.
+Given two enums with the same values:
+enum scan_priority
+enum wmi_scan_priority
+wouldn't you prefer to type wmi_ a few times less?  Doesn't really
+matter, but that was the point I was making.
+-- 
+Thanks,
+~Nick Desaulniers
