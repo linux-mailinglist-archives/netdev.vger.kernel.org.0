@@ -2,35 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 91B1F12660B
-	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 16:47:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 23BDE126648
+	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 17:00:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726801AbfLSPrI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Dec 2019 10:47:08 -0500
-Received: from www62.your-server.de ([213.133.104.62]:50000 "EHLO
+        id S1726830AbfLSQAF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Dec 2019 11:00:05 -0500
+Received: from www62.your-server.de ([213.133.104.62]:52706 "EHLO
         www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726757AbfLSPrH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Dec 2019 10:47:07 -0500
+        with ESMTP id S1726789AbfLSQAF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Dec 2019 11:00:05 -0500
 Received: from [2001:1620:665:0:5795:5b0a:e5d5:5944] (helo=localhost)
         by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
         (Exim 4.89_1)
         (envelope-from <daniel@iogearbox.net>)
-        id 1ihy13-0000Ip-BL; Thu, 19 Dec 2019 16:47:05 +0100
-Date:   Thu, 19 Dec 2019 16:47:04 +0100
+        id 1ihyDR-0001RQ-Vz; Thu, 19 Dec 2019 16:59:54 +0100
+Date:   Thu, 19 Dec 2019 16:59:53 +0100
 From:   Daniel Borkmann <daniel@iogearbox.net>
-To:     Edwin Peer <epeer@juniper.net>
-Cc:     Y Song <ys114321@gmail.com>,
+To:     =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@intel.com>
+Cc:     Maxim Mikityanskiy <maximmi@mellanox.com>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "ast@kernel.org" <ast@kernel.org>, bpf <bpf@vger.kernel.org>
-Subject: Re: [RFC PATCH bpf-next 0/2] unprivileged BPF_PROG_TEST_RUN
-Message-ID: <20191219154704.GC4198@linux-9.fritz.box>
-References: <20191219013534.125342-1-epeer@juniper.net>
- <CAH3MdRUTcd7rjum12HBtrQ_nmyx0LvdOokZmA1YuhP2WtGfJqA@mail.gmail.com>
- <69266F42-6D0B-4F0B-805C-414880AC253D@juniper.net>
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>
+Subject: Re: [PATCH bpf v2 0/4] Fix concurrency issues between XSK wakeup and
+ control path using RCU
+Message-ID: <20191219155953.GD4198@linux-9.fritz.box>
+References: <20191217162023.16011-1-maximmi@mellanox.com>
+ <cfe64691-7a0f-5b8a-d511-ebe742cec3c0@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <69266F42-6D0B-4F0B-805C-414880AC253D@juniper.net>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <cfe64691-7a0f-5b8a-d511-ebe742cec3c0@intel.com>
 User-Agent: Mutt/1.12.1 (2019-06-15)
 X-Authenticated-Sender: daniel@iogearbox.net
 X-Virus-Scanned: Clear (ClamAV 0.101.4/25668/Thu Dec 19 10:55:58 2019)
@@ -39,26 +50,15 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 19, 2019 at 02:50:42PM +0000, Edwin Peer wrote:
-> On 12/18/19, 23:19, "Y Song" <ys114321@gmail.com> wrote:
+On Tue, Dec 17, 2019 at 06:33:14PM +0100, Björn Töpel wrote:
+> On 2019-12-17 17:20, Maxim Mikityanskiy wrote:
+> > This series addresses the issue described in the commit message of the
+> > first patch: lack of synchronization between XSK wakeup and destroying
+> > the resources used by XSK wakeup. The idea is similar to
+> > napi_synchronize. The series contains fixes for the drivers that
+> > implement XSK. I haven't tested the changes to Intel's drivers, so,
+> > Intel guys, please review them.
 > 
-> >  Added cc to bpf@vger.kernel.org.
->
-> Thank you, I will remember to do this next time.
->
-> > Have you tried your patch with some bpf programs? verifier and jit  put some
-> > restrictions on unpriv programs. To truely test the program, most if not all these
-> > restrictions should be lifted, so the same tested program should be able to
-> > run on production server and vice verse.
-> 
-> Agreed, I am aware of some of these differences in the load/verifier behavior with and without
-> CAP_SYS_ADMIN. In particular, without CAP_SYS_ADMIN programs are still restricted to 4k, some helpers are not available (spin locks, trace printk) and there are some differences in context access checks.
-> 
-> I think these can be addressed incrementally, assuming folk are on board with this approach in general?
+> Max, thanks a lot for compiling the series on your vacation!
 
-What about CAP_BPF? IIRC, there are also other issues e.g. you could abuse
-the test interface as a packet generator (bpf_clone_redirect) which is not
-something fully unpriv should be doing.
-
-Thanks,
-Daniel
+Applied, thanks!
