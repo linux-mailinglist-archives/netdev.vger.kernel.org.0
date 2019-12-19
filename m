@@ -2,83 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1ABFD12642C
-	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 15:02:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F6E6126430
+	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 15:03:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726869AbfLSOCn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Dec 2019 09:02:43 -0500
-Received: from mx08-00178001.pphosted.com ([91.207.212.93]:29174 "EHLO
-        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726744AbfLSOCm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Dec 2019 09:02:42 -0500
-Received: from pps.filterd (m0046660.ppops.net [127.0.0.1])
-        by mx08-00178001.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xBJDgbJo030197;
-        Thu, 19 Dec 2019 15:02:31 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=st.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-type; s=STMicroelectronics;
- bh=lmYBkuR7hu/iO85iNxJiScrX1QW68m2Wp1jYoIywx+U=;
- b=GGKi5DLB7NESlB2r6cTCXbIuYTJ0jr85Am2eS6uqGs+aci2NBMZq3aN55KXOanmI5H8q
- QIlnS9qMb18zfmyp3USNnCPnxL/nSIZZjDft96pV9B895xKT4N6zSFoDh513fA7poNPk
- TNx0cn9F8k6s6hNT9gfeR2L72PRSAQB6PWK/ayaTjb1LtHEOv9C32ub6WLh+MMO2goE3
- fnTynm/avWiw6UjfBp5G4vt4WHxaKg+4yVOGKdo/nsjRFd4cSUPcctwV50HtORjEmUIa
- 0gArsbFGuPPVzfVdmthjLe5l5Vn8prFMuFiqvW8AI7xibU/ueI7KxnMJa1wX55AQohFE HQ== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx08-00178001.pphosted.com with ESMTP id 2wvnret2vp-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 19 Dec 2019 15:02:31 +0100
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 6A9AB10002A;
-        Thu, 19 Dec 2019 15:02:28 +0100 (CET)
-Received: from Webmail-eu.st.com (sfhdag3node3.st.com [10.75.127.9])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 52C332C38BE;
-        Thu, 19 Dec 2019 15:02:28 +0100 (CET)
-Received: from localhost (10.75.127.47) by SFHDAG3NODE3.st.com (10.75.127.9)
- with Microsoft SMTP Server (TLS) id 15.0.1347.2; Thu, 19 Dec 2019 15:02:28
- +0100
-From:   Benjamin Gaignard <benjamin.gaignard@st.com>
-To:     <davem@davemloft.net>, <robh@kernel.org>, <mark.rutland@arm.com>,
-        <mripard@kernel.org>, <martin.blumenstingl@googlemail.com>,
-        <andrew@lunn.ch>, <narmstrong@baylibre.com>,
-        <alexandru.ardelean@analog.com>
-CC:     <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        Benjamin Gaignard <benjamin.gaignard@st.com>
-Subject: [PATCH] dt-bindings: net: stmmac: add missing properties keyword
-Date:   Thu, 19 Dec 2019 15:02:26 +0100
-Message-ID: <20191219140226.16820-1-benjamin.gaignard@st.com>
-X-Mailer: git-send-email 2.15.0
+        id S1726887AbfLSOCs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Dec 2019 09:02:48 -0500
+Received: from mail-il1-f196.google.com ([209.85.166.196]:46659 "EHLO
+        mail-il1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726744AbfLSOCp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Dec 2019 09:02:45 -0500
+Received: by mail-il1-f196.google.com with SMTP id t17so4912317ilm.13
+        for <netdev@vger.kernel.org>; Thu, 19 Dec 2019 06:02:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=UW2WNzCKVC/Q6BcgA6pHzxjIqG8G7Lfqaw17jtNqaCs=;
+        b=GgCIM/qWM2be3MNK2igzkBxxtdkwTYlah7yGxK19tPzTPMjTLCt+N/azSnqT8ePhIl
+         ho53qzAlXiWCrTQu6/39i0RSFpkbAFoZVVB7teM81WAzd0osbj2bOonmnlhztG8Srd/S
+         x/L5PzFLs5WyWh+mhZ0S19JazD8mo5Wz7+MHGOVV6npGHxWqEvYp/4KRMwvsfYXzcef8
+         CEpnPxEoxMknefAELUThiIEvyS2Zjo8Z0KQHCjjoDt7z14B9gIrxOb+y3qI5z2qvg5d2
+         8hGWBQqPG/LgzOztWZv5bd0j40+XPuQaoydwyzNKrC0IKT+LH+Sz3Ik4iSPE4O0uTeSZ
+         psOQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=UW2WNzCKVC/Q6BcgA6pHzxjIqG8G7Lfqaw17jtNqaCs=;
+        b=dnIjLDUvnfkstC9X0oTUYIlidHYqOKd57H3+1UEvoTxPUHHNXtGJaNjPX4RgCUU3Nk
+         R0ETAwA9FVAiJMVK7FYtrxTEFRPLm8NXhkd2JAt5eCgY+K1EuJsg1VEaJQDDQ1NrNQS4
+         aLGst5hbTdO+6LT9xSBf/iPmUE7S+sdV90jJyWIZEzlSOJfAjkUdsFEUsBG3hYrdAy8r
+         C7D4bcHvpxPKjIrtzV5nGYP02gbzMN8yqGKL+vlXtgC+u5g8TgpBHvxG5ScsgYGdWrov
+         UK4mpE2visEw/mZ9PxeGehTfzy/XHWwgg7I0Aw+fawhhFxjbh2A3lXqp9Wpr/OTNJaaE
+         c3Tw==
+X-Gm-Message-State: APjAAAXy7JGwpQ0OzwxPZ9j6Apyb4oEVO+FqLFElx8ldQtD+VrZ1W9rm
+        BfDlKJW84TjaNq1OKX/zKK7oGQXS4jjqXcmkJEuoeWNvMxo=
+X-Google-Smtp-Source: APXvYqyrla0Db74O+Uz2gFwVhw5eg2ZuE9sHJpBI7irla0B1Jw7er2Ms6F2iPOM5Ggv+Wrxik/dvdhbHyQW0pGxcnTo=
+X-Received: by 2002:a92:6e09:: with SMTP id j9mr7317565ilc.178.1576764164462;
+ Thu, 19 Dec 2019 06:02:44 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.75.127.47]
-X-ClientProxiedBy: SFHDAG8NODE2.st.com (10.75.127.23) To SFHDAG3NODE3.st.com
- (10.75.127.9)
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
- definitions=2019-12-19_01:2019-12-17,2019-12-19 signatures=0
+References: <20191127001313.183170-1-zenczykowski@gmail.com>
+ <20191213114934.GB5449@hmswarspite.think-freely.org> <CAKD1Yr1m-bqpeZxMRVs84WvvjRE3zp8kJVx57OXf342r2gzVyw@mail.gmail.com>
+ <20191219131700.GA1159@hmswarspite.think-freely.org>
+In-Reply-To: <20191219131700.GA1159@hmswarspite.think-freely.org>
+From:   Lorenzo Colitti <lorenzo@google.com>
+Date:   Thu, 19 Dec 2019 23:02:32 +0900
+Message-ID: <CAKD1Yr2wyWbwCGP=BNqAfsGu9cjgjD12-ePjs648Or-FjqHyBw@mail.gmail.com>
+Subject: Re: [PATCH] net: introduce ip_local_unbindable_ports sysctl
+To:     Neil Horman <nhorman@tuxdriver.com>
+Cc:     =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <zenczykowski@gmail.com>,
+        =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <maze@google.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Linux NetDev <netdev@vger.kernel.org>,
+        Sean Tranchetti <stranche@codeaurora.org>,
+        Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Linux SCTP <linux-sctp@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add missing 'properties' keyword to be compliant with syntax requirements
+On Thu, Dec 19, 2019 at 10:17 PM Neil Horman <nhorman@tuxdriver.com> wrote:
+> > As I understand it, those utilities keep the ports reserved by binding
+> > to them so that no other process can. This doesn't work for Android
+> > because there are conformance tests that probe the device from the
+> > network and check that there are no open ports.
+> >
+> But you can address that with some augmentation to portreserve (i.e. just have
+> it add an iptables rule to drop frames on that port, or respond with a port
+> unreachable icmp message)
 
-Fixes: 7db3545aef5fa ("dt-bindings: net: stmmac: Convert the binding to a schemas")
-Signed-off-by: Benjamin Gaignard <benjamin.gaignard@st.com>
----
- Documentation/devicetree/bindings/net/snps,dwmac.yaml | 1 +
- 1 file changed, 1 insertion(+)
+There are also tests that run on device by inspecting
+/proc/net/{tcp,udp} to check that there are no open sockets. We'd have
+to change them as well.
 
-diff --git a/Documentation/devicetree/bindings/net/snps,dwmac.yaml b/Documentation/devicetree/bindings/net/snps,dwmac.yaml
-index 4845e29411e4..e08cd4c4d568 100644
---- a/Documentation/devicetree/bindings/net/snps,dwmac.yaml
-+++ b/Documentation/devicetree/bindings/net/snps,dwmac.yaml
-@@ -347,6 +347,7 @@ allOf:
-               - st,spear600-gmac
- 
-     then:
-+      properties:
-         snps,tso:
-           $ref: /schemas/types.yaml#definitions/flag
-           description:
--- 
-2.15.0
+But sure. It's not impossible to do this in userspace. We wouldn't use
+portreserve itself because the work to package it and make it work on
+Android (which has no /etc/services file), would likely be greater
+than just adding the code to an existing Android daemon (and because
+the reaction of the portreserve maintainers might be similar to yours:
+"you don't need to add code to portreserve for this, just use a script
+that shells out to iptables").
 
+But in any case, the result would be more complicated to use and
+maintain, and it would likely also be less realistic, such that a
+sophisticated conformance test might still find that the port was
+actually bound. Other users of the kernel wouldn't get to use this
+sysctl, and the userspace code can't be easily reused in other
+open-source projects, so the community gets nothing useful. That
+doesn't seem great.
+
+Or, we could take this patch and maintain it in the Android kernel
+tree. Android kernels get a tiny bit further from mainline. Other uses
+of the kernel wouldn't get to use this sysctl, and again the community
+gets nothing useful. That doesn't seem great either.
