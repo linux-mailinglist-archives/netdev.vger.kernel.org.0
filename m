@@ -2,91 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 15D34126413
-	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 14:57:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1ABFD12642C
+	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 15:02:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726778AbfLSN5b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Dec 2019 08:57:31 -0500
-Received: from mail-yw1-f65.google.com ([209.85.161.65]:33751 "EHLO
-        mail-yw1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726712AbfLSN5a (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Dec 2019 08:57:30 -0500
-Received: by mail-yw1-f65.google.com with SMTP id 192so2186400ywy.0
-        for <netdev@vger.kernel.org>; Thu, 19 Dec 2019 05:57:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=1yn+mK/5xEg4fegs3phGOsQ7/Ct6TERF9p632E4MnVU=;
-        b=Z+70zlfpfDFUhG4zCZN0o7aK311Wb9wqmTfhJspMn390U/L7t8E4FJKmpey+FMMx+m
-         MTrrHYTduZesm6fol+ZJfFmbXUWIpqMnwaYzeIw4f74e8jT8uVqAV65Rga3P/rBzQz12
-         t3fhOs6j8YhRorlFhHq64M1oHtQQOHmkXE/UgtMGS/SQwbqOXSNKOW3/cr9q2XF8EoaT
-         S8zSoSXCT9OwRrk+rJUEubK+m3qxHSe5oZ1JUCTlhyjI8QrEfKD/sOXaX44xHEOlYR0P
-         QJU5pdTCLdk9Pu7p6orkgIjjgAjT/7ZDfZ4a49i0E9kzIhy8mQRWWEl8xV8Bzxfk+rQo
-         u7/Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=1yn+mK/5xEg4fegs3phGOsQ7/Ct6TERF9p632E4MnVU=;
-        b=C7ZCoUDzBJqoc/VhX69XZ22eKUuHShOChJLa3iDXyUGl5ulvdjta4whUyWk4uBWonW
-         LP+wNgDRFFmi17oaUf+RZtzdEH5M0eqEMAkfH8mDiUNPgzLz2yc25xS8d6yL0UCILzTX
-         JX/gITaYWHTyPDsTj9p3KdTJyiw4FCwQXrU9nRlZw46uvDfJKOM4RswvrDPv1I4M9O6E
-         OLauDmkALVFNsdu2XorQ9C4PIUsNzI228GSCg1YdKDLB2QP51Epl736CWSo/FyrE2ft4
-         8sZeXsoLEkQW5cCEqMS1PRAe5IOjCuLBkswlqOL9lwOEXPkjQZ+8mwkp7ePdenZqVOBG
-         Ih5g==
-X-Gm-Message-State: APjAAAXeD+hTMPN5FGPKI8dya7SKselzi3QYVz5B/mgGx7RaQD3qAS6H
-        mji8rmSwaiRioXRTdyNdDraVo6XO
-X-Google-Smtp-Source: APXvYqzOxJ4q+m1sqgJMi036M4b6URkFVEzPnA1sHaxUqZBcpRGTtjnRsQfxGyLYCeRM5K/hhY636Q==
-X-Received: by 2002:a81:6c04:: with SMTP id h4mr6577369ywc.431.1576763849350;
-        Thu, 19 Dec 2019 05:57:29 -0800 (PST)
-Received: from mail-yb1-f171.google.com (mail-yb1-f171.google.com. [209.85.219.171])
-        by smtp.gmail.com with ESMTPSA id 207sm2502810ywq.100.2019.12.19.05.57.28
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 19 Dec 2019 05:57:28 -0800 (PST)
-Received: by mail-yb1-f171.google.com with SMTP id a124so2199271ybg.2
-        for <netdev@vger.kernel.org>; Thu, 19 Dec 2019 05:57:28 -0800 (PST)
-X-Received: by 2002:a5b:348:: with SMTP id q8mr6431302ybp.83.1576763847446;
- Thu, 19 Dec 2019 05:57:27 -0800 (PST)
+        id S1726869AbfLSOCn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Dec 2019 09:02:43 -0500
+Received: from mx08-00178001.pphosted.com ([91.207.212.93]:29174 "EHLO
+        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726744AbfLSOCm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Dec 2019 09:02:42 -0500
+Received: from pps.filterd (m0046660.ppops.net [127.0.0.1])
+        by mx08-00178001.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xBJDgbJo030197;
+        Thu, 19 Dec 2019 15:02:31 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=st.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-type; s=STMicroelectronics;
+ bh=lmYBkuR7hu/iO85iNxJiScrX1QW68m2Wp1jYoIywx+U=;
+ b=GGKi5DLB7NESlB2r6cTCXbIuYTJ0jr85Am2eS6uqGs+aci2NBMZq3aN55KXOanmI5H8q
+ QIlnS9qMb18zfmyp3USNnCPnxL/nSIZZjDft96pV9B895xKT4N6zSFoDh513fA7poNPk
+ TNx0cn9F8k6s6hNT9gfeR2L72PRSAQB6PWK/ayaTjb1LtHEOv9C32ub6WLh+MMO2goE3
+ fnTynm/avWiw6UjfBp5G4vt4WHxaKg+4yVOGKdo/nsjRFd4cSUPcctwV50HtORjEmUIa
+ 0gArsbFGuPPVzfVdmthjLe5l5Vn8prFMuFiqvW8AI7xibU/ueI7KxnMJa1wX55AQohFE HQ== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx08-00178001.pphosted.com with ESMTP id 2wvnret2vp-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 19 Dec 2019 15:02:31 +0100
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 6A9AB10002A;
+        Thu, 19 Dec 2019 15:02:28 +0100 (CET)
+Received: from Webmail-eu.st.com (sfhdag3node3.st.com [10.75.127.9])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 52C332C38BE;
+        Thu, 19 Dec 2019 15:02:28 +0100 (CET)
+Received: from localhost (10.75.127.47) by SFHDAG3NODE3.st.com (10.75.127.9)
+ with Microsoft SMTP Server (TLS) id 15.0.1347.2; Thu, 19 Dec 2019 15:02:28
+ +0100
+From:   Benjamin Gaignard <benjamin.gaignard@st.com>
+To:     <davem@davemloft.net>, <robh@kernel.org>, <mark.rutland@arm.com>,
+        <mripard@kernel.org>, <martin.blumenstingl@googlemail.com>,
+        <andrew@lunn.ch>, <narmstrong@baylibre.com>,
+        <alexandru.ardelean@analog.com>
+CC:     <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        Benjamin Gaignard <benjamin.gaignard@st.com>
+Subject: [PATCH] dt-bindings: net: stmmac: add missing properties keyword
+Date:   Thu, 19 Dec 2019 15:02:26 +0100
+Message-ID: <20191219140226.16820-1-benjamin.gaignard@st.com>
+X-Mailer: git-send-email 2.15.0
 MIME-Version: 1.0
-References: <20191219013344.34603-1-maowenan@huawei.com>
-In-Reply-To: <20191219013344.34603-1-maowenan@huawei.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Thu, 19 Dec 2019 08:56:50 -0500
-X-Gmail-Original-Message-ID: <CA+FuTScgWi905_NhGNsRzpwaQ+OPwahj6NtKgPjLZRjuqJvhXQ@mail.gmail.com>
-Message-ID: <CA+FuTScgWi905_NhGNsRzpwaQ+OPwahj6NtKgPjLZRjuqJvhXQ@mail.gmail.com>
-Subject: Re: [PATCH net] af_packet: refactoring code for prb_calc_retire_blk_tmo
-To:     Mao Wenan <maowenan@huawei.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>, maximmi@mellanox.com,
-        Paolo Abeni <pabeni@redhat.com>, yuehaibing@huawei.com,
-        Neil Horman <nhorman@tuxdriver.com>,
-        Network Development <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        kernel-janitors@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-Originating-IP: [10.75.127.47]
+X-ClientProxiedBy: SFHDAG8NODE2.st.com (10.75.127.23) To SFHDAG3NODE3.st.com
+ (10.75.127.9)
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
+ definitions=2019-12-19_01:2019-12-17,2019-12-19 signatures=0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 18, 2019 at 8:37 PM Mao Wenan <maowenan@huawei.com> wrote:
->
-> If __ethtool_get_link_ksettings() is failed and with
-> non-zero value, prb_calc_retire_blk_tmo() should return
-> DEFAULT_PRB_RETIRE_TOV firstly. Refactoring code and make
-> it more readable.
->
-> Fixes: b43d1f9f7067 ("af_packet: set defaule value for tmo")
+Add missing 'properties' keyword to be compliant with syntax requirements
 
-This is a pure refactor, not a fix.
+Fixes: 7db3545aef5fa ("dt-bindings: net: stmmac: Convert the binding to a schemas")
+Signed-off-by: Benjamin Gaignard <benjamin.gaignard@st.com>
+---
+ Documentation/devicetree/bindings/net/snps,dwmac.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
-Code refactors make backporting fixes across releases harder, among
-other things. I think this code is better left as is. Either way, it
-would be a candidate for net-next, not net.
+diff --git a/Documentation/devicetree/bindings/net/snps,dwmac.yaml b/Documentation/devicetree/bindings/net/snps,dwmac.yaml
+index 4845e29411e4..e08cd4c4d568 100644
+--- a/Documentation/devicetree/bindings/net/snps,dwmac.yaml
++++ b/Documentation/devicetree/bindings/net/snps,dwmac.yaml
+@@ -347,6 +347,7 @@ allOf:
+               - st,spear600-gmac
+ 
+     then:
++      properties:
+         snps,tso:
+           $ref: /schemas/types.yaml#definitions/flag
+           description:
+-- 
+2.15.0
 
-> -       unsigned int mbits = 0, msec = 0, div = 0, tmo = 0;
-> +       unsigned int mbits = 0, msec = 1, div = 0, tmo = 0;
-
-Most of these do not need to be initialized here at all, really.
