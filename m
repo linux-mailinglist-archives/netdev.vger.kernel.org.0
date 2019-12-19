@@ -2,67 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E5921270AE
-	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 23:29:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4232D1270AF
+	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 23:29:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726952AbfLSW3i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Dec 2019 17:29:38 -0500
-Received: from mail-ot1-f68.google.com ([209.85.210.68]:43245 "EHLO
-        mail-ot1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726818AbfLSW3i (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Dec 2019 17:29:38 -0500
-Received: by mail-ot1-f68.google.com with SMTP id p8so9117567oth.10
-        for <netdev@vger.kernel.org>; Thu, 19 Dec 2019 14:29:37 -0800 (PST)
+        id S1727020AbfLSW3w (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Dec 2019 17:29:52 -0500
+Received: from mail-qk1-f195.google.com ([209.85.222.195]:42356 "EHLO
+        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726818AbfLSW3v (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Dec 2019 17:29:51 -0500
+Received: by mail-qk1-f195.google.com with SMTP id z14so4766976qkg.9
+        for <netdev@vger.kernel.org>; Thu, 19 Dec 2019 14:29:51 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
+        d=cloudflare.com; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=mVfH/DcBVTGGcN06CBWiYIkpYmFLLGeZfHdqym/IvI4=;
-        b=TwUgs2DzOb6iEdvi+U5v9+i/CUHRM89Ke2f9204/Tbra1lJjOa4P+jETDPgYi6lbrr
-         PG94qJYZ1TvqUTKYZ4g8eVIvcnwIme/hNHBHcvtjooKWIXMEHibkdgBzCxobW6uupOYP
-         ixPrl1N0ManGLDWzZyBCRhiflaT44iHQRRmWw=
+        bh=XsmZBNUHHCXNS0fS7nTCTITHP4EPFsvNRDCD9lzBi+w=;
+        b=Eif7wPUhZhBXMbOxcCVIswCva/mJdhNlrsuySiCKIsGVgAwqU2+iXh8mFqr1Ly77XZ
+         3zrlNnVfxN8cmFagAZzCQxkFZc5muSCRZIWQP8lohsbiOw0LOiLeHiWMKr6iEGSNusnk
+         nmGYzxrqB8oInl31JkeAFmM1Y/DZedeZOVuyI=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=mVfH/DcBVTGGcN06CBWiYIkpYmFLLGeZfHdqym/IvI4=;
-        b=ny8b4WGcI89rQGFKB1WXenL40CmFYdsNu67/8dDp4lGELxx69ayBKftYopNwxYBJNx
-         rQcMSZpenysq3E+Bj9uwRkf+5SMCeej5lFrkmgnbvJjIEROAP66rFwNWYDivxM+ZXL7v
-         qQdkX3Gwp/K9akHdjIeqWVQkb86skhN9LayhuwRyFy0WejNK4sqL8n6QF/JhBnHyXg+E
-         FKe2r9NFLSWFMXiT4043MCNcbHE2k3X3rdz3H4MR3ONaGA7kHbWp5IrIWVM+QLvsx7aG
-         MPaRc8jS1VGigH5PuCuSzPXDyu4x+EGMl7DDf9XgsUFuYkbvNIN+kHgG85KC5CdYTW3W
-         Z1Jg==
-X-Gm-Message-State: APjAAAVVmJ0JNztXiHndHgxDexZnxgstMgI6nDFJXsh7REkbTZIwOm+E
-        BOZnDQAQFLsujvWOjnRER9txAUVCTC/wulX1d+IrgmWW
-X-Google-Smtp-Source: APXvYqwe87jaNmincKXmouV0Bg+5H/JmnuyMhZ4FFQ5LCiZmLNkIJSE0B90jgcTjfumNwbFH2YrEzolM3lzqT83Pxww=
-X-Received: by 2002:a9d:784b:: with SMTP id c11mr10811917otm.246.1576794577471;
- Thu, 19 Dec 2019 14:29:37 -0800 (PST)
+        bh=XsmZBNUHHCXNS0fS7nTCTITHP4EPFsvNRDCD9lzBi+w=;
+        b=XVZvMk/zyVPByvl1mBRIbwQXQxM//y0V/KQTMDyeb2DoLqMcw86QO2J85Q1tTD4Cmx
+         Uu12srULSryn7UQ1Hjv/M/YZHxtaXNKQXdz+oCp3j7OrK05WxwwWJLiqqlPLALu0pZM/
+         Du8840tTp7xveDksNfKy+OZRkXYz31AxA7ntsdBTFwGymYmNHCJ2EIVrpFWeJ3NB1N8y
+         YD0i/BYNC4gCxNdoTmgOh2Tynbn7VCvFvc+SUv+ycBTDyBQ3DZCVqJpPrlo6bDcxZ8/g
+         7eapbUy5R+sls8IRL7jIU4yu5GKOuj31FaQr2lNuuKK0hHHUVjjYYqrR8pobrPNb6oNh
+         MftA==
+X-Gm-Message-State: APjAAAViJtXs3hmkdY+P4NxDD6IwGI8Evohq//+KSVFhSNDmoTrq8Vdf
+        VuHciFkxCKFZ6/chZIgdwL/yJggOPp6rvv7NukLfXQ==
+X-Google-Smtp-Source: APXvYqxtFJZffZC3OR8xTVwXjUOlIiGd63DxAjijFLC1qabFOPp4JBCYMvJ6UkYGbSpHsGZPZsp2ah9pH2Cx2WhdDsc=
+X-Received: by 2002:a05:620a:102c:: with SMTP id a12mr10051027qkk.95.1576794590648;
+ Thu, 19 Dec 2019 14:29:50 -0800 (PST)
 MIME-Version: 1.0
-References: <20191219183516.7017-1-manishc@marvell.com>
-In-Reply-To: <20191219183516.7017-1-manishc@marvell.com>
-From:   Michael Chan <michael.chan@broadcom.com>
-Date:   Thu, 19 Dec 2019 14:29:26 -0800
-Message-ID: <CACKFLi=SPzHRXXMYXNecRjYNaKVZ5uOz1DAhZXXLLF4A+Wh2mA@mail.gmail.com>
-Subject: Re: [PATCH net 1/1] qede: Disable hardware gro when xdp prog is installed
-To:     Manish Chopra <manishc@marvell.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Netdev <netdev@vger.kernel.org>, aelior@marvell.com,
-        skalluru@marvell.com
+References: <20191219201601.7378-1-aforster@cloudflare.com> <CAADnVQLrsgGzVcBea68gf+yZ2R-iYzCJupE6jzaqR5ctbCKxNw@mail.gmail.com>
+In-Reply-To: <CAADnVQLrsgGzVcBea68gf+yZ2R-iYzCJupE6jzaqR5ctbCKxNw@mail.gmail.com>
+From:   Alex Forster <aforster@cloudflare.com>
+Date:   Thu, 19 Dec 2019 16:29:39 -0600
+Message-ID: <CAKxSbF19OsyE8B9mM+nB6676R6oA0duXSLn6_GGr1A+tCKhY9w@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] libbpf: fix AF_XDP helper program to support
+ kernels without the JMP32 eBPF instruction class
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 19, 2019 at 10:35 AM Manish Chopra <manishc@marvell.com> wrote:
->
-> commit 18c602dee472 ("qede: Use NETIF_F_GRO_HW.") introduced
-> a regression in driver that when xdp program is installed on
-> qede device, device's aggregation feature (hardware GRO) is not
-> getting disabled, which is unexpected with xdp.
->
-> Fixes: 18c602dee472 ("qede: Use NETIF_F_GRO_HW.")
-> Signed-off-by: Manish Chopra <manishc@marvell.com>
-> Signed-off-by: Ariel Elior <aelior@marvell.com>
+> I though af_xdp landed after jmp32 ?
 
-Reviewed-by: Michael Chan <michael.chan@broadcom.com>
+They were indeed pretty close together, but AF_XDP became usable in
+late 2018 with either 4.18 or 4.19. JMP32 landed in early 2019 with
+5.1.
+
+Alex Forster
