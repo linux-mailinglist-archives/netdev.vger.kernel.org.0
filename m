@@ -2,233 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CAEDD126719
-	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 17:32:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B83B6126728
+	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 17:33:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727002AbfLSQcJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Dec 2019 11:32:09 -0500
-Received: from mail-pl1-f175.google.com ([209.85.214.175]:44911 "EHLO
-        mail-pl1-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726907AbfLSQcI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Dec 2019 11:32:08 -0500
-Received: by mail-pl1-f175.google.com with SMTP id az3so2776150plb.11
-        for <netdev@vger.kernel.org>; Thu, 19 Dec 2019 08:32:07 -0800 (PST)
+        id S1726998AbfLSQdT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Dec 2019 11:33:19 -0500
+Received: from mail-io1-f67.google.com ([209.85.166.67]:35470 "EHLO
+        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726855AbfLSQdT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Dec 2019 11:33:19 -0500
+Received: by mail-io1-f67.google.com with SMTP id v18so6400102iol.2
+        for <netdev@vger.kernel.org>; Thu, 19 Dec 2019 08:33:19 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=QZG5dYiI8oM64dR2QXIexuoTL4Hz7S5sRgx4TD3K9uo=;
-        b=j/xDR4nQalRWrjfeAVPZaTwwpqxL9BBLna1Hsu4k4ahKVvPINfvs2c8hIOlLLuQwPf
-         yPuaDuuDAB72LMgC43ivica01E+xQv5yONC92iARx+tefCBDx5F99mkWELmDR/vFbXix
-         9gLSjcsGDGQIGYArm0xU0JxnKezIZli0o6FiTnlx15ovJuhyy5+LhS8lQqTapxh3gJfd
-         g+n7hOmkp+NO/PtrCBUDJMvaBNW/D9CtwssdnsoJs9Aw1fzN6f91I/Ao/4XR9GQvxvBn
-         ynlqKKES46hb6+xO/LU0ET/h3MUP0ah8at+mrFp2AP00dzLt/wUPyzrCdLIAP9fu26Y9
-         z1PQ==
+        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=2yQbD3cXPyFndLAFxqJM3tJ/8SIBtGHA3XQ9BtgSc/k=;
+        b=FAMNUF0TvvO17omX4sWaZKQ8p4ylndUjnwrL4G6AFS3eBZwXeuGlPuvNpT0pdcs84S
+         9YEkz6x3UlXSwxq0nQzBhDsMAPSEZFyTFp8PSIVc6StMJ/fqxjck6IQU3e35mjx6Rji3
+         lzyYJjXVP7TzEkRmvQFWNAhGi55BdjzBBc91/YSSRcONjeX2CNPS7R09UG4TOLhlp9qy
+         wTIVrlVEFJ5DhHLZLVpnnzxo4tmDFum2fb5ZvS5EO0BSQDTmGKosFncggHpRHwCwI0d4
+         mNiDu6SN7Y5MxsJQd+LmfOFF7Rxuoai3/s6r2IFQe3D6jnX57ECfdvc5Zl0/PICXva8u
+         DlxA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=QZG5dYiI8oM64dR2QXIexuoTL4Hz7S5sRgx4TD3K9uo=;
-        b=ZYTSudagJTeSE/6Q84m4WRGA9NeVoQcRwmo91EeR5b2B9b9qmoOwyFIoiN1hj4tPFO
-         kv1+58KMEuR95WFMhcEoDZ8xobc9/iCsZfaIV+1DAsoVYorvCnPEN1B5NhRsR/H/NcUR
-         5mjqDBZxNa8hfR3NRYMh0Euz4iDwhxQHT6CquIGAGvNuuiY++HYBesblEYrPlB4vx/mC
-         /swXnLR8+fApp2eIq1kemXF5xRUYsJ4hSxLuGji/kMF2wJNVX6nBAG2ay6rjRNogheMH
-         vEiGGQFAOJzBI55nptfThLD3bbrPkb44HIC+MY+S3rGTWW4vm+f8z6FnrtugLr0jUlgM
-         R6MQ==
-X-Gm-Message-State: APjAAAWx4OeGXMyuPaYdvmyVO2nq/Ob08n9MJceQbbKOABLqGN7EQW/v
-        GOIzhm2f0RRa1b3EV01l0qBTkZwD
-X-Google-Smtp-Source: APXvYqxVNN3cMIAaTCgmmbL70wf74rfCB2uk/09WbGwDgXRcfW1X/ffl8dawrSLtRIoNO1Xlq22pJg==
-X-Received: by 2002:a17:90a:6484:: with SMTP id h4mr10097020pjj.84.1576773127198;
-        Thu, 19 Dec 2019 08:32:07 -0800 (PST)
-Received: from localhost (c-98-246-132-65.hsd1.or.comcast.net. [98.246.132.65])
-        by smtp.gmail.com with ESMTPSA id n1sm7651203pfd.47.2019.12.19.08.32.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 19 Dec 2019 08:32:06 -0800 (PST)
-Date:   Thu, 19 Dec 2019 08:32:09 -0800
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Petr Machata <petrm@mellanox.com>,
-        John Fastabend <john.fastabend@gmail.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Roopa Prabhu <roopa@cumulusnetworks.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Roman Mashak <mrv@mojatatu.com>,
-        Ido Schimmel <idosch@mellanox.com>,
-        Jiri Pirko <jiri@resnulli.us>
-Message-ID: <5dfba6091d854_61ae2ac457a865c45f@john-XPS-13-9370.notmuch>
-In-Reply-To: <87eex1o528.fsf@mellanox.com>
-References: <cover.1576679650.git.petrm@mellanox.com>
- <5dfa525bc3674_2dca2afa496f05b86e@john-XPS-13-9370.notmuch>
- <87eex1o528.fsf@mellanox.com>
-Subject: Re: [PATCH net-next mlxsw v2 00/10] Add a new Qdisc, ETS
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=2yQbD3cXPyFndLAFxqJM3tJ/8SIBtGHA3XQ9BtgSc/k=;
+        b=JqumOwAliwtrsElBg9qpLv+T0PGrGAgXAG7jj46obCXKvYYNb/7p0u3TM0BnrOm74e
+         0moe+p4SbAUeLBRjj756qRPYzYN7tpRvqptWvvWFphNce25HepXJy8cHYfemARQqZvcs
+         RB0sBdzdmT2UmCTtvySOB2I42382kMqifSJ9qi175dawAniFmf5kL0so2zyN8E9fzprj
+         DwZoKWMlHwGUaM+tXKvagGiZMU1eLCuhSZ4dkn+qT+SRDloQXyfgaEauNnS1qIMYu53/
+         oRywEGtiCSGeFmpmpS0ZVq/0HZlX9rrj63NcUwAiREukV2xEkLdZlgIlxZ3wtZnkpFAc
+         UY6w==
+X-Gm-Message-State: APjAAAUGLM5SNuB57TV9ShBmQHuzIoGt09ofuvcOMwE/iEK2FC0Tynb4
+        Abw/1V2+orVEXv9GcPsGz8n4rWdD7vI=
+X-Google-Smtp-Source: APXvYqzM3RHD1Y8c9u+mvq+hl8vmblThSOTStFv14vkMtNiZVRnsEq0NZyyoLfJ8rlhl4NOkdoc7cg==
+X-Received: by 2002:a6b:7515:: with SMTP id l21mr6660862ioh.42.1576773198886;
+        Thu, 19 Dec 2019 08:33:18 -0800 (PST)
+Received: from [10.0.0.194] ([64.26.149.125])
+        by smtp.googlemail.com with ESMTPSA id b1sm2624294ilc.33.2019.12.19.08.33.17
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 19 Dec 2019 08:33:18 -0800 (PST)
+Subject: Re: [PATCH net 1/2] net/sched: cls_u32: fix refcount leak in the
+ error path of u32_change()
+To:     Vlad Buslov <vladbu@mellanox.com>
+Cc:     Davide Caratti <dcaratti@redhat.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>, Roman Mashak <mrv@mojatatu.com>
+References: <cover.1576623250.git.dcaratti@redhat.com>
+ <ae83c6dc89f8642166dc32debc6ea7444eb3671d.1576623250.git.dcaratti@redhat.com>
+ <bafb52ff-1ced-91a4-05d0-07d3fdc4f3e4@mojatatu.com>
+ <5b4239e5-6533-9f23-7a38-0ee4f6acbfe9@mojatatu.com>
+ <vbfr2102swb.fsf@mellanox.com>
+From:   Jamal Hadi Salim <jhs@mojatatu.com>
+Message-ID: <63fe479d-51cd-eff4-eb13-f0211f694366@mojatatu.com>
+Date:   Thu, 19 Dec 2019 11:33:17 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.3.0
+MIME-Version: 1.0
+In-Reply-To: <vbfr2102swb.fsf@mellanox.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-GB
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Petr Machata wrote:
-> 
-> John Fastabend <john.fastabend@gmail.com> writes:
-> 
-> > Petr Machata wrote:
-> >> The IEEE standard 802.1Qaz (and 802.1Q-2014) specifies four principal
-> >> transmission selection algorithms: strict priority, credit-based shaper,
-> >> ETS (bandwidth sharing), and vendor-specific. All these have their
-> >> corresponding knobs in DCB. But DCB does not have interfaces to configure
-> >> RED and ECN, unlike Qdiscs.
-> >
-> > So the idea here (way back when I did this years ago) is that marking ECN
-> > traffic was not paticularly CPU intensive on any metrics I came up with.
-> > And I don't recall anyone ever wanting to do RED here. The configuration
-> > I usually recommended was to use mqprio + SO_PRIORITY + fq per qdisc. Then
-> > once we got the BPF egress hook we replaced SO_PRIORITY configurations with
-> > the more dynamic BPF action to set it. There was never a compelling perf
-> > reason to offload red/ecn.
-> >
-> > But these use cases were edge nodes. I believe this series is mostly about
-> > control path and maybe some light control traffic? This is for switches
-> > not for edge nodes right? I'm guessing because I don't see any performance
-> > analaysis on why this is useful, intuitively it makes sense if there is
-> > a small CPU sitting on a 48 port 10gbps box or something like that.
-> 
-> Yes.
-> 
-> Our particular use case is a switch that has throughput in Tbps. There
-> simply isn't enough bandwidth to even get all this traffic to the CPU,
-> let alone process it on the CPU. You need to offload, or it doesn't make
-> sense. 48 x 10Gbps with a small CPU is like that as well, yeah.
+On 2019-12-19 11:15 a.m., Vlad Buslov wrote:
 
-Got it so I suspect primary usage will be offload then at least for
-the initial usage.
 
+> Hi Jamal,
 > 
-> From what I hear, RED / ECN was not used very widely in these sorts of
-> deployments, rather the deal was to have more bandwidth than you need
-> and not worry about QoS. This is changing, and people experiment with
-> this stuff more. So there is interest in strict vs. DWRR TCs, shapers,
-> and RED / ECN.
+> Just destroying tp unconditionally will break unlocked case (flower)
+> because of possibility of concurrent insertion of new filters to the
+> same tp instance.
 > 
-> >> In the Qdisc land, strict priority is implemented by PRIO. Credit-based
-> >> transmission selection algorithm can then be modeled by having e.g. TBF or
-> >> CBS Qdisc below some of the PRIO bands. ETS would then be modeled by
-> >> placing a DRR Qdisc under the last PRIO band.
-> >>
-> >> The problem with this approach is that DRR on its own, as well as the
-> >> combination of PRIO and DRR, are tricky to configure and tricky to offload
-> >> to 802.1Qaz-compliant hardware. This is due to several reasons:
-> >
-> > I would argue the trick to configure part could be hid behind tooling to
-> > simplify setup. The more annoying part is it was stuck behind the qdisc
-> > lock. I was hoping this would implement a lockless ETS qdisc seeing we
-> > have the infra to do lockless qdiscs now. But seems not. I guess software
-> > perf analysis might show prio+drr and ets here are about the same performance
-> > wise.
+
+I was worried about that. So rtnlheld doesnt help?
+
+> The root cause here is precisely described by Davide in cover letter -
+> to accommodate concurrent insertions cls API verifies that tp instance
+> is empty before deleting it and since there is no cls ops to do it
+> directly, it relies on checking that walk() stopped without accessing
+> any filters instead. Unfortunately, somw classifier implementations
+> assumed that there is always at least one filter on classifier (I fixed
+> several of these) and now Davide also uncovered this leak in u32.
 > 
-> Pretty sure. It's the same algorithm, and I would guess that the one
-> extra virtual call will not throw it off.
-
-Yeah small in comparison to other performance issues I would guess.
-
+> As a simpler solution to fix such issues once and for all I can propose
+> not to perform the walk() check at all and assume that any classifier
+> implementation that doesn't have TCF_PROTO_OPS_DOIT_UNLOCKED flag set is
+> empty in tcf_chain_tp_delete_empty() (there is no possibility of
+> concurrent insertion when synchronizing with rtnl).
 > 
-> > offload is tricky with stacked qdiscs though ;)
-> 
-> Offload and configuration both.
-> 
-> Of course there could be a script to somehow generate and parse the
-> configuration on the front end, and some sort of library to consolidate
-> on the driver side, but it's far cleaner and easier to understand for
-> all involved if it's a Qdisc. Qdiscs are tricky, but people still
-> understand them well in comparison.
+> WDYT?
 
-At one point I wrote an app to sit on top of the tc netlink interface
-and create common (at least for the customers at the time) setups. But
-that tool is probably lost to history at this point.
+IMO that would be a cleaner fix give walk() is used for other
+operations and this is a core cls issue.
+Also: documenting what it takes for a classifier to support
+TCF_PROTO_OPS_DOIT_UNLOCKED is useful (you may have done this
+in some commit already).
 
-I don't think its paticularly difficult to build this type of tool
-on top of the API but also not against a new qdisc like this that
-folds in a more concrete usage and aligns with a spec. And Dave
-already merged it so good to see ;)
-
-[...]
-
-> >> The chosen interface makes the overall system both reasonably easy to
-> >> configure, and reasonably easy to offload. The extra code to support ETS in
-> >> mlxsw (which already supports PRIO) is about 150 lines, of which perhaps 20
-> >> lines is bona fide new business logic.
-> >
-> > Sorry maybe obvious question but I couldn't sort it out. When the qdisc is
-> > offloaded if packets are sent via software stack do they also hit the sw
-> > side qdisc enqueue logic? Or did I miss something in the graft logic that
-> > then skips adding the qdisc to software side? For example taprio has dequeue
-> > logic for both offload and software cases but I don't see that here.
-> 
-> You mean the graft logic in the driver? All that stuff is in there just
-> to figure out how to configure the device. SW datapath packets are
-> still handled as usual.
-
-Got it just wasn't clear to me when viewing it from the software + smartnic
-use case. So is there a bug or maybe just missing feature, where if I
-offloaded this on a NIC that both software and hardware would do the ETS
-algorithm? How about on the switch would traffic from the CPU be both ETS 
-classified in software and in hardware? Or maybe CPU uses different interface
-without offload on?
-
-> 
-> There even is a selftest for the SW datapath that uses veth pairs to
-> implement interconnect and TBF to throttle it (so that the scheduling
-> kicks in).
-
-+1
-
-> 
-> >>
-> >> Credit-based shaping transmission selection algorithm can be configured by
-> >> adding a CBS Qdisc under one of the strict bands (e.g. TBF can be used to a
-> >> similar effect as well). As a non-work-conserving Qdisc, CBS can't be
-> >> hooked under the ETS bands. This is detected and handled identically to DRR
-> >> Qdisc at runtime. Note that offloading CBS is not subject of this patchset.
-> >
-> > Any performance data showing how accurate we get on software side? The
-> > advantage of hardware always to me seemed to be precision in the WRR algorithm.
-> 
-> Quantum is specified as a number of bytes allowed to dequeue before a
-> queue loses the medium. Over time, the amount of traffic dequeued from
-> individual queues should average out to be the quanta your specified. At
-> any point in time, size of the packets matters: if I push 1000B packets
-> into a 10000B-quantum queue, it will use 100% of its allocation. If they
-> are 800B packets, there will be some waste (and it will compensate next
-> round).
-> 
-> As far as the Qdisc is defined, the SW side is as accurate as possible
-> under given traffic patterns. For HW, we translate to %, and rounding
-> might lead to artifacts. You kinda get the same deal with DCB, where
-> there's no way to split 100% among 8 TCs perfectly fairly.
-> 
-> > Also data showing how much overhead we get hit with from basic mq case
-> > would help me understand if this is even useful for software or just a
-> > exercise in building some offload logic.
-> 
-> So the Qdisc is written to do something reasonable in the SW datapath.
-> In that respect it's as useful as PRIO and DRR are. Not sure that as a
-> switch operator you really want to handle this much traffic on the CPU
-> though.
-
-I was more thinking of using it in the smart nic case.
-
-> 
-> > FWIW I like the idea I meant to write an ETS sw qdisc for years with
-> > the expectation that it could get close enough to hardware offload case
-> > for most use cases, all but those that really need <5% tolerance or something.
-
-Anyways thanks for the answers clears it up on my side. One remaining
-question is if software does send packets if they get both classified
-via software and hardware. Might be worth thinking about fixing if
-that is the case or probably more likely switch knows not to do
-this.
-
-Thanks,
-John
+cheers,
+jamal
