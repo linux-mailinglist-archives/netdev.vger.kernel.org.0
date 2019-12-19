@@ -2,170 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B9FB2125BE2
-	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 08:10:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D5AD125BF0
+	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 08:18:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726498AbfLSHKe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Dec 2019 02:10:34 -0500
-Received: from mail-wm1-f66.google.com ([209.85.128.66]:37448 "EHLO
-        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726294AbfLSHKd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Dec 2019 02:10:33 -0500
-Received: by mail-wm1-f66.google.com with SMTP id f129so4449263wmf.2
-        for <netdev@vger.kernel.org>; Wed, 18 Dec 2019 23:10:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=9+eZhKfnhFTWqVU5yD68HbJomafqSVC49U1bxgXOn9g=;
-        b=mGLl/tRvr/xBWHbqI4elK7Bff87u0Ld+1wTvW9yemQTfTSqwy5pRpdcleqEcIAewO9
-         0T8ZOFvKDDDRe9esnQryFc3qlurEEn6nRcoE11eiUaEeqZkyLFL8guKXkREfNHikx6f7
-         6JfpDErGfvq4htre6mi7Xzg4Nw0Wg6QVB+ExGpoqaN0GsT0oqCqYCyfasymDy/CNAc5b
-         X7SwqABxGfTLzr6KHc4sDzZ5v75KHDKZ9BUqcHw4csyC/5u+K37oxGlmSzWfVD61vmSA
-         o4zz2Aqn+nrIKdHfZM/Zuf7DBgpPmn0xcg2o5MROnR0tWpSbsMLvJtQk2L+hpybIKXqz
-         47DQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=9+eZhKfnhFTWqVU5yD68HbJomafqSVC49U1bxgXOn9g=;
-        b=VJSR4ODQbmq/pITPOQ/s0p4t749jbcyvMF8Ouqa2Bn7nTJ6SE2muFugOL13gIbzLr2
-         Uu054JyxZa7cR5maH14oGgWPAT/SVDBmUFCpovzTEantB1rv79T4Csp/YyIIkh7ec1Ch
-         +26vLNvqg2/fgrfYTMhl8hjYcWDQOBO9GpE5nNMpsB/b6MKeo2l6eTJvg0SsDSLx0PD0
-         eqfuIrFlR12eItKyYJM7jx9AkvaEl25RFEqfA1sor1uQ8+7/ot65wF38icEkiBlOIftp
-         sXF9uIDGqMh5WWP3emWpaaMxpEM0jIefgYFd2nLTIKLZm/ppDLYNDDunqbGZrbAW9Dqy
-         XN0w==
-X-Gm-Message-State: APjAAAUPbEQ0hJJAGduOaSUWskBiAuNgKwjl1fPTqjb1u9CtLbltg3Ud
-        zaFJX75xnRi4bTWal5OkkCBQOglB
-X-Google-Smtp-Source: APXvYqz9bQwWwW+t2Gq6IJ+vTxdqjI5Vpv/qSK+XTF61HsVlSebM5QA307zZ+5dSlvEo/wCQ8u/uDQ==
-X-Received: by 2002:a7b:cc98:: with SMTP id p24mr7910028wma.139.1576739430814;
-        Wed, 18 Dec 2019 23:10:30 -0800 (PST)
-Received: from ?IPv6:2003:ea:8f4a:6300:edcc:f13f:926c:a126? (p200300EA8F4A6300EDCCF13F926CA126.dip0.t-ipconnect.de. [2003:ea:8f4a:6300:edcc:f13f:926c:a126])
-        by smtp.googlemail.com with ESMTPSA id e18sm5420196wrw.70.2019.12.18.23.10.29
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 18 Dec 2019 23:10:30 -0800 (PST)
-Subject: Re: [PATCH net] net: phy: make phy_error() report which PHY has
- failed
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-References: <E1ihCLZ-0001Vo-Nw@rmk-PC.armlinux.org.uk>
- <c96f14cd-7139-ebc7-9562-2f92d8b044fc@gmail.com>
- <20191217233436.GS25745@shell.armlinux.org.uk>
- <61f23d43-1c4d-a11e-a798-c938a896ddb3@gmail.com>
- <20191218220908.GX25745@shell.armlinux.org.uk>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <8f7411c7-f420-4a31-38ef-6a2af6c56675@gmail.com>
-Date:   Thu, 19 Dec 2019 08:10:21 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.1
+        id S1726498AbfLSHSa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Dec 2019 02:18:30 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:55607 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726303AbfLSHS3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Dec 2019 02:18:29 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1576739908;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=dvuyE3XNLiqrKcITgNM9IqSO03KcCDguA8aANa+9ouw=;
+        b=URJz45x44/7y/KJFCPUcnntdw/gcwjwWaaeAUB2NOlfysVA9vHPoGNjIg/mD8pdcW80pz+
+        z7EWI4HTsmFqMsU3yTrvLPYfgNefoPpXFia0FmSWFE33fLxmPLXMHOp1yR/aMt6pSi1e0g
+        +lhQ8UMrUyYAJXb/3OiXgZsdgUvIe6c=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-274-YCLQbHarP3it7edjCKN25Q-1; Thu, 19 Dec 2019 02:18:24 -0500
+X-MC-Unique: YCLQbHarP3it7edjCKN25Q-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id DF557DBA5;
+        Thu, 19 Dec 2019 07:18:22 +0000 (UTC)
+Received: from carbon (ovpn-200-37.brq.redhat.com [10.40.200.37])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 24136620D8;
+        Thu, 19 Dec 2019 07:18:18 +0000 (UTC)
+Date:   Thu, 19 Dec 2019 08:18:15 +0100
+From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
+To:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
+Cc:     netdev@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        bpf@vger.kernel.org, davem@davemloft.net,
+        jakub.kicinski@netronome.com, hawk@kernel.org,
+        john.fastabend@gmail.com, magnus.karlsson@intel.com,
+        jonathan.lemon@gmail.com
+Subject: Re: [PATCH bpf-next v2 0/8] Simplify
+ xdp_do_redirect_map()/xdp_do_flush_map() and XDP maps
+Message-ID: <20191219081815.0b07de1a@carbon>
+In-Reply-To: <20191219061006.21980-1-bjorn.topel@gmail.com>
+References: <20191219061006.21980-1-bjorn.topel@gmail.com>
+Organization: Red Hat Inc.
 MIME-Version: 1.0
-In-Reply-To: <20191218220908.GX25745@shell.armlinux.org.uk>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 18.12.2019 23:09, Russell King - ARM Linux admin wrote:
-> On Wed, Dec 18, 2019 at 09:54:32PM +0100, Heiner Kallweit wrote:
->> On 18.12.2019 00:34, Russell King - ARM Linux admin wrote:
->>> On Tue, Dec 17, 2019 at 10:41:34PM +0100, Heiner Kallweit wrote:
->>>> On 17.12.2019 13:53, Russell King wrote:
->>>>> phy_error() is called from phy_interrupt() or phy_state_machine(), and
->>>>> uses WARN_ON() to print a backtrace. The backtrace is not useful when
->>>>> reporting a PHY error.
->>>>>
->>>>> However, a system may contain multiple ethernet PHYs, and phy_error()
->>>>> gives no clue which one caused the problem.
->>>>>
->>>>> Replace WARN_ON() with a call to phydev_err() so that we can see which
->>>>> PHY had an error, and also inform the user that we are halting the PHY.
->>>>>
->>>>> Fixes: fa7b28c11bbf ("net: phy: print stack trace in phy_error")
->>>>> Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
->>>>> ---
->>>>> There is another related problem in this area. If an error is detected
->>>>> while the PHY is running, phy_error() moves to PHY_HALTED state. If we
->>>>> try to take the network device down, then:
->>>>>
->>>>> void phy_stop(struct phy_device *phydev)
->>>>> {
->>>>>         if (!phy_is_started(phydev)) {
->>>>>                 WARN(1, "called from state %s\n",
->>>>>                      phy_state_to_str(phydev->state));
->>>>>                 return;
->>>>>         }
->>>>>
->>>>> triggers, and we never do any of the phy_stop() cleanup. I'm not sure
->>>>> what the best way to solve this is - introducing a PHY_ERROR state may
->>>>> be a solution, but I think we want some phy_is_started() sites to
->>>>> return true for it and others to return false.
->>>>>
->>>>> Heiner - you introduced the above warning, could you look at improving
->>>>> this case so we don't print a warning and taint the kernel when taking
->>>>> a network device down after phy_error() please?
->>>>>
->>>> I think we need both types of information:
->>>> - the affected PHY device
->>>> - the stack trace to see where the issue was triggered
->>>
->>> Can you please explain why the stack trace is useful.  For the paths
->>> that are reachable, all it tells you is whether it was reached via
->>> the interrupt or the workqueue.
->>>
->>> If it's via the interrupt, the rest of the backtrace beyond that is
->>> irrelevant.  If it's the workqueue, the backtrace doesn't go back
->>> very far, and doesn't tell you what operation triggered it.
->>>
->>> If it's important to see where or why phy_error() was called, there
->>> are much better ways of doing that, notably passing a string into
->>> phy_error() to describe the actual error itself.  That would convey
->>> way more useful information than the backtrace does.
->>>
->>> I have been faced with these backtraces, and they have not been at
->>> all useful for diagnosing the problem.
->>>
->> "The problem" comes in two flavors:
->> 1. The problem that caused the PHY error
->> 2. The problem caused by the PHY error (if we decide to not
->>    always switch to HALTED state)
->>
->> We can't do much for case 1, maybe we could add an errno argument
->> to phy_error(). To facilitate analyzing case 2 we'd need to change
->> code pieces like the following.
->>
->> case a:
->> err = f1();
->> case b:
->> err = f2();
->>
->> if (err)
->> 	phy_error()
->>
->> For my understanding: What caused the PHY error in your case(s)?
->> Which info would have been useful for analyzing the error?
-> 
-> Errors reading/writing from the PHY.
-> 
-> The problem with a backtrace from phy_error() is it doesn't tell you
-> where the error actually occurred, it only tells you where the error
-> is reported - which is one of two different paths at the moment.
-> That can be achieved with much more elegance and simplicity by
-> passing a string into phy_error() to describe the call site if that's
-> even relevant.
-> 
-> I would say, however, that knowing where the error occurred would be
-> far better information.
-> 
-AFAICS PHY errors are typically forwarded MDIO access errors.
-PHY driver callback implementations could add own error sources,
-but from what I've seen they don't. Instead of the backtrace in
-phy_error() we could add a WARN_ONCE() to __mdiobus_read/write.
-Then the printed call chain should be more useful.
-If somebody wants to analyze in more detail, he can switch on
-MDIO access tracing.
+On Thu, 19 Dec 2019 07:09:58 +0100
+Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail.com> wrote:
+
+>   $ sudo ./xdp_redirect_cpu --dev enp134s0f0 --cpu 22 xdp_cpu_map0
+                                                        ^^^^^^^^^^^^
+>  =20
+>   Running XDP/eBPF prog_name:xdp_cpu_map5_lb_hash_ip_pairs
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>   XDP-cpumap      CPU:to  pps            drop-pps    extra-info
+>   XDP-RX          20      7723038        0           0
+>   XDP-RX          total   7723038        0
+[...]
+
+Talking about how to invoke the 'xdp_redirect_cpu' program, I notice
+that you are using BPF-prog named: 'xdp_cpu_map5_lb_hash_ip_pairs'
+(default) but on cmdline it looks like you want 'xdp_cpu_map0'.=20
+You need to use '--prog xdp_cpu_map0'.  It will make a HUGE performance
+difference.
+
+Like:
+  sudo ./xdp_redirect_cpu --dev mlx5p1 --cpu 22 --prog xdp_cpu_map0
+
+
+
+(p.s. The load-balance hash_ip_pairs is the default, because it is
+usable for solving the most common issue, where the NIC is not
+RSS distributing traffic correctly, e.g. ixgbe Q-in-Q. And it is close
+to the Suricata approach.)
+--=20
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
+
