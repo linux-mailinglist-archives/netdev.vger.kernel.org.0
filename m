@@ -2,120 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 562FE1265BD
-	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 16:28:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 81D2D1265E8
+	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 16:40:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726906AbfLSP2t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Dec 2019 10:28:49 -0500
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:46657 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726813AbfLSP2r (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Dec 2019 10:28:47 -0500
-Received: by mail-wr1-f65.google.com with SMTP id z7so6359481wrl.13
-        for <netdev@vger.kernel.org>; Thu, 19 Dec 2019 07:28:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=i3mTBRS7AQPPgtvaPLT01gq1ez3hV630kHrfvTiVFPY=;
-        b=bm2Q7yg+XRagohMcZJ+2XrM/uCM9GAtEzSd4ya8LC/HNvy5X+Bd0n2QownQFzu+gaG
-         082Spvr/Qi1OVjiUgfOhT9A/dLFbCHIN9w+0oWh7CPTPrQWXW+4zOSt4NBto0qZWhBCU
-         jYxG4PamMc0zwTV3GzSdyH7hWpopVt7qIhLs/NwbPOGL5bybP8W/2RtSYmeg7Caagr70
-         dIWDkg3A4LDmm7zCPBCPDGWIGpF3ZWps3uWLTkrdN5U3Q2nTNKTsn8mDsp78F3AY1Ypg
-         Y9Qk4tCc5N6wd/qHToksiQZ9unnQ4nC42T8Zbx23aOdOpnaYIgv+Ou9/3/Kx6aHuSuoo
-         mQAA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=i3mTBRS7AQPPgtvaPLT01gq1ez3hV630kHrfvTiVFPY=;
-        b=GngPddvdzHklGw1Rvc0B8jRvIusVphRtRHIz/fPG859I+WeRyUZgQhbhT6WRM7wjTr
-         gi/OHiEXa2Hxpu2kPkeq+j2vTPG+a1/DPsZf9yXCkcH6aSXCareCd3zgtBlg7nIdmBAF
-         X6LvWSPrG4qdwe1JmivJIzG5x4Q/8l+ZoHPtNgF0Ep07UaCq7GS+y1sRnmsaYS7BcYeb
-         osRjmVK/AIH6WB7nVRXi3B5hO4MrgKOlIKwy6tRYd8lbWtDOY5MzWsIm0nh5InKb+z35
-         /qm/blSAQSE2c/xWNt5/m6OYNj+XkGnKph3GpXuhdDlM/5Knsdxhyt5f1Mx5ABiIXg0y
-         3JBw==
-X-Gm-Message-State: APjAAAVUv6pd6eltLJ0U+XOQbTs3uubzN4ob1qGX64phzaOASy2W2Now
-        /oaPZeuhwz7Ak0R+SI+AbeK3Rg==
-X-Google-Smtp-Source: APXvYqziKLCATaCMCodRy6HwZfmyktzfE1GJqDQbMRumFaq9FlvUFmD50TLTlNoKXZl+bbctvtlFvg==
-X-Received: by 2002:adf:ffc7:: with SMTP id x7mr10016255wrs.159.1576769325750;
-        Thu, 19 Dec 2019 07:28:45 -0800 (PST)
-Received: from apalos.home (ppp-94-64-118-170.home.otenet.gr. [94.64.118.170])
-        by smtp.gmail.com with ESMTPSA id t190sm6506919wmt.44.2019.12.19.07.28.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 19 Dec 2019 07:28:44 -0800 (PST)
-Date:   Thu, 19 Dec 2019 17:28:41 +0200
-From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
-To:     Michal Hocko <mhocko@kernel.org>
-Cc:     Jesper Dangaard Brouer <brouer@redhat.com>, netdev@vger.kernel.org,
-        lirongqing@baidu.com, linyunsheng@huawei.com,
-        Saeed Mahameed <saeedm@mellanox.com>, peterz@infradead.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [net-next v4 PATCH] page_pool: handle page recycle for
- NUMA_NO_NODE condition
-Message-ID: <20191219152841.GA6889@apalos.home>
-References: <20191218084437.6db92d32@carbon>
- <157665609556.170047.13435503155369210509.stgit@firesoul>
- <20191219120925.GD26945@dhcp22.suse.cz>
- <20191219143535.6c7bc880@carbon>
- <20191219145206.GE26945@dhcp22.suse.cz>
+        id S1726895AbfLSPkn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Dec 2019 10:40:43 -0500
+Received: from sonic302-20.consmr.mail.ir2.yahoo.com ([87.248.110.83]:37599
+        "EHLO sonic302-20.consmr.mail.ir2.yahoo.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726751AbfLSPkn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Dec 2019 10:40:43 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1576770038; bh=HmqrXXQfx6qKUWQVWEU+ksZXqOEsKT2N61KT1pL/YcM=; h=Date:From:Reply-To:Subject:References:From:Subject; b=mTznz2wSg6A6ByKyjizYE7pSJJlA4MN2Guseih4ZOnYHHp348ffNAPmyeA8oSpASX/UxTo6sE4yqGPPP8NVYZxl+L+Uy+r77UryJ8MbSrgqbQXpm5mjGFe7UPDIBWPEn2WQG+l6RqwRFjcN9n4/M5EvN2HDr5LzFnS0MqyaLaS+BxEthgBPACa/C5qrXdLo/RrE8Coljbq0P+LxdaTlEWdmkeg9BWBBo682/VDHTYSRbKn/ywQYRT6inOk/DW0UFQ6pzA3c3on0S4T+wTZmRccqXaUvwVZtk1009hEiQUF4zr4NA84DOg2pYDwPDV9i7yfOut740+v1zufjJyEzpZA==
+X-YMail-OSG: akTdtdEVM1mA4_IxZ4Z05luJd32QhBJzqyAVdY_Q0uyufDl4CSPvF6Y5KUaV44h
+ OKRA36yT4kLAKf4X4WcaTcdrYnS2pgaSGqlFRxcC57Ixxovj2gy6U8yyWJJBgLU8ABfFzPvQMddJ
+ Hae5h4Jxli_tIEFcMiYBFYtxFDRaCNNGPnunLhcjDuj9Wtg.kYtdc3O0._cTi.Znf4WNDynqvHSQ
+ 46VFjau162zV6fWseeHEP69eaE95.fWY751Tf_zk9RdLzm2gbIzM.3mNkOhLqSXc9NC9WoHsp7rR
+ A5Oj4sqGno8NQSaHO2SK_aSGs72l6iGtVLWOTNJJI_2TiKxutTCyHfFVWTPtnbVXsj0Cu0tq9k5m
+ mN4tH2EY741LGQoL6HPd7fuw9qxCPFCGoQ.ylvghHDC_u489Qg7to8HNFGfP75lDg7KPemVG0G_g
+ Cbx0ZAukyiXLA.OxKc.xuM8s4OAdG43MxyrK.1jGA1F96IJU1S7v9fN80z06CSq.GTosWDs9BXdR
+ OQjdnAY5pt1rJa7mJOd3VVKfInzGtNTtA.kBrC17ZwdWC88d7PC4OwocUfvTup9Ex8v8sak2uvIp
+ Pyf3p0k3YajI5bhKjGgZzT7kfhIoto2pwVhHC1eSyzYtkIilcgjc3UevjDSyGf.TugZFucu0YcDU
+ YbCoMTgiOQpjcPUZ1_n6J8nsgLyXgRUvfF.D_Kzdu5g4855_A5oGCvMsfEbgEpqjlui9ookRO9nc
+ FtcDSNjR_D24.ehfyqun.JaFRavF8vJ2ayncP8qUfeQUwgqITnhmnTWYQdRd.jOr63TdQBBucCeV
+ qIE9XmlVJsv7VEQWhpCmYBwQy5_vW2K..59Xiw3ZsS5wMl_pPBlHQPAabjbtbxZgLs4lwH2jYprJ
+ _3X8e6pcUiXhED0NSSLE4vIA_J71JBZqo.DloeJdnWL5vjY5N0iF8Y_AVh.o2rehOqYRDJ5P2SDv
+ bKEGyR5nr.f1NGxxzGv4hZl0fVK_ahUmtLk6azVcah_5xWh0T_ECE9CtMg8Fqyq39HXAJfTW4jd3
+ keC8rhfFxkWs8IwJ0.rOP98Q3WOnUxfN0hNBlEDHOCdMO9Qjn9RvweKk7QM0WPW_5EndloXZlT10
+ cTCtOoRyFsa8UjnFhQryurWIH9Wd3Lce5xD8RTiq4NRNu9c6z8P685Ey5snR_OoVnlLeNU2X3dZ3
+ 6mbJt_S5hUl6bFoAl5uZHJvgQpB0gGAdKLqf10i8X9E.maQGLAjuH258qu_JvEgDsZnVN.4uh7bq
+ 2Y7kvMShectX1T.lN1cqQ6Wzf_A2Scw3xtKyhc5Qa45y8EGRYJfngmWTs2qZWCH9e4hsOEzmCdn7
+ f4Ac4ZPsrgb99eQ--
+Received: from sonic.gate.mail.ne1.yahoo.com by sonic302.consmr.mail.ir2.yahoo.com with HTTP; Thu, 19 Dec 2019 15:40:38 +0000
+Date:   Thu, 19 Dec 2019 15:40:34 +0000 (UTC)
+From:   Wilson Smith <smithwil456@gmail.com>
+Reply-To: smithwil456@gmail.com
+Message-ID: <922625577.2393156.1576770034174@mail.yahoo.com>
+Subject: HELLO FRIEND! I AWAIT YOUR RESPONSE
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191219145206.GE26945@dhcp22.suse.cz>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+References: <922625577.2393156.1576770034174.ref@mail.yahoo.com>
+X-Mailer: WebService/1.1.14873 YMailNodin Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.79 Safari/537.36
+To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 19, 2019 at 03:52:06PM +0100, Michal Hocko wrote:
-> On Thu 19-12-19 14:35:35, Jesper Dangaard Brouer wrote:
-> > On Thu, 19 Dec 2019 13:09:25 +0100
-> > Michal Hocko <mhocko@kernel.org> wrote:
-> > 
-> > > On Wed 18-12-19 09:01:35, Jesper Dangaard Brouer wrote:
-> > > [...]
-> > > > For the NUMA_NO_NODE case, when a NIC IRQ is moved to another NUMA
-> > > > node, then ptr_ring will be emptied in 65 (PP_ALLOC_CACHE_REFILL+1)
-> > > > chunks per allocation and allocation fall-through to the real
-> > > > page-allocator with the new nid derived from numa_mem_id(). We accept
-> > > > that transitioning the alloc cache doesn't happen immediately.  
-> > 
-> > Oh, I just realized that the drivers usually refill several RX
-> > packet-pages at once, this means that this is called N times, meaning
-> > during a NUMA change this will result in N * 65 pages returned.
-> > 
-> > 
-> > > Could you explain what is the expected semantic of NUMA_NO_NODE in this
-> > > case? Does it imply always the preferred locality? See my other email[1] to
-> > > this matter.
-> > 
-> > I do think we want NUMA_NO_NODE to mean preferred locality.
-> 
+Before I introduce myself, I wish to inform you that this letter is not a h=
+oax mail and I urge you to treat it serious. This letter must come to you a=
+s a big surprise, but I believe it is only a day that people meet and becom=
+e great friends and business partners. Please I want you to read this lette=
+r very carefully and I must apologize for barging this message into your ma=
+ilbox without any formal introduction due to the urgency and confidentialit=
+y of this business and I know that this message will come to you as a surpr=
+ise. Please this is not a joke and I will not like you to joke with it ok, =
+with due respect to your person and much sincerity of purpose, I make this =
+contact with you as I believe that you can be of great assistance to me. My=
+ name is Mr. Wilson Smith, from London, UK. I work in Kas Bank UK branch as=
+ telex manager, please see this as a confidential message and do not reveal=
+ it to another person and let me know whether you can be of assistance rega=
+rding my proposal below because it is top secret.
 
-Why? wouldn't it be clearer if it meant "this is not NUMA AWARE"?
-The way i see it iyou have drivers that sit on specific SoCs, 
-like the ti one, or the netsec one can declare 'NUMA_NO_NODE' since they 
-know beforehand what hardware they'll be sitting on.
-On PCI/USB pluggable interfaces mlx5 example should be followed.
+I am about to retire from active Banking service to start a new life, but I=
+ am sceptical to reveal this particular secret to a stranger. You must assu=
+re me that everything will be handled confidentially because we are not goi=
+ng to suffer again in life. It has been 10 years now that most of the greed=
+y African Politicians used our bank to launder money overseas through the h=
+elp of their Political advisers. Most of the funds which they transferred o=
+ut of the shores of Africa were gold and oil money that was supposed to hav=
+e been used to develop the continent. Their Political advisers always infla=
+ted the amounts before transferring to foreign accounts, so I also used the=
+ opportunity to divert part of the funds hence I am aware that there is no =
+official trace of how much was transferred as all the accounts used for suc=
+h transfers were being closed after transfer. I acted as the Bank Officer t=
+o most of the politicians and when I discovered that they were using me to =
+succeed in their greedy act; I also cleaned some of their banking records f=
+rom the Bank files and no one cared to ask me because the money was too muc=
+h for them to control. They laundered over =C2=A35billion pounds during the=
+ process.
 
-> I obviously have no saying here because I am not really familiar with
-> the users of this API but I would note that if there is such an implicit
-> assumption then you make it impossible to use the numa agnostic page
-> pool allocator (aka fast reallocation). This might be not important here
-> but future extension would be harder (you can still hack it around aka
-> NUMA_REALLY_NO_NODE). My experience tells me that people are quite
-> creative and usually require (or worse assume) semantics that you
-> thought were not useful.
-> 
-> That being said, if the NUMA_NO_NODE really should have a special
-> locality meaning then document it explicitly at least.
-
-Agree, if we treat it like this we have to document it somehow
-
-> -- 
-> Michal Hocko
-> SUSE Labs
-
-Thanks
-/Ilias
+Before I send this message to you, I have already diverted (=C2=A33.5millio=
+n pounds) to an escrow account belonging to no one in the bank. The bank is=
+ anxious now to know who the beneficiary to the funds is because they have =
+made a lot of profits with the funds. It is more than eight years now and m=
+ost of the politicians are no longer using our bank to transfer funds overs=
+eas. The (=C2=A33.5million pounds) has been laying waste in our bank and I =
+don=E2=80=99t want to retire from the bank without transferring the funds t=
+o a foreign account to enable me to share the proceeds with the receiver (a=
+ foreigner). The money will be shared 60% for me and 40% for you. There is =
+no one coming to ask you about the funds because I secured everything. I on=
+ly want you to assist me by providing a reliable bank account where the fun=
+ds can be transferred. Make Sure You Reply To My private email: wilsnl74@gm=
+ail.com
