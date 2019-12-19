@@ -2,45 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DDCBC125E89
-	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 11:08:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 34606125E9B
+	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 11:11:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726696AbfLSKH7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Dec 2019 05:07:59 -0500
-Received: from frisell.zx2c4.com ([192.95.5.64]:45445 "EHLO frisell.zx2c4.com"
+        id S1726752AbfLSKLm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Dec 2019 05:11:42 -0500
+Received: from frisell.zx2c4.com ([192.95.5.64]:51689 "EHLO frisell.zx2c4.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726609AbfLSKH7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 19 Dec 2019 05:07:59 -0500
-Received: by frisell.zx2c4.com (ZX2C4 Mail Server) with ESMTP id d951a01c;
-        Thu, 19 Dec 2019 09:11:16 +0000 (UTC)
+        id S1726725AbfLSKLm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 19 Dec 2019 05:11:42 -0500
+Received: by frisell.zx2c4.com (ZX2C4 Mail Server) with ESMTP id 7c18075f;
+        Thu, 19 Dec 2019 09:15:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=zx2c4.com; h=mime-version
         :references:in-reply-to:from:date:message-id:subject:to:cc
-        :content-type; s=mail; bh=grSjh8ZYo6kNeSpD6HM/l+7r1Mo=; b=FV3R3e
-        Z6vTu1Jr9LLECtX9dsaP1iiZ+lIz33emDMD/YS2L4FJB/MyhPSeZHv2KIVIYOAtv
-        QRDW3qwEVNWSfqry1i+rS0huWRSvMDrUzYT/QMV9ezVh+WJkkMgQPoFh2YI237hK
-        4HbuJHjVkCzVQ0Kmv135pe/9AdelFZS36CbwrZugN2P7tlHc7YFE0qEnshUi6/E4
-        lwlEfa/NwBcPfIlkygjnTofXbR0pZwWLI4rQWCqyJZvSoeHdk0AGhDbK4IzZs756
-        vAZ/Zp21022VIZe7OvZJ4X13jYZAqkdEGUEyaHm2B6rFQ+Ir3h1nKfrDVvnh/ElS
-        kbJ5jAYRG40RwveQ==
-Received: by frisell.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 3f89190a (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256:NO);
-        Thu, 19 Dec 2019 09:11:15 +0000 (UTC)
-Received: by mail-ot1-f46.google.com with SMTP id w1so6592527otg.3;
-        Thu, 19 Dec 2019 02:07:55 -0800 (PST)
-X-Gm-Message-State: APjAAAXzTUvVKi21zlhv2EqryQPE7eu6as1VO8E6JYfOHw8RZqywGfzH
-        5kEA/gWw6MXV6lYmPYezSZJZ2NfKrDH6Y5z/8oE=
-X-Google-Smtp-Source: APXvYqzwOVzplTvcddAygWVCVuqVraVrkajgnmf85Z8HESCRMPzl+88fjE14dVdEE+NGWAqidEvjjCceKSo3+7NE680=
-X-Received: by 2002:a9d:4f18:: with SMTP id d24mr2423429otl.179.1576750074960;
- Thu, 19 Dec 2019 02:07:54 -0800 (PST)
+        :content-type; s=mail; bh=+EdDtiusBwNIJrxz56VcIGbZpNs=; b=FTuevp
+        CztgWnh124N9Nn3nz/BVzwzUHNgy5G22x2l9dsc6Au8NjG0G/XAXJmW9Aild7858
+        FCgbdU65oy9CJo0Wr5LWyGsMbLFrIb5hDtqYX9FboOSYo1gPNYyreD8g4Ewi1Sx9
+        4e7f8j1kTMFDExICtYQGTesVWUNcbx/bN8VXo5YY1bZHlHNglpO8JziPBmwD/U1l
+        O/0XN+6JPNlxWRjpsur9b63wGPwFf0X6gimzQiNdkbi0Sf9+ADCTUNCkGrOA7eLz
+        f77tyGLO616udTw2H7ep35ncg6ZacdY+YF2g/mcdaSuAaqvJAaOp+2lPUfiCEmt8
+        zL2dcZXsfqHm4Dug==
+Received: by frisell.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id dd99e7a2 (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256:NO);
+        Thu, 19 Dec 2019 09:14:59 +0000 (UTC)
+Received: by mail-ot1-f47.google.com with SMTP id p8so6572188oth.10;
+        Thu, 19 Dec 2019 02:11:40 -0800 (PST)
+X-Gm-Message-State: APjAAAV6D4ucSOd5mAmYW6rYqgrTc8qd00vkT8hnXsKwiCZNGdgbGQZh
+        QCrKT/TROCq/595oUogKBUqt4fHuQ5/J+x4RhmI=
+X-Google-Smtp-Source: APXvYqy2bEz5l9a5Y3gzHzSKOIotYH8t0rUMP0jMFV0ZfqMV3QiV4R0uH2n6J7gtc1dXxQj1YkvTw5upDEDByrmGe8g=
+X-Received: by 2002:a05:6830:184:: with SMTP id q4mr8104517ota.52.1576750300137;
+ Thu, 19 Dec 2019 02:11:40 -0800 (PST)
 MIME-Version: 1.0
 References: <20191208232734.225161-1-Jason@zx2c4.com> <CACT4Y+bsJVmgbD-WogwU=LfWiPN1JgjBrwx4s8Y14hDd7vqqhQ@mail.gmail.com>
  <CAHmME9o0AparjaaOSoZD14RAW8_AJTfKfcx3Y2ndDAPFNC-MeQ@mail.gmail.com>
  <CACT4Y+Zssd6OZ2-U4kjw18mNthQyzPWZV_gkH3uATnSv1SVDfA@mail.gmail.com>
- <CAHmME9oM=YHMZyg23WEzmZAof=7iv-A01VazB3ihhR99f6X1cg@mail.gmail.com> <CACT4Y+aCEZm_BA5mmVTnK2cR8CQUky5w1qvmb2KpSR4-Pzp4Ow@mail.gmail.com>
-In-Reply-To: <CACT4Y+aCEZm_BA5mmVTnK2cR8CQUky5w1qvmb2KpSR4-Pzp4Ow@mail.gmail.com>
+ <CAHmME9oM=YHMZyg23WEzmZAof=7iv-A01VazB3ihhR99f6X1cg@mail.gmail.com>
+ <CACT4Y+aCEZm_BA5mmVTnK2cR8CQUky5w1qvmb2KpSR4-Pzp4Ow@mail.gmail.com> <CAHmME9rYstVLCBOgdMLqMeVDrX1V-f92vRKDqWsREROWdPbb6g@mail.gmail.com>
+In-Reply-To: <CAHmME9rYstVLCBOgdMLqMeVDrX1V-f92vRKDqWsREROWdPbb6g@mail.gmail.com>
 From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-Date:   Thu, 19 Dec 2019 11:07:43 +0100
-X-Gmail-Original-Message-ID: <CAHmME9rYstVLCBOgdMLqMeVDrX1V-f92vRKDqWsREROWdPbb6g@mail.gmail.com>
-Message-ID: <CAHmME9rYstVLCBOgdMLqMeVDrX1V-f92vRKDqWsREROWdPbb6g@mail.gmail.com>
+Date:   Thu, 19 Dec 2019 11:11:28 +0100
+X-Gmail-Original-Message-ID: <CAHmME9qUWr69o0r+Mtm8tRSeQq3P780DhWAhpJkNWBfZ+J5OYA@mail.gmail.com>
+Message-ID: <CAHmME9qUWr69o0r+Mtm8tRSeQq3P780DhWAhpJkNWBfZ+J5OYA@mail.gmail.com>
 Subject: Re: [PATCH net-next v2] net: WireGuard secure network tunnel
 To:     Dmitry Vyukov <dvyukov@google.com>
 Cc:     netdev <netdev@vger.kernel.org>,
@@ -57,34 +58,12 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 19, 2019 at 10:35 AM Dmitry Vyukov <dvyukov@google.com> wrote:
-> > Is this precise enough for race
-> > condition bugs?
+On Thu, Dec 19, 2019 at 11:07 AM Jason A. Donenfeld <Jason@zx2c4.com> wrote:
 >
-> It's finding lots of race conditions provoked bugs (I would say it's
-> the most common cause of kernel bugs).
+> On Thu, Dec 19, 2019 at 10:35 AM Dmitry Vyukov <dvyukov@google.com> wrote:
+> That's exciting about syzcaller having at it with WireGuard. Is there
+> some place where I can "see" it fuzzing WireGuard, or do I just wait
+> for the bug reports to come rolling in?
 
-I meant -- are the reproducers it makes precise enough to retrigger
-network-level race conditions?
-
-> Well, you are missing that wireguard is not the only subsystem
-> syzkaller tests (in fact, it does not test it at all) and there are
-> 3000 other subsystems :)
-
-Oooo! Everything is tested at the same time. I understand now; that
-makes a lot more sense.
-
-I'll look into splitting out the option, as you've asked. Note,
-though, that there are currently only three spots that have the "extra
-checks" at the moment, and one of them can be optimized out by the
-compiler with aggressive enough inlining added everywhere. The other
-two will result in an immediately corrupted stack frame that should be
-caught immediately by other things. So for now, I think you can get
-away with turning the debug option off, and you won't be missing much
-from the "extra checks", at least until we add more.
-
-That's exciting about syzcaller having at it with WireGuard. Is there
-some place where I can "see" it fuzzing WireGuard, or do I just wait
-for the bug reports to come rolling in?
-
-Jason
+Ahh, found it: https://storage.googleapis.com/syzkaller/cover/ci-upstream-net-kasan-gce.html
+Looks like we're at 1% and counting. :)
