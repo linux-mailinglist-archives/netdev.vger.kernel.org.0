@@ -2,159 +2,197 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 37C8C125EB2
-	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 11:15:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 37A1B125EB4
+	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 11:16:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726704AbfLSKPk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Dec 2019 05:15:40 -0500
-Received: from mail-lf1-f67.google.com ([209.85.167.67]:42687 "EHLO
-        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726609AbfLSKPk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Dec 2019 05:15:40 -0500
-Received: by mail-lf1-f67.google.com with SMTP id y19so3923150lfl.9;
-        Thu, 19 Dec 2019 02:15:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:from:to:cc:references:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=Rj2q3wD6aajz3PdA1FLrek6nU5zhW+vEBFUB4MYLIYs=;
-        b=VYe/tjzPHNpyq9kN24qr+0wfOwumba6bmciRVLa+9L5NEuwXAUQgygIBNEwsMvxx2A
-         5Sg/FAQKikTm1I6zgD3Pfq46QC69Fc4LaxF9XYMgsjj5m5DWD41kn7ShaJs9Hp/a0BfW
-         8+MYUQ9/VfDCVH6sY0bhMFCQPTPvGw8IrrwXoyYxUesoqKWMpmZh/ltZjqVVR2arkFwe
-         0yisTx5w/UZcNm/Zj4SWqhfR/xQVoWtjbLyBBi/iTAkAB5rxnbCp+QwSphWccc79DSi4
-         AMgYBzY/A3xL/PWG24tLgjNzZn2hBJPqCs3WfUMJ1XApJqo090kvepcXm2XyV0t9mqWB
-         r5MA==
+        id S1726744AbfLSKP7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Dec 2019 05:15:59 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:27551 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726609AbfLSKP7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Dec 2019 05:15:59 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1576750556;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=hQjAI6JubuoTKQgEMRmf2+97wqKzLvDzydfpYdfezXs=;
+        b=Dl0jVxGEuM2CTSvluGcTTnPGDGl5MFjXXSy5eAfXtAWSzjmscwThwpVZVAXbO/JMsKncIE
+        IO8VllSXwH0I+p/Np2FAB4TwW9B9j/AM+dsmGtjlpOtxU62UEgVgq/MRO20fmZxX/2UU1u
+        gKLPf830ZLlPBqyiNrixJw5agzxF1pA=
+Received: from mail-lj1-f200.google.com (mail-lj1-f200.google.com
+ [209.85.208.200]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-399-JBFAMPDnODenYJ0LOjd_5A-1; Thu, 19 Dec 2019 05:15:52 -0500
+X-MC-Unique: JBFAMPDnODenYJ0LOjd_5A-1
+Received: by mail-lj1-f200.google.com with SMTP id z18so1745507ljm.22
+        for <netdev@vger.kernel.org>; Thu, 19 Dec 2019 02:15:52 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=Rj2q3wD6aajz3PdA1FLrek6nU5zhW+vEBFUB4MYLIYs=;
-        b=POuZyLbRHk4Hu5hZesNlsNL9sys7iZCrhOdvF7cuSBlSNqwHJlyi9Q6aeS39Vyd4hw
-         k1+2DW2J8OmHLpQfx8nymj5pD/MWs9Xx3eYwgA0Svrudiwnu5bUmCsE2Sp9h8sw8lEKf
-         yCRrLvOlAPBqj45bK+djTD1N9pzL85VNhH9XEXeWbHhOGSO5FTg2iF09B7HOl1wveo1P
-         69oUsR8Rref3dQRC0C3Z+RR7J9ewrnw8/z9vpL8Cx9/KDxDO6lndVwpmHkPAmEwFMmr6
-         GiwUROFfN/WC4iRHpcOolsoHjqSLAZ/3WT/SXJBXTw9sG5b1lU5A5ik7xd1eJKqamaJz
-         +RFA==
-X-Gm-Message-State: APjAAAXZuztYZgI188mo1xSv0YvPaNqBcs9d854QOkkVJbzkKBF6+Ulv
-        da5MukE3q3d0pSpgM4IZdeNMBoQDqsyDgw==
-X-Google-Smtp-Source: APXvYqya/tgd7VQnmbu9lTExcsRK48yqlOicy53+7Ka2wVmIDOYpJUSfB1plClM8Ws9/ZUmRYzQX1A==
-X-Received: by 2002:ac2:4834:: with SMTP id 20mr4443150lft.166.1576750537756;
-        Thu, 19 Dec 2019 02:15:37 -0800 (PST)
-Received: from [192.168.43.60] ([176.227.99.155])
-        by smtp.gmail.com with ESMTPSA id g24sm2384473lfb.85.2019.12.19.02.15.34
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 19 Dec 2019 02:15:36 -0800 (PST)
-Subject: Re: [PATCH] Revert "iwlwifi: mvm: fix scan config command size"
-From:   Mehmet Akif Tasova <makiftasova@gmail.com>
-To:     Roman Gilg <subdiff@gmail.com>
-Cc:     Johannes Berg <johannes.berg@intel.com>,
-        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Intel Linux Wireless <linuxwifi@intel.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Shahar S Matityahu <shahar.s.matityahu@intel.com>,
-        Tova Mussai <tova.mussai@intel.com>,
-        Ayala Beker <ayala.beker@intel.com>,
-        Sara Sharon <sara.sharon@intel.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20191213203512.8250-1-makiftasova@gmail.com>
- <CAJcyoyusgtw0++KsEHK-t=EFGx2v9GKv7+BSViUCaB3nyDr2Jw@mail.gmail.com>
- <CAP=YcKGLDx_coFsY7ej6BkdBJT+FELGSOMM6YM_r7jgqEsvChw@mail.gmail.com>
-Message-ID: <8b895e5a-745b-a9f1-2bc8-8a1fac61129f@gmail.com>
-Date:   Thu, 19 Dec 2019 13:15:32 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.3.0
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=hQjAI6JubuoTKQgEMRmf2+97wqKzLvDzydfpYdfezXs=;
+        b=eplQFCSfQUCrHw5kTkxzgCf5hVmvM/gOJ+Ld46D6SWytRgeACaH1B/Q+MC9982S4LR
+         7W2Qj2s/2fzVcF/HjeNiDJWvB6fPwBkiR2mhOV4heBSN9oUo9UGNWVrIcZpgGguzbORP
+         iK79w++2Tbhtr7+cj76iGyYG/O21kVLfRScMJZurVj8v0hrpE7hPU6+qJbwi5GLGKmzR
+         2hCOnUqa3vahFjuY0M44KKDgfwzUVbdY54wMJDQFVh2FHFNSYYJG5kvMK1OYBaTRZ8eI
+         Mc1ztFFMjbQ3yPH9HZlAgxAZHZePTrc+AJsrN3EJP00137Kz0zIpGN7kCHfy/zk+QSNa
+         nTbg==
+X-Gm-Message-State: APjAAAU+d5LQobmNkAOWdEDYsCHwDmGdfvxVdlpR90C5v1lhzZM8IfOS
+        CAHJ074hIEP/ALRw0RLoNmnFAQl8ln7mBGYyPc13A/hExAnzvV0CUXhv5MS2hHFTa1ODaMJoNKD
+        itiau3S8+Im1AbWI5
+X-Received: by 2002:a2e:580c:: with SMTP id m12mr5402015ljb.150.1576750551361;
+        Thu, 19 Dec 2019 02:15:51 -0800 (PST)
+X-Google-Smtp-Source: APXvYqxRLX/uV3r0uPoNDAmKN5lQYe++bbWrGCxMJTSIxViCD/pZOvhtGAsv674uurk8OXXaLS/oRg==
+X-Received: by 2002:a2e:580c:: with SMTP id m12mr5401985ljb.150.1576750551118;
+        Thu, 19 Dec 2019 02:15:51 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id v9sm2954197lfe.18.2019.12.19.02.15.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 19 Dec 2019 02:15:50 -0800 (PST)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 61040180969; Thu, 19 Dec 2019 11:15:48 +0100 (CET)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Prashant Bhole <prashantbhole.linux@gmail.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Jesper Dangaard Brouer <jbrouer@redhat.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        "Michael S . Tsirkin" <mst@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Jason Wang <jasowang@redhat.com>,
+        David Ahern <dsahern@gmail.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Toshiaki Makita <toshiaki.makita1@gmail.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>, netdev@vger.kernel.org,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>
+Subject: Re: [RFC net-next 11/14] tun: run XDP program in tx path
+In-Reply-To: <35a07230-3184-40bf-69ff-852bdfaf03c6@gmail.com>
+References: <20191218081050.10170-1-prashantbhole.linux@gmail.com> <20191218081050.10170-12-prashantbhole.linux@gmail.com> <20191218110732.33494957@carbon> <87fthh6ehg.fsf@toke.dk> <20191218181944.3ws2oy72hpyxshhb@ast-mbp.dhcp.thefacebook.com> <35a07230-3184-40bf-69ff-852bdfaf03c6@gmail.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Thu, 19 Dec 2019 11:15:48 +0100
+Message-ID: <874kxw4o4r.fsf@toke.dk>
 MIME-Version: 1.0
-In-Reply-To: <CAP=YcKGLDx_coFsY7ej6BkdBJT+FELGSOMM6YM_r7jgqEsvChw@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Prashant Bhole <prashantbhole.linux@gmail.com> writes:
 
-Because I used gmail mobile app to response and the app decided that 
-always using HTML is a valid choice for every one, my previous mail 
-rejected by mailing lists.
+> On 12/19/19 3:19 AM, Alexei Starovoitov wrote:
+>> On Wed, Dec 18, 2019 at 12:48:59PM +0100, Toke H=C3=B8iland-J=C3=B8rgens=
+en wrote:
+>>> Jesper Dangaard Brouer <jbrouer@redhat.com> writes:
+>>>
+>>>> On Wed, 18 Dec 2019 17:10:47 +0900
+>>>> Prashant Bhole <prashantbhole.linux@gmail.com> wrote:
+>>>>
+>>>>> +static u32 tun_do_xdp_tx(struct tun_struct *tun, struct tun_file *tf=
+ile,
+>>>>> +			 struct xdp_frame *frame)
+>>>>> +{
+>>>>> +	struct bpf_prog *xdp_prog;
+>>>>> +	struct tun_page tpage;
+>>>>> +	struct xdp_buff xdp;
+>>>>> +	u32 act =3D XDP_PASS;
+>>>>> +	int flush =3D 0;
+>>>>> +
+>>>>> +	xdp_prog =3D rcu_dereference(tun->xdp_tx_prog);
+>>>>> +	if (xdp_prog) {
+>>>>> +		xdp.data_hard_start =3D frame->data - frame->headroom;
+>>>>> +		xdp.data =3D frame->data;
+>>>>> +		xdp.data_end =3D xdp.data + frame->len;
+>>>>> +		xdp.data_meta =3D xdp.data - frame->metasize;
+>>>>
+>>>> You have not configured xdp.rxq, thus a BPF-prog accessing this will c=
+rash.
+>>>>
+>>>> For an XDP TX hook, I want us to provide/give BPF-prog access to some
+>>>> more information about e.g. the current tx-queue length, or TC-q numbe=
+r.
+>>>>
+>>>> Question to Daniel or Alexei, can we do this and still keep BPF_PROG_T=
+YPE_XDP?
+>>>> Or is it better to introduce a new BPF prog type (enum bpf_prog_type)
+>>>> for XDP TX-hook ?
+>>>
+>>> I think a new program type would make the most sense. If/when we
+>>> introduce an XDP TX hook[0], it should have different semantics than the
+>>> regular XDP hook. I view the XDP TX hook as a hook that executes as the
+>>> very last thing before packets leave the interface. It should have
+>>> access to different context data as you say, but also I don't think it
+>>> makes sense to have XDP_TX and XDP_REDIRECT in an XDP_TX hook. And we
+>>> may also want to have a "throttle" return code; or maybe that could be
+>>> done via a helper?
+>>>
+>>> In any case, I don't think this "emulated RX hook on the other end of a
+>>> virtual device" model that this series introduces is the right semantics
+>>> for an XDP TX hook. I can see what you're trying to do, and for virtual
+>>> point-to-point links I think it may make sense to emulate the RX hook of
+>>> the "other end" on TX. However, form a UAPI perspective, I don't think
+>>> we should be calling this a TX hook; logically, it's still an RX hook
+>>> on the receive end.
+>>>
+>>> If you guys are up for evolving this design into a "proper" TX hook (as
+>>> outlined above an in [0]), that would be awesome, of course. But not
+>>> sure what constraints you have on your original problem? Do you
+>>> specifically need the "emulated RX hook for unmodified XDP programs"
+>>> semantics, or could your problem be solved with a TX hook with different
+>>> semantics?
+>>=20
+>> I agree with above.
+>> It looks more like existing BPF_PROG_TYPE_XDP, but attached to egress
+>> of veth/tap interface. I think only attachment point makes a difference.
+>> May be use expected_attach_type ?
+>> Then there will be no need to create new program type.
+>> BPF_PROG_TYPE_XDP will be able to access different fields depending
+>> on expected_attach_type. Like rx-queue length that Jesper is suggesting
+>> will be available only in such case and not for all BPF_PROG_TYPE_XDP pr=
+ogs.
+>> It can be reduced too. Like if there is no xdp.rxq concept for egress si=
+de
+>> of virtual device the access to that field can disallowed by the verifie=
+r.
+>> Could you also call it XDP_EGRESS instead of XDP_TX?
+>> I would like to reserve XDP_TX name to what Toke describes as XDP_TX.
+>>=20
+>
+>  From the discussion over this set, it makes sense to have new type of
+> program. As David suggested it will make a way for changes specific
+> to egress path.
+> On the other hand, XDP offload with virtio-net implementation is based
+> on "emulated RX hook". How about having this special behavior with
+> expected_attach_type?
 
-Because of that I am (re)sending this mail. You can find contents of my 
-previous mail below.
+Another thought I had re: this was that for these "special" virtual
+point-to-point devices we could extend the API to have an ATTACH_PEER
+flag. So if you have a pair of veth devices (veth0,veth1) connecting to
+each other, you could do either of:
 
-Regards,
-Mehmet Akif.
+bpf_set_link_xdp_fd(ifindex(veth0), prog_fd, 0);
+bpf_set_link_xdp_fd(ifindex(veth1), prog_fd, ATTACH_PEER);
 
-> Hi Roman,
->
-> Unfortunately I don't have XPS 13 and tested the patch on Dell Vostro 
-> 5481 and this patch is the result of bisection on Vostro.
->
-> At first, the Archlinux bug report I shared looked similar thus that 
-> bug report contains lots of dmesg outputs from different users. But 
-> yes probably there is 2 distinct issue which should be solved separately.
->
-> I will update commit message accordingly as soon as possible.
->
-> Regards,
-> Mehmet Akif
->
->
-> On Wed, Dec 18, 2019, 22:12 Roman Gilg <subdiff@gmail.com 
-> <mailto:subdiff@gmail.com>> wrote:
->
->     On Fri, Dec 13, 2019 at 9:36 PM Mehmet Akif Tasova
->     <makiftasova@gmail.com <mailto:makiftasova@gmail.com>> wrote:
->     >
->     > Since Linux 5.4.1 released, iwlwifi could not initialize
->     Intel(R) Dual Band
->     > Wireless AC 9462 firmware, failing with following error in dmesg:
->     >
->     > iwlwifi 0000:00:14.3: FW error in SYNC CMD SCAN_CFG_CMD
->     >
->     > whole dmesg output of error can be found at:
->     > https://gist.github.com/makiftasova/354e46439338f4ab3fba0b77ad5c19ec
->     >
->     > also bug report from ArchLinux bug tracker (contains more info):
->     > https://bugs.archlinux.org/task/64703
->
->     Since this bug report is about the Dell XPS 13 2-in1: I tested your
->     revert with this device, but the issue persists at least on this
->     device. So these might be two different issues, one for your device
->     and another one for the XPS.
->
->     > Reverting commit 06eb547c4ae4 ("iwlwifi: mvm: fix scan config
->     command
->     > size") seems to fix this issue  until proper solution is found.
->     >
->     > This reverts commit 06eb547c4ae4382e70d556ba213d13c95ca1801b.
->     >
->     > Signed-off-by: Mehmet Akif Tasova <makiftasova@gmail.com
->     <mailto:makiftasova@gmail.com>>
->     > ---
->     >  drivers/net/wireless/intel/iwlwifi/mvm/scan.c | 2 +-
->     >  1 file changed, 1 insertion(+), 1 deletion(-)
->     >
->     > diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/scan.c
->     b/drivers/net/wireless/intel/iwlwifi/mvm/scan.c
->     > index a046ac9fa852..a5af8f4128b1 100644
->     > --- a/drivers/net/wireless/intel/iwlwifi/mvm/scan.c
->     > +++ b/drivers/net/wireless/intel/iwlwifi/mvm/scan.c
->     > @@ -1213,7 +1213,7 @@ static int
->     iwl_mvm_legacy_config_scan(struct iwl_mvm *mvm)
->     >                 cmd_size = sizeof(struct iwl_scan_config_v2);
->     >         else
->     >                 cmd_size = sizeof(struct iwl_scan_config_v1);
->     > -       cmd_size += num_channels;
->     > +       cmd_size += mvm->fw->ucode_capa.n_scan_channels;
->     >
->     >         cfg = kzalloc(cmd_size, GFP_KERNEL);
->     >         if (!cfg)
->     > --
->     > 2.24.1
->     >
->
+to attach to veth0, and:
+
+bpf_set_link_xdp_fd(ifindex(veth1), prog_fd, 0);
+bpf_set_link_xdp_fd(ifindex(veth0), prog_fd, ATTACH_PEER);
+
+to attach to veth0.
+
+This would allow to attach to a device without having the "other end"
+visible, and keep the "XDP runs on RX" semantics clear to userspace.
+Internally in the kernel we could then turn the "attach to peer"
+operation for a tun device into the "emulate on TX" thing you're already
+doing?
+
+Would this work for your use case, do you think?
+
+-Toke
+
