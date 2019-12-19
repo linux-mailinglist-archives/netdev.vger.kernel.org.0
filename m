@@ -2,86 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F4089125918
-	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 02:11:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F14AC125920
+	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 02:17:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726696AbfLSBLv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Dec 2019 20:11:51 -0500
-Received: from mail-lj1-f196.google.com ([209.85.208.196]:33023 "EHLO
+        id S1726695AbfLSBRd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Dec 2019 20:17:33 -0500
+Received: from mail-lj1-f196.google.com ([209.85.208.196]:36526 "EHLO
         mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726518AbfLSBLv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Dec 2019 20:11:51 -0500
-Received: by mail-lj1-f196.google.com with SMTP id p8so4302139ljg.0;
-        Wed, 18 Dec 2019 17:11:50 -0800 (PST)
+        with ESMTP id S1726463AbfLSBRc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Dec 2019 20:17:32 -0500
+Received: by mail-lj1-f196.google.com with SMTP id r19so4296080ljg.3;
+        Wed, 18 Dec 2019 17:17:31 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=F0fthrE48knNAOyxF+Yceu62pdIXb13034ptSwh3wAw=;
-        b=BWFhIJPrJw6VyqCTtdf00IEaReySTrGUAHU+Ii8im5jphay4dEsgGmbPhl1c6wNh0K
-         E1ZTOQ7NNRH/eeOehQx+929CAUJaBKNu0EbotxGYDE04y0SJqi/5YtCJI9+0eaTSEvjJ
-         NowRwoUFf8+1lx1G+oPDi1tNAwivkCAPaDRadYWxu1REN9HnNzlDq+IoRAhYvOhMszXC
-         Pk4rIaz4zBg8E3wjM23WlrNGyg90u4W1KYKuR9IwfmZJG43YToocTgdwBevC8+1Z6c+j
-         Dp9a3/qtCxQv1ATjf9ZEBtAnqjQahEQZIHuxLg7rBimJa99GnlIOMbwZqr+dR+z6V5ba
-         QMjQ==
+        bh=x+hZ4AsCCSWF7X3U8kH39BiTzUTLQH9/GLTn4Zwvi2k=;
+        b=HI7qOMG1BZ9iBpMMUhSMk75Oa2uNnCESdfS2b5zaTakgAZ38v09cEubHnHG2cWxOjB
+         1+/09Gg3omg/LTo1ZdhfMYiPGli8VQ0VFNN1/VXlEv7qRgYPJlX3k8McdE9bNgrZmsQL
+         x5bBJutEZjWm7GMHaqelpJojx6oI+8w4duRkIE+I/N43T4IYbQBd9EuC3sQiTFxeqY8Y
+         IYa04i/oDHYRWayIOIBhgypQyxanUenXWiuUv8hocKn5BRxY/lUvNmBmgSx4hVFRCapp
+         tUByQWDDv5+gQ2X6g+mF7ly2sH3h8VK/BZ9cXO6P06JbZmjSQB0GF7aseUx+nXlkyG6+
+         InOw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=F0fthrE48knNAOyxF+Yceu62pdIXb13034ptSwh3wAw=;
-        b=FbBMB0okcIsYQvHgOYRlTT/8VJ6cjzW1lvHi59dNsn+jqWdHcZmTdUDrWXKY6b5H/G
-         /x9nMQuoTwNNezL7iNaErjf6qfm0s14LayqXM81VnqwAMWMuc8ZnFGraiFLlwY5xxSVH
-         Zvua0Ki+Gc80xDJf2Kpg8bHtcz5vd/ns+voSRl7Y2BelTKQw7VM4c1lPVaQKqfB78/GH
-         4/IL/FnHroC+jrPRd6JS8lHK44W4mZH9/fOPGbspP5knvjbDln0+jmKZ4XYFulkH+21H
-         WbN/tM86AqcCl03T9fr//3ODjn14lk3e7bbXnumwmeKZjMkT5InlswqZKhemhudefaLp
-         yLdg==
-X-Gm-Message-State: APjAAAVmkUFGwXR3qPmjggDv2N9pCbE8dcL792wb9cd8HBbNcCEsdQBe
-        CsYfSuHSvH03Cscu6UZ2LsXHjGHu8IL8AVDQ3lY=
-X-Google-Smtp-Source: APXvYqzPVkyfToCH6R8URpiEuhigRu1NaNge+Mxji2ZG9MET4K/cyuT1hD+lvcDHUEx+BN5bL9iM397fm8xhl1EuApg=
-X-Received: by 2002:a2e:9cd8:: with SMTP id g24mr3859839ljj.243.1576717512802;
- Wed, 18 Dec 2019 17:05:12 -0800 (PST)
+        bh=x+hZ4AsCCSWF7X3U8kH39BiTzUTLQH9/GLTn4Zwvi2k=;
+        b=aGLAXcAjEpRw1EL4a7HnS0TtIvFiYKJrfDJYPyCzy+aBpCuFK1LVh/G2YLFqaHji9e
+         EpwaEd/AmJg0FpzLDdUNIkYfoo2urEThu8eX+IoJzwIsv8KLUVRX0d4ufpffH8vu4CpH
+         q32UILXV7iN3QYiwGiKmAU/27tFLrnydQDrNYKvrgMomcPkMu8TzDAI8XNO/QzRiGG5e
+         /l1xCtLXZH8GWdhp/UrBPoR67MezUE3+3DCr0rJ2H2SeGvZDWKRWaSxpoxg0GAjw+E2+
+         Aw0tDhCKO1OuEWWjvhjvTwO6HCIlQKTHi5JyYsRNVhwKJS2SgzTqsYx+lWlk47VF0UJ8
+         zhDg==
+X-Gm-Message-State: APjAAAXzuqRe/qDKjlIca3m7RjHoOlarwLxGUgvtLGqylg53HA+sc6k7
+        T4rKas4HJYHeH0lDiedtGjitBHZCJbrlIMXDXyo=
+X-Google-Smtp-Source: APXvYqwMucniyBvvi/ahg11Dnv7XDWoGTxskW4ZSjRWD8b55hyXxzdVf9Rcv+mZ3Oz8rV9WdSjCMXE+U7r27uW7VMs8=
+X-Received: by 2002:a2e:9d85:: with SMTP id c5mr4038997ljj.51.1576718250567;
+ Wed, 18 Dec 2019 17:17:30 -0800 (PST)
 MIME-Version: 1.0
-References: <20191218221707.2552199-1-andriin@fb.com> <bc49104a-01a7-8731-e811-53a6c9861a48@fb.com>
- <1689268b-3f09-0a8a-b1dc-8c739901d92f@fb.com>
-In-Reply-To: <1689268b-3f09-0a8a-b1dc-8c739901d92f@fb.com>
+References: <20191218205747.107438-1-tehnerd@tehnerd.com>
+In-Reply-To: <20191218205747.107438-1-tehnerd@tehnerd.com>
 From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Wed, 18 Dec 2019 17:04:59 -0800
-Message-ID: <CAADnVQ+PTVQvoRQym8UZYCUQS9tTrB4B3SOWsBtNS943rn7rMA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] bpftool: work-around rst2man conversion bug
-To:     Yonghong Song <yhs@fb.com>
-Cc:     Andrii Nakryiko <andriin@fb.com>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "andrii.nakryiko@gmail.com" <andrii.nakryiko@gmail.com>,
-        Kernel Team <Kernel-team@fb.com>
+Date:   Wed, 18 Dec 2019 17:17:19 -0800
+Message-ID: <CAADnVQ+A1rdqtGNEa_d8sDrMgHqb0Z4QfiRv6_dfPYqPgBt6cA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] bpf: allow to change skb mark in test_run
+To:     "Nikita V. Shirokov" <tehnerd@tehnerd.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Stanislav Fomichev <sdf@google.com>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 18, 2019 at 4:42 PM Yonghong Song <yhs@fb.com> wrote:
+On Wed, Dec 18, 2019 at 12:59 PM Nikita V. Shirokov <tehnerd@tehnerd.com> wrote:
 >
+> allow to pass skb's mark field into bpf_prog_test_run ctx
+> for BPF_PROG_TYPE_SCHED_CLS prog type. that would allow
+> to test bpf programs which are doing decision based on this
+> field
 >
->
-> On 12/18/19 3:35 PM, Yonghong Song wrote:
-> >
-> >
-> > On 12/18/19 2:17 PM, Andrii Nakryiko wrote:
-> >> Work-around what appears to be a bug in rst2man convertion tool, used to
-> >> create man pages out of reStructureText-formatted documents. If text line
-> >> starts with dot, rst2man will put it in resulting man file verbatim. This
-> >> seems to cause man tool to interpret it as a directive/command (e.g., `.bs`), and
-> >> subsequently not render entire line because it's unrecognized one.
-> >>
-> >> Enclose '.xxx' words in extra formatting to work around.
-> >>
-> >> Fixes: cb21ac588546 ("bpftool: Add gen subcommand manpage")
-> >> Reported-by: Alexei Starovoitov <ast@kernel.org>
-> >> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
->
-> Acked-by: Yonghong Song <yhs@fb.com
+> Signed-off-by: Nikita V. Shirokov <tehnerd@tehnerd.com>
 
-Applied. Thanks
+Applied. Thanks.
+
+Please cc bpf@vger next time.
