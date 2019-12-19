@@ -2,73 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 71AF112583E
-	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 01:10:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1005D12586F
+	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 01:28:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726620AbfLSAKH convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 18 Dec 2019 19:10:07 -0500
-Received: from mga02.intel.com ([134.134.136.20]:62892 "EHLO mga02.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726559AbfLSAKH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 18 Dec 2019 19:10:07 -0500
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga101.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 18 Dec 2019 16:10:07 -0800
-X-IronPort-AV: E=Sophos;i="5.69,330,1571727600"; 
-   d="scan'208";a="210268231"
-Received: from aguedesl-mac01.jf.intel.com (HELO localhost) ([10.24.12.200])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 18 Dec 2019 16:10:06 -0800
-Content-Type: text/plain; charset="utf-8"
+        id S1726609AbfLSA2m (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Dec 2019 19:28:42 -0500
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:45602 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726536AbfLSA2m (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Dec 2019 19:28:42 -0500
+Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
+        by m0089730.ppops.net (8.16.0.42/8.16.0.42) with SMTP id xBJ0Q6wK023922
+        for <netdev@vger.kernel.org>; Wed, 18 Dec 2019 16:28:41 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-type; s=facebook;
+ bh=vfbQhXh/Xakk69vVb2LLOej57QJn3aEootPFG+x1SRU=;
+ b=e1oePF/rI3sGpjTC+g/AkrAA5XVNiRKY3r5dDlYReTuxAsElqNcfJ1X86lmdCiQle+z7
+ Flt4PQ3JTZlJPRjFkCA9lVbDWqkUUcjiHO8waymmt/auSjs0AYBAVRRwE6RMRqBbs291
+ ly8IcTWkOHXDXsRcRd/Z2mxbiv8yU19UNgU= 
+Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
+        by m0089730.ppops.net with ESMTP id 2wyhy23w3j-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Wed, 18 Dec 2019 16:28:41 -0800
+Received: from intmgw002.06.prn3.facebook.com (2620:10d:c081:10::13) by
+ mail.thefacebook.com (2620:10d:c081:35::125) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
+ Wed, 18 Dec 2019 16:28:39 -0800
+Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
+        id BAEBE2EC18AF; Wed, 18 Dec 2019 16:28:38 -0800 (PST)
+Smtp-Origin-Hostprefix: devbig
+From:   Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>
+CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Cluster: ftw2c04
+Subject: [PATCH bpf-next 0/3] Libbpf extern support improvements
+Date:   Wed, 18 Dec 2019 16:28:33 -0800
+Message-ID: <20191219002837.3074619-1-andriin@fb.com>
+X-Mailer: git-send-email 2.17.1
+X-FB-Internal: Safe
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-In-Reply-To: <20191218.151221.1979818977536859260.davem@davemloft.net>
-References: <20191218224448.8066-1-andre.guedes@intel.com> <20191218224448.8066-2-andre.guedes@intel.com> <20191218.151221.1979818977536859260.davem@davemloft.net>
-To:     David Miller <davem@davemloft.net>, andre.guedes@intel.com
-From:   Andre Guedes <andre.guedes@linux.intel.com>
-Cc:     netdev@vger.kernel.org
-Subject: Re: [PATCH 2/2] ether: Add ETH_P_AVTP macro
-Message-ID: <157671420675.49129.8232568416859420600@aguedesl-mac01.jf.intel.com>
-User-Agent: alot/0.8.1
-Date:   Wed, 18 Dec 2019 16:10:06 -0800
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
+ definitions=2019-12-18_08:2019-12-17,2019-12-18 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 adultscore=0
+ suspectscore=8 spamscore=0 impostorscore=0 malwarescore=0 clxscore=1015
+ mlxlogscore=949 bulkscore=0 priorityscore=1501 mlxscore=0
+ lowpriorityscore=0 phishscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-1910280000 definitions=main-1912190002
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi David,
+Based on latest feedback and discussions, this patch set implements the
+following changes:
 
-Quoting David Miller (2019-12-18 15:12:21)
-> From: Andre Guedes <andre.guedes@intel.com>
-> Date: Wed, 18 Dec 2019 14:44:48 -0800
-> 
-> > This patch adds the ETH_P_AVTP macro which defines the Audio/Video
-> > Transport Protocol (AVTP) ethertype assigned to 0x22F0, according to:
-> > 
-> > http://standards-oui.ieee.org/ethertype/eth.txt
-> > 
-> > AVTP is the transport protocol utilized in Audio/Video Bridging (AVB),
-> > and it is defined by IEEE 1722 standard.
-> > 
-> > Note that we have ETH_P_TSN macro defined with the number assigned to
-> > AVTP. However, there is no "TSN" ethertype. TSN is not a protocol, but a
-> > set of features to deliver networking determinism, so ETH_P_TSN can be a
-> > bit misleading. For compatibility reasons we should keep it around.
-> > This patch re-defines it using the ETH_P_AVTP macro to make it explicit.
-> > 
-> > Signed-off-by: Andre Guedes <andre.guedes@intel.com>
-> 
-> Likewise, let's see an in-kernel user first.
+- Kconfig-provided externs have to be in .kconfig section, for which
+  bpf_helpers.h provides convenient __kconfig macro (Daniel);
+- instead of allowing to override Kconfig file path, switch this to ability to
+  extend and override system Kconfig with user-provided custom values (Alexei);
+- BTF is required when externs are used.
 
-I don't think we are going to see an in-kernel user for these ethertypes since
-these protocols are implemented in user-space. For instance, we have AVTP
-plugins in upstream ALSA [1] and GStreamer [2] that implement AVB. The plugins
-are currently using ETH_P_TSN for convenience to send/receive AVTP packets.
+Andrii Nakryiko (3):
+  libbpf: put Kconfig externs into .kconfig section
+  libbpf: allow to augment system Kconfig through extra optional config
+  libbpf: BTF is required when externs are present
 
-Regards,
+ tools/bpf/bpftool/gen.c                       |   8 +-
+ tools/lib/bpf/bpf_helpers.h                   |   2 +
+ tools/lib/bpf/libbpf.c                        | 265 +++++++++++-------
+ tools/lib/bpf/libbpf.h                        |   8 +-
+ .../selftests/bpf/prog_tests/core_extern.c    |  32 +--
+ .../selftests/bpf/prog_tests/skeleton.c       |  16 +-
+ .../selftests/bpf/progs/test_core_extern.c    |  20 +-
+ .../selftests/bpf/progs/test_skeleton.c       |   4 +-
+ 8 files changed, 194 insertions(+), 161 deletions(-)
 
-Andre
+-- 
+2.17.1
 
-[1] https://github.com/alsa-project/alsa-plugins/blob/master/aaf/pcm_aaf.c#L283
-
-[2] https://gitlab.freedesktop.org/gstreamer/gst-plugins-bad/blob/master/ext/avtp/gstavtpsink.c#L245
