@@ -2,128 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 127BD12705F
-	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 23:06:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 700E3127066
+	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 23:08:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727412AbfLSWGr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Dec 2019 17:06:47 -0500
-Received: from mga18.intel.com ([134.134.136.126]:44253 "EHLO mga18.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727298AbfLSWGj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 19 Dec 2019 17:06:39 -0500
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga106.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 19 Dec 2019 14:06:30 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.69,333,1571727600"; 
-   d="scan'208";a="298841755"
-Received: from mjmartin-nuc02.mjmartin-nuc02 (HELO mjmartin-nuc02.sea.intel.com) ([10.251.1.107])
-  by orsmga001.jf.intel.com with ESMTP; 19 Dec 2019 14:06:30 -0800
-From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
-To:     netdev@vger.kernel.org, mptcp@lists.01.org
-Cc:     Paolo Abeni <pabeni@redhat.com>,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>
-Subject: [PATCH net-next v4 11/11] skb: add helpers to allocate ext independently from sk_buff
-Date:   Thu, 19 Dec 2019 14:05:57 -0800
-Message-Id: <20191219220557.17823-12-mathew.j.martineau@linux.intel.com>
-X-Mailer: git-send-email 2.24.1
-In-Reply-To: <20191219220557.17823-1-mathew.j.martineau@linux.intel.com>
-References: <20191219220557.17823-1-mathew.j.martineau@linux.intel.com>
+        id S1727029AbfLSWIA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Dec 2019 17:08:00 -0500
+Received: from mail-lf1-f66.google.com ([209.85.167.66]:39743 "EHLO
+        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726930AbfLSWIA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Dec 2019 17:08:00 -0500
+Received: by mail-lf1-f66.google.com with SMTP id y1so5447961lfb.6
+        for <netdev@vger.kernel.org>; Thu, 19 Dec 2019 14:07:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=hR7F4YhutqO0BJIosz2jHvA6soOJCJY1vQLjY2X2/O8=;
+        b=A0E8qgFtXIcXW/s4/ZRN1pdA2Rt/Qx2LrX6pMJ2FWSEA0rFfuE2nMr9XgT8pK0cCj3
+         uSMJVigsqKDHbIWpHp3E3zZ0mk4UhIo+P3RBi1qfizMP1cuLIV5kGyiyLMESfdsrlbSP
+         AT6RaxQBVSqO2xcOfcJgIo/Ui86hHaBO9Jz52Do8mB4SDbLm54VTxiBuZgiFP9rnpUmR
+         g7uJqKLKnZCuzB4Oq3EZa//6Zs792+UJzPvJvL4vqaTJ0zIboRbVVb3KHTSWA/w0/JUL
+         GyRcrZJUU3I6ANnaFv2r/kFt8P2of6noKw0AJAizbHkld69sJb/iJPma6l4C31VKC3gY
+         BjLQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=hR7F4YhutqO0BJIosz2jHvA6soOJCJY1vQLjY2X2/O8=;
+        b=SUYANogfHXzrGzaqio89x2VJCC/8OfaSPGoKLnZPTnDxgQf7EYZJ9yt9JMxbg9u3vp
+         8sVpeK0REgzOerw0mDb50M78tSOVmR3ZeIplCSJ9wAovctIEE+woztIA66GvGLqvHNTQ
+         u3dphP4w3oEUCADoQF0E13ZJmZCoHHPNmhn5g7uHeMwxMJ+CvdKIwV0dNtI4QHKrRpnG
+         s9eqSd+4mffzwobyceGRPd0y54As492m4L8/D7/woiIlcs8rFoYqvQSFs605hKqh0U6+
+         Jk8r9PiIpScTduOWAn4D2KtPUqgh67r/g8vxaTpkCnDkEuutmZWZIbY3Aewk77TK3cLc
+         oeNg==
+X-Gm-Message-State: APjAAAWz1qGTNGZC3P90GVEVfUI6jdxpJhlBGeTcdEP56n8dqg1HTkiN
+        5XMFXAYd2NeXdad04nq6aA93Pb7qmVTsq0GNpNQ=
+X-Google-Smtp-Source: APXvYqzgPbqhjgmpsMNrQQnGSJbfZhyld6Q42FWEF8ncXBlQb9cKi8xm4TJCQs7kAftmD16OQANzKRF82TNlXyPR6wE=
+X-Received: by 2002:a19:6d13:: with SMTP id i19mr6951656lfc.6.1576793278165;
+ Thu, 19 Dec 2019 14:07:58 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20191219201601.7378-1-aforster@cloudflare.com>
+In-Reply-To: <20191219201601.7378-1-aforster@cloudflare.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Thu, 19 Dec 2019 14:07:46 -0800
+Message-ID: <CAADnVQLrsgGzVcBea68gf+yZ2R-iYzCJupE6jzaqR5ctbCKxNw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] libbpf: fix AF_XDP helper program to support
+ kernels without the JMP32 eBPF instruction class
+To:     Alex Forster <aforster@cloudflare.com>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Paolo Abeni <pabeni@redhat.com>
+On Thu, Dec 19, 2019 at 12:16 PM Alex Forster <aforster@cloudflare.com> wro=
+te:
+>
+> Kernel 5.1 introduced support for the JMP32 eBPF instruction class, and c=
+ommit d7d962a modified the libbpf AF_XDP helper program to use the BPF_JMP3=
+2_IMM instruction. For those on earlier kernels, attempting to load the hel=
+per program now results in the verifier failing with "unknown opcode 66". T=
+his change replaces the usage of BPF_JMP32_IMM with BPF_JMP_IMM for compati=
+bility with pre-5.1 kernels.
 
-Currently we can allocate the extension only after the skb,
-this change allows the user to do the opposite, will simplify
-allocation failure handling from MPTCP.
-
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
----
- include/linux/skbuff.h |  3 +++
- net/core/skbuff.c      | 35 +++++++++++++++++++++++++++++++++--
- 2 files changed, 36 insertions(+), 2 deletions(-)
-
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index 1a261c3ee074..af9b6cf79a65 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -4115,6 +4115,9 @@ struct skb_ext {
- 	char data[0] __aligned(8);
- };
- 
-+struct skb_ext *__skb_ext_alloc(void);
-+void *__skb_ext_set(struct sk_buff *skb, enum skb_ext_id id,
-+		    struct skb_ext *ext);
- void *skb_ext_add(struct sk_buff *skb, enum skb_ext_id id);
- void __skb_ext_del(struct sk_buff *skb, enum skb_ext_id id);
- void __skb_ext_put(struct skb_ext *ext);
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index fa67036dd928..504e9bd5ebce 100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -5983,7 +5983,14 @@ static void *skb_ext_get_ptr(struct skb_ext *ext, enum skb_ext_id id)
- 	return (void *)ext + (ext->offset[id] * SKB_EXT_ALIGN_VALUE);
- }
- 
--static struct skb_ext *skb_ext_alloc(void)
-+/**
-+ * __skb_ext_alloc - allocate a new skb extensions storage
-+ *
-+ * Returns the newly allocated pointer. The pointer can later attached to a
-+ * skb via __skb_ext_set().
-+ * Note: caller must handle the skb_ext as an opaque data.
-+ */
-+struct skb_ext *__skb_ext_alloc(void)
- {
- 	struct skb_ext *new = kmem_cache_alloc(skbuff_ext_cache, GFP_ATOMIC);
- 
-@@ -6023,6 +6030,30 @@ static struct skb_ext *skb_ext_maybe_cow(struct skb_ext *old,
- 	return new;
- }
- 
-+/**
-+ * __skb_ext_set - attach the specified extension storage to this skb
-+ * @skb: buffer
-+ * @id: extension id
-+ * @ext: extension storage previously allocated via __skb_ext_alloc()
-+ *
-+ * Existing extensions, if any, are cleared.
-+ *
-+ * Returns the pointer to the extension.
-+ */
-+void *__skb_ext_set(struct sk_buff *skb, enum skb_ext_id id,
-+		    struct skb_ext *ext)
-+{
-+	unsigned int newlen, newoff = SKB_EXT_CHUNKSIZEOF(*ext);
-+
-+	skb_ext_put(skb);
-+	newlen = newoff + skb_ext_type_len[id];
-+	ext->chunks = newlen;
-+	ext->offset[id] = newoff;
-+	skb->extensions = ext;
-+	skb->active_extensions = 1 << id;
-+	return skb_ext_get_ptr(ext, id);
-+}
-+
- /**
-  * skb_ext_add - allocate space for given extension, COW if needed
-  * @skb: buffer
-@@ -6056,7 +6087,7 @@ void *skb_ext_add(struct sk_buff *skb, enum skb_ext_id id)
- 	} else {
- 		newoff = SKB_EXT_CHUNKSIZEOF(*new);
- 
--		new = skb_ext_alloc();
-+		new = __skb_ext_alloc();
- 		if (!new)
- 			return NULL;
- 	}
--- 
-2.24.1
-
+I though af_xdp landed after jmp32 ?
