@@ -2,92 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0CCCD125C9C
-	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 09:29:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 85A4A125CEC
+	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 09:46:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726742AbfLSI24 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Dec 2019 03:28:56 -0500
-Received: from mail-lf1-f65.google.com ([209.85.167.65]:42917 "EHLO
-        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726536AbfLSI2z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Dec 2019 03:28:55 -0500
-Received: by mail-lf1-f65.google.com with SMTP id y19so3686686lfl.9
-        for <netdev@vger.kernel.org>; Thu, 19 Dec 2019 00:28:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=EYVpTAvfKwHHKmlAPuGRsZ3iezpd785NjyR9OVcUj6E=;
-        b=MJZ/DNtFXAxxKUZKDxH+hao28YTyE5NOXtuQ0Z3/ibWy8zpn9idcT5fZSA3qlJswY1
-         Yijm5VvGd/xFqGL1v6NZGRxBXBKHV016m5JvvGWQlY0M4LINXT2A+VMv/c7K+z0FglYN
-         FkcONe7Byj4YXGeofGkBJBC9L9BYhWz0U/7T5uj+m7cWbGsUIxhMxvZYjxq9RmDbTAeo
-         5FOeLkOvfmFeFbQ9FneVOLbyy+1qTeqa2lenupHqbbfkraaI8ywbs0EUp3VJNPMnGg4z
-         8lysTRj1vQ/4vBUWcuSX068OiI8cXcTJLEVHZYJzOCkkKrvNMEEtnJ4J5TdoqJk3xzfJ
-         RFyg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=EYVpTAvfKwHHKmlAPuGRsZ3iezpd785NjyR9OVcUj6E=;
-        b=I+qKatK4JWy9Z/8pREbne6qjJMUbe+M/KhPxMWuf1RNiM+UT4Q6fInr/hADLI3fIHK
-         woerc+m6GYeoAhmymkNCAfHXPJLbevkTccvxRyaf66KM352OhfcDiqISrXIVPYTnIe1+
-         QlbWm8O7jsjIdhqQKiCOPzxXUYGPEn6qien55ua6yTUqZc8iUApSFvGLf471P4MBzlRT
-         rfO76h1QFSgKWnyD5XmKZMFNJAllsUdWPm6grZ3url/bH/yAMDCAPOQSbv6gR/kRmoSR
-         E+mm1DXMhXNtKt9FScaMShE9hLVaZaeL1cqZ19o4dOZGWZnkpDfLGb19pnHctVu6VmvJ
-         jv9A==
-X-Gm-Message-State: APjAAAXgnsDOA/xrxk4dxOiFk3KZUF1Uw4dJL1MypnS/FSpGaBexc/Xp
-        wIgRJRGcsKsGpyjo9I8n9vXdktOXMqigGyhbFPrQgA==
-X-Google-Smtp-Source: APXvYqynTJm9GoZtkT/ox5Ee2KtmtUCBm2Ol3fEci7a1RBI4FjyF3QqGMde1dsSwXQ7lWCCv/YG69H6YPlbklmRCDWQ=
-X-Received: by 2002:a19:8a41:: with SMTP id m62mr4543898lfd.5.1576744133697;
- Thu, 19 Dec 2019 00:28:53 -0800 (PST)
+        id S1726712AbfLSIqR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Dec 2019 03:46:17 -0500
+Received: from mail.kernel.org ([198.145.29.99]:49650 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726652AbfLSIqR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 19 Dec 2019 03:46:17 -0500
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 3EB0D24650;
+        Thu, 19 Dec 2019 08:46:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1576745176;
+        bh=0jcEw8Q6rcPxPmipvd7zTyTGS8RWxVITekelo7p9D3A=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=jnMDfrMClBY7y+umTB+2x2S2If75qx+UJMU4/JYHG7MmEmWf0ts2/JVk73aQvXqYP
+         136HC9o6AiAgNHK/o6pyDB0Eo2qXi7hZbUitnoCCTbvDu9MLhanWCo2hh8KHw7xvG1
+         u86wp9wh5usbmJeipbA4U1icImtI0SKx6P6/DNe4=
+Date:   Thu, 19 Dec 2019 09:46:14 +0100
+From:   'Greg KH' <gregkh@linuxfoundation.org>
+To:     "Saleem, Shiraz" <shiraz.saleem@intel.com>
+Cc:     "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "nhorman@redhat.com" <nhorman@redhat.com>,
+        "sassmann@redhat.com" <sassmann@redhat.com>,
+        "jgg@ziepe.ca" <jgg@ziepe.ca>,
+        "parav@mellanox.com" <parav@mellanox.com>,
+        "Ismail, Mustafa" <mustafa.ismail@intel.com>
+Subject: Re: [PATCH v3 04/20] i40e: Register a virtbus device to provide RDMA
+Message-ID: <20191219084614.GC1027830@kroah.com>
+References: <20191209224935.1780117-1-jeffrey.t.kirsher@intel.com>
+ <20191209224935.1780117-5-jeffrey.t.kirsher@intel.com>
+ <20191210153959.GD4053085@kroah.com>
+ <9DD61F30A802C4429A01CA4200E302A7B6B9345E@fmsmsx124.amr.corp.intel.com>
+ <20191214083753.GB3318534@kroah.com>
+ <9DD61F30A802C4429A01CA4200E302A7B6B9AFF7@fmsmsx124.amr.corp.intel.com>
 MIME-Version: 1.0
-References: <20191213124221.25775-1-tbogendoerfer@suse.de> <20191213124221.25775-3-tbogendoerfer@suse.de>
-In-Reply-To: <20191213124221.25775-3-tbogendoerfer@suse.de>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Thu, 19 Dec 2019 09:28:42 +0100
-Message-ID: <CACRpkdY+2Z90n6zNZbQpmGCWYAH4PzEOv8puOkwbrcxCk_Eq2A@mail.gmail.com>
-Subject: Re: [PATCH v11 net-next 2/2] mfd: ioc3: Add driver for SGI IOC3 chip
-To:     Thomas Bogendoerfer <tbogendoerfer@suse.de>
-Cc:     Ralf Baechle <ralf@linux-mips.org>,
-        Paul Burton <paulburton@kernel.org>,
-        James Hogan <jhogan@kernel.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>, linux-mips@vger.kernel.org,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>, linux-rtc@vger.kernel.org,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <9DD61F30A802C4429A01CA4200E302A7B6B9AFF7@fmsmsx124.amr.corp.intel.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Dec 13, 2019 at 1:43 PM Thomas Bogendoerfer
-<tbogendoerfer@suse.de> wrote:
+On Wed, Dec 18, 2019 at 06:57:10PM +0000, Saleem, Shiraz wrote:
+> > > > Subject: Re: [PATCH v3 04/20] i40e: Register a virtbus device to
+> > > > provide RDMA
+> [.....]
+> 
+> > > >
+> > > > And who owns the memory of this thing that is supposed to be
+> > > > dynamically controlled by something OUTSIDE of this driver?  Who
+> > > > created that thing 3 pointers deep?  What happens when you leak the
+> > > > memory below (hint, you did), and who is supposed to clean it up if
+> > > > you need to properly clean it up if something bad happens?
+> > >
+> > > The i40e_info object memory is tied to the PF driver.
+> > 
+> > What is a "PF"?
+> 
+> physical function.
+> 
+> > 
+> > > The object hierarchy is,
+> > >
+> > > i40e_pf: pointer to i40e_client_instance
+> > > 	----- i40e_client_instance: i40e_info
+> > > 		----- i40e_info: virtbus_device
+> > 
+> > So you are 3 pointers deep to get a structure that is dynamically controlled?  Why
+> > are those "3 pointers" not also represented in sysfs?
+> > You have a heiarchy within the kernel that is not being represented that way to
+> > userspace, why?
+> > 
+> > Hint, I think this is totally wrong, you need to rework this to be sane.
+> > 
+> > > For each PF, there is a client_instance object allocated.
+> > 
+> > Great, make it dynamic and in the device tree.
+> > 
+> > > The i40e_info object is populated and the virtbus_device hanging off this object
+> > is registered.
+> > 
+> > Great, make that dynamic and inthe device tree.
+> > 
+> > If you think this is too much, then your whole mess here is too much and needs to
+> > be made a lot simpler.
+> >
+> 
+> I think we can decouple the virtbus_device object from i40e_info object.
+> 
+> Instead allocate a i40e_virtbus_device object which contains
+> the virtbus_device and a pointer to i40e_info object for the
+> RDMA driver to consume on probe(). Register it the virtbus, and provide
+> a release callback to free up its memory.
+> 
+> Sending a patch snippet to hopefully make it clearer.
 
-> SGI IOC3 chip has integrated ethernet, keyboard and mouse interface.
-> It also supports connecting a SuperIO chip for serial and parallel
-> interfaces. IOC3 is used inside various SGI systemboards and add-on
-> cards with different equipped external interfaces.
->
-> Support for ethernet and serial interfaces were implemented inside
-> the network driver. This patchset moves out the not network related
-> parts to a new MFD driver, which takes care of card detection,
-> setup of platform devices and interrupt distribution for the subdevices.
->
-> Serial portion: Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Acked-for-MFD-by: Lee Jones <lee.jones@linaro.org>
->
-> Signed-off-by: Thomas Bogendoerfer <tbogendoerfer@suse.de>
+Yes, this looks a little bit more sane.
 
-This makes the kernel a better place:
-Acked-by: Linus Walleij <linus.walleij@linaro.org>
-
-Will there be a GPIO driver arriving later?
-
-Yours,
-Linus Walleij
+greg k-h
