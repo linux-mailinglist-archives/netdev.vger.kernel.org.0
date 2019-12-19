@@ -2,316 +2,215 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 83E7E126675
-	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 17:14:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 55D1E126678
+	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 17:16:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726855AbfLSQOK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Dec 2019 11:14:10 -0500
-Received: from www62.your-server.de ([213.133.104.62]:55156 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726789AbfLSQOJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Dec 2019 11:14:09 -0500
-Received: from sslproxy01.your-server.de ([88.198.220.130])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1ihyRA-0002MQ-G8; Thu, 19 Dec 2019 17:14:04 +0100
-Received: from [2001:1620:665:0:5795:5b0a:e5d5:5944] (helo=linux-9.fritz.box)
-        by sslproxy01.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1ihyR9-0003TA-UN; Thu, 19 Dec 2019 17:14:04 +0100
-Subject: Re: [PATCH bpf-next v14 1/2] bpf: add new helper get_fd_path for
- mapping a file descriptor to a pathname
-To:     Wenbo Zhang <ethercflow@gmail.com>, bpf@vger.kernel.org
-Cc:     ast@kernel.org, yhs@fb.com, bgregg@netflix.com,
-        andrii.nakryiko@gmail.com, netdev@vger.kernel.org,
-        viro@zeniv.linux.org.uk
-References: <8f6b8979fb64bedf5cb406ba29146c5fa2539267.1576575253.git.ethercflow@gmail.com>
- <cover.1576629200.git.ethercflow@gmail.com>
- <7464919bd9c15f2496ca29dceb6a4048b3199774.1576629200.git.ethercflow@gmail.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <51564b9e-35f0-3c73-1701-8e351f2482d7@iogearbox.net>
-Date:   Thu, 19 Dec 2019 17:14:02 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
-MIME-Version: 1.0
-In-Reply-To: <7464919bd9c15f2496ca29dceb6a4048b3199774.1576629200.git.ethercflow@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+        id S1726866AbfLSQQA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Dec 2019 11:16:00 -0500
+Received: from mail-eopbgr140057.outbound.protection.outlook.com ([40.107.14.57]:38471
+        "EHLO EUR01-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726760AbfLSQQA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 19 Dec 2019 11:16:00 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=bm8z2qz+XRjKThBGSCFA2MYokGrrqgqtim+8Tuj8fhimL0ZQdT96liLizp39h1bm3YxeDvnJbyTLYlcqQj9vC3Ut0eH+xWyZnV86CAnESKbFF4Ho0THcO6NaDio7MFj4YX/LSf3Ndpe5KFWlf/MNWmM1KeDRwMWuQCrjyIuWRWn/Lnk2SmchTFqPKBBLlZ7dzhGgsJ+ukOqi4WoOEZi+xLefR+sj7HcG6U0Kaz4PxIGz7/mHrJrO89k58Ut8doMxyD3bH98w1oBAZh6mcAE8qQgUfIUqB3Ba54tZ75ZtPNM18wozQ0HiQELVYBNXrEXZob7CRBlCZriU3MxEhBq5Iw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=wyAHA+xzVVzGVsI9vMmsXDZ3DTiCwl51TCzkp2gDpPQ=;
+ b=MpVQzdQYE3/2Fum5Xsj2rWo+Wvrrr0oiHwqX5rQwiTA0vo5oqjRJkxnhbuI6jeGdrs0Ii5wZCdq8Ve5WWHEyCNkmorYsGfFUcCPZgAXD3dmZBxeyc0DmvbAM2VARjrB9PJNVgMHZ+67o5+K4+TtxurDPpWqzp/RNHrTATR3Hy2UeGqBzmz4m36FiOIDUwwcdCWDjolOYC2vBZ2kozfq9h68xgyTwhmBvQO5wVBiO/64LWciVgJIjLmECeIwu7aDi5wzw4BxUCOsfRJtg9c2gJfM87C/0dhIaEd3CQJaHUJl5oNdx1W63YBiTFPNqUaE6ALAN/+p3M/1UWNPlREHzmA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=wyAHA+xzVVzGVsI9vMmsXDZ3DTiCwl51TCzkp2gDpPQ=;
+ b=tqnqzTNIgBBuo3LkUHrxVT6VwLPhpXQ50HnNX1l1fCZXk7sykqWlBIIIUGJvf+XhuoAHBdY56pzio16JgQVxgoWLWmCDN1Atohy7/TjQtf5sjvH907EtYwl203MM7X01U0aufMUO9PB5YS3h6SEas+Z3r8/S5xCm0B4Ypbm4ckI=
+Received: from AM0PR05MB5284.eurprd05.prod.outlook.com (20.178.17.20) by
+ AM0PR05MB4946.eurprd05.prod.outlook.com (20.177.40.11) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2559.14; Thu, 19 Dec 2019 16:15:53 +0000
+Received: from AM0PR05MB5284.eurprd05.prod.outlook.com
+ ([fe80::d8ce:80d0:a591:8cc]) by AM0PR05MB5284.eurprd05.prod.outlook.com
+ ([fe80::d8ce:80d0:a591:8cc%6]) with mapi id 15.20.2559.015; Thu, 19 Dec 2019
+ 16:15:53 +0000
+From:   Vlad Buslov <vladbu@mellanox.com>
+To:     Jamal Hadi Salim <jhs@mojatatu.com>
+CC:     Davide Caratti <dcaratti@redhat.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Vlad Buslov <vladbu@mellanox.com>,
+        Roman Mashak <mrv@mojatatu.com>
+Subject: Re: [PATCH net 1/2] net/sched: cls_u32: fix refcount leak in the
+ error path of u32_change()
+Thread-Topic: [PATCH net 1/2] net/sched: cls_u32: fix refcount leak in the
+ error path of u32_change()
+Thread-Index: AQHVtS3RDHKj6jsD1UGiL38qYfL+d6e/8y0AgAGEDQCAAC2QAA==
+Date:   Thu, 19 Dec 2019 16:15:53 +0000
+Message-ID: <vbfr2102swb.fsf@mellanox.com>
+References: <cover.1576623250.git.dcaratti@redhat.com>
+ <ae83c6dc89f8642166dc32debc6ea7444eb3671d.1576623250.git.dcaratti@redhat.com>
+ <bafb52ff-1ced-91a4-05d0-07d3fdc4f3e4@mojatatu.com>
+ <5b4239e5-6533-9f23-7a38-0ee4f6acbfe9@mojatatu.com>
+In-Reply-To: <5b4239e5-6533-9f23-7a38-0ee4f6acbfe9@mojatatu.com>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.101.4/25668/Thu Dec 19 10:55:58 2019)
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: PR2P264CA0039.FRAP264.PROD.OUTLOOK.COM
+ (2603:10a6:101:1::27) To AM0PR05MB5284.eurprd05.prod.outlook.com
+ (2603:10a6:208:eb::20)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=vladbu@mellanox.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [37.142.13.130]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: b679a98d-4bca-419c-0345-08d7849eb8ad
+x-ms-traffictypediagnostic: AM0PR05MB4946:|AM0PR05MB4946:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <AM0PR05MB4946B0416E156B3EC517D4C7AD520@AM0PR05MB4946.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-forefront-prvs: 0256C18696
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(136003)(366004)(39850400004)(346002)(376002)(396003)(199004)(189003)(6916009)(316002)(54906003)(53546011)(52116002)(6506007)(36756003)(4326008)(5660300002)(66446008)(4001150100001)(66556008)(66476007)(66946007)(478600001)(64756008)(6486002)(6512007)(2906002)(81156014)(186003)(71200400001)(26005)(2616005)(86362001)(8936002)(81166006)(8676002);DIR:OUT;SFP:1101;SCL:1;SRVR:AM0PR05MB4946;H:AM0PR05MB5284.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: w5Mr9XNecm701FmTUCiYexCE1gOdQCxR1Zw/HrrkSlwB4+Q4jb6O5ksfjdTh/15xNDse3CEh3fBVBaKkbdqyCx+prvoJ6eVMHEeZf73fgbVzPl+b37O+uOn093wjCcZ1n8BK8XqbH5YrR2eFeYdyNNTvpL9n0vBdXWVK4sVD9S+iWo4UrfvMQYLPmMDNllsfzVT49zAiYAtUto4zyLyK9zBsURwvDXIwB16patpA7806UNVsR4U8TDTiZp8hZ4sNtV6q+uD0dQFKGrfgKUL5kwfTkwfe4D3AqW2zrWvNarHrLDa/M9vEQlsQPmOu2wbqcpcsIJWNFwZX/fVqgzxzvFLlDK0KaZeLJfiHBl9rPVrecL7ocVJGSCpLZXYQ44PKHg9faFelnO077zHDLrASPL3yGJ3qveMcwJG4Q6jCIaMBBu0dovdma9z3NS7HFs0C
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b679a98d-4bca-419c-0345-08d7849eb8ad
+X-MS-Exchange-CrossTenant-originalarrivaltime: 19 Dec 2019 16:15:53.6148
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: sxH3N266utyMWPbEJR6qGXxIfmeOt8OKzkDCbZBiHY1RWdfWkSHt9IG0Lp1VWEYoBLqZFrUSh55j3p/jN8U4Lg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR05MB4946
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-[ Wenbo, please keep also Al (added here) in the loop since he was providing
-   feedback on prior submissions as well wrt vfs bits. ]
 
-On 12/18/19 1:56 AM, Wenbo Zhang wrote:
-> When people want to identify which file system files are being opened,
-> read, and written to, they can use this helper with file descriptor as
-> input to achieve this goal. Other pseudo filesystems are also supported.
-> 
-> This requirement is mainly discussed here:
-> 
->    https://github.com/iovisor/bcc/issues/237
-> 
-> v13->v14: addressed Yonghong and Daniel's feedback
-> - fix this helper's description to be consistent with comments in d_path
-> - fix error handling logic fill zeroes not '0's
-> 
-> v12->v13: addressed Brendan and Yonghong's feedback
-> - rename to get_fd_path
-> - refactor code & comment to be clearer and more compliant
-> 
-> v11->v12: addressed Alexei's feedback
-> - only allow tracepoints to make sure it won't dead lock
-> 
-> v10->v11: addressed Al and Alexei's feedback
-> - fix missing fput()
-> 
-> v9->v10: addressed Andrii's feedback
-> - send this patch together with the patch selftests as one patch series
-> 
-> v8->v9:
-> - format helper description
-> 
-> v7->v8: addressed Alexei's feedback
-> - use fget_raw instead of fdget_raw, as fdget_raw is only used inside fs/
-> - ensure we're in user context which is safe fot the help to run
-> - filter unmountable pseudo filesystem, because they don't have real path
-> - supplement the description of this helper function
-> 
-> v6->v7:
-> - fix missing signed-off-by line
-> 
-> v5->v6: addressed Andrii's feedback
-> - avoid unnecessary goto end by having two explicit returns
-> 
-> v4->v5: addressed Andrii and Daniel's feedback
-> - rename bpf_fd2path to bpf_get_file_path to be consistent with other
-> helper's names
-> - when fdget_raw fails, set ret to -EBADF instead of -EINVAL
-> - remove fdput from fdget_raw's error path
-> - use IS_ERR instead of IS_ERR_OR_NULL as d_path ether returns a pointer
-> into the buffer or an error code if the path was too long
-> - modify the normal path's return value to return copied string length
-> including NUL
-> - update this helper description's Return bits.
-> 
-> v3->v4: addressed Daniel's feedback
-> - fix missing fdput()
-> - move fd2path from kernel/bpf/trace.c to kernel/trace/bpf_trace.c
-> - move fd2path's test code to another patch
-> - add comment to explain why use fdget_raw instead of fdget
-> 
-> v2->v3: addressed Yonghong's feedback
-> - remove unnecessary LOCKDOWN_BPF_READ
-> - refactor error handling section for enhanced readability
-> - provide a test case in tools/testing/selftests/bpf
-> 
-> v1->v2: addressed Daniel's feedback
-> - fix backward compatibility
-> - add this helper description
-> - fix signed-off name
-> 
-> Signed-off-by: Wenbo Zhang <ethercflow@gmail.com>
-> ---
->   include/uapi/linux/bpf.h       | 29 +++++++++++++-
->   kernel/trace/bpf_trace.c       | 69 ++++++++++++++++++++++++++++++++++
->   tools/include/uapi/linux/bpf.h | 29 +++++++++++++-
->   3 files changed, 125 insertions(+), 2 deletions(-)
-> 
-> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-> index dbbcf0b02970..4534ce49f838 100644
-> --- a/include/uapi/linux/bpf.h
-> +++ b/include/uapi/linux/bpf.h
-> @@ -2821,6 +2821,32 @@ union bpf_attr {
->    * 	Return
->    * 		On success, the strictly positive length of the string,	including
->    * 		the trailing NUL character. On error, a negative value.
-> + *
-> + * int bpf_get_fd_path(char *path, u32 size, int fd)
-> + *	Description
-> + *		Get **file** atrribute from the current task by *fd*, then call
-> + *		**d_path** to get it's absolute path and copy it as string into
-> + *		*path* of *size*. Notice the **path** don't support unmountable
-> + *		pseudo filesystems as they don't have path (eg: SOCKFS, PIPEFS).
-> + *		The *size* must be strictly positive. On success, the helper
-> + *		makes sure that the *path* is NUL-terminated, and the buffer
-> + *		could be:
-> + *		- a regular full path (include mountable fs eg: /proc, /sys)
-> + *		- a regular full path with " (deleted)" is appended.
-> + *		On failure, it is filled with zeroes.
-> + *	Return
-> + *		On success, returns the length of the copied string INCLUDING
-> + *		the trailing '\0'.
-> + *
-> + *		On failure, the returned value is one of the following:
-> + *
-> + *		**-EPERM** if no permission to get the path (eg: in irq ctx).
-> + *
-> + *		**-EBADF** if *fd* is invalid.
-> + *
-> + *		**-EINVAL** if *fd* corresponds to a unmountable pseudo fs
-> + *
-> + *		**-ENAMETOOLONG** if full path is longer than *size*
->    */
->   #define __BPF_FUNC_MAPPER(FN)		\
->   	FN(unspec),			\
-> @@ -2938,7 +2964,8 @@ union bpf_attr {
->   	FN(probe_read_user),		\
->   	FN(probe_read_kernel),		\
->   	FN(probe_read_user_str),	\
-> -	FN(probe_read_kernel_str),
-> +	FN(probe_read_kernel_str),	\
-> +	FN(get_fd_path),
->   
->   /* integer value in 'imm' field of BPF_CALL instruction selects which helper
->    * function eBPF program intends to call
-> diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
-> index e5ef4ae9edb5..a2c18b193141 100644
-> --- a/kernel/trace/bpf_trace.c
-> +++ b/kernel/trace/bpf_trace.c
-> @@ -762,6 +762,71 @@ static const struct bpf_func_proto bpf_send_signal_proto = {
->   	.arg1_type	= ARG_ANYTHING,
->   };
->   
-> +BPF_CALL_3(bpf_get_fd_path, char *, dst, u32, size, int, fd)
-> +{
-> +	int ret = -EBADF;
-> +	struct file *f;
-> +	char *p;
-> +
-> +	/* Ensure we're in user context which is safe for the helper to
-> +	 * run. This helper has no business in a kthread.
-> +	 */
-> +	if (unlikely(in_interrupt() ||
-> +		     current->flags & (PF_KTHREAD | PF_EXITING))) {
-> +		ret = -EPERM;
-> +		goto error;
-> +	}
-> +
-> +	/* Use fget_raw instead of fget to support O_PATH, and it doesn't
-> +	 * have any sleepable code, so it's ok to be here.
-> +	 */
-> +	f = fget_raw(fd);
-> +	if (!f)
-> +		goto error;
-> +
-> +	/* For unmountable pseudo filesystem, it seems to have no meaning
-> +	 * to get their fake paths as they don't have path, and to be no
-> +	 * way to validate this function pointer can be always safe to call
-> +	 * in the current context.
-> +	 */
-> +	if (f->f_path.dentry->d_op && f->f_path.dentry->d_op->d_dname) {
-> +		ret = -EINVAL;
-> +		fput(f);
-> +		goto error;
-> +	}
-> +
-> +	/* After filter unmountable pseudo filesytem, d_path won't call
-> +	 * dentry->d_op->d_name(), the normally path doesn't have any
-> +	 * sleepable code, and despite it uses the current macro to get
-> +	 * fs_struct (current->fs), we've already ensured we're in user
-> +	 * context, so it's ok to be here.
-> +	 */
-> +	p = d_path(&f->f_path, dst, size);
-> +	if (IS_ERR(p)) {
-> +		ret = PTR_ERR(p);
-> +		fput(f);
-> +		goto error;
-> +	}
-> +
-> +	ret = strlen(p) + 1;
-> +	memmove(dst, p, ret);
-> +	fput(f);
-> +	return ret;
-> +
-> +error:
-> +	memset(dst, 0, size);
-> +	return ret;
-> +}
-> +
-> +static const struct bpf_func_proto bpf_get_fd_path_proto = {
-> +	.func       = bpf_get_fd_path,
-> +	.gpl_only   = true,
-> +	.ret_type   = RET_INTEGER,
-> +	.arg1_type  = ARG_PTR_TO_UNINIT_MEM,
-> +	.arg2_type  = ARG_CONST_SIZE,
-> +	.arg3_type  = ARG_ANYTHING,
-> +};
-> +
->   static const struct bpf_func_proto *
->   tracing_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
->   {
-> @@ -953,6 +1018,8 @@ tp_prog_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
->   		return &bpf_get_stackid_proto_tp;
->   	case BPF_FUNC_get_stack:
->   		return &bpf_get_stack_proto_tp;
-> +	case BPF_FUNC_get_fd_path:
-> +		return &bpf_get_fd_path_proto;
->   	default:
->   		return tracing_func_proto(func_id, prog);
->   	}
-> @@ -1146,6 +1213,8 @@ raw_tp_prog_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
->   		return &bpf_get_stackid_proto_raw_tp;
->   	case BPF_FUNC_get_stack:
->   		return &bpf_get_stack_proto_raw_tp;
-> +	case BPF_FUNC_get_fd_path:
-> +		return &bpf_get_fd_path_proto;
->   	default:
->   		return tracing_func_proto(func_id, prog);
->   	}
-> diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
-> index dbbcf0b02970..4534ce49f838 100644
-> --- a/tools/include/uapi/linux/bpf.h
-> +++ b/tools/include/uapi/linux/bpf.h
-> @@ -2821,6 +2821,32 @@ union bpf_attr {
->    * 	Return
->    * 		On success, the strictly positive length of the string,	including
->    * 		the trailing NUL character. On error, a negative value.
-> + *
-> + * int bpf_get_fd_path(char *path, u32 size, int fd)
-> + *	Description
-> + *		Get **file** atrribute from the current task by *fd*, then call
-> + *		**d_path** to get it's absolute path and copy it as string into
-> + *		*path* of *size*. Notice the **path** don't support unmountable
-> + *		pseudo filesystems as they don't have path (eg: SOCKFS, PIPEFS).
-> + *		The *size* must be strictly positive. On success, the helper
-> + *		makes sure that the *path* is NUL-terminated, and the buffer
-> + *		could be:
-> + *		- a regular full path (include mountable fs eg: /proc, /sys)
-> + *		- a regular full path with " (deleted)" is appended.
-> + *		On failure, it is filled with zeroes.
-> + *	Return
-> + *		On success, returns the length of the copied string INCLUDING
-> + *		the trailing '\0'.
-> + *
-> + *		On failure, the returned value is one of the following:
-> + *
-> + *		**-EPERM** if no permission to get the path (eg: in irq ctx).
-> + *
-> + *		**-EBADF** if *fd* is invalid.
-> + *
-> + *		**-EINVAL** if *fd* corresponds to a unmountable pseudo fs
-> + *
-> + *		**-ENAMETOOLONG** if full path is longer than *size*
->    */
->   #define __BPF_FUNC_MAPPER(FN)		\
->   	FN(unspec),			\
-> @@ -2938,7 +2964,8 @@ union bpf_attr {
->   	FN(probe_read_user),		\
->   	FN(probe_read_kernel),		\
->   	FN(probe_read_user_str),	\
-> -	FN(probe_read_kernel_str),
-> +	FN(probe_read_kernel_str),	\
-> +	FN(get_fd_path),
->   
->   /* integer value in 'imm' field of BPF_CALL instruction selects which helper
->    * function eBPF program intends to call
-> 
+On Thu 19 Dec 2019 at 15:32, Jamal Hadi Salim <jhs@mojatatu.com> wrote:
+> Hi Davide,
+>
+> I ran your test on my laptop (4.19) and nothing dangled.
+> Looking at that area of the code difference 4.19 vs current net-next
+> there was a destroy() in there that migrated into the inner guts of
+> tcf_chain_tp_delete_empty() Vlad? My gut feeling is restoring the old
+> logic like this would work at least for u32:
+>
+> ------------
+> diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
+> index 6a0eacafdb19..34a1d4e7e6e3 100644
+> --- a/net/sched/cls_api.c
+> +++ b/net/sched/cls_api.c
+> @@ -2135,8 +2135,10 @@ static int tc_new_tfilter(struct sk_buff *skb, str=
+uct
+> nlmsghdr *n,
+>         }
+>
+>  errout:
+> -       if (err && tp_created)
+> +       if (err && tp_created) {
+> +               tcf_proto_destroy(tp, rtnl_held, true, NULL);
+>                 tcf_chain_tp_delete_empty(chain, tp, rtnl_held, NULL);
+> +       }
+>  errout_tp:
+>         if (chain) {
+>                 if (tp && !IS_ERR(tp))
+> -----
+>
+> Maybe even better tcf_proto_put(tp, rtnl_held, NULL) directly instead
+> and no need for tcf_chain_tp_delete_empty().
+>
+> Of course above not even compile tested and may have consequences
+> for other classifiers (flower would be a good test) and concurency
+> intentions. Thoughts?
+>
+> cheers,
+> jamal
+>
+> On 2019-12-18 9:23 a.m., Jamal Hadi Salim wrote:
+>>
+>> On 2019-12-17 6:00 p.m., Davide Caratti wrote:
+>>> when users replace cls_u32 filters with new ones having wrong parameter=
+s,
+>>> so that u32_change() fails to validate them, the kernel doesn't roll-ba=
+ck
+>>> correctly, and leaves semi-configured rules.
+>>>
+>>> Fix this in u32_walk(), avoiding a call to the walker function on filte=
+rs
+>>> that don't have a match rule connected. The side effect is, these "empt=
+y"
+>>> filters are not even dumped when present; but that shouldn't be a probl=
+em
+>>> as long as we are restoring the original behaviour, where semi-configur=
+ed
+>>> filters were not even added in the error path of u32_change().
+>>>
+>>> Fixes: 6676d5e416ee ("net: sched: set dedicated tcf_walker flag when tp=
+ is
+>>> empty")
+>>> Signed-off-by: Davide Caratti <dcaratti@redhat.com>
+>>
+>> Hi Davide,
+>>
+>> Great catch (and good test case addition),
+>> but I am not sure about the fix.
+>>
+>> Unless I am  misunderstanding the flow is:
+>> You enter bad rules, validation fails, partial state had already been
+>> created (in this case root hts) before validation failure, you then
+>> leave the partial state in the kernel but when someone dumps you hide
+>> these bad tables?
+>>
+>> It sounds like the root cause is there is a missing destroy()
+>> invocation somewhere during the create/validation failure - which is
+>> what needs fixing... Those dangling tables should not have been
+>> inserted; maybe somewhere along the code path for tc_new_tfilter().
+>> Note "replace" is essentially "create if it doesnt
+>> exist" semantic therefore NLM_F_CREATE will be set.
+>>
+>> Since this is a core cls issue - I would check all other classifiers
+>> with similar aggrevation - make some attribute fail in the middle or
+>> end.
+>> Very likely only u32 is the victim.
+>>
+>> cheers,
+>> jamal
+>>
 
+Hi Jamal,
+
+Just destroying tp unconditionally will break unlocked case (flower)
+because of possibility of concurrent insertion of new filters to the
+same tp instance.
+
+The root cause here is precisely described by Davide in cover letter -
+to accommodate concurrent insertions cls API verifies that tp instance
+is empty before deleting it and since there is no cls ops to do it
+directly, it relies on checking that walk() stopped without accessing
+any filters instead. Unfortunately, somw classifier implementations
+assumed that there is always at least one filter on classifier (I fixed
+several of these) and now Davide also uncovered this leak in u32.
+
+As a simpler solution to fix such issues once and for all I can propose
+not to perform the walk() check at all and assume that any classifier
+implementation that doesn't have TCF_PROTO_OPS_DOIT_UNLOCKED flag set is
+empty in tcf_chain_tp_delete_empty() (there is no possibility of
+concurrent insertion when synchronizing with rtnl).
+
+WDYT?
+
+Regards,
+Vlad
