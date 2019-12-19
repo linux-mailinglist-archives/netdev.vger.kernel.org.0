@@ -2,123 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7EF10126C5C
-	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 20:03:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EE92C126DEF
+	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 20:26:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729793AbfLSTDS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Dec 2019 14:03:18 -0500
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:38316 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727335AbfLSTDR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Dec 2019 14:03:17 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=Mfm7DMY8WWFlPUqQr1sVZLi8OKj883uDVX3lL5NhuA8=; b=rRjm7uJoO5fJBjErsGFPJ73aw
-        mG90zjt80pLVX2HK04S/eCaR3UYGUELSaOVNSPwrzzWOw7MxlBwVJb/G4Zmm94imGRl9q8cpOKdqi
-        pJpZpoyXaZZocv940b0J4XiS6fWzGdkZuxgcy3Oza2Dwdr0aePFgV3xvMHxKbgdAJ92lDLcEcqXCr
-        QsGvywNRaZbLwyRyKZjcYGu7bV7ozTBUsFbv1/AT/mCm8oQ0/NAnh9N7yqQ56Yc/2V9HCvVWXgKgN
-        GuKGcH3S253umER+0piOLnuK960Slb3pphVbI3fTLMW9TBYJWeFvq2y3p37Rz3iU7MWAtZlYwa4D8
-        4Q4ygcE1Q==;
-Received: from shell.armlinux.org.uk ([2002:4e20:1eda:1:5054:ff:fe00:4ec]:51056)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1ii14p-0004Gj-Sm; Thu, 19 Dec 2019 19:03:12 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1ii14m-0005bF-HE; Thu, 19 Dec 2019 19:03:08 +0000
-Date:   Thu, 19 Dec 2019 19:03:08 +0000
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Madalin Bucur <madalin.bucur@nxp.com>
-Cc:     "davem@davemloft.net" <davem@davemloft.net>,
+        id S1727097AbfLST0v (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Dec 2019 14:26:51 -0500
+Received: from mail-pj1-f68.google.com ([209.85.216.68]:40889 "EHLO
+        mail-pj1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727006AbfLST0u (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Dec 2019 14:26:50 -0500
+Received: by mail-pj1-f68.google.com with SMTP id bg7so2500254pjb.5;
+        Thu, 19 Dec 2019 11:26:50 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=DftQt3RvHQyNwWIgNSKTLfN/c3SX0qQWX26ozRGzZp0=;
+        b=mtP4SWQnCQIayG+skanJOLqxzsX5SSz+dtlLgRE45niiPKGC3mbAWOiMX/6Lc4b4ih
+         6bbi/asmpm4IKS0VqlltlPDuYq/EQ4zXQ8WHXS//ZnpEcMm7SDr33/LYuWQTR0PU1aGW
+         hNE8Fng6+SSoD7sjs3qAsVeSxis8dkD1pmo5mi/hTFVjfRWaWN4eRA0ZzrkJFKhduVXl
+         xprpHFEO4tzdah2P63fPndyxTa6g8J0ENULJXOzIXkkUmLbX40htOxvPZvHOHEpbWQI/
+         MEHZnu8BZFSWIVlyi+S025B/eGwJduS3rfWh0aLGiRNGSk5pMFwY8kZmZxZYjMblC/I0
+         x2yw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=DftQt3RvHQyNwWIgNSKTLfN/c3SX0qQWX26ozRGzZp0=;
+        b=BwiOespQBqVXdduSmgDaifB8/l/BvQZ2KtX2d0EyzRG8CS2d/nwp/pYlcj5GEJzpfR
+         Vt+dqSqF5PrgSvXM5EFGOOzqtHdyDZAl5TAx1d9xIPVIA9ZpGhQcmV84pdERamGcOHjn
+         m8SlXJyEZTG3fCUS32nzjdmhX96boT0N60xlkDXIf0+pkhc7KwIGoINd0UpkFkVagb27
+         yYPtfp2YSqolNGBrOR2ZP2/2M2UCHIEWFbxmmRJ5fDfc/+XPjRrkoiqayMB7uYTvTZ4d
+         MEDjdyOWp5GMG+PUExc85eAAMfToy3TEd4SO+8f60ieu91RA02RgMRUjBLENLCS/iF2E
+         cRGA==
+X-Gm-Message-State: APjAAAXWjRaS1Rl05/erSsJWZQCY1UzA+WTPblSy46RcMJqbrg/5EelG
+        JFk2aUvOV80q2EA1rWveDc8=
+X-Google-Smtp-Source: APXvYqxpl6RI/gMFNC+0gg2n47wEEeL4nKp6Q4ecO7bz3MFfwfHS9pRZNNDkxLKesrspcS9uUN+U5g==
+X-Received: by 2002:a17:90a:22e7:: with SMTP id s94mr11758225pjc.12.1576783609833;
+        Thu, 19 Dec 2019 11:26:49 -0800 (PST)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:180::6b48])
+        by smtp.gmail.com with ESMTPSA id v19sm7603526pju.27.2019.12.19.11.26.48
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 19 Dec 2019 11:26:48 -0800 (PST)
+Date:   Thu, 19 Dec 2019 11:26:47 -0800
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Edwin Peer <epeer@juniper.net>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Y Song <ys114321@gmail.com>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "andrew@lunn.ch" <andrew@lunn.ch>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        "shawnguo@kernel.org" <shawnguo@kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
-Subject: Re: [PATCH 1/6] net: phy: add interface modes for XFI, SFI
-Message-ID: <20191219190308.GE25745@shell.armlinux.org.uk>
-References: <1576768881-24971-1-git-send-email-madalin.bucur@oss.nxp.com>
- <1576768881-24971-2-git-send-email-madalin.bucur@oss.nxp.com>
- <20191219172834.GC25745@shell.armlinux.org.uk>
- <VI1PR04MB5567FA3170CF45F877870E8CEC520@VI1PR04MB5567.eurprd04.prod.outlook.com>
+        "ast@kernel.org" <ast@kernel.org>, bpf <bpf@vger.kernel.org>
+Subject: Re: [RFC PATCH bpf-next 0/2] unprivileged BPF_PROG_TEST_RUN
+Message-ID: <20191219192645.5tbvxlhuugstokxf@ast-mbp.dhcp.thefacebook.com>
+References: <20191219013534.125342-1-epeer@juniper.net>
+ <CAH3MdRUTcd7rjum12HBtrQ_nmyx0LvdOokZmA1YuhP2WtGfJqA@mail.gmail.com>
+ <69266F42-6D0B-4F0B-805C-414880AC253D@juniper.net>
+ <20191219154704.GC4198@linux-9.fritz.box>
+ <CEA84064-FF2B-4AA7-84EE-B768D6ABC077@juniper.net>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <VI1PR04MB5567FA3170CF45F877870E8CEC520@VI1PR04MB5567.eurprd04.prod.outlook.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <CEA84064-FF2B-4AA7-84EE-B768D6ABC077@juniper.net>
+User-Agent: NeoMutt/20180223
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 19, 2019 at 06:32:51PM +0000, Madalin Bucur wrote:
-> > -----Original Message-----
-> > From: Russell King - ARM Linux admin <linux@armlinux.org.uk>
-> > Sent: Thursday, December 19, 2019 7:29 PM
-> > To: Madalin Bucur <madalin.bucur@nxp.com>
-> > Cc: davem@davemloft.net; netdev@vger.kernel.org; andrew@lunn.ch;
-> > f.fainelli@gmail.com; hkallweit1@gmail.com; shawnguo@kernel.org;
-> > devicetree@vger.kernel.org
-> > Subject: Re: [PATCH 1/6] net: phy: add interface modes for XFI, SFI
-> > 
-> > On Thu, Dec 19, 2019 at 05:21:16PM +0200, Madalin Bucur wrote:
-> > > From: Madalin Bucur <madalin.bucur@nxp.com>
-> > >
-> > > Add explicit entries for XFI, SFI to make sure the device
-> > > tree entries for phy-connection-type "xfi" or "sfi" are
-> > > properly parsed and differentiated against the existing
-> > > backplane 10GBASE-KR mode.
-> > 
-> > 10GBASE-KR is actually used for XFI and SFI (due to a slight mistake on
-> > my part, it should've been just 10GBASE-R).
-> > 
-> > Please explain exactly what the difference is between XFI, SFI and
-> > 10GBASE-R. I have not been able to find definitive definitions for
-> > XFI and SFI anywhere, and they appear to be precisely identical to
-> > 10GBASE-R. It seems that it's just a terminology thing, with
-> > different groups wanting to "own" what is essentially exactly the
-> > same interface type.
+On Thu, Dec 19, 2019 at 05:05:42PM +0000, Edwin Peer wrote:
+> On 12/19/19, 07:47, "Daniel Borkmann" <daniel@iogearbox.net> wrote:
 > 
-> Hi Russell,
+> >  What about CAP_BPF?
 > 
-> 10GBase-R could be used as a common nominator but just as well 10G and
-> remove the rest while we're at it. There are/may be differences in
-> features, differences in the way the HW is configured (the most
-> important aspect) and one should be able to determine what interface
-> type is in use to properly configure the HW. SFI does not have the CDR
-> function in the PMD, relying on the PMA signal conditioning vs the XFI
-> that requires this in the PMD. We kept the xgmii compatible for so long
-> without much issues until someone started cleaning up the PHY supported
-> modes. Since we're doing that, let's be rigorous. The 10GBase-KR is
-> important too, we have some backplane code in preparation and having it
-> there could pave the way for a simpler integration.
+> What is the status of this? It might solve some of the problems, but it is still puts testing
+> BPF outside reach of normal users.
 
-The problem we currently have is:
+why?
+I think CAP_BPF is solving exactly what you're trying to achieve.
+Use CAP_BPF to load _any_ program type and use prog_test_run to run it.
+While discussing CAP_BPF during plumbers conf we realized that the kernel doesn't need
+to check CAP_BPF for prog_test_run. It's user supplied data. No security risk. Though
+the kernel needs to make sure that dangerous helpers are not used for prog_test_run.
+Whether bpf_clone_redirect() is such helper is still tbd. Unpriv user can flood netdevs
+without any bpf.
 
-$ grep '10gbase-kr' arch/*/boot/dts -r
+> > IIRC, there are also other issues e.g. you could abuse the test interface as a packet
+> >  generator (bpf_clone_redirect) which is not something fully unpriv should be doing.
+> 
+> Good point. I suspect solutions exist - I'm trying to ascertain if they are worth pursuing
+> or if the idea of unprivileged testing is a complete non-starter to begin with.
+> 
+> Are there other helpers of concern that come immediately to mind? A first stab might
+> add these to the list in the verifier that require privilege. This has the drawback that
+> programs that actually need this kind of functionality are beyond the test framework.
 
-virtually none of those are actually backplane. For the mcbin matches,
-these are either to a 88x3310 PHY for the doubleshot, which dynamically
-operates between XFI, 5GBASE-R, 2500BASE-X, or SGMII according to the
-datasheet.
+So far majority of programs require root-only verifier features. The programs are
+getting more complex and benefit the most from testing. Relaxing test_run for unpriv
+progs is imo very narrow use case. I'd rather use CAP_BPF.
 
-If we add something else, then the problem becomes what to do about
-that lot - one of the problems is, it seems we're going to be breaking
-DT compatibility by redefining 10gbase-kr to be correct.
-
-It's interesting to hear what the difference is between XFI and SFI,
-but it's weird that PHYs such as 88x3310 have no configuration of their
-fiber interface to enable or disable the CDR, yet it supports fiber
-interfaces, and explicitly shows applications involving "XFI/SFI".
-There's no mention of the CDR in the datasheet either.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-According to speedtest.net: 11.9Mbps down 500kbps up
