@@ -2,120 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D14CB1258DA
-	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 01:49:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2B87B1258E6
+	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 01:54:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726656AbfLSAtk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Dec 2019 19:49:40 -0500
-Received: from mail-qk1-f195.google.com ([209.85.222.195]:43892 "EHLO
-        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726463AbfLSAtj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Dec 2019 19:49:39 -0500
-Received: by mail-qk1-f195.google.com with SMTP id t129so3220360qke.10;
-        Wed, 18 Dec 2019 16:49:39 -0800 (PST)
+        id S1726715AbfLSAyk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Dec 2019 19:54:40 -0500
+Received: from mail-qt1-f196.google.com ([209.85.160.196]:45463 "EHLO
+        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726518AbfLSAyk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Dec 2019 19:54:40 -0500
+Received: by mail-qt1-f196.google.com with SMTP id l12so3542480qtq.12;
+        Wed, 18 Dec 2019 16:54:39 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=6mGyyUCF9j+culY5LRSHnKGFLW14lBd2OHWps1dVqgY=;
-        b=SKjgyT+U9EQij+SQJLG7KjIp4wALmlaVeN1Ni/ZqwDldRVVg8hGBtBtL6jbzHhfCTe
-         MWk1ola827erClF77Cla0PDtvMrCxQ0xio2WgFxZV8WYmimpeocRfqBBWq0rqWo3gsUT
-         p0o8ADMXDCZIrR50y39n39j6AHoZB4Owa+JRpGNgBFw4ErWnlTBqpwuH2knfea/qBalA
-         cRBnW3n3CQY35e3tEG9KZetsKDiTNZiTE64QdKJT8sbvj0/3XuZ7gGGbJK8xYFyky3gz
-         kcxUy0ZbbiDJ49HRDKazRVL+zOQ7VLGLAvWyEurz7AfQrVZiOiqA0hhaA+j1mOgszigE
-         RxWw==
+        bh=A1Urs4RsdGYBrM/Z6psT6VFuLwM10wg/j95CYysxehQ=;
+        b=QafT74dzFrnd5FdUc7ZzJZlaKDob9h1sLpE+XITJl54ZNHghpJtwWE7dcAkDiPKqhX
+         lbx2ass0Ebil/RJsJijTZP3Js7drMaUnjPbmxgFL73QBDCWFkHtn8OnDLO7T2pW41HaO
+         nPio5pHds+vJOAx6gQvrzuGJzL+qNvKkFbJWykiaU1K1mEuKaGQG3t4zi8vdh6XGuiH8
+         ypLnvN3hshsvmwhleq2fcjUpOqWlbaAbajNsGYxNtjdDW5RmWuUhZYXkTQHWs8eDVOTT
+         MGsQrBruQfvqqAkjtR3vXomeOsANkyO9SBKlLxmJq+BKIo4lj4y7nlZPQGHhrrLkQvtV
+         3yhA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=6mGyyUCF9j+culY5LRSHnKGFLW14lBd2OHWps1dVqgY=;
-        b=XsNEfkFNRkpy9JfyLyHbeXUDFvPQ+mXpVF5XshM4jnsBJXi+poaXq20pr3H2i0+/qs
-         +1DSrYQgpqMBOECTajvvb+dOrh9PQgw8yTvxuhSpRylsEGZYCyeZDN3nqIRcHqJh8Ft8
-         bwt+HOIZCFxsCktf2B1GqU/t6qmw8AGyjo+5x4GcNqT9KsITJ+Dg0Olpp2GLQkBn0i/+
-         sgVhmMlE5g3RnQpLhf+8vMFICsVCtamboqQ/FIUcolf3I0MXDKqRazhHdm6vd2RDKuIJ
-         iDDDIGo7V1K80YHEzVNBpvYqeD5NuKeY4Yg4sOy6853uWN9sFq0tBnKpr6+T3TFt+v5S
-         3++w==
-X-Gm-Message-State: APjAAAUTS4Pd0Q4pjJ2a3y+11ByiEayM5LFRJe7ROhaVEAfJwr/J8OBK
-        YhjJVMv2mibao7hdkH9OCQJfL203S6Enj3gtQ0o=
-X-Google-Smtp-Source: APXvYqz+GtMUOjE8EuAJbAsfEgZe5osvaGLNibegzFzWPpes5jE3JnQ3/tAEQrkjDiVlCXfBcyXEV+/79VxYQzYa6Rg=
-X-Received: by 2002:a05:620a:5ae:: with SMTP id q14mr5789145qkq.437.1576716578643;
- Wed, 18 Dec 2019 16:49:38 -0800 (PST)
+        bh=A1Urs4RsdGYBrM/Z6psT6VFuLwM10wg/j95CYysxehQ=;
+        b=oZItB2ygC0o5F3mWiVDgyWz6NPeCRL5UaBjJJQ9vuXKBm4qLLtpWFDkiSBuZpy+ls6
+         qGcpg4LsYNzArxP1WZAAI0hxEqcy5Ni8sG/8DVdRM7nax4hqM9A3DxsP1+3CGFNf3IvV
+         9os9N2OSHx0IseynNSnTve2eC9QmN/IPBVJYQ+WjXZ9HtM8ZiK/UpOoPRCLYidmDxeCS
+         i+Dl5VLY1e0C+UNUfTApaUgG0XZrletARbniOUOnDWrlSHu4VD/GXLQFxs/26wgzJdM2
+         KNPeV18mx4mgqyEEAVUNGZxySGvSSUIW/M42xOZhuN6L4MyA8Z6D1kBSUIxhssv7O76+
+         cbUw==
+X-Gm-Message-State: APjAAAWHNDtrueTMU6ZEgEFAq9nRow6hjQaCQ6RxOoEQguewxlVrlX/q
+        RcABIhZfkIbqKgCQgtwKEq/+Ob6sJOo9HIR2Atc=
+X-Google-Smtp-Source: APXvYqxYXKEfiJIR4aztDlh6AyQHzq1Z+GedyfsEKbjzdal3F7FXFiTAT4o0HbCkk48AOkhwhMPm+llnUg8iQhz4gJw=
+X-Received: by 2002:ac8:4050:: with SMTP id j16mr4757783qtl.171.1576716879274;
+ Wed, 18 Dec 2019 16:54:39 -0800 (PST)
 MIME-Version: 1.0
-References: <cover.1576673841.git.paul.chaignon@orange.com>
- <ec8fd77bb20881e7149f7444e731c510790191ce.1576673842.git.paul.chaignon@orange.com>
- <377d5ad0-cf4f-4c8b-c23d-ed37dce4ad9f@fb.com>
-In-Reply-To: <377d5ad0-cf4f-4c8b-c23d-ed37dce4ad9f@fb.com>
+References: <20191211223344.165549-1-brianvv@google.com> <20191211223344.165549-9-brianvv@google.com>
+In-Reply-To: <20191211223344.165549-9-brianvv@google.com>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 18 Dec 2019 16:49:27 -0800
-Message-ID: <CAEf4BzZe7hoq1CsCf8am=w2pHr6j+S5dKE08K38PP8RL6At2Zg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 1/3] bpf: Single-cpu updates for per-cpu maps
-To:     Yonghong Song <yhs@fb.com>
-Cc:     Paul Chaignon <paul.chaignon@orange.com>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "paul.chaignon@gmail.com" <paul.chaignon@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+Date:   Wed, 18 Dec 2019 16:54:28 -0800
+Message-ID: <CAEf4BzaeLV8EkGunioqD=sn0Bin4EL0WMzp1T6GjdBajWaFQ+w@mail.gmail.com>
+Subject: Re: [PATCH v3 bpf-next 08/11] libbpf: add libbpf support to batch ops
+To:     Brian Vazquez <brianvv@google.com>
+Cc:     Brian Vazquez <brianvv.kernel@gmail.com>,
         Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Martin Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>
+        "David S . Miller" <davem@davemloft.net>,
+        Yonghong Song <yhs@fb.com>,
+        Stanislav Fomichev <sdf@google.com>,
+        Petar Penkov <ppenkov@google.com>,
+        Willem de Bruijn <willemb@google.com>,
+        open list <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 18, 2019 at 11:11 AM Yonghong Song <yhs@fb.com> wrote:
+On Wed, Dec 11, 2019 at 2:35 PM Brian Vazquez <brianvv@google.com> wrote:
 >
+> From: Yonghong Song <yhs@fb.com>
 >
+> Added four libbpf API functions to support map batch operations:
+>   . int bpf_map_delete_batch( ... )
+>   . int bpf_map_lookup_batch( ... )
+>   . int bpf_map_lookup_and_delete_batch( ... )
+>   . int bpf_map_update_batch( ... )
 >
-> On 12/18/19 6:23 AM, Paul Chaignon wrote:
-> > Currently, userspace programs have to update the values of all CPUs at
-> > once when updating per-cpu maps.  This limitation prevents the update of
-> > a single CPU's value without the risk of missing concurrent updates on
-> > other CPU's values.
-> >
-> > This patch allows userspace to update the value of a specific CPU in
-> > per-cpu maps.  The CPU whose value should be updated is encoded in the
-> > 32 upper-bits of the flags argument, as follows.  The new BPF_CPU flag
-> > can be combined with existing flags.
-> >
-> >    bpf_map_update_elem(..., cpuid << 32 | BPF_CPU)
+> Signed-off-by: Yonghong Song <yhs@fb.com>
+> ---
+
+These libbpf APIs should use _opts approach from the get go to make
+them extensible, but preserving backwards/forward compatibility.
+Please take a look at one of few that are already using them (or
+follow Andrey's bpf_prog_attach work, as he's adding opts-based one at
+the moment).
+
+>  tools/lib/bpf/bpf.c      | 61 ++++++++++++++++++++++++++++++++++++++++
+>  tools/lib/bpf/bpf.h      | 14 +++++++++
+>  tools/lib/bpf/libbpf.map |  4 +++
+>  3 files changed, 79 insertions(+)
 >
-> Some additional comments beyond Alexei's one.
->
-> >
-> > Signed-off-by: Paul Chaignon <paul.chaignon@orange.com>
-> > ---
-> >   include/uapi/linux/bpf.h       |  4 +++
-> >   kernel/bpf/arraymap.c          | 19 ++++++++-----
-> >   kernel/bpf/hashtab.c           | 49 ++++++++++++++++++++--------------
-> >   kernel/bpf/local_storage.c     | 16 +++++++----
-> >   kernel/bpf/syscall.c           | 17 +++++++++---
-> >   tools/include/uapi/linux/bpf.h |  4 +++
-> >   6 files changed, 74 insertions(+), 35 deletions(-)
-> >
-> > diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-> > index dbbcf0b02970..2efb17d2c77a 100644
-> > --- a/include/uapi/linux/bpf.h
-> > +++ b/include/uapi/linux/bpf.h
-> > @@ -316,6 +316,10 @@ enum bpf_attach_type {
-> >   #define BPF_NOEXIST 1 /* create new element if it didn't exist */
-> >   #define BPF_EXIST   2 /* update existing element */
-> >   #define BPF_F_LOCK  4 /* spin_lock-ed map_lookup/map_update */
-> > +#define BPF_CPU              8 /* single-cpu update for per-cpu maps */
-> > +
-> > +/* CPU mask for single-cpu updates */
-> > +#define BPF_CPU_MASK 0xFFFFFFFF00000000ULL
-> BPF_F_CPU_MASK?
-
-Maybe even define this as a function-like macro:
-
-#define BPF_F_CPU_NR(cpu) ((cpu) << 32)
-
-so that it can be easily combined with other flags in code like so:
-
-bpf_map_update_element(...., BPF_F_LOCK | BPF_F_CPU_NR(10))
-
-BPF_F_CPU_NR can automatically set BPF_F_CPU flag as well, btw.
 
 [...]
