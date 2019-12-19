@@ -2,71 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1EEB4125DC6
-	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 10:35:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B8B1125DC9
+	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 10:35:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726793AbfLSJf0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Dec 2019 04:35:26 -0500
-Received: from mail-il1-f196.google.com ([209.85.166.196]:34605 "EHLO
-        mail-il1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726618AbfLSJf0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Dec 2019 04:35:26 -0500
-Received: by mail-il1-f196.google.com with SMTP id s15so4327521iln.1
-        for <netdev@vger.kernel.org>; Thu, 19 Dec 2019 01:35:26 -0800 (PST)
+        id S1726834AbfLSJfa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Dec 2019 04:35:30 -0500
+Received: from mail-qv1-f65.google.com ([209.85.219.65]:36047 "EHLO
+        mail-qv1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726696AbfLSJfa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Dec 2019 04:35:30 -0500
+Received: by mail-qv1-f65.google.com with SMTP id m14so1970024qvl.3
+        for <netdev@vger.kernel.org>; Thu, 19 Dec 2019 01:35:29 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=a2DXLhWG+1I/sxJa6YFBWn4bUqJF9bmSM3jLRi/c7dc=;
-        b=TRVX4Lc8Y8ErxPbU6eqBYH6CyQy+QfNXWoP+LLwz0l1EvzGtkuSE2oF7wGtG6hkGcu
-         KJFIaAtCUTin8SM+ymwrscIObOxEDQaUA5ficzV/EJiwK9hs6DEpMG5QSDBg5hvdwtxt
-         lsOwh05wUG56husmLOH5Jwygk1fBcnrM8r08iBc4MvjoTswR9u+3Q/E7kADToRzUcbCF
-         jbcrCR5TgBFdWjYrxP18tic69Ck+5+jggbCGc3gqrtFUuVJfQzfsIjG0qwnJT0AL//Om
-         Q5ytQHbplugQ7gkUXICfJ0Cq3FLeXnB0/tDw6Qa2CZFYrHHNnovJjCZt/1zOy7LS9Yeh
-         6keQ==
+        bh=i3kinH9BKdcFWrmC53cr2rYC6iVhtIiNy5b7BJBTamU=;
+        b=RhZ4L+XeesMX8bq4b7b4SjjJMIzYqW/kFA+aLP/E/omYTcpkyqrnaTSkIjYfnrC+j3
+         Yu6QyJHygnNWgDy52rLc3Eh/goTp18pB1gv9G9C4WcM+mz+/8seuKGe5dwZ0ysIXekxD
+         glDiT2rNr+LAgopPqiO0qLmlJ+vQ/FWNrQ6Oc6dHGrNQmZlu83rt2/ris1BRWkMzWbuV
+         SuZoS5+E+tyGeGWAcOT6JApeE3sUyo3swp0HgZCvlT5gQyXCv89Kc5kHhbWNvxg4KaeR
+         UkeCd56nvBhCCmUvgqcOdGB2XnVDvU1LIPPyAfx/JkAdgn4QE+WuguxvpCmcT4rhgA+3
+         OD8w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=a2DXLhWG+1I/sxJa6YFBWn4bUqJF9bmSM3jLRi/c7dc=;
-        b=lyn5i9FuKZJOJlMgWMVoZ9VcNGpstC6m8UqP5JxBzXZyOipVjj7NZYLGp0yNUkl9Wr
-         19NTpP9+W7mnEWp6FJeDPYagIzf8rh4VmZgXHVk9dLF7SJFAoLCW4mmwGdAD5itUlxT1
-         aPldCa5DS70qeuOFQFyiFv7DTbBaIpAKRU3T0rRmRon6DvvD73wGJrfFKNJ50PqYx2QA
-         XGgOpEBEYN6w+bkm7po5NT1PMFb9epL4fQ5E73SYEnEnFzRdhW1fv6zFQaY4t2cvO+bD
-         OszskQ3ruEavSJom7w01olyCZVvzRC1l1aZERmvj++QQhnKZaLjLtpQwqltVygbo2BWI
-         8q5Q==
-X-Gm-Message-State: APjAAAV4gTLAXB9r9zyKMdg+Jm2BTJuK283TcYF0PVc44AB4tfec1Qd/
-        /v5dn38uijJZ5GbuTvX1luazUVSANIl84FBSyogu+Q==
-X-Google-Smtp-Source: APXvYqxu+jMjNle+ACBvO1nRDbDvShivY/r2tlBkdLEsMASv7gZt8FOunyItaOXZPAMs744KqWkrYdN0Lr/vbe9IxY8=
-X-Received: by 2002:a92:ca82:: with SMTP id t2mr6256940ilo.242.1576748125586;
- Thu, 19 Dec 2019 01:35:25 -0800 (PST)
+        bh=i3kinH9BKdcFWrmC53cr2rYC6iVhtIiNy5b7BJBTamU=;
+        b=DcsmpLe4MB+obqdV9UD5M7eTq8FBxc4bUPdRjSGX4UM1/SvJkHb76EBDZteMgAjny3
+         RqAhvS2Ks6x2HfVD1KZflXsSUv71LOcgWHQ44sRlc6dpe6MUwepj/tVQdsUu7+AqQfFn
+         0TYSiEjxT5pMF45zYDAd55X+Kl2QLQBkYq6+dTCKQX1ZQ7/dVdMEy1MNlMywpkhbVmM/
+         8yYfgsw4c0AC0HSzo+dhvvpwTQatCr4yQgSl8CezXF+99dFQYFu9tD+urHoY43drcLAi
+         EAzW55GrLd1BcntcI2Dzu3BWpDyq4i5OiXUb86RiFWZeulrk8L8xDdJRi6CEzOHOKg6x
+         Q+0g==
+X-Gm-Message-State: APjAAAWAVhjEQ2YGthdbhe7FyiZRaQIY46fzUasZ6dUf6QE9CklDhyx9
+        EaOtEuHda11gQvCdELEKhco3gUb3XtDL4rkiiWa/ikugdTo=
+X-Google-Smtp-Source: APXvYqy6Yj7NLDWm5gkYIu8GE7GppWwnrEdh9KUENE1GXmBiReYe5mDSw8lgNZtD5WJAiQ4gh3ZGTlod9wsiTweaUJI=
+X-Received: by 2002:a0c:c351:: with SMTP id j17mr6777104qvi.80.1576748128716;
+ Thu, 19 Dec 2019 01:35:28 -0800 (PST)
 MIME-Version: 1.0
-References: <20191127001313.183170-1-zenczykowski@gmail.com> <20191213114934.GB5449@hmswarspite.think-freely.org>
-In-Reply-To: <20191213114934.GB5449@hmswarspite.think-freely.org>
-From:   Lorenzo Colitti <lorenzo@google.com>
-Date:   Thu, 19 Dec 2019 18:35:13 +0900
-Message-ID: <CAKD1Yr1m-bqpeZxMRVs84WvvjRE3zp8kJVx57OXf342r2gzVyw@mail.gmail.com>
-Subject: Re: [PATCH] net: introduce ip_local_unbindable_ports sysctl
-To:     Neil Horman <nhorman@tuxdriver.com>
-Cc:     =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <zenczykowski@gmail.com>,
-        =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <maze@google.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Linux NetDev <netdev@vger.kernel.org>,
-        Sean Tranchetti <stranche@codeaurora.org>,
-        Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Linux SCTP <linux-sctp@vger.kernel.org>
+References: <20191208232734.225161-1-Jason@zx2c4.com> <CACT4Y+bsJVmgbD-WogwU=LfWiPN1JgjBrwx4s8Y14hDd7vqqhQ@mail.gmail.com>
+ <CAHmME9o0AparjaaOSoZD14RAW8_AJTfKfcx3Y2ndDAPFNC-MeQ@mail.gmail.com>
+ <CACT4Y+Zssd6OZ2-U4kjw18mNthQyzPWZV_gkH3uATnSv1SVDfA@mail.gmail.com> <CAHmME9oM=YHMZyg23WEzmZAof=7iv-A01VazB3ihhR99f6X1cg@mail.gmail.com>
+In-Reply-To: <CAHmME9oM=YHMZyg23WEzmZAof=7iv-A01VazB3ihhR99f6X1cg@mail.gmail.com>
+From:   Dmitry Vyukov <dvyukov@google.com>
+Date:   Thu, 19 Dec 2019 10:35:17 +0100
+Message-ID: <CACT4Y+aCEZm_BA5mmVTnK2cR8CQUky5w1qvmb2KpSR4-Pzp4Ow@mail.gmail.com>
+Subject: Re: [PATCH net-next v2] net: WireGuard secure network tunnel
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "open list:HARDWARE RANDOM NUMBER GENERATOR CORE" 
+        <linux-crypto@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 13 Dec 2019, 20:49 Neil Horman, <nhorman@tuxdriver.com> wrote:
-> Just out of curiosity, why are the portreserve and portrelease utilities not a
-> solution to this use case?
+On Wed, Dec 18, 2019 at 12:50 PM Jason A. Donenfeld <Jason@zx2c4.com> wrote:
+>
+> Hi Dmitry,
+>
+> On Wed, Dec 18, 2019 at 12:37 PM Dmitry Vyukov <dvyukov@google.com> wrote:
+> > > Actually with WireGuard, I think that's not the case. The WireGuard
+> > > logging has been written with DoS in mind. You /should/ be able to
+> > > safely run it on a production system exposed to the wild Internet, and
+> > > while there will be some additional things in your dmesg, an attacker
+> > > isn't supposed to be able to totally flood it without ratelimiting or
+> > > inject malicious strings into it (such as ANSI escape sequence). In
+> > > other words, I consider the logging to be fair game attack surface. If
+> > > your fuzzer manages to craft some nasty sequence of packets that
+> > > tricks some rate limiting logic and lets you litter all over dmesg
+> > > totally unbounded, I'd consider that a real security bug worth
+> > > stressing out about. So from the perspective of letting your fuzzers
+> > > loose on WireGuard, I'd actually like to see this option kept on.
+> >
+> > This is the case even with CONFIG_WIREGUARD_DEBUG turned on, right? Or without?
+>
+> Turned on.
+>
+> > Well, it may be able to trigger unbounded printing, but that won't be
+> > detected as a bug and won't be reported. To be reported it needs to
+> > fall into a set of predefined bug cases (e.g. "BUG:" or "WARNING:" on
+> > console). Unless of course it triggers total stall/hang.
+>
+> Bummer. Well, at least the stall case is interesting.
+>
+> > But I'm
+> > afraid it will just dirty dmesg, make reading crashes harder and slow
+> > down everything without benefit.
+>
+> Actually the point of the logging is usually to make it more obvious
+> why a crash has come about, to provide some trail about the sequence
+> of events. This was especially helpful in fixing old race conditions
+> where subtle packet timing caused WireGuard's timer-based state
+> machine to go haywire. Is syzkaller able to backtrack from crashes to
+> the packets and packet timing that caused them, in order to make a
+> test case to replay the crash?
 
-As I understand it, those utilities keep the ports reserved by binding
-to them so that no other process can. This doesn't work for Android
-because there are conformance tests that probe the device from the
-network and check that there are no open ports.
+Sometimes. You may sort by "Repro" column here to get the ratio:
+https://syzkaller.appspot.com/upstream
+https://syzkaller.appspot.com/upstream/fixed
+
+> Is this precise enough for race
+> condition bugs?
+
+It's finding lots of race conditions provoked bugs (I would say it's
+the most common cause of kernel bugs).
+
+> If so, then when debugging the crashes I could always
+> replay it later with logging turned on, in which case it might make
+> sense to split out the debug logging into CONFIG_WIREGUARD_VERBOSE_LOG
+> or similar (unless the logging itself changes the timing constraints
+> and I can't repro that way). If this isn't possible, then it seems
+> like logging might be something we would benefit from having in the
+> crash reports, right? Or am I missing some other detail of how the
+> system works?
+
+Well, you are missing that wireguard is not the only subsystem
+syzkaller tests (in fact, it does not test it at all) and there are
+3000 other subsystems :)
+If we enable verbose debug logging for all of them, we will get storm
+of output and the wireguard logging you are interested in may simply
+be evicted from the 1MB buffer. Also, the expected case is that a
+program does not crash, in that case we waste performance for
+unnecessary logging (and not finding bugs because of that).
+
+In some cases there are reproducers, in some cases a bug is trivial to
+debug based on the crash report (no tracing needed).
+
+But additional debug checks are useful in any testing.
