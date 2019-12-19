@@ -2,97 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2EE0F125C53
-	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 08:57:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6EB3F125C7D
+	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 09:22:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726648AbfLSH5h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Dec 2019 02:57:37 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:56380 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726439AbfLSH5h (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Dec 2019 02:57:37 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1576742256;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=PYvhhfdfRXcH4jO+EP53VpwP3E/K4rAyanO/djc7fbc=;
-        b=KabaoI+moD9kmGoioydznj3xewa99O4SAhB57J8rQgbHMeLpISzXAS4bx560g2DNYZT642
-        djJw3F+iNYfPodwqOX7MwZybUo0Kr42byu7V68ALaXFWCHgG+tl71+m/Ph9Ih0NOKXsd/7
-        wAGSLx+ejj1gWuUfxAHo4cV142414AI=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-287-UkhMKIxTMPm8eSJTniRGqw-1; Thu, 19 Dec 2019 02:57:32 -0500
-X-MC-Unique: UkhMKIxTMPm8eSJTniRGqw-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        id S1726599AbfLSIWt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Dec 2019 03:22:49 -0500
+Received: from a.mx.secunet.com ([62.96.220.36]:42010 "EHLO a.mx.secunet.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726439AbfLSIWt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 19 Dec 2019 03:22:49 -0500
+Received: from localhost (localhost [127.0.0.1])
+        by a.mx.secunet.com (Postfix) with ESMTP id CC65520533;
+        Thu, 19 Dec 2019 09:22:47 +0100 (CET)
+X-Virus-Scanned: by secunet
+Received: from a.mx.secunet.com ([127.0.0.1])
+        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id XANShWYe3Nzu; Thu, 19 Dec 2019 09:22:47 +0100 (CET)
+Received: from mail-essen-01.secunet.de (mail-essen-01.secunet.de [10.53.40.204])
+        (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id DDB2A107ACE3;
-        Thu, 19 Dec 2019 07:57:28 +0000 (UTC)
-Received: from carbon (ovpn-200-37.brq.redhat.com [10.40.200.37])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 4B0861000330;
-        Thu, 19 Dec 2019 07:57:24 +0000 (UTC)
-Date:   Thu, 19 Dec 2019 08:57:22 +0100
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     David Laight <David.Laight@ACULAB.COM>
-Cc:     'Marek Majkowski' <marek@cloudflare.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        network dev <netdev@vger.kernel.org>,
-        kernel-team <kernel-team@cloudflare.com>,
-        Paolo Abeni <pabeni@redhat.com>, brouer@redhat.com
-Subject: Re: epoll_wait() performance
-Message-ID: <20191219085722.23e39028@carbon>
-In-Reply-To: <b71441bb2fa14bc7b583de643a1ccf8b@AcuMS.aculab.com>
-References: <bc84e68c0980466096b0d2f6aec95747@AcuMS.aculab.com>
-        <CAJPywTJYDxGQtDWLferh8ObjGp3JsvOn1om1dCiTOtY6S3qyVg@mail.gmail.com>
-        <5f4028c48a1a4673bd3b38728e8ade07@AcuMS.aculab.com>
-        <20191127164821.1c41deff@carbon>
-        <5eecf41c7e124d7dbc0ab363d94b7d13@AcuMS.aculab.com>
-        <20191128121205.65c8dea1@carbon>
-        <b71441bb2fa14bc7b583de643a1ccf8b@AcuMS.aculab.com>
+        by a.mx.secunet.com (Postfix) with ESMTPS id 5465D200AC;
+        Thu, 19 Dec 2019 09:22:47 +0100 (CET)
+Received: from gauss2.secunet.de (10.182.7.193) by mail-essen-01.secunet.de
+ (10.53.40.204) with Microsoft SMTP Server id 14.3.439.0; Thu, 19 Dec 2019
+ 09:22:46 +0100
+Received: by gauss2.secunet.de (Postfix, from userid 1000)      id A030D3180373;
+ Thu, 19 Dec 2019 09:22:46 +0100 (CET)
+Date:   Thu, 19 Dec 2019 09:22:46 +0100
+From:   Steffen Klassert <steffen.klassert@secunet.com>
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+CC:     David Miller <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Network Development <netdev@vger.kernel.org>
+Subject: Re: [PATCH net-next 3/4] net: Support GRO/GSO fraglist chaining.
+Message-ID: <20191219082246.GS8621@gauss3.secunet.de>
+References: <20191218133458.14533-1-steffen.klassert@secunet.com>
+ <20191218133458.14533-4-steffen.klassert@secunet.com>
+ <CA+FuTScnux23Gj1WTEXHmZkiFG3RQsgmSz19TOWdWByM4Rd15Q@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <CA+FuTScnux23Gj1WTEXHmZkiFG3RQsgmSz19TOWdWByM4Rd15Q@mail.gmail.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 28 Nov 2019 16:37:01 +0000
-David Laight <David.Laight@ACULAB.COM> wrote:
-
-> From: Jesper Dangaard Brouer
-> > Sent: 28 November 2019 11:12  
-> ...
-> > > Can you test recv() as well?  
-> > 
-> > Sure: https://github.com/netoptimizer/network-testing/commit/9e3c8b86a2d662
-> > 
-> > $ sudo taskset -c 1 ./udp_sink --port 9  --count $((10**6*2))
-> >           	run      count   	ns/pkt	pps		cycles	payload
-> > recvMmsg/32  	run:  0	 2000000	653.29	1530704.29	2351	18	 demux:1
-> > recvmsg   	run:  0	 2000000	631.01	1584760.06	2271	18	 demux:1
-> > read      	run:  0	 2000000	582.24	1717518.16	2096	18	 demux:1
-> > recvfrom  	run:  0	 2000000	547.26	1827269.12	1970	18	 demux:1
-> > recv      	run:  0	 2000000	547.37	1826930.39	1970	18	 demux:1
-> >   
-> > > I think it might be faster than read().  
-> > 
-> > Slightly, but same speed as recvfrom.  
+On Wed, Dec 18, 2019 at 11:02:39AM -0500, Willem de Bruijn wrote:
+> On Wed, Dec 18, 2019 at 8:35 AM Steffen Klassert
+> <steffen.klassert@secunet.com> wrote:
 > 
-> I notice that you recvfrom() code doesn't request the source address.
-> So is probably identical to recv().
+> > +struct sk_buff *skb_segment_list(struct sk_buff *skb,
+> > +                                netdev_features_t features,
+> > +                                unsigned int offset)
+> > +{
+> > +       struct sk_buff *list_skb = skb_shinfo(skb)->frag_list;
+> > +       unsigned int tnl_hlen = skb_tnl_header_len(skb);
+> > +       unsigned int delta_truesize = 0;
+> > +       unsigned int delta_len = 0;
+> > +       struct sk_buff *tail = NULL;
+> > +       struct sk_buff *nskb;
+> > +
+> > +       skb_push(skb, -skb_network_offset(skb) + offset);
+> > +
+> > +       skb_shinfo(skb)->frag_list = NULL;
+> > +
+> > +       do {
+> > +               nskb = list_skb;
+> > +               list_skb = list_skb->next;
+> > +
+> > +               if (!tail)
+> > +                       skb->next = nskb;
+> > +               else
+> > +                       tail->next = nskb;
+> > +
+> > +               tail = nskb;
+> > +
+> > +               delta_len += nskb->len;
+> > +               delta_truesize += nskb->truesize;
+> > +
+> > +               skb_push(nskb, -skb_network_offset(nskb) + offset);
+> > +
+> > +               if (!secpath_exists(nskb))
+> > +                       __skb_ext_copy(nskb, skb);
+> 
+> Of all the possible extensions, why is this only relevant to secpath?
 
-Created a GitHub issue/bug on this:
- https://github.com/netoptimizer/network-testing/issues/5
+I wrote this before we had these extensions and adjusted it
+when the extensions where introduced to make it compile again.
+I think we can just copy the extensions unconditionally.
 
-Feel free to fix this and send a patch/PR.
+> 
+> More in general, this function open codes a variety of skb fields that
+> carry over from skb to nskb. How did you select this subset of fields?
 
--- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
+I tried to find the subset of __copy_skb_header() that is needed to copy.
+Some fields of nskb are still valid, and some (csum related) fields
+should not be copied from skb to nskb.
 
+> 
+> > +
+> > +               memcpy(nskb->cb, skb->cb, sizeof(skb->cb));
+> > +
+> > +               nskb->tstamp = skb->tstamp;
+> > +               nskb->dev = skb->dev;
+> > +               nskb->queue_mapping = skb->queue_mapping;
+> > +
+> > +               nskb->mac_len = skb->mac_len;
+> > +               nskb->mac_header = skb->mac_header;
+> > +               nskb->transport_header = skb->transport_header;
+> > +               nskb->network_header = skb->network_header;
+> > +               skb_dst_copy(nskb, skb);
+> > +
+> > +               skb_headers_offset_update(nskb, skb_headroom(nskb) - skb_headroom(skb));
+> > +               skb_copy_from_linear_data_offset(skb, -tnl_hlen,
+> > +                                                nskb->data - tnl_hlen,
+> > +                                                offset + tnl_hlen);
+> > +
+> > +               if (skb_needs_linearize(nskb, features) &&
+> > +                   __skb_linearize(nskb))
+> > +                       goto err_linearize;
+> > +
+> > +       } while (list_skb);
+> > +
+> > +       skb->truesize = skb->truesize - delta_truesize;
+> > +       skb->data_len = skb->data_len - delta_len;
+> > +       skb->len = skb->len - delta_len;
+> > +       skb->ip_summed = nskb->ip_summed;
+> > +       skb->csum_level = nskb->csum_level;
+> 
+> This changed from the previous version, where nskb inherited ip_summed
+> and csum_level from skb. Why is that?
+
+I had to set ip_summed to CHECKSUM_UNNECESSARY on GRO to
+make sure the noone touches the checksum of the head
+skb. Otherise netfilter etc. tries to touch the csum.
+
+Before chaining I make sure that ip_summed and csum_level is
+the same for all chained skbs and here I restore the original
+value from nskb.
