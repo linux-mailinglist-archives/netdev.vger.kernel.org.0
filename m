@@ -2,55 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E163A12707B
-	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 23:14:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CFAEC127085
+	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 23:16:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727020AbfLSWOg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Dec 2019 17:14:36 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:43060 "EHLO
+        id S1726998AbfLSWQV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Dec 2019 17:16:21 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:43072 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726866AbfLSWOg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Dec 2019 17:14:36 -0500
+        with ESMTP id S1726930AbfLSWQV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Dec 2019 17:16:21 -0500
 Received: from localhost (unknown [IPv6:2601:601:9f00:1c3::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id B8E4B153CA22B;
-        Thu, 19 Dec 2019 14:14:35 -0800 (PST)
-Date:   Thu, 19 Dec 2019 14:14:33 -0800 (PST)
-Message-Id: <20191219.141433.159371363914521057.davem@davemloft.net>
-To:     andrew@lunn.ch
-Cc:     rmk+kernel@armlinux.org.uk, f.fainelli@gmail.com,
-        hkallweit1@gmail.com, netdev@vger.kernel.org
-Subject: Re: [PATCH net] net: phy: make phy_error() report which PHY has
- failed
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 47AA8153CA864;
+        Thu, 19 Dec 2019 14:16:20 -0800 (PST)
+Date:   Thu, 19 Dec 2019 14:16:19 -0800 (PST)
+Message-Id: <20191219.141619.1840874136750249908.davem@davemloft.net>
+To:     stephen@networkplumber.org
+Cc:     cforno12@linux.vnet.ibm.com, netdev@vger.kernel.org,
+        mst@redhat.com, jasowang@redhat.com, haiyangz@microsoft.com,
+        sthemmin@microsoft.com, sashal@kernel.org, tlfalcon@linux.ibm.com
+Subject: Re: [PATCH, net-next, v3, 0/2] net/ethtool: Introduce
+ link_ksettings API for virtual network devices
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20191219210503.GR17475@lunn.ch>
-References: <E1ihCLZ-0001Vo-Nw@rmk-PC.armlinux.org.uk>
-        <20191219.125010.1105219757379875134.davem@davemloft.net>
-        <20191219210503.GR17475@lunn.ch>
+In-Reply-To: <20191219131156.21332555@hermes.lan>
+References: <20191219194057.4208-1-cforno12@linux.vnet.ibm.com>
+        <20191219131156.21332555@hermes.lan>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 19 Dec 2019 14:14:36 -0800 (PST)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 19 Dec 2019 14:16:20 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Andrew Lunn <andrew@lunn.ch>
-Date: Thu, 19 Dec 2019 22:05:03 +0100
+From: Stephen Hemminger <stephen@networkplumber.org>
+Date: Thu, 19 Dec 2019 13:11:56 -0800
 
->> I think I agree with Heiner that it is valuable to know whether the
->> error occurred from the interrupt handler or the state machine (and
->> if the state machine, where that got called from).
->> 
->> So I totally disagree with removing the backtrace, sorry.
-> 
-> Russell does have a point about the backtrace not giving an indication
-> of which phy experienced the error. So adding the phydev_err() call,
-> which will prefix the print with an identifier for the PHY, is a good
-> idea. So we should add that, and keep the WARN().
+> I don't think this makes sense for netvsc. The speed and duplex have no
+> meaning, why do you want to allow overriding it? If this is to try and make
+> some dashboard look good; then you aren't seeing the real speed which is
+> what only the host knows. Plus it does take into account the accelerated
+> networking path.
 
-Agreed.
+Maybe that's the point, userspace has extraneous knowledge it might
+use to set it accurately.
+
+This helps for bonding/team etc. as well.
+
+I don't think there is any real harm in allowing to set this, and
+we've done this in the past I think.
