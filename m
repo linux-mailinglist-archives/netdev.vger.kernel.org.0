@@ -2,65 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B959E1265EF
-	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 16:41:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C95E1265F2
+	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 16:41:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726908AbfLSPll (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Dec 2019 10:41:41 -0500
-Received: from www62.your-server.de ([213.133.104.62]:48802 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726776AbfLSPlk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Dec 2019 10:41:40 -0500
-Received: from [2001:1620:665:0:5795:5b0a:e5d5:5944] (helo=localhost)
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1ihxvm-0008Re-07; Thu, 19 Dec 2019 16:41:38 +0100
-Date:   Thu, 19 Dec 2019 16:41:37 +0100
-From:   Daniel Borkmann <daniel@iogearbox.net>
-To:     Andrii Nakryiko <andriin@fb.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@fb.com,
-        andrii.nakryiko@gmail.com, kernel-team@fb.com
-Subject: Re: [PATCH bpf-next 2/3] libbpf/tools: add runqslower tool to libbpf
-Message-ID: <20191219154137.GB4198@linux-9.fritz.box>
-References: <20191219070659.424273-1-andriin@fb.com>
- <20191219070659.424273-3-andriin@fb.com>
+        id S1726984AbfLSPlq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Dec 2019 10:41:46 -0500
+Received: from mail.kernel.org ([198.145.29.99]:41430 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726776AbfLSPlq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 19 Dec 2019 10:41:46 -0500
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 05A79206EC;
+        Thu, 19 Dec 2019 15:41:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1576770105;
+        bh=KF60Qe5gV74XQJzFH9w0KtJr6zzItpIRfiJtfel+FtA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=mX1sOidzues28HZ3z4Rp9rVat7pc28SuwQU3f/f5w7GvesHpULS+NBePQFyYs2E4u
+         eSW17ZipKIZ4SRxxp/vB9x6/Vo8NuMsvT/3DuXqkW3HKNWjZTFuMvZzPIJJ3uQbI6l
+         zDqpC5kp7AZDRe3zqkKOMrOQ8MC2GLspIZPT9aIw=
+Date:   Thu, 19 Dec 2019 16:41:43 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Aviraj CJ <acj@cisco.com>
+Cc:     peppe.cavallaro@st.com, alexandre.torgue@st.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        xe-linux-external@cisco.com
+Subject: Re: [PATCH stable v4.14 1/2] net: stmmac: use correct DMA buffer
+ size in the RX descriptor
+Message-ID: <20191219154143.GA1969379@kroah.com>
+References: <20191218131720.12270-1-acj@cisco.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20191219070659.424273-3-andriin@fb.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.101.4/25668/Thu Dec 19 10:55:58 2019)
+In-Reply-To: <20191218131720.12270-1-acj@cisco.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 18, 2019 at 11:06:57PM -0800, Andrii Nakryiko wrote:
-> Convert one of BCC tools (runqslower [0]) to BPF CO-RE + libbpf. It matches
-> its BCC-based counterpart 1-to-1, supporting all the same parameters and
-> functionality.
+On Wed, Dec 18, 2019 at 05:17:19AM -0800, Aviraj CJ wrote:
+> upstream 583e6361414903c5206258a30e5bd88cb03c0254 commit
 > 
-> runqslower tool utilizes BPF skeleton, auto-generated from BPF object file,
-> as well as memory-mapped interface to global (read-only, in this case) data.
-> Its makefile also ensures auto-generation of "relocatable" vmlinux.h, which is
-> necessary for BTF-typed raw tracepoints with direct memory access.
+> We always program the maximum DMA buffer size into the receive descriptor,
+> although the allocated size may be less. E.g. with the default MTU size
+> we allocate only 1536 bytes. If somebody sends us a bigger frame, then
+> memory may get corrupted.
 > 
->   [0] https://github.com/iovisor/bcc/blob/11bf5d02c895df9646c117c713082eb192825293/tools/runqslower.py
+> Program DMA using exact buffer sizes.
 > 
-> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
-> ---
->  tools/lib/bpf/tools/runqslower/.gitignore     |   2 +
->  tools/lib/bpf/tools/runqslower/Makefile       |  60 ++++++
->  .../lib/bpf/tools/runqslower/runqslower.bpf.c | 101 ++++++++++
->  tools/lib/bpf/tools/runqslower/runqslower.c   | 187 ++++++++++++++++++
->  tools/lib/bpf/tools/runqslower/runqslower.h   |  13 ++
+> Signed-off-by: Aaro Koskinen <aaro.koskinen@nokia.com>
+> Signed-off-by: David S. Miller <davem@davemloft.net>
+> Signed-off-by: Sasha Levin <sashal@kernel.org>
+> [acj: backport v4.14 -stable
+> - adjust context
+> - skipped the section modifying non-existent functions in dwxgmac2_descs.c and
+> hwif.h ]
+> Signed-off-by: Aviraj CJ <acj@cisco.com>
 
-tools/lib/bpf/tools/ is rather weird, please add to tools/bpf/ which is the
-more appropriate place we have for small tools. Could also live directly in
-there, e.g. tools/bpf/runqslower.{c,h,bpf.c} and then built/run from selftests,
-but under libbpf directly is too odd.
+Thanks for all of the backports, all now queued up.
 
-Thanks,
-Daniel
+greg k-h
