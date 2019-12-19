@@ -2,118 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D3F7512681F
-	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 18:30:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2784A12684C
+	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 18:39:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726945AbfLSRaX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Dec 2019 12:30:23 -0500
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:37186 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726818AbfLSRaX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Dec 2019 12:30:23 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=joiIL60i33gQwU7JNxW0f8NaOlF7POfgRUGaP64zU60=; b=HJKmIxFxgR1VFLr/8cqtc/no6
-        CgTOKTDq07ieyqGWpEpxV8UH8XHAmuFDsBz88OLmYeU9UREfooy9Ffxwevk7pCLeHHuIi7DkUCdL/
-        TAKrHCZdXh1uimmJ3onDz+U803HzhhOo+KzkivAObHX6e58ffMpMkLVJKaXXUxG1DyBCYaxx7wFKA
-        a+5AXduyVqo9kDPNfTwerL0H9vDfBXnIK/DRA3ui8EmMxBqa0EalR6yIlQU5RYdYDSCiiAN1RFhjh
-        VeM+D1cvUkrn9aU78A4HhmVkqHoKXsD8eS7AxmLhox61ghZoNVbG6CYw34xAvqzcn96fHnPzVsALl
-        hDBR8RI5A==;
-Received: from shell.armlinux.org.uk ([2001:4d48:ad52:3201:5054:ff:fe00:4ec]:43512)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1ihzcw-0003qu-2f; Thu, 19 Dec 2019 17:30:18 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1ihzcu-0005XU-Hm; Thu, 19 Dec 2019 17:30:16 +0000
-Date:   Thu, 19 Dec 2019 17:30:16 +0000
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     madalin.bucur@nxp.com
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, andrew@lunn.ch,
-        f.fainelli@gmail.com, hkallweit1@gmail.com, shawnguo@kernel.org,
-        devicetree@vger.kernel.org,
-        Madalin Bucur <madalin.bucur@oss.nxp.com>
-Subject: Re: [PATCH 5/6] net: fsl/fman: add support for PHY_INTERFACE_MODE_SFI
-Message-ID: <20191219173016.GD25745@shell.armlinux.org.uk>
-References: <1576768881-24971-1-git-send-email-madalin.bucur@oss.nxp.com>
- <1576768881-24971-6-git-send-email-madalin.bucur@oss.nxp.com>
+        id S1726907AbfLSRjM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Dec 2019 12:39:12 -0500
+Received: from mta-p7.oit.umn.edu ([134.84.196.207]:55918 "EHLO
+        mta-p7.oit.umn.edu" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726818AbfLSRjM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Dec 2019 12:39:12 -0500
+Received: from localhost (unknown [127.0.0.1])
+        by mta-p7.oit.umn.edu (Postfix) with ESMTP id 47dzdW1FClz9vZv7
+        for <netdev@vger.kernel.org>; Thu, 19 Dec 2019 17:39:11 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at umn.edu
+Received: from mta-p7.oit.umn.edu ([127.0.0.1])
+        by localhost (mta-p7.oit.umn.edu [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id 7IHRS8hirUgu for <netdev@vger.kernel.org>;
+        Thu, 19 Dec 2019 11:39:11 -0600 (CST)
+Received: from mail-yw1-f72.google.com (mail-yw1-f72.google.com [209.85.161.72])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mta-p7.oit.umn.edu (Postfix) with ESMTPS id 47dzdW011kz9vZvJ
+        for <netdev@vger.kernel.org>; Thu, 19 Dec 2019 11:39:10 -0600 (CST)
+Received: by mail-yw1-f72.google.com with SMTP id d198so4485155ywa.17
+        for <netdev@vger.kernel.org>; Thu, 19 Dec 2019 09:39:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=umn.edu; s=google;
+        h=subject:to:cc:references:in-reply-to:from:message-id:date
+         :user-agent:mime-version:content-language:content-transfer-encoding;
+        bh=AzwXwPyqLdMgiqxoaURBqE7zGRBLFphXTk6J0tyQ+1Q=;
+        b=WZFzVAbwy+PD3mfPyPnG/lqPzt5jire3SR0Dmi4ESDMbYrL0YMqDXS/gnwFGLUOpJX
+         Aph8hlbuNcPcKp1ouVSPSXKSu3cYdI1TbqcG5bChV3gwEvctRuldGeFualjy82R6o9g4
+         itwTPUbaq0V5y5zcTp6RzoR8KklzaE7+9TwCIgaR5odfvBOPFtgZrIk2SJKQTlaS5mFX
+         HCyYhhPuNqm3lZQjg/w+e8k/ksVL+X0kVSQJlkSYxsoQ2cO9SQKhWCyr51NhBd4yXCpC
+         4Z/X7zfDYL0K3qYHVxReQo67gdRjwVE64kFRNu6kDtVAvaoQWhMQqyfKOuiusJ2tiBQv
+         DkMw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:in-reply-to:from
+         :message-id:date:user-agent:mime-version:content-language
+         :content-transfer-encoding;
+        bh=AzwXwPyqLdMgiqxoaURBqE7zGRBLFphXTk6J0tyQ+1Q=;
+        b=lK/OLsvtjHS2bVdcuRAGa94oJ7z56M/w5q4Fb4mTzIuK6Z643L0GUJCQ+4Ykrkn5th
+         Axb/iaYxHjNS9gA2BCQmuqpCj3vdFPbDGyd04JB+DwEUO3V+GEjf1WLQIiwx2H+hKtu9
+         v+PzA+k7TT6mC7+qA2BqVKHUMOQhgU8yPP2sFVI3q0XAtFEjnJT9C+CVqTT4SHzdDM1c
+         wm/QARPvjQy6+4wEtL39tBUgdrEGJOi/a8nSty1ZK7V2W03dhzSPGPP+RViLop4M94gZ
+         uXU7BwH9aK8+4CapWjJjxpk7uSOlgHxazjVWxnEdotnT9XQh2oOoNprlBtOGNfwnT/3i
+         opdw==
+X-Gm-Message-State: APjAAAVCvgAbLC18DEb65O20LHqYRqhyafwa2ALIG9ArnQy1kbgkCzhE
+        yrbq/zbAyitKz2TvAvbXdf/3tnnXOcKEfRXpCA2vFRXtHSWwJyuvXc1tFDyN93YjoNBnUGSdxbP
+        fhFLMaCqS1FYswxnc6glQ
+X-Received: by 2002:a81:6707:: with SMTP id b7mr7101423ywc.36.1576777150476;
+        Thu, 19 Dec 2019 09:39:10 -0800 (PST)
+X-Google-Smtp-Source: APXvYqzP14w1/YKStiE4g89ZmMAeIFFU+TvL1hgLMP0XOo/Xbf7zuSSnJT6rWdWDvw3RwIwm9Zx+oA==
+X-Received: by 2002:a81:6707:: with SMTP id b7mr7101408ywc.36.1576777150217;
+        Thu, 19 Dec 2019 09:39:10 -0800 (PST)
+Received: from [128.101.106.66] (cs-u-syssec1.cs.umn.edu. [128.101.106.66])
+        by smtp.gmail.com with ESMTPSA id q1sm2854283ywa.82.2019.12.19.09.39.08
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 19 Dec 2019 09:39:09 -0800 (PST)
+Subject: Re: [PATCH] bpf: Replace BUG_ON when fp_old is NULL
+To:     Daniel Borkmann <daniel@iogearbox.net>, Yonghong Song <yhs@fb.com>
+Cc:     "kjlu@umn.edu" <kjlu@umn.edu>, Alexei Starovoitov <ast@kernel.org>,
+        Martin Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <20191215154432.22399-1-pakki001@umn.edu>
+ <98c13b9c-a73a-6203-4ea1-6b1180d87d97@fb.com>
+ <566f206c-f133-6f68-c257-2c0b3ec462fa@iogearbox.net>
+In-Reply-To: <566f206c-f133-6f68-c257-2c0b3ec462fa@iogearbox.net>
+From:   Aditya Pakki <pakki001@umn.edu>
+Message-ID: <51dcca79-f819-8ebb-308e-210a0d76b1cc@umn.edu>
+Date:   Thu, 19 Dec 2019 11:39:08 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1576768881-24971-6-git-send-email-madalin.bucur@oss.nxp.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 19, 2019 at 05:21:20PM +0200, Madalin Bucur wrote:
-> Add support for the SFI PHY interface mode.
+On 12/16/19 5:17 AM, Daniel Borkmann wrote:
+> On 12/15/19 11:08 PM, Yonghong Song wrote:
+>> On 12/15/19 7:44 AM, Aditya Pakki wrote:
+>>> If fp_old is NULL in bpf_prog_realloc, the program does an assertion
+>>> and crashes. However, we can continue execution by returning NULL to
+>>> the upper callers. The patch fixes this issue.
+>>
+>> Could you share how to reproduce the assertion and crash? I would
+>> like to understand the problem first before making changes in the code.
+>> Thanks!
 > 
-> Signed-off-by: Madalin Bucur <madalin.bucur@oss.nxp.com>
-> ---
->  drivers/net/ethernet/freescale/fman/fman_memac.c | 2 ++
->  drivers/net/ethernet/freescale/fman/mac.c        | 2 ++
->  2 files changed, 4 insertions(+)
-> 
-> diff --git a/drivers/net/ethernet/freescale/fman/fman_memac.c b/drivers/net/ethernet/freescale/fman/fman_memac.c
-> index d0b12efadd6c..09fdec935bf2 100644
-> --- a/drivers/net/ethernet/freescale/fman/fman_memac.c
-> +++ b/drivers/net/ethernet/freescale/fman/fman_memac.c
-> @@ -440,6 +440,7 @@ static int init(struct memac_regs __iomem *regs, struct memac_cfg *cfg,
->  	tmp = 0;
->  	switch (phy_if) {
->  	case PHY_INTERFACE_MODE_XFI:
-> +	case PHY_INTERFACE_MODE_SFI:
+> Fully agree, Aditya, please elaborate if you have seen a crash!
 
-No difference between these two.
+Thanks for your responses Alexei and Daniel. We identified this issue via static analysis
+and have not seen a crash. However, by looking at the callers of bpf_prog_realloc, I do 
+agree that fp_old is never NULL. 
 
->  	case PHY_INTERFACE_MODE_XGMII:
->  		tmp |= IF_MODE_10G;
->  		break;
-> @@ -456,6 +457,7 @@ static int init(struct memac_regs __iomem *regs, struct memac_cfg *cfg,
->  	/* TX_FIFO_SECTIONS */
->  	tmp = 0;
->  	if (phy_if == PHY_INTERFACE_MODE_XFI ||
-> +	    phy_if == PHY_INTERFACE_MODE_SFI ||
-
-Again, no difference between these two.
-
->  	    phy_if == PHY_INTERFACE_MODE_XGMII) {
->  		if (slow_10g_if) {
->  			tmp |= (TX_FIFO_SECTIONS_TX_AVAIL_SLOW_10G |
-> diff --git a/drivers/net/ethernet/freescale/fman/mac.c b/drivers/net/ethernet/freescale/fman/mac.c
-> index 2944188c19b3..5e6317742c38 100644
-> --- a/drivers/net/ethernet/freescale/fman/mac.c
-> +++ b/drivers/net/ethernet/freescale/fman/mac.c
-> @@ -542,6 +542,7 @@ static const u16 phy2speed[] = {
->  	[PHY_INTERFACE_MODE_QSGMII]		= SPEED_1000,
->  	[PHY_INTERFACE_MODE_XGMII]		= SPEED_10000,
->  	[PHY_INTERFACE_MODE_XFI]		= SPEED_10000,
-> +	[PHY_INTERFACE_MODE_SFI]		= SPEED_10000,
-
-Again, no difference between these two.
-
->  };
->  
->  static struct platform_device *dpaa_eth_add_device(int fman_id,
-> @@ -800,6 +801,7 @@ static int mac_probe(struct platform_device *_of_dev)
->  
->  	/* The 10G interface only supports one mode */
->  	if (mac_dev->phy_if == PHY_INTERFACE_MODE_XFI ||
-> +	    mac_dev->phy_if == PHY_INTERFACE_MODE_SFI ||
-
-Again, no difference between these two.
-
-I just don't see the point of perpetuating the XFI and SFI names for
-something that is just plain 10GBASE-R.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-According to speedtest.net: 11.9Mbps down 500kbps up
+Would you recommend removing the BUG_ON assertion altogether ?
