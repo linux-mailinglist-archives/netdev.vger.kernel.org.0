@@ -2,75 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 17CC3125C8E
-	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 09:26:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0CCCD125C9C
+	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 09:29:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726591AbfLSI0F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Dec 2019 03:26:05 -0500
-Received: from a.mx.secunet.com ([62.96.220.36]:42228 "EHLO a.mx.secunet.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726439AbfLSI0F (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 19 Dec 2019 03:26:05 -0500
-Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id 3D79020184;
-        Thu, 19 Dec 2019 09:26:03 +0100 (CET)
-X-Virus-Scanned: by secunet
-Received: from a.mx.secunet.com ([127.0.0.1])
-        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id enA1yM1AhO2X; Thu, 19 Dec 2019 09:26:02 +0100 (CET)
-Received: from mail-essen-01.secunet.de (mail-essen-01.secunet.de [10.53.40.204])
-        (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id D0DE4200AC;
-        Thu, 19 Dec 2019 09:26:02 +0100 (CET)
-Received: from gauss2.secunet.de (10.182.7.193) by mail-essen-01.secunet.de
- (10.53.40.204) with Microsoft SMTP Server id 14.3.439.0; Thu, 19 Dec 2019
- 09:26:02 +0100
-Received: by gauss2.secunet.de (Postfix, from userid 1000)      id 757053180373;
- Thu, 19 Dec 2019 09:26:02 +0100 (CET)
-Date:   Thu, 19 Dec 2019 09:26:02 +0100
-From:   Steffen Klassert <steffen.klassert@secunet.com>
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-CC:     David Miller <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Network Development <netdev@vger.kernel.org>
-Subject: Re: [PATCH net-next 4/4] udp: Support UDP fraglist GRO/GSO.
-Message-ID: <20191219082602.GT8621@gauss3.secunet.de>
-References: <20191218133458.14533-1-steffen.klassert@secunet.com>
- <20191218133458.14533-5-steffen.klassert@secunet.com>
- <CA+FuTScaqg8whAaS35n9TT+=7S38Sn_sMEN=KstYF6i83keSsw@mail.gmail.com>
+        id S1726742AbfLSI24 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Dec 2019 03:28:56 -0500
+Received: from mail-lf1-f65.google.com ([209.85.167.65]:42917 "EHLO
+        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726536AbfLSI2z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Dec 2019 03:28:55 -0500
+Received: by mail-lf1-f65.google.com with SMTP id y19so3686686lfl.9
+        for <netdev@vger.kernel.org>; Thu, 19 Dec 2019 00:28:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=EYVpTAvfKwHHKmlAPuGRsZ3iezpd785NjyR9OVcUj6E=;
+        b=MJZ/DNtFXAxxKUZKDxH+hao28YTyE5NOXtuQ0Z3/ibWy8zpn9idcT5fZSA3qlJswY1
+         Yijm5VvGd/xFqGL1v6NZGRxBXBKHV016m5JvvGWQlY0M4LINXT2A+VMv/c7K+z0FglYN
+         FkcONe7Byj4YXGeofGkBJBC9L9BYhWz0U/7T5uj+m7cWbGsUIxhMxvZYjxq9RmDbTAeo
+         5FOeLkOvfmFeFbQ9FneVOLbyy+1qTeqa2lenupHqbbfkraaI8ywbs0EUp3VJNPMnGg4z
+         8lysTRj1vQ/4vBUWcuSX068OiI8cXcTJLEVHZYJzOCkkKrvNMEEtnJ4J5TdoqJk3xzfJ
+         RFyg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=EYVpTAvfKwHHKmlAPuGRsZ3iezpd785NjyR9OVcUj6E=;
+        b=I+qKatK4JWy9Z/8pREbne6qjJMUbe+M/KhPxMWuf1RNiM+UT4Q6fInr/hADLI3fIHK
+         woerc+m6GYeoAhmymkNCAfHXPJLbevkTccvxRyaf66KM352OhfcDiqISrXIVPYTnIe1+
+         QlbWm8O7jsjIdhqQKiCOPzxXUYGPEn6qien55ua6yTUqZc8iUApSFvGLf471P4MBzlRT
+         rfO76h1QFSgKWnyD5XmKZMFNJAllsUdWPm6grZ3url/bH/yAMDCAPOQSbv6gR/kRmoSR
+         E+mm1DXMhXNtKt9FScaMShE9hLVaZaeL1cqZ19o4dOZGWZnkpDfLGb19pnHctVu6VmvJ
+         jv9A==
+X-Gm-Message-State: APjAAAXgnsDOA/xrxk4dxOiFk3KZUF1Uw4dJL1MypnS/FSpGaBexc/Xp
+        wIgRJRGcsKsGpyjo9I8n9vXdktOXMqigGyhbFPrQgA==
+X-Google-Smtp-Source: APXvYqynTJm9GoZtkT/ox5Ee2KtmtUCBm2Ol3fEci7a1RBI4FjyF3QqGMde1dsSwXQ7lWCCv/YG69H6YPlbklmRCDWQ=
+X-Received: by 2002:a19:8a41:: with SMTP id m62mr4543898lfd.5.1576744133697;
+ Thu, 19 Dec 2019 00:28:53 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <CA+FuTScaqg8whAaS35n9TT+=7S38Sn_sMEN=KstYF6i83keSsw@mail.gmail.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
+References: <20191213124221.25775-1-tbogendoerfer@suse.de> <20191213124221.25775-3-tbogendoerfer@suse.de>
+In-Reply-To: <20191213124221.25775-3-tbogendoerfer@suse.de>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Thu, 19 Dec 2019 09:28:42 +0100
+Message-ID: <CACRpkdY+2Z90n6zNZbQpmGCWYAH4PzEOv8puOkwbrcxCk_Eq2A@mail.gmail.com>
+Subject: Re: [PATCH v11 net-next 2/2] mfd: ioc3: Add driver for SGI IOC3 chip
+To:     Thomas Bogendoerfer <tbogendoerfer@suse.de>
+Cc:     Ralf Baechle <ralf@linux-mips.org>,
+        Paul Burton <paulburton@kernel.org>,
+        James Hogan <jhogan@kernel.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Alessandro Zummo <a.zummo@towertech.it>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>, linux-mips@vger.kernel.org,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>, linux-rtc@vger.kernel.org,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 18, 2019 at 11:03:09AM -0500, Willem de Bruijn wrote:
-> On Wed, Dec 18, 2019 at 8:35 AM Steffen Klassert
-> <steffen.klassert@secunet.com> wrote:
-> 
-> > @@ -544,6 +585,18 @@ INDIRECT_CALLABLE_SCOPE int udp4_gro_complete(struct sk_buff *skb, int nhoff)
-> >         const struct iphdr *iph = ip_hdr(skb);
-> >         struct udphdr *uh = (struct udphdr *)(skb->data + nhoff);
-> >
-> > +       if (NAPI_GRO_CB(skb)->is_flist) {
-> > +               uh->len = htons(skb->len - nhoff);
-> > +
-> > +               skb_shinfo(skb)->gso_type |= (SKB_GSO_FRAGLIST|SKB_GSO_UDP_L4);
-> > +               skb_shinfo(skb)->gso_segs = NAPI_GRO_CB(skb)->count;
-> > +
-> > +               skb->ip_summed = CHECKSUM_UNNECESSARY;
-> > +               skb->csum_level = ~0;
-> 
-> why is this needed for ipv4 only?
+On Fri, Dec 13, 2019 at 1:43 PM Thomas Bogendoerfer
+<tbogendoerfer@suse.de> wrote:
 
-It is needed for IPv6 too, I've just forgot to add it there.
+> SGI IOC3 chip has integrated ethernet, keyboard and mouse interface.
+> It also supports connecting a SuperIO chip for serial and parallel
+> interfaces. IOC3 is used inside various SGI systemboards and add-on
+> cards with different equipped external interfaces.
+>
+> Support for ethernet and serial interfaces were implemented inside
+> the network driver. This patchset moves out the not network related
+> parts to a new MFD driver, which takes care of card detection,
+> setup of platform devices and interrupt distribution for the subdevices.
+>
+> Serial portion: Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Acked-for-MFD-by: Lee Jones <lee.jones@linaro.org>
+>
+> Signed-off-by: Thomas Bogendoerfer <tbogendoerfer@suse.de>
 
-Thanks for the review!
+This makes the kernel a better place:
+Acked-by: Linus Walleij <linus.walleij@linaro.org>
+
+Will there be a GPIO driver arriving later?
+
+Yours,
+Linus Walleij
