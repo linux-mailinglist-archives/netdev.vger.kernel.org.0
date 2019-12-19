@@ -2,74 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5CEDE125946
-	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 02:35:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B26DD12595D
+	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 02:48:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726736AbfLSBf3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Dec 2019 20:35:29 -0500
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:45050 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726463AbfLSBf3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Dec 2019 20:35:29 -0500
-Received: by mail-pg1-f193.google.com with SMTP id x7so2217903pgl.11;
-        Wed, 18 Dec 2019 17:35:28 -0800 (PST)
+        id S1726701AbfLSBsR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Dec 2019 20:48:17 -0500
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:43239 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726463AbfLSBsR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Dec 2019 20:48:17 -0500
+Received: by mail-pf1-f196.google.com with SMTP id x6so1159279pfo.10
+        for <netdev@vger.kernel.org>; Wed, 18 Dec 2019 17:48:16 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=V9CV9BaQt0xTPSvPPcYe5ZuTRlahoiIA49Vi1uWbMvM=;
-        b=cbzK8Dck0ndGX8bRvwxkVj8Uo0hrI5ltXJXALS/8XqaLCZtedvC0mY7abFutYaz5hC
-         CQgoY0ZMYIZ3vcQYM1tuoZg2TVlN2WalGj1G7jgyCOJkBJA4i9wjw2pmFKSvT2dUpolS
-         NnWYCrq9tqlswbwMNpinOwrrEKbG/MjuJFMRh7F1aiyiD0ni39+LynMeusDe+EUWhfM1
-         2lVirY7p06POHezp4IUR14yLBkTFfF71v/T9vck0btC2w7OZdSA+6Y5/Bx2jeogI4YpA
-         qJGb4Pi92uBgnbUHqqVaKd1bD/jmk4yJkkpfwjDVLmNfmMQPd09Li+zlce3av6olws43
-         H1+g==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=z1zgCoxoS355H8oKd/4zPk5NHLvbIh36h9Cq8u5Cno8=;
+        b=pDRgVNTfc4oFAnQlNXPZZSY3IEpKlwr0M+X1BAjoZNbP03eeES46HpSXS/pjFoAZ2m
+         pcuBupnHYMyoIMAKfuFqJLF852w69kd1ZK1Ie2XjpaGfuZKJPuYbYL2HETHAf2UoHEMj
+         lDJY/P17iRmvcdEFzzpd2mXOv2cPFiCkrEq5UmLr+Ebubn86kF3b5PMfGnavGK21ukVX
+         Eh1mivquLuhGuZcmyxxmaYTHrw8TJSoDNd6andORoBpajgJxErNlQGwenG4ZhrsUKsHl
+         WT/KvUL8BWDCZIkvnY//9UMayE1xXus0zL5/ocPLoegjIN7zaJhc9rmDI25AAQSYYrUr
+         8NqQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=V9CV9BaQt0xTPSvPPcYe5ZuTRlahoiIA49Vi1uWbMvM=;
-        b=VHkGHdaxwV9dHD6tLM0OrRFOPX71VBYJs1QAJDgjIRmwxqpOR20ueUebBqPLS7IP4b
-         puwe04TTK3Fx5OljBtxgwFS4nya1QOgDyvxPvhUFuQTuTQXt5X1Het+SFZ/05BSbZPf8
-         Q7pb/H/uRFm/hQ8Jr8iNraJxIuZslcEvp0GVpBVje/sVseqzwOIS3xCiTHe5QjcKvN93
-         /tVNrCBB6v7Xzap5RRf7minJSE7USxRiDbSUUcOQvBd9ByPuq+vCLrE5wKENB3t86W2w
-         mKMWbPk85+j+WaubwMn/B2JbKBwVMoJIzvUNsXEVuZ6wqwyvkAiuXKemR+M5FTsbYyOQ
-         OYFg==
-X-Gm-Message-State: APjAAAWpUI3GvPOM8N/MuKBVCQB8ePmK2yscl4MPqefomyQcCkc8BQXi
-        Xx4MMh0LJF6iw6HLR0Z2NXI=
-X-Google-Smtp-Source: APXvYqyt41S9BWAxY1jH/gqa8OMjLQxbDKx07HbzVI6HJI5rRAGu39IEy8qRUv9sDgQDqduRt9PMqQ==
-X-Received: by 2002:a63:a43:: with SMTP id z3mr6364243pgk.232.1576719328218;
-        Wed, 18 Dec 2019 17:35:28 -0800 (PST)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:200::4108])
-        by smtp.gmail.com with ESMTPSA id 144sm5437955pfc.124.2019.12.18.17.35.26
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 18 Dec 2019 17:35:27 -0800 (PST)
-Date:   Wed, 18 Dec 2019 17:35:25 -0800
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Andrii Nakryiko <andriin@fb.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@fb.com,
-        daniel@iogearbox.net, andrii.nakryiko@gmail.com, kernel-team@fb.com
-Subject: Re: [PATCH bpf-next 0/3] Libbpf extern support improvements
-Message-ID: <20191219013524.klow6gvmumgpqb6s@ast-mbp.dhcp.thefacebook.com>
-References: <20191219002837.3074619-1-andriin@fb.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=z1zgCoxoS355H8oKd/4zPk5NHLvbIh36h9Cq8u5Cno8=;
+        b=U8jbDr0F558+4msXymoWx+qKvU2HURBeVHrHKfgce+XKvNoP9VWfxGkALZR5IlFdUL
+         cSnE9vMzyZK9wBHcJMpI0Eu8ZyuQ0A6uwySuqBOd+8VGpkS3L5hnCbVgWylvCdaFz0A1
+         dwRfUREMz4vnhTFGG44K+pU9DPoMjalaWSmlk6nvUOVxaxae9b2VZMnbJLD/ReqD0dGK
+         sbkW1cUF12h4xvyAgokaTQYrrrU8R7sth56wc5qBWwqGTaDn1q1VVKprYd3L2chqW4CM
+         0Tb1Ooc1CIB6K+QPuXm/OM+zyM9nI0b6QihZG6/Fr0RlgivVTF3l0XjfGl//e6LAw3Uw
+         PPJA==
+X-Gm-Message-State: APjAAAVqiITBJPgKllWQYxctxBL8XK8ZDCKc5EhYoJmldf7Dfu9VyxQa
+        mWwMPlwVZ5b5TOSaKdkSo6M=
+X-Google-Smtp-Source: APXvYqyJ6I++PJTlmH1d+yh8n9pD9kfBRZX15zW/B7OJERweff2X0kQAXlgqH/eYZcI3VI92UwlmHA==
+X-Received: by 2002:a65:5786:: with SMTP id b6mr6410985pgr.316.1576720096267;
+        Wed, 18 Dec 2019 17:48:16 -0800 (PST)
+Received: from [172.20.20.156] ([222.151.198.97])
+        by smtp.gmail.com with ESMTPSA id z130sm4785268pgz.6.2019.12.18.17.48.12
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 18 Dec 2019 17:48:15 -0800 (PST)
+Subject: Re: [RFC net-next 11/14] tun: run XDP program in tx path
+To:     Jesper Dangaard Brouer <jbrouer@redhat.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        "Michael S . Tsirkin" <mst@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Jason Wang <jasowang@redhat.com>,
+        David Ahern <dsahern@gmail.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Toshiaki Makita <toshiaki.makita1@gmail.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>, netdev@vger.kernel.org,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>
+References: <20191218081050.10170-1-prashantbhole.linux@gmail.com>
+ <20191218081050.10170-12-prashantbhole.linux@gmail.com>
+ <20191218110732.33494957@carbon>
+From:   Prashant Bhole <prashantbhole.linux@gmail.com>
+Message-ID: <d34c7552-70b4-72f5-98d2-78db7b5fea41@gmail.com>
+Date:   Thu, 19 Dec 2019 10:47:13 +0900
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191219002837.3074619-1-andriin@fb.com>
-User-Agent: NeoMutt/20180223
+In-Reply-To: <20191218110732.33494957@carbon>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 18, 2019 at 04:28:33PM -0800, Andrii Nakryiko wrote:
-> Based on latest feedback and discussions, this patch set implements the
-> following changes:
-> 
-> - Kconfig-provided externs have to be in .kconfig section, for which
->   bpf_helpers.h provides convenient __kconfig macro (Daniel);
-> - instead of allowing to override Kconfig file path, switch this to ability to
->   extend and override system Kconfig with user-provided custom values (Alexei);
-> - BTF is required when externs are used.
 
-Applied, Thanks
+
+On 12/18/19 7:07 PM, Jesper Dangaard Brouer wrote:
+> On Wed, 18 Dec 2019 17:10:47 +0900
+> Prashant Bhole <prashantbhole.linux@gmail.com> wrote:
+> 
+>> +static u32 tun_do_xdp_tx(struct tun_struct *tun, struct tun_file *tfile,
+>> +			 struct xdp_frame *frame)
+>> +{
+>> +	struct bpf_prog *xdp_prog;
+>> +	struct tun_page tpage;
+>> +	struct xdp_buff xdp;
+>> +	u32 act = XDP_PASS;
+>> +	int flush = 0;
+>> +
+>> +	xdp_prog = rcu_dereference(tun->xdp_tx_prog);
+>> +	if (xdp_prog) {
+>> +		xdp.data_hard_start = frame->data - frame->headroom;
+>> +		xdp.data = frame->data;
+>> +		xdp.data_end = xdp.data + frame->len;
+>> +		xdp.data_meta = xdp.data - frame->metasize;
+> 
+> You have not configured xdp.rxq, thus a BPF-prog accessing this will crash.
+> 
+> For an XDP TX hook, I want us to provide/give BPF-prog access to some
+> more information about e.g. the current tx-queue length, or TC-q number.
+> 
+> Question to Daniel or Alexei, can we do this and still keep BPF_PROG_TYPE_XDP?
+> Or is it better to introduce a new BPF prog type (enum bpf_prog_type)
+> for XDP TX-hook ?
+> 
+> To Prashant, look at net/core/filter.c in xdp_convert_ctx_access() on
+> how the BPF instruction rewrites are done, when accessing xdp_rxq_info.
+
+Got it. I will take care of it next time.
+
+> 
+> 
+>> +		act = bpf_prog_run_xdp(xdp_prog, &xdp);
+>> +		switch (act) {
+>> +		case XDP_PASS:
+>> +			break;
+>> +		case XDP_TX:
+>> +			/* fall through */
+>> +		case XDP_REDIRECT:
+>> +			/* fall through */
+>> +		default:
+>> +			bpf_warn_invalid_xdp_action(act);
+>> +			/* fall through */
+>> +		case XDP_ABORTED:
+>> +			trace_xdp_exception(tun->dev, xdp_prog, act);
+>> +			/* fall through */
+>> +		case XDP_DROP:
+>> +			xdp_return_frame_rx_napi(frame);
+> 
+> I'm not sure that it is safe to use "napi" variant here, as you have to
+> be under same RX-NAPI processing loop for this to be safe.
+> 
+> Notice the "rx" part of the name "xdp_return_frame_rx_napi".
+
+You are right, I will fix it next time.
+
+Thanks!
+
+> 
+> 
+>> +			break;
+>> +		}
+>> +	}
+>> +
+>> +	return act;
+>> +}
+> 
+> 
