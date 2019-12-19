@@ -2,111 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 62B4D12711D
-	for <lists+netdev@lfdr.de>; Fri, 20 Dec 2019 00:02:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CAC1E127144
+	for <lists+netdev@lfdr.de>; Fri, 20 Dec 2019 00:07:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727119AbfLSXCg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Dec 2019 18:02:36 -0500
-Received: from mail-qk1-f193.google.com ([209.85.222.193]:38612 "EHLO
-        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726963AbfLSXCg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Dec 2019 18:02:36 -0500
-Received: by mail-qk1-f193.google.com with SMTP id k6so6088942qki.5;
-        Thu, 19 Dec 2019 15:02:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=M09H0ZMAaBQYslcyoATNj3Hi1r1I6SKTpimgZ+0tR4s=;
-        b=bWG0dxC8qQ/ulgnsDc5r1GcT3msL3qcaVcnfsea9eDOiFK6CTo/S60Xb/i5t2LtYQN
-         cUCLVo/+Q+KKibecYReaNopIrTSd9G9zcp8gqrSP8ZZeF9RhIwMPoxt4sDsn+UXii8br
-         otbe9HF+Q+ERN75SVy2nPYMru9g2a9TWOyQvwDX23IYls+VZGNSJR59s5eHszIMPxgl1
-         pFCinILWmBr8apGIflaL7l43TQZA2WfjEJhHBuLNfaWhrHG+vB3b8EV+DBdOX7UZF+V2
-         b3UH8XC3XJ3H0mHyPUnVl96j5WcTuNt/Rp5/8G1wahIJpH0l3YNcU2176IJJ8zbypIeJ
-         Gpog==
+        id S1727191AbfLSXHs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Dec 2019 18:07:48 -0500
+Received: from mail-ot1-f67.google.com ([209.85.210.67]:35978 "EHLO
+        mail-ot1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726818AbfLSXHs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Dec 2019 18:07:48 -0500
+Received: by mail-ot1-f67.google.com with SMTP id w1so9261060otg.3;
+        Thu, 19 Dec 2019 15:07:48 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=M09H0ZMAaBQYslcyoATNj3Hi1r1I6SKTpimgZ+0tR4s=;
-        b=djBGfWLSXH6XzuLIZS3NGPaWhp0gPx8NuzE3TPhD58ihEU/rx+pCqTFbKCCeGLnMTV
-         bfw5mDiWz6Eku45aCDr4cwBxD+nKrhH9N5EicL9vv0jxLZLsjdeiR61g2F2zZN/sxsbz
-         s8AHtR0YjPFBa+49KblCG4P0lCo3z6feaUHZBOa3KBZXunr5luJuFE+k05z2eePVfghV
-         ErV0Y+4AAtN0UN+YCngZ9R3xCxp4JL9fV9lQTjoo+qlkKSt0FhiMOkSHfGICtr/CSDpW
-         IRFmZCHY+MPCsFj8WGGSKvzHK5BrdnJMqcbhLf8V0gB2HN3/P3abV1JerCFZ+jg4+9Xu
-         gBgg==
-X-Gm-Message-State: APjAAAVyvxfA7JqdExUdns1vElDzKCTsfDDQkAFmoPobG+Jt/Gw/MZhy
-        /J9gGTQD+buWVRp6Kzfs3NEzMGy7Q8+vHjnkf1Y=
-X-Google-Smtp-Source: APXvYqzF3yiSbUPtZjlVQIWuoTrT3/AHsXrmM+88NyvkDpiBok1Tzt5+AFSuH8D3KuetYXh4nYV0aW7HOjLyZ/FhSrM=
-X-Received: by 2002:a37:a685:: with SMTP id p127mr11056420qke.449.1576796555393;
- Thu, 19 Dec 2019 15:02:35 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=DgX0NKioz1rOLIBSrzLogpmefAWeE3WIM8ZkXd4rq84=;
+        b=WvTmuBodTGIZtY1oFNFfJL0P6LAVRUMz2RXFVwdEzb3k0zNZprzumrcfEJLVlUj8yp
+         eJhAOgQANtKA3NE6nlsUmEB+npmJFyCodJNpc/aCoHP5CRqSW5jRiy8+GhR33bhqklxi
+         61NCAL6XVIiQqYPKPf2RnEut8DlioGfjSrrmaS+dNLvjjKGlwfz4+gkvhWQ31vlK4y83
+         53cDWoztNiU0D0wxq9unRi9FyVVG2u9EaknyiNb3IPBZQlwy5IxtLtScoijx6bilLBLV
+         6bVQbr2MsZiwDMCVNnXzPHc8RMGyUgzBa/zyCf39b5q5oKuqZYFC51o5UPQdn5kb8B1D
+         ocVQ==
+X-Gm-Message-State: APjAAAUHTprp+HyYz1W3FNwXBIrgXuCSt1GQbApXkedTvuLLYbbuo2Or
+        rJNMMu6QE0gaCLdcBdK7eg==
+X-Google-Smtp-Source: APXvYqwB9T3HzArMlvLUll2SoZeItk08mg/8cUPV/SIjXWZaF7FfZ7O50gyaF8wV0hnYcqYD0TrjJA==
+X-Received: by 2002:a9d:7c97:: with SMTP id q23mr11280615otn.253.1576796867866;
+        Thu, 19 Dec 2019 15:07:47 -0800 (PST)
+Received: from localhost (ip-184-205-174-147.ftwttx.spcsdns.net. [184.205.174.147])
+        by smtp.gmail.com with ESMTPSA id n25sm2528516oic.6.2019.12.19.15.07.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 19 Dec 2019 15:07:47 -0800 (PST)
+Date:   Thu, 19 Dec 2019 17:07:45 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Rocky Liao <rjliao@codeaurora.org>
+Cc:     robh+dt@kernel.org, mark.rutland@arm.com, marcel@holtmann.org,
+        johan.hedberg@gmail.com, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-bluetooth@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        bgodavar@codeaurora.org, Rocky Liao <rjliao@codeaurora.org>
+Subject: Re: [PATCH v1 2/2] dt-bindings: net: bluetooth: Add device tree
+ bindings for QCA6390
+Message-ID: <20191219230745.GA9366@bogus>
+References: <0101016ef8b923cf-ef36a521-9c4b-4360-842d-d641e0eaaf0e-000000@us-west-2.amazonses.com>
 MIME-Version: 1.0
-References: <157675340354.60799.13351496736033615965.stgit@xdp-tutorial>
-In-Reply-To: <157675340354.60799.13351496736033615965.stgit@xdp-tutorial>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 19 Dec 2019 15:02:24 -0800
-Message-ID: <CAEf4BzYxDE5VoBiCaPwv=buUk87Cv0JF09usmQf0WvUceb8A5A@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] selftests/bpf: Add a test for attaching a bpf
- fentry/fexit trace to an XDP program
-To:     Eelco Chaudron <echaudro@redhat.com>
-Cc:     bpf <bpf@vger.kernel.org>, "David S. Miller" <davem@davemloft.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Networking <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <0101016ef8b923cf-ef36a521-9c4b-4360-842d-d641e0eaaf0e-000000@us-west-2.amazonses.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 19, 2019 at 3:04 AM Eelco Chaudron <echaudro@redhat.com> wrote:
->
-> Add a test that will attach a FENTRY and FEXIT program to the XDP test
-> program. It will also verify data from the XDP context on FENTRY and
-> verifies the return code on exit.
->
-> Signed-off-by: Eelco Chaudron <echaudro@redhat.com>
+On Thu, 12 Dec 2019 06:08:33 +0000, Rocky Liao wrote:
+> Add compatible string for the Qualcomm QCA6390 Bluetooth controller
+> 
+> Signed-off-by: Rocky Liao <rjliao@codeaurora.org>
 > ---
->  .../testing/selftests/bpf/prog_tests/xdp_bpf2bpf.c |   95 ++++++++++++++++++++
->  .../testing/selftests/bpf/progs/test_xdp_bpf2bpf.c |   44 +++++++++
->  2 files changed, 139 insertions(+)
->  create mode 100644 tools/testing/selftests/bpf/prog_tests/xdp_bpf2bpf.c
->  create mode 100644 tools/testing/selftests/bpf/progs/test_xdp_bpf2bpf.c
->
+>  Documentation/devicetree/bindings/net/qualcomm-bluetooth.txt | 1 +
+>  1 file changed, 1 insertion(+)
+> 
 
-[...]
-
-> +       /* Load XDP program to introspect */
-> +       err = bpf_prog_load(file, BPF_PROG_TYPE_XDP, &obj, &prog_fd);
-
-Please use BPF skeleton for this test. It will make it significantly
-shorter and clearer. See other fentry_fexit selftest for example.
-
-> +       if (CHECK_FAIL(err))
-> +               return;
-> +
-
-[...]
-
-> +
-> +static volatile __u64 test_result_fentry;
-
-no need for static volatile anymore, just use global var
-
-> +BPF_TRACE_1("fentry/_xdp_tx_iptunnel", trace_on_entry,
-> +           struct xdp_buff *, xdp)
-> +{
-> +       test_result_fentry = xdp->rxq->dev->ifindex;
-> +       return 0;
-> +}
-> +
-> +static volatile __u64 test_result_fexit;
-
-same here
-
-> +BPF_TRACE_2("fexit/_xdp_tx_iptunnel", trace_on_exit,
-> +           struct xdp_buff*, xdp, int, ret)
-> +{
-> +       test_result_fexit = ret;
-> +       return 0;
-> +}
->
+Acked-by: Rob Herring <robh@kernel.org>
