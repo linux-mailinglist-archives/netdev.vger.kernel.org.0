@@ -2,202 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E1E881264B6
-	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 15:29:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 73C831264C0
+	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 15:30:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726933AbfLSO3n (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Dec 2019 09:29:43 -0500
-Received: from us-smtp-2.mimecast.com ([205.139.110.61]:58377 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726879AbfLSO3l (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Dec 2019 09:29:41 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1576765780;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=UKuhuDZ28lcg6ktC/LRHyhMwfrATZ70bwbds9FUsBUk=;
-        b=LQzALclgabJBB6XN7pgnjZ96iuMYIx9cufzhQr9VHB9fz4ybFamGdBc7VdsD2dYPey9xCL
-        gAGgSt+/vDUHLKF/muRpSOgCBPjD40DQRO3RH2Evf6hhDb/og8HwfB6HtBPL1ZQYeMFFdY
-        Gl8NPvVSTSz/l7d/jmquX7zjwiyRfhI=
-Received: from mail-lf1-f71.google.com (mail-lf1-f71.google.com
- [209.85.167.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-140-tvrSb4sBNzuNopM-lujuEA-1; Thu, 19 Dec 2019 09:29:37 -0500
-X-MC-Unique: tvrSb4sBNzuNopM-lujuEA-1
-Received: by mail-lf1-f71.google.com with SMTP id t3so580609lfp.15
-        for <netdev@vger.kernel.org>; Thu, 19 Dec 2019 06:29:36 -0800 (PST)
+        id S1727083AbfLSOaQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Dec 2019 09:30:16 -0500
+Received: from mail-qt1-f195.google.com ([209.85.160.195]:40363 "EHLO
+        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727070AbfLSOaP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Dec 2019 09:30:15 -0500
+Received: by mail-qt1-f195.google.com with SMTP id e6so5184893qtq.7
+        for <netdev@vger.kernel.org>; Thu, 19 Dec 2019 06:30:14 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=B0yYV/zgiGoFwELUZOcLeBECeRrqa1TZpxKzwpeVoiM=;
+        b=X4JdQxLB8A+xTSDcWAFSXvHAsV/pLYvfJ/9CRK25ABgDGZhLlUNXsFVT7NELZzD2xc
+         xyiH63onBkOj2Vc5LVvsXgNy+c0QnawRjs2Wa7mv43P7vl7dLWB+V2XrpFJycD8gF0c/
+         6ZeRZwpFojktTqadOnqqrO4nQBjLmKxim1e6Fp5XlR3TMcp/Hmg6hRC+fCA4eu0xG0St
+         jXcBdBo74M0MPEd0Uc92fsWcYlOzykcDaKYA++0lM4jsh0NOD47Yh89ftDpMUlU7Nu7o
+         kH5+GdBoZIkndyX2iPcAT4xAHCYTfsl52oJaXjVG48eWgFiDOQ9h2fGCAoGRh2+PtvSJ
+         XFwg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:date:message-id:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=UKuhuDZ28lcg6ktC/LRHyhMwfrATZ70bwbds9FUsBUk=;
-        b=DhcvSsyszhBIcLuNSiOCN9X8bSn7KuRSxncFh/AAyp8/mSa4GoAU1/rFvGk1X+fIJj
-         /AaNs1ScOKfWfZ27fOG0l6BcQ0dc84JKGkXbYMdg0lev9KjUlluPNb7CCpT6IsVt+gzt
-         7pOqnHieRCeqwML8SqJUZ72+AlcUCTFxuhEVQtKfmXDgS7fGoV/nPONT0wQz69I9ElRe
-         5nIrwVZqjrvGta8BN1j7oenhRqHDf20OoAIafld+nRoTYvVhs/EFi/2n57OhJwciCOWQ
-         fZvjDKHMwmd8ZgzBbhPSGsSvTxgB0dJfFsYnNmwExkQWQkhirzpR2xEgqx5DHqBcQaYz
-         eJfw==
-X-Gm-Message-State: APjAAAXWz1CD8rEaI0FPH+LdBb13gK4JguKRgNDUla+FIx6sTp2lgYby
-        c9VK4iC9tv+VFpTtUwd/9hEzJFky/u39S/thczM5+YbH/eiljTvjHkqSb88b4F3xsJXhOi+2KUB
-        PnWL6/7C5/u3Hx1sl
-X-Received: by 2002:a2e:b0db:: with SMTP id g27mr6418233ljl.74.1576765775472;
-        Thu, 19 Dec 2019 06:29:35 -0800 (PST)
-X-Google-Smtp-Source: APXvYqxNDBp/rL2FrdoZdx7dGqWj4YiuJc4YV5pg+Bpobb9ccT2fGoE6MPT9y7qIMewiLJidU4AzOw==
-X-Received: by 2002:a2e:b0db:: with SMTP id g27mr6418205ljl.74.1576765775262;
-        Thu, 19 Dec 2019 06:29:35 -0800 (PST)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id s18sm3625170ljj.36.2019.12.19.06.29.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 19 Dec 2019 06:29:34 -0800 (PST)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id D8D7818096A; Thu, 19 Dec 2019 15:29:33 +0100 (CET)
-Subject: [PATCH RFC bpf-next 3/3] selftests/bpf: Add selftest for XDP
- multiprogs
-From:   =?utf-8?q?Toke_H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Date:   Thu, 19 Dec 2019 15:29:33 +0100
-Message-ID: <157676577376.957277.10941753215180409553.stgit@toke.dk>
-In-Reply-To: <157676577049.957277.3346427306600998172.stgit@toke.dk>
-References: <157676577049.957277.3346427306600998172.stgit@toke.dk>
-User-Agent: StGit/0.21
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=B0yYV/zgiGoFwELUZOcLeBECeRrqa1TZpxKzwpeVoiM=;
+        b=j091Wn7AXIrrfiMRcbWxioapIn1YnLBqiaaJBznKI1yhHJ9dxbNXozMN5tXQzMorqi
+         kV3/GbOL8ZzGYND1ZQMuFbjzMmkVrZHyuuaO9oTY2cG+PtNQP8+CXPP78u1LQMDqgXDe
+         vOrps3PSptYl7l6TPCjMPG4H1LjapAyYOaAC3bRBEGj6hDy5ZRsKCWBzGn9ARlKyy9+G
+         Bxz+xuMybAFpLOUCOBTKkVa4u3j6BXIWDtOQ3JwI188RU0P9AxGgGyhq7bF6u4pXrDzB
+         qlVOJ98hZoxOVuhx9GEMwl1UzSvR2Hz/WjprRBTR8kqk4oiIMEabppZkV5vCt2gtfUWX
+         MOVA==
+X-Gm-Message-State: APjAAAX7Akr6gmIoShAFNFkxPahe3l67QrQjsWnbJG2gsUBaJxS4Qc+Z
+        sXmAyIXtF9SL1s33QU6kndLScluQt4xDzs2iuSPLGg==
+X-Google-Smtp-Source: APXvYqx2rbIcbJPMtKA8mB0LRxssvTcYJ7Y3aCPioQXeqEB2WqVQOig7co6LAUz4OQZd1ryt9r5uOcZQIwZorIPSu2c=
+X-Received: by 2002:aed:2465:: with SMTP id s34mr7287340qtc.158.1576765813772;
+ Thu, 19 Dec 2019 06:30:13 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+References: <20191208232734.225161-1-Jason@zx2c4.com> <CACT4Y+bsJVmgbD-WogwU=LfWiPN1JgjBrwx4s8Y14hDd7vqqhQ@mail.gmail.com>
+ <CAHmME9o0AparjaaOSoZD14RAW8_AJTfKfcx3Y2ndDAPFNC-MeQ@mail.gmail.com>
+ <CACT4Y+Zssd6OZ2-U4kjw18mNthQyzPWZV_gkH3uATnSv1SVDfA@mail.gmail.com>
+ <CAHmME9oM=YHMZyg23WEzmZAof=7iv-A01VazB3ihhR99f6X1cg@mail.gmail.com>
+ <CACT4Y+aCEZm_BA5mmVTnK2cR8CQUky5w1qvmb2KpSR4-Pzp4Ow@mail.gmail.com>
+ <CAHmME9rYstVLCBOgdMLqMeVDrX1V-f92vRKDqWsREROWdPbb6g@mail.gmail.com>
+ <CAHmME9qUWr69o0r+Mtm8tRSeQq3P780DhWAhpJkNWBfZ+J5OYA@mail.gmail.com>
+ <CACT4Y+YfBDvQHdK24ybyyy5p07MXNMnLA7+gq9axq-EizN6jhA@mail.gmail.com>
+ <CAHmME9qcv5izLz-_Z2fQefhgxDKwgVU=MkkJmAkAn3O_dXs5fA@mail.gmail.com>
+ <CACT4Y+arVNCYpJZsY7vMhBEKQsaig_o6j7E=ib4tF5d25c-cjw@mail.gmail.com> <CAHmME9ofmwig2=G+8vc1fbOCawuRzv+CcAE=85spadtbneqGag@mail.gmail.com>
+In-Reply-To: <CAHmME9ofmwig2=G+8vc1fbOCawuRzv+CcAE=85spadtbneqGag@mail.gmail.com>
+From:   Dmitry Vyukov <dvyukov@google.com>
+Date:   Thu, 19 Dec 2019 15:30:02 +0100
+Message-ID: <CACT4Y+awD47=Q3taT_-yQPfQ4uyW-DRpeWBbSHcG6_=b20PPwg@mail.gmail.com>
+Subject: Re: [PATCH net-next v2] net: WireGuard secure network tunnel
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "open list:HARDWARE RANDOM NUMBER GENERATOR CORE" 
+        <linux-crypto@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Toke Høiland-Jørgensen <toke@redhat.com>
+On Thu, Dec 19, 2019 at 12:38 PM Jason A. Donenfeld <Jason@zx2c4.com> wrote:
+>
+> On Thu, Dec 19, 2019 at 12:19 PM Dmitry Vyukov <dvyukov@google.com> wrote:
+> > > Ahh, cool, okay. Netlink, device creation, and basic packet structure
+> > > is a good start. What about the crypto, though?
+> >
+> > It depends. What exactly we need there?
+> > syzkaller uses comparison operand interception which allows it e.g. to
+> > guess signatures/checksums in some cases.
+>
+> I don't think you'll have too much luck with WireGuard here. Fuzzing
+> your way to a valid handshake message involves guessing the 4th
+> preimage of some elliptic curve scalar multiplication, with some
+> random/changing data mixed in there every time you make a new try.
+> There's a condensed protocol description here which should be less bad
+> to glance at than the academic paper:
+> https://www.wireguard.com/protocol/#first-message-initiator-to-responder
+> . The fuzzers I've written for the crypto bits of WireGuard always
+> involve taking a complete handshake implementation and mutating things
+> from there. So maybe the "outer packet" won't be too fruitful without
+> a bunch of work. At the very least, we can generate packets that have
+> the right field sizes and such, and that should test the first level
+> of error cases I guess.
 
-This adds a simple selftest that combines two XDP programs through a third
-dispatcher, exercising the libbpf function externals handling.
+Yes, properly formed packets will probably require some procedural support.
+I can't say right away which exactly extension mechanism in syzkaller
+is the best for this.
+But there is another one I forgot to mention - custom pseudo syscalls.
+For the generic fuzzer engine they look like normal syscalls that
+accept/return something:
+https://github.com/google/syzkaller/blob/36650b4b2c942bc382314dce384d311fbadd1208/sys/linux/vnet.txt#L26
+but the actual implementation is our custom C code that can do
+anything (augment data, form packets, call multiple syscalls, take
+result of one syscall, do something with it and use as argument for
+another, etc):
+https://github.com/google/syzkaller/blob/36650b4b2c942bc382314dce384d311fbadd1208/executor/common_linux.h#L972-L1023
+These make doing a complex thing trivial for fuzzer, but the more is
+hardcoded there, the less randomness we get from fuzzing (though that
+presudo-syscall can also accept some additional randomness and use it
+in some way).
 
-Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
----
- .../selftests/bpf/prog_tests/xdp_multiprog.c       |   52 ++++++++++++++++++++
- tools/testing/selftests/bpf/progs/xdp_drop.c       |   13 +++++
- tools/testing/selftests/bpf/progs/xdp_multiprog.c  |   26 ++++++++++
- 3 files changed, 91 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/xdp_multiprog.c
- create mode 100644 tools/testing/selftests/bpf/progs/xdp_drop.c
- create mode 100644 tools/testing/selftests/bpf/progs/xdp_multiprog.c
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/xdp_multiprog.c b/tools/testing/selftests/bpf/prog_tests/xdp_multiprog.c
-new file mode 100644
-index 000000000000..40a743437222
---- /dev/null
-+++ b/tools/testing/selftests/bpf/prog_tests/xdp_multiprog.c
-@@ -0,0 +1,52 @@
-+// SPDX-License-Identifier: GPL-2.0
-+#include <test_progs.h>
-+
-+void test_xdp_multiprog(void)
-+{
-+	const char *file_dispatcher = "./xdp_multiprog.o";
-+	const char *file_drop = "./xdp_drop.o";
-+	const char *file_pass = "./xdp_dummy.o";
-+	struct bpf_object *obj, *obj_drop, *obj_pass;
-+	int err;
-+
-+
-+	obj = bpf_object__open_file(file_dispatcher, NULL);
-+	err = libbpf_get_error(obj);
-+	if (CHECK_FAIL(err))
-+		return;
-+
-+	obj_drop = bpf_object__open_file(file_drop, NULL);
-+	err = libbpf_get_error(obj_drop);
-+	if (CHECK_FAIL(err))
-+		goto out_obj;
-+
-+	obj_pass = bpf_object__open_file(file_pass, NULL);
-+	err = libbpf_get_error(obj_pass);
-+	if (CHECK_FAIL(err))
-+		goto out_drop;
-+
-+        err = bpf_object__load(obj_drop);
-+        err = err ?: bpf_object__load(obj_pass);
-+
-+        if (CHECK_FAIL(err))
-+                goto out;
-+
-+	struct bpf_extern_call_tgt tgts[] =
-+		{
-+		 {.name = "prog1", .tgt_prog_name = "xdp_dummy_prog", .tgt_obj = obj_pass},
-+		 {.name = "prog2", .tgt_prog_name = "xdp_drop_prog", .tgt_obj = obj_drop},
-+		};
-+	struct bpf_extern_calls calls = {.num_tgts = 2, .tgts = tgts };
-+
-+	DECLARE_LIBBPF_OPTS(bpf_object_load_opts, load_opts,
-+			    .ext_calls = &calls);
-+
-+	err = bpf_object__load2(obj, &load_opts);
-+        CHECK_FAIL(err);
-+out:
-+	bpf_object__close(obj_pass);
-+out_drop:
-+	bpf_object__close(obj_drop);
-+out_obj:
-+	bpf_object__close(obj);
-+}
-diff --git a/tools/testing/selftests/bpf/progs/xdp_drop.c b/tools/testing/selftests/bpf/progs/xdp_drop.c
-new file mode 100644
-index 000000000000..10e415e49564
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/xdp_drop.c
-@@ -0,0 +1,13 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+#define KBUILD_MODNAME "xdp_drop"
-+#include <linux/bpf.h>
-+#include "bpf_helpers.h"
-+
-+SEC("xdp_drop")
-+int xdp_drop_prog(struct xdp_md *ctx)
-+{
-+	return XDP_DROP;
-+}
-+
-+char _license[] SEC("license") = "GPL";
-diff --git a/tools/testing/selftests/bpf/progs/xdp_multiprog.c b/tools/testing/selftests/bpf/progs/xdp_multiprog.c
-new file mode 100644
-index 000000000000..ef5ba8172038
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/xdp_multiprog.c
-@@ -0,0 +1,26 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+#define KBUILD_MODNAME "xdp_multiprog"
-+#include <linux/bpf.h>
-+#include "bpf_helpers.h"
-+
-+extern int prog1(struct xdp_md *ctx);
-+extern int prog2(struct xdp_md *ctx);
-+
-+SEC("xdp_test")
-+int xdp_main(struct xdp_md *ctx)
-+{
-+        int ret;
-+
-+        ret = prog1(ctx);
-+        if (ret != XDP_PASS)
-+                goto out;
-+
-+        ret = prog2(ctx);
-+        if (ret != XDP_DROP)
-+                goto out;
-+out:
-+        return ret;
-+}
-+
-+char _license[] SEC("license") = "GPL";
 
+> However, there's still a decent amount of surface on the "inner
+> packet". For this, we can set up a pair of wireguard interfaces that
+> are preconfigured to talk to each other (in common_linux.h, right? Or
+> do you have some Go file that'd be easier to do that initialization
+> in?), and then syzkaller will figure out itself how to send nasty IP
+> packets through them with send/recv and such. There's a bit of surface
+> here because sending packets provokes the aforementioned handshake,
+> and also moves around the timer state machine. The receiver also needs
+> to do some minimal parsing of the received packet to check
+> "allowedips". So, good fodder for fuzzing.
+
+Yes, there is this location to pre-create some net devices in right states:
+https://github.com/google/syzkaller/blob/79b211f74b08737aeb4934c6ff69a263b3c38013/executor/common_linux.h#L668
+(not in Go, but in C because eventually it will become part of C reproducers).
+For example it creates vcan0 device and then syscall descriptions know
+this name and use it.
