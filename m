@@ -2,45 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B130C126658
-	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 17:02:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C3AC12665D
+	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 17:05:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726936AbfLSQCI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Dec 2019 11:02:08 -0500
-Received: from www62.your-server.de ([213.133.104.62]:53164 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726778AbfLSQCI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Dec 2019 11:02:08 -0500
-Received: from [2001:1620:665:0:5795:5b0a:e5d5:5944] (helo=localhost)
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1ihyFa-0001bO-HL; Thu, 19 Dec 2019 17:02:06 +0100
-Date:   Thu, 19 Dec 2019 17:02:06 +0100
-From:   Daniel Borkmann <daniel@iogearbox.net>
-To:     Andrii Nakryiko <andriin@fb.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@fb.com,
-        andrii.nakryiko@gmail.com, kernel-team@fb.com
-Subject: Re: [PATCH bpf-next] libbpf: fix another __u64 printf warning
-Message-ID: <20191219160206.GC8564@linux-9.fritz.box>
-References: <20191219052103.3515-1-andriin@fb.com>
+        id S1726890AbfLSQFr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Dec 2019 11:05:47 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:33556 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726778AbfLSQFq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 19 Dec 2019 11:05:46 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=IaGxRhDW1sFamH1CbhCP9ZpYf0Q8281Vz+4JiCX3/Ic=; b=CYqcWR1vXFNLed0Epssfv18qhx
+        8qTuOa8IT8mVpDlYPzox7qts0uDQCovkvTKjNv4ZPPKd7N9BSYnupTVl8eIUiN5isIEKMkmlWIESs
+        2A+IzDXHl3s1VjVNC2/TeQI6a1AJgjXJ0slGzwiMGVNIco7+cSq96FdrpzQxRPGXDheA=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1ihyIz-00025I-1o; Thu, 19 Dec 2019 17:05:37 +0100
+Date:   Thu, 19 Dec 2019 17:05:37 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     madalin.bucur@nxp.com
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, linux@armlinux.org.uk,
+        f.fainelli@gmail.com, hkallweit1@gmail.com, shawnguo@kernel.org,
+        devicetree@vger.kernel.org
+Subject: Re: [PATCH 2/6] arm64: dts: ls104xardb: set correct PHY interface
+ mode
+Message-ID: <20191219160537.GI17475@lunn.ch>
+References: <1576768881-24971-1-git-send-email-madalin.bucur@oss.nxp.com>
+ <1576768881-24971-3-git-send-email-madalin.bucur@oss.nxp.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20191219052103.3515-1-andriin@fb.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.101.4/25668/Thu Dec 19 10:55:58 2019)
+In-Reply-To: <1576768881-24971-3-git-send-email-madalin.bucur@oss.nxp.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 18, 2019 at 09:21:03PM -0800, Andrii Nakryiko wrote:
-> Fix yet another printf warning for %llu specifier on ppc64le. This time size_t
-> casting won't work, so cast to verbose `unsigned long long`.
+On Thu, Dec 19, 2019 at 05:21:17PM +0200, Madalin Bucur wrote:
+> From: Madalin Bucur <madalin.bucur@nxp.com>
 > 
-> Fixes: 166750bc1dd2 ("libbpf: Support libbpf-provided extern variables")
-> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+> The DPAA 1 based LS1043ARDB and LS1046ARDB boards are using
+> XFI for the 10G interfaces. Since at the moment of the addition
+> of the first DPAA platforms the only 10G PHY interface type used
+> was XGMII, although the boards were actually using XFI, they were
+> wrongly declared as xgmii. This has propagated along the DPAA
+> family of SoCs, all 10G interfaces being declared wrongly as
+> XGMII. This patch addresses the problem for the ARM based DPAA
+> SoCs. After the introduction of XFI PHY interface type we can
+> address this issue.
 
-Applied, thanks!
+Hi Madalin
+
+This patch should come at the end, after you have added support for
+these new modes. Otherwise anybody doing a git bisect could land on
+code which has broken ethernet.
+
+     Andrew
