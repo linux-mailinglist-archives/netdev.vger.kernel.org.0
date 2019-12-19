@@ -2,82 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D4D75126FEF
-	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 22:46:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 119EA126FFA
+	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 22:49:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727563AbfLSVq2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Dec 2019 16:46:28 -0500
-Received: from mail-qt1-f176.google.com ([209.85.160.176]:41483 "EHLO
-        mail-qt1-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726880AbfLSVq2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Dec 2019 16:46:28 -0500
-Received: by mail-qt1-f176.google.com with SMTP id k40so6343370qtk.8
-        for <netdev@vger.kernel.org>; Thu, 19 Dec 2019 13:46:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=mime-version:from:date:message-id:subject:to:cc;
-        bh=VO6Oa9byymwyW6n23ILZAJDl6f5Ys1IOFf5yRPmHuPo=;
-        b=LzRhNFGA5iZor0jf32Zm9YWEhI87EluLTGg6MUh3iGNs6XNwn0UTbGxldDCEF4IOfz
-         3DsLwGj94OyxxRUwEXEOz683yvpPPgpXQ8XvqTJ/DnFPn/0tYWAff+ABqyS6abz0CkeH
-         cHPthvsyIRSJL8qxrYA9agRd7wyidVd/liGYo=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
-        bh=VO6Oa9byymwyW6n23ILZAJDl6f5Ys1IOFf5yRPmHuPo=;
-        b=IuyTS/C13Fij6547EAr/GsQYks8MTfUVgXLtZvwlB4hlaUO/62Hbq+scHUwwApQdMp
-         tsBkhxGGFzV1OFyZGBtzXqNFkVCPozzRl4iA7zZF1YDRMsQ1+8qdXRxOIqKgGKZx2mn9
-         DJ0UI7cklfYCevkoIgsRWSD+xKSlgSl9ylHBSd9Ziiu84zAmyX25EdVeEgxJbu1UkSo4
-         v5MozCNsG6FSfreMAONvR3opdvncTX0w8JsQHFk+UNRZShY+wl+MaJJ5Pte5CRy+hTcl
-         iM42F7YmTflMyWsJ7cU19MthgdlkoQzZQR0nR2+0o/jwB6E0ghXxcqy4OeWSNiEzrMTx
-         zIQA==
-X-Gm-Message-State: APjAAAWMcbVXbeCtZ87BxdUamONGFWZuInfoFiWstY8F+uyM+bKqZVV8
-        Nkw5N8HO6b3pS70cvO4qiR4NUdEUCYNpcY2Ae+M7tt0+sW7NTA==
-X-Google-Smtp-Source: APXvYqwpqC74xeUMj8yQEwAE+ZczgnB/Uh/jOqqfs4iRaiimV06OcME38a4mJLo8X5ezJq61ccNR97lNfS0+INihS/4=
-X-Received: by 2002:ac8:602:: with SMTP id d2mr9200816qth.245.1576791987660;
- Thu, 19 Dec 2019 13:46:27 -0800 (PST)
+        id S1727148AbfLSVth (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Dec 2019 16:49:37 -0500
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:40270 "EHLO
+        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726866AbfLSVth (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Dec 2019 16:49:37 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=AYRcRglwcP5lo6E4Zn08sq4uQ/tRp+N1/Lj/8ULBHuo=; b=sInF7qsmdiLReNyXRT7V8wbck
+        MJKkGXTEe/cg36RETU4RMYa4IIiXV/MFte/uJgpwt+/vA+X9ToXVY7re2GLS8sUpa0mh7tl4bhTe0
+        Zga6ZEfAByCt8xHuiIMDWUKlHfURgmr4zwn24e4jSxwKL8jWn1ko+H9ZRaDbBmUgwek7+VyjDmtE6
+        WWhaN6XUfpZf6/GK74JMePirCJUOjx2pbZbRbV9V1wzIMQuXsWZ5WUeU01OhZaxJCxwYGztSTyALr
+        nSfG1nWGJo0qjwpiwpmVUCw/YJXeoGyT5wzeSny3x1IEGNfN9zhB56fj1VTtW1yqJSowzJdueVRPm
+        N2F+K+YuA==;
+Received: from shell.armlinux.org.uk ([2001:4d48:ad52:3201:5054:ff:fe00:4ec]:43588)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1ii3fo-0004xw-LX; Thu, 19 Dec 2019 21:49:32 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1ii3fm-0005ha-Eo; Thu, 19 Dec 2019 21:49:30 +0000
+Date:   Thu, 19 Dec 2019 21:49:30 +0000
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     "Madalin Bucur (OSS)" <madalin.bucur@oss.nxp.com>
+Cc:     "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "andrew@lunn.ch" <andrew@lunn.ch>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
+        "shawnguo@kernel.org" <shawnguo@kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
+Subject: Re: [PATCH 1/6] net: phy: add interface modes for XFI, SFI
+Message-ID: <20191219214930.GG25745@shell.armlinux.org.uk>
+References: <1576768881-24971-1-git-send-email-madalin.bucur@oss.nxp.com>
+ <1576768881-24971-2-git-send-email-madalin.bucur@oss.nxp.com>
+ <20191219172834.GC25745@shell.armlinux.org.uk>
+ <VI1PR04MB5567FA3170CF45F877870E8CEC520@VI1PR04MB5567.eurprd04.prod.outlook.com>
+ <20191219190308.GE25745@shell.armlinux.org.uk>
+ <VI1PR04MB5567010C06EB9A4734431106EC520@VI1PR04MB5567.eurprd04.prod.outlook.com>
 MIME-Version: 1.0
-From:   Alex Forster <aforster@cloudflare.com>
-Date:   Thu, 19 Dec 2019 15:46:16 -0600
-Message-ID: <CAKxSbF2XaqwLAby0BBbhT_8vBviMvkA_7fiK-ivAs2DHWqARxw@mail.gmail.com>
-Subject: getsockopt(XDP_MMAP_OFFSETS) syscall ABI breakage?
-To:     bpf@vger.kernel.org
-Cc:     netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <VI1PR04MB5567010C06EB9A4734431106EC520@VI1PR04MB5567.eurprd04.prod.outlook.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The getsockopt(XDP_MMAP_OFFSETS) socket option returns a struct
-xdp_mmap_offsets (from uapi/linux/if_xdp.h) which is defined as:
+On Thu, Dec 19, 2019 at 09:34:57PM +0000, Madalin Bucur (OSS) wrote:
+> > -----Original Message-----
+> > From: Russell King - ARM Linux admin <linux@armlinux.org.uk>
+> > Sent: Thursday, December 19, 2019 9:03 PM
+> > To: Madalin Bucur <madalin.bucur@nxp.com>
+> > Cc: davem@davemloft.net; netdev@vger.kernel.org; andrew@lunn.ch;
+> > f.fainelli@gmail.com; hkallweit1@gmail.com; shawnguo@kernel.org;
+> > devicetree@vger.kernel.org
+> > Subject: Re: [PATCH 1/6] net: phy: add interface modes for XFI, SFI
+> > 
+> > On Thu, Dec 19, 2019 at 06:32:51PM +0000, Madalin Bucur wrote:
+> > > > -----Original Message-----
+> > > > From: Russell King - ARM Linux admin <linux@armlinux.org.uk>
+> > > > Sent: Thursday, December 19, 2019 7:29 PM
+> > > > To: Madalin Bucur <madalin.bucur@nxp.com>
+> > > > Cc: davem@davemloft.net; netdev@vger.kernel.org; andrew@lunn.ch;
+> > > > f.fainelli@gmail.com; hkallweit1@gmail.com; shawnguo@kernel.org;
+> > > > devicetree@vger.kernel.org
+> > > > Subject: Re: [PATCH 1/6] net: phy: add interface modes for XFI, SFI
+> > > >
+> > > > On Thu, Dec 19, 2019 at 05:21:16PM +0200, Madalin Bucur wrote:
+> > > > > From: Madalin Bucur <madalin.bucur@nxp.com>
+> > > > >
+> > > > > Add explicit entries for XFI, SFI to make sure the device
+> > > > > tree entries for phy-connection-type "xfi" or "sfi" are
+> > > > > properly parsed and differentiated against the existing
+> > > > > backplane 10GBASE-KR mode.
+> > > >
+> > > > 10GBASE-KR is actually used for XFI and SFI (due to a slight mistake
+> > on
+> > > > my part, it should've been just 10GBASE-R).
+> > > >
+> > > > Please explain exactly what the difference is between XFI, SFI and
+> > > > 10GBASE-R. I have not been able to find definitive definitions for
+> > > > XFI and SFI anywhere, and they appear to be precisely identical to
+> > > > 10GBASE-R. It seems that it's just a terminology thing, with
+> > > > different groups wanting to "own" what is essentially exactly the
+> > > > same interface type.
+> > >
+> > > Hi Russell,
+> > >
+> > > 10GBase-R could be used as a common nominator but just as well 10G and
+> > > remove the rest while we're at it. There are/may be differences in
+> > > features, differences in the way the HW is configured (the most
+> > > important aspect) and one should be able to determine what interface
+> > > type is in use to properly configure the HW. SFI does not have the CDR
+> > > function in the PMD, relying on the PMA signal conditioning vs the XFI
+> > > that requires this in the PMD. We kept the xgmii compatible for so long
+> > > without much issues until someone started cleaning up the PHY supported
+> > > modes. Since we're doing that, let's be rigorous. The 10GBase-KR is
+> > > important too, we have some backplane code in preparation and having it
+> > > there could pave the way for a simpler integration.
+> > 
+> > The problem we currently have is:
+> > 
+> > $ grep '10gbase-kr' arch/*/boot/dts -r
+> > 
+> > virtually none of those are actually backplane. For the mcbin matches,
+> > these are either to a 88x3310 PHY for the doubleshot, which dynamically
+> > operates between XFI, 5GBASE-R, 2500BASE-X, or SGMII according to the
+> > datasheet.
+> 
+> Yes, I've seen it's used already in several places:
+> 
+> $ grep PHY_INTERFACE_MODE_10GKR drivers/net -nr
+> drivers/net/phy/marvell10g.c:219:       if (iface != PHY_INTERFACE_MODE_10GKR) {
+> drivers/net/phy/marvell10g.c:307:           phydev->interface != PHY_INTERFACE_MODE_10GKR)
+> drivers/net/phy/marvell10g.c:389:            phydev->interface == PHY_INTERFACE_MODE_10GKR) && phydev->link) {
+> drivers/net/phy/marvell10g.c:398:                       phydev->interface = PHY_INTERFACE_MODE_10GKR;
+> drivers/net/phy/phylink.c:296:          case PHY_INTERFACE_MODE_10GKR:
+> drivers/net/phy/aquantia_main.c:361:            phydev->interface = PHY_INTERFACE_MODE_10GKR;
+> drivers/net/phy/aquantia_main.c:499:        phydev->interface != PHY_INTERFACE_MODE_10GKR)
+> drivers/net/phy/sfp-bus.c:340:          return PHY_INTERFACE_MODE_10GKR;
+> drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c:1117:   return interface == PHY_INTERFACE_MODE_10GKR ||
+> drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c:1203:   case PHY_INTERFACE_MODE_10GKR:
+> drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c:1652:   case PHY_INTERFACE_MODE_10GKR:
+> drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c:4761:   case PHY_INTERFACE_MODE_10GKR:
+> drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c:4783:   case PHY_INTERFACE_MODE_10GKR:
+> 
+> We should fix this, if it's incorrect.
+> 
+> > If we add something else, then the problem becomes what to do about
+> > that lot - one of the problems is, it seems we're going to be breaking
+> > DT compatibility by redefining 10gbase-kr to be correct.
+> 
+> We need the committer/maintainer to update that to a correct value.
 
-    struct xdp_mmap_offsets {
-        struct xdp_ring_offset rx;
-        struct xdp_ring_offset tx;
-        struct xdp_ring_offset fr; /* Fill */
-        struct xdp_ring_offset cr; /* Completion */
-    };
+The general principle is, we don't break existing DT - in that, we
+expect DT files from current kernels to work with future kernels. So,
+we're kind of stuck with "10gbase-kr" being used for this at least in
+the medium term.
 
-Prior to kernel 5.4, struct xdp_ring_offset (from the same header) was
-defined as:
+By all means introduce "xfi" and "sfi" if you think that there is a
+need to discriminate between the two, but I've seen no hardware which
+that treats them any differently from 10gbase-r.
 
-    struct xdp_ring_offset {
-        __u64 producer;
-        __u64 consumer;
-        __u64 desc;
-    };
+If we want to support real 10gbase-kr, then I think we need to consider
+how to do that without affecting compatibility with what we already
+have.
 
-A few months ago, in 77cd0d7, it was changed to the following:
-
-    struct xdp_ring_offset {
-        __u64 producer;
-        __u64 consumer;
-        __u64 desc;
-        __u64 flags;
-    };
-
-I believe this constitutes a syscall ABI breakage, which I did not
-think was allowed. Have I misunderstood the current stability
-guarantees for AF_XDP?
-
-Alex Forster
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
+According to speedtest.net: 11.9Mbps down 500kbps up
