@@ -2,99 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C19EF1270BB
-	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 23:34:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 121CC1270C5
+	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 23:35:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727029AbfLSWep (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Dec 2019 17:34:45 -0500
-Received: from mail-ua1-f66.google.com ([209.85.222.66]:35222 "EHLO
-        mail-ua1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726818AbfLSWep (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Dec 2019 17:34:45 -0500
-Received: by mail-ua1-f66.google.com with SMTP id y23so2571868ual.2
-        for <netdev@vger.kernel.org>; Thu, 19 Dec 2019 14:34:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=VpboOSsAlEGLRQwjGYSM66BWhiuHg2YpYtx8W6AcQ7c=;
-        b=v0Ee1MglQDxW/nV3ZAPV6ZkzzbCsYZIV0nkQgFwwyZqft+qKhyc3A1q60nRn2Z7v+v
-         +95B1KXIZF/2xtIBsQ1tOTE7GRzYr/4TrZfiBdXZ5zB8gy66p+tgSf+4XUKrOzgjH6v/
-         ooHr0OAn9QOrksN6K9LeN9e6zABJ2f9YqlzMemt6jRXPdZXZ+/p0PJMcPA8uZrsSf//G
-         xGxQ00uYLa5+95NU76wVLr/ur4etzWC8MW6URrtdk26vGqrykglS4mGoSpjJpf3Xwl+H
-         4IzyQzh27Z7ZUZI5K4msC5UqeOBLzLY56vfxIe5XMXM/tslMW5iRqK1vi+NlUnbfqAQL
-         Fzgw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=VpboOSsAlEGLRQwjGYSM66BWhiuHg2YpYtx8W6AcQ7c=;
-        b=BK5hOdeWHbl268RsvHkK6k82ZM19c7G4BXsQqftBskX8XAFw1ijxUajRE9jmCExiER
-         j3ALfZcmRIPt8kFs82NSWo9eHTt11KiKKzqoy6HEvuSIx3cy0wH22A3CcvB90fRNbHXp
-         bRR6UOu1MXOWE38oFCe8X6L7taljHEzIq7mCs/BCBWELShzlMzJ108Hw6sNRojC0frGR
-         miaiVE4dYDGLYdhwOV91MWQVBay+VNUfzDWvlOR2snCDP5nCxcRvUXhM9rmddK7h2fW1
-         I6uDSOrCoo4QNaFMKPfjijCuxFvO0SkXcSHKiv48YuXFwvuvslZs68cdMTiSxvvctuE1
-         vLCg==
-X-Gm-Message-State: APjAAAXKvLcXxXnyT+u3Nf9XUIwHMX3CXkpgdzv+lNIaRlBkBqpsGxRR
-        hmObNhd7qv6DUAxfXIRYy4Thx9YKb4lKQBSE8uAgLQ==
-X-Google-Smtp-Source: APXvYqwK+EshQqhWAuEP+FIGWSdW4fSf4XVcb1H0wkkA0gtNccGHWZPwmpTELUU72DjKZh9h2rxmwDp4F1Myi6CEF/g=
-X-Received: by 2002:ab0:e16:: with SMTP id g22mr7016060uak.129.1576794884226;
- Thu, 19 Dec 2019 14:34:44 -0800 (PST)
+        id S1727125AbfLSWe7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Dec 2019 17:34:59 -0500
+Received: from mga04.intel.com ([192.55.52.120]:29335 "EHLO mga04.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726967AbfLSWe6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 19 Dec 2019 17:34:58 -0500
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 19 Dec 2019 14:34:58 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.69,333,1571727600"; 
+   d="scan'208";a="248484456"
+Received: from mjmartin-nuc02.mjmartin-nuc02 (HELO mjmartin-nuc02.sea.intel.com) ([10.251.1.107])
+  by fmsmga002.fm.intel.com with ESMTP; 19 Dec 2019 14:34:57 -0800
+From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
+To:     netdev@vger.kernel.org, mptcp@lists.01.org
+Cc:     Mat Martineau <mathew.j.martineau@linux.intel.com>
+Subject: [PATCH net-next v5 00/11] Multipath TCP: Prerequisites
+Date:   Thu, 19 Dec 2019 14:34:23 -0800
+Message-Id: <20191219223434.19722-1-mathew.j.martineau@linux.intel.com>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-References: <cover.1576606020.git.hns@goldelico.com>
-In-Reply-To: <cover.1576606020.git.hns@goldelico.com>
-From:   Ulf Hansson <ulf.hansson@linaro.org>
-Date:   Thu, 19 Dec 2019 23:34:08 +0100
-Message-ID: <CAPDyKFoRe1Nzu74BACNMCZDVoS4Dd3w0Bk3K-Mstw4WAvMtiLg@mail.gmail.com>
-Subject: Re: [PATCH v2 0/2] wl1251: remove ti,power-gpio for sdio mode
-To:     "H. Nikolaus Schaller" <hns@goldelico.com>
-Cc:     Kalle Valo <kvalo@codeaurora.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Alexios Zavras <alexios.zavras@intel.com>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        DTML <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Discussions about the Letux Kernel 
-        <letux-kernel@openphoenux.org>, kernel@pyra-handheld.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 17 Dec 2019 at 19:07, H. Nikolaus Schaller <hns@goldelico.com> wrote:
->
-> * use just "wl1251: " as title prefix - by Kalle Valo <kvalo@codeaurora.org>
-> * fix error handling: we still have to check for wl->irq returning -EPROBE_DEFER
->
-> PATCH V1 2019-11-24 11:35:48:
-> The driver has been updated to use the mmc/sdio core
-> which does full power control. So we do no longer need
-> the power control gipo.
->
-> Note that it is still needed for the SPI based interface
-> (N900).
->
-> Suggested by: Ulf Hansson <ulf.hansson@linaro.org>
-> Tested by: H. Nikolaus Schaller <hns@goldelico.com> # OpenPandora 600MHz
->
-> H. Nikolaus Schaller (2):
->   DTS: bindings: wl1251: mark ti,power-gpio as optional
->   wl1251: remove ti,power-gpio for SDIO mode
->
->  .../bindings/net/wireless/ti,wl1251.txt       |  3 +-
->  drivers/net/wireless/ti/wl1251/sdio.c         | 32 ++-----------------
->  2 files changed, 4 insertions(+), 31 deletions(-)
->
-> --
-> 2.23.0
->
+v4 -> v5: Cover letter subject fix. No changes to commits.
 
-Reviewed-by: Ulf Hansson <ulf.hansson@linaro.org>
+v3 -> v4: Update coalesce/collapse of incoming MPTCP skbs (patch 7)
 
-Kind regards
-Uffe
+v2 -> v3: Ensure sk_type alignment in struct sock (patch 2)
+
+v1 -> v2: sk_pacing_shift left as a regular struct member (patch 2), and
+modified SACK space check based on recent -net fix (patch 9).
+
+
+The MPTCP upstreaming community has been collaborating on an
+upstreamable MPTCP implementation that complies with RFC 8684. A minimal
+set of features to comply with the specification involves a sizeable set
+of code changes, so David requested that we split this work in to
+multiple, smaller patch sets to build up MPTCP infrastructure.
+
+The minimal MPTCP feature set we are proposing for review in the v5.6
+timeframe begins with these three parts:
+
+Part 1 (this patch set): MPTCP prerequisites. Introduce some MPTCP
+definitions, additional ULP and skb extension features, TCP option space
+checking, and a few exported symbols.
+
+Part 2: Single subflow implementation and self tests.
+
+Part 3: Switch from MPTCP v0 (RFC 6824) to MPTCP v1 (new RFC 8684,
+publication expected in the next few days).
+
+We plan to send those over the next week. Additional patches for
+multiple subflow support, path management, active backup, and other
+features are in the pipeline for submission after making progress with
+the above reviews.
+
+Clone/fetch:
+https://github.com/multipath-tcp/mptcp_net-next.git (tag: netdev-v5-part1)
+
+Browse:
+https://github.com/multipath-tcp/mptcp_net-next/tree/netdev-v5-part1
+
+Thank you for your review. You can find us at mptcp@lists.01.org and
+https://is.gd/mptcp_upstream
+
+
+Mat Martineau (9):
+  net: Make sock protocol value checks more specific
+  sock: Make sk_protocol a 16-bit value
+  tcp: Define IPPROTO_MPTCP
+  tcp: Add MPTCP option number
+  tcp, ulp: Add clone operation to tcp_ulp_ops
+  mptcp: Add MPTCP to skb extensions
+  tcp: coalesce/collapse must respect MPTCP extensions
+  tcp: Export TCP functions and ops struct
+  tcp: Check for filled TCP option space before SACK
+
+Paolo Abeni (2):
+  tcp: clean ext on tx recycle
+  skb: add helpers to allocate ext independently from sk_buff
+
+ MAINTAINERS                     | 10 ++++
+ include/linux/skbuff.h          |  6 +++
+ include/net/mptcp.h             | 81 +++++++++++++++++++++++++++++++++
+ include/net/sock.h              | 12 ++---
+ include/net/tcp.h               | 22 +++++++++
+ include/trace/events/sock.h     |  5 +-
+ include/uapi/linux/in.h         |  2 +
+ net/ax25/af_ax25.c              |  2 +-
+ net/core/skbuff.c               | 42 ++++++++++++++++-
+ net/decnet/af_decnet.c          |  2 +-
+ net/ipv4/inet_connection_sock.c |  2 +
+ net/ipv4/tcp.c                  |  6 +--
+ net/ipv4/tcp_input.c            | 11 +++--
+ net/ipv4/tcp_ipv4.c             |  2 +-
+ net/ipv4/tcp_output.c           | 12 +++--
+ net/ipv4/tcp_ulp.c              | 12 +++++
+ net/ipv6/tcp_ipv6.c             |  6 +--
+ tools/include/uapi/linux/in.h   |  2 +
+ 18 files changed, 211 insertions(+), 26 deletions(-)
+ create mode 100644 include/net/mptcp.h
+
+-- 
+2.24.1
+
