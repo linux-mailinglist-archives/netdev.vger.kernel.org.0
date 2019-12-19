@@ -2,168 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0033512678C
-	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 18:01:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 986FA1267A5
+	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 18:06:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726959AbfLSRBF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Dec 2019 12:01:05 -0500
-Received: from mail-eopbgr30040.outbound.protection.outlook.com ([40.107.3.40]:10365
-        "EHLO EUR03-AM5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726760AbfLSRBE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 19 Dec 2019 12:01:04 -0500
+        id S1727029AbfLSRF7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Dec 2019 12:05:59 -0500
+Received: from mx0a-00273201.pphosted.com ([208.84.65.16]:42390 "EHLO
+        mx0a-00273201.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726760AbfLSRF7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Dec 2019 12:05:59 -0500
+Received: from pps.filterd (m0108156.ppops.net [127.0.0.1])
+        by mx0a-00273201.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xBJGjxxD017037;
+        Thu, 19 Dec 2019 09:05:43 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=juniper.net; h=from : to : cc :
+ subject : date : message-id : references : in-reply-to : content-type :
+ content-id : content-transfer-encoding : mime-version; s=PPS1017;
+ bh=FcfHMxVoz1uIgqDKXkVkTL9rh6wCtT5lFpiVmkYa/vY=;
+ b=Blbvm0ESMeDBCekAphfv0rMv4064zm7tB0dUzyLYKRm+NjrwtFYJ0H3weOB3Ha1/zbDL
+ TXteZFHLfGa/BHTV/GzUjeo/i4AQHreSoPFPqw/ff7D569FzU+Fm2BZQy1VErGjzj4aD
+ 3xILmS6cryN/oL7zbtQdIvdkUxXqHifqVQmq52B82OYiAgBVKIFK9OW642FYZ7ZUHqa5
+ sodibHNfJ5UWnhrAwXZCJwTEBA43NRsv32XYxDjdXT4KpN33U5Yf236dmCXORoQt8Jm5
+ 2YvZWmU0DizFzTXj+IREjdbcpuaxQIj6BjIn0R12ldG8Qjvbq3CanBQv8tM5DSxLjpVY eA== 
+Received: from nam02-sn1-obe.outbound.protection.outlook.com (mail-sn1nam02lp2053.outbound.protection.outlook.com [104.47.36.53])
+        by mx0a-00273201.pphosted.com with ESMTP id 2x05860tkk-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 19 Dec 2019 09:05:43 -0800
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=AqShQusx+Ue4Y0akaT5fqM70qdvhFk42GjGLger3XzdB/u9RVv2o2obHSNQyJh3w88tiuPE/scxkHsJ/Hlq23PeMKA7O8fpjzxieyUEtLBGD6sbAEdPmtBD/l7FxWCVrtfmBtDVnVykBBEuMaCtLG15nVhqehreWuV/9lGFARB9Jln0qiF4Op3CfE96ypXbhjplMrN84kgx+f4t8jwx+ANE32t+e5HZSAmIZhr8dJgdqJmgjCW+g5G1RaPs5Od3Dgm/2LKdr5cdjVu5qFGCjcboeOPWqIcGDCov/3m+nHzMyHB+8B3TXUajcX65ip9DRAZLtQoZoRhKx6niSGoEQwQ==
+ b=hpNvtQH12uj0+bO+F+oMpQUE/UwrC108LdGl3bZn9AXFiVPT2z8AtzAmdi35Ngj+/DGY05tbW38014DF+A8oF+mlPopB+l563ueP5FcxDrqLw5RmsA+HExV4g5+GPMEAjZMs9sZ1Eg5Hi4BiH/zpE5azrkHtF5rD7fFHWaiXUdeYFNS9AV+eLrB1h05vG5hbBdX0u9dFPeP0CK/QAJ0PEh1SkNZwczYGxqWPWmAYTt6LGKBX4Ub8HxCxGxeVyUBK2aTa8281NseoBknsPfHVgr4DpBi8Lf9rvxPXRI5kZ3A7kAEGNatymcTOOGwGcdcQ41knvAHJe9TaZwDa79iP9A==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=xzPH8ZFQYBsDdxd8aTRYjk05EuMavjFIyEcLHqHD6dM=;
- b=nGpa2lFa5C0IhnOeaXdL9CrWvlPBRPhNztHLUQk7UHtQIYlTVEnypJcB32VPwBghmvi020+KvPyR+Icr4cpPT6r3xgyfYKQbA5MD9YbXkURXPZdvo5GOImd8eiXKpo6Xe7tcPnG+Em0fP8ul/+l1ACfDLY4HZhn/zZwkNZMurR6g3Ij26WQoNU5jUJDJJSNJvkBuqLuTV5v934xocfLJiYEoXa0S5g7FuwKXo81+39Rv6c0TUSNAencPXMyMLAP/gw/KVzvyvbvzGAcn3fpqJD80PClGEKVlt8P0DZyLTLb0xk79afNVoaOzxOvWFERNb2UZ/2ydvpe5vcV2BLq9XQ==
+ bh=FcfHMxVoz1uIgqDKXkVkTL9rh6wCtT5lFpiVmkYa/vY=;
+ b=be/YzBlIiyMwOKqlkpYOUyXlXzWtPsQZp1Pz5cf8VzT2UwKwji3TZwd/epnIYtC69y5xTMxsrAGaTTySulR53Hy3Z++peykwDTk+CsOC7gQBoXPpdn4VQdGTADJUfGjQp4U07cvptnEEsPzFpUDCU6pordwlww1BxIGHE5hbSnaxkCmEfrB7A85rzrajFKOcyeXzBSrDXSLnsApniizFZdhYDMub6W4LrwHHPNr6Lj9C30N2yPmGIs+pDyeuzMyKDDvEcMhICBjONJ9iGZfgLS3TBavhfnOUeUDzeCcNdCSjXy+UbMAm/qyc7htobeT8ENK2BUuuMS5BGFZNvMlrSg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ smtp.mailfrom=juniper.net; dmarc=pass action=none header.from=juniper.net;
+ dkim=pass header.d=juniper.net; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=juniper.net;
  s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=xzPH8ZFQYBsDdxd8aTRYjk05EuMavjFIyEcLHqHD6dM=;
- b=b4lI8kRaUAAsBxJL7xqnYll5w5t9II37iG9nHFloUSaeA26mtP164j32u/yfGKmya9lEANMrHb40xoAU/MTqdwchEcf7BnKiYpFJKomYWi2VjU2ukuiiKdd55eX5ZOIfvqH13JHaqlwJEmx9MYK8HCv0RlKUqBYwCY0zEWDDCQ0=
-Received: from AM0PR05MB5284.eurprd05.prod.outlook.com (20.178.17.20) by
- AM0PR05MB5060.eurprd05.prod.outlook.com (20.176.214.90) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2538.15; Thu, 19 Dec 2019 17:01:01 +0000
-Received: from AM0PR05MB5284.eurprd05.prod.outlook.com
- ([fe80::d8ce:80d0:a591:8cc]) by AM0PR05MB5284.eurprd05.prod.outlook.com
- ([fe80::d8ce:80d0:a591:8cc%6]) with mapi id 15.20.2559.015; Thu, 19 Dec 2019
- 17:01:01 +0000
-From:   Vlad Buslov <vladbu@mellanox.com>
-To:     Vlad Buslov <vladbu@mellanox.com>
-CC:     Jamal Hadi Salim <jhs@mojatatu.com>,
-        Davide Caratti <dcaratti@redhat.com>,
+ bh=FcfHMxVoz1uIgqDKXkVkTL9rh6wCtT5lFpiVmkYa/vY=;
+ b=DcdpRzK8waZAl2tlmIykC04hT3uPfU9oxP9shCFMxLkoLOI8UsED0FQoDS3QmzEfeRRWJKPEQ5I/iu8wQH4H0XBPVucloSWcob8hu4tlGZylc/QPp4x3rNqwpFV+H0L5/TD3NK5mCo4f49U31HI1d9ZX5I2fqONTEGeLRmilvzw=
+Received: from CY4PR0501MB3827.namprd05.prod.outlook.com (52.132.99.143) by
+ CY4PR0501MB3699.namprd05.prod.outlook.com (52.132.100.167) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2559.12; Thu, 19 Dec 2019 17:05:42 +0000
+Received: from CY4PR0501MB3827.namprd05.prod.outlook.com
+ ([fe80::8d77:6795:84cf:dd47]) by CY4PR0501MB3827.namprd05.prod.outlook.com
+ ([fe80::8d77:6795:84cf:dd47%7]) with mapi id 15.20.2559.012; Thu, 19 Dec 2019
+ 17:05:42 +0000
+From:   Edwin Peer <epeer@juniper.net>
+To:     Daniel Borkmann <daniel@iogearbox.net>
+CC:     Y Song <ys114321@gmail.com>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>, Roman Mashak <mrv@mojatatu.com>
-Subject: Re: [PATCH net 1/2] net/sched: cls_u32: fix refcount leak in the
- error path of u32_change()
-Thread-Topic: [PATCH net 1/2] net/sched: cls_u32: fix refcount leak in the
- error path of u32_change()
-Thread-Index: AQHVtS3RDHKj6jsD1UGiL38qYfL+d6e/8y0AgAGEDQCAAC2QAIAABOKAgAAFA4CAAAK4gA==
-Date:   Thu, 19 Dec 2019 17:01:00 +0000
-Message-ID: <vbfo8w42qt2.fsf@mellanox.com>
-References: <cover.1576623250.git.dcaratti@redhat.com>
- <ae83c6dc89f8642166dc32debc6ea7444eb3671d.1576623250.git.dcaratti@redhat.com>
- <bafb52ff-1ced-91a4-05d0-07d3fdc4f3e4@mojatatu.com>
- <5b4239e5-6533-9f23-7a38-0ee4f6acbfe9@mojatatu.com>
- <vbfr2102swb.fsf@mellanox.com>
- <63fe479d-51cd-eff4-eb13-f0211f694366@mojatatu.com>
- <vbfpngk2r9a.fsf@mellanox.com>
-In-Reply-To: <vbfpngk2r9a.fsf@mellanox.com>
+        "ast@kernel.org" <ast@kernel.org>, bpf <bpf@vger.kernel.org>
+Subject: Re: [RFC PATCH bpf-next 0/2] unprivileged BPF_PROG_TEST_RUN
+Thread-Topic: [RFC PATCH bpf-next 0/2] unprivileged BPF_PROG_TEST_RUN
+Thread-Index: AQHVtgy6x2wMuQ42JECcwOBV53W8TKfBDSIA///4BwCAAJXcAP//j9uA
+Date:   Thu, 19 Dec 2019 17:05:42 +0000
+Message-ID: <CEA84064-FF2B-4AA7-84EE-B768D6ABC077@juniper.net>
+References: <20191219013534.125342-1-epeer@juniper.net>
+ <CAH3MdRUTcd7rjum12HBtrQ_nmyx0LvdOokZmA1YuhP2WtGfJqA@mail.gmail.com>
+ <69266F42-6D0B-4F0B-805C-414880AC253D@juniper.net>
+ <20191219154704.GC4198@linux-9.fritz.box>
+In-Reply-To: <20191219154704.GC4198@linux-9.fritz.box>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
-x-clientproxiedby: PR0P264CA0123.FRAP264.PROD.OUTLOOK.COM
- (2603:10a6:100:1a::15) To AM0PR05MB5284.eurprd05.prod.outlook.com
- (2603:10a6:208:eb::20)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=vladbu@mellanox.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [37.142.13.130]
+msip_labels: MSIP_Label_9784d817-3396-4a4f-b60c-3ef6b345fe55_Enabled=true;MSIP_Label_9784d817-3396-4a4f-b60c-3ef6b345fe55_Name=Juniper
+ Business Use
+ Only;MSIP_Label_9784d817-3396-4a4f-b60c-3ef6b345fe55_Enabled=true;MSIP_Label_9784d817-3396-4a4f-b60c-3ef6b345fe55_SiteId=bea78b3c-4cdb-4130-854a-1d193232e5f4;MSIP_Label_9784d817-3396-4a4f-b60c-3ef6b345fe55_ContentBits=0;MSIP_Label_9784d817-3396-4a4f-b60c-3ef6b345fe55_Method=Standard;MSIP_Label_9784d817-3396-4a4f-b60c-3ef6b345fe55_ActionId=43de90f8-d5f3-49c3-8d29-0000eb6ce104;MSIP_Label_9784d817-3396-4a4f-b60c-3ef6b345fe55_SetDate=2019-12-19T16:51:55Z;
+x-originating-ip: [66.129.242.11]
 x-ms-publictraffictype: Email
 x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 834b16f6-020e-4fce-b053-08d784a50666
-x-ms-traffictypediagnostic: AM0PR05MB5060:|AM0PR05MB5060:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <AM0PR05MB5060D4DB51493B0FA2C8600AAD520@AM0PR05MB5060.eurprd05.prod.outlook.com>
+x-ms-office365-filtering-correlation-id: 451bcc07-32a7-4081-caa2-08d784a5ae22
+x-ms-traffictypediagnostic: CY4PR0501MB3699:
+x-microsoft-antispam-prvs: <CY4PR0501MB36997911451C72BB4D456C93B3520@CY4PR0501MB3699.namprd05.prod.outlook.com>
 x-ms-oob-tlc-oobclassifiers: OLM:9508;
 x-forefront-prvs: 0256C18696
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(396003)(39850400004)(136003)(366004)(346002)(376002)(199004)(189003)(2616005)(2906002)(64756008)(53546011)(66946007)(6512007)(54906003)(86362001)(316002)(6486002)(36756003)(81156014)(478600001)(186003)(71200400001)(6506007)(52116002)(4326008)(37006003)(81166006)(26005)(4001150100001)(5660300002)(8936002)(66556008)(66446008)(8676002)(6200100001)(66476007)(6862004);DIR:OUT;SFP:1101;SCL:1;SRVR:AM0PR05MB5060;H:AM0PR05MB5284.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(39860400002)(396003)(136003)(346002)(376002)(366004)(189003)(199004)(36756003)(66476007)(66946007)(66556008)(8936002)(64756008)(91956017)(76116006)(86362001)(316002)(53546011)(66446008)(2616005)(8676002)(5660300002)(71200400001)(54906003)(6916009)(81166006)(2906002)(186003)(26005)(81156014)(6486002)(478600001)(6506007)(4326008)(33656002)(6512007);DIR:OUT;SFP:1102;SCL:1;SRVR:CY4PR0501MB3699;H:CY4PR0501MB3827.namprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: juniper.net does not designate
  permitted sender hosts)
 x-ms-exchange-senderadcheck: 1
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: CACzFgANMF3c1N6VfIw1neSWt6qQk/TnTEWCy6cbCEfHbqcdfv7kM7crWq+6G6KHhw4fXzwamVkN5VxZNPQdm2X0fH39+MD9pQSoGp6aV2zosaEGs9wJ1FfBHnqxwd80tMyPfbHtcmfpZyTJtletjDSQZPLCx4FQzIirpiQUOd0SGaok9swmRp8Sbwkd6/o47gpAQPNQdU20j4RIFX0etAMjE878KB9aPXvcHrfmAeCtXl/zoAc6sLuvH3VA6DGeZVrLc2kuwx+3ojXuJ13UasTMeUS8GV1dmnX6EHWA5P+8X8AlM9DD+BPld2gFT8kD9mUciO1DR+PJm1aG5IDBqXHizC5RvAtYFTDmG6fzU72xLPiomHu5I5wMN3w9sN74wnLlaKvE+nNmJc67beJckIfoaMqBlaZAU+q4p8KqxqktuCb8FZJDMjhHd3uE8u3T
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+x-microsoft-antispam-message-info: zAPnh8QQhDsUUFY+O0oQw4JBWfaursPE1NXVffEZsmLaUNXtSzEtNgMDRlK6nYA+TOR6JBdz0AdYKWionHi+lp1WipKNxIebuy2hN2abQUMMuGkL/n0Z5u0DbWPin6hR80jQi9Fqvqi0k0ZbYxknR0k6uh+2VJUdrRP1E2A9MVOKuK4HwMwwEhVl0GJVyhQcAKR6lFOpDStYip0ZRkWOsVCUlcFSalrS09jl85wfeWDDIyHa0dUb4xIJT0bOe0GXjD9Ct4Z+2QdJbOK830Ou8Ub+t5MhW2Pa9AYnrEv6Ifuo9PN6ausGOfVZO45FLe5m/fNuWUUXEeyCJ0fBnX54hGqIsnSxkM3rrbxW5+j67F4D8kEIi/iGnjgkehFxCGvkW/kJSXH/tcMKzvSKlqMpCbxkRKTPj2yvZyGHS206dVmEqDQpiK2WQB0gN/RNNiUZ
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <9A63B3A0F3FE1A489F0B6D194982D26D@namprd05.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 834b16f6-020e-4fce-b053-08d784a50666
-X-MS-Exchange-CrossTenant-originalarrivaltime: 19 Dec 2019 17:01:01.5253
+X-OriginatorOrg: juniper.net
+X-MS-Exchange-CrossTenant-Network-Message-Id: 451bcc07-32a7-4081-caa2-08d784a5ae22
+X-MS-Exchange-CrossTenant-originalarrivaltime: 19 Dec 2019 17:05:42.1217
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-id: bea78b3c-4cdb-4130-854a-1d193232e5f4
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 2AgxWcg5pjpqx0ywF/xzahzXHjmpBXMWL58bfY8sH589+fKBF1lRgrd/LeJ87IUw8IY38IE5s2mphgE5+xa9tA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR05MB5060
+X-MS-Exchange-CrossTenant-userprincipalname: HsoBVRqtfg7MZ2p+FO4tJj18edFC2hM6tFvH3eUq/r8PhLMMBnn4WPTTfV3VG8lFU1BNH0Hdi5n20tlbNUntig==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR0501MB3699
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
+ definitions=2019-12-19_04:2019-12-17,2019-12-19 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_spam_notspam policy=outbound_spam score=0 spamscore=0
+ impostorscore=0 mlxscore=0 mlxlogscore=999 priorityscore=1501
+ malwarescore=0 bulkscore=0 adultscore=0 suspectscore=0 phishscore=0
+ lowpriorityscore=0 clxscore=1015 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-1910280000 definitions=main-1912190135
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On Thu 19 Dec 2019 at 18:51, Vlad Buslov <vladbu@mellanox.com> wrote:
-> On Thu 19 Dec 2019 at 18:33, Jamal Hadi Salim <jhs@mojatatu.com> wrote:
->> On 2019-12-19 11:15 a.m., Vlad Buslov wrote:
->>
->>
->>> Hi Jamal,
->>>
->>> Just destroying tp unconditionally will break unlocked case (flower)
->>> because of possibility of concurrent insertion of new filters to the
->>> same tp instance.
->>>
->>
->> I was worried about that. So rtnlheld doesnt help?
->
-> Rtnl_held flag can be set for multiple other reasons besides
-> locked/unlocked classifier implementation (parent Qdisc doesn't support
-> unlocked execution, retry in tc_new_tfilter(), etc.).
->
->>
->>> The root cause here is precisely described by Davide in cover letter -
->>> to accommodate concurrent insertions cls API verifies that tp instance
->>> is empty before deleting it and since there is no cls ops to do it
->>> directly, it relies on checking that walk() stopped without accessing
->>> any filters instead. Unfortunately, somw classifier implementations
->>> assumed that there is always at least one filter on classifier (I fixed
->>> several of these) and now Davide also uncovered this leak in u32.
->>>
->>> As a simpler solution to fix such issues once and for all I can propose
->>> not to perform the walk() check at all and assume that any classifier
->>> implementation that doesn't have TCF_PROTO_OPS_DOIT_UNLOCKED flag set i=
-s
->>> empty in tcf_chain_tp_delete_empty() (there is no possibility of
->>> concurrent insertion when synchronizing with rtnl).
->>>
->>> WDYT?
->>
->> IMO that would be a cleaner fix give walk() is used for other
->> operations and this is a core cls issue.
->> Also: documenting what it takes for a classifier to support
->> TCF_PROTO_OPS_DOIT_UNLOCKED is useful (you may have done this
->> in some commit already).
->
-> Well, idea was not to have classifier implement any specific API. If
-> classifier has TCF_PROTO_OPS_DOIT_UNLOCKED, then cls API doesn't obtain
-> rtnl and it is up to classifier to implement whatever locking necessary
-> internally. However, my approach to checking for empty classifier
-> instance uncovered multiple bugs and inconsistencies in classifier
-> implementations of ops->walk().
->
-> So I guess the requirement now is for unlocked classifier to have sane
-> implementation of ops->walk() that doesn't assume >1 filters and
-> correctly handles the case when insertion of first filter after
-> classifier instance is created fails.
-
-BTW another approach would be to extend ops with new callback
-delete_empty(), require unlocked implementation to define it and move
-functionality of tcf_proto_check_delete() there. Such approach would
-remove the need for (ab)using ops->walk() for this since internally
-in classifier implementation there is always a way to correctly verify
-that classifier instance is empty. Don't know which approach is better
-in this case.
-
->
->>
->> cheers,
->> jamal
+T24gMTIvMTkvMTksIDA3OjQ3LCAiRGFuaWVsIEJvcmttYW5uIiA8ZGFuaWVsQGlvZ2VhcmJveC5u
+ZXQ+IHdyb3RlOg0KDQo+ICBXaGF0IGFib3V0IENBUF9CUEY/DQoNCldoYXQgaXMgdGhlIHN0YXR1
+cyBvZiB0aGlzPyBJdCBtaWdodCBzb2x2ZSBzb21lIG9mIHRoZSBwcm9ibGVtcywgYnV0IGl0IGlz
+IHN0aWxsIHB1dHMgdGVzdGluZw0KQlBGIG91dHNpZGUgcmVhY2ggb2Ygbm9ybWFsIHVzZXJzLg0K
+DQo+IElJUkMsIHRoZXJlIGFyZSBhbHNvIG90aGVyIGlzc3VlcyBlLmcuIHlvdSBjb3VsZCBhYnVz
+ZSB0aGUgdGVzdCBpbnRlcmZhY2UgYXMgYSBwYWNrZXQNCj4gIGdlbmVyYXRvciAoYnBmX2Nsb25l
+X3JlZGlyZWN0KSB3aGljaCBpcyBub3Qgc29tZXRoaW5nIGZ1bGx5IHVucHJpdiBzaG91bGQgYmUg
+ZG9pbmcuDQoNCkdvb2QgcG9pbnQuIEkgc3VzcGVjdCBzb2x1dGlvbnMgZXhpc3QgLSBJJ20gdHJ5
+aW5nIHRvIGFzY2VydGFpbiBpZiB0aGV5IGFyZSB3b3J0aCBwdXJzdWluZw0Kb3IgaWYgdGhlIGlk
+ZWEgb2YgdW5wcml2aWxlZ2VkIHRlc3RpbmcgaXMgYSBjb21wbGV0ZSBub24tc3RhcnRlciB0byBi
+ZWdpbiB3aXRoLg0KDQpBcmUgdGhlcmUgb3RoZXIgaGVscGVycyBvZiBjb25jZXJuIHRoYXQgY29t
+ZSBpbW1lZGlhdGVseSB0byBtaW5kPyBBIGZpcnN0IHN0YWIgbWlnaHQNCmFkZCB0aGVzZSB0byB0
+aGUgbGlzdCBpbiB0aGUgdmVyaWZpZXIgdGhhdCByZXF1aXJlIHByaXZpbGVnZS4gVGhpcyBoYXMg
+dGhlIGRyYXdiYWNrIHRoYXQNCnByb2dyYW1zIHRoYXQgYWN0dWFsbHkgbmVlZCB0aGlzIGtpbmQg
+b2YgZnVuY3Rpb25hbGl0eSBhcmUgYmV5b25kIHRoZSB0ZXN0IGZyYW1ld29yay4NCg0KQW5vdGhl
+ciBpZGVhIG1pZ2h0IGJlIHRvIGhhdmUgc29tZSBraW5kIG9mIHRlc3QgY2xhc3NpZmljYXRpb24g
+c3RvcmVkIGluIHRoZSBwcm9ncmFtDQpjb250ZXh0LiBUaGF0IHdheSwgZGFuZ2Vyb3VzIGhlbHBl
+cnMgY291bGQgYmUgcmVwbGFjZWQgYnkgdmVyc2lvbnMgdGhhdCBtb2NrIHRoZQ0KZnVuY3Rpb25h
+bGl0eSBpbiBzb21lIHNhZmUgd2F5LiBQZXJoYXBzIGhhdmluZyB0ZXN0IHByb2dyYW1zIG9ubHkg
+aGF2ZSBhY2Nlc3MgdG8gYQ0Kc3Vic2V0IG9mIHZpcnR1YWwgbmV0ZGV2cyBmb3IgY2xvbmUgcmVk
+aXJlY3QsIGZvciBleGFtcGxlLiANCg0KUmVnYXJkcywNCkVkd2luIFBlZXINCiAgDQoNCg==
