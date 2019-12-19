@@ -2,113 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CFAAF127044
-	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 23:04:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AF3DD127049
+	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 23:04:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727167AbfLSWEI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Dec 2019 17:04:08 -0500
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:41266 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726866AbfLSWEH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Dec 2019 17:04:07 -0500
-Received: by mail-pf1-f196.google.com with SMTP id w62so4047193pfw.8;
-        Thu, 19 Dec 2019 14:04:06 -0800 (PST)
+        id S1727162AbfLSWEw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Dec 2019 17:04:52 -0500
+Received: from mail-pj1-f68.google.com ([209.85.216.68]:40619 "EHLO
+        mail-pj1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726866AbfLSWEw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Dec 2019 17:04:52 -0500
+Received: by mail-pj1-f68.google.com with SMTP id bg7so2677018pjb.5;
+        Thu, 19 Dec 2019 14:04:51 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to:user-agent;
-        bh=iKSHvrn/3r8/ReeJhzgkZ/w1RHXoQnMBbiU9xmGogzM=;
-        b=t8R6Dq6vslycH7CC3VcjeWk28+hY/EsPTeudJAJsWxh5exwtPFDpaFw5OjwuXaa04B
-         Yq2FuKA4HGrzfm6MVowzp1h6iV65fAfxysUh/YPd/w2pVe0EMJc3xmDZLWRAh8CagsXb
-         lgK0Hclm279SquBjrW5kL2E30X+Gs0I0f1WSrCDGXpECFwc8fy+fHHQTLsIsQqcOES1O
-         Zh3yNiYOh9Uy4jVv6ZzaWhuou4jRj3qRrev6a/tvnJQDhT/BAYmOApaydUnX/AO+MA4N
-         /qJhpqyQROy94Q2fZyJMOb6ftnOBU5CzYyk0qAleQmJ5Lr4jJkmU8h9r5LSdohXR9D1S
-         5aVA==
+        bh=vU/yG9rhO+wLaHPfrGrvYue5a5qDi7/QvRZIZCkUrKc=;
+        b=NmROeqkXwSag0ft7FrXfWUzQaYbBLf3RmWRtxmIKAfuXgQzHP3VXyJ02K12DZd1zOa
+         BZuflCXV+k1NU/v1oduF1m5lu0nLzY49q0q0fU0PTjcEzj/dif076TqG0nl/vg68ta66
+         v8l06fJCnc6xUNMeT7UdGgY1oZ8i5vggHk44SYJUv9tm7MmWC0TZ44E3w5fFBWd+FJA6
+         6+wttmlNxu3LiQxp8f6XqKY/lTiB3NrmxiMLYPLXjLcRUHGsZ736cOro3Juogv44CYQO
+         8c1vpqiayhyL2I+Q68SrTax94EcF2MtI8nnOUCVp3AZYtmrE8kTiHdPu8WwFZfEhKSsa
+         DGwA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=iKSHvrn/3r8/ReeJhzgkZ/w1RHXoQnMBbiU9xmGogzM=;
-        b=d8ftHccV4q/bqcdyHavF1FTQG80eXe9NbG/l6ZwW1MdmB4XXX7TJFHF0kkma5Wv8Mh
-         lHh+Y1cj/ZSpare+kV4s8n+ydNHXjwyCFj+KV4Vtvv16kkNXiHPvW1Ap+BJA6/SKDfpm
-         363eB1C2/zcWJF9X3F5YsRtg2jvcuX6vQqA7hZsLZypTKTTALgHBAQXlXf3nTDceSdOu
-         Osz45iBz6hZ28M6SvTj6e7/sPkddmANeHkXRr/NrAYC44sOLEADwM8Ll+jSRfurRugjs
-         slWhGqm0yH7tWoKx929uF3w1FJk0ZMh1vXnXF0YZLyA6e+nXz1AqBe3gfczCOOWpyRRS
-         3I+A==
-X-Gm-Message-State: APjAAAXMa3fnRRLKErcKXn5CKv5Dysdn+2V2mf01zFIjR6xXFexaW4aF
-        gNBoGHQbGp689EEqe1zelU2eJ70A
-X-Google-Smtp-Source: APXvYqx6WhMI/pC0qKh3qCXAqIXdHi0Sth1kXisyGajGpzBSrlUZ8nO8k2telIXUkh1l4gbO62y7rQ==
-X-Received: by 2002:a63:3484:: with SMTP id b126mr11052537pga.17.1576793046092;
-        Thu, 19 Dec 2019 14:04:06 -0800 (PST)
+        bh=vU/yG9rhO+wLaHPfrGrvYue5a5qDi7/QvRZIZCkUrKc=;
+        b=K7HbaltKhwlicHLAdyITAZBouGeQ+riWnewOv/i9s1P6t/GEKjS4oIFCi8rsc5GsN5
+         CDKe80mH3lOgAr+3bttHaQhxjUtqd4bbrYTkEeLIg7VGazMTjb3oX8BBzuwagYY0vVal
+         6wv4OQRPgcOqKChKrXhwxWUT5UhbFuoAKqUgXGV5N5tzMC+lBM3L4xun1zZrNafJ5phT
+         riViFYzWr836Og0S/Ja+vvs6oO9NcjuMH0ONHHZi3zjDR7z1FcQkOO7T/mYqCg/cOHIg
+         3RvSsdkX8qmElRiBNlQF2LaqNk7ySm9EGiQxiLethi2rbLRDGTqywT+/+7sw0pcfDq4F
+         xyqQ==
+X-Gm-Message-State: APjAAAWFiLCax9tY8/8gR8uMUgldmL07J3hNQbfXilE0tQh1MyHzyKdt
+        lPVy37tY9FHRG0mZA5I0jZgVW/vy
+X-Google-Smtp-Source: APXvYqxg/LNLoQVc+TzC0CzrEJnakddK68JTkSxu0UD6aDE1Q1iZo351/R3mLyUb5e6Wml9Giu4ZDA==
+X-Received: by 2002:a17:90a:2729:: with SMTP id o38mr10945891pje.45.1576793091396;
+        Thu, 19 Dec 2019 14:04:51 -0800 (PST)
 Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:180::b180])
-        by smtp.gmail.com with ESMTPSA id y128sm7957829pfy.146.2019.12.19.14.04.04
+        by smtp.gmail.com with ESMTPSA id m71sm11020865pje.0.2019.12.19.14.04.48
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 19 Dec 2019 14:04:04 -0800 (PST)
-Date:   Thu, 19 Dec 2019 14:04:03 -0800
+        Thu, 19 Dec 2019 14:04:49 -0800 (PST)
+Date:   Thu, 19 Dec 2019 14:04:47 -0800
 From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
 To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
         Networking <netdev@vger.kernel.org>,
         Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
         Kernel Team <kernel-team@fb.com>
-Subject: Re: [PATCH bpf-next 1/3] bpftool: add extra CO-RE mode to btf dump
- command
-Message-ID: <20191219220402.cdmxkkz3nmwmk6rc@ast-mbp.dhcp.thefacebook.com>
+Subject: Re: [PATCH bpf-next 2/3] libbpf/tools: add runqslower tool to libbpf
+Message-ID: <20191219220446.fhtn4i7w5wczuahq@ast-mbp.dhcp.thefacebook.com>
 References: <20191219070659.424273-1-andriin@fb.com>
- <20191219070659.424273-2-andriin@fb.com>
- <20191219170602.4xkljpjowi4i2e3q@ast-mbp.dhcp.thefacebook.com>
- <CAEf4BzYKf=+WNZv5HMv=W8robWWTab1L5NURAT=N7LQNW4oeGQ@mail.gmail.com>
+ <20191219070659.424273-3-andriin@fb.com>
+ <20191219154137.GB4198@linux-9.fritz.box>
+ <CAEf4BzZ8+_GYecvgGUXdOFj4Oca=U3_23PLWBJSAi0A8=gwReg@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAEf4BzYKf=+WNZv5HMv=W8robWWTab1L5NURAT=N7LQNW4oeGQ@mail.gmail.com>
+In-Reply-To: <CAEf4BzZ8+_GYecvgGUXdOFj4Oca=U3_23PLWBJSAi0A8=gwReg@mail.gmail.com>
 User-Agent: NeoMutt/20180223
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 19, 2019 at 01:07:38PM -0800, Andrii Nakryiko wrote:
-> On Thu, Dec 19, 2019 at 9:06 AM Alexei Starovoitov
-> <alexei.starovoitov@gmail.com> wrote:
+On Thu, Dec 19, 2019 at 01:14:46PM -0800, Andrii Nakryiko wrote:
+> On Thu, Dec 19, 2019 at 7:41 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
 > >
-> > On Wed, Dec 18, 2019 at 11:06:56PM -0800, Andrii Nakryiko wrote:
-> > > +     if (core_mode) {
-> > > +             printf("#if defined(__has_attribute) && __has_attribute(preserve_access_index)\n");
-> > > +             printf("#define __CLANG_BPF_CORE_SUPPORTED\n");
-> > > +             printf("#pragma clang attribute push (__attribute__((preserve_access_index)), apply_to = record)\n");
-> > > +             printf("#endif\n\n");
+> > On Wed, Dec 18, 2019 at 11:06:57PM -0800, Andrii Nakryiko wrote:
+> > > Convert one of BCC tools (runqslower [0]) to BPF CO-RE + libbpf. It matches
+> > > its BCC-based counterpart 1-to-1, supporting all the same parameters and
+> > > functionality.
+> > >
+> > > runqslower tool utilizes BPF skeleton, auto-generated from BPF object file,
+> > > as well as memory-mapped interface to global (read-only, in this case) data.
+> > > Its makefile also ensures auto-generation of "relocatable" vmlinux.h, which is
+> > > necessary for BTF-typed raw tracepoints with direct memory access.
+> > >
+> > >   [0] https://github.com/iovisor/bcc/blob/11bf5d02c895df9646c117c713082eb192825293/tools/runqslower.py
+> > >
+> > > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+> > > ---
+> > >  tools/lib/bpf/tools/runqslower/.gitignore     |   2 +
+> > >  tools/lib/bpf/tools/runqslower/Makefile       |  60 ++++++
+> > >  .../lib/bpf/tools/runqslower/runqslower.bpf.c | 101 ++++++++++
+> > >  tools/lib/bpf/tools/runqslower/runqslower.c   | 187 ++++++++++++++++++
+> > >  tools/lib/bpf/tools/runqslower/runqslower.h   |  13 ++
 > >
-> > I think it's dangerous to automatically opt-out when clang is not new enough.
-> > bpf prog will compile fine, but it will be missing co-re relocations.
-> > How about doing something like:
-> >   printf("#ifdef NEEDS_CO_RE\n");
-> >   printf("#pragma clang attribute push (__attribute__((preserve_access_index)), apply_to = record)\n");
-> >   printf("#endif\n\n");
-> > and emit it always when 'format c'.
-> > Then on the program side it will look:
-> > #define NEEDS_CO_RE
-> > #include "vmlinux.h"
-> > If clang is too old there will be a compile time error which is a good thing.
-> > Future features will have different NEEDS_ macros.
+> > tools/lib/bpf/tools/ is rather weird, please add to tools/bpf/ which is the
+> > more appropriate place we have for small tools. Could also live directly in
+> > there, e.g. tools/bpf/runqslower.{c,h,bpf.c} and then built/run from selftests,
+> > but under libbpf directly is too odd.
 > 
-> Wouldn't it be cleaner to separate vanilla C types dump vs
-> CO-RE-specific one? I'd prefer to have them separate and not require
-> every application to specify this #define NEEDS_CO_RE macro.
-> Furthermore, later we probably are going to add some additional
-> auto-generated types, definitions, etc, so plain C types dump and
-> CO-RE-specific one will deviate quite a bit. So it feels cleaner to
-> separate them now instead of polluting `format c` with irrelevant
-> noise.
+> runqslower is as much as a showcase of how to build a stand-alone tool
+> with libbpf and CO-RE, as a separate tool, which is why I put it under
+> libbpf directory. It's also not really BPF-specific tool, wouldn't
+> that make it weird to put it under tools/bpf along the bpftool? If we
+> added few more such tools using BPF CO-RE + libbpf, would you feel
+> it's still a good idea to put them under tools/bpf?
 
-Say we do this 'format core' today then tomorrow another tweak to vmlinux.h
-would need 'format core2' ? I think adding new format to bpftool for every
-little feature will be annoying to users. I think the output should stay as
-'format c' and that format should be extensible/customizable by bpf progs via
-#define NEEDS_FEATURE_X. Then these features can grow without a need to keep
-adding new cmd line args. This preserve_access_index feature makes up for less
-than 1% difference in generated vmlinux.h. If some feature extension would
-drastically change generated .h then it would justify new 'format'. This one is
-just a small tweak. Also #define NEEDS_CO_RE is probably too broad. I think
-#define CLANG_NEEDS_TO_EMIT_RELO would be more precise and less ambiguous.
+I agree with Daniel tools/bpf/ seems like better location.
+
