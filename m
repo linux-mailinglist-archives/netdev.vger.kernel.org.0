@@ -2,171 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 759E4125EA9
-	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 11:12:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4038F125EAF
+	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 11:15:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726797AbfLSKM1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Dec 2019 05:12:27 -0500
-Received: from mail-ot1-f67.google.com ([209.85.210.67]:39056 "EHLO
-        mail-ot1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726622AbfLSKM0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Dec 2019 05:12:26 -0500
-Received: by mail-ot1-f67.google.com with SMTP id 77so6591239oty.6;
-        Thu, 19 Dec 2019 02:12:25 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=7gVsavI/JT3S/B4hCPb68cU8nhyV5pL21wFcvH1mp4E=;
-        b=oHhTEgeNOr4aEuORnmTe/e4mLY8BQRzVBBQIGfPl1jlyPRubu0SXQudSynf+l18T9u
-         TVaObZZJflZee3w8mu7OVwGf8nkR6TfZFdcxXl3AnDmvMgNn4pp0DEu+R0YOjbcxFnsL
-         iuYe3FquV9NECADz0L4EwsblOVKSI1ip9Hzf6d308VEmhrgtHL1d94oVZG56nBOoR5UV
-         OyBbXT5Jd+6jy+oTKaJKDb6IElbMUN4eLSedUNdMUwWeHCvvOqmRFdTcyuVVijAYSqxE
-         WcWWcC/Q9kJEjwLlQAhjYZyDJad84W0FgHautPJWhdv+75ONimxm1JlfVxuEYFjDhLtL
-         /EIA==
-X-Gm-Message-State: APjAAAXz8PFjZGGRqwvzcTkB1CtYqqjss/1ExlgMRcWKOW2h6VltoSKX
-        ohomfYS2565f/MvTKg8sAS/TUV9scIaSrHSF2vc=
-X-Google-Smtp-Source: APXvYqzL4QPPo84YZ/GFL90PvSpMdwHUiM5jspEumQc5V+iVkrg1mIXqszRvm+fHeYjzejWdR21UlKMtjcO5l+BSoMM=
-X-Received: by 2002:a9d:7984:: with SMTP id h4mr8153285otm.297.1576750345417;
- Thu, 19 Dec 2019 02:12:25 -0800 (PST)
+        id S1726664AbfLSKPH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Dec 2019 05:15:07 -0500
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:60184 "EHLO
+        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726609AbfLSKPH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Dec 2019 05:15:07 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=UESy3mIwqghVP1fRUufEFJMVIWQZLgeNc0gbqddcABA=; b=uEZRQJn6nKCZHZ2UKk6m/e41M
+        akjypVz4+iNv7+GllBZVGLLGH9vSnT55xidlGx63brixAWWHKy3eQqv1+Q2FPqEeAiqS1aWIyBsO8
+        prFgL5Pmv+eMUlk6z1xMoNRzs1IWC5k0YLAhmLGblKqUOR/BCiVxty3hyLX2CRibDtklMuY/Pj3Lb
+        db7SwvH6k4SmKKQY6AeI+nxcq9u9vrPGF5tl0VGAh2rsPpFpJW/vqfJWe2+kcfRp8cEXIyC9g62bG
+        CzyTLUeh2o/yhqJ2AnZLZ4NyYQbRukh9/1E0VBqcZVenvxQ/e4axU5FENkvboNJ1/+8uxEjjQrtyX
+        lbGuuVfgw==;
+Received: from shell.armlinux.org.uk ([2001:4d48:ad52:3201:5054:ff:fe00:4ec]:43378)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1ihspg-0001p3-5p; Thu, 19 Dec 2019 10:15:00 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1ihspc-0005I7-Ea; Thu, 19 Dec 2019 10:14:56 +0000
+Date:   Thu, 19 Dec 2019 10:14:56 +0000
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Ioana Ciornei <ioana.ciornei@nxp.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        laurentiu.tudor@nxp.com, andrew@lunn.ch, f.fainelli@gmail.com
+Subject: Re: [PATCH net-next v4 0/5] dpaa2-eth: add MAC/PHY support through
+ phylink
+Message-ID: <20191219101456.GZ1344@shell.armlinux.org.uk>
+References: <1572477512-4618-1-git-send-email-ioana.ciornei@nxp.com>
+ <20191117160443.GG1344@shell.armlinux.org.uk>
 MIME-Version: 1.0
-References: <git-mailbomb-linux-master-8ffb055beae58574d3e77b4bf9d4d15eace1ca27@kernel.org>
-In-Reply-To: <git-mailbomb-linux-master-8ffb055beae58574d3e77b4bf9d4d15eace1ca27@kernel.org>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Thu, 19 Dec 2019 11:12:14 +0100
-Message-ID: <CAMuHMdVgF0PVmqXbaWqkrcML0O-hhWB3akj8UAn8Q_hN2evm+A@mail.gmail.com>
-Subject: refcount_warn_saturate WARNING (was: Re: cls_flower: Fix the behavior
- using port ranges with hw-offload)
-To:     Yoshiki Komachi <komachi.yoshiki@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Amritha Nambiar <amritha.nambiar@intel.com>,
-        netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191117160443.GG1344@shell.armlinux.org.uk>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Komachi-san,
+On Sun, Nov 17, 2019 at 04:04:43PM +0000, Russell King - ARM Linux admin wrote:
+> The other thing I see is that with dpmac.7 added, I get all the iommu
+> group messages, and buried in there is:
+> 
+> fsl_dpaa2_eth dpni.1: Probed interface eth1
+> 
+> as expected.  When I issue the dpmac.8 command (which is when all those
+> warnings are spat out) I see:
+> 
+> fsl_dpaa2_eth dpni.2: Probed interface eth1
+> 
+> So dpni.1 has gone, eth1 has gone to be replaced by dpni.2 bound to eth1.
+> 
+> Looking in /sys/bus/fsl-mc/devices/dpni.[12]/ it seems that both
+> devices still exist, but dpni.1 has been unbound from the dpaa2 eth
+> driver.
 
-On Sun, Dec 8, 2019 at 10:40 PM Linux Kernel Mailing List
-<linux-kernel@vger.kernel.org> wrote:
-> Commit:     8ffb055beae58574d3e77b4bf9d4d15eace1ca27
-> Parent:     2f23cd42e19c22c24ff0e221089b7b6123b117c5
-> Refname:    refs/heads/master
-> Web:        https://git.kernel.org/torvalds/c/8ffb055beae58574d3e77b4bf9d4d15eace1ca27
-> Author:     Yoshiki Komachi <komachi.yoshiki@gmail.com>
-> AuthorDate: Tue Dec 3 19:40:12 2019 +0900
-> Committer:  David S. Miller <davem@davemloft.net>
-> CommitDate: Tue Dec 3 11:55:46 2019 -0800
->
->     cls_flower: Fix the behavior using port ranges with hw-offload
->
->     The recent commit 5c72299fba9d ("net: sched: cls_flower: Classify
->     packets using port ranges") had added filtering based on port ranges
->     to tc flower. However the commit missed necessary changes in hw-offload
->     code, so the feature gave rise to generating incorrect offloaded flow
->     keys in NIC.
->
->     One more detailed example is below:
->
->     $ tc qdisc add dev eth0 ingress
->     $ tc filter add dev eth0 ingress protocol ip flower ip_proto tcp \
->       dst_port 100-200 action drop
->
->     With the setup above, an exact match filter with dst_port == 0 will be
->     installed in NIC by hw-offload. IOW, the NIC will have a rule which is
->     equivalent to the following one.
->
->     $ tc qdisc add dev eth0 ingress
->     $ tc filter add dev eth0 ingress protocol ip flower ip_proto tcp \
->       dst_port 0 action drop
->
->     The behavior was caused by the flow dissector which extracts packet
->     data into the flow key in the tc flower. More specifically, regardless
->     of exact match or specified port ranges, fl_init_dissector() set the
->     FLOW_DISSECTOR_KEY_PORTS flag in struct flow_dissector to extract port
->     numbers from skb in skb_flow_dissect() called by fl_classify(). Note
->     that device drivers received the same struct flow_dissector object as
->     used in skb_flow_dissect(). Thus, offloaded drivers could not identify
->     which of these is used because the FLOW_DISSECTOR_KEY_PORTS flag was
->     set to struct flow_dissector in either case.
->
->     This patch adds the new FLOW_DISSECTOR_KEY_PORTS_RANGE flag and the new
->     tp_range field in struct fl_flow_key to recognize which filters are applied
->     to offloaded drivers. At this point, when filters based on port ranges
->     passed to drivers, drivers return the EOPNOTSUPP error because they do
->     not support the feature (the newly created FLOW_DISSECTOR_KEY_PORTS_RANGE
->     flag).
->
->     Fixes: 5c72299fba9d ("net: sched: cls_flower: Classify packets using port ranges")
->     Signed-off-by: Yoshiki Komachi <komachi.yoshiki@gmail.com>
->     Signed-off-by: David S. Miller <davem@davemloft.net>
+I'm seeing this again, it's very annoying because it means one of the
+interfaces vanishes and can't then be resurected.
 
-I still see the below warning on m68k/ARAnyM during boot with v5.5-rc2
-and next-20191219.
-Reverting commit 8ffb055beae58574 ("cls_flower: Fix the behavior using
-port ranges with hw-offload") fixes that.
+[  161.573637] fsl_mc_allocator dpbp.2: Adding to iommu group 0
+[  161.579289] fsl_mc_allocator dpmcp.36: Adding to iommu group 0
+[  161.668060] fsl_mc_allocator dpcon.32: Adding to iommu group 0
+[  161.752477] fsl_mc_allocator dpcon.37: Adding to iommu group 0
+[  161.757221] fsl_mc_allocator dpcon.36: Adding to iommu group 0
+[  161.761981] fsl_mc_allocator dpcon.35: Adding to iommu group 0
+[  161.766704] fsl_mc_allocator dpcon.34: Adding to iommu group 0
+[  161.771453] fsl_mc_allocator dpcon.33: Adding to iommu group 0
+[  161.932117] fsl-mc dpcon.2: Removing from iommu group 0
+[  161.936171] fsl-mc dpcon.1: Removing from iommu group 0
+[  161.940239] fsl-mc dpcon.0: Removing from iommu group 0
+[  161.945283] fsl_mc_allocator dpcon.44: Adding to iommu group 0
+[  161.950074] fsl_mc_allocator dpcon.43: Adding to iommu group 0
+[  161.954807] fsl_mc_allocator dpcon.42: Adding to iommu group 0
+[  161.959513] fsl_mc_allocator dpcon.41: Adding to iommu group 0
+[  161.964236] fsl_mc_allocator dpcon.40: Adding to iommu group 0
+[  161.968933] fsl_mc_allocator dpcon.39: Adding to iommu group 0
+[  161.973642] fsl_mc_allocator dpcon.38: Adding to iommu group 0
+[  162.051949] fsl_dpaa2_eth dpni.1: Adding to iommu group 0
+[  162.206770] fsl_dpaa2_eth dpni.1: Probed interface eth1
+[  162.211811] fsl_mc_allocator dpcon.47: Adding to iommu group 0
+[  162.216544] fsl_mc_allocator dpcon.46: Adding to iommu group 0
+[  162.221260] fsl_mc_allocator dpcon.45: Adding to iommu group 0
+[  162.227232] fsl_mc_allocator dpcon.2: Adding to iommu group 0
+[  162.231864] fsl_mc_allocator dpcon.1: Adding to iommu group 0
+[  162.236497] fsl_mc_allocator dpcon.0: Adding to iommu group 0
 
-As this is networking, perhaps this is seen on big-endian only?
-Or !CONFIG_SMP?
+[  167.581066] fsl_mc_allocator dpbp.3: Adding to iommu group 0
+[  167.586802] fsl_mc_allocator dpmcp.37: Adding to iommu group 0
+[  167.592368] fsl_mc_allocator dpcon.51: Adding to iommu group 0
+[  167.597120] fsl_mc_allocator dpcon.50: Adding to iommu group 0
+[  167.601869] fsl_mc_allocator dpcon.49: Adding to iommu group 0
+[  167.606604] fsl_mc_allocator dpcon.48: Adding to iommu group 0
+[  168.304644] fsl-mc dpcon.4: Removing from iommu group 0
+[  168.308710] fsl-mc dpcon.3: Removing from iommu group 0
+[  168.312783] fsl-mc dpcon.2: Removing from iommu group 0
+[  168.316828] fsl-mc dpcon.1: Removing from iommu group 0
+[  168.320874] fsl-mc dpcon.0: Removing from iommu group 0
+[  168.325946] fsl_mc_allocator dpcon.59: Adding to iommu group 0
+[  168.330682] fsl_mc_allocator dpcon.58: Adding to iommu group 0
+[  168.335393] fsl_mc_allocator dpcon.57: Adding to iommu group 0
+[  168.340105] fsl_mc_allocator dpcon.56: Adding to iommu group 0
+[  168.344816] fsl_mc_allocator dpcon.55: Adding to iommu group 0
+[  168.349530] fsl_mc_allocator dpcon.54: Adding to iommu group 0
+[  168.354256] fsl_mc_allocator dpcon.53: Adding to iommu group 0
+[  168.358981] fsl_mc_allocator dpcon.52: Adding to iommu group 0
+[  168.435784] fsl_dpaa2_eth dpni.2: Adding to iommu group 0
+[  168.600151] fsl_dpaa2_eth dpni.2: Probed interface eth1
+[  168.605298] fsl_mc_allocator dpcon.63: Adding to iommu group 0
+[  168.610023] fsl_mc_allocator dpcon.62: Adding to iommu group 0
+[  168.614751] fsl_mc_allocator dpcon.61: Adding to iommu group 0
+[  168.619470] fsl_mc_allocator dpcon.60: Adding to iommu group 0
+[  168.625990] fsl_mc_allocator dpcon.4: Adding to iommu group 0
+[  168.630614] fsl_mc_allocator dpcon.3: Adding to iommu group 0
+[  168.635251] fsl_mc_allocator dpcon.2: Adding to iommu group 0
+[  168.639890] fsl_mc_allocator dpcon.1: Adding to iommu group 0
+[  168.644539] fsl_mc_allocator dpcon.0: Adding to iommu group 0
 
-Do you have a clue?
-I'm especially worried as this commit is already being backported to stable.
-Thanks!
-
-EXT4-fs (sda1): re-mounted. Opts:
-EXT4-fs (sda1): re-mounted. Opts: errors=remount-ro
-ext3 filesystem being remounted at / supports timestamps until 2038 (0x7fffffff)
-------------[ cut here ]------------
-WARNING: CPU: 0 PID: 7 at lib/refcount.c:28 refcount_warn_saturate+0x54/0x100
-refcount_t: underflow; use-after-free.
-Modules linked in:
-CPU: 0 PID: 7 Comm: ksoftirqd/0 Not tainted 5.5.0-rc2-next-20191219-atari #246
-Stack from 00c31e88:
-        00c31e88 00387ebc 00023d96 0039b5b0 0000001c 00000009 00a6d680 00023dda
-        0039b5b0 0000001c 001a9658 00000009 00000000 00c31ed0 00000001 00000000
-        04208040 0000000a 0039b5eb 00c31ef0 00c30000 001a9658 0039b5b0 0000001c
-        00000009 0039b5eb 0027071c 00326d1c 00000003 00326cd8 00271840 00000001
-        00326d1c 00000000 00a6d680 0024339c 00a6d680 00000000 00000200 000ab5e6
-        00048632 00a6d680 0000000a 00400d78 003fbc00 002f88a6 00400d78 002f8b5e
-Call Trace: [<00023d96>] __warn+0xb2/0xb4
- [<00023dda>] warn_slowpath_fmt+0x42/0x64
- [<001a9658>] refcount_warn_saturate+0x54/0x100
- [<001a9658>] refcount_warn_saturate+0x54/0x100
- [<0027071c>] refcount_sub_and_test.constprop.77+0x38/0x3e
- [<00271840>] ipv4_dst_destroy+0x24/0x42
- [<0024339c>] dst_destroy+0x40/0xae
- [<000ab5e6>] kfree+0x0/0x3e
- [<00048632>] rcu_process_callbacks+0x9a/0x9c
- [<002f88a6>] __do_softirq+0x146/0x182
- [<002f8b5e>] schedule+0x0/0xb4
- [<00035f3e>] kthread_parkme+0x0/0x10
- [<00035a86>] __init_completion+0x0/0x20
- [<0003836c>] smpboot_thread_fn+0x0/0x100
- [<000360a2>] kthread_should_stop+0x0/0x12
- [<00036096>] kthread_should_park+0x0/0xc
- [<00025c28>] run_ksoftirqd+0x12/0x20
- [<00038466>] smpboot_thread_fn+0xfa/0x100
- [<00024914>] do_exit+0x0/0x6d4
- [<0003f620>] complete+0x0/0x34
- [<0003665c>] kthread+0xb2/0xbc
- [<00035a86>] __init_completion+0x0/0x20
- [<000365aa>] kthread+0x0/0xbc
- [<00002ab8>] ret_from_kernel_thread+0xc/0x14
----[ end trace cddc6a39eb5bb237 ]---
-
-Gr{oetje,eeting}s,
-
-                        Geert
+Any ideas?
 
 -- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
+According to speedtest.net: 11.9Mbps down 500kbps up
