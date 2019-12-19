@@ -2,99 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 34B5D12580B
-	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 00:54:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 71AF112583E
+	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 01:10:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726741AbfLRXx6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Dec 2019 18:53:58 -0500
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:44974 "EHLO
-        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726620AbfLRXx6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Dec 2019 18:53:58 -0500
-Received: by mail-pg1-f195.google.com with SMTP id x7so2102878pgl.11
-        for <netdev@vger.kernel.org>; Wed, 18 Dec 2019 15:53:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=7Q7+ngoxGHulcvPYWZfpmuI44mIQd4qNwFvocQ6UeyE=;
-        b=vHwWJMgadN5EiuG0ZoK3Dz8PBDovBTvVOhUIDn/IekItG+R5GBJZ9U74qfxDIs3MtY
-         4F7G7skWYb26dN4wjLMny/l7/T7YJmmtsTquDzQS4gFKUMdzOucbhYZ1sdW4Y3A/I1VH
-         3ojtwGfm2rvXD3E3fdzaCAboSGaDMAgR3CF/RQlTCne7sHQxzOv5RLvT5UDoEq821UNt
-         kikMbjOyVCnCDrpmO4xiRO80tjOf2p9gsDeoLMzVn738xaAbmym/2927YhIeSrOmKEOk
-         hxeFnYBTd1WON4Fx5htXcYa0a09oOdvJ+me5z+VmN+SvY/Ot1b2qdY94qWXYrcJyKG1I
-         6prg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=7Q7+ngoxGHulcvPYWZfpmuI44mIQd4qNwFvocQ6UeyE=;
-        b=gDrb3dz03k4DJafUedHEoW/++fN9t1PUHic0/uVA1UgwbJsM3/dZpOaVgpvLoYgLJM
-         VYeRF2xR3HbOm0At0hPx8S6tiGjBuGrW86Tpv5DzhpZBhlAl27N41+UxOT4FClEo7u8d
-         /khiKyzTGrWZZ1QFPdGsfbeQXxOIfVCwDpOybJdC8mfXV+dBtwm4qgjpMtUCzd3XHPFi
-         I/+/wgnbCdCcD4yCIM+uOV5IWsP0W2/dlZUBySiP92xpMLpkcI9mWXFqyY6RpHAgcf+y
-         cd4j0mvHSLr95gLgxgl1R4QAtYycVhBtF+ueLXN0sgM2ZEzGzoyyi1dXTW7q2IatxHiJ
-         GI4Q==
-X-Gm-Message-State: APjAAAUaE//gCTuIVQMMDZgOr/P62acBlWUE+gj/J697oP3XG7LoIQ+O
-        vkmuzgjrpQ31OzGWf3EOUmeijL/e67I=
-X-Google-Smtp-Source: APXvYqwKg3JkOYHR38ux4hW6JP9eTNleJfh4Oab9ocDpoo7p3hgNWPBUCizuAiXclupj3Q8e6pliBQ==
-X-Received: by 2002:a62:754b:: with SMTP id q72mr5241346pfc.102.1576713237437;
-        Wed, 18 Dec 2019 15:53:57 -0800 (PST)
-Received: from cakuba.netronome.com ([216.9.110.3])
-        by smtp.gmail.com with ESMTPSA id e10sm4991277pfm.3.2019.12.18.15.53.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 18 Dec 2019 15:53:57 -0800 (PST)
-Date:   Wed, 18 Dec 2019 15:52:05 -0800
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     David Miller <davem@davemloft.net>
-Cc:     ldir@darbyshire-bryant.me.uk, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next v2] sch_cake: drop unused variable
- tin_quantum_prio
-Message-ID: <20191218155205.6b0d724c@cakuba.netronome.com>
-In-Reply-To: <20191218.123716.1806707418521871245.davem@davemloft.net>
-References: <20191218140459.24992-1-ldir@darbyshire-bryant.me.uk>
-        <20191218095340.7a26e391@cakuba.netronome.com>
-        <20191218.123716.1806707418521871245.davem@davemloft.net>
-Organization: Netronome Systems, Ltd.
+        id S1726620AbfLSAKH convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 18 Dec 2019 19:10:07 -0500
+Received: from mga02.intel.com ([134.134.136.20]:62892 "EHLO mga02.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726559AbfLSAKH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 18 Dec 2019 19:10:07 -0500
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga101.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 18 Dec 2019 16:10:07 -0800
+X-IronPort-AV: E=Sophos;i="5.69,330,1571727600"; 
+   d="scan'208";a="210268231"
+Received: from aguedesl-mac01.jf.intel.com (HELO localhost) ([10.24.12.200])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 18 Dec 2019 16:10:06 -0800
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8BIT
+In-Reply-To: <20191218.151221.1979818977536859260.davem@davemloft.net>
+References: <20191218224448.8066-1-andre.guedes@intel.com> <20191218224448.8066-2-andre.guedes@intel.com> <20191218.151221.1979818977536859260.davem@davemloft.net>
+To:     David Miller <davem@davemloft.net>, andre.guedes@intel.com
+From:   Andre Guedes <andre.guedes@linux.intel.com>
+Cc:     netdev@vger.kernel.org
+Subject: Re: [PATCH 2/2] ether: Add ETH_P_AVTP macro
+Message-ID: <157671420675.49129.8232568416859420600@aguedesl-mac01.jf.intel.com>
+User-Agent: alot/0.8.1
+Date:   Wed, 18 Dec 2019 16:10:06 -0800
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 18 Dec 2019 12:37:16 -0800 (PST), David Miller wrote:
-> From: Jakub Kicinski <jakub.kicinski@netronome.com>
-> Date: Wed, 18 Dec 2019 09:53:40 -0800
+Hi David,
+
+Quoting David Miller (2019-12-18 15:12:21)
+> From: Andre Guedes <andre.guedes@intel.com>
+> Date: Wed, 18 Dec 2019 14:44:48 -0800
 > 
-> > On Wed, 18 Dec 2019 14:05:13 +0000, Kevin 'ldir' Darbyshire-Bryant
-> > wrote:  
-> >> Turns out tin_quantum_prio isn't used anymore and is a leftover from a
-> >> previous implementation of diffserv tins.  Since the variable isn't used
-> >> in any calculations it can be eliminated.
-> >> 
-> >> Drop variable and places where it was set.  Rename remaining variable
-> >> and consolidate naming of intermediate variables that set it.
-> >> 
-> >> Signed-off-by: Kevin Darbyshire-Bryant <ldir@darbyshire-bryant.me.uk>  
+> > This patch adds the ETH_P_AVTP macro which defines the Audio/Video
+> > Transport Protocol (AVTP) ethertype assigned to 0x22F0, according to:
 > > 
-> > Checkpatch sayeth:
+> > http://standards-oui.ieee.org/ethertype/eth.txt
 > > 
-> > WARNING: Missing Signed-off-by: line by nominal patch author 'Kevin 'ldir' Darbyshire-Bryant <ldir@darbyshire-bryant.me.uk>'  
+> > AVTP is the transport protocol utilized in Audio/Video Bridging (AVB),
+> > and it is defined by IEEE 1722 standard.
+> > 
+> > Note that we have ETH_P_TSN macro defined with the number assigned to
+> > AVTP. However, there is no "TSN" ethertype. TSN is not a protocol, but a
+> > set of features to deliver networking determinism, so ETH_P_TSN can be a
+> > bit misleading. For compatibility reasons we should keep it around.
+> > This patch re-defines it using the ETH_P_AVTP macro to make it explicit.
+> > 
+> > Signed-off-by: Andre Guedes <andre.guedes@intel.com>
 > 
-> Which is kinda rediculous wouldn't you say? :-)
-> 
-> The warning stops to be useful if it's going to be applied in situations
-> like this where merely a nickname 'ldir' is added to the middle of the
-> person's formal name.
-> 
-> I would never push back on a patch on these grounds, it just wastes time.
+> Likewise, let's see an in-kernel user first.
 
-Yup, just tuning the checks, this one I wasn't 100% sure :-)
+I don't think we are going to see an in-kernel user for these ethertypes since
+these protocols are implemented in user-space. For instance, we have AVTP
+plugins in upstream ALSA [1] and GStreamer [2] that implement AVB. The plugins
+are currently using ETH_P_TSN for convenience to send/receive AVTP packets.
 
-Looks like Greg's script only complains if both name and address are
-different, but checkpatch expects the exact same thing. I'll stick to
-Greg's method.
+Regards,
 
-Feedback is very welcome :-)
+Andre
+
+[1] https://github.com/alsa-project/alsa-plugins/blob/master/aaf/pcm_aaf.c#L283
+
+[2] https://gitlab.freedesktop.org/gstreamer/gst-plugins-bad/blob/master/ext/avtp/gstavtpsink.c#L245
