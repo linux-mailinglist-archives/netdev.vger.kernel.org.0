@@ -2,134 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BC4FD1267EE
-	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 18:23:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D3F7512681F
+	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 18:30:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726880AbfLSRXb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Dec 2019 12:23:31 -0500
-Received: from lelv0143.ext.ti.com ([198.47.23.248]:59932 "EHLO
-        lelv0143.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726866AbfLSRXa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Dec 2019 12:23:30 -0500
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id xBJHNOd9087725;
-        Thu, 19 Dec 2019 11:23:24 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1576776204;
-        bh=4srQ/0uAnN+hYZObGD7gQKkd7uIuFLnNmTORzgKRcCc=;
-        h=Subject:To:CC:References:From:Date:In-Reply-To;
-        b=daWxkDnFFF56ChFGUZ3fYXv56vJ7c+f8eC/M847gMe3UyJKcYu6Fio4AkQvSbIWkJ
-         yD9hCZyEJKe4nObnILHOZ19TZdpkGjjqBTvLsT9nl9ShREvpfCh5Gs3ffX67gMUxjQ
-         Eh8Ov7RcYjA2itEcgyGNSz/kWFLuXxPksU9eRK2c=
-Received: from DFLE108.ent.ti.com (dfle108.ent.ti.com [10.64.6.29])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id xBJHNO5S013837
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 19 Dec 2019 11:23:24 -0600
-Received: from DFLE107.ent.ti.com (10.64.6.28) by DFLE108.ent.ti.com
- (10.64.6.29) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3; Thu, 19
- Dec 2019 11:23:22 -0600
-Received: from fllv0039.itg.ti.com (10.64.41.19) by DFLE107.ent.ti.com
- (10.64.6.28) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3 via
- Frontend Transport; Thu, 19 Dec 2019 11:23:23 -0600
-Received: from [158.218.117.45] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id xBJHNMmw033028;
-        Thu, 19 Dec 2019 11:23:22 -0600
-Subject: Re: RSTP with switchdev question
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     <netdev@vger.kernel.org>, "Kwok, WingMan" <w-kwok2@ti.com>,
-        <vivien.didelot@gmail.com>, <f.fainelli@gmail.com>,
-        <jiri@resnulli.us>, <ivecera@redhat.com>
-References: <c234beeb-5511-f33c-1232-638e9c9a3ac2@ti.com>
- <7ca19413-1ac5-946c-c4d0-3d9d5d88e634@ti.com>
- <20191217112122.GB17965@lunn.ch>
-From:   Murali Karicheri <m-karicheri2@ti.com>
-Message-ID: <93982e05-e15b-7589-de38-ea64a87580fd@ti.com>
-Date:   Thu, 19 Dec 2019 12:30:06 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
- Thunderbird/52.7.0
+        id S1726945AbfLSRaX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Dec 2019 12:30:23 -0500
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:37186 "EHLO
+        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726818AbfLSRaX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Dec 2019 12:30:23 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=joiIL60i33gQwU7JNxW0f8NaOlF7POfgRUGaP64zU60=; b=HJKmIxFxgR1VFLr/8cqtc/no6
+        CgTOKTDq07ieyqGWpEpxV8UH8XHAmuFDsBz88OLmYeU9UREfooy9Ffxwevk7pCLeHHuIi7DkUCdL/
+        TAKrHCZdXh1uimmJ3onDz+U803HzhhOo+KzkivAObHX6e58ffMpMkLVJKaXXUxG1DyBCYaxx7wFKA
+        a+5AXduyVqo9kDPNfTwerL0H9vDfBXnIK/DRA3ui8EmMxBqa0EalR6yIlQU5RYdYDSCiiAN1RFhjh
+        VeM+D1cvUkrn9aU78A4HhmVkqHoKXsD8eS7AxmLhox61ghZoNVbG6CYw34xAvqzcn96fHnPzVsALl
+        hDBR8RI5A==;
+Received: from shell.armlinux.org.uk ([2001:4d48:ad52:3201:5054:ff:fe00:4ec]:43512)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1ihzcw-0003qu-2f; Thu, 19 Dec 2019 17:30:18 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1ihzcu-0005XU-Hm; Thu, 19 Dec 2019 17:30:16 +0000
+Date:   Thu, 19 Dec 2019 17:30:16 +0000
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     madalin.bucur@nxp.com
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, andrew@lunn.ch,
+        f.fainelli@gmail.com, hkallweit1@gmail.com, shawnguo@kernel.org,
+        devicetree@vger.kernel.org,
+        Madalin Bucur <madalin.bucur@oss.nxp.com>
+Subject: Re: [PATCH 5/6] net: fsl/fman: add support for PHY_INTERFACE_MODE_SFI
+Message-ID: <20191219173016.GD25745@shell.armlinux.org.uk>
+References: <1576768881-24971-1-git-send-email-madalin.bucur@oss.nxp.com>
+ <1576768881-24971-6-git-send-email-madalin.bucur@oss.nxp.com>
 MIME-Version: 1.0
-In-Reply-To: <20191217112122.GB17965@lunn.ch>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1576768881-24971-6-git-send-email-madalin.bucur@oss.nxp.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Andrew,
-
-Thanks for responding to this.
-
-On 12/17/2019 06:21 AM, Andrew Lunn wrote:
-> On Mon, Dec 16, 2019 at 11:55:05AM -0500, Murali Karicheri wrote:
->> + switchdev/DSA experts
+On Thu, Dec 19, 2019 at 05:21:20PM +0200, Madalin Bucur wrote:
+> Add support for the SFI PHY interface mode.
 > 
-> Hi Murali
+> Signed-off-by: Madalin Bucur <madalin.bucur@oss.nxp.com>
+> ---
+>  drivers/net/ethernet/freescale/fman/fman_memac.c | 2 ++
+>  drivers/net/ethernet/freescale/fman/mac.c        | 2 ++
+>  2 files changed, 4 insertions(+)
 > 
-> I did not reply before because this is a pure switchdev issue. DSA
-> does things differently. The kernel FDB and the switches FDB are not
-> kept in sync. With DSA, when a port changes state, we flush the switch
-> FDB. For STP, that seems to be sufficient. There have been reports for
-> RSTP this might not be enough, but that conversation did not go very
-> far.
-I am new to RSTP and trying to understand what is required to be done
-at the driver level when switchdev is used.
+> diff --git a/drivers/net/ethernet/freescale/fman/fman_memac.c b/drivers/net/ethernet/freescale/fman/fman_memac.c
+> index d0b12efadd6c..09fdec935bf2 100644
+> --- a/drivers/net/ethernet/freescale/fman/fman_memac.c
+> +++ b/drivers/net/ethernet/freescale/fman/fman_memac.c
+> @@ -440,6 +440,7 @@ static int init(struct memac_regs __iomem *regs, struct memac_cfg *cfg,
+>  	tmp = 0;
+>  	switch (phy_if) {
+>  	case PHY_INTERFACE_MODE_XFI:
+> +	case PHY_INTERFACE_MODE_SFI:
 
-Looks like topology changes are handled currectly when only Linux bridge
-is used and L2 forwarding is not offloaded to switch (Plain Ethernet
-interface underneath).
+No difference between these two.
 
-This is my understanding. Linux bridge code uses BR_USER_STP to handle
-user space  handling. So daemon manages the STP state machine and update
-the STP  state to bridge which then get sent to device driver through
-switchdev SET attribute command in the same way as kernel STP. From the
-RSTP point of view, AFAIK, the quick data path switch over happens by
-purging and re-learning when topology changes (TCN BPDUs). Currently
-we are doing the following workaround which seems to solve the issue
-based on the limited testing we had. Idea is for the switchdev based
-switch driver to monitor the RTP state per port and if there is any
-change in state, do a purge of learned MAC address in switch and send a
-notification to bridge using
-call_switchdev_notifiers(SWITCHDEV_FDB_DEL_TO_BRIDGE, dev, &info.info);
+>  	case PHY_INTERFACE_MODE_XGMII:
+>  		tmp |= IF_MODE_10G;
+>  		break;
+> @@ -456,6 +457,7 @@ static int init(struct memac_regs __iomem *regs, struct memac_cfg *cfg,
+>  	/* TX_FIFO_SECTIONS */
+>  	tmp = 0;
+>  	if (phy_if == PHY_INTERFACE_MODE_XFI ||
+> +	    phy_if == PHY_INTERFACE_MODE_SFI ||
 
-Following transition to be monitored and purged on any port:-
-  Blocking   -> Learning  (assuming blocking to forward doesn't happen
-                directly)
-  Blocking   -> Forward (Not sure if this is possible. Need to check the
-                spec.
-  Learning   -> Blocked
-  Forwarding -> Blocked
+Again, no difference between these two.
 
-Hope the above are correct. Do you know if DSA is checking the above
-transitions? Also when the learned address are purged in the switch
-hardware, send event notification to Linux bridge to sync up with it's
-database.
+>  	    phy_if == PHY_INTERFACE_MODE_XGMII) {
+>  		if (slow_10g_if) {
+>  			tmp |= (TX_FIFO_SECTIONS_TX_AVAIL_SLOW_10G |
+> diff --git a/drivers/net/ethernet/freescale/fman/mac.c b/drivers/net/ethernet/freescale/fman/mac.c
+> index 2944188c19b3..5e6317742c38 100644
+> --- a/drivers/net/ethernet/freescale/fman/mac.c
+> +++ b/drivers/net/ethernet/freescale/fman/mac.c
+> @@ -542,6 +542,7 @@ static const u16 phy2speed[] = {
+>  	[PHY_INTERFACE_MODE_QSGMII]		= SPEED_1000,
+>  	[PHY_INTERFACE_MODE_XGMII]		= SPEED_10000,
+>  	[PHY_INTERFACE_MODE_XFI]		= SPEED_10000,
+> +	[PHY_INTERFACE_MODE_SFI]		= SPEED_10000,
 
-Since this is required for all of the Switchdev supported drivers,
-it make sense to move this to switchdev eventually to trigger purge at
-switch as well as notification to bridge for purge its entries. What do 
-you think?
+Again, no difference between these two.
 
-Regards,
+>  };
+>  
+>  static struct platform_device *dpaa_eth_add_device(int fman_id,
+> @@ -800,6 +801,7 @@ static int mac_probe(struct platform_device *_of_dev)
+>  
+>  	/* The 10G interface only supports one mode */
+>  	if (mac_dev->phy_if == PHY_INTERFACE_MODE_XFI ||
+> +	    mac_dev->phy_if == PHY_INTERFACE_MODE_SFI ||
 
-Murali
+Again, no difference between these two.
 
-> 
-> I've no idea how this is supposed to work with a pure switchdev
-> driver. Often, to answer a question like this, you need to take a step
-> backwards. How is this supposed to work for a machine with two e1000e
-> cards and a plain software bridge? What ever APIs user space RSTP is
-> using in a pure software case should be used in a switchdev setup as
-> well, but extra plumbing in the kernel might be required, and it
-> sounds like it may be missing...
-> 
->        Andrew
-> 
+I just don't see the point of perpetuating the XFI and SFI names for
+something that is just plain 10GBASE-R.
 
 -- 
-Murali Karicheri
-Texas Instruments
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
+According to speedtest.net: 11.9Mbps down 500kbps up
