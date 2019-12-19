@@ -2,98 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1FD6C12638F
-	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 14:32:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C22C6126392
+	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 14:32:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726744AbfLSNcJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Dec 2019 08:32:09 -0500
-Received: from mail25.static.mailgun.info ([104.130.122.25]:23033 "EHLO
-        mail25.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726712AbfLSNcG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Dec 2019 08:32:06 -0500
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1576762326; h=Content-Type: MIME-Version: Message-ID:
- In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
- bh=41W5xZgEpVmLUelbR692YUsa8fLldV9N+l6CsEx5uLU=; b=Tp/uSIfhvO7JAkTqFUlhU9bBqAGvDhP3TBxQbfad23AsjGkKn4FGQFA9B2qMlBkx/8ePW13D
- 1GUR4bX1M6r2TT4QnW9EBZunXXo/QPDYZ8hz82JjzHkvFgtBFiwvBV9kfJElov+xyd7oiBfW
- 3OT4GKbDJouGGKfhAvgn5JkkOxY=
-X-Mailgun-Sending-Ip: 104.130.122.25
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
- by mxa.mailgun.org with ESMTP id 5dfb7bd3.7fb3768398f0-smtp-out-n03;
- Thu, 19 Dec 2019 13:32:03 -0000 (UTC)
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id C2FBCC4479F; Thu, 19 Dec 2019 13:32:03 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 84FA8C433A2;
-        Thu, 19 Dec 2019 13:32:01 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 84FA8C433A2
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     Nick Desaulniers <ndesaulniers@google.com>
-Cc:     Nathan Chancellor <natechancellor@gmail.com>,
-        Network Development <netdev@vger.kernel.org>,
-        linux-wireless@vger.kernel.org,
-        LKML <linux-kernel@vger.kernel.org>,
-        clang-built-linux <clang-built-linux@googlegroups.com>,
-        ath11k@lists.infradead.org
-Subject: Re: [PATCH] ath11k: Remove unnecessary enum scan_priority
-References: <20191211192252.35024-1-natechancellor@gmail.com>
-        <CAKwvOdmQp+Rjgh49kbTp1ocLCjv4SUACEO4+tX5vz4stX-pPpg@mail.gmail.com>
-Date:   Thu, 19 Dec 2019 15:31:59 +0200
-In-Reply-To: <CAKwvOdmQp+Rjgh49kbTp1ocLCjv4SUACEO4+tX5vz4stX-pPpg@mail.gmail.com>
-        (Nick Desaulniers's message of "Thu, 12 Dec 2019 11:34:42 -0800")
-Message-ID: <87a77o786o.fsf@kamboji.qca.qualcomm.com>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
+        id S1726778AbfLSNcr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Dec 2019 08:32:47 -0500
+Received: from mail-il1-f194.google.com ([209.85.166.194]:46572 "EHLO
+        mail-il1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726719AbfLSNcr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Dec 2019 08:32:47 -0500
+Received: by mail-il1-f194.google.com with SMTP id t17so4832481ilm.13
+        for <netdev@vger.kernel.org>; Thu, 19 Dec 2019 05:32:47 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:from:to:cc:references:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=d6vE8/BisI3cyOUImMgDxi1RDAesuFjWD13xjjA8td4=;
+        b=kWMiWCFnKbnntgNtM57WQF5ibc1lgWe15hXP1Nlu9YsKwgsWPXyGuImin/kKTqI5dy
+         UaeTKrSG6vabAji4NjghpzX8f4Pimdq1nminTHmHTfBNtrt4OfnALie+8YCg5RDG6riZ
+         ydUCub4VwAhUeNtP9Tq63ZP6WX29/cr/P/0H2Ve2cveIXdeEJKG2kiYFTG02151QPYQ6
+         ErAjtjvJC5zfo1fVwapr/ul24mP2JZUvmQEuzn/IYYsszkGd9thO7mTZ7KG5x0psxCI1
+         fJJ+9WAyS/1nb/dO96Q22nC6U8ZR9Ns71OYlfYnDVLFvfQRVxk9kviOX7rzs42Yvjg5i
+         uTNQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=d6vE8/BisI3cyOUImMgDxi1RDAesuFjWD13xjjA8td4=;
+        b=SuAd+3e1HiCpjlfg8WLDp5Nvyq1832IShcE9X6JzQxhRTXI08ccLmHIywXTHj+55uC
+         uJV5H9Rr9wROQujdgpbKt/WdMDzc+SZV1rWF/j3/zHs4HVdDkiM0Ml5Ip4aEiLYZeNdG
+         SLXSb+//hdXSg2ZIg2yGxXmz1wZT+RWitktD78pVXd7f1xaMwZ2T0qbkEF41ItaZjIrz
+         3fuVo4CuohPOH1Nr4uNxC4rpxJBv5F0du3Hs/WzHwEtuC2OtSpeXdO6wISn3rYSFIvvt
+         EUWMKz5eu/zRNaNwHBVcQGTBlUvJ0kbT1MFkGRY2eMJnOCGRBaa4GlJKdhNDs7VGVFSp
+         z6Bw==
+X-Gm-Message-State: APjAAAXylEAgM/vh1EMW/llFK6CC+xnvGSlx+ID3eI7aPO1UbNrPD23f
+        89VzvgRLlGbr1r0Popj1Kae+ceUYPzc=
+X-Google-Smtp-Source: APXvYqw6fHMRUbhkwwoISARwemeFbzzz0NDUulMSeHunXQklXXL1+VDe+jTKeSZZ69Qp/ygU9TyQSg==
+X-Received: by 2002:a92:58ca:: with SMTP id z71mr6876296ilf.5.1576762366900;
+        Thu, 19 Dec 2019 05:32:46 -0800 (PST)
+Received: from [192.168.0.101] (198-84-204-252.cpe.teksavvy.com. [198.84.204.252])
+        by smtp.googlemail.com with ESMTPSA id r2sm2348396ila.42.2019.12.19.05.32.45
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 19 Dec 2019 05:32:45 -0800 (PST)
+Subject: Re: [PATCH net 1/2] net/sched: cls_u32: fix refcount leak in the
+ error path of u32_change()
+From:   Jamal Hadi Salim <jhs@mojatatu.com>
+To:     Davide Caratti <dcaratti@redhat.com>, netdev@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>
+Cc:     Vlad Buslov <vladbu@mellanox.com>, Roman Mashak <mrv@mojatatu.com>
+References: <cover.1576623250.git.dcaratti@redhat.com>
+ <ae83c6dc89f8642166dc32debc6ea7444eb3671d.1576623250.git.dcaratti@redhat.com>
+ <bafb52ff-1ced-91a4-05d0-07d3fdc4f3e4@mojatatu.com>
+Message-ID: <5b4239e5-6533-9f23-7a38-0ee4f6acbfe9@mojatatu.com>
+Date:   Thu, 19 Dec 2019 08:32:44 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.3.0
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <bafb52ff-1ced-91a4-05d0-07d3fdc4f3e4@mojatatu.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-GB
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Nick Desaulniers <ndesaulniers@google.com> writes:
+Hi Davide,
 
-> On Wed, Dec 11, 2019 at 11:23 AM Nathan Chancellor
-> <natechancellor@gmail.com> wrote:
+I ran your test on my laptop (4.19) and nothing dangled.
+Looking at that area of the code difference 4.19 vs current net-next
+there was a destroy() in there that migrated into the inner guts of
+tcf_chain_tp_delete_empty() Vlad? My gut feeling is restoring the old
+logic like this would work at least for u32:
+
+------------
+diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
+index 6a0eacafdb19..34a1d4e7e6e3 100644
+--- a/net/sched/cls_api.c
++++ b/net/sched/cls_api.c
+@@ -2135,8 +2135,10 @@ static int tc_new_tfilter(struct sk_buff *skb, 
+struct nlmsghdr *n,
+         }
+
+  errout:
+-       if (err && tp_created)
++       if (err && tp_created) {
++               tcf_proto_destroy(tp, rtnl_held, true, NULL);
+                 tcf_chain_tp_delete_empty(chain, tp, rtnl_held, NULL);
++       }
+  errout_tp:
+         if (chain) {
+                 if (tp && !IS_ERR(tp))
+-----
+
+Maybe even better tcf_proto_put(tp, rtnl_held, NULL) directly instead
+and no need for tcf_chain_tp_delete_empty().
+
+Of course above not even compile tested and may have consequences
+for other classifiers (flower would be a good test) and concurency
+intentions. Thoughts?
+
+cheers,
+jamal
+
+On 2019-12-18 9:23 a.m., Jamal Hadi Salim wrote:
+> 
+> On 2019-12-17 6:00 p.m., Davide Caratti wrote:
+>> when users replace cls_u32 filters with new ones having wrong parameters,
+>> so that u32_change() fails to validate them, the kernel doesn't roll-back
+>> correctly, and leaves semi-configured rules.
 >>
->> Clang warns:
+>> Fix this in u32_walk(), avoiding a call to the walker function on filters
+>> that don't have a match rule connected. The side effect is, these "empty"
+>> filters are not even dumped when present; but that shouldn't be a problem
+>> as long as we are restoring the original behaviour, where semi-configured
+>> filters were not even added in the error path of u32_change().
 >>
->> drivers/net/wireless/ath/ath11k/wmi.c:1827:23: warning: implicit
->> conversion from enumeration type 'enum wmi_scan_priority' to different
->> enumeration type 'enum scan_priority' [-Wenum-conversion]
->>         arg->scan_priority = WMI_SCAN_PRIORITY_LOW;
->>                            ~ ^~~~~~~~~~~~~~~~~~~~~
->> 1 warning generated.
->>
->> wmi_scan_priority and scan_priority have the same values but the wmi one
->> has WMI prefixed to the names. Since that enum is already being used,
->> get rid of scan_priority and switch its one use to wmi_scan_priority to
->> fix this warning.
->>
->> Fixes: d5c65159f289 ("ath11k: driver for Qualcomm IEEE 802.11ax devices")
->> Link: https://github.com/ClangBuiltLinux/linux/issues/808
->> Signed-off-by: Nathan Chancellor <natechancellor@gmail.com>
->
-> Further, it looks like the member `scan_priority` in `struct
-> wmi_start_scan_arg` and `struct wmi_start_scan_cmd` should probably
-> use `enum wmi_scan_priority`, rather than `u32`.
+>> Fixes: 6676d5e416ee ("net: sched: set dedicated tcf_walker flag when 
+>> tp is empty")
+>> Signed-off-by: Davide Caratti <dcaratti@redhat.com>
+> 
+> Hi Davide,
+> 
+> Great catch (and good test case addition),
+> but I am not sure about the fix.
+> 
+> Unless I am  misunderstanding the flow is:
+> You enter bad rules, validation fails, partial state had already been
+> created (in this case root hts) before validation failure, you then
+> leave the partial state in the kernel but when someone dumps you hide
+> these bad tables?
+> 
+> It sounds like the root cause is there is a missing destroy()
+> invocation somewhere during the create/validation failure - which is
+> what needs fixing... Those dangling tables should not have been
+> inserted; maybe somewhere along the code path for tc_new_tfilter().
+> Note "replace" is essentially "create if it doesnt
+> exist" semantic therefore NLM_F_CREATE will be set.
+> 
+> Since this is a core cls issue - I would check all other classifiers
+> with similar aggrevation - make some attribute fail in the middle or
+> end.
+> Very likely only u32 is the victim.
+> 
+> cheers,
+> jamal
+> 
 
-struct wmi_start_scan_cmd is sent to firmware and that's why it has u32
-to make sure that the size is exactly 32 bits.
-
-> Also, I don't know if the more concisely named enum is preferable?
-
-I didn't get this comment.
-
--- 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
