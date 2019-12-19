@@ -2,93 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C0CF125D50
-	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 10:10:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 36101125D61
+	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 10:14:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726709AbfLSJKi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Dec 2019 04:10:38 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:32946 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726599AbfLSJKi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 19 Dec 2019 04:10:38 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=hYoBaVE930HGaJi9sF95ko1l6qD4l0xLfHTfEv5mINc=; b=s1cQKRFPA9JIXHP0uNqaSOTIqg
-        7Rv49IYLbZJfuN69AdbI+tNCRpjJIG3FH62+GhANieE85gpavAL5MLklbMwoj+PNy3QPmutWdliF1
-        7tiDMKJNgqp3JflO5G6a+hinpdl5GUOO4n4EacexZiS+Io7m6Z6zbBAoJvFdL8mSgxfA=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1ihrpB-0005B1-MJ; Thu, 19 Dec 2019 10:10:25 +0100
-Date:   Thu, 19 Dec 2019 10:10:25 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Cc:     Vladimir Oltean <olteanv@gmail.com>, davem@davemloft.net,
-        jakub.kicinski@netronome.com, f.fainelli@gmail.com,
-        vivien.didelot@gmail.com, alexandru.marginean@nxp.com,
-        claudiu.manoil@nxp.com, xiaoliang.yang_1@nxp.com,
-        yangbo.lu@nxp.com, netdev@vger.kernel.org,
-        alexandre.belloni@bootlin.com, horatiu.vultur@microchip.com,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: Re: [RFC PATCH v2 1/8] mii: Add helpers for parsing SGMII
- auto-negotiation
-Message-ID: <20191219091025.GB17475@lunn.ch>
-References: <20191217221831.10923-1-olteanv@gmail.com>
- <20191217221831.10923-2-olteanv@gmail.com>
- <20191218185058.GW25745@shell.armlinux.org.uk>
+        id S1726652AbfLSJOX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Dec 2019 04:14:23 -0500
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:44914 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726599AbfLSJOW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Dec 2019 04:14:22 -0500
+Received: by mail-wr1-f66.google.com with SMTP id q10so5150234wrm.11;
+        Thu, 19 Dec 2019 01:14:20 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=S665pIJS3c5uCPmPgzBwkP3LU07+b+t424iKJ7p8WuI=;
+        b=q19B2cii8UHuaVoH1Z7GhGc0xwaH5gIeq4MDPVNlIC4PyH2fyB/CdrAV7I2q8SCp9Q
+         uIdKs7ru5EiD5tdJbUzDCKB9Yfex4h3NkeViqTTwPxvhxzZfVtNZRI0Ki3quxFhEFNeX
+         7K1y6sGO/vhbsgAI5Pq9STq2ERhDmp9eLCc6im49TOK37Xb9EyzBuMp23XOhwz4GmhW4
+         4AtdHimMF7aRUoc/+URI+6OtRtnBnATuWbRnsMga8vcpIusmOC7cfA9/9x9q3NGQgTsR
+         mgg+fSkqoF0Zdr4Tuu9Zj9uOT/e6Cs3UIBfzExZyxtTtVgHVS3thTJw6ht135kU0My/K
+         2Mpg==
+X-Gm-Message-State: APjAAAWUwQE2qw59Y6NdARbdXrGPXalgV9sIsmOOItbK5c/Kh2yEjDx7
+        h5+M+e2Kv+EId5H7IUztXi8=
+X-Google-Smtp-Source: APXvYqyxnlaH4Rd9JEvTobmsyRjoTlGJORS1lnWlaZIjisRjmr6Dn/QCguA4BOgpiX2fM5yaMPfW2A==
+X-Received: by 2002:adf:fd87:: with SMTP id d7mr8262096wrr.226.1576746859928;
+        Thu, 19 Dec 2019 01:14:19 -0800 (PST)
+Received: from Omicron ([217.76.31.1])
+        by smtp.gmail.com with ESMTPSA id g23sm5476207wmk.14.2019.12.19.01.14.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 19 Dec 2019 01:14:19 -0800 (PST)
+Date:   Thu, 19 Dec 2019 10:14:18 +0100
+From:   Paul Chaignon <paul.chaignon@orange.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     bpf@vger.kernel.org, paul.chaignon@gmail.com,
+        netdev@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>
+Subject: Re: [PATCH bpf-next 1/3] bpf: Single-cpu updates for per-cpu maps
+Message-ID: <20191219091418.GA6322@Omicron>
+References: <cover.1576673841.git.paul.chaignon@orange.com>
+ <ec8fd77bb20881e7149f7444e731c510790191ce.1576673842.git.paul.chaignon@orange.com>
+ <20191218180042.2ktkmok5ugeahczn@ast-mbp.dhcp.thefacebook.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20191218185058.GW25745@shell.armlinux.org.uk>
+In-Reply-To: <20191218180042.2ktkmok5ugeahczn@ast-mbp.dhcp.thefacebook.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > diff --git a/include/uapi/linux/mii.h b/include/uapi/linux/mii.h
-> > index 51b48e4be1f2..dc3b5d635beb 100644
-> > --- a/include/uapi/linux/mii.h
-> > +++ b/include/uapi/linux/mii.h
-> > @@ -71,6 +71,7 @@
-> >  /* Advertisement control register. */
-> >  #define ADVERTISE_SLCT		0x001f	/* Selector bits               */
-> >  #define ADVERTISE_CSMA		0x0001	/* Only selector supported     */
-> > +#define ADVERTISE_SGMII		0x0001	/* Can do SGMII                */
-> >  #define ADVERTISE_10HALF	0x0020	/* Try for 10mbps half-duplex  */
-> >  #define ADVERTISE_1000XFULL	0x0020	/* Try for 1000BASE-X full-duplex */
-> >  #define ADVERTISE_10FULL	0x0040	/* Try for 10mbps full-duplex  */
-> > @@ -94,6 +95,7 @@
-> >  
-> >  /* Link partner ability register. */
-> >  #define LPA_SLCT		0x001f	/* Same as advertise selector  */
-> > +#define LPA_SGMII		0x0001	/* Can do SGMII                */
-> >  #define LPA_10HALF		0x0020	/* Can do 10mbps half-duplex   */
-> >  #define LPA_1000XFULL		0x0020	/* Can do 1000BASE-X full-duplex */
-> >  #define LPA_10FULL		0x0040	/* Can do 10mbps full-duplex   */
-> > @@ -104,11 +106,19 @@
-> >  #define LPA_1000XPAUSE_ASYM	0x0100	/* Can do 1000BASE-X pause asym*/
-> >  #define LPA_100BASE4		0x0200	/* Can do 100mbps 4k packets   */
-> >  #define LPA_PAUSE_CAP		0x0400	/* Can pause                   */
-> > +#define LPA_SGMII_DPX_SPD_MASK	0x1C00	/* SGMII duplex and speed bits */
-> > +#define LPA_SGMII_10HALF	0x0000	/* Can do SGMII 10mbps half-duplex */
-> > +#define LPA_SGMII_10FULL	0x1000	/* Can do SGMII 10mbps full-duplex */
-> > +#define LPA_SGMII_100HALF	0x0400	/* Can do SGMII 100mbps half-duplex */
-> > +#define LPA_SGMII_100FULL	0x1400	/* Can do SGMII 100mbps full-duplex */
-> >  #define LPA_PAUSE_ASYM		0x0800	/* Can pause asymetrically     */
-> > +#define LPA_SGMII_1000HALF	0x0800	/* Can do SGMII 1000mbps half-duplex */
-> > +#define LPA_SGMII_1000FULL	0x1800	/* Can do SGMII 1000mbps full-duplex */
-> >  #define LPA_RESV		0x1000	/* Unused...                   */
-> >  #define LPA_RFAULT		0x2000	/* Link partner faulted        */
-> >  #define LPA_LPACK		0x4000	/* Link partner acked us       */
-> >  #define LPA_NPAGE		0x8000	/* Next page bit               */
-> > +#define LPA_SGMII_LINK		0x8000	/* Link partner has link       */
+Thanks everyone for the reviews and suggestions!
+
+On Wed, Dec 18, 2019 at 10:00:44AM -0800, Alexei Starovoitov wrote:
+> On Wed, Dec 18, 2019 at 03:23:04PM +0100, Paul Chaignon wrote:
+> > Currently, userspace programs have to update the values of all CPUs at
+> > once when updating per-cpu maps.  This limitation prevents the update of
+> > a single CPU's value without the risk of missing concurrent updates on
+> > other CPU's values.
+> > 
+> > This patch allows userspace to update the value of a specific CPU in
+> > per-cpu maps.  The CPU whose value should be updated is encoded in the
+> > 32 upper-bits of the flags argument, as follows.  The new BPF_CPU flag
+> > can be combined with existing flags.
 > 
-> I wonder whether mixing these definitions together is really such a
-> good idea, or whether separately grouping them would be better.
+> In general makes sense. Could you elaborate more on concrete issue?
 
-I think i prefer a seperate grouping.
+Sure.  I have a BPF program that matches incoming packets against
+packet-filtering rules, with a NIC that steers some flows (correspond to
+different tenants) to specific CPUs.  Rules are stored in a per-cpu
+hashmap with a counter (counting matching packets) and an off/on switch.
+To enable a rule on a new CPU, I lookup the value for that rule, switch
+the on/off variable in the value corresponding to the given CPU and
+update the map.  However, the counters corresponding to other CPUs for
+that same rule might have been updated between the lookup and the
+update.
 
-  Andrew
+Other BPF users have requested the same feature before on the bcc
+repository [1].  They probably have different (tracing-related?) use
+cases.
+
+1 - https://github.com/iovisor/bcc/issues/1886
+
+> 
+> >   bpf_map_update_elem(..., cpuid << 32 | BPF_CPU)
+> > 
+> > Signed-off-by: Paul Chaignon <paul.chaignon@orange.com>
+> > ---
+> >  include/uapi/linux/bpf.h       |  4 +++
+> >  kernel/bpf/arraymap.c          | 19 ++++++++-----
+> >  kernel/bpf/hashtab.c           | 49 ++++++++++++++++++++--------------
+> >  kernel/bpf/local_storage.c     | 16 +++++++----
+> >  kernel/bpf/syscall.c           | 17 +++++++++---
+> >  tools/include/uapi/linux/bpf.h |  4 +++
+> >  6 files changed, 74 insertions(+), 35 deletions(-)
+> > 
+> > diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> > index dbbcf0b02970..2efb17d2c77a 100644
+> > --- a/include/uapi/linux/bpf.h
+> > +++ b/include/uapi/linux/bpf.h
+> > @@ -316,6 +316,10 @@ enum bpf_attach_type {
+> >  #define BPF_NOEXIST	1 /* create new element if it didn't exist */
+> >  #define BPF_EXIST	2 /* update existing element */
+> >  #define BPF_F_LOCK	4 /* spin_lock-ed map_lookup/map_update */
+> > +#define BPF_CPU		8 /* single-cpu update for per-cpu maps */
+> 
+> BPF_F_CPU would be more consistent with the rest of flags.
+> 
+> Can BPF_F_CURRENT_CPU be supported as well?
+
+You mean to update the value corresponding to the CPU on which the
+userspace program is running?  BPF_F_CURRENT_CPU is a mask on the lower 
+32 bits so it would clash with existing flags, but there's probably
+another way to implement the same.  Not sure I see the use case though;
+userspace programs can easily update the value for the current CPU with
+BPF_F_CPU.
+
+> 
+> And for consistency support this flag in map_lookup_elem too?
+
+Sure, I'll add it to the v2.
+
+> 
+> > +
+> > +/* CPU mask for single-cpu updates */
+> > +#define BPF_CPU_MASK	0xFFFFFFFF00000000ULL
+> 
+> what is the reason to expose this in uapi?
+
+No reason; that's a mistake.
+
+> 
+> >  /* flags for BPF_MAP_CREATE command */
+> >  #define BPF_F_NO_PREALLOC	(1U << 0)
+> > diff --git a/kernel/bpf/arraymap.c b/kernel/bpf/arraymap.c
+> > index f0d19bbb9211..a96e94696819 100644
+> > --- a/kernel/bpf/arraymap.c
+> > +++ b/kernel/bpf/arraymap.c
+> > @@ -302,7 +302,8 @@ static int array_map_update_elem(struct bpf_map *map, void *key, void *value,
+> >  	u32 index = *(u32 *)key;
+> >  	char *val;
+> >  
+> > -	if (unlikely((map_flags & ~BPF_F_LOCK) > BPF_EXIST))
+> > +	if (unlikely((map_flags & ~BPF_CPU_MASK & ~BPF_F_LOCK &
+> > +				  ~BPF_CPU) > BPF_EXIST))
+> 
+> that reads odd.
+> More traditional would be ~ (A | B | C)
+> 
