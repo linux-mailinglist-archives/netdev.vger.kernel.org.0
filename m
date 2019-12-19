@@ -2,267 +2,190 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1221D1266C8
-	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 17:24:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 375EC1266D6
+	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 17:29:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726930AbfLSQYu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Dec 2019 11:24:50 -0500
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:30672 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726760AbfLSQYu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Dec 2019 11:24:50 -0500
-Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xBJGL6Ud032312;
-        Thu, 19 Dec 2019 08:24:31 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type : content-id
- : content-transfer-encoding : mime-version; s=facebook;
- bh=4+FWSHwjHLXnoBghPsOl6oAuFCKGh0NE1pkDIndDQSQ=;
- b=EmoQ0TwW/rrOEHvgXCZ1pAyuFZDLTdb7L9WSUa7JhdY+JSZyO7sAOh0Q3qrCHtmkOs6c
- 4G0r9+ela3B4JssXsUrP3iBuf/cawPqBmjQEIoUjZvO5RNZl4kzD17ST7E+4Ald8Iqlv
- tV2akVaJ6WL1Qrf7pDM/8UUSdsIV/GeVVVg= 
-Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by mx0a-00082601.pphosted.com with ESMTP id 2wye5f7yxs-4
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Thu, 19 Dec 2019 08:24:31 -0800
-Received: from prn-mbx05.TheFacebook.com (2620:10d:c081:6::19) by
- prn-hub06.TheFacebook.com (2620:10d:c081:35::130) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.1.1713.5; Thu, 19 Dec 2019 08:24:29 -0800
-Received: from prn-hub01.TheFacebook.com (2620:10d:c081:35::125) by
- prn-mbx05.TheFacebook.com (2620:10d:c081:6::19) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.1.1713.5; Thu, 19 Dec 2019 08:24:28 -0800
-Received: from NAM04-CO1-obe.outbound.protection.outlook.com (192.168.54.28)
- by o365-in.thefacebook.com (192.168.16.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.1.1713.5
- via Frontend Transport; Thu, 19 Dec 2019 08:24:28 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=YKcMq2Zl5+b82XEe8ZExVeRMOqwHbhUDmskWMVLl1SnAKIsJgmTI6x3Y8uqGI2nMtO865LUnWu9E/2OI+zGRF3RdNGD+33pM3qbJAMStup7uwY75wbq0WtDEOpwD4L6OHdYfTxCG0CLOjZZsDwsiVHi8b3/UF22Fhy0KCrH/HNI9dJdbKovovh4hQejCuRdMyFW1AsRKZLbPZQVlHm99UFPWvsa4VvC/bppY3yB0zmYYD2LeajVSrL1t4KuKdA5fFGwWsnuCtKzkHASc6HH04qMMaGjglbQuCy1uJwOzkOHZzZCOM0stfO6FmroQH+1vo+WiDQZETDi0Z5Wq0ZHABg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=4+FWSHwjHLXnoBghPsOl6oAuFCKGh0NE1pkDIndDQSQ=;
- b=PNAKSjTwXCDjiAyvDF8LG/d/fvgHdNwOi/Xf2RfDSUtsGyuvr+gXgvjIn7vF8/l3YpJYGlZtTaY9yf030CT1btHIH/eiEqCt0gmPaoroIRljYgxJoEVZzvCk0RnYEBYWr6sG5Up/tZtTohNZ4zogJT6RhnzzdPFaJEtGmlj2IIuANt55zmwSOHTQ+yzw5cKDNXpJ/YEDCWn8L//mOsYipkPw6drb0KJ+2jWoN0oge05yOsC175Q/2aajQ/1weXCOpvBtVimvUm2PkJbMwhwFAk0KXImfHw1psHYUekP3kTAUjKmnC1RBE6veVQqUQjNSl4D0s36pSoSKPWlhjPQX4w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=4+FWSHwjHLXnoBghPsOl6oAuFCKGh0NE1pkDIndDQSQ=;
- b=dc29dDLsQp8iOPY34UO3v4AOsjG7b67pLRb/9Ux+xMLgzAWe86KIWA5CZElWpRCEGu3ej9ZDqmqCuCPjTU0oYdWH7+L552sxnniseNvdFcQ7xbXqu6bT4kKx3OzUtn1PWhjNICrkEAsBjl0826PdpSM42jFSUjKZP6cWEBWgqQc=
-Received: from DM5PR15MB1675.namprd15.prod.outlook.com (10.175.107.145) by
- DM5PR15MB1770.namprd15.prod.outlook.com (10.174.247.14) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2559.15; Thu, 19 Dec 2019 16:24:14 +0000
-Received: from DM5PR15MB1675.namprd15.prod.outlook.com
- ([fe80::2844:b18d:c296:c23]) by DM5PR15MB1675.namprd15.prod.outlook.com
- ([fe80::2844:b18d:c296:c23%8]) with mapi id 15.20.2538.019; Thu, 19 Dec 2019
- 16:24:14 +0000
-From:   Yonghong Song <yhs@fb.com>
-To:     =?utf-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        "Daniel Borkmann" <daniel@iogearbox.net>
-CC:     Alexei Starovoitov <ast@kernel.org>, Martin Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        "Andrii Nakryiko" <andrii.nakryiko@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>
-Subject: Re: [PATCH RFC bpf-next 2/3] libbpf: Handle function externs and
- support static linking
-Thread-Topic: [PATCH RFC bpf-next 2/3] libbpf: Handle function externs and
- support static linking
-Thread-Index: AQHVtnjFkg64vDFcFkOok6KZPyQmvKfBpIyA
-Date:   Thu, 19 Dec 2019 16:24:14 +0000
-Message-ID: <d220154c-6aad-4bc1-ab86-6ae72e351dca@fb.com>
-References: <157676577049.957277.3346427306600998172.stgit@toke.dk>
- <157676577267.957277.6240503077867756432.stgit@toke.dk>
-In-Reply-To: <157676577267.957277.6240503077867756432.stgit@toke.dk>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: MWHPR14CA0041.namprd14.prod.outlook.com
- (2603:10b6:300:12b::27) To DM5PR15MB1675.namprd15.prod.outlook.com
- (2603:10b6:3:11f::17)
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [2620:10d:c090:200::1:442e]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 9b5a4027-a807-4c02-7691-08d7849fe316
-x-ms-traffictypediagnostic: DM5PR15MB1770:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <DM5PR15MB1770DCE3182C2A5A09968990D3520@DM5PR15MB1770.namprd15.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:10000;
-x-forefront-prvs: 0256C18696
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(136003)(396003)(346002)(376002)(39860400002)(366004)(199004)(189003)(8936002)(2906002)(71200400001)(86362001)(186003)(66946007)(66476007)(66446008)(81156014)(81166006)(64756008)(8676002)(5660300002)(36756003)(4326008)(6486002)(52116002)(66556008)(966005)(31696002)(110136005)(31686004)(6512007)(478600001)(66574012)(316002)(53546011)(6506007)(2616005)(54906003);DIR:OUT;SFP:1102;SCL:1;SRVR:DM5PR15MB1770;H:DM5PR15MB1675.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: fb.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 7OkkW9TYunOx0OJmUrx1RmByc0LEac8lVqVSrTjE9+XAY1S7vBU7Ich0O+9SeQmdpeyh8xY6+5JimCFl34V4lQZmNxM1LFE8iOUpPzyNpVWUe88DOVPOQ6gXaGR9IXt3I/eS2PBfY8hOeODsyBU+1kXnJqRM7Z8y5r4+J9jjwhks1casT8TE/y4w2o9jpEIJN39OdjFgbx6QD2PwCW4xyYn4tAFegKEefbsw4mhEEcmU2ajT8frc4ZMgO6sectcN0Vuc+5gF2sJlEjz/WJsSxHZLOiKqHE8tUPWqmj+kImq56CDKPXSHA+sbBWSng57OY4d+c4dkpwH6SLuYLGOttdrcXtVYWFQi7IAyuQ+9m+i0GV001Qp1oQM0m5b2o+ooffXbQF1n48thNVYwjSUrQmBp/qRPkuOfA95EdYTWvhXcLkfoLbYGHmCRBYEJDwG51HupcEi0/6IMS3fGqmM3AirfQpNTfOx4ueZ4XX1U10c=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <134C8677B6E4BA46AE681A7810A2CCA5@namprd15.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S1726818AbfLSQ3P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Dec 2019 11:29:15 -0500
+Received: from mail-yb1-f194.google.com ([209.85.219.194]:36003 "EHLO
+        mail-yb1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726760AbfLSQ3P (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Dec 2019 11:29:15 -0500
+Received: by mail-yb1-f194.google.com with SMTP id w126so505540yba.3
+        for <netdev@vger.kernel.org>; Thu, 19 Dec 2019 08:29:14 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=vr42BB59XnCA8JXvubJU+a50MC4tt0ZdyQh504CEAKM=;
+        b=jEjJLXFy1y21pT7awjS2Bnbgr72mB0jV7VGvFfVoV/Ktdjd1o2fBj28mwAuIPmgPMh
+         msQhRrSIFPmXLdC6eeABiCazJ2xRxdzv2vF6urKdKJRrxpHvhoJ8KKwVgkhfr6u+cGli
+         MiISaRJqcKR32rqte5HjUhNTSccrBcF8jNCbNb4comFbv6OjO0/Fc+KDcVK6/m0kP0bZ
+         tEM8UfX2OMYmFrjYumpzaYpkvyZQ9zwj1f4wCecD7UKk75vUgIglFBRmxHhmN70IWID2
+         ZcS8oYKHwRtyzSgRzxM/xWMhdtWr2MIU1BIkVP57UIPJ8sw4eRncvGh0vqS3HaSiPR3g
+         H5lA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=vr42BB59XnCA8JXvubJU+a50MC4tt0ZdyQh504CEAKM=;
+        b=lW5pc8y+NpHVihutTFFPTDOS2RGRQiGoluZPDTR4W5hkhagdqn53MwZi3myeTiXBQA
+         QOLaqytWiHH5ycSDN68rHD/jpbHAzVxq+wHqTButXPQrYLbsh+MPlgj+bbV3t4P+I1+5
+         S36CyiS4lwJjcyY2Ck89X/n3J3vz1iuvYJhMPU3aUb7Jsiu1ldWHPEYjMeUUUp13AoVK
+         Wfxq8FOLdpNAPIWaScspXMoV3OQXINvqPVM9ZYRq7mOO9JhlEkpHuWHSNwpT+eTqvhoi
+         6oxS+VNIuA69ZSfFwu/xETNXM6LskGZ2zpNsF/k3rY1CIMqUEahjB2bsAI5s2dpWYygC
+         buoA==
+X-Gm-Message-State: APjAAAUvVTWM7a1aXq7uzTUYmDBugKsh4hx85kKS+idgzvdQmCF+TvP2
+        w6W2HSBzI1q+/izxKtPxIOLp1bli
+X-Google-Smtp-Source: APXvYqwuTQX4itmrwLDVyDav0qLPbLNU7IIPZaxE068rykETL/YBcVDgEH6PJxb0Ae8eFfFzuQ+UOw==
+X-Received: by 2002:a25:6c86:: with SMTP id h128mr7153139ybc.305.1576772953098;
+        Thu, 19 Dec 2019 08:29:13 -0800 (PST)
+Received: from mail-yb1-f173.google.com (mail-yb1-f173.google.com. [209.85.219.173])
+        by smtp.gmail.com with ESMTPSA id z12sm2676017ywl.27.2019.12.19.08.29.11
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 19 Dec 2019 08:29:12 -0800 (PST)
+Received: by mail-yb1-f173.google.com with SMTP id a2so2396318ybr.7
+        for <netdev@vger.kernel.org>; Thu, 19 Dec 2019 08:29:11 -0800 (PST)
+X-Received: by 2002:a25:c444:: with SMTP id u65mr6802975ybf.443.1576772951233;
+ Thu, 19 Dec 2019 08:29:11 -0800 (PST)
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9b5a4027-a807-4c02-7691-08d7849fe316
-X-MS-Exchange-CrossTenant-originalarrivaltime: 19 Dec 2019 16:24:14.3329
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: O3Z4/30N9loubbHBLjqs2plqM0eQd77k2a91HZ3xidHJ7NbaYFVMuwoF/lfSWQZK
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR15MB1770
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
- definitions=2019-12-19_04:2019-12-17,2019-12-19 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 malwarescore=0
- bulkscore=0 priorityscore=1501 spamscore=0 lowpriorityscore=0
- mlxlogscore=999 suspectscore=0 phishscore=0 adultscore=0 clxscore=1015
- mlxscore=0 impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-1910280000 definitions=main-1912190135
-X-FB-Internal: deliver
+References: <20191218133458.14533-1-steffen.klassert@secunet.com>
+ <20191218133458.14533-4-steffen.klassert@secunet.com> <CA+FuTScnux23Gj1WTEXHmZkiFG3RQsgmSz19TOWdWByM4Rd15Q@mail.gmail.com>
+ <20191219082246.GS8621@gauss3.secunet.de>
+In-Reply-To: <20191219082246.GS8621@gauss3.secunet.de>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Thu, 19 Dec 2019 11:28:34 -0500
+X-Gmail-Original-Message-ID: <CA+FuTScKcwyh7rZdDNQsujndrA+ZnYMmtA7Uh7-ji+RM+t6-hQ@mail.gmail.com>
+Message-ID: <CA+FuTScKcwyh7rZdDNQsujndrA+ZnYMmtA7Uh7-ji+RM+t6-hQ@mail.gmail.com>
+Subject: Re: [PATCH net-next 3/4] net: Support GRO/GSO fraglist chaining.
+To:     Steffen Klassert <steffen.klassert@secunet.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Network Development <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQoNCk9uIDEyLzE5LzE5IDY6MjkgQU0sIFRva2UgSMO4aWxhbmQtSsO4cmdlbnNlbiB3cm90ZToN
-Cj4gRnJvbTogVG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2VuIDx0b2tlQHJlZGhhdC5jb20+DQo+IA0K
-PiBUaGlzIGFkZHMgc3VwcG9ydCBmb3IgcmVzb2x2aW5nIGZ1bmN0aW9uIGV4dGVybnMgdG8gbGli
-YnBmLCB3aXRoIGEgbmV3IEFQSQ0KPiB0byByZXNvbHZlIGV4dGVybmFsIGZ1bmN0aW9uIGNhbGxz
-IGJ5IHN0YXRpYyBsaW5raW5nIGF0IGxvYWQtdGltZS4gVGhlIEFQSQ0KPiBmb3IgdGhpcyByZXF1
-aXJlcyB0aGUgY2FsbGVyIHRvIHN1cHBseSB0aGUgb2JqZWN0IGZpbGVzIGNvbnRhaW5pbmcgdGhl
-DQo+IHRhcmdldCBmdW5jdGlvbnMsIGFuZCB0byBzcGVjaWZ5IGFuIGV4cGxpY2l0IG1hcHBpbmcg
-YmV0d2VlbiBleHRlcm4NCj4gZnVuY3Rpb24gbmFtZXMgaW4gdGhlIGNhbGxpbmcgcHJvZ3JhbSwg
-YW5kIGZ1bmN0aW9uIG5hbWVzIGluIHRoZSB0YXJnZXQNCj4gb2JqZWN0IGZpbGUuIFRoaXMgaXMg
-dG8gc3VwcG9ydCB0aGUgWERQIG11bHRpLXByb2cgY2FzZSwgd2hlcmUgdGhlDQo+IGRpc3BhdGNo
-ZXIgcHJvZ3JhbSBtYXkgbm90IG5lY2Vzc2FyaWx5IGhhdmUgY29udHJvbCBvdmVyIGZ1bmN0aW9u
-IG5hbWVzIGluDQo+IHRoZSB0YXJnZXQgcHJvZ3JhbXMsIHNvIHNpbXBsZSBmdW5jdGlvbiBuYW1l
-IHJlc29sdXRpb24gY2FuJ3QgYmUgdXNlZC4NCj4gDQo+IFRoZSB0YXJnZXQgb2JqZWN0IGZpbGVz
-IG11c3QgYmUgbG9hZGVkIGludG8gdGhlIGtlcm5lbCBiZWZvcmUgdGhlIGNhbGxpbmcNCj4gcHJv
-Z3JhbSwgdG8gZW5zdXJlIGFsbCByZWxvY2F0aW9ucyBhcmUgZG9uZSBvbiB0aGUgdGFyZ2V0IGZ1
-bmN0aW9ucywgc28gd2UNCj4gY2FuIGp1c3QgY29weSBvdmVyIHRoZSBpbnN0cnVjdGlvbnMuDQo+
-IA0KPiBTaWduZWQtb2ZmLWJ5OiBUb2tlIEjDuGlsYW5kLUrDuHJnZW5zZW4gPHRva2VAcmVkaGF0
-LmNvbT4NCj4gLS0tDQo+ICAgdG9vbHMvbGliL2JwZi9idGYuYyAgICB8ICAgMTAgKy0NCj4gICB0
-b29scy9saWIvYnBmL2xpYmJwZi5jIHwgIDI2OCArKysrKysrKysrKysrKysrKysrKysrKysrKysr
-KysrKysrKysrKystLS0tLS0tLS0NCj4gICB0b29scy9saWIvYnBmL2xpYmJwZi5oIHwgICAxNyAr
-KysNCj4gICAzIGZpbGVzIGNoYW5nZWQsIDI0NCBpbnNlcnRpb25zKCspLCA1MSBkZWxldGlvbnMo
-LSkNCj4gDQo+IGRpZmYgLS1naXQgYS90b29scy9saWIvYnBmL2J0Zi5jIGIvdG9vbHMvbGliL2Jw
-Zi9idGYuYw0KPiBpbmRleCA1ZjA0ZjU2ZTFlYjYuLjI3NDBkNGE2YjJlYiAxMDA2NDQNCj4gLS0t
-IGEvdG9vbHMvbGliL2JwZi9idGYuYw0KPiArKysgYi90b29scy9saWIvYnBmL2J0Zi5jDQo+IEBA
-IC0yNDYsNiArMjQ2LDcgQEAgX19zNjQgYnRmX19yZXNvbHZlX3NpemUoY29uc3Qgc3RydWN0IGJ0
-ZiAqYnRmLCBfX3UzMiB0eXBlX2lkKQ0KPiAgIAkJCXNpemUgPSB0LT5zaXplOw0KPiAgIAkJCWdv
-dG8gZG9uZTsNCj4gICAJCWNhc2UgQlRGX0tJTkRfUFRSOg0KPiArCQljYXNlIEJURl9LSU5EX0ZV
-TkNfUFJPVE86DQo+ICAgCQkJc2l6ZSA9IHNpemVvZih2b2lkICopOw0KPiAgIAkJCWdvdG8gZG9u
-ZTsNCj4gICAJCWNhc2UgQlRGX0tJTkRfVFlQRURFRjoNCj4gQEAgLTI4OCw2ICsyODksNyBAQCBp
-bnQgYnRmX19hbGlnbl9vZihjb25zdCBzdHJ1Y3QgYnRmICpidGYsIF9fdTMyIGlkKQ0KPiAgIAlj
-YXNlIEJURl9LSU5EX0VOVU06DQo+ICAgCQlyZXR1cm4gbWluKHNpemVvZih2b2lkICopLCB0LT5z
-aXplKTsNCj4gICAJY2FzZSBCVEZfS0lORF9QVFI6DQo+ICsJY2FzZSBCVEZfS0lORF9GVU5DX1BS
-T1RPOg0KPiAgIAkJcmV0dXJuIHNpemVvZih2b2lkICopOw0KPiAgIAljYXNlIEJURl9LSU5EX1RZ
-UEVERUY6DQo+ICAgCWNhc2UgQlRGX0tJTkRfVk9MQVRJTEU6DQo+IEBAIC02NDAsMTIgKzY0Miwx
-NiBAQCBpbnQgYnRmX19maW5hbGl6ZV9kYXRhKHN0cnVjdCBicGZfb2JqZWN0ICpvYmosIHN0cnVj
-dCBidGYgKmJ0ZikNCj4gICAJCSAqLw0KPiAgIAkJaWYgKGJ0Zl9pc19kYXRhc2VjKHQpKSB7DQo+
-ICAgCQkJZXJyID0gYnRmX2ZpeHVwX2RhdGFzZWMob2JqLCBidGYsIHQpOw0KPiAtCQkJaWYgKGVy
-cikNCj4gKwkJCS8qIEZJWE1FOiBXaXRoIGZ1bmN0aW9uIGV4dGVybnMgd2UgY2FuIGdldCBhIEJU
-RiBEQVRBU0VDDQo+ICsJCQkgKiBlbnRyeSBmb3IgLmV4dGVybiwgYnV0IHRoZSBzZWN0aW9uIGRv
-ZXNuJ3QgZXhpc3Q7IHNvDQo+ICsJCQkgKiBtYWtlIEVOT0VOVCBub24tZmF0YWwNCj4gKwkJCSAq
-Lw0KPiArCQkJaWYgKGVyciAmJiBlcnIgIT0gLUVOT0VOVCkNCj4gICAJCQkJYnJlYWs7DQo+ICAg
-CQl9DQo+ICAgCX0NCj4gICANCj4gLQlyZXR1cm4gZXJyOw0KPiArCXJldHVybiBlcnIgPT0gLUVO
-T0VOVCA/IGVyciA6IDA7DQo+ICAgfQ0KPiAgIA0KPiAgIGludCBidGZfX2xvYWQoc3RydWN0IGJ0
-ZiAqYnRmKQ0KPiBkaWZmIC0tZ2l0IGEvdG9vbHMvbGliL2JwZi9saWJicGYuYyBiL3Rvb2xzL2xp
-Yi9icGYvbGliYnBmLmMNCj4gaW5kZXggMjY2YjcyNWU0NDRiLi5iMmMwYTJmOTI3ZTcgMTAwNjQ0
-DQo+IC0tLSBhL3Rvb2xzL2xpYi9icGYvbGliYnBmLmMNCj4gKysrIGIvdG9vbHMvbGliL2JwZi9s
-aWJicGYuYw0KPiBAQCAtMTcyLDEzICsxNzIsMTcgQEAgZW51bSByZWxvY190eXBlIHsNCj4gICAJ
-UkVMT19DQUxMLA0KPiAgIAlSRUxPX0RBVEEsDQo+ICAgCVJFTE9fRVhURVJOLA0KPiArCVJFTE9f
-RVhURVJOX0NBTEwsDQo+ICAgfTsNCj4gICANCj4gK3N0cnVjdCBleHRlcm5fZGVzYzsNCj4gKw0K
-PiAgIHN0cnVjdCByZWxvY19kZXNjIHsNCj4gICAJZW51bSByZWxvY190eXBlIHR5cGU7DQo+ICAg
-CWludCBpbnNuX2lkeDsNCj4gICAJaW50IG1hcF9pZHg7DQo+ICAgCWludCBzeW1fb2ZmOw0KPiAr
-CXN0cnVjdCBleHRlcm5fZGVzYyAqZXh0Ow0KPiAgIH07DQo+ICAgDQo+ICAgLyoNCj4gQEAgLTI3
-NCw2ICsyNzgsNyBAQCBlbnVtIGV4dGVybl90eXBlIHsNCj4gICAJRVhUX0lOVCwNCj4gICAJRVhU
-X1RSSVNUQVRFLA0KPiAgIAlFWFRfQ0hBUl9BUlIsDQo+ICsJRVhUX0ZVTkMNCj4gICB9Ow0KPiAg
-IA0KPiAgIHN0cnVjdCBleHRlcm5fZGVzYyB7DQo+IEBAIC0yODcsNiArMjkyLDcgQEAgc3RydWN0
-IGV4dGVybl9kZXNjIHsNCj4gICAJYm9vbCBpc19zaWduZWQ7DQo+ICAgCWJvb2wgaXNfd2VhazsN
-Cj4gICAJYm9vbCBpc19zZXQ7DQo+ICsJc3RydWN0IGJwZl9wcm9ncmFtICp0Z3RfcHJvZzsNCj4g
-ICB9Ow0KPiAgIA0KPiAgIHN0YXRpYyBMSVNUX0hFQUQoYnBmX29iamVjdHNfbGlzdCk7DQo+IEBA
-IC0zMDUsNiArMzExLDcgQEAgc3RydWN0IGJwZl9vYmplY3Qgew0KPiAgIAljaGFyICprY29uZmln
-Ow0KPiAgIAlzdHJ1Y3QgZXh0ZXJuX2Rlc2MgKmV4dGVybnM7DQo+ICAgCWludCBucl9leHRlcm47
-DQo+ICsJaW50IG5yX2RhdGFfZXh0ZXJuOw0KPiAgIAlpbnQga2NvbmZpZ19tYXBfaWR4Ow0KPiAg
-IA0KPiAgIAlib29sIGxvYWRlZDsNCj4gQEAgLTEwNDEsNiArMTA0OCw3IEBAIHN0YXRpYyBpbnQg
-c2V0X2V4dF92YWx1ZV90cmkoc3RydWN0IGV4dGVybl9kZXNjICpleHQsIHZvaWQgKmV4dF92YWws
-DQo+ICAgCWNhc2UgRVhUX1VOS05PV046DQo+ICAgCWNhc2UgRVhUX0lOVDoNCj4gICAJY2FzZSBF
-WFRfQ0hBUl9BUlI6DQo+ICsJY2FzZSBFWFRfRlVOQzoNCj4gICAJZGVmYXVsdDoNCj4gICAJCXBy
-X3dhcm4oImV4dGVybiAlcz0lYyBzaG91bGQgYmUgYm9vbCwgdHJpc3RhdGUsIG9yIGNoYXJcbiIs
-DQo+ICAgCQkJZXh0LT5uYW1lLCB2YWx1ZSk7DQo+IEBAIC0xMjgxLDcgKzEyODksNyBAQCBzdGF0
-aWMgaW50IGJwZl9vYmplY3RfX2luaXRfa2NvbmZpZ19tYXAoc3RydWN0IGJwZl9vYmplY3QgKm9i
-aikNCj4gICAJc2l6ZV90IG1hcF9zejsNCj4gICAJaW50IGVycjsNCj4gICANCj4gLQlpZiAob2Jq
-LT5ucl9leHRlcm4gPT0gMCkNCj4gKwlpZiAob2JqLT5ucl9kYXRhX2V4dGVybiA9PSAwKQ0KPiAg
-IAkJcmV0dXJuIDA7DQo+ICAgDQo+ICAgCWxhc3RfZXh0ID0gJm9iai0+ZXh0ZXJuc1tvYmotPm5y
-X2V4dGVybiAtIDFdOw0KPiBAQCAtMTgyMiwyOSArMTgzMCw1MSBAQCBzdGF0aWMgdm9pZCBicGZf
-b2JqZWN0X19zYW5pdGl6ZV9idGYoc3RydWN0IGJwZl9vYmplY3QgKm9iaikNCj4gICAJc3RydWN0
-IGJ0Zl90eXBlICp0Ow0KPiAgIAlpbnQgaSwgaiwgdmxlbjsNCj4gICANCj4gLQlpZiAoIW9iai0+
-YnRmIHx8IChoYXNfZnVuYyAmJiBoYXNfZGF0YXNlYykpDQo+ICsJaWYgKCFvYmotPmJ0ZikNCj4g
-ICAJCXJldHVybjsNCj4gLQ0KPiAgIAlmb3IgKGkgPSAxOyBpIDw9IGJ0Zl9fZ2V0X25yX3R5cGVz
-KGJ0Zik7IGkrKykgew0KPiAgIAkJdCA9IChzdHJ1Y3QgYnRmX3R5cGUgKilidGZfX3R5cGVfYnlf
-aWQoYnRmLCBpKTsNCj4gICANCj4gLQkJaWYgKCFoYXNfZGF0YXNlYyAmJiBidGZfaXNfdmFyKHQp
-KSB7DQo+IC0JCQkvKiByZXBsYWNlIFZBUiB3aXRoIElOVCAqLw0KPiAtCQkJdC0+aW5mbyA9IEJU
-Rl9JTkZPX0VOQyhCVEZfS0lORF9JTlQsIDAsIDApOw0KPiAtCQkJLyoNCj4gLQkJCSAqIHVzaW5n
-IHNpemUgPSAxIGlzIHRoZSBzYWZlc3QgY2hvaWNlLCA0IHdpbGwgYmUgdG9vDQo+IC0JCQkgKiBi
-aWcgYW5kIGNhdXNlIGtlcm5lbCBCVEYgdmFsaWRhdGlvbiBmYWlsdXJlIGlmDQo+IC0JCQkgKiBv
-cmlnaW5hbCB2YXJpYWJsZSB0b29rIGxlc3MgdGhhbiA0IGJ5dGVzDQo+ICsJCWlmIChidGZfaXNf
-dmFyKHQpKSB7DQo+ICsJCQlzdHJ1Y3QgYnRmX3R5cGUgKnZhcl90Ow0KPiArDQo+ICsJCQl2YXJf
-dCA9IChzdHJ1Y3QgYnRmX3R5cGUgKilidGZfX3R5cGVfYnlfaWQoYnRmLA0KPiArCQkJCQkJCQkg
-ICB0LT50eXBlKTsNCj4gKw0KPiArCQkJLyogRklYTUU6IFRoZSBrZXJuZWwgZG9lc24ndCB1bmRl
-cnN0YW5kIGZ1bmNfcHJvdG8gd2l0aA0KPiArCQkJICogQlRGX1ZBUl9HTE9CQUxfRVhURVJOIGxp
-bmthZ2UsIHNvIHdlIGp1c3QgcmVwbGFjZQ0KPiArCQkJICogdGhlbSB3aXRoIElOVHMgaGVyZS4g
-V2hhdCdzIHRoZSByaWdodCB0aGluZyB0byBkbz8NCj4gICAJCQkgKi8NCj4gLQkJCXQtPnNpemUg
-PSAxOw0KPiAtCQkJKihpbnQgKikodCArIDEpID0gQlRGX0lOVF9FTkMoMCwgMCwgOCk7DQo+IC0J
-CX0gZWxzZSBpZiAoIWhhc19kYXRhc2VjICYmIGJ0Zl9pc19kYXRhc2VjKHQpKSB7DQo+ICsJCQlp
-ZiAoIWhhc19kYXRhc2VjIHx8DQo+ICsJCQkgICAgKGJ0Zl9raW5kKHZhcl90KSA9PSBCVEZfS0lO
-RF9GVU5DX1BST1RPICYmDQo+ICsJCQkgICAgIGJ0Zl92YXIodCktPmxpbmthZ2UgPT0gQlRGX1ZB
-Ul9HTE9CQUxfRVhURVJOKSkgew0KDQpZb3UgYXJlIHRoZSBmaXJzdCB1c2VyIHRvIHVzZSBleHRl
-cm4gZnVuY3Rpb24gZW5jb2RpbmcgaW4gQlRGISBUaGFua3MhDQoNClJlY2VudGx5LCB3ZSBoYXZl
-IGRpc2N1c3Npb24gd2l0aCBBbGV4ZWkgYW5kIGZlbHQgdGhhdCBwdXR0aW5nIGV4dGVybiANCmZ1
-bmN0aW9uIGludG8gZGF0YXNlYy92YXIgaXMgbm90IHByZXR0eS4gU28gd2UgaGF2ZSB0aGUgZm9s
-bG93aW5nIGxsdm0gcGF0Y2gNCiAgICBodHRwczovL3Jldmlld3MubGx2bS5vcmcvRDcxNjM4DQp0
-byBwdXQgZXh0ZXJuIGZ1bmN0aW9uIGFzIGEgQlRGX0tJTkRfRlVOQywgaS5lLiwNCiAgICBCVEZf
-S0lORF9GVU5DDQogICAgICAgICAuaW5mbyAobG93ZXIgMiBiaXRzKSAtPiBGVU5DX1NUQVRJQywg
-RlVOQ19HTE9CQUwsIEZVTkNfRVhURVJODQogICAgICAgICAudHlwZSAtPiBCVEZfS0lORF9GVU5D
-X1BST1RPDQoNCkFsZXhlaSBpcyB3b3JraW5nIG9uIGtlcm5lbCBzaWRlIHRvIGVuc3VyZSB0aGlz
-IGlzIGhhbmRsZWQgcHJvcGVybHkgDQpiZWZvcmUgbGx2bSBwYXRjaCBjYW4gYmUgbWVyZ2VkLg0K
-DQpKdXN0IGxldCB5b3Uga25vdyBmb3IgdGhlIGZ1dHVyZSBwb3RlbnRpYWwgQlRGIGludGVyZmFj
-ZSBjaGFuZ2UuDQoNCj4gKwkJCQkvKiByZXBsYWNlIFZBUiB3aXRoIElOVCAqLw0KPiArCQkJCXQt
-PmluZm8gPSBCVEZfSU5GT19FTkMoQlRGX0tJTkRfSU5ULCAwLCAwKTsNCj4gKwkJCQkvKg0KPiAr
-CQkJCSAqIHVzaW5nIHNpemUgPSAxIGlzIHRoZSBzYWZlc3QgY2hvaWNlLCA0IHdpbGwNCj4gKwkJ
-CQkgKiBiZSB0b28gYmlnIGFuZCBjYXVzZSBrZXJuZWwgQlRGIHZhbGlkYXRpb24NCj4gKwkJCQkg
-KiBmYWlsdXJlIGlmIG9yaWdpbmFsIHZhcmlhYmxlIHRvb2sgbGVzcyB0aGFuIDQNCj4gKwkJCQkg
-KiBieXRlcw0KPiArCQkJCSAqLw0KPiArCQkJCXQtPnNpemUgPSAxOw0KPiArCQkJCSooaW50ICop
-KHQgKyAxKSA9IEJURl9JTlRfRU5DKDAsIDAsIDgpOw0KPiArCQkJfQ0KPiArCQl9IGVsc2UgaWYg
-KGJ0Zl9pc19kYXRhc2VjKHQpKSB7DQo+ICAgCQkJLyogcmVwbGFjZSBEQVRBU0VDIHdpdGggU1RS
-VUNUICovDQo+ICAgCQkJY29uc3Qgc3RydWN0IGJ0Zl92YXJfc2VjaW5mbyAqdiA9IGJ0Zl92YXJf
-c2VjaW5mb3ModCk7DQo+ICAgCQkJc3RydWN0IGJ0Zl9tZW1iZXIgKm0gPSBidGZfbWVtYmVycyh0
-KTsNCj4gICAJCQlzdHJ1Y3QgYnRmX3R5cGUgKnZ0Ow0KPiArCQkJc2l6ZV90IHRvdF9zaXplID0g
-MDsNCj4gICAJCQljaGFyICpuYW1lOw0KPiAgIA0KPiArCQkJLyogRklYTUU6IFRoZSAuZXh0ZXJu
-IGRhdGFzZWMgY2FuIGJlIDAtc2l6ZWQgd2hlbiB0aGVyZQ0KPiArCQkJICogYXJlIG9ubHkgZnVu
-Y3Rpb24gc2lnbmF0dXJlcyBidXQgbm8gdmFyaWFibGVzIG1hcmtlZA0KPiArCQkJICogYXMgZXh0
-ZXJuLiBLZXJuZWwgZG9lc24ndCB1bmRlcnN0YW5kIHRoaXMsIHNvIHdlIG5lZWQNCj4gKwkJCSAq
-IHRvIGdldCByaWQgb2YgdGhvc2UuDQo+ICsJCQkgKi8NCj4gKwkJCWlmIChoYXNfZGF0YXNlYyAm
-JiB0LT5zaXplID4gMCkNCj4gKwkJCQljb250aW51ZTsNCj4gKw0KPiAgIAkJCW5hbWUgPSAoY2hh
-ciAqKWJ0Zl9fbmFtZV9ieV9vZmZzZXQoYnRmLCB0LT5uYW1lX29mZik7DQo+ICAgCQkJd2hpbGUg
-KCpuYW1lKSB7DQo+ICAgCQkJCWlmICgqbmFtZSA9PSAnLicpDQo+IEBAIC0xODYxLDcgKzE4OTEs
-MTAgQEAgc3RhdGljIHZvaWQgYnBmX29iamVjdF9fc2FuaXRpemVfYnRmKHN0cnVjdCBicGZfb2Jq
-ZWN0ICpvYmopDQo+ICAgCQkJCS8qIHByZXNlcnZlIHZhcmlhYmxlIG5hbWUgYXMgbWVtYmVyIG5h
-bWUgKi8NCj4gICAJCQkJdnQgPSAodm9pZCAqKWJ0Zl9fdHlwZV9ieV9pZChidGYsIHYtPnR5cGUp
-Ow0KPiAgIAkJCQltLT5uYW1lX29mZiA9IHZ0LT5uYW1lX29mZjsNCj4gKwkJCQl0b3Rfc2l6ZSAr
-PSB2dC0+c2l6ZTsNCj4gICAJCQl9DQo+ICsJCQlpZiAodC0+c2l6ZSA8IHRvdF9zaXplKQ0KPiAr
-CQkJCXQtPnNpemUgPSB0b3Rfc2l6ZTsNCj4gICAJCX0gZWxzZSBpZiAoIWhhc19mdW5jICYmIGJ0
-Zl9pc19mdW5jX3Byb3RvKHQpKSB7DQo+ICAgCQkJLyogcmVwbGFjZSBGVU5DX1BST1RPIHdpdGgg
-RU5VTSAqLw0KPiAgIAkJCXZsZW4gPSBidGZfdmxlbih0KTsNCj4gQEAgLTIyMDUsNiArMjIzOCw4
-IEBAIHN0YXRpYyBlbnVtIGV4dGVybl90eXBlIGZpbmRfZXh0ZXJuX3R5cGUoY29uc3Qgc3RydWN0
-IGJ0ZiAqYnRmLCBpbnQgaWQsDQo+ICAgCQlpZiAoZmluZF9leHRlcm5fdHlwZShidGYsIGJ0Zl9h
-cnJheSh0KS0+dHlwZSwgTlVMTCkgIT0gRVhUX0NIQVIpDQo+ICAgCQkJcmV0dXJuIEVYVF9VTktO
-T1dOOw0KPiAgIAkJcmV0dXJuIEVYVF9DSEFSX0FSUjsNCj4gKwljYXNlIEJURl9LSU5EX0ZVTkNf
-UFJPVE86DQo+ICsJCXJldHVybiBFWFRfRlVOQzsNCj4gICAJZGVmYXVsdDoNCj4gICAJCXJldHVy
-biBFWFRfVU5LTk9XTjsNCj4gICAJfQ0KPiBAQCAtMjIxNSw2ICsyMjUwLDEwIEBAIHN0YXRpYyBp
-bnQgY21wX2V4dGVybnMoY29uc3Qgdm9pZCAqX2EsIGNvbnN0IHZvaWQgKl9iKQ0KWy4uLl0NCg==
+On Thu, Dec 19, 2019 at 3:22 AM Steffen Klassert
+<steffen.klassert@secunet.com> wrote:
+>
+> On Wed, Dec 18, 2019 at 11:02:39AM -0500, Willem de Bruijn wrote:
+> > On Wed, Dec 18, 2019 at 8:35 AM Steffen Klassert
+> > <steffen.klassert@secunet.com> wrote:
+> >
+> > > +struct sk_buff *skb_segment_list(struct sk_buff *skb,
+> > > +                                netdev_features_t features,
+> > > +                                unsigned int offset)
+> > > +{
+> > > +       struct sk_buff *list_skb = skb_shinfo(skb)->frag_list;
+> > > +       unsigned int tnl_hlen = skb_tnl_header_len(skb);
+> > > +       unsigned int delta_truesize = 0;
+> > > +       unsigned int delta_len = 0;
+> > > +       struct sk_buff *tail = NULL;
+> > > +       struct sk_buff *nskb;
+> > > +
+> > > +       skb_push(skb, -skb_network_offset(skb) + offset);
+> > > +
+> > > +       skb_shinfo(skb)->frag_list = NULL;
+> > > +
+> > > +       do {
+> > > +               nskb = list_skb;
+> > > +               list_skb = list_skb->next;
+> > > +
+> > > +               if (!tail)
+> > > +                       skb->next = nskb;
+> > > +               else
+> > > +                       tail->next = nskb;
+> > > +
+> > > +               tail = nskb;
+> > > +
+> > > +               delta_len += nskb->len;
+> > > +               delta_truesize += nskb->truesize;
+> > > +
+> > > +               skb_push(nskb, -skb_network_offset(nskb) + offset);
+> > > +
+> > > +               if (!secpath_exists(nskb))
+> > > +                       __skb_ext_copy(nskb, skb);
+> >
+> > Of all the possible extensions, why is this only relevant to secpath?
+>
+> I wrote this before we had these extensions and adjusted it
+> when the extensions where introduced to make it compile again.
+> I think we can just copy the extensions unconditionally.
+>
+> >
+> > More in general, this function open codes a variety of skb fields that
+> > carry over from skb to nskb. How did you select this subset of fields?
+>
+> I tried to find the subset of __copy_skb_header() that is needed to copy.
+> Some fields of nskb are still valid, and some (csum related) fields
+> should not be copied from skb to nskb.
+
+Duplicating that code is kind of fragile wrt new fields being added to
+skbs later (such as the recent skb_ext example).
+
+Perhaps we can split __copy_skb_header further and call the
+inner part directly.
+
+Or, at least follow the order of operations exactly and add a comment
+that this code was taken verbatim from __copy_skb_header.
+
+> > > +
+> > > +               memcpy(nskb->cb, skb->cb, sizeof(skb->cb));
+> > > +
+> > > +               nskb->tstamp = skb->tstamp;
+> > > +               nskb->dev = skb->dev;
+> > > +               nskb->queue_mapping = skb->queue_mapping;
+> > > +
+> > > +               nskb->mac_len = skb->mac_len;
+> > > +               nskb->mac_header = skb->mac_header;
+> > > +               nskb->transport_header = skb->transport_header;
+> > > +               nskb->network_header = skb->network_header;
+> > > +               skb_dst_copy(nskb, skb);
+> > > +
+> > > +               skb_headers_offset_update(nskb, skb_headroom(nskb) - skb_headroom(skb));
+> > > +               skb_copy_from_linear_data_offset(skb, -tnl_hlen,
+> > > +                                                nskb->data - tnl_hlen,
+> > > +                                                offset + tnl_hlen);
+> > > +
+> > > +               if (skb_needs_linearize(nskb, features) &&
+> > > +                   __skb_linearize(nskb))
+> > > +                       goto err_linearize;
+> > > +
+> > > +       } while (list_skb);
+> > > +
+> > > +       skb->truesize = skb->truesize - delta_truesize;
+> > > +       skb->data_len = skb->data_len - delta_len;
+> > > +       skb->len = skb->len - delta_len;
+> > > +       skb->ip_summed = nskb->ip_summed;
+> > > +       skb->csum_level = nskb->csum_level;
+> >
+> > This changed from the previous version, where nskb inherited ip_summed
+> > and csum_level from skb. Why is that?
+>
+> I had to set ip_summed to CHECKSUM_UNNECESSARY on GRO to
+> make sure the noone touches the checksum of the head
+> skb. Otherise netfilter etc. tries to touch the csum.
+>
+> Before chaining I make sure that ip_summed and csum_level is
+> the same for all chained skbs and here I restore the original
+> value from nskb.
+
+This is safe because the skb_gro_checksum_validate will have validated
+already on CHECKSUM_PARTIAL? What happens if there is decap or encap
+in the path? We cannot revert to CHECKSUM_PARTIAL after that, I
+imagine.
+
+Either way, would you mind briefly documenting the checksum behavior
+in the commit message? It's not trivial and I doubt I'll recall the
+details in six months.
+
+Really about patch 4: that squashed in a lot of non-trivial scaffolding
+from previous patch 'UDP: enable GRO by default'. Does it make sense
+to keep that in a separate patch? That should be a noop, which we can
+verify. And it makes patch 4 easier to reason about on its own, too.
