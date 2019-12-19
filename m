@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CCDBA1265EC
-	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 16:41:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 299621265EB
+	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 16:41:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726928AbfLSPlW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1726945AbfLSPlW (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Thu, 19 Dec 2019 10:41:22 -0500
-Received: from smtp-fw-33001.amazon.com ([207.171.190.10]:50198 "EHLO
-        smtp-fw-33001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726757AbfLSPlW (ORCPT
+Received: from smtp-fw-6001.amazon.com ([52.95.48.154]:35667 "EHLO
+        smtp-fw-6001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726830AbfLSPlW (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 19 Dec 2019 10:41:22 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
   t=1576770081; x=1608306081;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version;
-  bh=oTyk/LS7mEYZnFXqntCIN70mkHozaXfwZmp4u0+qPtg=;
-  b=KlqXZm6qVjRZZi0d+JCsHxIPhpBsipjND2TGtyI7jsjqGZAFtt1KP2eU
-   uHQZWWz1w7c6957xVKFE0V9Icm6T67SjJx0AMtWavmRYCwqo0kYyEMcJD
-   7I06QnasdoROzSjwRcN4hKE9fRfEfuyjMLi4BHDYCy7hrSqu5FDIZvU0m
-   w=;
-IronPort-SDR: lIgAPmmLL6/kLH7t7NxlxQke8xA1H62jWuphtIUoJBqJjI8sgbaz9zKm/V6sVM4i720130PFxg
- 4J9P7Yg1H+Pg==
+  bh=jRCUA+UHbztDohooaM0Gl+KdJOND5kGgEsV7EVHHmb0=;
+  b=XQ+YpgLSlHjv8KEllbKUdwl2tWYVhBvpfttOQYI0exdTWUciiJN3CrxD
+   j0jUvPs8SfhqYJYvdtYdgwuly6djpqICLc88bKv05XMrT42e+YfxteeCz
+   HbMQeUH73DRsD12JiMFP62nrsbL9OVug/Lrs///72JveJkCntD/qK+PGC
+   Q=;
+IronPort-SDR: 6eJKImWsgzyZTqXE5fYr5gKFuFQgKc9z9IySlNYsUgbEyFPQIoqii1bhX+g3i1tufpPour+xBp
+ +NdK0pHSrNOQ==
 X-IronPort-AV: E=Sophos;i="5.69,332,1571702400"; 
-   d="scan'208";a="15859695"
-Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-2a-c5104f52.us-west-2.amazon.com) ([10.47.23.38])
-  by smtp-border-fw-out-33001.sea14.amazon.com with ESMTP; 19 Dec 2019 15:41:09 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (pdx4-ws-svc-p6-lb7-vlan3.pdx.amazon.com [10.170.41.166])
-        by email-inbound-relay-2a-c5104f52.us-west-2.amazon.com (Postfix) with ESMTPS id 69656A24DA;
-        Thu, 19 Dec 2019 15:41:08 +0000 (UTC)
-Received: from EX13D02UWB001.ant.amazon.com (10.43.161.240) by
- EX13MTAUWB001.ant.amazon.com (10.43.161.249) with Microsoft SMTP Server (TLS)
- id 15.0.1367.3; Thu, 19 Dec 2019 15:41:07 +0000
+   d="scan'208";a="9801803"
+Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-2a-119b4f96.us-west-2.amazon.com) ([10.43.8.6])
+  by smtp-border-fw-out-6001.iad6.amazon.com with ESMTP; 19 Dec 2019 15:41:19 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (pdx4-ws-svc-p6-lb7-vlan2.pdx.amazon.com [10.170.41.162])
+        by email-inbound-relay-2a-119b4f96.us-west-2.amazon.com (Postfix) with ESMTPS id 598A91A1DA7;
+        Thu, 19 Dec 2019 15:41:18 +0000 (UTC)
+Received: from EX13D10UWB004.ant.amazon.com (10.43.161.121) by
+ EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
+ id 15.0.1367.3; Thu, 19 Dec 2019 15:41:12 +0000
 Received: from EX13MTAUWB001.ant.amazon.com (10.43.161.207) by
- EX13D02UWB001.ant.amazon.com (10.43.161.240) with Microsoft SMTP Server (TLS)
- id 15.0.1367.3; Thu, 19 Dec 2019 15:41:07 +0000
+ EX13D10UWB004.ant.amazon.com (10.43.161.121) with Microsoft SMTP Server (TLS)
+ id 15.0.1367.3; Thu, 19 Dec 2019 15:41:12 +0000
 Received: from HFA15-G63729NC.hfa16.amazon.com (10.218.52.74) by
  mail-relay.amazon.com (10.43.161.249) with Microsoft SMTP Server id
- 15.0.1367.3 via Frontend Transport; Thu, 19 Dec 2019 15:41:03 +0000
+ 15.0.1367.3 via Frontend Transport; Thu, 19 Dec 2019 15:41:08 +0000
 From:   <akiyano@amazon.com>
 To:     <davem@davemloft.net>, <netdev@vger.kernel.org>
 CC:     Arthur Kiyanovski <akiyano@amazon.com>, <dwmw@amazon.com>,
@@ -47,9 +47,9 @@ CC:     Arthur Kiyanovski <akiyano@amazon.com>, <dwmw@amazon.com>,
         <gtzalik@amazon.com>, <netanel@amazon.com>, <alisaidi@amazon.com>,
         <benh@amazon.com>, <ndagan@amazon.com>, <shayagr@amazon.com>,
         <sameehj@amazon.com>
-Subject: [PATCH V2 net 1/2] net: ena: fix default tx interrupt moderation interval
-Date:   Thu, 19 Dec 2019 17:40:55 +0200
-Message-ID: <1576770056-1304-2-git-send-email-akiyano@amazon.com>
+Subject: [PATCH V2 net 2/2] net: ena: fix issues in setting interrupt moderation params in ethtool
+Date:   Thu, 19 Dec 2019 17:40:56 +0200
+Message-ID: <1576770056-1304-3-git-send-email-akiyano@amazon.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1576770056-1304-1-git-send-email-akiyano@amazon.com>
 References: <1576770056-1304-1-git-send-email-akiyano@amazon.com>
@@ -62,38 +62,112 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Arthur Kiyanovski <akiyano@amazon.com>
 
-Current default non-adaptive tx interrupt moderation interval is 196 us.
-This value is too high and might cause the tx queue to fill up.
+Issue 1:
+--------
+Reproduction steps:
+1. sudo ethtool -C eth0 rx-usecs 128
+2. sudo ethtool -C eth0 adaptive-rx on
+3. sudo ethtool -C eth0 adaptive-rx off
+4. ethtool -c eth0
 
-In this commit we set the default non-adaptive tx interrupt moderation
-interval to 64 us in order to:
-1. Reduce the probability of the queue filling-up (when compared to the
-   current default value of 196 us).
-2. Reduce unnecessary tx interrupt overhead (which happens if we set the
-   default tx interval to 0).
-   We determined experimentally that 64 us is an optimal value that
-   reduces interrupt rate by more than 20% without affecting performance.
+expected output: rx-usecs 128
+actual output: rx-usecs 0
 
+Reason for issue:
+In stage 3, ethtool userspace calls first the ena_get_coalesce() handler
+to get the current value of all properties, and then the ena_set_coalesce()
+handler. When ena_get_coalesce() is called the adaptive interrupt
+moderation is still on. There is an if in the code that returns the
+rx_coalesce_usecs only if the adaptive interrupt moderation is off.
+And since it is still on, rx_coalesce_usecs is not set, meaning it
+stays 0.
+
+Solution to issue:
+Remove this if static interrupt moderation intervals have nothing to do
+with dynamic ones.
+
+Issue 2:
+--------
+Reproduction steps:
+1. sudo ethtool -C eth0 adaptive-rx on
+2. sudo ethtool -C eth0 rx-usecs 128
+3. ethtool -c eth0
+
+expected output: rx-usecs 128
+actual output: rx-usecs 0
+
+Reason for issue:
+In stage 2, when ena_set_coalesce() is called, the handler tests if
+rx adaptive interrupt moderation is on, and if it is, it returns before
+getting to the part in the function that sets the rx non-adaptive
+interrupt moderation interval.
+
+Solution to issue:
+Remove the return from the function when rx adaptive interrupt moderation
+is on.
+
+Also cleaned up the fixed code in ena_set_coalesce by grouping together
+adaptive interrupt moderation toggling, and using && instead of nested
+ifs.
+
+Fixes: b3db86dc4b82 ("net: ena: reimplement set/get_coalesce()")
+Fixes: 0eda847953d8 ("net: ena: fix retrieval of nonadaptive interrupt moderation intervals")
 Fixes: 1738cd3ed342 ("net: ena: Add a driver for Amazon Elastic Network Adapters (ENA)")
 
 Signed-off-by: Arthur Kiyanovski <akiyano@amazon.com>
 ---
- drivers/net/ethernet/amazon/ena/ena_com.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/amazon/ena/ena_ethtool.c | 24 ++++++++++--------------
+ 1 file changed, 10 insertions(+), 14 deletions(-)
 
-diff --git a/drivers/net/ethernet/amazon/ena/ena_com.h b/drivers/net/ethernet/amazon/ena/ena_com.h
-index 7c941eb..0ce37d5 100644
---- a/drivers/net/ethernet/amazon/ena/ena_com.h
-+++ b/drivers/net/ethernet/amazon/ena/ena_com.h
-@@ -72,7 +72,7 @@
- /*****************************************************************************/
- /* ENA adaptive interrupt moderation settings */
+diff --git a/drivers/net/ethernet/amazon/ena/ena_ethtool.c b/drivers/net/ethernet/amazon/ena/ena_ethtool.c
+index a3250dc..fc96c66 100644
+--- a/drivers/net/ethernet/amazon/ena/ena_ethtool.c
++++ b/drivers/net/ethernet/amazon/ena/ena_ethtool.c
+@@ -315,10 +315,9 @@ static int ena_get_coalesce(struct net_device *net_dev,
+ 		ena_com_get_nonadaptive_moderation_interval_tx(ena_dev) *
+ 			ena_dev->intr_delay_resolution;
  
--#define ENA_INTR_INITIAL_TX_INTERVAL_USECS		196
-+#define ENA_INTR_INITIAL_TX_INTERVAL_USECS		64
- #define ENA_INTR_INITIAL_RX_INTERVAL_USECS		0
- #define ENA_DEFAULT_INTR_DELAY_RESOLUTION		1
+-	if (!ena_com_get_adaptive_moderation_enabled(ena_dev))
+-		coalesce->rx_coalesce_usecs =
+-			ena_com_get_nonadaptive_moderation_interval_rx(ena_dev)
+-			* ena_dev->intr_delay_resolution;
++	coalesce->rx_coalesce_usecs =
++		ena_com_get_nonadaptive_moderation_interval_rx(ena_dev)
++		* ena_dev->intr_delay_resolution;
  
+ 	coalesce->use_adaptive_rx_coalesce =
+ 		ena_com_get_adaptive_moderation_enabled(ena_dev);
+@@ -367,12 +366,6 @@ static int ena_set_coalesce(struct net_device *net_dev,
+ 
+ 	ena_update_tx_rings_intr_moderation(adapter);
+ 
+-	if (coalesce->use_adaptive_rx_coalesce) {
+-		if (!ena_com_get_adaptive_moderation_enabled(ena_dev))
+-			ena_com_enable_adaptive_moderation(ena_dev);
+-		return 0;
+-	}
+-
+ 	rc = ena_com_update_nonadaptive_moderation_interval_rx(ena_dev,
+ 							       coalesce->rx_coalesce_usecs);
+ 	if (rc)
+@@ -380,10 +373,13 @@ static int ena_set_coalesce(struct net_device *net_dev,
+ 
+ 	ena_update_rx_rings_intr_moderation(adapter);
+ 
+-	if (!coalesce->use_adaptive_rx_coalesce) {
+-		if (ena_com_get_adaptive_moderation_enabled(ena_dev))
+-			ena_com_disable_adaptive_moderation(ena_dev);
+-	}
++	if (coalesce->use_adaptive_rx_coalesce &&
++	    !ena_com_get_adaptive_moderation_enabled(ena_dev))
++		ena_com_enable_adaptive_moderation(ena_dev);
++
++	if (!coalesce->use_adaptive_rx_coalesce &&
++	    ena_com_get_adaptive_moderation_enabled(ena_dev))
++		ena_com_disable_adaptive_moderation(ena_dev);
+ 
+ 	return 0;
+ }
 -- 
 2.7.4
 
