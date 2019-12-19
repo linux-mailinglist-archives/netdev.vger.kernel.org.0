@@ -2,53 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 68EDE126F48
-	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 22:01:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 00E6C126F4A
+	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 22:01:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727024AbfLSVBF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Dec 2019 16:01:05 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:33974 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726880AbfLSVBF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 19 Dec 2019 16:01:05 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=Y2rAcYey8tO0y2ZYhyJFZqSqoF6GkKKd40qZIhlQ+OY=; b=xPglZwHfkanQavHv1J5lI0sRg+
-        rwum6o4NR0azt+IwWpRNl9KbXZysCjpQDxNQ5XsyYEBtIzlN1l52EaD9w6OcHiEyeDW30H7vfJueB
-        Tn+8ErzzunfL8uFvCfRaIjO/DjvkJ3ovSS8tQPc5tDl/gvKxAo2Emo6PeWXesbThE/1U=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1ii2uq-0005va-59; Thu, 19 Dec 2019 22:01:00 +0100
-Date:   Thu, 19 Dec 2019 22:01:00 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Russell King <rmk+kernel@armlinux.org.uk>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: Re: [PATCH] net: phy: ensure that phy IDs are correctly typed
-Message-ID: <20191219210100.GQ17475@lunn.ch>
-References: <E1ihsvI-0001bz-3t@rmk-PC.armlinux.org.uk>
+        id S1727120AbfLSVBv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Dec 2019 16:01:51 -0500
+Received: from mail-oi1-f195.google.com ([209.85.167.195]:38674 "EHLO
+        mail-oi1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726981AbfLSVBv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Dec 2019 16:01:51 -0500
+Received: by mail-oi1-f195.google.com with SMTP id l9so972562oii.5;
+        Thu, 19 Dec 2019 13:01:50 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Rho6KjCVdHcPa3Pm2Hwz5ompKB2MxkmWTphxamICN90=;
+        b=M5+N8u8FaZK7fB6OwNaLikLBB06Y0ZSktbKgydW/Anfr4fdEQ4afgx645i9Q8LfnbL
+         6qQK1ub5YZTpS12B0tTU/xb2bXZ9VjrdmLzdXmKg+Zt7PT8kzEQ9q0OJ7+M+aQ6PKUsl
+         yC1jBBAJUdNmoU06wcbI135LVBDsoCTlGpC+3saYWZFRp8d6obtviMxiDZjD4hjmGAxF
+         tYHz4+x2+0PK/QspSZ/+1dSHJiYF2kPoDwUuGUxjL/FSHE0Ok0HcpuiLkDz0zm2i6F6Y
+         cPkoQ2FT//AI1H7S+/vlwaXZZzIy2klD3l5EAAqlxVAvMi3rweN4ElWAF4yCZRs8Qvkb
+         Z+eQ==
+X-Gm-Message-State: APjAAAUhY2tC/hHaGcAyh/XgSVLAYdG65d2XXCEta+doDM+6SvPCQrn8
+        JZgjrs0qaqRzFv1qhjKB5pv4RXZ2hl0EHZdFgXc=
+X-Google-Smtp-Source: APXvYqwvA2BdXJ663aG+aWaAPgh2yntk+PKY9MC7GuJ4Ik36+blLWmshsTxHv/oZTHyJy/hEoDKwfxQJ4yQDOuTxN9I=
+X-Received: by 2002:aca:36c5:: with SMTP id d188mr3157965oia.54.1576789310327;
+ Thu, 19 Dec 2019 13:01:50 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <E1ihsvI-0001bz-3t@rmk-PC.armlinux.org.uk>
+References: <git-mailbomb-linux-master-8ffb055beae58574d3e77b4bf9d4d15eace1ca27@kernel.org>
+ <CAMuHMdVgF0PVmqXbaWqkrcML0O-hhWB3akj8UAn8Q_hN2evm+A@mail.gmail.com> <CAM_iQpWOhXR=x10i0S88qXTfG2nv9EypONTp6_vpBzs=iOySRQ@mail.gmail.com>
+In-Reply-To: <CAM_iQpWOhXR=x10i0S88qXTfG2nv9EypONTp6_vpBzs=iOySRQ@mail.gmail.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Thu, 19 Dec 2019 22:01:39 +0100
+Message-ID: <CAMuHMdXL8kycJm5EG6Ubx4aYGVGJH9JuJzP-vSM55wZ6RtyT+w@mail.gmail.com>
+Subject: Re: refcount_warn_saturate WARNING (was: Re: cls_flower: Fix the
+ behavior using port ranges with hw-offload)
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     Yoshiki Komachi <komachi.yoshiki@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Amritha Nambiar <amritha.nambiar@intel.com>,
+        netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 19, 2019 at 10:20:48AM +0000, Russell King wrote:
-> PHY IDs are 32-bit unsigned quantities. Ensure that they are always
-> treated as such, and not passed around as "int"s.
+Hi Cong,
 
-Hi Russell
+On Thu, Dec 19, 2019 at 9:50 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
+> On Thu, Dec 19, 2019 at 2:12 AM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
+> > I still see the below warning on m68k/ARAnyM during boot with v5.5-rc2
+> > and next-20191219.
+> > Reverting commit 8ffb055beae58574 ("cls_flower: Fix the behavior using
+> > port ranges with hw-offload") fixes that.
+> >
+> > As this is networking, perhaps this is seen on big-endian only?
+> > Or !CONFIG_SMP?
+> >
+> > Do you have a clue?
+> > I'm especially worried as this commit is already being backported to stable.
+> > Thanks!
+>
+> I did a quick look at the offending commit, I can't even connect it to
+> any dst refcnt.
+>
+> Do you have any more information? Like what happened before the
+> warning? Does your system use cls_flower filters at all? If so, please
+> share your tc configurations.
 
-Do we want to fix all cases?
+No, I don't use clf_flower filters.  This is just a normal old Debian boot,
+where the root file system is being remounted, followed by the warning.
 
-struct phy_device *phy_device_create(struct mii_bus *bus, int addr, int phy_id,
+To me, it also looks very strange.  But it's 100% reproducible for me.
+Git bisect pointed to this commit, and reverting it fixes the issue.
 
-       Andrew
+Gr{oetje,eeting}s,
+
+                        Geert
+
+-- 
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
