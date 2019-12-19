@@ -2,99 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F6E6126430
-	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 15:03:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EC9D8126445
+	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 15:08:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726887AbfLSOCs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Dec 2019 09:02:48 -0500
-Received: from mail-il1-f196.google.com ([209.85.166.196]:46659 "EHLO
-        mail-il1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726744AbfLSOCp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Dec 2019 09:02:45 -0500
-Received: by mail-il1-f196.google.com with SMTP id t17so4912317ilm.13
-        for <netdev@vger.kernel.org>; Thu, 19 Dec 2019 06:02:45 -0800 (PST)
+        id S1726793AbfLSOIK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Dec 2019 09:08:10 -0500
+Received: from mail-wr1-f73.google.com ([209.85.221.73]:34586 "EHLO
+        mail-wr1-f73.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726695AbfLSOIK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Dec 2019 09:08:10 -0500
+Received: by mail-wr1-f73.google.com with SMTP id i9so2423482wru.1
+        for <netdev@vger.kernel.org>; Thu, 19 Dec 2019 06:08:09 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=UW2WNzCKVC/Q6BcgA6pHzxjIqG8G7Lfqaw17jtNqaCs=;
-        b=GgCIM/qWM2be3MNK2igzkBxxtdkwTYlah7yGxK19tPzTPMjTLCt+N/azSnqT8ePhIl
-         ho53qzAlXiWCrTQu6/39i0RSFpkbAFoZVVB7teM81WAzd0osbj2bOonmnlhztG8Srd/S
-         x/L5PzFLs5WyWh+mhZ0S19JazD8mo5Wz7+MHGOVV6npGHxWqEvYp/4KRMwvsfYXzcef8
-         CEpnPxEoxMknefAELUThiIEvyS2Zjo8Z0KQHCjjoDt7z14B9gIrxOb+y3qI5z2qvg5d2
-         8hGWBQqPG/LgzOztWZv5bd0j40+XPuQaoydwyzNKrC0IKT+LH+Sz3Ik4iSPE4O0uTeSZ
-         psOQ==
+        h=date:message-id:mime-version:subject:from:cc;
+        bh=rR0DY8YnbpCQ+AdSGxlAPQN0c1LYEmMe5uvVF0GxO7w=;
+        b=edqJauAnv9l2Db/OdW4Nzcy/PoIy6m7rq0UBbWvju2X6CFnWDoBeUl9K3E5nkW+o/p
+         y8VDw4SJQ7XWWHzIrbpNoCovNAkUagOHXNdORCAMPd6MHzvGXSIaE0bYdYwA/k+o1kLb
+         OthNTjppH0IyA+vS1d+ParF1KyYV7SCachTjWXEGBOPjgmWIyfRiC23O50DgLBtokTtu
+         EKpqTp/xb352x5Z7ZxQBtpYVPpWnbolYLFPkDficge+P6SYrRa7oUm3kTURQObFlan0d
+         oeDJ/ry3rk/OlCFfnJOYTzZqzL4q/H3qTD98eMJBo7wVKMBDduxEJyiPvIJV2Qw61Qva
+         WUWQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=UW2WNzCKVC/Q6BcgA6pHzxjIqG8G7Lfqaw17jtNqaCs=;
-        b=dnIjLDUvnfkstC9X0oTUYIlidHYqOKd57H3+1UEvoTxPUHHNXtGJaNjPX4RgCUU3Nk
-         R0ETAwA9FVAiJMVK7FYtrxTEFRPLm8NXhkd2JAt5eCgY+K1EuJsg1VEaJQDDQ1NrNQS4
-         aLGst5hbTdO+6LT9xSBf/iPmUE7S+sdV90jJyWIZEzlSOJfAjkUdsFEUsBG3hYrdAy8r
-         C7D4bcHvpxPKjIrtzV5nGYP02gbzMN8yqGKL+vlXtgC+u5g8TgpBHvxG5ScsgYGdWrov
-         UK4mpE2visEw/mZ9PxeGehTfzy/XHWwgg7I0Aw+fawhhFxjbh2A3lXqp9Wpr/OTNJaaE
-         c3Tw==
-X-Gm-Message-State: APjAAAXy7JGwpQ0OzwxPZ9j6Apyb4oEVO+FqLFElx8ldQtD+VrZ1W9rm
-        BfDlKJW84TjaNq1OKX/zKK7oGQXS4jjqXcmkJEuoeWNvMxo=
-X-Google-Smtp-Source: APXvYqyrla0Db74O+Uz2gFwVhw5eg2ZuE9sHJpBI7irla0B1Jw7er2Ms6F2iPOM5Ggv+Wrxik/dvdhbHyQW0pGxcnTo=
-X-Received: by 2002:a92:6e09:: with SMTP id j9mr7317565ilc.178.1576764164462;
- Thu, 19 Dec 2019 06:02:44 -0800 (PST)
-MIME-Version: 1.0
-References: <20191127001313.183170-1-zenczykowski@gmail.com>
- <20191213114934.GB5449@hmswarspite.think-freely.org> <CAKD1Yr1m-bqpeZxMRVs84WvvjRE3zp8kJVx57OXf342r2gzVyw@mail.gmail.com>
- <20191219131700.GA1159@hmswarspite.think-freely.org>
-In-Reply-To: <20191219131700.GA1159@hmswarspite.think-freely.org>
-From:   Lorenzo Colitti <lorenzo@google.com>
-Date:   Thu, 19 Dec 2019 23:02:32 +0900
-Message-ID: <CAKD1Yr2wyWbwCGP=BNqAfsGu9cjgjD12-ePjs648Or-FjqHyBw@mail.gmail.com>
-Subject: Re: [PATCH] net: introduce ip_local_unbindable_ports sysctl
-To:     Neil Horman <nhorman@tuxdriver.com>
-Cc:     =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <zenczykowski@gmail.com>,
-        =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <maze@google.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Linux NetDev <netdev@vger.kernel.org>,
-        Sean Tranchetti <stranche@codeaurora.org>,
-        Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Linux SCTP <linux-sctp@vger.kernel.org>
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:cc;
+        bh=rR0DY8YnbpCQ+AdSGxlAPQN0c1LYEmMe5uvVF0GxO7w=;
+        b=E/qzEW3hxQ55etyRbpi11FQcANShGIIR8oOlYHF2D9eenktcakbD5z9++yOIj+up1v
+         Kp68jsBG4hrgKWcOMy6hZpqRJMzoqZzp7nV3eZbG2KWV8KsXC0CfMdMYUIuL0O9xuqJA
+         NKkqrc5Vptbh3e+8antJ2Ktpcqx1aX4FrFyJy2qKDAFu+oHd/1lkAx5r9I6fvxSIvAub
+         FAF4EcdslWS2T2rw5OVlrg3Yo8/hQ5YMfBH1haNC2qcrJWoUCuTZNKg3RIbf0ljCNFBk
+         K6unx4aU1KiwiAe/imXq6wtE6nCmtb0fCN8w6/cmP1zz2eoqP7+o3JJWrBrDoxw8VLPn
+         wfTA==
+X-Gm-Message-State: APjAAAVExbn5+qv8s8TEB0J7ywiQeKhHfUJGo9Rc7EnXQumQXOzNb4MX
+        rKSC8ihkpw2/+MiRdQe29wDxa+sW/FYztA==
+X-Google-Smtp-Source: APXvYqzQ1ljy0dFAUTLAmimiTU8+k3XguxQSkPO9FbsMtWJfxd2XpH7U3B6t3Eb9chW6NYvHc4xBCjjqUfjSlg==
+X-Received: by 2002:a5d:5267:: with SMTP id l7mr10383766wrc.84.1576764488183;
+ Thu, 19 Dec 2019 06:08:08 -0800 (PST)
+Date:   Thu, 19 Dec 2019 15:08:03 +0100
+Message-Id: <20191219140803.135164-1-amessina@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.24.1.735.g03f4e72817-goog
+Subject: [PATCH] udp: fix integer overflow while computing available space in sk_rcvbuf
+From:   Antonio Messina <amessina@google.com>
+Cc:     amessina@google.com, "David S. Miller" <davem@davemloft.net>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
+To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 19, 2019 at 10:17 PM Neil Horman <nhorman@tuxdriver.com> wrote:
-> > As I understand it, those utilities keep the ports reserved by binding
-> > to them so that no other process can. This doesn't work for Android
-> > because there are conformance tests that probe the device from the
-> > network and check that there are no open ports.
-> >
-> But you can address that with some augmentation to portreserve (i.e. just have
-> it add an iptables rule to drop frames on that port, or respond with a port
-> unreachable icmp message)
+When the size of the receive buffer for a socket is close to 2^31 when
+computing if we have enough space in the buffer to copy a packet from
+the queue to the buffer we might hit an integer overflow.
 
-There are also tests that run on device by inspecting
-/proc/net/{tcp,udp} to check that there are no open sockets. We'd have
-to change them as well.
+When an user set net.core.rmem_default to a value close to 2^31 UDP
+packets are dropped because of this overflow. This can be visible, for
+instance, with failure to resolve hostnames.
 
-But sure. It's not impossible to do this in userspace. We wouldn't use
-portreserve itself because the work to package it and make it work on
-Android (which has no /etc/services file), would likely be greater
-than just adding the code to an existing Android daemon (and because
-the reaction of the portreserve maintainers might be similar to yours:
-"you don't need to add code to portreserve for this, just use a script
-that shells out to iptables").
+This can be fixed by casting sk_rcvbuf (which is an int) to unsigned
+int, similarly to how it is done in TCP.
 
-But in any case, the result would be more complicated to use and
-maintain, and it would likely also be less realistic, such that a
-sophisticated conformance test might still find that the port was
-actually bound. Other users of the kernel wouldn't get to use this
-sysctl, and the userspace code can't be easily reused in other
-open-source projects, so the community gets nothing useful. That
-doesn't seem great.
+Signed-off-by: Antonio Messina <amessina@google.com>
+---
+ net/ipv4/udp.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Or, we could take this patch and maintain it in the Android kernel
-tree. Android kernels get a tiny bit further from mainline. Other uses
-of the kernel wouldn't get to use this sysctl, and again the community
-gets nothing useful. That doesn't seem great either.
+diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
+index 4da5758cc718..93a355b6b092 100644
+--- a/net/ipv4/udp.c
++++ b/net/ipv4/udp.c
+@@ -1475,7 +1475,7 @@ int __udp_enqueue_schedule_skb(struct sock *sk, struct sk_buff *skb)
+ 	 * queue contains some other skb
+ 	 */
+ 	rmem = atomic_add_return(size, &sk->sk_rmem_alloc);
+-	if (rmem > (size + sk->sk_rcvbuf))
++	if (rmem > (size + (unsigned int)sk->sk_rcvbuf))
+ 		goto uncharge_drop;
+ 
+ 	spin_lock(&list->lock);
+-- 
+2.24.1.735.g03f4e72817-goog
+
