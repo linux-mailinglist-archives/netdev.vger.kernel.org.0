@@ -2,297 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2FEE0125962
-	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 02:54:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DFA65125986
+	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 03:16:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726758AbfLSBx6 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 18 Dec 2019 20:53:58 -0500
-Received: from mga12.intel.com ([192.55.52.136]:57586 "EHLO mga12.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726599AbfLSBx6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 18 Dec 2019 20:53:58 -0500
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 18 Dec 2019 17:53:58 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.69,330,1571727600"; 
-   d="scan'208";a="417444867"
-Received: from vcostago-desk1.jf.intel.com (HELO vcostago-desk1) ([10.54.70.26])
-  by fmsmga006.fm.intel.com with ESMTP; 18 Dec 2019 17:53:57 -0800
-From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
-To:     Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
-Cc:     Po Liu <po.liu@nxp.com>,
-        Andre Guedes <andre.guedes@linux.intel.com>,
-        "alexandru.ardelean\@analog.com" <alexandru.ardelean@analog.com>,
-        "allison\@lohutok.net" <allison@lohutok.net>,
-        "andrew\@lunn.ch" <andrew@lunn.ch>,
-        "ayal\@mellanox.com" <ayal@mellanox.com>,
-        "davem\@davemloft.net" <davem@davemloft.net>,
-        "f.fainelli\@gmail.com" <f.fainelli@gmail.com>,
-        "gregkh\@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "hauke.mehrtens\@intel.com" <hauke.mehrtens@intel.com>,
-        "hkallweit1\@gmail.com" <hkallweit1@gmail.com>,
-        "jiri\@mellanox.com" <jiri@mellanox.com>,
-        "linux-kernel\@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev\@vger.kernel.org" <netdev@vger.kernel.org>,
-        "pablo\@netfilter.org" <pablo@netfilter.org>,
-        "saeedm\@mellanox.com" <saeedm@mellanox.com>,
-        "tglx\@linutronix.de" <tglx@linutronix.de>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Murali Karicheri <m-karicheri2@ti.com>,
-        "simon.horman\@netronome.com" <simon.horman@netronome.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandru Marginean <alexandru.marginean@nxp.com>,
-        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
-        Roy Zang <roy.zang@nxp.com>, Mingkai Hu <mingkai.hu@nxp.com>,
-        Jerry Huang <jerry.huang@nxp.com>, Leo Li <leoyang.li@nxp.com>
-Subject: Re: [EXT] Re: [v1,net-next, 1/2] ethtool: add setting frame preemption of traffic classes
-In-Reply-To: <20191219004322.GA20146@khorivan>
-References: <20191127094517.6255-1-Po.Liu@nxp.com> <157603276975.18462.4638422874481955289@pipeline> <VE1PR04MB6496CEA449E9B844094E580492510@VE1PR04MB6496.eurprd04.prod.outlook.com> <87eex43pzm.fsf@linux.intel.com> <20191219004322.GA20146@khorivan>
-Date:   Wed, 18 Dec 2019 17:54:23 -0800
-Message-ID: <87lfr9axm8.fsf@linux.intel.com>
+        id S1726776AbfLSCQN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Dec 2019 21:16:13 -0500
+Received: from mx0b-00273201.pphosted.com ([67.231.152.164]:14396 "EHLO
+        mx0b-00273201.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726463AbfLSCQM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Dec 2019 21:16:12 -0500
+X-Greylist: delayed 2370 seconds by postgrey-1.27 at vger.kernel.org; Wed, 18 Dec 2019 21:16:11 EST
+Received: from pps.filterd (m0108163.ppops.net [127.0.0.1])
+        by mx0b-00273201.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xBJ1VrJ5009510;
+        Wed, 18 Dec 2019 17:36:29 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=juniper.net; h=from : to : cc :
+ subject : date : message-id : content-type : content-transfer-encoding :
+ mime-version; s=PPS1017; bh=WZn6vKs50KNjjloFcyI628MFfJ2QaXTAd+wImg1I9uo=;
+ b=YgBwLlMsrOdtoi4c0wMZYuCfzdRp33jha2BClFl/g6hnuQsq9Tuw6w7qQ0dNMBpSXc7u
+ qbfMaIh6dJfkzBAxJiWNKmDpMS44mPkyEn1HZYPC3W7btWneKRT865zrULgsX2Xrtbaz
+ 5DSgYewrjfMCA22W9o6O8MW7bf3VI8ubOmNEmIIBNvUr2jPMbY39xilCN5DsB/b58TvK
+ CJjJSvl9wpYlfNEhNnE6MEKo7/MtkdOVv8iV7S1W7XZpqtCKJJ2DyB7n35MiwuNpGF7I
+ AKLqNbGfVX76FHjGwZgw6j5izieaDLZGUdvwGunY6yhafjBd+afJgbvGJij5Dyv0omuS jg== 
+Received: from nam12-dm6-obe.outbound.protection.outlook.com (mail-dm6nam12lp2172.outbound.protection.outlook.com [104.47.59.172])
+        by mx0b-00273201.pphosted.com with ESMTP id 2wyvssr86m-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 18 Dec 2019 17:36:28 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ioqDp+WJB7DRPzNGV6k2Q9I1uJevvyHxB0Ohk0sULDbH2A8MwFyRyQlR/YaWipyYoa+efkEDxV96UT8jXuFHyP2YoThE6MwBGouX2c19dM16CIQTal0ojYyqkRjwm03WWDVbDH/0C0rCRschILjpEQeA8nLz4AHHhXlQbKfkq8FTp4MmTgGB+9k2djrfQnn1XSyr35ZqiTft4PQKaDmRmtUFHEBILwZXYuyqaAPbkZHQZrNfyDNz0Q5k+H5E/emMnBqWMy9wdvUO1Q5VJdY9oqBcjRI+MqzPolMJvlpHsP1L5zXSD43qhVQZe6guqD6nKmiAZbAsMdZ0Yc1ht2Wyrw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=WZn6vKs50KNjjloFcyI628MFfJ2QaXTAd+wImg1I9uo=;
+ b=RCJ8zJC2B/NtZ7lFhD0sukYr2VjgUGCDetF4n8PO8/ZCsnhdkiQv3HCqSlMAUTQftgIxBnFRGWkgjYXVZJShKg+VtVpr6HotcaVRyY4ugAxRbfuVEhwMRk327wyzZfN/wK/1Yc63Rsznw9poxnWbjAxKO6iKAEYC3sdyO7Qblp62Cfy+5FUlFnKBTRxlH4m+t0qyJpVTH3/9Z39r55la4saa/gvJscaPwYmEJzGbkfe6zyZmKyIaaz8YxTPN/LXGqQLEPzl+5dBu4E+xlOO3dvZczzOOb/bOg1CF6IaXBP6BQDpz3rq1KJ+Oj/svksLVzUXbK5ZJyg9JMhBWhv3uUQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=juniper.net; dmarc=pass action=none header.from=juniper.net;
+ dkim=pass header.d=juniper.net; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=juniper.net;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=WZn6vKs50KNjjloFcyI628MFfJ2QaXTAd+wImg1I9uo=;
+ b=GRgvlrRELEuynBVsgZSpgCjkO9lYI6vlctqSRBzu5DE3s0dIp5KzS5EIRlmwqIb24xwfj4TwQwlDq66UzZRxGIVicZxQlQfmSd7IhOaudh3v2KmcWi5MaDJ0T70SCTX0QcZpvrw6Q24/tmMTavKy9/dkJzQrce9pjaILRXxLLsA=
+Received: from CY4PR0501MB3827.namprd05.prod.outlook.com (52.132.99.143) by
+ CY4PR0501MB3778.namprd05.prod.outlook.com (52.132.99.151) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2559.12; Thu, 19 Dec 2019 01:36:27 +0000
+Received: from CY4PR0501MB3827.namprd05.prod.outlook.com
+ ([fe80::8d77:6795:84cf:dd47]) by CY4PR0501MB3827.namprd05.prod.outlook.com
+ ([fe80::8d77:6795:84cf:dd47%7]) with mapi id 15.20.2559.012; Thu, 19 Dec 2019
+ 01:36:27 +0000
+From:   Edwin Peer <epeer@juniper.net>
+To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     "ast@kernel.org" <ast@kernel.org>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        Edwin Peer <epeer@juniper.net>
+Subject: [RFC PATCH bpf-next 0/2] unprivileged BPF_PROG_TEST_RUN 
+Thread-Topic: [RFC PATCH bpf-next 0/2] unprivileged BPF_PROG_TEST_RUN 
+Thread-Index: AQHVtgy6x2wMuQ42JECcwOBV53W8TA==
+Date:   Thu, 19 Dec 2019 01:36:26 +0000
+Message-ID: <20191219013534.125342-1-epeer@juniper.net>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [66.129.246.4]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 245377e9-1d32-44f7-bb0e-08d78423dd7e
+x-ms-traffictypediagnostic: CY4PR0501MB3778:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <CY4PR0501MB3778AB5CDDB13DCE41BFA7FCB3520@CY4PR0501MB3778.namprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:6108;
+x-forefront-prvs: 0256C18696
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(366004)(376002)(396003)(136003)(346002)(39860400002)(189003)(199004)(66556008)(8676002)(66476007)(66446008)(36756003)(107886003)(5660300002)(4744005)(6512007)(76116006)(71200400001)(478600001)(6486002)(66946007)(64756008)(81156014)(91956017)(4743002)(2906002)(6916009)(81166006)(86362001)(8936002)(1076003)(316002)(186003)(54906003)(2616005)(6506007)(26005)(4326008);DIR:OUT;SFP:1102;SCL:1;SRVR:CY4PR0501MB3778;H:CY4PR0501MB3827.namprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: juniper.net does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: Wy3NBE8l4ytK90JKV7mOpIcH0eZ2thaXOA1Q3H18Nqvoz4zIB3CnVA+tYDeYqxPyZIGVFIePY7gXhkxy5cPcQTkc7+0TjdKyYrrOnPKu5W6iDGC/rUiMyqg2M4G9emLT/cS+8Ef1RnmgeNlAFTG33MK6KFBuNFxovNhBe5v0FIM2dDrOFU5diIqEp4kRE6CZsP6EyVl5a2ByJdr7Mu3W129bbJvRZz6nD7THSGuruxeDl2EQurKzlO1Ly5HZ+M+Ew/cJ3VCoPoWYIyQZGF6sVmGndwaNc1XcTShsQ44RY3xiS91VoNbJiuuPA8pxofk2GJ4V1ElvMRqD7xKYXi1SeZOSv6Fo3uR5NG3PygvqIBY4kRkJEq2+WQu4uUMlIaTRJD5Ep4EfU93J5qXqECeigms+KQUfQ1KDdUyuFwAM8acs/idK+XkVs/8xECqZR5D9
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8BIT
+X-OriginatorOrg: juniper.net
+X-MS-Exchange-CrossTenant-Network-Message-Id: 245377e9-1d32-44f7-bb0e-08d78423dd7e
+X-MS-Exchange-CrossTenant-originalarrivaltime: 19 Dec 2019 01:36:26.9334
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: bea78b3c-4cdb-4130-854a-1d193232e5f4
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: +dZANPGAd5GxwlN+gMEZh65IedzzKlEGF1HZAzbxGJqqqQfU3cCQMvrUBBjTxyE4X20oABG+XxUbZHLbczeW4w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR0501MB3778
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
+ definitions=2019-12-18_08:2019-12-17,2019-12-18 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_spam_notspam policy=outbound_spam score=0 impostorscore=0
+ bulkscore=0 phishscore=0 mlxscore=0 lowpriorityscore=0 suspectscore=0
+ clxscore=1011 adultscore=0 malwarescore=0 mlxlogscore=728
+ priorityscore=1501 spamscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-1910280000 definitions=main-1912190009
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Ivan,
+Being able to load, verify and test BPF programs in unprivileged
+build environments is desirable. The two phase load and then
+test API makes this goal difficult to achieve, since relaxing
+permissions for BPF_PROG_TEST_RUN alone would be insufficient.
 
-Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org> writes:
+The approach taken in this proposal defers CAP_SYS_ADMIN checks
+until program attach time in order to unencumber BPF_PROG_LOAD.
 
->>>> Quoting Po Liu (2019-11-27 01:59:18)
->>>> > IEEE Std 802.1Qbu standard defined the frame preemption of port
->>>> > traffic classes. This patch introduce a method to set traffic classes
->>>> > preemption. Add a parameter 'preemption' in struct
->>>> > ethtool_link_settings. The value will be translated to a binary, each
->>>> > bit represent a traffic class. Bit "1" means preemptable traffic
->>>> > class. Bit "0" means express traffic class.  MSB represent high number
->>>> > traffic class.
->>>> >
->>>> > If hardware support the frame preemption, driver could set the
->>>> > ethernet device with hw_features and features with NETIF_F_PREEMPTION
->>>> > when initializing the port driver.
->>>> >
->>>> > User can check the feature 'tx-preemption' by command 'ethtool -k
->>>> > devname'. If hareware set preemption feature. The property would be a
->>>> > fixed value 'on' if hardware support the frame preemption.
->>>> > Feature would show a fixed value 'off' if hardware don't support the
->>>> > frame preemption.
->>
->>Having some knobs in ethtool to enable when/how Frame Preemption is
->>advertised on the wire makes sense. I also agree that it should be "on"
->>by default.
->>
->>>> >
->>>> > Command 'ethtool devname' and 'ethtool -s devname preemption N'
->>>> > would show/set which traffic classes are frame preemptable.
->>>> >
->>>> > Port driver would implement the frame preemption in the function
->>>> > get_link_ksettings() and set_link_ksettings() in the struct ethtool_ops.
->>>>
->>>> In an early RFC series [1], we proposed a way to support frame preemption. I'm
->>>> not sure if you have considered it before implementing this other proposal
->>>> based on ethtool interface so I thought it would be a good idea to bring that up
->>>> to your attention, just in case.
->>>
->>> Sorry, I didn't notice the RFC proposal. Using ethtool set the
->>> preemption just thinking about 8021Qbu as standalone. And not limit to
->>> the taprio if user won't set 802.1Qbv.
->>
->>I see your point of using frame-preemption "standalone", I have two
->>ideas:
->>
->> 1. add support in taprio to be configured without any schedule in the
->> "full offload" mode. In practice, allowing taprio to work somewhat
->> similar to (mqprio + frame-preemption), changes in the code should de
->> fairly small;
->
-> +
->
-> And if follow mqprio settings logic then preemption also can be enabled
-> immediately while configuring taprio first time, and similarly new ADMIN
-> can't change it and can be set w/o preemption option afterwards.
->
-> So that following is correct:
->
-> OPER
-> $ tc qdisc add dev IFACE parent root handle 100 taprio \
->       base-time 10000000 \
->       num_tc 3 \
->       map 2 2 1 0 2 2 2 2 2 2 2 2 2 2 2 2 \
->       queues 1@0 1@1 2@2 \
->       preemption 0 1 1 1
->       flags 1
->
-> then
-> ADMIN
-> $ tc qdisc add dev IFACE parent root handle 100 taprio \
->       base-time 12000000 \
->       num_tc 3 \
->       map 2 2 1 0 2 2 2 2 2 2 2 2 2 2 2 2 \
->       queues 1@0 1@1 2@2 \
->       preemption 0 1 1 1
->       sched-entry S 01 300000 \
->       sched-entry S 02 300000 \
->       flags 1
->
-> then
-> ADMIN
-> $ tc qdisc add dev IFACE parent root handle 100 taprio \
->       base-time 13000000 \
->       sched-entry S 01 300000 \
->       sched-entry S 02 300000 \
->       flags 1
->
-> BUT:
->
-> 1) The question is only should it be in this way? I mean preemption to be
-> enabled immediately? Also should include other parameters like
-> fragment size.
+Edwin Peer (2):
+  bpf: defer capability checks until program attach
+  bpf: relax CAP_SYS_ADMIN requirement for BPF_PROG_TEST_RUN
 
-We can decide what things are allowed/useful here. For example, it might
-make sense to allow "preemption" to be changed. We can extend taprio to
-support changing the fragment size, if that makes sense.
+ include/linux/filter.h |  3 ++-
+ kernel/bpf/syscall.c   | 27 +++++++++++++++++----------
+ 2 files changed, 19 insertions(+), 11 deletions(-)
 
->
-> 2) What if I want to use frame preemption with another "transmission selection
-> algorithm"? Say another one "time sensitive" - CBS? How is it going to be
-> stacked?
-
-I am not seeing any (conceptual*) problems when plugging a cbs (for
-example) qdisc into one of taprio children. Or, are you talking about a
-more general problem?
-
-* here I am considering that support for taprio without an schedule is
- added.
-
->
-> In this case ethtool looks better, allowing this "MAC level" feature, to be
-> configured separately.
-
-My only issue with using ethtool is that then we would have two
-different interfaces for "complementary" features. And it would make
-things even harder to configure and debug. The fact that one talks about
-traffic classes and the other transmission queues doesn't make me more
-comfortable as well.
-
-On the other hand, as there isn't a way to implement frame preemption in
-software, I agree that it makes it kind of awkward to have it in the tc
-subsystem.
-
-At this point, I am slightly in favor of the taprio approach (yes, I am
-biased :-), but I can be convinced otherwise. I will be only a little
-sad if we choose to go with ethtool for now, and then add support up in
-the stack, something similar to "ethtool -N" and "tc-flower".
-
->
->>
->> 2. extend mqprio to support frame-preemption;
->>
->>>
->>> As some feedback  also want to set the MAC merge minimal fragment size
->>> and get some more information of 802.3br.
->>
->>The minimal fragment size, I guess, also makes sense to be kept in
->>ethtool. That is we have a sane default, and allow the user to change
->>this setting for special cases.
->>
->>>
->>>>
->>>> In that initial proposal, Frame Preemption feature is configured via taprio qdisc.
->>>> For example:
->>>>
->>>> $ tc qdisc add dev IFACE parent root handle 100 taprio \
->>>>       num_tc 3 \
->>>>       map 2 2 1 0 2 2 2 2 2 2 2 2 2 2 2 2 \
->>>>       queues 1@0 1@1 2@2 \
->>>>       preemption 0 1 1 1 \
->>>>       base-time 10000000 \
->>>>       sched-entry S 01 300000 \
->>>>       sched-entry S 02 300000 \
->>>>       sched-entry S 04 400000 \
->>>>       clockid CLOCK_TAI
->>>>
->>>> It also aligns with the gate control operations Set-And-Hold-MAC and Set-And-
->>>> Release-MAC that can be set via 'sched-entry' (see Table 8.7 from
->>>> 802.1Q-2018 for further details.
->>>
->>> I am curious about Set-And-Hold-Mac via 'sched-entry'. Actually, it
->>> could be understand as guardband by hardware preemption. MAC should
->>> auto calculate the nano seconds before  express entry slot start to
->>> break to two fragments. Set-And-Hold-MAC should minimal larger than
->>> the fragment-size oct times.
->>
->>Another interesting point. My first idea is that when the schedule is
->>offloaded to the driver and the driver detects that the "entry" width is
->>smaller than the fragment side, the driver could reject that schedule
->>with a nice error message.
->
-> Looks ok, if entry command is RELEASE or SET only, but not HOLD, and
-> only if it contains express queues. And if for entry is expectable to have
-> interval shorter, the entry has to be marked as HOLD then.
->
-> But not every offload is able to support mac/hold per sched (there is
-> no HOLD/RELEASE commands in this case). For this case seems like here can
-> be 2 cases:
-
-Yeah, the hw I have in hand also doesn't support the HOLD/RELEASE
-commands.
-
->
-> 1) there is no “gate close” event for the preemptible traffic
-> 2) there is "gate close" event for the preemptable traffic
->
-> And both can have the following impact, if assume the main reason to
-> this guard check is to guarantee the express queue cannot be blocked while
-> this "close to short" interval opening ofc:
->
-> If a preemption fragment is started before "express" frame, then interval
-> should allow to complete preemption fragment and has to have enough time
-> to insert express frame. So here situation when maximum packet size per
-> each queue can have place.
->
-> In case of TI am65 this queue MTU is configurable per queue (for similar
-> reasons and couple more (packet fill feature for instance)) and can be
-> used for guard check also, but not clear where it should be. Seems like
-> it should be done using ethtool also, but can be needed for taprio
-> interface....
-
-For now, at least for the hardware I am working on, something like this
-is configurable, but I wasn't planning on exposing it, using the maximum
-ethernet frame size seemed a good default.
-
->
->>>
->>>>
->>>> Please share your thoughts on this.
->>>
->>> I am good to see there is frame preemption proposal. Each way is ok
->>> for me but ethtool is more flexible. I've seen the RFC the code. The
->>> hardware offload is in the mainline, but preemption is not yet, I
->>> don't know why. Could you post it again?
->>
->>It's not mainline because this kind of stuff will not be accepted
->>upstream without in-tree users. And you are the first one to propose
->>such a thing :-)
->>
->>It's just now that I have something that supports frame-preemption, the
->>code I have is approaching RFC-like quality. I will send another RFC
->>this week hopefully, and we can see how things look in practice.
->>
->>
->>Cheers,
->>--
->>Vinicius
->
-> -- 
-> Regards,
-> Ivan Khoronzhuk
-
-Cheers,
---
-Vinicius
+--=20
+2.24.1
