@@ -2,309 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B142D126E1D
-	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 20:41:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D74D126E5F
+	for <lists+netdev@lfdr.de>; Thu, 19 Dec 2019 21:06:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727412AbfLSTlZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Dec 2019 14:41:25 -0500
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:44130 "EHLO
-        mx0b-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727218AbfLSTlY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Dec 2019 14:41:24 -0500
-Received: from pps.filterd (m0127361.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xBJJcb30181182;
-        Thu, 19 Dec 2019 14:41:20 -0500
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 2x0efrjh32-1
+        id S1727016AbfLSUGl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Dec 2019 15:06:41 -0500
+Received: from mx0b-00273201.pphosted.com ([67.231.152.164]:24368 "EHLO
+        mx0b-00273201.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726906AbfLSUGl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Dec 2019 15:06:41 -0500
+Received: from pps.filterd (m0108162.ppops.net [127.0.0.1])
+        by mx0b-00273201.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xBJK6NW8006532;
+        Thu, 19 Dec 2019 12:06:23 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=juniper.net; h=from : to : cc :
+ subject : date : message-id : references : in-reply-to : content-type :
+ content-id : content-transfer-encoding : mime-version; s=PPS1017;
+ bh=2OOoPPZ3opPj95nLaLsYmfp+ijeBUkikHIAXzqVnTM8=;
+ b=xgwhkwffYnLAPw9qlmGSGNd6YWIj54veeUyYQRCvJZhWxLW4WGA+N89Q7QtsZShVAnOl
+ 7EgoP4yF/urs7OycVtt39cOjznY41zCwIt0+8leG9kmxHkiVoa8gJul03yNdTh4sHHfR
+ 30dbviwqZg2VLN8Qm690LMqLoEKxFyLni58tIRN75Nf/cdHG6nnZQ7QFPh8Aw9z8rgbG
+ Ux2EdfxdW0rdLkHsUho1rx88Pz6zyitura5LwXPGhPVK9d3ImU9I2y+lR8FCgPLEELsE
+ Q/YT64nKohrGFZZiRWoJHauZ6hSPvqs5VZv8yH9G5OxoJdkd5jM2OqvgYf9Q9USJZP9X EQ== 
+Received: from nam10-mw2-obe.outbound.protection.outlook.com (mail-mw2nam10lp2107.outbound.protection.outlook.com [104.47.55.107])
+        by mx0b-00273201.pphosted.com with ESMTP id 2x05dwh3c8-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 19 Dec 2019 14:41:20 -0500
-Received: from m0127361.ppops.net (m0127361.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id xBJJdBKU182869;
-        Thu, 19 Dec 2019 14:41:19 -0500
-Received: from ppma01dal.us.ibm.com (83.d6.3fa9.ip4.static.sl-reverse.com [169.63.214.131])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 2x0efrjh27-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 19 Dec 2019 14:41:19 -0500
-Received: from pps.filterd (ppma01dal.us.ibm.com [127.0.0.1])
-        by ppma01dal.us.ibm.com (8.16.0.27/8.16.0.27) with SMTP id xBJJeXpJ012785;
-        Thu, 19 Dec 2019 19:41:18 GMT
-Received: from b03cxnp08028.gho.boulder.ibm.com (b03cxnp08028.gho.boulder.ibm.com [9.17.130.20])
-        by ppma01dal.us.ibm.com with ESMTP id 2wvqc7ddc7-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 19 Dec 2019 19:41:18 +0000
-Received: from b03ledav005.gho.boulder.ibm.com (b03ledav005.gho.boulder.ibm.com [9.17.130.236])
-        by b03cxnp08028.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id xBJJfGik35520940
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 19 Dec 2019 19:41:16 GMT
-Received: from b03ledav005.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 8DC57BE051;
-        Thu, 19 Dec 2019 19:41:16 +0000 (GMT)
-Received: from b03ledav005.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 1B9BFBE04F;
-        Thu, 19 Dec 2019 19:41:15 +0000 (GMT)
-Received: from localhost.localdomain (unknown [9.160.22.203])
-        by b03ledav005.gho.boulder.ibm.com (Postfix) with ESMTP;
-        Thu, 19 Dec 2019 19:41:14 +0000 (GMT)
-From:   Cris Forno <cforno12@linux.vnet.ibm.com>
-To:     netdev@vger.kernel.org
-Cc:     mst@redhat.com, jasowang@redhat.com, haiyangz@microsoft.com,
-        sthemmin@microsoft.com, sashal@kernel.org, tlfalcon@linux.ibm.com,
-        Cris Forno <cforno12@linux.vnet.ibm.com>
-Subject: [PATCH, net-next, v3, 2/2] With get/set link settings functions in core/ethtool.c, ibmveth, netvsc, and virtio now use the core's helper function.
-Date:   Thu, 19 Dec 2019 13:40:57 -0600
-Message-Id: <20191219194057.4208-3-cforno12@linux.vnet.ibm.com>
-X-Mailer: git-send-email 2.24.1
-In-Reply-To: <20191219194057.4208-1-cforno12@linux.vnet.ibm.com>
-References: <20191219194057.4208-1-cforno12@linux.vnet.ibm.com>
+        Thu, 19 Dec 2019 12:06:23 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=cNsqZcWxDsHYacut5OIPweDJ+CVUXJOBeVeD/8uKd1tTkPP/sD3gP/bteG3tKadnZURoVOSvwJAXJOK73voz61bz2O8XUAx+GR9buUcTf/XCslfiUWdSTNMY8iUoi/fgYgZTY4yaSiF16xG3Y/kTzOeY2BpLZnyyUDSS4N0tBPcU12LGhvQresA/5r7jApyJqC9B/vO8OiwURNbE0WW9nsMi+uP0ymx8WHtkWwiYccxwbn/1ppWDXaTX8G6FiE371b57+q6/3qsePVZWGYwOZ6dDti6qNahTEtmMJG304rQl91KBFdW//dBJGfahXYQavn1Y9RphfZXkX0rRTLqTsg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=2OOoPPZ3opPj95nLaLsYmfp+ijeBUkikHIAXzqVnTM8=;
+ b=Prm0crSXBF1Ao53d0xdSYgL1kKF/S1j7di5Liv+6sYBMk+hy0YRcQNw/TW5JiaWjUb2yeQHUb8VKom7tcI4CtWe6DBLi1yM/TRedwNI++NsHDg6rXfwPvPv6ixMPoXr9NVWiSQfWcG7xUAaO9rRIzZlUSn11tEa8R9HkbQK2z6m8t3fVdNcYWGH9fonyQMRRzuIA2muGDCw6LANFYYFrmHZrR59anhpP7bUJuUNJsMosmEMhr/tTn4DFTdg45sZEaeP9UM1NzAhjoLG+71hIlpAHQXjXHyXTucCbKac5pSM3qOY26Av3vuzJMld+S5rCVedeGN0eF8xnLb09ULOnjQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=juniper.net; dmarc=pass action=none header.from=juniper.net;
+ dkim=pass header.d=juniper.net; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=juniper.net;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=2OOoPPZ3opPj95nLaLsYmfp+ijeBUkikHIAXzqVnTM8=;
+ b=i56bz1aYsXajXgJyLTSCi5jbVGEcdzC3jxRQCBWOuoR4JEF9n7V+oh5Dj9mqEQ8/pJyTWvZZyKRsj4iXVvxKEHM5GembgBJrE0A5GId6Rhu7t13z+K97UkIyczDV6/ncPCt7AgsU6jyj1EpYFTUFaxfB0jc6uo4WGiUOV4w6gV0=
+Received: from CY4PR0501MB3827.namprd05.prod.outlook.com (52.132.99.143) by
+ CY4PR0501MB3715.namprd05.prod.outlook.com (52.132.100.157) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2538.6; Thu, 19 Dec 2019 20:06:21 +0000
+Received: from CY4PR0501MB3827.namprd05.prod.outlook.com
+ ([fe80::8d77:6795:84cf:dd47]) by CY4PR0501MB3827.namprd05.prod.outlook.com
+ ([fe80::8d77:6795:84cf:dd47%7]) with mapi id 15.20.2559.012; Thu, 19 Dec 2019
+ 20:06:21 +0000
+From:   Edwin Peer <epeer@juniper.net>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+CC:     Daniel Borkmann <daniel@iogearbox.net>,
+        Y Song <ys114321@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "ast@kernel.org" <ast@kernel.org>, bpf <bpf@vger.kernel.org>
+Subject: Re: [RFC PATCH bpf-next 0/2] unprivileged BPF_PROG_TEST_RUN
+Thread-Topic: [RFC PATCH bpf-next 0/2] unprivileged BPF_PROG_TEST_RUN
+Thread-Index: AQHVtgy6x2wMuQ42JECcwOBV53W8TKfBDSIA///4BwCAAJXcAP//j9uAgACtiID//4TxAA==
+Date:   Thu, 19 Dec 2019 20:06:21 +0000
+Message-ID: <9A7BE6FA-92FD-411F-BF8C-80484F1B0FBA@juniper.net>
+References: <20191219013534.125342-1-epeer@juniper.net>
+ <CAH3MdRUTcd7rjum12HBtrQ_nmyx0LvdOokZmA1YuhP2WtGfJqA@mail.gmail.com>
+ <69266F42-6D0B-4F0B-805C-414880AC253D@juniper.net>
+ <20191219154704.GC4198@linux-9.fritz.box>
+ <CEA84064-FF2B-4AA7-84EE-B768D6ABC077@juniper.net>
+ <20191219192645.5tbvxlhuugstokxf@ast-mbp.dhcp.thefacebook.com>
+In-Reply-To: <20191219192645.5tbvxlhuugstokxf@ast-mbp.dhcp.thefacebook.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+msip_labels: MSIP_Label_9784d817-3396-4a4f-b60c-3ef6b345fe55_Enabled=true;MSIP_Label_9784d817-3396-4a4f-b60c-3ef6b345fe55_Name=Juniper
+ Business Use
+ Only;MSIP_Label_9784d817-3396-4a4f-b60c-3ef6b345fe55_Enabled=true;MSIP_Label_9784d817-3396-4a4f-b60c-3ef6b345fe55_SiteId=bea78b3c-4cdb-4130-854a-1d193232e5f4;MSIP_Label_9784d817-3396-4a4f-b60c-3ef6b345fe55_ContentBits=0;MSIP_Label_9784d817-3396-4a4f-b60c-3ef6b345fe55_Method=Standard;MSIP_Label_9784d817-3396-4a4f-b60c-3ef6b345fe55_ActionId=dcdc48b8-d966-4fc9-9883-0000bd1c4933;MSIP_Label_9784d817-3396-4a4f-b60c-3ef6b345fe55_SetDate=2019-12-19T19:50:02Z;
+x-originating-ip: [66.129.242.11]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 61573581-6e21-4e75-c77d-08d784beeae6
+x-ms-traffictypediagnostic: CY4PR0501MB3715:
+x-microsoft-antispam-prvs: <CY4PR0501MB3715EBBE07B1784407A11357B3520@CY4PR0501MB3715.namprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-forefront-prvs: 0256C18696
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(136003)(396003)(366004)(376002)(39860400002)(346002)(199004)(189003)(6512007)(81166006)(81156014)(8676002)(6916009)(66476007)(66446008)(64756008)(66556008)(6486002)(86362001)(66946007)(76116006)(71200400001)(316002)(33656002)(91956017)(2616005)(2906002)(186003)(5660300002)(4326008)(36756003)(26005)(478600001)(8936002)(54906003)(6506007)(53546011);DIR:OUT;SFP:1102;SCL:1;SRVR:CY4PR0501MB3715;H:CY4PR0501MB3827.namprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: juniper.net does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: iP4dtOsRpEWkgRMQGOT2J1nBlsCZlIaifZZ5smMPy+v1OaxeJT+fHL2/8xWWX595WJInaL8fSCC25FQSL2DferdkgKvI0TM01ngKr3luhUAhrTwLugFA2tRYKbPT+tK3cVMYHIoL7ZhuYjJRXE/653XEO+fixfXSVfU5X32NsmDaf5ntShcWLgnx+m8CGapz4wyGwXIf959eWpU55OpF5RFvJ1GLcdCB6xtzh+M8L+YuX0KQR3dVK3hp/xTaABAnzWXrZJS4roftrnViivRwqCIp1bkkjm44aphEjCDqngOXtW4CijAsNhn2BeHKJgLnWRKtJtgXPrqhXjnFx41Sh5setqkudQAzZyFYGQpUCO1ipLOaZEB4a4xaLx1PT8GvSuuSvHARQz72tNlwDkRv2K35XCPa1IJMjTQXOYhTVMlKYD5eN08cP6Dnj3D19jn8
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <12C2DF504ADF2D40BD71437413C8DBC9@namprd05.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
+X-OriginatorOrg: juniper.net
+X-MS-Exchange-CrossTenant-Network-Message-Id: 61573581-6e21-4e75-c77d-08d784beeae6
+X-MS-Exchange-CrossTenant-originalarrivaltime: 19 Dec 2019 20:06:21.4238
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: bea78b3c-4cdb-4130-854a-1d193232e5f4
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: /yM696A35pXHOIe7I87+DGRYtdDnGQs5d7EPOvO79BymCsrU8On2pNRSVTtKjhrU8Mp8z+gWSBw8+gXSBj4ejA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR0501MB3715
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
  definitions=2019-12-19_06:2019-12-17,2019-12-19 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- adultscore=0 mlxscore=0 suspectscore=1 mlxlogscore=999 priorityscore=1501
- clxscore=1015 spamscore=0 phishscore=0 bulkscore=0 impostorscore=0
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-1910280000 definitions=main-1912190145
+X-Proofpoint-Spam-Details: rule=outbound_spam_notspam policy=outbound_spam score=0 clxscore=1011
+ mlxlogscore=999 adultscore=0 suspectscore=0 lowpriorityscore=0
+ impostorscore=0 spamscore=0 malwarescore=0 bulkscore=0 priorityscore=1501
+ mlxscore=0 phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-1910280000 definitions=main-1912190147
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Signed-off-by: Cris Forno <cforno12@linux.vnet.ibm.com>
----
- drivers/net/ethernet/ibm/ibmveth.c | 60 +++++++++++++++++++++-----------------
- drivers/net/ethernet/ibm/ibmveth.h |  3 ++
- drivers/net/hyperv/netvsc_drv.c    | 21 ++++---------
- drivers/net/virtio_net.c           | 45 ++++------------------------
- 4 files changed, 46 insertions(+), 83 deletions(-)
-
-diff --git a/drivers/net/ethernet/ibm/ibmveth.c b/drivers/net/ethernet/ibm/ibmveth.c
-index c5be4eb..6f9350ca5 100644
---- a/drivers/net/ethernet/ibm/ibmveth.c
-+++ b/drivers/net/ethernet/ibm/ibmveth.c
-@@ -712,31 +712,34 @@ static int ibmveth_close(struct net_device *netdev)
- 	return 0;
- }
- 
--static int netdev_get_link_ksettings(struct net_device *dev,
--				     struct ethtool_link_ksettings *cmd)
-+static int ibmveth_set_link_ksettings(struct net_device *dev,
-+				      const struct ethtool_link_ksettings *cmd)
- {
--	u32 supported, advertising;
--
--	supported = (SUPPORTED_1000baseT_Full | SUPPORTED_Autoneg |
--				SUPPORTED_FIBRE);
--	advertising = (ADVERTISED_1000baseT_Full | ADVERTISED_Autoneg |
--				ADVERTISED_FIBRE);
--	cmd->base.speed = SPEED_1000;
--	cmd->base.duplex = DUPLEX_FULL;
--	cmd->base.port = PORT_FIBRE;
--	cmd->base.phy_address = 0;
--	cmd->base.autoneg = AUTONEG_ENABLE;
--
--	ethtool_convert_legacy_u32_to_link_mode(cmd->link_modes.supported,
--						supported);
--	ethtool_convert_legacy_u32_to_link_mode(cmd->link_modes.advertising,
--						advertising);
-+	struct ibmveth_adapter *adapter = netdev_priv(dev);
- 
--	return 0;
-+	return ethtool_virtdev_set_ksettings(dev, cmd,
-+					     &adapter->speed, &adapter->duplex);
-+}
-+
-+static int ibmveth_get_link_ksettings(struct net_device *dev,
-+				      struct ethtool_link_ksettings *cmd)
-+{
-+	struct ibmveth_adapter *adapter = netdev_priv(dev);
-+
-+	return ethtool_virtdev_get_ksettings(dev, cmd,
-+					     &adapter->speed, &adapter->duplex);
-+}
-+
-+static void ibmveth_init_link_settings(struct net_device *dev)
-+{
-+	struct ibmveth_adapter *adapter = netdev_priv(dev);
-+
-+	adapter->speed = SPEED_1000;
-+	adapter->duplex = DUPLEX_FULL;
- }
- 
--static void netdev_get_drvinfo(struct net_device *dev,
--			       struct ethtool_drvinfo *info)
-+static void ibmveth_get_drvinfo(struct net_device *dev,
-+				struct ethtool_drvinfo *info)
- {
- 	strlcpy(info->driver, ibmveth_driver_name, sizeof(info->driver));
- 	strlcpy(info->version, ibmveth_driver_version, sizeof(info->version));
-@@ -965,12 +968,14 @@ static void ibmveth_get_ethtool_stats(struct net_device *dev,
- }
- 
- static const struct ethtool_ops netdev_ethtool_ops = {
--	.get_drvinfo		= netdev_get_drvinfo,
--	.get_link		= ethtool_op_get_link,
--	.get_strings		= ibmveth_get_strings,
--	.get_sset_count		= ibmveth_get_sset_count,
--	.get_ethtool_stats	= ibmveth_get_ethtool_stats,
--	.get_link_ksettings	= netdev_get_link_ksettings,
-+	.get_drvinfo		         = ibmveth_get_drvinfo,
-+	.get_link		         = ethtool_op_get_link,
-+	.get_strings		         = ibmveth_get_strings,
-+	.get_sset_count		         = ibmveth_get_sset_count,
-+	.get_ethtool_stats	         = ibmveth_get_ethtool_stats,
-+	.get_link_ksettings	         = ibmveth_get_link_ksettings,
-+	.set_link_ksettings              = ibmveth_set_link_ksettings,
-+	.virtdev_validate_link_ksettings = ethtool_virtdev_validate_cmd,
- };
- 
- static int ibmveth_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
-@@ -1648,6 +1653,7 @@ static int ibmveth_probe(struct vio_dev *dev, const struct vio_device_id *id)
- 	adapter->netdev = netdev;
- 	adapter->mcastFilterSize = be32_to_cpu(*mcastFilterSize_p);
- 	adapter->pool_config = 0;
-+	ibmveth_init_link_settings(netdev);
- 
- 	netif_napi_add(netdev, &adapter->napi, ibmveth_poll, 16);
- 
-diff --git a/drivers/net/ethernet/ibm/ibmveth.h b/drivers/net/ethernet/ibm/ibmveth.h
-index 4e9bf34..27dfff2 100644
---- a/drivers/net/ethernet/ibm/ibmveth.h
-+++ b/drivers/net/ethernet/ibm/ibmveth.h
-@@ -162,6 +162,9 @@ struct ibmveth_adapter {
-     u64 tx_send_failed;
-     u64 tx_large_packets;
-     u64 rx_large_packets;
-+    /* Ethtool settings */
-+	u8 duplex;
-+	u32 speed;
- };
- 
- /*
-diff --git a/drivers/net/hyperv/netvsc_drv.c b/drivers/net/hyperv/netvsc_drv.c
-index 5fa5c49..d0dfa8e 100644
---- a/drivers/net/hyperv/netvsc_drv.c
-+++ b/drivers/net/hyperv/netvsc_drv.c
-@@ -1084,29 +1084,17 @@ static int netvsc_get_link_ksettings(struct net_device *dev,
- {
- 	struct net_device_context *ndc = netdev_priv(dev);
- 
--	cmd->base.speed = ndc->speed;
--	cmd->base.duplex = ndc->duplex;
--	cmd->base.port = PORT_OTHER;
--
--	return 0;
-+	return ethtool_virtdev_get_link_ksettings(dev, cmd,
-+						  &ndc->speed, &ndc->duplex);
- }
- 
- static int netvsc_set_link_ksettings(struct net_device *dev,
- 				     const struct ethtool_link_ksettings *cmd)
- {
- 	struct net_device_context *ndc = netdev_priv(dev);
--	u32 speed;
--
--	speed = cmd->base.speed;
--	if (!ethtool_validate_speed(speed) ||
--	    !ethtool_validate_duplex(cmd->base.duplex) ||
--	    !netvsc_validate_ethtool_ss_cmd(cmd))
--		return -EINVAL;
--
--	ndc->speed = speed;
--	ndc->duplex = cmd->base.duplex;
- 
--	return 0;
-+	return ethtool_virtdev_set_link_ksettings(dev, cmd,
-+						  &ndc->speed, &ndc->duplex);
- }
- 
- static int netvsc_change_mtu(struct net_device *ndev, int mtu)
-@@ -1867,6 +1855,7 @@ static void netvsc_set_msglevel(struct net_device *ndev, u32 val)
- 	.set_link_ksettings = netvsc_set_link_ksettings,
- 	.get_ringparam	= netvsc_get_ringparam,
- 	.set_ringparam	= netvsc_set_ringparam,
-+	.virtdev_validate_link_ksettings = netvsc_validate_ethtool_ss_cmd,
- };
- 
- static const struct net_device_ops device_ops = {
-diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-index 5a635f0..5cbcb16 100644
---- a/drivers/net/virtio_net.c
-+++ b/drivers/net/virtio_net.c
-@@ -2166,48 +2166,15 @@ static void virtnet_get_channels(struct net_device *dev,
- 	channels->other_count = 0;
- }
- 
--/* Check if the user is trying to change anything besides speed/duplex */
--static bool
--virtnet_validate_ethtool_cmd(const struct ethtool_link_ksettings *cmd)
--{
--	struct ethtool_link_ksettings diff1 = *cmd;
--	struct ethtool_link_ksettings diff2 = {};
--
--	/* cmd is always set so we need to clear it, validate the port type
--	 * and also without autonegotiation we can ignore advertising
--	 */
--	diff1.base.speed = 0;
--	diff2.base.port = PORT_OTHER;
--	ethtool_link_ksettings_zero_link_mode(&diff1, advertising);
--	diff1.base.duplex = 0;
--	diff1.base.cmd = 0;
--	diff1.base.link_mode_masks_nwords = 0;
--
--	return !memcmp(&diff1.base, &diff2.base, sizeof(diff1.base)) &&
--		bitmap_empty(diff1.link_modes.supported,
--			     __ETHTOOL_LINK_MODE_MASK_NBITS) &&
--		bitmap_empty(diff1.link_modes.advertising,
--			     __ETHTOOL_LINK_MODE_MASK_NBITS) &&
--		bitmap_empty(diff1.link_modes.lp_advertising,
--			     __ETHTOOL_LINK_MODE_MASK_NBITS);
- }
- 
- static int virtnet_set_link_ksettings(struct net_device *dev,
- 				      const struct ethtool_link_ksettings *cmd)
- {
- 	struct virtnet_info *vi = netdev_priv(dev);
--	u32 speed;
- 
--	speed = cmd->base.speed;
--	/* don't allow custom speed and duplex */
--	if (!ethtool_validate_speed(speed) ||
--	    !ethtool_validate_duplex(cmd->base.duplex) ||
--	    !virtnet_validate_ethtool_cmd(cmd))
--		return -EINVAL;
--	vi->speed = speed;
--	vi->duplex = cmd->base.duplex;
--
--	return 0;
-+	return ethtool_virtdev_set_link_ksettings(dev, cmd,
-+						  &vi->speed, &vi->duplex);
- }
- 
- static int virtnet_get_link_ksettings(struct net_device *dev,
-@@ -2215,11 +2182,8 @@ static int virtnet_get_link_ksettings(struct net_device *dev,
- {
- 	struct virtnet_info *vi = netdev_priv(dev);
- 
--	cmd->base.speed = vi->speed;
--	cmd->base.duplex = vi->duplex;
--	cmd->base.port = PORT_OTHER;
--
--	return 0;
-+	return ethtool_virtdev_get_link_ksettings(dev, cmd,
-+						  vi->speed, vi->duplex);
- }
- 
- static int virtnet_set_coalesce(struct net_device *dev,
-@@ -2309,6 +2273,7 @@ static void virtnet_update_settings(struct virtnet_info *vi)
- 	.set_link_ksettings = virtnet_set_link_ksettings,
- 	.set_coalesce = virtnet_set_coalesce,
- 	.get_coalesce = virtnet_get_coalesce,
-+	.virtdev_validate_link_ksettings = ethtool_virtdev_validate_cmd,
- };
- 
- static void virtnet_freeze_down(struct virtio_device *vdev)
--- 
-1.8.3.1
-
+T24gMTIvMTkvMTksIDExOjI2LCAiQWxleGVpIFN0YXJvdm9pdG92IiA8YWxleGVpLnN0YXJvdm9p
+dG92QGdtYWlsLmNvbT4gd3JvdGU6DQoNCj4gT24gVGh1LCBEZWMgMTksIDIwMTkgYXQgMDU6MDU6
+NDJQTSArMDAwMCwgRWR3aW4gUGVlciB3cm90ZToNCj4+IE9uIDEyLzE5LzE5LCAwNzo0NywgIkRh
+bmllbCBCb3JrbWFubiIgPGRhbmllbEBpb2dlYXJib3gubmV0PiB3cm90ZToNCj4+IA0KPj4gPiAg
+V2hhdCBhYm91dCBDQVBfQlBGPw0KPj4gDQo+PiBXaGF0IGlzIHRoZSBzdGF0dXMgb2YgdGhpcz8g
+SXQgbWlnaHQgc29sdmUgc29tZSBvZiB0aGUgcHJvYmxlbXMsIGJ1dCBpdCBpcyBzdGlsbCBwdXRz
+IHRlc3RpbmcNCj4+IEJQRiBvdXRzaWRlIHJlYWNoIG9mIG5vcm1hbCB1c2Vycy4NCj4gICAgDQo+
+IHdoeT8NCj4gSSB0aGluayBDQVBfQlBGIGlzIHNvbHZpbmcgZXhhY3RseSB3aGF0IHlvdSdyZSB0
+cnlpbmcgdG8gYWNoaWV2ZS4NCg0KSSdtIHRyeWluZyB0byBwcm92aWRlIGFjY2VzcyB0byBCUEYg
+dGVzdGluZyBpbmZyYXN0cnVjdHVyZSBmb3IgdW5wcml2aWxlZ2VkDQp1c2VycyAoYXNzdW1pbmcg
+aXQgY2FuIGJlIGRvbmUgaW4gYSBzYWZlIHdheSwgd2hpY2ggSSdtIGFzIHlldCB1bnN1cmUgb2Yp
+Lg0KQ0FQX0JQRiBpcyBub3QgdGhlIHNhbWUgdGhpbmcsIGJlY2F1c2UgYXQgbGVhc3Qgc29tZSBr
+aW5kIG9mIHJvb3QNCmludGVydmVudGlvbiBpcyByZXF1aXJlZCB0byBhdHRhaW4gQ0FQX0JQRiBp
+biB0aGUgZmlyc3QgcGxhY2UuDQoNCj4gV2hldGhlciBicGZfY2xvbmVfcmVkaXJlY3QoKSBpcyBz
+dWNoIGhlbHBlciBpcyBzdGlsbCB0YmQuIFVucHJpdiB1c2VyIGNhbiBmbG9vZCBuZXRkZXZzDQo+
+IHdpdGhvdXQgYW55IGJwZi4NCiAgIA0KVHJ1ZSwgYnV0IHByZXN1bWFibHkgc3VjaCB3b3VsZCBz
+dGlsbCBiZSBzdWJqZWN0IHRvIGFkbWluaXN0cmF0b3INCmNvbnRyb2xsZWQgUW9TIGFuZCBmaXJl
+d2FsbCBwb2xpY3k/IEFsc28gdW5wcml2aWxlZ2VkIHVzZXJzIHByZXN1bWFibHkNCmNhbid0IGNy
+ZWF0ZSBhcmJpdHJhcnkgcGFja2V0cyBjb21pbmcgZnJvbSBzcG9vZmVkIElQcyAvIE1BQ3MsIHdo
+aWNoIEkNCmJlbGlldmUgcmVxdWlyZXMgQ0FQX05FVF9SQVc/DQogDQo+PiBBcmUgdGhlcmUgb3Ro
+ZXIgaGVscGVycyBvZiBjb25jZXJuIHRoYXQgY29tZSBpbW1lZGlhdGVseSB0byBtaW5kPyBBIGZp
+cnN0IHN0YWIgbWlnaHQNCj4+IGFkZCB0aGVzZSB0byB0aGUgbGlzdCBpbiB0aGUgdmVyaWZpZXIg
+dGhhdCByZXF1aXJlIHByaXZpbGVnZS4gVGhpcyBoYXMgdGhlIGRyYXdiYWNrIHRoYXQNCj4+IHBy
+b2dyYW1zIHRoYXQgYWN0dWFsbHkgbmVlZCB0aGlzIGtpbmQgb2YgZnVuY3Rpb25hbGl0eSBhcmUg
+YmV5b25kIHRoZSB0ZXN0IGZyYW1ld29yay4NCj4gICAgDQo+ICAgU28gZmFyIG1ham9yaXR5IG9m
+IHByb2dyYW1zIHJlcXVpcmUgcm9vdC1vbmx5IHZlcmlmaWVyIGZlYXR1cmVzLiBUaGUgcHJvZ3Jh
+bXMgYXJlDQo+ICAgZ2V0dGluZyBtb3JlIGNvbXBsZXggYW5kIGJlbmVmaXQgdGhlIG1vc3QgZnJv
+bSB0ZXN0aW5nLiBSZWxheGluZyB0ZXN0X3J1biBmb3IgdW5wcml2DQo+ICAgcHJvZ3MgaXMgaW1v
+IHZlcnkgbmFycm93IHVzZSBjYXNlLiBJJ2QgcmF0aGVyIHVzZSBDQVBfQlBGLg0KICAgIA0KVGhl
+IG1vcmUgZWxhYm9yYXRlIHByb3Bvc2FsIGNhbGxlZCBmb3IgbW9ja2luZyB0aGVzZSBhc3BlY3Rz
+IGZvcg0KdGVzdGluZywgd2hpY2ggY291bGQgY29uY2VpdmFibHkgcmVzb2x2ZSB0aGlzPyBUaGF0
+IHNhaWQsIEkgc2VlIGFuDQppbmNyZW1lbnRhbCBwYXRoIHRvIHRoaXMsIGFkZGluZyBzdWNoIGFz
+IG5lZWRlZC4gVGhlIG5hcnJvd25lc3MNCm9mIHRoZSB1c2UgY2FzZSByZWFsbHkgZGVwZW5kcyBv
+biBleGFjdGx5IHdoYXQgeW91J3JlIHRyeWluZyB0byBkby4NClNvbWV0aGluZyBpbiBYRFAsIGZv
+ciBleGFtcGxlLCBoYXMgdmVyeSBsaXR0bGUga2VybmVsIGRlcGVuZGVuY2llcw0KKHBvc3NpYmx5
+IG5vbmUgdGhhdCB3b3VsZCBiZSBhZmZlY3RlZCBoZXJlKSBhbmQgcmVwcmVzZW50cyBhbiBlbnRp
+cmUNCmNsYXNzIG9mIHVzZSBjYXNlcyB0aGF0IGNvdWxkIGhhdmUgdW5wcml2aWxlZ2VkIHRlc3Rp
+bmcgYmUgc3VwcG9ydGVkLg0KDQpSZWdhcmRzLA0KRWR3aW4gUGVlcg0KDQo=
