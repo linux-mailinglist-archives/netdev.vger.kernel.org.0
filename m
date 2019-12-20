@@ -2,91 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 179D612763F
-	for <lists+netdev@lfdr.de>; Fri, 20 Dec 2019 08:08:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 582C2127667
+	for <lists+netdev@lfdr.de>; Fri, 20 Dec 2019 08:19:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727258AbfLTHIW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Dec 2019 02:08:22 -0500
-Received: from mail-pj1-f66.google.com ([209.85.216.66]:35204 "EHLO
-        mail-pj1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726276AbfLTHIW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Dec 2019 02:08:22 -0500
-Received: by mail-pj1-f66.google.com with SMTP id s7so3720419pjc.0
-        for <netdev@vger.kernel.org>; Thu, 19 Dec 2019 23:08:21 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=VkSt1ax+YAi0/mMhSwhEi8OzDSFahuyLq2lVA3SwBbI=;
-        b=qaa05edqYwWQnq8m2MzNaWQrBr0kX89i6LgkkTEVJXtDrMEhpKuHbCf1H9EiDDgaf+
-         SNnFlg0suDvE0iAlR6Sirpu7mj54A2fCkA1us1OEo/nTjhByOGZyGSrQtU4Qgwl4R8jm
-         J7YEEAVRZh2u73aNy3cbxfJnCdOxJgu1z7sPB6cfPA4oiWXaVbyQ2kIo4gqL3p83gdqI
-         sSd174hdEquaPy5Kx6hqYwxZZ6XBi3V8a27nrgV+29EEoGKeXDTPWtQBdCsT6NjTmf/X
-         CqFsLgdGQygC5PHnMgATnA7itpe+Q8UR741BitmPBFajX4OFC/bqSYKgwvk8oerzZqiy
-         BxAQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=VkSt1ax+YAi0/mMhSwhEi8OzDSFahuyLq2lVA3SwBbI=;
-        b=GZi8vl+UJ5K8XakFPhuwLsuiZTgNT38DyTjGzvliDP2xg1TdV4PhCZZEWGyu1P6t1c
-         3Udy+3Xg5qK2CBs1lR/cyHToM5rNcz00xTgz1CWTbzVaMEGfPt2QIKaWenOiZFDDK7n1
-         KjA0plC4xTtYWlHJRew+JUbuemIhO7AL/UA4Ku+fDbhK+lYkHzxbcdaBOulwA41GSp79
-         wtFhINbmcA6yJMxzcMNiNEfHPW6bwRjx5X1J7QOPvpjlq3b1taIKd5cT2x9bcP2u3JQn
-         VK5ZSHhqGOZRRFXIhlXc+C9Wp1NaHhGQDUxU1Ivg4Qdys6ufLJZxGAIBJ+VtGrpVxp8o
-         3ZRw==
-X-Gm-Message-State: APjAAAVHfU66et/l93I40SmBqytKmOfmjVsd01w6K5Jx6KsddwlCcRDb
-        0M84iOEr00W6HQrIoYPaeJnBq8FdhD8=
-X-Google-Smtp-Source: APXvYqykSkSC5iMD1/AUbHlmtqbwoB7KFjGLdZQM+RUT43LaNV31iwUlT/16w9xyyNv8xFXGgxAszg==
-X-Received: by 2002:a17:902:fe0d:: with SMTP id g13mr13494034plj.277.1576825701217;
-        Thu, 19 Dec 2019 23:08:21 -0800 (PST)
-Received: from dhcp-12-139.nay.redhat.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id i127sm11781410pfe.54.2019.12.19.23.08.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 19 Dec 2019 23:08:20 -0800 (PST)
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Sabrina Dubroca <sd@queasysnail.net>,
-        Stefano Brivio <sbrivio@redhat.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Hangbin Liu <liuhangbin@gmail.com>
-Subject: [PATCH net] selftests: pmtu: fix init mtu value in description
-Date:   Fri, 20 Dec 2019 15:08:06 +0800
-Message-Id: <20191220070806.9855-1-liuhangbin@gmail.com>
-X-Mailer: git-send-email 2.19.2
+        id S1726327AbfLTHTm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Dec 2019 02:19:42 -0500
+Received: from mail26.static.mailgun.info ([104.130.122.26]:13887 "EHLO
+        mail26.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725920AbfLTHTl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Dec 2019 02:19:41 -0500
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1576826381; h=Content-Type: MIME-Version: Message-ID:
+ In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
+ bh=qQnAOBnm851gvtQP9RARiafEiullQAdZpKpw996rOSk=; b=LK+J1zGwcyMsY9map+ofgfL+RI6uZaFvetVaCYLvEDOLJWxeXKpS78fk6PUlYuv7t2Jg/vnI
+ UEVQvDOJDTLdtRObq/UJ8oEjmHp9FwDJlqI3u8W3HNXMvU+7XcLcuV817Y6WrJjFnz5RHnTJ
+ 4SyBsAWj1O3P9t1Tkphn9HJ1caY=
+X-Mailgun-Sending-Ip: 104.130.122.26
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
+ by mxa.mailgun.org with ESMTP id 5dfc7608.7fdada0a99d0-smtp-out-n02;
+ Fri, 20 Dec 2019 07:19:36 -0000 (UTC)
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 76001C4479C; Fri, 20 Dec 2019 07:19:35 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,SPF_NONE,
+        URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 04C50C433CB;
+        Fri, 20 Dec 2019 07:19:32 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 04C50C433CB
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
+From:   Kalle Valo <kvalo@codeaurora.org>
+To:     Nick Desaulniers <ndesaulniers@google.com>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        linux-wireless@vger.kernel.org,
+        LKML <linux-kernel@vger.kernel.org>,
+        clang-built-linux <clang-built-linux@googlegroups.com>,
+        Nathan Chancellor <natechancellor@gmail.com>,
+        ath11k@lists.infradead.org
+Subject: Re: [PATCH] ath11k: Remove unnecessary enum scan_priority
+References: <20191211192252.35024-1-natechancellor@gmail.com>
+        <CAKwvOdmQp+Rjgh49kbTp1ocLCjv4SUACEO4+tX5vz4stX-pPpg@mail.gmail.com>
+        <87a77o786o.fsf@kamboji.qca.qualcomm.com>
+        <CAKwvOdk3EPurHLMf81VHowauRYZ4FZXxNg98hJvp8CLgu=SSPw@mail.gmail.com>
+Date:   Fri, 20 Dec 2019 09:19:30 +0200
+In-Reply-To: <CAKwvOdk3EPurHLMf81VHowauRYZ4FZXxNg98hJvp8CLgu=SSPw@mail.gmail.com>
+        (Nick Desaulniers's message of "Thu, 19 Dec 2019 09:06:37 -0800")
+Message-ID: <877e2r4g71.fsf@kamboji.qca.qualcomm.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There is no a_r3, a_r4 in the testing topology.
-It should be b_r1, b_r2. Also b_r1 mtu is 1400 and b_r2 mtu is 1500.
+Nick Desaulniers <ndesaulniers@google.com> writes:
 
-Fixes: e44e428f59e4 ("selftests: pmtu: add basic IPv4 and IPv6 PMTU tests")
-Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
----
- tools/testing/selftests/net/pmtu.sh | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+> On Thu, Dec 19, 2019 at 5:32 AM Kalle Valo <kvalo@codeaurora.org> wrote:
+>>
+>> Nick Desaulniers <ndesaulniers@google.com> writes:
+>>
+>> > On Wed, Dec 11, 2019 at 11:23 AM Nathan Chancellor
+>> > <natechancellor@gmail.com> wrote:
+>> >> wmi_scan_priority and scan_priority have the same values but the wmi one
+>> >> has WMI prefixed to the names. Since that enum is already being used,
+>> >> get rid of scan_priority and switch its one use to wmi_scan_priority to
+>> >> fix this warning.
+>> >>
+>> > Also, I don't know if the more concisely named enum is preferable?
+>>
+>> I didn't get this comment.
+>
+> Given two enums with the same values:
+> enum scan_priority
+> enum wmi_scan_priority
+> wouldn't you prefer to type wmi_ a few times less?  Doesn't really
+> matter, but that was the point I was making.
 
-diff --git a/tools/testing/selftests/net/pmtu.sh b/tools/testing/selftests/net/pmtu.sh
-index d697815d2785..71a62e7e35b1 100755
---- a/tools/testing/selftests/net/pmtu.sh
-+++ b/tools/testing/selftests/net/pmtu.sh
-@@ -11,9 +11,9 @@
- #	R1 and R2 (also implemented with namespaces), with different MTUs:
- #
- #	  segment a_r1    segment b_r1		a_r1: 2000
--#	.--------------R1--------------.	a_r2: 1500
--#	A                               B	a_r3: 2000
--#	'--------------R2--------------'	a_r4: 1400
-+#	.--------------R1--------------.	b_r1: 1400
-+#	A                               B	a_r2: 2000
-+#	'--------------R2--------------'	b_r2: 1500
- #	  segment a_r2    segment b_r2
- #
- #	Check that PMTU exceptions with the correct PMTU are created. Then
+Ah, now I got it :) This enum is part of firmware interface (WMI) so
+yes, I prefer to use the wmi_ prefix to make that obvious.
+
 -- 
-2.19.2
-
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
