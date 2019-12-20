@@ -2,179 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BACB1127852
-	for <lists+netdev@lfdr.de>; Fri, 20 Dec 2019 10:37:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 09C3612785A
+	for <lists+netdev@lfdr.de>; Fri, 20 Dec 2019 10:39:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727169AbfLTJhM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Dec 2019 04:37:12 -0500
-Received: from mail-il1-f199.google.com ([209.85.166.199]:41023 "EHLO
-        mail-il1-f199.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727404AbfLTJhL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Dec 2019 04:37:11 -0500
-Received: by mail-il1-f199.google.com with SMTP id k9so7045649ili.8
-        for <netdev@vger.kernel.org>; Fri, 20 Dec 2019 01:37:09 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=+SRiHYUIYqPOXXwQdb6uqMp3IkOEsDJQnj3uiqHrcuA=;
-        b=AZnrCLPyPIwY6pzvA5XAFLovCSKUF67OFTteq/59il29Tg5M1w9hEkY3klAuaByNy4
-         GHjU/IrknUZn6x7fxadKurU5W9fz0rP1+jhqcZ6SVc8gEOgIRwDizGDeaKh89Sygnq4I
-         8L8g1V9uEmIag3QsliwHt7Z1Bm8E0vDo8yRM2xQTlW0U2wC8qLJZLhuX/fm0DlG1bsNZ
-         3Pnk8Wwru/ydV5z+sqhJl/ecOyg1zgDoa3flJGlB7uU3JSLIS6cYYv6A1VIlpUCaiOQA
-         9Em1ctmenq7CiURXwzRZd8XgGJTxO8ts6AJDFB71FTuF9+2iwYsRyJ1IJrCkGm8QHNxl
-         EqqQ==
-X-Gm-Message-State: APjAAAVg0VKNhD0fnd2W8JHqW2yegJFkMbFjjzT0k2utIxVx80YwD7af
-        eR3IwtxTOAcGgA+og67UEURZpAQSag7FWFSl46S/j3yigDPO
-X-Google-Smtp-Source: APXvYqyh4rBUg6jIvlbuqTRpqz+dSoOIG5JntiBqjSV9Er/XOFvDyCNuEuu/S5oP3MA6hGBZzZVnFUSC3nC30nTBZQWKH3rK8Oxv
+        id S1727184AbfLTJjM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Dec 2019 04:39:12 -0500
+Received: from mail-eopbgr60076.outbound.protection.outlook.com ([40.107.6.76]:43520
+        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726111AbfLTJjM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 20 Dec 2019 04:39:12 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=fexDySnz+QZT+5KuEDTvN9SreNC9uZjC93p9uYd151FchMyUROO16+rT/svDOkWLXv36E9wwJnDSo7RNYuV2V7wyJCP57tQ1GVbPFmlVsK/l4M/A6cckbMrX6nUr6rKEZYIrPZSfdqenrW74DPXtbCJodZBj2XZR10kF4Bj6Io6/qnvAlKQtpLum1ewgOrsVrYvbXD9pxPYNm+3tiZ7R9I0CQ3/5ObPVAM//+yCbr5Ev9qj5Tprof59OfzlVBJ8OzTPfnYVZcvg4z+ejBQv5VQjlbk7IoNwpxm1UFD74VXVISWQQJeJbyTAyQrmTkTM1p7u+Ym5Qc+QADDTVAUDN7w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=6CAAFYFDP2+QozJPfRl85bi47Z1lasQEbImzTIYJm/k=;
+ b=QltYB/XW1yU2cTdbpF1UIOuBl6RgK4oJLMabGNB0rlGFwXbZOQsb4aILK4kb1IR1VWhMNQYtvLKs7CqeGvsFRgS26JyGKEZfAp0POGUpglyzVQUqOb9pZvyVkjLmUrUykhBgDYhHD3QTqU1O4klcxFceWGavpNFSSFLZiYNYJqYSyW1ZvOpF87M3xZllnIgq5OBrD48okDmXeLbVLae1RMlBXP72f0+98UsJDDym2kF6ffslz9rm1RJOP/ATnGwqHOYpk+Fk3LgYY/zzBTSmL2m5qvnCK9MFYowaa8+0zIzdh0Nn1+E/3q4WBjPKtWssZFY7ekhWFP/sg75ICyY9Cg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
+ dkim=pass header.d=oss.nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
+ s=selector2-NXP1-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=6CAAFYFDP2+QozJPfRl85bi47Z1lasQEbImzTIYJm/k=;
+ b=APIcLVHHoLlrlERPUNYPnj3c3xB9YejbyrYpaxguQDiqNhiRnw/r4UvwRaV4OcKf7vCw+tHXiVgnZkIarwF5UDLv67re5Rth677tLKpV0QFPbpFG5WzNNQAsj1Lm6mfPASkFn4Nv3CUO+GJMKyOFLAejMmY+iKycwTyx9MIEaH0=
+Received: from VI1PR04MB5567.eurprd04.prod.outlook.com (20.178.123.83) by
+ VI1PR04MB5519.eurprd04.prod.outlook.com (20.178.121.211) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2559.14; Fri, 20 Dec 2019 09:39:08 +0000
+Received: from VI1PR04MB5567.eurprd04.prod.outlook.com
+ ([fe80::f099:4735:430c:ef1d]) by VI1PR04MB5567.eurprd04.prod.outlook.com
+ ([fe80::f099:4735:430c:ef1d%2]) with mapi id 15.20.2559.016; Fri, 20 Dec 2019
+ 09:39:08 +0000
+From:   "Madalin Bucur (OSS)" <madalin.bucur@oss.nxp.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Russell King - ARM Linux admin <linux@armlinux.org.uk>
+CC:     "Madalin Bucur (OSS)" <madalin.bucur@oss.nxp.com>,
+        "antoine.tenart@free-electrons.com" 
+        <antoine.tenart@free-electrons.com>,
+        "jaz@semihalf.com" <jaz@semihalf.com>,
+        "baruch@tkos.co.il" <baruch@tkos.co.il>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
+        "shawnguo@kernel.org" <shawnguo@kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
+Subject: RE: [PATCH 1/6] net: phy: add interface modes for XFI, SFI
+Thread-Topic: [PATCH 1/6] net: phy: add interface modes for XFI, SFI
+Thread-Index: AQHVtn//emqdPRPEmEKC7Ncoej9h46fBtnoAgAAR9oCAAAh2AIAAKmuAgAAEEQCAAKSigIAAG14AgAADcACAAAJs8A==
+Date:   Fri, 20 Dec 2019 09:39:08 +0000
+Message-ID: <VI1PR04MB55679B12D4E7C9EC05FE0D9AEC2D0@VI1PR04MB5567.eurprd04.prod.outlook.com>
+References: <1576768881-24971-1-git-send-email-madalin.bucur@oss.nxp.com>
+ <1576768881-24971-2-git-send-email-madalin.bucur@oss.nxp.com>
+ <20191219172834.GC25745@shell.armlinux.org.uk>
+ <VI1PR04MB5567FA3170CF45F877870E8CEC520@VI1PR04MB5567.eurprd04.prod.outlook.com>
+ <20191219190308.GE25745@shell.armlinux.org.uk>
+ <VI1PR04MB5567010C06EB9A4734431106EC520@VI1PR04MB5567.eurprd04.prod.outlook.com>
+ <20191219214930.GG25745@shell.armlinux.org.uk>
+ <VI1PR04MB556768668EEEDFD61B7AA518EC2D0@VI1PR04MB5567.eurprd04.prod.outlook.com>
+ <20191220091642.GJ25745@shell.armlinux.org.uk>
+ <20191220092900.GB24174@lunn.ch>
+In-Reply-To: <20191220092900.GB24174@lunn.ch>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=madalin.bucur@oss.nxp.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [212.146.100.6]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 66cdab82-b186-45fd-4623-08d78530762b
+x-ms-traffictypediagnostic: VI1PR04MB5519:|VI1PR04MB5519:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <VI1PR04MB55194614BB92883EF6DE54ABAD2D0@VI1PR04MB5519.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8273;
+x-forefront-prvs: 025796F161
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(396003)(366004)(136003)(376002)(346002)(39860400002)(13464003)(199004)(189003)(9686003)(55016002)(26005)(5660300002)(316002)(7416002)(52536014)(76116006)(478600001)(110136005)(54906003)(71200400001)(4326008)(66946007)(66476007)(66446008)(33656002)(66556008)(86362001)(64756008)(186003)(2906002)(53546011)(6506007)(8936002)(81166006)(7696005)(8676002)(81156014);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR04MB5519;H:VI1PR04MB5567.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:0;MX:1;
+received-spf: None (protection.outlook.com: oss.nxp.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: W2jWzit+E0rlguI3HoP3SxVAv+ygE2DeubEvxAZLyg1L5XfILF4/oA2PhVrP8gRNlN4ziCVUhM9PZBHv6FZTzmzc++f/bjEGGJIRcgtMXPSANgWflXy0nMxriZkzdyezjhuavzCp7WjjZAdS6awxl/ZotNjUAf+dzlExtqMDArc1/cPfASGc6MyoHbQYvpfEGqJHjXO4+WhWOCkYYNi+tZSYo2QFzbN6N1sa7okhfRxxNGzdUaOx5tfxjuE/IreCriWYz5qK18nBprAco9dpqLzStUNrXqpXXaoS57BQcx9Vc5uaaBxdlPa4q+wozVvcSwAET63kiFODGitkhq7kpIc6MjXGFz9yOMtQATkMxT5/Z4aH9OyK5ROeGUECUBN8Px7SG/uXPLu+hjerPG5ULQe9b91GaHjJoR5wvnpdRIVzhnpVlzFQE0xXkIte3SYwGO+wrP1aH05ESixPputwdRTJ2oXpjZot3DOVXtmkEBVzdx91n/Hj30TagcpxuBQy
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-Received: by 2002:a5e:940e:: with SMTP id q14mr8716436ioj.247.1576834629339;
- Fri, 20 Dec 2019 01:37:09 -0800 (PST)
-Date:   Fri, 20 Dec 2019 01:37:09 -0800
-In-Reply-To: <00000000000083c858059877d77c@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000f39399059a1f6b2c@google.com>
-Subject: Re: KASAN: use-after-free Write in nr_release
-From:   syzbot <syzbot+caa188bdfc1eeafeb418@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, hdanton@sina.com, linux-hams@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        ralf@linux-mips.org, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+X-OriginatorOrg: oss.nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 66cdab82-b186-45fd-4623-08d78530762b
+X-MS-Exchange-CrossTenant-originalarrivaltime: 20 Dec 2019 09:39:08.2537
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: nbsr1zh0w1YZDirjobHpkdlp/VbiEFfDc7FW8j0LWiZyy0dUM6tz+WyZoT9Ax6W11NL/Xk4WqjPAP43Chffz/w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB5519
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has found a reproducer for the following crash on:
+> -----Original Message-----
+> From: Andrew Lunn <andrew@lunn.ch>
+> Sent: Friday, December 20, 2019 11:29 AM
+> To: Russell King - ARM Linux admin <linux@armlinux.org.uk>
+> Cc: Madalin Bucur (OSS) <madalin.bucur@oss.nxp.com>; antoine.tenart@free-
+> electrons.com; jaz@semihalf.com; baruch@tkos.co.il; davem@davemloft.net;
+> netdev@vger.kernel.org; f.fainelli@gmail.com; hkallweit1@gmail.com;
+> shawnguo@kernel.org; devicetree@vger.kernel.org
+> Subject: Re: [PATCH 1/6] net: phy: add interface modes for XFI, SFI
+>=20
+> > How does this help us when we can't simply change the existing usage?
+> > We can update the DT but we can't free up the usage of "10gbase-kr".
+>=20
+> Agreed. Code needs to keep on interpreting "10gbase-kr" as any 10G
+> link. If we ever have a true 10gbase-kr, 802.3ap, one meter of copper
+> and two connectors, we are going to have to add a new mode to
+> represent true 10gbase-kr.
+>=20
+> 	Andrew
 
-HEAD commit:    7e0165b2 Merge branch 'akpm' (patches from Andrew)
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=13d65fa6e00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=1b59a3066828ac4c
-dashboard link: https://syzkaller.appspot.com/bug?extid=caa188bdfc1eeafeb418
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=12d9dd51e00000
+Hi, actually we do have that. What would be the name of the new mode
+representing true 10GBase-KR that we will need to add when we upstream
+support for that?
 
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+caa188bdfc1eeafeb418@syzkaller.appspotmail.com
-
-==================================================================
-BUG: KASAN: use-after-free in atomic_fetch_add  
-include/asm-generic/atomic-instrumented.h:111 [inline]
-BUG: KASAN: use-after-free in refcount_add include/linux/refcount.h:188  
-[inline]
-BUG: KASAN: use-after-free in refcount_inc include/linux/refcount.h:228  
-[inline]
-BUG: KASAN: use-after-free in sock_hold include/net/sock.h:648 [inline]
-BUG: KASAN: use-after-free in nr_release+0x65/0x4c0  
-net/netrom/af_netrom.c:498
-Write of size 4 at addr ffff8880781a3080 by task syz-executor.0/12044
-
-CPU: 1 PID: 12044 Comm: syz-executor.0 Not tainted 5.5.0-rc2-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
-Google 01/01/2011
-Call Trace:
-  __dump_stack lib/dump_stack.c:77 [inline]
-  dump_stack+0x197/0x210 lib/dump_stack.c:118
-  print_address_description.constprop.0.cold+0xd4/0x30b mm/kasan/report.c:374
-  __kasan_report.cold+0x1b/0x41 mm/kasan/report.c:506
-  kasan_report+0x12/0x20 mm/kasan/common.c:639
-  check_memory_region_inline mm/kasan/generic.c:185 [inline]
-  check_memory_region+0x134/0x1a0 mm/kasan/generic.c:192
-  __kasan_check_write+0x14/0x20 mm/kasan/common.c:101
-  atomic_fetch_add include/asm-generic/atomic-instrumented.h:111 [inline]
-  refcount_add include/linux/refcount.h:188 [inline]
-  refcount_inc include/linux/refcount.h:228 [inline]
-  sock_hold include/net/sock.h:648 [inline]
-  nr_release+0x65/0x4c0 net/netrom/af_netrom.c:498
-  __sock_release+0xce/0x280 net/socket.c:592
-  sock_close+0x1e/0x30 net/socket.c:1270
-  __fput+0x2ff/0x890 fs/file_table.c:280
-  ____fput+0x16/0x20 fs/file_table.c:313
-  task_work_run+0x145/0x1c0 kernel/task_work.c:113
-  tracehook_notify_resume include/linux/tracehook.h:188 [inline]
-  exit_to_usermode_loop+0x316/0x380 arch/x86/entry/common.c:164
-  prepare_exit_to_usermode arch/x86/entry/common.c:195 [inline]
-  syscall_return_slowpath arch/x86/entry/common.c:278 [inline]
-  do_syscall_64+0x676/0x790 arch/x86/entry/common.c:304
-  entry_SYSCALL_64_after_hwframe+0x49/0xbe
-RIP: 0033:0x4144b1
-Code: 75 14 b8 03 00 00 00 0f 05 48 3d 01 f0 ff ff 0f 83 04 1b 00 00 c3 48  
-83 ec 08 e8 0a fc ff ff 48 89 04 24 b8 03 00 00 00 0f 05 <48> 8b 3c 24 48  
-89 c2 e8 53 fc ff ff 48 89 d0 48 83 c4 08 48 3d 01
-RSP: 002b:00007ffc1b260070 EFLAGS: 00000293 ORIG_RAX: 0000000000000003
-RAX: 0000000000000000 RBX: 0000000000000006 RCX: 00000000004144b1
-RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000005
-RBP: 0000000000000001 R08: ffffffffffffffff R09: ffffffffffffffff
-R10: 00007ffc1b260150 R11: 0000000000000293 R12: 000000000075c9a0
-R13: 000000000075c9a0 R14: 0000000000761390 R15: 000000000075c124
-
-Allocated by task 12049:
-  save_stack+0x23/0x90 mm/kasan/common.c:72
-  set_track mm/kasan/common.c:80 [inline]
-  __kasan_kmalloc mm/kasan/common.c:513 [inline]
-  __kasan_kmalloc.constprop.0+0xcf/0xe0 mm/kasan/common.c:486
-  kasan_kmalloc+0x9/0x10 mm/kasan/common.c:527
-  __do_kmalloc mm/slab.c:3656 [inline]
-  __kmalloc+0x163/0x770 mm/slab.c:3665
-  kmalloc include/linux/slab.h:561 [inline]
-  sk_prot_alloc+0x23a/0x310 net/core/sock.c:1603
-  sk_alloc+0x39/0xfd0 net/core/sock.c:1657
-  nr_create+0xb9/0x5e0 net/netrom/af_netrom.c:411
-  __sock_create+0x3ce/0x730 net/socket.c:1420
-  sock_create net/socket.c:1471 [inline]
-  __sys_socket+0x103/0x220 net/socket.c:1513
-  __do_sys_socket net/socket.c:1522 [inline]
-  __se_sys_socket net/socket.c:1520 [inline]
-  __x64_sys_socket+0x73/0xb0 net/socket.c:1520
-  do_syscall_64+0xfa/0x790 arch/x86/entry/common.c:294
-  entry_SYSCALL_64_after_hwframe+0x49/0xbe
-
-Freed by task 12044:
-  save_stack+0x23/0x90 mm/kasan/common.c:72
-  set_track mm/kasan/common.c:80 [inline]
-  kasan_set_free_info mm/kasan/common.c:335 [inline]
-  __kasan_slab_free+0x102/0x150 mm/kasan/common.c:474
-  kasan_slab_free+0xe/0x10 mm/kasan/common.c:483
-  __cache_free mm/slab.c:3426 [inline]
-  kfree+0x10a/0x2c0 mm/slab.c:3757
-  sk_prot_free net/core/sock.c:1640 [inline]
-  __sk_destruct+0x5d8/0x7f0 net/core/sock.c:1724
-  sk_destruct+0xd5/0x110 net/core/sock.c:1739
-  __sk_free+0xfb/0x360 net/core/sock.c:1750
-  sk_free+0x83/0xb0 net/core/sock.c:1761
-  sock_put include/net/sock.h:1729 [inline]
-  nr_release+0x3f4/0x4c0 net/netrom/af_netrom.c:532
-  __sock_release+0xce/0x280 net/socket.c:592
-  sock_close+0x1e/0x30 net/socket.c:1270
-  __fput+0x2ff/0x890 fs/file_table.c:280
-  ____fput+0x16/0x20 fs/file_table.c:313
-  task_work_run+0x145/0x1c0 kernel/task_work.c:113
-  tracehook_notify_resume include/linux/tracehook.h:188 [inline]
-  exit_to_usermode_loop+0x316/0x380 arch/x86/entry/common.c:164
-  prepare_exit_to_usermode arch/x86/entry/common.c:195 [inline]
-  syscall_return_slowpath arch/x86/entry/common.c:278 [inline]
-  do_syscall_64+0x676/0x790 arch/x86/entry/common.c:304
-  entry_SYSCALL_64_after_hwframe+0x49/0xbe
-
-The buggy address belongs to the object at ffff8880781a3000
-  which belongs to the cache kmalloc-2k of size 2048
-The buggy address is located 128 bytes inside of
-  2048-byte region [ffff8880781a3000, ffff8880781a3800)
-The buggy address belongs to the page:
-page:ffffea0001e068c0 refcount:1 mapcount:0 mapping:ffff8880aa400e00  
-index:0x0
-raw: 00fffe0000000200 ffffea0001e06848 ffffea0001af0088 ffff8880aa400e00
-raw: 0000000000000000 ffff8880781a3000 0000000100000001 0000000000000000
-page dumped because: kasan: bad access detected
-
-Memory state around the buggy address:
-  ffff8880781a2f80: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
-  ffff8880781a3000: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-> ffff8880781a3080: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-                    ^
-  ffff8880781a3100: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-  ffff8880781a3180: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-==================================================================
-
+Thanks,
+Madalin
