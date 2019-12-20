@@ -2,72 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DFDB712853E
-	for <lists+netdev@lfdr.de>; Fri, 20 Dec 2019 23:53:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 72D94128540
+	for <lists+netdev@lfdr.de>; Fri, 20 Dec 2019 23:54:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726666AbfLTWx4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Dec 2019 17:53:56 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:54638 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726030AbfLTWx4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Dec 2019 17:53:56 -0500
-Received: from localhost (unknown [IPv6:2601:601:9f00:1c3::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 263781510456C;
-        Fri, 20 Dec 2019 14:53:55 -0800 (PST)
-Date:   Fri, 20 Dec 2019 14:53:52 -0800 (PST)
-Message-Id: <20191220.145352.754139742452100943.davem@davemloft.net>
-To:     stephen@networkplumber.org
-Cc:     cforno12@linux.vnet.ibm.com, netdev@vger.kernel.org,
-        mst@redhat.com, jasowang@redhat.com, haiyangz@microsoft.com,
-        sthemmin@microsoft.com, sashal@kernel.org, tlfalcon@linux.ibm.com
-Subject: Re: [PATCH, net-next, v3, 0/2] net/ethtool: Introduce
- link_ksettings API for virtual network devices
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20191219192909.5ed9996c@hermes.lan>
-References: <20191219131156.21332555@hermes.lan>
-        <20191219.141619.1840874136750249908.davem@davemloft.net>
-        <20191219192909.5ed9996c@hermes.lan>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Fri, 20 Dec 2019 14:53:55 -0800 (PST)
+        id S1726717AbfLTWyE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Dec 2019 17:54:04 -0500
+Received: from mail-io1-f65.google.com ([209.85.166.65]:46184 "EHLO
+        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726030AbfLTWyE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Dec 2019 17:54:04 -0500
+Received: by mail-io1-f65.google.com with SMTP id t26so10966093ioi.13;
+        Fri, 20 Dec 2019 14:54:03 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=2UN8sBzxbyN8aug/3vc+iOIWvC/qcpLh7CDuZsTPA48=;
+        b=ooQwAssq7Yw4IstteUqAmZGSBz7iyxWDxAwOlrhEzUYV6XDUC+6ADB0mzwemDksk6E
+         iDl83NUyq83qwbZubYq+vUzyKN129w1lYMPJ8ov+Pj74bpB4/NhwRoLsxtzjm6E/Gizj
+         UkNao8aKp6eb5b0lwAMCSScnhQ4h9tT6evltpvizPc6UVVpjyx3VkbRLJ2bV4qBVIceV
+         EcXazGPEHNjN4u6kWRzph23dtkD4bsT7fLTlmNHDOGs7srkPmlwFflp+s+E9l5yVtJpL
+         ByjhT4La4LhoRWgcu5Et1z6II7zHp5/F5AXjCIJoqhZpDRBQYPKe8socbGhze2zBZQzg
+         DCvg==
+X-Gm-Message-State: APjAAAVZMFPwxhxTsgSrLgCTiBc6mswFJIEebthFxLT1bVqFB0l7xrzY
+        d5MpTrxxxhpPQFJjIG0G1w==
+X-Google-Smtp-Source: APXvYqz4DDqXIhZ6wJ1YCFldM/1b2d3Wtt5n0HPOSGpAeXTa7cl9VfKgzTmteFMXEEqaN9C6/kFEqw==
+X-Received: by 2002:a5d:8901:: with SMTP id b1mr11201405ion.246.1576882443540;
+        Fri, 20 Dec 2019 14:54:03 -0800 (PST)
+Received: from localhost ([64.188.179.251])
+        by smtp.gmail.com with ESMTPSA id e85sm5486916ilk.78.2019.12.20.14.54.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 20 Dec 2019 14:54:03 -0800 (PST)
+Date:   Fri, 20 Dec 2019 15:54:01 -0700
+From:   Rob Herring <robh@kernel.org>
+To:     Benjamin Gaignard <benjamin.gaignard@st.com>
+Cc:     davem@davemloft.net, mark.rutland@arm.com, mripard@kernel.org,
+        martin.blumenstingl@googlemail.com, andrew@lunn.ch,
+        narmstrong@baylibre.com, alexandru.ardelean@analog.com,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] dt-bindings: net: stmmac: add missing properties keyword
+Message-ID: <20191220225401.GA3172@bogus>
+References: <20191219140226.16820-1-benjamin.gaignard@st.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191219140226.16820-1-benjamin.gaignard@st.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Stephen Hemminger <stephen@networkplumber.org>
-Date: Thu, 19 Dec 2019 19:29:09 -0800
-
-> On Thu, 19 Dec 2019 14:16:19 -0800 (PST)
-> David Miller <davem@davemloft.net> wrote:
+On Thu, Dec 19, 2019 at 03:02:26PM +0100, Benjamin Gaignard wrote:
+> Add missing 'properties' keyword to be compliant with syntax requirements
 > 
->> From: Stephen Hemminger <stephen@networkplumber.org>
->> Date: Thu, 19 Dec 2019 13:11:56 -0800
->> 
->> > I don't think this makes sense for netvsc. The speed and duplex have no
->> > meaning, why do you want to allow overriding it? If this is to try and make
->> > some dashboard look good; then you aren't seeing the real speed which is
->> > what only the host knows. Plus it does take into account the accelerated
->> > networking path.  
->> 
->> Maybe that's the point, userspace has extraneous knowledge it might
->> use to set it accurately.
->> 
->> This helps for bonding/team etc. as well.
->> 
->> I don't think there is any real harm in allowing to set this, and
->> we've done this in the past I think.
-> 
-> My preference would be to have host report some real data.
-> But that might take host side changes which have a long lead time to
-> get done.
+> Fixes: 7db3545aef5fa ("dt-bindings: net: stmmac: Convert the binding to a schemas")
+> Signed-off-by: Benjamin Gaignard <benjamin.gaignard@st.com>
+> ---
+>  Documentation/devicetree/bindings/net/snps,dwmac.yaml | 1 +
+>  1 file changed, 1 insertion(+)
 
-_Iff_ they ever get done.
+Thanks, but I already sent and applied a fix.
 
-Meanwhile... we should provide some way to address this in the short
-term.
+Rob
