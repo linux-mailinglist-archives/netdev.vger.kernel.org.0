@@ -2,128 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A02A61279D5
-	for <lists+netdev@lfdr.de>; Fri, 20 Dec 2019 12:15:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D1D30127AC3
+	for <lists+netdev@lfdr.de>; Fri, 20 Dec 2019 13:11:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727252AbfLTLP1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Dec 2019 06:15:27 -0500
-Received: from mail-oi1-f196.google.com ([209.85.167.196]:46446 "EHLO
-        mail-oi1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727177AbfLTLP1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Dec 2019 06:15:27 -0500
-Received: by mail-oi1-f196.google.com with SMTP id p67so4222331oib.13
-        for <netdev@vger.kernel.org>; Fri, 20 Dec 2019 03:15:26 -0800 (PST)
+        id S1727229AbfLTMLZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Dec 2019 07:11:25 -0500
+Received: from mail-io1-f68.google.com ([209.85.166.68]:44898 "EHLO
+        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727177AbfLTMLZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Dec 2019 07:11:25 -0500
+Received: by mail-io1-f68.google.com with SMTP id b10so9144798iof.11
+        for <netdev@vger.kernel.org>; Fri, 20 Dec 2019 04:11:25 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=caZHEETAKMstGFK2FP8M+oVhxbx01uuGNn3bGrODfEk=;
-        b=tlrXOqSmyrAgztcsgfNrS1KXLSJV7KURM56U8GONaW8mmoNPJj34xVWOEtxMa1pgNB
-         EsgmnbKVZiq88KTIPuyc36JxmJ9OFDzfn4BWg5btjTWi3L4AhypOVr6+c2BpwRJoftQQ
-         H5VnbqprqVD/YUOWc//+RHcA3iokV86THjP34GN6GfzuApB8rKn5lnL2E3DfOo41oBVE
-         EIVYxSd7KD8X063pvphl5SISMsTCIGCRojycgAXoSNaFpZxdF2si+NbKa6bNFtzhFDew
-         EKknQl+NfzTGL5fks6D+JLcwzhhl9+s6cooIfGMjOdC0Z/7l9SZQPPKwCa3K9Ik2+m4b
-         bxrQ==
+        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=sjoBVnmN1fJq8TKBI+4jCTQTzvqpyaugxsFul1V9WbY=;
+        b=k2/lEEhXS40JjR2uz1vIPNQIv80obzYjUOs867XNiCiP3m2OZZ6w4sivH0pO/Vara2
+         OKP01AHhiCNf0UgCoE2+05ohZ+lIY38XXoTkbL7EVQ4cYsc217qEewSA+oARGLDThdLe
+         P9FpfkHxdsyBGyibkBkO2+reytvKc+ct1w69hsDy9UfwUzDXiQYEQxP+YE20NKH5V4DE
+         9q11JVImJM2mfbjiBgCeov59UW3uLMhsCvM/9tS/1SZoAvJLv+R+qrqUPGTimYBFIKmZ
+         wQ2uiYPKuCCSCYc64vxXPfzjdXj7nCkMXJzgXKJnWcx7k4hcEAPleR3XDSqdFcV8QndR
+         MLcQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to:content-transfer-encoding;
-        bh=caZHEETAKMstGFK2FP8M+oVhxbx01uuGNn3bGrODfEk=;
-        b=LlOchpopl7DWbIMNy0Q1Smu3c3HVLZgmjxhaRPK4VmISyywKjBbQaeZudYyYk2Og3q
-         bG6Xz59erzZRyTJgdILasQl0IV3Bn0nBMXCEgZAeIUCiGB52MXGj5cBp3hPlEHXFpyir
-         66xWh8satRwojwVXKIpzDBsbuM41E0vE2LVFbVhnDO42Nlud6wrU4tRftVyFdGDCWzkF
-         YDl27y79kNMDEjKY1kRzKIhc24sGrUkpgZ4kNEsmIiQFHGYFFD5NLpaoXyG431neLORY
-         4T9r4ibApgBzCM/qpPhPgTQHLmZuieKyTD/FEoYehQQiVbhRN9NTV3tuvfu4FteWWXus
-         xYxw==
-X-Gm-Message-State: APjAAAXTc2jACk2N/d+pafcEps1VjbCgcKLcEBQHoYzElm6M2NlhWUgu
-        Nb/Ihk//duyT63/1DmhdzDYqmBJ6jcq2kxYlifQ=
-X-Google-Smtp-Source: APXvYqwzKeQCz9OBcYVKAKnaDesTfSux4w0YPBqm+LfUqlJLKelmD81xzIgsY2CJ3CbwN+swMFOQZd+b963c00hRDaE=
-X-Received: by 2002:aca:cf50:: with SMTP id f77mr3607616oig.60.1576840526145;
- Fri, 20 Dec 2019 03:15:26 -0800 (PST)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=sjoBVnmN1fJq8TKBI+4jCTQTzvqpyaugxsFul1V9WbY=;
+        b=OA6tvp9zn4KFV+t2T3O6OCP1yBSbQx02gVYHUkfwiWklK4gX/upq0rf6fJqZou8hiI
+         8SkslbdsgO9uiWyPAVL3i9Di9QxECRRl/BB4d5sETG5UoP7wKwgLP03HmvSEV0vk1rCQ
+         5/sVo3OeOJGS3HH7PJtj+KUBL3d8LTpifMGNQcCwqISJzBs9z9qz8xmT0CKt8vNDwG+L
+         d+ZfQBFzN3yIcESfLEoljHgL5vp+c4zAh86pnPhmwuGc/vnCR6VIfvTFZ7DwKQeEuq0W
+         xY3uohSYpmKQcE4u32iSengkdn+IwLPivmi7b7CeIAWXZCoxQN4nZQ986dIizNDgBUSr
+         O6uQ==
+X-Gm-Message-State: APjAAAUd9JKkMC6sDTSRl7kdhx25skSd0ZOGIyTUaiWESfNf//1Pha2P
+        rsCWNHXynQXkPhAxSZfUd4vKGA==
+X-Google-Smtp-Source: APXvYqyYJBTNLgvpaToHG+zW5whpfAfdAhlu+NiF2tCN9V4F8W7r9GE7XvylUYwEjP5RdW3yur6sHA==
+X-Received: by 2002:a6b:6f06:: with SMTP id k6mr9997133ioc.204.1576843884643;
+        Fri, 20 Dec 2019 04:11:24 -0800 (PST)
+Received: from [192.168.0.125] (198-84-204-252.cpe.teksavvy.com. [198.84.204.252])
+        by smtp.googlemail.com with ESMTPSA id z21sm3206375ioj.21.2019.12.20.04.11.23
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 20 Dec 2019 04:11:23 -0800 (PST)
+Subject: Re: [PATCH net 1/2] net/sched: cls_u32: fix refcount leak in the
+ error path of u32_change()
+To:     Vlad Buslov <vladbu@mellanox.com>
+Cc:     Davide Caratti <dcaratti@redhat.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>, Roman Mashak <mrv@mojatatu.com>
+References: <cover.1576623250.git.dcaratti@redhat.com>
+ <ae83c6dc89f8642166dc32debc6ea7444eb3671d.1576623250.git.dcaratti@redhat.com>
+ <bafb52ff-1ced-91a4-05d0-07d3fdc4f3e4@mojatatu.com>
+ <5b4239e5-6533-9f23-7a38-0ee4f6acbfe9@mojatatu.com>
+ <vbfr2102swb.fsf@mellanox.com>
+ <63fe479d-51cd-eff4-eb13-f0211f694366@mojatatu.com>
+ <vbfpngk2r9a.fsf@mellanox.com> <vbfo8w42qt2.fsf@mellanox.com>
+From:   Jamal Hadi Salim <jhs@mojatatu.com>
+Message-ID: <b9b2261a-5a35-fdf7-79b5-9d644e3ed097@mojatatu.com>
+Date:   Fri, 20 Dec 2019 07:11:12 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.3.0
 MIME-Version: 1.0
-Received: by 2002:a05:6820:21a:0:0:0:0 with HTTP; Fri, 20 Dec 2019 03:15:25
- -0800 (PST)
-Reply-To: kantesulaman@gmail.com
-From:   sulaman Kante <justinalaboso2@gmail.com>
-Date:   Fri, 20 Dec 2019 03:15:25 -0800
-Message-ID: <CADPaY1BwLVqryXON-Vjb3BGLKX+W9BuCBtvty-PuQYNuOVuLfA@mail.gmail.com>
-Subject: Greetings
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <vbfo8w42qt2.fsf@mellanox.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-GB
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Greetings My Dear Friend,
+On 2019-12-19 12:01 p.m., Vlad Buslov wrote:
 
-Before I introduce myself, I wish to inform you that this letter is
-not a hoax mail and I urge you to treat it serious.This letter must
-come to you as a big surprise, but I believe it is only a day that
-people meet and become great friends and business partners. Please I
-want you to read this letter very carefully and I must apologize for
-barging this message into your mail box without any formal
-introduction due to the urgency and confidentiality of this business
-and I know that this message will come to you as a surprise. Please
-this is not a joke and I will not like you to joke with it ok,With due
-respect to your person and much sincerity of purpose, I make this
-contact with you as I believe that you can be of great assistance to
-me. My name is Mr.sulaman Kante, from Burkina Faso, West Africa. I
-work with BIB BANK (BIB BANK) as telex manager, please see this as a
-confidential message and do not reveal it to another person and let me
-know whether you can be of assistance regarding my proposal below
-because it is top secret.
+> 
+> BTW another approach would be to extend ops with new callback
+> delete_empty(), require unlocked implementation to define it and move
+> functionality of tcf_proto_check_delete() there. Such approach would
+> remove the need for (ab)using ops->walk() for this since internally
+> in classifier implementation there is always a way to correctly verify
+> that classifier instance is empty. Don't know which approach is better
+> in this case.
 
-I am about to retire from active Banking service to start a new life
-but I am skeptical to reveal this particular secret to a stranger. You
-must assure me that everything will be handled confidentially because
-we are not going to suffer again in life. It has been 10 years now
-that most of the greedy African Politicians used our bank to launder
-money overseas through the help of their Political advisers. Most of
-the funds which they transferred out of the shores of Africa were gold
-and oil money that was supposed to have been used to develop the
-continent. Their Political advisers always inflated the amounts before
-transferring to foreign accounts, so I also used the opportunity to
-divert part of the funds hence I am aware that there is no official
-trace of how much was transferred as all the accounts used for such
-transfers were being closed after transfer. I acted as the Bank
-Officer to most of the politicians and when I discovered that they
-were using me to succeed in their greedy act; I also cleaned some of
-their banking records from the Bank files and no one cared to ask me
-because the money was too much for them to control. They laundered
-over $5billion Dollars during the process.
+I see both as complementing each other. delete_empty()
+could serves like guidance almost for someone who wants to implement
+parallelization (and stops abuse of walk()) and
+TCF_PROTO_OPS_DOIT_UNLOCKED is more of a shortcut. IOW, you
+could at the top of tcf_proto_check_delete() return true
+if TCF_PROTO_OPS_DOIT_UNLOCKED is set while still invoking
+delete_empty() (instead of walk()) if you go past that.
+Would that work?
 
-Before I send this message to you, I have already diverted
-($10.6million Dollars) to an escrow account belonging to no one in the
-bank. The bank is anxious now to know who the beneficiary to the funds
-is because they have made a lot of profits with the funds. It is more
-than Eight years now and most of the politicians are no longer using
-our bank to transfer funds overseas. The ($10.6million Dollars) has
-been laying waste in our bank and I don=E2=80=99t want to retire from the b=
-ank
-without transferring the funds to a foreign account to enable me share
-the proceeds with the receiver (a foreigner). The money will be shared
-60% for me and 40% for you. There is no one coming to ask you about
-the funds because I secured everything. I only want you to assist me
-by providing a reliable bank account where the funds can be
-transferred.
+cheers,
+jamal
 
-You are not to face any difficulties or legal implications as I am
-going to handle the transfer personally. If you are capable of
-receiving the funds, do let me know immediately to enable me give you
-a detailed information on what to do. For me, I have not stolen the
-money from anyone because the other people that took the whole money
-did not face any problems. This is my chance to grab my own life
-opportunity but you must keep the details of the funds secret to avoid
-any leakages as no one in the bank knows about my plans.Please get
-back to me if you are interested and capable to handle this project, I
-shall intimate you on what to do when I hear from your confirmation
-and acceptance.If you are capable of being my trusted associate, do
-declare your consent to me I am looking forward to hear from you
-immediately for further information
-Thanks with my best regards.
-Mr.sulaman Kante,
-Telex Manager
-(BIB BANK)
-Burkina Faso.
