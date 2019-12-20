@@ -2,141 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BCDFA1283D1
-	for <lists+netdev@lfdr.de>; Fri, 20 Dec 2019 22:22:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E4F961283DD
+	for <lists+netdev@lfdr.de>; Fri, 20 Dec 2019 22:27:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727552AbfLTVWK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Dec 2019 16:22:10 -0500
-Received: from mail-pg1-f202.google.com ([209.85.215.202]:55395 "EHLO
-        mail-pg1-f202.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727473AbfLTVWK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Dec 2019 16:22:10 -0500
-Received: by mail-pg1-f202.google.com with SMTP id v30so5840552pga.22
-        for <netdev@vger.kernel.org>; Fri, 20 Dec 2019 13:22:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=r9lHUhVFmnwnvOI5+OYOqNbrR4sRrsu0Lvjkysu9m60=;
-        b=VccLePC7IXuSG66sx0PbhNexga6fWcYCg7SXxnBD8scdmE77qzrp8kF5tiLoxIvGyZ
-         cgK70KJ/9brCj7xNGnxcD5GmiI3v95REtyIFZKcDUNcjClkCij1om62AJlI1ZIJSwm4r
-         VyLinh19pG1DNbeVj+CrqjyWjdPG57HVKg/ApLWg8GY1NIEIlrb7IwGrAWzZw4AI/CU0
-         5RMbSPsGxtHhlNDlvmajf1daaT8ueDprlX322nqjNm/3N3yqswVvHXR338cTdHW8DZbe
-         77MdGvRoDccK14cs3eCsPZcP1Q1GcXGUFCrwA0WrabkD+Xv9iQ1zQ2h96D2vbpGsc6Os
-         Id/g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=r9lHUhVFmnwnvOI5+OYOqNbrR4sRrsu0Lvjkysu9m60=;
-        b=h/iSIJTvtl5agDswc9PYg3zBHDKa3D2W7UP6+OMCjRlOYjFtRuaC0VB40+U0S5JjZC
-         KBt2aVGx9ukQa4KYDQojMBOZhqrSTkowtZAgqRxBUbGxkIEy7iOEkHIoUUPZeCq385P1
-         U8Jv258JKa5Z7ImmL+yZMwQipJ6E0NNZ5IA1Osp78qqKt5qSwpBGKr5qJYf0f2BiDcBb
-         qUDreqJ5lqdXXvPIT3aw+YNdsosOXt0rIXIUbD7qjlK51lr74qYRLAr7TlrdoUrKwrdO
-         ByrbdQ0Yj9jeQ/MsYisr87d9xUWignj3uVyff1rxMipHs2Mx+fmXGRqXQYbTXt3eZzh6
-         3iqg==
-X-Gm-Message-State: APjAAAW1IYsUtyAVV8RxAiJlMX7tGTdVo4t9t/mraw1R4UI6iR+pZlfu
-        92TaV2lj6Rr7TGYdC0oauu8fAj83ctrOJMyWxxH7Sjh6fmGdZVWos9csal3Yf9UqwoLYE/GWUXu
-        fqOAFl6egab7i2Iv8Tl0iy/ePQK7vlryXMAHWfIWmk8nd/geCx/reSZz7dvhLfw==
-X-Google-Smtp-Source: APXvYqzAyuXgHTXrORNS6szcAloXE1fh1IDUxk+eoYefkB4yiERkk+yPhmXzgc5nXJYrKSjHf0NpTIjsDAA=
-X-Received: by 2002:a63:bc01:: with SMTP id q1mr18010589pge.442.1576876929534;
- Fri, 20 Dec 2019 13:22:09 -0800 (PST)
-Date:   Fri, 20 Dec 2019 13:22:07 -0800
-Message-Id: <20191220212207.76726-1-adelva@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.24.1.735.g03f4e72817-goog
-Subject: [PATCH net] virtio-net: Skip set_features on non-cvq devices
-From:   Alistair Delva <adelva@google.com>
-To:     netdev@vger.kernel.org
-Cc:     stable@vger.kernel.org, "Michael S . Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S . Miller" <davem@davemloft.net>, kernel-team@android.com,
-        virtualization@lists.linux-foundation.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        id S1727535AbfLTV1I (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Dec 2019 16:27:08 -0500
+Received: from mail-eopbgr50060.outbound.protection.outlook.com ([40.107.5.60]:62004
+        "EHLO EUR03-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727422AbfLTV1I (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 20 Dec 2019 16:27:08 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=a+DagKYzu1nrlMb/2U68sisYaf0C4AgV/oJDOOaP8a9UtkPHF244pYi7Mzp6wamBcuZsDpQH5L7Kfm3wvQLTAf1w1YcQA0eXUAHE1GNfCQUGfwCOXGd9Qe/tAEVBPmcb1kWWWlimE5Fux0ztab3jr6TETbx/Dt/4pxqt4rsdfR9+ZqXuRUvXfmSRBdV9Sukmq694SRBy0U5DZgK7numbmXAy0nOiyWerYjKMH8wyxGn7mTqW79SJN2kse2bNUpP/5s35nGzrV40+2E+SLxIz8B7MjHSYu/az8iAzocUJ1CFvE7AnljBfx0iScqWMkW60IbDoCK1CuuHxZ2OT3rMIcQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=sC2kC9OsSTA2LG6fabLRuYQGRN0WjeyeEwYsV+WPn+0=;
+ b=eBmq/G82mn/4OtUyNv0o6txKZDegQPg+aKiiNajxQJrOxUsNFMwbT+N3QSiqanAJqkaKoCZvPsWDbD8wpz3w6vjLYOQE27XZQV2ZEZpFBCv1JPb/fdxf6LEJTcZpheGPGobV/VCX81ylHXsKWE0GSmefmRT7QdMJTYKy3XMQi1VXi8YjKVzf6b/Iy0jCgrG21gmhAex0aUdbvmwai4jDP7d5RZx95Do9vRUkZuvIHgTPscWuzd13njavCGwVflqzG/oqRdvP1OEjnYtTP9Qew70XqFqMDDEgMZ2zRxh1csbb9AO+UR1QNxyNktzzaW5tA+fcKLsKFSkd0zOeHxn7rg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=sC2kC9OsSTA2LG6fabLRuYQGRN0WjeyeEwYsV+WPn+0=;
+ b=O92KO7fQfXscld8nsVCQNkZ5fjvCxk4eTD9JIRH5X6XWjptdu0LdUK2hBHlUvvDsLj7efSPO5PFLdGFQKnMizhvV75AOFmiBZsyg3aOs3sA4wp3zwVIQQzUmIVT/9VdBaTjatpq4vCf2Y34f+hlrI7WN3EtpDvDb2eOzGM+X8EY=
+Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (20.177.51.151) by
+ VI1PR05MB4719.eurprd05.prod.outlook.com (20.176.7.161) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2559.16; Fri, 20 Dec 2019 21:27:03 +0000
+Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
+ ([fe80::c872:cf66:4a5c:c881]) by VI1PR05MB5102.eurprd05.prod.outlook.com
+ ([fe80::c872:cf66:4a5c:c881%5]) with mapi id 15.20.2559.016; Fri, 20 Dec 2019
+ 21:27:03 +0000
+From:   Saeed Mahameed <saeedm@mellanox.com>
+To:     "ilias.apalodimas@linaro.org" <ilias.apalodimas@linaro.org>,
+        "brouer@redhat.com" <brouer@redhat.com>
+CC:     "peterz@infradead.org" <peterz@infradead.org>,
+        "linyunsheng@huawei.com" <linyunsheng@huawei.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Li Rongqing <lirongqing@baidu.com>,
+        "mhocko@kernel.org" <mhocko@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [net-next v5 PATCH] page_pool: handle page recycle for
+ NUMA_NO_NODE condition
+Thread-Topic: [net-next v5 PATCH] page_pool: handle page recycle for
+ NUMA_NO_NODE condition
+Thread-Index: AQHVtneBdU0TpEmmd0SpPbrpIjWYGafC0goAgAC5dYA=
+Date:   Fri, 20 Dec 2019 21:27:03 +0000
+Message-ID: <ac43d22859fa5a5145cc52e4673de01209818b9d.camel@mellanox.com>
+References: <20191218084437.6db92d32@carbon>
+         <157676523108.200893.4571988797174399927.stgit@firesoul>
+         <20191220102314.GB14269@apalos.home>
+In-Reply-To: <20191220102314.GB14269@apalos.home>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Evolution 3.32.5 (3.32.5-1.fc30) 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=saeedm@mellanox.com; 
+x-originating-ip: [209.116.155.178]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 8537ecd0-7edf-4845-8272-08d785935b38
+x-ms-traffictypediagnostic: VI1PR05MB4719:
+x-ld-processed: a652971c-7d2e-4d9b-a6a4-d149256f461b,ExtAddr
+x-microsoft-antispam-prvs: <VI1PR05MB4719F78F27800CA2A00DA07EBE2D0@VI1PR05MB4719.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-forefront-prvs: 025796F161
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(366004)(39860400002)(396003)(376002)(136003)(346002)(189003)(199004)(54906003)(6512007)(110136005)(8676002)(6506007)(6486002)(81156014)(26005)(81166006)(2906002)(86362001)(36756003)(8936002)(71200400001)(478600001)(5660300002)(76116006)(4326008)(66946007)(66476007)(91956017)(316002)(66556008)(66446008)(4001150100001)(186003)(2616005)(64756008);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB4719;H:VI1PR05MB5102.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: LfUhAX/gra1Y/8gqYDEBrh92D/gTDvPfgNuRA7mHfMMgnAFAvro82/7o4UrApz5+WoHYS8bDoPGr2nvIorgJwEGSKHeWcq4rPQhzRi2ephH5D9JhYBgH03T3lqEYjt28dW/A1h6EmkBn+0dlofiKxZJxkdwcKz+Z/PI+UxyfWCFm+dE0mQkXLSaMJhoGAsjOYDbG014nLHvPhCNSseJ8nsuvlzWjCrbE+6ihzS+vBz+AO8JCKFsGaKPCORl/nEXCAre1CCKUreYLIMym6x+VCt0PH/nSpYSt0an9+I+/dRHDhCLM0JrboixVOax4e9XhBOpxFobnRZ+dZlif3XznhKf4DLvlpfJbWJzB4tR4hFbqC7iLCf0m4sIeN//s7MRRDzVV5QRpXVneUYvWJJvJN0lkFz/hRw8mECY+hqJflSCLAdAA/RowK+rUZdsI3p+R
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <9371C7A0FCF1C249B46D3F889B332152@eurprd05.prod.outlook.com>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8537ecd0-7edf-4845-8272-08d785935b38
+X-MS-Exchange-CrossTenant-originalarrivaltime: 20 Dec 2019 21:27:03.1972
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 7ypJdnX5igLEq9qTPLoIA+6jdcQ70VRcZ7RL13F6Ut1WnC0FEFcWSTIoVBghWTkqCTmYEr1IJaI0z1wja2UoEw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB4719
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On devices without control virtqueue support, such as the virtio_net
-implementation in crosvm[1], attempting to configure LRO will panic the
-kernel:
-
-kernel BUG at drivers/net/virtio_net.c:1591!
-invalid opcode: 0000 [#1] PREEMPT SMP PTI
-CPU: 1 PID: 483 Comm: Binder:330_1 Not tainted 5.4.5-01326-g19463e9acaac #1
-Hardware name: ChromiumOS crosvm, BIOS 0
-RIP: 0010:virtnet_send_command+0x15d/0x170 [virtio_net]
-Code: d8 00 00 00 80 78 02 00 0f 94 c0 65 48 8b 0c 25 28 00 00 00 48 3b 4c 24 70 75 11 48 8d 65 d8 5b 41 5c 41 5d 41 5e 41 5f 5d c3 <0f> 0b e8 ec a4 12 c8 66 90 66 2e 0f 1f 84 00 00 00 00 00 55 48 89
-RSP: 0018:ffffb97940e7bb50 EFLAGS: 00010246
-RAX: ffffffffc0596020 RBX: ffffa0e1fc8ea840 RCX: 0000000000000017
-RDX: ffffffffc0596110 RSI: 0000000000000011 RDI: 000000000000000d
-RBP: ffffb97940e7bbf8 R08: ffffa0e1fc8ea0b0 R09: ffffa0e1fc8ea0b0
-R10: ffffffffffffffff R11: ffffffffc0590940 R12: 0000000000000005
-R13: ffffa0e1ffad2c00 R14: ffffb97940e7bc08 R15: 0000000000000000
-FS:  0000000000000000(0000) GS:ffffa0e1fd100000(006b) knlGS:00000000e5ef7494
-CS:  0010 DS: 002b ES: 002b CR0: 0000000080050033
-CR2: 00000000e5eeb82c CR3: 0000000079b06001 CR4: 0000000000360ee0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- ? preempt_count_add+0x58/0xb0
- ? _raw_spin_lock_irqsave+0x36/0x70
- ? _raw_spin_unlock_irqrestore+0x1a/0x40
- ? __wake_up+0x70/0x190
- virtnet_set_features+0x90/0xf0 [virtio_net]
- __netdev_update_features+0x271/0x980
- ? nlmsg_notify+0x5b/0xa0
- dev_disable_lro+0x2b/0x190
- ? inet_netconf_notify_devconf+0xe2/0x120
- devinet_sysctl_forward+0x176/0x1e0
- proc_sys_call_handler+0x1f0/0x250
- proc_sys_write+0xf/0x20
- __vfs_write+0x3e/0x190
- ? __sb_start_write+0x6d/0xd0
- vfs_write+0xd3/0x190
- ksys_write+0x68/0xd0
- __ia32_sys_write+0x14/0x20
- do_fast_syscall_32+0x86/0xe0
- entry_SYSENTER_compat+0x7c/0x8e
-
-This happens because virtio_set_features() does not check the presence
-of the control virtqueue feature, which is sanity checked by a BUG_ON
-in virtnet_send_command().
-
-Fix this by skipping any feature processing if the control virtqueue is
-missing. This should be OK for any future feature that is added, as
-presumably all of them would require control virtqueue support to notify
-the endpoint that offload etc. should begin.
-
-[1] https://chromium.googlesource.com/chromiumos/platform/crosvm/
-
-Fixes: a02e8964eaf9 ("virtio-net: ethtool configurable LRO")
-Cc: stable@vger.kernel.org [4.20+]
-Cc: Michael S. Tsirkin <mst@redhat.com>
-Cc: Jason Wang <jasowang@redhat.com>
-Cc: David S. Miller <davem@davemloft.net>
-Cc: kernel-team@android.com
-Cc: virtualization@lists.linux-foundation.org
-Cc: linux-kernel@vger.kernel.org
-Signed-off-by: Alistair Delva <adelva@google.com>
----
- drivers/net/virtio_net.c | 3 +++
- 1 file changed, 3 insertions(+)
-
-diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-index 4d7d5434cc5d..709bcd34e485 100644
---- a/drivers/net/virtio_net.c
-+++ b/drivers/net/virtio_net.c
-@@ -2560,6 +2560,9 @@ static int virtnet_set_features(struct net_device *dev,
- 	u64 offloads;
- 	int err;
- 
-+	if (!vi->has_cvq)
-+		return 0;
-+
- 	if ((dev->features ^ features) & NETIF_F_LRO) {
- 		if (vi->xdp_queue_pairs)
- 			return -EBUSY;
--- 
-2.24.1.735.g03f4e72817-goog
-
+T24gRnJpLCAyMDE5LTEyLTIwIGF0IDEyOjIzICswMjAwLCBJbGlhcyBBcGFsb2RpbWFzIHdyb3Rl
+Og0KPiBIaSBKZXNwZXIsIA0KPiANCj4gSSBsaWtlIHRoZSBvdmVyYWxsIGFwcHJvYWNoIHNpbmNl
+IHRoaXMgbW92ZXMgdGhlIGNoZWNrIG91dCBvZiAgdGhlDQo+IGhvdHBhdGguIA0KPiBAU2FlZWQs
+IHNpbmNlIGkgZ290IG5vIGhhcmR3YXJlIHRvIHRlc3QgdGhpcyBvbiwgd291bGQgaXQgYmUgcG9z
+c2libGUNCj4gdG8gY2hlY2sNCj4gdGhhdCBpdCBzdGlsbCB3b3JrcyBmaW5lIGZvciBtbHg1Pw0K
+DQpUaGUgaWRlYSBzZWVtcyByZWFzb25hYmxlLA0KSSB3aWxsIG5lZWQgYSBkYXkgb3IgdHdvIHRv
+IHRlc3QgYW5kIHJldmlldyB0aGlzLg0KDQpUaGUgb25seSB0aGluZyB3ZSBuZWVkIHRvIGJlIGNh
+cmVmdWwgYWJvdXQgaXMgaG93IGhlYXZ5IHRoZSBmbHVzaA0Kb3BlcmF0aW9uIG9uIG51bWEgY2hh
+bmdlcywgaG9sZGluZyBhIHNwaW4gbG9jayBhbmQgcmVsZWFzaW5nIGFsbCBwYWdlcw0KYXQgb25j
+ZSAuLg0KcHJpb3IgdG8gdGhpcyBwYXRjaCwgcGFnZSByZWxlYXNpbmcgd2FzIGRvbmUgcGVyIHBh
+Y2tldCwgc28gdGhlcmUNCnNob3VsZCBiZSBhbiBpbXByb3ZlbWVudCBoZXJlIG9mIGJ1bGsgcGFn
+ZSBmbHVzaCwgYnV0IG9uIHRoZSBvdGhlciBoYW5kDQp3ZSB3aWxsIGJlIGhvbGRpbmcgYSBzcGlu
+IGxvY2suLiBpIGFtIG5vdCB3b3JyaWVkIGFib3V0IHNwaW4gbG9jaw0KY29udGVudGlvbiB0aG91
+Z2gsIGp1c3QgYWJvdXQgdGhlIHBvdGVudGlhbCBjcHUgc3Bpa2VzLg0KDQpUaGFua3MsDQpTYWVl
+ZC4NCg0KPiANCj4gWy4uLl0NCj4gPiArCXN0cnVjdCBwdHJfcmluZyAqciA9ICZwb29sLT5yaW5n
+Ow0KPiA+ICsJc3RydWN0IHBhZ2UgKnBhZ2U7DQo+ID4gKwlpbnQgcHJlZl9uaWQ7IC8qIHByZWZl
+cnJlZCBOVU1BIG5vZGUgKi8NCj4gPiArDQo+ID4gKwkvKiBRdWlja2VyIGZhbGxiYWNrLCBhdm9p
+ZCBsb2NrcyB3aGVuIHJpbmcgaXMgZW1wdHkgKi8NCj4gPiArCWlmIChfX3B0cl9yaW5nX2VtcHR5
+KHIpKQ0KPiA+ICsJCXJldHVybiBOVUxMOw0KPiA+ICsNCj4gPiArCS8qIFNvZnRpcnEgZ3VhcmFu
+dGVlIENQVSBhbmQgdGh1cyBOVU1BIG5vZGUgaXMgc3RhYmxlLiBUaGlzLA0KPiA+ICsJICogYXNz
+dW1lcyBDUFUgcmVmaWxsaW5nIGRyaXZlciBSWC1yaW5nIHdpbGwgYWxzbyBydW4gUlgtTkFQSS4N
+Cj4gPiArCSAqLw0KPiA+ICsJcHJlZl9uaWQgPSAocG9vbC0+cC5uaWQgPT0gTlVNQV9OT19OT0RF
+KSA/IG51bWFfbWVtX2lkKCkgOg0KPiA+IHBvb2wtPnAubmlkOw0KPiANCj4gT25lIG9mIHRoZSB1
+c2UgY2FzZXMgZm9yIHRoaXMgaXMgdGhhdCBkdXJpbmcgdGhlIGFsbG9jYXRpb24gd2UgYXJlDQo+
+IG5vdA0KPiBndWFyYW50ZWVkIHRvIHBpY2sgdXAgdGhlIGNvcnJlY3QgTlVNQSBub2RlLiANCj4g
+VGhpcyB3aWxsIGdldCBhdXRvbWF0aWNhbGx5IGZpeGVkIG9uY2UgdGhlIGRyaXZlciBzdGFydHMg
+cmVjeWNsaW5nDQo+IHBhY2tldHMuIA0KPiANCj4gSSBkb24ndCBmZWVsIHN0cm9uZ2x5IGFib3V0
+IHRoaXMsIHNpbmNlIGkgZG9uJ3QgdXN1YWxseSBsaWtlIGhpZGluZw0KPiB2YWx1ZQ0KPiBjaGFu
+Z2VzIGZyb20gdGhlIHVzZXIgYnV0LCB3b3VsZCBpdCBtYWtlIHNlbnNlIHRvIG1vdmUgdGhpcyBp
+bnRvIA0KPiBfX3BhZ2VfcG9vbF9hbGxvY19wYWdlc19zbG93KCkgYW5kIGNoYW5nZSB0aGUgcG9v
+bC0+cC5uaWQ/DQo+IA0KPiBTaW5jZSBhbGxvY19wYWdlc19ub2RlKCkgd2lsbCByZXBsYWNlIE5V
+TUFfTk9fTk9ERSB3aXRoIG51bWFfbWVtX2lkKCkNCj4gcmVnYXJkbGVzcywgd2h5IG5vdCBzdG9y
+ZSB0aGUgYWN0dWFsIG5vZGUgaW4gb3VyIHBhZ2UgcG9vbA0KPiBpbmZvcm1hdGlvbj8NCj4gWW91
+IGNhbiB0aGVuIHNraXAgdGhpcyBhbmQgY2hlY2sgcG9vbC0+cC5uaWQgPT0gbnVtYV9tZW1faWQo
+KSwNCj4gcmVnYXJkbGVzcyBvZg0KPiB3aGF0J3MgY29uZmlndXJlZC4gDQo+IA0KPiBUaGFua3MN
+Cj4gL0lsaWFzDQo=
