@@ -2,122 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3AC4B1271FA
-	for <lists+netdev@lfdr.de>; Fri, 20 Dec 2019 01:02:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1BAC31271FD
+	for <lists+netdev@lfdr.de>; Fri, 20 Dec 2019 01:02:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727165AbfLTACM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Dec 2019 19:02:12 -0500
-Received: from youngberry.canonical.com ([91.189.89.112]:55510 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726963AbfLTACM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Dec 2019 19:02:12 -0500
-Received: from 1.general.cking.uk.vpn ([10.172.193.212])
-        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <colin.king@canonical.com>)
-        id 1ii5k9-0003p9-1d; Fri, 20 Dec 2019 00:02:09 +0000
-To:     Johannes Berg <johannes.berg@intel.com>,
-        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Intel Linux Wireless <linuxwifi@intel.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Ihab Zhaika <ihab.zhaika@intel.com>,
-        Shahar S Matityahu <shahar.s.matityahu@intel.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-From:   Colin Ian King <colin.king@canonical.com>
-Autocrypt: addr=colin.king@canonical.com; prefer-encrypt=mutual; keydata=
- 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
-Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: re: iwlwifi: refactor the SAR tables from mvm to acpi
-Message-ID: <18ea9fa8-93fe-f371-68ee-3d12eac252c8@canonical.com>
-Date:   Fri, 20 Dec 2019 00:02:08 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.3.0
+        id S1727140AbfLTACk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Dec 2019 19:02:40 -0500
+Received: from mail-qk1-f194.google.com ([209.85.222.194]:40189 "EHLO
+        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726963AbfLTACj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Dec 2019 19:02:39 -0500
+Received: by mail-qk1-f194.google.com with SMTP id c17so6186716qkg.7;
+        Thu, 19 Dec 2019 16:02:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=DflVdIpQoJVyFG2BYO2Tb9HnXbDJdzN08W+fLPNFXdw=;
+        b=J2K9KKfk7sNRJRboR9FGRYGVRv0Hnm+oqc4ULUvo81K3Zn9eSLsLIxoqt9t4HOkaFE
+         IWRGvvMxGF4w7lB+49j0URKQU41q6Es4aybrNhT8rvTdtO3+ygRgq6KLdLIj4hPf8fuO
+         GHz42/E+o9i+XZ+XuNyEpd1KJDxaRr/eGg7XP2HQNSqi6AO3o21BDZ/I44ostzpiRhBN
+         KEOOqnS+KdWysOYjx8xPR4nWLgedEHw+W5545s+M6GYte9wdr89SXe2kIWnU4yDez/4E
+         OG0W4Xx+btm/IaOSq+hatDt00N359c1ApOy+i3OaZLZ98Pu+HasiqeGDoh4xJ0Pm4kBD
+         /HEA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=DflVdIpQoJVyFG2BYO2Tb9HnXbDJdzN08W+fLPNFXdw=;
+        b=ltlZ1O5ef+ctTvCMSIY3AtZb8NSTnijd7G94plx7B/hQQ4ahzLerVhXpr/W0Zyi6JP
+         KGepp+Henv4bh5RT4lUWaUef9aejA654yoEeowHJGVRR3a1BtLm97eS3gf9D7s+GFy4t
+         HTfmuIbzHqlw/tUGqVvnMr7X0bhOq8SOiPQSTflTbflm+bExnfrsV05DN7SnAgzH8huS
+         I5CKyiOQuieWZoKGxX62T/vOYxAAK/t00w05qQ4YJXx3aOWedcdJt8aBQ9DmF+pM+Kt9
+         6Owo+qoraLkHsZGRgSmuu/LdiN+sN600P532A/PAsotSQN0lUg45coO7mUcMYhz6Fdr5
+         abfw==
+X-Gm-Message-State: APjAAAXXUKQlUs2UI5VyYt8pxq8TQMDnfzYA1X+YYl6ctkLOKfSJTJJu
+        qcmxUmhU9XxZzU/uC0OJCkoG3sJgmLWwc7xc6BQ=
+X-Google-Smtp-Source: APXvYqw9TDa7w6xj+qx/o6YYN4t9kpVyB/JwaShoiKk7HyvfPJQa+5Tszx3kLCLBj49gCNLEzwgaWVI1NA61UOPotN8=
+X-Received: by 2002:ae9:e809:: with SMTP id a9mr10933464qkg.92.1576800158825;
+ Thu, 19 Dec 2019 16:02:38 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+References: <157676577049.957277.3346427306600998172.stgit@toke.dk> <157676577267.957277.6240503077867756432.stgit@toke.dk>
+In-Reply-To: <157676577267.957277.6240503077867756432.stgit@toke.dk>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Thu, 19 Dec 2019 16:02:27 -0800
+Message-ID: <CAEf4BzZYOrXQFtVbqhw7PagzT6VhfM5LRV93cLuzABy8eHWyqw@mail.gmail.com>
+Subject: Re: [PATCH RFC bpf-next 2/3] libbpf: Handle function externs and
+ support static linking
+To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On Thu, Dec 19, 2019 at 6:29 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redh=
+at.com> wrote:
+>
+> From: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+>
+> This adds support for resolving function externs to libbpf, with a new AP=
+I
+> to resolve external function calls by static linking at load-time. The AP=
+I
+> for this requires the caller to supply the object files containing the
+> target functions, and to specify an explicit mapping between extern
+> function names in the calling program, and function names in the target
+> object file. This is to support the XDP multi-prog case, where the
+> dispatcher program may not necessarily have control over function names i=
+n
+> the target programs, so simple function name resolution can't be used.
+>
+> The target object files must be loaded into the kernel before the calling
+> program, to ensure all relocations are done on the target functions, so w=
+e
+> can just copy over the instructions.
+>
+> Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+> ---
 
-Static analysis with Coverity has detected a potential issue with the
-following commit:
+A bunch of this code will change after you update to latest Clang with
+proper type info for extern functions. E.g., there shouldn't be any
+size/alignment for BTF_KIND_FUNC_PROTO, it's illegal. But that
+Yonghong already mentioned.
 
-commit 39c1a9728f938c7255ce507c8d56b73e8a4ebddf
-Author: Ihab Zhaika <ihab.zhaika@intel.com>
-Date:   Fri Nov 15 09:28:11 2019 +0200
+As for the overall approach. I think doing static linking outside of
+bpf_object opening/loading is cleaner approach. If we introduce
+bpf_linker concept/object and have someting like
+bpf_linked__new(options) + a sequence of
+bpf_linker__add_object(bpf_object) + final bpf_linker__link(), which
+will produce usable bpf_object, as if bpf_object__open() was just
+called, it will be better and will allow quite a lot of flexibility in
+how we do things, without cluttering bpf_object API itself.
+Additionally, we can even have bpf_linker__write_file() to emit a
+final ELF file with statically linked object, which can then be loaded
+through bpf_object__open_file (we can do the same for in-memory
+buffer, of course). You can imagine LLC some day using libbpf to do
+actual linking of BPF .o files into a final BPF executable/object
+file, just like you expect it to do for non-BPF object files. WDYT?
 
-    iwlwifi: refactor the SAR tables from mvm to acpi
+Additionally, and seems you already realized that as well (judging by
+FIXMEs), we'll need to merge those individual objects' BTFs and
+deduplicate them, so that they form coherent set of types. Adjusting
+line info/func info is mandatory as well.
 
+Another thing we should think through is sharing maps. With
+BTF-defined maps, it should be pretty easy to have declaration vs
+definiton of maps. E.g.,
 
-in function iwl_sar_get_ewrd_table() we have an array index pos being
-initialized to 3 and then incremented each time a loop iterates:
+prog_a.c:
 
-        for (i = 0; i < n_profiles; i++) {
-                /* the tables start at element 3 */
-                int pos = 3;
+struct {
+    __uint(type, BPF_MAP_TYPE_ARRAY);
+    __uint(max_entries, 123);
+    ... and so on, complete definition
+} my_map SEC(".maps");
 
-                /* The EWRD profiles officially go from 2 to 4, but we
-                 * save them in sar_profiles[1-3] (because we don't
-                 * have profile 0).  So in the array we start from 1.
-                 */
-                ret = iwl_sar_set_profile(&wifi_pkg->package.elements[pos],
-                                          &fwrt->sar_profiles[i + 1],
-                                          enabled);
-                if (ret < 0)
-                        break;
+prog_b.c:
 
-                /* go to the next table */
-                pos += ACPI_SAR_TABLE_SIZE;
-        }
+extern struct {
+    ... here we can discuss which pieces are necessary/allowed,
+potentially all (and they all should match, of course) ...
+} my_map SEC(".maps");
 
-So, each iteration is always accessing package.elements[3]. I'm not sure
-if that is intentional. If it is, then the increment of pos is not
-required.  Either way, it's not clear what the original intention is.
+prog_b.c won't create a new map, it will just use my_map from prog_a.c.
 
-Colin
+I might be missing something else as well, but those are the top things, IM=
+O.
+
+I hope this is helpful.
+
+>  tools/lib/bpf/btf.c    |   10 +-
+>  tools/lib/bpf/libbpf.c |  268 +++++++++++++++++++++++++++++++++++++++---=
+------
+>  tools/lib/bpf/libbpf.h |   17 +++
+>  3 files changed, 244 insertions(+), 51 deletions(-)
+>
+
+[...]
