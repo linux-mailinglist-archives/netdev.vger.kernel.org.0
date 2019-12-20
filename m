@@ -2,85 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C2E6128576
-	for <lists+netdev@lfdr.de>; Sat, 21 Dec 2019 00:18:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 14ABB128595
+	for <lists+netdev@lfdr.de>; Sat, 21 Dec 2019 00:39:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726565AbfLTXSA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Dec 2019 18:18:00 -0500
-Received: from mga01.intel.com ([192.55.52.88]:21658 "EHLO mga01.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726470AbfLTXSA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 20 Dec 2019 18:18:00 -0500
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 20 Dec 2019 15:17:59 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.69,337,1571727600"; 
-   d="scan'208";a="391012942"
-Received: from romley-ivt3.sc.intel.com ([172.25.110.60])
-  by orsmga005.jf.intel.com with ESMTP; 20 Dec 2019 15:17:59 -0800
-From:   Fenghua Yu <fenghua.yu@intel.com>
-To:     "Michael Chan" <michael.chan@broadcom.com>, netdev@vger.kernel.org
-Cc:     "Thomas Gleixner" <tglx@linutronix.de>,
-        "Andy Lutomirski" <luto@kernel.org>,
-        "Peter Zijlstra" <peterz@infradead.org>,
-        "Tony Luck" <tony.luck@intel.com>,
-        "David Laight" <David.Laight@ACULAB.COM>,
-        "Ravi V Shankar" <ravi.v.shankar@intel.com>,
-        Fenghua Yu <fenghua.yu@intel.com>
-Subject: [PATCH] drivers/net/b44: Change to non-atomic bit operations
-Date:   Fri, 20 Dec 2019 15:29:11 -0800
-Message-Id: <1576884551-9518-1-git-send-email-fenghua.yu@intel.com>
-X-Mailer: git-send-email 2.5.0
+        id S1726565AbfLTXjS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Dec 2019 18:39:18 -0500
+Received: from mail-pf1-f180.google.com ([209.85.210.180]:40198 "EHLO
+        mail-pf1-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726470AbfLTXjR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Dec 2019 18:39:17 -0500
+Received: by mail-pf1-f180.google.com with SMTP id q8so6056211pfh.7
+        for <netdev@vger.kernel.org>; Fri, 20 Dec 2019 15:39:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=herbertland-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id;
+        bh=Vf3Bo/w2DMGELrRPhmngdku+4mZnW82yk0RNt+cOstA=;
+        b=Zg2ZLYQ4pORIhFiFQgwMzXJZZ3uUDu+JPpB2+uyS4Nyt4bzjeVtxCF1N66sKYOSrum
+         tgddoHeQWZbrU5kTJWZTMztITPntOTXlEbbyFfz1L2IS+PzfUnFXVwLQ7U1sPzyDdPRj
+         hhHioTfPGfjC6QrIZQm1DIus0vGhh/tvJzO+wEZwXdQIRPGLI+zPrDwhTOpkMhM5yA1y
+         1gYOcbbgjYLsdUyIjab9q/diA+NPXK8zmi/3rfkGCLmNHaSTomxL08mOTKR/XT+p4zy8
+         4PxdCfofa7jDqfUzmP3iSb1J/HcfbuiAqZwIG4XHuTL7TJV7kLZRUQiQoS5ZqhKdezYm
+         E/bg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=Vf3Bo/w2DMGELrRPhmngdku+4mZnW82yk0RNt+cOstA=;
+        b=MPTyuBeaxuHKzUi2dJk4MUGPuf3j/p7tUjBKXSI1JbApkTSq83/xHmYINzTzUQiem4
+         Bh+6PnTJrEKVMH9RT/cO8wn1s6aJ9vzG80PSgRuA9m0DXE1vWSHBJ8tT0eZxBOXexZxC
+         Z3RxP8QGcojjDxyFt5juFp7bAZIkjNFn0FmSfrimZK1eiIpsgzUhmn9MWWsaG86ti73Z
+         LVL1tyMs9oiIfbN54TEHjOS914qjs9RfFy6QJ/kPcy/JVJkijxYg3mzzwsvRsGofqfeh
+         De4+xpjefFK0cFE+QVvoShqJv2CBCif57JM+4tQ51Age2JLDE4kPhsyVW94hMsapx5Qi
+         LPJw==
+X-Gm-Message-State: APjAAAVatFIxZ6ocWN3JY1fgOZslJlEsJCibtL6lsm0x8U3CeY5/EEbj
+        jeoMens8z9+H0O21U8K0xA3WzrU5EgE=
+X-Google-Smtp-Source: APXvYqyfkPF7w9Qe0fHfUia/msIyXj+z3gbZKpImmNSqezvmsNXfzGfclOsiCuGanJpg8G5D09YbYA==
+X-Received: by 2002:a62:14c4:: with SMTP id 187mr17590890pfu.96.1576885157175;
+        Fri, 20 Dec 2019 15:39:17 -0800 (PST)
+Received: from localhost.localdomain (c-73-202-182-113.hsd1.ca.comcast.net. [73.202.182.113])
+        by smtp.gmail.com with ESMTPSA id 207sm14833555pfu.88.2019.12.20.15.39.15
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
+        Fri, 20 Dec 2019 15:39:16 -0800 (PST)
+From:   Tom Herbert <tom@herbertland.com>
+To:     davem@davemloft.net, netdev@vger.kernel.org,
+        simon.horman@netronome.com
+Cc:     Tom Herbert <tom@herbertland.com>
+Subject: [PATCH v6 net-next 0/9] ipv6: Extension header infrastructure
+Date:   Fri, 20 Dec 2019 15:38:35 -0800
+Message-Id: <1576885124-14576-1-git-send-email-tom@herbertland.com>
+X-Mailer: git-send-email 2.7.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Since "pwol_mask" is local and never exposed to concurrency, there is
-no need to set bit in pwol_mask by costly atomic operations. On x86,
-accessing data across two cache lines in one atomic bit operation
-(aka split lock) can take over 1000 cycles.
+This patchset improves the IPv6 extension header infrastructure
+to make extension headers more usable and scalable.
 
-Directly operate on the byte which contains the bit instead of using
-__set_bit() to avoid any big endian concern due to type cast to
-unsigned long in __set_bit().
+  - Reorganize extension header files to separate out common
+    API components
+  - Create common TLV handler that will can be used in other use
+    cases (e.g. segment routing TLVs, UDP options)
+  - Allow registration of TLV handlers
+  - Elaborate on the TLV tables to include more characteristics
+  - Add a netlink interface to set TLV parameters (such as
+    alignment requirements, authorization to send, etc.)
+  - Enhance validation of TLVs being sent. Validation is strict
+    (unless overridden by admin) following the sending clause
+    of the robustness principle
+  - Allow non-privileged users to set Hop-by-Hop and Destination
+    Options if authorized by the admin
 
-Suggested-by: Peter Zijlstra <peterz@infradead.org>
-Signed-off-by: Fenghua Yu <fenghua.yu@intel.com>
-Reviewed-by: Tony Luck <tony.luck@intel.com>
----
- drivers/net/ethernet/broadcom/b44.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+v2:
+  - Fix build errors from missing include file.
 
-diff --git a/drivers/net/ethernet/broadcom/b44.c b/drivers/net/ethernet/broadcom/b44.c
-index 035dbb1b2c98..ec25fd81985d 100644
---- a/drivers/net/ethernet/broadcom/b44.c
-+++ b/drivers/net/ethernet/broadcom/b44.c
-@@ -1516,8 +1516,10 @@ static int b44_magic_pattern(u8 *macaddr, u8 *ppattern, u8 *pmask, int offset)
- 	int ethaddr_bytes = ETH_ALEN;
- 
- 	memset(ppattern + offset, 0xff, magicsync);
--	for (j = 0; j < magicsync; j++)
--		set_bit(len++, (unsigned long *) pmask);
-+	for (j = 0; j < magicsync; j++) {
-+		pmask[len >> 3] |= BIT(len & 7);
-+		len++;
-+	}
- 
- 	for (j = 0; j < B44_MAX_PATTERNS; j++) {
- 		if ((B44_PATTERN_SIZE - len) >= ETH_ALEN)
-@@ -1529,7 +1531,8 @@ static int b44_magic_pattern(u8 *macaddr, u8 *ppattern, u8 *pmask, int offset)
- 		for (k = 0; k< ethaddr_bytes; k++) {
- 			ppattern[offset + magicsync +
- 				(j * ETH_ALEN) + k] = macaddr[k];
--			set_bit(len++, (unsigned long *) pmask);
-+			pmask[len >> 3] |= BIT(len & 7);
-+			len++;
- 		}
- 	}
- 	return len - 1;
+v3:
+  - Fix kbuild issue for ipv6_opt_hdr declared inside parameter list
+    in ipeh.h
+
+v4:
+  - Resubmit
+
+v5:
+  - Fix reverse christmas tree issue
+
+v6:
+  - Address comments from Simon Horman
+  - Remove new EXTHDRS Kconfig symbol, just use IPV6 for now
+  - Split out introduction of parse_error for TLV parsing loop into its
+    own patch
+  - Fix drop counters in HBH and destination options processing
+  - Add extack error messages in netlink code
+  - Added range of permissions in include/uapi/linux/ipeh.h
+  - Check that min data length is <= max data length when setting
+    TLV attributes
+
+Tom Herbert (9):
+  ipeh: Fix destopts and hopopts counters on drop
+  ipeh: Create exthdrs_options.c and ipeh.h
+  ipeh: Move generic EH functions to exthdrs_common.c
+  ipeh: Generic TLV parser
+  ipeh: Add callback to ipeh_parse_tlv to handle errors
+  ip6tlvs: Registration of TLV handlers and parameters
+  ip6tlvs: Add TX parameters
+  ip6tlvs: Add netlink interface
+  ip6tlvs: Validation of TX Destination and Hop-by-Hop options
+
+ include/net/ipeh.h         |  209 ++++++++
+ include/net/ipv6.h         |   12 +-
+ include/uapi/linux/in6.h   |    6 +
+ include/uapi/linux/ipeh.h  |   53 ++
+ net/dccp/ipv6.c            |    2 +-
+ net/ipv6/Makefile          |    3 +-
+ net/ipv6/calipso.c         |    6 +-
+ net/ipv6/datagram.c        |   51 +-
+ net/ipv6/exthdrs.c         |  504 ++----------------
+ net/ipv6/exthdrs_common.c  | 1212 ++++++++++++++++++++++++++++++++++++++++++++
+ net/ipv6/exthdrs_options.c |  342 +++++++++++++
+ net/ipv6/ipv6_sockglue.c   |   39 +-
+ net/ipv6/raw.c             |    2 +-
+ net/ipv6/tcp_ipv6.c        |    2 +-
+ net/ipv6/udp.c             |    2 +-
+ net/l2tp/l2tp_ip6.c        |    2 +-
+ net/sctp/ipv6.c            |    2 +-
+ 17 files changed, 1938 insertions(+), 511 deletions(-)
+ create mode 100644 include/net/ipeh.h
+ create mode 100644 include/uapi/linux/ipeh.h
+ create mode 100644 net/ipv6/exthdrs_common.c
+ create mode 100644 net/ipv6/exthdrs_options.c
+
 -- 
-2.19.1
+2.7.4
 
