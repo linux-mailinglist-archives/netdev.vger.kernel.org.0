@@ -2,94 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D908B127F44
-	for <lists+netdev@lfdr.de>; Fri, 20 Dec 2019 16:28:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0EC20127F47
+	for <lists+netdev@lfdr.de>; Fri, 20 Dec 2019 16:29:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727546AbfLTP2P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Dec 2019 10:28:15 -0500
-Received: from mail-pj1-f67.google.com ([209.85.216.67]:53744 "EHLO
-        mail-pj1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727395AbfLTP2P (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Dec 2019 10:28:15 -0500
-Received: by mail-pj1-f67.google.com with SMTP id n96so4250751pjc.3;
-        Fri, 20 Dec 2019 07:28:15 -0800 (PST)
+        id S1727451AbfLTP3J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Dec 2019 10:29:09 -0500
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:40891 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727390AbfLTP3I (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Dec 2019 10:29:08 -0500
+Received: by mail-wr1-f65.google.com with SMTP id c14so9784338wrn.7
+        for <netdev@vger.kernel.org>; Fri, 20 Dec 2019 07:29:07 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=GZPCEvTkQBcE0MkWf0wsjsT/U2bWse2KUq7jRUE3VSc=;
-        b=sTBffexju1W2lYD4Nzsim/64ZnYR8BCtM/yzwIWySePc8qD1ZaDo537POMdRGfJtc5
-         uQoau9wJxX1jJ0hT6gmVPT1uexYZB6irL1/mRepbdy4i9EQNFN2NhaLJCzT/KbnhPYb9
-         hC72KGNGP6qV9wVzqcwN2t059a2z+XKzJ4xof+PrSdGjjSkSeuElWwFq2edOJWKhmNI4
-         pzbSTqAhGVORWmDdzs7Fym/z4sCMidom6d6+wwNCBT9s5tPn0NGTL5dBFLIHOa/pjhoW
-         DXiSnQPKiM79BUvG6rqjoMaRTgsR1tAjsGqTKg6D3jeVO5OiXFHVsOL/IFZd9qyI7Wkv
-         lccQ==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=WTvZUoSWMSNKMHTGH4126mxenNh2hHlcTMmEH/wjPt4=;
+        b=j1e+Q/Db9C7aA4YKD1uuFgKzFRODxmsPXqtmAEW+XZ8VnL7Kins7TDZAKxX/s4PXYJ
+         z+bFlosTTMJUY6XStYwdY4xVrhspqmguOizAhvPc0kNWq99AuP6picLY0FFiESUvEK1f
+         X/if7J+oV1DX4JyfXCaViZbX7Q2uOTUoxpnP+3sGp+ikIc+KGPsf/og/6kAnEDvpZChV
+         BEro+ELDScuvj2qmzswosR6j22j7YZbMcmjXyVBpHP5QGI1mDAH43SctNayFoPaqK/dq
+         egrqX1A4H0DLsrjDnsHA8Vu0ZjnlDBCap8wKma8pBpCOlz+GkqZxqQ2XUC0H0EMexpW8
+         SU2Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=GZPCEvTkQBcE0MkWf0wsjsT/U2bWse2KUq7jRUE3VSc=;
-        b=ScPLDmAqBxuQ1E+xyLopBrh4Ae0nEP51k9J+NC4lskHDkgQYJnmvHpbWjuXRLcAfAw
-         qf0byziQPGHbY6KMD/eEBhYHvQHQ7m+2RvzC1wtyXbfNzrWKET5whbTdQyhy9Nd3TU/V
-         5e+c1hdOSgzsMcYp48uFoxBtoCkv95L1Mr4jyJcsS8/vJo4TOPJlLlwpKNXs9D2yvoCl
-         N6OlSy8MRi4F87ahO9dF1g1WOFuSoYjvI9z8WgZzqcGY8u8S+q1LQ240WmeClg7UEKuZ
-         p/5ac8Ya+AyS+PHT/zlHRZtDwBRfp8yZkCr6Cuf9tXM2XXKOx15ldIIq2t9jz1ecy49+
-         J2Og==
-X-Gm-Message-State: APjAAAUHeMi+ZP27bquLDXufNHRMYrCcVieEEHY8rwkXoeG0JjnrBl1s
-        D93zrl/ZhtrQOFbh4/bPweTjpdfAdf7NoA==
-X-Google-Smtp-Source: APXvYqwN583GT21VCNYIdu4eOGCxYptUDhCM7V0OyVU+QMsL1dpSQO5jno4LZj6NxqwbLl5ZCLDT0g==
-X-Received: by 2002:a17:902:124:: with SMTP id 33mr15019308plb.115.1576855694327;
-        Fri, 20 Dec 2019 07:28:14 -0800 (PST)
-Received: from localhost.localdomain ([2001:1284:f013:b9c8:9c5e:a64b:e068:9fbd])
-        by smtp.gmail.com with ESMTPSA id p185sm13678019pfg.61.2019.12.20.07.28.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 20 Dec 2019 07:28:13 -0800 (PST)
-Received: by localhost.localdomain (Postfix, from userid 1000)
-        id B62CEC161F; Fri, 20 Dec 2019 12:28:10 -0300 (-03)
-Date:   Fri, 20 Dec 2019 12:28:10 -0300
-From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-To:     syzbot <syzbot+9a1bc632e78a1a98488b@syzkaller.appspotmail.com>
-Cc:     davem@davemloft.net, linux-kernel@vger.kernel.org,
-        linux-sctp@vger.kernel.org, lucien.xin@gmail.com,
-        netdev@vger.kernel.org, nhorman@tuxdriver.com,
-        syzkaller-bugs@googlegroups.com, vyasevich@gmail.com
-Subject: Re: general protection fault in sctp_stream_free (2)
-Message-ID: <20191220152810.GI4444@localhost.localdomain>
-References: <0000000000001b6443059a1a815d@google.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=WTvZUoSWMSNKMHTGH4126mxenNh2hHlcTMmEH/wjPt4=;
+        b=VcKS8OKg0NGQp/gUWVROFHEdurRFHoKwNv/9h6frHUopkPNk0MQ4y0vb24baHw5kCT
+         oCxdvVVXkiRqgVJHMfUO2s7WAodHnor9hJc3nd3hr8mC/SlClZn/1DBvOIz21B3pRPzC
+         SLxpSJt4KoOVXnYXzY7vlsrCdHlUXZsOoP2+VL9PM3tGEfpqdRGw5MKw/Q+X+wmye0h4
+         LZaX/BDYqWzLuD3F0rIh5tZP0fYQVjG2T1XU7yfDcmbRbZar8ofvq3hlmPpRJB31RcHq
+         hZHNsDtzWmQw1v8PyM6hPZhBqWXQs2T9rOVeXN/i9ER++8he0MHM8p3xVvyjOUrySjp6
+         6Qsw==
+X-Gm-Message-State: APjAAAVh0p+QIWsTlz2L7qdafyCL5nUM1IIsu9QKxVlydfvQEfCPqwmp
+        Zvw0ZoPjN+KsmT+iFmliI40=
+X-Google-Smtp-Source: APXvYqwhpsQlzkgOVOGcGgW42nTMn+ZGYxmq6l1Jgjdz6x6CWzhvoiUne2JxJAbtwsUybIRGGBe51Q==
+X-Received: by 2002:adf:f98c:: with SMTP id f12mr15228510wrr.138.1576855747029;
+        Fri, 20 Dec 2019 07:29:07 -0800 (PST)
+Received: from [192.168.8.147] (72.173.185.81.rev.sfr.net. [81.185.173.72])
+        by smtp.gmail.com with ESMTPSA id f127sm8655408wma.4.2019.12.20.07.29.06
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 20 Dec 2019 07:29:06 -0800 (PST)
+Subject: Re: [PATCH net-next v5 10/11] tcp: clean ext on tx recycle
+To:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        netdev@vger.kernel.org, mptcp@lists.01.org
+Cc:     Paolo Abeni <pabeni@redhat.com>, Florian Westphal <fw@strlen.de>
+References: <20191219223434.19722-1-mathew.j.martineau@linux.intel.com>
+ <20191219223434.19722-11-mathew.j.martineau@linux.intel.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <5b17ec8a-3ee2-7167-8702-4f14a9b6e016@gmail.com>
+Date:   Fri, 20 Dec 2019 07:29:05 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <0000000000001b6443059a1a815d@google.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+In-Reply-To: <20191219223434.19722-11-mathew.j.martineau@linux.intel.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 19, 2019 at 07:45:09PM -0800, syzbot wrote:
-> Hello,
-> 
-> syzbot found the following crash on:
-> 
-> HEAD commit:    6fa9a115 Merge branch 'stmmac-fixes'
-> git tree:       net
-> console output: https://syzkaller.appspot.com/x/log.txt?x=10c4fe99e00000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=216dca5e1758db87
-> dashboard link: https://syzkaller.appspot.com/bug?extid=9a1bc632e78a1a98488b
-> compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=178ada71e00000
-> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=144f23a6e00000
-> 
-> The bug was bisected to:
-> 
-> commit 951c6db954a1adefab492f6da805decacabbd1a7
-> Author: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-> Date:   Tue Dec 17 01:01:16 2019 +0000
-> 
->     sctp: fix memleak on err handling of stream initialization
 
-Ouch... this wasn't a good fix.
-When called from sctp_stream_init(), it is doing the right thing.
-But when called from sctp_send_add_streams(), it can't free the
-genradix. Ditto from sctp_process_strreset_addstrm_in().
+
+On 12/19/19 2:34 PM, Mat Martineau wrote:
+> From: Paolo Abeni <pabeni@redhat.com>
+> 
+> Otherwise we will find stray/unexpected/old extensions value on next
+> iteration.
+> 
+> On tcp_write_xmit() we can end-up splitting an already queued skb in two
+> parts, via tso_fragment(). The newly created skb can be allocated via
+> the tx cache and an upper layer will not be aware of it, so that upper
+> layer cannot set the ext properly.
+> 
+> Resetting the ext on recycle ensures that stale data is not propagated
+> in to packet headers or elsewhere.
+> 
+> An alternative would be add an additional hook in tso_fragment() or in
+> sk_stream_alloc_skb() to init the ext for upper layers that need it.
+> 
+> Co-developed-by: Florian Westphal <fw@strlen.de>
+> Signed-off-by: Florian Westphal <fw@strlen.de>
+> Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+> Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
+> ---
+
+Reviewed-by: Eric Dumazet <edumazet@google.com>
 
