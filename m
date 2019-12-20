@@ -2,216 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A60812851E
-	for <lists+netdev@lfdr.de>; Fri, 20 Dec 2019 23:40:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9EAAA128520
+	for <lists+netdev@lfdr.de>; Fri, 20 Dec 2019 23:41:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726874AbfLTWk1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Dec 2019 17:40:27 -0500
-Received: from mail-ua1-f68.google.com ([209.85.222.68]:40571 "EHLO
-        mail-ua1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726594AbfLTWk0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Dec 2019 17:40:26 -0500
-Received: by mail-ua1-f68.google.com with SMTP id v18so3825280uaq.7
-        for <netdev@vger.kernel.org>; Fri, 20 Dec 2019 14:40:25 -0800 (PST)
+        id S1726674AbfLTWlw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Dec 2019 17:41:52 -0500
+Received: from mail-ed1-f66.google.com ([209.85.208.66]:38825 "EHLO
+        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726030AbfLTWlv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Dec 2019 17:41:51 -0500
+Received: by mail-ed1-f66.google.com with SMTP id i16so9925986edr.5;
+        Fri, 20 Dec 2019 14:41:49 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=lNPn3jTBrwGAUgkWhsaau0xZPRg7/357uMDLAycFnt4=;
-        b=NRffTbo6m1RIaJKI7R6fU+906J19eVbTcd5zBSITIfQw73ZidBHN8zq0Zev66pG9y1
-         zVmQDh3NbHhRC929EbqFFVfCOHF92mqG3H9ru76/2dTD9eFSxOHNGbsbwzakLjbeVFdw
-         k2VLJgL2OLyRX7yrwRur4fywqFpq2Dq6GVjfc=
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=yIZnV50OUwepqjkr46AdLFR5nCFpfLqglWhqFqYw4CM=;
+        b=UrAkQMBUFc6/fwgxMQjwWmHGOLiG59B0StM/jqim+MeQq2YvM8yXiYv82zsOEK6IOc
+         ZSyBCZf5y7KqAr+Sk9Kj/Q7L5WhE8N/jfN5U6IlIHDMq1E2xc/fTtkssTH4OmnK+rE5v
+         kY7xojEqG/JsEfDWiLmnW3VL5G2+fIN9rzDqvl2I+ll5MPwxE8Nn6yhNbOmqAVjDaokQ
+         1TL7rxPI+K+447Leox3ZN2+b29zeP3qcw5X/7dDmi/Tf9BY6o57Tbg3cKCSKhLarKf//
+         YemkdJLd7bObxCuSR6g43lGEKYbn9v6mlPmAg3QRmapow73mht1Mmd+mOlxUbFx5fGJe
+         AZJA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=lNPn3jTBrwGAUgkWhsaau0xZPRg7/357uMDLAycFnt4=;
-        b=qKwS3IrptNjdS0pRFMdPWjdsPAQUW6QhPe1N4b00NXEqQCxSjye+fU6cN2ggg3utaR
-         hiEkA0Gco4nhDQ9EmaalJ2ThTnea54m15KIuUPDA8eCfvJ5DaEglpOW1Pg0gbz/hNs7x
-         v79apmrK4d0K5Tz10Ot3k6MgeHKJLDOUBC16In7AEDHY6H2pHoeRRVmKeExnVLsm18wq
-         a9YVkoNFSeRS5nhpTCp4di5Pw51JGqDgv99GpBuSixQf3FeHVHMzzAv1AyPKgv3xO7t1
-         KdzDpwq0pNeryNoKPz6x1Y7WLQAIdjsSdNusuy4b7VnYQkLEr5WSgjHP1KjTaSpvLuYf
-         qlig==
-X-Gm-Message-State: APjAAAUT2jhJlL8umwpXHFoU5b7ZF6bBjWcugNsNI8sGTZDe2hChG63Q
-        KO9NGIisyhluXVHGHa8uksManpAr3nFwKg==
-X-Google-Smtp-Source: APXvYqzvR04jlu3I3038yoNNGTlT/tybfnwgAiw3Y+UA2wRVdMUPStvGnw4/r26wtw5BreKKGQ7few==
-X-Received: by 2002:ab0:3773:: with SMTP id o19mr11129099uat.30.1576881624817;
-        Fri, 20 Dec 2019 14:40:24 -0800 (PST)
-Received: from mail-ua1-f44.google.com (mail-ua1-f44.google.com. [209.85.222.44])
-        by smtp.gmail.com with ESMTPSA id i24sm3332218vkk.21.2019.12.20.14.40.24
-        for <netdev@vger.kernel.org>
+        h=x-gm-message-state:subject:to:cc:references:from:autocrypt
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=yIZnV50OUwepqjkr46AdLFR5nCFpfLqglWhqFqYw4CM=;
+        b=jvHCuDvAp61p+lDqjiZtz+3/Rq/zy0sXWVixZ+N5mv6k6Ho8W1DLSjjZYZi+FwyOKZ
+         TnTkbzCF1hi77R0zIDo5O+8ocmjK3eIK1+sTLTEOoD+jlVt3BxrIuJe5p6YaadAUuJkt
+         5+LjmWM9WfhrrDPO3pb2JNem/J7wPBQSvak09hdmeKc6oPnBgB1rD4zLnz2qxsm5S9tC
+         OmVTfYWEg6VZjh+ILOenc4XFbsXvcBymG71f1FtoKXKTZhQJOk3/Lg5ol3g5J+FlgO4h
+         hKV/K3vDYBuLt76cUXbsYT2iyuX5wnCU3PGKH5Ox6dAQY2ghWjilSJuwrrLtC7jHGbQe
+         ZChQ==
+X-Gm-Message-State: APjAAAUqv6Uff6rjuA8ztYP3gohfg/Y7xyQ0YTAWRXQGEH2/OjfIYS9u
+        X8ofeQv6Be/h8bjWIaxqLdo=
+X-Google-Smtp-Source: APXvYqwiIe7BOTSh69Cfj+gKpBjWcmYbqEBVeLwgkCc3RSPVb22D4OCyw4DPR2Jnq8eG54lDcbrRrA==
+X-Received: by 2002:a17:906:9511:: with SMTP id u17mr18637398ejx.13.1576881709262;
+        Fri, 20 Dec 2019 14:41:49 -0800 (PST)
+Received: from [10.67.50.49] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id d19sm531899ejd.21.2019.12.20.14.41.45
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 20 Dec 2019 14:40:24 -0800 (PST)
-Received: by mail-ua1-f44.google.com with SMTP id f9so3830620ual.4
-        for <netdev@vger.kernel.org>; Fri, 20 Dec 2019 14:40:24 -0800 (PST)
-X-Received: by 2002:ab0:94:: with SMTP id 20mr10805511uaj.71.1576881623480;
- Fri, 20 Dec 2019 14:40:23 -0800 (PST)
+        Fri, 20 Dec 2019 14:41:48 -0800 (PST)
+Subject: Re: [PATCH V7 net-next 09/11] net: mdio: of: Register discovered MII
+ time stampers.
+To:     Richard Cochran <richardcochran@gmail.com>, netdev@vger.kernel.org
+Cc:     David Miller <davem@davemloft.net>, devicetree@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Jacob Keller <jacob.e.keller@intel.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Miroslav Lichvar <mlichvar@redhat.com>,
+        Murali Karicheri <m-karicheri2@ti.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Willem de Bruijn <willemb@google.com>,
+        Wingman Kwok <w-kwok2@ti.com>, Rob Herring <robh@kernel.org>
+References: <cover.1576865315.git.richardcochran@gmail.com>
+ <9af33891bfa5f3d4c42654228eabab2e3d39c259.1576865315.git.richardcochran@gmail.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
+ xsDiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
+ xGlkaOSDuu09rxuW+69Y2f1TzjFuGpBk4ysWOR85O2Nx8AJ6fYGCoeTbovrNlGT1M9obSFGQ
+ X3IzRnWoqlfudjTO5TKoqkbOgpYqIo5n1QbEjCCwCwCg3DOH/4ug2AUUlcIT9/l3pGvoRJ0E
+ AICDzi3l7pmC5IWn2n1mvP5247urtHFs/uusE827DDj3K8Upn2vYiOFMBhGsxAk6YKV6IP0d
+ ZdWX6fqkJJlu9cSDvWtO1hXeHIfQIE/xcqvlRH783KrihLcsmnBqOiS6rJDO2x1eAgC8meAX
+ SAgsrBhcgGl2Rl5gh/jkeA5ykwbxA/9u1eEuL70Qzt5APJmqVXR+kWvrqdBVPoUNy/tQ8mYc
+ nzJJ63ng3tHhnwHXZOu8hL4nqwlYHRa9eeglXYhBqja4ZvIvCEqSmEukfivk+DlIgVoOAJbh
+ qIWgvr3SIEuR6ayY3f5j0f2ejUMYlYYnKdiHXFlF9uXm1ELrb0YX4GMHz80nRmxvcmlhbiBG
+ YWluZWxsaSA8Zi5mYWluZWxsaUBnbWFpbC5jb20+wmYEExECACYCGyMGCwkIBwMCBBUCCAME
+ FgIDAQIeAQIXgAUCVF/S8QUJHlwd3wAKCRBhV5kVtWN2DvCVAJ4u4/bPF4P3jxb4qEY8I2gS
+ 6hG0gACffNWlqJ2T4wSSn+3o7CCZNd7SLSDOwU0EVxvH8AEQAOqv6agYuT4x3DgFIJNv9i0e
+ S443rCudGwmg+CbjXGA4RUe1bNdPHYgbbIaN8PFkXfb4jqg64SyU66FXJJJO+DmPK/t7dRNA
+ 3eMB1h0GbAHlLzsAzD0DKk1ARbjIusnc02aRQNsAUfceqH5fAMfs2hgXBa0ZUJ4bLly5zNbr
+ r0t/fqZsyI2rGQT9h1D5OYn4oF3KXpSpo+orJD93PEDeseho1EpmMfsVH7PxjVUlNVzmZ+tc
+ IDw24CDSXf0xxnaojoicQi7kzKpUrJodfhNXUnX2JAm/d0f9GR7zClpQMezJ2hYAX7BvBajb
+ Wbtzwi34s8lWGI121VjtQNt64mSqsK0iQAE6OYk0uuQbmMaxbBTT63+04rTPBO+gRAWZNDmQ
+ b2cTLjrOmdaiPGClSlKx1RhatzW7j1gnUbpfUl91Xzrp6/Rr9BgAZydBE/iu57KWsdMaqu84
+ JzO9UBGomh9eyBWBkrBt+Fe1qN78kM7JO6i3/QI56NA4SflV+N4PPgI8TjDVaxgrfUTV0gVa
+ cr9gDE5VgnSeSiOleChM1jOByZu0JTShOkT6AcSVW0kCz3fUrd4e5sS3J3uJezSvXjYDZ53k
+ +0GS/Hy//7PSvDbNVretLkDWL24Sgxu/v8i3JiYIxe+F5Br8QpkwNa1tm7FK4jOd95xvYADl
+ BUI1EZMCPI7zABEBAAHCwagEGBECAAkFAlcbx/ACGwICKQkQYVeZFbVjdg7BXSAEGQECAAYF
+ Alcbx/AACgkQh9CWnEQHBwSJBw//Z5n6IO19mVzMy/ZLU/vu8flv0Aa0kwk5qvDyvuvfiDTd
+ WQzq2PLs+obX0y1ffntluhvP+8yLzg7h5O6/skOfOV26ZYD9FeV3PIgR3QYF26p2Ocwa3B/k
+ P6ENkk2pRL2hh6jaA1Bsi0P34iqC2UzzLq+exctXPa07ioknTIJ09BT31lQ36Udg7NIKalnj
+ 5UbkRjqApZ+Rp0RAP9jFtq1n/gjvZGyEfuuo/G+EVCaiCt3Vp/cWxDYf2qsX6JxkwmUNswuL
+ C3duQ0AOMNYrT6Pn+Vf0kMboZ5UJEzgnSe2/5m8v6TUc9ZbC5I517niyC4+4DY8E2m2V2LS9
+ es9uKpA0yNcd4PfEf8bp29/30MEfBWOf80b1yaubrP5y7yLzplcGRZMF3PgBfi0iGo6kM/V2
+ 13iD/wQ45QTV0WTXaHVbklOdRDXDHIpT69hFJ6hAKnnM7AhqZ70Qi31UHkma9i/TeLLzYYXz
+ zhLHGIYaR04dFT8sSKTwTSqvm8rmDzMpN54/NeDSoSJitDuIE8givW/oGQFb0HGAF70qLgp0
+ 2XiUazRyRU4E4LuhNHGsUxoHOc80B3l+u3jM6xqJht2ZyMZndbAG4LyVA2g9hq2JbpX8BlsF
+ skzW1kbzIoIVXT5EhelxYEGqLFsZFdDhCy8tjePOWK069lKuuFSssaZ3C4edHtkZ8gCfWWtA
+ 8dMsqeOIg9Trx7ZBCDOZGNAAnjYQmSb2eYOAti3PX3Ex7vI8ZhJCzsNNBEjPuBIQEAC/6NPW
+ 6EfQ91ZNU7e/oKWK91kOoYGFTjfdOatp3RKANidHUMSTUcN7J2mxww80AQHKjr3Yu2InXwVX
+ SotMMR4UrkQX7jqabqXV5G+88bj0Lkr3gi6qmVkUPgnNkIBe0gaoM523ujYKLreal2OQ3GoJ
+ PS6hTRoSUM1BhwLCLIWqdX9AdT6FMlDXhCJ1ffA/F3f3nTN5oTvZ0aVF0SvQb7eIhGVFxrlb
+ WS0+dpyulr9hGdU4kzoqmZX9T/r8WCwcfXipmmz3Zt8o2pYWPMq9Utby9IEgPwultaP06MHY
+ nhda1jfzGB5ZKco/XEaXNvNYADtAD91dRtNGMwRHWMotIGiWwhEJ6vFc9bw1xcR88oYBs+7p
+ gbFSpmMGYAPA66wdDKGj9+cLhkd0SXGht9AJyaRA5AWB85yNmqcXXLkzzh2chIpSEawRsw8B
+ rQIZXc5QaAcBN2dzGN9UzqQArtWaTTjMrGesYhN+aVpMHNCmJuISQORhX5lkjeg54oplt6Zn
+ QyIsOCH3MfG95ha0TgWwyFtdxOdY/UY2zv5wGivZ3WeS0TtQf/BcGre2y85rAohFziWOzTaS
+ BKZKDaBFHwnGcJi61Pnjkz82hena8OmsnsBIucsz4N0wE+hVd6AbDYN8ZcFNIDyt7+oGD1+c
+ PfqLz2df6qjXzq27BBUboklbGUObNwADBQ//V45Z51Q4fRl/6/+oY5q+FPbRLDPlUF2lV6mb
+ hymkpqIzi1Aj/2FUKOyImGjbLAkuBQj3uMqy+BSSXyQLG3sg8pDDe8AJwXDpG2fQTyTzQm6l
+ OnaMCzosvALk2EOPJryMkOCI52+hk67cSFA0HjgTbkAv4Mssd52y/5VZR28a+LW+mJIZDurI
+ Y14UIe50G99xYxjuD1lNdTa/Yv6qFfEAqNdjEBKNuOEUQOlTLndOsvxOOPa1mRUk8Bqm9BUt
+ LHk3GDb8bfDwdos1/h2QPEi+eI+O/bm8YX7qE7uZ13bRWBY+S4+cd+Cyj8ezKYAJo9B+0g4a
+ RVhdhc3AtW44lvZo1h2iml9twMLfewKkGV3oG35CcF9mOd7n6vDad3teeNpYd/5qYhkopQrG
+ k2oRBqxyvpSLrJepsyaIpfrt5NNaH7yTCtGXcxlGf2jzGdei6H4xQPjDcVq2Ra5GJohnb/ix
+ uOc0pWciL80ohtpSspLlWoPiIowiKJu/D/Y0bQdatUOZcGadkywCZc/dg5hcAYNYchc8AwA4
+ 2dp6w8SlIsm1yIGafWlNnfvqbRBglSTnxFuKqVggiz2zk+1wa/oP+B96lm7N4/3Aw6uy7lWC
+ HvsHIcv4lxCWkFXkwsuWqzEKK6kxVpRDoEQPDj+Oy/ZJ5fYuMbkdHrlegwoQ64LrqdmiVVPC
+ TwQYEQIADwIbDAUCVF/S8QUJHlwd3wAKCRBhV5kVtWN2Do+FAJ956xSz2XpDHql+Wg/2qv3b
+ G10n8gCguORqNGMsVRxrlLs7/himep7MrCc=
+Message-ID: <2651ffae-d3ea-d8fd-632a-79630c1a95ac@gmail.com>
+Date:   Fri, 20 Dec 2019 14:41:44 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-References: <20191220212207.76726-1-adelva@google.com>
-In-Reply-To: <20191220212207.76726-1-adelva@google.com>
-From:   Stephen Barber <smbarber@chromium.org>
-Date:   Fri, 20 Dec 2019 14:40:12 -0800
-X-Gmail-Original-Message-ID: <CADR9n4__Tjev_q+-f=GqPWs4_bo3dnBe7htnbogCQbqWArQV6g@mail.gmail.com>
-Message-ID: <CADR9n4__Tjev_q+-f=GqPWs4_bo3dnBe7htnbogCQbqWArQV6g@mail.gmail.com>
-Subject: Re: [PATCH net] virtio-net: Skip set_features on non-cvq devices
-To:     Alistair Delva <adelva@google.com>
-Cc:     netdev@vger.kernel.org, stable@vger.kernel.org,
-        "Michael S . Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S . Miller" <davem@davemloft.net>, kernel-team@android.com,
-        virtualization@lists.linux-foundation.org,
-        open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <9af33891bfa5f3d4c42654228eabab2e3d39c259.1576865315.git.richardcochran@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Dec 20, 2019 at 1:22 PM Alistair Delva <adelva@google.com> wrote:
->
-> On devices without control virtqueue support, such as the virtio_net
-> implementation in crosvm[1], attempting to configure LRO will panic the
-> kernel:
+On 12/20/19 10:15 AM, Richard Cochran wrote:
+> When parsing a PHY node, register its time stamper, if any, and attach
+> the instance to the PHY device.
+> 
+> Signed-off-by: Richard Cochran <richardcochran@gmail.com>
+> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+> Reviewed-by: Rob Herring <robh@kernel.org>
 
-If you'd like to try using the control virtqueue, I have a WIP patch
-at crrev.com/c/1968200
-
-The downside there is that when enabling IP forwarding the guest
-successfully disables LRO,
-which AFAIK (please correct me if I'm wrong!) is generally safe when
-using virtio-net. My iperf
-tests showed a ~90% bandwidth reduction, so we'd need to force LRO
-back on after enabling
-IP forwarding if the control queue offload patch lands.
-
->
-> kernel BUG at drivers/net/virtio_net.c:1591!
-> invalid opcode: 0000 [#1] PREEMPT SMP PTI
-> CPU: 1 PID: 483 Comm: Binder:330_1 Not tainted 5.4.5-01326-g19463e9acaac #1
-> Hardware name: ChromiumOS crosvm, BIOS 0
-> RIP: 0010:virtnet_send_command+0x15d/0x170 [virtio_net]
-> Code: d8 00 00 00 80 78 02 00 0f 94 c0 65 48 8b 0c 25 28 00 00 00 48 3b 4c 24 70 75 11 48 8d 65 d8 5b 41 5c 41 5d 41 5e 41 5f 5d c3 <0f> 0b e8 ec a4 12 c8 66 90 66 2e 0f 1f 84 00 00 00 00 00 55 48 89
-> RSP: 0018:ffffb97940e7bb50 EFLAGS: 00010246
-> RAX: ffffffffc0596020 RBX: ffffa0e1fc8ea840 RCX: 0000000000000017
-> RDX: ffffffffc0596110 RSI: 0000000000000011 RDI: 000000000000000d
-> RBP: ffffb97940e7bbf8 R08: ffffa0e1fc8ea0b0 R09: ffffa0e1fc8ea0b0
-> R10: ffffffffffffffff R11: ffffffffc0590940 R12: 0000000000000005
-> R13: ffffa0e1ffad2c00 R14: ffffb97940e7bc08 R15: 0000000000000000
-> FS:  0000000000000000(0000) GS:ffffa0e1fd100000(006b) knlGS:00000000e5ef7494
-> CS:  0010 DS: 002b ES: 002b CR0: 0000000080050033
-> CR2: 00000000e5eeb82c CR3: 0000000079b06001 CR4: 0000000000360ee0
-> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> Call Trace:
->  ? preempt_count_add+0x58/0xb0
->  ? _raw_spin_lock_irqsave+0x36/0x70
->  ? _raw_spin_unlock_irqrestore+0x1a/0x40
->  ? __wake_up+0x70/0x190
->  virtnet_set_features+0x90/0xf0 [virtio_net]
->  __netdev_update_features+0x271/0x980
->  ? nlmsg_notify+0x5b/0xa0
->  dev_disable_lro+0x2b/0x190
->  ? inet_netconf_notify_devconf+0xe2/0x120
->  devinet_sysctl_forward+0x176/0x1e0
->  proc_sys_call_handler+0x1f0/0x250
->  proc_sys_write+0xf/0x20
->  __vfs_write+0x3e/0x190
->  ? __sb_start_write+0x6d/0xd0
->  vfs_write+0xd3/0x190
->  ksys_write+0x68/0xd0
->  __ia32_sys_write+0x14/0x20
->  do_fast_syscall_32+0x86/0xe0
->  entry_SYSENTER_compat+0x7c/0x8e
->
-> This happens because virtio_set_features() does not check the presence
-> of the control virtqueue feature, which is sanity checked by a BUG_ON
-> in virtnet_send_command().
->
-> Fix this by skipping any feature processing if the control virtqueue is
-> missing. This should be OK for any future feature that is added, as
-> presumably all of them would require control virtqueue support to notify
-> the endpoint that offload etc. should begin.
-
-This sounds okay to me. This does end up hitting a netdev_WARN later on though:
-[    1.885957] ------------[ cut here ]------------
-[    1.888398] netdevice: eth0: failed to disable LRO!
-[    1.890369] WARNING: CPU: 0 PID: 163 at
-/mnt/host/source/src/third_party/kernel/v5.4/net/core/dev.c:1483
-dev_disable_lro+0x91/0x95
-[    1.894761] CPU: 0 PID: 163 Comm: lxd Not tainted 5.4.5 #2
-[    1.896698] Hardware name: ChromiumOS crosvm, BIOS 0
-[    1.898387] RIP: 0010:dev_disable_lro+0x91/0x95
-[    1.899877] Code: a6 4d 0f 44 f7 eb 07 49 c7 c6 af 78 60 a6 4c 89
-ff e8 6a 00 00 00 48 c7 c7 dd 73 60 a6 4c 89 f6 48 89 c2 31 c0 e8 36
-e2 a5 ff <0f> 0b eb 8a 53 48 83 ec 18 48 89 fb 65 48 8b 04 25 28 00 00
-00 48
-[    1.905701] RSP: 0018:ffffae0fc0427d78 EFLAGS: 00010246
-[    1.907282] RAX: fe766977dd14fb00 RBX: 0000000000000001 RCX: ffffffffa683aa50
-[    1.909391] RDX: fffffffffffffe6d RSI: 0000000000000082 RDI: ffffffffa683aa20
-[    1.911503] RBP: ffff990bd3f8e050 R08: ffff0a1000000600 R09: 0000004000000000
-[    1.913613] R10: 0000000000000193 R11: ffffffffa5af56a5 R12: ffffffffa6882690
-[    1.915729] R13: ffff990bd3ec2248 R14: ffff990bd3f8e000 R15: ffff990bd3f8e000
-[    1.918555] FS:  00007ca813fff700(0000) GS:ffff990bd4c00000(0000)
-knlGS:0000000000000000
-[    1.920648] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[    1.922039] CR2: 00005ba0e1789990 CR3: 00000001d1716003 CR4: 00000000003606b0
-[    1.923716] Call Trace:
-[    1.924356]  devinet_sysctl_forward+0x15a/0x1b9
-[    1.925444]  proc_sys_call_handler+0xc3/0xe0
-[    1.926491]  __vfs_write+0x3d/0x19b
-[    1.927351]  ? selinux_file_permission+0x8c/0x124
-[    1.928482]  vfs_write+0xea/0x17f
-[    1.929329]  ksys_write+0x68/0xc9
-[    1.930178]  do_syscall_64+0x4a/0x5d
-[    1.931063]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
-[    1.932272] RIP: 0033:0x5ba0e10655c0
-[    1.933159] Code: 8b 7c 24 10 48 8b 74 24 18 48 8b 54 24 20 49 c7
-c2 00 00 00 00 49 c7 c0 00 00 00 00 49 c7 c1 00 00 00 00 48 8b 44 24
-08 0f 05 <48> 3d 01 f0 ff ff 76 20 48 c7 44 24 28 ff ff ff ff 48 c7 44
-24 30
-[    1.937440] RSP: 002b:000000c00041e258 EFLAGS: 00000216 ORIG_RAX:
-0000000000000001
-[    1.939224] RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00005ba0e10655c0
-[    1.940897] RDX: 0000000000000001 RSI: 000000c00041e4d8 RDI: 0000000000000018
-[    1.942600] RBP: 000000c00041e2a8 R08: 0000000000000000 R09: 0000000000000000
-[    1.944310] R10: 0000000000000000 R11: 0000000000000216 R12: 000000000000000c
-[    1.946007] R13: 0000000000000032 R14: 00005ba0e0fa01e8 R15: 0000000000000000
-[    1.947706] ---[ end trace 9ac0c921383f98c0 ]---
-
-
->
-> [1] https://chromium.googlesource.com/chromiumos/platform/crosvm/
->
-> Fixes: a02e8964eaf9 ("virtio-net: ethtool configurable LRO")
-> Cc: stable@vger.kernel.org [4.20+]
-> Cc: Michael S. Tsirkin <mst@redhat.com>
-> Cc: Jason Wang <jasowang@redhat.com>
-> Cc: David S. Miller <davem@davemloft.net>
-> Cc: kernel-team@android.com
-> Cc: virtualization@lists.linux-foundation.org
-> Cc: linux-kernel@vger.kernel.org
-> Signed-off-by: Alistair Delva <adelva@google.com>
-
-Tested-by: Stephen Barber <smbarber@chromium.org>
-
-> ---
->  drivers/net/virtio_net.c | 3 +++
->  1 file changed, 3 insertions(+)
->
-> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> index 4d7d5434cc5d..709bcd34e485 100644
-> --- a/drivers/net/virtio_net.c
-> +++ b/drivers/net/virtio_net.c
-> @@ -2560,6 +2560,9 @@ static int virtnet_set_features(struct net_device *dev,
->         u64 offloads;
->         int err;
->
-> +       if (!vi->has_cvq)
-> +               return 0;
-> +
->         if ((dev->features ^ features) & NETIF_F_LRO) {
->                 if (vi->xdp_queue_pairs)
->                         return -EBUSY;
-> --
-> 2.24.1.735.g03f4e72817-goog
->
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
