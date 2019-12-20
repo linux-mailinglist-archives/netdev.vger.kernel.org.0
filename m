@@ -2,255 +2,281 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F8101273AF
-	for <lists+netdev@lfdr.de>; Fri, 20 Dec 2019 04:04:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 72B1E1273D1
+	for <lists+netdev@lfdr.de>; Fri, 20 Dec 2019 04:25:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727125AbfLTDEl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Dec 2019 22:04:41 -0500
-Received: from mail-pl1-f194.google.com ([209.85.214.194]:37219 "EHLO
-        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726986AbfLTDEl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Dec 2019 22:04:41 -0500
-Received: by mail-pl1-f194.google.com with SMTP id c23so3471384plz.4
-        for <netdev@vger.kernel.org>; Thu, 19 Dec 2019 19:04:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=5tsb2r706EWjLSQ5/o20aHlzBoHb3L6MPuN+uNkQ3R4=;
-        b=qz0S0gxKSLLkRdCKshvvRJ6vlO0Vc3L87qYqPQmicTMK6VJ081wDS6YF/uMo3wmb9D
-         FCMp5OteHlU2rZbzXrVLj9rW9nbhYQpdkmuqoG3Z39S9dal4gQGHwBRQJF2SRaIfCAzl
-         4UZxP01NBdSdkYT1eARb/0jd5I1ugt7g9sWq8uTWISy09XfJ0EpAfVXNmg2b6eEeuq/F
-         H8HbyBtyoMvXbRhS7R6HqDp+Jji3XHZu5wHB7J9vIJsGkSsyN9ULsgaev0XhbK0dVnKx
-         tEoQfNY9blkil89Ro1jqEaoWaZAKITb+GJ2QDzHmtMM3Taos3L5foy+BHMljgsCuMTnN
-         8eGA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=5tsb2r706EWjLSQ5/o20aHlzBoHb3L6MPuN+uNkQ3R4=;
-        b=nfN7ft0GUTPrIYm6FldMy/f3fVH56xGGrMRVdtemM64ZKmXkTB/7RXw+1RKhEHlGYp
-         MozfSLjQ5mMJ0IP3kOKWEe+oZdIwBvNzmLUT8nfBSbZp3jhOFQkl8Gi7aoTzpGycHnWY
-         ItuJfVfhz2qkDYNXkYn//PHl2ezGELeASjcpwzDl5VHIbuA7la/fzTs6wseINtKXxWnZ
-         JcvL1GIBHWb6aGPMthwdMnY1vw4l6MpZKjWBlcMfXaYroJ2nbCGqrJT2aYPKe6wKsJNH
-         PHotjqNH0mLqfBPH64RWkQwiWNis/VmpBH1L0z3JqVO2tGugXho/6RKMh8/oSLEIv+Qv
-         EiyA==
-X-Gm-Message-State: APjAAAWPK/iF6RDgiL/dn9lfcVN3LpJCcd/Sf84ssPFzcXwjWGENDKSH
-        rSOcMI7piXgCVQbVThZ4kpEhiDWB
-X-Google-Smtp-Source: APXvYqxgn0uYAfYLUfgEWu+LGk3K4AUnoUXj2oTv2N3w1fNeuDLfIktxs+fCr1JHx3npuX/32XXTBA==
-X-Received: by 2002:a17:902:744c:: with SMTP id e12mr13009718plt.123.1576811080193;
-        Thu, 19 Dec 2019 19:04:40 -0800 (PST)
-Received: from martin-VirtualBox ([42.109.141.34])
-        by smtp.gmail.com with ESMTPSA id t23sm10998864pfq.106.2019.12.19.19.04.38
-        (version=TLS1 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Thu, 19 Dec 2019 19:04:39 -0800 (PST)
-Date:   Fri, 20 Dec 2019 08:34:28 +0530
-From:   Martin Varghese <martinvarghesenokia@gmail.com>
-To:     Pravin Shelar <pshelar@ovn.org>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>, scott.drennan@nokia.com,
-        Jiri Benc <jbenc@redhat.com>,
-        "Varghese, Martin (Nokia - IN/Bangalore)" <martin.varghese@nokia.com>
-Subject: Re: [PATCH net-next v4 3/3] openvswitch: New MPLS actions for layer
- 2 tunnelling
-Message-ID: <20191220030428.GA4534@martin-VirtualBox>
-References: <cover.1576648350.git.martin.varghese@nokia.com>
- <f78a4e44caac82f0f1db5c89dfd30696c2cb192e.1576648350.git.martin.varghese@nokia.com>
- <CAOrHB_CTqSYc7TBuVqU64f7TjLQNmggWg69zYxrLwrC0Sgjf=A@mail.gmail.com>
- <20191219041234.GA2840@martin-VirtualBox>
- <CAOrHB_B88W_bnQGkE_=fML-6GyLUOzZ5FoL-WbvSCoU-D-d+fA@mail.gmail.com>
+        id S1727177AbfLTDZG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Dec 2019 22:25:06 -0500
+Received: from us-smtp-2.mimecast.com ([205.139.110.61]:28965 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726964AbfLTDZG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Dec 2019 22:25:06 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1576812303;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=kGBsRXEKX2r9J8frnym0anFY1M8amTvC30ekMb58Nl4=;
+        b=hx8rO3n5R7KBgXi0YSycClhuGL/wbXi/Z4Vc6mzMlCwUBC6vrSE52kvmvJ/sh53vp6FxXl
+        BpHLW7raVbvc4QY7F8g6SnhbkZLkPtcuSZ2uAQghIC6ACoE9pIsccc2OkIz178hH47BJ/E
+        WaSV4nZPBZ5EMANkEpE3A+vlHsObWzo=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-416-GaefpPfiMQ6dN2kMFgRBgQ-1; Thu, 19 Dec 2019 22:25:01 -0500
+X-MC-Unique: GaefpPfiMQ6dN2kMFgRBgQ-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 3F8C3800D48;
+        Fri, 20 Dec 2019 03:24:59 +0000 (UTC)
+Received: from [10.72.12.176] (ovpn-12-176.pek2.redhat.com [10.72.12.176])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 55C0B5D9E2;
+        Fri, 20 Dec 2019 03:24:48 +0000 (UTC)
+Subject: Re: [RFC net-next 11/14] tun: run XDP program in tx path
+To:     Prashant Bhole <prashantbhole.linux@gmail.com>,
+        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Jesper Dangaard Brouer <jbrouer@redhat.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        "Michael S . Tsirkin" <mst@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        David Ahern <dsahern@gmail.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Toshiaki Makita <toshiaki.makita1@gmail.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>, netdev@vger.kernel.org,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>
+References: <20191218081050.10170-1-prashantbhole.linux@gmail.com>
+ <20191218081050.10170-12-prashantbhole.linux@gmail.com>
+ <20191218110732.33494957@carbon> <87fthh6ehg.fsf@toke.dk>
+ <20191218181944.3ws2oy72hpyxshhb@ast-mbp.dhcp.thefacebook.com>
+ <35a07230-3184-40bf-69ff-852bdfaf03c6@gmail.com> <874kxw4o4r.fsf@toke.dk>
+ <5eb791bf-1876-0b4b-f721-cb3c607f846c@gmail.com>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <75228f98-338e-453c-3ace-b6d36b26c51c@redhat.com>
+Date:   Fri, 20 Dec 2019 11:24:47 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAOrHB_B88W_bnQGkE_=fML-6GyLUOzZ5FoL-WbvSCoU-D-d+fA@mail.gmail.com>
-User-Agent: Mutt/1.5.21 (2010-09-15)
+In-Reply-To: <5eb791bf-1876-0b4b-f721-cb3c607f846c@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 19, 2019 at 05:07:25PM -0800, Pravin Shelar wrote:
-> On Wed, Dec 18, 2019 at 8:12 PM Martin Varghese
-> <martinvarghesenokia@gmail.com> wrote:
-> >
-> > On Wed, Dec 18, 2019 at 07:50:52PM -0800, Pravin Shelar wrote:
-> > > On Tue, Dec 17, 2019 at 10:56 PM Martin Varghese
-> > > <martinvarghesenokia@gmail.com> wrote:
-> > > >
-> > > > From: Martin Varghese <martin.varghese@nokia.com>
-> > > >
-> > > > The existing PUSH MPLS action inserts MPLS header between ethernet header
-> > > > and the IP header. Though this behaviour is fine for L3 VPN where an IP
-> > > > packet is encapsulated inside a MPLS tunnel, it does not suffice the L2
-> > > > VPN (l2 tunnelling) requirements. In L2 VPN the MPLS header should
-> > > > encapsulate the ethernet packet.
-> > > >
-> > > > The new mpls action PTAP_PUSH_MPLS inserts MPLS header at the start of the
-> > > > packet or at the start of the l3 header depending on the value of l2 tunnel
-> > > > flag in the PTAP_PUSH_MPLS arguments.
-> > > >
-> > > > POP_MPLS action is extended to support ethertype 0x6558.
-> > > >
-> > > > Signed-off-by: Martin Varghese <martin.varghese@nokia.com>
-> > > > ---
-> > > > Changes in v2:
-> > > >    - PTAP_POP_MPLS action removed.
-> > > >    - Special handling for ethertype 0 added in PUSH_MPLS.
-> > > >    - Refactored push_mpls function to cater existing push_mpls and
-> > > >      ptap_push_mpls actions.
-> > > >    - mac len to specify the MPLS header location added in PTAP_PUSH_MPLS
-> > > >      arguments.
-> > > >
-> > > > Changes in v3:
-> > > >    - Special handling for ethertype 0 removed.
-> > > >    - Added support for ether type 0x6558.
-> > > >    - Removed mac len from PTAP_PUSH_MPLS argument list
-> > > >    - used l2_tun flag to distinguish l2 and l3 tunnelling.
-> > > >    - Extended PTAP_PUSH_MPLS handling to cater PUSH_MPLS action also.
-> > > >
-> > > > Changes in v4:
-> > > >    - Removed extra blank lines.
-> > > >    - Replaced bool l2_tun with u16 tun flags in
-> > > >      struct ovs_action_ptap_push_mpls.
-> > > >
-> > > The patch looks almost ready. I have couple of comments.
-> > >
-> > > >  include/uapi/linux/openvswitch.h | 31 +++++++++++++++++++++++++++++++
-> > > >  net/openvswitch/actions.c        | 30 ++++++++++++++++++++++++------
-> > > >  net/openvswitch/flow_netlink.c   | 34 ++++++++++++++++++++++++++++++++++
-> > > >  3 files changed, 89 insertions(+), 6 deletions(-)
-> > > >
-> > > > diff --git a/include/uapi/linux/openvswitch.h b/include/uapi/linux/openvswitch.h
-> > > > index a87b44c..d9461ce 100644
-> > > > --- a/include/uapi/linux/openvswitch.h
-> > > > +++ b/include/uapi/linux/openvswitch.h
-> > > > @@ -673,6 +673,32 @@ struct ovs_action_push_mpls {
-> > > >  };
-> > > >
-> > > ...
-> > > ...
-> > > > diff --git a/net/openvswitch/flow_netlink.c b/net/openvswitch/flow_netlink.c
-> > > > index 65c2e34..85fe7df 100644
-> > > > --- a/net/openvswitch/flow_netlink.c
-> > > > +++ b/net/openvswitch/flow_netlink.c
-> > > > @@ -79,6 +79,7 @@ static bool actions_may_change_flow(const struct nlattr *actions)
-> > > >                 case OVS_ACTION_ATTR_SET_MASKED:
-> > > >                 case OVS_ACTION_ATTR_METER:
-> > > >                 case OVS_ACTION_ATTR_CHECK_PKT_LEN:
-> > > > +               case OVS_ACTION_ATTR_PTAP_PUSH_MPLS:
-> > > >                 default:
-> > > >                         return true;
-> > > >                 }
-> > > > @@ -3005,6 +3006,7 @@ static int __ovs_nla_copy_actions(struct net *net, const struct nlattr *attr,
-> > > >                         [OVS_ACTION_ATTR_METER] = sizeof(u32),
-> > > >                         [OVS_ACTION_ATTR_CLONE] = (u32)-1,
-> > > >                         [OVS_ACTION_ATTR_CHECK_PKT_LEN] = (u32)-1,
-> > > > +                       [OVS_ACTION_ATTR_PTAP_PUSH_MPLS] = sizeof(struct ovs_action_ptap_push_mpls),
-> > > >                 };
-> > > >                 const struct ovs_action_push_vlan *vlan;
-> > > >                 int type = nla_type(a);
-> > > > @@ -3072,6 +3074,33 @@ static int __ovs_nla_copy_actions(struct net *net, const struct nlattr *attr,
-> > > >                 case OVS_ACTION_ATTR_RECIRC:
-> > > >                         break;
-> > > >
-> > > > +               case OVS_ACTION_ATTR_PTAP_PUSH_MPLS: {
-> > > Can you change name of this action given this can handle both L2 and
-> > > L3 MPLS tunneling?
-> > >
-> > > > +                       const struct ovs_action_ptap_push_mpls *mpls = nla_data(a);
-> > > > +
-> > > > +                       if (!eth_p_mpls(mpls->mpls_ethertype))
-> > > > +                               return -EINVAL;
-> > > > +
-> > > > +                       if (!(mpls->tun_flags & OVS_MPLS_L2_TUNNEL_FLAG_MASK)) {
-> > > > +                               if (vlan_tci & htons(VLAN_CFI_MASK) ||
-> > > > +                                   (eth_type != htons(ETH_P_IP) &&
-> > > > +                                    eth_type != htons(ETH_P_IPV6) &&
-> > > > +                                    eth_type != htons(ETH_P_ARP) &&
-> > > > +                                    eth_type != htons(ETH_P_RARP) &&
-> > > > +                                    !eth_p_mpls(eth_type)))
-> > > > +                                       return -EINVAL;
-> > > > +                               mpls_label_count++;
-> > > > +                       } else {
-> > > > +                               if (mac_proto != MAC_PROTO_NONE) {
-> > > It is better to check for 'MAC_PROTO_ETHERNET', rather than this negative test.
-> > >
-> > The idea is that if you have a l2 header you need to reset the mpls label count
-> > Either way fine for me.Let me know
-> Lets change it to  "if (mac_proto  == MAC_PROTO_ETHERNET)"
-> 
-Yes, but it will not work for a hypothetical case where l2
-is no ethernet.
-> > > > +                                       mpls_label_count = 1;
-> > > > +                                       mac_proto = MAC_PROTO_NONE;
-> > > > +                               } else {
-> > > > +                                       mpls_label_count++;
-> > > > +                               }
-> > > We need to either disallow combination of L3 and L2 MPLS_PUSH, POP
-> > > actions in a action list or keep separate label count. Otherwise it is
-> > > impossible to validate mpls labels stack depth in POP actions.
-> > >
-> >
-> > I assume it is taken in care in the above block
-> >
-> > let us consider the different cases
-> >
-> > 1.
-> >   Incoming Packet - ETH|IP|Payload
-> >   Actions = push_mpls(0x1),push_mpls(0x2),ptap_push_mpls(0x03)
-> >   Resulting packet - MPLS(3)|Eth|MPLS(2)|MPLS(1)|IP|Payload
-> >   Total Mpls count = 1
-> >
-> >   Since the total MPLS count = 1,ony one POP will be allowed and a recirc is need to
-> >   parse the inner packets
-> >
-> > 2. Incoming Packet - ETH|MPLS(1)|IP|Payload
-> >    Actions = ptap_push_mpls(0x03)
-> >    Resulting packet - MPLS(3)|Eth|MPLS(1)|IP|Payload
-> >    Total Mpls count = 1
-> >
-> >    Since the total MPLS count = 1,ony one POP will be allowed and a recirc is need to
-> >    parse the inner packets
-> >
-> > 3. Incoming Packet - MPLS(1)|IP|Payload
-> >    Actions = ptap_push_mpls(0x03)
-> >    Resulting packet - MPLS(3)|MPLS(1)|IP|Payload
-> >    Total Mpls count = 2
-> >
-> >    Since the total MPLS acount is 2 , 2 pops are allowd
-> >
-> >
-> > Is there any other case ?
-> >
-> I was think case of action list: PUSH_MPLS_L2, PUSH_MPLS_L3, ....,
-> POP_MPLS_L2, POP_MPLS_L2
-> This action will pass the validation. It would also work fine in
-> datapath since POP action can detect L2 and L3 packet dynamically. But
-> it is inconsistent with actions intention.
 
-I couldnt get the concern correctly.
-THere is no POPMPLS l2.There is only one type of MPLS POP
-the pop MPLS always removes MPLS header after mac header
-
-In the case of POP_MPLS:0x6558 the ethernet header should not be
-present as we dont support ethernet in ethernet.We have the validation
-in flow_netlink.c
-So for the POP_MPLS:0x6558 to work ,it should be preceeded by a pop_eth
-if is a ethernet packet.
-
-Considering the action above.
-Incomming packet - ETH|IP|Payload
-1 Actions - push_mpls_l2
-outgoing packet -  l2 MPLS label|eth|IP - ( Packet is l3 now)
-2 Actions  - Push_mpls_l2
-outgoing packet  | L3 MPLS Label| l2 MPLS label|eth|IP.
-
-2 actions - POP_MPLS,POP_MPLS
-outgoing packet - ETH |IP|Payload  (Packet is l2 now)
-
-
+On 2019/12/20 =E4=B8=8A=E5=8D=888:07, Prashant Bhole wrote:
+> Note: Resending my last response. It was not delivered to netdev list
+> due to some problem.
+>
+> On 12/19/19 7:15 PM, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
+>> Prashant Bhole <prashantbhole.linux@gmail.com> writes:
+>>
+>>> On 12/19/19 3:19 AM, Alexei Starovoitov wrote:
+>>>> On Wed, Dec 18, 2019 at 12:48:59PM +0100, Toke H=C3=B8iland-J=C3=B8r=
+gensen=20
+>>>> wrote:
+>>>>> Jesper Dangaard Brouer <jbrouer@redhat.com> writes:
+>>>>>
+>>>>>> On Wed, 18 Dec 2019 17:10:47 +0900
+>>>>>> Prashant Bhole <prashantbhole.linux@gmail.com> wrote:
+>>>>>>
+>>>>>>> +static u32 tun_do_xdp_tx(struct tun_struct *tun, struct=20
+>>>>>>> tun_file *tfile,
+>>>>>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0 struct xdp_frame *frame)
+>>>>>>> +{
+>>>>>>> +=C2=A0=C2=A0=C2=A0 struct bpf_prog *xdp_prog;
+>>>>>>> +=C2=A0=C2=A0=C2=A0 struct tun_page tpage;
+>>>>>>> +=C2=A0=C2=A0=C2=A0 struct xdp_buff xdp;
+>>>>>>> +=C2=A0=C2=A0=C2=A0 u32 act =3D XDP_PASS;
+>>>>>>> +=C2=A0=C2=A0=C2=A0 int flush =3D 0;
+>>>>>>> +
+>>>>>>> +=C2=A0=C2=A0=C2=A0 xdp_prog =3D rcu_dereference(tun->xdp_tx_prog=
+);
+>>>>>>> +=C2=A0=C2=A0=C2=A0 if (xdp_prog) {
+>>>>>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 xdp.data_hard_start =3D=
+ frame->data - frame->headroom;
+>>>>>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 xdp.data =3D frame->d=
+ata;
+>>>>>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 xdp.data_end =3D xdp.=
+data + frame->len;
+>>>>>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 xdp.data_meta =3D xdp=
+.data - frame->metasize;
+>>>>>>
+>>>>>> You have not configured xdp.rxq, thus a BPF-prog accessing this=20
+>>>>>> will crash.
+>>>>>>
+>>>>>> For an XDP TX hook, I want us to provide/give BPF-prog access to=20
+>>>>>> some
+>>>>>> more information about e.g. the current tx-queue length, or TC-q=20
+>>>>>> number.
+>>>>>>
+>>>>>> Question to Daniel or Alexei, can we do this and still keep=20
+>>>>>> BPF_PROG_TYPE_XDP?
+>>>>>> Or is it better to introduce a new BPF prog type (enum=20
+>>>>>> bpf_prog_type)
+>>>>>> for XDP TX-hook ?
+>>>>>
+>>>>> I think a new program type would make the most sense. If/when we
+>>>>> introduce an XDP TX hook[0], it should have different semantics=20
+>>>>> than the
+>>>>> regular XDP hook. I view the XDP TX hook as a hook that executes=20
+>>>>> as the
+>>>>> very last thing before packets leave the interface. It should have
+>>>>> access to different context data as you say, but also I don't=20
+>>>>> think it
+>>>>> makes sense to have XDP_TX and XDP_REDIRECT in an XDP_TX hook. And =
+we
+>>>>> may also want to have a "throttle" return code; or maybe that=20
+>>>>> could be
+>>>>> done via a helper?
+>>>>>
+>>>>> In any case, I don't think this "emulated RX hook on the other end=20
+>>>>> of a
+>>>>> virtual device" model that this series introduces is the right=20
+>>>>> semantics
+>>>>> for an XDP TX hook. I can see what you're trying to do, and for=20
+>>>>> virtual
+>>>>> point-to-point links I think it may make sense to emulate the RX=20
+>>>>> hook of
+>>>>> the "other end" on TX. However, form a UAPI perspective, I don't=20
+>>>>> think
+>>>>> we should be calling this a TX hook; logically, it's still an RX ho=
+ok
+>>>>> on the receive end.
+>>>>>
+>>>>> If you guys are up for evolving this design into a "proper" TX=20
+>>>>> hook (as
+>>>>> outlined above an in [0]), that would be awesome, of course. But no=
+t
+>>>>> sure what constraints you have on your original problem? Do you
+>>>>> specifically need the "emulated RX hook for unmodified XDP programs=
+"
+>>>>> semantics, or could your problem be solved with a TX hook with=20
+>>>>> different
+>>>>> semantics?
+>>>>
+>>>> I agree with above.
+>>>> It looks more like existing BPF_PROG_TYPE_XDP, but attached to egres=
+s
+>>>> of veth/tap interface. I think only attachment point makes a=20
+>>>> difference.
+>>>> May be use expected_attach_type ?
+>>>> Then there will be no need to create new program type.
+>>>> BPF_PROG_TYPE_XDP will be able to access different fields depending
+>>>> on expected_attach_type. Like rx-queue length that Jesper is=20
+>>>> suggesting
+>>>> will be available only in such case and not for all=20
+>>>> BPF_PROG_TYPE_XDP progs.
+>>>> It can be reduced too. Like if there is no xdp.rxq concept for=20
+>>>> egress side
+>>>> of virtual device the access to that field can disallowed by the=20
+>>>> verifier.
+>>>> Could you also call it XDP_EGRESS instead of XDP_TX?
+>>>> I would like to reserve XDP_TX name to what Toke describes as XDP_TX=
+.
+>>>>
+>>>
+>>> =C2=A0 From the discussion over this set, it makes sense to have new =
+type of
+>>> program. As David suggested it will make a way for changes specific
+>>> to egress path.
+>>> On the other hand, XDP offload with virtio-net implementation is base=
+d
+>>> on "emulated RX hook". How about having this special behavior with
+>>> expected_attach_type?
+>>
+>> Another thought I had re: this was that for these "special" virtual
+>> point-to-point devices we could extend the API to have an ATTACH_PEER
+>> flag. So if you have a pair of veth devices (veth0,veth1) connecting t=
+o
+>> each other, you could do either of:
+>>
+>> bpf_set_link_xdp_fd(ifindex(veth0), prog_fd, 0);
+>> bpf_set_link_xdp_fd(ifindex(veth1), prog_fd, ATTACH_PEER);
+>>
+>> to attach to veth0, and:
+>>
+>> bpf_set_link_xdp_fd(ifindex(veth1), prog_fd, 0);
+>> bpf_set_link_xdp_fd(ifindex(veth0), prog_fd, ATTACH_PEER);
+>>
+>> to attach to veth0.
+>>
+>> This would allow to attach to a device without having the "other end"
+>> visible, and keep the "XDP runs on RX" semantics clear to userspace.
+>> Internally in the kernel we could then turn the "attach to peer"
+>> operation for a tun device into the "emulate on TX" thing you're alrea=
+dy
+>> doing?
+>>
+>> Would this work for your use case, do you think?
+>>
+>> -Toke
+>>
+>
+> This is nice from UAPI point of view. It may work for veth case but
+> not for XDP offload with virtio-net. Please see the sequence when
+> a user program in the guest wants to offload a program to tun.
+>
+> * User program wants to loads the program by setting offload flag and
+> =C2=A0 ifindex:
+>
+> - map_offload_ops->alloc()
+> =C2=A0 virtio-net sends map info to qemu and it creates map on the host=
+.
+> - prog_offload_ops->setup()
+> =C2=A0 New callback just to have a copy of unmodified program. It conta=
+ins
+> =C2=A0 original map fds. We replace map fds with fds from the host side=
+.
+> =C2=A0 Check the program for unsupported helpers calls.
+> - prog_offload_ops->finalize()
+> =C2=A0 Send the program to qemu and it loads the program to the host.
+>
+> * User program calls bpf_set_link_xdp_fd()
+> =C2=A0 virtio-net handles XDP_PROG_SETUP_HW by sending a request to qem=
+u.
+> =C2=A0 Qemu then attaches host side program fd to respective tun device=
+ by
+> =C2=A0 calling bpf_set_link_xdp_fd()
+>
+> In above sequence there is no chance to use.
 
 
+For VM, I think what Toke meant is to consider virtio-net as a peer of=20
+TAP and we can do something like the following in qemu:
+
+bpf_set_link_xdp_fd(ifindex(tap0), prog_fd, ATTACH_PEER);
+
+in this case. And the behavior of XDP_TX could be kept as if the XDP was=20
+attached to the peer of TAP (actually a virtio-net inside the guest).
+
+Thanks
 
 
+>
+> Here is how other ideas from this discussion can be used:
+>
+> - Introduce BPF_PROG_TYPE_TX_XDP for egress path. Have a special
+> =C2=A0 behavior of emulating RX XDP using expected_attach_type flag.
+> - The emulated RX XDP will be restrictive in terms of helper calls.
+> - In offload case qemu will load the program BPF_PROG_TYPE_TX_XDP and
+> =C2=A0 set expected_attach_type.
+>
+> What is your opinion about it? Does the driver implementing egress
+> XDP needs to know what kind of XDP program it is running?
+>
+> Thanks,
+> Prashant
+>
 
