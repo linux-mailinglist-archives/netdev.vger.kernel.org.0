@@ -2,160 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 76B1B12740F
-	for <lists+netdev@lfdr.de>; Fri, 20 Dec 2019 04:45:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 74532127460
+	for <lists+netdev@lfdr.de>; Fri, 20 Dec 2019 04:57:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727174AbfLTDpK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Dec 2019 22:45:10 -0500
-Received: from mail-io1-f72.google.com ([209.85.166.72]:36239 "EHLO
-        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727020AbfLTDpK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Dec 2019 22:45:10 -0500
-Received: by mail-io1-f72.google.com with SMTP id 144so5228043iou.3
-        for <netdev@vger.kernel.org>; Thu, 19 Dec 2019 19:45:09 -0800 (PST)
+        id S1727192AbfLTD5o (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Dec 2019 22:57:44 -0500
+Received: from mail-pj1-f68.google.com ([209.85.216.68]:33853 "EHLO
+        mail-pj1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727110AbfLTD5o (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Dec 2019 22:57:44 -0500
+Received: by mail-pj1-f68.google.com with SMTP id s94so3370620pjc.1
+        for <netdev@vger.kernel.org>; Thu, 19 Dec 2019 19:57:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=Tv1bsnnBuK4n8b3XvwS+kK6Rwt0PLzuNKd6ADta2C48=;
+        b=BiVsS9L2Y52OiUgmkoL+mR4EuoUv1vjHtS+ngB+IJbU9YujUZdvlR5d7k4e1cLIsua
+         h2G5hqP5MvjvFvq//iTf5mI6t4y3IFhcPvkADW3i2qzotd8rTAnzklSGpUlhl5vW/uP9
+         zXtFWoR8+nHbshu+DsUEM20pVmbhvLu3yxqzY7SzRxiJ0+571uinSVHoUu53Tmdn4jfz
+         TCCIxC91xxTlZ7JwmMUdFVbPYM8YBf/cgjp525XusNZWG1KpwOtqgJsEf8XdofqnEmZ7
+         G2bwQx7AM5Kb1imuA8MCBLJqMFfCNgUA3EKpqFNe3pzv1TZdOBIYh9Z0UNd0e+KDbPpv
+         dJkQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=dna2/NTPZH/v2wYRfNU5J9PqMpJUPBNX/S2Lv/VYKxU=;
-        b=sUWhuPqhDwDW4fr+hy1I+YPRcOZu2KNprnjBfk3VHnuqtqyEVH+Ivf3ZS512vFLIoa
-         Jk3sL9FFb9K0lJNxvDonej5VUhJzmJl7WCGU1zYdG0hjaTlFQLhhd9MaIq9/03pXn/cC
-         OW0j025I8fTGcSlvGcDxN+NV+eS7564XIZ+YDjSRMlOkbt9lMDOg708ykHMEUBv0IiDn
-         5GgFYUALsi2x2XNQkhQvirF2I3ZeAurbjk7jThIGGgnD3xk+stS+YHGQPoUW2lMeGRC3
-         AGF3pmzK4AWn44WZSzNRt9clY/c/5/5bRLIVBnecAr402v1Gtpp8RPDums4GQqHnKJqi
-         zu1A==
-X-Gm-Message-State: APjAAAXa5v6f9jOunPvaRmhH++4g4fqsdLZSl1czlqOJhUFhUEK2QaHs
-        ZeYMMKtYVP/D0lg9RPF/e/q22j2aa0UdN3b9IkEoYSHl9QBk
-X-Google-Smtp-Source: APXvYqwsZ7Yidf95uPacXveyO65URZZ4u0gPzEyHLq/OkVbPj5QWLBhZu2dKkoZBKj5OJ+K4Sv8NWhBI+cIecQ9T0Y4BAjQBfGUm
+        h=x-gm-message-state:subject:to:cc:references:from:autocrypt
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=Tv1bsnnBuK4n8b3XvwS+kK6Rwt0PLzuNKd6ADta2C48=;
+        b=j2w1NVk51vICyTHcGaGVQr1uYpFjGiXMW+hc9Vbueoh/7WBmAjRoVNfdKZhDcCJjlr
+         R61d94PWGzscPIPjdihjIXjUburHew4ZP1JEcMjdkpiYqueXM5ff+kYjl4wyNLh3S53i
+         1bK+1WhpefPvL5b+uGfxREYFpo2qRfe+m3MBXXs0/xNG/QFjKt/X/SbwbHz9g3YhMLz5
+         PBrJPybIkljlJRgpYQ9p86RcVqQdQeN8eWPf+RnbWgNB1FO3QvmsCdE6TIUz3gNcCwGO
+         i15ZJFs7o6XwVjnhQK9hpivt+ymJFGxUX/rynad4BQXVumeTvfXgtydqrRqZ4ufdYY8V
+         YeEg==
+X-Gm-Message-State: APjAAAXF6EzCF9I5pFNRFrKbZPMnPBIAxGKO9yin1Eg3JtfEGN3WapDN
+        zVnPtGKTZj6A8d5JLQNkwM6vzd4E
+X-Google-Smtp-Source: APXvYqwS6jM45TdeuG5lpaexDFRIdfXLb/2MOUl/AFF9IfNxXxvcCc/4lndQi3uYS8E7gjhFYkKvNw==
+X-Received: by 2002:a17:902:b083:: with SMTP id p3mr12566536plr.141.1576814263142;
+        Thu, 19 Dec 2019 19:57:43 -0800 (PST)
+Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
+        by smtp.gmail.com with ESMTPSA id 2sm8984255pgo.79.2019.12.19.19.57.42
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 19 Dec 2019 19:57:42 -0800 (PST)
+Subject: Re: [PATCH net v2] mod_devicetable: fix PHY module format
+To:     Russell King <rmk+kernel@armlinux.org.uk>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Andy Fleming <afleming@freescale.com>,
+        David Woodhouse <dwmw2@infradead.org>,
+        Ben Hutchings <ben@decadent.org.uk>
+References: <E1ii59z-0003Na-Rb@rmk-PC.armlinux.org.uk>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Autocrypt: addr=f.fainelli@gmail.com; keydata=
+ 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
+ a9BQwACgnzGuH1BVeT2J0Ra+ZYgkx7DaPR0=
+Message-ID: <31fc357c-2e50-beaf-5a88-4e6dac40d7ad@gmail.com>
+Date:   Thu, 19 Dec 2019 19:57:29 -0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.3.1
 MIME-Version: 1.0
-X-Received: by 2002:a92:c703:: with SMTP id a3mr9596649ilp.63.1576813509434;
- Thu, 19 Dec 2019 19:45:09 -0800 (PST)
-Date:   Thu, 19 Dec 2019 19:45:09 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000001b6443059a1a815d@google.com>
-Subject: general protection fault in sctp_stream_free (2)
-From:   syzbot <syzbot+9a1bc632e78a1a98488b@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, linux-kernel@vger.kernel.org,
-        linux-sctp@vger.kernel.org, lucien.xin@gmail.com,
-        marcelo.leitner@gmail.com, netdev@vger.kernel.org,
-        nhorman@tuxdriver.com, syzkaller-bugs@googlegroups.com,
-        vyasevich@gmail.com
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+In-Reply-To: <E1ii59z-0003Na-Rb@rmk-PC.armlinux.org.uk>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
-
-syzbot found the following crash on:
-
-HEAD commit:    6fa9a115 Merge branch 'stmmac-fixes'
-git tree:       net
-console output: https://syzkaller.appspot.com/x/log.txt?x=10c4fe99e00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=216dca5e1758db87
-dashboard link: https://syzkaller.appspot.com/bug?extid=9a1bc632e78a1a98488b
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=178ada71e00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=144f23a6e00000
-
-The bug was bisected to:
-
-commit 951c6db954a1adefab492f6da805decacabbd1a7
-Author: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Date:   Tue Dec 17 01:01:16 2019 +0000
-
-     sctp: fix memleak on err handling of stream initialization
-
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=13ffbdb6e00000
-final crash:    https://syzkaller.appspot.com/x/report.txt?x=10007db6e00000
-console output: https://syzkaller.appspot.com/x/log.txt?x=17ffbdb6e00000
-
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+9a1bc632e78a1a98488b@syzkaller.appspotmail.com
-Fixes: 951c6db954a1 ("sctp: fix memleak on err handling of stream  
-initialization")
-
-RBP: 0000000000000004 R08: 0000000000000008 R09: 00007ffc57730031
-R10: 0000000020000040 R11: 0000000000000246 R12: 0000000000401f20
-R13: 0000000000401fb0 R14: 0000000000000000 R15: 0000000000000000
-kasan: CONFIG_KASAN_INLINE enabled
-kasan: GPF could be caused by NULL-ptr deref or user memory access
-general protection fault: 0000 [#1] PREEMPT SMP KASAN
-CPU: 1 PID: 9129 Comm: syz-executor521 Not tainted 5.5.0-rc1-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
-Google 01/01/2011
-RIP: 0010:sctp_stream_free+0xe4/0x180 net/sctp/stream.c:183
-Code: 07 48 89 d1 48 69 d2 aa 00 00 00 48 c1 e1 0c 48 29 d0 48 8d 04 40 48  
-8d 34 c1 e8 57 24 54 fc 48 8d 78 08 48 89 fa 48 c1 ea 03 <42> 80 3c 32 00  
-75 6f 48 8b 78 08 e8 1c 4c 77 fa 41 0f b6 45 00 84
-RSP: 0018:ffffc90001e17770 EFLAGS: 00010202
-RAX: 0000000000000000 RBX: 0000000000000000 RCX: ffffffff838f50f6
-RDX: 0000000000000001 RSI: ffffffff838f5170 RDI: 0000000000000008
-RBP: ffffc90001e177a8 R08: ffff888094206000 R09: fffffbfff16599c2
-R10: fffffbfff16599c1 R11: ffffffff8b2cce0f R12: ffff8880a70126e8
-R13: ffffed1014e024df R14: dffffc0000000000 R15: ffff8880a70120a8
-FS:  0000000000f03880(0000) GS:ffff8880ae900000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000000020000100 CR3: 000000000986d000 CR4: 00000000001406e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
-  sctp_association_free+0x235/0x7e0 net/sctp/associola.c:350
-  sctp_cmd_delete_tcb net/sctp/sm_sideeffect.c:934 [inline]
-  sctp_cmd_interpreter net/sctp/sm_sideeffect.c:1322 [inline]
-  sctp_side_effects net/sctp/sm_sideeffect.c:1189 [inline]
-  sctp_do_sm+0x3a6a/0x5190 net/sctp/sm_sideeffect.c:1160
-  sctp_primitive_ABORT+0xa0/0xd0 net/sctp/primitive.c:104
-  sctp_close+0x259/0x960 net/sctp/socket.c:1513
-  inet_release+0xed/0x200 net/ipv4/af_inet.c:427
-  __sock_release+0xce/0x280 net/socket.c:592
-  sock_close+0x1e/0x30 net/socket.c:1270
-  __fput+0x2ff/0x890 fs/file_table.c:280
-  ____fput+0x16/0x20 fs/file_table.c:313
-  task_work_run+0x145/0x1c0 kernel/task_work.c:113
-  exit_task_work include/linux/task_work.h:22 [inline]
-  do_exit+0x8e7/0x2ef0 kernel/exit.c:797
-  do_group_exit+0x135/0x360 kernel/exit.c:895
-  __do_sys_exit_group kernel/exit.c:906 [inline]
-  __se_sys_exit_group kernel/exit.c:904 [inline]
-  __x64_sys_exit_group+0x44/0x50 kernel/exit.c:904
-  do_syscall_64+0xfa/0x790 arch/x86/entry/common.c:294
-  entry_SYSCALL_64_after_hwframe+0x49/0xbe
-RIP: 0033:0x43f2f8
-Code: Bad RIP value.
-RSP: 002b:00007ffc5773ea88 EFLAGS: 00000246 ORIG_RAX: 00000000000000e7
-RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 000000000043f2f8
-RDX: 0000000000000000 RSI: 000000000000003c RDI: 0000000000000000
-RBP: 00000000004bf0c8 R08: 00000000000000e7 R09: ffffffffffffffd0
-R10: 0000000020000040 R11: 0000000000000246 R12: 0000000000000001
-R13: 00000000006d1180 R14: 0000000000000000 R15: 0000000000000000
-Modules linked in:
----[ end trace 0df255c71a71b566 ]---
-RIP: 0010:sctp_stream_free+0xe4/0x180 net/sctp/stream.c:183
-Code: 07 48 89 d1 48 69 d2 aa 00 00 00 48 c1 e1 0c 48 29 d0 48 8d 04 40 48  
-8d 34 c1 e8 57 24 54 fc 48 8d 78 08 48 89 fa 48 c1 ea 03 <42> 80 3c 32 00  
-75 6f 48 8b 78 08 e8 1c 4c 77 fa 41 0f b6 45 00 84
-RSP: 0018:ffffc90001e17770 EFLAGS: 00010202
-RAX: 0000000000000000 RBX: 0000000000000000 RCX: ffffffff838f50f6
-RDX: 0000000000000001 RSI: ffffffff838f5170 RDI: 0000000000000008
-RBP: ffffc90001e177a8 R08: ffff888094206000 R09: fffffbfff16599c2
-R10: fffffbfff16599c1 R11: ffffffff8b2cce0f R12: ffff8880a70126e8
-R13: ffffed1014e024df R14: dffffc0000000000 R15: ffff8880a70120a8
-FS:  0000000000f03880(0000) GS:ffff8880ae900000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 000000000043f2ce CR3: 000000000986d000 CR4: 00000000001406e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
 
 
----
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+On 12/19/2019 3:24 PM, Russell King wrote:
+> When a PHY is probed, if the top bit is set, we end up requesting a
+> module with the string "mdio:-10101110000000100101000101010001" -
+> the top bit is printed to a signed -1 value. This leads to the module
+> not being loaded.
+> 
+> Fix the module format string and the macro generating the values for
+> it to ensure that we only print unsigned types and the top bit is
+> always 0/1. We correctly end up with
+> "mdio:10101110000000100101000101010001".
+> 
+> Fixes: 8626d3b43280 ("phylib: Support phy module autoloading")
+> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+> Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
 
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
-syzbot can test patches for this bug, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
