@@ -2,75 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A8C1127F63
-	for <lists+netdev@lfdr.de>; Fri, 20 Dec 2019 16:34:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2CC75127F69
+	for <lists+netdev@lfdr.de>; Fri, 20 Dec 2019 16:35:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727497AbfLTPeG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Dec 2019 10:34:06 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:35226 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727181AbfLTPeF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 20 Dec 2019 10:34:05 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=FlEdcjqR14Yp6BDuBVePu7rcTs7oSKGfaNl9lmmWvhY=; b=zFKX5Mx6zfivGSorxUsCX27mrf
-        Mdb7jKv4NoU2UpfVY45idZm7bRTqFThe+ouaRvXPd4oGnAAhXw3PSRzXQcp0PToyJj8nEk62cGtIX
-        bzhUpCsvadN1+mTB6aJRnpwhbimkq4102brSkFxx2RKwX8OJwhozOOuKIRSrBfEZCeSU=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1iiKHv-0003HC-5i; Fri, 20 Dec 2019 16:33:59 +0100
-Date:   Fri, 20 Dec 2019 16:33:59 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Richard Cochran <richardcochran@gmail.com>
-Cc:     netdev@vger.kernel.org, David Miller <davem@davemloft.net>,
-        devicetree@vger.kernel.org,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Jacob Keller <jacob.e.keller@intel.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Miroslav Lichvar <mlichvar@redhat.com>,
-        Murali Karicheri <m-karicheri2@ti.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Willem de Bruijn <willemb@google.com>,
-        Wingman Kwok <w-kwok2@ti.com>
-Subject: Re: [PATCH V6 net-next 06/11] net: Introduce a new MII time stamping
- interface.
-Message-ID: <20191220153359.GA11117@lunn.ch>
-References: <cover.1576511937.git.richardcochran@gmail.com>
- <28939f11b984759257167e778d0c73c0dd206a35.1576511937.git.richardcochran@gmail.com>
- <20191217092155.GL6994@lunn.ch>
- <20191220145712.GA3846@localhost>
+        id S1727470AbfLTPfa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Dec 2019 10:35:30 -0500
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:34902 "EHLO
+        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727344AbfLTPfa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Dec 2019 10:35:30 -0500
+Received: by mail-wm1-f68.google.com with SMTP id p17so9690257wmb.0
+        for <netdev@vger.kernel.org>; Fri, 20 Dec 2019 07:35:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=gqrF9pvmNvbyZ7iF5tr0vPsyh3BTimuOn+73jWsLZC8=;
+        b=Q7CAltA8TS/OLUGuIThw79ldnl8U3YiKJRx1tVOttSOd4pg3yjWMK91aAmTcEkYqss
+         33xDV7JP9D0Y4uuAyvJNp7oJoEkQCOrsPPqJq+p5yW/ZLxrtHBAzLzXc1YgDEHQuRNzw
+         vN/LcxkV+fg71e0kgQAQit7TEVSd6tYcvfzEtEsFUWIF4cdxe6qht9jEO+wy7X+qzebv
+         PulNNHyCFkoaEJAkNPyBCtxm1RZ7eUkWQ6TGsQEZ2hWTWB4UHXOnw9hmsvxQVaneWtn0
+         fno3UssnJ3G8pzlFWi8uzJnQG2yHtS7gKC7LtC+1DxXH56bJmae5OwzKdQTuBWExWeZe
+         SRIg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=gqrF9pvmNvbyZ7iF5tr0vPsyh3BTimuOn+73jWsLZC8=;
+        b=uOwph4N6ZxDGN7hHrTllFqCGzr0ETfS/tSO0QpRYaOjhu77RzYBTwWOyvJ2APux+E+
+         /gJbmCiW4Ff+GgDre2s6V4tAoZXT4EghECZLClJzXeH9j9q09IAJ6+le3su5Pe+fbQTH
+         +QzDAi/4wsdiGsUZ5aA4Mwt5oEgZQJVd6zVOM563t3zLOiTuF4W0TVe6y1OILDLJlOh2
+         MIyeBOFA9pcxcRUSqN6LHC0V+jamlWuFhnPylxy8ip9+YkZiCPn1U0/o/S6IgWKXfW5M
+         XvAjYDAOawNY5i4kpPFIFxKq4oHybplszABjvzSMLAQjjvIzdRgpMXlk2V/9FhNA0V2M
+         qlhQ==
+X-Gm-Message-State: APjAAAWjD5nC3Nrxg2Hmjh3fyc1WNr/XxOk1Vjr07dXx4aBBLkDA3Ics
+        snc71YYwCzGCcu7MMOCKqQ4=
+X-Google-Smtp-Source: APXvYqy2D/gr43+Bzk6jM85PWry336ocx74q85u3O8VZOLj/QxtKjo1YA2ImvrWO/lRUwSupKH+SAw==
+X-Received: by 2002:a7b:c5d8:: with SMTP id n24mr16604309wmk.124.1576856128648;
+        Fri, 20 Dec 2019 07:35:28 -0800 (PST)
+Received: from [192.168.8.147] (72.173.185.81.rev.sfr.net. [81.185.173.72])
+        by smtp.gmail.com with ESMTPSA id q19sm9743185wmc.12.2019.12.20.07.35.27
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 20 Dec 2019 07:35:27 -0800 (PST)
+Subject: Re: [PATCH net-next v5 01/11] net: Make sock protocol value checks
+ more specific
+To:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        netdev@vger.kernel.org, mptcp@lists.01.org
+References: <20191219223434.19722-1-mathew.j.martineau@linux.intel.com>
+ <20191219223434.19722-2-mathew.j.martineau@linux.intel.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <ce72abad-ef13-ffee-8dca-0efddd1ccb2c@gmail.com>
+Date:   Fri, 20 Dec 2019 07:35:27 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191220145712.GA3846@localhost>
+In-Reply-To: <20191219223434.19722-2-mathew.j.martineau@linux.intel.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Dec 20, 2019 at 06:57:12AM -0800, Richard Cochran wrote:
-> On Tue, Dec 17, 2019 at 10:21:55AM +0100, Andrew Lunn wrote:
-> > Forward declarations are considered bad.
+
+
+On 12/19/19 2:34 PM, Mat Martineau wrote:
+> SK_PROTOCOL_MAX is only used in two places, for DECNet and AX.25. The
+> limits have more to do with the those protocol definitions than they do
+> with the data type of sk_protocol, so remove SK_PROTOCOL_MAX and use
+> U8_MAX directly.
 > 
-> Not by me!
+> Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
 
-Lets see what David says.
-
-> > For the moment what you have is sufficient. I doubt anybody is using
-> > the dp83640 with phylink, and the new hardware you are targeting seems
-> > to be RGMII based, not SERDES, which is the main use case for PHYLINK.
-> 
-> Yeah, my impression is that the phyter will be the first and last phy
-> time stamping device ever created.  Designers reject this part because
-> it is 100 mbit only.  And there are no gigabit+ phys with time
-> stamping at all.
-
-The Marvell PHY datasheets indicate they support PTP. I've not looked
-at how they implement it, and if the current model will work.
-
-   Andrew
+Reviewed-by: Eric Dumazet <edumazet@google.com>
