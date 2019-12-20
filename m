@@ -2,132 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EDD8E127C08
-	for <lists+netdev@lfdr.de>; Fri, 20 Dec 2019 14:54:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9760A127C13
+	for <lists+netdev@lfdr.de>; Fri, 20 Dec 2019 14:58:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727417AbfLTNyN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Dec 2019 08:54:13 -0500
-Received: from mail-io1-f67.google.com ([209.85.166.67]:41351 "EHLO
-        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727346AbfLTNyM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Dec 2019 08:54:12 -0500
-Received: by mail-io1-f67.google.com with SMTP id c16so5875899ioo.8
-        for <netdev@vger.kernel.org>; Fri, 20 Dec 2019 05:54:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=cgytD78FRHMpVR07lVHdXHDp7d3fIsIaVIOtC1GfChA=;
-        b=srLBMCUG5LrZHAQ6N8QKzaPKbo6tAQbhGsmRFigsMnpPpAHy5s/foc2/URZxQVZdqK
-         t9OQkIZ4/4Vb49ha+6K1qDfK422fIYTbR9PZVE0zjceG3FAqQnPUAqIceqmBzI90xQAx
-         gzMkn1ay/UjGV376KT0nHUR3/dT3sc62xwsWldApjYhpaBxs8M31l2AL6XOoGFyKDI0v
-         8uLXW/0wcFKwb6Nuwn3xhQtSgx0icIM7784QaqRLIl3uhlkPLeLBmF1wWQ+YlnggcpNV
-         GEyr08GSdjriDqQgyWf4Pw4yVqpZ0uyapMExGkRFL2Q2PsQkcm98P+SRWSrMZ20pKCAW
-         4Vow==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=cgytD78FRHMpVR07lVHdXHDp7d3fIsIaVIOtC1GfChA=;
-        b=ev0V6HxSyGnPIQgrrk/eOqJMH3PJEdUgMxiloc62J65oU1NwF/i/m+9xrZrvbxq4/2
-         3nU8yZLZqkBaLvqJzM9W2rIV6zNnLXZjaI6LzFZhp+70DuoLAXifJ05z44WzGg9XWXIp
-         B71Vg63tnHBhldmn+7j2HkQ3UXVgIXNx3jK5jYhSUBG7TAmV3vacdO0LVSEwsibehtx8
-         BhBz/ZmVKzk6Qvz+L1pjM6VwsSNambDkCAry5wffxH99p/IGAeUE8xevGbOrj/wzARJl
-         SI3OqmsvEjgKITY5vJuqdU1y7JyzxGiQyva8BlghKhU504FvMdLfk8H+ei1kdLlNb+J/
-         Qz5Q==
-X-Gm-Message-State: APjAAAUf9k1zFvgA+OR5Pttw1lFuCs7MgQA4uU8TZtZiI3KUGU/fnIgV
-        okVgElxPc0T6MQFYAs0iZyuOsQ==
-X-Google-Smtp-Source: APXvYqzpa93wbr1qHXEjhaYJ188wjPx5K7DK7CRdw8UTP3GU/qH9L4ETT99JfT3FJ0al0ANHzTphSg==
-X-Received: by 2002:a02:3090:: with SMTP id q138mr12272515jaq.23.1576850051454;
-        Fri, 20 Dec 2019 05:54:11 -0800 (PST)
-Received: from [192.168.0.125] (198-84-204-252.cpe.teksavvy.com. [198.84.204.252])
-        by smtp.googlemail.com with ESMTPSA id x25sm1012318iol.6.2019.12.20.05.54.10
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 20 Dec 2019 05:54:10 -0800 (PST)
-Subject: Re: [PATCH net 1/2] net/sched: cls_u32: fix refcount leak in the
- error path of u32_change()
-To:     Davide Caratti <dcaratti@redhat.com>,
-        Vlad Buslov <vladbu@mellanox.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>, Roman Mashak <mrv@mojatatu.com>
-References: <cover.1576623250.git.dcaratti@redhat.com>
- <ae83c6dc89f8642166dc32debc6ea7444eb3671d.1576623250.git.dcaratti@redhat.com>
- <bafb52ff-1ced-91a4-05d0-07d3fdc4f3e4@mojatatu.com>
- <5b4239e5-6533-9f23-7a38-0ee4f6acbfe9@mojatatu.com>
- <vbfr2102swb.fsf@mellanox.com>
- <63fe479d-51cd-eff4-eb13-f0211f694366@mojatatu.com>
- <vbfpngk2r9a.fsf@mellanox.com> <vbfo8w42qt2.fsf@mellanox.com>
- <3bbe208c56d4b6cf3526f4957b19f87d695d5d0a.camel@redhat.com>
-From:   Jamal Hadi Salim <jhs@mojatatu.com>
-Message-ID: <424b6532-377c-1fcf-f0a8-e9efdbae8740@mojatatu.com>
-Date:   Fri, 20 Dec 2019 08:54:09 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.3.0
+        id S1727369AbfLTN6Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Dec 2019 08:58:24 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:45315 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1727347AbfLTN6Y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Dec 2019 08:58:24 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1576850303;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=z/vT1v9oai6dd5cPt5za0mxKDratl1TdjeGUiSkGV8U=;
+        b=Ftcrk7+AyrzmnRXWnF2B/SJTIZs0WEnSUjeOTZlhCHO6hN4wmndShaszEvJAtN5s8jgZEk
+        DCaWAKL4FDSVMG4ALpntl7d2I20tero2Vbmt/KKQ0kDThZP3VdV36HxZOc5f7aMcUeFOLF
+        kZpsIm/hvOPUdtG0qGazjW13NujU81I=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-335-7uWGQ2u_MCi_F4W2Gtz9nA-1; Fri, 20 Dec 2019 08:58:19 -0500
+X-MC-Unique: 7uWGQ2u_MCi_F4W2Gtz9nA-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 395C78024DE;
+        Fri, 20 Dec 2019 13:58:17 +0000 (UTC)
+Received: from krava (ovpn-204-66.brq.redhat.com [10.40.204.66])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 06B9426FB3;
+        Fri, 20 Dec 2019 13:58:13 +0000 (UTC)
+Date:   Fri, 20 Dec 2019 14:58:11 +0100
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     Julia Kartseva <hex@fb.com>
+Cc:     Alexei Starovoitov <ast@fb.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        "labbott@redhat.com" <labbott@redhat.com>,
+        "acme@kernel.org" <acme@kernel.org>,
+        "debian-kernel@lists.debian.org" <debian-kernel@lists.debian.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Andrey Ignatov <rdna@fb.com>, Yonghong Song <yhs@fb.com>,
+        "jolsa@kernel.org" <jolsa@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "md@linux.it" <md@linux.it>
+Subject: Re: libbpf distro packaging
+Message-ID: <20191220135811.GF17348@krava>
+References: <a00bab9b-dae8-23d8-8de0-3751a1d1b023@fb.com>
+ <20190826064235.GA17554@krava>
+ <A2E805DD-8237-4703-BE6F-CC96A4D4D909@fb.com>
+ <20190828071237.GA31023@krava>
+ <20190930111305.GE602@krava>
+ <040A8497-C388-4B65-9562-6DB95D72BE0F@fb.com>
+ <20191008073958.GA10009@krava>
+ <AAB8D5C3-807A-4EE3-B57C-C7D53F7E057D@fb.com>
+ <20191016100145.GA15580@krava>
+ <824912a1-048e-9e95-f6be-fd2b481a8cfc@fb.com>
 MIME-Version: 1.0
-In-Reply-To: <3bbe208c56d4b6cf3526f4957b19f87d695d5d0a.camel@redhat.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <824912a1-048e-9e95-f6be-fd2b481a8cfc@fb.com>
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2019-12-20 8:21 a.m., Davide Caratti wrote:
-> hi Jamal and Vlad,
+On Thu, Dec 19, 2019 at 09:37:23PM +0000, Julia Kartseva wrote:
+> Hi Jiri,
 > 
-> thanks a lot for sharing your thoughts.
-> 
-> On Thu, 2019-12-19 at 17:01 +0000, Vlad Buslov wrote:
->>>> IMO that would be a cleaner fix give walk() is used for other
->>>> operations and this is a core cls issue.
+> 1. v. 0.0.6 is out [1], could you please package it?
+> 2. we might need a small spec update due to zlib is made an explicit
+> dependency in [2]. zlib should be listed in BuildRequires: section of the
+> spec so it's consistent with libbpf.pc
 
-> I tried forcing an error in matchall, and didn't observe this problem:
-> 
-> [root@f31 ~]# perf record -e probe:mall_change__return -agR -- tc filter add dev dam0 parent root matchall skip_sw action drop
-> RTNETLINK answers: Operation not supported
-> We have an error talking to the kernel
-> [ perf record: Woken up 1 times to write data ]
-> [ perf record: Captured and wrote 1.225 MB perf.data (1 samples) ]
-> [root@f31 ~]# perf script
-> tc 115241 [002] 19665.372130: probe:mall_change__return: (ffffffffc115f930 <- ffffffffb98a7266) ret=0xffffffa1
->          ffffffffb9066790 kretprobe_trampoline+0x0 (vmlinux)
->              7fa64c16cb77 __libc_sendmsg+0x17 (/usr/lib64/libc-2.30.so)
-> 
-> [root@f31 ~]# tc filter show dev dam0
-> [root@f31 ~]#
-> 
-> and similar test can be also carried for the other classifiers
-> (on unpatched kernel), so it should be easy to understand if there are
-> other filter that show the same problem.
-> 
+sure, it's ok for rawhide, in fedora 31/30 we still don't have
+latest headers packaged
 
-I think this one works because of the simpler walk().
-In the corner cases you caught u32 is more complex. It would create
-multiple tp and so the list would not appear empty.
+> 3. Do you plan to address the bug report [3] for CentOS? Namely rebuilding
+> Fedora's RPM and publishing to EPEL repo?
 
->> BTW another approach would be to extend ops with new callback
->> delete_empty(), require unlocked implementation to define it and move
->> functionality of tcf_proto_check_delete() there. Such approach would
->> remove the need for (ab)using ops->walk() for this since internally
->> in classifier implementation there is always a way to correctly verify
->> that classifier instance is empty. Don't know which approach is better
->> in this case.
-> 
-> I like the idea of using walk() only when filters are dumped, and handling
-> the check for empty filters on deletion with a separate callback. That
-> would allow de-refcounting the filter in the error path unconditionally
-> for   all classifiers, like old kernel was doing, unless the classifier
-> implements its own "check empty" function.
-> 
-> how does it sound?
+I did not get any answers on who would do that internally,
+so I'm afreaid I'll have to do it, but let me ask again first ;-)
 
-Agreed.
-Note: my comment on other email was also to consider using
-TCF_PROTO_OPS_DOIT_UNLOCKED for obvious cases.
+jirka
 
-cheers,
-jamal
