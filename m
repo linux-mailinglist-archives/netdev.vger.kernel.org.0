@@ -2,108 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A689B127BCE
-	for <lists+netdev@lfdr.de>; Fri, 20 Dec 2019 14:37:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EDD8E127C08
+	for <lists+netdev@lfdr.de>; Fri, 20 Dec 2019 14:54:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727388AbfLTNhB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Dec 2019 08:37:01 -0500
-Received: from mail-oi1-f195.google.com ([209.85.167.195]:40285 "EHLO
-        mail-oi1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727362AbfLTNhB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Dec 2019 08:37:01 -0500
-Received: by mail-oi1-f195.google.com with SMTP id c77so4009769oib.7;
-        Fri, 20 Dec 2019 05:37:00 -0800 (PST)
+        id S1727417AbfLTNyN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Dec 2019 08:54:13 -0500
+Received: from mail-io1-f67.google.com ([209.85.166.67]:41351 "EHLO
+        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727346AbfLTNyM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Dec 2019 08:54:12 -0500
+Received: by mail-io1-f67.google.com with SMTP id c16so5875899ioo.8
+        for <netdev@vger.kernel.org>; Fri, 20 Dec 2019 05:54:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=cgytD78FRHMpVR07lVHdXHDp7d3fIsIaVIOtC1GfChA=;
+        b=srLBMCUG5LrZHAQ6N8QKzaPKbo6tAQbhGsmRFigsMnpPpAHy5s/foc2/URZxQVZdqK
+         t9OQkIZ4/4Vb49ha+6K1qDfK422fIYTbR9PZVE0zjceG3FAqQnPUAqIceqmBzI90xQAx
+         gzMkn1ay/UjGV376KT0nHUR3/dT3sc62xwsWldApjYhpaBxs8M31l2AL6XOoGFyKDI0v
+         8uLXW/0wcFKwb6Nuwn3xhQtSgx0icIM7784QaqRLIl3uhlkPLeLBmF1wWQ+YlnggcpNV
+         GEyr08GSdjriDqQgyWf4Pw4yVqpZ0uyapMExGkRFL2Q2PsQkcm98P+SRWSrMZ20pKCAW
+         4Vow==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=I1fCOA/Sv1KGJSA6mRhrFG67s6gpWFpFbY2201u/RCQ=;
-        b=PWwBA0+ipxLwsdIDQLVU9Opbl240+SDJgommm+PZ69gXiO11VtmYzH3wYtNDRrtA0L
-         xVlhl7BJ4k12iU+3FjdWkQ9/QPcDljn2tEBAEcV5ExQ4y+X13r5iw1tGwzaV0BYLnfDD
-         jOq9aavLXueP6irHasTrkwBV7gJV6F1wwirPQnmX/6VWFvzxk5j8aA1g9q2pC+qcXIjL
-         JKNI6VFcz4g/byZrXbx7DLzc3sznJO8QWpG4hLhCmbX+q2MfmOYMvtDpFGzPq6QgP51e
-         mWc6Z1cbQTszouo45g5c+2iPnLjlK8hPnB406/nAfhlopXmhZs755PAE3viOR5fbjoIT
-         R5gg==
-X-Gm-Message-State: APjAAAXerdouZvwrWX6Yd1ULmFBnED/lLA4kaWMF4CbeigKxE898V+yG
-        5pnvC0z9ZURSuv66lF83sBq8iA18VHmrRmi/sl8=
-X-Google-Smtp-Source: APXvYqx99YdXrtAVo+2lBsGy+1MasKuJ6va9hTNxUc2EXy1QdfUgsmv0s+kIJ0R5ysWOYRqLdQ9XYSQAnclfK9n+XcY=
-X-Received: by 2002:aca:1a06:: with SMTP id a6mr3453327oia.148.1576849020359;
- Fri, 20 Dec 2019 05:37:00 -0800 (PST)
-MIME-Version: 1.0
-References: <git-mailbomb-linux-master-8ffb055beae58574d3e77b4bf9d4d15eace1ca27@kernel.org>
- <CAMuHMdVgF0PVmqXbaWqkrcML0O-hhWB3akj8UAn8Q_hN2evm+A@mail.gmail.com>
- <CAM_iQpWOhXR=x10i0S88qXTfG2nv9EypONTp6_vpBzs=iOySRQ@mail.gmail.com>
- <CAMuHMdXL8kycJm5EG6Ubx4aYGVGJH9JuJzP-vSM55wZ6RtyT+w@mail.gmail.com> <CAM_iQpXJiiiFdEZ1XYf0v0CNEwT=fSmpxWPVJ_L2_tPSd8u+-w@mail.gmail.com>
-In-Reply-To: <CAM_iQpXJiiiFdEZ1XYf0v0CNEwT=fSmpxWPVJ_L2_tPSd8u+-w@mail.gmail.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Fri, 20 Dec 2019 14:36:49 +0100
-Message-ID: <CAMuHMdVYqfEF4NxwR64jDno9KdzX3pgVRSphBzfsJjQ6ORTq_g@mail.gmail.com>
-Subject: Re: refcount_warn_saturate WARNING (was: Re: cls_flower: Fix the
- behavior using port ranges with hw-offload)
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     Yoshiki Komachi <komachi.yoshiki@gmail.com>,
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=cgytD78FRHMpVR07lVHdXHDp7d3fIsIaVIOtC1GfChA=;
+        b=ev0V6HxSyGnPIQgrrk/eOqJMH3PJEdUgMxiloc62J65oU1NwF/i/m+9xrZrvbxq4/2
+         3nU8yZLZqkBaLvqJzM9W2rIV6zNnLXZjaI6LzFZhp+70DuoLAXifJ05z44WzGg9XWXIp
+         B71Vg63tnHBhldmn+7j2HkQ3UXVgIXNx3jK5jYhSUBG7TAmV3vacdO0LVSEwsibehtx8
+         BhBz/ZmVKzk6Qvz+L1pjM6VwsSNambDkCAry5wffxH99p/IGAeUE8xevGbOrj/wzARJl
+         SI3OqmsvEjgKITY5vJuqdU1y7JyzxGiQyva8BlghKhU504FvMdLfk8H+ei1kdLlNb+J/
+         Qz5Q==
+X-Gm-Message-State: APjAAAUf9k1zFvgA+OR5Pttw1lFuCs7MgQA4uU8TZtZiI3KUGU/fnIgV
+        okVgElxPc0T6MQFYAs0iZyuOsQ==
+X-Google-Smtp-Source: APXvYqzpa93wbr1qHXEjhaYJ188wjPx5K7DK7CRdw8UTP3GU/qH9L4ETT99JfT3FJ0al0ANHzTphSg==
+X-Received: by 2002:a02:3090:: with SMTP id q138mr12272515jaq.23.1576850051454;
+        Fri, 20 Dec 2019 05:54:11 -0800 (PST)
+Received: from [192.168.0.125] (198-84-204-252.cpe.teksavvy.com. [198.84.204.252])
+        by smtp.googlemail.com with ESMTPSA id x25sm1012318iol.6.2019.12.20.05.54.10
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 20 Dec 2019 05:54:10 -0800 (PST)
+Subject: Re: [PATCH net 1/2] net/sched: cls_u32: fix refcount leak in the
+ error path of u32_change()
+To:     Davide Caratti <dcaratti@redhat.com>,
+        Vlad Buslov <vladbu@mellanox.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Amritha Nambiar <amritha.nambiar@intel.com>,
-        netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>, Roman Mashak <mrv@mojatatu.com>
+References: <cover.1576623250.git.dcaratti@redhat.com>
+ <ae83c6dc89f8642166dc32debc6ea7444eb3671d.1576623250.git.dcaratti@redhat.com>
+ <bafb52ff-1ced-91a4-05d0-07d3fdc4f3e4@mojatatu.com>
+ <5b4239e5-6533-9f23-7a38-0ee4f6acbfe9@mojatatu.com>
+ <vbfr2102swb.fsf@mellanox.com>
+ <63fe479d-51cd-eff4-eb13-f0211f694366@mojatatu.com>
+ <vbfpngk2r9a.fsf@mellanox.com> <vbfo8w42qt2.fsf@mellanox.com>
+ <3bbe208c56d4b6cf3526f4957b19f87d695d5d0a.camel@redhat.com>
+From:   Jamal Hadi Salim <jhs@mojatatu.com>
+Message-ID: <424b6532-377c-1fcf-f0a8-e9efdbae8740@mojatatu.com>
+Date:   Fri, 20 Dec 2019 08:54:09 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.3.0
+MIME-Version: 1.0
+In-Reply-To: <3bbe208c56d4b6cf3526f4957b19f87d695d5d0a.camel@redhat.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-GB
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Cong,
+On 2019-12-20 8:21 a.m., Davide Caratti wrote:
+> hi Jamal and Vlad,
+> 
+> thanks a lot for sharing your thoughts.
+> 
+> On Thu, 2019-12-19 at 17:01 +0000, Vlad Buslov wrote:
+>>>> IMO that would be a cleaner fix give walk() is used for other
+>>>> operations and this is a core cls issue.
 
-On Thu, Dec 19, 2019 at 10:52 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
-> On Thu, Dec 19, 2019 at 1:01 PM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
-> > On Thu, Dec 19, 2019 at 9:50 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
-> > > On Thu, Dec 19, 2019 at 2:12 AM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
-> > > > I still see the below warning on m68k/ARAnyM during boot with v5.5-rc2
-> > > > and next-20191219.
-> > > > Reverting commit 8ffb055beae58574 ("cls_flower: Fix the behavior using
-> > > > port ranges with hw-offload") fixes that.
-> > > >
-> > > > As this is networking, perhaps this is seen on big-endian only?
-> > > > Or !CONFIG_SMP?
-> > > >
-> > > > Do you have a clue?
-> > > > I'm especially worried as this commit is already being backported to stable.
-> > > > Thanks!
-> > >
-> > > I did a quick look at the offending commit, I can't even connect it to
-> > > any dst refcnt.
-> > >
-> > > Do you have any more information? Like what happened before the
-> > > warning? Does your system use cls_flower filters at all? If so, please
-> > > share your tc configurations.
-> >
-> > No, I don't use clf_flower filters.  This is just a normal old Debian boot,
-> > where the root file system is being remounted, followed by the warning.
->
-> > To me, it also looks very strange.  But it's 100% reproducible for me.
-> > Git bisect pointed to this commit, and reverting it fixes the issue.
->
-> Hmm, does the attached patch have any luck to fix it?
+> I tried forcing an error in matchall, and didn't observe this problem:
+> 
+> [root@f31 ~]# perf record -e probe:mall_change__return -agR -- tc filter add dev dam0 parent root matchall skip_sw action drop
+> RTNETLINK answers: Operation not supported
+> We have an error talking to the kernel
+> [ perf record: Woken up 1 times to write data ]
+> [ perf record: Captured and wrote 1.225 MB perf.data (1 samples) ]
+> [root@f31 ~]# perf script
+> tc 115241 [002] 19665.372130: probe:mall_change__return: (ffffffffc115f930 <- ffffffffb98a7266) ret=0xffffffa1
+>          ffffffffb9066790 kretprobe_trampoline+0x0 (vmlinux)
+>              7fa64c16cb77 __libc_sendmsg+0x17 (/usr/lib64/libc-2.30.so)
+> 
+> [root@f31 ~]# tc filter show dev dam0
+> [root@f31 ~]#
+> 
+> and similar test can be also carried for the other classifiers
+> (on unpatched kernel), so it should be easy to understand if there are
+> other filter that show the same problem.
+> 
 
-Thanks, but unfortunately it doesn't help.
+I think this one works because of the simpler walk().
+In the corner cases you caught u32 is more complex. It would create
+multiple tp and so the list would not appear empty.
 
-More investigation revealed that the above commit caused some shifts in the
-kernel binary, moving dst_default_metrics to a 2-byte aligned address.
-This is incompatible with the use of DST_METRICS_FLAGS and
-__DST_METRICS_PTR().
+>> BTW another approach would be to extend ops with new callback
+>> delete_empty(), require unlocked implementation to define it and move
+>> functionality of tcf_proto_check_delete() there. Such approach would
+>> remove the need for (ab)using ops->walk() for this since internally
+>> in classifier implementation there is always a way to correctly verify
+>> that classifier instance is empty. Don't know which approach is better
+>> in this case.
+> 
+> I like the idea of using walk() only when filters are dumped, and handling
+> the check for empty filters on deletion with a separate callback. That
+> would allow de-refcounting the filter in the error path unconditionally
+> for   all classifiers, like old kernel was doing, unless the classifier
+> implements its own "check empty" function.
+> 
+> how does it sound?
 
-Fix sent: "[PATCH] net: dst: Force 4-byte alignment of dst_metrics"
-https://lore.kernel.org/linux-m68k/20191220133140.5684-1-geert@linux-m68k.org/
+Agreed.
+Note: my comment on other email was also to consider using
+TCF_PROTO_OPS_DOIT_UNLOCKED for obvious cases.
 
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+cheers,
+jamal
