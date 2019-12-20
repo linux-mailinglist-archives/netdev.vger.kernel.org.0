@@ -2,58 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 74532127460
-	for <lists+netdev@lfdr.de>; Fri, 20 Dec 2019 04:57:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AE82E127464
+	for <lists+netdev@lfdr.de>; Fri, 20 Dec 2019 04:58:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727192AbfLTD5o (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Dec 2019 22:57:44 -0500
-Received: from mail-pj1-f68.google.com ([209.85.216.68]:33853 "EHLO
-        mail-pj1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727110AbfLTD5o (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Dec 2019 22:57:44 -0500
-Received: by mail-pj1-f68.google.com with SMTP id s94so3370620pjc.1
-        for <netdev@vger.kernel.org>; Thu, 19 Dec 2019 19:57:43 -0800 (PST)
+        id S1727235AbfLTD6N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Dec 2019 22:58:13 -0500
+Received: from mail-pl1-f193.google.com ([209.85.214.193]:33970 "EHLO
+        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727221AbfLTD6N (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Dec 2019 22:58:13 -0500
+Received: by mail-pl1-f193.google.com with SMTP id x17so3521899pln.1
+        for <netdev@vger.kernel.org>; Thu, 19 Dec 2019 19:58:12 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=Tv1bsnnBuK4n8b3XvwS+kK6Rwt0PLzuNKd6ADta2C48=;
-        b=BiVsS9L2Y52OiUgmkoL+mR4EuoUv1vjHtS+ngB+IJbU9YujUZdvlR5d7k4e1cLIsua
-         h2G5hqP5MvjvFvq//iTf5mI6t4y3IFhcPvkADW3i2qzotd8rTAnzklSGpUlhl5vW/uP9
-         zXtFWoR8+nHbshu+DsUEM20pVmbhvLu3yxqzY7SzRxiJ0+571uinSVHoUu53Tmdn4jfz
-         TCCIxC91xxTlZ7JwmMUdFVbPYM8YBf/cgjp525XusNZWG1KpwOtqgJsEf8XdofqnEmZ7
-         G2bwQx7AM5Kb1imuA8MCBLJqMFfCNgUA3EKpqFNe3pzv1TZdOBIYh9Z0UNd0e+KDbPpv
-         dJkQ==
+        bh=OKc/CHyw/qigfyutxAhN438pCVTiYZY1NRTu5tHGp1w=;
+        b=QCZdywbKgDFabBfxKw6WRhqDyos9b4tF9P6h0ZtCpTvvm+XD9bn4ilI6TFXJmsbgit
+         oQaDh71SrILJY10afYUmSo2S+nUwEPUXsSbV5Tlknu8YQEaSCK00vx8wZHQjq5XEeNoU
+         NIxLZK/nY2EWUnNusyeeUqjY9C4GLob+QAw9EqWsoFurWj7At6zqhEv/Wn4xWe5FBMe0
+         XlPAksOFg+nJNS7l1CeBQY/ir42WeBhTpIfAsu4fnu473VMIad0N2Sny4gJTZD2DKY9G
+         rMz96KIuFPaVcCJ8Kbdul9uKyAvaUMmze9oty1/51fapwdh2vFE0jNZeQJ1yVB22gL30
+         Oq2Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=Tv1bsnnBuK4n8b3XvwS+kK6Rwt0PLzuNKd6ADta2C48=;
-        b=j2w1NVk51vICyTHcGaGVQr1uYpFjGiXMW+hc9Vbueoh/7WBmAjRoVNfdKZhDcCJjlr
-         R61d94PWGzscPIPjdihjIXjUburHew4ZP1JEcMjdkpiYqueXM5ff+kYjl4wyNLh3S53i
-         1bK+1WhpefPvL5b+uGfxREYFpo2qRfe+m3MBXXs0/xNG/QFjKt/X/SbwbHz9g3YhMLz5
-         PBrJPybIkljlJRgpYQ9p86RcVqQdQeN8eWPf+RnbWgNB1FO3QvmsCdE6TIUz3gNcCwGO
-         i15ZJFs7o6XwVjnhQK9hpivt+ymJFGxUX/rynad4BQXVumeTvfXgtydqrRqZ4ufdYY8V
-         YeEg==
-X-Gm-Message-State: APjAAAXF6EzCF9I5pFNRFrKbZPMnPBIAxGKO9yin1Eg3JtfEGN3WapDN
-        zVnPtGKTZj6A8d5JLQNkwM6vzd4E
-X-Google-Smtp-Source: APXvYqwS6jM45TdeuG5lpaexDFRIdfXLb/2MOUl/AFF9IfNxXxvcCc/4lndQi3uYS8E7gjhFYkKvNw==
-X-Received: by 2002:a17:902:b083:: with SMTP id p3mr12566536plr.141.1576814263142;
-        Thu, 19 Dec 2019 19:57:43 -0800 (PST)
+        bh=OKc/CHyw/qigfyutxAhN438pCVTiYZY1NRTu5tHGp1w=;
+        b=KHi/OBtI7/pAnKhFlZx7tYEjsC8bXOYQ/5E/US89YXC/07+70P4znLz5QdZd5sAn5X
+         FB4savtCbjrz51PydR5RzIfA01lPUMJUH52WY9E/pyhVfF4qKw/hUrRR8wkRLkAzulDA
+         arxZWK/xEHUXJM8BBMTPdWzm3LVkBcZ2kI241dGB9DeGkedbEi/ao83iBx0GqlqdgEMK
+         egyenlOCMzW7w4UUd1CTrz8Vpvb6+29Kzi7WsXoc/H39HzQ6vtasYiAmngKC/x97jOum
+         MUXLZxQogXBSTUghyX7f6Bsn9KeR+uIS3JGo1WXwI8CINMvv6lWLDRgOmua06asGkYY4
+         G4fQ==
+X-Gm-Message-State: APjAAAWkoFTokW0CzRSsd9tWLJtA9Msndqkgjw8EBD9IwB8cTsUXcTI4
+        LvjivIQSAfMA6EDxSynf+cRQ1jeZ
+X-Google-Smtp-Source: APXvYqwayuzC/2fb+Ih6LpbvcB7R8GVph2gXfQU5g8pl7ytnbVqkpIZnTpBU3Svr/76eExWAqdGH3g==
+X-Received: by 2002:a17:90a:17c5:: with SMTP id q63mr13262669pja.138.1576814292302;
+        Thu, 19 Dec 2019 19:58:12 -0800 (PST)
 Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
-        by smtp.gmail.com with ESMTPSA id 2sm8984255pgo.79.2019.12.19.19.57.42
+        by smtp.gmail.com with ESMTPSA id i4sm9196358pgc.51.2019.12.19.19.58.11
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 19 Dec 2019 19:57:42 -0800 (PST)
-Subject: Re: [PATCH net v2] mod_devicetable: fix PHY module format
+        Thu, 19 Dec 2019 19:58:11 -0800 (PST)
+Subject: Re: [PATCH net v2] net: phy: ensure that phy IDs are correctly typed
 To:     Russell King <rmk+kernel@armlinux.org.uk>,
         Andrew Lunn <andrew@lunn.ch>,
         Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Andy Fleming <afleming@freescale.com>,
-        David Woodhouse <dwmw2@infradead.org>,
-        Ben Hutchings <ben@decadent.org.uk>
-References: <E1ii59z-0003Na-Rb@rmk-PC.armlinux.org.uk>
+Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+References: <E1ii5A4-0003Ni-Vs@rmk-PC.armlinux.org.uk>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Autocrypt: addr=f.fainelli@gmail.com; keydata=
  mQGiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
@@ -109,12 +106,12 @@ Autocrypt: addr=f.fainelli@gmail.com; keydata=
  caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
  6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9qfUATKC9NgZjRvBztfqy4
  a9BQwACgnzGuH1BVeT2J0Ra+ZYgkx7DaPR0=
-Message-ID: <31fc357c-2e50-beaf-5a88-4e6dac40d7ad@gmail.com>
-Date:   Thu, 19 Dec 2019 19:57:29 -0800
+Message-ID: <d8b29847-51d6-782a-7506-f61f4250e1fb@gmail.com>
+Date:   Thu, 19 Dec 2019 19:58:10 -0800
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
  Thunderbird/68.3.1
 MIME-Version: 1.0
-In-Reply-To: <E1ii59z-0003Na-Rb@rmk-PC.armlinux.org.uk>
+In-Reply-To: <E1ii5A4-0003Ni-Vs@rmk-PC.armlinux.org.uk>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -126,18 +123,10 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 On 12/19/2019 3:24 PM, Russell King wrote:
-> When a PHY is probed, if the top bit is set, we end up requesting a
-> module with the string "mdio:-10101110000000100101000101010001" -
-> the top bit is printed to a signed -1 value. This leads to the module
-> not being loaded.
+> PHY IDs are 32-bit unsigned quantities. Ensure that they are always
+> treated as such, and not passed around as "int"s.
 > 
-> Fix the module format string and the macro generating the values for
-> it to ensure that we only print unsigned types and the top bit is
-> always 0/1. We correctly end up with
-> "mdio:10101110000000100101000101010001".
-> 
-> Fixes: 8626d3b43280 ("phylib: Support phy module autoloading")
-> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+> Fixes: 13d0ab6750b2 ("net: phy: check return code when requesting PHY driver module")
 > Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
 
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
