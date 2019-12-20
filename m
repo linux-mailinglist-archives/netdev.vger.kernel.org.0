@@ -2,103 +2,174 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 004EE12800C
-	for <lists+netdev@lfdr.de>; Fri, 20 Dec 2019 16:52:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 779E5128057
+	for <lists+netdev@lfdr.de>; Fri, 20 Dec 2019 17:06:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727639AbfLTPv7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Dec 2019 10:51:59 -0500
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:57476 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727362AbfLTPv7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Dec 2019 10:51:59 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1576857118;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=RNzUXdHPbC9QG5PI7iEnbaTNbG0U51Xojbeo3Jhjtz4=;
-        b=R2tjS6AcOaZ19oxpbtIG49KN8wMYWrMF54fXP3Th9xnrdkT+eWZYt09Er0FHS5MA4AAf4K
-        CqVyNb3yYo2Bs4tbO1veJ6wcsBdJHthKNgl7K4Wd4A4bPULAi1jUSHtOactdgQPYL9TlaN
-        CxNb7wXKJSfCucFL2KAZ/85+G7QZ/To=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-195-lftL74DuPQiVy_45GraklA-1; Fri, 20 Dec 2019 10:51:54 -0500
-X-MC-Unique: lftL74DuPQiVy_45GraklA-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 154CE1005502;
-        Fri, 20 Dec 2019 15:51:53 +0000 (UTC)
-Received: from ovpn-116-246.ams2.redhat.com (ovpn-116-246.ams2.redhat.com [10.36.116.246])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id E537B5DA2C;
-        Fri, 20 Dec 2019 15:51:50 +0000 (UTC)
-Message-ID: <581ec29dccd8d499d7cb2041218c1fcca90da29a.camel@redhat.com>
-Subject: Re: [PATCH net-next v2 00/15] Multipath TCP part 2: Single subflow
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Eric Dumazet <eric.dumazet@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        mathew.j.martineau@linux.intel.com
-Cc:     netdev@vger.kernel.org, mptcp@lists.01.org
-Date:   Fri, 20 Dec 2019 16:51:49 +0100
-In-Reply-To: <1eb6643d-c0c1-1331-4a32-720240d4fd25@gmail.com>
-References: <20191218195510.7782-1-mathew.j.martineau@linux.intel.com>
-         <20191218.124244.864160487872326152.davem@davemloft.net>
-         <1eb6643d-c0c1-1331-4a32-720240d4fd25@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.32.5 (3.32.5-1.fc30) 
+        id S1727440AbfLTQGE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Dec 2019 11:06:04 -0500
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:36113 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726808AbfLTQGE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Dec 2019 11:06:04 -0500
+Received: by mail-pg1-f193.google.com with SMTP id k3so5162507pgc.3;
+        Fri, 20 Dec 2019 08:06:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=LGfw/ABfWG44S99dqNjFh7GtGRP7EqyTNmaTlSCAxUg=;
+        b=rons7KyIPEHNTL/N4SxJ2hN2OFbBMQtGxo8h2FuwtbZvEsEL0kBtgIGmZshLGSiWDg
+         mbvPeYAQ/fg77L2oA3SiVkFm5F4ucmmyl2G+l4dtRx10A0gikel1DdfPuvYqD9kLrZVj
+         Vat6/k1CjBcVz8y4xBlasZjwDQUhhi/jQcfqD5vhEI1Qnts8Li7frbrgdzJFVfkaDA3R
+         mPFUvTHkwWJELM/JPBbRuHmDQNSuKxDaDlmr9A+Zd3U2vXpvCI14rg46HQS/Py6C0LDr
+         CXdfyuDqjn93GfqKdlERIADxH3XiCw1hjmFS4uTANHYkWAGbkfYMDqH/Cryo7hh7sPs4
+         QBEw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=LGfw/ABfWG44S99dqNjFh7GtGRP7EqyTNmaTlSCAxUg=;
+        b=gdsoQyoPtz/U3NjrThgJX/dkMYiFiKiy46TvGKn0IgI21CmxgqSr8gkCR2Oon8Gtsc
+         vxefdFaKW7OlWCorvNL9k3EZ1DuzWOZgNv9KXECxKvPZGCJZGftXrE8VqJpoCBSxRfN6
+         JM/skg8U8Acy8yGod9hFZgwDVdL9RBRu3pjvdq8PHjeuEtXDI5q3GEvwNAxyvFY+7+XV
+         TqTh/y2Z3Zn0dWUb99MGFqNkUDEtQE8Hefq7B0ETKU2QXrXjJV0zPuQcIBSy6NWh8uyR
+         wg9u2QaXGq/qPDJhAE9jGwo/jsO2owp96Vuw5WoKggErOHdX02D/K3Odc5xJXo6vg9h3
+         ptgA==
+X-Gm-Message-State: APjAAAXoyPvbX/2H2lDFKvML2QD/7nGm7g5FLdnpdm4dAx5beQRtvGZj
+        QNEdz7iwtu6cyEhuvv8pe7Y=
+X-Google-Smtp-Source: APXvYqzlixHZOELXQc/0KmNzXrImB3d8Haci6RRW4JwMnGEVrlK0cx6fXDzpc1YV0xrS+z2zYs7/sw==
+X-Received: by 2002:a65:518b:: with SMTP id h11mr15462937pgq.133.1576857963178;
+        Fri, 20 Dec 2019 08:06:03 -0800 (PST)
+Received: from localhost.localdomain ([2001:1284:f013:b9c8:9c5e:a64b:e068:9fbd])
+        by smtp.gmail.com with ESMTPSA id s22sm13054365pfe.90.2019.12.20.08.06.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 20 Dec 2019 08:06:02 -0800 (PST)
+Received: by localhost.localdomain (Postfix, from userid 1000)
+        id 6E97FC161F; Fri, 20 Dec 2019 13:05:59 -0300 (-03)
+Date:   Fri, 20 Dec 2019 13:05:59 -0300
+From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+To:     syzbot <syzbot+9a1bc632e78a1a98488b@syzkaller.appspotmail.com>
+Cc:     davem@davemloft.net, linux-kernel@vger.kernel.org,
+        linux-sctp@vger.kernel.org, lucien.xin@gmail.com,
+        netdev@vger.kernel.org, nhorman@tuxdriver.com,
+        syzkaller-bugs@googlegroups.com, vyasevich@gmail.com
+Subject: Re: general protection fault in sctp_stream_free (2)
+Message-ID: <20191220160559.GD5058@localhost.localdomain>
+References: <0000000000001b6443059a1a815d@google.com>
+ <20191220152810.GI4444@localhost.localdomain>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191220152810.GI4444@localhost.localdomain>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 2019-12-20 at 07:03 -0800, Eric Dumazet wrote:
+On Fri, Dec 20, 2019 at 12:28:10PM -0300, Marcelo Ricardo Leitner wrote:
+> On Thu, Dec 19, 2019 at 07:45:09PM -0800, syzbot wrote:
+> > Hello,
+> > 
+> > syzbot found the following crash on:
+> > 
+> > HEAD commit:    6fa9a115 Merge branch 'stmmac-fixes'
+> > git tree:       net
+> > console output: https://syzkaller.appspot.com/x/log.txt?x=10c4fe99e00000
+> > kernel config:  https://syzkaller.appspot.com/x/.config?x=216dca5e1758db87
+> > dashboard link: https://syzkaller.appspot.com/bug?extid=9a1bc632e78a1a98488b
+> > compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+> > syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=178ada71e00000
+> > C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=144f23a6e00000
+> > 
+> > The bug was bisected to:
+> > 
+> > commit 951c6db954a1adefab492f6da805decacabbd1a7
+> > Author: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+> > Date:   Tue Dec 17 01:01:16 2019 +0000
+> > 
+> >     sctp: fix memleak on err handling of stream initialization
 > 
-> On 12/18/19 12:42 PM, David Miller wrote:
-> > From: Mat Martineau <mathew.j.martineau@linux.intel.com>
-> > Date: Wed, 18 Dec 2019 11:54:55 -0800
-> > 
-> > > v1 -> v2: Rebased on latest "Multipath TCP: Prerequisites" v3 series
-> > 
-> > This really can't proceed in this manner.
-> > 
-> > Wait until one patch series is fully reviewed and integrated before
-> > trying to build things on top of it, ok?
-> > 
-> > Nobody is going to review this second series in any reasonable manner
-> > while the prerequisites are not upstream yet.
-> > 
-> 
-> Also I want to point that for some reasons MPTCP folks provide
-> patch series during the last two weeks of the year.
-> 
-> I don't know about you, but I try to share this time with my family.
-> So this does not make me being indulgent about MPTCP :/
+> Ouch... this wasn't a good fix.
+> When called from sctp_stream_init(), it is doing the right thing.
+> But when called from sctp_send_add_streams(), it can't free the
+> genradix. Ditto from sctp_process_strreset_addstrm_in().
 
-We are sorry if our course of action is perceived as aggressive or
-worse.
+Tentative fix. I'll post after additional tests.
 
-The idea was to share our progress giving enough context to get a more
-complete picture.
+--8<--
 
-We tried to reply to the feedback in a timely manner to demonstrate
-collaborative behavior and not with the goal to hard press anyone!  We
-are very sorry if we gave a different impression!
-
-We understand the time of the year is unfortunate, we have been a bit
-delayed by several related an unrelated issues - idea was to post v1
-just after net-next re-open.
-
-We appreciate a lot all the feedback received, which helped improving
-the code significantly.
-
-I understand you prefer we will have the next iteration in the new
-year, am I correct?
-
-Thank you!
-
-Paolo
-
+diff --git a/net/sctp/stream.c b/net/sctp/stream.c
+index 6a30392068a0..c1a100d2fed3 100644
+--- a/net/sctp/stream.c
++++ b/net/sctp/stream.c
+@@ -84,10 +84,8 @@ static int sctp_stream_alloc_out(struct sctp_stream *stream, __u16 outcnt,
+ 		return 0;
+ 
+ 	ret = genradix_prealloc(&stream->out, outcnt, gfp);
+-	if (ret) {
+-		genradix_free(&stream->out);
++	if (ret)
+ 		return ret;
+-	}
+ 
+ 	stream->outcnt = outcnt;
+ 	return 0;
+@@ -102,10 +100,8 @@ static int sctp_stream_alloc_in(struct sctp_stream *stream, __u16 incnt,
+ 		return 0;
+ 
+ 	ret = genradix_prealloc(&stream->in, incnt, gfp);
+-	if (ret) {
+-		genradix_free(&stream->in);
++	if (ret)
+ 		return ret;
+-	}
+ 
+ 	stream->incnt = incnt;
+ 	return 0;
+@@ -123,7 +119,7 @@ int sctp_stream_init(struct sctp_stream *stream, __u16 outcnt, __u16 incnt,
+ 	 * a new one with new outcnt to save memory if needed.
+ 	 */
+ 	if (outcnt == stream->outcnt)
+-		goto in;
++		goto handle_in;
+ 
+ 	/* Filter out chunks queued on streams that won't exist anymore */
+ 	sched->unsched_all(stream);
+@@ -132,24 +128,28 @@ int sctp_stream_init(struct sctp_stream *stream, __u16 outcnt, __u16 incnt,
+ 
+ 	ret = sctp_stream_alloc_out(stream, outcnt, gfp);
+ 	if (ret)
+-		goto out;
++		goto out_err;
+ 
+ 	for (i = 0; i < stream->outcnt; i++)
+ 		SCTP_SO(stream, i)->state = SCTP_STREAM_OPEN;
+ 
+-in:
++handle_in:
+ 	sctp_stream_interleave_init(stream);
+ 	if (!incnt)
+ 		goto out;
+ 
+ 	ret = sctp_stream_alloc_in(stream, incnt, gfp);
+-	if (ret) {
+-		sched->free(stream);
+-		genradix_free(&stream->out);
+-		stream->outcnt = 0;
+-		goto out;
+-	}
++	if (ret)
++		goto in_err;
++
++	goto out;
+ 
++in_err:
++	sched->free(stream);
++	genradix_free(&stream->in);
++out_err:
++	genradix_free(&stream->out);
++	stream->outcnt = 0;
+ out:
+ 	return ret;
+ }
