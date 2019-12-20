@@ -2,90 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 88104127F41
-	for <lists+netdev@lfdr.de>; Fri, 20 Dec 2019 16:28:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D908B127F44
+	for <lists+netdev@lfdr.de>; Fri, 20 Dec 2019 16:28:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727535AbfLTP16 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Dec 2019 10:27:58 -0500
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:42841 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727395AbfLTP15 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Dec 2019 10:27:57 -0500
-Received: by mail-wr1-f65.google.com with SMTP id q6so9770246wro.9
-        for <netdev@vger.kernel.org>; Fri, 20 Dec 2019 07:27:56 -0800 (PST)
+        id S1727546AbfLTP2P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Dec 2019 10:28:15 -0500
+Received: from mail-pj1-f67.google.com ([209.85.216.67]:53744 "EHLO
+        mail-pj1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727395AbfLTP2P (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Dec 2019 10:28:15 -0500
+Received: by mail-pj1-f67.google.com with SMTP id n96so4250751pjc.3;
+        Fri, 20 Dec 2019 07:28:15 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=QgvFx5YHtxnECnkDBTqxzi0EKbhnWjIBCvLL8T47+vI=;
-        b=kQ6Lv3XkbX3KIEyHrz312HKNFMhGmuM0GPmyZ85L4Qb1qsZ3vS48omlzbhvg1m7rv0
-         ZMsas043coV+I5M8/bN2SpnBSnf30zYcnCF98ZN9/Phu3ani77nk1wb+rHOjjBmL16s4
-         JWSBAYbAROCTKypMACXva0kCw1qRgndS6AhPFuz8/YlByLO6XsnqUzuG2UqIhcamrR+/
-         rgg6MoADwoO3fV6l6mMNDQr42wTExhgEW/zxjgs+FRvuMxcpM7A31snj5+JAHhXVdM7v
-         gHhHNyUWNCfKWRoNxIXpLoPXBona/UgOQCrzZUdWq2FGnf9DzEyV7JOWg1BGmlpVubyU
-         fxRA==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=GZPCEvTkQBcE0MkWf0wsjsT/U2bWse2KUq7jRUE3VSc=;
+        b=sTBffexju1W2lYD4Nzsim/64ZnYR8BCtM/yzwIWySePc8qD1ZaDo537POMdRGfJtc5
+         uQoau9wJxX1jJ0hT6gmVPT1uexYZB6irL1/mRepbdy4i9EQNFN2NhaLJCzT/KbnhPYb9
+         hC72KGNGP6qV9wVzqcwN2t059a2z+XKzJ4xof+PrSdGjjSkSeuElWwFq2edOJWKhmNI4
+         pzbSTqAhGVORWmDdzs7Fym/z4sCMidom6d6+wwNCBT9s5tPn0NGTL5dBFLIHOa/pjhoW
+         DXiSnQPKiM79BUvG6rqjoMaRTgsR1tAjsGqTKg6D3jeVO5OiXFHVsOL/IFZd9qyI7Wkv
+         lccQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=QgvFx5YHtxnECnkDBTqxzi0EKbhnWjIBCvLL8T47+vI=;
-        b=ZLSV6SZ3Ykds9FbiZqeh8gaMBrxDvAPvwhcPeZww3ZxmKib5qZuSMxAAyN/3QUAI/O
-         3jYAq59OwUnHvnZygCBDkPJNeyFMM1HiDVlHe0Y1tHUMo3Xyj5+DQOjBoF/lcb3AQja0
-         CkLtjegQf9weAKPhw89mfT6S11Up8A4o2GS7hlM89hRh7drRybXUf8qy+5YWwlCAMgyx
-         0rIA0BO17beMYxIkwkp4VxAeFjKclanVYh6Hyu0VmXIr9KcjN8qkBJmw3k7Xb5+lHb9/
-         x7C5XtC8/pb3ibdKT070RysO4xwSB+P+VbmZz2PrpyX9fAfP7GQDtdr3ldDPPKpRLMVw
-         VDhQ==
-X-Gm-Message-State: APjAAAXJUzeAMjLlpQUDv0sJqNh/3ZobV+EGzIoLBHVnYkiG9DUNR+WP
-        t8FZ7WwzHiTxizWi4jVZrEE=
-X-Google-Smtp-Source: APXvYqz+q+5o566ccpNL+Wp1HQq1d6uok6rYp8sP0AyGG6XqKSm98H8uQZZg8XrNikrtj9HuCFMz9w==
-X-Received: by 2002:a5d:4602:: with SMTP id t2mr15593815wrq.37.1576855676229;
-        Fri, 20 Dec 2019 07:27:56 -0800 (PST)
-Received: from [192.168.8.147] (72.173.185.81.rev.sfr.net. [81.185.173.72])
-        by smtp.gmail.com with ESMTPSA id q3sm9735355wmj.38.2019.12.20.07.27.55
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 20 Dec 2019 07:27:55 -0800 (PST)
-Subject: Re: [PATCH net-next v5 09/11] tcp: Check for filled TCP option space
- before SACK
-To:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        netdev@vger.kernel.org, mptcp@lists.01.org
-Cc:     Paolo Abeni <pabeni@redhat.com>
-References: <20191219223434.19722-1-mathew.j.martineau@linux.intel.com>
- <20191219223434.19722-10-mathew.j.martineau@linux.intel.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <034d02ef-e760-3cfa-a6a4-4a1943e73783@gmail.com>
-Date:   Fri, 20 Dec 2019 07:27:54 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=GZPCEvTkQBcE0MkWf0wsjsT/U2bWse2KUq7jRUE3VSc=;
+        b=ScPLDmAqBxuQ1E+xyLopBrh4Ae0nEP51k9J+NC4lskHDkgQYJnmvHpbWjuXRLcAfAw
+         qf0byziQPGHbY6KMD/eEBhYHvQHQ7m+2RvzC1wtyXbfNzrWKET5whbTdQyhy9Nd3TU/V
+         5e+c1hdOSgzsMcYp48uFoxBtoCkv95L1Mr4jyJcsS8/vJo4TOPJlLlwpKNXs9D2yvoCl
+         N6OlSy8MRi4F87ahO9dF1g1WOFuSoYjvI9z8WgZzqcGY8u8S+q1LQ240WmeClg7UEKuZ
+         p/5ac8Ya+AyS+PHT/zlHRZtDwBRfp8yZkCr6Cuf9tXM2XXKOx15ldIIq2t9jz1ecy49+
+         J2Og==
+X-Gm-Message-State: APjAAAUHeMi+ZP27bquLDXufNHRMYrCcVieEEHY8rwkXoeG0JjnrBl1s
+        D93zrl/ZhtrQOFbh4/bPweTjpdfAdf7NoA==
+X-Google-Smtp-Source: APXvYqwN583GT21VCNYIdu4eOGCxYptUDhCM7V0OyVU+QMsL1dpSQO5jno4LZj6NxqwbLl5ZCLDT0g==
+X-Received: by 2002:a17:902:124:: with SMTP id 33mr15019308plb.115.1576855694327;
+        Fri, 20 Dec 2019 07:28:14 -0800 (PST)
+Received: from localhost.localdomain ([2001:1284:f013:b9c8:9c5e:a64b:e068:9fbd])
+        by smtp.gmail.com with ESMTPSA id p185sm13678019pfg.61.2019.12.20.07.28.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 20 Dec 2019 07:28:13 -0800 (PST)
+Received: by localhost.localdomain (Postfix, from userid 1000)
+        id B62CEC161F; Fri, 20 Dec 2019 12:28:10 -0300 (-03)
+Date:   Fri, 20 Dec 2019 12:28:10 -0300
+From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+To:     syzbot <syzbot+9a1bc632e78a1a98488b@syzkaller.appspotmail.com>
+Cc:     davem@davemloft.net, linux-kernel@vger.kernel.org,
+        linux-sctp@vger.kernel.org, lucien.xin@gmail.com,
+        netdev@vger.kernel.org, nhorman@tuxdriver.com,
+        syzkaller-bugs@googlegroups.com, vyasevich@gmail.com
+Subject: Re: general protection fault in sctp_stream_free (2)
+Message-ID: <20191220152810.GI4444@localhost.localdomain>
+References: <0000000000001b6443059a1a815d@google.com>
 MIME-Version: 1.0
-In-Reply-To: <20191219223434.19722-10-mathew.j.martineau@linux.intel.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <0000000000001b6443059a1a815d@google.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, Dec 19, 2019 at 07:45:09PM -0800, syzbot wrote:
+> Hello,
+> 
+> syzbot found the following crash on:
+> 
+> HEAD commit:    6fa9a115 Merge branch 'stmmac-fixes'
+> git tree:       net
+> console output: https://syzkaller.appspot.com/x/log.txt?x=10c4fe99e00000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=216dca5e1758db87
+> dashboard link: https://syzkaller.appspot.com/bug?extid=9a1bc632e78a1a98488b
+> compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=178ada71e00000
+> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=144f23a6e00000
+> 
+> The bug was bisected to:
+> 
+> commit 951c6db954a1adefab492f6da805decacabbd1a7
+> Author: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+> Date:   Tue Dec 17 01:01:16 2019 +0000
+> 
+>     sctp: fix memleak on err handling of stream initialization
 
-
-On 12/19/19 2:34 PM, Mat Martineau wrote:
-> Update the SACK check to work with zero option space available, a case
-> that's possible with MPTCP but not MD5+TS. Maintained only one
-> conditional branch for insufficient SACK space.
-> 
-> v1 -> v2:
-> - Moves the check inside the SACK branch by taking recent SACK fix:
-> 
->     9424e2e7ad93 (tcp: md5: fix potential overestimation of TCP option space)
-> 
->   in to account, but modifies it to work in MPTCP scenarios beyond the
->   MD5+TS corner case.
-> 
-> Co-developed-by: Paolo Abeni <pabeni@redhat.com>
-> Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-> Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
-> ---
-
-Reviewed-by: Eric Dumazet <edumazet@google.com>
+Ouch... this wasn't a good fix.
+When called from sctp_stream_init(), it is doing the right thing.
+But when called from sctp_send_add_streams(), it can't free the
+genradix. Ditto from sctp_process_strreset_addstrm_in().
 
