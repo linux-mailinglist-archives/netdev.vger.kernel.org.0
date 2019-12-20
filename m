@@ -2,163 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B2CAF1281D0
-	for <lists+netdev@lfdr.de>; Fri, 20 Dec 2019 19:03:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D41AE1281E6
+	for <lists+netdev@lfdr.de>; Fri, 20 Dec 2019 19:08:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727421AbfLTSDw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Dec 2019 13:03:52 -0500
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:45240 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727391AbfLTSDv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Dec 2019 13:03:51 -0500
-Received: by mail-pg1-f194.google.com with SMTP id b9so5288770pgk.12;
-        Fri, 20 Dec 2019 10:03:51 -0800 (PST)
+        id S1727474AbfLTSID (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Dec 2019 13:08:03 -0500
+Received: from mail-qk1-f170.google.com ([209.85.222.170]:40143 "EHLO
+        mail-qk1-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727391AbfLTSIC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Dec 2019 13:08:02 -0500
+Received: by mail-qk1-f170.google.com with SMTP id c17so8348223qkg.7
+        for <netdev@vger.kernel.org>; Fri, 20 Dec 2019 10:08:02 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=FAEvr8klz2XDkzltwC8mw+zAPjrSB24j/93vCNbDxvw=;
-        b=Dextb+QY7pv8zH/1Yb/fwMsFL0ffNyb5CwyHy2WWf/BYVwp3WYfDVdBojSxCrP+DLp
-         6OulupzbVeqBFHtDcds4xY8JZscl4JxXmVTRCwiZvR3V6tVcd+drvLm/uqboDJWF9BjH
-         LULBLh8Xhb2Jz376JVPRBKgJ036ZcTkEC1F198Vj9pjC3b42OM+2aXvU0IQ/PzfrfgYC
-         MNpaUoHcTAG01JsqgqY6HHKkRPmWnh04Y2qRnPzLG+y0plLC4ckBXNL3xvzKVK4La5E6
-         7/pfk1t8pxNm6YNy5A5D8G1MrDlRYC7e99EzC0N0UqtaID1MEF3wYamR9ggtizg+Lasu
-         aAgA==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=er1bssFX4Auf5RyExJsmYghz8eNB/FYzbhbQpUQ1esg=;
+        b=TxjPdUMmqpj87X1+gnS6MRlDRYFgebGiIBv8e1QWTU7Ob/i0ivhlDpQALgwrA96aDr
+         xLdwOdFZaFMTqGbUStA17KAifj5iMXDivUi3VuyYBZ4OerDPiaQcy9tmh+wQwofEHEGR
+         niXO0S5tFHZCV66mdNx/oaaFXNv23pJ534k1SuhSVmGJaqK6J54OwfNp/b6UVCcUlbof
+         mV8E2/FKQkQvRo4Ln0sHsC5fBCds2sXS4GJXojqxOZTjrBxWdIudUMACb4dmO2mOaSVl
+         //1JTxKoiIZSYUTYJYnavuMxz9agAyaKVlj8Gga9tjoiZHC399Ep8I8B99mDI3pdjt2o
+         D7fg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=FAEvr8klz2XDkzltwC8mw+zAPjrSB24j/93vCNbDxvw=;
-        b=Pgthyxae5KDkvJ3cRLCbe8vYOB0LV11i0rfkSrkrHyre1cQuBGRQrBGP3Y8n96IX6h
-         SJDAn08/LTExrhy/V1KXZqTPmudMR8tYeQwnrDeB8AOc07soQ6+uQ8kBev/jLABDSa65
-         xZBGV8dwXd3cL8iVeZVakLHDqvaHkyjiduy2KfrKIHV7QJvEWoUpZz+tX4AwitXqAh4V
-         QnPopAegY+51QGu3D4BklqNuRtW8np/evZ3Lo8zDzcXf9oguvTCATaXY4N3CEPa/ymOZ
-         /B4UQL/pUSLrkKWdC51b30sgacC9IlzGrXbcIR5OR1h0pj8SVVK/o9uiRD6Z7kwlO4sC
-         j/hw==
-X-Gm-Message-State: APjAAAVFSU8WpUmOtt4qcuCU6hPQX08kCSYXkoR+S5oelPQK1hLQa9+4
-        effPkTjakLMNovELLuUWl2Ul0PVRXeE=
-X-Google-Smtp-Source: APXvYqz8+1UwgAt4RmU4j7QYjfpI/cy9IUCOHH3KG02F9jIZio8vCJRDA6JcbTcfPsSUMVnjMg1NGg==
-X-Received: by 2002:aa7:8b17:: with SMTP id f23mr17825121pfd.197.1576865030820;
-        Fri, 20 Dec 2019 10:03:50 -0800 (PST)
-Received: from localhost.localdomain ([2001:1284:f013:b9c8:9c5e:a64b:e068:9fbd])
-        by smtp.gmail.com with ESMTPSA id d26sm11845840pgv.66.2019.12.20.10.03.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 20 Dec 2019 10:03:50 -0800 (PST)
-Received: by localhost.localdomain (Postfix, from userid 1000)
-        id DF9EDC161F; Fri, 20 Dec 2019 15:03:46 -0300 (-03)
-From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Neil Horman <nhorman@tuxdriver.com>, linux-sctp@vger.kernel.org,
-        Xin Long <lucien.xin@gmail.com>,
-        syzbot <syzbot+9a1bc632e78a1a98488b@syzkaller.appspotmail.com>,
-        syzkaller-bugs@googlegroups.com
-Subject: [PATCH net] sctp: fix err handling of stream initialization
-Date:   Fri, 20 Dec 2019 15:03:44 -0300
-Message-Id: <d41d8475f8485f571152b3f3716d7f474b5c0e79.1576864893.git.marcelo.leitner@gmail.com>
-X-Mailer: git-send-email 2.23.0
+        bh=er1bssFX4Auf5RyExJsmYghz8eNB/FYzbhbQpUQ1esg=;
+        b=We1Q6NiqU1knKvsjHAA6UCl4762ZX/U04vZiX3c+1M4VwAh2NPrv9JVN9h0oJE5ozz
+         VxPgrrvc39y/6sMW4k28LFm9lMOt8FOVGe0dIujuzB2jclmZWeKWYQun1K4RFKC2iJSs
+         dwEFYFaNEvTm1gVFJM7qwoSnmWiQfRVz4W2JeNSJdnwZm9EpgbjIVKM0UgJNEe1RLbKN
+         mjw95axQ/YwyZjCyqBIjZTiH1jlnpwC8Y/np5hT2tS++Gmer1PQxTlVIoxd6gM2Bo0z2
+         hAXBtDg9gF/yUjA38V7lJH6OS4iGzrFTvK144a7G93iXI9tzgctekG35x90TKlqg9fQC
+         AeXQ==
+X-Gm-Message-State: APjAAAVGMIVWADpHN3depQPsGlrHYWperJja589ypIxUatWTH+ZNyMsQ
+        ktB2pWmwfJ1ja1dKtbWD95o=
+X-Google-Smtp-Source: APXvYqwPde5Mu/8WEJzIA9VY8dPBkW8A1SqWHCUR22zUKTJTmNwK9Wqn85eeYZ553QIaA+nkbUf8Xw==
+X-Received: by 2002:a05:620a:6d7:: with SMTP id 23mr13986459qky.299.1576865281671;
+        Fri, 20 Dec 2019 10:08:01 -0800 (PST)
+Received: from ?IPv6:2601:282:800:fd80:d462:ea64:486f:4002? ([2601:282:800:fd80:d462:ea64:486f:4002])
+        by smtp.googlemail.com with ESMTPSA id q35sm3351956qta.19.2019.12.20.10.08.00
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 20 Dec 2019 10:08:01 -0800 (PST)
+Subject: Re: [patch net-next 2/4] net: push code from net notifier reg/unreg
+ into helpers
+To:     Jiri Pirko <jiri@resnulli.us>, netdev@vger.kernel.org
+Cc:     davem@davemloft.net, jakub.kicinski@netronome.com,
+        saeedm@mellanox.com, leon@kernel.org, tariqt@mellanox.com,
+        ayal@mellanox.com, vladbu@mellanox.com, michaelgur@mellanox.com,
+        moshe@mellanox.com, mlxsw@mellanox.com
+References: <20191220123542.26315-1-jiri@resnulli.us>
+ <20191220123542.26315-3-jiri@resnulli.us>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <8cff200c-b944-5b05-61da-9ef5fb0dfec4@gmail.com>
+Date:   Fri, 20 Dec 2019 11:07:59 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.3.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20191220123542.26315-3-jiri@resnulli.us>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The fix on 951c6db954a1 fixed the issued reported there but introduced
-another. When the allocation fails within sctp_stream_init() it is
-okay/necessary to free the genradix. But it is also called when adding
-new streams, from sctp_send_add_streams() and
-sctp_process_strreset_addstrm_in() and in those situations it cannot
-just free the genradix because by then it is a fully operational
-association.
+On 12/20/19 5:35 AM, Jiri Pirko wrote:
+> @@ -1784,6 +1784,42 @@ int unregister_netdevice_notifier(struct notifier_block *nb)
+>  }
+>  EXPORT_SYMBOL(unregister_netdevice_notifier);
+>  
+> +static int __register_netdevice_notifier_net(struct net *net,
+> +					     struct notifier_block *nb,
+> +					     bool ignore_call_fail)
+> +{
+> +	int err;
+> +
+> +	err = raw_notifier_chain_register(&net->netdev_chain, nb);
+> +	if (err)
+> +		return err;
+> +	if (dev_boot_phase)
+> +		return 0;
+> +
+> +	err = call_netdevice_register_net_notifiers(nb, net);
+> +	if (err && !ignore_call_fail)
+> +		goto chain_unregister;
+> +
+> +	return 0;
+> +
+> +chain_unregister:
+> +	raw_notifier_chain_unregister(&netdev_chain, nb);
 
-The fix here then is to only free the genradix in sctp_stream_init()
-and on those other call sites  move on with what it already had and let
-the subsequent error handling to handle it.
-
-Tested with the reproducers from this report and the previous one,
-with lksctp-tools and sctp-tests.
-
-Reported-by: syzbot+9a1bc632e78a1a98488b@syzkaller.appspotmail.com
-Fixes: 951c6db954a1 ("sctp: fix memleak on err handling of stream initialization")
-Signed-off-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
----
- net/sctp/stream.c | 30 +++++++++++++++---------------
- 1 file changed, 15 insertions(+), 15 deletions(-)
-
-diff --git a/net/sctp/stream.c b/net/sctp/stream.c
-index 6a30392068a04bfcefcb14c3d7f13fc092d59cd3..c1a100d2fed39c2d831487e05fcbf5e8d507d470 100644
---- a/net/sctp/stream.c
-+++ b/net/sctp/stream.c
-@@ -84,10 +84,8 @@ static int sctp_stream_alloc_out(struct sctp_stream *stream, __u16 outcnt,
- 		return 0;
- 
- 	ret = genradix_prealloc(&stream->out, outcnt, gfp);
--	if (ret) {
--		genradix_free(&stream->out);
-+	if (ret)
- 		return ret;
--	}
- 
- 	stream->outcnt = outcnt;
- 	return 0;
-@@ -102,10 +100,8 @@ static int sctp_stream_alloc_in(struct sctp_stream *stream, __u16 incnt,
- 		return 0;
- 
- 	ret = genradix_prealloc(&stream->in, incnt, gfp);
--	if (ret) {
--		genradix_free(&stream->in);
-+	if (ret)
- 		return ret;
--	}
- 
- 	stream->incnt = incnt;
- 	return 0;
-@@ -123,7 +119,7 @@ int sctp_stream_init(struct sctp_stream *stream, __u16 outcnt, __u16 incnt,
- 	 * a new one with new outcnt to save memory if needed.
- 	 */
- 	if (outcnt == stream->outcnt)
--		goto in;
-+		goto handle_in;
- 
- 	/* Filter out chunks queued on streams that won't exist anymore */
- 	sched->unsched_all(stream);
-@@ -132,24 +128,28 @@ int sctp_stream_init(struct sctp_stream *stream, __u16 outcnt, __u16 incnt,
- 
- 	ret = sctp_stream_alloc_out(stream, outcnt, gfp);
- 	if (ret)
--		goto out;
-+		goto out_err;
- 
- 	for (i = 0; i < stream->outcnt; i++)
- 		SCTP_SO(stream, i)->state = SCTP_STREAM_OPEN;
- 
--in:
-+handle_in:
- 	sctp_stream_interleave_init(stream);
- 	if (!incnt)
- 		goto out;
- 
- 	ret = sctp_stream_alloc_in(stream, incnt, gfp);
--	if (ret) {
--		sched->free(stream);
--		genradix_free(&stream->out);
--		stream->outcnt = 0;
--		goto out;
--	}
-+	if (ret)
-+		goto in_err;
-+
-+	goto out;
- 
-+in_err:
-+	sched->free(stream);
-+	genradix_free(&stream->in);
-+out_err:
-+	genradix_free(&stream->out);
-+	stream->outcnt = 0;
- out:
- 	return ret;
- }
--- 
-2.23.0
+why is the error path using the global netdev_chain when the register is
+relative to a namespace? yes, I realize existing code does that and this
+is maintaining that behavior.
 
