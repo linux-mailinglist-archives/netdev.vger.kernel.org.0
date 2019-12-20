@@ -2,116 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 706EF12819D
-	for <lists+netdev@lfdr.de>; Fri, 20 Dec 2019 18:47:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CB91D1281B2
+	for <lists+netdev@lfdr.de>; Fri, 20 Dec 2019 18:55:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727417AbfLTRrM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Dec 2019 12:47:12 -0500
-Received: from mail-qk1-f193.google.com ([209.85.222.193]:36244 "EHLO
-        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727388AbfLTRrM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Dec 2019 12:47:12 -0500
-Received: by mail-qk1-f193.google.com with SMTP id a203so8669728qkc.3;
-        Fri, 20 Dec 2019 09:47:11 -0800 (PST)
+        id S1727417AbfLTRzX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Dec 2019 12:55:23 -0500
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:35447 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727394AbfLTRzW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Dec 2019 12:55:22 -0500
+Received: by mail-pg1-f196.google.com with SMTP id l24so5307175pgk.2
+        for <netdev@vger.kernel.org>; Fri, 20 Dec 2019 09:55:22 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
+        d=google.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=E0Z53j9US/Ru8iPxRBY/NIhx3B+IYvteyqpQ3CuGhOo=;
-        b=Rd2LZLv7Bkzvgesea2+QtQp3UwfE9wQuv4o6XcIiChtnjFMUjFJEVLCBC51v6RpujG
-         Ko4Oj9ITBFdAmSMbr7AK+dzDPd2aBlzG2nTvsPdnY5tt/YsHrs0tr8yWeqBrbvLGQFvv
-         FS7NtAuNPu7mahVP4hLZhEQxjcY7Sb2P9IB3pEBU1tG5xCqmh2QCFCbMRs4AArIkJIvj
-         kAUx6uL80zm3UDQ6uokUbSkTEU/DXJmE68F7QAwu7kfe3eUVkB/EVwdiU48yKnLmHefu
-         7TuyTGg4DEQxPOJDQZx/6PPWxqWsFE6uNI9BYS/YYRYO5kVhhGVj2PyVV0m+cPqXD8Fu
-         6jmg==
+        bh=xoXHEXUCOBtDITY/XcLLcf4lJLLHDCF5oZRbMuonV/U=;
+        b=Ke0F3drZ3Jpd1lr7gPZpD/wYuUs+3JD06nHt+mn89KuV0JtSg1p5AoBawc9s5ahkLw
+         ftfFZu0PeaZx/eMQ3fpD3SU5JFKH2ix953eWB+GM5yls6Z1OkU14KuFwInjcCpNFACK0
+         xdjuXtxv+mHzq+2c1534zYifCHZ26vI5sPOpDs2NtCSiNuhpbLSOxuz4+Qc+X3tOD69m
+         HrDyGn5H+00VHAl71JokGv0FE8cJ0QGc17fUujyqQ9MyUKe8iB9qTwQXvsGQ9c1Zw1MV
+         JKdyZtOWayV9P8KNw5QoMNjgWCoEAKmHGt0OOeITOr49WKZJdRYOE3/ksL+IgTENSjy0
+         FRCw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=E0Z53j9US/Ru8iPxRBY/NIhx3B+IYvteyqpQ3CuGhOo=;
-        b=eiqMzF9ooJIEdcIuxlEezDN35gdnatEXb+T0ctHLygHEgvl5k/oPL1UCbaCSYp8YI2
-         DeDMn6a8r4NwFv6E5GYL2jsXHA27F4WVeVexJdXQVaVI/xGbBY7DlFM2IGjcRLyapqYh
-         Scf05Pboz5/IECOIYU5xnhT4C/T6ddZQ70nnqFIxvAOQ/6rbfCB/IKjUVU7b1OZH9PCR
-         gd54PfZhsFPxJeRxEsl99x7p3jlpIHPnvFKvPzKZm1F6QWwvnNwKpkHpYj+gxoXuM0Q7
-         E35VO0E5gWzIno74FinUCzZJhtOr9QeCEgclJNtOmorU2x2oZSp/hIXLW3Shqijjc20d
-         zdxQ==
-X-Gm-Message-State: APjAAAVrR7Gg1k3Pa0Mzwwm65XRnWBB8xsrv5ZbR64Q+OTih+e+qjFbt
-        vD+E+Zrat5G7sq/jYhnV9kuraHbHCVOxzFrOjwemaD9X
-X-Google-Smtp-Source: APXvYqy/Ff5zxO8Bf+NTZiZZOfrlHbbem6saNBk/jEiPCqi9MvFB4i4dZAwhQ9+CYXSPIlYxQP6T4ERsUxQJdaUCWLo=
-X-Received: by 2002:a05:620a:5ae:: with SMTP id q14mr14909350qkq.437.1576864030972;
- Fri, 20 Dec 2019 09:47:10 -0800 (PST)
+        bh=xoXHEXUCOBtDITY/XcLLcf4lJLLHDCF5oZRbMuonV/U=;
+        b=iqjVV2V2OP/2wygrvIVW0GOfAvojGANOZXx1289dOf4Y0GmMxZm4XRwvLWsmzuctAG
+         y+/ddkxgUmNSYF/0qHCl5a+SZKSWGoxKZu8xltomnZoNqhJeAsXDc8173waBnOws+xnR
+         k3h64fstqWcjHrNliQ8RbnQiNWPTDsFVuMJrcx4F4Pcz+B19jXsUXSQ8r0AY35UVI644
+         odP90Kx6QheDq4CSN8Ayar9xWXWC4rKVHPH4ASMrbgX+t3V0402EHkhT7SObZcHJqTtR
+         iEHAArkXxfxfYRz9vGVYOt8qoi29n4UBVE+++Jb5J2byp4M5tr8l66/lHMeJ3zRkGsOB
+         e1KQ==
+X-Gm-Message-State: APjAAAVvEA33P6nQi8JhyrSxAdUW1ynedadqZRsITgM31HThSZryWjfD
+        M1vskBjFr3RqyqHlO88Mt5Tiwcyhx1AwrbXH3KltcA==
+X-Google-Smtp-Source: APXvYqzv8FL4X96ovaTwjhjPCE3PhKMmXmXKR1EZP13tNuwsYvj6hY1pGNeEJQ6qzMGyi485e8uTgaZ6/55PPXKthP0=
+X-Received: by 2002:aa7:946a:: with SMTP id t10mr17562534pfq.165.1576864521638;
+ Fri, 20 Dec 2019 09:55:21 -0800 (PST)
 MIME-Version: 1.0
-References: <20191212013521.1689228-1-andriin@fb.com> <20191216144404.GG14887@linux.fritz.box>
- <CAEf4BzYhmFvhL_DgeXK8xxihcxcguRzox2AXpjBS1BB4n9d7rQ@mail.gmail.com> <dfb31c60-3c8c-94a2-5302-569096428e9b@iogearbox.net>
-In-Reply-To: <dfb31c60-3c8c-94a2-5302-569096428e9b@iogearbox.net>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 20 Dec 2019 09:46:59 -0800
-Message-ID: <CAEf4Bza2kyMQLiDnkzDi-82xShEiUY2zrre=MJdedZet4g=o7A@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 0/4] Fix perf_buffer creation on systems with
- offline CPUs
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Kernel Team <kernel-team@fb.com>
+References: <20191218011545.40557-1-natechancellor@gmail.com>
+In-Reply-To: <20191218011545.40557-1-natechancellor@gmail.com>
+From:   Nick Desaulniers <ndesaulniers@google.com>
+Date:   Fri, 20 Dec 2019 09:55:10 -0800
+Message-ID: <CAKwvOd=S6HBP5RTTgm=+1r51t9cSNt+sCHrwkK_fAVFqVcZ-1A@mail.gmail.com>
+Subject: Re: [PATCH] hostap: Adjust indentation in prism2_hostapd_add_sta
+To:     Nathan Chancellor <natechancellor@gmail.com>
+Cc:     Kalle Valo <kvalo@codeaurora.org>, linux-wireless@vger.kernel.org,
+        Network Development <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        clang-built-linux <clang-built-linux@googlegroups.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 17, 2019 at 5:00 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
+On Tue, Dec 17, 2019 at 5:15 PM Nathan Chancellor
+<natechancellor@gmail.com> wrote:
 >
-> On 12/16/19 6:59 PM, Andrii Nakryiko wrote:
-> > On Mon, Dec 16, 2019 at 6:44 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
-> >> On Wed, Dec 11, 2019 at 05:35:20PM -0800, Andrii Nakryiko wrote:
-> >>> This patch set fixes perf_buffer__new() behavior on systems which have some of
-> >>> the CPUs offline/missing (due to difference between "possible" and "online"
-> >>> sets). perf_buffer will create per-CPU buffer and open/attach to corresponding
-> >>> perf_event only on CPUs present and online at the moment of perf_buffer
-> >>> creation. Without this logic, perf_buffer creation has no chances of
-> >>> succeeding on such systems, preventing valid and correct BPF applications from
-> >>> starting.
-> >>
-> >> Once CPU goes back online and processes BPF events, any attempt to push into
-> >> perf RB via bpf_perf_event_output() with flag BPF_F_CURRENT_CPU would silently
-> >
-> > bpf_perf_event_output() will return error code in such case, so it's
-> > not exactly undetectable by application.
+> Clang warns:
 >
-> Yeah, true, given there would be no element in the perf map at that slot, the
-> program would receive -ENOENT and we could account for missed events via per
-> CPU map or such.
+> ../drivers/net/wireless/intersil/hostap/hostap_ap.c:2511:3: warning:
+> misleading indentation; statement is not part of the previous 'if'
+> [-Wmisleading-indentation]
+>         if (sta->tx_supp_rates & WLAN_RATE_5M5)
+>         ^
+> ../drivers/net/wireless/intersil/hostap/hostap_ap.c:2509:2: note:
+> previous statement is here
+>         if (sta->tx_supp_rates & WLAN_RATE_2M)
+>         ^
+> 1 warning generated.
 >
-> >> get discarded. Should rather perf API be fixed instead of plain skipping as done
-> >> here to at least allow creation of ring buffer for BPF to avoid such case?
-> >
-> > Can you elaborate on what perf API fix you have in mind? Do you mean
-> > for perf to allow attaching ring buffer to offline CPU or something
-> > else?
+> This warning occurs because there is a space before the tab on this
+> line. Remove it so that the indentation is consistent with the Linux
+> kernel coding style and clang no longer warns.
 >
-> Yes, was wondering about the former, meaning, possibility to attach ring buffer
-> to offline CPU.
+> Fixes: ff1d2767d5a4 ("Add HostAP wireless driver.")
+> Link: https://github.com/ClangBuiltLinux/linux/issues/813
+> Signed-off-by: Nathan Chancellor <natechancellor@gmail.com>
 
-This sounds like a more heavy-weight fix, I'll put it on backburner
-for now and will look at perf code when I get a chance to see if/how
-it's possible.
+Thanks for the patch!
+Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
 
+> ---
 >
-> >>> Andrii Nakryiko (4):
-> >>>    libbpf: extract and generalize CPU mask parsing logic
-> >>>    selftests/bpf: add CPU mask parsing tests
-> >>>    libbpf: don't attach perf_buffer to offline/missing CPUs
-> >>>    selftests/bpf: fix perf_buffer test on systems w/ offline CPUs
-> >>>
-> >>>   tools/lib/bpf/libbpf.c                        | 157 ++++++++++++------
-> >>>   tools/lib/bpf/libbpf_internal.h               |   2 +
-> >>>   .../selftests/bpf/prog_tests/cpu_mask.c       |  78 +++++++++
-> >>>   .../selftests/bpf/prog_tests/perf_buffer.c    |  29 +++-
-> >>>   4 files changed, 213 insertions(+), 53 deletions(-)
-> >>>   create mode 100644 tools/testing/selftests/bpf/prog_tests/cpu_mask.c
-> >>>
-> >>> --
-> >>> 2.17.1
-> >>>
+> Sorry for sending a patch for an "Obselete" driver (especially one as
+> trivial as this) but it is still a warning from clang and shows up on
+> all{yes,mod}config.
 >
+>  drivers/net/wireless/intersil/hostap/hostap_ap.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/drivers/net/wireless/intersil/hostap/hostap_ap.c b/drivers/net/wireless/intersil/hostap/hostap_ap.c
+> index 0094b1d2b577..3ec46f48cfde 100644
+> --- a/drivers/net/wireless/intersil/hostap/hostap_ap.c
+> +++ b/drivers/net/wireless/intersil/hostap/hostap_ap.c
+> @@ -2508,7 +2508,7 @@ static int prism2_hostapd_add_sta(struct ap_data *ap,
+>                 sta->supported_rates[0] = 2;
+>         if (sta->tx_supp_rates & WLAN_RATE_2M)
+>                 sta->supported_rates[1] = 4;
+> -       if (sta->tx_supp_rates & WLAN_RATE_5M5)
+> +       if (sta->tx_supp_rates & WLAN_RATE_5M5)
+>                 sta->supported_rates[2] = 11;
+>         if (sta->tx_supp_rates & WLAN_RATE_11M)
+>                 sta->supported_rates[3] = 22;
+> --
+> 2.24.1
+>
+> --
+> You received this message because you are subscribed to the Google Groups "Clang Built Linux" group.
+> To unsubscribe from this group and stop receiving emails from it, send an email to clang-built-linux+unsubscribe@googlegroups.com.
+> To view this discussion on the web visit https://groups.google.com/d/msgid/clang-built-linux/20191218011545.40557-1-natechancellor%40gmail.com.
+
+
+
+-- 
+Thanks,
+~Nick Desaulniers
