@@ -2,195 +2,199 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 30DB41272A2
-	for <lists+netdev@lfdr.de>; Fri, 20 Dec 2019 02:06:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9BC9A1272A4
+	for <lists+netdev@lfdr.de>; Fri, 20 Dec 2019 02:07:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727063AbfLTBGL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Dec 2019 20:06:11 -0500
-Received: from relay7-d.mail.gandi.net ([217.70.183.200]:52615 "EHLO
-        relay7-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726992AbfLTBGL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Dec 2019 20:06:11 -0500
-X-Originating-IP: 209.85.217.42
-Received: from mail-vs1-f42.google.com (mail-vs1-f42.google.com [209.85.217.42])
+        id S1727151AbfLTBHk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Dec 2019 20:07:40 -0500
+Received: from relay12.mail.gandi.net ([217.70.178.232]:40899 "EHLO
+        relay12.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726992AbfLTBHk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Dec 2019 20:07:40 -0500
+Received: from mail-vs1-f53.google.com (mail-vs1-f53.google.com [209.85.217.53])
         (Authenticated sender: pshelar@ovn.org)
-        by relay7-d.mail.gandi.net (Postfix) with ESMTPSA id 23E5320007;
-        Fri, 20 Dec 2019 01:06:07 +0000 (UTC)
-Received: by mail-vs1-f42.google.com with SMTP id v12so5022825vsv.5;
-        Thu, 19 Dec 2019 17:06:07 -0800 (PST)
-X-Gm-Message-State: APjAAAWLf8zDhUE4M3HDckqbNsLjAMB55AeOP5FOPCE/anwOP9VUGkVK
-        MRFBCrVuxg3jSJLTMUeYOOI+NEQsinBE4QBTLgU=
-X-Google-Smtp-Source: APXvYqzdAdOolKAsiA39U4G+O/Wg9/TOx9O5RpmRYAxyWgnx+q7PQmxCFZSk/izM5zYNJt5TXfdAN/d0EOrILv6HigA=
-X-Received: by 2002:a67:d007:: with SMTP id r7mr6912927vsi.93.1576803966767;
- Thu, 19 Dec 2019 17:06:06 -0800 (PST)
+        by relay12.mail.gandi.net (Postfix) with ESMTPSA id 85D13200006
+        for <netdev@vger.kernel.org>; Fri, 20 Dec 2019 01:07:37 +0000 (UTC)
+Received: by mail-vs1-f53.google.com with SMTP id u14so5036085vsu.3
+        for <netdev@vger.kernel.org>; Thu, 19 Dec 2019 17:07:37 -0800 (PST)
+X-Gm-Message-State: APjAAAV1+nKfCvsXgF+MHcUMEMqQD9brPFdmdtzIvZfpOcMwzSGBOV3i
+        t24I85BmR7988h+8S5GtTh0oH+MAgkIYjcpu7hw=
+X-Google-Smtp-Source: APXvYqwIWipwtroEnlL6IiDV/SvBcgTp7vlRUtqsqMZRGHlsVCZWCq3GWqoPxbbvWeXm6dseR9XKJRTdCAWiAO4Htm4=
+X-Received: by 2002:a67:fe09:: with SMTP id l9mr6577443vsr.58.1576804056003;
+ Thu, 19 Dec 2019 17:07:36 -0800 (PST)
 MIME-Version: 1.0
-References: <20191217155102.46039-1-mcroce@redhat.com> <CAOrHB_BVf8mXuCUehMy0_Sbq=pgfg7Zu1ivPFT8Y9Zatdj1yPw@mail.gmail.com>
- <CAGnkfhyojPg9ZxrR=NcNdsndxZpdpjgArzO+HHsVWnCKTBg1Tg@mail.gmail.com>
-In-Reply-To: <CAGnkfhyojPg9ZxrR=NcNdsndxZpdpjgArzO+HHsVWnCKTBg1Tg@mail.gmail.com>
+References: <cover.1576648350.git.martin.varghese@nokia.com>
+ <f78a4e44caac82f0f1db5c89dfd30696c2cb192e.1576648350.git.martin.varghese@nokia.com>
+ <CAOrHB_CTqSYc7TBuVqU64f7TjLQNmggWg69zYxrLwrC0Sgjf=A@mail.gmail.com> <20191219041234.GA2840@martin-VirtualBox>
+In-Reply-To: <20191219041234.GA2840@martin-VirtualBox>
 From:   Pravin Shelar <pshelar@ovn.org>
-Date:   Thu, 19 Dec 2019 17:05:55 -0800
-X-Gmail-Original-Message-ID: <CAOrHB_BnE=pZY-ciAA-vWw0fY0T-u-BCCQyhqNZYK+MOC1C5pA@mail.gmail.com>
-Message-ID: <CAOrHB_BnE=pZY-ciAA-vWw0fY0T-u-BCCQyhqNZYK+MOC1C5pA@mail.gmail.com>
-Subject: Re: [PATCH net-next v2] openvswitch: add TTL decrement action
-To:     Matteo Croce <mcroce@redhat.com>
+Date:   Thu, 19 Dec 2019 17:07:25 -0800
+X-Gmail-Original-Message-ID: <CAOrHB_B88W_bnQGkE_=fML-6GyLUOzZ5FoL-WbvSCoU-D-d+fA@mail.gmail.com>
+Message-ID: <CAOrHB_B88W_bnQGkE_=fML-6GyLUOzZ5FoL-WbvSCoU-D-d+fA@mail.gmail.com>
+Subject: Re: [PATCH net-next v4 3/3] openvswitch: New MPLS actions for layer 2 tunnelling
+To:     Martin Varghese <martinvarghesenokia@gmail.com>
 Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        ovs dev <dev@openvswitch.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Bindiya Kurle <bindiyakurle@gmail.com>,
-        Simon Horman <simon.horman@netronome.com>,
-        Ben Pfaff <blp@ovn.org>
+        "David S. Miller" <davem@davemloft.net>, scott.drennan@nokia.com,
+        Jiri Benc <jbenc@redhat.com>,
+        "Varghese, Martin (Nokia - IN/Bangalore)" <martin.varghese@nokia.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 19, 2019 at 8:36 AM Matteo Croce <mcroce@redhat.com> wrote:
+On Wed, Dec 18, 2019 at 8:12 PM Martin Varghese
+<martinvarghesenokia@gmail.com> wrote:
 >
-> On Wed, Dec 18, 2019 at 4:06 AM Pravin Shelar <pshelar@ovn.org> wrote:
-> >
-> > On Tue, Dec 17, 2019 at 7:51 AM Matteo Croce <mcroce@redhat.com> wrote:
+> On Wed, Dec 18, 2019 at 07:50:52PM -0800, Pravin Shelar wrote:
+> > On Tue, Dec 17, 2019 at 10:56 PM Martin Varghese
+> > <martinvarghesenokia@gmail.com> wrote:
 > > >
-> > > New action to decrement TTL instead of setting it to a fixed value.
-> > > This action will decrement the TTL and, in case of expired TTL, drop it
-> > > or execute an action passed via a nested attribute.
-> > > The default TTL expired action is to drop the packet.
+> > > From: Martin Varghese <martin.varghese@nokia.com>
 > > >
-> > > Supports both IPv4 and IPv6 via the ttl and hop_limit fields, respectively.
+> > > The existing PUSH MPLS action inserts MPLS header between ethernet header
+> > > and the IP header. Though this behaviour is fine for L3 VPN where an IP
+> > > packet is encapsulated inside a MPLS tunnel, it does not suffice the L2
+> > > VPN (l2 tunnelling) requirements. In L2 VPN the MPLS header should
+> > > encapsulate the ethernet packet.
 > > >
-> > > Tested with a corresponding change in the userspace:
+> > > The new mpls action PTAP_PUSH_MPLS inserts MPLS header at the start of the
+> > > packet or at the start of the l3 header depending on the value of l2 tunnel
+> > > flag in the PTAP_PUSH_MPLS arguments.
 > > >
-> > >     # ovs-dpctl dump-flows
-> > >     in_port(2),eth(),eth_type(0x0800), packets:0, bytes:0, used:never, actions:dec_ttl{ttl<=1 action:(drop)},1,1
-> > >     in_port(1),eth(),eth_type(0x0800), packets:0, bytes:0, used:never, actions:dec_ttl{ttl<=1 action:(drop)},1,2
-> > >     in_port(1),eth(),eth_type(0x0806), packets:0, bytes:0, used:never, actions:2
-> > >     in_port(2),eth(),eth_type(0x0806), packets:0, bytes:0, used:never, actions:1
+> > > POP_MPLS action is extended to support ethertype 0x6558.
 > > >
-> > >     # ping -c1 192.168.0.2 -t 42
-> > >     IP (tos 0x0, ttl 41, id 61647, offset 0, flags [DF], proto ICMP (1), length 84)
-> > >         192.168.0.1 > 192.168.0.2: ICMP echo request, id 386, seq 1, length 64
-> > >     # ping -c1 192.168.0.2 -t 120
-> > >     IP (tos 0x0, ttl 119, id 62070, offset 0, flags [DF], proto ICMP (1), length 84)
-> > >         192.168.0.1 > 192.168.0.2: ICMP echo request, id 388, seq 1, length 64
-> > >     # ping -c1 192.168.0.2 -t 1
-> > >     #
-> > >
-> > > Co-authored-by: Bindiya Kurle <bindiyakurle@gmail.com>
-> > > Signed-off-by: Bindiya Kurle <bindiyakurle@gmail.com>
-> > > Signed-off-by: Matteo Croce <mcroce@redhat.com>
+> > > Signed-off-by: Martin Varghese <martin.varghese@nokia.com>
 > > > ---
-> > >  include/uapi/linux/openvswitch.h |  22 +++++++
-> > >  net/openvswitch/actions.c        |  71 +++++++++++++++++++++
-> > >  net/openvswitch/flow_netlink.c   | 105 +++++++++++++++++++++++++++++++
-> > >  3 files changed, 198 insertions(+)
+> > > Changes in v2:
+> > >    - PTAP_POP_MPLS action removed.
+> > >    - Special handling for ethertype 0 added in PUSH_MPLS.
+> > >    - Refactored push_mpls function to cater existing push_mpls and
+> > >      ptap_push_mpls actions.
+> > >    - mac len to specify the MPLS header location added in PTAP_PUSH_MPLS
+> > >      arguments.
+> > >
+> > > Changes in v3:
+> > >    - Special handling for ethertype 0 removed.
+> > >    - Added support for ether type 0x6558.
+> > >    - Removed mac len from PTAP_PUSH_MPLS argument list
+> > >    - used l2_tun flag to distinguish l2 and l3 tunnelling.
+> > >    - Extended PTAP_PUSH_MPLS handling to cater PUSH_MPLS action also.
+> > >
+> > > Changes in v4:
+> > >    - Removed extra blank lines.
+> > >    - Replaced bool l2_tun with u16 tun flags in
+> > >      struct ovs_action_ptap_push_mpls.
+> > >
+> > The patch looks almost ready. I have couple of comments.
+> >
+> > >  include/uapi/linux/openvswitch.h | 31 +++++++++++++++++++++++++++++++
+> > >  net/openvswitch/actions.c        | 30 ++++++++++++++++++++++++------
+> > >  net/openvswitch/flow_netlink.c   | 34 ++++++++++++++++++++++++++++++++++
+> > >  3 files changed, 89 insertions(+), 6 deletions(-)
 > > >
 > > > diff --git a/include/uapi/linux/openvswitch.h b/include/uapi/linux/openvswitch.h
-> > > index a87b44cd5590..b6684bc04883 100644
+> > > index a87b44c..d9461ce 100644
 > > > --- a/include/uapi/linux/openvswitch.h
 > > > +++ b/include/uapi/linux/openvswitch.h
-> > > @@ -927,6 +927,7 @@ enum ovs_action_attr {
-> > >         OVS_ACTION_ATTR_METER,        /* u32 meter ID. */
-> > >         OVS_ACTION_ATTR_CLONE,        /* Nested OVS_CLONE_ATTR_*.  */
-> > >         OVS_ACTION_ATTR_CHECK_PKT_LEN, /* Nested OVS_CHECK_PKT_LEN_ATTR_*. */
-> > > +       OVS_ACTION_ATTR_DEC_TTL,       /* Nested OVS_DEC_TTL_ATTR_*. */
-> > >
-> > >         __OVS_ACTION_ATTR_MAX,        /* Nothing past this will be accepted
-> > >                                        * from userspace. */
-> > > @@ -939,6 +940,23 @@ enum ovs_action_attr {
+> > > @@ -673,6 +673,32 @@ struct ovs_action_push_mpls {
 > > >  };
 > > >
-> > >  #define OVS_ACTION_ATTR_MAX (__OVS_ACTION_ATTR_MAX - 1)
-> > > +enum ovs_dec_ttl_attr {
-> > > +       OVS_DEC_TTL_ATTR_UNSPEC,
-> > > +       OVS_DEC_TTL_ATTR_ACTION_TYPE,    /* Action Type u32 */
-> > > +       OVS_DEC_TTL_ATTR_ACTION,         /* nested action */
-> > > +       __OVS_DEC_TTL_ATTR_MAX,
-> > > +#ifdef __KERNEL__
-> > > +       OVS_DEC_TTL_ATTR_ARG          /* struct sample_arg  */
-> > > +#endif
-> > > +};
-> > > +
+> > ...
+> > ...
+> > > diff --git a/net/openvswitch/flow_netlink.c b/net/openvswitch/flow_netlink.c
+> > > index 65c2e34..85fe7df 100644
+> > > --- a/net/openvswitch/flow_netlink.c
+> > > +++ b/net/openvswitch/flow_netlink.c
+> > > @@ -79,6 +79,7 @@ static bool actions_may_change_flow(const struct nlattr *actions)
+> > >                 case OVS_ACTION_ATTR_SET_MASKED:
+> > >                 case OVS_ACTION_ATTR_METER:
+> > >                 case OVS_ACTION_ATTR_CHECK_PKT_LEN:
+> > > +               case OVS_ACTION_ATTR_PTAP_PUSH_MPLS:
+> > >                 default:
+> > >                         return true;
+> > >                 }
+> > > @@ -3005,6 +3006,7 @@ static int __ovs_nla_copy_actions(struct net *net, const struct nlattr *attr,
+> > >                         [OVS_ACTION_ATTR_METER] = sizeof(u32),
+> > >                         [OVS_ACTION_ATTR_CLONE] = (u32)-1,
+> > >                         [OVS_ACTION_ATTR_CHECK_PKT_LEN] = (u32)-1,
+> > > +                       [OVS_ACTION_ATTR_PTAP_PUSH_MPLS] = sizeof(struct ovs_action_ptap_push_mpls),
+> > >                 };
+> > >                 const struct ovs_action_push_vlan *vlan;
+> > >                 int type = nla_type(a);
+> > > @@ -3072,6 +3074,33 @@ static int __ovs_nla_copy_actions(struct net *net, const struct nlattr *attr,
+> > >                 case OVS_ACTION_ATTR_RECIRC:
+> > >                         break;
+> > >
+> > > +               case OVS_ACTION_ATTR_PTAP_PUSH_MPLS: {
+> > Can you change name of this action given this can handle both L2 and
+> > L3 MPLS tunneling?
 > >
-> > I do not see need for type or OVS_DEC_TTL_ACTION_DROP, if there are no
-> > nested action the datapath can drop the packet.
+> > > +                       const struct ovs_action_ptap_push_mpls *mpls = nla_data(a);
+> > > +
+> > > +                       if (!eth_p_mpls(mpls->mpls_ethertype))
+> > > +                               return -EINVAL;
+> > > +
+> > > +                       if (!(mpls->tun_flags & OVS_MPLS_L2_TUNNEL_FLAG_MASK)) {
+> > > +                               if (vlan_tci & htons(VLAN_CFI_MASK) ||
+> > > +                                   (eth_type != htons(ETH_P_IP) &&
+> > > +                                    eth_type != htons(ETH_P_IPV6) &&
+> > > +                                    eth_type != htons(ETH_P_ARP) &&
+> > > +                                    eth_type != htons(ETH_P_RARP) &&
+> > > +                                    !eth_p_mpls(eth_type)))
+> > > +                                       return -EINVAL;
+> > > +                               mpls_label_count++;
+> > > +                       } else {
+> > > +                               if (mac_proto != MAC_PROTO_NONE) {
+> > It is better to check for 'MAC_PROTO_ETHERNET', rather than this negative test.
 > >
-> > > +#ifdef __KERNEL__
-> > > +struct dec_ttl_arg {
-> > > +       u32 action_type;            /* dec_ttl action type.*/
-> > > +};
-> > > +#endif
-> > > +
-> > > +#define OVS_DEC_TTL_ATTR_MAX (__OVS_DEC_TTL_ATTR_MAX - 1)
-> > >
-> > >  /* Meters. */
-> > >  #define OVS_METER_FAMILY  "ovs_meter"
-> > > @@ -1009,6 +1027,10 @@ enum ovs_ct_limit_attr {
-> > >         __OVS_CT_LIMIT_ATTR_MAX
-> > >  };
-> > >
-> > > +enum ovs_dec_ttl_action {            /*Actions supported by dec_ttl */
-> > > +       OVS_DEC_TTL_ACTION_DROP,
-> > > +       OVS_DEC_TTL_ACTION_USER_SPACE
-> > > +};
-> > >  #define OVS_CT_LIMIT_ATTR_MAX (__OVS_CT_LIMIT_ATTR_MAX - 1)
-> > >
-> > >  #define OVS_ZONE_LIMIT_DEFAULT_ZONE -1
-> > > diff --git a/net/openvswitch/actions.c b/net/openvswitch/actions.c
-> > > index 4c8395462303..5329668732b1 100644
-> > > --- a/net/openvswitch/actions.c
-> > > +++ b/net/openvswitch/actions.c
-> > > @@ -960,6 +960,31 @@ static int output_userspace(struct datapath *dp, struct sk_buff *skb,
-> > >         return ovs_dp_upcall(dp, skb, key, &upcall, cutlen);
-> > >  }
-> > >
-> > > +static int dec_ttl(struct datapath *dp, struct sk_buff *skb,
-> > > +                  struct sw_flow_key *fk, const struct nlattr *attr, bool last)
-> > > +{
-> > > +       struct nlattr *actions;
-> > > +       struct nlattr *dec_ttl_arg;
-> > > +       int rem = nla_len(attr);
-> > > +       const struct dec_ttl_arg *arg;
-> > > +
-> > > +       /* The first action is always OVS_DEC_TTL_ATTR_ARG. */
-> > > +       dec_ttl_arg = nla_data(attr);
-> > > +       arg = nla_data(dec_ttl_arg);
-> > > +       actions = nla_next(dec_ttl_arg, &rem);
-> > > +
-> > > +       switch (arg->action_type) {
-> > > +       case OVS_DEC_TTL_ACTION_DROP:
-> > > +               consume_skb(skb);
-> > > +               break;
-> > > +
-> > > +       case OVS_DEC_TTL_ACTION_USER_SPACE:
-> > > +               return clone_execute(dp, skb, fk, 0, actions, rem, last, false);
-> > > +       }
-> > > +
-> > > +       return 0;
-> > > +}
-> > > +
-> > >  /* When 'last' is true, sample() should always consume the 'skb'.
-> > >   * Otherwise, sample() should keep 'skb' intact regardless what
-> > >   * actions are executed within sample().
-> > > @@ -1176,6 +1201,44 @@ static int execute_check_pkt_len(struct datapath *dp, struct sk_buff *skb,
-> > >                              nla_len(actions), last, clone_flow_key);
-> > >  }
-> > >
-> > > +static int execute_dec_ttl(struct sk_buff *skb, struct sw_flow_key *key)
-> > > +{
-> > > +       int err;
-> > > +
-> > > +       if (skb->protocol == htons(ETH_P_IPV6)) {
-> > > +               struct ipv6hdr *nh = ipv6_hdr(skb);
-> > > +
-> > > +               err = skb_ensure_writable(skb, skb_network_offset(skb) +
-> > > +                                         sizeof(*nh));
-> > There is no need to initialize 'nh', just use 'struct ipv6hdr' to get the size.
+> The idea is that if you have a l2 header you need to reset the mpls label count
+> Either way fine for me.Let me know
+Lets change it to  "if (mac_proto  == MAC_PROTO_ETHERNET)"
+
+> > > +                                       mpls_label_count = 1;
+> > > +                                       mac_proto = MAC_PROTO_NONE;
+> > > +                               } else {
+> > > +                                       mpls_label_count++;
+> > > +                               }
+> > We need to either disallow combination of L3 and L2 MPLS_PUSH, POP
+> > actions in a action list or keep separate label count. Otherwise it is
+> > impossible to validate mpls labels stack depth in POP actions.
+> >
 >
-> But I have to set it later to have nh->hop_limit.
-> Do you mean to assign it before the skb_ensure_writable check?
-> What differs sizeof(*nh) and sizeof(struct ipv6hdr)? The former will
-> work also after a refactor.
+> I assume it is taken in care in the above block
 >
-I meant you can initialize it after skb_ensure_writable() call to
-avoid refreshing the pointer after this call.
+> let us consider the different cases
+>
+> 1.
+>   Incoming Packet - ETH|IP|Payload
+>   Actions = push_mpls(0x1),push_mpls(0x2),ptap_push_mpls(0x03)
+>   Resulting packet - MPLS(3)|Eth|MPLS(2)|MPLS(1)|IP|Payload
+>   Total Mpls count = 1
+>
+>   Since the total MPLS count = 1,ony one POP will be allowed and a recirc is need to
+>   parse the inner packets
+>
+> 2. Incoming Packet - ETH|MPLS(1)|IP|Payload
+>    Actions = ptap_push_mpls(0x03)
+>    Resulting packet - MPLS(3)|Eth|MPLS(1)|IP|Payload
+>    Total Mpls count = 1
+>
+>    Since the total MPLS count = 1,ony one POP will be allowed and a recirc is need to
+>    parse the inner packets
+>
+> 3. Incoming Packet - MPLS(1)|IP|Payload
+>    Actions = ptap_push_mpls(0x03)
+>    Resulting packet - MPLS(3)|MPLS(1)|IP|Payload
+>    Total Mpls count = 2
+>
+>    Since the total MPLS acount is 2 , 2 pops are allowd
+>
+>
+> Is there any other case ?
+>
+I was think case of action list: PUSH_MPLS_L2, PUSH_MPLS_L3, ....,
+POP_MPLS_L2, POP_MPLS_L2
+This action will pass the validation. It would also work fine in
+datapath since POP action can detect L2 and L3 packet dynamically. But
+it is inconsistent with actions intention.
