@@ -2,160 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 58269127BBD
-	for <lists+netdev@lfdr.de>; Fri, 20 Dec 2019 14:34:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A689B127BCE
+	for <lists+netdev@lfdr.de>; Fri, 20 Dec 2019 14:37:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727421AbfLTNe1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Dec 2019 08:34:27 -0500
-Received: from mail-qv1-f65.google.com ([209.85.219.65]:37728 "EHLO
-        mail-qv1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727351AbfLTNe0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Dec 2019 08:34:26 -0500
-Received: by mail-qv1-f65.google.com with SMTP id f16so3608170qvi.4
-        for <netdev@vger.kernel.org>; Fri, 20 Dec 2019 05:34:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=5r9Zi+Au/gtKbsFaE0fKhn5Z9mh4Uiv+qjM4b27ESt8=;
-        b=gS91bsS4NjRyWzEDV454oc5qOgomjYBCltRmKzH7Nu9vdI8tQd65a6Yp2TVGSlgA1T
-         37v5Lb1zFtvOvSi94i0Yt83/4AqEpVzmzRwSkFPiESUgqKx4PUFqFCjV/s3xXBOVi9U4
-         w+ZUvVeXy6xbZ8B7zSi+DLnr0w1yjX7v6UIJiebq6UOkRZYcGvU4/THsXU/G/ZDo26P9
-         Xc2y8nF265eAeIX5xgl66hBVWEixNbJ1XzQjNRNan6ViT+Wn6RFHm+C8bWOAWNCFyUU3
-         D0D+BCr//3+mjkgiCcFfBfObTFOz8gI7nHowmgBdF1XYr9LIFcBR6SXbWA6e0W7l8hfH
-         tNRQ==
+        id S1727388AbfLTNhB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Dec 2019 08:37:01 -0500
+Received: from mail-oi1-f195.google.com ([209.85.167.195]:40285 "EHLO
+        mail-oi1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727362AbfLTNhB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Dec 2019 08:37:01 -0500
+Received: by mail-oi1-f195.google.com with SMTP id c77so4009769oib.7;
+        Fri, 20 Dec 2019 05:37:00 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=5r9Zi+Au/gtKbsFaE0fKhn5Z9mh4Uiv+qjM4b27ESt8=;
-        b=stPAXSoEjjQDAw4+mMG8ij45bh3PyrAbECq/Q+m7orUzjqMWuiz+MNuh4Et2HuG3Gp
-         uD1pCUCE8S8jkXB7QHsKlyRoKD94t+6B5uvbfQ5HOvlf9PzoEJ7IUqPe0enGtVJXYpuh
-         LR+eDcA/RTCIvR0POm8Z7wh847tAexDeLeonDy54+ErWpNj9SLs3Bz7GWCJCtptPUviR
-         cElyKrJR1nCwgLL/bxTmpqKqUZsK7I/aDNmrY4lPN3nYBFy1lG/rHX27Sd2Wc6oJLaji
-         YyYKoGb4hEJOoj0J0YoOkoV/MECtJ7hptUEyYL/mzWHsLQBgxCkvF+7NkG4RS10wDzrI
-         XRoQ==
-X-Gm-Message-State: APjAAAV6vMXVE/Yh3l0Nm6V3UipjrV/dKL8gkNfi4GbRitz8RJe3X75R
-        BThhhLUMBhm1QUVYxuIAHUb79g==
-X-Google-Smtp-Source: APXvYqz9az5JjtCMEl1OLVSzBMZYIFm7RbLMGJ3PjpAUx1pKMUVrf5ynor78RCoLoFWtbwHwcCO7NQ==
-X-Received: by 2002:a0c:893d:: with SMTP id 58mr4949386qvp.4.1576848864984;
-        Fri, 20 Dec 2019 05:34:24 -0800 (PST)
-Received: from ziepe.ca (hlfxns017vw-142-68-57-212.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.57.212])
-        by smtp.gmail.com with ESMTPSA id q73sm2786969qka.56.2019.12.20.05.34.23
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Fri, 20 Dec 2019 05:34:24 -0800 (PST)
-Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)
-        (envelope-from <jgg@ziepe.ca>)
-        id 1iiIQB-0003cq-Co; Fri, 20 Dec 2019 09:34:23 -0400
-Date:   Fri, 20 Dec 2019 09:34:23 -0400
-From:   Jason Gunthorpe <jgg@ziepe.ca>
-To:     John Hubbard <jhubbard@nvidia.com>
-Cc:     Leon Romanovsky <leon@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Dave Chinner <david@fromorbit.com>,
-        David Airlie <airlied@linux.ie>,
-        "David S . Miller" <davem@davemloft.net>,
-        Ira Weiny <ira.weiny@intel.com>, Jan Kara <jack@suse.cz>,
-        Jens Axboe <axboe@kernel.dk>, Jonathan Corbet <corbet@lwn.net>,
-        =?utf-8?B?SsOpcsO0bWU=?= Glisse <jglisse@redhat.com>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Michal Hocko <mhocko@suse.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Paul Mackerras <paulus@samba.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Vlastimil Babka <vbabka@suse.cz>, bpf@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, kvm@vger.kernel.org,
-        linux-block@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        linux-media@vger.kernel.org, linux-rdma@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, netdev@vger.kernel.org,
-        linux-mm@kvack.org, LKML <linux-kernel@vger.kernel.org>,
-        Maor Gottlieb <maorg@mellanox.com>
-Subject: Re: [PATCH v11 00/25] mm/gup: track dma-pinned pages: FOLL_PIN
-Message-ID: <20191220133423.GA13506@ziepe.ca>
-References: <20191216222537.491123-1-jhubbard@nvidia.com>
- <20191219132607.GA410823@unreal>
- <a4849322-8e17-119e-a664-80d9f95d850b@nvidia.com>
- <20191219210743.GN17227@ziepe.ca>
- <42a3e5c1-6301-db0b-5d09-212edf5ecf2a@nvidia.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=I1fCOA/Sv1KGJSA6mRhrFG67s6gpWFpFbY2201u/RCQ=;
+        b=PWwBA0+ipxLwsdIDQLVU9Opbl240+SDJgommm+PZ69gXiO11VtmYzH3wYtNDRrtA0L
+         xVlhl7BJ4k12iU+3FjdWkQ9/QPcDljn2tEBAEcV5ExQ4y+X13r5iw1tGwzaV0BYLnfDD
+         jOq9aavLXueP6irHasTrkwBV7gJV6F1wwirPQnmX/6VWFvzxk5j8aA1g9q2pC+qcXIjL
+         JKNI6VFcz4g/byZrXbx7DLzc3sznJO8QWpG4hLhCmbX+q2MfmOYMvtDpFGzPq6QgP51e
+         mWc6Z1cbQTszouo45g5c+2iPnLjlK8hPnB406/nAfhlopXmhZs755PAE3viOR5fbjoIT
+         R5gg==
+X-Gm-Message-State: APjAAAXerdouZvwrWX6Yd1ULmFBnED/lLA4kaWMF4CbeigKxE898V+yG
+        5pnvC0z9ZURSuv66lF83sBq8iA18VHmrRmi/sl8=
+X-Google-Smtp-Source: APXvYqx99YdXrtAVo+2lBsGy+1MasKuJ6va9hTNxUc2EXy1QdfUgsmv0s+kIJ0R5ysWOYRqLdQ9XYSQAnclfK9n+XcY=
+X-Received: by 2002:aca:1a06:: with SMTP id a6mr3453327oia.148.1576849020359;
+ Fri, 20 Dec 2019 05:37:00 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <42a3e5c1-6301-db0b-5d09-212edf5ecf2a@nvidia.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+References: <git-mailbomb-linux-master-8ffb055beae58574d3e77b4bf9d4d15eace1ca27@kernel.org>
+ <CAMuHMdVgF0PVmqXbaWqkrcML0O-hhWB3akj8UAn8Q_hN2evm+A@mail.gmail.com>
+ <CAM_iQpWOhXR=x10i0S88qXTfG2nv9EypONTp6_vpBzs=iOySRQ@mail.gmail.com>
+ <CAMuHMdXL8kycJm5EG6Ubx4aYGVGJH9JuJzP-vSM55wZ6RtyT+w@mail.gmail.com> <CAM_iQpXJiiiFdEZ1XYf0v0CNEwT=fSmpxWPVJ_L2_tPSd8u+-w@mail.gmail.com>
+In-Reply-To: <CAM_iQpXJiiiFdEZ1XYf0v0CNEwT=fSmpxWPVJ_L2_tPSd8u+-w@mail.gmail.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Fri, 20 Dec 2019 14:36:49 +0100
+Message-ID: <CAMuHMdVYqfEF4NxwR64jDno9KdzX3pgVRSphBzfsJjQ6ORTq_g@mail.gmail.com>
+Subject: Re: refcount_warn_saturate WARNING (was: Re: cls_flower: Fix the
+ behavior using port ranges with hw-offload)
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     Yoshiki Komachi <komachi.yoshiki@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Amritha Nambiar <amritha.nambiar@intel.com>,
+        netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 19, 2019 at 01:13:54PM -0800, John Hubbard wrote:
-> On 12/19/19 1:07 PM, Jason Gunthorpe wrote:
-> > On Thu, Dec 19, 2019 at 12:30:31PM -0800, John Hubbard wrote:
-> > > On 12/19/19 5:26 AM, Leon Romanovsky wrote:
-> > > > On Mon, Dec 16, 2019 at 02:25:12PM -0800, John Hubbard wrote:
-> > > > > Hi,
-> > > > > 
-> > > > > This implements an API naming change (put_user_page*() -->
-> > > > > unpin_user_page*()), and also implements tracking of FOLL_PIN pages. It
-> > > > > extends that tracking to a few select subsystems. More subsystems will
-> > > > > be added in follow up work.
-> > > > 
-> > > > Hi John,
-> > > > 
-> > > > The patchset generates kernel panics in our IB testing. In our tests, we
-> > > > allocated single memory block and registered multiple MRs using the single
-> > > > block.
-> > > > 
-> > > > The possible bad flow is:
-> > > >    ib_umem_geti() ->
-> > > >     pin_user_pages_fast(FOLL_WRITE) ->
-> > > >      internal_get_user_pages_fast(FOLL_WRITE) ->
-> > > >       gup_pgd_range() ->
-> > > >        gup_huge_pd() ->
-> > > >         gup_hugepte() ->
-> > > >          try_grab_compound_head() ->
-> > > 
-> > > Hi Leon,
-> > > 
-> > > Thanks very much for the detailed report! So we're overflowing...
-> > > 
-> > > At first look, this seems likely to be hitting a weak point in the
-> > > GUP_PIN_COUNTING_BIAS-based design, one that I believed could be deferred
-> > > (there's a writeup in Documentation/core-api/pin_user_page.rst, lines
-> > > 99-121). Basically it's pretty easy to overflow the page->_refcount
-> > > with huge pages if the pages have a *lot* of subpages.
-> > > 
-> > > We can only do about 7 pins on 1GB huge pages that use 4KB subpages.
-> > 
-> > Considering that establishing these pins is entirely under user
-> > control, we can't have a limit here.
-> 
-> There's already a limit, it's just a much larger one. :) What does "no limit"
-> really mean, numerically, to you in this case?
+Hi Cong,
 
-I guess I mean 'hidden limit' - hitting the limit and failing would
-be managable.
+On Thu, Dec 19, 2019 at 10:52 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
+> On Thu, Dec 19, 2019 at 1:01 PM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
+> > On Thu, Dec 19, 2019 at 9:50 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
+> > > On Thu, Dec 19, 2019 at 2:12 AM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
+> > > > I still see the below warning on m68k/ARAnyM during boot with v5.5-rc2
+> > > > and next-20191219.
+> > > > Reverting commit 8ffb055beae58574 ("cls_flower: Fix the behavior using
+> > > > port ranges with hw-offload") fixes that.
+> > > >
+> > > > As this is networking, perhaps this is seen on big-endian only?
+> > > > Or !CONFIG_SMP?
+> > > >
+> > > > Do you have a clue?
+> > > > I'm especially worried as this commit is already being backported to stable.
+> > > > Thanks!
+> > >
+> > > I did a quick look at the offending commit, I can't even connect it to
+> > > any dst refcnt.
+> > >
+> > > Do you have any more information? Like what happened before the
+> > > warning? Does your system use cls_flower filters at all? If so, please
+> > > share your tc configurations.
+> >
+> > No, I don't use clf_flower filters.  This is just a normal old Debian boot,
+> > where the root file system is being remounted, followed by the warning.
+>
+> > To me, it also looks very strange.  But it's 100% reproducible for me.
+> > Git bisect pointed to this commit, and reverting it fixes the issue.
+>
+> Hmm, does the attached patch have any luck to fix it?
 
-I think 7 is probably too low though, but we are not using 1GB huge
-pages, only 2M..
+Thanks, but unfortunately it doesn't help.
 
-> > If the number of allowed pins are exhausted then the
-> > pin_user_pages_fast() must fail back to the user.
-> 
-> I'll poke around the IB call stack and see how much of that return
-> path is in place, if any. Because it's the same situation for
-> get_user_pages_fast().  This code just added a warning on overflow
-> so we could spot it early.
+More investigation revealed that the above commit caused some shifts in the
+kernel binary, moving dst_default_metrics to a 2-byte aligned address.
+This is incompatible with the use of DST_METRICS_FLAGS and
+__DST_METRICS_PTR().
 
-All GUP callers must be prepared for failure, IB should be fine...
+Fix sent: "[PATCH] net: dst: Force 4-byte alignment of dst_metrics"
+https://lore.kernel.org/linux-m68k/20191220133140.5684-1-geert@linux-m68k.org/
 
-Jason
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
