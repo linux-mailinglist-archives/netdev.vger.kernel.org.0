@@ -2,205 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 75E4C1271CF
-	for <lists+netdev@lfdr.de>; Fri, 20 Dec 2019 00:51:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3AC4B1271FA
+	for <lists+netdev@lfdr.de>; Fri, 20 Dec 2019 01:02:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727002AbfLSXvK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Dec 2019 18:51:10 -0500
-Received: from mail-qk1-f193.google.com ([209.85.222.193]:44147 "EHLO
-        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726952AbfLSXvK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Dec 2019 18:51:10 -0500
-Received: by mail-qk1-f193.google.com with SMTP id w127so6141676qkb.11;
-        Thu, 19 Dec 2019 15:51:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=XrJ59tiWQE9MErbGB8Avs3Qqob/Udw2Qp1l0w9c5NOs=;
-        b=YqP6JvZXKJNj0g05OnixHUstywAGGOwvGR98BCY5UHBnCqmJ4CZceu7/zl/KL25eTh
-         3QqovONJOLNDdIIVaPAlV0048S67yRssvmNSeCO3lXNu4Cp1oxeaJYtRRV4Sy9tUOLAe
-         vTfVVwaWh+JLV+jQkxP2PyEUKDOR4CosMAzvQ7i9xTB+D9qmElQSzCnNXsIiiM9vfvAv
-         p0ZbWosnPBpVoyad7CFo19JZZUi8/TepA6ULAgrk3m/oSNKwOujsN3NHX+D8BUhcIgJ+
-         7qSLKXagcAWU565X3fCEaAIYDsXOnwB+14Pb4yPHit5VYw3izhenhALuW+UTCUPkb/yF
-         jbkw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=XrJ59tiWQE9MErbGB8Avs3Qqob/Udw2Qp1l0w9c5NOs=;
-        b=MMdQ3KC15yACuZzb1kQ4VuJYFMS9k9FRUROhLd+WNlSdkMrewGIMxYvYfwQPUOne2r
-         CBozlK+JsvYe2JQw/x2mqyZJUlNW6L+lYc0UrVQo2m097LxOyS3M/rSQ/PZKjtnB4tFU
-         uCHXlmwTCGW0ymxgJE8f6UBXh/UMhNQ/Q/xSrXdKzcKzMCy7ZFaRvNqngLTg8J4HpUi8
-         s2xDcNAKmowF8snOFRv98MsorycJfRuMyPGM7Mtd89YnNkB+/groujlz3ElkKUaJAw4m
-         loV3L8HmGEzRAmX3YUp7kKyuOgCYP5EeHm90tHZDSR8mkKpF2j2dYtCG619OfHV25esN
-         LGKQ==
-X-Gm-Message-State: APjAAAXbYJg+1RBtJh6HZJh85SOt+SvMxFXlPhMlT44OspHtYh87a+b5
-        WTmkzB48NFG7yTw+t3Kqc1+UUrGQifVDPrLiqks=
-X-Google-Smtp-Source: APXvYqx8iRx0fILDilvpUpFh8/wa422wtk6gaAAbGduPeng/XfncldBLa27iM/LSYyRrQol/aJgP9hIicC5//QbkEoY=
-X-Received: by 2002:a37:a685:: with SMTP id p127mr11233546qke.449.1576799468986;
- Thu, 19 Dec 2019 15:51:08 -0800 (PST)
+        id S1727165AbfLTACM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Dec 2019 19:02:12 -0500
+Received: from youngberry.canonical.com ([91.189.89.112]:55510 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726963AbfLTACM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Dec 2019 19:02:12 -0500
+Received: from 1.general.cking.uk.vpn ([10.172.193.212])
+        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <colin.king@canonical.com>)
+        id 1ii5k9-0003p9-1d; Fri, 20 Dec 2019 00:02:09 +0000
+To:     Johannes Berg <johannes.berg@intel.com>,
+        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Intel Linux Wireless <linuxwifi@intel.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Ihab Zhaika <ihab.zhaika@intel.com>,
+        Shahar S Matityahu <shahar.s.matityahu@intel.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+From:   Colin Ian King <colin.king@canonical.com>
+Autocrypt: addr=colin.king@canonical.com; prefer-encrypt=mutual; keydata=
+ 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
+Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: re: iwlwifi: refactor the SAR tables from mvm to acpi
+Message-ID: <18ea9fa8-93fe-f371-68ee-3d12eac252c8@canonical.com>
+Date:   Fri, 20 Dec 2019 00:02:08 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.3.0
 MIME-Version: 1.0
-References: <157676577049.957277.3346427306600998172.stgit@toke.dk> <157676577159.957277.7471130922810004500.stgit@toke.dk>
-In-Reply-To: <157676577159.957277.7471130922810004500.stgit@toke.dk>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 19 Dec 2019 15:50:57 -0800
-Message-ID: <CAEf4BzYKpstQk8JO_iOws93VpHEEs+J+z+ZO7cKRiKRNvN1zMg@mail.gmail.com>
-Subject: Re: [PATCH RFC bpf-next 1/3] libbpf: Add new bpf_object__load2()
- using new-style opts
-To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 19, 2019 at 6:29 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redh=
-at.com> wrote:
->
-> From: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
->
-> Since we introduced DECLARE_LIBBPF_OPTS and related macros for declaring
-> function options, that is now the preferred way to extend APIs. Introduce=
- a
-> variant of the bpf_object__load() function that uses this function, and
-> deprecate the _xattr variant. Since all the good function names were take=
-n,
-> the new function is unimaginatively called bpf_object__load2().
->
-> Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
-> ---
+Hi,
 
-I've been thinking about options for load quite a bit lately, and I'm
-leaning towards an opinion, that bpf_object__load() shouldn't take any
-options, and all the various per-bpf_object options have to be
-specified in bpf_object_open_opts and stored, if necessary for
-load/attach phase. So I'd rather move target_btf_path and log_level to
-open_opts instead.
+Static analysis with Coverity has detected a potential issue with the
+following commit:
 
-For cases where we need to tune load behavior/options per individual
-BPF program, bpf_object_load_opts don't work either way, and we'll
-have to add some getters/setters for bpf_program objects, anyways. So
-I think it's overall cleaner to specify everything per-bpf_object at
-"creation time" (which is open), and keep load()/attach() option-less.
+commit 39c1a9728f938c7255ce507c8d56b73e8a4ebddf
+Author: Ihab Zhaika <ihab.zhaika@intel.com>
+Date:   Fri Nov 15 09:28:11 2019 +0200
 
->  tools/lib/bpf/libbpf.c   |   31 ++++++++++++++++++-------------
->  tools/lib/bpf/libbpf.h   |   13 +++++++++++++
->  tools/lib/bpf/libbpf.map |    1 +
->  3 files changed, 32 insertions(+), 13 deletions(-)
->
-> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-> index febbaac3daf4..266b725e444b 100644
-> --- a/tools/lib/bpf/libbpf.c
-> +++ b/tools/lib/bpf/libbpf.c
-> @@ -4844,15 +4844,12 @@ static int bpf_object__resolve_externs(struct bpf=
-_object *obj,
->         return 0;
->  }
->
-> -int bpf_object__load_xattr(struct bpf_object_load_attr *attr)
-> +int bpf_object__load2(struct bpf_object *obj,
-> +                     const struct bpf_object_load_opts *opts)
->  {
-> -       struct bpf_object *obj;
->         int err, i;
->
-> -       if (!attr)
-> -               return -EINVAL;
-> -       obj =3D attr->obj;
-> -       if (!obj)
-> +       if (!obj || !OPTS_VALID(opts, bpf_object_load_opts))
->                 return -EINVAL;
->
->         if (obj->loaded) {
-> @@ -4867,8 +4864,10 @@ int bpf_object__load_xattr(struct bpf_object_load_=
-attr *attr)
->         err =3D err ? : bpf_object__sanitize_and_load_btf(obj);
->         err =3D err ? : bpf_object__sanitize_maps(obj);
->         err =3D err ? : bpf_object__create_maps(obj);
-> -       err =3D err ? : bpf_object__relocate(obj, attr->target_btf_path);
-> -       err =3D err ? : bpf_object__load_progs(obj, attr->log_level);
-> +       err =3D err ? : bpf_object__relocate(obj,
-> +                                          OPTS_GET(opts, target_btf_path=
-, NULL));
-> +       err =3D err ? : bpf_object__load_progs(obj,
-> +                                            OPTS_GET(opts, log_level, 0)=
-);
->         if (err)
->                 goto out;
->
-> @@ -4884,13 +4883,19 @@ int bpf_object__load_xattr(struct bpf_object_load=
-_attr *attr)
->         return err;
->  }
->
-> -int bpf_object__load(struct bpf_object *obj)
-> +int bpf_object__load_xattr(struct bpf_object_load_attr *attr)
->  {
-> -       struct bpf_object_load_attr attr =3D {
-> -               .obj =3D obj,
-> -       };
-> +       DECLARE_LIBBPF_OPTS(bpf_object_load_opts, opts,
-> +           .log_level =3D attr->log_level,
-> +           .target_btf_path =3D attr->target_btf_path,
-> +       );
-> +
-> +       return bpf_object__load2(attr->obj, &opts);
-> +}
->
-> -       return bpf_object__load_xattr(&attr);
-> +int bpf_object__load(struct bpf_object *obj)
-> +{
-> +       return bpf_object__load2(obj, NULL);
->  }
->
->  static int make_parent_dir(const char *path)
-> diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
-> index fe592ef48f1b..ce86277d7445 100644
-> --- a/tools/lib/bpf/libbpf.h
-> +++ b/tools/lib/bpf/libbpf.h
-> @@ -132,8 +132,21 @@ struct bpf_object_load_attr {
->         const char *target_btf_path;
->  };
->
-> +struct bpf_object_load_opts {
-> +       /* size of this struct, for forward/backward compatiblity */
-> +       size_t sz;
-> +       /* log level on load */
-> +       int log_level;
-> +       /* BTF path (for CO-RE relocations) */
-> +       const char *target_btf_path;
-> +};
-> +#define bpf_object_load_opts__last_field target_btf_path
-> +
->  /* Load/unload object into/from kernel */
->  LIBBPF_API int bpf_object__load(struct bpf_object *obj);
-> +LIBBPF_API int bpf_object__load2(struct bpf_object *obj,
-> +                                const struct bpf_object_load_opts *opts)=
-;
-> +/* deprecated, use bpf_object__load2() instead */
->  LIBBPF_API int bpf_object__load_xattr(struct bpf_object_load_attr *attr)=
-;
->  LIBBPF_API int bpf_object__unload(struct bpf_object *obj);
->
-> diff --git a/tools/lib/bpf/libbpf.map b/tools/lib/bpf/libbpf.map
-> index e3a471f38a71..d6cb860763d1 100644
-> --- a/tools/lib/bpf/libbpf.map
-> +++ b/tools/lib/bpf/libbpf.map
-> @@ -217,6 +217,7 @@ LIBBPF_0.0.7 {
->                 bpf_object__attach_skeleton;
->                 bpf_object__destroy_skeleton;
->                 bpf_object__detach_skeleton;
-> +               bpf_object__load2;
->                 bpf_object__load_skeleton;
->                 bpf_object__open_skeleton;
->                 bpf_program__attach;
->
+    iwlwifi: refactor the SAR tables from mvm to acpi
+
+
+in function iwl_sar_get_ewrd_table() we have an array index pos being
+initialized to 3 and then incremented each time a loop iterates:
+
+        for (i = 0; i < n_profiles; i++) {
+                /* the tables start at element 3 */
+                int pos = 3;
+
+                /* The EWRD profiles officially go from 2 to 4, but we
+                 * save them in sar_profiles[1-3] (because we don't
+                 * have profile 0).  So in the array we start from 1.
+                 */
+                ret = iwl_sar_set_profile(&wifi_pkg->package.elements[pos],
+                                          &fwrt->sar_profiles[i + 1],
+                                          enabled);
+                if (ret < 0)
+                        break;
+
+                /* go to the next table */
+                pos += ACPI_SAR_TABLE_SIZE;
+        }
+
+So, each iteration is always accessing package.elements[3]. I'm not sure
+if that is intentional. If it is, then the increment of pos is not
+required.  Either way, it's not clear what the original intention is.
+
+Colin
