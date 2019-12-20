@@ -2,191 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 97C1D128347
-	for <lists+netdev@lfdr.de>; Fri, 20 Dec 2019 21:30:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BCDFA1283D1
+	for <lists+netdev@lfdr.de>; Fri, 20 Dec 2019 22:22:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727510AbfLTUav (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Dec 2019 15:30:51 -0500
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:45381 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726525AbfLTUav (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Dec 2019 15:30:51 -0500
-Received: by mail-pg1-f194.google.com with SMTP id b9so5480639pgk.12;
-        Fri, 20 Dec 2019 12:30:50 -0800 (PST)
+        id S1727552AbfLTVWK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Dec 2019 16:22:10 -0500
+Received: from mail-pg1-f202.google.com ([209.85.215.202]:55395 "EHLO
+        mail-pg1-f202.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727473AbfLTVWK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Dec 2019 16:22:10 -0500
+Received: by mail-pg1-f202.google.com with SMTP id v30so5840552pga.22
+        for <netdev@vger.kernel.org>; Fri, 20 Dec 2019 13:22:10 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to
-         :user-agent;
-        bh=9eNRVdUpLISQN+Dkpw/DpfxstaMnOQ1oUQnuZRi/qnQ=;
-        b=fvKGAq3hyW9oR+yyzMIfWKDaoyJW9+hfVWmLUlV2io6JMuv2l6+X9hAi7MMzaXAJMm
-         waV1i4wKUqE9ucG5oLCWnATjKQELXYByab/snj49vNtadayoZotcVTVNV3VEA5zb945C
-         hp6z1Cn/PKgP9x9lYDKO3aBI8l8tydWEgie459ypSuJ8LkgEl2geWU1LXqPFdLMV34Ou
-         ZmurN08a0O60fcqYbf6Kavy8/INig+tOb/qKaVtHtAv5iJ2pqu9X4x+URm+GEfZe7w1n
-         ETmuwG857PaEelnU+H9GDIj2ZE/CaknHcNvZw3RtV9oWoqLLsDa82G845jghA6faTUe4
-         3F+Q==
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=r9lHUhVFmnwnvOI5+OYOqNbrR4sRrsu0Lvjkysu9m60=;
+        b=VccLePC7IXuSG66sx0PbhNexga6fWcYCg7SXxnBD8scdmE77qzrp8kF5tiLoxIvGyZ
+         cgK70KJ/9brCj7xNGnxcD5GmiI3v95REtyIFZKcDUNcjClkCij1om62AJlI1ZIJSwm4r
+         VyLinh19pG1DNbeVj+CrqjyWjdPG57HVKg/ApLWg8GY1NIEIlrb7IwGrAWzZw4AI/CU0
+         5RMbSPsGxtHhlNDlvmajf1daaT8ueDprlX322nqjNm/3N3yqswVvHXR338cTdHW8DZbe
+         77MdGvRoDccK14cs3eCsPZcP1Q1GcXGUFCrwA0WrabkD+Xv9iQ1zQ2h96D2vbpGsc6Os
+         Id/g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to:user-agent;
-        bh=9eNRVdUpLISQN+Dkpw/DpfxstaMnOQ1oUQnuZRi/qnQ=;
-        b=pxYtxcjsXSuiE1myCDQyMegvAERQOXMMUn1KIMC6y1h+IlrJLKPwF1vPXrxa39235+
-         f7yXRfUcUQh3SBWidRjL+UD/QkXWkZQFyCUziYTOwDhlzfXJQTcI8QateIeDum/ewzGb
-         XGTfvaJiHx0HuMIzrnwT0v4bPDsO1RImONmtW1Kyt62m7ykL3dSKaM0RSiyVJ1Lc0nLb
-         3qmxWs34kddAlSi541jims1JIzHShVaUY8N0Ou2C8wgiwhj1DoPZ+YwDOGXehMpKT8Gj
-         rXAOxIYps3LI03fketp68fIrgagHrBZ7yA8TBgu3rmvYDkE04AB1OBQiEQ3q2p8VNUfu
-         KBZw==
-X-Gm-Message-State: APjAAAW53uvw47X1YBqBlkXYFNCXrb63FAJ5PptSeb3Sy1sOHqC4pUB6
-        KZ2KBm2ZuJEDZMEM4xxWAjs=
-X-Google-Smtp-Source: APXvYqxI3oY6o9wyY0whh8gPmdGsdFGK4Q2Lg9bfW6Aa/31TBqLjaMI6jz7q7e15d1gkFigdSPeDXw==
-X-Received: by 2002:a63:5056:: with SMTP id q22mr16658034pgl.20.1576873849805;
-        Fri, 20 Dec 2019 12:30:49 -0800 (PST)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:200::2:827d])
-        by smtp.gmail.com with ESMTPSA id d65sm14089997pfa.159.2019.12.20.12.30.48
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 20 Dec 2019 12:30:48 -0800 (PST)
-Date:   Fri, 20 Dec 2019 12:30:47 -0800
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: Re: [PATCH RFC bpf-next 0/3] libbpf: Add support for extern function
- calls
-Message-ID: <20191220203045.hmeoum5l4uw7gy5g@ast-mbp.dhcp.thefacebook.com>
-References: <157676577049.957277.3346427306600998172.stgit@toke.dk>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <157676577049.957277.3346427306600998172.stgit@toke.dk>
-User-Agent: NeoMutt/20180223
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=r9lHUhVFmnwnvOI5+OYOqNbrR4sRrsu0Lvjkysu9m60=;
+        b=h/iSIJTvtl5agDswc9PYg3zBHDKa3D2W7UP6+OMCjRlOYjFtRuaC0VB40+U0S5JjZC
+         KBt2aVGx9ukQa4KYDQojMBOZhqrSTkowtZAgqRxBUbGxkIEy7iOEkHIoUUPZeCq385P1
+         U8Jv258JKa5Z7ImmL+yZMwQipJ6E0NNZ5IA1Osp78qqKt5qSwpBGKr5qJYf0f2BiDcBb
+         qUDreqJ5lqdXXvPIT3aw+YNdsosOXt0rIXIUbD7qjlK51lr74qYRLAr7TlrdoUrKwrdO
+         ByrbdQ0Yj9jeQ/MsYisr87d9xUWignj3uVyff1rxMipHs2Mx+fmXGRqXQYbTXt3eZzh6
+         3iqg==
+X-Gm-Message-State: APjAAAW1IYsUtyAVV8RxAiJlMX7tGTdVo4t9t/mraw1R4UI6iR+pZlfu
+        92TaV2lj6Rr7TGYdC0oauu8fAj83ctrOJMyWxxH7Sjh6fmGdZVWos9csal3Yf9UqwoLYE/GWUXu
+        fqOAFl6egab7i2Iv8Tl0iy/ePQK7vlryXMAHWfIWmk8nd/geCx/reSZz7dvhLfw==
+X-Google-Smtp-Source: APXvYqzAyuXgHTXrORNS6szcAloXE1fh1IDUxk+eoYefkB4yiERkk+yPhmXzgc5nXJYrKSjHf0NpTIjsDAA=
+X-Received: by 2002:a63:bc01:: with SMTP id q1mr18010589pge.442.1576876929534;
+ Fri, 20 Dec 2019 13:22:09 -0800 (PST)
+Date:   Fri, 20 Dec 2019 13:22:07 -0800
+Message-Id: <20191220212207.76726-1-adelva@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.24.1.735.g03f4e72817-goog
+Subject: [PATCH net] virtio-net: Skip set_features on non-cvq devices
+From:   Alistair Delva <adelva@google.com>
+To:     netdev@vger.kernel.org
+Cc:     stable@vger.kernel.org, "Michael S . Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S . Miller" <davem@davemloft.net>, kernel-team@android.com,
+        virtualization@lists.linux-foundation.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 19, 2019 at 03:29:30PM +0100, Toke Høiland-Jørgensen wrote:
-> This series adds support for resolving function calls to functions marked as
-> 'extern' in eBPF source files, by resolving the function call targets at load
-> time. For now, this only works by static linking (i.e., copying over the
-> instructions from the function target. Once the kernel support for dynamic
-> linking lands, support can be added for having a function target be an already
-> loaded program fd instead of a bpf object.
-> 
-> The API I'm proposing for this is that the caller specifies an explicit mapping
-> between extern function names and function names in the target object file.
-> This is to support the XDP multi-prog case, where the dispatcher program may not
-> necessarily have control over function names in the target programs, so simple
-> function name resolution can't be used.
+On devices without control virtqueue support, such as the virtio_net
+implementation in crosvm[1], attempting to configure LRO will panic the
+kernel:
 
-I think simple name resolution should be the default behavior for both static
-and dynamic linking. That's the part where I think we must not reinvent the wheel.
-When one .c has
-extern int prog1(struct xdp_md *ctx);
-another .c should have:
-int prog1(struct xdp_md *ctx) {...}
-Both static and dynamic linking should link these two .c together without any
-extra steps from the user. It's expected behavior that any C user assumes and
-it should 'just work'.
+kernel BUG at drivers/net/virtio_net.c:1591!
+invalid opcode: 0000 [#1] PREEMPT SMP PTI
+CPU: 1 PID: 483 Comm: Binder:330_1 Not tainted 5.4.5-01326-g19463e9acaac #1
+Hardware name: ChromiumOS crosvm, BIOS 0
+RIP: 0010:virtnet_send_command+0x15d/0x170 [virtio_net]
+Code: d8 00 00 00 80 78 02 00 0f 94 c0 65 48 8b 0c 25 28 00 00 00 48 3b 4c 24 70 75 11 48 8d 65 d8 5b 41 5c 41 5d 41 5e 41 5f 5d c3 <0f> 0b e8 ec a4 12 c8 66 90 66 2e 0f 1f 84 00 00 00 00 00 55 48 89
+RSP: 0018:ffffb97940e7bb50 EFLAGS: 00010246
+RAX: ffffffffc0596020 RBX: ffffa0e1fc8ea840 RCX: 0000000000000017
+RDX: ffffffffc0596110 RSI: 0000000000000011 RDI: 000000000000000d
+RBP: ffffb97940e7bbf8 R08: ffffa0e1fc8ea0b0 R09: ffffa0e1fc8ea0b0
+R10: ffffffffffffffff R11: ffffffffc0590940 R12: 0000000000000005
+R13: ffffa0e1ffad2c00 R14: ffffb97940e7bc08 R15: 0000000000000000
+FS:  0000000000000000(0000) GS:ffffa0e1fd100000(006b) knlGS:00000000e5ef7494
+CS:  0010 DS: 002b ES: 002b CR0: 0000000080050033
+CR2: 00000000e5eeb82c CR3: 0000000079b06001 CR4: 0000000000360ee0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ ? preempt_count_add+0x58/0xb0
+ ? _raw_spin_lock_irqsave+0x36/0x70
+ ? _raw_spin_unlock_irqrestore+0x1a/0x40
+ ? __wake_up+0x70/0x190
+ virtnet_set_features+0x90/0xf0 [virtio_net]
+ __netdev_update_features+0x271/0x980
+ ? nlmsg_notify+0x5b/0xa0
+ dev_disable_lro+0x2b/0x190
+ ? inet_netconf_notify_devconf+0xe2/0x120
+ devinet_sysctl_forward+0x176/0x1e0
+ proc_sys_call_handler+0x1f0/0x250
+ proc_sys_write+0xf/0x20
+ __vfs_write+0x3e/0x190
+ ? __sb_start_write+0x6d/0xd0
+ vfs_write+0xd3/0x190
+ ksys_write+0x68/0xd0
+ __ia32_sys_write+0x14/0x20
+ do_fast_syscall_32+0x86/0xe0
+ entry_SYSENTER_compat+0x7c/0x8e
 
-Where we need to be creative is how plug two xdp firewalls with arbitrary
-program names (including the same names) into common roolet.
+This happens because virtio_set_features() does not check the presence
+of the control virtqueue feature, which is sanity checked by a BUG_ON
+in virtnet_send_command().
 
-One firewall can be:
-noinline int foo(struct xdp_md *ctx)
-{ // some logic
-}
-SEC("xdp")
-int xdp_prog1(struct xdp_md *ctx)
-{
-       return foo(ctx);
-}
+Fix this by skipping any feature processing if the control virtqueue is
+missing. This should be OK for any future feature that is added, as
+presumably all of them would require control virtqueue support to notify
+the endpoint that offload etc. should begin.
 
-And another firewall:
-noinline int foo(struct xdp_md *ctx)
-{ // some other logic
-}
-SEC("xdp")
-int xdp_prog2(struct xdp_md *ctx)
-{
-       return foo(ctx);
-}
+[1] https://chromium.googlesource.com/chromiumos/platform/crosvm/
 
-Both xdp programs (with multiple functions) need to be connected into:
+Fixes: a02e8964eaf9 ("virtio-net: ethtool configurable LRO")
+Cc: stable@vger.kernel.org [4.20+]
+Cc: Michael S. Tsirkin <mst@redhat.com>
+Cc: Jason Wang <jasowang@redhat.com>
+Cc: David S. Miller <davem@davemloft.net>
+Cc: kernel-team@android.com
+Cc: virtualization@lists.linux-foundation.org
+Cc: linux-kernel@vger.kernel.org
+Signed-off-by: Alistair Delva <adelva@google.com>
+---
+ drivers/net/virtio_net.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-__weak noinline int dummy1(struct xdp_md *ctx) { return XDP_PASS; }
-__weak noinline int dummy2(struct xdp_md *ctx) { return XDP_PASS; }
+diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+index 4d7d5434cc5d..709bcd34e485 100644
+--- a/drivers/net/virtio_net.c
++++ b/drivers/net/virtio_net.c
+@@ -2560,6 +2560,9 @@ static int virtnet_set_features(struct net_device *dev,
+ 	u64 offloads;
+ 	int err;
+ 
++	if (!vi->has_cvq)
++		return 0;
++
+ 	if ((dev->features ^ features) & NETIF_F_LRO) {
+ 		if (vi->xdp_queue_pairs)
+ 			return -EBUSY;
+-- 
+2.24.1.735.g03f4e72817-goog
 
-SEC("xdp")
-int rootlet(struct xdp_md *ctx)
-{
-        int ret;
-
-        ret = dummy1(ctx);
-        if (ret != XDP_PASS)
-                goto out;
-
-        ret = dummy2(ctx);
-        if (ret != XDP_DROP)
-                goto out;
-out:
-        return ret;
-}
-
-where xdp_prog1() from 1st firewall needs to replace dummy1()
-and xdp_prog2() from 2nd firewall needs to replaced dummy2().
-Or the other way around depending on the order of installation.
-
-At the kernel level the API is actually simple. It's the pair of
-target_prog_fd + btf_id I described earlier in "static/dynamic linking" thread.
-Where target_prog_fd is FD of loaded into kernel rootlet and
-btf_id is BTF id of dummy1 or dummy2.
-
-When 1st firewall is being loaded libbpf needs to pass target_prog_fd+btf_id
-along with xdp_prog1() into the kernel, so that the verifier can do
-appropriate checking and refcnting.
-
-Note that the kernel and every program have their own BTF id space.
-Their own BTF ids == their own names.
-Loading two programs with exactly the same name is ok today and in the future.
-Linking into other program name space is where we need to agree on naming first.
-
-The static linking of two .o should follow familiar user space linker logic.
-Proposed bpf_linker__..("first.o") and bpf_linker__..("second.o") should work.
-Meaning that "extern int foo()" in "second.o" will get resolved with "int foo()"
-from "first.o".
-Dynamic linking is when "first.o" with "int foo()" was already loaded into
-the kernel and "second.o" is loaded after. In such case its "extern int foo()"
-will be resolved dynamically from previously loaded program.
-The user space analogy of this behavior is glibc.
-"first.o" is glibc.so that supplies memcpy() and friends.
-"second.o" is some a.out that used "extern int memcpy()".
-
-For XDP rootlet case already loaded weak function dummy[12]() need to
-be replaced later by xdp_prog[12](). It's like replacing memcpy() in glibc.so.
-I think the user space doesn't have such concepts. I was simply calling it
-dynamic linking too, but it's not quite accurate. It's dynamically replacing
-already loaded functions. Let's call it "dynamic re-linking" ?
-
-As far as libbpf api for dynamic linking, so far I didn't need to add new stuff.
-I'm trying to piggy back on fexit/fentry approach.
-
-I think to prototype re-linking without kernel support. We can do static re-linking.
-I think the best approach is to stick with name based resolution. libxdp can do:
-- add alias("dummy1") to xdp_prog1() in first_firewall.o
-- rename foo() in first_firewall.o into unique_foo().
-- add alias("dummy2") to xdp_prog2() in second_firewall.o
-- rename foo() in second_firewall.o into very_unique_foo().
-- use standard static linking of first_firewall.o + second_firewall.o + rootlet.o
-
-The static re-linking is more work than dynamic re-linking because it needs to
-operate in a single name space of final .o. Whereas dynamic re-linking has
-individual name space for every loaded into kernel program.
-I'm hoping to share a prototype of dynamic re-linking soon.
