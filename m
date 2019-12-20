@@ -2,86 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7ACE9127E18
-	for <lists+netdev@lfdr.de>; Fri, 20 Dec 2019 15:38:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 98E6D127ED4
+	for <lists+netdev@lfdr.de>; Fri, 20 Dec 2019 15:57:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727920AbfLTOip (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Dec 2019 09:38:45 -0500
-Received: from mail.kernel.org ([198.145.29.99]:42100 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728350AbfLTOh6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 20 Dec 2019 09:37:58 -0500
-Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id B43E424689;
-        Fri, 20 Dec 2019 14:37:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1576852677;
-        bh=Ga1t74zu3ZcZd9+WWTuiAieeUhQURloJ+zzCSvUioZo=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=k8M8WFjNDsoqTIoucsIVluIesbl7mmtlkof5/SxNKVknP/S+2Awvf+XaOw+VaGUcN
-         kugf4UcX+hLNwUg4iEVu/EGb1UTo+BxhB85ByA4urRLqShVGOriA3zBwcat7VGfT5t
-         pe269t79gSYNZZaOox4xwnZyS6cFPw/MKPrJp8dM=
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jens Axboe <axboe@kernel.dk>, netdev@vger.kernel.org,
-        David Miller <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 4.14 12/19] net: make socket read/write_iter() honor IOCB_NOWAIT
-Date:   Fri, 20 Dec 2019 09:37:33 -0500
-Message-Id: <20191220143741.10220-12-sashal@kernel.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20191220143741.10220-1-sashal@kernel.org>
-References: <20191220143741.10220-1-sashal@kernel.org>
+        id S1727401AbfLTO5R (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Dec 2019 09:57:17 -0500
+Received: from mail-pl1-f193.google.com ([209.85.214.193]:34004 "EHLO
+        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727233AbfLTO5R (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Dec 2019 09:57:17 -0500
+Received: by mail-pl1-f193.google.com with SMTP id x17so4214806pln.1;
+        Fri, 20 Dec 2019 06:57:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=hkWco8dRw59sMhOMYfREd70FxO1H0nWVA/bQQmTVaVs=;
+        b=B4U/Cy0Jo5ZWdcTxOejAzkRKtbqu1oJ8cNX48pzKNRMx1jx7bG6GM0Fr8ZLpoMgfKR
+         RmeJwCepYBDlD6HLi5Im7D7ORLfF9mdZyjTpceiiVUAGTYpTuxiMuUGANPH8pauiyk2A
+         wPQlW9yUzrADqqqzH7kDOH3w0k2ahGfUr/trYz0kNaLZeVju1wXwlXOUb9gITh9BfKN7
+         b4Spa9s0ePcrVUpP88/J6nHsxFPd7mqLD3LMWWKKXHAQRGiNDLi+NofQoQSy2zBPu/3q
+         Ia61NeWbWgJ1dINVmjGEa0/8IUSnrS101RX4O4ID+dhea8bctn7Cz8WvCUfGCW2c2x/B
+         OfJQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=hkWco8dRw59sMhOMYfREd70FxO1H0nWVA/bQQmTVaVs=;
+        b=VAxZDqbaTxpgLhkJivKMfl5sxLsqe7SkIGApfRBHFZV6+Jr9459Qg9QXWe4GTi3gOA
+         J/s5Mdz7A6MKsjP6XUjcRjBz64x9qOMLp3REFnXQdkstxORRHlk922nRn+hgYdjNbujl
+         FLANia5CZgtUiKFcUoRN3FupZdIXhErqrL1eBY9IBKySer5wtLacbramWZ98IVNiR0u7
+         olyT3hvR8tL89/Z9//FMonggxCFmqtpdRpqSRBSFLYjbbAvAXGeOJz2oYrzsoBL8vINv
+         wLQw+qtOuzowS4RU4ybAnytZ9JSeQdtiec9W4Yawj7zdJQIyZQ/9NZKZOKzpjCh8nqnl
+         kJkQ==
+X-Gm-Message-State: APjAAAX+Vc1LdHHpjuUad6LCG3kwUw6KUC4TFBBR2auSBo+Kj17sgwqM
+        j/hsmJwds78lhKIYCpn6hK8=
+X-Google-Smtp-Source: APXvYqwy7FBGM1nmXMxgGMObkWPUX4z7afo67yur0K79OgQbDAlglTObe9TLYetTlj+g52JNcu3Mjw==
+X-Received: by 2002:a17:902:bc45:: with SMTP id t5mr15255745plz.163.1576853836223;
+        Fri, 20 Dec 2019 06:57:16 -0800 (PST)
+Received: from localhost (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
+        by smtp.gmail.com with ESMTPSA id x7sm13927986pfp.93.2019.12.20.06.57.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 20 Dec 2019 06:57:15 -0800 (PST)
+Date:   Fri, 20 Dec 2019 06:57:12 -0800
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     netdev@vger.kernel.org, David Miller <davem@davemloft.net>,
+        devicetree@vger.kernel.org,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Jacob Keller <jacob.e.keller@intel.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Miroslav Lichvar <mlichvar@redhat.com>,
+        Murali Karicheri <m-karicheri2@ti.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Willem de Bruijn <willemb@google.com>,
+        Wingman Kwok <w-kwok2@ti.com>
+Subject: Re: [PATCH V6 net-next 06/11] net: Introduce a new MII time stamping
+ interface.
+Message-ID: <20191220145712.GA3846@localhost>
+References: <cover.1576511937.git.richardcochran@gmail.com>
+ <28939f11b984759257167e778d0c73c0dd206a35.1576511937.git.richardcochran@gmail.com>
+ <20191217092155.GL6994@lunn.ch>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191217092155.GL6994@lunn.ch>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jens Axboe <axboe@kernel.dk>
+On Tue, Dec 17, 2019 at 10:21:55AM +0100, Andrew Lunn wrote:
+> Forward declarations are considered bad.
 
-[ Upstream commit ebfcd8955c0b52eb793bcbc9e71140e3d0cdb228 ]
+Not by me!
 
-The socket read/write helpers only look at the file O_NONBLOCK. not
-the iocb IOCB_NOWAIT flag. This breaks users like preadv2/pwritev2
-and io_uring that rely on not having the file itself marked nonblocking,
-but rather the iocb itself.
+> Please add a new patch to the
+> series which moves code around first.
 
-Cc: netdev@vger.kernel.org
-Acked-by: David Miller <davem@davemloft.net>
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- net/socket.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Sorry, I disagree.  For new drivers, sure, but for testing, production
+drivers, moving code blocks around "just because" is only asking for
+new bugs due to copy-pastos.
 
-diff --git a/net/socket.c b/net/socket.c
-index aab65277314d9..5b134a6b6216f 100644
---- a/net/socket.c
-+++ b/net/socket.c
-@@ -891,7 +891,7 @@ static ssize_t sock_read_iter(struct kiocb *iocb, struct iov_iter *to)
- 			     .msg_iocb = iocb};
- 	ssize_t res;
- 
--	if (file->f_flags & O_NONBLOCK)
-+	if (file->f_flags & O_NONBLOCK || (iocb->ki_flags & IOCB_NOWAIT))
- 		msg.msg_flags = MSG_DONTWAIT;
- 
- 	if (iocb->ki_pos != 0)
-@@ -916,7 +916,7 @@ static ssize_t sock_write_iter(struct kiocb *iocb, struct iov_iter *from)
- 	if (iocb->ki_pos != 0)
- 		return -ESPIPE;
- 
--	if (file->f_flags & O_NONBLOCK)
-+	if (file->f_flags & O_NONBLOCK || (iocb->ki_flags & IOCB_NOWAIT))
- 		msg.msg_flags = MSG_DONTWAIT;
- 
- 	if (sock->type == SOCK_SEQPACKET)
--- 
-2.20.1
+> When using phylink, not phylib, this call will not happen. You need to
+> add a similar bit of code in phylink_mac_config().
+
+Good to know.
+
+> For the moment what you have is sufficient. I doubt anybody is using
+> the dp83640 with phylink, and the new hardware you are targeting seems
+> to be RGMII based, not SERDES, which is the main use case for PHYLINK.
+
+Yeah, my impression is that the phyter will be the first and last phy
+time stamping device ever created.  Designers reject this part because
+it is 100 mbit only.  And there are no gigabit+ phys with time
+stamping at all.
+
+So I don't anticipate the phylink layer needing any of this time
+stamping stuff in the foreseeable future.
+
+Thanks,
+Richard
 
