@@ -2,148 +2,229 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1BAC31271FD
-	for <lists+netdev@lfdr.de>; Fri, 20 Dec 2019 01:02:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 77531127205
+	for <lists+netdev@lfdr.de>; Fri, 20 Dec 2019 01:08:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727140AbfLTACk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Dec 2019 19:02:40 -0500
-Received: from mail-qk1-f194.google.com ([209.85.222.194]:40189 "EHLO
-        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726963AbfLTACj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Dec 2019 19:02:39 -0500
-Received: by mail-qk1-f194.google.com with SMTP id c17so6186716qkg.7;
-        Thu, 19 Dec 2019 16:02:39 -0800 (PST)
+        id S1726982AbfLTAI3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Dec 2019 19:08:29 -0500
+Received: from mail-pj1-f68.google.com ([209.85.216.68]:52250 "EHLO
+        mail-pj1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726952AbfLTAI3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Dec 2019 19:08:29 -0500
+Received: by mail-pj1-f68.google.com with SMTP id w23so3278262pjd.2
+        for <netdev@vger.kernel.org>; Thu, 19 Dec 2019 16:08:28 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=DflVdIpQoJVyFG2BYO2Tb9HnXbDJdzN08W+fLPNFXdw=;
-        b=J2K9KKfk7sNRJRboR9FGRYGVRv0Hnm+oqc4ULUvo81K3Zn9eSLsLIxoqt9t4HOkaFE
-         IWRGvvMxGF4w7lB+49j0URKQU41q6Es4aybrNhT8rvTdtO3+ygRgq6KLdLIj4hPf8fuO
-         GHz42/E+o9i+XZ+XuNyEpd1KJDxaRr/eGg7XP2HQNSqi6AO3o21BDZ/I44ostzpiRhBN
-         KEOOqnS+KdWysOYjx8xPR4nWLgedEHw+W5545s+M6GYte9wdr89SXe2kIWnU4yDez/4E
-         OG0W4Xx+btm/IaOSq+hatDt00N359c1ApOy+i3OaZLZ98Pu+HasiqeGDoh4xJ0Pm4kBD
-         /HEA==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=X1FrBWT1p24x6uHFsr9hhNO3xRgVrIbhvVHS+TyU1LM=;
+        b=HoCarn20yXBR8LN/DFVUaJyIhL0Pd6BLLx2dh+tkEwkX4wGKfIOc+LhcGAVwrmu8zL
+         znPZjrGBboz9j9K6kulBB4fqtA1ZjwwAc2ekl5hEndleZbwspYWc0PDb2CQ46UvRJrpq
+         hJFQnuD8+WwTJtrhxrqn4EV92t4a5Qx3In8BRF2iH1NBuxaUuJXzCHS8UfTtlPNU9WMo
+         1MaBlFboMDm9oy9IYQ5PSqmEjf/bTx56n/9IUiqoG65uiTREjLNkndqFwXCK2Tg0F53O
+         CjXpGKb27hYV6Y5Ln0FaA8toF7NgDLO4frQtej7ZnR1CFXhwP0TPhnjXFR4+rfvrCmaO
+         whfA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=DflVdIpQoJVyFG2BYO2Tb9HnXbDJdzN08W+fLPNFXdw=;
-        b=ltlZ1O5ef+ctTvCMSIY3AtZb8NSTnijd7G94plx7B/hQQ4ahzLerVhXpr/W0Zyi6JP
-         KGepp+Henv4bh5RT4lUWaUef9aejA654yoEeowHJGVRR3a1BtLm97eS3gf9D7s+GFy4t
-         HTfmuIbzHqlw/tUGqVvnMr7X0bhOq8SOiPQSTflTbflm+bExnfrsV05DN7SnAgzH8huS
-         I5CKyiOQuieWZoKGxX62T/vOYxAAK/t00w05qQ4YJXx3aOWedcdJt8aBQ9DmF+pM+Kt9
-         6Owo+qoraLkHsZGRgSmuu/LdiN+sN600P532A/PAsotSQN0lUg45coO7mUcMYhz6Fdr5
-         abfw==
-X-Gm-Message-State: APjAAAXXUKQlUs2UI5VyYt8pxq8TQMDnfzYA1X+YYl6ctkLOKfSJTJJu
-        qcmxUmhU9XxZzU/uC0OJCkoG3sJgmLWwc7xc6BQ=
-X-Google-Smtp-Source: APXvYqw9TDa7w6xj+qx/o6YYN4t9kpVyB/JwaShoiKk7HyvfPJQa+5Tszx3kLCLBj49gCNLEzwgaWVI1NA61UOPotN8=
-X-Received: by 2002:ae9:e809:: with SMTP id a9mr10933464qkg.92.1576800158825;
- Thu, 19 Dec 2019 16:02:38 -0800 (PST)
-MIME-Version: 1.0
-References: <157676577049.957277.3346427306600998172.stgit@toke.dk> <157676577267.957277.6240503077867756432.stgit@toke.dk>
-In-Reply-To: <157676577267.957277.6240503077867756432.stgit@toke.dk>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 19 Dec 2019 16:02:27 -0800
-Message-ID: <CAEf4BzZYOrXQFtVbqhw7PagzT6VhfM5LRV93cLuzABy8eHWyqw@mail.gmail.com>
-Subject: Re: [PATCH RFC bpf-next 2/3] libbpf: Handle function externs and
- support static linking
-To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=X1FrBWT1p24x6uHFsr9hhNO3xRgVrIbhvVHS+TyU1LM=;
+        b=eCzuzCpY66Jt7149oevCV6s+ARML5PLcR8kTi1Nd8N/uSt+lW86zjTcba2W16ZIMcj
+         8y2on7aG5GQt+xil/tDlPY8ouSzwTxs4RxGUw5BYwlsiJSez2OUwJC1J9PAEH1L3Znrv
+         iBFHzxrnDffwsUyG1W6p4mAmAjdSq1aB0i8TU8zM7bxRyF1GHV6yufkH39HtT1rAeVD1
+         kFDRAJNpGkTTqZTvMZSOnQhlXcGE5jsO/aa+1d59LjOMgx5jrIegZmciGxSIHL0NVgmN
+         YcYQei8q1S2kHNwAtklYF06eX2yBNVxy3e4rbK18SdVeHnG+FaKitlScsczoxPxYyxpa
+         6z2g==
+X-Gm-Message-State: APjAAAW3K590T2NQnvgS03rJy3eEI9dvlQ9Kk5aOE/naXH9UmtblheQl
+        6l6lbUOBlgtW+wy/ns2HZdo=
+X-Google-Smtp-Source: APXvYqwR7Be3TeXX8IbUcKztjTnLxNdzJoLAYADOSPZ19sXokOHRn9TfZ2euhzGNNECWIoyjoCSYbA==
+X-Received: by 2002:a17:902:b901:: with SMTP id bf1mr11874897plb.283.1576800508330;
+        Thu, 19 Dec 2019 16:08:28 -0800 (PST)
+Received: from [172.20.20.156] ([222.151.198.97])
+        by smtp.gmail.com with ESMTPSA id i4sm8167347pjd.19.2019.12.19.16.08.24
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 19 Dec 2019 16:08:27 -0800 (PST)
+Subject: Re: [RFC net-next 11/14] tun: run XDP program in tx path
+To:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Jesper Dangaard Brouer <jbrouer@redhat.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        "Michael S . Tsirkin" <mst@redhat.com>,
         Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Jason Wang <jasowang@redhat.com>,
+        David Ahern <dsahern@gmail.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Toshiaki Makita <toshiaki.makita1@gmail.com>,
         Martin KaFai Lau <kafai@fb.com>,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        Andrii Nakryiko <andriin@fb.com>, netdev@vger.kernel.org,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>
+References: <20191218081050.10170-1-prashantbhole.linux@gmail.com>
+ <20191218081050.10170-12-prashantbhole.linux@gmail.com>
+ <20191218110732.33494957@carbon> <87fthh6ehg.fsf@toke.dk>
+ <20191218181944.3ws2oy72hpyxshhb@ast-mbp.dhcp.thefacebook.com>
+ <35a07230-3184-40bf-69ff-852bdfaf03c6@gmail.com> <874kxw4o4r.fsf@toke.dk>
+From:   Prashant Bhole <prashantbhole.linux@gmail.com>
+Message-ID: <5eb791bf-1876-0b4b-f721-cb3c607f846c@gmail.com>
+Date:   Fri, 20 Dec 2019 09:07:24 +0900
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
+MIME-Version: 1.0
+In-Reply-To: <874kxw4o4r.fsf@toke.dk>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 19, 2019 at 6:29 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redh=
-at.com> wrote:
->
-> From: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
->
-> This adds support for resolving function externs to libbpf, with a new AP=
-I
-> to resolve external function calls by static linking at load-time. The AP=
-I
-> for this requires the caller to supply the object files containing the
-> target functions, and to specify an explicit mapping between extern
-> function names in the calling program, and function names in the target
-> object file. This is to support the XDP multi-prog case, where the
-> dispatcher program may not necessarily have control over function names i=
-n
-> the target programs, so simple function name resolution can't be used.
->
-> The target object files must be loaded into the kernel before the calling
-> program, to ensure all relocations are done on the target functions, so w=
-e
-> can just copy over the instructions.
->
-> Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
-> ---
+Note: Resending my last response. It was not delivered to netdev list
+due to some problem.
 
-A bunch of this code will change after you update to latest Clang with
-proper type info for extern functions. E.g., there shouldn't be any
-size/alignment for BTF_KIND_FUNC_PROTO, it's illegal. But that
-Yonghong already mentioned.
+On 12/19/19 7:15 PM, Toke Høiland-Jørgensen wrote:
+> Prashant Bhole <prashantbhole.linux@gmail.com> writes:
+> 
+>> On 12/19/19 3:19 AM, Alexei Starovoitov wrote:
+>>> On Wed, Dec 18, 2019 at 12:48:59PM +0100, Toke Høiland-Jørgensen wrote:
+>>>> Jesper Dangaard Brouer <jbrouer@redhat.com> writes:
+>>>>
+>>>>> On Wed, 18 Dec 2019 17:10:47 +0900
+>>>>> Prashant Bhole <prashantbhole.linux@gmail.com> wrote:
+>>>>>
+>>>>>> +static u32 tun_do_xdp_tx(struct tun_struct *tun, struct tun_file *tfile,
+>>>>>> +			 struct xdp_frame *frame)
+>>>>>> +{
+>>>>>> +	struct bpf_prog *xdp_prog;
+>>>>>> +	struct tun_page tpage;
+>>>>>> +	struct xdp_buff xdp;
+>>>>>> +	u32 act = XDP_PASS;
+>>>>>> +	int flush = 0;
+>>>>>> +
+>>>>>> +	xdp_prog = rcu_dereference(tun->xdp_tx_prog);
+>>>>>> +	if (xdp_prog) {
+>>>>>> +		xdp.data_hard_start = frame->data - frame->headroom;
+>>>>>> +		xdp.data = frame->data;
+>>>>>> +		xdp.data_end = xdp.data + frame->len;
+>>>>>> +		xdp.data_meta = xdp.data - frame->metasize;
+>>>>>
+>>>>> You have not configured xdp.rxq, thus a BPF-prog accessing this will crash.
+>>>>>
+>>>>> For an XDP TX hook, I want us to provide/give BPF-prog access to some
+>>>>> more information about e.g. the current tx-queue length, or TC-q number.
+>>>>>
+>>>>> Question to Daniel or Alexei, can we do this and still keep BPF_PROG_TYPE_XDP?
+>>>>> Or is it better to introduce a new BPF prog type (enum bpf_prog_type)
+>>>>> for XDP TX-hook ?
+>>>>
+>>>> I think a new program type would make the most sense. If/when we
+>>>> introduce an XDP TX hook[0], it should have different semantics than the
+>>>> regular XDP hook. I view the XDP TX hook as a hook that executes as the
+>>>> very last thing before packets leave the interface. It should have
+>>>> access to different context data as you say, but also I don't think it
+>>>> makes sense to have XDP_TX and XDP_REDIRECT in an XDP_TX hook. And we
+>>>> may also want to have a "throttle" return code; or maybe that could be
+>>>> done via a helper?
+>>>>
+>>>> In any case, I don't think this "emulated RX hook on the other end of a
+>>>> virtual device" model that this series introduces is the right semantics
+>>>> for an XDP TX hook. I can see what you're trying to do, and for virtual
+>>>> point-to-point links I think it may make sense to emulate the RX hook of
+>>>> the "other end" on TX. However, form a UAPI perspective, I don't think
+>>>> we should be calling this a TX hook; logically, it's still an RX hook
+>>>> on the receive end.
+>>>>
+>>>> If you guys are up for evolving this design into a "proper" TX hook (as
+>>>> outlined above an in [0]), that would be awesome, of course. But not
+>>>> sure what constraints you have on your original problem? Do you
+>>>> specifically need the "emulated RX hook for unmodified XDP programs"
+>>>> semantics, or could your problem be solved with a TX hook with different
+>>>> semantics?
+>>>
+>>> I agree with above.
+>>> It looks more like existing BPF_PROG_TYPE_XDP, but attached to egress
+>>> of veth/tap interface. I think only attachment point makes a difference.
+>>> May be use expected_attach_type ?
+>>> Then there will be no need to create new program type.
+>>> BPF_PROG_TYPE_XDP will be able to access different fields depending
+>>> on expected_attach_type. Like rx-queue length that Jesper is suggesting
+>>> will be available only in such case and not for all BPF_PROG_TYPE_XDP progs.
+>>> It can be reduced too. Like if there is no xdp.rxq concept for egress side
+>>> of virtual device the access to that field can disallowed by the verifier.
+>>> Could you also call it XDP_EGRESS instead of XDP_TX?
+>>> I would like to reserve XDP_TX name to what Toke describes as XDP_TX.
+>>>
+>>
+>>   From the discussion over this set, it makes sense to have new type of
+>> program. As David suggested it will make a way for changes specific
+>> to egress path.
+>> On the other hand, XDP offload with virtio-net implementation is based
+>> on "emulated RX hook". How about having this special behavior with
+>> expected_attach_type?
+> 
+> Another thought I had re: this was that for these "special" virtual
+> point-to-point devices we could extend the API to have an ATTACH_PEER
+> flag. So if you have a pair of veth devices (veth0,veth1) connecting to
+> each other, you could do either of:
+> 
+> bpf_set_link_xdp_fd(ifindex(veth0), prog_fd, 0);
+> bpf_set_link_xdp_fd(ifindex(veth1), prog_fd, ATTACH_PEER);
+> 
+> to attach to veth0, and:
+> 
+> bpf_set_link_xdp_fd(ifindex(veth1), prog_fd, 0);
+> bpf_set_link_xdp_fd(ifindex(veth0), prog_fd, ATTACH_PEER);
+> 
+> to attach to veth0.
+> 
+> This would allow to attach to a device without having the "other end"
+> visible, and keep the "XDP runs on RX" semantics clear to userspace.
+> Internally in the kernel we could then turn the "attach to peer"
+> operation for a tun device into the "emulate on TX" thing you're already
+> doing?
+> 
+> Would this work for your use case, do you think?
+> 
+> -Toke
+> 
 
-As for the overall approach. I think doing static linking outside of
-bpf_object opening/loading is cleaner approach. If we introduce
-bpf_linker concept/object and have someting like
-bpf_linked__new(options) + a sequence of
-bpf_linker__add_object(bpf_object) + final bpf_linker__link(), which
-will produce usable bpf_object, as if bpf_object__open() was just
-called, it will be better and will allow quite a lot of flexibility in
-how we do things, without cluttering bpf_object API itself.
-Additionally, we can even have bpf_linker__write_file() to emit a
-final ELF file with statically linked object, which can then be loaded
-through bpf_object__open_file (we can do the same for in-memory
-buffer, of course). You can imagine LLC some day using libbpf to do
-actual linking of BPF .o files into a final BPF executable/object
-file, just like you expect it to do for non-BPF object files. WDYT?
+This is nice from UAPI point of view. It may work for veth case but
+not for XDP offload with virtio-net. Please see the sequence when
+a user program in the guest wants to offload a program to tun.
 
-Additionally, and seems you already realized that as well (judging by
-FIXMEs), we'll need to merge those individual objects' BTFs and
-deduplicate them, so that they form coherent set of types. Adjusting
-line info/func info is mandatory as well.
+* User program wants to loads the program by setting offload flag and
+   ifindex:
 
-Another thing we should think through is sharing maps. With
-BTF-defined maps, it should be pretty easy to have declaration vs
-definiton of maps. E.g.,
+- map_offload_ops->alloc()
+   virtio-net sends map info to qemu and it creates map on the host.
+- prog_offload_ops->setup()
+   New callback just to have a copy of unmodified program. It contains
+   original map fds. We replace map fds with fds from the host side.
+   Check the program for unsupported helpers calls.
+- prog_offload_ops->finalize()
+   Send the program to qemu and it loads the program to the host.
 
-prog_a.c:
+* User program calls bpf_set_link_xdp_fd()
+   virtio-net handles XDP_PROG_SETUP_HW by sending a request to qemu.
+   Qemu then attaches host side program fd to respective tun device by
+   calling bpf_set_link_xdp_fd()
 
-struct {
-    __uint(type, BPF_MAP_TYPE_ARRAY);
-    __uint(max_entries, 123);
-    ... and so on, complete definition
-} my_map SEC(".maps");
+In above sequence there is no chance to use.
 
-prog_b.c:
+Here is how other ideas from this discussion can be used:
 
-extern struct {
-    ... here we can discuss which pieces are necessary/allowed,
-potentially all (and they all should match, of course) ...
-} my_map SEC(".maps");
+- Introduce BPF_PROG_TYPE_TX_XDP for egress path. Have a special
+   behavior of emulating RX XDP using expected_attach_type flag.
+- The emulated RX XDP will be restrictive in terms of helper calls.
+- In offload case qemu will load the program BPF_PROG_TYPE_TX_XDP and
+   set expected_attach_type.
 
-prog_b.c won't create a new map, it will just use my_map from prog_a.c.
+What is your opinion about it? Does the driver implementing egress
+XDP needs to know what kind of XDP program it is running?
 
-I might be missing something else as well, but those are the top things, IM=
-O.
-
-I hope this is helpful.
-
->  tools/lib/bpf/btf.c    |   10 +-
->  tools/lib/bpf/libbpf.c |  268 +++++++++++++++++++++++++++++++++++++++---=
-------
->  tools/lib/bpf/libbpf.h |   17 +++
->  3 files changed, 244 insertions(+), 51 deletions(-)
->
-
-[...]
+Thanks,
+Prashant
