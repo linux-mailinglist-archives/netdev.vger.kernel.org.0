@@ -2,74 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 03BE0128085
-	for <lists+netdev@lfdr.de>; Fri, 20 Dec 2019 17:21:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3EA46128098
+	for <lists+netdev@lfdr.de>; Fri, 20 Dec 2019 17:24:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727411AbfLTQVi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Dec 2019 11:21:38 -0500
-Received: from mail-ot1-f67.google.com ([209.85.210.67]:41281 "EHLO
-        mail-ot1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726808AbfLTQVi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Dec 2019 11:21:38 -0500
-Received: by mail-ot1-f67.google.com with SMTP id r27so12451396otc.8
-        for <netdev@vger.kernel.org>; Fri, 20 Dec 2019 08:21:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=NfrLzNCbw1s+zBcwnz7RctaCH2Oi3DzYD9aUkPQBXEY=;
-        b=NukwiuTqz8YI0+DM+UvFJEo4FpuYNrxrXxww/YwT5/K4119xDyIkgAanpMd5mzhnZR
-         /1JTbYp2OI+o+NHIIcM2ycnOczcwn5AzjlfAf3QRUKOoTJ++LOXGwUG2GJTUtSk8o0oJ
-         Gihz53x+p99h+dUxOWARcqiwmF0+pMx7SE8N2YSkp2eqOuMP0y3P4q/5cxpvoe/xkkZl
-         ONhtO0i+xPeUF4VmfpUXM17FcrwYmLtqkwXBCFXZ4tkBUAJz9xHwGxaOc7fz1fjXjAAg
-         T1v9DC0jJlpiTJDShqZKkbpwb7bGoI5DXcDZrHqNzKonA5Qk+AqV6W4YmIb4RDRj6JZV
-         G4Wg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=NfrLzNCbw1s+zBcwnz7RctaCH2Oi3DzYD9aUkPQBXEY=;
-        b=ka8T7xuO4S5xZURq9gQzXR/tlUbJBgk/Aj1nugM1A54LGAXw4Mn+0zG5uB+eLcR3Q2
-         azuOzjUSp2iDJvMMMBIiiiDm/uZs44Mp/X1VnNiIguuMP+GpAmOKk4qRMsjp7W5K3emt
-         YBWMAuZAwH4hZRE0VQaakB9Y1z3dA+qb3RrXbNwl+9qaVVQ07w75+ZCqFigmOGWTg1Qr
-         xRHsC6YTaYN8bspuwE5OUCOe8hOMePsl5DHo4mVwFV0MHAr8k4JBl0ZdicQnWJmfeBIm
-         4m8v1Jm580SNpwaWxhK2wSGKVd5Ek2jMcgPJrcdNS3uUZuuFe6rGiuTr+70Cmw1pl00a
-         9LvA==
-X-Gm-Message-State: APjAAAXkpBrQuMvemFPRkA70t5neYfbj96Ims4J3AEoG7ZQWkbEr6ZHT
-        UYyS+5uJ+ivMxCoMl96EedjcjqLQ2WytxvK5HAs=
-X-Google-Smtp-Source: APXvYqwu4ezD82Nd8DsJ5Ba614kzjrCN03l3kTPm49o9g+ekczF47iWniQyQpqK8i6GvX3+t/95P17BLUzM3o9hXd+E=
-X-Received: by 2002:a9d:ee2:: with SMTP id 89mr7369441otj.270.1576858897265;
- Fri, 20 Dec 2019 08:21:37 -0800 (PST)
+        id S1727422AbfLTQYf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Dec 2019 11:24:35 -0500
+Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:53106 "EHLO
+        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727181AbfLTQYe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Dec 2019 11:24:34 -0500
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx1-us2.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id EF4BB34006A;
+        Fri, 20 Dec 2019 16:24:32 +0000 (UTC)
+Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
+ (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Fri, 20 Dec
+ 2019 16:24:28 +0000
+From:   Edward Cree <ecree@solarflare.com>
+Subject: [PATCH net 0/2] sfc: fix bugs introduced by XDP patches
+To:     <linux-net-drivers@solarflare.com>, <davem@davemloft.net>
+CC:     <netdev@vger.kernel.org>
+Message-ID: <83c50994-18de-1d8f-67ce-b2322d226338@solarflare.com>
+Date:   Fri, 20 Dec 2019 16:24:24 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-Received: by 2002:a4a:8c04:0:0:0:0:0 with HTTP; Fri, 20 Dec 2019 08:21:36
- -0800 (PST)
-Reply-To: westeruniontransferunite.lome@hotmail.com
-From:   MAKATY MAKAA <makatymakaa@gmail.com>
-Date:   Fri, 20 Dec 2019 16:21:36 +0000
-Message-ID: <CA+oczq4LYcQJwRtDduOVnnL=mB+6mNnDM6Hy5ykaWbWi5uf4eA@mail.gmail.com>
-Subject: 
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-GB
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.17.20.203]
+X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
+ ukex01.SolarFlarecom.com (10.17.10.4)
+X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1010-25114.003
+X-TM-AS-Result: No-0.537900-8.000000-10
+X-TMASE-MatchedRID: MS5rc/rqO2w5NXlWWXBFjsnUT+eskUQPV447DNvw38b2u2oLJUFmGIWh
+        cBEymmAr8XVI39JCRnSjfNAVYAJRAinqwKmU0oYznFVnNmvv47t9LQinZ4QefL6qvLNjDYTwxbG
+        vmM9nj5NQSFbL1bvQAXnN0DN7HnFmW5LB7PV5+OBj3jcwKV3vYSJIBoXPfnNXa4IDfe01uhmj2q
+        jlYX+7qlrMCKBXF1d6I2VNggMWJCP4LggrmsRgvTwNB+BE7PnlftwZ3X11IV0=
+X-TM-AS-User-Approved-Sender: Yes
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--0.537900-8.000000
+X-TMASE-Version: SMEX-12.5.0.1300-8.5.1010-25114.003
+X-MDID: 1576859074-zJ1E9mjcN2oG
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Attention,
+Two fixes for bugs introduced by the XDP support in the sfc driver.
 
-We have deposited the cheque of your fund ($ 2.5 Million USD) through
-Western Union department Finally after our meeting Regarding your
-fund,  All you do is to contact Western Union director Dr.Fedinand
-Umeh via Email (westeruniontransferunite@gmail.com) he will give you
-direction on how you will be receiving the Funds daily,remember to
-send him your full information to avoid wrong transfer Such as,
-Receiver's Name _______________
-Address: ________________
-Country: _____________
-Phone Number: _____________
-Your email address _______________
-Though,  Dr.Fedinand Umeh has sent $ 5,000 through Western Union  in
-your name  today  so contact  Dr.Fedinand Umeh as soon as you receive
-this email and tell him to give you the Mtcn, sender name and question
-/ answer to pick the $ 5000 and Please let us know as soon as you
-received all your fund. Best Regards.
-WESTERN UNION AGENT
+Charles McLachlan (1):
+  sfc: Include XDP packet headroom in buffer step size.
+
+Edward Cree (1):
+  sfc: fix channel allocation with brute force
+
+ drivers/net/ethernet/sfc/efx.c        | 37 +++++++++++++--------------
+ drivers/net/ethernet/sfc/net_driver.h |  4 +--
+ drivers/net/ethernet/sfc/rx.c         | 14 +++++-----
+ 3 files changed, 26 insertions(+), 29 deletions(-)
+
