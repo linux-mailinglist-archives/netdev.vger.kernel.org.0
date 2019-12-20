@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 191271273DC
+	by mail.lfdr.de (Postfix) with ESMTP id 8B4E61273DD
 	for <lists+netdev@lfdr.de>; Fri, 20 Dec 2019 04:26:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727301AbfLTD0M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Dec 2019 22:26:12 -0500
-Received: from mail-pf1-f181.google.com ([209.85.210.181]:38341 "EHLO
-        mail-pf1-f181.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727024AbfLTD0L (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Dec 2019 22:26:11 -0500
-Received: by mail-pf1-f181.google.com with SMTP id x185so4432087pfc.5
-        for <netdev@vger.kernel.org>; Thu, 19 Dec 2019 19:26:11 -0800 (PST)
+        id S1727328AbfLTD0P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Dec 2019 22:26:15 -0500
+Received: from mail-pf1-f177.google.com ([209.85.210.177]:34042 "EHLO
+        mail-pf1-f177.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727024AbfLTD0P (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Dec 2019 22:26:15 -0500
+Received: by mail-pf1-f177.google.com with SMTP id l127so4439420pfl.1
+        for <netdev@vger.kernel.org>; Thu, 19 Dec 2019 19:26:15 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=Cm7bXKD9o1sCx3jg8KwtBaYlyUHT3VMT3GrRMVAKWDc=;
-        b=k5OgFaZg431siSSXv4zAqkQLmRu+zk+NA+xmpBVtGkOEpw3XQ81MstZlMYCtaT2iDF
-         GpQ7yDK2CroA8xLcEeDqNF5T6hSY3AohGolhcjmx1JL+s7Py8mq0mNYn8xdbq8KOWsqo
-         jeaC4X0W2vWBUZXU6/g0Ci/oeNVPBZC722XODkTqWK4mtiq66p/TMll0Mw1t9Jhfl1Nc
-         9Ln0/xjqr0AU2n4zQ2PrLNJw74n138LE+uNJyvF2ERwUXdNSB3Ht9y1TomzlDicoKWxK
-         t1zVs3fNPv6siSnjoPTGUu4pxAPthUMC4uMKJpDLU6/6UFQ8sRpDK2Agn6JIjfS2QZXw
-         Xt5Q==
+        bh=Gylx/NMD0ldqd3YSkq+7y4Gipb/VepE8tqTW6LAeoq0=;
+        b=J0AutXzz7C/PdhlKxSofSNrFv9HiChYr0edafMfgvequUqFO8AVTfZf2BTFMZVYV+P
+         oR2lUrXiXbFdU2jTwp1B/XC7Nm9iEEvg/+fjCX+Qol1ZpGZ+sUOs6gW+U1F9UUb8EhPs
+         qaY/qIIcH3bPZYwR3dO14LM0znZvpWTk6nRjBNWK7egfVBd08y0K3uIDliO28i2g0qT7
+         Ck4MreZzOGi5hKgrCXHwq/lHMcG0XvV8MphybyScPYwYH/apjd8Wq6YLFmhzEDNE7FHD
+         VsmH+Fk5oGZFWppxV3giIjYHn65s4g+evYZUrrrDZ8PlgQSfpJ4RlTSFAWTCjPUvte7W
+         HDEg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=Cm7bXKD9o1sCx3jg8KwtBaYlyUHT3VMT3GrRMVAKWDc=;
-        b=CUwcJvmUVRaLTl+Rtb4ohgNDwEx5zFn/UKwK4cQbX2Q+0oDTyKtQLVeeWQ3tJ0rGUL
-         VXkT0dvbZrNvQCWG7W9TA8pnZmBr1CXKjPVDjwEIu7+9XEZlbtedaI16hdka21pTA+7z
-         xJa6XnUqdtt7FaQm+ZHH9kS56w4JHTW9nfBeWDszmfp6z2kz2rERrmkS6JbPHx5tcYHC
-         RiEfjlQebKCwFFUgUwhsczo2Ty/nAPYSacMNh7GCNdqQI88V708N2uWh0SrZKHzCoBzD
-         zwWeCiXEdE8CbuOYtfVLvMZEnlGAPK0w+VGHESlxtgwF9X9BiQFyUGzJCPuPNhzOPKqQ
-         eVBw==
-X-Gm-Message-State: APjAAAV4f7KZ538VcmGsD7EPRjVQIfcwxllPNCpiknwFB9hMbYqmIEU7
-        zk4FjIA9wgO4vyVsHOSCqLFpU0hPjro=
-X-Google-Smtp-Source: APXvYqzDiphbDbZvd0mi0RYWzZbSrLrzH9Ifv/W8Przy1NSKw2HABEgbMZmWoTuFrx6UtkhxeKg+wQ==
-X-Received: by 2002:a62:7681:: with SMTP id r123mr13476188pfc.169.1576812370806;
-        Thu, 19 Dec 2019 19:26:10 -0800 (PST)
+        bh=Gylx/NMD0ldqd3YSkq+7y4Gipb/VepE8tqTW6LAeoq0=;
+        b=p7ljn9fhAvlqt0cJjb74jm+UKIBU3wJvD4nDZVfEO5MxNOueDlE2/7spU6U7jHhKzx
+         0Y6XE2S+ZftLmCP8zlIMmQzodCJaXY/98xGfcFNBH1HiRrcSPN0KmFZDeaZcTOYuAleI
+         jQFMjxgjwJFvVbo10XyzuiPQF79dMG8ca678617TiRb9kLyCVUC0v5/FXGMB1OE1eEDx
+         NNZdkJwxM2w6EPSmZV3cA8e0yTvqVjwovus+0tjF0+4aUqclKGaUs2QDQ12tMgjndPkw
+         eNOVo5y0z0l+qUxiaR7FTTW1Cs8Dozh+oNTe8JP4YgfStbpv9TQYdGgdCMfogQlZJXpd
+         XHjQ==
+X-Gm-Message-State: APjAAAXJWzgHtEJUI7+xN2SaHHRGy+c55NpKriQn1FlrDOqip97T0pnJ
+        AggUfdLt+mEgqZCLh/w2NOSjh9rsOcI=
+X-Google-Smtp-Source: APXvYqxCSg4X9I/RijJLUs7r7xDm0duasLvi0FQ+iL3kaoFYfe2H+a1ss86j9vLjrRBc0RWV9EJoMg==
+X-Received: by 2002:a63:dc41:: with SMTP id f1mr13007032pgj.119.1576812374734;
+        Thu, 19 Dec 2019 19:26:14 -0800 (PST)
 Received: from dhcp-12-139.nay.redhat.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id gc1sm7954265pjb.20.2019.12.19.19.26.07
+        by smtp.gmail.com with ESMTPSA id gc1sm7954265pjb.20.2019.12.19.19.26.11
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 19 Dec 2019 19:26:10 -0800 (PST)
+        Thu, 19 Dec 2019 19:26:14 -0800 (PST)
 From:   Hangbin Liu <liuhangbin@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     Julian Anastasov <ja@ssi.bg>,
@@ -56,9 +56,9 @@ Cc:     Julian Anastasov <ja@ssi.bg>,
         Stephen Hemminger <stephen@networkplumber.org>,
         Alexey Kodanev <alexey.kodanev@oracle.com>,
         Hangbin Liu <liuhangbin@gmail.com>
-Subject: [PATCHv4 net 7/8] sit: do not confirm neighbor when do pmtu update
-Date:   Fri, 20 Dec 2019 11:25:24 +0800
-Message-Id: <20191220032525.26909-8-liuhangbin@gmail.com>
+Subject: [PATCHv4 net 8/8] net/dst: do not confirm neighbor for vxlan and geneve pmtu update
+Date:   Fri, 20 Dec 2019 11:25:25 +0800
+Message-Id: <20191220032525.26909-9-liuhangbin@gmail.com>
 X-Mailer: git-send-email 2.19.2
 In-Reply-To: <20191220032525.26909-1-liuhangbin@gmail.com>
 References: <20191218115313.19352-1-liuhangbin@gmail.com>
@@ -73,31 +73,35 @@ X-Mailing-List: netdev@vger.kernel.org
 When do IPv6 tunnel PMTU update and calls __ip6_rt_update_pmtu() in the end,
 we should not call dst_confirm_neigh() as there is no two-way communication.
 
+So disable the neigh confirm for vxlan and geneve pmtu update.
+
 v4: No change.
 v3: Do not remove dst_confirm_neigh, but add a new bool parameter in
     dst_ops.update_pmtu to control whether we should do neighbor confirm.
     Also split the big patch to small ones for each area.
 v2: Remove dst_confirm_neigh in __ip6_rt_update_pmtu.
 
+Fixes: a93bf0ff4490 ("vxlan: update skb dst pmtu on tx path")
+Fixes: 52a589d51f10 ("geneve: update skb dst pmtu on tx path")
 Reviewed-by: Guillaume Nault <gnault@redhat.com>
 Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
 ---
- net/ipv6/sit.c | 2 +-
+ include/net/dst.h | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/ipv6/sit.c b/net/ipv6/sit.c
-index b2ccbc473127..98954830c40b 100644
---- a/net/ipv6/sit.c
-+++ b/net/ipv6/sit.c
-@@ -944,7 +944,7 @@ static netdev_tx_t ipip6_tunnel_xmit(struct sk_buff *skb,
- 		}
+diff --git a/include/net/dst.h b/include/net/dst.h
+index 208e7c0c89d8..626cf614ad86 100644
+--- a/include/net/dst.h
++++ b/include/net/dst.h
+@@ -535,7 +535,7 @@ static inline void skb_tunnel_check_pmtu(struct sk_buff *skb,
+ 	u32 encap_mtu = dst_mtu(encap_dst);
  
- 		if (tunnel->parms.iph.daddr)
--			skb_dst_update_pmtu(skb, mtu);
-+			skb_dst_update_pmtu_no_confirm(skb, mtu);
+ 	if (skb->len > encap_mtu - headroom)
+-		skb_dst_update_pmtu(skb, encap_mtu - headroom);
++		skb_dst_update_pmtu_no_confirm(skb, encap_mtu - headroom);
+ }
  
- 		if (skb->len > mtu && !skb_is_gso(skb)) {
- 			icmpv6_send(skb, ICMPV6_PKT_TOOBIG, 0, mtu);
+ #endif /* _NET_DST_H */
 -- 
 2.19.2
 
