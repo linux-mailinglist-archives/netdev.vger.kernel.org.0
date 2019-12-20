@@ -2,378 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E3591273FD
-	for <lists+netdev@lfdr.de>; Fri, 20 Dec 2019 04:35:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 76B1B12740F
+	for <lists+netdev@lfdr.de>; Fri, 20 Dec 2019 04:45:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727089AbfLTDfU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Dec 2019 22:35:20 -0500
-Received: from mail-ua1-f66.google.com ([209.85.222.66]:37599 "EHLO
-        mail-ua1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726964AbfLTDfU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Dec 2019 22:35:20 -0500
-Received: by mail-ua1-f66.google.com with SMTP id f9so2771886ual.4;
-        Thu, 19 Dec 2019 19:35:19 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=dSZ86v0Mu1ySriVc9gqwkJvhT4GqAJeYYgDn+nDx/NA=;
-        b=H4NQFwkCHtmaW+phBtsqIzhnck1uMVx9DDkJOTyGKg43KvlftZkke53DVW1GP7Xj0q
-         bDjrPwAGE86+FZCVLnWEsK/ka+G1Jlp8awL8Ib9ortQL4yqvMXQp4meQYqicZGEqTLKW
-         3of4D5AWypxlF0vfW9J5frXdwy1KHi2BQsH2+jG7nqjYGj8svoY7D04/GvjI9woRwHLM
-         1Gu/5uTXJwhD3/aLmOxO0yTQ0vEm9DdayqdO+GiQ+7h6LmnUe0VmS9/hSNsD+KJYBnei
-         2bIY0lmKLKmTOjJTZ7R+zvbhaHrtYUc5CXN9WfrA2ActbMBaCFgF/LNYG9rubPgeT4O9
-         ck+w==
+        id S1727174AbfLTDpK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Dec 2019 22:45:10 -0500
+Received: from mail-io1-f72.google.com ([209.85.166.72]:36239 "EHLO
+        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727020AbfLTDpK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Dec 2019 22:45:10 -0500
+Received: by mail-io1-f72.google.com with SMTP id 144so5228043iou.3
+        for <netdev@vger.kernel.org>; Thu, 19 Dec 2019 19:45:09 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=dSZ86v0Mu1ySriVc9gqwkJvhT4GqAJeYYgDn+nDx/NA=;
-        b=AA7cI0thJQOOf9odLFA88c69uduHV5JGKASQy7qVnrDEqt+RnOHuWdVnMQA7dTs3yS
-         8gF4WUcb3tS3CxF9s5szGk0c0uzCTERbTjiiRUzmOmhZMgqJaUr0XBlRQEcKur1czp3v
-         z56RgFcM1CCFRlgVetkqwZiOVzQ/Bevp1q6KYq0bU+lIwdcOeSJB8LvkeL6f7aYJMuvM
-         aGQcokRaa3AKwjfCuGHG3jzflkbaE4fAi3/Urnh1qphLy1EG5LEuy3FgzOhWf9QBujS7
-         hSVeP0jCS/tDZRnlxbpqa7vY72V5zd32y1Mf/woOVcfxuxAr20VUX/Rwg9Eg7AZ5TSVa
-         VeFA==
-X-Gm-Message-State: APjAAAUDMNN8TOxkrcaqD5QV0EEk/2DeZyr43Do+Kb4iiUHsoI4/LbJ3
-        5qk483xONGDkuIWHVRUBwLrytBJbLT93pCzaUOE=
-X-Google-Smtp-Source: APXvYqwxvwhtLk6UJSd/n6V0ttt9NyuictxlLRY5TsrxURRLYsZ3fHONUCwNTo8rJnwc3Gh2ytrDswN/yrcpxIZ6T1g=
-X-Received: by 2002:ab0:1006:: with SMTP id f6mr7973581uab.94.1576812918982;
- Thu, 19 Dec 2019 19:35:18 -0800 (PST)
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=dna2/NTPZH/v2wYRfNU5J9PqMpJUPBNX/S2Lv/VYKxU=;
+        b=sUWhuPqhDwDW4fr+hy1I+YPRcOZu2KNprnjBfk3VHnuqtqyEVH+Ivf3ZS512vFLIoa
+         Jk3sL9FFb9K0lJNxvDonej5VUhJzmJl7WCGU1zYdG0hjaTlFQLhhd9MaIq9/03pXn/cC
+         OW0j025I8fTGcSlvGcDxN+NV+eS7564XIZ+YDjSRMlOkbt9lMDOg708ykHMEUBv0IiDn
+         5GgFYUALsi2x2XNQkhQvirF2I3ZeAurbjk7jThIGGgnD3xk+stS+YHGQPoUW2lMeGRC3
+         AGF3pmzK4AWn44WZSzNRt9clY/c/5/5bRLIVBnecAr402v1Gtpp8RPDums4GQqHnKJqi
+         zu1A==
+X-Gm-Message-State: APjAAAXa5v6f9jOunPvaRmhH++4g4fqsdLZSl1czlqOJhUFhUEK2QaHs
+        ZeYMMKtYVP/D0lg9RPF/e/q22j2aa0UdN3b9IkEoYSHl9QBk
+X-Google-Smtp-Source: APXvYqwsZ7Yidf95uPacXveyO65URZZ4u0gPzEyHLq/OkVbPj5QWLBhZu2dKkoZBKj5OJ+K4Sv8NWhBI+cIecQ9T0Y4BAjQBfGUm
 MIME-Version: 1.0
-References: <8f6b8979fb64bedf5cb406ba29146c5fa2539267.1576575253.git.ethercflow@gmail.com>
- <cover.1576629200.git.ethercflow@gmail.com> <7464919bd9c15f2496ca29dceb6a4048b3199774.1576629200.git.ethercflow@gmail.com>
- <51564b9e-35f0-3c73-1701-8e351f2482d7@iogearbox.net>
-In-Reply-To: <51564b9e-35f0-3c73-1701-8e351f2482d7@iogearbox.net>
-From:   Wenbo Zhang <ethercflow@gmail.com>
-Date:   Fri, 20 Dec 2019 11:35:08 +0800
-Message-ID: <CABtjQmbh080cFr9e_V_vutb1fErRcCvw-bNNYeJHOcah-adFCA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v14 1/2] bpf: add new helper get_fd_path for
- mapping a file descriptor to a pathname
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Yonghong Song <yhs@fb.com>, Brendan Gregg <bgregg@netflix.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Networking <netdev@vger.kernel.org>, viro@zeniv.linux.org.uk
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-Received: by 2002:a92:c703:: with SMTP id a3mr9596649ilp.63.1576813509434;
+ Thu, 19 Dec 2019 19:45:09 -0800 (PST)
+Date:   Thu, 19 Dec 2019 19:45:09 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000001b6443059a1a815d@google.com>
+Subject: general protection fault in sctp_stream_free (2)
+From:   syzbot <syzbot+9a1bc632e78a1a98488b@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, linux-kernel@vger.kernel.org,
+        linux-sctp@vger.kernel.org, lucien.xin@gmail.com,
+        marcelo.leitner@gmail.com, netdev@vger.kernel.org,
+        nhorman@tuxdriver.com, syzkaller-bugs@googlegroups.com,
+        vyasevich@gmail.com
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> [ Wenbo, please keep also Al (added here) in the loop since he was provid=
-ing
->    feedback on prior submissions as well wrt vfs bits. ]
+Hello,
 
-Get it, thank you!
+syzbot found the following crash on:
 
-Daniel Borkmann <daniel@iogearbox.net> =E4=BA=8E2019=E5=B9=B412=E6=9C=8820=
-=E6=97=A5=E5=91=A8=E4=BA=94 =E4=B8=8A=E5=8D=8812:14=E5=86=99=E9=81=93=EF=BC=
-=9A
->
-> [ Wenbo, please keep also Al (added here) in the loop since he was provid=
-ing
->    feedback on prior submissions as well wrt vfs bits. ]
->
-> On 12/18/19 1:56 AM, Wenbo Zhang wrote:
-> > When people want to identify which file system files are being opened,
-> > read, and written to, they can use this helper with file descriptor as
-> > input to achieve this goal. Other pseudo filesystems are also supported=
-.
-> >
-> > This requirement is mainly discussed here:
-> >
-> >    https://github.com/iovisor/bcc/issues/237
-> >
-> > v13->v14: addressed Yonghong and Daniel's feedback
-> > - fix this helper's description to be consistent with comments in d_pat=
-h
-> > - fix error handling logic fill zeroes not '0's
-> >
-> > v12->v13: addressed Brendan and Yonghong's feedback
-> > - rename to get_fd_path
-> > - refactor code & comment to be clearer and more compliant
-> >
-> > v11->v12: addressed Alexei's feedback
-> > - only allow tracepoints to make sure it won't dead lock
-> >
-> > v10->v11: addressed Al and Alexei's feedback
-> > - fix missing fput()
-> >
-> > v9->v10: addressed Andrii's feedback
-> > - send this patch together with the patch selftests as one patch series
-> >
-> > v8->v9:
-> > - format helper description
-> >
-> > v7->v8: addressed Alexei's feedback
-> > - use fget_raw instead of fdget_raw, as fdget_raw is only used inside f=
-s/
-> > - ensure we're in user context which is safe fot the help to run
-> > - filter unmountable pseudo filesystem, because they don't have real pa=
-th
-> > - supplement the description of this helper function
-> >
-> > v6->v7:
-> > - fix missing signed-off-by line
-> >
-> > v5->v6: addressed Andrii's feedback
-> > - avoid unnecessary goto end by having two explicit returns
-> >
-> > v4->v5: addressed Andrii and Daniel's feedback
-> > - rename bpf_fd2path to bpf_get_file_path to be consistent with other
-> > helper's names
-> > - when fdget_raw fails, set ret to -EBADF instead of -EINVAL
-> > - remove fdput from fdget_raw's error path
-> > - use IS_ERR instead of IS_ERR_OR_NULL as d_path ether returns a pointe=
-r
-> > into the buffer or an error code if the path was too long
-> > - modify the normal path's return value to return copied string length
-> > including NUL
-> > - update this helper description's Return bits.
-> >
-> > v3->v4: addressed Daniel's feedback
-> > - fix missing fdput()
-> > - move fd2path from kernel/bpf/trace.c to kernel/trace/bpf_trace.c
-> > - move fd2path's test code to another patch
-> > - add comment to explain why use fdget_raw instead of fdget
-> >
-> > v2->v3: addressed Yonghong's feedback
-> > - remove unnecessary LOCKDOWN_BPF_READ
-> > - refactor error handling section for enhanced readability
-> > - provide a test case in tools/testing/selftests/bpf
-> >
-> > v1->v2: addressed Daniel's feedback
-> > - fix backward compatibility
-> > - add this helper description
-> > - fix signed-off name
-> >
-> > Signed-off-by: Wenbo Zhang <ethercflow@gmail.com>
-> > ---
-> >   include/uapi/linux/bpf.h       | 29 +++++++++++++-
-> >   kernel/trace/bpf_trace.c       | 69 +++++++++++++++++++++++++++++++++=
-+
-> >   tools/include/uapi/linux/bpf.h | 29 +++++++++++++-
-> >   3 files changed, 125 insertions(+), 2 deletions(-)
-> >
-> > diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-> > index dbbcf0b02970..4534ce49f838 100644
-> > --- a/include/uapi/linux/bpf.h
-> > +++ b/include/uapi/linux/bpf.h
-> > @@ -2821,6 +2821,32 @@ union bpf_attr {
-> >    *  Return
-> >    *          On success, the strictly positive length of the string, i=
-ncluding
-> >    *          the trailing NUL character. On error, a negative value.
-> > + *
-> > + * int bpf_get_fd_path(char *path, u32 size, int fd)
-> > + *   Description
-> > + *           Get **file** atrribute from the current task by *fd*, the=
-n call
-> > + *           **d_path** to get it's absolute path and copy it as strin=
-g into
-> > + *           *path* of *size*. Notice the **path** don't support unmou=
-ntable
-> > + *           pseudo filesystems as they don't have path (eg: SOCKFS, P=
-IPEFS).
-> > + *           The *size* must be strictly positive. On success, the hel=
-per
-> > + *           makes sure that the *path* is NUL-terminated, and the buf=
-fer
-> > + *           could be:
-> > + *           - a regular full path (include mountable fs eg: /proc, /s=
-ys)
-> > + *           - a regular full path with " (deleted)" is appended.
-> > + *           On failure, it is filled with zeroes.
-> > + *   Return
-> > + *           On success, returns the length of the copied string INCLU=
-DING
-> > + *           the trailing '\0'.
-> > + *
-> > + *           On failure, the returned value is one of the following:
-> > + *
-> > + *           **-EPERM** if no permission to get the path (eg: in irq c=
-tx).
-> > + *
-> > + *           **-EBADF** if *fd* is invalid.
-> > + *
-> > + *           **-EINVAL** if *fd* corresponds to a unmountable pseudo f=
-s
-> > + *
-> > + *           **-ENAMETOOLONG** if full path is longer than *size*
-> >    */
-> >   #define __BPF_FUNC_MAPPER(FN)               \
-> >       FN(unspec),                     \
-> > @@ -2938,7 +2964,8 @@ union bpf_attr {
-> >       FN(probe_read_user),            \
-> >       FN(probe_read_kernel),          \
-> >       FN(probe_read_user_str),        \
-> > -     FN(probe_read_kernel_str),
-> > +     FN(probe_read_kernel_str),      \
-> > +     FN(get_fd_path),
-> >
-> >   /* integer value in 'imm' field of BPF_CALL instruction selects which=
- helper
-> >    * function eBPF program intends to call
-> > diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
-> > index e5ef4ae9edb5..a2c18b193141 100644
-> > --- a/kernel/trace/bpf_trace.c
-> > +++ b/kernel/trace/bpf_trace.c
-> > @@ -762,6 +762,71 @@ static const struct bpf_func_proto bpf_send_signal=
-_proto =3D {
-> >       .arg1_type      =3D ARG_ANYTHING,
-> >   };
-> >
-> > +BPF_CALL_3(bpf_get_fd_path, char *, dst, u32, size, int, fd)
-> > +{
-> > +     int ret =3D -EBADF;
-> > +     struct file *f;
-> > +     char *p;
-> > +
-> > +     /* Ensure we're in user context which is safe for the helper to
-> > +      * run. This helper has no business in a kthread.
-> > +      */
-> > +     if (unlikely(in_interrupt() ||
-> > +                  current->flags & (PF_KTHREAD | PF_EXITING))) {
-> > +             ret =3D -EPERM;
-> > +             goto error;
-> > +     }
-> > +
-> > +     /* Use fget_raw instead of fget to support O_PATH, and it doesn't
-> > +      * have any sleepable code, so it's ok to be here.
-> > +      */
-> > +     f =3D fget_raw(fd);
-> > +     if (!f)
-> > +             goto error;
-> > +
-> > +     /* For unmountable pseudo filesystem, it seems to have no meaning
-> > +      * to get their fake paths as they don't have path, and to be no
-> > +      * way to validate this function pointer can be always safe to ca=
-ll
-> > +      * in the current context.
-> > +      */
-> > +     if (f->f_path.dentry->d_op && f->f_path.dentry->d_op->d_dname) {
-> > +             ret =3D -EINVAL;
-> > +             fput(f);
-> > +             goto error;
-> > +     }
-> > +
-> > +     /* After filter unmountable pseudo filesytem, d_path won't call
-> > +      * dentry->d_op->d_name(), the normally path doesn't have any
-> > +      * sleepable code, and despite it uses the current macro to get
-> > +      * fs_struct (current->fs), we've already ensured we're in user
-> > +      * context, so it's ok to be here.
-> > +      */
-> > +     p =3D d_path(&f->f_path, dst, size);
-> > +     if (IS_ERR(p)) {
-> > +             ret =3D PTR_ERR(p);
-> > +             fput(f);
-> > +             goto error;
-> > +     }
-> > +
-> > +     ret =3D strlen(p) + 1;
-> > +     memmove(dst, p, ret);
-> > +     fput(f);
-> > +     return ret;
-> > +
-> > +error:
-> > +     memset(dst, 0, size);
-> > +     return ret;
-> > +}
-> > +
-> > +static const struct bpf_func_proto bpf_get_fd_path_proto =3D {
-> > +     .func       =3D bpf_get_fd_path,
-> > +     .gpl_only   =3D true,
-> > +     .ret_type   =3D RET_INTEGER,
-> > +     .arg1_type  =3D ARG_PTR_TO_UNINIT_MEM,
-> > +     .arg2_type  =3D ARG_CONST_SIZE,
-> > +     .arg3_type  =3D ARG_ANYTHING,
-> > +};
-> > +
-> >   static const struct bpf_func_proto *
-> >   tracing_func_proto(enum bpf_func_id func_id, const struct bpf_prog *p=
-rog)
-> >   {
-> > @@ -953,6 +1018,8 @@ tp_prog_func_proto(enum bpf_func_id func_id, const=
- struct bpf_prog *prog)
-> >               return &bpf_get_stackid_proto_tp;
-> >       case BPF_FUNC_get_stack:
-> >               return &bpf_get_stack_proto_tp;
-> > +     case BPF_FUNC_get_fd_path:
-> > +             return &bpf_get_fd_path_proto;
-> >       default:
-> >               return tracing_func_proto(func_id, prog);
-> >       }
-> > @@ -1146,6 +1213,8 @@ raw_tp_prog_func_proto(enum bpf_func_id func_id, =
-const struct bpf_prog *prog)
-> >               return &bpf_get_stackid_proto_raw_tp;
-> >       case BPF_FUNC_get_stack:
-> >               return &bpf_get_stack_proto_raw_tp;
-> > +     case BPF_FUNC_get_fd_path:
-> > +             return &bpf_get_fd_path_proto;
-> >       default:
-> >               return tracing_func_proto(func_id, prog);
-> >       }
-> > diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/=
-bpf.h
-> > index dbbcf0b02970..4534ce49f838 100644
-> > --- a/tools/include/uapi/linux/bpf.h
-> > +++ b/tools/include/uapi/linux/bpf.h
-> > @@ -2821,6 +2821,32 @@ union bpf_attr {
-> >    *  Return
-> >    *          On success, the strictly positive length of the string, i=
-ncluding
-> >    *          the trailing NUL character. On error, a negative value.
-> > + *
-> > + * int bpf_get_fd_path(char *path, u32 size, int fd)
-> > + *   Description
-> > + *           Get **file** atrribute from the current task by *fd*, the=
-n call
-> > + *           **d_path** to get it's absolute path and copy it as strin=
-g into
-> > + *           *path* of *size*. Notice the **path** don't support unmou=
-ntable
-> > + *           pseudo filesystems as they don't have path (eg: SOCKFS, P=
-IPEFS).
-> > + *           The *size* must be strictly positive. On success, the hel=
-per
-> > + *           makes sure that the *path* is NUL-terminated, and the buf=
-fer
-> > + *           could be:
-> > + *           - a regular full path (include mountable fs eg: /proc, /s=
-ys)
-> > + *           - a regular full path with " (deleted)" is appended.
-> > + *           On failure, it is filled with zeroes.
-> > + *   Return
-> > + *           On success, returns the length of the copied string INCLU=
-DING
-> > + *           the trailing '\0'.
-> > + *
-> > + *           On failure, the returned value is one of the following:
-> > + *
-> > + *           **-EPERM** if no permission to get the path (eg: in irq c=
-tx).
-> > + *
-> > + *           **-EBADF** if *fd* is invalid.
-> > + *
-> > + *           **-EINVAL** if *fd* corresponds to a unmountable pseudo f=
-s
-> > + *
-> > + *           **-ENAMETOOLONG** if full path is longer than *size*
-> >    */
-> >   #define __BPF_FUNC_MAPPER(FN)               \
-> >       FN(unspec),                     \
-> > @@ -2938,7 +2964,8 @@ union bpf_attr {
-> >       FN(probe_read_user),            \
-> >       FN(probe_read_kernel),          \
-> >       FN(probe_read_user_str),        \
-> > -     FN(probe_read_kernel_str),
-> > +     FN(probe_read_kernel_str),      \
-> > +     FN(get_fd_path),
-> >
-> >   /* integer value in 'imm' field of BPF_CALL instruction selects which=
- helper
-> >    * function eBPF program intends to call
-> >
->
+HEAD commit:    6fa9a115 Merge branch 'stmmac-fixes'
+git tree:       net
+console output: https://syzkaller.appspot.com/x/log.txt?x=10c4fe99e00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=216dca5e1758db87
+dashboard link: https://syzkaller.appspot.com/bug?extid=9a1bc632e78a1a98488b
+compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=178ada71e00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=144f23a6e00000
+
+The bug was bisected to:
+
+commit 951c6db954a1adefab492f6da805decacabbd1a7
+Author: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Date:   Tue Dec 17 01:01:16 2019 +0000
+
+     sctp: fix memleak on err handling of stream initialization
+
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=13ffbdb6e00000
+final crash:    https://syzkaller.appspot.com/x/report.txt?x=10007db6e00000
+console output: https://syzkaller.appspot.com/x/log.txt?x=17ffbdb6e00000
+
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+9a1bc632e78a1a98488b@syzkaller.appspotmail.com
+Fixes: 951c6db954a1 ("sctp: fix memleak on err handling of stream  
+initialization")
+
+RBP: 0000000000000004 R08: 0000000000000008 R09: 00007ffc57730031
+R10: 0000000020000040 R11: 0000000000000246 R12: 0000000000401f20
+R13: 0000000000401fb0 R14: 0000000000000000 R15: 0000000000000000
+kasan: CONFIG_KASAN_INLINE enabled
+kasan: GPF could be caused by NULL-ptr deref or user memory access
+general protection fault: 0000 [#1] PREEMPT SMP KASAN
+CPU: 1 PID: 9129 Comm: syz-executor521 Not tainted 5.5.0-rc1-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
+Google 01/01/2011
+RIP: 0010:sctp_stream_free+0xe4/0x180 net/sctp/stream.c:183
+Code: 07 48 89 d1 48 69 d2 aa 00 00 00 48 c1 e1 0c 48 29 d0 48 8d 04 40 48  
+8d 34 c1 e8 57 24 54 fc 48 8d 78 08 48 89 fa 48 c1 ea 03 <42> 80 3c 32 00  
+75 6f 48 8b 78 08 e8 1c 4c 77 fa 41 0f b6 45 00 84
+RSP: 0018:ffffc90001e17770 EFLAGS: 00010202
+RAX: 0000000000000000 RBX: 0000000000000000 RCX: ffffffff838f50f6
+RDX: 0000000000000001 RSI: ffffffff838f5170 RDI: 0000000000000008
+RBP: ffffc90001e177a8 R08: ffff888094206000 R09: fffffbfff16599c2
+R10: fffffbfff16599c1 R11: ffffffff8b2cce0f R12: ffff8880a70126e8
+R13: ffffed1014e024df R14: dffffc0000000000 R15: ffff8880a70120a8
+FS:  0000000000f03880(0000) GS:ffff8880ae900000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000000020000100 CR3: 000000000986d000 CR4: 00000000001406e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+  sctp_association_free+0x235/0x7e0 net/sctp/associola.c:350
+  sctp_cmd_delete_tcb net/sctp/sm_sideeffect.c:934 [inline]
+  sctp_cmd_interpreter net/sctp/sm_sideeffect.c:1322 [inline]
+  sctp_side_effects net/sctp/sm_sideeffect.c:1189 [inline]
+  sctp_do_sm+0x3a6a/0x5190 net/sctp/sm_sideeffect.c:1160
+  sctp_primitive_ABORT+0xa0/0xd0 net/sctp/primitive.c:104
+  sctp_close+0x259/0x960 net/sctp/socket.c:1513
+  inet_release+0xed/0x200 net/ipv4/af_inet.c:427
+  __sock_release+0xce/0x280 net/socket.c:592
+  sock_close+0x1e/0x30 net/socket.c:1270
+  __fput+0x2ff/0x890 fs/file_table.c:280
+  ____fput+0x16/0x20 fs/file_table.c:313
+  task_work_run+0x145/0x1c0 kernel/task_work.c:113
+  exit_task_work include/linux/task_work.h:22 [inline]
+  do_exit+0x8e7/0x2ef0 kernel/exit.c:797
+  do_group_exit+0x135/0x360 kernel/exit.c:895
+  __do_sys_exit_group kernel/exit.c:906 [inline]
+  __se_sys_exit_group kernel/exit.c:904 [inline]
+  __x64_sys_exit_group+0x44/0x50 kernel/exit.c:904
+  do_syscall_64+0xfa/0x790 arch/x86/entry/common.c:294
+  entry_SYSCALL_64_after_hwframe+0x49/0xbe
+RIP: 0033:0x43f2f8
+Code: Bad RIP value.
+RSP: 002b:00007ffc5773ea88 EFLAGS: 00000246 ORIG_RAX: 00000000000000e7
+RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 000000000043f2f8
+RDX: 0000000000000000 RSI: 000000000000003c RDI: 0000000000000000
+RBP: 00000000004bf0c8 R08: 00000000000000e7 R09: ffffffffffffffd0
+R10: 0000000020000040 R11: 0000000000000246 R12: 0000000000000001
+R13: 00000000006d1180 R14: 0000000000000000 R15: 0000000000000000
+Modules linked in:
+---[ end trace 0df255c71a71b566 ]---
+RIP: 0010:sctp_stream_free+0xe4/0x180 net/sctp/stream.c:183
+Code: 07 48 89 d1 48 69 d2 aa 00 00 00 48 c1 e1 0c 48 29 d0 48 8d 04 40 48  
+8d 34 c1 e8 57 24 54 fc 48 8d 78 08 48 89 fa 48 c1 ea 03 <42> 80 3c 32 00  
+75 6f 48 8b 78 08 e8 1c 4c 77 fa 41 0f b6 45 00 84
+RSP: 0018:ffffc90001e17770 EFLAGS: 00010202
+RAX: 0000000000000000 RBX: 0000000000000000 RCX: ffffffff838f50f6
+RDX: 0000000000000001 RSI: ffffffff838f5170 RDI: 0000000000000008
+RBP: ffffc90001e177a8 R08: ffff888094206000 R09: fffffbfff16599c2
+R10: fffffbfff16599c1 R11: ffffffff8b2cce0f R12: ffff8880a70126e8
+R13: ffffed1014e024df R14: dffffc0000000000 R15: ffff8880a70120a8
+FS:  0000000000f03880(0000) GS:ffff8880ae900000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 000000000043f2ce CR3: 000000000986d000 CR4: 00000000001406e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+
+
+---
+This bug is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this bug report. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+syzbot can test patches for this bug, for details see:
+https://goo.gl/tpsmEJ#testing-patches
