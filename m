@@ -2,71 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D1D30127AC3
-	for <lists+netdev@lfdr.de>; Fri, 20 Dec 2019 13:11:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 147E4127AD0
+	for <lists+netdev@lfdr.de>; Fri, 20 Dec 2019 13:15:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727229AbfLTMLZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Dec 2019 07:11:25 -0500
-Received: from mail-io1-f68.google.com ([209.85.166.68]:44898 "EHLO
-        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727177AbfLTMLZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Dec 2019 07:11:25 -0500
-Received: by mail-io1-f68.google.com with SMTP id b10so9144798iof.11
-        for <netdev@vger.kernel.org>; Fri, 20 Dec 2019 04:11:25 -0800 (PST)
+        id S1727281AbfLTMPB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Dec 2019 07:15:01 -0500
+Received: from mail-il1-f194.google.com ([209.85.166.194]:33291 "EHLO
+        mail-il1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727191AbfLTMPA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Dec 2019 07:15:00 -0500
+Received: by mail-il1-f194.google.com with SMTP id v15so7796291iln.0
+        for <netdev@vger.kernel.org>; Fri, 20 Dec 2019 04:15:00 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=sjoBVnmN1fJq8TKBI+4jCTQTzvqpyaugxsFul1V9WbY=;
-        b=k2/lEEhXS40JjR2uz1vIPNQIv80obzYjUOs867XNiCiP3m2OZZ6w4sivH0pO/Vara2
-         OKP01AHhiCNf0UgCoE2+05ohZ+lIY38XXoTkbL7EVQ4cYsc217qEewSA+oARGLDThdLe
-         P9FpfkHxdsyBGyibkBkO2+reytvKc+ct1w69hsDy9UfwUzDXiQYEQxP+YE20NKH5V4DE
-         9q11JVImJM2mfbjiBgCeov59UW3uLMhsCvM/9tS/1SZoAvJLv+R+qrqUPGTimYBFIKmZ
-         wQ2uiYPKuCCSCYc64vxXPfzjdXj7nCkMXJzgXKJnWcx7k4hcEAPleR3XDSqdFcV8QndR
-         MLcQ==
+        bh=EVTrDTjdXLIfcCojPULwd3KxwFBMJh1j/xJeTBKbEWo=;
+        b=iOV72Ioy6P1HMLqkYTcLcbaRBzQHhMhmXpRMZdnWVwHWtuLMgmccg4UbJZkTUXLAXF
+         6NPEk8cAtFu8uD3jCEeIQYvb8d9kmn9ghp/9jGCaTIKG2ApyUiijAm9cwycvAQxYFlGz
+         dnRu8B7nSyJN/SoSv7FAzDdtJAhMB3BEOFR0iSWEaeSYht9BuN569mxxIppOIB5HRjQE
+         OFn1w8qhKpiFr0qcTRoPkEcpu7FJEjpwCAJIykM0Dl88GdBP2Tnfl/TX/GTRrgW/fkVF
+         1LZ2Kh5rhBlgazP35blXeJXc4QKOPRSbIibZOspospirjdzE7cq0LXrD7b1aVGW2Yg5j
+         Mx7g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=sjoBVnmN1fJq8TKBI+4jCTQTzvqpyaugxsFul1V9WbY=;
-        b=OA6tvp9zn4KFV+t2T3O6OCP1yBSbQx02gVYHUkfwiWklK4gX/upq0rf6fJqZou8hiI
-         8SkslbdsgO9uiWyPAVL3i9Di9QxECRRl/BB4d5sETG5UoP7wKwgLP03HmvSEV0vk1rCQ
-         5/sVo3OeOJGS3HH7PJtj+KUBL3d8LTpifMGNQcCwqISJzBs9z9qz8xmT0CKt8vNDwG+L
-         d+ZfQBFzN3yIcESfLEoljHgL5vp+c4zAh86pnPhmwuGc/vnCR6VIfvTFZ7DwKQeEuq0W
-         xY3uohSYpmKQcE4u32iSengkdn+IwLPivmi7b7CeIAWXZCoxQN4nZQ986dIizNDgBUSr
-         O6uQ==
-X-Gm-Message-State: APjAAAUd9JKkMC6sDTSRl7kdhx25skSd0ZOGIyTUaiWESfNf//1Pha2P
-        rsCWNHXynQXkPhAxSZfUd4vKGA==
-X-Google-Smtp-Source: APXvYqyYJBTNLgvpaToHG+zW5whpfAfdAhlu+NiF2tCN9V4F8W7r9GE7XvylUYwEjP5RdW3yur6sHA==
-X-Received: by 2002:a6b:6f06:: with SMTP id k6mr9997133ioc.204.1576843884643;
-        Fri, 20 Dec 2019 04:11:24 -0800 (PST)
+        bh=EVTrDTjdXLIfcCojPULwd3KxwFBMJh1j/xJeTBKbEWo=;
+        b=V3GQ8SJZSyS+Ro2+K6QVBw2fL4IdBsp5ZB9tLEdFmhLOD3Fusk9VahRq1QbaujqfCs
+         +I2FpYRk3GYTOjrs638mVvx2T2wrRbTZyrttl5ERUrnB7O13i3nq/JcWV+vZKkG0K4Fb
+         XkzqYJA0Ijw5eb/E7pDDQDz/nBscdVc13tnbVJauLgObVWvJ0r7GvFEdpwtqMmI7SmdV
+         GsprTLeI5KFNwVIicbu7t8mObGAwNjo5H/OcQhYEhbbluTMK9Rg/KFPWvDmxQMetfstm
+         DEqju6y+FTKMXqwArHeFqnb3jX0YRMlNInqke4X1b6l0NNM6Pfg9gE+QxW32QxA7OCnJ
+         aU2w==
+X-Gm-Message-State: APjAAAUll5x4fbbq6+qeBkBAAlBCA2oY1F3ZiRNb7FXLeH4e4hb+8LrD
+        n+5znFSW4/IaliILoI/b5Y0ueA==
+X-Google-Smtp-Source: APXvYqxIoEOF9WKDmdtpayNU9pMieZN/dOfaU/RysK5fs8nkZsCYAP2SZrO3opIL/uH2WsjJ7VCeRQ==
+X-Received: by 2002:a92:d34d:: with SMTP id a13mr1587556ilh.178.1576844100158;
+        Fri, 20 Dec 2019 04:15:00 -0800 (PST)
 Received: from [192.168.0.125] (198-84-204-252.cpe.teksavvy.com. [198.84.204.252])
-        by smtp.googlemail.com with ESMTPSA id z21sm3206375ioj.21.2019.12.20.04.11.23
+        by smtp.googlemail.com with ESMTPSA id u10sm4514717ilq.1.2019.12.20.04.14.59
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 20 Dec 2019 04:11:23 -0800 (PST)
-Subject: Re: [PATCH net 1/2] net/sched: cls_u32: fix refcount leak in the
- error path of u32_change()
-To:     Vlad Buslov <vladbu@mellanox.com>
-Cc:     Davide Caratti <dcaratti@redhat.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>, Roman Mashak <mrv@mojatatu.com>
+        Fri, 20 Dec 2019 04:14:59 -0800 (PST)
+Subject: Re: [PATCH net 0/2] net/sched: cls_u32: fix refcount leak
+To:     David Miller <davem@davemloft.net>, dcaratti@redhat.com
+Cc:     netdev@vger.kernel.org, xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        vladbu@mellanox.com, mrv@mojatatu.com
 References: <cover.1576623250.git.dcaratti@redhat.com>
- <ae83c6dc89f8642166dc32debc6ea7444eb3671d.1576623250.git.dcaratti@redhat.com>
- <bafb52ff-1ced-91a4-05d0-07d3fdc4f3e4@mojatatu.com>
- <5b4239e5-6533-9f23-7a38-0ee4f6acbfe9@mojatatu.com>
- <vbfr2102swb.fsf@mellanox.com>
- <63fe479d-51cd-eff4-eb13-f0211f694366@mojatatu.com>
- <vbfpngk2r9a.fsf@mellanox.com> <vbfo8w42qt2.fsf@mellanox.com>
+ <20191219.175331.2104515305508917057.davem@davemloft.net>
 From:   Jamal Hadi Salim <jhs@mojatatu.com>
-Message-ID: <b9b2261a-5a35-fdf7-79b5-9d644e3ed097@mojatatu.com>
-Date:   Fri, 20 Dec 2019 07:11:12 -0500
+Message-ID: <21a8c84d-6a2e-bb84-e980-64437f2f1f16@mojatatu.com>
+Date:   Fri, 20 Dec 2019 07:14:58 -0500
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.3.0
 MIME-Version: 1.0
-In-Reply-To: <vbfo8w42qt2.fsf@mellanox.com>
+In-Reply-To: <20191219.175331.2104515305508917057.davem@davemloft.net>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-GB
 Content-Transfer-Encoding: 7bit
@@ -75,26 +66,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2019-12-19 12:01 p.m., Vlad Buslov wrote:
-
+On 2019-12-19 8:53 p.m., David Miller wrote:
+> From: Davide Caratti <dcaratti@redhat.com>
+> Date: Wed, 18 Dec 2019 00:00:03 +0100
 > 
-> BTW another approach would be to extend ops with new callback
-> delete_empty(), require unlocked implementation to define it and move
-> functionality of tcf_proto_check_delete() there. Such approach would
-> remove the need for (ab)using ops->walk() for this since internally
-> in classifier implementation there is always a way to correctly verify
-> that classifier instance is empty. Don't know which approach is better
-> in this case.
+>> a refcount leak in the error path of u32_change() has been recently
+>> introduced. It can be observed with the following commands:
+>   ...
+>> they all legitimately return -EINVAL; however, they leave semi-configured
+>> filters at eth0 tc ingress:
+>   ...
+>> With older kernels, filters were unconditionally considered empty (and
+>> thus de-refcounted) on the error path of ->change().
+>> After commit 8b64678e0af8 ("net: sched: refactor tp insert/delete for
+>> concurrent execution"), filters were considered empty when the walk()
+>> function didn't set 'walker.stop' to 1.
+>> Finally, with commit 6676d5e416ee ("net: sched: set dedicated tcf_walker
+>> flag when tp is empty"), tc filters are considered empty unless the walker
+>> function is called with a non-NULL handle. This last change doesn't fit
+>> cls_u32 design, because at least the "root hnode" is (almost) always
+>> non-NULL, as it's allocated in u32_init().
+>>
+>> - patch 1/2 is a proposal to restore the original kernel behavior, where
+>>    no filter was installed in the error path of u32_change().
+>> - patch 2/2 adds tdc selftests that can be ued to verify the correct
+>>    behavior of u32 in the error path of ->change().
+> 
+> Series applied, thanks.
+> 
 
-I see both as complementing each other. delete_empty()
-could serves like guidance almost for someone who wants to implement
-parallelization (and stops abuse of walk()) and
-TCF_PROTO_OPS_DOIT_UNLOCKED is more of a shortcut. IOW, you
-could at the top of tcf_proto_check_delete() return true
-if TCF_PROTO_OPS_DOIT_UNLOCKED is set while still invoking
-delete_empty() (instead of walk()) if you go past that.
-Would that work?
+There is still an ongoing discussion on this patch set...
 
 cheers,
 jamal
-
