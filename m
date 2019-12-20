@@ -2,78 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CB7A9127517
-	for <lists+netdev@lfdr.de>; Fri, 20 Dec 2019 06:19:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D3F9E12751C
+	for <lists+netdev@lfdr.de>; Fri, 20 Dec 2019 06:21:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727198AbfLTFTh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Dec 2019 00:19:37 -0500
-Received: from mail-pj1-f65.google.com ([209.85.216.65]:50263 "EHLO
-        mail-pj1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727192AbfLTFTg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Dec 2019 00:19:36 -0500
-Received: by mail-pj1-f65.google.com with SMTP id r67so3579333pjb.0
-        for <netdev@vger.kernel.org>; Thu, 19 Dec 2019 21:19:36 -0800 (PST)
+        id S1725919AbfLTFVx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Dec 2019 00:21:53 -0500
+Received: from mail-lf1-f68.google.com ([209.85.167.68]:36139 "EHLO
+        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725775AbfLTFVx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Dec 2019 00:21:53 -0500
+Received: by mail-lf1-f68.google.com with SMTP id n12so6035555lfe.3;
+        Thu, 19 Dec 2019 21:21:52 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=bm7dz8v6v7xOopQbslTs0QmjP2BYiyMGUH15MYokzpE=;
-        b=T8xo1GkC5V5B4E5N6KAFDgBCm7AFSOp69gdMMwtI2vAlHvsPDhf+UeOC5gcDEyaFj3
-         rd8h1Ou4uORsFa80d/W7II+f/Vs4APxxVp/RyoPg/zae0UCa5jzR16YtWS5EA5P1d3I5
-         jNhVWvMB05c8DGXG/lBVJxJO/bApuqbh2osb/TwnR0MynAD44fzREvMdhotqoIIBslkb
-         dM+jFymHbtDhklJsRKE/hkjGz+RhTo+zWEFFQQ/VnoFQdXNgXyIT7lDs4HeM6idUZWse
-         A3PRHtU2TswhSnu2YpH1VLCBIuQXeRHafpzkDhUguf1yzMfVY7sBxNVUCWJXAxQvcd3G
-         uQLQ==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=03PtfnLGGnAyQvgUuAnVt5GRf0St1uJofzRe3SMVv6U=;
+        b=X5ZfcQL+QX4lQufRyONkb7KbSPBlLLxCZxr234USX6j+vadAwC1k283HKD3W5xGjE/
+         gPz9J7T8kHjav+VDQf/mEu5m2gYsltsHa56tjAr3wZnKm/F23N9GXZ5BTIXpEPLSNhW1
+         RU7fRAbj+enRMeQ9W4JjFB0UZAK9VhEVgo8/wB8+bT19am5AvUZNXHba4Ki5UGhVUlpR
+         WkI+YwefSxCy4HD6zPtfKk1tKemOLtht5OxONQzyPVpnp2fi49LtPZYb/aSAA4BSkX4U
+         NatPtCpbNEk8jRlchfXoYcX2IAdeAbzV54xO0uUCW/IqT7P1uqDN0VOmjtwv3dZ1Oxr/
+         dFZw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=bm7dz8v6v7xOopQbslTs0QmjP2BYiyMGUH15MYokzpE=;
-        b=d05LbXZOKpgpDUbseaFQITl09+bMZ8PMlhiw+YSN5DwxCE6ZbTyJkuFJqQklE0hvAU
-         XgJXSgkXhhf41LxBnGC7tRkjtnhIleho9ZeD7/JpBLir1APBhxAdENhg8j9xqFyDhAi4
-         LRGHDxgCWwZGZsSMeqcil2dDpYm6XDUm11WdGerbnvO1D1LGAk4E7mUiPmypk4HjV85m
-         F2ilnqJrIBjIUI5khQpLX1a9V2kS8G2wTsP42O42f6cBIPetQ2opkhkgD2l7M2vz3GiP
-         WKFq1paeKrZGmDaVuY9D4iCM9ZghNgneV7yfADrdU7IMSszUuSLpK1CkVJYVINpLIRfo
-         G4Vg==
-X-Gm-Message-State: APjAAAVjiMKMdqr+VvOAyQU+4pr6yLDBIDKqwFkgQs5MB7tJOx0HbIuG
-        pbVbHLBHyCPRvKEHnX8w/Eg=
-X-Google-Smtp-Source: APXvYqzBVIhmtG1mEEMspWcAI71KWMdUUtEaeUdHQc7JJBOnaipwNbCctkETdpMkNQgcFZOJN4OLHA==
-X-Received: by 2002:a17:902:680f:: with SMTP id h15mr7389837plk.114.1576819176288;
-        Thu, 19 Dec 2019 21:19:36 -0800 (PST)
-Received: from localhost (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
-        by smtp.gmail.com with ESMTPSA id d65sm10632598pfa.159.2019.12.19.21.19.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 19 Dec 2019 21:19:35 -0800 (PST)
-Date:   Thu, 19 Dec 2019 21:19:33 -0800
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Radhey Shyam Pandey <radheys@xilinx.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        David Miller <davem@davemloft.net>,
-        Michal Simek <michals@xilinx.com>
-Subject: Re: [PATCH net-next 1/3] net: axienet: Propagate registration errors
- during probe.
-Message-ID: <20191220051933.GA1408@localhost>
-References: <cover.1576520432.git.richardcochran@gmail.com>
- <42ed0fb7ef99101d6fd8b799bccb6e2d746939c2.1576520432.git.richardcochran@gmail.com>
- <CH2PR02MB70009FEE62CD2AB6B40911E5C7500@CH2PR02MB7000.namprd02.prod.outlook.com>
- <20191217154950.GA8163@localhost>
- <CH2PR02MB700039E0886AE86B9C731A90C7520@CH2PR02MB7000.namprd02.prod.outlook.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=03PtfnLGGnAyQvgUuAnVt5GRf0St1uJofzRe3SMVv6U=;
+        b=BagctX6oo5lf7IKYDtfmw71EAVS7WIg6yr13NpgGsswckdhP4w9CDcE5TbhQMkppqb
+         N3OJxUoVLBGgiAVa4JRWSvc2x2sx04nqs5tnVBZMcTNHetNxh+sZmTbjeR2EFoY/e/R2
+         gbkgtNkxH9uKWcmLiGmQYnhG1ioKWWYgnhSfOxrZtXr71RVfSWAYuIJ8dqIBuufrEIYi
+         nk/V/f7FDlsZAfaobbez9DbmNuWaS8QnqrWLliobH87VWN1nsBA9zjAtObZrXf5m+zBr
+         JKw76Ggeh8P9YRkOZwxVvwHJBVrtnbY5Ff8FpS4cHwk5o5k9jwIo6qccZmBeQToScAZy
+         v2mg==
+X-Gm-Message-State: APjAAAWKY+AjtCH5XSxt5MY9VmzkK6gFP6dVNn/cN43GMi+Y6ASvCs+K
+        /s7iz/MJepDfVvX0zIsFRC+B/UZlfPH7OTGFAHM=
+X-Google-Smtp-Source: APXvYqxypej6qqCW8dosM7Jg0IUqE/Fn34L4eT3AZX9qRDgb1HCVTIjVs/8IE3wCLx0VOVmOJz7Y9adm0d2wx8mA5Zs=
+X-Received: by 2002:ac2:44d9:: with SMTP id d25mr7953219lfm.15.1576819311517;
+ Thu, 19 Dec 2019 21:21:51 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CH2PR02MB700039E0886AE86B9C731A90C7520@CH2PR02MB7000.namprd02.prod.outlook.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20191219061006.21980-1-bjorn.topel@gmail.com>
+In-Reply-To: <20191219061006.21980-1-bjorn.topel@gmail.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Thu, 19 Dec 2019 21:21:39 -0800
+Message-ID: <CAADnVQL1x8AJmCOjesA_6Z3XprFVEdWgbREfpn3CC-XO8k4PDA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2 0/8] Simplify xdp_do_redirect_map()/xdp_do_flush_map()
+ and XDP maps
+To:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        bpf <bpf@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 19, 2019 at 06:13:34PM +0000, Radhey Shyam Pandey wrote:
-> I mean in which scenario we are hitting of_mdiobus_register defer? 
+On Wed, Dec 18, 2019 at 10:10 PM Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail.c=
+om> wrote:
+>
+> This series aims to simplify the XDP maps and
+> xdp_do_redirect_map()/xdp_do_flush_map(), and to crank out some more
+> performance from XDP_REDIRECT scenarios.
+>
+> The first part of the series simplifies all XDP_REDIRECT capable maps,
+> so that __XXX_flush_map() does not require the map parameter, by
+> moving the flush list from the map to global scope.
+>
+> This results in that the map_to_flush member can be removed from
+> struct bpf_redirect_info, and its corresponding logic.
+>
+> Simpler code, and more performance due to that checks/code per-packet
+> is moved to flush.
+>
+> Pre-series performance:
+>   $ sudo taskset -c 22 ./xdpsock -i enp134s0f0 -q 20 -n 1 -r -z
+>
+>    sock0@enp134s0f0:20 rxdrop xdp-drv
+>                   pps         pkts        1.00
+>   rx              20,797,350  230,942,399
+>   tx              0           0
+>
+>   $ sudo ./xdp_redirect_cpu --dev enp134s0f0 --cpu 22 xdp_cpu_map0
+>
+>   Running XDP/eBPF prog_name:xdp_cpu_map5_lb_hash_ip_pairs
+>   XDP-cpumap      CPU:to  pps            drop-pps    extra-info
+>   XDP-RX          20      7723038        0           0
+>   XDP-RX          total   7723038        0
+>   cpumap_kthread  total   0              0           0
+>   redirect_err    total   0              0
+>   xdp_exception   total   0              0
+>
+> Post-series performance:
+>   $ sudo taskset -c 22 ./xdpsock -i enp134s0f0 -q 20 -n 1 -r -z
+>
+>    sock0@enp134s0f0:20 rxdrop xdp-drv
+>                   pps         pkts        1.00
+>   rx              21,524,979  86,835,327
+>   tx              0           0
+>
+>   $ sudo ./xdp_redirect_cpu --dev enp134s0f0 --cpu 22 xdp_cpu_map0
+>
+>   Running XDP/eBPF prog_name:xdp_cpu_map5_lb_hash_ip_pairs
+>   XDP-cpumap      CPU:to  pps            drop-pps    extra-info
+>   XDP-RX          20      7840124        0           0
+>   XDP-RX          total   7840124        0
+>   cpumap_kthread  total   0              0           0
+>   redirect_err    total   0              0
+>   xdp_exception   total   0              0
+>
+> Results: +3.5% and +1.5% for the ubenchmarks.
+>
+> v1->v2 [1]:
+>   * Removed 'unused-variable' compiler warning (Jakub)
+>
+> [1] https://lore.kernel.org/bpf/20191218105400.2895-1-bjorn.topel@gmail.c=
+om/
 
-of_mdiobus_register_phy() returns EPROBE_DEFER.
-
-Thanks,
-Richard
+My understanding that outstanding discussions are not objecting to the
+core ideas
+of the patch set, hence applied. Thanks
