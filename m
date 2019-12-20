@@ -2,84 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4AA791276B4
-	for <lists+netdev@lfdr.de>; Fri, 20 Dec 2019 08:47:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E5832127704
+	for <lists+netdev@lfdr.de>; Fri, 20 Dec 2019 09:14:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727148AbfLTHrK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Dec 2019 02:47:10 -0500
-Received: from us-smtp-1.mimecast.com ([207.211.31.81]:60387 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727084AbfLTHrK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Dec 2019 02:47:10 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1576828029;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=9iV4z2RQRpVICXyhItIFMfalMQxLbhL/DHBOEt6V43U=;
-        b=iXMXUkA9uE8QHenSeSEmHjLTgHwBLBkhb8jr7JezKVFuyTlBvImrbzW4ibORWyfVmK9I+U
-        AB87aD7y1FYXYj7J6nYeTZE3ZTbd8Wlbi9eVw+m+mkVM5QzH+Jx++zj7n7FSG/xtibVGwP
-        LgVVJFOpiNgkX3o8JPGCm6aKkZq3ejU=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-39-042aShh1Mu-HGoM2hkSaQw-1; Fri, 20 Dec 2019 02:47:03 -0500
-X-MC-Unique: 042aShh1Mu-HGoM2hkSaQw-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 990DFDB96;
-        Fri, 20 Dec 2019 07:47:00 +0000 (UTC)
-Received: from carbon (ovpn-200-18.brq.redhat.com [10.40.200.18])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 1A9EF5E241;
-        Fri, 20 Dec 2019 07:46:53 +0000 (UTC)
-Date:   Fri, 20 Dec 2019 08:46:51 +0100
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     brouer@redhat.com,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
-        Network Development <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        bpf <bpf@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>
-Subject: Re: [PATCH bpf-next v2 0/8] Simplify
- xdp_do_redirect_map()/xdp_do_flush_map() and XDP maps
-Message-ID: <20191220084651.6dacb941@carbon>
-In-Reply-To: <CAADnVQL1x8AJmCOjesA_6Z3XprFVEdWgbREfpn3CC-XO8k4PDA@mail.gmail.com>
-References: <20191219061006.21980-1-bjorn.topel@gmail.com>
-        <CAADnVQL1x8AJmCOjesA_6Z3XprFVEdWgbREfpn3CC-XO8k4PDA@mail.gmail.com>
+        id S1727110AbfLTIOC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Dec 2019 03:14:02 -0500
+Received: from mail-io1-f71.google.com ([209.85.166.71]:40539 "EHLO
+        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725941AbfLTIOB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Dec 2019 03:14:01 -0500
+Received: by mail-io1-f71.google.com with SMTP id q19so5527867ion.7
+        for <netdev@vger.kernel.org>; Fri, 20 Dec 2019 00:14:01 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=HwhEudMPancjOLmNPDtIZH3YRpT3d3B5zGNbPpoAiF4=;
+        b=RqUvl/4BoQeZkYKdJvDLLbpJ1TueEi9EqG9lwu0/1opCHAVouX1NGLYwyipfNCkOOC
+         hSxTB1+ZN3KmUDgdaHlNgHHFD621a/0Bi9yoM5FLEMmgPSyoVrEKpJWJJ1if2hbFPJgp
+         T2Qxw71kNR0fFdzlmv6dk4ekPHuFfr/l16Lt3nrLT5gmUirIdLQjPoDzS2aWMSYpHfxY
+         iH860A8wuCH8vnSZ6Jy7ktfHgjZE/jpVqmG99VDQsgYpdKSNyCJEyQ3EO8ZG61CtjGoz
+         S6pfTiU0RA4DrVbTQM5yfTWzpTPCvHUM7PIjxQ1OYAGqvQSgM1Av5gifm7ZnoI7Kqiwo
+         MABQ==
+X-Gm-Message-State: APjAAAUnpCEEYXF/GNPemBJ9fn3DUUKl1vingwImOPJIPZIOmK92pwC3
+        prc/PAkOw3ojpmKvj29Z2sK1uQvkoSbbJKdpHBYsvWF67kz7
+X-Google-Smtp-Source: APXvYqzzkxfg5ZzcJxfe+aBm7XwCcX7piKL4LgQ4AXtSuKltTsybPJGKOlhivpmRcgNnreZf3AbISv7B6MW6XbBdiVJfATCYynA1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+X-Received: by 2002:a5e:8e4d:: with SMTP id r13mr8605992ioo.60.1576829641276;
+ Fri, 20 Dec 2019 00:14:01 -0800 (PST)
+Date:   Fri, 20 Dec 2019 00:14:01 -0800
+In-Reply-To: <001a1143e62e6f71d20565bf329f@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000a3c3ef059a1e4260@google.com>
+Subject: Re: KASAN: stack-out-of-bounds Read in update_stack_state
+From:   syzbot <syzbot+2990ca6e76c080858a9c@syzkaller.appspotmail.com>
+To:     akpm@linux-foundation.org, glider@google.com, hpa@zytor.com,
+        jpoimboe@redhat.com, keescook@chromium.org,
+        linux-kernel@vger.kernel.org, mbenes@suse.cz, mhiramat@kernel.org,
+        mingo@redhat.com, netdev@vger.kernel.org, rostedt@goodmis.org,
+        rppt@linux.ibm.com, syzkaller-bugs@googlegroups.com,
+        tglx@linutronix.de, x86@kernel.org
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 19 Dec 2019 21:21:39 -0800
-Alexei Starovoitov <alexei.starovoitov@gmail.com> wrote:
+syzbot suspects this bug was fixed by commit:
 
-> > v1->v2 [1]:
-> >   * Removed 'unused-variable' compiler warning (Jakub)
-> >
-> > [1] https://lore.kernel.org/bpf/20191218105400.2895-1-bjorn.topel@gmail.com/  
-> 
-> My understanding that outstanding discussions are not objecting to the
-> core ideas of the patch set, hence applied. Thanks
+commit 4ee7c60de83ac01fa4c33c55937357601631e8ad
+Author: Steven Rostedt (VMware) <rostedt@goodmis.org>
+Date:   Fri Mar 23 14:18:03 2018 +0000
 
-I had hoped to have time to review it in details today.  But as I don't
-have any objecting to the core ideas, then I don't mind it getting
-applied. We can just fix things in followups.
+     init, tracing: Add initcall trace events
 
--- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=11ebd0aee00000
+start commit:   0b6b8a3d Merge branch 'bpf-misc-selftest-improvements'
+git tree:       bpf-next
+kernel config:  https://syzkaller.appspot.com/x/.config?x=82a189bf69e089b5
+dashboard link: https://syzkaller.appspot.com/bug?extid=2990ca6e76c080858a9c
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=11dde5b3800000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1347b65d800000
 
+If the result looks correct, please mark the bug fixed by replying with:
+
+#syz fix: init, tracing: Add initcall trace events
+
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
