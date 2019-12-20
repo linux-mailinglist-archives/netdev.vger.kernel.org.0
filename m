@@ -2,139 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 64655128237
-	for <lists+netdev@lfdr.de>; Fri, 20 Dec 2019 19:29:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F770128240
+	for <lists+netdev@lfdr.de>; Fri, 20 Dec 2019 19:30:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727485AbfLTS3q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Dec 2019 13:29:46 -0500
-Received: from mail.kernel.org ([198.145.29.99]:38688 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727390AbfLTS3p (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 20 Dec 2019 13:29:45 -0500
-Received: from localhost (unknown [5.29.147.182])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id D2FAC21655;
-        Fri, 20 Dec 2019 18:29:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1576866584;
-        bh=ezMyUTqia+8GWq7yY+wOcF0j+RT4zhZQ09PnQwqq4KE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=xtlhJ22m9XyJ5lWO10q+7J5Sk6+9idLwARTLc3T4M1a05GuHRH5id2sNGPiPWkdyw
-         F5aNzJNH2Vp2YMQKi9OPbULXNoF3GMWuF3AVswdPVwVKkqEUvRJYUZgE627DNdfVQF
-         4AwRtEvppRShBI0d5vgFOARlPmzYXsKhecOZipAc=
-Date:   Fri, 20 Dec 2019 20:29:39 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Jason Gunthorpe <jgg@ziepe.ca>
-Cc:     John Hubbard <jhubbard@nvidia.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@intel.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Dave Chinner <david@fromorbit.com>,
-        David Airlie <airlied@linux.ie>,
-        "David S . Miller" <davem@davemloft.net>,
-        Ira Weiny <ira.weiny@intel.com>, Jan Kara <jack@suse.cz>,
-        Jens Axboe <axboe@kernel.dk>, Jonathan Corbet <corbet@lwn.net>,
-        =?iso-8859-1?B?Suly9G1l?= Glisse <jglisse@redhat.com>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Michal Hocko <mhocko@suse.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Paul Mackerras <paulus@samba.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Vlastimil Babka <vbabka@suse.cz>, bpf@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, kvm@vger.kernel.org,
-        linux-block@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        linux-media@vger.kernel.org, linux-rdma@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, netdev@vger.kernel.org,
-        linux-mm@kvack.org, LKML <linux-kernel@vger.kernel.org>,
-        Maor Gottlieb <maorg@mellanox.com>
-Subject: Re: [PATCH v11 00/25] mm/gup: track dma-pinned pages: FOLL_PIN
-Message-ID: <20191220182939.GA10944@unreal>
-References: <20191216222537.491123-1-jhubbard@nvidia.com>
- <20191219132607.GA410823@unreal>
- <a4849322-8e17-119e-a664-80d9f95d850b@nvidia.com>
- <20191219210743.GN17227@ziepe.ca>
+        id S1727508AbfLTSa0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Dec 2019 13:30:26 -0500
+Received: from mail-qk1-f193.google.com ([209.85.222.193]:37434 "EHLO
+        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727390AbfLTSa0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Dec 2019 13:30:26 -0500
+Received: by mail-qk1-f193.google.com with SMTP id 21so8431377qky.4
+        for <netdev@vger.kernel.org>; Fri, 20 Dec 2019 10:30:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=jEIabRcDG+gBZu1uBxXqMBLXMqwcvYlDm+SzbmLASeY=;
+        b=rlbCNqCdFubEdmJteyCs/XVSrrE5HsOLSohG7UdJGjwns9hpQ8R+k099xnqbvYmUHc
+         D0xn0wYT3cn8YSU6plzziy9luRIZO9jIBy3GE86OfrAvaubS2TChgYoRWvll6IIl6ZUD
+         61XZXef36rXcG2R/QDlKEpFIm29deiPOOlCM/yKGmzHJRijoWzPmI5IqQ7ZqR5ldnIzc
+         rSGAGwa7L2OhhXc2NMXOfrKc0c826XA65mAeWKS4VXZ8mWGGwzkZeS/Xat6RtecqVKXL
+         GuQRFMBROumFDaj/nox/mAzs6qRjK2qnwauo+6lV0Z0931YVPDEtd7lOGGncc/C1OjYh
+         9BTw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=jEIabRcDG+gBZu1uBxXqMBLXMqwcvYlDm+SzbmLASeY=;
+        b=fTGFThC1vESplruWJpqAofDdTKkBUW86Z0bkZ3JDROQ5IbbARfJR2Bz1oMrGP3n8TL
+         TWMe395NIgsNfszJY075EYoTo8AO/XB3anOcRiztIgTRxt6uiicr8HD9U9HrTQ4M75iH
+         flLhZdCZ7Py73MRVb9EhKyBb30y0EYo9rMB6+OXsNSKgAJMxwMSOUh+NSvaz8fMOhT0M
+         z0hfxRqsBXfXMJAZNq7BabrhINxG25B+4Ue6EmueM39uGFRMYDe49Djo1ZvkAi48WvSg
+         FhgtNtBlhVdv1j4ev/wjo/TQvqANqaP9WLlnLHHiV5TIDu2IKB3adE+reRbItzylstbW
+         KjBQ==
+X-Gm-Message-State: APjAAAW7ZyAtoq3i3ArvamV/ZAbqT2NZcdXVXa2IZbrUWZy4lXHXYZNt
+        1ONIEJP5z2Yk3zZW27vNvmQ=
+X-Google-Smtp-Source: APXvYqzXnNMghEhEtOzHzjYbrlBV2WbWlKCxs9ExtqDn4XPQk/C3fRO6x7ER7w294nRhlsUPbLVb/g==
+X-Received: by 2002:a37:a98e:: with SMTP id s136mr14653095qke.253.1576866625711;
+        Fri, 20 Dec 2019 10:30:25 -0800 (PST)
+Received: from ?IPv6:2601:282:800:fd80:d462:ea64:486f:4002? ([2601:282:800:fd80:d462:ea64:486f:4002])
+        by smtp.googlemail.com with ESMTPSA id n7sm3066906qke.121.2019.12.20.10.30.23
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 20 Dec 2019 10:30:24 -0800 (PST)
+Subject: Re: [patch net-next 0/4] net: allow per-net notifier to follow netdev
+ into namespace
+To:     Jiri Pirko <jiri@resnulli.us>, netdev@vger.kernel.org
+Cc:     davem@davemloft.net, jakub.kicinski@netronome.com,
+        saeedm@mellanox.com, leon@kernel.org, tariqt@mellanox.com,
+        ayal@mellanox.com, vladbu@mellanox.com, michaelgur@mellanox.com,
+        moshe@mellanox.com, mlxsw@mellanox.com
+References: <20191220123542.26315-1-jiri@resnulli.us>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <72587b16-d459-aa6e-b813-cf14b4118b0c@gmail.com>
+Date:   Fri, 20 Dec 2019 11:30:22 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.3.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191219210743.GN17227@ziepe.ca>
+In-Reply-To: <20191220123542.26315-1-jiri@resnulli.us>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 19, 2019 at 05:07:43PM -0400, Jason Gunthorpe wrote:
-> On Thu, Dec 19, 2019 at 12:30:31PM -0800, John Hubbard wrote:
-> > On 12/19/19 5:26 AM, Leon Romanovsky wrote:
-> > > On Mon, Dec 16, 2019 at 02:25:12PM -0800, John Hubbard wrote:
-> > > > Hi,
-> > > >
-> > > > This implements an API naming change (put_user_page*() -->
-> > > > unpin_user_page*()), and also implements tracking of FOLL_PIN pages. It
-> > > > extends that tracking to a few select subsystems. More subsystems will
-> > > > be added in follow up work.
-> > >
-> > > Hi John,
-> > >
-> > > The patchset generates kernel panics in our IB testing. In our tests, we
-> > > allocated single memory block and registered multiple MRs using the single
-> > > block.
-> > >
-> > > The possible bad flow is:
-> > >   ib_umem_geti() ->
-> > >    pin_user_pages_fast(FOLL_WRITE) ->
-> > >     internal_get_user_pages_fast(FOLL_WRITE) ->
-> > >      gup_pgd_range() ->
-> > >       gup_huge_pd() ->
-> > >        gup_hugepte() ->
-> > >         try_grab_compound_head() ->
-> >
-> > Hi Leon,
-> >
-> > Thanks very much for the detailed report! So we're overflowing...
-> >
-> > At first look, this seems likely to be hitting a weak point in the
-> > GUP_PIN_COUNTING_BIAS-based design, one that I believed could be deferred
-> > (there's a writeup in Documentation/core-api/pin_user_page.rst, lines
-> > 99-121). Basically it's pretty easy to overflow the page->_refcount
-> > with huge pages if the pages have a *lot* of subpages.
-> >
-> > We can only do about 7 pins on 1GB huge pages that use 4KB subpages.
->
-> Considering that establishing these pins is entirely under user
-> control, we can't have a limit here.
->
-> If the number of allowed pins are exhausted then the
-> pin_user_pages_fast() must fail back to the user.
->
-> > 3. It would be nice if I could reproduce this. I have a two-node mlx5 Infiniband
-> > test setup, but I have done only the tiniest bit of user space IB coding, so
-> > if you have any test programs that aren't too hard to deal with that could
-> > possibly hit this, or be tweaked to hit it, I'd be grateful. Keeping in mind
-> > that I'm not an advanced IB programmer. At all. :)
->
-> Clone this:
->
-> https://github.com/linux-rdma/rdma-core.git
->
-> Install all the required deps to build it (notably cython), see the README.md
->
-> $ ./build.sh
-> $ build/bin/run_tests.py
->
-> If you get things that far I think Leon can get a reproduction for you
+On 12/20/19 5:35 AM, Jiri Pirko wrote:
+> However if netdev can change namespace, per-net notifier cannot be used.
+> Introduce dev_net variant that is basically per-net notifier with an
+> extension that re-registers the per-net notifier upon netdev namespace
+> change. Basically the per-net notifier follows the netdev into
+> namespace.
 
-I'm not so optimistic about that.
+This is getting convoluted.
 
-Thanks
-
->
-> Jason
+If the driver wants notifications in a new namespace, then it should
+register for notifiers in the new namespace. The info for
+NETDEV_UNREGISTER event could indicate the device is getting moved to a
+new namespace and the driver register for notifications in the new
+namespace. If the drivers are trying to be efficient wrt to
+notifications then it will need to unregister when all netdevices leave
+a namespace which it means it has work to do on namespace changes.
