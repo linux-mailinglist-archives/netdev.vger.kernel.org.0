@@ -2,131 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 09C3612785A
-	for <lists+netdev@lfdr.de>; Fri, 20 Dec 2019 10:39:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F24E127864
+	for <lists+netdev@lfdr.de>; Fri, 20 Dec 2019 10:40:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727184AbfLTJjM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Dec 2019 04:39:12 -0500
-Received: from mail-eopbgr60076.outbound.protection.outlook.com ([40.107.6.76]:43520
-        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726111AbfLTJjM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 20 Dec 2019 04:39:12 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=fexDySnz+QZT+5KuEDTvN9SreNC9uZjC93p9uYd151FchMyUROO16+rT/svDOkWLXv36E9wwJnDSo7RNYuV2V7wyJCP57tQ1GVbPFmlVsK/l4M/A6cckbMrX6nUr6rKEZYIrPZSfdqenrW74DPXtbCJodZBj2XZR10kF4Bj6Io6/qnvAlKQtpLum1ewgOrsVrYvbXD9pxPYNm+3tiZ7R9I0CQ3/5ObPVAM//+yCbr5Ev9qj5Tprof59OfzlVBJ8OzTPfnYVZcvg4z+ejBQv5VQjlbk7IoNwpxm1UFD74VXVISWQQJeJbyTAyQrmTkTM1p7u+Ym5Qc+QADDTVAUDN7w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=6CAAFYFDP2+QozJPfRl85bi47Z1lasQEbImzTIYJm/k=;
- b=QltYB/XW1yU2cTdbpF1UIOuBl6RgK4oJLMabGNB0rlGFwXbZOQsb4aILK4kb1IR1VWhMNQYtvLKs7CqeGvsFRgS26JyGKEZfAp0POGUpglyzVQUqOb9pZvyVkjLmUrUykhBgDYhHD3QTqU1O4klcxFceWGavpNFSSFLZiYNYJqYSyW1ZvOpF87M3xZllnIgq5OBrD48okDmXeLbVLae1RMlBXP72f0+98UsJDDym2kF6ffslz9rm1RJOP/ATnGwqHOYpk+Fk3LgYY/zzBTSmL2m5qvnCK9MFYowaa8+0zIzdh0Nn1+E/3q4WBjPKtWssZFY7ekhWFP/sg75ICyY9Cg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
- dkim=pass header.d=oss.nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
- s=selector2-NXP1-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=6CAAFYFDP2+QozJPfRl85bi47Z1lasQEbImzTIYJm/k=;
- b=APIcLVHHoLlrlERPUNYPnj3c3xB9YejbyrYpaxguQDiqNhiRnw/r4UvwRaV4OcKf7vCw+tHXiVgnZkIarwF5UDLv67re5Rth677tLKpV0QFPbpFG5WzNNQAsj1Lm6mfPASkFn4Nv3CUO+GJMKyOFLAejMmY+iKycwTyx9MIEaH0=
-Received: from VI1PR04MB5567.eurprd04.prod.outlook.com (20.178.123.83) by
- VI1PR04MB5519.eurprd04.prod.outlook.com (20.178.121.211) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2559.14; Fri, 20 Dec 2019 09:39:08 +0000
-Received: from VI1PR04MB5567.eurprd04.prod.outlook.com
- ([fe80::f099:4735:430c:ef1d]) by VI1PR04MB5567.eurprd04.prod.outlook.com
- ([fe80::f099:4735:430c:ef1d%2]) with mapi id 15.20.2559.016; Fri, 20 Dec 2019
- 09:39:08 +0000
-From:   "Madalin Bucur (OSS)" <madalin.bucur@oss.nxp.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Russell King - ARM Linux admin <linux@armlinux.org.uk>
-CC:     "Madalin Bucur (OSS)" <madalin.bucur@oss.nxp.com>,
-        "antoine.tenart@free-electrons.com" 
-        <antoine.tenart@free-electrons.com>,
-        "jaz@semihalf.com" <jaz@semihalf.com>,
-        "baruch@tkos.co.il" <baruch@tkos.co.il>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        "shawnguo@kernel.org" <shawnguo@kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
-Subject: RE: [PATCH 1/6] net: phy: add interface modes for XFI, SFI
-Thread-Topic: [PATCH 1/6] net: phy: add interface modes for XFI, SFI
-Thread-Index: AQHVtn//emqdPRPEmEKC7Ncoej9h46fBtnoAgAAR9oCAAAh2AIAAKmuAgAAEEQCAAKSigIAAG14AgAADcACAAAJs8A==
-Date:   Fri, 20 Dec 2019 09:39:08 +0000
-Message-ID: <VI1PR04MB55679B12D4E7C9EC05FE0D9AEC2D0@VI1PR04MB5567.eurprd04.prod.outlook.com>
-References: <1576768881-24971-1-git-send-email-madalin.bucur@oss.nxp.com>
- <1576768881-24971-2-git-send-email-madalin.bucur@oss.nxp.com>
- <20191219172834.GC25745@shell.armlinux.org.uk>
- <VI1PR04MB5567FA3170CF45F877870E8CEC520@VI1PR04MB5567.eurprd04.prod.outlook.com>
- <20191219190308.GE25745@shell.armlinux.org.uk>
- <VI1PR04MB5567010C06EB9A4734431106EC520@VI1PR04MB5567.eurprd04.prod.outlook.com>
- <20191219214930.GG25745@shell.armlinux.org.uk>
- <VI1PR04MB556768668EEEDFD61B7AA518EC2D0@VI1PR04MB5567.eurprd04.prod.outlook.com>
- <20191220091642.GJ25745@shell.armlinux.org.uk>
- <20191220092900.GB24174@lunn.ch>
-In-Reply-To: <20191220092900.GB24174@lunn.ch>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=madalin.bucur@oss.nxp.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [212.146.100.6]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 66cdab82-b186-45fd-4623-08d78530762b
-x-ms-traffictypediagnostic: VI1PR04MB5519:|VI1PR04MB5519:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VI1PR04MB55194614BB92883EF6DE54ABAD2D0@VI1PR04MB5519.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8273;
-x-forefront-prvs: 025796F161
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(396003)(366004)(136003)(376002)(346002)(39860400002)(13464003)(199004)(189003)(9686003)(55016002)(26005)(5660300002)(316002)(7416002)(52536014)(76116006)(478600001)(110136005)(54906003)(71200400001)(4326008)(66946007)(66476007)(66446008)(33656002)(66556008)(86362001)(64756008)(186003)(2906002)(53546011)(6506007)(8936002)(81166006)(7696005)(8676002)(81156014);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR04MB5519;H:VI1PR04MB5567.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:0;MX:1;
-received-spf: None (protection.outlook.com: oss.nxp.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: W2jWzit+E0rlguI3HoP3SxVAv+ygE2DeubEvxAZLyg1L5XfILF4/oA2PhVrP8gRNlN4ziCVUhM9PZBHv6FZTzmzc++f/bjEGGJIRcgtMXPSANgWflXy0nMxriZkzdyezjhuavzCp7WjjZAdS6awxl/ZotNjUAf+dzlExtqMDArc1/cPfASGc6MyoHbQYvpfEGqJHjXO4+WhWOCkYYNi+tZSYo2QFzbN6N1sa7okhfRxxNGzdUaOx5tfxjuE/IreCriWYz5qK18nBprAco9dpqLzStUNrXqpXXaoS57BQcx9Vc5uaaBxdlPa4q+wozVvcSwAET63kiFODGitkhq7kpIc6MjXGFz9yOMtQATkMxT5/Z4aH9OyK5ROeGUECUBN8Px7SG/uXPLu+hjerPG5ULQe9b91GaHjJoR5wvnpdRIVzhnpVlzFQE0xXkIte3SYwGO+wrP1aH05ESixPputwdRTJ2oXpjZot3DOVXtmkEBVzdx91n/Hj30TagcpxuBQy
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1727235AbfLTJkh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Dec 2019 04:40:37 -0500
+Received: from mail-ot1-f65.google.com ([209.85.210.65]:35857 "EHLO
+        mail-ot1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726210AbfLTJkh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Dec 2019 04:40:37 -0500
+Received: by mail-ot1-f65.google.com with SMTP id w1so11171023otg.3;
+        Fri, 20 Dec 2019 01:40:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=B8W2+ltOfOy0ZB4DxGV/lU4B1XOok93p5EKVOLRu56c=;
+        b=Jbkg7h8e4r7rZ+67wEgMPeJi6jK68ZPAVStnG+3NyVpda7Ujo+OxRBIclBxYNqwSTP
+         sW3Ou3KIR5neH/MPXUbvRE2LzlsiqKXg9aLH2YE47QcjKgqUKNlN2Ms7rSjblY4EGHYd
+         +3oCK6hu4A9p+gKk+68ofNtrXl3zDRBoVhAv1m2rQPJfJgCwZ04/S1nWC37UBEv/Zu+V
+         KYcZ3AFx2diFPvqomzpqheNphT7+JsWfy/KIEcXrdmfb1O82eGsgmX351AnUFS3OKdWe
+         dpXxg1m6ZuE3IcYooIKeH0AKA9/VTETKpDmEYBa6VXOwWguuhnJbtr67lkGb1GXTnk/f
+         R/Zw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=B8W2+ltOfOy0ZB4DxGV/lU4B1XOok93p5EKVOLRu56c=;
+        b=TWeq+YvWpkvqJTiH+4dAEw6o5SeA+RjVQuVirxD4qrfBHdZ9sHGMie2gnzku5Q00U0
+         jPZfR1Acz9XdG8LelSLSosLBke5Tn5Y/pkwI4I9EKKo3yYma9e43dw5i8WTlDEFsd5O7
+         Rm0fzr7SFWYYyo8DFHLIT47y+ttK2apMoDUEQMk6mk74rU6043LzEo3nZOFN4puRnqnL
+         owzlpo0Pin5uDRGzRskYRPbeia3pPeM4D9uO9ELXkhRhkFXNmUdf0VgfwwdDjO7U8zZn
+         En9FcRZpD9dTa+amUS56ZExa4x7t2WuKOQAsZVFLuyRwMPfi2fmGyOqUo1g2w94Eif75
+         iW6g==
+X-Gm-Message-State: APjAAAXFW2/AopiPgxnkemEIBhjFMQQxIPPr43ZxmcMlS37pTTi2uUsX
+        l9sgHIhMrjuzP0i5batSqcGAtyW+e5ayRyyVC4A=
+X-Google-Smtp-Source: APXvYqwDmdLgM1T281shQSN/QsbY8xFEkYvnSM6b+A2fHctteT2NJqaJ5QkNFlGusQvzs2VFZsSwJNgXDeN51UJ2ujw=
+X-Received: by 2002:a05:6830:2141:: with SMTP id r1mr13923523otd.39.1576834836200;
+ Fri, 20 Dec 2019 01:40:36 -0800 (PST)
 MIME-Version: 1.0
-X-OriginatorOrg: oss.nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 66cdab82-b186-45fd-4623-08d78530762b
-X-MS-Exchange-CrossTenant-originalarrivaltime: 20 Dec 2019 09:39:08.2537
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: nbsr1zh0w1YZDirjobHpkdlp/VbiEFfDc7FW8j0LWiZyy0dUM6tz+WyZoT9Ax6W11NL/Xk4WqjPAP43Chffz/w==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB5519
+References: <CAKxSbF2XaqwLAby0BBbhT_8vBviMvkA_7fiK-ivAs2DHWqARxw@mail.gmail.com>
+In-Reply-To: <CAKxSbF2XaqwLAby0BBbhT_8vBviMvkA_7fiK-ivAs2DHWqARxw@mail.gmail.com>
+From:   Magnus Karlsson <magnus.karlsson@gmail.com>
+Date:   Fri, 20 Dec 2019 10:40:25 +0100
+Message-ID: <CAJ8uoz1wP0MGg6yODd31eoDL4i-4mgRP2jd9BF-F9eqF3P2t6w@mail.gmail.com>
+Subject: Re: getsockopt(XDP_MMAP_OFFSETS) syscall ABI breakage?
+To:     Alex Forster <aforster@cloudflare.com>
+Cc:     bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> -----Original Message-----
-> From: Andrew Lunn <andrew@lunn.ch>
-> Sent: Friday, December 20, 2019 11:29 AM
-> To: Russell King - ARM Linux admin <linux@armlinux.org.uk>
-> Cc: Madalin Bucur (OSS) <madalin.bucur@oss.nxp.com>; antoine.tenart@free-
-> electrons.com; jaz@semihalf.com; baruch@tkos.co.il; davem@davemloft.net;
-> netdev@vger.kernel.org; f.fainelli@gmail.com; hkallweit1@gmail.com;
-> shawnguo@kernel.org; devicetree@vger.kernel.org
-> Subject: Re: [PATCH 1/6] net: phy: add interface modes for XFI, SFI
->=20
-> > How does this help us when we can't simply change the existing usage?
-> > We can update the DT but we can't free up the usage of "10gbase-kr".
->=20
-> Agreed. Code needs to keep on interpreting "10gbase-kr" as any 10G
-> link. If we ever have a true 10gbase-kr, 802.3ap, one meter of copper
-> and two connectors, we are going to have to add a new mode to
-> represent true 10gbase-kr.
->=20
-> 	Andrew
+On Thu, Dec 19, 2019 at 10:47 PM Alex Forster <aforster@cloudflare.com> wrote:
+>
+> The getsockopt(XDP_MMAP_OFFSETS) socket option returns a struct
+> xdp_mmap_offsets (from uapi/linux/if_xdp.h) which is defined as:
+>
+>     struct xdp_mmap_offsets {
+>         struct xdp_ring_offset rx;
+>         struct xdp_ring_offset tx;
+>         struct xdp_ring_offset fr; /* Fill */
+>         struct xdp_ring_offset cr; /* Completion */
+>     };
+>
+> Prior to kernel 5.4, struct xdp_ring_offset (from the same header) was
+> defined as:
+>
+>     struct xdp_ring_offset {
+>         __u64 producer;
+>         __u64 consumer;
+>         __u64 desc;
+>     };
+>
+> A few months ago, in 77cd0d7, it was changed to the following:
+>
+>     struct xdp_ring_offset {
+>         __u64 producer;
+>         __u64 consumer;
+>         __u64 desc;
+>         __u64 flags;
+>     };
+>
+> I believe this constitutes a syscall ABI breakage, which I did not
+> think was allowed. Have I misunderstood the current stability
+> guarantees for AF_XDP?
 
-Hi, actually we do have that. What would be the name of the new mode
-representing true 10GBase-KR that we will need to add when we upstream
-support for that?
+Version 5.4 and above supports both the old definition and the new. If
+you enter the size of the old struct xdp_mmap_offsets into the
+getsockopt, you get the results in the form that was there before 5.4.
+If you enter the size of the new struct, you get the results in the
+new form introduced in commit 77cd0d7.
 
-Thanks,
-Madalin
+> Alex Forster
