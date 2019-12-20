@@ -2,77 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CE27C12832E
-	for <lists+netdev@lfdr.de>; Fri, 20 Dec 2019 21:22:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 49B31128339
+	for <lists+netdev@lfdr.de>; Fri, 20 Dec 2019 21:24:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727549AbfLTUWw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Dec 2019 15:22:52 -0500
-Received: from www62.your-server.de ([213.133.104.62]:48248 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727413AbfLTUWv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Dec 2019 15:22:51 -0500
-Received: from sslproxy06.your-server.de ([78.46.172.3])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1iiOnO-0005EJ-EG; Fri, 20 Dec 2019 21:22:46 +0100
-Received: from [178.197.248.55] (helo=pc-9.home)
-        by sslproxy06.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1iiOnO-000BM7-2K; Fri, 20 Dec 2019 21:22:46 +0100
-Subject: Re: [PATCH bpf-next] libbpf: fix AF_XDP helper program to support
- kernels without the JMP32 eBPF instruction class
-To:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        Alex Forster <aforster@cloudflare.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        bpf <bpf@vger.kernel.org>
-References: <20191219201601.7378-1-aforster@cloudflare.com>
- <CAADnVQLrsgGzVcBea68gf+yZ2R-iYzCJupE6jzaqR5ctbCKxNw@mail.gmail.com>
- <CAKxSbF19OsyE8B9mM+nB6676R6oA0duXSLn6_GGr1A+tCKhY9w@mail.gmail.com>
- <c02dbf12-f1ae-8cb1-13fc-a7bb2fbff3aa@intel.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <e8253d51-1821-af17-ce07-7c4cbc28f15e@iogearbox.net>
-Date:   Fri, 20 Dec 2019 21:22:45 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
-MIME-Version: 1.0
-In-Reply-To: <c02dbf12-f1ae-8cb1-13fc-a7bb2fbff3aa@intel.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+        id S1727552AbfLTUYd convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 20 Dec 2019 15:24:33 -0500
+Received: from mga02.intel.com ([134.134.136.20]:40091 "EHLO mga02.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727402AbfLTUYd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 20 Dec 2019 15:24:33 -0500
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga101.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 20 Dec 2019 12:24:32 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.69,337,1571727600"; 
+   d="scan'208";a="267612649"
+Received: from fmsmsx104.amr.corp.intel.com ([10.18.124.202])
+  by FMSMGA003.fm.intel.com with ESMTP; 20 Dec 2019 12:24:32 -0800
+Received: from fmsmsx602.amr.corp.intel.com (10.18.126.82) by
+ fmsmsx104.amr.corp.intel.com (10.18.124.202) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Fri, 20 Dec 2019 12:24:31 -0800
+Received: from fmsmsx602.amr.corp.intel.com (10.18.126.82) by
+ fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Fri, 20 Dec 2019 12:24:31 -0800
+Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82]) by
+ fmsmsx602.amr.corp.intel.com ([10.18.126.82]) with mapi id 15.01.1713.004;
+ Fri, 20 Dec 2019 12:24:31 -0800
+From:   "Bowers, AndrewX" <andrewx.bowers@intel.com>
+To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>
+Subject: RE: [Intel-wired-lan] [PATCH net-next 2/2] drivers: net: ice:
+ Removing hung_queue variable to use txqueue function parameter
+Thread-Topic: [Intel-wired-lan] [PATCH net-next 2/2] drivers: net: ice:
+ Removing hung_queue variable to use txqueue function parameter
+Thread-Index: AQHVtgThBxGKLI4+qkutpf6gFctWIKfDet6A
+Date:   Fri, 20 Dec 2019 20:24:31 +0000
+Message-ID: <f63daf8642254899a42c8156ab9baded@intel.com>
+References: <20191218183845.20038-1-jcfaracco@gmail.com>
+ <20191218183845.20038-3-jcfaracco@gmail.com>
+In-Reply-To: <20191218183845.20038-3-jcfaracco@gmail.com>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.101.4/25669/Fri Dec 20 10:57:00 2019)
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-product: dlpe-windows
+x-ctpclassification: CTP_NT
+x-titus-metadata-40: eyJDYXRlZ29yeUxhYmVscyI6IiIsIk1ldGFkYXRhIjp7Im5zIjoiaHR0cDpcL1wvd3d3LnRpdHVzLmNvbVwvbnNcL0ludGVsMyIsImlkIjoiODdjNjQ2MTctMDJlZS00YTczLWE0NDQtZjA3MTAxNzZkMmE5IiwicHJvcHMiOlt7Im4iOiJDVFBDbGFzc2lmaWNhdGlvbiIsInZhbHMiOlt7InZhbHVlIjoiQ1RQX05UIn1dfV19LCJTdWJqZWN0TGFiZWxzIjpbXSwiVE1DVmVyc2lvbiI6IjE3LjEwLjE4MDQuNDkiLCJUcnVzdGVkTGFiZWxIYXNoIjoiYWpGWW5iNFBiQjVKWEFPeDQ2bmJoZjkrdzV0NFRnUlRrdytTZ2RmOXo3TXJpV2xLdkVENUt2cmlSQWp4b2FIcSJ9
+dlp-reaction: no-action
+dlp-version: 11.0.400.15
+x-originating-ip: [10.22.254.132]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
+MIME-Version: 1.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/20/19 8:20 AM, Björn Töpel wrote:
-> On 2019-12-19 23:29, Alex Forster wrote:
->>> I though af_xdp landed after jmp32 ?
->>
->> They were indeed pretty close together, but AF_XDP became usable in
->> late 2018 with either 4.18 or 4.19. JMP32 landed in early 2019 with
->> 5.1.
+> -----Original Message-----
+> From: Intel-wired-lan [mailto:intel-wired-lan-bounces@osuosl.org] On
+> Behalf Of Julio Faracco
+> Sent: Wednesday, December 18, 2019 10:39 AM
+> To: netdev@vger.kernel.org
+> Cc: intel-wired-lan@lists.osuosl.org; davem@davemloft.net
+> Subject: [Intel-wired-lan] [PATCH net-next 2/2] drivers: net: ice: Removing
+> hung_queue variable to use txqueue function parameter
 > 
-> Correct, but is anyone really using AF_XDP pre-5.1?
+> The scope of function .ndo_tx_timeout was changed to include the hang
+> queue when a TX timeout event occurs. See commit 0290bd291cc0
+> ("netdev: pass the stuck queue to the timeout handler") for more details.
+> Now, drivers don't need to identify which queue is stopped.
+> Drivers can simply use the queue index provided bt dev_watchdog and
+> execute all actions needed to restore network traffic. This commit do some
+> cleanups into Intel ice driver to remove a redundant loop to find stopped
+> queue.
 > 
-> The rationale for doing JMP32:
-> https://lore.kernel.org/bpf/87v9sip0i8.fsf@toke.dk/
-> 
-> I think going forward, a route where different AF_XDP programs is loaded
-> based on what currently running kernel supports. "Every s^Hcycle is
-> sacred", and we're actually paying for the extra checks.
-> 
-> Then again, failing to load is still pretty bad. :-) Thanks for fixing this.
+> Signed-off-by: Julio Faracco <jcfaracco@gmail.com>
+> ---
+>  drivers/net/ethernet/intel/ice/ice_main.c | 41 ++++++-----------------
+>  1 file changed, 11 insertions(+), 30 deletions(-)
 
-Could we simply just test availability of JMP32 in underlying kernel and use
-it if available, if not, fall back to regular JMP. libbpf already has infra
-for this, so xsk code could make use of it.
-
-Thanks,
-Daniel
+Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
