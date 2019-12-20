@@ -2,110 +2,433 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A60512809F
-	for <lists+netdev@lfdr.de>; Fri, 20 Dec 2019 17:27:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4493E1280BF
+	for <lists+netdev@lfdr.de>; Fri, 20 Dec 2019 17:35:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727422AbfLTQ1U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Dec 2019 11:27:20 -0500
-Received: from dispatch1-us1.ppe-hosted.com ([148.163.129.52]:33004 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727362AbfLTQ1U (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Dec 2019 11:27:20 -0500
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1-us2.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id BBE5C68007A;
-        Fri, 20 Dec 2019 16:27:18 +0000 (UTC)
-Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
- (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Fri, 20 Dec
- 2019 16:27:13 +0000
-From:   Edward Cree <ecree@solarflare.com>
-Subject: [PATCH net 2/2] sfc: Include XDP packet headroom in buffer step size.
-To:     <linux-net-drivers@solarflare.com>, <davem@davemloft.net>
-CC:     <netdev@vger.kernel.org>
-References: <83c50994-18de-1d8f-67ce-b2322d226338@solarflare.com>
-Message-ID: <bb198e68-df88-e91a-2516-26cffdbac7da@solarflare.com>
-Date:   Fri, 20 Dec 2019 16:27:10 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
+        id S1727473AbfLTQfk convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 20 Dec 2019 11:35:40 -0500
+Received: from youngberry.canonical.com ([91.189.89.112]:51222 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726808AbfLTQfj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Dec 2019 11:35:39 -0500
+Received: from 1.general.jvosburgh.us.vpn ([10.172.68.206] helo=famine.localdomain)
+        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <jay.vosburgh@canonical.com>)
+        id 1iiLFW-0004Ys-QC; Fri, 20 Dec 2019 16:35:35 +0000
+Received: by famine.localdomain (Postfix, from userid 1000)
+        id 180CD67BB3; Fri, 20 Dec 2019 08:35:33 -0800 (PST)
+Received: from famine (localhost [127.0.0.1])
+        by famine.localdomain (Postfix) with ESMTP id 10421AC1CC;
+        Fri, 20 Dec 2019 08:35:33 -0800 (PST)
+From:   Jay Vosburgh <jay.vosburgh@canonical.com>
+To:     Andy Gospodarek <andy@greyhouse.net>
+cc:     Andy Roulin <aroulin@cumulusnetworks.com>, netdev@vger.kernel.org,
+        dsahern@gmail.com, nikolay@cumulusnetworks.com,
+        roopa@cumulusnetworks.com, vfalico@gmail.com
+Subject: Re: [PATCH net-next] bonding: rename AD_STATE_* to BOND_3AD_STATE_*
+In-reply-to: <20191220155023.GA61232@C02YVCJELVCG.dhcp.broadcom.net>
+References: <1576798379-5061-1-git-send-email-aroulin@cumulusnetworks.com> <20191220155023.GA61232@C02YVCJELVCG.dhcp.broadcom.net>
+Comments: In-reply-to Andy Gospodarek <andy@greyhouse.net>
+   message dated "Fri, 20 Dec 2019 10:50:23 -0500."
+X-Mailer: MH-E 8.6+git; nmh 1.6; GNU Emacs 27.0.50
 MIME-Version: 1.0
-In-Reply-To: <83c50994-18de-1d8f-67ce-b2322d226338@solarflare.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.17.20.203]
-X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
- ukex01.SolarFlarecom.com (10.17.10.4)
-X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1010-25114.003
-X-TM-AS-Result: No-3.047800-8.000000-10
-X-TMASE-MatchedRID: JbtIZinIcnI2jeY+Udg/Irb55TietSt6+eBf9ovw8I1psnGGIgWMmYbH
-        6cTCX9B6m8hxAIEws9piucu0gIo06DA9KOtcb1F9UyxW4vmvLt16i696PjRPiB3RY4pGTCyHeWg
-        68DhoEkmt2gtuWr1Lmtr+D80ZNbcycGCkjn3GWnYjRwcsjqWGArEhhZOhPCz3uWYx8s2K6Rphz/
-        HivrpiI84WZ2e8JNtqg3BGMlB+x2PnmDJKPFuKfodlc1JaOB1TfS0Ip2eEHny+qryzYw2E8CKve
-        Q4wmYdMdgkRR8OiM/9YF3qW3Je6+4I6gp8lN4acYsngetMXOZnmN1XBQy6gQ5Z8bmrvg131aOSK
-        iFL/ZjX4Fv7FxFFlHYPfpEB25qYdIU7pBEDRPOQb4f74IlmD7DHCqV7rv9Y1QDMFuK2P9FjtoWa
-        vEW7HRE3Z8jKJCdR04mqLFh5vfmx+3BndfXUhXQ==
-X-TM-AS-User-Approved-Sender: Yes
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--3.047800-8.000000
-X-TMASE-Version: SMEX-12.5.0.1300-8.5.1010-25114.003
-X-MDID: 1576859239-F9ts4Lhl_YBl
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <28487.1576859733.1@famine>
+Content-Transfer-Encoding: 8BIT
+Date:   Fri, 20 Dec 2019 08:35:33 -0800
+Message-ID: <28488.1576859733@famine>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Charles McLachlan <cmclachlan@solarflare.com>
+Andy Gospodarek <andy@greyhouse.net> wrote:
 
-Correct a mismatch between rx_page_buf_step and the actual step size
-used when filling buffer pages.
+>On Thu, Dec 19, 2019 at 03:32:59PM -0800, Andy Roulin wrote:
+>> As the LACP states are now part of the uapi, rename the
+>> 3ad state defines with BOND_3AD prefix. This way, the naming
+>> is consistent with the the rest of the bonding uapi.
+>
+>Thanks for doing this!
+>
+>> 
+>> Signed-off-by: Andy Roulin <aroulin@cumulusnetworks.com>
+>> Acked-by: Roopa Prabhu <roopa@cumulusnetworks.com>
+>> ---
+>> 
+>> Notes:
+>>     - Most modified lines were already over 80 chars. Some are now over
+>>       80 though but I don't think it would add any values to break them
+>>       to respect the limit.
+>>     
+>>     - Another choice would be LACP_* instead of BOND_3AD_* but going
+>>       with LACP would mean we should replace everywhere 3AD with
+>>       LACP to be consistent.
+>
+>I hate to say this, but I think I prefer the string BOND_8023AD_* or
+>LACP_* to just BOND_3AD_*.  As Jay mentioned the movement a decade ago
+>to 802.1AX also makes me think we should just drop the references to
+>802.3AD all-together and just go with LACP.
 
-This patch fixes the page overrun that occured when the MTU was set to
-anything bigger than 1692.
+	I agree; pretty much everything refers to this protocol as LACP
+and not by either the old or current IEEE standard names.
 
-Fixes: 3990a8fffbda ("sfc: allocate channels for XDP tx queues")
-Signed-off-by: Charles McLachlan <cmclachlan@solarflare.com>
-Signed-off-by: Edward Cree <ecree@solarflare.com>
----
- drivers/net/ethernet/sfc/rx.c | 14 +++++++-------
- 1 file changed, 7 insertions(+), 7 deletions(-)
+>You are right that the downside to moving towards LACP_* is that
+>everything should move that way as well, but it seems worthwhile to
+>consider.
 
-diff --git a/drivers/net/ethernet/sfc/rx.c b/drivers/net/ethernet/sfc/rx.c
-index ef52b24ad9e7..c29bf862a94c 100644
---- a/drivers/net/ethernet/sfc/rx.c
-+++ b/drivers/net/ethernet/sfc/rx.c
-@@ -96,11 +96,12 @@ static inline void efx_sync_rx_buffer(struct efx_nic *efx,
- 
- void efx_rx_config_page_split(struct efx_nic *efx)
- {
--	efx->rx_page_buf_step = ALIGN(efx->rx_dma_len + efx->rx_ip_align,
-+	efx->rx_page_buf_step = ALIGN(efx->rx_dma_len + efx->rx_ip_align +
-+				      XDP_PACKET_HEADROOM,
- 				      EFX_RX_BUF_ALIGNMENT);
- 	efx->rx_bufs_per_page = efx->rx_buffer_order ? 1 :
- 		((PAGE_SIZE - sizeof(struct efx_rx_page_state)) /
--		(efx->rx_page_buf_step + XDP_PACKET_HEADROOM));
-+		efx->rx_page_buf_step);
- 	efx->rx_buffer_truesize = (PAGE_SIZE << efx->rx_buffer_order) /
- 		efx->rx_bufs_per_page;
- 	efx->rx_pages_per_batch = DIV_ROUND_UP(EFX_RX_PREFERRED_BATCH,
-@@ -190,14 +191,13 @@ static int efx_init_rx_buffers(struct efx_rx_queue *rx_queue, bool atomic)
- 		page_offset = sizeof(struct efx_rx_page_state);
- 
- 		do {
--			page_offset += XDP_PACKET_HEADROOM;
--			dma_addr += XDP_PACKET_HEADROOM;
--
- 			index = rx_queue->added_count & rx_queue->ptr_mask;
- 			rx_buf = efx_rx_buffer(rx_queue, index);
--			rx_buf->dma_addr = dma_addr + efx->rx_ip_align;
-+			rx_buf->dma_addr = dma_addr + efx->rx_ip_align +
-+					   XDP_PACKET_HEADROOM;
- 			rx_buf->page = page;
--			rx_buf->page_offset = page_offset + efx->rx_ip_align;
-+			rx_buf->page_offset = page_offset + efx->rx_ip_align +
-+					      XDP_PACKET_HEADROOM;
- 			rx_buf->len = efx->rx_dma_len;
- 			rx_buf->flags = 0;
- 			++rx_queue->added_count;
+	But the immediate concern is to get the UAPI correct, as once we
+make public API changes there's no going back later.
+
+	-J
+
+>> 
+>>  drivers/net/bonding/bond_3ad.c  | 112 ++++++++++++++++----------------
+>>  include/uapi/linux/if_bonding.h |  16 ++---
+>>  2 files changed, 64 insertions(+), 64 deletions(-)
+>> 
+>> diff --git a/drivers/net/bonding/bond_3ad.c b/drivers/net/bonding/bond_3ad.c
+>> index 34bfe99641a3..0b4b8c500894 100644
+>> --- a/drivers/net/bonding/bond_3ad.c
+>> +++ b/drivers/net/bonding/bond_3ad.c
+>> @@ -447,8 +447,8 @@ static void __choose_matched(struct lacpdu *lacpdu, struct port *port)
+>>  	     MAC_ADDRESS_EQUAL(&(lacpdu->partner_system), &(port->actor_system)) &&
+>>  	     (ntohs(lacpdu->partner_system_priority) == port->actor_system_priority) &&
+>>  	     (ntohs(lacpdu->partner_key) == port->actor_oper_port_key) &&
+>> -	     ((lacpdu->partner_state & AD_STATE_AGGREGATION) == (port->actor_oper_port_state & AD_STATE_AGGREGATION))) ||
+>> -	    ((lacpdu->actor_state & AD_STATE_AGGREGATION) == 0)
+>> +	     ((lacpdu->partner_state & BOND_3AD_STATE_AGGREGATION) == (port->actor_oper_port_state & BOND_3AD_STATE_AGGREGATION))) ||
+>> +	    ((lacpdu->actor_state & BOND_3AD_STATE_AGGREGATION) == 0)
+>>  		) {
+>>  		port->sm_vars |= AD_PORT_MATCHED;
+>>  	} else {
+>> @@ -482,18 +482,18 @@ static void __record_pdu(struct lacpdu *lacpdu, struct port *port)
+>>  		partner->port_state = lacpdu->actor_state;
+>>  
+>>  		/* set actor_oper_port_state.defaulted to FALSE */
+>> -		port->actor_oper_port_state &= ~AD_STATE_DEFAULTED;
+>> +		port->actor_oper_port_state &= ~BOND_3AD_STATE_DEFAULTED;
+>>  
+>>  		/* set the partner sync. to on if the partner is sync,
+>>  		 * and the port is matched
+>>  		 */
+>>  		if ((port->sm_vars & AD_PORT_MATCHED) &&
+>> -		    (lacpdu->actor_state & AD_STATE_SYNCHRONIZATION)) {
+>> -			partner->port_state |= AD_STATE_SYNCHRONIZATION;
+>> +		    (lacpdu->actor_state & BOND_3AD_STATE_SYNCHRONIZATION)) {
+>> +			partner->port_state |= BOND_3AD_STATE_SYNCHRONIZATION;
+>>  			slave_dbg(port->slave->bond->dev, port->slave->dev,
+>>  				  "partner sync=1\n");
+>>  		} else {
+>> -			partner->port_state &= ~AD_STATE_SYNCHRONIZATION;
+>> +			partner->port_state &= ~BOND_3AD_STATE_SYNCHRONIZATION;
+>>  			slave_dbg(port->slave->bond->dev, port->slave->dev,
+>>  				  "partner sync=0\n");
+>>  		}
+>> @@ -516,7 +516,7 @@ static void __record_default(struct port *port)
+>>  		       sizeof(struct port_params));
+>>  
+>>  		/* set actor_oper_port_state.defaulted to true */
+>> -		port->actor_oper_port_state |= AD_STATE_DEFAULTED;
+>> +		port->actor_oper_port_state |= BOND_3AD_STATE_DEFAULTED;
+>>  	}
+>>  }
+>>  
+>> @@ -546,7 +546,7 @@ static void __update_selected(struct lacpdu *lacpdu, struct port *port)
+>>  		    !MAC_ADDRESS_EQUAL(&lacpdu->actor_system, &partner->system) ||
+>>  		    ntohs(lacpdu->actor_system_priority) != partner->system_priority ||
+>>  		    ntohs(lacpdu->actor_key) != partner->key ||
+>> -		    (lacpdu->actor_state & AD_STATE_AGGREGATION) != (partner->port_state & AD_STATE_AGGREGATION)) {
+>> +		    (lacpdu->actor_state & BOND_3AD_STATE_AGGREGATION) != (partner->port_state & BOND_3AD_STATE_AGGREGATION)) {
+>>  			port->sm_vars &= ~AD_PORT_SELECTED;
+>>  		}
+>>  	}
+>> @@ -578,8 +578,8 @@ static void __update_default_selected(struct port *port)
+>>  		    !MAC_ADDRESS_EQUAL(&admin->system, &oper->system) ||
+>>  		    admin->system_priority != oper->system_priority ||
+>>  		    admin->key != oper->key ||
+>> -		    (admin->port_state & AD_STATE_AGGREGATION)
+>> -			!= (oper->port_state & AD_STATE_AGGREGATION)) {
+>> +		    (admin->port_state & BOND_3AD_STATE_AGGREGATION)
+>> +			!= (oper->port_state & BOND_3AD_STATE_AGGREGATION)) {
+>>  			port->sm_vars &= ~AD_PORT_SELECTED;
+>>  		}
+>>  	}
+>> @@ -609,10 +609,10 @@ static void __update_ntt(struct lacpdu *lacpdu, struct port *port)
+>>  		    !MAC_ADDRESS_EQUAL(&(lacpdu->partner_system), &(port->actor_system)) ||
+>>  		    (ntohs(lacpdu->partner_system_priority) != port->actor_system_priority) ||
+>>  		    (ntohs(lacpdu->partner_key) != port->actor_oper_port_key) ||
+>> -		    ((lacpdu->partner_state & AD_STATE_LACP_ACTIVITY) != (port->actor_oper_port_state & AD_STATE_LACP_ACTIVITY)) ||
+>> -		    ((lacpdu->partner_state & AD_STATE_LACP_TIMEOUT) != (port->actor_oper_port_state & AD_STATE_LACP_TIMEOUT)) ||
+>> -		    ((lacpdu->partner_state & AD_STATE_SYNCHRONIZATION) != (port->actor_oper_port_state & AD_STATE_SYNCHRONIZATION)) ||
+>> -		    ((lacpdu->partner_state & AD_STATE_AGGREGATION) != (port->actor_oper_port_state & AD_STATE_AGGREGATION))
+>> +		    ((lacpdu->partner_state & BOND_3AD_STATE_LACP_ACTIVITY) != (port->actor_oper_port_state & BOND_3AD_STATE_LACP_ACTIVITY)) ||
+>> +		    ((lacpdu->partner_state & BOND_3AD_STATE_LACP_TIMEOUT) != (port->actor_oper_port_state & BOND_3AD_STATE_LACP_TIMEOUT)) ||
+>> +		    ((lacpdu->partner_state & BOND_3AD_STATE_SYNCHRONIZATION) != (port->actor_oper_port_state & BOND_3AD_STATE_SYNCHRONIZATION)) ||
+>> +		    ((lacpdu->partner_state & BOND_3AD_STATE_AGGREGATION) != (port->actor_oper_port_state & BOND_3AD_STATE_AGGREGATION))
+>>  		   ) {
+>>  			port->ntt = true;
+>>  		}
+>> @@ -968,7 +968,7 @@ static void ad_mux_machine(struct port *port, bool *update_slave_arr)
+>>  			 * edable port will take place only after this timer)
+>>  			 */
+>>  			if ((port->sm_vars & AD_PORT_SELECTED) &&
+>> -			    (port->partner_oper.port_state & AD_STATE_SYNCHRONIZATION) &&
+>> +			    (port->partner_oper.port_state & BOND_3AD_STATE_SYNCHRONIZATION) &&
+>>  			    !__check_agg_selection_timer(port)) {
+>>  				if (port->aggregator->is_active)
+>>  					port->sm_mux_state =
+>> @@ -986,14 +986,14 @@ static void ad_mux_machine(struct port *port, bool *update_slave_arr)
+>>  				port->sm_mux_state = AD_MUX_DETACHED;
+>>  			} else if (port->aggregator->is_active) {
+>>  				port->actor_oper_port_state |=
+>> -				    AD_STATE_SYNCHRONIZATION;
+>> +				    BOND_3AD_STATE_SYNCHRONIZATION;
+>>  			}
+>>  			break;
+>>  		case AD_MUX_COLLECTING_DISTRIBUTING:
+>>  			if (!(port->sm_vars & AD_PORT_SELECTED) ||
+>>  			    (port->sm_vars & AD_PORT_STANDBY) ||
+>> -			    !(port->partner_oper.port_state & AD_STATE_SYNCHRONIZATION) ||
+>> -			    !(port->actor_oper_port_state & AD_STATE_SYNCHRONIZATION)) {
+>> +			    !(port->partner_oper.port_state & BOND_3AD_STATE_SYNCHRONIZATION) ||
+>> +			    !(port->actor_oper_port_state & BOND_3AD_STATE_SYNCHRONIZATION)) {
+>>  				port->sm_mux_state = AD_MUX_ATTACHED;
+>>  			} else {
+>>  				/* if port state hasn't changed make
+>> @@ -1022,11 +1022,11 @@ static void ad_mux_machine(struct port *port, bool *update_slave_arr)
+>>  			  port->sm_mux_state);
+>>  		switch (port->sm_mux_state) {
+>>  		case AD_MUX_DETACHED:
+>> -			port->actor_oper_port_state &= ~AD_STATE_SYNCHRONIZATION;
+>> +			port->actor_oper_port_state &= ~BOND_3AD_STATE_SYNCHRONIZATION;
+>>  			ad_disable_collecting_distributing(port,
+>>  							   update_slave_arr);
+>> -			port->actor_oper_port_state &= ~AD_STATE_COLLECTING;
+>> -			port->actor_oper_port_state &= ~AD_STATE_DISTRIBUTING;
+>> +			port->actor_oper_port_state &= ~BOND_3AD_STATE_COLLECTING;
+>> +			port->actor_oper_port_state &= ~BOND_3AD_STATE_DISTRIBUTING;
+>>  			port->ntt = true;
+>>  			break;
+>>  		case AD_MUX_WAITING:
+>> @@ -1035,20 +1035,20 @@ static void ad_mux_machine(struct port *port, bool *update_slave_arr)
+>>  		case AD_MUX_ATTACHED:
+>>  			if (port->aggregator->is_active)
+>>  				port->actor_oper_port_state |=
+>> -				    AD_STATE_SYNCHRONIZATION;
+>> +				    BOND_3AD_STATE_SYNCHRONIZATION;
+>>  			else
+>>  				port->actor_oper_port_state &=
+>> -				    ~AD_STATE_SYNCHRONIZATION;
+>> -			port->actor_oper_port_state &= ~AD_STATE_COLLECTING;
+>> -			port->actor_oper_port_state &= ~AD_STATE_DISTRIBUTING;
+>> +				    ~BOND_3AD_STATE_SYNCHRONIZATION;
+>> +			port->actor_oper_port_state &= ~BOND_3AD_STATE_COLLECTING;
+>> +			port->actor_oper_port_state &= ~BOND_3AD_STATE_DISTRIBUTING;
+>>  			ad_disable_collecting_distributing(port,
+>>  							   update_slave_arr);
+>>  			port->ntt = true;
+>>  			break;
+>>  		case AD_MUX_COLLECTING_DISTRIBUTING:
+>> -			port->actor_oper_port_state |= AD_STATE_COLLECTING;
+>> -			port->actor_oper_port_state |= AD_STATE_DISTRIBUTING;
+>> -			port->actor_oper_port_state |= AD_STATE_SYNCHRONIZATION;
+>> +			port->actor_oper_port_state |= BOND_3AD_STATE_COLLECTING;
+>> +			port->actor_oper_port_state |= BOND_3AD_STATE_DISTRIBUTING;
+>> +			port->actor_oper_port_state |= BOND_3AD_STATE_SYNCHRONIZATION;
+>>  			ad_enable_collecting_distributing(port,
+>>  							  update_slave_arr);
+>>  			port->ntt = true;
+>> @@ -1146,7 +1146,7 @@ static void ad_rx_machine(struct lacpdu *lacpdu, struct port *port)
+>>  				port->sm_vars |= AD_PORT_LACP_ENABLED;
+>>  			port->sm_vars &= ~AD_PORT_SELECTED;
+>>  			__record_default(port);
+>> -			port->actor_oper_port_state &= ~AD_STATE_EXPIRED;
+>> +			port->actor_oper_port_state &= ~BOND_3AD_STATE_EXPIRED;
+>>  			port->sm_rx_state = AD_RX_PORT_DISABLED;
+>>  
+>>  			/* Fall Through */
+>> @@ -1156,9 +1156,9 @@ static void ad_rx_machine(struct lacpdu *lacpdu, struct port *port)
+>>  		case AD_RX_LACP_DISABLED:
+>>  			port->sm_vars &= ~AD_PORT_SELECTED;
+>>  			__record_default(port);
+>> -			port->partner_oper.port_state &= ~AD_STATE_AGGREGATION;
+>> +			port->partner_oper.port_state &= ~BOND_3AD_STATE_AGGREGATION;
+>>  			port->sm_vars |= AD_PORT_MATCHED;
+>> -			port->actor_oper_port_state &= ~AD_STATE_EXPIRED;
+>> +			port->actor_oper_port_state &= ~BOND_3AD_STATE_EXPIRED;
+>>  			break;
+>>  		case AD_RX_EXPIRED:
+>>  			/* Reset of the Synchronization flag (Standard 43.4.12)
+>> @@ -1167,19 +1167,19 @@ static void ad_rx_machine(struct lacpdu *lacpdu, struct port *port)
+>>  			 * case of EXPIRED even if LINK_DOWN didn't arrive for
+>>  			 * the port.
+>>  			 */
+>> -			port->partner_oper.port_state &= ~AD_STATE_SYNCHRONIZATION;
+>> +			port->partner_oper.port_state &= ~BOND_3AD_STATE_SYNCHRONIZATION;
+>>  			port->sm_vars &= ~AD_PORT_MATCHED;
+>> -			port->partner_oper.port_state |= AD_STATE_LACP_TIMEOUT;
+>> -			port->partner_oper.port_state |= AD_STATE_LACP_ACTIVITY;
+>> +			port->partner_oper.port_state |= BOND_3AD_STATE_LACP_TIMEOUT;
+>> +			port->partner_oper.port_state |= BOND_3AD_STATE_LACP_ACTIVITY;
+>>  			port->sm_rx_timer_counter = __ad_timer_to_ticks(AD_CURRENT_WHILE_TIMER, (u16)(AD_SHORT_TIMEOUT));
+>> -			port->actor_oper_port_state |= AD_STATE_EXPIRED;
+>> +			port->actor_oper_port_state |= BOND_3AD_STATE_EXPIRED;
+>>  			port->sm_vars |= AD_PORT_CHURNED;
+>>  			break;
+>>  		case AD_RX_DEFAULTED:
+>>  			__update_default_selected(port);
+>>  			__record_default(port);
+>>  			port->sm_vars |= AD_PORT_MATCHED;
+>> -			port->actor_oper_port_state &= ~AD_STATE_EXPIRED;
+>> +			port->actor_oper_port_state &= ~BOND_3AD_STATE_EXPIRED;
+>>  			break;
+>>  		case AD_RX_CURRENT:
+>>  			/* detect loopback situation */
+>> @@ -1192,8 +1192,8 @@ static void ad_rx_machine(struct lacpdu *lacpdu, struct port *port)
+>>  			__update_selected(lacpdu, port);
+>>  			__update_ntt(lacpdu, port);
+>>  			__record_pdu(lacpdu, port);
+>> -			port->sm_rx_timer_counter = __ad_timer_to_ticks(AD_CURRENT_WHILE_TIMER, (u16)(port->actor_oper_port_state & AD_STATE_LACP_TIMEOUT));
+>> -			port->actor_oper_port_state &= ~AD_STATE_EXPIRED;
+>> +			port->sm_rx_timer_counter = __ad_timer_to_ticks(AD_CURRENT_WHILE_TIMER, (u16)(port->actor_oper_port_state & BOND_3AD_STATE_LACP_TIMEOUT));
+>> +			port->actor_oper_port_state &= ~BOND_3AD_STATE_EXPIRED;
+>>  			break;
+>>  		default:
+>>  			break;
+>> @@ -1221,7 +1221,7 @@ static void ad_churn_machine(struct port *port)
+>>  	if (port->sm_churn_actor_timer_counter &&
+>>  	    !(--port->sm_churn_actor_timer_counter) &&
+>>  	    port->sm_churn_actor_state == AD_CHURN_MONITOR) {
+>> -		if (port->actor_oper_port_state & AD_STATE_SYNCHRONIZATION) {
+>> +		if (port->actor_oper_port_state & BOND_3AD_STATE_SYNCHRONIZATION) {
+>>  			port->sm_churn_actor_state = AD_NO_CHURN;
+>>  		} else {
+>>  			port->churn_actor_count++;
+>> @@ -1231,7 +1231,7 @@ static void ad_churn_machine(struct port *port)
+>>  	if (port->sm_churn_partner_timer_counter &&
+>>  	    !(--port->sm_churn_partner_timer_counter) &&
+>>  	    port->sm_churn_partner_state == AD_CHURN_MONITOR) {
+>> -		if (port->partner_oper.port_state & AD_STATE_SYNCHRONIZATION) {
+>> +		if (port->partner_oper.port_state & BOND_3AD_STATE_SYNCHRONIZATION) {
+>>  			port->sm_churn_partner_state = AD_NO_CHURN;
+>>  		} else {
+>>  			port->churn_partner_count++;
+>> @@ -1288,7 +1288,7 @@ static void ad_periodic_machine(struct port *port)
+>>  
+>>  	/* check if port was reinitialized */
+>>  	if (((port->sm_vars & AD_PORT_BEGIN) || !(port->sm_vars & AD_PORT_LACP_ENABLED) || !port->is_enabled) ||
+>> -	    (!(port->actor_oper_port_state & AD_STATE_LACP_ACTIVITY) && !(port->partner_oper.port_state & AD_STATE_LACP_ACTIVITY))
+>> +	    (!(port->actor_oper_port_state & BOND_3AD_STATE_LACP_ACTIVITY) && !(port->partner_oper.port_state & BOND_3AD_STATE_LACP_ACTIVITY))
+>>  	   ) {
+>>  		port->sm_periodic_state = AD_NO_PERIODIC;
+>>  	}
+>> @@ -1305,11 +1305,11 @@ static void ad_periodic_machine(struct port *port)
+>>  			switch (port->sm_periodic_state) {
+>>  			case AD_FAST_PERIODIC:
+>>  				if (!(port->partner_oper.port_state
+>> -				      & AD_STATE_LACP_TIMEOUT))
+>> +				      & BOND_3AD_STATE_LACP_TIMEOUT))
+>>  					port->sm_periodic_state = AD_SLOW_PERIODIC;
+>>  				break;
+>>  			case AD_SLOW_PERIODIC:
+>> -				if ((port->partner_oper.port_state & AD_STATE_LACP_TIMEOUT)) {
+>> +				if ((port->partner_oper.port_state & BOND_3AD_STATE_LACP_TIMEOUT)) {
+>>  					port->sm_periodic_timer_counter = 0;
+>>  					port->sm_periodic_state = AD_PERIODIC_TX;
+>>  				}
+>> @@ -1325,7 +1325,7 @@ static void ad_periodic_machine(struct port *port)
+>>  			break;
+>>  		case AD_PERIODIC_TX:
+>>  			if (!(port->partner_oper.port_state &
+>> -			    AD_STATE_LACP_TIMEOUT))
+>> +			    BOND_3AD_STATE_LACP_TIMEOUT))
+>>  				port->sm_periodic_state = AD_SLOW_PERIODIC;
+>>  			else
+>>  				port->sm_periodic_state = AD_FAST_PERIODIC;
+>> @@ -1532,7 +1532,7 @@ static void ad_port_selection_logic(struct port *port, bool *update_slave_arr)
+>>  	ad_agg_selection_logic(aggregator, update_slave_arr);
+>>  
+>>  	if (!port->aggregator->is_active)
+>> -		port->actor_oper_port_state &= ~AD_STATE_SYNCHRONIZATION;
+>> +		port->actor_oper_port_state &= ~BOND_3AD_STATE_SYNCHRONIZATION;
+>>  }
+>>  
+>>  /* Decide if "agg" is a better choice for the new active aggregator that
+>> @@ -1838,13 +1838,13 @@ static void ad_initialize_port(struct port *port, int lacp_fast)
+>>  		port->actor_port_priority = 0xff;
+>>  		port->actor_port_aggregator_identifier = 0;
+>>  		port->ntt = false;
+>> -		port->actor_admin_port_state = AD_STATE_AGGREGATION |
+>> -					       AD_STATE_LACP_ACTIVITY;
+>> -		port->actor_oper_port_state  = AD_STATE_AGGREGATION |
+>> -					       AD_STATE_LACP_ACTIVITY;
+>> +		port->actor_admin_port_state = BOND_3AD_STATE_AGGREGATION |
+>> +					       BOND_3AD_STATE_LACP_ACTIVITY;
+>> +		port->actor_oper_port_state  = BOND_3AD_STATE_AGGREGATION |
+>> +					       BOND_3AD_STATE_LACP_ACTIVITY;
+>>  
+>>  		if (lacp_fast)
+>> -			port->actor_oper_port_state |= AD_STATE_LACP_TIMEOUT;
+>> +			port->actor_oper_port_state |= BOND_3AD_STATE_LACP_TIMEOUT;
+>>  
+>>  		memcpy(&port->partner_admin, &tmpl, sizeof(tmpl));
+>>  		memcpy(&port->partner_oper, &tmpl, sizeof(tmpl));
+>> @@ -2095,10 +2095,10 @@ void bond_3ad_unbind_slave(struct slave *slave)
+>>  		  aggregator->aggregator_identifier);
+>>  
+>>  	/* Tell the partner that this port is not suitable for aggregation */
+>> -	port->actor_oper_port_state &= ~AD_STATE_SYNCHRONIZATION;
+>> -	port->actor_oper_port_state &= ~AD_STATE_COLLECTING;
+>> -	port->actor_oper_port_state &= ~AD_STATE_DISTRIBUTING;
+>> -	port->actor_oper_port_state &= ~AD_STATE_AGGREGATION;
+>> +	port->actor_oper_port_state &= ~BOND_3AD_STATE_SYNCHRONIZATION;
+>> +	port->actor_oper_port_state &= ~BOND_3AD_STATE_COLLECTING;
+>> +	port->actor_oper_port_state &= ~BOND_3AD_STATE_DISTRIBUTING;
+>> +	port->actor_oper_port_state &= ~BOND_3AD_STATE_AGGREGATION;
+>>  	__update_lacpdu_from_port(port);
+>>  	ad_lacpdu_send(port);
+>>  
+>> @@ -2685,9 +2685,9 @@ void bond_3ad_update_lacp_rate(struct bonding *bond)
+>>  	bond_for_each_slave(bond, slave, iter) {
+>>  		port = &(SLAVE_AD_INFO(slave)->port);
+>>  		if (lacp_fast)
+>> -			port->actor_oper_port_state |= AD_STATE_LACP_TIMEOUT;
+>> +			port->actor_oper_port_state |= BOND_3AD_STATE_LACP_TIMEOUT;
+>>  		else
+>> -			port->actor_oper_port_state &= ~AD_STATE_LACP_TIMEOUT;
+>> +			port->actor_oper_port_state &= ~BOND_3AD_STATE_LACP_TIMEOUT;
+>>  	}
+>>  	spin_unlock_bh(&bond->mode_lock);
+>>  }
+>> diff --git a/include/uapi/linux/if_bonding.h b/include/uapi/linux/if_bonding.h
+>> index 6829213a54c5..0fc5d5ae8f09 100644
+>> --- a/include/uapi/linux/if_bonding.h
+>> +++ b/include/uapi/linux/if_bonding.h
+>> @@ -96,14 +96,14 @@
+>>  #define BOND_XMIT_POLICY_ENCAP34	4 /* encapsulated layer 3+4 */
+>>  
+>>  /* 802.3ad port state definitions (43.4.2.2 in the 802.3ad standard) */
+>> -#define AD_STATE_LACP_ACTIVITY   0x1
+>> -#define AD_STATE_LACP_TIMEOUT    0x2
+>> -#define AD_STATE_AGGREGATION     0x4
+>> -#define AD_STATE_SYNCHRONIZATION 0x8
+>> -#define AD_STATE_COLLECTING      0x10
+>> -#define AD_STATE_DISTRIBUTING    0x20
+>> -#define AD_STATE_DEFAULTED       0x40
+>> -#define AD_STATE_EXPIRED         0x80
+>> +#define BOND_3AD_STATE_LACP_ACTIVITY   0x1
+>> +#define BOND_3AD_STATE_LACP_TIMEOUT    0x2
+>> +#define BOND_3AD_STATE_AGGREGATION     0x4
+>> +#define BOND_3AD_STATE_SYNCHRONIZATION 0x8
+>> +#define BOND_3AD_STATE_COLLECTING      0x10
+>> +#define BOND_3AD_STATE_DISTRIBUTING    0x20
+>> +#define BOND_3AD_STATE_DEFAULTED       0x40
+>> +#define BOND_3AD_STATE_EXPIRED         0x80
+>>  
+>>  typedef struct ifbond {
+>>  	__s32 bond_mode;
+>> -- 
+>> 2.20.1
+>> 
