@@ -2,114 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EFD0912756B
-	for <lists+netdev@lfdr.de>; Fri, 20 Dec 2019 06:51:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6CE7F12761D
+	for <lists+netdev@lfdr.de>; Fri, 20 Dec 2019 08:04:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725965AbfLTFvw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Dec 2019 00:51:52 -0500
-Received: from mail-co1nam11on2076.outbound.protection.outlook.com ([40.107.220.76]:6152
-        "EHLO NAM11-CO1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725825AbfLTFvw (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 20 Dec 2019 00:51:52 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=iAhun1mHn7CMmMAnwo+GrcqhGWsVsiwShUwqXNisp803czCcryJ5UW8UMOiT1l47YxhWQRJAfMq2SWV9gqQcGoXo2rCl13E1fAGxRYjOpGan6vfWOtS1BgkrluJ8docK7fH3fyFKpkQAJFGV0nYiB0IrKFNUxrHY29Qd+ljCvG2kXP4PDFlos+7ddTQiWVrtc4oqGXitql5E+HyipzIxkBLzWYQNmjtSbs/GFtywN06s8mzypy2aPIvv9/O5Wzd1sw16tEKhaYQE2wj5tYvB5egtEtqwmq/we4j5w1yHw97WzF/sLH/Bmy6kjR2sZ+W4E+I271CqVuiqkGpr001/Jw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=yPewZla1yNPJsp49l8KcSZaCvnYJJUBGxHf+vnY5u5s=;
- b=EpD8x6CBDKfs9HatdMNepXwsGNbnS1pKyDEgje2xfEnaFAgfPb4ZGUxjuzlFIjj70eIcu4RORLgclU9jaMKN+71oFvjANlRDhYXcqbE69ynEPDQHLhgddA5Pfj6t32Q7uE5DYss12xgEkyWfYWMMAzeQOE8H9NqlGNDuzd9SxvVMIXjS1D3ZTWXRY7dJEkRofFv9F0vjIp+ckFJO4adQ4YNOymEO1+StXCavqsw9tEHnH85Qha0GsWHXfX1Gam0KfVFxTJyzySpWUnWCOVJtjLNJAvC6YnK2fUrqByuAwVuEHfLSir1E1F3s9aN4y4wDobrf0kiHgEYQU3bFAxLDGg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=xilinx.com; dmarc=pass action=none header.from=xilinx.com;
- dkim=pass header.d=xilinx.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=yPewZla1yNPJsp49l8KcSZaCvnYJJUBGxHf+vnY5u5s=;
- b=NqiUXVLXG2vTtne21jHFHlAm8LRjbdTxe/HftGoOWhHGvY0Xfh9xk0J+0WcFDP/M8dHUk0zaH32W94ZoU6iOPlNc1k6eyC5KeVJSAWo6UUXg3ZmjdwRMyBQhBPUc/pTc+mKvgqsjDVGNCiFT3B7C2V5H/+plvmbsIfrGD8QJTzU=
-Received: from CH2PR02MB7000.namprd02.prod.outlook.com (20.180.9.216) by
- CH2PR02MB6024.namprd02.prod.outlook.com (52.132.228.212) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2559.14; Fri, 20 Dec 2019 05:51:48 +0000
-Received: from CH2PR02MB7000.namprd02.prod.outlook.com
- ([fe80::969:436f:b4b8:4899]) by CH2PR02MB7000.namprd02.prod.outlook.com
- ([fe80::969:436f:b4b8:4899%7]) with mapi id 15.20.2559.012; Fri, 20 Dec 2019
- 05:51:48 +0000
-From:   Radhey Shyam Pandey <radheys@xilinx.com>
-To:     Richard Cochran <richardcochran@gmail.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
+        id S1727177AbfLTHEW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Dec 2019 02:04:22 -0500
+Received: from mx2.suse.de ([195.135.220.15]:41840 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727167AbfLTHEV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 20 Dec 2019 02:04:21 -0500
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx2.suse.de (Postfix) with ESMTP id 1EFA9AD85;
+        Fri, 20 Dec 2019 07:04:19 +0000 (UTC)
+Received: by unicorn.suse.cz (Postfix, from userid 1000)
+        id 5402AE008B; Fri, 20 Dec 2019 08:04:18 +0100 (CET)
+Date:   Fri, 20 Dec 2019 08:04:18 +0100
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     netdev@vger.kernel.org
+Cc:     Thomas Falcon <tlfalcon@linux.ibm.com>,
+        Cris Forno <cforno12@linux.vnet.ibm.com>, mst@redhat.com,
+        jasowang@redhat.com, haiyangz@microsoft.com,
+        sthemmin@microsoft.com, sashal@kernel.org,
         David Miller <davem@davemloft.net>,
-        Michal Simek <michals@xilinx.com>
-Subject: RE: [PATCH net-next 1/3] net: axienet: Propagate registration errors
- during probe.
-Thread-Topic: [PATCH net-next 1/3] net: axienet: Propagate registration errors
- during probe.
-Thread-Index: AQHVtD8/PHqqoL6sF0eYA6GsnGF+CKe92YtQgAChMQCAA0uZIIAAu0yAgAAFTOA=
-Date:   Fri, 20 Dec 2019 05:51:48 +0000
-Message-ID: <CH2PR02MB7000F55F495C7083772697A7C72D0@CH2PR02MB7000.namprd02.prod.outlook.com>
-References: <cover.1576520432.git.richardcochran@gmail.com>
- <42ed0fb7ef99101d6fd8b799bccb6e2d746939c2.1576520432.git.richardcochran@gmail.com>
- <CH2PR02MB70009FEE62CD2AB6B40911E5C7500@CH2PR02MB7000.namprd02.prod.outlook.com>
- <20191217154950.GA8163@localhost>
- <CH2PR02MB700039E0886AE86B9C731A90C7520@CH2PR02MB7000.namprd02.prod.outlook.com>
- <20191220051933.GA1408@localhost>
-In-Reply-To: <20191220051933.GA1408@localhost>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=radheys@xilinx.com; 
-x-originating-ip: [149.199.50.133]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: dab0db75-c7ba-481d-9262-08d78510b41e
-x-ms-traffictypediagnostic: CH2PR02MB6024:|CH2PR02MB6024:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <CH2PR02MB6024797B6F706EA3EC88FCB4C72D0@CH2PR02MB6024.namprd02.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:1824;
-x-forefront-prvs: 025796F161
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(396003)(136003)(39860400002)(366004)(376002)(346002)(189003)(199004)(13464003)(54906003)(6916009)(4326008)(26005)(107886003)(7696005)(55016002)(9686003)(6506007)(53546011)(186003)(33656002)(86362001)(5660300002)(4744005)(81166006)(52536014)(81156014)(316002)(64756008)(478600001)(71200400001)(2906002)(66556008)(8676002)(66446008)(8936002)(66476007)(76116006)(66946007);DIR:OUT;SFP:1101;SCL:1;SRVR:CH2PR02MB6024;H:CH2PR02MB7000.namprd02.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: xilinx.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: y5k8J2farWyWgTyE7YviUucZENpkPUyXwITwDkpUTy2Mt+24ACzvWPTPTqAmEVwLAR0D3ZUp7jtRE0jnhrxP949ifeMtn2DtETTaglZOcas6uG0vaHfZ49xYU8rpz/6K6vNruQvGuTpZvvxbfMTa2iQvKnGqNFg1AVFFKUKYqzalBuetfl78ZzFK315VJYX1AN84AT9G1ZIsJ3xSFzCWc88HcGyNeQmxHxb2ud8Lflt4R+8IWRzCyINnR0SeYFDMYIuvTLjYCwQV1vnZMrdN8/krxoATd7MR7161Qnr5eAN5Obtd5/f24m+os+YoRWIMHCLvWAkCuPAk55VQ5z7/lWWrUvhdQoU+yKdBfeFAAKKRnMDBkLR377752nz+a49QUBHikYogpaV2wTRMSKwQQ3uLkN4iJUyU9C5dl17Rkqa575kLZZo6ool0S4RjnfL6l52CClNcH9Vmm3WR7rIpOm9geUUd2pallMFSiupTYSAz+1cQj4cZuRzSzdReoPYs
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        Jakub Kicinski <jakub.kicinski@netronome.com>
+Subject: Re: [PATCH, net-next, v3, 1/2] Three virtual devices (ibmveth,
+ virtio_net, and netvsc) all have similar code to set/get link settings and
+ validate ethtool command. To eliminate duplication of code, it is factored
+ out into core/ethtool.c.
+Message-ID: <20191220070418.GE21614@unicorn.suse.cz>
+References: <20191219194057.4208-1-cforno12@linux.vnet.ibm.com>
+ <20191219194057.4208-2-cforno12@linux.vnet.ibm.com>
+ <20191219223603.GC21614@unicorn.suse.cz>
+ <bac064bd-fba1-e453-7754-022ea6a191f2@linux.ibm.com>
 MIME-Version: 1.0
-X-OriginatorOrg: xilinx.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: dab0db75-c7ba-481d-9262-08d78510b41e
-X-MS-Exchange-CrossTenant-originalarrivaltime: 20 Dec 2019 05:51:48.1349
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 657af505-d5df-48d0-8300-c31994686c5c
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 56nsiIsExPeB9lLpw+Y4oxAGI8kSZiQ1M6WvF8k4WwA3EsyFVMyMyJjToj1y7Y8iWSGQCLRF5Ezx5gNxDMWiKQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR02MB6024
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <bac064bd-fba1-e453-7754-022ea6a191f2@linux.ibm.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> -----Original Message-----
-> From: Richard Cochran <richardcochran@gmail.com>
-> Sent: Friday, December 20, 2019 10:50 AM
-> To: Radhey Shyam Pandey <radheys@xilinx.com>
-> Cc: netdev@vger.kernel.org; linux-arm-kernel@lists.infradead.org; David
-> Miller <davem@davemloft.net>; Michal Simek <michals@xilinx.com>
-> Subject: Re: [PATCH net-next 1/3] net: axienet: Propagate registration er=
-rors
-> during probe.
->=20
-> On Thu, Dec 19, 2019 at 06:13:34PM +0000, Radhey Shyam Pandey wrote:
-> > I mean in which scenario we are hitting of_mdiobus_register defer?
->=20
-> of_mdiobus_register_phy() returns EPROBE_DEFER.
-Thanks. For defer we can skip "error registering MDIO bus" reporting.
->=20
-> Thanks,
-> Richard
+On Thu, Dec 19, 2019 at 07:26:14PM -0600, Thomas Falcon wrote:
+> On 12/19/19 4:36 PM, Michal Kubecek wrote:
+> > On Thu, Dec 19, 2019 at 01:40:56PM -0600, Cris Forno wrote:
+[...]
+> > > @@ -579,6 +579,32 @@ static int load_link_ksettings_from_user(struct ethtool_link_ksettings *to,
+> > >   	return 0;
+> > >   }
+> > > +/* Check if the user is trying to change anything besides speed/duplex */
+> > > +static bool
+> > > +ethtool_virtdev_validate_cmd(const struct ethtool_link_ksettings *cmd)
+> > > +{
+> > > +	struct ethtool_link_ksettings diff1 = *cmd;
+> > > +	struct ethtool_link_ksettings diff2 = {};
+> > > +
+> > > +	/* cmd is always set so we need to clear it, validate the port type
+> > > +	 * and also without autonegotiation we can ignore advertising
+> > > +	 */
+> > > +	diff1.base.speed = 0;
+> > > +	diff2.base.port = PORT_OTHER;
+> > > +	ethtool_link_ksettings_zero_link_mode(&diff1, advertising);
+> > > +	diff1.base.duplex = 0;
+> > > +	diff1.base.cmd = 0;
+> > > +	diff1.base.link_mode_masks_nwords = 0;
+> > > +
+> > > +	return !memcmp(&diff1.base, &diff2.base, sizeof(diff1.base)) &&
+> > > +		bitmap_empty(diff1.link_modes.supported,
+> > > +			     __ETHTOOL_LINK_MODE_MASK_NBITS) &&
+> > > +		bitmap_empty(diff1.link_modes.advertising,
+> > > +			     __ETHTOOL_LINK_MODE_MASK_NBITS) &&
+> > Isn't this condition always true? You zeroed the advertising bitmap
+> > above. Could you just omit this part and clearing of advertising above?
+> > 
+> > > +		bitmap_empty(diff1.link_modes.lp_advertising,
+> > > +			     __ETHTOOL_LINK_MODE_MASK_NBITS);
+> > > +}
+> > Another idea: instead of zeroing parts of diff1, you could copy these
+> > members from *cmd to diff2 and compare cmd->base with diff2.base. You
+> > could then drop diff1. And you wouldn't even need whole struct
+> > ethtool_link_ksettings for diff2 as you only compare embedded struct
+> > ethtool_link_settings (and check two bitmaps in cmd->link_modes).
+> 
+> If I understand your suggestion correctly, then the validate function might
+> look something like this?
+> 
+> /* Check if the user is trying to change anything besides speed/duplex */
+> static bool
+> ethtool_virtdev_validate_cmd(const struct ethtool_link_ksettings *cmd)
+> {
+>     struct ethtool_link_settings base2 = {};
+> 
+>     base2.speed = cmd->base.speed;
+>     base2.port = PORT_OTHER;
+>     base2.duplex = cmd->base.duplex;
+>     base2.cmd = cmd->base.cmd;
+>     base2.link_mode_masks_nwords = cmd->base.link_mode_masks_nwords;
+> 
+>     return !memcmp(&base2, cmd->base, sizeof(base2)) &&
+>         bitmap_empty(cmd->link_modes.supported,
+>                  __ETHTOOL_LINK_MODE_MASK_NBITS) &&
+>         bitmap_empty(cmd->link_modes.lp_advertising,
+>                  __ETHTOOL_LINK_MODE_MASK_NBITS);
+> }
+
+Yes, that is what I wanted to suggest (the second argument of memcmp()
+should be "&cmd->base", I think).
+
+Michal
