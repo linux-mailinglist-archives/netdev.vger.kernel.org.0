@@ -2,85 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B7BD1281BE
-	for <lists+netdev@lfdr.de>; Fri, 20 Dec 2019 18:59:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 40F7F1281C6
+	for <lists+netdev@lfdr.de>; Fri, 20 Dec 2019 19:01:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727421AbfLTR7x (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Dec 2019 12:59:53 -0500
-Received: from mail-qk1-f195.google.com ([209.85.222.195]:37301 "EHLO
-        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727400AbfLTR7x (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Dec 2019 12:59:53 -0500
-Received: by mail-qk1-f195.google.com with SMTP id 21so8355732qky.4
-        for <netdev@vger.kernel.org>; Fri, 20 Dec 2019 09:59:53 -0800 (PST)
+        id S1727474AbfLTSB1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Dec 2019 13:01:27 -0500
+Received: from mail-pj1-f68.google.com ([209.85.216.68]:54530 "EHLO
+        mail-pj1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727406AbfLTSB0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Dec 2019 13:01:26 -0500
+Received: by mail-pj1-f68.google.com with SMTP id kx11so319123pjb.4;
+        Fri, 20 Dec 2019 10:01:26 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=AKuatM0y3ooR37SXFCTdVACrZiBimSZ339fk0focLFE=;
-        b=Bd/3FNn5CwlogigosRNb+/qMVP7x7yjsRwKs/T4pV1HvFYXiVGokBoq+IfzG4C75DF
-         ZRLq9ljUWggvR3a4WB49tuJbwmYiboNNC5LCILjjKr7IbRQ9QGC/QKYquVL/qszHnbUl
-         dlx6j4bv2eK9oCWEssU+NYaWSjwuCfrSQ1NPElYHAZQ+jnLomiNYV4YNySp6f5ELMBqv
-         4MFkFeNjdIEUWbeKFa6OVvslXMrXAAmB3Oj74uGRgBI6nYdva6TEqpwnDIbsNAa3c32o
-         qOlfFxM19BEZY0u6XwPr4hk/Ltv6rBQNCNizN9t6IBsRb+PhigE1qU/KS4a5nQoFd6yZ
-         nEXw==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=QfkiIhsrv51gpnAU/wXArCyH7nSkKGuTujHi7jMqn60=;
+        b=ky1TtQkiP1ey8yFLZ3pBK1jBDNUUmbFQR2bxVreYkzE+rZiwI0FUyBapYjWRXONV9w
+         dkT5SkAMeZgHxEzHUmWyFNzaOagM4BzkYSx7Na4XB85mNFq8n3U7dR1PHITOdtEpq6PQ
+         Vi+/wLz7ILNe7pcMihESquOKP9orJXJOeaex3LcdMesqkPuPCcVLDXb7taRXA+WU3+H8
+         uB/deJKXYPPrVVyeaFAR8DQ+4T70Yo30jnZLlRWOlrnzHkMo+iINRLPnLf5PQx5MPCb3
+         FRQvqzqSH9QgqJhcoz6Ap93iJWEhaNKuHxeD2YIL78CHxwzpbPfTPTlpFDlT9kKPWq71
+         Oxvw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=AKuatM0y3ooR37SXFCTdVACrZiBimSZ339fk0focLFE=;
-        b=r6LynmI4PE81+8XxR21ShLluziFdda4QMjwzwejVKkn8EjAjF2cKJUUyoIlXUPDAHH
-         VzbtTFvar0Vj94+9CSBabyLfVRlpRW7VxcKmdEJqbLozeVVy5y7HKqswgf+fo4V4Qfyd
-         Kj/bvEu2jBSLgAIQwl7AzhDJjfc6Hk4nUXZ/lqfg5XS56Z0s+b46WgLB8gNjY4AuC7qv
-         iMdGyfKCbjHuVyfQQSDRqYGRakwAHBo1ElxDEJf3jbr6GfNP5TmszuxybpbI9eSrMeVm
-         DJRhNeQf89BHc5ZnGb8asmF/g+72ZmZ4CKhayFp+89REWtf0HyM8+geLXb5Hutnmda9b
-         vtRw==
-X-Gm-Message-State: APjAAAU8MlmWTKQaF9X7NnzKh+bbmNcZ5itf5NR3Y0Fz7iEX10b9q5an
-        ZNCiKfD4FsRaSbjbhVw2XQE=
-X-Google-Smtp-Source: APXvYqxkXeA7XcEOqB3m5W4tD56A0lPBfZhxoKIYtC5LFGr8jm1HuHc+6Fy5o5NH1MkD+ESy5WUmfg==
-X-Received: by 2002:a37:89c7:: with SMTP id l190mr14621416qkd.498.1576864792626;
-        Fri, 20 Dec 2019 09:59:52 -0800 (PST)
-Received: from ?IPv6:2601:282:800:fd80:d462:ea64:486f:4002? ([2601:282:800:fd80:d462:ea64:486f:4002])
-        by smtp.googlemail.com with ESMTPSA id v5sm3330389qtc.64.2019.12.20.09.59.50
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 20 Dec 2019 09:59:51 -0800 (PST)
-Subject: Re: [patch net-next 1/4] net: call
- call_netdevice_unregister_net_notifiers from unregister
-To:     Jiri Pirko <jiri@resnulli.us>, netdev@vger.kernel.org
-Cc:     davem@davemloft.net, jakub.kicinski@netronome.com,
-        saeedm@mellanox.com, leon@kernel.org, tariqt@mellanox.com,
-        ayal@mellanox.com, vladbu@mellanox.com, michaelgur@mellanox.com,
-        moshe@mellanox.com, mlxsw@mellanox.com
-References: <20191220123542.26315-1-jiri@resnulli.us>
- <20191220123542.26315-2-jiri@resnulli.us>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <029e89ea-6ca8-bdd0-92bd-17025f5f1973@gmail.com>
-Date:   Fri, 20 Dec 2019 10:59:50 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.3.1
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=QfkiIhsrv51gpnAU/wXArCyH7nSkKGuTujHi7jMqn60=;
+        b=pObLgu1N3SKWU2B1sq1J68ZbzoIMgYnqIJ71qi4VH7uEjgpNMRjJGdyesBgqO3PDG9
+         BPvyVTM96OAkle70ea3ARC1Ae7DeBQUkKddVmbmyWKozvRWeR5oPuZN7ARL0AWYgZBoS
+         8preXXysI450rE3+lYmAim4plkAJWe8CyKYFj/eDTWsnksaESa8apJgvMC9eTp6OZ9eS
+         ILUww9+W/CAhzefrSKLleKB5FTM55dgxUL1sv/v3SHVn4GDzZGA+A94UVAFBFDMPsT3P
+         EYAVM+9y13Z8Bjy2Q9Xf0o64jtjoYN5s5se7+saEklFvNVZ7esDhKvZtsE86IEvyCDk9
+         bNFQ==
+X-Gm-Message-State: APjAAAVaBqm+j65OUxRVaTUrHZ40cfasJxUS++ttVU+QbG/PLumH/gUe
+        6VL7dz+729BGO5jBLmlOMyM=
+X-Google-Smtp-Source: APXvYqxiY8v7P2ECjAmG0887Br7C9pWZhpZv3nUsRNTAWgxiBii0nx5tn+BpAqmoAc//Tnwzm0S9IQ==
+X-Received: by 2002:a17:902:6bc3:: with SMTP id m3mr16045597plt.185.1576864886201;
+        Fri, 20 Dec 2019 10:01:26 -0800 (PST)
+Received: from localhost (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
+        by smtp.gmail.com with ESMTPSA id u7sm13146794pfh.128.2019.12.20.10.01.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 20 Dec 2019 10:01:25 -0800 (PST)
+Date:   Fri, 20 Dec 2019 10:01:22 -0800
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     netdev@vger.kernel.org, David Miller <davem@davemloft.net>,
+        devicetree@vger.kernel.org,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Jacob Keller <jacob.e.keller@intel.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Miroslav Lichvar <mlichvar@redhat.com>,
+        Murali Karicheri <m-karicheri2@ti.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Willem de Bruijn <willemb@google.com>,
+        Wingman Kwok <w-kwok2@ti.com>
+Subject: Re: [PATCH V6 net-next 06/11] net: Introduce a new MII time stamping
+ interface.
+Message-ID: <20191220180122.GB3846@localhost>
+References: <cover.1576511937.git.richardcochran@gmail.com>
+ <28939f11b984759257167e778d0c73c0dd206a35.1576511937.git.richardcochran@gmail.com>
+ <20191217092155.GL6994@lunn.ch>
+ <20191220145712.GA3846@localhost>
+ <20191220153359.GA11117@lunn.ch>
 MIME-Version: 1.0
-In-Reply-To: <20191220123542.26315-2-jiri@resnulli.us>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191220153359.GA11117@lunn.ch>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/20/19 5:35 AM, Jiri Pirko wrote:
-> From: Jiri Pirko <jiri@mellanox.com>
-> 
-> The function does the same thing as the existing code, so rather call
-> call_netdevice_unregister_net_notifiers() instead of code duplication.
-> 
-> Signed-off-by: Jiri Pirko <jiri@mellanox.com>
-> ---
->  net/core/dev.c | 14 +++-----------
->  1 file changed, 3 insertions(+), 11 deletions(-)
-> 
+On Fri, Dec 20, 2019 at 04:33:59PM +0100, Andrew Lunn wrote:
+> The Marvell PHY datasheets indicate they support PTP. I've not looked
+> at how they implement it, and if the current model will work.
 
-Reviewed-by: David Ahern <dsahern@gmail.com>
+IIRC, those parts time stamp on the MII bus input, and not in the PHY
+itself, and so they offer no advantage over MAC time stamping.  I
+suspect that is why there has been so little interest.
+
+Thanks,
+Richard
+
+
 
 
