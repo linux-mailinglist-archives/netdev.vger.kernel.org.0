@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2FA3812848A
-	for <lists+netdev@lfdr.de>; Fri, 20 Dec 2019 23:26:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 199BA12848C
+	for <lists+netdev@lfdr.de>; Fri, 20 Dec 2019 23:26:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726834AbfLTW0W (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Dec 2019 17:26:22 -0500
-Received: from mail-ed1-f65.google.com ([209.85.208.65]:42825 "EHLO
-        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725965AbfLTW0W (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Dec 2019 17:26:22 -0500
-Received: by mail-ed1-f65.google.com with SMTP id e10so9896144edv.9;
-        Fri, 20 Dec 2019 14:26:20 -0800 (PST)
+        id S1727190AbfLTW0d (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Dec 2019 17:26:33 -0500
+Received: from mail-ed1-f68.google.com ([209.85.208.68]:34538 "EHLO
+        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725965AbfLTW0d (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Dec 2019 17:26:33 -0500
+Received: by mail-ed1-f68.google.com with SMTP id l8so9912314edw.1;
+        Fri, 20 Dec 2019 14:26:31 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=o68TKBEIfWWAJToMblTCRGgrRKAYXCmkNVDkmDkvo3I=;
-        b=ZIRwLHMMqiz4Yq7HUy4I/d5IZJ+6yBAJIAlSK5Xw8LJsycjW+BXqJ5tp6BMxxLCc3w
-         1CkaEoq16wHMCNZVpWX7t3EEgXk9fn7VitS57at0WuxUgtdjm8Xzacdz6xGJN1BChK70
-         uKitsQBhqrqcuW/tDZs4alXstvnK2Q4BZQkUpCKG5UYREnweZ85b2BfvaN0cwmQmDKtU
-         UPXcI9wFjWBiIQgk+aMcXPZ2SpE6kijd1fGf63IrW/UvV+xZgBjMKEGDsH0H9o+LdFtX
-         Bm+rgN97SNkrf8Kuekxwux2TqUGqnabKhCHxHWtIGvpE4OmtFTEGdzToaBhCCKX3hBhe
-         mOsQ==
+        bh=aGJbEOCyjRuMlNGehnN4eSYp7l2BAUz798KgsPYCNJY=;
+        b=GYMas4ZDgFna/TUQbX1RaCjvK4eq4Sz6HMDxO/YGQcYCoN/6xKJ/5pwx9IiHMqqyL3
+         emd1DTpC7RkRTkNlpzY5/TXOfdoU44AD6czi1hqZbnI5Nj+RNPRTMSQcZdhNm3sQe4zK
+         YV+aW9FiWAiDKv//F2GScJQC7L1ttBhmsEihbeXff+t/SooxqIf4MIBQk1SAVFf/y4Em
+         BEewdRHmXCEw2KnHWWtCPeBEdmdXGzQODuR1waLzkeIjh+6oH22xryya4V7E1d3keYC5
+         WLTceyUne7AzH5DXodJyZ9coipY/cd7qYVJUSPLg10/SAKu268358A6ghqZ9yIKYD/SP
+         vDYg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=o68TKBEIfWWAJToMblTCRGgrRKAYXCmkNVDkmDkvo3I=;
-        b=i2qeBviiL4zHqZgEVQte6bC3lWtRccn6d/7ZMQOH8kE75wZ9vF4zNM/i/5RNGfCJV7
-         7mtUqTiZ5xS9IZ+i7i2/O9K/5Yc7gFrAsIfON+wn7qAaDjWH+PxUFY+WITtuLRROpjnJ
-         8olcqtfsvcUSEPUzQQiBwCGl9h4Kj9LlNrl+3OF4dpr7nxHAG7oTy1LcZDCBE7GXHCfC
-         7XH/b6NAVuWPGoH4vjeldFZH4N1S8XkWs1+/R5JlS9vOkmMbSfJpHQPL9LoHaDRoz6Ng
-         9HRPMUERbc54F9hS5X/xJVWdJmvUxmIdpzkpJOAt25/MpQCTRx6UT6OKPhB6hpAkkW/a
-         O6xg==
-X-Gm-Message-State: APjAAAWf/2z+rPxk3seu/hiX5BfOBSEgu+2d/o/gjdylRmIZdKarUxjY
-        2sDr2Ctql9N8j06h100zM4I=
-X-Google-Smtp-Source: APXvYqzyi4XxzMEZrbhujuiaSwOx4tuQziwCCRZBUgmBt6lvjg3J5PVewyAliUeF2/wHjLsR4ekMxA==
-X-Received: by 2002:a17:906:5e4d:: with SMTP id b13mr19124001eju.266.1576880779754;
-        Fri, 20 Dec 2019 14:26:19 -0800 (PST)
+        bh=aGJbEOCyjRuMlNGehnN4eSYp7l2BAUz798KgsPYCNJY=;
+        b=t3qhsAIL+kYzQnVgMy3/KC09jKUYVOwmxeGSLa4dsHUrOstrcDniccixX66ZhoAb7m
+         Tr8PfV/jRNUwLGQMn9Qpnt6+Mqal9sITdc1IVI/yYa/hCfXC+nCjIjemwEk2RfKeNvDj
+         NJVMey92UTCQX0NT1dcomMT8oz9lo0woh5fB6PeErWWycUyEZK7yjMxiuLpEpUM6mom0
+         2CpNYnEgAS/7HFbSIGNXBz4RZkgzvq48+5zCYphI3Bc2FePdY2HGOfKWXTRLVBxLj0lv
+         ZGptsRRrxPxEAhKeyNIXr+oKnEMHJ6MwRJUlP2wguTI003xPdLvWb816J9pgDYm0qaL/
+         64GQ==
+X-Gm-Message-State: APjAAAUWcwn5C2WOHxM0GoGDuugfBb5KiLOYe1/xR2SQCzhh69i5Xs0L
+        thT4hKdNn7vOOXBDvmkDmxM=
+X-Google-Smtp-Source: APXvYqzF9dhzYPYsGIxYPLy7337lt5na69Olou69dOHbgkEbHE3vbbbV1jroDdfzYCokOcFbSPuJAQ==
+X-Received: by 2002:a50:fb96:: with SMTP id e22mr18652074edq.18.1576880790688;
+        Fri, 20 Dec 2019 14:26:30 -0800 (PST)
 Received: from [10.67.50.49] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id f18sm1104903edy.91.2019.12.20.14.26.16
+        by smtp.googlemail.com with ESMTPSA id dh4sm1141826edb.77.2019.12.20.14.26.27
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 20 Dec 2019 14:26:19 -0800 (PST)
-Subject: Re: [PATCH V7 net-next 02/11] net: macvlan: Use the PHY time stamping
+        Fri, 20 Dec 2019 14:26:29 -0800 (PST)
+Subject: Re: [PATCH V7 net-next 03/11] net: vlan: Use the PHY time stamping
  interface.
 To:     Richard Cochran <richardcochran@gmail.com>, netdev@vger.kernel.org
 Cc:     David Miller <davem@davemloft.net>, devicetree@vger.kernel.org,
@@ -60,7 +60,7 @@ Cc:     David Miller <davem@davemloft.net>, devicetree@vger.kernel.org,
         Willem de Bruijn <willemb@google.com>,
         Wingman Kwok <w-kwok2@ti.com>
 References: <cover.1576865315.git.richardcochran@gmail.com>
- <c0d1f95851ef7459da05d439b3475335d0a00b61.1576865315.git.richardcochran@gmail.com>
+ <99795ca57ffa9f5ef8aa49cda730df29dad9822e.1576865315.git.richardcochran@gmail.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  xsDiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
@@ -116,12 +116,12 @@ Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  HvsHIcv4lxCWkFXkwsuWqzEKK6kxVpRDoEQPDj+Oy/ZJ5fYuMbkdHrlegwoQ64LrqdmiVVPC
  TwQYEQIADwIbDAUCVF/S8QUJHlwd3wAKCRBhV5kVtWN2Do+FAJ956xSz2XpDHql+Wg/2qv3b
  G10n8gCguORqNGMsVRxrlLs7/himep7MrCc=
-Message-ID: <941dd60e-2244-c52f-797c-0da7003c21ca@gmail.com>
-Date:   Fri, 20 Dec 2019 14:26:15 -0800
+Message-ID: <3ac78b92-3c19-e899-cff7-0352ab5249e9@gmail.com>
+Date:   Fri, 20 Dec 2019 14:26:26 -0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.2.2
 MIME-Version: 1.0
-In-Reply-To: <c0d1f95851ef7459da05d439b3475335d0a00b61.1576865315.git.richardcochran@gmail.com>
+In-Reply-To: <99795ca57ffa9f5ef8aa49cda730df29dad9822e.1576865315.git.richardcochran@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -131,7 +131,7 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On 12/20/19 10:15 AM, Richard Cochran wrote:
-> The macvlan layer tests fields of the phy_device in order to determine
+> The vlan layer tests fields of the phy_device in order to determine
 > whether to invoke the PHY's tsinfo ethtool callback.  This patch
 > replaces the open coded logic with an invocation of the proper
 > methods.
