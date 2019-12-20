@@ -2,96 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C44ED127F60
-	for <lists+netdev@lfdr.de>; Fri, 20 Dec 2019 16:33:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6A8C1127F63
+	for <lists+netdev@lfdr.de>; Fri, 20 Dec 2019 16:34:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727511AbfLTPdk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Dec 2019 10:33:40 -0500
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:34088 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727181AbfLTPdk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Dec 2019 10:33:40 -0500
-Received: by mail-wr1-f68.google.com with SMTP id t2so9838676wrr.1
-        for <netdev@vger.kernel.org>; Fri, 20 Dec 2019 07:33:39 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=j/myDvMwGwJOGxixav8OHdGy9sFqAX9GPJEQWHZcFvo=;
-        b=f87xbHzzkG0g/QpZusV3nlCaE0zO9n3zAY5M1LIEqQkBTq1ftJJE3NqJKjSiyAn0E0
-         irYlk6X/QZtg+yco3zQp04ySOuI4vqsrdtO2iLHFr0mokjueWiXfSpGsm25Iu7Lyekyl
-         rRBSqsqkqojzROqAiLZQB+NjNydsuToclRHGoDJDa2lcxQJGP74caw1oTzonU/rdJVIz
-         Uw7uSH2ZHiAA3PBJbKF2nqSQx018aFpm3D8s+T4W/g9JR0R5G0tKN9JsIIHA5H3eGtwi
-         zx0KO+wULrgOQdw1m8ftonxWi/rwpIILRYMT6yFta/3G5okHlhgSTx5k8WWP12me8mb1
-         36mQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=j/myDvMwGwJOGxixav8OHdGy9sFqAX9GPJEQWHZcFvo=;
-        b=CtcMSIWwNXW4c7KQbBi4mSXli3D9Ctr9ANxQ/vcnPgLOnTC49I/nOGRSVz2ZRO0LiA
-         yFewYPdxnjRtsW6Th9VS3T15QglXuP/NMQCKXfplFhsZrFWx816rIY55gA8Tp9PK1YZ3
-         RpP/wSPeOK37nNKcPY1HVa2fovv75Zq22wWJUKBEH5lVvpurYIVot6r5QF/mpOMkZszJ
-         60+5ycKo93m9RVtdXdGG7YgbO/15qieTzy7qtnsY5XY+8nvKx4RZEjSRYia1M9MLnW7a
-         2Wsk6Sr+oEczc9QET4dCdndDTWdQlOvkIbLl5GY5SmyA7AE5D1g11m/3Js1Pcax7+qAC
-         xRLQ==
-X-Gm-Message-State: APjAAAU8lkgbhY3MrTZyZoaI7l/nxy0aVdQbIeuAmB9xnJGbU3mnyEJF
-        +P9AtEaj4pYF4k4iXrZLr9NZIuRk
-X-Google-Smtp-Source: APXvYqw0mbW2SlZ8iHXUN6QEZ9IrXJKvfRPFvfLBblVPCKYG7kODIBYyuJIAK4C8abZeolPXbXhPyg==
-X-Received: by 2002:adf:ebc3:: with SMTP id v3mr15783886wrn.280.1576856018593;
-        Fri, 20 Dec 2019 07:33:38 -0800 (PST)
-Received: from [192.168.8.147] (72.173.185.81.rev.sfr.net. [81.185.173.72])
-        by smtp.gmail.com with ESMTPSA id g199sm10828478wmg.12.2019.12.20.07.33.37
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 20 Dec 2019 07:33:38 -0800 (PST)
-Subject: Re: [PATCH net-next v5 06/11] mptcp: Add MPTCP to skb extensions
-To:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        netdev@vger.kernel.org, mptcp@lists.01.org
-Cc:     Matthieu Baerts <matthieu.baerts@tessares.net>
-References: <20191219223434.19722-1-mathew.j.martineau@linux.intel.com>
- <20191219223434.19722-7-mathew.j.martineau@linux.intel.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <eb8a3c9d-4234-1f3a-27f9-3c65fd4496b5@gmail.com>
-Date:   Fri, 20 Dec 2019 07:33:37 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        id S1727497AbfLTPeG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Dec 2019 10:34:06 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:35226 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727181AbfLTPeF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 20 Dec 2019 10:34:05 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=FlEdcjqR14Yp6BDuBVePu7rcTs7oSKGfaNl9lmmWvhY=; b=zFKX5Mx6zfivGSorxUsCX27mrf
+        Mdb7jKv4NoU2UpfVY45idZm7bRTqFThe+ouaRvXPd4oGnAAhXw3PSRzXQcp0PToyJj8nEk62cGtIX
+        bzhUpCsvadN1+mTB6aJRnpwhbimkq4102brSkFxx2RKwX8OJwhozOOuKIRSrBfEZCeSU=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1iiKHv-0003HC-5i; Fri, 20 Dec 2019 16:33:59 +0100
+Date:   Fri, 20 Dec 2019 16:33:59 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Richard Cochran <richardcochran@gmail.com>
+Cc:     netdev@vger.kernel.org, David Miller <davem@davemloft.net>,
+        devicetree@vger.kernel.org,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Jacob Keller <jacob.e.keller@intel.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Miroslav Lichvar <mlichvar@redhat.com>,
+        Murali Karicheri <m-karicheri2@ti.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Willem de Bruijn <willemb@google.com>,
+        Wingman Kwok <w-kwok2@ti.com>
+Subject: Re: [PATCH V6 net-next 06/11] net: Introduce a new MII time stamping
+ interface.
+Message-ID: <20191220153359.GA11117@lunn.ch>
+References: <cover.1576511937.git.richardcochran@gmail.com>
+ <28939f11b984759257167e778d0c73c0dd206a35.1576511937.git.richardcochran@gmail.com>
+ <20191217092155.GL6994@lunn.ch>
+ <20191220145712.GA3846@localhost>
 MIME-Version: 1.0
-In-Reply-To: <20191219223434.19722-7-mathew.j.martineau@linux.intel.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191220145712.GA3846@localhost>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 12/19/19 2:34 PM, Mat Martineau wrote:
-> Add enum value for MPTCP and update config dependencies
+On Fri, Dec 20, 2019 at 06:57:12AM -0800, Richard Cochran wrote:
+> On Tue, Dec 17, 2019 at 10:21:55AM +0100, Andrew Lunn wrote:
+> > Forward declarations are considered bad.
 > 
-> Co-developed-by: Matthieu Baerts <matthieu.baerts@tessares.net>
-> Signed-off-by: Matthieu Baerts <matthieu.baerts@tessares.net>
-> Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
+> Not by me!
 
-...
+Lets see what David says.
 
-> +/* MPTCP sk_buff extension data */
-> +struct mptcp_ext {
-> +	u64		data_ack;
-> +	u64		data_seq;
-> +	u32		subflow_seq;
-> +	u16		data_len;
-> +	u8		use_map:1,
-> +			dsn64:1,
-> +			data_fin:1,
-> +			use_ack:1,
-> +			ack64:1,
-> +			__unused:2;
-	__unused:3; 
+> > For the moment what you have is sufficient. I doubt anybody is using
+> > the dp83640 with phylink, and the new hardware you are targeting seems
+> > to be RGMII based, not SERDES, which is the main use case for PHYLINK.
+> 
+> Yeah, my impression is that the phyter will be the first and last phy
+> time stamping device ever created.  Designers reject this part because
+> it is 100 mbit only.  And there are no gigabit+ phys with time
+> stamping at all.
 
-Also worth noting there is one byte hole in this structure.
+The Marvell PHY datasheets indicate they support PTP. I've not looked
+at how they implement it, and if the current model will work.
 
-> +};
-> +
+   Andrew
