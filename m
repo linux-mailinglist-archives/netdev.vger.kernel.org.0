@@ -2,203 +2,294 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 52DD01278E3
-	for <lists+netdev@lfdr.de>; Fri, 20 Dec 2019 11:10:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 16B691278EF
+	for <lists+netdev@lfdr.de>; Fri, 20 Dec 2019 11:11:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727211AbfLTKKK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Dec 2019 05:10:10 -0500
-Received: from mail-qk1-f194.google.com ([209.85.222.194]:41618 "EHLO
-        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726210AbfLTKKK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Dec 2019 05:10:10 -0500
-Received: by mail-qk1-f194.google.com with SMTP id x129so7168293qke.8;
-        Fri, 20 Dec 2019 02:10:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=15e0lkCjkPeEZrmYiFOGrDKXMpH42X3ZivF1r0Ic8Vo=;
-        b=rJmIcCoD+afgNjcL4JsdOOk9U5U8Jj+nivg30zpv/EX9WnTHjrWz+VcagW/i7RlhMR
-         i0bdQqCMw4+4kv3j9xNUeqWfJyMrIndOiDriOol+qRVnuXlz0524kskmeNLPLIYjaA6k
-         LJJ1ERY/7MSETSJtDH0hUBECKMKsuci4dZQQ44OC1fjAr/0yLw+fSwUNnpTeacHaVQfI
-         5H27VVzByyjh56ISLbkccKnzhGdbOuwpNZlkSct36OEBU/tN3mEg9UAWAyArFfB9WYe6
-         GLvPT69Wkt11OLI0hFhsmP7Imcd2YwArCGXSh6hNWFY/OU/HYo7Q5Uj10vdi2yHxl9E0
-         XWdg==
+        id S1727241AbfLTKLe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Dec 2019 05:11:34 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:45323 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1727167AbfLTKLd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Dec 2019 05:11:33 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1576836691;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=jPFrvUt2IUSB536Etrc74yAuRlwlOERZsA9MaPVMgcQ=;
+        b=BfHv/iozfFlgTcahS5vQQq2WpT3FaWbT6Fl60qWq33HWZbRU1soEGuFa0Q+KlXbFnzc4AX
+        i/WqkenFr36FlLWDHEK/bEqfo2n5UuMHVsiSfDDyLZfgjtp1tUyQbwaH+JXfXsk78tl5um
+        jEqj81yhoVAPdZBTxhYno4kODA7TrFw=
+Received: from mail-lj1-f197.google.com (mail-lj1-f197.google.com
+ [209.85.208.197]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-284-rv3Atz_zOO6KacyjBUKGuQ-1; Fri, 20 Dec 2019 05:11:30 -0500
+X-MC-Unique: rv3Atz_zOO6KacyjBUKGuQ-1
+Received: by mail-lj1-f197.google.com with SMTP id d14so1023483ljg.17
+        for <netdev@vger.kernel.org>; Fri, 20 Dec 2019 02:11:29 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=15e0lkCjkPeEZrmYiFOGrDKXMpH42X3ZivF1r0Ic8Vo=;
-        b=sSNb7H33YEcBI7VlbMOuvapSO52CbSDDZJNnsrsbaF3c+WhQInsHLxfvGmUsxifgPR
-         uzyfd8jO7jhLJu5lTsUvDQ1N/YLlprkFHJ1CUQlMT1vTxYq1/K99P90DjjlNpt2pBTUy
-         TISh8Clwp3elEctlv+lZ9wNJUT21uTihjIbm+4vHMsTMgRDxo4NSHsWfPjUm6naEJFp1
-         1CcbBK6D6HM1Ovka128cDDXUU89lCl+wfRrSkaGC9a+3G1cAkOJcp4ZK+SrNTzeSxOzk
-         +wmkDS8zRsOK5+qZv5APgtopTcervkbF6B5NWV+IATOSqWmYC5wVrF1TlyGhgPObsY6k
-         wwJA==
-X-Gm-Message-State: APjAAAXwwhMgL3AnLYTb7eA5El6E7s7uMhqQXmfPy/9yLNhi+C7rNaBq
-        K/j5q81RcHgKsAPsWHnn/8zbu13BgObw2Ll/C08=
-X-Google-Smtp-Source: APXvYqz+BnZucLS15/50NtXUoImnWTOjjv92ldpdv5cA/AKa9hYj5Q3RfybLZyfvPVERJfCwmf8vIrF62+9r28hOdCw=
-X-Received: by 2002:a37:63c7:: with SMTP id x190mr12477981qkb.232.1576836608574;
- Fri, 20 Dec 2019 02:10:08 -0800 (PST)
-MIME-Version: 1.0
-References: <1576759171-28550-1-git-send-email-magnus.karlsson@intel.com>
-In-Reply-To: <1576759171-28550-1-git-send-email-magnus.karlsson@intel.com>
-From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
-Date:   Fri, 20 Dec 2019 11:09:57 +0100
-Message-ID: <CAJ+HfNh0mGnDnQD0FZqza0oEDZpj+nh_DS=JvWvJMATwsOMJEA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 00/12] xsk: clean up ring access functions
-To:     Magnus Karlsson <magnus.karlsson@intel.com>
-Cc:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=jPFrvUt2IUSB536Etrc74yAuRlwlOERZsA9MaPVMgcQ=;
+        b=TwpNINwO8Hm2T2DTubsRUAL4XLfpZMeqVcs5vwMPRJL5uiCzEYsT3Y6kq+kO9wxWig
+         TH2oHw1YBQajjPfi9A9KhMNZr4iE+FpfRH2jIVghkDYYhebiMin6Sza70J2snSH+aPOR
+         PVwdP857DrRjkS5r8EMSo+fzFJvgknnVpBviH9CQoqnxQ5WzfcGkxrdpddf3bw0nkitI
+         QsQKP30vnTZ9gkaY0tt4KOIHdf8bBpFpCgloBAu2D4SDkp3uxdla4xCDW+eQb7uABZ2u
+         SShTleZiq1IP+9Tw4HHQLZPjL1D+h8N1BgIRWc0wDSy8Ds3XuKgzEi6KRdwbo5POWbTb
+         AEkA==
+X-Gm-Message-State: APjAAAUZThEf11C+NdVlppobBqdY6oQHqL7gQE8nHb6yjMvCnx4YMVdJ
+        I/n5CxgW2BxhlLb25208+4W2VXtgdGdNx+S5iC9jNG+IiqewRRuNystKlMsBLpXlIbkV2XYKolR
+        Tef1UY9iil9C3hiQG
+X-Received: by 2002:a19:2389:: with SMTP id j131mr8065028lfj.86.1576836688325;
+        Fri, 20 Dec 2019 02:11:28 -0800 (PST)
+X-Google-Smtp-Source: APXvYqyg6jVfvHYIIf2WMr8t79Bnhr3CW9xi8OkY5ZEHM1tJTC0nXHAatmRjVyZaldrIicGwOfmX4Q==
+X-Received: by 2002:a19:2389:: with SMTP id j131mr8064993lfj.86.1576836687983;
+        Fri, 20 Dec 2019 02:11:27 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
+        by smtp.gmail.com with ESMTPSA id r9sm4574787lfc.72.2019.12.20.02.11.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 20 Dec 2019 02:11:27 -0800 (PST)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 02E05180969; Fri, 20 Dec 2019 11:11:25 +0100 (CET)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Prashant Bhole <prashantbhole.linux@gmail.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Jesper Dangaard Brouer <jbrouer@redhat.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        "Michael S . Tsirkin" <mst@redhat.com>,
         Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Netdev <netdev@vger.kernel.org>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        bpf <bpf@vger.kernel.org>, Saeed Mahameed <saeedm@mellanox.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        "Fijalkowski, Maciej" <maciej.fijalkowski@intel.com>,
-        Maciej Fijalkowski <maciejromanfijalkowski@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        David Ahern <dsahern@gmail.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Toshiaki Makita <toshiaki.makita1@gmail.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>, netdev@vger.kernel.org,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>
+Subject: Re: [RFC net-next 11/14] tun: run XDP program in tx path
+In-Reply-To: <3654a205-b3fd-b531-80ac-42823e089b39@gmail.com>
+References: <20191218081050.10170-1-prashantbhole.linux@gmail.com> <20191218081050.10170-12-prashantbhole.linux@gmail.com> <20191218110732.33494957@carbon> <87fthh6ehg.fsf@toke.dk> <20191218181944.3ws2oy72hpyxshhb@ast-mbp.dhcp.thefacebook.com> <35a07230-3184-40bf-69ff-852bdfaf03c6@gmail.com> <874kxw4o4r.fsf@toke.dk> <5eb791bf-1876-0b4b-f721-cb3c607f846c@gmail.com> <75228f98-338e-453c-3ace-b6d36b26c51c@redhat.com> <3654a205-b3fd-b531-80ac-42823e089b39@gmail.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Fri, 20 Dec 2019 11:11:25 +0100
+Message-ID: <87sglf2to2.fsf@toke.dk>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 19 Dec 2019 at 13:40, Magnus Karlsson <magnus.karlsson@intel.com> w=
-rote:
->
-> This patch set cleans up the ring access functions of AF_XDP in hope
-> that it will now be easier to understand and maintain. I used to get a
-> headache every time I looked at this code in order to really understand i=
-t,
-> but now I do think it is a lot less painful.
->
-> The code has been simplified a lot and as a bonus we get better
-> performance in nearly all cases. On my new 2.1 GHz Cascade Lake
-> machine with a standard default config plus AF_XDP support and
-> CONFIG_PREEMPT on I get the following results in percent performance
-> increases with this patch set compared to without it:
->
-> Zero-copy (-N):
->           rxdrop        txpush        l2fwd
-> 1 core:    -2%            0%            3%
-> 2 cores:    4%            0%            3%
->
-> Zero-copy with poll() (-N -p):
->           rxdrop        txpush        l2fwd
-> 1 core:     3%            0%            1%
-> 2 cores:   21%            0%            9%
->
-> Skb mode (-S):
-> Shows a 0% to 5% performance improvement over the same benchmarks as
-> above.
->
-> Here 1 core means that we are running the driver processing and the
-> application on the same core, while 2 cores means that they execute on
-> separate cores. The applications are from the xdpsock sample app.
->
-> On my older 2.0 Ghz Broadwell machine that I used for the v1, I get
-> the following results:
->
-> Zero-copy (-N):
->           rxdrop        txpush        l2fwd
-> 1 core:     4%            5%            4%
-> 2 cores:    1%            0%            2%
->
-> Zero-copy with poll() (-N -p):
->           rxdrop        txpush        l2fwd
-> 1 core:     1%            3%            3%
-> 2 cores:   22%            0%            5%
->
-> Skb mode (-S):
-> Shows a 0% to 1% performance improvement over the same benchmarks as
-> above.
->
-> When a results says 21 or 22% better, as in the case of poll mode with
-> 2 cores and rxdrop, my first reaction is that it must be a
-> bug. Everything else shows between 0% and 5% performance
-> improvement. What is giving rise to 22%? A quick bisect indicates that
-> it is patches 2, 3, 4, 5, and 6 that are giving rise to most of this
-> improvement. So not one patch in particular, but something around 4%
-> improvement from each one of them. Note that exactly this benchmark
-> has previously had an extraordinary slow down compared to when running
-> without poll syscalls. For all the other poll tests above, the
-> slowdown has always been around 4% for using poll syscalls. But with
-> the bad performing test in question, it was above 25%. Interestingly,
-> after this clean up, the slow down is 4%, just like all the other poll
-> tests. Please take an extra peek at this so I have not messed up
-> something.
->
-> The 0% for several txpush results are due to the test bottlenecking on
-> a non-CPU HW resource. If I eliminated that bottleneck on my system, I
-> would expect to see an increase there too.
->
-> Changes v1 -> v2:
-> * Corrected textual errors in the commit logs (Sergei and Martin)
-> * Fixed the functions that detect empty and full rings so that they
->   now operate on the global ring state (Maxim)
->
-> This patch has been applied against commit a352a82496d1 ("Merge branch 'l=
-ibbpf-extern-followups'")
->
-> Structure of the patch set:
->
-> Patch 1: Eliminate the lazy update threshold used when preallocating
->          entries in the completion ring
-> Patch 2: Simplify the detection of empty and full rings
-> Patch 3: Consolidate the two local producer pointers into one
-> Patch 4: Standardize the naming of the producer ring access functions
-> Patch 5: Eliminate the Rx batch size used for the fill ring
-> Patch 6: Simplify the functions xskq_nb_avail and xskq_nb_free
-> Patch 7: Simplify and standardize the naming of the consumer ring
->          access functions
-> Patch 8: Change the names of the validation functions to improve
->          readability and also the return value of these functions
-> Patch 9: Change the name of xsk_umem_discard_addr() to
->          xsk_umem_release_addr() to better reflect the new
->          names. Requires a name change in the drivers that support AF_XDP
->          zero-copy.
-> Patch 10: Remove unnecessary READ_ONCE of data in the ring
-> Patch 11: Add overall function naming comment and reorder the functions
->           for easier reference
-> Patch 12: Use the struct_size helper function when allocating rings
->
-> Thanks: Magnus
->
+Prashant Bhole <prashantbhole.linux@gmail.com> writes:
 
-Very nice cleanup (and performance boost)!
-
-For the series:
-Reviewed-by: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
-Tested-by: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
-Acked-by: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
-
-
-> Magnus Karlsson (12):
->   xsk: eliminate the lazy update threshold
->   xsk: simplify detection of empty and full rings
->   xsk: consolidate to one single cached producer pointer
->   xsk: standardize naming of producer ring access functions
->   xsk: eliminate the RX batch size
->   xsk: simplify xskq_nb_avail and xskq_nb_free
->   xsk: simplify the consumer ring access functions
->   xsk: change names of validation functions
->   xsk: ixgbe: i40e: ice: mlx5: xsk_umem_discard_addr to
->     xsk_umem_release_addr
->   xsk: remove unnecessary READ_ONCE of data
->   xsk: add function naming comments and reorder functions
->   xsk: use struct_size() helper
+> On 12/20/19 12:24 PM, Jason Wang wrote:
+>>=20
+>> On 2019/12/20 =E4=B8=8A=E5=8D=888:07, Prashant Bhole wrote:
+>>> Note: Resending my last response. It was not delivered to netdev list
+>>> due to some problem.
+>>>
+>>> On 12/19/19 7:15 PM, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
+>>>> Prashant Bhole <prashantbhole.linux@gmail.com> writes:
+>>>>
+>>>>> On 12/19/19 3:19 AM, Alexei Starovoitov wrote:
+>>>>>> On Wed, Dec 18, 2019 at 12:48:59PM +0100, Toke H=C3=B8iland-J=C3=B8r=
+gensen=20
+>>>>>> wrote:
+>>>>>>> Jesper Dangaard Brouer <jbrouer@redhat.com> writes:
+>>>>>>>
+>>>>>>>> On Wed, 18 Dec 2019 17:10:47 +0900
+>>>>>>>> Prashant Bhole <prashantbhole.linux@gmail.com> wrote:
+>>>>>>>>
+>>>>>>>>> +static u32 tun_do_xdp_tx(struct tun_struct *tun, struct=20
+>>>>>>>>> tun_file *tfile,
+>>>>>>>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0 struct xdp_frame *frame)
+>>>>>>>>> +{
+>>>>>>>>> +=C2=A0=C2=A0=C2=A0 struct bpf_prog *xdp_prog;
+>>>>>>>>> +=C2=A0=C2=A0=C2=A0 struct tun_page tpage;
+>>>>>>>>> +=C2=A0=C2=A0=C2=A0 struct xdp_buff xdp;
+>>>>>>>>> +=C2=A0=C2=A0=C2=A0 u32 act =3D XDP_PASS;
+>>>>>>>>> +=C2=A0=C2=A0=C2=A0 int flush =3D 0;
+>>>>>>>>> +
+>>>>>>>>> +=C2=A0=C2=A0=C2=A0 xdp_prog =3D rcu_dereference(tun->xdp_tx_prog=
+);
+>>>>>>>>> +=C2=A0=C2=A0=C2=A0 if (xdp_prog) {
+>>>>>>>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 xdp.data_hard_start =
+=3D frame->data - frame->headroom;
+>>>>>>>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 xdp.data =3D frame->d=
+ata;
+>>>>>>>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 xdp.data_end =3D xdp.=
+data + frame->len;
+>>>>>>>>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 xdp.data_meta =3D xdp=
+.data - frame->metasize;
+>>>>>>>>
+>>>>>>>> You have not configured xdp.rxq, thus a BPF-prog accessing this=20
+>>>>>>>> will crash.
+>>>>>>>>
+>>>>>>>> For an XDP TX hook, I want us to provide/give BPF-prog access to=20
+>>>>>>>> some
+>>>>>>>> more information about e.g. the current tx-queue length, or TC-q=20
+>>>>>>>> number.
+>>>>>>>>
+>>>>>>>> Question to Daniel or Alexei, can we do this and still keep=20
+>>>>>>>> BPF_PROG_TYPE_XDP?
+>>>>>>>> Or is it better to introduce a new BPF prog type (enum=20
+>>>>>>>> bpf_prog_type)
+>>>>>>>> for XDP TX-hook ?
+>>>>>>>
+>>>>>>> I think a new program type would make the most sense. If/when we
+>>>>>>> introduce an XDP TX hook[0], it should have different semantics=20
+>>>>>>> than the
+>>>>>>> regular XDP hook. I view the XDP TX hook as a hook that executes=20
+>>>>>>> as the
+>>>>>>> very last thing before packets leave the interface. It should have
+>>>>>>> access to different context data as you say, but also I don't=20
+>>>>>>> think it
+>>>>>>> makes sense to have XDP_TX and XDP_REDIRECT in an XDP_TX hook. And =
+we
+>>>>>>> may also want to have a "throttle" return code; or maybe that=20
+>>>>>>> could be
+>>>>>>> done via a helper?
+>>>>>>>
+>>>>>>> In any case, I don't think this "emulated RX hook on the other end=
+=20
+>>>>>>> of a
+>>>>>>> virtual device" model that this series introduces is the right=20
+>>>>>>> semantics
+>>>>>>> for an XDP TX hook. I can see what you're trying to do, and for=20
+>>>>>>> virtual
+>>>>>>> point-to-point links I think it may make sense to emulate the RX=20
+>>>>>>> hook of
+>>>>>>> the "other end" on TX. However, form a UAPI perspective, I don't=20
+>>>>>>> think
+>>>>>>> we should be calling this a TX hook; logically, it's still an RX ho=
+ok
+>>>>>>> on the receive end.
+>>>>>>>
+>>>>>>> If you guys are up for evolving this design into a "proper" TX=20
+>>>>>>> hook (as
+>>>>>>> outlined above an in [0]), that would be awesome, of course. But not
+>>>>>>> sure what constraints you have on your original problem? Do you
+>>>>>>> specifically need the "emulated RX hook for unmodified XDP programs"
+>>>>>>> semantics, or could your problem be solved with a TX hook with=20
+>>>>>>> different
+>>>>>>> semantics?
+>>>>>>
+>>>>>> I agree with above.
+>>>>>> It looks more like existing BPF_PROG_TYPE_XDP, but attached to egress
+>>>>>> of veth/tap interface. I think only attachment point makes a=20
+>>>>>> difference.
+>>>>>> May be use expected_attach_type ?
+>>>>>> Then there will be no need to create new program type.
+>>>>>> BPF_PROG_TYPE_XDP will be able to access different fields depending
+>>>>>> on expected_attach_type. Like rx-queue length that Jesper is=20
+>>>>>> suggesting
+>>>>>> will be available only in such case and not for all=20
+>>>>>> BPF_PROG_TYPE_XDP progs.
+>>>>>> It can be reduced too. Like if there is no xdp.rxq concept for=20
+>>>>>> egress side
+>>>>>> of virtual device the access to that field can disallowed by the=20
+>>>>>> verifier.
+>>>>>> Could you also call it XDP_EGRESS instead of XDP_TX?
+>>>>>> I would like to reserve XDP_TX name to what Toke describes as XDP_TX.
+>>>>>>
+>>>>>
+>>>>> =C2=A0 From the discussion over this set, it makes sense to have new =
+type of
+>>>>> program. As David suggested it will make a way for changes specific
+>>>>> to egress path.
+>>>>> On the other hand, XDP offload with virtio-net implementation is based
+>>>>> on "emulated RX hook". How about having this special behavior with
+>>>>> expected_attach_type?
+>>>>
+>>>> Another thought I had re: this was that for these "special" virtual
+>>>> point-to-point devices we could extend the API to have an ATTACH_PEER
+>>>> flag. So if you have a pair of veth devices (veth0,veth1) connecting to
+>>>> each other, you could do either of:
+>>>>
+>>>> bpf_set_link_xdp_fd(ifindex(veth0), prog_fd, 0);
+>>>> bpf_set_link_xdp_fd(ifindex(veth1), prog_fd, ATTACH_PEER);
+>>>>
+>>>> to attach to veth0, and:
+>>>>
+>>>> bpf_set_link_xdp_fd(ifindex(veth1), prog_fd, 0);
+>>>> bpf_set_link_xdp_fd(ifindex(veth0), prog_fd, ATTACH_PEER);
+>>>>
+>>>> to attach to veth0.
+>>>>
+>>>> This would allow to attach to a device without having the "other end"
+>>>> visible, and keep the "XDP runs on RX" semantics clear to userspace.
+>>>> Internally in the kernel we could then turn the "attach to peer"
+>>>> operation for a tun device into the "emulate on TX" thing you're alrea=
+dy
+>>>> doing?
+>>>>
+>>>> Would this work for your use case, do you think?
+>>>>
+>>>> -Toke
+>>>>
+>>>
+>>> This is nice from UAPI point of view. It may work for veth case but
+>>> not for XDP offload with virtio-net. Please see the sequence when
+>>> a user program in the guest wants to offload a program to tun.
+>>>
+>>> * User program wants to loads the program by setting offload flag and
+>>> =C2=A0 ifindex:
+>>>
+>>> - map_offload_ops->alloc()
+>>> =C2=A0 virtio-net sends map info to qemu and it creates map on the host.
+>>> - prog_offload_ops->setup()
+>>> =C2=A0 New callback just to have a copy of unmodified program. It conta=
+ins
+>>> =C2=A0 original map fds. We replace map fds with fds from the host side.
+>>> =C2=A0 Check the program for unsupported helpers calls.
+>>> - prog_offload_ops->finalize()
+>>> =C2=A0 Send the program to qemu and it loads the program to the host.
+>>>
+>>> * User program calls bpf_set_link_xdp_fd()
+>>> =C2=A0 virtio-net handles XDP_PROG_SETUP_HW by sending a request to qem=
+u.
+>>> =C2=A0 Qemu then attaches host side program fd to respective tun device=
+ by
+>>> =C2=A0 calling bpf_set_link_xdp_fd()
+>>>
+>>> In above sequence there is no chance to use.
+>>=20
+>>=20
+>> For VM, I think what Toke meant is to consider virtio-net as a peer of=20
+>> TAP and we can do something like the following in qemu:
+>>=20
+>> bpf_set_link_xdp_fd(ifindex(tap0), prog_fd, ATTACH_PEER);
+>>=20
+>> in this case. And the behavior of XDP_TX could be kept as if the XDP was=
+=20
+>> attached to the peer of TAP (actually a virtio-net inside the guest).
 >
->  drivers/net/ethernet/intel/i40e/i40e_xsk.c         |   4 +-
->  drivers/net/ethernet/intel/ice/ice_xsk.c           |   4 +-
->  drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c       |   4 +-
->  .../net/ethernet/mellanox/mlx5/core/en/xsk/rx.c    |   2 +-
->  include/net/xdp_sock.h                             |  14 +-
->  net/xdp/xsk.c                                      |  62 ++--
->  net/xdp/xsk_queue.c                                |  15 +-
->  net/xdp/xsk_queue.h                                | 371 +++++++++++----=
-------
->  8 files changed, 246 insertions(+), 230 deletions(-)
+> I think he meant actually attaching the program to the peer. Most
+> probably referring the use case I mentioned in the cover letter.
 >
-> --
-> 2.7.4
+> "It can improve container networking where veth pair links the host and
+> the container. Host can set ACL by setting tx path XDP to the veth
+> iface."
+>
+> Toke, Can you please clarify?
+
+Well, I was mostly talking about the UAPI. I.e., the ATTACH_PEER should
+*behave as if* the XDP program ran on RX on the peer side. Whether it
+actually just attaches on that side, or whether it is emulated like your
+"run in TX path" patch does, I think would have to be context dependent.
+For TAP/virtio_net, I think it would be pretty obvious that we should
+just emulate it, like Jason said. For veth I'm not sure; there are some
+gnarly details if we do actually move the attachment to the peer
+interface when that peer is in a different namespace (a container
+probably shouldn't be able to install an XDP program outside its
+namespace, for instance). So either we could say we attach on the actual
+peer if both interfaces are in the same namespace, and emulate
+otherwise? IDK?
+
+-Toke
+
