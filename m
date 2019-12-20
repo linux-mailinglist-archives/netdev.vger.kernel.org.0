@@ -2,121 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CB91D1281B2
-	for <lists+netdev@lfdr.de>; Fri, 20 Dec 2019 18:55:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B7BD1281BE
+	for <lists+netdev@lfdr.de>; Fri, 20 Dec 2019 18:59:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727417AbfLTRzX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Dec 2019 12:55:23 -0500
-Received: from mail-pg1-f196.google.com ([209.85.215.196]:35447 "EHLO
-        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727394AbfLTRzW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Dec 2019 12:55:22 -0500
-Received: by mail-pg1-f196.google.com with SMTP id l24so5307175pgk.2
-        for <netdev@vger.kernel.org>; Fri, 20 Dec 2019 09:55:22 -0800 (PST)
+        id S1727421AbfLTR7x (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Dec 2019 12:59:53 -0500
+Received: from mail-qk1-f195.google.com ([209.85.222.195]:37301 "EHLO
+        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727400AbfLTR7x (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Dec 2019 12:59:53 -0500
+Received: by mail-qk1-f195.google.com with SMTP id 21so8355732qky.4
+        for <netdev@vger.kernel.org>; Fri, 20 Dec 2019 09:59:53 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=xoXHEXUCOBtDITY/XcLLcf4lJLLHDCF5oZRbMuonV/U=;
-        b=Ke0F3drZ3Jpd1lr7gPZpD/wYuUs+3JD06nHt+mn89KuV0JtSg1p5AoBawc9s5ahkLw
-         ftfFZu0PeaZx/eMQ3fpD3SU5JFKH2ix953eWB+GM5yls6Z1OkU14KuFwInjcCpNFACK0
-         xdjuXtxv+mHzq+2c1534zYifCHZ26vI5sPOpDs2NtCSiNuhpbLSOxuz4+Qc+X3tOD69m
-         HrDyGn5H+00VHAl71JokGv0FE8cJ0QGc17fUujyqQ9MyUKe8iB9qTwQXvsGQ9c1Zw1MV
-         JKdyZtOWayV9P8KNw5QoMNjgWCoEAKmHGt0OOeITOr49WKZJdRYOE3/ksL+IgTENSjy0
-         FRCw==
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=AKuatM0y3ooR37SXFCTdVACrZiBimSZ339fk0focLFE=;
+        b=Bd/3FNn5CwlogigosRNb+/qMVP7x7yjsRwKs/T4pV1HvFYXiVGokBoq+IfzG4C75DF
+         ZRLq9ljUWggvR3a4WB49tuJbwmYiboNNC5LCILjjKr7IbRQ9QGC/QKYquVL/qszHnbUl
+         dlx6j4bv2eK9oCWEssU+NYaWSjwuCfrSQ1NPElYHAZQ+jnLomiNYV4YNySp6f5ELMBqv
+         4MFkFeNjdIEUWbeKFa6OVvslXMrXAAmB3Oj74uGRgBI6nYdva6TEqpwnDIbsNAa3c32o
+         qOlfFxM19BEZY0u6XwPr4hk/Ltv6rBQNCNizN9t6IBsRb+PhigE1qU/KS4a5nQoFd6yZ
+         nEXw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=xoXHEXUCOBtDITY/XcLLcf4lJLLHDCF5oZRbMuonV/U=;
-        b=iqjVV2V2OP/2wygrvIVW0GOfAvojGANOZXx1289dOf4Y0GmMxZm4XRwvLWsmzuctAG
-         y+/ddkxgUmNSYF/0qHCl5a+SZKSWGoxKZu8xltomnZoNqhJeAsXDc8173waBnOws+xnR
-         k3h64fstqWcjHrNliQ8RbnQiNWPTDsFVuMJrcx4F4Pcz+B19jXsUXSQ8r0AY35UVI644
-         odP90Kx6QheDq4CSN8Ayar9xWXWC4rKVHPH4ASMrbgX+t3V0402EHkhT7SObZcHJqTtR
-         iEHAArkXxfxfYRz9vGVYOt8qoi29n4UBVE+++Jb5J2byp4M5tr8l66/lHMeJ3zRkGsOB
-         e1KQ==
-X-Gm-Message-State: APjAAAVvEA33P6nQi8JhyrSxAdUW1ynedadqZRsITgM31HThSZryWjfD
-        M1vskBjFr3RqyqHlO88Mt5Tiwcyhx1AwrbXH3KltcA==
-X-Google-Smtp-Source: APXvYqzv8FL4X96ovaTwjhjPCE3PhKMmXmXKR1EZP13tNuwsYvj6hY1pGNeEJQ6qzMGyi485e8uTgaZ6/55PPXKthP0=
-X-Received: by 2002:aa7:946a:: with SMTP id t10mr17562534pfq.165.1576864521638;
- Fri, 20 Dec 2019 09:55:21 -0800 (PST)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=AKuatM0y3ooR37SXFCTdVACrZiBimSZ339fk0focLFE=;
+        b=r6LynmI4PE81+8XxR21ShLluziFdda4QMjwzwejVKkn8EjAjF2cKJUUyoIlXUPDAHH
+         VzbtTFvar0Vj94+9CSBabyLfVRlpRW7VxcKmdEJqbLozeVVy5y7HKqswgf+fo4V4Qfyd
+         Kj/bvEu2jBSLgAIQwl7AzhDJjfc6Hk4nUXZ/lqfg5XS56Z0s+b46WgLB8gNjY4AuC7qv
+         iMdGyfKCbjHuVyfQQSDRqYGRakwAHBo1ElxDEJf3jbr6GfNP5TmszuxybpbI9eSrMeVm
+         DJRhNeQf89BHc5ZnGb8asmF/g+72ZmZ4CKhayFp+89REWtf0HyM8+geLXb5Hutnmda9b
+         vtRw==
+X-Gm-Message-State: APjAAAU8MlmWTKQaF9X7NnzKh+bbmNcZ5itf5NR3Y0Fz7iEX10b9q5an
+        ZNCiKfD4FsRaSbjbhVw2XQE=
+X-Google-Smtp-Source: APXvYqxkXeA7XcEOqB3m5W4tD56A0lPBfZhxoKIYtC5LFGr8jm1HuHc+6Fy5o5NH1MkD+ESy5WUmfg==
+X-Received: by 2002:a37:89c7:: with SMTP id l190mr14621416qkd.498.1576864792626;
+        Fri, 20 Dec 2019 09:59:52 -0800 (PST)
+Received: from ?IPv6:2601:282:800:fd80:d462:ea64:486f:4002? ([2601:282:800:fd80:d462:ea64:486f:4002])
+        by smtp.googlemail.com with ESMTPSA id v5sm3330389qtc.64.2019.12.20.09.59.50
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 20 Dec 2019 09:59:51 -0800 (PST)
+Subject: Re: [patch net-next 1/4] net: call
+ call_netdevice_unregister_net_notifiers from unregister
+To:     Jiri Pirko <jiri@resnulli.us>, netdev@vger.kernel.org
+Cc:     davem@davemloft.net, jakub.kicinski@netronome.com,
+        saeedm@mellanox.com, leon@kernel.org, tariqt@mellanox.com,
+        ayal@mellanox.com, vladbu@mellanox.com, michaelgur@mellanox.com,
+        moshe@mellanox.com, mlxsw@mellanox.com
+References: <20191220123542.26315-1-jiri@resnulli.us>
+ <20191220123542.26315-2-jiri@resnulli.us>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <029e89ea-6ca8-bdd0-92bd-17025f5f1973@gmail.com>
+Date:   Fri, 20 Dec 2019 10:59:50 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.3.1
 MIME-Version: 1.0
-References: <20191218011545.40557-1-natechancellor@gmail.com>
-In-Reply-To: <20191218011545.40557-1-natechancellor@gmail.com>
-From:   Nick Desaulniers <ndesaulniers@google.com>
-Date:   Fri, 20 Dec 2019 09:55:10 -0800
-Message-ID: <CAKwvOd=S6HBP5RTTgm=+1r51t9cSNt+sCHrwkK_fAVFqVcZ-1A@mail.gmail.com>
-Subject: Re: [PATCH] hostap: Adjust indentation in prism2_hostapd_add_sta
-To:     Nathan Chancellor <natechancellor@gmail.com>
-Cc:     Kalle Valo <kvalo@codeaurora.org>, linux-wireless@vger.kernel.org,
-        Network Development <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        clang-built-linux <clang-built-linux@googlegroups.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20191220123542.26315-2-jiri@resnulli.us>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 17, 2019 at 5:15 PM Nathan Chancellor
-<natechancellor@gmail.com> wrote:
->
-> Clang warns:
->
-> ../drivers/net/wireless/intersil/hostap/hostap_ap.c:2511:3: warning:
-> misleading indentation; statement is not part of the previous 'if'
-> [-Wmisleading-indentation]
->         if (sta->tx_supp_rates & WLAN_RATE_5M5)
->         ^
-> ../drivers/net/wireless/intersil/hostap/hostap_ap.c:2509:2: note:
-> previous statement is here
->         if (sta->tx_supp_rates & WLAN_RATE_2M)
->         ^
-> 1 warning generated.
->
-> This warning occurs because there is a space before the tab on this
-> line. Remove it so that the indentation is consistent with the Linux
-> kernel coding style and clang no longer warns.
->
-> Fixes: ff1d2767d5a4 ("Add HostAP wireless driver.")
-> Link: https://github.com/ClangBuiltLinux/linux/issues/813
-> Signed-off-by: Nathan Chancellor <natechancellor@gmail.com>
-
-Thanks for the patch!
-Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
-
+On 12/20/19 5:35 AM, Jiri Pirko wrote:
+> From: Jiri Pirko <jiri@mellanox.com>
+> 
+> The function does the same thing as the existing code, so rather call
+> call_netdevice_unregister_net_notifiers() instead of code duplication.
+> 
+> Signed-off-by: Jiri Pirko <jiri@mellanox.com>
 > ---
->
-> Sorry for sending a patch for an "Obselete" driver (especially one as
-> trivial as this) but it is still a warning from clang and shows up on
-> all{yes,mod}config.
->
->  drivers/net/wireless/intersil/hostap/hostap_ap.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/drivers/net/wireless/intersil/hostap/hostap_ap.c b/drivers/net/wireless/intersil/hostap/hostap_ap.c
-> index 0094b1d2b577..3ec46f48cfde 100644
-> --- a/drivers/net/wireless/intersil/hostap/hostap_ap.c
-> +++ b/drivers/net/wireless/intersil/hostap/hostap_ap.c
-> @@ -2508,7 +2508,7 @@ static int prism2_hostapd_add_sta(struct ap_data *ap,
->                 sta->supported_rates[0] = 2;
->         if (sta->tx_supp_rates & WLAN_RATE_2M)
->                 sta->supported_rates[1] = 4;
-> -       if (sta->tx_supp_rates & WLAN_RATE_5M5)
-> +       if (sta->tx_supp_rates & WLAN_RATE_5M5)
->                 sta->supported_rates[2] = 11;
->         if (sta->tx_supp_rates & WLAN_RATE_11M)
->                 sta->supported_rates[3] = 22;
-> --
-> 2.24.1
->
-> --
-> You received this message because you are subscribed to the Google Groups "Clang Built Linux" group.
-> To unsubscribe from this group and stop receiving emails from it, send an email to clang-built-linux+unsubscribe@googlegroups.com.
-> To view this discussion on the web visit https://groups.google.com/d/msgid/clang-built-linux/20191218011545.40557-1-natechancellor%40gmail.com.
+>  net/core/dev.c | 14 +++-----------
+>  1 file changed, 3 insertions(+), 11 deletions(-)
+> 
+
+Reviewed-by: David Ahern <dsahern@gmail.com>
 
 
-
--- 
-Thanks,
-~Nick Desaulniers
