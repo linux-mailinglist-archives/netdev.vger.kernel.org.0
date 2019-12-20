@@ -2,100 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E8421277DF
-	for <lists+netdev@lfdr.de>; Fri, 20 Dec 2019 10:18:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E4271277F3
+	for <lists+netdev@lfdr.de>; Fri, 20 Dec 2019 10:22:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727233AbfLTJSY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Dec 2019 04:18:24 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:34712 "EHLO vps0.lunn.ch"
+        id S1727351AbfLTJWC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Dec 2019 04:22:02 -0500
+Received: from mx2.suse.de ([195.135.220.15]:46708 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726111AbfLTJSY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 20 Dec 2019 04:18:24 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=7oAc3KbOfStV10Pw+JK23/DHmUM3WMxbidUMaHV1jAQ=; b=zvyFHNu32mCutlOCcWLFjodOCF
-        rHUfp3O/n8/V+L9vE+ieyFriv9Z2PmM5Unf1xk2SfIOAPibXTJ7yCS0PNU2stXLpYrZRwzaBF+25B
-        kvj67SP8Sd5sIoOWrz2ZWALZtnOKuw+OqosV6dZmhtVRV2tKfeGkrANG2jqz8vOdofS0=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1iiEQI-0006eo-Ls; Fri, 20 Dec 2019 10:18:14 +0100
-Date:   Fri, 20 Dec 2019 10:18:14 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Cc:     David Miller <davem@davemloft.net>, f.fainelli@gmail.com,
-        hkallweit1@gmail.com, netdev@vger.kernel.org
-Subject: Re: [PATCH net] net: phy: make phy_error() report which PHY has
- failed
-Message-ID: <20191220091814.GA24174@lunn.ch>
-References: <E1ihCLZ-0001Vo-Nw@rmk-PC.armlinux.org.uk>
- <20191219.125010.1105219757379875134.davem@davemloft.net>
- <20191219214537.GF25745@shell.armlinux.org.uk>
+        id S1727188AbfLTJWB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 20 Dec 2019 04:22:01 -0500
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx2.suse.de (Postfix) with ESMTP id 98BD2AE00;
+        Fri, 20 Dec 2019 09:21:57 +0000 (UTC)
+Received: by quack2.suse.cz (Postfix, from userid 1000)
+        id 38E621E0B44; Fri, 20 Dec 2019 10:21:54 +0100 (CET)
+Date:   Fri, 20 Dec 2019 10:21:54 +0100
+From:   Jan Kara <jack@suse.cz>
+To:     John Hubbard <jhubbard@nvidia.com>
+Cc:     Leon Romanovsky <leon@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@intel.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Dave Chinner <david@fromorbit.com>,
+        David Airlie <airlied@linux.ie>,
+        "David S . Miller" <davem@davemloft.net>,
+        Ira Weiny <ira.weiny@intel.com>, Jan Kara <jack@suse.cz>,
+        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
+        Jonathan Corbet <corbet@lwn.net>,
+        =?iso-8859-1?B?Suly9G1l?= Glisse <jglisse@redhat.com>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Michal Hocko <mhocko@suse.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Paul Mackerras <paulus@samba.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Vlastimil Babka <vbabka@suse.cz>, bpf@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, kvm@vger.kernel.org,
+        linux-block@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        linux-media@vger.kernel.org, linux-rdma@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, netdev@vger.kernel.org,
+        linux-mm@kvack.org, LKML <linux-kernel@vger.kernel.org>,
+        Maor Gottlieb <maorg@mellanox.com>
+Subject: Re: [PATCH v11 00/25] mm/gup: track dma-pinned pages: FOLL_PIN
+Message-ID: <20191220092154.GA10068@quack2.suse.cz>
+References: <20191216222537.491123-1-jhubbard@nvidia.com>
+ <20191219132607.GA410823@unreal>
+ <a4849322-8e17-119e-a664-80d9f95d850b@nvidia.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20191219214537.GF25745@shell.armlinux.org.uk>
+In-Reply-To: <a4849322-8e17-119e-a664-80d9f95d850b@nvidia.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 19, 2019 at 09:45:37PM +0000, Russell King - ARM Linux admin wrote:
-> On Thu, Dec 19, 2019 at 12:50:10PM -0800, David Miller wrote:
-> > From: Russell King <rmk+kernel@armlinux.org.uk>
-> > Date: Tue, 17 Dec 2019 12:53:05 +0000
+On Thu 19-12-19 12:30:31, John Hubbard wrote:
+> On 12/19/19 5:26 AM, Leon Romanovsky wrote:
+> > On Mon, Dec 16, 2019 at 02:25:12PM -0800, John Hubbard wrote:
+> > > Hi,
+> > > 
+> > > This implements an API naming change (put_user_page*() -->
+> > > unpin_user_page*()), and also implements tracking of FOLL_PIN pages. It
+> > > extends that tracking to a few select subsystems. More subsystems will
+> > > be added in follow up work.
 > > 
-> > > phy_error() is called from phy_interrupt() or phy_state_machine(), and
-> > > uses WARN_ON() to print a backtrace. The backtrace is not useful when
-> > > reporting a PHY error.
-> > > 
-> > > However, a system may contain multiple ethernet PHYs, and phy_error()
-> > > gives no clue which one caused the problem.
-> > > 
-> > > Replace WARN_ON() with a call to phydev_err() so that we can see which
-> > > PHY had an error, and also inform the user that we are halting the PHY.
-> > > 
-> > > Fixes: fa7b28c11bbf ("net: phy: print stack trace in phy_error")
-> > > Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
+> > Hi John,
 > > 
-> > I think I agree with Heiner that it is valuable to know whether the
-> > error occurred from the interrupt handler or the state machine (and
-> > if the state machine, where that got called from).
+> > The patchset generates kernel panics in our IB testing. In our tests, we
+> > allocated single memory block and registered multiple MRs using the single
+> > block.
+> > 
+> > The possible bad flow is:
+> >   ib_umem_geti() ->
+> >    pin_user_pages_fast(FOLL_WRITE) ->
+> >     internal_get_user_pages_fast(FOLL_WRITE) ->
+> >      gup_pgd_range() ->
+> >       gup_huge_pd() ->
+> >        gup_hugepte() ->
+> >         try_grab_compound_head() ->
 > 
-> Would you accept, then, passing a string to indicate where phy_error()
-> was called from, which would do the same job without tainting the
-> kernel for something that becomes a _normal_ event when removing a
-> SFP?
+> Hi Leon,
+> 
+> Thanks very much for the detailed report! So we're overflowing...
+> 
+> At first look, this seems likely to be hitting a weak point in the
+> GUP_PIN_COUNTING_BIAS-based design, one that I believed could be deferred
+> (there's a writeup in Documentation/core-api/pin_user_page.rst, lines
+> 99-121). Basically it's pretty easy to overflow the page->_refcount
+> with huge pages if the pages have a *lot* of subpages.
+> 
+> We can only do about 7 pins on 1GB huge pages that use 4KB subpages.
+> Do you have any idea how many pins (repeated pins on the same page, which
+> it sounds like you have) might be involved in your test case,
+> and the huge page and system page sizes? That would allow calculating
+> if we're likely overflowing for that reason.
+> 
+> So, ideas and next steps:
+> 
+> 1. Assuming that you *are* hitting this, I think I may have to fall back to
+> implementing the "deferred" part of this design, as part of this series, after
+> all. That means:
+> 
+>   For the pin/unpin calls at least, stop treating all pages as if they are
+>   a cluster of PAGE_SIZE pages; instead, retrieve a huge page as one page.
+>   That's not how it works now, and the need to hand back a huge array of
+>   subpages is part of the problem. This affects the callers too, so it's not
+>   a super quick change to make. (I was really hoping not to have to do this
+>   yet.)
 
-I'm actually wondering what purpose phy_error has, and if the SFP is
-using it correctly.
+Does that mean that you would need to make all GUP users huge page aware?
+Otherwise I don't see how what you suggest would work... And I don't think
+making all GUP users huge page aware is realistic (effort-wise) or even
+wanted (maintenance overhead in all those places).
 
-It is currently used when the phy driver interrupts handling returns
-an error, or phy_start_aneg returns an error.
+I believe there might be also a different solution for this: For
+transparent huge pages, we could find a space in 'struct page' of the
+second page in the huge page for proper pin counter and just account pins
+there so we'd have full width of 32-bits for it.
 
-In general, with a traditional MDIO bus, you cannot tell when the
-device has disappeared. Writes just disappear into the bit bucket, and
-reads return 0xffff. If an error is returned by the MDIO bus driver,
-it is because the mechanisms surrounding the bus have returned an
-error. A needed clock has been turned off, the system is too busy to
-service the interrupt in a timely manor etc. An error indicates a bug
-of some sort, bad power management, or timers too short.
-
-SFPs, with their MDIO bus tunnelled over i2c are however a little
-different. i2c does allow you to know the device has gone, and return
--EIO.
-
-We might want to consider the question, should the MDIO over i2c code
-actually be tossing this EIO error, and returning 0xffff on read, no
-error on write? It makes the emulation more true? Only return an error
-for power management or timeouts, similar to traditional MDIO? Maybe
-print a rate limited warning when dropping an EIO error?
-
-Phylink is going to notice the PHY has disappeared soon anyway, so is
-there any value in returning an error when the module has been
-unplugged?
-
-      Andrew
+								Honza
+-- 
+Jan Kara <jack@suse.com>
+SUSE Labs, CR
