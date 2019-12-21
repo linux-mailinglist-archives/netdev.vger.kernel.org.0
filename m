@@ -2,126 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1D59D1285CC
-	for <lists+netdev@lfdr.de>; Sat, 21 Dec 2019 01:00:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C766A1285D1
+	for <lists+netdev@lfdr.de>; Sat, 21 Dec 2019 01:02:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726571AbfLUAAP convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 20 Dec 2019 19:00:15 -0500
-Received: from mga04.intel.com ([192.55.52.120]:36265 "EHLO mga04.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726462AbfLUAAP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 20 Dec 2019 19:00:15 -0500
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 20 Dec 2019 16:00:15 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.69,337,1571727600"; 
-   d="scan'208";a="267652901"
-Received: from fmsmsx104.amr.corp.intel.com ([10.18.124.202])
-  by FMSMGA003.fm.intel.com with ESMTP; 20 Dec 2019 16:00:15 -0800
-Received: from fmsmsx155.amr.corp.intel.com (10.18.116.71) by
- fmsmsx104.amr.corp.intel.com (10.18.124.202) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Fri, 20 Dec 2019 16:00:14 -0800
-Received: from fmsmsx101.amr.corp.intel.com ([169.254.1.124]) by
- FMSMSX155.amr.corp.intel.com ([169.254.5.244]) with mapi id 14.03.0439.000;
- Fri, 20 Dec 2019 16:00:14 -0800
-From:   "Keller, Jacob E" <jacob.e.keller@intel.com>
-To:     "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
-CC:     "Ismail, Mustafa" <mustafa.ismail@intel.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "nhorman@redhat.com" <nhorman@redhat.com>,
-        "sassmann@redhat.com" <sassmann@redhat.com>,
-        "jgg@ziepe.ca" <jgg@ziepe.ca>,
-        "parav@mellanox.com" <parav@mellanox.com>,
-        "Saleem, Shiraz" <shiraz.saleem@intel.com>,
-        "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>
-Subject: RE: [PATCH v3 05/20] RDMA/irdma: Add driver framework definitions
-Thread-Topic: [PATCH v3 05/20] RDMA/irdma: Add driver framework definitions
-Thread-Index: AQHVruL9MH0IThHAC0+pMLCxvmnyHKfDxL7g
-Date:   Sat, 21 Dec 2019 00:00:13 +0000
-Message-ID: <02874ECE860811409154E81DA85FBB58B26E80B9@fmsmsx101.amr.corp.intel.com>
-References: <20191209224935.1780117-1-jeffrey.t.kirsher@intel.com>
- <20191209224935.1780117-6-jeffrey.t.kirsher@intel.com>
-In-Reply-To: <20191209224935.1780117-6-jeffrey.t.kirsher@intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-product: dlpe-windows
-dlp-version: 11.2.0.6
-dlp-reaction: no-action
-x-originating-ip: [10.1.200.106]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        id S1726752AbfLUACW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Dec 2019 19:02:22 -0500
+Received: from hqnvemgate26.nvidia.com ([216.228.121.65]:17577 "EHLO
+        hqnvemgate26.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726462AbfLUACV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Dec 2019 19:02:21 -0500
+Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate26.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
+        id <B5dfd61010000>; Fri, 20 Dec 2019 16:02:10 -0800
+Received: from hqmail.nvidia.com ([172.20.161.6])
+  by hqpgpgate101.nvidia.com (PGP Universal service);
+  Fri, 20 Dec 2019 16:02:20 -0800
+X-PGP-Universal: processed;
+        by hqpgpgate101.nvidia.com on Fri, 20 Dec 2019 16:02:20 -0800
+Received: from [10.110.48.28] (10.124.1.5) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Sat, 21 Dec
+ 2019 00:02:16 +0000
+Subject: Re: [PATCH v11 00/25] mm/gup: track dma-pinned pages: FOLL_PIN
+To:     Jan Kara <jack@suse.cz>
+CC:     Leon Romanovsky <leon@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        "Alex Williamson" <alex.williamson@redhat.com>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Dave Chinner <david@fromorbit.com>,
+        David Airlie <airlied@linux.ie>,
+        "David S . Miller" <davem@davemloft.net>,
+        Ira Weiny <ira.weiny@intel.com>,
+        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
+        Jonathan Corbet <corbet@lwn.net>,
+        =?UTF-8?B?SsOpcsO0bWUgR2xpc3Nl?= <jglisse@redhat.com>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Michal Hocko <mhocko@suse.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Paul Mackerras <paulus@samba.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Vlastimil Babka <vbabka@suse.cz>, <bpf@vger.kernel.org>,
+        <dri-devel@lists.freedesktop.org>, <kvm@vger.kernel.org>,
+        <linux-block@vger.kernel.org>, <linux-doc@vger.kernel.org>,
+        <linux-fsdevel@vger.kernel.org>, <linux-kselftest@vger.kernel.org>,
+        <linux-media@vger.kernel.org>, <linux-rdma@vger.kernel.org>,
+        <linuxppc-dev@lists.ozlabs.org>, <netdev@vger.kernel.org>,
+        <linux-mm@kvack.org>, LKML <linux-kernel@vger.kernel.org>,
+        Maor Gottlieb <maorg@mellanox.com>
+References: <20191216222537.491123-1-jhubbard@nvidia.com>
+ <20191219132607.GA410823@unreal>
+ <a4849322-8e17-119e-a664-80d9f95d850b@nvidia.com>
+ <20191220092154.GA10068@quack2.suse.cz>
+X-Nvconfidentiality: public
+From:   John Hubbard <jhubbard@nvidia.com>
+Message-ID: <b4b720c6-bb65-4928-f94f-618a39781c17@nvidia.com>
+Date:   Fri, 20 Dec 2019 16:02:15 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.3.0
 MIME-Version: 1.0
+In-Reply-To: <20191220092154.GA10068@quack2.suse.cz>
+X-Originating-IP: [10.124.1.5]
+X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1576886530; bh=lYmRHUKxjje08r87sxcrKTHiQd7mjXE1LoyaAhCgFxg=;
+        h=X-PGP-Universal:Subject:To:CC:References:X-Nvconfidentiality:From:
+         Message-ID:Date:User-Agent:MIME-Version:In-Reply-To:
+         X-Originating-IP:X-ClientProxiedBy:Content-Type:Content-Language:
+         Content-Transfer-Encoding;
+        b=f7r38Ma6i3MI9nFSKeDIvPdt5vYrXy+JJsSfP31k7u+2wCxmmNufD1MCidKlHygn3
+         9DLRItYTVN4NHfhd0m+R/vw4197VAkr47By2QIcXSjvCdK32rmWdX1HB29Za9NhH9u
+         hudNbxuLpZYfSsTqz7cK57z334jwi4I1tLEi9lH/ca1Ff62dT4UIra7e9vrIur0HB5
+         JlY4V/uCEY0LG0MxUfhFQE9legwb8M5VcPujH9NTF0fF15bOxKlnVGzri/2jDISypV
+         Ta+rQMc92Kz26PG64qcQiVvssdWbJbDYbG+1Hm1r44PlB1G6okvsKpTqDlZ87Fs/zI
+         Q76HA4eWaOe1g==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> -----Original Message-----
-> From: netdev-owner@vger.kernel.org <netdev-owner@vger.kernel.org> On
-> Behalf Of Jeff Kirsher
-> Sent: Monday, December 09, 2019 2:49 PM
-> To: davem@davemloft.net; gregkh@linuxfoundation.org
-> Cc: Ismail, Mustafa <mustafa.ismail@intel.com>; netdev@vger.kernel.org; linux-
-> rdma@vger.kernel.org; nhorman@redhat.com; sassmann@redhat.com;
-> jgg@ziepe.ca; parav@mellanox.com; Saleem, Shiraz <shiraz.saleem@intel.com>;
-> Kirsher, Jeffrey T <jeffrey.t.kirsher@intel.com>
-> Subject: [PATCH v3 05/20] RDMA/irdma: Add driver framework definitions
+On 12/20/19 1:21 AM, Jan Kara wrote:
+...
+>> So, ideas and next steps:
+>>
+>> 1. Assuming that you *are* hitting this, I think I may have to fall back to
+>> implementing the "deferred" part of this design, as part of this series, after
+>> all. That means:
+>>
+>>   For the pin/unpin calls at least, stop treating all pages as if they are
+>>   a cluster of PAGE_SIZE pages; instead, retrieve a huge page as one page.
+>>   That's not how it works now, and the need to hand back a huge array of
+>>   subpages is part of the problem. This affects the callers too, so it's not
+>>   a super quick change to make. (I was really hoping not to have to do this
+>>   yet.)
 > 
-> From: Mustafa Ismail <mustafa.ismail@intel.com>
+> Does that mean that you would need to make all GUP users huge page aware?
+> Otherwise I don't see how what you suggest would work... And I don't think
+> making all GUP users huge page aware is realistic (effort-wise) or even
+> wanted (maintenance overhead in all those places).
 > 
-> Register irdma as a virtbus driver binding to
-> 'i40e' and 'ice' virtbus devices added from their
-> respective netdev drivers for each PF. During
-> irdma probe(), the gen-specific netdev peer device
-> is obtained from virtbus device to establish an
-> interface and initialize the HW.
+
+Well, pretty much yes. It's really just the pin_user_pages*() callers, but
+the internals, follow_page() and such, are so interconnected right now that
+it would probably blow up into a huge effort, as you point out.
+
+> I believe there might be also a different solution for this: For
+> transparent huge pages, we could find a space in 'struct page' of the
+> second page in the huge page for proper pin counter and just account pins
+> there so we'd have full width of 32-bits for it.
 > 
-> Signed-off-by: Mustafa Ismail <mustafa.ismail@intel.com>
-> Signed-off-by: Shiraz Saleem <shiraz.saleem@intel.com>
-> Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+> 								Honza
+> 
 
-> +enum irdma_dl_param_id {
-> +	IRDMA_DEVLINK_PARAM_ID_BASE =
-> DEVLINK_PARAM_GENERIC_ID_MAX,
-> +	IRDMA_DEVLINK_PARAM_ID_LIMITS_SELECTOR,
-> +	IRDMA_DEVLINK_PARAM_ID_UPLOAD_CONTEXT,
-> +	IRDMA_DEVLINK_PARAM_ID_ROCE_ENABLE,
-> +};
-> +
-> +static const struct devlink_param irdma_devlink_params[] = {
-> +	/* Common */
-> +
-> 	DEVLINK_PARAM_DRIVER(IRDMA_DEVLINK_PARAM_ID_LIMITS_SELECT
-> OR,
-> +			     "resource_limits_selector",
-> DEVLINK_PARAM_TYPE_U8,
-> +			      BIT(DEVLINK_PARAM_CMODE_DRIVERINIT),
-> +			      NULL, NULL, irdma_devlink_rsrc_limits_validate),
-> +
-> 	DEVLINK_PARAM_DRIVER(IRDMA_DEVLINK_PARAM_ID_UPLOAD_CON
-> TEXT,
-> +			     "upload_context", DEVLINK_PARAM_TYPE_BOOL,
-> +			     BIT(DEVLINK_PARAM_CMODE_RUNTIME),
-> +			     irdma_devlink_upload_ctx_get,
-> +			     irdma_devlink_upload_ctx_set, NULL),
-> +#define IRDMA_DL_COMMON_PARAMS_ARRAY_SZ 2
-> +	/* GEN_2 only */
-> +	DEVLINK_PARAM_DRIVER(IRDMA_DEVLINK_PARAM_ID_ROCE_ENABLE,
-> +			     "roce_enable", DEVLINK_PARAM_TYPE_BOOL,
-> +			      BIT(DEVLINK_PARAM_CMODE_DRIVERINIT),
-> +			      NULL, NULL, NULL),
-> +};
-> +
+OK, let me pursue that. Given that I shouldn't need to handle pages
+splitting, it should be not *too* bad.
 
-Instead of adding a driver specific "roce_enable", use the generic parameter "enable_roce".
+I am starting to think that I should just post the first 9 or so 
+prerequisite patches (first 9 patches, plus the v4l2 fix that arguably should 
+have been earlier in the sequence I guess), as 5.6 candidates, while I go
+back to the drawing board here. 
 
-Thanks,
-Jake
-
+thanks,
+-- 
+John Hubbard
+NVIDIA
