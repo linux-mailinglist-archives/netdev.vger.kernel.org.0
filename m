@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F7D6128B1E
-	for <lists+netdev@lfdr.de>; Sat, 21 Dec 2019 20:36:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D5B3A128B27
+	for <lists+netdev@lfdr.de>; Sat, 21 Dec 2019 20:37:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727397AbfLUTgy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 21 Dec 2019 14:36:54 -0500
-Received: from mail-pl1-f195.google.com ([209.85.214.195]:35177 "EHLO
-        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727339AbfLUTgt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 21 Dec 2019 14:36:49 -0500
-Received: by mail-pl1-f195.google.com with SMTP id g6so5545575plt.2;
-        Sat, 21 Dec 2019 11:36:49 -0800 (PST)
+        id S1727382AbfLUTgx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 21 Dec 2019 14:36:53 -0500
+Received: from mail-pj1-f67.google.com ([209.85.216.67]:50537 "EHLO
+        mail-pj1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726107AbfLUTgu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 21 Dec 2019 14:36:50 -0500
+Received: by mail-pj1-f67.google.com with SMTP id r67so5628856pjb.0;
+        Sat, 21 Dec 2019 11:36:50 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=LZ93AY1+fKpm1lkv7HOM3paCh/zw2D/T/ZiNFPokrAw=;
-        b=ahk83Fg5iFOr5LxXXHbH5RT9e9MD2eV6kteRw7B8tdtbjaxE+slOVsiWHsEo35v5GR
-         sK9oMVGLBtYa6d+3a/DpIGtXcQx+kJ0LZLcbxmIXzi/WuTmnln4bX1RUvDQiISxFC9E6
-         a3B7g52k+dTMXcQH85oc1mReOWpRaT1QfKjM1/785S9Bju/30w1TQk5PXo/TN0LFW2A7
-         4gayD9A/Oz76q42h8xFgFZw4butA6ciZGKRbiYpWEYKYsw8oRlU4HRMRNZK+iFsXpzVG
-         1uSEkcwOzR7OZJWOLR5BFiqH8WXTZf2qwyVmRAAHKBc4kKxh5/TKbPBk5kqUn/AOP8/L
-         T5LQ==
+        bh=iufX15HyInYqkt5BpnF9hIl241zgF1i5PO7B69MX67w=;
+        b=MyGjMkqM0mdZt4j5JnOVa5hLXaWM63cQX4YChVDAoDaG2TTHoozJ4+w/E/kdimkgX+
+         pc6ibfflP+lWfnG3VQqZvm5W/k0zU8yspfxwZbf/Kbft8v6Fx6JSsQ6B8VOqlHp7L0GE
+         pDjM86Bn/X+jr6hMSN6CQEQKuKEAg7siXSJvKCJBOTyM11Og7GMukeGq5LStAy2R8E2T
+         aTYJhuNNp3Le6JUxI2YafsRfn7vkAAiNhv/XoyLelUTFs/p6o7Srf6bGD81WefiFs+vo
+         HJPfW6nZGC634albWGQx1T5A/9q0lz+1xkPEABGKaWxs8zQAEzsoFLJ4evDUI6Xwl6vo
+         SogQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=LZ93AY1+fKpm1lkv7HOM3paCh/zw2D/T/ZiNFPokrAw=;
-        b=IMrZ8TpGTVY2EfrNle7nZ7jIgX5X4gq/OlahgKGKGCVu/5vwdwAlrrnKluDN+WwUsF
-         q2NV4wnrN/twPzh+ChEo/QU1sfRPR2LGaObNU347xDO3NclzrFlzSEk2wFCdwY2HRVTJ
-         7WeyIczfWdfpOeSlOsM5zvmJaPCkhgCmccMLxGCcJeULpvrcQUmk6cuQdtV/edqz2fUX
-         Zls6JpblyVk61z9siZ4uGAIZCjy4DnbVzvL7/vCp3RgX0AuflIVLK18BEOFV8Jdu71We
-         lqhwzI1WdPCBp3jrV+F3yMbHhocVeB8W4E0ttyjbm1hu6GGhozkjwiA7zjppQ6EWJZmb
-         am+Q==
-X-Gm-Message-State: APjAAAUQAMqjCo+V+hJY3nFKjUTeEOZNr82qb6579ubPv+QKlni3zLgG
-        TaN7aO8J2Ic36kqvni6X8+rCCvyT
-X-Google-Smtp-Source: APXvYqyaWfVImWgFzZFryPWHuiQ/Oc9qphIn8ajBahnOWf9g3de5R8OF0TwGPiyXMIvf8xAio76BMA==
-X-Received: by 2002:a17:90a:a88d:: with SMTP id h13mr23038652pjq.55.1576957008437;
-        Sat, 21 Dec 2019 11:36:48 -0800 (PST)
+        bh=iufX15HyInYqkt5BpnF9hIl241zgF1i5PO7B69MX67w=;
+        b=adH0w8BwuLREjj6OTNCypTZr5fimzuPtriMfGNqb25zGoEdnT2aENN8SZa7xLKjHPZ
+         WIkNeusGfm3lfOEqaBZodcLRg9foFvMn9okqpza5D50e3d1DxhGobT0teQFae36PLN6x
+         3IILl6Pvf7Wv4/rApzwAQNzACJrChJlJD3SruQ+HGZHQzSar8LKMuisB1CntqmDHdU9o
+         gQ+mbAckUWfS0739wfrRklPa6GIDIzhIjf2wZJzZIK+IumaefthY345pKItjBMJiKGcX
+         Qd4PJC3EB/cIy7pjMizCxl1jsPaMmzEiV4fITyIhyoxuFYS+gz2SBciEcruXfzPJ0OKO
+         qPSg==
+X-Gm-Message-State: APjAAAV7k4UfDm8wvm8RU7qOKTSy6ErRI5MnmUjSK09qWOBQrjilyvqZ
+        c5qqFF3b/1/XVT4/5Voutbtf1KSI
+X-Google-Smtp-Source: APXvYqzqvg9i0YnGGTSSZN17isYLVDaza6jFl7oSWzlolylv0vZvQ7NE479FGzbsIpdq7LFuT7eLuA==
+X-Received: by 2002:a17:90b:4383:: with SMTP id in3mr5519564pjb.111.1576957009810;
+        Sat, 21 Dec 2019 11:36:49 -0800 (PST)
 Received: from localhost.localdomain (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
-        by smtp.gmail.com with ESMTPSA id y197sm18512603pfc.79.2019.12.21.11.36.47
+        by smtp.gmail.com with ESMTPSA id y197sm18512603pfc.79.2019.12.21.11.36.48
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 21 Dec 2019 11:36:47 -0800 (PST)
+        Sat, 21 Dec 2019 11:36:49 -0800 (PST)
 From:   Richard Cochran <richardcochran@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     David Miller <davem@davemloft.net>, devicetree@vger.kernel.org,
@@ -58,9 +58,9 @@ Cc:     David Miller <davem@davemloft.net>, devicetree@vger.kernel.org,
         Rob Herring <robh+dt@kernel.org>,
         Willem de Bruijn <willemb@google.com>,
         Wingman Kwok <w-kwok2@ti.com>
-Subject: [PATCH V8 net-next 05/12] net: netcp_ethss: Use the PHY time stamping interface.
-Date:   Sat, 21 Dec 2019 11:36:31 -0800
-Message-Id: <76cd58c2032f894184aeb2f1e23a59b368f3eb2c.1576956342.git.richardcochran@gmail.com>
+Subject: [PATCH V8 net-next 06/12] net: phy: dp83640: Move the probe and remove methods around.
+Date:   Sat, 21 Dec 2019 11:36:32 -0800
+Message-Id: <ed071a6dc40506744a7db58a4207ac8d7cdd993e.1576956342.git.richardcochran@gmail.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <cover.1576956342.git.richardcochran@gmail.com>
 References: <cover.1576956342.git.richardcochran@gmail.com>
@@ -71,58 +71,216 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The netcp_ethss driver tests fields of the phy_device in order to
-determine whether to defer to the PHY's time stamping functionality.
-This patch replaces the open coded logic with an invocation of the
-proper methods.
+An upcoming patch will change how the PHY time stamping functions are
+registered with the networking stack, and adapting this driver would
+entail adding forward declarations for four time stamping methods.
+However, forward declarations are considered to be stylistic defects.
+This patch avoids the issue by moving the probe and remove methods
+immediately above the phy_driver interface structure.
 
 Signed-off-by: Richard Cochran <richardcochran@gmail.com>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 ---
- drivers/net/ethernet/ti/netcp_ethss.c | 8 +++-----
- 1 file changed, 3 insertions(+), 5 deletions(-)
+ drivers/net/phy/dp83640.c | 180 +++++++++++++++++++-------------------
+ 1 file changed, 90 insertions(+), 90 deletions(-)
 
-diff --git a/drivers/net/ethernet/ti/netcp_ethss.c b/drivers/net/ethernet/ti/netcp_ethss.c
-index 86a3f42a3dcc..1280ccd581d4 100644
---- a/drivers/net/ethernet/ti/netcp_ethss.c
-+++ b/drivers/net/ethernet/ti/netcp_ethss.c
-@@ -2533,8 +2533,6 @@ static int gbe_del_vid(void *intf_priv, int vid)
+diff --git a/drivers/net/phy/dp83640.c b/drivers/net/phy/dp83640.c
+index 8f241b57fcf6..b58abdb5491e 100644
+--- a/drivers/net/phy/dp83640.c
++++ b/drivers/net/phy/dp83640.c
+@@ -1131,96 +1131,6 @@ static void dp83640_clock_put(struct dp83640_clock *clock)
+ 	mutex_unlock(&clock->clock_lock);
  }
  
- #if IS_ENABLED(CONFIG_TI_CPTS)
--#define HAS_PHY_TXTSTAMP(p) ((p)->drv && (p)->drv->txtstamp)
--#define HAS_PHY_RXTSTAMP(p) ((p)->drv && (p)->drv->rxtstamp)
- 
- static void gbe_txtstamp(void *context, struct sk_buff *skb)
+-static int dp83640_probe(struct phy_device *phydev)
+-{
+-	struct dp83640_clock *clock;
+-	struct dp83640_private *dp83640;
+-	int err = -ENOMEM, i;
+-
+-	if (phydev->mdio.addr == BROADCAST_ADDR)
+-		return 0;
+-
+-	clock = dp83640_clock_get_bus(phydev->mdio.bus);
+-	if (!clock)
+-		goto no_clock;
+-
+-	dp83640 = kzalloc(sizeof(struct dp83640_private), GFP_KERNEL);
+-	if (!dp83640)
+-		goto no_memory;
+-
+-	dp83640->phydev = phydev;
+-	INIT_DELAYED_WORK(&dp83640->ts_work, rx_timestamp_work);
+-
+-	INIT_LIST_HEAD(&dp83640->rxts);
+-	INIT_LIST_HEAD(&dp83640->rxpool);
+-	for (i = 0; i < MAX_RXTS; i++)
+-		list_add(&dp83640->rx_pool_data[i].list, &dp83640->rxpool);
+-
+-	phydev->priv = dp83640;
+-
+-	spin_lock_init(&dp83640->rx_lock);
+-	skb_queue_head_init(&dp83640->rx_queue);
+-	skb_queue_head_init(&dp83640->tx_queue);
+-
+-	dp83640->clock = clock;
+-
+-	if (choose_this_phy(clock, phydev)) {
+-		clock->chosen = dp83640;
+-		clock->ptp_clock = ptp_clock_register(&clock->caps,
+-						      &phydev->mdio.dev);
+-		if (IS_ERR(clock->ptp_clock)) {
+-			err = PTR_ERR(clock->ptp_clock);
+-			goto no_register;
+-		}
+-	} else
+-		list_add_tail(&dp83640->list, &clock->phylist);
+-
+-	dp83640_clock_put(clock);
+-	return 0;
+-
+-no_register:
+-	clock->chosen = NULL;
+-	kfree(dp83640);
+-no_memory:
+-	dp83640_clock_put(clock);
+-no_clock:
+-	return err;
+-}
+-
+-static void dp83640_remove(struct phy_device *phydev)
+-{
+-	struct dp83640_clock *clock;
+-	struct list_head *this, *next;
+-	struct dp83640_private *tmp, *dp83640 = phydev->priv;
+-
+-	if (phydev->mdio.addr == BROADCAST_ADDR)
+-		return;
+-
+-	enable_status_frames(phydev, false);
+-	cancel_delayed_work_sync(&dp83640->ts_work);
+-
+-	skb_queue_purge(&dp83640->rx_queue);
+-	skb_queue_purge(&dp83640->tx_queue);
+-
+-	clock = dp83640_clock_get(dp83640->clock);
+-
+-	if (dp83640 == clock->chosen) {
+-		ptp_clock_unregister(clock->ptp_clock);
+-		clock->chosen = NULL;
+-	} else {
+-		list_for_each_safe(this, next, &clock->phylist) {
+-			tmp = list_entry(this, struct dp83640_private, list);
+-			if (tmp == dp83640) {
+-				list_del_init(&tmp->list);
+-				break;
+-			}
+-		}
+-	}
+-
+-	dp83640_clock_put(clock);
+-	kfree(dp83640);
+-}
+-
+ static int dp83640_soft_reset(struct phy_device *phydev)
  {
-@@ -2566,7 +2564,7 @@ static int gbe_txtstamp_mark_pkt(struct gbe_intf *gbe_intf,
- 	 * We mark it here because skb_tx_timestamp() is called
- 	 * after all the txhooks are called.
- 	 */
--	if (phydev && HAS_PHY_TXTSTAMP(phydev)) {
-+	if (phy_has_txtstamp(phydev)) {
- 		skb_shinfo(p_info->skb)->tx_flags |= SKBTX_IN_PROGRESS;
- 		return 0;
- 	}
-@@ -2588,7 +2586,7 @@ static int gbe_rxtstamp(struct gbe_intf *gbe_intf, struct netcp_packet *p_info)
- 	if (p_info->rxtstamp_complete)
- 		return 0;
+ 	int ret;
+@@ -1526,6 +1436,96 @@ static int dp83640_ts_info(struct phy_device *dev, struct ethtool_ts_info *info)
+ 	return 0;
+ }
  
--	if (phydev && HAS_PHY_RXTSTAMP(phydev)) {
-+	if (phy_has_rxtstamp(phydev)) {
- 		p_info->rxtstamp_complete = true;
- 		return 0;
- 	}
-@@ -2830,7 +2828,7 @@ static int gbe_ioctl(void *intf_priv, struct ifreq *req, int cmd)
- 	struct gbe_intf *gbe_intf = intf_priv;
- 	struct phy_device *phy = gbe_intf->slave->phy;
- 
--	if (!phy || !phy->drv->hwtstamp) {
-+	if (!phy_has_hwtstamp(phy)) {
- 		switch (cmd) {
- 		case SIOCGHWTSTAMP:
- 			return gbe_hwtstamp_get(gbe_intf, req);
++static int dp83640_probe(struct phy_device *phydev)
++{
++	struct dp83640_clock *clock;
++	struct dp83640_private *dp83640;
++	int err = -ENOMEM, i;
++
++	if (phydev->mdio.addr == BROADCAST_ADDR)
++		return 0;
++
++	clock = dp83640_clock_get_bus(phydev->mdio.bus);
++	if (!clock)
++		goto no_clock;
++
++	dp83640 = kzalloc(sizeof(struct dp83640_private), GFP_KERNEL);
++	if (!dp83640)
++		goto no_memory;
++
++	dp83640->phydev = phydev;
++	INIT_DELAYED_WORK(&dp83640->ts_work, rx_timestamp_work);
++
++	INIT_LIST_HEAD(&dp83640->rxts);
++	INIT_LIST_HEAD(&dp83640->rxpool);
++	for (i = 0; i < MAX_RXTS; i++)
++		list_add(&dp83640->rx_pool_data[i].list, &dp83640->rxpool);
++
++	phydev->priv = dp83640;
++
++	spin_lock_init(&dp83640->rx_lock);
++	skb_queue_head_init(&dp83640->rx_queue);
++	skb_queue_head_init(&dp83640->tx_queue);
++
++	dp83640->clock = clock;
++
++	if (choose_this_phy(clock, phydev)) {
++		clock->chosen = dp83640;
++		clock->ptp_clock = ptp_clock_register(&clock->caps,
++						      &phydev->mdio.dev);
++		if (IS_ERR(clock->ptp_clock)) {
++			err = PTR_ERR(clock->ptp_clock);
++			goto no_register;
++		}
++	} else
++		list_add_tail(&dp83640->list, &clock->phylist);
++
++	dp83640_clock_put(clock);
++	return 0;
++
++no_register:
++	clock->chosen = NULL;
++	kfree(dp83640);
++no_memory:
++	dp83640_clock_put(clock);
++no_clock:
++	return err;
++}
++
++static void dp83640_remove(struct phy_device *phydev)
++{
++	struct dp83640_clock *clock;
++	struct list_head *this, *next;
++	struct dp83640_private *tmp, *dp83640 = phydev->priv;
++
++	if (phydev->mdio.addr == BROADCAST_ADDR)
++		return;
++
++	enable_status_frames(phydev, false);
++	cancel_delayed_work_sync(&dp83640->ts_work);
++
++	skb_queue_purge(&dp83640->rx_queue);
++	skb_queue_purge(&dp83640->tx_queue);
++
++	clock = dp83640_clock_get(dp83640->clock);
++
++	if (dp83640 == clock->chosen) {
++		ptp_clock_unregister(clock->ptp_clock);
++		clock->chosen = NULL;
++	} else {
++		list_for_each_safe(this, next, &clock->phylist) {
++			tmp = list_entry(this, struct dp83640_private, list);
++			if (tmp == dp83640) {
++				list_del_init(&tmp->list);
++				break;
++			}
++		}
++	}
++
++	dp83640_clock_put(clock);
++	kfree(dp83640);
++}
++
+ static struct phy_driver dp83640_driver = {
+ 	.phy_id		= DP83640_PHY_ID,
+ 	.phy_id_mask	= 0xfffffff0,
 -- 
 2.20.1
 
