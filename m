@@ -2,98 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8643B128A98
-	for <lists+netdev@lfdr.de>; Sat, 21 Dec 2019 18:26:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BF86C128AD0
+	for <lists+netdev@lfdr.de>; Sat, 21 Dec 2019 19:30:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727106AbfLUR0R (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 21 Dec 2019 12:26:17 -0500
-Received: from relay6-d.mail.gandi.net ([217.70.183.198]:39695 "EHLO
-        relay6-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726114AbfLUR0R (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 21 Dec 2019 12:26:17 -0500
-X-Originating-IP: 209.85.217.51
-Received: from mail-vs1-f51.google.com (mail-vs1-f51.google.com [209.85.217.51])
-        (Authenticated sender: pshelar@ovn.org)
-        by relay6-d.mail.gandi.net (Postfix) with ESMTPSA id CA7F3C0004
-        for <netdev@vger.kernel.org>; Sat, 21 Dec 2019 17:26:15 +0000 (UTC)
-Received: by mail-vs1-f51.google.com with SMTP id b79so8147500vsd.9
-        for <netdev@vger.kernel.org>; Sat, 21 Dec 2019 09:26:15 -0800 (PST)
-X-Gm-Message-State: APjAAAUwprhMlIF6bFOnsR1ODNuFwhMDsfpU11ALMN0ZwT5rXXDmdlBI
-        /LIhiLp+/6OVZvVSqzFAuR7ozbcVr+CjBh6wQGU=
-X-Google-Smtp-Source: APXvYqyzJnXpORZc8zNY2BbbNUGad2VRouiB5tgfb8A40hbv1fY4kA+EthH2zpKGbbZgQg0XEO0Navglppe1jOhIsLY=
-X-Received: by 2002:a67:2701:: with SMTP id n1mr12102497vsn.103.1576949174666;
- Sat, 21 Dec 2019 09:26:14 -0800 (PST)
+        id S1726876AbfLUSad (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 21 Dec 2019 13:30:33 -0500
+Received: from us-smtp-2.mimecast.com ([205.139.110.61]:53929 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726107AbfLUSac (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 21 Dec 2019 13:30:32 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1576953030;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=LB8m3iWkUtLz/PlBZFVImUXu9V+7qz7Xx2g60a0njl0=;
+        b=StV0j3KwUW34jvzi4lanVpk5asqiR7IkbuA4FD5wl9rO0OyhOp3FAoaUrzA9jdzLjtft5S
+        QqSjfiW/h2hB5J/lPxF/evLd5euNtF9CVMscdP3oug3SdluoV5gcag6hOQTAYNQkB5skK8
+        6GiJcXJeXBcWFfjfeSQKkuh0rYoxy/g=
+Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
+ [209.85.221.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-310-O5WegrkvNsi5jY-NaLW4Yg-1; Sat, 21 Dec 2019 13:30:29 -0500
+X-MC-Unique: O5WegrkvNsi5jY-NaLW4Yg-1
+Received: by mail-wr1-f71.google.com with SMTP id d8so5477028wrq.12
+        for <netdev@vger.kernel.org>; Sat, 21 Dec 2019 10:30:28 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=LB8m3iWkUtLz/PlBZFVImUXu9V+7qz7Xx2g60a0njl0=;
+        b=YBto4Kz7mLLSdjx3KRRlsRn38tUsAlhXJmlMDpnVw1F8dHaMZqLNqN+SnY8BGRR2fQ
+         j7tCuLXyLTwqailIiIItm92qArtsSSDu9iXhHE39xvVk6yypX2bYUX/lsd0RDJ/N9laW
+         0sDd8h2NmAwEJb7WCQVGvkZwJOrh6isuPovYl0bvoHNqYCb4LrZHJ2BQreTK0FJdc6LC
+         wFJElM8uGOfUwkpzKNqVQszG6wRUadRrHHO28acJx7PtYnGgZID6ACJKPRfHdextxEwp
+         qdwtVCRsjw1W7Zk3tgwlzRQxkpd+ipm60r66cSKQbIbEA/8lzY8PLIhlv9RMnMwinhRk
+         do/g==
+X-Gm-Message-State: APjAAAWEipo8gXYxdXWC1H9g+VHXF81gcK6/t29YJsIb7q65kWM7zpW9
+        0tw+yP6B2XS+mzt4jc8Ewv3ql+/29Cnj1Hf/wPqvCGM0X5NsnBaISsSYsVja4EqjOZ5bEAhHl5V
+        LvBOyxKvVILbLvgpy
+X-Received: by 2002:a5d:4e0a:: with SMTP id p10mr21341446wrt.229.1576953027552;
+        Sat, 21 Dec 2019 10:30:27 -0800 (PST)
+X-Google-Smtp-Source: APXvYqzGlLM9f31hiLSCx0N98WyORMC0Vzoi16RohIYz2q7mo1sXxDmyhBVFjNvacB56DbGgcOu04Q==
+X-Received: by 2002:a5d:4e0a:: with SMTP id p10mr21341430wrt.229.1576953027310;
+        Sat, 21 Dec 2019 10:30:27 -0800 (PST)
+Received: from linux.home (2a01cb0585290000c08fcfaf4969c46f.ipv6.abo.wanadoo.fr. [2a01:cb05:8529:0:c08f:cfaf:4969:c46f])
+        by smtp.gmail.com with ESMTPSA id x18sm14241160wrr.75.2019.12.21.10.30.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 21 Dec 2019 10:30:26 -0800 (PST)
+Date:   Sat, 21 Dec 2019 19:30:24 +0100
+From:   Guillaume Nault <gnault@redhat.com>
+To:     Hangbin Liu <liuhangbin@gmail.com>
+Cc:     netdev@vger.kernel.org, Julian Anastasov <ja@ssi.bg>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        David Ahern <dsahern@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        David Miller <davem@davemloft.net>,
+        Pablo Neira <pablo@netfilter.org>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Alexey Kodanev <alexey.kodanev@oracle.com>
+Subject: Re: [PATCHv4 net 6/8] vti: do not confirm neighbor when do pmtu
+ update
+Message-ID: <20191221183024.GA7352@linux.home>
+References: <20191218115313.19352-1-liuhangbin@gmail.com>
+ <20191220032525.26909-1-liuhangbin@gmail.com>
+ <20191220032525.26909-7-liuhangbin@gmail.com>
 MIME-Version: 1.0
-References: <cover.1576896417.git.martin.varghese@nokia.com> <4cb29736c3fad6d660df246ef75623db0bd4a864.1576896417.git.martin.varghese@nokia.com>
-In-Reply-To: <4cb29736c3fad6d660df246ef75623db0bd4a864.1576896417.git.martin.varghese@nokia.com>
-From:   Pravin Shelar <pshelar@ovn.org>
-Date:   Sat, 21 Dec 2019 09:26:04 -0800
-X-Gmail-Original-Message-ID: <CAOrHB_AYHNp77eFAottf4YhhfjgYg4DVcCYYH+gXOmYSUE0tZg@mail.gmail.com>
-Message-ID: <CAOrHB_AYHNp77eFAottf4YhhfjgYg4DVcCYYH+gXOmYSUE0tZg@mail.gmail.com>
-Subject: Re: [PATCH net-next v5 3/3] openvswitch: New MPLS actions for layer 2 tunnelling
-To:     Martin Varghese <martinvarghesenokia@gmail.com>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>, scott.drennan@nokia.com,
-        Jiri Benc <jbenc@redhat.com>,
-        "Varghese, Martin (Nokia - IN/Bangalore)" <martin.varghese@nokia.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191220032525.26909-7-liuhangbin@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Dec 20, 2019 at 7:21 PM Martin Varghese
-<martinvarghesenokia@gmail.com> wrote:
->
-> From: Martin Varghese <martin.varghese@nokia.com>
->
-> The existing PUSH MPLS action inserts MPLS header between ethernet header
-> and the IP header. Though this behaviour is fine for L3 VPN where an IP
-> packet is encapsulated inside a MPLS tunnel, it does not suffice the L2
-> VPN (l2 tunnelling) requirements. In L2 VPN the MPLS header should
-> encapsulate the ethernet packet.
->
-> The new mpls action ADD_MPLS inserts MPLS header at the start of the
-> packet or at the start of the l3 header depending on the value of l3 tunnel
-> flag in the ADD_MPLS arguments.
->
-> POP_MPLS action is extended to support ethertype 0x6558.
->
-> Signed-off-by: Martin Varghese <martin.varghese@nokia.com>
-> ---
-> Changes in v2:
->    - PTAP_POP_MPLS action removed.
->    - Special handling for ethertype 0 added in PUSH_MPLS.
->    - Refactored push_mpls function to cater existing push_mpls and
->      ptap_push_mpls actions.
->    - mac len to specify the MPLS header location added in PTAP_PUSH_MPLS
->      arguments.
->
-> Changes in v3:
->    - Special handling for ethertype 0 removed.
->    - Added support for ether type 0x6558.
->    - Removed mac len from PTAP_PUSH_MPLS argument list
->    - used l2_tun flag to distinguish l2 and l3 tunnelling.
->    - Extended PTAP_PUSH_MPLS handling to cater PUSH_MPLS action also.
->
-> Changes in v4:
->    - Removed extra blank lines.
->    - Replaced bool l2_tun with u16 tun flags in
->      struct ovs_action_ptap_push_mpls.
->
-> Changes in v5:
->    - Renamed PTAP_PUSH_MPLS action to ADD_MPLS.
->    - Replaced l2 tunnel flag with l3 tunnel flag.
->    - In ADD_MPLS configuration, the code to check for l2 header is
->      changed from (mac_proto != MAC_PROTO_NONE) to
->      (mac_proto == MAC_PROTO_ETHERNET).
->
->  include/uapi/linux/openvswitch.h | 31 +++++++++++++++++++++++++++++++
->  net/openvswitch/actions.c        | 30 ++++++++++++++++++++++++------
->  net/openvswitch/flow_netlink.c   | 34 ++++++++++++++++++++++++++++++++++
->  3 files changed, 89 insertions(+), 6 deletions(-)
->
-Looks good to me.
-Acked-by: Pravin B Shelar <pshelar@ovn.org>
+On Fri, Dec 20, 2019 at 11:25:23AM +0800, Hangbin Liu wrote:
+> Although ip vti is not affected as __ip_rt_update_pmtu() does not call
+> dst_confirm_neigh(), we still not do neigh confirm to keep consistency with
+> IPv6 code.
+> 
+As with the GRE case, the problem is not the IP version used on the
+underlay. The problem happens when the tunnel transports IPv6 packets
+(which vti can do).
 
-Thanks.
+However, it's true that vti is immune to this problem, but that's for
+another reason: it's an IFF_NOARP interface (which means vti6 is immune
+too).
+
+Patch is good (we really have no reason to confirm neighbour here), but
+let's not have a misleading commit message.
+
+> v4: No change.
+> v3: Do not remove dst_confirm_neigh, but add a new bool parameter in
+>     dst_ops.update_pmtu to control whether we should do neighbor confirm.
+>     Also split the big patch to small ones for each area.
+> v2: Remove dst_confirm_neigh in __ip6_rt_update_pmtu.
+> 
+> Reviewed-by: Guillaume Nault <gnault@redhat.com>
+> Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
+> ---
+>  net/ipv4/ip_vti.c  | 2 +-
+>  net/ipv6/ip6_vti.c | 2 +-
+>  2 files changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/net/ipv4/ip_vti.c b/net/ipv4/ip_vti.c
+> index cfb025606793..fb9f6d60c27c 100644
+> --- a/net/ipv4/ip_vti.c
+> +++ b/net/ipv4/ip_vti.c
+> @@ -214,7 +214,7 @@ static netdev_tx_t vti_xmit(struct sk_buff *skb, struct net_device *dev,
+>  
+>  	mtu = dst_mtu(dst);
+>  	if (skb->len > mtu) {
+> -		skb_dst_update_pmtu(skb, mtu);
+> +		skb_dst_update_pmtu_no_confirm(skb, mtu);
+>  		if (skb->protocol == htons(ETH_P_IP)) {
+>  			icmp_send(skb, ICMP_DEST_UNREACH, ICMP_FRAG_NEEDED,
+>  				  htonl(mtu));
+> diff --git a/net/ipv6/ip6_vti.c b/net/ipv6/ip6_vti.c
+> index 024db17386d2..6f08b760c2a7 100644
+> --- a/net/ipv6/ip6_vti.c
+> +++ b/net/ipv6/ip6_vti.c
+> @@ -479,7 +479,7 @@ vti6_xmit(struct sk_buff *skb, struct net_device *dev, struct flowi *fl)
+>  
+>  	mtu = dst_mtu(dst);
+>  	if (skb->len > mtu) {
+> -		skb_dst_update_pmtu(skb, mtu);
+> +		skb_dst_update_pmtu_no_confirm(skb, mtu);
+>  
+>  		if (skb->protocol == htons(ETH_P_IPV6)) {
+>  			if (mtu < IPV6_MIN_MTU)
+> -- 
+> 2.19.2
+> 
+
