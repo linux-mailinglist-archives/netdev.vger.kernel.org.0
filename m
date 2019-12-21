@@ -2,90 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 13B3F128929
-	for <lists+netdev@lfdr.de>; Sat, 21 Dec 2019 14:15:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 75ADB128922
+	for <lists+netdev@lfdr.de>; Sat, 21 Dec 2019 14:12:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726940AbfLUNPz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 21 Dec 2019 08:15:55 -0500
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:45466 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726874AbfLUNPy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 21 Dec 2019 08:15:54 -0500
-Received: by mail-wr1-f66.google.com with SMTP id j42so11984002wrj.12
-        for <netdev@vger.kernel.org>; Sat, 21 Dec 2019 05:15:53 -0800 (PST)
+        id S1726783AbfLUNLy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 21 Dec 2019 08:11:54 -0500
+Received: from mail-io1-f53.google.com ([209.85.166.53]:46452 "EHLO
+        mail-io1-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726583AbfLUNLy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 21 Dec 2019 08:11:54 -0500
+Received: by mail-io1-f53.google.com with SMTP id t26so12111679ioi.13
+        for <netdev@vger.kernel.org>; Sat, 21 Dec 2019 05:11:54 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=to:cc:from:subject:message-id:date:user-agent:mime-version
-         :content-language:content-transfer-encoding;
-        bh=dY0UWbS5mIaCYPRBsmGmLWYRkCiCFQ1HsNkWnV0cAR4=;
-        b=AyeSZ2z6F9mgjWbYAuEDx7WNEi6wUEGMYfCU0Y4I9uw4XfudtTKS9EDK/u3LWQBu7x
-         VzfUu9yeIOmGfvmxwDnUEaRSSGkOeTzqe6hsMHsIXdVqqhkt7s6Sji7Hv3TD5iUPQk9H
-         bjRwx4tpCwL/cMzRnQuMkbHUappuPXieab7fIClOmX4uxxXpwV+yLfgORSnG0G1gOI1c
-         XIXQrqMNTvjlRZDw79wz9SbgQ394Eta4hLiHF87jtMtpml8BfVn7ygy0jUwnQNH1nW03
-         XHI15V+gWDWPAYoK7ugD9HGtWRKLRHjJbp2XhGRdYJ0LH28BwAEeaVmP8+9IMay9owk6
-         xLHA==
+        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:from:to:cc:references:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=rOpVuMy2RIQF9LbENi5T7IbwM6dhfF7zOJlxvEUj3Os=;
+        b=fvQ/ZVBAoaXdvLO2ql0Xcej6Va+za9C0ZrsMqtJO2TXvPszZmXa9Q15IeJvxwk6J31
+         D+9i/zAnsjmW+SI3G2qHKPAVsonCKGFTnsVD00Pf+0u9BVU2M56Vp4F4XHoLSUnm3Ya0
+         xeqyZLa3ep5m7LZoxmW6YkRshOkp1gWp7hMMVzE1b78akFFfNz/L0GCSt6ITsOY8kNmN
+         U0Um6QzmkwsoOdTAX6c++CmsCKXznBNKjG7I/Vp7XCA0okKdKTIMoeNd6/0lKG2AI4L+
+         7cla9e9lgb3jMfeZO0HGpjP3rndB90lW5wS2TfkmY7lnpCsnLRTN5P6rjPEPW6yg+KXE
+         PywA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
-         :mime-version:content-language:content-transfer-encoding;
-        bh=dY0UWbS5mIaCYPRBsmGmLWYRkCiCFQ1HsNkWnV0cAR4=;
-        b=j7TX99Cag1Kp+BXznyB2oLcNZHcFZGGMLehedJRa00gMHdL2CxKIPkOscH4Juglzlr
-         xI1oVCfFqE7UVHB4DyS33bzpGrodiyWqna+9LWaAcQHtnXIKaiCEozElKeC2Gfr2tKaE
-         SfeEu/XXMI8Dl6F3H45xkfR2eZIsx2dF897f+wPee6B2Eenrg1vVXbTedfK7n/TSv5fO
-         ahmkyX4CmRFrnc/90/D3GJv6Sj5/YHAcSGvM7cXGvvJ89sp0+E/ztqJBWcUIiyIlPpUg
-         joLIvsMv6SQHYyXVA8OLLLDyknqGW7uE0cb/bFsmR3Dg+fGiiQpBt8d+omO3d6joSi1v
-         5Eow==
-X-Gm-Message-State: APjAAAVfJL+mqDx7nnp1xMP6PHD2Ve2k5RPaDQXYTERTdjw8EwEU3rYP
-        oRM0mY9jFHgFjkiT3VjDG6cn/ncY
-X-Google-Smtp-Source: APXvYqwpIdlwicTKILBHtBeitOq7KDsYNnPzyU5j5dwG4u+K3DAPqYFXE7smJsYDcMUpw/tkqPiFTg==
-X-Received: by 2002:adf:ee88:: with SMTP id b8mr21914329wro.249.1576934153048;
-        Sat, 21 Dec 2019 05:15:53 -0800 (PST)
-Received: from ?IPv6:2003:ea:8f4a:6300:1d9b:6ccb:460c:7d9e? (p200300EA8F4A63001D9B6CCB460C7D9E.dip0.t-ipconnect.de. [2003:ea:8f4a:6300:1d9b:6ccb:460c:7d9e])
-        by smtp.googlemail.com with ESMTPSA id x132sm16923826wmg.0.2019.12.21.05.15.52
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 21 Dec 2019 05:15:52 -0800 (PST)
-To:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
-        David Miller <davem@davemloft.net>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: [PATCH net-next] r8169: remove MAC workaround in
- rtl8168e_2_hw_phy_config
-Message-ID: <7fada62e-0f26-bc72-4872-817d924baa9f@gmail.com>
-Date:   Sat, 21 Dec 2019 14:11:08 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.1
+        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=rOpVuMy2RIQF9LbENi5T7IbwM6dhfF7zOJlxvEUj3Os=;
+        b=PSTDbDxWGfGHBeg9woramwSQsqaEQtKJFek6Jy3v4O9f4bG+8RkeDH1HC8ooU1VyJt
+         1IXpsw/uLxtEvNkTZqWwk6bYTXoJlH28YVhXkIdGlQV8AYbXjGE9zNGH6lBMpqMEfSqU
+         z13wLQWdU7qwjc2zK6X4U0E3aec3n6YoAeLFTxR2dtoEyksiEvz0BU+YHZgcjVN8txYS
+         L9NFmiWSUEjn5F6mMEWAuc5l9Pf0q8TWSbn81PeVWlkVO7QVdIZtqkvjM2FdEqRWyYy6
+         vV/MW2KV/L6wPr8/vpjUWIHKJjreUm2/CLx0knqf2J8+qY97misrFM5M3lC9hmlLDdIe
+         e3tg==
+X-Gm-Message-State: APjAAAWRU7o4aM5yO3+UvpxZZdAQBGU4UdU8XlSxP+jzvTHrgX6QIjxq
+        nxFWQIPQd/LmSy3pb2Rb5gDtFWCIpsI=
+X-Google-Smtp-Source: APXvYqy6DhEAWrnBYqhXc5qQOMZLI2wITuLcamSBmX/H3aBgV3ZxbAnNRq7gh5LH9hDk0O74yRxwCw==
+X-Received: by 2002:a6b:6a02:: with SMTP id x2mr11864822iog.154.1576933913827;
+        Sat, 21 Dec 2019 05:11:53 -0800 (PST)
+Received: from [192.168.0.101] (198-84-204-252.cpe.teksavvy.com. [198.84.204.252])
+        by smtp.googlemail.com with ESMTPSA id o70sm6763061ilb.8.2019.12.21.05.11.52
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 21 Dec 2019 05:11:53 -0800 (PST)
+Subject: Re: issues with the list?
+From:   Jamal Hadi Salim <jhs@mojatatu.com>
+To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Cc:     David Miller <davem@davemloft.net>
+References: <f31715cd-ae38-b358-a507-22eeb78717a6@mojatatu.com>
+Message-ID: <3d1e7772-f91d-3323-fef9-e23278b4f7d3@mojatatu.com>
+Date:   Sat, 21 Dec 2019 08:11:50 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.3.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+In-Reply-To: <f31715cd-ae38-b358-a507-22eeb78717a6@mojatatu.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-GB
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Due to recent changes we don't need the call to rtl_rar_exgmac_set()
-and longer at this place. It's called from rtl_rar_set() which is
-called in rtl_init_mac_address() and rtl8169_resume().
+As it turns out I was unsubscribed (not by me).
+I had to resubscribe...
 
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
----
- drivers/net/ethernet/realtek/r8169_main.c | 3 ---
- 1 file changed, 3 deletions(-)
+cheers,
+jamal
 
-diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-index c845a5850..38a09b5ee 100644
---- a/drivers/net/ethernet/realtek/r8169_main.c
-+++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -2961,9 +2961,6 @@ static void rtl8168e_2_hw_phy_config(struct rtl8169_private *tp)
- 	rtl_writephy(tp, 0x1f, 0x0005);
- 	rtl_w0w1_phy(tp, 0x01, 0x0100, 0x0000);
- 	rtl_writephy(tp, 0x1f, 0x0000);
--
--	/* Broken BIOS workaround: feed GigaMAC registers with MAC address. */
--	rtl_rar_exgmac_set(tp, tp->dev->dev_addr);
- }
- 
- static void rtl8168f_hw_phy_config(struct rtl8169_private *tp)
--- 
-2.24.1
+On 2019-12-20 7:19 a.m., Jamal Hadi Salim wrote:
+> 
+> I just noticed i am not receiving netdev mail for at least a day.
+> Last email exchanges are related to Davide's patches. Is
+> anyone else experiencing the same issue? The effect is
+> like i have been unsubscribed.
+> 
+> cheers,
+> jamal
 
