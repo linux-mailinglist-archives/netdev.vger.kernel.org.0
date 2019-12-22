@@ -2,32 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B4EED128D4B
-	for <lists+netdev@lfdr.de>; Sun, 22 Dec 2019 10:44:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F1D2F128D4C
+	for <lists+netdev@lfdr.de>; Sun, 22 Dec 2019 10:48:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726057AbfLVJnQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 22 Dec 2019 04:43:16 -0500
-Received: from guitar.tcltek.co.il ([192.115.133.116]:37068 "EHLO
-        mx.tkos.co.il" rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725899AbfLVJnQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 22 Dec 2019 04:43:16 -0500
-Received: from tarshish (unknown [10.0.8.2])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx.tkos.co.il (Postfix) with ESMTPS id 852F544030A;
-        Sun, 22 Dec 2019 11:43:12 +0200 (IST)
-References: <dd029665fdacef34a17f4fb8c5db4584211eacf6.1576748902.git.baruch@tkos.co.il> <20191220142725.GB2458874@t480s.localdomain>
-User-agent: mu4e 1.2.0; emacs 26.1
-From:   Baruch Siach <baruch@tkos.co.il>
-To:     Vivien Didelot <vivien.didelot@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Marek =?utf-8?Q?Beh=C3=BAn?= <marek.behun@nic.cz>,
-        netdev@vger.kernel.org,
-        Denis Odintsov <d.odintsov@traviangames.com>
-Subject: Re: [PATCH] net: dsa: mv88e6xxx: force cmode write on 6141/6341
-In-reply-to: <20191220142725.GB2458874@t480s.localdomain>
-Date:   Sun, 22 Dec 2019 11:43:12 +0200
-Message-ID: <87r20w4rwv.fsf@tarshish>
+        id S1726166AbfLVJsN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 22 Dec 2019 04:48:13 -0500
+Received: from smtp-fw-6001.amazon.com ([52.95.48.154]:11136 "EHLO
+        smtp-fw-6001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725997AbfLVJsN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 22 Dec 2019 04:48:13 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1577008092; x=1608544092;
+  h=from:to:cc:subject:date:message-id:mime-version;
+  bh=0rtl6ep2RPr1saDQtLsZMU7/FksJX8TDRwiOCWM4dzk=;
+  b=VLgOfC5b0vo4WOt6TM6YlKaXVIGAu6ysg3wRYiDFWEK+MkyWEQfuJUhO
+   rtLhbGx52Yxwra4E9bzFqdJko7t1e6f9V4pDqKEg3XkR2g14Nwpd9AY6B
+   BGv4VEqmDBViBiC8rSWf5TFo3VLMzaglB7GJ+/kDToevuO1jes8imc3mq
+   Y=;
+IronPort-SDR: 04t+aq1hvUZAH+Jc9vlGE2zjdMJmzgzAZwEr1iv+3mGFTYHl/UXs2ATZ9ldXmwlt9UDgOC63A/
+ zy24bTlLMwhQ==
+X-IronPort-AV: E=Sophos;i="5.69,343,1571702400"; 
+   d="scan'208";a="10187511"
+Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-2c-87a10be6.us-west-2.amazon.com) ([10.43.8.6])
+  by smtp-border-fw-out-6001.iad6.amazon.com with ESMTP; 22 Dec 2019 09:48:11 +0000
+Received: from EX13MTAUEB002.ant.amazon.com (pdx4-ws-svc-p6-lb7-vlan2.pdx.amazon.com [10.170.41.162])
+        by email-inbound-relay-2c-87a10be6.us-west-2.amazon.com (Postfix) with ESMTPS id E0550A1DF1;
+        Sun, 22 Dec 2019 09:48:09 +0000 (UTC)
+Received: from EX13D08UEB003.ant.amazon.com (10.43.60.11) by
+ EX13MTAUEB002.ant.amazon.com (10.43.60.12) with Microsoft SMTP Server (TLS)
+ id 15.0.1367.3; Sun, 22 Dec 2019 09:48:08 +0000
+Received: from EX13MTAUEB002.ant.amazon.com (10.43.60.12) by
+ EX13D08UEB003.ant.amazon.com (10.43.60.11) with Microsoft SMTP Server (TLS)
+ id 15.0.1367.3; Sun, 22 Dec 2019 09:48:07 +0000
+Received: from dev-dsk-netanel-2a-7f44fd35.us-west-2.amazon.com (172.19.37.7)
+ by mail-relay.amazon.com (10.43.60.234) with Microsoft SMTP Server id
+ 15.0.1367.3 via Frontend Transport; Sun, 22 Dec 2019 09:48:07 +0000
+Received: by dev-dsk-netanel-2a-7f44fd35.us-west-2.amazon.com (Postfix, from userid 3129586)
+        id 8833BA7; Sun, 22 Dec 2019 09:48:07 +0000 (UTC)
+From:   Netanel Belgazal <netanel@amazon.com>
+To:     <davem@davemloft.net>, <netdev@vger.kernel.org>
+CC:     Netanel Belgazal <netanel@amazon.com>, <dwmw@amazon.com>,
+        <zorik@amazon.com>, <matua@amazon.com>, <saeedb@amazon.com>,
+        <msw@amazon.com>, <aliguori@amazon.com>, <nafea@amazon.com>,
+        <gtzalik@amazon.com>, <alisaidi@amazon.com>, <benh@amazon.com>,
+        <akiyano@amazon.com>
+Subject: [PATCH V1 net-next] MAINTAINERS: Add additional maintainers to ENA Ethernet driver
+Date:   Sun, 22 Dec 2019 09:47:59 +0000
+Message-ID: <20191222094759.17542-1-netanel@amazon.com>
+X-Mailer: git-send-email 2.17.2
 MIME-Version: 1.0
 Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
@@ -35,46 +58,24 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Vivien,
+Signed-off-by: Netanel Belgazal <netanel@amazon.com>
+---
+ MAINTAINERS | 2 ++
+ 1 file changed, 2 insertions(+)
 
-On Fri, Dec 20 2019, Vivien Didelot wrote:
-> On Thu, 19 Dec 2019 11:48:22 +0200, Baruch Siach <baruch@tkos.co.il> wrote:
->> mv88e6xxx_port_set_cmode() relies on cmode stored in struct
->> mv88e6xxx_port to skip cmode update when the requested value matches the
->> cached value. It turns out that mv88e6xxx_port_hidden_write() might
->> change the port cmode setting as a side effect, so we can't rely on the
->> cached value to determine that cmode update in not necessary.
->> 
->> Force cmode update in mv88e6341_port_set_cmode(), to make
->> serdes configuration work again. Other mv88e6xxx_port_set_cmode()
->> callers keep the current behaviour.
->> 
->> This fixes serdes configuration of the 6141 switch on SolidRun Clearfog
->> GT-8K.
->> 
->> Fixes: 7a3007d22e8 ("net: dsa: mv88e6xxx: fully support SERDES on Topaz family")
->> Reported-by: Denis Odintsov <d.odintsov@traviangames.com>
->> Signed-off-by: Baruch Siach <baruch@tkos.co.il>
->
-> Andrew,
->
-> We tend to avoid caching values in the mv88e6xxx driver the more we can and
-> query the hardware instead to avoid errors like this. We can consider calling a
-> new mv88e6xxx_port_get_cmode() helper when needed (e.g. in higher level callers
-> like mv88e6xxx_serdes_power() and mv88e6xxx_serdes_irq_thread_fn()) and pass
-> the value down to the routines previously accessing chip->ports[port].cmode,
-> as a new argument. I can prepare a patch doing this. What do you think?
-
-I'm not sure that cmode read would always give a valid value. On 6141 I
-see an invalid 0x6 value after mv88e6xxx_port_hidden_write().
-
-As I understand, this cache elimination work would target v5.6+. Would
-you ack this patch for v5.5-rc to fix currently broken setup?
-
-Thanks,
-baruch
-
+diff --git a/MAINTAINERS b/MAINTAINERS
+index a049abccaa26..bc3736ade88b 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -771,6 +771,8 @@ F:	drivers/thermal/thermal_mmio.c
+ 
+ AMAZON ETHERNET DRIVERS
+ M:	Netanel Belgazal <netanel@amazon.com>
++M:	Arthur Kiyanovski <akiyano@amazon.com>
++R:	Guy Tzalik <gtzalik@amazon.com>
+ R:	Saeed Bishara <saeedb@amazon.com>
+ R:	Zorik Machulsky <zorik@amazon.com>
+ L:	netdev@vger.kernel.org
 -- 
-     http://baruch.siach.name/blog/                  ~. .~   Tk Open Systems
-=}------------------------------------------------ooO--U--Ooo------------{=
-   - baruch@tkos.co.il - tel: +972.52.368.4656, http://www.tkos.co.il -
+2.17.2
+
