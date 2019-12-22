@@ -2,271 +2,214 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BDD4B12903C
-	for <lists+netdev@lfdr.de>; Mon, 23 Dec 2019 00:16:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0180512904F
+	for <lists+netdev@lfdr.de>; Mon, 23 Dec 2019 00:45:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726798AbfLVXO6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 22 Dec 2019 18:14:58 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:24006 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726663AbfLVXO5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 22 Dec 2019 18:14:57 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1577056495;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=oacqaIqkVqhvmYjRIHRg1RTNOe+DCAG/JEc5cTwcxTs=;
-        b=MrkelW/UFoVR1mtAZcBcrouylwdjT08LIPC24Xj7wQXlVFpdtd1Ql4P11z+jkQqF1bFTEN
-        8SJwLD9S3vjMMQzEwsDb7w1e2vgvNitTcoG0s35rHcZvqNrTxfZ7tB/uPcPtQckOEnhsqS
-        IjRpAqh+xPKta/BRhUwjUPtDRVfXuuc=
-Received: from mail-qt1-f199.google.com (mail-qt1-f199.google.com
- [209.85.160.199]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-286-j5jekIEnPL6l6HZpJOPZxg-1; Sun, 22 Dec 2019 18:14:53 -0500
-X-MC-Unique: j5jekIEnPL6l6HZpJOPZxg-1
-Received: by mail-qt1-f199.google.com with SMTP id e8so10139941qtg.9
-        for <netdev@vger.kernel.org>; Sun, 22 Dec 2019 15:14:53 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=oacqaIqkVqhvmYjRIHRg1RTNOe+DCAG/JEc5cTwcxTs=;
-        b=ncsiiD9LtL3B4SH+2YZ7dLL1L9ulUqFW8/5m49Qbb4Dc0b4LHiy8Ip2L8FwqiDLncz
-         otGs5tvcHY5ijdWPtsNQqdk9lxV0LU/L0qIb/XB3xRePP3aa5/1UmD1hMPPmRlqT1H14
-         rHd06GP6zeRbH0qHaPR8fla8QtfB5kgTXcIpc3j6hgmIado8nhkThD00/YNUco3xSbsv
-         CPXNCaYJjIEL36oNuyO95J6vEHogtW3Vv2hfYDq4ksdQ9zqjXD2OOKVUzwMVclU2nr2z
-         CL53d12gE973DlpO5AWgfOpkQCOOlC5+k6hwpQl38aLkMtGbZaEfJHq2m2LdYk9oD6By
-         ebXg==
-X-Gm-Message-State: APjAAAUqtXl9A4XI8zCTuKO1lkLopRqEah2RD53Gpm9C80G3cy7jvQJP
-        kO/yB61If4N/FyNYleHescdCQqpgbpOIeUjz/zJRwE0hnLAdhSJFlPwa4Lea3X0n4tOaOpqL74z
-        L6t9yBXk4WbhuEQmZ
-X-Received: by 2002:ac8:3946:: with SMTP id t6mr21041547qtb.278.1577056492099;
-        Sun, 22 Dec 2019 15:14:52 -0800 (PST)
-X-Google-Smtp-Source: APXvYqxs81afcv9O3ZCF9nqLaJj5XXKZoOJCYrgwMPzMSLIGEEKLPHmVO8N3ATJGdBb252/7DG1Ydw==
-X-Received: by 2002:ac8:3946:: with SMTP id t6mr21041528qtb.278.1577056491818;
-        Sun, 22 Dec 2019 15:14:51 -0800 (PST)
-Received: from redhat.com (bzq-79-181-48-215.red.bezeqint.net. [79.181.48.215])
-        by smtp.gmail.com with ESMTPSA id a144sm5339061qkc.30.2019.12.22.15.14.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 22 Dec 2019 15:14:51 -0800 (PST)
-Date:   Sun, 22 Dec 2019 18:14:45 -0500
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     Alistair Delva <adelva@google.com>,
-        Network Development <netdev@vger.kernel.org>,
-        stable <stable@vger.kernel.org>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S . Miller" <davem@davemloft.net>, kernel-team@android.com,
-        virtualization@lists.linux-foundation.org,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net] virtio-net: Skip set_features on non-cvq devices
-Message-ID: <20191222181341-mutt-send-email-mst@kernel.org>
-References: <20191220212207.76726-1-adelva@google.com>
- <CA+FuTSewMaRTe51jOJtD-VHcp4Ct+c=11-9SxenULHwQuokamw@mail.gmail.com>
- <20191222080754-mutt-send-email-mst@kernel.org>
- <CA+FuTSd4vd9wS0sHmAk=Ys2-OwZarAHT3TNFzg7c7+2Dsott=g@mail.gmail.com>
- <20191222095141-mutt-send-email-mst@kernel.org>
- <CA+FuTScTcMqU4dKXNKCbjYJ8A-eVGp5eDNihAkq106YKTvTqDw@mail.gmail.com>
- <20191222160850-mutt-send-email-mst@kernel.org>
- <CA+FuTSerJ1Xhsmo2bFvTDohzmLsY5foOartO8ZjZEaK1vTTOcw@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CA+FuTSerJ1Xhsmo2bFvTDohzmLsY5foOartO8ZjZEaK1vTTOcw@mail.gmail.com>
+        id S1726539AbfLVXpV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 22 Dec 2019 18:45:21 -0500
+Received: from mx2.suse.de ([195.135.220.15]:55136 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726057AbfLVXpV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 22 Dec 2019 18:45:21 -0500
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx2.suse.de (Postfix) with ESMTP id DF99FABEA;
+        Sun, 22 Dec 2019 23:45:17 +0000 (UTC)
+Received: by unicorn.suse.cz (Postfix, from userid 1000)
+        id 0BD5DE03A8; Mon, 23 Dec 2019 00:45:14 +0100 (CET)
+Message-Id: <cover.1577052887.git.mkubecek@suse.cz>
+From:   Michal Kubecek <mkubecek@suse.cz>
+Subject: [PATCH net-next v8 00/14] ethtool netlink interface, part 1
+To:     David Miller <davem@davemloft.net>, netdev@vger.kernel.org
+Cc:     Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Jiri Pirko <jiri@resnulli.us>, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        John Linville <linville@tuxdriver.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        linux-kernel@vger.kernel.org
+Date:   Mon, 23 Dec 2019 00:45:14 +0100 (CET)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Dec 22, 2019 at 04:44:31PM -0500, Willem de Bruijn wrote:
-> On Sun, Dec 22, 2019 at 4:12 PM Michael S. Tsirkin <mst@redhat.com> wrote:
-> >
-> > On Sun, Dec 22, 2019 at 10:54:23AM -0500, Willem de Bruijn wrote:
-> > > On Sun, Dec 22, 2019 at 9:57 AM Michael S. Tsirkin <mst@redhat.com> wrote:
-> > > >
-> > > > On Sun, Dec 22, 2019 at 09:21:43AM -0500, Willem de Bruijn wrote:
-> > > > > On Sun, Dec 22, 2019 at 8:11 AM Michael S. Tsirkin <mst@redhat.com> wrote:
-> > > > > >
-> > > > > > On Fri, Dec 20, 2019 at 10:08:41PM -0500, Willem de Bruijn wrote:
-> > > > > > > On Fri, Dec 20, 2019 at 4:22 PM Alistair Delva <adelva@google.com> wrote:
-> > > > > > > >
-> > > > > > > > On devices without control virtqueue support, such as the virtio_net
-> > > > > > > > implementation in crosvm[1], attempting to configure LRO will panic the
-> > > > > > > > kernel:
-> > > > > > > >
-> > > > > > > > kernel BUG at drivers/net/virtio_net.c:1591!
-> > > > > > > > invalid opcode: 0000 [#1] PREEMPT SMP PTI
-> > > > > > > > CPU: 1 PID: 483 Comm: Binder:330_1 Not tainted 5.4.5-01326-g19463e9acaac #1
-> > > > > > > > Hardware name: ChromiumOS crosvm, BIOS 0
-> > > > > > > > RIP: 0010:virtnet_send_command+0x15d/0x170 [virtio_net]
-> > > > > > > > Code: d8 00 00 00 80 78 02 00 0f 94 c0 65 48 8b 0c 25 28 00 00 00 48 3b 4c 24 70 75 11 48 8d 65 d8 5b 41 5c 41 5d 41 5e 41 5f 5d c3 <0f> 0b e8 ec a4 12 c8 66 90 66 2e 0f 1f 84 00 00 00 00 00 55 48 89
-> > > > > > > > RSP: 0018:ffffb97940e7bb50 EFLAGS: 00010246
-> > > > > > > > RAX: ffffffffc0596020 RBX: ffffa0e1fc8ea840 RCX: 0000000000000017
-> > > > > > > > RDX: ffffffffc0596110 RSI: 0000000000000011 RDI: 000000000000000d
-> > > > > > > > RBP: ffffb97940e7bbf8 R08: ffffa0e1fc8ea0b0 R09: ffffa0e1fc8ea0b0
-> > > > > > > > R10: ffffffffffffffff R11: ffffffffc0590940 R12: 0000000000000005
-> > > > > > > > R13: ffffa0e1ffad2c00 R14: ffffb97940e7bc08 R15: 0000000000000000
-> > > > > > > > FS:  0000000000000000(0000) GS:ffffa0e1fd100000(006b) knlGS:00000000e5ef7494
-> > > > > > > > CS:  0010 DS: 002b ES: 002b CR0: 0000000080050033
-> > > > > > > > CR2: 00000000e5eeb82c CR3: 0000000079b06001 CR4: 0000000000360ee0
-> > > > > > > > DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> > > > > > > > DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> > > > > > > > Call Trace:
-> > > > > > > >  ? preempt_count_add+0x58/0xb0
-> > > > > > > >  ? _raw_spin_lock_irqsave+0x36/0x70
-> > > > > > > >  ? _raw_spin_unlock_irqrestore+0x1a/0x40
-> > > > > > > >  ? __wake_up+0x70/0x190
-> > > > > > > >  virtnet_set_features+0x90/0xf0 [virtio_net]
-> > > > > > > >  __netdev_update_features+0x271/0x980
-> > > > > > > >  ? nlmsg_notify+0x5b/0xa0
-> > > > > > > >  dev_disable_lro+0x2b/0x190
-> > > > > > > >  ? inet_netconf_notify_devconf+0xe2/0x120
-> > > > > > > >  devinet_sysctl_forward+0x176/0x1e0
-> > > > > > > >  proc_sys_call_handler+0x1f0/0x250
-> > > > > > > >  proc_sys_write+0xf/0x20
-> > > > > > > >  __vfs_write+0x3e/0x190
-> > > > > > > >  ? __sb_start_write+0x6d/0xd0
-> > > > > > > >  vfs_write+0xd3/0x190
-> > > > > > > >  ksys_write+0x68/0xd0
-> > > > > > > >  __ia32_sys_write+0x14/0x20
-> > > > > > > >  do_fast_syscall_32+0x86/0xe0
-> > > > > > > >  entry_SYSENTER_compat+0x7c/0x8e
-> > > > > > > >
-> > > > > > > > This happens because virtio_set_features() does not check the presence
-> > > > > > > > of the control virtqueue feature, which is sanity checked by a BUG_ON
-> > > > > > > > in virtnet_send_command().
-> > > > > > > >
-> > > > > > > > Fix this by skipping any feature processing if the control virtqueue is
-> > > > > > > > missing. This should be OK for any future feature that is added, as
-> > > > > > > > presumably all of them would require control virtqueue support to notify
-> > > > > > > > the endpoint that offload etc. should begin.
-> > > > > > > >
-> > > > > > > > [1] https://chromium.googlesource.com/chromiumos/platform/crosvm/
-> > > > > > > >
-> > > > > > > > Fixes: a02e8964eaf9 ("virtio-net: ethtool configurable LRO")
-> > > > > > > > Cc: stable@vger.kernel.org [4.20+]
-> > > > > > > > Cc: Michael S. Tsirkin <mst@redhat.com>
-> > > > > > > > Cc: Jason Wang <jasowang@redhat.com>
-> > > > > > > > Cc: David S. Miller <davem@davemloft.net>
-> > > > > > > > Cc: kernel-team@android.com
-> > > > > > > > Cc: virtualization@lists.linux-foundation.org
-> > > > > > > > Cc: linux-kernel@vger.kernel.org
-> > > > > > > > Signed-off-by: Alistair Delva <adelva@google.com>
-> > > > > > >
-> > > > > > > Thanks for debugging this, Alistair.
-> > > > > > >
-> > > > > > > > ---
-> > > > > > > >  drivers/net/virtio_net.c | 3 +++
-> > > > > > > >  1 file changed, 3 insertions(+)
-> > > > > > > >
-> > > > > > > > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> > > > > > > > index 4d7d5434cc5d..709bcd34e485 100644
-> > > > > > > > --- a/drivers/net/virtio_net.c
-> > > > > > > > +++ b/drivers/net/virtio_net.c
-> > > > > > > > @@ -2560,6 +2560,9 @@ static int virtnet_set_features(struct net_device *dev,
-> > > > > > > >         u64 offloads;
-> > > > > > > >         int err;
-> > > > > > > >
-> > > > > > > > +       if (!vi->has_cvq)
-> > > > > > > > +               return 0;
-> > > > > > > > +
-> > > > > > >
-> > > > > > > Instead of checking for this in virtnet_set_features, how about we
-> > > > > > > make configurability contingent on cvq in virtnet_probe:
-> > > > > > >
-> > > > > > > -       if (virtio_has_feature(vdev, VIRTIO_NET_F_CTRL_GUEST_OFFLOADS))
-> > > > > > > +       if (virtio_has_feature(vdev, VIRTIO_NET_F_CTRL_GUEST_OFFLOADS) &&
-> > > > > > > +           virtio_has_feature(vdev, VIRTIO_NET_F_CTRL_VQ))
-> > > > > > >                 dev->hw_features |= NETIF_F_LRO;
-> > > > > > >
-> > > > > > > Based on this logic a little below in the same function
-> > > > > > >
-> > > > > > >         if (virtio_has_feature(vdev, VIRTIO_NET_F_CTRL_VQ))
-> > > > > > >                 vi->has_cvq = true;
-> > > > > >
-> > > > > >
-> > > > > > This would be a regression on old hypervisors which didn't have
-> > > > > > CTL VQ - suddenly they will lose offloads.
-> > > > >
-> > > > > dev->features still correctly displays whether offloads are enabled.
-> > > > > Removing it from dev->hw_features just renders it non-configurable.
-> > > >
-> > > > Oh you are right. I confused it with dev->features.
-> > > >
-> > > > > Note that before the patch that is being fixed the offloads were
-> > > > > enabled, but ethtool would show them as off.
-> > > >
-> > > > So the bug is in spec, it should have said
-> > > > VIRTIO_NET_F_CTRL_GUEST_OFFLOADS depends on VIRTIO_NET_F_CTRL_VQ, but we
-> > > > missed that part. We can and I guess should add this as a recommendation
-> > > > but it's too late to make it a MUST.
-> > > >
-> > > > Meanwhile I would say it's cleanest to work around
-> > > > this in virtnet_validate by clearing VIRTIO_NET_F_CTRL_GUEST_OFFLOADS
-> > > > if VIRTIO_NET_F_CTRL_VQ is off, with a big comment explaining
-> > > > it's a spec bug.
-> > >
-> > > Wouldn't that cause precisely the regression you were concerned about?
-> >
-> > Not sure how do you mean.  VIRTIO_NET_F_CTRL_GUEST_OFFLOADS simply can't
-> > work without a ctrl vq. What's the point of keeping it on?
-> 
-> Ah, now I was mistaken. I thought that
-> 
->     dev->features |= NETIF_F_LRO
-> 
-> was also contingent on VIRTIO_NET_F_CTRL_GUEST_OFFLOADS. But that's
-> another (pair of) flag(s), of course
-> 
->         if (virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_TSO4) ||
->             virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_TSO6))
->                 dev->features |= NETIF_F_LRO;
-> 
-> I wonder if this bug is then also triggered when enabling XDP, through
-> virtnet_clear_guest_offloads. That predates LRO, so would deserve
-> another Fixes tag.
+This is first part of netlink based alternative userspace interface for
+ethtool. It aims to address some long known issues with the ioctl
+interface, mainly lack of extensibility, raciness, limited error reporting
+and absence of notifications. The goal is to allow userspace ethtool
+utility to provide all features it currently does but without using the
+ioctl interface. However, some features provided by ethtool ioctl API will
+be available through other netlink interfaces (rtnetlink, devlink) if it's
+more appropriate.
+
+The interface uses generic netlink family "ethtool" and provides multicast
+group "monitor" which is used for notifications. Documentation for the
+interface is in Documentation/networking/ethtool-netlink.rst file. The
+netlink interface is optional, it is built when CONFIG_ETHTOOL_NETLINK
+(bool) option is enabled.
+
+There are three types of request messages distinguished by suffix "_GET"
+(query for information), "_SET" (modify parameters) and "_ACT" (perform an
+action). Kernel reply messages have name with additional suffix "_REPLY"
+(e.g. ETHTOOL_MSG_SETTINGS_GET_REPLY). Most "_SET" and "_ACT" message types
+do not have matching reply type as only some of them need additional reply
+data beyond numeric error code and extack. Kernel also broadcasts
+notification messages ("_NTF" suffix) on changes.
+
+Basic concepts:
+
+- make extensions easier not only by allowing new attributes but also by
+  imposing as few artificial limits as possible, e.g. by using arbitrary
+  size bit sets for most bitmap attributes or by not using fixed size
+  strings
+- use extack for error reporting and warnings
+- send netlink notifications on changes (even if they were done using the
+  ioctl interface) and actions
+- avoid the racy read/modify/write cycle between kernel and userspace by
+  sending only attributes which userspace wants to change; there is still
+  a read/modify/write cycle between generic kernel code and ethtool_ops
+  handler in NIC driver but it is only in kernel and under RTNL lock
+- reduce the number of name lists that need to be kept in sync between
+  kernel and userspace (e.g. recognized link modes)
+- where feasible, allow dump requests to query specific information for all
+  network devices
+- as parsing and generating netlink messages is more complicated than
+  simply copying data structures between userspace API and ethtool_ops
+  handlers (which most ioctl commands do), split the code into multiple
+  files in net/ethtool directory; move net/core/ethtool.c also to this
+  directory and rename it to ioctl.c
+
+Main changes between v7 and v8:
+
+- preliminary patches sent as a separate series (already in net-next)
+- split notification related changes out of _SET patches
+- drop request specific flags from common header
+- use FLAG/flag rather than GFLAG/gflag for global flags (as there are
+  only global flags now)
+- allow device names up to ALTIFNAMSIZ characters
+- rename ETHTOOL_A_BITSET_LIST to ETHTOOL_A_BITSET_NOMASK
+- rename ETHTOOL_A_BIT{,S}_* to ETHTOOL_A_BITSET_BIT{,S}_*
+- use standard bitset helpers for link modes (rather than in-place
+  conversion)
+- use "default" rather than "standard" for unified _GET handlers
+- fixed 64-bit big endian bitset code
+
+Main changes between v6 and v7:
+
+- split complex messages into small single purpose ones (drop info and
+  request masks and one level of nesting)
+- separate request information and reply data into two structures
+- refactor bitset handling (no simultaneous u32/ulong handling but avoid
+  kmalloc() except for long bitmaps on 64-bit big endian architectures)
+- use only fixed size strings internally (will be replaced by char *
+  eventually but that will require rewriting also existing ioctl code)
+- rework ethnl_update_* helpers to return error code
+- rename request flag constants (to ETHTOOL_[GR]FLAG_ prefix)
+- convert documentation to rst
+
+Main changes between v5 and v6:
+
+- use ETHTOOL_MSG_ prefix for message types
+- replace ETHA_ prefix for netlink attributes by ETHTOOL_A_
+- replace ETH_x_IM_y for infomask bits by ETHTOOL_IM_x_y
+- split GET reply types from SET requests and notifications
+- split kernel and userspace message types into different enums
+- remove INFO_GET requests from submitted part
+- drop EVENT notifications (use rtnetlink and on-demand string set load)
+- reorganize patches to reduce the number of intermitent warnings
+- unify request/reply header and its processing
+- another nest around strings in a string set for consistency
+- more consistent identifier naming
+- coding style cleanup
+- get rid of some of the helpers
+- set bad attribute in extack where applicable
+- various bug fixes
+- improve documentation and code comments, more kerneldoc comments
+- more verbose commit messages
+
+Changes between v4 and v5:
+
+- do not panic on failed initialization, only WARN()
+
+Main changes between RFC v3 and v4:
+
+- use more kerneldoc style comments
+- strict attribute policy checking
+- use macros for tables of link mode names and parameters
+- provide permanent hardware address in rtnetlink
+- coding style cleanup
+- split too long patches, reorder
+- wrap more ETHA_SETTINGS_* attributes in nests
+- add also some SET_* implementation into submitted part
+
+Main changes between RFC v2 and RFC v3:
+
+- do not allow building as a module (no netdev notifiers needed)
+- drop some obsolete fields
+- add permanent hw address, timestamping and private flags support
+- rework bitset handling to get rid of variable length arrays
+- notify monitor on device renames
+- restructure GET_SETTINGS/SET_SETTINGS messages
+- split too long patches and submit only first part of the series
+
+Main changes between RFC v1 and RFC v2:
+
+- support dumps for all "get" requests
+- provide notifications for changes related to supported request types
+- support getting string sets (both global and per device)
+- support getting/setting device features
+- get rid of family specific header, everything passed as attributes
+- split netlink code into multiple files in net/ethtool/ directory
 
 
-Are you sure? I thought LRO has been there before xdp...
+Michal Kubecek (14):
+  ethtool: introduce ethtool netlink interface
+  ethtool: helper functions for netlink interface
+  ethtool: netlink bitset handling
+  ethtool: support for netlink notifications
+  ethtool: default handlers for GET requests
+  ethtool: provide string sets with STRSET_GET request
+  ethtool: provide link settings with LINKINFO_GET request
+  ethtool: set link settings with LINKINFO_SET request
+  ethtool: add default notification handler
+  ethtool: add LINKINFO_NTF notification
+  ethtool: provide link mode information with LINKMODES_GET request
+  ethtool: set link modes related data with LINKMODES_SET request
+  ethtool: add LINKMODES_NTF notification
+  ethtool: provide link state with LINKSTATE_GET request
 
-> 
-> > > Workloads may now depend on LRO for cycle efficiency. Reverting to
-> > > behavior before this patch (though now displaying the offload state
-> > > correctly) is more conservative in that regard.
-> >
-> > Do you see a problem with the following (untested):
-> >
-> > Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-> >
-> >
-> > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> > index 4d7d5434cc5d..7b8805b47f0d 100644
-> > --- a/drivers/net/virtio_net.c
-> > +++ b/drivers/net/virtio_net.c
-> > @@ -2971,6 +2971,15 @@ static int virtnet_validate(struct virtio_device *vdev)
-> >         if (!virtnet_validate_features(vdev))
-> >                 return -EINVAL;
-> >
-> > +       /* VIRTIO_NET_F_CTRL_GUEST_OFFLOADS does not work without
-> > +        * VIRTIO_NET_F_CTRL_VQ. Unfortunately spec forgot to
-> > +        * specify that VIRTIO_NET_F_CTRL_GUEST_OFFLOADS depends
-> > +        * on VIRTIO_NET_F_CTRL_VQ so devices can set the later but
-> > +        * not the former.
-> > +        */
-> > +       if (!virtio_has_feature(vdev, VIRTIO_NET_F_CTRL_VQ))
-> > +                       __virtio_clear_bit(vdev, VIRTIO_NET_F_CTRL_GUEST_OFFLOADS);
-> > +
-> >         if (virtio_has_feature(vdev, VIRTIO_NET_F_MTU)) {
-> >                 int mtu = virtio_cread16(vdev,
-> >                                          offsetof(struct virtio_net_config,
-> >
-> 
-> Looks good to me!
-
-Alstair could you pls try this patch and report?
-
-Thanks!
+ Documentation/networking/ethtool-netlink.rst | 510 +++++++++++++
+ include/linux/ethtool_netlink.h              |  17 +
+ include/linux/netdevice.h                    |   9 +
+ include/uapi/linux/ethtool.h                 |   3 +
+ include/uapi/linux/ethtool_netlink.h         | 204 +++++
+ net/Kconfig                                  |   8 +
+ net/ethtool/Makefile                         |   7 +-
+ net/ethtool/bitset.c                         | 735 +++++++++++++++++++
+ net/ethtool/bitset.h                         |  28 +
+ net/ethtool/common.c                         |  56 ++
+ net/ethtool/common.h                         |   7 +
+ net/ethtool/ioctl.c                          |  72 +-
+ net/ethtool/linkinfo.c                       | 167 +++++
+ net/ethtool/linkmodes.c                      | 377 ++++++++++
+ net/ethtool/linkstate.c                      |  74 ++
+ net/ethtool/netlink.c                        | 687 +++++++++++++++++
+ net/ethtool/netlink.h                        | 341 +++++++++
+ net/ethtool/strset.c                         | 425 +++++++++++
+ 18 files changed, 3672 insertions(+), 55 deletions(-)
+ create mode 100644 Documentation/networking/ethtool-netlink.rst
+ create mode 100644 include/linux/ethtool_netlink.h
+ create mode 100644 include/uapi/linux/ethtool_netlink.h
+ create mode 100644 net/ethtool/bitset.c
+ create mode 100644 net/ethtool/bitset.h
+ create mode 100644 net/ethtool/linkinfo.c
+ create mode 100644 net/ethtool/linkmodes.c
+ create mode 100644 net/ethtool/linkstate.c
+ create mode 100644 net/ethtool/netlink.c
+ create mode 100644 net/ethtool/netlink.h
+ create mode 100644 net/ethtool/strset.c
 
 -- 
-MST
+2.24.1
 
