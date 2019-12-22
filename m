@@ -2,62 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 181F0128D13
-	for <lists+netdev@lfdr.de>; Sun, 22 Dec 2019 06:48:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 73A97128D17
+	for <lists+netdev@lfdr.de>; Sun, 22 Dec 2019 07:13:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725971AbfLVFrc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 22 Dec 2019 00:47:32 -0500
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:44996 "EHLO
-        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725776AbfLVFrc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 22 Dec 2019 00:47:32 -0500
-Received: by mail-pg1-f195.google.com with SMTP id x7so7099393pgl.11;
-        Sat, 21 Dec 2019 21:47:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=XjcArXgAKvyfXDBzvMFPB+lHDAxL1AfHT3DO6M8M8pE=;
-        b=QbGggnc4rIBvP1w2ApBWds25yNBz7SrOcuLl9VlQJCYjcADux3y+UglVZooSW4SdPa
-         aASLnMYWp9ViF6BO87ILXkqQ31ecI/dJ95aVsHGvEf4an7NFGG9VRRWXv0GlSWwXiOhe
-         SEeX6HvJncwtqsBCqvOYraM0XN9E025eXKDhV8/HP/yceXDtqY/XfKq96TJsCB7wbQ9d
-         3bzPdDFtPFSX5gh70p2FbaXB1nYNmUvODQkfOB6Z5yltAub3uX+1v4SlAssElHprNXV+
-         JSJ6elEQfi+pGIitKDnzijKqhSpQRTpGbLIcWcwB+FnKXRmNQHosDOEAxyQ6CR3uP7/A
-         7aXQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=XjcArXgAKvyfXDBzvMFPB+lHDAxL1AfHT3DO6M8M8pE=;
-        b=IyxwoT9i00bVRfWcdNIlSZbr7HwA9l8iV74/6bxObFOkfZegRZ+TB8VyMWAQFNSrEt
-         gmwCnfWmYTnC5iA6+OSgmlQm9+F5ZR8c7/k4MHjOxx4MV+60tRaXskfC1wYSf50zH7mI
-         Dg4Ua3ARt9VIzqr3Ry1j5SSUzrF3jBDAyN+3m9kdsw5xIO2zwpzk6SrYxbqK4i1aOecm
-         FCoJDMkruyUapWbLj6ZVsvpm32aSdnJTbF783ZdNyKk7rqpMAOTT9pbb4EhGdsdHFCgA
-         8Rh24sV7a7eK3Sep/TxgqQC3MZiF4nmDti4TmrclaIkZ9A5TOMbK5mfibjChowl8HJ87
-         vKCQ==
-X-Gm-Message-State: APjAAAVhI2B88yfDOTg9UwP9P/2VwZjBmEzWbnHiDz315b77Z1hQ9x0K
-        3hKZIae3W7x385CfbQxBVHM=
-X-Google-Smtp-Source: APXvYqx/CXunbtTsMsCA0OTUahlAsoQ/vNvrN9YML3yeUrMBpoBnwEnYlPtdizk64BmU3JLJ3C6eAQ==
-X-Received: by 2002:a63:d017:: with SMTP id z23mr24720347pgf.110.1576993651284;
-        Sat, 21 Dec 2019 21:47:31 -0800 (PST)
-Received: from debian.net.fpt ([2405:4800:58f7:229b:e8c2:8912:129c:d0d])
-        by smtp.gmail.com with ESMTPSA id o2sm10880285pjo.26.2019.12.21.21.47.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 21 Dec 2019 21:47:30 -0800 (PST)
-From:   Phong Tran <tranmanphong@gmail.com>
-To:     syzbot+514595412b80dc817633@syzkaller.appspotmail.com,
-        davem@davemloft.net, gregkh@linuxfoundation.org, oneukum@suse.com
-Cc:     allison@lohutok.net, andreyknvl@google.com,
-        kstewart@linuxfoundation.org, linux-kernel@vger.kernel.org,
-        linux-usb@vger.kernel.org, netdev@vger.kernel.org,
-        swinslow@gmail.com, syzkaller-bugs@googlegroups.com,
-        tglx@linutronix.de, tranmanphong@gmail.com, zhang.run@zte.com.cn
-Subject: [PATCH] ax88172a: fix wrong reading MAC malicious device
-Date:   Sun, 22 Dec 2019 12:47:13 +0700
-Message-Id: <20191222054713.14887-1-tranmanphong@gmail.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <000000000000ab9d07059a410fae@google.com>
-References: <000000000000ab9d07059a410fae@google.com>
+        id S1725829AbfLVGKX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 22 Dec 2019 01:10:23 -0500
+Received: from mail.wilcox-tech.com ([45.32.83.9]:41172 "EHLO
+        mail.wilcox-tech.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725763AbfLVGKX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 22 Dec 2019 01:10:23 -0500
+X-Greylist: delayed 400 seconds by postgrey-1.27 at vger.kernel.org; Sun, 22 Dec 2019 01:10:23 EST
+Received: (qmail 5598 invoked from network); 22 Dec 2019 06:03:40 -0000
+Received: from localhost (HELO gwyn.foxkit.us) (awilcox@wilcox-tech.com@127.0.0.1)
+  by localhost with ESMTPA; 22 Dec 2019 06:03:40 -0000
+From:   "A. Wilcox" <AWilcox@Wilcox-Tech.com>
+To:     netdev@vger.kernel.org, linux-api@vger.kernel.org,
+        musl@lists.openwall.com
+Cc:     "A. Wilcox" <AWilcox@Wilcox-Tech.com>
+Subject: [PATCH] uapi: Prevent redefinition of struct iphdr
+Date:   Sun, 22 Dec 2019 00:02:27 -0600
+Message-Id: <20191222060227.7089-1-AWilcox@Wilcox-Tech.com>
+X-Mailer: git-send-email 2.22.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -65,37 +30,45 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Crash log KASAN: use-after-free Read in asix_suspend
+As with struct ethhdr, the musl libc provides its own definition of the
+iphdr struct.  This guard ensures software like net-tools builds correctly
+on the musl libc.
 
-https://syzkaller.appspot.com/text?tag=CrashLog&x=1330a2c6e00000
-(unnamed net_device) (uninitialized): Failed to read MAC address: 0
+The __UAPI_DEF_IPHDR definition is in ip.h itself to prevent the issue in
+commit da360299b673 ("uapi/if_ether.h: move __UAPI_DEF_ETHHDR libc define")
+from being seen here.
 
-asix_read_cmd() with ret = 0 but this is a error. Fix the checking
-return value condition.
-
-Reported-by: syzbot+514595412b80dc817633@syzkaller.appspotmail.com
-
-Tested by:
-https://groups.google.com/d/msg/syzkaller-bugs/0hHExZ030LI/yge-2Q_9BAAJ
-
-Signed-off-by: Phong Tran <tranmanphong@gmail.com>
+Signed-off-by: A. Wilcox <AWilcox@Wilcox-Tech.com>
 ---
- drivers/net/usb/ax88172a.c | 2 ++
- 1 file changed, 2 insertions(+)
+ include/uapi/linux/ip.h | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/drivers/net/usb/ax88172a.c b/drivers/net/usb/ax88172a.c
-index af3994e0853b..525900896ce0 100644
---- a/drivers/net/usb/ax88172a.c
-+++ b/drivers/net/usb/ax88172a.c
-@@ -197,6 +197,8 @@ static int ax88172a_bind(struct usbnet *dev, struct usb_interface *intf)
- 	/* Get the MAC address */
- 	ret = asix_read_cmd(dev, AX_CMD_READ_NODE_ID, 0, 0, ETH_ALEN, buf, 0);
- 	if (ret < ETH_ALEN) {
-+		if (ret >= 0)
-+			ret = -ENXIO;
- 		netdev_err(dev->net, "Failed to read MAC address: %d\n", ret);
- 		goto free;
- 	}
+diff --git a/include/uapi/linux/ip.h b/include/uapi/linux/ip.h
+index e42d13b55cf3..d34a0d295672 100644
+--- a/include/uapi/linux/ip.h
++++ b/include/uapi/linux/ip.h
+@@ -83,6 +83,13 @@
+ 
+ #define IPV4_BEET_PHMAXLEN 8
+ 
++/* Allow libcs to deactivate this - musl has its own copy in <netinet/ip.h> */
++
++#ifndef __UAPI_DEF_IPHDR
++#define __UAPI_DEF_IPHDR	1
++#endif
++
++#if __UAPI_DEF_IPHDR
+ struct iphdr {
+ #if defined(__LITTLE_ENDIAN_BITFIELD)
+ 	__u8	ihl:4,
+@@ -104,6 +111,7 @@ struct iphdr {
+ 	__be32	daddr;
+ 	/*The options start here. */
+ };
++#endif
+ 
+ 
+ struct ip_auth_hdr {
 -- 
-2.20.1
+2.22.1
 
