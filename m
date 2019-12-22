@@ -2,127 +2,182 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6793A128E00
-	for <lists+netdev@lfdr.de>; Sun, 22 Dec 2019 14:10:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1C59E128E82
+	for <lists+netdev@lfdr.de>; Sun, 22 Dec 2019 15:22:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725922AbfLVNKG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 22 Dec 2019 08:10:06 -0500
-Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:48928 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725840AbfLVNKF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 22 Dec 2019 08:10:05 -0500
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xBMD07X3019958;
-        Sun, 22 Dec 2019 05:10:03 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-type; s=pfpt0818;
- bh=yN0ZAeOuu1Xt4tClGthJl673x8/K2l39GZodWm88NBI=;
- b=IooU4YBn9Kp00olVSTgTNjGxUnZgNP43ZHrcWGB8A0U+iiCkdZYiyIq2/rFka4MrShY2
- XvHXUQ1XiFMtSGz/hXyJeMIrOLBMbcVtGsBtcm8loygdQgkxApVqBqublNitlNxmdwEh
- kNFsU4Dt9AIvhwM6xZ5tNq8apQmjmF1gH13QtYDUQccpUPwq3bRx8/QUCC3AElQz7qR0
- lFC7I2WwKUWU3Xsw6aT+55Y6sZapBWUJOn45I4S+JzFFsUmMXrARQuAMrBavlRFv4FQA
- bH75U6WCLuZws9ANuykpMtv+3H2uQy1MSoJ3cp5diWSQaXlhy4VXk/49wL04y5mtcSMt UQ== 
-Received: from sc-exch04.marvell.com ([199.233.58.184])
-        by mx0b-0016f401.pphosted.com with ESMTP id 2x1kssa69n-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Sun, 22 Dec 2019 05:10:03 -0800
-Received: from SC-EXCH01.marvell.com (10.93.176.81) by SC-EXCH04.marvell.com
- (10.93.176.84) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Sun, 22 Dec
- 2019 05:10:00 -0800
-Received: from maili.marvell.com (10.93.176.43) by SC-EXCH01.marvell.com
- (10.93.176.81) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Sun, 22 Dec 2019 05:10:00 -0800
-Received: from lb-tlvb-denis.il.qlogic.org (unknown [10.5.220.219])
-        by maili.marvell.com (Postfix) with ESMTP id BF8DA3F703F;
-        Sun, 22 Dec 2019 05:09:59 -0800 (PST)
-From:   Denis Bolotin <dbolotin@marvell.com>
-To:     <davem@davemloft.net>, <netdev@vger.kernel.org>
-CC:     Denis Bolotin <dbolotin@marvell.com>,
-        Ariel Elior <aelior@marvell.com>
-Subject: [PATCH net-next] qede: Implement ndo_tx_timeout
-Date:   Sun, 22 Dec 2019 16:07:22 +0200
-Message-ID: <20191222140722.32304-1-dbolotin@marvell.com>
-X-Mailer: git-send-email 2.14.3
+        id S1726190AbfLVOW1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 22 Dec 2019 09:22:27 -0500
+Received: from mail-yb1-f196.google.com ([209.85.219.196]:41443 "EHLO
+        mail-yb1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726057AbfLVOWZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 22 Dec 2019 09:22:25 -0500
+Received: by mail-yb1-f196.google.com with SMTP id b145so6102891yba.8
+        for <netdev@vger.kernel.org>; Sun, 22 Dec 2019 06:22:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=THlA5NTI//lyv3s+FDTGj24TVhpc+hcbOPPNoSPH/Lk=;
+        b=snZO3dXqyqSCfewSRq7k/W6Hof51qOQGHUhEr6BLG1eluc8fcNpJM9hx9e9/dIA4+J
+         1ir1E4CAapLT7ILyy9d6nzvJ0uXzOp6r3eSK5YmS3z2fkT6bTWDoNy3yFj0G3M8pUa9g
+         EP67rPa+PVNAjksE6j4THtMGTTHecod6rSf58ABnZvzvTklG6lMb8KAUojMKbmKMyKt6
+         UXHJsily4aV7pneanM3ywb/SaToB8htimqDPpkuDB8HQB5p5wZAyG9+rQ2CMOFjAFlCw
+         xg+FiHLOYmqVNXVO3a6deF9/Tyx6/vZU/NXurFKlPCvjXtB8FLX/nn4//LFYBQAOQPcG
+         oe4g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=THlA5NTI//lyv3s+FDTGj24TVhpc+hcbOPPNoSPH/Lk=;
+        b=NAWVNIceJEp2L+RBhLlAn32kdaxJjYQZOGVfSpoE7AlqZi+af6YoAoGJW8dTV3750W
+         efXACPpKRivhN2xLXHKIRJuohuNwxC0P9OTitLprcJL7gLgRWOKRPkoQ1Y8Fx9WiFWR1
+         s3MwDtFpe9Qwh2LowBARXLv6KLaMIoCD2jIYcV9gLrXbPfs0jLLN9r/nlD4Iub9ecW+Q
+         3y+u79uqraGShkv6UutNdLJaOM4Q5G8gPM/vOYWPMXF5Z/Yxkvc5bXuVb/E9tgz3u3Ru
+         MhijKl5UfhL5npnUxijU14NpKdm6+64OMPiYC/Id1P2l0UH43+VHboE1B5CAKioq6w2b
+         Xdqg==
+X-Gm-Message-State: APjAAAX9k0EP5zwNcvob5mH2Vf+wH3NP6xOgUcqUALZXgc0Jtr17QaM7
+        z2uhJ7cItZIrp1GR6SSoXuvZcfI3
+X-Google-Smtp-Source: APXvYqxSMvs5+r419T6DknEWVaDM2jNe3IxWRxkE2Sf2POtOYiIAUJGhii1mIW01DhXPFh7Iy9JQ6g==
+X-Received: by 2002:a25:805:: with SMTP id 5mr17866401ybi.294.1577024543123;
+        Sun, 22 Dec 2019 06:22:23 -0800 (PST)
+Received: from mail-yw1-f44.google.com (mail-yw1-f44.google.com. [209.85.161.44])
+        by smtp.gmail.com with ESMTPSA id q16sm6680513ywa.110.2019.12.22.06.22.20
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 22 Dec 2019 06:22:21 -0800 (PST)
+Received: by mail-yw1-f44.google.com with SMTP id i190so6165747ywc.2
+        for <netdev@vger.kernel.org>; Sun, 22 Dec 2019 06:22:20 -0800 (PST)
+X-Received: by 2002:a0d:e886:: with SMTP id r128mr18295532ywe.357.1577024540362;
+ Sun, 22 Dec 2019 06:22:20 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
- definitions=2019-12-22_01:2019-12-17,2019-12-21 signatures=0
+References: <20191220212207.76726-1-adelva@google.com> <CA+FuTSewMaRTe51jOJtD-VHcp4Ct+c=11-9SxenULHwQuokamw@mail.gmail.com>
+ <20191222080754-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20191222080754-mutt-send-email-mst@kernel.org>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Sun, 22 Dec 2019 09:21:43 -0500
+X-Gmail-Original-Message-ID: <CA+FuTSd4vd9wS0sHmAk=Ys2-OwZarAHT3TNFzg7c7+2Dsott=g@mail.gmail.com>
+Message-ID: <CA+FuTSd4vd9wS0sHmAk=Ys2-OwZarAHT3TNFzg7c7+2Dsott=g@mail.gmail.com>
+Subject: Re: [PATCH net] virtio-net: Skip set_features on non-cvq devices
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        Alistair Delva <adelva@google.com>,
+        Network Development <netdev@vger.kernel.org>,
+        stable <stable@vger.kernel.org>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S . Miller" <davem@davemloft.net>, kernel-team@android.com,
+        virtualization@lists.linux-foundation.org,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Disable carrier and print TX queue info on TX timeout.
+On Sun, Dec 22, 2019 at 8:11 AM Michael S. Tsirkin <mst@redhat.com> wrote:
+>
+> On Fri, Dec 20, 2019 at 10:08:41PM -0500, Willem de Bruijn wrote:
+> > On Fri, Dec 20, 2019 at 4:22 PM Alistair Delva <adelva@google.com> wrote:
+> > >
+> > > On devices without control virtqueue support, such as the virtio_net
+> > > implementation in crosvm[1], attempting to configure LRO will panic the
+> > > kernel:
+> > >
+> > > kernel BUG at drivers/net/virtio_net.c:1591!
+> > > invalid opcode: 0000 [#1] PREEMPT SMP PTI
+> > > CPU: 1 PID: 483 Comm: Binder:330_1 Not tainted 5.4.5-01326-g19463e9acaac #1
+> > > Hardware name: ChromiumOS crosvm, BIOS 0
+> > > RIP: 0010:virtnet_send_command+0x15d/0x170 [virtio_net]
+> > > Code: d8 00 00 00 80 78 02 00 0f 94 c0 65 48 8b 0c 25 28 00 00 00 48 3b 4c 24 70 75 11 48 8d 65 d8 5b 41 5c 41 5d 41 5e 41 5f 5d c3 <0f> 0b e8 ec a4 12 c8 66 90 66 2e 0f 1f 84 00 00 00 00 00 55 48 89
+> > > RSP: 0018:ffffb97940e7bb50 EFLAGS: 00010246
+> > > RAX: ffffffffc0596020 RBX: ffffa0e1fc8ea840 RCX: 0000000000000017
+> > > RDX: ffffffffc0596110 RSI: 0000000000000011 RDI: 000000000000000d
+> > > RBP: ffffb97940e7bbf8 R08: ffffa0e1fc8ea0b0 R09: ffffa0e1fc8ea0b0
+> > > R10: ffffffffffffffff R11: ffffffffc0590940 R12: 0000000000000005
+> > > R13: ffffa0e1ffad2c00 R14: ffffb97940e7bc08 R15: 0000000000000000
+> > > FS:  0000000000000000(0000) GS:ffffa0e1fd100000(006b) knlGS:00000000e5ef7494
+> > > CS:  0010 DS: 002b ES: 002b CR0: 0000000080050033
+> > > CR2: 00000000e5eeb82c CR3: 0000000079b06001 CR4: 0000000000360ee0
+> > > DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> > > DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> > > Call Trace:
+> > >  ? preempt_count_add+0x58/0xb0
+> > >  ? _raw_spin_lock_irqsave+0x36/0x70
+> > >  ? _raw_spin_unlock_irqrestore+0x1a/0x40
+> > >  ? __wake_up+0x70/0x190
+> > >  virtnet_set_features+0x90/0xf0 [virtio_net]
+> > >  __netdev_update_features+0x271/0x980
+> > >  ? nlmsg_notify+0x5b/0xa0
+> > >  dev_disable_lro+0x2b/0x190
+> > >  ? inet_netconf_notify_devconf+0xe2/0x120
+> > >  devinet_sysctl_forward+0x176/0x1e0
+> > >  proc_sys_call_handler+0x1f0/0x250
+> > >  proc_sys_write+0xf/0x20
+> > >  __vfs_write+0x3e/0x190
+> > >  ? __sb_start_write+0x6d/0xd0
+> > >  vfs_write+0xd3/0x190
+> > >  ksys_write+0x68/0xd0
+> > >  __ia32_sys_write+0x14/0x20
+> > >  do_fast_syscall_32+0x86/0xe0
+> > >  entry_SYSENTER_compat+0x7c/0x8e
+> > >
+> > > This happens because virtio_set_features() does not check the presence
+> > > of the control virtqueue feature, which is sanity checked by a BUG_ON
+> > > in virtnet_send_command().
+> > >
+> > > Fix this by skipping any feature processing if the control virtqueue is
+> > > missing. This should be OK for any future feature that is added, as
+> > > presumably all of them would require control virtqueue support to notify
+> > > the endpoint that offload etc. should begin.
+> > >
+> > > [1] https://chromium.googlesource.com/chromiumos/platform/crosvm/
+> > >
+> > > Fixes: a02e8964eaf9 ("virtio-net: ethtool configurable LRO")
+> > > Cc: stable@vger.kernel.org [4.20+]
+> > > Cc: Michael S. Tsirkin <mst@redhat.com>
+> > > Cc: Jason Wang <jasowang@redhat.com>
+> > > Cc: David S. Miller <davem@davemloft.net>
+> > > Cc: kernel-team@android.com
+> > > Cc: virtualization@lists.linux-foundation.org
+> > > Cc: linux-kernel@vger.kernel.org
+> > > Signed-off-by: Alistair Delva <adelva@google.com>
+> >
+> > Thanks for debugging this, Alistair.
+> >
+> > > ---
+> > >  drivers/net/virtio_net.c | 3 +++
+> > >  1 file changed, 3 insertions(+)
+> > >
+> > > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> > > index 4d7d5434cc5d..709bcd34e485 100644
+> > > --- a/drivers/net/virtio_net.c
+> > > +++ b/drivers/net/virtio_net.c
+> > > @@ -2560,6 +2560,9 @@ static int virtnet_set_features(struct net_device *dev,
+> > >         u64 offloads;
+> > >         int err;
+> > >
+> > > +       if (!vi->has_cvq)
+> > > +               return 0;
+> > > +
+> >
+> > Instead of checking for this in virtnet_set_features, how about we
+> > make configurability contingent on cvq in virtnet_probe:
+> >
+> > -       if (virtio_has_feature(vdev, VIRTIO_NET_F_CTRL_GUEST_OFFLOADS))
+> > +       if (virtio_has_feature(vdev, VIRTIO_NET_F_CTRL_GUEST_OFFLOADS) &&
+> > +           virtio_has_feature(vdev, VIRTIO_NET_F_CTRL_VQ))
+> >                 dev->hw_features |= NETIF_F_LRO;
+> >
+> > Based on this logic a little below in the same function
+> >
+> >         if (virtio_has_feature(vdev, VIRTIO_NET_F_CTRL_VQ))
+> >                 vi->has_cvq = true;
+>
+>
+> This would be a regression on old hypervisors which didn't have
+> CTL VQ - suddenly they will lose offloads.
 
-Signed-off-by: Denis Bolotin <dbolotin@marvell.com>
-Signed-off-by: Ariel Elior <aelior@marvell.com>
----
- drivers/net/ethernet/qlogic/qede/qede.h      |  1 -
- drivers/net/ethernet/qlogic/qede/qede_main.c | 32 ++++++++++++++++++++++++++++
- 2 files changed, 32 insertions(+), 1 deletion(-)
+dev->features still correctly displays whether offloads are enabled.
+Removing it from dev->hw_features just renders it non-configurable.
 
-diff --git a/drivers/net/ethernet/qlogic/qede/qede.h b/drivers/net/ethernet/qlogic/qede/qede.h
-index c303a92..6837225 100644
---- a/drivers/net/ethernet/qlogic/qede/qede.h
-+++ b/drivers/net/ethernet/qlogic/qede/qede.h
-@@ -519,7 +519,6 @@ u16 qede_select_queue(struct net_device *dev, struct sk_buff *skb,
- netdev_features_t qede_features_check(struct sk_buff *skb,
- 				      struct net_device *dev,
- 				      netdev_features_t features);
--void qede_tx_log_print(struct qede_dev *edev, struct qede_fastpath *fp);
- int qede_alloc_rx_buffer(struct qede_rx_queue *rxq, bool allow_lazy);
- int qede_free_tx_pkt(struct qede_dev *edev,
- 		     struct qede_tx_queue *txq, int *len);
-diff --git a/drivers/net/ethernet/qlogic/qede/qede_main.c b/drivers/net/ethernet/qlogic/qede/qede_main.c
-index 481b096..b519688 100644
---- a/drivers/net/ethernet/qlogic/qede/qede_main.c
-+++ b/drivers/net/ethernet/qlogic/qede/qede_main.c
-@@ -527,6 +527,37 @@ static int qede_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
- 	return 0;
- }
- 
-+static void qede_tx_log_print(struct qede_dev *edev, struct qede_tx_queue *txq)
-+{
-+	DP_NOTICE(edev,
-+		  "Txq[%d]: FW cons [host] %04x, SW cons %04x, SW prod %04x [Jiffies %lu]\n",
-+		  txq->index, le16_to_cpu(*txq->hw_cons_ptr),
-+		  qed_chain_get_cons_idx(&txq->tx_pbl),
-+		  qed_chain_get_prod_idx(&txq->tx_pbl),
-+		  jiffies);
-+}
-+
-+static void qede_tx_timeout(struct net_device *dev, unsigned int txqueue)
-+{
-+	struct qede_dev *edev = netdev_priv(dev);
-+	struct qede_tx_queue *txq;
-+	int cos;
-+
-+	netif_carrier_off(dev);
-+	DP_NOTICE(edev, "TX timeout on queue %u!\n", txqueue);
-+
-+	if (!(edev->fp_array[txqueue].type & QEDE_FASTPATH_TX))
-+		return;
-+
-+	for_each_cos_in_txq(edev, cos) {
-+		txq = &edev->fp_array[txqueue].txq[cos];
-+
-+		if (qed_chain_get_cons_idx(&txq->tx_pbl) !=
-+		    qed_chain_get_prod_idx(&txq->tx_pbl))
-+			qede_tx_log_print(edev, txq);
-+	}
-+}
-+
- static int qede_setup_tc(struct net_device *ndev, u8 num_tc)
- {
- 	struct qede_dev *edev = netdev_priv(ndev);
-@@ -614,6 +645,7 @@ static int qede_setup_tc_block_cb(enum tc_setup_type type, void *type_data,
- 	.ndo_validate_addr = eth_validate_addr,
- 	.ndo_change_mtu = qede_change_mtu,
- 	.ndo_do_ioctl = qede_ioctl,
-+	.ndo_tx_timeout = qede_tx_timeout,
- #ifdef CONFIG_QED_SRIOV
- 	.ndo_set_vf_mac = qede_set_vf_mac,
- 	.ndo_set_vf_vlan = qede_set_vf_vlan,
--- 
-1.8.3.1
-
+Note that before the patch that is being fixed the offloads were
+enabled, but ethtool would show them as off.
