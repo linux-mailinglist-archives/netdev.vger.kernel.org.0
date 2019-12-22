@@ -2,148 +2,194 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A19ED128D91
-	for <lists+netdev@lfdr.de>; Sun, 22 Dec 2019 12:25:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 86E72128D92
+	for <lists+netdev@lfdr.de>; Sun, 22 Dec 2019 12:26:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726680AbfLVLZg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 22 Dec 2019 06:25:36 -0500
-Received: from mail-pj1-f68.google.com ([209.85.216.68]:35528 "EHLO
-        mail-pj1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726616AbfLVLZg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 22 Dec 2019 06:25:36 -0500
-Received: by mail-pj1-f68.google.com with SMTP id s7so6192023pjc.0
-        for <netdev@vger.kernel.org>; Sun, 22 Dec 2019 03:25:35 -0800 (PST)
+        id S1726716AbfLVL0W (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 22 Dec 2019 06:26:22 -0500
+Received: from mail-pf1-f195.google.com ([209.85.210.195]:39643 "EHLO
+        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726166AbfLVL0W (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 22 Dec 2019 06:26:22 -0500
+Received: by mail-pf1-f195.google.com with SMTP id q10so7720366pfs.6
+        for <netdev@vger.kernel.org>; Sun, 22 Dec 2019 03:26:22 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id;
-        bh=f85zuiU7heTyCOlzAIJ/zBASRW8Q92ZyTqi3NnxjndY=;
-        b=b8yfoJNcXiYriU3cD5n73EquGm0NKvR0NocOQlr2CVQxeBELyVHQuuSok4VeamMaZD
-         /vbyAu4d2NlWgACG03OLhhNCJmkfawMhaOyjybnrZ8zI1Uvg+tOaFsirOOPfv+ykkRsv
-         seC05D2YUrtG5m7oVGAZd4xDRP+U0XNgmvCITQZA4AcduGXWLi1N6dHa5llLJAxJOAXR
-         SaOIQkm6WAsN6SQz2xFEQDZxiHnLNUKLp3T/aCAXtfIjmpTI5tdgFALAudSvT7CdFZFh
-         EV0JuENxRoWvIlOqvs6upWXYe3YAyeLCKhI7f+kPdLb5tp1toGVPRvirQM6/DoxPBbdV
-         jdSg==
+        bh=jn68yGHhMRDz0iUlyMWkxF+0O5bK1yIcHYNGv2AQZQY=;
+        b=Xn/0rH1F+jaiYC58r6SgrzD7ISKhouelOwg3tVztrsgymOyLtbT1i+HhyKEG237WIG
+         /k+hgEud58yl6UmeLL1JZ2Su1tRD56YIEP6oFy9o5OHN0PsWOFnsp2ztISj5g6Cz/AW0
+         m708d0NthynXFaBnGfF+MO5QIFUrRlQW33iwb4BymYTa2jAJBigJuUz/sgGfA8WtM6QG
+         e0/s4KKXIv2NRNB7a7g7dxU/hwqwuuPMAK2Esh+eNBULET3xHTflT5dHOLEXy+lF8DLH
+         v0P2jFIAsspcRiJawMYJk9Zao++WB6mrx7EYb3ks7HswyslE7OqqVghXVzw/C/M4+J/t
+         4w5g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=f85zuiU7heTyCOlzAIJ/zBASRW8Q92ZyTqi3NnxjndY=;
-        b=hKVVdYlC4wVLTiCUXI38Jg4r3jAVMPZtbxG4MFuLZpnY+duBmxZfogBCZVCCVJofjk
-         dPtWD5ALnPUNnk7v+h3BrwrELB19ysLkfvTAm6oavz1Eeu2mXEamoGduyYC7dgH+red4
-         6whF4uryItq341BQ/dbpbe6eLu8qXnXUofdiTt66aUvswjgih7jZcd35mkcGdqUqWY9P
-         /bziqvJOqC7FJ/OsnGzZO66p8+PCUbsjbPV6CQnrLZz+8msh8VHQ0K42+gSsSVFLfAXf
-         GNF7WSsVj+w01To54HzWDOqQfxixBbkn1Ofmj7wskcn6rHZxpArMbLaYR8upWT9gAAma
-         H8Pg==
-X-Gm-Message-State: APjAAAWnKEIjHdq9ShaLUSMFeCf6oHvkXD/8T+pulaLPfhd0LmIOY6fH
-        WkWGzA2D2GU7Lx+wWhdsE9s=
-X-Google-Smtp-Source: APXvYqx3TtsjUtENybEWmpiFNEzP7uowSG/J22pg5/7YWEAiBSc95xr4djmLvndxU6L2ENGQFR2ctw==
-X-Received: by 2002:a17:90a:d78f:: with SMTP id z15mr28065149pju.36.1577013935382;
-        Sun, 22 Dec 2019 03:25:35 -0800 (PST)
+        bh=jn68yGHhMRDz0iUlyMWkxF+0O5bK1yIcHYNGv2AQZQY=;
+        b=oePDPB6gHjHbWY8m9d+QKfZGXO13ydE1G5EzaqU9MbBk0BuwrCLVkRJ3m+31CUicnw
+         hhdnJ+As3uXSpgXrbTP8Jp9SkFxwsRcuhBdZQcUv0rN1W8sT1QdcOk+6g0qHPdugcduz
+         JKcbq1C0ZjrR0B4gAJmvG/MWHmIGQ/jV4Q/1LWmrF5PbLW9QIvJfuALClE8jTJ3SHbUI
+         kksSA/0kfTVEJYMZzkZCGtqmysdFnpj6llWpL2Fyj3Nop7zqAdiuvC3kde/7xSu0tSLp
+         Xqi4hPU3fU71UNmXsH3TKpWfiuvjRJqYJhuSuQ8AObl5X3hxZfxYZnnWgbBSYxwvzpgO
+         Cmaw==
+X-Gm-Message-State: APjAAAX46FkaybZr1zKqHjWGjnAbiF37G6b5wJoWJSpf5EFLmeoZghUi
+        vRWF9/tmkUj5g5h77N8Fbdc=
+X-Google-Smtp-Source: APXvYqzX68qc5pVqRj1AryeLrXeWCcEuOx78rtS9FARdRqYwiQz6hNAT/1VX+fjVltRXfd+uKjl4rg==
+X-Received: by 2002:aa7:8695:: with SMTP id d21mr27127372pfo.199.1577013981956;
+        Sun, 22 Dec 2019 03:26:21 -0800 (PST)
 Received: from localhost.localdomain ([110.35.161.54])
-        by smtp.gmail.com with ESMTPSA id j38sm18216824pgj.27.2019.12.22.03.25.32
+        by smtp.gmail.com with ESMTPSA id r62sm20619838pfc.89.2019.12.22.03.26.19
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 22 Dec 2019 03:25:34 -0800 (PST)
+        Sun, 22 Dec 2019 03:26:21 -0800 (PST)
 From:   Taehee Yoo <ap420073@gmail.com>
-To:     davem@davemloft.net, arvid.brodin@alten.se,
-        jakub.kicinski@netronome.com, netdev@vger.kernel.org
+To:     davem@davemloft.net, jakub.kicinski@netronome.com,
+        netdev@vger.kernel.org
 Cc:     ap420073@gmail.com
-Subject: [PATCH net 1/6] hsr: avoid debugfs warning message when module is remove
-Date:   Sun, 22 Dec 2019 11:25:27 +0000
-Message-Id: <20191222112527.2990-1-ap420073@gmail.com>
+Subject: [PATCH net 2/6] hsr: fix error handling routine in hsr_dev_finalize()
+Date:   Sun, 22 Dec 2019 11:26:15 +0000
+Message-Id: <20191222112615.3083-1-ap420073@gmail.com>
 X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When hsr module is being removed, debugfs_remove() is called to remove
-both debugfs directory and file.
+hsr_dev_finalize() is called to create new hsr interface.
+There are some wrong error handling codes.
 
-When module is being removed, module state is changed to
-MODULE_STATE_GOING then exit() is called.
-At this moment, module couldn't be held so try_module_get()
-will be failed.
+1. wrong checking return value of debugfs_create_{dir/file}.
+These function doesn't return NULL. If error occurs in there,
+it returns error pointer.
+So, it should check error pointer instead of NULL.
 
-debugfs's open() callback tries to hold the module if .owner is existing.
-If it fails, warning message is printed.
+2. It doesn't unregister interface if it fails to setup hsr interface.
+If it fails to initialize hsr interface after register_netdevice(),
+it should call unregister_netdevice().
 
-CPU0				CPU1
-delete_module()
-    try_stop_module()
-    hsr_exit()			open() <-- WARNING
-        debugfs_remove()
+3. Ignore failure of creation of debugfs
+If creating of debugfs dir and file is failed, creating hsr interface
+will be failed. But debugfs doesn't affect actual logic of hsr module.
+So, ignoring this is more correct and this behavior is more general.
 
-In order to avoid the warning message, this patch makes hsr module does
-not set .owner. Unsetting .owner is safe because these are protected by
-inode_lock().
-
-Test commands:
-    #SHELL1
-    ip link add dummy0 type dummy
-    ip link add dummy1 type dummy
-    while :
-    do
-        ip link add hsr0 type hsr slave1 dummy0 slave2 dummy1
-	modprobe -rv hsr
-    done
-
-    #SHELL2
-    while :
-    do
-        cat /sys/kernel/debug/hsr0/node_table
-    done
-
-Splat looks like:
-[  101.223783][ T1271] ------------[ cut here ]------------
-[  101.230309][ T1271] debugfs file owner did not clean up at exit: node_table
-[  101.230380][ T1271] WARNING: CPU: 3 PID: 1271 at fs/debugfs/file.c:309 full_proxy_open+0x10f/0x650
-[  101.233153][ T1271] Modules linked in: hsr(-) dummy veth openvswitch nsh nf_conncount nf_nat nf_conntrack nf_d]
-[  101.237112][ T1271] CPU: 3 PID: 1271 Comm: cat Tainted: G        W         5.5.0-rc1+ #204
-[  101.238270][ T1271] Hardware name: innotek GmbH VirtualBox/VirtualBox, BIOS VirtualBox 12/01/2006
-[  101.240379][ T1271] RIP: 0010:full_proxy_open+0x10f/0x650
-[  101.241166][ T1271] Code: 48 c1 ea 03 80 3c 02 00 0f 85 c1 04 00 00 49 8b 3c 24 e8 04 86 7e ff 84 c0 75 2d 4c 8
-[  101.251985][ T1271] RSP: 0018:ffff8880ca22fa38 EFLAGS: 00010286
-[  101.273355][ T1271] RAX: dffffc0000000008 RBX: ffff8880cc6e6200 RCX: 0000000000000000
-[  101.274466][ T1271] RDX: 0000000000000000 RSI: 0000000000000006 RDI: ffff8880c4dd5c14
-[  101.275581][ T1271] RBP: 0000000000000000 R08: fffffbfff2922f5d R09: 0000000000000000
-[  101.276733][ T1271] R10: 0000000000000001 R11: 0000000000000000 R12: ffffffffc0551bc0
-[  101.277853][ T1271] R13: ffff8880c4059a48 R14: ffff8880be50a5e0 R15: ffffffff941adaa0
-[  101.278956][ T1271] FS:  00007f8871cda540(0000) GS:ffff8880da800000(0000) knlGS:0000000000000000
-[  101.280216][ T1271] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[  101.282832][ T1271] CR2: 00007f88717cfd10 CR3: 00000000b9440005 CR4: 00000000000606e0
-[  101.283974][ T1271] Call Trace:
-[  101.285328][ T1271]  do_dentry_open+0x63c/0xf50
-[  101.286077][ T1271]  ? open_proxy_open+0x270/0x270
-[  101.288271][ T1271]  ? __x64_sys_fchdir+0x180/0x180
-[  101.288987][ T1271]  ? inode_permission+0x65/0x390
-[  101.289682][ T1271]  path_openat+0x701/0x2810
-[  101.290294][ T1271]  ? path_lookupat+0x880/0x880
-[  101.290957][ T1271]  ? check_chain_key+0x236/0x5d0
-[  101.291676][ T1271]  ? __lock_acquire+0xdfe/0x3de0
-[  101.292358][ T1271]  ? sched_clock+0x5/0x10
-[  101.292962][ T1271]  ? sched_clock_cpu+0x18/0x170
-[  101.293644][ T1271]  ? find_held_lock+0x39/0x1d0
-[  101.305616][ T1271]  do_filp_open+0x17a/0x270
-[  101.306061][ T1271]  ? may_open_dev+0xc0/0xc0
-[ ... ]
-
-Fixes: fc4ecaeebd26 ("net: hsr: add debugfs support for display node list")
+Fixes: c5a759117210 ("net/hsr: Use list_head (and rcu) instead of array for slave devices.")
 Signed-off-by: Taehee Yoo <ap420073@gmail.com>
 ---
- net/hsr/hsr_debugfs.c | 1 -
- 1 file changed, 1 deletion(-)
+ net/hsr/hsr_debugfs.c | 15 +++++++--------
+ net/hsr/hsr_device.c  | 19 ++++++++++---------
+ net/hsr/hsr_main.h    | 11 ++++-------
+ 3 files changed, 21 insertions(+), 24 deletions(-)
 
 diff --git a/net/hsr/hsr_debugfs.c b/net/hsr/hsr_debugfs.c
-index 94447974a3c0..6135706f03d5 100644
+index 6135706f03d5..6618a9d8e58e 100644
 --- a/net/hsr/hsr_debugfs.c
 +++ b/net/hsr/hsr_debugfs.c
-@@ -64,7 +64,6 @@ hsr_node_table_open(struct inode *inode, struct file *filp)
+@@ -77,15 +77,14 @@ static const struct file_operations hsr_fops = {
+  * When debugfs is configured this routine sets up the node_table file per
+  * hsr device for dumping the node_table entries
+  */
+-int hsr_debugfs_init(struct hsr_priv *priv, struct net_device *hsr_dev)
++void hsr_debugfs_init(struct hsr_priv *priv, struct net_device *hsr_dev)
+ {
+-	int rc = -1;
+ 	struct dentry *de = NULL;
+ 
+ 	de = debugfs_create_dir(hsr_dev->name, NULL);
+-	if (!de) {
++	if (IS_ERR(de)) {
+ 		pr_err("Cannot create hsr debugfs root\n");
+-		return rc;
++		return;
+ 	}
+ 
+ 	priv->node_tbl_root = de;
+@@ -93,13 +92,13 @@ int hsr_debugfs_init(struct hsr_priv *priv, struct net_device *hsr_dev)
+ 	de = debugfs_create_file("node_table", S_IFREG | 0444,
+ 				 priv->node_tbl_root, priv,
+ 				 &hsr_fops);
+-	if (!de) {
++	if (IS_ERR(de)) {
+ 		pr_err("Cannot create hsr node_table directory\n");
+-		return rc;
++		debugfs_remove(priv->node_tbl_root);
++		priv->node_tbl_root = NULL;
++		return;
+ 	}
+ 	priv->node_tbl_file = de;
+-
+-	return 0;
  }
  
- static const struct file_operations hsr_fops = {
--	.owner	= THIS_MODULE,
- 	.open	= hsr_node_table_open,
- 	.read	= seq_read,
- 	.llseek = seq_lseek,
+ /* hsr_debugfs_term - Tear down debugfs intrastructure
+diff --git a/net/hsr/hsr_device.c b/net/hsr/hsr_device.c
+index b01e1bae4ddc..e73549075a03 100644
+--- a/net/hsr/hsr_device.c
++++ b/net/hsr/hsr_device.c
+@@ -477,30 +477,31 @@ int hsr_dev_finalize(struct net_device *hsr_dev, struct net_device *slave[2],
+ 
+ 	res = hsr_add_port(hsr, hsr_dev, HSR_PT_MASTER);
+ 	if (res)
+-		goto err_add_port;
++		goto err_add_master;
+ 
+ 	res = register_netdevice(hsr_dev);
+ 	if (res)
+-		goto fail;
++		goto err_unregister;
+ 
+ 	res = hsr_add_port(hsr, slave[0], HSR_PT_SLAVE_A);
+ 	if (res)
+-		goto fail;
++		goto err_add_slaves;
++
+ 	res = hsr_add_port(hsr, slave[1], HSR_PT_SLAVE_B);
+ 	if (res)
+-		goto fail;
++		goto err_add_slaves;
+ 
++	hsr_debugfs_init(hsr, hsr_dev);
+ 	mod_timer(&hsr->prune_timer, jiffies + msecs_to_jiffies(PRUNE_PERIOD));
+-	res = hsr_debugfs_init(hsr, hsr_dev);
+-	if (res)
+-		goto fail;
+ 
+ 	return 0;
+ 
+-fail:
++err_add_slaves:
++	unregister_netdevice(hsr_dev);
++err_unregister:
+ 	list_for_each_entry_safe(port, tmp, &hsr->ports, port_list)
+ 		hsr_del_port(port);
+-err_add_port:
++err_add_master:
+ 	hsr_del_self_node(&hsr->self_node_db);
+ 
+ 	return res;
+diff --git a/net/hsr/hsr_main.h b/net/hsr/hsr_main.h
+index 96fac696a1e1..acab9c353a49 100644
+--- a/net/hsr/hsr_main.h
++++ b/net/hsr/hsr_main.h
+@@ -184,15 +184,12 @@ static inline u16 hsr_get_skb_sequence_nr(struct sk_buff *skb)
+ }
+ 
+ #if IS_ENABLED(CONFIG_DEBUG_FS)
+-int hsr_debugfs_init(struct hsr_priv *priv, struct net_device *hsr_dev);
++void hsr_debugfs_init(struct hsr_priv *priv, struct net_device *hsr_dev);
+ void hsr_debugfs_term(struct hsr_priv *priv);
+ #else
+-static inline int hsr_debugfs_init(struct hsr_priv *priv,
+-				   struct net_device *hsr_dev)
+-{
+-	return 0;
+-}
+-
++static inline void hsr_debugfs_init(struct hsr_priv *priv,
++				    struct net_device *hsr_dev)
++{}
+ static inline void hsr_debugfs_term(struct hsr_priv *priv)
+ {}
+ #endif
 -- 
 2.17.1
 
