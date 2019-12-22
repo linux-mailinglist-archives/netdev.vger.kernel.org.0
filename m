@@ -2,80 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F1D2F128D4C
-	for <lists+netdev@lfdr.de>; Sun, 22 Dec 2019 10:48:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E78E128D90
+	for <lists+netdev@lfdr.de>; Sun, 22 Dec 2019 12:25:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726166AbfLVJsN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 22 Dec 2019 04:48:13 -0500
-Received: from smtp-fw-6001.amazon.com ([52.95.48.154]:11136 "EHLO
-        smtp-fw-6001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725997AbfLVJsN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 22 Dec 2019 04:48:13 -0500
+        id S1726664AbfLVLZT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 22 Dec 2019 06:25:19 -0500
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:35870 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726616AbfLVLZS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 22 Dec 2019 06:25:18 -0500
+Received: by mail-pf1-f193.google.com with SMTP id x184so7731819pfb.3
+        for <netdev@vger.kernel.org>; Sun, 22 Dec 2019 03:25:18 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1577008092; x=1608544092;
-  h=from:to:cc:subject:date:message-id:mime-version;
-  bh=0rtl6ep2RPr1saDQtLsZMU7/FksJX8TDRwiOCWM4dzk=;
-  b=VLgOfC5b0vo4WOt6TM6YlKaXVIGAu6ysg3wRYiDFWEK+MkyWEQfuJUhO
-   rtLhbGx52Yxwra4E9bzFqdJko7t1e6f9V4pDqKEg3XkR2g14Nwpd9AY6B
-   BGv4VEqmDBViBiC8rSWf5TFo3VLMzaglB7GJ+/kDToevuO1jes8imc3mq
-   Y=;
-IronPort-SDR: 04t+aq1hvUZAH+Jc9vlGE2zjdMJmzgzAZwEr1iv+3mGFTYHl/UXs2ATZ9ldXmwlt9UDgOC63A/
- zy24bTlLMwhQ==
-X-IronPort-AV: E=Sophos;i="5.69,343,1571702400"; 
-   d="scan'208";a="10187511"
-Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-2c-87a10be6.us-west-2.amazon.com) ([10.43.8.6])
-  by smtp-border-fw-out-6001.iad6.amazon.com with ESMTP; 22 Dec 2019 09:48:11 +0000
-Received: from EX13MTAUEB002.ant.amazon.com (pdx4-ws-svc-p6-lb7-vlan2.pdx.amazon.com [10.170.41.162])
-        by email-inbound-relay-2c-87a10be6.us-west-2.amazon.com (Postfix) with ESMTPS id E0550A1DF1;
-        Sun, 22 Dec 2019 09:48:09 +0000 (UTC)
-Received: from EX13D08UEB003.ant.amazon.com (10.43.60.11) by
- EX13MTAUEB002.ant.amazon.com (10.43.60.12) with Microsoft SMTP Server (TLS)
- id 15.0.1367.3; Sun, 22 Dec 2019 09:48:08 +0000
-Received: from EX13MTAUEB002.ant.amazon.com (10.43.60.12) by
- EX13D08UEB003.ant.amazon.com (10.43.60.11) with Microsoft SMTP Server (TLS)
- id 15.0.1367.3; Sun, 22 Dec 2019 09:48:07 +0000
-Received: from dev-dsk-netanel-2a-7f44fd35.us-west-2.amazon.com (172.19.37.7)
- by mail-relay.amazon.com (10.43.60.234) with Microsoft SMTP Server id
- 15.0.1367.3 via Frontend Transport; Sun, 22 Dec 2019 09:48:07 +0000
-Received: by dev-dsk-netanel-2a-7f44fd35.us-west-2.amazon.com (Postfix, from userid 3129586)
-        id 8833BA7; Sun, 22 Dec 2019 09:48:07 +0000 (UTC)
-From:   Netanel Belgazal <netanel@amazon.com>
-To:     <davem@davemloft.net>, <netdev@vger.kernel.org>
-CC:     Netanel Belgazal <netanel@amazon.com>, <dwmw@amazon.com>,
-        <zorik@amazon.com>, <matua@amazon.com>, <saeedb@amazon.com>,
-        <msw@amazon.com>, <aliguori@amazon.com>, <nafea@amazon.com>,
-        <gtzalik@amazon.com>, <alisaidi@amazon.com>, <benh@amazon.com>,
-        <akiyano@amazon.com>
-Subject: [PATCH V1 net-next] MAINTAINERS: Add additional maintainers to ENA Ethernet driver
-Date:   Sun, 22 Dec 2019 09:47:59 +0000
-Message-ID: <20191222094759.17542-1-netanel@amazon.com>
-X-Mailer: git-send-email 2.17.2
-MIME-Version: 1.0
-Content-Type: text/plain
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=tj0PUv3dvIdNOrGgmj5kPI4hutmid5dD4m/Z8s+z6dE=;
+        b=E+MzzF4fRS1ymePFpGTvqY9PKk1kW7lF+BRGzkYLe//13e2lvs+RhvqZmCeHoYcM27
+         Y0WNA/sIMNQDFW+NMZ3zsxxXQggEILHBAXv1c5eJrm9UWkg/ijHf3oo6vzVIeEJiXIOa
+         hpdOmDgX+WYXK1mXuJfukCr6tNB/icRwu28cg99oqUhP5CPIebyuJnncu+DRJ+aNNOCK
+         7NBR0GvOfT0PF48zbXpBRxp+p3F8Xz/3xqbVW2xeBQhiOWQxZuzaL6ysdTqP4Y1PEiwG
+         3bej3O3h9f1HMALnuhO0fH5k5H53Crq4EhYkguKteVUQQ0FBUQlyIMGfQQhFQCHKqu+c
+         CvEw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=tj0PUv3dvIdNOrGgmj5kPI4hutmid5dD4m/Z8s+z6dE=;
+        b=NjduPCe2eNwKuhQu+uS+5Z29frahkPczWyJh32GI+kOixLjacuej2UWzE0m/P4cLBs
+         a3x/TqImimIxdk7j5p61kOCNj4q5+J1yehD15w5oKpP+xuakFM5JK+kR/pUbUTrxx0M7
+         mhAaSPoOgpb7mQ0eTeSrDivPMNWMG4c+DuK9LNmGJNJlNSMkclx2LtYVbBFr56JfAs0/
+         HR+RZE3qsyd7+CQMP+ixqvRBAnZpQ8h9CnmvC9ni+YuzspQqqR3XwjbNXJmjXdPhHacs
+         NuqkVc8VwM4SP9+Qy9Nkp84LzmwWR9rsr2KcOt8n3f2zVh6HhfOCB+K5rfKZRh654YKg
+         RIEQ==
+X-Gm-Message-State: APjAAAXXTKbiFTFMAGvYdMYcgJN/DMAaZOk/kK+n9u6YvUiNUDUPuway
+        u8IxXjUbVIA3lEqkM5RrcS0=
+X-Google-Smtp-Source: APXvYqyiHqnG0ZPh3QNUhBGMkxyUnBBw1wmnayJ0msJsJrRrmGvyoon5eRKpubsSJXgrEDt4bVB2eQ==
+X-Received: by 2002:a62:1857:: with SMTP id 84mr27058682pfy.257.1577013917839;
+        Sun, 22 Dec 2019 03:25:17 -0800 (PST)
+Received: from localhost.localdomain ([110.35.161.54])
+        by smtp.gmail.com with ESMTPSA id e4sm9454632pfa.44.2019.12.22.03.25.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 22 Dec 2019 03:25:16 -0800 (PST)
+From:   Taehee Yoo <ap420073@gmail.com>
+To:     davem@davemloft.net, arvid.brodin@alten.se,
+        jakub.kicinski@netronome.com, netdev@vger.kernel.org
+Cc:     ap420073@gmail.com
+Subject: [PATCH net 0/6] hsr: fix several bugs in hsr module
+Date:   Sun, 22 Dec 2019 11:24:58 +0000
+Message-Id: <20191222112458.2859-1-ap420073@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Signed-off-by: Netanel Belgazal <netanel@amazon.com>
----
- MAINTAINERS | 2 ++
- 1 file changed, 2 insertions(+)
+1. The first patch fixes debugfs warning when it's opened when hsr module
+is being removed. debugfs file is opened, it tries to hold .owner module,
+but it would print warning messages if it couldn't hold .owner module.
+In order to avoid the warning message, this patch makes hsr module does
+not set .owner. Unsetting .owner is safe because these are protected by
+inode_lock().
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index a049abccaa26..bc3736ade88b 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -771,6 +771,8 @@ F:	drivers/thermal/thermal_mmio.c
- 
- AMAZON ETHERNET DRIVERS
- M:	Netanel Belgazal <netanel@amazon.com>
-+M:	Arthur Kiyanovski <akiyano@amazon.com>
-+R:	Guy Tzalik <gtzalik@amazon.com>
- R:	Saeed Bishara <saeedb@amazon.com>
- R:	Zorik Machulsky <zorik@amazon.com>
- L:	netdev@vger.kernel.org
+2. The second patch fixes wrong error handling of hsr_dev_finalize()
+a) hsr_dev_finalize() calls debugfs_create_{dir/file} to create debugfs.
+it checks NULL pointer but debugfs don't return NULL so it's wrong code.
+b) hsr_dev_finalize() calls register_netdevice(). so if it fails after
+register_netdevice(), it should call unregister_netdevice().
+But it doesn't.
+c) debugfs doesn't affect any actual logic of hsr module.
+So, the failure of creating of debugfs could be ignored.
+
+3. The third patch adds hsr root debugfs directory.
+When hsr interface is created, it creates debugfs directory in
+/sys/kernel/debug/<interface name>.
+It's a little bit faulty path because if an interface is the same with
+another directory name in the same path, it will fail. If hsr root
+directory is existing, the possibility of failure of creating debugfs
+file will be reduced.
+
+4. The fourth patch adds debugfs rename routine.
+debugfs directory name is the same with hsr interface name.
+So hsr interface name is changed, debugfs directory name should be
+changed too.
+
+5. The fifth patch fixes a race condition in node list add and del.
+hsr nodes are protected by RCU and there is no write side lock.
+But node insertions and deletions could be being operated concurrently.
+So write side locking is needed.
+
+6. The Sixth patch resets network header
+Tap routine is enabled, below message will be printed.
+
+[  175.852292][    C3] protocol 88fb is buggy, dev veth0
+
+hsr module doesn't set network header for supervision frame.
+But tap routine validates network header.
+If network header wasn't set, it resets and warns about it.
+
+Taehee Yoo (6):
+  hsr: avoid debugfs warning message when module is remove
+  hsr: fix error handling routine in hsr_dev_finalize()
+  hsr: add hsr root debugfs directory
+  hsr: rename debugfs file when interface name is changed
+  hsr: fix a race condition in node list insertion and deletion
+  hsr: reset network header when supervision frame is created
+
+ net/hsr/hsr_debugfs.c  | 52 +++++++++++++++++++++++-------
+ net/hsr/hsr_device.c   | 28 +++++++++-------
+ net/hsr/hsr_framereg.c | 73 ++++++++++++++++++++++++++----------------
+ net/hsr/hsr_framereg.h |  6 ++--
+ net/hsr/hsr_main.c     |  6 +++-
+ net/hsr/hsr_main.h     | 22 +++++++++----
+ net/hsr/hsr_netlink.c  |  1 +
+ 7 files changed, 125 insertions(+), 63 deletions(-)
+
 -- 
-2.17.2
+2.17.1
 
