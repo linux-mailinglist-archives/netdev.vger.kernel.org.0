@@ -2,24 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0180512904F
+	by mail.lfdr.de (Postfix) with ESMTP id E7D05129051
 	for <lists+netdev@lfdr.de>; Mon, 23 Dec 2019 00:45:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726539AbfLVXpV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 22 Dec 2019 18:45:21 -0500
-Received: from mx2.suse.de ([195.135.220.15]:55136 "EHLO mx2.suse.de"
+        id S1726663AbfLVXpX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 22 Dec 2019 18:45:23 -0500
+Received: from mx2.suse.de ([195.135.220.15]:55164 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726057AbfLVXpV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 22 Dec 2019 18:45:21 -0500
+        id S1726114AbfLVXpW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 22 Dec 2019 18:45:22 -0500
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id DF99FABEA;
-        Sun, 22 Dec 2019 23:45:17 +0000 (UTC)
+        by mx2.suse.de (Postfix) with ESMTP id 69C5DADAD;
+        Sun, 22 Dec 2019 23:45:19 +0000 (UTC)
 Received: by unicorn.suse.cz (Postfix, from userid 1000)
-        id 0BD5DE03A8; Mon, 23 Dec 2019 00:45:14 +0100 (CET)
-Message-Id: <cover.1577052887.git.mkubecek@suse.cz>
+        id 11089E03A8; Mon, 23 Dec 2019 00:45:19 +0100 (CET)
+Message-Id: <580d57d8cef89dd2a84d63f1a78a0d9a9b3d458f.1577052887.git.mkubecek@suse.cz>
+In-Reply-To: <cover.1577052887.git.mkubecek@suse.cz>
+References: <cover.1577052887.git.mkubecek@suse.cz>
 From:   Michal Kubecek <mkubecek@suse.cz>
-Subject: [PATCH net-next v8 00/14] ethtool netlink interface, part 1
+Subject: [PATCH net-next v8 01/14] ethtool: introduce ethtool netlink
+ interface
 To:     David Miller <davem@davemloft.net>, netdev@vger.kernel.org
 Cc:     Jakub Kicinski <jakub.kicinski@netronome.com>,
         Jiri Pirko <jiri@resnulli.us>, Andrew Lunn <andrew@lunn.ch>,
@@ -28,188 +31,399 @@ Cc:     Jakub Kicinski <jakub.kicinski@netronome.com>,
         Stephen Hemminger <stephen@networkplumber.org>,
         Johannes Berg <johannes@sipsolutions.net>,
         linux-kernel@vger.kernel.org
-Date:   Mon, 23 Dec 2019 00:45:14 +0100 (CET)
+Date:   Mon, 23 Dec 2019 00:45:19 +0100 (CET)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is first part of netlink based alternative userspace interface for
-ethtool. It aims to address some long known issues with the ioctl
-interface, mainly lack of extensibility, raciness, limited error reporting
-and absence of notifications. The goal is to allow userspace ethtool
-utility to provide all features it currently does but without using the
-ioctl interface. However, some features provided by ethtool ioctl API will
-be available through other netlink interfaces (rtnetlink, devlink) if it's
-more appropriate.
+Basic genetlink and init infrastructure for the netlink interface, register
+genetlink family "ethtool". Add CONFIG_ETHTOOL_NETLINK Kconfig option to
+make the build optional. Add initial overall interface description into
+Documentation/networking/ethtool-netlink.rst, further patches will add more
+detailed information.
 
-The interface uses generic netlink family "ethtool" and provides multicast
-group "monitor" which is used for notifications. Documentation for the
-interface is in Documentation/networking/ethtool-netlink.rst file. The
-netlink interface is optional, it is built when CONFIG_ETHTOOL_NETLINK
-(bool) option is enabled.
-
-There are three types of request messages distinguished by suffix "_GET"
-(query for information), "_SET" (modify parameters) and "_ACT" (perform an
-action). Kernel reply messages have name with additional suffix "_REPLY"
-(e.g. ETHTOOL_MSG_SETTINGS_GET_REPLY). Most "_SET" and "_ACT" message types
-do not have matching reply type as only some of them need additional reply
-data beyond numeric error code and extack. Kernel also broadcasts
-notification messages ("_NTF" suffix) on changes.
-
-Basic concepts:
-
-- make extensions easier not only by allowing new attributes but also by
-  imposing as few artificial limits as possible, e.g. by using arbitrary
-  size bit sets for most bitmap attributes or by not using fixed size
-  strings
-- use extack for error reporting and warnings
-- send netlink notifications on changes (even if they were done using the
-  ioctl interface) and actions
-- avoid the racy read/modify/write cycle between kernel and userspace by
-  sending only attributes which userspace wants to change; there is still
-  a read/modify/write cycle between generic kernel code and ethtool_ops
-  handler in NIC driver but it is only in kernel and under RTNL lock
-- reduce the number of name lists that need to be kept in sync between
-  kernel and userspace (e.g. recognized link modes)
-- where feasible, allow dump requests to query specific information for all
-  network devices
-- as parsing and generating netlink messages is more complicated than
-  simply copying data structures between userspace API and ethtool_ops
-  handlers (which most ioctl commands do), split the code into multiple
-  files in net/ethtool directory; move net/core/ethtool.c also to this
-  directory and rename it to ioctl.c
-
-Main changes between v7 and v8:
-
-- preliminary patches sent as a separate series (already in net-next)
-- split notification related changes out of _SET patches
-- drop request specific flags from common header
-- use FLAG/flag rather than GFLAG/gflag for global flags (as there are
-  only global flags now)
-- allow device names up to ALTIFNAMSIZ characters
-- rename ETHTOOL_A_BITSET_LIST to ETHTOOL_A_BITSET_NOMASK
-- rename ETHTOOL_A_BIT{,S}_* to ETHTOOL_A_BITSET_BIT{,S}_*
-- use standard bitset helpers for link modes (rather than in-place
-  conversion)
-- use "default" rather than "standard" for unified _GET handlers
-- fixed 64-bit big endian bitset code
-
-Main changes between v6 and v7:
-
-- split complex messages into small single purpose ones (drop info and
-  request masks and one level of nesting)
-- separate request information and reply data into two structures
-- refactor bitset handling (no simultaneous u32/ulong handling but avoid
-  kmalloc() except for long bitmaps on 64-bit big endian architectures)
-- use only fixed size strings internally (will be replaced by char *
-  eventually but that will require rewriting also existing ioctl code)
-- rework ethnl_update_* helpers to return error code
-- rename request flag constants (to ETHTOOL_[GR]FLAG_ prefix)
-- convert documentation to rst
-
-Main changes between v5 and v6:
-
-- use ETHTOOL_MSG_ prefix for message types
-- replace ETHA_ prefix for netlink attributes by ETHTOOL_A_
-- replace ETH_x_IM_y for infomask bits by ETHTOOL_IM_x_y
-- split GET reply types from SET requests and notifications
-- split kernel and userspace message types into different enums
-- remove INFO_GET requests from submitted part
-- drop EVENT notifications (use rtnetlink and on-demand string set load)
-- reorganize patches to reduce the number of intermitent warnings
-- unify request/reply header and its processing
-- another nest around strings in a string set for consistency
-- more consistent identifier naming
-- coding style cleanup
-- get rid of some of the helpers
-- set bad attribute in extack where applicable
-- various bug fixes
-- improve documentation and code comments, more kerneldoc comments
-- more verbose commit messages
-
-Changes between v4 and v5:
-
-- do not panic on failed initialization, only WARN()
-
-Main changes between RFC v3 and v4:
-
-- use more kerneldoc style comments
-- strict attribute policy checking
-- use macros for tables of link mode names and parameters
-- provide permanent hardware address in rtnetlink
-- coding style cleanup
-- split too long patches, reorder
-- wrap more ETHA_SETTINGS_* attributes in nests
-- add also some SET_* implementation into submitted part
-
-Main changes between RFC v2 and RFC v3:
-
-- do not allow building as a module (no netdev notifiers needed)
-- drop some obsolete fields
-- add permanent hw address, timestamping and private flags support
-- rework bitset handling to get rid of variable length arrays
-- notify monitor on device renames
-- restructure GET_SETTINGS/SET_SETTINGS messages
-- split too long patches and submit only first part of the series
-
-Main changes between RFC v1 and RFC v2:
-
-- support dumps for all "get" requests
-- provide notifications for changes related to supported request types
-- support getting string sets (both global and per device)
-- support getting/setting device features
-- get rid of family specific header, everything passed as attributes
-- split netlink code into multiple files in net/ethtool/ directory
-
-
-Michal Kubecek (14):
-  ethtool: introduce ethtool netlink interface
-  ethtool: helper functions for netlink interface
-  ethtool: netlink bitset handling
-  ethtool: support for netlink notifications
-  ethtool: default handlers for GET requests
-  ethtool: provide string sets with STRSET_GET request
-  ethtool: provide link settings with LINKINFO_GET request
-  ethtool: set link settings with LINKINFO_SET request
-  ethtool: add default notification handler
-  ethtool: add LINKINFO_NTF notification
-  ethtool: provide link mode information with LINKMODES_GET request
-  ethtool: set link modes related data with LINKMODES_SET request
-  ethtool: add LINKMODES_NTF notification
-  ethtool: provide link state with LINKSTATE_GET request
-
- Documentation/networking/ethtool-netlink.rst | 510 +++++++++++++
- include/linux/ethtool_netlink.h              |  17 +
- include/linux/netdevice.h                    |   9 +
- include/uapi/linux/ethtool.h                 |   3 +
- include/uapi/linux/ethtool_netlink.h         | 204 +++++
+Signed-off-by: Michal Kubecek <mkubecek@suse.cz>
+---
+ Documentation/networking/ethtool-netlink.rst | 215 +++++++++++++++++++
+ include/linux/ethtool_netlink.h              |   9 +
+ include/uapi/linux/ethtool_netlink.h         |  36 ++++
  net/Kconfig                                  |   8 +
- net/ethtool/Makefile                         |   7 +-
- net/ethtool/bitset.c                         | 735 +++++++++++++++++++
- net/ethtool/bitset.h                         |  28 +
- net/ethtool/common.c                         |  56 ++
- net/ethtool/common.h                         |   7 +
- net/ethtool/ioctl.c                          |  72 +-
- net/ethtool/linkinfo.c                       | 167 +++++
- net/ethtool/linkmodes.c                      | 377 ++++++++++
- net/ethtool/linkstate.c                      |  74 ++
- net/ethtool/netlink.c                        | 687 +++++++++++++++++
- net/ethtool/netlink.h                        | 341 +++++++++
- net/ethtool/strset.c                         | 425 +++++++++++
- 18 files changed, 3672 insertions(+), 55 deletions(-)
+ net/ethtool/Makefile                         |   6 +-
+ net/ethtool/netlink.c                        |  33 +++
+ net/ethtool/netlink.h                        |  10 +
+ 7 files changed, 316 insertions(+), 1 deletion(-)
  create mode 100644 Documentation/networking/ethtool-netlink.rst
  create mode 100644 include/linux/ethtool_netlink.h
  create mode 100644 include/uapi/linux/ethtool_netlink.h
- create mode 100644 net/ethtool/bitset.c
- create mode 100644 net/ethtool/bitset.h
- create mode 100644 net/ethtool/linkinfo.c
- create mode 100644 net/ethtool/linkmodes.c
- create mode 100644 net/ethtool/linkstate.c
  create mode 100644 net/ethtool/netlink.c
  create mode 100644 net/ethtool/netlink.h
- create mode 100644 net/ethtool/strset.c
 
+diff --git a/Documentation/networking/ethtool-netlink.rst b/Documentation/networking/ethtool-netlink.rst
+new file mode 100644
+index 000000000000..020aa655885b
+--- /dev/null
++++ b/Documentation/networking/ethtool-netlink.rst
+@@ -0,0 +1,215 @@
++=============================
++Netlink interface for ethtool
++=============================
++
++
++Basic information
++=================
++
++Netlink interface for ethtool uses generic netlink family ``ethtool``
++(userspace application should use macros ``ETHTOOL_GENL_NAME`` and
++``ETHTOOL_GENL_VERSION`` defined in ``<linux/ethtool_netlink.h>`` uapi
++header). This family does not use a specific header, all information in
++requests and replies is passed using netlink attributes.
++
++The ethtool netlink interface uses extended ACK for error and warning
++reporting, userspace application developers are encouraged to make these
++messages available to user in a suitable way.
++
++Requests can be divided into three categories: "get" (retrieving information),
++"set" (setting parameters) and "action" (invoking an action).
++
++All "set" and "action" type requests require admin privileges
++(``CAP_NET_ADMIN`` in the namespace). Most "get" type requests are allowed for
++anyone but there are exceptions (where the response contains sensitive
++information). In some cases, the request as such is allowed for anyone but
++unprivileged users have attributes with sensitive information (e.g.
++wake-on-lan password) omitted.
++
++
++Conventions
++===========
++
++Attributes which represent a boolean value usually use u8 type so that we can
++distinguish three states: "on", "off" and "not present" (meaning the
++information is not available in "get" requests or value is not to be changed
++in "set" requests). For these attributes, the "true" value should be passed as
++number 1 but any non-zero value should be understood as "true" by recipient.
++
++In the message structure descriptions below, if an attribute name is suffixed
++with "+", parent nest can contain multiple attributes of the same type. This
++implements an array of entries.
++
++
++Request header
++==============
++
++Each request or reply message contains a nested attribute with common header.
++Structure of this header is
++
++  ==============================  ======  =============================
++  ``ETHTOOL_A_HEADER_DEV_INDEX``  u32     device ifindex
++  ``ETHTOOL_A_HEADER_DEV_NAME``   string  device name
++  ``ETHTOOL_A_HEADER_FLAGS``      u32     flags common for all requests
++  ==============================  ======  =============================
++
++``ETHTOOL_A_HEADER_DEV_INDEX`` and ``ETHTOOL_A_HEADER_DEV_NAME`` identify the
++device message relates to. One of them is sufficient in requests, if both are
++used, they must identify the same device. Some requests, e.g. global string
++sets, do not require device identification. Most ``GET`` requests also allow
++dump requests without device identification to query the same information for
++all devices providing it (each device in a separate message).
++
++``ETHTOOL_A_HEADER_FLAGS`` is a bitmap of request flags common for all request
++types. The interpretation of these flags is the same for all request types but
++the flags may not apply to requests. Recognized flags are:
++
++  =================================  ===================================
++  ``ETHTOOL_FLAG_COMPACT_BITSETS``   use compact format bitsets in reply
++  ``ETHTOOL_FLAG_OMIT_REPLY``        omit optional reply (_SET and _ACT)
++  =================================  ===================================
++
++New request flags should follow the general idea that if the flag is not set,
++the behaviour is backward compatible, i.e. requests from old clients not aware
++of the flag should be interpreted the way the client expects. A client must
++not set flags it does not understand.
++
++
++List of message types
++=====================
++
++All constants identifying message types use ``ETHTOOL_CMD_`` prefix and suffix
++according to message purpose:
++
++  ==============    ======================================
++  ``_GET``          userspace request to retrieve data
++  ``_SET``          userspace request to set data
++  ``_ACT``          userspace request to perform an action
++  ``_GET_REPLY``    kernel reply to a ``GET`` request
++  ``_SET_REPLY``    kernel reply to a ``SET`` request
++  ``_ACT_REPLY``    kernel reply to an ``ACT`` request
++  ``_NTF``          kernel notification
++  ==============    ======================================
++
++``GET`` requests are sent by userspace applications to retrieve device
++information. They usually do not contain any message specific attributes.
++Kernel replies with corresponding "GET_REPLY" message. For most types, ``GET``
++request with ``NLM_F_DUMP`` and no device identification can be used to query
++the information for all devices supporting the request.
++
++If the data can be also modified, corresponding ``SET`` message with the same
++layout as corresponding ``GET_REPLY`` is used to request changes. Only
++attributes where a change is requested are included in such request (also, not
++all attributes may be changed). Replies to most ``SET`` request consist only
++of error code and extack; if kernel provides additional data, it is sent in
++the form of corresponding ``SET_REPLY`` message which can be suppressed by
++setting ``ETHTOOL_FLAG_OMIT_REPLY`` flag in request header.
++
++Data modification also triggers sending a ``NTF`` message with a notification.
++These usually bear only a subset of attributes which was affected by the
++change. The same notification is issued if the data is modified using other
++means (mostly ioctl ethtool interface). Unlike notifications from ethtool
++netlink code which are only sent if something actually changed, notifications
++triggered by ioctl interface may be sent even if the request did not actually
++change any data.
++
++``ACT`` messages request kernel (driver) to perform a specific action. If some
++information is reported by kernel (which can be suppressed by setting
++``ETHTOOL_FLAG_OMIT_REPLY`` flag in request header), the reply takes form of
++an ``ACT_REPLY`` message. Performing an action also triggers a notification
++(``NTF`` message).
++
++Later sections describe the format and semantics of these messages.
++
++
++Request translation
++===================
++
++The following table maps ioctl commands to netlink commands providing their
++functionality. Entries with "n/a" in right column are commands which do not
++have their netlink replacement yet.
++
++  =================================== =====================================
++  ioctl command                       netlink command
++  =================================== =====================================
++  ``ETHTOOL_GSET``                    n/a
++  ``ETHTOOL_SSET``                    n/a
++  ``ETHTOOL_GDRVINFO``                n/a
++  ``ETHTOOL_GREGS``                   n/a
++  ``ETHTOOL_GWOL``                    n/a
++  ``ETHTOOL_SWOL``                    n/a
++  ``ETHTOOL_GMSGLVL``                 n/a
++  ``ETHTOOL_SMSGLVL``                 n/a
++  ``ETHTOOL_NWAY_RST``                n/a
++  ``ETHTOOL_GLINK``                   n/a
++  ``ETHTOOL_GEEPROM``                 n/a
++  ``ETHTOOL_SEEPROM``                 n/a
++  ``ETHTOOL_GCOALESCE``               n/a
++  ``ETHTOOL_SCOALESCE``               n/a
++  ``ETHTOOL_GRINGPARAM``              n/a
++  ``ETHTOOL_SRINGPARAM``              n/a
++  ``ETHTOOL_GPAUSEPARAM``             n/a
++  ``ETHTOOL_SPAUSEPARAM``             n/a
++  ``ETHTOOL_GRXCSUM``                 n/a
++  ``ETHTOOL_SRXCSUM``                 n/a
++  ``ETHTOOL_GTXCSUM``                 n/a
++  ``ETHTOOL_STXCSUM``                 n/a
++  ``ETHTOOL_GSG``                     n/a
++  ``ETHTOOL_SSG``                     n/a
++  ``ETHTOOL_TEST``                    n/a
++  ``ETHTOOL_GSTRINGS``                n/a
++  ``ETHTOOL_PHYS_ID``                 n/a
++  ``ETHTOOL_GSTATS``                  n/a
++  ``ETHTOOL_GTSO``                    n/a
++  ``ETHTOOL_STSO``                    n/a
++  ``ETHTOOL_GPERMADDR``               rtnetlink ``RTM_GETLINK``
++  ``ETHTOOL_GUFO``                    n/a
++  ``ETHTOOL_SUFO``                    n/a
++  ``ETHTOOL_GGSO``                    n/a
++  ``ETHTOOL_SGSO``                    n/a
++  ``ETHTOOL_GFLAGS``                  n/a
++  ``ETHTOOL_SFLAGS``                  n/a
++  ``ETHTOOL_GPFLAGS``                 n/a
++  ``ETHTOOL_SPFLAGS``                 n/a
++  ``ETHTOOL_GRXFH``                   n/a
++  ``ETHTOOL_SRXFH``                   n/a
++  ``ETHTOOL_GGRO``                    n/a
++  ``ETHTOOL_SGRO``                    n/a
++  ``ETHTOOL_GRXRINGS``                n/a
++  ``ETHTOOL_GRXCLSRLCNT``             n/a
++  ``ETHTOOL_GRXCLSRULE``              n/a
++  ``ETHTOOL_GRXCLSRLALL``             n/a
++  ``ETHTOOL_SRXCLSRLDEL``             n/a
++  ``ETHTOOL_SRXCLSRLINS``             n/a
++  ``ETHTOOL_FLASHDEV``                n/a
++  ``ETHTOOL_RESET``                   n/a
++  ``ETHTOOL_SRXNTUPLE``               n/a
++  ``ETHTOOL_GRXNTUPLE``               n/a
++  ``ETHTOOL_GSSET_INFO``              n/a
++  ``ETHTOOL_GRXFHINDIR``              n/a
++  ``ETHTOOL_SRXFHINDIR``              n/a
++  ``ETHTOOL_GFEATURES``               n/a
++  ``ETHTOOL_SFEATURES``               n/a
++  ``ETHTOOL_GCHANNELS``               n/a
++  ``ETHTOOL_SCHANNELS``               n/a
++  ``ETHTOOL_SET_DUMP``                n/a
++  ``ETHTOOL_GET_DUMP_FLAG``           n/a
++  ``ETHTOOL_GET_DUMP_DATA``           n/a
++  ``ETHTOOL_GET_TS_INFO``             n/a
++  ``ETHTOOL_GMODULEINFO``             n/a
++  ``ETHTOOL_GMODULEEEPROM``           n/a
++  ``ETHTOOL_GEEE``                    n/a
++  ``ETHTOOL_SEEE``                    n/a
++  ``ETHTOOL_GRSSH``                   n/a
++  ``ETHTOOL_SRSSH``                   n/a
++  ``ETHTOOL_GTUNABLE``                n/a
++  ``ETHTOOL_STUNABLE``                n/a
++  ``ETHTOOL_GPHYSTATS``               n/a
++  ``ETHTOOL_PERQUEUE``                n/a
++  ``ETHTOOL_GLINKSETTINGS``           n/a
++  ``ETHTOOL_SLINKSETTINGS``           n/a
++  ``ETHTOOL_PHY_GTUNABLE``            n/a
++  ``ETHTOOL_PHY_STUNABLE``            n/a
++  ``ETHTOOL_GFECPARAM``               n/a
++  ``ETHTOOL_SFECPARAM``               n/a
++  =================================== =====================================
+diff --git a/include/linux/ethtool_netlink.h b/include/linux/ethtool_netlink.h
+new file mode 100644
+index 000000000000..f27e92b5f344
+--- /dev/null
++++ b/include/linux/ethtool_netlink.h
+@@ -0,0 +1,9 @@
++/* SPDX-License-Identifier: GPL-2.0-only */
++
++#ifndef _LINUX_ETHTOOL_NETLINK_H_
++#define _LINUX_ETHTOOL_NETLINK_H_
++
++#include <uapi/linux/ethtool_netlink.h>
++#include <linux/ethtool.h>
++
++#endif /* _LINUX_ETHTOOL_NETLINK_H_ */
+diff --git a/include/uapi/linux/ethtool_netlink.h b/include/uapi/linux/ethtool_netlink.h
+new file mode 100644
+index 000000000000..3c93276ba066
+--- /dev/null
++++ b/include/uapi/linux/ethtool_netlink.h
+@@ -0,0 +1,36 @@
++/* SPDX-License-Identifier: GPL-2.0-only WITH Linux-syscall-note */
++/*
++ * include/uapi/linux/ethtool_netlink.h - netlink interface for ethtool
++ *
++ * See Documentation/networking/ethtool-netlink.txt in kernel source tree for
++ * doucumentation of the interface.
++ */
++
++#ifndef _UAPI_LINUX_ETHTOOL_NETLINK_H_
++#define _UAPI_LINUX_ETHTOOL_NETLINK_H_
++
++#include <linux/ethtool.h>
++
++/* message types - userspace to kernel */
++enum {
++	ETHTOOL_MSG_USER_NONE,
++
++	/* add new constants above here */
++	__ETHTOOL_MSG_USER_CNT,
++	ETHTOOL_MSG_USER_MAX = __ETHTOOL_MSG_USER_CNT - 1
++};
++
++/* message types - kernel to userspace */
++enum {
++	ETHTOOL_MSG_KERNEL_NONE,
++
++	/* add new constants above here */
++	__ETHTOOL_MSG_KERNEL_CNT,
++	ETHTOOL_MSG_KERNEL_MAX = __ETHTOOL_MSG_KERNEL_CNT - 1
++};
++
++/* generic netlink info */
++#define ETHTOOL_GENL_NAME "ethtool"
++#define ETHTOOL_GENL_VERSION 1
++
++#endif /* _UAPI_LINUX_ETHTOOL_NETLINK_H_ */
+diff --git a/net/Kconfig b/net/Kconfig
+index bd191f978a23..8c18c9325bd8 100644
+--- a/net/Kconfig
++++ b/net/Kconfig
+@@ -448,6 +448,14 @@ config FAILOVER
+ 	  migration of VMs with direct attached VFs by failing over to the
+ 	  paravirtual datapath when the VF is unplugged.
+ 
++config ETHTOOL_NETLINK
++	bool "Netlink interface for ethtool"
++	default y
++	help
++	  An alternative userspace interface for ethtool based on generic
++	  netlink. It provides better extensibility and some new features,
++	  e.g. notification messages.
++
+ endif   # if NET
+ 
+ # Used by archs to tell that they support BPF JIT compiler plus which flavour.
+diff --git a/net/ethtool/Makefile b/net/ethtool/Makefile
+index f68387618973..59d5ee230c29 100644
+--- a/net/ethtool/Makefile
++++ b/net/ethtool/Makefile
+@@ -1,3 +1,7 @@
+ # SPDX-License-Identifier: GPL-2.0-only
+ 
+-obj-y		+= ioctl.o common.o
++obj-y				+= ioctl.o common.o
++
++obj-$(CONFIG_ETHTOOL_NETLINK)	+= ethtool_nl.o
++
++ethtool_nl-y	:= netlink.o
+diff --git a/net/ethtool/netlink.c b/net/ethtool/netlink.c
+new file mode 100644
+index 000000000000..59e1ebde2f15
+--- /dev/null
++++ b/net/ethtool/netlink.c
+@@ -0,0 +1,33 @@
++// SPDX-License-Identifier: GPL-2.0-only
++
++#include <linux/ethtool_netlink.h>
++#include "netlink.h"
++
++/* genetlink setup */
++
++static const struct genl_ops ethtool_genl_ops[] = {
++};
++
++static struct genl_family ethtool_genl_family = {
++	.name		= ETHTOOL_GENL_NAME,
++	.version	= ETHTOOL_GENL_VERSION,
++	.netnsok	= true,
++	.parallel_ops	= true,
++	.ops		= ethtool_genl_ops,
++	.n_ops		= ARRAY_SIZE(ethtool_genl_ops),
++};
++
++/* module setup */
++
++static int __init ethnl_init(void)
++{
++	int ret;
++
++	ret = genl_register_family(&ethtool_genl_family);
++	if (WARN(ret < 0, "ethtool: genetlink family registration failed"))
++		return ret;
++
++	return 0;
++}
++
++subsys_initcall(ethnl_init);
+diff --git a/net/ethtool/netlink.h b/net/ethtool/netlink.h
+new file mode 100644
+index 000000000000..e4220780d368
+--- /dev/null
++++ b/net/ethtool/netlink.h
+@@ -0,0 +1,10 @@
++/* SPDX-License-Identifier: GPL-2.0-only */
++
++#ifndef _NET_ETHTOOL_NETLINK_H
++#define _NET_ETHTOOL_NETLINK_H
++
++#include <linux/ethtool_netlink.h>
++#include <linux/netdevice.h>
++#include <net/genetlink.h>
++
++#endif /* _NET_ETHTOOL_NETLINK_H */
 -- 
 2.24.1
 
