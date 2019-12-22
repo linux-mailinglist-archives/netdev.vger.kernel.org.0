@@ -2,86 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 02F33128C93
-	for <lists+netdev@lfdr.de>; Sun, 22 Dec 2019 05:36:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D8213128C97
+	for <lists+netdev@lfdr.de>; Sun, 22 Dec 2019 05:57:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726716AbfLVEft (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 21 Dec 2019 23:35:49 -0500
-Received: from mail-lj1-f196.google.com ([209.85.208.196]:38168 "EHLO
-        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726339AbfLVEft (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 21 Dec 2019 23:35:49 -0500
-Received: by mail-lj1-f196.google.com with SMTP id k8so14357197ljh.5;
-        Sat, 21 Dec 2019 20:35:48 -0800 (PST)
+        id S1726716AbfLVE5i (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 21 Dec 2019 23:57:38 -0500
+Received: from mail-io1-f66.google.com ([209.85.166.66]:34821 "EHLO
+        mail-io1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726671AbfLVE5h (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 21 Dec 2019 23:57:37 -0500
+Received: by mail-io1-f66.google.com with SMTP id v18so13299118iol.2
+        for <netdev@vger.kernel.org>; Sat, 21 Dec 2019 20:57:37 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:subject:from:in-reply-to:date:cc
-         :content-transfer-encoding:message-id:references:to;
-        bh=COqV+F9ei+E2oY/KUB0AC+nOpaJlD5cnAnx3su+cln8=;
-        b=Cv0SnhHugHFXM1wehyT8ZP9WXuaIPyVcBG6QAPwrblORdbVMiTAq5PHe4q50nyM/yb
-         7uEgLheCNNJx5Q34a5dRlsr3bz70WQoFgnfd0vNUZc/DPyzWEnmrb/N7VVxEpHzA6gte
-         O8jawT7C5MPN4poBDjy1xgqL74lKqd7+xQmN5rVfGQIr7BuYYHWMPG/V9aqYIthcXXSg
-         cazi3FoZXNrpwOAhTN/CBxTcxmMwWW7jMBTMGZcf16SPjrPx+z7QlU9i6arOrqjdSYZ/
-         N42CdQnpuBqd4eOwRVh7LrPJAQ2OX3lVzj95Ewy1hLSsPULxOhX8qH2uuHbXR11a+KCJ
-         /oyw==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=jcnk1B0MsUqEQj419gGeSMvJeezB1YbnBJ98+8euboc=;
+        b=ajO6ZGx0zBl2RwDzuOf3bZj29RXDfvutuKgnm2RQQyKZtvlmGsV7iEzrWFDl4ht22Q
+         kGv7355jRRHHnTIaeck6+obiDxn0gS6NjWeP21uY4d/UUb25VU3nlRamCWmZ1iNDMVBo
+         0PKuk0aFgjKNb5u/CBqKc88+PoAMLASNzAv5hokH+OrG9a5fkUtV8k/ugwgUNOqoktyg
+         +HS7PO2C4yq56Mngn3ngr9YzI+7+kVOPfPGmh9AJIwU8SiY2tC/0dHeJeHGXqtZXUJ9l
+         igKmeOdah9Xdw9055zLVCe3Afv4+YV6n7ZRoCtw0uF3gBkWV3qN/esP42MGTS9Qrg3xC
+         soWg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
-         :content-transfer-encoding:message-id:references:to;
-        bh=COqV+F9ei+E2oY/KUB0AC+nOpaJlD5cnAnx3su+cln8=;
-        b=ZVjCXS11NRf2SAS7Mkw6Mh3wDSNCNAVzBuoE8WOg+Fs1GNvbTM+ugWXSH7SKcCBbXb
-         dDCzZPICULzcrtu6tmazoFBck4ahWVgGqEuYQo1NOq0hVNb16A6z28KsD8Pl7arlMF7m
-         ilDZH+wnF/4ohk9yq0fdDxgO9+84o6eXfoUiE6lfRlFblzHJFwuB+5cAwA3p1NQ/Eypc
-         YyMkOtCtLhluRR+G9xOB60OgemzUZwo/PgflbuY9CAhtggLLkp+MDJbMPj/hIQ4t7fJ9
-         NxQsssUK6wWi1ECqtw9mm2tT6vCmLCK4qUukIvtZek/9VNOuCCrvEMogt5o9Phd4ED7c
-         QtxQ==
-X-Gm-Message-State: APjAAAWPKW7Ugkr0TxWXA3KYNtwNm5PQRuyeV5mK+BankAckDlAR7fVG
-        qtbm7/NO4VPLJnMcnrnukiU=
-X-Google-Smtp-Source: APXvYqwwHNpyqONsjbrnnDi7Do8gsYy7HpNpEiploEtWoEqRQpQQl2rppymPVsg7yDY255l1Q74Klw==
-X-Received: by 2002:a2e:88c5:: with SMTP id a5mr14669392ljk.201.1576989347408;
-        Sat, 21 Dec 2019 20:35:47 -0800 (PST)
-Received: from [172.20.1.19] ([5.42.224.242])
-        by smtp.gmail.com with ESMTPSA id g15sm1827895ljl.10.2019.12.21.20.35.44
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 21 Dec 2019 20:35:46 -0800 (PST)
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 12.4 \(3445.104.11\))
-Subject: Re: [PATCH v2 0/9] brcmfmac: add support for BCM4359 SDIO chipset
-From:   Christian Hewitt <christianshewitt@gmail.com>
-In-Reply-To: <cb3ac55f-4c8f-b0a0-41ee-f16b3232c87e@web.de>
-Date:   Sun, 22 Dec 2019 07:35:43 +0300
-Cc:     Kalle Valo <kvalo@codeaurora.org>,
-        Heiko Stuebner <heiko@sntech.de>,
-        linux-wireless@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com,
-        brcm80211-dev-list@cypress.com, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Neil Armstrong <narmstrong@baylibre.com>
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <47DB71CE-ACC4-431D-9E66-D28A8C18C0A4@gmail.com>
-References: <20191211235253.2539-1-smoch@web.de>
- <D1B53CE9-E87C-4514-A2D7-0FE70A4D1A5D@gmail.com>
- <cb3ac55f-4c8f-b0a0-41ee-f16b3232c87e@web.de>
-To:     Soeren Moch <smoch@web.de>
-X-Mailer: Apple Mail (2.3445.104.11)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=jcnk1B0MsUqEQj419gGeSMvJeezB1YbnBJ98+8euboc=;
+        b=r9tto2Lzx3SFY8MzWjfBwWL2niAXvdwOc7Cm/yqKbCAwdBr9pO/WYOV44dyD8XyeaK
+         /M0bkhXZdfVNeJEw0nM/eJyvUC8IEquTgPF/Waz6RZIOfj3/afLUrFPo4Vzga/e24C4y
+         uG9yD4MRoNlCknOHtSu1dMnmStS084H7mahpQztYCt1gUvfYk4oQPNWWf3uI5EL+su/L
+         Kwd2rZv+8zMBv8sqKDMDV9+AonWhTDsisJObIZeIbKN/S5Hi+hbE/mNUXgT7vMXhXlR9
+         GqrKywnnl8GjQOsywQBFqmAs6ZOqiAhRDbqe4fdOG/YPLZUssVbYzw3gZNFSXPLPWm5G
+         8Xzw==
+X-Gm-Message-State: APjAAAUBH9eo2guGviE5ok1N89uPCSy/Zew7UdbHR0iYTsgZpJSK8vBz
+        OaHUYlraa9wHjL4s5CrAWEI=
+X-Google-Smtp-Source: APXvYqzsjDPL9Jj6pCENLgGRgrs5cu6T3/06mSa3LotVSqpkEJxWeiGtVyvbpdtaE6d7hRiI3cBzeg==
+X-Received: by 2002:a5e:9902:: with SMTP id t2mr15550376ioj.120.1576990657155;
+        Sat, 21 Dec 2019 20:57:37 -0800 (PST)
+Received: from ?IPv6:2601:282:800:fd80:9c40:b5b:dc0:a3f8? ([2601:282:800:fd80:9c40:b5b:dc0:a3f8])
+        by smtp.googlemail.com with ESMTPSA id s88sm7658934ilk.79.2019.12.21.20.57.35
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 21 Dec 2019 20:57:36 -0800 (PST)
+Subject: Re: [patch net-next 0/4] net: allow per-net notifier to follow netdev
+ into namespace
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net,
+        jakub.kicinski@netronome.com, saeedm@mellanox.com, leon@kernel.org,
+        tariqt@mellanox.com, ayal@mellanox.com, vladbu@mellanox.com,
+        michaelgur@mellanox.com, moshe@mellanox.com, mlxsw@mellanox.com
+References: <20191220123542.26315-1-jiri@resnulli.us>
+ <72587b16-d459-aa6e-b813-cf14b4118b0c@gmail.com>
+ <20191221081406.GB2246@nanopsycho.orion>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <e66fee63-ad27-c5e0-8321-76999e7d82c9@gmail.com>
+Date:   Sat, 21 Dec 2019 21:57:35 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.3.1
+MIME-Version: 1.0
+In-Reply-To: <20191221081406.GB2246@nanopsycho.orion>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 12/21/19 1:14 AM, Jiri Pirko wrote:
+> Fri, Dec 20, 2019 at 07:30:22PM CET, dsahern@gmail.com wrote:
+>> On 12/20/19 5:35 AM, Jiri Pirko wrote:
+>>> However if netdev can change namespace, per-net notifier cannot be used.
+>>> Introduce dev_net variant that is basically per-net notifier with an
+>>> extension that re-registers the per-net notifier upon netdev namespace
+>>> change. Basically the per-net notifier follows the netdev into
+>>> namespace.
+>>
+>> This is getting convoluted.
+>>
+>> If the driver wants notifications in a new namespace, then it should
+>> register for notifiers in the new namespace. The info for
+>> NETDEV_UNREGISTER event could indicate the device is getting moved to a
+>> new namespace and the driver register for notifications in the new
+> 
+> Yes, I considered this option. However, that would lead to having a pair
+> of notifier block struct for every registration and basically the same
+> tracking code would be implemented in every driver.
+> 
+> That is why i chose this implementation where there is still one
+> notifier block structure and the core takes care of the tracking for
+> all.
+> 
 
-> On 19 Dec 2019, at 2:04 am, Soeren Moch <smoch@web.de> wrote:
->=20
-> I guess you need similar enhancements of the board device tree as in
-> patch 8 of this series for your VIM3 board.
-
-Wider testing now points to a known SDIO issue (SoC bug) with Amlogic =
-G12A/B hardware. The merged workaround for the bug was only tested with =
-bcmdhd and brcmfmac may require tweaking as the same issue exhibits on =
-an Amlogic G12B device with BCM4356 chip. Testing the series with =
-Amlogic GXM (older) and SM1 (newer) hardware to exclude the SoC bug =
-shows everything working as expected.
-
-Christian=
+This design has core code only handling half of the problem - automatic
+registration in new namespaces for a netdev but not dealing with drivers
+receiving notifications in namespaces they no longer care about. If a
+driver cares for granularity, it can deal with namespace changes on its
+own. If that's too much, use the global registration.
