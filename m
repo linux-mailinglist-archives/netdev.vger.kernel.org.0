@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E6F541296C2
-	for <lists+netdev@lfdr.de>; Mon, 23 Dec 2019 15:03:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B67501296CC
+	for <lists+netdev@lfdr.de>; Mon, 23 Dec 2019 15:04:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726936AbfLWODk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Dec 2019 09:03:40 -0500
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:44212 "EHLO
+        id S1726928AbfLWOEL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Dec 2019 09:04:11 -0500
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:52110 "EHLO
         mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726754AbfLWODi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Dec 2019 09:03:38 -0500
-Received: from pps.filterd (m0098413.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xBNE3NoS094531
-        for <netdev@vger.kernel.org>; Mon, 23 Dec 2019 09:03:37 -0500
-Received: from e06smtp07.uk.ibm.com (e06smtp07.uk.ibm.com [195.75.94.103])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 2x21kg42qr-1
+        by vger.kernel.org with ESMTP id S1726733AbfLWOEK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Dec 2019 09:04:10 -0500
+Received: from pps.filterd (m0098414.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xBNE44Om008163
+        for <netdev@vger.kernel.org>; Mon, 23 Dec 2019 09:04:09 -0500
+Received: from e06smtp02.uk.ibm.com (e06smtp02.uk.ibm.com [195.75.94.98])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 2x21b0da5k-1
         (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Mon, 23 Dec 2019 09:03:36 -0500
+        for <netdev@vger.kernel.org>; Mon, 23 Dec 2019 09:04:08 -0500
 Received: from localhost
-        by e06smtp07.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
+        by e06smtp02.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
         for <netdev@vger.kernel.org> from <jwi@linux.ibm.com>;
         Mon, 23 Dec 2019 14:03:35 -0000
-Received: from b06cxnps3074.portsmouth.uk.ibm.com (9.149.109.194)
-        by e06smtp07.uk.ibm.com (192.168.101.137) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
+Received: from b06cxnps4076.portsmouth.uk.ibm.com (9.149.109.198)
+        by e06smtp02.uk.ibm.com (192.168.101.132) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
         (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
         Mon, 23 Dec 2019 14:03:32 -0000
 Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
-        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id xBNE3Ueb63897688
+        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id xBNE3VIT54067276
         (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 23 Dec 2019 14:03:30 GMT
+        Mon, 23 Dec 2019 14:03:31 GMT
 Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id BF2ACA4054;
-        Mon, 23 Dec 2019 14:03:30 +0000 (GMT)
+        by IMSVA (Postfix) with ESMTP id 13A37A4064;
+        Mon, 23 Dec 2019 14:03:31 +0000 (GMT)
 Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 82844A4062;
+        by IMSVA (Postfix) with ESMTP id CAC77A405B;
         Mon, 23 Dec 2019 14:03:30 +0000 (GMT)
 Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
         by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
@@ -46,156 +46,131 @@ Cc:     <netdev@vger.kernel.org>, <linux-s390@vger.kernel.org>,
         Stefan Raspl <raspl@linux.ibm.com>,
         Ursula Braun <ubraun@linux.ibm.com>,
         Julian Wiedmann <jwi@linux.ibm.com>
-Subject: [PATCH net 1/6] s390/qeth: fix qdio teardown after early init error
-Date:   Mon, 23 Dec 2019 15:03:21 +0100
+Subject: [PATCH net 2/6] s390/qeth: lock the card while changing its hsuid
+Date:   Mon, 23 Dec 2019 15:03:22 +0100
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20191223140326.16488-1-jwi@linux.ibm.com>
 References: <20191223140326.16488-1-jwi@linux.ibm.com>
 X-TM-AS-GCONF: 00
-x-cbid: 19122314-0028-0000-0000-000003CB4F05
+x-cbid: 19122314-0008-0000-0000-000003439A47
 X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
-x-cbparentid: 19122314-0029-0000-0000-0000248EAA13
-Message-Id: <20191223140326.16488-2-jwi@linux.ibm.com>
+x-cbparentid: 19122314-0009-0000-0000-00004A63BDC8
+Message-Id: <20191223140326.16488-3-jwi@linux.ibm.com>
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
  definitions=2019-12-23_06:2019-12-23,2019-12-23 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 suspectscore=2
- mlxlogscore=999 malwarescore=0 priorityscore=1501 lowpriorityscore=0
- bulkscore=0 adultscore=0 mlxscore=0 clxscore=1015 spamscore=0
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0
+ priorityscore=1501 suspectscore=2 phishscore=0 adultscore=0 malwarescore=0
+ mlxscore=0 spamscore=0 lowpriorityscore=0 mlxlogscore=983 bulkscore=0
+ clxscore=1011 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-1910280000 definitions=main-1912230121
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-qeth_l?_set_online() goes through a number of initialization steps, and
-on any error uses qeth_l?_stop_card() to tear down the residual state.
+qeth_l3_dev_hsuid_store() initially checks the card state, but doesn't
+take the conf_mutex to ensure that the card stays in this state while
+being reconfigured.
 
-The first initialization step is qeth_core_hardsetup_card(). When this
-fails after having established a QDIO context on the device
-(ie. somewhere after qeth_mpc_initialize()), qeth_l?_stop_card() doesn't
-shut down this QDIO context again (since the card state hasn't
-progressed from DOWN at this stage).
+Rework the code to take this lock, and drop a redundant state check in a
+helper function.
 
-Even worse, we then call qdio_free() as final teardown step to free the
-QDIO data structures - while some of them are still hooked into wider
-QDIO infrastructure such as the IRQ list. This is inevitably followed by
-use-after-frees and other nastyness.
-
-Fix this by unconditionally calling qeth_qdio_clear_card() to shut down
-the QDIO context, and also to halt/clear any pending activity on the
-various IO channels.
-Remove the naive attempt at handling the teardown in
-qeth_mpc_initialize(), it clearly doesn't suffice and we're handling it
-properly now in the wider teardown code.
-
-Fixes: 4a71df50047f ("qeth: new qeth device driver")
+Fixes: b333293058aa ("qeth: add support for af_iucv HiperSockets transport")
 Signed-off-by: Julian Wiedmann <jwi@linux.ibm.com>
 ---
- drivers/s390/net/qeth_core_main.c | 20 ++++++++------------
- drivers/s390/net/qeth_l2_main.c   |  2 +-
- drivers/s390/net/qeth_l3_main.c   |  2 +-
- 3 files changed, 10 insertions(+), 14 deletions(-)
+ drivers/s390/net/qeth_core_main.c |  5 ----
+ drivers/s390/net/qeth_l3_sys.c    | 40 +++++++++++++++++++++----------
+ 2 files changed, 28 insertions(+), 17 deletions(-)
 
 diff --git a/drivers/s390/net/qeth_core_main.c b/drivers/s390/net/qeth_core_main.c
-index bc4158888af9..324cf22f9111 100644
+index 324cf22f9111..c64ef55f0dff 100644
 --- a/drivers/s390/net/qeth_core_main.c
 +++ b/drivers/s390/net/qeth_core_main.c
-@@ -2482,50 +2482,46 @@ static int qeth_mpc_initialize(struct qeth_card *card)
- 	rc = qeth_cm_enable(card);
- 	if (rc) {
- 		QETH_CARD_TEXT_(card, 2, "2err%d", rc);
--		goto out_qdio;
-+		return rc;
- 	}
- 	rc = qeth_cm_setup(card);
- 	if (rc) {
- 		QETH_CARD_TEXT_(card, 2, "3err%d", rc);
--		goto out_qdio;
-+		return rc;
- 	}
- 	rc = qeth_ulp_enable(card);
- 	if (rc) {
- 		QETH_CARD_TEXT_(card, 2, "4err%d", rc);
--		goto out_qdio;
-+		return rc;
- 	}
- 	rc = qeth_ulp_setup(card);
- 	if (rc) {
- 		QETH_CARD_TEXT_(card, 2, "5err%d", rc);
--		goto out_qdio;
-+		return rc;
- 	}
- 	rc = qeth_alloc_qdio_queues(card);
- 	if (rc) {
- 		QETH_CARD_TEXT_(card, 2, "5err%d", rc);
--		goto out_qdio;
-+		return rc;
- 	}
- 	rc = qeth_qdio_establish(card);
- 	if (rc) {
- 		QETH_CARD_TEXT_(card, 2, "6err%d", rc);
+@@ -3425,11 +3425,6 @@ int qeth_configure_cq(struct qeth_card *card, enum qeth_cq cq)
+ 			goto out;
+ 		}
+ 
+-		if (card->state != CARD_STATE_DOWN) {
+-			rc = -1;
+-			goto out;
+-		}
+-
  		qeth_free_qdio_queues(card);
--		goto out_qdio;
-+		return rc;
- 	}
- 	rc = qeth_qdio_activate(card);
- 	if (rc) {
- 		QETH_CARD_TEXT_(card, 2, "7err%d", rc);
--		goto out_qdio;
-+		return rc;
- 	}
- 	rc = qeth_dm_act(card);
- 	if (rc) {
- 		QETH_CARD_TEXT_(card, 2, "8err%d", rc);
--		goto out_qdio;
-+		return rc;
+ 		card->options.cq = cq;
+ 		rc = 0;
+diff --git a/drivers/s390/net/qeth_l3_sys.c b/drivers/s390/net/qeth_l3_sys.c
+index f9067ed6c7d3..e8c848f72c6d 100644
+--- a/drivers/s390/net/qeth_l3_sys.c
++++ b/drivers/s390/net/qeth_l3_sys.c
+@@ -242,21 +242,33 @@ static ssize_t qeth_l3_dev_hsuid_store(struct device *dev,
+ 		struct device_attribute *attr, const char *buf, size_t count)
+ {
+ 	struct qeth_card *card = dev_get_drvdata(dev);
++	int rc = 0;
+ 	char *tmp;
+-	int rc;
+ 
+ 	if (!IS_IQD(card))
+ 		return -EPERM;
+-	if (card->state != CARD_STATE_DOWN)
+-		return -EPERM;
+-	if (card->options.sniffer)
+-		return -EPERM;
+-	if (card->options.cq == QETH_CQ_NOTAVAILABLE)
+-		return -EPERM;
++
++	mutex_lock(&card->conf_mutex);
++	if (card->state != CARD_STATE_DOWN) {
++		rc = -EPERM;
++		goto out;
++	}
++
++	if (card->options.sniffer) {
++		rc = -EPERM;
++		goto out;
++	}
++
++	if (card->options.cq == QETH_CQ_NOTAVAILABLE) {
++		rc = -EPERM;
++		goto out;
++	}
+ 
+ 	tmp = strsep((char **)&buf, "\n");
+-	if (strlen(tmp) > 8)
+-		return -EINVAL;
++	if (strlen(tmp) > 8) {
++		rc = -EINVAL;
++		goto out;
++	}
+ 
+ 	if (card->options.hsuid[0])
+ 		/* delete old ip address */
+@@ -267,11 +279,13 @@ static ssize_t qeth_l3_dev_hsuid_store(struct device *dev,
+ 		card->options.hsuid[0] = '\0';
+ 		memcpy(card->dev->perm_addr, card->options.hsuid, 9);
+ 		qeth_configure_cq(card, QETH_CQ_DISABLED);
+-		return count;
++		goto out;
  	}
  
- 	return 0;
--out_qdio:
--	qeth_qdio_clear_card(card, !IS_IQD(card));
--	qdio_free(CARD_DDEV(card));
--	return rc;
+-	if (qeth_configure_cq(card, QETH_CQ_ENABLED))
+-		return -EPERM;
++	if (qeth_configure_cq(card, QETH_CQ_ENABLED)) {
++		rc = -EPERM;
++		goto out;
++	}
+ 
+ 	snprintf(card->options.hsuid, sizeof(card->options.hsuid),
+ 		 "%-8s", tmp);
+@@ -280,6 +294,8 @@ static ssize_t qeth_l3_dev_hsuid_store(struct device *dev,
+ 
+ 	rc = qeth_l3_modify_hsuid(card, true);
+ 
++out:
++	mutex_unlock(&card->conf_mutex);
+ 	return rc ? rc : count;
  }
  
- void qeth_print_status_message(struct qeth_card *card)
-diff --git a/drivers/s390/net/qeth_l2_main.c b/drivers/s390/net/qeth_l2_main.c
-index 8c95e6019bac..15e2fd65d434 100644
---- a/drivers/s390/net/qeth_l2_main.c
-+++ b/drivers/s390/net/qeth_l2_main.c
-@@ -287,12 +287,12 @@ static void qeth_l2_stop_card(struct qeth_card *card)
- 		card->state = CARD_STATE_HARDSETUP;
- 	}
- 	if (card->state == CARD_STATE_HARDSETUP) {
--		qeth_qdio_clear_card(card, 0);
- 		qeth_drain_output_queues(card);
- 		qeth_clear_working_pool_list(card);
- 		card->state = CARD_STATE_DOWN;
- 	}
- 
-+	qeth_qdio_clear_card(card, 0);
- 	flush_workqueue(card->event_wq);
- 	card->info.mac_bits &= ~QETH_LAYER2_MAC_REGISTERED;
- 	card->info.promisc_mode = 0;
-diff --git a/drivers/s390/net/qeth_l3_main.c b/drivers/s390/net/qeth_l3_main.c
-index 04e301de376f..5508ab89b518 100644
---- a/drivers/s390/net/qeth_l3_main.c
-+++ b/drivers/s390/net/qeth_l3_main.c
-@@ -1307,12 +1307,12 @@ static void qeth_l3_stop_card(struct qeth_card *card)
- 		card->state = CARD_STATE_HARDSETUP;
- 	}
- 	if (card->state == CARD_STATE_HARDSETUP) {
--		qeth_qdio_clear_card(card, 0);
- 		qeth_drain_output_queues(card);
- 		qeth_clear_working_pool_list(card);
- 		card->state = CARD_STATE_DOWN;
- 	}
- 
-+	qeth_qdio_clear_card(card, 0);
- 	flush_workqueue(card->event_wq);
- 	card->info.promisc_mode = 0;
- }
 -- 
 2.17.1
 
