@@ -2,104 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 92B7612947B
-	for <lists+netdev@lfdr.de>; Mon, 23 Dec 2019 11:57:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8B3991294CA
+	for <lists+netdev@lfdr.de>; Mon, 23 Dec 2019 12:07:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726866AbfLWK5v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Dec 2019 05:57:51 -0500
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:39166 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726671AbfLWK5v (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Dec 2019 05:57:51 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=AJi1bSzf2CTFSkBMqdWcYKhm22m5Iv4lMaNhZ4z9I8M=; b=jebe56vFX/WrSsKn38pH7tlt6
-        ds4FplDdyNA/X8EwWIOpf/ZreeMrSTzqFweWtxF80HKteoP1N5guiaUi9yRKkbnFRw/BahOD8pQNR
-        H0rJPbaI+FSc7hF4YQec0MdvI3+AheYw+34DFPcZK0Q2i2Y7DBLhBtDxNNP7jZ1OCPIKSiZXA1cWy
-        FcvvDAYI7Rp9PsrTLIMw8uuKkxGvH7Zl/1Y2daJp8ugskzTzArcX9anx9afBb98FuShtjCzoPqMMA
-        JV5OMbP1Lgn9FbVdCl5rABeQtRZfCROhjDbzbjuubAEtDWOqEtFbfsPpp2zKvCfnvxAcyRsf0pdeI
-        7CxL4c+kA==;
-Received: from shell.armlinux.org.uk ([2001:4d48:ad52:3201:5054:ff:fe00:4ec]:45216)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1ijLPE-0001K7-SC; Mon, 23 Dec 2019 10:57:46 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1ijLPD-0000kk-QF; Mon, 23 Dec 2019 10:57:43 +0000
-Date:   Mon, 23 Dec 2019 10:57:43 +0000
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Madalin Bucur <madalin.bucur@oss.nxp.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, andrew@lunn.ch,
-        f.fainelli@gmail.com, hkallweit1@gmail.com, shawnguo@kernel.org,
-        leoyang.li@nxp.com, devicetree@vger.kernel.org, robh+dt@kernel.org,
-        mark.rutland@arm.com, Madalin Bucur <madalin.bucur@nxp.com>
-Subject: Re: [PATCH net-next v2 1/7] net: phy: add interface modes for XFI,
- SFI
-Message-ID: <20191223105743.GN25745@shell.armlinux.org.uk>
-References: <1577096053-20507-1-git-send-email-madalin.bucur@oss.nxp.com>
- <1577096053-20507-2-git-send-email-madalin.bucur@oss.nxp.com>
+        id S1726905AbfLWLHA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Dec 2019 06:07:00 -0500
+Received: from mail-pj1-f66.google.com ([209.85.216.66]:33921 "EHLO
+        mail-pj1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726878AbfLWLHA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Dec 2019 06:07:00 -0500
+Received: by mail-pj1-f66.google.com with SMTP id s94so5694565pjc.1
+        for <netdev@vger.kernel.org>; Mon, 23 Dec 2019 03:06:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=mFKvqtQ9vSPm5T315tkOXf8KD7fD/8AVHb7q+1r7gfY=;
+        b=pVgC4P7FEEyT+JBvMyEZQHV2zV6kVPMHYiC2LiK/xtQF/XsjR0avCcwDPQEPazYJwS
+         bnTczswulHp2+XbhwTw1NABpuepJxPhBuvPCQatkrhA1EtptLdxhGuKnIsaDeEg+Szc4
+         +2dOfsmxqgnbFYZuh7AFQgm9s0kHdv/ZKYGstEGFnjxtdKwcmcP2S4ywiPfCOzhumKn9
+         LTNdD+EnrOHYyNf/00Qa7qad3Bcrj77m0z6H0+TdqEgPPhg+ZkLYQscOfwnERnqvpsGy
+         E0WGEB8TFXeYnSzqstutUaDXy/jPYQUYYvdLUrggzVruqNPf/PAK3u22WLaY/Sb1yyuw
+         GeLA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=mFKvqtQ9vSPm5T315tkOXf8KD7fD/8AVHb7q+1r7gfY=;
+        b=s/sXJopBdkxlcqLGCm+kmoreZBXlzEQuPGh5mxGw9fF+eIGfVuaNbWGtXT1ErKoLRY
+         XErz1vpRbGnKe6me3EnJ6r7HrMYTwUj0GpyO3wi3Y0ALXBGBfFp0NnS3HMmg9q/bDo7H
+         sEOrWVMNVj2OlbhcpIyqL2gZSzygU5nBzKah8R6BgD5c3CJyBiKftDKIR5bYhwg2m3Gi
+         ce4BabYkWkENujqSZxw8Hc1WvYW83DdqB06ZiTbhw/hx5TsfHEqQpO9bGkTR+BZ5brUK
+         tLakX86SNRFnE8MUnNwmjkIHjJlxRGpV2v8v3jhMthm0aGYO2bH2PVL6JgNXu0sb6mw6
+         xQag==
+X-Gm-Message-State: APjAAAVrrk/JYuCJ49Ghqr+DGQ5h+oL7FnFYYbVEa3ltVrJNmjbdYzOC
+        SPGaDTnSxbCOVBlRiUhu20w=
+X-Google-Smtp-Source: APXvYqyZzmMEyF8usYU0hkMnDW0u6Cm6lH1+L2QNrCUkQCrC1udZtoXP7KrRaFvDssYUJSYj8jCS5g==
+X-Received: by 2002:a17:90a:2808:: with SMTP id e8mr33465518pjd.63.1577099219041;
+        Mon, 23 Dec 2019 03:06:59 -0800 (PST)
+Received: from [192.168.1.236] (KD124211219252.ppp-bb.dion.ne.jp. [124.211.219.252])
+        by smtp.gmail.com with ESMTPSA id k3sm22301785pgc.3.2019.12.23.03.06.53
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 23 Dec 2019 03:06:58 -0800 (PST)
+Subject: Re: [RFC net-next 11/14] tun: run XDP program in tx path
+To:     Jason Wang <jasowang@redhat.com>, David Ahern <dsahern@gmail.com>,
+        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Jesper Dangaard Brouer <jbrouer@redhat.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        "Michael S . Tsirkin" <mst@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Toshiaki Makita <toshiaki.makita1@gmail.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>, netdev@vger.kernel.org,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>
+References: <20191218081050.10170-1-prashantbhole.linux@gmail.com>
+ <20191218081050.10170-12-prashantbhole.linux@gmail.com>
+ <20191218110732.33494957@carbon> <87fthh6ehg.fsf@toke.dk>
+ <20191218181944.3ws2oy72hpyxshhb@ast-mbp.dhcp.thefacebook.com>
+ <35a07230-3184-40bf-69ff-852bdfaf03c6@gmail.com> <874kxw4o4r.fsf@toke.dk>
+ <5eb791bf-1876-0b4b-f721-cb3c607f846c@gmail.com>
+ <75228f98-338e-453c-3ace-b6d36b26c51c@redhat.com>
+ <3654a205-b3fd-b531-80ac-42823e089b39@gmail.com>
+ <3e7bbc36-256f-757b-d4e0-aeaae7009d6c@gmail.com>
+ <58e0f61d-cb17-f517-d76d-8a665af31618@gmail.com>
+ <4d1847f1-73c2-7cf2-11e4-ce66c268b386@redhat.com>
+ <09118670-b0c7-897c-961d-022ad4dfb093@gmail.com>
+ <2ca3d486-a5ee-5c78-e957-74f8932f1f62@redhat.com>
+From:   Prashant Bhole <prashantbhole.linux@gmail.com>
+Message-ID: <fc739287-62d1-e90c-c935-685b8db7970f@gmail.com>
+Date:   Mon, 23 Dec 2019 20:06:53 +0900
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.3.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1577096053-20507-2-git-send-email-madalin.bucur@oss.nxp.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <2ca3d486-a5ee-5c78-e957-74f8932f1f62@redhat.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 23, 2019 at 12:14:07PM +0200, Madalin Bucur wrote:
-> From: Madalin Bucur <madalin.bucur@nxp.com>
-> 
-> Add explicit entries for XFI, SFI to make sure the device
-> tree entries for phy-connection-type "xfi" or "sfi" are
-> properly parsed and differentiated against the existing
-> backplane 10GBASE-KR mode.
-> 
-> Signed-off-by: Madalin Bucur <madalin.bucur@nxp.com>
 
-NAK until we've finished discussing this matter in the previous posting.
 
-> ---
->  include/linux/phy.h | 7 ++++++-
->  1 file changed, 6 insertions(+), 1 deletion(-)
+On 12/23/2019 5:34 PM, Jason Wang wrote:
 > 
-> diff --git a/include/linux/phy.h b/include/linux/phy.h
-> index dd4a91f1feaa..5651c7be0c45 100644
-> --- a/include/linux/phy.h
-> +++ b/include/linux/phy.h
-> @@ -99,7 +99,8 @@ typedef enum {
->  	PHY_INTERFACE_MODE_2500BASEX,
->  	PHY_INTERFACE_MODE_RXAUI,
->  	PHY_INTERFACE_MODE_XAUI,
-> -	/* 10GBASE-KR, XFI, SFI - single lane 10G Serdes */
-> +	PHY_INTERFACE_MODE_XFI,
-> +	PHY_INTERFACE_MODE_SFI,
->  	PHY_INTERFACE_MODE_10GKR,
->  	PHY_INTERFACE_MODE_USXGMII,
->  	PHY_INTERFACE_MODE_MAX,
-> @@ -175,6 +176,10 @@ static inline const char *phy_modes(phy_interface_t interface)
->  		return "rxaui";
->  	case PHY_INTERFACE_MODE_XAUI:
->  		return "xaui";
-> +	case PHY_INTERFACE_MODE_XFI:
-> +		return "xfi";
-> +	case PHY_INTERFACE_MODE_SFI:
-> +		return "sfi";
->  	case PHY_INTERFACE_MODE_10GKR:
->  		return "10gbase-kr";
->  	case PHY_INTERFACE_MODE_USXGMII:
-> -- 
-> 2.1.0
+> On 2019/12/23 下午4:09, Prashant Bhole wrote:
+>>
+>>
+>> On 12/23/19 3:05 PM, Jason Wang wrote:
+>>>
+>>> On 2019/12/21 上午6:17, Prashant Bhole wrote:
+>>>>
+>>>>
+>>>> On 12/21/2019 1:11 AM, David Ahern wrote:
+>>>>> On 12/19/19 9:46 PM, Prashant Bhole wrote:
+>>>>>>
+>>>>>> "It can improve container networking where veth pair links the 
+>>>>>> host and
+>>>>>> the container. Host can set ACL by setting tx path XDP to the veth
+>>>>>> iface."
+>>>>>
+>>>>> Just to be clear, this is the use case of interest to me, not the
+>>>>> offloading. I want programs managed by and viewable by the host OS and
+>>>>> not necessarily viewable by the guest OS or container programs.
+>>>>>
+>>>>
+>>>> Yes the plan is to implement this while having a provision to implement
+>>>> offload feature on top of it.
+>>>
+>>>
+>>> I wonder maybe it's easier to focus on the TX path first then 
+>>> consider building offloading support on top.
+>> Currently working on TX path. I will try make sure that we will be able
+>> to implement offloading on top of it later.
+>>
+>> Thanks.
 > 
+> 
+> Right, then I think it's better to drop patch 13 and bring it back in 
+> the offloading series.
 > 
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-According to speedtest.net: 11.9Mbps down 500kbps up
+Yes that patch actually makes sense in offloading series.
+
+
+
