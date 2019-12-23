@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 95BC2129677
+	by mail.lfdr.de (Postfix) with ESMTP id 22BCB129676
 	for <lists+netdev@lfdr.de>; Mon, 23 Dec 2019 14:29:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726882AbfLWN3E (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Dec 2019 08:29:04 -0500
-Received: from out1-smtp.messagingengine.com ([66.111.4.25]:43017 "EHLO
+        id S1726871AbfLWN3D (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Dec 2019 08:29:03 -0500
+Received: from out1-smtp.messagingengine.com ([66.111.4.25]:48591 "EHLO
         out1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726853AbfLWN3A (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Dec 2019 08:29:00 -0500
+        by vger.kernel.org with ESMTP id S1726795AbfLWN3C (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Dec 2019 08:29:02 -0500
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id C4ACF21BBA;
-        Mon, 23 Dec 2019 08:28:59 -0500 (EST)
+        by mailout.nyi.internal (Postfix) with ESMTP id 3D24921C57;
+        Mon, 23 Dec 2019 08:29:01 -0500 (EST)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Mon, 23 Dec 2019 08:28:59 -0500
+  by compute3.internal (MEProxy); Mon, 23 Dec 2019 08:29:01 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; bh=ka56UIaZ2c29QTHRBQWvkWSodGaLodu/2i/tO6dP7uQ=; b=tXmzFM+v
-        onoctCy3eS6WG6GFi168NoMAYVMT8YhXmqGNZlw9s7c5Lb7jLgPqC0YY/XrNvHs6
-        zF0Fueh+5j13UskrwxjmukGs2uAA3JJwqlNkXwOUIL4K9YPpMGhEla14DnMwtpEb
-        exdwOAurP8gtlm8bhzSKdTOo+zMCawnDLPwd5WQln+S331Y70Aae6KGDi9q3SobN
-        /9lGoWgr4HTBbr3nyezi8Ye5dCMpy68MQw23AIoD3plm8FIUkL3b80m43cV2wSOV
-        frwGJmGSZv3vYmpKtidlwCxBQw2RLuU2mbqzLnqX4WeHmSM67WFgi1ZKR6sW1L6h
-        1JyXXOjFOM4HXQ==
-X-ME-Sender: <xms:G8EAXqJCgqXpsARnc7kXwmlZW46KjU8gSYBT_AUvAXVe7WbMaNjVRA>
+        fm1; bh=8hACKGIjLK5OjYiqNuSwwSyw5hX1OzeS0u//9sTPoKk=; b=lhbKFnqu
+        pRWt7CrJgBv4XN9jfy6JM+uLmeeN8N8NlvsEvAcOkkNAjFtfhdgBT4v9yeyhpWX1
+        vtw6I7XSlElNbnraIbCeKS9yTV5MGOLL7eNsZfuIsm+jsbnZTREC7T6yN69h8rbs
+        YqPlPUU5RJV5KWi0tJlHF4Z9+BLPOKw3FrnQd7wBv3FG97tcoZgDO261rdI28GWm
+        zhFDeecb9Jg9kjMk40RvDqpKlRdFeqaXiBNUC+07jSGrgKpY3IXcxAX1ibgnF9VH
+        5W7ufdAFIg0Ki8tcEiaTtqKw5g4fF+vWudtCgF1aCf0M3+23JmEMImeqMrNTuL5v
+        RusOHp4JXs7eDQ==
+X-ME-Sender: <xms:HcEAXgPE84xkTJW_eUn-6n9JywIMve6lujNLUCnjgnNd8TQMpazzgA>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedufedrvddvtddghedvucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
     dtredttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiugho
     shgthhdrohhrgheqnecukfhppeduleefrdegjedrudeihedrvdehudenucfrrghrrghmpe
     hmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrghenucevlhhushhtvghr
-    ufhiiigvpedt
-X-ME-Proxy: <xmx:G8EAXh2tJvNLOw8ZpqF215iPgPLkDM-n7I0nSOohxpFL8-NmdOdZlg>
-    <xmx:G8EAXmVJNGZmkFkOLXneYuzaCy5YoLW5aNKdLP24KxPx7wPat-iHmw>
-    <xmx:G8EAXrNBnrRRBkBjXJLaJZRNlpRhpQ7MaRz4rLYocwZrDbqw8_-5_g>
-    <xmx:G8EAXnNFwVbZM25x9W5674OPRkZqFMsnhpKCpquwHohGnv_5nq2x9w>
+    ufhiiigvpeeg
+X-ME-Proxy: <xmx:HcEAXkrgFM59I03kNDefpFycqFWSPoBbnSz-2v9CLZILD-AG5Fy5dA>
+    <xmx:HcEAXhuS-TA4jlxBWMPgbVUXaz1kKmxjQOyOxj5p-3fOJK23zq1pXQ>
+    <xmx:HcEAXg6ZNTjwhWU4mxai8BYeAO75FWOXVOgQgeVwy5v0-lhTExnjPg>
+    <xmx:HcEAXlfOxs3bL61Id2ef32R9Of5qUAyb8zkTOSjpdmhunE5iC8bfsA>
 Received: from splinter.mtl.com (unknown [193.47.165.251])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 6D04D3060A88;
-        Mon, 23 Dec 2019 08:28:58 -0500 (EST)
+        by mail.messagingengine.com (Postfix) with ESMTPA id DAFEA3060802;
+        Mon, 23 Dec 2019 08:28:59 -0500 (EST)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, dsahern@gmail.com, roopa@cumulusnetworks.com,
         jakub.kicinski@netronome.com, jiri@mellanox.com,
         Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net-next 4/9] ipv6: Notify multipath route if should be offloaded
-Date:   Mon, 23 Dec 2019 15:28:15 +0200
-Message-Id: <20191223132820.888247-5-idosch@idosch.org>
+Subject: [PATCH net-next 5/9] ipv6: Only Replay routes of interest to new listeners
+Date:   Mon, 23 Dec 2019 15:28:16 +0200
+Message-Id: <20191223132820.888247-6-idosch@idosch.org>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20191223132820.888247-1-idosch@idosch.org>
 References: <20191223132820.888247-1-idosch@idosch.org>
@@ -62,86 +62,93 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ido Schimmel <idosch@mellanox.com>
 
-In a similar fashion to previous patches, only notify the new multipath
-route if it is the first route in the node or if it was appended to such
-route.
+When a new listener is registered to the FIB notification chain it
+receives a dump of all the available routes in the system. Instead, make
+sure to only replay the IPv6 routes that are actually used in the data
+path and are of any interest to the new listener.
 
-The type of the notification (replace vs. append) is determined based on
-the number of routes added ('nhn') and the number of sibling routes. If
-the two do not match, then an append notification should be sent.
+This is done by iterating over all the routing tables in the given
+namespace, but from each traversed node only the first route ('leaf') is
+notified. Multipath routes are notified in a single notification instead
+of one for each nexthop.
+
+Add fib6_rt_dump_tmp() to do that. Later on in the patch set it will be
+renamed to fib6_rt_dump() instead of the existing one.
 
 Signed-off-by: Ido Schimmel <idosch@mellanox.com>
 Reviewed-by: Jiri Pirko <jiri@mellanox.com>
 ---
- net/ipv6/route.c | 48 ++++++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 48 insertions(+)
+ net/ipv6/ip6_fib.c | 40 ++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 40 insertions(+)
 
-diff --git a/net/ipv6/route.c b/net/ipv6/route.c
-index b59940416cb5..c0809f52f9ef 100644
---- a/net/ipv6/route.c
-+++ b/net/ipv6/route.c
-@@ -5017,6 +5017,32 @@ static void ip6_route_mpath_notify(struct fib6_info *rt,
- 		inet6_rt_notify(RTM_NEWROUTE, rt, info, nlflags);
+diff --git a/net/ipv6/ip6_fib.c b/net/ipv6/ip6_fib.c
+index 7cf9554888b0..51cf848e38f0 100644
+--- a/net/ipv6/ip6_fib.c
++++ b/net/ipv6/ip6_fib.c
+@@ -370,6 +370,21 @@ static int call_fib6_entry_notifier(struct notifier_block *nb,
+ 	return call_fib6_notifier(nb, event_type, &info.info);
  }
  
-+static bool ip6_route_mpath_should_notify(const struct fib6_info *rt)
++static int call_fib6_multipath_entry_notifier(struct notifier_block *nb,
++					      enum fib_event_type event_type,
++					      struct fib6_info *rt,
++					      unsigned int nsiblings,
++					      struct netlink_ext_ack *extack)
 +{
-+	bool rt_can_ecmp = rt6_qualify_for_ecmp(rt);
-+	bool should_notify = false;
-+	struct fib6_info *leaf;
-+	struct fib6_node *fn;
++	struct fib6_entry_notifier_info info = {
++		.info.extack = extack,
++		.rt = rt,
++		.nsiblings = nsiblings,
++	};
 +
-+	rcu_read_lock();
-+	fn = rcu_dereference(rt->fib6_node);
-+	if (!fn)
-+		goto out;
-+
-+	leaf = rcu_dereference(fn->leaf);
-+	if (!leaf)
-+		goto out;
-+
-+	if (rt == leaf ||
-+	    (rt_can_ecmp && rt->fib6_metric == leaf->fib6_metric &&
-+	     rt6_qualify_for_ecmp(leaf)))
-+		should_notify = true;
-+out:
-+	rcu_read_unlock();
-+
-+	return should_notify;
++	return call_fib6_notifier(nb, event_type, &info.info);
 +}
 +
- static int ip6_route_multipath_add(struct fib6_config *cfg,
- 				   struct netlink_ext_ack *extack)
- {
-@@ -5147,6 +5173,28 @@ static int ip6_route_multipath_add(struct fib6_config *cfg,
- 		nhn++;
- 	}
+ int call_fib6_entry_notifiers(struct net *net,
+ 			      enum fib_event_type event_type,
+ 			      struct fib6_info *rt,
+@@ -414,16 +429,41 @@ static int fib6_rt_dump(struct fib6_info *rt, struct fib6_dump_arg *arg)
+ 					rt, arg->extack);
+ }
  
-+	/* An in-kernel notification should only be sent in case the new
-+	 * multipath route is added as the first route in the node, or if
-+	 * it was appended to it. We pass 'rt_notif' since it is the first
-+	 * sibling and might allow us to skip some checks in the replace case.
-+	 */
-+	if (ip6_route_mpath_should_notify(rt_notif)) {
-+		enum fib_event_type fib_event;
++static int fib6_rt_dump_tmp(struct fib6_info *rt, struct fib6_dump_arg *arg)
++{
++	enum fib_event_type fib_event = FIB_EVENT_ENTRY_REPLACE_TMP;
++	int err;
 +
-+		if (rt_notif->fib6_nsiblings != nhn - 1)
-+			fib_event = FIB_EVENT_ENTRY_APPEND;
-+		else
-+			fib_event = FIB_EVENT_ENTRY_REPLACE_TMP;
++	if (!rt || rt == arg->net->ipv6.fib6_null_entry)
++		return 0;
 +
-+		err = call_fib6_multipath_entry_notifiers(info->nl_net,
-+							  fib_event, rt_notif,
-+							  nhn - 1, extack);
-+		if (err) {
-+			/* Delete all the siblings that were just added */
-+			err_nh = NULL;
-+			goto add_errout;
-+		}
-+	}
- 	event_type = replace ? FIB_EVENT_ENTRY_REPLACE : FIB_EVENT_ENTRY_ADD;
- 	err = call_fib6_multipath_entry_notifiers(info->nl_net, event_type,
- 						  rt_notif, nhn - 1, extack);
++	if (rt->fib6_nsiblings)
++		err = call_fib6_multipath_entry_notifier(arg->nb, fib_event,
++							 rt,
++							 rt->fib6_nsiblings,
++							 arg->extack);
++	else
++		err = call_fib6_entry_notifier(arg->nb, fib_event, rt,
++					       arg->extack);
++
++	return err;
++}
++
+ static int fib6_node_dump(struct fib6_walker *w)
+ {
+ 	struct fib6_info *rt;
+ 	int err = 0;
+ 
++	err = fib6_rt_dump_tmp(w->leaf, w->args);
++	if (err)
++		goto out;
++
+ 	for_each_fib6_walker_rt(w) {
+ 		err = fib6_rt_dump(rt, w->args);
+ 		if (err)
+ 			break;
+ 	}
++out:
+ 	w->leaf = NULL;
+ 	return err;
+ }
 -- 
 2.24.1
 
