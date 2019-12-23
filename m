@@ -2,104 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C81411291BA
-	for <lists+netdev@lfdr.de>; Mon, 23 Dec 2019 07:06:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 568021291C8
+	for <lists+netdev@lfdr.de>; Mon, 23 Dec 2019 07:09:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726027AbfLWGGM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Dec 2019 01:06:12 -0500
-Received: from us-smtp-1.mimecast.com ([207.211.31.81]:42353 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725822AbfLWGGM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Dec 2019 01:06:12 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1577081171;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=1HktJH0dvsHvV7SiBs6r9/N1aqb3VBRmcc3Ui6snl00=;
-        b=iI8sloR81oKFvCeo5jE3jZFLpJSOb4i8z6nC98biP7qraVrvZTLWhyyw4qPiT3W0lYrn2B
-        pqBdTu/7H4C6ECGImdVOY4qlnSmYvWHrw03clktIvBqhYswtHZWT+ATuMzKb07MZTCnqAK
-        iAAFam8jtkz2TWFLl51kmLsXWbvP6jk=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-157-d_4RgNUXPKOlRs2TezPmfA-1; Mon, 23 Dec 2019 01:06:09 -0500
-X-MC-Unique: d_4RgNUXPKOlRs2TezPmfA-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 036C21856A60;
-        Mon, 23 Dec 2019 06:06:07 +0000 (UTC)
-Received: from [10.72.12.184] (ovpn-12-184.pek2.redhat.com [10.72.12.184])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id D52481001DF0;
-        Mon, 23 Dec 2019 06:05:40 +0000 (UTC)
-Subject: Re: [RFC net-next 11/14] tun: run XDP program in tx path
-To:     Prashant Bhole <prashantbhole.linux@gmail.com>,
-        David Ahern <dsahern@gmail.com>,
-        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Jesper Dangaard Brouer <jbrouer@redhat.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        "Michael S . Tsirkin" <mst@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
+        id S1726763AbfLWGJh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Dec 2019 01:09:37 -0500
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:38619 "EHLO
+        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725867AbfLWGJh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Dec 2019 01:09:37 -0500
+Received: by mail-wm1-f68.google.com with SMTP id u2so15088251wmc.3;
+        Sun, 22 Dec 2019 22:09:35 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=kBek2qMpkl76XzsVkCJQfX3XYSAhe9VKKtzp8ddYINw=;
+        b=QLqFEjkxit+AHR2YIaqlGQBzXeEdZNYEsnovuK8u1VnQuJ9YuuMu2HHVwyzXFH4Qaa
+         iEsSAIdwrDakK5vffy94ciajrYMEqezGrO7jbn8M/3W6By2TxsumAwwN5cA60BUBvXvb
+         Kl4FPZXm4U6/avPEal/PbEaSps8EXzsmVxT1E3j1bpI6AZACqQ0XTfnJ44Kyiz2qo08h
+         rxyy4GKRyVsMLxM+U46w+f38Wfa620SD0MP4IhxPjXVRLCcLVi3Q89PNjQIt5A2+3tHp
+         63yDzFFHW+45pPCOMk7q/XQ/3rRVAZFB0fohk04ca13bW3LmN+F9W8uJ89fG2rQJoqcf
+         Qh3w==
+X-Gm-Message-State: APjAAAXEpXNc+5xTrfVYn7xj98rRsMLwPSRLjazkcGqN0qIGZO0HmSj0
+        L2IXSNDYEl25nO0KmosF7ahO1oiFXn0VyU/PVlU=
+X-Google-Smtp-Source: APXvYqzduGzxW0Eq8AtIuTC/t2Jdrao10koS+96PhhcRz3RUy8glgGTBnhBhSnilH6eoF1DYQito+ijf/Sp8rKfGPwY=
+X-Received: by 2002:a7b:c5d8:: with SMTP id n24mr28455099wmk.124.1577081374906;
+ Sun, 22 Dec 2019 22:09:34 -0800 (PST)
+MIME-Version: 1.0
+References: <20191221162158.rw6xqqktubozg6fg@ast-mbp.dhcp.thefacebook.com>
+ <20191223030530.725937-1-namhyung@kernel.org> <CAEf4BzaGfsF352kWu1zZe+yXSRm4c9LQ0U57VnRq2EdtjeQutw@mail.gmail.com>
+ <CAEf4BzbyBgDN5svEcfpyjoViixhn2iGBs1j+jyvNhfjPp_1E=w@mail.gmail.com>
+In-Reply-To: <CAEf4BzbyBgDN5svEcfpyjoViixhn2iGBs1j+jyvNhfjPp_1E=w@mail.gmail.com>
+From:   Namhyung Kim <namhyung@kernel.org>
+Date:   Mon, 23 Dec 2019 15:09:23 +0900
+Message-ID: <CAM9d7ch1=pmgkFbgGr2YignQwdNjke2QeOAFLCFYu8L8J-Z8vw@mail.gmail.com>
+Subject: Re: [PATCH bpf] libbpf: Fix build on read-only filesystems
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Toshiaki Makita <toshiaki.makita1@gmail.com>,
         Martin KaFai Lau <kafai@fb.com>,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>, netdev@vger.kernel.org,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>
-References: <20191218081050.10170-1-prashantbhole.linux@gmail.com>
- <20191218081050.10170-12-prashantbhole.linux@gmail.com>
- <20191218110732.33494957@carbon> <87fthh6ehg.fsf@toke.dk>
- <20191218181944.3ws2oy72hpyxshhb@ast-mbp.dhcp.thefacebook.com>
- <35a07230-3184-40bf-69ff-852bdfaf03c6@gmail.com> <874kxw4o4r.fsf@toke.dk>
- <5eb791bf-1876-0b4b-f721-cb3c607f846c@gmail.com>
- <75228f98-338e-453c-3ace-b6d36b26c51c@redhat.com>
- <3654a205-b3fd-b531-80ac-42823e089b39@gmail.com>
- <3e7bbc36-256f-757b-d4e0-aeaae7009d6c@gmail.com>
- <58e0f61d-cb17-f517-d76d-8a665af31618@gmail.com>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <4d1847f1-73c2-7cf2-11e4-ce66c268b386@redhat.com>
-Date:   Mon, 23 Dec 2019 14:05:36 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
-MIME-Version: 1.0
-In-Reply-To: <58e0f61d-cb17-f517-d76d-8a665af31618@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
-Content-Transfer-Encoding: quoted-printable
+        Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Jiri Olsa <jolsa@redhat.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Shuah Khan <shuah@kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        linux-perf-users <linux-perf-users@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello,
 
-On 2019/12/21 =E4=B8=8A=E5=8D=886:17, Prashant Bhole wrote:
+On Mon, Dec 23, 2019 at 2:55 PM Andrii Nakryiko
+<andrii.nakryiko@gmail.com> wrote:
 >
+> On Sun, Dec 22, 2019 at 9:45 PM Andrii Nakryiko
+> <andrii.nakryiko@gmail.com> wrote:
+> >
+> > On Sun, Dec 22, 2019 at 7:05 PM Namhyung Kim <namhyung@kernel.org> wrote:
+> > >
+> > > I got the following error when I tried to build perf on a read-only
+> > > filesystem with O=dir option.
+> > >
+> > >   $ cd /some/where/ro/linux/tools/perf
+> > >   $ make O=$HOME/build/perf
+> > >   ...
+> > >     CC       /home/namhyung/build/perf/lib.o
+> > >   /bin/sh: bpf_helper_defs.h: Read-only file system
+> > >   make[3]: *** [Makefile:184: bpf_helper_defs.h] Error 1
+> > >   make[2]: *** [Makefile.perf:778: /home/namhyung/build/perf/libbpf.a] Error 2
+> > >   make[2]: *** Waiting for unfinished jobs....
+> > >     LD       /home/namhyung/build/perf/libperf-in.o
+> > >     AR       /home/namhyung/build/perf/libperf.a
+> > >     PERF_VERSION = 5.4.0
+> > >   make[1]: *** [Makefile.perf:225: sub-make] Error 2
+> > >   make: *** [Makefile:70: all] Error 2
+> > >
+> > > It was becaused bpf_helper_defs.h was generated in current directory.
+> > > Move it to OUTPUT directory.
+> > >
+> > > Signed-off-by: Namhyung Kim <namhyung@kernel.org>
+> > > ---
+> >
+> > Looks good, thanks!
 >
-> On 12/21/2019 1:11 AM, David Ahern wrote:
->> On 12/19/19 9:46 PM, Prashant Bhole wrote:
->>>
->>> "It can improve container networking where veth pair links the host a=
-nd
->>> the container. Host can set ACL by setting tx path XDP to the veth
->>> iface."
->>
->> Just to be clear, this is the use case of interest to me, not the
->> offloading. I want programs managed by and viewable by the host OS and
->> not necessarily viewable by the guest OS or container programs.
->>
+> just one minor thing: bpf_helper_defs.h has to be added to .gitignore
+> under selftests/bpf now
 >
-> Yes the plan is to implement this while having a provision to implement
-> offload feature on top of it.
+> >
+> > Tested-by: Andrii Nakryiko <andriin@fb.com>
+> > Acked-by: Andrii Nakryiko <andriin@fb.com>
 
-
-I wonder maybe it's easier to focus on the TX path first then consider=20
-building offloading support on top.
+Thanks a lot for the review, I'll send v3 soon
 
 Thanks
-
+Namhyung
