@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D6E2D129AD6
-	for <lists+netdev@lfdr.de>; Mon, 23 Dec 2019 21:28:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 55147129AD7
+	for <lists+netdev@lfdr.de>; Mon, 23 Dec 2019 21:28:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727100AbfLWU2G (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Dec 2019 15:28:06 -0500
-Received: from mail-pf1-f201.google.com ([209.85.210.201]:54834 "EHLO
-        mail-pf1-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726829AbfLWU2F (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Dec 2019 15:28:05 -0500
-Received: by mail-pf1-f201.google.com with SMTP id v14so12419052pfm.21
-        for <netdev@vger.kernel.org>; Mon, 23 Dec 2019 12:28:04 -0800 (PST)
+        id S1727114AbfLWU2J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Dec 2019 15:28:09 -0500
+Received: from mail-pl1-f201.google.com ([209.85.214.201]:37752 "EHLO
+        mail-pl1-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726884AbfLWU2I (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Dec 2019 15:28:08 -0500
+Received: by mail-pl1-f201.google.com with SMTP id t21so7627270plo.4
+        for <netdev@vger.kernel.org>; Mon, 23 Dec 2019 12:28:08 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=Anzi+1t6PcAe6iqhvZbFZ2mRDmg10rGxXywKXYDuhag=;
-        b=OZL4q8mB/gAa1VPayZ4NZ80WmStRaBP31541n8n33k9HWuXtRVq74BEwfVb9zl2+2F
-         n1JXkA8F/q6w36tg7Grefol9ufj6mFinCmlGGe1e7ieYO8p69r2VQ/Y88KYshls8OU5i
-         IwJPEGbD/f4ZpFDjMiM56thEhk8AwXadZB2VQ5N77oEw3CU3BFYgNSXFnPrer89gLE0l
-         Y/hIPf4dKmg97AeWaIk5g1jonG51eJK0sdsC3XTvdtky4decRIM9vbpa2aCPE51gMM+R
-         sPbmOvJBFiH0MLoai76nQWChjDEyyvFFmQlT9g69gF6hSFx1a22qu7RhVM6JKGN0RI8r
-         hNCA==
+        bh=6CLddxOiqlpuryTo/OIgSRM2J2KWyQujjlTnXLQ5+eI=;
+        b=eE1wGr4iXH2TBBbpegVj5vN5ORbDBxzgm68ILweyUH9+IzhjEMyxcL+3hCiwhob938
+         6vWOhDYGVmUYcbw15GOzE8Y7u4fzsixJo75pHb42eCl+Ka/1Fjqr2VUoacKWkx8wimkn
+         7DVevh5R2Aikn6m8F1ZLwIyHoUWVddqG1MktjhKwYjcRVlgCu7C22ww+Opbo+wKSDwjN
+         u2W3WULlRF17IziiP/fo3OhVwfqEjzfami4q8M5Pga7VM7gNlOFDMQyo7wXc7ysngqx1
+         GtQQq46r66stR8yZHEp+xuL+3wqbG0rzRH2JoMzQg2iCPvTBjN7DgXyNSUs5tGIVncbl
+         /NNw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=Anzi+1t6PcAe6iqhvZbFZ2mRDmg10rGxXywKXYDuhag=;
-        b=i6bQ2ATgaUljUPVmZlGl4MF3U1pU/P6iyZpksa/oLFtvyJU+ak9VB3R5QkM3xF6Y1e
-         eyoZBYjtEN+TEL38kZsxk6mzxilHiSKHhc6+Gpt3j7JPptD0syHl5sE32VTuoLJoV3Ih
-         r+lxCScpjRxvdbhX1Zklrp5ZynBdFy3pDr4aDYGjx1VOjJsao0pNyibk9PhhaOPJw3aq
-         /BVx9Z1TaGmDsISAxVeLOURHunfaNTHgsGyErqcmKCNnq/17//eq44AoeOVuKTq7wqko
-         RuH0iDO8myJXjx55qfyR/pDfQ9asee9Xbd/3FTWks+3VA6nx7vfV8sazbXR7pbqLJvaB
-         98+A==
-X-Gm-Message-State: APjAAAUj0wOoSFVin58/dMoD7EwBwsmE/4iQsw1+uRrBFM8O2wEJ271k
-        +EfO4/+IZanz/bo8FgTi7yQo9aYi74lriw==
-X-Google-Smtp-Source: APXvYqwBFzLwwYLSB9xDJQz4ug1b+zwL1AqpULLp3rUXNzjkNkn4JFztb02gOmFb22nlh/B83dTVPWfUt0c3dA==
-X-Received: by 2002:a65:5bc3:: with SMTP id o3mr32613346pgr.226.1577132884374;
- Mon, 23 Dec 2019 12:28:04 -0800 (PST)
-Date:   Mon, 23 Dec 2019 12:27:51 -0800
+        bh=6CLddxOiqlpuryTo/OIgSRM2J2KWyQujjlTnXLQ5+eI=;
+        b=QMlzGIj3vwKU64Fka7mlADff+csU2aYluXj9xzfIIZeXhcvB0Rsn5tSXcK5RobHwKe
+         dR27rPtEqwgazy8/jfhEcTl3I4Ha64B21Ff23+zzVyakH/DYO8s+Xxhpc5EevmBnB+T1
+         TUju1kWh9KbRgW+tWRBH0L67kDDlBWuhT4SI2TY2HmE//sxlR2xITXRsy0gGEwMcO8/s
+         laqnOA4KhO98EHh/I6I2B3tqFq/RHCHOlFj0nU02rMb9Mw7Hmt7D3CqKOfPwBERFOiJg
+         WSA4+2iopZ0GE5GkaQ26lQGZ+PEca3pYs8EW+4XL0s9QbcANI7R1LIWZdg/apf8DL6bo
+         Hfdg==
+X-Gm-Message-State: APjAAAUUmNJqFskggdGCZu/UQR0w/lM5AGa/0fQno1v3YpeqN+R1Pi4z
+        Luj+/3G2zz+uek8lvVZkV9/yV88CVlUkyQ==
+X-Google-Smtp-Source: APXvYqwu9HpBKfGLtHu2TrpomI8ogJJwRKDpdVVL1sf1w9pydYF7ZOHuTWmOezvAeDJG5IiK9Hs0D77XkXgupA==
+X-Received: by 2002:a63:a511:: with SMTP id n17mr32721086pgf.338.1577132887734;
+ Mon, 23 Dec 2019 12:28:07 -0800 (PST)
+Date:   Mon, 23 Dec 2019 12:27:52 -0800
 In-Reply-To: <20191223202754.127546-1-edumazet@google.com>
-Message-Id: <20191223202754.127546-3-edumazet@google.com>
+Message-Id: <20191223202754.127546-4-edumazet@google.com>
 Mime-Version: 1.0
 References: <20191223202754.127546-1-edumazet@google.com>
 X-Mailer: git-send-email 2.24.1.735.g03f4e72817-goog
-Subject: [PATCH net-next v2 2/5] tcp_cubic: remove one conditional from hystart_update()
+Subject: [PATCH net-next v2 3/5] tcp_cubic: switch bictcp_clock() to usec resolution
 From:   Eric Dumazet <edumazet@google.com>
 To:     "David S . Miller" <davem@davemloft.net>
 Cc:     netdev <netdev@vger.kernel.org>,
@@ -62,39 +62,147 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If we initialize ca->curr_rtt to ~0U, we do not need to test
-for zero value in hystart_update()
+Current 1ms clock feeds ca->round_start, ca->delay_min,
+ca->last_ack.
 
-We only read ca->curr_rtt if at least HYSTART_MIN_SAMPLES have
-been processed, and thus ca->curr_rtt will have a sane value.
+This is quite problematic for data-center flows, where delay_min
+is way below 1 ms.
+
+This means Hystart Train detection triggers every time jiffies value
+is updated, since "((s32)(now - ca->round_start) > ca->delay_min >> 4)"
+expression becomes true.
+
+This kind of random behavior can be solved by reusing the existing
+usec timestamp that TCP keeps in tp->tcp_mstamp
+
+Note that a followup patch will tweak things a bit, because
+during slow start, GRO aggregation on receivers naturally
+increases the RTT as TSO packets gradually come to ~64KB size.
+
+To recap, right after this patch CUBIC Hystart train detection
+is more aggressive, since short RTT flows might exit slow start at
+cwnd = 20, instead of being possibly unbounded.
+
+Following patch will address this problem.
 
 Signed-off-by: Eric Dumazet <edumazet@google.com>
 ---
- net/ipv4/tcp_cubic.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ net/ipv4/tcp_cubic.c | 35 ++++++++++++++---------------------
+ 1 file changed, 14 insertions(+), 21 deletions(-)
 
 diff --git a/net/ipv4/tcp_cubic.c b/net/ipv4/tcp_cubic.c
-index 297936033c335ee57ba6205de50c5ef06b90da60..5eff762acd7fe1510eb39fc789b488de8ca648de 100644
+index 5eff762acd7fe1510eb39fc789b488de8ca648de..068775b91fb5790e6e60a6490b49e7a266e4ed51 100644
 --- a/net/ipv4/tcp_cubic.c
 +++ b/net/ipv4/tcp_cubic.c
-@@ -133,7 +133,7 @@ static inline void bictcp_hystart_reset(struct sock *sk)
+@@ -40,8 +40,8 @@
  
- 	ca->round_start = ca->last_ack = bictcp_clock();
- 	ca->end_seq = tp->snd_nxt;
--	ca->curr_rtt = 0;
-+	ca->curr_rtt = ~0U;
- 	ca->sample_cnt = 0;
+ /* Number of delay samples for detecting the increase of delay */
+ #define HYSTART_MIN_SAMPLES	8
+-#define HYSTART_DELAY_MIN	(4U<<3)
+-#define HYSTART_DELAY_MAX	(16U<<3)
++#define HYSTART_DELAY_MIN	(4000U)	/* 4 ms */
++#define HYSTART_DELAY_MAX	(16000U)	/* 16 ms */
+ #define HYSTART_DELAY_THRESH(x)	clamp(x, HYSTART_DELAY_MIN, HYSTART_DELAY_MAX)
+ 
+ static int fast_convergence __read_mostly = 1;
+@@ -53,7 +53,7 @@ static int tcp_friendliness __read_mostly = 1;
+ static int hystart __read_mostly = 1;
+ static int hystart_detect __read_mostly = HYSTART_ACK_TRAIN | HYSTART_DELAY;
+ static int hystart_low_window __read_mostly = 16;
+-static int hystart_ack_delta __read_mostly = 2;
++static int hystart_ack_delta_us __read_mostly = 2000;
+ 
+ static u32 cube_rtt_scale __read_mostly;
+ static u32 beta_scale __read_mostly;
+@@ -77,8 +77,8 @@ MODULE_PARM_DESC(hystart_detect, "hybrid slow start detection mechanisms"
+ 		 " 1: packet-train 2: delay 3: both packet-train and delay");
+ module_param(hystart_low_window, int, 0644);
+ MODULE_PARM_DESC(hystart_low_window, "lower bound cwnd for hybrid slow start");
+-module_param(hystart_ack_delta, int, 0644);
+-MODULE_PARM_DESC(hystart_ack_delta, "spacing between ack's indicating train (msecs)");
++module_param(hystart_ack_delta_us, int, 0644);
++MODULE_PARM_DESC(hystart_ack_delta_us, "spacing between ack's indicating train (usecs)");
+ 
+ /* BIC TCP Parameters */
+ struct bictcp {
+@@ -89,7 +89,7 @@ struct bictcp {
+ 	u32	bic_origin_point;/* origin point of bic function */
+ 	u32	bic_K;		/* time to origin point
+ 				   from the beginning of the current epoch */
+-	u32	delay_min;	/* min delay (msec << 3) */
++	u32	delay_min;	/* min delay (usec) */
+ 	u32	epoch_start;	/* beginning of an epoch */
+ 	u32	ack_cnt;	/* number of acks */
+ 	u32	tcp_cwnd;	/* estimated tcp cwnd */
+@@ -117,13 +117,9 @@ static inline void bictcp_reset(struct bictcp *ca)
+ 	ca->found = 0;
  }
  
-@@ -402,7 +402,7 @@ static void hystart_update(struct sock *sk, u32 delay)
- 	if (hystart_detect & HYSTART_DELAY) {
- 		/* obtain the minimum delay of more than sampling packets */
- 		if (ca->sample_cnt < HYSTART_MIN_SAMPLES) {
--			if (ca->curr_rtt == 0 || ca->curr_rtt > delay)
-+			if (ca->curr_rtt > delay)
- 				ca->curr_rtt = delay;
+-static inline u32 bictcp_clock(void)
++static inline u32 bictcp_clock_us(const struct sock *sk)
+ {
+-#if HZ < 1000
+-	return ktime_to_ms(ktime_get_real());
+-#else
+-	return jiffies_to_msecs(jiffies);
+-#endif
++	return tcp_sk(sk)->tcp_mstamp;
+ }
  
- 			ca->sample_cnt++;
+ static inline void bictcp_hystart_reset(struct sock *sk)
+@@ -131,7 +127,7 @@ static inline void bictcp_hystart_reset(struct sock *sk)
+ 	struct tcp_sock *tp = tcp_sk(sk);
+ 	struct bictcp *ca = inet_csk_ca(sk);
+ 
+-	ca->round_start = ca->last_ack = bictcp_clock();
++	ca->round_start = ca->last_ack = bictcp_clock_us(sk);
+ 	ca->end_seq = tp->snd_nxt;
+ 	ca->curr_rtt = ~0U;
+ 	ca->sample_cnt = 0;
+@@ -276,7 +272,7 @@ static inline void bictcp_update(struct bictcp *ca, u32 cwnd, u32 acked)
+ 	 */
+ 
+ 	t = (s32)(tcp_jiffies32 - ca->epoch_start);
+-	t += msecs_to_jiffies(ca->delay_min >> 3);
++	t += usecs_to_jiffies(ca->delay_min);
+ 	/* change the unit from HZ to bictcp_HZ */
+ 	t <<= BICTCP_HZ;
+ 	do_div(t, HZ);
+@@ -382,12 +378,12 @@ static void hystart_update(struct sock *sk, u32 delay)
+ 	struct bictcp *ca = inet_csk_ca(sk);
+ 
+ 	if (hystart_detect & HYSTART_ACK_TRAIN) {
+-		u32 now = bictcp_clock();
++		u32 now = bictcp_clock_us(sk);
+ 
+ 		/* first detection parameter - ack-train detection */
+-		if ((s32)(now - ca->last_ack) <= hystart_ack_delta) {
++		if ((s32)(now - ca->last_ack) <= hystart_ack_delta_us) {
+ 			ca->last_ack = now;
+-			if ((s32)(now - ca->round_start) > ca->delay_min >> 4) {
++			if ((s32)(now - ca->round_start) > ca->delay_min >> 1) {
+ 				ca->found = 1;
+ 				NET_INC_STATS(sock_net(sk),
+ 					      LINUX_MIB_TCPHYSTARTTRAINDETECT);
+@@ -421,9 +417,6 @@ static void hystart_update(struct sock *sk, u32 delay)
+ 	}
+ }
+ 
+-/* Track delayed acknowledgment ratio using sliding window
+- * ratio = (15*ratio + sample) / 16
+- */
+ static void bictcp_acked(struct sock *sk, const struct ack_sample *sample)
+ {
+ 	const struct tcp_sock *tp = tcp_sk(sk);
+@@ -438,7 +431,7 @@ static void bictcp_acked(struct sock *sk, const struct ack_sample *sample)
+ 	if (ca->epoch_start && (s32)(tcp_jiffies32 - ca->epoch_start) < HZ)
+ 		return;
+ 
+-	delay = (sample->rtt_us << 3) / USEC_PER_MSEC;
++	delay = sample->rtt_us;
+ 	if (delay == 0)
+ 		delay = 1;
+ 
 -- 
 2.24.1.735.g03f4e72817-goog
 
