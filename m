@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 75C82129ACC
-	for <lists+netdev@lfdr.de>; Mon, 23 Dec 2019 21:20:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B38EF129ACD
+	for <lists+netdev@lfdr.de>; Mon, 23 Dec 2019 21:20:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727047AbfLWUUX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Dec 2019 15:20:23 -0500
-Received: from mail-pf1-f202.google.com ([209.85.210.202]:42906 "EHLO
-        mail-pf1-f202.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726787AbfLWUUW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Dec 2019 15:20:22 -0500
-Received: by mail-pf1-f202.google.com with SMTP id p126so6700085pfb.9
-        for <netdev@vger.kernel.org>; Mon, 23 Dec 2019 12:20:22 -0800 (PST)
+        id S1727072AbfLWUU2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Dec 2019 15:20:28 -0500
+Received: from mail-pl1-f201.google.com ([209.85.214.201]:52464 "EHLO
+        mail-pl1-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726787AbfLWUU1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Dec 2019 15:20:27 -0500
+Received: by mail-pl1-f201.google.com with SMTP id x10so8741997plo.19
+        for <netdev@vger.kernel.org>; Mon, 23 Dec 2019 12:20:26 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=nKu4Nf5lomBleAao937WS1G/XEYFtthoweeyAGHX+s4=;
-        b=UdyKbTOnTgb8Tef/GRcMO2z6s7LTE/5IcnR49BlubfNX7JI+QNYzXz+tysUc6Jy2X1
-         6FC8ABi4jfDaIf119UrWXA2i4nuKnaY52bASyfVqWChsXasE26yQF27oP7I8TuNCtppa
-         sSv3WhN/Q+5QclsegfRrZSDx00/WTr3c/b1dgb1hcbrTPqaHxFT2koSAJibTDWLHJnwI
-         dVnNO8phlL77jNpjmBRyl8UeRWh94dM58sHidP2RnYDaEakWPN4A1uePc51vOMt444HD
-         VA4wytSfg3yBj4m90KLKCatANprGkg1U8gR7J1QG+uKEoc/rYjcDsgY3v0h2AjQ9uzdO
-         /XMw==
+        bh=A3DbLOdyNAUecDRtpjaIblc9q6MqYgAuowRkHmUyU4c=;
+        b=hmcmKEWIYS5+IZErHJxOhg6/bOV+WGSqGmCbbIf/J1CduPghIsBIJ6zD0HRag5k61y
+         V20b54QuSfLd1uFqBrK7QKdw8ngjQp03TRwq4bxDyl2TVBjmQ6urrey/vqgya+S4FDnl
+         oMqsSdXHgYXzkqvzclR/0bluGfhVo/Oa1mmzmyCOoYXinaiJdjOYbDqxryuSQUkA8mxe
+         47tfklQ2YKEavuLBI6ZY8Wg8R2L5tzpOtRmg7kcXIs8y93HraMhPH0OpA+HR7OpkmtOH
+         r7RF+ATpylZrXAWEtlUOMAD3Hm9+XWTk4LXBEwqazUhxidHQblbs2vqGgfIx1I8VcdEx
+         YJbA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=nKu4Nf5lomBleAao937WS1G/XEYFtthoweeyAGHX+s4=;
-        b=PVVb+GtAdo/VTII5V3xvp5YI8NKNIE2dxtE4bqOfW7bchp0rSl5NSkolSkwTZQ6ViF
-         MUCwXhZEC2m7Tf/LE5vftPuMVARzcr+LrVdpLvPkN6VD7r2pbYKH8iuUBsVb/BKKU+F2
-         jlqbJKCP+Z5w3O2P6Rsa6pZ5z+bGlBNKwkdbu9D1szAaosO42JF89zRtDUSPnPm0Iopq
-         Hshbsl51OnM/gAoHxUyYl8ibgTIMcVpm35kcMB6zozRsZWfMXDWQHiXeot9lwFETY3u6
-         xWYOvr5DDsQSQ9cVjE4kHeHMeQcgAb+CsGmXdvuE4AO+AYOsl/E6Lsx4oLAodoye4YqU
-         7/7g==
-X-Gm-Message-State: APjAAAU5P8ZUUKoBMiqqD6jULMjB7JP9ukvGWbxlb/TxoNGkbU64T4Eq
-        L5dcPwaqicubhJBV0wy6aYrkHQj4A3Gkvg==
-X-Google-Smtp-Source: APXvYqzJABChd5xyFyKsJRcPqX6UxtEqgsMpL5QSe68ElzzSHwGS8ZwM0XyfytALP2XG2Wt0qacPDP66xi8n3Q==
-X-Received: by 2002:a65:66ce:: with SMTP id c14mr34262456pgw.262.1577132421992;
- Mon, 23 Dec 2019 12:20:21 -0800 (PST)
-Date:   Mon, 23 Dec 2019 12:20:04 -0800
+        bh=A3DbLOdyNAUecDRtpjaIblc9q6MqYgAuowRkHmUyU4c=;
+        b=HHAVWXA0F/JZgGnoHomQfeniIK5aSwyLIJNVVHnkkjVWKU3/LUsocFy5fHcrPQnvEm
+         ZVN4r7BTf5rrgazFSp7tqmuGq1kAHtu4nqFrK3FSSFVsk4ZFFTVIKZFP3IquIrvTiT9N
+         m9Hqdh6t9AZNoejNZqUdFbH5bi4+bzN+E+PdZGyEcxkWpVnzGhxLGHySfVTC4u9OPXbZ
+         CI67+kvo9j5mr8cLzq4gu/enUA7Uznv3GaMG41PO2R2xmUyQCR6NhVK/77HrPUlkV2DI
+         +VGqam1j4spfehb8EKmMcfkqLkZqV0ehelGfb4eM2rddE39mnlAQXrFXp6mc4GJl02qA
+         QLqQ==
+X-Gm-Message-State: APjAAAWrgdUOtjcF9ozohhKwFHodc+vWhx5/w3XkHuTjQPs6q4huYgRs
+        tz3RDARd0WGRvj8UKIk6xSVH1mGgZWGLSA==
+X-Google-Smtp-Source: APXvYqzJgbC0UCI2O4aB/BN9YJwxLZeACEWwqrWxltqpO/No2jQNGWRy540T51MQ825BHNFk7t+W6bKiMyKvFg==
+X-Received: by 2002:a63:4723:: with SMTP id u35mr32124107pga.194.1577132425509;
+ Mon, 23 Dec 2019 12:20:25 -0800 (PST)
+Date:   Mon, 23 Dec 2019 12:20:05 -0800
 In-Reply-To: <20191223202005.104713-1-edumazet@google.com>
-Message-Id: <20191223202005.104713-5-edumazet@google.com>
+Message-Id: <20191223202005.104713-6-edumazet@google.com>
 Mime-Version: 1.0
 References: <20191223202005.104713-1-edumazet@google.com>
 X-Mailer: git-send-email 2.24.1.735.g03f4e72817-goog
-Subject: [PATCH net-next 4/5] tcp_cubic: tweak Hystart detection for short RTT flows
+Subject: [PATCH net-next 5/5] tcp_cubic: make Hystart aware of pacing
 From:   Eric Dumazet <edumazet@google.com>
 To:     "David S . Miller" <davem@davemloft.net>
 Cc:     netdev <netdev@vger.kernel.org>,
@@ -62,92 +62,101 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-After switching ca->delay_min to usec resolution, we exit
-slow start prematurely for very low RTT flows, setting
-snd_ssthresh to 20.
+For years we disabled Hystart ACK train detection at Google
+because it was fooled by TCP pacing.
 
-The reason is that delay_min is fed with RTT of small packet
-trains. Then as cwnd is increased, TCP sends bigger TSO packets.
+ACK train detection uses a simple heuristic, detecting if
+we receive ACK past half the RTT, to exit slow start before
+hitting the bottleneck and experience massive drops.
 
-LRO/GRO aggregation and/or interrupt mitigation strategies
-on receiver tend to inflate RTT samples.
-
-Fix this by adding to delay_min the expected delay of
-two TSO packets, given current pacing rate.
+But pacing by design might delay packets up to RTT/2,
+so we need to tweak the Hystart logic to be aware of this
+extra delay.
 
 Tested:
+ Added a 100 usec delay at receiver.
 
-Sender uses pfifo_fast qdisc
-
-Before :
-$ nstat -n;for f in {1..10}; do ./super_netperf 1 -H lpaa24 -l -4000000; done;nstat|egrep "Hystart"
-  11348
-  11707
-  11562
-  11428
-  11773
-  11534
-   9878
-  11693
-  10597
-  10968
+Before:
+nstat -n;for f in {1..10}; do ./super_netperf 1 -H lpaa24 -l -4000000; done;nstat|egrep "Hystart"
+   9117
+   7057
+   9553
+   8300
+   7030
+   6849
+   9533
+  10126
+   6876
+   8473
 TcpExtTCPHystartTrainDetect     10                 0.0
-TcpExtTCPHystartTrainCwnd       200                0.0
+TcpExtTCPHystartTrainCwnd       1230               0.0
 
 After :
-$ nstat -n;for f in {1..10}; do ./super_netperf 1 -H lpaa24 -l -4000000; done;nstat|egrep "Hystart"
-  14877
-  14517
-  15797
-  18466
-  17376
-  14833
-  17558
-  17933
-  16039
-  18059
+nstat -n;for f in {1..10}; do ./super_netperf 1 -H lpaa24 -l -4000000; done;nstat|egrep "Hystart"
+   9845
+  10103
+  10866
+  11096
+  11936
+  11487
+  11773
+  12188
+  11066
+  11894
 TcpExtTCPHystartTrainDetect     10                 0.0
-TcpExtTCPHystartTrainCwnd       1670               0.0
+TcpExtTCPHystartTrainCwnd       6462               0.0
+
+Disabling Hystart ACK Train detection gives similar numbers
+
+echo 2 >/sys/module/tcp_cubic/parameters/hystart_detect
+nstat -n;for f in {1..10}; do ./super_netperf 1 -H lpaa24 -l -4000000; done;nstat|egrep "Hystart"
+  11173
+  10954
+  12455
+  10627
+  11578
+  11583
+  11222
+  10880
+  10665
+  11366
 
 Signed-off-by: Eric Dumazet <edumazet@google.com>
 ---
- net/ipv4/tcp_cubic.c | 23 +++++++++++++++++++++--
- 1 file changed, 21 insertions(+), 2 deletions(-)
+ net/ipv4/tcp_cubic.c | 13 ++++++++++++-
+ 1 file changed, 12 insertions(+), 1 deletion(-)
 
 diff --git a/net/ipv4/tcp_cubic.c b/net/ipv4/tcp_cubic.c
-index 068775b91fb5790e6e60a6490b49e7a266e4ed51..0e5428ed04fe4e50627e21a53c3d17f9f2dade4d 100644
+index 0e5428ed04fe4e50627e21a53c3d17f9f2dade4d..8ed25999381919af3dda59402a8c354c6115df24 100644
 --- a/net/ipv4/tcp_cubic.c
 +++ b/net/ipv4/tcp_cubic.c
-@@ -436,8 +436,27 @@ static void bictcp_acked(struct sock *sk, const struct ack_sample *sample)
- 		delay = 1;
+@@ -376,6 +376,7 @@ static void hystart_update(struct sock *sk, u32 delay)
+ {
+ 	struct tcp_sock *tp = tcp_sk(sk);
+ 	struct bictcp *ca = inet_csk_ca(sk);
++	u32 threshold;
  
- 	/* first time call or link delay decreases */
--	if (ca->delay_min == 0 || ca->delay_min > delay)
--		ca->delay_min = delay;
-+	if (ca->delay_min == 0 || ca->delay_min > delay) {
-+		unsigned long rate = READ_ONCE(sk->sk_pacing_rate);
+ 	if (hystart_detect & HYSTART_ACK_TRAIN) {
+ 		u32 now = bictcp_clock_us(sk);
+@@ -383,7 +384,17 @@ static void hystart_update(struct sock *sk, u32 delay)
+ 		/* first detection parameter - ack-train detection */
+ 		if ((s32)(now - ca->last_ack) <= hystart_ack_delta_us) {
+ 			ca->last_ack = now;
+-			if ((s32)(now - ca->round_start) > ca->delay_min >> 1) {
 +
-+		/* Account for TSO/GRO delays.
-+		 * Otherwise short RTT flows could get too small ssthresh,
-+		 * since during slow start we begin with small TSO packets
-+		 * and could lower ca->delay_min too much.
-+		 * Ideally even with a very small RTT we would like to have
-+		 * at least one TSO packet being sent and received by GRO,
-+		 * and another one in qdisc layer.
-+		 * We apply another 100% factor because @rate is doubled at
-+		 * this point.
-+		 * We cap the cushion to 1ms.
-+		 */
-+		if (rate)
-+			delay += min_t(u64, USEC_PER_MSEC,
-+				       div64_ul((u64)GSO_MAX_SIZE *
-+						4 * USEC_PER_SEC, rate));
-+		if (ca->delay_min == 0 || ca->delay_min > delay)
-+			ca->delay_min = delay;
-+	}
- 
- 	/* hystart triggers when cwnd is larger than some threshold */
- 	if (!ca->found && hystart && tcp_in_slow_start(tp) &&
++			threshold = ca->delay_min;
++			/* Hystart ack train triggers if we get ack past
++			 * ca->delay_min/2.
++			 * Pacing might have delayed packets up to RTT/2
++			 * during slow start.
++			 */
++			if ((sk->sk_pacing_status == SK_PACING_NONE) || (netdev_max_backlog & 1))
++				threshold >>= 1;
++
++			if ((s32)(now - ca->round_start) > threshold) {
+ 				ca->found = 1;
+ 				NET_INC_STATS(sock_net(sk),
+ 					      LINUX_MIB_TCPHYSTARTTRAINDETECT);
 -- 
 2.24.1.735.g03f4e72817-goog
 
