@@ -2,169 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DFBFB129670
-	for <lists+netdev@lfdr.de>; Mon, 23 Dec 2019 14:26:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F92A129672
+	for <lists+netdev@lfdr.de>; Mon, 23 Dec 2019 14:28:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726860AbfLWN0Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Dec 2019 08:26:16 -0500
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:37181 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726676AbfLWN0Q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Dec 2019 08:26:16 -0500
-Received: by mail-pg1-f193.google.com with SMTP id q127so8833182pga.4;
-        Mon, 23 Dec 2019 05:26:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=BmTQDyGLMu6c7YjIBdeFAFkvuYWoq3WAP/yZHqx1jsU=;
-        b=kjy/qPKWfSWtPxQiG9QWf2tn7CtSzuSpAYtbq3TCjWEkEEfvz8a2li1q3lyOm802Z+
-         /gBYKtwg19uBILPjAcIGHtLtJ1HLXUzlWBb2IIyKBTukYIx3vBSvhg8PyHSXbyHvantr
-         tXRkAYsR182ftW9gClv7R+1saw9ERS/CnFG1bEtwKxoRcrzJYde44gzF79rYiK5Pqqc3
-         z5KMO4FhRtHYXsmaldgBsHwxwUVJ9aZbpgBXAMskMNog31B6mOGxlOpKc0aZdtU6F1B7
-         nsbx0546s5beyv8pxeWS1KBhJU/IvlShvQHazTfTFwzBlYgKlUASlDdFH0UIj2/UTxrT
-         CKoQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=BmTQDyGLMu6c7YjIBdeFAFkvuYWoq3WAP/yZHqx1jsU=;
-        b=ByI3enPeL+PWY/lZhOtSlgNZc8R96SIe6veJtGEUvb3jeDt/nylMuwvrmh/5ILIYOz
-         ZycMfLyoZbfY6ck6uf59qe//T+5iZXRScO7U4nAK5nPN+eNk1WHOuX9l5/5VGFgsz/Ii
-         ck4K5T/pDKd1ehzkfxmCAIno/YdqJqQlKSEFFfTI/rvVUVTDmSo5pZ5ysVq0HTVr3K/B
-         ohEYOAN98PWE0WqWqg2QfKsWJN7IhPhlY42PricuM7hRFeHEVHXlcL5IUqrvhZ5C3rqO
-         ZzyqYh/NWGriX/aQVvadEvqsPSOxB87Ah/btb3vgLZ8MwoGzO1YANhAbWuCiLx18+nMQ
-         JQjA==
-X-Gm-Message-State: APjAAAWWK5F0qCisTiZ+soGZ2xIcj55pztwx2Kd/ExY1m+7GHRYxF43U
-        GzpDlOFmJgqZz2tDxFsxdFM=
-X-Google-Smtp-Source: APXvYqxKmiGYNGKsGHVnJcPmCLsTTs/UrFLIl6033SjKaidMV1lZ0/ZndYxz3GthsWDZvxNW+2nfHg==
-X-Received: by 2002:a62:1552:: with SMTP id 79mr31998009pfv.156.1577107575168;
-        Mon, 23 Dec 2019 05:26:15 -0800 (PST)
-Received: from localhost.localdomain ([2001:1284:f013:d619:5b44:72e4:9760:c602])
-        by smtp.gmail.com with ESMTPSA id b185sm7866001pfa.102.2019.12.23.05.26.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 Dec 2019 05:26:14 -0800 (PST)
-Received: by localhost.localdomain (Postfix, from userid 1000)
-        id 613B0C16F2; Mon, 23 Dec 2019 10:26:11 -0300 (-03)
-Date:   Mon, 23 Dec 2019 10:26:11 -0300
-From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-To:     Kevin Kou <qdkevin.kou@gmail.com>
-Cc:     vyasevich@gmail.com, nhorman@tuxdriver.com, davem@davemloft.net,
-        linux-sctp@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] sctp: do trace_sctp_probe after SACK validation and check
-Message-ID: <20191223132611.GF5058@localhost.localdomain>
-References: <20191220044703.88-1-qdkevin.kou@gmail.com>
- <20191220161756.GE5058@localhost.localdomain>
- <1ec267f2-1172-32c0-baee-0d4ebcbfb380@gmail.com>
+        id S1726729AbfLWN2z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Dec 2019 08:28:55 -0500
+Received: from out1-smtp.messagingengine.com ([66.111.4.25]:55961 "EHLO
+        out1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726676AbfLWN2z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Dec 2019 08:28:55 -0500
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id 28B9921B42;
+        Mon, 23 Dec 2019 08:28:54 -0500 (EST)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute3.internal (MEProxy); Mon, 23 Dec 2019 08:28:54 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-transfer-encoding:date:from
+        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=283rqeguAEs74wzhu
+        SuPPyYdx5b6CEfHpEIqnvX+Jrg=; b=jrRaetg/mMMV4boAnwiQ1n+UBUOLMCbya
+        5MvrqueaMXW6SC+bzsuB7aCPNyw1r3ksdaW/eJyHGS3MWMv6Cz8OXVqoRN/PedIZ
+        MjNP3ctVm3uwUF65aRnG+0DEok0SV1MTOqTYAkc9EppDgiFceZqZkZIIBkXG4a8e
+        9cC8k8Ke4ZMjr2G/bs2h8JmPGr6MR0WqbC7zQYNwwSRsL4A04tKTyd9gK9s8IeiY
+        08kOZbCyVnUcE2DCBOqm5V804WqzCdHPEbfL30Rhtyb3Nj8+DNQuoV1EDbI4imzF
+        2WdsM2BdtdfXAJS/7oxgAjsPntI38xEK4x6aVnrF1WRLqKH2bMt+A==
+X-ME-Sender: <xms:FcEAXivct71GJrLNwGGdSCPfZ8YmOhVStgC99rSQpV6niQ1yV_u-Qw>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedufedrvddvtddghedvucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgggfestdekredtre
+    dttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiughoshgt
+    hhdrohhrgheqnecuffhomhgrihhnpehgihhthhhusgdrtghomhdpohiilhgrsghsrdhorh
+    hgnecukfhppeduleefrdegjedrudeihedrvdehudenucfrrghrrghmpehmrghilhhfrhho
+    mhepihguohhstghhsehiughoshgthhdrohhrghenucevlhhushhtvghrufhiiigvpedt
+X-ME-Proxy: <xmx:FcEAXoHQnpkgBvmrwgIaZ_rvcOuixNsoHJJUNnrDYmUGenoGc84akQ>
+    <xmx:FcEAXo58cINsuWKfO8lGKxelp9zjBslku6RJYJJU7caqnRnIdGYkhQ>
+    <xmx:FcEAXhynXxhtPIee8khopqJPQCpLxOuNw2Qk6Gvk3Zf1VSyE1JTuTA>
+    <xmx:FsEAXtw_ngEtyM-yq6q7jamABdqCldBcf1ZuUjqdD3b6dd6L19T7hA>
+Received: from splinter.mtl.com (unknown [193.47.165.251])
+        by mail.messagingengine.com (Postfix) with ESMTPA id A323430609A0;
+        Mon, 23 Dec 2019 08:28:52 -0500 (EST)
+From:   Ido Schimmel <idosch@idosch.org>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, dsahern@gmail.com, roopa@cumulusnetworks.com,
+        jakub.kicinski@netronome.com, jiri@mellanox.com,
+        Ido Schimmel <idosch@mellanox.com>
+Subject: [PATCH net-next 0/9] Simplify IPv6 route offload API
+Date:   Mon, 23 Dec 2019 15:28:11 +0200
+Message-Id: <20191223132820.888247-1-idosch@idosch.org>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1ec267f2-1172-32c0-baee-0d4ebcbfb380@gmail.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Dec 22, 2019 at 12:22:24PM +0800, Kevin Kou wrote:
-> On 2019/12/21 0:17, Marcelo Ricardo Leitner wrote:
-> > On Fri, Dec 20, 2019 at 04:47:03AM +0000, Kevin Kou wrote:
-> > > The function sctp_sf_eat_sack_6_2 now performs
-> > > the Verification Tag validation, Chunk length validation, Bogu check,
-> > > and also the detection of out-of-order SACK based on the RFC2960
-> > > Section 6.2 at the beginning, and finally performs the further
-> > > processing of SACK. The trace_sctp_probe now triggered before
-> > > the above necessary validation and check.
-> > > 
-> > > This patch is to do the trace_sctp_probe after the necessary check
-> > > and validation to SACK.
-> > > 
-> > > Signed-off-by: Kevin Kou <qdkevin.kou@gmail.com>
-> > > ---
-> > >   net/sctp/sm_statefuns.c | 3 ++-
-> > >   1 file changed, 2 insertions(+), 1 deletion(-)
-> > > 
-> > > diff --git a/net/sctp/sm_statefuns.c b/net/sctp/sm_statefuns.c
-> > > index 42558fa..b4a54df 100644
-> > > --- a/net/sctp/sm_statefuns.c
-> > > +++ b/net/sctp/sm_statefuns.c
-> > > @@ -3281,7 +3281,6 @@ enum sctp_disposition sctp_sf_eat_sack_6_2(struct net *net,
-> > >   	struct sctp_sackhdr *sackh;
-> > >   	__u32 ctsn;
-> > > -	trace_sctp_probe(ep, asoc, chunk);
-> > >   	if (!sctp_vtag_verify(chunk, asoc))
-> > >   		return sctp_sf_pdiscard(net, ep, asoc, type, arg, commands);
-> > > @@ -3319,6 +3318,8 @@ enum sctp_disposition sctp_sf_eat_sack_6_2(struct net *net,
-> > >   	if (!TSN_lt(ctsn, asoc->next_tsn))
-> > >   		return sctp_sf_violation_ctsn(net, ep, asoc, type, arg, commands);
-> > > +	trace_sctp_probe(ep, asoc, chunk);
-> > > +
-> > 
-> > Moving it here will be after the check against ctsn_ack_point, which
-> > could cause duplicated SACKs to be missed from the log.
-> 
-> 
-> As this SCTP trace used to trace the changes of SCTP association state in
-> response to incoming packets(SACK). It is used for debugging SCTP congestion
-> control algorithms, so according to the code in include/trace/events/sctp.h,
-> the trace event mainly focus on congestion related information, and there is
-> no SACK Chunk related information printed. So it is hard to point out
-> whether the SACK is duplicate one or not based on this trace event.
+From: Ido Schimmel <idosch@mellanox.com>
 
-I see. Yet, it's quite odd to do debugging of congestion control
-algorithms without knowing how many TSNs/bytes are being acked by this
-ack, but let's keep that aside for now.
+Motivation
+==========
 
-I still can't agree with filtering out based the out-of-order SACK check
-(the TSN_lt(ctsn, asoc->ctsn_ack_point) check. That is valuable to
-congestion control debugging, because it will likely mean that the
-sender is working with fewer acks than it would like/expect.
+This is the IPv6 counterpart of "Simplify IPv4 route offload API" [1].
+The aim of this patch set is to simplify the IPv6 route offload API by
+making the stack a bit smarter about the notifications it is generating.
+This allows driver authors to focus on programming the underlying device
+instead of having to duplicate the IPv6 route insertion logic in their
+driver, which is error-prone.
 
-If you need to filter out them and have a "clean" list of what got in,
-then the fix it needs lies in adding support for logging the ctsn in
-the trace point itself (similarly to the pr_debug in there) and filter
-it on post-processing of the logs.
+Details
+=======
 
-I don't know how much of UAPI cover probe points. Hopefully we can add
-that information without having to create new probe points.
+Today, whenever an IPv6 route is added or deleted a notification is sent
+in the FIB notification chain and it is up to offload drivers to decide
+if the route should be programmed to the hardware or not. This is not an
+easy task as in hardware routes are keyed by {prefix, prefix length,
+table id}, whereas the kernel can store multiple such routes that only
+differ in metric / nexthop info.
 
-PS: You can invert the check in
-        if (!TSN_lt(ctsn, asoc->next_tsn))
-to
-        if (TSN_lte(asoc->next_tsn, ctsn))
-and move it above, so it is done before the out-of-order check, and
-the trace point in between them.
+This series makes sure that only routes that are actually used in the
+data path are notified to offload drivers. This greatly simplifies the
+work these drivers need to do, as they are now only concerned with
+programming the hardware and do not need to replicate the IPv6 route
+insertion logic and store multiple identical routes.
 
-> 
-> include/trace/events/sctp.h
-> 1. TRACE_EVENT(sctp_probe,
-> 
-> TP_printk("asoc=%#llx mark=%#x bind_port=%d peer_port=%d pathmtu=%d "
-> 		  "rwnd=%u unack_data=%d",
-> 		  __entry->asoc, __entry->mark, __entry->bind_port,
-> 		  __entry->peer_port, __entry->pathmtu, __entry->rwnd,
-> 		  __entry->unack_data)
-> 
-> 2. TRACE_EVENT(sctp_probe_path,
-> 
-> TP_printk("asoc=%#llx%s ipaddr=%pISpc state=%u cwnd=%u ssthresh=%u "
-> 		  "flight_size=%u partial_bytes_acked=%u pathmtu=%u",
-> 		  __entry->asoc, __entry->primary ? "(*)" : "",
-> 		  __entry->ipaddr, __entry->state, __entry->cwnd,
-> 		  __entry->ssthresh, __entry->flight_size,
-> 		  __entry->partial_bytes_acked, __entry->pathmtu)
-> 
-> > 
-> > Yes, from the sender-side CC we don't care about it (yet), but it
-> > helps to spot probably avoidable retransmissions.
-> > 
-> > I think this is cleaning up the noise too much. I can agree with
-> > moving it to after the chunk sanity tests, though.
-> > 
-> > >   	/* Return this SACK for further processing.  */
-> > >   	sctp_add_cmd_sf(commands, SCTP_CMD_PROCESS_SACK, SCTP_CHUNK(chunk));
-> > > -- 
-> > > 1.8.3.1
-> > > 
-> 
+The route that is notified is the first route in the IPv6 FIB node,
+which represents a single prefix and length in a given table. In case
+the route is deleted and there is another route with the same key, a
+replace notification is emitted. Otherwise, a delete notification is
+emitted.
+
+Unlike IPv4, in IPv6 it is possible to append individual nexthops to an
+existing multipath route. Therefore, in addition to the replace and
+delete notifications present in IPv4, an append notification is also
+used.
+
+Testing
+=======
+
+To ensure there is no degradation in route insertion rates, I averaged
+the insertion rate of 512k routes (/64 and /128) over 50 runs. Did not
+observe any degradation.
+
+Functional tests are available here [2]. They rely on route trap
+indication, which is added in a subsequent patch set.
+
+In addition, I have been running syzkaller for the past couple of weeks
+with debug options enabled. Did not observe any problems.
+
+Patch set overview
+==================
+
+Patches #1-#7 gradually introduce the new FIB notifications
+Patch #8 converts mlxsw to use the new notifications
+Patch #9 remove the old notifications
+
+[1] https://patchwork.ozlabs.org/cover/1209738/
+[2] https://github.com/idosch/linux/tree/fib-notifier
+
+Ido Schimmel (9):
+  net: fib_notifier: Add temporary events to the FIB notification chain
+  ipv6: Notify newly added route if should be offloaded
+  ipv6: Notify route if replacing currently offloaded one
+  ipv6: Notify multipath route if should be offloaded
+  ipv6: Only Replay routes of interest to new listeners
+  ipv6: Handle route deletion notification
+  ipv6: Handle multipath route deletion notification
+  mlxsw: spectrum_router: Start using new IPv6 route notifications
+  ipv6: Remove old route notifications and convert listeners
+
+ .../ethernet/mellanox/mlxsw/spectrum_router.c | 218 ++++++------------
+ drivers/net/netdevsim/fib.c                   |   1 -
+ include/net/ip6_fib.h                         |   1 +
+ net/ipv6/ip6_fib.c                            | 108 +++++++--
+ net/ipv6/route.c                              |  86 +++++--
+ 5 files changed, 238 insertions(+), 176 deletions(-)
+
+-- 
+2.24.1
+
