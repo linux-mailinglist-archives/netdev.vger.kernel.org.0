@@ -2,135 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D7C012957D
-	for <lists+netdev@lfdr.de>; Mon, 23 Dec 2019 12:37:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B9601295AB
+	for <lists+netdev@lfdr.de>; Mon, 23 Dec 2019 12:46:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727478AbfLWLhJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Dec 2019 06:37:09 -0500
-Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:63798 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726791AbfLWLhI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Dec 2019 06:37:08 -0500
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xBNBUIB3032559;
-        Mon, 23 Dec 2019 03:36:51 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : references : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=pfpt0818;
- bh=umG6pZY64B5MYmOuvzhQTpX6kesataCEMSkVU+rzUtA=;
- b=YEUH0V9EKNWTsCZrpw0PdLTsgnpJ7AdhWJZBHF30O1VFELHM9bnYuMCkiJN8VCAkolIz
- riTviJ7/Fw1Y6tk7FnnGfGpX/GgSBwR73QQNP46Nfd4HSlPi5VH0chZWylXfsGDxs2w0
- M0TS8ObWk0wjzI8L6Fp0bEQGwTJifo33zAMi9aL2DougPVwmZ0K+fiiL+kxiIeB4JK3a
- 9VYYKfNUX2s69JbTGeCdxwkjMQBFbn+lEwOyYfSl/XNXG1EVtI6e+d3SmnXRwX+3dAMw
- BTnFnG1b+2LQwt49q0vh9g6MVQzALndevF0eb+wJE20MAJyQOD3zV9dyL/+uw62w0u0P /w== 
-Received: from sc-exch01.marvell.com ([199.233.58.181])
-        by mx0a-0016f401.pphosted.com with ESMTP id 2x1hmv4vpy-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Mon, 23 Dec 2019 03:36:51 -0800
-Received: from SC-EXCH01.marvell.com (10.93.176.81) by SC-EXCH01.marvell.com
- (10.93.176.81) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 23 Dec
- 2019 03:36:50 -0800
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (104.47.58.107)
- by SC-EXCH01.marvell.com (10.93.176.81) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2 via Frontend Transport; Mon, 23 Dec 2019 03:36:50 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=fjjedbSkouQXBjSfE8GBr9Ie8EnGTnFrDeNvWSTb0Y+urc+Wje/cJxPZDqmgiyzNZUU3w8hqI4hIhNwkOrtTP60ZNn8TYuNYJk39V74suz8SJw3c+GOe07vn7RjKo+TT3ToUjhofQSdJ/uF8W44Hqz9PeQXv3k8emCHPzzpT4tyCNMtlE+/DDKTpSeG0iZjN4nl3gOusIAjcEbJ8lFMwXpWS4PutuG5jxiGg7vm1N+z0NFw/vZ/R09YrvIrapGVJPkbj7gw4G5ijTuX1UmE1wWVXPFeFX5+PnX1v4h6UK8G6JR0cpOEG30bhKPIYAXq0cL3fbmhRAQ4bzjtkh31Ikw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=umG6pZY64B5MYmOuvzhQTpX6kesataCEMSkVU+rzUtA=;
- b=SketMkPSUrk1jKA+ZL+TL9DD8N1/QtQEVhxD+93fX8V0Ld/Xn2MWXclSctYO1DSBYGZd1epSCpjuhMQG72rI2yJdTquCNNWVT3G/E+yznl0H+tH6zWCRpi8FfDfdKszFIoLSb1rJWmvM9nX/i8KX90jAgUAJ0+ZpvtmfTgie28ucFTjZxh7UJRLuBz2Uy1cDzmEjJqU+qBv1shT2kY8k5Pr2lzojUYAiNFQIzhiJ0uzP/WqoH6bFRNlmvl+l6y4lAjAW6Q6m8I+EO5tsTGblcuHVKz/6wR9Av+eMdfephXfCTTE7Cw6w22AnSFLjzSCoMHcL0czvjpzSF6BNkFZb6g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=marvell.com; dmarc=pass action=none header.from=marvell.com;
- dkim=pass header.d=marvell.com; arc=none
+        id S1726763AbfLWLqe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Dec 2019 06:46:34 -0500
+Received: from smtp-fw-2101.amazon.com ([72.21.196.25]:18754 "EHLO
+        smtp-fw-2101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726257AbfLWLqe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Dec 2019 06:46:34 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=marvell.onmicrosoft.com; s=selector1-marvell-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=umG6pZY64B5MYmOuvzhQTpX6kesataCEMSkVU+rzUtA=;
- b=TLkbtHqeuJ8aWC363qq+KYzKQQNoCxol1II1OA5bHvIC/lkbSgSSZJs+rPJQZD70IyF9tVfF6f83CFx1EHpQQc7I1xVJr6GyhXV+daPXl4TiPRAC3AdlH9n3lCIYZY4D2cqio3n5o3ry+h/rUwQOYPwbMuHdXSxqliv9oruanjQ=
-Received: from MN2PR18MB2638.namprd18.prod.outlook.com (20.179.84.25) by
- MN2PR18MB3406.namprd18.prod.outlook.com (10.255.236.28) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2559.14; Mon, 23 Dec 2019 11:36:48 +0000
-Received: from MN2PR18MB2638.namprd18.prod.outlook.com
- ([fe80::54ca:9908:4108:f0a6]) by MN2PR18MB2638.namprd18.prod.outlook.com
- ([fe80::54ca:9908:4108:f0a6%6]) with mapi id 15.20.2559.017; Mon, 23 Dec 2019
- 11:36:48 +0000
-From:   Igor Russkikh <irusskikh@marvell.com>
-To:     Antoine Tenart <antoine.tenart@bootlin.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "sd@queasysnail.net" <sd@queasysnail.net>,
-        "andrew@lunn.ch" <andrew@lunn.ch>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "hkallweit1@gmail.com" <hkallweit1@gmail.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1577101593; x=1608637593;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=vvmp92KNUpBEgXRjRfQ+MICqzu1qMXT+80kMSZKetok=;
+  b=RZW9Py3q1sMRx2fvzBMpOvftnXSo81qErb5ABgPl+oRDP9t8NhXWApz2
+   Q8F6t/xTfHT8SxKkqfDJRWZoSSj73vHx32YEca4m+MMyUEsRnrM/4+ANe
+   SN5o3jTi/ySnfJgxaverB1KgHnaH33qGUMj4Hv18UGO9ayXEc3vcUGlPk
+   8=;
+IronPort-SDR: bYFdawsqLJaf///3+Xmev8apsMjp4iYZk+WyLjr5J5nVgZ60Q04Yv7ot07mFMeKy50f3Bvfqg2
+ YdpJMNxOkl2g==
+X-IronPort-AV: E=Sophos;i="5.69,347,1571702400"; 
+   d="scan'208";a="9790850"
+Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-1d-38ae4ad2.us-east-1.amazon.com) ([10.43.8.2])
+  by smtp-border-fw-out-2101.iad2.amazon.com with ESMTP; 23 Dec 2019 11:46:31 +0000
+Received: from EX13MTAUEA002.ant.amazon.com (iad55-ws-svc-p15-lb9-vlan3.iad.amazon.com [10.40.159.166])
+        by email-inbound-relay-1d-38ae4ad2.us-east-1.amazon.com (Postfix) with ESMTPS id 6C2C1A27B1;
+        Mon, 23 Dec 2019 11:46:31 +0000 (UTC)
+Received: from EX13D32EUC002.ant.amazon.com (10.43.164.94) by
+ EX13MTAUEA002.ant.amazon.com (10.43.61.77) with Microsoft SMTP Server (TLS)
+ id 15.0.1236.3; Mon, 23 Dec 2019 11:46:30 +0000
+Received: from EX13D32EUC003.ant.amazon.com (10.43.164.24) by
+ EX13D32EUC002.ant.amazon.com (10.43.164.94) with Microsoft SMTP Server (TLS)
+ id 15.0.1367.3; Mon, 23 Dec 2019 11:46:29 +0000
+Received: from EX13D32EUC003.ant.amazon.com ([10.43.164.24]) by
+ EX13D32EUC003.ant.amazon.com ([10.43.164.24]) with mapi id 15.00.1367.000;
+ Mon, 23 Dec 2019 11:46:29 +0000
+From:   "Durrant, Paul" <pdurrant@amazon.com>
+To:     Wei Liu <wei.liu@kernel.org>
+CC:     "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "thomas.petazzoni@bootlin.com" <thomas.petazzoni@bootlin.com>,
-        "alexandre.belloni@bootlin.com" <alexandre.belloni@bootlin.com>,
-        "allan.nielsen@microchip.com" <allan.nielsen@microchip.com>,
-        "camelia.groza@nxp.com" <camelia.groza@nxp.com>,
-        "Simon.Edelhaus@aquantia.com" <Simon.Edelhaus@aquantia.com>,
-        "jakub.kicinski@netronome.com" <jakub.kicinski@netronome.com>,
-        "Dmitry Bogdanov" <dbogdanov@marvell.com>,
-        Mark Starovoytov <mstarovoitov@marvell.com>
-Subject: Re: [EXT] [PATCH net-next v4 15/15] net: macsec: add support for
- offloading to the MAC
-Thread-Topic: [EXT] [PATCH net-next v4 15/15] net: macsec: add support for
- offloading to the MAC
-Thread-Index: AQIsumBpaQv0fT17tb+gRgQd0efq8ALR+7c2Ad4MoeQ=
-Date:   Mon, 23 Dec 2019 11:36:48 +0000
-Message-ID: <MN2PR18MB26387BD6B59565D21F936FE5B72E0@MN2PR18MB2638.namprd18.prod.outlook.com>
-References: <20191219105515.78400-1-antoine.tenart@bootlin.com>
- <20191219105515.78400-16-antoine.tenart@bootlin.com>
-In-Reply-To: <20191219105515.78400-16-antoine.tenart@bootlin.com>
-Accept-Language: en-US
+        Paul Durrant <paul@xen.org>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: RE: [PATCH net-next] xen-netback: support dynamic unbind/bind
+Thread-Topic: [PATCH net-next] xen-netback: support dynamic unbind/bind
+Thread-Index: AQHVuXeo48GmlxuNH0abtWhDKbfEbafHl0uAgAACIOA=
+Date:   Mon, 23 Dec 2019 11:46:29 +0000
+Message-ID: <1d1189a3acd8473fadc420d902fd4692@EX13D32EUC003.ant.amazon.com>
+References: <20191223095923.2458-1-pdurrant@amazon.com>
+ <20191223113545.nwugg7lsorttunuu@debian>
+In-Reply-To: <20191223113545.nwugg7lsorttunuu@debian>
+Accept-Language: en-GB, en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
-x-originating-ip: [95.79.108.179]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: a06fc9cd-9506-4668-823d-08d7879c659b
-x-ms-traffictypediagnostic: MN2PR18MB3406:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <MN2PR18MB340616D84A061E22356C3E55B72E0@MN2PR18MB3406.namprd18.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:2657;
-x-forefront-prvs: 0260457E99
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(366004)(136003)(346002)(376002)(396003)(39850400004)(199004)(189003)(9686003)(54906003)(110136005)(33656002)(316002)(71200400001)(8676002)(81166006)(81156014)(8936002)(7416002)(478600001)(4326008)(186003)(55016002)(107886003)(66556008)(64756008)(66446008)(2906002)(66476007)(6506007)(66946007)(4744005)(26005)(86362001)(52536014)(7696005)(76116006)(5660300002);DIR:OUT;SFP:1101;SCL:1;SRVR:MN2PR18MB3406;H:MN2PR18MB2638.namprd18.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: marvell.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 7RgH2P3+1SoPtJDeJSGfXAmyilpUquZq9c4laMvtLRxgXRl+IO1KGCN2gF9qWRtPVNl7gqFBnr6ZsekZsT6xPDrtU1Cmhh3DHkbKS7qac7jk2j4XXU9hWXYEKGLzKZdujsxFoXxbF2LfjCi2VXBCHC+3zDwMC2X+9QhFYF3Q1BaaqFn9kHcuc92lcdQVkjkcilVCmNHPjluBsGwC6Gd5emLQICa/XUCIv/x76Cp0ptLVB50kiMfRHC0J1Xb+LfTcRZiiZI81PoqBF5EGy7RUohSVSw3XnKOhbufA9cWXm4KZ823/V5/IYGxYV3+7sbEBw8Y2JaJSon2XLbzquF082RIAVnGM9YilNvW/QfKS23zhdOKyFdAl8mas34lWQWD2mPYe1I0Yhp33MNaim1XjdXB8spQWm2n3E9cnUTQNm3Ga0yp7/ihZSObIFRkdajef
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.43.165.29]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: a06fc9cd-9506-4668-823d-08d7879c659b
-X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Dec 2019 11:36:48.5003
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 70e1fb47-1155-421d-87fc-2e58f638b6e0
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: q/Jaf9Euiwd63E5QJypKvpYMyvv9MOLh+4Xs/wAlTJTO+pOFdI0LhRcP5jBjiMxV+Q715xlfHd1mR04JAiLPww==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR18MB3406
-X-OriginatorOrg: marvell.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
- definitions=2019-12-23_05:2019-12-23,2019-12-23 signatures=0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQo+IGRpZmYgLS1naXQgYS9pbmNsdWRlL3VhcGkvbGludXgvaWZfbGluay5oIGIvaW5jbHVkZS91
-YXBpL2xpbnV4L2lmX2xpbmsuaA0KPiBpbmRleCAwMjRhZjJkMWQwYWYuLjc3MTM3MWQ1Yjk5NiAx
-MDA2NDQNCj4gLS0tIGEvaW5jbHVkZS91YXBpL2xpbnV4L2lmX2xpbmsuaA0KPiArKysgYi9pbmNs
-dWRlL3VhcGkvbGludXgvaWZfbGluay5oDQo+IEBAIC00ODksNiArNDg5LDcgQEAgZW51bSBtYWNz
-ZWNfdmFsaWRhdGlvbl90eXBlIHsNCj4gIGVudW0gbWFjc2VjX29mZmxvYWQgew0KPiAgCU1BQ1NF
-Q19PRkZMT0FEX09GRiA9IDAsDQo+ICAJTUFDU0VDX09GRkxPQURfUEhZID0gMSwNCj4gKwlNQUNT
-RUNfT0ZGTE9BRF9NQUMgPSAyLA0KPiAgCV9fTUFDU0VDX09GRkxPQURfRU5ELA0KPiAgCU1BQ1NF
-Q19PRkZMT0FEX01BWCA9IF9fTUFDU0VDX09GRkxPQURfRU5EIC0gMSwNCg0KSGkgQW50b2luZSwN
-Cg0KU28gZnJvbSB1YXBpIHBlcnNwZWN0aXZlIHVzZXIgaGF2ZSB0byBleHBsaWNpdGx5IHNwZWNp
-ZnkgIm9mZmxvYWQgbWFjIg0Kb3IgIm9mZmxvYWQgcGh5Ij8gQW5kIGZyb20gbm9uIGV4cGVyaWVu
-Y2VkIHVzZXIgcGVyc3BlY3RpdmUgaGUgYWx3YXlzDQpoYXZlIHRvIHRyeSB0aGVzZSB0d28gYmVm
-b3JlIHJvbGxpbmcgYmFjayB0byAib2ZmbG9hZCBub25lIiA/DQoNCkknbSBub3Qgc2F5aW5nIHRo
-aXMgaXMgd3JvbmcsIGp1c3QgdHJ5aW5nIHRvIHVuZGVyc3RhbmQgaWYgdGhlcmUgYW55DQptb3Jl
-IHN0cmVhbWxpbmVkIHdheSB0byBkbyB0aGlzLi4NCg0KUmVnYXJkcywNCiAgSWdvcg0K
+> -----Original Message-----
+> From: Wei Liu <wei.liu@kernel.org>
+> Sent: 23 December 2019 11:36
+> To: Durrant, Paul <pdurrant@amazon.com>
+> Cc: xen-devel@lists.xenproject.org; netdev@vger.kernel.org; linux-
+> kernel@vger.kernel.org; Wei Liu <wei.liu@kernel.org>; Paul Durrant
+> <paul@xen.org>; David S. Miller <davem@davemloft.net>
+> Subject: Re: [PATCH net-next] xen-netback: support dynamic unbind/bind
+>=20
+> On Mon, Dec 23, 2019 at 09:59:23AM +0000, Paul Durrant wrote:
+> [...]
+> > diff --git a/drivers/net/xen-netback/interface.c b/drivers/net/xen-
+> netback/interface.c
+> > index f15ba3de6195..0c8a02a1ead7 100644
+> > --- a/drivers/net/xen-netback/interface.c
+> > +++ b/drivers/net/xen-netback/interface.c
+> > @@ -585,6 +585,7 @@ int xenvif_connect_ctrl(struct xenvif *vif,
+> grant_ref_t ring_ref,
+> >  	struct net_device *dev =3D vif->dev;
+> >  	void *addr;
+> >  	struct xen_netif_ctrl_sring *shared;
+> > +	RING_IDX rsp_prod, req_prod;
+> >  	int err;
+> >
+> >  	err =3D xenbus_map_ring_valloc(xenvif_to_xenbus_device(vif),
+> > @@ -593,7 +594,14 @@ int xenvif_connect_ctrl(struct xenvif *vif,
+> grant_ref_t ring_ref,
+> >  		goto err;
+> >
+> >  	shared =3D (struct xen_netif_ctrl_sring *)addr;
+> > -	BACK_RING_INIT(&vif->ctrl, shared, XEN_PAGE_SIZE);
+> > +	rsp_prod =3D READ_ONCE(shared->rsp_prod);
+> > +	req_prod =3D READ_ONCE(shared->req_prod);
+> > +
+> > +	BACK_RING_ATTACH(&vif->ctrl, shared, rsp_prod, XEN_PAGE_SIZE);
+> > +
+> > +	err =3D -EIO;
+> > +	if (req_prod - rsp_prod > RING_SIZE(&vif->ctrl))
+> > +		goto err_unmap;
+>=20
+> I think it makes more sense to attach the ring after this check has been
+> done, but I can see you want to structure code like this to reuse the
+> unmap error path.
+
+Looks a little odd, agreed. The reason I did it this way is so that I can u=
+se RING_SIZE() rather than having to use __RING_SIZE(); makes the code just=
+ a little bit shorter... which reminds me I ought to neaten up blkback simi=
+larly.
+
+>=20
+> So:
+>=20
+> Reviewed-by: Wei Liu <wei.liu@kernel.org>
+>=20
+> Nice work btw.
+
+Thanks :-)
+
+  Paul
