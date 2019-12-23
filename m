@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A1DD12967A
-	for <lists+netdev@lfdr.de>; Mon, 23 Dec 2019 14:29:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2378112967B
+	for <lists+netdev@lfdr.de>; Mon, 23 Dec 2019 14:29:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726920AbfLWN3I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Dec 2019 08:29:08 -0500
-Received: from out1-smtp.messagingengine.com ([66.111.4.25]:46931 "EHLO
+        id S1726933AbfLWN3K (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Dec 2019 08:29:10 -0500
+Received: from out1-smtp.messagingengine.com ([66.111.4.25]:42305 "EHLO
         out1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726897AbfLWN3H (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Dec 2019 08:29:07 -0500
+        by vger.kernel.org with ESMTP id S1726853AbfLWN3I (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Dec 2019 08:29:08 -0500
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 900A921BF9;
-        Mon, 23 Dec 2019 08:29:05 -0500 (EST)
+        by mailout.nyi.internal (Postfix) with ESMTP id 0728A21B7C;
+        Mon, 23 Dec 2019 08:29:07 -0500 (EST)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Mon, 23 Dec 2019 08:29:05 -0500
+  by compute3.internal (MEProxy); Mon, 23 Dec 2019 08:29:07 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; bh=M8Irrlwr6XfIqF7+UPITSjn46t9qn27eqRLL7i6acOk=; b=vFjTcFji
-        k2HzT1ICAbQoj8bMJvbbQdPSdAjzf78K+ys97Bu0264J+EvUHsr0HwrEAed9blmt
-        lw0yzsNdHgyuU3PK1TmTtOSp7njyzj0MQBy2R+PtDoGbQmMwjYMD0g+DMWKLl1ab
-        TPmqdmTgHpwb9wfnivyZH+N2y8nz7FCyIxlLHHHDc543ieZlfEILrT4s/HoiiLDe
-        jj1//qw6ELGMFABM3xhaWZCeRK8K2oOxxLt1os7+zSvCeugwKzgvMW9LhOrAApbn
-        4k6eINb406Ie6cDXP0ceRnFDMcyZLXG1Wkb1tpaTwNYYHnJZ89U6gYsKEAhZmheD
-        aqHFUrZwcSrT6A==
-X-ME-Sender: <xms:IcEAXjwHYevQ2uwdW2Bo_mIgtWKvG6peKIwu4kt3vrIEjj6ynr5Z1Q>
+        fm1; bh=8ORQ3bOrK9bhDUtKMt8YY5bN+s801J/n7zefuNttFeM=; b=WSrdrowG
+        3Iw9pm5PZhVDxvrZ7/QTKvIuUaabulLoq5yh93MFjlGLifp/WH9A27JN6zMzbXzi
+        OtIzXh0011EBFw88AamHGcpx5+x+VU7fbdYWoLFHa6DFvapsUGb/sbOTs8Lx8o2y
+        Pzw11hOLDsClKNK1r6f9IPFacepQGjDbOSRKJJQ5s/6HWD9QU5QRIfW9G8AKPPK/
+        n3G4w/kfMMCZPqws+h4KBgcZHNImhUgQksLF7UDb1iItum5H6bDI2gUvrR+3BC2R
+        WO3x69lsSynY6ZLGkRgwVsKxhb1UA/DAjvEGIfbplNcTv9GUiJDb/zTJ0Uhpc8fF
+        qhBHKvRCZl7k7A==
+X-ME-Sender: <xms:IsEAXmo4JtfM-2rJ-MDtP3tdTTpCavUKto_LrD-WQGbATCFbCsScLw>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedufedrvddvtddghedvucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
     dtredttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiugho
     shgthhdrohhrgheqnecukfhppeduleefrdegjedrudeihedrvdehudenucfrrghrrghmpe
     hmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrghenucevlhhushhtvghr
-    ufhiiigvpeeg
-X-ME-Proxy: <xmx:IcEAXoL0ZrOFyDXOQAHATNib4_IlshDCpDRdJ0hez_FPshgHtN6VeQ>
-    <xmx:IcEAXuMD8WhvwMEVJ8pD2X1G-wVGuGg_2y17ZzS4Krpvd13u58zfZw>
-    <xmx:IcEAXhqqL7hGQAQSVIAlATR8cKjjnsex12fAFqQDB6WYfCLc2pLYlw>
-    <xmx:IcEAXmdITYu9R-G6yR9RSYRzTU_CnDrM-746vY5keXU4hz8lhSGiMQ>
+    ufhiiigvpeek
+X-ME-Proxy: <xmx:IsEAXo420oBducMt-0vkHXGQvzB5gygsHy8DfF3yDJCx1YaD6WH0AA>
+    <xmx:IsEAXmO7F-c1wEIblpaN-IEFNgYYwZnbPxRhKKqdNvIkFMDPVg-1yw>
+    <xmx:IsEAXqPEuF-PvkA9OMSWOwZMeVxroLM55oR-4QZP6zQs1n1wNXCVUw>
+    <xmx:I8EAXn6gZ063Vg0Mcmkd1BBb2rQzRsUjlHNa_qYxIKX_MoyVsWR1pg>
 Received: from splinter.mtl.com (unknown [193.47.165.251])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 377DB3060A6E;
-        Mon, 23 Dec 2019 08:29:04 -0500 (EST)
+        by mail.messagingengine.com (Postfix) with ESMTPA id A56E03060802;
+        Mon, 23 Dec 2019 08:29:05 -0500 (EST)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, dsahern@gmail.com, roopa@cumulusnetworks.com,
         jakub.kicinski@netronome.com, jiri@mellanox.com,
         Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net-next 8/9] mlxsw: spectrum_router: Start using new IPv6 route notifications
-Date:   Mon, 23 Dec 2019 15:28:19 +0200
-Message-Id: <20191223132820.888247-9-idosch@idosch.org>
+Subject: [PATCH net-next 9/9] ipv6: Remove old route notifications and convert listeners
+Date:   Mon, 23 Dec 2019 15:28:20 +0200
+Message-Id: <20191223132820.888247-10-idosch@idosch.org>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20191223132820.888247-1-idosch@idosch.org>
 References: <20191223132820.888247-1-idosch@idosch.org>
@@ -62,363 +62,257 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ido Schimmel <idosch@mellanox.com>
 
-With the new notifications mlxsw does not need to handle identical
-routes itself, as this is taken care of by the core IPv6 code.
-
-Instead, mlxsw only needs to take care of inserting and removing routes
-from the device.
-
-Convert mlxsw to use the new IPv6 route notifications and simplify the
-code.
+Now that mlxsw is converted to use the new FIB notifications it is
+possible to delete the old ones and use the new replace / append /
+delete notifications.
 
 Signed-off-by: Ido Schimmel <idosch@mellanox.com>
 Reviewed-by: Jiri Pirko <jiri@mellanox.com>
 ---
- .../ethernet/mellanox/mlxsw/spectrum_router.c | 225 ++++++------------
- 1 file changed, 76 insertions(+), 149 deletions(-)
+ .../ethernet/mellanox/mlxsw/spectrum_router.c |  9 ++-
+ drivers/net/netdevsim/fib.c                   |  1 -
+ include/net/fib_notifier.h                    |  2 -
+ net/ipv6/ip6_fib.c                            | 61 +++++--------------
+ net/ipv6/route.c                              | 18 +-----
+ 5 files changed, 21 insertions(+), 70 deletions(-)
 
 diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
-index 0678815efbf3..295cdcb1c4c0 100644
+index 295cdcb1c4c0..f62e8d67348c 100644
 --- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
 +++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
-@@ -4989,13 +4989,6 @@ static void mlxsw_sp_rt6_destroy(struct mlxsw_sp_rt6 *mlxsw_sp_rt6)
- 	kfree(mlxsw_sp_rt6);
- }
- 
--static bool mlxsw_sp_fib6_rt_can_mp(const struct fib6_info *rt)
--{
--	/* RTF_CACHE routes are ignored */
--	return !(rt->fib6_flags & RTF_ADDRCONF) &&
--		rt->fib6_nh->fib_nh_gw_family;
--}
--
- static struct fib6_info *
- mlxsw_sp_fib6_entry_rt(const struct mlxsw_sp_fib6_entry *fib6_entry)
- {
-@@ -5003,37 +4996,6 @@ mlxsw_sp_fib6_entry_rt(const struct mlxsw_sp_fib6_entry *fib6_entry)
- 				list)->rt;
- }
- 
--static struct mlxsw_sp_fib6_entry *
--mlxsw_sp_fib6_node_mp_entry_find(const struct mlxsw_sp_fib_node *fib_node,
--				 const struct fib6_info *nrt, bool replace)
--{
--	struct mlxsw_sp_fib6_entry *fib6_entry;
--
--	if (!mlxsw_sp_fib6_rt_can_mp(nrt) || replace)
--		return NULL;
--
--	list_for_each_entry(fib6_entry, &fib_node->entry_list, common.list) {
--		struct fib6_info *rt = mlxsw_sp_fib6_entry_rt(fib6_entry);
--
--		/* RT6_TABLE_LOCAL and RT6_TABLE_MAIN share the same
--		 * virtual router.
--		 */
--		if (rt->fib6_table->tb6_id > nrt->fib6_table->tb6_id)
--			continue;
--		if (rt->fib6_table->tb6_id != nrt->fib6_table->tb6_id)
--			break;
--		if (rt->fib6_metric < nrt->fib6_metric)
--			continue;
--		if (rt->fib6_metric == nrt->fib6_metric &&
--		    mlxsw_sp_fib6_rt_can_mp(rt))
--			return fib6_entry;
--		if (rt->fib6_metric > nrt->fib6_metric)
--			break;
--	}
--
--	return NULL;
--}
--
- static struct mlxsw_sp_rt6 *
- mlxsw_sp_fib6_entry_rt_find(const struct mlxsw_sp_fib6_entry *fib6_entry,
- 			    const struct fib6_info *rt)
-@@ -5424,86 +5386,13 @@ static void mlxsw_sp_fib6_entry_destroy(struct mlxsw_sp *mlxsw_sp,
- 	kfree(fib6_entry);
- }
- 
--static struct mlxsw_sp_fib6_entry *
--mlxsw_sp_fib6_node_entry_find(const struct mlxsw_sp_fib_node *fib_node,
--			      const struct fib6_info *nrt, bool replace)
--{
--	struct mlxsw_sp_fib6_entry *fib6_entry, *fallback = NULL;
--
--	list_for_each_entry(fib6_entry, &fib_node->entry_list, common.list) {
--		struct fib6_info *rt = mlxsw_sp_fib6_entry_rt(fib6_entry);
--
--		if (rt->fib6_table->tb6_id > nrt->fib6_table->tb6_id)
--			continue;
--		if (rt->fib6_table->tb6_id != nrt->fib6_table->tb6_id)
--			break;
--		if (replace && rt->fib6_metric == nrt->fib6_metric) {
--			if (mlxsw_sp_fib6_rt_can_mp(rt) ==
--			    mlxsw_sp_fib6_rt_can_mp(nrt))
--				return fib6_entry;
--			if (mlxsw_sp_fib6_rt_can_mp(nrt))
--				fallback = fallback ?: fib6_entry;
--		}
--		if (rt->fib6_metric > nrt->fib6_metric)
--			return fallback ?: fib6_entry;
--	}
--
--	return fallback;
--}
--
--static int
--mlxsw_sp_fib6_node_list_insert(struct mlxsw_sp_fib6_entry *new6_entry,
--			       bool *p_replace)
--{
--	struct mlxsw_sp_fib_node *fib_node = new6_entry->common.fib_node;
--	struct fib6_info *nrt = mlxsw_sp_fib6_entry_rt(new6_entry);
--	struct mlxsw_sp_fib6_entry *fib6_entry;
--
--	fib6_entry = mlxsw_sp_fib6_node_entry_find(fib_node, nrt, *p_replace);
--
--	if (*p_replace && !fib6_entry)
--		*p_replace = false;
--
--	if (fib6_entry) {
--		list_add_tail(&new6_entry->common.list,
--			      &fib6_entry->common.list);
--	} else {
--		struct mlxsw_sp_fib6_entry *last;
--
--		list_for_each_entry(last, &fib_node->entry_list, common.list) {
--			struct fib6_info *rt = mlxsw_sp_fib6_entry_rt(last);
--
--			if (nrt->fib6_table->tb6_id > rt->fib6_table->tb6_id)
--				break;
--			fib6_entry = last;
--		}
--
--		if (fib6_entry)
--			list_add(&new6_entry->common.list,
--				 &fib6_entry->common.list);
--		else
--			list_add(&new6_entry->common.list,
--				 &fib_node->entry_list);
--	}
--
--	return 0;
--}
--
--static void
--mlxsw_sp_fib6_node_list_remove(struct mlxsw_sp_fib6_entry *fib6_entry)
--{
--	list_del(&fib6_entry->common.list);
--}
--
- static int mlxsw_sp_fib6_node_entry_link(struct mlxsw_sp *mlxsw_sp,
--					 struct mlxsw_sp_fib6_entry *fib6_entry,
--					 bool *p_replace)
-+					 struct mlxsw_sp_fib6_entry *fib6_entry)
- {
-+	struct mlxsw_sp_fib_node *fib_node = fib6_entry->common.fib_node;
- 	int err;
- 
--	err = mlxsw_sp_fib6_node_list_insert(fib6_entry, p_replace);
--	if (err)
--		return err;
-+	list_add(&fib6_entry->common.list, &fib_node->entry_list);
- 
- 	err = mlxsw_sp_fib_node_entry_add(mlxsw_sp, &fib6_entry->common);
- 	if (err)
-@@ -5512,7 +5401,7 @@ static int mlxsw_sp_fib6_node_entry_link(struct mlxsw_sp *mlxsw_sp,
- 	return 0;
- 
- err_fib_node_entry_add:
--	mlxsw_sp_fib6_node_list_remove(fib6_entry);
-+	list_del(&fib6_entry->common.list);
- 	return err;
- }
- 
-@@ -5521,7 +5410,7 @@ mlxsw_sp_fib6_node_entry_unlink(struct mlxsw_sp *mlxsw_sp,
- 				struct mlxsw_sp_fib6_entry *fib6_entry)
- {
- 	mlxsw_sp_fib_node_entry_del(mlxsw_sp, &fib6_entry->common);
--	mlxsw_sp_fib6_node_list_remove(fib6_entry);
-+	list_del(&fib6_entry->common.list);
- }
- 
- static struct mlxsw_sp_fib6_entry *
-@@ -5557,15 +5446,15 @@ mlxsw_sp_fib6_entry_lookup(struct mlxsw_sp *mlxsw_sp,
- }
- 
- static void mlxsw_sp_fib6_entry_replace(struct mlxsw_sp *mlxsw_sp,
--					struct mlxsw_sp_fib6_entry *fib6_entry,
--					bool replace)
-+					struct mlxsw_sp_fib6_entry *fib6_entry)
- {
- 	struct mlxsw_sp_fib_node *fib_node = fib6_entry->common.fib_node;
- 	struct mlxsw_sp_fib6_entry *replaced;
- 
--	if (!replace)
-+	if (list_is_singular(&fib_node->entry_list))
- 		return;
- 
-+	/* We inserted the new entry before replaced one */
- 	replaced = list_next_entry(fib6_entry, common.list);
- 
- 	mlxsw_sp_fib6_node_entry_unlink(mlxsw_sp, replaced);
-@@ -5573,9 +5462,9 @@ static void mlxsw_sp_fib6_entry_replace(struct mlxsw_sp *mlxsw_sp,
- 	mlxsw_sp_fib_node_put(mlxsw_sp, fib_node);
- }
- 
--static int mlxsw_sp_router_fib6_add(struct mlxsw_sp *mlxsw_sp,
--				    struct fib6_info **rt_arr,
--				    unsigned int nrt6, bool replace)
-+static int mlxsw_sp_router_fib6_replace(struct mlxsw_sp *mlxsw_sp,
-+					struct fib6_info **rt_arr,
-+					unsigned int nrt6)
- {
- 	struct mlxsw_sp_fib6_entry *fib6_entry;
- 	struct mlxsw_sp_fib_node *fib_node;
-@@ -5599,18 +5488,6 @@ static int mlxsw_sp_router_fib6_add(struct mlxsw_sp *mlxsw_sp,
- 	if (IS_ERR(fib_node))
- 		return PTR_ERR(fib_node);
- 
--	/* Before creating a new entry, try to append route to an existing
--	 * multipath entry.
--	 */
--	fib6_entry = mlxsw_sp_fib6_node_mp_entry_find(fib_node, rt, replace);
--	if (fib6_entry) {
--		err = mlxsw_sp_fib6_entry_nexthop_add(mlxsw_sp, fib6_entry,
--						      rt_arr, nrt6);
--		if (err)
--			goto err_fib6_entry_nexthop_add;
--		return 0;
--	}
--
- 	fib6_entry = mlxsw_sp_fib6_entry_create(mlxsw_sp, fib_node, rt_arr,
- 						nrt6);
- 	if (IS_ERR(fib6_entry)) {
-@@ -5618,17 +5495,61 @@ static int mlxsw_sp_router_fib6_add(struct mlxsw_sp *mlxsw_sp,
- 		goto err_fib6_entry_create;
- 	}
- 
--	err = mlxsw_sp_fib6_node_entry_link(mlxsw_sp, fib6_entry, &replace);
-+	err = mlxsw_sp_fib6_node_entry_link(mlxsw_sp, fib6_entry);
- 	if (err)
- 		goto err_fib6_node_entry_link;
- 
--	mlxsw_sp_fib6_entry_replace(mlxsw_sp, fib6_entry, replace);
-+	mlxsw_sp_fib6_entry_replace(mlxsw_sp, fib6_entry);
- 
- 	return 0;
- 
- err_fib6_node_entry_link:
- 	mlxsw_sp_fib6_entry_destroy(mlxsw_sp, fib6_entry);
- err_fib6_entry_create:
-+	mlxsw_sp_fib_node_put(mlxsw_sp, fib_node);
-+	return err;
-+}
-+
-+static int mlxsw_sp_router_fib6_append(struct mlxsw_sp *mlxsw_sp,
-+				       struct fib6_info **rt_arr,
-+				       unsigned int nrt6)
-+{
-+	struct mlxsw_sp_fib6_entry *fib6_entry;
-+	struct mlxsw_sp_fib_node *fib_node;
-+	struct fib6_info *rt = rt_arr[0];
-+	int err;
-+
-+	if (mlxsw_sp->router->aborted)
-+		return 0;
-+
-+	if (rt->fib6_src.plen)
-+		return -EINVAL;
-+
-+	if (mlxsw_sp_fib6_rt_should_ignore(rt))
-+		return 0;
-+
-+	fib_node = mlxsw_sp_fib_node_get(mlxsw_sp, rt->fib6_table->tb6_id,
-+					 &rt->fib6_dst.addr,
-+					 sizeof(rt->fib6_dst.addr),
-+					 rt->fib6_dst.plen,
-+					 MLXSW_SP_L3_PROTO_IPV6);
-+	if (IS_ERR(fib_node))
-+		return PTR_ERR(fib_node);
-+
-+	if (WARN_ON_ONCE(list_empty(&fib_node->entry_list))) {
-+		mlxsw_sp_fib_node_put(mlxsw_sp, fib_node);
-+		return -EINVAL;
-+	}
-+
-+	fib6_entry = list_first_entry(&fib_node->entry_list,
-+				      struct mlxsw_sp_fib6_entry, common.list);
-+	err = mlxsw_sp_fib6_entry_nexthop_add(mlxsw_sp, fib6_entry, rt_arr,
-+					      nrt6);
-+	if (err)
-+		goto err_fib6_entry_nexthop_add;
-+
-+	return 0;
-+
- err_fib6_entry_nexthop_add:
- 	mlxsw_sp_fib_node_put(mlxsw_sp, fib_node);
- 	return err;
-@@ -6039,25 +5960,29 @@ static void mlxsw_sp_router_fib6_event_work(struct work_struct *work)
- 	struct mlxsw_sp_fib_event_work *fib_work =
- 		container_of(work, struct mlxsw_sp_fib_event_work, work);
- 	struct mlxsw_sp *mlxsw_sp = fib_work->mlxsw_sp;
--	bool replace;
- 	int err;
- 
- 	rtnl_lock();
+@@ -5966,7 +5966,7 @@ static void mlxsw_sp_router_fib6_event_work(struct work_struct *work)
  	mlxsw_sp_span_respin(mlxsw_sp);
  
  	switch (fib_work->event) {
--	case FIB_EVENT_ENTRY_REPLACE: /* fall through */
--	case FIB_EVENT_ENTRY_ADD:
--		replace = fib_work->event == FIB_EVENT_ENTRY_REPLACE;
--		err = mlxsw_sp_router_fib6_add(mlxsw_sp,
--					       fib_work->fib6_work.rt_arr,
--					       fib_work->fib6_work.nrt6,
--					       replace);
-+	case FIB_EVENT_ENTRY_REPLACE_TMP:
-+		err = mlxsw_sp_router_fib6_replace(mlxsw_sp,
-+						   fib_work->fib6_work.rt_arr,
-+						   fib_work->fib6_work.nrt6);
- 		if (err)
+-	case FIB_EVENT_ENTRY_REPLACE_TMP:
++	case FIB_EVENT_ENTRY_REPLACE:
+ 		err = mlxsw_sp_router_fib6_replace(mlxsw_sp,
+ 						   fib_work->fib6_work.rt_arr,
+ 						   fib_work->fib6_work.nrt6);
+@@ -5982,7 +5982,7 @@ static void mlxsw_sp_router_fib6_event_work(struct work_struct *work)
  			mlxsw_sp_router_fib_abort(mlxsw_sp);
  		mlxsw_sp_router_fib6_work_fini(&fib_work->fib6_work);
  		break;
--	case FIB_EVENT_ENTRY_DEL:
-+	case FIB_EVENT_ENTRY_APPEND:
-+		err = mlxsw_sp_router_fib6_append(mlxsw_sp,
-+						  fib_work->fib6_work.rt_arr,
-+						  fib_work->fib6_work.nrt6);
-+		if (err)
-+			mlxsw_sp_router_fib_abort(mlxsw_sp);
-+		mlxsw_sp_router_fib6_work_fini(&fib_work->fib6_work);
-+		break;
-+	case FIB_EVENT_ENTRY_DEL_TMP:
+-	case FIB_EVENT_ENTRY_DEL_TMP:
++	case FIB_EVENT_ENTRY_DEL:
  		mlxsw_sp_router_fib6_del(mlxsw_sp,
  					 fib_work->fib6_work.rt_arr,
  					 fib_work->fib6_work.nrt6);
-@@ -6143,9 +6068,9 @@ static int mlxsw_sp_router_fib6_event(struct mlxsw_sp_fib_event_work *fib_work,
+@@ -6068,9 +6068,9 @@ static int mlxsw_sp_router_fib6_event(struct mlxsw_sp_fib_event_work *fib_work,
  	int err;
  
  	switch (fib_work->event) {
--	case FIB_EVENT_ENTRY_REPLACE: /* fall through */
--	case FIB_EVENT_ENTRY_ADD: /* fall through */
--	case FIB_EVENT_ENTRY_DEL:
-+	case FIB_EVENT_ENTRY_REPLACE_TMP: /* fall through */
-+	case FIB_EVENT_ENTRY_APPEND: /* fall through */
-+	case FIB_EVENT_ENTRY_DEL_TMP:
+-	case FIB_EVENT_ENTRY_REPLACE_TMP: /* fall through */
++	case FIB_EVENT_ENTRY_REPLACE: /* fall through */
+ 	case FIB_EVENT_ENTRY_APPEND: /* fall through */
+-	case FIB_EVENT_ENTRY_DEL_TMP:
++	case FIB_EVENT_ENTRY_DEL:
  		fen6_info = container_of(info, struct fib6_entry_notifier_info,
  					 info);
  		err = mlxsw_sp_router_fib6_work_init(&fib_work->fib6_work,
-@@ -6248,7 +6173,9 @@ static int mlxsw_sp_router_fib_event(struct notifier_block *nb,
- 						     router->mlxsw_sp);
+@@ -6174,7 +6174,6 @@ static int mlxsw_sp_router_fib_event(struct notifier_block *nb,
  		return notifier_from_errno(err);
  	case FIB_EVENT_ENTRY_ADD: /* fall through */
--	case FIB_EVENT_ENTRY_REPLACE:
-+	case FIB_EVENT_ENTRY_REPLACE: /* fall through */
-+	case FIB_EVENT_ENTRY_REPLACE_TMP: /* fall through */
-+	case FIB_EVENT_ENTRY_APPEND:
+ 	case FIB_EVENT_ENTRY_REPLACE: /* fall through */
+-	case FIB_EVENT_ENTRY_REPLACE_TMP: /* fall through */
+ 	case FIB_EVENT_ENTRY_APPEND:
  		if (router->aborted) {
  			NL_SET_ERR_MSG_MOD(info->extack, "FIB offload was aborted. Not configuring route");
- 			return notifier_from_errno(-EINVAL);
+diff --git a/drivers/net/netdevsim/fib.c b/drivers/net/netdevsim/fib.c
+index 4e02a4231fcb..b5df308b4e33 100644
+--- a/drivers/net/netdevsim/fib.c
++++ b/drivers/net/netdevsim/fib.c
+@@ -178,7 +178,6 @@ static int nsim_fib_event_nb(struct notifier_block *nb, unsigned long event,
+ 		break;
+ 
+ 	case FIB_EVENT_ENTRY_REPLACE:  /* fall through */
+-	case FIB_EVENT_ENTRY_ADD:  /* fall through */
+ 	case FIB_EVENT_ENTRY_DEL:
+ 		err = nsim_fib_event(data, info, event != FIB_EVENT_ENTRY_DEL);
+ 		break;
+diff --git a/include/net/fib_notifier.h b/include/net/fib_notifier.h
+index b3c54325caec..6d59221ff05a 100644
+--- a/include/net/fib_notifier.h
++++ b/include/net/fib_notifier.h
+@@ -23,8 +23,6 @@ enum fib_event_type {
+ 	FIB_EVENT_NH_DEL,
+ 	FIB_EVENT_VIF_ADD,
+ 	FIB_EVENT_VIF_DEL,
+-	FIB_EVENT_ENTRY_REPLACE_TMP,
+-	FIB_EVENT_ENTRY_DEL_TMP,
+ };
+ 
+ struct fib_notifier_ops {
+diff --git a/net/ipv6/ip6_fib.c b/net/ipv6/ip6_fib.c
+index 67ddee539f77..b1e9a10e1133 100644
+--- a/net/ipv6/ip6_fib.c
++++ b/net/ipv6/ip6_fib.c
+@@ -423,8 +423,7 @@ int call_fib6_entry_notifiers_replace(struct net *net, struct fib6_info *rt)
+ 	};
+ 
+ 	rt->fib6_table->fib_seq++;
+-	return call_fib6_notifiers(net, FIB_EVENT_ENTRY_REPLACE_TMP,
+-				   &info.info);
++	return call_fib6_notifiers(net, FIB_EVENT_ENTRY_REPLACE, &info.info);
+ }
+ 
+ struct fib6_dump_arg {
+@@ -435,15 +434,7 @@ struct fib6_dump_arg {
+ 
+ static int fib6_rt_dump(struct fib6_info *rt, struct fib6_dump_arg *arg)
+ {
+-	if (rt == arg->net->ipv6.fib6_null_entry)
+-		return 0;
+-	return call_fib6_entry_notifier(arg->nb, FIB_EVENT_ENTRY_ADD,
+-					rt, arg->extack);
+-}
+-
+-static int fib6_rt_dump_tmp(struct fib6_info *rt, struct fib6_dump_arg *arg)
+-{
+-	enum fib_event_type fib_event = FIB_EVENT_ENTRY_REPLACE_TMP;
++	enum fib_event_type fib_event = FIB_EVENT_ENTRY_REPLACE;
+ 	int err;
+ 
+ 	if (!rt || rt == arg->net->ipv6.fib6_null_entry)
+@@ -463,19 +454,9 @@ static int fib6_rt_dump_tmp(struct fib6_info *rt, struct fib6_dump_arg *arg)
+ 
+ static int fib6_node_dump(struct fib6_walker *w)
+ {
+-	struct fib6_info *rt;
+-	int err = 0;
+-
+-	err = fib6_rt_dump_tmp(w->leaf, w->args);
+-	if (err)
+-		goto out;
++	int err;
+ 
+-	for_each_fib6_walker_rt(w) {
+-		err = fib6_rt_dump(rt, w->args);
+-		if (err)
+-			break;
+-	}
+-out:
++	err = fib6_rt_dump(w->leaf, w->args);
+ 	w->leaf = NULL;
+ 	return err;
+ }
+@@ -1220,25 +1201,21 @@ static int fib6_add_rt2node(struct fib6_node *fn, struct fib6_info *rt,
+ add:
+ 		nlflags |= NLM_F_CREATE;
+ 
+-		if (!info->skip_notify_kernel) {
++		/* The route should only be notified if it is the first
++		 * route in the node or if it is added as a sibling
++		 * route to the first route in the node.
++		 */
++		if (!info->skip_notify_kernel &&
++		    (notify_sibling_rt || ins == &fn->leaf)) {
+ 			enum fib_event_type fib_event;
+ 
+ 			if (notify_sibling_rt)
+ 				fib_event = FIB_EVENT_ENTRY_APPEND;
+ 			else
+-				fib_event = FIB_EVENT_ENTRY_REPLACE_TMP;
+-			/* The route should only be notified if it is the first
+-			 * route in the node or if it is added as a sibling
+-			 * route to the first route in the node.
+-			 */
+-			if (notify_sibling_rt || ins == &fn->leaf)
+-				err = call_fib6_entry_notifiers(info->nl_net,
+-								fib_event, rt,
+-								extack);
+-
++				fib_event = FIB_EVENT_ENTRY_REPLACE;
+ 			err = call_fib6_entry_notifiers(info->nl_net,
+-							FIB_EVENT_ENTRY_ADD,
+-							rt, extack);
++							fib_event, rt,
++							extack);
+ 			if (err) {
+ 				struct fib6_info *sibling, *next_sibling;
+ 
+@@ -1282,14 +1259,7 @@ static int fib6_add_rt2node(struct fib6_node *fn, struct fib6_info *rt,
+ 			return -ENOENT;
+ 		}
+ 
+-		if (!info->skip_notify_kernel) {
+-			enum fib_event_type fib_event;
+-
+-			fib_event = FIB_EVENT_ENTRY_REPLACE_TMP;
+-			if (ins == &fn->leaf)
+-				err = call_fib6_entry_notifiers(info->nl_net,
+-								fib_event, rt,
+-								extack);
++		if (!info->skip_notify_kernel && ins == &fn->leaf) {
+ 			err = call_fib6_entry_notifiers(info->nl_net,
+ 							FIB_EVENT_ENTRY_REPLACE,
+ 							rt, extack);
+@@ -2007,11 +1977,10 @@ static void fib6_del_route(struct fib6_table *table, struct fib6_node *fn,
+ 
+ 	if (!info->skip_notify_kernel) {
+ 		if (notify_del)
+-			call_fib6_entry_notifiers(net, FIB_EVENT_ENTRY_DEL_TMP,
++			call_fib6_entry_notifiers(net, FIB_EVENT_ENTRY_DEL,
+ 						  rt, NULL);
+ 		else if (replace_rt)
+ 			call_fib6_entry_notifiers_replace(net, replace_rt);
+-		call_fib6_entry_notifiers(net, FIB_EVENT_ENTRY_DEL, rt, NULL);
+ 	}
+ 	if (!info->skip_notify)
+ 		inet6_rt_notify(RTM_DELROUTE, rt, info, 0);
+diff --git a/net/ipv6/route.c b/net/ipv6/route.c
+index 646716a47cc9..4b8659e077d3 100644
+--- a/net/ipv6/route.c
++++ b/net/ipv6/route.c
+@@ -3787,15 +3787,10 @@ static int __ip6_del_rt_siblings(struct fib6_info *rt, struct fib6_config *cfg)
+ 								  replace_rt);
+ 			else
+ 				call_fib6_multipath_entry_notifiers(net,
+-						       FIB_EVENT_ENTRY_DEL_TMP,
++						       FIB_EVENT_ENTRY_DEL,
+ 						       rt, rt->fib6_nsiblings,
+ 						       NULL);
+ 		}
+-		call_fib6_multipath_entry_notifiers(net,
+-						    FIB_EVENT_ENTRY_DEL,
+-						    rt,
+-						    rt->fib6_nsiblings,
+-						    NULL);
+ 		list_for_each_entry_safe(sibling, next_sibling,
+ 					 &rt->fib6_siblings,
+ 					 fib6_siblings) {
+@@ -5074,7 +5069,6 @@ static int ip6_route_multipath_add(struct fib6_config *cfg,
+ {
+ 	struct fib6_info *rt_notif = NULL, *rt_last = NULL;
+ 	struct nl_info *info = &cfg->fc_nlinfo;
+-	enum fib_event_type event_type;
+ 	struct fib6_config r_cfg;
+ 	struct rtnexthop *rtnh;
+ 	struct fib6_info *rt;
+@@ -5210,7 +5204,7 @@ static int ip6_route_multipath_add(struct fib6_config *cfg,
+ 		if (rt_notif->fib6_nsiblings != nhn - 1)
+ 			fib_event = FIB_EVENT_ENTRY_APPEND;
+ 		else
+-			fib_event = FIB_EVENT_ENTRY_REPLACE_TMP;
++			fib_event = FIB_EVENT_ENTRY_REPLACE;
+ 
+ 		err = call_fib6_multipath_entry_notifiers(info->nl_net,
+ 							  fib_event, rt_notif,
+@@ -5221,14 +5215,6 @@ static int ip6_route_multipath_add(struct fib6_config *cfg,
+ 			goto add_errout;
+ 		}
+ 	}
+-	event_type = replace ? FIB_EVENT_ENTRY_REPLACE : FIB_EVENT_ENTRY_ADD;
+-	err = call_fib6_multipath_entry_notifiers(info->nl_net, event_type,
+-						  rt_notif, nhn - 1, extack);
+-	if (err) {
+-		/* Delete all the siblings that were just added */
+-		err_nh = NULL;
+-		goto add_errout;
+-	}
+ 
+ 	/* success ... tell user about new route */
+ 	ip6_route_mpath_notify(rt_notif, rt_last, info, nlflags);
 -- 
 2.24.1
 
