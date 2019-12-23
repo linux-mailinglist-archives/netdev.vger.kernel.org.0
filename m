@@ -2,157 +2,209 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F6DF129B84
-	for <lists+netdev@lfdr.de>; Mon, 23 Dec 2019 23:55:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F9BD129B86
+	for <lists+netdev@lfdr.de>; Mon, 23 Dec 2019 23:55:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726899AbfLWWzO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Dec 2019 17:55:14 -0500
-Received: from charlotte.tuxdriver.com ([70.61.120.58]:45775 "EHLO
-        smtp.tuxdriver.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726817AbfLWWzO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Dec 2019 17:55:14 -0500
-Received: from 2606-a000-111b-43ee-0000-0000-0000-115f.inf6.spectrum.com ([2606:a000:111b:43ee::115f] helo=localhost)
-        by smtp.tuxdriver.com with esmtpsa (TLSv1:AES256-SHA:256)
-        (Exim 4.63)
-        (envelope-from <nhorman@tuxdriver.com>)
-        id 1ijWbQ-0006Dg-2s; Mon, 23 Dec 2019 17:55:10 -0500
-Date:   Mon, 23 Dec 2019 17:55:03 -0500
-From:   Neil Horman <nhorman@tuxdriver.com>
-To:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Cc:     netdev@vger.kernel.org, linux-sctp@vger.kernel.org,
-        Xin Long <lucien.xin@gmail.com>,
-        syzbot <syzbot+9a1bc632e78a1a98488b@syzkaller.appspotmail.com>,
-        syzkaller-bugs@googlegroups.com
-Subject: Re: [PATCH net] sctp: fix err handling of stream initialization
-Message-ID: <20191223225503.GB30462@hmswarspite.think-freely.org>
-References: <d41d8475f8485f571152b3f3716d7f474b5c0e79.1576864893.git.marcelo.leitner@gmail.com>
- <20191223124609.GA30462@hmswarspite.think-freely.org>
- <20191223125108.GK4444@localhost.localdomain>
+        id S1726946AbfLWWzZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Dec 2019 17:55:25 -0500
+Received: from mail-qk1-f196.google.com ([209.85.222.196]:33160 "EHLO
+        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726908AbfLWWzY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Dec 2019 17:55:24 -0500
+Received: by mail-qk1-f196.google.com with SMTP id d71so6906727qkc.0;
+        Mon, 23 Dec 2019 14:55:24 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=hFRSuELUfsOU19FxywO7oDhfhqX0ADpqMh4EBYlSxEk=;
+        b=vHTSvyBaek14gv2gHOxnCQoFesdGrim/ke4m2iiCl/tnn5fxi7L4aUw7RSzPbHmco6
+         i4ir0z3Pe5/nj5Kz+pHXwfOOX6dmHqRYzHtxH+ETHacrGY5l4V1d0rwNvQ9K0V8hMlOn
+         YutQdJHJj5zTZhRrLSgsB9NNsFGTlMZCbzmwNNF1PHp46NOqn2YzNySO0//CPSGRvFV1
+         qPbnwg17wwGkzf3rKgG4QMSNCOpmfsxXBnInsgvgvFoOC4k9krxmoOmTsXlkWcwhoJI5
+         9boQNYylqLk29GeF4vwpBz1SHD/mSAa4ON1YdeUflAKmmqryZ6lpLAuxKeyba3exkeA9
+         //Lg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=hFRSuELUfsOU19FxywO7oDhfhqX0ADpqMh4EBYlSxEk=;
+        b=hhna/mPPf9LUzIXL1Mdz0MOQz5QnClmSQts9ObXE68N+r/SBq3Sf+SQLdUO/djJbPj
+         SqqNwJileYLIBgUzEpSqxlzsJTtqUfHFG7UZLfqRnbWbh+LrRHubOksYmscaH5FKvRpj
+         YMUsmrucMG9bA9JO4Xl+ycm7MR50Wgy3XJcyvHGIPxFb6k2dewDzdtToW/hRaEl+fnnr
+         3rS+GGqoEHweXcdw9/oejOaCq7aWdyeGtm/6n//mH8KiODM68OMsmHeOBK7V17iu/roc
+         fgHd38aM7a7IlaBX/3/24spvvfIsoDA5oF9+JW7TPjwrSLCpGWzyPsDwUSZxa6OcrpdM
+         wqcg==
+X-Gm-Message-State: APjAAAX/vF1xcZ3yKaoyEylEMHKq4G4FvAwB1fsEFztLmkATVNfDMGaf
+        t19Fo5O7iNTCeinW0rrdjAqYdcPeVlV+KVT4ydEVjw==
+X-Google-Smtp-Source: APXvYqx7u1vfv6k2BcE+ZvH/AOFjzuGTTSEU5ihRVE7aWj7Y/FKq9UfgTFuD/Td29Y6LYP05XL416HtkNM4fLXfTMKo=
+X-Received: by 2002:a05:620a:5ae:: with SMTP id q14mr29228299qkq.437.1577141723623;
+ Mon, 23 Dec 2019 14:55:23 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191223125108.GK4444@localhost.localdomain>
-X-Spam-Score: -2.9 (--)
-X-Spam-Status: No
+References: <20191221062556.1182261-1-kafai@fb.com> <20191221062606.1182939-1-kafai@fb.com>
+ <CAEf4BzYF8mBrkzM3=+XtyCwoQrLGvkA-6Uc3KXJ9CWmaKePX8Q@mail.gmail.com> <20191223222955.2d2hxboqzgp7662r@kafai-mbp>
+In-Reply-To: <20191223222955.2d2hxboqzgp7662r@kafai-mbp>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 23 Dec 2019 14:55:12 -0800
+Message-ID: <CAEf4BzaM7OGnocOc=58hXAAcLvM0qaYRWuwiqt1L2cPY1rWykA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2 05/11] bpf: Introduce BPF_PROG_TYPE_STRUCT_OPS
+To:     Martin Lau <kafai@fb.com>
+Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        David Miller <davem@davemloft.net>,
+        Kernel Team <Kernel-team@fb.com>,
+        Networking <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 23, 2019 at 09:51:08AM -0300, Marcelo Ricardo Leitner wrote:
-> On Mon, Dec 23, 2019 at 07:46:09AM -0500, Neil Horman wrote:
-> > On Fri, Dec 20, 2019 at 03:03:44PM -0300, Marcelo Ricardo Leitner wrote:
-> > > The fix on 951c6db954a1 fixed the issued reported there but introduced
-> > > another. When the allocation fails within sctp_stream_init() it is
-> > > okay/necessary to free the genradix. But it is also called when adding
-> > > new streams, from sctp_send_add_streams() and
-> > > sctp_process_strreset_addstrm_in() and in those situations it cannot
-> > > just free the genradix because by then it is a fully operational
-> > > association.
-> > > 
-> > > The fix here then is to only free the genradix in sctp_stream_init()
-> > > and on those other call sites  move on with what it already had and let
-> > > the subsequent error handling to handle it.
-> > > 
-> > > Tested with the reproducers from this report and the previous one,
-> > > with lksctp-tools and sctp-tests.
-> > > 
-> > > Reported-by: syzbot+9a1bc632e78a1a98488b@syzkaller.appspotmail.com
-> > > Fixes: 951c6db954a1 ("sctp: fix memleak on err handling of stream initialization")
-> > > Signed-off-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+On Mon, Dec 23, 2019 at 2:30 PM Martin Lau <kafai@fb.com> wrote:
+>
+> On Mon, Dec 23, 2019 at 12:29:37PM -0800, Andrii Nakryiko wrote:
+> > On Fri, Dec 20, 2019 at 10:26 PM Martin KaFai Lau <kafai@fb.com> wrote:
+> > >
+> > > This patch allows the kernel's struct ops (i.e. func ptr) to be
+> > > implemented in BPF.  The first use case in this series is the
+> > > "struct tcp_congestion_ops" which will be introduced in a
+> > > latter patch.
+> > >
+> > > This patch introduces a new prog type BPF_PROG_TYPE_STRUCT_OPS.
+> > > The BPF_PROG_TYPE_STRUCT_OPS prog is verified against a particular
+> > > func ptr of a kernel struct.  The attr->attach_btf_id is the btf id
+> > > of a kernel struct.  The attr->expected_attach_type is the member
+> > > "index" of that kernel struct.  The first member of a struct starts
+> > > with member index 0.  That will avoid ambiguity when a kernel struct
+> > > has multiple func ptrs with the same func signature.
+> > >
+> > > For example, a BPF_PROG_TYPE_STRUCT_OPS prog is written
+> > > to implement the "init" func ptr of the "struct tcp_congestion_ops".
+> > > The attr->attach_btf_id is the btf id of the "struct tcp_congestion_ops"
+> > > of the _running_ kernel.  The attr->expected_attach_type is 3.
+> > >
+> > > The ctx of BPF_PROG_TYPE_STRUCT_OPS is an array of u64 args saved
+> > > by arch_prepare_bpf_trampoline that will be done in the next
+> > > patch when introducing BPF_MAP_TYPE_STRUCT_OPS.
+> > >
+> > > "struct bpf_struct_ops" is introduced as a common interface for the kernel
+> > > struct that supports BPF_PROG_TYPE_STRUCT_OPS prog.  The supporting kernel
+> > > struct will need to implement an instance of the "struct bpf_struct_ops".
+> > >
+> > > The supporting kernel struct also needs to implement a bpf_verifier_ops.
+> > > During BPF_PROG_LOAD, bpf_struct_ops_find() will find the right
+> > > bpf_verifier_ops by searching the attr->attach_btf_id.
+> > >
+> > > A new "btf_struct_access" is also added to the bpf_verifier_ops such
+> > > that the supporting kernel struct can optionally provide its own specific
+> > > check on accessing the func arg (e.g. provide limited write access).
+> > >
+> > > After btf_vmlinux is parsed, the new bpf_struct_ops_init() is called
+> > > to initialize some values (e.g. the btf id of the supporting kernel
+> > > struct) and it can only be done once the btf_vmlinux is available.
+> > >
+> > > The R0 checks at BPF_EXIT is excluded for the BPF_PROG_TYPE_STRUCT_OPS prog
+> > > if the return type of the prog->aux->attach_func_proto is "void".
+> > >
+> > > Signed-off-by: Martin KaFai Lau <kafai@fb.com>
 > > > ---
-> > >  net/sctp/stream.c | 30 +++++++++++++++---------------
-> > >  1 file changed, 15 insertions(+), 15 deletions(-)
-> > > 
-> > > diff --git a/net/sctp/stream.c b/net/sctp/stream.c
-> > > index 6a30392068a04bfcefcb14c3d7f13fc092d59cd3..c1a100d2fed39c2d831487e05fcbf5e8d507d470 100644
-> > > --- a/net/sctp/stream.c
-> > > +++ b/net/sctp/stream.c
-> > > @@ -84,10 +84,8 @@ static int sctp_stream_alloc_out(struct sctp_stream *stream, __u16 outcnt,
-> > >  		return 0;
-> > >  
-> > >  	ret = genradix_prealloc(&stream->out, outcnt, gfp);
-> > > -	if (ret) {
-> > > -		genradix_free(&stream->out);
-> > > +	if (ret)
-> > >  		return ret;
-> > > -	}
-> > >  
-> > >  	stream->outcnt = outcnt;
-> > >  	return 0;
-> > > @@ -102,10 +100,8 @@ static int sctp_stream_alloc_in(struct sctp_stream *stream, __u16 incnt,
-> > >  		return 0;
-> > >  
-> > >  	ret = genradix_prealloc(&stream->in, incnt, gfp);
-> > > -	if (ret) {
-> > > -		genradix_free(&stream->in);
-> > > +	if (ret)
-> > >  		return ret;
-> > > -	}
-> > >  
-> > >  	stream->incnt = incnt;
-> > >  	return 0;
-> > > @@ -123,7 +119,7 @@ int sctp_stream_init(struct sctp_stream *stream, __u16 outcnt, __u16 incnt,
-> > >  	 * a new one with new outcnt to save memory if needed.
-> > >  	 */
-> > >  	if (outcnt == stream->outcnt)
-> > > -		goto in;
-> > > +		goto handle_in;
-> > >  
-> > >  	/* Filter out chunks queued on streams that won't exist anymore */
-> > >  	sched->unsched_all(stream);
-> > > @@ -132,24 +128,28 @@ int sctp_stream_init(struct sctp_stream *stream, __u16 outcnt, __u16 incnt,
-> > >  
-> > >  	ret = sctp_stream_alloc_out(stream, outcnt, gfp);
-> > >  	if (ret)
-> > > -		goto out;
-> > > +		goto out_err;
-> > >  
-> > >  	for (i = 0; i < stream->outcnt; i++)
-> > >  		SCTP_SO(stream, i)->state = SCTP_STREAM_OPEN;
-> > >  
-> > > -in:
-> > > +handle_in:
-> > >  	sctp_stream_interleave_init(stream);
-> > >  	if (!incnt)
-> > >  		goto out;
-> > >  
-> > >  	ret = sctp_stream_alloc_in(stream, incnt, gfp);
-> > > -	if (ret) {
-> > > -		sched->free(stream);
-> > > -		genradix_free(&stream->out);
-> > > -		stream->outcnt = 0;
-> > > -		goto out;
-> > > -	}
-> > > +	if (ret)
-> > > +		goto in_err;
+> > >  include/linux/bpf.h               |  30 +++++++
+> > >  include/linux/bpf_types.h         |   4 +
+> > >  include/linux/btf.h               |  34 ++++++++
+> > >  include/uapi/linux/bpf.h          |   1 +
+> > >  kernel/bpf/Makefile               |   2 +-
+> > >  kernel/bpf/bpf_struct_ops.c       | 122 +++++++++++++++++++++++++++
+> > >  kernel/bpf/bpf_struct_ops_types.h |   4 +
+> > >  kernel/bpf/btf.c                  |  88 ++++++++++++++------
+> > >  kernel/bpf/syscall.c              |  17 ++--
+> > >  kernel/bpf/verifier.c             | 134 +++++++++++++++++++++++-------
+> > >  10 files changed, 372 insertions(+), 64 deletions(-)
+> > >  create mode 100644 kernel/bpf/bpf_struct_ops.c
+> > >  create mode 100644 kernel/bpf/bpf_struct_ops_types.h
+> > >
+> >
+> > All looks good, apart from the concern with partially-initialized
+> > bpf_struct_ops.
+> >
+> > [...]
+> >
+> > > +const struct bpf_prog_ops bpf_struct_ops_prog_ops = {
+> > > +};
 > > > +
-> > > +	goto out;
-> > >  
-> > > +in_err:
-> > > +	sched->free(stream);
-> > > +	genradix_free(&stream->in);
-> > > +out_err:
-> > > +	genradix_free(&stream->out);
-> > Isn't this effectively a double free in the fall through case?
-> 
-> Hm, if you got you right, the line 3 lines above is freeing '->in' and
-> the right above one, '->out', so no.
-> No other calls to genradix_free() are left in this function, too.
-> 
-you're right, I missed the different streams in the free function
-Neil
+> > > +void bpf_struct_ops_init(struct btf *_btf_vmlinux)
+> >
+> > this is always get passed vmlinux's btf, so why not call it short and
+> > sweet "btf"? _btf_vmlinux is kind of ugly and verbose.
+> >
+> > > +{
+> > > +       const struct btf_member *member;
+> > > +       struct bpf_struct_ops *st_ops;
+> > > +       struct bpf_verifier_log log = {};
+> > > +       const struct btf_type *t;
+> > > +       const char *mname;
+> > > +       s32 type_id;
+> > > +       u32 i, j;
+> > > +
+> >
+> > [...]
+> >
+> > > +static int check_struct_ops_btf_id(struct bpf_verifier_env *env)
+> > > +{
+> > > +       const struct btf_type *t, *func_proto;
+> > > +       const struct bpf_struct_ops *st_ops;
+> > > +       const struct btf_member *member;
+> > > +       struct bpf_prog *prog = env->prog;
+> > > +       u32 btf_id, member_idx;
+> > > +       const char *mname;
+> > > +
+> > > +       btf_id = prog->aux->attach_btf_id;
+> > > +       st_ops = bpf_struct_ops_find(btf_id);
+> >
+> > if struct_ops initialization fails, type will be NULL and type_id will
+> > be 0, which we rely on here to not get partially-initialized
+> > bpf_struct_ops, right? Small comment mentioning this would be helpful.
+> >
+> >
+> > > +       if (!st_ops) {
+> > > +               verbose(env, "attach_btf_id %u is not a supported struct\n",
+> > > +                       btf_id);
+> > > +               return -ENOTSUPP;
+> > > +       }
+> > > +
+> >
+> > [...]
+> >
+> > >  static int check_attach_btf_id(struct bpf_verifier_env *env)
+> > >  {
+> > >         struct bpf_prog *prog = env->prog;
+> > > @@ -9520,6 +9591,9 @@ static int check_attach_btf_id(struct bpf_verifier_env *env)
+> > >         long addr;
+> > >         u64 key;
+> > >
+> > > +       if (prog->type == BPF_PROG_TYPE_STRUCT_OPS)
+> > > +               return check_struct_ops_btf_id(env);
+> > > +
+> >
+> > There is a btf_id == 0 check below, you need to check that for
+> > STRUCT_OPS as well, otherwise you can get partially-initialized
+> > bpf_struct_ops struct in check_struct_ops_btf_id.
+> This btf_id == 0 check is done at the beginning of bpf_struct_ops_find().
+> Hence, bpf_struct_ops_find() won't try to search if btf_id is 0.
+>
 
->   Marcelo
-> 
-> > Neil
-> > 
-> > > +	stream->outcnt = 0;
-> > >  out:
-> > >  	return ret;
-> > >  }
-> > > -- 
-> > > 2.23.0
-> > > 
-> > > 
-> 
+Ah right, I missed that check. Then yeah, it's not a concern. I still
+don't like _btf_vmlinux name, but that's just a nit.
+
+Acked-by: Andrii Nakryiko <andriin@fb.com>
+
+> st_ops fields is only set when everything passed, so individual st_ops
+> will not be partially initialized.
+>
+>
+> >
+> > >         if (prog->type != BPF_PROG_TYPE_TRACING)
+> > >                 return 0;
+> > >
+> > > --
+> > > 2.17.1
+> > >
