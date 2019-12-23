@@ -2,139 +2,283 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CCD721299F9
-	for <lists+netdev@lfdr.de>; Mon, 23 Dec 2019 19:53:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EF96E1299FC
+	for <lists+netdev@lfdr.de>; Mon, 23 Dec 2019 19:58:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726832AbfLWSx1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Dec 2019 13:53:27 -0500
-Received: from mail-yw1-f68.google.com ([209.85.161.68]:34746 "EHLO
-        mail-yw1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726766AbfLWSx0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Dec 2019 13:53:26 -0500
-Received: by mail-yw1-f68.google.com with SMTP id b186so7452195ywc.1
-        for <netdev@vger.kernel.org>; Mon, 23 Dec 2019 10:53:26 -0800 (PST)
+        id S1726853AbfLWS6p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Dec 2019 13:58:45 -0500
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:40034 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726787AbfLWS6p (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Dec 2019 13:58:45 -0500
+Received: by mail-pg1-f193.google.com with SMTP id k25so9231929pgt.7
+        for <netdev@vger.kernel.org>; Mon, 23 Dec 2019 10:58:44 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=osBD8dJGgUhTdeeULOYtmsCBx13VXNvpZz57rJuhm7k=;
-        b=oCfsoIjD+GdEJPFTfiIGbbZJWi7tp6H5551kSaBj4IDG65P0Ms7/FYpCkzbu+PN0iE
-         cpoh7Gm/6H+YGCWU4FhXI1ubogr4u37Gv9COtlM9pSLWg1hm0fPuHE7sxHGg4YXmeHIl
-         Z/9K/oaVFADkyWilU4Up4ZvcraebKBObgU5npOJ4WUaOWsxJUpUnj2G9inUMtSLeYOTa
-         ThhnShPrdcqLWfVEr4VfmUi5EDjE3VdAnNd79L4pLMwGRwy68SrZyIZ+x8IGufWoZK0l
-         4U6DQhgPb1x964uzXwY808/14c410WDb8Egj9nQhwE8a4A05f4ZOB4O5KyQmdK3lAyvk
-         65bw==
+        d=google.com; s=20161025;
+        h=date:from:subject:cc:to:in-reply-to:references:message-id
+         :mime-version:content-transfer-encoding;
+        bh=A7JVk1cXsoYFiiChroTLy8zZeWGRIe3FHpiOiUqKpGU=;
+        b=T7/pNyTuaDMWNBPwbrY1VYEKkvSk+2k6cVVmGNufeC4yFeaRCNG1EOnGzAl4vsy3ip
+         brXTVX476PPN5U4ebArZ2nPebc0oVhRIHDiDEaMQYICQGquIWyLEv5BGbXqJ92wWhEBJ
+         QfbyBjXs6syNuREWLyEGDXV0v+2U9wU0MGKSfIg1i7jMRnTH8akAZu5bEYPjiNBK4Qhz
+         9e06igomCGNBAWSSCd0mqbVS42WTolDEdkHddr5oBdiP/MjoYXKQNqetSlEcofQDUGup
+         FOfR8EIiuCK6FuHVBTlpMA771cX6mqWdiGiOg7uFi/ngXERB4gdbhvg2/xVPWsk8oUtt
+         elFQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=osBD8dJGgUhTdeeULOYtmsCBx13VXNvpZz57rJuhm7k=;
-        b=KcrIbwtGFsiVR0bAa2Vq2RL9U9xyHeYCXhIgMmLXTZBkrsZZdRbtIA6uob3wMjyS9o
-         MPAzh+NqE377DNKK/0CUwoGKX5RHoN/3AexX+BWTrej5GjZwfo7BnyMNJQeLKTAqV/LU
-         SkjEG/ea7rnz1eBWAWtFr0kq+w7p7boWw3xXcPM0G/+18j9i6OiPp+ZfMMzuj5Imkmx5
-         kmTsguzR+zHR+3aS5BBSyUqalS1I8vELSsH2lJKi1LBqcMpi9jeYqIYoCuokUFLYbhkT
-         6+40OohDFB/9mHl9Q1cKFAOlT81bkATtIz4J1B/0L8cuA/TLAlzJuvoYbMV4YvnZnEZZ
-         SbDA==
-X-Gm-Message-State: APjAAAVLBTc6HbEUeaQyuDUeet6bYrZj0AS/6dJPl/AzAwCqKOvtJ+U1
-        p9bUjZ37bKmCV3MwT2lCyjzoYkgF
-X-Google-Smtp-Source: APXvYqzCC5Qn7LVztg4VmMoxdF4F/SaChnnP/WbRGtkRGvy9lH7xj6+d6PCnBa21b7HckM+lXRHwzA==
-X-Received: by 2002:a0d:cad6:: with SMTP id m205mr23652670ywd.348.1577127205336;
-        Mon, 23 Dec 2019 10:53:25 -0800 (PST)
-Received: from mail-yb1-f174.google.com (mail-yb1-f174.google.com. [209.85.219.174])
-        by smtp.gmail.com with ESMTPSA id h23sm8238583ywc.105.2019.12.23.10.53.23
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 23 Dec 2019 10:53:24 -0800 (PST)
-Received: by mail-yb1-f174.google.com with SMTP id f136so4258359ybg.11
-        for <netdev@vger.kernel.org>; Mon, 23 Dec 2019 10:53:23 -0800 (PST)
-X-Received: by 2002:a25:d117:: with SMTP id i23mr16360727ybg.139.1577127203160;
- Mon, 23 Dec 2019 10:53:23 -0800 (PST)
-MIME-Version: 1.0
-References: <1576885124-14576-1-git-send-email-tom@herbertland.com>
- <1576885124-14576-2-git-send-email-tom@herbertland.com> <CA+FuTSfSFtSZjstCCp4ZdwPMCiHXaskgTqQH0EJYzV4-08t2Eg@mail.gmail.com>
- <CALx6S35o==mvEJ+GOx_tQfi56HVxKFySd+bjNakzwgiuvHnS7Q@mail.gmail.com>
-In-Reply-To: <CALx6S35o==mvEJ+GOx_tQfi56HVxKFySd+bjNakzwgiuvHnS7Q@mail.gmail.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Mon, 23 Dec 2019 13:52:46 -0500
-X-Gmail-Original-Message-ID: <CA+FuTSd4feUHeTAODKEqt7AXoNgh0sbZYJJXrWg7Tb6GTnDmtA@mail.gmail.com>
-Message-ID: <CA+FuTSd4feUHeTAODKEqt7AXoNgh0sbZYJJXrWg7Tb6GTnDmtA@mail.gmail.com>
-Subject: Re: [PATCH v6 net-next 1/9] ipeh: Fix destopts and hopopts counters
- on drop
-To:     Tom Herbert <tom@herbertland.com>
-Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        Network Development <netdev@vger.kernel.org>,
-        Simon Horman <simon.horman@netronome.com>,
-        Tom Herbert <tom@quantonium.net>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:date:from:subject:cc:to:in-reply-to:references
+         :message-id:mime-version:content-transfer-encoding;
+        bh=A7JVk1cXsoYFiiChroTLy8zZeWGRIe3FHpiOiUqKpGU=;
+        b=l/wcema+HSIK1WZ1A/9sF6oIYIuUVOy3mCF9Lsly+hNUk4jETm6WOTfGYSZ0yY9OrD
+         5b0mnpniFbvZp/zdxd6gasD05jbBieuc8AoZqkK0sLpY5hWAq5Lc77SCccp5zJ06yPXR
+         nVCpJWWczbO90qjzPG+itdVO2M+xwiRSsaXvtOnS8k9WabR95Hq8S+lu0nOm3psvTsuH
+         xluHZOFD62TgfGMzFtb8xYW/Otj9WINw1kOAMOIVppfAu04qHyux9FBOjQkq/VkrSQxf
+         ImzNMI9rFhMIA2nGbx/mIx1htXS12Nu7a9xvnQqYRgiTIAxTzR1A6AZQYtx743WcZO6N
+         j5mQ==
+X-Gm-Message-State: APjAAAXP+QfOOlYlfWXovSQYHgxzINly/JdC6MkoJGDRJaGhWIbYJ8mV
+        KxwphPaLciEdLDQuxrU8aZ58CA==
+X-Google-Smtp-Source: APXvYqy8VjDtj2M4YXOgNQVoS5W6G2214rRGeclX3IHaVhjTP1Xl1eEWmabjscdOkvOmZ8taN4sZIA==
+X-Received: by 2002:a63:3196:: with SMTP id x144mr32652805pgx.319.1577127523915;
+        Mon, 23 Dec 2019 10:58:43 -0800 (PST)
+Received: from localhost ([2620:0:1000:2514:7f69:cd98:a2a2:a03d])
+        by smtp.gmail.com with ESMTPSA id s130sm23094849pgc.82.2019.12.23.10.58.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 23 Dec 2019 10:58:43 -0800 (PST)
+Date:   Mon, 23 Dec 2019 10:58:43 -0800 (PST)
+X-Google-Original-Date: Mon, 23 Dec 2019 10:57:47 PST (-0800)
+From:   Palmer Dabbelt <palmerdabbelt@google.com>
+X-Google-Original-From: Palmer Dabbelt <palmer@dabbelt.com>
+Subject:     Re: [PATCH bpf-next v2 7/9] riscv, bpf: optimize calls
+CC:     daniel@iogearbox.net, ast@kernel.org, netdev@vger.kernel.org,
+        Bjorn Topel <bjorn.topel@gmail.com>,
+        linux-riscv@lists.infradead.org, bpf@vger.kernel.org
+To:     Bjorn Topel <bjorn.topel@gmail.com>
+In-Reply-To: <20191216091343.23260-8-bjorn.topel@gmail.com>
+References: <20191216091343.23260-8-bjorn.topel@gmail.com>
+  <20191216091343.23260-1-bjorn.topel@gmail.com>
+Message-ID: <mhng-041b1051-f9ac-4cd8-95bf-731bb1bfbdb8@palmerdabbelt-glaptop>
+Mime-Version: 1.0 (MHng)
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 23, 2019 at 11:53 AM Tom Herbert <tom@herbertland.com> wrote:
+On Mon, 16 Dec 2019 01:13:41 PST (-0800), Bjorn Topel wrote:
+> Instead of using emit_imm() and emit_jalr() which can expand to six
+> instructions, start using jal or auipc+jalr.
 >
-> On Sun, Dec 22, 2019 at 8:21 AM Willem de Bruijn
-> <willemdebruijn.kernel@gmail.com> wrote:
-> >
-> > On Fri, Dec 20, 2019 at 6:39 PM Tom Herbert <tom@herbertland.com> wrote:
-> > >
-> > > From: Tom Herbert <tom@quantonium.net>
-> > >
-> > > For destopts, bump IPSTATS_MIB_INHDRERRORS when limit of length
-> > > of extension header is exceeded.
-> > >
-> > > For hop-by-hop options, bump IPSTATS_MIB_INHDRERRORS in same
-> > > situations as for when destopts are dropped.
-> > >
-> > > Signed-off-by: Tom Herbert <tom@herbertland.com>
-> > > ---
-> > >  net/ipv6/exthdrs.c | 7 ++++++-
-> > >  1 file changed, 6 insertions(+), 1 deletion(-)
-> > >
-> > > diff --git a/net/ipv6/exthdrs.c b/net/ipv6/exthdrs.c
-> > > index ab5add0..f605e4e 100644
-> > > --- a/net/ipv6/exthdrs.c
-> > > +++ b/net/ipv6/exthdrs.c
-> > > @@ -288,9 +288,9 @@ static int ipv6_destopt_rcv(struct sk_buff *skb)
-> > >         if (!pskb_may_pull(skb, skb_transport_offset(skb) + 8) ||
-> > >             !pskb_may_pull(skb, (skb_transport_offset(skb) +
-> > >                                  ((skb_transport_header(skb)[1] + 1) << 3)))) {
-> > > +fail_and_free:
-> > >                 __IP6_INC_STATS(dev_net(dst->dev), idev,
-> > >                                 IPSTATS_MIB_INHDRERRORS);
-> > > -fail_and_free:
-> > >                 kfree_skb(skb);
-> > >                 return -1;
-> > >         }
-> > > @@ -820,8 +820,10 @@ static const struct tlvtype_proc tlvprochopopt_lst[] = {
-> > >
-> > >  int ipv6_parse_hopopts(struct sk_buff *skb)
-> > >  {
-> > > +       struct inet6_dev *idev = __in6_dev_get(skb->dev);
-> > >         struct inet6_skb_parm *opt = IP6CB(skb);
-> > >         struct net *net = dev_net(skb->dev);
-> > > +       struct dst_entry *dst = skb_dst(skb);
-> > >         int extlen;
-> > >
-> > >         /*
-> > > @@ -834,6 +836,8 @@ int ipv6_parse_hopopts(struct sk_buff *skb)
-> > >             !pskb_may_pull(skb, (sizeof(struct ipv6hdr) +
-> > >                                  ((skb_transport_header(skb)[1] + 1) << 3)))) {
-> > >  fail_and_free:
-> > > +               __IP6_INC_STATS(dev_net(dst->dev), idev,
-> > > +                               IPSTATS_MIB_INHDRERRORS);
-> >
-> > ip6_rcv_core, the only caller of ipv6_parse_hopopts, checks
-> > skb_valid_dst(skb) before deref. Does this need the same?
+> Signed-off-by: Björn Töpel <bjorn.topel@gmail.com>
+> ---
+>  arch/riscv/net/bpf_jit_comp.c | 101 +++++++++++++++++++++-------------
+>  1 file changed, 64 insertions(+), 37 deletions(-)
 >
-> Hi Willem,
+> diff --git a/arch/riscv/net/bpf_jit_comp.c b/arch/riscv/net/bpf_jit_comp.c
+> index 46cff093f526..8d7e3343a08c 100644
+> --- a/arch/riscv/net/bpf_jit_comp.c
+> +++ b/arch/riscv/net/bpf_jit_comp.c
+> @@ -811,11 +811,12 @@ static void emit_sext_32_rd(u8 *rd, struct rv_jit_context *ctx)
+>  	*rd = RV_REG_T2;
+>  }
 >
-> Actually, it looks like ipv6_parse_hopopts is doing things the right
-> way. __IP6_INC_STATS is called from ip6_rcv_core if ipv6_parse_hopopts
-> and the net is always taken from skb->dev (not dst) in HBH path. I'll
-> fix destopts to do the same.
+> -static void emit_jump_and_link(u8 rd, int rvoff, struct rv_jit_context *ctx)
+> +static void emit_jump_and_link(u8 rd, s64 rvoff, bool force_jalr,
+> +			       struct rv_jit_context *ctx)
+>  {
+>  	s64 upper, lower;
+>
+> -	if (is_21b_int(rvoff)) {
+> +	if (rvoff && is_21b_int(rvoff) && !force_jalr) {
+>  		emit(rv_jal(rd, rvoff >> 1), ctx);
+>  		return;
+>  	}
+> @@ -832,6 +833,28 @@ static bool is_signed_bpf_cond(u8 cond)
+>  		cond == BPF_JSGE || cond == BPF_JSLE;
+>  }
+>
+> +static int emit_call(bool fixed, u64 addr, struct rv_jit_context *ctx)
+> +{
+> +	s64 off = 0;
+> +	u64 ip;
+> +	u8 rd;
+> +
+> +	if (addr && ctx->insns) {
+> +		ip = (u64)(long)(ctx->insns + ctx->ninsns);
+> +		off = addr - ip;
+> +		if (!is_32b_int(off)) {
+> +			pr_err("bpf-jit: target call addr %pK is out of range\n",
+> +			       (void *)addr);
+> +			return -ERANGE;
+> +		}
+> +	}
+> +
+> +	emit_jump_and_link(RV_REG_RA, off, !fixed, ctx);
+> +	rd = bpf_to_rv_reg(BPF_REG_0, ctx);
+> +	emit(rv_addi(rd, RV_REG_A0, 0), ctx);
 
-I don't entirely follow. The above code uses dev_net(dst->dev). Using
-local variable net, derived from dev_net(skb->dev), here definitely
-sounds good to me, if that's what you meant.
+Why are they out of order?  It seems like it'd be better to just have the BPF
+calling convention match the RISC-V calling convention, as that'd avoid
+juggling the registers around.
+
+> +	return 0;
+> +}
+> +
+>  static int emit_insn(const struct bpf_insn *insn, struct rv_jit_context *ctx,
+>  		     bool extra_pass)
+>  {
+> @@ -1107,7 +1130,7 @@ static int emit_insn(const struct bpf_insn *insn, struct rv_jit_context *ctx,
+>  	/* JUMP off */
+>  	case BPF_JMP | BPF_JA:
+>  		rvoff = rv_offset(i, off, ctx);
+> -		emit_jump_and_link(RV_REG_ZERO, rvoff, ctx);
+> +		emit_jump_and_link(RV_REG_ZERO, rvoff, false, ctx);
+>  		break;
+>
+>  	/* IF (dst COND src) JUMP off */
+> @@ -1209,7 +1232,7 @@ static int emit_insn(const struct bpf_insn *insn, struct rv_jit_context *ctx,
+>  	case BPF_JMP | BPF_CALL:
+>  	{
+>  		bool fixed;
+> -		int i, ret;
+> +		int ret;
+>  		u64 addr;
+>
+>  		mark_call(ctx);
+> @@ -1217,20 +1240,9 @@ static int emit_insn(const struct bpf_insn *insn, struct rv_jit_context *ctx,
+>  					    &fixed);
+>  		if (ret < 0)
+>  			return ret;
+> -		if (fixed) {
+> -			emit_imm(RV_REG_T1, addr, ctx);
+> -		} else {
+> -			i = ctx->ninsns;
+> -			emit_imm(RV_REG_T1, addr, ctx);
+> -			for (i = ctx->ninsns - i; i < 8; i++) {
+> -				/* nop */
+> -				emit(rv_addi(RV_REG_ZERO, RV_REG_ZERO, 0),
+> -				     ctx);
+> -			}
+> -		}
+> -		emit(rv_jalr(RV_REG_RA, RV_REG_T1, 0), ctx);
+> -		rd = bpf_to_rv_reg(BPF_REG_0, ctx);
+> -		emit(rv_addi(rd, RV_REG_A0, 0), ctx);
+> +		ret = emit_call(fixed, addr, ctx);
+> +		if (ret)
+> +			return ret;
+>  		break;
+>  	}
+>  	/* tail call */
+> @@ -1245,7 +1257,7 @@ static int emit_insn(const struct bpf_insn *insn, struct rv_jit_context *ctx,
+>  			break;
+>
+>  		rvoff = epilogue_offset(ctx);
+> -		emit_jump_and_link(RV_REG_ZERO, rvoff, ctx);
+> +		emit_jump_and_link(RV_REG_ZERO, rvoff, false, ctx);
+>  		break;
+>
+>  	/* dst = imm64 */
+> @@ -1508,7 +1520,7 @@ static void build_epilogue(struct rv_jit_context *ctx)
+>  	__build_epilogue(false, ctx);
+>  }
+>
+> -static int build_body(struct rv_jit_context *ctx, bool extra_pass)
+> +static int build_body(struct rv_jit_context *ctx, bool extra_pass, int *offset)
+>  {
+>  	const struct bpf_prog *prog = ctx->prog;
+>  	int i;
+> @@ -1520,12 +1532,12 @@ static int build_body(struct rv_jit_context *ctx, bool extra_pass)
+>  		ret = emit_insn(insn, ctx, extra_pass);
+>  		if (ret > 0) {
+>  			i++;
+> -			if (ctx->insns == NULL)
+> -				ctx->offset[i] = ctx->ninsns;
+> +			if (offset)
+> +				offset[i] = ctx->ninsns;
+>  			continue;
+>  		}
+> -		if (ctx->insns == NULL)
+> -			ctx->offset[i] = ctx->ninsns;
+> +		if (offset)
+> +			offset[i] = ctx->ninsns;
+>  		if (ret)
+>  			return ret;
+>  	}
+> @@ -1553,8 +1565,8 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
+>  	struct bpf_prog *tmp, *orig_prog = prog;
+>  	int pass = 0, prev_ninsns = 0, i;
+>  	struct rv_jit_data *jit_data;
+> +	unsigned int image_size = 0;
+>  	struct rv_jit_context *ctx;
+> -	unsigned int image_size;
+>
+>  	if (!prog->jit_requested)
+>  		return orig_prog;
+> @@ -1599,36 +1611,51 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
+>  	for (i = 0; i < 16; i++) {
+>  		pass++;
+>  		ctx->ninsns = 0;
+> -		if (build_body(ctx, extra_pass)) {
+> +		if (build_body(ctx, extra_pass, ctx->offset)) {
+>  			prog = orig_prog;
+>  			goto out_offset;
+>  		}
+>  		build_prologue(ctx);
+>  		ctx->epilogue_offset = ctx->ninsns;
+>  		build_epilogue(ctx);
+> -		if (ctx->ninsns == prev_ninsns)
+> -			break;
+> +
+> +		if (ctx->ninsns == prev_ninsns) {
+> +			if (jit_data->header)
+> +				break;
+> +
+> +			image_size = sizeof(u32) * ctx->ninsns;
+> +			jit_data->header =
+> +				bpf_jit_binary_alloc(image_size,
+> +						     &jit_data->image,
+> +						     sizeof(u32),
+> +						     bpf_fill_ill_insns);
+> +			if (!jit_data->header) {
+> +				prog = orig_prog;
+> +				goto out_offset;
+> +			}
+> +
+> +			ctx->insns = (u32 *)jit_data->image;
+> +			/* Now, when the image is allocated, the image
+> +			 * can potentially shrink more (auipc/jalr ->
+> +			 * jal).
+> +			 */
+> +		}
+
+It seems like these fragments should go along with patch #2 that introduces the
+code, as I don't see anything above that makes this necessary here.
+
+>  		prev_ninsns = ctx->ninsns;
+>  	}
+>
+> -	/* Allocate image, now that we know the size. */
+> -	image_size = sizeof(u32) * ctx->ninsns;
+> -	jit_data->header = bpf_jit_binary_alloc(image_size, &jit_data->image,
+> -						sizeof(u32),
+> -						bpf_fill_ill_insns);
+> -	if (!jit_data->header) {
+> +	if (i == 16) {
+> +		pr_err("bpf-jit: image did not converge in <%d passes!\n", i);
+> +		bpf_jit_binary_free(jit_data->header);
+>  		prog = orig_prog;
+>  		goto out_offset;
+>  	}
+>
+> -	/* Second, real pass, that acutally emits the image. */
+> -	ctx->insns = (u32 *)jit_data->image;
+>  skip_init_ctx:
+>  	pass++;
+>  	ctx->ninsns = 0;
+>
+>  	build_prologue(ctx);
+> -	if (build_body(ctx, extra_pass)) {
+> +	if (build_body(ctx, extra_pass, NULL)) {
+>  		bpf_jit_binary_free(jit_data->header);
+>  		prog = orig_prog;
+>  		goto out_offset;
