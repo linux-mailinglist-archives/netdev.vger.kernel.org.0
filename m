@@ -2,61 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 16DBC1299E0
-	for <lists+netdev@lfdr.de>; Mon, 23 Dec 2019 19:29:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2C4151299EB
+	for <lists+netdev@lfdr.de>; Mon, 23 Dec 2019 19:30:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726834AbfLWS3k (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Dec 2019 13:29:40 -0500
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:39890 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726829AbfLWS3k (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Dec 2019 13:29:40 -0500
-Received: by mail-pf1-f193.google.com with SMTP id q10so9557903pfs.6
-        for <netdev@vger.kernel.org>; Mon, 23 Dec 2019 10:29:40 -0800 (PST)
+        id S1726860AbfLWSaj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Dec 2019 13:30:39 -0500
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:42809 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726817AbfLWSaj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Dec 2019 13:30:39 -0500
+Received: by mail-pg1-f193.google.com with SMTP id s64so9196421pgb.9
+        for <netdev@vger.kernel.org>; Mon, 23 Dec 2019 10:30:39 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
         h=date:from:subject:cc:to:in-reply-to:references:message-id
          :mime-version:content-transfer-encoding;
-        bh=ETCAz2nAecl12u4VuGxwDzQ9bwqkvTCnDzDrKnZSkaE=;
-        b=NQ/x9Xan0pE4XVpqheHlJ4CgdWe9LDhiMKidcqqT/im1ZAJ8dXpX0qu/PHgUy31UXc
-         G6lwCJOBwiAh/ft2PEvg80+4POa6qy7ZUAtsi0I51DRIPt1txRBs1ubVABHHkMq84bx6
-         Kfcs79SAgBwfBBF2bxH2cNdP4dfjRRRLwYt8VfjTO6bR8exPyX8qx8azKgm/U2X7npz0
-         /6McjwgckB8P17bxehoGhsQtMyxnja/2UTTroiKjpoLuAVsfKCH6Xa0FOzHNYjE/TGoQ
-         UN8DeWzbvbMYNHdgcA1zhyqEpumsqCinN9aKr8Qtsu+5X8j40ZMJqXM6DCkuCNoHPGbf
-         FWOg==
+        bh=4s+YAIWTnpqbkvQsrs1kgFyI5PJQFh2IvW0x8pJusAk=;
+        b=PMrDwuX6oPEJOhMrPi5n1g3U7AyrFtjZL1PYFgy/GbhKxjcYPxgTuBWEThA3KTF1NK
+         g+VL9Tzn8sDxGvVXEoe/4omE8SUgc4k/ySj8seyg0hkXJXsuHZ6TrIggTl4KhIvD6L7D
+         hnjfgLhwvFPJmMBuusSh/sXZasEaSVi22bY6CT0VM0PkGg/dHHb2cZGy7B2qYaMlgoWY
+         2PvcbWWtA6yJh453bsuMpOr8IAu7EHhh7Raeq6l2sCGhd/irHBdz5AxBBnx02lbGsLux
+         fsO/uCSbk+DQOH4LcQTjOAmVEATd5fuTcg652PP37Z7vEsl+cw92BBf55B+4tgNt2LZq
+         gd8Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:subject:cc:to:in-reply-to:references
          :message-id:mime-version:content-transfer-encoding;
-        bh=ETCAz2nAecl12u4VuGxwDzQ9bwqkvTCnDzDrKnZSkaE=;
-        b=o+LwX66pjuNgFqo3ETk9dDOc15Re7oG/MavcwdE4gTP/NRXNJtlsKS5N+5FwGTdbxn
-         sYv/N+z4MHOzLh+tTTbfyeYVgpi063KUjhBJiu3k1zQ+xljjdbyvfzj9NxZhDc15+qOp
-         MilbyOgq+tEXERgFEgmY1ymxsQQ6NCViyJ04RmK6yCSka5jq23VadouxDG9EdiTc5tNS
-         OxPaQICI45cORDKYv/KN5bz8JEsrReovQPGvj+UPH6eJtpwHsq20uPktWsHmZSbIbyYi
-         o70cJgSyH6s4tZ9Ehv+lq0CjV/5Slgphe4dZfeHV7buafY0Brb5a91o8utADWV0JmwrZ
-         IoWg==
-X-Gm-Message-State: APjAAAWVWZ4sjqykPTddFogGggt2VnhjcQu4J2VtWlcrtIrWYYiROcFB
-        D9063xUU5cpdnEzPchOWs0Q0/w==
-X-Google-Smtp-Source: APXvYqzyXbXysDM2meGOAdnFewhF96oWfXTEbytcsUZtAPxGdzhU1sBVIYdYLoMQmjWY+UsfFcIGRQ==
-X-Received: by 2002:a62:a515:: with SMTP id v21mr34004010pfm.128.1577125779770;
-        Mon, 23 Dec 2019 10:29:39 -0800 (PST)
+        bh=4s+YAIWTnpqbkvQsrs1kgFyI5PJQFh2IvW0x8pJusAk=;
+        b=RU+1jxXesFqXjc0he8ordhTGFrxD0VKAhv0IKViVAKvpXUdZ4phYqbc5f2etwlx/I0
+         22RFcx8LEGBKgLgnGAABvO3yz1Dr2mtkObyYKPu5kJ1U556JQi4+efvMLwbFuCeuk7P+
+         UFNE6rrqhu6PJNwlTtu8xzM0b/vkHcuNQh0JxFk0LkXno+qJqPQk2UG+z4FB601oYvc+
+         O4WjHdNVNwvyYsrACA8q6Bf/NhX/DyGLneKJywkw2fK02EAZ2gWICJmUukP867qglnUo
+         huWjAtQfTxhLkfwujrBf+4bC+S5f43JnTXXhOsMDqpjf29fj5DFVrs8qb6A0rLqvi9rw
+         c11g==
+X-Gm-Message-State: APjAAAWxuqiNOZT2FOA9WVGTb+87+y72g5hrpU1DaraJ1WNg/K4LkY0w
+        c4g8kyiEkxR3KdY8PWk9Im8wXw==
+X-Google-Smtp-Source: APXvYqz9XqWvyxAlEWkNyD9bCzCDDMgxZw2M9kfQJPYDiGtuFIz2E7BxiGhn7rriK62yIKD4t4rHrA==
+X-Received: by 2002:a63:1c64:: with SMTP id c36mr29162810pgm.302.1577125838483;
+        Mon, 23 Dec 2019 10:30:38 -0800 (PST)
 Received: from localhost ([2620:0:1000:2514:7f69:cd98:a2a2:a03d])
-        by smtp.gmail.com with ESMTPSA id w20sm15751188pfi.86.2019.12.23.10.29.39
+        by smtp.gmail.com with ESMTPSA id g26sm17328760pfo.130.2019.12.23.10.30.37
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 Dec 2019 10:29:39 -0800 (PST)
-Date:   Mon, 23 Dec 2019 10:29:39 -0800 (PST)
-X-Google-Original-Date: Mon, 23 Dec 2019 10:29:24 PST (-0800)
+        Mon, 23 Dec 2019 10:30:38 -0800 (PST)
+Date:   Mon, 23 Dec 2019 10:30:38 -0800 (PST)
+X-Google-Original-Date: Mon, 23 Dec 2019 10:30:36 PST (-0800)
 From:   Palmer Dabbelt <palmerdabbelt@google.com>
 X-Google-Original-From: Palmer Dabbelt <palmer@dabbelt.com>
-Subject:     Re: [PATCH bpf-next v2 5/9] riscv, bpf: optimize BPF tail calls
+Subject:     Re: [PATCH bpf-next v2 6/9] riscv, bpf: provide RISC-V specific JIT image alloc/free
 CC:     daniel@iogearbox.net, ast@kernel.org, netdev@vger.kernel.org,
         Bjorn Topel <bjorn.topel@gmail.com>,
         linux-riscv@lists.infradead.org, bpf@vger.kernel.org
 To:     Bjorn Topel <bjorn.topel@gmail.com>
-In-Reply-To: <20191216091343.23260-6-bjorn.topel@gmail.com>
-References: <20191216091343.23260-6-bjorn.topel@gmail.com>
+In-Reply-To: <20191216091343.23260-7-bjorn.topel@gmail.com>
+References: <20191216091343.23260-7-bjorn.topel@gmail.com>
   <20191216091343.23260-1-bjorn.topel@gmail.com>
-Message-ID: <mhng-01fe07e5-a27a-4fde-a7ab-22bbad6eb668@palmerdabbelt-glaptop>
+Message-ID: <mhng-3299fb62-01d1-4e83-90fe-d706d2495bc1@palmerdabbelt-glaptop>
 Mime-Version: 1.0 (MHng)
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
@@ -65,61 +65,61 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 16 Dec 2019 01:13:39 PST (-0800), Bjorn Topel wrote:
-> Remove one addi, and instead use the offset part of jalr.
+On Mon, 16 Dec 2019 01:13:40 PST (-0800), Bjorn Topel wrote:
+> This commit makes sure that the JIT images is kept close to the kernel
+> text, so BPF calls can use relative calling with auipc/jalr or jal
+> instead of loading the full 64-bit address and jalr.
+>
+> The BPF JIT image region is 128 MB before the kernel text.
 >
 > Signed-off-by: Björn Töpel <bjorn.topel@gmail.com>
 > ---
->  arch/riscv/net/bpf_jit_comp.c | 13 +++++++------
->  1 file changed, 7 insertions(+), 6 deletions(-)
+>  arch/riscv/include/asm/pgtable.h |  4 ++++
+>  arch/riscv/net/bpf_jit_comp.c    | 13 +++++++++++++
+>  2 files changed, 17 insertions(+)
 >
+> diff --git a/arch/riscv/include/asm/pgtable.h b/arch/riscv/include/asm/pgtable.h
+> index 7ff0ed4f292e..cc3f49415620 100644
+> --- a/arch/riscv/include/asm/pgtable.h
+> +++ b/arch/riscv/include/asm/pgtable.h
+> @@ -404,6 +404,10 @@ static inline int ptep_clear_flush_young(struct vm_area_struct *vma,
+>  #define VMALLOC_END      (PAGE_OFFSET - 1)
+>  #define VMALLOC_START    (PAGE_OFFSET - VMALLOC_SIZE)
+>
+> +#define BPF_JIT_REGION_SIZE	(SZ_128M)
+> +#define BPF_JIT_REGION_START	(PAGE_OFFSET - BPF_JIT_REGION_SIZE)
+> +#define BPF_JIT_REGION_END	(VMALLOC_END)
+> +
+>  /*
+>   * Roughly size the vmemmap space to be large enough to fit enough
+>   * struct pages to map half the virtual address space. Then
 > diff --git a/arch/riscv/net/bpf_jit_comp.c b/arch/riscv/net/bpf_jit_comp.c
-> index 2fc0f24ad30f..8aa19c846881 100644
+> index 8aa19c846881..46cff093f526 100644
 > --- a/arch/riscv/net/bpf_jit_comp.c
 > +++ b/arch/riscv/net/bpf_jit_comp.c
-> @@ -552,7 +552,7 @@ static int epilogue_offset(struct rv_jit_context *ctx)
->  	return (to - from) << 2;
+> @@ -1656,3 +1656,16 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
+>  					   tmp : orig_prog);
+>  	return prog;
 >  }
->
-> -static void __build_epilogue(u8 reg, struct rv_jit_context *ctx)
-> +static void __build_epilogue(bool is_tail_call, struct rv_jit_context *ctx)
->  {
->  	int stack_adjust = ctx->stack_size, store_offset = stack_adjust - 8;
->
-> @@ -589,9 +589,11 @@ static void __build_epilogue(u8 reg, struct rv_jit_context *ctx)
->
->  	emit(rv_addi(RV_REG_SP, RV_REG_SP, stack_adjust), ctx);
->  	/* Set return value. */
-> -	if (reg == RV_REG_RA)
-> +	if (!is_tail_call)
->  		emit(rv_addi(RV_REG_A0, RV_REG_A5, 0), ctx);
-> -	emit(rv_jalr(RV_REG_ZERO, reg, 0), ctx);
-> +	emit(rv_jalr(RV_REG_ZERO, is_tail_call ? RV_REG_T3 : RV_REG_RA,
-> +		     is_tail_call ? 4 : 0), /* skip TCC init */
-> +	     ctx);
->  }
->
->  /* return -1 or inverted cond */
-> @@ -751,9 +753,8 @@ static int emit_bpf_tail_call(int insn, struct rv_jit_context *ctx)
->  	if (is_12b_check(off, insn))
->  		return -1;
->  	emit(rv_ld(RV_REG_T3, off, RV_REG_T2), ctx);
-> -	emit(rv_addi(RV_REG_T3, RV_REG_T3, 4), ctx);
->  	emit(rv_addi(RV_REG_TCC, RV_REG_T1, 0), ctx);
-> -	__build_epilogue(RV_REG_T3, ctx);
-> +	__build_epilogue(true, ctx);
->  	return 0;
->  }
->
-> @@ -1504,7 +1505,7 @@ static void build_prologue(struct rv_jit_context *ctx)
->
->  static void build_epilogue(struct rv_jit_context *ctx)
->  {
-> -	__build_epilogue(RV_REG_RA, ctx);
-> +	__build_epilogue(false, ctx);
->  }
->
->  static int build_body(struct rv_jit_context *ctx, bool extra_pass)
+> +
+> +void *bpf_jit_alloc_exec(unsigned long size)
+> +{
+> +	return __vmalloc_node_range(size, PAGE_SIZE, BPF_JIT_REGION_START,
+> +				    BPF_JIT_REGION_END, GFP_KERNEL,
+> +				    PAGE_KERNEL_EXEC, 0, NUMA_NO_NODE,
+> +				    __builtin_return_address(0));
+> +}
+> +
+> +void bpf_jit_free_exec(void *addr)
+> +{
+> +	return vfree(addr);
+> +}
+
+Ah, I guess I should have read the whole patch set :)
 
 Reviewed-by: Palmer Dabbelt <palmerdabbelt@google.com>
 Acked-by: Palmer Dabbelt <palmerdabbelt@google.com>
+
+and feel free to put the same on whatever patch I just asked that question
+on, though maybe this one should go before the others as they sort of depend on
+it?
