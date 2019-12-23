@@ -2,124 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2C4151299EB
-	for <lists+netdev@lfdr.de>; Mon, 23 Dec 2019 19:30:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CCD721299F9
+	for <lists+netdev@lfdr.de>; Mon, 23 Dec 2019 19:53:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726860AbfLWSaj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Dec 2019 13:30:39 -0500
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:42809 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726817AbfLWSaj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Dec 2019 13:30:39 -0500
-Received: by mail-pg1-f193.google.com with SMTP id s64so9196421pgb.9
-        for <netdev@vger.kernel.org>; Mon, 23 Dec 2019 10:30:39 -0800 (PST)
+        id S1726832AbfLWSx1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Dec 2019 13:53:27 -0500
+Received: from mail-yw1-f68.google.com ([209.85.161.68]:34746 "EHLO
+        mail-yw1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726766AbfLWSx0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Dec 2019 13:53:26 -0500
+Received: by mail-yw1-f68.google.com with SMTP id b186so7452195ywc.1
+        for <netdev@vger.kernel.org>; Mon, 23 Dec 2019 10:53:26 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:from:subject:cc:to:in-reply-to:references:message-id
-         :mime-version:content-transfer-encoding;
-        bh=4s+YAIWTnpqbkvQsrs1kgFyI5PJQFh2IvW0x8pJusAk=;
-        b=PMrDwuX6oPEJOhMrPi5n1g3U7AyrFtjZL1PYFgy/GbhKxjcYPxgTuBWEThA3KTF1NK
-         g+VL9Tzn8sDxGvVXEoe/4omE8SUgc4k/ySj8seyg0hkXJXsuHZ6TrIggTl4KhIvD6L7D
-         hnjfgLhwvFPJmMBuusSh/sXZasEaSVi22bY6CT0VM0PkGg/dHHb2cZGy7B2qYaMlgoWY
-         2PvcbWWtA6yJh453bsuMpOr8IAu7EHhh7Raeq6l2sCGhd/irHBdz5AxBBnx02lbGsLux
-         fsO/uCSbk+DQOH4LcQTjOAmVEATd5fuTcg652PP37Z7vEsl+cw92BBf55B+4tgNt2LZq
-         gd8Q==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=osBD8dJGgUhTdeeULOYtmsCBx13VXNvpZz57rJuhm7k=;
+        b=oCfsoIjD+GdEJPFTfiIGbbZJWi7tp6H5551kSaBj4IDG65P0Ms7/FYpCkzbu+PN0iE
+         cpoh7Gm/6H+YGCWU4FhXI1ubogr4u37Gv9COtlM9pSLWg1hm0fPuHE7sxHGg4YXmeHIl
+         Z/9K/oaVFADkyWilU4Up4ZvcraebKBObgU5npOJ4WUaOWsxJUpUnj2G9inUMtSLeYOTa
+         ThhnShPrdcqLWfVEr4VfmUi5EDjE3VdAnNd79L4pLMwGRwy68SrZyIZ+x8IGufWoZK0l
+         4U6DQhgPb1x964uzXwY808/14c410WDb8Egj9nQhwE8a4A05f4ZOB4O5KyQmdK3lAyvk
+         65bw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:subject:cc:to:in-reply-to:references
-         :message-id:mime-version:content-transfer-encoding;
-        bh=4s+YAIWTnpqbkvQsrs1kgFyI5PJQFh2IvW0x8pJusAk=;
-        b=RU+1jxXesFqXjc0he8ordhTGFrxD0VKAhv0IKViVAKvpXUdZ4phYqbc5f2etwlx/I0
-         22RFcx8LEGBKgLgnGAABvO3yz1Dr2mtkObyYKPu5kJ1U556JQi4+efvMLwbFuCeuk7P+
-         UFNE6rrqhu6PJNwlTtu8xzM0b/vkHcuNQh0JxFk0LkXno+qJqPQk2UG+z4FB601oYvc+
-         O4WjHdNVNwvyYsrACA8q6Bf/NhX/DyGLneKJywkw2fK02EAZ2gWICJmUukP867qglnUo
-         huWjAtQfTxhLkfwujrBf+4bC+S5f43JnTXXhOsMDqpjf29fj5DFVrs8qb6A0rLqvi9rw
-         c11g==
-X-Gm-Message-State: APjAAAWxuqiNOZT2FOA9WVGTb+87+y72g5hrpU1DaraJ1WNg/K4LkY0w
-        c4g8kyiEkxR3KdY8PWk9Im8wXw==
-X-Google-Smtp-Source: APXvYqz9XqWvyxAlEWkNyD9bCzCDDMgxZw2M9kfQJPYDiGtuFIz2E7BxiGhn7rriK62yIKD4t4rHrA==
-X-Received: by 2002:a63:1c64:: with SMTP id c36mr29162810pgm.302.1577125838483;
-        Mon, 23 Dec 2019 10:30:38 -0800 (PST)
-Received: from localhost ([2620:0:1000:2514:7f69:cd98:a2a2:a03d])
-        by smtp.gmail.com with ESMTPSA id g26sm17328760pfo.130.2019.12.23.10.30.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 Dec 2019 10:30:38 -0800 (PST)
-Date:   Mon, 23 Dec 2019 10:30:38 -0800 (PST)
-X-Google-Original-Date: Mon, 23 Dec 2019 10:30:36 PST (-0800)
-From:   Palmer Dabbelt <palmerdabbelt@google.com>
-X-Google-Original-From: Palmer Dabbelt <palmer@dabbelt.com>
-Subject:     Re: [PATCH bpf-next v2 6/9] riscv, bpf: provide RISC-V specific JIT image alloc/free
-CC:     daniel@iogearbox.net, ast@kernel.org, netdev@vger.kernel.org,
-        Bjorn Topel <bjorn.topel@gmail.com>,
-        linux-riscv@lists.infradead.org, bpf@vger.kernel.org
-To:     Bjorn Topel <bjorn.topel@gmail.com>
-In-Reply-To: <20191216091343.23260-7-bjorn.topel@gmail.com>
-References: <20191216091343.23260-7-bjorn.topel@gmail.com>
-  <20191216091343.23260-1-bjorn.topel@gmail.com>
-Message-ID: <mhng-3299fb62-01d1-4e83-90fe-d706d2495bc1@palmerdabbelt-glaptop>
-Mime-Version: 1.0 (MHng)
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=osBD8dJGgUhTdeeULOYtmsCBx13VXNvpZz57rJuhm7k=;
+        b=KcrIbwtGFsiVR0bAa2Vq2RL9U9xyHeYCXhIgMmLXTZBkrsZZdRbtIA6uob3wMjyS9o
+         MPAzh+NqE377DNKK/0CUwoGKX5RHoN/3AexX+BWTrej5GjZwfo7BnyMNJQeLKTAqV/LU
+         SkjEG/ea7rnz1eBWAWtFr0kq+w7p7boWw3xXcPM0G/+18j9i6OiPp+ZfMMzuj5Imkmx5
+         kmTsguzR+zHR+3aS5BBSyUqalS1I8vELSsH2lJKi1LBqcMpi9jeYqIYoCuokUFLYbhkT
+         6+40OohDFB/9mHl9Q1cKFAOlT81bkATtIz4J1B/0L8cuA/TLAlzJuvoYbMV4YvnZnEZZ
+         SbDA==
+X-Gm-Message-State: APjAAAVLBTc6HbEUeaQyuDUeet6bYrZj0AS/6dJPl/AzAwCqKOvtJ+U1
+        p9bUjZ37bKmCV3MwT2lCyjzoYkgF
+X-Google-Smtp-Source: APXvYqzCC5Qn7LVztg4VmMoxdF4F/SaChnnP/WbRGtkRGvy9lH7xj6+d6PCnBa21b7HckM+lXRHwzA==
+X-Received: by 2002:a0d:cad6:: with SMTP id m205mr23652670ywd.348.1577127205336;
+        Mon, 23 Dec 2019 10:53:25 -0800 (PST)
+Received: from mail-yb1-f174.google.com (mail-yb1-f174.google.com. [209.85.219.174])
+        by smtp.gmail.com with ESMTPSA id h23sm8238583ywc.105.2019.12.23.10.53.23
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 23 Dec 2019 10:53:24 -0800 (PST)
+Received: by mail-yb1-f174.google.com with SMTP id f136so4258359ybg.11
+        for <netdev@vger.kernel.org>; Mon, 23 Dec 2019 10:53:23 -0800 (PST)
+X-Received: by 2002:a25:d117:: with SMTP id i23mr16360727ybg.139.1577127203160;
+ Mon, 23 Dec 2019 10:53:23 -0800 (PST)
+MIME-Version: 1.0
+References: <1576885124-14576-1-git-send-email-tom@herbertland.com>
+ <1576885124-14576-2-git-send-email-tom@herbertland.com> <CA+FuTSfSFtSZjstCCp4ZdwPMCiHXaskgTqQH0EJYzV4-08t2Eg@mail.gmail.com>
+ <CALx6S35o==mvEJ+GOx_tQfi56HVxKFySd+bjNakzwgiuvHnS7Q@mail.gmail.com>
+In-Reply-To: <CALx6S35o==mvEJ+GOx_tQfi56HVxKFySd+bjNakzwgiuvHnS7Q@mail.gmail.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Mon, 23 Dec 2019 13:52:46 -0500
+X-Gmail-Original-Message-ID: <CA+FuTSd4feUHeTAODKEqt7AXoNgh0sbZYJJXrWg7Tb6GTnDmtA@mail.gmail.com>
+Message-ID: <CA+FuTSd4feUHeTAODKEqt7AXoNgh0sbZYJJXrWg7Tb6GTnDmtA@mail.gmail.com>
+Subject: Re: [PATCH v6 net-next 1/9] ipeh: Fix destopts and hopopts counters
+ on drop
+To:     Tom Herbert <tom@herbertland.com>
+Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        Network Development <netdev@vger.kernel.org>,
+        Simon Horman <simon.horman@netronome.com>,
+        Tom Herbert <tom@quantonium.net>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 16 Dec 2019 01:13:40 PST (-0800), Bjorn Topel wrote:
-> This commit makes sure that the JIT images is kept close to the kernel
-> text, so BPF calls can use relative calling with auipc/jalr or jal
-> instead of loading the full 64-bit address and jalr.
+On Mon, Dec 23, 2019 at 11:53 AM Tom Herbert <tom@herbertland.com> wrote:
 >
-> The BPF JIT image region is 128 MB before the kernel text.
+> On Sun, Dec 22, 2019 at 8:21 AM Willem de Bruijn
+> <willemdebruijn.kernel@gmail.com> wrote:
+> >
+> > On Fri, Dec 20, 2019 at 6:39 PM Tom Herbert <tom@herbertland.com> wrote:
+> > >
+> > > From: Tom Herbert <tom@quantonium.net>
+> > >
+> > > For destopts, bump IPSTATS_MIB_INHDRERRORS when limit of length
+> > > of extension header is exceeded.
+> > >
+> > > For hop-by-hop options, bump IPSTATS_MIB_INHDRERRORS in same
+> > > situations as for when destopts are dropped.
+> > >
+> > > Signed-off-by: Tom Herbert <tom@herbertland.com>
+> > > ---
+> > >  net/ipv6/exthdrs.c | 7 ++++++-
+> > >  1 file changed, 6 insertions(+), 1 deletion(-)
+> > >
+> > > diff --git a/net/ipv6/exthdrs.c b/net/ipv6/exthdrs.c
+> > > index ab5add0..f605e4e 100644
+> > > --- a/net/ipv6/exthdrs.c
+> > > +++ b/net/ipv6/exthdrs.c
+> > > @@ -288,9 +288,9 @@ static int ipv6_destopt_rcv(struct sk_buff *skb)
+> > >         if (!pskb_may_pull(skb, skb_transport_offset(skb) + 8) ||
+> > >             !pskb_may_pull(skb, (skb_transport_offset(skb) +
+> > >                                  ((skb_transport_header(skb)[1] + 1) << 3)))) {
+> > > +fail_and_free:
+> > >                 __IP6_INC_STATS(dev_net(dst->dev), idev,
+> > >                                 IPSTATS_MIB_INHDRERRORS);
+> > > -fail_and_free:
+> > >                 kfree_skb(skb);
+> > >                 return -1;
+> > >         }
+> > > @@ -820,8 +820,10 @@ static const struct tlvtype_proc tlvprochopopt_lst[] = {
+> > >
+> > >  int ipv6_parse_hopopts(struct sk_buff *skb)
+> > >  {
+> > > +       struct inet6_dev *idev = __in6_dev_get(skb->dev);
+> > >         struct inet6_skb_parm *opt = IP6CB(skb);
+> > >         struct net *net = dev_net(skb->dev);
+> > > +       struct dst_entry *dst = skb_dst(skb);
+> > >         int extlen;
+> > >
+> > >         /*
+> > > @@ -834,6 +836,8 @@ int ipv6_parse_hopopts(struct sk_buff *skb)
+> > >             !pskb_may_pull(skb, (sizeof(struct ipv6hdr) +
+> > >                                  ((skb_transport_header(skb)[1] + 1) << 3)))) {
+> > >  fail_and_free:
+> > > +               __IP6_INC_STATS(dev_net(dst->dev), idev,
+> > > +                               IPSTATS_MIB_INHDRERRORS);
+> >
+> > ip6_rcv_core, the only caller of ipv6_parse_hopopts, checks
+> > skb_valid_dst(skb) before deref. Does this need the same?
 >
-> Signed-off-by: Björn Töpel <bjorn.topel@gmail.com>
-> ---
->  arch/riscv/include/asm/pgtable.h |  4 ++++
->  arch/riscv/net/bpf_jit_comp.c    | 13 +++++++++++++
->  2 files changed, 17 insertions(+)
+> Hi Willem,
 >
-> diff --git a/arch/riscv/include/asm/pgtable.h b/arch/riscv/include/asm/pgtable.h
-> index 7ff0ed4f292e..cc3f49415620 100644
-> --- a/arch/riscv/include/asm/pgtable.h
-> +++ b/arch/riscv/include/asm/pgtable.h
-> @@ -404,6 +404,10 @@ static inline int ptep_clear_flush_young(struct vm_area_struct *vma,
->  #define VMALLOC_END      (PAGE_OFFSET - 1)
->  #define VMALLOC_START    (PAGE_OFFSET - VMALLOC_SIZE)
->
-> +#define BPF_JIT_REGION_SIZE	(SZ_128M)
-> +#define BPF_JIT_REGION_START	(PAGE_OFFSET - BPF_JIT_REGION_SIZE)
-> +#define BPF_JIT_REGION_END	(VMALLOC_END)
-> +
->  /*
->   * Roughly size the vmemmap space to be large enough to fit enough
->   * struct pages to map half the virtual address space. Then
-> diff --git a/arch/riscv/net/bpf_jit_comp.c b/arch/riscv/net/bpf_jit_comp.c
-> index 8aa19c846881..46cff093f526 100644
-> --- a/arch/riscv/net/bpf_jit_comp.c
-> +++ b/arch/riscv/net/bpf_jit_comp.c
-> @@ -1656,3 +1656,16 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
->  					   tmp : orig_prog);
->  	return prog;
->  }
-> +
-> +void *bpf_jit_alloc_exec(unsigned long size)
-> +{
-> +	return __vmalloc_node_range(size, PAGE_SIZE, BPF_JIT_REGION_START,
-> +				    BPF_JIT_REGION_END, GFP_KERNEL,
-> +				    PAGE_KERNEL_EXEC, 0, NUMA_NO_NODE,
-> +				    __builtin_return_address(0));
-> +}
-> +
-> +void bpf_jit_free_exec(void *addr)
-> +{
-> +	return vfree(addr);
-> +}
+> Actually, it looks like ipv6_parse_hopopts is doing things the right
+> way. __IP6_INC_STATS is called from ip6_rcv_core if ipv6_parse_hopopts
+> and the net is always taken from skb->dev (not dst) in HBH path. I'll
+> fix destopts to do the same.
 
-Ah, I guess I should have read the whole patch set :)
-
-Reviewed-by: Palmer Dabbelt <palmerdabbelt@google.com>
-Acked-by: Palmer Dabbelt <palmerdabbelt@google.com>
-
-and feel free to put the same on whatever patch I just asked that question
-on, though maybe this one should go before the others as they sort of depend on
-it?
+I don't entirely follow. The above code uses dev_net(dst->dev). Using
+local variable net, derived from dev_net(skb->dev), here definitely
+sounds good to me, if that's what you meant.
