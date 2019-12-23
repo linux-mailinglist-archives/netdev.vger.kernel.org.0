@@ -2,128 +2,184 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 32AED129283
-	for <lists+netdev@lfdr.de>; Mon, 23 Dec 2019 08:49:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C2856129285
+	for <lists+netdev@lfdr.de>; Mon, 23 Dec 2019 08:50:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725927AbfLWHtj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Dec 2019 02:49:39 -0500
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:8358 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725810AbfLWHtj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Dec 2019 02:49:39 -0500
-Received: from pps.filterd (m0109331.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xBN7imcZ023678;
-        Sun, 22 Dec 2019 23:49:24 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type : content-id
- : content-transfer-encoding : mime-version; s=facebook;
- bh=cpfIx4vwS1Teplu9Wha/NDHAgYpxJNvC/KQS/DDc6pg=;
- b=Qoz/RJkaXVWenDbW2KQSbj+1QzQvKbXzbdl8kGaeDKM3mEbWoVcrlSy23nAC8HEfGb1A
- nQVQ5Q2w/JyWbgRVvHHfVQai/NEjlP7mwS9i9yiupMcZ+l1k1Nadz50ABwaXzsaV5nF5
- aVZ7js1rn7IoL4KA+iycDAHUiKaVqHt46rA= 
-Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by mx0a-00082601.pphosted.com with ESMTP id 2x1j3qe1mv-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Sun, 22 Dec 2019 23:49:24 -0800
-Received: from prn-hub01.TheFacebook.com (2620:10d:c081:35::125) by
- prn-hub02.TheFacebook.com (2620:10d:c081:35::126) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.1.1713.5; Sun, 22 Dec 2019 23:49:23 -0800
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (192.168.54.28)
- by o365-in.thefacebook.com (192.168.16.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.1.1713.5
- via Frontend Transport; Sun, 22 Dec 2019 23:49:23 -0800
+        id S1726028AbfLWHuQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Dec 2019 02:50:16 -0500
+Received: from mail-eopbgr20058.outbound.protection.outlook.com ([40.107.2.58]:62373
+        "EHLO EUR02-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725810AbfLWHuP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 23 Dec 2019 02:50:15 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=EQMZ/8ACH6mSK0MGMYveDp+HXdSfKb7D5UBA7urDfuo7Svbjzw5xTI759mZqhlFpF98kqnt4fS03R1ctAV0G1JzazwjlK8caWwqNItkmoEMn7i/4vfR7xGMgKRKNqQ+CocHIxGgpBUog6OjDewHnGUnPPxpqeIcH2j4EIHJPWDDVqFNnDzipx7cEyXl3T1Kn0ID4ztZyGh6Prpt8pbQ2ITQ93BP5MV7z80mc347TVMz46BVBGoDG6ZlIROWWKx7iQcq4lFjFqspoqUj1Kvm1fKLkdF2AJ76Rs0K3Niycf8ZLNYUP6WjUyfnayEGNl0dImf6LQm1h8Lw622wUmZDGQw==
+ b=Wiwzj75EeLKxFkJwk3YMTaTVVgkFTYbaA3wwSMFQz4KeJCK4onRGCutbPJHnZCXpxrS8Yg4rxiRWQIIoXUHdtaetgQCLfVZYkysADap/ZFCNA0a5fSs/LhLpVQ1euTaev9uHbrsFKwmqaZ0mFJH8S+GAQSND++ht5uLYu3K+7HjhVVLNG07gsltGM5zaXk34kuU6EvcYQyxVnpMTiMcVp/j1m2AiDElyDh1ggcHASrPhnkDjvbJhAoAN8MBOCN7n915V3ctw0DWmZnaVJNi4m95iAgbo5xC49rOMddAybTxzWb80GpzZb1ZAvN3vFV5OsScZovOgiIj5D//dukpxdQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=cpfIx4vwS1Teplu9Wha/NDHAgYpxJNvC/KQS/DDc6pg=;
- b=XbjJNYSE1PDyb5KfhlSvo9sLN6LM9hX5HetNTlPbE5beAukKnUimJyzEdnuQnAJ6yBFDBwYe8c7H5lL/5Kvf7kHLBH+eURE3iVZ6TMMhkZbXz2QEt559u9xo1NPv+wwlS7PXjuusuRaifFq73znqf5xkjAhJseXYCVu/fs8gCc+/1VRZJpWLimb0RrLu+ZVTNEP89Y+PfqfGLPVfV4lDjxOG0VxD7rb4CM20LysXftZXUYJKdCn6lcCSr2ciGugPIZY2hZOUDFIDgYNMkE4icns2kyKfiMLwitlcNpRUqCT9OkmH87q06JDC2YrwxYViPSFOA9yTjPassRxUKXlNWQ==
+ bh=pmIoqhEZgdz7pAnorhCOvuOIFn7T8c/QJpZE6zjoVmg=;
+ b=YoX4barpghfgVQd8BDSU2/r3hKy1+Ch3wthS0mE+xsQQLl/8uOh5gBWFflE3LRhOI896fjLbcsKqdVFH+MNR5JjrDHNdxJO0iko9jDch+cY+JqY9SQ5fqvNcAQAp5EwT+CStSjMbxK98OD5EAUZx2Cj3Nsp/kWX84JGQJeLzthPQvEKOjSTknkzr2yfudpBavLBaGt1OjB/ZKE6Wo8wZiBYH/l6gdbMVo+6fO1u7Wvfg0PV8KbJ4XTrblYXZu2xzXwqcTnD8OwLzo8V2U6JMF1y++k8J+4YF0ELwisDLmn98PzxlFAnFXVD+AauFJwKDMtR+g/lt9BY1xJ10Lbzafw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
+ smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
+ dkim=pass header.d=oss.nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
+ s=selector2-NXP1-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=cpfIx4vwS1Teplu9Wha/NDHAgYpxJNvC/KQS/DDc6pg=;
- b=asMPRgAKzGKG7KqcOGqcg+UPm8tKxlMCD2yWQAQqiYWoaEo726lP2cimoLnZgqMsZxH9J7Y1IAKS7KRjfpZ7u0rKYwRTvmfUbLR6rMuuBGxXuDApkL1ho3ihWXHWm3Yp9WJMasjzkzzuRL0IEmniXZH2hWxpMaZwNIa6/q9urtE=
-Received: from DM5PR15MB1675.namprd15.prod.outlook.com (10.175.107.145) by
- DM5PR15MB1547.namprd15.prod.outlook.com (10.173.221.10) with Microsoft SMTP
+ bh=pmIoqhEZgdz7pAnorhCOvuOIFn7T8c/QJpZE6zjoVmg=;
+ b=UWa1a3zMRQzYBd0ZtlbbipN9V31eVAdlRumuGuxt+U0SL02JYbw2SE+Y6Af62DJ6njWF3xRPYwvMkhWyhWMvXh1shcqdpr01bqOOZzqw7d13ppXOMPFL5M0kBfEATfqFjHSlzWpqWDNg1kVTp2ZnRH7PocZDyPYE+ZkGs+1seuE=
+Received: from VI1PR04MB5567.eurprd04.prod.outlook.com (20.178.123.83) by
+ VI1PR04MB6975.eurprd04.prod.outlook.com (52.133.246.211) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2559.14; Mon, 23 Dec 2019 07:49:08 +0000
-Received: from DM5PR15MB1675.namprd15.prod.outlook.com
- ([fe80::2844:b18d:c296:c23]) by DM5PR15MB1675.namprd15.prod.outlook.com
- ([fe80::2844:b18d:c296:c23%8]) with mapi id 15.20.2559.017; Mon, 23 Dec 2019
- 07:49:08 +0000
-Received: from macbook-pro-52.local.dhcp.thefacebook.com (2620:10d:c090:180::62a8) by CO1PR15CA0073.namprd15.prod.outlook.com (2603:10b6:101:20::17) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2559.14 via Frontend Transport; Mon, 23 Dec 2019 07:49:07 +0000
-From:   Yonghong Song <yhs@fb.com>
-To:     Martin Lau <kafai@fb.com>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>
-CC:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        David Miller <davem@davemloft.net>,
-        Kernel Team <Kernel-team@fb.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH bpf-next v2 04/11] bpf: Support bitfield read access in
- btf_struct_access
-Thread-Topic: [PATCH bpf-next v2 04/11] bpf: Support bitfield read access in
- btf_struct_access
-Thread-Index: AQHVt8eMPrh8mmnRe0KFFgYnEVuYFqfHW1aA
-Date:   Mon, 23 Dec 2019 07:49:08 +0000
-Message-ID: <0d256d3a-ba40-3bdb-0779-016ae4f3f514@fb.com>
-References: <20191221062556.1182261-1-kafai@fb.com>
- <20191221062604.1182843-1-kafai@fb.com>
-In-Reply-To: <20191221062604.1182843-1-kafai@fb.com>
+ 15.20.2559.17; Mon, 23 Dec 2019 07:50:08 +0000
+Received: from VI1PR04MB5567.eurprd04.prod.outlook.com
+ ([fe80::f099:4735:430c:ef1d]) by VI1PR04MB5567.eurprd04.prod.outlook.com
+ ([fe80::f099:4735:430c:ef1d%2]) with mapi id 15.20.2559.017; Mon, 23 Dec 2019
+ 07:50:08 +0000
+From:   "Madalin Bucur (OSS)" <madalin.bucur@oss.nxp.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        "Madalin Bucur (OSS)" <madalin.bucur@oss.nxp.com>
+CC:     Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        "antoine.tenart@free-electrons.com" 
+        <antoine.tenart@free-electrons.com>,
+        "jaz@semihalf.com" <jaz@semihalf.com>,
+        "baruch@tkos.co.il" <baruch@tkos.co.il>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
+        "shawnguo@kernel.org" <shawnguo@kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
+Subject: RE: [PATCH 1/6] net: phy: add interface modes for XFI, SFI
+Thread-Topic: [PATCH 1/6] net: phy: add interface modes for XFI, SFI
+Thread-Index: AQHVtn//emqdPRPEmEKC7Ncoej9h46fBtnoAgAAR9oCAAAh2AIAAKmuAgAAEEQCAAKSigIAAG14AgAADcACAAALUAIAAB5aAgASPfwA=
+Date:   Mon, 23 Dec 2019 07:50:08 +0000
+Message-ID: <VI1PR04MB556727A95090FFB4F9836DA2EC2E0@VI1PR04MB5567.eurprd04.prod.outlook.com>
+References: <1576768881-24971-2-git-send-email-madalin.bucur@oss.nxp.com>
+ <20191219172834.GC25745@shell.armlinux.org.uk>
+ <VI1PR04MB5567FA3170CF45F877870E8CEC520@VI1PR04MB5567.eurprd04.prod.outlook.com>
+ <20191219190308.GE25745@shell.armlinux.org.uk>
+ <VI1PR04MB5567010C06EB9A4734431106EC520@VI1PR04MB5567.eurprd04.prod.outlook.com>
+ <20191219214930.GG25745@shell.armlinux.org.uk>
+ <VI1PR04MB556768668EEEDFD61B7AA518EC2D0@VI1PR04MB5567.eurprd04.prod.outlook.com>
+ <20191220091642.GJ25745@shell.armlinux.org.uk>
+ <20191220092900.GB24174@lunn.ch>
+ <VI1PR04MB55679B12D4E7C9EC05FE0D9AEC2D0@VI1PR04MB5567.eurprd04.prod.outlook.com>
+ <20191220100617.GE24174@lunn.ch>
+In-Reply-To: <20191220100617.GE24174@lunn.ch>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
-x-clientproxiedby: CO1PR15CA0073.namprd15.prod.outlook.com
- (2603:10b6:101:20::17) To DM5PR15MB1675.namprd15.prod.outlook.com
- (2603:10b6:3:11f::17)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=madalin.bucur@oss.nxp.com; 
 x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [2620:10d:c090:180::62a8]
+x-originating-ip: [188.27.188.128]
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 7af667ee-d03c-4f8b-3ceb-08d7877c9757
-x-ms-traffictypediagnostic: DM5PR15MB1547:
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: b3287390-ac8e-4296-31e3-08d7877cbb71
+x-ms-traffictypediagnostic: VI1PR04MB6975:|VI1PR04MB6975:
 x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <DM5PR15MB15475ED0D68C6F379F2F4573D32E0@DM5PR15MB1547.namprd15.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:345;
+x-microsoft-antispam-prvs: <VI1PR04MB69756D801F14D7DE7ED832C1AD2E0@VI1PR04MB6975.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8882;
 x-forefront-prvs: 0260457E99
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(39860400002)(396003)(366004)(136003)(376002)(346002)(189003)(199004)(54906003)(6512007)(86362001)(110136005)(316002)(52116002)(31686004)(2906002)(5660300002)(6486002)(31696002)(66476007)(66556008)(66446008)(64756008)(66946007)(186003)(16526019)(8676002)(81156014)(81166006)(6506007)(53546011)(71200400001)(558084003)(2616005)(478600001)(8936002)(36756003)(4326008);DIR:OUT;SFP:1102;SCL:1;SRVR:DM5PR15MB1547;H:DM5PR15MB1675.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: fb.com does not designate
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(39860400002)(346002)(376002)(366004)(136003)(396003)(13464003)(189003)(199004)(53546011)(186003)(54906003)(6506007)(110136005)(478600001)(7416002)(33656002)(55016002)(9686003)(5660300002)(8936002)(2906002)(26005)(8676002)(52536014)(64756008)(19627235002)(81166006)(81156014)(76116006)(66946007)(7696005)(86362001)(66446008)(66556008)(316002)(71200400001)(4326008)(66476007);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR04MB6975;H:VI1PR04MB5567.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:0;
+received-spf: None (protection.outlook.com: oss.nxp.com does not designate
  permitted sender hosts)
 x-ms-exchange-senderadcheck: 1
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 2LQ056AT6L9nPzimFfwBp+ZIZUN7pjum6dN4ivNMlMxtiOmITXT7AMTK+yccKh6l3yDzD2ZVzEdlnxWVE3kasX6Q3Ye+ZZebE1uhcuJmJmHhKsEX02QaCmGR88gkSH5TXRWm5M5y4iPOC8dlXL7QQskR0pefbGuSawquqfLg91Qho6bzDvg6OSnhs4DmItXWvW+NfhdnPJPT4/fsI5CZwibjcKxd4nEcAXDLp/K6jtRwqk9ncgyi3viuxE9SuWCRyxCdxHaNYtanoSfuD5k+hYmEr36nFQWMsrr/VzaeWkdZ554CHLMAbhag9aaXUAaDLHK2tBKWFkpE0D1T2t43qHrI8zxLxevjJa1ldabD+Hc/PZTYwNNcFfKhu13nFyqNpa26dl+48gRSDYBAdGw7m4O8MRDO6QBJZija7EY3r97uXxFDGQsXD39SzZX4Y6Uo
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <F3FF0ED38F74D245A4331EC355CBD3A8@namprd15.prod.outlook.com>
-Content-Transfer-Encoding: base64
+x-microsoft-antispam-message-info: 9+/th3r/zgi7zXrug7reXD9kCtHWGyY9qwHXIixLCu7zereocMDnve3tDeAYbCzrp+dCoCJiv2sjCjkMfMAe93N5NAxCg37cOSJsZCPDepSBbSObN/Av5LBVnWhWSq/haT3jiPyAsj7HlJAIJdmjDlAAlPZouwNLfUmHIojZ7OlTkfwjKvb5KssLLAnU3z7tpXz+dIwP44xWCjsYANWkGJwVYJDB7838kg9KpgNSpMlMuHO3DW/nHc+W5gZ6tzUgWRuI3V720ijznsOxKaU6MPPSizhKj6oUvUYKjHOrf0CS2Z8l8m8LMiQzAO3V91a3aU0tk+ZjCWMvLAdRYVsbWO52ZmNrwLEKeoyV+IWpvPhk+FOD+I46tqvBs/LOigIorhZcQNw3Cnemi0qcu5pX4/qkR5D0vfzUSHDkFfoNp0oUJKvsIW/QVAUXTxYRlLRw7wWSiX/jkDILX1Lo5z8WrXjQ8z/jl0iFhiymCYGdhJjs+KLckKGzTs5nnqT3uas/
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7af667ee-d03c-4f8b-3ceb-08d7877c9757
-X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Dec 2019 07:49:08.4443
+X-OriginatorOrg: oss.nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b3287390-ac8e-4296-31e3-08d7877cbb71
+X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Dec 2019 07:50:08.3578
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: XzCpOI4kQFzPzL3vbW5HWI7x/HvfebhHiQyeMQ+7+fPle2HWETP7AxVBgEiNCZqD
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR15MB1547
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
- definitions=2019-12-23_03:2019-12-17,2019-12-23 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
- lowpriorityscore=0 malwarescore=0 clxscore=1015 mlxscore=0 adultscore=0
- mlxlogscore=741 phishscore=0 spamscore=0 bulkscore=0 suspectscore=0
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-1910280000 definitions=main-1912230067
-X-FB-Internal: deliver
+X-MS-Exchange-CrossTenant-userprincipalname: WDJmp+lE8l2loKqFlcboDqgmF+LJbKDW8y6sD6c02suv+h9sRMghbEkWKlK+1zztAdz+RgmQQLpcUzngV1Nl0w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB6975
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQoNCk9uIDEyLzIwLzE5IDEwOjI2IFBNLCBNYXJ0aW4gS2FGYWkgTGF1IHdyb3RlOg0KPiBUaGlz
-IHBhdGNoIGFsbG93cyBiaXRmaWVsZCBhY2Nlc3MgYXMgYSBzY2FsYXIuDQo+IA0KPiBTaWduZWQt
-b2ZmLWJ5OiBNYXJ0aW4gS2FGYWkgTGF1IDxrYWZhaUBmYi5jb20+DQoNCkFja2VkLWJ5OiBZb25n
-aG9uZyBTb25nIDx5aHNAZmIuY29tPg0K
+> -----Original Message-----
+> From: Andrew Lunn <andrew@lunn.ch>
+> Sent: Friday, December 20, 2019 12:06 PM
+> To: Madalin Bucur (OSS) <madalin.bucur@oss.nxp.com>
+> Cc: Russell King - ARM Linux admin <linux@armlinux.org.uk>;
+> antoine.tenart@free-electrons.com; jaz@semihalf.com; baruch@tkos.co.il;
+> davem@davemloft.net; netdev@vger.kernel.org; f.fainelli@gmail.com;
+> hkallweit1@gmail.com; shawnguo@kernel.org; devicetree@vger.kernel.org
+> Subject: Re: [PATCH 1/6] net: phy: add interface modes for XFI, SFI
+>=20
+> On Fri, Dec 20, 2019 at 09:39:08AM +0000, Madalin Bucur (OSS) wrote:
+> > > -----Original Message-----
+> > > From: Andrew Lunn <andrew@lunn.ch>
+> > > Sent: Friday, December 20, 2019 11:29 AM
+> > > To: Russell King - ARM Linux admin <linux@armlinux.org.uk>
+> > > Cc: Madalin Bucur (OSS) <madalin.bucur@oss.nxp.com>;
+> antoine.tenart@free-
+> > > electrons.com; jaz@semihalf.com; baruch@tkos.co.il;
+> davem@davemloft.net;
+> > > netdev@vger.kernel.org; f.fainelli@gmail.com; hkallweit1@gmail.com;
+> > > shawnguo@kernel.org; devicetree@vger.kernel.org
+> > > Subject: Re: [PATCH 1/6] net: phy: add interface modes for XFI, SFI
+> > >
+> > > > How does this help us when we can't simply change the existing
+> usage?
+> > > > We can update the DT but we can't free up the usage of "10gbase-kr"=
+.
+> > >
+> > > Agreed. Code needs to keep on interpreting "10gbase-kr" as any 10G
+> > > link. If we ever have a true 10gbase-kr, 802.3ap, one meter of copper
+> > > and two connectors, we are going to have to add a new mode to
+> > > represent true 10gbase-kr.
+> > >
+> > > 	Andrew
+> >
+> > Hi, actually we do have that. What would be the name of the new mode
+> > representing true 10GBase-KR that we will need to add when we upstream
+> > support for that?
+>=20
+> Ah!
+>=20
+> This is going to be messy.
+>=20
+> Do you really need to differentiate? What seems to make 802.3ap
+> different is the FEC, autoneg and link training. Does you hardware
+> support this? Do you need to know you are supposed to be using 802.3ap
+> in order to configure these features?
+
+Yes, it does.
+
+> What are we going to report to user space? 10gbase-kr, or
+> 10gbase-kr-true? How do we handle the mess this makes with firmware
+> based cards which correctly report
+> ETHTOOL_LINK_MODE_10000baseKR_Full_BIT to user space?
+>=20
+> What do we currently report to user space? Is it possible for us to
+> split DT from user space? DT says 10gbase-kr-true but to user space we
+> say ETHTOOL_LINK_MODE_10000baseKR_Full_BIT?
+>=20
+> I think in order to work through these issues, somebody probably needs
+> the hardware, and the desire to see it working. So it might actually
+> be you who makes a proposal how we sort this out, with help from
+> Russell and I.
+>=20
+> 	Andrew
+
+We're overcomplicating the fix. As far as I can see only some Marvell board=
+s
+declared 10GBase-KR as PHY interface type. These either support 10GBase-KR =
+or
+they don't. When we learn this, we'll need to set things straight in the de=
+vice
+trees and code. Until then it will remain as is, there is no trouble with t=
+hat.
+I'll reorder and resend the patches that introduce the XFI and SFI types.
+
+Regards,
+Madalin
