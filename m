@@ -2,117 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8BFFD1291F8
-	for <lists+netdev@lfdr.de>; Mon, 23 Dec 2019 07:36:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BEF31129205
+	for <lists+netdev@lfdr.de>; Mon, 23 Dec 2019 07:50:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726028AbfLWGgA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Dec 2019 01:36:00 -0500
-Received: from mail-qk1-f194.google.com ([209.85.222.194]:40646 "EHLO
-        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725811AbfLWGgA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Dec 2019 01:36:00 -0500
-Received: by mail-qk1-f194.google.com with SMTP id c17so12781493qkg.7;
-        Sun, 22 Dec 2019 22:35:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=0DzjFSTk4GUARqFpDM4bTgDw2bbAI+/uJbZ7VnbMQBM=;
-        b=k9SUps3bztjSi0wnFJmvXha09GFyi7e/mLC2GiTwovXmG3H8TZn49UpjMv4QPBsmYM
-         v4Aw/1e2M00sEQwIQA00KtPxxwhD5mFNbisb/6cfhtxL5PmbwbWNqLv5P4Wzs2Rnmd4Q
-         79jJV316crdBAsLkoons6YqYHwgXPteVrP6HjpwmlKPRW7fc1kVVJ80b6wDu5ijXk3r1
-         Uzkj3Ju15esmX7j4q8CpYupcHO7LlYyrbfiiQeybklpjUJVO2LpNQbeD7b9LAQO1g5PI
-         qJLLAu1tWyo18Z7RrT82q+v8dfDf8f/KUdI2GkgU9hNwpAinQpdYcsNrqFtRt6bRBwfL
-         F+Qg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=0DzjFSTk4GUARqFpDM4bTgDw2bbAI+/uJbZ7VnbMQBM=;
-        b=VRAMhfmwxbytMK69Yx1haUyymPbNxq75v559MhTNtyzgNPR8dTidSo9rD8/sl80WLA
-         Mu6iL3H0oxjgJvLdl7Ro/gGN+0RK1X2ZrRN1KE609/mdiCk8zIjLRB0URUdvrp6QN5b+
-         dsLDgzI7Bu6g2Tw2QpH12sCcfeIhVTencBoLgKwWLn8XRWojpg+byRSoStAMmHDmBhWp
-         mtvNGgugHIrIW7rgiZd4NeperrBpkUefg7TRWHoDdoUNvAapq4oEDuVQ8V1XEWNlykcq
-         pb99I2wrvWLnm+Hs4pxs70eqGaGPBMjv+pNpgJ4GgcOhFNJFv88Vha9JHajKOTF5SAAW
-         +JGg==
-X-Gm-Message-State: APjAAAVC/KFzqR9fPqUfSObJHvzbIqKvznYRQc+9N6iLGYJaDgb504Fm
-        rAusfD05sWjTjFG0t3nR13vQzrqhSsJdWEh9Os0hvKy+
-X-Google-Smtp-Source: APXvYqztFGJq3WP4/JkaL+PY/hOKDdmLZ/j+qBS59+0z43ikGnU6aLOKmC/NbEcSCFwrzAJ+i9jkTknQ50oZNYlOvvE=
-X-Received: by 2002:a37:e408:: with SMTP id y8mr24666444qkf.39.1577082558207;
- Sun, 22 Dec 2019 22:29:18 -0800 (PST)
+        id S1725880AbfLWGuI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Dec 2019 01:50:08 -0500
+Received: from mail-eopbgr130079.outbound.protection.outlook.com ([40.107.13.79]:54851
+        "EHLO EUR01-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725810AbfLWGuH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 23 Dec 2019 01:50:07 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=DbV709W0AsGq/HcnGOiwevC5yJ/Tc7Z6kanNOsRw3RfERD7rW6So/CLfbyxfibF11XwkbpIGAXurHD4wTolZr5th0WFcpI5lWMJimNV+DSYP1fjJvaHsH34UDs+vE6qk7TzmMDghN9ZiFHQYSswCDR/nnI6a2r6xtwqlstbeiPRE3IyOMhjvILJxcmKQTaZ957wJS6bjNoJFBLJMNHiUK4sdz/14J7SoivCkVD6WI64eEOHp4qAGOHq4AYHU9xGMLSrwlqqGXyHCxPbLZzOIuKISAPVrYCbHsYzg5gwessLKwoUR6pj4DwRGcJgQnbWKlvCMDtmYt7HTy1JeDSViqA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=BJh4oWB8ytJDiSAuOfi7RKc4He6+NIJqTIZIgoYgo5E=;
+ b=Kb8KnKULT77ikW4XFNaCAKT0JaiRPuZ0tuXRZOUJKs5LDxOhc5Z9skIlpTG4TKRffRvI0TsDYUj1xtN238OS1beh16C/exqNUp0RI2USN1gwuo3yhqGmr9tosbPZfXr7VYKTjEZQ234IW43x5VA5NeBsOA9d2gsc19/diVbF+F5sz3RUiscaQBF2QqihP8ZCdOEWJJptOFWjdOoAf58mLArtvhZM7RWmbA7qdUXXOCt1UnW4YUWUc85N3oUSsjiYUdZdc6iW5L3nHEGELvYUV5ZdNrZFlibVkB/7grI9AlZqOXD41ttxsW4yBeVSyYi97gt1mIujdpKESDjwfkKaLQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
+ dkim=pass header.d=oss.nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
+ s=selector2-NXP1-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=BJh4oWB8ytJDiSAuOfi7RKc4He6+NIJqTIZIgoYgo5E=;
+ b=FTQ54L51WxMGu3nctMAlkPD9Icd52Oy+FFgXLjM30/6IDquGQSjrMGA2MOPbyxUuvxweomKm0NF04nQ5uSgFPKvXsGXl8Wr3oG80wkahKpu78tfdiZx3a0XJjL1SijXcDQT2bL6YUm7RR3dE4Tf5QyMCsbEKUWTe7wITG6ceVoY=
+Received: from VI1PR04MB5567.eurprd04.prod.outlook.com (20.178.123.83) by
+ VI1PR04MB5277.eurprd04.prod.outlook.com (20.177.48.96) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2559.14; Mon, 23 Dec 2019 06:50:04 +0000
+Received: from VI1PR04MB5567.eurprd04.prod.outlook.com
+ ([fe80::f099:4735:430c:ef1d]) by VI1PR04MB5567.eurprd04.prod.outlook.com
+ ([fe80::f099:4735:430c:ef1d%2]) with mapi id 15.20.2559.017; Mon, 23 Dec 2019
+ 06:50:03 +0000
+From:   "Madalin Bucur (OSS)" <madalin.bucur@oss.nxp.com>
+To:     David Miller <davem@davemloft.net>,
+        "Madalin Bucur (OSS)" <madalin.bucur@oss.nxp.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: RE: [PATCH] dpaa_eth: fix DMA mapping leak
+Thread-Topic: [PATCH] dpaa_eth: fix DMA mapping leak
+Thread-Index: AQHVtnXZRmk6fTbj3EGul63ThTY2tKfEFAAAgAM5e/A=
+Date:   Mon, 23 Dec 2019 06:50:03 +0000
+Message-ID: <VI1PR04MB5567A2BC5EDF345F6A8AB59CEC2E0@VI1PR04MB5567.eurprd04.prod.outlook.com>
+References: <1576764528-10742-1-git-send-email-madalin.bucur@oss.nxp.com>
+ <20191220.213532.2095474595045639925.davem@davemloft.net>
+In-Reply-To: <20191220.213532.2095474595045639925.davem@davemloft.net>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=madalin.bucur@oss.nxp.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [188.27.188.128]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 0a215feb-7f7f-4d56-80cf-08d7877456df
+x-ms-traffictypediagnostic: VI1PR04MB5277:|VI1PR04MB5277:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <VI1PR04MB5277115696514295B65411B5AD2E0@VI1PR04MB5277.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:972;
+x-forefront-prvs: 0260457E99
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(396003)(366004)(136003)(346002)(376002)(39860400002)(189003)(199004)(13464003)(8676002)(9686003)(81156014)(55016002)(4326008)(8936002)(478600001)(2906002)(81166006)(7696005)(4744005)(66556008)(64756008)(5660300002)(33656002)(71200400001)(26005)(66446008)(86362001)(52536014)(316002)(186003)(110136005)(6506007)(66946007)(66476007)(53546011)(76116006);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR04MB5277;H:VI1PR04MB5567.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:0;
+received-spf: None (protection.outlook.com: oss.nxp.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 2L4oNkh3mr+Bq9tiBBZtT3MdMQNCZxZ+ydDzBVIaA5yH4FExlCJhWfcYhlVo9gxmQHgUNCXlaICumV00zBMLAAe8zmzQfhL2fkYwepsL7k7TEI540/FltBpIvBb5KXr7upa4xA992f7VkP8iAQZbp6IG+tE7n42fFSNwAEdRv+6l9nmyka7vl368YTLF6lb+6ZliDhBKqO/XG7EWKWn/2voLjS/upnWX3B2PnlYPj6ahLzvWUgXV6yPMoPEVH3YkWqhkLYos7x4A45BJvoB5pVqsSn2Z3dXrfORASPwKy87LL5X1SS00LyjptobQ3LCf/slqShRRgnW8EdtBcOZtejMuPim8YCSajFzU1X/85qPsEV7TUJOnw58+iW/WrJN/chtDXVK7w60s0UbdWzSKmt3giaXAi9pbuEyCnC0BXoa5bWOaDWyZw+IH6dJ7Gmdf+MuFl3oaeAioPnpnfmS0hxMKc6wwstJ6GYhFTIakolNcaDo6+R0ae8goGEppQNJ8
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-References: <CAM9d7ch1=pmgkFbgGr2YignQwdNjke2QeOAFLCFYu8L8J-Z8vw@mail.gmail.com>
- <20191223061326.843366-1-namhyung@kernel.org>
-In-Reply-To: <20191223061326.843366-1-namhyung@kernel.org>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Sun, 22 Dec 2019 22:29:07 -0800
-Message-ID: <CAEf4BzY1HvhkPzR1HE7-reGhfZnfySe-LxQ-5MS7Nx-Uv4oVug@mail.gmail.com>
-Subject: Re: [PATCH bpf v3] libbpf: Fix build on read-only filesystems
-To:     Namhyung Kim <namhyung@kernel.org>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        bpf <bpf@vger.kernel.org>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Jiri Olsa <jolsa@redhat.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Shuah Khan <shuah@kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        linux-perf-users@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+X-OriginatorOrg: oss.nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0a215feb-7f7f-4d56-80cf-08d7877456df
+X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Dec 2019 06:50:03.6420
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 2NBZA/hhuFV9LQNtfWMgIb5+6mcQqYna+eCWFoUa4E8gI760Z9rp+6qyHmMwYwzhKpG7nEDwGZUhOKkaSAL3Og==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB5277
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Dec 22, 2019 at 10:14 PM Namhyung Kim <namhyung@kernel.org> wrote:
->
-> I got the following error when I tried to build perf on a read-only
-> filesystem with O=dir option.
->
->   $ cd /some/where/ro/linux/tools/perf
->   $ make O=$HOME/build/perf
->   ...
->     CC       /home/namhyung/build/perf/lib.o
->   /bin/sh: bpf_helper_defs.h: Read-only file system
->   make[3]: *** [Makefile:184: bpf_helper_defs.h] Error 1
->   make[2]: *** [Makefile.perf:778: /home/namhyung/build/perf/libbpf.a] Error 2
->   make[2]: *** Waiting for unfinished jobs....
->     LD       /home/namhyung/build/perf/libperf-in.o
->     AR       /home/namhyung/build/perf/libperf.a
->     PERF_VERSION = 5.4.0
->   make[1]: *** [Makefile.perf:225: sub-make] Error 2
->   make: *** [Makefile:70: all] Error 2
->
-> It was becaused bpf_helper_defs.h was generated in current directory.
-> Move it to OUTPUT directory.
->
-> Tested-by: Andrii Nakryiko <andriin@fb.com>
-> Acked-by: Andrii Nakryiko <andriin@fb.com>
-> Signed-off-by: Namhyung Kim <namhyung@kernel.org>
-> ---
->  tools/lib/bpf/Makefile                 | 15 ++++++++-------
->  tools/testing/selftests/bpf/.gitignore |  1 +
->  tools/testing/selftests/bpf/Makefile   |  6 +++---
->  3 files changed, 12 insertions(+), 10 deletions(-)
->
+> -----Original Message-----
+> From: David Miller <davem@davemloft.net>
+> Sent: Saturday, December 21, 2019 7:36 AM
+> To: Madalin Bucur <madalin.bucur@nxp.com>; Madalin Bucur (OSS)
+> <madalin.bucur@oss.nxp.com>
+> Cc: netdev@vger.kernel.org
+> Subject: Re: [PATCH] dpaa_eth: fix DMA mapping leak
+>=20
+> From: Madalin Bucur <madalin.bucur@oss.nxp.com>
+> Date: Thu, 19 Dec 2019 16:08:48 +0200
+>=20
+> > @@ -1744,6 +1744,9 @@ static struct sk_buff *sg_fd_to_skb(const struct
+> dpaa_priv *priv,
+> >  		count_ptr =3D this_cpu_ptr(dpaa_bp->percpu_count);
+> >  		dma_unmap_page(priv->rx_dma_dev, sg_addr,
+> >  			       DPAA_BP_RAW_SIZE, DMA_FROM_DEVICE);
+> > +
+> > +		j++; /* fragments up to j were DMA unmapped */
+> > +
+>=20
+> You can move this code:
+>=20
+> 		/* We may use multiple Rx pools */
+> 		dpaa_bp =3D dpaa_bpid2pool(sgt[i].bpid);
+> 		if (!dpaa_bp)
+> 			goto free_buffers;
+>=20
+> 		count_ptr =3D this_cpu_ptr(dpaa_bp->percpu_count);
+>=20
+> after the dma_unmap_page() call and that is such a much simpler
+> way to fix this bug.
 
-[...]
-
-> diff --git a/tools/testing/selftests/bpf/.gitignore b/tools/testing/selftests/bpf/.gitignore
-> index 419652458da4..1ff0a9f49c01 100644
-> --- a/tools/testing/selftests/bpf/.gitignore
-> +++ b/tools/testing/selftests/bpf/.gitignore
-> @@ -40,3 +40,4 @@ xdping
->  test_cpp
->  /no_alu32
->  /bpf_gcc
-> +bpf_helper_defs.h
-
-looks good, thanks!
-
-[...]
+Thank you, that will yield a simpler cleanup path.
