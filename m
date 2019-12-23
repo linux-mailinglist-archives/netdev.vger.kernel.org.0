@@ -2,122 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DB42E129611
-	for <lists+netdev@lfdr.de>; Mon, 23 Dec 2019 13:39:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A68812960B
+	for <lists+netdev@lfdr.de>; Mon, 23 Dec 2019 13:33:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726834AbfLWMjm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Dec 2019 07:39:42 -0500
-Received: from mx1.yrkesakademin.fi ([85.134.45.194]:23192 "EHLO
-        mx1.yrkesakademin.fi" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726257AbfLWMjm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Dec 2019 07:39:42 -0500
-X-Greylist: delayed 904 seconds by postgrey-1.27 at vger.kernel.org; Mon, 23 Dec 2019 07:39:40 EST
-Subject: Re: [PATCH] Revert "iwlwifi: mvm: fix scan config command size"
-To:     Roman Gilg <subdiff@gmail.com>,
-        Mehmet Akif Tasova <makiftasova@gmail.com>
-CC:     Johannes Berg <johannes.berg@intel.com>,
-        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Intel Linux Wireless <linuxwifi@intel.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Shahar S Matityahu <shahar.s.matityahu@intel.com>,
-        Tova Mussai <tova.mussai@intel.com>,
-        Ayala Beker <ayala.beker@intel.com>,
-        Sara Sharon <sara.sharon@intel.com>,
-        <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-References: <20191213203512.8250-1-makiftasova@gmail.com>
- <CAJcyoyusgtw0++KsEHK-t=EFGx2v9GKv7+BSViUCaB3nyDr2Jw@mail.gmail.com>
-From:   Thomas Backlund <tmb@mageia.org>
-Message-ID: <946da821-9e54-4508-e3ab-f2cdc19c8084@mageia.org>
-Date:   Mon, 23 Dec 2019 14:24:33 +0200
+        id S1726791AbfLWMdr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Dec 2019 07:33:47 -0500
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:36087 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726257AbfLWMdr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Dec 2019 07:33:47 -0500
+Received: by mail-wr1-f66.google.com with SMTP id z3so16465010wru.3
+        for <netdev@vger.kernel.org>; Mon, 23 Dec 2019 04:33:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=metanetworks.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=eQs/KOtwqKE7vkWui2AVhnRY74kInmRv20LpgQRXNYU=;
+        b=PWD0E9uPuNtEif+b027m5evDxRlHshEABhIlP4zzBj+RLGyOqkuX5ehGjabqyEFaF7
+         VdiVlwBCR8jVLtgc75XaAHg22M3Eddy8SJcrShvQ3eOxoyt34ViMMURMs6NkfC/jMoH7
+         /bjRaS+igd9JVRuQlwa7YVNtjrGgj/ZpCRAks=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=eQs/KOtwqKE7vkWui2AVhnRY74kInmRv20LpgQRXNYU=;
+        b=hTTJsux67PiRO9sMLtJmTHFiCAVu0t4Ts/iLoVEf9mGWINR1fFRt+rTY0J2lCHYj9n
+         wswF/ZCqBsdhrREnJDAJUayAW8PwcWlS8o5SCBG72slNOYUGpq26baR5GXLTbsvhAePw
+         BVIHry+wYixYCNXoOjPQm0B9HPcV1S0Ba0hqNz42jZ7578sJsUlsAszmwakzmSECgweq
+         FtVof2QFEM7vKtvOW6mTGYFobyyAvbsYobru5D2qamYKFGA1d/cB0vFzCsOgSHOhGBHk
+         OJzoRFZiY71X0HXSX8z08WEqEwm5/IAlzdvSUpb+9o0lEbUVLqoobhjMRkFHXC+VvNEF
+         hoYw==
+X-Gm-Message-State: APjAAAVRiZJstbyXa4XRemvLhxPWaBgagoCifBHuLM1fHyH1K+jnrvPE
+        q/7gZiu5/fGviFbam4xqnjy/IMSLM98ORw==
+X-Google-Smtp-Source: APXvYqwyTi4KezS5MgJUBv5Wcd/EWT369S8sTyrSWfq3MquwaV2rkDf38Og390F7y98HsmCUKicJHg==
+X-Received: by 2002:adf:f20b:: with SMTP id p11mr28934997wro.195.1577104424710;
+        Mon, 23 Dec 2019 04:33:44 -0800 (PST)
+Received: from localhost.localdomain (bzq-82-81-225-244.cablep.bezeqint.net. [82.81.225.244])
+        by smtp.gmail.com with ESMTPSA id b21sm12023194wmd.37.2019.12.23.04.33.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 23 Dec 2019 04:33:44 -0800 (PST)
+From:   shmulik@metanetworks.com
+X-Google-Original-From: sladkani@proofpoint.com
+To:     Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>
+Cc:     "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        shmulik.ladkani@gmail.com,
+        Shmulik Ladkani <sladkani@proofpoint.com>
+Subject: [PATCH net-next] net/sched: act_mirred: Ensure mac_len is pulled prior redirect to a non mac_header_xmit target device
+Date:   Mon, 23 Dec 2019 14:33:36 +0200
+Message-Id: <20191223123336.13066-1-sladkani@proofpoint.com>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-In-Reply-To: <CAJcyoyusgtw0++KsEHK-t=EFGx2v9GKv7+BSViUCaB3nyDr2Jw@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-WatchGuard-Spam-ID: str=0001.0A0C0215.5E00B58D.0066,ss=1,re=0.000,recu=0.000,reip=0.000,cl=1,cld=1,fgs=0
-X-WatchGuard-Spam-Score: 0, clean; 0, virus threat unknown
-X-WatchGuard-Mail-Client-IP: 85.134.45.194
-X-WatchGuard-Mail-From: tmb@mageia.org
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Den 18-12-2019 kl. 21:12, skrev Roman Gilg:
-> On Fri, Dec 13, 2019 at 9:36 PM Mehmet Akif Tasova
-> <makiftasova@gmail.com> wrote:
->>
->> Since Linux 5.4.1 released, iwlwifi could not initialize Intel(R) Dual Band
->> Wireless AC 9462 firmware, failing with following error in dmesg:
->>
->> iwlwifi 0000:00:14.3: FW error in SYNC CMD SCAN_CFG_CMD
->>
->> whole dmesg output of error can be found at:
->> https://gist.github.com/makiftasova/354e46439338f4ab3fba0b77ad5c19ec
->>
->> also bug report from ArchLinux bug tracker (contains more info):
->> https://bugs.archlinux.org/task/64703
-> 
-> Since this bug report is about the Dell XPS 13 2-in1: I tested your
-> revert with this device, but the issue persists at least on this
-> device. So these might be two different issues, one for your device
-> and another one for the XPS.
+From: Shmulik Ladkani <sladkani@proofpoint.com>
 
+There's no skb_pull performed when a mirred action is set at egress of a
+mac device, with a target device/action that expects skb->data to point
+at the network header.
 
-Yeah, to get iwlwifi to work somewhat nicely you need this revert, and 
-also theese on top of 5.4.6:
+As a result, either the target device is errornously given an skb with
+data pointing to the mac (egress case), or the net stack receives the
+skb with data pointing to the mac (ingress case).
 
- From db5cce1afc8d2475d2c1c37c2a8267dd0e151526 Mon Sep 17 00:00:00 2001
-From: Anders Kaseorg <andersk@mit.edu>
-Date: Mon, 2 Dec 2019 17:09:20 -0500
-Subject: Revert "iwlwifi: assign directly to iwl_trans->cfg in QuZ 
-detection"
+E.g:
+ # tc qdisc add dev eth9 root handle 1: prio
+ # tc filter add dev eth9 parent 1: prio 9 protocol ip handle 9 basic \
+   action mirred egress redirect dev tun0
 
- From 0df36b90c47d93295b7e393da2d961b2f3b6cde4 Mon Sep 17 00:00:00 2001
-From: Luca Coelho <luciano.coelho@intel.com>
-Date: Thu, 5 Dec 2019 09:03:54 +0200
-Subject: iwlwifi: pcie: move power gating workaround earlier in the flow
+ (tun0 is a tun device. result: tun0 errornously gets the eth header
+  instead of the iph)
 
-and atleast v2 of the "iwlwifi: mvm: don't send the 
-IWL_MVM_RXQ_NSSN_SYNC notif to Rx queues" patch that is being debated on 
-this list.
+Revise the push/pull logic of tcf_mirred_act() to not rely on the
+skb_at_tc_ingress() vs tcf_mirred_act_wants_ingress() comparison, as it
+does not cover all "pull" cases.
 
-With theese in place, we seem to have it behaving properly again for 
-Mageia users reporting various problems / firmware crashes / ...
+Instead, calculate whether the required action on the target device
+requires the data to point at the network header, and compare this to
+whether skb->data points to network header - and make the push/pull
+adjustments as necessary.
 
-Hopefully Intel guys will get this sorted soon-ish and all sent to stable@
+Signed-off-by: Shmulik Ladkani <sladkani@proofpoint.com>
+---
+ net/sched/act_mirred.c | 22 ++++++++++++----------
+ 1 file changed, 12 insertions(+), 10 deletions(-)
 
-> 
->> Reverting commit 06eb547c4ae4 ("iwlwifi: mvm: fix scan config command
->> size") seems to fix this issue  until proper solution is found.
->>
->> This reverts commit 06eb547c4ae4382e70d556ba213d13c95ca1801b.
->>
->> Signed-off-by: Mehmet Akif Tasova <makiftasova@gmail.com>
->> ---
->>   drivers/net/wireless/intel/iwlwifi/mvm/scan.c | 2 +-
->>   1 file changed, 1 insertion(+), 1 deletion(-)
->>
->> diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/scan.c b/drivers/net/wireless/intel/iwlwifi/mvm/scan.c
->> index a046ac9fa852..a5af8f4128b1 100644
->> --- a/drivers/net/wireless/intel/iwlwifi/mvm/scan.c
->> +++ b/drivers/net/wireless/intel/iwlwifi/mvm/scan.c
->> @@ -1213,7 +1213,7 @@ static int iwl_mvm_legacy_config_scan(struct iwl_mvm *mvm)
->>                  cmd_size = sizeof(struct iwl_scan_config_v2);
->>          else
->>                  cmd_size = sizeof(struct iwl_scan_config_v1);
->> -       cmd_size += num_channels;
->> +       cmd_size += mvm->fw->ucode_capa.n_scan_channels;
->>
->>          cfg = kzalloc(cmd_size, GFP_KERNEL);
->>          if (!cfg)
->> --
->> 2.24.1
->>
-> 
+diff --git a/net/sched/act_mirred.c b/net/sched/act_mirred.c
+index 1e3eb3a97532..1ad300e6dbc0 100644
+--- a/net/sched/act_mirred.c
++++ b/net/sched/act_mirred.c
+@@ -219,8 +219,10 @@ static int tcf_mirred_act(struct sk_buff *skb, const struct tc_action *a,
+ 	bool use_reinsert;
+ 	bool want_ingress;
+ 	bool is_redirect;
++	bool expects_nh;
+ 	int m_eaction;
+ 	int mac_len;
++	bool at_nh;
+ 
+ 	rec_level = __this_cpu_inc_return(mirred_rec_level);
+ 	if (unlikely(rec_level > MIRRED_RECURSION_LIMIT)) {
+@@ -261,19 +263,19 @@ static int tcf_mirred_act(struct sk_buff *skb, const struct tc_action *a,
+ 			goto out;
+ 	}
+ 
+-	/* If action's target direction differs than filter's direction,
+-	 * and devices expect a mac header on xmit, then mac push/pull is
+-	 * needed.
+-	 */
+ 	want_ingress = tcf_mirred_act_wants_ingress(m_eaction);
+-	if (skb_at_tc_ingress(skb) != want_ingress && m_mac_header_xmit) {
+-		if (!skb_at_tc_ingress(skb)) {
+-			/* caught at egress, act ingress: pull mac */
+-			mac_len = skb_network_header(skb) - skb_mac_header(skb);
++
++	expects_nh = want_ingress || !m_mac_header_xmit;
++	at_nh = skb->data == skb_network_header(skb);
++	if (at_nh != expects_nh) {
++		mac_len = skb_at_tc_ingress(skb) ? skb->mac_len :
++			  skb_network_header(skb) - skb_mac_header(skb);
++		if (expects_nh) {
++			/* target device/action expect data at nh */
+ 			skb_pull_rcsum(skb2, mac_len);
+ 		} else {
+-			/* caught at ingress, act egress: push mac */
+-			skb_push_rcsum(skb2, skb->mac_len);
++			/* target device/action expect data at mac */
++			skb_push_rcsum(skb2, mac_len);
+ 		}
+ 	}
+ 
+-- 
+2.24.1
 
---
-Thomas
