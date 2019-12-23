@@ -2,627 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C725D1299BC
-	for <lists+netdev@lfdr.de>; Mon, 23 Dec 2019 19:03:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C6DFF1299C3
+	for <lists+netdev@lfdr.de>; Mon, 23 Dec 2019 19:10:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726933AbfLWSDe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Dec 2019 13:03:34 -0500
-Received: from mail-pl1-f196.google.com ([209.85.214.196]:37365 "EHLO
-        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726877AbfLWSDd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Dec 2019 13:03:33 -0500
-Received: by mail-pl1-f196.google.com with SMTP id c23so7469557plz.4
-        for <netdev@vger.kernel.org>; Mon, 23 Dec 2019 10:03:33 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:from:subject:cc:to:in-reply-to:references:message-id
-         :mime-version:content-transfer-encoding;
-        bh=SX6xGdHWcUslbOaZq1936ovi75UbfYkq2eUPLIzVJRg=;
-        b=kwWoa9JLAwA2Fb4ueybvidyLBDjAom2y7rtrkUmXqoNCNQ4PePSEKVHfvXHbWf3YEU
-         RqPerjfpOplXJEkVt+HR7D7yRn9uk4GlH7TaC0gXdunW20mhtvB70x1gwS+0J3ueyDWH
-         WAaHYK8PbPy89DNEN+XXBumey+UTPTSEc+i1Xk+3yKhsNItj6MmAxVSX2Aof7KcAhFUb
-         Dmb8cXYP4fiYzpicRhaO8sNbf6oGC0igBXAAWDv851+6DP7z3GSHJqAORB7Tc57P/VH4
-         hVgE1y1tyJ+oRFQX1ejtsj3ry3KRShHSpfNMNI3fYttUU2gA9YAuLlUT9SqNGjRLoxdX
-         Pi4g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:subject:cc:to:in-reply-to:references
-         :message-id:mime-version:content-transfer-encoding;
-        bh=SX6xGdHWcUslbOaZq1936ovi75UbfYkq2eUPLIzVJRg=;
-        b=mPRov9hZflTrZaNs/+Ba5TDi01SRPeG4qBiVhtTTSZUbOkKCkwbfzn4oK0RljxbHNE
-         PXQ3oRkunLldTG9sbg2ead//RSwJe8K1A+9wuzuyYtGyBq8xx7n1nyBclNj8K/NDXDKy
-         fkjuTgymOdUtaEjb+yjLxPW/Ig/10SkiNqGWoIqNBHFY07VD+nujRRfHsXb+dZIf9Tro
-         IBZU0FCL+omOCTyzOT3AAhe/X46SiiUdeEClC26/hy6Tz3QceYql/GiXNTfKw8qhXtL6
-         DIjQf9MG9ZPaRYyzKxpVMEDWGsN1xT+h0hZHZ112CSCcUm7f346aVrc9Az8KpZe5rb8K
-         eBBw==
-X-Gm-Message-State: APjAAAWkQegiPbLFb7UQK6GeR+inppo3c3EZjn055e2SXA8cOBRoIlrt
-        Soj735fknWURZctrbEXKI64pgng2vzc=
-X-Google-Smtp-Source: APXvYqzgXBk/wo2vTnIy3t9wEaW/hHRyc4vt8FDumRtGKTRJ6zmBfemhU4yg1fwRxDlKKCexPmcNrQ==
-X-Received: by 2002:a17:902:9a42:: with SMTP id x2mr23865135plv.322.1577124212093;
-        Mon, 23 Dec 2019 10:03:32 -0800 (PST)
-Received: from localhost ([2620:0:1000:2514:7f69:cd98:a2a2:a03d])
-        by smtp.gmail.com with ESMTPSA id h12sm10439980pfo.12.2019.12.23.10.03.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 Dec 2019 10:03:31 -0800 (PST)
-Date:   Mon, 23 Dec 2019 10:03:31 -0800 (PST)
-X-Google-Original-Date: Mon, 23 Dec 2019 10:03:28 PST (-0800)
-From:   Palmer Dabbelt <palmerdabbelt@google.com>
-X-Google-Original-From: Palmer Dabbelt <palmer@dabbelt.com>
-Subject:     Re: [PATCH bpf-next v2 2/9] riscv, bpf: add support for far branching
-CC:     daniel@iogearbox.net, ast@kernel.org, netdev@vger.kernel.org,
-        Bjorn Topel <bjorn.topel@gmail.com>,
-        linux-riscv@lists.infradead.org, lukenels@cs.washington.edu,
-        bpf@vger.kernel.org, xi.wang@gmail.com
-To:     Bjorn Topel <bjorn.topel@gmail.com>
-In-Reply-To: <20191216091343.23260-3-bjorn.topel@gmail.com>
-References: <20191216091343.23260-3-bjorn.topel@gmail.com>
-  <20191216091343.23260-1-bjorn.topel@gmail.com>
-Message-ID: <mhng-6be38b2a-78df-4016-aaea-f35aa0acd7e0@palmerdabbelt-glaptop>
-Mime-Version: 1.0 (MHng)
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
+        id S1726860AbfLWSKw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Dec 2019 13:10:52 -0500
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:61178 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726766AbfLWSKv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Dec 2019 13:10:51 -0500
+Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xBNI5YJm012486;
+        Mon, 23 Dec 2019 10:10:38 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : references : in-reply-to : content-type : content-id
+ : content-transfer-encoding : mime-version; s=facebook;
+ bh=+0J+AFcRp/x7vbD6v/GyPXQm5xhACJHd0KJJEQFprBE=;
+ b=ZZJUiCYgx2/TN0qdmwQA0ZI5Vtl/4KbnHfDKNYaEDRXIBYg8yRoHOiteyD60QQXbXpg+
+ x0zEdJYHTHhsmTnGjau6yosacpNH3LUSRaCXmD9mhueO0kMnr+qckqGt6me/A/a72eu5
+ O0jKSC4s5d9a6et/fvowkpGwBwXfwFPWGtw= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com with ESMTP id 2x23tvnd0s-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Mon, 23 Dec 2019 10:10:38 -0800
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (100.104.98.9) by
+ o365-in.thefacebook.com (100.104.94.228) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1779.2; Mon, 23 Dec 2019 10:10:37 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=EAbKISVE0EwCJoyMOtmGTEjIS9yunjoaeRrUy1Ef5WJLuaWaLzW9PH+0WgzU+gM/X1rvk/uCyIAa7O/996euJmFzrv/Bq+x+FR/eEoJgPILfUWGuLx4r1wUGDHcvfIeR49vK0Y2tL8wtRsXaKlV4pZP+tZpic1hlnAfNEJWXKnaSEkGJ7bzbaUS6BsrK7w53y6bZAISOvKNN8zRUhOB0RwH4W/8zHz52BTUFI/gYWO/uP0E42mlF+DQINkqK5JM4uzw2shzq7smZ7onMcq9yR9TrjwPNFvmS80c9YmRiBiPsBn4A8yKlZ6dt58TJgKuMP5LRh7LL6KWUB99dcz24iA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=+0J+AFcRp/x7vbD6v/GyPXQm5xhACJHd0KJJEQFprBE=;
+ b=Ffs7QGdO+ZbGndOafy7tHewyB+XDDXiSd6v50rab/tR/O1nx2rBf+0LK/uqlV0iz5s30SSjr5Av6sIzv9zB63hpeT43KDd25ww9wjVqGJ9AbE7ponbgJh5ONKLEa8HB5cnQxK+wyILpyeBFH9etkPUPM6725He/tU8BjgfCLQCeiCVHMyhb8xQPvQWA/7qxNlgoMFSKxvQ48am4A8eKMQj1h/3roU/21cKQ3vGZ56gsrAj93CX8KOfcy6OPQxV8cYgiynAvUeuBLnb0p2CQWCA6giDid/zyCdYtHHLvhfeGXzhJ01Sjiq6LvnkLyoIu62R+KHfhVQVFep9xM6Dkwrw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=+0J+AFcRp/x7vbD6v/GyPXQm5xhACJHd0KJJEQFprBE=;
+ b=VPC2RWB+EE6tMwQjncS30l6qfwYmLet1nAr9dsEtX62pLZ/Pa++apIzffsGOAYDKorqF8Ck5oNoMrjWQbfotUTI3lpGp3IHIoVMUnCT7L89rc5K6VVlNtCsoNZ5F+qV9AYJyjVcljSuZbrtMtmcp3uRxN9Lhvn2ZbEsHvvUcLGQ=
+Received: from DM5PR15MB1675.namprd15.prod.outlook.com (10.175.107.145) by
+ DM5PR15MB1945.namprd15.prod.outlook.com (10.173.215.148) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2559.14; Mon, 23 Dec 2019 18:10:36 +0000
+Received: from DM5PR15MB1675.namprd15.prod.outlook.com
+ ([fe80::2844:b18d:c296:c23]) by DM5PR15MB1675.namprd15.prod.outlook.com
+ ([fe80::2844:b18d:c296:c23%8]) with mapi id 15.20.2559.017; Mon, 23 Dec 2019
+ 18:10:36 +0000
+Received: from macbook-pro-52.dhcp.thefacebook.com (2620:10d:c090:200::4a23) by MWHPR12CA0029.namprd12.prod.outlook.com (2603:10b6:301:2::15) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2559.14 via Frontend Transport; Mon, 23 Dec 2019 18:10:35 +0000
+From:   Yonghong Song <yhs@fb.com>
+To:     Andrii Nakryiko <andriin@fb.com>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>
+CC:     "andrii.nakryiko@gmail.com" <andrii.nakryiko@gmail.com>,
+        Kernel Team <Kernel-team@fb.com>
+Subject: Re: [PATCH v2 bpf-next] libbpf: support CO-RE relocations for
+ LDX/ST/STX instructions
+Thread-Topic: [PATCH v2 bpf-next] libbpf: support CO-RE relocations for
+ LDX/ST/STX instructions
+Thread-Index: AQHVubtC4z++ChceEUmHI0HUG13ijqfIBRKA
+Date:   Mon, 23 Dec 2019 18:10:36 +0000
+Message-ID: <c8e07d16-9b7e-5847-b8a8-853f4aaf620f@fb.com>
+References: <20191223180305.86417-1-andriin@fb.com>
+In-Reply-To: <20191223180305.86417-1-andriin@fb.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: MWHPR12CA0029.namprd12.prod.outlook.com
+ (2603:10b6:301:2::15) To DM5PR15MB1675.namprd15.prod.outlook.com
+ (2603:10b6:3:11f::17)
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [2620:10d:c090:200::4a23]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 05ccaf78-9956-4c42-3cf1-08d787d3688f
+x-ms-traffictypediagnostic: DM5PR15MB1945:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <DM5PR15MB19450930E54DBAEEAEE69D38D32E0@DM5PR15MB1945.namprd15.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:4303;
+x-forefront-prvs: 0260457E99
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(39860400002)(346002)(376002)(136003)(396003)(366004)(189003)(199004)(2906002)(6486002)(8936002)(2616005)(81166006)(6506007)(53546011)(36756003)(81156014)(52116002)(8676002)(4326008)(16526019)(186003)(6512007)(5660300002)(31686004)(478600001)(71200400001)(66946007)(54906003)(66446008)(966005)(64756008)(86362001)(66476007)(66556008)(31696002)(316002)(110136005);DIR:OUT;SFP:1102;SCL:1;SRVR:DM5PR15MB1945;H:DM5PR15MB1675.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: fb.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: wwbDJR3nxzf/MTX89lIPBeop+Do0E/rlUMGMYxDIPBiGhBbi3mYpnDChdjBp3mTWDKDTvgUjZ+EgN4LBK7jLRe2+eEg2k5iTV/KjM54TzcGu7rcXBpXOI9hebHVb/vwVEyM/G9ipWJoaDEG5XtEitvT4wQPd/NFEwD/sYGqFL8kIefiBGTJ0+pI93FgXkvLk3imHrmW/3+dvvQ8Y34ahP2rxXiXsW2JcHZyTZSLURXUmu4NfIa5WzZ4ICJoVMiRqWg/asR4+M7D/n2UT3l8QGQsEYN5ASc6GjOvMeJ7ZEHhTGbobRkXv0CgoQEavt+WDlC4rNsFtJD6t0yi90oA4pfaUAy6Ds7xXM5SXWABNMAwSTVnQy6mW5Ef+4tav7GihycckpYOWXj/VB3jmZLS8cyIzQbkEJbP5H8KDa//BooyEDVkj1IkdWOzzuEr8vX0Z1b7/qgGuinQtr2ldwSWsXcNXP7uY+UZsB169uxTTAaI=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <CBBE4004B8CC7A46A8D226E5B53EE258@namprd15.prod.outlook.com>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-Network-Message-Id: 05ccaf78-9956-4c42-3cf1-08d787d3688f
+X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Dec 2019 18:10:36.1120
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 6M8ZJhtWRKEitJMf8HhXf5N1/8Nxuejoq+WvFylC2IUtzNgbUJHfbkq5M5n49hMf
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR15MB1945
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
+ definitions=2019-12-23_07:2019-12-23,2019-12-23 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 impostorscore=0
+ lowpriorityscore=0 mlxlogscore=999 mlxscore=0 spamscore=0
+ priorityscore=1501 malwarescore=0 clxscore=1015 phishscore=0 adultscore=0
+ bulkscore=0 suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-1910280000 definitions=main-1912230155
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 16 Dec 2019 01:13:36 PST (-0800), Bjorn Topel wrote:
-> This commit adds branch relaxation to the BPF JIT, and with that
-> support for far (offset greater than 12b) branching.
-
-Interesting.  We don't actually relax these in the binutils linker, but instead
-just do it staticly at assembly time...
-
-> The branch relaxation requires more than two passes to converge. For
-> most programs it is three passes, but for larger programs it can be
-> more.
-
-... and that's why :).  In binutils we just worst-case the link-time
-relaxations when doing assembler relaxation, which proves to be good enough.  C
-code doesn't branch outside a function, so most branches end up fairly short
-anyway.
-
-> Reviewed-by: Luke Nelson <lukenels@cs.washington.edu>
-> Cc: Xi Wang <xi.wang@gmail.com>
-> Signed-off-by: Björn Töpel <bjorn.topel@gmail.com>
-> ---
->  arch/riscv/net/bpf_jit_comp.c | 352 ++++++++++++++++++----------------
->  1 file changed, 188 insertions(+), 164 deletions(-)
->
-> diff --git a/arch/riscv/net/bpf_jit_comp.c b/arch/riscv/net/bpf_jit_comp.c
-> index 1606ebd49666..e599458a9bcd 100644
-> --- a/arch/riscv/net/bpf_jit_comp.c
-> +++ b/arch/riscv/net/bpf_jit_comp.c
-> @@ -461,6 +461,11 @@ static u32 rv_amoadd_d(u8 rd, u8 rs2, u8 rs1, u8 aq, u8 rl)
->  	return rv_amo_insn(0, aq, rl, rs2, rs1, 3, rd, 0x2f);
->  }
->
-> +static u32 rv_auipc(u8 rd, u32 imm31_12)
-> +{
-> +	return rv_u_insn(imm31_12, rd, 0x17);
-> +}
-> +
->  static bool is_12b_int(s64 val)
->  {
->  	return -(1 << 11) <= val && val < (1 << 11);
-> @@ -484,7 +489,7 @@ static bool is_32b_int(s64 val)
->  static int is_12b_check(int off, int insn)
->  {
->  	if (!is_12b_int(off)) {
-> -		pr_err("bpf-jit: insn=%d offset=%d not supported yet!\n",
-> +		pr_err("bpf-jit: insn=%d 12b < offset=%d not supported yet!\n",
->  		       insn, (int)off);
->  		return -1;
->  	}
-> @@ -494,7 +499,7 @@ static int is_12b_check(int off, int insn)
->  static int is_13b_check(int off, int insn)
->  {
->  	if (!is_13b_int(off)) {
-> -		pr_err("bpf-jit: insn=%d offset=%d not supported yet!\n",
-> +		pr_err("bpf-jit: insn=%d 13b < offset=%d not supported yet!\n",
->  		       insn, (int)off);
->  		return -1;
->  	}
-> @@ -504,7 +509,7 @@ static int is_13b_check(int off, int insn)
->  static int is_21b_check(int off, int insn)
->  {
->  	if (!is_21b_int(off)) {
-> -		pr_err("bpf-jit: insn=%d offset=%d not supported yet!\n",
-> +		pr_err("bpf-jit: insn=%d 21b < offset=%d not supported yet!\n",
->  		       insn, (int)off);
->  		return -1;
->  	}
-> @@ -550,10 +555,13 @@ static void emit_imm(u8 rd, s64 val, struct rv_jit_context *ctx)
->  		emit(rv_addi(rd, rd, lower), ctx);
->  }
->
-> -static int rv_offset(int bpf_to, int bpf_from, struct rv_jit_context *ctx)
-> +static int rv_offset(int insn, int off, struct rv_jit_context *ctx)
->  {
-> -	int from = ctx->offset[bpf_from] - 1, to = ctx->offset[bpf_to];
-> +	int from, to;
->
-> +	off++; /* BPF branch is from PC+1, RV is from PC */
-> +	from = (insn > 0) ? ctx->offset[insn - 1] : 0;
-> +	to = (insn + off > 0) ? ctx->offset[insn + off - 1] : 0;
->  	return (to - from) << 2;
->  }
->
-> @@ -606,6 +614,109 @@ static void __build_epilogue(u8 reg, struct rv_jit_context *ctx)
->  	emit(rv_jalr(RV_REG_ZERO, reg, 0), ctx);
->  }
->
-> +/* return -1 or inverted cond */
-> +static int invert_bpf_cond(u8 cond)
-> +{
-> +	switch (cond) {
-> +	case BPF_JEQ:
-> +		return BPF_JNE;
-> +	case BPF_JGT:
-> +		return BPF_JLE;
-> +	case BPF_JLT:
-> +		return BPF_JGE;
-> +	case BPF_JGE:
-> +		return BPF_JLT;
-> +	case BPF_JLE:
-> +		return BPF_JGT;
-> +	case BPF_JNE:
-> +		return BPF_JEQ;
-> +	case BPF_JSGT:
-> +		return BPF_JSLE;
-> +	case BPF_JSLT:
-> +		return BPF_JSGE;
-> +	case BPF_JSGE:
-> +		return BPF_JSLT;
-> +	case BPF_JSLE:
-> +		return BPF_JSGT;
-> +	}
-> +	return -1;
-> +}
-> +
-> +static void emit_bcc(u8 cond, u8 rd, u8 rs, int rvoff,
-> +		     struct rv_jit_context *ctx)
-> +{
-> +	switch (cond) {
-> +	case BPF_JEQ:
-> +		emit(rv_beq(rd, rs, rvoff >> 1), ctx);
-> +		return;
-> +	case BPF_JGT:
-> +		emit(rv_bltu(rs, rd, rvoff >> 1), ctx);
-> +		return;
-> +	case BPF_JLT:
-> +		emit(rv_bltu(rd, rs, rvoff >> 1), ctx);
-> +		return;
-> +	case BPF_JGE:
-> +		emit(rv_bgeu(rd, rs, rvoff >> 1), ctx);
-> +		return;
-> +	case BPF_JLE:
-> +		emit(rv_bgeu(rs, rd, rvoff >> 1), ctx);
-> +		return;
-> +	case BPF_JNE:
-> +		emit(rv_bne(rd, rs, rvoff >> 1), ctx);
-> +		return;
-> +	case BPF_JSGT:
-> +		emit(rv_blt(rs, rd, rvoff >> 1), ctx);
-> +		return;
-> +	case BPF_JSLT:
-> +		emit(rv_blt(rd, rs, rvoff >> 1), ctx);
-> +		return;
-> +	case BPF_JSGE:
-> +		emit(rv_bge(rd, rs, rvoff >> 1), ctx);
-> +		return;
-> +	case BPF_JSLE:
-> +		emit(rv_bge(rs, rd, rvoff >> 1), ctx);
-> +	}
-> +}
-> +
-> +static void emit_branch(u8 cond, u8 rd, u8 rs, int rvoff,
-> +			struct rv_jit_context *ctx)
-> +{
-> +	s64 upper, lower;
-> +
-> +	if (is_13b_int(rvoff)) {
-> +		emit_bcc(cond, rd, rs, rvoff, ctx);
-> +		return;
-> +	}
-> +
-> +	/* Adjust for jal */
-> +	rvoff -= 4;
-> +
-> +	/* Transform, e.g.:
-> +	 *   bne rd,rs,foo
-> +	 * to
-> +	 *   beq rd,rs,<.L1>
-> +	 *   (auipc foo)
-> +	 *   jal(r) foo
-> +	 * .L1
-> +	 */
-> +	cond = invert_bpf_cond(cond);
-> +	if (is_21b_int(rvoff)) {
-> +		emit_bcc(cond, rd, rs, 8, ctx);
-> +		emit(rv_jal(RV_REG_ZERO, rvoff >> 1), ctx);
-> +		return;
-> +	}
-> +
-> +	/* 32b No need for an additional rvoff adjustment, since we
-> +	 * get that from the auipc at PC', where PC = PC' + 4.
-> +	 */
-> +	upper = (rvoff + (1 << 11)) >> 12;
-> +	lower = rvoff & 0xfff;
-> +
-> +	emit_bcc(cond, rd, rs, 12, ctx);
-> +	emit(rv_auipc(RV_REG_T1, upper), ctx);
-> +	emit(rv_jalr(RV_REG_ZERO, RV_REG_T1, lower), ctx);
-> +}
-> +
->  static void emit_zext_32(u8 reg, struct rv_jit_context *ctx)
->  {
->  	emit(rv_slli(reg, reg, 32), ctx);
-> @@ -693,13 +804,6 @@ static void init_regs(u8 *rd, u8 *rs, const struct bpf_insn *insn,
->  		*rs = bpf_to_rv_reg(insn->src_reg, ctx);
->  }
->
-> -static int rv_offset_check(int *rvoff, s16 off, int insn,
-> -			   struct rv_jit_context *ctx)
-> -{
-> -	*rvoff = rv_offset(insn + off, insn, ctx);
-> -	return is_13b_check(*rvoff, insn);
-> -}
-> -
->  static void emit_zext_32_rd_rs(u8 *rd, u8 *rs, struct rv_jit_context *ctx)
->  {
->  	emit(rv_addi(RV_REG_T2, *rd, 0), ctx);
-> @@ -732,13 +836,19 @@ static void emit_sext_32_rd(u8 *rd, struct rv_jit_context *ctx)
->  	*rd = RV_REG_T2;
->  }
->
-> +static bool is_signed_bpf_cond(u8 cond)
-> +{
-> +	return cond == BPF_JSGT || cond == BPF_JSLT ||
-> +		cond == BPF_JSGE || cond == BPF_JSLE;
-> +}
-> +
->  static int emit_insn(const struct bpf_insn *insn, struct rv_jit_context *ctx,
->  		     bool extra_pass)
->  {
->  	bool is64 = BPF_CLASS(insn->code) == BPF_ALU64 ||
->  		    BPF_CLASS(insn->code) == BPF_JMP;
-> +	int s, e, rvoff, i = insn - ctx->prog->insnsi;
->  	struct bpf_prog_aux *aux = ctx->prog->aux;
-> -	int rvoff, i = insn - ctx->prog->insnsi;
->  	u8 rd = -1, rs = -1, code = insn->code;
->  	s16 off = insn->off;
->  	s32 imm = insn->imm;
-> @@ -1006,7 +1116,7 @@ static int emit_insn(const struct bpf_insn *insn, struct rv_jit_context *ctx,
->
->  	/* JUMP off */
->  	case BPF_JMP | BPF_JA:
-> -		rvoff = rv_offset(i + off, i, ctx);
-> +		rvoff = rv_offset(i, off, ctx);
->  		if (!is_21b_int(rvoff)) {
->  			pr_err("bpf-jit: insn=%d offset=%d not supported yet!\n",
->  			       i, rvoff);
-> @@ -1019,194 +1129,96 @@ static int emit_insn(const struct bpf_insn *insn, struct rv_jit_context *ctx,
->  	/* IF (dst COND src) JUMP off */
->  	case BPF_JMP | BPF_JEQ | BPF_X:
->  	case BPF_JMP32 | BPF_JEQ | BPF_X:
-> -		if (rv_offset_check(&rvoff, off, i, ctx))
-> -			return -1;
-> -		if (!is64)
-> -			emit_zext_32_rd_rs(&rd, &rs, ctx);
-> -		emit(rv_beq(rd, rs, rvoff >> 1), ctx);
-> -		break;
->  	case BPF_JMP | BPF_JGT | BPF_X:
->  	case BPF_JMP32 | BPF_JGT | BPF_X:
-> -		if (rv_offset_check(&rvoff, off, i, ctx))
-> -			return -1;
-> -		if (!is64)
-> -			emit_zext_32_rd_rs(&rd, &rs, ctx);
-> -		emit(rv_bltu(rs, rd, rvoff >> 1), ctx);
-> -		break;
->  	case BPF_JMP | BPF_JLT | BPF_X:
->  	case BPF_JMP32 | BPF_JLT | BPF_X:
-> -		if (rv_offset_check(&rvoff, off, i, ctx))
-> -			return -1;
-> -		if (!is64)
-> -			emit_zext_32_rd_rs(&rd, &rs, ctx);
-> -		emit(rv_bltu(rd, rs, rvoff >> 1), ctx);
-> -		break;
->  	case BPF_JMP | BPF_JGE | BPF_X:
->  	case BPF_JMP32 | BPF_JGE | BPF_X:
-> -		if (rv_offset_check(&rvoff, off, i, ctx))
-> -			return -1;
-> -		if (!is64)
-> -			emit_zext_32_rd_rs(&rd, &rs, ctx);
-> -		emit(rv_bgeu(rd, rs, rvoff >> 1), ctx);
-> -		break;
->  	case BPF_JMP | BPF_JLE | BPF_X:
->  	case BPF_JMP32 | BPF_JLE | BPF_X:
-> -		if (rv_offset_check(&rvoff, off, i, ctx))
-> -			return -1;
-> -		if (!is64)
-> -			emit_zext_32_rd_rs(&rd, &rs, ctx);
-> -		emit(rv_bgeu(rs, rd, rvoff >> 1), ctx);
-> -		break;
->  	case BPF_JMP | BPF_JNE | BPF_X:
->  	case BPF_JMP32 | BPF_JNE | BPF_X:
-> -		if (rv_offset_check(&rvoff, off, i, ctx))
-> -			return -1;
-> -		if (!is64)
-> -			emit_zext_32_rd_rs(&rd, &rs, ctx);
-> -		emit(rv_bne(rd, rs, rvoff >> 1), ctx);
-> -		break;
->  	case BPF_JMP | BPF_JSGT | BPF_X:
->  	case BPF_JMP32 | BPF_JSGT | BPF_X:
-> -		if (rv_offset_check(&rvoff, off, i, ctx))
-> -			return -1;
-> -		if (!is64)
-> -			emit_sext_32_rd_rs(&rd, &rs, ctx);
-> -		emit(rv_blt(rs, rd, rvoff >> 1), ctx);
-> -		break;
->  	case BPF_JMP | BPF_JSLT | BPF_X:
->  	case BPF_JMP32 | BPF_JSLT | BPF_X:
-> -		if (rv_offset_check(&rvoff, off, i, ctx))
-> -			return -1;
-> -		if (!is64)
-> -			emit_sext_32_rd_rs(&rd, &rs, ctx);
-> -		emit(rv_blt(rd, rs, rvoff >> 1), ctx);
-> -		break;
->  	case BPF_JMP | BPF_JSGE | BPF_X:
->  	case BPF_JMP32 | BPF_JSGE | BPF_X:
-> -		if (rv_offset_check(&rvoff, off, i, ctx))
-> -			return -1;
-> -		if (!is64)
-> -			emit_sext_32_rd_rs(&rd, &rs, ctx);
-> -		emit(rv_bge(rd, rs, rvoff >> 1), ctx);
-> -		break;
->  	case BPF_JMP | BPF_JSLE | BPF_X:
->  	case BPF_JMP32 | BPF_JSLE | BPF_X:
-> -		if (rv_offset_check(&rvoff, off, i, ctx))
-> -			return -1;
-> -		if (!is64)
-> -			emit_sext_32_rd_rs(&rd, &rs, ctx);
-> -		emit(rv_bge(rs, rd, rvoff >> 1), ctx);
-> -		break;
->  	case BPF_JMP | BPF_JSET | BPF_X:
->  	case BPF_JMP32 | BPF_JSET | BPF_X:
-> -		if (rv_offset_check(&rvoff, off, i, ctx))
-> -			return -1;
-> -		if (!is64)
-> -			emit_zext_32_rd_rs(&rd, &rs, ctx);
-> -		emit(rv_and(RV_REG_T1, rd, rs), ctx);
-> -		emit(rv_bne(RV_REG_T1, RV_REG_ZERO, rvoff >> 1), ctx);
-> +		rvoff = rv_offset(i, off, ctx);
-> +		if (!is64) {
-> +			s = ctx->ninsns;
-> +			if (is_signed_bpf_cond(BPF_OP(code)))
-> +				emit_sext_32_rd_rs(&rd, &rs, ctx);
-> +			else
-> +				emit_zext_32_rd_rs(&rd, &rs, ctx);
-> +			e = ctx->ninsns;
-> +
-> +			/* Adjust for extra insns */
-> +			rvoff -= (e - s) << 2;
-> +		}
-> +
-> +		if (BPF_OP(code) == BPF_JSET) {
-> +			/* Adjust for and */
-> +			rvoff -= 4;
-> +			emit(rv_and(RV_REG_T1, rd, rs), ctx);
-> +			emit_branch(BPF_JNE, RV_REG_T1, RV_REG_ZERO, rvoff,
-> +				    ctx);
-> +		} else {
-> +			emit_branch(BPF_OP(code), rd, rs, rvoff, ctx);
-> +		}
->  		break;
->
->  	/* IF (dst COND imm) JUMP off */
->  	case BPF_JMP | BPF_JEQ | BPF_K:
->  	case BPF_JMP32 | BPF_JEQ | BPF_K:
-> -		if (rv_offset_check(&rvoff, off, i, ctx))
-> -			return -1;
-> -		emit_imm(RV_REG_T1, imm, ctx);
-> -		if (!is64)
-> -			emit_zext_32_rd_t1(&rd, ctx);
-> -		emit(rv_beq(rd, RV_REG_T1, rvoff >> 1), ctx);
-> -		break;
->  	case BPF_JMP | BPF_JGT | BPF_K:
->  	case BPF_JMP32 | BPF_JGT | BPF_K:
-> -		if (rv_offset_check(&rvoff, off, i, ctx))
-> -			return -1;
-> -		emit_imm(RV_REG_T1, imm, ctx);
-> -		if (!is64)
-> -			emit_zext_32_rd_t1(&rd, ctx);
-> -		emit(rv_bltu(RV_REG_T1, rd, rvoff >> 1), ctx);
-> -		break;
->  	case BPF_JMP | BPF_JLT | BPF_K:
->  	case BPF_JMP32 | BPF_JLT | BPF_K:
-> -		if (rv_offset_check(&rvoff, off, i, ctx))
-> -			return -1;
-> -		emit_imm(RV_REG_T1, imm, ctx);
-> -		if (!is64)
-> -			emit_zext_32_rd_t1(&rd, ctx);
-> -		emit(rv_bltu(rd, RV_REG_T1, rvoff >> 1), ctx);
-> -		break;
->  	case BPF_JMP | BPF_JGE | BPF_K:
->  	case BPF_JMP32 | BPF_JGE | BPF_K:
-> -		if (rv_offset_check(&rvoff, off, i, ctx))
-> -			return -1;
-> -		emit_imm(RV_REG_T1, imm, ctx);
-> -		if (!is64)
-> -			emit_zext_32_rd_t1(&rd, ctx);
-> -		emit(rv_bgeu(rd, RV_REG_T1, rvoff >> 1), ctx);
-> -		break;
->  	case BPF_JMP | BPF_JLE | BPF_K:
->  	case BPF_JMP32 | BPF_JLE | BPF_K:
-> -		if (rv_offset_check(&rvoff, off, i, ctx))
-> -			return -1;
-> -		emit_imm(RV_REG_T1, imm, ctx);
-> -		if (!is64)
-> -			emit_zext_32_rd_t1(&rd, ctx);
-> -		emit(rv_bgeu(RV_REG_T1, rd, rvoff >> 1), ctx);
-> -		break;
->  	case BPF_JMP | BPF_JNE | BPF_K:
->  	case BPF_JMP32 | BPF_JNE | BPF_K:
-> -		if (rv_offset_check(&rvoff, off, i, ctx))
-> -			return -1;
-> -		emit_imm(RV_REG_T1, imm, ctx);
-> -		if (!is64)
-> -			emit_zext_32_rd_t1(&rd, ctx);
-> -		emit(rv_bne(rd, RV_REG_T1, rvoff >> 1), ctx);
-> -		break;
->  	case BPF_JMP | BPF_JSGT | BPF_K:
->  	case BPF_JMP32 | BPF_JSGT | BPF_K:
-> -		if (rv_offset_check(&rvoff, off, i, ctx))
-> -			return -1;
-> -		emit_imm(RV_REG_T1, imm, ctx);
-> -		if (!is64)
-> -			emit_sext_32_rd(&rd, ctx);
-> -		emit(rv_blt(RV_REG_T1, rd, rvoff >> 1), ctx);
-> -		break;
->  	case BPF_JMP | BPF_JSLT | BPF_K:
->  	case BPF_JMP32 | BPF_JSLT | BPF_K:
-> -		if (rv_offset_check(&rvoff, off, i, ctx))
-> -			return -1;
-> -		emit_imm(RV_REG_T1, imm, ctx);
-> -		if (!is64)
-> -			emit_sext_32_rd(&rd, ctx);
-> -		emit(rv_blt(rd, RV_REG_T1, rvoff >> 1), ctx);
-> -		break;
->  	case BPF_JMP | BPF_JSGE | BPF_K:
->  	case BPF_JMP32 | BPF_JSGE | BPF_K:
-> -		if (rv_offset_check(&rvoff, off, i, ctx))
-> -			return -1;
-> -		emit_imm(RV_REG_T1, imm, ctx);
-> -		if (!is64)
-> -			emit_sext_32_rd(&rd, ctx);
-> -		emit(rv_bge(rd, RV_REG_T1, rvoff >> 1), ctx);
-> -		break;
->  	case BPF_JMP | BPF_JSLE | BPF_K:
->  	case BPF_JMP32 | BPF_JSLE | BPF_K:
-> -		if (rv_offset_check(&rvoff, off, i, ctx))
-> -			return -1;
-> -		emit_imm(RV_REG_T1, imm, ctx);
-> -		if (!is64)
-> -			emit_sext_32_rd(&rd, ctx);
-> -		emit(rv_bge(RV_REG_T1, rd, rvoff >> 1), ctx);
-> -		break;
->  	case BPF_JMP | BPF_JSET | BPF_K:
->  	case BPF_JMP32 | BPF_JSET | BPF_K:
-> -		if (rv_offset_check(&rvoff, off, i, ctx))
-> -			return -1;
-> +		rvoff = rv_offset(i, off, ctx);
-> +		s = ctx->ninsns;
->  		emit_imm(RV_REG_T1, imm, ctx);
-> -		if (!is64)
-> -			emit_zext_32_rd_t1(&rd, ctx);
-> -		emit(rv_and(RV_REG_T1, rd, RV_REG_T1), ctx);
-> -		emit(rv_bne(RV_REG_T1, RV_REG_ZERO, rvoff >> 1), ctx);
-> +		if (!is64) {
-> +			if (is_signed_bpf_cond(BPF_OP(code)))
-> +				emit_sext_32_rd(&rd, ctx);
-> +			else
-> +				emit_zext_32_rd_t1(&rd, ctx);
-> +		}
-> +		e = ctx->ninsns;
-> +
-> +		/* Adjust for extra insns */
-> +		rvoff -= (e - s) << 2;
-> +
-> +		if (BPF_OP(code) == BPF_JSET) {
-> +			/* Adjust for and */
-> +			rvoff -= 4;
-> +			emit(rv_and(RV_REG_T1, rd, RV_REG_T1), ctx);
-> +			emit_branch(BPF_JNE, RV_REG_T1, RV_REG_ZERO, rvoff,
-> +				    ctx);
-> +		} else {
-> +			emit_branch(BPF_OP(code), rd, RV_REG_T1, rvoff, ctx);
-> +		}
->  		break;
->
->  	/* function call */
-> @@ -1557,6 +1569,7 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
->  {
->  	bool tmp_blinded = false, extra_pass = false;
->  	struct bpf_prog *tmp, *orig_prog = prog;
-> +	int pass = 0, prev_ninsns = 0, i;
->  	struct rv_jit_data *jit_data;
->  	struct rv_jit_context *ctx;
->  	unsigned int image_size;
-> @@ -1596,15 +1609,25 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
->  		prog = orig_prog;
->  		goto out_offset;
->  	}
-> +	for (i = 0; i < prog->len; i++) {
-> +		prev_ninsns += 32;
-> +		ctx->offset[i] = prev_ninsns;
-> +	}
-
-It feels like the first-order implementation is the same as binutils here: the
-first round is worst cased, after which things can be more exact.  We're only
-doing one pass in binutils because most of the relaxation happens in the
-linker, but this approach seems reasonable to me.  I'd be interested in seeing
-some benchmarks, as it may be worth relaxing these in the binutils linker as
-well -- I can certainly come up with contrived test cases that aren't relaxed,
-but I'm not sure how common this is.
-
-My only worry is that that invariant should be more explicit.  Specifically,
-I'm thinking that every time offset is updated there should be some sort of
-assertion that the offset is shrinking.  This is enforced structurally in the
-binutils code because we only generate code once and then move it around, but
-since you're generating code every time it'd be easy for a bug to sneak in as
-the JIT gets more complicated.
-
-Since most of the branches should be forward, you'll probably end up with way
-fewer iterations if you do the optimization passes backwards.
-
-> -	/* First pass generates the ctx->offset, but does not emit an image. */
-> -	if (build_body(ctx, extra_pass)) {
-> -		prog = orig_prog;
-> -		goto out_offset;
-> +	for (i = 0; i < 16; i++) {
-> +		pass++;
-> +		ctx->ninsns = 0;
-> +		if (build_body(ctx, extra_pass)) {
-> +			prog = orig_prog;
-> +			goto out_offset;
-
-Isn't this returning a broken program if build_body() errors out the first time
-through?
-
-> +		}
-> +		build_prologue(ctx);
-> +		ctx->epilogue_offset = ctx->ninsns;
-> +		build_epilogue(ctx);
-> +		if (ctx->ninsns == prev_ninsns)
-> +			break;
-> +		prev_ninsns = ctx->ninsns;
-
-IDK how important the performance of the JIT is, but you could probably get
-away with skipping an iteration by keeping track of some simple metric that
-determines if it would be possible to 
-
->  	}
-> -	build_prologue(ctx);
-> -	ctx->epilogue_offset = ctx->ninsns;
-> -	build_epilogue(ctx);
->
->  	/* Allocate image, now that we know the size. */
->  	image_size = sizeof(u32) * ctx->ninsns;
-> @@ -1619,6 +1642,7 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
->  	/* Second, real pass, that acutally emits the image. */
->  	ctx->insns = (u32 *)jit_data->image;
->  skip_init_ctx:
-> +	pass++;
->  	ctx->ninsns = 0;
->
->  	build_prologue(ctx);
-> @@ -1630,7 +1654,7 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
->  	build_epilogue(ctx);
->
->  	if (bpf_jit_enable > 1)
-> -		bpf_jit_dump(prog->len, image_size, 2, ctx->insns);
-> +		bpf_jit_dump(prog->len, image_size, pass, ctx->insns);
->
->  	prog->bpf_func = (void *)ctx->insns;
->  	prog->jited = 1;
+DQoNCk9uIDEyLzIzLzE5IDEwOjAzIEFNLCBBbmRyaWkgTmFrcnlpa28gd3JvdGU6DQo+IENsYW5n
+IHBhdGNoIFswXSBlbmFibGVzIGVtaXR0aW5nIHJlbG9jYXRhYmxlIGdlbmVyaWMgQUxVL0FMVTY0
+IGluc3RydWN0aW9ucw0KPiAoaS5lLCBzaGlmdHMgYW5kIGFyaXRobWV0aWMgb3BlcmF0aW9ucyks
+IGFzIHdlbGwgYXMgZ2VuZXJpYyBsb2FkL3N0b3JlDQo+IGluc3RydWN0aW9ucy4gVGhlIGZvcm1l
+ciBvbmVzIGFyZSBhbHJlYWR5IHN1cHBvcnRlZCBieSBsaWJicGYgYXMgaXMuIFRoaXMNCj4gcGF0
+Y2ggYWRkcyBmdXJ0aGVyIHN1cHBvcnQgZm9yIGxvYWQvc3RvcmUgaW5zdHJ1Y3Rpb25zLiBSZWxv
+Y2F0YWJsZSBmaWVsZA0KPiBvZmZzZXQgaXMgZW5jb2RlZCBpbiBCUEYgaW5zdHJ1Y3Rpb24ncyAx
+Ni1iaXQgb2Zmc2V0IHNlY3Rpb24gYW5kIGFyZSBhZGp1c3RlZA0KPiBieSBsaWJicGYgYmFzZWQg
+b24gdGFyZ2V0IGtlcm5lbCBCVEYuDQo+IA0KPiBUaGVzZSBDbGFuZyBjaGFuZ2VzIGFuZCBjb3Jy
+ZXNwb25kaW5nIGxpYmJwZiBjaGFuZ2VzIGFsbG93IGZvciBtb3JlIHN1Y2NpbmN0DQo+IGdlbmVy
+YXRlZCBCUEYgY29kZSBieSBlbmNvZGluZyByZWxvY2F0YWJsZSBmaWVsZCByZWFkcyBhcyBhIHNp
+bmdsZQ0KPiBTVC9MRFgvU1RYIGluc3RydWN0aW9uLiBJdCBhbHNvIGVuYWJsZXMgcmVsb2NhdGFi
+bGUgYWNjZXNzIHRvIEJQRiBjb250ZXh0Lg0KPiBQcmV2aW91c2x5LCBpZiBjb250ZXh0IHN0cnVj
+dCAoZS5nLiwgX19za19idWZmKSB3YXMgYWNjZXNzZWQgd2l0aCBDTy1SRQ0KPiByZWxvY2F0aW9u
+cyAoZS5nLiwgZHVlIHRvIHByZXNlcnZlX2FjY2Vzc19pbmRleCBhdHRyaWJ1dGUpLCBpdCB3b3Vs
+ZCBiZQ0KPiByZWplY3RlZCBieSBCUEYgdmVyaWZpZXIgZHVlIHRvIG1vZGlmaWVkIGNvbnRleHQg
+cG9pbnRlciBkZXJlZmVyZW5jZS4gV2l0aA0KPiBDbGFuZyBwYXRjaCwgc3VjaCBjb250ZXh0IGFj
+Y2Vzc2VzIGFyZSBib3RoIHJlbG9jYXRhYmxlIGFuZCBoYXZlIGEgZml4ZWQNCj4gb2Zmc2V0IGZy
+b20gdGhlIHBvaW50IG9mIHZpZXcgb2YgQlBGIHZlcmlmaWVyLg0KPiANCj4gICAgWzBdIGh0dHBz
+Oi8vcmV2aWV3cy5sbHZtLm9yZy9ENzE3OTANCj4gDQo+IFNpZ25lZC1vZmYtYnk6IEFuZHJpaSBO
+YWtyeWlrbyA8YW5kcmlpbkBmYi5jb20+DQpBY2tlZC1ieTogWW9uZ2hvbmcgU29uZyA8eWhzQGZi
+LmNvbT4NCg==
