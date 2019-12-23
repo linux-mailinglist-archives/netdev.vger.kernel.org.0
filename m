@@ -2,54 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F92A129672
-	for <lists+netdev@lfdr.de>; Mon, 23 Dec 2019 14:28:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5DE1C129673
+	for <lists+netdev@lfdr.de>; Mon, 23 Dec 2019 14:29:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726729AbfLWN2z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Dec 2019 08:28:55 -0500
-Received: from out1-smtp.messagingengine.com ([66.111.4.25]:55961 "EHLO
+        id S1726777AbfLWN24 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Dec 2019 08:28:56 -0500
+Received: from out1-smtp.messagingengine.com ([66.111.4.25]:44803 "EHLO
         out1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726676AbfLWN2z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Dec 2019 08:28:55 -0500
+        by vger.kernel.org with ESMTP id S1726676AbfLWN24 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Dec 2019 08:28:56 -0500
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 28B9921B42;
-        Mon, 23 Dec 2019 08:28:54 -0500 (EST)
+        by mailout.nyi.internal (Postfix) with ESMTP id 6FB5621BF9;
+        Mon, 23 Dec 2019 08:28:55 -0500 (EST)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Mon, 23 Dec 2019 08:28:54 -0500
+  by compute3.internal (MEProxy); Mon, 23 Dec 2019 08:28:55 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=283rqeguAEs74wzhu
-        SuPPyYdx5b6CEfHpEIqnvX+Jrg=; b=jrRaetg/mMMV4boAnwiQ1n+UBUOLMCbya
-        5MvrqueaMXW6SC+bzsuB7aCPNyw1r3ksdaW/eJyHGS3MWMv6Cz8OXVqoRN/PedIZ
-        MjNP3ctVm3uwUF65aRnG+0DEok0SV1MTOqTYAkc9EppDgiFceZqZkZIIBkXG4a8e
-        9cC8k8Ke4ZMjr2G/bs2h8JmPGr6MR0WqbC7zQYNwwSRsL4A04tKTyd9gK9s8IeiY
-        08kOZbCyVnUcE2DCBOqm5V804WqzCdHPEbfL30Rhtyb3Nj8+DNQuoV1EDbI4imzF
-        2WdsM2BdtdfXAJS/7oxgAjsPntI38xEK4x6aVnrF1WRLqKH2bMt+A==
-X-ME-Sender: <xms:FcEAXivct71GJrLNwGGdSCPfZ8YmOhVStgC99rSQpV6niQ1yV_u-Qw>
+        :in-reply-to:message-id:mime-version:references:subject:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm1; bh=5GKCO1NfaI9n0X5f0MumRgH9ey4vfegTBOnPqq+MgM0=; b=W2UL7loK
+        0z1O8QLpChUoGb90MSJP5AfQl2+z0dpeq1SoWiTPa5Fhw1KIxlf0bLTi3OLrQnlj
+        r8N0S9bOH/3p1gimTbdSEKL5LvMGg1dKhtldApvSeOQmcI+xVbyfB5rap/JNliak
+        dTFoA7YkVYpgi8/LXnQIGHTs7edn+IC0MFnrSKwDTYD6TDQGiHOWU7VgHFyiMNja
+        OU4AOtuXOfx6siD7bF39JhR4iELNfAkkCS0EA83QBG0EpzgkXjWxfDNsNkGkZs1s
+        okfjOFd8lAUHmzyYyJHBwSBhClOt5z/qHptkm9GFZ0DRycfQhjg5rPgDT77xZyDg
+        jxQsbMx8IHlHwg==
+X-ME-Sender: <xms:F8EAXv0tlbRW-Kbqt37t-7wCLkvIcGGX74WxKfLSlOkrwfKasS6wlQ>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedufedrvddvtddghedvucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgggfestdekredtre
-    dttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiughoshgt
-    hhdrohhrgheqnecuffhomhgrihhnpehgihhthhhusgdrtghomhdpohiilhgrsghsrdhorh
-    hgnecukfhppeduleefrdegjedrudeihedrvdehudenucfrrghrrghmpehmrghilhhfrhho
-    mhepihguohhstghhsehiughoshgthhdrohhrghenucevlhhushhtvghrufhiiigvpedt
-X-ME-Proxy: <xmx:FcEAXoHQnpkgBvmrwgIaZ_rvcOuixNsoHJJUNnrDYmUGenoGc84akQ>
-    <xmx:FcEAXo58cINsuWKfO8lGKxelp9zjBslku6RJYJJU7caqnRnIdGYkhQ>
-    <xmx:FcEAXhynXxhtPIee8khopqJPQCpLxOuNw2Qk6Gvk3Zf1VSyE1JTuTA>
-    <xmx:FsEAXtw_ngEtyM-yq6q7jamABdqCldBcf1ZuUjqdD3b6dd6L19T7hA>
+    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
+    dtredttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiugho
+    shgthhdrohhrgheqnecukfhppeduleefrdegjedrudeihedrvdehudenucfrrghrrghmpe
+    hmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrghenucevlhhushhtvghr
+    ufhiiigvpedt
+X-ME-Proxy: <xmx:F8EAXiAqPIS5Z9S_vf6qv2OyDWXOWClPFtsK3Th3QzATLsXex8UJcw>
+    <xmx:F8EAXobvszklQNqt90NrnlXsz7XHx-yC_aVf9xtat3ChHbggBQniyw>
+    <xmx:F8EAXuZwM7Brs421_G8nVKZUgxPTo_TN1YLszxoSkN4i0JtPboQ_-Q>
+    <xmx:F8EAXs3XGB23-bqMIokG9hZ3xQlh8pOcCUUFZJ-vPDUOaHb2a0uZOA>
 Received: from splinter.mtl.com (unknown [193.47.165.251])
-        by mail.messagingengine.com (Postfix) with ESMTPA id A323430609A0;
-        Mon, 23 Dec 2019 08:28:52 -0500 (EST)
+        by mail.messagingengine.com (Postfix) with ESMTPA id 1B9473060AAA;
+        Mon, 23 Dec 2019 08:28:53 -0500 (EST)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, dsahern@gmail.com, roopa@cumulusnetworks.com,
         jakub.kicinski@netronome.com, jiri@mellanox.com,
         Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net-next 0/9] Simplify IPv6 route offload API
-Date:   Mon, 23 Dec 2019 15:28:11 +0200
-Message-Id: <20191223132820.888247-1-idosch@idosch.org>
+Subject: [PATCH net-next 1/9] net: fib_notifier: Add temporary events to the FIB notification chain
+Date:   Mon, 23 Dec 2019 15:28:12 +0200
+Message-Id: <20191223132820.888247-2-idosch@idosch.org>
 X-Mailer: git-send-email 2.24.1
+In-Reply-To: <20191223132820.888247-1-idosch@idosch.org>
+References: <20191223132820.888247-1-idosch@idosch.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -59,84 +62,32 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ido Schimmel <idosch@mellanox.com>
 
-Motivation
-==========
+Subsequent patches are going to simplify the IPv6 route offload API,
+which will only use three events - replace, delete and append.
 
-This is the IPv6 counterpart of "Simplify IPv4 route offload API" [1].
-The aim of this patch set is to simplify the IPv6 route offload API by
-making the stack a bit smarter about the notifications it is generating.
-This allows driver authors to focus on programming the underlying device
-instead of having to duplicate the IPv6 route insertion logic in their
-driver, which is error-prone.
+Introduce a temporary version of replace and delete in order to make the
+conversion easier to review. Note that append does not need a temporary
+version, as it is currently not used.
 
-Details
-=======
+Signed-off-by: Ido Schimmel <idosch@mellanox.com>
+Reviewed-by: Jiri Pirko <jiri@mellanox.com>
+---
+ include/net/fib_notifier.h | 2 ++
+ 1 file changed, 2 insertions(+)
 
-Today, whenever an IPv6 route is added or deleted a notification is sent
-in the FIB notification chain and it is up to offload drivers to decide
-if the route should be programmed to the hardware or not. This is not an
-easy task as in hardware routes are keyed by {prefix, prefix length,
-table id}, whereas the kernel can store multiple such routes that only
-differ in metric / nexthop info.
-
-This series makes sure that only routes that are actually used in the
-data path are notified to offload drivers. This greatly simplifies the
-work these drivers need to do, as they are now only concerned with
-programming the hardware and do not need to replicate the IPv6 route
-insertion logic and store multiple identical routes.
-
-The route that is notified is the first route in the IPv6 FIB node,
-which represents a single prefix and length in a given table. In case
-the route is deleted and there is another route with the same key, a
-replace notification is emitted. Otherwise, a delete notification is
-emitted.
-
-Unlike IPv4, in IPv6 it is possible to append individual nexthops to an
-existing multipath route. Therefore, in addition to the replace and
-delete notifications present in IPv4, an append notification is also
-used.
-
-Testing
-=======
-
-To ensure there is no degradation in route insertion rates, I averaged
-the insertion rate of 512k routes (/64 and /128) over 50 runs. Did not
-observe any degradation.
-
-Functional tests are available here [2]. They rely on route trap
-indication, which is added in a subsequent patch set.
-
-In addition, I have been running syzkaller for the past couple of weeks
-with debug options enabled. Did not observe any problems.
-
-Patch set overview
-==================
-
-Patches #1-#7 gradually introduce the new FIB notifications
-Patch #8 converts mlxsw to use the new notifications
-Patch #9 remove the old notifications
-
-[1] https://patchwork.ozlabs.org/cover/1209738/
-[2] https://github.com/idosch/linux/tree/fib-notifier
-
-Ido Schimmel (9):
-  net: fib_notifier: Add temporary events to the FIB notification chain
-  ipv6: Notify newly added route if should be offloaded
-  ipv6: Notify route if replacing currently offloaded one
-  ipv6: Notify multipath route if should be offloaded
-  ipv6: Only Replay routes of interest to new listeners
-  ipv6: Handle route deletion notification
-  ipv6: Handle multipath route deletion notification
-  mlxsw: spectrum_router: Start using new IPv6 route notifications
-  ipv6: Remove old route notifications and convert listeners
-
- .../ethernet/mellanox/mlxsw/spectrum_router.c | 218 ++++++------------
- drivers/net/netdevsim/fib.c                   |   1 -
- include/net/ip6_fib.h                         |   1 +
- net/ipv6/ip6_fib.c                            | 108 +++++++--
- net/ipv6/route.c                              |  86 +++++--
- 5 files changed, 238 insertions(+), 176 deletions(-)
-
+diff --git a/include/net/fib_notifier.h b/include/net/fib_notifier.h
+index 6d59221ff05a..b3c54325caec 100644
+--- a/include/net/fib_notifier.h
++++ b/include/net/fib_notifier.h
+@@ -23,6 +23,8 @@ enum fib_event_type {
+ 	FIB_EVENT_NH_DEL,
+ 	FIB_EVENT_VIF_ADD,
+ 	FIB_EVENT_VIF_DEL,
++	FIB_EVENT_ENTRY_REPLACE_TMP,
++	FIB_EVENT_ENTRY_DEL_TMP,
+ };
+ 
+ struct fib_notifier_ops {
 -- 
 2.24.1
 
