@@ -2,141 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A68812960B
-	for <lists+netdev@lfdr.de>; Mon, 23 Dec 2019 13:33:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F632129620
+	for <lists+netdev@lfdr.de>; Mon, 23 Dec 2019 13:52:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726791AbfLWMdr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Dec 2019 07:33:47 -0500
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:36087 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726257AbfLWMdr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Dec 2019 07:33:47 -0500
-Received: by mail-wr1-f66.google.com with SMTP id z3so16465010wru.3
-        for <netdev@vger.kernel.org>; Mon, 23 Dec 2019 04:33:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=metanetworks.com; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=eQs/KOtwqKE7vkWui2AVhnRY74kInmRv20LpgQRXNYU=;
-        b=PWD0E9uPuNtEif+b027m5evDxRlHshEABhIlP4zzBj+RLGyOqkuX5ehGjabqyEFaF7
-         VdiVlwBCR8jVLtgc75XaAHg22M3Eddy8SJcrShvQ3eOxoyt34ViMMURMs6NkfC/jMoH7
-         /bjRaS+igd9JVRuQlwa7YVNtjrGgj/ZpCRAks=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=eQs/KOtwqKE7vkWui2AVhnRY74kInmRv20LpgQRXNYU=;
-        b=hTTJsux67PiRO9sMLtJmTHFiCAVu0t4Ts/iLoVEf9mGWINR1fFRt+rTY0J2lCHYj9n
-         wswF/ZCqBsdhrREnJDAJUayAW8PwcWlS8o5SCBG72slNOYUGpq26baR5GXLTbsvhAePw
-         BVIHry+wYixYCNXoOjPQm0B9HPcV1S0Ba0hqNz42jZ7578sJsUlsAszmwakzmSECgweq
-         FtVof2QFEM7vKtvOW6mTGYFobyyAvbsYobru5D2qamYKFGA1d/cB0vFzCsOgSHOhGBHk
-         OJzoRFZiY71X0HXSX8z08WEqEwm5/IAlzdvSUpb+9o0lEbUVLqoobhjMRkFHXC+VvNEF
-         hoYw==
-X-Gm-Message-State: APjAAAVRiZJstbyXa4XRemvLhxPWaBgagoCifBHuLM1fHyH1K+jnrvPE
-        q/7gZiu5/fGviFbam4xqnjy/IMSLM98ORw==
-X-Google-Smtp-Source: APXvYqwyTi4KezS5MgJUBv5Wcd/EWT369S8sTyrSWfq3MquwaV2rkDf38Og390F7y98HsmCUKicJHg==
-X-Received: by 2002:adf:f20b:: with SMTP id p11mr28934997wro.195.1577104424710;
-        Mon, 23 Dec 2019 04:33:44 -0800 (PST)
-Received: from localhost.localdomain (bzq-82-81-225-244.cablep.bezeqint.net. [82.81.225.244])
-        by smtp.gmail.com with ESMTPSA id b21sm12023194wmd.37.2019.12.23.04.33.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 Dec 2019 04:33:44 -0800 (PST)
-From:   shmulik@metanetworks.com
-X-Google-Original-From: sladkani@proofpoint.com
-To:     Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>
-Cc:     "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        shmulik.ladkani@gmail.com,
-        Shmulik Ladkani <sladkani@proofpoint.com>
-Subject: [PATCH net-next] net/sched: act_mirred: Ensure mac_len is pulled prior redirect to a non mac_header_xmit target device
-Date:   Mon, 23 Dec 2019 14:33:36 +0200
-Message-Id: <20191223123336.13066-1-sladkani@proofpoint.com>
+        id S1726879AbfLWMw2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Dec 2019 07:52:28 -0500
+Received: from srv2.anyservers.com ([77.79.239.202]:55646 "EHLO
+        srv2.anyservers.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726680AbfLWMw1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Dec 2019 07:52:27 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=asmblr.net;
+         s=default; h=Content-Transfer-Encoding:Content-Type:MIME-Version:References:
+        In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=TjhyZtVGXeZiT/7ziQoThyRywRWC9b0F5fUg+oxiM5Y=; b=rX6KxPMVrkp6MBh3aQqgueT0Nf
+        MlMdBwLJeOXAtFX1QO5P4C6iTT0ASsbIZPNqE7WQg44BbWrGQ/Hjsa605y8yDF4zmzRrUdhwtUnLn
+        ayLfW7q9raV8TaZVI495E0ERkQBh91JzZITMADzFXZwhHoeuEo3AWmunbE9IZ466FjdyhZcs+JWuH
+        G6kJ53tarH53zTmik6/3LAtXkaANYEJ0gDzo7LaIi0CAQxB/Ly7q8uGchgX5KoqlioFaPDnmpDw4c
+        Eai3/KpVK6CnXo49D0kfDUITuN8i2EAtvWjXqfbDsxB98nwzSxLtRoNE2Byh0ABSJiDUIUFejQIJb
+        KDocwIOg==;
+Received: from 89-64-37-27.dynamic.chello.pl ([89.64.37.27]:49046 helo=milkyway.galaxy)
+        by srv2.anyservers.com with esmtpsa (TLSv1.2:ECDHE-RSA-AES128-GCM-SHA256:128)
+        (Exim 4.92)
+        (envelope-from <amade@asmblr.net>)
+        id 1ijMxP-00Gi5o-61; Mon, 23 Dec 2019 13:37:07 +0100
+From:   =?UTF-8?q?Amadeusz=20S=C5=82awi=C5=84ski?= <amade@asmblr.net>
+To:     Ping-Ke Shih <pkshih@realtek.com>,
+        Kalle Valo <kvalo@codeaurora.org>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Larry Finger <Larry.Finger@lwfinger.net>,
+        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org,
+        =?UTF-8?q?Amadeusz=20S=C5=82awi=C5=84ski?= <amade@asmblr.net>
+Subject: [PATCH 1/9] rtlwifi: rtl8192cu: Fix typo
+Date:   Mon, 23 Dec 2019 13:37:07 +0100
+Message-Id: <20191223123715.7177-2-amade@asmblr.net>
 X-Mailer: git-send-email 2.24.1
+In-Reply-To: <20191223123715.7177-1-amade@asmblr.net>
+References: <20191223123715.7177-1-amade@asmblr.net>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - srv2.anyservers.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - asmblr.net
+X-Get-Message-Sender-Via: srv2.anyservers.com: authenticated_id: amade@asmblr.net
+X-Authenticated-Sender: srv2.anyservers.com: amade@asmblr.net
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Shmulik Ladkani <sladkani@proofpoint.com>
+Replace USB_VENDER_ID_REALTEK with USB_VENDOR_ID_REALTEK.
 
-There's no skb_pull performed when a mirred action is set at egress of a
-mac device, with a target device/action that expects skb->data to point
-at the network header.
-
-As a result, either the target device is errornously given an skb with
-data pointing to the mac (egress case), or the net stack receives the
-skb with data pointing to the mac (ingress case).
-
-E.g:
- # tc qdisc add dev eth9 root handle 1: prio
- # tc filter add dev eth9 parent 1: prio 9 protocol ip handle 9 basic \
-   action mirred egress redirect dev tun0
-
- (tun0 is a tun device. result: tun0 errornously gets the eth header
-  instead of the iph)
-
-Revise the push/pull logic of tcf_mirred_act() to not rely on the
-skb_at_tc_ingress() vs tcf_mirred_act_wants_ingress() comparison, as it
-does not cover all "pull" cases.
-
-Instead, calculate whether the required action on the target device
-requires the data to point at the network header, and compare this to
-whether skb->data points to network header - and make the push/pull
-adjustments as necessary.
-
-Signed-off-by: Shmulik Ladkani <sladkani@proofpoint.com>
+Signed-off-by: Amadeusz Sławiński <amade@asmblr.net>
 ---
- net/sched/act_mirred.c | 22 ++++++++++++----------
- 1 file changed, 12 insertions(+), 10 deletions(-)
+ .../wireless/realtek/rtlwifi/rtl8192cu/sw.c   | 34 +++++++++----------
+ 1 file changed, 17 insertions(+), 17 deletions(-)
 
-diff --git a/net/sched/act_mirred.c b/net/sched/act_mirred.c
-index 1e3eb3a97532..1ad300e6dbc0 100644
---- a/net/sched/act_mirred.c
-+++ b/net/sched/act_mirred.c
-@@ -219,8 +219,10 @@ static int tcf_mirred_act(struct sk_buff *skb, const struct tc_action *a,
- 	bool use_reinsert;
- 	bool want_ingress;
- 	bool is_redirect;
-+	bool expects_nh;
- 	int m_eaction;
- 	int mac_len;
-+	bool at_nh;
+diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8192cu/sw.c b/drivers/net/wireless/realtek/rtlwifi/rtl8192cu/sw.c
+index ab3e4aebad39..6b954059e830 100644
+--- a/drivers/net/wireless/realtek/rtlwifi/rtl8192cu/sw.c
++++ b/drivers/net/wireless/realtek/rtlwifi/rtl8192cu/sw.c
+@@ -252,45 +252,45 @@ static struct rtl_hal_cfg rtl92cu_hal_cfg = {
+ 	.maps[RTL_RC_HT_RATEMCS15] = DESC_RATEMCS15,
+ };
  
- 	rec_level = __this_cpu_inc_return(mirred_rec_level);
- 	if (unlikely(rec_level > MIRRED_RECURSION_LIMIT)) {
-@@ -261,19 +263,19 @@ static int tcf_mirred_act(struct sk_buff *skb, const struct tc_action *a,
- 			goto out;
- 	}
+-#define USB_VENDER_ID_REALTEK		0x0bda
++#define USB_VENDOR_ID_REALTEK		0x0bda
  
--	/* If action's target direction differs than filter's direction,
--	 * and devices expect a mac header on xmit, then mac push/pull is
--	 * needed.
--	 */
- 	want_ingress = tcf_mirred_act_wants_ingress(m_eaction);
--	if (skb_at_tc_ingress(skb) != want_ingress && m_mac_header_xmit) {
--		if (!skb_at_tc_ingress(skb)) {
--			/* caught at egress, act ingress: pull mac */
--			mac_len = skb_network_header(skb) - skb_mac_header(skb);
-+
-+	expects_nh = want_ingress || !m_mac_header_xmit;
-+	at_nh = skb->data == skb_network_header(skb);
-+	if (at_nh != expects_nh) {
-+		mac_len = skb_at_tc_ingress(skb) ? skb->mac_len :
-+			  skb_network_header(skb) - skb_mac_header(skb);
-+		if (expects_nh) {
-+			/* target device/action expect data at nh */
- 			skb_pull_rcsum(skb2, mac_len);
- 		} else {
--			/* caught at ingress, act egress: push mac */
--			skb_push_rcsum(skb2, skb->mac_len);
-+			/* target device/action expect data at mac */
-+			skb_push_rcsum(skb2, mac_len);
- 		}
- 	}
+ /* 2010-10-19 DID_USB_V3.4 */
+ static const struct usb_device_id rtl8192c_usb_ids[] = {
  
+ 	/*=== Realtek demoboard ===*/
+ 	/* Default ID */
+-	{RTL_USB_DEVICE(USB_VENDER_ID_REALTEK, 0x8191, rtl92cu_hal_cfg)},
++	{RTL_USB_DEVICE(USB_VENDOR_ID_REALTEK, 0x8191, rtl92cu_hal_cfg)},
+ 
+ 	/****** 8188CU ********/
+ 	/* RTL8188CTV */
+-	{RTL_USB_DEVICE(USB_VENDER_ID_REALTEK, 0x018a, rtl92cu_hal_cfg)},
++	{RTL_USB_DEVICE(USB_VENDOR_ID_REALTEK, 0x018a, rtl92cu_hal_cfg)},
+ 	/* 8188CE-VAU USB minCard */
+-	{RTL_USB_DEVICE(USB_VENDER_ID_REALTEK, 0x8170, rtl92cu_hal_cfg)},
++	{RTL_USB_DEVICE(USB_VENDOR_ID_REALTEK, 0x8170, rtl92cu_hal_cfg)},
+ 	/* 8188cu 1*1 dongle */
+-	{RTL_USB_DEVICE(USB_VENDER_ID_REALTEK, 0x8176, rtl92cu_hal_cfg)},
++	{RTL_USB_DEVICE(USB_VENDOR_ID_REALTEK, 0x8176, rtl92cu_hal_cfg)},
+ 	/* 8188cu 1*1 dongle, (b/g mode only) */
+-	{RTL_USB_DEVICE(USB_VENDER_ID_REALTEK, 0x8177, rtl92cu_hal_cfg)},
++	{RTL_USB_DEVICE(USB_VENDOR_ID_REALTEK, 0x8177, rtl92cu_hal_cfg)},
+ 	/* 8188cu Slim Solo */
+-	{RTL_USB_DEVICE(USB_VENDER_ID_REALTEK, 0x817a, rtl92cu_hal_cfg)},
++	{RTL_USB_DEVICE(USB_VENDOR_ID_REALTEK, 0x817a, rtl92cu_hal_cfg)},
+ 	/* 8188cu Slim Combo */
+-	{RTL_USB_DEVICE(USB_VENDER_ID_REALTEK, 0x817b, rtl92cu_hal_cfg)},
++	{RTL_USB_DEVICE(USB_VENDOR_ID_REALTEK, 0x817b, rtl92cu_hal_cfg)},
+ 	/* 8188RU High-power USB Dongle */
+-	{RTL_USB_DEVICE(USB_VENDER_ID_REALTEK, 0x817d, rtl92cu_hal_cfg)},
++	{RTL_USB_DEVICE(USB_VENDOR_ID_REALTEK, 0x817d, rtl92cu_hal_cfg)},
+ 	/* 8188CE-VAU USB minCard (b/g mode only) */
+-	{RTL_USB_DEVICE(USB_VENDER_ID_REALTEK, 0x817e, rtl92cu_hal_cfg)},
++	{RTL_USB_DEVICE(USB_VENDOR_ID_REALTEK, 0x817e, rtl92cu_hal_cfg)},
+ 	/* 8188RU in Alfa AWUS036NHR */
+-	{RTL_USB_DEVICE(USB_VENDER_ID_REALTEK, 0x817f, rtl92cu_hal_cfg)},
++	{RTL_USB_DEVICE(USB_VENDOR_ID_REALTEK, 0x817f, rtl92cu_hal_cfg)},
+ 	/* RTL8188CUS-VL */
+-	{RTL_USB_DEVICE(USB_VENDER_ID_REALTEK, 0x818a, rtl92cu_hal_cfg)},
+-	{RTL_USB_DEVICE(USB_VENDER_ID_REALTEK, 0x819a, rtl92cu_hal_cfg)},
++	{RTL_USB_DEVICE(USB_VENDOR_ID_REALTEK, 0x818a, rtl92cu_hal_cfg)},
++	{RTL_USB_DEVICE(USB_VENDOR_ID_REALTEK, 0x819a, rtl92cu_hal_cfg)},
+ 	/* 8188 Combo for BC4 */
+-	{RTL_USB_DEVICE(USB_VENDER_ID_REALTEK, 0x8754, rtl92cu_hal_cfg)},
++	{RTL_USB_DEVICE(USB_VENDOR_ID_REALTEK, 0x8754, rtl92cu_hal_cfg)},
+ 
+ 	/****** 8192CU ********/
+ 	/* 8192cu 2*2 */
+-	{RTL_USB_DEVICE(USB_VENDER_ID_REALTEK, 0x8178, rtl92cu_hal_cfg)},
++	{RTL_USB_DEVICE(USB_VENDOR_ID_REALTEK, 0x8178, rtl92cu_hal_cfg)},
+ 	/* 8192CE-VAU USB minCard */
+-	{RTL_USB_DEVICE(USB_VENDER_ID_REALTEK, 0x817c, rtl92cu_hal_cfg)},
++	{RTL_USB_DEVICE(USB_VENDOR_ID_REALTEK, 0x817c, rtl92cu_hal_cfg)},
+ 
+ 	/*=== Customer ID ===*/
+ 	/****** 8188CU ********/
+@@ -329,7 +329,7 @@ static const struct usb_device_id rtl8192c_usb_ids[] = {
+ 
+ 	/****** 8188 RU ********/
+ 	/* Netcore */
+-	{RTL_USB_DEVICE(USB_VENDER_ID_REALTEK, 0x317f, rtl92cu_hal_cfg)},
++	{RTL_USB_DEVICE(USB_VENDOR_ID_REALTEK, 0x317f, rtl92cu_hal_cfg)},
+ 
+ 	/****** 8188CUS Slim Solo********/
+ 	{RTL_USB_DEVICE(0x04f2, 0xaff7, rtl92cu_hal_cfg)}, /*Xavi*/
 -- 
 2.24.1
 
