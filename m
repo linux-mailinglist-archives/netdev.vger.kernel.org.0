@@ -2,114 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DA4711295D5
-	for <lists+netdev@lfdr.de>; Mon, 23 Dec 2019 13:07:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DB42E129611
+	for <lists+netdev@lfdr.de>; Mon, 23 Dec 2019 13:39:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726824AbfLWMHk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Dec 2019 07:07:40 -0500
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:40054 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726679AbfLWMHk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Dec 2019 07:07:40 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=F4tsb7PW4zFpLC7EOtPGBjzINEMkMbZx84q7LYNGooU=; b=yH6GtR7yflOVtImr6967Co3ay
-        d/XaiswbaRJM3OuRqi0NE9HKd8IsJ52tPrIY7E2O4ue3anmycFXy/SGKOk/Ql59kNTV6toiEE6zIm
-        a3AyfVRXR/PSM4J6Nk4/cXpNmMiGVu1XLi4gPOYtiIKgDAXRXlQjPGPryqK5EYIUVA84LWkxI2ZbH
-        4R1bG7dwh562RIRwjx0PQ04Ut6aDiZK/KByd8pvPqOW7KTMA56JtlIxTaMZLHrw5vYSBtAmp1PAa2
-        U2m4767DABblYab+CcLmAG/gObQlCdrhggGkm7ZATXZdj8GIlxynVy8ZNVfLCZLnxb1WVe2n+g8og
-        +sLm/q9PQ==;
-Received: from shell.armlinux.org.uk ([2002:4e20:1eda:1:5054:ff:fe00:4ec]:52756)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1ijMUo-0001hB-GO; Mon, 23 Dec 2019 12:07:34 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1ijMUl-0000n5-47; Mon, 23 Dec 2019 12:07:31 +0000
-Date:   Mon, 23 Dec 2019 12:07:31 +0000
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Madalin Bucur <madalin.bucur@nxp.com>
-Cc:     "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "andrew@lunn.ch" <andrew@lunn.ch>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        "shawnguo@kernel.org" <shawnguo@kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
-Subject: Re: [PATCH 1/6] net: phy: add interface modes for XFI, SFI
-Message-ID: <20191223120730.GO25745@shell.armlinux.org.uk>
-References: <1576768881-24971-1-git-send-email-madalin.bucur@oss.nxp.com>
- <1576768881-24971-2-git-send-email-madalin.bucur@oss.nxp.com>
- <20191219172834.GC25745@shell.armlinux.org.uk>
- <VI1PR04MB5567FA3170CF45F877870E8CEC520@VI1PR04MB5567.eurprd04.prod.outlook.com>
+        id S1726834AbfLWMjm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Dec 2019 07:39:42 -0500
+Received: from mx1.yrkesakademin.fi ([85.134.45.194]:23192 "EHLO
+        mx1.yrkesakademin.fi" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726257AbfLWMjm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Dec 2019 07:39:42 -0500
+X-Greylist: delayed 904 seconds by postgrey-1.27 at vger.kernel.org; Mon, 23 Dec 2019 07:39:40 EST
+Subject: Re: [PATCH] Revert "iwlwifi: mvm: fix scan config command size"
+To:     Roman Gilg <subdiff@gmail.com>,
+        Mehmet Akif Tasova <makiftasova@gmail.com>
+CC:     Johannes Berg <johannes.berg@intel.com>,
+        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Intel Linux Wireless <linuxwifi@intel.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Shahar S Matityahu <shahar.s.matityahu@intel.com>,
+        Tova Mussai <tova.mussai@intel.com>,
+        Ayala Beker <ayala.beker@intel.com>,
+        Sara Sharon <sara.sharon@intel.com>,
+        <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+References: <20191213203512.8250-1-makiftasova@gmail.com>
+ <CAJcyoyusgtw0++KsEHK-t=EFGx2v9GKv7+BSViUCaB3nyDr2Jw@mail.gmail.com>
+From:   Thomas Backlund <tmb@mageia.org>
+Message-ID: <946da821-9e54-4508-e3ab-f2cdc19c8084@mageia.org>
+Date:   Mon, 23 Dec 2019 14:24:33 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <VI1PR04MB5567FA3170CF45F877870E8CEC520@VI1PR04MB5567.eurprd04.prod.outlook.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <CAJcyoyusgtw0++KsEHK-t=EFGx2v9GKv7+BSViUCaB3nyDr2Jw@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-WatchGuard-Spam-ID: str=0001.0A0C0215.5E00B58D.0066,ss=1,re=0.000,recu=0.000,reip=0.000,cl=1,cld=1,fgs=0
+X-WatchGuard-Spam-Score: 0, clean; 0, virus threat unknown
+X-WatchGuard-Mail-Client-IP: 85.134.45.194
+X-WatchGuard-Mail-From: tmb@mageia.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 19, 2019 at 06:32:51PM +0000, Madalin Bucur wrote:
-> 10GBase-R could be used as a common nominator but just as well 10G and
-> remove the rest while we're at it. There are/may be differences in
-> features, differences in the way the HW is configured (the most
-> important aspect) and one should be able to determine what interface
-> type is in use to properly configure the HW. SFI does not have the CDR
-> function in the PMD, relying on the PMA signal conditioning vs the XFI
-> that requires this in the PMD.
+Den 18-12-2019 kl. 21:12, skrev Roman Gilg:
+> On Fri, Dec 13, 2019 at 9:36 PM Mehmet Akif Tasova
+> <makiftasova@gmail.com> wrote:
+>>
+>> Since Linux 5.4.1 released, iwlwifi could not initialize Intel(R) Dual Band
+>> Wireless AC 9462 firmware, failing with following error in dmesg:
+>>
+>> iwlwifi 0000:00:14.3: FW error in SYNC CMD SCAN_CFG_CMD
+>>
+>> whole dmesg output of error can be found at:
+>> https://gist.github.com/makiftasova/354e46439338f4ab3fba0b77ad5c19ec
+>>
+>> also bug report from ArchLinux bug tracker (contains more info):
+>> https://bugs.archlinux.org/task/64703
+> 
+> Since this bug report is about the Dell XPS 13 2-in1: I tested your
+> revert with this device, but the issue persists at least on this
+> device. So these might be two different issues, one for your device
+> and another one for the XPS.
 
-I've now found a copy of INF-8077i on the net, which seems to be the
-document that defines XFI. The definition in there seems to be very
-similar to SFI in that it is an electrical specification, not a
-protocol specification, and, just like SFI, it defines the electrical
-characteristics at the cage, not at the serdes. Therefore, the effects
-of the board layout come into play to achieve compliance with XFI.
 
-Just like SFI, XFI can be used with multiple different underlying
-protocols. I quote:
+Yeah, to get iwlwifi to work somewhat nicely you need this revert, and 
+also theese on top of 5.4.6:
 
-  "The XFI interface is designed to support SONET OC-192,
-  IEEE.Std-802.3ae, 10GFC and G.709(OTU-2) applications."
+ From db5cce1afc8d2475d2c1c37c2a8267dd0e151526 Mon Sep 17 00:00:00 2001
+From: Anders Kaseorg <andersk@mit.edu>
+Date: Mon, 2 Dec 2019 17:09:20 -0500
+Subject: Revert "iwlwifi: assign directly to iwl_trans->cfg in QuZ 
+detection"
 
-Therefore, to describe 10GBASE-R as "XFI" is most definitely incorrect.
-10GBASE-R is just _one_ protocol that can be run over XFI, but it is
-not the only one.
+ From 0df36b90c47d93295b7e393da2d961b2f3b6cde4 Mon Sep 17 00:00:00 2001
+From: Luca Coelho <luciano.coelho@intel.com>
+Date: Thu, 5 Dec 2019 09:03:54 +0200
+Subject: iwlwifi: pcie: move power gating workaround earlier in the flow
 
-As for CDR, INF-8077i says:
+and atleast v2 of the "iwlwifi: mvm: don't send the 
+IWL_MVM_RXQ_NSSN_SYNC notif to Rx queues" patch that is being debated on 
+this list.
 
-  "The XFP module shall include a Signal Conditioner based on CDR (Clock
-  Data Recovery) technology for complete regeneration."
+With theese in place, we seem to have it behaving properly again for 
+Mageia users reporting various problems / firmware crashes / ...
 
-Whereas for SFP modules, SFF-8472 revision 11.4 added optional support
-for CDR on the modules.
+Hopefully Intel guys will get this sorted soon-ish and all sent to stable@
 
-In any case, the CDR is a matter for the module itself, not for the
-host, so it seems that isn't relevent.
+> 
+>> Reverting commit 06eb547c4ae4 ("iwlwifi: mvm: fix scan config command
+>> size") seems to fix this issue  until proper solution is found.
+>>
+>> This reverts commit 06eb547c4ae4382e70d556ba213d13c95ca1801b.
+>>
+>> Signed-off-by: Mehmet Akif Tasova <makiftasova@gmail.com>
+>> ---
+>>   drivers/net/wireless/intel/iwlwifi/mvm/scan.c | 2 +-
+>>   1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/scan.c b/drivers/net/wireless/intel/iwlwifi/mvm/scan.c
+>> index a046ac9fa852..a5af8f4128b1 100644
+>> --- a/drivers/net/wireless/intel/iwlwifi/mvm/scan.c
+>> +++ b/drivers/net/wireless/intel/iwlwifi/mvm/scan.c
+>> @@ -1213,7 +1213,7 @@ static int iwl_mvm_legacy_config_scan(struct iwl_mvm *mvm)
+>>                  cmd_size = sizeof(struct iwl_scan_config_v2);
+>>          else
+>>                  cmd_size = sizeof(struct iwl_scan_config_v1);
+>> -       cmd_size += num_channels;
+>> +       cmd_size += mvm->fw->ucode_capa.n_scan_channels;
+>>
+>>          cfg = kzalloc(cmd_size, GFP_KERNEL);
+>>          if (!cfg)
+>> --
+>> 2.24.1
+>>
+> 
 
-Everything that I've said concerning SFI in my previous email (in date
-order), and why we should not be defining that as a phy_interface_t
-seems to also apply to XFI from what I've read in INF-8077i, and it
-seems my original decision that we should not separately define
-XFI and SFI from 10GBASE-R is well founded.
-
-Given that meeting these electrical characteristics involves the
-effects of the board, and it is impractical for a board to switch
-between different electrical characteristics at runtime (routing serdes
-lanes to both a SFP+ and XFP cage is impractical due to reflections on
-unterminated paths) I really don't see any reason why we need two
-different phy_interface_t definitions for these.  As mentioned, the
-difference between XFI and SFI is electrical, and involves the board
-layout, which is a platform specific issue.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-According to speedtest.net: 11.9Mbps down 500kbps up
+--
+Thomas
