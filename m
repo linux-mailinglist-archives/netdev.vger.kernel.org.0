@@ -2,128 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5458C12964E
-	for <lists+netdev@lfdr.de>; Mon, 23 Dec 2019 14:09:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F3ED012966E
+	for <lists+netdev@lfdr.de>; Mon, 23 Dec 2019 14:25:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726965AbfLWNJw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Dec 2019 08:09:52 -0500
-Received: from srv2.anyservers.com ([77.79.239.202]:56196 "EHLO
-        srv2.anyservers.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726709AbfLWNJw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Dec 2019 08:09:52 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=asmblr.net;
-         s=default; h=Content-Transfer-Encoding:Content-Type:MIME-Version:References:
-        In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=n7GtaCKJbQxPZo28gDx6RScAysfknWdat5EWVpSMU6c=; b=eM3ytUQZXDAfeZe1IibVV7YOgs
-        IrcUTwWH5lJu4Ws8VerFRJcMSdcNR7wQDKdzTA1/laOGvbOli/GuXXM7KjsopBgrfEKdKgQDxd+Iq
-        ZxlLUz7kESGV4s9MRLqiDIQkMYh5tdcy5+LW0mlOpXiIjWP5HdPaYXBjVSAwSCcSuBv+tELjvHvSh
-        thsAW7Vh1c8yTWzVrdYrLN/OnqomKTsiEYYXIABXYdI7rn1Sk2EBJrggc33eZJwjKqIqlOjWwo/zz
-        q0IdWZR+8n89P9CkIujwCyih7/g5VjidIw0c1lmMHqLC6BwV4ks05PkK6jZTmLrwDxXWzx85WZAvq
-        IA1GVNUA==;
-Received: from 89-64-37-27.dynamic.chello.pl ([89.64.37.27]:49046 helo=milkyway.galaxy)
-        by srv2.anyservers.com with esmtpsa (TLSv1.2:ECDHE-RSA-AES128-GCM-SHA256:128)
-        (Exim 4.92)
-        (envelope-from <amade@asmblr.net>)
-        id 1ijMxR-00Gi5o-BW; Mon, 23 Dec 2019 13:37:09 +0100
-From:   =?UTF-8?q?Amadeusz=20S=C5=82awi=C5=84ski?= <amade@asmblr.net>
-To:     Ping-Ke Shih <pkshih@realtek.com>,
-        Kalle Valo <kvalo@codeaurora.org>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Larry Finger <Larry.Finger@lwfinger.net>,
-        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org,
-        =?UTF-8?q?Amadeusz=20S=C5=82awi=C5=84ski?= <amade@asmblr.net>
-Subject: [PATCH 9/9] rtlwifi: rtl8821ae: Make functions static & rm sw.h
-Date:   Mon, 23 Dec 2019 13:37:15 +0100
-Message-Id: <20191223123715.7177-10-amade@asmblr.net>
-X-Mailer: git-send-email 2.24.1
-In-Reply-To: <20191223123715.7177-1-amade@asmblr.net>
-References: <20191223123715.7177-1-amade@asmblr.net>
+        id S1726763AbfLWNZL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Dec 2019 08:25:11 -0500
+Received: from frisell.zx2c4.com ([192.95.5.64]:34193 "EHLO frisell.zx2c4.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726676AbfLWNZL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 23 Dec 2019 08:25:11 -0500
+Received: by frisell.zx2c4.com (ZX2C4 Mail Server) with ESMTP id 33177afe;
+        Mon, 23 Dec 2019 12:27:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=zx2c4.com; h=from:to:cc
+        :subject:date:message-id:mime-version:content-type
+        :content-transfer-encoding; s=mail; bh=PR2EZO8ufGYRsxJoOzfwo7jvX
+        u4=; b=wLe3r14OcAm7t4tv5liciSiyFaX8aDUzz9GpVXEbPSL9j6jGPHGZh0bu2
+        RSusyyCf6irJqgVfNCT161fHlrfUPVPUkk6ya66R+lXfVDk1mn5Th8l3sfjGpVCu
+        SGKBKyDmVP7N7rYjjWc5xyzr+DLtjD6FFAUj2Xt1erL7eMIoDnJukTXCrS4Q9WUn
+        8utRd7vFMeHbeHlhgTXn0GvXarfKZc4dXml1JZk4QH9GW3S0hxS+xDg79/cAxFbj
+        GgHGoIeZWFa2Ah7ndgNcna6f5fiuXTJKaytsrD3rQMgAqitAbKOtw6Ji4uCE0cG4
+        ZUJfAX1OHKxR8Q46a7vQDUdJ1FCuw==
+Received: by frisell.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 05becb2e (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256:NO);
+        Mon, 23 Dec 2019 12:27:56 +0000 (UTC)
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        davem@davemloft.net
+Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Antoine Tenart <antoine.tenart@bootlin.com>
+Subject: [PATCH net] of: mdio: mark stub of_mdiobus_child_is_phy as inline
+Date:   Mon, 23 Dec 2019 14:24:43 +0100
+Message-Id: <20191223132443.115540-1-Jason@zx2c4.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - srv2.anyservers.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - asmblr.net
-X-Get-Message-Sender-Via: srv2.anyservers.com: authenticated_id: amade@asmblr.net
-X-Authenticated-Sender: srv2.anyservers.com: amade@asmblr.net
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Some of functions which were exposed in sw.h, are only used in sw.c, so
-just make them static. This makes sw.h unnecessary, so remove it.
+The of_mdiobus_child_is_phy function was recently exported, with a stub
+fallback added to simply return false as a static function. The inline
+specifier was left out, leading to build time errors:
 
-Signed-off-by: Amadeusz Sławiński <amade@asmblr.net>
+In file included from linux/include/linux/fs_enet_pd.h:21,
+                 from linux/arch/powerpc/sysdev/fsl_soc.c:26:
+linux/include/linux/of_mdio.h:58:13: error: ‘of_mdiobus_child_is_phy’ defined but not used [-Werror=unused-function]
+   58 | static bool of_mdiobus_child_is_phy(struct device_node *child)
+      |             ^~~~~~~~~~
+
+This commit simply adds the missing inline keyboard.
+
+Fixes: 0aa4d016c043 ("of: mdio: export of_mdiobus_child_is_phy")
+Cc: Antoine Tenart <antoine.tenart@bootlin.com>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 ---
- drivers/net/wireless/realtek/rtlwifi/rtl8821ae/sw.c |  7 +++----
- drivers/net/wireless/realtek/rtlwifi/rtl8821ae/sw.h | 12 ------------
- 2 files changed, 3 insertions(+), 16 deletions(-)
- delete mode 100644 drivers/net/wireless/realtek/rtlwifi/rtl8821ae/sw.h
+ include/linux/of_mdio.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8821ae/sw.c b/drivers/net/wireless/realtek/rtlwifi/rtl8821ae/sw.c
-index 3def6a2b3450..d8df816753cb 100644
---- a/drivers/net/wireless/realtek/rtlwifi/rtl8821ae/sw.c
-+++ b/drivers/net/wireless/realtek/rtlwifi/rtl8821ae/sw.c
-@@ -10,7 +10,6 @@
- #include "dm.h"
- #include "hw.h"
- #include "fw.h"
--#include "sw.h"
- #include "trx.h"
- #include "led.h"
- #include "table.h"
-@@ -65,7 +64,7 @@ static void rtl8821ae_init_aspm_vars(struct ieee80211_hw *hw)
+diff --git a/include/linux/of_mdio.h b/include/linux/of_mdio.h
+index 79bc82e30c02..491a2b7e77c1 100644
+--- a/include/linux/of_mdio.h
++++ b/include/linux/of_mdio.h
+@@ -55,7 +55,7 @@ static inline int of_mdio_parse_addr(struct device *dev,
  }
  
- /*InitializeVariables8812E*/
--int rtl8821ae_init_sw_vars(struct ieee80211_hw *hw)
-+static int rtl8821ae_init_sw_vars(struct ieee80211_hw *hw)
+ #else /* CONFIG_OF_MDIO */
+-static bool of_mdiobus_child_is_phy(struct device_node *child)
++static inline bool of_mdiobus_child_is_phy(struct device_node *child)
  {
- 	int err = 0;
- 	struct rtl_priv *rtlpriv = rtl_priv(hw);
-@@ -211,7 +210,7 @@ int rtl8821ae_init_sw_vars(struct ieee80211_hw *hw)
- 	return 0;
+ 	return false;
  }
- 
--void rtl8821ae_deinit_sw_vars(struct ieee80211_hw *hw)
-+static void rtl8821ae_deinit_sw_vars(struct ieee80211_hw *hw)
- {
- 	struct rtl_priv *rtlpriv = rtl_priv(hw);
- 
-@@ -228,7 +227,7 @@ void rtl8821ae_deinit_sw_vars(struct ieee80211_hw *hw)
- }
- 
- /* get bt coexist status */
--bool rtl8821ae_get_btc_status(void)
-+static bool rtl8821ae_get_btc_status(void)
- {
- 	return true;
- }
-diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8821ae/sw.h b/drivers/net/wireless/realtek/rtlwifi/rtl8821ae/sw.h
-deleted file mode 100644
-index 9d7610f84b20..000000000000
---- a/drivers/net/wireless/realtek/rtlwifi/rtl8821ae/sw.h
-+++ /dev/null
-@@ -1,12 +0,0 @@
--/* SPDX-License-Identifier: GPL-2.0 */
--/* Copyright(c) 2009-2010  Realtek Corporation.*/
--
--#ifndef __RTL8821AE_SW_H__
--#define __RTL8821AE_SW_H__
--
--int rtl8821ae_init_sw_vars(struct ieee80211_hw *hw);
--void rtl8821ae_deinit_sw_vars(struct ieee80211_hw *hw);
--void rtl8821ae_init_var_map(struct ieee80211_hw *hw);
--bool rtl8821ae_get_btc_status(void);
--
--#endif
 -- 
 2.24.1
 
