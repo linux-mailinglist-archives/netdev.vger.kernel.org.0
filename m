@@ -2,161 +2,192 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A28B3129AD9
-	for <lists+netdev@lfdr.de>; Mon, 23 Dec 2019 21:28:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3BBB8129ADB
+	for <lists+netdev@lfdr.de>; Mon, 23 Dec 2019 21:29:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727146AbfLWU2P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Dec 2019 15:28:15 -0500
-Received: from mail-pj1-f73.google.com ([209.85.216.73]:35418 "EHLO
-        mail-pj1-f73.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726884AbfLWU2P (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Dec 2019 15:28:15 -0500
-Received: by mail-pj1-f73.google.com with SMTP id l8so368314pje.0
-        for <netdev@vger.kernel.org>; Mon, 23 Dec 2019 12:28:15 -0800 (PST)
+        id S1726933AbfLWU3w (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Dec 2019 15:29:52 -0500
+Received: from mail-qv1-f66.google.com ([209.85.219.66]:40673 "EHLO
+        mail-qv1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726787AbfLWU3w (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Dec 2019 15:29:52 -0500
+Received: by mail-qv1-f66.google.com with SMTP id dp13so6780091qvb.7;
+        Mon, 23 Dec 2019 12:29:50 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=LNh12X0w6s4aHE614eShFhr0NDoDuT1UFBM/j1moBVw=;
-        b=gTGwlxObfF9Ic2kwzRJJnuJye5Q6SyfuU1JndpLTbA1ys4tW69n7hBZzI9vLxmeKHM
-         YQ/QCrKxrBfeOu2zB3bUBTbitm6IJUgyh7JjIOV52ieftJyCYXM5m7h0FEYm0VI01MwI
-         OX/LoxUNc83MOOKd5QEfFuioZ3PrTu0F8A4sgk41xcMsbX2dsv/x1KcEoGQxeNSzMH/0
-         aUzy0SH4iNHsMm+aNrnny68YByiq9IciWuOxlsT89lEUUambOiOUMlJ4I6KqhF4vyWLD
-         qRx1qzabCT4Cs837zCsMam4hUrwtVT+fqrN+XSYZDrv+3+MyQDcLoqr5SMGPkAAKQfVA
-         LOZQ==
+        bh=u3bM40DQGJwFxa8bQbqygcSAKBmzJQdS8BLF8sF03Go=;
+        b=MbGSCT+fJA+Oh53nS+99q/pwRGBr622vpPJ2xB7r+0O2lP3AobA6krj1WP5yJX7Is/
+         Z2vRegzzFjMrud//xqKBcuYotvQV0+YKa37Lwr7uRcMbD7P/q7XuNLIMfUf2+CNRzbuE
+         fDnM25uZvwgqWI/tp6XOCV2oLGwDTwKP7mp80p7h8OkUWgJGBxf/GrbueCiKDJOMzT4a
+         zA5yFJUmApZGJFA556jSQ7Ikfa/PXy7BUlNktyA9thVBttO2/o7UaMfFgS7882DcDr/g
+         2zzpSz56QIDvC8jVptsGrofJ5t3DlCC7S+UJX5Zp62EUOSxYUxDDeMcBHQXKaZscc8zE
+         QUwA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=LNh12X0w6s4aHE614eShFhr0NDoDuT1UFBM/j1moBVw=;
-        b=lKgfZWmw5UF1xMyClwyemIZZi+n98oxvzA/jESoHfic6vR0Gc9Zve28tUwccu050oi
-         Xpph/47JkLYtfYe9S2YNH/Yw0DnUdgZxvukgbQPn9HFEqdzdKivMzU0RBPlArN7ji1Qn
-         Ae0AILTpLcsAyN4GDEfp52seb0tGX9PEHLd4BIF2UnviN1U5S4YFNIQK4esNtg3dT7qR
-         mV+prrXyMb4FKxIuEkEb0I2sAowNEqfgTrfswa2A/q8ab3bVMqIiRvcUfuQ+ntbrVohY
-         F5ioq+XzonMcZXON/uuQOhV1QwavOACDA/g1P2JRXPygL+tDaLvvMN8mZLGIuTmAYrFe
-         RQmw==
-X-Gm-Message-State: APjAAAUttls4DpnlZPO4N+I5LgH9OcBvvr55+ecxcej7zVi6uO8YLtjg
-        JOiQnZQ/GvdhB+dxp7xTNuNS74h/ZIO0fA==
-X-Google-Smtp-Source: APXvYqwPs3/EaRhkwFsABT4YSuKU0ihk37fbGakkRgsUX7jRtrvV53/f2UAr+DlMsSCkhk48XvwkhZxXsBuMpg==
-X-Received: by 2002:a63:a707:: with SMTP id d7mr32403267pgf.93.1577132894739;
- Mon, 23 Dec 2019 12:28:14 -0800 (PST)
-Date:   Mon, 23 Dec 2019 12:27:54 -0800
-In-Reply-To: <20191223202754.127546-1-edumazet@google.com>
-Message-Id: <20191223202754.127546-6-edumazet@google.com>
-Mime-Version: 1.0
-References: <20191223202754.127546-1-edumazet@google.com>
-X-Mailer: git-send-email 2.24.1.735.g03f4e72817-goog
-Subject: [PATCH net-next v2 5/5] tcp_cubic: make Hystart aware of pacing
-From:   Eric Dumazet <edumazet@google.com>
-To:     "David S . Miller" <davem@davemloft.net>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Soheil Hassas Yeganeh <soheil@google.com>,
-        Neal Cardwell <ncardwell@google.com>,
-        Yuchung Cheng <ycheng@google.com>,
-        Martin KaFai Lau <kafai@fb.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=u3bM40DQGJwFxa8bQbqygcSAKBmzJQdS8BLF8sF03Go=;
+        b=EBb4addXtladxj6EzcdnnJPcbkf5GGfeVehJzTAI29FuYoWv3jydYIchCK4egGYuos
+         sDtQcEMDRKNFg1zZFUPcbWexXR2g0FwG4AtMNbXnrZHcfiWkQMdGGk8zWoYM5z4rPs2C
+         eQX/ImA/Sj13ga85eiHk3syMoxw8A3vS9Z/0YUSwSDgovQpc5aqXEN6gtgUfC+E2WIf6
+         bikVlxnc9UQ60macUG72pmfl7nNgM2DpPWhAIkxSH9qGuTwAAucPYP+5is4qkeD/VIhi
+         a1Cvs/cwch83EKBfZVShe3ZD97FpdCuTzuWu+RaSK9V0imHpw1aObi1HDqek/Z8vIdAp
+         5y0A==
+X-Gm-Message-State: APjAAAUE0dCuF7Ax4sY27kz7UTfK9h6JnmZMxb4BdttX/t3z4WrfmWXm
+        wdzKJwxGCVCqNHlAfZ9kmSdwbNGrjLw9b3a7Uz4=
+X-Google-Smtp-Source: APXvYqx5+PSx4g4ydMwaKb6icy7/DtFnwIQOsWrldTlmPtgeswBzTKPW5QM4iqj/+/I3rmm2pZtBB1pBkorHgzlW6IA=
+X-Received: by 2002:a05:6214:8cb:: with SMTP id da11mr16630926qvb.228.1577132988805;
+ Mon, 23 Dec 2019 12:29:48 -0800 (PST)
+MIME-Version: 1.0
+References: <20191221062556.1182261-1-kafai@fb.com> <20191221062606.1182939-1-kafai@fb.com>
+In-Reply-To: <20191221062606.1182939-1-kafai@fb.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 23 Dec 2019 12:29:37 -0800
+Message-ID: <CAEf4BzYF8mBrkzM3=+XtyCwoQrLGvkA-6Uc3KXJ9CWmaKePX8Q@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2 05/11] bpf: Introduce BPF_PROG_TYPE_STRUCT_OPS
+To:     Martin KaFai Lau <kafai@fb.com>
+Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        David Miller <davem@davemloft.net>,
+        Kernel Team <kernel-team@fb.com>,
+        Networking <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-For years we disabled Hystart ACK train detection at Google
-because it was fooled by TCP pacing.
+On Fri, Dec 20, 2019 at 10:26 PM Martin KaFai Lau <kafai@fb.com> wrote:
+>
+> This patch allows the kernel's struct ops (i.e. func ptr) to be
+> implemented in BPF.  The first use case in this series is the
+> "struct tcp_congestion_ops" which will be introduced in a
+> latter patch.
+>
+> This patch introduces a new prog type BPF_PROG_TYPE_STRUCT_OPS.
+> The BPF_PROG_TYPE_STRUCT_OPS prog is verified against a particular
+> func ptr of a kernel struct.  The attr->attach_btf_id is the btf id
+> of a kernel struct.  The attr->expected_attach_type is the member
+> "index" of that kernel struct.  The first member of a struct starts
+> with member index 0.  That will avoid ambiguity when a kernel struct
+> has multiple func ptrs with the same func signature.
+>
+> For example, a BPF_PROG_TYPE_STRUCT_OPS prog is written
+> to implement the "init" func ptr of the "struct tcp_congestion_ops".
+> The attr->attach_btf_id is the btf id of the "struct tcp_congestion_ops"
+> of the _running_ kernel.  The attr->expected_attach_type is 3.
+>
+> The ctx of BPF_PROG_TYPE_STRUCT_OPS is an array of u64 args saved
+> by arch_prepare_bpf_trampoline that will be done in the next
+> patch when introducing BPF_MAP_TYPE_STRUCT_OPS.
+>
+> "struct bpf_struct_ops" is introduced as a common interface for the kernel
+> struct that supports BPF_PROG_TYPE_STRUCT_OPS prog.  The supporting kernel
+> struct will need to implement an instance of the "struct bpf_struct_ops".
+>
+> The supporting kernel struct also needs to implement a bpf_verifier_ops.
+> During BPF_PROG_LOAD, bpf_struct_ops_find() will find the right
+> bpf_verifier_ops by searching the attr->attach_btf_id.
+>
+> A new "btf_struct_access" is also added to the bpf_verifier_ops such
+> that the supporting kernel struct can optionally provide its own specific
+> check on accessing the func arg (e.g. provide limited write access).
+>
+> After btf_vmlinux is parsed, the new bpf_struct_ops_init() is called
+> to initialize some values (e.g. the btf id of the supporting kernel
+> struct) and it can only be done once the btf_vmlinux is available.
+>
+> The R0 checks at BPF_EXIT is excluded for the BPF_PROG_TYPE_STRUCT_OPS prog
+> if the return type of the prog->aux->attach_func_proto is "void".
+>
+> Signed-off-by: Martin KaFai Lau <kafai@fb.com>
+> ---
+>  include/linux/bpf.h               |  30 +++++++
+>  include/linux/bpf_types.h         |   4 +
+>  include/linux/btf.h               |  34 ++++++++
+>  include/uapi/linux/bpf.h          |   1 +
+>  kernel/bpf/Makefile               |   2 +-
+>  kernel/bpf/bpf_struct_ops.c       | 122 +++++++++++++++++++++++++++
+>  kernel/bpf/bpf_struct_ops_types.h |   4 +
+>  kernel/bpf/btf.c                  |  88 ++++++++++++++------
+>  kernel/bpf/syscall.c              |  17 ++--
+>  kernel/bpf/verifier.c             | 134 +++++++++++++++++++++++-------
+>  10 files changed, 372 insertions(+), 64 deletions(-)
+>  create mode 100644 kernel/bpf/bpf_struct_ops.c
+>  create mode 100644 kernel/bpf/bpf_struct_ops_types.h
+>
 
-ACK train detection uses a simple heuristic, detecting if
-we receive ACK past half the RTT, to exit slow start before
-hitting the bottleneck and experience massive drops.
+All looks good, apart from the concern with partially-initialized
+bpf_struct_ops.
 
-But pacing by design might delay packets up to RTT/2,
-so we need to tweak the Hystart logic to be aware of this
-extra delay.
+[...]
 
-Tested:
- Added a 100 usec delay at receiver.
+> +const struct bpf_prog_ops bpf_struct_ops_prog_ops = {
+> +};
+> +
+> +void bpf_struct_ops_init(struct btf *_btf_vmlinux)
 
-Before:
-nstat -n;for f in {1..10}; do ./super_netperf 1 -H lpaa24 -l -4000000; done;nstat|egrep "Hystart"
-   9117
-   7057
-   9553
-   8300
-   7030
-   6849
-   9533
-  10126
-   6876
-   8473
-TcpExtTCPHystartTrainDetect     10                 0.0
-TcpExtTCPHystartTrainCwnd       1230               0.0
+this is always get passed vmlinux's btf, so why not call it short and
+sweet "btf"? _btf_vmlinux is kind of ugly and verbose.
 
-After :
-nstat -n;for f in {1..10}; do ./super_netperf 1 -H lpaa24 -l -4000000; done;nstat|egrep "Hystart"
-   9845
-  10103
-  10866
-  11096
-  11936
-  11487
-  11773
-  12188
-  11066
-  11894
-TcpExtTCPHystartTrainDetect     10                 0.0
-TcpExtTCPHystartTrainCwnd       6462               0.0
+> +{
+> +       const struct btf_member *member;
+> +       struct bpf_struct_ops *st_ops;
+> +       struct bpf_verifier_log log = {};
+> +       const struct btf_type *t;
+> +       const char *mname;
+> +       s32 type_id;
+> +       u32 i, j;
+> +
 
-Disabling Hystart ACK Train detection gives similar numbers
+[...]
 
-echo 2 >/sys/module/tcp_cubic/parameters/hystart_detect
-nstat -n;for f in {1..10}; do ./super_netperf 1 -H lpaa24 -l -4000000; done;nstat|egrep "Hystart"
-  11173
-  10954
-  12455
-  10627
-  11578
-  11583
-  11222
-  10880
-  10665
-  11366
+> +static int check_struct_ops_btf_id(struct bpf_verifier_env *env)
+> +{
+> +       const struct btf_type *t, *func_proto;
+> +       const struct bpf_struct_ops *st_ops;
+> +       const struct btf_member *member;
+> +       struct bpf_prog *prog = env->prog;
+> +       u32 btf_id, member_idx;
+> +       const char *mname;
+> +
+> +       btf_id = prog->aux->attach_btf_id;
+> +       st_ops = bpf_struct_ops_find(btf_id);
 
-Signed-off-by: Eric Dumazet <edumazet@google.com>
----
- net/ipv4/tcp_cubic.c | 13 ++++++++++++-
- 1 file changed, 12 insertions(+), 1 deletion(-)
+if struct_ops initialization fails, type will be NULL and type_id will
+be 0, which we rely on here to not get partially-initialized
+bpf_struct_ops, right? Small comment mentioning this would be helpful.
 
-diff --git a/net/ipv4/tcp_cubic.c b/net/ipv4/tcp_cubic.c
-index 0e5428ed04fe4e50627e21a53c3d17f9f2dade4d..d02bb283c6890e1692e714e053515c6e4981d83a 100644
---- a/net/ipv4/tcp_cubic.c
-+++ b/net/ipv4/tcp_cubic.c
-@@ -376,6 +376,7 @@ static void hystart_update(struct sock *sk, u32 delay)
- {
- 	struct tcp_sock *tp = tcp_sk(sk);
- 	struct bictcp *ca = inet_csk_ca(sk);
-+	u32 threshold;
- 
- 	if (hystart_detect & HYSTART_ACK_TRAIN) {
- 		u32 now = bictcp_clock_us(sk);
-@@ -383,7 +384,17 @@ static void hystart_update(struct sock *sk, u32 delay)
- 		/* first detection parameter - ack-train detection */
- 		if ((s32)(now - ca->last_ack) <= hystart_ack_delta_us) {
- 			ca->last_ack = now;
--			if ((s32)(now - ca->round_start) > ca->delay_min >> 1) {
-+
-+			threshold = ca->delay_min;
-+			/* Hystart ack train triggers if we get ack past
-+			 * ca->delay_min/2.
-+			 * Pacing might have delayed packets up to RTT/2
-+			 * during slow start.
-+			 */
-+			if (sk->sk_pacing_status == SK_PACING_NONE)
-+				threshold >>= 1;
-+
-+			if ((s32)(now - ca->round_start) > threshold) {
- 				ca->found = 1;
- 				NET_INC_STATS(sock_net(sk),
- 					      LINUX_MIB_TCPHYSTARTTRAINDETECT);
--- 
-2.24.1.735.g03f4e72817-goog
 
+> +       if (!st_ops) {
+> +               verbose(env, "attach_btf_id %u is not a supported struct\n",
+> +                       btf_id);
+> +               return -ENOTSUPP;
+> +       }
+> +
+
+[...]
+
+>  static int check_attach_btf_id(struct bpf_verifier_env *env)
+>  {
+>         struct bpf_prog *prog = env->prog;
+> @@ -9520,6 +9591,9 @@ static int check_attach_btf_id(struct bpf_verifier_env *env)
+>         long addr;
+>         u64 key;
+>
+> +       if (prog->type == BPF_PROG_TYPE_STRUCT_OPS)
+> +               return check_struct_ops_btf_id(env);
+> +
+
+There is a btf_id == 0 check below, you need to check that for
+STRUCT_OPS as well, otherwise you can get partially-initialized
+bpf_struct_ops struct in check_struct_ops_btf_id.
+
+>         if (prog->type != BPF_PROG_TYPE_TRACING)
+>                 return 0;
+>
+> --
+> 2.17.1
+>
