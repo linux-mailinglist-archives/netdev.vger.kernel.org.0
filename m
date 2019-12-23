@@ -2,164 +2,191 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E210D129A66
-	for <lists+netdev@lfdr.de>; Mon, 23 Dec 2019 20:34:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 49C63129A6E
+	for <lists+netdev@lfdr.de>; Mon, 23 Dec 2019 20:39:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726880AbfLWTd7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Dec 2019 14:33:59 -0500
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:49574 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726787AbfLWTd7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Dec 2019 14:33:59 -0500
-Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xBNJTTLq015709;
-        Mon, 23 Dec 2019 11:33:43 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type : content-id
- : content-transfer-encoding : mime-version; s=facebook;
- bh=69JQjPCnyOtCykoj4NTG9tkxLNzmVZGUdE/RQjxW4fU=;
- b=KqT7zuNvrl9E/r9ovrfk7WAcAKKF8U2dx4RV4sJDgkiQhlrdBI0MngMztXsnU4S8gVtL
- gPi7R5UrOrJ1WfqqsYqREFyNTIOwjPorTlsuMSniNit0/b5YaV3/OlaKzAOXcBSOwMd3
- Y+5ofnkgYRoKS4LVI3S7aYEQuV+VhDbdr40= 
-Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by mx0a-00082601.pphosted.com with ESMTP id 2x1hswgn08-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Mon, 23 Dec 2019 11:33:43 -0800
-Received: from prn-hub01.TheFacebook.com (2620:10d:c081:35::125) by
- prn-hub05.TheFacebook.com (2620:10d:c081:35::129) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.1.1713.5; Mon, 23 Dec 2019 11:33:42 -0800
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (192.168.54.28)
- by o365-in.thefacebook.com (192.168.16.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.1.1713.5
- via Frontend Transport; Mon, 23 Dec 2019 11:33:41 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=kPzNom4QQV6KDVLlauueh8JyGL0cbyO5YSyGwsf+26OrmbD/dn52ODR8dVCZK6QCNssIMfWVapDG48fABJ6vvYLYQNjgOSQlS9CRmraVcJKpNFBsCJZflBntUIRA4bxTe51571ZLsO5oLjZdulF8frPO+/qyKyyy/OujExl/whM4gv6Ms1OxVnpVd9IN9BCfsG1nZvNhdDjf1oiMjPYsCjdnuEIMLesaEZXQtI6wF8l6ReiA/y0Vi1gliJIx1GmVqKMlvCXJtXWWnme30YxAuAcdzv/n+khYAHDRsQRFCA+n9WD0dm9im0BMYxLfZ9kOteqQk9FKae5r7cxKn+0KGw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=69JQjPCnyOtCykoj4NTG9tkxLNzmVZGUdE/RQjxW4fU=;
- b=ZFX8SDkuwF9ZfqSklIBiwArma0qisFWnRZKDYbxJJSM/H+xT2hImUTzy4D9XlfwKUIdGzxoVjKbHdIxhNGls67pl66iKutyIg3KvE8nxbMpK4AjDzNkUKEEq2Y+be4EYcfnudlWe+gKakQwJ2BXV7GotIQ69ERNV/K0/AVx1tQWDXUApvQUHkAAByBV3CKbZycXkyd6iwNSP5y39+V73Zi6C55d+11EyVcQEstuVXIbqdVI1xZDNQEd8tloOmFZneiO4lcQBVCI51geFyqkVgZBk2gK+/dYKA+e13zt6D6MCzjB9qbmaAfmlqwf1LWEbgJxPUoRwP0TruI8lLniz4w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=69JQjPCnyOtCykoj4NTG9tkxLNzmVZGUdE/RQjxW4fU=;
- b=UGk4leduy8j013bMBzfdFEYj46wnAwzZRjPWAkN8Q8alqXeYZhQuDAdxPX1bN5I+a4RoTl09xxlJEaFmCoIZ+V96leWCF3Um5RGsL7Y3JaH4MXRgMcFMQJpkswEFTzZTrYlRSkyKNE1LiHzzktWo5mdp8QRWXglSOTvTkwAwBMM=
-Received: from DM5PR15MB1675.namprd15.prod.outlook.com (10.175.107.145) by
- DM5PR15MB1177.namprd15.prod.outlook.com (10.173.209.7) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2559.14; Mon, 23 Dec 2019 19:33:41 +0000
-Received: from DM5PR15MB1675.namprd15.prod.outlook.com
- ([fe80::2844:b18d:c296:c23]) by DM5PR15MB1675.namprd15.prod.outlook.com
- ([fe80::2844:b18d:c296:c23%8]) with mapi id 15.20.2559.017; Mon, 23 Dec 2019
- 19:33:40 +0000
-Received: from macbook-pro-52.dhcp.thefacebook.com (2620:10d:c090:200::4a23) by MWHPR1401CA0006.namprd14.prod.outlook.com (2603:10b6:301:4b::16) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2559.14 via Frontend Transport; Mon, 23 Dec 2019 19:33:39 +0000
-From:   Yonghong Song <yhs@fb.com>
-To:     Martin Lau <kafai@fb.com>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>
-CC:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        David Miller <davem@davemloft.net>,
-        Kernel Team <Kernel-team@fb.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH bpf-next v2 05/11] bpf: Introduce BPF_PROG_TYPE_STRUCT_OPS
-Thread-Topic: [PATCH bpf-next v2 05/11] bpf: Introduce
- BPF_PROG_TYPE_STRUCT_OPS
-Thread-Index: AQHVt8eKP2WKQJFTCEGWlNbUr6aAQ6fIIC+A
-Date:   Mon, 23 Dec 2019 19:33:40 +0000
-Message-ID: <9da5d3dc-6de5-c3c8-5184-67c5adba97ef@fb.com>
-References: <20191221062556.1182261-1-kafai@fb.com>
- <20191221062606.1182939-1-kafai@fb.com>
-In-Reply-To: <20191221062606.1182939-1-kafai@fb.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: MWHPR1401CA0006.namprd14.prod.outlook.com
- (2603:10b6:301:4b::16) To DM5PR15MB1675.namprd15.prod.outlook.com
- (2603:10b6:3:11f::17)
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [2620:10d:c090:200::4a23]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 3e65eed4-1446-4aa9-f7c9-08d787df0389
-x-ms-traffictypediagnostic: DM5PR15MB1177:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <DM5PR15MB1177EBD22C6412686E99E299D32E0@DM5PR15MB1177.namprd15.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8882;
-x-forefront-prvs: 0260457E99
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(396003)(366004)(39860400002)(376002)(136003)(346002)(189003)(199004)(66446008)(8936002)(6506007)(8676002)(186003)(66476007)(66556008)(64756008)(53546011)(81166006)(52116002)(16526019)(5660300002)(2906002)(86362001)(6486002)(81156014)(4326008)(31686004)(2616005)(71200400001)(6666004)(36756003)(54906003)(316002)(31696002)(6512007)(66946007)(478600001)(110136005);DIR:OUT;SFP:1102;SCL:1;SRVR:DM5PR15MB1177;H:DM5PR15MB1675.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: fb.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: B18TVOV0e7t+Fy07V9hW/cCpOH0EPEPelWlWyvbH047S6JOgHFVnc8vv+y1T50fHctYFVuZtps71urlN3nJNe0uBE/lRtTcWeul+PrzlJpS0Mk+FBoDlSDmsRrSSu/lCEVV5gtlfF4AusStsmnxHSJ4MraYZ/w9y/qWqCApUHUaYK0bh0H9CJ8AJnVVtVrEPc4nfu34yzDj9BoapQydxnSIuMbFm+ZxS7Ga/j9yjsUy/yU+Flyf8I1K+CzEN4osWZSE5Z77nPvFaybKulwd+nQqqYXWZfNOU+OGurAHF932Tz7qClPb7rZ544Hs3DOmCReM5d+iEs6jTjMzeZRGvhTenaKZBziCvIhGs68s20zAhOC+OIPMujvDl99kLl5pNuRphLKp12nh0rgoQAzrAfQ+pS2u2Gm79pIzuIg7XlPJmeXY2kmH0n76z61W3BCdJ
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <56934AA07C8D4F40AE0DC969B0C7CB61@namprd15.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S1726918AbfLWTjB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Dec 2019 14:39:01 -0500
+Received: from mga02.intel.com ([134.134.136.20]:64403 "EHLO mga02.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726756AbfLWTjB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 23 Dec 2019 14:39:01 -0500
+X-Amp-Result: UNKNOWN
+X-Amp-Original-Verdict: FILE UNKNOWN
+X-Amp-File-Uploaded: False
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga101.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 23 Dec 2019 11:39:00 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.69,348,1571727600"; 
+   d="scan'208";a="418768668"
+Received: from lkp-server01.sh.intel.com (HELO lkp-server01) ([10.239.97.150])
+  by fmsmga006.fm.intel.com with ESMTP; 23 Dec 2019 11:38:58 -0800
+Received: from kbuild by lkp-server01 with local (Exim 4.89)
+        (envelope-from <lkp@intel.com>)
+        id 1ijTXe-000ARz-50; Tue, 24 Dec 2019 03:38:58 +0800
+Date:   Tue, 24 Dec 2019 03:38:43 +0800
+From:   kbuild test robot <lkp@intel.com>
+To:     Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
+Cc:     kbuild-all@lists.01.org, davem@davemloft.net,
+        michal.simek@xilinx.com, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        git@xilinx.com,
+        Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
+Subject: Re: [PATCH net-next v2 2/3] net: emaclite: In kconfig remove arch
+ dependency
+Message-ID: <201912240321.RasGegIt%lkp@intel.com>
+References: <1576832220-9631-3-git-send-email-radhey.shyam.pandey@xilinx.com>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3e65eed4-1446-4aa9-f7c9-08d787df0389
-X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Dec 2019 19:33:40.7462
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 5zRXlJCKDGcFsAXcClcIfSH0/o0gWo4Yfpk26PaUwpUBKl3s/1nzmNcQQLil7n5S
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR15MB1177
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
- definitions=2019-12-23_07:2019-12-23,2019-12-23 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 malwarescore=0
- impostorscore=0 mlxscore=0 bulkscore=0 priorityscore=1501 clxscore=1015
- mlxlogscore=706 phishscore=0 adultscore=0 lowpriorityscore=0 spamscore=0
- suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-1910280000 definitions=main-1912230168
-X-FB-Internal: deliver
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1576832220-9631-3-git-send-email-radhey.shyam.pandey@xilinx.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQoNCk9uIDEyLzIwLzE5IDEwOjI2IFBNLCBNYXJ0aW4gS2FGYWkgTGF1IHdyb3RlOg0KPiBUaGlz
-IHBhdGNoIGFsbG93cyB0aGUga2VybmVsJ3Mgc3RydWN0IG9wcyAoaS5lLiBmdW5jIHB0cikgdG8g
-YmUNCj4gaW1wbGVtZW50ZWQgaW4gQlBGLiAgVGhlIGZpcnN0IHVzZSBjYXNlIGluIHRoaXMgc2Vy
-aWVzIGlzIHRoZQ0KPiAic3RydWN0IHRjcF9jb25nZXN0aW9uX29wcyIgd2hpY2ggd2lsbCBiZSBp
-bnRyb2R1Y2VkIGluIGENCj4gbGF0dGVyIHBhdGNoLg0KPiANCj4gVGhpcyBwYXRjaCBpbnRyb2R1
-Y2VzIGEgbmV3IHByb2cgdHlwZSBCUEZfUFJPR19UWVBFX1NUUlVDVF9PUFMuDQo+IFRoZSBCUEZf
-UFJPR19UWVBFX1NUUlVDVF9PUFMgcHJvZyBpcyB2ZXJpZmllZCBhZ2FpbnN0IGEgcGFydGljdWxh
-cg0KPiBmdW5jIHB0ciBvZiBhIGtlcm5lbCBzdHJ1Y3QuICBUaGUgYXR0ci0+YXR0YWNoX2J0Zl9p
-ZCBpcyB0aGUgYnRmIGlkDQo+IG9mIGEga2VybmVsIHN0cnVjdC4gIFRoZSBhdHRyLT5leHBlY3Rl
-ZF9hdHRhY2hfdHlwZSBpcyB0aGUgbWVtYmVyDQo+ICJpbmRleCIgb2YgdGhhdCBrZXJuZWwgc3Ry
-dWN0LiAgVGhlIGZpcnN0IG1lbWJlciBvZiBhIHN0cnVjdCBzdGFydHMNCj4gd2l0aCBtZW1iZXIg
-aW5kZXggMC4gIFRoYXQgd2lsbCBhdm9pZCBhbWJpZ3VpdHkgd2hlbiBhIGtlcm5lbCBzdHJ1Y3QN
-Cj4gaGFzIG11bHRpcGxlIGZ1bmMgcHRycyB3aXRoIHRoZSBzYW1lIGZ1bmMgc2lnbmF0dXJlLg0K
-PiANCj4gRm9yIGV4YW1wbGUsIGEgQlBGX1BST0dfVFlQRV9TVFJVQ1RfT1BTIHByb2cgaXMgd3Jp
-dHRlbg0KPiB0byBpbXBsZW1lbnQgdGhlICJpbml0IiBmdW5jIHB0ciBvZiB0aGUgInN0cnVjdCB0
-Y3BfY29uZ2VzdGlvbl9vcHMiLg0KPiBUaGUgYXR0ci0+YXR0YWNoX2J0Zl9pZCBpcyB0aGUgYnRm
-IGlkIG9mIHRoZSAic3RydWN0IHRjcF9jb25nZXN0aW9uX29wcyINCj4gb2YgdGhlIF9ydW5uaW5n
-XyBrZXJuZWwuICBUaGUgYXR0ci0+ZXhwZWN0ZWRfYXR0YWNoX3R5cGUgaXMgMy4NCj4gDQo+IFRo
-ZSBjdHggb2YgQlBGX1BST0dfVFlQRV9TVFJVQ1RfT1BTIGlzIGFuIGFycmF5IG9mIHU2NCBhcmdz
-IHNhdmVkDQo+IGJ5IGFyY2hfcHJlcGFyZV9icGZfdHJhbXBvbGluZSB0aGF0IHdpbGwgYmUgZG9u
-ZSBpbiB0aGUgbmV4dA0KPiBwYXRjaCB3aGVuIGludHJvZHVjaW5nIEJQRl9NQVBfVFlQRV9TVFJV
-Q1RfT1BTLg0KPiANCj4gInN0cnVjdCBicGZfc3RydWN0X29wcyIgaXMgaW50cm9kdWNlZCBhcyBh
-IGNvbW1vbiBpbnRlcmZhY2UgZm9yIHRoZSBrZXJuZWwNCj4gc3RydWN0IHRoYXQgc3VwcG9ydHMg
-QlBGX1BST0dfVFlQRV9TVFJVQ1RfT1BTIHByb2cuICBUaGUgc3VwcG9ydGluZyBrZXJuZWwNCj4g
-c3RydWN0IHdpbGwgbmVlZCB0byBpbXBsZW1lbnQgYW4gaW5zdGFuY2Ugb2YgdGhlICJzdHJ1Y3Qg
-YnBmX3N0cnVjdF9vcHMiLg0KPiANCj4gVGhlIHN1cHBvcnRpbmcga2VybmVsIHN0cnVjdCBhbHNv
-IG5lZWRzIHRvIGltcGxlbWVudCBhIGJwZl92ZXJpZmllcl9vcHMuDQo+IER1cmluZyBCUEZfUFJP
-R19MT0FELCBicGZfc3RydWN0X29wc19maW5kKCkgd2lsbCBmaW5kIHRoZSByaWdodA0KPiBicGZf
-dmVyaWZpZXJfb3BzIGJ5IHNlYXJjaGluZyB0aGUgYXR0ci0+YXR0YWNoX2J0Zl9pZC4NCj4gDQo+
-IEEgbmV3ICJidGZfc3RydWN0X2FjY2VzcyIgaXMgYWxzbyBhZGRlZCB0byB0aGUgYnBmX3Zlcmlm
-aWVyX29wcyBzdWNoDQo+IHRoYXQgdGhlIHN1cHBvcnRpbmcga2VybmVsIHN0cnVjdCBjYW4gb3B0
-aW9uYWxseSBwcm92aWRlIGl0cyBvd24gc3BlY2lmaWMNCj4gY2hlY2sgb24gYWNjZXNzaW5nIHRo
-ZSBmdW5jIGFyZyAoZS5nLiBwcm92aWRlIGxpbWl0ZWQgd3JpdGUgYWNjZXNzKS4NCj4gDQo+IEFm
-dGVyIGJ0Zl92bWxpbnV4IGlzIHBhcnNlZCwgdGhlIG5ldyBicGZfc3RydWN0X29wc19pbml0KCkg
-aXMgY2FsbGVkDQo+IHRvIGluaXRpYWxpemUgc29tZSB2YWx1ZXMgKGUuZy4gdGhlIGJ0ZiBpZCBv
-ZiB0aGUgc3VwcG9ydGluZyBrZXJuZWwNCj4gc3RydWN0KSBhbmQgaXQgY2FuIG9ubHkgYmUgZG9u
-ZSBvbmNlIHRoZSBidGZfdm1saW51eCBpcyBhdmFpbGFibGUuDQo+IA0KPiBUaGUgUjAgY2hlY2tz
-IGF0IEJQRl9FWElUIGlzIGV4Y2x1ZGVkIGZvciB0aGUgQlBGX1BST0dfVFlQRV9TVFJVQ1RfT1BT
-IHByb2cNCj4gaWYgdGhlIHJldHVybiB0eXBlIG9mIHRoZSBwcm9nLT5hdXgtPmF0dGFjaF9mdW5j
-X3Byb3RvIGlzICJ2b2lkIi4NCj4gDQo+IFNpZ25lZC1vZmYtYnk6IE1hcnRpbiBLYUZhaSBMYXUg
-PGthZmFpQGZiLmNvbT4NCg0KQWNrZWQtYnk6IFlvbmdob25nIFNvbmcgPHloc0BmYi5jb20+DQo=
+Hi Radhey,
+
+I love your patch! Perhaps something to improve:
+
+[auto build test WARNING on net-next/master]
+[also build test WARNING on net/master v5.5-rc3 next-20191220]
+[cannot apply to xlnx/master]
+[if your patch is applied to the wrong git tree, please drop us a note to help
+improve the system. BTW, we also suggest to use '--base' option to specify the
+base tree in git format-patch, please see https://stackoverflow.com/a/37406982]
+
+url:    https://github.com/0day-ci/linux/commits/Radhey-Shyam-Pandey/net-emaclite-Fix-coding-style/20191223-163233
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git ac80010fc94eb0680d9a432b639583bd7ac29066
+reproduce:
+        # apt-get install sparse
+        # sparse version: v0.6.1-129-g341daf20-dirty
+        make ARCH=x86_64 allmodconfig
+        make C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__'
+
+If you fix the issue, kindly add following tag
+Reported-by: kbuild test robot <lkp@intel.com>
+
+
+sparse warnings: (new ones prefixed by >>)
+
+>> drivers/net/ethernet/xilinx/xilinx_emaclite.c:411:24: sparse: sparse: cast to restricted __be32
+>> drivers/net/ethernet/xilinx/xilinx_emaclite.c:411:24: sparse: sparse: cast to restricted __be32
+>> drivers/net/ethernet/xilinx/xilinx_emaclite.c:411:24: sparse: sparse: cast to restricted __be32
+>> drivers/net/ethernet/xilinx/xilinx_emaclite.c:411:24: sparse: sparse: cast to restricted __be32
+>> drivers/net/ethernet/xilinx/xilinx_emaclite.c:411:24: sparse: sparse: cast to restricted __be32
+>> drivers/net/ethernet/xilinx/xilinx_emaclite.c:411:24: sparse: sparse: cast to restricted __be32
+   drivers/net/ethernet/xilinx/xilinx_emaclite.c:420:36: sparse: sparse: cast to restricted __be32
+   drivers/net/ethernet/xilinx/xilinx_emaclite.c:420:36: sparse: sparse: cast to restricted __be32
+   drivers/net/ethernet/xilinx/xilinx_emaclite.c:420:36: sparse: sparse: cast to restricted __be32
+   drivers/net/ethernet/xilinx/xilinx_emaclite.c:420:36: sparse: sparse: cast to restricted __be32
+   drivers/net/ethernet/xilinx/xilinx_emaclite.c:420:36: sparse: sparse: cast to restricted __be32
+   drivers/net/ethernet/xilinx/xilinx_emaclite.c:420:36: sparse: sparse: cast to restricted __be32
+   drivers/net/ethernet/xilinx/xilinx_emaclite.c:612:17: sparse: sparse: non size-preserving pointer to integer cast
+
+vim +411 drivers/net/ethernet/xilinx/xilinx_emaclite.c
+
+bb81b2ddfa194b drivers/net/xilinx_emaclite.c                 John Linn           2009-08-20  363  
+bb81b2ddfa194b drivers/net/xilinx_emaclite.c                 John Linn           2009-08-20  364  /**
+bb81b2ddfa194b drivers/net/xilinx_emaclite.c                 John Linn           2009-08-20  365   * xemaclite_recv_data - Receive a frame
+bb81b2ddfa194b drivers/net/xilinx_emaclite.c                 John Linn           2009-08-20  366   * @drvdata:	Pointer to the Emaclite device private data
+bb81b2ddfa194b drivers/net/xilinx_emaclite.c                 John Linn           2009-08-20  367   * @data:	Address where the data is to be received
+f713d50f33c1fb drivers/net/ethernet/xilinx/xilinx_emaclite.c Radhey Shyam Pandey 2018-06-28  368   * @maxlen:    Maximum supported ethernet packet length
+bb81b2ddfa194b drivers/net/xilinx_emaclite.c                 John Linn           2009-08-20  369   *
+bb81b2ddfa194b drivers/net/xilinx_emaclite.c                 John Linn           2009-08-20  370   * This function is intended to be called from the interrupt context or
+bb81b2ddfa194b drivers/net/xilinx_emaclite.c                 John Linn           2009-08-20  371   * with a wrapper which waits for the receive frame to be available.
+bb81b2ddfa194b drivers/net/xilinx_emaclite.c                 John Linn           2009-08-20  372   *
+bb81b2ddfa194b drivers/net/xilinx_emaclite.c                 John Linn           2009-08-20  373   * Return:	Total number of bytes received
+bb81b2ddfa194b drivers/net/xilinx_emaclite.c                 John Linn           2009-08-20  374   */
+cd224553641848 drivers/net/ethernet/xilinx/xilinx_emaclite.c Anssi Hannula       2017-02-14  375  static u16 xemaclite_recv_data(struct net_local *drvdata, u8 *data, int maxlen)
+bb81b2ddfa194b drivers/net/xilinx_emaclite.c                 John Linn           2009-08-20  376  {
+bb81b2ddfa194b drivers/net/xilinx_emaclite.c                 John Linn           2009-08-20  377  	void __iomem *addr;
+bb81b2ddfa194b drivers/net/xilinx_emaclite.c                 John Linn           2009-08-20  378  	u16 length, proto_type;
+bb81b2ddfa194b drivers/net/xilinx_emaclite.c                 John Linn           2009-08-20  379  	u32 reg_data;
+bb81b2ddfa194b drivers/net/xilinx_emaclite.c                 John Linn           2009-08-20  380  
+bb81b2ddfa194b drivers/net/xilinx_emaclite.c                 John Linn           2009-08-20  381  	/* Determine the expected buffer address */
+bb81b2ddfa194b drivers/net/xilinx_emaclite.c                 John Linn           2009-08-20  382  	addr = (drvdata->base_addr + drvdata->next_rx_buf_to_use);
+bb81b2ddfa194b drivers/net/xilinx_emaclite.c                 John Linn           2009-08-20  383  
+bb81b2ddfa194b drivers/net/xilinx_emaclite.c                 John Linn           2009-08-20  384  	/* Verify which buffer has valid data */
+acf138f1b00bdd drivers/net/ethernet/xilinx/xilinx_emaclite.c Anssi Hannula       2017-02-14  385  	reg_data = xemaclite_readl(addr + XEL_RSR_OFFSET);
+bb81b2ddfa194b drivers/net/xilinx_emaclite.c                 John Linn           2009-08-20  386  
+bb81b2ddfa194b drivers/net/xilinx_emaclite.c                 John Linn           2009-08-20  387  	if ((reg_data & XEL_RSR_RECV_DONE_MASK) == XEL_RSR_RECV_DONE_MASK) {
+bb81b2ddfa194b drivers/net/xilinx_emaclite.c                 John Linn           2009-08-20  388  		if (drvdata->rx_ping_pong != 0)
+bb81b2ddfa194b drivers/net/xilinx_emaclite.c                 John Linn           2009-08-20  389  			drvdata->next_rx_buf_to_use ^= XEL_BUFFER_OFFSET;
+bb81b2ddfa194b drivers/net/xilinx_emaclite.c                 John Linn           2009-08-20  390  	} else {
+bb81b2ddfa194b drivers/net/xilinx_emaclite.c                 John Linn           2009-08-20  391  		/* The instance is out of sync, try other buffer if other
+bb81b2ddfa194b drivers/net/xilinx_emaclite.c                 John Linn           2009-08-20  392  		 * buffer is configured, return 0 otherwise. If the instance is
+bb81b2ddfa194b drivers/net/xilinx_emaclite.c                 John Linn           2009-08-20  393  		 * out of sync, do not update the 'next_rx_buf_to_use' since it
+49a83f002731db drivers/net/ethernet/xilinx/xilinx_emaclite.c Radhey Shyam Pandey 2018-06-28  394  		 * will correct on subsequent calls
+49a83f002731db drivers/net/ethernet/xilinx/xilinx_emaclite.c Radhey Shyam Pandey 2018-06-28  395  		 */
+bb81b2ddfa194b drivers/net/xilinx_emaclite.c                 John Linn           2009-08-20  396  		if (drvdata->rx_ping_pong != 0)
+bb81b2ddfa194b drivers/net/xilinx_emaclite.c                 John Linn           2009-08-20  397  			addr = (void __iomem __force *)((u32 __force)addr ^
+bb81b2ddfa194b drivers/net/xilinx_emaclite.c                 John Linn           2009-08-20  398  							 XEL_BUFFER_OFFSET);
+bb81b2ddfa194b drivers/net/xilinx_emaclite.c                 John Linn           2009-08-20  399  		else
+bb81b2ddfa194b drivers/net/xilinx_emaclite.c                 John Linn           2009-08-20  400  			return 0;	/* No data was available */
+bb81b2ddfa194b drivers/net/xilinx_emaclite.c                 John Linn           2009-08-20  401  
+bb81b2ddfa194b drivers/net/xilinx_emaclite.c                 John Linn           2009-08-20  402  		/* Verify that buffer has valid data */
+acf138f1b00bdd drivers/net/ethernet/xilinx/xilinx_emaclite.c Anssi Hannula       2017-02-14  403  		reg_data = xemaclite_readl(addr + XEL_RSR_OFFSET);
+bb81b2ddfa194b drivers/net/xilinx_emaclite.c                 John Linn           2009-08-20  404  		if ((reg_data & XEL_RSR_RECV_DONE_MASK) !=
+bb81b2ddfa194b drivers/net/xilinx_emaclite.c                 John Linn           2009-08-20  405  		     XEL_RSR_RECV_DONE_MASK)
+bb81b2ddfa194b drivers/net/xilinx_emaclite.c                 John Linn           2009-08-20  406  			return 0;	/* No data was available */
+bb81b2ddfa194b drivers/net/xilinx_emaclite.c                 John Linn           2009-08-20  407  	}
+bb81b2ddfa194b drivers/net/xilinx_emaclite.c                 John Linn           2009-08-20  408  
+49a83f002731db drivers/net/ethernet/xilinx/xilinx_emaclite.c Radhey Shyam Pandey 2018-06-28  409  	/* Get the protocol type of the ethernet frame that arrived
+49a83f002731db drivers/net/ethernet/xilinx/xilinx_emaclite.c Radhey Shyam Pandey 2018-06-28  410  	 */
+acf138f1b00bdd drivers/net/ethernet/xilinx/xilinx_emaclite.c Anssi Hannula       2017-02-14 @411  	proto_type = ((ntohl(xemaclite_readl(addr + XEL_HEADER_OFFSET +
+44180a573ec936 drivers/net/xilinx_emaclite.c                 Michal Simek        2010-09-10  412  			XEL_RXBUFF_OFFSET)) >> XEL_HEADER_SHIFT) &
+bb81b2ddfa194b drivers/net/xilinx_emaclite.c                 John Linn           2009-08-20  413  			XEL_RPLR_LENGTH_MASK);
+bb81b2ddfa194b drivers/net/xilinx_emaclite.c                 John Linn           2009-08-20  414  
+bb81b2ddfa194b drivers/net/xilinx_emaclite.c                 John Linn           2009-08-20  415  	/* Check if received ethernet frame is a raw ethernet frame
+49a83f002731db drivers/net/ethernet/xilinx/xilinx_emaclite.c Radhey Shyam Pandey 2018-06-28  416  	 * or an IP packet or an ARP packet
+49a83f002731db drivers/net/ethernet/xilinx/xilinx_emaclite.c Radhey Shyam Pandey 2018-06-28  417  	 */
+cd224553641848 drivers/net/ethernet/xilinx/xilinx_emaclite.c Anssi Hannula       2017-02-14  418  	if (proto_type > ETH_DATA_LEN) {
+bb81b2ddfa194b drivers/net/xilinx_emaclite.c                 John Linn           2009-08-20  419  		if (proto_type == ETH_P_IP) {
+acf138f1b00bdd drivers/net/ethernet/xilinx/xilinx_emaclite.c Anssi Hannula       2017-02-14  420  			length = ((ntohl(xemaclite_readl(addr +
+bb81b2ddfa194b drivers/net/xilinx_emaclite.c                 John Linn           2009-08-20  421  					XEL_HEADER_IP_LENGTH_OFFSET +
+44180a573ec936 drivers/net/xilinx_emaclite.c                 Michal Simek        2010-09-10  422  					XEL_RXBUFF_OFFSET)) >>
+bb81b2ddfa194b drivers/net/xilinx_emaclite.c                 John Linn           2009-08-20  423  					XEL_HEADER_SHIFT) &
+bb81b2ddfa194b drivers/net/xilinx_emaclite.c                 John Linn           2009-08-20  424  					XEL_RPLR_LENGTH_MASK);
+cd224553641848 drivers/net/ethernet/xilinx/xilinx_emaclite.c Anssi Hannula       2017-02-14  425  			length = min_t(u16, length, ETH_DATA_LEN);
+bb81b2ddfa194b drivers/net/xilinx_emaclite.c                 John Linn           2009-08-20  426  			length += ETH_HLEN + ETH_FCS_LEN;
+bb81b2ddfa194b drivers/net/xilinx_emaclite.c                 John Linn           2009-08-20  427  
+69ddb40fcc98c1 drivers/net/ethernet/xilinx/xilinx_emaclite.c Radhey Shyam Pandey 2019-12-20  428  		} else if (proto_type == ETH_P_ARP) {
+bb81b2ddfa194b drivers/net/xilinx_emaclite.c                 John Linn           2009-08-20  429  			length = XEL_ARP_PACKET_SIZE + ETH_HLEN + ETH_FCS_LEN;
+69ddb40fcc98c1 drivers/net/ethernet/xilinx/xilinx_emaclite.c Radhey Shyam Pandey 2019-12-20  430  		} else {
+bb81b2ddfa194b drivers/net/xilinx_emaclite.c                 John Linn           2009-08-20  431  			/* Field contains type other than IP or ARP, use max
+49a83f002731db drivers/net/ethernet/xilinx/xilinx_emaclite.c Radhey Shyam Pandey 2018-06-28  432  			 * frame size and let user parse it
+49a83f002731db drivers/net/ethernet/xilinx/xilinx_emaclite.c Radhey Shyam Pandey 2018-06-28  433  			 */
+bb81b2ddfa194b drivers/net/xilinx_emaclite.c                 John Linn           2009-08-20  434  			length = ETH_FRAME_LEN + ETH_FCS_LEN;
+69ddb40fcc98c1 drivers/net/ethernet/xilinx/xilinx_emaclite.c Radhey Shyam Pandey 2019-12-20  435  		}
+69ddb40fcc98c1 drivers/net/ethernet/xilinx/xilinx_emaclite.c Radhey Shyam Pandey 2019-12-20  436  	} else {
+bb81b2ddfa194b drivers/net/xilinx_emaclite.c                 John Linn           2009-08-20  437  		/* Use the length in the frame, plus the header and trailer */
+bb81b2ddfa194b drivers/net/xilinx_emaclite.c                 John Linn           2009-08-20  438  		length = proto_type + ETH_HLEN + ETH_FCS_LEN;
+69ddb40fcc98c1 drivers/net/ethernet/xilinx/xilinx_emaclite.c Radhey Shyam Pandey 2019-12-20  439  	}
+bb81b2ddfa194b drivers/net/xilinx_emaclite.c                 John Linn           2009-08-20  440  
+cd224553641848 drivers/net/ethernet/xilinx/xilinx_emaclite.c Anssi Hannula       2017-02-14  441  	if (WARN_ON(length > maxlen))
+cd224553641848 drivers/net/ethernet/xilinx/xilinx_emaclite.c Anssi Hannula       2017-02-14  442  		length = maxlen;
+cd224553641848 drivers/net/ethernet/xilinx/xilinx_emaclite.c Anssi Hannula       2017-02-14  443  
+bb81b2ddfa194b drivers/net/xilinx_emaclite.c                 John Linn           2009-08-20  444  	/* Read from the EmacLite device */
+bb81b2ddfa194b drivers/net/xilinx_emaclite.c                 John Linn           2009-08-20  445  	xemaclite_aligned_read((u32 __force *)(addr + XEL_RXBUFF_OFFSET),
+bb81b2ddfa194b drivers/net/xilinx_emaclite.c                 John Linn           2009-08-20  446  			       data, length);
+bb81b2ddfa194b drivers/net/xilinx_emaclite.c                 John Linn           2009-08-20  447  
+bb81b2ddfa194b drivers/net/xilinx_emaclite.c                 John Linn           2009-08-20  448  	/* Acknowledge the frame */
+acf138f1b00bdd drivers/net/ethernet/xilinx/xilinx_emaclite.c Anssi Hannula       2017-02-14  449  	reg_data = xemaclite_readl(addr + XEL_RSR_OFFSET);
+bb81b2ddfa194b drivers/net/xilinx_emaclite.c                 John Linn           2009-08-20  450  	reg_data &= ~XEL_RSR_RECV_DONE_MASK;
+acf138f1b00bdd drivers/net/ethernet/xilinx/xilinx_emaclite.c Anssi Hannula       2017-02-14  451  	xemaclite_writel(reg_data, addr + XEL_RSR_OFFSET);
+bb81b2ddfa194b drivers/net/xilinx_emaclite.c                 John Linn           2009-08-20  452  
+bb81b2ddfa194b drivers/net/xilinx_emaclite.c                 John Linn           2009-08-20  453  	return length;
+bb81b2ddfa194b drivers/net/xilinx_emaclite.c                 John Linn           2009-08-20  454  }
+bb81b2ddfa194b drivers/net/xilinx_emaclite.c                 John Linn           2009-08-20  455  
+
+:::::: The code at line 411 was first introduced by commit
+:::::: acf138f1b00bdd1b7cd9894562ed0c2a1670888e net: xilinx_emaclite: fix freezes due to unordered I/O
+
+:::::: TO: Anssi Hannula <anssi.hannula@bitwise.fi>
+:::::: CC: David S. Miller <davem@davemloft.net>
+
+---
+0-DAY kernel test infrastructure                 Open Source Technology Center
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org Intel Corporation
