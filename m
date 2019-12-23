@@ -2,138 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E330E129399
-	for <lists+netdev@lfdr.de>; Mon, 23 Dec 2019 10:25:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 024621293B0
+	for <lists+netdev@lfdr.de>; Mon, 23 Dec 2019 10:36:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726108AbfLWJZY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Dec 2019 04:25:24 -0500
-Received: from out3-smtp.messagingengine.com ([66.111.4.27]:41003 "EHLO
-        out3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726034AbfLWJZY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Dec 2019 04:25:24 -0500
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 1670A218C1;
-        Mon, 23 Dec 2019 04:25:23 -0500 (EST)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Mon, 23 Dec 2019 04:25:23 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:content-type
-        :date:from:in-reply-to:message-id:mime-version:references
-        :subject:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-        :x-sasl-enc; s=fm1; bh=vMMfxu/cPCNvuQ43lK6puzAyRLSCXYLtlGInr9Pdr
-        jw=; b=HiOR9fpoB8tE9yUqqMVp9obC48Ts0NfzeUZqRL71Rl7YPwLuAweGP2cuQ
-        KLy9uEAdSrXapunvKMaID6/cde0HT9v/MLf+8SF7NwymxKGJVCeWAqCVt4DaOkVR
-        RDeyEMvIVvY2+4XtuL5jalQ3AfkBIHGwWQM5hw8WgzO1tP85xsRWw6P7S0GKCnH3
-        80Z5Jiy8VoxpWo5dy3XOLRbmGLUaTkjLbAC1yQ2W/hZptBVM5dufcL01cv3jqo7T
-        sIOtZV5rzoJf/XF/q5hkoOfqTL8tmSzojqW7yo/FbF4IWxI9M7m5MO9BOd8Y/e8C
-        eYscpcXKeajuDqdUQiEBIbfZCJWpA==
-X-ME-Sender: <xms:AogAXrMa5GK3Yf2fL6BqJ1TPy2CBg0R_WbI0navIai6FEbPn32WAvA>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedufedrvddvtddgtdefucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvffukfhfgggtugfgjgesthekredttddtudenucfhrhhomhepkfguohcu
-    ufgthhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuffhomhgrih
-    hnpehkvghrnhgvlhdrohhrghdpghhithhhuhgsrdgtohhmnecukfhppeduleefrdegjedr
-    udeihedrvdehudenucfrrghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughosh
-    gthhdrohhrghenucevlhhushhtvghrufhiiigvpedt
-X-ME-Proxy: <xmx:AogAXnwbyefyMoWrJd2SY6XvCBY9_vasxXVASl6nDIyLzBjEAaVb5g>
-    <xmx:AogAXsBFB9zx-fQ8ik1KJC0jKobthDh9zz6jkYaDUChOsxr4xX1S7Q>
-    <xmx:AogAXg795MxjLxl2BFHdUH2JZIR8XM9ufWNfkSS4uft-rJd3UbL5gQ>
-    <xmx:A4gAXjScsjNJ-rF_86ZxPGuyyKq8rp5tJPnaNB7_s-IDlyAeKo1GxA>
-Received: from localhost (unknown [193.47.165.251])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 4E9783060A6E;
-        Mon, 23 Dec 2019 04:25:22 -0500 (EST)
-Date:   Mon, 23 Dec 2019 11:25:20 +0200
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>
-Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Jesper Dangaard Brouer <brouer@redhat.com>
-Subject: Re: [RFC PATCH bpf-next] xdp: Add tracepoint on XDP program return
-Message-ID: <20191223092520.GA838734@splinter>
-References: <20191216152715.711308-1-toke@redhat.com>
- <CAJ+HfNhYG_hzuFzX5sAH7ReotLtZWTP_9D2jA_iVMg+jUtXXCw@mail.gmail.com>
- <20191217005944.s3mayy473ldlnldl@ast-mbp.dhcp.thefacebook.com>
- <87h81z8hcd.fsf@toke.dk>
+        id S1726266AbfLWJg2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Dec 2019 04:36:28 -0500
+Received: from mail-lf1-f67.google.com ([209.85.167.67]:34847 "EHLO
+        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726211AbfLWJg2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Dec 2019 04:36:28 -0500
+Received: by mail-lf1-f67.google.com with SMTP id 15so12127458lfr.2
+        for <netdev@vger.kernel.org>; Mon, 23 Dec 2019 01:36:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cogentembedded-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=oZMn7o1oy69KXnBYV9LaAvQrLEGDsj3NY515SvELtas=;
+        b=avrYXnWBKOPWaYgT8LTFhU+8vzomKUx2Sl96gHd/iwNBc4P3GDX1FfFnkZcnKICY+e
+         Slbq/3v/7ycDaahDn38eQ9oSjXTJ6ULqiO3QZMglc0oSpktPadcxb7eUCiodL68diTwR
+         HnEDVBNViAuPHot021sCNjg050IlPRdxwr/J2sFitaZu9ahgkKyfE2pmDsPDQOA4Ps9x
+         wa2Mpv7mi50qIahge36tbWPp7ZK49PcoiZu6gmrsWScckY1EdfW49k9GJOLbQK/1BpHc
+         2fgu5iKtLX5MnanjJEpFkUze5Jijl9owFY7Gq8VvHxCQH06aD9rFm4Brqt7bM3kNXtZ6
+         at+A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=oZMn7o1oy69KXnBYV9LaAvQrLEGDsj3NY515SvELtas=;
+        b=V0mk1WStHUt3r03qeS6ptwGc5DDHl13sHTfSf686NPJ0phZoAOXjQGAzHJLoWtYmK2
+         wW3xHtyi2hZ+mY0IW1O5sh+0MSLALwvcguc9gg3iMuM+Ii9/RaXccrG1Wihjppg4AIxB
+         60lEi/+zzAgCuigfI9FvNKqpiXhuyuy5NJmIv0qoc98MztpwPNzZnDscR3gWwfC/+kru
+         AnH0STHBSXmX8gpGMoqYrVmSycPTZq98mRG4FlDwRkt+3vDLUBuK+ZRS/7J+15aM7A3p
+         AppzX6/zXLBuRnODMn30n0see0v1LfToOTrr/3LRSSD2umOoQnXocaVVBsKHb1k3yXcS
+         Ramg==
+X-Gm-Message-State: APjAAAXuteQFk9ucvSYUYCAMQbU/2D3uiOlWbPpG/464ZBP+LIUXpiJh
+        z0mm4jEeQJdWIjInA9EID8QOGAQtC66Oyw==
+X-Google-Smtp-Source: APXvYqzpwoVgjOExyFx7a0NvdeU+5teMlq/PIN4Ppuh7OZligwpt7aMlbtAXk3vXBz+T5ohldr/tlw==
+X-Received: by 2002:ac2:48bc:: with SMTP id u28mr16050434lfg.81.1577093786041;
+        Mon, 23 Dec 2019 01:36:26 -0800 (PST)
+Received: from ?IPv6:2a00:1fa0:4292:b2b4:35ce:e1fb:80c2:d584? ([2a00:1fa0:4292:b2b4:35ce:e1fb:80c2:d584])
+        by smtp.gmail.com with ESMTPSA id p15sm7921857lfo.88.2019.12.23.01.36.24
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 23 Dec 2019 01:36:25 -0800 (PST)
+Subject: Re: [PATCH] xfrm: Use kmem_cache_zalloc() instead of
+ kmem_cache_alloc() with flag GFP_ZERO.
+To:     Yi Wang <wang.yi59@zte.com.cn>, steffen.klassert@secunet.com
+Cc:     herbert@gondor.apana.org.au, davem@davemloft.net,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        xue.zhihong@zte.com.cn, up2wing@gmail.com, wang.liang82@zte.com.cn,
+        Huang Zijiang <huang.zijiang@zte.com.cn>
+References: <1577065982-25751-1-git-send-email-wang.yi59@zte.com.cn>
+From:   Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
+Message-ID: <1d8007f1-15ab-a173-a3ed-cf2235cd2cea@cogentembedded.com>
+Date:   Mon, 23 Dec 2019 12:36:22 +0300
+User-Agent: Mozilla/5.0 (Windows NT 6.3; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.3.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <87h81z8hcd.fsf@toke.dk>
+In-Reply-To: <1577065982-25751-1-git-send-email-wang.yi59@zte.com.cn>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 17, 2019 at 09:52:02AM +0100, Toke Høiland-Jørgensen wrote:
-> Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
+Hello!
+
+On 23.12.2019 4:53, Yi Wang wrote:
+
+> From: Huang Zijiang <huang.zijiang@zte.com.cn>
 > 
-> > On Mon, Dec 16, 2019 at 07:17:59PM +0100, Björn Töpel wrote:
-> >> On Mon, 16 Dec 2019 at 16:28, Toke Høiland-Jørgensen <toke@redhat.com> wrote:
-> >> >
-> >> > This adds a new tracepoint, xdp_prog_return, which is triggered at every
-> >> > XDP program return. This was first discussed back in August[0] as a way to
-> >> > hook XDP into the kernel drop_monitor framework, to have a one-stop place
-> >> > to find all packet drops in the system.
-> >> >
-> >> > Because trace/events/xdp.h includes filter.h, some ifdef guarding is needed
-> >> > to be able to use the tracepoint from bpf_prog_run_xdp(). If anyone has any
-> >> > ideas for how to improve on this, please to speak up. Sending this RFC
-> >> > because of this issue, and to get some feedback from Ido on whether this
-> >> > tracepoint has enough data for drop_monitor usage.
-> >> >
-> >> 
-> >> I get that it would be useful, but can it be solved with BPF tracing
-> >> (i.e. tracing BPF with BPF)? It would be neat not adding another
-> >> tracepoint in the fast-path...
-> >
-> > That was my question as well.
-> > Here is an example from Eelco:
-> > https://lore.kernel.org/bpf/78D7857B-82E4-42BC-85E1-E3D7C97BF840@redhat.com/
-> > BPF_TRACE_2("fexit/xdp_prog_simple", trace_on_exit,
-> >              struct xdp_buff*, xdp, int, ret)
-> > {
-> >      bpf_debug("fexit: [ifindex = %u, queue =  %u, ret = %d]\n",
-> >                xdp->rxq->dev->ifindex, xdp->rxq->queue_index, ret);
-> >
-> >      return 0;
-> > }
-> > 'ret' is return code from xdp program.
-> > Such approach is per xdp program, but cheaper when not enabled
-> > and faster when it's triggering comparing to static tracepoint.
-> > Anything missing there that you'd like to see?
+> Use kmem_cache_zalloc instead of manually setting kmem_cache_alloc
+> with flag GFP_ZERO since kzalloc sets allocated memory
+> to zero.
 > 
-> For userspace, sure, the fentry/fexit stuff is fine. The main use case
-> for this new tracepoint is to hook into the (in-kernel) drop monitor.
-> Dunno if that can be convinced to hook into the BPF tracing
-> infrastructure instead of tracepoints. Ido, WDYT?
+> Signed-off-by: Huang Zijiang <huang.zijiang@zte.com.cn>
+> Signed-off-by: Yi Wang <wang.yi59@zte.com.cn>
+> ---
+>   net/xfrm/xfrm_state.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/net/xfrm/xfrm_state.c b/net/xfrm/xfrm_state.c
+> index a5dc319..adfa279 100644
+> --- a/net/xfrm/xfrm_state.c
+> +++ b/net/xfrm/xfrm_state.c
+> @@ -612,7 +612,7 @@ struct xfrm_state *xfrm_state_alloc(struct net *net)
+>   {
+>       struct xfrm_state *x;
+>   
+> -    x = kmem_cache_alloc(xfrm_state_cache, GFP_ATOMIC | __GFP_ZERO);
+> +x = kmem_cache_zalloc(xfrm_state_cache, GFP_ATOMIC);
 
-Hi Toke,
+    You ate the indentation. :-)
 
-Sorry for the delay. I wasn't available most of last week.
+[...]
 
-Regarding the tracepoint, the data it provides seems sufficient to me.
-Regarding the fentry/fexit stuff, it would be great to hook it into drop
-monitor, but I'm not sure how to do that at this point. It seems that at
-minimum user would need to pass the XDP programs that need to be traced?
-
-FYI, I'm not too happy with the current way of capturing the events via
-nlmon, so I started creating a utility to directly output the events to
-pcap [1] (inspired by Florian's nfqdump). Will send a pull request to
-Neil when it's ready. You can do:
-
-# dwdump -w /dev/stdout | tshark -V -r -
-
-A recent enough wireshark will correctly dissect these events. My next
-step is to add '--unique' which will load an eBPF program on the socket
-and only allow unique events to be enqueued. The program will store
-{5-tuple, IP/drop reason} in LRU hash with corresponding count. I can
-then instrument the application for Prometheus so that it will export
-the contents of the map as metrics.
-
-Please let me know if you have more suggestions.
-
-[1] https://github.com/idosch/dropwatch/blob/dwdump/src/dwdump.c
+MBR, Sergei
