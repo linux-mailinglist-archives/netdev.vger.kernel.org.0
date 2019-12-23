@@ -2,167 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BEBE3129ACF
-	for <lists+netdev@lfdr.de>; Mon, 23 Dec 2019 21:22:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8243E129AD0
+	for <lists+netdev@lfdr.de>; Mon, 23 Dec 2019 21:22:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726934AbfLWUWJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Dec 2019 15:22:09 -0500
-Received: from mail-ua1-f66.google.com ([209.85.222.66]:44681 "EHLO
-        mail-ua1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726787AbfLWUWJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Dec 2019 15:22:09 -0500
-Received: by mail-ua1-f66.google.com with SMTP id c14so4867884uaq.11
-        for <netdev@vger.kernel.org>; Mon, 23 Dec 2019 12:22:08 -0800 (PST)
+        id S1727071AbfLWUWQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Dec 2019 15:22:16 -0500
+Received: from mail-yb1-f194.google.com ([209.85.219.194]:47060 "EHLO
+        mail-yb1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726829AbfLWUWQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Dec 2019 15:22:16 -0500
+Received: by mail-yb1-f194.google.com with SMTP id v15so7467265ybp.13
+        for <netdev@vger.kernel.org>; Mon, 23 Dec 2019 12:22:15 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=yA4u7gp9B/6NRMaekhn2PBnz5CQhfso1HFtJ7dePbwg=;
-        b=jFotFt+ki8Cm57pYfqclAl00IYjzHjFBGCLJXAwFIEkF8SyuB0w4m8uQOsHxXP7frc
-         mvuODyXcXZjeZ7XgC6CvZ10vupf9kLRjW/kN/iWDhJpUfim46K4/T0QU+vgJN6RakAxX
-         0yKjYAwfDNqntkkanBu8eJDxDMdFHLnUpYbYyMvqoiEGOLYD+wf0dCHJY0NxMvg7LMkL
-         Iwr7UuCHuaaB/ddl+Z8ia1ueQIkspJNomczBL75wno+6nStfN3BuZenDW/ncPzPWepXV
-         eT/mlEthNec1nHdz8Y19p8Fzg6Sexszg0khyoUFxoquoKOdk50EIhE+fn4rFKo/nEIss
-         3pCw==
+        bh=QDFlJ6P+g4b+jDzmVB/qZT12KJOS0KnTkxJi96umux0=;
+        b=FASapm/qED3x966fkw6KoS20zulEb/B9kOs4j2zlw2cTJ05uCPy/YYCr/dci9ve7Mq
+         u49xOrH4aM3QY9Yj7T1IF/f6NKFV7dsIqAGnOMzLwtxlYWaVK3XIh/1BbVcBqGHXRtQa
+         42i/LDSd+xIahE+Lb72pm2GS8UwwZVtn8l+bG/ZlxGAbF9L4UY1J7+EiiKQ+Ur9f/9QI
+         WrFz57Z2rJ6CUI2bRpwcVjhS6muSPT2oeGBCdPQTZXG5uF2YyEcUr2AumVsDSDAGzYxL
+         zynIvQpCzyRJC2eiRaKl9jzZR8yfiI2HhvLcihe8TegNwXpQNQjFAasUrtmZCnBRkeip
+         xy7A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=yA4u7gp9B/6NRMaekhn2PBnz5CQhfso1HFtJ7dePbwg=;
-        b=pG0hnKNZWPKTtTDctZwTTquuFNECANkv/a7KZLTcQN7doK5QcYDjQFC5x+d+ZjnDFP
-         ZS0BPThAWZRAzz/tSD/H2L9PFzpjEDJ1FgfoFZyOZcFh/FRDvRdkMTtqPrvDgtl4wm3E
-         nn8Pwd8iv8DgsPPQMMB1tIPRvOVkQb8BtsJTW6xDdmIwJKXA/XNuwNoGarIArLlIKlZO
-         e7WP6ItFCsbqk/Tu8i6843to4VmYo6NpYQ4J2xvIFQzrqTigh2Dj7Fh1inaq/hXXxBQ/
-         R2UmbAZPUv6QoevGzDeccF2GV5Wv1vpu9JLHdbHcKcHI6didcG3ghhJ2NSthOVk8hsJq
-         +uaQ==
-X-Gm-Message-State: APjAAAXpL1D251TquY6C4g1CUgcOOSUaD3NDG6O4M5TxjEroLPhpeh68
-        ylIoaOnjrpXhhdunbtiDo62gkVerVJg0LvUdWCfLVA==
-X-Google-Smtp-Source: APXvYqyuI83QwyFNxns5DVfH/XuFb1gn4xwX1leW2xqvloPp9zajO/40ovNU+0rLGyFcofQLZrj01xD1H1VgXw9OTzE=
-X-Received: by 2002:ab0:1101:: with SMTP id e1mr17083200uab.123.1577132527752;
- Mon, 23 Dec 2019 12:22:07 -0800 (PST)
+        bh=QDFlJ6P+g4b+jDzmVB/qZT12KJOS0KnTkxJi96umux0=;
+        b=svGtjZ2E50oFy1cda9R3OJqH7e9x0AOw4AEjl1robDf/JVmTXRS6J3b7Lp/fq3twLt
+         egs2klgnws7P8WqUQh1Yd/lewDR1zI2ER0aYVWkm0M7s3ipnihMVgBzUcnvJI5+63n3t
+         TKA04fQrLDf2K5uP/Qx3WZC1zrMUYa4Uns2hQOqgNChNOFkA278kEx0F567hZbSrSN5F
+         GgpFP0OtwChUoplCJ6N90EPjyMyuZytSMeOefkeA/wo4mU4s4p5EGRHBmXD1zAqwd+OW
+         d8fmL9vu8NPDEVvSKvXhNJGDjH7YVkKm9WEI+GxSiq0hA5D1ChMth/VcfHWUndQYIG7L
+         zW1g==
+X-Gm-Message-State: APjAAAWheZI0xroB59B3jckx/0+nYR+2du0y2CVYhuD9pKrDRtBD8iAs
+        N6g+3sm6WgWsf343ZHSR9kr5TwUW7O/3uxm6TxoFLg==
+X-Google-Smtp-Source: APXvYqxsO/r1I6RHW4uvlgDZdL70Ef4yBQZpgMnu8yVenwdzL6Oh6FCB4kixBCzOXv02zxzVvbLm6pMtTgaArtdhyjQ=
+X-Received: by 2002:a25:7ec7:: with SMTP id z190mr5062868ybc.364.1577132534672;
+ Mon, 23 Dec 2019 12:22:14 -0800 (PST)
 MIME-Version: 1.0
-References: <20191223140322.20013-1-mst@redhat.com> <CANDihLHPk5khpv-f-M+qhkzgTkygAts38GGb-HChg-VL2bo+Uw@mail.gmail.com>
- <CA+FuTSfq5v3-0VYmTG7YFFUqT8uG53eXXhqc8WvVvMbp3s0nvA@mail.gmail.com> <CA+FuTScwwajN2ny2w8EBkBQd191Eb1ZsrRhbh3=5eQervArnEA@mail.gmail.com>
-In-Reply-To: <CA+FuTScwwajN2ny2w8EBkBQd191Eb1ZsrRhbh3=5eQervArnEA@mail.gmail.com>
-From:   Alistair Delva <adelva@google.com>
-Date:   Mon, 23 Dec 2019 12:21:56 -0800
-Message-ID: <CANDihLFv+DJYOD1m_Z3CKuxoXG-z4zPy_Tc2eoggq1KRo+GeWw@mail.gmail.com>
-Subject: Re: [PATCH net] virtio_net: CTRL_GUEST_OFFLOADS depends on CTRL_VQ
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        virtualization@lists.linux-foundation.org,
-        Network Development <netdev@vger.kernel.org>
+References: <20191223202005.104713-1-edumazet@google.com> <20191223202005.104713-6-edumazet@google.com>
+In-Reply-To: <20191223202005.104713-6-edumazet@google.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Mon, 23 Dec 2019 12:22:03 -0800
+Message-ID: <CANn89i+AS+YE1w9E9LxKsGtqgXW7uKjZv==MYFx9UwPSe-EM1g@mail.gmail.com>
+Subject: Re: [PATCH net-next 5/5] tcp_cubic: make Hystart aware of pacing
+To:     "David S . Miller" <davem@davemloft.net>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Soheil Hassas Yeganeh <soheil@google.com>,
+        Neal Cardwell <ncardwell@google.com>,
+        Yuchung Cheng <ycheng@google.com>,
+        Martin KaFai Lau <kafai@fb.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 23, 2019 at 12:12 PM Willem de Bruijn
-<willemdebruijn.kernel@gmail.com> wrote:
+On Mon, Dec 23, 2019 at 12:20 PM Eric Dumazet <edumazet@google.com> wrote:
 >
-> On Mon, Dec 23, 2019 at 2:56 PM Willem de Bruijn
-> <willemdebruijn.kernel@gmail.com> wrote:
-> >
-> > 00fffe0ff0 DR7: 0000000000000400
-> > > > Call Trace:
-> > > >  ? preempt_count_add+0x58/0xb0
-> > > >  ? _raw_spin_lock_irqsave+0x36/0x70
-> > > >  ? _raw_spin_unlock_irqrestore+0x1a/0x40
-> > > >  ? __wake_up+0x70/0x190
-> > > >  virtnet_set_features+0x90/0xf0 [virtio_net]
-> > > >  __netdev_update_features+0x271/0x980
-> > > >  ? nlmsg_notify+0x5b/0xa0
-> > > >  dev_disable_lro+0x2b/0x190
-> > > >  ? inet_netconf_notify_devconf+0xe2/0x120
-> > > >  devinet_sysctl_forward+0x176/0x1e0
-> > > >  proc_sys_call_handler+0x1f0/0x250
-> > > >  proc_sys_write+0xf/0x20
-> > > >  __vfs_write+0x3e/0x190
-> > > >  ? __sb_start_write+0x6d/0xd0
-> > > >  vfs_write+0xd3/0x190
-> > > >  ksys_write+0x68/0xd0
-> > > >  __ia32_sys_write+0x14/0x20
-> > > >  do_fast_syscall_32+0x86/0xe0
-> > > >  entry_SYSENTER_compat+0x7c/0x8e
-> > > >
-> > > > A similar crash will likely trigger when enabling XDP.
-> > > >
-> > > > Reported-by: Alistair Delva <adelva@google.com>
-> > > > Reported-by: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-> > > > Fixes: 3f93522ffab2 ("virtio-net: switch off offloads on demand if possible on XDP set")
-> > > > Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-> > > > ---
-> > > >
-> > > > Lightly tested.
-> > > >
-> > > > Alistair, could you please test and confirm that this resolves the
-> > > > crash for you?
-> > >
-> > > This patch doesn't work. The reason is that NETIF_F_LRO is also turned
-> > > on by TSO4/TSO6, which your patch didn't check for. So it ends up
-> > > going through the same path and crashing in the same way.
-> > >
-> > >         if (virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_TSO4) ||
-> > >             virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_TSO6))
-> > >                 dev->features |= NETIF_F_LRO;
-> > >
-> > > It sounds like this patch is fixing something slightly differently to
-> > > my patch fixed. virtnet_set_features() doesn't care about
-> > > GUEST_OFFLOADS, it only tests against NETIF_F_LRO. Even if "offloads"
-> > > is zero, it will call virtnet_set_guest_offloads(), which triggers the
-> > > crash.
-> >
-> >
-> > Interesting. It's surprising that it is trying to configure a flag
-> > that is not configurable, i.e., absent from dev->hw_features
-> > after Michael's change.
-> >
-> > > So either we need to ensure NETIF_F_LRO is never set, or
-> >
-> > LRO might be available, just not configurable. Indeed this was what I
-> > observed in the past.
+> For years we disabled Hystart ACK train detection at Google
+> because it was fooled by TCP pacing.
 >
-> dev_disable_lro expects that NETIF_F_LRO is always configurable. Which
-> I guess is a reasonable assumption, just not necessarily the case in
-> virtio_net.
+> ACK train detection uses a simple heuristic, detecting if
+> we receive ACK past half the RTT, to exit slow start before
+> hitting the bottleneck and experience massive drops.
 >
-> So I think we need both patches. Correctly mark the feature as fixed
-> by removing from dev->hw_features and also ignore the request from
-> dev_disable_lro, which does not check for this.
+>
+...
 
-Something like this maybe:
+> +                       threshold = ca->delay_min;
+> +                       /* Hystart ack train triggers if we get ack past
+> +                        * ca->delay_min/2.
+> +                        * Pacing might have delayed packets up to RTT/2
+> +                        * during slow start.
+> +                        */
+> +                       if ((sk->sk_pacing_status == SK_PACING_NONE) || (netdev_max_backlog & 1))
+> +                               threshold >>= 1;
 
-diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-index 4d7d5434cc5d..0556f42b0fb5 100644
---- a/drivers/net/virtio_net.c
-+++ b/drivers/net/virtio_net.c
-@@ -2560,6 +2560,9 @@ static int virtnet_set_features(struct net_device *dev,
-        u64 offloads;
-        int err;
+This is silly, last minute debug feature that I forgot to remove
 
-+       if (!virtio_has_feature(vi->vdev, VIRTIO_NET_F_CTRL_GUEST_OFFLOADS))
-+               return 0;
-+
-        if ((dev->features ^ features) & NETIF_F_LRO) {
-                if (vi->xdp_queue_pairs)
-                        return -EBUSY;
-@@ -2971,6 +2974,15 @@ static int virtnet_validate(struct virtio_device *vdev)
-        if (!virtnet_validate_features(vdev))
-                return -EINVAL;
-
-+       /* VIRTIO_NET_F_CTRL_GUEST_OFFLOADS does not work without
-+        * VIRTIO_NET_F_CTRL_VQ. However the virtio spec does not
-+        * specify that VIRTIO_NET_F_CTRL_GUEST_OFFLOADS depends
-+        * on VIRTIO_NET_F_CTRL_VQ so devices can set the later but
-+        * not the former.
-+        */
-+       if (!virtio_has_feature(vdev, VIRTIO_NET_F_CTRL_VQ))
-+               __virtio_clear_bit(vdev, VIRTIO_NET_F_CTRL_GUEST_OFFLOADS);
-+
-        if (virtio_has_feature(vdev, VIRTIO_NET_F_MTU)) {
-                int mtu = virtio_cread16(vdev,
-                                         offsetof(struct virtio_net_config,
+Will send a V2 without it.
