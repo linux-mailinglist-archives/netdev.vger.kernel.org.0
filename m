@@ -2,101 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 024621293B0
-	for <lists+netdev@lfdr.de>; Mon, 23 Dec 2019 10:36:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 98FEE1293D9
+	for <lists+netdev@lfdr.de>; Mon, 23 Dec 2019 10:55:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726266AbfLWJg2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Dec 2019 04:36:28 -0500
-Received: from mail-lf1-f67.google.com ([209.85.167.67]:34847 "EHLO
-        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726211AbfLWJg2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Dec 2019 04:36:28 -0500
-Received: by mail-lf1-f67.google.com with SMTP id 15so12127458lfr.2
-        for <netdev@vger.kernel.org>; Mon, 23 Dec 2019 01:36:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cogentembedded-com.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=oZMn7o1oy69KXnBYV9LaAvQrLEGDsj3NY515SvELtas=;
-        b=avrYXnWBKOPWaYgT8LTFhU+8vzomKUx2Sl96gHd/iwNBc4P3GDX1FfFnkZcnKICY+e
-         Slbq/3v/7ycDaahDn38eQ9oSjXTJ6ULqiO3QZMglc0oSpktPadcxb7eUCiodL68diTwR
-         HnEDVBNViAuPHot021sCNjg050IlPRdxwr/J2sFitaZu9ahgkKyfE2pmDsPDQOA4Ps9x
-         wa2Mpv7mi50qIahge36tbWPp7ZK49PcoiZu6gmrsWScckY1EdfW49k9GJOLbQK/1BpHc
-         2fgu5iKtLX5MnanjJEpFkUze5Jijl9owFY7Gq8VvHxCQH06aD9rFm4Brqt7bM3kNXtZ6
-         at+A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=oZMn7o1oy69KXnBYV9LaAvQrLEGDsj3NY515SvELtas=;
-        b=V0mk1WStHUt3r03qeS6ptwGc5DDHl13sHTfSf686NPJ0phZoAOXjQGAzHJLoWtYmK2
-         wW3xHtyi2hZ+mY0IW1O5sh+0MSLALwvcguc9gg3iMuM+Ii9/RaXccrG1Wihjppg4AIxB
-         60lEi/+zzAgCuigfI9FvNKqpiXhuyuy5NJmIv0qoc98MztpwPNzZnDscR3gWwfC/+kru
-         AnH0STHBSXmX8gpGMoqYrVmSycPTZq98mRG4FlDwRkt+3vDLUBuK+ZRS/7J+15aM7A3p
-         AppzX6/zXLBuRnODMn30n0see0v1LfToOTrr/3LRSSD2umOoQnXocaVVBsKHb1k3yXcS
-         Ramg==
-X-Gm-Message-State: APjAAAXuteQFk9ucvSYUYCAMQbU/2D3uiOlWbPpG/464ZBP+LIUXpiJh
-        z0mm4jEeQJdWIjInA9EID8QOGAQtC66Oyw==
-X-Google-Smtp-Source: APXvYqzpwoVgjOExyFx7a0NvdeU+5teMlq/PIN4Ppuh7OZligwpt7aMlbtAXk3vXBz+T5ohldr/tlw==
-X-Received: by 2002:ac2:48bc:: with SMTP id u28mr16050434lfg.81.1577093786041;
-        Mon, 23 Dec 2019 01:36:26 -0800 (PST)
-Received: from ?IPv6:2a00:1fa0:4292:b2b4:35ce:e1fb:80c2:d584? ([2a00:1fa0:4292:b2b4:35ce:e1fb:80c2:d584])
-        by smtp.gmail.com with ESMTPSA id p15sm7921857lfo.88.2019.12.23.01.36.24
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 23 Dec 2019 01:36:25 -0800 (PST)
-Subject: Re: [PATCH] xfrm: Use kmem_cache_zalloc() instead of
- kmem_cache_alloc() with flag GFP_ZERO.
-To:     Yi Wang <wang.yi59@zte.com.cn>, steffen.klassert@secunet.com
-Cc:     herbert@gondor.apana.org.au, davem@davemloft.net,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        xue.zhihong@zte.com.cn, up2wing@gmail.com, wang.liang82@zte.com.cn,
-        Huang Zijiang <huang.zijiang@zte.com.cn>
-References: <1577065982-25751-1-git-send-email-wang.yi59@zte.com.cn>
-From:   Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
-Message-ID: <1d8007f1-15ab-a173-a3ed-cf2235cd2cea@cogentembedded.com>
-Date:   Mon, 23 Dec 2019 12:36:22 +0300
-User-Agent: Mozilla/5.0 (Windows NT 6.3; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.3.1
+        id S1726744AbfLWJzt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Dec 2019 04:55:49 -0500
+Received: from out30-130.freemail.mail.aliyun.com ([115.124.30.130]:36202 "EHLO
+        out30-130.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726233AbfLWJzt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Dec 2019 04:55:49 -0500
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R251e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04394;MF=dust.li@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0Tli.qQa_1577094938;
+Received: from jingxuanljxdeMacBook-Pro.local(mailfrom:dust.li@linux.alibaba.com fp:SMTPD_---0Tli.qQa_1577094938)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Mon, 23 Dec 2019 17:55:39 +0800
+Subject: Re: [PATCH net-next 0/2] net: sched: unify __gnet_stats_copy_xxx()
+ for percpu and non-percpu
+To:     David Miller <davem@davemloft.net>
+Cc:     xiyou.wangcong@gmail.com, jhs@mojatatu.com,
+        john.fastabend@gmail.com, jiri@resnulli.us,
+        tonylu@linux.alibaba.com, netdev@vger.kernel.org
+References: <20191217084718.52098-1-dust.li@linux.alibaba.com>
+ <20191220.165446.1167328110197614173.davem@davemloft.net>
+From:   Dust Li <dust.li@linux.alibaba.com>
+Message-ID: <f082962e-282f-f0dc-8773-b9107d39e482@linux.alibaba.com>
+Date:   Mon, 23 Dec 2019 17:55:38 +0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:60.0)
+ Gecko/20100101 Thunderbird/60.9.1
 MIME-Version: 1.0
-In-Reply-To: <1577065982-25751-1-git-send-email-wang.yi59@zte.com.cn>
+In-Reply-To: <20191220.165446.1167328110197614173.davem@davemloft.net>
 Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello!
 
-On 23.12.2019 4:53, Yi Wang wrote:
+On 12/21/19 8:54 AM, David Miller wrote:
+> From: Dust Li <dust.li@linux.alibaba.com>
+> Date: Tue, 17 Dec 2019 16:47:16 +0800
+>
+>> Currently, __gnet_stats_copy_xxx() will overwrite the return value when
+>> percpu stats are not enabled. But when percpu stats are enabled, it will
+>> add the percpu stats to the result. This inconsistency brings confusion to
+>> its callers.
+>>
+>> This patch series unify the behaviour of __gnet_stats_copy_basic() and
+>> __gnet_stats_copy_queue() for percpu and non-percpu stats and fix an
+>> incorrect statistic for mqprio class.
+>>
+>> - Patch 1 unified __gnet_stats_copy_xxx() for both percpu and non-percpu
+>> - Patch 2 depending on Patch 1, fixes the problem that 'tc class show'
+>>    for mqprio class is always 0.
+> I think this is going to break the estimator.
+>
+> The callers of est_fetch_counters() expect continually incrementing
+> statistics.  It does relative subtractions from previous values each
+> time, so if we just reset on the next statistics fetch it won't work.
+>
+> Sorry I can't apply this.
 
-> From: Huang Zijiang <huang.zijiang@zte.com.cn>
-> 
-> Use kmem_cache_zalloc instead of manually setting kmem_cache_alloc
-> with flag GFP_ZERO since kzalloc sets allocated memory
-> to zero.
-> 
-> Signed-off-by: Huang Zijiang <huang.zijiang@zte.com.cn>
-> Signed-off-by: Yi Wang <wang.yi59@zte.com.cn>
-> ---
->   net/xfrm/xfrm_state.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/net/xfrm/xfrm_state.c b/net/xfrm/xfrm_state.c
-> index a5dc319..adfa279 100644
-> --- a/net/xfrm/xfrm_state.c
-> +++ b/net/xfrm/xfrm_state.c
-> @@ -612,7 +612,7 @@ struct xfrm_state *xfrm_state_alloc(struct net *net)
->   {
->       struct xfrm_state *x;
->   
-> -    x = kmem_cache_alloc(xfrm_state_cache, GFP_ATOMIC | __GFP_ZERO);
-> +x = kmem_cache_zalloc(xfrm_state_cache, GFP_ATOMIC);
 
-    You ate the indentation. :-)
+Hi David,
 
-[...]
+Thanks for your reply.
 
-MBR, Sergei
+
+I checked the callers of est_fetch_counters(). I think there is a little
+misunderstanding here.We memset() the 'gnet_stats_basic_packed *b'which
+is not the original data of the estimator,but just the return value.
+Actually, it has been already memseted in est_fetch_counters() now. So it
+shouldnot break the estimator.
+
+static void est_fetch_counters(struct net_rate_estimator *e,
+                                struct gnet_stats_basic_packed *b)
+{
+/        memset(b, 0, sizeof(*b));     // <<--- Here b is already memseted/
+         if (e->stats_lock)
+                 spin_lock(e->stats_lock);
+
+         __gnet_stats_copy_basic(e->running, b, e->cpu_bstats, e->bstats);
+
+         if (e->stats_lock)
+                 spin_unlock(e->stats_lock);
+
+}
+
+
+The purpose of this memset() is to maintain a consistent semantics for both
+percpu and non-percpu statisticsin __gnet_stats_copy_basic().
+
+
+Thanks
+
+Dust
+
