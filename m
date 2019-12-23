@@ -2,113 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B731D12945D
-	for <lists+netdev@lfdr.de>; Mon, 23 Dec 2019 11:46:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A70CA12945B
+	for <lists+netdev@lfdr.de>; Mon, 23 Dec 2019 11:45:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726777AbfLWKq2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Dec 2019 05:46:28 -0500
-Received: from szxga07-in.huawei.com ([45.249.212.35]:39904 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725799AbfLWKq1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 23 Dec 2019 05:46:27 -0500
-Received: from DGGEMS411-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id 218214BBEA90FFFFFDB1;
-        Mon, 23 Dec 2019 18:46:25 +0800 (CST)
-Received: from localhost.localdomain.localdomain (10.175.113.25) by
- DGGEMS411-HUB.china.huawei.com (10.3.19.211) with Microsoft SMTP Server id
- 14.3.439.0; Mon, 23 Dec 2019 18:46:16 +0800
-From:   Mao Wenan <maowenan@huawei.com>
-To:     <davem@davemloft.net>, <edumazet@google.com>, <willemb@google.com>,
-        <maximmi@mellanox.com>, <maowenan@huawei.com>, <pabeni@redhat.com>,
-        <yuehaibing@huawei.com>, <nhorman@tuxdriver.com>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <kernel-janitors@vger.kernel.org>,
-        <willemdebruijn.kernel@gmail.com>
-Subject: [PATCH net-next v2] af_packet: refactoring code for prb_calc_retire_blk_tmo
-Date:   Mon, 23 Dec 2019 18:42:57 +0800
-Message-ID: <20191223104257.132354-1-maowenan@huawei.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <CA+FuTScgWi905_NhGNsRzpwaQ+OPwahj6NtKgPjLZRjuqJvhXQ@mail.gmail.com>
-References: <CA+FuTScgWi905_NhGNsRzpwaQ+OPwahj6NtKgPjLZRjuqJvhXQ@mail.gmail.com>
+        id S1726666AbfLWKp5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Dec 2019 05:45:57 -0500
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:53887 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725799AbfLWKp5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Dec 2019 05:45:57 -0500
+Received: by mail-wm1-f66.google.com with SMTP id m24so15363926wmc.3
+        for <netdev@vger.kernel.org>; Mon, 23 Dec 2019 02:45:55 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
+        bh=s/M5dijp2KwW7Hu0RJPMS2w1muNH7B/bYmEMje/jJAc=;
+        b=OYip9Nmq3ceiWvcFgOR+obt+XeTNCW0Z64xeWYsh1HnU2S8i9aBepzaicRHVCOIofO
+         38IvrKgcqNhvgRDH4POLplHnNPHl0flopwK4Fh2709PqgiMZlU+f8Xmjjy933F9TlhTP
+         Hll2OM7R+uV7Wi9TXISWHZWJmXpQivGnhzOq964pE13CyeixZQZK4BZIulK3S5+RDAoV
+         rZKFFk4CYID5uGA/zM5/37eFcNhkojxhehzUpQlzTtVQLM2TwHgCOzYUX9AriJPM/Bf1
+         cqB159eoMNqfcQPVowZQeVEQaK47emksM+0FxR5WRGi5kRMlVSylogiVByeGe26m8hpe
+         oV3Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=s/M5dijp2KwW7Hu0RJPMS2w1muNH7B/bYmEMje/jJAc=;
+        b=QaALPV/mBEWiLyTyw5cplnHoePJ2yBEsPCkjyLZ9NX7/o/sDrZ2Umjh+oSdzOxsZMA
+         5fK/yxD7zSMByn2QGSobLWjezY0DerUsP95KpuXj7NzhRjygWRq1h/Et5vaM23dLmB1D
+         SoQ0V2Zn2/HaPTMHj8nWE835JAPY4e5AbyiFBofFBciZm/QaOorkQji+MZdzm9MDPLBm
+         5UKrhrUCRvmV9oH9XLh8HKNlNqoU9uDLs/EG30HlUE1+SaZVmv+0O4lUbtn8wckHaGL4
+         MakhtVRkjn3qAp2keSGxFToEnW//W4D9rissXbzZuLbhKZ6diEiQ+Jsv4k2jeYvUY52W
+         EnQQ==
+X-Gm-Message-State: APjAAAW44LIqdcJwQnuAv89wTCMElHvwDYvrTOa48KTTepbsSLg/o5KU
+        nBMY8VUK9nFkoyTlY5Um3zjBEi5s
+X-Google-Smtp-Source: APXvYqyyxMQYqeoVfcQH38nrB5ImFxIZ8CRBNKZXv1wYGUMSiI4K6hEyTqjdEjiYtSx0w1ESGfwoEA==
+X-Received: by 2002:a1c:770e:: with SMTP id t14mr32632656wmi.101.1577097954984;
+        Mon, 23 Dec 2019 02:45:54 -0800 (PST)
+Received: from peto-laptopnovy ([185.144.96.57])
+        by smtp.gmail.com with ESMTPSA id o7sm18468733wmh.11.2019.12.23.02.45.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 23 Dec 2019 02:45:54 -0800 (PST)
+Date:   Mon, 23 Dec 2019 11:45:52 +0100
+From:   Peter Junos <petoju@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     petoju@gmail.com
+Subject: [PATCH] ss: use compact output for undetected screen width
+Message-ID: <20191223104552.GA16433@peto-laptopnovy>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.113.25]
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If __ethtool_get_link_ksettings() is failed and with
-non-zero value, prb_calc_retire_blk_tmo() should return
-DEFAULT_PRB_RETIRE_TOV firstly. 
+This change fixes calculation of width in case user pipes the output.
 
-This patch is to refactory code and make it more readable.
+SS output output works correctly when stdout is a terminal. When one
+pipes the output, it tries to use 80 or 160 columns. That adds a
+line-break if user has terminal width of 100 chars and output is of
+the similar width.
 
-Signed-off-by: Mao Wenan <maowenan@huawei.com>
+To reproduce the issue, call
+ss | less
+and see every other line empty if your screen is between 80 and 160
+columns wide.
 ---
- v2: delete 'Fixes' tag, do not initialize some variable, 
- and delete two variable as Willem de Bruijn proposal.
- net/packet/af_packet.c | 30 ++++++++++++------------------
- 1 file changed, 12 insertions(+), 18 deletions(-)
+ misc/ss.c | 15 +++++++++++++--
+ 1 file changed, 13 insertions(+), 2 deletions(-)
 
-diff --git a/net/packet/af_packet.c b/net/packet/af_packet.c
-index 118cd66b7516..3bec515ccde3 100644
---- a/net/packet/af_packet.c
-+++ b/net/packet/af_packet.c
-@@ -520,7 +520,7 @@ static int prb_calc_retire_blk_tmo(struct packet_sock *po,
- 				int blk_size_in_bytes)
- {
- 	struct net_device *dev;
--	unsigned int mbits = 0, msec = 0, div = 0, tmo = 0;
-+	unsigned int mbits, div;
- 	struct ethtool_link_ksettings ecmd;
- 	int err;
- 
-@@ -532,31 +532,25 @@ static int prb_calc_retire_blk_tmo(struct packet_sock *po,
- 	}
- 	err = __ethtool_get_link_ksettings(dev, &ecmd);
- 	rtnl_unlock();
--	if (!err) {
--		/*
--		 * If the link speed is so slow you don't really
--		 * need to worry about perf anyways
--		 */
--		if (ecmd.base.speed < SPEED_1000 ||
--		    ecmd.base.speed == SPEED_UNKNOWN) {
--			return DEFAULT_PRB_RETIRE_TOV;
--		} else {
--			msec = 1;
--			div = ecmd.base.speed / 1000;
--		}
--	} else
-+	if (err)
- 		return DEFAULT_PRB_RETIRE_TOV;
- 
-+	/* If the link speed is so slow you don't really
-+	 * need to worry about perf anyways
-+	 */
-+	if (ecmd.base.speed < SPEED_1000 ||
-+	    ecmd.base.speed == SPEED_UNKNOWN)
-+		return DEFAULT_PRB_RETIRE_TOV;
-+
-+	div = ecmd.base.speed / 1000;
- 	mbits = (blk_size_in_bytes * 8) / (1024 * 1024);
- 
- 	if (div)
- 		mbits /= div;
- 
--	tmo = mbits * msec;
--
- 	if (div)
--		return tmo+1;
--	return tmo;
-+		return mbits + 1;
-+	return mbits;
+diff --git a/misc/ss.c b/misc/ss.c
+index 95f1d37a..56d44f6b 100644
+--- a/misc/ss.c
++++ b/misc/ss.c
+@@ -1135,10 +1135,10 @@ static void buf_free_all(void)
+ 	buffer.chunks = 0;
  }
  
- static void prb_init_ft_ops(struct tpacket_kbdq_core *p1,
+-/* Get current screen width, default to 80 columns if TIOCGWINSZ fails */
++/* Get current screen width, returns -1 if TIOCGWINSZ fails */
+ static int render_screen_width(void)
+ {
+-	int width = 80;
++	int width = -1;
+ 
+ 	if (isatty(STDOUT_FILENO)) {
+ 		struct winsize w;
+@@ -1159,7 +1159,13 @@ static int render_screen_width(void)
+  */
+ static void render_calc_width(void)
+ {
++	bool compact_output = false;
+ 	int screen_width = render_screen_width();
++	if (screen_width == -1) {
++		screen_width = 80;
++		compact_output = true;
++	}
++
+ 	struct column *c, *eol = columns - 1;
+ 	int first, len = 0, linecols = 0;
+ 
+@@ -1183,6 +1189,11 @@ static void render_calc_width(void)
+ 			first = 0;
+ 	}
+ 
++	if (compact_output) {
++		/* Terminal width couldn't be guessed, don't extend the output */
++		return;
++	}
++
+ 	/* Second pass: find out newlines and distribute available spacing */
+ 	for (c = columns; c - columns < COL_MAX; c++) {
+ 		int pad, spacing, rem, last;
 -- 
-2.20.1
+2.24.0
 
