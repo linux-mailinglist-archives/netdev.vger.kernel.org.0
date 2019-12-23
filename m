@@ -2,47 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 95CDE1297B0
-	for <lists+netdev@lfdr.de>; Mon, 23 Dec 2019 15:48:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 912111297B2
+	for <lists+netdev@lfdr.de>; Mon, 23 Dec 2019 15:48:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726834AbfLWOsK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Dec 2019 09:48:10 -0500
-Received: from mail.kernel.org ([198.145.29.99]:34192 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726682AbfLWOsK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 23 Dec 2019 09:48:10 -0500
-Received: from localhost (unknown [5.29.147.182])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 374B3206B7;
-        Mon, 23 Dec 2019 14:48:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1577112489;
-        bh=y/0myjdzzuQyj9IjaHTESTVCzakf8VZwCyHUWWiuM6k=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Kc3hDWkYY6akmCdMV5M5uG+pgu0NrNhJhFJgrGGq5wvpiloiWVmLoQZt+YBWg7GAl
-         x6aOWZLSgmW/uYFgoeLL7O5PWyo3UZWnrWIwDQ3qNhzgHesTyVUQBeysQZ7n8jrqqu
-         IPLrdoubZpKzuKytkGgLLFniZW+8PE+KsACmZi4E=
-Date:   Mon, 23 Dec 2019 16:48:06 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Madalin Bucur <madalin.bucur@oss.nxp.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org
-Subject: Re: [PATCH net,v2] dpaa_eth: fix DMA mapping leak
-Message-ID: <20191223144806.GA120310@unreal>
-References: <1577086762-11453-1-git-send-email-madalin.bucur@oss.nxp.com>
+        id S1726873AbfLWOs1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Dec 2019 09:48:27 -0500
+Received: from www62.your-server.de ([213.133.104.62]:42862 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726846AbfLWOs1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Dec 2019 09:48:27 -0500
+Received: from [185.105.41.126] (helo=localhost)
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1ijP0R-0006jC-FF; Mon, 23 Dec 2019 15:48:23 +0100
+From:   Daniel Borkmann <daniel@iogearbox.net>
+To:     davem@davemloft.net
+Cc:     jakub.kicinski@netronome.com, daniel@iogearbox.net, ast@kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: pull-request: bpf 2019-12-23
+Date:   Mon, 23 Dec 2019 15:48:23 +0100
+Message-Id: <20191223144823.3456-1-daniel@iogearbox.net>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1577086762-11453-1-git-send-email-madalin.bucur@oss.nxp.com>
+Content-Transfer-Encoding: 8bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.101.4/25672/Mon Dec 23 10:53:10 2019)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 23, 2019 at 09:39:22AM +0200, Madalin Bucur wrote:
-> On the error path some fragments remain DMA mapped. Adding a fix
-> that unmaps all the fragments. Rework cleanup path to be simpler.
->
-> Fixes: 8151ee88bad5 ("dpaa_eth: use page backed rx buffers")
+Hi David,
 
-Thanks
+The following pull-request contains BPF updates for your *net* tree.
+
+We've added 2 non-merge commits during the last 1 day(s) which contain
+a total of 4 files changed, 34 insertions(+), 31 deletions(-).
+
+The main changes are:
+
+1) Fix libbpf build when building on a read-only filesystem with O=dir
+   option, from Namhyung Kim.
+
+2) Fix a precision tracking bug for unknown scalars, from Daniel Borkmann.
+
+Please consider pulling these changes from:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git
+
+Thanks a lot & Merry Xmas!
+
+Also thanks to reporters, reviewers and testers of commits in this pull-request:
+
+Anatoly Trosinenko, Andrii Nakryiko
+
+----------------------------------------------------------------
+
+The following changes since commit c60174717544aa8959683d7e19d568309c3a0c65:
+
+  Merge tag 'xfs-5.5-fixes-2' of git://git.kernel.org/pub/scm/fs/xfs/xfs-linux (2019-12-22 10:59:06 -0800)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git 
+
+for you to fetch changes up to fa633a0f89192379828103957874682d389eae83:
+
+  libbpf: Fix build on read-only filesystems (2019-12-23 15:34:06 +0100)
+
+----------------------------------------------------------------
+Daniel Borkmann (1):
+      bpf: Fix precision tracking for unbounded scalars
+
+Namhyung Kim (1):
+      libbpf: Fix build on read-only filesystems
+
+ kernel/bpf/verifier.c                  | 43 +++++++++++++++++-----------------
+ tools/lib/bpf/Makefile                 | 15 ++++++------
+ tools/testing/selftests/bpf/.gitignore |  1 +
+ tools/testing/selftests/bpf/Makefile   |  6 ++---
+ 4 files changed, 34 insertions(+), 31 deletions(-)
