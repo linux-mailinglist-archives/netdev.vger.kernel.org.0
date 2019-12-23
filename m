@@ -2,70 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C2F031290A8
-	for <lists+netdev@lfdr.de>; Mon, 23 Dec 2019 02:29:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CD3051290CB
+	for <lists+netdev@lfdr.de>; Mon, 23 Dec 2019 02:55:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726633AbfLWB3m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 22 Dec 2019 20:29:42 -0500
-Received: from mail-lf1-f68.google.com ([209.85.167.68]:43784 "EHLO
-        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726393AbfLWB3m (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 22 Dec 2019 20:29:42 -0500
-Received: by mail-lf1-f68.google.com with SMTP id 9so11346332lfq.10;
-        Sun, 22 Dec 2019 17:29:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=3/T/nKs4wrsuDICyEhvY4U603UgwSn/cAUPgPFMHgvY=;
-        b=cyoZ7q1cVANwGHWtxNxWDb81oEK54rgcssJjt0ftSvEUTKJpujX1HsDVIsWz4qM1fN
-         4lB4mjBs0YtU/93LAsg1CzPIEeqOrmS8nQ8RIb2Ik4zGUOlr0UXJk8zHJTHEclxI871J
-         a97q2+IxpcaU3nHb+eJnb6BHQ10Yea1mdGSN6wAe4m2AGueQHf4a4IJw4w8foo8N+8V4
-         ogtgk+w6VJHCvrr5UKpVD93IZNL9/uu2VJQmE4wWYoXFrOqoMJv5SCbbyehnsKshQVC0
-         iyb7K+B9SH/WH6rrePNLW9O6ej2ouaVgwiMtjEqLiDcIzB8eMgbxMmQpBsToK94BItjq
-         LYUw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=3/T/nKs4wrsuDICyEhvY4U603UgwSn/cAUPgPFMHgvY=;
-        b=EG1Z7WXHLn70S0J9URJiCcuSFSL6iqNaykg3PFz2MMowBmLLISTF0h4WEJ67CxL86g
-         hSJ8rhHDbIuOUB/ZxaIi+LQHP9t01bhwRyO6iZx83V87TCIBwBDyGUmqsQKHOLyYeJMs
-         2dz5WpUgoLJH2/RF2LqbxxWCnOmtHFEbCr8THPtod+S/tKzQsvXerzZOfi4L1fFaTsvF
-         sPkfaCnca0ae4jcOQAzAhdOg/iqIO6d1njEZBpa4azHogeCHfqULVqeu5rXF6APqriBD
-         m/NvhHl5mcDwk+buHiN8IybmFRDnGkB50YxtHN+3mXSCOM8Up7LI6qCkewqEt7sEyuLY
-         BW8A==
-X-Gm-Message-State: APjAAAUrcrNLdmvWlvLzyWKs6oP1gSrBcjUuycW7j5VaTE3StB01BqB0
-        Fu5Bh9FjONE7vS63HgPfJDQmBsX7O9JgXHTsIyU=
-X-Google-Smtp-Source: APXvYqxyGkUMXa1mo8W701X4EjQq4peAchitzKXwtzBqJog71t5X3UGvRl+7HQwAkUPx5ZNyBDQcDZJDmBnQHcV3ucc=
-X-Received: by 2002:ac2:44d9:: with SMTP id d25mr15887486lfm.15.1577064579951;
- Sun, 22 Dec 2019 17:29:39 -0800 (PST)
-MIME-Version: 1.0
-References: <20191222223740.25297-1-daniel@iogearbox.net>
-In-Reply-To: <20191222223740.25297-1-daniel@iogearbox.net>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Sun, 22 Dec 2019 17:29:28 -0800
-Message-ID: <CAADnVQJ5H2c-QCLAXYdb6j2mYpCNDZ0pGa96BMbKRmasqeup3A@mail.gmail.com>
-Subject: Re: [PATCH bpf] bpf: Fix precision tracking for unbounded scalars
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>,
-        Anatoly Trosinenko <anatoly.trosinenko@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S1726853AbfLWBz0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 22 Dec 2019 20:55:26 -0500
+Received: from out1.zte.com.cn ([202.103.147.172]:45643 "EHLO mxct.zte.com.cn"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726215AbfLWBz0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 22 Dec 2019 20:55:26 -0500
+Received: from mse-fl2.zte.com.cn (unknown [10.30.14.239])
+        by Forcepoint Email with ESMTPS id B0F03628B6642F5D2DA1;
+        Mon, 23 Dec 2019 09:55:21 +0800 (CST)
+Received: from notes_smtp.zte.com.cn (notes_smtp.zte.com.cn [10.30.1.239])
+        by mse-fl2.zte.com.cn with ESMTP id xBN1r3cI034081;
+        Mon, 23 Dec 2019 09:53:03 +0800 (GMT-8)
+        (envelope-from wang.yi59@zte.com.cn)
+Received: from fox-host8.localdomain ([10.74.120.8])
+          by szsmtp06.zte.com.cn (Lotus Domino Release 8.5.3FP6)
+          with ESMTP id 2019122309530535-1467765 ;
+          Mon, 23 Dec 2019 09:53:05 +0800 
+From:   Yi Wang <wang.yi59@zte.com.cn>
+To:     steffen.klassert@secunet.com
+Cc:     herbert@gondor.apana.org.au, davem@davemloft.net,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        xue.zhihong@zte.com.cn, wang.yi59@zte.com.cn, up2wing@gmail.com,
+        wang.liang82@zte.com.cn, Huang Zijiang <huang.zijiang@zte.com.cn>
+Subject: [PATCH] xfrm: Use kmem_cache_zalloc() instead of kmem_cache_alloc() with flag GFP_ZERO.
+Date:   Mon, 23 Dec 2019 09:53:02 +0800
+Message-Id: <1577065982-25751-1-git-send-email-wang.yi59@zte.com.cn>
+X-Mailer: git-send-email 1.8.3.1
+X-MIMETrack: Itemize by SMTP Server on SZSMTP06/server/zte_ltd(Release 8.5.3FP6|November
+ 21, 2013) at 2019-12-23 09:53:05,
+        Serialize by Router on notes_smtp/zte_ltd(Release 9.0.1FP7|August  17, 2016) at
+ 2019-12-23 09:53:04,
+        Serialize complete at 2019-12-23 09:53:04
+X-MAIL: mse-fl2.zte.com.cn xBN1r3cI034081
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Dec 22, 2019 at 2:37 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
->
-> Anatoly has been fuzzing with kBdysch harness and reported a hang in one
-> of the outcomes. Upon closer analysis, it turns out that precise scalar
-> value tracking is missing a few precision markings for unknown scalars:
->
-> Fixes: 6754172c208d ("bpf: fix precision tracking in presence of bpf2bpf calls")
-> Reported-by: Anatoly Trosinenko <anatoly.trosinenko@gmail.com>
-> Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+From: Huang Zijiang <huang.zijiang@zte.com.cn>
 
-Applied. Thanks
+Use kmem_cache_zalloc instead of manually setting kmem_cache_alloc
+with flag GFP_ZERO since kzalloc sets allocated memory
+to zero.
+
+Signed-off-by: Huang Zijiang <huang.zijiang@zte.com.cn>
+Signed-off-by: Yi Wang <wang.yi59@zte.com.cn>
+---
+ net/xfrm/xfrm_state.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/net/xfrm/xfrm_state.c b/net/xfrm/xfrm_state.c
+index a5dc319..adfa279 100644
+--- a/net/xfrm/xfrm_state.c
++++ b/net/xfrm/xfrm_state.c
+@@ -612,7 +612,7 @@ struct xfrm_state *xfrm_state_alloc(struct net *net)
+ {
+     struct xfrm_state *x;
+ 
+-    x = kmem_cache_alloc(xfrm_state_cache, GFP_ATOMIC | __GFP_ZERO);
++x = kmem_cache_zalloc(xfrm_state_cache, GFP_ATOMIC);
+ 
+     if (x) {
+         write_pnet(&x->xs_net, net);
+-- 
+1.9.1
+
