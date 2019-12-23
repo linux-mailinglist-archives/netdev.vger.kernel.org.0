@@ -2,75 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 72CC01293ED
-	for <lists+netdev@lfdr.de>; Mon, 23 Dec 2019 11:03:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 68980129404
+	for <lists+netdev@lfdr.de>; Mon, 23 Dec 2019 11:14:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726791AbfLWKD1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Dec 2019 05:03:27 -0500
-Received: from xavier.telenet-ops.be ([195.130.132.52]:51940 "EHLO
-        xavier.telenet-ops.be" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726150AbfLWKD1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Dec 2019 05:03:27 -0500
-Received: from ramsan ([84.195.182.253])
-        by xavier.telenet-ops.be with bizsmtp
-        id hN3N2100P5USYZQ01N3N9r; Mon, 23 Dec 2019 11:03:24 +0100
-Received: from rox.of.borg ([192.168.97.57])
-        by ramsan with esmtp (Exim 4.90_1)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1ijKYc-0000eh-Kh; Mon, 23 Dec 2019 11:03:22 +0100
-Received: from geert by rox.of.borg with local (Exim 4.90_1)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1ijKYc-0001vV-I6; Mon, 23 Dec 2019 11:03:22 +0100
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-To:     Antoine Tenart <antoine.tenart@bootlin.com>,
-        "David S . Miller" <davem@davemloft.net>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: [PATCH] of: mdio: Add missing inline to of_mdiobus_child_is_phy() dummy
-Date:   Mon, 23 Dec 2019 11:03:21 +0100
-Message-Id: <20191223100321.7364-1-geert@linux-m68k.org>
-X-Mailer: git-send-email 2.17.1
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        id S1726787AbfLWKOT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Dec 2019 05:14:19 -0500
+Received: from inva021.nxp.com ([92.121.34.21]:41654 "EHLO inva021.nxp.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725799AbfLWKOT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 23 Dec 2019 05:14:19 -0500
+Received: from inva021.nxp.com (localhost [127.0.0.1])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 0C5FA200A44;
+        Mon, 23 Dec 2019 11:14:17 +0100 (CET)
+Received: from inva024.eu-rdc02.nxp.com (inva024.eu-rdc02.nxp.com [134.27.226.22])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id F39922007E5;
+        Mon, 23 Dec 2019 11:14:16 +0100 (CET)
+Received: from fsr-fed2164-101.ea.freescale.net (fsr-fed2164-101.ea.freescale.net [10.171.82.91])
+        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id 7C1E82033F;
+        Mon, 23 Dec 2019 11:14:16 +0100 (CET)
+From:   Madalin Bucur <madalin.bucur@oss.nxp.com>
+To:     davem@davemloft.net, netdev@vger.kernel.org, linux@armlinux.org.uk,
+        andrew@lunn.ch
+Cc:     f.fainelli@gmail.com, hkallweit1@gmail.com, shawnguo@kernel.org,
+        leoyang.li@nxp.com, devicetree@vger.kernel.org, robh+dt@kernel.org,
+        mark.rutland@arm.com, Madalin Bucur <madalin.bucur@oss.nxp.com>
+Subject: [PATCH net-next v2 0/7] Add PHY connection types for XFI and SFI
+Date:   Mon, 23 Dec 2019 12:14:06 +0200
+Message-Id: <1577096053-20507-1-git-send-email-madalin.bucur@oss.nxp.com>
+X-Mailer: git-send-email 2.1.0
+Content-Type: text/plain; charset="us-ascii"
+Reply-to: madalin.bucur@oss.nxp.com
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If CONFIG_OF_MDIO=n:
+For a long time the only 10G interface mode registered in the code was
+XGMII and some PHYs and MACs that actually supported other modes just
+used that to denote 10G. Recently more modes were added (USXGMII,
+10GKR) to better match the actual HW support. In this respect, the use
+of 10GBase-KR to denote not only backplane but also XFI and SFI can be
+improved upon. This patch series introduces XFI and SFI PHY connection
+types and initial users for them.
 
-    drivers/net/phy/mdio_bus.c:23:
-    include/linux/of_mdio.h:58:13: warning: ‘of_mdiobus_child_is_phy’ defined but not used [-Wunused-function]
-     static bool of_mdiobus_child_is_phy(struct device_node *child)
-		 ^~~~~~~~~~~~~~~~~~~~~~~
 
-Fix this by adding the missing "inline" keyword.
+Changes from v1:
+  Reorder patches to avoid issues with git bisect
+  Add devicetree bindings entry for XFI, SFI
 
-Fixes: 0aa4d016c043d16a ("of: mdio: export of_mdiobus_child_is_phy")
-Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
----
- include/linux/of_mdio.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Madalin Bucur (7):
+  net: phy: add interface modes for XFI, SFI
+  net: fsl/fman: rename IF_MODE_XGMII to IF_MODE_10G
+  net: fsl/fman: add support for PHY_INTERFACE_MODE_XFI
+  net: fsl/fman: add support for PHY_INTERFACE_MODE_SFI
+  net: phy: aquantia: add support for PHY_INTERFACE_MODE_XFI
+  dt-bindings: net: add xfi, sfi to phy-connection-type
+  arm64: dts: ls104xardb: set correct PHY interface mode
 
-diff --git a/include/linux/of_mdio.h b/include/linux/of_mdio.h
-index 79bc82e30c02333d..491a2b7e77c1e906 100644
---- a/include/linux/of_mdio.h
-+++ b/include/linux/of_mdio.h
-@@ -55,7 +55,7 @@ static inline int of_mdio_parse_addr(struct device *dev,
- }
- 
- #else /* CONFIG_OF_MDIO */
--static bool of_mdiobus_child_is_phy(struct device_node *child)
-+static inline bool of_mdiobus_child_is_phy(struct device_node *child)
- {
- 	return false;
- }
+ Documentation/devicetree/bindings/net/ethernet-controller.yaml |  2 ++
+ arch/arm64/boot/dts/freescale/fsl-ls1043a-rdb.dts              |  2 +-
+ arch/arm64/boot/dts/freescale/fsl-ls1046a-rdb.dts              |  4 ++--
+ drivers/net/ethernet/freescale/fman/fman_memac.c               | 10 +++++++---
+ drivers/net/ethernet/freescale/fman/mac.c                      | 10 +++++++---
+ drivers/net/phy/aquantia_main.c                                |  5 ++++-
+ include/linux/phy.h                                            |  7 ++++++-
+ 7 files changed, 29 insertions(+), 11 deletions(-)
+
 -- 
-2.17.1
+2.1.0
 
