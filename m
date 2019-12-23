@@ -2,57 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F9BD129B86
-	for <lists+netdev@lfdr.de>; Mon, 23 Dec 2019 23:55:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E3AC8129BB8
+	for <lists+netdev@lfdr.de>; Tue, 24 Dec 2019 00:05:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726946AbfLWWzZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Dec 2019 17:55:25 -0500
-Received: from mail-qk1-f196.google.com ([209.85.222.196]:33160 "EHLO
-        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726908AbfLWWzY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Dec 2019 17:55:24 -0500
-Received: by mail-qk1-f196.google.com with SMTP id d71so6906727qkc.0;
-        Mon, 23 Dec 2019 14:55:24 -0800 (PST)
+        id S1726866AbfLWXFV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Dec 2019 18:05:21 -0500
+Received: from mail-qt1-f193.google.com ([209.85.160.193]:43045 "EHLO
+        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726817AbfLWXFV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Dec 2019 18:05:21 -0500
+Received: by mail-qt1-f193.google.com with SMTP id d18so13960630qtj.10;
+        Mon, 23 Dec 2019 15:05:20 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=hFRSuELUfsOU19FxywO7oDhfhqX0ADpqMh4EBYlSxEk=;
-        b=vHTSvyBaek14gv2gHOxnCQoFesdGrim/ke4m2iiCl/tnn5fxi7L4aUw7RSzPbHmco6
-         i4ir0z3Pe5/nj5Kz+pHXwfOOX6dmHqRYzHtxH+ETHacrGY5l4V1d0rwNvQ9K0V8hMlOn
-         YutQdJHJj5zTZhRrLSgsB9NNsFGTlMZCbzmwNNF1PHp46NOqn2YzNySO0//CPSGRvFV1
-         qPbnwg17wwGkzf3rKgG4QMSNCOpmfsxXBnInsgvgvFoOC4k9krxmoOmTsXlkWcwhoJI5
-         9boQNYylqLk29GeF4vwpBz1SHD/mSAa4ON1YdeUflAKmmqryZ6lpLAuxKeyba3exkeA9
-         //Lg==
+        bh=Mqig9b83gxfcXIMXK/a+UH1YQaFrRLRBEAu5SztV+e8=;
+        b=sdeGOIqd5gKReVHdtiazD+MT3E4s1di+nU4iEQM+eUFcwbv2o96SLX0ZuCMcUJndNn
+         Xxk4wo3DcUBm9HNKZRfvNpmTMKaDNNtS307sNQG6rcE9jrLXA22HX7j4DKVpBcJYMbmW
+         Exuaj2OfPrt6ymeI9ZexT05lVJPPHxSORT93CVnIw9hivWo08VLzKghRoyYbcj9Qieg3
+         IvL6VCT8nMlvwONa5UPiPgIVlTIUodLJEZpv0bNl2ixroBzkn9O5V47ipCxvnNfjNxYR
+         J9nXidMflMwOXJYT5juDc+vw9Z8DO1/ZS3nSpYGabZrs/ONPc3Ykf26Hac2ok3zyTVRp
+         TOMA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=hFRSuELUfsOU19FxywO7oDhfhqX0ADpqMh4EBYlSxEk=;
-        b=hhna/mPPf9LUzIXL1Mdz0MOQz5QnClmSQts9ObXE68N+r/SBq3Sf+SQLdUO/djJbPj
-         SqqNwJileYLIBgUzEpSqxlzsJTtqUfHFG7UZLfqRnbWbh+LrRHubOksYmscaH5FKvRpj
-         YMUsmrucMG9bA9JO4Xl+ycm7MR50Wgy3XJcyvHGIPxFb6k2dewDzdtToW/hRaEl+fnnr
-         3rS+GGqoEHweXcdw9/oejOaCq7aWdyeGtm/6n//mH8KiODM68OMsmHeOBK7V17iu/roc
-         fgHd38aM7a7IlaBX/3/24spvvfIsoDA5oF9+JW7TPjwrSLCpGWzyPsDwUSZxa6OcrpdM
-         wqcg==
-X-Gm-Message-State: APjAAAX/vF1xcZ3yKaoyEylEMHKq4G4FvAwB1fsEFztLmkATVNfDMGaf
-        t19Fo5O7iNTCeinW0rrdjAqYdcPeVlV+KVT4ydEVjw==
-X-Google-Smtp-Source: APXvYqx7u1vfv6k2BcE+ZvH/AOFjzuGTTSEU5ihRVE7aWj7Y/FKq9UfgTFuD/Td29Y6LYP05XL416HtkNM4fLXfTMKo=
-X-Received: by 2002:a05:620a:5ae:: with SMTP id q14mr29228299qkq.437.1577141723623;
- Mon, 23 Dec 2019 14:55:23 -0800 (PST)
+        bh=Mqig9b83gxfcXIMXK/a+UH1YQaFrRLRBEAu5SztV+e8=;
+        b=Ol6wbWYNrGs6kYA3U1U4+EfhzkgDphk8NDe39ixiFrNzRJuD8d2lDw1OvFIE92TfXw
+         tuGuCpHasotjiABEtQtwNtdxCxuOwIwNElW3SNusVu7Sg3kAnlvGWt/dJFW/clAikRbZ
+         ivyv+P0IUsOjkfVHrx1DNzA53La11MpoV6z5RklyHqPuDA12qSJbZ+Fao8uwv80vFNV9
+         +r+p5mvVv4fM26wYsN0Jb6unhVIQb68gZVXg/6lEJR3BzwPeibvXzADQ5rmZ/pUiH8qQ
+         ynL8gWiGISq6k69QF4s8C8495gGt6Vvt1It90VWH+mLPnq9N6Gzm1guQHkEzZpLblcnR
+         Y7Jg==
+X-Gm-Message-State: APjAAAWTPk7mR1F/t1k7IphxXFlHD64wzylekN1Zr5q5PDQDIxyinMwM
+        cr9GQXHFEhiGCyOHkz4s/NSN2yTJWMQ6rGtCrCI=
+X-Google-Smtp-Source: APXvYqyuKExO8yQkzYEW4CwRIhcAGYvV0y3mRdBj8lk1lUoFL4QpEKj4A+fFD0snL9vGnmS71733zc+SqjzCIkZkZsM=
+X-Received: by 2002:ac8:4050:: with SMTP id j16mr24285560qtl.171.1577142319848;
+ Mon, 23 Dec 2019 15:05:19 -0800 (PST)
 MIME-Version: 1.0
-References: <20191221062556.1182261-1-kafai@fb.com> <20191221062606.1182939-1-kafai@fb.com>
- <CAEf4BzYF8mBrkzM3=+XtyCwoQrLGvkA-6Uc3KXJ9CWmaKePX8Q@mail.gmail.com> <20191223222955.2d2hxboqzgp7662r@kafai-mbp>
-In-Reply-To: <20191223222955.2d2hxboqzgp7662r@kafai-mbp>
+References: <20191221062556.1182261-1-kafai@fb.com> <20191221062608.1183091-1-kafai@fb.com>
+In-Reply-To: <20191221062608.1183091-1-kafai@fb.com>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 23 Dec 2019 14:55:12 -0800
-Message-ID: <CAEf4BzaM7OGnocOc=58hXAAcLvM0qaYRWuwiqt1L2cPY1rWykA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 05/11] bpf: Introduce BPF_PROG_TYPE_STRUCT_OPS
-To:     Martin Lau <kafai@fb.com>
+Date:   Mon, 23 Dec 2019 15:05:08 -0800
+Message-ID: <CAEf4BzZ0fb5ecoCJTt+7j2rxoP3QnVBivHjg8GDLofR4sLFU7w@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2 06/11] bpf: Introduce BPF_MAP_TYPE_STRUCT_OPS
+To:     Martin KaFai Lau <kafai@fb.com>
 Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         David Miller <davem@davemloft.net>,
-        Kernel Team <Kernel-team@fb.com>,
+        Kernel Team <kernel-team@fb.com>,
         Networking <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
@@ -60,151 +59,205 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 23, 2019 at 2:30 PM Martin Lau <kafai@fb.com> wrote:
+On Fri, Dec 20, 2019 at 10:26 PM Martin KaFai Lau <kafai@fb.com> wrote:
 >
-> On Mon, Dec 23, 2019 at 12:29:37PM -0800, Andrii Nakryiko wrote:
-> > On Fri, Dec 20, 2019 at 10:26 PM Martin KaFai Lau <kafai@fb.com> wrote:
-> > >
-> > > This patch allows the kernel's struct ops (i.e. func ptr) to be
-> > > implemented in BPF.  The first use case in this series is the
-> > > "struct tcp_congestion_ops" which will be introduced in a
-> > > latter patch.
-> > >
-> > > This patch introduces a new prog type BPF_PROG_TYPE_STRUCT_OPS.
-> > > The BPF_PROG_TYPE_STRUCT_OPS prog is verified against a particular
-> > > func ptr of a kernel struct.  The attr->attach_btf_id is the btf id
-> > > of a kernel struct.  The attr->expected_attach_type is the member
-> > > "index" of that kernel struct.  The first member of a struct starts
-> > > with member index 0.  That will avoid ambiguity when a kernel struct
-> > > has multiple func ptrs with the same func signature.
-> > >
-> > > For example, a BPF_PROG_TYPE_STRUCT_OPS prog is written
-> > > to implement the "init" func ptr of the "struct tcp_congestion_ops".
-> > > The attr->attach_btf_id is the btf id of the "struct tcp_congestion_ops"
-> > > of the _running_ kernel.  The attr->expected_attach_type is 3.
-> > >
-> > > The ctx of BPF_PROG_TYPE_STRUCT_OPS is an array of u64 args saved
-> > > by arch_prepare_bpf_trampoline that will be done in the next
-> > > patch when introducing BPF_MAP_TYPE_STRUCT_OPS.
-> > >
-> > > "struct bpf_struct_ops" is introduced as a common interface for the kernel
-> > > struct that supports BPF_PROG_TYPE_STRUCT_OPS prog.  The supporting kernel
-> > > struct will need to implement an instance of the "struct bpf_struct_ops".
-> > >
-> > > The supporting kernel struct also needs to implement a bpf_verifier_ops.
-> > > During BPF_PROG_LOAD, bpf_struct_ops_find() will find the right
-> > > bpf_verifier_ops by searching the attr->attach_btf_id.
-> > >
-> > > A new "btf_struct_access" is also added to the bpf_verifier_ops such
-> > > that the supporting kernel struct can optionally provide its own specific
-> > > check on accessing the func arg (e.g. provide limited write access).
-> > >
-> > > After btf_vmlinux is parsed, the new bpf_struct_ops_init() is called
-> > > to initialize some values (e.g. the btf id of the supporting kernel
-> > > struct) and it can only be done once the btf_vmlinux is available.
-> > >
-> > > The R0 checks at BPF_EXIT is excluded for the BPF_PROG_TYPE_STRUCT_OPS prog
-> > > if the return type of the prog->aux->attach_func_proto is "void".
-> > >
-> > > Signed-off-by: Martin KaFai Lau <kafai@fb.com>
-> > > ---
-> > >  include/linux/bpf.h               |  30 +++++++
-> > >  include/linux/bpf_types.h         |   4 +
-> > >  include/linux/btf.h               |  34 ++++++++
-> > >  include/uapi/linux/bpf.h          |   1 +
-> > >  kernel/bpf/Makefile               |   2 +-
-> > >  kernel/bpf/bpf_struct_ops.c       | 122 +++++++++++++++++++++++++++
-> > >  kernel/bpf/bpf_struct_ops_types.h |   4 +
-> > >  kernel/bpf/btf.c                  |  88 ++++++++++++++------
-> > >  kernel/bpf/syscall.c              |  17 ++--
-> > >  kernel/bpf/verifier.c             | 134 +++++++++++++++++++++++-------
-> > >  10 files changed, 372 insertions(+), 64 deletions(-)
-> > >  create mode 100644 kernel/bpf/bpf_struct_ops.c
-> > >  create mode 100644 kernel/bpf/bpf_struct_ops_types.h
-> > >
-> >
-> > All looks good, apart from the concern with partially-initialized
-> > bpf_struct_ops.
-> >
-> > [...]
-> >
-> > > +const struct bpf_prog_ops bpf_struct_ops_prog_ops = {
-> > > +};
-> > > +
-> > > +void bpf_struct_ops_init(struct btf *_btf_vmlinux)
-> >
-> > this is always get passed vmlinux's btf, so why not call it short and
-> > sweet "btf"? _btf_vmlinux is kind of ugly and verbose.
-> >
-> > > +{
-> > > +       const struct btf_member *member;
-> > > +       struct bpf_struct_ops *st_ops;
-> > > +       struct bpf_verifier_log log = {};
-> > > +       const struct btf_type *t;
-> > > +       const char *mname;
-> > > +       s32 type_id;
-> > > +       u32 i, j;
-> > > +
-> >
-> > [...]
-> >
-> > > +static int check_struct_ops_btf_id(struct bpf_verifier_env *env)
-> > > +{
-> > > +       const struct btf_type *t, *func_proto;
-> > > +       const struct bpf_struct_ops *st_ops;
-> > > +       const struct btf_member *member;
-> > > +       struct bpf_prog *prog = env->prog;
-> > > +       u32 btf_id, member_idx;
-> > > +       const char *mname;
-> > > +
-> > > +       btf_id = prog->aux->attach_btf_id;
-> > > +       st_ops = bpf_struct_ops_find(btf_id);
-> >
-> > if struct_ops initialization fails, type will be NULL and type_id will
-> > be 0, which we rely on here to not get partially-initialized
-> > bpf_struct_ops, right? Small comment mentioning this would be helpful.
-> >
-> >
-> > > +       if (!st_ops) {
-> > > +               verbose(env, "attach_btf_id %u is not a supported struct\n",
-> > > +                       btf_id);
-> > > +               return -ENOTSUPP;
-> > > +       }
-> > > +
-> >
-> > [...]
-> >
-> > >  static int check_attach_btf_id(struct bpf_verifier_env *env)
-> > >  {
-> > >         struct bpf_prog *prog = env->prog;
-> > > @@ -9520,6 +9591,9 @@ static int check_attach_btf_id(struct bpf_verifier_env *env)
-> > >         long addr;
-> > >         u64 key;
-> > >
-> > > +       if (prog->type == BPF_PROG_TYPE_STRUCT_OPS)
-> > > +               return check_struct_ops_btf_id(env);
-> > > +
-> >
-> > There is a btf_id == 0 check below, you need to check that for
-> > STRUCT_OPS as well, otherwise you can get partially-initialized
-> > bpf_struct_ops struct in check_struct_ops_btf_id.
-> This btf_id == 0 check is done at the beginning of bpf_struct_ops_find().
-> Hence, bpf_struct_ops_find() won't try to search if btf_id is 0.
+> The patch introduces BPF_MAP_TYPE_STRUCT_OPS.  The map value
+> is a kernel struct with its func ptr implemented in bpf prog.
+> This new map is the interface to register/unregister/introspect
+> a bpf implemented kernel struct.
 >
+> The kernel struct is actually embedded inside another new struct
+> (or called the "value" struct in the code).  For example,
+> "struct tcp_congestion_ops" is embbeded in:
+> struct bpf_struct_ops_tcp_congestion_ops {
+>         refcount_t refcnt;
+>         enum bpf_struct_ops_state state;
+>         struct tcp_congestion_ops data;  /* <-- kernel subsystem struct here */
+> }
+> The map value is "struct bpf_struct_ops_tcp_congestion_ops".
+> The "bpftool map dump" will then be able to show the
+> state ("inuse"/"tobefree") and the number of subsystem's refcnt (e.g.
+> number of tcp_sock in the tcp_congestion_ops case).  This "value" struct
+> is created automatically by a macro.  Having a separate "value" struct
+> will also make extending "struct bpf_struct_ops_XYZ" easier (e.g. adding
+> "void (*init)(void)" to "struct bpf_struct_ops_XYZ" to do some
+> initialization works before registering the struct_ops to the kernel
+> subsystem).  The libbpf will take care of finding and populating the
+> "struct bpf_struct_ops_XYZ" from "struct XYZ".
+>
+> Register a struct_ops to a kernel subsystem:
+> 1. Load all needed BPF_PROG_TYPE_STRUCT_OPS prog(s)
+> 2. Create a BPF_MAP_TYPE_STRUCT_OPS with attr->btf_vmlinux_value_type_id
+>    set to the btf id "struct bpf_struct_ops_tcp_congestion_ops" of the
+>    running kernel.
+>    Instead of reusing the attr->btf_value_type_id,
+>    btf_vmlinux_value_type_id s added such that attr->btf_fd can still be
+>    used as the "user" btf which could store other useful sysadmin/debug
+>    info that may be introduced in the furture,
+>    e.g. creation-date/compiler-details/map-creator...etc.
+> 3. Create a "struct bpf_struct_ops_tcp_congestion_ops" object as described
+>    in the running kernel btf.  Populate the value of this object.
+>    The function ptr should be populated with the prog fds.
+> 4. Call BPF_MAP_UPDATE with the object created in (3) as
+>    the map value.  The key is always "0".
+>
+> During BPF_MAP_UPDATE, the code that saves the kernel-func-ptr's
+> args as an array of u64 is generated.  BPF_MAP_UPDATE also allows
+> the specific struct_ops to do some final checks in "st_ops->init_member()"
+> (e.g. ensure all mandatory func ptrs are implemented).
+> If everything looks good, it will register this kernel struct
+> to the kernel subsystem.  The map will not allow further update
+> from this point.
+>
+> Unregister a struct_ops from the kernel subsystem:
+> BPF_MAP_DELETE with key "0".
+>
+> Introspect a struct_ops:
+> BPF_MAP_LOOKUP_ELEM with key "0".  The map value returned will
+> have the prog _id_ populated as the func ptr.
+>
+> The map value state (enum bpf_struct_ops_state) will transit from:
+> INIT (map created) =>
+> INUSE (map updated, i.e. reg) =>
+> TOBEFREE (map value deleted, i.e. unreg)
+>
+> The kernel subsystem needs to call bpf_struct_ops_get() and
+> bpf_struct_ops_put() to manage the "refcnt" in the
+> "struct bpf_struct_ops_XYZ".  This patch uses a separate refcnt
+> for the purose of tracking the subsystem usage.  Another approach
+> is to reuse the map->refcnt and then "show" (i.e. during map_lookup)
+> the subsystem's usage by doing map->refcnt - map->usercnt to filter out
+> the map-fd/pinned-map usage.  However, that will also tie down the
+> future semantics of map->refcnt and map->usercnt.
+>
+> The very first subsystem's refcnt (during reg()) holds one
+> count to map->refcnt.  When the very last subsystem's refcnt
+> is gone, it will also release the map->refcnt.  All bpf_prog will be
+> freed when the map->refcnt reaches 0 (i.e. during map_free()).
+>
+> Here is how the bpftool map command will look like:
+> [root@arch-fb-vm1 bpf]# bpftool map show
+> 6: struct_ops  name dctcp  flags 0x0
+>         key 4B  value 256B  max_entries 1  memlock 4096B
+>         btf_id 6
+> [root@arch-fb-vm1 bpf]# bpftool map dump id 6
+> [{
+>         "value": {
+>             "refcnt": {
+>                 "refs": {
+>                     "counter": 1
+>                 }
+>             },
+>             "state": 1,
+>             "data": {
+>                 "list": {
+>                     "next": 0,
+>                     "prev": 0
+>                 },
+>                 "key": 0,
+>                 "flags": 2,
+>                 "init": 24,
+>                 "release": 0,
+>                 "ssthresh": 25,
+>                 "cong_avoid": 30,
+>                 "set_state": 27,
+>                 "cwnd_event": 28,
+>                 "in_ack_event": 26,
+>                 "undo_cwnd": 29,
+>                 "pkts_acked": 0,
+>                 "min_tso_segs": 0,
+>                 "sndbuf_expand": 0,
+>                 "cong_control": 0,
+>                 "get_info": 0,
+>                 "name": [98,112,102,95,100,99,116,99,112,0,0,0,0,0,0,0
+>                 ],
+>                 "owner": 0
+>             }
+>         }
+>     }
+> ]
+>
+> Misc Notes:
+> * bpf_struct_ops_map_sys_lookup_elem() is added for syscall lookup.
+>   It does an inplace update on "*value" instead returning a pointer
+>   to syscall.c.  Otherwise, it needs a separate copy of "zero" value
+>   for the BPF_STRUCT_OPS_STATE_INIT to avoid races.
+>
+> * The bpf_struct_ops_map_delete_elem() is also called without
+>   preempt_disable() from map_delete_elem().  It is because
+>   the "->unreg()" may requires sleepable context, e.g.
+>   the "tcp_unregister_congestion_control()".
+>
+> * "const" is added to some of the existing "struct btf_func_model *"
+>   function arg to avoid a compiler warning caused by this patch.
+>
+> Signed-off-by: Martin KaFai Lau <kafai@fb.com>
+> ---
 
-Ah right, I missed that check. Then yeah, it's not a concern. I still
-don't like _btf_vmlinux name, but that's just a nit.
+LGTM! Few questions below to improve my understanding.
 
 Acked-by: Andrii Nakryiko <andriin@fb.com>
 
-> st_ops fields is only set when everything passed, so individual st_ops
-> will not be partially initialized.
+>  arch/x86/net/bpf_jit_comp.c |  11 +-
+>  include/linux/bpf.h         |  49 +++-
+>  include/linux/bpf_types.h   |   3 +
+>  include/linux/btf.h         |  13 +
+>  include/uapi/linux/bpf.h    |   7 +-
+>  kernel/bpf/bpf_struct_ops.c | 468 +++++++++++++++++++++++++++++++++++-
+>  kernel/bpf/btf.c            |  20 +-
+>  kernel/bpf/map_in_map.c     |   3 +-
+>  kernel/bpf/syscall.c        |  49 ++--
+>  kernel/bpf/trampoline.c     |   5 +-
+>  kernel/bpf/verifier.c       |   5 +
+>  11 files changed, 593 insertions(+), 40 deletions(-)
 >
->
-> >
-> > >         if (prog->type != BPF_PROG_TYPE_TRACING)
-> > >                 return 0;
-> > >
-> > > --
-> > > 2.17.1
-> > >
+
+[...]
+
+> +               /* All non func ptr member must be 0 */
+> +               if (!btf_type_resolve_func_ptr(btf_vmlinux, member->type,
+> +                                              NULL)) {
+> +                       u32 msize;
+> +
+> +                       mtype = btf_resolve_size(btf_vmlinux, mtype,
+> +                                                &msize, NULL, NULL);
+> +                       if (IS_ERR(mtype)) {
+> +                               err = PTR_ERR(mtype);
+> +                               goto reset_unlock;
+> +                       }
+> +
+> +                       if (memchr_inv(udata + moff, 0, msize)) {
+
+
+just double-checking: we are ok with having non-zeroed padding in a
+struct, is that right?
+
+> +                               err = -EINVAL;
+> +                               goto reset_unlock;
+> +                       }
+> +
+> +                       continue;
+> +               }
+> +
+
+[...]
+
+> +
+> +               err = arch_prepare_bpf_trampoline(image,
+> +                                                 &st_ops->func_models[i], 0,
+> +                                                 &prog, 1, NULL, 0, NULL);
+> +               if (err < 0)
+> +                       goto reset_unlock;
+> +
+> +               *(void **)(kdata + moff) = image;
+> +               image += err;
+
+are there any alignment requirements on image pointer for trampoline?
+
+> +
+> +               /* put prog_id to udata */
+> +               *(unsigned long *)(udata + moff) = prog->aux->id;
+> +       }
+> +
+
+[...]
