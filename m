@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E3AC8129BB8
-	for <lists+netdev@lfdr.de>; Tue, 24 Dec 2019 00:05:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0CE39129BC6
+	for <lists+netdev@lfdr.de>; Tue, 24 Dec 2019 00:20:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726866AbfLWXFV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Dec 2019 18:05:21 -0500
-Received: from mail-qt1-f193.google.com ([209.85.160.193]:43045 "EHLO
-        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726817AbfLWXFV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Dec 2019 18:05:21 -0500
-Received: by mail-qt1-f193.google.com with SMTP id d18so13960630qtj.10;
-        Mon, 23 Dec 2019 15:05:20 -0800 (PST)
+        id S1726860AbfLWXUW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Dec 2019 18:20:22 -0500
+Received: from mail-qk1-f193.google.com ([209.85.222.193]:39940 "EHLO
+        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726512AbfLWXUV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Dec 2019 18:20:21 -0500
+Received: by mail-qk1-f193.google.com with SMTP id c17so14777529qkg.7;
+        Mon, 23 Dec 2019 15:20:21 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=Mqig9b83gxfcXIMXK/a+UH1YQaFrRLRBEAu5SztV+e8=;
-        b=sdeGOIqd5gKReVHdtiazD+MT3E4s1di+nU4iEQM+eUFcwbv2o96SLX0ZuCMcUJndNn
-         Xxk4wo3DcUBm9HNKZRfvNpmTMKaDNNtS307sNQG6rcE9jrLXA22HX7j4DKVpBcJYMbmW
-         Exuaj2OfPrt6ymeI9ZexT05lVJPPHxSORT93CVnIw9hivWo08VLzKghRoyYbcj9Qieg3
-         IvL6VCT8nMlvwONa5UPiPgIVlTIUodLJEZpv0bNl2ixroBzkn9O5V47ipCxvnNfjNxYR
-         J9nXidMflMwOXJYT5juDc+vw9Z8DO1/ZS3nSpYGabZrs/ONPc3Ykf26Hac2ok3zyTVRp
-         TOMA==
+        bh=DMdWdM7LFYQH+fxL4cGJUo7gwgTy2PraIoPXC8o4QZw=;
+        b=A+QoyNYVl6/3tlN1zI0S1YAmGzZ8o8K8rSulyE0ZCxlTxVge2If3j+IVuHNidIZ90Q
+         gJLC5btc3LXtil6Fnw4UoIlQhMbGYYO1567UEIyN/XNqQLtgBT+uHRrA3Ta9iJD+5QSS
+         MUtX4Oba1iDxB2qt5Vs9fVoF8NoX6JflxBrp5TZT3doe/ErD6TsFcck/4YbKagQv230z
+         EMZspDD5LKWWvvvH8tU1nQJKJlFtsB9Z6C/0M5Yw2XbL4eZ9cGlOyj0rGUcduGr8p194
+         90/F/MCaV2v3XU9z2tL1dERQ2sptTP43HmmyxcsWFKw8kqOYulXQU23P0RMMhzxHZ71S
+         NFnA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=Mqig9b83gxfcXIMXK/a+UH1YQaFrRLRBEAu5SztV+e8=;
-        b=Ol6wbWYNrGs6kYA3U1U4+EfhzkgDphk8NDe39ixiFrNzRJuD8d2lDw1OvFIE92TfXw
-         tuGuCpHasotjiABEtQtwNtdxCxuOwIwNElW3SNusVu7Sg3kAnlvGWt/dJFW/clAikRbZ
-         ivyv+P0IUsOjkfVHrx1DNzA53La11MpoV6z5RklyHqPuDA12qSJbZ+Fao8uwv80vFNV9
-         +r+p5mvVv4fM26wYsN0Jb6unhVIQb68gZVXg/6lEJR3BzwPeibvXzADQ5rmZ/pUiH8qQ
-         ynL8gWiGISq6k69QF4s8C8495gGt6Vvt1It90VWH+mLPnq9N6Gzm1guQHkEzZpLblcnR
-         Y7Jg==
-X-Gm-Message-State: APjAAAWTPk7mR1F/t1k7IphxXFlHD64wzylekN1Zr5q5PDQDIxyinMwM
-        cr9GQXHFEhiGCyOHkz4s/NSN2yTJWMQ6rGtCrCI=
-X-Google-Smtp-Source: APXvYqyuKExO8yQkzYEW4CwRIhcAGYvV0y3mRdBj8lk1lUoFL4QpEKj4A+fFD0snL9vGnmS71733zc+SqjzCIkZkZsM=
-X-Received: by 2002:ac8:4050:: with SMTP id j16mr24285560qtl.171.1577142319848;
- Mon, 23 Dec 2019 15:05:19 -0800 (PST)
+        bh=DMdWdM7LFYQH+fxL4cGJUo7gwgTy2PraIoPXC8o4QZw=;
+        b=LufUbtKuaw/oDfJSgTuwuvVNd9R28725XcjP/9qzNCtye9ql8MUHwF5ZCuUi8c4zzW
+         3hJNpbbv0x9Qc4qaBZNZr4YCoETxMSfxKbrFwFTvjrRQ3n21hxwPxYnHteVvbXol0ElA
+         NAwztMKZy/hX0YrrW6PYpQGJxx76Hjnw5z52YvHh6P3lswfTdMv9zA8atcTNN57ColPW
+         3Z6QPtu2xRYjB+W+VNWZeZkOnyztp2REoTr/GcnISplmqrhHMoIgsTDa6pX4vPApigaB
+         R1k9nTL5AS/Pkg9R/0vd9hZUCY3JWxKTJoVXwlWmjTzjDH/3uJi6zHl95fYHCQpPnP7a
+         Je3A==
+X-Gm-Message-State: APjAAAVNghtyj8WerhP+uqhGSyK9whixS7npe9xpxGpT07cTBLvlA0WF
+        85n2U0VTNW1vvqhUFEWxEmaZaS7hNQLroavLwNd+mA==
+X-Google-Smtp-Source: APXvYqzdVqV6FjPPc06W6fiRQB1oTCVdWPWhAU4VJfMg2f4pCTI6ylx0x3RST0wbXG8fzfKb8OWoY3h/pxRSEFLs2wc=
+X-Received: by 2002:a05:620a:14a2:: with SMTP id x2mr28956102qkj.36.1577143220866;
+ Mon, 23 Dec 2019 15:20:20 -0800 (PST)
 MIME-Version: 1.0
-References: <20191221062556.1182261-1-kafai@fb.com> <20191221062608.1183091-1-kafai@fb.com>
-In-Reply-To: <20191221062608.1183091-1-kafai@fb.com>
+References: <20191221062556.1182261-1-kafai@fb.com> <20191221062611.1183363-1-kafai@fb.com>
+In-Reply-To: <20191221062611.1183363-1-kafai@fb.com>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 23 Dec 2019 15:05:08 -0800
-Message-ID: <CAEf4BzZ0fb5ecoCJTt+7j2rxoP3QnVBivHjg8GDLofR4sLFU7w@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 06/11] bpf: Introduce BPF_MAP_TYPE_STRUCT_OPS
+Date:   Mon, 23 Dec 2019 15:20:10 -0800
+Message-ID: <CAEf4BzbrA4YqvUcNVvCjkQsWz9UuERwwZWhLmFrRh1sgx=yL2A@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2 07/11] bpf: tcp: Support tcp_congestion_ops in bpf
 To:     Martin KaFai Lau <kafai@fb.com>
 Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -61,203 +61,104 @@ X-Mailing-List: netdev@vger.kernel.org
 
 On Fri, Dec 20, 2019 at 10:26 PM Martin KaFai Lau <kafai@fb.com> wrote:
 >
-> The patch introduces BPF_MAP_TYPE_STRUCT_OPS.  The map value
-> is a kernel struct with its func ptr implemented in bpf prog.
-> This new map is the interface to register/unregister/introspect
-> a bpf implemented kernel struct.
+> This patch makes "struct tcp_congestion_ops" to be the first user
+> of BPF STRUCT_OPS.  It allows implementing a tcp_congestion_ops
+> in bpf.
 >
-> The kernel struct is actually embedded inside another new struct
-> (or called the "value" struct in the code).  For example,
-> "struct tcp_congestion_ops" is embbeded in:
-> struct bpf_struct_ops_tcp_congestion_ops {
->         refcount_t refcnt;
->         enum bpf_struct_ops_state state;
->         struct tcp_congestion_ops data;  /* <-- kernel subsystem struct here */
-> }
-> The map value is "struct bpf_struct_ops_tcp_congestion_ops".
-> The "bpftool map dump" will then be able to show the
-> state ("inuse"/"tobefree") and the number of subsystem's refcnt (e.g.
-> number of tcp_sock in the tcp_congestion_ops case).  This "value" struct
-> is created automatically by a macro.  Having a separate "value" struct
-> will also make extending "struct bpf_struct_ops_XYZ" easier (e.g. adding
-> "void (*init)(void)" to "struct bpf_struct_ops_XYZ" to do some
-> initialization works before registering the struct_ops to the kernel
-> subsystem).  The libbpf will take care of finding and populating the
-> "struct bpf_struct_ops_XYZ" from "struct XYZ".
+> The BPF implemented tcp_congestion_ops can be used like
+> regular kernel tcp-cc through sysctl and setsockopt.  e.g.
+> [root@arch-fb-vm1 bpf]# sysctl -a | egrep congestion
+> net.ipv4.tcp_allowed_congestion_control = reno cubic bpf_cubic
+> net.ipv4.tcp_available_congestion_control = reno bic cubic bpf_cubic
+> net.ipv4.tcp_congestion_control = bpf_cubic
 >
-> Register a struct_ops to a kernel subsystem:
-> 1. Load all needed BPF_PROG_TYPE_STRUCT_OPS prog(s)
-> 2. Create a BPF_MAP_TYPE_STRUCT_OPS with attr->btf_vmlinux_value_type_id
->    set to the btf id "struct bpf_struct_ops_tcp_congestion_ops" of the
->    running kernel.
->    Instead of reusing the attr->btf_value_type_id,
->    btf_vmlinux_value_type_id s added such that attr->btf_fd can still be
->    used as the "user" btf which could store other useful sysadmin/debug
->    info that may be introduced in the furture,
->    e.g. creation-date/compiler-details/map-creator...etc.
-> 3. Create a "struct bpf_struct_ops_tcp_congestion_ops" object as described
->    in the running kernel btf.  Populate the value of this object.
->    The function ptr should be populated with the prog fds.
-> 4. Call BPF_MAP_UPDATE with the object created in (3) as
->    the map value.  The key is always "0".
+> There has been attempt to move the TCP CC to the user space
+> (e.g. CCP in TCP).   The common arguments are faster turn around,
+> get away from long-tail kernel versions in production...etc,
+> which are legit points.
 >
-> During BPF_MAP_UPDATE, the code that saves the kernel-func-ptr's
-> args as an array of u64 is generated.  BPF_MAP_UPDATE also allows
-> the specific struct_ops to do some final checks in "st_ops->init_member()"
-> (e.g. ensure all mandatory func ptrs are implemented).
-> If everything looks good, it will register this kernel struct
-> to the kernel subsystem.  The map will not allow further update
-> from this point.
+> BPF has been the continuous effort to join both kernel and
+> userspace upsides together (e.g. XDP to gain the performance
+> advantage without bypassing the kernel).  The recent BPF
+> advancements (in particular BTF-aware verifier, BPF trampoline,
+> BPF CO-RE...) made implementing kernel struct ops (e.g. tcp cc)
+> possible in BPF.  It allows a faster turnaround for testing algorithm
+> in the production while leveraging the existing (and continue growing)
+> BPF feature/framework instead of building one specifically for
+> userspace TCP CC.
 >
-> Unregister a struct_ops from the kernel subsystem:
-> BPF_MAP_DELETE with key "0".
+> This patch allows write access to a few fields in tcp-sock
+> (in bpf_tcp_ca_btf_struct_access()).
 >
-> Introspect a struct_ops:
-> BPF_MAP_LOOKUP_ELEM with key "0".  The map value returned will
-> have the prog _id_ populated as the func ptr.
->
-> The map value state (enum bpf_struct_ops_state) will transit from:
-> INIT (map created) =>
-> INUSE (map updated, i.e. reg) =>
-> TOBEFREE (map value deleted, i.e. unreg)
->
-> The kernel subsystem needs to call bpf_struct_ops_get() and
-> bpf_struct_ops_put() to manage the "refcnt" in the
-> "struct bpf_struct_ops_XYZ".  This patch uses a separate refcnt
-> for the purose of tracking the subsystem usage.  Another approach
-> is to reuse the map->refcnt and then "show" (i.e. during map_lookup)
-> the subsystem's usage by doing map->refcnt - map->usercnt to filter out
-> the map-fd/pinned-map usage.  However, that will also tie down the
-> future semantics of map->refcnt and map->usercnt.
->
-> The very first subsystem's refcnt (during reg()) holds one
-> count to map->refcnt.  When the very last subsystem's refcnt
-> is gone, it will also release the map->refcnt.  All bpf_prog will be
-> freed when the map->refcnt reaches 0 (i.e. during map_free()).
->
-> Here is how the bpftool map command will look like:
-> [root@arch-fb-vm1 bpf]# bpftool map show
-> 6: struct_ops  name dctcp  flags 0x0
->         key 4B  value 256B  max_entries 1  memlock 4096B
->         btf_id 6
-> [root@arch-fb-vm1 bpf]# bpftool map dump id 6
-> [{
->         "value": {
->             "refcnt": {
->                 "refs": {
->                     "counter": 1
->                 }
->             },
->             "state": 1,
->             "data": {
->                 "list": {
->                     "next": 0,
->                     "prev": 0
->                 },
->                 "key": 0,
->                 "flags": 2,
->                 "init": 24,
->                 "release": 0,
->                 "ssthresh": 25,
->                 "cong_avoid": 30,
->                 "set_state": 27,
->                 "cwnd_event": 28,
->                 "in_ack_event": 26,
->                 "undo_cwnd": 29,
->                 "pkts_acked": 0,
->                 "min_tso_segs": 0,
->                 "sndbuf_expand": 0,
->                 "cong_control": 0,
->                 "get_info": 0,
->                 "name": [98,112,102,95,100,99,116,99,112,0,0,0,0,0,0,0
->                 ],
->                 "owner": 0
->             }
->         }
->     }
-> ]
->
-> Misc Notes:
-> * bpf_struct_ops_map_sys_lookup_elem() is added for syscall lookup.
->   It does an inplace update on "*value" instead returning a pointer
->   to syscall.c.  Otherwise, it needs a separate copy of "zero" value
->   for the BPF_STRUCT_OPS_STATE_INIT to avoid races.
->
-> * The bpf_struct_ops_map_delete_elem() is also called without
->   preempt_disable() from map_delete_elem().  It is because
->   the "->unreg()" may requires sleepable context, e.g.
->   the "tcp_unregister_congestion_control()".
->
-> * "const" is added to some of the existing "struct btf_func_model *"
->   function arg to avoid a compiler warning caused by this patch.
+> The optional "get_info" is unsupported now.  It can be added
+> later.  One possible way is to output the info with a btf-id
+> to describe the content.
 >
 > Signed-off-by: Martin KaFai Lau <kafai@fb.com>
 > ---
+>  include/linux/filter.h            |   2 +
+>  include/net/tcp.h                 |   1 +
+>  kernel/bpf/bpf_struct_ops_types.h |   7 +-
+>  net/core/filter.c                 |   2 +-
+>  net/ipv4/Makefile                 |   4 +
+>  net/ipv4/bpf_tcp_ca.c             | 226 ++++++++++++++++++++++++++++++
+>  net/ipv4/tcp_cong.c               |  14 +-
+>  net/ipv4/tcp_ipv4.c               |   6 +-
+>  net/ipv4/tcp_minisocks.c          |   4 +-
+>  net/ipv4/tcp_output.c             |   4 +-
+>  10 files changed, 255 insertions(+), 15 deletions(-)
+>  create mode 100644 net/ipv4/bpf_tcp_ca.c
+>
 
-LGTM! Few questions below to improve my understanding.
+Naming nits below. Other than that:
 
 Acked-by: Andrii Nakryiko <andriin@fb.com>
 
->  arch/x86/net/bpf_jit_comp.c |  11 +-
->  include/linux/bpf.h         |  49 +++-
->  include/linux/bpf_types.h   |   3 +
->  include/linux/btf.h         |  13 +
->  include/uapi/linux/bpf.h    |   7 +-
->  kernel/bpf/bpf_struct_ops.c | 468 +++++++++++++++++++++++++++++++++++-
->  kernel/bpf/btf.c            |  20 +-
->  kernel/bpf/map_in_map.c     |   3 +-
->  kernel/bpf/syscall.c        |  49 ++--
->  kernel/bpf/trampoline.c     |   5 +-
->  kernel/bpf/verifier.c       |   5 +
->  11 files changed, 593 insertions(+), 40 deletions(-)
->
-
 [...]
 
-> +               /* All non func ptr member must be 0 */
-> +               if (!btf_type_resolve_func_ptr(btf_vmlinux, member->type,
-> +                                              NULL)) {
-> +                       u32 msize;
+> +static const struct btf_type *tcp_sock_type;
+> +static u32 tcp_sock_id, sock_id;
 > +
-> +                       mtype = btf_resolve_size(btf_vmlinux, mtype,
-> +                                                &msize, NULL, NULL);
-> +                       if (IS_ERR(mtype)) {
-> +                               err = PTR_ERR(mtype);
-> +                               goto reset_unlock;
-> +                       }
+> +static int bpf_tcp_ca_init(struct btf *_btf_vmlinux)
+> +{
+
+there is no reason to pass anything but vmlinux's BTF to this
+function, so I think just having "btf" as a name is OK.
+
+> +       s32 type_id;
 > +
-> +                       if (memchr_inv(udata + moff, 0, msize)) {
+> +       type_id = btf_find_by_name_kind(_btf_vmlinux, "sock", BTF_KIND_STRUCT);
+> +       if (type_id < 0)
+> +               return -EINVAL;
+> +       sock_id = type_id;
+> +
+> +       type_id = btf_find_by_name_kind(_btf_vmlinux, "tcp_sock",
+> +                                       BTF_KIND_STRUCT);
+> +       if (type_id < 0)
+> +               return -EINVAL;
+> +       tcp_sock_id = type_id;
+> +       tcp_sock_type = btf_type_by_id(_btf_vmlinux, tcp_sock_id);
+> +
+> +       return 0;
+> +}
+> +
+> +static bool check_optional(u32 member_offset)
+
+check_xxx is quite ambiguous, in general: is it a check that it is
+optional or that it's not optional? How about using
+is_optional/is_unsupported to make this clear?
 
 
-just double-checking: we are ok with having non-zeroed padding in a
-struct, is that right?
-
-> +                               err = -EINVAL;
-> +                               goto reset_unlock;
-> +                       }
+> +{
+> +       unsigned int i;
 > +
-> +                       continue;
-> +               }
-> +
-
-[...]
-
-> +
-> +               err = arch_prepare_bpf_trampoline(image,
-> +                                                 &st_ops->func_models[i], 0,
-> +                                                 &prog, 1, NULL, 0, NULL);
-> +               if (err < 0)
-> +                       goto reset_unlock;
-> +
-> +               *(void **)(kdata + moff) = image;
-> +               image += err;
-
-are there any alignment requirements on image pointer for trampoline?
-
-> +
-> +               /* put prog_id to udata */
-> +               *(unsigned long *)(udata + moff) = prog->aux->id;
+> +       for (i = 0; i < ARRAY_SIZE(optional_ops); i++) {
+> +               if (member_offset == optional_ops[i])
+> +                       return true;
 > +       }
+> +
+> +       return false;
+> +}
 > +
 
 [...]
