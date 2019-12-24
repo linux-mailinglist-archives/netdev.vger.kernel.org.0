@@ -2,57 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E2D312A4B6
-	for <lists+netdev@lfdr.de>; Wed, 25 Dec 2019 00:43:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A7B2412A4B8
+	for <lists+netdev@lfdr.de>; Wed, 25 Dec 2019 00:47:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726245AbfLXXm5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Dec 2019 18:42:57 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:57624 "EHLO
+        id S1726262AbfLXXrP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Dec 2019 18:47:15 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:57656 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726224AbfLXXm5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Dec 2019 18:42:57 -0500
+        with ESMTP id S1726250AbfLXXrP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Dec 2019 18:47:15 -0500
 Received: from localhost (unknown [IPv6:2601:601:9f00:1c3::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 65490154CBDE1;
-        Tue, 24 Dec 2019 15:42:56 -0800 (PST)
-Date:   Tue, 24 Dec 2019 15:42:54 -0800 (PST)
-Message-Id: <20191224.154254.1245558924785049224.davem@davemloft.net>
-To:     aroulin@cumulusnetworks.com
-Cc:     netdev@vger.kernel.org, dsahern@gmail.com,
-        nikolay@cumulusnetworks.com, roopa@cumulusnetworks.com,
-        j.vosburgh@gmail.com, vfalico@gmail.com, andy@greyhouse.net
-Subject: Re: [PATCH net-next] bonding: rename AD_STATE_* to BOND_3AD_STATE_*
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id E8F2C154CBDF1;
+        Tue, 24 Dec 2019 15:47:13 -0800 (PST)
+Date:   Tue, 24 Dec 2019 15:47:13 -0800 (PST)
+Message-Id: <20191224.154713.990847792889689914.davem@davemloft.net>
+To:     richardcochran@gmail.com
+Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org, andrew@lunn.ch,
+        f.fainelli@gmail.com, hkallweit1@gmail.com,
+        jacob.e.keller@intel.com, jakub.kicinski@netronome.com,
+        mark.rutland@arm.com, mlichvar@redhat.com, m-karicheri2@ti.com,
+        robh+dt@kernel.org, willemb@google.com, w-kwok2@ti.com
+Subject: Re: [PATCH V8 net-next 00/12] Peer to Peer One-Step time stamping
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <1576798379-5061-1-git-send-email-aroulin@cumulusnetworks.com>
-References: <1576798379-5061-1-git-send-email-aroulin@cumulusnetworks.com>
+In-Reply-To: <cover.1576956342.git.richardcochran@gmail.com>
+References: <cover.1576956342.git.richardcochran@gmail.com>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 24 Dec 2019 15:42:56 -0800 (PST)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 24 Dec 2019 15:47:14 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Andy Roulin <aroulin@cumulusnetworks.com>
-Date: Thu, 19 Dec 2019 15:32:59 -0800
+From: Richard Cochran <richardcochran@gmail.com>
+Date: Sat, 21 Dec 2019 11:36:26 -0800
 
-> As the LACP states are now part of the uapi, rename the
-> 3ad state defines with BOND_3AD prefix. This way, the naming
-> is consistent with the the rest of the bonding uapi.
-> 
-> Signed-off-by: Andy Roulin <aroulin@cumulusnetworks.com>
-> Acked-by: Roopa Prabhu <roopa@cumulusnetworks.com>
+> This series adds support for PTP (IEEE 1588) P2P one-step time
+> stamping along with a driver for a hardware device that supports this.
+ ...
 
-When the next version of this is posted please provide an appropriate
-Fixes: tag.
-
-My understanding of this situaion is that we only started putting this in
-the UAPI header in the current merge window, which is why it is valid to
-change UAPI like this.
-
-If you provided an appropriate Fixes: tag, it would have been very clear
-to me that this is in fact the case.
+Series applied, thanks Richard.
