@@ -2,180 +2,209 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6CF96129E4D
-	for <lists+netdev@lfdr.de>; Tue, 24 Dec 2019 07:56:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C8235129E52
+	for <lists+netdev@lfdr.de>; Tue, 24 Dec 2019 08:02:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726084AbfLXG4w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Dec 2019 01:56:52 -0500
-Received: from mail-pg1-f196.google.com ([209.85.215.196]:33960 "EHLO
-        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725993AbfLXG4v (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Dec 2019 01:56:51 -0500
-Received: by mail-pg1-f196.google.com with SMTP id r11so10001397pgf.1;
-        Mon, 23 Dec 2019 22:56:51 -0800 (PST)
+        id S1726069AbfLXHCI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Dec 2019 02:02:08 -0500
+Received: from mail-qk1-f195.google.com ([209.85.222.195]:37437 "EHLO
+        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725993AbfLXHCH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Dec 2019 02:02:07 -0500
+Received: by mail-qk1-f195.google.com with SMTP id 21so15439477qky.4;
+        Mon, 23 Dec 2019 23:02:06 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=1CyQSBhVS/8RJiNCLwZXcBfNssZFyZO/f15gG/kQ3+0=;
-        b=YXfpGeFl+ihFaHTjtPmHVcCzVU5ZXOxJ8kzJH8AM7KhC90RWt2v59HEjLZ7JkojS5m
-         qbp47bgd0S1Lhyt8Gq7NJrxcRngYJDgyG6736nLy9Knl2dv8MoyEWPKb5Bv60wK/C6Gv
-         S9/OOpliziORiO36wFJzAJbC1oedAvn18Ak0CBZ2WesSBI2YUJGCvceYiKzeN+9Sje6N
-         jqZu/y7nJWT0rDmBnt3xRHsVPTxR4SMndg/8q5jR8GIBPFABYsmI/3f0vIF0XU4FkjGC
-         ZnT3rIsUMBKsjtu+yg7+UCHU/mD4yug17gVKnkxQAu8AhL6Smbo24UlgRukKRNRjhe5z
-         s9KA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=S6WMlhNYljVx4fqcFwvkQVwW/hWHhMZYIqjCowPZnuQ=;
+        b=KCSIZn1z/5QKU6hoI3gpxJlgBnhnnZMPv7xMSxzwiNYDrGsD231v4SVBduQhm6/ufC
+         xQbCr8VswRk5NcBeL4rIr3JmWKNKpUfR0x2eaGwwJB2D68YoeKqFeQj9qarOyCoHU6OI
+         jr5Sx2lVNH/xo2cnyMeSTsRwbP7mxZvKQybKUHBEBvXhr+F81lIPzwh7OAgwJe4KgSCC
+         a4UIQVSBTCj4YWpDCh+6VFE8KTWzTfjS++eMAnstnWRvzVEo1MqdRTt0QM6ILFUukZ+u
+         /CL1tqhJuoJB1CnX5u5CDvvJeWL8x3geSvPK+MuSUH+oHQWo0oB1kEStXY/ySgtKc9tb
+         L8mQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=1CyQSBhVS/8RJiNCLwZXcBfNssZFyZO/f15gG/kQ3+0=;
-        b=t1xFNq8HMAW9j1kYeuTd+fH1OFilNz5QAhLVktwTGX8iDy+9EuEOkcWfEv9Pc/CPnV
-         dqx1xeyX8nISWZ/A1MnvG8Etda0i9+nnNGwJWJ1tSTln8eOH8XMEsOphxwU3IaqjnYAu
-         x6rnrkaHOmz+ubyhkMurHiUWsywQxP1d/upwQ6Gi5Py4W4l1iqkpYwPxaw20Uc6fIVqO
-         0Y6yVVrzbWku0XupfY9GjWuVRq5RG0MUBG8FAulu5TFH6eGLAajIO36lSsIGi2WWrxJw
-         K3MWPnZlpBDMUe6NUUQmSadGyNOznK//FsRRV0eiR7+lsmgEEeZtL0Wr7jhhMAKp3iyU
-         n0Vg==
-X-Gm-Message-State: APjAAAUr6hxPtIF+iDyFC/cIC5WUXqP8DS1zTsDfgoSON2UJsAWvg9t1
-        D/rKIlB6+zmrwn3CaqcanRl66viFSB3eRQ==
-X-Google-Smtp-Source: APXvYqyVMpUEMOjroP7PS5Ty8tELicY25iSnynlgqT6GR7apmQC/Gr3C2x1YdJVi2dshpJKv0iu23Q==
-X-Received: by 2002:a63:ce55:: with SMTP id r21mr20685275pgi.156.1577170610208;
-        Mon, 23 Dec 2019 22:56:50 -0800 (PST)
-Received: from ?IPv6:2408:84e4:413:c13d:86f:e176:bbe6:b09b? ([2408:84e4:413:c13d:86f:e176:bbe6:b09b])
-        by smtp.gmail.com with ESMTPSA id e2sm27248524pfh.84.2019.12.23.22.56.38
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 23 Dec 2019 22:56:49 -0800 (PST)
-Subject: Re: [PATCH] sctp: do trace_sctp_probe after SACK validation and check
-To:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Cc:     vyasevich@gmail.com, nhorman@tuxdriver.com, davem@davemloft.net,
-        linux-sctp@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20191220044703.88-1-qdkevin.kou@gmail.com>
- <20191220161756.GE5058@localhost.localdomain>
- <1ec267f2-1172-32c0-baee-0d4ebcbfb380@gmail.com>
- <20191223132611.GF5058@localhost.localdomain>
-From:   Kevin Kou <qdkevin.kou@gmail.com>
-Message-ID: <53550819-1f80-b4cc-9016-b53fc7de9369@gmail.com>
-Date:   Tue, 24 Dec 2019 14:56:32 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:72.0) Gecko/20100101
- Thunderbird/72.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=S6WMlhNYljVx4fqcFwvkQVwW/hWHhMZYIqjCowPZnuQ=;
+        b=QmllmjIvIFT1RgPdkkIh5cYmKWfUgR6i4y9Z4aQaj30VH6/FMCGaGpaTrC+YYhTn8w
+         /w8mCFjQhcpzN/c8V9R/C47Y6x5WPzEM+eagAVI5/fmy725ljmwk1Flq8Bj9PuaBL6rD
+         3zItt/79yTQrrtlMZo+eB2q/v8ztSocKxS92hL+GVg5Au57wYHrj024gYKEBM7z/IJzC
+         vJsHNM7Yh9YrcQ3xM0VIT9+mVtSzUPAlrvT9NF5NlGr6cbPKiL7SHTxlVKFBodI1jZsu
+         qSdjt+3Jj70lnsdcVFIfovGKBMT42CIdZnSYgZdocW/nPIoI8HtxNGHgCXXf04mzKDkV
+         f3pA==
+X-Gm-Message-State: APjAAAWt1ZcC7SMQy22zqrxIlTLZtrCvHxAtVqChbW3vYocLMG91+8+P
+        +yxcjFIT0p61PJVc/gdXasJDg/WYMObWK5abDVY=
+X-Google-Smtp-Source: APXvYqyZSbZBdslEFL0LLI5LdcAnVyjbWvMFao9nISr88WHezTkc0EQapuokyrcSOQsLFKtqQZsu7mFtjjPGm1VdH2E=
+X-Received: by 2002:ae9:e809:: with SMTP id a9mr29525784qkg.92.1577170926357;
+ Mon, 23 Dec 2019 23:02:06 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20191223132611.GF5058@localhost.localdomain>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20191221062556.1182261-1-kafai@fb.com> <20191221062620.1184118-1-kafai@fb.com>
+ <CAEf4BzZX_TNUXJktJUtqmxgMefDzie=Ta18TbBqBhG0-GSLQMg@mail.gmail.com> <20191224013140.ibn33unj77mtbkne@kafai-mbp>
+In-Reply-To: <20191224013140.ibn33unj77mtbkne@kafai-mbp>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 23 Dec 2019 23:01:55 -0800
+Message-ID: <CAEf4Bzb2fRZJsccx2CG_pASy+2eMMWPXk6m3d6SbN+o0MSdQPg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2 11/11] bpf: Add bpf_dctcp example
+To:     Martin Lau <kafai@fb.com>
+Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        David Miller <davem@davemloft.net>,
+        Kernel Team <Kernel-team@fb.com>,
+        Networking <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, Dec 23, 2019 at 5:31 PM Martin Lau <kafai@fb.com> wrote:
+>
+> On Mon, Dec 23, 2019 at 03:26:50PM -0800, Andrii Nakryiko wrote:
+> > On Fri, Dec 20, 2019 at 10:26 PM Martin KaFai Lau <kafai@fb.com> wrote:
+> > >
+> > > This patch adds a bpf_dctcp example.  It currently does not do
+> > > no-ECN fallback but the same could be done through the cgrp2-bpf.
+> > >
+> > > Signed-off-by: Martin KaFai Lau <kafai@fb.com>
+> > > ---
+> > >  tools/testing/selftests/bpf/bpf_tcp_helpers.h | 228 ++++++++++++++++++
+> > >  .../selftests/bpf/prog_tests/bpf_tcp_ca.c     | 218 +++++++++++++++++
+> > >  tools/testing/selftests/bpf/progs/bpf_dctcp.c | 210 ++++++++++++++++
+> > >  3 files changed, 656 insertions(+)
+> > >  create mode 100644 tools/testing/selftests/bpf/bpf_tcp_helpers.h
+> > >  create mode 100644 tools/testing/selftests/bpf/prog_tests/bpf_tcp_ca.c
+> > >  create mode 100644 tools/testing/selftests/bpf/progs/bpf_dctcp.c
+> > >
+> > > diff --git a/tools/testing/selftests/bpf/bpf_tcp_helpers.h b/tools/testing/selftests/bpf/bpf_tcp_helpers.h
+> > > new file mode 100644
+> > > index 000000000000..7ba8c1b4157a
+> > > --- /dev/null
+> > > +++ b/tools/testing/selftests/bpf/bpf_tcp_helpers.h
+> > > @@ -0,0 +1,228 @@
+> > > +/* SPDX-License-Identifier: GPL-2.0 */
+> > > +#ifndef __BPF_TCP_HELPERS_H
+> > > +#define __BPF_TCP_HELPERS_H
+> > > +
+> > > +#include <stdbool.h>
+> > > +#include <linux/types.h>
+> > > +#include <bpf_helpers.h>
+> > > +#include <bpf_core_read.h>
+> > > +#include "bpf_trace_helpers.h"
+> > > +
+> > > +#define BPF_TCP_OPS_0(fname, ret_type, ...) BPF_TRACE_x(0, #fname"_sec", fname, ret_type, __VA_ARGS__)
+> > > +#define BPF_TCP_OPS_1(fname, ret_type, ...) BPF_TRACE_x(1, #fname"_sec", fname, ret_type, __VA_ARGS__)
+> > > +#define BPF_TCP_OPS_2(fname, ret_type, ...) BPF_TRACE_x(2, #fname"_sec", fname, ret_type, __VA_ARGS__)
+> > > +#define BPF_TCP_OPS_3(fname, ret_type, ...) BPF_TRACE_x(3, #fname"_sec", fname, ret_type, __VA_ARGS__)
+> > > +#define BPF_TCP_OPS_4(fname, ret_type, ...) BPF_TRACE_x(4, #fname"_sec", fname, ret_type, __VA_ARGS__)
+> > > +#define BPF_TCP_OPS_5(fname, ret_type, ...) BPF_TRACE_x(5, #fname"_sec", fname, ret_type, __VA_ARGS__)
+> >
+> > Should we try to put those BPF programs into some section that would
+> > indicate they are used with struct opts? libbpf doesn't use or enforce
+> > that (even though it could to derive and enforce that they are
+> > STRUCT_OPS programs). So something like
+> > SEC("struct_ops/<ideally-operation-name-here>"). I think having this
+> > convention is very useful for consistency and to do a quick ELF dump
+> > and see what is where. WDYT?
+> I did not use it here because I don't want any misperception that it is
+> a required convention by libbpf.
+>
+> Sure, I can prefix it here and comment that it is just a
+> convention but not a libbpf's requirement.
 
+Well, we can actually make it a requirement of sorts. Currently your
+code expects that BPF program's type is UNSPEC and then it sets it to
+STRUCT_OPS. Alternatively we can say that any BPF program in
+SEC("struct_ops/<whatever>") will be automatically assigned
+STRUCT_OPTS BPF program type (which is done generically in
+bpf_object__open()), and then as .struct_ops section is parsed, all
+those programs will be "assembled" by the code you added into a
+struct_ops map.
 
-On 2019/12/23 21:26, Marcelo Ricardo Leitner wrote:
-> On Sun, Dec 22, 2019 at 12:22:24PM +0800, Kevin Kou wrote:
->> On 2019/12/21 0:17, Marcelo Ricardo Leitner wrote:
->>> On Fri, Dec 20, 2019 at 04:47:03AM +0000, Kevin Kou wrote:
->>>> The function sctp_sf_eat_sack_6_2 now performs
->>>> the Verification Tag validation, Chunk length validation, Bogu check,
->>>> and also the detection of out-of-order SACK based on the RFC2960
->>>> Section 6.2 at the beginning, and finally performs the further
->>>> processing of SACK. The trace_sctp_probe now triggered before
->>>> the above necessary validation and check.
->>>>
->>>> This patch is to do the trace_sctp_probe after the necessary check
->>>> and validation to SACK.
->>>>
->>>> Signed-off-by: Kevin Kou <qdkevin.kou@gmail.com>
->>>> ---
->>>>    net/sctp/sm_statefuns.c | 3 ++-
->>>>    1 file changed, 2 insertions(+), 1 deletion(-)
->>>>
->>>> diff --git a/net/sctp/sm_statefuns.c b/net/sctp/sm_statefuns.c
->>>> index 42558fa..b4a54df 100644
->>>> --- a/net/sctp/sm_statefuns.c
->>>> +++ b/net/sctp/sm_statefuns.c
->>>> @@ -3281,7 +3281,6 @@ enum sctp_disposition sctp_sf_eat_sack_6_2(struct net *net,
->>>>    	struct sctp_sackhdr *sackh;
->>>>    	__u32 ctsn;
->>>> -	trace_sctp_probe(ep, asoc, chunk);
->>>>    	if (!sctp_vtag_verify(chunk, asoc))
->>>>    		return sctp_sf_pdiscard(net, ep, asoc, type, arg, commands);
->>>> @@ -3319,6 +3318,8 @@ enum sctp_disposition sctp_sf_eat_sack_6_2(struct net *net,
->>>>    	if (!TSN_lt(ctsn, asoc->next_tsn))
->>>>    		return sctp_sf_violation_ctsn(net, ep, asoc, type, arg, commands);
->>>> +	trace_sctp_probe(ep, asoc, chunk);
->>>> +
->>>
->>> Moving it here will be after the check against ctsn_ack_point, which
->>> could cause duplicated SACKs to be missed from the log.
->>
->>
->> As this SCTP trace used to trace the changes of SCTP association state in
->> response to incoming packets(SACK). It is used for debugging SCTP congestion
->> control algorithms, so according to the code in include/trace/events/sctp.h,
->> the trace event mainly focus on congestion related information, and there is
->> no SACK Chunk related information printed. So it is hard to point out
->> whether the SACK is duplicate one or not based on this trace event.
-> 
-> I see. Yet, it's quite odd to do debugging of congestion control
-> algorithms without knowing how many TSNs/bytes are being acked by this
-> ack, but let's keep that aside for now.
-> 
-> I still can't agree with filtering out based the out-of-order SACK check
-> (the TSN_lt(ctsn, asoc->ctsn_ack_point) check. That is valuable to
-> congestion control debugging, because it will likely mean that the
-> sender is working with fewer acks than it would like/expect.
-> 
-> If you need to filter out them and have a "clean" list of what got in,
-> then the fix it needs lies in adding support for logging the ctsn in
-> the trace point itself (similarly to the pr_debug in there) and filter
-> it on post-processing of the logs.
-> 
-> I don't know how much of UAPI cover probe points. Hopefully we can add
-> that information without having to create new probe points.
-> 
-Thanks for your comments, In order to avoid affecting the UAPI, let's 
-keep the existing print fields at present.
+It's a requirement "of sorts", because even if user doesn't do that,
+stuff will still work, if user manually will call
+bpf_program__set_struct_ops(prog). Which actually reminds me that it
+would be good to add bpf_program__set_struct_ops() and
+bpf_program__is_struct_ops() APIs for completeness, similarly to how
+KP's LSM patch set does.
 
-> PS: You can invert the check in
->          if (!TSN_lt(ctsn, asoc->next_tsn))
-> to
->          if (TSN_lte(asoc->next_tsn, ctsn))
-> and move it above, so it is done before the out-of-order check, and
-> the trace point in between them.
-> 
+BTW, libbpf will emit debug message for every single BPF program it
+doesn't recognize section for, so it is still nice to have it be
+something more or less standardized and recognizable by libbpf.
 
-I will make this change and commit another patch.
+>
+> >
+> > > +
 
->>
->> include/trace/events/sctp.h
->> 1. TRACE_EVENT(sctp_probe,
->>
->> TP_printk("asoc=%#llx mark=%#x bind_port=%d peer_port=%d pathmtu=%d "
->> 		  "rwnd=%u unack_data=%d",
->> 		  __entry->asoc, __entry->mark, __entry->bind_port,
->> 		  __entry->peer_port, __entry->pathmtu, __entry->rwnd,
->> 		  __entry->unack_data)
->>
->> 2. TRACE_EVENT(sctp_probe_path,
->>
->> TP_printk("asoc=%#llx%s ipaddr=%pISpc state=%u cwnd=%u ssthresh=%u "
->> 		  "flight_size=%u partial_bytes_acked=%u pathmtu=%u",
->> 		  __entry->asoc, __entry->primary ? "(*)" : "",
->> 		  __entry->ipaddr, __entry->state, __entry->cwnd,
->> 		  __entry->ssthresh, __entry->flight_size,
->> 		  __entry->partial_bytes_acked, __entry->pathmtu)
->>
->>>
->>> Yes, from the sender-side CC we don't care about it (yet), but it
->>> helps to spot probably avoidable retransmissions.
->>>
->>> I think this is cleaning up the noise too much. I can agree with
->>> moving it to after the chunk sanity tests, though.
->>>
->>>>    	/* Return this SACK for further processing.  */
->>>>    	sctp_add_cmd_sf(commands, SCTP_CMD_PROCESS_SACK, SCTP_CHUNK(chunk));
->>>> -- 
->>>> 1.8.3.1
->>>>
->>
+[...]
+
+> >
+> > Can all of these types come from vmlinux.h instead of being duplicated here?
+> It can but I prefer leaving it as is in bpf_tcp_helpers.h like another
+> existing test in kfree_skb.c.  Without directly using the same struct in
+> vmlinux.h,  I think it is a good test for libbpf.
+> That remind me to shuffle the member ordering a little in tcp_congestion_ops
+> here.
+
+Sure no problem. When I looked at this it was a bit discouraging on
+how much types I'd need to duplicate, but surely we don't want to make
+an impression that vmlinux.h is the only way to achieve this.
+
+>
+> >
+> > > +
+> > > +#define min(a, b) ((a) < (b) ? (a) : (b))
+> > > +#define max(a, b) ((a) > (b) ? (a) : (b))
+> > > +#define min_not_zero(x, y) ({                  \
+> > > +       typeof(x) __x = (x);                    \
+> > > +       typeof(y) __y = (y);                    \
+> > > +       __x == 0 ? __y : ((__y == 0) ? __x : min(__x, __y)); })
+> > > +
+> >
+> > [...]
+> >
+> > > +static struct bpf_object *load(const char *filename, const char *map_name,
+> > > +                              struct bpf_link **link)
+> > > +{
+> > > +       struct bpf_object *obj;
+> > > +       struct bpf_map *map;
+> > > +       struct bpf_link *l;
+> > > +       int err;
+> > > +
+> > > +       obj = bpf_object__open(filename);
+> > > +       if (CHECK(IS_ERR(obj), "bpf_obj__open_file", "obj:%ld\n",
+> > > +                 PTR_ERR(obj)))
+> > > +               return obj;
+> > > +
+> > > +       err = bpf_object__load(obj);
+> > > +       if (CHECK(err, "bpf_object__load", "err:%d\n", err)) {
+> > > +               bpf_object__close(obj);
+> > > +               return ERR_PTR(err);
+> > > +       }
+> > > +
+> > > +       map = bpf_object__find_map_by_name(obj, map_name);
+> > > +       if (CHECK(!map, "bpf_object__find_map_by_name", "%s not found\n",
+> > > +                   map_name)) {
+> > > +               bpf_object__close(obj);
+> > > +               return ERR_PTR(-ENOENT);
+> > > +       }
+> > > +
+> >
+> > use skeleton instead?
+> Will give it a spin.
+>
+> >
+> > > +       l = bpf_map__attach_struct_ops(map);
+> > > +       if (CHECK(IS_ERR(l), "bpf_struct_ops_map__attach", "err:%ld\n",
+> > > +                 PTR_ERR(l))) {
+> > > +               bpf_object__close(obj);
+> > > +               return (void *)l;
+> > > +       }
+> > > +
+> > > +       *link = l;
+> > > +
+> > > +       return obj;
+> > > +}
+> > > +
