@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A1E8129D4A
-	for <lists+netdev@lfdr.de>; Tue, 24 Dec 2019 05:23:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 806C3129D4F
+	for <lists+netdev@lfdr.de>; Tue, 24 Dec 2019 05:28:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726884AbfLXEXu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Dec 2019 23:23:50 -0500
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:33599 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726847AbfLXEXu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Dec 2019 23:23:50 -0500
-Received: by mail-pg1-f194.google.com with SMTP id 6so9832265pgk.0;
-        Mon, 23 Dec 2019 20:23:49 -0800 (PST)
+        id S1726911AbfLXE2g (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Dec 2019 23:28:36 -0500
+Received: from mail-pl1-f195.google.com ([209.85.214.195]:37784 "EHLO
+        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726853AbfLXE2g (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Dec 2019 23:28:36 -0500
+Received: by mail-pl1-f195.google.com with SMTP id c23so8001972plz.4;
+        Mon, 23 Dec 2019 20:28:35 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=JX1EL/6eRwb5KtYiMYTIg46J0eLFw4FhTiS7oR9PV1A=;
-        b=Swnp1PFp30RQwDUwAejmlTu2qne3T3lQN/q8nUrlWxdofEZf6wwvW4Z2RiLICfSovN
-         x2yrImyRArfILBNnsK0h/VzotYllhKHrLaRiIWO098a5ToQQbWsohgOAZIHGqPMR4lne
-         XaTpA+vWv3HYJviVgvQHpwqZ+3Zx04eJJ+uH96m3mDqDRJr3fmYKw+puEL5cAis3ZVn/
-         nmly1IcNvaVoCT00HFh7kxmMbSIhH0jweN5JZhC+2mVZAUL8+y+ZxADgT+QpFCy3rMch
-         nKMvAqeEpu75b9+8WSfx6nbHdxbizEAR0/eAl0+ZfqJyay82P5Z9RK5DNMiteBS6MWth
-         Qc0g==
+        bh=Rlp1x+CfsIyep+vLCVnKlOuXvn91+pgUbmxCqB93/vM=;
+        b=Q8j6V2cffRkzISDE4IXqAZ45ci+6mXCEPOuye39cnuyMKoXrwJP2ywMW17MqI0fYIm
+         lHREdno3CU/N0O9Lq9SIkb9q9bmj/sBL7Rz3pwYIKFmQ3ra9v+SH4CfJ9fGVXAIQmLQT
+         doQPL46/UiK49tOOpiJoZJ255ivrBJBcKbGZTJijXbvTirrtoOXZ9BowRHr198JLaTx8
+         DVw0GKxeqPFZbsNsSuPM7YR92NZk2fEAc4NTG2S2xw1cVlFX3TWPHjgYoMpPHzquKzN+
+         bmN6v6Sm+gdT7JGTTsywoGtmN4JzaQN0APUMcWP8XAqQhiU5STkThlovnwyljeI1Kxnr
+         1Tfg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=JX1EL/6eRwb5KtYiMYTIg46J0eLFw4FhTiS7oR9PV1A=;
-        b=m31jD3qqN5KBgsbuNTgb3h34JkvMz8FdhG26TsipvIk9SIQXb7R/9hedq7TmTYfWA5
-         cJc9+2sR32Idw/pZrbCbUU1yzou/Ex7my8DM17Fxm/1NyAxf0R9jeL9pmiVS1Jtlr+lq
-         t46kHcuCHn1pvCLGtpTW0Dlkd3dP0P1XcBXiZjYA4xPMNgn+1wihQq04MexP/s0TuZwY
-         bY7BzLUakrlIJ0XZS0cgzE3Rf1X4rKqZAWKUM9eNY6ZpqQkIdBXvjGwF0t7rr56bqnDE
-         UAW21vEJjMBpcLNelba0QA1Wn8BLP189Srv3G/5kxJGlLsAIJr10wVkw73S0riY6gikB
-         B9GA==
-X-Gm-Message-State: APjAAAUVpRaGP0YAJA9+q7ofl61PLgRHeDQosFjWP1+lsCId6x2Mtzj9
-        UGXaDtf+cV4V8A2Rr7A+UPqS0j50
-X-Google-Smtp-Source: APXvYqyyBzwkVAJ1MhIaI53BguBhvnsWMzG1nyg0tFnFE2KdKfpMNAK62yF8lfMhxlB2d8Wxp9aeuQ==
-X-Received: by 2002:a63:c20c:: with SMTP id b12mr34226979pgd.407.1577161428905;
-        Mon, 23 Dec 2019 20:23:48 -0800 (PST)
+        bh=Rlp1x+CfsIyep+vLCVnKlOuXvn91+pgUbmxCqB93/vM=;
+        b=gRc1KWOlefQlEye6Zj+lqVR06xYNwRHWa8dcIaPxUGKUemYPOYzEGWNZwHDk+O3Fbr
+         riMQiNb/ot4Gk1iIciYWgCsJgZylUgRCx5AVNASj840d2wZPdI93UDjqr4v8PKGJh1Z5
+         4hldbitRsIRkpw0q7HduBMcAI4vhZ0L4JtZNUzpgU/JV/s+JMUl2g7aCFMKEFG/rUK0B
+         md01E9fDWVH3K1c3W2NjywyxjpXUdKo/R0e4QrpXn9mD00yfIQLE+xbYFrbLNlsvr6Uy
+         O/8eRCIbHqin9+2h/SrdASvimO7gL4W8gvMtwUxOaM3Ws7h9RlbSkNULDnv1InAZEMzu
+         4asA==
+X-Gm-Message-State: APjAAAW8SbbiiCDO1NwFCNOqDRal0nav5ZC+V4+2oZ6lTfsuIERLxyAM
+        VK+PyAqp5WDQLh3es/q1633ih2GP
+X-Google-Smtp-Source: APXvYqysuv01KwwK2ajUl0jHMsIeOmc/PH/pnhZb1H9dsovpJcBJLfjcvDEt/GB+cB4ehKI1GjC5uQ==
+X-Received: by 2002:a17:90a:8a0e:: with SMTP id w14mr3447337pjn.51.1577161715099;
+        Mon, 23 Dec 2019 20:28:35 -0800 (PST)
 Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
-        by smtp.gmail.com with ESMTPSA id 7sm16514706pfx.52.2019.12.23.20.23.47
+        by smtp.gmail.com with ESMTPSA id n1sm25744742pfd.47.2019.12.23.20.28.34
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 23 Dec 2019 20:23:48 -0800 (PST)
-Subject: Re: [PATCH net-next v8 05/14] ethtool: default handlers for GET
- requests
+        Mon, 23 Dec 2019 20:28:34 -0800 (PST)
+Subject: Re: [PATCH net-next v8 06/14] ethtool: provide string sets with
+ STRSET_GET request
 To:     Michal Kubecek <mkubecek@suse.cz>,
         David Miller <davem@davemloft.net>, netdev@vger.kernel.org
 Cc:     Jakub Kicinski <jakub.kicinski@netronome.com>,
@@ -56,7 +56,7 @@ Cc:     Jakub Kicinski <jakub.kicinski@netronome.com>,
         Johannes Berg <johannes@sipsolutions.net>,
         linux-kernel@vger.kernel.org
 References: <cover.1577052887.git.mkubecek@suse.cz>
- <5db4d3bb1856e286a67d25ad02712b2bb2890524.1577052887.git.mkubecek@suse.cz>
+ <9f0cd4f631987f637812aa721e51a21e9e49eb46.1577052887.git.mkubecek@suse.cz>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Autocrypt: addr=f.fainelli@gmail.com; keydata=
  mQGiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
@@ -112,12 +112,12 @@ Autocrypt: addr=f.fainelli@gmail.com; keydata=
  caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
  6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9qfUATKC9NgZjRvBztfqy4
  a9BQwACgnzGuH1BVeT2J0Ra+ZYgkx7DaPR0=
-Message-ID: <499e7eab-c8dc-73ca-2475-0e9806210410@gmail.com>
-Date:   Mon, 23 Dec 2019 20:23:47 -0800
+Message-ID: <548c0a25-9366-05d5-2182-ba50b5c240aa@gmail.com>
+Date:   Mon, 23 Dec 2019 20:28:33 -0800
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
  Thunderbird/68.3.1
 MIME-Version: 1.0
-In-Reply-To: <5db4d3bb1856e286a67d25ad02712b2bb2890524.1577052887.git.mkubecek@suse.cz>
+In-Reply-To: <9f0cd4f631987f637812aa721e51a21e9e49eb46.1577052887.git.mkubecek@suse.cz>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -129,28 +129,21 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 On 12/22/2019 3:45 PM, Michal Kubecek wrote:
-> Significant part of GET request processing is common for most request
-> types but unfortunately it cannot be easily separated from type specific
-> code as we need to alternate between common actions (parsing common request
-> header, allocating message and filling netlink/genetlink headers etc.) and
-> specific actions (querying the device, composing the reply). The processing
-> also happens in three different situations: "do" request, "dump" request
-> and notification, each doing things in slightly different way.
+> Requests a contents of one or more string sets, i.e. indexed arrays of
+> strings; this information is provided by ETHTOOL_GSSET_INFO and
+> ETHTOOL_GSTRINGS commands of ioctl interface. Unlike ioctl interface, all
+> information can be retrieved with one request and mulitple string sets can
+> be requested at once.
 > 
-> The request specific code is implemented in four or five callbacks defined
-> in an instance of struct get_request_ops:
+> There are three types of requests:
 > 
->   parse_request() - parse incoming message
->   prepare_data()  - retrieve data from driver or NIC
->   reply_size()    - estimate reply message size
->   fill_reply()    - compose reply message
->   cleanup_data()  - (optional) clean up additional data
+>   - no NLM_F_DUMP, no device: get "global" stringsets
+>   - no NLM_F_DUMP, with device: get string sets related to the device
+>   - NLM_F_DUMP, no device: get device related string sets for all devices
 > 
-> Other members of struct get_request_ops describe the data structure holding
-> information from client request and data used to compose the message. The
-> default handlers ethnl_default_doit(), ethnl_default_dumpit(),
-> ethnl_default_start() and ethnl_default_done() can be then used in genl_ops
-> handler. Notification handler will be introduced in a later patch.
+> Client can request either all string sets of given type (global or device
+> related) or only specific sets. With ETHTOOL_A_STRSET_COUNTS flag set, only
+> set sizes (numbers of strings) are returned.
 > 
 > Signed-off-by: Michal Kubecek <mkubecek@suse.cz>
 
