@@ -2,150 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 03117129FD9
-	for <lists+netdev@lfdr.de>; Tue, 24 Dec 2019 10:52:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B0B8E12A01C
+	for <lists+netdev@lfdr.de>; Tue, 24 Dec 2019 11:28:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726201AbfLXJwe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Dec 2019 04:52:34 -0500
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:43483 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726104AbfLXJwe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Dec 2019 04:52:34 -0500
-Received: by mail-wr1-f67.google.com with SMTP id d16so19327587wre.10
-        for <netdev@vger.kernel.org>; Tue, 24 Dec 2019 01:52:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=N3HBmWELJ09NCKU7N1TUdxqAH5rNCluFgs2bN3EZVaM=;
-        b=a5SwwLJ7wdPE0l7OEStq9kLfrybjTtNM9B2ahwATRWhdqk04fohhlIqkQG74hqA6Fz
-         +Aj3921DFogeuC7csDkXVEnZLXIELKVyi2PCE6kUhBRPU1MiHjAUkssRhn3TS+AD2OtF
-         yUC7UPi9dtY344RFgjAcsU1QApLLOGY88dg+5N4uAR7UVqv73CakDc+k23Mu6MHOerXd
-         nB4fUsX7i7c7BRFdJrolF1lFVqq1cTeoOCVtCFfw4L5KAXodgx7iT0vMznczToxy8fk6
-         cKbCZCKI13lqNKQJj4CbsWEdfWTyhIw/ddiJsj3sRRwU8VGE2TKbaJ56MNhVXJe2KhGG
-         RGug==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=N3HBmWELJ09NCKU7N1TUdxqAH5rNCluFgs2bN3EZVaM=;
-        b=s/2HUtXpjn6YsodksBFi+hwj7g+G6E8tSqpL5PiavbtmA33DSTSXEbICKTnH8oZd1S
-         c0xSGeAQ4zimG5z/rJJErrLl6t8BHBticvs3Zw8FfH0j/5H0jbAr7OXapTwovI6cY+pA
-         qN93eNtiia4JdN03zte5BU7DSK9idPX7fUEh4dI3rdA/Lb+/VH0yBtey5bJh6fue0L/r
-         +bAq8kk11Uze6f/SMEJS4WgsA527hDtdiOBniRTL1NQzKbQmvxgD2VX+xx0QjDindfh1
-         qrqSVdWvRqhmLtd9XOUERZpLOahhP3HQPIk74wSHlvI6P/BN7rxyM6mG/FoxAjFndZQh
-         xA1A==
-X-Gm-Message-State: APjAAAWRZiVAgfU7vCDL5LztoVp5oeMdVNfdz5jTtODe/1kesfco+QeH
-        u1TpfLRwT13rLW6NdFtN+xDWrg==
-X-Google-Smtp-Source: APXvYqx8OEXpOqgIwYiNou/aJcyi8NyZ0Zz3lhggLDmM2qFtxsFeWbTTbrXCsfnE1VKXx1IcnvMZoQ==
-X-Received: by 2002:adf:ee92:: with SMTP id b18mr36084857wro.281.1577181152190;
-        Tue, 24 Dec 2019 01:52:32 -0800 (PST)
-Received: from apalos.home (ppp-94-64-118-170.home.otenet.gr. [94.64.118.170])
-        by smtp.gmail.com with ESMTPSA id v14sm23394678wrm.28.2019.12.24.01.52.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 24 Dec 2019 01:52:31 -0800 (PST)
-Date:   Tue, 24 Dec 2019 11:52:29 +0200
-From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
-To:     Matteo Croce <mcroce@redhat.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Maxime Chevallier <maxime.chevallier@bootlin.com>,
-        Antoine Tenart <antoine.tenart@bootlin.com>,
-        Luka Perkov <luka.perkov@sartura.hr>,
-        Tomislav Tomasic <tomislav.tomasic@sartura.hr>,
-        Marcin Wojtas <mw@semihalf.com>,
-        Stefan Chulski <stefanc@marvell.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Nadav Haklai <nadavh@marvell.com>
-Subject: Re: [RFC net-next 0/2] mvpp2: page_pool support
-Message-ID: <20191224095229.GA24310@apalos.home>
-References: <20191224010103.56407-1-mcroce@redhat.com>
+        id S1726262AbfLXK2c (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Dec 2019 05:28:32 -0500
+Received: from mail-eopbgr50095.outbound.protection.outlook.com ([40.107.5.95]:6829
+        "EHLO EUR03-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726076AbfLXK2c (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 24 Dec 2019 05:28:32 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=iaurMVRvf/NeyqFOxd6+vpyTE8+3hSv0arP3ZhDSZbHhdU/JtyBE65w7rVnBdWDGejoD1EIGz52lJtTsUcT7nX0HuqHQEIQdzCRnTn7Si7j+c83pvp/UrcVrcQaS4X43hn3jZ8fq+a5xCfU/bp96x1nIHT/xfOWGkO5iuHJrxI91wiVdB0nU4H69jYKiYkbOSzzq7OqAc9wrSBOhCx+8JW7Lba6tZsK7LMVmw4ZQd9ubuT3lr9cJ71tMlOHscejO+cRctCw/oAIoIXif14PDGQQLYEw5rk7Q/tknxiZuNq5sIYDQI7Vug9h9ERI7M4/rM2tBOvHG+CzV9dSLtiuoGg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=6DTNrjZo65ISOtFzEG/FPldy+s1ou6FxTqOAyOitf2k=;
+ b=LKxUc1umN8+pPRfHnITRciqxl2kqlRjRDdIaLITWyJg5Z5qZNDN4fVGTyaV50NbtvnmF6aIS6ME0aegegE+5Xv4Dda08NJC5UODRgEhYiXM8WmMwXg8tQI7ziQvAgAA5S2TAh8tCfwbKgKZQwptGbpddxrunRzIpF6DicNaBW+Xyyof5qYLQ4eZ5G7iXcdn6u6e6FQl3eKnMd4vDkUgHaxVjIG7CqClMCoc2T0GGMYhU+CE/Y6bJER8TErrCSs/Y/cZJ87vYEb0zS538DT8ancz22U37K/KXKJ2QtWBiRhTTWg0tL21riGjjdd8hm772zooPGg/VZxHTnLLvAMNJbA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=televic.com; dmarc=pass action=none header.from=televic.com;
+ dkim=pass header.d=televic.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=televic.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=6DTNrjZo65ISOtFzEG/FPldy+s1ou6FxTqOAyOitf2k=;
+ b=FLIYHdDdzlFh8uAunte0Xb0MeF7jWgRbADteocigtrLyYSrpO4QsueS0q0UKNLxnxE/n874GgeOgGX4uvHqXkKONZAfSCZm430yAmPTQh2PUk68aVP4GmllbAsbCkBR47p980NwU3wVd1NVQ/BSmYwbi/1fV7ZAqxPRcFEkOb1M=
+Authentication-Results: spf=none (sender IP is )
+ smtp.mailfrom=J.Lambrecht@TELEVIC.com; 
+Received: from VI1PR07MB5085.eurprd07.prod.outlook.com (20.177.203.77) by
+ VI1PR07MB5741.eurprd07.prod.outlook.com (20.177.203.153) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2581.11; Tue, 24 Dec 2019 10:28:29 +0000
+Received: from VI1PR07MB5085.eurprd07.prod.outlook.com
+ ([fe80::780c:216f:7598:e572]) by VI1PR07MB5085.eurprd07.prod.outlook.com
+ ([fe80::780c:216f:7598:e572%6]) with mapi id 15.20.2581.007; Tue, 24 Dec 2019
+ 10:28:29 +0000
+Subject: Re: net: dsa: mv88e6xxx: error parsing ethernet node from dts
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        rasmus.villemoes@prevas.dk,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        vivien.didelot@gmail.com
+References: <27f65072-f3a1-7a3c-5e9e-0cc86d25ab51@televic.com>
+ <20191204153804.GD21904@lunn.ch>
+ <ccf9c80e-83e5-d207-8d09-1819cfb1cf35@televic.com>
+ <20191204171336.GF21904@lunn.ch>
+From:   =?UTF-8?Q?J=c3=bcrgen_Lambrecht?= <j.lambrecht@televic.com>
+Message-ID: <c03b1cc5-d5a9-980c-e615-af5b821b500d@televic.com>
+Date:   Tue, 24 Dec 2019 11:28:27 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.3.0
+In-Reply-To: <20191204171336.GF21904@lunn.ch>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-ClientProxiedBy: AM0PR06CA0054.eurprd06.prod.outlook.com
+ (2603:10a6:208:aa::31) To VI1PR07MB5085.eurprd07.prod.outlook.com
+ (2603:10a6:803:9d::13)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191224010103.56407-1-mcroce@redhat.com>
+Received: from [10.40.216.140] (84.199.255.188) by AM0PR06CA0054.eurprd06.prod.outlook.com (2603:10a6:208:aa::31) with Microsoft SMTP Server (version=TLS1_2, cipher=) via Frontend Transport; Tue, 24 Dec 2019 10:28:28 +0000
+X-Originating-IP: [84.199.255.188]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: e26ab66a-7704-43e2-54ff-08d7885c0468
+X-MS-TrafficTypeDiagnostic: VI1PR07MB5741:
+X-Microsoft-Antispam-PRVS: <VI1PR07MB574188F930FA95236402A443FF290@VI1PR07MB5741.eurprd07.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
+X-Forefront-PRVS: 0261CCEEDF
+X-Forefront-Antispam-Report: SFV:NSPM;SFS:(10019020)(4636009)(39850400004)(136003)(396003)(376002)(346002)(366004)(199004)(189003)(54906003)(6916009)(2616005)(8936002)(81166006)(6486002)(5660300002)(66476007)(26005)(66556008)(316002)(4744005)(8676002)(2906002)(66574012)(16576012)(81156014)(956004)(86362001)(4326008)(16526019)(478600001)(53546011)(36756003)(31686004)(52116002)(31696002)(66946007)(186003);DIR:OUT;SFP:1102;SCL:1;SRVR:VI1PR07MB5741;H:VI1PR07MB5085.eurprd07.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+Received-SPF: None (protection.outlook.com: TELEVIC.com does not designate
+ permitted sender hosts)
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: qdw8g1cswkHs6BPN3rIUCGXMwcnZ4xmVTvHlIHFCdkMeo8bz2lOv0dtGK4tHboQVBoGE0AhJQAn/kLC2jmDBeollf/YRiccV3siJ48gLKs6Rn8g8Jn8rpxY0abrFeQ31B1mpFm/hhH7wmvduDBA9Q+Sauiobs56skb0WTzA3Oa5U9bvBtlQ/4/UJypnUW0F+tbXxcB5l7Slk2DHwn0Hm0GHssJUlLZHgG7kRTYyGVBVD/g0vCvSvnZ1+wLPvqfKHZ/SZTM6GF568vJb40ObmspvD9uO1bL8zy5K7Zl/+7wW8iZw9JnFx/iTebeU7xSBo+amoeVLstEdHpI+dzSCHrspCqlz2TR0w0Z8rj/P1+D4LX/ZoyTsuQ6C0vQjQLTOPIwiI1RhszOm7W3YlSStJ4miDQ7HSm+qc6M7E93/lMlshB5SXazGq3oqOL70v9TEa
+X-OriginatorOrg: televic.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: e26ab66a-7704-43e2-54ff-08d7885c0468
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Dec 2019 10:28:29.1218
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 68a8593e-d1fc-4a6a-b782-1bdcb0633231
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: oBDWGFl3Bjr2ao6sHgAkrVdisDtPFi0Rmm9VjgJKQyzuQDu5HHrdEtlmwwLbYRUHV9Mbl22yB49ZaUEEEcbTIQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR07MB5741
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 24, 2019 at 02:01:01AM +0100, Matteo Croce wrote:
-> This patches change the memory allocator of mvpp2 from the frag allocator to
-> the page_pool API. This change is needed to add later XDP support to mvpp2.
-> 
-> The reason I send it as RFC is that with this changeset, mvpp2 performs much
-> more slower. This is the tc drop rate measured with a single flow:
-> 
-> stock net-next with frag allocator:
-> rx: 900.7 Mbps 1877 Kpps
-> 
-> this patchset with page_pool:
-> rx: 423.5 Mbps 882.3 Kpps
-> 
-> This is the perf top when receiving traffic:
-> 
->   27.68%  [kernel]            [k] __page_pool_clean_page
+On 12/4/19 6:13 PM, Andrew Lunn wrote:
+> But returning 0x0000 is odd. Normally, if an MDIO device does not
+> respond, you read 0xffff, because of the pull up resistor on the bus.
+>
+> The fact you find it ones means it is something like this, some minor
+> configuration problem, power management, etc.
 
-This seems extremly high on the list. 
+Hi Adrew,
 
->    9.79%  [kernel]            [k] get_page_from_freelist
->    7.18%  [kernel]            [k] free_unref_page
->    4.64%  [kernel]            [k] build_skb
->    4.63%  [kernel]            [k] __netif_receive_skb_core
->    3.83%  [mvpp2]             [k] mvpp2_poll
->    3.64%  [kernel]            [k] eth_type_trans
->    3.61%  [kernel]            [k] kmem_cache_free
->    3.03%  [kernel]            [k] kmem_cache_alloc
->    2.76%  [kernel]            [k] dev_gro_receive
->    2.69%  [mvpp2]             [k] mvpp2_bm_pool_put
->    2.68%  [kernel]            [k] page_frag_free
->    1.83%  [kernel]            [k] inet_gro_receive
->    1.74%  [kernel]            [k] page_pool_alloc_pages
->    1.70%  [kernel]            [k] __build_skb
->    1.47%  [kernel]            [k] __alloc_pages_nodemask
->    1.36%  [mvpp2]             [k] mvpp2_buf_alloc.isra.0
->    1.29%  [kernel]            [k] tcf_action_exec
-> 
-> I tried Ilias patches for page_pool recycling, I get an improvement
-> to ~1100, but I'm still far than the original allocator.
+to close this issue: you were right: the Marvell clock, that comes from the iMX clocking block ENET1_REF_CLK_25M suddenly stops running:
 
-Can you post the recycling perf for comparison?
+an oscilloscope showed that the Marvell main clock stops shortly after the first probe, and only comes back 5s later at the end of booting when the fixed-phy is configured.
+It is not the fec that stops the clock, because if fec1 is "disabled" also the clock stops, but then does not come back.
 
-> 
-> Any idea on why I get such bad numbers?
+We did not found yet how to keep the clock enabled (independent of the fec), so if you have any hints - more than welcome.
 
-Nop but it's indeed strange
 
-> 
-> Another reason to send it as RFC is that I'm not fully convinced on how to
-> use the page_pool given the HW limitation of the BM.
+Best regards,
 
-I'll have a look right after holidays
+Jürgen
 
-> 
-> The driver currently uses, for every CPU, a page_pool for short packets and
-> another for long ones. The driver also has 4 rx queue per port, so every
-> RXQ #1 will share the short and long page pools of CPU #1.
-> 
-
-I am not sure i am following the hardware config here
-
-> This means that for every RX queue I call xdp_rxq_info_reg_mem_model() twice,
-> on two different page_pool, can this be a problem?
-> 
-> As usual, ideas are welcome.
-> 
-> Matteo Croce (2):
->   mvpp2: use page_pool allocator
->   mvpp2: memory accounting
-> 
->  drivers/net/ethernet/marvell/Kconfig          |   1 +
->  drivers/net/ethernet/marvell/mvpp2/mvpp2.h    |   7 +
->  .../net/ethernet/marvell/mvpp2/mvpp2_main.c   | 142 +++++++++++++++---
->  3 files changed, 125 insertions(+), 25 deletions(-)
-> 
-> -- 
-> 2.24.1
-> 
-Cheers
-/Ilias
