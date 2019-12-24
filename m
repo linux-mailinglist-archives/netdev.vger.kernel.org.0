@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 907BF129D30
-	for <lists+netdev@lfdr.de>; Tue, 24 Dec 2019 05:01:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B4588129D39
+	for <lists+netdev@lfdr.de>; Tue, 24 Dec 2019 05:09:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726897AbfLXEBN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Dec 2019 23:01:13 -0500
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:44862 "EHLO
-        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726747AbfLXEBN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Dec 2019 23:01:13 -0500
-Received: by mail-pg1-f195.google.com with SMTP id x7so9789352pgl.11;
-        Mon, 23 Dec 2019 20:01:12 -0800 (PST)
+        id S1726880AbfLXEI7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Dec 2019 23:08:59 -0500
+Received: from mail-pj1-f67.google.com ([209.85.216.67]:40516 "EHLO
+        mail-pj1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726847AbfLXEI6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Dec 2019 23:08:58 -0500
+Received: by mail-pj1-f67.google.com with SMTP id bg7so660880pjb.5;
+        Mon, 23 Dec 2019 20:08:58 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=DeTrWnPqj8Nu0CdJ5/wJNZRaWW5zoCsbwPb6RYQPwjk=;
-        b=chG/Hm8oiRcvSXd2Q20nxF9vcRBtr4Fl3gu+rTXYTcAJ77524ciDXdmRKvR2IrHX2W
-         3g9BbYCWKxE8GJN86Tqj8K6RGQWXrGRZp3iPls/9IpzGF+vxW32PfmUQf5LeIyDYZfB6
-         zTg1cRoDfKQx8O3pgIi80n+5ZZcmWfV4BhkmhnQEU3AJhrlPoblVHx7u8LrjpzyUV4Sm
-         3IGaoSyDZYNTyd/f3EEuHUpXffC/z0Z74AM0Vp1VlT2rv34RWpwLXlu0g83PenWbwYGA
-         3V9GeyrEmOYmccDngiUzNIJXevSfIwsg61w45Bfku+0bJdddv99IoA7UBBdFYna5w7Zf
-         Yzow==
+        bh=+nXk7pE99ytdls3+BMfeMPLZoaiW6iK0ew+FdU+xPGM=;
+        b=d1jPT7BGxT8w6IReVtgp8vsod0GBHJSS7SFicZuEPl2zZZ4KrwAuBybSooX64nbXmO
+         gDYAUFwNCnj5/LLsF0PiyqimZpuoYWI6V+yiTEPu551z5GaakBTHGICCPp0cxYOi9mxl
+         QihpVsN4dmS06mlD3crS9ZFZx4V2lKq4cG+RUK6D2VS6FzpTVSdfR4+RrJ/mjI8SSBHJ
+         pFouba/g2M0Hh6P0DP8jIlDgmvtlXRpIcwa5FdrDjBDIIdaGCEqnZB9Kt0nwYa81LxUK
+         3bz1b9FMl42lqXFIteh4NUlABFOzX8WIZ8gt0ZvdpY4L+DZ+1eceFSzmQQwAmwro+zYZ
+         vZZg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=DeTrWnPqj8Nu0CdJ5/wJNZRaWW5zoCsbwPb6RYQPwjk=;
-        b=PezIQtrd9SnQ78xRnPUweiPtzhECD43498QrhMxARhEW4WmEKaIZcXiTO8jU5If3lX
-         6btMpohYkezKlJvSlkPJ67VJOPZvO7a73njAUfTXUu9M0WDQSfj4d/MLJFtSiOnK4t+x
-         mYKawy6gex2dDn3wRGRJeWZ+kdE/Sj122b1dxJ0xOVgHJYbvfSqHPGxPuc9iltg327BU
-         v8CXm4jx5pDZcFyqdXkqgdOPqfvsSSZNnZfsI5UEtlj0JV0+rlJyxFYEhnDTORtx6CW9
-         T5y1byDA3XONOWkHRJsKOhMVKkmsAn5bdadsnNUSRQV9JuJqcHFBOA1kxUnEQl8Yhte9
-         i/nQ==
-X-Gm-Message-State: APjAAAVMeSbQAdx5+D5IGEwiFiTBO0Ek1Z6z87gwbb92qomRON6W0ng6
-        /v/V4safDi4GpVUhnNr7Jat1mn/B
-X-Google-Smtp-Source: APXvYqwi5g6jWuhhhiX3pVqzcD1NF1jawz49mNqddXfOi5bQ5fTp6Vef1NJinDv7aCUsns1w4Y1WsQ==
-X-Received: by 2002:a63:ec0a:: with SMTP id j10mr35002497pgh.178.1577160072032;
-        Mon, 23 Dec 2019 20:01:12 -0800 (PST)
+        bh=+nXk7pE99ytdls3+BMfeMPLZoaiW6iK0ew+FdU+xPGM=;
+        b=QsRoRwmSPMbEZBwP5FYvfVX0G5qSeK3Vc0jIcpFnBIhiy8yFe3EPYar/Qa9Go5B65D
+         9CKNdRZNFPTroj9rd4S4X6LU02sUpNLRIm74ZCuhNNztVg05cGunByJZP/cSjQmQ+8Kh
+         uh+2m1kvcWsf+HtPQJTmlntvm9mi6T3sxGhcbiyejlTk4llNGJMg84+mUrj6Jop3wpwJ
+         End/Q7keHymjYOXJjYQ8dH8GUCaUpsmFcd56rZw+tv0sZxK9LJcD+kq8ANlPZxsJTI5z
+         rF9IyNVBTofSvwzkoQedXV1cZBlG5stj6DdKlG1K8oJadXMe2eEq1SRODohccAMlXbej
+         Dxrg==
+X-Gm-Message-State: APjAAAUj2Yqzw9bCMxl0XsvG0H6N738r96R6H23nRXMBBf2zf9m8rp44
+        MoqAyIZK7eagS/yAkhAjyvdsKnJm
+X-Google-Smtp-Source: APXvYqwZHb+rGPlzQcUKBYkxPK2rawFh+S7BFuovuA/1pCbjLJ/WTb6u6bpWUE9BvLROm1m2o8hBAg==
+X-Received: by 2002:a17:902:209:: with SMTP id 9mr34665542plc.58.1577160537524;
+        Mon, 23 Dec 2019 20:08:57 -0800 (PST)
 Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
-        by smtp.gmail.com with ESMTPSA id l127sm24435511pgl.48.2019.12.23.20.01.10
+        by smtp.gmail.com with ESMTPSA id i17sm3835041pfr.67.2019.12.23.20.08.56
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 23 Dec 2019 20:01:11 -0800 (PST)
-Subject: Re: [PATCH net-next v8 01/14] ethtool: introduce ethtool netlink
+        Mon, 23 Dec 2019 20:08:56 -0800 (PST)
+Subject: Re: [PATCH net-next v8 02/14] ethtool: helper functions for netlink
  interface
 To:     Michal Kubecek <mkubecek@suse.cz>,
         David Miller <davem@davemloft.net>, netdev@vger.kernel.org
@@ -56,7 +56,7 @@ Cc:     Jakub Kicinski <jakub.kicinski@netronome.com>,
         Johannes Berg <johannes@sipsolutions.net>,
         linux-kernel@vger.kernel.org
 References: <cover.1577052887.git.mkubecek@suse.cz>
- <580d57d8cef89dd2a84d63f1a78a0d9a9b3d458f.1577052887.git.mkubecek@suse.cz>
+ <8cbb9c250caf021f600032ad4aa32c44adf0b8e9.1577052887.git.mkubecek@suse.cz>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Autocrypt: addr=f.fainelli@gmail.com; keydata=
  mQGiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
@@ -112,12 +112,12 @@ Autocrypt: addr=f.fainelli@gmail.com; keydata=
  caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
  6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9qfUATKC9NgZjRvBztfqy4
  a9BQwACgnzGuH1BVeT2J0Ra+ZYgkx7DaPR0=
-Message-ID: <a3186490-9c7f-2b5d-245e-7972dc7c4e80@gmail.com>
-Date:   Mon, 23 Dec 2019 20:01:10 -0800
+Message-ID: <921763be-9f8d-5f2d-18a3-400c9ac98797@gmail.com>
+Date:   Mon, 23 Dec 2019 20:08:55 -0800
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
  Thunderbird/68.3.1
 MIME-Version: 1.0
-In-Reply-To: <580d57d8cef89dd2a84d63f1a78a0d9a9b3d458f.1577052887.git.mkubecek@suse.cz>
+In-Reply-To: <8cbb9c250caf021f600032ad4aa32c44adf0b8e9.1577052887.git.mkubecek@suse.cz>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -129,14 +129,66 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 On 12/22/2019 3:45 PM, Michal Kubecek wrote:
-> Basic genetlink and init infrastructure for the netlink interface, register
-> genetlink family "ethtool". Add CONFIG_ETHTOOL_NETLINK Kconfig option to
-> make the build optional. Add initial overall interface description into
-> Documentation/networking/ethtool-netlink.rst, further patches will add more
-> detailed information.
+> Add common request/reply header definition and helpers to parse request
+> header and fill reply header. Provide ethnl_update_* helpers to update
+> structure members from request attributes (to be used for *_SET requests).
 > 
 > Signed-off-by: Michal Kubecek <mkubecek@suse.cz>
+> ---
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+[snip]
+
+> +/**
+> + * ethnl_update_u32() - update u32 value from NLA_U32 attribute
+> + * @dst:  value to update
+> + * @attr: netlink attribute with new value or null
+> + * @mod:  pointer to bool for modification tracking
+> + *
+> + * Copy the u32 value from NLA_U32 netlink attribute @attr into variable
+> + * pointed to by @dst; do nothing if @attr is null. Bool pointed to by @mod
+> + * is set to true if this function changed the value of *dst, otherwise it
+> + * is left as is.
+> + */
+
+I would find it more intuitive if an integer was returned: < 0 in case
+of error, 0 if no change and 1 if something changed.
+
+> +static inline void ethnl_update_u32(u32 *dst, const struct nlattr *attr,
+> +				    bool *mod)
+> +{
+> +	u32 val;
+> +
+> +	if (!attr)
+> +		return;
+> +	val = nla_get_u32(attr);
+> +	if (*dst == val)
+> +		return;
+> +
+> +	*dst = val;
+> +	*mod = true;
+> +}
+> +
+> +/**
+> + * ethnl_update_u8() - update u8 value from NLA_U8 attribute
+> + * @dst:  value to update
+> + * @attr: netlink attribute with new value or null
+> + * @mod:  pointer to bool for modification tracking
+> + *
+> + * Copy the u8 value from NLA_U8 netlink attribute @attr into variable
+> + * pointed to by @dst; do nothing if @attr is null. Bool pointed to by @mod
+> + * is set to true if this function changed the value of *dst, otherwise it
+> + * is left as is.
+> + */
+> +static inline void ethnl_update_u8(u8 *dst, const struct nlattr *attr,
+> +				   bool *mod)
+> +{
+> +	u8 val;
+> +
+> +	if (!attr)
+> +		return;
+> +	val = nla_get_u32(attr);
+
+Should not this be nla_get_u8() here? This sounds like it is going to
+break on BE machines.
 -- 
 Florian
