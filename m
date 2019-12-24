@@ -2,137 +2,227 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 408B9129E74
-	for <lists+netdev@lfdr.de>; Tue, 24 Dec 2019 08:33:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C5A1129E7A
+	for <lists+netdev@lfdr.de>; Tue, 24 Dec 2019 08:41:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726154AbfLXHdB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Dec 2019 02:33:01 -0500
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:10330 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725993AbfLXHdB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Dec 2019 02:33:01 -0500
-Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xBO7VbE8023807;
-        Mon, 23 Dec 2019 23:32:46 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type : content-id
- : content-transfer-encoding : mime-version; s=facebook;
- bh=Gh2riE+VIqr3NJToalcUMZn4Qbe2Q9obgyhjo/2so0c=;
- b=a+jpo1mlr+30UK/RxFGn4GSjka4NJrUHE5UAJsgQdd3VQscqHz0DoGQlMS5n0j72dzQ9
- 9w1QSFmn6VO3oAwl1NW/puvm/vIL6xNFckfeuUoIegcvkf/hgGBtyeUBNtJ9xFoQrCyX
- AIAjeNLnZIUVAUYPKt+bXTgi7wmbOKLjGtY= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 2x2gx6dy0t-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Mon, 23 Dec 2019 23:32:46 -0800
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (100.104.98.9) by
- o365-in.thefacebook.com (100.104.94.199) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1779.2; Mon, 23 Dec 2019 23:32:45 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=PPZqMI41yWc4YMvkr4S2EOdajSjcPftMq9R5t4ii7U5a8T4AXKoyqpN8bug7ATjec7QoCY6VbNQuEwSyCe60RrmAqbmEdIaQS8oCyxgXE5EwsY5VVbwfpS4QKXn/QqHxDwi9sRu+J0CrhXPZUL2I7xtxtSgKNgpBUCAdwqKXD5sw1oXkizu2LSGw9Qen52HhNq4K5ETaWH6Rhbe886MjI1jXnyrGSSqexmFn8FKQmIbaTeoM2c3SqNgnqi9LeQAwWWZ7aujBUGnvu/HMKg1ISN724rKiamVUu2rfGcsTW2+xy6+ox3cEae3fwxVyWsWYoJwCIsiFhnp2k8BBHYfYOg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Gh2riE+VIqr3NJToalcUMZn4Qbe2Q9obgyhjo/2so0c=;
- b=R+EgtXAjIvNS8RVF6z/AaXzFomVJVHdtTY/q8y0mYRmAhu1qzSJIZgSfGLOdj88nhEJ1mCpDsmr8TH7ueNMhsIQv2uVy0J8XZcWusunqD6bUNS2VzGVORMIe61Z0tO4xe9QBw8upsM4xMW50aZa43sniP7PVW2MfJchYsVBN2JjJWLjiDnL5Kq6gSSZQ5xMrcHHZCYj+kn0PoJIL8gCCC/pLRubvVyR3nDdVZgHWm1rsnsxn6FruHlmmdRBicw9DQmdC20JLToCsa60ZceY5KAEYoBBw4ou+XKzCztsIstL+6qHbsPiAz2TshWUAw6r5yA0VUAz897KxVnqOCk9mTw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Gh2riE+VIqr3NJToalcUMZn4Qbe2Q9obgyhjo/2so0c=;
- b=SSsFJPYGDXe3qslw8ZDjw/ayNhiNqWfJaaI9OwllfYZMNoc7tklExZqp3NpNWT7qBY6UerN1G2zuDKKj3PEEWt3N8andnOiho5S2e27zdvRa+Sp5+wyQ1LBoPLMLAkzIVGqHmwkJuIAVH4ENBwmnAdzAM2pZ8YottADK5f8dorc=
-Received: from MN2PR15MB3213.namprd15.prod.outlook.com (20.179.21.76) by
- MN2PR15MB3520.namprd15.prod.outlook.com (20.179.23.153) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2559.14; Tue, 24 Dec 2019 07:32:44 +0000
-Received: from MN2PR15MB3213.namprd15.prod.outlook.com
- ([fe80::6d1e:f2f7:d36:a42f]) by MN2PR15MB3213.namprd15.prod.outlook.com
- ([fe80::6d1e:f2f7:d36:a42f%4]) with mapi id 15.20.2559.017; Tue, 24 Dec 2019
- 07:32:43 +0000
-Received: from kafai-mbp (2620:10d:c090:180::446a) by CO2PR04CA0185.namprd04.prod.outlook.com (2603:10b6:104:5::15) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2559.14 via Frontend Transport; Tue, 24 Dec 2019 07:32:42 +0000
-From:   Martin Lau <kafai@fb.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-CC:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        "Daniel Borkmann" <daniel@iogearbox.net>,
-        David Miller <davem@davemloft.net>,
-        "Kernel Team" <Kernel-team@fb.com>,
-        Networking <netdev@vger.kernel.org>
-Subject: Re: [PATCH bpf-next v2 11/11] bpf: Add bpf_dctcp example
-Thread-Topic: [PATCH bpf-next v2 11/11] bpf: Add bpf_dctcp example
-Thread-Index: AQHVueh9eJgyi9Vd8EqEIu9FcYh4uKfIf/YAgABcRoCAAAiWgA==
-Date:   Tue, 24 Dec 2019 07:32:43 +0000
-Message-ID: <20191224073239.zcrdaybyj7wj4kvf@kafai-mbp>
-References: <20191221062556.1182261-1-kafai@fb.com>
- <20191221062620.1184118-1-kafai@fb.com>
- <CAEf4BzZX_TNUXJktJUtqmxgMefDzie=Ta18TbBqBhG0-GSLQMg@mail.gmail.com>
- <20191224013140.ibn33unj77mtbkne@kafai-mbp>
- <CAEf4Bzb2fRZJsccx2CG_pASy+2eMMWPXk6m3d6SbN+o0MSdQPg@mail.gmail.com>
-In-Reply-To: <CAEf4Bzb2fRZJsccx2CG_pASy+2eMMWPXk6m3d6SbN+o0MSdQPg@mail.gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: CO2PR04CA0185.namprd04.prod.outlook.com
- (2603:10b6:104:5::15) To MN2PR15MB3213.namprd15.prod.outlook.com
- (2603:10b6:208:3d::12)
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [2620:10d:c090:180::446a]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 4bd3202a-df2a-45f7-39ed-08d7884376d3
-x-ms-traffictypediagnostic: MN2PR15MB3520:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <MN2PR15MB35203C838D554DD3C5BAFC0BD5290@MN2PR15MB3520.namprd15.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-forefront-prvs: 0261CCEEDF
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(376002)(346002)(39860400002)(396003)(366004)(136003)(189003)(199004)(8936002)(86362001)(55016002)(71200400001)(9686003)(4326008)(316002)(478600001)(8676002)(186003)(52116002)(6496006)(81166006)(54906003)(81156014)(16526019)(1076003)(66946007)(2906002)(66476007)(64756008)(66556008)(6916009)(5660300002)(66446008)(33716001)(4744005);DIR:OUT;SFP:1102;SCL:1;SRVR:MN2PR15MB3520;H:MN2PR15MB3213.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: fb.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: +he7pQdIsULj9yIh8Tt6Y2S6J+UeLd85RYwYKkHoFlRh76jMkKf2yziNJFUrNfWgz+G2ETX4QmYXP1FrE0qnPXXK0O55+S7QKCapxFluIEqJBW2zl/dPyUhTnx3cG01bdisZfPIX5ILefUoCkNHYYJShgaFUdGu8y2eymi/hc8KQe0xOoZf3m7vjc2iB15aa5umx25is412LvenSjlS1Z1FQnqrQK1AHB5F9W5lGuV/Gyj+Zl90Bnc/vgEOk8Nmlp68CcGygCQ3ZlrpSiUj3FghHhw4K3724SvHRAGdgoIn3JoKtNoC/LJPVnXKDomL+dJ2Rvx5CBrHfKmGrT/egSCui3kuv0FKnSKRkwffAeEgav0b0lMVOZhNyQNeqEVkQenR47gcYxGwvOvL+tESgRq9r/mmu7nk9g456fJBbmcNtDF1futiqfS0oUB3O8pL0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <18DF9400E014724A921DC4A15D647C56@namprd15.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        id S1726160AbfLXHlL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Dec 2019 02:41:11 -0500
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:52491 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726037AbfLXHlK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Dec 2019 02:41:10 -0500
+Received: by mail-wm1-f66.google.com with SMTP id p9so1712695wmc.2
+        for <netdev@vger.kernel.org>; Mon, 23 Dec 2019 23:41:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=v0VAmnhdebnxv7lTrxqMAa5GegnphCGLfAXE1e+3WA0=;
+        b=U3YZm9DjXESahYqKFAj3AISEVv0ieD5Bo9qmUOZtsv+5KFkiSVxrossklLGPtr86lx
+         4MBeBfC8IxOOISBxRWIOD5E9QfZdpGrW9OlUBZfyEjivxg9A2FA3DbQpkpry73y+0b6N
+         k+HCYkNWQQ7y6de42E/zcX9CF6D/kiThUj/ftiusjMIJpODCoi7nZOnJuRNksTGXImTD
+         E91+x9K9RHqsJyHZYoqcUvn6INyYLYB9QbqyJuSp/nn4d/g6FxpTnqAmLlOxtTA8EeqD
+         Y5Gwrb4q7QXyn8UEey4JjxbJfbMllQO7wvyDY+HZ67Hxc4/J3ZmMaCXc7BXrHdnUEe0/
+         B3/A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=v0VAmnhdebnxv7lTrxqMAa5GegnphCGLfAXE1e+3WA0=;
+        b=EbruhnpPM31jSREX6cYep4T5ylLyQEloKl5+noAh4nuKfVVUaiOgXp3owBC/4Y2XOK
+         DWys2mluD975q4I7Ijlt0pb+V/jmqRxF9XX6N8RbUruTRFpllU80q1NQLQoOb+UQLDT6
+         zoa7BuGsGJabk4sm+6vuHJIdZt+p32k+vID242CTuzSed2L1v1aSCtKbLGT29QH1y9k2
+         f08wQPsDwS37/ProK/ZfHrVKxurJ7h5Tqu9BzJW7a83e1CP+ZLnIwCb2zYQA0juC+ETT
+         /GzAlpCZdn7xbhq7oKRqJSXXnYP3I1BKEh4wQrBpDlbL9hxYBBO1e18Bnutvph5mx6hc
+         7R5Q==
+X-Gm-Message-State: APjAAAX9rGgihXKRDcobtqOh0EqZ7LSebaFCUwcDLArM1kQYPioz7Zx3
+        tsyfjl4ItXL8OMgLdyRKa9YCBA==
+X-Google-Smtp-Source: APXvYqwo4ltOAsTEdb6NMVSH4uNofK/s7WAP4ylQc5u4tmNuXWYau1WZfd7HeptLiAYByP4IsjC5PQ==
+X-Received: by 2002:a7b:c5cd:: with SMTP id n13mr2722602wmk.172.1577173267101;
+        Mon, 23 Dec 2019 23:41:07 -0800 (PST)
+Received: from apalos.home (ppp-94-64-118-170.home.otenet.gr. [94.64.118.170])
+        by smtp.gmail.com with ESMTPSA id n3sm22689586wrs.8.2019.12.23.23.41.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 23 Dec 2019 23:41:06 -0800 (PST)
+Date:   Tue, 24 Dec 2019 09:41:03 +0200
+From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
+To:     Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     netdev@vger.kernel.org, lirongqing@baidu.com,
+        linyunsheng@huawei.com, Saeed Mahameed <saeedm@mellanox.com>,
+        mhocko@kernel.org, peterz@infradead.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [net-next v5 PATCH] page_pool: handle page recycle for
+ NUMA_NO_NODE condition
+Message-ID: <20191224074103.GB2819@apalos.home>
+References: <20191218084437.6db92d32@carbon>
+ <157676523108.200893.4571988797174399927.stgit@firesoul>
+ <20191220102314.GB14269@apalos.home>
+ <20191220114116.59d86ff6@carbon>
+ <20191220104937.GA15487@apalos.home>
+ <20191220162254.0138263e@carbon>
+ <20191220160649.GA26788@apalos.home>
+ <20191223075700.GA5333@apalos.home>
+ <20191223175257.164557cd@carbon>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4bd3202a-df2a-45f7-39ed-08d7884376d3
-X-MS-Exchange-CrossTenant-originalarrivaltime: 24 Dec 2019 07:32:43.6014
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: Cy5RHC4ZYcWTrZ4X9fkCOAOGdbxX0oOY6EQPCZEkvXdTRmvz1fgRAmxZ+9dRV5W+
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR15MB3520
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
- definitions=2019-12-24_01:2019-12-23,2019-12-24 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 lowpriorityscore=0
- suspectscore=0 priorityscore=1501 impostorscore=0 mlxscore=0 clxscore=1015
- phishscore=0 spamscore=0 malwarescore=0 mlxlogscore=583 adultscore=0
- bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-1910280000 definitions=main-1912240066
-X-FB-Internal: deliver
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191223175257.164557cd@carbon>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 23, 2019 at 11:01:55PM -0800, Andrii Nakryiko wrote:
-> > > Can all of these types come from vmlinux.h instead of being duplicate=
-d here?
-> > It can but I prefer leaving it as is in bpf_tcp_helpers.h like another
-> > existing test in kfree_skb.c.  Without directly using the same struct i=
-n
-> > vmlinux.h,  I think it is a good test for libbpf.
-> > That remind me to shuffle the member ordering a little in tcp_congestio=
-n_ops
-> > here.
->=20
-> Sure no problem. When I looked at this it was a bit discouraging on
-> how much types I'd need to duplicate, but surely we don't want to make
-> an impression that vmlinux.h is the only way to achieve this.
-IMO, it is a very compact set of fields that work for both dctcp and cubic.
-Also, duplication is not a concern here.  The deviation between
-the kernel and bpf_tcp_helpers.h is not a problem with CO-RE.
+Hi Jesper,
+
+On Mon, Dec 23, 2019 at 05:52:57PM +0100, Jesper Dangaard Brouer wrote:
+> On Mon, 23 Dec 2019 09:57:00 +0200
+> Ilias Apalodimas <ilias.apalodimas@linaro.org> wrote:
+> 
+> > Hi Jesper,
+> > 
+> > Looking at the overall path again, i still need we need to reconsider 
+> > pool->p.nid semantics.
+> > 
+> > As i said i like the patch and the whole functionality and code seems fine,
+> > but here's the current situation.
+> 
+> > If a user sets pool->p.nid == NUMA_NO_NODE and wants to use
+> > page_pool_update_nid() the whole behavior feels a liitle odd.
+> 
+> As soon as driver uses page_pool_update_nid() than means they want to
+> control the NUMA placement explicitly.  As soon as that happens, it is
+> the drivers responsibility and choice, and page_pool API must respect
+> that (and not automatically change that behind drivers back).
+> 
+> 
+> > page_pool_update_nid() first check will always be true since .nid =
+> > NUMA_NO_NODE). Then we'll update this to a real nid. So we end up
+> > overwriting what the user initially coded in.
+> >
+> > This is close to what i proposed in the previous mails on this
+> > thread. Always store a real nid even if the user explicitly requests
+> > NUMA_NO_NODE.
+> > 
+> > So  semantics is still a problem. I'll stick to what we initially
+> > suggested.
+> >  1. We either *always* store a real nid
+> > or 
+> >  2. If NUMA_NO_NODE is present ignore every other check and recycle
+> >  the memory blindly. 
+> > 
+> 
+> Hmm... I actually disagree with both 1 and 2.
+> 
+> My semantics proposal:
+> If driver configures page_pool with NUMA_NO_NODE, then page_pool tried
+> to help get the best default performance. (Which according to
+> performance measurements is to have RX-pages belong to the NUMA node
+> RX-processing runs on).
+> 
+> The reason I want this behavior is that during driver init/boot, it can
+> easily happen that a driver allocates RX-pages from wrong NUMA node.
+> This will cause a performance slowdown, that normally doesn't happen,
+> because without a cache (like page_pool) RX-pages would fairly quickly
+> transition over to the RX NUMA node (instead we keep recycling these,
+> in your case #2, where you suggest recycle blindly in case of
+> NUMA_NO_NODE). IMHO page_pool should hide this border-line case from
+> driver developers.
+
+Yea #2 has different semantics than the one you propose. So if he chooses
+NUMA_NO_NODE, i'd expect the machines(s) the driver sits on, are not NUMA-aware.
+Think specific SoC's, i'd never expect PCI cards to use that.
+As i said i don't feel strongly about this anyway, it's just another case i had
+under consideration but i like what you propose more. I'll try to add 
+documentation on page_pool API and describe the semantics you have in mind.
+
+
+Thanks
+/Ilias
+
+> 
+> --Jesper
+> 
+> 
+> > On Fri, Dec 20, 2019 at 06:06:49PM +0200, Ilias Apalodimas wrote:
+> > > On Fri, Dec 20, 2019 at 04:22:54PM +0100, Jesper Dangaard Brouer
+> > > wrote:  
+> > > > On Fri, 20 Dec 2019 12:49:37 +0200
+> > > > Ilias Apalodimas <ilias.apalodimas@linaro.org> wrote:
+> > > >   
+> > > > > On Fri, Dec 20, 2019 at 11:41:16AM +0100, Jesper Dangaard
+> > > > > Brouer wrote:  
+> > > > > > On Fri, 20 Dec 2019 12:23:14 +0200
+> > > > > > Ilias Apalodimas <ilias.apalodimas@linaro.org> wrote:
+> > > > > >     
+> > > > > > > Hi Jesper, 
+> > > > > > > 
+> > > > > > > I like the overall approach since this moves the check out
+> > > > > > > of  the hotpath. @Saeed, since i got no hardware to test
+> > > > > > > this on, would it be possible to check that it still works
+> > > > > > > fine for mlx5?
+> > > > > > > 
+> > > > > > > [...]    
+> > > > > > > > +	struct ptr_ring *r = &pool->ring;
+> > > > > > > > +	struct page *page;
+> > > > > > > > +	int pref_nid; /* preferred NUMA node */
+> > > > > > > > +
+> > > > > > > > +	/* Quicker fallback, avoid locks when ring is
+> > > > > > > > empty */
+> > > > > > > > +	if (__ptr_ring_empty(r))
+> > > > > > > > +		return NULL;
+> > > > > > > > +
+> > > > > > > > +	/* Softirq guarantee CPU and thus NUMA node is
+> > > > > > > > stable. This,
+> > > > > > > > +	 * assumes CPU refilling driver RX-ring will
+> > > > > > > > also run RX-NAPI.
+> > > > > > > > +	 */
+> > > > > > > > +	pref_nid = (pool->p.nid == NUMA_NO_NODE) ?
+> > > > > > > > numa_mem_id() : pool->p.nid;      
+> > > > > > > 
+> > > > > > > One of the use cases for this is that during the allocation
+> > > > > > > we are not guaranteed to pick up the correct NUMA node. 
+> > > > > > > This will get automatically fixed once the driver starts
+> > > > > > > recycling packets. 
+> > > > > > > 
+> > > > > > > I don't feel strongly about this, since i don't usually
+> > > > > > > like hiding value changes from the user but, would it make
+> > > > > > > sense to move this into __page_pool_alloc_pages_slow() and
+> > > > > > > change the pool->p.nid?
+> > > > > > > 
+> > > > > > > Since alloc_pages_node() will replace NUMA_NO_NODE with
+> > > > > > > numa_mem_id() regardless, why not store the actual node in
+> > > > > > > our page pool information? You can then skip this and check
+> > > > > > > pool->p.nid == numa_mem_id(), regardless of what's
+> > > > > > > configured.     
+> > > > > > 
+> > > > > > This single code line helps support that drivers can control
+> > > > > > the nid themselves.  This is a feature that is only used my
+> > > > > > mlx5 AFAIK.
+> > > > > > 
+> > > > > > I do think that is useful to allow the driver to "control"
+> > > > > > the nid, as pinning/preferring the pages to come from the
+> > > > > > NUMA node that matches the PCI-e controller hardware is
+> > > > > > installed in does have benefits.    
+> > > > > 
+> > > > > Sure you can keep the if statement as-is, it won't break
+> > > > > anything. Would we want to store the actual numa id in
+> > > > > pool->p.nid if the user selects 'NUMA_NO_NODE'?  
+> > > >  
+> > > > No. pool->p.nid should stay as NUMA_NO_NODE, because that makes it
+> > > > dynamic.  If someone moves an RX IRQ to another CPU on another
+> > > > NUMA node, then this 'NUMA_NO_NODE' setting makes pages
+> > > > transitioned automatically.  
+> > > Ok this assumed that drivers were going to use
+> > > page_pool_nid_changed(), but with the current code we don't have to
+> > > force them to do that. Let's keep this as-is.
+> > > 
+> > > I'll be running a few more tests  and wait in case Saeed gets a
+> > > chance to test it and send my reviewed-by
+> 
+> 
+> -- 
+> Best regards,
+>   Jesper Dangaard Brouer
+>   MSc.CS, Principal Kernel Engineer at Red Hat
+>   LinkedIn: http://www.linkedin.com/in/brouer
+> 
