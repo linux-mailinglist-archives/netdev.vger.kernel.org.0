@@ -2,51 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F21E129D72
-	for <lists+netdev@lfdr.de>; Tue, 24 Dec 2019 05:41:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D025C129D83
+	for <lists+netdev@lfdr.de>; Tue, 24 Dec 2019 05:41:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726961AbfLXEk6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Dec 2019 23:40:58 -0500
-Received: from mail-pf1-f195.google.com ([209.85.210.195]:46006 "EHLO
-        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726853AbfLXEk6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Dec 2019 23:40:58 -0500
-Received: by mail-pf1-f195.google.com with SMTP id 2so10169683pfg.12;
-        Mon, 23 Dec 2019 20:40:57 -0800 (PST)
+        id S1727047AbfLXElv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Dec 2019 23:41:51 -0500
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:43866 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726881AbfLXElv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Dec 2019 23:41:51 -0500
+Received: by mail-pg1-f194.google.com with SMTP id k197so9831707pga.10;
+        Mon, 23 Dec 2019 20:41:51 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=n3L9kJWeaG8ZHvFiuR+M6QHPPKlCr/cPrgvGDqQwzKc=;
-        b=T4HMviUObQx29X90c7gyETrzBJaBTMMfpEcqHzHHMU9jW/xV3xYg8uAXYQ9ZOmVQSc
-         c65VU5ZrZj/UNpXiolUH6/JV842g6DsfUkzmbxjQ2BlfbMR7DrzSUwT4L8QYPaRkNhi2
-         EjDkRMDIMFmy03v1ZTS1znZC0IVxb/VZlzA+yLWFQCoMtALebdFJPCPcREyO3J0yAzzC
-         m7oUrDDNJMZxhHE+wr6gn+Q1Lf2mbrzRc7uBv4G0rYjmMJ5FdyjtvF7Ub++rEZ5/00L/
-         LvkMToAwLK+iTAYzr5vkm+Asnqw38kDFgTtlEtl6cpCaaztlRTzkTGgVH5ls1F96dE7A
-         av8Q==
+        bh=JoTjvPy6XkZPG7BWE7ZFfAl28h/iHccBxD+gsbcLBcw=;
+        b=hHw0HWkrZkYBgqOOwKyRBdGAGisIzUhlBYXQIg+CB7ZUeeoaHvpFFx1jOjtJYmCq1g
+         dXoCYWz9WhTOHzWFPf2PMi4fc9+j4+esHY4YFARuFyZMAO4zPMitPrLrMriSynRUeuXp
+         4oUPmkVK1ldi+nJmjWFdFwD/m3xPpN3sg4QYs/un3LZ9ojMn4yYSqS2eE1iKQQLB6kJ9
+         dbSy6n8+tZcsSP4iua0f4qFZzv5OiCYL9g8+SNtiGkAp9meYOSwPszdDKeFxBU9CJYNT
+         nSzlE76gCsTxjDxSB+8Wc/O1qW0dBrHA5nU6PtgcNToi/yr+rwp9Mb7bSzqjYdpYELg/
+         9acg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=n3L9kJWeaG8ZHvFiuR+M6QHPPKlCr/cPrgvGDqQwzKc=;
-        b=orfsQRx2fyBCHPwPOeFUEUnEecBs0nrYrQVm/ZPgDZ5SIe6IS6/jU/V9cMb2q6o3ry
-         Qnl96s4chOaGcQqL1ez7fHosSfCzpsh+kF8PyASUTuP3gtLYsjF8nrbuUKSfLixQuXEG
-         omipa1+cxciMGPH7Btmg/XY0wj5K8KsgOJ+huCodK+D3aXvH6OgGvPU1rKaO7wIyfX5+
-         a9QOAPkUGTLNDrZjsF4RixOcAqFbfTCJWC6asJ/NF9GIkTcRk9X1wMYDUUmPCTwN+rvj
-         4KH/MTC/P8zCet9+FNMU8VwEhxJXb3qoEs6q5TGy706GyS9TD+lFbJSzKlWnb6V95f7L
-         OFow==
-X-Gm-Message-State: APjAAAVwRjZcyuOAsJs0jNCtpXaZRQ1pLzKSphVjh99Htl/Y/5HHz0lw
-        fd5MQUrOcUkAHiWWhUBKCkBGXXac
-X-Google-Smtp-Source: APXvYqzVcDiYaUnUk33P4mftFAoOp992dJo757JUJoe68VsFrawXEoDoJlgqQUYiLf+W9Ssub4mV0g==
-X-Received: by 2002:aa7:9829:: with SMTP id q9mr29124192pfl.231.1577162457009;
-        Mon, 23 Dec 2019 20:40:57 -0800 (PST)
+        bh=JoTjvPy6XkZPG7BWE7ZFfAl28h/iHccBxD+gsbcLBcw=;
+        b=ByWMNhkjNqfKXBL3Kv3dd1kO0kkd7DSJVHdHOFpBtaHIwxlmWE0SYR+XxMSAXbyGqa
+         lN9AxAVS6Yd8wenQcO0dFk5hY62JF9oQL/ocRc98E/4T2Q2RO9UiuQzzhq+VmuMutUuj
+         XP0dyKmrTbcXYFI3rYPZDiBZKBlnwthf5M7Uee2Ut+TdZ0iaPFSvFxBOCeosWW1tu2d1
+         buFPTDSZxs4X/0pJOhPYErNCdr6e6YxsOAkfaop+6zIv26RrXiac0/ILEQgxHsgidyqa
+         i5DOUpW8mYpIRvPHBpJdD/VnEWxmw4zJLPeYOd3GzJ6v4YvTVmGAKiNNcdcxwSFvCrFf
+         Ljpg==
+X-Gm-Message-State: APjAAAXhW5O46L5mA7ggVSgMhWRFTwuoljV7jes7PhfLSz3EX6E8JPDw
+        1WCIPTKHu7fyHRft5FGipOKg1KU5
+X-Google-Smtp-Source: APXvYqxctHGhCglEIHYmv91hfL2VUUqgqj2FoL/SmJBJibWORe+LM6s6YsEevSLIJxLfgW8JIc3jgw==
+X-Received: by 2002:a63:4006:: with SMTP id n6mr27470203pga.139.1577162510609;
+        Mon, 23 Dec 2019 20:41:50 -0800 (PST)
 Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
-        by smtp.gmail.com with ESMTPSA id m6sm1141875pjn.21.2019.12.23.20.40.55
+        by smtp.gmail.com with ESMTPSA id u23sm26456043pfm.29.2019.12.23.20.41.49
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 23 Dec 2019 20:40:56 -0800 (PST)
-Subject: Re: [PATCH net-next v8 12/14] ethtool: set link modes related data
- with LINKMODES_SET request
+        Mon, 23 Dec 2019 20:41:50 -0800 (PST)
+Subject: Re: [PATCH net-next v8 13/14] ethtool: add LINKMODES_NTF notification
 To:     Michal Kubecek <mkubecek@suse.cz>,
         David Miller <davem@davemloft.net>, netdev@vger.kernel.org
 Cc:     Jakub Kicinski <jakub.kicinski@netronome.com>,
@@ -56,7 +55,7 @@ Cc:     Jakub Kicinski <jakub.kicinski@netronome.com>,
         Johannes Berg <johannes@sipsolutions.net>,
         linux-kernel@vger.kernel.org
 References: <cover.1577052887.git.mkubecek@suse.cz>
- <2fd709246b48fdf7ee1a16c8decb378680eda436.1577052887.git.mkubecek@suse.cz>
+ <c9fff5bddb3fdbe5973ccb9826fd5200a88e56a5.1577052887.git.mkubecek@suse.cz>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Autocrypt: addr=f.fainelli@gmail.com; keydata=
  mQGiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
@@ -112,12 +111,12 @@ Autocrypt: addr=f.fainelli@gmail.com; keydata=
  caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
  6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9qfUATKC9NgZjRvBztfqy4
  a9BQwACgnzGuH1BVeT2J0Ra+ZYgkx7DaPR0=
-Message-ID: <e319f343-8774-267d-c07c-5d2cbece7a21@gmail.com>
-Date:   Mon, 23 Dec 2019 20:40:55 -0800
+Message-ID: <d8a046e9-d832-01a9-7ee0-ae0c84ff20c9@gmail.com>
+Date:   Mon, 23 Dec 2019 20:41:48 -0800
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
  Thunderbird/68.3.1
 MIME-Version: 1.0
-In-Reply-To: <2fd709246b48fdf7ee1a16c8decb378680eda436.1577052887.git.mkubecek@suse.cz>
+In-Reply-To: <c9fff5bddb3fdbe5973ccb9826fd5200a88e56a5.1577052887.git.mkubecek@suse.cz>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -129,14 +128,23 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 On 12/22/2019 3:46 PM, Michal Kubecek wrote:
-> Implement LINKMODES_SET netlink request to set advertised linkmodes and
-> related attributes as ETHTOOL_SLINKSETTINGS and ETHTOOL_SSET commands do.
+> Send ETHTOOL_MSG_LINKMODES_NTF notification message whenever device link
+> settings or advertised modes are modified using ETHTOOL_MSG_LINKMODES_SET
+> netlink message or ETHTOOL_SLINKSETTINGS or ETHTOOL_SSET ioctl commands.
 > 
-> The request allows setting autonegotiation flag, speed, duplex and
-> advertised link modes.
+> The notification message has the same format as reply to LINKMODES_GET
+> request. ETHTOOL_MSG_LINKMODES_SET netlink request only triggers the
+> notification if there is a change but the ioctl command handlers do not
+> check if there is an actual change and trigger the notification whenever
+> the commands are executed.
+> 
+> As all work is done by ethnl_default_notify() handler and callback
+> functions introduced to handle LINKMODES_GET requests, all that remains is
+> adding entries for ETHTOOL_MSG_LINKMODES_NTF into ethnl_notify_handlers and
+> ethnl_default_notify_ops lookup tables and calls to ethtool_notify() where
+> needed.
 > 
 > Signed-off-by: Michal Kubecek <mkubecek@suse.cz>
-> ---
 
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
