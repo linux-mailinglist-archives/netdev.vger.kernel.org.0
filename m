@@ -2,77 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7156712A135
-	for <lists+netdev@lfdr.de>; Tue, 24 Dec 2019 13:13:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 022BD12A0FB
+	for <lists+netdev@lfdr.de>; Tue, 24 Dec 2019 13:02:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726885AbfLXMMm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Dec 2019 07:12:42 -0500
-Received: from m12-17.163.com ([220.181.12.17]:36930 "EHLO m12-17.163.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726352AbfLXMMl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 24 Dec 2019 07:12:41 -0500
-X-Greylist: delayed 938 seconds by postgrey-1.27 at vger.kernel.org; Tue, 24 Dec 2019 07:12:39 EST
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id; bh=2PfFdn+GcUUgz9kOGP
-        vjod/qqNrrabIvrEJCD+uVTXM=; b=GGe5+9Dq18bbXMxDrS1I0EXYN00rVR5tkY
-        /ndRddEm30EXVr701RuxrHti/dJBFTWsSGqPH5w1X/NkYeKXRAy2/+1EUu/QVHpc
-        o/WKkDeJgOCqsSnw+fAmXCzDOWPukCwi78Ls78A3R4pu2aCKR1Awq3TSpkE4R9rZ
-        KM5Dywo/s=
-Received: from localhost (unknown [106.37.187.139])
-        by smtp13 (Coremail) with SMTP id EcCowACXtPj2_AFecBFYag--.27430S3;
-        Tue, 24 Dec 2019 19:56:38 +0800 (CST)
-From:   Geliang Tang <geliangtang@gmail.com>
-To:     Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     Geliang Tang <geliangtang@gmail.com>,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] netfilter: xt_LOG: remove unused headers
-Date:   Tue, 24 Dec 2019 19:56:37 +0800
-Message-Id: <00755cb479aeafbc88c4f8b92e99ca9ada4b9af0.1577188409.git.geliangtang@gmail.com>
-X-Mailer: git-send-email 2.17.1
-X-CM-TRANSID: EcCowACXtPj2_AFecBFYag--.27430S3
-X-Coremail-Antispam: 1Uf129KBjvdXoWrKryDGw1kKr4xZr4xGFyUWrg_yoW3Wwb_Ca
-        s29r48G3WDXr17Aw1xJFs7A345K34xJFn3WrySva15ta1DJw40g397Xr1Yvr45Wwn8CryU
-        Z3WkG34xW345WjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7IU8SeHDUUUUU==
-X-Originating-IP: [106.37.187.139]
-X-CM-SenderInfo: 5jhoxtpqjwt0rj6rljoofrz/1tbiGRaVmVyPWWvBWgAAs5
+        id S1726272AbfLXMBs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Dec 2019 07:01:48 -0500
+Received: from szxga07-in.huawei.com ([45.249.212.35]:36468 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726102AbfLXMBr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 24 Dec 2019 07:01:47 -0500
+Received: from DGGEMS407-HUB.china.huawei.com (unknown [172.30.72.60])
+        by Forcepoint Email with ESMTP id 1EA0F613C9AA1A03BDCA;
+        Tue, 24 Dec 2019 20:01:42 +0800 (CST)
+Received: from localhost.localdomain.localdomain (10.175.113.25) by
+ DGGEMS407-HUB.china.huawei.com (10.3.19.207) with Microsoft SMTP Server id
+ 14.3.439.0; Tue, 24 Dec 2019 20:01:34 +0800
+From:   Mao Wenan <maowenan@huawei.com>
+To:     <andrew@lunn.ch>, <vivien.didelot@gmail.com>,
+        <f.fainelli@gmail.com>, <davem@davemloft.net>,
+        <linux@rempel-privat.de>, <maowenan@huawei.com>,
+        <marek.behun@nic.cz>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <kernel-janitors@vger.kernel.org>
+Subject: [PATCH net-next v2] net: dsa: qca: ar9331: drop pointless static qualifier in ar9331_sw_mbus_init
+Date:   Tue, 24 Dec 2019 19:58:12 +0800
+Message-ID: <20191224115812.166927-1-maowenan@huawei.com>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20191224112515.GE3395@lunn.ch>
+References: <20191224112515.GE3395@lunn.ch>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.113.25]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Some headers are not used so remove them.
+There is no need to set variable 'mbus' static
+since new value always be assigned before use it.
 
-Signed-off-by: Geliang Tang <geliangtang@gmail.com>
+Signed-off-by: Mao Wenan <maowenan@huawei.com>
 ---
- net/netfilter/xt_LOG.c | 8 --------
- 1 file changed, 8 deletions(-)
+ v2: change subject and description.
+ drivers/net/dsa/qca/ar9331.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/netfilter/xt_LOG.c b/net/netfilter/xt_LOG.c
-index a1e79b517c01..f5086a6b700a 100644
---- a/net/netfilter/xt_LOG.c
-+++ b/net/netfilter/xt_LOG.c
-@@ -9,15 +9,7 @@
+diff --git a/drivers/net/dsa/qca/ar9331.c b/drivers/net/dsa/qca/ar9331.c
+index 0d1a7cd85fe8..da3bece75e21 100644
+--- a/drivers/net/dsa/qca/ar9331.c
++++ b/drivers/net/dsa/qca/ar9331.c
+@@ -266,7 +266,7 @@ static int ar9331_sw_mbus_read(struct mii_bus *mbus, int port, int regnum)
+ static int ar9331_sw_mbus_init(struct ar9331_sw_priv *priv)
+ {
+ 	struct device *dev = priv->dev;
+-	static struct mii_bus *mbus;
++	struct mii_bus *mbus;
+ 	struct device_node *np, *mnp;
+ 	int ret;
  
- #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
- #include <linux/module.h>
--#include <linux/spinlock.h>
- #include <linux/skbuff.h>
--#include <linux/if_arp.h>
--#include <linux/ip.h>
--#include <net/ipv6.h>
--#include <net/icmp.h>
--#include <net/udp.h>
--#include <net/tcp.h>
--#include <net/route.h>
- 
- #include <linux/netfilter.h>
- #include <linux/netfilter/x_tables.h>
 -- 
-2.17.1
-
+2.20.1
 
