@@ -2,61 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BEE35129D87
-	for <lists+netdev@lfdr.de>; Tue, 24 Dec 2019 05:44:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 70AE9129D89
+	for <lists+netdev@lfdr.de>; Tue, 24 Dec 2019 05:45:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726885AbfLXEoW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Dec 2019 23:44:22 -0500
-Received: from mail-pj1-f65.google.com ([209.85.216.65]:54817 "EHLO
-        mail-pj1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726853AbfLXEoW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Dec 2019 23:44:22 -0500
-Received: by mail-pj1-f65.google.com with SMTP id kx11so680840pjb.4;
-        Mon, 23 Dec 2019 20:44:21 -0800 (PST)
+        id S1726943AbfLXEpX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Dec 2019 23:45:23 -0500
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:45290 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726853AbfLXEpX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Dec 2019 23:45:23 -0500
+Received: by mail-pf1-f193.google.com with SMTP id 2so10174182pfg.12;
+        Mon, 23 Dec 2019 20:45:22 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=WFYPDpSn46JwPjbFpRAIxd857o4nEm+35HGIctfhwtw=;
-        b=YXANqMvx3LVDCPDqqSJFdzMeVCp9CYAxeDlNR8s4yEeHJKSsSSjAIRWdZj1sMSTALy
-         +07xOb6CbaQ6R6Fc2fXWSVBSOl5/Kz6g28dAO3qt5ABY5/NlmDeD5QBUpmoqHWjorvRA
-         0BteGylIRE8G9HB/WDYuCpLDX6C6GYJegFsEHVv7wFx4Je8HTyGOqOtV2o86UVm/ttQe
-         Jqf1UaSQqYe0hHHjhcwhJo/6UktWs/woVu7l9QHiMiFZFn+L5NJ2U7SmEZATJG+O5TDm
-         2+4rtBTzH6WePRBMztiDJDjuTWt19pEqZT1DOSo5t3faHS+4Kh4GyKuGd8PvQIezg0ZV
-         6GjQ==
+        bh=kUcP5CowhZCpBK+l4YfNQ9jTqlumMXA29kQvpAXf9Og=;
+        b=Yf9+meP8XsJgKPHXgor5VnGWDVgOM0Yfojd6NIOnyqnnWbluk7dRq+D8/Lpvt16YSE
+         OjKZGkcdFPsdWMxynAU+Yc6bSPbFdzj1RSahf9smx/MaE8dFMIG4CarUKlLYv/GCF+Zj
+         2swhrQNu0nsRI3RTCCZ0DQGMNC8FHDR6WeovAPeca5yKUHI546/HV96wxqP0HmnGR0go
+         sfPSfYV87EyIdkLByRWPOfrP+qSyonnhymtw3/RELFhRn6w8B5xwheqzg7aPJjqzqDYS
+         56utTqEOXK18/HVjBw9EtJFokj5SyESmWk9VhOiYWW6G5NgXIcmWjz4aN5yKz8U8OAy/
+         Nxcw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=WFYPDpSn46JwPjbFpRAIxd857o4nEm+35HGIctfhwtw=;
-        b=Ma/IYaHzUIYuXp2iI+2utsQeR7FzUFaglVqTX5R6ydKaWoQRI7NTQoLhOk7iCqEqtw
-         /ZxDruxVoEuA+Zi8XW3P/WEdOqv2yJXHfiVvu6Y5Xn6jtggGKVJG+TcAC49s7G9uv3xC
-         jiwv2uQC2etwinUSrbx0i2MV7MT1pt53vanIs6nn03Waq102C0HZwn/Ak8T7pOOOi3Hi
-         hWxUR4KW2Tdicv77QtfGDxdWutc8N5mbIwsFauskLjmiWY1sDyin8NV/VXGVOk/AgGrE
-         hk/U83ivxDIsnLxVbLRPdiPzWVy2FNAleMimntgsTwvQNe1n41fOpNk9tWM1OGXkIyRe
-         kQkg==
-X-Gm-Message-State: APjAAAXG/IUOrrkyS5+0Du3jhjUUN5u5vU9KQFnlyg1NIAKrmRlCdgy3
-        09bT8wv56MQ91GkJkTud0VFVGfE2
-X-Google-Smtp-Source: APXvYqzQJiAwZScfv+vAWKCdAz68QBPlsAdt4WbQpo+jyeeLtXnAmIu/8u87Bmt1fh7B7GTXi6TwDA==
-X-Received: by 2002:a17:902:7043:: with SMTP id h3mr34327594plt.332.1577162661251;
-        Mon, 23 Dec 2019 20:44:21 -0800 (PST)
+        bh=kUcP5CowhZCpBK+l4YfNQ9jTqlumMXA29kQvpAXf9Og=;
+        b=svNvdIOvX2ZgXOIokaGeMPQmYIDudNGYtmzMdbJp4oBYb4jpLC6hXEUcEFWCotd38l
+         CP5QSO4rqVs3LxwpVcY9jUdzxPTmhiLzK1d1GDIMApvWOOz2V8EQ3sW7e0WNVQH5EYvq
+         vaxvZdBBTaucdQcJCgrzmnopgWGZu+6GQH643Gy/+8xsVIx+9BorKdVvqMyHZHDk/9wJ
+         rhHF4fKy9xDJMT0T9Su6Ln4ofD0K/bWyii0kqc+9gP0TZrXyhiMc+EJkzSK8bY9Tg71M
+         QqwMs/uh6rva6zIUzwogziEgW7NRZs+/YVbxwFshbc5SJhndTBKdVejxAOhHJJa3d6kr
+         H3Sw==
+X-Gm-Message-State: APjAAAUAJ6a2vQq9o0lCeqWSP5QYuEL979Rzr1ZQ/8BZB3UkBXwcYqFD
+        mGF6vhGeZpNnA4j6zUkASn5gsha5
+X-Google-Smtp-Source: APXvYqwLqbPcmf+BA1WVmgI/YQVhq3ByAia1jRTSjIt4hfV/csvft+ruyT0nVIMjd8btYJ9h299JtA==
+X-Received: by 2002:a63:1c13:: with SMTP id c19mr35522581pgc.450.1577162721766;
+        Mon, 23 Dec 2019 20:45:21 -0800 (PST)
 Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
-        by smtp.gmail.com with ESMTPSA id f8sm26334210pfn.2.2019.12.23.20.44.20
+        by smtp.gmail.com with ESMTPSA id b1sm1207171pjw.4.2019.12.23.20.45.20
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 23 Dec 2019 20:44:20 -0800 (PST)
-Subject: Re: [PATCH net-next v8 14/14] ethtool: provide link state with
- LINKSTATE_GET request
-To:     Michal Kubecek <mkubecek@suse.cz>,
-        David Miller <davem@davemloft.net>, netdev@vger.kernel.org
-Cc:     Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Mon, 23 Dec 2019 20:45:21 -0800 (PST)
+Subject: Re: [PATCH net-next v8 00/14] ethtool netlink interface, part 1
+To:     Michal Kubecek <mkubecek@suse.cz>
+Cc:     David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
         Jiri Pirko <jiri@resnulli.us>, Andrew Lunn <andrew@lunn.ch>,
         John Linville <linville@tuxdriver.com>,
         Stephen Hemminger <stephen@networkplumber.org>,
         Johannes Berg <johannes@sipsolutions.net>,
         linux-kernel@vger.kernel.org
 References: <cover.1577052887.git.mkubecek@suse.cz>
- <7a6c4161fc6d29620bdc95a919e03f8be8b91e48.1577052887.git.mkubecek@suse.cz>
+ <884c1d40-c0ca-37f2-4149-8c7189dbca3b@gmail.com>
+ <20191223220516.GI21614@unicorn.suse.cz>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Autocrypt: addr=f.fainelli@gmail.com; keydata=
  mQGiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
@@ -112,12 +112,12 @@ Autocrypt: addr=f.fainelli@gmail.com; keydata=
  caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
  6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9qfUATKC9NgZjRvBztfqy4
  a9BQwACgnzGuH1BVeT2J0Ra+ZYgkx7DaPR0=
-Message-ID: <918da8cd-7ebc-b895-85c8-afad9eed6036@gmail.com>
-Date:   Mon, 23 Dec 2019 20:44:19 -0800
+Message-ID: <cac0adaa-fab6-eaba-a888-5783890564d8@gmail.com>
+Date:   Mon, 23 Dec 2019 20:45:20 -0800
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
  Thunderbird/68.3.1
 MIME-Version: 1.0
-In-Reply-To: <7a6c4161fc6d29620bdc95a919e03f8be8b91e48.1577052887.git.mkubecek@suse.cz>
+In-Reply-To: <20191223220516.GI21614@unicorn.suse.cz>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -128,31 +128,55 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-On 12/22/2019 3:46 PM, Michal Kubecek wrote:
-> Implement LINKSTATE_GET netlink request to get link state information.
+On 12/23/2019 2:05 PM, Michal Kubecek wrote:
+> On Mon, Dec 23, 2019 at 08:52:01AM -0800, Florian Fainelli wrote:
+>> Hi Michal,
+>>
+>> On 12/22/2019 3:45 PM, Michal Kubecek wrote:
+>>> This is first part of netlink based alternative userspace interface for
+>>> ethtool. It aims to address some long known issues with the ioctl
+>>> interface, mainly lack of extensibility, raciness, limited error reporting
+>>> and absence of notifications. The goal is to allow userspace ethtool
+>>> utility to provide all features it currently does but without using the
+>>> ioctl interface. However, some features provided by ethtool ioctl API will
+>>> be available through other netlink interfaces (rtnetlink, devlink) if it's
+>>> more appropriate.
+>>>
+>>> The interface uses generic netlink family "ethtool" and provides multicast
+>>> group "monitor" which is used for notifications. Documentation for the
+>>> interface is in Documentation/networking/ethtool-netlink.rst file. The
+>>> netlink interface is optional, it is built when CONFIG_ETHTOOL_NETLINK
+>>> (bool) option is enabled.
+>>>
+>>> There are three types of request messages distinguished by suffix "_GET"
+>>> (query for information), "_SET" (modify parameters) and "_ACT" (perform an
+>>> action). Kernel reply messages have name with additional suffix "_REPLY"
+>>> (e.g. ETHTOOL_MSG_SETTINGS_GET_REPLY). Most "_SET" and "_ACT" message types
+>>> do not have matching reply type as only some of them need additional reply
+>>> data beyond numeric error code and extack. Kernel also broadcasts
+>>> notification messages ("_NTF" suffix) on changes.
+>>
+>> Thanks for re-posting these patches again, would you have ethtool and
+>> iproute2 branches with your latest ethnl patches applied? I did find
+>> your ethnl directory on your github, but it applies to a slightly oldish
+>> ethtool version. If you could maintain forks with an "ethnl" branch
+>> there, that would help greatly.
 > 
-> At the moment, only link up flag as provided by ETHTOOL_GLINK ioctl command
-> is returned.
+> The iproute2 patch (adding display of permanent hardware address) is in
+> iproute2 "next" tree. As for (userspace) ethtool code, at the moment
+> it's not in a presentable state. As I wanted on getting v8 out as soon
+> as possible, I focused on making it work somehow so that I can test the
+> kernel patchset. So at the moment, the userspace series is still in the
+> form of an older one (implementing older UAPI) plus one bit "work in
+> progress" patch adapting it to current UAPI.
 > 
-> LINKSTATE_GET request can be used with NLM_F_DUMP (without device
-> identification) to request the information for all devices in current
-> network namespace providing the data.
-> 
-> Signed-off-by: Michal Kubecek <mkubecek@suse.cz>
-> ---
+> The userspace code also still doesn't look the way I would like it to.
+> I would like to spend some more time on it in second half of this week
+> and then I plan to also update the repository on github.
 
-[snip]
-
-> +Kernel response contents:
-> +
-> +  ====================================  ======  ==========================
-> +  ``ETHTOOL_A_LINKSTATE_HEADER``        nested  reply header
-> +  ``ETHTOOL_A_LINKSTATE_LINK``          u8      autonegotiation status
-
-^ ==== Humm, auto-negotiation status may not be exactly accurate
-especially with complex devices with SerDes/PHY/SFPs/what have you/.
-Other than that, the code looks correct:
-
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+OK, no problem. The patches do look fine to me with a few comments here
+and there. I hope Jiri likes the user space ABI now, as it would be good
+to get your changes included, from there we can have many more hands to
+help with converting/extending the existing ioctl() interface.
 -- 
 Florian
