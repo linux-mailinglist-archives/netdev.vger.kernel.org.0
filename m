@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 806C3129D4F
-	for <lists+netdev@lfdr.de>; Tue, 24 Dec 2019 05:28:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E6CDB129D52
+	for <lists+netdev@lfdr.de>; Tue, 24 Dec 2019 05:30:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726911AbfLXE2g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Dec 2019 23:28:36 -0500
-Received: from mail-pl1-f195.google.com ([209.85.214.195]:37784 "EHLO
-        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726853AbfLXE2g (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Dec 2019 23:28:36 -0500
-Received: by mail-pl1-f195.google.com with SMTP id c23so8001972plz.4;
-        Mon, 23 Dec 2019 20:28:35 -0800 (PST)
+        id S1726884AbfLXEaG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Dec 2019 23:30:06 -0500
+Received: from mail-pj1-f65.google.com ([209.85.216.65]:50433 "EHLO
+        mail-pj1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726853AbfLXEaG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Dec 2019 23:30:06 -0500
+Received: by mail-pj1-f65.google.com with SMTP id r67so676145pjb.0;
+        Mon, 23 Dec 2019 20:30:06 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=Rlp1x+CfsIyep+vLCVnKlOuXvn91+pgUbmxCqB93/vM=;
-        b=Q8j6V2cffRkzISDE4IXqAZ45ci+6mXCEPOuye39cnuyMKoXrwJP2ywMW17MqI0fYIm
-         lHREdno3CU/N0O9Lq9SIkb9q9bmj/sBL7Rz3pwYIKFmQ3ra9v+SH4CfJ9fGVXAIQmLQT
-         doQPL46/UiK49tOOpiJoZJ255ivrBJBcKbGZTJijXbvTirrtoOXZ9BowRHr198JLaTx8
-         DVw0GKxeqPFZbsNsSuPM7YR92NZk2fEAc4NTG2S2xw1cVlFX3TWPHjgYoMpPHzquKzN+
-         bmN6v6Sm+gdT7JGTTsywoGtmN4JzaQN0APUMcWP8XAqQhiU5STkThlovnwyljeI1Kxnr
-         1Tfg==
+        bh=4mJHZTsPIEA6O9sZVqGs4DwP6hOOAd/5S49t+OCk5TU=;
+        b=CIQA/9J96laCV1r/rpoePqW2XKzyanbJckW1VK97NaHpsdX9evSZcZjp4BE+OtrZTT
+         RHjok5sy1AOKv0NN4eNiwe8gSuBvit2pbSppTxOAKmFFJSk4aZxL4ElKREh8nBbdIFjN
+         Ug5I5k0N8fLyNoGYTAqduHNhNdDIzP74svjo4K8HkYf+8wuuDBCXhOaZ4OFIc0e3Hp9C
+         dWYeXS/G/6qDxqTbHIc5B779TYyo6USIyFTUi7dpy2WUzCxsF5R+0dX6MJGt4Vp2gY9k
+         IloTid0Aa5JB+DWTsA3iNL1zZjAgRQSZnrfYxmEqNXNNZ/7n8+6edjOs4+4bMBoGq3TW
+         qDpw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=Rlp1x+CfsIyep+vLCVnKlOuXvn91+pgUbmxCqB93/vM=;
-        b=gRc1KWOlefQlEye6Zj+lqVR06xYNwRHWa8dcIaPxUGKUemYPOYzEGWNZwHDk+O3Fbr
-         riMQiNb/ot4Gk1iIciYWgCsJgZylUgRCx5AVNASj840d2wZPdI93UDjqr4v8PKGJh1Z5
-         4hldbitRsIRkpw0q7HduBMcAI4vhZ0L4JtZNUzpgU/JV/s+JMUl2g7aCFMKEFG/rUK0B
-         md01E9fDWVH3K1c3W2NjywyxjpXUdKo/R0e4QrpXn9mD00yfIQLE+xbYFrbLNlsvr6Uy
-         O/8eRCIbHqin9+2h/SrdASvimO7gL4W8gvMtwUxOaM3Ws7h9RlbSkNULDnv1InAZEMzu
-         4asA==
-X-Gm-Message-State: APjAAAW8SbbiiCDO1NwFCNOqDRal0nav5ZC+V4+2oZ6lTfsuIERLxyAM
-        VK+PyAqp5WDQLh3es/q1633ih2GP
-X-Google-Smtp-Source: APXvYqysuv01KwwK2ajUl0jHMsIeOmc/PH/pnhZb1H9dsovpJcBJLfjcvDEt/GB+cB4ehKI1GjC5uQ==
-X-Received: by 2002:a17:90a:8a0e:: with SMTP id w14mr3447337pjn.51.1577161715099;
-        Mon, 23 Dec 2019 20:28:35 -0800 (PST)
+        bh=4mJHZTsPIEA6O9sZVqGs4DwP6hOOAd/5S49t+OCk5TU=;
+        b=cQl9Cqm6Ff27I1Gub3JpVHf0yVidXz+Cl50Ap0Riy/IVMxbnDXo0H72l2AspJgEO7w
+         C7lgw6BR5F/LPopDIUU6Ut3qi1QYxFCYkudCp/8JYh9hYWJ5PqtN/phnFhZw/3Y1o03z
+         l+8DX2jTGMwfUno3xYOQ7KJm8oqPnlrQfq6Co71GhQN3ieLFN8impOCDr4NoFbMG2gpS
+         pwa78N/JdK55HpPfmLw4Lc4doEjWQd6i+kRsvRsdNnELwf3O+QTmdOBsO2tLkOZjneW5
+         gmeSOR8W9p7tBeqP6TySdwGeurFhYrAJqvImeOd2DB2vqKwpi/bcq5YKGpyd4i00urq0
+         sxqA==
+X-Gm-Message-State: APjAAAWyZFl4Ja+nkuRBmv+HdbIBu03E/WJWE7sTgiaDuxxwWlmjL5kf
+        AtJUdOgyIdmM44w27BvnK2PYA7Vp
+X-Google-Smtp-Source: APXvYqyZVXmnzWE/uqt1bo2zdSwVIBjQauSH1lc5lxVQhj7xDxjhxxvTU/oXge8/+U9F6l7W/SwqKw==
+X-Received: by 2002:a17:90a:d50:: with SMTP id 16mr3378762pju.117.1577161805477;
+        Mon, 23 Dec 2019 20:30:05 -0800 (PST)
 Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
-        by smtp.gmail.com with ESMTPSA id n1sm25744742pfd.47.2019.12.23.20.28.34
+        by smtp.gmail.com with ESMTPSA id z16sm26274058pff.125.2019.12.23.20.30.04
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 23 Dec 2019 20:28:34 -0800 (PST)
-Subject: Re: [PATCH net-next v8 06/14] ethtool: provide string sets with
- STRSET_GET request
+        Mon, 23 Dec 2019 20:30:04 -0800 (PST)
+Subject: Re: [PATCH net-next v8 08/14] ethtool: set link settings with
+ LINKINFO_SET request
 To:     Michal Kubecek <mkubecek@suse.cz>,
         David Miller <davem@davemloft.net>, netdev@vger.kernel.org
 Cc:     Jakub Kicinski <jakub.kicinski@netronome.com>,
@@ -56,7 +56,7 @@ Cc:     Jakub Kicinski <jakub.kicinski@netronome.com>,
         Johannes Berg <johannes@sipsolutions.net>,
         linux-kernel@vger.kernel.org
 References: <cover.1577052887.git.mkubecek@suse.cz>
- <9f0cd4f631987f637812aa721e51a21e9e49eb46.1577052887.git.mkubecek@suse.cz>
+ <916e2bfa265b6c64522167a73ebcdda710d9d63c.1577052887.git.mkubecek@suse.cz>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Autocrypt: addr=f.fainelli@gmail.com; keydata=
  mQGiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
@@ -112,12 +112,12 @@ Autocrypt: addr=f.fainelli@gmail.com; keydata=
  caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
  6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9qfUATKC9NgZjRvBztfqy4
  a9BQwACgnzGuH1BVeT2J0Ra+ZYgkx7DaPR0=
-Message-ID: <548c0a25-9366-05d5-2182-ba50b5c240aa@gmail.com>
-Date:   Mon, 23 Dec 2019 20:28:33 -0800
+Message-ID: <ff62b417-deb3-c5cb-7996-6a831030a691@gmail.com>
+Date:   Mon, 23 Dec 2019 20:30:03 -0800
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
  Thunderbird/68.3.1
 MIME-Version: 1.0
-In-Reply-To: <9f0cd4f631987f637812aa721e51a21e9e49eb46.1577052887.git.mkubecek@suse.cz>
+In-Reply-To: <916e2bfa265b6c64522167a73ebcdda710d9d63c.1577052887.git.mkubecek@suse.cz>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -129,21 +129,11 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 On 12/22/2019 3:45 PM, Michal Kubecek wrote:
-> Requests a contents of one or more string sets, i.e. indexed arrays of
-> strings; this information is provided by ETHTOOL_GSSET_INFO and
-> ETHTOOL_GSTRINGS commands of ioctl interface. Unlike ioctl interface, all
-> information can be retrieved with one request and mulitple string sets can
-> be requested at once.
+> Implement LINKINFO_SET netlink request to set link settings queried by
+> LINKINFO_GET message.
 > 
-> There are three types of requests:
-> 
->   - no NLM_F_DUMP, no device: get "global" stringsets
->   - no NLM_F_DUMP, with device: get string sets related to the device
->   - NLM_F_DUMP, no device: get device related string sets for all devices
-> 
-> Client can request either all string sets of given type (global or device
-> related) or only specific sets. With ETHTOOL_A_STRSET_COUNTS flag set, only
-> set sizes (numbers of strings) are returned.
+> Only physical port, phy MDIO address and MDI(-X) control can be set,
+> attempt to modify MDI(-X) status and transceiver is rejected.
 > 
 > Signed-off-by: Michal Kubecek <mkubecek@suse.cz>
 
