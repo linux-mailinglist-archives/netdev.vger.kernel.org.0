@@ -2,154 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3DA59129F43
-	for <lists+netdev@lfdr.de>; Tue, 24 Dec 2019 09:42:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DCA24129F84
+	for <lists+netdev@lfdr.de>; Tue, 24 Dec 2019 10:02:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726140AbfLXImE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Dec 2019 03:42:04 -0500
-Received: from mail-lf1-f65.google.com ([209.85.167.65]:43483 "EHLO
-        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726068AbfLXImE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Dec 2019 03:42:04 -0500
-Received: by mail-lf1-f65.google.com with SMTP id 9so14581826lfq.10;
-        Tue, 24 Dec 2019 00:42:02 -0800 (PST)
+        id S1726178AbfLXJCB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Dec 2019 04:02:01 -0500
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:55035 "EHLO
+        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726047AbfLXJCA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Dec 2019 04:02:00 -0500
+Received: by mail-wm1-f67.google.com with SMTP id b19so1856769wmj.4
+        for <netdev@vger.kernel.org>; Tue, 24 Dec 2019 01:01:59 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=BUrzHnGWsCvRbYqfGz7mzn9PEmCOLtCvRNjYsu70LCU=;
-        b=TjcNAuSz8FRQTvnBNT4Mi9cXoiQFY24AK+G4GnqivWsBRc+hcAcjF0A3IfXuDEqY35
-         NtSqIgKijH1yptSgKocyiQCokDpDd5N/TYH/Gtvf+Aw5L+2O2oN5CZo49aWTilo5Oz2Q
-         Pvmwue3yAnnujo0yC0u15A/1edzSiKDILNElGoHUG3niV0glvN7vlz/oxpLQ2iHP8lma
-         gOmohbFb4z/e6AAmLqNt6umtLb1RbfWoshLT7EOK6T68f9XlEx2c4X01/dYCx8kmp/x6
-         fMaWPVQLQob5SYiXl+xSdF6ZNnAatcs2y00iJEuHOXLNwHX3KdZksHi5x3Yyl+NdiwvY
-         emyw==
+        d=broadcom.com; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=JpIUPsCQ4mUZV8clqM6x3//3zxhuxnyUCEItvWS4lIE=;
+        b=EJ2m8BgGEtcQm8iSYsrb6jbllbscoKNSW55IMHI0wPcev4mLznd5VMRKwg2/sTmJx7
+         6B0CFsO0Hi5zcoPBFR5UJazH++6qulEdmR+LgsQTpX43ge6h4U8J8ZJNVTYRJqa9zOoX
+         KHYdGmdBFl3qmjTINlKlX73vsGbpXDplIawOo=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=BUrzHnGWsCvRbYqfGz7mzn9PEmCOLtCvRNjYsu70LCU=;
-        b=th5H6H4orsxMLMyPrV5NXFm19rC+i4COiKvg0nUODEkSovWb34cm76VANJecnefGnK
-         Vv/vua41aLyt2OHTAWSNXJdYJE+jEDTjEkpKKH64/Dqbsz9RbPBN49PiSX5ltb6LdQlF
-         VSTmoUXCe6ERC71jh0aHVGA8lVlmqjCF0yV8X2S7qiKIwiS0A2g6xgGr0ufOiOXajfPH
-         rTJCjtPDHDxSClIjG5zoW+/ifBYN2uwsFhCpUKBfUO9ASC158jR7o+wiu5PqgFqYDkOh
-         BGBvSC7HFgQYzN+JZYjLVX/8MzFL/uMkSavwFxkA0dXieUG2nRcPROlhkPLOI8OaxhZl
-         boog==
-X-Gm-Message-State: APjAAAWbU8beCDTVJV9Vx/rx5kemolExt1hTGZJD7i6zXx5daFZISePH
-        bi20S7L1S54TFMvWwEs3EYrxXhUmxerAKWC25qw=
-X-Google-Smtp-Source: APXvYqwoEbinn89EIGoO3O5nrw330HICfs0OCkkHCQfpLzwsU20wYK120bA2s6sO6pnLIsha9ci8sXVRs9LNfi8JS7E=
-X-Received: by 2002:ac2:47e6:: with SMTP id b6mr18967553lfp.96.1577176921418;
- Tue, 24 Dec 2019 00:42:01 -0800 (PST)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=JpIUPsCQ4mUZV8clqM6x3//3zxhuxnyUCEItvWS4lIE=;
+        b=c3SjrhDjhGX4Onr0Csu+U3hW+gqDEGRCgG1fa+jJ7rfuHc0tk1Bt9x/N/QvoXFCW/r
+         XZxqPHAEzoPPB05v8OaTjKvUKS4cZoszmL6VrHKfUaJ89p2bnExgvHCjxw9bPk+Z9bVp
+         e5chIGCffZ1E9zc8PCDzYwPa40VDuRA7XMqhXIO4LaWKzw/YEc7P/uiMDT1KwmoRmAJd
+         9yXV+j13QRXAwb1rkBrCHZLRaIWHrlXacfHr8nzzsXmVq0kZ3EGMNkPu6xMALp6dE/Kt
+         h1AOW35evSR3cYA/9dGKqscQ1DiN0glNyMQKdsuW2qPXyvt+i8mQ7cxnEHVf1XdW/lRg
+         /HJA==
+X-Gm-Message-State: APjAAAU6aatEAXiDuaqw6/OgpNPzB7KpKOdcH+tln541eeZLVud46hsY
+        P9E4p2BxmcV7CBWDDygltKD5QQ==
+X-Google-Smtp-Source: APXvYqwaDJpckqJ1JrVbZPbh8vFZ6XADgxx76CNzAlm8TnNSIoHONxdbgCmk6gW2sYiAbh73ok449A==
+X-Received: by 2002:a1c:4b01:: with SMTP id y1mr3010277wma.12.1577178118405;
+        Tue, 24 Dec 2019 01:01:58 -0800 (PST)
+Received: from [10.230.41.59] ([192.19.215.251])
+        by smtp.gmail.com with ESMTPSA id v22sm1942400wml.11.2019.12.24.01.01.56
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 24 Dec 2019 01:01:57 -0800 (PST)
+Subject: Re: [PATCH v2 0/9] brcmfmac: add support for BCM4359 SDIO chipset
+To:     Christian Hewitt <christianshewitt@gmail.com>,
+        Soeren Moch <smoch@web.de>
+Cc:     Kalle Valo <kvalo@codeaurora.org>,
+        Heiko Stuebner <heiko@sntech.de>,
+        linux-wireless@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        brcm80211-dev-list@cypress.com, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Neil Armstrong <narmstrong@baylibre.com>
+References: <20191211235253.2539-1-smoch@web.de>
+ <D1B53CE9-E87C-4514-A2D7-0FE70A4D1A5D@gmail.com>
+ <cb3ac55f-4c8f-b0a0-41ee-f16b3232c87e@web.de>
+ <47DB71CE-ACC4-431D-9E66-D28A8C18C0A4@gmail.com>
+From:   Arend Van Spriel <arend.vanspriel@broadcom.com>
+Message-ID: <3c42d6de-670d-fee8-aa81-99f44d447e87@broadcom.com>
+Date:   Tue, 24 Dec 2019 10:01:56 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.1
 MIME-Version: 1.0
-References: <20191217155102.46039-1-mcroce@redhat.com> <cf5b01f8-b4e4-90da-0ee7-b1d81ee6d342@cumulusnetworks.com>
- <CAGnkfhxaT9_WL4UR8qurjBTkkdkuZFbfTQucLjoKOP-1eDEoTw@mail.gmail.com>
-In-Reply-To: <CAGnkfhxaT9_WL4UR8qurjBTkkdkuZFbfTQucLjoKOP-1eDEoTw@mail.gmail.com>
-From:   Tonghao Zhang <xiangxia.m.yue@gmail.com>
-Date:   Tue, 24 Dec 2019 16:41:25 +0800
-Message-ID: <CAMDZJNUQHR2zJwzbqKJWqMEYSKpz3-VHu4LTUzWKX94rQgMzxw@mail.gmail.com>
-Subject: Re: [ovs-dev] [PATCH net-next v2] openvswitch: add TTL decrement action
-To:     Matteo Croce <mcroce@redhat.com>
-Cc:     Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
-        ovs dev <dev@openvswitch.org>, netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Bindiya Kurle <bindiyakurle@gmail.com>,
-        Simon Horman <simon.horman@netronome.com>,
-        "David S. Miller" <davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <47DB71CE-ACC4-431D-9E66-D28A8C18C0A4@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Matteo,
-Did you have plan to implement the TTL decrement action in userspace
-datapath(with dpdk),
-I am doing some research offloading about TTL decrement action, and
-may sent patch TTL decrement offload action,
-using dpdk rte_flow.
+On 12/22/2019 5:35 AM, Christian Hewitt wrote:
+> 
+>> On 19 Dec 2019, at 2:04 am, Soeren Moch <smoch@web.de> wrote:
+>>
+>> I guess you need similar enhancements of the board device tree as in
+>> patch 8 of this series for your VIM3 board.
+> 
+> Wider testing now points to a known SDIO issue (SoC bug) with Amlogic G12A/B hardware. The merged workaround for the bug was only tested with bcmdhd and brcmfmac may require tweaking as the same issue exhibits on an Amlogic G12B device with BCM4356 chip. Testing the series with Amlogic GXM (older) and SM1 (newer) hardware to exclude the SoC bug shows everything working as expected.
 
-On Fri, Dec 20, 2019 at 8:37 PM Matteo Croce <mcroce@redhat.com> wrote:
->
-> On Tue, Dec 17, 2019 at 5:30 PM Nikolay Aleksandrov
-> <nikolay@cumulusnetworks.com> wrote:
-> >
-> > On 17/12/2019 17:51, Matteo Croce wrote:
-> > > New action to decrement TTL instead of setting it to a fixed value.
-> > > This action will decrement the TTL and, in case of expired TTL, drop it
-> > > or execute an action passed via a nested attribute.
-> > > The default TTL expired action is to drop the packet.
-> > >
-> > > Supports both IPv4 and IPv6 via the ttl and hop_limit fields, respectively.
-> > >
-> > > Tested with a corresponding change in the userspace:
-> > >
-> > >     # ovs-dpctl dump-flows
-> > >     in_port(2),eth(),eth_type(0x0800), packets:0, bytes:0, used:never, actions:dec_ttl{ttl<=1 action:(drop)},1,1
-> > >     in_port(1),eth(),eth_type(0x0800), packets:0, bytes:0, used:never, actions:dec_ttl{ttl<=1 action:(drop)},1,2
-> > >     in_port(1),eth(),eth_type(0x0806), packets:0, bytes:0, used:never, actions:2
-> > >     in_port(2),eth(),eth_type(0x0806), packets:0, bytes:0, used:never, actions:1
-> > >
-> > >     # ping -c1 192.168.0.2 -t 42
-> > >     IP (tos 0x0, ttl 41, id 61647, offset 0, flags [DF], proto ICMP (1), length 84)
-> > >         192.168.0.1 > 192.168.0.2: ICMP echo request, id 386, seq 1, length 64
-> > >     # ping -c1 192.168.0.2 -t 120
-> > >     IP (tos 0x0, ttl 119, id 62070, offset 0, flags [DF], proto ICMP (1), length 84)
-> > >         192.168.0.1 > 192.168.0.2: ICMP echo request, id 388, seq 1, length 64
-> > >     # ping -c1 192.168.0.2 -t 1
-> > >     #
-> > >
-> > > Co-authored-by: Bindiya Kurle <bindiyakurle@gmail.com>
-> > > Signed-off-by: Bindiya Kurle <bindiyakurle@gmail.com>
-> > > Signed-off-by: Matteo Croce <mcroce@redhat.com>
-> > > ---
-> > >  include/uapi/linux/openvswitch.h |  22 +++++++
-> > >  net/openvswitch/actions.c        |  71 +++++++++++++++++++++
-> > >  net/openvswitch/flow_netlink.c   | 105 +++++++++++++++++++++++++++++++
-> > >  3 files changed, 198 insertions(+)
-> > >
-> >
-> > Hi Matteo,
-> >
-> > [snip]
-> > > +}
-> > > +
-> > >  /* When 'last' is true, sample() should always consume the 'skb'.
-> > >   * Otherwise, sample() should keep 'skb' intact regardless what
-> > >   * actions are executed within sample().
-> > > @@ -1176,6 +1201,44 @@ static int execute_check_pkt_len(struct datapath *dp, struct sk_buff *skb,
-> > >                            nla_len(actions), last, clone_flow_key);
-> > >  }
-> > >
-> > > +static int execute_dec_ttl(struct sk_buff *skb, struct sw_flow_key *key)
-> > > +{
-> > > +     int err;
-> > > +
-> > > +     if (skb->protocol == htons(ETH_P_IPV6)) {
-> > > +             struct ipv6hdr *nh = ipv6_hdr(skb);
-> > > +
-> > > +             err = skb_ensure_writable(skb, skb_network_offset(skb) +
-> > > +                                       sizeof(*nh));
-> >
-> > skb_ensure_writable() calls pskb_may_pull() which may reallocate so nh might become invalid.
-> > It seems the IPv4 version below is ok as the ptr is reloaded.
-> >
->
-> Right
->
-> > One q as I don't know ovs that much - can this action be called only with
-> > skb->protocol ==  ETH_P_IP/IPV6 ? I.e. Are we sure that if it's not v6, then it must be v4 ?
-> >
->
-> I'm adding a check in validate_and_copy_dec_ttl() so only ipv4/ipv6
-> packet will pass.
->
-> Thanks,
->
-> --
-> Matteo Croce
-> per aspera ad upstream
->
-> _______________________________________________
-> dev mailing list
-> dev@openvswitch.org
-> https://mail.openvswitch.org/mailman/listinfo/ovs-dev
+Hi Christian,
+
+Can you elaborate on the "known SDIO issue"? Is it an issue with ADMA or 
+something else. I am asking because there is a workaround in brcmfmac to 
+avoid scatter-gather lists, which may or may not address the issue.
+
+Regards,
+Arend
