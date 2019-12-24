@@ -2,153 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 24C1112A261
-	for <lists+netdev@lfdr.de>; Tue, 24 Dec 2019 15:38:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F87B12A28B
+	for <lists+netdev@lfdr.de>; Tue, 24 Dec 2019 15:42:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726201AbfLXOia (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Dec 2019 09:38:30 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:24791 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726128AbfLXOia (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Dec 2019 09:38:30 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1577198307;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=XhTSxydB787Fx7W9BGgbDNxwN40hZslUJG+z59R7n0E=;
-        b=BeaE67WaapKET6OOCjeLlHP9Im4XGywSJxm8epcnRV0e1rc3IA37THhhRG/3opkoZEWCZR
-        1NqZraHsu7Q6GvW/K+hnjCVFaJHn+euJCRDFqEId1W75nU6oe1MYalakCRt6yoV4wgU+wT
-        P3U4m37yLCvsnqgcI8MBYjAt+Q3wmIM=
-Received: from mail-lj1-f198.google.com (mail-lj1-f198.google.com
- [209.85.208.198]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-378-UF75jLD4OVmNnmVBRVCQWQ-1; Tue, 24 Dec 2019 09:38:26 -0500
-X-MC-Unique: UF75jLD4OVmNnmVBRVCQWQ-1
-Received: by mail-lj1-f198.google.com with SMTP id 126so3088482ljj.10
-        for <netdev@vger.kernel.org>; Tue, 24 Dec 2019 06:38:26 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=XhTSxydB787Fx7W9BGgbDNxwN40hZslUJG+z59R7n0E=;
-        b=tCghGLsmMWp8quFgWiFIx3BTCCbls7qwCwhpKWXdC/0ew5cmdm4D3XjUp60hexw3Kt
-         HiprBVs8YLRKvLfiYFJfs8vEkWkIcMPxwSVffHxfwQe6hY+Udz3vHw5qXPUBu/QmoYG2
-         V2de8a/ixUsHT99IVFR/mEctv8HbMwyS7KIZfjEB1e6EN6bKWS7fvhGJxwl8GjwyfVzB
-         NoCsdzINIkMt+3KTUP6J5XtHkhK03tpZ1/ZZtGgfxQiqVEkA5Zadl85kLRfKpyDH+mtx
-         Auj2dluCHiDskFG1+GiNPflyoP3bCaKC37ZG8utW5Vio0aBwPPI1zSp6lEAXVixOzXXz
-         f3Yw==
-X-Gm-Message-State: APjAAAWzywbthjE/lRHeOTxt2ztvlipTzFt7A9PanOmIAneClJUZyuWQ
-        gbQEN6dYOWAEfyHvPihpGL/BCV7jsYIzRhmsfeKWUGaaFW335+KzT26hI7rm0kjWmn6Xbbl9hwa
-        qsLaxKtEs27hS3o2IsJeHcal26wX2C/aH
-X-Received: by 2002:a19:8456:: with SMTP id g83mr20275491lfd.0.1577198304965;
-        Tue, 24 Dec 2019 06:38:24 -0800 (PST)
-X-Google-Smtp-Source: APXvYqwFw9Zd5Ca/3FACYA3fL7tMqVTaYlHAdjxV9dGZw75keJELu67CLpVePZwmd49Rk96cz5eQO0KvH8Ik3APQQjY=
-X-Received: by 2002:a19:8456:: with SMTP id g83mr20275481lfd.0.1577198304733;
- Tue, 24 Dec 2019 06:38:24 -0800 (PST)
+        id S1726184AbfLXOmL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Dec 2019 09:42:11 -0500
+Received: from sonic317-32.consmr.mail.ne1.yahoo.com ([66.163.184.43]:41074
+        "EHLO sonic317-32.consmr.mail.ne1.yahoo.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726128AbfLXOmL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Dec 2019 09:42:11 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1577198529; bh=17dVP7Uubr9+jNqE4DjEgXnP0HamWyMUmKfcpo3/pYc=; h=Date:From:Reply-To:Subject:References:From:Subject; b=N+mmsTrmbwDoqx+1sD2j/sf7xF/v6QcWBjaOEoSxKymawGT9WeupQZRI2fk+v5dqPMmlj9zOrztyzX0UW6owY2pIZ7lj51S6t7idHrQX/frZ8MWekDWcKNhra78eLFoo6h6sk8fWeZbs9u9rPD5QkxV/jlH+0wEvRarprN2qJ/zBpYkLaVHHa5oX+eeosqflDXB1UWdwC0/7Ah/ol0wiS77K9Vt8cGhhu/Rs4X4THmvlyS1GSOiiRmw35wPBC7sTFPKkWstI65rQYFpyPZ7VVCW5pFYU9m5ZxM2DZAzxCHNL8g/ecDwwddlVALd7fIqQxaISSDPB9zw6cXV6SXd18g==
+X-YMail-OSG: ZabDINAVM1lNeUrfmpQn_HZshuF93v31rZh5DlZEpSRw.sYqphJ944wTriWr2G7
+ ybCsmv4u_jxXvJBtmVPh60PYD19aMrH.u4y_e1Zj9Bykqp6x5W6QlQ2FFNRba2ZUcXZcDmI.VQ8A
+ cREUxWreUcvqgYR3a827dlacrIWTo_2XCHvMkx4EMrQ1b0FBR5LF84lo_IMhwe7B3dMDFn5i9cxW
+ 0onhCY_5wQ45aD0sSMH1INtI17.m1ehXEvHYygZTG2xaWBCR8_mHzqTRV2gHV0FEellRS55s_obg
+ aW18a_AHCjidmLuzKBg4K5QdJMIcG0ee3vlsOK0QOrovLHyADThX.Fpns8MNYLxIVTskXmVwFWrm
+ d0eQCgHoS2u8otVfKApcEaqLdZjfsWmtlXReSJJ.VyeygrNAMtT3UZtMiH2Y.89DJ7c2lxkCwuWC
+ 8qtR86iz6V8S78ShfaBmTdPtYaGlpmJ25N8HdejtXdF4ovLeUjiM6sc_zCbibMbIB4OZu779_r1C
+ yVe7fXzw0xEibi8y3auxeJGRqLFpPreBxjTWUC5JzzzWLxycKS5Zr8K9cJQaSo54s8yvBK_LzwjA
+ ZzuM.K.TDOUwciFPTV.UgOhy74KBgPW_ex0_mQqJpckSuBOmxLhJyGr8N5U8miIdbvH9_BYQrUWz
+ SLl3N_V8ucnQ4XOuH8cYZOyUJopkCewO5vQpFBqPtxzJkkIXY9S_1IQSbdgijY1gAhVduBz50aib
+ wKJyFAFodHVX7qucc10ovueuMlK5NXVEhOE6rQRWQffmyU9uUsV1zKFZmI72H7Hu43MhYdxC4Y55
+ 5YG1meG8sLpQ0yO56NfQ8ubDmrhaKm3aQGZLXl6fRgCEMe5SnT29sVmmAC7y8.I_B6t8uiD.v9fN
+ 6X.F37qmttJOhl_cBjbDELYXQkUC7tQm9P_eG_ysXNao2zkyvrIrsl3rmfNbo5DuSsma1rEhvmiP
+ qOZ3r_kZ_qpDvsuONkOaH._gWxAcfnkcG6fqWVafRMQKBvrfLNHkUUPA5qEGDz.GkSQUEHP76W4i
+ z8NHyTr.9V_Iqyb5FeWXOBskBtNgx0Y.D8_PUqyJpVkN_v1jlXAqOWFgEXIols7xEqN_wMwCdFTk
+ 5FBzP.owN_Wb97LTdbcENrO.6M8Hj3gUFVx6UTrPo3HlfFUiZfVhDNNEv5tfzHxtXkWtCliapGsA
+ LC3yqgwG3rq1tF5hiCV6cDIJdrg_t0toR453VoXIpmzBRrF0hkJ2uzK4QVE6dxve_eMu.2zzmN6s
+ AKWdGfuuK7sg2OYNl8teF2Jheypf2Py4U4kIC8aNfP4AKUuA3JvAiHXwEXiQaFwOFdyFXrnItHhf
+ i
+Received: from sonic.gate.mail.ne1.yahoo.com by sonic317.consmr.mail.ne1.yahoo.com with HTTP; Tue, 24 Dec 2019 14:42:09 +0000
+Date:   Tue, 24 Dec 2019 14:42:06 +0000 (UTC)
+From:   Pamela Render <sgt.prrender@gmail.com>
+Reply-To: sgt.prender@gmail.com
+Message-ID: <708447843.3266486.1577198526464@mail.yahoo.com>
+Subject: Hi
 MIME-Version: 1.0
-References: <20191224010103.56407-1-mcroce@redhat.com> <20191224095229.GA24310@apalos.home>
- <20191224150058.4400ffab@carbon>
-In-Reply-To: <20191224150058.4400ffab@carbon>
-From:   Matteo Croce <mcroce@redhat.com>
-Date:   Tue, 24 Dec 2019 15:37:49 +0100
-Message-ID: <CAGnkfhzYdqBPvRM8j98HVMzeHSbJ8RyVH+nLpoKBuz2iqErPog@mail.gmail.com>
-Subject: Re: [RFC net-next 0/2] mvpp2: page_pool support
-To:     Jesper Dangaard Brouer <brouer@redhat.com>
-Cc:     Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Maxime Chevallier <maxime.chevallier@bootlin.com>,
-        Antoine Tenart <antoine.tenart@bootlin.com>,
-        Luka Perkov <luka.perkov@sartura.hr>,
-        Tomislav Tomasic <tomislav.tomasic@sartura.hr>,
-        Marcin Wojtas <mw@semihalf.com>,
-        Stefan Chulski <stefanc@marvell.com>,
-        Nadav Haklai <nadavh@marvell.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+References: <708447843.3266486.1577198526464.ref@mail.yahoo.com>
+X-Mailer: WebService/1.1.14873 YMailNodin Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.97 Safari/537.36
+To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 24, 2019 at 3:01 PM Jesper Dangaard Brouer
-<brouer@redhat.com> wrote:
->
-> On Tue, 24 Dec 2019 11:52:29 +0200
-> Ilias Apalodimas <ilias.apalodimas@linaro.org> wrote:
->
-> > On Tue, Dec 24, 2019 at 02:01:01AM +0100, Matteo Croce wrote:
-> > > This patches change the memory allocator of mvpp2 from the frag allocator to
-> > > the page_pool API. This change is needed to add later XDP support to mvpp2.
-> > >
-> > > The reason I send it as RFC is that with this changeset, mvpp2 performs much
-> > > more slower. This is the tc drop rate measured with a single flow:
-> > >
-> > > stock net-next with frag allocator:
-> > > rx: 900.7 Mbps 1877 Kpps
-> > >
-> > > this patchset with page_pool:
-> > > rx: 423.5 Mbps 882.3 Kpps
-> > >
-> > > This is the perf top when receiving traffic:
-> > >
-> > >   27.68%  [kernel]            [k] __page_pool_clean_page
-> >
-> > This seems extremly high on the list.
->
-> This looks related to the cost of dma unmap, as page_pool have
-> PP_FLAG_DMA_MAP. (It is a little strange, as page_pool have flag
-> DMA_ATTR_SKIP_CPU_SYNC, which should make it less expensive).
->
->
-> > >    9.79%  [kernel]            [k] get_page_from_freelist
->
-> You are clearly hitting page-allocator every time, because you are not
-> using page_pool recycle facility.
->
->
-> > >    7.18%  [kernel]            [k] free_unref_page
-> > >    4.64%  [kernel]            [k] build_skb
-> > >    4.63%  [kernel]            [k] __netif_receive_skb_core
-> > >    3.83%  [mvpp2]             [k] mvpp2_poll
-> > >    3.64%  [kernel]            [k] eth_type_trans
-> > >    3.61%  [kernel]            [k] kmem_cache_free
-> > >    3.03%  [kernel]            [k] kmem_cache_alloc
-> > >    2.76%  [kernel]            [k] dev_gro_receive
-> > >    2.69%  [mvpp2]             [k] mvpp2_bm_pool_put
-> > >    2.68%  [kernel]            [k] page_frag_free
-> > >    1.83%  [kernel]            [k] inet_gro_receive
-> > >    1.74%  [kernel]            [k] page_pool_alloc_pages
-> > >    1.70%  [kernel]            [k] __build_skb
-> > >    1.47%  [kernel]            [k] __alloc_pages_nodemask
-> > >    1.36%  [mvpp2]             [k] mvpp2_buf_alloc.isra.0
-> > >    1.29%  [kernel]            [k] tcf_action_exec
-> > >
-> > > I tried Ilias patches for page_pool recycling, I get an improvement
-> > > to ~1100, but I'm still far than the original allocator.
-> --
-> Best regards,
->   Jesper Dangaard Brouer
->   MSc.CS, Principal Kernel Engineer at Red Hat
->   LinkedIn: http://www.linkedin.com/in/brouer
->
+Hi dear friend, Good day to you, I'm Pamela Render, from united states, please do you speak english. With Love.
 
-The change I did to use the recycling is the following:
+Thanks and regards.
+Pamela Render
 
---- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-+++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-@@ -3071,7 +3071,7 @@ static int mvpp2_rx(struct mvpp2_port *port,
-struct napi_struct *napi,
-    if (pp)
--       page_pool_release_page(pp, virt_to_page(data));
-+      skb_mark_for_recycle(skb, virt_to_page(data), &rxq->xdp_rxq.mem);
-    else
-         dma_unmap_single_attrs(dev->dev.parent, dma_addr,
-
-
-
-
---
-Matteo Croce
-per aspera ad upstream
-
+__________________________________
+Sent From United Nations Wireless Device Server==================
