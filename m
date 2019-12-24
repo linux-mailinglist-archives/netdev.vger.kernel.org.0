@@ -2,64 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C6D0212A33E
-	for <lists+netdev@lfdr.de>; Tue, 24 Dec 2019 17:40:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1201912A33F
+	for <lists+netdev@lfdr.de>; Tue, 24 Dec 2019 17:44:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726244AbfLXQko (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Dec 2019 11:40:44 -0500
-Received: from mail-il1-f193.google.com ([209.85.166.193]:35987 "EHLO
-        mail-il1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726183AbfLXQkn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Dec 2019 11:40:43 -0500
-Received: by mail-il1-f193.google.com with SMTP id b15so16927245iln.3
-        for <netdev@vger.kernel.org>; Tue, 24 Dec 2019 08:40:43 -0800 (PST)
+        id S1726201AbfLXQoZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Dec 2019 11:44:25 -0500
+Received: from mail-io1-f67.google.com ([209.85.166.67]:36261 "EHLO
+        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726168AbfLXQoY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Dec 2019 11:44:24 -0500
+Received: by mail-io1-f67.google.com with SMTP id r13so9508946ioa.3
+        for <netdev@vger.kernel.org>; Tue, 24 Dec 2019 08:44:24 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=YQJnjfy+wiFZmrjQ/8XtNAKfDBwifFSG9Qj4ezMxuTE=;
-        b=J4oDkKYk1wei2mVKTNAwNYZ4lMnFVTeC/+aHsyYcznSWHzNAYIeodQ5laPqOr97oG2
-         fF9TmNgc+2EOCwhaEB8t/rDrxe+U2BM1oWp1ubw22bkSXnyw6/eepJG63VrDKRfT396T
-         hi+6aemDVfKtPwITarXAXl7WZ49FjQuFLvyUOsXDrX3a3dy1gsdlnQ78GHDAtwobfVkc
-         2OOKej3fgh5IF6DcEC6MmVxSi6nMFNNk3q89cJP6wIDQO7FgjIa5FwecwGd0ODhW3JnC
-         BV+j05ZAwZfN+I1bpfSvZ23XFdv4hhZbbkw76PWHARfWNL5W/QPxqPqGGqwlzo2FE62Y
-         ltBg==
+        bh=SUxgsZyApg4KkbWhZUSWoBOcaMQj+/Hebp7i0KZjw6Q=;
+        b=vCoClSyxfzKoclorowq2DNQ3bERMV8EMZEI+lBNrhkjG2AkZvtcLZMyzZS3GV1Jhsu
+         NF3q9/ITzr/I2FQkwyLeYYcjC22aq/kiijwdxnwi81kM5vv8qniGXQrYh8+t0FTms7M5
+         Gg7qlKz2WT+Pi+3McLr+SlA4O5WHYfNwXkTFnBKZQG8hCqz45VngEM63kYM76ii00dDU
+         roYBVJrv9heOe+fP7qm5QXrWwSe1WNBfghAwqVRRCHxjIlo5TjGiEgxiuX2cdHCacgGD
+         dbFbaFJOnJ78semksWjF2XRDozflFQd67OM6ZvkQMeFVQNT978F6QrifL7BXpnRywI+O
+         3+Sg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=YQJnjfy+wiFZmrjQ/8XtNAKfDBwifFSG9Qj4ezMxuTE=;
-        b=LSNxm549ytiABdQa6hPW3x6RHlH5xkCZRxDYHmuXNNtrha90G1sKF5UGF+ZZonKtUU
-         Es6s8Av73Af5739pRv0nDaYrFf2xVR+XqxL1qcWOAEw4xpt+1jWMXHdVWj+uVLbjCmrn
-         H4zr6gnX8M2H0E5oZO8LVLNnTqM6tdaAKfL8wK9TwM0pUg4SKVdlL82X5Q2FQRRoPxBR
-         CrDF+AyD095MOzDyzT+5ZVjz1h3A4JIOLYC1jMmPu6zIWxehenOwWTnvq7WVwYIhR8Uv
-         BLOlIBTNPkVkab+G6xFfJrNeuOAGMDwEvKQuZV0KOvfWA9DZvMNVceE4wdJH8y8ryHAD
-         NXfw==
-X-Gm-Message-State: APjAAAUlA5fTmRjPdOwgPM00IiGEjxog280qOk7G0lm6vTCPzBeSjXrc
-        mlibGqt6S6HrI1eFykGO8a8=
-X-Google-Smtp-Source: APXvYqz/sZrIqsbRD54q1xy03o16CdIMr6krljIHSHtkLlfBoqSCIe2zA7DX/uUOr7D0Ug3zMD5/rA==
-X-Received: by 2002:a92:ba8d:: with SMTP id t13mr30295602ill.207.1577205643118;
-        Tue, 24 Dec 2019 08:40:43 -0800 (PST)
+        bh=SUxgsZyApg4KkbWhZUSWoBOcaMQj+/Hebp7i0KZjw6Q=;
+        b=UJJ/cBstQUlpnQ8N2hpPTcHPJXg6dPS4k/aM1MPhu8Qn9dx0TDR2pZUaJhL3FyyjXZ
+         4iTD2ohEDKp0o+7jkvSRgxvILzHDms+wbIql6vGbHrtzkUEu35r7rb4TvRHOV2OsL93M
+         wnEVM1ED150QHFRHF1cVc+BOct3IDYoOOTChM1zeHq1fhQCujDdIhVnMd/BmXl3MFee7
+         EnZTZwJMlAuZK+3zbhAXl4jSQQJ4w8W/e5q2i6dFfnBJfV4FO5iBx946uk1FEE88BZxP
+         w3accZjDNB/rJNadGX0HbkjZVJ2mcrXPwjC7sRo7YrgGsMJAYLYfw8oHZTKBx52wYPMT
+         qbqw==
+X-Gm-Message-State: APjAAAWQi15sDKsApA9wZxnG62Igr4uWe/YrVYd4LWI+vczKxkI/WCtX
+        sSoffzf3Y1+nghBxgLFazAc=
+X-Google-Smtp-Source: APXvYqznkyMTRSYom6Ih8VMzd/vkHfm2MAk8yRap+6devEjPJZ6KzNWcY8ewQLYSSLh6iwLWrKkmCw==
+X-Received: by 2002:a02:a898:: with SMTP id l24mr18993175jam.107.1577205864275;
+        Tue, 24 Dec 2019 08:44:24 -0800 (PST)
 Received: from ?IPv6:2601:284:8202:10b0:859d:710a:f117:8322? ([2601:284:8202:10b0:859d:710a:f117:8322])
-        by smtp.googlemail.com with ESMTPSA id q11sm4358564ioi.25.2019.12.24.08.40.41
+        by smtp.googlemail.com with ESMTPSA id s10sm7106707ioc.4.2019.12.24.08.44.22
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 24 Dec 2019 08:40:42 -0800 (PST)
-Subject: Re: [PATCH net-next 2/9] ipv6: Notify newly added route if should be
- offloaded
+        Tue, 24 Dec 2019 08:44:23 -0800 (PST)
+Subject: Re: [PATCH net-next 3/9] ipv6: Notify route if replacing currently
+ offloaded one
 To:     Ido Schimmel <idosch@idosch.org>, netdev@vger.kernel.org
 Cc:     davem@davemloft.net, roopa@cumulusnetworks.com,
         jakub.kicinski@netronome.com, jiri@mellanox.com,
         Ido Schimmel <idosch@mellanox.com>
 References: <20191223132820.888247-1-idosch@idosch.org>
- <20191223132820.888247-3-idosch@idosch.org>
+ <20191223132820.888247-4-idosch@idosch.org>
 From:   David Ahern <dsahern@gmail.com>
-Message-ID: <e679e494-ed27-7089-9b29-9e73bc98002f@gmail.com>
-Date:   Tue, 24 Dec 2019 09:40:41 -0700
+Message-ID: <e649aa5e-b187-0379-35be-1c4a99a59f01@gmail.com>
+Date:   Tue, 24 Dec 2019 09:44:22 -0700
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
  Gecko/20100101 Thunderbird/68.3.1
 MIME-Version: 1.0
-In-Reply-To: <20191223132820.888247-3-idosch@idosch.org>
+In-Reply-To: <20191223132820.888247-4-idosch@idosch.org>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -71,21 +71,15 @@ X-Mailing-List: netdev@vger.kernel.org
 On 12/23/19 6:28 AM, Ido Schimmel wrote:
 > From: Ido Schimmel <idosch@mellanox.com>
 > 
-> fib6_add_rt2node() takes care of adding a single route ('struct
-> fib6_info') to a FIB node. The route in question should only be notified
-> in case it is added as the first route in the node (lowest metric) or if
-> it is added as a sibling route to the first route in the node.
-> 
-> The first criterion can be tested by checking if the route is pointed to
-> by 'fn->leaf'. The second criterion can be tested by checking the new
-> 'notify_sibling_rt' variable that is set when the route is added as a
-> sibling to the first route in the node.
+> Similar to the corresponding IPv4 patch, only notify the new route if it
+> is replacing the currently offloaded one. Meaning, the one pointed to by
+> 'fn->leaf'.
 > 
 > Signed-off-by: Ido Schimmel <idosch@mellanox.com>
 > Reviewed-by: Jiri Pirko <jiri@mellanox.com>
 > ---
->  net/ipv6/ip6_fib.c | 18 ++++++++++++++++++
->  1 file changed, 18 insertions(+)
+>  net/ipv6/ip6_fib.c | 7 +++++++
+>  1 file changed, 7 insertions(+)
 > 
 
 Reviewed-by: David Ahern <dsahern@gmail.com>
