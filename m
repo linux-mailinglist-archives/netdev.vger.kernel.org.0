@@ -2,227 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C5A1129E7A
-	for <lists+netdev@lfdr.de>; Tue, 24 Dec 2019 08:41:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 07A40129EFC
+	for <lists+netdev@lfdr.de>; Tue, 24 Dec 2019 09:31:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726160AbfLXHlL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Dec 2019 02:41:11 -0500
-Received: from mail-wm1-f66.google.com ([209.85.128.66]:52491 "EHLO
-        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726037AbfLXHlK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Dec 2019 02:41:10 -0500
-Received: by mail-wm1-f66.google.com with SMTP id p9so1712695wmc.2
-        for <netdev@vger.kernel.org>; Mon, 23 Dec 2019 23:41:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=v0VAmnhdebnxv7lTrxqMAa5GegnphCGLfAXE1e+3WA0=;
-        b=U3YZm9DjXESahYqKFAj3AISEVv0ieD5Bo9qmUOZtsv+5KFkiSVxrossklLGPtr86lx
-         4MBeBfC8IxOOISBxRWIOD5E9QfZdpGrW9OlUBZfyEjivxg9A2FA3DbQpkpry73y+0b6N
-         k+HCYkNWQQ7y6de42E/zcX9CF6D/kiThUj/ftiusjMIJpODCoi7nZOnJuRNksTGXImTD
-         E91+x9K9RHqsJyHZYoqcUvn6INyYLYB9QbqyJuSp/nn4d/g6FxpTnqAmLlOxtTA8EeqD
-         Y5Gwrb4q7QXyn8UEey4JjxbJfbMllQO7wvyDY+HZ67Hxc4/J3ZmMaCXc7BXrHdnUEe0/
-         B3/A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=v0VAmnhdebnxv7lTrxqMAa5GegnphCGLfAXE1e+3WA0=;
-        b=EbruhnpPM31jSREX6cYep4T5ylLyQEloKl5+noAh4nuKfVVUaiOgXp3owBC/4Y2XOK
-         DWys2mluD975q4I7Ijlt0pb+V/jmqRxF9XX6N8RbUruTRFpllU80q1NQLQoOb+UQLDT6
-         zoa7BuGsGJabk4sm+6vuHJIdZt+p32k+vID242CTuzSed2L1v1aSCtKbLGT29QH1y9k2
-         f08wQPsDwS37/ProK/ZfHrVKxurJ7h5Tqu9BzJW7a83e1CP+ZLnIwCb2zYQA0juC+ETT
-         /GzAlpCZdn7xbhq7oKRqJSXXnYP3I1BKEh4wQrBpDlbL9hxYBBO1e18Bnutvph5mx6hc
-         7R5Q==
-X-Gm-Message-State: APjAAAX9rGgihXKRDcobtqOh0EqZ7LSebaFCUwcDLArM1kQYPioz7Zx3
-        tsyfjl4ItXL8OMgLdyRKa9YCBA==
-X-Google-Smtp-Source: APXvYqwo4ltOAsTEdb6NMVSH4uNofK/s7WAP4ylQc5u4tmNuXWYau1WZfd7HeptLiAYByP4IsjC5PQ==
-X-Received: by 2002:a7b:c5cd:: with SMTP id n13mr2722602wmk.172.1577173267101;
-        Mon, 23 Dec 2019 23:41:07 -0800 (PST)
-Received: from apalos.home (ppp-94-64-118-170.home.otenet.gr. [94.64.118.170])
-        by smtp.gmail.com with ESMTPSA id n3sm22689586wrs.8.2019.12.23.23.41.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 Dec 2019 23:41:06 -0800 (PST)
-Date:   Tue, 24 Dec 2019 09:41:03 +0200
-From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
-To:     Jesper Dangaard Brouer <brouer@redhat.com>
-Cc:     netdev@vger.kernel.org, lirongqing@baidu.com,
-        linyunsheng@huawei.com, Saeed Mahameed <saeedm@mellanox.com>,
-        mhocko@kernel.org, peterz@infradead.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [net-next v5 PATCH] page_pool: handle page recycle for
- NUMA_NO_NODE condition
-Message-ID: <20191224074103.GB2819@apalos.home>
-References: <20191218084437.6db92d32@carbon>
- <157676523108.200893.4571988797174399927.stgit@firesoul>
- <20191220102314.GB14269@apalos.home>
- <20191220114116.59d86ff6@carbon>
- <20191220104937.GA15487@apalos.home>
- <20191220162254.0138263e@carbon>
- <20191220160649.GA26788@apalos.home>
- <20191223075700.GA5333@apalos.home>
- <20191223175257.164557cd@carbon>
+        id S1726216AbfLXIav (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Dec 2019 03:30:51 -0500
+Received: from out2-smtp.messagingengine.com ([66.111.4.26]:58019 "EHLO
+        out2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726047AbfLXIav (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Dec 2019 03:30:51 -0500
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id 57F9E2203E;
+        Tue, 24 Dec 2019 03:30:50 -0500 (EST)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute3.internal (MEProxy); Tue, 24 Dec 2019 03:30:50 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=feltvn
+        kPILD6mfvJaVnljV6VH5w42oJrra5rPGaKvCU=; b=LCsFy47vGftR1Gx1IDBMPZ
+        8vPMRRyZLlhWkI2vGYFJP6ItyHzlbTrTK6xON+M6IBraPxSfPWMuMwp1lYLuP6Yk
+        X2l6g8XNRvcKdqAoXWjCPyHjuWmTD6kK8ih/1IWQLgFUSLFg2KASdbFdb1PQ1hMi
+        LVEpSKOxNKFIcXB9/lLvq32c75NmZDHLSdbqc9Itjb0wyyMJDxD0DWbMPifcTFjE
+        WvunXrRG/7gV2rhb+Qt07IjgP+bF16fj4+DeHKWAohEdi6caF3YA6nqM0W7m4Czw
+        2soKKmmFcb6IRFT0z/7yO7czwDDMhO82jshXFRpARggGtF8dY5kIaF6mB98hCGFA
+        ==
+X-ME-Sender: <xms:t8wBXr19uU3yLqVovEL9kO5dMEnkO5w04WT87lQWWJD0U6KXVHAMUw>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedufedrvddvuddgkeelucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkughoucfu
+    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucffohhmrghinh
+    epkhgvrhhnvghlrdhorhhgpdgtuhhmuhhluhhsnhgvthifohhrkhhsrdgtohhmpdhgihht
+    hhhusgdrtghomhenucfkphepudelfedrgeejrdduieehrddvhedunecurfgrrhgrmhepmh
+    grihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhgnecuvehluhhsthgvrhfu
+    ihiivgeptd
+X-ME-Proxy: <xmx:t8wBXj4yft3crf-XWRNvkwYZ_4q7xU0UWq0tqyLcEay2DJpfM_syEw>
+    <xmx:t8wBXnUVypgMuvEzNSc1rihTtGqG7eGaF5eMTlBUJpdYvGMlXEPfUg>
+    <xmx:t8wBXtPL4_eodR48giN8ZffM1_b2t9WDjNp48FBG9Ho5_fFCvDwD5g>
+    <xmx:uswBXjxrngssWKatye2SolxRMZ1aunqTYS2aOMpVyR9qXK1J0_6hYw>
+Received: from localhost (unknown [193.47.165.251])
+        by mail.messagingengine.com (Postfix) with ESMTPA id DB88D8005A;
+        Tue, 24 Dec 2019 03:30:46 -0500 (EST)
+Date:   Tue, 24 Dec 2019 10:30:45 +0200
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     Russell King <rmk+kernel@armlinux.org.uk>, netdev@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>, Jiri Pirko <jiri@resnulli.us>,
+        Ido Schimmel <idosch@mellanox.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>
+Subject: Re: [RFC 3/3] net: dsa: mv88e6xxx: fix vlan setup
+Message-ID: <20191224083045.GA895380@splinter>
+References: <20191222192235.GK25745@shell.armlinux.org.uk>
+ <E1ij6pq-00084C-47@rmk-PC.armlinux.org.uk>
+ <562d2a65-8361-9361-f761-082ace3a77bc@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20191223175257.164557cd@carbon>
+In-Reply-To: <562d2a65-8361-9361-f761-082ace3a77bc@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jesper,
-
-On Mon, Dec 23, 2019 at 05:52:57PM +0100, Jesper Dangaard Brouer wrote:
-> On Mon, 23 Dec 2019 09:57:00 +0200
-> Ilias Apalodimas <ilias.apalodimas@linaro.org> wrote:
+On Mon, Dec 23, 2019 at 10:02:12AM -0800, Florian Fainelli wrote:
+> +Ido,
 > 
-> > Hi Jesper,
+> On 12/22/2019 11:24 AM, Russell King wrote:
+> > DSA assumes that a bridge which has vlan filtering disabled is not
+> > vlan aware, and ignores all vlan configuration. However, the kernel
+> > software bridge code allows configuration in this state.
 > > 
-> > Looking at the overall path again, i still need we need to reconsider 
-> > pool->p.nid semantics.
+> > This causes the kernel's idea of the bridge vlan state and the
+> > hardware state to disagree, so "bridge vlan show" indicates a correct
+> > configuration but the hardware lacks all configuration. Even worse,
+> > enabling vlan filtering on a DSA bridge immediately blocks all traffic
+> > which, given the output of "bridge vlan show", is very confusing.
 > > 
-> > As i said i like the patch and the whole functionality and code seems fine,
-> > but here's the current situation.
+> > Provide an option that drivers can set to indicate they want to receive
+> > vlan configuration even when vlan filtering is disabled. This is safe
+> > for Marvell DSA bridges, which do not look up ingress traffic in the
+> > VTU if the port is in 8021Q disabled state. Whether this change is
+> > suitable for all DSA bridges is not known.
 > 
-> > If a user sets pool->p.nid == NUMA_NO_NODE and wants to use
-> > page_pool_update_nid() the whole behavior feels a liitle odd.
+> s/DSA bridges/DSA switches/ ?
 > 
-> As soon as driver uses page_pool_update_nid() than means they want to
-> control the NUMA placement explicitly.  As soon as that happens, it is
-> the drivers responsibility and choice, and page_pool API must respect
-> that (and not automatically change that behind drivers back).
+> this is also safe to do with b53 switches in fact this is even desirable
+> because VLAN filtering is a global attribute so if you have at least one
+> bridge that spans one of your switch ports and that bridge requests
+> vlan_filtering=1, you *must* have a valid VID entry for the non-bridged
+> ports, or the bridged ports with vlan_filtering=0 otherwise there is no
+> default VID entry programmed to ingress the frame. Today this is
+> achieved by making sure that the default untagged VID 0 for non bridged
+> ports is always programmed at start-up and the switch is always
+> configured with VLAN awareness.
 > 
-> 
-> > page_pool_update_nid() first check will always be true since .nid =
-> > NUMA_NO_NODE). Then we'll update this to a real nid. So we end up
-> > overwriting what the user initially coded in.
-> >
-> > This is close to what i proposed in the previous mails on this
-> > thread. Always store a real nid even if the user explicitly requests
-> > NUMA_NO_NODE.
 > > 
-> > So  semantics is still a problem. I'll stick to what we initially
-> > suggested.
-> >  1. We either *always* store a real nid
-> > or 
-> >  2. If NUMA_NO_NODE is present ignore every other check and recycle
-> >  the memory blindly. 
-> > 
+> > Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
 > 
-> Hmm... I actually disagree with both 1 and 2.
+> This ties in with this commit:
 > 
-> My semantics proposal:
-> If driver configures page_pool with NUMA_NO_NODE, then page_pool tried
-> to help get the best default performance. (Which according to
-> performance measurements is to have RX-pages belong to the NUMA node
-> RX-processing runs on).
+> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=2ea7a679ca2abd251c1ec03f20508619707e1749
 > 
-> The reason I want this behavior is that during driver init/boot, it can
-> easily happen that a driver allocates RX-pages from wrong NUMA node.
-> This will cause a performance slowdown, that normally doesn't happen,
-> because without a cache (like page_pool) RX-pages would fairly quickly
-> transition over to the RX NUMA node (instead we keep recycling these,
-> in your case #2, where you suggest recycle blindly in case of
-> NUMA_NO_NODE). IMHO page_pool should hide this border-line case from
-> driver developers.
+> which I believe is still correct in the sense that with Linux a bridge
+> with vlan_filtering=0 also means that the bridge is not VLAN aware. Ido,
+> Jiri, do you disagree?
 
-Yea #2 has different semantics than the one you propose. So if he chooses
-NUMA_NO_NODE, i'd expect the machines(s) the driver sits on, are not NUMA-aware.
-Think specific SoC's, i'd never expect PCI cards to use that.
-As i said i don't feel strongly about this anyway, it's just another case i had
-under consideration but i like what you propose more. I'll try to add 
-documentation on page_pool API and describe the semantics you have in mind.
+Hi Florian,
 
+Yes, vlan_filtering=0 means that the bridge is not VLAN aware. It's not
+only about filtering at ingress / egress. The man page says "When
+disabled, the bridge will not consider the VLAN tag when handling
+packets." It also affects the VLAN with which FDB entries are learned
+and the VLAN used for FDB lookup.
 
-Thanks
-/Ilias
+It is really problematic for switch drivers to properly support the
+dynamic toggling of this option. This is why mlxsw forbids this
+toggling. Either you create the bridge with VLAN filtering disabled or
+enabled. Assuming I'm reading Cumulus documentation correctly, it seems
+they enforce the same behavior:
 
+https://docs.cumulusnetworks.com/cumulus-linux/Layer-2/Ethernet-Bridging-VLANs/VLAN-aware-Bridge-Mode/#convert-bridges-between-supported-modes
+
+> This seems to be coming every now and then, so maybe it is time to
+> revisit this documentation patch:
 > 
-> --Jesper
-> 
-> 
-> > On Fri, Dec 20, 2019 at 06:06:49PM +0200, Ilias Apalodimas wrote:
-> > > On Fri, Dec 20, 2019 at 04:22:54PM +0100, Jesper Dangaard Brouer
-> > > wrote:  
-> > > > On Fri, 20 Dec 2019 12:49:37 +0200
-> > > > Ilias Apalodimas <ilias.apalodimas@linaro.org> wrote:
-> > > >   
-> > > > > On Fri, Dec 20, 2019 at 11:41:16AM +0100, Jesper Dangaard
-> > > > > Brouer wrote:  
-> > > > > > On Fri, 20 Dec 2019 12:23:14 +0200
-> > > > > > Ilias Apalodimas <ilias.apalodimas@linaro.org> wrote:
-> > > > > >     
-> > > > > > > Hi Jesper, 
-> > > > > > > 
-> > > > > > > I like the overall approach since this moves the check out
-> > > > > > > of  the hotpath. @Saeed, since i got no hardware to test
-> > > > > > > this on, would it be possible to check that it still works
-> > > > > > > fine for mlx5?
-> > > > > > > 
-> > > > > > > [...]    
-> > > > > > > > +	struct ptr_ring *r = &pool->ring;
-> > > > > > > > +	struct page *page;
-> > > > > > > > +	int pref_nid; /* preferred NUMA node */
-> > > > > > > > +
-> > > > > > > > +	/* Quicker fallback, avoid locks when ring is
-> > > > > > > > empty */
-> > > > > > > > +	if (__ptr_ring_empty(r))
-> > > > > > > > +		return NULL;
-> > > > > > > > +
-> > > > > > > > +	/* Softirq guarantee CPU and thus NUMA node is
-> > > > > > > > stable. This,
-> > > > > > > > +	 * assumes CPU refilling driver RX-ring will
-> > > > > > > > also run RX-NAPI.
-> > > > > > > > +	 */
-> > > > > > > > +	pref_nid = (pool->p.nid == NUMA_NO_NODE) ?
-> > > > > > > > numa_mem_id() : pool->p.nid;      
-> > > > > > > 
-> > > > > > > One of the use cases for this is that during the allocation
-> > > > > > > we are not guaranteed to pick up the correct NUMA node. 
-> > > > > > > This will get automatically fixed once the driver starts
-> > > > > > > recycling packets. 
-> > > > > > > 
-> > > > > > > I don't feel strongly about this, since i don't usually
-> > > > > > > like hiding value changes from the user but, would it make
-> > > > > > > sense to move this into __page_pool_alloc_pages_slow() and
-> > > > > > > change the pool->p.nid?
-> > > > > > > 
-> > > > > > > Since alloc_pages_node() will replace NUMA_NO_NODE with
-> > > > > > > numa_mem_id() regardless, why not store the actual node in
-> > > > > > > our page pool information? You can then skip this and check
-> > > > > > > pool->p.nid == numa_mem_id(), regardless of what's
-> > > > > > > configured.     
-> > > > > > 
-> > > > > > This single code line helps support that drivers can control
-> > > > > > the nid themselves.  This is a feature that is only used my
-> > > > > > mlx5 AFAIK.
-> > > > > > 
-> > > > > > I do think that is useful to allow the driver to "control"
-> > > > > > the nid, as pinning/preferring the pages to come from the
-> > > > > > NUMA node that matches the PCI-e controller hardware is
-> > > > > > installed in does have benefits.    
-> > > > > 
-> > > > > Sure you can keep the if statement as-is, it won't break
-> > > > > anything. Would we want to store the actual numa id in
-> > > > > pool->p.nid if the user selects 'NUMA_NO_NODE'?  
-> > > >  
-> > > > No. pool->p.nid should stay as NUMA_NO_NODE, because that makes it
-> > > > dynamic.  If someone moves an RX IRQ to another CPU on another
-> > > > NUMA node, then this 'NUMA_NO_NODE' setting makes pages
-> > > > transitioned automatically.  
-> > > Ok this assumed that drivers were going to use
-> > > page_pool_nid_changed(), but with the current code we don't have to
-> > > force them to do that. Let's keep this as-is.
-> > > 
-> > > I'll be running a few more tests  and wait in case Saeed gets a
-> > > chance to test it and send my reviewed-by
-> 
-> 
-> -- 
-> Best regards,
->   Jesper Dangaard Brouer
->   MSc.CS, Principal Kernel Engineer at Red Hat
->   LinkedIn: http://www.linkedin.com/in/brouer
-> 
+> https://github.com/ffainelli/linux/commit/3fe61b1722a3b79d2e317a812c54f3afc902e5b0
+
+Yes, I remember reviewing it. Not sure why you didn't send another
+version :)
