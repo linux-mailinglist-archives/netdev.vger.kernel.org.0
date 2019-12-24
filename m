@@ -2,50 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A5B1129D3C
-	for <lists+netdev@lfdr.de>; Tue, 24 Dec 2019 05:15:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 474C8129D3E
+	for <lists+netdev@lfdr.de>; Tue, 24 Dec 2019 05:17:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726879AbfLXEP0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Dec 2019 23:15:26 -0500
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:46428 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726747AbfLXEPZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Dec 2019 23:15:25 -0500
-Received: by mail-pf1-f193.google.com with SMTP id n9so2289289pff.13;
-        Mon, 23 Dec 2019 20:15:25 -0800 (PST)
+        id S1726899AbfLXEQ6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Dec 2019 23:16:58 -0500
+Received: from mail-pj1-f68.google.com ([209.85.216.68]:53226 "EHLO
+        mail-pj1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726866AbfLXEQ6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Dec 2019 23:16:58 -0500
+Received: by mail-pj1-f68.google.com with SMTP id a6so661008pjh.2;
+        Mon, 23 Dec 2019 20:16:57 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=P1nYoC8WCP45tYHKKFkQav2EZRqMASRYBf5CMJdawyk=;
-        b=E7W3+7E/oihbNEZF3AlpMAeiHy500AN99wYMRWoNskg9XzLEyWh2++sk/UczmCVI9s
-         v+vO8mDa7cceSdlEFklpg7YJL80SLmt5D5xeLaJ/QFhWHNWTSVHLK8Aq9qjKQSCer/KV
-         MTQxjdTJ2pECs4YDf3ywpvcxrdd4qjsN9HgjCxmIL58tylgJ4eCj9326HPcmDr66zPun
-         LX0R/XdnOJ9AvaX+/zQQ6bEQj1c3ngrlyTGPEP4XzuTUN/ydBopLx7BoeCxYPVkdo5nz
-         o5BSIrk4LP1DlsLb+epotMLwb3Mm9BR36wIn3Hu2fYboAYoblxATNygIgsRsIzHR4tCR
-         WTag==
+        bh=TJ71qsrHkOwyDS6wJPPpVKyLH1gnQyBIMJypk8M5lmo=;
+        b=rnJzMUnSlasxHv03A8kW01I8C+yidstsfhIi1CXLYJkcJd5HtmfsE5ehTavDUaCCqO
+         64V9ouEdgeAukgCF7JI4cRMNbuSj+98RGPStIevX/et37I0Cze7frb/4v7fhIqrABI8E
+         C96xtM7zvnANKbR0ECFZbgnT3zQV2zAuJ0YqP+iAq+cgJOppBdYmqCI7JEOqkETSKAT2
+         iT6PdlmjBmDquWx5N9Pgust12P4xZlgElFa0xQG4no9SyRhalgKDzDPkYY21XTsawy7O
+         jpcSxB9YfwrX+h+K+pwota8H/gZyYOHXfetFRDBCKXRKAWtop9vQgJgNSpU5zKr4Kwpw
+         +LkQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=P1nYoC8WCP45tYHKKFkQav2EZRqMASRYBf5CMJdawyk=;
-        b=QxtgBlg8Zt/wFewjJtmpLWToYmsueTxn6tx1hXixsquGfrR+FsyWf10s9Pe6XD7ifl
-         IaaCfev3Tku/64lSkwYDDc8bUWTQfx2KkNvnBj02OWmiUgfEg49o+b5Au1LNq6o3NImD
-         BKBFtW88lOPykGgxiUaTN1ox8/CuYfBZzJRZpwHYUNqx6dPK8C/YvuAd9aloVUZZKgWg
-         NTECJKfzIxvZPQ6NCTyMtqoYadKtKWmwA5q8KegZiBykAH1uR3PfnjthfMeC+FfScsgh
-         pl0S4KZ4Shv7CKWHKb93Sk2mTy0yxOo2bTmb6/Mb4jFb5WjVkyM7Nm8AlSiI/Vk8S+0p
-         b5Ig==
-X-Gm-Message-State: APjAAAWMochHXf1i010duU6FjWRQaX/k0ViCtfHwF81FIDMpbMHAhHVA
-        TiIxce+sd5IekkNcHZ55sH/09yCE
-X-Google-Smtp-Source: APXvYqwR+3LjZZfSiEQpNV0YNfFGU1iyQy9BpOq9LHa7N2ydejHOOsNmXVJOCxO6CD3dR296P0jg/g==
-X-Received: by 2002:a63:de4c:: with SMTP id y12mr34845536pgi.107.1577160924575;
-        Mon, 23 Dec 2019 20:15:24 -0800 (PST)
+        bh=TJ71qsrHkOwyDS6wJPPpVKyLH1gnQyBIMJypk8M5lmo=;
+        b=gYURAVbrAfyF65AFEC2PuH+ky5gGREoi5FQkbiWpE0YwEcZltFBIlAdZvKequr2f3J
+         1/V+MOiLsYkxzxStn5FGnOCPBC3bJ0tuuO7a1yXjU6ybbG0ONefAmiFgJlsSN9DvqYtA
+         o8hH6Wr3J5LaS0/j/udOR62TQmQP4NkNwbPyOmsERTEZ5paF51ptiApVYEtnnyis2uS1
+         UNcq2RVRNAi4hUABLrsKOlC0QCIDbjIl7NRmGDK8AEd8HZyTarm+dXKbzVgXYpjmm9oU
+         KO2WJ7wax5eRMWH6hc9gAqYlTDUEnG10y1T6/HkqY+2vAPc1ObjFgPTXzHNIqPriGw+O
+         FznQ==
+X-Gm-Message-State: APjAAAUTOcAl84j7xHQeGpRqNsXTC66GD9bmm02bwj3ktxv/f1XJczQ6
+        ns3x4jJQMGprOw8nHmvVGL7cxDXr
+X-Google-Smtp-Source: APXvYqxnI0dpcPf7SV+gntWTen8kaqrQliF2gUeKBWUoBoq8fqZRHy0Eg9YYD5SHZX/lPn95qoGHXQ==
+X-Received: by 2002:a17:902:8bc5:: with SMTP id r5mr34874328plo.189.1577161017292;
+        Mon, 23 Dec 2019 20:16:57 -0800 (PST)
 Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
-        by smtp.gmail.com with ESMTPSA id k23sm23050943pgg.7.2019.12.23.20.15.23
+        by smtp.gmail.com with ESMTPSA id y62sm26858514pfg.45.2019.12.23.20.16.56
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 23 Dec 2019 20:15:24 -0800 (PST)
-Subject: Re: [PATCH net-next v8 03/14] ethtool: netlink bitset handling
+        Mon, 23 Dec 2019 20:16:56 -0800 (PST)
+Subject: Re: [PATCH net-next v8 04/14] ethtool: support for netlink
+ notifications
 To:     Michal Kubecek <mkubecek@suse.cz>,
         David Miller <davem@davemloft.net>, netdev@vger.kernel.org
 Cc:     Jakub Kicinski <jakub.kicinski@netronome.com>,
@@ -55,7 +56,7 @@ Cc:     Jakub Kicinski <jakub.kicinski@netronome.com>,
         Johannes Berg <johannes@sipsolutions.net>,
         linux-kernel@vger.kernel.org
 References: <cover.1577052887.git.mkubecek@suse.cz>
- <0fcbf623c390b30ca34ab0f83645b86a88558b32.1577052887.git.mkubecek@suse.cz>
+ <e050a214bbf68f0456bd34898303e9b109a55dd7.1577052887.git.mkubecek@suse.cz>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Autocrypt: addr=f.fainelli@gmail.com; keydata=
  mQGiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
@@ -111,12 +112,12 @@ Autocrypt: addr=f.fainelli@gmail.com; keydata=
  caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
  6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9qfUATKC9NgZjRvBztfqy4
  a9BQwACgnzGuH1BVeT2J0Ra+ZYgkx7DaPR0=
-Message-ID: <b36ee759-2d7a-8237-6f3d-a93e8c22ba66@gmail.com>
-Date:   Mon, 23 Dec 2019 20:15:22 -0800
+Message-ID: <bb4ab157-d6b5-4c41-b5ed-806568884ddc@gmail.com>
+Date:   Mon, 23 Dec 2019 20:16:55 -0800
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
  Thunderbird/68.3.1
 MIME-Version: 1.0
-In-Reply-To: <0fcbf623c390b30ca34ab0f83645b86a88558b32.1577052887.git.mkubecek@suse.cz>
+In-Reply-To: <e050a214bbf68f0456bd34898303e9b109a55dd7.1577052887.git.mkubecek@suse.cz>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -128,40 +129,21 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 On 12/22/2019 3:45 PM, Michal Kubecek wrote:
-> The ethtool netlink code uses common framework for passing arbitrary
-> length bit sets to allow future extensions. A bitset can be a list (only
-> one bitmap) or can consist of value and mask pair (used e.g. when client
-> want to modify only some bits). A bitset can use one of two formats:
-> verbose (bit by bit) or compact.
+> Add infrastructure for ethtool netlink notifications. There is only one
+> multicast group "monitor" which is used to notify userspace about changes
+> and actions performed. Notification messages (types using suffix _NTF)
+> share the format with replies to GET requests.
 > 
-> Verbose format consists of bitset size (number of bits), list flag and
-> an array of bit nests, telling which bits are part of the list or which
-> bits are in the mask and which of them are to be set. In requests, bits
-> can be identified by index (position) or by name. In replies, kernel
-> provides both index and name. Verbose format is suitable for "one shot"
-> applications like standard ethtool command as it avoids the need to
-> either keep bit names (e.g. link modes) in sync with kernel or having to
-> add an extra roundtrip for string set request (e.g. for private flags).
+> Notifications are supposed to be broadcasted on every configuration change,
+> whether it is done using the netlink interface or ioctl one. Netlink SET
+> requests only trigger a notification if some data is actually changed.
 > 
-> Compact format uses one (list) or two (value/mask) arrays of 32-bit
-> words to store the bitmap(s). It is more suitable for long running
-> applications (ethtool in monitor mode or network management daemons)
-> which can retrieve the names once and then pass only compact bitmaps to
-> save space.
-> 
-> Userspace requests can use either format; ETHTOOL_FLAG_COMPACT_BITSETS
-> flag in request header tells kernel which format to use in reply.
-> Notifications always use compact format.
-> 
-> As some code uses arrays of unsigned long for internal representation and
-> some arrays of u32 (or even a single u32), two sets of parse/compose
-> helpers are introduced. To avoid code duplication, helpers for unsigned
-> long arrays are implemented as wrappers around helpers for u32 arrays.
-> There are two reasons for this choice: (1) u32 arrays are more frequent in
-> ethtool code and (2) unsigned long array can be always interpreted as an
-> u32 array on little endian 64-bit and all 32-bit architectures while we
-> would need special handling for odd number of u32 words in the opposite
-> direction.
+> To trigger an ethtool notification, both ethtool netlink and external code
+> use ethtool_notify() helper. This helper requires RTNL to be held and may
+> sleep. Handlers sending messages for specific notification message types
+> are registered in ethnl_notify_handlers array. As notifications can be
+> triggered from other code, ethnl_ok flag is used to prevent an attempt to
+> send notification before genetlink family is registered.
 > 
 > Signed-off-by: Michal Kubecek <mkubecek@suse.cz>
 
