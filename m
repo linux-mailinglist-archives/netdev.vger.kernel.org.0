@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 474C8129D3E
-	for <lists+netdev@lfdr.de>; Tue, 24 Dec 2019 05:17:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A1E8129D4A
+	for <lists+netdev@lfdr.de>; Tue, 24 Dec 2019 05:23:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726899AbfLXEQ6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Dec 2019 23:16:58 -0500
-Received: from mail-pj1-f68.google.com ([209.85.216.68]:53226 "EHLO
-        mail-pj1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726866AbfLXEQ6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Dec 2019 23:16:58 -0500
-Received: by mail-pj1-f68.google.com with SMTP id a6so661008pjh.2;
-        Mon, 23 Dec 2019 20:16:57 -0800 (PST)
+        id S1726884AbfLXEXu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Dec 2019 23:23:50 -0500
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:33599 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726847AbfLXEXu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Dec 2019 23:23:50 -0500
+Received: by mail-pg1-f194.google.com with SMTP id 6so9832265pgk.0;
+        Mon, 23 Dec 2019 20:23:49 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=TJ71qsrHkOwyDS6wJPPpVKyLH1gnQyBIMJypk8M5lmo=;
-        b=rnJzMUnSlasxHv03A8kW01I8C+yidstsfhIi1CXLYJkcJd5HtmfsE5ehTavDUaCCqO
-         64V9ouEdgeAukgCF7JI4cRMNbuSj+98RGPStIevX/et37I0Cze7frb/4v7fhIqrABI8E
-         C96xtM7zvnANKbR0ECFZbgnT3zQV2zAuJ0YqP+iAq+cgJOppBdYmqCI7JEOqkETSKAT2
-         iT6PdlmjBmDquWx5N9Pgust12P4xZlgElFa0xQG4no9SyRhalgKDzDPkYY21XTsawy7O
-         jpcSxB9YfwrX+h+K+pwota8H/gZyYOHXfetFRDBCKXRKAWtop9vQgJgNSpU5zKr4Kwpw
-         +LkQ==
+        bh=JX1EL/6eRwb5KtYiMYTIg46J0eLFw4FhTiS7oR9PV1A=;
+        b=Swnp1PFp30RQwDUwAejmlTu2qne3T3lQN/q8nUrlWxdofEZf6wwvW4Z2RiLICfSovN
+         x2yrImyRArfILBNnsK0h/VzotYllhKHrLaRiIWO098a5ToQQbWsohgOAZIHGqPMR4lne
+         XaTpA+vWv3HYJviVgvQHpwqZ+3Zx04eJJ+uH96m3mDqDRJr3fmYKw+puEL5cAis3ZVn/
+         nmly1IcNvaVoCT00HFh7kxmMbSIhH0jweN5JZhC+2mVZAUL8+y+ZxADgT+QpFCy3rMch
+         nKMvAqeEpu75b9+8WSfx6nbHdxbizEAR0/eAl0+ZfqJyay82P5Z9RK5DNMiteBS6MWth
+         Qc0g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=TJ71qsrHkOwyDS6wJPPpVKyLH1gnQyBIMJypk8M5lmo=;
-        b=gYURAVbrAfyF65AFEC2PuH+ky5gGREoi5FQkbiWpE0YwEcZltFBIlAdZvKequr2f3J
-         1/V+MOiLsYkxzxStn5FGnOCPBC3bJ0tuuO7a1yXjU6ybbG0ONefAmiFgJlsSN9DvqYtA
-         o8hH6Wr3J5LaS0/j/udOR62TQmQP4NkNwbPyOmsERTEZ5paF51ptiApVYEtnnyis2uS1
-         UNcq2RVRNAi4hUABLrsKOlC0QCIDbjIl7NRmGDK8AEd8HZyTarm+dXKbzVgXYpjmm9oU
-         KO2WJ7wax5eRMWH6hc9gAqYlTDUEnG10y1T6/HkqY+2vAPc1ObjFgPTXzHNIqPriGw+O
-         FznQ==
-X-Gm-Message-State: APjAAAUTOcAl84j7xHQeGpRqNsXTC66GD9bmm02bwj3ktxv/f1XJczQ6
-        ns3x4jJQMGprOw8nHmvVGL7cxDXr
-X-Google-Smtp-Source: APXvYqxnI0dpcPf7SV+gntWTen8kaqrQliF2gUeKBWUoBoq8fqZRHy0Eg9YYD5SHZX/lPn95qoGHXQ==
-X-Received: by 2002:a17:902:8bc5:: with SMTP id r5mr34874328plo.189.1577161017292;
-        Mon, 23 Dec 2019 20:16:57 -0800 (PST)
+        bh=JX1EL/6eRwb5KtYiMYTIg46J0eLFw4FhTiS7oR9PV1A=;
+        b=m31jD3qqN5KBgsbuNTgb3h34JkvMz8FdhG26TsipvIk9SIQXb7R/9hedq7TmTYfWA5
+         cJc9+2sR32Idw/pZrbCbUU1yzou/Ex7my8DM17Fxm/1NyAxf0R9jeL9pmiVS1Jtlr+lq
+         t46kHcuCHn1pvCLGtpTW0Dlkd3dP0P1XcBXiZjYA4xPMNgn+1wihQq04MexP/s0TuZwY
+         bY7BzLUakrlIJ0XZS0cgzE3Rf1X4rKqZAWKUM9eNY6ZpqQkIdBXvjGwF0t7rr56bqnDE
+         UAW21vEJjMBpcLNelba0QA1Wn8BLP189Srv3G/5kxJGlLsAIJr10wVkw73S0riY6gikB
+         B9GA==
+X-Gm-Message-State: APjAAAUVpRaGP0YAJA9+q7ofl61PLgRHeDQosFjWP1+lsCId6x2Mtzj9
+        UGXaDtf+cV4V8A2Rr7A+UPqS0j50
+X-Google-Smtp-Source: APXvYqyyBzwkVAJ1MhIaI53BguBhvnsWMzG1nyg0tFnFE2KdKfpMNAK62yF8lfMhxlB2d8Wxp9aeuQ==
+X-Received: by 2002:a63:c20c:: with SMTP id b12mr34226979pgd.407.1577161428905;
+        Mon, 23 Dec 2019 20:23:48 -0800 (PST)
 Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
-        by smtp.gmail.com with ESMTPSA id y62sm26858514pfg.45.2019.12.23.20.16.56
+        by smtp.gmail.com with ESMTPSA id 7sm16514706pfx.52.2019.12.23.20.23.47
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 23 Dec 2019 20:16:56 -0800 (PST)
-Subject: Re: [PATCH net-next v8 04/14] ethtool: support for netlink
- notifications
+        Mon, 23 Dec 2019 20:23:48 -0800 (PST)
+Subject: Re: [PATCH net-next v8 05/14] ethtool: default handlers for GET
+ requests
 To:     Michal Kubecek <mkubecek@suse.cz>,
         David Miller <davem@davemloft.net>, netdev@vger.kernel.org
 Cc:     Jakub Kicinski <jakub.kicinski@netronome.com>,
@@ -56,7 +56,7 @@ Cc:     Jakub Kicinski <jakub.kicinski@netronome.com>,
         Johannes Berg <johannes@sipsolutions.net>,
         linux-kernel@vger.kernel.org
 References: <cover.1577052887.git.mkubecek@suse.cz>
- <e050a214bbf68f0456bd34898303e9b109a55dd7.1577052887.git.mkubecek@suse.cz>
+ <5db4d3bb1856e286a67d25ad02712b2bb2890524.1577052887.git.mkubecek@suse.cz>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Autocrypt: addr=f.fainelli@gmail.com; keydata=
  mQGiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
@@ -112,12 +112,12 @@ Autocrypt: addr=f.fainelli@gmail.com; keydata=
  caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
  6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9qfUATKC9NgZjRvBztfqy4
  a9BQwACgnzGuH1BVeT2J0Ra+ZYgkx7DaPR0=
-Message-ID: <bb4ab157-d6b5-4c41-b5ed-806568884ddc@gmail.com>
-Date:   Mon, 23 Dec 2019 20:16:55 -0800
+Message-ID: <499e7eab-c8dc-73ca-2475-0e9806210410@gmail.com>
+Date:   Mon, 23 Dec 2019 20:23:47 -0800
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
  Thunderbird/68.3.1
 MIME-Version: 1.0
-In-Reply-To: <e050a214bbf68f0456bd34898303e9b109a55dd7.1577052887.git.mkubecek@suse.cz>
+In-Reply-To: <5db4d3bb1856e286a67d25ad02712b2bb2890524.1577052887.git.mkubecek@suse.cz>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -129,21 +129,28 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 On 12/22/2019 3:45 PM, Michal Kubecek wrote:
-> Add infrastructure for ethtool netlink notifications. There is only one
-> multicast group "monitor" which is used to notify userspace about changes
-> and actions performed. Notification messages (types using suffix _NTF)
-> share the format with replies to GET requests.
+> Significant part of GET request processing is common for most request
+> types but unfortunately it cannot be easily separated from type specific
+> code as we need to alternate between common actions (parsing common request
+> header, allocating message and filling netlink/genetlink headers etc.) and
+> specific actions (querying the device, composing the reply). The processing
+> also happens in three different situations: "do" request, "dump" request
+> and notification, each doing things in slightly different way.
 > 
-> Notifications are supposed to be broadcasted on every configuration change,
-> whether it is done using the netlink interface or ioctl one. Netlink SET
-> requests only trigger a notification if some data is actually changed.
+> The request specific code is implemented in four or five callbacks defined
+> in an instance of struct get_request_ops:
 > 
-> To trigger an ethtool notification, both ethtool netlink and external code
-> use ethtool_notify() helper. This helper requires RTNL to be held and may
-> sleep. Handlers sending messages for specific notification message types
-> are registered in ethnl_notify_handlers array. As notifications can be
-> triggered from other code, ethnl_ok flag is used to prevent an attempt to
-> send notification before genetlink family is registered.
+>   parse_request() - parse incoming message
+>   prepare_data()  - retrieve data from driver or NIC
+>   reply_size()    - estimate reply message size
+>   fill_reply()    - compose reply message
+>   cleanup_data()  - (optional) clean up additional data
+> 
+> Other members of struct get_request_ops describe the data structure holding
+> information from client request and data used to compose the message. The
+> default handlers ethnl_default_doit(), ethnl_default_dumpit(),
+> ethnl_default_start() and ethnl_default_done() can be then used in genl_ops
+> handler. Notification handler will be introduced in a later patch.
 > 
 > Signed-off-by: Michal Kubecek <mkubecek@suse.cz>
 
