@@ -2,95 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F2F7012A8FA
-	for <lists+netdev@lfdr.de>; Wed, 25 Dec 2019 20:04:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 71F0712A8FB
+	for <lists+netdev@lfdr.de>; Wed, 25 Dec 2019 20:04:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726455AbfLYTE0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Dec 2019 14:04:26 -0500
-Received: from mail-pg1-f172.google.com ([209.85.215.172]:43754 "EHLO
-        mail-pg1-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726397AbfLYTEZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Dec 2019 14:04:25 -0500
-Received: by mail-pg1-f172.google.com with SMTP id k197so11890045pga.10
-        for <netdev@vger.kernel.org>; Wed, 25 Dec 2019 11:04:25 -0800 (PST)
+        id S1726704AbfLYTE2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Dec 2019 14:04:28 -0500
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:32783 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726397AbfLYTE2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Dec 2019 14:04:28 -0500
+Received: by mail-pg1-f195.google.com with SMTP id 6so11906560pgk.0
+        for <netdev@vger.kernel.org>; Wed, 25 Dec 2019 11:04:28 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Vk4TxrenJB0UI/jaB6QOpaRDajVbyg1tXQjCjN7gbuE=;
-        b=srLvAtteF0xJPJQLTqCUU3uAcdZbAsCUCU+RBifnrzz/0lkAztx91difpINd1MN7vi
-         NE7rlwhKRbt++xa64dn4qV2fuxuV3HyWCmVbVHRYs348yBtbjCyGpSsOStGcxLuWBVh4
-         y1mNTi5s/3PFOwFQORaG7RC/a145NkyXULhdvahV5FPDB5rOt6SU1avhEQAD4XbmBzE7
-         HdFWuOCW4XnjqWepC+xTWV1wLQMVRD3aH0Bq315LJSKKfYUZj5bCiAYCC6V45FlFRwxd
-         jlMjkMqjKruBqetjv5esz6K34JzvSjTh63wgzfPvzo/Dm1zQW4X2LOLys9MfOZ9drm5R
-         b0/A==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=kb5qCsjYafCum84Oq6JPO5h0JkqJVlXcvm2isWnTNkE=;
+        b=n3bfr5U1BSG2YmPUqTNw1fgmW+oYAJ54YPd0ee+moc6tCM0zreVw1XcgsCJ7g71iJ4
+         MNBLqZK5CvJk/S2Onaty17wjMkrt7XsHmrLdqNK/v0WRSPejiqhJOQ1l+XmjGTx1hVyZ
+         OCMJN6NDfeEX6H2CKx6lhjpjP9urdBDHB7XlWjCtploOcrGs++9weptf8UfR58ziTVTF
+         B6/ynCtSi7yIc5Ruc4YPz1Hr8bfITaOEQvzHSy+pVDvJr8ZJ62yFz+INRxGdyqCyXgXJ
+         xSmPZS8P/7K2fqJ1WiRrZCFIuw6NFBKjCIvTJN1f2wZjC0bGmPIiu1Ow4+UGueUgEhOS
+         yeMQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Vk4TxrenJB0UI/jaB6QOpaRDajVbyg1tXQjCjN7gbuE=;
-        b=YynO/V6gQ0KIOjQgU/sbZcXcjil7kAJBCleofsXEatSdb3raUkkUkwgqtpGtPu9IH5
-         tcnlQIz7BTMRkRwtwZj1ZtV/4eFHkewx5m9tmtUukg5bxXC2Gu98VD3MaGfLhbKEQaey
-         1xgUiggKz6WbtJ3eYIPMgLh0ArwEVgWW5uSc3bh5IJHqVbvsHY+Z3CvChrE9dCgTQ2LN
-         gCH5ktCkFnsZZ9hwqOSGHkNtHiYBRMcjwun5CviOXH5Yi/K9mQBKD0kG/pCy3DiSDBRY
-         bDOm4rHc78lvcOEFIaDrmJibfO1mdwZxyYnMmbFavHdtBR2h2EFQSpqJQYATGRXoyEfm
-         DQEA==
-X-Gm-Message-State: APjAAAU4hl7eFyYZ6fpQ0E3FSxcTU2GZ2bl7ckmOaD/3Iprb73JCOjQY
-        BYKsb9kS7QED/Sf90HetLSFClFI7CeA=
-X-Google-Smtp-Source: APXvYqzoiYTvCmHttzOarh23JmhbE1KlN8hOhkztZWh2VQ357ITahO29sHPIfjLTgNuhHRmdQsqW5g==
-X-Received: by 2002:aa7:8d8f:: with SMTP id i15mr16321477pfr.220.1577300664739;
-        Wed, 25 Dec 2019 11:04:24 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=kb5qCsjYafCum84Oq6JPO5h0JkqJVlXcvm2isWnTNkE=;
+        b=jZrZE7HIrGK+Eyq59r6D5O+HGDgO4SGBhql45FAXr5kI25L9ws4/pYjG0ifHhcPSDJ
+         XLE215fZmBiScxOeQzBGfjUTXOkZwvRl799KFO+IBPWoLyk++jO5zXPA6rTIqvFKzbn+
+         7gcYQ8t0ZHQ6TsYUc7PkLwusVgCKA8Y2TKb48zuWBy7GMZ2xSMvfjJeD6v2ewAxsKPNb
+         F29tvIEHRT/sP9jHhC0/YGDpXYXboBQ8ZB/lxYD8cEUQ7kKgLZakHnJQ0CXSlyUvF+y7
+         pmv1mokDAm36XXQGpkCrDAPm3Hl65NNJv/U6+I7vNKB6CaSzSbqyyKNxDKrQ6nStEP4X
+         kSCg==
+X-Gm-Message-State: APjAAAXMLzERnrP5o+LUU73wJc+ofL3fKLZ3Sxt9mcJTAo1Oag0ECM8C
+        hTc7mr767gjPO7WNgksDrxumCI6da8U=
+X-Google-Smtp-Source: APXvYqzXc4PlLeislTfriZl0ebKSJaiCg0SNY02rSLR1WlAz+p1amvxWfEoelQ3jk2UlzieXdA9bZA==
+X-Received: by 2002:a62:8202:: with SMTP id w2mr45824040pfd.100.1577300667465;
+        Wed, 25 Dec 2019 11:04:27 -0800 (PST)
 Received: from localhost.localdomain ([103.89.235.106])
-        by smtp.gmail.com with ESMTPSA id j28sm30019719pgb.36.2019.12.25.11.04.22
+        by smtp.gmail.com with ESMTPSA id j28sm30019719pgb.36.2019.12.25.11.04.24
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 25 Dec 2019 11:04:24 -0800 (PST)
+        Wed, 25 Dec 2019 11:04:26 -0800 (PST)
 From:   Leslie Monis <lesliemonis@gmail.com>
 To:     Linux NetDev <netdev@vger.kernel.org>
 Cc:     David Ahern <dsahern@gmail.com>,
         Stephen Hemminger <stephen@networkplumber.org>
-Subject: [PATCH iproute2-next 00/10] tc: add support for JSON output in some qdiscs
-Date:   Thu, 26 Dec 2019 00:34:08 +0530
-Message-Id: <20191225190418.8806-1-lesliemonis@gmail.com>
+Subject: [PATCH iproute2-next 01/10] tc: cbs: add support for JSON output
+Date:   Thu, 26 Dec 2019 00:34:09 +0530
+Message-Id: <20191225190418.8806-2-lesliemonis@gmail.com>
 X-Mailer: git-send-email 2.17.1
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20191225190418.8806-1-lesliemonis@gmail.com>
+References: <20191225190418.8806-1-lesliemonis@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Several qdiscs do not yet support the JSON output format. This patch series
-adds the missing compatibility to 9 classless qdiscs. Some of the patches
-also improve the oneline output of the qdiscs. The last patch in the series
-fixes a missing statistic in the JSON output of fq_codel.
+Enable proper JSON output for the CBS Qdisc.
 
-Leslie Monis (10):
-  tc: cbs: add support for JSON output
-  tc: choke: add support for JSON output
-  tc: codel: add support for JSON output
-  tc: fq: add support for JSON output
-  tc: hhf: add support for JSON output
-  tc: pie: add support for JSON output
-  tc: sfb: add support for JSON output
-  tc: sfq: add support for JSON output
-  tc: tbf: add support for JSON output
-  tc: fq_codel: fix missing statistic in JSON output
+Signed-off-by: Leslie Monis <lesliemonis@gmail.com>
+---
+ tc/q_cbs.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
- man/man8/tc-fq.8  |  14 +++---
- man/man8/tc-pie.8 |  16 +++----
- tc/q_cbs.c        |  10 ++---
- tc/q_choke.c      |  26 +++++++----
- tc/q_codel.c      |  45 +++++++++++++------
- tc/q_fq.c         | 108 ++++++++++++++++++++++++++++++++--------------
- tc/q_fq_codel.c   |   4 +-
- tc/q_hhf.c        |  33 +++++++++-----
- tc/q_pie.c        |  47 ++++++++++++--------
- tc/q_sfb.c        |  67 ++++++++++++++++++----------
- tc/q_sfq.c        |  66 +++++++++++++++++-----------
- tc/q_tbf.c        |  68 ++++++++++++++++++++---------
- 12 files changed, 335 insertions(+), 169 deletions(-)
-
+diff --git a/tc/q_cbs.c b/tc/q_cbs.c
+index 9515a1f7..13bb08e9 100644
+--- a/tc/q_cbs.c
++++ b/tc/q_cbs.c
+@@ -125,11 +125,11 @@ static int cbs_print_opt(struct qdisc_util *qu, FILE *f, struct rtattr *opt)
+ 	if (RTA_PAYLOAD(tb[TCA_CBS_PARMS])  < sizeof(*qopt))
+ 		return -1;
+ 
+-	fprintf(f, "hicredit %d ", qopt->hicredit);
+-	fprintf(f, "locredit %d ", qopt->locredit);
+-	fprintf(f, "sendslope %d ", qopt->sendslope);
+-	fprintf(f, "idleslope %d ", qopt->idleslope);
+-	fprintf(f, "offload %d ", qopt->offload);
++	print_int(PRINT_ANY, "hicredit", "hicredit %d ", qopt->hicredit);
++	print_int(PRINT_ANY, "locredit", "locredit %d ", qopt->locredit);
++	print_int(PRINT_ANY, "sendslope", "sendslope %d ", qopt->sendslope);
++	print_int(PRINT_ANY, "idleslope", "idleslope %d ", qopt->idleslope);
++	print_int(PRINT_ANY, "offload", "offload %d ", qopt->offload);
+ 
+ 	return 0;
+ }
 -- 
 2.17.1
 
