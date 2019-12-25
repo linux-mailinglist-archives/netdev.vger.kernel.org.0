@@ -2,252 +2,280 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A247C12A5F9
-	for <lists+netdev@lfdr.de>; Wed, 25 Dec 2019 06:22:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 412DF12A627
+	for <lists+netdev@lfdr.de>; Wed, 25 Dec 2019 06:26:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726352AbfLYFWw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Dec 2019 00:22:52 -0500
-Received: from mail-wm1-f45.google.com ([209.85.128.45]:52927 "EHLO
-        mail-wm1-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725865AbfLYFWw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Dec 2019 00:22:52 -0500
-Received: by mail-wm1-f45.google.com with SMTP id p9so3663634wmc.2
-        for <netdev@vger.kernel.org>; Tue, 24 Dec 2019 21:22:50 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cogentembedded-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=qMTBrOIT6QljA26o7CngIXpUowbXiYo2yACLBwyAbCI=;
-        b=ozInkqUYw1Kqoft2NGxBrmmVKrzez0ibPnP4Zt+XboGoIQK8sM3cM63+Yp1Ho8Pe3a
-         BZT9i06stwBv8LUlvGBploPoPcOnu2y/88iiZ7aOPREfnUT3e7fmpHN8JQM3CkDoIeEb
-         YMrBbGnyGVIRTe9n5SId2UoZuVWlfHskGpIigNcbKQ18P6mnwAqLdCfvdkwYCr2iTh8D
-         u51Vy2QL2Sa6cmaMLt3z5AAzPxEhxsbnYerHJqWw/+nBcGiDE5H9g81nu1KCRYhotsED
-         mxIL9FTjYTZw82zmD0ASo5K503NK1xWMAfNX1YGHdOiRbTAVk8GsUrFcj2Kpu980bJon
-         2YhQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=qMTBrOIT6QljA26o7CngIXpUowbXiYo2yACLBwyAbCI=;
-        b=nutP9dgDKhZk+C/x4149SpU+5ZtscL+43QE3XPfE2ORroiK6ZaHoc/lF3vv8glGbfB
-         vmBQ/BdQZph1t3LgpQRmnVVKx6TC7v4/ZypY3EEPoW/qN1J/DpBZnqty6Og04M3RasH3
-         2Aw7poapjxVdlD9euBeqKbWycyJJQ8fC5X4pb2OMFrZK3/sIP4MM226OzwdWXMyRPmqa
-         7aUhHdCk72uB6izkQxZF8kuU62QYSoz3s0NfAK6mBa49Yf0Z6GKjv68H7TmLwqw6rX7S
-         f4+peCwv4uIqfcIv2+VAfD8QQ44sHHPSmanzl1TZo1AVB6ipzhnDegNnRcYt+0US0e0D
-         mu0Q==
-X-Gm-Message-State: APjAAAWaDXXDFkjdbsKysA1nRqwD6qqG03yM4O+vZ1cs0KEvK5CRgEHN
-        lxtLNJCNbGIOjhSyIICyErtNog==
-X-Google-Smtp-Source: APXvYqzc/V6XRdPpMfp67C5BqhJAi7qCXNhWtCdv9V988HZMNdA4oBVTi0zALCXR804KowE8pqShrA==
-X-Received: by 2002:a05:600c:230d:: with SMTP id 13mr7249445wmo.12.1577251369298;
-        Tue, 24 Dec 2019 21:22:49 -0800 (PST)
-Received: from cobook.home (nikaet.starlink.ru. [94.141.168.29])
-        by smtp.gmail.com with ESMTPSA id u16sm4682935wmj.41.2019.12.24.21.22.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 24 Dec 2019 21:22:48 -0800 (PST)
-From:   Nikita Yushchenko <nikita.yoush@cogentembedded.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Chris Healy <cphealy@gmail.com>,
-        Lucas Stach <l.stach@pengutronix.de>,
-        Nikita Yushchenko <nikita.yoush@cogentembedded.com>
-Subject: [PATCH v2] mv88e6xxx: Add serdes Rx statistics
-Date:   Wed, 25 Dec 2019 08:22:38 +0300
-Message-Id: <20191225052238.23334-1-nikita.yoush@cogentembedded.com>
-X-Mailer: git-send-email 2.20.1
+        id S1726461AbfLYF0S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Dec 2019 00:26:18 -0500
+Received: from mail.kernel.org ([198.145.29.99]:54772 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725784AbfLYF0R (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 25 Dec 2019 00:26:17 -0500
+Received: from localhost (unknown [5.29.147.182])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 1B55D2071E;
+        Wed, 25 Dec 2019 05:26:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1577251576;
+        bh=XecFfsaVDZ9xwmzIy/JIRjF1C/8kAWJZBoR2IY+F2RA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=bq/liqXfuKDGJm/bGg4q9hFXMmE+Y/AuB7AQqgBxYhO1C6nmQsQelIzCX1v5I5WAy
+         wsBPrYaZwpLUi6WCN7S+YTK/tktc66fQ/jur1rAeqVmCtqwwKEWcnC46thxPwqkyMA
+         SXjSVJZNN56CsSF4ioskprUfCvid80SsCXRVwzPk=
+Date:   Wed, 25 Dec 2019 07:26:12 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     John Hubbard <jhubbard@nvidia.com>
+Cc:     Jason Gunthorpe <jgg@ziepe.ca>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@intel.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Dave Chinner <david@fromorbit.com>,
+        David Airlie <airlied@linux.ie>,
+        "David S . Miller" <davem@davemloft.net>,
+        Ira Weiny <ira.weiny@intel.com>, Jan Kara <jack@suse.cz>,
+        Jens Axboe <axboe@kernel.dk>, Jonathan Corbet <corbet@lwn.net>,
+        =?iso-8859-1?B?Suly9G1l?= Glisse <jglisse@redhat.com>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Michal Hocko <mhocko@suse.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Paul Mackerras <paulus@samba.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Vlastimil Babka <vbabka@suse.cz>, bpf@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, kvm@vger.kernel.org,
+        linux-block@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        linux-media@vger.kernel.org, linux-rdma@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, netdev@vger.kernel.org,
+        linux-mm@kvack.org, LKML <linux-kernel@vger.kernel.org>,
+        Maor Gottlieb <maorg@mellanox.com>,
+        Ran Rozenstein <ranro@mellanox.com>
+Subject: Re: [PATCH v11 00/25] mm/gup: track dma-pinned pages: FOLL_PIN
+Message-ID: <20191225052612.GA212002@unreal>
+References: <20191216222537.491123-1-jhubbard@nvidia.com>
+ <20191219132607.GA410823@unreal>
+ <a4849322-8e17-119e-a664-80d9f95d850b@nvidia.com>
+ <20191219210743.GN17227@ziepe.ca>
+ <20191220182939.GA10944@unreal>
+ <1001a5fc-a71d-9c0f-1090-546c4913d8a2@nvidia.com>
+ <20191222132357.GF13335@unreal>
+ <49d57efe-85e1-6910-baf5-c18df1382206@nvidia.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <49d57efe-85e1-6910-baf5-c18df1382206@nvidia.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If packet checker is enabled in the serdes, then Rx counter registers
-start working, and no side effects have been detected.
+On Tue, Dec 24, 2019 at 06:03:50PM -0800, John Hubbard wrote:
+> On 12/22/19 5:23 AM, Leon Romanovsky wrote:
+> > On Fri, Dec 20, 2019 at 03:54:55PM -0800, John Hubbard wrote:
+> > > On 12/20/19 10:29 AM, Leon Romanovsky wrote:
+> > > ...
+> > > > > $ ./build.sh
+> > > > > $ build/bin/run_tests.py
+> > > > >
+> > > > > If you get things that far I think Leon can get a reproduction for you
+> > > >
+> > > > I'm not so optimistic about that.
+> > > >
+> > >
+> > > OK, I'm going to proceed for now on the assumption that I've got an overflow
+> > > problem that happens when huge pages are pinned. If I can get more information,
+> > > great, otherwise it's probably enough.
+> > >
+> > > One thing: for your repro, if you know the huge page size, and the system
+> > > page size for that case, that would really help. Also the number of pins per
+> > > page, more or less, that you'd expect. Because Jason says that only 2M huge
+> > > pages are used...
+> > >
+> > > Because the other possibility is that the refcount really is going negative,
+> > > likely due to a mismatched pin/unpin somehow.
+> > >
+> > > If there's not an obvious repro case available, but you do have one (is it easy
+> > > to repro, though?), then *if* you have the time, I could point you to a github
+> > > branch that reduces GUP_PIN_COUNTING_BIAS by, say, 4x, by applying this:
+> > >
+> > > diff --git a/include/linux/mm.h b/include/linux/mm.h
+> > > index bb44c4d2ada7..8526fd03b978 100644
+> > > --- a/include/linux/mm.h
+> > > +++ b/include/linux/mm.h
+> > > @@ -1077,7 +1077,7 @@ static inline void put_page(struct page *page)
+> > >    * get_user_pages and page_mkclean and other calls that race to set up page
+> > >    * table entries.
+> > >    */
+> > > -#define GUP_PIN_COUNTING_BIAS (1U << 10)
+> > > +#define GUP_PIN_COUNTING_BIAS (1U << 8)
+> > >
+> > >   void unpin_user_page(struct page *page);
+> > >   void unpin_user_pages_dirty_lock(struct page **pages, unsigned long npages,
+> > >
+> > > If that fails to repro, then we would be zeroing in on the root cause.
+> > >
+> > > The branch is here (I just tested it and it seems healthy):
+> > >
+> > > git@github.com:johnhubbard/linux.git  pin_user_pages_tracking_v11_with_diags
+> >
+> > Hi,
+> >
+> > We tested the following branch and here comes results:
+>
+> Thanks for this testing run!
+>
+> > [root@server consume_mtts]# (master) $ grep foll_pin /proc/vmstat
+> > nr_foll_pin_requested 0
+> > nr_foll_pin_returned 0
+> >
+>
+> Zero pinned pages!
 
-This patch enables packet checker automatically when powering serdes on,
-and exposes Rx counter registers via ethtool statistics interface.
+Maybe we are missing some CONFIG_* option?
+https://lore.kernel.org/linux-rdma/12a28917-f8c9-5092-2f01-92bb74714cae@nvidia.com/T/#mf900896f5dfc86cdee9246219990c632ed77115f
 
-Code partially basded by older attempt by Andrew Lunn.
+>
+> ...now I'm confused. Somehow FOLL_PIN and pin_user_pages*() calls are
+> not happening. And although the backtraces below show some of my new
+> routines (like try_grab_page), they also confirm the above: there is no
+> pin_user_page*() call in the stack.
+>
+> In particular, it looks like ib_umem_get() is calling through to
+> get_user_pages*(), rather than pin_user_pages*(). I don't see how this
+> is possible, because the code on my screen shows ib_umem_get() calling
+> pin_user_pages_fast().
+>
+> Any thoughts or ideas are welcome here.
+>
+> However, glossing over all of that and assuming that the new
+> GUP_PIN_COUNTING_BIAS of 256 is applied, it's interesting that we still
+> see any overflow. I'm less confident now that this is a true refcount
+> overflow.
 
-Signed-off-by: Nikita Yushchenko <nikita.yoush@cogentembedded.com>
----
-Changes from v1:
-- added missing break statement (thanks kbuild test robot <lkp@intel.com>)
-- renamed variable ret -> err to follow the rest of the file
+Earlier in this email thread, I posted possible function call chain which
+doesn't involve refcount overflow, but for some reason the refcount
+overflow was chosen as a way to explore.
 
- drivers/net/dsa/mv88e6xxx/chip.c   |   3 +
- drivers/net/dsa/mv88e6xxx/serdes.c | 100 ++++++++++++++++++++++++++++-
- drivers/net/dsa/mv88e6xxx/serdes.h |   9 +++
- 3 files changed, 109 insertions(+), 3 deletions(-)
+>
+> Also, any information that would get me closer to being able to attempt
+> my own reproduction of the problem are *very* welcome. :)
 
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-index 3bd988529178..5eeeb6566196 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.c
-+++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -4424,6 +4424,9 @@ static const struct mv88e6xxx_ops mv88e6390_ops = {
- 	.gpio_ops = &mv88e6352_gpio_ops,
- 	.avb_ops = &mv88e6390_avb_ops,
- 	.ptp_ops = &mv88e6352_ptp_ops,
-+	.serdes_get_sset_count = mv88e6390_serdes_get_sset_count,
-+	.serdes_get_strings = mv88e6390_serdes_get_strings,
-+	.serdes_get_stats = mv88e6390_serdes_get_stats,
- 	.phylink_validate = mv88e6390_phylink_validate,
- };
- 
-diff --git a/drivers/net/dsa/mv88e6xxx/serdes.c b/drivers/net/dsa/mv88e6xxx/serdes.c
-index 902feb398746..8d8b3b74aee1 100644
---- a/drivers/net/dsa/mv88e6xxx/serdes.c
-+++ b/drivers/net/dsa/mv88e6xxx/serdes.c
-@@ -405,22 +405,116 @@ static int mv88e6390_serdes_power_sgmii(struct mv88e6xxx_chip *chip, u8 lane,
- 	return err;
- }
- 
-+struct mv88e6390_serdes_hw_stat {
-+	char string[ETH_GSTRING_LEN];
-+	int reg;
-+};
-+
-+static struct mv88e6390_serdes_hw_stat mv88e6390_serdes_hw_stats[] = {
-+	{ "serdes_rx_pkts", 0xf021 },
-+	{ "serdes_rx_bytes", 0xf024 },
-+	{ "serdes_rx_pkts_error", 0xf027 },
-+};
-+
-+int mv88e6390_serdes_get_sset_count(struct mv88e6xxx_chip *chip, int port)
-+{
-+	if (mv88e6390_serdes_get_lane(chip, port) == 0)
-+		return 0;
-+
-+	return ARRAY_SIZE(mv88e6390_serdes_hw_stats);
-+}
-+
-+int mv88e6390_serdes_get_strings(struct mv88e6xxx_chip *chip,
-+				 int port, uint8_t *data)
-+{
-+	struct mv88e6390_serdes_hw_stat *stat;
-+	int i;
-+
-+	if (mv88e6390_serdes_get_lane(chip, port) == 0)
-+		return 0;
-+
-+	for (i = 0; i < ARRAY_SIZE(mv88e6390_serdes_hw_stats); i++) {
-+		stat = &mv88e6390_serdes_hw_stats[i];
-+		memcpy(data + i * ETH_GSTRING_LEN, stat->string,
-+		       ETH_GSTRING_LEN);
-+	}
-+	return ARRAY_SIZE(mv88e6390_serdes_hw_stats);
-+}
-+
-+static uint64_t mv88e6390_serdes_get_stat(struct mv88e6xxx_chip *chip, int lane,
-+					  struct mv88e6390_serdes_hw_stat *stat)
-+{
-+	u16 reg[3];
-+	int err, i;
-+
-+	for (i = 0; i < 3; i++) {
-+		err = mv88e6390_serdes_read(chip, lane, MDIO_MMD_PHYXS,
-+					    stat->reg + i, &reg[i]);
-+		if (err) {
-+			dev_err(chip->dev, "failed to read statistic\n");
-+			return 0;
-+		}
-+	}
-+
-+	return reg[0] | ((u64)reg[1] << 16) | ((u64)reg[2] << 32);
-+}
-+
-+int mv88e6390_serdes_get_stats(struct mv88e6xxx_chip *chip, int port,
-+			       uint64_t *data)
-+{
-+	struct mv88e6390_serdes_hw_stat *stat;
-+	int lane;
-+	int i;
-+
-+	lane = mv88e6390_serdes_get_lane(chip, port);
-+	if (lane == 0)
-+		return 0;
-+
-+	for (i = 0; i < ARRAY_SIZE(mv88e6390_serdes_hw_stats); i++) {
-+		stat = &mv88e6390_serdes_hw_stats[i];
-+		data[i] = mv88e6390_serdes_get_stat(chip, lane, stat);
-+	}
-+
-+	return ARRAY_SIZE(mv88e6390_serdes_hw_stats);
-+}
-+
-+static int mv88e6390_serdes_enable_checker(struct mv88e6xxx_chip *chip, u8 lane)
-+{
-+	u16 reg;
-+	int err;
-+
-+	err = mv88e6390_serdes_read(chip, lane, MDIO_MMD_PHYXS,
-+				    MV88E6390_PG_CONTROL, &reg);
-+	if (err)
-+		return err;
-+
-+	reg |= MV88E6390_PG_CONTROL_ENABLE_PC;
-+	return mv88e6390_serdes_write(chip, lane, MDIO_MMD_PHYXS,
-+				      MV88E6390_PG_CONTROL, reg);
-+}
-+
- int mv88e6390_serdes_power(struct mv88e6xxx_chip *chip, int port, u8 lane,
- 			   bool up)
- {
- 	u8 cmode = chip->ports[port].cmode;
-+	int err = 0;
- 
- 	switch (cmode) {
- 	case MV88E6XXX_PORT_STS_CMODE_SGMII:
- 	case MV88E6XXX_PORT_STS_CMODE_1000BASEX:
- 	case MV88E6XXX_PORT_STS_CMODE_2500BASEX:
--		return mv88e6390_serdes_power_sgmii(chip, lane, up);
-+		err = mv88e6390_serdes_power_sgmii(chip, lane, up);
-+		break;
- 	case MV88E6XXX_PORT_STS_CMODE_XAUI:
- 	case MV88E6XXX_PORT_STS_CMODE_RXAUI:
--		return mv88e6390_serdes_power_10g(chip, lane, up);
-+		err = mv88e6390_serdes_power_10g(chip, lane, up);
-+		break;
- 	}
- 
--	return 0;
-+	if (!err && up)
-+		err = mv88e6390_serdes_enable_checker(chip, lane);
-+
-+	return err;
- }
- 
- static void mv88e6390_serdes_irq_link_sgmii(struct mv88e6xxx_chip *chip,
-diff --git a/drivers/net/dsa/mv88e6xxx/serdes.h b/drivers/net/dsa/mv88e6xxx/serdes.h
-index bd8df36ab537..d16ef4da20b0 100644
---- a/drivers/net/dsa/mv88e6xxx/serdes.h
-+++ b/drivers/net/dsa/mv88e6xxx/serdes.h
-@@ -74,6 +74,10 @@
- #define MV88E6390_SGMII_PHY_STATUS_SPD_DPL_VALID BIT(11)
- #define MV88E6390_SGMII_PHY_STATUS_LINK		BIT(10)
- 
-+/* Packet generator pad packet checker */
-+#define MV88E6390_PG_CONTROL		0xf010
-+#define MV88E6390_PG_CONTROL_ENABLE_PC		BIT(0)
-+
- u8 mv88e6341_serdes_get_lane(struct mv88e6xxx_chip *chip, int port);
- u8 mv88e6352_serdes_get_lane(struct mv88e6xxx_chip *chip, int port);
- u8 mv88e6390_serdes_get_lane(struct mv88e6xxx_chip *chip, int port);
-@@ -99,6 +103,11 @@ int mv88e6352_serdes_get_strings(struct mv88e6xxx_chip *chip,
- 				 int port, uint8_t *data);
- int mv88e6352_serdes_get_stats(struct mv88e6xxx_chip *chip, int port,
- 			       uint64_t *data);
-+int mv88e6390_serdes_get_sset_count(struct mv88e6xxx_chip *chip, int port);
-+int mv88e6390_serdes_get_strings(struct mv88e6xxx_chip *chip,
-+				 int port, uint8_t *data);
-+int mv88e6390_serdes_get_stats(struct mv88e6xxx_chip *chip, int port,
-+			       uint64_t *data);
- 
- /* Return the (first) SERDES lane address a port is using, 0 otherwise. */
- static inline u8 mv88e6xxx_serdes_get_lane(struct mv88e6xxx_chip *chip,
--- 
-2.20.1
+It is ancient verification test (~10y) which is not an easy task to
+make it understandable and standalone :).
 
+>
+> thanks,
+> --
+> John Hubbard
+> NVIDIA
+>
+> > [root@serer consume_mtts]# (master) $ dmesg
+> > [  425.221459] ------------[ cut here ]------------
+> > [  425.225894] WARNING: CPU: 1 PID: 6738 at mm/gup.c:61 try_grab_compound_head+0x90/0xa0
+> > [  425.228021] Modules linked in: mlx5_ib mlx5_core mlxfw mlx4_ib mlx4_en ptp pps_core mlx4_core bonding ip6_gre ip6_tunnel tunnel6 ip_gre gre ip_tunnel rdma_rxe ip6_udp_tunnel udp_tunnel rdma_ucm ib_uverbs ib_ipoib ib_umad ib_srp scsi_transport_srp rpcrdma ib_iser libiscsi scsi_transport_iscsi rdma_cm iw_cm ib_cm ib_core [last unloaded: mlxfw]
+> > [  425.235266] CPU: 1 PID: 6738 Comm: consume_mtts Tainted: G           O      5.5.0-rc2+ #1
+> > [  425.237480] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.10.2-1ubuntu1 04/01/2014
+> > [  425.239738] RIP: 0010:try_grab_compound_head+0x90/0xa0
+> > [  425.241170] Code: 06 48 8d 4f 34 f0 0f b1 57 34 74 cd 85 c0 74 cf 8d 14 06 f0 0f b1 11 74 c0 eb f1 8d 14 06 f0 0f b1 11 74 b5 85 c0 75 f3 eb b5 <0f> 0b 31 c0 c3 90 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 41
+> > [  425.245739] RSP: 0018:ffffc900006878a8 EFLAGS: 00010082
+> > [  425.247124] RAX: 0000000080000001 RBX: 00007f780488a000 RCX: 0000000000000bb0
+> > [  425.248956] RDX: ffffea000e031087 RSI: 0000000000008a00 RDI: ffffea000dc58000
+> > [  425.250761] RBP: ffffea000e031080 R08: ffffc90000687974 R09: 000fffffffe00000
+> > [  425.252661] R10: 0000000000000000 R11: ffff888362560000 R12: 000000000000008a
+> > [  425.254487] R13: 80000003716000e7 R14: 00007f780488a000 R15: ffffc90000687974
+> > [  425.256309] FS:  00007f780d9d3740(0000) GS:ffff8883b1c80000(0000) knlGS:0000000000000000
+> > [  425.258401] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> > [  425.259949] CR2: 0000000002334048 CR3: 000000039c68c001 CR4: 00000000001606a0
+> > [  425.261884] Call Trace:
+> > [  425.262735]  gup_pgd_range+0x517/0x5a0
+> > [  425.263819]  internal_get_user_pages_fast+0x210/0x250
+> > [  425.265193]  ib_umem_get+0x298/0x550 [ib_uverbs]
+> > [  425.266476]  mr_umem_get+0xc9/0x260 [mlx5_ib]
+> > [  425.267699]  mlx5_ib_reg_user_mr+0xcc/0x7e0 [mlx5_ib]
+> > [  425.269134]  ? xas_load+0x8/0x80
+> > [  425.270074]  ? xa_load+0x48/0x90
+> > [  425.271038]  ? lookup_get_idr_uobject.part.10+0x12/0x70 [ib_uverbs]
+> > [  425.272757]  ib_uverbs_reg_mr+0x127/0x280 [ib_uverbs]
+> > [  425.274120]  ib_uverbs_handler_UVERBS_METHOD_INVOKE_WRITE+0xc2/0xf0 [ib_uverbs]
+> > [  425.276058]  ib_uverbs_cmd_verbs.isra.6+0x5be/0xbe0 [ib_uverbs]
+> > [  425.277657]  ? uverbs_disassociate_api+0xd0/0xd0 [ib_uverbs]
+> > [  425.279155]  ? __alloc_pages_nodemask+0x148/0x2b0
+> > [  425.280445]  ib_uverbs_ioctl+0xc0/0x120 [ib_uverbs]
+> > [  425.281755]  do_vfs_ioctl+0x9d/0x650
+> > [  425.282766]  ksys_ioctl+0x70/0x80
+> > [  425.283745]  __x64_sys_ioctl+0x16/0x20
+> > [  425.284912]  do_syscall_64+0x42/0x130
+> > [  425.285973]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+> > [  425.287377] RIP: 0033:0x7f780d2df267
+> > [  425.288449] Code: b3 66 90 48 8b 05 19 3c 2c 00 64 c7 00 26 00 00 00 48 c7 c0 ff ff ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 b8 10 00 00 00 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d e9 3b 2c 00 f7 d8 64 89 01 48
+> > [  425.293073] RSP: 002b:00007ffce49a88a8 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
+> > [  425.295034] RAX: ffffffffffffffda RBX: 00007ffce49a8938 RCX: 00007f780d2df267
+> > [  425.296895] RDX: 00007ffce49a8920 RSI: 00000000c0181b01 RDI: 0000000000000003
+> > [  425.298689] RBP: 00007ffce49a8900 R08: 0000000000000003 R09: 00007f780d9a1010
+> > [  425.300480] R10: 00000000ffffffff R11: 0000000000000246 R12: 00007f780d9a1150
+> > [  425.302290] R13: 00007ffce49a8900 R14: 00007ffce49a8ad8 R15: 00007f780468a000
+> > [  425.304113] ---[ end trace 1ecbefdb403190dd ]---
+> > [  425.305434] ------------[ cut here ]------------
+> > [  425.307147] WARNING: CPU: 1 PID: 6738 at mm/gup.c:150 try_grab_page+0x56/0x60
+> > [  425.309111] Modules linked in: mlx5_ib mlx5_core mlxfw mlx4_ib mlx4_en ptp pps_core mlx4_core bonding ip6_gre ip6_tunnel tunnel6 ip_gre gre ip_tunnel rdma_rxe ip6_udp_tunnel udp_tunnel rdma_ucm ib_uverbs ib_ipoib ib_umad ib_srp scsi_transport_srp rpcrdma ib_iser libiscsi scsi_transport_iscsi rdma_cm iw_cm ib_cm ib_core [last unloaded: mlxfw]
+> > [  425.316461] CPU: 1 PID: 6738 Comm: consume_mtts Tainted: G        W  O      5.5.0-rc2+ #1
+> > [  425.318582] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.10.2-1ubuntu1 04/01/2014
+> > [  425.320958] RIP: 0010:try_grab_page+0x56/0x60
+> > [  425.322167] Code: 7e 28 f0 81 47 34 00 01 00 00 c3 48 8b 47 08 48 8d 50 ff a8 01 48 0f 45 fa 8b 47 34 85 c0 7e 0f f0 ff 47 34 b8 01 00 00 00 c3 <0f> 0b 31 c0 c3 0f 0b 31 c0 c3 0f 1f 44 00 00 41 57 41 56 41 55 41
+> > [  425.326814] RSP: 0018:ffffc90000687830 EFLAGS: 00010282
+> > [  425.328226] RAX: 0000000000000001 RBX: ffffea000dc58000 RCX: ffffea000e031087
+> > [  425.330104] RDX: 0000000080000001 RSI: 0000000000040000 RDI: ffffea000dc58000
+> > [  425.331980] RBP: 00007f7804800000 R08: 000ffffffffff000 R09: 80000003716000e7
+> > [  425.333898] R10: ffff88834af80120 R11: ffff8883ac16f000 R12: ffff88834af80120
+> > [  425.335704] R13: ffff88837c0915c0 R14: 0000000000050201 R15: 00007f7804800000
+> > [  425.337638] FS:  00007f780d9d3740(0000) GS:ffff8883b1c80000(0000) knlGS:0000000000000000
+> > [  425.339734] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> > [  425.341369] CR2: 0000000002334048 CR3: 000000039c68c001 CR4: 00000000001606a0
+> > [  425.343160] Call Trace:
+> > [  425.343967]  follow_trans_huge_pmd+0x16f/0x2e0
+> > [  425.345263]  follow_p4d_mask+0x51c/0x630
+> > [  425.346344]  __get_user_pages+0x1a1/0x6c0
+> > [  425.347463]  internal_get_user_pages_fast+0x17b/0x250
+> > [  425.348918]  ib_umem_get+0x298/0x550 [ib_uverbs]
+> > [  425.350174]  mr_umem_get+0xc9/0x260 [mlx5_ib]
+> > [  425.351383]  mlx5_ib_reg_user_mr+0xcc/0x7e0 [mlx5_ib]
+> > [  425.352849]  ? xas_load+0x8/0x80
+> > [  425.353776]  ? xa_load+0x48/0x90
+> > [  425.354730]  ? lookup_get_idr_uobject.part.10+0x12/0x70 [ib_uverbs]
+> > [  425.356410]  ib_uverbs_reg_mr+0x127/0x280 [ib_uverbs]
+> > [  425.357843]  ib_uverbs_handler_UVERBS_METHOD_INVOKE_WRITE+0xc2/0xf0 [ib_uverbs]
+> > [  425.359749]  ib_uverbs_cmd_verbs.isra.6+0x5be/0xbe0 [ib_uverbs]
+> > [  425.361405]  ? uverbs_disassociate_api+0xd0/0xd0 [ib_uverbs]
+> > [  425.362898]  ? __alloc_pages_nodemask+0x148/0x2b0
+> > [  425.364206]  ib_uverbs_ioctl+0xc0/0x120 [ib_uverbs]
+> > [  425.365564]  do_vfs_ioctl+0x9d/0x650
+> > [  425.366567]  ksys_ioctl+0x70/0x80
+> > [  425.367537]  __x64_sys_ioctl+0x16/0x20
+> > [  425.368698]  do_syscall_64+0x42/0x130
+> > [  425.369782]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+> > [  425.371117] RIP: 0033:0x7f780d2df267
+> > [  425.372159] Code: b3 66 90 48 8b 05 19 3c 2c 00 64 c7 00 26 00 00 00 48 c7 c0 ff ff ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 b8 10 00 00 00 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d e9 3b 2c 00 f7 d8 64 89 01 48
+> > [  425.376774] RSP: 002b:00007ffce49a88a8 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
+> > [  425.378740] RAX: ffffffffffffffda RBX: 00007ffce49a8938 RCX: 00007f780d2df267
+> > [  425.380598] RDX: 00007ffce49a8920 RSI: 00000000c0181b01 RDI: 0000000000000003
+> > [  425.382411] RBP: 00007ffce49a8900 R08: 0000000000000003 R09: 00007f780d9a1010
+> > [  425.384312] R10: 00000000ffffffff R11: 0000000000000246 R12: 00007f780d9a1150
+> > [  425.386132] R13: 00007ffce49a8900 R14: 00007ffce49a8ad8 R15: 00007f780468a000
+> > [  425.387964] ---[ end trace 1ecbefdb403190de ]---
+> >
+> > Thanks
+> >
+> > >
+> > >
+> > >
+> > > thanks,
+> > > --
+> > > John Hubbard
+> > > NVIDIA
