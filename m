@@ -2,131 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B505E12A6C6
-	for <lists+netdev@lfdr.de>; Wed, 25 Dec 2019 09:28:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B255012A6C4
+	for <lists+netdev@lfdr.de>; Wed, 25 Dec 2019 09:28:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726399AbfLYI2O (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Dec 2019 03:28:14 -0500
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:46926 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726000AbfLYI2O (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Dec 2019 03:28:14 -0500
-Received: by mail-pg1-f193.google.com with SMTP id z124so11398525pgb.13;
-        Wed, 25 Dec 2019 00:28:14 -0800 (PST)
+        id S1726353AbfLYI1v (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Dec 2019 03:27:51 -0500
+Received: from mail-wr1-f68.google.com ([209.85.221.68]:37132 "EHLO
+        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726106AbfLYI1v (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Dec 2019 03:27:51 -0500
+Received: by mail-wr1-f68.google.com with SMTP id w15so8767383wru.4
+        for <netdev@vger.kernel.org>; Wed, 25 Dec 2019 00:27:50 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=zLSzUO63CHc1kybIYEoH0WtkRo0w2hezIxwasjJaVhs=;
-        b=VqCBsIUSIpy3KI5Ci5pd+7mWBRQ5vbAM5oviHTWPZQ9fFiPsPajav1U06wjD2TxEN0
-         h7/b8PpNvWtNSsQsKlDLDkXeuhB9W7hKqoPDGFSxaLwzfedBH6zXGmA6u+ZNOczhwKH4
-         KWxBkuD10ZQpsC7YuOGuShrbMN15plzVSr4XXP6iVGBqEWXm5FrWg5IV10BJWMmI3TTT
-         vqi2kH2YqM8qYL/KMG6t2xR5LF0LKk22YPYG7vg/2CTP327JMaO+FOwWfr+nGm1tNt7T
-         HSVDqGs5n19pw0YIRgLiwJqs7t5UxfX2CiGpZvsW132uZfsZWbWs7rtJH7jjcJCFTfPd
-         BzpQ==
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=OrP/GZUcmkg7vvpr2zDPF3lAblUYoBKaM6cF68Hmac4=;
+        b=mYWja6YzS6uIEFENgdb9HUBaR+GENcF1hbrNia0ySuLOAavmixwl9pR0EAxofMzk5O
+         ycxQqIEyABZdpns/in898IYzQQKc41Dt1P0EKZlYol31VwEQMrRAZpmdjzDLIgjUrNPW
+         497PIPJM4jk9qvXBbHd1ylfFJU2aAXBvoF6rh61L4jYzqOH47ULBy01yWT+EBqn2h8PV
+         ZzC69FLnKsAGyYaXpFE2vHYqlQ3apkNyn0NyRiScqgImxRC+55lTEe4s/mWzW/zFWdlW
+         mqyGWZ/Q14EyAdPE6gWKWN8fDh2AEA4saE0Wr7usqAdnsT/W4d0rEkfTcq7j9reCxxh+
+         JpAQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=zLSzUO63CHc1kybIYEoH0WtkRo0w2hezIxwasjJaVhs=;
-        b=b7WMJ4cSn801UR+y2szPN/S6CrDWRaIFQ2zsKzYttcxtYaMgtIqwffzFN+KnNUhjTx
-         Z+EOXLozYeSzarngHJuu9R1RdEQjhADukuMFPul4wXgIVombirKukuDhnTJ8547FDbrG
-         vx/PegnzJCdq+kT8BTafjQfYVvwZOyNSyzzQPTvQqLVUp2i0uJmsgBos36GuDgCo+rt1
-         NZ2DV4SkR1mn3iyeY2veePoKPq2Lve1sbaJfUxxusji+NrnhlNjHUJaMup5j20PTvAV6
-         klhndHiLELfDIqNPJ9GmZ34GADX6zpBzAM8pn6NdVgKZxG74MtVwpKg7nvGG5SkGap65
-         sKhw==
-X-Gm-Message-State: APjAAAVzM+F+p3+abBnd2KI9O8sXJ9RM9Nu52Cj7qpbi7dxzl57n0gBr
-        ZGhA8H6BN2IVJSA8D/312FVi+tYnXYyMug==
-X-Google-Smtp-Source: APXvYqyk4C3LmCURVVPaZvd1Wr+T4nfvPc38hqBgzDiagHikbfIQ+kcZgQTodBv0tOVyQkh8KhSZkg==
-X-Received: by 2002:a62:1a97:: with SMTP id a145mr43957623pfa.244.1577262493895;
-        Wed, 25 Dec 2019 00:28:13 -0800 (PST)
-Received: from CV0038107N9.nsn-intra.net ([2408:84e4:508:29a4:f854:7e63:8bdf:7b7])
-        by smtp.gmail.com with ESMTPSA id k44sm5970965pjb.20.2019.12.25.00.27.55
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 25 Dec 2019 00:28:13 -0800 (PST)
-From:   Kevin Kou <qdkevin.kou@gmail.com>
-To:     linux-sctp@vger.kernel.org, netdev@vger.kernel.org
-Cc:     vyasevich@gmail.com, nhorman@tuxdriver.com,
-        marcelo.leitner@gmail.com, davem@davemloft.net,
-        qdkevin.kou@gmail.com
-Subject: [PATCHv3 net-next] sctp: do trace_sctp_probe after SACK validation and check
-Date:   Wed, 25 Dec 2019 08:27:25 +0000
-Message-Id: <20191225082725.1251-1-qdkevin.kou@gmail.com>
-X-Mailer: git-send-email 2.23.0.windows.1
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=OrP/GZUcmkg7vvpr2zDPF3lAblUYoBKaM6cF68Hmac4=;
+        b=Sd5S6jVdc66ssHOMFvP9yVO46eQeBm1g1liVKOQP7sh0EcIW8cB5idJMiaJe49k6qq
+         2ORE5XgAm0ViS695yh1ngm2XX1rAPXEMstuT4FzfXTDzLjLlURndNwQ+uXaFTTB55vy0
+         Tcx5MkGmAMkOe9tPU0ojrA2mWGLhHMYI0/N0SwXSJ1t4h66vfygGyuwJYdxJ37vRBPua
+         4MjOM9wNVmF4gT9hwt/S5WD2ErxSTUbUnjc5z4z1ZFW9LZ+tEHKTb6Nx3JfuvmsCtbBl
+         WgkGRE4uwR4Hv2ZtucWmv3Bv0zs0fZ+ltb609qOurMZqntZ3sLvThigCYDnT/jlR2izq
+         J1FQ==
+X-Gm-Message-State: APjAAAWBYojSS18QgE+A1esffKLF7AXVD1HKzEwv207rhX0Fi2Gi6+sJ
+        UE+GQzaWc+FfPFtVZXPgDh4=
+X-Google-Smtp-Source: APXvYqyCRLLCEWWqsx9vwE/6lT/qaJkKhJetCPfV33ls9wtSoXZ+1Q6JjaQ323nnNZhhf7XgkuI96A==
+X-Received: by 2002:a5d:558d:: with SMTP id i13mr39645233wrv.364.1577262469305;
+        Wed, 25 Dec 2019 00:27:49 -0800 (PST)
+Received: from blondie ([141.226.11.88])
+        by smtp.gmail.com with ESMTPSA id q19sm4966055wmc.12.2019.12.25.00.27.45
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Wed, 25 Dec 2019 00:27:48 -0800 (PST)
+Date:   Wed, 25 Dec 2019 10:27:42 +0200
+From:   Shmulik Ladkani <shmulik.ladkani@gmail.com>
+To:     Jamal Hadi Salim <jhs@mojatatu.com>
+Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        shmulik.ladkani@gmail.com,
+        Shmulik Ladkani <sladkani@proofpoint.com>
+Subject: Re: [PATCH net-next] net/sched: act_mirred: Ensure mac_len is
+ pulled prior redirect to a non mac_header_xmit target device
+Message-ID: <20191225102742.35f61e4e@blondie>
+In-Reply-To: <c412ce79-1a37-963f-3633-2eba92ef05c4@mojatatu.com>
+References: <20191223123336.13066-1-sladkani@proofpoint.com>
+        <c412ce79-1a37-963f-3633-2eba92ef05c4@mojatatu.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The function sctp_sf_eat_sack_6_2 now performs the Verification
-Tag validation, Chunk length validation, Bogu check, and also
-the detection of out-of-order SACK based on the RFC2960
-Section 6.2 at the beginning, and finally performs the further
-processing of SACK. The trace_sctp_probe now triggered before
-the above necessary validation and check.
+On Tue, 24 Dec 2019 07:45:08 -0500
+Jamal Hadi Salim <jhs@mojatatu.com> wrote:
 
-this patch is to do the trace_sctp_probe after the chunk sanity
-tests, but keep doing trace if the SACK received is out of order,
-for the out-of-order SACK is valuable to congestion control
-debugging.
+> Shmulik - are you able to add a tdc testcase? It will be helpful to
+> catch future regressions.
 
-v1->v2:
- - keep doing SCTP trace if the SACK is out of order as Marcelo's
-   suggestion.
-v2->v3:
- - regenerate the patch as v2 generated on top of v1, and add
-   'net-next' tag to the new one as Marcelo's comments.
-
-Signed-off-by: Kevin Kou <qdkevin.kou@gmail.com>
----
- net/sctp/sm_statefuns.c | 18 +++++++++---------
- 1 file changed, 9 insertions(+), 9 deletions(-)
-
-diff --git a/net/sctp/sm_statefuns.c b/net/sctp/sm_statefuns.c
-index 42558fa..748e3b1 100644
---- a/net/sctp/sm_statefuns.c
-+++ b/net/sctp/sm_statefuns.c
-@@ -3281,8 +3281,6 @@ enum sctp_disposition sctp_sf_eat_sack_6_2(struct net *net,
- 	struct sctp_sackhdr *sackh;
- 	__u32 ctsn;
- 
--	trace_sctp_probe(ep, asoc, chunk);
--
- 	if (!sctp_vtag_verify(chunk, asoc))
- 		return sctp_sf_pdiscard(net, ep, asoc, type, arg, commands);
- 
-@@ -3299,6 +3297,15 @@ enum sctp_disposition sctp_sf_eat_sack_6_2(struct net *net,
- 	chunk->subh.sack_hdr = sackh;
- 	ctsn = ntohl(sackh->cum_tsn_ack);
- 
-+	/* If Cumulative TSN Ack beyond the max tsn currently
-+	 * send, terminating the association and respond to the
-+	 * sender with an ABORT.
-+	 */
-+	if (TSN_lte(asoc->next_tsn, ctsn))
-+		return sctp_sf_violation_ctsn(net, ep, asoc, type, arg, commands);
-+
-+	trace_sctp_probe(ep, asoc, chunk);
-+
- 	/* i) If Cumulative TSN Ack is less than the Cumulative TSN
- 	 *     Ack Point, then drop the SACK.  Since Cumulative TSN
- 	 *     Ack is monotonically increasing, a SACK whose
-@@ -3312,13 +3319,6 @@ enum sctp_disposition sctp_sf_eat_sack_6_2(struct net *net,
- 		return SCTP_DISPOSITION_DISCARD;
- 	}
- 
--	/* If Cumulative TSN Ack beyond the max tsn currently
--	 * send, terminating the association and respond to the
--	 * sender with an ABORT.
--	 */
--	if (!TSN_lt(ctsn, asoc->next_tsn))
--		return sctp_sf_violation_ctsn(net, ep, asoc, type, arg, commands);
--
- 	/* Return this SACK for further processing.  */
- 	sctp_add_cmd_sf(commands, SCTP_CMD_PROCESS_SACK, SCTP_CHUNK(chunk));
- 
--- 
-1.8.3.1
-
+Sure, I'll try to cook something, different submission.
