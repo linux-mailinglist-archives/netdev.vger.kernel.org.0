@@ -2,54 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7620D12A66C
-	for <lists+netdev@lfdr.de>; Wed, 25 Dec 2019 07:35:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1FB6812A66D
+	for <lists+netdev@lfdr.de>; Wed, 25 Dec 2019 07:38:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725992AbfLYGf3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Dec 2019 01:35:29 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:59136 "EHLO
+        id S1725976AbfLYGiD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Dec 2019 01:38:03 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:59148 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725847AbfLYGf3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Dec 2019 01:35:29 -0500
+        with ESMTP id S1725847AbfLYGiD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Dec 2019 01:38:03 -0500
 Received: from localhost (unknown [IPv6:2601:601:9f00:1c3::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id E1F65154D8940;
-        Tue, 24 Dec 2019 22:35:28 -0800 (PST)
-Date:   Tue, 24 Dec 2019 22:35:28 -0800 (PST)
-Message-Id: <20191224.223528.197681217171143712.davem@davemloft.net>
-To:     dbolotin@marvell.com
-Cc:     netdev@vger.kernel.org, aelior@marvell.com
-Subject: Re: [PATCH net-next] qede: Implement ndo_tx_timeout
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 48793154D8950;
+        Tue, 24 Dec 2019 22:38:02 -0800 (PST)
+Date:   Tue, 24 Dec 2019 22:38:01 -0800 (PST)
+Message-Id: <20191224.223801.1418400073780159879.davem@davemloft.net>
+To:     idosch@idosch.org
+Cc:     netdev@vger.kernel.org, dsahern@gmail.com,
+        roopa@cumulusnetworks.com, jakub.kicinski@netronome.com,
+        jiri@mellanox.com, idosch@mellanox.com
+Subject: Re: [PATCH net-next 0/9] Simplify IPv6 route offload API
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20191222140722.32304-1-dbolotin@marvell.com>
-References: <20191222140722.32304-1-dbolotin@marvell.com>
+In-Reply-To: <20191223132820.888247-1-idosch@idosch.org>
+References: <20191223132820.888247-1-idosch@idosch.org>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 24 Dec 2019 22:35:29 -0800 (PST)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 24 Dec 2019 22:38:02 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Denis Bolotin <dbolotin@marvell.com>
-Date: Sun, 22 Dec 2019 16:07:22 +0200
+From: Ido Schimmel <idosch@idosch.org>
+Date: Mon, 23 Dec 2019 15:28:11 +0200
 
-> Disable carrier and print TX queue info on TX timeout.
-> 
-> Signed-off-by: Denis Bolotin <dbolotin@marvell.com>
-> Signed-off-by: Ariel Elior <aelior@marvell.com>
+> This is the IPv6 counterpart of "Simplify IPv4 route offload API" [1].
+ ...
 
-You need to do more than just dump some state.
-
-You have to actually reset the device so that there is a chance that
-packets can start flowing again.
-
-If the network is the only way administrators can access the machine
-or see the log messages, your state dump will be seen by no-one unless
-you reset the device and get it working again.
-
-I'm not applying this, sorry.
+Series applied, thanks Ido.
