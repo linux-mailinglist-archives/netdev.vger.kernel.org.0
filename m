@@ -2,53 +2,211 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1298112A500
-	for <lists+netdev@lfdr.de>; Wed, 25 Dec 2019 01:05:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4CB8812A522
+	for <lists+netdev@lfdr.de>; Wed, 25 Dec 2019 01:10:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726331AbfLYAFB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Dec 2019 19:05:01 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:57896 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726262AbfLYAFB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Dec 2019 19:05:01 -0500
-Received: from localhost (unknown [IPv6:2601:601:9f00:1c3::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 35686154B95FD;
-        Tue, 24 Dec 2019 16:05:00 -0800 (PST)
-Date:   Tue, 24 Dec 2019 16:04:59 -0800 (PST)
-Message-Id: <20191224.160459.513700743670795651.davem@davemloft.net>
-To:     timofey.babitskiy@pendulum-instruments.com
-Cc:     netdev@vger.kernel.org, peppe.cavallaro@st.com,
-        alexandre.torgue@st.com, joabreu@synopsys.com
-Subject: Re: [PATCH] stmmac: export RX mitigation control to device tree
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <AM6PR0702MB3639888440F0AC658E31FE25DF2D0@AM6PR0702MB3639.eurprd07.prod.outlook.com>
-References: <AM6PR0702MB3639888440F0AC658E31FE25DF2D0@AM6PR0702MB3639.eurprd07.prod.outlook.com>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 24 Dec 2019 16:05:00 -0800 (PST)
+        id S1726262AbfLYAKQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Dec 2019 19:10:16 -0500
+Received: from sonic304-49.consmr.mail.ne1.yahoo.com ([66.163.191.175]:46124
+        "EHLO sonic304-49.consmr.mail.ne1.yahoo.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726237AbfLYAKQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Dec 2019 19:10:16 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1577232614; bh=mNREEvMLF61pXDTvzXza9VvuF2gKQ2TelzUlK4DktMQ=; h=From:To:Cc:Subject:Date:In-Reply-To:References:From:Subject; b=cq8uuULJpQbvDwdF3ZNjDXRwXYlF746JRUSaL3HcukcJx0MD6/E8oAVQ22x68+W4oZuQPUqyzv8SFrm1b+v0bY0R8oj9GGvdGH3hzIg3FS3gFp78JJpRv6H04IuiuOZXM3GzMzhR46er8jt9fMj99LTPSZMRAaygVUOw/c76/rkJaLCWajmmBeD0X9g5qPWwF08FUWml76hoH9cThz1m4ZWCDU4SfL/qoAgpvN+oUjlmkVcic8Ocd1XLkUdwdPuzl02D/AM8+/v8E8rFmitrB9yjUlgo9amy5djnQ225qJtB0T3dm5ENP63jFuTcoGT1Q5xcNaVs3Nwxq+2bsUECnA==
+X-YMail-OSG: N_6BpMEVRDvd.miR6A7lED5GPdAEx7ojsA--
+Received: from sonic.gate.mail.ne1.yahoo.com by sonic304.consmr.mail.ne1.yahoo.com with HTTP; Wed, 25 Dec 2019 00:10:14 +0000
+Received: by smtp424.mail.ne1.yahoo.com (Oath Hermes SMTP Server) with ESMTPA ID 5be7380208f5a988f04b3c63b5adabed;
+          Wed, 25 Dec 2019 00:08:13 +0000 (UTC)
+From:   Casey Schaufler <casey@schaufler-ca.com>
+To:     casey.schaufler@intel.com
+Cc:     Casey Schaufler <casey@schaufler-ca.com>,
+        Kees Cook <keescook@chromium.org>,
+        John Johansen <john.johansen@canonical.com>,
+        Stephen Smalley <sds@tycho.nsa.gov>, netdev@vger.kernel.org
+Subject: [PATCH v13 05/25] net: Prepare UDS for security module stacking
+Date:   Tue, 24 Dec 2019 16:07:09 -0800
+Message-Id: <20191225000729.7576-6-casey@schaufler-ca.com>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20191225000729.7576-1-casey@schaufler-ca.com>
+References: <20191225000729.7576-1-casey@schaufler-ca.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Timofey Babitskiy <timofey.babitskiy@pendulum-instruments.com>
-Date: Fri, 20 Dec 2019 12:56:50 +0000
+Change the data used in UDS SO_PEERSEC processing from a
+secid to a more general struct lsmblob. Update the
+security_socket_getpeersec_dgram() interface to use the
+lsmblob. There is a small amount of scaffolding code
+that will come out when the security_secid_to_secctx()
+code is brought in line with the lsmblob.
 
-> Having Rx mitigation via HW watchdog timer on is not suitable for time 
-> servers distributing time via NTP and PTP protocol and relying on SW 
-> timestamping, because Rx mitigation adds latency on receive and hence adds 
-> path delay assymetry, which leads to time offset on timing clients. Turning 
-> Rx mitigation off via platform config is not always a good option, because 
-> some systems use default platform configs and only tune the device tree.
-> 
-> Signed-off-by: Timofey Babitskiy <timofey.babitskiy@pendulum-instruments.com>
+Reviewed-by: Kees Cook <keescook@chromium.org>
+Reviewed-by: John Johansen <john.johansen@canonical.com>
+Acked-by: Stephen Smalley <sds@tycho.nsa.gov>
+Signed-off-by: Casey Schaufler <casey@schaufler-ca.com>
+cc: netdev@vger.kernel.org
+---
+ include/linux/security.h |  7 +++++--
+ include/net/af_unix.h    |  2 +-
+ include/net/scm.h        |  8 +++++---
+ net/ipv4/ip_sockglue.c   |  8 +++++---
+ net/unix/af_unix.c       |  6 +++---
+ security/security.c      | 18 +++++++++++++++---
+ 6 files changed, 34 insertions(+), 15 deletions(-)
 
-The device tree is not an appropriate place to control what is already settable
-via ethtool.
+diff --git a/include/linux/security.h b/include/linux/security.h
+index 322ed9622819..995faba7393f 100644
+--- a/include/linux/security.h
++++ b/include/linux/security.h
+@@ -1356,7 +1356,8 @@ int security_socket_shutdown(struct socket *sock, int how);
+ int security_sock_rcv_skb(struct sock *sk, struct sk_buff *skb);
+ int security_socket_getpeersec_stream(struct socket *sock, char __user *optval,
+ 				      int __user *optlen, unsigned len);
+-int security_socket_getpeersec_dgram(struct socket *sock, struct sk_buff *skb, u32 *secid);
++int security_socket_getpeersec_dgram(struct socket *sock, struct sk_buff *skb,
++				     struct lsmblob *blob);
+ int security_sk_alloc(struct sock *sk, int family, gfp_t priority);
+ void security_sk_free(struct sock *sk);
+ void security_sk_clone(const struct sock *sk, struct sock *newsk);
+@@ -1494,7 +1495,9 @@ static inline int security_socket_getpeersec_stream(struct socket *sock, char __
+ 	return -ENOPROTOOPT;
+ }
+ 
+-static inline int security_socket_getpeersec_dgram(struct socket *sock, struct sk_buff *skb, u32 *secid)
++static inline int security_socket_getpeersec_dgram(struct socket *sock,
++						   struct sk_buff *skb,
++						   struct lsmblob *blob)
+ {
+ 	return -ENOPROTOOPT;
+ }
+diff --git a/include/net/af_unix.h b/include/net/af_unix.h
+index 3426d6dacc45..933492c08b8c 100644
+--- a/include/net/af_unix.h
++++ b/include/net/af_unix.h
+@@ -36,7 +36,7 @@ struct unix_skb_parms {
+ 	kgid_t			gid;
+ 	struct scm_fp_list	*fp;		/* Passed files		*/
+ #ifdef CONFIG_SECURITY_NETWORK
+-	u32			secid;		/* Security ID		*/
++	struct lsmblob		lsmblob;	/* Security LSM data	*/
+ #endif
+ 	u32			consumed;
+ } __randomize_layout;
+diff --git a/include/net/scm.h b/include/net/scm.h
+index 1ce365f4c256..e2e71c4bf9d0 100644
+--- a/include/net/scm.h
++++ b/include/net/scm.h
+@@ -33,7 +33,7 @@ struct scm_cookie {
+ 	struct scm_fp_list	*fp;		/* Passed files		*/
+ 	struct scm_creds	creds;		/* Skb credentials	*/
+ #ifdef CONFIG_SECURITY_NETWORK
+-	u32			secid;		/* Passed security ID 	*/
++	struct lsmblob		lsmblob;	/* Passed LSM data	*/
+ #endif
+ };
+ 
+@@ -46,7 +46,7 @@ struct scm_fp_list *scm_fp_dup(struct scm_fp_list *fpl);
+ #ifdef CONFIG_SECURITY_NETWORK
+ static __inline__ void unix_get_peersec_dgram(struct socket *sock, struct scm_cookie *scm)
+ {
+-	security_socket_getpeersec_dgram(sock, NULL, &scm->secid);
++	security_socket_getpeersec_dgram(sock, NULL, &scm->lsmblob);
+ }
+ #else
+ static __inline__ void unix_get_peersec_dgram(struct socket *sock, struct scm_cookie *scm)
+@@ -97,7 +97,9 @@ static inline void scm_passec(struct socket *sock, struct msghdr *msg, struct sc
+ 	int err;
+ 
+ 	if (test_bit(SOCK_PASSSEC, &sock->flags)) {
+-		err = security_secid_to_secctx(scm->secid, &secdata, &seclen);
++		/* Scaffolding - it has to be element 0 for now */
++		err = security_secid_to_secctx(scm->lsmblob.secid[0],
++					       &secdata, &seclen);
+ 
+ 		if (!err) {
+ 			put_cmsg(msg, SOL_SOCKET, SCM_SECURITY, seclen, secdata);
+diff --git a/net/ipv4/ip_sockglue.c b/net/ipv4/ip_sockglue.c
+index aa3fd61818c4..6cf57d5ac899 100644
+--- a/net/ipv4/ip_sockglue.c
++++ b/net/ipv4/ip_sockglue.c
+@@ -130,15 +130,17 @@ static void ip_cmsg_recv_checksum(struct msghdr *msg, struct sk_buff *skb,
+ 
+ static void ip_cmsg_recv_security(struct msghdr *msg, struct sk_buff *skb)
+ {
++	struct lsmblob lb;
+ 	char *secdata;
+-	u32 seclen, secid;
++	u32 seclen;
+ 	int err;
+ 
+-	err = security_socket_getpeersec_dgram(NULL, skb, &secid);
++	err = security_socket_getpeersec_dgram(NULL, skb, &lb);
+ 	if (err)
+ 		return;
+ 
+-	err = security_secid_to_secctx(secid, &secdata, &seclen);
++	/* Scaffolding - it has to be element 0 */
++	err = security_secid_to_secctx(lb.secid[0], &secdata, &seclen);
+ 	if (err)
+ 		return;
+ 
+diff --git a/net/unix/af_unix.c b/net/unix/af_unix.c
+index 774babbee045..f0b1d741ab6c 100644
+--- a/net/unix/af_unix.c
++++ b/net/unix/af_unix.c
+@@ -138,17 +138,17 @@ static struct hlist_head *unix_sockets_unbound(void *addr)
+ #ifdef CONFIG_SECURITY_NETWORK
+ static void unix_get_secdata(struct scm_cookie *scm, struct sk_buff *skb)
+ {
+-	UNIXCB(skb).secid = scm->secid;
++	UNIXCB(skb).lsmblob = scm->lsmblob;
+ }
+ 
+ static inline void unix_set_secdata(struct scm_cookie *scm, struct sk_buff *skb)
+ {
+-	scm->secid = UNIXCB(skb).secid;
++	scm->lsmblob = UNIXCB(skb).lsmblob;
+ }
+ 
+ static inline bool unix_secdata_eq(struct scm_cookie *scm, struct sk_buff *skb)
+ {
+-	return (scm->secid == UNIXCB(skb).secid);
++	return lsmblob_equal(&scm->lsmblob, &(UNIXCB(skb).lsmblob));
+ }
+ #else
+ static inline void unix_get_secdata(struct scm_cookie *scm, struct sk_buff *skb)
+diff --git a/security/security.c b/security/security.c
+index 674042c6f03f..33563963cd45 100644
+--- a/security/security.c
++++ b/security/security.c
+@@ -2108,10 +2108,22 @@ int security_socket_getpeersec_stream(struct socket *sock, char __user *optval,
+ 				optval, optlen, len);
+ }
+ 
+-int security_socket_getpeersec_dgram(struct socket *sock, struct sk_buff *skb, u32 *secid)
++int security_socket_getpeersec_dgram(struct socket *sock, struct sk_buff *skb,
++				     struct lsmblob *blob)
+ {
+-	return call_int_hook(socket_getpeersec_dgram, -ENOPROTOOPT, sock,
+-			     skb, secid);
++	struct security_hook_list *hp;
++	int rc = -ENOPROTOOPT;
++
++	hlist_for_each_entry(hp, &security_hook_heads.socket_getpeersec_dgram,
++			     list) {
++		if (WARN_ON(hp->lsmid->slot < 0 || hp->lsmid->slot >= lsm_slot))
++			continue;
++		rc = hp->hook.socket_getpeersec_dgram(sock, skb,
++						&blob->secid[hp->lsmid->slot]);
++		if (rc != 0)
++			break;
++	}
++	return rc;
+ }
+ EXPORT_SYMBOL(security_socket_getpeersec_dgram);
+ 
+-- 
+2.20.1
 
-Make the appropriate ethtool setting on your NTP servers.
