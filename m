@@ -2,96 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 062BB12A904
-	for <lists+netdev@lfdr.de>; Wed, 25 Dec 2019 20:05:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8B8C912A913
+	for <lists+netdev@lfdr.de>; Wed, 25 Dec 2019 21:25:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727009AbfLYTE4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Dec 2019 14:04:56 -0500
-Received: from mail-pl1-f194.google.com ([209.85.214.194]:35030 "EHLO
-        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726397AbfLYTE4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Dec 2019 14:04:56 -0500
-Received: by mail-pl1-f194.google.com with SMTP id g6so9676022plt.2
-        for <netdev@vger.kernel.org>; Wed, 25 Dec 2019 11:04:55 -0800 (PST)
+        id S1726469AbfLYUYr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Dec 2019 15:24:47 -0500
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:38395 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726415AbfLYUYr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Dec 2019 15:24:47 -0500
+Received: by mail-pg1-f194.google.com with SMTP id a33so11950212pgm.5
+        for <netdev@vger.kernel.org>; Wed, 25 Dec 2019 12:24:47 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=zFwjOzvEwYsCMqPxR9qSVrNAmD1MKfKMdVbc5ZQpsKU=;
-        b=GKU9FWVyJlq2ngYV5Dy9jxjkQ/3Ks3wgrHjpnpD7pz1Jm3oOTRPazHiru+cvB5aafB
-         uqyEXVYAG7IRgli5lQz/KBD+qYQzLxAxLS0oziQPLAGfGJa3ZONK4ppbr1p5qbwzpuJ/
-         2Wiy+jMq5qR8rnbUuu5yBz+TrFItnTMYSpdMLkud8Q8wf2rqsaODrK/TrHRq8UUzlMNQ
-         G9K/QunPY0xjqYO7fNKkMZ9sqSqZqvyCk7bmLCKt7aGG7fGyVcZM+zLEQaVzaSkgKbTQ
-         si3nuA3aGcjCG4eUwTbyV2APHO0VvL42n5YKeNybIcOSKLm0vjpSNJCP2XQ1KFk7q7jR
-         E/AA==
+        bh=VW3b0yXG3fsaN6BsnsbeDFlqo4XryZpan0MVKAZhesQ=;
+        b=Liekt9Ipiyc3CX4D2g8J2LwM8mPQvZvzkOrlATBhH0DFoDK9GGv02qSGQCiZkSqyKF
+         OwMVqe0GBE6ZFQsedvtcjpoDBMGbCxW1GX6BNO1p2UaRoHk3O1dsbMXYArRECKcJDvyV
+         KjgTGGZEtVs/FlwsKsHBMoY65lXi4WbkWtvmHmEuieunW/GHrpf5iunO1RNox1dkdWsk
+         w2n73i1be1kWrIDxsZvFgZLouChM0xZcMmeveg/R4CzfFkXdzHrd3dPbTEP/h0P9oNsU
+         HEpWpGfGLgwGw1GLHMY07EYc1NY8rzK7LMwL8ryqzf177fnP56c9vzFujGlaw5H3fPcZ
+         ZRSA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=zFwjOzvEwYsCMqPxR9qSVrNAmD1MKfKMdVbc5ZQpsKU=;
-        b=MYz7zv5yBB705nt6dA8JY7mjTSz9H9xS1LISUBwJr4/VB1ym0Bs0OFCLgQ6WX0x9I1
-         xB8MgZp1QXAWsi7IX6u3g5ToBdLak1LLod2g+3KiRyBLxuHWr1PfRqJW9mAjfgGr0em9
-         kiZncg2jE5w/MMEN4rLbXiHiAnMFuybe7PMKTQfJSqUg9Ld3ebyNrLXxx+tRj/dp9qqe
-         6g9iQVLt3ynPTKVTbKOp/qMIVDdufMNOn0txy7BRntjjjI5pGH/EeQaQtCJy8Klw18wD
-         Xk6f5V0Kx5PLAqwMrocOUlZwrewfvb7rvCCeJM1DyO7UzR/hfU1/r8hA3hESM8gcmoXZ
-         gI9g==
-X-Gm-Message-State: APjAAAXFtJ/ra0GTAQL4qvz9Z/XaXA+d7vZn//rQgcNDK2wEMDAn0e2I
-        zytDrJMoOS2a15L9+qr3B9SFaySNC4o=
-X-Google-Smtp-Source: APXvYqxfvzbNA/iw4mi8bKgjcNnG97KEwX4l8OF9m7P1bEj/vs6FUu/YB7eJr85rp6ghsOtmRsgGwQ==
-X-Received: by 2002:a17:902:b611:: with SMTP id b17mr43008580pls.210.1577300695173;
-        Wed, 25 Dec 2019 11:04:55 -0800 (PST)
-Received: from localhost.localdomain ([103.89.235.106])
-        by smtp.gmail.com with ESMTPSA id j28sm30019719pgb.36.2019.12.25.11.04.52
+        bh=VW3b0yXG3fsaN6BsnsbeDFlqo4XryZpan0MVKAZhesQ=;
+        b=iRf7+HIl0Ubm1Zy3jFYkrhtkyLqWsphv0SGbjFH8Y+Hla++iMPJOU+sUgii8x9BSlJ
+         eJCpBUm2T5eHl3S8/6B7ZUBnf/QAC2EHLGtlJUSUmzGyI+Frlya+GXIb/Ukowu18RcuD
+         8wu3arck1/M5tlHTbIj4mgpFD8W2A8Oc2QXeQWZlOcuGWUzkcKncEhJpe7LrBCL0/+ol
+         Qrm/WhMSWm2yYbRXM9Li0ervmBtoDSWiavbBCKgPeg6pOeMQy3L3fxJbv/6LaOZX4Jd+
+         VkFMDcwjgbYe4YWtehEgY3wG8znkwuhlb2j/zuTJe6HpN/0ABIEd2Dbvs74fD+Qa5bjN
+         JyAg==
+X-Gm-Message-State: APjAAAW4RTG+JmoZLgVPow6haKEFKTAzarCsUM5jStjRRDOfCTC30wDf
+        v5TwhfujiGUGqd/w3RDLQypD7g==
+X-Google-Smtp-Source: APXvYqz3JWp+mk4N6FVAtBZuaogKu5R1NLVl6nR/NKs14ZdTkI1N8CFohZ8xEHrF2vI3dGA5WIoRPg==
+X-Received: by 2002:aa7:9306:: with SMTP id 6mr44927813pfj.36.1577305486618;
+        Wed, 25 Dec 2019 12:24:46 -0800 (PST)
+Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id w187sm15863213pfw.62.2019.12.25.12.24.45
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 25 Dec 2019 11:04:54 -0800 (PST)
-From:   Leslie Monis <lesliemonis@gmail.com>
-To:     Linux NetDev <netdev@vger.kernel.org>
-Cc:     David Ahern <dsahern@gmail.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>
-Subject: [PATCH iproute2-next 10/10] tc: fq_codel: fix missing statistic in JSON output
-Date:   Thu, 26 Dec 2019 00:34:18 +0530
-Message-Id: <20191225190418.8806-11-lesliemonis@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20191225190418.8806-1-lesliemonis@gmail.com>
-References: <20191225190418.8806-1-lesliemonis@gmail.com>
+        Wed, 25 Dec 2019 12:24:46 -0800 (PST)
+Date:   Wed, 25 Dec 2019 12:24:24 -0800
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Fenghua Yu <fenghua.yu@intel.com>
+Cc:     David Miller <davem@davemloft.net>, michael.chan@broadcom.com,
+        netdev@vger.kernel.org, tglx@linutronix.de, luto@kernel.org,
+        peterz@infradead.org, tony.luck@intel.com, David.Laight@ACULAB.COM,
+        ravi.v.shankar@intel.com
+Subject: Re: [PATCH] drivers/net/b44: Change to non-atomic bit operations
+Message-ID: <20191225122424.5bc18036@hermes.lan>
+In-Reply-To: <20191225011020.GE241295@romley-ivt3.sc.intel.com>
+References: <1576884551-9518-1-git-send-email-fenghua.yu@intel.com>
+        <20191224.161826.37676943451935844.davem@davemloft.net>
+        <20191225011020.GE241295@romley-ivt3.sc.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Print JSON object even if tc_fq_codel_xstats->class_stats.drop_next
-is negative.
+On Tue, 24 Dec 2019 17:10:20 -0800
+Fenghua Yu <fenghua.yu@intel.com> wrote:
 
-Cc: Toke Høiland-Jørgensen <toke@toke.dk>
-Fixes: 997f2dc19378 ("tc: Add JSON output of fq_codel stats")
-Signed-off-by: Leslie Monis <lesliemonis@gmail.com>
----
- tc/q_fq_codel.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+> On Tue, Dec 24, 2019 at 04:18:26PM -0800, David Miller wrote:
+> > From: Fenghua Yu <fenghua.yu@intel.com>
+> > Date: Fri, 20 Dec 2019 15:29:11 -0800
+> >   
+> > > On x86, accessing data across two cache lines in one atomic bit
+> > > operation (aka split lock) can take over 1000 cycles.  
+> > 
+> > This happens during configuration of WOL, nobody cares that the atomic
+> > operations done in this function take 1000 cycles each.
+> > 
+> > I'm not applying this patch.  It is gratuitous, and the commit message
+> > talks about "performance" considuations (cycle counts) that completely
+> > don't matter here.
+> > 
+> > If you are merely just arbitrarily trying to remove locked atomic
+> > operations across the tree for it's own sake, then you should be
+> > completely honest about that in your commit message.  
+> 
+> We are enabling split lock in the kernel (by default):
+> https://lkml.org/lkml/2019/12/12/1129
+> 
+> After applying the split lock detection patch, the set_bit() in b44.c
+> may cause split lock and kernel dies.
+> 
+> So should I change the commit message to add the above info?
+> 
+> Thanks.
+> 
+> -Fenghua
 
-diff --git a/tc/q_fq_codel.c b/tc/q_fq_codel.c
-index 12ce3fbf..efed4d28 100644
---- a/tc/q_fq_codel.c
-+++ b/tc/q_fq_codel.c
-@@ -276,12 +276,12 @@ static int fq_codel_print_xstats(struct qdisc_util *qu, FILE *f,
- 			sprint_time(st->class_stats.ldelay, b1));
- 		if (st->class_stats.dropping) {
- 			print_bool(PRINT_ANY, "dropping", " dropping", true);
-+			print_int(PRINT_JSON, "drop_next", NULL,
-+				  st->class_stats.drop_next);
- 			if (st->class_stats.drop_next < 0)
- 				print_string(PRINT_FP, NULL, " drop_next -%s",
- 					sprint_time(-st->class_stats.drop_next, b1));
- 			else {
--				print_uint(PRINT_JSON, "drop_next", NULL,
--					st->class_stats.drop_next);
- 				print_string(PRINT_FP, NULL, " drop_next %s",
- 					sprint_time(st->class_stats.drop_next, b1));
- 			}
--- 
-2.17.1
-
+Why not just make pwol_pattern aligned and choose the right word to do
+the operation on?
