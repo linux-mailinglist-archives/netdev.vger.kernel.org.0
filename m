@@ -2,142 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 31F6412A81F
-	for <lists+netdev@lfdr.de>; Wed, 25 Dec 2019 14:07:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C55EA12A864
+	for <lists+netdev@lfdr.de>; Wed, 25 Dec 2019 16:09:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726884AbfLYNHZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Dec 2019 08:07:25 -0500
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:40966 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726397AbfLYNHY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Dec 2019 08:07:24 -0500
-Received: by mail-pf1-f196.google.com with SMTP id w62so11975277pfw.8;
-        Wed, 25 Dec 2019 05:07:24 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=f4msYejz1CgfAS0PDopXbv0VGp58pQs3AmFecyIJFjU=;
-        b=t7uNaJqE3eC76oMV8xP1AQ+7MeUTc5YaIsmt1NG5QhrKyYp3hH4ZyncqME8c/q7pWZ
-         RZoXkYcKuPePN8pc5oDnkCT4bgO8Ek0/ymYv2SD/TS7YP59vxtpXmsVYbI8Om28JJsAt
-         O0JHxZVniXfA7d4C+D/lrYYqBpSkB5CkkyO5E9LeF2+j8zWy5HMpl8sPpPqKatxO+2Eh
-         urIt9+NsiIoUAUoGWS9uZkHpQGCZggPnn2MgeVRmXvSSs+DDhxB+cdKlxOQ8j9nAbHpo
-         0tFiTIa0c6+Wfv2PHs5bCDbgfUszFflPotmi2b4n+BBHSJgIXldyLBVr1yJXCpx9NTEU
-         S9pg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=f4msYejz1CgfAS0PDopXbv0VGp58pQs3AmFecyIJFjU=;
-        b=EYlzI9E5UIfwQe3/a1GHY6wxBAI8FD7GsCK04iPMajzx0fw6CbhYUllkXDC3JOOUZP
-         2+Z3C8bhvoDU/wBlcZz5SNJUYKiR+Uu8D/FpTr0eQ4vMw40Bt14lHXPwcn2JqOMkHTNs
-         BCvEjUuh3TB0j6VZnAgG/B1c4Kea6CW0IdimyckKXFjf74sklv4DqeDHuOR1ZxFptXTm
-         CSKhn6qz1BmtOC+i4nv1XmUFISu35A1Ct9Zy16VSr1sG0mLHSVHymsBTetaBMaTUrHnV
-         EKcrBKMWiedRi8xIrfhrlb28GhE5uC35svSCdtn7K6cdQLe56yBf+C6L7OSR7bq39FOe
-         X0KQ==
-X-Gm-Message-State: APjAAAXWO7JZkSBeYs897Aqs9MeWXyU0qXbCB83UNVsN6IZANWmVYoHj
-        yAMnqjIb3pe5NPfnP+nd7an3ClBv9CA=
-X-Google-Smtp-Source: APXvYqya+SVU33XUkWn6lmNJRrPJyOBODquBxyjiPHSKDUCz0nLX8t40deArAAKynwbzIMvLEmnYJw==
-X-Received: by 2002:aa7:8699:: with SMTP id d25mr43247453pfo.139.1577279244019;
-        Wed, 25 Dec 2019 05:07:24 -0800 (PST)
-Received: from localhost.localdomain ([168.181.48.206])
-        by smtp.gmail.com with ESMTPSA id j17sm5201897pfa.28.2019.12.25.05.07.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 25 Dec 2019 05:07:23 -0800 (PST)
-Received: by localhost.localdomain (Postfix, from userid 1000)
-        id 62CC4C1BD3; Wed, 25 Dec 2019 10:07:20 -0300 (-03)
-Date:   Wed, 25 Dec 2019 10:07:20 -0300
-From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-To:     Kevin Kou <qdkevin.kou@gmail.com>
-Cc:     linux-sctp@vger.kernel.org, netdev@vger.kernel.org,
-        vyasevich@gmail.com, nhorman@tuxdriver.com, davem@davemloft.net
-Subject: Re: [PATCHv3 net-next] sctp: do trace_sctp_probe after SACK
- validation and check
-Message-ID: <20191225130720.GM4444@localhost.localdomain>
-References: <20191225082725.1251-1-qdkevin.kou@gmail.com>
+        id S1726420AbfLYPI6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Dec 2019 10:08:58 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:39902 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726353AbfLYPI6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 25 Dec 2019 10:08:58 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=jQM1mPv2ronZJbcInLqrwGfsm7Z5m5AylYfzZgE2JXA=; b=zTEfMuOoUE9MwHB3sP2D4Xd29U
+        B+ejTbVH8L+m+Y7bydqkF8Dm/oDIF0kTrd+TKU5JrmBdJkTJbF1cPtIa5qlI4XdJcYZcJR2eZKCfI
+        NTTb5UzoFmrjvo0NuqfqIaHH1JhkSOviMTwD8hDle1tN/hewSV9OhQeSRTHZtCZwz6aw=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1ik8HF-0004Zd-42; Wed, 25 Dec 2019 16:08:45 +0100
+Date:   Wed, 25 Dec 2019 16:08:45 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Cc:     linux-amlogic@lists.infradead.org, netdev@vger.kernel.org,
+        davem@davemloft.net, khilman@baylibre.com,
+        linus.luessing@c0d3.blue, balbes-150@yandex.ru,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        ingrassia@epigenesys.com, jbrunet@baylibre.com
+Subject: Re: [PATCH 1/3] net: stmmac: dwmac-meson8b: Fix the RGMII TX delay
+ on Meson8b/8m2 SoCs
+Message-ID: <20191225150845.GA16671@lunn.ch>
+References: <20191225005655.1502037-1-martin.blumenstingl@googlemail.com>
+ <20191225005655.1502037-2-martin.blumenstingl@googlemail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20191225082725.1251-1-qdkevin.kou@gmail.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+In-Reply-To: <20191225005655.1502037-2-martin.blumenstingl@googlemail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 25, 2019 at 08:27:25AM +0000, Kevin Kou wrote:
-> The function sctp_sf_eat_sack_6_2 now performs the Verification
-> Tag validation, Chunk length validation, Bogu check, and also
-> the detection of out-of-order SACK based on the RFC2960
-> Section 6.2 at the beginning, and finally performs the further
-> processing of SACK. The trace_sctp_probe now triggered before
-> the above necessary validation and check.
+On Wed, Dec 25, 2019 at 01:56:53AM +0100, Martin Blumenstingl wrote:
+> GXBB and newer SoCs use the fixed FCLK_DIV2 (1GHz) clock as input for
+> the m250_sel clock. Meson8b and Meson8m2 use MPLL2 instead, whose rate
+> can be adjusted at runtime.
 > 
-> this patch is to do the trace_sctp_probe after the chunk sanity
-> tests, but keep doing trace if the SACK received is out of order,
-> for the out-of-order SACK is valuable to congestion control
-> debugging.
+> So far we have been running MPLL2 with ~250MHz (and the internal
+> m250_div with value 1), which worked enough that we could transfer data
+> with an TX delay of 4ns. Unfortunately there is high packet loss with
+> an RGMII PHY when transferring data (receiving data works fine though).
+> Odroid-C1's u-boot is running with a TX delay of only 2ns as well as
+> the internal m250_div set to 2 - no lost (TX) packets can be observed
+> with that setting in u-boot.
 > 
-> v1->v2:
->  - keep doing SCTP trace if the SACK is out of order as Marcelo's
->    suggestion.
-> v2->v3:
->  - regenerate the patch as v2 generated on top of v1, and add
->    'net-next' tag to the new one as Marcelo's comments.
-> 
-> Signed-off-by: Kevin Kou <qdkevin.kou@gmail.com>
+> Manual testing has shown that the TX packet loss goes away when using
+> the following settings in Linux:
+> - MPLL2 clock set to ~500MHz
+> - m250_div set to 2
+> - TX delay set to 2ns
 
-Acked-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Hi Martin
 
-Thanks Kevin.
+The delay will depend on the PHY, the value of phy-mode, and the PCB
+layout.
 
-> ---
->  net/sctp/sm_statefuns.c | 18 +++++++++---------
->  1 file changed, 9 insertions(+), 9 deletions(-)
-> 
-> diff --git a/net/sctp/sm_statefuns.c b/net/sctp/sm_statefuns.c
-> index 42558fa..748e3b1 100644
-> --- a/net/sctp/sm_statefuns.c
-> +++ b/net/sctp/sm_statefuns.c
-> @@ -3281,8 +3281,6 @@ enum sctp_disposition sctp_sf_eat_sack_6_2(struct net *net,
->  	struct sctp_sackhdr *sackh;
->  	__u32 ctsn;
->  
-> -	trace_sctp_probe(ep, asoc, chunk);
-> -
->  	if (!sctp_vtag_verify(chunk, asoc))
->  		return sctp_sf_pdiscard(net, ep, asoc, type, arg, commands);
->  
-> @@ -3299,6 +3297,15 @@ enum sctp_disposition sctp_sf_eat_sack_6_2(struct net *net,
->  	chunk->subh.sack_hdr = sackh;
->  	ctsn = ntohl(sackh->cum_tsn_ack);
->  
-> +	/* If Cumulative TSN Ack beyond the max tsn currently
-> +	 * send, terminating the association and respond to the
-> +	 * sender with an ABORT.
-> +	 */
-> +	if (TSN_lte(asoc->next_tsn, ctsn))
-> +		return sctp_sf_violation_ctsn(net, ep, asoc, type, arg, commands);
-> +
-> +	trace_sctp_probe(ep, asoc, chunk);
-> +
->  	/* i) If Cumulative TSN Ack is less than the Cumulative TSN
->  	 *     Ack Point, then drop the SACK.  Since Cumulative TSN
->  	 *     Ack is monotonically increasing, a SACK whose
-> @@ -3312,13 +3319,6 @@ enum sctp_disposition sctp_sf_eat_sack_6_2(struct net *net,
->  		return SCTP_DISPOSITION_DISCARD;
->  	}
->  
-> -	/* If Cumulative TSN Ack beyond the max tsn currently
-> -	 * send, terminating the association and respond to the
-> -	 * sender with an ABORT.
-> -	 */
-> -	if (!TSN_lt(ctsn, asoc->next_tsn))
-> -		return sctp_sf_violation_ctsn(net, ep, asoc, type, arg, commands);
-> -
->  	/* Return this SACK for further processing.  */
->  	sctp_add_cmd_sf(commands, SCTP_CMD_PROCESS_SACK, SCTP_CHUNK(chunk));
->  
-> -- 
-> 1.8.3.1
-> 
+https://ethernetfmc.com/rgmii-interface-timing-considerations/
+
+RGMII requires a delay of 2ns between the data and the clock
+signal. There are at least three ways this can happen.
+
+1) The MAC adds the delay
+
+2) The PCB adds the delay by making the clock line longer than the
+data line.
+
+3) The PHY adds the delay.
+
+In linux you configure this using the phy-mode in DT.
+
+      # RX and TX delays are added by the MAC when required
+      - rgmii
+
+      # RGMII with internal RX and TX delays provided by the PHY,
+      # the MAC should not add the RX or TX delays in this case
+      - rgmii-id
+
+      # RGMII with internal RX delay provided by the PHY, the MAC
+      # should not add an RX delay in this case
+      - rgmii-rxid
+
+      # RGMII with internal TX delay provided by the PHY, the MAC
+      # should not add an TX delay in this case
+      - rgmii-txid
+
+So ideally, you want the MAC to add no delay at all, and then use the
+correct phy-mode so the PHY adds the correct delay. This gives you the
+most flexibility in terms of PHY and PCB design. This does however
+require that the PHY implements the delay, which not all do.
+
+Looking at patches 2 and 3, the phy-mode is set to rgmii. What you
+might actually need to do is set this to rgmii-txid, or maybe
+rgmii-id, once you have the MAC not inserting any delay.
+
+With MAC/PHY issues, it is a good idea to Cc: the PHY maintainers.
+
+	Andrew
+
