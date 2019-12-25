@@ -2,66 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B927612A534
-	for <lists+netdev@lfdr.de>; Wed, 25 Dec 2019 01:15:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2C15012A53D
+	for <lists+netdev@lfdr.de>; Wed, 25 Dec 2019 01:18:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726287AbfLYAPk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Dec 2019 19:15:40 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:58006 "EHLO
+        id S1726317AbfLYAS2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Dec 2019 19:18:28 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:58036 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726225AbfLYAPk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Dec 2019 19:15:40 -0500
+        with ESMTP id S1726237AbfLYAS1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Dec 2019 19:18:27 -0500
 Received: from localhost (unknown [IPv6:2601:601:9f00:1c3::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id C497C154CCC3F;
-        Tue, 24 Dec 2019 16:15:39 -0800 (PST)
-Date:   Tue, 24 Dec 2019 16:15:39 -0800 (PST)
-Message-Id: <20191224.161539.500554691107655943.davem@davemloft.net>
-To:     dhowells@redhat.com
-Cc:     netdev@vger.kernel.org, linux-afs@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net 0/3] rxrpc: Fixes
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id F1C00154CCC20;
+        Tue, 24 Dec 2019 16:18:26 -0800 (PST)
+Date:   Tue, 24 Dec 2019 16:18:26 -0800 (PST)
+Message-Id: <20191224.161826.37676943451935844.davem@davemloft.net>
+To:     fenghua.yu@intel.com
+Cc:     michael.chan@broadcom.com, netdev@vger.kernel.org,
+        tglx@linutronix.de, luto@kernel.org, peterz@infradead.org,
+        tony.luck@intel.com, David.Laight@ACULAB.COM,
+        ravi.v.shankar@intel.com
+Subject: Re: [PATCH] drivers/net/b44: Change to non-atomic bit operations
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <157688311975.18694.10870615714269857980.stgit@warthog.procyon.org.uk>
-References: <157688311975.18694.10870615714269857980.stgit@warthog.procyon.org.uk>
+In-Reply-To: <1576884551-9518-1-git-send-email-fenghua.yu@intel.com>
+References: <1576884551-9518-1-git-send-email-fenghua.yu@intel.com>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 24 Dec 2019 16:15:40 -0800 (PST)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 24 Dec 2019 16:18:27 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: David Howells <dhowells@redhat.com>
-Date: Fri, 20 Dec 2019 23:05:19 +0000
+From: Fenghua Yu <fenghua.yu@intel.com>
+Date: Fri, 20 Dec 2019 15:29:11 -0800
 
-> 
-> Here are a couple of bugfixes plus a patch that makes one of the bugfixes
-> easier:
-> 
->  (1) Move the ping and mutex unlock on a new call from rxrpc_input_packet()
->      into rxrpc_new_incoming_call(), which it calls.  This means the
->      lock-unlock section is entirely within the latter function.  This
->      simplifies patch (2).
-> 
->  (2) Don't take the call->user_mutex at all in the softirq path.  Mutexes
->      aren't allowed to be taken or released there and a patch was merged
->      that caused a warning to be emitted every time this happened.  Looking
->      at the code again, it looks like that taking the mutex isn't actually
->      necessary, as the value of call->state will block access to the call.
-> 
->  (3) Fix the incoming call path to check incoming calls earlier to reject
->      calls to RPC services for which we don't have a security key of the
->      appropriate class.  This avoids an assertion failure if YFS tries
->      making a secure call to the kafs cache manager RPC service.
-> 
-> The patches are tagged here:
-> 
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/dhowells/linux-fs.git
-> 	rxrpc-fixes-20191220
+> On x86, accessing data across two cache lines in one atomic bit
+> operation (aka split lock) can take over 1000 cycles.
 
-Pulled, thanks David.
+This happens during configuration of WOL, nobody cares that the atomic
+operations done in this function take 1000 cycles each.
+
+I'm not applying this patch.  It is gratuitous, and the commit message
+talks about "performance" considuations (cycle counts) that completely
+don't matter here.
+
+If you are merely just arbitrarily trying to remove locked atomic
+operations across the tree for it's own sake, then you should be
+completely honest about that in your commit message.
