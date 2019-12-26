@@ -2,83 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A17412ABC5
-	for <lists+netdev@lfdr.de>; Thu, 26 Dec 2019 12:08:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2EEDA12ABD2
+	for <lists+netdev@lfdr.de>; Thu, 26 Dec 2019 12:14:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726442AbfLZLI1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Dec 2019 06:08:27 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:40468 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726055AbfLZLI1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 26 Dec 2019 06:08:27 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=ukIw4m4IWdjtDk5tl+vpdhk2AgnUFvsYekg7tTbNV58=; b=ZHTiyIfdFWcU9Q83bJaMbTRwx0
-        M4IA11fwoXIwj+IX+Q+MvfwepBiRNPyZ0DNNx24Pb9fQyhMXBKOgzgNrUxVXy+sir+VNST6I8WNqk
-        nw+E/Mf+hL4eKIOC3YpaoTfGqlK5aBGy6lVC6fXQBBrdeKlW7lyzzuLRh2F6r+L7txKo=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1ikR09-0001I2-2q; Thu, 26 Dec 2019 12:08:21 +0100
-Date:   Thu, 26 Dec 2019 12:08:21 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     "Madalin Bucur (OSS)" <madalin.bucur@oss.nxp.com>
-Cc:     "maxime.ripard@bootlin.com" <maxime.ripard@bootlin.com>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "mark.rutland@arm.com" <mark.rutland@arm.com>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [RFC] obsolete references to
- Documentation/devicetree/bindings/net/ethernet.txt
-Message-ID: <20191226110821.GE1480@lunn.ch>
-References: <VI1PR04MB5567BBD2827A5DDDFD0D82B7EC2E0@VI1PR04MB5567.eurprd04.prod.outlook.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <VI1PR04MB5567BBD2827A5DDDFD0D82B7EC2E0@VI1PR04MB5567.eurprd04.prod.outlook.com>
+        id S1726626AbfLZLOC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Dec 2019 06:14:02 -0500
+Received: from wout1-smtp.messagingengine.com ([64.147.123.24]:52155 "EHLO
+        wout1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726109AbfLZLOB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Dec 2019 06:14:01 -0500
+Received: from compute2.internal (compute2.nyi.internal [10.202.2.42])
+        by mailout.west.internal (Postfix) with ESMTP id 7B32A7A9;
+        Thu, 26 Dec 2019 06:14:00 -0500 (EST)
+Received: from imap1 ([10.202.2.51])
+  by compute2.internal (MEProxy); Thu, 26 Dec 2019 06:14:00 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=octaforge.org;
+         h=mime-version:message-id:in-reply-to:references:date:from:to
+        :cc:subject:content-type; s=fm2; bh=JXta/WqdhE4YY2I64sh/VVqEpXKm
+        hm0Lw30srU4vDGY=; b=cexShvJUjvFwcGdxsSXh8AXoF/W8dUGxFBgYL7E6yt4v
+        /UdZo9DC2dgzLsDbCSpvV4BwOy9oUVW3eUlmJMMkhzVBA18Qeclw5f5JGlbJ9Tuj
+        lS0fRxFeuQREAdpestQrT+H2cJFGofW72Lr+iQYpZj96K+afYIuOgkzO51/eV4ve
+        gAc0iFkxAVo/lIoeVvkHv7HhNSp0mpeb/Ee54Ii53IfvmcwjCjeVFUfTXmx2i11X
+        CpIyNO/qtMBxbCPdBI5TFE2AyEAzt/gK9KwdL9QPbun1Xt+SZqPFLME79BXB8R78
+        eA0NaHpu4dxmvR/mGRS/1tIqpQgW6go8fiyAIpus9g==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=JXta/W
+        qdhE4YY2I64sh/VVqEpXKmhm0Lw30srU4vDGY=; b=UK+ibjhycYCi5Lk4PWm+u5
+        4mKlo8Zyulbqaw3YGqeE14x5JIKaDKnTJW4+Y79yMskjq7zFVPuIPkb0qY84yjqK
+        72g1Ve5uKZT5P+A6elXdToG2Q5bTIntGIJ8ovsv2LurIHwqclo2hyrBBAJUs4FGG
+        5F0TihkgYrx3R3irMpDDs7kAnlc2T5MDRqVnRmTrIe1py7V4Nr/xnATDGsCWHevf
+        2mySJ0ETsFH5eeO72LpLI/uAMP0t7wZ95tFvrLcVZg/VjFwP0/WIbqFWYpDrEzw6
+        l/W5Wq1whvF8efV5RnS+40noycpalmoTkOugc60E2jNGRfJzucO+MBvFTv8SlyAA
+        ==
+X-ME-Sender: <xms:95UEXqM8zGqPOFXYpIMTMBF2hD1WFLHwRZrXgv5aZcDwyEMu9p6kqg>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedufedrvddviedgvdegucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepofgfggfkjghffffhvffutgesthdtredtreertdenucfhrhhomhepfdffrghn
+    ihgvlhcumfholhgvshgrfdcuoegurghnihgvlhesohgtthgrfhhorhhgvgdrohhrgheqne
+    curfgrrhgrmhepmhgrihhlfhhrohhmpegurghnihgvlhesohgtthgrfhhorhhgvgdrohhr
+    ghenucevlhhushhtvghrufhiiigvpedt
+X-ME-Proxy: <xmx:95UEXpYKIVPvoGXx8cS8vnFmpZVWTpJMvbtyuIKlbRgiS6-GUrQXwg>
+    <xmx:95UEXmuJmr88Q22yakGgo29iOw8aIksTXl5m6_uDPQPYF1g8G3H0HA>
+    <xmx:95UEXor7Hvtm3mGf7QpgKVr2EAX6DvAM1a7kSNzCrHhDlqqKQ7KdSw>
+    <xmx:-JUEXp3-wAXuoL8KJ4PWci7_HzbD643sOPnjWgtnDg_h4n8H6kOruA>
+Received: by mailuser.nyi.internal (Postfix, from userid 501)
+        id A4D93C200A4; Thu, 26 Dec 2019 06:13:59 -0500 (EST)
+X-Mailer: MessagingEngine.com Webmail Interface
+User-Agent: Cyrus-JMAP/3.1.7-694-gd5bab98-fmstable-20191218v1
+Mime-Version: 1.0
+Message-Id: <66db73b0-c470-4708-a017-c662f4ca0d7c@www.fastmail.com>
+In-Reply-To: <20191225.194929.1465672299217213413.davem@davemloft.net>
+References: <20191222060227.7089-1-AWilcox@Wilcox-Tech.com>
+ <20191225.163411.1590483851343305623.davem@davemloft.net>
+ <20191226010515.GD30412@brightrain.aerifal.cx>
+ <20191225.194929.1465672299217213413.davem@davemloft.net>
+Date:   Thu, 26 Dec 2019 12:13:37 +0100
+From:   "Daniel Kolesa" <daniel@octaforge.org>
+To:     "David Miller" <davem@davemloft.net>, musl@lists.openwall.com,
+        dalias@libc.org
+Cc:     AWilcox@Wilcox-Tech.com, netdev@vger.kernel.org,
+        linux-api@vger.kernel.org
+Subject: Re: [musl] Re: [PATCH] uapi: Prevent redefinition of struct iphdr
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 23, 2019 at 09:00:50AM +0000, Madalin Bucur (OSS) wrote:
-> Hi,
+On Thu, Dec 26, 2019, at 04:49, David Miller wrote:
+> From: Rich Felker <dalias@libc.org>
+> Date: Wed, 25 Dec 2019 20:05:15 -0500
 > 
-> this patch removed the ethernet.txt content and added the information found in
-> it in the ethernet-controller.yaml (Documentation/devicetree/bindings/net):
+> > On Wed, Dec 25, 2019 at 04:34:11PM -0800, David Miller wrote:
+> >> I find it really strange that this, therefore, only happens for musl
+> >> and we haven't had thousands of reports of this conflict with glibc
+> >> over the years.
+> > 
+> > It's possible that there's software that's including just one of the
+> > headers conditional on __GLIBC__, and including both otherwise, or
+> > something like that. Arguably this should be considered unsupported
+> > usage; there are plenty of headers where that doesn't work and
+> > shouldn't be expected to.
 > 
->   commit 9d3de3c58347623b5e71d554628a1571cd3142ad
->   Author: Maxime Ripard <maxime.ripard@bootlin.com>
->   Date:   Thu Jun 27 17:31:43 2019 +0200
-> 
->       dt-bindings: net: Add YAML schemas for the generic Ethernet options
-> 
->       The Ethernet controllers have a good number of generic options that can be
->       needed in a device tree. Add a YAML schemas for those.
-> 
->       Reviewed-by: Rob Herring <robh@kernel.org>
->       Signed-off-by: Maxime Ripard <maxime.ripard@bootlin.com>
->       Reviewed-by: Andrew Lunn <andrew@lunn.ch>
->       Signed-off-by: Rob Herring <robh@kernel.org>
-> 
-> There are still many references to the previous ethernet.txt document:
-> 
->   $ grep ethernet.txt Documentation/devicetree/bindings/net/ -r | wc -l
->   96
-> 
-> Should those be updated too or it's enough to rely on the current content
-> of the previous ethernet.txt file:
-> 
->   $ cat Documentation/devicetree/bindings/net/ethernet.txt
->   This file has moved to ethernet-controller.yaml.
+> I don't buy that, this is waaaaaay too common a header to use.
 
-Hi Madalin
+In case of net-tools, only <linux/ip.h> is included, and never <netinet/ip.h> directly. Chances are in musl the indirect include tree happens to be different and conflicting, while in glibc it is not.
 
-Feel free to fix the references if you want. Probably a perl one liner
-should do most of the work.
+> 
+> Please investigate.
+>
 
-       Thanks
-	Andrew
+Daniel
