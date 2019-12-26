@@ -2,104 +2,188 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C572712AE4E
-	for <lists+netdev@lfdr.de>; Thu, 26 Dec 2019 20:22:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CF1B812AE4F
+	for <lists+netdev@lfdr.de>; Thu, 26 Dec 2019 20:23:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726831AbfLZTWU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Dec 2019 14:22:20 -0500
-Received: from mail-io1-f65.google.com ([209.85.166.65]:41111 "EHLO
-        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726653AbfLZTWU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Dec 2019 14:22:20 -0500
-Received: by mail-io1-f65.google.com with SMTP id c16so20416254ioo.8;
-        Thu, 26 Dec 2019 11:22:19 -0800 (PST)
+        id S1726839AbfLZTXi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Dec 2019 14:23:38 -0500
+Received: from mail-ed1-f67.google.com ([209.85.208.67]:46626 "EHLO
+        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726659AbfLZTXh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Dec 2019 14:23:37 -0500
+Received: by mail-ed1-f67.google.com with SMTP id m8so23523020edi.13
+        for <netdev@vger.kernel.org>; Thu, 26 Dec 2019 11:23:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=herbertland-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=GGlFeuiV//kVMDy1kqCnfQsZCsPZMXG0uwLugUBKNvM=;
+        b=NHFcJvdElOQkl807pohRNXiCEr5QdDguPxIwmNA1rGTK/Dh+x4RcDWYFEPHgCVybQp
+         iSewA5N9fchpqHgFyigtb1LwqssncPaOcjhDztKU/S2lzRHWHNcljDOtQTvNSpqts70u
+         NYl6a4m7UOWyDHTlTqigCzJ90kUnrPy1HJu4fefs+Zik0/mGb/pzgIzSjLxY1yYX858T
+         xv7AiqTjPNZMaYq71SajV+zU6gm2+fBxujuU3PF9VU7Bz6hTuthbvRnUS3XRqweqE5ZN
+         Ldn9uDstGPZ9S/kImMocgXteFMOseBqWxteoj/HorrVbsT05Wwf1Zu+q8iVMdbWTyBSk
+         L6Hg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=R5ux+aGvRE7UtpZWNEHDpq3k2THh0opmzfMyK7lQA+4=;
-        b=hCDpSSLieOlbhG3SHdorTCIA19wv9VFFzfgKI0QhrVn8COMWCEV/+WOBsm0RdhQcgU
-         tC+S2PVEJsaObsFa0wxPWXKrZixMnaCV3qYiSQH/CBoP+MZgFtR8QvM0pqxzurro3KR+
-         C2gokJpNj6BDEG4dKIMth64lTzczX2x7eCLfypvtGX51clFnu02j/nbFcC6/xL/2xWfi
-         7Zwi1L39kC2BXWg1CFRHlxve0pjqo4IGQgQ8AB1MmDWJfRVEUUDbv5z8ENOsJXEOyn4z
-         FvDkhXkZ40rAVLRLci69UnGh9qmyYVgrHmTohrtcHVqZBtwOJ4pd8g9eBzkG0qIxZPBf
-         MOUg==
-X-Gm-Message-State: APjAAAXOOcui/iY7xHkcB4TDWzOYhThowj1jFLawMutEXKxcRNnfPspb
-        lc7OUoZlsZq6PrnWrdH57g==
-X-Google-Smtp-Source: APXvYqx2j8ZzstKCwh9JS77NHZuPA/MpsLy6K80JazDbIQ1Q8wufCtUxnmt94zLihf2RNl8QRxlb0w==
-X-Received: by 2002:a02:6558:: with SMTP id u85mr37591000jab.42.1577388139118;
-        Thu, 26 Dec 2019 11:22:19 -0800 (PST)
-Received: from localhost ([64.188.179.250])
-        by smtp.gmail.com with ESMTPSA id b145sm8844951iof.60.2019.12.26.11.22.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 26 Dec 2019 11:22:18 -0800 (PST)
-Date:   Thu, 26 Dec 2019 12:22:17 -0700
-From:   Rob Herring <robh@kernel.org>
-To:     vincent.cheng.xh@renesas.com
-Cc:     mark.rutland@arm.com, richardcochran@gmail.com,
-        devicetree@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next 1/3] dt-bindings: ptp: Rename ptp-idtcm.yaml to
- ptp-cm.yaml
-Message-ID: <20191226192217.GA17727@bogus>
-References: <1576558988-20837-1-git-send-email-vincent.cheng.xh@renesas.com>
- <1576558988-20837-2-git-send-email-vincent.cheng.xh@renesas.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=GGlFeuiV//kVMDy1kqCnfQsZCsPZMXG0uwLugUBKNvM=;
+        b=tiYeX/0ht7KmMwHTHBo10IHAisQCISDBjGtGb+KYGgWccGKockyKVW/U65ae/LXG2x
+         eInpccrdZGJYX5aT9asYMqQGKmzvZtOkmJw2dTq4fBLK62yhqjlqm6Y2YCYP5fv0y/e6
+         HIOpp3BuDCB2LRyBx9rwKEXYWmEsspcKM1U92xdsWeHjqJLpQUF/orasPLYBJxr/4fDu
+         xuSdKCOD3uDN66nRTT8z1QKlyG7KtFSKp0lF5yE9+XBcM7pZ1IWjDRNEQUnLrRYBTFP3
+         1DaCWRlt5eFlNugBJDt60SHUcVpjkA6TV6/I94YGb3BOeApCqyL5p6uDdNeBOXt1Oagb
+         SBnQ==
+X-Gm-Message-State: APjAAAVVf0e5qyZTD7epaQY3rPff5dq9Or4zDP4yo/TBnh6Ny3HwAUCi
+        Za1VgL3HqzzOTCYmn5vgk9nDGcjzNVNy7zpKwgVSlfpV
+X-Google-Smtp-Source: APXvYqxUkuQtIef3tkw3z36xG3a6/IJM7ipwaDjTp9yK758NnuKsIPn7+5AKhMX5WwEtL8CPFMjxPQ1KMeGZq4s1/VY=
+X-Received: by 2002:a05:6402:1777:: with SMTP id da23mr51855215edb.292.1577388215407;
+ Thu, 26 Dec 2019 11:23:35 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1576558988-20837-2-git-send-email-vincent.cheng.xh@renesas.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20191226023200.21389-1-prashantbhole.linux@gmail.com>
+In-Reply-To: <20191226023200.21389-1-prashantbhole.linux@gmail.com>
+From:   Tom Herbert <tom@herbertland.com>
+Date:   Thu, 26 Dec 2019 11:23:24 -0800
+Message-ID: <CALx6S37d=JYSSjCfWa_N=AK3HUMSR9TJEv46tLTK-LiMrzoWMg@mail.gmail.com>
+Subject: Re: [RFC v2 net-next 00/12] XDP in tx path
+To:     Prashant Bhole <prashantbhole.linux@gmail.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        "Michael S . Tsirkin" <mst@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Jason Wang <jasowang@redhat.com>,
+        David Ahern <dsahern@gmail.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Toshiaki Makita <toshiaki.makita1@gmail.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 17, 2019 at 12:03:06AM -0500, vincent.cheng.xh@renesas.com wrote:
-> From: Vincent Cheng <vincent.cheng.xh@renesas.com>
-> 
-> Renesas Electronics Corporation completed acquisition of IDT in 2019.
-> 
-> This patch removes IDT references or replaces IDT with Renesas.
-> Renamed ptp-idtcm.yaml to ptp-cm.yaml.
-> 
-> Signed-off-by: Vincent Cheng <vincent.cheng.xh@renesas.com>
-> ---
->  Documentation/devicetree/bindings/ptp/ptp-cm.yaml  | 69 ++++++++++++++++++++++
->  .../devicetree/bindings/ptp/ptp-idtcm.yaml         | 69 ----------------------
->  2 files changed, 69 insertions(+), 69 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/ptp/ptp-cm.yaml
->  delete mode 100644 Documentation/devicetree/bindings/ptp/ptp-idtcm.yaml
-> 
-> +  compatible:
-> +    enum:
-> +      # For System Synchronizer
-> +      - renesas,8a34000
-> +      - renesas,8a34001
-> +      - renesas,8a34002
-> +      - renesas,8a34003
-> +      - renesas,8a34004
-> +      - renesas,8a34005
-> +      - renesas,8a34006
-> +      - renesas,8a34007
-> +      - renesas,8a34008
-> +      - renesas,8a34009
+Prashant,
 
+Can you provide some more detail about the expected use cases. I am
+particularly interested if the intent is to set an XDP-like eBPF hook
+in the generic TX path (the examples provided seem limited to
+tunnels). For instance, is there an intent to send packets on a device
+without ever creating a skbuf as the analogue of how XDP can receive
+packets without needing skb.
 
-> -  compatible:
-> -    enum:
-> -      # For System Synchronizer
-> -      - idt,8a34000
-> -      - idt,8a34001
-> -      - idt,8a34002
-> -      - idt,8a34003
-> -      - idt,8a34004
-> -      - idt,8a34005
-> -      - idt,8a34006
-> -      - idt,8a34007
-> -      - idt,8a34008
-> -      - idt,8a34009
+Tom
 
-NAK. You can't change this as it is an ABI.
-
-Rob
-
+On Wed, Dec 25, 2019 at 6:33 PM Prashant Bhole
+<prashantbhole.linux@gmail.com> wrote:
+>
+> v2:
+> - New XDP attachment type: Jesper, Toke and Alexei discussed whether
+>   to introduce a new program type. Since this set adds a way to attach
+>   regular XDP program to the tx path, as per Alexei's suggestion, a
+>   new attachment type BPF_XDP_EGRESS is introduced.
+>
+> - libbpf API changes:
+>   Alexei had suggested _opts() style of API extension. Considering it
+>   two new libbpf APIs are introduced which are equivalent to existing
+>   APIs. New ones can be extended easily. Please see individual patches
+>   for details. xdp1 sample program is modified to use new APIs.
+>
+> - tun: Some patches from previous set are removed as they are
+>   irrelevant in this series. They will in introduced later.
+>
+>
+> This series introduces new XDP attachment type BPF_XDP_EGRESS to run
+> an XDP program in tx path. The idea is to emulate RX path XDP of the
+> peer interface. Such program will not have access to rxq info.
+>
+> RFC also includes its usage in tun driver.
+> Later it can be posted separately. Another possible use of this
+> feature can be in veth driver. It can improve container networking
+> where veth pair links the host and the container. Host can set ACL by
+> setting tx path XDP to the veth interface.
+>
+> It was originally a part of Jason Wang's work "XDP offload with
+> virtio-net" [1]. In order to simplify this work we decided to split
+> it and introduce tx path XDP separately in this set.
+>
+> The performance improvment can be seen when an XDP program is attached
+> to tun tx path opposed to rx path in the guest.
+>
+> * Case 1: When packets are XDP_REDIRECT'ed towards tun.
+>
+>                      virtio-net rx XDP      tun tx XDP
+>   xdp1(XDP_DROP)        2.57 Mpps           12.90 Mpps
+>   xdp2(XDP_TX)          1.53 Mpps            7.15 Mpps
+>
+> * Case 2: When packets are pass through bridge towards tun
+>
+>                      virtio-net rx XDP      tun tx XDP
+>   xdp1(XDP_DROP)        0.99 Mpps           1.00 Mpps
+>   xdp2(XDP_TX)          1.19 Mpps           0.97 Mpps
+>
+> Since this set modifies tun and vhost_net, below are the netperf
+> performance numbers.
+>
+>     Netperf_test       Before      After   Difference
+>   UDP_STREAM 18byte     90.14       88.77    -1.51%
+>   UDP_STREAM 1472byte   6955        6658     -4.27%
+>   TCP STREAM            9409        9402     -0.07%
+>   UDP_RR                12658       13030    +2.93%
+>   TCP_RR                12711       12831    +0.94%
+>
+> XDP_REDIRECT will be handled later because we need to come up with
+> proper way to handle it in tx path.
+>
+> Patches 1-5 are related to adding tx path XDP support.
+> Patches 6-12 implement tx path XDP in tun driver.
+>
+> [1]: https://netdevconf.info/0x13/session.html?xdp-offload-with-virtio-net
+>
+>
+>
+> David Ahern (2):
+>   net: introduce BPF_XDP_EGRESS attach type for XDP
+>   tun: set tx path XDP program
+>
+> Jason Wang (2):
+>   net: core: rename netif_receive_generic_xdp() to do_generic_xdp_core()
+>   net: core: export do_xdp_generic_core()
+>
+> Prashant Bhole (8):
+>   tools: sync kernel uapi/linux/if_link.h header
+>   libbpf: api for getting/setting link xdp options
+>   libbpf: set xdp program in tx path
+>   samples/bpf: xdp1, add XDP tx support
+>   tuntap: check tun_msg_ctl type at necessary places
+>   vhost_net: user tap recvmsg api to access ptr ring
+>   tuntap: remove usage of ptr ring in vhost_net
+>   tun: run XDP program in tx path
+>
+>  drivers/net/tap.c                  |  42 +++---
+>  drivers/net/tun.c                  | 220 ++++++++++++++++++++++++++---
+>  drivers/vhost/net.c                |  77 +++++-----
+>  include/linux/if_tap.h             |   5 -
+>  include/linux/if_tun.h             |  23 ++-
+>  include/linux/netdevice.h          |   6 +-
+>  include/uapi/linux/bpf.h           |   1 +
+>  include/uapi/linux/if_link.h       |   1 +
+>  net/core/dev.c                     |  42 ++++--
+>  net/core/filter.c                  |   8 ++
+>  net/core/rtnetlink.c               | 112 ++++++++++++++-
+>  samples/bpf/xdp1_user.c            |  42 ++++--
+>  tools/include/uapi/linux/bpf.h     |   1 +
+>  tools/include/uapi/linux/if_link.h |   2 +
+>  tools/lib/bpf/libbpf.h             |  40 ++++++
+>  tools/lib/bpf/libbpf.map           |   2 +
+>  tools/lib/bpf/netlink.c            | 113 +++++++++++++--
+>  17 files changed, 613 insertions(+), 124 deletions(-)
+>
+> --
+> 2.21.0
+>
