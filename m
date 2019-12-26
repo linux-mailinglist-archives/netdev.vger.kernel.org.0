@@ -2,188 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CF1B812AE4F
-	for <lists+netdev@lfdr.de>; Thu, 26 Dec 2019 20:23:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7809312AE5C
+	for <lists+netdev@lfdr.de>; Thu, 26 Dec 2019 20:50:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726839AbfLZTXi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Dec 2019 14:23:38 -0500
-Received: from mail-ed1-f67.google.com ([209.85.208.67]:46626 "EHLO
-        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726659AbfLZTXh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Dec 2019 14:23:37 -0500
-Received: by mail-ed1-f67.google.com with SMTP id m8so23523020edi.13
-        for <netdev@vger.kernel.org>; Thu, 26 Dec 2019 11:23:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=herbertland-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=GGlFeuiV//kVMDy1kqCnfQsZCsPZMXG0uwLugUBKNvM=;
-        b=NHFcJvdElOQkl807pohRNXiCEr5QdDguPxIwmNA1rGTK/Dh+x4RcDWYFEPHgCVybQp
-         iSewA5N9fchpqHgFyigtb1LwqssncPaOcjhDztKU/S2lzRHWHNcljDOtQTvNSpqts70u
-         NYl6a4m7UOWyDHTlTqigCzJ90kUnrPy1HJu4fefs+Zik0/mGb/pzgIzSjLxY1yYX858T
-         xv7AiqTjPNZMaYq71SajV+zU6gm2+fBxujuU3PF9VU7Bz6hTuthbvRnUS3XRqweqE5ZN
-         Ldn9uDstGPZ9S/kImMocgXteFMOseBqWxteoj/HorrVbsT05Wwf1Zu+q8iVMdbWTyBSk
-         L6Hg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=GGlFeuiV//kVMDy1kqCnfQsZCsPZMXG0uwLugUBKNvM=;
-        b=tiYeX/0ht7KmMwHTHBo10IHAisQCISDBjGtGb+KYGgWccGKockyKVW/U65ae/LXG2x
-         eInpccrdZGJYX5aT9asYMqQGKmzvZtOkmJw2dTq4fBLK62yhqjlqm6Y2YCYP5fv0y/e6
-         HIOpp3BuDCB2LRyBx9rwKEXYWmEsspcKM1U92xdsWeHjqJLpQUF/orasPLYBJxr/4fDu
-         xuSdKCOD3uDN66nRTT8z1QKlyG7KtFSKp0lF5yE9+XBcM7pZ1IWjDRNEQUnLrRYBTFP3
-         1DaCWRlt5eFlNugBJDt60SHUcVpjkA6TV6/I94YGb3BOeApCqyL5p6uDdNeBOXt1Oagb
-         SBnQ==
-X-Gm-Message-State: APjAAAVVf0e5qyZTD7epaQY3rPff5dq9Or4zDP4yo/TBnh6Ny3HwAUCi
-        Za1VgL3HqzzOTCYmn5vgk9nDGcjzNVNy7zpKwgVSlfpV
-X-Google-Smtp-Source: APXvYqxUkuQtIef3tkw3z36xG3a6/IJM7ipwaDjTp9yK758NnuKsIPn7+5AKhMX5WwEtL8CPFMjxPQ1KMeGZq4s1/VY=
-X-Received: by 2002:a05:6402:1777:: with SMTP id da23mr51855215edb.292.1577388215407;
- Thu, 26 Dec 2019 11:23:35 -0800 (PST)
-MIME-Version: 1.0
-References: <20191226023200.21389-1-prashantbhole.linux@gmail.com>
-In-Reply-To: <20191226023200.21389-1-prashantbhole.linux@gmail.com>
-From:   Tom Herbert <tom@herbertland.com>
-Date:   Thu, 26 Dec 2019 11:23:24 -0800
-Message-ID: <CALx6S37d=JYSSjCfWa_N=AK3HUMSR9TJEv46tLTK-LiMrzoWMg@mail.gmail.com>
-Subject: Re: [RFC v2 net-next 00/12] XDP in tx path
-To:     Prashant Bhole <prashantbhole.linux@gmail.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        "Michael S . Tsirkin" <mst@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Jason Wang <jasowang@redhat.com>,
-        David Ahern <dsahern@gmail.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Toshiaki Makita <toshiaki.makita1@gmail.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        id S1726925AbfLZTuV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Dec 2019 14:50:21 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:42842 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726903AbfLZTuV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Dec 2019 14:50:21 -0500
+Received: from localhost (unknown [IPv6:2601:601:9f00:1c3::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 528CF14325459;
+        Thu, 26 Dec 2019 11:50:20 -0800 (PST)
+Date:   Thu, 26 Dec 2019 11:50:17 -0800 (PST)
+Message-Id: <20191226.115017.708837293686080083.davem@davemloft.net>
+To:     leon@kernel.org
+Cc:     mlxsw@mellanox.com, vladyslavt@mellanox.com,
+        netdev@vger.kernel.org, ayal@mellanox.com, leonro@mellanox.com
+Subject: Re: [PATCH net] net/mlxfw: Fix out-of-memory error in mfa2 flash
+ burning
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20191226084156.9561-1-leon@kernel.org>
+References: <20191226084156.9561-1-leon@kernel.org>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 26 Dec 2019 11:50:20 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Prashant,
+From: Leon Romanovsky <leon@kernel.org>
+Date: Thu, 26 Dec 2019 10:41:56 +0200
 
-Can you provide some more detail about the expected use cases. I am
-particularly interested if the intent is to set an XDP-like eBPF hook
-in the generic TX path (the examples provided seem limited to
-tunnels). For instance, is there an intent to send packets on a device
-without ever creating a skbuf as the analogue of how XDP can receive
-packets without needing skb.
+> From: Vladyslav Tarasiuk <vladyslavt@mellanox.com>
+> 
+> The burning process requires to perform internal allocations of large
+> chunks of memory. This memory doesn't need to be contiguous and can be
+> safely allocated by vzalloc() instead of kzalloc(). This patch changes
+> such allocation to avoid possible out-of-memory failure.
+> 
+> Fixes: 410ed13cae39 ("Add the mlxfw module for Mellanox firmware flash process")
+> Signed-off-by: Vladyslav Tarasiuk <vladyslavt@mellanox.com>
+> Reviewed-by: Aya Levin <ayal@mellanox.com>
+> Signed-off-by: Leon Romanovsky <leonro@mellanox.com>
 
-Tom
-
-On Wed, Dec 25, 2019 at 6:33 PM Prashant Bhole
-<prashantbhole.linux@gmail.com> wrote:
->
-> v2:
-> - New XDP attachment type: Jesper, Toke and Alexei discussed whether
->   to introduce a new program type. Since this set adds a way to attach
->   regular XDP program to the tx path, as per Alexei's suggestion, a
->   new attachment type BPF_XDP_EGRESS is introduced.
->
-> - libbpf API changes:
->   Alexei had suggested _opts() style of API extension. Considering it
->   two new libbpf APIs are introduced which are equivalent to existing
->   APIs. New ones can be extended easily. Please see individual patches
->   for details. xdp1 sample program is modified to use new APIs.
->
-> - tun: Some patches from previous set are removed as they are
->   irrelevant in this series. They will in introduced later.
->
->
-> This series introduces new XDP attachment type BPF_XDP_EGRESS to run
-> an XDP program in tx path. The idea is to emulate RX path XDP of the
-> peer interface. Such program will not have access to rxq info.
->
-> RFC also includes its usage in tun driver.
-> Later it can be posted separately. Another possible use of this
-> feature can be in veth driver. It can improve container networking
-> where veth pair links the host and the container. Host can set ACL by
-> setting tx path XDP to the veth interface.
->
-> It was originally a part of Jason Wang's work "XDP offload with
-> virtio-net" [1]. In order to simplify this work we decided to split
-> it and introduce tx path XDP separately in this set.
->
-> The performance improvment can be seen when an XDP program is attached
-> to tun tx path opposed to rx path in the guest.
->
-> * Case 1: When packets are XDP_REDIRECT'ed towards tun.
->
->                      virtio-net rx XDP      tun tx XDP
->   xdp1(XDP_DROP)        2.57 Mpps           12.90 Mpps
->   xdp2(XDP_TX)          1.53 Mpps            7.15 Mpps
->
-> * Case 2: When packets are pass through bridge towards tun
->
->                      virtio-net rx XDP      tun tx XDP
->   xdp1(XDP_DROP)        0.99 Mpps           1.00 Mpps
->   xdp2(XDP_TX)          1.19 Mpps           0.97 Mpps
->
-> Since this set modifies tun and vhost_net, below are the netperf
-> performance numbers.
->
->     Netperf_test       Before      After   Difference
->   UDP_STREAM 18byte     90.14       88.77    -1.51%
->   UDP_STREAM 1472byte   6955        6658     -4.27%
->   TCP STREAM            9409        9402     -0.07%
->   UDP_RR                12658       13030    +2.93%
->   TCP_RR                12711       12831    +0.94%
->
-> XDP_REDIRECT will be handled later because we need to come up with
-> proper way to handle it in tx path.
->
-> Patches 1-5 are related to adding tx path XDP support.
-> Patches 6-12 implement tx path XDP in tun driver.
->
-> [1]: https://netdevconf.info/0x13/session.html?xdp-offload-with-virtio-net
->
->
->
-> David Ahern (2):
->   net: introduce BPF_XDP_EGRESS attach type for XDP
->   tun: set tx path XDP program
->
-> Jason Wang (2):
->   net: core: rename netif_receive_generic_xdp() to do_generic_xdp_core()
->   net: core: export do_xdp_generic_core()
->
-> Prashant Bhole (8):
->   tools: sync kernel uapi/linux/if_link.h header
->   libbpf: api for getting/setting link xdp options
->   libbpf: set xdp program in tx path
->   samples/bpf: xdp1, add XDP tx support
->   tuntap: check tun_msg_ctl type at necessary places
->   vhost_net: user tap recvmsg api to access ptr ring
->   tuntap: remove usage of ptr ring in vhost_net
->   tun: run XDP program in tx path
->
->  drivers/net/tap.c                  |  42 +++---
->  drivers/net/tun.c                  | 220 ++++++++++++++++++++++++++---
->  drivers/vhost/net.c                |  77 +++++-----
->  include/linux/if_tap.h             |   5 -
->  include/linux/if_tun.h             |  23 ++-
->  include/linux/netdevice.h          |   6 +-
->  include/uapi/linux/bpf.h           |   1 +
->  include/uapi/linux/if_link.h       |   1 +
->  net/core/dev.c                     |  42 ++++--
->  net/core/filter.c                  |   8 ++
->  net/core/rtnetlink.c               | 112 ++++++++++++++-
->  samples/bpf/xdp1_user.c            |  42 ++++--
->  tools/include/uapi/linux/bpf.h     |   1 +
->  tools/include/uapi/linux/if_link.h |   2 +
->  tools/lib/bpf/libbpf.h             |  40 ++++++
->  tools/lib/bpf/libbpf.map           |   2 +
->  tools/lib/bpf/netlink.c            | 113 +++++++++++++--
->  17 files changed, 613 insertions(+), 124 deletions(-)
->
-> --
-> 2.21.0
->
+Applied and queued up for -stable, thank you.
