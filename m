@@ -2,64 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C24F12AD29
-	for <lists+netdev@lfdr.de>; Thu, 26 Dec 2019 16:04:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E0E3E12AD80
+	for <lists+netdev@lfdr.de>; Thu, 26 Dec 2019 17:40:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726654AbfLZPEi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Dec 2019 10:04:38 -0500
-Received: from smtp05.smtpout.orange.fr ([80.12.242.127]:57621 "EHLO
-        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726534AbfLZPEi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Dec 2019 10:04:38 -0500
-Received: from localhost.localdomain ([90.40.29.152])
-        by mwinf5d81 with ME
-        id if4V2100M3Gv28S03f4V7d; Thu, 26 Dec 2019 16:04:36 +0100
-X-ME-Helo: localhost.localdomain
-X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
-X-ME-Date: Thu, 26 Dec 2019 16:04:36 +0100
-X-ME-IP: 90.40.29.152
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-To:     linux-net-drivers@solarflare.com, ecree@solarflare.com,
-        mhabets@solarflare.com, davem@davemloft.net
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Subject: [PATCH] sfc: avoid duplicate error handling code in 'efx_ef10_sriov_set_vf_mac()'
-Date:   Thu, 26 Dec 2019 16:02:24 +0100
-Message-Id: <20191226150224.8701-1-christophe.jaillet@wanadoo.fr>
-X-Mailer: git-send-email 2.20.1
+        id S1726654AbfLZQkF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Dec 2019 11:40:05 -0500
+Received: from correo.us.es ([193.147.175.20]:54730 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726236AbfLZQkF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 26 Dec 2019 11:40:05 -0500
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id 9FB13E34E5
+        for <netdev@vger.kernel.org>; Thu, 26 Dec 2019 17:40:01 +0100 (CET)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 906A1DA710
+        for <netdev@vger.kernel.org>; Thu, 26 Dec 2019 17:40:01 +0100 (CET)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id 86018DA70E; Thu, 26 Dec 2019 17:40:01 +0100 (CET)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,URIBL_BLOCKED,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 6ED66DA707;
+        Thu, 26 Dec 2019 17:39:59 +0100 (CET)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Thu, 26 Dec 2019 17:39:59 +0100 (CET)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from salvia.here (sys.soleta.eu [212.170.55.40])
+        (Authenticated sender: pneira@us.es)
+        by entrada.int (Postfix) with ESMTPA id 4DFE14251481;
+        Thu, 26 Dec 2019 17:39:59 +0100 (CET)
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     netfilter-devel@vger.kernel.org
+Cc:     davem@davemloft.net, netdev@vger.kernel.org
+Subject: [PATCH 0/4] Netfilter fixes for net
+Date:   Thu, 26 Dec 2019 17:39:52 +0100
+Message-Id: <20191226163956.672174-1-pablo@netfilter.org>
+X-Mailer: git-send-email 2.11.0
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-'eth_zero_addr()' is already called in the error handling path. This is
-harmless, but there is no point in calling it twice, so remove one.
+Hi,
 
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
----
- drivers/net/ethernet/sfc/ef10_sriov.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+The following patchset contains Netfilter fixes for net:
 
-diff --git a/drivers/net/ethernet/sfc/ef10_sriov.c b/drivers/net/ethernet/sfc/ef10_sriov.c
-index 52bd43f45761..14393767ef9f 100644
---- a/drivers/net/ethernet/sfc/ef10_sriov.c
-+++ b/drivers/net/ethernet/sfc/ef10_sriov.c
-@@ -522,10 +522,9 @@ int efx_ef10_sriov_set_vf_mac(struct efx_nic *efx, int vf_i, u8 *mac)
- 
- 	if (!is_zero_ether_addr(mac)) {
- 		rc = efx_ef10_vport_add_mac(efx, vf->vport_id, mac);
--		if (rc) {
--			eth_zero_addr(vf->mac);
-+		if (rc)
- 			goto fail;
--		}
-+
- 		if (vf->efx)
- 			ether_addr_copy(vf->efx->net_dev->dev_addr, mac);
- 	}
--- 
-2.20.1
+1) Fix endianness issue in flowtable TCP flags dissector,
+   from Arnd Bergmann.
 
+2) Extend flowtable test script with dnat rules, from Florian Westphal.
+
+3) Reject padding in ebtables user entries and validate computed user
+   offset, reported by syzbot, from Florian Westphal.
+
+4) Fix endianness in nft_tproxy, from Phil Sutter.
+
+You can pull these changes from:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/pablo/nf.git
+
+Thanks.
+
+----------------------------------------------------------------
+
+The following changes since commit 0fd260056ef84ede8f444c66a3820811691fe884:
+
+  Merge git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf (2019-12-19 14:20:47 -0800)
+
+are available in the git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/pablo/nf.git HEAD
+
+for you to fetch changes up to 8cb4ec44de42b99b92399b4d1daf3dc430ed0186:
+
+  netfilter: nft_tproxy: Fix port selector on Big Endian (2019-12-20 02:12:28 +0100)
+
+----------------------------------------------------------------
+Arnd Bergmann (1):
+      netfilter: nf_flow_table: fix big-endian integer overflow
+
+Florian Westphal (2):
+      selftests: netfilter: extend flowtable test script with dnat rule
+      netfilter: ebtables: compat: reject all padding in matches/watchers
+
+Phil Sutter (1):
+      netfilter: nft_tproxy: Fix port selector on Big Endian
+
+ net/bridge/netfilter/ebtables.c                    | 33 +++++++++---------
+ net/netfilter/nf_flow_table_offload.c              |  2 +-
+ net/netfilter/nft_tproxy.c                         |  4 +--
+ tools/testing/selftests/netfilter/nft_flowtable.sh | 39 +++++++++++++++++++---
+ 4 files changed, 53 insertions(+), 25 deletions(-)
