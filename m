@@ -2,119 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2715E12AE16
-	for <lists+netdev@lfdr.de>; Thu, 26 Dec 2019 19:59:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AE1C612AE23
+	for <lists+netdev@lfdr.de>; Thu, 26 Dec 2019 20:01:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726728AbfLZS7J (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Dec 2019 13:59:09 -0500
-Received: from mail-io1-f69.google.com ([209.85.166.69]:52658 "EHLO
-        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726511AbfLZS7J (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Dec 2019 13:59:09 -0500
-Received: by mail-io1-f69.google.com with SMTP id d10so17479471iod.19
-        for <netdev@vger.kernel.org>; Thu, 26 Dec 2019 10:59:08 -0800 (PST)
+        id S1726925AbfLZTBQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Dec 2019 14:01:16 -0500
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:33361 "EHLO
+        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726511AbfLZTBQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Dec 2019 14:01:16 -0500
+Received: by mail-wm1-f65.google.com with SMTP id d139so5551312wmd.0;
+        Thu, 26 Dec 2019 11:01:14 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=googlemail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ncp0cKjiqSNqZtUZj6kSVhT3fNnvKYgj+9vZwHCvLHU=;
+        b=OG2vGorWxsVVWtHw8LcxkzPlVF8DTxDoodaUSMIy1WNJTNkvvSkZRVTN8+QAcO4TF+
+         BeA84DgZvW64FGHilCuwScNiEckg8lvJjC1G4siYN5zQujILB1NMUkzwKGzEC3KGGlUZ
+         Tkm578bVH9QmfnZYmUFbaErWmfWeqB1PK8jdwfkme/0Jldsdqi4XI3A1cVO52nwz6mD7
+         EJ+izmSGSCbYVk9y9J4DcSuMczsoLYpsXPnf7WTcFeQ+r5pUpUeGQQHK8qHx9KjjOLXT
+         dxYkeNK3g9ji0vmpZd2jeU9cI3WrTFSTtfFnbD7spBii7q20Hbe6/Cd8a4no2QihtKF+
+         SHzw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=TNo0QHyIeHdI/8GLONj6hbWPDE88TILb9xkj6RUQsSU=;
-        b=uneljEv3M1gv7igh2T1k+B2inITUt9SsLjxL8yZC/vOBit0/Ybz6omNoDBrS7cQ35k
-         gSIwYTdFHL5tHOLo0ApOS37CHGVITnAtHAqNGX+VYz7yiGO/Z+cwbq8tKmTcUbHOmB0y
-         PZyCHeRM1A493NqaHmtCbSlZ0kgNP0OneEbB2q735/pdcTpwiYuMy7sYF9qAn80/oPJQ
-         UEbD4V/t0vabpDiYd1QQF3fNeqjo4Q5P0j2WYjnnGDDu5p59XsuC5Gtzs1YJwgNmCJtC
-         TKAFXln2A6ple5+/8XJBW+sLgkiHQmbWYccvmTmisiAVVIPwdO1M8ufVYehJP3T3lvJA
-         lJAQ==
-X-Gm-Message-State: APjAAAWs2EibGcevcijRwvkdJjqW+aziZ2PdaPeoNf0I/IwZXr6XrF3u
-        bbQsUEUUpjRKGV+VhhOU57r/H631f8ljk9TxWKtnc0oiQXqy
-X-Google-Smtp-Source: APXvYqwLsoPbnZNDL141I7xVT62mvkZcF8D3gKtHxDqMdO+g8VRSHXkHzrX3fgjNRU3y1dP84SMEw9ukIxpeSESgakL8a0gBWPJ+
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ncp0cKjiqSNqZtUZj6kSVhT3fNnvKYgj+9vZwHCvLHU=;
+        b=TZ9nAsV7I0r0QRBpxqWdkoS0+r2kIwOvWI1oN9SlkhbEig9toD2ozETX+/hHWXMpfU
+         Ns1w/DBZ9XVTKgq3uXHOeiUGeT+VfFPO11u3JPEKXJrPIzubySItmf8hfq65pnd4Zcnk
+         qgBGtSh3o69OC6n37HWDq2H8sd6HacQ+H4h6xAcieJsbXHoORolnScBmrWOwDgY6MR+U
+         v9dWIiKDUHB+Y9qmwtcRPsykhueAXS7TdIkKVk+PPMY1myp7aATGRVGZ/GtsglffMA63
+         C5E4QE3rTcxuIrpExYywi8l+lp5iQHPE11l/83VZ4hmmt+Cugr7de85qde93D2iDaMjf
+         VdYw==
+X-Gm-Message-State: APjAAAVULtimJJ+1b89dzBPA8aVlBN4I9Ys3bjJOGrd6Ap04R1VkXJyL
+        +UWwc+6dlkB3vx5CeFfTEuQ=
+X-Google-Smtp-Source: APXvYqwyHmDN753nFzJKANB8LWnP8tdzNpfU5bel2yfMTlsatjTbMVaemA+4OF1AHv2hPmAbPF+juQ==
+X-Received: by 2002:a7b:c08d:: with SMTP id r13mr16253154wmh.104.1577386873950;
+        Thu, 26 Dec 2019 11:01:13 -0800 (PST)
+Received: from localhost.localdomain (p200300F1373A1900428D5CFFFEB99DB8.dip0.t-ipconnect.de. [2003:f1:373a:1900:428d:5cff:feb9:9db8])
+        by smtp.googlemail.com with ESMTPSA id u18sm31777854wrt.26.2019.12.26.11.01.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 26 Dec 2019 11:01:13 -0800 (PST)
+From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+To:     andrew@lunn.ch, f.fainelli@gmail.com, davem@davemloft.net,
+        netdev@vger.kernel.org, linux-amlogic@lists.infradead.org
+Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Subject: [PATCH v2 0/1] dwmac-meson8b: Ethernet RGMII TX delay fix
+Date:   Thu, 26 Dec 2019 20:01:00 +0100
+Message-Id: <20191226190101.3766479-1-martin.blumenstingl@googlemail.com>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-X-Received: by 2002:a92:d805:: with SMTP id y5mr39807073ilm.194.1577386748390;
- Thu, 26 Dec 2019 10:59:08 -0800 (PST)
-Date:   Thu, 26 Dec 2019 10:59:08 -0800
-In-Reply-To: <000000000000b6b450059870d703@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000cfb39e059a9ff822@google.com>
-Subject: Re: KASAN: global-out-of-bounds Read in precalculate_color
-From:   syzbot <syzbot+02d9172bf4c43104cd70@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, ericvh@gmail.com, hverkuil-cisco@xs4all.nl,
-        linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
-        lucho@ionkov.net, mchehab@kernel.org, netdev@vger.kernel.org,
-        rminnich@sandia.gov, syzkaller-bugs@googlegroups.com,
-        v9fs-developer@lists.sourceforge.net, viro@zeniv.linux.org.uk,
-        vivek.kasireddy@intel.com
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has found a reproducer for the following crash on:
+The Ethernet TX performance has been historically bad on Meson8b and
+Meson8m2 SoCs because high packet loss was seen. Today I (presumably)
+found out why this is: the input clock (which feeds the RGMII TX clock)
+has to be at least 4 times 125MHz. With the fixed "divide by 2" in the
+clock tree this means that m250_div needs to be at least 2.
 
-HEAD commit:    46cf053e Linux 5.5-rc3
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=11932ce1e00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=ed9d672709340e35
-dashboard link: https://syzkaller.appspot.com/bug?extid=02d9172bf4c43104cd70
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=14861a49e00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1794423ee00000
+With this patch and a 2ns TX delay generated by either the MAC *or* the
+PHY this results in improved Ethernet TX performance and no packet loss
+anymore:
+# iperf3 -c 192.168.1.100
+Connecting to host 192.168.1.100, port 5201
+[  5] local 192.168.1.163 port 42636 connected to 192.168.1.100 port 5201
+[ ID] Interval           Transfer     Bitrate         Retr  Cwnd
+[  5]   0.00-1.00   sec   105 MBytes   878 Mbits/sec    0    609 KBytes       
+[  5]   1.00-2.00   sec   106 MBytes   885 Mbits/sec    0    683 KBytes       
+[  5]   2.00-3.09   sec  73.7 MBytes   570 Mbits/sec    0    683 KBytes       
+[  5]   3.09-4.00   sec  81.9 MBytes   754 Mbits/sec    0    795 KBytes       
+[  5]   4.00-5.00   sec   104 MBytes   869 Mbits/sec    0    877 KBytes       
+[  5]   5.00-6.00   sec   105 MBytes   878 Mbits/sec    0    877 KBytes       
+[  5]   6.00-7.00   sec  68.0 MBytes   571 Mbits/sec    0    877 KBytes       
+[  5]   7.00-8.00   sec  80.7 MBytes   676 Mbits/sec    0    877 KBytes       
+[  5]   8.00-9.01   sec   102 MBytes   853 Mbits/sec    0    877 KBytes       
+[  5]   9.01-10.00  sec   101 MBytes   859 Mbits/sec    0    877 KBytes       
+- - - - - - - - - - - - - - - - - - - - - - - - -
+[ ID] Interval           Transfer     Bitrate         Retr
+[  5]   0.00-10.00  sec   927 MBytes   778 Mbits/sec    0             sender
+[  5]   0.00-10.01  sec   927 MBytes   777 Mbits/sec                  receiver
 
-The bug was bisected to:
 
-commit 7594bf37ae9ffc434da425120c576909eb33b0bc
-Author: Al Viro <viro@zeniv.linux.org.uk>
-Date:   Mon Jul 17 02:53:08 2017 +0000
+The .dts of these boards are still using an incorrect TX delay of 4ns.
+This will be fixed in follow-up patches when it's clear whether the MAC
+really generates an RX delay and how this can be configured.
 
-     9p: untangle ->poll() mess
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=15e323a6e00000
-console output: https://syzkaller.appspot.com/x/log.txt?x=13e323a6e00000
+Changes since v1 [0]:
+- update cover-letter title
+- dropped the .dts patches after discussion with Andrew in [1]
+- slightly reworded the patch description of patch #1 to indicate that
+  the goal is to fix the TX delay generated by the MAC, without
+  suggesting that it's recommended to let the MAC actually generate it.
 
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+02d9172bf4c43104cd70@syzkaller.appspotmail.com
-Fixes: 7594bf37ae9f ("9p: untangle ->poll() mess")
 
-==================================================================
-BUG: KASAN: global-out-of-bounds in precalculate_color+0x2154/0x2480  
-drivers/media/common/v4l2-tpg/v4l2-tpg-core.c:942
-Read of size 1 at addr ffffffff88b3d3f9 by task vivid-000-vid-c/9278
+[0] https://patchwork.kernel.org/cover/11309887/
+[1] https://patchwork.kernel.org/patch/11309891/
 
-CPU: 0 PID: 9278 Comm: vivid-000-vid-c Not tainted 5.5.0-rc3-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
-Google 01/01/2011
-Call Trace:
-  __dump_stack lib/dump_stack.c:77 [inline]
-  dump_stack+0x197/0x210 lib/dump_stack.c:118
-  print_address_description.constprop.0.cold+0x5/0x30b mm/kasan/report.c:374
-  __kasan_report.cold+0x1b/0x41 mm/kasan/report.c:506
-  kasan_report+0x12/0x20 mm/kasan/common.c:639
-  __asan_report_load1_noabort+0x14/0x20 mm/kasan/generic_report.c:132
-  precalculate_color+0x2154/0x2480  
-drivers/media/common/v4l2-tpg/v4l2-tpg-core.c:942
-  tpg_precalculate_colors drivers/media/common/v4l2-tpg/v4l2-tpg-core.c:1093  
-[inline]
-  tpg_recalc+0x561/0x2850 drivers/media/common/v4l2-tpg/v4l2-tpg-core.c:2118
-  tpg_calc_text_basep+0xa1/0x290  
-drivers/media/common/v4l2-tpg/v4l2-tpg-core.c:2136
-  vivid_fillbuff+0x1a5f/0x3af0  
-drivers/media/platform/vivid/vivid-kthread-cap.c:466
-  vivid_thread_vid_cap_tick+0x8cf/0x2210  
-drivers/media/platform/vivid/vivid-kthread-cap.c:727
-  vivid_thread_vid_cap+0x5d8/0xa60  
-drivers/media/platform/vivid/vivid-kthread-cap.c:866
-  kthread+0x361/0x430 kernel/kthread.c:255
-  ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
 
-The buggy address belongs to the variable:
-  kbd_keycodes+0x119/0x760
+Martin Blumenstingl (1):
+  net: stmmac: dwmac-meson8b: Fix the RGMII TX delay on Meson8b/8m2 SoCs
 
-Memory state around the buggy address:
-  ffffffff88b3d280: fa fa fa fa 00 00 04 fa fa fa fa fa 00 00 00 00
-  ffffffff88b3d300: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-> ffffffff88b3d380: 00 00 00 00 00 00 00 00 00 00 00 00 fa fa fa fa
-                                                                 ^
-  ffffffff88b3d400: 00 00 00 00 07 fa fa fa fa fa fa fa 00 00 00 00
-  ffffffff88b3d480: 00 fa fa fa fa fa fa fa 02 fa fa fa fa fa fa fa
-==================================================================
+ .../net/ethernet/stmicro/stmmac/dwmac-meson8b.c    | 14 +++++++++++---
+ 1 file changed, 11 insertions(+), 3 deletions(-)
+
+-- 
+2.24.1
 
