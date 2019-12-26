@@ -2,85 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B73212AEF3
-	for <lists+netdev@lfdr.de>; Thu, 26 Dec 2019 22:35:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E8A4712AEF5
+	for <lists+netdev@lfdr.de>; Thu, 26 Dec 2019 22:36:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726911AbfLZVfZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Dec 2019 16:35:25 -0500
-Received: from mail-pj1-f65.google.com ([209.85.216.65]:56316 "EHLO
-        mail-pj1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726105AbfLZVfZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Dec 2019 16:35:25 -0500
-Received: by mail-pj1-f65.google.com with SMTP id d5so3838131pjz.5
-        for <netdev@vger.kernel.org>; Thu, 26 Dec 2019 13:35:24 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=herbertland-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=I8OAdcktKNNxLldYp1vXyJmIqrTlmpirUH+a3CmCZSE=;
-        b=CNpwjnbELqVd++shT+XngHtUkMjCIzkksUVMEWee7KQfuqkGtnHcn85AEJchju7aYE
-         2Aqn5+CztQ0AV4sklbHi/ttRaf46jpb+smpX9m/V7IKZUiyXfbZxx+1fkV1SsiwuF2WR
-         7U/XqpnXcZO8tj6CUegL0eGxl0LWxT4h3o4iOcVHfsx+EaozQZiTkcuIEPFPhNt8V7gL
-         TaWqn1bv/m3Zzt03YCekqbRMr9sKssBu3TheP/6JS2eBfVnor+bJFqP+fA+ccdGP/Squ
-         ZIfZA2d0pJckBra+4RGlbTEjgwPpzEnZD+35lxL0MpnxI42EYbopXVeTRO7G0Mw+tah3
-         J0lg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=I8OAdcktKNNxLldYp1vXyJmIqrTlmpirUH+a3CmCZSE=;
-        b=OMSRqpsINkyC2W8svSO5duH0egUU0yh8JRivG9nGl1yPBFyrLKoEHBjp6KnqE5t6XX
-         P4PZxrPYrDRQVETXYv9hKY1ZtJc6YXvWoqsdds8iMbOpgUMvdtO6p+/ZteqW4AtQc0X9
-         vskIL9508C5HBgLLMg0HzUa2r1LoPB3BLVpuo11IUnndaKa+Sn32cjPQVzfJ7kN7G5BM
-         8W3cDUzQ7YXq56Jf0a1zFCrj5Xkkh5kEDZzO2dbdtofVDfZ1yYWk+kpJLWgvNt8D4red
-         /E4Cw26YX/rNfJfzhwC1+9tfpo2nyI6r7xNlZa9PxpbLaxcy9niMuSezP4yA40iyVgDV
-         nOdg==
-X-Gm-Message-State: APjAAAX4YBMlMR9YC7DOzCeJJWIuSDL3XF5dO9M3xjx3vsef0cbPSK74
-        MBabr/zRdMTrvgx4rZl4p6jz3J0cDdw=
-X-Google-Smtp-Source: APXvYqyl1JBPb/8G+a/k4dUV+eIUvC9MsztwOO4KvW13PUdw/XHEfh1BIGalQU8FYB1r3d5u1MQ2SA==
-X-Received: by 2002:a17:902:7288:: with SMTP id d8mr46701484pll.341.1577396124373;
-        Thu, 26 Dec 2019 13:35:24 -0800 (PST)
-Received: from localhost.localdomain (c-73-202-182-113.hsd1.ca.comcast.net. [73.202.182.113])
-        by smtp.gmail.com with ESMTPSA id q6sm37996662pfh.127.2019.12.26.13.35.23
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Thu, 26 Dec 2019 13:35:23 -0800 (PST)
-From:   Tom Herbert <tom@herbertland.com>
-To:     davem@davemloft.net, netdev@vger.kernel.org
-Cc:     Tom Herbert <tom@herbertland.com>
-Subject: [PATCH net-next 2/2] net: Warning about use of deprecated TX checksum offload
-Date:   Thu, 26 Dec 2019 13:34:59 -0800
-Message-Id: <1577396099-3831-3-git-send-email-tom@herbertland.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1577396099-3831-1-git-send-email-tom@herbertland.com>
-References: <1577396099-3831-1-git-send-email-tom@herbertland.com>
+        id S1726981AbfLZVgU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Dec 2019 16:36:20 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:40916 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726105AbfLZVgU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 26 Dec 2019 16:36:20 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=bZoxgAannd2tkNNwwKV808Ug99KBWslN4hI308jxAhg=; b=ZTxVZbP8jHh4LUydfIbDacSml9
+        p6f862RCdnk35tCi5JKeLOO+fJT/giHdSgS1id+hipPbF65+xyiR7b/hqkEhs15n15sqduE+4zPFP
+        GnsJ3c5yflBU/GhXqC41Lr6fy1BdKK2kA2FLoIgAXAAFOwssipmQ4yHGNajKopjJNuFY=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1ikanm-0000Ho-Fy; Thu, 26 Dec 2019 22:36:14 +0100
+Date:   Thu, 26 Dec 2019 22:36:14 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Cc:     f.fainelli@gmail.com, davem@davemloft.net, netdev@vger.kernel.org,
+        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH v2 1/1] net: stmmac: dwmac-meson8b: Fix the RGMII TX
+ delay on Meson8b/8m2 SoCs
+Message-ID: <20191226213614.GC32477@lunn.ch>
+References: <20191226190101.3766479-1-martin.blumenstingl@googlemail.com>
+ <20191226190101.3766479-2-martin.blumenstingl@googlemail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191226190101.3766479-2-martin.blumenstingl@googlemail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a warning in netdev_fix_features that NETIF_F_IP_CSUM and
-NETIF_F_IPV6_CSUM are deprecated and that drivers should advertise
-NETIF_F_HW_CSUM instead.
+On Thu, Dec 26, 2019 at 08:01:01PM +0100, Martin Blumenstingl wrote:
+> GXBB and newer SoCs use the fixed FCLK_DIV2 (1GHz) clock as input for
+> the m250_sel clock. Meson8b and Meson8m2 use MPLL2 instead, whose rate
+> can be adjusted at runtime.
+> 
+> So far we have been running MPLL2 with ~250MHz (and the internal
+> m250_div with value 1), which worked enough that we could transfer data
+> with an TX delay of 4ns. Unfortunately there is high packet loss with
+> an RGMII PHY when transferring data (receiving data works fine though).
+> Odroid-C1's u-boot is running with a TX delay of only 2ns as well as
+> the internal m250_div set to 2 - no lost (TX) packets can be observed
+> with that setting in u-boot.
+> 
+> Manual testing has shown that the TX packet loss goes away when using
+> the following settings in Linux (the vendor kernel uses the same
+> settings):
+> - MPLL2 clock set to ~500MHz
+> - m250_div set to 2
+> - TX delay set to 2ns on the MAC side
+> 
+> Update the m250_div divider settings to only accept dividers greater or
+> equal 2 to fix the TX delay generated by the MAC.
+> 
+> iperf3 results before the change:
+> [ ID] Interval           Transfer     Bitrate         Retr
+> [  5]   0.00-10.00  sec   182 MBytes   153 Mbits/sec  514      sender
+> [  5]   0.00-10.00  sec   182 MBytes   152 Mbits/sec           receiver
+> 
+> iperf3 results after the change (including an updated TX delay of 2ns):
+> [ ID] Interval           Transfer     Bitrate         Retr  Cwnd
+> [  5]   0.00-10.00  sec   927 MBytes   778 Mbits/sec    0      sender
+> [  5]   0.00-10.01  sec   927 MBytes   777 Mbits/sec           receiver
+> 
+> Fixes: 4f6a71b84e1afd ("net: stmmac: dwmac-meson8b: fix internal RGMII clock configuration")
+> Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 
-Signed-off-by: Tom Herbert <tom@herbertland.com>
----
- net/core/dev.c | 4 ++++
- 1 file changed, 4 insertions(+)
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 0ad39c8..ef09fb7 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -8835,6 +8835,10 @@ static void netdev_sync_lower_features(struct net_device *upper,
- static netdev_features_t netdev_fix_features(struct net_device *dev,
- 	netdev_features_t features)
- {
-+	/* NETIF_F_IP_CSUM and NETIF_F_IPV6_CSUM are deprecated */
-+	if (features & (NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM))
-+		netdev_warn(dev, "NETIF_F_IP_CSUM and NETIF_F_IPV6_CSUM are considered deprecated. Please fix driver to use NETIF_F_HW_CSUM.\n");
-+
- 	/* Fix illegal checksum combinations */
- 	if ((features & NETIF_F_HW_CSUM) &&
- 	    (features & (NETIF_F_IP_CSUM|NETIF_F_IPV6_CSUM))) {
--- 
-2.7.4
-
+    Andrew
