@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 259A012A9AB
-	for <lists+netdev@lfdr.de>; Thu, 26 Dec 2019 03:16:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2599712A9A7
+	for <lists+netdev@lfdr.de>; Thu, 26 Dec 2019 03:16:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727146AbfLZCQv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Dec 2019 21:16:51 -0500
-Received: from mail-pj1-f68.google.com ([209.85.216.68]:50363 "EHLO
-        mail-pj1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726960AbfLZCQh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Dec 2019 21:16:37 -0500
-Received: by mail-pj1-f68.google.com with SMTP id r67so2753886pjb.0;
-        Wed, 25 Dec 2019 18:16:37 -0800 (PST)
+        id S1727138AbfLZCQq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Dec 2019 21:16:46 -0500
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:41337 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727066AbfLZCQj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Dec 2019 21:16:39 -0500
+Received: by mail-pf1-f193.google.com with SMTP id w62so12533333pfw.8;
+        Wed, 25 Dec 2019 18:16:38 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=0xNn8rOhvQ0q/eVsblgqPKWbsQdxuQgNbseY+ebe5zk=;
-        b=uiH/hT6t6N6748th+48BCkyAR9uJD4b2RaXJ/h0XZhFcgflKtDXLZQmQiA3JzpMJGs
-         Zd0RCN6QwOdEnsZJTQagx5UyQtzRsrjgoEd2sJhTKFVlpFnJCAe/fqUJuM69bqV5U58t
-         WL0h/LsNJ7p1N4IjrgvxU1mzQyZhwtplLhmvfjopUf4OeHziS4iekLjfA0pQIPQpVQpL
-         JsoqRFxpIQtzdc7FVY5IPwKdLWv3IfOQidAAueRTeKeb6IOKQTgGB67e9TTGyqZlOXpa
-         D2hL7mdfMwrJJu5EL+ZVe4/EnSIibbtc/lxzEZyxaCCOz+HwitrJh1+s41RPbuSW0NGr
-         JFRA==
+        bh=3zXk4i0KLuY4F8k54STdAEaNIexx5qy18ypFiNvNJ2Q=;
+        b=l6+PaU0eOVky+XIjhFUt4/UIPR3WM2ohcyOLe0l1XUdLBIrywfhD7HYWNR8b5oMwab
+         1WMvDtCtZbKrPGLReHFTSCrs87+IQXHfGfYA/fBztRvOlf6668I2YvaQOQUQ+MkUUgvN
+         j0Qtb0WAmfLxpMbUqYa8oixU7DEo671Q5g6NEfz+R6ZGHlcnj/vIuprvx+iarEDqkSpD
+         rwd51GHDMy2dlZCOSITTcwz5Hp75/+JWkVUV6Z2/2cgsyIhLi029nuKJBNigFHKeev9s
+         uRMV0/jJxNSv0qx6OJx4K0KPz34GEtRVASCsYFj4WWmrDdEisF8ZvDUfAU0H33sLzLgF
+         cONQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=0xNn8rOhvQ0q/eVsblgqPKWbsQdxuQgNbseY+ebe5zk=;
-        b=nKX0XatxvOHWKJTiJgR8Oc7XUDVPCtJKv/yXlbdsNvG3Uscx6M8hGccxA9fDFVZSy1
-         2HArHjIT2TLBieXKIVDQ/8TaHl7K7otYZMjnUIDxLygk3Y8vu73vfmdUPFBxyQoBzs4z
-         ozFoyrPxhaqYohmhgJrPQivzFYW7okpL7RL+dvqPiWr0DaiUcA1St5n/+m9Ywjj55jN3
-         7Bn2IJCS5EIMgIF/XrVoDYVQyWp8gGkpqaCIONTACZufEsEfrzZSUvwl3chO58ahSC/W
-         h0+W6tpjnUtQvOnp6vDK2B9B2EMdhK3L8a+1jYxSobpTvfiBdk2ab37DN5d3WVeEqOFb
-         ceFw==
-X-Gm-Message-State: APjAAAUZQ6w/w0deM4bCKGKiGomdxhco+XDz966azvE/nZ3IjAW5cJLf
-        mhhkh/208Foq7lk7G4E0IK12hoJq
-X-Google-Smtp-Source: APXvYqyyk+sKrngMza8Vnp27YMJnAMAIgvq+TTfss04Qs9J89dP1kprzwI916gHpkL7bvb79KtZjYQ==
-X-Received: by 2002:a17:902:9a98:: with SMTP id w24mr43971499plp.300.1577326596658;
-        Wed, 25 Dec 2019 18:16:36 -0800 (PST)
+        bh=3zXk4i0KLuY4F8k54STdAEaNIexx5qy18ypFiNvNJ2Q=;
+        b=OBoRp7frlW4/Po3sTelhT+Jn2Gea5lJWYkr3VlrOj9ijuwKmrHuTtkv8Od+Ep2eec7
+         08HsDgt6UApqDDOy6yCAmBvVgPzU/srymBPHZq20cmfJJB3bUXh5VeHA65JclmfY+IQT
+         BfHoiGEXhZiGOPmhG2lEr4IbqrXWrSYM7gLRObLZpi7i24MWd4gcbi+o3CBaOO0WTlsb
+         4RgCEHSxO/59sHMO8fM2eyRbG7cfhXvsxFhchRs8uvLBLJDDvtyuGr+FS+KeLW+T/uDW
+         PtubFnb9bDwCzk+b1gU23k4p+YJo+nqFt+fcDRQwSfupwmbAl0z2s+ax34fFS+qrUN/t
+         /Zrw==
+X-Gm-Message-State: APjAAAWnBGTgoXpoDO5LY49TPlQc//wA2GkjGfrnVmtaaT+gFMv0Q6Pq
+        Yw1LJZLMXLNCARxzbN6h1dxOQcqz
+X-Google-Smtp-Source: APXvYqxjBgWS+n4zSdCVxaXCBkFaPa6/avY/087acctDAx1KFjxAlfKlt6x0C8XNCFVx7l1kRf5mGg==
+X-Received: by 2002:a65:66ce:: with SMTP id c14mr47413769pgw.262.1577326598116;
+        Wed, 25 Dec 2019 18:16:38 -0800 (PST)
 Received: from localhost.localdomain (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
-        by smtp.gmail.com with ESMTPSA id b65sm31880723pgc.18.2019.12.25.18.16.35
+        by smtp.gmail.com with ESMTPSA id b65sm31880723pgc.18.2019.12.25.18.16.36
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 25 Dec 2019 18:16:36 -0800 (PST)
+        Wed, 25 Dec 2019 18:16:37 -0800 (PST)
 From:   Richard Cochran <richardcochran@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     David Miller <davem@davemloft.net>, devicetree@vger.kernel.org,
@@ -57,10 +57,10 @@ Cc:     David Miller <davem@davemloft.net>, devicetree@vger.kernel.org,
         Murali Karicheri <m-karicheri2@ti.com>,
         Rob Herring <robh+dt@kernel.org>,
         Willem de Bruijn <willemb@google.com>,
-        Wingman Kwok <w-kwok2@ti.com>, Rob Herring <robh@kernel.org>
-Subject: [PATCH V9 net-next 10/12] net: mdio: of: Register discovered MII time stampers.
-Date:   Wed, 25 Dec 2019 18:16:18 -0800
-Message-Id: <3e3eac41c3a43a9dc444903e0b0179b59f250498.1577326042.git.richardcochran@gmail.com>
+        Wingman Kwok <w-kwok2@ti.com>
+Subject: [PATCH V9 net-next 11/12] net: Introduce peer to peer one step PTP time stamping.
+Date:   Wed, 25 Dec 2019 18:16:19 -0800
+Message-Id: <6e42816f229f4c8688dd1f87335a7938cc030bb0.1577326042.git.richardcochran@gmail.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <cover.1577326042.git.richardcochran@gmail.com>
 References: <cover.1577326042.git.richardcochran@gmail.com>
@@ -71,103 +71,102 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When parsing a PHY node, register its time stamper, if any, and attach
-the instance to the PHY device.
+The 1588 standard defines one step operation for both Sync and
+PDelay_Resp messages.  Up until now, hardware with P2P one step has
+been rare, and kernel support was lacking.  This patch adds support of
+the mode in anticipation of new hardware developments.
 
 Signed-off-by: Richard Cochran <richardcochran@gmail.com>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-Reviewed-by: Rob Herring <robh@kernel.org>
 ---
- drivers/net/phy/phy_device.c |  3 +++
- drivers/of/of_mdio.c         | 30 +++++++++++++++++++++++++++++-
- 2 files changed, 32 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c   | 1 +
+ drivers/net/ethernet/mellanox/mlxsw/spectrum_ptp.c | 1 +
+ drivers/net/ethernet/microchip/lan743x_ptp.c       | 3 +++
+ drivers/net/ethernet/qlogic/qede/qede_ptp.c        | 1 +
+ include/uapi/linux/net_tstamp.h                    | 8 ++++++++
+ net/core/dev_ioctl.c                               | 1 +
+ 6 files changed, 15 insertions(+)
 
-diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
-index ee45838f90c9..debbda61e12b 100644
---- a/drivers/net/phy/phy_device.c
-+++ b/drivers/net/phy/phy_device.c
-@@ -881,6 +881,9 @@ EXPORT_SYMBOL(phy_device_register);
-  */
- void phy_device_remove(struct phy_device *phydev)
- {
-+	if (phydev->mii_ts)
-+		unregister_mii_timestamper(phydev->mii_ts);
-+
- 	device_del(&phydev->mdio.dev);
- 
- 	/* Assert the reset signal */
-diff --git a/drivers/of/of_mdio.c b/drivers/of/of_mdio.c
-index c6b87ce2b0cc..0b7aee235813 100644
---- a/drivers/of/of_mdio.c
-+++ b/drivers/of/of_mdio.c
-@@ -42,14 +42,37 @@ static int of_get_phy_id(struct device_node *device, u32 *phy_id)
- 	return -EINVAL;
- }
- 
-+static struct mii_timestamper *of_find_mii_timestamper(struct device_node *node)
-+{
-+	struct of_phandle_args arg;
-+	int err;
-+
-+	err = of_parse_phandle_with_fixed_args(node, "timestamper", 1, 0, &arg);
-+
-+	if (err == -ENOENT)
-+		return NULL;
-+	else if (err)
-+		return ERR_PTR(err);
-+
-+	if (arg.args_count != 1)
-+		return ERR_PTR(-EINVAL);
-+
-+	return register_mii_timestamper(arg.np, arg.args[0]);
-+}
-+
- static int of_mdiobus_register_phy(struct mii_bus *mdio,
- 				    struct device_node *child, u32 addr)
- {
-+	struct mii_timestamper *mii_ts;
- 	struct phy_device *phy;
- 	bool is_c45;
- 	int rc;
- 	u32 phy_id;
- 
-+	mii_ts = of_find_mii_timestamper(child);
-+	if (IS_ERR(mii_ts))
-+		return PTR_ERR(mii_ts);
-+
- 	is_c45 = of_device_is_compatible(child,
- 					 "ethernet-phy-ieee802.3-c45");
- 
-@@ -57,11 +80,14 @@ static int of_mdiobus_register_phy(struct mii_bus *mdio,
- 		phy = phy_device_create(mdio, addr, phy_id, 0, NULL);
- 	else
- 		phy = get_phy_device(mdio, addr, is_c45);
--	if (IS_ERR(phy))
-+	if (IS_ERR(phy)) {
-+		unregister_mii_timestamper(mii_ts);
- 		return PTR_ERR(phy);
-+	}
- 
- 	rc = of_irq_get(child, 0);
- 	if (rc == -EPROBE_DEFER) {
-+		unregister_mii_timestamper(mii_ts);
- 		phy_device_free(phy);
- 		return rc;
+diff --git a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
+index 192ff8d5da32..7343d7a28327 100644
+--- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
++++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
+@@ -15402,6 +15402,7 @@ int bnx2x_configure_ptp_filters(struct bnx2x *bp)
+ 		REG_WR(bp, rule, BNX2X_PTP_TX_ON_RULE_MASK);
+ 		break;
+ 	case HWTSTAMP_TX_ONESTEP_SYNC:
++	case HWTSTAMP_TX_ONESTEP_P2P:
+ 		BNX2X_ERR("One-step timestamping is not supported\n");
+ 		return -ERANGE;
  	}
-@@ -90,10 +116,12 @@ static int of_mdiobus_register_phy(struct mii_bus *mdio,
- 	 * register it */
- 	rc = phy_device_register(phy);
- 	if (rc) {
-+		unregister_mii_timestamper(mii_ts);
- 		phy_device_free(phy);
- 		of_node_put(child);
- 		return rc;
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_ptp.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_ptp.c
+index ec2ff3d7f41c..4aaaa4937b1a 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_ptp.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_ptp.c
+@@ -920,6 +920,7 @@ static int mlxsw_sp_ptp_get_message_types(const struct hwtstamp_config *config,
+ 		egr_types = 0xff;
+ 		break;
+ 	case HWTSTAMP_TX_ONESTEP_SYNC:
++	case HWTSTAMP_TX_ONESTEP_P2P:
+ 		return -ERANGE;
  	}
-+	phy->mii_ts = mii_ts;
  
- 	dev_dbg(&mdio->dev, "registered phy %pOFn at address %i\n",
- 		child, addr);
+diff --git a/drivers/net/ethernet/microchip/lan743x_ptp.c b/drivers/net/ethernet/microchip/lan743x_ptp.c
+index afe52463dc57..9399f6a98748 100644
+--- a/drivers/net/ethernet/microchip/lan743x_ptp.c
++++ b/drivers/net/ethernet/microchip/lan743x_ptp.c
+@@ -1265,6 +1265,9 @@ int lan743x_ptp_ioctl(struct net_device *netdev, struct ifreq *ifr, int cmd)
+ 
+ 		lan743x_ptp_set_sync_ts_insert(adapter, true);
+ 		break;
++	case HWTSTAMP_TX_ONESTEP_P2P:
++		ret = -ERANGE;
++		break;
+ 	default:
+ 		netif_warn(adapter, drv, adapter->netdev,
+ 			   "  tx_type = %d, UNKNOWN\n", config.tx_type);
+diff --git a/drivers/net/ethernet/qlogic/qede/qede_ptp.c b/drivers/net/ethernet/qlogic/qede/qede_ptp.c
+index f815435cf106..4c7f7a7fc151 100644
+--- a/drivers/net/ethernet/qlogic/qede/qede_ptp.c
++++ b/drivers/net/ethernet/qlogic/qede/qede_ptp.c
+@@ -247,6 +247,7 @@ static int qede_ptp_cfg_filters(struct qede_dev *edev)
+ 		break;
+ 
+ 	case HWTSTAMP_TX_ONESTEP_SYNC:
++	case HWTSTAMP_TX_ONESTEP_P2P:
+ 		DP_ERR(edev, "One-step timestamping is not supported\n");
+ 		return -ERANGE;
+ 	}
+diff --git a/include/uapi/linux/net_tstamp.h b/include/uapi/linux/net_tstamp.h
+index e5b39721c6e4..f96e650d0af9 100644
+--- a/include/uapi/linux/net_tstamp.h
++++ b/include/uapi/linux/net_tstamp.h
+@@ -90,6 +90,14 @@ enum hwtstamp_tx_types {
+ 	 * queue.
+ 	 */
+ 	HWTSTAMP_TX_ONESTEP_SYNC,
++
++	/*
++	 * Same as HWTSTAMP_TX_ONESTEP_SYNC, but also enables time
++	 * stamp insertion directly into PDelay_Resp packets. In this
++	 * case, neither transmitted Sync nor PDelay_Resp packets will
++	 * receive a time stamp via the socket error queue.
++	 */
++	HWTSTAMP_TX_ONESTEP_P2P,
+ };
+ 
+ /* possible values for hwtstamp_config->rx_filter */
+diff --git a/net/core/dev_ioctl.c b/net/core/dev_ioctl.c
+index 5163d900bb4f..dbaebbe573f0 100644
+--- a/net/core/dev_ioctl.c
++++ b/net/core/dev_ioctl.c
+@@ -187,6 +187,7 @@ static int net_hwtstamp_validate(struct ifreq *ifr)
+ 	case HWTSTAMP_TX_OFF:
+ 	case HWTSTAMP_TX_ON:
+ 	case HWTSTAMP_TX_ONESTEP_SYNC:
++	case HWTSTAMP_TX_ONESTEP_P2P:
+ 		tx_type_valid = 1;
+ 		break;
+ 	}
 -- 
 2.20.1
 
