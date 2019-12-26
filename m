@@ -2,173 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3764212AE08
-	for <lists+netdev@lfdr.de>; Thu, 26 Dec 2019 19:52:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2715E12AE16
+	for <lists+netdev@lfdr.de>; Thu, 26 Dec 2019 19:59:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727000AbfLZSwi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Dec 2019 13:52:38 -0500
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:55757 "EHLO
-        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726944AbfLZSwa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Dec 2019 13:52:30 -0500
-Received: by mail-wm1-f65.google.com with SMTP id q9so4907586wmj.5;
-        Thu, 26 Dec 2019 10:52:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=googlemail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Tdk21lW1THUxHtY9vlZ1nRwe59sn6+TCzl9IK6kCrxY=;
-        b=iy5TYbCSAWLEklxNjWcYw/NjNKf0lb/V+hYcCMh1kVbwFjgAETRmR2NieVU29nMbjG
-         3ColCXXTQ0PqfbprUmdkgtLUaHb1vYj82WbM2M/V3MNOvimf47w7XFn01bmr4+V9CDLK
-         VWhuREDvC+8s9OkXhnDIVropP7Wv9E2KuFnhipf4sMbrS+Q9h4uWq5HyeZz6go9/OJoM
-         9KdREoM6V0gppd2Won4vWzgUqUB4sR9b9uYDLszLW0kvy0uU5a/C3zGcuBCdNegAsxsu
-         mv9mWq+YqWxpj8gUDTonZkALbmA1v3Hu8iYaWXNZSoI9accUVyGZsewf/zxHDGFth1Qu
-         mF2A==
+        id S1726728AbfLZS7J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Dec 2019 13:59:09 -0500
+Received: from mail-io1-f69.google.com ([209.85.166.69]:52658 "EHLO
+        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726511AbfLZS7J (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Dec 2019 13:59:09 -0500
+Received: by mail-io1-f69.google.com with SMTP id d10so17479471iod.19
+        for <netdev@vger.kernel.org>; Thu, 26 Dec 2019 10:59:08 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Tdk21lW1THUxHtY9vlZ1nRwe59sn6+TCzl9IK6kCrxY=;
-        b=cV4sobuE6F8syE13tNfi4p+wKnC1J3Vm8HjiSwgT2ORz05TZFw3wHOyGXPhQdHkKJA
-         lzi68Kkek9eeaezVyXuVR4AibyIGh1fR25wbGc8O/UMk7j+LetHbzrSmcYZlEYXS4xTx
-         lZQLRr/i+VpThli8qzC+f9uY6PcGgpJzXaGrKzkvRhlbTDhebn8mI/JjhRa8tN6320W1
-         dc8L2FZTaBNyQrj4mMsWG1XNrZZ+zZwG2qX7zdB6xWvyb2dk4HJwf8jCY4cPU5zrqfsv
-         nSfGH8zP+nOJTddSR9HJeegKpnROQA7GVl5OMevKZS5li9fMIuQpmc64l4OpABbUZkK/
-         N2NQ==
-X-Gm-Message-State: APjAAAVgNDR5iFFAfuNSf6L+jh/0Wj4FZYCNpMD5QwdL/sLe27Z91kYN
-        9AGflc8hTm8dYXWCbybVDQg=
-X-Google-Smtp-Source: APXvYqytWCvSfGTkES4SMiUhI/nM1xVgQh7JR7YbzW2kovtBSDGlDHHDJAYkz2oB1+Ao2XlCczoPDw==
-X-Received: by 2002:a1c:a745:: with SMTP id q66mr14592494wme.167.1577386348409;
-        Thu, 26 Dec 2019 10:52:28 -0800 (PST)
-Received: from localhost.localdomain (p200300F1373A1900428D5CFFFEB99DB8.dip0.t-ipconnect.de. [2003:f1:373a:1900:428d:5cff:feb9:9db8])
-        by smtp.googlemail.com with ESMTPSA id j12sm32129352wrt.55.2019.12.26.10.52.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 26 Dec 2019 10:52:27 -0800 (PST)
-From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-To:     andrew@lunn.ch, f.fainelli@gmail.com, davem@davemloft.net,
-        netdev@vger.kernel.org, linux-amlogic@lists.infradead.org
-Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Subject: [PATCH 2/2] net: phy: realtek: add support for configuring the RX delay on RTL8211F
-Date:   Thu, 26 Dec 2019 19:51:48 +0100
-Message-Id: <20191226185148.3764251-3-martin.blumenstingl@googlemail.com>
-X-Mailer: git-send-email 2.24.1
-In-Reply-To: <20191226185148.3764251-1-martin.blumenstingl@googlemail.com>
-References: <20191226185148.3764251-1-martin.blumenstingl@googlemail.com>
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=TNo0QHyIeHdI/8GLONj6hbWPDE88TILb9xkj6RUQsSU=;
+        b=uneljEv3M1gv7igh2T1k+B2inITUt9SsLjxL8yZC/vOBit0/Ybz6omNoDBrS7cQ35k
+         gSIwYTdFHL5tHOLo0ApOS37CHGVITnAtHAqNGX+VYz7yiGO/Z+cwbq8tKmTcUbHOmB0y
+         PZyCHeRM1A493NqaHmtCbSlZ0kgNP0OneEbB2q735/pdcTpwiYuMy7sYF9qAn80/oPJQ
+         UEbD4V/t0vabpDiYd1QQF3fNeqjo4Q5P0j2WYjnnGDDu5p59XsuC5Gtzs1YJwgNmCJtC
+         TKAFXln2A6ple5+/8XJBW+sLgkiHQmbWYccvmTmisiAVVIPwdO1M8ufVYehJP3T3lvJA
+         lJAQ==
+X-Gm-Message-State: APjAAAWs2EibGcevcijRwvkdJjqW+aziZ2PdaPeoNf0I/IwZXr6XrF3u
+        bbQsUEUUpjRKGV+VhhOU57r/H631f8ljk9TxWKtnc0oiQXqy
+X-Google-Smtp-Source: APXvYqwLsoPbnZNDL141I7xVT62mvkZcF8D3gKtHxDqMdO+g8VRSHXkHzrX3fgjNRU3y1dP84SMEw9ukIxpeSESgakL8a0gBWPJ+
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-Received: by 2002:a92:d805:: with SMTP id y5mr39807073ilm.194.1577386748390;
+ Thu, 26 Dec 2019 10:59:08 -0800 (PST)
+Date:   Thu, 26 Dec 2019 10:59:08 -0800
+In-Reply-To: <000000000000b6b450059870d703@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000cfb39e059a9ff822@google.com>
+Subject: Re: KASAN: global-out-of-bounds Read in precalculate_color
+From:   syzbot <syzbot+02d9172bf4c43104cd70@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, ericvh@gmail.com, hverkuil-cisco@xs4all.nl,
+        linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
+        lucho@ionkov.net, mchehab@kernel.org, netdev@vger.kernel.org,
+        rminnich@sandia.gov, syzkaller-bugs@googlegroups.com,
+        v9fs-developer@lists.sourceforge.net, viro@zeniv.linux.org.uk,
+        vivek.kasireddy@intel.com
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On RTL8211F the RX and TX delays (2ns) can be configured in two ways:
-- pin strapping (RXD1 for the TX delay and RXD0 for the RX delay, LOW
-  means "off" and HIGH means "on") which is read during PHY reset
-- using software to configure the TX and RX delay registers
+syzbot has found a reproducer for the following crash on:
 
-So far only the configuration using pin strapping has been supported.
-Add support for enabling or disabling the RGMII RX delay based on the
-phy-mode to be able to get the RX delay into a known state. This is
-important because the RX delay has to be coordinated between the PHY,
-MAC and the PCB design (trace length). With an invalid RX delay applied
-(for example if both PHY and MAC add a 2ns RX delay) Ethernet may not
-work at all.
+HEAD commit:    46cf053e Linux 5.5-rc3
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=11932ce1e00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=ed9d672709340e35
+dashboard link: https://syzkaller.appspot.com/bug?extid=02d9172bf4c43104cd70
+compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=14861a49e00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1794423ee00000
 
-Also add debug logging when configuring the RX delay (just like the TX
-delay) because this is a common source of problems.
+The bug was bisected to:
 
-Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
----
- drivers/net/phy/realtek.c | 46 ++++++++++++++++++++++++++++++---------
- 1 file changed, 36 insertions(+), 10 deletions(-)
+commit 7594bf37ae9ffc434da425120c576909eb33b0bc
+Author: Al Viro <viro@zeniv.linux.org.uk>
+Date:   Mon Jul 17 02:53:08 2017 +0000
 
-diff --git a/drivers/net/phy/realtek.c b/drivers/net/phy/realtek.c
-index 879ca37c8508..f5fa2fff3ddc 100644
---- a/drivers/net/phy/realtek.c
-+++ b/drivers/net/phy/realtek.c
-@@ -29,6 +29,8 @@
- #define RTL8211F_INSR				0x1d
- 
- #define RTL8211F_TX_DELAY			BIT(8)
-+#define RTL8211F_RX_DELAY			BIT(3)
-+
- #define RTL8211E_TX_DELAY			BIT(1)
- #define RTL8211E_RX_DELAY			BIT(2)
- #define RTL8211E_MODE_MII_GMII			BIT(3)
-@@ -172,38 +174,62 @@ static int rtl8211c_config_init(struct phy_device *phydev)
- static int rtl8211f_config_init(struct phy_device *phydev)
- {
- 	struct device *dev = &phydev->mdio.dev;
--	u16 val;
-+	u16 val_txdly, val_rxdly;
- 	int ret;
- 
--	/* enable TX-delay for rgmii-{id,txid}, and disable it for rgmii and
--	 * rgmii-rxid. The RX-delay can be enabled by the external RXDLY pin.
--	 */
- 	switch (phydev->interface) {
- 	case PHY_INTERFACE_MODE_RGMII:
-+		val_txdly = 0;
-+		val_rxdly = 0;
-+		break;
-+
- 	case PHY_INTERFACE_MODE_RGMII_RXID:
--		val = 0;
-+		val_txdly = 0;
-+		val_rxdly = RTL8211F_RX_DELAY;
- 		break;
--	case PHY_INTERFACE_MODE_RGMII_ID:
-+
- 	case PHY_INTERFACE_MODE_RGMII_TXID:
--		val = RTL8211F_TX_DELAY;
-+		val_txdly = RTL8211F_TX_DELAY;
-+		val_rxdly = 0;
-+		break;
-+
-+	case PHY_INTERFACE_MODE_RGMII_ID:
-+		val_txdly = RTL8211F_TX_DELAY;
-+		val_rxdly = RTL8211F_RX_DELAY;
- 		break;
-+
- 	default: /* the rest of the modes imply leaving delay as is. */
- 		return 0;
- 	}
- 
- 	ret = phy_modify_paged_changed(phydev, 0xd08, 0x11, RTL8211F_TX_DELAY,
--				       val);
-+				       val_txdly);
- 	if (ret < 0) {
- 		dev_err(dev, "Failed to update the TX delay register\n");
- 		return ret;
- 	} else if (ret) {
- 		dev_dbg(dev,
- 			"%s 2ns TX delay (and changing the value from pin-strapping RXD1 or the bootloader)\n",
--			val ? "Enabling" : "Disabling");
-+			val_txdly ? "Enabling" : "Disabling");
- 	} else {
- 		dev_dbg(dev,
- 			"2ns TX delay was already %s (by pin-strapping RXD1 or bootloader configuration)\n",
--			val ? "enabled" : "disabled");
-+			val_txdly ? "enabled" : "disabled");
-+	}
-+
-+	ret = phy_modify_paged_changed(phydev, 0xd08, 0x15, RTL8211F_RX_DELAY,
-+				       val_rxdly);
-+	if (ret < 0) {
-+		dev_err(dev, "Failed to update the RX delay register\n");
-+		return ret;
-+	} else if (ret) {
-+		dev_dbg(dev,
-+			"%s 2ns RX delay (and changing the value from pin-strapping RXD0 or the bootloader)\n",
-+			val_rxdly ? "Enabling" : "Disabling");
-+	} else {
-+		dev_dbg(dev,
-+			"2ns RX delay was already %s (by pin-strapping RXD0 or bootloader configuration)\n",
-+			val_rxdly ? "enabled" : "disabled");
- 	}
- 
- 	return 0;
--- 
-2.24.1
+     9p: untangle ->poll() mess
+
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=15e323a6e00000
+console output: https://syzkaller.appspot.com/x/log.txt?x=13e323a6e00000
+
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+02d9172bf4c43104cd70@syzkaller.appspotmail.com
+Fixes: 7594bf37ae9f ("9p: untangle ->poll() mess")
+
+==================================================================
+BUG: KASAN: global-out-of-bounds in precalculate_color+0x2154/0x2480  
+drivers/media/common/v4l2-tpg/v4l2-tpg-core.c:942
+Read of size 1 at addr ffffffff88b3d3f9 by task vivid-000-vid-c/9278
+
+CPU: 0 PID: 9278 Comm: vivid-000-vid-c Not tainted 5.5.0-rc3-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
+Google 01/01/2011
+Call Trace:
+  __dump_stack lib/dump_stack.c:77 [inline]
+  dump_stack+0x197/0x210 lib/dump_stack.c:118
+  print_address_description.constprop.0.cold+0x5/0x30b mm/kasan/report.c:374
+  __kasan_report.cold+0x1b/0x41 mm/kasan/report.c:506
+  kasan_report+0x12/0x20 mm/kasan/common.c:639
+  __asan_report_load1_noabort+0x14/0x20 mm/kasan/generic_report.c:132
+  precalculate_color+0x2154/0x2480  
+drivers/media/common/v4l2-tpg/v4l2-tpg-core.c:942
+  tpg_precalculate_colors drivers/media/common/v4l2-tpg/v4l2-tpg-core.c:1093  
+[inline]
+  tpg_recalc+0x561/0x2850 drivers/media/common/v4l2-tpg/v4l2-tpg-core.c:2118
+  tpg_calc_text_basep+0xa1/0x290  
+drivers/media/common/v4l2-tpg/v4l2-tpg-core.c:2136
+  vivid_fillbuff+0x1a5f/0x3af0  
+drivers/media/platform/vivid/vivid-kthread-cap.c:466
+  vivid_thread_vid_cap_tick+0x8cf/0x2210  
+drivers/media/platform/vivid/vivid-kthread-cap.c:727
+  vivid_thread_vid_cap+0x5d8/0xa60  
+drivers/media/platform/vivid/vivid-kthread-cap.c:866
+  kthread+0x361/0x430 kernel/kthread.c:255
+  ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
+
+The buggy address belongs to the variable:
+  kbd_keycodes+0x119/0x760
+
+Memory state around the buggy address:
+  ffffffff88b3d280: fa fa fa fa 00 00 04 fa fa fa fa fa 00 00 00 00
+  ffffffff88b3d300: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+> ffffffff88b3d380: 00 00 00 00 00 00 00 00 00 00 00 00 fa fa fa fa
+                                                                 ^
+  ffffffff88b3d400: 00 00 00 00 07 fa fa fa fa fa fa fa 00 00 00 00
+  ffffffff88b3d480: 00 fa fa fa fa fa fa fa 02 fa fa fa fa fa fa fa
+==================================================================
 
