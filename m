@@ -2,164 +2,177 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DB45712ADE1
-	for <lists+netdev@lfdr.de>; Thu, 26 Dec 2019 19:17:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D66C912ADEA
+	for <lists+netdev@lfdr.de>; Thu, 26 Dec 2019 19:24:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726944AbfLZSRT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Dec 2019 13:17:19 -0500
-Received: from mail-ed1-f67.google.com ([209.85.208.67]:36770 "EHLO
-        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726812AbfLZSRT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Dec 2019 13:17:19 -0500
-Received: by mail-ed1-f67.google.com with SMTP id j17so23341889edp.3;
-        Thu, 26 Dec 2019 10:17:17 -0800 (PST)
+        id S1726643AbfLZSYc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Dec 2019 13:24:32 -0500
+Received: from mail-ed1-f66.google.com ([209.85.208.66]:35177 "EHLO
+        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726453AbfLZSYc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Dec 2019 13:24:32 -0500
+Received: by mail-ed1-f66.google.com with SMTP id f8so23390535edv.2
+        for <netdev@vger.kernel.org>; Thu, 26 Dec 2019 10:24:30 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=googlemail.com; s=20161025;
+        d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=/kVUvUUlIv+S4KgB8PAilg5eRolltdkQ40GkTlROLJs=;
-        b=bdk9f8SUF43t/ZpP5zxB4uQXnDLufOuMHu/wIWWmDxL7aVjosImu7uDnGwroYAo9hR
-         eJCnfI7jptFKeuPCfVOoo7DiYO5i6BKr4kO6hw5GyLhjfhklx2fPmTYgv6vRDCEfICc6
-         N3X3vUhbgwMXiacZqdUHI4AqL0uF0koIJCoO4qJCciRnbmP6Jx5g3AXukI/Fw4JQ/wAv
-         o4aL+uNzuC/mo44CJ2xatye3EAhKVbrD6a4UjOkCtB4+olUufm7vbM6mvjvPR9c991vv
-         jaTnyHZiCSrclPaFEMixAatFZ8y0GsfV++VqW1GaPDsCrplp7O/+sv4lIfufoL5CcUB6
-         HCRQ==
+         :cc:content-transfer-encoding;
+        bh=GTzCUOyMXju09A0r3OFWJbfA6bnWFB/+Ryp/x6btYo8=;
+        b=eMsJsJRf9AhfJ9fsEzblu799622AU1dEDK8z5JOiesSxNYWPfHtXkj+ALERGzgE3Zr
+         XuJPE9YB9G0u8kSvKSQ9LhuoB4gsAuucdl8DjEAb5OE21yFDOQRIrkDQV/tFtfqUvs+J
+         54imj57uw2bXMOhgbz13D86NDV/IoOK2Kj8gMqtGOWwrsVZnWd0N7tsCYV8ghYC+392L
+         Llt4/it2QVsSMvyNgMqB9gJRQUOFqPkdFW23zQlIu5V9lkw9FpnuSUO5t1sXjwBkwck5
+         XcWYW8kleJjCkdXb6pr5Rf5m3lnMQKYNWt7gzyYy6WYsg+k7/SjNG+ifZ3cqnh8THXWK
+         cTaw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=/kVUvUUlIv+S4KgB8PAilg5eRolltdkQ40GkTlROLJs=;
-        b=bwfyVlAoOrRWq+cDkp9kZYWlhz9mL4OaCP9j7HNzb9K+hi6LLJ58fnVGDvzt6cpwGF
-         fScYdWLLSSrpYYQpek9WYSfdcANZKwysH9h8HVQLaGgvnR0oH6fwPNaTr8Lhnxs1nh/d
-         ZSGv/edPASV53Yx+uVVJxdbDNKF/8Adnhpu+KcMdNNkBwppL/D2WNkQwCbvfJBSklNmn
-         HqVrgJBSsvgstEsYfcl03lhpmxLiH1R1WzIhAgPahCwL5HzYDABMTBn7OdGERvQs2qCY
-         WHy0lAl/dBebWqzF45etgzePi1ZywNVHyeY0cJo3Qlw1qVh4/3lPmsnY7ZsZp1VwxUfU
-         4jjg==
-X-Gm-Message-State: APjAAAVudn+0q2f2JmMub2zjXdPAEAaHlco3PIiLKBtZlRMCouLAP7xb
-        DJ1NjU759/AsRGvWxAyktHybTf4XS8hVL0i3rE4=
-X-Google-Smtp-Source: APXvYqyIG6a7r9M4dZcMeoqoNvL9c1xsxC7MdJXKs8s6dyYvgPlDylAr5Jg+h9P+QsIDTu+cgoDJlTOe781mQBrq0i0=
-X-Received: by 2002:a17:906:260b:: with SMTP id h11mr49327361ejc.327.1577384236409;
- Thu, 26 Dec 2019 10:17:16 -0800 (PST)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=GTzCUOyMXju09A0r3OFWJbfA6bnWFB/+Ryp/x6btYo8=;
+        b=tIf6Xyrb7yxOlunvEsAyocXi8INnM3u3prdmTvi94+5k2SNnjG5rBW8m2vG/tRd8ma
+         spg4BGWV2ItiveFI4tydIlDKWxtq11kZ4Fvkn7+ra3h25WgsX5X2TyhfXQd6NGv3f0Wm
+         rkuGBNVF2CzaDbeppVqagYiAI5uARDArEWtU8ad7CAs7p3++OvxM91SlKrPhF/dpeOrn
+         cRwRvwogsLtPJ+t2By+Gdlkd7Qo69vcCqaLGqfHLRPNREOQVF4yKtCsbK+oPzfgpD7Fu
+         TRaEmTVZAh2qb0WFFj3uqmOsEn4eU0kMBi9y7u+YEqD5d+rEOQiqSQEInpZKFn+hnpxH
+         nlOQ==
+X-Gm-Message-State: APjAAAXz3DTwaO3eAOpXi99Y6TBJuYlX3vcfl0XjeM/Kc/Zabi4M6Rr+
+        Db936TsenPwNwOUhS2epdfP9hEnt2czBkQX1O9Y=
+X-Google-Smtp-Source: APXvYqyjmlkW6RRPqeUhDqTW41DSLQK/GJjsA81W85Ua8j4UwmHz0eImM+4wvvYz3iZfWsDtXy3ZAplb8trTxhGM0CI=
+X-Received: by 2002:a05:6402:21e3:: with SMTP id ce3mr51397124edb.165.1577384670185;
+ Thu, 26 Dec 2019 10:24:30 -0800 (PST)
 MIME-Version: 1.0
-References: <20191225005655.1502037-1-martin.blumenstingl@googlemail.com>
- <20191225005655.1502037-2-martin.blumenstingl@googlemail.com>
- <20191225150845.GA16671@lunn.ch> <CAFBinCA4X1e5_5nBiHmNiB40uJyr9Nm1b2VkF9NqM+wb7-1xmw@mail.gmail.com>
- <20191226105044.GC1480@lunn.ch> <CAFBinCB8YQ-tuGBixO_85NFXDdrH5keDURFgri5tFLdrAwUJKg@mail.gmail.com>
- <20191226120133.GI1480@lunn.ch>
-In-Reply-To: <20191226120133.GI1480@lunn.ch>
-From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Date:   Thu, 26 Dec 2019 19:17:05 +0100
-Message-ID: <CAFBinCC9KioCC8HzPOFm3x3ZjTiQm_gr-aemnziLnTN8Ets_+A@mail.gmail.com>
-Subject: Re: [PATCH 1/3] net: stmmac: dwmac-meson8b: Fix the RGMII TX delay on
- Meson8b/8m2 SoCs
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     linux-amlogic@lists.infradead.org, netdev@vger.kernel.org,
-        davem@davemloft.net, khilman@baylibre.com,
-        linus.luessing@c0d3.blue, balbes-150@yandex.ru,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        ingrassia@epigenesys.com, jbrunet@baylibre.com,
-        Florian Fainelli <f.fainelli@gmail.com>
+References: <20191216223344.2261-1-olteanv@gmail.com> <02874ECE860811409154E81DA85FBB58B26DEDC3@fmsmsx101.amr.corp.intel.com>
+ <CA+h21hob3FmbQYyXMeLTtbHF1SeFO=LZVGyQt4jniS9-VXEO-w@mail.gmail.com>
+ <02874ECE860811409154E81DA85FBB58B26DF1C9@fmsmsx101.amr.corp.intel.com> <20191224190531.GA426@localhost>
+In-Reply-To: <20191224190531.GA426@localhost>
+From:   Vladimir Oltean <olteanv@gmail.com>
+Date:   Thu, 26 Dec 2019 20:24:19 +0200
+Message-ID: <CA+h21hrBLedLHCfP3oY2U96BJXqMQO=Uof3tsjji_Fp-b0smHQ@mail.gmail.com>
+Subject: Re: [PATCH net] net: dsa: sja1105: Fix double delivery of TX
+ timestamps to socket error queue
+To:     Richard Cochran <richardcochran@gmail.com>
+Cc:     "Keller, Jacob E" <jacob.e.keller@intel.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "jakub.kicinski@netronome.com" <jakub.kicinski@netronome.com>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>,
+        "andrew@lunn.ch" <andrew@lunn.ch>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Andrew,
+Hi Richard,
 
-On Thu, Dec 26, 2019 at 1:01 PM Andrew Lunn <andrew@lunn.ch> wrote:
+On Tue, 24 Dec 2019 at 21:05, Richard Cochran <richardcochran@gmail.com> wr=
+ote:
 >
-> > the MAC is not capable of generating an RX delay (at least as far as I know).
+> On Tue, Dec 17, 2019 at 10:21:29PM +0000, Keller, Jacob E wrote:
+> > > -----Original Message-----
+> > > From: netdev-owner@vger.kernel.org <netdev-owner@vger.kernel.org> On
+> > > Behalf Of Vladimir Oltean
 >
-> So that immediately means rgmii is invalid as a phy-mode, since the
-> documentation implies the MAC needs to add RX delay.
-things turned out even more confusing thanks to your persistence (keep
-reading, it will get better though) :-)
-
-I have tested the following on my Odroid-C1 which has an RTL8211F PHY.
-With patch #1 from this series I knew that the following was working:
-- phy-mode = "rgmii" and 2ns TX delay on the MAC (RX delay is
-seemingly not configured anywhere)
-- phy-mode = "rgmii-txid" (again, the RX delay is seemingly not
-configured anywhere)
-
-with the patch to change the RX delay on the RTL8211F PHY I decided to
-try out phy-mode = "rgmii-id": this broke Ethernet.
-then I looked at the MAC registers and spotted that bits 13
-(adj_enable) and 14 (adj_setup) are set (first time I'm noticing
-this). unsetting them makes phy-mode = "rgmii-id" work!
-I also confirmed the opposite case: unsetting bit 13 and 14 breaks
-Ethernet with phy-mode = "rgmii-txid".
-
-so it seems that there *is* a way to configure the RX delay on Meson8b
-and Meson8m2 SoCs (at least).
-I will spin up a RfC patch to discuss this with the Amlogic team and
-because I don't know what these bits do exactly
-
-> > it's mostly "broken" (high TX packet loss, slow TX speeds) for the two
-> > supported boards with an RGMII PHY (meson8b-odroidc1.dts and
-> > meson8m2-mxiii-plus.dts)
-> > examples on the many ways it was broken will follow - feel free to
-> > skip this part
+> > > There are many more drivers that are in principle broken with DSA PTP=
+,
+> > > since they don't even have the equivalent check for priv->hwts_tx_en.
 >
-> That is actually good. If it never worked, we don't need to worry
-> about breaking it! We can spend our time getting this correct, and not
-> have to worry about backwards compatibility, etc.
-ACK
-
-> > > What we normally say is make the MAC add no delays, and pass the
-> > > correct configuration to the PHY so it adds the delay. But due to the
-> > > strapping pin on the rtl8211f, we are in a bit of a grey area. I would
-> > > suggest the MAC adds no delay, phy-mode is set to rmgii-id, the PHY
-> > > driver adds TX delay in software, we assume the strapping pin is set
-> > > to add RX delay, and we add a big fat comment in the DT.
-> > >
-> > > For the Micrel PHY, we do the same, plus add the vendor properties to
-> > > configure the clock skew.
-> > >
-> > > But as i said, we are in a bit of a grey area. We can consider other
-> > > options, but everything needs to be self consistent, between what the
-> > > MAC is doing, what the PHY is doing, and what phy-mode is set to in
-> > > DT.
+> Please stop saying that.  It is not true.
 >
-> > do you think it's worth the effort to get clarification from Realtek
-> > on the RX delay behavior (and whether there's a register to control
-> > it)?
->
-> You can ask. There are also datasheet here:
->
-> http://files.pine64.org/doc/datasheet/rock64/RTL8211F-CG-Realtek.pdf
-> https://datasheet.lcsc.com/szlcsc/1909021205_Realtek-Semicon-RTL8211F-CG_C187932.pdf
->
-> It looks like both RX and TX delay can be controlled via
-> strapping. But the register for controlling the TX delay is not
-> documented.
-I checked the mails I got from Realtek I while ago and they even
-included the RX delay bits!
-I even sent a patch two years ago but I must have dropped it at some
-point (maybe I assumed that it wasn't relevant anymore - I don't
-remember): [0]
 
-> > you mentioned that there was breakage earlier this year, so I'm not sure anymore
-> > (that leaves me thinking: asking them is still useful to get out of
-> > this grey area)
+Why isn't it true?
+You mean to say that this code in cavium/liquidio/lio_main.c will ever
+work with a PTP-cable DSA switch or PHY?
+
+static netdev_tx_t liquidio_xmit(struct sk_buff *skb, struct net_device *ne=
+tdev)
+{
+(...)
+    if (unlikely(skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP)) {
+        skb_shinfo(skb)->tx_flags |=3D SKBTX_IN_PROGRESS;
+        cmdsetup.s.timestamp =3D 1;
+    }
+
+Or this one in cavium/octeon/octeon_mgmt.c?
+
+    re.s.tstamp =3D ((skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP) !=3D 0);
+
+Or this one in mscc/ocelot.c:
+
+    /* Check if timestamping is needed */
+    if (ocelot->ptp && shinfo->tx_flags & SKBTX_HW_TSTAMP) {
+        info.rew_op =3D ocelot_port->ptp_cmd;
+        if (ocelot_port->ptp_cmd =3D=3D IFH_REW_OP_TWO_STEP_PTP)
+            info.rew_op |=3D (ocelot_port->ts_id  % 4) << 3;
+    }
+
+Or this one in mellanox/mlx5/core/en_tx.c:
+
+            if (unlikely(skb_shinfo(skb)->tx_flags &
+                     SKBTX_HW_TSTAMP)) {
+                struct skb_shared_hwtstamps hwts =3D {};
+
+                hwts.hwtstamp =3D
+                    mlx5_timecounter_cyc2time(sq->clock,
+                                  get_cqe_ts(cqe));
+                skb_tstamp_tx(skb, &hwts);
+            }
+
+etc etc.
+
+How will these drivers not transmit a second hw TX timestamp to the
+stack, if they don't check whether TX timestamping is enabled for
+their netdev?
+
+Of course, at least that breakage is going to be much more binary and
+obvious: PTP simply won't work at all for drivers stacked on top of
+them until they are fixed.
+
+> No fix is needed.  MAC drivers must set SKBTX_IN_PROGRESS and call
+> skb_tstamp_tx() to deliver the transmit time stamp.  DSA drivers
+> should call skb_complete_tx_timestamp() to deliver the transmit time
+> stamp, and they should *not* set SKBTX_IN_PROGRESS.
 >
-> It was an Atheros PHY with breakage.
->
-> If we can fully control the RX and TX delays, that would be great. It
-> would also be useful if there was a way to determine how the PHY has
-> been strapped. If we cannot fully control the delays but we can find
-> out what delays it is using, we can check the requested configuration
-> against the strapped configuration, and warn if they are different.
-I am currently testing whether the pin strapping configuration can be
-read back by the RX and TX delay registers
-my Odroid-C1 has both strapped to GND which means off
-but my Khadas VIM2 has TX delay strapped to ETH_VDDIO which means on
-(RX delay is still strapped to GND)
-once I am done testing I will send patches for the RTL8211F PHY driver
 
+Who says so, and why? How would it be better than fixing gianfar in
+this case? How would it be better in avoiding compatibility with the
+drivers mentioned above?
 
-Martin
+Does the TI PHYTER driver count?
 
+commit e2e2f51dd0254fa0002bcd1c5fda180348163f09
+Author: Stefan S=C3=B8rensen <stefan.sorensen@spectralink.com>
+Date:   Mon Feb 3 15:36:35 2014 +0100
 
-[0] https://patchwork.ozlabs.org/patch/843946/
+    net:phy:dp83640: Declare that TX timestamping possible
+
+    Set the SKBTX_IN_PROGRESS bit in tx_flags dp83640_txtstamp when doing
+    tx timestamps as per Documentation/networking/timestamping.txt.
+
+    Signed-off-by: Stefan S=C3=B8rensen <stefan.sorensen@spectralink.com>
+    Acked-by: Richard Cochran <richardcochran@gmail.com>
+    Signed-off-by: David S. Miller <davem@davemloft.net>
+
+diff --git a/drivers/net/phy/dp83640.c b/drivers/net/phy/dp83640.c
+index 547725fa8671..3f882eea6e1d 100644
+--- a/drivers/net/phy/dp83640.c
++++ b/drivers/net/phy/dp83640.c
+@@ -1281,6 +1281,7 @@ static void dp83640_txtstamp(struct phy_device *phyde=
+v,
+                }
+                /* fall through */
+        case HWTSTAMP_TX_ON:
++               skb_shinfo(skb)->tx_flags |=3D SKBTX_IN_PROGRESS;
+                skb_queue_tail(&dp83640->tx_queue, skb);
+                schedule_work(&dp83640->ts_work);
+                break;
+
+I think this rule is somewhat made-up and arbitrary.
+
+> Thanks,
+> Richard
+
+Thanks,
+-Vladimir
