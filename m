@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9511512AEA1
-	for <lists+netdev@lfdr.de>; Thu, 26 Dec 2019 21:54:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 38BDF12AEA5
+	for <lists+netdev@lfdr.de>; Thu, 26 Dec 2019 21:55:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726893AbfLZUyq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Dec 2019 15:54:46 -0500
-Received: from mail-pg1-f196.google.com ([209.85.215.196]:37006 "EHLO
-        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726105AbfLZUyp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Dec 2019 15:54:45 -0500
-Received: by mail-pg1-f196.google.com with SMTP id q127so13398073pga.4;
-        Thu, 26 Dec 2019 12:54:45 -0800 (PST)
+        id S1726985AbfLZUzZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Dec 2019 15:55:25 -0500
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:36821 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726105AbfLZUzZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Dec 2019 15:55:25 -0500
+Received: by mail-pg1-f193.google.com with SMTP id k3so13398869pgc.3;
+        Thu, 26 Dec 2019 12:55:25 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=eHX8zpcgJuEQPZJ2h4zqcCJFzc58YVmiFDRcJtSTKgo=;
-        b=rTW9SBgiBWmNdcZRjsrmCYV9eUibq6Pj/R6/F62b+CgXrUYTG6I7l3/Jgw51xaxC45
-         YNt3befcorJQMvOa7cO4AfBCObLwmaQ3pGfyjvWrte6HqZmDteLS+spzGhyX92RCVIhI
-         Jk/lyUZj7U15KhDoZAnEfN9IAOst76Lp0CbmptoIYThC7ynpA5bdwV7NrHnUuaxPKM4j
-         LAxoXqTTVFX4cZ+llQrQJrZMeD+5ifirGWPOr4D2nskLTPLXAV9CliXa7anzrqgfkJGG
-         1l7THSFEjMHF2pFs3WRtx3Y+31pgXK59ARQvtnWHf76zO/HtUJskiIxjWH4TuOdYns31
-         8Rng==
+        bh=ls1jpyu5ovX4GvKDoC0M9qL5iwqWEQEsc9nX4yNDJgw=;
+        b=uCWWK6X/Wxdhm5YIVFnVbQidM8ngXAYE9oCHR2EsAmwKcm7rzpBaAeFLR0zeo49DXj
+         tPpqXU1XkJ3/NtTs98IqmLug6Xzc22HIHQ8asKkbphkoFaJmgMec2lJoh8NuW6kG3OEC
+         EHUEAo1DEITmz58/SgkpohQ6McqOqXpPsV8e8qlk1TIAt/ZkXvKrcU2+yk93NIV0OmCK
+         /uilnSzY26pl7APkDxpAk9GsjY7TbLiGxEt8E/DisbgOWgy/sIgLwIq96dYoPgeo3PIO
+         DU+aUjk0LXNylTVJ/zlP4Zk9hg8XDyu3uqBGoqaBsmaLGDr6pKsthwzJH9hzebmYeESb
+         hbzQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=eHX8zpcgJuEQPZJ2h4zqcCJFzc58YVmiFDRcJtSTKgo=;
-        b=Fr58IbpOhLkdpMZYM73jU8rkcac9xyqDgFHWuwVTDjfZ5M39p664auDCZinxRTInxa
-         LCaV7v16dpdrpgcS5npKY73eKzmfS0JbDRQUMoIaibOWz0bwc+d8+MUxqEdDoD20DGH1
-         AFqdF8HNBmg/fXmQpCruyNzEOQKsNS7Ac+cN8S8fmRuRL+NzOnwldW2BCvw5ZsSfMH84
-         xGLW2w2DyJjlvY1HiFpp9OXofOOHh7/d9Zhq6nMl50WvhrH4UXgDrWaOaUM/CwBn3xNB
-         ydsWs8681zyxC/G3wie8QCrQgB5AODAst0XiTNft3XgHX88KSCy3sbJgr+pvfcWAPezc
-         Uu9w==
-X-Gm-Message-State: APjAAAXEJEhNwC5Nx5dNCkGx2kCub1pPth8bdWdYmrrKTs0gPv+qFh/z
-        JkHAh4wdH/f8fT4oSdmQ8KM=
-X-Google-Smtp-Source: APXvYqziecMYsLN34st5VNE6YLjms1uEwnQiv1twd7dNGRPBfbuv8jQbu0+0F/6um9xIEDoFraFmOw==
-X-Received: by 2002:aa7:8299:: with SMTP id s25mr49460840pfm.261.1577393684784;
-        Thu, 26 Dec 2019 12:54:44 -0800 (PST)
+        bh=ls1jpyu5ovX4GvKDoC0M9qL5iwqWEQEsc9nX4yNDJgw=;
+        b=SQmDwZweDK5oFXRjaPc06biWClQDnkRBXj0vcjkcJ9ljqqnpWy3MBxoXshPBo+/j4G
+         bwOdN6Iw3ertFPPtGJ7+QnNTa0cutHbdH7MKOJ0nCwUzWG+IQNjg5q8KxVAvA9yhCYAB
+         cvVNf9mmV8X7BE20lcquQMVTYP1B/E2iExfh0kttUJL26n3pZBY3MvLCVACLSX8ejvJS
+         0Fflq/BvGFjKGGbwq/Bx0by1JPKlMbn2mfSmzpy8v1NIl+qNZSZx0DosrjlBAMTvtnHe
+         k8rYX7wgmpmLlGj3pPFjH/4lYJkfNwumvpBCm/6QpcooyprZCeWGNHr1jdYZzyQxk7G8
+         Akiw==
+X-Gm-Message-State: APjAAAV7ZhDsbQ3wK5VHu5ZaXNaqI9lJFJVQctB6fJvyAo1ZcQHHKxsA
+        lSi8iuCIWhIyQh39s6/lvTQ=
+X-Google-Smtp-Source: APXvYqwqmXWUHtAKJwoKAO6BicMH8+vjW43MlGEkruI8Pso25k4g/HdN1r7Wsv8lRSaK9wCMVdYmKQ==
+X-Received: by 2002:a63:d62:: with SMTP id 34mr52536513pgn.268.1577393724753;
+        Thu, 26 Dec 2019 12:55:24 -0800 (PST)
 Received: from [10.230.28.123] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id p5sm34273774pgs.28.2019.12.26.12.54.43
+        by smtp.gmail.com with ESMTPSA id b65sm35593928pgc.18.2019.12.26.12.55.23
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 26 Dec 2019 12:54:44 -0800 (PST)
-Subject: Re: [PATCH 1/2] net: phy: realtek: add logging for the RGMII TX delay
- configuration
+        Thu, 26 Dec 2019 12:55:24 -0800 (PST)
+Subject: Re: [PATCH 2/2] net: phy: realtek: add support for configuring the RX
+ delay on RTL8211F
 To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
         andrew@lunn.ch, davem@davemloft.net, netdev@vger.kernel.org,
         linux-amlogic@lists.infradead.org
 Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 References: <20191226185148.3764251-1-martin.blumenstingl@googlemail.com>
- <20191226185148.3764251-2-martin.blumenstingl@googlemail.com>
+ <20191226185148.3764251-3-martin.blumenstingl@googlemail.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Autocrypt: addr=f.fainelli@gmail.com; keydata=
  mQGiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
@@ -108,12 +108,12 @@ Autocrypt: addr=f.fainelli@gmail.com; keydata=
  caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
  6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9qfUATKC9NgZjRvBztfqy4
  a9BQwACgnzGuH1BVeT2J0Ra+ZYgkx7DaPR0=
-Message-ID: <e21320b3-6e99-25a4-20d9-e8c5aa1aff03@gmail.com>
-Date:   Thu, 26 Dec 2019 12:54:42 -0800
+Message-ID: <df249d8b-01db-730a-d1e1-615acf7949b5@gmail.com>
+Date:   Thu, 26 Dec 2019 12:55:23 -0800
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
  Thunderbird/68.3.1
 MIME-Version: 1.0
-In-Reply-To: <20191226185148.3764251-2-martin.blumenstingl@googlemail.com>
+In-Reply-To: <20191226185148.3764251-3-martin.blumenstingl@googlemail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -125,21 +125,21 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 On 12/26/2019 10:51 AM, Martin Blumenstingl wrote:
-> RGMII requires a delay of 2ns between the data and the clock signal.
-> There are at least three ways this can happen. One possibility is by
-> having the PHY generate this delay.
-> This is a common source for problems (for example with slow TX speeds or
-> packet loss when sending data). The TX delay configuration of the
-> RTL8211F PHY can be set either by pin-strappping the RXD1 pin (HIGH
-> means enabled, LOW means disabled) or through configuring a paged
-> register. The setting from the RXD1 pin is also reflected in the
-> register.
+> On RTL8211F the RX and TX delays (2ns) can be configured in two ways:
+> - pin strapping (RXD1 for the TX delay and RXD0 for the RX delay, LOW
+>   means "off" and HIGH means "on") which is read during PHY reset
+> - using software to configure the TX and RX delay registers
 > 
-> Add debug logging to the TX delay configuration on RTL8211F so it's
-> easier to spot these issues (for example if the TX delay is enabled for
-> both, the RTL8211F PHY and the MAC).
-> This is especially helpful because there is no public datasheet for the
-> RTL8211F PHY available with all the RX/TX delay specifics.
+> So far only the configuration using pin strapping has been supported.
+> Add support for enabling or disabling the RGMII RX delay based on the
+> phy-mode to be able to get the RX delay into a known state. This is
+> important because the RX delay has to be coordinated between the PHY,
+> MAC and the PCB design (trace length). With an invalid RX delay applied
+> (for example if both PHY and MAC add a 2ns RX delay) Ethernet may not
+> work at all.
+> 
+> Also add debug logging when configuring the RX delay (just like the TX
+> delay) because this is a common source of problems.
 > 
 > Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 
