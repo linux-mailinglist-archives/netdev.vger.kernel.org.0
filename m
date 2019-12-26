@@ -2,108 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 82A9C12ABFD
-	for <lists+netdev@lfdr.de>; Thu, 26 Dec 2019 12:44:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9DFF312AC05
+	for <lists+netdev@lfdr.de>; Thu, 26 Dec 2019 13:02:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726440AbfLZLoy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Dec 2019 06:44:54 -0500
-Received: from mail-ed1-f50.google.com ([209.85.208.50]:42391 "EHLO
-        mail-ed1-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726109AbfLZLoy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Dec 2019 06:44:54 -0500
-Received: by mail-ed1-f50.google.com with SMTP id e10so22389334edv.9
-        for <netdev@vger.kernel.org>; Thu, 26 Dec 2019 03:44:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ZJO/PGFiGEeZ/TNfLFE2YR12l5jbTSzN+yS8xy2BS0c=;
-        b=tyHUQGP/h1qM/t+u3jCh5oD7J4o+NKtkoB8yZQRLaHWPZCBgcfvAnokG9czTzW49Bz
-         SWZ1OkprTUBs3u85rymjqfs6SBHOm62FIg/J2EXaaI7m1II77lK/8fo6P4MgJF1PpcWN
-         Lc6Gz3pmA9VChGDtGWn9eMUQo+JwdodQvyrET5rQdQ8Tr2Ro5OMNk7NWUB7IGp0/2/Nr
-         sqNFFkQ5Wq/9nNJhRJElxelDSzYWvKObMEGJFXuuhV9iZdgfQ7XNbc82ZGx661wlkrMt
-         W3UHzentVkDLh1Vd75H2lqjRjgsbp7IzJfmmBrM9xlZP35weHTABTf1ogSbmTRiSYGTT
-         9d6A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ZJO/PGFiGEeZ/TNfLFE2YR12l5jbTSzN+yS8xy2BS0c=;
-        b=WOAQGGWeskba93+0+0VRv/n8eFX2sL2DUOxIHsfctfFPi7XyQVVaIITCzMt6gjE09/
-         53u8E5CEFyXWN1UI9wLd+EywADOxxlZAJSkMJfIVz5Nrnxhv03NOo4KQIhS44zDlCsF5
-         e2Ki6A6RTKkYEurkxMMxYJQtP47I1M9ilDKwVqLBH24lpeWQkXtKy5T1LSj8RpgO8D0z
-         TJX8OXwJADGWTtQ9+aeNYbTBqSjdub9Tfz63/nSqmt/wxXCSgRVnYkJ4o+MfeCDWQfGe
-         /11BtJGi56fHadJLU09tGRimVIr0MXNQ+3cz1D+KIs5ftzEbWnHH7X0+t/3jRvkjvsFF
-         EQsg==
-X-Gm-Message-State: APjAAAUQ9sac7YrhOSZh+Os5qJGDPRd3RLoXXqk8rfdk+nMF/PvHNmsd
-        nA7FrQflW2pbisNiCrfeYOaYsRrHn5RgSzkOxI4=
-X-Google-Smtp-Source: APXvYqyhAXd4j2VwCxhhbMZqPXWe3RydIlG0ZDfti2gyDOfWTt2rwdb3xBprfKejdog+ccMryPP8cWGDLnypPM3JrIg=
-X-Received: by 2002:a50:f704:: with SMTP id g4mr49010265edn.123.1577360692738;
- Thu, 26 Dec 2019 03:44:52 -0800 (PST)
+        id S1726480AbfLZMBn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Dec 2019 07:01:43 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:40518 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726055AbfLZMBn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 26 Dec 2019 07:01:43 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=5f9FO2IjRXu6jiUBvxbXob0IdCuPlK4tpmU4a1BrtKg=; b=rWgcDHsfNjmGjaw6IwHYelifmr
+        fj0xuVrH1RZMuSbTKnitSYFhi8p7na9PWEenybBSr5DX/hFOYl8KAbjPKRxbmRabaD/gCNMjPnNW2
+        ef8wtzMjzYeXZQJ3Oz5WBfb5+R3drXTZ0xjiYLJaBhXOhbmZDXqklw5xZ4DCfZxwtJ/w=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1ikRpd-0001x6-Vp; Thu, 26 Dec 2019 13:01:33 +0100
+Date:   Thu, 26 Dec 2019 13:01:33 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Cc:     linux-amlogic@lists.infradead.org, netdev@vger.kernel.org,
+        davem@davemloft.net, khilman@baylibre.com,
+        linus.luessing@c0d3.blue, balbes-150@yandex.ru,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        ingrassia@epigenesys.com, jbrunet@baylibre.com,
+        Florian Fainelli <f.fainelli@gmail.com>
+Subject: Re: [PATCH 1/3] net: stmmac: dwmac-meson8b: Fix the RGMII TX delay
+ on Meson8b/8m2 SoCs
+Message-ID: <20191226120133.GI1480@lunn.ch>
+References: <20191225005655.1502037-1-martin.blumenstingl@googlemail.com>
+ <20191225005655.1502037-2-martin.blumenstingl@googlemail.com>
+ <20191225150845.GA16671@lunn.ch>
+ <CAFBinCA4X1e5_5nBiHmNiB40uJyr9Nm1b2VkF9NqM+wb7-1xmw@mail.gmail.com>
+ <20191226105044.GC1480@lunn.ch>
+ <CAFBinCB8YQ-tuGBixO_85NFXDdrH5keDURFgri5tFLdrAwUJKg@mail.gmail.com>
 MIME-Version: 1.0
-References: <20191226095851.24325-1-yangbo.lu@nxp.com> <CA+h21hojJ=UU2i1kucYoD4G9VQgpz1XytSOp_MT9pjRYFnkc4A@mail.gmail.com>
- <AM7PR04MB68858970C5BA46FE33C01F48F82B0@AM7PR04MB6885.eurprd04.prod.outlook.com>
-In-Reply-To: <AM7PR04MB68858970C5BA46FE33C01F48F82B0@AM7PR04MB6885.eurprd04.prod.outlook.com>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Thu, 26 Dec 2019 13:44:41 +0200
-Message-ID: <CA+h21hp_3gAqehP6mPdF-bWN9kDoXLdMEAVhidCrmPAPTpR2eg@mail.gmail.com>
-Subject: Re: [PATCH] net: mscc: ocelot: support PPS signal generation
-To:     "Y.b. Lu" <yangbo.lu@nxp.com>
-Cc:     netdev <netdev@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        Richard Cochran <richardcochran@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAFBinCB8YQ-tuGBixO_85NFXDdrH5keDURFgri5tFLdrAwUJKg@mail.gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 26 Dec 2019 at 13:17, Y.b. Lu <yangbo.lu@nxp.com> wrote:
-> > Also, I think what you have implemented here is periodic output
-> > (PTP_CLK_REQ_PEROUT) not PPS [input] (PTP_CLK_REQ_PPS). I have found
-> > the PTP documentation to be rather confusing on what PTP_CLK_REQ_PPS
-> > means, so I'm adding Richard in the hope that he may clarify (also
-> > what's different between PTP_CLK_REQ_PPS and PTP_CLK_REQ_PPS).
->
-> My understand is PTP_CLK_REQ_PEROUT is for periodical output, and PTP_CLK_REQ_PPS is for PPS event handling.
-> This patch is to initialize PPS signal. You may check reference manual for how to generate PPS.
->
-> "For the CLOCK action, the sync option makes the pin generate a single pulse, <WAFEFORM_LOW>
-> nanoseconds after the time of day has increased the seconds. The pulse will get a width of
-> <WAVEFORM_HIGH> nanoseconds. "
->
-> If the sync option is not used, it is for periodical clock generation that you mentioned.
->
+> the MAC is not capable of generating an RX delay (at least as far as I know).
 
-So basically this hardware emits a periodic signal with the frequency
-f equal to:
-- NSEC_PER_SEC / (WAFEFORM_LOW + WAFEFORM_HIGH) if PTP_PIN_SYNC is not set
-- 1 Hz if PTP_PIN_SYNC is set
+So that immediately means rgmii is invalid as a phy-mode, since the
+documentation implies the MAC needs to add RX delay.
 
-So the hardware hardcodes the frequency, basically, and makes
-WAFEFORM_LOW be the phase adjustment. So all in all, it's still
-PTP_CLK_REQ_PEROUT that needs to be treated for this. Maybe you have
-to special-case the value of rq->perout.period.sec and
-rq->perout.period.nsec.
+> it's mostly "broken" (high TX packet loss, slow TX speeds) for the two
+> supported boards with an RGMII PHY (meson8b-odroidc1.dts and
+> meson8m2-mxiii-plus.dts)
+> examples on the many ways it was broken will follow - feel free to
+> skip this part
 
-What is the phase adjustment (pin start time) if the PTP_PIN_SYNC
-option is not set?
+That is actually good. If it never worked, we don't need to worry
+about breaking it! We can spend our time getting this correct, and not
+have to worry about backwards compatibility, etc.
 
-Anyway, it's good that you figured it out, but it's not really ok to
-hardcode it like this. On some boards there may be electrical issues
-if the PTP pins just emit pulses by default.
+> > What we normally say is make the MAC add no delays, and pass the
+> > correct configuration to the PHY so it adds the delay. But due to the
+> > strapping pin on the rtl8211f, we are in a bit of a grey area. I would
+> > suggest the MAC adds no delay, phy-mode is set to rmgii-id, the PHY
+> > driver adds TX delay in software, we assume the strapping pin is set
+> > to add RX delay, and we add a big fat comment in the DT.
+> >
+> > For the Micrel PHY, we do the same, plus add the vendor properties to
+> > configure the clock skew.
+> >
+> > But as i said, we are in a bit of a grey area. We can consider other
+> > options, but everything needs to be self consistent, between what the
+> > MAC is doing, what the PHY is doing, and what phy-mode is set to in
+> > DT.
 
-> EXTTS is for capturing timestamps for external trigger pin which is input signal.
+> do you think it's worth the effort to get clarification from Realtek
+> on the RX delay behavior (and whether there's a register to control
+> it)?
 
-And isn't PTP_CLK_REQ_PPS the same, just that the input signal is
-expected to have a particular waveform?
-Some drivers, like ptp_qoriq, seem like they misinterpret the PPS
-request as meaning "generate PPS output". I find this strange because
-it's exactly Richard who added the code for it.
+You can ask. There are also datasheet here:
 
-Thanks,
--Vladimir
+http://files.pine64.org/doc/datasheet/rock64/RTL8211F-CG-Realtek.pdf
+https://datasheet.lcsc.com/szlcsc/1909021205_Realtek-Semicon-RTL8211F-CG_C187932.pdf
+
+It looks like both RX and TX delay can be controlled via
+strapping. But the register for controlling the TX delay is not
+documented.
+
+> you mentioned that there was breakage earlier this year, so I'm not sure anymore
+> (that leaves me thinking: asking them is still useful to get out of
+> this grey area)
+
+It was an Atheros PHY with breakage.
+
+If we can fully control the RX and TX delays, that would be great. It
+would also be useful if there was a way to determine how the PHY has
+been strapped. If we cannot fully control the delays but we can find
+out what delays it is using, we can check the requested configuration
+against the strapped configuration, and warn if they are different.
+
+    Andrew
