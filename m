@@ -2,214 +2,196 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 064FE12AE88
-	for <lists+netdev@lfdr.de>; Thu, 26 Dec 2019 21:37:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0AB8212AE9C
+	for <lists+netdev@lfdr.de>; Thu, 26 Dec 2019 21:48:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727028AbfLZUhU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Dec 2019 15:37:20 -0500
-Received: from mail-wm1-f47.google.com ([209.85.128.47]:40856 "EHLO
-        mail-wm1-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726920AbfLZUhQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Dec 2019 15:37:16 -0500
-Received: by mail-wm1-f47.google.com with SMTP id t14so6807932wmi.5;
-        Thu, 26 Dec 2019 12:37:14 -0800 (PST)
+        id S1726838AbfLZUsX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Dec 2019 15:48:23 -0500
+Received: from mail-qk1-f195.google.com ([209.85.222.195]:40623 "EHLO
+        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726684AbfLZUsW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Dec 2019 15:48:22 -0500
+Received: by mail-qk1-f195.google.com with SMTP id c17so20179209qkg.7;
+        Thu, 26 Dec 2019 12:48:21 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=googlemail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=RjzvH91MnVV7aITjjuXlbaOaZ4rQFhkSbeJltjOfK8A=;
-        b=s+drKSEiN/qOoiDdlcEy0bXE+J5Pc5IJ0dzfAXtyoK1ioUgP35H6WcIHPxSGqsGjoj
-         IgA7AzNURTPzCOEPtnsnNSbP8evDBzz/bQOmXHjd6aofJ7+iAtnsiWmtO7Mo9eEzI4pR
-         rL359/EItc2wt8MqMa1xQKhWBrl4ilmXxnGU8LFBOIVqVPFmkasHP5mcoF06myENwmzK
-         V0Fa7vSNiZ5ley+IA3SqIkpBIc45TksTRnyHAYerI+9KOPfC/M8EQ15BryuYrHMW0Oqd
-         UfIakJmOvV2/ULXcu1BKOVCHq42Kccr2MfE3rBanZ6ZsW33GF+sXcsF/njXcHJDo7P4o
-         MIJA==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=zOupSjJsR3wnGh3oZaKm83dSTdc/kQHfdz++o3RZ0Iw=;
+        b=EVJS1j7V0F6WzYRC09sAObS7YJZlGWT1mfbrzcQ2vRKszbs4SlYYAuT8VcXk9HAh8b
+         DHpqFOzTy4nFCV782aenq049RYrYe3+l9w0D+aY08wp7nnTBDQMtHtWj2VoOqX+r3DFy
+         2CfruwDiq12jKWsokKOl4undhIm4NZBt0uoVxpH5jZtGBKbBcxRP/BoFMCTA15U+HwIb
+         +IWdL7YxUbDmmzwLfrpxoQgfzfuvANIIyDp5kPh+GA75hnPz7IMIW08psETuYKIIINfa
+         mobRhxoILxMFNZAq/ke/1YNfF3OIY+Q0yt386rwJ7UuO5gUZpFXXkyYJ9qIHvz5e4WGE
+         013g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=RjzvH91MnVV7aITjjuXlbaOaZ4rQFhkSbeJltjOfK8A=;
-        b=uBI1TBAHMpMzIpqGAiEgwzTuqOW+dJ6T/1YylAuXyxtSlVrtk67wzItd/gsroVrTGo
-         5uJUsT1C8g04uX6E0nyC82DHdA0cl9rcSisUME0EpEmxt4fgPfKiXem6o2D0otBL2M0U
-         /FYmbFBI1rLndGQsKw4rl9hW4QXibZ2IaOm8WoRArhfsvAXvJPjE/I71Xx9qNTsWzhB1
-         46ffuaYfPfeCkIqc1Mko8WZOGOc3+TU1eFxUHBwRccbRPfdK39kZsrcpi+Ut+3k3hyGJ
-         drclNoWJCHGvNr+FnOJbpKMVLa7T4lVtyinf5JLOkgm8N+X/lRC0zJeF92I1QalcYkFM
-         Lorw==
-X-Gm-Message-State: APjAAAU3gCEfvk+xUxfSugvA2ypsq4LlHgYk2IvUyHG5b7Gz77KhWE+C
-        xvRQQMtqO5QjDiTjheL4j3E=
-X-Google-Smtp-Source: APXvYqw2MZbGNvdpTY6PKEXi82D3m+l0OOPUiJU+ERQgG9SfmDopfpP3drcdmqJBbzAUiexFFSEACA==
-X-Received: by 2002:a7b:ca4c:: with SMTP id m12mr15100035wml.176.1577392633660;
-        Thu, 26 Dec 2019 12:37:13 -0800 (PST)
-Received: from localhost.localdomain (p200300F1373A1900428D5CFFFEB99DB8.dip0.t-ipconnect.de. [2003:f1:373a:1900:428d:5cff:feb9:9db8])
-        by smtp.googlemail.com with ESMTPSA id q3sm32911665wrn.33.2019.12.26.12.37.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 26 Dec 2019 12:37:13 -0800 (PST)
-From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-To:     andrew@lunn.ch, f.fainelli@gmail.com,
-        linux-amlogic@lists.infradead.org, jianxin.pan@amlogic.com
-Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Subject: [RFC v1 2/2] net: stmmac: dwmac-meson8b: add support for the RX delay configuration
-Date:   Thu, 26 Dec 2019 21:36:55 +0100
-Message-Id: <20191226203655.4046170-3-martin.blumenstingl@googlemail.com>
-X-Mailer: git-send-email 2.24.1
-In-Reply-To: <20191226203655.4046170-1-martin.blumenstingl@googlemail.com>
-References: <20191226203655.4046170-1-martin.blumenstingl@googlemail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=zOupSjJsR3wnGh3oZaKm83dSTdc/kQHfdz++o3RZ0Iw=;
+        b=Gbr/beaDE4nIUfah6RlIbqKJLgCcevu//fZ5K7u2n49DL9eDjYKD7C8SGpyVIGdjcV
+         SaO2DIDdYQVTfSUxalH6FetWvKgQzEM/zraMh3nDIhBSWOhnIhtDY9kwySBKI2NmxFbk
+         M+GryjuSfylYUHhSYLhjBkbq3C9crp0VzrRKoKQvrbHZ94BFuMVKJOA1wQ/VVjP0izDD
+         N+189oVm66NWDrE/HvqRY6eB1h6q9y8DvaokBWUzksEqsHuzWun1BKfb8hdzo5Mdvbay
+         QxJiROX5HbKWA15dfN6HnvK7jipsJpEescX2Rp56ikQumc9bwCKb1l5y3dKMy+G8Lhys
+         FmGA==
+X-Gm-Message-State: APjAAAV/Y7jKIKkGskLdeJTvGT369Y96Pk/9vAYCw395O+ukRWZ3MQ6f
+        cQnahZp5O+CdSWbwTIfzUvKPyi4qTKyrLRSyaaA=
+X-Google-Smtp-Source: APXvYqzNHi/f0bAEdMn9F7Sx3JpIMdKRaMgE7M6z0CHhmiBL8l5UMVjOntLw+vEC2hiMHiDwOq8e3mI6sGKFk6NbH6w=
+X-Received: by 2002:ae9:e809:: with SMTP id a9mr40229983qkg.92.1577393300859;
+ Thu, 26 Dec 2019 12:48:20 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20191221062556.1182261-1-kafai@fb.com> <20191221062620.1184118-1-kafai@fb.com>
+ <CAEf4BzZX_TNUXJktJUtqmxgMefDzie=Ta18TbBqBhG0-GSLQMg@mail.gmail.com>
+ <20191224013140.ibn33unj77mtbkne@kafai-mbp> <CAEf4Bzb2fRZJsccx2CG_pASy+2eMMWPXk6m3d6SbN+o0MSdQPg@mail.gmail.com>
+ <20191224165003.oi4kvxad6mlsg5kw@kafai-mbp> <CAEf4BzYA=xS7pHPqGxK4LsRHpxN=Y4dLcbG8WNMqGhKpauh7gQ@mail.gmail.com>
+ <20191226202512.abhyhdtetv46z5sd@kafai-mbp>
+In-Reply-To: <20191226202512.abhyhdtetv46z5sd@kafai-mbp>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Thu, 26 Dec 2019 12:48:09 -0800
+Message-ID: <CAEf4BzagEe4sbUfz6=Y6MHCsAAUAVe1GKi_XJUNu8xpHdd_mAQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2 11/11] bpf: Add bpf_dctcp example
+To:     Martin Lau <kafai@fb.com>
+Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        David Miller <davem@davemloft.net>,
+        Kernel Team <Kernel-team@fb.com>,
+        Networking <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DO NOT MERGE THIS!
+On Thu, Dec 26, 2019 at 12:25 PM Martin Lau <kafai@fb.com> wrote:
+>
+> On Thu, Dec 26, 2019 at 11:02:26AM -0800, Andrii Nakryiko wrote:
+> > On Tue, Dec 24, 2019 at 8:50 AM Martin Lau <kafai@fb.com> wrote:
+> > >
+> > > On Mon, Dec 23, 2019 at 11:01:55PM -0800, Andrii Nakryiko wrote:
+> > > > On Mon, Dec 23, 2019 at 5:31 PM Martin Lau <kafai@fb.com> wrote:
+> > > > >
+> > > > > On Mon, Dec 23, 2019 at 03:26:50PM -0800, Andrii Nakryiko wrote:
+> > > > > > On Fri, Dec 20, 2019 at 10:26 PM Martin KaFai Lau <kafai@fb.com> wrote:
+> > > > > > >
+> > > > > > > This patch adds a bpf_dctcp example.  It currently does not do
+> > > > > > > no-ECN fallback but the same could be done through the cgrp2-bpf.
+> > > > > > >
+> > > > > > > Signed-off-by: Martin KaFai Lau <kafai@fb.com>
+> > > > > > > ---
+> > > > > > >  tools/testing/selftests/bpf/bpf_tcp_helpers.h | 228 ++++++++++++++++++
+> > > > > > >  .../selftests/bpf/prog_tests/bpf_tcp_ca.c     | 218 +++++++++++++++++
+> > > > > > >  tools/testing/selftests/bpf/progs/bpf_dctcp.c | 210 ++++++++++++++++
+> > > > > > >  3 files changed, 656 insertions(+)
+> > > > > > >  create mode 100644 tools/testing/selftests/bpf/bpf_tcp_helpers.h
+> > > > > > >  create mode 100644 tools/testing/selftests/bpf/prog_tests/bpf_tcp_ca.c
+> > > > > > >  create mode 100644 tools/testing/selftests/bpf/progs/bpf_dctcp.c
+> > > > > > >
+> > > > > > > diff --git a/tools/testing/selftests/bpf/bpf_tcp_helpers.h b/tools/testing/selftests/bpf/bpf_tcp_helpers.h
+> > > > > > > new file mode 100644
+> > > > > > > index 000000000000..7ba8c1b4157a
+> > > > > > > --- /dev/null
+> > > > > > > +++ b/tools/testing/selftests/bpf/bpf_tcp_helpers.h
+> > > > > > > @@ -0,0 +1,228 @@
+> > > > > > > +/* SPDX-License-Identifier: GPL-2.0 */
+> > > > > > > +#ifndef __BPF_TCP_HELPERS_H
+> > > > > > > +#define __BPF_TCP_HELPERS_H
+> > > > > > > +
+> > > > > > > +#include <stdbool.h>
+> > > > > > > +#include <linux/types.h>
+> > > > > > > +#include <bpf_helpers.h>
+> > > > > > > +#include <bpf_core_read.h>
+> > > > > > > +#include "bpf_trace_helpers.h"
+> > > > > > > +
+> > > > > > > +#define BPF_TCP_OPS_0(fname, ret_type, ...) BPF_TRACE_x(0, #fname"_sec", fname, ret_type, __VA_ARGS__)
+> > > > > > > +#define BPF_TCP_OPS_1(fname, ret_type, ...) BPF_TRACE_x(1, #fname"_sec", fname, ret_type, __VA_ARGS__)
+> > > > > > > +#define BPF_TCP_OPS_2(fname, ret_type, ...) BPF_TRACE_x(2, #fname"_sec", fname, ret_type, __VA_ARGS__)
+> > > > > > > +#define BPF_TCP_OPS_3(fname, ret_type, ...) BPF_TRACE_x(3, #fname"_sec", fname, ret_type, __VA_ARGS__)
+> > > > > > > +#define BPF_TCP_OPS_4(fname, ret_type, ...) BPF_TRACE_x(4, #fname"_sec", fname, ret_type, __VA_ARGS__)
+> > > > > > > +#define BPF_TCP_OPS_5(fname, ret_type, ...) BPF_TRACE_x(5, #fname"_sec", fname, ret_type, __VA_ARGS__)
+> > > > > >
+> > > > > > Should we try to put those BPF programs into some section that would
+> > > > > > indicate they are used with struct opts? libbpf doesn't use or enforce
+> > > > > > that (even though it could to derive and enforce that they are
+> > > > > > STRUCT_OPS programs). So something like
+> > > > > > SEC("struct_ops/<ideally-operation-name-here>"). I think having this
+> > > > > > convention is very useful for consistency and to do a quick ELF dump
+> > > > > > and see what is where. WDYT?
+> > > > > I did not use it here because I don't want any misperception that it is
+> > > > > a required convention by libbpf.
+> > > > >
+> > > > > Sure, I can prefix it here and comment that it is just a
+> > > > > convention but not a libbpf's requirement.
+> > > >
+> > > > Well, we can actually make it a requirement of sorts. Currently your
+> > > > code expects that BPF program's type is UNSPEC and then it sets it to
+> > > > STRUCT_OPS. Alternatively we can say that any BPF program in
+> > > > SEC("struct_ops/<whatever>") will be automatically assigned
+> > > > STRUCT_OPTS BPF program type (which is done generically in
+> > > > bpf_object__open()), and then as .struct_ops section is parsed, all
+> > > > those programs will be "assembled" by the code you added into a
+> > > > struct_ops map.
+> > > Setting BPF_PROG_TYPE_STRUCT_OPS can be done automatically at open
+> > > phase (during collect_reloc time).  I will make this change.
+> > >
+> >
+> > Can you please extend exiting logic in __bpf_object__open() to do
+> > this? See how libbpf_prog_type_by_name() is used for that.
+> Does it have to call libbpf_prog_type_by_name() if everything
+> has already been decided by the earlier
+> bpf_object__collect_struct_ops_map_reloc()?
 
-Test results:
-- Akaso M8S (not upstream yet) Meson8m2 with RMII PHY: no change
-- Odroid-C1 Meson8b with RTL8211F RGMII PHY:
-  phy-mode = "rgmii" still works
-  phy-mode = "rgmii-id" works now
-- Khadas VIM2 GXM with RTL8211F RGMII PHY:
-  phy-mode = "rgmii" is now broken!
-  phy-mode = "rgmii-id" works
+We can certainly change the logic to omit guessing program type if
+it's already set to something else than UNSPEC.
 
-The public A311D datasheet [0] mentions these bits in the PRG_ETH0 (also
-call PRG_ETH0_REG) register:
-- bit[13]: RMII & RGMII mode, Enable data delay adjustment and
-  calibration logic.
-- bit[14]: Set RXDV and RXD setup time, data is aligned with index 0.
-  When set to 1, auto delay and skew.
-- bit[19:15]:  Set bit14 to 0. RMII & RGMII mode. Capture input data at
-  clock index equal to adj_delay.
-- bit[24:20]: RMII & RGMII mode. 5 Bits correspondent to
-  {RXDV, RXD[3:0]}, set to 1 will delay the data capture by 1 cycle.
-(do all of these bits have the same meaning for all supported SoCs:
-Meson8b, Meson8m2, GXBB, GXL, GXM, AXG, G12A, G12B, SM1?)
+But all I'm asking is that instead of using #fname"_sec" section name,
+is to use "struct_ops/"#fname, because it's consistent with all other
+program types. If you do that, then you don't have to do anything
+extra (well, add single entry to section_defs, of course), it will
+just work as is.
 
-The public "Amlogic Ethernet controller user guide" recommends the
-following settings.
-RMII: adj_enable = 1, adj_setup = 0, adj_delay = 18, adj_skew = 0x0
-RGMII: adj_enable = 1, adj_setup = 1, adj_delay = 4, adj_skew = 0xc
-(shouldn't adj_delay be 0 for the RGMII mode based on the register
-description above?)
+>
+> >
+> > > >
+> > > > It's a requirement "of sorts", because even if user doesn't do that,
+> > > > stuff will still work, if user manually will call
+> > > > bpf_program__set_struct_ops(prog). Which actually reminds me that it
+> > > > would be good to add bpf_program__set_struct_ops() and
+> > > Although there is BPF_PROG_TYPE_FNS macro,
+> > > I don't see moving bpf_prog__set_struct_ops(prog) to LIBBPF_API is useful
+> > > while actually may cause confusion and error.  How could __set_struct_ops()
+> > > a prog to struct_ops prog_type help a program, which is not used in
+> > > SEC(".struct_ops"), to be loaded successfully as a struct_ops prog?
+> > >
+> > > Assigning a bpf_prog to a function ptr under the SEC(".struct_ops")
+> > > is the only way for a program to be successfully loaded as
+> > > struct_ops prog type.  Extra way to allow a prog to be changed to
+> > > struct_ops prog_type is either useless or redundant.
+> >
+> > Well, first of all, just for consistency with everything else. We have
+> > such methods for all prog_types, so I'd like to avoid a special
+> > snowflake one that doesn't.
+> Yes, for consistency is fine as I mentioned in the earlier reply,
+> as long as it is understood the usefulness of it.
+>
+> > Second, while high-level libbpf API provides all the magic to
+> > construct STRUCT_OPS map based on .struct_ops section types,
+> > technically, user might decide to do that using low-level map creation
+> > API, right?
+> How?
+>
+> Correct that the map api is reused as is in SEC(".struct_ops").
+>
+> For prog, AFAICT, it is not possible to create struct_ops
+> prog from raw and use it in struct_ops map unless more LIBBPF_API
+> is added.  Lets put aside the need to find the btf_vmlinux
+> and its btf-types...etc.  At least, there is no LIBBPF_API to
+> set prog->attach_btf_id.  Considering the amount of preparation
+> is needed to create a struct_ops map from raw,  I would like
+> to see a real use case first before even considering what else
+> is needed and add another LIBBPF_API that may not be used.
 
-Do we need to expose adj_delay and adj_skew to devicetree?
-How do I know which value to set for each board?
-
-[0] https://dl.khadas.com/Hardware/VIM3/Datasheet/A311D_Datasheet_01_Wesion.pdf
-[1] http://openlinux.amlogic.com/@api/deki/files/75/=Amlogic_Ethenet_controller_user_Guide.pdf
-
-Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
----
- .../ethernet/stmicro/stmmac/dwmac-meson8b.c   | 59 ++++++++++---------
- 1 file changed, 32 insertions(+), 27 deletions(-)
-
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-meson8b.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-meson8b.c
-index 1483761ab1e6..af25eb1aea41 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-meson8b.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-meson8b.c
-@@ -33,6 +33,10 @@
- #define PRG_ETH0_CLK_M250_SEL_SHIFT	4
- #define PRG_ETH0_CLK_M250_SEL_MASK	GENMASK(4, 4)
- 
-+/* TX clock delay in ns = "8ns / 4 * tx_dly_val" (where 8ns are exactly one
-+ * cycle of the 125MHz RGMII TX clock):
-+ * 0ns = 0x0, 2ns = 0x1, 4ns = 0x2, 6ns = 0x3
-+ */
- #define PRG_ETH0_TXDLY_MASK		GENMASK(6, 5)
- 
- /* divider for the result of m250_sel */
-@@ -44,6 +48,11 @@
- #define PRG_ETH0_INVERTED_RMII_CLK	BIT(11)
- #define PRG_ETH0_TX_AND_PHY_REF_CLK	BIT(12)
- 
-+#define PRG_ETH0_ADJ_ENABLE		BIT(13)
-+#define PRG_ETH0_ADJ_SETUP		BIT(14)
-+#define PRG_ETH0_ADJ_DELAY		GENMASK(19, 15)
-+#define PRG_ETH0_ADJ_SKEW		GENMASK(24, 20)
-+
- #define MUX_CLK_NUM_PARENTS		2
- 
- struct meson8b_dwmac;
-@@ -241,29 +250,38 @@ static int meson_axg_set_phy_mode(struct meson8b_dwmac *dwmac)
- 
- static int meson8b_init_prg_eth(struct meson8b_dwmac *dwmac)
- {
-+	u8 tx_dly_val = dwmac->tx_delay_ns >> 1;
-+	u32 delay_config;
- 	int ret;
--	u8 tx_dly_val = 0;
- 
- 	switch (dwmac->phy_mode) {
- 	case PHY_INTERFACE_MODE_RGMII:
-+		delay_config = FIELD_PREP(PRG_ETH0_TXDLY_MASK, tx_dly_val);
-+		delay_config |= PRG_ETH0_ADJ_ENABLE | PRG_ETH0_ADJ_SETUP;
-+		break;
- 	case PHY_INTERFACE_MODE_RGMII_RXID:
--		/* TX clock delay in ns = "8ns / 4 * tx_dly_val" (where
--		 * 8ns are exactly one cycle of the 125MHz RGMII TX clock):
--		 * 0ns = 0x0, 2ns = 0x1, 4ns = 0x2, 6ns = 0x3
--		 */
--		tx_dly_val = dwmac->tx_delay_ns >> 1;
--		/* fall through */
--
--	case PHY_INTERFACE_MODE_RGMII_ID:
-+		delay_config = FIELD_PREP(PRG_ETH0_TXDLY_MASK, tx_dly_val);
-+		break;
- 	case PHY_INTERFACE_MODE_RGMII_TXID:
-+		delay_config = PRG_ETH0_ADJ_ENABLE | PRG_ETH0_ADJ_SETUP;
-+		break;
-+	case PHY_INTERFACE_MODE_RGMII_ID:
-+	case PHY_INTERFACE_MODE_RMII:
-+	default:
-+		delay_config = 0;
-+		break;
-+	};
-+
-+	meson8b_dwmac_mask_bits(dwmac, PRG_ETH0, PRG_ETH0_TXDLY_MASK |
-+				PRG_ETH0_ADJ_ENABLE | PRG_ETH0_ADJ_SETUP |
-+				PRG_ETH0_ADJ_DELAY | PRG_ETH0_ADJ_SKEW,
-+				delay_config);
-+
-+	if (phy_interface_mode_is_rgmii(dwmac->phy_mode)) {
- 		/* only relevant for RMII mode -> disable in RGMII mode */
- 		meson8b_dwmac_mask_bits(dwmac, PRG_ETH0,
- 					PRG_ETH0_INVERTED_RMII_CLK, 0);
- 
--		meson8b_dwmac_mask_bits(dwmac, PRG_ETH0, PRG_ETH0_TXDLY_MASK,
--					FIELD_PREP(PRG_ETH0_TXDLY_MASK,
--						   tx_dly_val));
--
- 		/* Configure the 125MHz RGMII TX clock, the IP block changes
- 		 * the output automatically (= without us having to configure
- 		 * a register) based on the line-speed (125MHz for Gbit speeds,
-@@ -286,24 +304,11 @@ static int meson8b_init_prg_eth(struct meson8b_dwmac *dwmac)
- 		devm_add_action_or_reset(dwmac->dev,
- 					(void(*)(void *))clk_disable_unprepare,
- 					dwmac->rgmii_tx_clk);
--		break;
--
--	case PHY_INTERFACE_MODE_RMII:
-+	} else {
- 		/* invert internal clk_rmii_i to generate 25/2.5 tx_rx_clk */
- 		meson8b_dwmac_mask_bits(dwmac, PRG_ETH0,
- 					PRG_ETH0_INVERTED_RMII_CLK,
- 					PRG_ETH0_INVERTED_RMII_CLK);
--
--		/* TX clock delay cannot be configured in RMII mode */
--		meson8b_dwmac_mask_bits(dwmac, PRG_ETH0, PRG_ETH0_TXDLY_MASK,
--					0);
--
--		break;
--
--	default:
--		dev_err(dwmac->dev, "unsupported phy-mode %s\n",
--			phy_modes(dwmac->phy_mode));
--		return -EINVAL;
- 	}
- 
- 	/* enable TX_CLK and PHY_REF_CLK generator */
--- 
-2.24.1
-
+To be clear, I don't think anyone in their right mind should do this
+by hand. I'm just saying that in the end it's not magic, just calls to
+low-level map APIs. See above, though, all I care is consistent
+pattern for sections names: "program_type/<whatever-makes-sense>".
