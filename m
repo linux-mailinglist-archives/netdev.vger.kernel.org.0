@@ -2,473 +2,549 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 72C8D12AECC
-	for <lists+netdev@lfdr.de>; Thu, 26 Dec 2019 22:16:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0AEFA12AECF
+	for <lists+netdev@lfdr.de>; Thu, 26 Dec 2019 22:19:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727083AbfLZVPd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Dec 2019 16:15:33 -0500
-Received: from mail-io1-f69.google.com ([209.85.166.69]:53574 "EHLO
-        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726748AbfLZVPM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Dec 2019 16:15:12 -0500
-Received: by mail-io1-f69.google.com with SMTP id m5so10811346iol.20
-        for <netdev@vger.kernel.org>; Thu, 26 Dec 2019 13:15:11 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=eKYwtZjwxXpWCOekYMYt9WDRJ4Y/KJHGrx/6wjCId6U=;
-        b=L1lhMIBJ6IIM33DDQ4OQbPQlckaf2EhXxNwc/beVuDRbheyAxc6QmFsR7oCOPWXB3M
-         U7iID2JRhVVswN+NQ6YeQBUGlJiS0w1jUz4jVRsT2YgMKPLK93ls4KqlG5kfv6lZ3/wc
-         9XupmIm3PpXRMoOZp7E+xSSE4a4Vfj3sITqCPRLomCdlXJlJFfa7XI0Y7kdVsC7FVDWP
-         bfLolRJCQvZGsHrU5Ds6nwDx3bKFLIlGKVCqFHcmOINRl34kt14T91Px/wHK261PbzB1
-         GslmU9rl5/fmtJ7oyvDBGEkSGKoDL2Nlcn0nAnk4ANqM79UmwOxeLNhkR2nTIVkd6J2z
-         ZRIA==
-X-Gm-Message-State: APjAAAUyxFflJqDKdocEm3EWVZ7/+fBkrUfsLlUoGD0bBY9TbOsOL6Jt
-        fAfWLx69OgwbugSpZ5/e/Xi2jwqUHCTtOU8suB3JsyQ/UPv8
-X-Google-Smtp-Source: APXvYqzN1LRZcat8Gf3OapnF1VMsPHi/08XA+LdwCxVqpkNPiAQXMA7ZBRKm53iEIlzEsbYzGIImsucG0fuWBeuT3VRauNOa9V0e
+        id S1726748AbfLZVTN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Dec 2019 16:19:13 -0500
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:45382 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726105AbfLZVTN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Dec 2019 16:19:13 -0500
+Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
+        by m0001303.ppops.net (8.16.0.42/8.16.0.42) with SMTP id xBQLHULp011737
+        for <netdev@vger.kernel.org>; Thu, 26 Dec 2019 13:19:08 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-type; s=facebook;
+ bh=xrWag5ptm8VTUu3lPHQoHI7kSkNcGG6RbhRZze+jT2Q=;
+ b=WA0F2pUZPelXmi8VR17c7aauqm/XVSKtuPkpvWTAQYvM6PHy6K+3d/4LS6V23FIjCooN
+ 38I9c44Rva8yMkNGrNqB2Gl4fVW6UY4p7C4Ynf+s/nHeW1LdkPDiFO9fMYKRcr1Lrh+x
+ VP6dzQbnewrBFmcBakq0XrVL8Dk9NcdEeoo= 
+Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
+        by m0001303.ppops.net with ESMTP id 2x3mexfwvh-3
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Thu, 26 Dec 2019 13:19:08 -0800
+Received: from intmgw004.05.ash5.facebook.com (2620:10d:c081:10::13) by
+ mail.thefacebook.com (2620:10d:c081:35::126) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
+ Thu, 26 Dec 2019 13:19:06 -0800
+Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
+        id 7F9652EC1C37; Thu, 26 Dec 2019 13:19:04 -0800 (PST)
+Smtp-Origin-Hostprefix: devbig
+From:   Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>, <yhs@fb.com>, <kafai@fb.com>
+CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Cluster: ftw2c04
+Subject: [PATCH bpf-next] selftests/bpf: add BPF_HANDLER, BPF_KPROBE, and BPF_KRETPROBE macros
+Date:   Thu, 26 Dec 2019 13:18:55 -0800
+Message-ID: <20191226211855.3190765-1-andriin@fb.com>
+X-Mailer: git-send-email 2.17.1
+X-FB-Internal: Safe
 MIME-Version: 1.0
-X-Received: by 2002:a92:d18a:: with SMTP id z10mr42462219ilz.48.1577394911483;
- Thu, 26 Dec 2019 13:15:11 -0800 (PST)
-Date:   Thu, 26 Dec 2019 13:15:11 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000005eaea0059aa1dff6@google.com>
-Subject: INFO: task hung in htable_put
-From:   syzbot <syzbot+84936245a918e2cddb32@syzkaller.appspotmail.com>
-To:     akpm@linux-foundation.org, coreteam@netfilter.org,
-        davem@davemloft.net, fw@strlen.de, hannes@cmpxchg.org,
-        kadlec@blackhole.kfki.hu, kadlec@netfilter.org,
-        linux-kernel@vger.kernel.org, mhocko@suse.com,
-        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        pablo@netfilter.org, syzkaller-bugs@googlegroups.com,
-        torvalds@linux-foundation.org, vbabka@suse.cz
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
+ definitions=2019-12-26_05:2019-12-24,2019-12-26 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 spamscore=0
+ malwarescore=0 priorityscore=1501 suspectscore=8 bulkscore=0
+ impostorscore=0 clxscore=1015 adultscore=0 phishscore=0 mlxlogscore=999
+ mlxscore=0 lowpriorityscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-1910280000 definitions=main-1912260189
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Streamline BPF_TRACE_x macro by moving out return type and section attribute
+definition out of macro itself. That makes those function look in source code
+similar to other BPF programs. Additionally, simplify its usage by determining
+number of arguments automatically (so just single BPF_TRACE vs a family of
+BPF_TRACE_1, BPF_TRACE_2, etc). Also, allow more natural function argument
+syntax without commas inbetween argument type and name.
 
-syzbot found the following crash on:
+Given this helper is useful not only for tracing tp_btf/fenty/fexit programs,
+but could be used for LSM programs and others following the same pattern,
+rename BPF_TRACE macro into more generic BPF_HANDLER. Existing BPF_TRACE_x
+usages in selftests are converted to new BPF_HANDLER macro.
 
-HEAD commit:    46cf053e Linux 5.5-rc3
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=128f54e1e00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=ed9d672709340e35
-dashboard link: https://syzkaller.appspot.com/bug?extid=84936245a918e2cddb32
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=134252c6e00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=12c7c63ee00000
+Following the same pattern, define BPF_KPROBE and BPF_KRETPROBE macros for
+nicer usage of kprobe/kretprobe arguments, respectively. BPF_KRETPROBE, adopts
+same convention used by fexit programs, that last defined argument is probed
+function's return result.
 
-The bug was bisected to:
-
-commit b8c8a338f75e052d9fa2fed851259320af412e3f
-Author: Johannes Weiner <hannes@cmpxchg.org>
-Date:   Fri Oct 13 22:58:05 2017 +0000
-
-     Revert "vmalloc: back off when the current task is killed"
-
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=178f8649e00000
-final crash:    https://syzkaller.appspot.com/x/report.txt?x=144f8649e00000
-console output: https://syzkaller.appspot.com/x/log.txt?x=104f8649e00000
-
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+84936245a918e2cddb32@syzkaller.appspotmail.com
-Fixes: b8c8a338f75e ("Revert "vmalloc: back off when the current task is  
-killed"")
-
-INFO: task syz-executor013:10018 blocked for more than 143 seconds.
-       Not tainted 5.5.0-rc3-syzkaller #0
-"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-syz-executor013 D27416 10018  10013 0x00004004
-Call Trace:
-  context_switch kernel/sched/core.c:3385 [inline]
-  __schedule+0x934/0x1f90 kernel/sched/core.c:4081
-  schedule+0xdc/0x2b0 kernel/sched/core.c:4155
-  schedule_timeout+0x717/0xc50 kernel/time/timer.c:1871
-  do_wait_for_common kernel/sched/completion.c:83 [inline]
-  __wait_for_common kernel/sched/completion.c:104 [inline]
-  wait_for_common kernel/sched/completion.c:115 [inline]
-  wait_for_completion+0x29c/0x440 kernel/sched/completion.c:136
-  __flush_work+0x4fe/0xa50 kernel/workqueue.c:3041
-  __cancel_work_timer+0x3d9/0x540 kernel/workqueue.c:3128
-  cancel_delayed_work_sync+0x1b/0x20 kernel/workqueue.c:3260
-  htable_destroy net/netfilter/xt_hashlimit.c:420 [inline]
-  htable_put+0x15f/0x220 net/netfilter/xt_hashlimit.c:449
-  hashlimit_mt_destroy_v2+0x56/0x70 net/netfilter/xt_hashlimit.c:971
-  cleanup_match+0xde/0x170 net/ipv6/netfilter/ip6_tables.c:478
-  cleanup_entry+0xd7/0x270 net/ipv4/netfilter/ip_tables.c:645
-  do_replace net/ipv4/netfilter/ip_tables.c:1148 [inline]
-  do_ipt_set_ctl+0x3e4/0x4c2 net/ipv4/netfilter/ip_tables.c:1672
-  nf_sockopt net/netfilter/nf_sockopt.c:106 [inline]
-  nf_setsockopt+0x77/0xd0 net/netfilter/nf_sockopt.c:115
-  ip_setsockopt net/ipv4/ip_sockglue.c:1260 [inline]
-  ip_setsockopt+0xdf/0x100 net/ipv4/ip_sockglue.c:1240
-  udp_setsockopt+0x68/0xb0 net/ipv4/udp.c:2639
-  sock_common_setsockopt+0x94/0xd0 net/core/sock.c:3149
-  __sys_setsockopt+0x261/0x4c0 net/socket.c:2117
-  __do_sys_setsockopt net/socket.c:2133 [inline]
-  __se_sys_setsockopt net/socket.c:2130 [inline]
-  __x64_sys_setsockopt+0xbe/0x150 net/socket.c:2130
-  do_syscall_64+0xfa/0x790 arch/x86/entry/common.c:294
-  entry_SYSCALL_64_after_hwframe+0x49/0xbe
-RIP: 0033:0x4412b9
-Code: 0a 72 65 73 6f 72 74 2c 20 79 6f 75 20 6d 61 79 20 77 61 6e 74 20 74  
-6f 20 72 65 6d 6f 76 65 20 24 41 62 6f 72 74 4f 6e 55 6e <63> 6c 65 61 6e  
-43 6f 6e 66 69 67 20 74 6f 20 70 65 72 6d 69 74 20
-RSP: 002b:00007ffc9723f3f8 EFLAGS: 00000246 ORIG_RAX: 0000000000000036
-RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00000000004412b9
-RDX: 0000000000000040 RSI: 0000000000000000 RDI: 0000000000000005
-RBP: 00000000006cc018 R08: 0000000000000001 R09: 00000000004002c8
-R10: 0000000020000500 R11: 0000000000000246 R12: 0000000000402030
-R13: 00000000004020c0 R14: 0000000000000000 R15: 0000000000000000
-INFO: task syz-executor013:10029 blocked for more than 143 seconds.
-       Not tainted 5.5.0-rc3-syzkaller #0
-"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-syz-executor013 D28160 10029  10017 0x00000004
-Call Trace:
-  context_switch kernel/sched/core.c:3385 [inline]
-  __schedule+0x934/0x1f90 kernel/sched/core.c:4081
-  schedule+0xdc/0x2b0 kernel/sched/core.c:4155
-  schedule_preempt_disabled+0x13/0x20 kernel/sched/core.c:4214
-  __mutex_lock_common kernel/locking/mutex.c:1033 [inline]
-  __mutex_lock+0x7ab/0x13c0 kernel/locking/mutex.c:1103
-  mutex_lock_nested+0x16/0x20 kernel/locking/mutex.c:1118
-  hashlimit_mt_check_common.isra.0+0x341/0x1500  
-net/netfilter/xt_hashlimit.c:903
-  hashlimit_mt_check_v2+0x327/0x3b0 net/netfilter/xt_hashlimit.c:950
-  xt_check_match+0x280/0x690 net/netfilter/x_tables.c:501
-  check_match net/ipv4/netfilter/ip_tables.c:472 [inline]
-  find_check_match net/ipv4/netfilter/ip_tables.c:488 [inline]
-  find_check_entry.isra.0+0x32f/0x920 net/ipv4/netfilter/ip_tables.c:538
-  translate_table+0xcb4/0x17d0 net/ipv4/netfilter/ip_tables.c:717
-  do_replace net/ipv4/netfilter/ip_tables.c:1136 [inline]
-  do_ipt_set_ctl+0x2fe/0x4c2 net/ipv4/netfilter/ip_tables.c:1672
-  nf_sockopt net/netfilter/nf_sockopt.c:106 [inline]
-  nf_setsockopt+0x77/0xd0 net/netfilter/nf_sockopt.c:115
-  ip_setsockopt net/ipv4/ip_sockglue.c:1260 [inline]
-  ip_setsockopt+0xdf/0x100 net/ipv4/ip_sockglue.c:1240
-  udp_setsockopt+0x68/0xb0 net/ipv4/udp.c:2639
-  sock_common_setsockopt+0x94/0xd0 net/core/sock.c:3149
-  __sys_setsockopt+0x261/0x4c0 net/socket.c:2117
-  __do_sys_setsockopt net/socket.c:2133 [inline]
-  __se_sys_setsockopt net/socket.c:2130 [inline]
-  __x64_sys_setsockopt+0xbe/0x150 net/socket.c:2130
-  do_syscall_64+0xfa/0x790 arch/x86/entry/common.c:294
-  entry_SYSCALL_64_after_hwframe+0x49/0xbe
-RIP: 0033:0x4412b9
-Code: 0a 72 65 73 6f 72 74 2c 20 79 6f 75 20 6d 61 79 20 77 61 6e 74 20 74  
-6f 20 72 65 6d 6f 76 65 20 24 41 62 6f 72 74 4f 6e 55 6e <63> 6c 65 61 6e  
-43 6f 6e 66 69 67 20 74 6f 20 70 65 72 6d 69 74 20
-RSP: 002b:00007ffc9723f3f8 EFLAGS: 00000246 ORIG_RAX: 0000000000000036
-RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00000000004412b9
-RDX: 0000000000000040 RSI: 0000000000000000 RDI: 0000000000000005
-RBP: 00000000000c7176 R08: 0000000000000001 R09: 00000000004002c8
-R10: 0000000020000500 R11: 0000000000000246 R12: 0000000000402030
-R13: 00000000004020c0 R14: 0000000000000000 R15: 0000000000000000
-INFO: task syz-executor013:10030 blocked for more than 144 seconds.
-       Not tainted 5.5.0-rc3-syzkaller #0
-"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-syz-executor013 D28160 10030  10014 0x00000004
-Call Trace:
-  context_switch kernel/sched/core.c:3385 [inline]
-  __schedule+0x934/0x1f90 kernel/sched/core.c:4081
-  schedule+0xdc/0x2b0 kernel/sched/core.c:4155
-  schedule_preempt_disabled+0x13/0x20 kernel/sched/core.c:4214
-  __mutex_lock_common kernel/locking/mutex.c:1033 [inline]
-  __mutex_lock+0x7ab/0x13c0 kernel/locking/mutex.c:1103
-  mutex_lock_nested+0x16/0x20 kernel/locking/mutex.c:1118
-  hashlimit_mt_check_common.isra.0+0x341/0x1500  
-net/netfilter/xt_hashlimit.c:903
-  hashlimit_mt_check_v2+0x327/0x3b0 net/netfilter/xt_hashlimit.c:950
-  xt_check_match+0x280/0x690 net/netfilter/x_tables.c:501
-  check_match net/ipv4/netfilter/ip_tables.c:472 [inline]
-  find_check_match net/ipv4/netfilter/ip_tables.c:488 [inline]
-  find_check_entry.isra.0+0x32f/0x920 net/ipv4/netfilter/ip_tables.c:538
-  translate_table+0xcb4/0x17d0 net/ipv4/netfilter/ip_tables.c:717
-  do_replace net/ipv4/netfilter/ip_tables.c:1136 [inline]
-  do_ipt_set_ctl+0x2fe/0x4c2 net/ipv4/netfilter/ip_tables.c:1672
-  nf_sockopt net/netfilter/nf_sockopt.c:106 [inline]
-  nf_setsockopt+0x77/0xd0 net/netfilter/nf_sockopt.c:115
-  ip_setsockopt net/ipv4/ip_sockglue.c:1260 [inline]
-  ip_setsockopt+0xdf/0x100 net/ipv4/ip_sockglue.c:1240
-  udp_setsockopt+0x68/0xb0 net/ipv4/udp.c:2639
-  sock_common_setsockopt+0x94/0xd0 net/core/sock.c:3149
-  __sys_setsockopt+0x261/0x4c0 net/socket.c:2117
-  __do_sys_setsockopt net/socket.c:2133 [inline]
-  __se_sys_setsockopt net/socket.c:2130 [inline]
-  __x64_sys_setsockopt+0xbe/0x150 net/socket.c:2130
-  do_syscall_64+0xfa/0x790 arch/x86/entry/common.c:294
-  entry_SYSCALL_64_after_hwframe+0x49/0xbe
-RIP: 0033:0x4412b9
-Code: 0a 72 65 73 6f 72 74 2c 20 79 6f 75 20 6d 61 79 20 77 61 6e 74 20 74  
-6f 20 72 65 6d 6f 76 65 20 24 41 62 6f 72 74 4f 6e 55 6e <63> 6c 65 61 6e  
-43 6f 6e 66 69 67 20 74 6f 20 70 65 72 6d 69 74 20
-RSP: 002b:00007ffc9723f3f8 EFLAGS: 00000246 ORIG_RAX: 0000000000000036
-RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00000000004412b9
-RDX: 0000000000000040 RSI: 0000000000000000 RDI: 0000000000000005
-RBP: 00000000000c84a6 R08: 0000000000000001 R09: 00000000004002c8
-R10: 0000000020000500 R11: 0000000000000246 R12: 0000000000402030
-R13: 00000000004020c0 R14: 0000000000000000 R15: 0000000000000000
-INFO: task syz-executor013:10031 blocked for more than 144 seconds.
-       Not tainted 5.5.0-rc3-syzkaller #0
-"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-syz-executor013 D28160 10031  10015 0x00004004
-Call Trace:
-  context_switch kernel/sched/core.c:3385 [inline]
-  __schedule+0x934/0x1f90 kernel/sched/core.c:4081
-  schedule+0xdc/0x2b0 kernel/sched/core.c:4155
-  schedule_preempt_disabled+0x13/0x20 kernel/sched/core.c:4214
-  __mutex_lock_common kernel/locking/mutex.c:1033 [inline]
-  __mutex_lock+0x7ab/0x13c0 kernel/locking/mutex.c:1103
-  mutex_lock_nested+0x16/0x20 kernel/locking/mutex.c:1118
-  hashlimit_mt_check_common.isra.0+0x341/0x1500  
-net/netfilter/xt_hashlimit.c:903
-  hashlimit_mt_check_v2+0x327/0x3b0 net/netfilter/xt_hashlimit.c:950
-  xt_check_match+0x280/0x690 net/netfilter/x_tables.c:501
-  check_match net/ipv4/netfilter/ip_tables.c:472 [inline]
-  find_check_match net/ipv4/netfilter/ip_tables.c:488 [inline]
-  find_check_entry.isra.0+0x32f/0x920 net/ipv4/netfilter/ip_tables.c:538
-  translate_table+0xcb4/0x17d0 net/ipv4/netfilter/ip_tables.c:717
-  do_replace net/ipv4/netfilter/ip_tables.c:1136 [inline]
-  do_ipt_set_ctl+0x2fe/0x4c2 net/ipv4/netfilter/ip_tables.c:1672
-  nf_sockopt net/netfilter/nf_sockopt.c:106 [inline]
-  nf_setsockopt+0x77/0xd0 net/netfilter/nf_sockopt.c:115
-  ip_setsockopt net/ipv4/ip_sockglue.c:1260 [inline]
-  ip_setsockopt+0xdf/0x100 net/ipv4/ip_sockglue.c:1240
-  udp_setsockopt+0x68/0xb0 net/ipv4/udp.c:2639
-  sock_common_setsockopt+0x94/0xd0 net/core/sock.c:3149
-  __sys_setsockopt+0x261/0x4c0 net/socket.c:2117
-  __do_sys_setsockopt net/socket.c:2133 [inline]
-  __se_sys_setsockopt net/socket.c:2130 [inline]
-  __x64_sys_setsockopt+0xbe/0x150 net/socket.c:2130
-  do_syscall_64+0xfa/0x790 arch/x86/entry/common.c:294
-  entry_SYSCALL_64_after_hwframe+0x49/0xbe
-RIP: 0033:0x4412b9
-Code: 0a 72 65 73 6f 72 74 2c 20 79 6f 75 20 6d 61 79 20 77 61 6e 74 20 74  
-6f 20 72 65 6d 6f 76 65 20 24 41 62 6f 72 74 4f 6e 55 6e <63> 6c 65 61 6e  
-43 6f 6e 66 69 67 20 74 6f 20 70 65 72 6d 69 74 20
-RSP: 002b:00007ffc9723f3f8 EFLAGS: 00000246 ORIG_RAX: 0000000000000036
-RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00000000004412b9
-RDX: 0000000000000040 RSI: 0000000000000000 RDI: 0000000000000005
-RBP: 00000000000c84a6 R08: 0000000000000001 R09: 00000000004002c8
-R10: 0000000020000500 R11: 0000000000000246 R12: 0000000000402030
-R13: 00000000004020c0 R14: 0000000000000000 R15: 0000000000000000
-INFO: task syz-executor013:10032 blocked for more than 144 seconds.
-       Not tainted 5.5.0-rc3-syzkaller #0
-"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-syz-executor013 D28160 10032  10012 0x00000004
-Call Trace:
-  context_switch kernel/sched/core.c:3385 [inline]
-  __schedule+0x934/0x1f90 kernel/sched/core.c:4081
-  schedule+0xdc/0x2b0 kernel/sched/core.c:4155
-  schedule_preempt_disabled+0x13/0x20 kernel/sched/core.c:4214
-  __mutex_lock_common kernel/locking/mutex.c:1033 [inline]
-  __mutex_lock+0x7ab/0x13c0 kernel/locking/mutex.c:1103
-  mutex_lock_nested+0x16/0x20 kernel/locking/mutex.c:1118
-  hashlimit_mt_check_common.isra.0+0x341/0x1500  
-net/netfilter/xt_hashlimit.c:903
-  hashlimit_mt_check_v2+0x327/0x3b0 net/netfilter/xt_hashlimit.c:950
-  xt_check_match+0x280/0x690 net/netfilter/x_tables.c:501
-  check_match net/ipv4/netfilter/ip_tables.c:472 [inline]
-  find_check_match net/ipv4/netfilter/ip_tables.c:488 [inline]
-  find_check_entry.isra.0+0x32f/0x920 net/ipv4/netfilter/ip_tables.c:538
-  translate_table+0xcb4/0x17d0 net/ipv4/netfilter/ip_tables.c:717
-  do_replace net/ipv4/netfilter/ip_tables.c:1136 [inline]
-  do_ipt_set_ctl+0x2fe/0x4c2 net/ipv4/netfilter/ip_tables.c:1672
-  nf_sockopt net/netfilter/nf_sockopt.c:106 [inline]
-  nf_setsockopt+0x77/0xd0 net/netfilter/nf_sockopt.c:115
-  ip_setsockopt net/ipv4/ip_sockglue.c:1260 [inline]
-  ip_setsockopt+0xdf/0x100 net/ipv4/ip_sockglue.c:1240
-  udp_setsockopt+0x68/0xb0 net/ipv4/udp.c:2639
-  sock_common_setsockopt+0x94/0xd0 net/core/sock.c:3149
-  __sys_setsockopt+0x261/0x4c0 net/socket.c:2117
-  __do_sys_setsockopt net/socket.c:2133 [inline]
-  __se_sys_setsockopt net/socket.c:2130 [inline]
-  __x64_sys_setsockopt+0xbe/0x150 net/socket.c:2130
-  do_syscall_64+0xfa/0x790 arch/x86/entry/common.c:294
-  entry_SYSCALL_64_after_hwframe+0x49/0xbe
-RIP: 0033:0x4412b9
-Code: 0a 72 65 73 6f 72 74 2c 20 79 6f 75 20 6d 61 79 20 77 61 6e 74 20 74  
-6f 20 72 65 6d 6f 76 65 20 24 41 62 6f 72 74 4f 6e 55 6e <63> 6c 65 61 6e  
-43 6f 6e 66 69 67 20 74 6f 20 70 65 72 6d 69 74 20
-RSP: 002b:00007ffc9723f3f8 EFLAGS: 00000246 ORIG_RAX: 0000000000000036
-RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00000000004412b9
-RDX: 0000000000000040 RSI: 0000000000000000 RDI: 0000000000000005
-RBP: 00000000000c84a7 R08: 0000000000000001 R09: 00000000004002c8
-R10: 0000000020000500 R11: 0000000000000246 R12: 0000000000402030
-R13: 00000000004020c0 R14: 0000000000000000 R15: 0000000000000000
-INFO: task syz-executor013:10033 blocked for more than 145 seconds.
-       Not tainted 5.5.0-rc3-syzkaller #0
-"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-syz-executor013 D28160 10033  10016 0x00004004
-Call Trace:
-  context_switch kernel/sched/core.c:3385 [inline]
-  __schedule+0x934/0x1f90 kernel/sched/core.c:4081
-  schedule+0xdc/0x2b0 kernel/sched/core.c:4155
-  schedule_preempt_disabled+0x13/0x20 kernel/sched/core.c:4214
-  __mutex_lock_common kernel/locking/mutex.c:1033 [inline]
-  __mutex_lock+0x7ab/0x13c0 kernel/locking/mutex.c:1103
-  mutex_lock_nested+0x16/0x20 kernel/locking/mutex.c:1118
-  hashlimit_mt_check_common.isra.0+0x341/0x1500  
-net/netfilter/xt_hashlimit.c:903
-  hashlimit_mt_check_v2+0x327/0x3b0 net/netfilter/xt_hashlimit.c:950
-  xt_check_match+0x280/0x690 net/netfilter/x_tables.c:501
-  check_match net/ipv4/netfilter/ip_tables.c:472 [inline]
-  find_check_match net/ipv4/netfilter/ip_tables.c:488 [inline]
-  find_check_entry.isra.0+0x32f/0x920 net/ipv4/netfilter/ip_tables.c:538
-  translate_table+0xcb4/0x17d0 net/ipv4/netfilter/ip_tables.c:717
-  do_replace net/ipv4/netfilter/ip_tables.c:1136 [inline]
-  do_ipt_set_ctl+0x2fe/0x4c2 net/ipv4/netfilter/ip_tables.c:1672
-  nf_sockopt net/netfilter/nf_sockopt.c:106 [inline]
-  nf_setsockopt+0x77/0xd0 net/netfilter/nf_sockopt.c:115
-  ip_setsockopt net/ipv4/ip_sockglue.c:1260 [inline]
-  ip_setsockopt+0xdf/0x100 net/ipv4/ip_sockglue.c:1240
-  udp_setsockopt+0x68/0xb0 net/ipv4/udp.c:2639
-  sock_common_setsockopt+0x94/0xd0 net/core/sock.c:3149
-  __sys_setsockopt+0x261/0x4c0 net/socket.c:2117
-  __do_sys_setsockopt net/socket.c:2133 [inline]
-  __se_sys_setsockopt net/socket.c:2130 [inline]
-  __x64_sys_setsockopt+0xbe/0x150 net/socket.c:2130
-  do_syscall_64+0xfa/0x790 arch/x86/entry/common.c:294
-  entry_SYSCALL_64_after_hwframe+0x49/0xbe
-RIP: 0033:0x4412b9
-Code: 0a 72 65 73 6f 72 74 2c 20 79 6f 75 20 6d 61 79 20 77 61 6e 74 20 74  
-6f 20 72 65 6d 6f 76 65 20 24 41 62 6f 72 74 4f 6e 55 6e <63> 6c 65 61 6e  
-43 6f 6e 66 69 67 20 74 6f 20 70 65 72 6d 69 74 20
-RSP: 002b:00007ffc9723f3f8 EFLAGS: 00000246 ORIG_RAX: 0000000000000036
-RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00000000004412b9
-RDX: 0000000000000040 RSI: 0000000000000000 RDI: 0000000000000005
-RBP: 00000000000c84a2 R08: 0000000000000001 R09: 00000000004002c8
-R10: 0000000020000500 R11: 0000000000000246 R12: 0000000000402030
-R13: 00000000004020c0 R14: 0000000000000000 R15: 0000000000000000
-
-Showing all locks held in the system:
-1 lock held by khungtaskd/1114:
-  #0: ffffffff899a5680 (rcu_read_lock){....}, at:  
-debug_show_all_locks+0x5f/0x279 kernel/locking/lockdep.c:5334
-3 locks held by kworker/0:92/3036:
-1 lock held by rsyslogd/9860:
-  #0: ffff888095c665e0 (&f->f_pos_lock){+.+.}, at: __fdget_pos+0xee/0x110  
-fs/file.c:801
-2 locks held by getty/9982:
-  #0: ffff88809875e090 (&tty->ldisc_sem){++++}, at:  
-ldsem_down_read+0x33/0x40 drivers/tty/tty_ldsem.c:340
-  #1: ffffc900017cb2e0 (&ldata->atomic_read_lock){+.+.}, at:  
-n_tty_read+0x220/0x1bf0 drivers/tty/n_tty.c:2156
-2 locks held by getty/9983:
-  #0: ffff8880864d9090 (&tty->ldisc_sem){++++}, at:  
-ldsem_down_read+0x33/0x40 drivers/tty/tty_ldsem.c:340
-  #1: ffffc900017db2e0 (&ldata->atomic_read_lock){+.+.}, at:  
-n_tty_read+0x220/0x1bf0 drivers/tty/n_tty.c:2156
-2 locks held by getty/9984:
-  #0: ffff8880a8c78090 (&tty->ldisc_sem){++++}, at:  
-ldsem_down_read+0x33/0x40 drivers/tty/tty_ldsem.c:340
-  #1: ffffc9000185b2e0 (&ldata->atomic_read_lock){+.+.}, at:  
-n_tty_read+0x220/0x1bf0 drivers/tty/n_tty.c:2156
-2 locks held by getty/9985:
-  #0: ffff888096bdd090 (&tty->ldisc_sem){++++}, at:  
-ldsem_down_read+0x33/0x40 drivers/tty/tty_ldsem.c:340
-  #1: ffffc9000184b2e0 (&ldata->atomic_read_lock){+.+.}, at:  
-n_tty_read+0x220/0x1bf0 drivers/tty/n_tty.c:2156
-2 locks held by getty/9986:
-  #0: ffff888097e13090 (&tty->ldisc_sem){++++}, at:  
-ldsem_down_read+0x33/0x40 drivers/tty/tty_ldsem.c:340
-  #1: ffffc9000183b2e0 (&ldata->atomic_read_lock){+.+.}, at:  
-n_tty_read+0x220/0x1bf0 drivers/tty/n_tty.c:2156
-2 locks held by getty/9987:
-  #0: ffff888082318090 (&tty->ldisc_sem){++++}, at:  
-ldsem_down_read+0x33/0x40 drivers/tty/tty_ldsem.c:340
-  #1: ffffc900017fb2e0 (&ldata->atomic_read_lock){+.+.}, at:  
-n_tty_read+0x220/0x1bf0 drivers/tty/n_tty.c:2156
-2 locks held by getty/9988:
-  #0: ffff88821526f090 (&tty->ldisc_sem){++++}, at:  
-ldsem_down_read+0x33/0x40 drivers/tty/tty_ldsem.c:340
-  #1: ffffc900011202e0 (&ldata->atomic_read_lock){+.+.}, at:  
-n_tty_read+0x220/0x1bf0 drivers/tty/n_tty.c:2156
-1 lock held by syz-executor013/10018:
-  #0: ffffffff8a5393e0 (hashlimit_mutex){+.+.}, at: htable_put+0x21/0x220  
-net/netfilter/xt_hashlimit.c:446
-1 lock held by syz-executor013/10029:
-  #0: ffffffff8a5393e0 (hashlimit_mutex){+.+.}, at:  
-hashlimit_mt_check_common.isra.0+0x341/0x1500  
-net/netfilter/xt_hashlimit.c:903
-1 lock held by syz-executor013/10030:
-  #0: ffffffff8a5393e0 (hashlimit_mutex){+.+.}, at:  
-hashlimit_mt_check_common.isra.0+0x341/0x1500  
-net/netfilter/xt_hashlimit.c:903
-1 lock held by syz-executor013/10031:
-  #0: ffffffff8a5393e0 (hashlimit_mutex){+.+.}, at:  
-hashlimit_mt_check_common.isra.0+0x341/0x1500  
-net/netfilter/xt_hashlimit.c:903
-1 lock held by syz-executor013/10032:
-  #0: ffffffff8a5393e0 (hashlimit_mutex){+.+.}, at:  
-hashlimit_mt_check_common.isra.0+0x341/0x1500  
-net/netfilter/xt_hashlimit.c:903
-1 lock held by syz-executor013/10033:
-  #0: ffffffff8a5393e0 (hashlimit_mutex){+.+.}, at:  
-hashlimit_mt_check_common.isra.0+0x341/0x1500  
-net/netfilter/xt_hashlimit.c:903
-
-=============================================
-
-NMI backtrace for cpu 1
-CPU: 1 PID: 1114 Comm: khungtaskd Not tainted 5.5.0-rc3-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
-Google 01/01/2011
-Call Trace:
-  __dump_stack lib/dump_stack.c:77 [inline]
-  dump_stack+0x197/0x210 lib/dump_stack.c:118
-  nmi_cpu_backtrace.cold+0x70/0xb2 lib/nmi_backtrace.c:101
-  nmi_trigger_cpumask_backtrace+0x23b/0x28b lib/nmi_backtrace.c:62
-  arch_trigger_cpumask_backtrace+0x14/0x20 arch/x86/kernel/apic/hw_nmi.c:38
-  trigger_all_cpu_backtrace include/linux/nmi.h:146 [inline]
-  check_hung_uninterruptible_tasks kernel/hung_task.c:205 [inline]
-  watchdog+0xb11/0x10c0 kernel/hung_task.c:289
-  kthread+0x361/0x430 kernel/kthread.c:255
-  ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
-Sending NMI from CPU 1 to CPUs 0:
-NMI backtrace for cpu 0
-CPU: 0 PID: 3036 Comm: kworker/0:92 Not tainted 5.5.0-rc3-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
-Google 01/01/2011
-Workqueue: events_power_efficient htable_gc
-RIP: 0010:__lock_acquire+0x1bc/0x4a00 kernel/locking/lockdep.c:3864
-Code: 2f 0f 87 bf 18 00 00 49 8d bb 98 08 00 00 49 81 ec 80 e1 2c 8b 48 b8  
-a3 8b 2e ba e8 a2 8b 2e 49 c1 fc 04 48 89 bd 60 ff ff ff <4c> 0f af e0 8b  
-85 70 ff ff ff 4c 8d 14 80 49 c1 e2 03 85 c0 74 46
-RSP: 0018:ffffc9000853fae8 EFLAGS: 00000006
-RAX: 2e8ba2e8ba2e8ba3 RBX: 0000000000000000 RCX: 0000000000000000
-RDX: 0000000000000000 RSI: 0000000000000000 RDI: ffff88809e498dd8
-RBP: ffffc9000853fc00 R08: 0000000000000001 R09: 0000000000000001
-R10: fffffbfff14f3320 R11: ffff88809e498540 R12: 0000000000003d72
-R13: 0000000000000000 R14: ffffc9000d431060 R15: 0000000000000000
-FS:  0000000000000000(0000) GS:ffff8880ae800000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000000020000500 CR3: 000000009624d000 CR4: 00000000001406f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
-  lock_acquire+0x190/0x410 kernel/locking/lockdep.c:4485
-  __raw_spin_lock_bh include/linux/spinlock_api_smp.h:135 [inline]
-  _raw_spin_lock_bh+0x33/0x50 kernel/locking/spinlock.c:175
-  spin_lock_bh include/linux/spinlock.h:343 [inline]
-  htable_selective_cleanup+0xa6/0x330 net/netfilter/xt_hashlimit.c:382
-  htable_gc+0x26/0xc0 net/netfilter/xt_hashlimit.c:398
-  process_one_work+0x9af/0x1740 kernel/workqueue.c:2264
-  worker_thread+0x98/0xe40 kernel/workqueue.c:2410
-  kthread+0x361/0x430 kernel/kthread.c:255
-  ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
-
-
+Signed-off-by: Andrii Nakryiko <andriin@fb.com>
 ---
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+ .../testing/selftests/bpf/bpf_trace_helpers.h | 130 +++++++++++-------
+ .../testing/selftests/bpf/progs/fentry_test.c |  21 +--
+ .../selftests/bpf/progs/fexit_bpf2bpf.c       |   8 +-
+ .../bpf/progs/fexit_bpf2bpf_simple.c          |   5 +-
+ .../testing/selftests/bpf/progs/fexit_test.c  |  24 ++--
+ tools/testing/selftests/bpf/progs/kfree_skb.c |  17 +--
+ .../selftests/bpf/progs/test_overhead.c       |  32 +++--
+ .../selftests/bpf/progs/test_perf_buffer.c    |   3 +-
+ .../selftests/bpf/progs/test_probe_user.c     |   3 +-
+ 9 files changed, 145 insertions(+), 98 deletions(-)
 
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
-syzbot can test patches for this bug, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+diff --git a/tools/testing/selftests/bpf/bpf_trace_helpers.h b/tools/testing/selftests/bpf/bpf_trace_helpers.h
+index c76a214a53b0..023b6565d663 100644
+--- a/tools/testing/selftests/bpf/bpf_trace_helpers.h
++++ b/tools/testing/selftests/bpf/bpf_trace_helpers.h
+@@ -4,55 +4,85 @@
+ 
+ #include "bpf_helpers.h"
+ 
+-#define __BPF_MAP_0(i, m, v, ...) v
+-#define __BPF_MAP_1(i, m, v, t, a, ...) m(t, a, ctx[i])
+-#define __BPF_MAP_2(i, m, v, t, a, ...) m(t, a, ctx[i]), __BPF_MAP_1(i+1, m, v, __VA_ARGS__)
+-#define __BPF_MAP_3(i, m, v, t, a, ...) m(t, a, ctx[i]), __BPF_MAP_2(i+1, m, v, __VA_ARGS__)
+-#define __BPF_MAP_4(i, m, v, t, a, ...) m(t, a, ctx[i]), __BPF_MAP_3(i+1, m, v, __VA_ARGS__)
+-#define __BPF_MAP_5(i, m, v, t, a, ...) m(t, a, ctx[i]), __BPF_MAP_4(i+1, m, v, __VA_ARGS__)
+-#define __BPF_MAP_6(i, m, v, t, a, ...) m(t, a, ctx[i]), __BPF_MAP_5(i+1, m, v, __VA_ARGS__)
+-#define __BPF_MAP_7(i, m, v, t, a, ...) m(t, a, ctx[i]), __BPF_MAP_6(i+1, m, v, __VA_ARGS__)
+-#define __BPF_MAP_8(i, m, v, t, a, ...) m(t, a, ctx[i]), __BPF_MAP_7(i+1, m, v, __VA_ARGS__)
+-#define __BPF_MAP_9(i, m, v, t, a, ...) m(t, a, ctx[i]), __BPF_MAP_8(i+1, m, v, __VA_ARGS__)
+-#define __BPF_MAP_10(i, m, v, t, a, ...) m(t, a, ctx[i]), __BPF_MAP_9(i+1, m, v, __VA_ARGS__)
+-#define __BPF_MAP_11(i, m, v, t, a, ...) m(t, a, ctx[i]), __BPF_MAP_10(i+1, m, v, __VA_ARGS__)
+-#define __BPF_MAP_12(i, m, v, t, a, ...) m(t, a, ctx[i]), __BPF_MAP_11(i+1, m, v, __VA_ARGS__)
+-#define __BPF_MAP(n, ...) __BPF_MAP_##n(0, __VA_ARGS__)
+-
+-/* BPF sizeof(void *) is always 8, so no need to cast to long first
+- * for ptr to avoid compiler warning.
+- */
+-#define __BPF_CAST(t, a, ctx) (t) ctx
+-#define __BPF_V void
+-#define __BPF_N
+-
+-#define __BPF_DECL_ARGS(t, a, ctx) t a
+-
+-#define BPF_TRACE_x(x, sec_name, fname, ret_type, ...)			\
+-static __always_inline ret_type						\
+-____##fname(__BPF_MAP(x, __BPF_DECL_ARGS, __BPF_V, __VA_ARGS__));	\
+-									\
+-SEC(sec_name)								\
+-ret_type fname(__u64 *ctx)						\
+-{									\
+-	return ____##fname(__BPF_MAP(x, __BPF_CAST, __BPF_N, __VA_ARGS__));\
+-}									\
+-									\
+-static __always_inline							\
+-ret_type ____##fname(__BPF_MAP(x, __BPF_DECL_ARGS, __BPF_V, __VA_ARGS__))
+-
+-#define BPF_TRACE_0(sec, fname, ...)  BPF_TRACE_x(0, sec, fname, int, __VA_ARGS__)
+-#define BPF_TRACE_1(sec, fname, ...)  BPF_TRACE_x(1, sec, fname, int, __VA_ARGS__)
+-#define BPF_TRACE_2(sec, fname, ...)  BPF_TRACE_x(2, sec, fname, int, __VA_ARGS__)
+-#define BPF_TRACE_3(sec, fname, ...)  BPF_TRACE_x(3, sec, fname, int, __VA_ARGS__)
+-#define BPF_TRACE_4(sec, fname, ...)  BPF_TRACE_x(4, sec, fname, int, __VA_ARGS__)
+-#define BPF_TRACE_5(sec, fname, ...)  BPF_TRACE_x(5, sec, fname, int, __VA_ARGS__)
+-#define BPF_TRACE_6(sec, fname, ...)  BPF_TRACE_x(6, sec, fname, int, __VA_ARGS__)
+-#define BPF_TRACE_7(sec, fname, ...)  BPF_TRACE_x(7, sec, fname, int, __VA_ARGS__)
+-#define BPF_TRACE_8(sec, fname, ...)  BPF_TRACE_x(8, sec, fname, int, __VA_ARGS__)
+-#define BPF_TRACE_9(sec, fname, ...)  BPF_TRACE_x(9, sec, fname, int, __VA_ARGS__)
+-#define BPF_TRACE_10(sec, fname, ...)  BPF_TRACE_x(10, sec, fname, int, __VA_ARGS__)
+-#define BPF_TRACE_11(sec, fname, ...)  BPF_TRACE_x(11, sec, fname, int, __VA_ARGS__)
+-#define BPF_TRACE_12(sec, fname, ...)  BPF_TRACE_x(12, sec, fname, int, __VA_ARGS__)
++#define ___bpf_concat(a, b) a ## b
++#define ___bpf_apply(fn, n) ___bpf_concat(fn, n)
++#define ___bpf_nth(_, _1, _2, _3, _4, _5, _6, _7, _8, _9, _a, _b, _c, N, ...) N
++#define ___bpf_narg(...) \
++	___bpf_nth(_, ##__VA_ARGS__, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0)
++#define ___bpf_empty(...) \
++	___bpf_nth(_, ##__VA_ARGS__, N, N, N, N, N, N, N, N, N, N, 0)
+ 
++#define ___bpf_ctx_cast0()
++#define ___bpf_ctx_cast1(x) (void *)ctx[0]
++#define ___bpf_ctx_cast2(x, args...) ___bpf_ctx_cast1(args), (void *)ctx[1]
++#define ___bpf_ctx_cast3(x, args...) ___bpf_ctx_cast2(args), (void *)ctx[2]
++#define ___bpf_ctx_cast4(x, args...) ___bpf_ctx_cast3(args), (void *)ctx[3]
++#define ___bpf_ctx_cast5(x, args...) ___bpf_ctx_cast4(args), (void *)ctx[4]
++#define ___bpf_ctx_cast6(x, args...) ___bpf_ctx_cast5(args), (void *)ctx[5]
++#define ___bpf_ctx_cast7(x, args...) ___bpf_ctx_cast6(args), (void *)ctx[6]
++#define ___bpf_ctx_cast8(x, args...) ___bpf_ctx_cast7(args), (void *)ctx[7]
++#define ___bpf_ctx_cast9(x, args...) ___bpf_ctx_cast8(args), (void *)ctx[8]
++#define ___bpf_ctx_cast10(x, args...) ___bpf_ctx_cast9(args), (void *)ctx[9]
++#define ___bpf_ctx_cast11(x, args...) ___bpf_ctx_cast10(args), (void *)ctx[10]
++#define ___bpf_ctx_cast12(x, args...) ___bpf_ctx_cast11(args), (void *)ctx[11]
++#define ___bpf_ctx_cast(args...) \
++	___bpf_apply(___bpf_ctx_cast, ___bpf_narg(args))(args)
++
++#define BPF_HANDLER(name, args...)					    \
++name(unsigned long long *ctx);						    \
++static __always_inline typeof(name(0)) ____##name(args);		    \
++typeof(name(0)) name(unsigned long long *ctx)				    \
++{									    \
++	_Pragma("GCC diagnostic push")					    \
++	_Pragma("GCC diagnostic ignored \"-Wint-conversion\"")		    \
++	return ____##name(___bpf_ctx_cast(args));			    \
++	_Pragma("GCC diagnostic pop")					    \
++}									    \
++static __always_inline typeof(name(0)) ____##name(args)
++
++struct pt_regs;
++
++#define ___bpf_kprobe_args0() ctx
++#define ___bpf_kprobe_args1(x) \
++	___bpf_kprobe_args0(), (void *)PT_REGS_PARM1(ctx)
++#define ___bpf_kprobe_args2(x, args...) \
++	___bpf_kprobe_args1(args), (void *)PT_REGS_PARM2(ctx)
++#define ___bpf_kprobe_args3(x, args...) \
++	___bpf_kprobe_args2(args), (void *)PT_REGS_PARM3(ctx)
++#define ___bpf_kprobe_args4(x, args...) \
++	___bpf_kprobe_args3(args), (void *)PT_REGS_PARM4(ctx)
++#define ___bpf_kprobe_args5(x, args...) \
++	___bpf_kprobe_args4(args), (void *)PT_REGS_PARM5(ctx)
++#define ___bpf_kprobe_args(args...) \
++	___bpf_apply(___bpf_kprobe_args, ___bpf_narg(args))(args)
++
++#define BPF_KPROBE(name, args...)					    \
++name(struct pt_regs *ctx);						    \
++static __always_inline typeof(name(0)) ____##name(struct pt_regs *ctx, ##args);\
++typeof(name(0)) name(struct pt_regs *ctx)				    \
++{									    \
++	_Pragma("GCC diagnostic push")					    \
++	_Pragma("GCC diagnostic ignored \"-Wint-conversion\"")		    \
++	return ____##name(___bpf_kprobe_args(args));			    \
++	_Pragma("GCC diagnostic pop")					    \
++}									    \
++static __always_inline typeof(name(0)) ____##name(struct pt_regs *ctx, ##args)
++
++#define ___bpf_kretprobe_args0() ctx
++#define ___bpf_kretprobe_argsN(x, args...) \
++	___bpf_kprobe_args(args), (void *)PT_REGS_RET(ctx)
++#define ___bpf_kretprobe_args(args...) \
++	___bpf_apply(___bpf_kretprobe_args, ___bpf_empty(args))(args)
++
++#define BPF_KRETPROBE(name, args...)					    \
++name(struct pt_regs *ctx);						    \
++static __always_inline typeof(name(0)) ____##name(struct pt_regs *ctx, ##args);\
++typeof(name(0)) name(struct pt_regs *ctx)				    \
++{									    \
++	_Pragma("GCC diagnostic push")					    \
++	_Pragma("GCC diagnostic ignored \"-Wint-conversion\"")		    \
++	return ____##name(___bpf_kretprobe_args(args));			    \
++	_Pragma("GCC diagnostic pop")					    \
++}									    \
++static __always_inline typeof(name(0)) ____##name(struct pt_regs *ctx, ##args)
+ #endif
+diff --git a/tools/testing/selftests/bpf/progs/fentry_test.c b/tools/testing/selftests/bpf/progs/fentry_test.c
+index 615f7c6bca77..59109a0cd218 100644
+--- a/tools/testing/selftests/bpf/progs/fentry_test.c
++++ b/tools/testing/selftests/bpf/progs/fentry_test.c
+@@ -7,37 +7,40 @@
+ char _license[] SEC("license") = "GPL";
+ 
+ __u64 test1_result = 0;
+-BPF_TRACE_1("fentry/bpf_fentry_test1", test1, int, a)
++SEC("fentry/bpf_fentry_test1")
++int BPF_HANDLER(test1, int a)
+ {
+ 	test1_result = a == 1;
+ 	return 0;
+ }
+ 
+ __u64 test2_result = 0;
+-BPF_TRACE_2("fentry/bpf_fentry_test2", test2, int, a, __u64, b)
++SEC("fentry/bpf_fentry_test2")
++int BPF_HANDLER(test2, int a, __u64 b)
+ {
+ 	test2_result = a == 2 && b == 3;
+ 	return 0;
+ }
+ 
+ __u64 test3_result = 0;
+-BPF_TRACE_3("fentry/bpf_fentry_test3", test3, char, a, int, b, __u64, c)
++SEC("fentry/bpf_fentry_test3")
++int BPF_HANDLER(test3, char a, int b, __u64 c)
+ {
+ 	test3_result = a == 4 && b == 5 && c == 6;
+ 	return 0;
+ }
+ 
+ __u64 test4_result = 0;
+-BPF_TRACE_4("fentry/bpf_fentry_test4", test4,
+-	    void *, a, char, b, int, c, __u64, d)
++SEC("fentry/bpf_fentry_test4")
++int BPF_HANDLER(test4, void *a, char b, int c, __u64 d)
+ {
+ 	test4_result = a == (void *)7 && b == 8 && c == 9 && d == 10;
+ 	return 0;
+ }
+ 
+ __u64 test5_result = 0;
+-BPF_TRACE_5("fentry/bpf_fentry_test5", test5,
+-	    __u64, a, void *, b, short, c, int, d, __u64, e)
++SEC("fentry/bpf_fentry_test5")
++int BPF_HANDLER(test5, __u64 a, void *b, short c, int d, __u64 e)
+ {
+ 	test5_result = a == 11 && b == (void *)12 && c == 13 && d == 14 &&
+ 		e == 15;
+@@ -45,8 +48,8 @@ BPF_TRACE_5("fentry/bpf_fentry_test5", test5,
+ }
+ 
+ __u64 test6_result = 0;
+-BPF_TRACE_6("fentry/bpf_fentry_test6", test6,
+-	    __u64, a, void *, b, short, c, int, d, void *, e, __u64, f)
++SEC("fentry/bpf_fentry_test6")
++int BPF_HANDLER(test6, __u64 a, void *b, short c, int d, void * e, __u64 f)
+ {
+ 	test6_result = a == 16 && b == (void *)17 && c == 18 && d == 19 &&
+ 		e == (void *)20 && f == 21;
+diff --git a/tools/testing/selftests/bpf/progs/fexit_bpf2bpf.c b/tools/testing/selftests/bpf/progs/fexit_bpf2bpf.c
+index 2d211ee98a1c..a23cc22b960c 100644
+--- a/tools/testing/selftests/bpf/progs/fexit_bpf2bpf.c
++++ b/tools/testing/selftests/bpf/progs/fexit_bpf2bpf.c
+@@ -9,8 +9,8 @@ struct sk_buff {
+ };
+ 
+ __u64 test_result = 0;
+-BPF_TRACE_2("fexit/test_pkt_access", test_main,
+-	    struct sk_buff *, skb, int, ret)
++SEC("fexit/test_pkt_access")
++int BPF_HANDLER(test_main, struct sk_buff *skb, int ret)
+ {
+ 	int len;
+ 
+@@ -24,8 +24,8 @@ BPF_TRACE_2("fexit/test_pkt_access", test_main,
+ }
+ 
+ __u64 test_result_subprog1 = 0;
+-BPF_TRACE_2("fexit/test_pkt_access_subprog1", test_subprog1,
+-	    struct sk_buff *, skb, int, ret)
++SEC("fexit/test_pkt_access_subprog1")
++int BPF_HANDLER(test_subprog1, struct sk_buff *skb, int ret)
+ {
+ 	int len;
+ 
+diff --git a/tools/testing/selftests/bpf/progs/fexit_bpf2bpf_simple.c b/tools/testing/selftests/bpf/progs/fexit_bpf2bpf_simple.c
+index ebc0ab7f0f5c..381a8a61781d 100644
+--- a/tools/testing/selftests/bpf/progs/fexit_bpf2bpf_simple.c
++++ b/tools/testing/selftests/bpf/progs/fexit_bpf2bpf_simple.c
+@@ -9,8 +9,9 @@ struct sk_buff {
+ };
+ 
+ __u64 test_result = 0;
+-BPF_TRACE_2("fexit/test_pkt_md_access", test_main2,
+-	    struct sk_buff *, skb, int, ret)
++
++SEC("fexit/test_pkt_md_access")
++int BPF_HANDLER(test_main2, struct sk_buff *skb, int ret)
+ {
+ 	int len;
+ 
+diff --git a/tools/testing/selftests/bpf/progs/fexit_test.c b/tools/testing/selftests/bpf/progs/fexit_test.c
+index 86db0d60fb6e..ea4091f6dca1 100644
+--- a/tools/testing/selftests/bpf/progs/fexit_test.c
++++ b/tools/testing/selftests/bpf/progs/fexit_test.c
+@@ -7,39 +7,41 @@
+ char _license[] SEC("license") = "GPL";
+ 
+ __u64 test1_result = 0;
+-BPF_TRACE_2("fexit/bpf_fentry_test1", test1, int, a, int, ret)
++SEC("fexit/bpf_fentry_test1")
++int BPF_HANDLER(test1, int a, int ret)
+ {
+ 	test1_result = a == 1 && ret == 2;
+ 	return 0;
+ }
+ 
+ __u64 test2_result = 0;
+-BPF_TRACE_3("fexit/bpf_fentry_test2", test2, int, a, __u64, b, int, ret)
++SEC("fexit/bpf_fentry_test2")
++int BPF_HANDLER(test2, int a, __u64 b, int ret)
+ {
+ 	test2_result = a == 2 && b == 3 && ret == 5;
+ 	return 0;
+ }
+ 
+ __u64 test3_result = 0;
+-BPF_TRACE_4("fexit/bpf_fentry_test3", test3, char, a, int, b, __u64, c, int, ret)
++SEC("fexit/bpf_fentry_test3")
++int BPF_HANDLER(test3, char a, int b, __u64 c, int ret)
+ {
+ 	test3_result = a == 4 && b == 5 && c == 6 && ret == 15;
+ 	return 0;
+ }
+ 
+ __u64 test4_result = 0;
+-BPF_TRACE_5("fexit/bpf_fentry_test4", test4,
+-	    void *, a, char, b, int, c, __u64, d, int, ret)
++SEC("fexit/bpf_fentry_test4")
++int BPF_HANDLER(test4, void *a, char b, int c, __u64 d, int ret)
+ {
+-
+ 	test4_result = a == (void *)7 && b == 8 && c == 9 && d == 10 &&
+ 		ret == 34;
+ 	return 0;
+ }
+ 
+ __u64 test5_result = 0;
+-BPF_TRACE_6("fexit/bpf_fentry_test5", test5,
+-	    __u64, a, void *, b, short, c, int, d, __u64, e, int, ret)
++SEC("fexit/bpf_fentry_test5")
++int BPF_HANDLER(test5, __u64 a, void *b, short c, int d, __u64 e, int ret)
+ {
+ 	test5_result = a == 11 && b == (void *)12 && c == 13 && d == 14 &&
+ 		e == 15 && ret == 65;
+@@ -47,9 +49,9 @@ BPF_TRACE_6("fexit/bpf_fentry_test5", test5,
+ }
+ 
+ __u64 test6_result = 0;
+-BPF_TRACE_7("fexit/bpf_fentry_test6", test6,
+-	    __u64, a, void *, b, short, c, int, d, void *, e, __u64, f,
+-	    int, ret)
++SEC("fexit/bpf_fentry_test6")
++int BPF_HANDLER(test6, __u64 a, void *b, short c, int d, void *e, __u64 f,
++		       int ret)
+ {
+ 	test6_result = a == 16 && b == (void *)17 && c == 18 && d == 19 &&
+ 		e == (void *)20 && f == 21 && ret == 111;
+diff --git a/tools/testing/selftests/bpf/progs/kfree_skb.c b/tools/testing/selftests/bpf/progs/kfree_skb.c
+index 974d6f3bb319..d36427ae795f 100644
+--- a/tools/testing/selftests/bpf/progs/kfree_skb.c
++++ b/tools/testing/selftests/bpf/progs/kfree_skb.c
+@@ -57,8 +57,8 @@ struct meta {
+ /* TRACE_EVENT(kfree_skb,
+  *         TP_PROTO(struct sk_buff *skb, void *location),
+  */
+-BPF_TRACE_2("tp_btf/kfree_skb", trace_kfree_skb,
+-	    struct sk_buff *, skb, void *, location)
++SEC("tp_btf/kfree_skb")
++int BPF_HANDLER(trace_kfree_skb, struct sk_buff *skb, void *location)
+ {
+ 	struct net_device *dev;
+ 	struct callback_head *ptr;
+@@ -114,9 +114,9 @@ static volatile struct {
+ 	bool fexit_test_ok;
+ } result;
+ 
+-BPF_TRACE_3("fentry/eth_type_trans", fentry_eth_type_trans,
+-	    struct sk_buff *, skb, struct net_device *, dev,
+-	    unsigned short, protocol)
++SEC("fentry/eth_type_trans")
++int BPF_HANDLER(fentry_eth_type_trans, struct sk_buff *skb,
++		struct net_device *dev, unsigned short protocol)
+ {
+ 	int len, ifindex;
+ 
+@@ -132,9 +132,10 @@ BPF_TRACE_3("fentry/eth_type_trans", fentry_eth_type_trans,
+ 	return 0;
+ }
+ 
+-BPF_TRACE_3("fexit/eth_type_trans", fexit_eth_type_trans,
+-	    struct sk_buff *, skb, struct net_device *, dev,
+-	    unsigned short, protocol)
++SEC("fexit/eth_type_trans")
++int BPF_HANDLER(fexit_eth_type_trans,
++	    struct sk_buff *skb, struct net_device *dev,
++	    unsigned short protocol)
+ {
+ 	int len, ifindex;
+ 
+diff --git a/tools/testing/selftests/bpf/progs/test_overhead.c b/tools/testing/selftests/bpf/progs/test_overhead.c
+index 96c0124a04ba..f8599b3937e9 100644
+--- a/tools/testing/selftests/bpf/progs/test_overhead.c
++++ b/tools/testing/selftests/bpf/progs/test_overhead.c
+@@ -1,39 +1,47 @@
+ // SPDX-License-Identifier: GPL-2.0
+ /* Copyright (c) 2019 Facebook */
++#include <stdbool.h>
++#include <stddef.h>
+ #include <linux/bpf.h>
++#include <linux/ptrace.h>
+ #include "bpf_helpers.h"
+ #include "bpf_tracing.h"
+ #include "bpf_trace_helpers.h"
+ 
++struct task_struct;
++
+ SEC("kprobe/__set_task_comm")
+-int prog1(struct pt_regs *ctx)
++int BPF_KPROBE(prog1, struct task_struct *tsk, const char *buf, bool exec)
+ {
+-	return 0;
++	return tsk == NULL;
+ }
+ 
+ SEC("kretprobe/__set_task_comm")
+-int prog2(struct pt_regs *ctx)
++int BPF_KRETPROBE(prog2,
++		  struct task_struct *tsk, const char *buf, bool exec,
++		  int ret)
+ {
+-	return 0;
++	return PT_REGS_PARM1(ctx) == 0 && ret != 0;
+ }
+ 
+ SEC("raw_tp/task_rename")
+ int prog3(struct bpf_raw_tracepoint_args *ctx)
+ {
+-	return 0;
++	return ctx->args[0] == 0;;
+ }
+ 
+-struct task_struct;
+-BPF_TRACE_3("fentry/__set_task_comm", prog4,
+-	    struct task_struct *, tsk, const char *, buf, __u8, exec)
++SEC("fentry/__set_task_comm")
++int BPF_HANDLER(prog4, struct task_struct *tsk, const char *buf, bool exec)
+ {
+-	return 0;
++	return tsk == NULL;
+ }
+ 
+-BPF_TRACE_3("fexit/__set_task_comm", prog5,
+-	    struct task_struct *, tsk, const char *, buf, __u8, exec)
++SEC("fexit/__set_task_comm")
++int BPF_HANDLER(prog5,
++		struct task_struct *tsk, const char *buf, bool exec,
++		int ret)
+ {
+-	return 0;
++	return tsk == NULL && ret != 0;
+ }
+ 
+ char _license[] SEC("license") = "GPL";
+diff --git a/tools/testing/selftests/bpf/progs/test_perf_buffer.c b/tools/testing/selftests/bpf/progs/test_perf_buffer.c
+index 07c09ca5546a..1fdc999031ac 100644
+--- a/tools/testing/selftests/bpf/progs/test_perf_buffer.c
++++ b/tools/testing/selftests/bpf/progs/test_perf_buffer.c
+@@ -4,6 +4,7 @@
+ #include <linux/ptrace.h>
+ #include <linux/bpf.h>
+ #include "bpf_helpers.h"
++#include "bpf_trace_helpers.h"
+ 
+ struct {
+ 	__uint(type, BPF_MAP_TYPE_PERF_EVENT_ARRAY);
+@@ -12,7 +13,7 @@ struct {
+ } perf_buf_map SEC(".maps");
+ 
+ SEC("kprobe/sys_nanosleep")
+-int handle_sys_nanosleep_entry(struct pt_regs *ctx)
++int BPF_KPROBE(handle_sys_nanosleep_entry)
+ {
+ 	int cpu = bpf_get_smp_processor_id();
+ 
+diff --git a/tools/testing/selftests/bpf/progs/test_probe_user.c b/tools/testing/selftests/bpf/progs/test_probe_user.c
+index 1871e2ece0c4..5b570969e5c5 100644
+--- a/tools/testing/selftests/bpf/progs/test_probe_user.c
++++ b/tools/testing/selftests/bpf/progs/test_probe_user.c
+@@ -7,11 +7,12 @@
+ 
+ #include "bpf_helpers.h"
+ #include "bpf_tracing.h"
++#include "bpf_trace_helpers.h"
+ 
+ static struct sockaddr_in old;
+ 
+ SEC("kprobe/__sys_connect")
+-int handle_sys_connect(struct pt_regs *ctx)
++int BPF_KPROBE(handle_sys_connect)
+ {
+ 	void *ptr = (void *)PT_REGS_PARM2(ctx);
+ 	struct sockaddr_in new;
+-- 
+2.17.1
+
