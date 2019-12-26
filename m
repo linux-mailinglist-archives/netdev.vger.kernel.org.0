@@ -2,235 +2,221 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AF77812ABE3
-	for <lists+netdev@lfdr.de>; Thu, 26 Dec 2019 12:22:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 04DBC12ABF5
+	for <lists+netdev@lfdr.de>; Thu, 26 Dec 2019 12:40:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726277AbfLZLWx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Dec 2019 06:22:53 -0500
-Received: from mail-eopbgr150048.outbound.protection.outlook.com ([40.107.15.48]:36846
-        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726055AbfLZLWx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 26 Dec 2019 06:22:53 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=bWrJcwca7c0H4hBWjyf6kn7t/7/eP1J5z/vTATCrchmKaGsozt7MymKrF+6gojv/XspaEY7aTVkvtphMg6qDNOEMNiXodTOxvHdWK3/jsEDYgWyv1cmwrXWrE3tibcoPO95XB1CuV6QiQZNNd9EpBWjWV+9l+MQvANe4sKgSePkwXExUycwfQFNJT60xlGA8lfBaDyeLy+6cx5RsJz2t1zu8YaF0n6zFJA1Gm4aWOZG21WPet1CmARYucZkMHy07KG3uBj8uCYaCRMbETUjk2c8YAHRzSTMwRVgzXE/t+2HBprFkviw8ZpYLPj8oUkvtdhcxIqmrWP7/3ibuM90gUg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=5yaGEsOoS9Ei6acCs1oYKdQYyLdvVgdugBoxGm2g25Y=;
- b=ntwMW1xeqUamtUiTgJ/DUIfEMqYaQ4PMD/geU16kQAtfv+GxHuKl0jX4zCSGtomFJBACi9NAppOABXTxxmQod1FUlxHiBdZBubZNiVP8wv6IJXBYTJg2ZVvu4H/GfybAU4Hkls5Ihn1o/uv5ERr42CIYpZSPrtXsO4cit/qWGj4MnYZ/geFGRf335o6HXf2fEU7g7+ZzPMdnh8tsD2QIZ9U/lm5f6oDBEZFhdY5lBFci6d+BK8FPfjT4h3j3GMH/OYlW/UHOB1AbkY+R+/bq3UL6rXUOpM5xw5TLeBKM1WN4/Y8cenwzNfxo5htCazR7J8u25tLLdbKOBwfX72JppQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=5yaGEsOoS9Ei6acCs1oYKdQYyLdvVgdugBoxGm2g25Y=;
- b=jCNCfg1cGUylkv4IMKva8mN86fupY4GfpXzxH6XkwSUYOXUWBp0cGkbb91t4lQPjEZ2hipIDykGWmViicjsoMxb0fvSzHkG5eSW3FM4B1coPoX9RLjI0Vheta2uuGJcrYmTXbRiei5PwK0bjzU1e+lKVI9pZ3vWX8ZOfHpIFhZY=
-Received: from AM7PR04MB6885.eurprd04.prod.outlook.com (10.141.174.88) by
- AM7PR04MB7144.eurprd04.prod.outlook.com (52.135.58.13) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2581.12; Thu, 26 Dec 2019 11:22:47 +0000
-Received: from AM7PR04MB6885.eurprd04.prod.outlook.com
- ([fe80::f07f:2e7c:2cda:f041]) by AM7PR04MB6885.eurprd04.prod.outlook.com
- ([fe80::f07f:2e7c:2cda:f041%3]) with mapi id 15.20.2559.017; Thu, 26 Dec 2019
- 11:22:47 +0000
-From:   "Y.b. Lu" <yangbo.lu@nxp.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        Richard Cochran <richardcochran@gmail.com>
-Subject: RE: [PATCH] net: mscc: ocelot: support PPS signal generation
-Thread-Topic: [PATCH] net: mscc: ocelot: support PPS signal generation
-Thread-Index: AQHVu9M/WSOP+wb7uEmsr7BfCHTyEqfMPzMAgAAGbAA=
-Date:   Thu, 26 Dec 2019 11:22:47 +0000
-Message-ID: <AM7PR04MB6885E29B3D92E3C256A10D37F82B0@AM7PR04MB6885.eurprd04.prod.outlook.com>
-References: <20191226095851.24325-1-yangbo.lu@nxp.com>
- <20191226105838.GD1480@lunn.ch>
-In-Reply-To: <20191226105838.GD1480@lunn.ch>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=yangbo.lu@nxp.com; 
-x-originating-ip: [92.121.36.197]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 25f7b257-d7b5-460d-5a19-08d789f5ef89
-x-ms-traffictypediagnostic: AM7PR04MB7144:|AM7PR04MB7144:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <AM7PR04MB71444C514FA8CD40BE3EE7A2F82B0@AM7PR04MB7144.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:6430;
-x-forefront-prvs: 02638D901B
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(376002)(366004)(39860400002)(136003)(396003)(346002)(199004)(189003)(13464003)(5660300002)(81156014)(8676002)(8936002)(81166006)(33656002)(316002)(9686003)(478600001)(55016002)(71200400001)(54906003)(4326008)(64756008)(66476007)(66946007)(66556008)(66446008)(76116006)(86362001)(186003)(26005)(2906002)(52536014)(6916009)(53546011)(6506007)(7696005);DIR:OUT;SFP:1101;SCL:1;SRVR:AM7PR04MB7144;H:AM7PR04MB6885.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: nxp.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: sk8qYDa6ssBazE50MaEWRrhauvTvGTP9fo9k93EYAN1cPR9CY/rsNNoO1CcnlukcUypmtXiIdWR/6WK0Empf8nsNrexoQTGz5g8mw+Dx6RB8QL6oP6S2G94DYu5nw2hYFiMTWD4TzMYrfzqYKao3IxqJg4bedjMSS5ZnWL2lsL0xwXeLo8xa9Xl48jXNHdfWcCUXR5eo5RjvjnRVL2fTGCHbt3zYneQ8QHLfhVmexGEs6g+XTvhsKDrLjmcRE+LxyB9igjrmgpHEtMQGECRyhNIc+/NKn2lAvOZZhYZFt22UW5EJxuTFN/CgYimQ7qmKdsryLem5yavzLnQ6fJJkpRlzmUJHeKurMccNqId3UjorONq5mGur1g7m0zUovMUG7L8VGIQ5x7EWOyZ0Y69p0AyXUDA6e1d3vDmJykIt2UrSmW7gvJn2kxik6oDRHKDImCdDT4tzeuU9nV+XExk+yHBVBHSkNJMU7lw4bdE4RIrvGTOHWX/8r8TQUstjcJYJ
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1726586AbfLZLj6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Dec 2019 06:39:58 -0500
+Received: from mail-ed1-f68.google.com ([209.85.208.68]:42051 "EHLO
+        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725954AbfLZLj5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Dec 2019 06:39:57 -0500
+Received: by mail-ed1-f68.google.com with SMTP id e10so22381036edv.9;
+        Thu, 26 Dec 2019 03:39:56 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=googlemail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=hnDpuMiYhSgWz3b9tcFVN297Eqx81qPSphtkpFW2YI4=;
+        b=EGpos4ezfLlYKew+l/e4uJMp1Skke6cJfAC2hkFpwhvi2aSWglVSxO/Apd0kmsyYU4
+         h/9hBvwkjpD1LWarE95HV5ZORSNeSM6HLaCuBjhLCwboFt4tF4LDm8Wq+K/4nhVTXkPW
+         U+0pnY2U09Jy1xRZjZVbFDO0oJX2AUUEqzmciqjfqDuxrMPMP+iJDX00dXXhOb1MG22G
+         Iea+7+idDyh1+Rw72NADm1grR8WLkGAFilun3oYBoPzH+v8h87Rwgj2sBt6hXG5jeJkI
+         mVWFElZi0AHWt9mwfuEtHRWy3OavHY+pJ/Pr3wik7d+JhHAU2p+I4Be8MjzmEnv+PXSt
+         crXg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=hnDpuMiYhSgWz3b9tcFVN297Eqx81qPSphtkpFW2YI4=;
+        b=PRmjcP8+zgyJGUap8VTrG5pFGJeXj4ofAqi8aK+wPcFm/+L3wpd5Z7qzphhOtSVDLp
+         5HgCGRMXfxiNo+wUi496m2R7QAbpiRDBiF/kOS7Gi9AGTBVodjBakBkYQo47W/kMKUBm
+         +5dBO5q/Kebp7inPfTNqKlFfyh3s26s/UjFi7XJfGdYBaZq3SdxO89LhibT0d7nQIlAn
+         e/Ke5DW3vbFdkw30XEeadqBhul65RGp3aUajfFHM1qxTyeYmvByTjMUQYYGcXf1exLlM
+         fWnRn8THKJqLyDThzgAQyb4jlDor40uYJ164LU6DcHe0h9osCFUTLjzBZsuW8eC7IZRl
+         kf3g==
+X-Gm-Message-State: APjAAAXUsnuQKgALJaB89OD9Z1z3kbMnoj6B5zgQsAIDUB6O7zkvE3CD
+        ozA0QtZIHVkRjrRlEuiKRqq+Tx7AxBKp8AWvoug=
+X-Google-Smtp-Source: APXvYqwnJ4hu5Maho1A6UkCjxWLgHWKDqj1W43SvfESp+qHnuiZUYYJ6rlO/+jx29OthsJx6Da6soJidQqqcVLjEI0s=
+X-Received: by 2002:a17:906:e219:: with SMTP id gf25mr47257452ejb.51.1577360395212;
+ Thu, 26 Dec 2019 03:39:55 -0800 (PST)
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 25f7b257-d7b5-460d-5a19-08d789f5ef89
-X-MS-Exchange-CrossTenant-originalarrivaltime: 26 Dec 2019 11:22:47.3748
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 2YpRZR9NP2var02EpZK+59uFZm/UKzDVrW799VpHV6pc02cXpAlHbnlMF90Gk/tCA8LdnH9F0zOSDiHRxJvGqw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM7PR04MB7144
+References: <20191225005655.1502037-1-martin.blumenstingl@googlemail.com>
+ <20191225005655.1502037-2-martin.blumenstingl@googlemail.com>
+ <20191225150845.GA16671@lunn.ch> <CAFBinCA4X1e5_5nBiHmNiB40uJyr9Nm1b2VkF9NqM+wb7-1xmw@mail.gmail.com>
+ <20191226105044.GC1480@lunn.ch>
+In-Reply-To: <20191226105044.GC1480@lunn.ch>
+From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Date:   Thu, 26 Dec 2019 12:39:44 +0100
+Message-ID: <CAFBinCB8YQ-tuGBixO_85NFXDdrH5keDURFgri5tFLdrAwUJKg@mail.gmail.com>
+Subject: Re: [PATCH 1/3] net: stmmac: dwmac-meson8b: Fix the RGMII TX delay on
+ Meson8b/8m2 SoCs
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     linux-amlogic@lists.infradead.org, netdev@vger.kernel.org,
+        davem@davemloft.net, khilman@baylibre.com,
+        linus.luessing@c0d3.blue, balbes-150@yandex.ru,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        ingrassia@epigenesys.com, jbrunet@baylibre.com,
+        Florian Fainelli <f.fainelli@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> -----Original Message-----
-> From: Andrew Lunn <andrew@lunn.ch>
-> Sent: Thursday, December 26, 2019 6:59 PM
-> To: Y.b. Lu <yangbo.lu@nxp.com>
-> Cc: netdev@vger.kernel.org; David S . Miller <davem@davemloft.net>;
-> Claudiu Manoil <claudiu.manoil@nxp.com>; Vladimir Oltean
-> <vladimir.oltean@nxp.com>; Alexandre Belloni
-> <alexandre.belloni@bootlin.com>; Microchip Linux Driver Support
-> <UNGLinuxDriver@microchip.com>; Richard Cochran
-> <richardcochran@gmail.com>
-> Subject: Re: [PATCH] net: mscc: ocelot: support PPS signal generation
->=20
-> On Thu, Dec 26, 2019 at 05:58:51PM +0800, Yangbo Lu wrote:
-> > This patch is to support PPS signal generation for Ocelot family
-> > switches, including VSC9959 switch.
->=20
-> Hi Yangbo
->=20
-> Please always Cc: Richard Cochran <richardcochran@gmail.com> for ptp
-> patches.
->=20
+Hi Andrew,
 
-Sorry for missing...
+On Thu, Dec 26, 2019 at 11:50 AM Andrew Lunn <andrew@lunn.ch> wrote:
+>
+> > >       # RX and TX delays are added by the MAC when required
+> > >       - rgmii
+> > >
+> > >       # RGMII with internal RX and TX delays provided by the PHY,
+> > >       # the MAC should not add the RX or TX delays in this case
+> > >       - rgmii-id
+> > >
+> > >       # RGMII with internal RX delay provided by the PHY, the MAC
+> > >       # should not add an RX delay in this case
+> > >       - rgmii-rxid
+> > >
+> > >       # RGMII with internal TX delay provided by the PHY, the MAC
+> > >       # should not add an TX delay in this case
+> > >       - rgmii-txid
+> > >
+> > > So ideally, you want the MAC to add no delay at all, and then use the
+> > > correct phy-mode so the PHY adds the correct delay. This gives you the
+> > > most flexibility in terms of PHY and PCB design. This does however
+> > > require that the PHY implements the delay, which not all do.
+> > these boards (with RGMII PHY) that I am aware of are using an RTL8211F
+> > PHY which implements a 2ns PHY TX delay
+>
+> We need to be careful here...
+>
+> Earlier this year we got into a mess with a PHY driver wrongly
+> implemented these delays. DT contained 'rgmii', but the PHY driver
+> actually implemented rgmii-id'. Boards worked, because they actually
+> needed rgmii-id. But then came along a board which really did need
+> rgmii. We took the decision, maybe the wrong decision, to fix the PHY
+> driver, and fixup DT files as we found boards which had the incorrect
+> setting. We broke a lot of boards for a while and caused lots of
+> people pain.
+>
+> You might have something which works, but i want to be sure it is
+> actually correct, not two bugs cancelling each other out.
+(wow, that sounds painful)
 
-> 	Andrew
->=20
+> You say the RTL8211F PHY implements a 2ns PHY TX delay. So in DT, do
+> you have the phy-mode of 'rgmii-txid'? That would be the correct
+> setting to say that the PHY provides only the TX delay.
+yes, in my experiment (for which I did not send patches to the list
+yet because we're discussing that part) I set phy-mode = "rgmii-txid";
+this also makes the dwmac-meson8b driver ignore any TX delay on the MAC side
+
+> > however, the 3.10 vendor kernel also supports Micrel RGMII (and RMII)
+> > PHYs where I don't know if they implement a (configurable) TX delay.
 > >
-> > Signed-off-by: Yangbo Lu <yangbo.lu@nxp.com>
-> > ---
-> >  drivers/net/dsa/ocelot/felix_vsc9959.c  |  2 ++
-> >  drivers/net/ethernet/mscc/ocelot.c      | 25
-> +++++++++++++++++++++++++
-> >  drivers/net/ethernet/mscc/ocelot_ptp.h  |  2 ++
-> >  drivers/net/ethernet/mscc/ocelot_regs.c |  2 ++
-> >  include/soc/mscc/ocelot.h               |  2 ++
-> >  5 files changed, 33 insertions(+)
-> >
-> > diff --git a/drivers/net/dsa/ocelot/felix_vsc9959.c
-> b/drivers/net/dsa/ocelot/felix_vsc9959.c
-> > index b9758b0..ee0ce7c 100644
-> > --- a/drivers/net/dsa/ocelot/felix_vsc9959.c
-> > +++ b/drivers/net/dsa/ocelot/felix_vsc9959.c
-> > @@ -287,6 +287,8 @@ static const u32 vsc9959_ptp_regmap[] =3D {
-> >  	REG(PTP_PIN_TOD_SEC_MSB,           0x000004),
-> >  	REG(PTP_PIN_TOD_SEC_LSB,           0x000008),
-> >  	REG(PTP_PIN_TOD_NSEC,              0x00000c),
-> > +	REG(PTP_PIN_WF_HIGH_PERIOD,        0x000014),
-> > +	REG(PTP_PIN_WF_LOW_PERIOD,         0x000018),
-> >  	REG(PTP_CFG_MISC,                  0x0000a0),
-> >  	REG(PTP_CLK_CFG_ADJ_CFG,           0x0000a4),
-> >  	REG(PTP_CLK_CFG_ADJ_FREQ,          0x0000a8),
-> > diff --git a/drivers/net/ethernet/mscc/ocelot.c
-> b/drivers/net/ethernet/mscc/ocelot.c
-> > index 985b46d..c0f8a9e 100644
-> > --- a/drivers/net/ethernet/mscc/ocelot.c
-> > +++ b/drivers/net/ethernet/mscc/ocelot.c
-> > @@ -2147,6 +2147,29 @@ static struct ptp_clock_info
-> ocelot_ptp_clock_info =3D {
-> >  	.adjfine	=3D ocelot_ptp_adjfine,
-> >  };
-> >
-> > +static void ocelot_ptp_init_pps(struct ocelot *ocelot)
-> > +{
-> > +	u32 val;
-> > +
-> > +	/* PPS signal generation uses CLOCK action. Together with SYNC option=
-,
-> > +	 * a single pulse will be generated after <WAFEFORM_LOW>
-> nanoseconds
-> > +	 * after the time of day has increased the seconds. The pulse will
-> > +	 * get a width of <WAFEFORM_HIGH> nanoseconds.
-> > +	 *
-> > +	 * In default,
-> > +	 * WAFEFORM_LOW =3D 0
-> > +	 * WAFEFORM_HIGH =3D 1us
-> > +	 */
-> > +	ocelot_write_rix(ocelot, 0, PTP_PIN_WF_LOW_PERIOD, ALT_PPS_PIN);
-> > +	ocelot_write_rix(ocelot, 1000, PTP_PIN_WF_HIGH_PERIOD,
-> ALT_PPS_PIN);
-> > +
-> > +	val =3D ocelot_read_rix(ocelot, PTP_PIN_CFG, ALT_PPS_PIN);
-> > +	val &=3D ~(PTP_PIN_CFG_SYNC | PTP_PIN_CFG_ACTION_MASK |
-> PTP_PIN_CFG_DOM);
-> > +	val |=3D (PTP_PIN_CFG_SYNC |
-> PTP_PIN_CFG_ACTION(PTP_PIN_ACTION_CLOCK));
-> > +
-> > +	ocelot_write_rix(ocelot, val, PTP_PIN_CFG, ALT_PPS_PIN);
-> > +}
-> > +
-> >  static int ocelot_init_timestamp(struct ocelot *ocelot)
-> >  {
-> >  	struct ptp_clock *ptp_clock;
-> > @@ -2478,6 +2501,8 @@ int ocelot_init(struct ocelot *ocelot)
-> >  				"Timestamp initialization failed\n");
-> >  			return ret;
-> >  		}
-> > +
-> > +		ocelot_ptp_init_pps(ocelot);
-> >  	}
-> >
-> >  	return 0;
-> > diff --git a/drivers/net/ethernet/mscc/ocelot_ptp.h
-> b/drivers/net/ethernet/mscc/ocelot_ptp.h
-> > index 9ede14a..21bc744 100644
-> > --- a/drivers/net/ethernet/mscc/ocelot_ptp.h
-> > +++ b/drivers/net/ethernet/mscc/ocelot_ptp.h
-> > @@ -13,6 +13,8 @@
-> >  #define PTP_PIN_TOD_SEC_MSB_RSZ		PTP_PIN_CFG_RSZ
-> >  #define PTP_PIN_TOD_SEC_LSB_RSZ		PTP_PIN_CFG_RSZ
-> >  #define PTP_PIN_TOD_NSEC_RSZ		PTP_PIN_CFG_RSZ
-> > +#define PTP_PIN_WF_HIGH_PERIOD_RSZ	PTP_PIN_CFG_RSZ
-> > +#define PTP_PIN_WF_LOW_PERIOD_RSZ	PTP_PIN_CFG_RSZ
-> >
-> >  #define PTP_PIN_CFG_DOM			BIT(0)
-> >  #define PTP_PIN_CFG_SYNC		BIT(2)
-> > diff --git a/drivers/net/ethernet/mscc/ocelot_regs.c
-> b/drivers/net/ethernet/mscc/ocelot_regs.c
-> > index b88b589..ed4dd01 100644
-> > --- a/drivers/net/ethernet/mscc/ocelot_regs.c
-> > +++ b/drivers/net/ethernet/mscc/ocelot_regs.c
-> > @@ -239,6 +239,8 @@ static const u32 ocelot_ptp_regmap[] =3D {
-> >  	REG(PTP_PIN_TOD_SEC_MSB,           0x000004),
-> >  	REG(PTP_PIN_TOD_SEC_LSB,           0x000008),
-> >  	REG(PTP_PIN_TOD_NSEC,              0x00000c),
-> > +	REG(PTP_PIN_WF_HIGH_PERIOD,        0x000014),
-> > +	REG(PTP_PIN_WF_LOW_PERIOD,         0x000018),
-> >  	REG(PTP_CFG_MISC,                  0x0000a0),
-> >  	REG(PTP_CLK_CFG_ADJ_CFG,           0x0000a4),
-> >  	REG(PTP_CLK_CFG_ADJ_FREQ,          0x0000a8),
-> > diff --git a/include/soc/mscc/ocelot.h b/include/soc/mscc/ocelot.h
-> > index 64cbbbe..c2ab20d 100644
-> > --- a/include/soc/mscc/ocelot.h
-> > +++ b/include/soc/mscc/ocelot.h
-> > @@ -325,6 +325,8 @@ enum ocelot_reg {
-> >  	PTP_PIN_TOD_SEC_MSB,
-> >  	PTP_PIN_TOD_SEC_LSB,
-> >  	PTP_PIN_TOD_NSEC,
-> > +	PTP_PIN_WF_HIGH_PERIOD,
-> > +	PTP_PIN_WF_LOW_PERIOD,
-> >  	PTP_CFG_MISC,
-> >  	PTP_CLK_CFG_ADJ_CFG,
-> >  	PTP_CLK_CFG_ADJ_FREQ,
-> > --
-> > 2.7.4
-> >
+> > > Looking at patches 2 and 3, the phy-mode is set to rgmii. What you
+> > > might actually need to do is set this to rgmii-txid, or maybe
+> > > rgmii-id, once you have the MAC not inserting any delay.
+> > please let us split this discussion:
+> > 1) I believe that this patch is still correct and required whenever
+> > the MAC *has to* generate the TX delay (one use-case could be the
+> > Micrel PHYs I mentioned above)
+>
+> I think this patch splits into two parts. One is getting a 25MHz
+> clock. That part i can agree with straight away. The second part is
+> setting a 2ns TX delay. This we need to be careful of. What is the MAC
+> actually doing after this patch? What is the configured RX delay? Does
+> the driver explicitly configure the RX delay? To what?
+good to see that we agree on the clock part!
+
+the MAC is not capable of generating an RX delay (at least as far as I know).
+to me this means that we are using the default on the PHY side (I
+*assume* - but I have no proof - that this means the RX delay is
+enabled, just like TX delay is enabled after a full chip reset)
+
+> > 2) the correct phy-mode and where the TX delay is being generated. I
+> > have tried "rgmii-txid" on my own Odroid-C1 and it's working fine
+> > there. however, it's the only board with RGMII PHY that I have from
+> > this generation of SoCs (and other testers are typically rare for this
+> > platform, because it's an older SoC). so my idea was to use the same
+> > settings as the 3.10 vendor kernel because these seem to be the "known
+> > working" ones.
+>
+> Vendor kernels have the alternative of 'vendor crap' for a good
+> reason. Just because it works does not mean it is correct.
+yes, there's no general rule about the quality of vendor code
+in my case I found Ethernet TX to be stable and close to Gbit/s speeds
+on the vendor kernel while mainline was dropping packets and speeds
+were worse
+that still doesn't mean the vendor code is good, but from a user
+perspective it's better than what we have in mainline
+
+> > what do you think about 2)? my main concern is that this *could* break
+> > Ethernet on other people's boards.
+> > on the other hand I have no idea how likely that actually is.
+>
+> From what i understand, Ethernet is already broken? Or is it broken on
+> just some boards?
+it's mostly "broken" (high TX packet loss, slow TX speeds) for the two
+supported boards with an RGMII PHY (meson8b-odroidc1.dts and
+meson8m2-mxiii-plus.dts)
+examples on the many ways it was broken will follow - feel free to
+skip this part
+
+before this patch we had:
+input clock at 250MHz
+|- m250_sel (inheriting the rate of the input clock because it's a mux)
+   |- m250_div set to 1
+      |- fixed_div_by_2 (outputting 125MHz for the RGMII TX clock)
+together with a configured (but suspicious) TX delay of 4ns on the MAC
+side in the board .dts
+Transmitting ("sending") data via Ethernet has heavy packet loss and
+far from Gbit/s speeds
+(setting the TX delay on the MAC in this case to 2ns broke Ethernet
+completely, even DHCP was failing)
+
+after this patch we have:
+input clock at 500MHz (double as before)
+|- m250_sel (inheriting the rate of the input clock because it's a mux)
+   |- m250_div set to 2
+      |- fixed_div_by_2 (still outputting 125MHz for the RGMII TX clock)
+with the old TX delay of 4ns on the MAC side there is still packet loss
+updating the TX delay on the MAC side to 2ns (which is what the vendor
+driver does) fixes the packet loss and transmit speeds
+
+> The Micrel PHY driver can also control its clock skew, but it does it
+> in an odd way, not via the phy-mode, but via additional
+> properties. See the binding document.
+I see, thank you for the hint
+
+> What we normally say is make the MAC add no delays, and pass the
+> correct configuration to the PHY so it adds the delay. But due to the
+> strapping pin on the rtl8211f, we are in a bit of a grey area. I would
+> suggest the MAC adds no delay, phy-mode is set to rmgii-id, the PHY
+> driver adds TX delay in software, we assume the strapping pin is set
+> to add RX delay, and we add a big fat comment in the DT.
+>
+> For the Micrel PHY, we do the same, plus add the vendor properties to
+> configure the clock skew.
+>
+> But as i said, we are in a bit of a grey area. We can consider other
+> options, but everything needs to be self consistent, between what the
+> MAC is doing, what the PHY is doing, and what phy-mode is set to in
+> DT.
+do you think it's worth the effort to get clarification from Realtek
+on the RX delay behavior (and whether there's a register to control
+it)?
+(when I previously asked them about interrupt support they answered
+all my questions so we were able to confirm that it's implemented
+properly upstream)
+before this email I would have asked Realtek about the RX delay and
+sent a patch updating rtl8211f_config_init (the
+PHY_INTERFACE_MODE_RGMII_RXID and PHY_INTERFACE_MODE_RGMII_ID cases).
+
+you mentioned that there was breakage earlier this year, so I'm not sure anymore
+(that leaves me thinking: asking them is still useful to get out of
+this grey area)
+
+
+Martin
