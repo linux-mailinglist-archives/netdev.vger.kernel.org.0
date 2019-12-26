@@ -2,79 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9620812AF7A
-	for <lists+netdev@lfdr.de>; Thu, 26 Dec 2019 23:58:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 12C3412AF84
+	for <lists+netdev@lfdr.de>; Fri, 27 Dec 2019 00:06:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726933AbfLZW6d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Dec 2019 17:58:33 -0500
-Received: from mail-il1-f193.google.com ([209.85.166.193]:34052 "EHLO
-        mail-il1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726806AbfLZW6d (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Dec 2019 17:58:33 -0500
-Received: by mail-il1-f193.google.com with SMTP id s15so21193724iln.1;
-        Thu, 26 Dec 2019 14:58:32 -0800 (PST)
+        id S1726935AbfLZXGU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Dec 2019 18:06:20 -0500
+Received: from mail-ot1-f65.google.com ([209.85.210.65]:43403 "EHLO
+        mail-ot1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726277AbfLZXGU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Dec 2019 18:06:20 -0500
+Received: by mail-ot1-f65.google.com with SMTP id p8so34024837oth.10
+        for <netdev@vger.kernel.org>; Thu, 26 Dec 2019 15:06:19 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=pmmPiTac3WeEQtt7IFL8QKaw6tXi/ITHfOgpw/sJNsg=;
+        b=Q40ymyeQHuUN6QO93+vjqvyznK8l9vFNp3myN+siAdRSyINO8hQowtYqbrn8BxnTjh
+         k10kgaX122zDjlyiKTfr5wDEMvxpFjEjzTqhdDkmcP84iBxm7oPzCMXq6TVBGR+3U4Ke
+         M04xcEJJYfI05G0yAJGnC4yJy2rA6NX9wap/8cYDU1cPY6QgSML1UpDF431HpdzcBoCR
+         pEi2+dNdAjt/D6Qr75r7MD4XBdWmotuKZZL/h5sKkGI6sSRGet+SrEkJ0OLxmiMsQMKM
+         TU2IbiyFUtn1+cNtcLaVvfOVtU0ww+0K9lOwh7Tcsqnfh15S3vQcNbSWtdlKnrmdgHkr
+         679g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=19umCU1foW27C6F1T/aG75qtQ/YsllKFioJd6vrnCos=;
-        b=OscQeAk0ebhm4cTkwX6UvGpwbi1otWfW3HlA8rLAKUUqPB7c0c1owRcSAESZQ6njRD
-         qBNhLYYzkOEx60bKWwiLYw3z7V1jotKpGVLs8iAAZfwJ7RLOKOVdA8xpDx9bnflzLsmw
-         8lm9JiIiDqsTwR9OmlKgPl0c+itwiKPo2eT64HGIWQrwUZtTRk7PkfSE+OLF/284yTn6
-         c4zTBT7+HJNlarrO03PX/M0bBevs6ZFEnyzIRLZ8HsZn2UarL8kqzWv/fmrWkb2x8+5h
-         tHMiUfVUCqIaLSr6z/eK4t5O5HTjhmLaynMjAHyH1t1Jpyk4HGf0B5yjnNVqAhjlwZXB
-         KY8Q==
-X-Gm-Message-State: APjAAAUTU9JOFdQbHqPJ9g4HKju7T8UTzYu4bKe8n3K0Prnv1bxWKdB+
-        wffW+n90NuNw51yL8+UKiw==
-X-Google-Smtp-Source: APXvYqwI86xFoCX7YL80LZzMdEiLjiACERhaXHMCudrl3qXRjT+KzMJ9HPYZBlZkEjwH0sMKqSGASQ==
-X-Received: by 2002:a92:9107:: with SMTP id t7mr41848417ild.51.1577401112315;
-        Thu, 26 Dec 2019 14:58:32 -0800 (PST)
-Received: from localhost ([64.188.179.250])
-        by smtp.gmail.com with ESMTPSA id 75sm12647588ila.61.2019.12.26.14.58.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 26 Dec 2019 14:58:31 -0800 (PST)
-Date:   Thu, 26 Dec 2019 15:58:31 -0700
-From:   Rob Herring <robh@kernel.org>
-To:     Richard Cochran <richardcochran@gmail.com>
-Cc:     netdev@vger.kernel.org, David Miller <davem@davemloft.net>,
-        devicetree@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Jacob Keller <jacob.e.keller@intel.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Miroslav Lichvar <mlichvar@redhat.com>,
-        Murali Karicheri <m-karicheri2@ti.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Wingman Kwok <w-kwok2@ti.com>
-Subject: Re: [PATCH V9 net-next 09/12] dt-bindings: ptp: Introduce MII time
- stamping devices.
-Message-ID: <20191226225831.GA22533@bogus>
-References: <cover.1577326042.git.richardcochran@gmail.com>
- <ee2e7db95bfc8a30c7f398f051a073aaf38bb7f6.1577326042.git.richardcochran@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=pmmPiTac3WeEQtt7IFL8QKaw6tXi/ITHfOgpw/sJNsg=;
+        b=gzOiA5FKR0u1tCmliA0+AJxFixZGNjDQ/Toe4R9Ei0gXKs9sNLjqvYU78+q5b+UQmZ
+         FDDZQpVka/mtYzUVmE7afUKuH4Wd9JhptOeVrM4wXVRtYY9hWRYkdCC3g7gx1paeppMz
+         UNxI7VgUYEvjJYKAGV2DHc5ZkdHvvnc5sRdCBkFJLpDDu1lpU1K4IE6HAH2gXYkHOVUS
+         WXU147nFO2Qsoz+AdiEiuGv0AklVpllIKAwq67ClEhT5K9QjQ+rL/7nxRQMLG9jgWiXS
+         BlNA8BMcnWeaMX3TUDzxip6E/PIQQwoMP8TEcO5Tbm8U1+xO3nc0kCO9VhSG/syfByUh
+         ZcrQ==
+X-Gm-Message-State: APjAAAU2Boix0+P5/jeHKUWvDDWii89fnPFMtlUW4xsUfvWP7XS3wytP
+        vtP9W6sMrNBsCU/c9xryxebimVD2I1Z65d4U/0z3Aw==
+X-Google-Smtp-Source: APXvYqx66QuXIfpF90Jptuw+jqrpHZPZMHCKW5M5BYmMXFWZ4wSZNfDvRZnrMSaDBBf3oSGcTbDE/1bC7TA5E1657a4=
+X-Received: by 2002:a9d:4c94:: with SMTP id m20mr50126037otf.341.1577401578841;
+ Thu, 26 Dec 2019 15:06:18 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ee2e7db95bfc8a30c7f398f051a073aaf38bb7f6.1577326042.git.richardcochran@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20191223202754.127546-1-edumazet@google.com> <20191223202754.127546-3-edumazet@google.com>
+In-Reply-To: <20191223202754.127546-3-edumazet@google.com>
+From:   Neal Cardwell <ncardwell@google.com>
+Date:   Thu, 26 Dec 2019 18:06:02 -0500
+Message-ID: <CADVnQy=1nYJVTC_Qh70oVSFPGSahwHoUNR17NOtRAiz7J38afQ@mail.gmail.com>
+Subject: Re: [PATCH net-next v2 2/5] tcp_cubic: remove one conditional from hystart_update()
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Soheil Hassas Yeganeh <soheil@google.com>,
+        Yuchung Cheng <ycheng@google.com>,
+        Martin KaFai Lau <kafai@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 25 Dec 2019 18:16:17 -0800, Richard Cochran wrote:
-> This patch add a new binding that allows non-PHY MII time stamping
-> devices to find their buses.  The new documentation covers both the
-> generic binding and one upcoming user.
-> 
-> Signed-off-by: Richard Cochran <richardcochran@gmail.com>
-> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+On Mon, Dec 23, 2019 at 3:28 PM Eric Dumazet <edumazet@google.com> wrote:
+>
+> If we initialize ca->curr_rtt to ~0U, we do not need to test
+> for zero value in hystart_update()
+>
+> We only read ca->curr_rtt if at least HYSTART_MIN_SAMPLES have
+> been processed, and thus ca->curr_rtt will have a sane value.
+>
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
 > ---
->  .../devicetree/bindings/ptp/ptp-ines.txt      | 35 ++++++++++++++++
->  .../devicetree/bindings/ptp/timestamper.txt   | 42 +++++++++++++++++++
->  2 files changed, 77 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/ptp/ptp-ines.txt
->  create mode 100644 Documentation/devicetree/bindings/ptp/timestamper.txt
-> 
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+Acked-by: Neal Cardwell <ncardwell@google.com>
+
+thanks,
+neal
