@@ -2,110 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CC2F612AEBA
-	for <lists+netdev@lfdr.de>; Thu, 26 Dec 2019 22:09:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7CDE412AEBB
+	for <lists+netdev@lfdr.de>; Thu, 26 Dec 2019 22:09:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726706AbfLZVJK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Dec 2019 16:09:10 -0500
-Received: from charlotte.tuxdriver.com ([70.61.120.58]:56734 "EHLO
-        smtp.tuxdriver.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726105AbfLZVJJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Dec 2019 16:09:09 -0500
-Received: from 2606-a000-111b-43ee-0000-0000-0000-115f.inf6.spectrum.com ([2606:a000:111b:43ee::115f] helo=localhost)
-        by smtp.tuxdriver.com with esmtpsa (TLSv1:AES256-SHA:256)
-        (Exim 4.63)
-        (envelope-from <nhorman@tuxdriver.com>)
-        id 1ikaNS-00069z-7I; Thu, 26 Dec 2019 16:09:06 -0500
-Date:   Thu, 26 Dec 2019 16:09:01 -0500
-From:   Neil Horman <nhorman@tuxdriver.com>
-To:     Kevin Kou <qdkevin.kou@gmail.com>
-Cc:     linux-sctp@vger.kernel.org, netdev@vger.kernel.org,
-        vyasevich@gmail.com, marcelo.leitner@gmail.com, davem@davemloft.net
-Subject: Re: [PATCHv3 net-next] sctp: do trace_sctp_probe after SACK
- validation and check
-Message-ID: <20191226210901.GA1891@hmswarspite.think-freely.org>
-References: <20191225082725.1251-1-qdkevin.kou@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191225082725.1251-1-qdkevin.kou@gmail.com>
-X-Spam-Score: -2.9 (--)
-X-Spam-Status: No
+        id S1726839AbfLZVJs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Dec 2019 16:09:48 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:43442 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726105AbfLZVJs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Dec 2019 16:09:48 -0500
+Received: from localhost (unknown [IPv6:2601:601:9f00:1c3::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 1465F1510FBA3;
+        Thu, 26 Dec 2019 13:09:48 -0800 (PST)
+Date:   Thu, 26 Dec 2019 13:09:47 -0800 (PST)
+Message-Id: <20191226.130947.1921067020497315902.davem@davemloft.net>
+To:     aroulin@cumulusnetworks.com
+Cc:     netdev@vger.kernel.org, dsahern@gmail.com,
+        nikolay@cumulusnetworks.com, roopa@cumulusnetworks.com,
+        j.vosburgh@gmail.com, vfalico@gmail.com, andy@greyhouse.net
+Subject: Re: [PATCH net-next v2] bonding: rename AD_STATE_* to LACP_STATE_*
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <1577367717-3971-1-git-send-email-aroulin@cumulusnetworks.com>
+References: <1577367717-3971-1-git-send-email-aroulin@cumulusnetworks.com>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 26 Dec 2019 13:09:48 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Dec 25, 2019 at 08:27:25AM +0000, Kevin Kou wrote:
-> The function sctp_sf_eat_sack_6_2 now performs the Verification
-> Tag validation, Chunk length validation, Bogu check, and also
-> the detection of out-of-order SACK based on the RFC2960
-> Section 6.2 at the beginning, and finally performs the further
-> processing of SACK. The trace_sctp_probe now triggered before
-> the above necessary validation and check.
+From: Andy Roulin <aroulin@cumulusnetworks.com>
+Date: Thu, 26 Dec 2019 05:41:57 -0800
+
+> As the LACP actor/partner state is now part of the uapi, rename the
+> 3ad state defines with LACP prefix. The LACP prefix is preferred over
+> BOND_3AD as the LACP standard moved to 802.1AX.
 > 
-> this patch is to do the trace_sctp_probe after the chunk sanity
-> tests, but keep doing trace if the SACK received is out of order,
-> for the out-of-order SACK is valuable to congestion control
-> debugging.
-> 
-> v1->v2:
->  - keep doing SCTP trace if the SACK is out of order as Marcelo's
->    suggestion.
-> v2->v3:
->  - regenerate the patch as v2 generated on top of v1, and add
->    'net-next' tag to the new one as Marcelo's comments.
-> 
-> Signed-off-by: Kevin Kou <qdkevin.kou@gmail.com>
+> Fixes: 826f66b30c2e3 ("bonding: move 802.3ad port state flags to uapi")
+> Signed-off-by: Andy Roulin <aroulin@cumulusnetworks.com>
 > ---
->  net/sctp/sm_statefuns.c | 18 +++++++++---------
->  1 file changed, 9 insertions(+), 9 deletions(-)
 > 
-> diff --git a/net/sctp/sm_statefuns.c b/net/sctp/sm_statefuns.c
-> index 42558fa..748e3b1 100644
-> --- a/net/sctp/sm_statefuns.c
-> +++ b/net/sctp/sm_statefuns.c
-> @@ -3281,8 +3281,6 @@ enum sctp_disposition sctp_sf_eat_sack_6_2(struct net *net,
->  	struct sctp_sackhdr *sackh;
->  	__u32 ctsn;
->  
-> -	trace_sctp_probe(ep, asoc, chunk);
-> -
->  	if (!sctp_vtag_verify(chunk, asoc))
->  		return sctp_sf_pdiscard(net, ep, asoc, type, arg, commands);
->  
-> @@ -3299,6 +3297,15 @@ enum sctp_disposition sctp_sf_eat_sack_6_2(struct net *net,
->  	chunk->subh.sack_hdr = sackh;
->  	ctsn = ntohl(sackh->cum_tsn_ack);
->  
-> +	/* If Cumulative TSN Ack beyond the max tsn currently
-> +	 * send, terminating the association and respond to the
-> +	 * sender with an ABORT.
-> +	 */
-> +	if (TSN_lte(asoc->next_tsn, ctsn))
-> +		return sctp_sf_violation_ctsn(net, ep, asoc, type, arg, commands);
-> +
-> +	trace_sctp_probe(ep, asoc, chunk);
-> +
->  	/* i) If Cumulative TSN Ack is less than the Cumulative TSN
->  	 *     Ack Point, then drop the SACK.  Since Cumulative TSN
->  	 *     Ack is monotonically increasing, a SACK whose
-> @@ -3312,13 +3319,6 @@ enum sctp_disposition sctp_sf_eat_sack_6_2(struct net *net,
->  		return SCTP_DISPOSITION_DISCARD;
->  	}
->  
-> -	/* If Cumulative TSN Ack beyond the max tsn currently
-> -	 * send, terminating the association and respond to the
-> -	 * sender with an ABORT.
-> -	 */
-> -	if (!TSN_lt(ctsn, asoc->next_tsn))
-> -		return sctp_sf_violation_ctsn(net, ep, asoc, type, arg, commands);
-> -
->  	/* Return this SACK for further processing.  */
->  	sctp_add_cmd_sf(commands, SCTP_CMD_PROCESS_SACK, SCTP_CHUNK(chunk));
->  
-> -- 
-> 1.8.3.1
-> 
-> 
-Acked-by: Neil Horman <nhorman@tuxdriver.com>
+> Notes:
+>     v2: use LACP_* prefix instead of BOND_3AD_*
+
+Applied, thank you.
