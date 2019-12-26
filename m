@@ -2,111 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E0E212AB2D
-	for <lists+netdev@lfdr.de>; Thu, 26 Dec 2019 10:17:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D2DD312AB35
+	for <lists+netdev@lfdr.de>; Thu, 26 Dec 2019 10:23:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726336AbfLZJRC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Dec 2019 04:17:02 -0500
-Received: from mail-eopbgr150071.outbound.protection.outlook.com ([40.107.15.71]:11233
-        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725878AbfLZJRC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 26 Dec 2019 04:17:02 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=I2uAsw9cdnJ06bc1dQLbUjKcqXJSegsOvgJxGyaSC/Ap+AZAgWmavuYvyxJBVILoSeMGt+sbvHd81uNxJvGJK6C3y+Xg0YID+yydrxt5pg3vGGQASVakczqb9xoJ/9l7cO+HZQYNSbaS0ErbnwqMDXHlyMlaB5ppCOr5NV47FxCh1eyywkAcGtvtuLhSqN638n/NFFY0FSN7y3UZZe2OYryAoslKDK8Z9H4Zd955u8tk7XsAgssUSp1dwrJ+xFVbi9tJhH6Ll200tnJkYYRpVbsx82/63R4gecgs7UCSCjUU3CR1qbAS3+LjhE+QAimm/ADsIIcoe3lPLaBwIx7whA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=LbeQzVKohwJaJrR0BhAYt64InSvP5+OLstJFiYkspJI=;
- b=fl9E45bLu3uWOTg8TLn2qpIopFkDITdKeh+pEg3gLt6alOeT6NdMykaGusp0JmkNr46JZkCvP3bGXQ0LQ0M/aMjn3W+5bzxpANqrG1oYDqUejf+JHORGDoJI+rJ2bN8Bl83hs5XgK4hd0NYsYTFgH8j4S1LFjxOxjWuuMZpzszaCJjOkpKMjBx9yj1QNQNHVbBBqCj03oZr4Hj9eSLU4kyM1t0wGWiduowFgPOeMNbc5ssOlBwdTQ5kK5vWUvptsIVjx3cjPDPgq+H7UQgudTgg9X0wBQI3FYoh5SMsNGjOv7xhyAcHALvRg58/FldLw2k30eKv3mpFCJSGMHCaN3w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=LbeQzVKohwJaJrR0BhAYt64InSvP5+OLstJFiYkspJI=;
- b=DlkaExPeJThST6pJJCbRe/14KUltnMSMvte1aQOpY5AYifNGPLVpB/aP841Y+dpVDb1AUSMf2FraU5pK/LJDZciV3vgJM3iijM5c0O5uJpdC43/V7/dBAbawl1h4DvGgWLK1C7rp8ql0BYeX5GjZF1q7Oiqrua6OMlWIy/fQbOg=
-Received: from DB6PR0502MB3048.eurprd05.prod.outlook.com (10.172.250.7) by
- DB6PR0502MB3096.eurprd05.prod.outlook.com (10.172.246.139) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2581.11; Thu, 26 Dec 2019 09:16:57 +0000
-Received: from DB6PR0502MB3048.eurprd05.prod.outlook.com
- ([fe80::a59c:7d1d:5fc2:d6a2]) by DB6PR0502MB3048.eurprd05.prod.outlook.com
- ([fe80::a59c:7d1d:5fc2:d6a2%7]) with mapi id 15.20.2559.017; Thu, 26 Dec 2019
- 09:16:57 +0000
-From:   Ido Schimmel <idosch@mellanox.com>
-To:     Leon Romanovsky <leon@kernel.org>
-CC:     "David S . Miller" <davem@davemloft.net>,
-        mlxsw <mlxsw@mellanox.com>,
-        Vladyslav Tarasiuk <vladyslavt@mellanox.com>,
-        linux-netdev <netdev@vger.kernel.org>,
-        Aya Levin <ayal@mellanox.com>,
-        Leon Romanovsky <leonro@mellanox.com>
-Subject: Re: [PATCH net] net/mlxfw: Fix out-of-memory error in mfa2 flash
- burning
-Thread-Topic: [PATCH net] net/mlxfw: Fix out-of-memory error in mfa2 flash
- burning
-Thread-Index: AQHVu8hdUHavQ7lbTkqyxTPd5rn+zqfMIt6A
-Date:   Thu, 26 Dec 2019 09:16:57 +0000
-Message-ID: <20191226091655.GA35898@splinter>
-References: <20191226084156.9561-1-leon@kernel.org>
-In-Reply-To: <20191226084156.9561-1-leon@kernel.org>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: AM0PR0102CA0019.eurprd01.prod.exchangelabs.com
- (2603:10a6:208:14::32) To DB6PR0502MB3048.eurprd05.prod.outlook.com
- (2603:10a6:4:9e::7)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=idosch@mellanox.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [193.47.165.251]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 1ff1c1e8-2103-4a57-763f-08d789e45b24
-x-ms-traffictypediagnostic: DB6PR0502MB3096:|DB6PR0502MB3096:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <DB6PR0502MB3096270B48B7A5106104D21FBF2B0@DB6PR0502MB3096.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:3173;
-x-forefront-prvs: 02638D901B
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(7916004)(136003)(366004)(346002)(39860400002)(396003)(376002)(199004)(189003)(316002)(186003)(33656002)(71200400001)(6916009)(52116002)(478600001)(33716001)(107886003)(4326008)(86362001)(66946007)(8676002)(54906003)(8936002)(4744005)(81166006)(66556008)(66446008)(81156014)(5660300002)(66476007)(6512007)(9686003)(1076003)(6506007)(2906002)(64756008)(26005)(6486002);DIR:OUT;SFP:1101;SCL:1;SRVR:DB6PR0502MB3096;H:DB6PR0502MB3048.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: w5IKpjCSS0i/JJDFGOTKWOvTPLgo3/dbfi4vEgNsGZFLJIAxwGsilUROkJtZfE4XZ03J6Y/W8+z+Xt5TA7x6YVpWnkOwu5U8v8Syerl7odGkgxQVphdtvX6OVb/arheMwwjBIJk8Aye6E8CsVUdjKWM+iJ4S3RbxiVhxNIQM2XmN0p3qZSLO2am1UrfC59JKb3Qfm+YtBSZ4uP3BgRaWaASJP27BLiPhcstTIao9yiC9+g/7kC/N2n4A4GXIHalCHV3jOaG2rUwOgAVZcy8BP9KJ9bGS7VY23E0Kmwa37pBLNsQVk87ZzByu/zBk2Gg9RSry7i3GAEBT7I7ku6jQdYtbn9jv5BNsscvuGG4Zu3S0cnJb8KJGHTdpRZMa/yHeLCln69yEPMMN2pqdYiT5b/SSB3uMHxrR/wCDiwxKoSed3n/8S0FV5kchDj4v5Oht
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <7C268B815F288248882A945C8D263C84@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        id S1726474AbfLZJXn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Dec 2019 04:23:43 -0500
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:38535 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726023AbfLZJXn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Dec 2019 04:23:43 -0500
+Received: by mail-wr1-f67.google.com with SMTP id y17so23226867wrh.5
+        for <netdev@vger.kernel.org>; Thu, 26 Dec 2019 01:23:41 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=nurk82iIc6Uf6HLv+/kPOhKpFPTwWrEFlF6AYIZHVqQ=;
+        b=yaL76tM97lic3wdIDVCfNrWmp9mP3+VXnpugn3RPs9cJU6TgGpTXrk2k169775DirQ
+         lPs8k2lXxh20ln+uuLA/EHoWolzciSKLjB595cEBfTYj1ZbwQODqy37Mc/jE76VXOkLt
+         SMOrl5nKOUJD52cuyYnJenoti4KCrOI6zlpFaUMTP28sgHZ+Tl2e8U39zjurT32GR2uI
+         hN4gwERSVxbTLw/M3JbNesQdjT4OhIu0The4KQCgYJ8K6p6wbZm8l44UXVAqaaT1WHqB
+         AldN+Gy4/6uka86en1+TPE0Abp0iA5njxagyYatdSjmik382b9o3kMVAGEQqIJ4rO4Qc
+         67dA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=nurk82iIc6Uf6HLv+/kPOhKpFPTwWrEFlF6AYIZHVqQ=;
+        b=oXmuKfP613HM2g3BsSj+j9naE+MVkulfP+t3kUw1KgsGfxJvqBXeXMuV//qyN74Ss0
+         8/BG3BZjc/2B4GvR4AKp5UnKEMjvca61sv5Ry/PYKjgR4LyGhPCzU6Dbl0tKtcDRbLZA
+         ace0enaEkBJdh7R4oUSCo5U+ifwLR9f4GkIof07INlqGPZRYF2iHPhxioUKGxiG2T1Al
+         lojVa9CZ13LJAvJolDaM69RPiTTvX3ttais4p5XQUqrKxi2PubD7572+uT9IX3Ji3XTG
+         4xFO59Q7wGrk+qyM961OPoKxSHVuJbBHAqdhDWVbGwL9T5S1GFvHDJY8xupoDWyxRUbY
+         dFig==
+X-Gm-Message-State: APjAAAX+hBjSfRnIGg1AnTiWHG9HZPHBysjY0Ht4YKBZWOkuNwgGY4bG
+        ZYtA/OKo3SGfBvwF79Mohjuz7Q==
+X-Google-Smtp-Source: APXvYqyAR696D3kS1dX3WXY/2Dbme3j68rsrY1Bgy00HGi1MyXsAHGrtrNLIZELbGoJU3MSXs8Yjjg==
+X-Received: by 2002:adf:fe0e:: with SMTP id n14mr43938820wrr.116.1577352221254;
+        Thu, 26 Dec 2019 01:23:41 -0800 (PST)
+Received: from lophozonia.localdomain (68.120.91.91.rev.sfr.net. [91.91.120.68])
+        by smtp.gmail.com with ESMTPSA id d14sm31930037wru.9.2019.12.26.01.23.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 26 Dec 2019 01:23:40 -0800 (PST)
+From:   Jean-Philippe Brucker <jean-philippe@linaro.org>
+To:     linux-wireless@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        brcm80211-dev-list@cypress.com, netdev@vger.kernel.org,
+        arend.vanspriel@broadcom.com, hdegoede@redhat.com
+Cc:     franky.lin@broadcom.com, hante.meuleman@broadcom.com,
+        chi-hsien.lin@cypress.com, wright.feng@cypress.com,
+        kvalo@codeaurora.org, davem@davemloft.net
+Subject: [PATCH] brcmfmac: sdio: Fix OOB interrupt initialization on brcm43362
+Date:   Thu, 26 Dec 2019 10:20:33 +0100
+Message-Id: <20191226092033.12600-1-jean-philippe@linaro.org>
+X-Mailer: git-send-email 2.24.0
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1ff1c1e8-2103-4a57-763f-08d789e45b24
-X-MS-Exchange-CrossTenant-originalarrivaltime: 26 Dec 2019 09:16:57.4078
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: XLFN6t3G9ock8iIBi4kO6TY9EcsJhwWCIwGo/BLwa6RpnEgJtpaYRC3aKtBEAPDaU63yMP02HpSSecwo7/8VOw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR0502MB3096
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 26, 2019 at 10:41:56AM +0200, Leon Romanovsky wrote:
-> From: Vladyslav Tarasiuk <vladyslavt@mellanox.com>
->=20
-> The burning process requires to perform internal allocations of large
-> chunks of memory. This memory doesn't need to be contiguous and can be
-> safely allocated by vzalloc() instead of kzalloc(). This patch changes
-> such allocation to avoid possible out-of-memory failure.
->=20
-> Fixes: 410ed13cae39 ("Add the mlxfw module for Mellanox firmware flash pr=
-ocess")
-> Signed-off-by: Vladyslav Tarasiuk <vladyslavt@mellanox.com>
-> Reviewed-by: Aya Levin <ayal@mellanox.com>
-> Signed-off-by: Leon Romanovsky <leonro@mellanox.com>
+Commit 262f2b53f679 ("brcmfmac: call brcmf_attach() just before calling
+brcmf_bus_started()") changed the initialization order of the brcmfmac
+SDIO driver. Unfortunately since brcmf_sdiod_intr_register() is now
+called before the sdiodev->bus_if initialization, it reads the wrong
+chip ID and fails to initialize the GPIO on brcm43362. Thus the chip
+cannot send interrupts and fails to probe:
 
-Tested-by: Ido Schimmel <idosch@mellanox.com>
+[   12.517023] brcmfmac: brcmf_sdio_bus_rxctl: resumed on timeout
+[   12.531214] ieee80211 phy0: brcmf_bus_started: failed: -110
+[   12.536976] ieee80211 phy0: brcmf_attach: dongle is not responding: err=-110
+[   12.566467] brcmfmac: brcmf_sdio_firmware_callback: brcmf_attach failed
+
+Initialize the bus interface earlier to ensure that
+brcmf_sdiod_intr_register() properly sets up the OOB interrupt.
+
+BugLink: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=908438
+Fixes: 262f2b53f679 ("brcmfmac: call brcmf_attach() just before calling brcmf_bus_started()")
+Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+---
+A workaround [1] disabling the OOB interrupt is being discussed. It
+works for me, but this patch fixes the wifi problem on my cubietruck.
+
+[1] https://lore.kernel.org/linux-arm-kernel/20180930150927.12076-1-hdegoede@redhat.com/
+---
+ .../net/wireless/broadcom/brcm80211/brcmfmac/sdio.c  | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
+index 264ad63232f8..058069a03693 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
+@@ -4220,38 +4220,38 @@ static void brcmf_sdio_firmware_callback(struct device *dev, int err,
+ 		brcmf_sdio_sr_init(bus);
+ 	} else {
+ 		/* Restore previous clock setting */
+ 		brcmf_sdiod_writeb(sdiod, SBSDIO_FUNC1_CHIPCLKCSR,
+ 				   saveclk, &err);
+ 	}
+ 
+ 	if (err == 0) {
++		/* Assign bus interface call back */
++		sdiod->bus_if->dev = sdiod->dev;
++		sdiod->bus_if->ops = &brcmf_sdio_bus_ops;
++		sdiod->bus_if->chip = bus->ci->chip;
++		sdiod->bus_if->chiprev = bus->ci->chiprev;
++
+ 		/* Allow full data communication using DPC from now on. */
+ 		brcmf_sdiod_change_state(bus->sdiodev, BRCMF_SDIOD_DATA);
+ 
+ 		err = brcmf_sdiod_intr_register(sdiod);
+ 		if (err != 0)
+ 			brcmf_err("intr register failed:%d\n", err);
+ 	}
+ 
+ 	/* If we didn't come up, turn off backplane clock */
+ 	if (err != 0) {
+ 		brcmf_sdio_clkctl(bus, CLK_NONE, false);
+ 		goto checkdied;
+ 	}
+ 
+ 	sdio_release_host(sdiod->func1);
+ 
+-	/* Assign bus interface call back */
+-	sdiod->bus_if->dev = sdiod->dev;
+-	sdiod->bus_if->ops = &brcmf_sdio_bus_ops;
+-	sdiod->bus_if->chip = bus->ci->chip;
+-	sdiod->bus_if->chiprev = bus->ci->chiprev;
+-
+ 	err = brcmf_alloc(sdiod->dev, sdiod->settings);
+ 	if (err) {
+ 		brcmf_err("brcmf_alloc failed\n");
+ 		goto claim;
+ 	}
+ 
+ 	/* Attach to the common layer, reserve hdr space */
+ 	err = brcmf_attach(sdiod->dev);
+-- 
+2.24.0
+
