@@ -2,57 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1414E12AFB5
-	for <lists+netdev@lfdr.de>; Fri, 27 Dec 2019 00:25:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C44C12AFBC
+	for <lists+netdev@lfdr.de>; Fri, 27 Dec 2019 00:27:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726936AbfLZXZX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Dec 2019 18:25:23 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:44592 "EHLO
+        id S1727030AbfLZX1b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Dec 2019 18:27:31 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:44612 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725909AbfLZXZX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Dec 2019 18:25:23 -0500
+        with ESMTP id S1725909AbfLZX1b (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Dec 2019 18:27:31 -0500
 Received: from localhost (unknown [IPv6:2601:601:9f00:1c3::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id C734B1539F551;
-        Thu, 26 Dec 2019 15:25:22 -0800 (PST)
-Date:   Thu, 26 Dec 2019 15:25:22 -0800 (PST)
-Message-Id: <20191226.152522.547752807327139189.davem@davemloft.net>
-To:     daniel@iogearbox.net
-Cc:     jakub.kicinski@netronome.com, ast@kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: Re: pull-request: bpf 2019-12-23
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 24980153A41D6;
+        Thu, 26 Dec 2019 15:27:31 -0800 (PST)
+Date:   Thu, 26 Dec 2019 15:27:30 -0800 (PST)
+Message-Id: <20191226.152730.1286140920999493173.davem@davemloft.net>
+To:     manishc@marvell.com
+Cc:     netdev@vger.kernel.org, aelior@marvell.com, skalluru@marvell.com
+Subject: Re: [PATCH net 0/2] bnx2x: Bug fixes
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20191223144823.3456-1-daniel@iogearbox.net>
-References: <20191223144823.3456-1-daniel@iogearbox.net>
+In-Reply-To: <20191223182309.3919-1-manishc@marvell.com>
+References: <20191223182309.3919-1-manishc@marvell.com>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 26 Dec 2019 15:25:23 -0800 (PST)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 26 Dec 2019 15:27:31 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Daniel Borkmann <daniel@iogearbox.net>
-Date: Mon, 23 Dec 2019 15:48:23 +0100
+From: Manish Chopra <manishc@marvell.com>
+Date: Mon, 23 Dec 2019 10:23:07 -0800
 
-> The following pull-request contains BPF updates for your *net* tree.
+> This series has changes in the area of vlan resources
+> management APIs to fix fw assert issue reported in max
+> vlan configuration testing over the PF.
 > 
-> We've added 2 non-merge commits during the last 1 day(s) which contain
-> a total of 4 files changed, 34 insertions(+), 31 deletions(-).
-> 
-> The main changes are:
-> 
-> 1) Fix libbpf build when building on a read-only filesystem with O=dir
->    option, from Namhyung Kim.
-> 
-> 2) Fix a precision tracking bug for unknown scalars, from Daniel Borkmann.
-> 
-> Please consider pulling these changes from:
-> 
->   git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git
+> Please consider applying it to "net"
 
-Pulled, thanks Daniel.
+Series applied, thanks.
