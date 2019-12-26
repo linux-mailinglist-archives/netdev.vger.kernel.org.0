@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B8A3E12ABE2
-	for <lists+netdev@lfdr.de>; Thu, 26 Dec 2019 12:21:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AF77812ABE3
+	for <lists+netdev@lfdr.de>; Thu, 26 Dec 2019 12:22:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726506AbfLZLVS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Dec 2019 06:21:18 -0500
-Received: from mail-eopbgr60043.outbound.protection.outlook.com ([40.107.6.43]:56561
-        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
+        id S1726277AbfLZLWx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Dec 2019 06:22:53 -0500
+Received: from mail-eopbgr150048.outbound.protection.outlook.com ([40.107.15.48]:36846
+        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726055AbfLZLVS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 26 Dec 2019 06:21:18 -0500
+        id S1726055AbfLZLWx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 26 Dec 2019 06:22:53 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=cArzmU31pZ8RO+OqH/b+F9OIV+0l4D4viPc3kKlw2x3CZp4ToJcImO5DRnbz4xsOzJYPQDcOWBs84h1e0ZykHxJAXNSqMm1fvvoWyGXemPXHrrs81h0PMZXmrF9dalhp8TI+n3fmeUmue92cRoeA0yDPzKIut+Aj2O78L0z7wRTnwrtXM7GhGW5CrVty9beyz/fhotvJzU+4vJcETdOjIBSSutK7sC0fkjdXG8T+NzbI40qOfxo1NcIezDy4hTEAjk/1cTDlXF/qL2N0JSz7s09cd8gZmp25kaK3IWw7Eoi2z0A9n5IJVhK4qz7w5AUvGsmhPvTr4ECCzyEiTZJgng==
+ b=bWrJcwca7c0H4hBWjyf6kn7t/7/eP1J5z/vTATCrchmKaGsozt7MymKrF+6gojv/XspaEY7aTVkvtphMg6qDNOEMNiXodTOxvHdWK3/jsEDYgWyv1cmwrXWrE3tibcoPO95XB1CuV6QiQZNNd9EpBWjWV+9l+MQvANe4sKgSePkwXExUycwfQFNJT60xlGA8lfBaDyeLy+6cx5RsJz2t1zu8YaF0n6zFJA1Gm4aWOZG21WPet1CmARYucZkMHy07KG3uBj8uCYaCRMbETUjk2c8YAHRzSTMwRVgzXE/t+2HBprFkviw8ZpYLPj8oUkvtdhcxIqmrWP7/3ibuM90gUg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=jxPGkkJjWLDul+JwDDiueBZlQft7T4TSYfWGj5FjUZs=;
- b=O1Y8HWMyxLSXTw608OYikFCoPQdjANjGAU7VEKcaMLBxwHUHgyH+Rc+zwxfIKrrTdfjwhgrLCq91bWbf/xbxrdK9oBZqHyvE2WWC5qAnWsQqvqQIfLCyF2r5IsxMvCbnJbYsedMw80XGeN8iPN+52uUpem/GJoUU93Oicp78rXBR+1jBpbnTIQZ0QQMeN4Dy4mu8kUBjFOvfjf10LfWWqoEpM+Akzb4gV6WRF5zaykUxKu8s3YZxpDOqKQDiQoeNbBOymIhW0SFxrcdJvox+LIrJQh5txPK2RlRmGIWfd9VOoPzQaaNpnPSnWJqQ6FMEGCUi+ODzJi3VC/HAvxAm2Q==
+ bh=5yaGEsOoS9Ei6acCs1oYKdQYyLdvVgdugBoxGm2g25Y=;
+ b=ntwMW1xeqUamtUiTgJ/DUIfEMqYaQ4PMD/geU16kQAtfv+GxHuKl0jX4zCSGtomFJBACi9NAppOABXTxxmQod1FUlxHiBdZBubZNiVP8wv6IJXBYTJg2ZVvu4H/GfybAU4Hkls5Ihn1o/uv5ERr42CIYpZSPrtXsO4cit/qWGj4MnYZ/geFGRf335o6HXf2fEU7g7+ZzPMdnh8tsD2QIZ9U/lm5f6oDBEZFhdY5lBFci6d+BK8FPfjT4h3j3GMH/OYlW/UHOB1AbkY+R+/bq3UL6rXUOpM5xw5TLeBKM1WN4/Y8cenwzNfxo5htCazR7J8u25tLLdbKOBwfX72JppQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=jxPGkkJjWLDul+JwDDiueBZlQft7T4TSYfWGj5FjUZs=;
- b=Eu30dQQY6m17fxRluhBvfg5n5ntWTjhp8Gz4IDXhIrHMJKWx+KDaoGPuYk4al1tS329fBrVT+/Tdnv2mhbpz3VqI4JA4w6pisUE84TK0Vxx3YvRPFo6hI5UQPW0zhpBke6HoYjhVyj2seJHrH9hVc0jvWoZVBMj7WDEuf4S1PpU=
+ bh=5yaGEsOoS9Ei6acCs1oYKdQYyLdvVgdugBoxGm2g25Y=;
+ b=jCNCfg1cGUylkv4IMKva8mN86fupY4GfpXzxH6XkwSUYOXUWBp0cGkbb91t4lQPjEZ2hipIDykGWmViicjsoMxb0fvSzHkG5eSW3FM4B1coPoX9RLjI0Vheta2uuGJcrYmTXbRiei5PwK0bjzU1e+lKVI9pZ3vWX8ZOfHpIFhZY=
 Received: from AM7PR04MB6885.eurprd04.prod.outlook.com (10.141.174.88) by
  AM7PR04MB7144.eurprd04.prod.outlook.com (52.135.58.13) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2581.12; Thu, 26 Dec 2019 11:21:14 +0000
+ 15.20.2581.12; Thu, 26 Dec 2019 11:22:47 +0000
 Received: from AM7PR04MB6885.eurprd04.prod.outlook.com
  ([fe80::f07f:2e7c:2cda:f041]) by AM7PR04MB6885.eurprd04.prod.outlook.com
  ([fe80::f07f:2e7c:2cda:f041%3]) with mapi id 15.20.2559.017; Thu, 26 Dec 2019
- 11:21:14 +0000
+ 11:22:47 +0000
 From:   "Y.b. Lu" <yangbo.lu@nxp.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-CC:     netdev <netdev@vger.kernel.org>,
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         "David S . Miller" <davem@davemloft.net>,
         Claudiu Manoil <claudiu.manoil@nxp.com>,
         Vladimir Oltean <vladimir.oltean@nxp.com>,
@@ -45,13 +45,12 @@ CC:     netdev <netdev@vger.kernel.org>,
         Richard Cochran <richardcochran@gmail.com>
 Subject: RE: [PATCH] net: mscc: ocelot: support PPS signal generation
 Thread-Topic: [PATCH] net: mscc: ocelot: support PPS signal generation
-Thread-Index: AQHVu9M/WSOP+wb7uEmsr7BfCHTyEqfMPJMAgAAASgCAAAgE0A==
-Date:   Thu, 26 Dec 2019 11:21:14 +0000
-Message-ID: <AM7PR04MB6885358CE2FA4C9CA10E55AFF82B0@AM7PR04MB6885.eurprd04.prod.outlook.com>
+Thread-Index: AQHVu9M/WSOP+wb7uEmsr7BfCHTyEqfMPzMAgAAGbAA=
+Date:   Thu, 26 Dec 2019 11:22:47 +0000
+Message-ID: <AM7PR04MB6885E29B3D92E3C256A10D37F82B0@AM7PR04MB6885.eurprd04.prod.outlook.com>
 References: <20191226095851.24325-1-yangbo.lu@nxp.com>
- <CA+h21hojJ=UU2i1kucYoD4G9VQgpz1XytSOp_MT9pjRYFnkc4A@mail.gmail.com>
- <CA+h21hqCp-a_ZE6qQL3CXEqwfrCBhdo1nYfK_ucJM0d7HFdYAQ@mail.gmail.com>
-In-Reply-To: <CA+h21hqCp-a_ZE6qQL3CXEqwfrCBhdo1nYfK_ucJM0d7HFdYAQ@mail.gmail.com>
+ <20191226105838.GD1480@lunn.ch>
+In-Reply-To: <20191226105838.GD1480@lunn.ch>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
@@ -61,156 +60,177 @@ authentication-results: spf=none (sender IP is )
 x-originating-ip: [92.121.36.197]
 x-ms-publictraffictype: Email
 x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 6e37ca3b-74f5-4aaa-df32-08d789f5b80e
+x-ms-office365-filtering-correlation-id: 25f7b257-d7b5-460d-5a19-08d789f5ef89
 x-ms-traffictypediagnostic: AM7PR04MB7144:|AM7PR04MB7144:
 x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <AM7PR04MB7144EE07A57679D0B478E5A3F82B0@AM7PR04MB7144.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-microsoft-antispam-prvs: <AM7PR04MB71444C514FA8CD40BE3EE7A2F82B0@AM7PR04MB7144.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:6430;
 x-forefront-prvs: 02638D901B
 x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(376002)(366004)(39860400002)(136003)(396003)(346002)(199004)(189003)(13464003)(5660300002)(81156014)(8676002)(8936002)(81166006)(33656002)(316002)(9686003)(478600001)(55016002)(71200400001)(54906003)(4326008)(64756008)(66476007)(66946007)(66556008)(66446008)(76116006)(86362001)(186003)(26005)(2906002)(52536014)(6916009)(53546011)(6506007)(7696005);DIR:OUT;SFP:1101;SCL:1;SRVR:AM7PR04MB7144;H:AM7PR04MB6885.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
 received-spf: None (protection.outlook.com: nxp.com does not designate
  permitted sender hosts)
 x-ms-exchange-senderadcheck: 1
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: MMVgqz109X8vwH9jIf++/o20yiocmZK2sozXYpqAE3AIrF3w5eVhl7Qht8qSvFpz717e7ZezsbhJvdX2euQ8QpfHu6v6sqlHhFDOJMrFfmCBjKeQN/bPh7hOTQskxqkoVdqCeEDkW3gKyvYwc+kQHKiIBBCn0g1v0PCrxv0H18AEJs7CcZjoY9p7Yeiy63U3nW3GXwt6icQGFOetZbQvq9G5JzhQvkNGCz30jpEQUaGoQ6mgft70syJppl6aQwZjBgtEphfXGSnKciJwCfuj+uWVAbKHwzi3d8Z+Ul+4zQIVkasxEfwZNUFbRGtHj47TqGZRxcsvSMvm62XvakoVz9gAIlaM0kZN3QFy1zCjgqgVUsPAoFPnOAOm2H13GiE2wYE4iZ6ozvBZe7dUL6gaZR2RvmpiH9RR4J+POcvPsjR5ri8rX0RUfyOjxSg/ZLJYrZ0S9getJ7g8IUqen4zHf23ewPGRPFJVChNXQkeaGX6Rsx5+60J57rk/GI3WyTvN
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+x-microsoft-antispam-message-info: sk8qYDa6ssBazE50MaEWRrhauvTvGTP9fo9k93EYAN1cPR9CY/rsNNoO1CcnlukcUypmtXiIdWR/6WK0Empf8nsNrexoQTGz5g8mw+Dx6RB8QL6oP6S2G94DYu5nw2hYFiMTWD4TzMYrfzqYKao3IxqJg4bedjMSS5ZnWL2lsL0xwXeLo8xa9Xl48jXNHdfWcCUXR5eo5RjvjnRVL2fTGCHbt3zYneQ8QHLfhVmexGEs6g+XTvhsKDrLjmcRE+LxyB9igjrmgpHEtMQGECRyhNIc+/NKn2lAvOZZhYZFt22UW5EJxuTFN/CgYimQ7qmKdsryLem5yavzLnQ6fJJkpRlzmUJHeKurMccNqId3UjorONq5mGur1g7m0zUovMUG7L8VGIQ5x7EWOyZ0Y69p0AyXUDA6e1d3vDmJykIt2UrSmW7gvJn2kxik6oDRHKDImCdDT4tzeuU9nV+XExk+yHBVBHSkNJMU7lw4bdE4RIrvGTOHWX/8r8TQUstjcJYJ
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6e37ca3b-74f5-4aaa-df32-08d789f5b80e
-X-MS-Exchange-CrossTenant-originalarrivaltime: 26 Dec 2019 11:21:14.3672
+X-MS-Exchange-CrossTenant-Network-Message-Id: 25f7b257-d7b5-460d-5a19-08d789f5ef89
+X-MS-Exchange-CrossTenant-originalarrivaltime: 26 Dec 2019 11:22:47.3748
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: enNoNO9C5GpdED0cqwCVggjFIX+vcQpbTTMnY6W1tgPys782galgJ8aRRuQm1VMDsRhR6XFDPAboXLfCBwGvuw==
+X-MS-Exchange-CrossTenant-userprincipalname: 2YpRZR9NP2var02EpZK+59uFZm/UKzDVrW799VpHV6pc02cXpAlHbnlMF90Gk/tCA8LdnH9F0zOSDiHRxJvGqw==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM7PR04MB7144
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBWbGFkaW1pciBPbHRlYW4gPG9s
-dGVhbnZAZ21haWwuY29tPg0KPiBTZW50OiBUaHVyc2RheSwgRGVjZW1iZXIgMjYsIDIwMTkgNjo1
-MCBQTQ0KPiBUbzogWS5iLiBMdSA8eWFuZ2JvLmx1QG54cC5jb20+DQo+IENjOiBuZXRkZXYgPG5l
-dGRldkB2Z2VyLmtlcm5lbC5vcmc+OyBEYXZpZCBTIC4gTWlsbGVyDQo+IDxkYXZlbUBkYXZlbWxv
-ZnQubmV0PjsgQ2xhdWRpdSBNYW5vaWwgPGNsYXVkaXUubWFub2lsQG54cC5jb20+Ow0KPiBWbGFk
-aW1pciBPbHRlYW4gPHZsYWRpbWlyLm9sdGVhbkBueHAuY29tPjsgQWxleGFuZHJlIEJlbGxvbmkN
-Cj4gPGFsZXhhbmRyZS5iZWxsb25pQGJvb3RsaW4uY29tPjsgTWljcm9jaGlwIExpbnV4IERyaXZl
-ciBTdXBwb3J0DQo+IDxVTkdMaW51eERyaXZlckBtaWNyb2NoaXAuY29tPjsgUmljaGFyZCBDb2No
-cmFuDQo+IDxyaWNoYXJkY29jaHJhbkBnbWFpbC5jb20+DQo+IFN1YmplY3Q6IFJlOiBbUEFUQ0hd
-IG5ldDogbXNjYzogb2NlbG90OiBzdXBwb3J0IFBQUyBzaWduYWwgZ2VuZXJhdGlvbg0KPiANCj4g
-T24gVGh1LCAyNiBEZWMgMjAxOSBhdCAxMjo0OSwgVmxhZGltaXIgT2x0ZWFuIDxvbHRlYW52QGdt
-YWlsLmNvbT4gd3JvdGU6DQo+ID4NCj4gPiBIaSBZYW5nYm8sDQo+ID4NCj4gPiBPbiBUaHUsIDI2
-IERlYyAyMDE5IGF0IDEyOjAwLCBZYW5nYm8gTHUgPHlhbmdiby5sdUBueHAuY29tPiB3cm90ZToN
-Cj4gPiA+DQo+ID4gPiBUaGlzIHBhdGNoIGlzIHRvIHN1cHBvcnQgUFBTIHNpZ25hbCBnZW5lcmF0
-aW9uIGZvciBPY2Vsb3QgZmFtaWx5DQo+ID4gPiBzd2l0Y2hlcywgaW5jbHVkaW5nIFZTQzk5NTkg
-c3dpdGNoLg0KPiA+ID4NCj4gPiA+IFNpZ25lZC1vZmYtYnk6IFlhbmdibyBMdSA8eWFuZ2JvLmx1
-QG54cC5jb20+DQo+ID4gPiAtLS0NCj4gPg0KPiA+IFNob3VsZG4ndCB0aGlzIGJlIGludGVncmF0
-ZWQgd2l0aCB0aGUgLmVuYWJsZSBjYWxsYmFjayBvZiB0aGUgUFRQIGNvcmU/DQo+ID4NCj4gPiA+
-ICBkcml2ZXJzL25ldC9kc2Evb2NlbG90L2ZlbGl4X3ZzYzk5NTkuYyAgfCAgMiArKw0KPiA+ID4g
-IGRyaXZlcnMvbmV0L2V0aGVybmV0L21zY2Mvb2NlbG90LmMgICAgICB8IDI1DQo+ICsrKysrKysr
-KysrKysrKysrKysrKysrKysNCj4gPiA+ICBkcml2ZXJzL25ldC9ldGhlcm5ldC9tc2NjL29jZWxv
-dF9wdHAuaCAgfCAgMiArKw0KPiA+ID4gIGRyaXZlcnMvbmV0L2V0aGVybmV0L21zY2Mvb2NlbG90
-X3JlZ3MuYyB8ICAyICsrDQo+ID4gPiAgaW5jbHVkZS9zb2MvbXNjYy9vY2Vsb3QuaCAgICAgICAg
-ICAgICAgIHwgIDIgKysNCj4gPiA+ICA1IGZpbGVzIGNoYW5nZWQsIDMzIGluc2VydGlvbnMoKykN
-Cj4gPiA+DQo+ID4gPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9uZXQvZHNhL29jZWxvdC9mZWxpeF92
-c2M5OTU5LmMNCj4gYi9kcml2ZXJzL25ldC9kc2Evb2NlbG90L2ZlbGl4X3ZzYzk5NTkuYw0KPiA+
-ID4gaW5kZXggYjk3NThiMC4uZWUwY2U3YyAxMDA2NDQNCj4gPiA+IC0tLSBhL2RyaXZlcnMvbmV0
-L2RzYS9vY2Vsb3QvZmVsaXhfdnNjOTk1OS5jDQo+ID4gPiArKysgYi9kcml2ZXJzL25ldC9kc2Ev
-b2NlbG90L2ZlbGl4X3ZzYzk5NTkuYw0KPiA+ID4gQEAgLTI4Nyw2ICsyODcsOCBAQCBzdGF0aWMg
-Y29uc3QgdTMyIHZzYzk5NTlfcHRwX3JlZ21hcFtdID0gew0KPiA+ID4gICAgICAgICBSRUcoUFRQ
-X1BJTl9UT0RfU0VDX01TQiwgICAgICAgICAgIDB4MDAwMDA0KSwNCj4gPiA+ICAgICAgICAgUkVH
-KFBUUF9QSU5fVE9EX1NFQ19MU0IsICAgICAgICAgICAweDAwMDAwOCksDQo+ID4gPiAgICAgICAg
-IFJFRyhQVFBfUElOX1RPRF9OU0VDLCAgICAgICAgICAgICAgMHgwMDAwMGMpLA0KPiA+ID4gKyAg
-ICAgICBSRUcoUFRQX1BJTl9XRl9ISUdIX1BFUklPRCwgICAgICAgIDB4MDAwMDE0KSwNCj4gPiA+
-ICsgICAgICAgUkVHKFBUUF9QSU5fV0ZfTE9XX1BFUklPRCwgICAgICAgICAweDAwMDAxOCksDQo+
-ID4gPiAgICAgICAgIFJFRyhQVFBfQ0ZHX01JU0MsICAgICAgICAgICAgICAgICAgMHgwMDAwYTAp
-LA0KPiA+ID4gICAgICAgICBSRUcoUFRQX0NMS19DRkdfQURKX0NGRywgICAgICAgICAgIDB4MDAw
-MGE0KSwNCj4gPiA+ICAgICAgICAgUkVHKFBUUF9DTEtfQ0ZHX0FESl9GUkVRLCAgICAgICAgICAw
-eDAwMDBhOCksDQo+ID4gPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9uZXQvZXRoZXJuZXQvbXNjYy9v
-Y2Vsb3QuYw0KPiBiL2RyaXZlcnMvbmV0L2V0aGVybmV0L21zY2Mvb2NlbG90LmMNCj4gPiA+IGlu
-ZGV4IDk4NWI0NmQuLmMwZjhhOWUgMTAwNjQ0DQo+ID4gPiAtLS0gYS9kcml2ZXJzL25ldC9ldGhl
-cm5ldC9tc2NjL29jZWxvdC5jDQo+ID4gPiArKysgYi9kcml2ZXJzL25ldC9ldGhlcm5ldC9tc2Nj
-L29jZWxvdC5jDQo+ID4gPiBAQCAtMjE0Nyw2ICsyMTQ3LDI5IEBAIHN0YXRpYyBzdHJ1Y3QgcHRw
-X2Nsb2NrX2luZm8NCj4gb2NlbG90X3B0cF9jbG9ja19pbmZvID0gew0KPiA+ID4gICAgICAgICAu
-YWRqZmluZSAgICAgICAgPSBvY2Vsb3RfcHRwX2FkamZpbmUsDQo+ID4gPiAgfTsNCj4gPiA+DQo+
-ID4gPiArc3RhdGljIHZvaWQgb2NlbG90X3B0cF9pbml0X3BwcyhzdHJ1Y3Qgb2NlbG90ICpvY2Vs
-b3QpDQo+ID4gPiArew0KPiA+ID4gKyAgICAgICB1MzIgdmFsOw0KPiA+ID4gKw0KPiA+ID4gKyAg
-ICAgICAvKiBQUFMgc2lnbmFsIGdlbmVyYXRpb24gdXNlcyBDTE9DSyBhY3Rpb24uIFRvZ2V0aGVy
-IHdpdGggU1lOQw0KPiBvcHRpb24sDQo+ID4gPiArICAgICAgICAqIGEgc2luZ2xlIHB1bHNlIHdp
-bGwgYmUgZ2VuZXJhdGVkIGFmdGVyIDxXQUZFRk9STV9MT1c+DQo+IG5hbm9zZWNvbmRzDQo+ID4g
-PiArICAgICAgICAqIGFmdGVyIHRoZSB0aW1lIG9mIGRheSBoYXMgaW5jcmVhc2VkIHRoZSBzZWNv
-bmRzLiBUaGUgcHVsc2Ugd2lsbA0KPiA+ID4gKyAgICAgICAgKiBnZXQgYSB3aWR0aCBvZiA8V0FG
-RUZPUk1fSElHSD4gbmFub3NlY29uZHMuDQo+ID4NCj4gPiBBbHNvLCBJIHRoaW5rIHdoYXQgeW91
-IGhhdmUgaW1wbGVtZW50ZWQgaGVyZSBpcyBwZXJpb2RpYyBvdXRwdXQNCj4gPiAoUFRQX0NMS19S
-RVFfUEVST1VUKSBub3QgUFBTIFtpbnB1dF0gKFBUUF9DTEtfUkVRX1BQUykuIEkgaGF2ZSBmb3Vu
-ZA0KPiA+IHRoZSBQVFAgZG9jdW1lbnRhdGlvbiB0byBiZSByYXRoZXIgY29uZnVzaW5nIG9uIHdo
-YXQgUFRQX0NMS19SRVFfUFBTDQo+ID4gbWVhbnMsIHNvIEknbSBhZGRpbmcgUmljaGFyZCBpbiB0
-aGUgaG9wZSB0aGF0IGhlIG1heSBjbGFyaWZ5IChhbHNvDQo+ID4gd2hhdCdzIGRpZmZlcmVudCBi
-ZXR3ZWVuIFBUUF9DTEtfUkVRX1BQUyBhbmQgUFRQX0NMS19SRVFfUFBTKS4NCj4gDQo+IEVYVFRT
-LCBzb3JyeSwgb2J2aW91c2x5IG5vdGhpbmcgaXMgZGlmZmVyZW50IGJldHdlZW4gWCBhbmQgaXRz
-ZWxmLg0KPiANCg0KRVhUVFMgaXMgZm9yIGNhcHR1cmluZyB0aW1lc3RhbXBzIGZvciBleHRlcm5h
-bCB0cmlnZ2VyIHBpbiB3aGljaCBpcyBpbnB1dCBzaWduYWwuDQoNCj4gPg0KPiA+ID4gKyAgICAg
-ICAgKg0KPiA+ID4gKyAgICAgICAgKiBJbiBkZWZhdWx0LA0KPiA+ID4gKyAgICAgICAgKiBXQUZF
-Rk9STV9MT1cgPSAwDQo+ID4gPiArICAgICAgICAqIFdBRkVGT1JNX0hJR0ggPSAxdXMNCj4gPiA+
-ICsgICAgICAgICovDQo+ID4gPiArICAgICAgIG9jZWxvdF93cml0ZV9yaXgob2NlbG90LCAwLCBQ
-VFBfUElOX1dGX0xPV19QRVJJT0QsDQo+IEFMVF9QUFNfUElOKTsNCj4gPiA+ICsgICAgICAgb2Nl
-bG90X3dyaXRlX3JpeChvY2Vsb3QsIDEwMDAsIFBUUF9QSU5fV0ZfSElHSF9QRVJJT0QsDQo+IEFM
-VF9QUFNfUElOKTsNCj4gPiA+ICsNCj4gPiA+ICsgICAgICAgdmFsID0gb2NlbG90X3JlYWRfcml4
-KG9jZWxvdCwgUFRQX1BJTl9DRkcsIEFMVF9QUFNfUElOKTsNCj4gPiA+ICsgICAgICAgdmFsICY9
-IH4oUFRQX1BJTl9DRkdfU1lOQyB8IFBUUF9QSU5fQ0ZHX0FDVElPTl9NQVNLIHwNCj4gUFRQX1BJ
-Tl9DRkdfRE9NKTsNCj4gPiA+ICsgICAgICAgdmFsIHw9IChQVFBfUElOX0NGR19TWU5DIHwNCj4g
-UFRQX1BJTl9DRkdfQUNUSU9OKFBUUF9QSU5fQUNUSU9OX0NMT0NLKSk7DQo+ID4gPiArDQo+ID4N
-Cj4gPiBJIHN1cHBvc2UgdGhlIHJlYXNvbiB3aHkgeW91IGRpZG4ndCB1c2Ugb2NlbG90X3Jtd19y
-aXggaGVyZSBpcyB0aGF0IGl0DQo+ID4gZG9lc24ndCBmaXQgaW4gODAgY2hhcmFjdGVycz8NCj4g
-PiBEbyB5b3UgZXZlbiBuZWVkIHRvIHJlYWQtbW9kaWZ5LXdyaXRlPyBUaGUgb25seSBvdGhlciBm
-aWVsZCBpcyB0aGUNCj4gPiBwb2xhcml0eSBiaXQgd2hpY2ggaXMgYnkgZGVmYXVsdCAwIChhY3Rp
-dmUgaGlnaCkgYW5kIG5vbi1jb25maWd1cmFibGUNCj4gPiB2aWEgdGhlIGN1cnJlbnQgQVBJIChz
-dHJ1Y3QgcHRwX3Bpbl9kZXNjKSBhcyBmYXIgYXMgSSBjYW4gc2VlLg0KPiA+DQo+ID4gPiArICAg
-ICAgIG9jZWxvdF93cml0ZV9yaXgob2NlbG90LCB2YWwsIFBUUF9QSU5fQ0ZHLCBBTFRfUFBTX1BJ
-Tik7DQo+ID4gPiArfQ0KPiA+ID4gKw0KPiA+ID4gIHN0YXRpYyBpbnQgb2NlbG90X2luaXRfdGlt
-ZXN0YW1wKHN0cnVjdCBvY2Vsb3QgKm9jZWxvdCkNCj4gPiA+ICB7DQo+ID4gPiAgICAgICAgIHN0
-cnVjdCBwdHBfY2xvY2sgKnB0cF9jbG9jazsNCj4gPiA+IEBAIC0yNDc4LDYgKzI1MDEsOCBAQCBp
-bnQgb2NlbG90X2luaXQoc3RydWN0IG9jZWxvdCAqb2NlbG90KQ0KPiA+ID4gICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAiVGltZXN0YW1wIGluaXRpYWxpemF0aW9uIGZhaWxlZFxuIik7
-DQo+ID4gPiAgICAgICAgICAgICAgICAgICAgICAgICByZXR1cm4gcmV0Ow0KPiA+ID4gICAgICAg
-ICAgICAgICAgIH0NCj4gPiA+ICsNCj4gPiA+ICsgICAgICAgICAgICAgICBvY2Vsb3RfcHRwX2lu
-aXRfcHBzKG9jZWxvdCk7DQo+ID4gPiAgICAgICAgIH0NCj4gPiA+DQo+ID4gPiAgICAgICAgIHJl
-dHVybiAwOw0KPiA+ID4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvbmV0L2V0aGVybmV0L21zY2Mvb2Nl
-bG90X3B0cC5oDQo+IGIvZHJpdmVycy9uZXQvZXRoZXJuZXQvbXNjYy9vY2Vsb3RfcHRwLmgNCj4g
-PiA+IGluZGV4IDllZGUxNGEuLjIxYmM3NDQgMTAwNjQ0DQo+ID4gPiAtLS0gYS9kcml2ZXJzL25l
-dC9ldGhlcm5ldC9tc2NjL29jZWxvdF9wdHAuaA0KPiA+ID4gKysrIGIvZHJpdmVycy9uZXQvZXRo
-ZXJuZXQvbXNjYy9vY2Vsb3RfcHRwLmgNCj4gPiA+IEBAIC0xMyw2ICsxMyw4IEBADQo+ID4gPiAg
-I2RlZmluZSBQVFBfUElOX1RPRF9TRUNfTVNCX1JTWg0KPiBQVFBfUElOX0NGR19SU1oNCj4gPiA+
-ICAjZGVmaW5lIFBUUF9QSU5fVE9EX1NFQ19MU0JfUlNaICAgICAgICAgICAgICAgIFBUUF9QSU5f
-Q0ZHX1JTWg0KPiA+ID4gICNkZWZpbmUgUFRQX1BJTl9UT0RfTlNFQ19SU1ogICAgICAgICAgIFBU
-UF9QSU5fQ0ZHX1JTWg0KPiA+ID4gKyNkZWZpbmUgUFRQX1BJTl9XRl9ISUdIX1BFUklPRF9SU1og
-ICAgIFBUUF9QSU5fQ0ZHX1JTWg0KPiA+ID4gKyNkZWZpbmUgUFRQX1BJTl9XRl9MT1dfUEVSSU9E
-X1JTWiAgICAgIFBUUF9QSU5fQ0ZHX1JTWg0KPiA+ID4NCj4gPiA+ICAjZGVmaW5lIFBUUF9QSU5f
-Q0ZHX0RPTSAgICAgICAgICAgICAgICAgICAgICAgIEJJVCgwKQ0KPiA+ID4gICNkZWZpbmUgUFRQ
-X1BJTl9DRkdfU1lOQyAgICAgICAgICAgICAgIEJJVCgyKQ0KPiA+ID4gZGlmZiAtLWdpdCBhL2Ry
-aXZlcnMvbmV0L2V0aGVybmV0L21zY2Mvb2NlbG90X3JlZ3MuYw0KPiBiL2RyaXZlcnMvbmV0L2V0
-aGVybmV0L21zY2Mvb2NlbG90X3JlZ3MuYw0KPiA+ID4gaW5kZXggYjg4YjU4OS4uZWQ0ZGQwMSAx
-MDA2NDQNCj4gPiA+IC0tLSBhL2RyaXZlcnMvbmV0L2V0aGVybmV0L21zY2Mvb2NlbG90X3JlZ3Mu
-Yw0KPiA+ID4gKysrIGIvZHJpdmVycy9uZXQvZXRoZXJuZXQvbXNjYy9vY2Vsb3RfcmVncy5jDQo+
-ID4gPiBAQCAtMjM5LDYgKzIzOSw4IEBAIHN0YXRpYyBjb25zdCB1MzIgb2NlbG90X3B0cF9yZWdt
-YXBbXSA9IHsNCj4gPiA+ICAgICAgICAgUkVHKFBUUF9QSU5fVE9EX1NFQ19NU0IsICAgICAgICAg
-ICAweDAwMDAwNCksDQo+ID4gPiAgICAgICAgIFJFRyhQVFBfUElOX1RPRF9TRUNfTFNCLCAgICAg
-ICAgICAgMHgwMDAwMDgpLA0KPiA+ID4gICAgICAgICBSRUcoUFRQX1BJTl9UT0RfTlNFQywgICAg
-ICAgICAgICAgIDB4MDAwMDBjKSwNCj4gPiA+ICsgICAgICAgUkVHKFBUUF9QSU5fV0ZfSElHSF9Q
-RVJJT0QsICAgICAgICAweDAwMDAxNCksDQo+ID4gPiArICAgICAgIFJFRyhQVFBfUElOX1dGX0xP
-V19QRVJJT0QsICAgICAgICAgMHgwMDAwMTgpLA0KPiA+ID4gICAgICAgICBSRUcoUFRQX0NGR19N
-SVNDLCAgICAgICAgICAgICAgICAgIDB4MDAwMGEwKSwNCj4gPiA+ICAgICAgICAgUkVHKFBUUF9D
-TEtfQ0ZHX0FESl9DRkcsICAgICAgICAgICAweDAwMDBhNCksDQo+ID4gPiAgICAgICAgIFJFRyhQ
-VFBfQ0xLX0NGR19BREpfRlJFUSwgICAgICAgICAgMHgwMDAwYTgpLA0KPiA+ID4gZGlmZiAtLWdp
-dCBhL2luY2x1ZGUvc29jL21zY2Mvb2NlbG90LmggYi9pbmNsdWRlL3NvYy9tc2NjL29jZWxvdC5o
-DQo+ID4gPiBpbmRleCA2NGNiYmJlLi5jMmFiMjBkIDEwMDY0NA0KPiA+ID4gLS0tIGEvaW5jbHVk
-ZS9zb2MvbXNjYy9vY2Vsb3QuaA0KPiA+ID4gKysrIGIvaW5jbHVkZS9zb2MvbXNjYy9vY2Vsb3Qu
-aA0KPiA+ID4gQEAgLTMyNSw2ICszMjUsOCBAQCBlbnVtIG9jZWxvdF9yZWcgew0KPiA+ID4gICAg
-ICAgICBQVFBfUElOX1RPRF9TRUNfTVNCLA0KPiA+ID4gICAgICAgICBQVFBfUElOX1RPRF9TRUNf
-TFNCLA0KPiA+ID4gICAgICAgICBQVFBfUElOX1RPRF9OU0VDLA0KPiA+ID4gKyAgICAgICBQVFBf
-UElOX1dGX0hJR0hfUEVSSU9ELA0KPiA+ID4gKyAgICAgICBQVFBfUElOX1dGX0xPV19QRVJJT0Qs
-DQo+ID4gPiAgICAgICAgIFBUUF9DRkdfTUlTQywNCj4gPiA+ICAgICAgICAgUFRQX0NMS19DRkdf
-QURKX0NGRywNCj4gPiA+ICAgICAgICAgUFRQX0NMS19DRkdfQURKX0ZSRVEsDQo+ID4gPiAtLQ0K
-PiA+ID4gMi43LjQNCj4gPiA+DQo+ID4NCj4gPiBUaGFua3MsDQo+ID4gLVZsYWRpbWlyDQo=
+> -----Original Message-----
+> From: Andrew Lunn <andrew@lunn.ch>
+> Sent: Thursday, December 26, 2019 6:59 PM
+> To: Y.b. Lu <yangbo.lu@nxp.com>
+> Cc: netdev@vger.kernel.org; David S . Miller <davem@davemloft.net>;
+> Claudiu Manoil <claudiu.manoil@nxp.com>; Vladimir Oltean
+> <vladimir.oltean@nxp.com>; Alexandre Belloni
+> <alexandre.belloni@bootlin.com>; Microchip Linux Driver Support
+> <UNGLinuxDriver@microchip.com>; Richard Cochran
+> <richardcochran@gmail.com>
+> Subject: Re: [PATCH] net: mscc: ocelot: support PPS signal generation
+>=20
+> On Thu, Dec 26, 2019 at 05:58:51PM +0800, Yangbo Lu wrote:
+> > This patch is to support PPS signal generation for Ocelot family
+> > switches, including VSC9959 switch.
+>=20
+> Hi Yangbo
+>=20
+> Please always Cc: Richard Cochran <richardcochran@gmail.com> for ptp
+> patches.
+>=20
+
+Sorry for missing...
+
+> 	Andrew
+>=20
+> >
+> > Signed-off-by: Yangbo Lu <yangbo.lu@nxp.com>
+> > ---
+> >  drivers/net/dsa/ocelot/felix_vsc9959.c  |  2 ++
+> >  drivers/net/ethernet/mscc/ocelot.c      | 25
+> +++++++++++++++++++++++++
+> >  drivers/net/ethernet/mscc/ocelot_ptp.h  |  2 ++
+> >  drivers/net/ethernet/mscc/ocelot_regs.c |  2 ++
+> >  include/soc/mscc/ocelot.h               |  2 ++
+> >  5 files changed, 33 insertions(+)
+> >
+> > diff --git a/drivers/net/dsa/ocelot/felix_vsc9959.c
+> b/drivers/net/dsa/ocelot/felix_vsc9959.c
+> > index b9758b0..ee0ce7c 100644
+> > --- a/drivers/net/dsa/ocelot/felix_vsc9959.c
+> > +++ b/drivers/net/dsa/ocelot/felix_vsc9959.c
+> > @@ -287,6 +287,8 @@ static const u32 vsc9959_ptp_regmap[] =3D {
+> >  	REG(PTP_PIN_TOD_SEC_MSB,           0x000004),
+> >  	REG(PTP_PIN_TOD_SEC_LSB,           0x000008),
+> >  	REG(PTP_PIN_TOD_NSEC,              0x00000c),
+> > +	REG(PTP_PIN_WF_HIGH_PERIOD,        0x000014),
+> > +	REG(PTP_PIN_WF_LOW_PERIOD,         0x000018),
+> >  	REG(PTP_CFG_MISC,                  0x0000a0),
+> >  	REG(PTP_CLK_CFG_ADJ_CFG,           0x0000a4),
+> >  	REG(PTP_CLK_CFG_ADJ_FREQ,          0x0000a8),
+> > diff --git a/drivers/net/ethernet/mscc/ocelot.c
+> b/drivers/net/ethernet/mscc/ocelot.c
+> > index 985b46d..c0f8a9e 100644
+> > --- a/drivers/net/ethernet/mscc/ocelot.c
+> > +++ b/drivers/net/ethernet/mscc/ocelot.c
+> > @@ -2147,6 +2147,29 @@ static struct ptp_clock_info
+> ocelot_ptp_clock_info =3D {
+> >  	.adjfine	=3D ocelot_ptp_adjfine,
+> >  };
+> >
+> > +static void ocelot_ptp_init_pps(struct ocelot *ocelot)
+> > +{
+> > +	u32 val;
+> > +
+> > +	/* PPS signal generation uses CLOCK action. Together with SYNC option=
+,
+> > +	 * a single pulse will be generated after <WAFEFORM_LOW>
+> nanoseconds
+> > +	 * after the time of day has increased the seconds. The pulse will
+> > +	 * get a width of <WAFEFORM_HIGH> nanoseconds.
+> > +	 *
+> > +	 * In default,
+> > +	 * WAFEFORM_LOW =3D 0
+> > +	 * WAFEFORM_HIGH =3D 1us
+> > +	 */
+> > +	ocelot_write_rix(ocelot, 0, PTP_PIN_WF_LOW_PERIOD, ALT_PPS_PIN);
+> > +	ocelot_write_rix(ocelot, 1000, PTP_PIN_WF_HIGH_PERIOD,
+> ALT_PPS_PIN);
+> > +
+> > +	val =3D ocelot_read_rix(ocelot, PTP_PIN_CFG, ALT_PPS_PIN);
+> > +	val &=3D ~(PTP_PIN_CFG_SYNC | PTP_PIN_CFG_ACTION_MASK |
+> PTP_PIN_CFG_DOM);
+> > +	val |=3D (PTP_PIN_CFG_SYNC |
+> PTP_PIN_CFG_ACTION(PTP_PIN_ACTION_CLOCK));
+> > +
+> > +	ocelot_write_rix(ocelot, val, PTP_PIN_CFG, ALT_PPS_PIN);
+> > +}
+> > +
+> >  static int ocelot_init_timestamp(struct ocelot *ocelot)
+> >  {
+> >  	struct ptp_clock *ptp_clock;
+> > @@ -2478,6 +2501,8 @@ int ocelot_init(struct ocelot *ocelot)
+> >  				"Timestamp initialization failed\n");
+> >  			return ret;
+> >  		}
+> > +
+> > +		ocelot_ptp_init_pps(ocelot);
+> >  	}
+> >
+> >  	return 0;
+> > diff --git a/drivers/net/ethernet/mscc/ocelot_ptp.h
+> b/drivers/net/ethernet/mscc/ocelot_ptp.h
+> > index 9ede14a..21bc744 100644
+> > --- a/drivers/net/ethernet/mscc/ocelot_ptp.h
+> > +++ b/drivers/net/ethernet/mscc/ocelot_ptp.h
+> > @@ -13,6 +13,8 @@
+> >  #define PTP_PIN_TOD_SEC_MSB_RSZ		PTP_PIN_CFG_RSZ
+> >  #define PTP_PIN_TOD_SEC_LSB_RSZ		PTP_PIN_CFG_RSZ
+> >  #define PTP_PIN_TOD_NSEC_RSZ		PTP_PIN_CFG_RSZ
+> > +#define PTP_PIN_WF_HIGH_PERIOD_RSZ	PTP_PIN_CFG_RSZ
+> > +#define PTP_PIN_WF_LOW_PERIOD_RSZ	PTP_PIN_CFG_RSZ
+> >
+> >  #define PTP_PIN_CFG_DOM			BIT(0)
+> >  #define PTP_PIN_CFG_SYNC		BIT(2)
+> > diff --git a/drivers/net/ethernet/mscc/ocelot_regs.c
+> b/drivers/net/ethernet/mscc/ocelot_regs.c
+> > index b88b589..ed4dd01 100644
+> > --- a/drivers/net/ethernet/mscc/ocelot_regs.c
+> > +++ b/drivers/net/ethernet/mscc/ocelot_regs.c
+> > @@ -239,6 +239,8 @@ static const u32 ocelot_ptp_regmap[] =3D {
+> >  	REG(PTP_PIN_TOD_SEC_MSB,           0x000004),
+> >  	REG(PTP_PIN_TOD_SEC_LSB,           0x000008),
+> >  	REG(PTP_PIN_TOD_NSEC,              0x00000c),
+> > +	REG(PTP_PIN_WF_HIGH_PERIOD,        0x000014),
+> > +	REG(PTP_PIN_WF_LOW_PERIOD,         0x000018),
+> >  	REG(PTP_CFG_MISC,                  0x0000a0),
+> >  	REG(PTP_CLK_CFG_ADJ_CFG,           0x0000a4),
+> >  	REG(PTP_CLK_CFG_ADJ_FREQ,          0x0000a8),
+> > diff --git a/include/soc/mscc/ocelot.h b/include/soc/mscc/ocelot.h
+> > index 64cbbbe..c2ab20d 100644
+> > --- a/include/soc/mscc/ocelot.h
+> > +++ b/include/soc/mscc/ocelot.h
+> > @@ -325,6 +325,8 @@ enum ocelot_reg {
+> >  	PTP_PIN_TOD_SEC_MSB,
+> >  	PTP_PIN_TOD_SEC_LSB,
+> >  	PTP_PIN_TOD_NSEC,
+> > +	PTP_PIN_WF_HIGH_PERIOD,
+> > +	PTP_PIN_WF_LOW_PERIOD,
+> >  	PTP_CFG_MISC,
+> >  	PTP_CLK_CFG_ADJ_CFG,
+> >  	PTP_CLK_CFG_ADJ_FREQ,
+> > --
+> > 2.7.4
+> >
