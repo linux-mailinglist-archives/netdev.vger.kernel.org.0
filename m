@@ -2,111 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B372A12AB61
-	for <lists+netdev@lfdr.de>; Thu, 26 Dec 2019 10:47:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 187E712AB79
+	for <lists+netdev@lfdr.de>; Thu, 26 Dec 2019 11:00:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726336AbfLZJrZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Dec 2019 04:47:25 -0500
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:37927 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726105AbfLZJrY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Dec 2019 04:47:24 -0500
-Received: by mail-wm1-f67.google.com with SMTP id u2so5696507wmc.3
-        for <netdev@vger.kernel.org>; Thu, 26 Dec 2019 01:47:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=from:to:cc:date:message-id:in-reply-to:references:user-agent
-         :subject:mime-version:content-transfer-encoding;
-        bh=fes1e17DjoybcHkZ3ppriXwbGN3pvc12W7QvoiRRzVg=;
-        b=T49Hwalmr/bx7Mup/eAfMwH7e+v3fLjLMmlU1pyvn8yuLfBoCvz4ja2Vynu23NVorU
-         L4vnwr+FmuwKarExYkms1yh4mRUBT1M09SVJgtiDCxOuuVC/h8a/T/ESNa09oo03e4vi
-         1oJaGadD1zadC7UsOTyTkznFyj+Vu7bsTrUK4=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:date:message-id:in-reply-to
-         :references:user-agent:subject:mime-version
-         :content-transfer-encoding;
-        bh=fes1e17DjoybcHkZ3ppriXwbGN3pvc12W7QvoiRRzVg=;
-        b=isAZAtGHLMvKpSA+hv3y5h6wGOI3AajRejqfNhGhEN4hEFPzUn9AQQljOQ/agLX/r0
-         LqMMm6zW2xZEYk9kKEm6SDZ7i5W8CKVFrmFDt384ytJnOuTVWYRvIgK/h986WA0zXxDr
-         uNPdUuNb7iYrhy38T5VRIExpXoJBtgIUYSSxnI8SI4KwrLaD9Z6C3FseICOP61MdHMYT
-         WMTebavtWdIY8UrCLKjz0Rzk8mfqqIBGrzxxFKsRfNZ7x9EZgiQ5s9pjvuTgHZncqT/R
-         mu5kVq7dy1x2uPZdnz+f5Tq0Ci0yBCllT3ACJt/hS9VkMfwcILlvyv8dvEFnZssGfB6P
-         Xrgw==
-X-Gm-Message-State: APjAAAVjeoqUVd5fvczEoak0/s0Br6kxC0PptPo62d0KVBB3LSAd2n5V
-        0+ZH6TkFHZy2lfuswg04DXwyQA==
-X-Google-Smtp-Source: APXvYqyc7OhIVZzeNAMoAEb/5fAFhzjgh+m1mZdckHnOmlU+mWH/dr+prELI2ptTmuJrzKZR8soZbg==
-X-Received: by 2002:a7b:c957:: with SMTP id i23mr13388410wml.49.1577353642157;
-        Thu, 26 Dec 2019 01:47:22 -0800 (PST)
-Received: from [192.168.178.38] (f140230.upc-f.chello.nl. [80.56.140.230])
-        by smtp.gmail.com with ESMTPSA id a14sm32456308wrx.81.2019.12.26.01.47.20
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 26 Dec 2019 01:47:21 -0800 (PST)
-From:   Arend Van Spriel <arend.vanspriel@broadcom.com>
-To:     "Jean-Philippe Brucker" <jean-philippe@linaro.org>,
-        <linux-wireless@vger.kernel.org>,
-        <brcm80211-dev-list.pdl@broadcom.com>,
-        <brcm80211-dev-list@cypress.com>, <netdev@vger.kernel.org>,
-        <hdegoede@redhat.com>
-CC:     <franky.lin@broadcom.com>, <hante.meuleman@broadcom.com>,
-        <chi-hsien.lin@cypress.com>, <wright.feng@cypress.com>,
-        <kvalo@codeaurora.org>, <davem@davemloft.net>, <digetx@gmail.com>,
-        <hdegoede@redhat.com>
-Date:   Thu, 26 Dec 2019 10:47:18 +0100
-Message-ID: <16f419a7070.279b.9b12b7fc0a3841636cfb5e919b41b954@broadcom.com>
-In-Reply-To: <20191226092033.12600-1-jean-philippe@linaro.org>
-References: <20191226092033.12600-1-jean-philippe@linaro.org>
-User-Agent: AquaMail/1.22.0-1511 (build: 102200004)
-Subject: Re: [PATCH] brcmfmac: sdio: Fix OOB interrupt initialization on brcm43362
-MIME-Version: 1.0
-Content-Type: text/plain; format=flowed; charset="us-ascii"
-Content-Transfer-Encoding: 8bit
+        id S1726336AbfLZKAH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Dec 2019 05:00:07 -0500
+Received: from inva021.nxp.com ([92.121.34.21]:37262 "EHLO inva021.nxp.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726220AbfLZKAG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 26 Dec 2019 05:00:06 -0500
+Received: from inva021.nxp.com (localhost [127.0.0.1])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id E0A222014D7;
+        Thu, 26 Dec 2019 11:00:03 +0100 (CET)
+Received: from invc005.ap-rdc01.nxp.com (invc005.ap-rdc01.nxp.com [165.114.16.14])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 089A120056C;
+        Thu, 26 Dec 2019 11:00:00 +0100 (CET)
+Received: from localhost.localdomain (mega.ap.freescale.net [10.192.208.232])
+        by invc005.ap-rdc01.nxp.com (Postfix) with ESMTP id 3A0DD402B3;
+        Thu, 26 Dec 2019 17:59:55 +0800 (SGT)
+From:   Yangbo Lu <yangbo.lu@nxp.com>
+To:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>
+Cc:     Yangbo Lu <yangbo.lu@nxp.com>
+Subject: [PATCH] net: mscc: ocelot: support PPS signal generation
+Date:   Thu, 26 Dec 2019 17:58:51 +0800
+Message-Id: <20191226095851.24325-1-yangbo.lu@nxp.com>
+X-Mailer: git-send-email 2.17.1
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On December 26, 2019 10:23:41 AM Jean-Philippe Brucker 
-<jean-philippe@linaro.org> wrote:
+This patch is to support PPS signal generation for Ocelot family
+switches, including VSC9959 switch.
 
-> Commit 262f2b53f679 ("brcmfmac: call brcmf_attach() just before calling
-> brcmf_bus_started()") changed the initialization order of the brcmfmac
-> SDIO driver. Unfortunately since brcmf_sdiod_intr_register() is now
-> called before the sdiodev->bus_if initialization, it reads the wrong
-> chip ID and fails to initialize the GPIO on brcm43362. Thus the chip
-> cannot send interrupts and fails to probe:
->
-> [   12.517023] brcmfmac: brcmf_sdio_bus_rxctl: resumed on timeout
-> [   12.531214] ieee80211 phy0: brcmf_bus_started: failed: -110
-> [   12.536976] ieee80211 phy0: brcmf_attach: dongle is not responding: err=-110
-> [   12.566467] brcmfmac: brcmf_sdio_firmware_callback: brcmf_attach failed
->
-> Initialize the bus interface earlier to ensure that
-> brcmf_sdiod_intr_register() properly sets up the OOB interrupt.
->
-> BugLink: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=908438
-> Fixes: 262f2b53f679 ("brcmfmac: call brcmf_attach() just before calling 
-> brcmf_bus_started()")
+Signed-off-by: Yangbo Lu <yangbo.lu@nxp.com>
+---
+ drivers/net/dsa/ocelot/felix_vsc9959.c  |  2 ++
+ drivers/net/ethernet/mscc/ocelot.c      | 25 +++++++++++++++++++++++++
+ drivers/net/ethernet/mscc/ocelot_ptp.h  |  2 ++
+ drivers/net/ethernet/mscc/ocelot_regs.c |  2 ++
+ include/soc/mscc/ocelot.h               |  2 ++
+ 5 files changed, 33 insertions(+)
 
-Reviewed-by: Arend van Spriel <arend.vanspriel@broadcom.com>
-
-> Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
-> ---
-> A workaround [1] disabling the OOB interrupt is being discussed. It
-> works for me, but this patch fixes the wifi problem on my cubietruck.
-
-I missed that one. Too bad it was not sent to linux-wireless as well. Good 
-find here. I did see another patch dealing with the OOB interrupt on Nvidia 
-Tegra. Now I wonder if this is the same issue.
-
-Regards,
-Arend
-
-> [1] 
-> https://lore.kernel.org/linux-arm-kernel/20180930150927.12076-1-hdegoede@redhat.com/
-> ---
-> .../net/wireless/broadcom/brcm80211/brcmfmac/sdio.c  | 12 ++++++------
-> 1 file changed, 6 insertions(+), 6 deletions(-)
-
-
+diff --git a/drivers/net/dsa/ocelot/felix_vsc9959.c b/drivers/net/dsa/ocelot/felix_vsc9959.c
+index b9758b0..ee0ce7c 100644
+--- a/drivers/net/dsa/ocelot/felix_vsc9959.c
++++ b/drivers/net/dsa/ocelot/felix_vsc9959.c
+@@ -287,6 +287,8 @@ static const u32 vsc9959_ptp_regmap[] = {
+ 	REG(PTP_PIN_TOD_SEC_MSB,           0x000004),
+ 	REG(PTP_PIN_TOD_SEC_LSB,           0x000008),
+ 	REG(PTP_PIN_TOD_NSEC,              0x00000c),
++	REG(PTP_PIN_WF_HIGH_PERIOD,        0x000014),
++	REG(PTP_PIN_WF_LOW_PERIOD,         0x000018),
+ 	REG(PTP_CFG_MISC,                  0x0000a0),
+ 	REG(PTP_CLK_CFG_ADJ_CFG,           0x0000a4),
+ 	REG(PTP_CLK_CFG_ADJ_FREQ,          0x0000a8),
+diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
+index 985b46d..c0f8a9e 100644
+--- a/drivers/net/ethernet/mscc/ocelot.c
++++ b/drivers/net/ethernet/mscc/ocelot.c
+@@ -2147,6 +2147,29 @@ static struct ptp_clock_info ocelot_ptp_clock_info = {
+ 	.adjfine	= ocelot_ptp_adjfine,
+ };
+ 
++static void ocelot_ptp_init_pps(struct ocelot *ocelot)
++{
++	u32 val;
++
++	/* PPS signal generation uses CLOCK action. Together with SYNC option,
++	 * a single pulse will be generated after <WAFEFORM_LOW> nanoseconds
++	 * after the time of day has increased the seconds. The pulse will
++	 * get a width of <WAFEFORM_HIGH> nanoseconds.
++	 *
++	 * In default,
++	 * WAFEFORM_LOW = 0
++	 * WAFEFORM_HIGH = 1us
++	 */
++	ocelot_write_rix(ocelot, 0, PTP_PIN_WF_LOW_PERIOD, ALT_PPS_PIN);
++	ocelot_write_rix(ocelot, 1000, PTP_PIN_WF_HIGH_PERIOD, ALT_PPS_PIN);
++
++	val = ocelot_read_rix(ocelot, PTP_PIN_CFG, ALT_PPS_PIN);
++	val &= ~(PTP_PIN_CFG_SYNC | PTP_PIN_CFG_ACTION_MASK | PTP_PIN_CFG_DOM);
++	val |= (PTP_PIN_CFG_SYNC | PTP_PIN_CFG_ACTION(PTP_PIN_ACTION_CLOCK));
++
++	ocelot_write_rix(ocelot, val, PTP_PIN_CFG, ALT_PPS_PIN);
++}
++
+ static int ocelot_init_timestamp(struct ocelot *ocelot)
+ {
+ 	struct ptp_clock *ptp_clock;
+@@ -2478,6 +2501,8 @@ int ocelot_init(struct ocelot *ocelot)
+ 				"Timestamp initialization failed\n");
+ 			return ret;
+ 		}
++
++		ocelot_ptp_init_pps(ocelot);
+ 	}
+ 
+ 	return 0;
+diff --git a/drivers/net/ethernet/mscc/ocelot_ptp.h b/drivers/net/ethernet/mscc/ocelot_ptp.h
+index 9ede14a..21bc744 100644
+--- a/drivers/net/ethernet/mscc/ocelot_ptp.h
++++ b/drivers/net/ethernet/mscc/ocelot_ptp.h
+@@ -13,6 +13,8 @@
+ #define PTP_PIN_TOD_SEC_MSB_RSZ		PTP_PIN_CFG_RSZ
+ #define PTP_PIN_TOD_SEC_LSB_RSZ		PTP_PIN_CFG_RSZ
+ #define PTP_PIN_TOD_NSEC_RSZ		PTP_PIN_CFG_RSZ
++#define PTP_PIN_WF_HIGH_PERIOD_RSZ	PTP_PIN_CFG_RSZ
++#define PTP_PIN_WF_LOW_PERIOD_RSZ	PTP_PIN_CFG_RSZ
+ 
+ #define PTP_PIN_CFG_DOM			BIT(0)
+ #define PTP_PIN_CFG_SYNC		BIT(2)
+diff --git a/drivers/net/ethernet/mscc/ocelot_regs.c b/drivers/net/ethernet/mscc/ocelot_regs.c
+index b88b589..ed4dd01 100644
+--- a/drivers/net/ethernet/mscc/ocelot_regs.c
++++ b/drivers/net/ethernet/mscc/ocelot_regs.c
+@@ -239,6 +239,8 @@ static const u32 ocelot_ptp_regmap[] = {
+ 	REG(PTP_PIN_TOD_SEC_MSB,           0x000004),
+ 	REG(PTP_PIN_TOD_SEC_LSB,           0x000008),
+ 	REG(PTP_PIN_TOD_NSEC,              0x00000c),
++	REG(PTP_PIN_WF_HIGH_PERIOD,        0x000014),
++	REG(PTP_PIN_WF_LOW_PERIOD,         0x000018),
+ 	REG(PTP_CFG_MISC,                  0x0000a0),
+ 	REG(PTP_CLK_CFG_ADJ_CFG,           0x0000a4),
+ 	REG(PTP_CLK_CFG_ADJ_FREQ,          0x0000a8),
+diff --git a/include/soc/mscc/ocelot.h b/include/soc/mscc/ocelot.h
+index 64cbbbe..c2ab20d 100644
+--- a/include/soc/mscc/ocelot.h
++++ b/include/soc/mscc/ocelot.h
+@@ -325,6 +325,8 @@ enum ocelot_reg {
+ 	PTP_PIN_TOD_SEC_MSB,
+ 	PTP_PIN_TOD_SEC_LSB,
+ 	PTP_PIN_TOD_NSEC,
++	PTP_PIN_WF_HIGH_PERIOD,
++	PTP_PIN_WF_LOW_PERIOD,
+ 	PTP_CFG_MISC,
+ 	PTP_CLK_CFG_ADJ_CFG,
+ 	PTP_CLK_CFG_ADJ_FREQ,
+-- 
+2.7.4
 
