@@ -2,196 +2,186 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0AB8212AE9C
-	for <lists+netdev@lfdr.de>; Thu, 26 Dec 2019 21:48:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 73B1B12AE9F
+	for <lists+netdev@lfdr.de>; Thu, 26 Dec 2019 21:53:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726838AbfLZUsX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Dec 2019 15:48:23 -0500
-Received: from mail-qk1-f195.google.com ([209.85.222.195]:40623 "EHLO
-        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726684AbfLZUsW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Dec 2019 15:48:22 -0500
-Received: by mail-qk1-f195.google.com with SMTP id c17so20179209qkg.7;
-        Thu, 26 Dec 2019 12:48:21 -0800 (PST)
+        id S1726831AbfLZUxH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Dec 2019 15:53:07 -0500
+Received: from mail-pl1-f194.google.com ([209.85.214.194]:40458 "EHLO
+        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726105AbfLZUxH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Dec 2019 15:53:07 -0500
+Received: by mail-pl1-f194.google.com with SMTP id s21so8134825plr.7;
+        Thu, 26 Dec 2019 12:53:06 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=zOupSjJsR3wnGh3oZaKm83dSTdc/kQHfdz++o3RZ0Iw=;
-        b=EVJS1j7V0F6WzYRC09sAObS7YJZlGWT1mfbrzcQ2vRKszbs4SlYYAuT8VcXk9HAh8b
-         DHpqFOzTy4nFCV782aenq049RYrYe3+l9w0D+aY08wp7nnTBDQMtHtWj2VoOqX+r3DFy
-         2CfruwDiq12jKWsokKOl4undhIm4NZBt0uoVxpH5jZtGBKbBcxRP/BoFMCTA15U+HwIb
-         +IWdL7YxUbDmmzwLfrpxoQgfzfuvANIIyDp5kPh+GA75hnPz7IMIW08psETuYKIIINfa
-         mobRhxoILxMFNZAq/ke/1YNfF3OIY+Q0yt386rwJ7UuO5gUZpFXXkyYJ9qIHvz5e4WGE
-         013g==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=BOJ+Bp2lzNQCDSB58EIQw+u7Fr4FdhFaCkWUtMTHSYQ=;
+        b=Ku53PuJ2iF6avdrKMDP+LKVP+v4MAydY1pH6gIAlmo0AoHXHgpJzDSlaROIR8gfG2P
+         XH/7iOWFJ2kIHGQRWINLfxMHS/GR5EttXcr0m+jT945X+bs3BKXAQ/sHwd18cLaNedGK
+         Rh4mr7JoSYtBAhpExbEpE+Yn3vLduCebObbWS+MIDjsyo6G3GOJwxVWH/qrwkUH8EW6y
+         iPh7C1Srpc6EHP0zeiDiKZvafOgjE+/osMCf7iSjzmboN131Ls3JJScQfq9STzsu4ftz
+         wD26IB5hA+V+Y7eNjljjTigRCJ+zct5jdNth8xreONpByaxVQ8X2wmnGyeN8fKaEsdx+
+         XsQg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=zOupSjJsR3wnGh3oZaKm83dSTdc/kQHfdz++o3RZ0Iw=;
-        b=Gbr/beaDE4nIUfah6RlIbqKJLgCcevu//fZ5K7u2n49DL9eDjYKD7C8SGpyVIGdjcV
-         SaO2DIDdYQVTfSUxalH6FetWvKgQzEM/zraMh3nDIhBSWOhnIhtDY9kwySBKI2NmxFbk
-         M+GryjuSfylYUHhSYLhjBkbq3C9crp0VzrRKoKQvrbHZ94BFuMVKJOA1wQ/VVjP0izDD
-         N+189oVm66NWDrE/HvqRY6eB1h6q9y8DvaokBWUzksEqsHuzWun1BKfb8hdzo5Mdvbay
-         QxJiROX5HbKWA15dfN6HnvK7jipsJpEescX2Rp56ikQumc9bwCKb1l5y3dKMy+G8Lhys
-         FmGA==
-X-Gm-Message-State: APjAAAV/Y7jKIKkGskLdeJTvGT369Y96Pk/9vAYCw395O+ukRWZ3MQ6f
-        cQnahZp5O+CdSWbwTIfzUvKPyi4qTKyrLRSyaaA=
-X-Google-Smtp-Source: APXvYqzNHi/f0bAEdMn9F7Sx3JpIMdKRaMgE7M6z0CHhmiBL8l5UMVjOntLw+vEC2hiMHiDwOq8e3mI6sGKFk6NbH6w=
-X-Received: by 2002:ae9:e809:: with SMTP id a9mr40229983qkg.92.1577393300859;
- Thu, 26 Dec 2019 12:48:20 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=BOJ+Bp2lzNQCDSB58EIQw+u7Fr4FdhFaCkWUtMTHSYQ=;
+        b=GNrYSyZTjogO7v8bAjxPfdm4aVljFMUkR6UO0nUuuQk09a3pEACGmluT4E3PhBM0o6
+         61roXeXQMkxj8fLsaSstAyHTiqBexz1Ie6jD1kkLNHs9rDNVudY7Lg7pCoUBo5IOsXgy
+         kwdFWJ0glWwMU4qZnmrbjfwsOJs83s9FO0mOqTbpNWDuUj3BNAz7rAsn/6qstSYBrR2/
+         J0mpo/HSETiUDgc8uQW5vbpMMCfJp2eFlghtUoj6YxCCaGPQkF0EI+h3PjVJapgG8qFT
+         NFBrL9iMhA7dS20dj7051Htw9Tr+zKVkNjh3mfGIlMAolrXkd7ZsmaX+MSNzc97LVMCM
+         4XWA==
+X-Gm-Message-State: APjAAAVREcfQNZf9iIKrDnsoqfEVk+XkCGZ3ikPmeUEuOTYv0CJYsGzG
+        uc9vqc1h3ABnrpyyEbKcvQE=
+X-Google-Smtp-Source: APXvYqxxl6JQuCCv5eOIh5svidWLVY54ARqSseMEAx/16KQUTTCj1jYqy0SOjPDr+HTUeQxoWdrg0g==
+X-Received: by 2002:a17:902:a5c1:: with SMTP id t1mr24634844plq.87.1577393585746;
+        Thu, 26 Dec 2019 12:53:05 -0800 (PST)
+Received: from localhost.localdomain ([168.181.48.206])
+        by smtp.gmail.com with ESMTPSA id a18sm2806659pjq.30.2019.12.26.12.53.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 26 Dec 2019 12:53:05 -0800 (PST)
+Received: by localhost.localdomain (Postfix, from userid 1000)
+        id 23971C3750; Thu, 26 Dec 2019 17:53:02 -0300 (-03)
+Date:   Thu, 26 Dec 2019 17:53:02 -0300
+From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+To:     Kevin Kou <qdkevin.kou@gmail.com>
+Cc:     linux-sctp@vger.kernel.org, netdev@vger.kernel.org,
+        nhorman@tuxdriver.com, davem@davemloft.net
+Subject: Re: [PATCH net-next] sctp: move trace_sctp_probe_path into
+ sctp_outq_sack
+Message-ID: <20191226205302.GH5058@localhost.localdomain>
+References: <20191226122917.431-1-qdkevin.kou@gmail.com>
 MIME-Version: 1.0
-References: <20191221062556.1182261-1-kafai@fb.com> <20191221062620.1184118-1-kafai@fb.com>
- <CAEf4BzZX_TNUXJktJUtqmxgMefDzie=Ta18TbBqBhG0-GSLQMg@mail.gmail.com>
- <20191224013140.ibn33unj77mtbkne@kafai-mbp> <CAEf4Bzb2fRZJsccx2CG_pASy+2eMMWPXk6m3d6SbN+o0MSdQPg@mail.gmail.com>
- <20191224165003.oi4kvxad6mlsg5kw@kafai-mbp> <CAEf4BzYA=xS7pHPqGxK4LsRHpxN=Y4dLcbG8WNMqGhKpauh7gQ@mail.gmail.com>
- <20191226202512.abhyhdtetv46z5sd@kafai-mbp>
-In-Reply-To: <20191226202512.abhyhdtetv46z5sd@kafai-mbp>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 26 Dec 2019 12:48:09 -0800
-Message-ID: <CAEf4BzagEe4sbUfz6=Y6MHCsAAUAVe1GKi_XJUNu8xpHdd_mAQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 11/11] bpf: Add bpf_dctcp example
-To:     Martin Lau <kafai@fb.com>
-Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        David Miller <davem@davemloft.net>,
-        Kernel Team <Kernel-team@fb.com>,
-        Networking <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191226122917.431-1-qdkevin.kou@gmail.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 26, 2019 at 12:25 PM Martin Lau <kafai@fb.com> wrote:
->
-> On Thu, Dec 26, 2019 at 11:02:26AM -0800, Andrii Nakryiko wrote:
-> > On Tue, Dec 24, 2019 at 8:50 AM Martin Lau <kafai@fb.com> wrote:
-> > >
-> > > On Mon, Dec 23, 2019 at 11:01:55PM -0800, Andrii Nakryiko wrote:
-> > > > On Mon, Dec 23, 2019 at 5:31 PM Martin Lau <kafai@fb.com> wrote:
-> > > > >
-> > > > > On Mon, Dec 23, 2019 at 03:26:50PM -0800, Andrii Nakryiko wrote:
-> > > > > > On Fri, Dec 20, 2019 at 10:26 PM Martin KaFai Lau <kafai@fb.com> wrote:
-> > > > > > >
-> > > > > > > This patch adds a bpf_dctcp example.  It currently does not do
-> > > > > > > no-ECN fallback but the same could be done through the cgrp2-bpf.
-> > > > > > >
-> > > > > > > Signed-off-by: Martin KaFai Lau <kafai@fb.com>
-> > > > > > > ---
-> > > > > > >  tools/testing/selftests/bpf/bpf_tcp_helpers.h | 228 ++++++++++++++++++
-> > > > > > >  .../selftests/bpf/prog_tests/bpf_tcp_ca.c     | 218 +++++++++++++++++
-> > > > > > >  tools/testing/selftests/bpf/progs/bpf_dctcp.c | 210 ++++++++++++++++
-> > > > > > >  3 files changed, 656 insertions(+)
-> > > > > > >  create mode 100644 tools/testing/selftests/bpf/bpf_tcp_helpers.h
-> > > > > > >  create mode 100644 tools/testing/selftests/bpf/prog_tests/bpf_tcp_ca.c
-> > > > > > >  create mode 100644 tools/testing/selftests/bpf/progs/bpf_dctcp.c
-> > > > > > >
-> > > > > > > diff --git a/tools/testing/selftests/bpf/bpf_tcp_helpers.h b/tools/testing/selftests/bpf/bpf_tcp_helpers.h
-> > > > > > > new file mode 100644
-> > > > > > > index 000000000000..7ba8c1b4157a
-> > > > > > > --- /dev/null
-> > > > > > > +++ b/tools/testing/selftests/bpf/bpf_tcp_helpers.h
-> > > > > > > @@ -0,0 +1,228 @@
-> > > > > > > +/* SPDX-License-Identifier: GPL-2.0 */
-> > > > > > > +#ifndef __BPF_TCP_HELPERS_H
-> > > > > > > +#define __BPF_TCP_HELPERS_H
-> > > > > > > +
-> > > > > > > +#include <stdbool.h>
-> > > > > > > +#include <linux/types.h>
-> > > > > > > +#include <bpf_helpers.h>
-> > > > > > > +#include <bpf_core_read.h>
-> > > > > > > +#include "bpf_trace_helpers.h"
-> > > > > > > +
-> > > > > > > +#define BPF_TCP_OPS_0(fname, ret_type, ...) BPF_TRACE_x(0, #fname"_sec", fname, ret_type, __VA_ARGS__)
-> > > > > > > +#define BPF_TCP_OPS_1(fname, ret_type, ...) BPF_TRACE_x(1, #fname"_sec", fname, ret_type, __VA_ARGS__)
-> > > > > > > +#define BPF_TCP_OPS_2(fname, ret_type, ...) BPF_TRACE_x(2, #fname"_sec", fname, ret_type, __VA_ARGS__)
-> > > > > > > +#define BPF_TCP_OPS_3(fname, ret_type, ...) BPF_TRACE_x(3, #fname"_sec", fname, ret_type, __VA_ARGS__)
-> > > > > > > +#define BPF_TCP_OPS_4(fname, ret_type, ...) BPF_TRACE_x(4, #fname"_sec", fname, ret_type, __VA_ARGS__)
-> > > > > > > +#define BPF_TCP_OPS_5(fname, ret_type, ...) BPF_TRACE_x(5, #fname"_sec", fname, ret_type, __VA_ARGS__)
-> > > > > >
-> > > > > > Should we try to put those BPF programs into some section that would
-> > > > > > indicate they are used with struct opts? libbpf doesn't use or enforce
-> > > > > > that (even though it could to derive and enforce that they are
-> > > > > > STRUCT_OPS programs). So something like
-> > > > > > SEC("struct_ops/<ideally-operation-name-here>"). I think having this
-> > > > > > convention is very useful for consistency and to do a quick ELF dump
-> > > > > > and see what is where. WDYT?
-> > > > > I did not use it here because I don't want any misperception that it is
-> > > > > a required convention by libbpf.
-> > > > >
-> > > > > Sure, I can prefix it here and comment that it is just a
-> > > > > convention but not a libbpf's requirement.
-> > > >
-> > > > Well, we can actually make it a requirement of sorts. Currently your
-> > > > code expects that BPF program's type is UNSPEC and then it sets it to
-> > > > STRUCT_OPS. Alternatively we can say that any BPF program in
-> > > > SEC("struct_ops/<whatever>") will be automatically assigned
-> > > > STRUCT_OPTS BPF program type (which is done generically in
-> > > > bpf_object__open()), and then as .struct_ops section is parsed, all
-> > > > those programs will be "assembled" by the code you added into a
-> > > > struct_ops map.
-> > > Setting BPF_PROG_TYPE_STRUCT_OPS can be done automatically at open
-> > > phase (during collect_reloc time).  I will make this change.
-> > >
-> >
-> > Can you please extend exiting logic in __bpf_object__open() to do
-> > this? See how libbpf_prog_type_by_name() is used for that.
-> Does it have to call libbpf_prog_type_by_name() if everything
-> has already been decided by the earlier
-> bpf_object__collect_struct_ops_map_reloc()?
+On Thu, Dec 26, 2019 at 12:29:17PM +0000, Kevin Kou wrote:
+> The original patch bringed in the "SCTP ACK tracking trace event"
+> feature was committed at Dec.20, 2017, it replaced jprobe usage
+> with trace events, and bringed in two trace events, one is
+> TRACE_EVENT(sctp_probe), another one is TRACE_EVENT(sctp_probe_path).
+> The original patch intended to trigger the trace_sctp_probe_path in
+> TRACE_EVENT(sctp_probe) as below code,
+> 
+> +TRACE_EVENT(sctp_probe,
+> +
+> +	TP_PROTO(const struct sctp_endpoint *ep,
+> +		 const struct sctp_association *asoc,
+> +		 struct sctp_chunk *chunk),
+> +
+> +	TP_ARGS(ep, asoc, chunk),
+> +
+> +	TP_STRUCT__entry(
+> +		__field(__u64, asoc)
+> +		__field(__u32, mark)
+> +		__field(__u16, bind_port)
+> +		__field(__u16, peer_port)
+> +		__field(__u32, pathmtu)
+> +		__field(__u32, rwnd)
+> +		__field(__u16, unack_data)
+> +	),
+> +
+> +	TP_fast_assign(
+> +		struct sk_buff *skb = chunk->skb;
+> +
+> +		__entry->asoc = (unsigned long)asoc;
+> +		__entry->mark = skb->mark;
+> +		__entry->bind_port = ep->base.bind_addr.port;
+> +		__entry->peer_port = asoc->peer.port;
+> +		__entry->pathmtu = asoc->pathmtu;
+> +		__entry->rwnd = asoc->peer.rwnd;
+> +		__entry->unack_data = asoc->unack_data;
+> +
+> +		if (trace_sctp_probe_path_enabled()) {
+> +			struct sctp_transport *sp;
+> +
+> +			list_for_each_entry(sp, &asoc->peer.transport_addr_list,
+> +					    transports) {
+> +				trace_sctp_probe_path(sp, asoc);
+> +			}
+> +		}
+> +	),
+> 
+> But I found it did not work when I did testing, and trace_sctp_probe_path
+> had no output, I finally found that there is trace buffer lock
+> operation(trace_event_buffer_reserve) in include/trace/trace_events.h:
+> 
+> static notrace void							\
+> trace_event_raw_event_##call(void *__data, proto)			\
+> {									\
+> 	struct trace_event_file *trace_file = __data;			\
+> 	struct trace_event_data_offsets_##call __maybe_unused __data_offsets;\
+> 	struct trace_event_buffer fbuffer;				\
+> 	struct trace_event_raw_##call *entry;				\
+> 	int __data_size;						\
+> 									\
+> 	if (trace_trigger_soft_disabled(trace_file))			\
+> 		return;							\
+> 									\
+> 	__data_size = trace_event_get_offsets_##call(&__data_offsets, args); \
+> 									\
+> 	entry = trace_event_buffer_reserve(&fbuffer, trace_file,	\
+> 				 sizeof(*entry) + __data_size);		\
+> 									\
+> 	if (!entry)							\
+> 		return;							\
+> 									\
+> 	tstruct								\
+> 									\
+> 	{ assign; }							\
+> 									\
+> 	trace_event_buffer_commit(&fbuffer);				\
+> }
+> 
+> The reason caused no output of trace_sctp_probe_path is that
+> trace_sctp_probe_path written in TP_fast_assign part of
+> TRACE_EVENT(sctp_probe), and it will be placed( { assign; } ) after the
+> trace_event_buffer_reserve() when compiler expands Macro,
+> 
+>         entry = trace_event_buffer_reserve(&fbuffer, trace_file,        \
+>                                  sizeof(*entry) + __data_size);         \
+>                                                                         \
+>         if (!entry)                                                     \
+>                 return;                                                 \
+>                                                                         \
+>         tstruct                                                         \
+>                                                                         \
+>         { assign; }                                                     \
+> 
+> so trace_sctp_probe_path finally can not acquire trace_event_buffer
+> and return no output, that is to say the nest of tracepoint entry function
+> is not allowed. The function call flow is:
+> 
+> trace_sctp_probe()
+> -> trace_event_raw_event_sctp_probe()
+>  -> lock buffer
+>  -> trace_sctp_probe_path()
+>    -> trace_event_raw_event_sctp_probe_path()  --nested
+>    -> buffer has been locked and return no output.
+> 
+> This patch is to remove trace_sctp_probe_path from the TP_fast_assign
+> part of TRACE_EVENT(sctp_probe) to avoid the nest of entry function,
+> and trigger sctp_probe_path_trace in sctp_outq_sack.
+> 
+> After this patch, you can enable both events individually,
+>   # cd /sys/kernel/debug/tracing
+>   # echo 1 > events/sctp/sctp_probe/enable
+>   # echo 1 > events/sctp/sctp_probe_path/enable
+> 
+> Or, you can enable all the events under sctp.
+> 
+>   # echo 1 > events/sctp/enable
+> 
+> Signed-off-by: Kevin Kou <qdkevin.kou@gmail.com>
 
-We can certainly change the logic to omit guessing program type if
-it's already set to something else than UNSPEC.
-
-But all I'm asking is that instead of using #fname"_sec" section name,
-is to use "struct_ops/"#fname, because it's consistent with all other
-program types. If you do that, then you don't have to do anything
-extra (well, add single entry to section_defs, of course), it will
-just work as is.
-
->
-> >
-> > > >
-> > > > It's a requirement "of sorts", because even if user doesn't do that,
-> > > > stuff will still work, if user manually will call
-> > > > bpf_program__set_struct_ops(prog). Which actually reminds me that it
-> > > > would be good to add bpf_program__set_struct_ops() and
-> > > Although there is BPF_PROG_TYPE_FNS macro,
-> > > I don't see moving bpf_prog__set_struct_ops(prog) to LIBBPF_API is useful
-> > > while actually may cause confusion and error.  How could __set_struct_ops()
-> > > a prog to struct_ops prog_type help a program, which is not used in
-> > > SEC(".struct_ops"), to be loaded successfully as a struct_ops prog?
-> > >
-> > > Assigning a bpf_prog to a function ptr under the SEC(".struct_ops")
-> > > is the only way for a program to be successfully loaded as
-> > > struct_ops prog type.  Extra way to allow a prog to be changed to
-> > > struct_ops prog_type is either useless or redundant.
-> >
-> > Well, first of all, just for consistency with everything else. We have
-> > such methods for all prog_types, so I'd like to avoid a special
-> > snowflake one that doesn't.
-> Yes, for consistency is fine as I mentioned in the earlier reply,
-> as long as it is understood the usefulness of it.
->
-> > Second, while high-level libbpf API provides all the magic to
-> > construct STRUCT_OPS map based on .struct_ops section types,
-> > technically, user might decide to do that using low-level map creation
-> > API, right?
-> How?
->
-> Correct that the map api is reused as is in SEC(".struct_ops").
->
-> For prog, AFAICT, it is not possible to create struct_ops
-> prog from raw and use it in struct_ops map unless more LIBBPF_API
-> is added.  Lets put aside the need to find the btf_vmlinux
-> and its btf-types...etc.  At least, there is no LIBBPF_API to
-> set prog->attach_btf_id.  Considering the amount of preparation
-> is needed to create a struct_ops map from raw,  I would like
-> to see a real use case first before even considering what else
-> is needed and add another LIBBPF_API that may not be used.
-
-To be clear, I don't think anyone in their right mind should do this
-by hand. I'm just saying that in the end it's not magic, just calls to
-low-level map APIs. See above, though, all I care is consistent
-pattern for sections names: "program_type/<whatever-makes-sense>".
+Acked-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
