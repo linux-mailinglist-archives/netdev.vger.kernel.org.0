@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CEFCD12AEF2
-	for <lists+netdev@lfdr.de>; Thu, 26 Dec 2019 22:35:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B73212AEF3
+	for <lists+netdev@lfdr.de>; Thu, 26 Dec 2019 22:35:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726831AbfLZVfX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Dec 2019 16:35:23 -0500
-Received: from mail-pj1-f66.google.com ([209.85.216.66]:52217 "EHLO
-        mail-pj1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726105AbfLZVfX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Dec 2019 16:35:23 -0500
-Received: by mail-pj1-f66.google.com with SMTP id j11so3853896pjs.1
-        for <netdev@vger.kernel.org>; Thu, 26 Dec 2019 13:35:22 -0800 (PST)
+        id S1726911AbfLZVfZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Dec 2019 16:35:25 -0500
+Received: from mail-pj1-f65.google.com ([209.85.216.65]:56316 "EHLO
+        mail-pj1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726105AbfLZVfZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Dec 2019 16:35:25 -0500
+Received: by mail-pj1-f65.google.com with SMTP id d5so3838131pjz.5
+        for <netdev@vger.kernel.org>; Thu, 26 Dec 2019 13:35:24 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=herbertland-com.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=JsC69g/dm6TU2TzB9WwH3npWL31daqcKnC5S4dcBCXU=;
-        b=wG873mVVD1tuPddo4d6DXhNZ5yYQ1pOdewxelbCok8POL4dfjtOAy7cLGXzsynY0i2
-         i5MU5CMd6wORfoEy6dpecA93TIEiurKBLnp3g8UKPqvkUjvq1TVX7zQM+LzOArpOobUq
-         RP+WrVHak46kakscTsRx70DN01gjl2xVfkvLwWJxSC9u8m0miYf4IwDsMK3dSd1aO2sV
-         dEJDQrAbkSgD6UNg8OOSUMskNrkpiI6t7X6n+apCyEcT1iro0caztgkUHniyZSS2aRcc
-         TIi95fX8s3iUdLTy4x70lvkQkhARi8fh3/QhU72EoRwbwKhMOMGU7Mtahbcg/OI1rJt2
-         CZ2g==
+        bh=I8OAdcktKNNxLldYp1vXyJmIqrTlmpirUH+a3CmCZSE=;
+        b=CNpwjnbELqVd++shT+XngHtUkMjCIzkksUVMEWee7KQfuqkGtnHcn85AEJchju7aYE
+         2Aqn5+CztQ0AV4sklbHi/ttRaf46jpb+smpX9m/V7IKZUiyXfbZxx+1fkV1SsiwuF2WR
+         7U/XqpnXcZO8tj6CUegL0eGxl0LWxT4h3o4iOcVHfsx+EaozQZiTkcuIEPFPhNt8V7gL
+         TaWqn1bv/m3Zzt03YCekqbRMr9sKssBu3TheP/6JS2eBfVnor+bJFqP+fA+ccdGP/Squ
+         ZIfZA2d0pJckBra+4RGlbTEjgwPpzEnZD+35lxL0MpnxI42EYbopXVeTRO7G0Mw+tah3
+         J0lg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=JsC69g/dm6TU2TzB9WwH3npWL31daqcKnC5S4dcBCXU=;
-        b=bvMnC/rW95CnpF1eCM+7mE6XP1uGHqQmeiirP1SHE4WDYkjZZBCH2g+rXtgUhkicB7
-         UonwlkyHxWv/KthIN8u8X//majBPwOuliiwRa+bEx/XTkGa9DU7GD4pEFQigXfuL9UNT
-         IMPbQMDI3uyjAyih/Kn9/Xb7Th4xtnpR+u093NG0rCQ/qa0aGRrCaErNsrYcaVZJtqD8
-         c70flAQbB9yilgMS0Pz6IAgkD7L+3UHARACY6gTV11rYZGO4Ju0WzZgwufnEUI4evNN2
-         UvHN2DcQ3Z47FNSnvyuEfvTIgAHvv2g6XXrqn+QdEHKaV7/YeZHeCQllIjBM86dtqo1G
-         9iTg==
-X-Gm-Message-State: APjAAAXQPFzgcwx4qgppqLgPSoyjF7/8TWnu8RduoVZcjepN9R2IT93x
-        9VmjAqzHTo0hD7P29s+9SeAdqRUM5QA=
-X-Google-Smtp-Source: APXvYqzuHo5P9QZcd4H7y6/KxmuMPF2Qz9lO7IAoZHJqRLCPzbpvpfhYZQOrTikLjX5JR3wYfN36oQ==
-X-Received: by 2002:a17:902:9048:: with SMTP id w8mr47730382plz.294.1577396122200;
-        Thu, 26 Dec 2019 13:35:22 -0800 (PST)
+        bh=I8OAdcktKNNxLldYp1vXyJmIqrTlmpirUH+a3CmCZSE=;
+        b=OMSRqpsINkyC2W8svSO5duH0egUU0yh8JRivG9nGl1yPBFyrLKoEHBjp6KnqE5t6XX
+         P4PZxrPYrDRQVETXYv9hKY1ZtJc6YXvWoqsdds8iMbOpgUMvdtO6p+/ZteqW4AtQc0X9
+         vskIL9508C5HBgLLMg0HzUa2r1LoPB3BLVpuo11IUnndaKa+Sn32cjPQVzfJ7kN7G5BM
+         8W3cDUzQ7YXq56Jf0a1zFCrj5Xkkh5kEDZzO2dbdtofVDfZ1yYWk+kpJLWgvNt8D4red
+         /E4Cw26YX/rNfJfzhwC1+9tfpo2nyI6r7xNlZa9PxpbLaxcy9niMuSezP4yA40iyVgDV
+         nOdg==
+X-Gm-Message-State: APjAAAX4YBMlMR9YC7DOzCeJJWIuSDL3XF5dO9M3xjx3vsef0cbPSK74
+        MBabr/zRdMTrvgx4rZl4p6jz3J0cDdw=
+X-Google-Smtp-Source: APXvYqyl1JBPb/8G+a/k4dUV+eIUvC9MsztwOO4KvW13PUdw/XHEfh1BIGalQU8FYB1r3d5u1MQ2SA==
+X-Received: by 2002:a17:902:7288:: with SMTP id d8mr46701484pll.341.1577396124373;
+        Thu, 26 Dec 2019 13:35:24 -0800 (PST)
 Received: from localhost.localdomain (c-73-202-182-113.hsd1.ca.comcast.net. [73.202.182.113])
-        by smtp.gmail.com with ESMTPSA id q6sm37996662pfh.127.2019.12.26.13.35.21
+        by smtp.gmail.com with ESMTPSA id q6sm37996662pfh.127.2019.12.26.13.35.23
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Thu, 26 Dec 2019 13:35:21 -0800 (PST)
+        Thu, 26 Dec 2019 13:35:23 -0800 (PST)
 From:   Tom Herbert <tom@herbertland.com>
 To:     davem@davemloft.net, netdev@vger.kernel.org
 Cc:     Tom Herbert <tom@herbertland.com>
-Subject: [PATCH net-next 1/2] net: Documentation about deprecating NETIF_F_IP{V6}_CSUM
-Date:   Thu, 26 Dec 2019 13:34:58 -0800
-Message-Id: <1577396099-3831-2-git-send-email-tom@herbertland.com>
+Subject: [PATCH net-next 2/2] net: Warning about use of deprecated TX checksum offload
+Date:   Thu, 26 Dec 2019 13:34:59 -0800
+Message-Id: <1577396099-3831-3-git-send-email-tom@herbertland.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1577396099-3831-1-git-send-email-tom@herbertland.com>
 References: <1577396099-3831-1-git-send-email-tom@herbertland.com>
@@ -57,34 +57,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add text in netdev-features.txt documenting that NETIF_F_IP_CSUM and
-NETIF_F_IPV6_CSUM are being deprecated in favor of NETIF_F_HW_CSUM.
-Suggest that legacy drivers can be fixed by advertising NETIF_F_HW_CSUM
-and checking skb->protocol.
+Add a warning in netdev_fix_features that NETIF_F_IP_CSUM and
+NETIF_F_IPV6_CSUM are deprecated and that drivers should advertise
+NETIF_F_HW_CSUM instead.
 
 Signed-off-by: Tom Herbert <tom@herbertland.com>
 ---
- Documentation/networking/netdev-features.txt | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ net/core/dev.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/Documentation/networking/netdev-features.txt b/Documentation/networking/netdev-features.txt
-index 58dd1c1..8500ada 100644
---- a/Documentation/networking/netdev-features.txt
-+++ b/Documentation/networking/netdev-features.txt
-@@ -106,7 +106,12 @@ For complete description, see comments near the top of include/linux/skbuff.h.
- 
- Note: NETIF_F_HW_CSUM is a superset of NETIF_F_IP_CSUM + NETIF_F_IPV6_CSUM.
- It means that device can fill TCP/UDP-like checksum anywhere in the packets
--whatever headers there might be.
-+whatever headers there might be. NETIF_F_IP_CSUM and NETIF_F_IPV6_CSUM are
-+deprecated in favor of NETIF_F_HW_CSUM. Legacy drivers can be converted
-+by advertising NETIF_F_HW_CSUM and checking skb->protocol for ETH_P_IP or
-+ETH_P_IPV6, if the device does not support checksum offload for the protocol
-+in skb->protocol then it can call skb_checksum_help to perform the checksum
-+on the host.
- 
-  * Transmit TCP segmentation offload
- 
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 0ad39c8..ef09fb7 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -8835,6 +8835,10 @@ static void netdev_sync_lower_features(struct net_device *upper,
+ static netdev_features_t netdev_fix_features(struct net_device *dev,
+ 	netdev_features_t features)
+ {
++	/* NETIF_F_IP_CSUM and NETIF_F_IPV6_CSUM are deprecated */
++	if (features & (NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM))
++		netdev_warn(dev, "NETIF_F_IP_CSUM and NETIF_F_IPV6_CSUM are considered deprecated. Please fix driver to use NETIF_F_HW_CSUM.\n");
++
+ 	/* Fix illegal checksum combinations */
+ 	if ((features & NETIF_F_HW_CSUM) &&
+ 	    (features & (NETIF_F_IP_CSUM|NETIF_F_IPV6_CSUM))) {
 -- 
 2.7.4
 
