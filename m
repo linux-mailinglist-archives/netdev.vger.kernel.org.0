@@ -2,43 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D440D12AEC9
-	for <lists+netdev@lfdr.de>; Thu, 26 Dec 2019 22:16:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BE15212AEC7
+	for <lists+netdev@lfdr.de>; Thu, 26 Dec 2019 22:16:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727056AbfLZVP1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Dec 2019 16:15:27 -0500
-Received: from mail-io1-f69.google.com ([209.85.166.69]:55676 "EHLO
-        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726806AbfLZVPM (ORCPT
+        id S1726933AbfLZVPM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Dec 2019 16:15:12 -0500
+Received: from mail-il1-f200.google.com ([209.85.166.200]:34001 "EHLO
+        mail-il1-f200.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726277AbfLZVPM (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 26 Dec 2019 16:15:12 -0500
-Received: by mail-io1-f69.google.com with SMTP id z21so17538322iob.22
+Received: by mail-il1-f200.google.com with SMTP id l13so21639467ils.1
         for <netdev@vger.kernel.org>; Thu, 26 Dec 2019 13:15:11 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=ik7b2s7WamGplClGQL+MsIJ1UBXlFPSq+eZNryAWeT8=;
-        b=Vp8dQeKWjgTEeEnQJdgNVFm09uvvrRqt6aXbseMzrBIi9Q/ND5n0Jm3uN4TC0hRXX8
-         mdlpbqsmdGLW7lbZYpjk7BavgfFWaLpS+69tGf4UtIMZc2bS5yYjrab9u6K/QSeoOMkp
-         k/9i0pKmLco36qks0+T1KpMEsBqJNTnKeRibBliVz5EMT6U7MbsaMVk0uGB4Q0SZnPyn
-         HKczdNLHgW//9jFVPxOxIsj1kRY81oYzRtnsM7qKVN5dZrnp3OMF1bs6yqI8de55XfYn
-         XvXPc4qnycglrQqHH33aNW5ly0gOkNsGgU9mp8Orwdt4hwmXgm693VEXTWxZorhwTJUa
-         WOmg==
-X-Gm-Message-State: APjAAAVx1QWMa99Bz7A0BIAaNheYOmbNJGsN4dJJ593uv0n1Z38lCyY+
-        Uetij2S+2UgjyzgMgZWUPFhBSUzMH6w1ayhQhApNe3Zt2Yx3
-X-Google-Smtp-Source: APXvYqzOUFxyaFo/BSJwAwjfs5XthFXahdFTkxNZEQ52cHWHlC/OE2bQJTqfvDR4XfcOo9H+0+Vleg+DKMe5Auvniu5xQQcQpq3m
+        bh=q/kM3hNHvC7xHvrXTsOHwQHfpns6WCQHWB8i90xjZpI=;
+        b=JLE3BwJPlQgwAyjO6WiEB4D+/L48ZWqlTDXwfmevtOeNDpZdtqM40iEHrvjdKBZeLp
+         4jgFOszZXNRgpc/BUY2+8txYGswtD/2dJOFU5CkyDofcc7SOTPNS5NQbaJtJdjLYqRzx
+         CSQY0jvHgCT9OlXsgeypjcJhCs0LyKIHJiSy8UcdCqcROXaDYhyPSXxBYmGi+ae+3lt+
+         12/5jn8OYCrb4IimZBCdv9g4YPoMx4KGVwHJhGxJEsxrbktK4jWW3gZHyBvu5DQW4hU+
+         mO5ft17nBeKVi/ROOHyEBCvH7lFKd42xEm7dun5OdyKqU8X2e+NimycHtVcJWPWMp+sW
+         Mgkw==
+X-Gm-Message-State: APjAAAUNKtzMWJaCSyLLjaPd3rYBmvLY05GldCRi25ej5RlOtem8lLfX
+        3wfL1cszzIeaLWy19T3IDe+gEjYdJLCnkkeIT5E5pvtUDivX
+X-Google-Smtp-Source: APXvYqw0eXL0knSBDFLS9zNPnFLDEUdeUcUkwol8Z+hx4ADXhrZNKbJUGsPo+SVwWmOU2FxfYsAB6nj71/7KydpYAgXbI+hYH1Im
 MIME-Version: 1.0
-X-Received: by 2002:a92:d80f:: with SMTP id y15mr41770448ilm.225.1577394911048;
+X-Received: by 2002:a5e:840f:: with SMTP id h15mr33848611ioj.286.1577394911270;
  Thu, 26 Dec 2019 13:15:11 -0800 (PST)
 Date:   Thu, 26 Dec 2019 13:15:11 -0800
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000057fd27059aa1dfca@google.com>
-Subject: general protection fault in xt_rateest_tg_checkentry
-From:   syzbot <syzbot+d7358a458d8a81aee898@syzkaller.appspotmail.com>
-To:     coreteam@netfilter.org, davem@davemloft.net, fw@strlen.de,
-        kadlec@netfilter.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        pablo@netfilter.org, syzkaller-bugs@googlegroups.com
+Message-ID: <0000000000005b5fc7059aa1df89@google.com>
+Subject: KASAN: use-after-free Read in j1939_tp_txtimer
+From:   syzbot <syzbot+5322482fe520b02aea30@syzkaller.appspotmail.com>
+To:     bst@pengutronix.de, davem@davemloft.net,
+        dev.kurt@vandijck-laurijssen.be, ecathinds@gmail.com,
+        kernel@pengutronix.de, linux-can@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux@rempel-privat.de,
+        lkp@intel.com, maxime.jayat@mobile-devices.fr, mkl@pengutronix.de,
+        netdev@vger.kernel.org, o.rempel@pengutronix.de, robin@protonic.nl,
+        socketcan@hartkopp.net, syzkaller-bugs@googlegroups.com
 Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
@@ -51,89 +54,136 @@ syzbot found the following crash on:
 
 HEAD commit:    46cf053e Linux 5.5-rc3
 git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=11775799e00000
+console output: https://syzkaller.appspot.com/x/log.txt?x=158ac866e00000
 kernel config:  https://syzkaller.appspot.com/x/.config?x=ed9d672709340e35
-dashboard link: https://syzkaller.appspot.com/bug?extid=d7358a458d8a81aee898
+dashboard link: https://syzkaller.appspot.com/bug?extid=5322482fe520b02aea30
 compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=13713ec1e00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1272ba49e00000
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=11af21fee00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=116b4ec1e00000
+
+The bug was bisected to:
+
+commit 9d71dd0c70099914fcd063135da3c580865e924c
+Author: The j1939 authors <linux-can@vger.kernel.org>
+Date:   Mon Oct 8 09:48:36 2018 +0000
+
+     can: add support of SAE J1939 protocol
+
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=124d0ac1e00000
+final crash:    https://syzkaller.appspot.com/x/report.txt?x=114d0ac1e00000
+console output: https://syzkaller.appspot.com/x/log.txt?x=164d0ac1e00000
 
 IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+d7358a458d8a81aee898@syzkaller.appspotmail.com
+Reported-by: syzbot+5322482fe520b02aea30@syzkaller.appspotmail.com
+Fixes: 9d71dd0c7009 ("can: add support of SAE J1939 protocol")
 
-kasan: CONFIG_KASAN_INLINE enabled
-kasan: GPF could be caused by NULL-ptr deref or user memory access
-general protection fault: 0000 [#1] PREEMPT SMP KASAN
-CPU: 1 PID: 9188 Comm: syz-executor670 Not tainted 5.5.0-rc3-syzkaller #0
+==================================================================
+BUG: KASAN: use-after-free in memcpy include/linux/string.h:380 [inline]
+BUG: KASAN: use-after-free in j1939_session_tx_dat  
+net/can/j1939/transport.c:790 [inline]
+BUG: KASAN: use-after-free in j1939_xtp_txnext_transmiter  
+net/can/j1939/transport.c:847 [inline]
+BUG: KASAN: use-after-free in j1939_tp_txtimer+0x777/0x1b00  
+net/can/j1939/transport.c:1095
+Read of size 7 at addr ffff88809073d917 by task ksoftirqd/0/9
+
+CPU: 0 PID: 9 Comm: ksoftirqd/0 Not tainted 5.5.0-rc3-syzkaller #0
 Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
 Google 01/01/2011
-RIP: 0010:__read_once_size include/linux/compiler.h:199 [inline]
-RIP: 0010:net_generic include/net/netns/generic.h:45 [inline]
-RIP: 0010:xt_rateest_tg_checkentry+0x11d/0xb40  
-net/netfilter/xt_RATEEST.c:109
-Code: d9 f2 0d fb 45 84 f6 0f 84 08 07 00 00 e8 8b f1 0d fb 49 8d bd 68 13  
-00 00 48 b8 00 00 00 00 00 fc ff df 48 89 fa 48 c1 ea 03 <80> 3c 02 00 0f  
-85 f4 08 00 00 4d 8b ad 68 13 00 00 e8 cd 29 fa fa
-RSP: 0018:ffffc90001df7788 EFLAGS: 00010202
-RAX: dffffc0000000000 RBX: ffffc90001df7ae8 RCX: ffffffff8667437e
-RDX: 000000000000026d RSI: ffffffff86673c65 RDI: 0000000000001368
-RBP: ffffc90001df7848 R08: ffff888093e48540 R09: ffffed1015d2703d
-R10: ffffed1015d2703c R11: ffff8880ae9381e3 R12: 000000000000002d
-R13: 0000000000000000 R14: 0000000000000001 R15: ffffc90001df7820
-FS:  0000000001250880(0000) GS:ffff8880ae900000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000000020000820 CR3: 000000008f27a000 CR4: 00000000001406e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
 Call Trace:
-  xt_check_target+0x283/0x690 net/netfilter/x_tables.c:1019
-  check_target net/ipv4/netfilter/arp_tables.c:399 [inline]
-  find_check_entry net/ipv4/netfilter/arp_tables.c:422 [inline]
-  translate_table+0x1005/0x1d70 net/ipv4/netfilter/arp_tables.c:572
-  do_replace net/ipv4/netfilter/arp_tables.c:977 [inline]
-  do_arpt_set_ctl+0x310/0x640 net/ipv4/netfilter/arp_tables.c:1456
-  nf_sockopt net/netfilter/nf_sockopt.c:106 [inline]
-  nf_setsockopt+0x77/0xd0 net/netfilter/nf_sockopt.c:115
-  ip_setsockopt net/ipv4/ip_sockglue.c:1260 [inline]
-  ip_setsockopt+0xdf/0x100 net/ipv4/ip_sockglue.c:1240
-  udp_setsockopt+0x68/0xb0 net/ipv4/udp.c:2639
-  sock_common_setsockopt+0x94/0xd0 net/core/sock.c:3149
-  __sys_setsockopt+0x261/0x4c0 net/socket.c:2117
-  __do_sys_setsockopt net/socket.c:2133 [inline]
-  __se_sys_setsockopt net/socket.c:2130 [inline]
-  __x64_sys_setsockopt+0xbe/0x150 net/socket.c:2130
-  do_syscall_64+0xfa/0x790 arch/x86/entry/common.c:294
-  entry_SYSCALL_64_after_hwframe+0x49/0xbe
-RIP: 0033:0x4414d9
-Code: 18 89 d0 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 00 48 89 f8 48 89 f7  
-48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff  
-ff 0f 83 fb 13 fc ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007fff75392588 EFLAGS: 00000246 ORIG_RAX: 0000000000000036
-RAX: ffffffffffffffda RBX: 00000000004002c8 RCX: 00000000004414d9
-RDX: 0000000000000060 RSI: 0a02000000000000 RDI: 0000000000000003
-RBP: 00000000006cb018 R08: 0000000000000530 R09: 00000000004002c8
-R10: 0000000020000800 R11: 0000000000000246 R12: 0000000000402d60
-R13: 0000000000402df0 R14: 0000000000000000 R15: 0000000000000000
-Modules linked in:
----[ end trace 6eeb34579322f089 ]---
-RIP: 0010:__read_once_size include/linux/compiler.h:199 [inline]
-RIP: 0010:net_generic include/net/netns/generic.h:45 [inline]
-RIP: 0010:xt_rateest_tg_checkentry+0x11d/0xb40  
-net/netfilter/xt_RATEEST.c:109
-Code: d9 f2 0d fb 45 84 f6 0f 84 08 07 00 00 e8 8b f1 0d fb 49 8d bd 68 13  
-00 00 48 b8 00 00 00 00 00 fc ff df 48 89 fa 48 c1 ea 03 <80> 3c 02 00 0f  
-85 f4 08 00 00 4d 8b ad 68 13 00 00 e8 cd 29 fa fa
-RSP: 0018:ffffc90001df7788 EFLAGS: 00010202
-RAX: dffffc0000000000 RBX: ffffc90001df7ae8 RCX: ffffffff8667437e
-RDX: 000000000000026d RSI: ffffffff86673c65 RDI: 0000000000001368
-RBP: ffffc90001df7848 R08: ffff888093e48540 R09: ffffed1015d2703d
-R10: ffffed1015d2703c R11: ffff8880ae9381e3 R12: 000000000000002d
-R13: 0000000000000000 R14: 0000000000000001 R15: ffffc90001df7820
-FS:  0000000001250880(0000) GS:ffff8880ae900000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000000020000820 CR3: 000000008f27a000 CR4: 00000000001406e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+  __dump_stack lib/dump_stack.c:77 [inline]
+  dump_stack+0x197/0x210 lib/dump_stack.c:118
+  print_address_description.constprop.0.cold+0xd4/0x30b mm/kasan/report.c:374
+  __kasan_report.cold+0x1b/0x41 mm/kasan/report.c:506
+  kasan_report+0x12/0x20 mm/kasan/common.c:639
+  check_memory_region_inline mm/kasan/generic.c:185 [inline]
+  check_memory_region+0x134/0x1a0 mm/kasan/generic.c:192
+  memcpy+0x24/0x50 mm/kasan/common.c:125
+  memcpy include/linux/string.h:380 [inline]
+  j1939_session_tx_dat net/can/j1939/transport.c:790 [inline]
+  j1939_xtp_txnext_transmiter net/can/j1939/transport.c:847 [inline]
+  j1939_tp_txtimer+0x777/0x1b00 net/can/j1939/transport.c:1095
+  __run_hrtimer kernel/time/hrtimer.c:1517 [inline]
+  __hrtimer_run_queues+0x364/0xe40 kernel/time/hrtimer.c:1579
+  hrtimer_run_softirq+0x17e/0x270 kernel/time/hrtimer.c:1596
+  __do_softirq+0x262/0x98c kernel/softirq.c:292
+  run_ksoftirqd kernel/softirq.c:603 [inline]
+  run_ksoftirqd+0x8e/0x110 kernel/softirq.c:595
+  smpboot_thread_fn+0x6a3/0xa40 kernel/smpboot.c:165
+  kthread+0x361/0x430 kernel/kthread.c:255
+  ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
+
+Allocated by task 16:
+  save_stack+0x23/0x90 mm/kasan/common.c:72
+  set_track mm/kasan/common.c:80 [inline]
+  __kasan_kmalloc mm/kasan/common.c:513 [inline]
+  __kasan_kmalloc.constprop.0+0xcf/0xe0 mm/kasan/common.c:486
+  kasan_slab_alloc+0xf/0x20 mm/kasan/common.c:521
+  slab_post_alloc_hook mm/slab.h:584 [inline]
+  slab_alloc_node mm/slab.c:3263 [inline]
+  kmem_cache_alloc_node+0x138/0x740 mm/slab.c:3575
+  __alloc_skb+0xd5/0x5e0 net/core/skbuff.c:197
+  alloc_skb include/linux/skbuff.h:1049 [inline]
+  j1939_tp_tx_dat_new+0x38/0x530 net/can/j1939/transport.c:568
+  j1939_tp_tx_dat net/can/j1939/transport.c:606 [inline]
+  j1939_session_tx_dat net/can/j1939/transport.c:791 [inline]
+  j1939_xtp_txnext_transmiter net/can/j1939/transport.c:847 [inline]
+  j1939_tp_txtimer+0x7a7/0x1b00 net/can/j1939/transport.c:1095
+  __run_hrtimer kernel/time/hrtimer.c:1517 [inline]
+  __hrtimer_run_queues+0x364/0xe40 kernel/time/hrtimer.c:1579
+  hrtimer_run_softirq+0x17e/0x270 kernel/time/hrtimer.c:1596
+  __do_softirq+0x262/0x98c kernel/softirq.c:292
+
+Freed by task 16:
+  save_stack+0x23/0x90 mm/kasan/common.c:72
+  set_track mm/kasan/common.c:80 [inline]
+  kasan_set_free_info mm/kasan/common.c:335 [inline]
+  __kasan_slab_free+0x102/0x150 mm/kasan/common.c:474
+  kasan_slab_free+0xe/0x10 mm/kasan/common.c:483
+  __cache_free mm/slab.c:3426 [inline]
+  kmem_cache_free+0x86/0x320 mm/slab.c:3694
+  kfree_skbmem net/core/skbuff.c:623 [inline]
+  kfree_skbmem+0xfb/0x1c0 net/core/skbuff.c:617
+  __kfree_skb net/core/skbuff.c:680 [inline]
+  consume_skb net/core/skbuff.c:838 [inline]
+  consume_skb+0x103/0x410 net/core/skbuff.c:832
+  vcan_tx+0x29f/0x7f0 drivers/net/can/vcan.c:110
+  __netdev_start_xmit include/linux/netdevice.h:4447 [inline]
+  netdev_start_xmit include/linux/netdevice.h:4461 [inline]
+  xmit_one net/core/dev.c:3420 [inline]
+  dev_hard_start_xmit+0x1a3/0x9b0 net/core/dev.c:3436
+  __dev_queue_xmit+0x2b05/0x35c0 net/core/dev.c:4013
+  dev_queue_xmit+0x18/0x20 net/core/dev.c:4046
+  can_send+0x439/0x890 net/can/af_can.c:277
+  j1939_send_one+0x29d/0x360 net/can/j1939/main.c:340
+  j1939_tp_tx_dat net/can/j1939/transport.c:615 [inline]
+  j1939_session_tx_dat net/can/j1939/transport.c:791 [inline]
+  j1939_xtp_txnext_transmiter net/can/j1939/transport.c:847 [inline]
+  j1939_tp_txtimer+0x5a9/0x1b00 net/can/j1939/transport.c:1095
+  __run_hrtimer kernel/time/hrtimer.c:1517 [inline]
+  __hrtimer_run_queues+0x364/0xe40 kernel/time/hrtimer.c:1579
+  hrtimer_run_softirq+0x17e/0x270 kernel/time/hrtimer.c:1596
+  __do_softirq+0x262/0x98c kernel/softirq.c:292
+
+The buggy address belongs to the object at ffff88809073d840
+  which belongs to the cache skbuff_head_cache of size 224
+The buggy address is located 215 bytes inside of
+  224-byte region [ffff88809073d840, ffff88809073d920)
+The buggy address belongs to the page:
+page:ffffea000241cf40 refcount:1 mapcount:0 mapping:ffff88821b774e00  
+index:0x0
+raw: 00fffe0000000200 ffffea00026df588 ffffea00023d9308 ffff88821b774e00
+raw: 0000000000000000 ffff88809073d0c0 000000010000000c 0000000000000000
+page dumped because: kasan: bad access detected
+
+Memory state around the buggy address:
+  ffff88809073d800: fc fc fc fc fc fc fc fc fb fb fb fb fb fb fb fb
+  ffff88809073d880: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+> ffff88809073d900: fb fb fb fb fc fc fc fc fc fc fc fc fc fc fc fc
+                          ^
+  ffff88809073d980: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+  ffff88809073da00: fb fb fb fb fb fb fb fb fb fb fb fb fc fc fc fc
+==================================================================
 
 
 ---
@@ -143,5 +193,6 @@ syzbot engineers can be reached at syzkaller@googlegroups.com.
 
 syzbot will keep track of this bug report. See:
 https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
 syzbot can test patches for this bug, for details see:
 https://goo.gl/tpsmEJ#testing-patches
