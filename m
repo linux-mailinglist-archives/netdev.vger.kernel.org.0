@@ -2,136 +2,176 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4DE9612AE21
-	for <lists+netdev@lfdr.de>; Thu, 26 Dec 2019 20:01:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 530CE12AE29
+	for <lists+netdev@lfdr.de>; Thu, 26 Dec 2019 20:02:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726981AbfLZTBR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Dec 2019 14:01:17 -0500
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:33362 "EHLO
-        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726752AbfLZTBQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Dec 2019 14:01:16 -0500
-Received: by mail-wm1-f65.google.com with SMTP id d139so5551332wmd.0;
-        Thu, 26 Dec 2019 11:01:15 -0800 (PST)
+        id S1726752AbfLZTCj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Dec 2019 14:02:39 -0500
+Received: from mail-qt1-f193.google.com ([209.85.160.193]:37648 "EHLO
+        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726480AbfLZTCj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Dec 2019 14:02:39 -0500
+Received: by mail-qt1-f193.google.com with SMTP id w47so22935478qtk.4;
+        Thu, 26 Dec 2019 11:02:38 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=googlemail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=G3rTKkxQ4jW7k/v9aR/psmRAwE+gN+ZcbP3Syw4+shY=;
-        b=mELOjX4SoFXM8AIHXZRIeFnnO9Y9LgnWsu0GIsFn/9o3LYHSDm34OAyN54M0CIE976
-         g6x4Mv7Z1xm/KtdgWm+DtHlMDMtdcBlKd8JzOVuyRJn/nTmxS5qnmqGrDdkhnYx1iqqT
-         uJeydm1jD+sPIvsAb+IjfYPHOX2Etf2GNbfnuSDMPe6zafIuuvhnTwraW6BBmTsQfNbi
-         aUsNny/3WM2NxfQoZuH/JjU8imbxePoXVI+IQvqq5QRlm7W+dwQTtx4g4aLVfhqHKnDm
-         M47QUxht+pMbSs35w9DCmZk2F8XJb2CgZaHESFNfgq/tCg2TagCC2tYhLPANuDqrJrnG
-         SPhw==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=FObIispKpyf2G1I3J0ZcpVwC/VArnaqEtMfJyaRVn2c=;
+        b=AiailQx9cBJXMfg/f3YL8dqse9CV8SutR7lJsLq7ok5/R5bVHmwd7iLEdsPjn844D3
+         TQS3NiNmuWUleoQLMjhmkVlUa5fHETXTV+WQLtDOzG1Zpj5iu7TV7fag6pjZwn3jK2sn
+         fKcVq4/TdjqgjR4S6xEIaNDTHx7pPZaGwLnFpKiDr2ayP+rLYbLsANRu84HU8x7kuZ5P
+         gWsmUadEv15sWat7AfyIfLuX5v62E5BzYyLUb/LjLnsbpkeKbm2X/C8AMBAL8BoRRJQC
+         YgJ2S0BE1K6aUYsEWq6+rvApDlc6AB99snlzRT3oIkff06rXQkRLFXYmSGZ8w3obDOS9
+         KIZg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=G3rTKkxQ4jW7k/v9aR/psmRAwE+gN+ZcbP3Syw4+shY=;
-        b=GvMNkQvew8/PuFn3XFd+/rHkZpTMj326x49lzDMSV7tvjsRLNb7cCVZuHVrK5i2xXt
-         qqfX0DRvmu5vDUDAmfjOJWTS2ZyyVCoPGby0b6qv/p5ay0y/pCk94QJtKCFZH7SrUpAw
-         6nmSc7t5zdPKt+ZzRchJA/ImwSdnrz/Y5rpDl7tQ21dBqK/JKDGcSot3hsMLsZyxJb1p
-         26nxxs/6RtR2g4FSXqH3izL6jiBAo5BG/Vd2AbPMfavb4cczUsaRX8ulxIpwmXUtzBMa
-         CJyDJEKM/mnPhtehEcL0IPVlzf3ih2yxs0iEIK3oU8IvkkV6O/lyOIYrAMjuNGv3jbYe
-         Aycg==
-X-Gm-Message-State: APjAAAXGvFsbfWJZu4ksZOTqtcKmYN5ZVU6+CnGAC0gxzHqDzhl9aj/c
-        BtR3Mo9SUI011dEOmWHG5gE=
-X-Google-Smtp-Source: APXvYqxXejnGcUgKodwQOfW9DCOGrgj2XtI1U1hjLycE2F7TOewPOhFjXUH3LM8ZXUN0XWcwkm3rWw==
-X-Received: by 2002:a7b:c392:: with SMTP id s18mr15862281wmj.169.1577386874993;
-        Thu, 26 Dec 2019 11:01:14 -0800 (PST)
-Received: from localhost.localdomain (p200300F1373A1900428D5CFFFEB99DB8.dip0.t-ipconnect.de. [2003:f1:373a:1900:428d:5cff:feb9:9db8])
-        by smtp.googlemail.com with ESMTPSA id u18sm31777854wrt.26.2019.12.26.11.01.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 26 Dec 2019 11:01:14 -0800 (PST)
-From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-To:     andrew@lunn.ch, f.fainelli@gmail.com, davem@davemloft.net,
-        netdev@vger.kernel.org, linux-amlogic@lists.infradead.org
-Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Subject: [PATCH v2 1/1] net: stmmac: dwmac-meson8b: Fix the RGMII TX delay on Meson8b/8m2 SoCs
-Date:   Thu, 26 Dec 2019 20:01:01 +0100
-Message-Id: <20191226190101.3766479-2-martin.blumenstingl@googlemail.com>
-X-Mailer: git-send-email 2.24.1
-In-Reply-To: <20191226190101.3766479-1-martin.blumenstingl@googlemail.com>
-References: <20191226190101.3766479-1-martin.blumenstingl@googlemail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=FObIispKpyf2G1I3J0ZcpVwC/VArnaqEtMfJyaRVn2c=;
+        b=msMxO5jG6PL1rcl5rVDiCte1lP9TP2FwZVerpAh24LZgm14D4KLfoCNaWGcCDgGAqi
+         0GcBfDxfKfQIJL/lbIzWLI3DGQSr+Ijl86Rf1wDag0tefolXe7TOp6PFk0vCEtuaZDXm
+         3stxlFt3a9Rze0gQqkFyu/2/zPoV+4B7qhSHOca8Y0XLBqdj715jcscyt5atgTWbL3/M
+         oIZIEBm0hrGuz/fLeGJm88RN0NFuxOayXPMLw5x8sLHq2lMqddxY5vQuzT45kApWQpws
+         HtmHgeQ2XdNwooA3EZVsKH8+1GbpkI7rL2Vs7k2CglsyDB7GXfH2CjNv7fs/WTMG8jMb
+         lUXg==
+X-Gm-Message-State: APjAAAUeju5tH4feoBD8o8TCwmQpbp8OFda3p7Hg/TVCW2qV0zsDYhLT
+        Kci/DHvgGqjZEgyBIEm2ShwXFX12ouPNB1BCjoI=
+X-Google-Smtp-Source: APXvYqxaf5F1UboTDk11Wj5PtqKCnYS6Bf+AiBJdtub4vzGf94S0DUUfASVr+Cr1UeAX2Zv8kQInxbqfcTtNOhfW8hg=
+X-Received: by 2002:ac8:4050:: with SMTP id j16mr34509449qtl.171.1577386957840;
+ Thu, 26 Dec 2019 11:02:37 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20191221062556.1182261-1-kafai@fb.com> <20191221062620.1184118-1-kafai@fb.com>
+ <CAEf4BzZX_TNUXJktJUtqmxgMefDzie=Ta18TbBqBhG0-GSLQMg@mail.gmail.com>
+ <20191224013140.ibn33unj77mtbkne@kafai-mbp> <CAEf4Bzb2fRZJsccx2CG_pASy+2eMMWPXk6m3d6SbN+o0MSdQPg@mail.gmail.com>
+ <20191224165003.oi4kvxad6mlsg5kw@kafai-mbp>
+In-Reply-To: <20191224165003.oi4kvxad6mlsg5kw@kafai-mbp>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Thu, 26 Dec 2019 11:02:26 -0800
+Message-ID: <CAEf4BzYA=xS7pHPqGxK4LsRHpxN=Y4dLcbG8WNMqGhKpauh7gQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2 11/11] bpf: Add bpf_dctcp example
+To:     Martin Lau <kafai@fb.com>
+Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        David Miller <davem@davemloft.net>,
+        Kernel Team <Kernel-team@fb.com>,
+        Networking <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-GXBB and newer SoCs use the fixed FCLK_DIV2 (1GHz) clock as input for
-the m250_sel clock. Meson8b and Meson8m2 use MPLL2 instead, whose rate
-can be adjusted at runtime.
+On Tue, Dec 24, 2019 at 8:50 AM Martin Lau <kafai@fb.com> wrote:
+>
+> On Mon, Dec 23, 2019 at 11:01:55PM -0800, Andrii Nakryiko wrote:
+> > On Mon, Dec 23, 2019 at 5:31 PM Martin Lau <kafai@fb.com> wrote:
+> > >
+> > > On Mon, Dec 23, 2019 at 03:26:50PM -0800, Andrii Nakryiko wrote:
+> > > > On Fri, Dec 20, 2019 at 10:26 PM Martin KaFai Lau <kafai@fb.com> wrote:
+> > > > >
+> > > > > This patch adds a bpf_dctcp example.  It currently does not do
+> > > > > no-ECN fallback but the same could be done through the cgrp2-bpf.
+> > > > >
+> > > > > Signed-off-by: Martin KaFai Lau <kafai@fb.com>
+> > > > > ---
+> > > > >  tools/testing/selftests/bpf/bpf_tcp_helpers.h | 228 ++++++++++++++++++
+> > > > >  .../selftests/bpf/prog_tests/bpf_tcp_ca.c     | 218 +++++++++++++++++
+> > > > >  tools/testing/selftests/bpf/progs/bpf_dctcp.c | 210 ++++++++++++++++
+> > > > >  3 files changed, 656 insertions(+)
+> > > > >  create mode 100644 tools/testing/selftests/bpf/bpf_tcp_helpers.h
+> > > > >  create mode 100644 tools/testing/selftests/bpf/prog_tests/bpf_tcp_ca.c
+> > > > >  create mode 100644 tools/testing/selftests/bpf/progs/bpf_dctcp.c
+> > > > >
+> > > > > diff --git a/tools/testing/selftests/bpf/bpf_tcp_helpers.h b/tools/testing/selftests/bpf/bpf_tcp_helpers.h
+> > > > > new file mode 100644
+> > > > > index 000000000000..7ba8c1b4157a
+> > > > > --- /dev/null
+> > > > > +++ b/tools/testing/selftests/bpf/bpf_tcp_helpers.h
+> > > > > @@ -0,0 +1,228 @@
+> > > > > +/* SPDX-License-Identifier: GPL-2.0 */
+> > > > > +#ifndef __BPF_TCP_HELPERS_H
+> > > > > +#define __BPF_TCP_HELPERS_H
+> > > > > +
+> > > > > +#include <stdbool.h>
+> > > > > +#include <linux/types.h>
+> > > > > +#include <bpf_helpers.h>
+> > > > > +#include <bpf_core_read.h>
+> > > > > +#include "bpf_trace_helpers.h"
+> > > > > +
+> > > > > +#define BPF_TCP_OPS_0(fname, ret_type, ...) BPF_TRACE_x(0, #fname"_sec", fname, ret_type, __VA_ARGS__)
+> > > > > +#define BPF_TCP_OPS_1(fname, ret_type, ...) BPF_TRACE_x(1, #fname"_sec", fname, ret_type, __VA_ARGS__)
+> > > > > +#define BPF_TCP_OPS_2(fname, ret_type, ...) BPF_TRACE_x(2, #fname"_sec", fname, ret_type, __VA_ARGS__)
+> > > > > +#define BPF_TCP_OPS_3(fname, ret_type, ...) BPF_TRACE_x(3, #fname"_sec", fname, ret_type, __VA_ARGS__)
+> > > > > +#define BPF_TCP_OPS_4(fname, ret_type, ...) BPF_TRACE_x(4, #fname"_sec", fname, ret_type, __VA_ARGS__)
+> > > > > +#define BPF_TCP_OPS_5(fname, ret_type, ...) BPF_TRACE_x(5, #fname"_sec", fname, ret_type, __VA_ARGS__)
+> > > >
+> > > > Should we try to put those BPF programs into some section that would
+> > > > indicate they are used with struct opts? libbpf doesn't use or enforce
+> > > > that (even though it could to derive and enforce that they are
+> > > > STRUCT_OPS programs). So something like
+> > > > SEC("struct_ops/<ideally-operation-name-here>"). I think having this
+> > > > convention is very useful for consistency and to do a quick ELF dump
+> > > > and see what is where. WDYT?
+> > > I did not use it here because I don't want any misperception that it is
+> > > a required convention by libbpf.
+> > >
+> > > Sure, I can prefix it here and comment that it is just a
+> > > convention but not a libbpf's requirement.
+> >
+> > Well, we can actually make it a requirement of sorts. Currently your
+> > code expects that BPF program's type is UNSPEC and then it sets it to
+> > STRUCT_OPS. Alternatively we can say that any BPF program in
+> > SEC("struct_ops/<whatever>") will be automatically assigned
+> > STRUCT_OPTS BPF program type (which is done generically in
+> > bpf_object__open()), and then as .struct_ops section is parsed, all
+> > those programs will be "assembled" by the code you added into a
+> > struct_ops map.
+> Setting BPF_PROG_TYPE_STRUCT_OPS can be done automatically at open
+> phase (during collect_reloc time).  I will make this change.
+>
 
-So far we have been running MPLL2 with ~250MHz (and the internal
-m250_div with value 1), which worked enough that we could transfer data
-with an TX delay of 4ns. Unfortunately there is high packet loss with
-an RGMII PHY when transferring data (receiving data works fine though).
-Odroid-C1's u-boot is running with a TX delay of only 2ns as well as
-the internal m250_div set to 2 - no lost (TX) packets can be observed
-with that setting in u-boot.
+Can you please extend exiting logic in __bpf_object__open() to do
+this? See how libbpf_prog_type_by_name() is used for that.
 
-Manual testing has shown that the TX packet loss goes away when using
-the following settings in Linux (the vendor kernel uses the same
-settings):
-- MPLL2 clock set to ~500MHz
-- m250_div set to 2
-- TX delay set to 2ns on the MAC side
+> >
+> > It's a requirement "of sorts", because even if user doesn't do that,
+> > stuff will still work, if user manually will call
+> > bpf_program__set_struct_ops(prog). Which actually reminds me that it
+> > would be good to add bpf_program__set_struct_ops() and
+> Although there is BPF_PROG_TYPE_FNS macro,
+> I don't see moving bpf_prog__set_struct_ops(prog) to LIBBPF_API is useful
+> while actually may cause confusion and error.  How could __set_struct_ops()
+> a prog to struct_ops prog_type help a program, which is not used in
+> SEC(".struct_ops"), to be loaded successfully as a struct_ops prog?
+>
+> Assigning a bpf_prog to a function ptr under the SEC(".struct_ops")
+> is the only way for a program to be successfully loaded as
+> struct_ops prog type.  Extra way to allow a prog to be changed to
+> struct_ops prog_type is either useless or redundant.
 
-Update the m250_div divider settings to only accept dividers greater or
-equal 2 to fix the TX delay generated by the MAC.
+Well, first of all, just for consistency with everything else. We have
+such methods for all prog_types, so I'd like to avoid a special
+snowflake one that doesn't.
 
-iperf3 results before the change:
-[ ID] Interval           Transfer     Bitrate         Retr
-[  5]   0.00-10.00  sec   182 MBytes   153 Mbits/sec  514      sender
-[  5]   0.00-10.00  sec   182 MBytes   152 Mbits/sec           receiver
+Second, while high-level libbpf API provides all the magic to
+construct STRUCT_OPS map based on .struct_ops section types,
+technically, user might decide to do that using low-level map creation
+API, right? So not making unnecessary assumptions and providing
+complete APIs is a good thing, IMO. Especially if it costs basically
+nothing in terms of code and maintenance.
 
-iperf3 results after the change (including an updated TX delay of 2ns):
-[ ID] Interval           Transfer     Bitrate         Retr  Cwnd
-[  5]   0.00-10.00  sec   927 MBytes   778 Mbits/sec    0      sender
-[  5]   0.00-10.01  sec   927 MBytes   777 Mbits/sec           receiver
+>
+> If it is really necessary to have __set_struct_ops() as a API
+> for completeness, it can be added...
+>
+> > bpf_program__is_struct_ops() APIs for completeness, similarly to how
+> is_struct_ops() makes sense.
+>
+> > BTW, libbpf will emit debug message for every single BPF program it
+> > doesn't recognize section for, so it is still nice to have it be
+> > something more or less standardized and recognizable by libbpf.
+> I can make this debug (not error) message go away too after
+> setting the BPF_PROG_TYPE_STRUCT_OPS automatically at open time.
 
-Fixes: 4f6a71b84e1afd ("net: stmmac: dwmac-meson8b: fix internal RGMII clock configuration")
-Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
----
- .../net/ethernet/stmicro/stmmac/dwmac-meson8b.c    | 14 +++++++++++---
- 1 file changed, 11 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-meson8b.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-meson8b.c
-index bd6c01004913..0e2fa14f1423 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-meson8b.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-meson8b.c
-@@ -112,6 +112,14 @@ static int meson8b_init_rgmii_tx_clk(struct meson8b_dwmac *dwmac)
- 	struct device *dev = dwmac->dev;
- 	const char *parent_name, *mux_parent_names[MUX_CLK_NUM_PARENTS];
- 	struct meson8b_dwmac_clk_configs *clk_configs;
-+	static const struct clk_div_table div_table[] = {
-+		{ .div = 2, .val = 2, },
-+		{ .div = 3, .val = 3, },
-+		{ .div = 4, .val = 4, },
-+		{ .div = 5, .val = 5, },
-+		{ .div = 6, .val = 6, },
-+		{ .div = 7, .val = 7, },
-+	};
- 
- 	clk_configs = devm_kzalloc(dev, sizeof(*clk_configs), GFP_KERNEL);
- 	if (!clk_configs)
-@@ -146,9 +154,9 @@ static int meson8b_init_rgmii_tx_clk(struct meson8b_dwmac *dwmac)
- 	clk_configs->m250_div.reg = dwmac->regs + PRG_ETH0;
- 	clk_configs->m250_div.shift = PRG_ETH0_CLK_M250_DIV_SHIFT;
- 	clk_configs->m250_div.width = PRG_ETH0_CLK_M250_DIV_WIDTH;
--	clk_configs->m250_div.flags = CLK_DIVIDER_ONE_BASED |
--				CLK_DIVIDER_ALLOW_ZERO |
--				CLK_DIVIDER_ROUND_CLOSEST;
-+	clk_configs->m250_div.table = div_table;
-+	clk_configs->m250_div.flags = CLK_DIVIDER_ALLOW_ZERO |
-+				      CLK_DIVIDER_ROUND_CLOSEST;
- 	clk = meson8b_dwmac_register_clk(dwmac, "m250_div", &parent_name, 1,
- 					 &clk_divider_ops,
- 					 &clk_configs->m250_div.hw);
--- 
-2.24.1
-
+Yep, that would be great.
