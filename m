@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DBA9D12B66C
-	for <lists+netdev@lfdr.de>; Fri, 27 Dec 2019 18:42:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5638D12B66F
+	for <lists+netdev@lfdr.de>; Fri, 27 Dec 2019 18:42:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727916AbfL0Rmi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Dec 2019 12:42:38 -0500
-Received: from mail.kernel.org ([198.145.29.99]:39554 "EHLO mail.kernel.org"
+        id S1727958AbfL0Rmn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Dec 2019 12:42:43 -0500
+Received: from mail.kernel.org ([198.145.29.99]:39760 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727900AbfL0Rmf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 27 Dec 2019 12:42:35 -0500
+        id S1727947AbfL0Rmm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 27 Dec 2019 12:42:42 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 1A5E0218AC;
-        Fri, 27 Dec 2019 17:42:34 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 1A4AD21744;
+        Fri, 27 Dec 2019 17:42:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1577468554;
-        bh=inSHXxAmEMnLtfzgN61sGOZo9j+enNoa1EQvuFtC+xQ=;
+        s=default; t=1577468561;
+        bh=btxijgQeafxrlBq6FrXQk6LgJOls1zIVVBq1KL4GIBo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=K6rAPHaVRkUH+wV59MSVeXDXe9dT0uYC5f/74nh8e0g1f+PcT+dfeC5a/h6LSZdEE
-         cXXx5/G+cEGzE2FkjWi9xK6/nZXCFXjewJIxV6lqy3Wcref2iTSiOLlVdJQNmTRHS4
-         U45UoS7eH/zkLQd3TdcWHpV6NdBuJeCfwpEEGLkY=
+        b=D2bt21LKRHsJvtgLdzqViMGZofI2Kxs4HG/AvYEJP+iSWRkRk3ua03pq00GAXxxNB
+         +TvmJE15844w+FP7DwpdqHdUvwYuafdQFXL7FxLOWiawc6RTWfV6oaGndqphW+PujP
+         gCME2iz26L2V4WwDhPSrcSWyQB8H+TyDjdt+nA+I=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     "Daniel T. Lee" <danieltimlee@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
+Cc:     Cristian Birsan <cristian.birsan@microchip.com>,
+        "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 081/187] samples: bpf: fix syscall_tp due to unused syscall
-Date:   Fri, 27 Dec 2019 12:39:09 -0500
-Message-Id: <20191227174055.4923-81-sashal@kernel.org>
+        linux-usb@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 087/187] net: usb: lan78xx: Fix suspend/resume PHY register access error
+Date:   Fri, 27 Dec 2019 12:39:15 -0500
+Message-Id: <20191227174055.4923-87-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191227174055.4923-1-sashal@kernel.org>
 References: <20191227174055.4923-1-sashal@kernel.org>
@@ -44,60 +44,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: "Daniel T. Lee" <danieltimlee@gmail.com>
+From: Cristian Birsan <cristian.birsan@microchip.com>
 
-[ Upstream commit fe3300897cbfd76c6cb825776e5ac0ca50a91ca4 ]
+[ Upstream commit 20032b63586ac6c28c936dff696981159913a13f ]
 
-Currently, open() is called from the user program and it calls the syscall
-'sys_openat', not the 'sys_open'. This leads to an error of the program
-of user side, due to the fact that the counter maps are zero since no
-function such 'sys_open' is called.
+Lan78xx driver accesses the PHY registers through MDIO bus over USB
+connection. When performing a suspend/resume, the PHY registers can be
+accessed before the USB connection is resumed. This will generate an
+error and will prevent the device to resume correctly.
+This patch adds the dependency between the MDIO bus and USB device to
+allow correct handling of suspend/resume.
 
-This commit adds the kernel bpf program which are attached to the
-tracepoint 'sys_enter_openat' and 'sys_enter_openat'.
-
-Fixes: 1da236b6be963 ("bpf: add a test case for syscalls/sys_{enter|exit}_* tracepoints")
-Signed-off-by: Daniel T. Lee <danieltimlee@gmail.com>
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Fixes: ce85e13ad6ef ("lan78xx: Update to use phylib instead of mii_if_info.")
+Signed-off-by: Cristian Birsan <cristian.birsan@microchip.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- samples/bpf/syscall_tp_kern.c | 18 ++++++++++++++++--
- 1 file changed, 16 insertions(+), 2 deletions(-)
+ drivers/net/usb/lan78xx.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/samples/bpf/syscall_tp_kern.c b/samples/bpf/syscall_tp_kern.c
-index 1d78819ffef1..630ce8c4d5a2 100644
---- a/samples/bpf/syscall_tp_kern.c
-+++ b/samples/bpf/syscall_tp_kern.c
-@@ -47,13 +47,27 @@ static __always_inline void count(void *map)
- SEC("tracepoint/syscalls/sys_enter_open")
- int trace_enter_open(struct syscalls_enter_open_args *ctx)
- {
--	count((void *)&enter_open_map);
-+	count(&enter_open_map);
-+	return 0;
-+}
-+
-+SEC("tracepoint/syscalls/sys_enter_openat")
-+int trace_enter_open_at(struct syscalls_enter_open_args *ctx)
-+{
-+	count(&enter_open_map);
- 	return 0;
- }
+diff --git a/drivers/net/usb/lan78xx.c b/drivers/net/usb/lan78xx.c
+index f24a1b0b801f..0becc79fd431 100644
+--- a/drivers/net/usb/lan78xx.c
++++ b/drivers/net/usb/lan78xx.c
+@@ -1808,6 +1808,7 @@ static int lan78xx_mdio_init(struct lan78xx_net *dev)
+ 	dev->mdiobus->read = lan78xx_mdiobus_read;
+ 	dev->mdiobus->write = lan78xx_mdiobus_write;
+ 	dev->mdiobus->name = "lan78xx-mdiobus";
++	dev->mdiobus->parent = &dev->udev->dev;
  
- SEC("tracepoint/syscalls/sys_exit_open")
- int trace_enter_exit(struct syscalls_exit_open_args *ctx)
- {
--	count((void *)&exit_open_map);
-+	count(&exit_open_map);
-+	return 0;
-+}
-+
-+SEC("tracepoint/syscalls/sys_exit_openat")
-+int trace_enter_exit_at(struct syscalls_exit_open_args *ctx)
-+{
-+	count(&exit_open_map);
- 	return 0;
- }
+ 	snprintf(dev->mdiobus->id, MII_BUS_ID_SIZE, "usb-%03d:%03d",
+ 		 dev->udev->bus->busnum, dev->udev->devnum);
 -- 
 2.20.1
 
