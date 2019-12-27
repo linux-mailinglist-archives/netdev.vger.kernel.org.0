@@ -2,47 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C2C012BB57
+	by mail.lfdr.de (Postfix) with ESMTP id D7BAD12BB58
 	for <lists+netdev@lfdr.de>; Fri, 27 Dec 2019 22:37:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726796AbfL0VhK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Dec 2019 16:37:10 -0500
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:40163 "EHLO
-        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726552AbfL0Vg6 (ORCPT
+        id S1726812AbfL0VhM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Dec 2019 16:37:12 -0500
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:39041 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726509AbfL0Vg6 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 27 Dec 2019 16:36:58 -0500
-Received: by mail-wm1-f65.google.com with SMTP id t14so9301237wmi.5
-        for <netdev@vger.kernel.org>; Fri, 27 Dec 2019 13:36:56 -0800 (PST)
+Received: by mail-wm1-f66.google.com with SMTP id 20so9299370wmj.4
+        for <netdev@vger.kernel.org>; Fri, 27 Dec 2019 13:36:57 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=K5D3W/fCixiqiMl4ZhilHiF+8en5/MvOq3+tMTVW4iQ=;
-        b=G3qYYmpXvUgvfgr56cjceFVGlbBB8aYGhZkf7sgIwpZBDDMfOrCIjZowsKBwjh2qOY
-         ORpVBsrKWw55oZIgJ7Xh15oDAd0Bk0G22TTMfWbMylZbejj/o/x4ZsSa8Hb19XZTTSvq
-         yBdwAbU3b5/G2SJcwicujyTIVOnOv9ceavlsKJ5BFg4kp+ESjTGYfbwyppngffYjWGg4
-         a9cwXxa1EFYeOFigSpGBv0tLqwcyszglj6BrEzwwlIzHXIMgEUawpQa6anECoyQXzss1
-         rkGfbu+LxYKqNU+iestQtWSXSUUWyjFd2mq4QAAQbOYkdFZyG/Te0CFFUOKw0P7Kc/w2
-         G69Q==
+        bh=7V5fBkcvHjU8SacvQbqTer+Jpx5oyXeJlKJjN0LLnos=;
+        b=rfDOBMQQ4BoFHPI0zQvR1Hms0QkpBbCKBI+F/5uUziflwr3T1HEFjTVzeML0g4KcDz
+         HpuURUTdITnQ1+Zr+6AU/fQ98dWAbPOVrTzaK5tzrNeOvNYyy8VvDJRMTVWgkiWgitjC
+         nNXQl1B7/NouY7wecqjCqhXLGXO46PBezFIWslqkE6fU8UJtUZF7uoaLUViyyEl+tPDv
+         5WHdQbmG/yjfjUuUQtqT51kQUNmdqu/ew5X6vblrf5QpJGG9EX+OmwGnqhQILInqAgjo
+         zrR3r5wsPPmv3uGV1EY8c+pJwf9UX5xYXmL4LZ0gvap0Rzxy8ixHVWPy1m9JcG/uBx59
+         lk8g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=K5D3W/fCixiqiMl4ZhilHiF+8en5/MvOq3+tMTVW4iQ=;
-        b=Z9RPKIa0BD8ZTHUpjE7H9a2yolGtBnmwqkS80sSUIL/xYDwEqogLeofgghq40Q++Ly
-         +RAL/tKVGIpx9Khl72LpgHwYrFmpA6k8bi8K/ctbMfiL4Rk17aT8OOTDULMykbCYuEoK
-         xf0VhFYuGpRmh6j7lLTc8vLeRF/P3WmaBKQFmUS8rk4XlXlj0Xc6B7HrEsizoKZmJKiV
-         KkmVztKsR8hrKYET3aj8jTG6RlbGA+0XJQ/Dh4syGoV1Mgn/TSVZzpRzwuBGNRpigTFp
-         Fhy3Nw9JTiAAGhAxssIdz+jXq1E7JhraU7YGNEWyqEtTjzihQ/Pw7KoQlz99mHR+iOx9
-         92lg==
-X-Gm-Message-State: APjAAAWZCLZOcLkee7/pNdQqM2/tAyDZGwBWuvbZknfmHr4qRlqw2Kvp
-        2BgFUe3E7JXezJtR2wKtsoA=
-X-Google-Smtp-Source: APXvYqzP+5ydcHbRI9MpIym4+SXSqb3o5g75fu2hbOehqpWzT+mVL1I6Kq1/9BuvzIJ5sI4zKwrqwA==
-X-Received: by 2002:a1c:1b41:: with SMTP id b62mr20289275wmb.53.1577482615742;
-        Fri, 27 Dec 2019 13:36:55 -0800 (PST)
+        bh=7V5fBkcvHjU8SacvQbqTer+Jpx5oyXeJlKJjN0LLnos=;
+        b=t5FsFGAwAMlJd+BYY3QoLWiskITjUVmmDGRhL4nOBuoKYu1UC26F5/CwOPYlp4OiU1
+         fhpUzgMgAEN5rX7AevqU9z6L51qj+lDEDPkfG1jcgCGx68kFSe+qN7MTFxupxJOSWQ0k
+         z3Dw3PIZgPOTFzF5sfAlcJICswJ/IAZ89D6OQadrhO/rsAq12gtf01AV4d4jIEVc6QC7
+         F2rNbXtG3Fx7bGSAhhAWEPPMXbpIzkuN7QSSIIyOz8cIe2S/e32PnYGuMIqB1ca9xVjc
+         OSWb6ZFwwebYw8uBaBAtUOTtqx8MV9+zalmiSMexHRGd142gFOQr0t7+q7q2aTURXks2
+         US9g==
+X-Gm-Message-State: APjAAAUWGJFhvAoJ3kfbOPmIAMBd1IZoSyoueIN0+Uu7pWRV284GV0J7
+        wr1mN9x0lAct4LTuhjN4NOc=
+X-Google-Smtp-Source: APXvYqzyiUuqrCfMx9gkZ4inV0SIP/0jWgm9vfb8vpy/GEYXJcQKCpkdiBnFCuOLQfB8aHh4Vhfw9A==
+X-Received: by 2002:a05:600c:21c6:: with SMTP id x6mr19964502wmj.177.1577482617006;
+        Fri, 27 Dec 2019 13:36:57 -0800 (PST)
 Received: from localhost.localdomain ([188.25.254.226])
-        by smtp.gmail.com with ESMTPSA id v3sm36330504wru.32.2019.12.27.13.36.54
+        by smtp.gmail.com with ESMTPSA id v3sm36330504wru.32.2019.12.27.13.36.55
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 27 Dec 2019 13:36:55 -0800 (PST)
+        Fri, 27 Dec 2019 13:36:56 -0800 (PST)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     davem@davemloft.net, jakub.kicinski@netronome.com,
         linux@armlinux.org.uk, andrew@lunn.ch, f.fainelli@gmail.com,
@@ -52,9 +52,9 @@ Cc:     alexandru.marginean@nxp.com, claudiu.manoil@nxp.com,
         netdev@vger.kernel.org, alexandre.belloni@bootlin.com,
         horatiu.vultur@microchip.com, UNGLinuxDriver@microchip.com,
         Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [PATCH v3 net-next 05/11] net: phy: Add a property for controlling in-band auto-negotiation
-Date:   Fri, 27 Dec 2019 23:36:20 +0200
-Message-Id: <20191227213626.4404-6-olteanv@gmail.com>
+Subject: [PATCH v3 net-next 06/11] net: phy: vsc8514: configure explicit in-band SGMII auto-negotiation settings
+Date:   Fri, 27 Dec 2019 23:36:21 +0200
+Message-Id: <20191227213626.4404-7-olteanv@gmail.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20191227213626.4404-1-olteanv@gmail.com>
 References: <20191227213626.4404-1-olteanv@gmail.com>
@@ -63,110 +63,63 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+From: Alex Marginean <alexandru.marginean@nxp.com>
 
-This patch aims to solve a simple problem: for SerDes interfaces, the
-MAC has a PCS layer which serializes the data before passing it to the
-link partner (typically a PHY with its own PCS, but not necessarily, it
-can also be a remote PHY).
+The IN_BAND_AN_DEFAULT setting for the VSC8514 PHY is not very reliable:
+its out-of-reset state is with SerDes AN disabled, but certain boot
+firmware (such as U-Boot) enables it during the boot process.
 
-Some of these SerDes protocols have a configuration word that is
-transmitted in-band, to establish the link parameters. Some SerDes
-implementations strictly require this handshake (in-band AN) to complete
-before passing data, while on others it may be bypassed.
+So its final state as seen by Linux depends on whether the U-Boot PHY
+driver has run or not.
 
-From a user perspective, the top-most entity of this in-band AN
-relationship is the MAC PCS, driven by an Ethernet driver.
-When the MAC PCS operates as PHY-less, there is little that can be done
-from our side to prevent a settings mismatch, since the link partner may
-be remote and outside our control.
-When the MAC PCS is connected to a PHY driven by the PHY library, that
-is when we want to ensure the in-band AN settings are in sync and can be
-fulfilled by both parties.
+If SGMII auto-negotiation is enabled but not acknowledged by the MAC,
+the PHY does not pass traffic.
 
-This setting is ternary and requested by the MAC PCS driver. For
-compatibility with existing code, we introduce a IN_BAND_AN_DEFAULT
-state equal to 0, which means that the MAC driver, caller of the PHY
-library, has no opinion about in-band AN settings. It is assumed that
-somebody else has taken care of this setting and nothing should be done.
+But otherwise, it is able to pass traffic both with AN disabled, and
+with AN enabled. So make it explicitly configurable.
 
-When the PHYLIB caller requests an explicit setting (IN_BAND_AN_ENABLED
-or IN_BAND_AN_DISABLED), the PHY driver must veto this operation in its
-.config_init callback if it can't do as requested. As mentioned, this is
-to avoid mismatches, which will be taken to result in failure to pass
-data between MAC and PHY.
-
-As for the caller of PHYLIB, it shouldn't hardcode any particular value
-for phydev->in_band_autoneg, but rather take this information from a
-board description file such as device tree. This gives the caller a
-chance to veto the setting as well, if it doesn't support it, and it
-leaves the choice at the level of individual MAC-PHY instances instead
-of drivers. A more-or-less standard device tree binding that can be used
-to gather this information is:
-	managed = "in-band-status";
-which PHYLINK already uses.
-
-Make PHYLINK the first user of this scheme, by parsing the DT binding
-mentioned above and passing it to the PHY library.
-
+Signed-off-by: Alex Marginean <alexandru.marginean@nxp.com>
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
 Changes in v3:
 - Patch is new.
 
- drivers/net/phy/phylink.c |  2 ++
- include/linux/phy.h       | 18 ++++++++++++++++++
- 2 files changed, 20 insertions(+)
+ drivers/net/phy/mscc.c | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
 
-diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
-index 73a01ea5fc55..af574d5a8426 100644
---- a/drivers/net/phy/phylink.c
-+++ b/drivers/net/phy/phylink.c
-@@ -878,6 +878,8 @@ int phylink_of_phy_connect(struct phylink *pl, struct device_node *dn,
- 	if (!phy_dev)
- 		return -ENODEV;
+diff --git a/drivers/net/phy/mscc.c b/drivers/net/phy/mscc.c
+index 50214c081164..b9a22474a715 100644
+--- a/drivers/net/phy/mscc.c
++++ b/drivers/net/phy/mscc.c
+@@ -176,6 +176,8 @@ enum rgmii_rx_clock_delay {
+ #define SECURE_ON_PASSWD_LEN_4		  0x4000
  
-+	phy_dev->in_band_autoneg = (pl->cfg_link_an_mode == MLO_AN_INBAND);
+ /* Extended Page 3 Registers */
++#define MSCC_PHY_SERDES_CON		  16
++#define MSCC_PHY_SERDES_ANEG		  BIT(7)
+ #define MSCC_PHY_SERDES_TX_VALID_CNT	  21
+ #define MSCC_PHY_SERDES_TX_CRC_ERR_CNT	  22
+ #define MSCC_PHY_SERDES_RX_VALID_CNT	  28
+@@ -2157,6 +2159,19 @@ static int vsc8514_config_init(struct phy_device *phydev)
+ 
+ 	mutex_unlock(&phydev->mdio.bus->mdio_lock);
+ 
++	ret = phy_write(phydev, MSCC_EXT_PAGE_ACCESS, MSCC_PHY_PAGE_EXTENDED_3);
++	if (ret)
++		return ret;
 +
- 	ret = phy_attach_direct(pl->netdev, phy_dev, flags,
- 				pl->link_interface);
++	if (phydev->in_band_autoneg == IN_BAND_AN_ENABLED)
++		ret = phy_set_bits(phydev, MSCC_PHY_SERDES_CON,
++				   MSCC_PHY_SERDES_ANEG);
++	else if (phydev->in_band_autoneg == IN_BAND_AN_DISABLED)
++		ret = phy_clear_bits(phydev, MSCC_PHY_SERDES_CON,
++				     MSCC_PHY_SERDES_ANEG);
++	if (ret)
++		return ret;
++
+ 	ret = phy_write(phydev, MSCC_EXT_PAGE_ACCESS, MSCC_PHY_PAGE_STANDARD);
+ 
  	if (ret)
-diff --git a/include/linux/phy.h b/include/linux/phy.h
-index 30e599c454db..090e4ba303e2 100644
---- a/include/linux/phy.h
-+++ b/include/linux/phy.h
-@@ -318,6 +318,22 @@ enum phy_state {
- 	PHY_NOLINK,
- };
- 
-+/* Settings for system-side PHY auto-negotiation:
-+ * - IN_BAND_AN_DEFAULT: the PHY is left in the default configuration, be it
-+ *   out-of-reset, preconfigured by boot firmware, etc. In-band AN can be
-+ *   disabled, enabled or even unsupported when this setting is on.
-+ * - IN_BAND_AN_ENABLED: the PHY must enable system-side auto-negotiation with
-+ *   the attached MAC, or veto this setting if it can't.
-+ * - IN_BAND_AN_DISABLED: the PHY must disable or bypass system-side
-+ *   auto-negotiation with the attached MAC (and force the link settings if
-+ *   applicable), or veto this setting if it can't.
-+ */
-+enum phy_in_band_autoneg {
-+	IN_BAND_AN_DEFAULT = 0,
-+	IN_BAND_AN_ENABLED,
-+	IN_BAND_AN_DISABLED,
-+};
-+
- /**
-  * struct phy_c45_device_ids - 802.3-c45 Device Identifiers
-  * @devices_in_package: Bit vector of devices present.
-@@ -388,6 +404,8 @@ struct phy_device {
- 	/* Interrupts are enabled */
- 	unsigned interrupts:1;
- 
-+	enum phy_in_band_autoneg in_band_autoneg;
-+
- 	enum phy_state state;
- 
- 	u32 dev_flags;
 -- 
 2.17.1
 
