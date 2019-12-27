@@ -2,26 +2,26 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 49F2212B563
-	for <lists+netdev@lfdr.de>; Fri, 27 Dec 2019 15:56:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C85912B565
+	for <lists+netdev@lfdr.de>; Fri, 27 Dec 2019 15:56:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727393AbfL0O4C (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Dec 2019 09:56:02 -0500
-Received: from mx2.suse.de ([195.135.220.15]:42850 "EHLO mx2.suse.de"
+        id S1727416AbfL0O4I (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Dec 2019 09:56:08 -0500
+Received: from mx2.suse.de ([195.135.220.15]:42884 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727274AbfL0O4B (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 27 Dec 2019 09:56:01 -0500
+        id S1727274AbfL0O4F (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 27 Dec 2019 09:56:05 -0500
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id 9DE50AFAE;
-        Fri, 27 Dec 2019 14:55:58 +0000 (UTC)
+        by mx2.suse.de (Postfix) with ESMTP id A3BF4AFBB;
+        Fri, 27 Dec 2019 14:56:03 +0000 (UTC)
 Received: by unicorn.suse.cz (Postfix, from userid 1000)
-        id 4EEEBE008A; Fri, 27 Dec 2019 15:55:58 +0100 (CET)
-Message-Id: <67c3883bd045024b0fee585e2b879e09e8768b42.1577457846.git.mkubecek@suse.cz>
+        id 559D4E008A; Fri, 27 Dec 2019 15:56:03 +0100 (CET)
+Message-Id: <571e898665f1c7396d3352921b0549469cd02ae1.1577457846.git.mkubecek@suse.cz>
 In-Reply-To: <cover.1577457846.git.mkubecek@suse.cz>
 References: <cover.1577457846.git.mkubecek@suse.cz>
 From:   Michal Kubecek <mkubecek@suse.cz>
-Subject: [PATCH net-next v9 09/14] ethtool: add default notification handler
+Subject: [PATCH net-next v9 10/14] ethtool: add LINKINFO_NTF notification
 To:     David Miller <davem@davemloft.net>, netdev@vger.kernel.org
 Cc:     Jakub Kicinski <jakub.kicinski@netronome.com>,
         Jiri Pirko <jiri@resnulli.us>, Andrew Lunn <andrew@lunn.ch>,
@@ -30,156 +30,139 @@ Cc:     Jakub Kicinski <jakub.kicinski@netronome.com>,
         Stephen Hemminger <stephen@networkplumber.org>,
         Johannes Berg <johannes@sipsolutions.net>,
         linux-kernel@vger.kernel.org
-Date:   Fri, 27 Dec 2019 15:55:58 +0100 (CET)
+Date:   Fri, 27 Dec 2019 15:56:03 +0100 (CET)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The ethtool netlink notifications have the same format as related GET
-replies so that if generic GET handling framework is used to process GET
-requests, its callbacks and instance of struct get_request_ops can be
-also used to compose corresponding notification message.
+Send ETHTOOL_MSG_LINKINFO_NTF notification message whenever device link
+settings are modified using ETHTOOL_MSG_LINKINFO_SET netlink message or
+ETHTOOL_SLINKSETTINGS or ETHTOOL_SSET ioctl commands.
 
-Provide function ethnl_std_notify() to be used as notification handler in
-ethnl_notify_handlers table.
+The notification message has the same format as reply to LINKINFO_GET
+request. ETHTOOL_MSG_LINKINFO_SET netlink request only triggers the
+notification if there is a change but the ioctl command handlers do not
+check if there is an actual change and trigger the notification whenever
+the commands are executed.
+
+As all work is done by ethnl_default_notify() handler and callback
+functions introduced to handle LINKINFO_GET requests, all that remains is
+adding entries for ETHTOOL_MSG_LINKINFO_NTF into ethnl_notify_handlers and
+ethnl_default_notify_ops lookup tables and calls to ethtool_notify() where
+needed.
 
 Signed-off-by: Michal Kubecek <mkubecek@suse.cz>
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 ---
- net/ethtool/netlink.c | 89 +++++++++++++++++++++++++++++++++++++++++++
- net/ethtool/netlink.h |  4 +-
- 2 files changed, 92 insertions(+), 1 deletion(-)
+ Documentation/networking/ethtool-netlink.rst |  1 +
+ include/uapi/linux/ethtool_netlink.h         |  1 +
+ net/ethtool/ioctl.c                          | 12 ++++++++++--
+ net/ethtool/linkinfo.c                       |  2 ++
+ net/ethtool/netlink.c                        |  2 ++
+ 5 files changed, 16 insertions(+), 2 deletions(-)
 
+diff --git a/Documentation/networking/ethtool-netlink.rst b/Documentation/networking/ethtool-netlink.rst
+index 39c4aba324c3..34254482d295 100644
+--- a/Documentation/networking/ethtool-netlink.rst
++++ b/Documentation/networking/ethtool-netlink.rst
+@@ -189,6 +189,7 @@ Kernel to userspace:
+   ===================================== ================================
+   ``ETHTOOL_MSG_STRSET_GET_REPLY``      string set contents
+   ``ETHTOOL_MSG_LINKINFO_GET_REPLY``    link settings
++  ``ETHTOOL_MSG_LINKINFO_NTF``          link settings notification
+   ===================================== ================================
+ 
+ ``GET`` requests are sent by userspace applications to retrieve device
+diff --git a/include/uapi/linux/ethtool_netlink.h b/include/uapi/linux/ethtool_netlink.h
+index 5b7806a5bef8..d530fa30de36 100644
+--- a/include/uapi/linux/ethtool_netlink.h
++++ b/include/uapi/linux/ethtool_netlink.h
+@@ -28,6 +28,7 @@ enum {
+ 	ETHTOOL_MSG_KERNEL_NONE,
+ 	ETHTOOL_MSG_STRSET_GET_REPLY,
+ 	ETHTOOL_MSG_LINKINFO_GET_REPLY,
++	ETHTOOL_MSG_LINKINFO_NTF,
+ 
+ 	/* add new constants above here */
+ 	__ETHTOOL_MSG_KERNEL_CNT,
+diff --git a/net/ethtool/ioctl.c b/net/ethtool/ioctl.c
+index 8a0a13b478e0..11a467294a33 100644
+--- a/net/ethtool/ioctl.c
++++ b/net/ethtool/ioctl.c
+@@ -26,6 +26,7 @@
+ #include <net/devlink.h>
+ #include <net/xdp_sock.h>
+ #include <net/flow_offload.h>
++#include <linux/ethtool_netlink.h>
+ 
+ #include "common.h"
+ 
+@@ -571,7 +572,10 @@ static int ethtool_set_link_ksettings(struct net_device *dev,
+ 	    != link_ksettings.base.link_mode_masks_nwords)
+ 		return -EINVAL;
+ 
+-	return dev->ethtool_ops->set_link_ksettings(dev, &link_ksettings);
++	err = dev->ethtool_ops->set_link_ksettings(dev, &link_ksettings);
++	if (err >= 0)
++		ethtool_notify(dev, ETHTOOL_MSG_LINKINFO_NTF, NULL);
++	return err;
+ }
+ 
+ /* Query device for its ethtool_cmd settings.
+@@ -620,6 +624,7 @@ static int ethtool_set_settings(struct net_device *dev, void __user *useraddr)
+ {
+ 	struct ethtool_link_ksettings link_ksettings;
+ 	struct ethtool_cmd cmd;
++	int ret;
+ 
+ 	ASSERT_RTNL();
+ 
+@@ -632,7 +637,10 @@ static int ethtool_set_settings(struct net_device *dev, void __user *useraddr)
+ 		return -EINVAL;
+ 	link_ksettings.base.link_mode_masks_nwords =
+ 		__ETHTOOL_LINK_MODE_MASK_NU32;
+-	return dev->ethtool_ops->set_link_ksettings(dev, &link_ksettings);
++	ret = dev->ethtool_ops->set_link_ksettings(dev, &link_ksettings);
++	if (ret >= 0)
++		ethtool_notify(dev, ETHTOOL_MSG_LINKINFO_NTF, NULL);
++	return ret;
+ }
+ 
+ static noinline_for_stack int ethtool_get_drvinfo(struct net_device *dev,
+diff --git a/net/ethtool/linkinfo.c b/net/ethtool/linkinfo.c
+index 8a5f68f92425..5d16cb4e8693 100644
+--- a/net/ethtool/linkinfo.c
++++ b/net/ethtool/linkinfo.c
+@@ -155,6 +155,8 @@ int ethnl_set_linkinfo(struct sk_buff *skb, struct genl_info *info)
+ 	ret = dev->ethtool_ops->set_link_ksettings(dev, &ksettings);
+ 	if (ret < 0)
+ 		GENL_SET_ERR_MSG(info, "link settings update failed");
++	else
++		ethtool_notify(dev, ETHTOOL_MSG_LINKINFO_NTF, NULL);
+ 
+ out_ops:
+ 	ethnl_ops_complete(dev);
 diff --git a/net/ethtool/netlink.c b/net/ethtool/netlink.c
-index 7867425956f6..057b67f8ba8c 100644
+index 057b67f8ba8c..942da4ebdfe9 100644
 --- a/net/ethtool/netlink.c
 +++ b/net/ethtool/netlink.c
-@@ -7,6 +7,7 @@
- static struct genl_family ethtool_genl_family;
+@@ -509,6 +509,7 @@ static int ethnl_default_done(struct netlink_callback *cb)
  
- static bool ethnl_ok __read_mostly;
-+static u32 ethnl_bcast_seq;
+ static const struct ethnl_request_ops *
+ ethnl_default_notify_ops[ETHTOOL_MSG_KERNEL_MAX + 1] = {
++	[ETHTOOL_MSG_LINKINFO_NTF]	= &ethnl_linkinfo_request_ops,
+ };
  
- static const struct nla_policy ethnl_header_policy[ETHTOOL_A_HEADER_MAX + 1] = {
- 	[ETHTOOL_A_HEADER_UNSPEC]	= { .type = NLA_REJECT },
-@@ -171,6 +172,18 @@ struct sk_buff *ethnl_reply_init(size_t payload, struct net_device *dev, u8 cmd,
- 	return NULL;
- }
+ /* default notification handler */
+@@ -589,6 +590,7 @@ typedef void (*ethnl_notify_handler_t)(struct net_device *dev, unsigned int cmd,
+ 				       const void *data);
  
-+static void *ethnl_bcastmsg_put(struct sk_buff *skb, u8 cmd)
-+{
-+	return genlmsg_put(skb, 0, ++ethnl_bcast_seq, &ethtool_genl_family, 0,
-+			   cmd);
-+}
-+
-+static int ethnl_multicast(struct sk_buff *skb, struct net_device *dev)
-+{
-+	return genlmsg_multicast_netns(&ethtool_genl_family, dev_net(dev), skb,
-+				       0, ETHNL_MCGRP_MONITOR, GFP_KERNEL);
-+}
-+
- /* GET request helpers */
+ static const ethnl_notify_handler_t ethnl_notify_handlers[] = {
++	[ETHTOOL_MSG_LINKINFO_NTF]	= ethnl_default_notify,
+ };
  
- /**
-@@ -494,6 +507,82 @@ static int ethnl_default_done(struct netlink_callback *cb)
- 	return 0;
- }
- 
-+static const struct ethnl_request_ops *
-+ethnl_default_notify_ops[ETHTOOL_MSG_KERNEL_MAX + 1] = {
-+};
-+
-+/* default notification handler */
-+static void ethnl_default_notify(struct net_device *dev, unsigned int cmd,
-+				 const void *data)
-+{
-+	struct ethnl_reply_data *reply_data;
-+	const struct ethnl_request_ops *ops;
-+	struct ethnl_req_info *req_info;
-+	struct sk_buff *skb;
-+	void *reply_payload;
-+	int reply_len;
-+	int ret;
-+
-+	if (WARN_ONCE(cmd > ETHTOOL_MSG_KERNEL_MAX ||
-+		      !ethnl_default_notify_ops[cmd],
-+		      "unexpected notification type %u\n", cmd))
-+		return;
-+	ops = ethnl_default_notify_ops[cmd];
-+	req_info = kzalloc(ops->req_info_size, GFP_KERNEL);
-+	if (!req_info)
-+		return;
-+	reply_data = kmalloc(ops->reply_data_size, GFP_KERNEL);
-+	if (!reply_data) {
-+		kfree(req_info);
-+		return;
-+	}
-+
-+	req_info->dev = dev;
-+	req_info->flags |= ETHTOOL_FLAG_COMPACT_BITSETS;
-+
-+	ethnl_init_reply_data(reply_data, ops, dev);
-+	ret = ops->prepare_data(req_info, reply_data, NULL);
-+	if (ret < 0)
-+		goto err_cleanup;
-+	reply_len = ops->reply_size(req_info, reply_data);
-+	if (ret < 0)
-+		goto err_cleanup;
-+	ret = -ENOMEM;
-+	skb = genlmsg_new(reply_len, GFP_KERNEL);
-+	if (!skb)
-+		goto err_cleanup;
-+	reply_payload = ethnl_bcastmsg_put(skb, cmd);
-+	if (!reply_payload)
-+		goto err_skb;
-+	ret = ethnl_fill_reply_header(skb, dev, ops->hdr_attr);
-+	if (ret < 0)
-+		goto err_msg;
-+	ret = ops->fill_reply(skb, req_info, reply_data);
-+	if (ret < 0)
-+		goto err_msg;
-+	if (ops->cleanup_data)
-+		ops->cleanup_data(reply_data);
-+
-+	genlmsg_end(skb, reply_payload);
-+	kfree(reply_data);
-+	kfree(req_info);
-+	ethnl_multicast(skb, dev);
-+	return;
-+
-+err_msg:
-+	WARN_ONCE(ret == -EMSGSIZE,
-+		  "calculated message payload length (%d) not sufficient\n",
-+		  reply_len);
-+err_skb:
-+	nlmsg_free(skb);
-+err_cleanup:
-+	if (ops->cleanup_data)
-+		ops->cleanup_data(reply_data);
-+	kfree(reply_data);
-+	kfree(req_info);
-+	return;
-+}
-+
- /* notifications */
- 
- typedef void (*ethnl_notify_handler_t)(struct net_device *dev, unsigned int cmd,
-diff --git a/net/ethtool/netlink.h b/net/ethtool/netlink.h
-index bbe5fe60a023..5d56d7779a06 100644
---- a/net/ethtool/netlink.h
-+++ b/net/ethtool/netlink.h
-@@ -300,7 +300,9 @@ static inline void ethnl_ops_complete(struct net_device *dev)
-  * unified infrastructure. When used, a pointer to an instance of this
-  * structure is to be added to &ethnl_default_requests array and generic
-  * handlers ethnl_default_doit(), ethnl_default_dumpit(),
-- * ethnl_default_start() and ethnl_default_done() used in @ethtool_genl_ops.
-+ * ethnl_default_start() and ethnl_default_done() used in @ethtool_genl_ops;
-+ * ethnl_default_notify() can be used in @ethnl_notify_handlers to send
-+ * notifications of the corresponding type.
-  */
- struct ethnl_request_ops {
- 	u8			request_cmd;
+ void ethtool_notify(struct net_device *dev, unsigned int cmd, const void *data)
 -- 
 2.24.1
 
