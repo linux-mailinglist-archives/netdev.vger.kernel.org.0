@@ -2,134 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 947F212B9F1
-	for <lists+netdev@lfdr.de>; Fri, 27 Dec 2019 19:15:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C7A412BA7C
+	for <lists+netdev@lfdr.de>; Fri, 27 Dec 2019 19:19:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727948AbfL0SPU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Dec 2019 13:15:20 -0500
-Received: from mail.kernel.org ([198.145.29.99]:40136 "EHLO mail.kernel.org"
+        id S1727473AbfL0STP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Dec 2019 13:19:15 -0500
+Received: from mx2.suse.de ([195.135.220.15]:41764 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727912AbfL0SPT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 27 Dec 2019 13:15:19 -0500
-Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id C750C20CC7;
-        Fri, 27 Dec 2019 18:15:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1577470519;
-        bh=yHCh4QScFjCwLSI9Otg0zyHCn4qOLLgXiiPFPp86E74=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XtzMATBDiPXIXVuK3Q1Rqn2tqTEmy17i2nUYWuEV7vB5EmwWn81XXN7wUxS5/ANYk
-         VQbp3/bQJzrwfNARqpC6hobcSGukgRPHKJUrXzEFbxArgKPO8QbdWYlmJO9IalIkIv
-         30sALXjyiMEo+h+F/+U29NlT2wW0XnHDgth3lCfk=
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jiangfeng Xiao <xiaojiangfeng@huawei.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 36/38] net: hisilicon: Fix a BUG trigered by wrong bytes_compl
-Date:   Fri, 27 Dec 2019 13:14:33 -0500
-Message-Id: <20191227181435.7644-36-sashal@kernel.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20191227181435.7644-1-sashal@kernel.org>
-References: <20191227181435.7644-1-sashal@kernel.org>
+        id S1727393AbfL0SO4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 27 Dec 2019 13:14:56 -0500
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx2.suse.de (Postfix) with ESMTP id 11550ABEA;
+        Fri, 27 Dec 2019 18:14:54 +0000 (UTC)
+Date:   Fri, 27 Dec 2019 18:14:48 +0000
+From:   Michal Rostecki <mrostecki@opensuse.org>
+To:     mrostecki@opensuse.org
+Cc:     bpf@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH bpf-next 0/2] bpftool/libbpf: Add probe for large INSN
+ limit
+Message-ID: <20191227181448.GA452@wotan.suse.de>
+References: <20191227105346.867-1-mrostecki@opensuse.org>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191227105346.867-1-mrostecki@opensuse.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jiangfeng Xiao <xiaojiangfeng@huawei.com>
+On Fri, Dec 27, 2019 at 11:53:44AM +0100, mrostecki@opensuse.org wrote:
+> From: Michal Rostecki <mrostecki@opensuse.org>
+> 
+> This series implements a new BPF feature probe which checks for the
+> commit c04c0d2b968a ("bpf: increase complexity limit and maximum program
+> size"), which increases the maximum program size to 1M. It's based on
+> the similar check in Cilium, althogh Cilium is already aiming to use
+> bpftool checks and eventually drop all its custom checks.
+> 
+> Examples of outputs:
+> 
+> # bpftool feature probe
+> [...]
+> Scanning miscellaneous eBPF features...
+> Large complexity limit and maximum program size (1M) is available
+> 
+> # bpftool feature probe macros
+> [...]
+> /*** eBPF misc features ***/
+> #define HAVE_HAVE_LARGE_INSN_LIMIT
+> 
+> # bpftool feature probe -j | jq '.["misc"]'
+> {
+>   "have_large_insn_limit": true
+> }
+> 
+> Michal Rostecki (2):
+>   libbpf: Add probe for large INSN limit
+>   bpftool: Add misc secion and probe for large INSN limit
+> 
+>  tools/bpf/bpftool/feature.c   | 18 ++++++++++++++++++
+>  tools/lib/bpf/libbpf.h        |  1 +
+>  tools/lib/bpf/libbpf.map      |  1 +
+>  tools/lib/bpf/libbpf_probes.c | 23 +++++++++++++++++++++++
+>  4 files changed, 43 insertions(+)
+> 
+> -- 
+> 2.16.4
+> 
 
-[ Upstream commit 90b3b339364c76baa2436445401ea9ade040c216 ]
-
-When doing stress test, we get the following trace:
-kernel BUG at lib/dynamic_queue_limits.c:26!
-Internal error: Oops - BUG: 0 [#1] SMP ARM
-Modules linked in: hip04_eth
-CPU: 0 PID: 2003 Comm: tDblStackPcap0 Tainted: G           O L  4.4.197 #1
-Hardware name: Hisilicon A15
-task: c3637668 task.stack: de3bc000
-PC is at dql_completed+0x18/0x154
-LR is at hip04_tx_reclaim+0x110/0x174 [hip04_eth]
-pc : [<c041abfc>]    lr : [<bf0003a8>]    psr: 800f0313
-sp : de3bdc2c  ip : 00000000  fp : c020fb10
-r10: 00000000  r9 : c39b4224  r8 : 00000001
-r7 : 00000046  r6 : c39b4000  r5 : 0078f392  r4 : 0078f392
-r3 : 00000047  r2 : 00000000  r1 : 00000046  r0 : df5d5c80
-Flags: Nzcv  IRQs on  FIQs on  Mode SVC_32  ISA ARM  Segment user
-Control: 32c5387d  Table: 1e189b80  DAC: 55555555
-Process tDblStackPcap0 (pid: 2003, stack limit = 0xde3bc190)
-Stack: (0xde3bdc2c to 0xde3be000)
-[<c041abfc>] (dql_completed) from [<bf0003a8>] (hip04_tx_reclaim+0x110/0x174 [hip04_eth])
-[<bf0003a8>] (hip04_tx_reclaim [hip04_eth]) from [<bf0012c0>] (hip04_rx_poll+0x20/0x388 [hip04_eth])
-[<bf0012c0>] (hip04_rx_poll [hip04_eth]) from [<c04c8d9c>] (net_rx_action+0x120/0x374)
-[<c04c8d9c>] (net_rx_action) from [<c021eaf4>] (__do_softirq+0x218/0x318)
-[<c021eaf4>] (__do_softirq) from [<c021eea0>] (irq_exit+0x88/0xac)
-[<c021eea0>] (irq_exit) from [<c0240130>] (msa_irq_exit+0x11c/0x1d4)
-[<c0240130>] (msa_irq_exit) from [<c0267ba8>] (__handle_domain_irq+0x110/0x148)
-[<c0267ba8>] (__handle_domain_irq) from [<c0201588>] (gic_handle_irq+0xd4/0x118)
-[<c0201588>] (gic_handle_irq) from [<c0558360>] (__irq_svc+0x40/0x58)
-Exception stack(0xde3bdde0 to 0xde3bde28)
-dde0: 00000000 00008001 c3637668 00000000 00000000 a00f0213 dd3627a0 c0af6380
-de00: c086d380 a00f0213 c0a22a50 de3bde6c 00000002 de3bde30 c0558138 c055813c
-de20: 600f0213 ffffffff
-[<c0558360>] (__irq_svc) from [<c055813c>] (_raw_spin_unlock_irqrestore+0x44/0x54)
-Kernel panic - not syncing: Fatal exception in interrupt
-
-Pre-modification code:
-int hip04_mac_start_xmit(struct sk_buff *skb, struct net_device *ndev)
-{
-[...]
-[1]	priv->tx_head = TX_NEXT(tx_head);
-[2]	count++;
-[3]	netdev_sent_queue(ndev, skb->len);
-[...]
-}
-An rx interrupt occurs if hip04_mac_start_xmit just executes to the line 2,
-tx_head has been updated, but corresponding 'skb->len' has not been
-added to dql_queue.
-
-And then
-hip04_mac_interrupt->__napi_schedule->hip04_rx_poll->hip04_tx_reclaim
-
-In hip04_tx_reclaim, because tx_head has been updated,
-bytes_compl will plus an additional "skb-> len"
-which has not been added to dql_queue. And then
-trigger the BUG_ON(bytes_compl > num_queued - dql->num_completed).
-
-To solve the problem described above, we put
-"netdev_sent_queue(ndev, skb->len);"
-before
-"priv->tx_head = TX_NEXT(tx_head);"
-
-Fixes: a41ea46a9a12 ("net: hisilicon: new hip04 ethernet driver")
-Signed-off-by: Jiangfeng Xiao <xiaojiangfeng@huawei.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/net/ethernet/hisilicon/hip04_eth.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/hisilicon/hip04_eth.c b/drivers/net/ethernet/hisilicon/hip04_eth.c
-index 4436a0307f32..0b3aa83f3fc1 100644
---- a/drivers/net/ethernet/hisilicon/hip04_eth.c
-+++ b/drivers/net/ethernet/hisilicon/hip04_eth.c
-@@ -455,9 +455,9 @@ static int hip04_mac_start_xmit(struct sk_buff *skb, struct net_device *ndev)
- 	skb_tx_timestamp(skb);
- 
- 	hip04_set_xmit_desc(priv, phys);
--	priv->tx_head = TX_NEXT(tx_head);
- 	count++;
- 	netdev_sent_queue(ndev, skb->len);
-+	priv->tx_head = TX_NEXT(tx_head);
- 
- 	stats->tx_bytes += skb->len;
- 	stats->tx_packets++;
--- 
-2.20.1
-
+Sorry for sending this twice! I didn't see the thread immediately after
+sending the first time, so I though there is some problem with my
+@opensuse.org alias or SMTP server not accepting it. Please review this
+series, since I'm using @opensuse.org alias for upstream development
+more frequently than @suse.de.
