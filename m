@@ -2,92 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4DEDA12B017
-	for <lists+netdev@lfdr.de>; Fri, 27 Dec 2019 02:04:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1DDEE12B01A
+	for <lists+netdev@lfdr.de>; Fri, 27 Dec 2019 02:08:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726984AbfL0BEF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Dec 2019 20:04:05 -0500
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:38888 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726193AbfL0BEE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Dec 2019 20:04:04 -0500
-Received: by mail-wr1-f66.google.com with SMTP id y17so24893772wrh.5
-        for <netdev@vger.kernel.org>; Thu, 26 Dec 2019 17:04:03 -0800 (PST)
+        id S1726994AbfL0BIb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Dec 2019 20:08:31 -0500
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:40968 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726193AbfL0BIb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Dec 2019 20:08:31 -0500
+Received: by mail-wr1-f65.google.com with SMTP id c9so24872480wrw.8;
+        Thu, 26 Dec 2019 17:08:29 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id;
-        bh=SJavRKYLQJoieNyJqH2ZNFzEMrxnkIJspMuxMmHhtyU=;
-        b=fNW22+uyjAh24iOrAvHjJeKF4XvXojnscPsjvJM2FOJj4b/JOMPGXegR4ibXhOE9pO
-         99tMFz8pjT51iHvvQbopi+VqMQ1kh9QTTnUrbKFvpgROCSD3Vfpc3ryT+IYN2/sdaeL/
-         ZcXiIsYSd71i3STZIt1xCDYkOmE8LNPJZwDrWt4EbTew8tv81MqlmUOqxqQ4gwcEgFMZ
-         qNDLaWqn8e4CBsOn9oxy51U6sUZp+Xi5hBqcEtln3bnVcB3oPLFTbdrSofNobjJtHnE2
-         JZ/B9Ed1sm53MBKvZXXcY9dNyi3t0J23Zr54JK+mn4882/cFuQDCGrh7mSGirwDqiUKg
-         J5Bw==
+        bh=5qBV6ew8s1N9fYUvOO0//bKF0z9LM7TG1Jue/fyKu08=;
+        b=moPTOwvT8uvt49GZN7zaIzKkufqm9i+wrMk1WQjL7iqiq/frC9V8v0wCSbBdo9wKBK
+         0OSPOav6J++wUCdNQWdM19K8y51HPGN/y31Nas3hEDQxODhlwqLF2IQ5hs7TV8Vbchyw
+         0+znjNEqqA2Cu1zR6w1gejouUSlCPPbjHV+Wty7XJYY2s+oKX5Dibpv81z67CuoElo2v
+         EjF5uuwi9Q7V1MQJSLyMAbNvIQlSkkeZbbczjh+zVcuoaeTu9/0ZxeM44Sm3T75deusV
+         9YXSkhUtC+pvQyem0lei7ZYdz55Opi3eu7HJ4Wwc8f3MFfn8TCIpwVv74NqdvNj+ro84
+         pzAQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=SJavRKYLQJoieNyJqH2ZNFzEMrxnkIJspMuxMmHhtyU=;
-        b=O2QzboiDJAlDXRU4Pjkyjw8Z2GRYh8mVHwYCGdpfJepdfiQ+WnUnegeZgyC3HDjKaB
-         +snVguhpR73ONm401j1DJdFUXcY3jEyTbcuUDJgscEf+5rx4lLNtHYReX9t6NPtfkgM9
-         Y2axCSdsGvnT7roo/4DlJTGk8n7FXIv3Eio9ndzDvbmxCwTtaT6Oc2La0WOAVgDx3mrU
-         U0AM728Mykc7SSJbJ/hLKR120FMWocMF3K01UJkiqUK0xjv6Wbt5uchkb0KHtnE0rSQH
-         CmsdjgIJCtlyVbmPOlLVo/XcG0J2D35RNF/DaZUWqzWRTEG7hH4r44y6UcfDFenzsA4m
-         P2DA==
-X-Gm-Message-State: APjAAAUlcfNkrNLcIZa1shWWexhmZB6sJ4SE6c9xW+xrjWsXgoTVyThw
-        4a01QOjFacTKgJyXL+dxvOE=
-X-Google-Smtp-Source: APXvYqxZZ5/24joLxUh7wPZyUK4QU71HYcdkAEjf1zfDb4uKNe+sV1obiiIyaXC8e3dCs9J6Vxnaww==
-X-Received: by 2002:a5d:53d1:: with SMTP id a17mr45955025wrw.327.1577408642830;
-        Thu, 26 Dec 2019 17:04:02 -0800 (PST)
+        bh=5qBV6ew8s1N9fYUvOO0//bKF0z9LM7TG1Jue/fyKu08=;
+        b=QLntxK1szxXG5NUn/NciHGTIpucqmWLpUAEoRhOo72d4m1jxYEY5WDgJ1aPEvP3JX2
+         pfLa3KrTU9N59QR2b3P90rkTnv5HUpYNCuaVTtfM6wrmmpqBZitkiWUFSYo39zUG2UYT
+         +wSIbcPmKtsXyYeDzAGXHXmmJ8Y7W5AKt6N5kcS8wGnFQ5qBgrmYUC/ujXDVy9UtAT56
+         c3pHhtJVBLHjRNXvvVjsgWHAtkD15mEI9NCATHvx74SEuIas4MPEXvZmTo6ifIB5S7pN
+         055AL98hhGJBa+5hBHRZ4l567NLk0sh+Ny0vzqQcedIAS1Xc6XNv2RRsD1eg3SeSVP7o
+         tXDQ==
+X-Gm-Message-State: APjAAAUkd7sLueTtTyly2BbZw49gJPAM9eVbzGweFiF6RM2s0olayjdB
+        P+oGYn5Hv0AlzicHAsYGinnPIc4f
+X-Google-Smtp-Source: APXvYqzIZAa89bWOQ/ThgJghnMhYymq2HvJKTz8l8x8HNIL818T+lRZCrFZYqZJymlRGHTx0HdpYaQ==
+X-Received: by 2002:a5d:53c1:: with SMTP id a1mr45680029wrw.373.1577408908840;
+        Thu, 26 Dec 2019 17:08:28 -0800 (PST)
 Received: from localhost.localdomain ([188.25.254.226])
-        by smtp.gmail.com with ESMTPSA id o1sm32929826wrn.84.2019.12.26.17.04.01
+        by smtp.gmail.com with ESMTPSA id f1sm33506409wrp.93.2019.12.26.17.08.28
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 26 Dec 2019 17:04:02 -0800 (PST)
+        Thu, 26 Dec 2019 17:08:28 -0800 (PST)
 From:   Vladimir Oltean <olteanv@gmail.com>
-To:     davem@davemloft.net, jakub.kicinski@netronome.com
-Cc:     richardcochran@gmail.com, f.fainelli@gmail.com,
-        vivien.didelot@gmail.com, andrew@lunn.ch, vinicius.gomes@intel.com,
-        netdev@vger.kernel.org, Vladimir Oltean <olteanv@gmail.com>
-Subject: [PATCH net] net: dsa: sja1105: Remove restriction of zero base-time for taprio offload
-Date:   Fri, 27 Dec 2019 03:03:54 +0200
-Message-Id: <20191227010354.26826-1-olteanv@gmail.com>
+To:     corbet@lwn.net
+Cc:     davem@davemloft.net, mchehab+samsung@kernel.org,
+        netdev@vger.kernel.org, linux-doc@vger.kernel.org,
+        Vladimir Oltean <olteanv@gmail.com>
+Subject: [PATCH] Documentation: net: dsa: sja1105: Remove text about taprio base-time limitation
+Date:   Fri, 27 Dec 2019 03:08:07 +0200
+Message-Id: <20191227010807.28162-1-olteanv@gmail.com>
 X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The check originates from the initial implementation which was not based
-on PTP time but on a standalone clock source. In the meantime we can now
-program the PTPSCHTM register at runtime with the dynamic base time
-(actually with a value that is 200 ns smaller, to avoid writing DELTA=0
-in the Schedule Entry Points Parameters Table). And we also have logic
-for moving the actual base time in the future of the PHC's current time
-base, so the check for zero serves no purpose, since even if the user
-will specify zero, that's not what will end up in the static config
-table where the limitation is.
+Since commit 86db36a347b4 ("net: dsa: sja1105: Implement state machine
+for TAS with PTP clock source"), this paragraph is no longer true. So
+remove it.
 
-Fixes: 86db36a347b4 ("net: dsa: sja1105: Implement state machine for TAS with PTP clock source")
 Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
 ---
- drivers/net/dsa/sja1105/sja1105_tas.c | 5 -----
- 1 file changed, 5 deletions(-)
+ Documentation/networking/dsa/sja1105.rst | 6 ------
+ 1 file changed, 6 deletions(-)
 
-diff --git a/drivers/net/dsa/sja1105/sja1105_tas.c b/drivers/net/dsa/sja1105/sja1105_tas.c
-index 26b925b5dace..fa6750d973d7 100644
---- a/drivers/net/dsa/sja1105/sja1105_tas.c
-+++ b/drivers/net/dsa/sja1105/sja1105_tas.c
-@@ -477,11 +477,6 @@ int sja1105_setup_tc_taprio(struct dsa_switch *ds, int port,
- 	if (admin->cycle_time_extension)
- 		return -ENOTSUPP;
+diff --git a/Documentation/networking/dsa/sja1105.rst b/Documentation/networking/dsa/sja1105.rst
+index 21a288aa7692..35d0643f1377 100644
+--- a/Documentation/networking/dsa/sja1105.rst
++++ b/Documentation/networking/dsa/sja1105.rst
+@@ -245,12 +245,6 @@ simultaneously on two ports. The driver checks the consistency of the schedules
+ against this restriction and errors out when appropriate. Schedule analysis is
+ needed to avoid this, which is outside the scope of the document.
  
--	if (!ns_to_sja1105_delta(admin->base_time)) {
--		dev_err(ds->dev, "A base time of zero is not hardware-allowed\n");
--		return -ERANGE;
--	}
+-At the moment, the time-aware scheduler can only be triggered based on a
+-standalone clock and not based on PTP time. This means the base-time argument
+-from tc-taprio is ignored and the schedule starts right away. It also means it
+-is more difficult to phase-align the scheduler with the other devices in the
+-network.
 -
- 	for (i = 0; i < admin->num_entries; i++) {
- 		s64 delta_ns = admin->entries[i].interval;
- 		s64 delta_cycles = ns_to_sja1105_delta(delta_ns);
+ Device Tree bindings and board design
+ =====================================
+ 
 -- 
 2.17.1
 
