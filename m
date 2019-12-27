@@ -2,18 +2,18 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D4FC212B47C
-	for <lists+netdev@lfdr.de>; Fri, 27 Dec 2019 13:21:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A83C112B480
+	for <lists+netdev@lfdr.de>; Fri, 27 Dec 2019 13:22:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727130AbfL0MVu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Dec 2019 07:21:50 -0500
-Received: from mx2.suse.de ([195.135.220.15]:38860 "EHLO mx2.suse.de"
+        id S1727188AbfL0MV6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Dec 2019 07:21:58 -0500
+Received: from mx2.suse.de ([195.135.220.15]:38838 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726408AbfL0MVu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1726379AbfL0MVu (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 27 Dec 2019 07:21:50 -0500
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id A7DE2B285;
+        by mx2.suse.de (Postfix) with ESMTP id 62D25B277;
         Fri, 27 Dec 2019 12:21:48 +0000 (UTC)
 From:   Michal Rostecki <mrostecki@suse.de>
 To:     bpf@vger.kernel.org
@@ -23,48 +23,95 @@ Cc:     Alexei Starovoitov <ast@kernel.org>,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
         Andrii Nakryiko <andriin@fb.com>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, Michal Rostecki <mrostecki@suse.de>
-Subject: [PATCH bpf-next 0/2] bpftool/libbpf: Add probe for large INSN limit
-Date:   Fri, 27 Dec 2019 12:06:03 +0100
-Message-Id: <20191227110605.1757-1-mrostecki@suse.de>
+Subject: [PATCH bpf-next 1/2] libbpf: Add probe for large INSN limit
+Date:   Fri, 27 Dec 2019 12:06:04 +0100
+Message-Id: <20191227110605.1757-2-mrostecki@suse.de>
 X-Mailer: git-send-email 2.16.4
+In-Reply-To: <20191227110605.1757-1-mrostecki@suse.de>
+References: <20191227110605.1757-1-mrostecki@suse.de>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This series implements a new BPF feature probe which checks for the
-commit c04c0d2b968a ("bpf: increase complexity limit and maximum program
-size"), which increases the maximum program size to 1M. It's based on
-the similar check in Cilium, althogh Cilium is already aiming to use
-bpftool checks and eventually drop all its custom checks.
+Introduce a new probe which checks whether kernel has large maximum
+program size (1M) which was increased in commit c04c0d2b968a ("bpf:
+increase complexity limit and maximum program size").
 
-Examples of outputs:
+Based on the similar check in Cilium[0], authored by Daniel Borkmann.
 
-# bpftool feature probe
-[...]
-Scanning miscellaneous eBPF features...
-Large complexity limit and maximum program size (1M) is available
+[0] https://github.com/cilium/cilium/commit/657d0f585afd26232cfa5d4e70b6f64d2ea91596
 
-# bpftool feature probe macros
-[...]
-/*** eBPF misc features ***/
-#define HAVE_HAVE_LARGE_INSN_LIMIT
-
-# bpftool feature probe -j | jq '.["misc"]'
-{
-  "have_large_insn_limit": true
-}
-
-Michal Rostecki (2):
-  libbpf: Add probe for large INSN limit
-  bpftool: Add misc secion and probe for large INSN limit
-
- tools/bpf/bpftool/feature.c   | 18 ++++++++++++++++++
+Co-authored-by: Daniel Borkmann <daniel@iogearbox.net>
+Signed-off-by: Michal Rostecki <mrostecki@suse.de>
+---
  tools/lib/bpf/libbpf.h        |  1 +
  tools/lib/bpf/libbpf.map      |  1 +
  tools/lib/bpf/libbpf_probes.c | 23 +++++++++++++++++++++++
- 4 files changed, 43 insertions(+)
+ 3 files changed, 25 insertions(+)
 
+diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
+index fe592ef48f1b..26bf539f1b3c 100644
+--- a/tools/lib/bpf/libbpf.h
++++ b/tools/lib/bpf/libbpf.h
+@@ -521,6 +521,7 @@ LIBBPF_API bool bpf_probe_prog_type(enum bpf_prog_type prog_type,
+ LIBBPF_API bool bpf_probe_map_type(enum bpf_map_type map_type, __u32 ifindex);
+ LIBBPF_API bool bpf_probe_helper(enum bpf_func_id id,
+ 				 enum bpf_prog_type prog_type, __u32 ifindex);
++LIBBPF_API bool bpf_probe_large_insn_limit(__u32 ifindex);
+ 
+ /*
+  * Get bpf_prog_info in continuous memory
+diff --git a/tools/lib/bpf/libbpf.map b/tools/lib/bpf/libbpf.map
+index e9713a574243..b300d74c921a 100644
+--- a/tools/lib/bpf/libbpf.map
++++ b/tools/lib/bpf/libbpf.map
+@@ -219,6 +219,7 @@ LIBBPF_0.0.7 {
+ 		bpf_object__detach_skeleton;
+ 		bpf_object__load_skeleton;
+ 		bpf_object__open_skeleton;
++		bpf_probe_large_insn_limit;
+ 		bpf_prog_attach_xattr;
+ 		bpf_program__attach;
+ 		bpf_program__name;
+diff --git a/tools/lib/bpf/libbpf_probes.c b/tools/lib/bpf/libbpf_probes.c
+index a9eb8b322671..925f95106a52 100644
+--- a/tools/lib/bpf/libbpf_probes.c
++++ b/tools/lib/bpf/libbpf_probes.c
+@@ -17,6 +17,8 @@
+ #include "libbpf.h"
+ #include "libbpf_internal.h"
+ 
++#define INSN_REPEAT 4128
++
+ static bool grep(const char *buffer, const char *pattern)
+ {
+ 	return !!strstr(buffer, pattern);
+@@ -321,3 +323,24 @@ bool bpf_probe_helper(enum bpf_func_id id, enum bpf_prog_type prog_type,
+ 
+ 	return res;
+ }
++
++/*
++ * Probe for availability of kernel commit (5.3):
++ *
++ * c04c0d2b968a ("bpf: increase complexity limit and maximum program size")
++ */
++bool bpf_probe_large_insn_limit(__u32 ifindex)
++{
++	struct bpf_insn insns[INSN_REPEAT + 1];
++	int i;
++
++	for (i = 0; i < INSN_REPEAT; i++)
++		insns[i] = BPF_MOV64_IMM(BPF_REG_0, 1);
++	insns[INSN_REPEAT] = BPF_EXIT_INSN();
++
++	errno = 0;
++	probe_load(BPF_PROG_TYPE_SCHED_CLS, insns, ARRAY_SIZE(insns), NULL, 0,
++		   ifindex);
++
++	return errno != E2BIG && errno != EINVAL;
++}
 -- 
 2.16.4
 
