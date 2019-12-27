@@ -2,118 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B6D0012B61B
-	for <lists+netdev@lfdr.de>; Fri, 27 Dec 2019 18:24:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9456812B628
+	for <lists+netdev@lfdr.de>; Fri, 27 Dec 2019 18:32:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726936AbfL0RYU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Dec 2019 12:24:20 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:59847 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726379AbfL0RYU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Dec 2019 12:24:20 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1577467458;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=6BagKGK8+pZSqwaMw/HELL5MlEA5rUbPb85VxpNXUsU=;
-        b=DcFOCXg7tvjzKXO/4xT6mJhMyKoVI+MphdTK4X0+Ffe7AAJJD44bK8KpByEhJnKzScEJBN
-        3f/5S+48ez2V410e1M8RUuwx0EDO0wHT2DzhfnkAv/oExGl4zZiW4Ge5uBFW4XGhCVk6jf
-        z+U8CZnKIRNbdMX87vBkA9b3O/lpDWA=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-264-1y8vaMnpOPeT0R7BGJ8Y8A-1; Fri, 27 Dec 2019 12:24:14 -0500
-X-MC-Unique: 1y8vaMnpOPeT0R7BGJ8Y8A-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 81F8A107ACC5;
-        Fri, 27 Dec 2019 17:24:13 +0000 (UTC)
-Received: from colo-mx.corp.redhat.com (colo-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.20])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 7712360BFB;
-        Fri, 27 Dec 2019 17:24:13 +0000 (UTC)
-Received: from zmail21.collab.prod.int.phx2.redhat.com (zmail21.collab.prod.int.phx2.redhat.com [10.5.83.24])
-        by colo-mx.corp.redhat.com (Postfix) with ESMTP id 6A6B318089C8;
-        Fri, 27 Dec 2019 17:24:13 +0000 (UTC)
-Date:   Fri, 27 Dec 2019 12:24:13 -0500 (EST)
-From:   Vladis Dronov <vdronov@redhat.com>
-To:     Richard Cochran <richardcochran@gmail.com>
-Cc:     linux-fsdevel@vger.kernel.org,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Al Viro <aviro@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Message-ID: <1031316500.2657655.1577467453350.JavaMail.zimbra@redhat.com>
-In-Reply-To: <20191227150218.GA1435@localhost>
-References: <20191208195340.GX4203@ZenIV.linux.org.uk> <20191227022627.24476-1-vdronov@redhat.com> <20191227150218.GA1435@localhost>
-Subject: Re: [PATCH v2] ptp: fix the race between the release of ptp_clock
- and cdev
+        id S1726893AbfL0Rco (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Dec 2019 12:32:44 -0500
+Received: from mail-ot1-f68.google.com ([209.85.210.68]:45188 "EHLO
+        mail-ot1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726379AbfL0Rco (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Dec 2019 12:32:44 -0500
+Received: by mail-ot1-f68.google.com with SMTP id 59so37057156otp.12
+        for <netdev@vger.kernel.org>; Fri, 27 Dec 2019 09:32:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=q/mpSW/qL83GgxwJU/g70xQR00ZuC6l6zYDXDDuBqHk=;
+        b=jlm3R58uRa4lF5+vff2qAOPN1LYUg9r3wQYobrslqBTjS4e8DtVjIKI7T49XUS4fkL
+         +mWrXLBEBUg+9W6pdu2wDORKqhmYj/lcHk+cR9rvV04bmH/NGHhkRciT47xUMWrGzXTW
+         ojkrSKc33qzzBnaX18pylNvyzoQLJGJBxKBo4tAMfoS1Ewxydhs87Ls3wLhrtUxWVjx0
+         pzfkRfd2kG38/X2z7v8ZELV8jTUBSadfhABtdm55qMBDqRajHLmLWUE3KFGlDGq+JG03
+         OrY/P6NOV3H8QEgg6RPtURYz4AN3mrdRyoj4qj2LSJiNaAw1ymJH4liQ213Fh1Tpir7n
+         O82w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=q/mpSW/qL83GgxwJU/g70xQR00ZuC6l6zYDXDDuBqHk=;
+        b=A5IH3QxQYhsNBHxBJq44VidFnKbyqIUOO6Oq6xLnKBhesI1A1SKkbmXLf61s/DOk73
+         WoZ+eP/g9Lc/U64PVoxsZEem2loVZgoKr3ppMX3uCUHEVNPpU3zB/Xcyz64HvRqstz6r
+         NDL8fLW3744OX1yhVgun7zDIyy0FtQsvkovBjXfkIdrSwJlb0wY6nsJRIHjwTRF9BbYS
+         zHhxR7QRhGsaZXHFWyNhgvmYNapZgj2MEX3ArQ2vqPzWK2VMPM3FulUWj2j0EzrlcpSO
+         xPNunxd8AqEtJ316OhXBYhXTJ9vEkG3jj+CBdLaPIzfoLv3h13uJfbAiH7022TMyBW8S
+         SHrg==
+X-Gm-Message-State: APjAAAWJAZzoAU4UtDOJhDRp6FPAairLK3KCTPEOhaPlfCOwFxNdzne0
+        /sqY0m85XyAdHoCaFxlw3Wan6TEAK2eH4sPeUatr78Wq+20=
+X-Google-Smtp-Source: APXvYqxXlrcvFRsPyQ+fkcRst8O7ZWqpaPNwsNFCNDjTABDGSEg1suCSsPhiaDCzRPAfsBecx0hSz4PdsACU8POzcPY=
+X-Received: by 2002:a9d:7852:: with SMTP id c18mr50316190otm.247.1577467962929;
+ Fri, 27 Dec 2019 09:32:42 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [194.228.13.70, 10.4.196.16, 10.5.100.50, 10.4.195.23]
-Thread-Topic: fix the race between the release of ptp_clock and cdev
-Thread-Index: irWUFwtSG/M8AhEHYaeQCeWyBgqSgA==
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+References: <20191223202754.127546-1-edumazet@google.com>
+In-Reply-To: <20191223202754.127546-1-edumazet@google.com>
+From:   Neal Cardwell <ncardwell@google.com>
+Date:   Fri, 27 Dec 2019 12:32:26 -0500
+Message-ID: <CADVnQymnrpPvgMQLT4_2CAGieJG3p7wZsz+nwzgBNCzgEV-RyA@mail.gmail.com>
+Subject: Re: [PATCH net-next v2 0/5] tcp_cubic: various fixes
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Soheil Hassas Yeganeh <soheil@google.com>,
+        Yuchung Cheng <ycheng@google.com>,
+        Martin KaFai Lau <kafai@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello, Richard,
+On Mon, Dec 23, 2019 at 3:28 PM Eric Dumazet <edumazet@google.com> wrote:
+>
+> This patch series converts tcp_cubic to usec clock resolution
+> for Hystart logic.
+>
+> This makes Hystart more relevant for data-center flows.
+> Prior to this series, Hystart was not kicking, or was
+> kicking without good reason, since the 1ms clock was too coarse.
+>
+> Last patch also fixes an issue with Hystart vs TCP pacing.
+>
+> v2: removed a last-minute debug chunk from last patch
+>
+> Eric Dumazet (5):
+>   tcp_cubic: optimize hystart_update()
+>   tcp_cubic: remove one conditional from hystart_update()
+>   tcp_cubic: switch bictcp_clock() to usec resolution
+>   tcp_cubic: tweak Hystart detection for short RTT flows
+>   tcp_cubic: make Hystart aware of pacing
+>
+>  net/ipv4/tcp_cubic.c | 82 +++++++++++++++++++++++++++-----------------
+>  1 file changed, 51 insertions(+), 31 deletions(-)
 
-Thank you for the review!
+Thanks for this very nice patch series, Eric.
 
-> > + * @dev:   Pointer to the initialized device. Caller must provide
-> > + *         'release' filed
-> 
-> field
+In reviewing these patches and thinking about the Hystart ACK train
+heuristic, I am thinking that another behavior that could fool this
+heuristic and cause a spurious/early Hystart exit of slow start would
+be application-limited flights of data. In other words, just as pacing
+can cause inter-ACK spacing increases that could spuriously trigger
+the Hystart ACK train heuristic, AFAICT gaps between application
+writes could also cause inter-ACK gaps that could spuriously trigger
+the Hystart ACK train heuristic.
 
-Indeed. *sigh* Nothing is ideal. Let's hope a maintainer could fix it if
-this is approved.
+AFAICT to avoid such spurious exits of slow start we ought to pass in
+the is_app_limited bool in the struct ack_sample, and thereby pass it
+through pkts_acked(), bictcp_acked(), and hystart_update().
 
-Best regards,
-Vladis Dronov | Red Hat, Inc. | The Core Kernel | Senior Software Engineer
+@@ -3233,9 +3233,12 @@ static int tcp_clean_rtx_queue(struct sock *sk,
+u32 prior_fack,
+  }
 
------ Original Message -----
-> From: "Richard Cochran" <richardcochran@gmail.com>
-> To: "Vladis Dronov" <vdronov@redhat.com>
-> Cc: linux-fsdevel@vger.kernel.org, "Alexander Viro" <viro@zeniv.linux.org.uk>, "Al Viro" <aviro@redhat.com>,
-> netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-> Sent: Friday, December 27, 2019 4:02:19 PM
-> Subject: Re: [PATCH v2] ptp: fix the race between the release of ptp_clock and cdev
-> 
-> On Fri, Dec 27, 2019 at 03:26:27AM +0100, Vladis Dronov wrote:
-> > Here cdev is embedded in posix_clock which is embedded in ptp_clock.
-> > The race happens because ptp_clock's lifetime is controlled by two
-> > refcounts: kref and cdev.kobj in posix_clock. This is wrong.
-> > 
-> > Make ptp_clock's sysfs device a parent of cdev with cdev_device_add()
-> > created especially for such cases. This way the parent device with its
-> > ptp_clock is not released until all references to the cdev are released.
-> > This adds a requirement that an initialized but not exposed struct
-> > device should be provided to posix_clock_register() by a caller instead
-> > of a simple dev_t.
-> > 
-> > This approach was adopted from the commit 72139dfa2464 ("watchdog: Fix
-> > the race between the release of watchdog_core_data and cdev"). See
-> > details of the implementation in the commit 233ed09d7fda ("chardev: add
-> > helper function to register char devs with a struct device").
-> 
-> Thanks for digging into this!
-> 
-> Acked-by: Richard Cochran <richardcochran@gmail.com>
-> 
-> >  /**
-> >   * posix_clock_register() - register a new clock
-> > - * @clk:   Pointer to the clock. Caller must provide 'ops' and 'release'
-> > - * @devid: Allocated device id
-> > + * @clk:   Pointer to the clock. Caller must provide 'ops' field
-> > + * @dev:   Pointer to the initialized device. Caller must provide
-> > + *         'release' filed
-> 
-> field
-> 
-> Thanks,
-> Richard
+  if (icsk->icsk_ca_ops->pkts_acked) {
+- struct ack_sample sample = { .pkts_acked = pkts_acked,
+-      .rtt_us = sack->rate->rtt_us,
+-      .in_flight = last_in_flight };
++  struct ack_sample sample = {
++    .pkts_acked = pkts_acked,
++    .rtt_us = sack->rate->rtt_us,
++    .in_flight = last_in_flight,
++    .is_app_limited = sack->rate->is_app_limited,
++  };
 
+    icsk->icsk_ca_ops->pkts_acked(sk, &sample);
+  }
+
+...and then only trigger the HYSTART_ACK_TRAIN heuristic to exit slow
+start if !sample->is_app_limited.
+
+This could be a follow-on patch after this series, or an additional
+patch at the end of this series.
+
+WDYT?
+
+neal
