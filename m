@@ -2,126 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9456812B628
-	for <lists+netdev@lfdr.de>; Fri, 27 Dec 2019 18:32:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 42D6912B8F5
+	for <lists+netdev@lfdr.de>; Fri, 27 Dec 2019 18:59:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726893AbfL0Rco (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Dec 2019 12:32:44 -0500
-Received: from mail-ot1-f68.google.com ([209.85.210.68]:45188 "EHLO
-        mail-ot1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726379AbfL0Rco (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Dec 2019 12:32:44 -0500
-Received: by mail-ot1-f68.google.com with SMTP id 59so37057156otp.12
-        for <netdev@vger.kernel.org>; Fri, 27 Dec 2019 09:32:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=q/mpSW/qL83GgxwJU/g70xQR00ZuC6l6zYDXDDuBqHk=;
-        b=jlm3R58uRa4lF5+vff2qAOPN1LYUg9r3wQYobrslqBTjS4e8DtVjIKI7T49XUS4fkL
-         +mWrXLBEBUg+9W6pdu2wDORKqhmYj/lcHk+cR9rvV04bmH/NGHhkRciT47xUMWrGzXTW
-         ojkrSKc33qzzBnaX18pylNvyzoQLJGJBxKBo4tAMfoS1Ewxydhs87Ls3wLhrtUxWVjx0
-         pzfkRfd2kG38/X2z7v8ZELV8jTUBSadfhABtdm55qMBDqRajHLmLWUE3KFGlDGq+JG03
-         OrY/P6NOV3H8QEgg6RPtURYz4AN3mrdRyoj4qj2LSJiNaAw1ymJH4liQ213Fh1Tpir7n
-         O82w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=q/mpSW/qL83GgxwJU/g70xQR00ZuC6l6zYDXDDuBqHk=;
-        b=A5IH3QxQYhsNBHxBJq44VidFnKbyqIUOO6Oq6xLnKBhesI1A1SKkbmXLf61s/DOk73
-         WoZ+eP/g9Lc/U64PVoxsZEem2loVZgoKr3ppMX3uCUHEVNPpU3zB/Xcyz64HvRqstz6r
-         NDL8fLW3744OX1yhVgun7zDIyy0FtQsvkovBjXfkIdrSwJlb0wY6nsJRIHjwTRF9BbYS
-         zHhxR7QRhGsaZXHFWyNhgvmYNapZgj2MEX3ArQ2vqPzWK2VMPM3FulUWj2j0EzrlcpSO
-         xPNunxd8AqEtJ316OhXBYhXTJ9vEkG3jj+CBdLaPIzfoLv3h13uJfbAiH7022TMyBW8S
-         SHrg==
-X-Gm-Message-State: APjAAAWJAZzoAU4UtDOJhDRp6FPAairLK3KCTPEOhaPlfCOwFxNdzne0
-        /sqY0m85XyAdHoCaFxlw3Wan6TEAK2eH4sPeUatr78Wq+20=
-X-Google-Smtp-Source: APXvYqxXlrcvFRsPyQ+fkcRst8O7ZWqpaPNwsNFCNDjTABDGSEg1suCSsPhiaDCzRPAfsBecx0hSz4PdsACU8POzcPY=
-X-Received: by 2002:a9d:7852:: with SMTP id c18mr50316190otm.247.1577467962929;
- Fri, 27 Dec 2019 09:32:42 -0800 (PST)
+        id S1727221AbfL0RlI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Dec 2019 12:41:08 -0500
+Received: from mail.kernel.org ([198.145.29.99]:37064 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727175AbfL0RlH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 27 Dec 2019 12:41:07 -0500
+Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 8470E21775;
+        Fri, 27 Dec 2019 17:41:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1577468466;
+        bh=eSBIlZaB+1Zf9Pp3QrfkfLpJAZHv8lJk20E9gHCjWwg=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=2A+IpCXKvBUrQknVgf9BMGu5246cGCoERKEMHItp7WaD+zlRjyEskmvqx16aG/NTI
+         CzGFxhaIAMUn3NWhSqRZTs0/+pAACqZHuFqkCBbcH6TrW3Zjt+YJjeUkIrz5U8zQp8
+         Vs/JzWsIoppS+n0kIJGBcc6n8VUXlcJPUDZAgObg=
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Ganapathi Bhat <gbhat@marvell.com>,
+        huangwen <huangwenabc@gmail.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Sasha Levin <sashal@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 008/187] mwifiex: fix possible heap overflow in mwifiex_process_country_ie()
+Date:   Fri, 27 Dec 2019 12:37:56 -0500
+Message-Id: <20191227174055.4923-8-sashal@kernel.org>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20191227174055.4923-1-sashal@kernel.org>
+References: <20191227174055.4923-1-sashal@kernel.org>
 MIME-Version: 1.0
-References: <20191223202754.127546-1-edumazet@google.com>
-In-Reply-To: <20191223202754.127546-1-edumazet@google.com>
-From:   Neal Cardwell <ncardwell@google.com>
-Date:   Fri, 27 Dec 2019 12:32:26 -0500
-Message-ID: <CADVnQymnrpPvgMQLT4_2CAGieJG3p7wZsz+nwzgBNCzgEV-RyA@mail.gmail.com>
-Subject: Re: [PATCH net-next v2 0/5] tcp_cubic: various fixes
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Soheil Hassas Yeganeh <soheil@google.com>,
-        Yuchung Cheng <ycheng@google.com>,
-        Martin KaFai Lau <kafai@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 23, 2019 at 3:28 PM Eric Dumazet <edumazet@google.com> wrote:
->
-> This patch series converts tcp_cubic to usec clock resolution
-> for Hystart logic.
->
-> This makes Hystart more relevant for data-center flows.
-> Prior to this series, Hystart was not kicking, or was
-> kicking without good reason, since the 1ms clock was too coarse.
->
-> Last patch also fixes an issue with Hystart vs TCP pacing.
->
-> v2: removed a last-minute debug chunk from last patch
->
-> Eric Dumazet (5):
->   tcp_cubic: optimize hystart_update()
->   tcp_cubic: remove one conditional from hystart_update()
->   tcp_cubic: switch bictcp_clock() to usec resolution
->   tcp_cubic: tweak Hystart detection for short RTT flows
->   tcp_cubic: make Hystart aware of pacing
->
->  net/ipv4/tcp_cubic.c | 82 +++++++++++++++++++++++++++-----------------
->  1 file changed, 51 insertions(+), 31 deletions(-)
+From: Ganapathi Bhat <gbhat@marvell.com>
 
-Thanks for this very nice patch series, Eric.
+[ Upstream commit 3d94a4a8373bf5f45cf5f939e88b8354dbf2311b ]
 
-In reviewing these patches and thinking about the Hystart ACK train
-heuristic, I am thinking that another behavior that could fool this
-heuristic and cause a spurious/early Hystart exit of slow start would
-be application-limited flights of data. In other words, just as pacing
-can cause inter-ACK spacing increases that could spuriously trigger
-the Hystart ACK train heuristic, AFAICT gaps between application
-writes could also cause inter-ACK gaps that could spuriously trigger
-the Hystart ACK train heuristic.
+mwifiex_process_country_ie() function parse elements of bss
+descriptor in beacon packet. When processing WLAN_EID_COUNTRY
+element, there is no upper limit check for country_ie_len before
+calling memcpy. The destination buffer domain_info->triplet is an
+array of length MWIFIEX_MAX_TRIPLET_802_11D(83). The remote
+attacker can build a fake AP with the same ssid as real AP, and
+send malicous beacon packet with long WLAN_EID_COUNTRY elemen
+(country_ie_len > 83). Attacker can  force STA connect to fake AP
+on a different channel. When the victim STA connects to fake AP,
+will trigger the heap buffer overflow. Fix this by checking for
+length and if found invalid, don not connect to the AP.
 
-AFAICT to avoid such spurious exits of slow start we ought to pass in
-the is_app_limited bool in the struct ack_sample, and thereby pass it
-through pkts_acked(), bictcp_acked(), and hystart_update().
+This fix addresses CVE-2019-14895.
 
-@@ -3233,9 +3233,12 @@ static int tcp_clean_rtx_queue(struct sock *sk,
-u32 prior_fack,
-  }
+Reported-by: huangwen <huangwenabc@gmail.com>
+Signed-off-by: Ganapathi Bhat <gbhat@marvell.com>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/net/wireless/marvell/mwifiex/sta_ioctl.c | 13 +++++++++++--
+ 1 file changed, 11 insertions(+), 2 deletions(-)
 
-  if (icsk->icsk_ca_ops->pkts_acked) {
-- struct ack_sample sample = { .pkts_acked = pkts_acked,
--      .rtt_us = sack->rate->rtt_us,
--      .in_flight = last_in_flight };
-+  struct ack_sample sample = {
-+    .pkts_acked = pkts_acked,
-+    .rtt_us = sack->rate->rtt_us,
-+    .in_flight = last_in_flight,
-+    .is_app_limited = sack->rate->is_app_limited,
-+  };
+diff --git a/drivers/net/wireless/marvell/mwifiex/sta_ioctl.c b/drivers/net/wireless/marvell/mwifiex/sta_ioctl.c
+index 74e50566db1f..6dd835f1efc2 100644
+--- a/drivers/net/wireless/marvell/mwifiex/sta_ioctl.c
++++ b/drivers/net/wireless/marvell/mwifiex/sta_ioctl.c
+@@ -229,6 +229,14 @@ static int mwifiex_process_country_ie(struct mwifiex_private *priv,
+ 			    "11D: skip setting domain info in FW\n");
+ 		return 0;
+ 	}
++
++	if (country_ie_len >
++	    (IEEE80211_COUNTRY_STRING_LEN + MWIFIEX_MAX_TRIPLET_802_11D)) {
++		mwifiex_dbg(priv->adapter, ERROR,
++			    "11D: country_ie_len overflow!, deauth AP\n");
++		return -EINVAL;
++	}
++
+ 	memcpy(priv->adapter->country_code, &country_ie[2], 2);
+ 
+ 	domain_info->country_code[0] = country_ie[2];
+@@ -272,8 +280,9 @@ int mwifiex_bss_start(struct mwifiex_private *priv, struct cfg80211_bss *bss,
+ 	priv->scan_block = false;
+ 
+ 	if (bss) {
+-		if (adapter->region_code == 0x00)
+-			mwifiex_process_country_ie(priv, bss);
++		if (adapter->region_code == 0x00 &&
++		    mwifiex_process_country_ie(priv, bss))
++			return -EINVAL;
+ 
+ 		/* Allocate and fill new bss descriptor */
+ 		bss_desc = kzalloc(sizeof(struct mwifiex_bssdescriptor),
+-- 
+2.20.1
 
-    icsk->icsk_ca_ops->pkts_acked(sk, &sample);
-  }
-
-...and then only trigger the HYSTART_ACK_TRAIN heuristic to exit slow
-start if !sample->is_app_limited.
-
-This could be a follow-on patch after this series, or an additional
-patch at the end of this series.
-
-WDYT?
-
-neal
