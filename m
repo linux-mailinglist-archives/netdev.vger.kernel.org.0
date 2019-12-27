@@ -2,38 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B51612B872
-	for <lists+netdev@lfdr.de>; Fri, 27 Dec 2019 18:56:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 66C6412B65A
+	for <lists+netdev@lfdr.de>; Fri, 27 Dec 2019 18:42:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727753AbfL0RmJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Dec 2019 12:42:09 -0500
-Received: from mail.kernel.org ([198.145.29.99]:38704 "EHLO mail.kernel.org"
+        id S1727742AbfL0RmH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Dec 2019 12:42:07 -0500
+Received: from mail.kernel.org ([198.145.29.99]:38734 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727733AbfL0RmE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 27 Dec 2019 12:42:04 -0500
+        id S1727126AbfL0RmF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 27 Dec 2019 12:42:05 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 21C4A2173E;
-        Fri, 27 Dec 2019 17:42:03 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 6199420CC7;
+        Fri, 27 Dec 2019 17:42:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1577468524;
-        bh=xliATFxaIc+DI3oWcgq4jydwYRh7rKbWojHiLvFhSpE=;
+        s=default; t=1577468525;
+        bh=S2mj7vV8Qc/c49pbhgd4tw4+L6FzjsTck13YfwNPXjI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tv6Dh7QMt+OsieBq8OIoF160UvRlxBzUvTd3wUxj6J/LgWqcj9yYLAkpgybcOvsJh
-         gA7t5mdDcjDkuZuC1ZGPbjLnsvueAs7h2f2ah8UpYYmebdbOjmnWdxGRaWsYpMJI4e
-         rfoHc6u7D+fLLYFNx2C+FNKfpjRYcQow0rPn+H2k=
+        b=HprOG/IhDBp5wyFR+A5d9NaDq1p75jf1GcWPgzL9LInOeq0hQDyionW/NgJY6qpAa
+         X/1+d+kzKslY52L5cAFgX1B0HXjD8kJ9tLetjz+PaoY8A1x+WrsQszK8lJ/ztuHUgy
+         MofMA5dvYJPGJ07d6iyRWB9X3SDqkDXcBKq2Qv24=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Stephan Gerhold <stephan@gerhold.net>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, linux-nfc@lists.01.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 055/187] NFC: nxp-nci: Fix probing without ACPI
-Date:   Fri, 27 Dec 2019 12:38:43 -0500
-Message-Id: <20191227174055.4923-55-sashal@kernel.org>
+Cc:     Anders Kaseorg <andersk@mit.edu>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Sasha Levin <sashal@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 056/187] Revert "iwlwifi: assign directly to iwl_trans->cfg in QuZ detection"
+Date:   Fri, 27 Dec 2019 12:38:44 -0500
+Message-Id: <20191227174055.4923-56-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191227174055.4923-1-sashal@kernel.org>
 References: <20191227174055.4923-1-sashal@kernel.org>
@@ -46,41 +45,63 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Stephan Gerhold <stephan@gerhold.net>
+From: Anders Kaseorg <andersk@mit.edu>
 
-[ Upstream commit 868afbaca1e2a7923e48b5e8c07be34660525db5 ]
+[ Upstream commit db5cce1afc8d2475d2c1c37c2a8267dd0e151526 ]
 
-devm_acpi_dev_add_driver_gpios() returns -ENXIO if CONFIG_ACPI
-is disabled (e.g. on device tree platforms).
-In this case, nxp-nci will silently fail to probe.
+This reverts commit 968dcfb4905245dc64d65312c0d17692fa087b99.
 
-The other NFC drivers only log a debug message if
-devm_acpi_dev_add_driver_gpios() fails.
-Do the same in nxp-nci to fix this problem.
+Both that commit and commit 809805a820c6445f7a701ded24fdc6bbc841d1e4
+attempted to fix the same bug (dead assignments to the local variable
+cfg), but they did so in incompatible ways. When they were both merged,
+independently of each other, the combination actually caused the bug to
+reappear, leading to a firmware crash on boot for some cards.
 
-Fixes: ad0acfd69add ("NFC: nxp-nci: Get rid of code duplication in ->probe()")
-Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Signed-off-by: Stephan Gerhold <stephan@gerhold.net>
-Acked-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+https://bugzilla.kernel.org/show_bug.cgi?id=205719
+
+Signed-off-by: Anders Kaseorg <andersk@mit.edu>
+Acked-by: Luca Coelho <luciano.coelho@intel.com>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/nfc/nxp-nci/i2c.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/wireless/intel/iwlwifi/pcie/drv.c | 24 +++++++++----------
+ 1 file changed, 12 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/nfc/nxp-nci/i2c.c b/drivers/nfc/nxp-nci/i2c.c
-index 4d1909aecd6c..9f60e4dc5a90 100644
---- a/drivers/nfc/nxp-nci/i2c.c
-+++ b/drivers/nfc/nxp-nci/i2c.c
-@@ -278,7 +278,7 @@ static int nxp_nci_i2c_probe(struct i2c_client *client,
+diff --git a/drivers/net/wireless/intel/iwlwifi/pcie/drv.c b/drivers/net/wireless/intel/iwlwifi/pcie/drv.c
+index 040cec17d3ad..b0b7eca1754e 100644
+--- a/drivers/net/wireless/intel/iwlwifi/pcie/drv.c
++++ b/drivers/net/wireless/intel/iwlwifi/pcie/drv.c
+@@ -1111,18 +1111,18 @@ static int iwl_pci_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
  
- 	r = devm_acpi_dev_add_driver_gpios(dev, acpi_nxp_nci_gpios);
- 	if (r)
--		return r;
-+		dev_dbg(dev, "Unable to add GPIO mapping table\n");
+ 	/* same thing for QuZ... */
+ 	if (iwl_trans->hw_rev == CSR_HW_REV_TYPE_QUZ) {
+-		if (iwl_trans->cfg == &iwl_ax101_cfg_qu_hr)
+-			iwl_trans->cfg = &iwl_ax101_cfg_quz_hr;
+-		else if (iwl_trans->cfg == &iwl_ax201_cfg_qu_hr)
+-			iwl_trans->cfg = &iwl_ax201_cfg_quz_hr;
+-		else if (iwl_trans->cfg == &iwl9461_2ac_cfg_qu_b0_jf_b0)
+-			iwl_trans->cfg = &iwl9461_2ac_cfg_quz_a0_jf_b0_soc;
+-		else if (iwl_trans->cfg == &iwl9462_2ac_cfg_qu_b0_jf_b0)
+-			iwl_trans->cfg = &iwl9462_2ac_cfg_quz_a0_jf_b0_soc;
+-		else if (iwl_trans->cfg == &iwl9560_2ac_cfg_qu_b0_jf_b0)
+-			iwl_trans->cfg = &iwl9560_2ac_cfg_quz_a0_jf_b0_soc;
+-		else if (iwl_trans->cfg == &iwl9560_2ac_160_cfg_qu_b0_jf_b0)
+-			iwl_trans->cfg = &iwl9560_2ac_160_cfg_quz_a0_jf_b0_soc;
++		if (cfg == &iwl_ax101_cfg_qu_hr)
++			cfg = &iwl_ax101_cfg_quz_hr;
++		else if (cfg == &iwl_ax201_cfg_qu_hr)
++			cfg = &iwl_ax201_cfg_quz_hr;
++		else if (cfg == &iwl9461_2ac_cfg_qu_b0_jf_b0)
++			cfg = &iwl9461_2ac_cfg_quz_a0_jf_b0_soc;
++		else if (cfg == &iwl9462_2ac_cfg_qu_b0_jf_b0)
++			cfg = &iwl9462_2ac_cfg_quz_a0_jf_b0_soc;
++		else if (cfg == &iwl9560_2ac_cfg_qu_b0_jf_b0)
++			cfg = &iwl9560_2ac_cfg_quz_a0_jf_b0_soc;
++		else if (cfg == &iwl9560_2ac_160_cfg_qu_b0_jf_b0)
++			cfg = &iwl9560_2ac_160_cfg_quz_a0_jf_b0_soc;
+ 	}
  
- 	phy->gpiod_en = devm_gpiod_get(dev, "enable", GPIOD_OUT_LOW);
- 	if (IS_ERR(phy->gpiod_en)) {
+ #endif
 -- 
 2.20.1
 
