@@ -2,201 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E85F12B056
-	for <lists+netdev@lfdr.de>; Fri, 27 Dec 2019 02:42:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C0AE012B063
+	for <lists+netdev@lfdr.de>; Fri, 27 Dec 2019 02:52:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727171AbfL0BmX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Dec 2019 20:42:23 -0500
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:35768 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726277AbfL0BmV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Dec 2019 20:42:21 -0500
-Received: by mail-wm1-f67.google.com with SMTP id p17so7230541wmb.0;
-        Thu, 26 Dec 2019 17:42:19 -0800 (PST)
+        id S1726982AbfL0Bwg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Dec 2019 20:52:36 -0500
+Received: from mail-pj1-f67.google.com ([209.85.216.67]:33115 "EHLO
+        mail-pj1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726193AbfL0Bwg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Dec 2019 20:52:36 -0500
+Received: by mail-pj1-f67.google.com with SMTP id u63so2610730pjb.0
+        for <netdev@vger.kernel.org>; Thu, 26 Dec 2019 17:52:35 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=t3dw4nJOZnYE2VNxhBHq7qx6fpZ9kBoAZtFQwOujWiQ=;
-        b=s4fpulVTKlPezJe1ZKFE/yuUjx/QRdHiOuDUrrqM0Nll6bjypAqFQpQI7+ziUQiDKs
-         CSrB7AbgW5/nIba5M6wfp9YKomRhsLpcAfd8Jr1htmj07UiwduDvl13oQGwujxw10CzS
-         sM381SyPS9WBFAsUf9Zi1M0rWwMpdxjZhj3PVt1kjgkVGXGUF1du0OpOWqWeE13HA4M4
-         yQ6CS+7jPU2JwcpxGXSIFECrXLysJpxpkGFugzrzr81HS6QSIPhHDEqhFvHd035DeR4S
-         ue8t0k7D27FVhOhG+syFp0LfL1TerURCbx84EADRSZM35J2BOCQmPGu8DY9CPnvVO2u9
-         Tfbg==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=Y+5tks2cU6a5PTdgMwn+wrqN5qv2qlGyw6wNJXYf1OM=;
+        b=D8tECnw/1CZpktlCJFaZ15eCUMKPr6WtSadyax382xvVeKyS64gwI1uo1U+ANBnVHA
+         sKeP+XsfMUd7inZ16hY1Qfe+4c6zuFVqLA2GvTWc8dvtsiY8IxvAv5hLAb5X9iOVDYOl
+         jlj5Z5uyqXd1N3tp1XzriFi1jtQr+G+qJ6sD5iCjiwoXv06NqIlJu7a+iZE/3Yui4Q6g
+         cxHUVAtzcwqy5h4imGuwqGuhdLI59ynnvkltf8n6pRsuNVS4QiZ3wWFBoDOc9ldeLOyd
+         WmQi8tDVmTLE6yCHjO6dmMw2SHffkghtJ0DeypqjtM/sA8q5ofBi3d0tmkfAOi+b3e2B
+         4nbw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=t3dw4nJOZnYE2VNxhBHq7qx6fpZ9kBoAZtFQwOujWiQ=;
-        b=EIpKnYlfAs62rszri1ROD6bKxr3t0Da7x+VU9vJZx+05o7kOdDm5Vfw7bmQ1fVEX68
-         7mIe+b1AqasPoS6IDKGEfTjXRjbLL8XNYawihLsaXKp1HPgT0SJR3CSWegH8KKxpUbGM
-         9kAaz9XBWzh9YBVFoL9etW67/TaaJ8ub7492J/ZErIanGaA2NLoZqCm6VuSgerOl/TBy
-         LChxTCUMd2506l2Oi5p16QSryoYiABuWEgf+iCwYrf3Y6VrqODvCZ9Nlod/HNt1fM9QU
-         B2DQUjr/uVNrxwxsMDlvsBRFQ4gEOpwwnQRljk4IlFUJ6HJYB/duOWhnm1WLTCwA6Jr1
-         sw+A==
-X-Gm-Message-State: APjAAAXfVShNSa7U/wcuYRAhWxwJGm7TGKOVWPglqfd79OrgOeFrostt
-        tXEsVmvPTrEPIrvhGOsa2uY=
-X-Google-Smtp-Source: APXvYqxf28R55vxOUXoIHUm0/dFI2QLdCrQhHAs52SMMSz5YMWsDSSZH0sY6kNi/8wdwhouXjjJtMA==
-X-Received: by 2002:a1c:66d6:: with SMTP id a205mr16602351wmc.171.1577410939283;
-        Thu, 26 Dec 2019 17:42:19 -0800 (PST)
-Received: from localhost.localdomain ([188.25.254.226])
-        by smtp.gmail.com with ESMTPSA id q11sm32622130wrp.24.2019.12.26.17.42.18
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=Y+5tks2cU6a5PTdgMwn+wrqN5qv2qlGyw6wNJXYf1OM=;
+        b=s+ElBzOmfjxVmjceewg9ubt59uDTtnxsqA8h5TWZjdUUeC2R0BEXm2dJ08YIVIIzDi
+         RzZvNjIvMv7Ke11oUPGwc6Jizr5KOSQDSLwbgw+b4AMdx0uoOeDN3xu1KYuaL44gZdn8
+         1mhOSNboNlaqJzjTBmt/UWVuy8/gJCCj/MbcwtaLI+we0aig0AsHBrsxMdH0+5/8Xhl2
+         Wnv3t+J5HXI2T7nykGxtx7aKifgUNhQMWGsH690K3Sz6w7O2hsk2LVENjy5IjJVWHBPX
+         BoLpNH8AY6AhS5qPP5aVKGWZVUU9SL79vF6UD8ZbTplLuOVivxym2dCvqrS2GNVlb5Hx
+         Mv+A==
+X-Gm-Message-State: APjAAAWh+fDuAHoP6velCyJtT1w8X3Q0FRgHgw9Yislu/i/6fEJ5JvSO
+        ZT/I57W/yTYeXm7wpYaGQCo=
+X-Google-Smtp-Source: APXvYqzBda4D13s4clmAqsfmMwIwq8RW8d01/sStH7OfLA46GMg4QL19X7lrZqU0dLYXXne47SPC+w==
+X-Received: by 2002:a17:902:462:: with SMTP id 89mr12260483ple.270.1577411555218;
+        Thu, 26 Dec 2019 17:52:35 -0800 (PST)
+Received: from localhost (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
+        by smtp.gmail.com with ESMTPSA id l22sm12769150pjc.0.2019.12.26.17.52.33
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 26 Dec 2019 17:42:18 -0800 (PST)
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     f.fainelli@gmail.com, vivien.didelot@gmail.com, andrew@lunn.ch,
-        davem@davemloft.net
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Vladimir Oltean <olteanv@gmail.com>
-Subject: [PATCH net-next 2/2] net: dsa: Create a kernel thread for each port's deferred xmit work
-Date:   Fri, 27 Dec 2019 03:42:08 +0200
-Message-Id: <20191227014208.7189-3-olteanv@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20191227014208.7189-1-olteanv@gmail.com>
-References: <20191227014208.7189-1-olteanv@gmail.com>
+        Thu, 26 Dec 2019 17:52:34 -0800 (PST)
+Date:   Thu, 26 Dec 2019 17:52:32 -0800
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     "Keller, Jacob E" <jacob.e.keller@intel.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "jakub.kicinski@netronome.com" <jakub.kicinski@netronome.com>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>,
+        "andrew@lunn.ch" <andrew@lunn.ch>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH net] net: dsa: sja1105: Fix double delivery of TX
+ timestamps to socket error queue
+Message-ID: <20191227015232.GA6436@localhost>
+References: <20191216223344.2261-1-olteanv@gmail.com>
+ <02874ECE860811409154E81DA85FBB58B26DEDC3@fmsmsx101.amr.corp.intel.com>
+ <CA+h21hob3FmbQYyXMeLTtbHF1SeFO=LZVGyQt4jniS9-VXEO-w@mail.gmail.com>
+ <02874ECE860811409154E81DA85FBB58B26DF1C9@fmsmsx101.amr.corp.intel.com>
+ <20191224190531.GA426@localhost>
+ <CA+h21hrBLedLHCfP3oY2U96BJXqMQO=Uof3tsjji_Fp-b0smHQ@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CA+h21hrBLedLHCfP3oY2U96BJXqMQO=Uof3tsjji_Fp-b0smHQ@mail.gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Because this callback can be used on certain switches (at the moment
-only sja1105) to do TX timstamping, this should have been a kernel
-thread from the get-go.
+On Thu, Dec 26, 2019 at 08:24:19PM +0200, Vladimir Oltean wrote:
+> How will these drivers not transmit a second hw TX timestamp to the
+> stack, if they don't check whether TX timestamping is enabled for
+> their netdev?
 
-PTP is a time-critical protocol and requires the ability to control the
-scheduling priority with tools such as chrt, as opposed to just
-executing the work in the generic workqueue.
+Ah, so they are checking SKBTX_HW_TSTAMP on the socket without
+checking for HWTSTAMP first?  Yeah, that won't work with DSA time
+stamping.  But who cares?  Most of the real world doesn't have gigabit
+DSA switches in front of MACs that provide 10 gigabit links or higher.
 
-If the user switch ports are named swp0, swp1, swp2, the kernel threads
-will be named dsa_swp0_xmit, dsa_swp1_xmit, dsa_swp2_xmit.
+> Of course, at least that breakage is going to be much more binary and
+> obvious: PTP simply won't work at all for drivers stacked on top of
+> them until they are fixed.
 
-Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
----
- include/net/dsa.h |  3 ++-
- net/dsa/slave.c   | 43 ++++++++++++++++++++++++++++++++++---------
- 2 files changed, 36 insertions(+), 10 deletions(-)
+Right, you can fix individual MAC drivers to work with DSA, one by
+one.  You are free to try to get the maintainers to ack your fixes.
+(But, here is a friendly hint: don't start out by declaring their
+drivers "broken").
+ 
+> Does the TI PHYTER driver count?
 
-diff --git a/include/net/dsa.h b/include/net/dsa.h
-index 5d510a4da5d0..8460eae69dd9 100644
---- a/include/net/dsa.h
-+++ b/include/net/dsa.h
-@@ -189,7 +189,8 @@ struct dsa_port {
- 	struct phylink		*pl;
- 	struct phylink_config	pl_config;
- 
--	struct work_struct	xmit_work;
-+	struct kthread_worker	*xmit_worker;
-+	struct kthread_work	xmit_work;
- 	struct sk_buff_head	xmit_queue;
- 
- 	struct list_head list;
-diff --git a/net/dsa/slave.c b/net/dsa/slave.c
-index 9f7e47dcdc20..c7e8a29e1e86 100644
---- a/net/dsa/slave.c
-+++ b/net/dsa/slave.c
-@@ -115,9 +115,12 @@ static int dsa_slave_close(struct net_device *dev)
- {
- 	struct net_device *master = dsa_slave_to_master(dev);
- 	struct dsa_port *dp = dsa_slave_to_port(dev);
-+	struct dsa_switch *ds = dp->ds;
- 
--	cancel_work_sync(&dp->xmit_work);
--	skb_queue_purge(&dp->xmit_queue);
-+	if (ds->ops->port_deferred_xmit) {
-+		kthread_cancel_work_sync(&dp->xmit_work);
-+		skb_queue_purge(&dp->xmit_queue);
-+	}
- 
- 	phylink_stop(dp->pl);
- 
-@@ -545,13 +548,13 @@ void *dsa_defer_xmit(struct sk_buff *skb, struct net_device *dev)
- 	 * won't really free the packet.
- 	 */
- 	skb_queue_tail(&dp->xmit_queue, skb_get(skb));
--	schedule_work(&dp->xmit_work);
-+	kthread_queue_work(dp->xmit_worker, &dp->xmit_work);
- 
- 	return NULL;
- }
- EXPORT_SYMBOL_GPL(dsa_defer_xmit);
- 
--static void dsa_port_xmit_work(struct work_struct *work)
-+static void dsa_port_xmit_work(struct kthread_work *work)
- {
- 	struct dsa_port *dp = container_of(work, struct dsa_port, xmit_work);
- 	struct dsa_switch *ds = dp->ds;
-@@ -1363,12 +1366,15 @@ static int dsa_slave_phy_setup(struct net_device *slave_dev)
- int dsa_slave_suspend(struct net_device *slave_dev)
- {
- 	struct dsa_port *dp = dsa_slave_to_port(slave_dev);
-+	struct dsa_switch *ds = dp->ds;
- 
- 	if (!netif_running(slave_dev))
- 		return 0;
- 
--	cancel_work_sync(&dp->xmit_work);
--	skb_queue_purge(&dp->xmit_queue);
-+	if (ds->ops->port_deferred_xmit) {
-+		kthread_cancel_work_sync(&dp->xmit_work);
-+		skb_queue_purge(&dp->xmit_queue);
-+	}
- 
- 	netif_device_detach(slave_dev);
- 
-@@ -1455,17 +1461,29 @@ int dsa_slave_create(struct dsa_port *port)
- 	}
- 	p->dp = port;
- 	INIT_LIST_HEAD(&p->mall_tc_list);
--	INIT_WORK(&port->xmit_work, dsa_port_xmit_work);
--	skb_queue_head_init(&port->xmit_queue);
- 	p->xmit = cpu_dp->tag_ops->xmit;
- 	port->slave = slave_dev;
- 
-+	if (ds->ops->port_deferred_xmit) {
-+		kthread_init_work(&port->xmit_work, dsa_port_xmit_work);
-+		port->xmit_worker = kthread_create_worker(0, "dsa_%s_xmit",
-+							  slave_dev->name);
-+		if (IS_ERR(port->xmit_worker)) {
-+			ret = PTR_ERR(port->xmit_worker);
-+			netdev_err(master,
-+				   "failed to create deferred xmit thread: %d\n",
-+				   ret);
-+			goto out_free;
-+		}
-+		skb_queue_head_init(&port->xmit_queue);
-+	}
-+
- 	netif_carrier_off(slave_dev);
- 
- 	ret = dsa_slave_phy_setup(slave_dev);
- 	if (ret) {
- 		netdev_err(master, "error %d setting up slave phy\n", ret);
--		goto out_free;
-+		goto out_destroy;
- 	}
- 
- 	dsa_slave_notify(slave_dev, DSA_PORT_REGISTER);
-@@ -1484,6 +1502,9 @@ int dsa_slave_create(struct dsa_port *port)
- 	phylink_disconnect_phy(p->dp->pl);
- 	rtnl_unlock();
- 	phylink_destroy(p->dp->pl);
-+out_destroy:
-+	if (ds->ops->port_deferred_xmit)
-+		kthread_destroy_worker(port->xmit_worker);
- out_free:
- 	free_percpu(p->stats64);
- 	free_netdev(slave_dev);
-@@ -1495,6 +1516,10 @@ void dsa_slave_destroy(struct net_device *slave_dev)
- {
- 	struct dsa_port *dp = dsa_slave_to_port(slave_dev);
- 	struct dsa_slave_priv *p = netdev_priv(slave_dev);
-+	struct dsa_switch *ds = dp->ds;
-+
-+	if (ds->ops->port_deferred_xmit)
-+		kthread_destroy_worker(dp->xmit_worker);
- 
- 	netif_carrier_off(slave_dev);
- 	rtnl_lock();
--- 
-2.17.1
+No.  It really doesn't count.  It won't work together with MAC time
+stamping, but this is a known limitation.  That part is 100 mbit only,
+and there are very few implementations.  Unfortunately the
+so_timestamping API did not foresee the possibility of simultaneous
+MAC and PHY time stamping.  Too bad, that's life.  I didn't invent the
+API, and I don't have to defend it, either.
 
+Thanks,
+Richard
