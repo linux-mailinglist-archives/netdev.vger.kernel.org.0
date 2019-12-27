@@ -2,38 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9774612B764
-	for <lists+netdev@lfdr.de>; Fri, 27 Dec 2019 18:49:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C925412B757
+	for <lists+netdev@lfdr.de>; Fri, 27 Dec 2019 18:48:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728204AbfL0RtI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Dec 2019 12:49:08 -0500
-Received: from mail.kernel.org ([198.145.29.99]:42822 "EHLO mail.kernel.org"
+        id S1728612AbfL0Rsn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Dec 2019 12:48:43 -0500
+Received: from mail.kernel.org ([198.145.29.99]:42894 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727612AbfL0Rof (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 27 Dec 2019 12:44:35 -0500
+        id S1728515AbfL0Roj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 27 Dec 2019 12:44:39 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id B961722522;
-        Fri, 27 Dec 2019 17:44:33 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 6F78C21927;
+        Fri, 27 Dec 2019 17:44:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1577468674;
-        bh=YgJ1Rj9xwayAqRHWe+d8iXp2E6DpWtapNBQW+ENO0ok=;
+        s=default; t=1577468678;
+        bh=eetheB3u83n9I/VdONtoQoCdmqijr+yPMsRlS6R5A9E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KjtNQ0xFmWGUiaXa15XJvFLbxnB6XjejKN8/f7mpv8GqMN+U/wVfioD5zH1FRWDJi
-         p5EN8vwnOP3gMuumb6tpMgnu3FI03R538GIyTd2fyoKdOBCLHsEDrLjNV1zInTsNjW
-         i2mKC8jkmchHtrLbb+AcIJTt3MWGmDJ0j4Csufww=
+        b=MhMnbGsnc/gEcfKbtkkn8/0ngTR+ZIxsihjdbWsa4qkFPHiOezTqP29ucZykVEEt5
+         ZwfZsY2eOc43tIBwy2bk826C3W2MLFTFFDQVaHRWqoyHJ1NzPQKE3HjBsg3CQXqAz5
+         gDXa4Grr68MDgiwf5jMh99Ty7Q3SHmzWu6tMtzvs=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Paul Chaignon <paul.chaignon@orange.com>,
-        Mahshid Khezri <khezri.mahshid@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
+Cc:     "Daniel T. Lee" <danieltimlee@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-mips@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 34/84] bpf, mips: Limit to 33 tail calls
-Date:   Fri, 27 Dec 2019 12:43:02 -0500
-Message-Id: <20191227174352.6264-34-sashal@kernel.org>
+        bpf@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 37/84] samples: bpf: Replace symbol compare of trace_event
+Date:   Fri, 27 Dec 2019 12:43:05 -0500
+Message-Id: <20191227174352.6264-37-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191227174352.6264-1-sashal@kernel.org>
 References: <20191227174352.6264-1-sashal@kernel.org>
@@ -46,59 +44,43 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Paul Chaignon <paul.chaignon@orange.com>
+From: "Daniel T. Lee" <danieltimlee@gmail.com>
 
-[ Upstream commit e49e6f6db04e915dccb494ae10fa14888fea6f89 ]
+[ Upstream commit bba1b2a890253528c45aa66cf856f289a215bfbc ]
 
-All BPF JIT compilers except RISC-V's and MIPS' enforce a 33-tail calls
-limit at runtime.  In addition, a test was recently added, in tailcalls2,
-to check this limit.
+Previously, when this sample is added, commit 1c47910ef8013
+("samples/bpf: add perf_event+bpf example"), a symbol 'sys_read' and
+'sys_write' has been used without no prefixes. But currently there are
+no exact symbols with these under kallsyms and this leads to failure.
 
-This patch updates the tail call limit in MIPS' JIT compiler to allow
-33 tail calls.
+This commit changes exact compare to substring compare to keep compatible
+with exact symbol or prefixed symbol.
 
-Fixes: b6bd53f9c4e8 ("MIPS: Add missing file for eBPF JIT.")
-Reported-by: Mahshid Khezri <khezri.mahshid@gmail.com>
-Signed-off-by: Paul Chaignon <paul.chaignon@orange.com>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Acked-by: Martin KaFai Lau <kafai@fb.com>
-Link: https://lore.kernel.org/bpf/b8eb2caac1c25453c539248e56ca22f74b5316af.1575916815.git.paul.chaignon@gmail.com
+Fixes: 1c47910ef8013 ("samples/bpf: add perf_event+bpf example")
+Signed-off-by: Daniel T. Lee <danieltimlee@gmail.com>
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Link: https://lore.kernel.org/bpf/20191205080114.19766-2-danieltimlee@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/mips/net/ebpf_jit.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+ samples/bpf/trace_event_user.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/mips/net/ebpf_jit.c b/arch/mips/net/ebpf_jit.c
-index 9bda82ed75eb..3832c4628608 100644
---- a/arch/mips/net/ebpf_jit.c
-+++ b/arch/mips/net/ebpf_jit.c
-@@ -586,6 +586,7 @@ static void emit_const_to_reg(struct jit_ctx *ctx, int dst, u64 value)
- static int emit_bpf_tail_call(struct jit_ctx *ctx, int this_idx)
- {
- 	int off, b_off;
-+	int tcc_reg;
+diff --git a/samples/bpf/trace_event_user.c b/samples/bpf/trace_event_user.c
+index d08046ab81f0..d33022447d6b 100644
+--- a/samples/bpf/trace_event_user.c
++++ b/samples/bpf/trace_event_user.c
+@@ -35,9 +35,9 @@ static void print_ksym(__u64 addr)
+ 		return;
+ 	sym = ksym_search(addr);
+ 	printf("%s;", sym->name);
+-	if (!strcmp(sym->name, "sys_read"))
++	if (!strstr(sym->name, "sys_read"))
+ 		sys_read_seen = true;
+-	else if (!strcmp(sym->name, "sys_write"))
++	else if (!strstr(sym->name, "sys_write"))
+ 		sys_write_seen = true;
+ }
  
- 	ctx->flags |= EBPF_SEEN_TC;
- 	/*
-@@ -598,14 +599,14 @@ static int emit_bpf_tail_call(struct jit_ctx *ctx, int this_idx)
- 	b_off = b_imm(this_idx + 1, ctx);
- 	emit_instr(ctx, bne, MIPS_R_AT, MIPS_R_ZERO, b_off);
- 	/*
--	 * if (--TCC < 0)
-+	 * if (TCC-- < 0)
- 	 *     goto out;
- 	 */
- 	/* Delay slot */
--	emit_instr(ctx, daddiu, MIPS_R_T5,
--		   (ctx->flags & EBPF_TCC_IN_V1) ? MIPS_R_V1 : MIPS_R_S4, -1);
-+	tcc_reg = (ctx->flags & EBPF_TCC_IN_V1) ? MIPS_R_V1 : MIPS_R_S4;
-+	emit_instr(ctx, daddiu, MIPS_R_T5, tcc_reg, -1);
- 	b_off = b_imm(this_idx + 1, ctx);
--	emit_instr(ctx, bltz, MIPS_R_T5, b_off);
-+	emit_instr(ctx, bltz, tcc_reg, b_off);
- 	/*
- 	 * prog = array->ptrs[index];
- 	 * if (prog == NULL)
 -- 
 2.20.1
 
