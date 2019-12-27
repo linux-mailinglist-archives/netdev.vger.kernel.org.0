@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E5ECF12B5C3
-	for <lists+netdev@lfdr.de>; Fri, 27 Dec 2019 17:01:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4DFC312B5C6
+	for <lists+netdev@lfdr.de>; Fri, 27 Dec 2019 17:07:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726897AbfL0QBP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Dec 2019 11:01:15 -0500
-Received: from mail-oi1-f196.google.com ([209.85.167.196]:37045 "EHLO
-        mail-oi1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726495AbfL0QBO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Dec 2019 11:01:14 -0500
-Received: by mail-oi1-f196.google.com with SMTP id z64so3298967oia.4
-        for <netdev@vger.kernel.org>; Fri, 27 Dec 2019 08:01:13 -0800 (PST)
+        id S1726677AbfL0QHc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Dec 2019 11:07:32 -0500
+Received: from mail-ot1-f65.google.com ([209.85.210.65]:38730 "EHLO
+        mail-ot1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726379AbfL0QHc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Dec 2019 11:07:32 -0500
+Received: by mail-ot1-f65.google.com with SMTP id d7so32420380otf.5
+        for <netdev@vger.kernel.org>; Fri, 27 Dec 2019 08:07:31 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=WK4iVOH39mVAlbG5FDJY7+5ncV7Ux3BI9B86Yy9O7b0=;
-        b=jjupyFidZ3ABMcE/XksfEcnLE4mrmVpxhijeS2I1/Uu4MvFUp7DJkrqTm+lKvB9X8D
-         j7nD5NXB3VAuB62hAmy/lRAMJQR6cLMYe28NR1kyvmk9OYdfXG07TrS65ls0Q8MlL5R0
-         /r5QaCIRQ1Z9d+6LqwAVlt1uN5miYrV9dHBR0Pkexux6IrjzZKmjRD7c1SYBvvMMIKY5
-         js4OL854wQmvOFTtMZWiUlfy7+r6wqhK9LJYpSPQptoyMi8cz9S62SVCdBMqQuxg0qEZ
-         HPfsw5kq0LKikPia3H+Yr3HUCgrfUtn6AYyvMYAxjXHbylC/DemUZRM81C9/lXslezZT
-         4xhg==
+        bh=d57aeGztFkcbBHYV8hz2MRIY7RJ+WugJJ0gcXv1Gns0=;
+        b=IXfnuW+1HzaFv+OfPm22FORI8JATgyExaj/oztF8OwIUuRUL+C/CxSuIwQpBUKgRTV
+         +sgAd+zWFLMvuFAYgq0HIXhdKHll2S2mmBwl58dvJdU0krPjGhajc90T/+w/s2PWXtF+
+         HeI7f9DJKdcm6e2ULJiMqyY/WfTbJu2Uz36BpHCsh8XJJZHE9mXojfl7066WOdUzrfvS
+         9wcSXV4MzATl+2sO3Y49pFLHJER3V7Cv2U0wFMPdAa9Yks4YJ9M4IKbl5MWkEfClNQXz
+         ezvIghAa1g2vXiUYpMajs5zZgaDPflhuIJI2Pg4uQuJtGTXx76SP3f/pTostMy9Y8koy
+         /5ZA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=WK4iVOH39mVAlbG5FDJY7+5ncV7Ux3BI9B86Yy9O7b0=;
-        b=BT/tGLfeIYaHjYpQOQd9x02RzR2016vGg14TowdOYuEH8M/YWqtVXkILTssctzpHEn
-         +41KMrBLfzmKRGvXkeGV4HzUio/sipwojngsAhVxOjKV1VbQuvQywguXmiCEdNJFH1k0
-         4XoVpXsja4QpGLNbHSyisbRjC/6qcu6/u3I0S5+5c1Z5mH0K/El/9azDYcKhkpgZcVAu
-         jTBcOLPIdHkd/WO5+y8Bpa6vjePTmXtjeU6PLB0lPmJMg7x9WOU2VKGVNbPvpB8C6fbu
-         WwAbiHXCQ+26a2OxGEGTOIsVwqwW4X6Zo4664A6RdsJRYE13MqRofgELo0m3GyCE4hez
-         srdw==
-X-Gm-Message-State: APjAAAXtQMkD7LFgSLbZmxB+UTRMSACZnyUePx2KGJOVATcYHeESdvhR
-        jkOKeQsOjn8VapbF7OVdp0lz5iabEsjvnUKe6/Ty8Q==
-X-Google-Smtp-Source: APXvYqzAiyrMQgVU2ufN8tK3Im9ebDRZ0AroUjOcLkTELouAOnBEyCb80Y3myT5ec1Lh10PWe8PCjFrTdFqlIw+jViw=
-X-Received: by 2002:a05:6808:2c4:: with SMTP id a4mr1275942oid.22.1577462473030;
- Fri, 27 Dec 2019 08:01:13 -0800 (PST)
+        bh=d57aeGztFkcbBHYV8hz2MRIY7RJ+WugJJ0gcXv1Gns0=;
+        b=diGcsQzrflXLpd8/opAj1P80yinuzWHQUdBWR5iAYcdPLRrUHDR6iXycQ5KfDEQ1Gn
+         Na01Ilw+ojETbdVLycn5DBaZxjP3SeMNMFm+snMVtTcSY4GcsYFO2AtTKSh6zb/Xpg0X
+         xU02KMs0jVL7goXKKCRG1YTxTDfnmcQiPaQc4Y6DaGqeh4NyIzV4sPvbZo6VqXYtZieH
+         kt+eAuNtAm8w2OPxNoJKU6EKnAb5/BgPoRqn84AsrDMp2il39U0s6TQbta6355NC3BOG
+         uhsMWEz5cnCq5qHum9AmRIc8nvvsb7e4DWSM71lgC9nnL+cWRpFK3eX3yASM2oOK+anR
+         4WOA==
+X-Gm-Message-State: APjAAAWOmczZcaKKjmdIaMb6+TbZC+QI1Is/WXXXmsKk1xvW8qlo7B+I
+        NqLzBYbDozxM9KVWNHOTkOKVS5KC9jjXUeIShmQvvdxX
+X-Google-Smtp-Source: APXvYqw/k/R7VG1gw6vuN1p7Kra7T5dUW+lxAli5Ti1XU9bgOQyMcHjdQpg35jWhKFTE8O722DZCijXjyyzmZWiTfRs=
+X-Received: by 2002:a9d:7852:: with SMTP id c18mr49874259otm.247.1577462851253;
+ Fri, 27 Dec 2019 08:07:31 -0800 (PST)
 MIME-Version: 1.0
-References: <20191223202754.127546-1-edumazet@google.com> <20191223202754.127546-5-edumazet@google.com>
-In-Reply-To: <20191223202754.127546-5-edumazet@google.com>
+References: <20191223202754.127546-1-edumazet@google.com> <20191223202754.127546-4-edumazet@google.com>
+ <CADVnQynXwSoG4mjAnpy_LrLpR0RGur2ZjayNMM-TX7vGo6BxuA@mail.gmail.com> <CANn89iKF8+sjonkgvw25V6or2huUffn9F7nNjiQDAsymLm-P0g@mail.gmail.com>
+In-Reply-To: <CANn89iKF8+sjonkgvw25V6or2huUffn9F7nNjiQDAsymLm-P0g@mail.gmail.com>
 From:   Neal Cardwell <ncardwell@google.com>
-Date:   Fri, 27 Dec 2019 11:00:56 -0500
-Message-ID: <CADVnQyma12zfkJs4uVN6kLZX_ubDUhsVX6mZ0-4Ci-+xF4xH5w@mail.gmail.com>
-Subject: Re: [PATCH net-next v2 4/5] tcp_cubic: tweak Hystart detection for
- short RTT flows
+Date:   Fri, 27 Dec 2019 11:07:15 -0500
+Message-ID: <CADVnQy=TpVa4_fn=RptPWk+UMjQNV7ROQ9dz-csOX8ZdAcTt4w@mail.gmail.com>
+Subject: Re: [PATCH net-next v2 3/5] tcp_cubic: switch bictcp_clock() to usec resolution
 To:     Eric Dumazet <edumazet@google.com>
 Cc:     "David S . Miller" <davem@davemloft.net>,
         netdev <netdev@vger.kernel.org>,
@@ -61,130 +61,67 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 23, 2019 at 3:28 PM Eric Dumazet <edumazet@google.com> wrote:
+On Fri, Dec 27, 2019 at 10:24 AM Eric Dumazet <edumazet@google.com> wrote:
 >
-> After switching ca->delay_min to usec resolution, we exit
-> slow start prematurely for very low RTT flows, setting
-> snd_ssthresh to 20.
+> On Fri, Dec 27, 2019 at 6:46 AM Neal Cardwell <ncardwell@google.com> wrote:
+> >
+> > On Mon, Dec 23, 2019 at 3:28 PM Eric Dumazet <edumazet@google.com> wrote:
+> > >
+> > > Current 1ms clock feeds ca->round_start, ca->delay_min,
+> > > ca->last_ack.
+> > >
+> > > This is quite problematic for data-center flows, where delay_min
+> > > is way below 1 ms.
+> > >
+> > > This means Hystart Train detection triggers every time jiffies value
+> > > is updated, since "((s32)(now - ca->round_start) > ca->delay_min >> 4)"
+> > > expression becomes true.
+> > >
+> > > This kind of random behavior can be solved by reusing the existing
+> > > usec timestamp that TCP keeps in tp->tcp_mstamp
+> > ...
+> > > @@ -438,7 +431,7 @@ static void bictcp_acked(struct sock *sk, const struct ack_sample *sample)
+> > >         if (ca->epoch_start && (s32)(tcp_jiffies32 - ca->epoch_start) < HZ)
+> > >                 return;
+> > >
+> > > -       delay = (sample->rtt_us << 3) / USEC_PER_MSEC;
+> > > +       delay = sample->rtt_us;
+> >
+> > It seems there is a bug in this patch: it changes the code to not
+> > shift the RTT samples left by 3 bits, and adjusts the
+> > HYSTART_ACK_TRAIN code path to expect the new behavior, but does not
+> > change the HYSTART_DELAY code path to expect the new behavior, so the
+> > HYSTART_DELAY code path is still shifting right by 3 bits, when it
+> > should not... the HYSTART_DELAY remains like this at the end of the
+> > patch series:
+> >
+> >         if (hystart_detect & HYSTART_DELAY) {
+> > ...
+> >                         if (ca->curr_rtt > ca->delay_min +
+> >                             HYSTART_DELAY_THRESH(ca->delay_min >> 3)) {
+> >
+> > AFAICT the patch also should have:
+> >
+> > -                            HYSTART_DELAY_THRESH(ca->delay_min >> 3)) {
+> > +                           HYSTART_DELAY_THRESH(ca->delay_min)) {
+> >
 >
-> The reason is that delay_min is fed with RTT of small packet
-> trains. Then as cwnd is increased, TCP sends bigger TSO packets.
 >
-> LRO/GRO aggregation and/or interrupt mitigation strategies
-> on receiver tend to inflate RTT samples.
+> I do not think so Neal.
 >
-> Fix this by adding to delay_min the expected delay of
-> two TSO packets, given current pacing rate.
-...
-> diff --git a/net/ipv4/tcp_cubic.c b/net/ipv4/tcp_cubic.c
-> index 068775b91fb5790e6e60a6490b49e7a266e4ed51..0e5428ed04fe4e50627e21a53c3d17f9f2dade4d 100644
-> --- a/net/ipv4/tcp_cubic.c
-> +++ b/net/ipv4/tcp_cubic.c
-> @@ -436,8 +436,27 @@ static void bictcp_acked(struct sock *sk, const struct ack_sample *sample)
->                 delay = 1;
+> The HYSTART_DELAY_THRESH(ca->delay_min >> 3) thing really means we
+> want to apply a 12.5 % factor.
 >
->         /* first time call or link delay decreases */
-> -       if (ca->delay_min == 0 || ca->delay_min > delay)
-> -               ca->delay_min = delay;
-> +       if (ca->delay_min == 0 || ca->delay_min > delay) {
-> +               unsigned long rate = READ_ONCE(sk->sk_pacing_rate);
-> +
-> +               /* Account for TSO/GRO delays.
-> +                * Otherwise short RTT flows could get too small ssthresh,
-> +                * since during slow start we begin with small TSO packets
-> +                * and could lower ca->delay_min too much.
-> +                * Ideally even with a very small RTT we would like to have
-> +                * at least one TSO packet being sent and received by GRO,
-> +                * and another one in qdisc layer.
-> +                * We apply another 100% factor because @rate is doubled at
-> +                * this point.
-
-This comment mentions "@rate is doubled at this point". But AFAICT
-this part of the code is executed on every ACK, not just in slow
-start, so the rate is not really always doubled at this point. It
-might be more clear/precise to say  "@rate can be doubled at this
-point"?
-
-
-> +                * We cap the cushion to 1ms.
-> +                */
-> +               if (rate)
-> +                       delay += min_t(u64, USEC_PER_MSEC,
-> +                                      div64_ul((u64)GSO_MAX_SIZE *
-> +                                               4 * USEC_PER_SEC, rate));
-> +               if (ca->delay_min == 0 || ca->delay_min > delay)
-> +                       ca->delay_min = delay;
-> +       }
+> See commit 42eef7a0bb09 "tcp_cubic: refine Hystart delay threshold"
+> for some context.
 >
->         /* hystart triggers when cwnd is larger than some threshold */
->         if (!ca->found && hystart && tcp_in_slow_start(tp) &&
+> After this patch, ca->delay_min is in usec unit, and ca->cur_rtt is
+> also in usec unit.
 
-AFAICT there may be some CPU usage impact here for high-speed
-intra-datacenter flows due to an extra div64_ul() being executed on
-most ACKs? It seems like if 'ca->delay_min > delay' then the code
-executes the div64_ul() to calculate the cushion and add it to
-'delay'. Then the  ca->delay_min is recorded with the cushion added.
+Oops, of course you are right. So sorry, I forgot this >>3 was for the
+12.5% factor, and was reading the code too fast, and with too little
+caffeine... :-)
 
-But the first 'ca->delay_min > delay' comparison that determines
-whether we execute the div64_ul() is comparing a ca->delay_min that
-has a cushion included to the 'delay' that has no cushion included. So
-if the raw 'delay' value is within the cushion of the raw min_rtt
-value, then this 'ca->delay_min > delay' expression will evaluate to
-true, and we'll run the div64_ul() even though there is probably not a
-need to.
-
-How big is the cushion? In back of the envelope terms, for a 10
-Gbit/sec link where CUBIC has exited the initial slow start and is
-using a pacing rate matching the link rate, then AFAICT the cushion
-should be roughly:
-  4 * 65536 * 1000000 / (1.2*10*10^9/8) ~= 175 usecs
-So if that math is in the right ballpark, then any RTT sample that is
-within roughly 175 usec of the true min_rtt is going to have
-'ca->delay_min > delay' evaluate to true, and run the div64_ul() when
-there is probably no need.
-
-AFAICT there is also some risk with this patch that the steady-state
-behavior of CUBIC becomes slightly more aggressive for moderate-rate,
-low-RTT cases. In such cases this up to ~1ms of cushion to delay_min
-will cause the bictcp_update() line:
-
- t += usecs_to_jiffies(ca->delay_min);
-
-to calculate the target cwnd at a point in time that is ~1ms further
-out than before, and thus possibly grow the cwnd faster than it would
-have before.
-
-To avoid the risk of extra divisions on many ACKs, and the risk of
-more aggressive cwnd behavior in the steady state, WDYT about an
-approach where the cushioned delay_min used by your revised Hystart
-code (ACK train heuristic and delay heuristic) is maintained
-separately from the "pure" delay_min used elsewhere in the CUBIC code,
-perhaps as a new ca->delay_min_hystart field? I am wondering about an
-approach something like:
-
-/* Account for TSO/GRO delays. ...
-*/
-static u32 update_delay_min_hystart(struct sock *sk)
-{
-        unsigned long rate = READ_ONCE(sk->sk_pacing_rate);
-        u32 ack_delay = 0;
-
-        if (ca->found)
-                return;  /* Hystart is done */
-
-        if (rate)
-                ack_delay = min_t(u64, USEC_PER_MSEC,
-                                  div64_ul((u64)GSO_MAX_SIZE *
-                                           4 * USEC_PER_SEC, rate));
-        ca->delay_min_hystart = ca->delay_min + ack_delay;
-}
-
-...
-        if (ca->delay_min == 0 || ca->delay_min > delay) {
-                ca->delay_min = delay;
-                update_delay_min_hystart(sk);
-        }
-
-WDYT?
+Sorry for the noise!
 
 neal
