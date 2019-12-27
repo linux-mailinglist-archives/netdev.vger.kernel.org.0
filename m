@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9969C12B64C
-	for <lists+netdev@lfdr.de>; Fri, 27 Dec 2019 18:41:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BC5AB12B8B4
+	for <lists+netdev@lfdr.de>; Fri, 27 Dec 2019 18:57:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727581AbfL0Rlo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Dec 2019 12:41:44 -0500
-Received: from mail.kernel.org ([198.145.29.99]:38132 "EHLO mail.kernel.org"
+        id S1727801AbfL0R5f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Dec 2019 12:57:35 -0500
+Received: from mail.kernel.org ([198.145.29.99]:38188 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727494AbfL0Rln (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 27 Dec 2019 12:41:43 -0500
+        id S1727570AbfL0Rlo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 27 Dec 2019 12:41:44 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id B1D9021D7E;
-        Fri, 27 Dec 2019 17:41:41 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id D5BE42173E;
+        Fri, 27 Dec 2019 17:41:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1577468502;
-        bh=b0j4uUP36eM65YwUbTde7dNnwD7Sf+hUVDxtcT2ZUDk=;
+        s=default; t=1577468503;
+        bh=1TsBAZt0kGZestdFokrITKiGHIC4EGqDGcbQA7U+5uU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=I+lSwmxyzvLNw+Ybl0hsNaP+Hxhm8XONBVVcEEYEPKnTF3DcPqeDU2ipqyd8HEdFd
-         RmgRgS+VqH32K3L07YYzgH8+aPsDMbXgCbhpO/RjcHbZ+m3OPLWcr4Dt9gs0kAvDjw
-         Wv48DGUs9ULtKc0s6WlnHZYLGZXyc+WjMNDulfR8=
+        b=upiifxKDpBTsmHJp8+9npyp+geCT99PTIbix1KKUaM/YWe4OlCfqI0hmBvDg2NNm9
+         QzAJa3u5j9ru70PTFv+bgSBKefQDldRxEi3CN4VOnKTVWURrFpmjnDrqpZ3bBk9Cob
+         2dZm54uo1QDgFU/nNcR+sDP+akIBuA6jwkKPD1qk=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
         Sasha Levin <sashal@kernel.org>,
         netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
         netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 036/187] netfilter: nf_tables: skip module reference count bump on object updates
-Date:   Fri, 27 Dec 2019 12:38:24 -0500
-Message-Id: <20191227174055.4923-36-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.4 037/187] netfilter: nf_tables_offload: return EOPNOTSUPP if rule specifies no actions
+Date:   Fri, 27 Dec 2019 12:38:25 -0500
+Message-Id: <20191227174055.4923-37-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191227174055.4923-1-sashal@kernel.org>
 References: <20191227174055.4923-1-sashal@kernel.org>
@@ -46,31 +46,32 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Pablo Neira Ayuso <pablo@netfilter.org>
 
-[ Upstream commit fd57d0cbe187e93f63777d36e9f49293311d417f ]
+[ Upstream commit 81ec61074bcf68acfcb2820cda3ff9d9984419c7 ]
 
-Use __nft_obj_type_get() instead, otherwise there is a module reference
-counter leak.
+If the rule only specifies the matching side, return EOPNOTSUPP.
+Otherwise, the front-end relies on the drivers to reject this rule.
 
-Fixes: d62d0ba97b58 ("netfilter: nf_tables: Introduce stateful object update operation")
+Fixes: c9626a2cbdb2 ("netfilter: nf_tables: add hardware offload support")
 Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/netfilter/nf_tables_api.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/netfilter/nf_tables_offload.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
-index 4c03c14e46bc..67ca47c7ce54 100644
---- a/net/netfilter/nf_tables_api.c
-+++ b/net/netfilter/nf_tables_api.c
-@@ -5217,7 +5217,7 @@ static int nf_tables_newobj(struct net *net, struct sock *nlsk,
- 		if (nlh->nlmsg_flags & NLM_F_REPLACE)
- 			return -EOPNOTSUPP;
+diff --git a/net/netfilter/nf_tables_offload.c b/net/netfilter/nf_tables_offload.c
+index 6f7eab502e65..e743f811245f 100644
+--- a/net/netfilter/nf_tables_offload.c
++++ b/net/netfilter/nf_tables_offload.c
+@@ -44,6 +44,9 @@ struct nft_flow_rule *nft_flow_rule_create(struct net *net,
+ 		expr = nft_expr_next(expr);
+ 	}
  
--		type = nft_obj_type_get(net, objtype);
-+		type = __nft_obj_type_get(objtype);
- 		nft_ctx_init(&ctx, net, skb, nlh, family, table, NULL, nla);
- 
- 		return nf_tables_updobj(&ctx, type, nla[NFTA_OBJ_DATA], obj);
++	if (num_actions == 0)
++		return ERR_PTR(-EOPNOTSUPP);
++
+ 	flow = nft_flow_rule_alloc(num_actions);
+ 	if (!flow)
+ 		return ERR_PTR(-ENOMEM);
 -- 
 2.20.1
 
