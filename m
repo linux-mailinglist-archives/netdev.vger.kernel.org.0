@@ -2,38 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 43A3212B679
-	for <lists+netdev@lfdr.de>; Fri, 27 Dec 2019 18:43:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 97EF312B7FB
+	for <lists+netdev@lfdr.de>; Fri, 27 Dec 2019 18:52:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727614AbfL0RnC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Dec 2019 12:43:02 -0500
-Received: from mail.kernel.org ([198.145.29.99]:40228 "EHLO mail.kernel.org"
+        id S1728225AbfL0Rwr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Dec 2019 12:52:47 -0500
+Received: from mail.kernel.org ([198.145.29.99]:40284 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728033AbfL0RnB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 27 Dec 2019 12:43:01 -0500
+        id S1728062AbfL0RnD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 27 Dec 2019 12:43:03 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 56C3620CC7;
-        Fri, 27 Dec 2019 17:42:59 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id AAD7E2176D;
+        Fri, 27 Dec 2019 17:43:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1577468580;
-        bh=RYxCbrhb0ssrvSLx3VTWpDJv75pfkQdYXqLh2751Ock=;
+        s=default; t=1577468581;
+        bh=NWXH7CsWLWq/PwChXh7t1D4dl2UtShQzA2DC1VhX1Jk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tyJauiSxMtSxlSZkIoITkzpYVq0mP8VLe3sli3lCpjNSxA9Ec1K9dN1FousGPNkW6
-         uzECC3rcBnCwCpLd9pMTuLS1LTqlndLBpfainsmKJbW5ffpMDD2WzYO69iQjf0gYKr
-         yvB0rh5+bI9wsmOVVeay/Wi/lJ4JkQTQF+VAHAsE=
+        b=g+QDQVis4VSo9eOBOCtMvvGXgaf9vhnNfFcDlVgrl1Fv9Gi8Z4bZo26kbtRGRAb1L
+         ETRWe2s7bvyfUioGueWgFAoVaLJ11KQezU2yXaPiLTSZPTQRNk2fFpez3UgkP17ecM
+         ICzkDQKKWwjeEW/gxPlbCay3rSJIGpfQ8VYrUE5E=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Eric Dumazet <edumazet@google.com>,
-        Michal Kubecek <mkubecek@suse.cz>,
-        Firo Yang <firo.yang@suse.com>,
+        syzbot <syzkaller@googlegroups.com>,
+        Arnd Bergmann <arnd@arndb.de>,
         Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Sasha Levin <sashal@kernel.org>, rcu@vger.kernel.org,
+        Sasha Levin <sashal@kernel.org>, linux-hams@vger.kernel.org,
         netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 103/187] tcp/dccp: fix possible race __inet_lookup_established()
-Date:   Fri, 27 Dec 2019 12:39:31 -0500
-Message-Id: <20191227174055.4923-103-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.4 104/187] 6pack,mkiss: fix possible deadlock
+Date:   Fri, 27 Dec 2019 12:39:32 -0500
+Message-Id: <20191227174055.4923-104-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191227174055.4923-1-sashal@kernel.org>
 References: <20191227174055.4923-1-sashal@kernel.org>
@@ -48,234 +48,180 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Eric Dumazet <edumazet@google.com>
 
-[ Upstream commit 8dbd76e79a16b45b2ccb01d2f2e08dbf64e71e40 ]
+[ Upstream commit 5c9934b6767b16ba60be22ec3cbd4379ad64170d ]
 
-Michal Kubecek and Firo Yang did a very nice analysis of crashes
-happening in __inet_lookup_established().
+We got another syzbot report [1] that tells us we must use
+write_lock_irq()/write_unlock_irq() to avoid possible deadlock.
 
-Since a TCP socket can go from TCP_ESTABLISH to TCP_LISTEN
-(via a close()/socket()/listen() cycle) without a RCU grace period,
-I should not have changed listeners linkage in their hash table.
+[1]
 
-They must use the nulls protocol (Documentation/RCU/rculist_nulls.txt),
-so that a lookup can detect a socket in a hash list was moved in
-another one.
+WARNING: inconsistent lock state
+5.5.0-rc1-syzkaller #0 Not tainted
+--------------------------------
+inconsistent {HARDIRQ-ON-W} -> {IN-HARDIRQ-R} usage.
+syz-executor826/9605 [HC1[1]:SC0[0]:HE0:SE1] takes:
+ffffffff8a128718 (disc_data_lock){+-..}, at: sp_get.isra.0+0x1d/0xf0 drivers/net/ppp/ppp_synctty.c:138
+{HARDIRQ-ON-W} state was registered at:
+  lock_acquire+0x190/0x410 kernel/locking/lockdep.c:4485
+  __raw_write_lock_bh include/linux/rwlock_api_smp.h:203 [inline]
+  _raw_write_lock_bh+0x33/0x50 kernel/locking/spinlock.c:319
+  sixpack_close+0x1d/0x250 drivers/net/hamradio/6pack.c:657
+  tty_ldisc_close.isra.0+0x119/0x1a0 drivers/tty/tty_ldisc.c:489
+  tty_set_ldisc+0x230/0x6b0 drivers/tty/tty_ldisc.c:585
+  tiocsetd drivers/tty/tty_io.c:2337 [inline]
+  tty_ioctl+0xe8d/0x14f0 drivers/tty/tty_io.c:2597
+  vfs_ioctl fs/ioctl.c:47 [inline]
+  file_ioctl fs/ioctl.c:545 [inline]
+  do_vfs_ioctl+0x977/0x14e0 fs/ioctl.c:732
+  ksys_ioctl+0xab/0xd0 fs/ioctl.c:749
+  __do_sys_ioctl fs/ioctl.c:756 [inline]
+  __se_sys_ioctl fs/ioctl.c:754 [inline]
+  __x64_sys_ioctl+0x73/0xb0 fs/ioctl.c:754
+  do_syscall_64+0xfa/0x790 arch/x86/entry/common.c:294
+  entry_SYSCALL_64_after_hwframe+0x49/0xbe
+irq event stamp: 3946
+hardirqs last  enabled at (3945): [<ffffffff87c86e43>] __raw_spin_unlock_irq include/linux/spinlock_api_smp.h:168 [inline]
+hardirqs last  enabled at (3945): [<ffffffff87c86e43>] _raw_spin_unlock_irq+0x23/0x80 kernel/locking/spinlock.c:199
+hardirqs last disabled at (3946): [<ffffffff8100675f>] trace_hardirqs_off_thunk+0x1a/0x1c arch/x86/entry/thunk_64.S:42
+softirqs last  enabled at (2658): [<ffffffff86a8b4df>] spin_unlock_bh include/linux/spinlock.h:383 [inline]
+softirqs last  enabled at (2658): [<ffffffff86a8b4df>] clusterip_netdev_event+0x46f/0x670 net/ipv4/netfilter/ipt_CLUSTERIP.c:222
+softirqs last disabled at (2656): [<ffffffff86a8b22b>] spin_lock_bh include/linux/spinlock.h:343 [inline]
+softirqs last disabled at (2656): [<ffffffff86a8b22b>] clusterip_netdev_event+0x1bb/0x670 net/ipv4/netfilter/ipt_CLUSTERIP.c:196
 
-Since we added code in commit d296ba60d8e2 ("soreuseport: Resolve
-merge conflict for v4/v6 ordering fix"), we have to add
-hlist_nulls_add_tail_rcu() helper.
+other info that might help us debug this:
+ Possible unsafe locking scenario:
 
-Fixes: 3b24d854cb35 ("tcp/dccp: do not touch listener sk_refcnt under synflood")
+       CPU0
+       ----
+  lock(disc_data_lock);
+  <Interrupt>
+    lock(disc_data_lock);
+
+ *** DEADLOCK ***
+
+5 locks held by syz-executor826/9605:
+ #0: ffff8880a905e198 (&tty->legacy_mutex){+.+.}, at: tty_lock+0xc7/0x130 drivers/tty/tty_mutex.c:19
+ #1: ffffffff899a56c0 (rcu_read_lock){....}, at: mutex_spin_on_owner+0x0/0x330 kernel/locking/mutex.c:413
+ #2: ffff8880a496a2b0 (&(&i->lock)->rlock){-.-.}, at: spin_lock include/linux/spinlock.h:338 [inline]
+ #2: ffff8880a496a2b0 (&(&i->lock)->rlock){-.-.}, at: serial8250_interrupt+0x2d/0x1a0 drivers/tty/serial/8250/8250_core.c:116
+ #3: ffffffff8c104048 (&port_lock_key){-.-.}, at: serial8250_handle_irq.part.0+0x24/0x330 drivers/tty/serial/8250/8250_port.c:1823
+ #4: ffff8880a905e090 (&tty->ldisc_sem){++++}, at: tty_ldisc_ref+0x22/0x90 drivers/tty/tty_ldisc.c:288
+
+stack backtrace:
+CPU: 1 PID: 9605 Comm: syz-executor826 Not tainted 5.5.0-rc1-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ <IRQ>
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0x197/0x210 lib/dump_stack.c:118
+ print_usage_bug.cold+0x327/0x378 kernel/locking/lockdep.c:3101
+ valid_state kernel/locking/lockdep.c:3112 [inline]
+ mark_lock_irq kernel/locking/lockdep.c:3309 [inline]
+ mark_lock+0xbb4/0x1220 kernel/locking/lockdep.c:3666
+ mark_usage kernel/locking/lockdep.c:3554 [inline]
+ __lock_acquire+0x1e55/0x4a00 kernel/locking/lockdep.c:3909
+ lock_acquire+0x190/0x410 kernel/locking/lockdep.c:4485
+ __raw_read_lock include/linux/rwlock_api_smp.h:149 [inline]
+ _raw_read_lock+0x32/0x50 kernel/locking/spinlock.c:223
+ sp_get.isra.0+0x1d/0xf0 drivers/net/ppp/ppp_synctty.c:138
+ sixpack_write_wakeup+0x25/0x340 drivers/net/hamradio/6pack.c:402
+ tty_wakeup+0xe9/0x120 drivers/tty/tty_io.c:536
+ tty_port_default_wakeup+0x2b/0x40 drivers/tty/tty_port.c:50
+ tty_port_tty_wakeup+0x57/0x70 drivers/tty/tty_port.c:387
+ uart_write_wakeup+0x46/0x70 drivers/tty/serial/serial_core.c:104
+ serial8250_tx_chars+0x495/0xaf0 drivers/tty/serial/8250/8250_port.c:1761
+ serial8250_handle_irq.part.0+0x2a2/0x330 drivers/tty/serial/8250/8250_port.c:1834
+ serial8250_handle_irq drivers/tty/serial/8250/8250_port.c:1820 [inline]
+ serial8250_default_handle_irq+0xc0/0x150 drivers/tty/serial/8250/8250_port.c:1850
+ serial8250_interrupt+0xf1/0x1a0 drivers/tty/serial/8250/8250_core.c:126
+ __handle_irq_event_percpu+0x15d/0x970 kernel/irq/handle.c:149
+ handle_irq_event_percpu+0x74/0x160 kernel/irq/handle.c:189
+ handle_irq_event+0xa7/0x134 kernel/irq/handle.c:206
+ handle_edge_irq+0x25e/0x8d0 kernel/irq/chip.c:830
+ generic_handle_irq_desc include/linux/irqdesc.h:156 [inline]
+ do_IRQ+0xde/0x280 arch/x86/kernel/irq.c:250
+ common_interrupt+0xf/0xf arch/x86/entry/entry_64.S:607
+ </IRQ>
+RIP: 0010:cpu_relax arch/x86/include/asm/processor.h:685 [inline]
+RIP: 0010:mutex_spin_on_owner+0x247/0x330 kernel/locking/mutex.c:579
+Code: c3 be 08 00 00 00 4c 89 e7 e8 e5 06 59 00 4c 89 e0 48 c1 e8 03 42 80 3c 38 00 0f 85 e1 00 00 00 49 8b 04 24 a8 01 75 96 f3 90 <e9> 2f fe ff ff 0f 0b e8 0d 19 09 00 84 c0 0f 85 ff fd ff ff 48 c7
+RSP: 0018:ffffc90001eafa20 EFLAGS: 00000246 ORIG_RAX: ffffffffffffffd7
+RAX: 0000000000000000 RBX: ffff88809fd9e0c0 RCX: 1ffffffff13266dd
+RDX: 0000000000000000 RSI: 0000000000000008 RDI: 0000000000000000
+RBP: ffffc90001eafa60 R08: 1ffff11013d22898 R09: ffffed1013d22899
+R10: ffffed1013d22898 R11: ffff88809e9144c7 R12: ffff8880a905e138
+R13: ffff88809e9144c0 R14: 0000000000000000 R15: dffffc0000000000
+ mutex_optimistic_spin kernel/locking/mutex.c:673 [inline]
+ __mutex_lock_common kernel/locking/mutex.c:962 [inline]
+ __mutex_lock+0x32b/0x13c0 kernel/locking/mutex.c:1106
+ mutex_lock_nested+0x16/0x20 kernel/locking/mutex.c:1121
+ tty_lock+0xc7/0x130 drivers/tty/tty_mutex.c:19
+ tty_release+0xb5/0xe90 drivers/tty/tty_io.c:1665
+ __fput+0x2ff/0x890 fs/file_table.c:280
+ ____fput+0x16/0x20 fs/file_table.c:313
+ task_work_run+0x145/0x1c0 kernel/task_work.c:113
+ exit_task_work include/linux/task_work.h:22 [inline]
+ do_exit+0x8e7/0x2ef0 kernel/exit.c:797
+ do_group_exit+0x135/0x360 kernel/exit.c:895
+ __do_sys_exit_group kernel/exit.c:906 [inline]
+ __se_sys_exit_group kernel/exit.c:904 [inline]
+ __x64_sys_exit_group+0x44/0x50 kernel/exit.c:904
+ do_syscall_64+0xfa/0x790 arch/x86/entry/common.c:294
+ entry_SYSCALL_64_after_hwframe+0x49/0xbe
+RIP: 0033:0x43fef8
+Code: Bad RIP value.
+RSP: 002b:00007ffdb07d2338 EFLAGS: 00000246 ORIG_RAX: 00000000000000e7
+RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 000000000043fef8
+RDX: 0000000000000000 RSI: 000000000000003c RDI: 0000000000000000
+RBP: 00000000004bf730 R08: 00000000000000e7 R09: ffffffffffffffd0
+R10: 00000000004002c8 R11: 0000000000000246 R12: 0000000000000001
+R13: 00000000006d1180 R14: 0000000000000000 R15: 0000000000000000
+
+Fixes: 6e4e2f811bad ("6pack,mkiss: fix lock inconsistency")
 Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reported-by: Michal Kubecek <mkubecek@suse.cz>
-Reported-by: Firo Yang <firo.yang@suse.com>
-Reviewed-by: Michal Kubecek <mkubecek@suse.cz>
-Link: https://lore.kernel.org/netdev/20191120083919.GH27852@unicorn.suse.cz/
+Reported-by: syzbot <syzkaller@googlegroups.com>
+Cc: Arnd Bergmann <arnd@arndb.de>
 Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/linux/rculist_nulls.h | 37 +++++++++++++++++++++++++++++++++++
- include/net/inet_hashtables.h | 12 +++++++++---
- include/net/sock.h            |  5 +++++
- net/ipv4/inet_diag.c          |  3 ++-
- net/ipv4/inet_hashtables.c    | 16 +++++++--------
- net/ipv4/tcp_ipv4.c           |  7 ++++---
- 6 files changed, 65 insertions(+), 15 deletions(-)
+ drivers/net/hamradio/6pack.c | 4 ++--
+ drivers/net/hamradio/mkiss.c | 4 ++--
+ 2 files changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/include/linux/rculist_nulls.h b/include/linux/rculist_nulls.h
-index bc8206a8f30e..61974c4c566b 100644
---- a/include/linux/rculist_nulls.h
-+++ b/include/linux/rculist_nulls.h
-@@ -100,6 +100,43 @@ static inline void hlist_nulls_add_head_rcu(struct hlist_nulls_node *n,
- 		first->pprev = &n->next;
- }
- 
-+/**
-+ * hlist_nulls_add_tail_rcu
-+ * @n: the element to add to the hash list.
-+ * @h: the list to add to.
-+ *
-+ * Description:
-+ * Adds the specified element to the specified hlist_nulls,
-+ * while permitting racing traversals.
-+ *
-+ * The caller must take whatever precautions are necessary
-+ * (such as holding appropriate locks) to avoid racing
-+ * with another list-mutation primitive, such as hlist_nulls_add_head_rcu()
-+ * or hlist_nulls_del_rcu(), running on this same list.
-+ * However, it is perfectly legal to run concurrently with
-+ * the _rcu list-traversal primitives, such as
-+ * hlist_nulls_for_each_entry_rcu(), used to prevent memory-consistency
-+ * problems on Alpha CPUs.  Regardless of the type of CPU, the
-+ * list-traversal primitive must be guarded by rcu_read_lock().
-+ */
-+static inline void hlist_nulls_add_tail_rcu(struct hlist_nulls_node *n,
-+					    struct hlist_nulls_head *h)
-+{
-+	struct hlist_nulls_node *i, *last = NULL;
-+
-+	/* Note: write side code, so rcu accessors are not needed. */
-+	for (i = h->first; !is_a_nulls(i); i = i->next)
-+		last = i;
-+
-+	if (last) {
-+		n->next = last->next;
-+		n->pprev = &last->next;
-+		rcu_assign_pointer(hlist_next_rcu(last), n);
-+	} else {
-+		hlist_nulls_add_head_rcu(n, h);
-+	}
-+}
-+
- /**
-  * hlist_nulls_for_each_entry_rcu - iterate over rcu list of given type
-  * @tpos:	the type * to use as a loop cursor.
-diff --git a/include/net/inet_hashtables.h b/include/net/inet_hashtables.h
-index af2b4c065a04..d0019d3395cf 100644
---- a/include/net/inet_hashtables.h
-+++ b/include/net/inet_hashtables.h
-@@ -103,13 +103,19 @@ struct inet_bind_hashbucket {
- 	struct hlist_head	chain;
- };
- 
--/*
-- * Sockets can be hashed in established or listening table
-+/* Sockets can be hashed in established or listening table.
-+ * We must use different 'nulls' end-of-chain value for all hash buckets :
-+ * A socket might transition from ESTABLISH to LISTEN state without
-+ * RCU grace period. A lookup in ehash table needs to handle this case.
-  */
-+#define LISTENING_NULLS_BASE (1U << 29)
- struct inet_listen_hashbucket {
- 	spinlock_t		lock;
- 	unsigned int		count;
--	struct hlist_head	head;
-+	union {
-+		struct hlist_head	head;
-+		struct hlist_nulls_head	nulls_head;
-+	};
- };
- 
- /* This is for listening sockets, thus all sockets which possess wildcards. */
-diff --git a/include/net/sock.h b/include/net/sock.h
-index 718e62fbe869..fe7cd6899cde 100644
---- a/include/net/sock.h
-+++ b/include/net/sock.h
-@@ -723,6 +723,11 @@ static inline void __sk_nulls_add_node_rcu(struct sock *sk, struct hlist_nulls_h
- 	hlist_nulls_add_head_rcu(&sk->sk_nulls_node, list);
- }
- 
-+static inline void __sk_nulls_add_node_tail_rcu(struct sock *sk, struct hlist_nulls_head *list)
-+{
-+	hlist_nulls_add_tail_rcu(&sk->sk_nulls_node, list);
-+}
-+
- static inline void sk_nulls_add_node_rcu(struct sock *sk, struct hlist_nulls_head *list)
+diff --git a/drivers/net/hamradio/6pack.c b/drivers/net/hamradio/6pack.c
+index 23281aeeb222..71d6629e65c9 100644
+--- a/drivers/net/hamradio/6pack.c
++++ b/drivers/net/hamradio/6pack.c
+@@ -654,10 +654,10 @@ static void sixpack_close(struct tty_struct *tty)
  {
- 	sock_hold(sk);
-diff --git a/net/ipv4/inet_diag.c b/net/ipv4/inet_diag.c
-index 7dc79b973e6e..6a4c82f96e78 100644
---- a/net/ipv4/inet_diag.c
-+++ b/net/ipv4/inet_diag.c
-@@ -914,11 +914,12 @@ void inet_diag_dump_icsk(struct inet_hashinfo *hashinfo, struct sk_buff *skb,
+ 	struct sixpack *sp;
  
- 		for (i = s_i; i < INET_LHTABLE_SIZE; i++) {
- 			struct inet_listen_hashbucket *ilb;
-+			struct hlist_nulls_node *node;
+-	write_lock_bh(&disc_data_lock);
++	write_lock_irq(&disc_data_lock);
+ 	sp = tty->disc_data;
+ 	tty->disc_data = NULL;
+-	write_unlock_bh(&disc_data_lock);
++	write_unlock_irq(&disc_data_lock);
+ 	if (!sp)
+ 		return;
  
- 			num = 0;
- 			ilb = &hashinfo->listening_hash[i];
- 			spin_lock(&ilb->lock);
--			sk_for_each(sk, &ilb->head) {
-+			sk_nulls_for_each(sk, node, &ilb->nulls_head) {
- 				struct inet_sock *inet = inet_sk(sk);
- 
- 				if (!net_eq(sock_net(sk), net))
-diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c
-index 83fb00153018..2bbaaf0c7176 100644
---- a/net/ipv4/inet_hashtables.c
-+++ b/net/ipv4/inet_hashtables.c
-@@ -516,10 +516,11 @@ static int inet_reuseport_add_sock(struct sock *sk,
- 				   struct inet_listen_hashbucket *ilb)
+diff --git a/drivers/net/hamradio/mkiss.c b/drivers/net/hamradio/mkiss.c
+index c5bfa19ddb93..deef14215110 100644
+--- a/drivers/net/hamradio/mkiss.c
++++ b/drivers/net/hamradio/mkiss.c
+@@ -773,10 +773,10 @@ static void mkiss_close(struct tty_struct *tty)
  {
- 	struct inet_bind_bucket *tb = inet_csk(sk)->icsk_bind_hash;
-+	const struct hlist_nulls_node *node;
- 	struct sock *sk2;
- 	kuid_t uid = sock_i_uid(sk);
+ 	struct mkiss *ax;
  
--	sk_for_each_rcu(sk2, &ilb->head) {
-+	sk_nulls_for_each_rcu(sk2, node, &ilb->nulls_head) {
- 		if (sk2 != sk &&
- 		    sk2->sk_family == sk->sk_family &&
- 		    ipv6_only_sock(sk2) == ipv6_only_sock(sk) &&
-@@ -555,9 +556,9 @@ int __inet_hash(struct sock *sk, struct sock *osk)
- 	}
- 	if (IS_ENABLED(CONFIG_IPV6) && sk->sk_reuseport &&
- 		sk->sk_family == AF_INET6)
--		hlist_add_tail_rcu(&sk->sk_node, &ilb->head);
-+		__sk_nulls_add_node_tail_rcu(sk, &ilb->nulls_head);
- 	else
--		hlist_add_head_rcu(&sk->sk_node, &ilb->head);
-+		__sk_nulls_add_node_rcu(sk, &ilb->nulls_head);
- 	inet_hash2(hashinfo, sk);
- 	ilb->count++;
- 	sock_set_flag(sk, SOCK_RCU_FREE);
-@@ -606,11 +607,9 @@ void inet_unhash(struct sock *sk)
- 		reuseport_detach_sock(sk);
- 	if (ilb) {
- 		inet_unhash2(hashinfo, sk);
--		 __sk_del_node_init(sk);
--		 ilb->count--;
--	} else {
--		__sk_nulls_del_node_init_rcu(sk);
-+		ilb->count--;
- 	}
-+	__sk_nulls_del_node_init_rcu(sk);
- 	sock_prot_inuse_add(sock_net(sk), sk->sk_prot, -1);
- unlock:
- 	spin_unlock_bh(lock);
-@@ -750,7 +749,8 @@ void inet_hashinfo_init(struct inet_hashinfo *h)
+-	write_lock_bh(&disc_data_lock);
++	write_lock_irq(&disc_data_lock);
+ 	ax = tty->disc_data;
+ 	tty->disc_data = NULL;
+-	write_unlock_bh(&disc_data_lock);
++	write_unlock_irq(&disc_data_lock);
  
- 	for (i = 0; i < INET_LHTABLE_SIZE; i++) {
- 		spin_lock_init(&h->listening_hash[i].lock);
--		INIT_HLIST_HEAD(&h->listening_hash[i].head);
-+		INIT_HLIST_NULLS_HEAD(&h->listening_hash[i].nulls_head,
-+				      i + LISTENING_NULLS_BASE);
- 		h->listening_hash[i].count = 0;
- 	}
- 
-diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
-index 67b2dc7a1727..eda64871f983 100644
---- a/net/ipv4/tcp_ipv4.c
-+++ b/net/ipv4/tcp_ipv4.c
-@@ -2149,13 +2149,14 @@ static void *listening_get_next(struct seq_file *seq, void *cur)
- 	struct tcp_iter_state *st = seq->private;
- 	struct net *net = seq_file_net(seq);
- 	struct inet_listen_hashbucket *ilb;
-+	struct hlist_nulls_node *node;
- 	struct sock *sk = cur;
- 
- 	if (!sk) {
- get_head:
- 		ilb = &tcp_hashinfo.listening_hash[st->bucket];
- 		spin_lock(&ilb->lock);
--		sk = sk_head(&ilb->head);
-+		sk = sk_nulls_head(&ilb->nulls_head);
- 		st->offset = 0;
- 		goto get_sk;
- 	}
-@@ -2163,9 +2164,9 @@ static void *listening_get_next(struct seq_file *seq, void *cur)
- 	++st->num;
- 	++st->offset;
- 
--	sk = sk_next(sk);
-+	sk = sk_nulls_next(sk);
- get_sk:
--	sk_for_each_from(sk) {
-+	sk_nulls_for_each_from(sk, node) {
- 		if (!net_eq(sock_net(sk), net))
- 			continue;
- 		if (sk->sk_family == afinfo->family)
+ 	if (!ax)
+ 		return;
 -- 
 2.20.1
 
