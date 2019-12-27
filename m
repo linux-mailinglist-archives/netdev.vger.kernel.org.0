@@ -2,35 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3187212B761
-	for <lists+netdev@lfdr.de>; Fri, 27 Dec 2019 18:49:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9774612B764
+	for <lists+netdev@lfdr.de>; Fri, 27 Dec 2019 18:49:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728489AbfL0Rof (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Dec 2019 12:44:35 -0500
-Received: from mail.kernel.org ([198.145.29.99]:42748 "EHLO mail.kernel.org"
+        id S1728204AbfL0RtI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Dec 2019 12:49:08 -0500
+Received: from mail.kernel.org ([198.145.29.99]:42822 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728482AbfL0Rod (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 27 Dec 2019 12:44:33 -0500
+        id S1727612AbfL0Rof (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 27 Dec 2019 12:44:35 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id B2ABB21744;
-        Fri, 27 Dec 2019 17:44:32 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id B961722522;
+        Fri, 27 Dec 2019 17:44:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1577468673;
-        bh=M/ouBtoEG38dS75mI+FfojHB+J5Eqf9o3er0Y0LKpTE=;
+        s=default; t=1577468674;
+        bh=YgJ1Rj9xwayAqRHWe+d8iXp2E6DpWtapNBQW+ENO0ok=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TFHt2AAWQyeGqEc4G8mKVesxkTeuCixCZu46ORTXeUFEqfOlqMLAZdGpuJECDGumL
-         6qP3kcZ7bj03nZkVyvCSwkl3Tc+B5lrD4uP/TSS0rM2PL49GeyPTMIW5WcRLblv82w
-         6J7YqN2gImkqW++xTh3jotAFa5npXtqwhGopfrwE=
+        b=KjtNQ0xFmWGUiaXa15XJvFLbxnB6XjejKN8/f7mpv8GqMN+U/wVfioD5zH1FRWDJi
+         p5EN8vwnOP3gMuumb6tpMgnu3FI03R538GIyTd2fyoKdOBCLHsEDrLjNV1zInTsNjW
+         i2mKC8jkmchHtrLbb+AcIJTt3MWGmDJ0j4Csufww=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Netanel Belgazal <netanel@amazon.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 33/84] net: ena: fix napi handler misbehavior when the napi budget is zero
-Date:   Fri, 27 Dec 2019 12:43:01 -0500
-Message-Id: <20191227174352.6264-33-sashal@kernel.org>
+Cc:     Paul Chaignon <paul.chaignon@orange.com>,
+        Mahshid Khezri <khezri.mahshid@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-mips@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 34/84] bpf, mips: Limit to 33 tail calls
+Date:   Fri, 27 Dec 2019 12:43:02 -0500
+Message-Id: <20191227174352.6264-34-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191227174352.6264-1-sashal@kernel.org>
 References: <20191227174352.6264-1-sashal@kernel.org>
@@ -43,57 +46,59 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Netanel Belgazal <netanel@amazon.com>
+From: Paul Chaignon <paul.chaignon@orange.com>
 
-[ Upstream commit 24dee0c7478d1a1e00abdf5625b7f921467325dc ]
+[ Upstream commit e49e6f6db04e915dccb494ae10fa14888fea6f89 ]
 
-In netpoll the napi handler could be called with budget equal to zero.
-Current ENA napi handler doesn't take that into consideration.
+All BPF JIT compilers except RISC-V's and MIPS' enforce a 33-tail calls
+limit at runtime.  In addition, a test was recently added, in tailcalls2,
+to check this limit.
 
-The napi handler handles Rx packets in a do-while loop.
-Currently, the budget check happens only after decrementing the
-budget, therefore the napi handler, in rare cases, could run over
-MAX_INT packets.
+This patch updates the tail call limit in MIPS' JIT compiler to allow
+33 tail calls.
 
-In addition to that, this moves all budget related variables to int
-calculation and stop mixing u32 to avoid ambiguity
-
-Fixes: 1738cd3ed342 ("net: ena: Add a driver for Amazon Elastic Network Adapters (ENA)")
-Signed-off-by: Netanel Belgazal <netanel@amazon.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: b6bd53f9c4e8 ("MIPS: Add missing file for eBPF JIT.")
+Reported-by: Mahshid Khezri <khezri.mahshid@gmail.com>
+Signed-off-by: Paul Chaignon <paul.chaignon@orange.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Acked-by: Martin KaFai Lau <kafai@fb.com>
+Link: https://lore.kernel.org/bpf/b8eb2caac1c25453c539248e56ca22f74b5316af.1575916815.git.paul.chaignon@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/amazon/ena/ena_netdev.c | 10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
+ arch/mips/net/ebpf_jit.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.c b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-index b5d72815776c..e26c195fec83 100644
---- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
-+++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-@@ -1197,8 +1197,8 @@ static int ena_io_poll(struct napi_struct *napi, int budget)
- 	struct ena_napi *ena_napi = container_of(napi, struct ena_napi, napi);
- 	struct ena_ring *tx_ring, *rx_ring;
+diff --git a/arch/mips/net/ebpf_jit.c b/arch/mips/net/ebpf_jit.c
+index 9bda82ed75eb..3832c4628608 100644
+--- a/arch/mips/net/ebpf_jit.c
++++ b/arch/mips/net/ebpf_jit.c
+@@ -586,6 +586,7 @@ static void emit_const_to_reg(struct jit_ctx *ctx, int dst, u64 value)
+ static int emit_bpf_tail_call(struct jit_ctx *ctx, int this_idx)
+ {
+ 	int off, b_off;
++	int tcc_reg;
  
--	u32 tx_work_done;
--	u32 rx_work_done;
-+	int tx_work_done;
-+	int rx_work_done = 0;
- 	int tx_budget;
- 	int napi_comp_call = 0;
- 	int ret;
-@@ -1215,7 +1215,11 @@ static int ena_io_poll(struct napi_struct *napi, int budget)
- 	}
- 
- 	tx_work_done = ena_clean_tx_irq(tx_ring, tx_budget);
--	rx_work_done = ena_clean_rx_irq(rx_ring, napi, budget);
-+	/* On netpoll the budget is zero and the handler should only clean the
-+	 * tx completions.
-+	 */
-+	if (likely(budget))
-+		rx_work_done = ena_clean_rx_irq(rx_ring, napi, budget);
- 
- 	/* If the device is about to reset or down, avoid unmask
- 	 * the interrupt and return 0 so NAPI won't reschedule
+ 	ctx->flags |= EBPF_SEEN_TC;
+ 	/*
+@@ -598,14 +599,14 @@ static int emit_bpf_tail_call(struct jit_ctx *ctx, int this_idx)
+ 	b_off = b_imm(this_idx + 1, ctx);
+ 	emit_instr(ctx, bne, MIPS_R_AT, MIPS_R_ZERO, b_off);
+ 	/*
+-	 * if (--TCC < 0)
++	 * if (TCC-- < 0)
+ 	 *     goto out;
+ 	 */
+ 	/* Delay slot */
+-	emit_instr(ctx, daddiu, MIPS_R_T5,
+-		   (ctx->flags & EBPF_TCC_IN_V1) ? MIPS_R_V1 : MIPS_R_S4, -1);
++	tcc_reg = (ctx->flags & EBPF_TCC_IN_V1) ? MIPS_R_V1 : MIPS_R_S4;
++	emit_instr(ctx, daddiu, MIPS_R_T5, tcc_reg, -1);
+ 	b_off = b_imm(this_idx + 1, ctx);
+-	emit_instr(ctx, bltz, MIPS_R_T5, b_off);
++	emit_instr(ctx, bltz, tcc_reg, b_off);
+ 	/*
+ 	 * prog = array->ptrs[index];
+ 	 * if (prog == NULL)
 -- 
 2.20.1
 
