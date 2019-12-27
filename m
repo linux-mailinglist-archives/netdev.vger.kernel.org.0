@@ -2,1159 +2,237 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1138712BB56
-	for <lists+netdev@lfdr.de>; Fri, 27 Dec 2019 22:37:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 196B412BB5A
+	for <lists+netdev@lfdr.de>; Fri, 27 Dec 2019 22:38:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726720AbfL0VhI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Dec 2019 16:37:08 -0500
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:42855 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726675AbfL0VhH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Dec 2019 16:37:07 -0500
-Received: by mail-wr1-f66.google.com with SMTP id q6so27221322wro.9
-        for <netdev@vger.kernel.org>; Fri, 27 Dec 2019 13:37:04 -0800 (PST)
+        id S1726377AbfL0Vic (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Dec 2019 16:38:32 -0500
+Received: from mail-pj1-f67.google.com ([209.85.216.67]:35371 "EHLO
+        mail-pj1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725860AbfL0Vic (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Dec 2019 16:38:32 -0500
+Received: by mail-pj1-f67.google.com with SMTP id s7so5458313pjc.0
+        for <netdev@vger.kernel.org>; Fri, 27 Dec 2019 13:38:31 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=myoJdfH8K1GhoMXSoqTso1OFwPfRRuVjCk51mI8glyU=;
-        b=iAYwAZKDlcepu8212Yz/bLmCWsiEr41wzer8edQYGcw+MxJAm2U/aDahhRZ0yw9Q7j
-         MODzf1WZikCwmrePMSimgbUEgELZDRYSPKpMm97WOnUbSi00pK6BH3kkezjs1r/+u0He
-         imDR2dj58EKCv1InSCoHyJb8CbHioZD/WfqgmPC4BLrp0eirgSZz6zdyBZKWK8+09XxY
-         ki9i2EcbeVchbYYArEdRR8pq7Wx2XcdTNOjQEdTZHkDswAQWc9dOKjjZMVMzkna0PtBR
-         jYl4S2yu1gTWorWg6JUZ8hrkrqgTRYNlKpckrhAxWuzgkYZi3lEdyRq5VwtCrcBQIHKV
-         33Ag==
+        h=reply-to:subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=yrIQOsNlSgrKaJyhCGYe/nJTpqy1G8FHl94ac6GMtlI=;
+        b=iyq4ziLOT0bEfl+GVHoDzMLGGzNf1hhKB6pJRqhiWwpQ9pCWdMU07BjjUNiXABLQ4X
+         m4yOvgFOUQcqt57+k7oCoPj7n7xQNL3p4ePZjuRZ2UruK3XknYRadFOFRMIU9+ihGRbC
+         aNMY3mQmY4NvAziX74Vq4PfnAnw1TfSCRVP8apoKefhWeF0Rfre5wxz2qVIcKV+V96m5
+         OMnC6Cwv4KNcjsZH+69Qk8CpdOAYxmcFx4BLFmM3Le3VXGeVn+0Tmvm/7G7Xy0342HRA
+         MQHVQPJ0SLI7/TFxIk3iUzQ68UuJpzfWsZlH5ELZy3BRIusAEn07RsQcRXW0hW6y6n5/
+         +Q2Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=myoJdfH8K1GhoMXSoqTso1OFwPfRRuVjCk51mI8glyU=;
-        b=sfvaC2EzWkahwgvDQpfHap9iULIsCdUM49VFpliD1bvm6tByW81wV7BgptDssP0Tn8
-         ur7GLs0k+qBaHvscZt1uk/etTWGD5NwJ9w2tFU8tCyrLQtXvPq/1Cx8yOvlAPbJamwCe
-         Vb+mY+eSOT7+1BNW3vAkqibvCZ7vCgKyh1bp3p3lOl7+iMWbDtvORevtORhcbnQ04WQS
-         zlzocI8jCz8s4UGvJYPv31BuJKbSyqWsY2nbarhlV2ZVHnIPCatpxR74EcOgb3AEU/7T
-         yCIt2juTh6OvAnEWDb7IFVxLTpStUNOvNfvBLgmaAR1zYzc+wl/UYXiM9E8xcuV7nHEi
-         ofrg==
-X-Gm-Message-State: APjAAAW0fBQ9w4QNdMFf4Bw/u0ke+XqQ6P2mQgXLYD7/ozIYlWtlmWUz
-        meNnuLDwQvs4XiyTdcpmaYA=
-X-Google-Smtp-Source: APXvYqz5FiwjTZFEjZALOTI/fSMbEc541LlgAgPaIwz2Ng2u/wNQfD+hvAIx9RJ5b6ug8uICkBWDcw==
-X-Received: by 2002:adf:f58a:: with SMTP id f10mr54789384wro.105.1577482623580;
-        Fri, 27 Dec 2019 13:37:03 -0800 (PST)
-Received: from localhost.localdomain ([188.25.254.226])
-        by smtp.gmail.com with ESMTPSA id v3sm36330504wru.32.2019.12.27.13.37.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 27 Dec 2019 13:37:03 -0800 (PST)
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     davem@davemloft.net, jakub.kicinski@netronome.com,
-        linux@armlinux.org.uk, andrew@lunn.ch, f.fainelli@gmail.com,
-        vivien.didelot@gmail.com
-Cc:     alexandru.marginean@nxp.com, claudiu.manoil@nxp.com,
-        xiaoliang.yang_1@nxp.com, yangbo.lu@nxp.com,
-        netdev@vger.kernel.org, alexandre.belloni@bootlin.com,
-        horatiu.vultur@microchip.com, UNGLinuxDriver@microchip.com,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [PATCH v3 net-next 11/11] net: dsa: felix: Add PCS operations for PHYLINK
-Date:   Fri, 27 Dec 2019 23:36:26 +0200
-Message-Id: <20191227213626.4404-12-olteanv@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20191227213626.4404-1-olteanv@gmail.com>
-References: <20191227213626.4404-1-olteanv@gmail.com>
+        h=x-gm-message-state:reply-to:subject:to:cc:references:from
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=yrIQOsNlSgrKaJyhCGYe/nJTpqy1G8FHl94ac6GMtlI=;
+        b=GrDOFzjHiJ18rBJ5Xw2F6E2QCipi8Y/rRgpC/wyIS7B3Ym2dFNStuYwNd8Al9IOvtc
+         LbFzWxUtjT9/l6TyhZuANEMMnDIHtGZsCPJTGFPDEceMyRmu2vzCkTjDOA/Ucm/XnQu5
+         7hIAqSgPiQsnTBd63jYM2AQpcvxmLW1rYUWO03omeRJUN8ya6K0gMOPoRIw3T5ZGpbKb
+         HKhmmPUPE3dP4TOq1rhQCWCTPnIh3H36BxozIuDKygZGsDYL6Sk0YluQC8tjNDD179GX
+         e98uUTq9tfUU5YelTJP4Ib4IzXhpDn2Ghr8Bhpm21R3K7rBUYYknmHoMa2rjSqx7PyMi
+         cXeA==
+X-Gm-Message-State: APjAAAWzA8hasgKZ7eT1DZZzvEGrwN983tmFLxK4TYowwJiDSgPPlI+f
+        OnITm4DZg679ObBn21k3FrBhOGfC
+X-Google-Smtp-Source: APXvYqxTKB1sHvjnz6iR8+ln/VNPFLboFJzL7Mcjubo5ag5SM6QZbbPPTlUuNfxSw6Jz2S32AIbAGw==
+X-Received: by 2002:a17:902:d705:: with SMTP id w5mr45650284ply.68.1577482711058;
+        Fri, 27 Dec 2019 13:38:31 -0800 (PST)
+Received: from mua.localhost (99-7-172-215.lightspeed.snmtca.sbcglobal.net. [99.7.172.215])
+        by smtp.gmail.com with ESMTPSA id p185sm42611489pfg.61.2019.12.27.13.38.30
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 27 Dec 2019 13:38:30 -0800 (PST)
+Reply-To: pgnet.dev@gmail.com
+Subject: Re: with kernel 5.4.6, two Eth interfaces -- one 'reliably named',
+ the other not. used to work , what's changed?
+To:     Stephen Hemminger <stephen@networkplumber.org>
+Cc:     netdev@vger.kernel.org
+References: <42a3cd4b-c42f-b2c2-da84-e1fd433a4219@gmail.com>
+ <20191227133516.0b0dba3a@hermes.lan>
+From:   PGNet Dev <pgnet.dev@gmail.com>
+Message-ID: <4b2c3b22-ef30-4019-ccd9-20632a6a4685@gmail.com>
+Date:   Fri, 27 Dec 2019 13:38:29 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.3.1
+MIME-Version: 1.0
+In-Reply-To: <20191227133516.0b0dba3a@hermes.lan>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+On 12/27/19 1:35 PM, Stephen Hemminger wrote:
+> Network renaming is not a kernel responsibility. This list is not directly relevant
+to your issue.
+> 
+> Various user packages (usually systemd/udev) do this based on distribution.
 
-Layerscape SoCs traditionally expose the SerDes configuration/status for
-Ethernet protocols (PCS for SGMII/XFI/USXGMII etc etc) in a register
-format that is compatible with clause 22 or clause 45 (depending on
-SerDes protocol). Each MAC has its own internal MDIO bus on which there
-is one or more of these PCS's, responding to commands at a configurable
-PHY address. The per-port internal MDIO bus (which is just for PCSs) is
-totally separate and has nothing to do with the dedicated external MDIO
-controller (which is just for PHYs), but the register map for the MDIO
-controller is the same.
 
-The VSC9959 (Felix) switch instantiated in the LS1028A is integrated
-in hardware with the ENETC PCS of its DSA master, and reuses its MDIO
-controller driver, so Felix has been made to depend on it in Kconfig.
+ah, I'll find a different home for it then.
 
- +------------------------------------------------------------------------+
- |                   +--------+ GMII (typically disabled via RCW)         |
- | ENETC PCI         |  ENETC |--------------------------+                |
- | Root Complex      | port 3 |-----------------------+  |                |
- | Integrated        +--------+                       |  |                |
- | Endpoint                                           |  |                |
- |                   +--------+ 2.5G GMII             |  |                |
- |                   |  ENETC |--------------+        |  |                |
- |                   | port 2 |-----------+  |        |  |                |
- |                   +--------+           |  |        |  |                |
- |                                     +--------+  +--------+             |
- |                                     |  Felix |  |  Felix |             |
- |                                     | port 4 |  | port 5 |             |
- |                                     +--------+  +--------+             |
- |                                                                        |
- | +--------+  +--------+  +--------+  +--------+  +--------+  +--------+ |
- | |  ENETC |  |  ENETC |  |  Felix |  |  Felix |  |  Felix |  |  Felix | |
- | | port 0 |  | port 1 |  | port 0 |  | port 1 |  | port 2 |  | port 3 | |
- +------------------------------------------------------------------------+
- |    ||||  SerDes |          ||||        ||||        ||||        ||||    |
- | +--------+block |       +--------------------------------------------+ |
- | |  ENETC |      |       |       ENETC port 2 internal MDIO bus       | |
- | | port 0 |      |       |  PCS         PCS          PCS        PCS   | |
- | |   PCS  |      |       |   0           1            2          3    | |
- +-----------------|------------------------------------------------------+
-        v          v           v           v            v          v
-     SGMII/      RGMII    QSGMII/QSXGMII/4xSGMII/4x100Base-X/4x2500Base-X
-    USXGMII/   (bypasses
-  1000Base-X/   SerDes)
-  2500Base-X
+thx!!
 
-In the LS1028A SoC described above, the VSC9959 Felix switch is PF5 of
-the ENETC root complex, and has 2 BARs:
-- BAR 4: the switch's effective registers
-- BAR 0: the MDIO controller register map lended from ENETC port 2
-         (PF2), for accessing its associated PCS's.
-
-This explanation is necessary because the patch does some renaming
-"pci_bar" -> "switch_pci_bar" for clarity, which would otherwise appear
-a bit obtuse.
-
-The fact that the internal MDIO bus is "borrowed" is relevant because
-the register map is found in PF5 (the switch) but it triggers an access
-fault if PF2 (the ENETC DSA master) is not enabled. This is not treated
-in any way (and I don't think it can be treated).
-
-All of this is so SoC-specific, that it was contained as much as
-possible in the platform-integration file felix_vsc9959.c.
-
-We need to parse and pre-validate the device tree because of 2 reasons:
-- The PHY mode (SerDes protocol) cannot change at runtime due to SoC
-  design.
-- There is a circular dependency in that we need to know what clause the
-  PCS speaks in order to find it on the internal MDIO bus. But the
-  clause of the PCS depends on what phy-mode it is configured for.
-
-The goal of this patch is to make steps towards removing the bootloader
-dependency for SGMII PCS pre-configuration, as well as to add support
-for monitoring the in-band SGMII AN between the PCS and the system-side
-link partner (PHY or other MAC).
-
-In practice the bootloader dependency is not completely removed. U-Boot
-pre-programs the PHY address at which each PCS can be found on the
-internal MDIO bus (MDEV_PORT). This is needed because the PCS of each
-port has the same out-of-reset PHY address of zero. The SerDes register
-for changing MDEV_PORT is pretty deep in the SoC (outside the addresses
-of the ENETC PCI BARs) and therefore inaccessible to us from here.
-
-Felix VSC9959 and Ocelot VSC7514 are integrated very differently in
-their respective SoCs, and for that reason Felix does not use the Ocelot
-core library for PHYLINK. On one hand we don't want to impose the
-fixed phy-mode limitation to Ocelot, and on the other hand Felix doesn't
-need to force the MAC link speed the way Ocelot does, since the MAC is
-connected to the PCS through a fixed GMII, and the PCS is the one who
-does the rate adaptation at lower link speeds, which the MAC does not
-even need to know about. In fact changing the GMII speed for Felix
-irrecoverably breaks transmission through that port until a reset.
-
-Yet another reason for wanting to convert Felix to PHYLINK is to
-configure the MAC of port 5 (the one that is typically disabled, in the
-setup with ENETC 2 as DSA master it doesn't support tagging so when it's
-enabled it is a regular fixed-link slave port, something that DSA PHYLIB
-doesn't control with .adjust_link).
-
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
----
-Changes in v3:
-- Made a few tweaks to vsc9959_pcs_init_sgmii so that it works without
-  MLO_AN_INBAND with the VSC8514 PHY.
-- Added proper dependencies on ENETC MDIO (re: "depends on
-  NET_VENDOR_FREESCALE": yes, I know, the hardware really is a
-  Frankenstein, can't do much about it).
-- Dropped the polling from vsc9959_pcs_link_state and let PHYLINK do its
-  timer thing.
-
- drivers/net/dsa/ocelot/Kconfig         |   2 +
- drivers/net/dsa/ocelot/felix.c         | 266 ++++++++++++-
- drivers/net/dsa/ocelot/felix.h         |  16 +-
- drivers/net/dsa/ocelot/felix_vsc9959.c | 501 ++++++++++++++++++++++++-
- 4 files changed, 768 insertions(+), 17 deletions(-)
-
-diff --git a/drivers/net/dsa/ocelot/Kconfig b/drivers/net/dsa/ocelot/Kconfig
-index 6f9804093150..a5b7cca03d09 100644
---- a/drivers/net/dsa/ocelot/Kconfig
-+++ b/drivers/net/dsa/ocelot/Kconfig
-@@ -3,8 +3,10 @@ config NET_DSA_MSCC_FELIX
- 	tristate "Ocelot / Felix Ethernet switch support"
- 	depends on NET_DSA && PCI
- 	depends on NET_VENDOR_MICROSEMI
-+	depends on NET_VENDOR_FREESCALE
- 	select MSCC_OCELOT_SWITCH
- 	select NET_DSA_TAG_OCELOT
-+	select FSL_ENETC_MDIO
- 	help
- 	  This driver supports the VSC9959 network switch, which is a member of
- 	  the Vitesse / Microsemi / Microchip Ocelot family of switching cores.
-diff --git a/drivers/net/dsa/ocelot/felix.c b/drivers/net/dsa/ocelot/felix.c
-index b7f92464815d..236f28306f7d 100644
---- a/drivers/net/dsa/ocelot/felix.c
-+++ b/drivers/net/dsa/ocelot/felix.c
-@@ -2,9 +2,14 @@
- /* Copyright 2019 NXP Semiconductors
-  */
- #include <uapi/linux/if_bridge.h>
-+#include <soc/mscc/ocelot_qsys.h>
-+#include <soc/mscc/ocelot_sys.h>
-+#include <soc/mscc/ocelot_dev.h>
-+#include <soc/mscc/ocelot_ana.h>
- #include <soc/mscc/ocelot.h>
- #include <linux/packing.h>
- #include <linux/module.h>
-+#include <linux/of_net.h>
- #include <linux/pci.h>
- #include <linux/of.h>
- #include <net/dsa.h>
-@@ -26,14 +31,6 @@ static int felix_set_ageing_time(struct dsa_switch *ds,
- 	return 0;
- }
- 
--static void felix_adjust_link(struct dsa_switch *ds, int port,
--			      struct phy_device *phydev)
--{
--	struct ocelot *ocelot = ds->priv;
--
--	ocelot_adjust_link(ocelot, port, phydev);
--}
--
- static int felix_fdb_dump(struct dsa_switch *ds, int port,
- 			  dsa_fdb_dump_cb_t *cb, void *data)
- {
-@@ -155,6 +152,139 @@ static void felix_port_disable(struct dsa_switch *ds, int port)
- 	return ocelot_port_disable(ocelot, port);
- }
- 
-+static void felix_phylink_validate(struct dsa_switch *ds, int port,
-+				   unsigned long *supported,
-+				   struct phylink_link_state *state)
-+{
-+	struct ocelot *ocelot = ds->priv;
-+	struct ocelot_port *ocelot_port = ocelot->ports[port];
-+	__ETHTOOL_DECLARE_LINK_MODE_MASK(mask) = { 0, };
-+
-+	if (state->interface != PHY_INTERFACE_MODE_NA &&
-+	    state->interface != ocelot_port->phy_mode) {
-+		bitmap_zero(supported, __ETHTOOL_LINK_MODE_MASK_NBITS);
-+		return;
-+	}
-+
-+	/* No half-duplex. */
-+	phylink_set_port_modes(mask);
-+	phylink_set(mask, Autoneg);
-+	phylink_set(mask, Pause);
-+	phylink_set(mask, Asym_Pause);
-+	if (state->interface != PHY_INTERFACE_MODE_2500BASEX) {
-+		phylink_set(mask, 10baseT_Full);
-+		phylink_set(mask, 100baseT_Full);
-+		phylink_set(mask, 1000baseT_Full);
-+	}
-+	/* The internal ports that run at 2.5G are overclocked GMII */
-+	if (state->interface == PHY_INTERFACE_MODE_GMII ||
-+	    state->interface == PHY_INTERFACE_MODE_2500BASEX ||
-+	    state->interface == PHY_INTERFACE_MODE_USXGMII) {
-+		phylink_set(mask, 2500baseT_Full);
-+		phylink_set(mask, 2500baseX_Full);
-+	}
-+
-+	bitmap_and(supported, supported, mask,
-+		   __ETHTOOL_LINK_MODE_MASK_NBITS);
-+	bitmap_and(state->advertising, state->advertising, mask,
-+		   __ETHTOOL_LINK_MODE_MASK_NBITS);
-+}
-+
-+static int felix_phylink_mac_pcs_get_state(struct dsa_switch *ds, int port,
-+					   struct phylink_link_state *state)
-+{
-+	struct ocelot *ocelot = ds->priv;
-+	struct felix *felix = ocelot_to_felix(ocelot);
-+
-+	if (felix->info->pcs_link_state)
-+		felix->info->pcs_link_state(ocelot, port, state);
-+
-+	return 0;
-+}
-+
-+static void felix_phylink_mac_config(struct dsa_switch *ds, int port,
-+				     unsigned int link_an_mode,
-+				     const struct phylink_link_state *state)
-+{
-+	struct ocelot *ocelot = ds->priv;
-+	struct ocelot_port *ocelot_port = ocelot->ports[port];
-+	struct felix *felix = ocelot_to_felix(ocelot);
-+	u32 mac_fc_cfg;
-+
-+	/* Take MAC, Port, Phy (intern) and PCS (SGMII/Serdes) clock out of
-+	 * reset */
-+	ocelot_port_writel(ocelot_port, DEV_CLOCK_CFG_LINK_SPEED(state->speed),
-+			   DEV_CLOCK_CFG);
-+
-+	/* No PFC */
-+	ocelot_write_gix(ocelot, ANA_PFC_PFC_CFG_FC_LINK_SPEED(state->speed),
-+			 ANA_PFC_PFC_CFG, port);
-+
-+	/* Core: Enable port for frame transfer */
-+	ocelot_write_rix(ocelot, QSYS_SWITCH_PORT_MODE_INGRESS_DROP_MODE |
-+			 QSYS_SWITCH_PORT_MODE_SCH_NEXT_CFG(1) |
-+			 QSYS_SWITCH_PORT_MODE_PORT_ENA,
-+			 QSYS_SWITCH_PORT_MODE, port);
-+
-+	/* Flow control */
-+	mac_fc_cfg = SYS_MAC_FC_CFG_FC_LINK_SPEED(state->speed);
-+	if (state->pause & MLO_PAUSE_RX)
-+		mac_fc_cfg |= SYS_MAC_FC_CFG_RX_FC_ENA;
-+	if (state->pause & MLO_PAUSE_TX)
-+		mac_fc_cfg |= SYS_MAC_FC_CFG_TX_FC_ENA |
-+			      SYS_MAC_FC_CFG_PAUSE_VAL_CFG(0xffff) |
-+			      SYS_MAC_FC_CFG_FC_LATENCY_CFG(0x7) |
-+			      SYS_MAC_FC_CFG_ZERO_PAUSE_ENA;
-+	ocelot_write_rix(ocelot, mac_fc_cfg, SYS_MAC_FC_CFG, port);
-+
-+	ocelot_write_rix(ocelot, 0, ANA_POL_FLOWC, port);
-+
-+	if (felix->info->pcs_init)
-+		felix->info->pcs_init(ocelot, port, link_an_mode, state);
-+}
-+
-+static void felix_phylink_mac_an_restart(struct dsa_switch *ds, int port)
-+{
-+	struct ocelot *ocelot = ds->priv;
-+	struct felix *felix = ocelot_to_felix(ocelot);
-+
-+	if (felix->info->pcs_an_restart)
-+		felix->info->pcs_an_restart(ocelot, port);
-+}
-+
-+static void felix_phylink_mac_link_down(struct dsa_switch *ds, int port,
-+					unsigned int link_an_mode,
-+					phy_interface_t interface)
-+{
-+	struct ocelot *ocelot = ds->priv;
-+	struct ocelot_port *ocelot_port = ocelot->ports[port];
-+
-+	ocelot_port_writel(ocelot_port, 0, DEV_MAC_ENA_CFG);
-+	ocelot_rmw_rix(ocelot, 0, QSYS_SWITCH_PORT_MODE_PORT_ENA,
-+		       QSYS_SWITCH_PORT_MODE, port);
-+}
-+
-+static void felix_phylink_mac_link_up(struct dsa_switch *ds, int port,
-+				      unsigned int link_an_mode,
-+				      phy_interface_t interface,
-+				      struct phy_device *phydev)
-+{
-+	struct ocelot *ocelot = ds->priv;
-+	struct ocelot_port *ocelot_port = ocelot->ports[port];
-+
-+	/* Enable MAC module */
-+	ocelot_port_writel(ocelot_port, DEV_MAC_ENA_CFG_RX_ENA |
-+			   DEV_MAC_ENA_CFG_TX_ENA, DEV_MAC_ENA_CFG);
-+
-+	/* Enable receiving frames on the port, and activate auto-learning of
-+	 * MAC addresses.
-+	 */
-+	ocelot_write_gix(ocelot, ANA_PORT_PORT_CFG_LEARNAUTO |
-+			 ANA_PORT_PORT_CFG_RECV_ENA |
-+			 ANA_PORT_PORT_CFG_PORTID_VAL(port),
-+			 ANA_PORT_PORT_CFG, port);
-+}
-+
- static void felix_get_strings(struct dsa_switch *ds, int port,
- 			      u32 stringset, u8 *data)
- {
-@@ -185,10 +315,76 @@ static int felix_get_ts_info(struct dsa_switch *ds, int port,
- 	return ocelot_get_ts_info(ocelot, port, info);
- }
- 
-+static int felix_parse_ports_node(struct felix *felix,
-+				  struct device_node *ports_node,
-+				  phy_interface_t *port_phy_modes)
-+{
-+	struct ocelot *ocelot = &felix->ocelot;
-+	struct device *dev = felix->ocelot.dev;
-+	struct device_node *child;
-+
-+	for_each_child_of_node(ports_node, child) {
-+		phy_interface_t phy_mode;
-+		u32 port;
-+		int err;
-+
-+		/* Get switch port number from DT */
-+		if (of_property_read_u32(child, "reg", &port) < 0) {
-+			dev_err(dev, "Port number not defined in device tree "
-+				"(property \"reg\")\n");
-+			of_node_put(child);
-+			return -ENODEV;
-+		}
-+
-+		/* Get PHY mode from DT */
-+		err = of_get_phy_mode(child, &phy_mode);
-+		if (err) {
-+			dev_err(dev, "Failed to read phy-mode or "
-+				"phy-interface-type property for port %d\n",
-+				port);
-+			of_node_put(child);
-+			return -ENODEV;
-+		}
-+
-+		err = felix->info->prevalidate_phy_mode(ocelot, port, phy_mode);
-+		if (err < 0) {
-+			dev_err(dev, "Unsupported PHY mode %s on port %d\n",
-+				phy_modes(phy_mode), port);
-+			return err;
-+		}
-+
-+		port_phy_modes[port] = phy_mode;
-+	}
-+
-+	return 0;
-+}
-+
-+static int felix_parse_dt(struct felix *felix, phy_interface_t *port_phy_modes)
-+{
-+	struct device *dev = felix->ocelot.dev;
-+	struct device_node *switch_node;
-+	struct device_node *ports_node;
-+	int err;
-+
-+	switch_node = dev->of_node;
-+
-+	ports_node = of_get_child_by_name(switch_node, "ports");
-+	if (!ports_node) {
-+		dev_err(dev, "Incorrect bindings: absent \"ports\" node\n");
-+		return -ENODEV;
-+	}
-+
-+	err = felix_parse_ports_node(felix, ports_node, port_phy_modes);
-+	of_node_put(ports_node);
-+
-+	return err;
-+}
-+
- static int felix_init_structs(struct felix *felix, int num_phys_ports)
- {
- 	struct ocelot *ocelot = &felix->ocelot;
--	resource_size_t base;
-+	phy_interface_t *port_phy_modes;
-+	resource_size_t switch_base;
- 	int port, i, err;
- 
- 	ocelot->num_phys_ports = num_phys_ports;
-@@ -203,7 +399,19 @@ static int felix_init_structs(struct felix *felix, int num_phys_ports)
- 	ocelot->shared_queue_sz	= felix->info->shared_queue_sz;
- 	ocelot->ops		= felix->info->ops;
- 
--	base = pci_resource_start(felix->pdev, felix->info->pci_bar);
-+	port_phy_modes = kcalloc(num_phys_ports, sizeof(phy_interface_t),
-+				 GFP_KERNEL);
-+	if (!port_phy_modes)
-+		return -ENOMEM;
-+
-+	err = felix_parse_dt(felix, port_phy_modes);
-+	if (err) {
-+		kfree(port_phy_modes);
-+		return err;
-+	}
-+
-+	switch_base = pci_resource_start(felix->pdev,
-+					 felix->info->switch_pci_bar);
- 
- 	for (i = 0; i < TARGET_MAX; i++) {
- 		struct regmap *target;
-@@ -214,13 +422,14 @@ static int felix_init_structs(struct felix *felix, int num_phys_ports)
- 
- 		res = &felix->info->target_io_res[i];
- 		res->flags = IORESOURCE_MEM;
--		res->start += base;
--		res->end += base;
-+		res->start += switch_base;
-+		res->end += switch_base;
- 
- 		target = ocelot_regmap_init(ocelot, res);
- 		if (IS_ERR(target)) {
- 			dev_err(ocelot->dev,
- 				"Failed to map device memory space\n");
-+			kfree(port_phy_modes);
- 			return PTR_ERR(target);
- 		}
- 
-@@ -230,6 +439,7 @@ static int felix_init_structs(struct felix *felix, int num_phys_ports)
- 	err = ocelot_regfields_init(ocelot, felix->info->regfields);
- 	if (err) {
- 		dev_err(ocelot->dev, "failed to init reg fields map\n");
-+		kfree(port_phy_modes);
- 		return err;
- 	}
- 
-@@ -244,26 +454,37 @@ static int felix_init_structs(struct felix *felix, int num_phys_ports)
- 		if (!ocelot_port) {
- 			dev_err(ocelot->dev,
- 				"failed to allocate port memory\n");
-+			kfree(port_phy_modes);
- 			return -ENOMEM;
- 		}
- 
- 		res = &felix->info->port_io_res[port];
- 		res->flags = IORESOURCE_MEM;
--		res->start += base;
--		res->end += base;
-+		res->start += switch_base;
-+		res->end += switch_base;
- 
- 		port_regs = devm_ioremap_resource(ocelot->dev, res);
- 		if (IS_ERR(port_regs)) {
- 			dev_err(ocelot->dev,
- 				"failed to map registers for port %d\n", port);
-+			kfree(port_phy_modes);
- 			return PTR_ERR(port_regs);
- 		}
- 
-+		ocelot_port->phy_mode = port_phy_modes[port];
- 		ocelot_port->ocelot = ocelot;
- 		ocelot_port->regs = port_regs;
- 		ocelot->ports[port] = ocelot_port;
- 	}
- 
-+	kfree(port_phy_modes);
-+
-+	if (felix->info->mdio_bus_alloc) {
-+		err = felix->info->mdio_bus_alloc(ocelot);
-+		if (err < 0)
-+			return err;
-+	}
-+
- 	return 0;
- }
- 
-@@ -293,12 +514,22 @@ static int felix_setup(struct dsa_switch *ds)
- 					    OCELOT_TAG_PREFIX_LONG);
- 	}
- 
-+	/* It looks like the MAC/PCS interrupt register - PM0_IEVENT (0x8040)
-+	 * isn't instantiated for the Felix PF.
-+	 * In-band AN may take a few ms to complete, so we need to poll.
-+	 */
-+	ds->pcs_poll = true;
-+
- 	return 0;
- }
- 
- static void felix_teardown(struct dsa_switch *ds)
- {
- 	struct ocelot *ocelot = ds->priv;
-+	struct felix *felix = ocelot_to_felix(ocelot);
-+
-+	if (felix->info->mdio_bus_free)
-+		felix->info->mdio_bus_free(ocelot);
- 
- 	/* stop workqueue thread */
- 	ocelot_deinit(ocelot);
-@@ -369,7 +600,12 @@ static const struct dsa_switch_ops felix_switch_ops = {
- 	.get_ethtool_stats	= felix_get_ethtool_stats,
- 	.get_sset_count		= felix_get_sset_count,
- 	.get_ts_info		= felix_get_ts_info,
--	.adjust_link		= felix_adjust_link,
-+	.phylink_validate	= felix_phylink_validate,
-+	.phylink_mac_link_state	= felix_phylink_mac_pcs_get_state,
-+	.phylink_mac_config	= felix_phylink_mac_config,
-+	.phylink_mac_an_restart	= felix_phylink_mac_an_restart,
-+	.phylink_mac_link_down	= felix_phylink_mac_link_down,
-+	.phylink_mac_link_up	= felix_phylink_mac_link_up,
- 	.port_enable		= felix_port_enable,
- 	.port_disable		= felix_port_disable,
- 	.port_fdb_dump		= felix_fdb_dump,
-diff --git a/drivers/net/dsa/ocelot/felix.h b/drivers/net/dsa/ocelot/felix.h
-index 204296e51d0c..3a7580015b62 100644
---- a/drivers/net/dsa/ocelot/felix.h
-+++ b/drivers/net/dsa/ocelot/felix.h
-@@ -10,6 +10,7 @@
- struct felix_info {
- 	struct resource			*target_io_res;
- 	struct resource			*port_io_res;
-+	struct resource			*imdio_res;
- 	const struct reg_field		*regfields;
- 	const u32 *const		*map;
- 	const struct ocelot_ops		*ops;
-@@ -17,7 +18,18 @@ struct felix_info {
- 	const struct ocelot_stat_layout	*stats_layout;
- 	unsigned int			num_stats;
- 	int				num_ports;
--	int				pci_bar;
-+	int				switch_pci_bar;
-+	int				imdio_pci_bar;
-+	int	(*mdio_bus_alloc)(struct ocelot *ocelot);
-+	void	(*mdio_bus_free)(struct ocelot *ocelot);
-+	void	(*pcs_init)(struct ocelot *ocelot, int port,
-+			    unsigned int link_an_mode,
-+			    const struct phylink_link_state *state);
-+	void	(*pcs_an_restart)(struct ocelot *ocelot, int port);
-+	void	(*pcs_link_state)(struct ocelot *ocelot, int port,
-+				  struct phylink_link_state *state);
-+	int	(*prevalidate_phy_mode)(struct ocelot *ocelot, int port,
-+					phy_interface_t phy_mode);
- };
- 
- extern struct felix_info		felix_info_vsc9959;
-@@ -32,6 +44,8 @@ struct felix {
- 	struct pci_dev			*pdev;
- 	struct felix_info		*info;
- 	struct ocelot			ocelot;
-+	struct mii_bus			*imdio;
-+	struct phy_device		**pcs;
- };
- 
- #endif
-diff --git a/drivers/net/dsa/ocelot/felix_vsc9959.c b/drivers/net/dsa/ocelot/felix_vsc9959.c
-index b9758b0d18c7..41b684fb0f36 100644
---- a/drivers/net/dsa/ocelot/felix_vsc9959.c
-+++ b/drivers/net/dsa/ocelot/felix_vsc9959.c
-@@ -2,12 +2,33 @@
- /* Copyright 2017 Microsemi Corporation
-  * Copyright 2018-2019 NXP Semiconductors
-  */
-+#include <linux/fsl/enetc_mdio.h>
- #include <soc/mscc/ocelot_sys.h>
- #include <soc/mscc/ocelot.h>
- #include <linux/iopoll.h>
- #include <linux/pci.h>
- #include "felix.h"
- 
-+/* TODO: should find a better place for these */
-+#define USXGMII_BMCR_RESET		BIT(15)
-+#define USXGMII_BMCR_AN_EN		BIT(12)
-+#define USXGMII_BMCR_RST_AN		BIT(9)
-+#define USXGMII_BMSR_LNKS(status)	(((status) & GENMASK(2, 2)) >> 2)
-+#define USXGMII_BMSR_AN_CMPL(status)	(((status) & GENMASK(5, 5)) >> 5)
-+#define USXGMII_ADVERTISE_LNKS(x)	(((x) << 15) & BIT(15))
-+#define USXGMII_ADVERTISE_FDX		BIT(12)
-+#define USXGMII_ADVERTISE_SPEED(x)	(((x) << 9) & GENMASK(11, 9))
-+#define USXGMII_LPA_LNKS(lpa)		((lpa) >> 15)
-+#define USXGMII_LPA_DUPLEX(lpa)		(((lpa) & GENMASK(12, 12)) >> 12)
-+#define USXGMII_LPA_SPEED(lpa)		(((lpa) & GENMASK(11, 9)) >> 9)
-+
-+enum usxgmii_speed {
-+	USXGMII_SPEED_10	= 0,
-+	USXGMII_SPEED_100	= 1,
-+	USXGMII_SPEED_1000	= 2,
-+	USXGMII_SPEED_2500	= 4,
-+};
-+
- static const u32 vsc9959_ana_regmap[] = {
- 	REG(ANA_ADVLEARN,			0x0089a0),
- 	REG(ANA_VLANMASK,			0x0089a4),
-@@ -386,6 +407,15 @@ static struct resource vsc9959_port_io_res[] = {
- 	},
- };
- 
-+/* Port MAC 0 Internal MDIO bus through which the SerDes acting as an
-+ * SGMII/QSGMII MAC PCS can be found.
-+ */
-+static struct resource vsc9959_imdio_res = {
-+	.start		= 0x8030,
-+	.end		= 0x8040,
-+	.name		= "imdio",
-+};
-+
- static const struct reg_field vsc9959_regfields[] = {
- 	[ANA_ADVLEARN_VLAN_CHK] = REG_FIELD(ANA_ADVLEARN, 6, 6),
- 	[ANA_ADVLEARN_LEARN_MIRROR] = REG_FIELD(ANA_ADVLEARN, 0, 5),
-@@ -565,13 +595,475 @@ static int vsc9959_reset(struct ocelot *ocelot)
- 	return 0;
- }
- 
-+static void vsc9959_pcs_an_restart_sgmii(struct phy_device *pcs)
-+{
-+	phy_set_bits(pcs, MII_BMCR, BMCR_ANRESTART);
-+}
-+
-+static void vsc9959_pcs_an_restart_usxgmii(struct phy_device *pcs)
-+{
-+	phy_write_mmd(pcs, MDIO_MMD_VEND2, MII_BMCR,
-+		      USXGMII_BMCR_RESET |
-+		      USXGMII_BMCR_AN_EN |
-+		      USXGMII_BMCR_RST_AN);
-+}
-+
-+static void vsc9959_pcs_an_restart(struct ocelot *ocelot, int port)
-+{
-+	struct felix *felix = ocelot_to_felix(ocelot);
-+	struct phy_device *pcs = felix->pcs[port];
-+
-+	if (!pcs)
-+		return;
-+
-+	switch (pcs->interface) {
-+	case PHY_INTERFACE_MODE_SGMII:
-+	case PHY_INTERFACE_MODE_QSGMII:
-+		vsc9959_pcs_an_restart_sgmii(pcs);
-+		break;
-+	case PHY_INTERFACE_MODE_USXGMII:
-+		vsc9959_pcs_an_restart_usxgmii(pcs);
-+		break;
-+	default:
-+		dev_err(ocelot->dev, "Invalid PCS interface type %s\n",
-+			phy_modes(pcs->interface));
-+		break;
-+	}
-+}
-+
-+/* We enable SGMII AN only when the PHY has managed = "in-band-status" in the
-+ * device tree. If we are in MLO_AN_PHY mode, we program directly state->speed
-+ * into the PCS, which is retrieved out-of-band over MDIO. This also has the
-+ * benefit of working with SGMII fixed-links, like switches, where both link
-+ * partners attempt to operate as AN masters and therefore AN never completes.
-+ * But it also has the disadvantage that some PHY chips don't pass traffic if
-+ * SGMII AN is enabled but not completed, so MLO_AN_INBAND is actually required
-+ * for those.
-+ */
-+static void vsc9959_pcs_init_sgmii(struct phy_device *pcs,
-+				   unsigned int link_an_mode,
-+				   const struct phylink_link_state *state)
-+{
-+	if (link_an_mode == MLO_AN_INBAND) {
-+		/* SGMII spec requires tx_config_Reg[15:0] to be exactly 0x4001
-+		 * for the MAC PCS in order to acknowledge the AN.
-+		 */
-+		phy_write(pcs, MII_ADVERTISE, ADVERTISE_SGMII |
-+					      ADVERTISE_LPACK);
-+
-+		phy_write(pcs, ENETC_PCS_IF_MODE,
-+			  ENETC_PCS_IF_MODE_SGMII_EN |
-+			  ENETC_PCS_IF_MODE_USE_SGMII_AN);
-+
-+		/* Adjust link timer for SGMII */
-+		phy_write(pcs, ENETC_PCS_LINK_TIMER1,
-+			  ENETC_PCS_LINK_TIMER1_VAL);
-+		phy_write(pcs, ENETC_PCS_LINK_TIMER2,
-+			  ENETC_PCS_LINK_TIMER2_VAL);
-+
-+		phy_write(pcs, MII_BMCR, BMCR_ANRESTART | BMCR_ANENABLE);
-+	} else {
-+		int speed;
-+
-+		if (state->duplex == DUPLEX_HALF) {
-+			phydev_err(pcs, "Half duplex not supported\n");
-+			return;
-+		}
-+		switch (state->speed) {
-+		case SPEED_1000:
-+			speed = ENETC_PCS_SPEED_1000;
-+			break;
-+		case SPEED_100:
-+			speed = ENETC_PCS_SPEED_100;
-+			break;
-+		case SPEED_10:
-+			speed = ENETC_PCS_SPEED_10;
-+			break;
-+		case SPEED_UNKNOWN:
-+			/* Silently don't do anything */
-+			return;
-+		default:
-+			phydev_err(pcs, "Invalid PCS speed %d\n", state->speed);
-+			return;
-+		}
-+
-+		phy_write(pcs, ENETC_PCS_IF_MODE,
-+			  ENETC_PCS_IF_MODE_SGMII_EN |
-+			  ENETC_PCS_IF_MODE_SGMII_SPEED(speed));
-+
-+		/* Yes, not a mistake: speed is given by IF_MODE. */
-+		phy_write(pcs, MII_BMCR, BMCR_RESET |
-+					 BMCR_SPEED1000 |
-+					 BMCR_FULLDPLX);
-+	}
-+}
-+
-+/* 2500Base-X is SerDes protocol 7 on Felix and 6 on ENETC. It is a SerDes lane
-+ * clocked at 3.125 GHz which encodes symbols with 8b/10b and does not have
-+ * auto-negotiation of any link parameters. Electrically it is compatible with
-+ * a single lane of XAUI.
-+ * The hardware reference manual wants to call this mode SGMII, but it isn't
-+ * really, since the fundamental features of SGMII:
-+ * - Downgrading the link speed by duplicating symbols
-+ * - Auto-negotiation
-+ * are not there.
-+ * The speed is configured at 1000 in the IF_MODE and BMCR MDIO registers
-+ * because the clock frequency is actually given by a PLL configured in the
-+ * Reset Configuration Word (RCW).
-+ * Since there is no difference between fixed speed SGMII w/o AN and 802.3z w/o
-+ * AN, we call this PHY interface type 2500Base-X. In case a PHY negotiates a
-+ * lower link speed on line side, the system-side interface remains fixed at
-+ * 2500 Mbps and we do rate adaptation through pause frames.
-+ */
-+static void vsc9959_pcs_init_2500basex(struct phy_device *pcs,
-+				       unsigned int link_an_mode,
-+				       const struct phylink_link_state *state)
-+{
-+	if (link_an_mode == MLO_AN_INBAND) {
-+		phydev_err(pcs, "AN not supported on 3.125GHz SerDes lane\n");
-+		return;
-+	}
-+
-+	phy_write(pcs, ENETC_PCS_IF_MODE,
-+		  ENETC_PCS_IF_MODE_SGMII_EN |
-+		  ENETC_PCS_IF_MODE_SGMII_SPEED(ENETC_PCS_SPEED_2500));
-+
-+	phy_write(pcs, MII_BMCR, BMCR_SPEED1000 |
-+				 BMCR_FULLDPLX |
-+				 BMCR_RESET);
-+}
-+
-+static void vsc9959_pcs_init_usxgmii(struct phy_device *pcs,
-+				     unsigned int link_an_mode,
-+				     const struct phylink_link_state *state)
-+{
-+	if (link_an_mode != MLO_AN_INBAND) {
-+		phydev_err(pcs, "USXGMII only supports in-band AN for now\n");
-+		return;
-+	}
-+
-+	/* Configure device ability for the USXGMII Replicator */
-+	phy_write_mmd(pcs, MDIO_MMD_VEND2, MII_ADVERTISE,
-+		      USXGMII_ADVERTISE_SPEED(USXGMII_SPEED_2500) |
-+		      USXGMII_ADVERTISE_LNKS(1) |
-+		      ADVERTISE_SGMII |
-+		      ADVERTISE_LPACK |
-+		      USXGMII_ADVERTISE_FDX);
-+}
-+
-+static void vsc9959_pcs_init(struct ocelot *ocelot, int port,
-+			     unsigned int link_an_mode,
-+			     const struct phylink_link_state *state)
-+{
-+	struct felix *felix = ocelot_to_felix(ocelot);
-+	struct phy_device *pcs = felix->pcs[port];
-+
-+	if (!pcs)
-+		return;
-+
-+	/* The PCS does not implement the BMSR register fully, so capability
-+	 * detection via genphy_read_abilities does not work. Since we can get
-+	 * the PHY config word from the LPA register though, there is still
-+	 * value in using the generic phy_resolve_aneg_linkmode function. So
-+	 * populate the supported and advertising link modes manually here.
-+	 */
-+	linkmode_set_bit_array(phy_basic_ports_array,
-+			       ARRAY_SIZE(phy_basic_ports_array),
-+			       pcs->supported);
-+	linkmode_set_bit(ETHTOOL_LINK_MODE_10baseT_Full_BIT, pcs->supported);
-+	linkmode_set_bit(ETHTOOL_LINK_MODE_100baseT_Full_BIT, pcs->supported);
-+	linkmode_set_bit(ETHTOOL_LINK_MODE_1000baseT_Full_BIT, pcs->supported);
-+	if (pcs->interface == PHY_INTERFACE_MODE_2500BASEX ||
-+	    pcs->interface == PHY_INTERFACE_MODE_USXGMII)
-+		linkmode_set_bit(ETHTOOL_LINK_MODE_2500baseX_Full_BIT,
-+				 pcs->supported);
-+	if (pcs->interface != PHY_INTERFACE_MODE_2500BASEX)
-+		linkmode_set_bit(ETHTOOL_LINK_MODE_Autoneg_BIT,
-+				 pcs->supported);
-+	phy_advertise_supported(pcs);
-+
-+	switch (pcs->interface) {
-+	case PHY_INTERFACE_MODE_SGMII:
-+	case PHY_INTERFACE_MODE_QSGMII:
-+		vsc9959_pcs_init_sgmii(pcs, link_an_mode, state);
-+		break;
-+	case PHY_INTERFACE_MODE_2500BASEX:
-+		vsc9959_pcs_init_2500basex(pcs, link_an_mode, state);
-+		break;
-+	case PHY_INTERFACE_MODE_USXGMII:
-+		vsc9959_pcs_init_usxgmii(pcs, link_an_mode, state);
-+		break;
-+	default:
-+		dev_err(ocelot->dev, "Unsupported link mode %s\n",
-+			phy_modes(pcs->interface));
-+	}
-+}
-+
-+static void vsc9959_pcs_link_state_resolve(struct phy_device *pcs,
-+					   struct phylink_link_state *state)
-+{
-+	state->an_complete = pcs->autoneg_complete;
-+	state->an_enabled = pcs->autoneg;
-+	state->link = pcs->link;
-+	state->duplex = pcs->duplex;
-+	state->speed = pcs->speed;
-+	/* SGMII AN does not negotiate flow control, but that's ok,
-+	 * since phylink already knows that, and does:
-+	 *	link_state.pause |= pl->phy_state.pause;
-+	 */
-+	state->pause = MLO_PAUSE_NONE;
-+
-+	phydev_dbg(pcs,
-+		   "mode=%s/%s/%s adv=%*pb lpa=%*pb link=%u an_enabled=%u an_complete=%u\n",
-+		   phy_modes(pcs->interface),
-+		   phy_speed_to_str(pcs->speed),
-+		   phy_duplex_to_str(pcs->duplex),
-+		   __ETHTOOL_LINK_MODE_MASK_NBITS, pcs->advertising,
-+		   __ETHTOOL_LINK_MODE_MASK_NBITS, pcs->lp_advertising,
-+		   pcs->link, pcs->autoneg, pcs->autoneg_complete);
-+}
-+
-+static void vsc9959_pcs_link_state_sgmii(struct phy_device *pcs,
-+					 struct phylink_link_state *state)
-+{
-+	int err;
-+
-+	err = genphy_update_link(pcs);
-+	if (err < 0)
-+		return;
-+
-+	if (pcs->autoneg_complete) {
-+		u16 lpa = phy_read(pcs, MII_LPA);
-+
-+		mii_lpa_to_linkmode_lpa_sgmii(pcs->lp_advertising, lpa);
-+
-+		phy_resolve_aneg_linkmode(pcs);
-+	}
-+}
-+
-+static void vsc9959_pcs_link_state_2500basex(struct phy_device *pcs,
-+					     struct phylink_link_state *state)
-+{
-+	int err;
-+
-+	err = genphy_update_link(pcs);
-+	if (err < 0)
-+		return;
-+
-+	pcs->speed = SPEED_2500;
-+	pcs->asym_pause = true;
-+	pcs->pause = true;
-+}
-+
-+static void vsc9959_pcs_link_state_usxgmii(struct phy_device *pcs,
-+					   struct phylink_link_state *state)
-+{
-+	int status, lpa;
-+
-+	status = phy_read_mmd(pcs, MDIO_MMD_VEND2, MII_BMSR);
-+	if (status < 0)
-+		return;
-+
-+	pcs->autoneg = true;
-+	pcs->autoneg_complete = USXGMII_BMSR_AN_CMPL(status);
-+	pcs->link = USXGMII_BMSR_LNKS(status);
-+
-+	if (!pcs->link || !pcs->autoneg_complete)
-+		return;
-+
-+	lpa = phy_read_mmd(pcs, MDIO_MMD_VEND2, MII_LPA);
-+	if (lpa < 0)
-+		return;
-+
-+	switch (USXGMII_LPA_SPEED(lpa)) {
-+	case USXGMII_SPEED_10:
-+		pcs->speed = SPEED_10;
-+		break;
-+	case USXGMII_SPEED_100:
-+		pcs->speed = SPEED_100;
-+		break;
-+	case USXGMII_SPEED_1000:
-+		pcs->speed = SPEED_1000;
-+		break;
-+	case USXGMII_SPEED_2500:
-+		pcs->speed = SPEED_2500;
-+		break;
-+	default:
-+		break;
-+	}
-+
-+	pcs->link = USXGMII_LPA_LNKS(lpa);
-+	if (USXGMII_LPA_DUPLEX(lpa))
-+		pcs->duplex = DUPLEX_FULL;
-+	else
-+		pcs->duplex = DUPLEX_HALF;
-+}
-+
-+static void vsc9959_pcs_link_state(struct ocelot *ocelot, int port,
-+				   struct phylink_link_state *state)
-+{
-+	struct felix *felix = ocelot_to_felix(ocelot);
-+	struct phy_device *pcs = felix->pcs[port];
-+
-+	if (!pcs)
-+		return;
-+
-+	pcs->speed = SPEED_UNKNOWN;
-+	pcs->duplex = DUPLEX_UNKNOWN;
-+	pcs->pause = 0;
-+	pcs->asym_pause = 0;
-+
-+	switch (pcs->interface) {
-+	case PHY_INTERFACE_MODE_SGMII:
-+	case PHY_INTERFACE_MODE_QSGMII:
-+		vsc9959_pcs_link_state_sgmii(pcs, state);
-+		break;
-+	case PHY_INTERFACE_MODE_2500BASEX:
-+		vsc9959_pcs_link_state_2500basex(pcs, state);
-+		break;
-+	case PHY_INTERFACE_MODE_USXGMII:
-+		vsc9959_pcs_link_state_usxgmii(pcs, state);
-+		break;
-+	default:
-+		return;
-+	}
-+
-+	vsc9959_pcs_link_state_resolve(pcs, state);
-+}
-+
-+static int vsc9959_prevalidate_phy_mode(struct ocelot *ocelot, int port,
-+					phy_interface_t phy_mode)
-+{
-+	switch (phy_mode) {
-+	case PHY_INTERFACE_MODE_GMII:
-+		/* Only supported on internal to-CPU ports */
-+		if (port != 4 && port != 5)
-+			return -ENOTSUPP;
-+		return 0;
-+	case PHY_INTERFACE_MODE_SGMII:
-+	case PHY_INTERFACE_MODE_QSGMII:
-+	case PHY_INTERFACE_MODE_USXGMII:
-+	case PHY_INTERFACE_MODE_2500BASEX:
-+		/* Not supported on internal to-CPU ports */
-+		if (port == 4 || port == 5)
-+			return -ENOTSUPP;
-+		return 0;
-+	default:
-+		return -ENOTSUPP;
-+	}
-+}
-+
- static const struct ocelot_ops vsc9959_ops = {
- 	.reset			= vsc9959_reset,
- };
- 
-+static int vsc9959_mdio_bus_alloc(struct ocelot *ocelot)
-+{
-+	struct felix *felix = ocelot_to_felix(ocelot);
-+	struct enetc_mdio_priv *mdio_priv;
-+	struct device *dev = ocelot->dev;
-+	resource_size_t imdio_base;
-+	void __iomem *imdio_regs;
-+	struct resource *res;
-+	struct enetc_hw *hw;
-+	struct mii_bus *bus;
-+	int port;
-+	int rc;
-+
-+	felix->pcs = devm_kcalloc(dev, felix->info->num_ports,
-+				  sizeof(struct phy_device *),
-+				  GFP_KERNEL);
-+	if (!felix->pcs) {
-+		dev_err(dev, "failed to allocate array for PCS PHYs\n");
-+		return -ENOMEM;
-+	}
-+
-+	imdio_base = pci_resource_start(felix->pdev,
-+					felix->info->imdio_pci_bar);
-+
-+	res = felix->info->imdio_res;
-+	res->flags = IORESOURCE_MEM;
-+	res->start += imdio_base;
-+	res->end += imdio_base;
-+
-+	imdio_regs = devm_ioremap_resource(dev, res);
-+	if (IS_ERR(imdio_regs)) {
-+		dev_err(dev, "failed to map internal MDIO registers\n");
-+		return PTR_ERR(imdio_regs);
-+	}
-+
-+	hw = enetc_hw_alloc(dev, imdio_regs);
-+	if (IS_ERR(hw)) {
-+		dev_err(dev, "failed to allocate ENETC HW structure\n");
-+		return PTR_ERR(hw);
-+	}
-+
-+	bus = devm_mdiobus_alloc_size(dev, sizeof(*mdio_priv));
-+	if (!bus)
-+		return -ENOMEM;
-+
-+	bus->name = "VSC9959 internal MDIO bus";
-+	bus->read = enetc_mdio_read;
-+	bus->write = enetc_mdio_write;
-+	bus->parent = dev;
-+	mdio_priv = bus->priv;
-+	mdio_priv->hw = hw;
-+	/* This gets added to imdio_regs, which already maps addresses
-+	 * starting with the proper offset.
-+	 */
-+	mdio_priv->mdio_base = 0;
-+	snprintf(bus->id, MII_BUS_ID_SIZE, "%s-imdio", dev_name(dev));
-+
-+	/* Needed in order to initialize the bus mutex lock */
-+	rc = mdiobus_register(bus);
-+	if (rc < 0) {
-+		dev_err(dev, "failed to register MDIO bus\n");
-+		return rc;
-+	}
-+
-+	felix->imdio = bus;
-+
-+	for (port = 0; port < felix->info->num_ports; port++) {
-+		struct ocelot_port *ocelot_port = ocelot->ports[port];
-+		struct phy_device *pcs;
-+		bool is_c45 = false;
-+
-+		if (ocelot_port->phy_mode == PHY_INTERFACE_MODE_USXGMII)
-+			is_c45 = true;
-+
-+		pcs = get_phy_device(felix->imdio, port, is_c45);
-+		if (IS_ERR(pcs))
-+			continue;
-+
-+		pcs->interface = ocelot_port->phy_mode;
-+		felix->pcs[port] = pcs;
-+
-+		dev_info(dev, "Found PCS at internal MDIO address %d\n", port);
-+	}
-+
-+	return 0;
-+}
-+
-+static void vsc9959_mdio_bus_free(struct ocelot *ocelot)
-+{
-+	struct felix *felix = ocelot_to_felix(ocelot);
-+	int port;
-+
-+	for (port = 0; port < ocelot->num_phys_ports; port++) {
-+		struct phy_device *pcs = felix->pcs[port];
-+
-+		if (!pcs)
-+			continue;
-+
-+		put_device(&pcs->mdio.dev);
-+	}
-+	mdiobus_unregister(felix->imdio);
-+}
-+
- struct felix_info felix_info_vsc9959 = {
- 	.target_io_res		= vsc9959_target_io_res,
- 	.port_io_res		= vsc9959_port_io_res,
-+	.imdio_res		= &vsc9959_imdio_res,
- 	.regfields		= vsc9959_regfields,
- 	.map			= vsc9959_regmap,
- 	.ops			= &vsc9959_ops,
-@@ -579,5 +1071,12 @@ struct felix_info felix_info_vsc9959 = {
- 	.num_stats		= ARRAY_SIZE(vsc9959_stats_layout),
- 	.shared_queue_sz	= 128 * 1024,
- 	.num_ports		= 6,
--	.pci_bar		= 4,
-+	.switch_pci_bar		= 4,
-+	.imdio_pci_bar		= 0,
-+	.mdio_bus_alloc		= vsc9959_mdio_bus_alloc,
-+	.mdio_bus_free		= vsc9959_mdio_bus_free,
-+	.pcs_init		= vsc9959_pcs_init,
-+	.pcs_an_restart		= vsc9959_pcs_an_restart,
-+	.pcs_link_state		= vsc9959_pcs_link_state,
-+	.prevalidate_phy_mode	= vsc9959_prevalidate_phy_mode,
- };
--- 
-2.17.1
+> On Tue, 24 Dec 2019 11:24:09 -0800
+> PGNet Dev <pgnet.dev@gmail.com> wrote:
+> 
+>>   I recently upgraded a linux/64 box to
+>>
+>> 	uname -rm
+>> 		5.4.6-24.ge5f8301-default x86_64
+>>
+>> For 'ages' prior, I've had two functional Eth interfaces on it
+>>
+>> 	inxi -n
+>> (1)		Network:   Card-1: Realtek RTL8111/8168/8411 PCI Express Gigabit Ethernet Controller driver: r8169
+>> 		           IF: eth0 state: down mac: 18:d6:c7:01:15:11
+>> (2)		           Card-2: Realtek RTL8111/8168/8411 PCI Express Gigabit Ethernet Controller driver: r8169
+>> 		           IF: enp3s0 state: up speed: 1000 Mbps duplex: full mac: 00:52:35:50:44:04
+>>
+>> where (2)'s the Mobo ETH, and (1)'s an ETH PCI-e card
+>>
+>> Both expect/use the same driver,
+>>
+>> 	lspci -tv | grep -i eth
+>> 		+-04.0-[02]----00.0  Realtek Semiconductor Co., Ltd. RTL8111/8168/8411 PCI Express Gigabit Ethernet Controller
+>> 		+-06.0-[03]----00.0  Realtek Semiconductor Co., Ltd. RTL8111/8168/8411 PCI Express Gigabit Ethernet Controller
+>>
+>>
+>> The driver's up
+>>
+>> 	lsmod | grep 8169
+>> 		r8169                  94208  0
+>> 		libphy                 98304  2 r8169,realtek
+>>
+>> provided by
+>>
+>> 	rpm -q --whatprovides /lib/modules/5.4.6-24.ge5f8301-default/kernel/drivers/net/ethernet/realtek/r8169.ko
+>> 		kernel-default-5.4.6-24.1.ge5f8301.x86_64
+>>
+>> the cards are available,
+>>
+>> I've had reliable naming enabled
+>>
+>> 	cat /proc/cmdline
+>> 		... net.ifnames=1 biosdevname=0
+>>
+>> and the two interfaces, Mobo & PCI, _had_ always appeared as enp2s0 & enp3s0
+>>
+>> with current kernel,
+>>
+>> 	uname -rm
+>> 		5.4.6-24.ge5f8301-default x86_64
+>>
+>> & firmware packages,
+>>
+>> 	rpm -qa | grep -i kernel-firmware | sort
+>> 		kernel-firmware-all-20191118-36.13.noarch
+>> 		kernel-firmware-amdgpu-20191118-36.13.noarch
+>> 		kernel-firmware-ath10k-20191118-36.13.noarch
+>> 		kernel-firmware-atheros-20191118-36.13.noarch
+>> 		kernel-firmware-bluetooth-20191118-36.13.noarch
+>> 		kernel-firmware-bnx2-20191118-36.13.noarch
+>> 		kernel-firmware-brcm-20191118-36.13.noarch
+>> 		kernel-firmware-chelsio-20191118-36.13.noarch
+>> 		kernel-firmware-dpaa2-20191118-36.13.noarch
+>> 		kernel-firmware-i915-20191118-36.13.noarch
+>> 		kernel-firmware-intel-20191118-36.13.noarch
+>> 		kernel-firmware-iwlwifi-20191118-36.13.noarch
+>> 		kernel-firmware-liquidio-20191118-36.13.noarch
+>> 		kernel-firmware-marvell-20191118-36.13.noarch
+>> 		kernel-firmware-media-20191118-36.13.noarch
+>> 		kernel-firmware-mediatek-20191118-36.13.noarch
+>> 		kernel-firmware-mellanox-20191118-36.13.noarch
+>> 		kernel-firmware-mwifiex-20191118-36.13.noarch
+>> 		kernel-firmware-network-20191118-36.13.noarch
+>> 		kernel-firmware-nfp-20191118-36.13.noarch
+>> 		kernel-firmware-nvidia-20191118-36.13.noarch
+>> 		kernel-firmware-platform-20191118-36.13.noarch
+>> 		kernel-firmware-qlogic-20191118-36.13.noarch
+>> 		kernel-firmware-radeon-20191118-36.13.noarch
+>> 		kernel-firmware-realtek-20191118-36.13.noarch
+>> 		kernel-firmware-serial-20191118-36.13.noarch
+>> 		kernel-firmware-sound-20191118-36.13.noarch
+>> 		kernel-firmware-ti-20191118-36.13.noarch
+>> 		kernel-firmware-ueagle-20191118-36.13.noarch
+>> 		kernel-firmware-usb-network-20191118-36.13.noarch
+>>
+>> The TPLINK PCI card no longer comes up as an 'en*'-named card, per
+>>
+>> 	https://www.freedesktop.org/software/systemd/man/systemd.net-naming-scheme.html
+>>
+>> but rather, incorrectly (?), as 'eth0'
+>>
+>> 	hwinfo --netcard | egrep -i "Ethernet controller|Driver|addr|Model:|Device:|Device file"
+>> 		07: PCI 300.0: 0200 Ethernet controller
+>> 		  Model: "Realtek RTL8111/8168 PCI Express Gigabit Ethernet controller"
+>> 		  Device: pci 0x8168 "RTL8111/8168/8411 PCI Express Gigabit Ethernet Controller"
+>> 		  SubDevice: pci 0x8168 "RTL8111/8168 PCI Express Gigabit Ethernet controller"
+>> 		  Driver: "r8169"
+>> 		  Driver Modules: "r8169"
+>> 		  Device File: enp3s0
+>> 		  HW Address: 00:52:35:50:44:04
+>> 		  Permanent HW Address: 00:52:35:50:44:04
+>> 		  Driver Info #0:
+>> 		    Driver Status: r8169 is active
+>> 		    Driver Activation Cmd: "modprobe r8169"
+>> 		11: PCI 200.0: 0200 Ethernet controller
+>> 		  Model: "TP-LINK TG-3468 Gigabit PCI Express Network Adapter"
+>> 		  Device: pci 0x8168 "RTL8111/8168/8411 PCI Express Gigabit Ethernet Controller"
+>> 		  SubDevice: pci 0x3468 "TG-3468 Gigabit PCI Express Network Adapter"
+>> 		  Driver: "r8169"
+>> 		  Driver Modules: "r8169"
+>> ??		  Device File: eth0
+>> 		  HW Address: 18:d6:c7:01:15:11
+>> 		  Permanent HW Address: 18:d6:c7:01:15:11
+>> 		  Driver Info #0:
+>> 		    Driver Status: r8169 is active
+>> 		    Driver Activation Cmd: "modprobe r8169"
+>>
+>> noting,
+>>
+>> 	ls -1 /sys/class/net/
+>> 		enp3s0@
+>> 		eth0@
+>> 		lo@
+>>
+>> in `dmesg`
+>>
+>> 	dmesg | egrep -i "eth|enp"
+>> 		[    4.564854] r8169 0000:02:00.0 eth0: RTL8168e/8111e, 18:d6:c7:01:15:11, XID 2c2, IRQ 27
+>> 		[    4.564856] r8169 0000:02:00.0 eth0: jumbo features [frames: 9200 bytes, tx checksumming: ko]
+>> 		[    4.568641] r8169 0000:03:00.0 eth1: RTL8168c/8111c, 00:52:35:50:44:04, XID 3c4, IRQ 18
+>> 		[    4.568643] r8169 0000:03:00.0 eth1: jumbo features [frames: 6128 bytes, tx checksumming: ko]
+>> 		[    4.614030] r8169 0000:03:00.0 enp3s0: renamed from eth1
+>> 		[   28.179613] RTL8211B Gigabit Ethernet r8169-300:00: attached PHY driver [RTL8211B Gigabit Ethernet] (mii_bus:phy_addr=r8169-300:00, irq=IGNORE)
+>> 		[   28.283488] r8169 0000:03:00.0 enp3s0: Link is Down
+>> 		[   30.498955] r8169 0000:03:00.0 enp3s0: Link is Up - 1Gbps/Full - flow control rx/tx
+>> 		[   30.498976] IPv6: ADDRCONF(NETDEV_CHANGE): enp3s0: link becomes ready
+>>
+>> Something's changed -- as both interfaces used to be properly named per reliable-naming standard.
+>>
+>> I _can_ bring up the network on the Mobo's renamed enp3s0 interface ... but no longer on the PCI card.
+>>
+>> I'm not clear on why one interface IS using the reliable-naming scheme, and the other is NOT.
+>>
+>> Any hints/clues as to the problem &/or a fix?
+>>
+> 
+> Network renaming is not a kernel responsibility. This list is not directly relevant
+> to your issue.
+> 
+> Various user packages (usually systemd/udev) do this based on distribution.
+> 
+> The naming schemes mostly rely on information reported by sysfs, such as PCI address, slot or other
+> values. Look for any changes in that information that might cause naming to change. I.e one
+> version had PCI slot information, and the other did not.
+> 
+> Read the documentation here: https://www.freedesktop.org/software/systemd/man/systemd.net-naming-scheme.html
+> To see what the systemd policy is.
+> 
 
