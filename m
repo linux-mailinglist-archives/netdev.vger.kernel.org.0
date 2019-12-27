@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1208C12BA88
-	for <lists+netdev@lfdr.de>; Fri, 27 Dec 2019 19:19:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 09F4112BA6F
+	for <lists+netdev@lfdr.de>; Fri, 27 Dec 2019 19:19:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727860AbfL0STZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Dec 2019 13:19:25 -0500
-Received: from mail.kernel.org ([198.145.29.99]:39286 "EHLO mail.kernel.org"
+        id S1727538AbfL0SO4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Dec 2019 13:14:56 -0500
+Received: from mail.kernel.org ([198.145.29.99]:39306 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727440AbfL0SOw (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 27 Dec 2019 13:14:52 -0500
+        id S1727471AbfL0SOx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 27 Dec 2019 13:14:53 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 198B821744;
-        Fri, 27 Dec 2019 18:14:51 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 2B675208C4;
+        Fri, 27 Dec 2019 18:14:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1577470491;
-        bh=jKEoB//vvMiVIMHHwPC01aWBfdUgmVNVKxLl2DCEFhI=;
+        s=default; t=1577470492;
+        bh=9EID52D7e5jdDMIxVggjeOppsxxQ4OeaDCj5xbY+c7w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DT7MwGdE7iXulBXIfYz530KNTJHn2F7ZV8EZn8/9/KsXlz08zBwdqZ5Gned8/RoVm
-         tuAfOOv2pOm4s2nEcpoy1b0KyZN6DGFfe8CGoo62IiFOU8YYUyixCwhSB/nFPtofg5
-         Iz35yGI9+Bd73Gz+j4qWBMwZGttFo/+9Ce1JucUc=
+        b=le8sKo134EwGqP1oRJSuoiDogzs7a3/4/0aVITapZ/hLK0LulyTJ5d0HyXGWOaJst
+         y1JcHBukbFQm2jjcyKkQY7EvojrrKVAkeE/atBeuD4SuslU7r2OKS2/6J3T84oWga8
+         FOj0O4mCjkPysxXbHiCcRSMNnsbsmxEz9yvxpe78=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Chuhong Yuan <hslester96@gmail.com>,
+Cc:     Netanel Belgazal <netanel@amazon.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 12/38] fjes: fix missed check in fjes_acpi_add
-Date:   Fri, 27 Dec 2019 13:14:09 -0500
-Message-Id: <20191227181435.7644-12-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.9 13/38] net: ena: fix napi handler misbehavior when the napi budget is zero
+Date:   Fri, 27 Dec 2019 13:14:10 -0500
+Message-Id: <20191227181435.7644-13-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191227181435.7644-1-sashal@kernel.org>
 References: <20191227181435.7644-1-sashal@kernel.org>
@@ -43,35 +43,57 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Chuhong Yuan <hslester96@gmail.com>
+From: Netanel Belgazal <netanel@amazon.com>
 
-[ Upstream commit a288f105a03a7e0e629a8da2b31f34ebf0343ee2 ]
+[ Upstream commit 24dee0c7478d1a1e00abdf5625b7f921467325dc ]
 
-fjes_acpi_add() misses a check for platform_device_register_simple().
-Add a check to fix it.
+In netpoll the napi handler could be called with budget equal to zero.
+Current ENA napi handler doesn't take that into consideration.
 
-Fixes: 658d439b2292 ("fjes: Introduce FUJITSU Extended Socket Network Device driver")
-Signed-off-by: Chuhong Yuan <hslester96@gmail.com>
+The napi handler handles Rx packets in a do-while loop.
+Currently, the budget check happens only after decrementing the
+budget, therefore the napi handler, in rare cases, could run over
+MAX_INT packets.
+
+In addition to that, this moves all budget related variables to int
+calculation and stop mixing u32 to avoid ambiguity
+
+Fixes: 1738cd3ed342 ("net: ena: Add a driver for Amazon Elastic Network Adapters (ENA)")
+Signed-off-by: Netanel Belgazal <netanel@amazon.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/fjes/fjes_main.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/net/ethernet/amazon/ena/ena_netdev.c | 10 +++++++---
+ 1 file changed, 7 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/fjes/fjes_main.c b/drivers/net/fjes/fjes_main.c
-index bbc983b04561..3511d40ba3f1 100644
---- a/drivers/net/fjes/fjes_main.c
-+++ b/drivers/net/fjes/fjes_main.c
-@@ -148,6 +148,9 @@ static int fjes_acpi_add(struct acpi_device *device)
- 	/* create platform_device */
- 	plat_dev = platform_device_register_simple(DRV_NAME, 0, fjes_resource,
- 						   ARRAY_SIZE(fjes_resource));
-+	if (IS_ERR(plat_dev))
-+		return PTR_ERR(plat_dev);
-+
- 	device->driver_data = plat_dev;
+diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.c b/drivers/net/ethernet/amazon/ena/ena_netdev.c
+index 0780900b37c7..961f31c8356b 100644
+--- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
++++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
+@@ -1105,8 +1105,8 @@ static int ena_io_poll(struct napi_struct *napi, int budget)
+ 	struct ena_ring *tx_ring, *rx_ring;
+ 	struct ena_eth_io_intr_reg intr_reg;
  
- 	return 0;
+-	u32 tx_work_done;
+-	u32 rx_work_done;
++	int tx_work_done;
++	int rx_work_done = 0;
+ 	int tx_budget;
+ 	int napi_comp_call = 0;
+ 	int ret;
+@@ -1122,7 +1122,11 @@ static int ena_io_poll(struct napi_struct *napi, int budget)
+ 	}
+ 
+ 	tx_work_done = ena_clean_tx_irq(tx_ring, tx_budget);
+-	rx_work_done = ena_clean_rx_irq(rx_ring, napi, budget);
++	/* On netpoll the budget is zero and the handler should only clean the
++	 * tx completions.
++	 */
++	if (likely(budget))
++		rx_work_done = ena_clean_rx_irq(rx_ring, napi, budget);
+ 
+ 	if ((budget > rx_work_done) && (tx_budget > tx_work_done)) {
+ 		napi_complete_done(napi, rx_work_done);
 -- 
 2.20.1
 
