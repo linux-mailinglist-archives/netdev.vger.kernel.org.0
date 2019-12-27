@@ -2,39 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6999212B6A9
-	for <lists+netdev@lfdr.de>; Fri, 27 Dec 2019 18:44:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 72ADC12B77B
+	for <lists+netdev@lfdr.de>; Fri, 27 Dec 2019 18:49:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728438AbfL0RoX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Dec 2019 12:44:23 -0500
-Received: from mail.kernel.org ([198.145.29.99]:42380 "EHLO mail.kernel.org"
+        id S1728245AbfL0Rth (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Dec 2019 12:49:37 -0500
+Received: from mail.kernel.org ([198.145.29.99]:42482 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727811AbfL0RoV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 27 Dec 2019 12:44:21 -0500
+        id S1728453AbfL0Ro0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 27 Dec 2019 12:44:26 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id E841321744;
-        Fri, 27 Dec 2019 17:44:19 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id D0C0321744;
+        Fri, 27 Dec 2019 17:44:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1577468661;
-        bh=61QqtsM7heF3ZrrF9P/X7IR582ifXhr/shcSYIh1waI=;
+        s=default; t=1577468665;
+        bh=BS+mAXFvlqflThf7F1mV4aixoBzjq1S/IWPEOHRCS/0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Jx0qRi+C3d9E4g3rj3RUwW6lLxOkjmWGp1sAGP/75W2nZpZnqnOvTCnuqfVSlS5y9
-         OJcZBuaXB0v3VzpI9eqbJF2O2WJuPcrGH1Ioyl5jOA3fjq8ex9G9jY/Hg1G3802OpK
-         C9jcNadAOVULrjMH+bo6vgzBLLImqFm1tVyVzBr8=
+        b=OtQXDKlSTfN6s+w4QOfzv9VmPFfqnja8QD42KrqF/JZITUZIuAsH2m5YCJwXAPT8n
+         vud/jUhrEXBJ5BNhFPzidPxjWPCDvtCPicFu/+9Lz2HT5J2Mi6azACYeiDG/pbjuxm
+         g++lizh6IC1CnUmjbB62cl7qymxSzvx/JcICT6Lo=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Eric Dumazet <edumazet@google.com>,
-        syzbot <syzkaller@googlegroups.com>,
-        Florian Westphal <fw@strlen.de>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Sasha Levin <sashal@kernel.org>,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        bridge@lists.linux-foundation.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 22/84] netfilter: bridge: make sure to pull arp header in br_nf_forward_arp()
-Date:   Fri, 27 Dec 2019 12:42:50 -0500
-Message-Id: <20191227174352.6264-22-sashal@kernel.org>
+Cc:     Ido Schimmel <idosch@mellanox.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        linux-kselftest@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 26/84] selftests: forwarding: Delete IPv6 address at the end
+Date:   Fri, 27 Dec 2019 12:42:54 -0500
+Message-Id: <20191227174352.6264-26-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191227174352.6264-1-sashal@kernel.org>
 References: <20191227174352.6264-1-sashal@kernel.org>
@@ -47,112 +44,47 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Ido Schimmel <idosch@mellanox.com>
 
-[ Upstream commit 5604285839aaedfb23ebe297799c6e558939334d ]
+[ Upstream commit 65cb13986229cec02635a1ecbcd1e2dd18353201 ]
 
-syzbot is kind enough to remind us we need to call skb_may_pull()
+When creating the second host in h2_create(), two addresses are assigned
+to the interface, but only one is deleted. When running the test twice
+in a row the following error is observed:
 
-BUG: KMSAN: uninit-value in br_nf_forward_arp+0xe61/0x1230 net/bridge/br_netfilter_hooks.c:665
-CPU: 1 PID: 11631 Comm: syz-executor.1 Not tainted 5.4.0-rc8-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- <IRQ>
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x1c9/0x220 lib/dump_stack.c:118
- kmsan_report+0x128/0x220 mm/kmsan/kmsan_report.c:108
- __msan_warning+0x64/0xc0 mm/kmsan/kmsan_instr.c:245
- br_nf_forward_arp+0xe61/0x1230 net/bridge/br_netfilter_hooks.c:665
- nf_hook_entry_hookfn include/linux/netfilter.h:135 [inline]
- nf_hook_slow+0x18b/0x3f0 net/netfilter/core.c:512
- nf_hook include/linux/netfilter.h:260 [inline]
- NF_HOOK include/linux/netfilter.h:303 [inline]
- __br_forward+0x78f/0xe30 net/bridge/br_forward.c:109
- br_flood+0xef0/0xfe0 net/bridge/br_forward.c:234
- br_handle_frame_finish+0x1a77/0x1c20 net/bridge/br_input.c:162
- nf_hook_bridge_pre net/bridge/br_input.c:245 [inline]
- br_handle_frame+0xfb6/0x1eb0 net/bridge/br_input.c:348
- __netif_receive_skb_core+0x20b9/0x51a0 net/core/dev.c:4830
- __netif_receive_skb_one_core net/core/dev.c:4927 [inline]
- __netif_receive_skb net/core/dev.c:5043 [inline]
- process_backlog+0x610/0x13c0 net/core/dev.c:5874
- napi_poll net/core/dev.c:6311 [inline]
- net_rx_action+0x7a6/0x1aa0 net/core/dev.c:6379
- __do_softirq+0x4a1/0x83a kernel/softirq.c:293
- do_softirq_own_stack+0x49/0x80 arch/x86/entry/entry_64.S:1091
- </IRQ>
- do_softirq kernel/softirq.c:338 [inline]
- __local_bh_enable_ip+0x184/0x1d0 kernel/softirq.c:190
- local_bh_enable+0x36/0x40 include/linux/bottom_half.h:32
- rcu_read_unlock_bh include/linux/rcupdate.h:688 [inline]
- __dev_queue_xmit+0x38e8/0x4200 net/core/dev.c:3819
- dev_queue_xmit+0x4b/0x60 net/core/dev.c:3825
- packet_snd net/packet/af_packet.c:2959 [inline]
- packet_sendmsg+0x8234/0x9100 net/packet/af_packet.c:2984
- sock_sendmsg_nosec net/socket.c:637 [inline]
- sock_sendmsg net/socket.c:657 [inline]
- __sys_sendto+0xc44/0xc70 net/socket.c:1952
- __do_sys_sendto net/socket.c:1964 [inline]
- __se_sys_sendto+0x107/0x130 net/socket.c:1960
- __x64_sys_sendto+0x6e/0x90 net/socket.c:1960
- do_syscall_64+0xb6/0x160 arch/x86/entry/common.c:291
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-RIP: 0033:0x45a679
-Code: ad b6 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 7b b6 fb ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007f0a3c9e5c78 EFLAGS: 00000246 ORIG_RAX: 000000000000002c
-RAX: ffffffffffffffda RBX: 0000000000000006 RCX: 000000000045a679
-RDX: 000000000000000e RSI: 0000000020000200 RDI: 0000000000000003
-RBP: 000000000075bf20 R08: 00000000200000c0 R09: 0000000000000014
-R10: 0000000000000000 R11: 0000000000000246 R12: 00007f0a3c9e66d4
-R13: 00000000004c8ec1 R14: 00000000004dfe28 R15: 00000000ffffffff
+$ ./router_bridge_vlan.sh
+TEST: ping                                                          [ OK ]
+TEST: ping6                                                         [ OK ]
+TEST: vlan                                                          [ OK ]
+$ ./router_bridge_vlan.sh
+RTNETLINK answers: File exists
+TEST: ping                                                          [ OK ]
+TEST: ping6                                                         [ OK ]
+TEST: vlan                                                          [ OK ]
 
-Uninit was created at:
- kmsan_save_stack_with_flags mm/kmsan/kmsan.c:149 [inline]
- kmsan_internal_poison_shadow+0x5c/0x110 mm/kmsan/kmsan.c:132
- kmsan_slab_alloc+0x97/0x100 mm/kmsan/kmsan_hooks.c:86
- slab_alloc_node mm/slub.c:2773 [inline]
- __kmalloc_node_track_caller+0xe27/0x11a0 mm/slub.c:4381
- __kmalloc_reserve net/core/skbuff.c:141 [inline]
- __alloc_skb+0x306/0xa10 net/core/skbuff.c:209
- alloc_skb include/linux/skbuff.h:1049 [inline]
- alloc_skb_with_frags+0x18c/0xa80 net/core/skbuff.c:5662
- sock_alloc_send_pskb+0xafd/0x10a0 net/core/sock.c:2244
- packet_alloc_skb net/packet/af_packet.c:2807 [inline]
- packet_snd net/packet/af_packet.c:2902 [inline]
- packet_sendmsg+0x63a6/0x9100 net/packet/af_packet.c:2984
- sock_sendmsg_nosec net/socket.c:637 [inline]
- sock_sendmsg net/socket.c:657 [inline]
- __sys_sendto+0xc44/0xc70 net/socket.c:1952
- __do_sys_sendto net/socket.c:1964 [inline]
- __se_sys_sendto+0x107/0x130 net/socket.c:1960
- __x64_sys_sendto+0x6e/0x90 net/socket.c:1960
- do_syscall_64+0xb6/0x160 arch/x86/entry/common.c:291
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
+Fix this by deleting the address during cleanup.
 
-Fixes: c4e70a87d975 ("netfilter: bridge: rename br_netfilter.c to br_netfilter_hooks.c")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reported-by: syzbot <syzkaller@googlegroups.com>
-Reviewed-by: Florian Westphal <fw@strlen.de>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Fixes: 5b1e7f9ebd56 ("selftests: forwarding: Test routed bridge interface")
+Signed-off-by: Ido Schimmel <idosch@mellanox.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/bridge/br_netfilter_hooks.c | 3 +++
- 1 file changed, 3 insertions(+)
+ tools/testing/selftests/net/forwarding/router_bridge_vlan.sh | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/bridge/br_netfilter_hooks.c b/net/bridge/br_netfilter_hooks.c
-index 212c184c1eee..ccab290c14d4 100644
---- a/net/bridge/br_netfilter_hooks.c
-+++ b/net/bridge/br_netfilter_hooks.c
-@@ -646,6 +646,9 @@ static unsigned int br_nf_forward_arp(void *priv,
- 		nf_bridge_pull_encap_header(skb);
- 	}
+diff --git a/tools/testing/selftests/net/forwarding/router_bridge_vlan.sh b/tools/testing/selftests/net/forwarding/router_bridge_vlan.sh
+index fef88eb4b873..fa6a88c50750 100755
+--- a/tools/testing/selftests/net/forwarding/router_bridge_vlan.sh
++++ b/tools/testing/selftests/net/forwarding/router_bridge_vlan.sh
+@@ -36,7 +36,7 @@ h2_destroy()
+ {
+ 	ip -6 route del 2001:db8:1::/64 vrf v$h2
+ 	ip -4 route del 192.0.2.0/28 vrf v$h2
+-	simple_if_fini $h2 192.0.2.130/28
++	simple_if_fini $h2 192.0.2.130/28 2001:db8:2::2/64
+ }
  
-+	if (unlikely(!pskb_may_pull(skb, sizeof(struct arphdr))))
-+		return NF_DROP;
-+
- 	if (arp_hdr(skb)->ar_pln != 4) {
- 		if (IS_VLAN_ARP(skb))
- 			nf_bridge_push_encap_header(skb);
+ router_create()
 -- 
 2.20.1
 
