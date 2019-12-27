@@ -2,36 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0696A12B74B
-	for <lists+netdev@lfdr.de>; Fri, 27 Dec 2019 18:48:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 707B912B740
+	for <lists+netdev@lfdr.de>; Fri, 27 Dec 2019 18:48:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728260AbfL0Rs3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Dec 2019 12:48:29 -0500
-Received: from mail.kernel.org ([198.145.29.99]:43028 "EHLO mail.kernel.org"
+        id S1728253AbfL0RsK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Dec 2019 12:48:10 -0500
+Received: from mail.kernel.org ([198.145.29.99]:43128 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728532AbfL0Ron (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 27 Dec 2019 12:44:43 -0500
+        id S1728553AbfL0Ror (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 27 Dec 2019 12:44:47 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 024EF20740;
-        Fri, 27 Dec 2019 17:44:41 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 6C4B821582;
+        Fri, 27 Dec 2019 17:44:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1577468682;
-        bh=qJJlTlHRi51WTrLwYlXoW7LIzvQeZU6Zad7hGcPoHiw=;
+        s=default; t=1577468687;
+        bh=wvVGmq4XE2oHNlB21bRNNlRnCfW+IKBgGPSVORd4Cv4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Za7HgRmvF4VoIYpbfJ/NjpML5xUcd7ZSLzGg9wUHbIjoI9IBA9+SinAAWhXHSrllQ
-         5BR53JYWCOXDBgN+2a418ckeAZ9GvpRiIA3oXUkkppuIRZWIUR/mEh1JnrbpIxjd3E
-         uTGVXOtc1uebFDizSttirjY2vG7lU2SWOJuDxfBg=
+        b=Bo18kt42VO3VyEHCWPLJzYDvMVBoWXdbvnAl+PQqur3buYJLUq5yY/zVduF2nXKIZ
+         DS76y9g/FBqgf9h2ZVKKXlLoG7+P0nRkK2rcNYnZ7cmUIMvCAK9Viv2vN2jCv9zLNI
+         y5hEIszq85Yu4hJusEz2ItIgHvSHmSqhh7Mt5Q+U=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Manish Chopra <manishc@marvell.com>,
-        Ariel Elior <aelior@marvell.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 41/84] qede: Fix multicast mac configuration
-Date:   Fri, 27 Dec 2019 12:43:09 -0500
-Message-Id: <20191227174352.6264-41-sashal@kernel.org>
+Cc:     Lorenz Bauer <lmb@cloudflare.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 45/84] bpf: Clear skb->tstamp in bpf_redirect when necessary
+Date:   Fri, 27 Dec 2019 12:43:13 -0500
+Message-Id: <20191227174352.6264-45-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191227174352.6264-1-sashal@kernel.org>
 References: <20191227174352.6264-1-sashal@kernel.org>
@@ -44,36 +45,39 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Manish Chopra <manishc@marvell.com>
+From: Lorenz Bauer <lmb@cloudflare.com>
 
-[ Upstream commit 0af67e49b018e7280a4227bfe7b6005bc9d3e442 ]
+[ Upstream commit 5133498f4ad1123a5ffd4c08df6431dab882cc32 ]
 
-Driver doesn't accommodate the configuration for max number
-of multicast mac addresses, in such particular case it leaves
-the device with improper/invalid multicast configuration state,
-causing connectivity issues (in lacp bonding like scenarios).
+Redirecting a packet from ingress to egress by using bpf_redirect
+breaks if the egress interface has an fq qdisc installed. This is the same
+problem as fixed in 'commit 8203e2d844d3 ("net: clear skb->tstamp in forwarding paths")
 
-Signed-off-by: Manish Chopra <manishc@marvell.com>
-Signed-off-by: Ariel Elior <aelior@marvell.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Clear skb->tstamp when redirecting into the egress path.
+
+Fixes: 80b14dee2bea ("net: Add a new socket option for a future transmit time.")
+Fixes: fb420d5d91c1 ("tcp/fq: move back to CLOCK_MONOTONIC")
+Signed-off-by: Lorenz Bauer <lmb@cloudflare.com>
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Reviewed-by: Eric Dumazet <edumazet@google.com>
+Link: https://lore.kernel.org/bpf/20191213180817.2510-1-lmb@cloudflare.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/qlogic/qede/qede_filter.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/core/filter.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/ethernet/qlogic/qede/qede_filter.c b/drivers/net/ethernet/qlogic/qede/qede_filter.c
-index b16ce7d93caf..c3d5d40afec0 100644
---- a/drivers/net/ethernet/qlogic/qede/qede_filter.c
-+++ b/drivers/net/ethernet/qlogic/qede/qede_filter.c
-@@ -1230,7 +1230,7 @@ qede_configure_mcast_filtering(struct net_device *ndev,
- 	netif_addr_lock_bh(ndev);
+diff --git a/net/core/filter.c b/net/core/filter.c
+index e6fa88506c00..91b950261975 100644
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -2007,6 +2007,7 @@ static inline int __bpf_tx_skb(struct net_device *dev, struct sk_buff *skb)
+ 	}
  
- 	mc_count = netdev_mc_count(ndev);
--	if (mc_count < 64) {
-+	if (mc_count <= 64) {
- 		netdev_for_each_mc_addr(ha, ndev) {
- 			ether_addr_copy(temp, ha->addr);
- 			temp += ETH_ALEN;
+ 	skb->dev = dev;
++	skb->tstamp = 0;
+ 
+ 	__this_cpu_inc(xmit_recursion);
+ 	ret = dev_queue_xmit(skb);
 -- 
 2.20.1
 
