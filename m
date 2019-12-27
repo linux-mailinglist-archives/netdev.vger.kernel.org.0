@@ -2,39 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9946E12B862
-	for <lists+netdev@lfdr.de>; Fri, 27 Dec 2019 18:56:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F00FD12B663
+	for <lists+netdev@lfdr.de>; Fri, 27 Dec 2019 18:42:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727947AbfL0RzR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Dec 2019 12:55:17 -0500
-Received: from mail.kernel.org ([198.145.29.99]:39170 "EHLO mail.kernel.org"
+        id S1727849AbfL0RmY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Dec 2019 12:42:24 -0500
+Received: from mail.kernel.org ([198.145.29.99]:39252 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727823AbfL0RmU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 27 Dec 2019 12:42:20 -0500
+        id S1727456AbfL0RmX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 27 Dec 2019 12:42:23 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 463FD21744;
-        Fri, 27 Dec 2019 17:42:19 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 836E624656;
+        Fri, 27 Dec 2019 17:42:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1577468539;
-        bh=mTIUIuPdDWwgh0qX8a/UlwVj8gBl+shZGZxFTaLncsw=;
+        s=default; t=1577468542;
+        bh=sA28e4/Vn28o0eBK2OtFILC07rU4A36VwG070Roqi1Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oir1Ph/9nhlQco+WLWxjJXBDXexU1wim2wuFoKY/myz9aRahoLHBDB7CptodrR2oj
-         EEcfS9xT6vIrNv/blsP4sJVhtOCLUoKA+IJ5CDlSkhd32gnqmy1xyynzgXsiWEqc2z
-         VnxKuXTrLLBG3JHe62GBM3C6lQ/hc4zCdjvPV3SI=
+        b=TiKHpEc6CjWZYqHnTSwrNT6baXTcn23/DRReuzfA9XS8TZUMxmDmnBH5smo1ha96M
+         ehPvzrdCkn1N0u2vCUI6ia6pA8vZCNYLNODmvK+ehrpI7xlOCdF3zGXDsaubdsgEdu
+         d+76EAmFFcvYvSbQs3m1aOdCaEKFlLWSLbIiE72Q=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Netanel Belgazal <netanel@amazon.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 069/187] net: ena: fix napi handler misbehavior when the napi budget is zero
-Date:   Fri, 27 Dec 2019 12:38:57 -0500
-Message-Id: <20191227174055.4923-69-sashal@kernel.org>
+Cc:     Paul Chaignon <paul.chaignon@orange.com>,
+        Mahshid Khezri <khezri.mahshid@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@gmail.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        linux-riscv@lists.infradead.org, bpf@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 071/187] bpf, riscv: Limit to 33 tail calls
+Date:   Fri, 27 Dec 2019 12:38:59 -0500
+Message-Id: <20191227174055.4923-71-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191227174055.4923-1-sashal@kernel.org>
 References: <20191227174055.4923-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -43,57 +48,51 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Netanel Belgazal <netanel@amazon.com>
+From: Paul Chaignon <paul.chaignon@orange.com>
 
-[ Upstream commit 24dee0c7478d1a1e00abdf5625b7f921467325dc ]
+[ Upstream commit 96bc4432f5ade1045521f3b247f516b1478166bd ]
 
-In netpoll the napi handler could be called with budget equal to zero.
-Current ENA napi handler doesn't take that into consideration.
+All BPF JIT compilers except RISC-V's and MIPS' enforce a 33-tail calls
+limit at runtime.  In addition, a test was recently added, in tailcalls2,
+to check this limit.
 
-The napi handler handles Rx packets in a do-while loop.
-Currently, the budget check happens only after decrementing the
-budget, therefore the napi handler, in rare cases, could run over
-MAX_INT packets.
+This patch updates the tail call limit in RISC-V's JIT compiler to allow
+33 tail calls.  I tested it using the above selftest on an emulated
+RISCV64.
 
-In addition to that, this moves all budget related variables to int
-calculation and stop mixing u32 to avoid ambiguity
-
-Fixes: 1738cd3ed342 ("net: ena: Add a driver for Amazon Elastic Network Adapters (ENA)")
-Signed-off-by: Netanel Belgazal <netanel@amazon.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: 2353ecc6f91f ("bpf, riscv: add BPF JIT for RV64G")
+Reported-by: Mahshid Khezri <khezri.mahshid@gmail.com>
+Signed-off-by: Paul Chaignon <paul.chaignon@orange.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Acked-by: Björn Töpel <bjorn.topel@gmail.com>
+Acked-by: Martin KaFai Lau <kafai@fb.com>
+Link: https://lore.kernel.org/bpf/966fe384383bf23a0ee1efe8d7291c78a3fb832b.1575916815.git.paul.chaignon@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/amazon/ena/ena_netdev.c | 10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
+ arch/riscv/net/bpf_jit_comp.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.c b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-index c487d2a7d6dd..b4a145220aba 100644
---- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
-+++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-@@ -1238,8 +1238,8 @@ static int ena_io_poll(struct napi_struct *napi, int budget)
- 	struct ena_napi *ena_napi = container_of(napi, struct ena_napi, napi);
- 	struct ena_ring *tx_ring, *rx_ring;
+diff --git a/arch/riscv/net/bpf_jit_comp.c b/arch/riscv/net/bpf_jit_comp.c
+index 5451ef3845f2..7fbf56aab661 100644
+--- a/arch/riscv/net/bpf_jit_comp.c
++++ b/arch/riscv/net/bpf_jit_comp.c
+@@ -631,14 +631,14 @@ static int emit_bpf_tail_call(int insn, struct rv_jit_context *ctx)
+ 		return -1;
+ 	emit(rv_bgeu(RV_REG_A2, RV_REG_T1, off >> 1), ctx);
  
--	u32 tx_work_done;
--	u32 rx_work_done;
-+	int tx_work_done;
-+	int rx_work_done = 0;
- 	int tx_budget;
- 	int napi_comp_call = 0;
- 	int ret;
-@@ -1256,7 +1256,11 @@ static int ena_io_poll(struct napi_struct *napi, int budget)
- 	}
+-	/* if (--TCC < 0)
++	/* if (TCC-- < 0)
+ 	 *     goto out;
+ 	 */
+ 	emit(rv_addi(RV_REG_T1, tcc, -1), ctx);
+ 	off = (tc_ninsn - (ctx->ninsns - start_insn)) << 2;
+ 	if (is_13b_check(off, insn))
+ 		return -1;
+-	emit(rv_blt(RV_REG_T1, RV_REG_ZERO, off >> 1), ctx);
++	emit(rv_blt(tcc, RV_REG_ZERO, off >> 1), ctx);
  
- 	tx_work_done = ena_clean_tx_irq(tx_ring, tx_budget);
--	rx_work_done = ena_clean_rx_irq(rx_ring, napi, budget);
-+	/* On netpoll the budget is zero and the handler should only clean the
-+	 * tx completions.
-+	 */
-+	if (likely(budget))
-+		rx_work_done = ena_clean_rx_irq(rx_ring, napi, budget);
- 
- 	/* If the device is about to reset or down, avoid unmask
- 	 * the interrupt and return 0 so NAPI won't reschedule
+ 	/* prog = array->ptrs[index];
+ 	 * if (!prog)
 -- 
 2.20.1
 
