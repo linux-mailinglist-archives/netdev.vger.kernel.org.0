@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2BE2D12B95D
-	for <lists+netdev@lfdr.de>; Fri, 27 Dec 2019 19:05:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 966BD12B957
+	for <lists+netdev@lfdr.de>; Fri, 27 Dec 2019 19:05:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728854AbfL0SEe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Dec 2019 13:04:34 -0500
-Received: from mail.kernel.org ([198.145.29.99]:60544 "EHLO mail.kernel.org"
+        id S1728357AbfL0SE1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Dec 2019 13:04:27 -0500
+Received: from mail.kernel.org ([198.145.29.99]:60586 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728639AbfL0SDU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 27 Dec 2019 13:03:20 -0500
+        id S1728646AbfL0SDV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 27 Dec 2019 13:03:21 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 0C5DC2173E;
-        Fri, 27 Dec 2019 18:03:18 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 3CA8B206F4;
+        Fri, 27 Dec 2019 18:03:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1577469799;
-        bh=0H7jxEWn0kJ94GucQWB7iemHQgpagReOFqt9e26JIAU=;
+        s=default; t=1577469801;
+        bh=gIyIU93aBqwRp4LrB8fM2LEhhTHoiTkDl6m3HJi/KcE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tej11M6xbyjvQ9/RqmmzvExE8bs2D8d0NCLrjgBQUjpKXoPkjXcybsytpeKAqQRgU
-         sH99UyzXEQFaYWA+ukOfTMHVeuBDgMLS4YQ+k6H0q34cP7qkg7EupOnRGHjIuFGuBb
-         YaW2E816yplW+OWk2e2kiGEYKLqd+UVxlBfb8WTY=
+        b=seewqgq3KnL/bmKhUCBtM1HnlRE5A3tbjDYt2eFD95lL5okCUe0b5b3QbqpYMXM/4
+         TVI2GbIGgExTp2H5lRfPIp9yj09q/kt4h3TSfjtqJnfBRELeKkSMK6yg2cCqMzUitA
+         +i+4sP6hSEo3LXvUe/D8fbYn95NiylJk8W/MUNlg=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Jose Abreu <Jose.Abreu@synopsys.com>,
@@ -30,9 +30,9 @@ Cc:     Jose Abreu <Jose.Abreu@synopsys.com>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
         linux-stm32@st-md-mailman.stormreply.com,
         linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 4.14 47/57] net: stmmac: Do not accept invalid MTU values
-Date:   Fri, 27 Dec 2019 13:02:12 -0500
-Message-Id: <20191227180222.7076-47-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.14 48/57] net: stmmac: RX buffer size must be 16 byte aligned
+Date:   Fri, 27 Dec 2019 13:02:13 -0500
+Message-Id: <20191227180222.7076-48-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191227180222.7076-1-sashal@kernel.org>
 References: <20191227180222.7076-1-sashal@kernel.org>
@@ -47,55 +47,35 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jose Abreu <Jose.Abreu@synopsys.com>
 
-[ Upstream commit eaf4fac478077d4ed57cbca2c044c4b58a96bd98 ]
+[ Upstream commit 8d558f0294fe92e04af192e221d0d0f6a180ee7b ]
 
-The maximum MTU value is determined by the maximum size of TX FIFO so
-that a full packet can fit in the FIFO. Add a check for this in the MTU
-change callback.
-
-Also check if provided and rounded MTU does not passes the maximum limit
-of 16K.
+We need to align the RX buffer size to at least 16 byte so that IP
+doesn't mis-behave. This is required by HW.
 
 Changes from v2:
-- Align MTU before checking if its valid
+- Align UP and not DOWN (David)
 
 Fixes: 7ac6653a085b ("stmmac: Move the STMicroelectronics driver")
 Signed-off-by: Jose Abreu <Jose.Abreu@synopsys.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index e6d16c48ffef..4ef923f1094a 100644
+index 4ef923f1094a..e89466bd432d 100644
 --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
 +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -3597,12 +3597,24 @@ static void stmmac_set_rx_mode(struct net_device *dev)
- static int stmmac_change_mtu(struct net_device *dev, int new_mtu)
- {
- 	struct stmmac_priv *priv = netdev_priv(dev);
-+	int txfifosz = priv->plat->tx_fifo_size;
-+
-+	if (txfifosz == 0)
-+		txfifosz = priv->dma_cap.tx_fifo_size;
-+
-+	txfifosz /= priv->plat->tx_queues_to_use;
+@@ -51,7 +51,7 @@
+ #include <linux/of_mdio.h>
+ #include "dwmac1000.h"
  
- 	if (netif_running(dev)) {
- 		netdev_err(priv->dev, "must be stopped to change its MTU\n");
- 		return -EBUSY;
- 	}
+-#define	STMMAC_ALIGN(x)		__ALIGN_KERNEL(x, SMP_CACHE_BYTES)
++#define	STMMAC_ALIGN(x)		ALIGN(ALIGN(x, SMP_CACHE_BYTES), 16)
+ #define	TSO_MAX_BUFF_SIZE	(SZ_16K - 1)
  
-+	new_mtu = STMMAC_ALIGN(new_mtu);
-+
-+	/* If condition true, FIFO is too small or MTU too large */
-+	if ((txfifosz < new_mtu) || (new_mtu > BUF_SIZE_16KiB))
-+		return -EINVAL;
-+
- 	dev->mtu = new_mtu;
- 
- 	netdev_update_features(dev);
+ /* Module parameters */
 -- 
 2.20.1
 
