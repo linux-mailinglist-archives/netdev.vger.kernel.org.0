@@ -2,85 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 78C1112B3E9
-	for <lists+netdev@lfdr.de>; Fri, 27 Dec 2019 11:35:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B8EFD12B401
+	for <lists+netdev@lfdr.de>; Fri, 27 Dec 2019 11:38:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726857AbfL0Kb1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Dec 2019 05:31:27 -0500
-Received: from mail.loongson.cn ([114.242.206.163]:43760 "EHLO loongson.cn"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726270AbfL0Kb1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 27 Dec 2019 05:31:27 -0500
-Received: from linux.localdomain (unknown [123.138.236.242])
-        by mail.loongson.cn (Coremail) with SMTP id AQAAf9AxObhy3QVeYssBAA--.2105S2;
-        Fri, 27 Dec 2019 18:31:15 +0800 (CST)
-From:   Tiezhu Yang <yangtiezhu@loongson.cn>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Antoine Tenart <antoine.tenart@bootlin.com>
-Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] net: phy: Fix compile warning about of_mdiobus_child_is_phy
-Date:   Fri, 27 Dec 2019 18:30:59 +0800
-Message-Id: <1577442659-12134-1-git-send-email-yangtiezhu@loongson.cn>
-X-Mailer: git-send-email 2.1.0
+        id S1727122AbfL0Kiw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Dec 2019 05:38:52 -0500
+Received: from helcar.hmeau.com ([216.24.177.18]:60270 "EHLO deadmen.hmeau.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726365AbfL0Kiw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 27 Dec 2019 05:38:52 -0500
+Received: from gondobar.mordor.me.apana.org.au ([192.168.128.4] helo=gondobar)
+        by deadmen.hmeau.com with esmtps (Exim 4.89 #2 (Debian))
+        id 1ikn17-0007P3-TG; Fri, 27 Dec 2019 18:38:49 +0800
+Received: from herbert by gondobar with local (Exim 4.89)
+        (envelope-from <herbert@gondor.apana.org.au>)
+        id 1ikn17-0005ns-Iv; Fri, 27 Dec 2019 18:38:49 +0800
+Date:   Fri, 27 Dec 2019 18:38:49 +0800
+From:   Herbert Xu <herbert@gondor.apana.org.au>
+To:     Vinay Kumar Yadav <vinay.yadav@chelsio.com>
+Cc:     davem@davemloft.net, linux-crypto@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net-next 0/2] chelsio/chtls
+Message-ID: <20191227103849.3qcbcgknqp5viyn6@gondor.apana.org.au>
+References: <20191219105148.32456-1-vinay.yadav@chelsio.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: AQAAf9AxObhy3QVeYssBAA--.2105S2
-X-Coremail-Antispam: 1UD129KBjvdXoW7XF1DZr1kWw1xJr4rZw4Utwb_yoWDCrbEk3
-        W3GrW5Gr4rGFyfCw43Ga1IqF90yrWxWr4kXFZag3yvqw1DXw42v3y8AFn2qr4DGanrCFW5
-        Zw18Z3409w1UCjkaLaAFLSUrUUUUjb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUIcSsGvfJTRUUUbskYjsxI4VWkKwAYFVCjjxCrM7AC8VAFwI0_Gr0_Xr1l1xkIjI8I
-        6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AEw4v_Jr0_Jr4l8cAvFVAK0II2c7xJM2
-        8CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2IY67AKxVW8JVW5JwA2z4x0Y4vE2Ix0
-        cI8IcVCY1x0267AKxVW8JVWxJwA2z4x0Y4vEx4A2jsIE14v26F4UJVW0owA2z4x0Y4vEx4
-        A2jsIEc7CjxVAFwI0_GcCE3s1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IE
-        w4CE5I8CrVC2j2WlYx0E2Ix0cI8IcVAFwI0_JrI_JrylYx0Ex4A2jsIE14v26r4j6F4UMc
-        vjeVCFs4IE7xkEbVWUJVW8JwACjcxG0xvY0x0EwIxGrwACI402YVCY1x02628vn2kIc2xK
-        xwCY02Avz4vE14v_Gw1l42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2
-        IqxVAqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v2
-        6r1q6r43MIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2
-        IY6xkF7I0E14v26r4j6F4UMIIF0xvE42xK8VAvwI8IcIk0rVWrJr0_WFyUJwCI42IY6I8E
-        87Iv67AKxVWUJVW8JwCI42IY6I8E87Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWIevJa73Uj
-        IFyTuYvjxUg8hLDUUUU
-X-CM-SenderInfo: p1dqw3xlh2x3gn0dqz5rrqw2lrqou0/
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191219105148.32456-1-vinay.yadav@chelsio.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix the following compile warning when CONFIG_OF_MDIO is not set:
+On Thu, Dec 19, 2019 at 04:21:46PM +0530, Vinay Kumar Yadav wrote:
+> This series of patches address two issues in chtls.
+> patch 1 add support for AES256-GCM based ciphers.
+> patch 2 fixes memory leak issues.
+> 
+> Thanks,
+> Vinay
+> 
+> Vinay Kumar Yadav (2):
+>   chtls: Add support for AES256-GCM based ciphers
+>   chtls: Fixed memory leak
+> 
+>  drivers/crypto/chelsio/chtls/chtls.h      |  7 ++-
+>  drivers/crypto/chelsio/chtls/chtls_cm.c   | 27 +++++-----
+>  drivers/crypto/chelsio/chtls/chtls_cm.h   | 21 ++++++++
+>  drivers/crypto/chelsio/chtls/chtls_hw.c   | 65 ++++++++++++++++-------
+>  drivers/crypto/chelsio/chtls/chtls_main.c | 23 +++++++-
+>  5 files changed, 109 insertions(+), 34 deletions(-)
 
-  CC      drivers/net/phy/mdio_bus.o
-In file included from drivers/net/phy/mdio_bus.c:23:0:
-./include/linux/of_mdio.h:58:13: warning: ‘of_mdiobus_child_is_phy’ defined but not used [-Wunused-function]
- static bool of_mdiobus_child_is_phy(struct device_node *child)
-             ^
-
-Fixes: 0aa4d016c043 ("of: mdio: export of_mdiobus_child_is_phy")
-Signed-off-by: Tiezhu Yang <yangtiezhu@loongson.cn>
----
- include/linux/of_mdio.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/include/linux/of_mdio.h b/include/linux/of_mdio.h
-index 79bc82e..491a2b7 100644
---- a/include/linux/of_mdio.h
-+++ b/include/linux/of_mdio.h
-@@ -55,7 +55,7 @@ static inline int of_mdio_parse_addr(struct device *dev,
- }
- 
- #else /* CONFIG_OF_MDIO */
--static bool of_mdiobus_child_is_phy(struct device_node *child)
-+static inline bool of_mdiobus_child_is_phy(struct device_node *child)
- {
- 	return false;
- }
+All applied.  Thanks.
 -- 
-2.1.0
-
+Email: Herbert Xu <herbert@gondor.apana.org.au>
+Home Page: http://gondor.apana.org.au/~herbert/
+PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
