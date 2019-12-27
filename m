@@ -2,94 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D101F12B7C6
-	for <lists+netdev@lfdr.de>; Fri, 27 Dec 2019 18:51:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B17212B905
+	for <lists+netdev@lfdr.de>; Fri, 27 Dec 2019 19:00:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728362AbfL0Rvb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Dec 2019 12:51:31 -0500
-Received: from mail-pl1-f195.google.com ([209.85.214.195]:40931 "EHLO
-        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728001AbfL0Rva (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Dec 2019 12:51:30 -0500
-Received: by mail-pl1-f195.google.com with SMTP id s21so9240075plr.7
-        for <netdev@vger.kernel.org>; Fri, 27 Dec 2019 09:51:29 -0800 (PST)
+        id S1727210AbfL0SAQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Dec 2019 13:00:16 -0500
+Received: from mail-pj1-f68.google.com ([209.85.216.68]:36389 "EHLO
+        mail-pj1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726379AbfL0SAP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Dec 2019 13:00:15 -0500
+Received: by mail-pj1-f68.google.com with SMTP id n59so5218651pjb.1
+        for <netdev@vger.kernel.org>; Fri, 27 Dec 2019 10:00:15 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to:user-agent;
-        bh=jZOPCY5LlG7am99M0UhbJQOO/tWX0tzEt9s1wi2Ebi0=;
-        b=UwAKMkHNxCpvoWzZ/PtRHXMFN7rGyScPADZ0T8htIj9z77X2WClVF8l1ksv2wY8qHy
-         nXp9BT9coNoKPw/jM4uTl5mSHVE2VjIpT1wpkyasqVklZpPWvFii+koJGB2BcLE10R7c
-         w3o8Ths9mcN8PpYiw4RjvozZ41ubdPqeIQST71JxzlB+HE2ahvbcXfsUB2ATMEO3T26D
-         iQRFLCXhbuZjozTqWfm3ehuQAd3KCDJ5l6vcrYFAcxC1w33EWyLdNhuzwBLzShbd4Krw
-         IUPb0hTb+OPTVKPaKBGkujf0oFbQ8CKwiWICXlOtHzvYzqn3nhmXA7D+b0W0tT6K2+2t
-         LoAg==
+        bh=yAi/q24AyfQaGQAYnuWi1+l+OpeZEqyTvDNcM0hvSso=;
+        b=UfW1FPHMnqESlMFf4eRcJIJN4xNd52klliaq38YVTyxZ/hLazhIANmVKwK5LGK1LAM
+         tK0vCERWVCrNUill70peGUUr0jwej8erlVAnW6OWnLGMLSiD6gB+JzfBsNbW5RLRZG0k
+         phkFMiqPUz2y10WqwMPg4BsMECoeZ4EsZRc2I4Y2Cp6Bk7lyQu0M/jLaNX664LDIVuMT
+         YvAqj39xi2+5+8x9vaGGs7fAcapj9hTVNPNULFOpygl5XshEIAg4zUm47J2JRXtMWGTg
+         AiiAUqgp3WiqFxs4YdRPDsTbtrZ/Mgynb6xWId5qlj56T+7kfwYsYV7oQ6HnLHtiCKkd
+         9GsA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=jZOPCY5LlG7am99M0UhbJQOO/tWX0tzEt9s1wi2Ebi0=;
-        b=lGCx4okhYWdxPhYbuKwg92a6U1QJeChRzenYXHu+f8WLH4W/+aNE4NyPaP4sTPXRpH
-         AdFL9234IX8NUQx7ifm8O6HIcRQyYJRtVpYPseyMN9NT8XmRLTXMm5phPtARDcAhGIup
-         fS4UHn4HTiLD2UXJ22Pn+euE5j7lHH+IQs0dD+aUlD06KCjHi9J168D483qEoQEcwoJm
-         YEXLsJtjwZLIqson2PRF7XLETNBjFkcA+6oJtkN4IWL6mz7yzyJAhrmHbCsrt3LTlVuE
-         B81UvKKJf1tPADyAEj2jtHfgNujxc3tu+2gRF75c0DykPKKKaRE4Ie0rRO3h5KuX5+Vk
-         Rh9A==
-X-Gm-Message-State: APjAAAXf5IX5SNY9/aFawPtKdGxKFH/RjBjUGiuQ3+zsyolrd56PIAWx
-        FRRuSp/11z2EZ8gGy04xg9k=
-X-Google-Smtp-Source: APXvYqz4oAgGV1GvlKOgZxd6gQg09Sa279HHXQctWKM3GY4UBOz7DA3Qs1qVRJ4Od/reVLp4k4pgNw==
-X-Received: by 2002:a17:90a:db48:: with SMTP id u8mr27177936pjx.54.1577469089359;
-        Fri, 27 Dec 2019 09:51:29 -0800 (PST)
+        bh=yAi/q24AyfQaGQAYnuWi1+l+OpeZEqyTvDNcM0hvSso=;
+        b=LNs/Q1b0jhRHgwjAvCUVR2zx/nZlWGQGPDs98HH4vib20JwL7CTJv1XHDtf8jgiPu+
+         TJBWdLX9JwcFDv2jVB20PV9q1vmBO5BivAQxmB9ZOua8TuWZ8CWHdhqhDS2qiP6T56M3
+         iPR993Lflnz9IVNdCXug4ItGoFVZzgH8SG4te258LjMs4VvhDdYPjxPK3ZaEr/ENSXEO
+         3qmypQ/DrS16DEnBWnglAHBXgRISFS3aa8n0Qpsvz5nLaGlYZgQErgGS1CoHZ8eW0M5d
+         dohoeFXgPM+BXdCDFPSshYyNxrplGWOhsxSEs0MQEDrCzLiRYix8qCRbHRMI+FAwSkXd
+         zK6w==
+X-Gm-Message-State: APjAAAUAOw1bIwS6Q6hUtSNIgLrOLJQup0VNi3cYFnB+ockKEDPN2i5K
+        YeexEgPRZxOcQJUvHj2/ppY=
+X-Google-Smtp-Source: APXvYqxzDJgfdwUik3Sd9aTEGUpxVWg+8SuoywmhPfnerqwzhZktd3DMzWVtoI1ojIN8Bw+6YnuJQA==
+X-Received: by 2002:a17:902:7c95:: with SMTP id y21mr13332000pll.150.1577469614763;
+        Fri, 27 Dec 2019 10:00:14 -0800 (PST)
 Received: from localhost (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
-        by smtp.gmail.com with ESMTPSA id m3sm37672743pgp.32.2019.12.27.09.51.28
+        by smtp.gmail.com with ESMTPSA id o7sm43580500pfg.138.2019.12.27.10.00.13
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 27 Dec 2019 09:51:28 -0800 (PST)
-Date:   Fri, 27 Dec 2019 09:51:26 -0800
+        Fri, 27 Dec 2019 10:00:13 -0800 (PST)
+Date:   Fri, 27 Dec 2019 10:00:11 -0800
 From:   Richard Cochran <richardcochran@gmail.com>
 To:     Vladimir Oltean <olteanv@gmail.com>
 Cc:     davem@davemloft.net, jakub.kicinski@netronome.com,
         f.fainelli@gmail.com, vivien.didelot@gmail.com, andrew@lunn.ch,
         netdev@vger.kernel.org
-Subject: Re: [PATCH net 2/2] net: dsa: Deny PTP on master if switch supports
- it
-Message-ID: <20191227175126.GE1435@localhost>
+Subject: Re: [PATCH net 1/2] gianfar: Fix TX timestamping with stacked (DSA
+ and PHY) drivers
+Message-ID: <20191227180011.GF1435@localhost>
 References: <20191227004435.21692-1-olteanv@gmail.com>
- <20191227004435.21692-3-olteanv@gmail.com>
+ <20191227004435.21692-2-olteanv@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20191227004435.21692-3-olteanv@gmail.com>
+In-Reply-To: <20191227004435.21692-2-olteanv@gmail.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Dec 27, 2019 at 02:44:35AM +0200, Vladimir Oltean wrote:
-> Why? Well, in short, the PTP API in place today is a bit rudimentary and
-> relies on applications to retrieve the TX timestamps by polling the
-> error queue and looking at the cmsg structure. But there is no timestamp
-> identification of any sorts (except whether it's HW or SW), you don't
-> know how many more timestamps are there to come, which one is this one,
-> from whom it is, etc.
+On Fri, Dec 27, 2019 at 02:44:34AM +0200, Vladimir Oltean wrote:
 
-IOW, you can only get one HW time stamp from the stack.  This is a
-fundamental limitation of the so_timestamping API.  If user space
-really wanted multiple HW and SW time stamps, then some new way would
-have to be invented, but it would be lots of work.
+> But a stacked driver such as a DSA switch or a PTP-capable PHY can
+> also set SKBTX_IN_PROGRESS, which is actually exactly what it should do
+> in order to denote that the hardware timestamping process is undergoing.
 
-IMHO, as a practical matter, multiple time stamps would be interesting
-from a profiling point of view, but less so for synchronization
-applications.
+Please remove the text about the PHY.  This driver does not call
+skb_tx_timestamp(), and so it isn't possible for a PHY driver to set
+the flag.
+ 
+> There have been discussions [0] as to whether non-MAC drivers need or not to
+> set SKBTX_IN_PROGRESS at all (whose purpose is to avoid sending 2
+> timestamps, a sw and a hw one, to applications which only expect one).
+> But as of this patch, there are at least 2 PTP drivers that would break
+> in conjunction with gianfar: the sja1105 DSA switch and the TI PHYTER
+> (dp83640).
 
-> So it is a fact of life that PTP timestamping on the DSA master is
-> incompatible with timestamping on the switch MAC. And if the switch
-> supports PTP, taking the timestamps from the switch MAC is highly
-> preferable anyway, due to the fact that those don't contain the queuing
-> latencies of the switch. So just disallow PTP on the DSA master if there
-> is any PTP-capable switch attached.
+Again, please drop the bit about the phyter.  It is a non-issue here.
+The clash with the DSA layer is reason enough for this patch.
 
-I agreed that MAC time stamps are not very useful when there is a PTP
-switch in front.
+> Fixes: f0ee7acfcdd4 ("gianfar: Add hardware TX timestamping support")
+> Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
 
 Acked-by: Richard Cochran <richardcochran@gmail.com>
