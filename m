@@ -2,93 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B10312B015
-	for <lists+netdev@lfdr.de>; Fri, 27 Dec 2019 02:02:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4DEDA12B017
+	for <lists+netdev@lfdr.de>; Fri, 27 Dec 2019 02:04:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727120AbfL0BCA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Dec 2019 20:02:00 -0500
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:50451 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726277AbfL0BCA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Dec 2019 20:02:00 -0500
-Received: by mail-wm1-f68.google.com with SMTP id a5so6992076wmb.0
-        for <netdev@vger.kernel.org>; Thu, 26 Dec 2019 17:01:58 -0800 (PST)
+        id S1726984AbfL0BEF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Dec 2019 20:04:05 -0500
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:38888 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726193AbfL0BEE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Dec 2019 20:04:04 -0500
+Received: by mail-wr1-f66.google.com with SMTP id y17so24893772wrh.5
+        for <netdev@vger.kernel.org>; Thu, 26 Dec 2019 17:04:03 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id;
-        bh=dgQKtxP/R03TWq5DIxr766UAp5B0TjINbFtQVtJEbiI=;
-        b=J61nfOGxd0phbmfM3r7CzuCy1gSp2P0Nx83Q7GmOdgETyMx+DUp7hSxPdcM1Tj8RO0
-         R59vWfdpj1gqSQSJBGGwwe7JObHHbzTRn9TG4JT5h4WnwN8PIrJ4Rwo/jofh58aC3I4+
-         FhrGwD5915I+V22pVYhC9jHPyuRVrLkaj4U16LA9GtztoRNaXvFP4IHHhpqFW4cmvV42
-         8XLs02bRk9RQ3+DP7kd1zf9vWveWMDk8LnDjrfrft/VV6M6sg1C2VQbg3J/SrTI69e5q
-         +uuFr0I3kZVCjsKlDsL/6eQjEtUnr59CSCfxFhGA3fjTQEYSNGCYpVGqTaqgZKdSFW0W
-         jajw==
+        bh=SJavRKYLQJoieNyJqH2ZNFzEMrxnkIJspMuxMmHhtyU=;
+        b=fNW22+uyjAh24iOrAvHjJeKF4XvXojnscPsjvJM2FOJj4b/JOMPGXegR4ibXhOE9pO
+         99tMFz8pjT51iHvvQbopi+VqMQ1kh9QTTnUrbKFvpgROCSD3Vfpc3ryT+IYN2/sdaeL/
+         ZcXiIsYSd71i3STZIt1xCDYkOmE8LNPJZwDrWt4EbTew8tv81MqlmUOqxqQ4gwcEgFMZ
+         qNDLaWqn8e4CBsOn9oxy51U6sUZp+Xi5hBqcEtln3bnVcB3oPLFTbdrSofNobjJtHnE2
+         JZ/B9Ed1sm53MBKvZXXcY9dNyi3t0J23Zr54JK+mn4882/cFuQDCGrh7mSGirwDqiUKg
+         J5Bw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=dgQKtxP/R03TWq5DIxr766UAp5B0TjINbFtQVtJEbiI=;
-        b=bT6+SusyQr2qxLiZ8tgWCnJA2NWbiaqb40EHEqSlUirrRoBrD9ckuP3NdV4bZtKLED
-         7yIXcXvUD1MdrEA/YrP1IPGEOdKfau8VWTj6kVF+lG84VXw4WfZfDqUaoxfYvFua+x+w
-         8Anoq/pvsJFlBv45rBhbxTOdN4JVlwZdmjuGRcc4orrlWhldSMNhNnykKblvvu4RY1Ac
-         VQj40MKZkFxck9sBBv5+0Wgw0cAYi5e/gFyyyWmOeex8rT1+EfwiZlneNZu0pR63vqG9
-         qxduqFMhn2TlQdohQ8sZEucEaIDJNgYUU8IchZmhyDO3jUO/ZOiw+gx7b3XMPChlbjvg
-         yMog==
-X-Gm-Message-State: APjAAAUnBX0imW1ykAsCQ5OXoxkkaUyl44Q3UNSx7qzpqBfEFVO29PoA
-        P31uUd8gOOdfEwOM4tPW6mo=
-X-Google-Smtp-Source: APXvYqwgtI993T7c3PXdVfI8mL5tUiwAvLZb+WRjKZr+rTcx2/QSC1GQ7GuCVlqpam1EeKb35T+LqQ==
-X-Received: by 2002:a1c:a78c:: with SMTP id q134mr15315866wme.98.1577408518231;
-        Thu, 26 Dec 2019 17:01:58 -0800 (PST)
+        bh=SJavRKYLQJoieNyJqH2ZNFzEMrxnkIJspMuxMmHhtyU=;
+        b=O2QzboiDJAlDXRU4Pjkyjw8Z2GRYh8mVHwYCGdpfJepdfiQ+WnUnegeZgyC3HDjKaB
+         +snVguhpR73ONm401j1DJdFUXcY3jEyTbcuUDJgscEf+5rx4lLNtHYReX9t6NPtfkgM9
+         Y2axCSdsGvnT7roo/4DlJTGk8n7FXIv3Eio9ndzDvbmxCwTtaT6Oc2La0WOAVgDx3mrU
+         U0AM728Mykc7SSJbJ/hLKR120FMWocMF3K01UJkiqUK0xjv6Wbt5uchkb0KHtnE0rSQH
+         CmsdjgIJCtlyVbmPOlLVo/XcG0J2D35RNF/DaZUWqzWRTEG7hH4r44y6UcfDFenzsA4m
+         P2DA==
+X-Gm-Message-State: APjAAAUlcfNkrNLcIZa1shWWexhmZB6sJ4SE6c9xW+xrjWsXgoTVyThw
+        4a01QOjFacTKgJyXL+dxvOE=
+X-Google-Smtp-Source: APXvYqxZZ5/24joLxUh7wPZyUK4QU71HYcdkAEjf1zfDb4uKNe+sV1obiiIyaXC8e3dCs9J6Vxnaww==
+X-Received: by 2002:a5d:53d1:: with SMTP id a17mr45955025wrw.327.1577408642830;
+        Thu, 26 Dec 2019 17:04:02 -0800 (PST)
 Received: from localhost.localdomain ([188.25.254.226])
-        by smtp.gmail.com with ESMTPSA id a16sm32457162wrt.37.2019.12.26.17.01.56
+        by smtp.gmail.com with ESMTPSA id o1sm32929826wrn.84.2019.12.26.17.04.01
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 26 Dec 2019 17:01:57 -0800 (PST)
+        Thu, 26 Dec 2019 17:04:02 -0800 (PST)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     davem@davemloft.net, jakub.kicinski@netronome.com
 Cc:     richardcochran@gmail.com, f.fainelli@gmail.com,
-        vivien.didelot@gmail.com, andrew@lunn.ch, netdev@vger.kernel.org,
-        Vladimir Oltean <olteanv@gmail.com>
-Subject: [PATCH net] net: dsa: sja1105: Really make the PTP command read-write
-Date:   Fri, 27 Dec 2019 03:01:50 +0200
-Message-Id: <20191227010150.26034-1-olteanv@gmail.com>
+        vivien.didelot@gmail.com, andrew@lunn.ch, vinicius.gomes@intel.com,
+        netdev@vger.kernel.org, Vladimir Oltean <olteanv@gmail.com>
+Subject: [PATCH net] net: dsa: sja1105: Remove restriction of zero base-time for taprio offload
+Date:   Fri, 27 Dec 2019 03:03:54 +0200
+Message-Id: <20191227010354.26826-1-olteanv@gmail.com>
 X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When activating tc-taprio offload on the switch ports, the TAS state
-machine will try to check whether it is running or not, but will find
-both the STARTED and STOPPED bits as false in the
-sja1105_tas_check_running function. So the function will return -EINVAL
-(an abnormal situation) and the kernel will keep printing this from the
-TAS FSM workqueue:
+The check originates from the initial implementation which was not based
+on PTP time but on a standalone clock source. In the meantime we can now
+program the PTPSCHTM register at runtime with the dynamic base time
+(actually with a value that is 200 ns smaller, to avoid writing DELTA=0
+in the Schedule Entry Points Parameters Table). And we also have logic
+for moving the actual base time in the future of the PHC's current time
+base, so the check for zero serves no purpose, since even if the user
+will specify zero, that's not what will end up in the static config
+table where the limitation is.
 
-[   37.691971] sja1105 spi0.1: An operation returned -22
-
-The reason is that the underlying function that gets called,
-sja1105_ptp_commit, does not actually do a SPI_READ, but a SPI_WRITE. So
-the command buffer remains initialized with zeroes instead of retrieving
-the hardware state. Fix that.
-
-Fixes: 41603d78b362 ("net: dsa: sja1105: Make the PTP command read-write")
+Fixes: 86db36a347b4 ("net: dsa: sja1105: Implement state machine for TAS with PTP clock source")
 Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
 ---
- drivers/net/dsa/sja1105/sja1105_ptp.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/dsa/sja1105/sja1105_tas.c | 5 -----
+ 1 file changed, 5 deletions(-)
 
-diff --git a/drivers/net/dsa/sja1105/sja1105_ptp.c b/drivers/net/dsa/sja1105/sja1105_ptp.c
-index 56f18ff60a41..c373513127d3 100644
---- a/drivers/net/dsa/sja1105/sja1105_ptp.c
-+++ b/drivers/net/dsa/sja1105/sja1105_ptp.c
-@@ -237,7 +237,7 @@ int sja1105_ptp_commit(struct dsa_switch *ds, struct sja1105_ptp_cmd *cmd,
- 	if (rw == SPI_WRITE)
- 		priv->info->ptp_cmd_packing(buf, cmd, PACK);
+diff --git a/drivers/net/dsa/sja1105/sja1105_tas.c b/drivers/net/dsa/sja1105/sja1105_tas.c
+index 26b925b5dace..fa6750d973d7 100644
+--- a/drivers/net/dsa/sja1105/sja1105_tas.c
++++ b/drivers/net/dsa/sja1105/sja1105_tas.c
+@@ -477,11 +477,6 @@ int sja1105_setup_tc_taprio(struct dsa_switch *ds, int port,
+ 	if (admin->cycle_time_extension)
+ 		return -ENOTSUPP;
  
--	rc = sja1105_xfer_buf(priv, SPI_WRITE, regs->ptp_control, buf,
-+	rc = sja1105_xfer_buf(priv, rw, regs->ptp_control, buf,
- 			      SJA1105_SIZE_PTP_CMD);
- 
- 	if (rw == SPI_READ)
+-	if (!ns_to_sja1105_delta(admin->base_time)) {
+-		dev_err(ds->dev, "A base time of zero is not hardware-allowed\n");
+-		return -ERANGE;
+-	}
+-
+ 	for (i = 0; i < admin->num_entries; i++) {
+ 		s64 delta_ns = admin->entries[i].interval;
+ 		s64 delta_cycles = ns_to_sja1105_delta(delta_ns);
 -- 
 2.17.1
 
