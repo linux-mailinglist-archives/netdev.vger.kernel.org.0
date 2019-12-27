@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E275612B9E8
+	by mail.lfdr.de (Postfix) with ESMTP id 651A712B9E6
 	for <lists+netdev@lfdr.de>; Fri, 27 Dec 2019 19:15:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727806AbfL0SPJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Dec 2019 13:15:09 -0500
-Received: from mail.kernel.org ([198.145.29.99]:39712 "EHLO mail.kernel.org"
+        id S1727783AbfL0SPI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Dec 2019 13:15:08 -0500
+Received: from mail.kernel.org ([198.145.29.99]:39764 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727733AbfL0SPF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 27 Dec 2019 13:15:05 -0500
+        id S1727738AbfL0SPG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 27 Dec 2019 13:15:06 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 20A6F208C4;
-        Fri, 27 Dec 2019 18:15:04 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 3D21120CC7;
+        Fri, 27 Dec 2019 18:15:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1577470504;
-        bh=tZgV55XFfhtQ/L/J3NIPWWile7ruquWvp9IYF3wQGMc=;
+        s=default; t=1577470506;
+        bh=iQGXxCHV1+CJ7ks380hPcc4n61ekmCUk3qyBkkXbrt4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Kx2r3xN+nyo+sdCjQIljetVHNNrm6M52SZOWMkmtclRk/Tu07teImYfU7ZxhC4gR1
-         dvJm8S1QWvhgVw2s+/1qTlCz7osH8c08DRQbL4lwlgIFI9x4qFj8fKM0lEU7gh7y6L
-         qaaTVpqtxTJA47oMxwulMYiZX3VzCEiewoKMPEpM=
+        b=BlJ35lZHpd2LhZFTaDzne/C/KsErJxbebleQPDzUaZ5DqqTFJwch3o4Q7kTSsK/hv
+         HoxtEYvRp80qVTkpXjNV1EhGHEwGNxC1nJC5VJF8QG9VwbeWsyKlMHdW1HPqbIqsRP
+         CbbCgyEaRz4Zjudu6fnnzogNNNQHnXSVD7kF9QH0=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Taehee Yoo <ap420073@gmail.com>,
+Cc:     Cristian Birsan <cristian.birsan@microchip.com>,
         Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Sasha Levin <sashal@kernel.org>,
-        osmocom-net-gprs@lists.osmocom.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 23/38] gtp: avoid zero size hashtable
-Date:   Fri, 27 Dec 2019 13:14:20 -0500
-Message-Id: <20191227181435.7644-23-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        linux-usb@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.9 24/38] net: usb: lan78xx: Fix error message format specifier
+Date:   Fri, 27 Dec 2019 13:14:21 -0500
+Message-Id: <20191227181435.7644-24-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191227181435.7644-1-sashal@kernel.org>
 References: <20191227181435.7644-1-sashal@kernel.org>
@@ -44,42 +44,33 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Taehee Yoo <ap420073@gmail.com>
+From: Cristian Birsan <cristian.birsan@microchip.com>
 
-[ Upstream commit 6a902c0f31993ab02e1b6ea7085002b9c9083b6a ]
+[ Upstream commit 858ce8ca62ea1530f2779d0e3f934b0176e663c3 ]
 
-GTP default hashtable size is 1024 and userspace could set specific
-hashtable size with IFLA_GTP_PDP_HASHSIZE. If hashtable size is set to 0
-from userspace,  hashtable will not work and panic will occur.
+Display the return code as decimal integer.
 
-Fixes: 459aa660eb1d ("gtp: add initial driver for datapath of GPRS Tunneling Protocol (GTP-U)")
-Signed-off-by: Taehee Yoo <ap420073@gmail.com>
+Fixes: 55d7de9de6c3 ("Microchip's LAN7800 family USB 2/3 to 10/100/1000 Ethernet device driver")
+Signed-off-by: Cristian Birsan <cristian.birsan@microchip.com>
 Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/gtp.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ drivers/net/usb/lan78xx.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/gtp.c b/drivers/net/gtp.c
-index 1d2fc81dc714..c2898718b593 100644
---- a/drivers/net/gtp.c
-+++ b/drivers/net/gtp.c
-@@ -677,10 +677,13 @@ static int gtp_newlink(struct net *src_net, struct net_device *dev,
- 	if (err < 0)
- 		goto out_err;
+diff --git a/drivers/net/usb/lan78xx.c b/drivers/net/usb/lan78xx.c
+index 96258e6a1920..207660fd4b74 100644
+--- a/drivers/net/usb/lan78xx.c
++++ b/drivers/net/usb/lan78xx.c
+@@ -442,7 +442,7 @@ static int lan78xx_read_stats(struct lan78xx_net *dev,
+ 		}
+ 	} else {
+ 		netdev_warn(dev->net,
+-			    "Failed to read stat ret = 0x%x", ret);
++			    "Failed to read stat ret = %d", ret);
+ 	}
  
--	if (!data[IFLA_GTP_PDP_HASHSIZE])
-+	if (!data[IFLA_GTP_PDP_HASHSIZE]) {
- 		hashsize = 1024;
--	else
-+	} else {
- 		hashsize = nla_get_u32(data[IFLA_GTP_PDP_HASHSIZE]);
-+		if (!hashsize)
-+			hashsize = 1024;
-+	}
- 
- 	err = gtp_hashtable_new(gtp, hashsize);
- 	if (err < 0)
+ 	kfree(stats);
 -- 
 2.20.1
 
