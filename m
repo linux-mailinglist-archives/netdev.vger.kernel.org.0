@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C736512B025
-	for <lists+netdev@lfdr.de>; Fri, 27 Dec 2019 02:21:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B3CCC12B02D
+	for <lists+netdev@lfdr.de>; Fri, 27 Dec 2019 02:24:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726874AbfL0BVL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Dec 2019 20:21:11 -0500
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:36026 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726193AbfL0BVL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Dec 2019 20:21:11 -0500
-Received: by mail-wr1-f66.google.com with SMTP id z3so24916690wru.3
-        for <netdev@vger.kernel.org>; Thu, 26 Dec 2019 17:21:08 -0800 (PST)
+        id S1727033AbfL0BYY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Dec 2019 20:24:24 -0500
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:41741 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726806AbfL0BYY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Dec 2019 20:24:24 -0500
+Received: by mail-wr1-f65.google.com with SMTP id c9so24890700wrw.8;
+        Thu, 26 Dec 2019 17:24:22 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id;
-        bh=DUpQPK5fjxKECZzGOiN4zd1b/yBFtdI+JhnvQsythio=;
-        b=lNUbss1kJEq1XYvuUnfXd8XW1H6TfP1pnUCMByNvnhO9r4EelPT5jGsuZ6RahMi2nR
-         7WT29kK6WWKojwW4AdkiOahGaXhqmQPcagfHgEWx3KCwN9aInrR4Ptb+D6cSY3YseH6j
-         4RZdOYJs0PKNcaMs30kvmKc/up9iJB3lGZJoRDiVIF8BEy4akFZowunP8TUZofIMr1uA
-         lQqoGW8nU4Rs7lG5r4k2HYPhk8ESJvYX+nfwHn2UsLHWr2Mwz+LEJLh48HhuUKYP09B3
-         UlXllSZbFWWlIfoAaCCJcQSCqBi3OeBWeqCKnAzCwVOfygx4IhZPwKasnUgmh3o4espw
-         C+iA==
+        bh=bVUkShIVYz0GYkvp4Nh+Gg7c7ljJk23j8BGGZQ1teIk=;
+        b=aHZOXDejBhYLGyCj6Ch72AKMAfMMdXoYzUaw+aiVdzIloMwWDTUy1UTzd8RIG8pyO9
+         hhjR6eEYcWgXzGa+91jXh1HrDOB6QQ8U7fUaKXhXRyGGBNYBUaIEKae4f/OY+0Bwmilx
+         dmqwH4bUHnTYfU21kRhhHxylwNBHtWQaPQnKQCPbiEBTMRYB0OVfQrcQZDgn9XgGJTiC
+         wtPZ7ZEJ0Es2E09kNbRWdfa2XXDhMQk3449c+LRmcUpT4UwflDD7GGC4Mz93DEgxk2MM
+         zrEximcOeKrlbvaAOlnqVvNT3gCT5S8r+zw6a0fBjFPeCLdoiQ4wa0ZeIzuHC82wGfTk
+         DnqA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=DUpQPK5fjxKECZzGOiN4zd1b/yBFtdI+JhnvQsythio=;
-        b=XaCKtetTiPwo281r9Pr52w+dyB1Rl6R1UhhoAY6nA9ou+bdA/OejHGxjWz5Ou77Nem
-         jbF5fqJdWR5FpC+Gm912xBd3vI4YCyRn9zNaYgo022K/CwlgBAVdnkr0ehDv5q09Bxjx
-         LQY1KF9pzS0pkkdacVeavi0tJ73g/1N8XKiCdRNG1gHl5pQBQdSi3eXsC8CeVjIr/BOd
-         5AKe20lprRYqvih8RIJ9QYsXRadND3VXh0vDjQEkCG+x1GQjHSE4pGavx7lUHBjCNMy+
-         ixwRMm/p8kOkzJQee9UVk06dIIbSwz7lXBpdyEox3VHWTazC2LKDhsQurP1INl1Ju+68
-         L3Vg==
-X-Gm-Message-State: APjAAAUa00D6GfAQzSW81CSh4Y36H8QgRh2mgIyFVQAL4dU3Bw2mp+5u
-        TwS8rP75HkQH1M76g8bzGIg=
-X-Google-Smtp-Source: APXvYqzP7P/19D8/7blEz6qn4bPYy+XfQXPNnTcD+d+UDSCkR+xc6HxgKh2gLXMwTbEQYwqXZbf93g==
-X-Received: by 2002:adf:f850:: with SMTP id d16mr48696163wrq.161.1577409668082;
-        Thu, 26 Dec 2019 17:21:08 -0800 (PST)
+        bh=bVUkShIVYz0GYkvp4Nh+Gg7c7ljJk23j8BGGZQ1teIk=;
+        b=EvLptjfrZsdhbm1FgSk1sfhfCHEl9/0Ftfy0QRoqC8TzeGpelmAkc4Zz132Pvb7CoF
+         ZhmdXO4Ob6DmOvXfsCWwkKMuiwixZt4m1L/yf6F0qTzxkxxhzo3HwSTkFYGIh6VYw5TC
+         PvcULkJ48gLJ+8JqTE/rfMYtknS0Biq+unnmTc8+I3k2aN/vmmZP0QVByLG4FPSqNAaV
+         lq5IFd5iYasUko/OXzvEYw9/tI2x8eehZoah3j6kR2bqgkMEeuzkeG5jYHGCVpeyj5VT
+         uPkYc7W1svRT6rFsCVJK8z/P3ALYAbQW0nuwS0zKOg0aEvxXPzzYJ01cuXQoX/Kg443s
+         J7OQ==
+X-Gm-Message-State: APjAAAUcWwfBExl4O1lwf5+GzrElZ+pDqkeQmsZNTG/DdXLKrZwnTiND
+        RzgiyZqkaiLXpFiMlydLuzk+JMnK
+X-Google-Smtp-Source: APXvYqyDVh3BeBUpcKVw/mom+KUNYCCGDqr8smKYZUVF0qIB/v2W8rD+egCiPnzMYH6+pwEyr0/xTg==
+X-Received: by 2002:adf:ff8a:: with SMTP id j10mr12780825wrr.312.1577409861657;
+        Thu, 26 Dec 2019 17:24:21 -0800 (PST)
 Received: from localhost.localdomain ([188.25.254.226])
-        by smtp.gmail.com with ESMTPSA id n8sm33258680wrx.42.2019.12.26.17.21.07
+        by smtp.gmail.com with ESMTPSA id k7sm9580233wmi.19.2019.12.26.17.24.20
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 26 Dec 2019 17:21:07 -0800 (PST)
+        Thu, 26 Dec 2019 17:24:21 -0800 (PST)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     broonie@kernel.org
-Cc:     linux-spi@vget.kernel.org, netdev@vger.kernel.org,
+Cc:     linux-spi@vger.kernel.org, netdev@vger.kernel.org,
         Vladimir Oltean <olteanv@gmail.com>
 Subject: [PATCH spi] spi: Don't look at TX buffer for PTP system timestamping
-Date:   Fri, 27 Dec 2019 03:21:00 +0200
-Message-Id: <20191227012100.32316-1-olteanv@gmail.com>
+Date:   Fri, 27 Dec 2019 03:24:17 +0200
+Message-Id: <20191227012417.1057-1-olteanv@gmail.com>
 X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
@@ -71,6 +71,9 @@ Fixes: b42faeee718c ("spi: Add a PTP system timestamp to the transfer structure"
 Fixes: d6b71dfaeeba ("spi: spi-fsl-dspi: Implement the PTP system timestamping for TCFQ mode")
 Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
 ---
+Sorry, resent because I had a typo in the address of the mailing list
+the first time.
+
  drivers/spi/spi-fsl-dspi.c |  9 ++++++---
  drivers/spi/spi.c          | 22 ++++++++--------------
  include/linux/spi/spi.h    |  4 ++--
