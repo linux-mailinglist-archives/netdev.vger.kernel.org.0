@@ -2,86 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B57DD12B4CF
-	for <lists+netdev@lfdr.de>; Fri, 27 Dec 2019 14:22:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D5C1112B4B6
+	for <lists+netdev@lfdr.de>; Fri, 27 Dec 2019 14:02:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726509AbfL0NVt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Dec 2019 08:21:49 -0500
-Received: from mx2.suse.de ([195.135.220.15]:40682 "EHLO mx2.suse.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726342AbfL0NVt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 27 Dec 2019 08:21:49 -0500
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id 6B559B206;
-        Fri, 27 Dec 2019 13:21:47 +0000 (UTC)
-From:   mrostecki@opensuse.org
-To:     bpf@vger.kernel.org
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Michal Rostecki <mrostecki@opensuse.org>
-Subject: [PATCH bpf-next 2/2] bpftool: Add misc secion and probe for large INSN limit
-Date:   Fri, 27 Dec 2019 11:53:46 +0100
-Message-Id: <20191227105346.867-3-mrostecki@opensuse.org>
-X-Mailer: git-send-email 2.16.4
-In-Reply-To: <20191227105346.867-1-mrostecki@opensuse.org>
-References: <20191227105346.867-1-mrostecki@opensuse.org>
+        id S1726538AbfL0NCj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Dec 2019 08:02:39 -0500
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:34350 "EHLO
+        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726053AbfL0NCj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Dec 2019 08:02:39 -0500
+Received: by mail-wm1-f65.google.com with SMTP id c127so6845476wme.1
+        for <netdev@vger.kernel.org>; Fri, 27 Dec 2019 05:02:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=H6yhrk7MOPfgAqOyYMkFlyk4k0Gx1xWrJTv4PbVvw0k=;
+        b=Pm2djIftyQXWQ+R/ei0b3D2k5tKUtGW2Rg9CWolpH06vLB0I71L2SB3pLoLDmxgJt4
+         IxTitPorkLfQ4eCaBB6XqkIJZ5qYm7Y2eqj/hMY7sSnehxbckhec8tbfG82vx1QPrbx6
+         dRwV8bPenPi82FXSimi71WjkFhpD0czxeYYX59iok/GFFKsAChXNtpRhBKX0u3DixSnw
+         CNTYtGror79smIow6G8jhS6826Y1mZNcjHcjlcPflgbvq9FWM+QJSj8cc1TgdmfEyYYM
+         iaqeO3nyug+mYc0DGq4n6zPLwPZoKyeNRK1oX4k4AAodyVZWbRFDlcKouIMljulOrb/I
+         B9YA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=H6yhrk7MOPfgAqOyYMkFlyk4k0Gx1xWrJTv4PbVvw0k=;
+        b=SXf8JufFWmKpgBYF1gll5zLGVJQ5SIzAR+hVwck894YysHse7rP6BHEcZZRG/2R8nx
+         WM9Ipwhg7TTwm7ZztSVjUJKCQ5C1PboKe5hFprCrvjxB2kdHBgdxY3T3YReFrX1iToWa
+         P0CpCx7kbpaTOIFzojDk/Fp8OKIn4Do8qlie0aRFtrWJ9ShmFLG/r6/+gX61YM26SWav
+         syFNdw07sm4a0RNNYWjYUb1r62wbU6FsMcyAGSt4CkCjDDO8Qrk5g04fW+f6O1lVqA/J
+         y8HwFRvMdwaqdUE3HazOP0OOHSZ8IlwyVKmk+pBQkInM09xNFulrnsg7a0HlufoV7l4U
+         b10g==
+X-Gm-Message-State: APjAAAVE2fN0sQlPhcaavno0yo/4ozNM2/84JptxTX/MrUDMhbzOToYa
+        ps2e0ulbCPwlX5LNiFTs2Oc=
+X-Google-Smtp-Source: APXvYqwefgcfuGvSCuoGlrlYzC2aEz/yQMK5zBlJ+apyJMjXpZVpfaNWB+zzPEecA8cTROFyn5ScxA==
+X-Received: by 2002:a7b:c351:: with SMTP id l17mr20072090wmj.25.1577451756999;
+        Fri, 27 Dec 2019 05:02:36 -0800 (PST)
+Received: from localhost.localdomain ([188.25.254.226])
+        by smtp.gmail.com with ESMTPSA id i5sm34307357wrv.34.2019.12.27.05.02.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 27 Dec 2019 05:02:36 -0800 (PST)
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     davem@davemloft.net, jakub.kicinski@netronome.com
+Cc:     richardcochran@gmail.com, f.fainelli@gmail.com,
+        vivien.didelot@gmail.com, andrew@lunn.ch, netdev@vger.kernel.org,
+        Vladimir Oltean <olteanv@gmail.com>
+Subject: [PATCH v2 net-next 0/3] Improvements to SJA1105 DSA RX timestamping
+Date:   Fri, 27 Dec 2019 15:02:27 +0200
+Message-Id: <20191227130230.21541-1-olteanv@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Michal Rostecki <mrostecki@opensuse.org>
+This series makes the sja1105 DSA driver use a dedicated kernel thread
+for RX timestamping, a process which is time-sensitive and otherwise a
+bit fragile. This allows users to customize their system (probabil an
+embedded PTP switch) fully and allocate the CPU bandwidth for the driver
+to expedite the RX timestamps as quickly as possible.
 
-Introduce a new probe section (misc) for probes not related to concrete
-map types, program types, functions or kernel configuration. Introduce a
-probe for large INSN limit as the first one in that section.
+While doing this conversion, add a function to the PTP core for
+cancelling this kernel thread (function which I found rather strange to
+be missing).
 
-Signed-off-by: Michal Rostecki <mrostecki@opensuse.org>
----
- tools/bpf/bpftool/feature.c | 18 ++++++++++++++++++
- 1 file changed, 18 insertions(+)
+Vladimir Oltean (3):
+  ptp: introduce ptp_cancel_worker_sync
+  net: dsa: sja1105: Use PTP core's dedicated kernel thread for RX
+    timestamping
+  net: dsa: sja1105: Empty the RX timestamping queue on PTP settings
+    change
 
-diff --git a/tools/bpf/bpftool/feature.c b/tools/bpf/bpftool/feature.c
-index 03bdc5b3ac49..4a7359b9a427 100644
---- a/tools/bpf/bpftool/feature.c
-+++ b/tools/bpf/bpftool/feature.c
-@@ -572,6 +572,18 @@ probe_helpers_for_progtype(enum bpf_prog_type prog_type, bool supported_type,
- 		printf("\n");
- }
- 
-+static void
-+probe_large_insn_limit(const char *define_prefix, __u32 ifindex)
-+{
-+	bool res;
-+
-+	res = bpf_probe_large_insn_limit(ifindex);
-+	print_bool_feature("have_large_insn_limit",
-+			   "Large complexity limit and maximum program size (1M)",
-+			   "HAVE_LARGE_INSN_LIMIT",
-+			   res, define_prefix);
-+}
-+
- static int do_probe(int argc, char **argv)
- {
- 	enum probe_component target = COMPONENT_UNSPEC;
-@@ -724,6 +736,12 @@ static int do_probe(int argc, char **argv)
- 		probe_helpers_for_progtype(i, supported_types[i],
- 					   define_prefix, ifindex);
- 
-+	print_end_then_start_section("misc",
-+				     "Scanning miscellaneous eBPF features...",
-+				     "/*** eBPF misc features ***/",
-+				     define_prefix);
-+	probe_large_insn_limit(define_prefix, ifindex);
-+
- exit_close_json:
- 	if (json_output) {
- 		/* End current "section" of probes */
+ drivers/net/dsa/sja1105/sja1105_ptp.c | 36 +++++++++++++--------------
+ drivers/net/dsa/sja1105/sja1105_ptp.h |  1 +
+ drivers/ptp/ptp_clock.c               |  6 +++++
+ include/linux/dsa/sja1105.h           |  2 --
+ include/linux/ptp_clock_kernel.h      |  9 +++++++
+ 5 files changed, 34 insertions(+), 20 deletions(-)
+
 -- 
-2.16.4
+2.17.1
 
