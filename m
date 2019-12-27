@@ -2,41 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B62E12B6F1
-	for <lists+netdev@lfdr.de>; Fri, 27 Dec 2019 18:46:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A28C12B6D8
+	for <lists+netdev@lfdr.de>; Fri, 27 Dec 2019 18:45:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727830AbfL0Rpy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Dec 2019 12:45:54 -0500
-Received: from mail.kernel.org ([198.145.29.99]:43982 "EHLO mail.kernel.org"
+        id S1728379AbfL0Rpi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Dec 2019 12:45:38 -0500
+Received: from mail.kernel.org ([198.145.29.99]:44126 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728755AbfL0RpW (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 27 Dec 2019 12:45:22 -0500
+        id S1728782AbfL0Rp2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 27 Dec 2019 12:45:28 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 147F7206CB;
-        Fri, 27 Dec 2019 17:45:21 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id B7D8B24125;
+        Fri, 27 Dec 2019 17:45:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1577468721;
-        bh=jQybQAdyx9ZBDl/KAmYyeRIYex04N12HCfmKKKywYCg=;
+        s=default; t=1577468727;
+        bh=KV6gv0rCE9llG/Bq2Q+B7GqwVsdqUICSIUa5yUrEtv8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=B8/T50fk2/0qKQbF94Hal0IuLUrNz2ORgB2tdZe4pBQeapVEfQ1YPOcjzUYg/dVoI
-         RJ+cAMyUDrGXrX5BV3w09SEpsS0EHzYPMQHoZZaOqpunj75un/3dRZisW8I2bCiZfn
-         /BM6D9+iKXUnAyZM9iFscwa1zZMPu6TNSzNBV4Mk=
+        b=g1burTYFd2dowUZi5ZCt2+aV4PNFHW4Xj3b17ZJWR2v1uU/SZ+0BXUjLWT/lZ6LxH
+         Jj0IpVGd7a78RuKF44pipiuGWt6MBnyzyBuQeYadlkA5QzouGw0uStL85LnSAiVSnw
+         SaA0HkGvnN1ukvC3ibdaO1OfNz9ZyDoB6oZvxKEo=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Alexander Lobakin <alobakin@dlink.ru>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 75/84] net, sysctl: Fix compiler warning when only cBPF is present
-Date:   Fri, 27 Dec 2019 12:43:43 -0500
-Message-Id: <20191227174352.6264-75-sashal@kernel.org>
+Cc:     Jiangfeng Xiao <xiaojiangfeng@huawei.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 80/84] net: hisilicon: Fix a BUG trigered by wrong bytes_compl
+Date:   Fri, 27 Dec 2019 12:43:48 -0500
+Message-Id: <20191227174352.6264-80-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191227174352.6264-1-sashal@kernel.org>
 References: <20191227174352.6264-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -45,64 +43,93 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Alexander Lobakin <alobakin@dlink.ru>
+From: Jiangfeng Xiao <xiaojiangfeng@huawei.com>
 
-[ Upstream commit 1148f9adbe71415836a18a36c1b4ece999ab0973 ]
+[ Upstream commit 90b3b339364c76baa2436445401ea9ade040c216 ]
 
-proc_dointvec_minmax_bpf_restricted() has been firstly introduced
-in commit 2e4a30983b0f ("bpf: restrict access to core bpf sysctls")
-under CONFIG_HAVE_EBPF_JIT. Then, this ifdef has been removed in
-ede95a63b5e8 ("bpf: add bpf_jit_limit knob to restrict unpriv
-allocations"), because a new sysctl, bpf_jit_limit, made use of it.
-Finally, this parameter has become long instead of integer with
-fdadd04931c2 ("bpf: fix bpf_jit_limit knob for PAGE_SIZE >= 64K")
-and thus, a new proc_dolongvec_minmax_bpf_restricted() has been
-added.
+When doing stress test, we get the following trace:
+kernel BUG at lib/dynamic_queue_limits.c:26!
+Internal error: Oops - BUG: 0 [#1] SMP ARM
+Modules linked in: hip04_eth
+CPU: 0 PID: 2003 Comm: tDblStackPcap0 Tainted: G           O L  4.4.197 #1
+Hardware name: Hisilicon A15
+task: c3637668 task.stack: de3bc000
+PC is at dql_completed+0x18/0x154
+LR is at hip04_tx_reclaim+0x110/0x174 [hip04_eth]
+pc : [<c041abfc>]    lr : [<bf0003a8>]    psr: 800f0313
+sp : de3bdc2c  ip : 00000000  fp : c020fb10
+r10: 00000000  r9 : c39b4224  r8 : 00000001
+r7 : 00000046  r6 : c39b4000  r5 : 0078f392  r4 : 0078f392
+r3 : 00000047  r2 : 00000000  r1 : 00000046  r0 : df5d5c80
+Flags: Nzcv  IRQs on  FIQs on  Mode SVC_32  ISA ARM  Segment user
+Control: 32c5387d  Table: 1e189b80  DAC: 55555555
+Process tDblStackPcap0 (pid: 2003, stack limit = 0xde3bc190)
+Stack: (0xde3bdc2c to 0xde3be000)
+[<c041abfc>] (dql_completed) from [<bf0003a8>] (hip04_tx_reclaim+0x110/0x174 [hip04_eth])
+[<bf0003a8>] (hip04_tx_reclaim [hip04_eth]) from [<bf0012c0>] (hip04_rx_poll+0x20/0x388 [hip04_eth])
+[<bf0012c0>] (hip04_rx_poll [hip04_eth]) from [<c04c8d9c>] (net_rx_action+0x120/0x374)
+[<c04c8d9c>] (net_rx_action) from [<c021eaf4>] (__do_softirq+0x218/0x318)
+[<c021eaf4>] (__do_softirq) from [<c021eea0>] (irq_exit+0x88/0xac)
+[<c021eea0>] (irq_exit) from [<c0240130>] (msa_irq_exit+0x11c/0x1d4)
+[<c0240130>] (msa_irq_exit) from [<c0267ba8>] (__handle_domain_irq+0x110/0x148)
+[<c0267ba8>] (__handle_domain_irq) from [<c0201588>] (gic_handle_irq+0xd4/0x118)
+[<c0201588>] (gic_handle_irq) from [<c0558360>] (__irq_svc+0x40/0x58)
+Exception stack(0xde3bdde0 to 0xde3bde28)
+dde0: 00000000 00008001 c3637668 00000000 00000000 a00f0213 dd3627a0 c0af6380
+de00: c086d380 a00f0213 c0a22a50 de3bde6c 00000002 de3bde30 c0558138 c055813c
+de20: 600f0213 ffffffff
+[<c0558360>] (__irq_svc) from [<c055813c>] (_raw_spin_unlock_irqrestore+0x44/0x54)
+Kernel panic - not syncing: Fatal exception in interrupt
 
-With this last change, we got back to that
-proc_dointvec_minmax_bpf_restricted() is used only under
-CONFIG_HAVE_EBPF_JIT, but the corresponding ifdef has not been
-brought back.
+Pre-modification code:
+int hip04_mac_start_xmit(struct sk_buff *skb, struct net_device *ndev)
+{
+[...]
+[1]	priv->tx_head = TX_NEXT(tx_head);
+[2]	count++;
+[3]	netdev_sent_queue(ndev, skb->len);
+[...]
+}
+An rx interrupt occurs if hip04_mac_start_xmit just executes to the line 2,
+tx_head has been updated, but corresponding 'skb->len' has not been
+added to dql_queue.
 
-So, in configurations like CONFIG_BPF_JIT=y && CONFIG_HAVE_EBPF_JIT=n
-since v4.20 we have:
+And then
+hip04_mac_interrupt->__napi_schedule->hip04_rx_poll->hip04_tx_reclaim
 
-  CC      net/core/sysctl_net_core.o
-net/core/sysctl_net_core.c:292:1: warning: ‘proc_dointvec_minmax_bpf_restricted’ defined but not used [-Wunused-function]
-  292 | proc_dointvec_minmax_bpf_restricted(struct ctl_table *table, int write,
-      | ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In hip04_tx_reclaim, because tx_head has been updated,
+bytes_compl will plus an additional "skb-> len"
+which has not been added to dql_queue. And then
+trigger the BUG_ON(bytes_compl > num_queued - dql->num_completed).
 
-Suppress this by guarding it with CONFIG_HAVE_EBPF_JIT again.
+To solve the problem described above, we put
+"netdev_sent_queue(ndev, skb->len);"
+before
+"priv->tx_head = TX_NEXT(tx_head);"
 
-Fixes: fdadd04931c2 ("bpf: fix bpf_jit_limit knob for PAGE_SIZE >= 64K")
-Signed-off-by: Alexander Lobakin <alobakin@dlink.ru>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Link: https://lore.kernel.org/bpf/20191218091821.7080-1-alobakin@dlink.ru
+Fixes: a41ea46a9a12 ("net: hisilicon: new hip04 ethernet driver")
+Signed-off-by: Jiangfeng Xiao <xiaojiangfeng@huawei.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/core/sysctl_net_core.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/net/ethernet/hisilicon/hip04_eth.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/core/sysctl_net_core.c b/net/core/sysctl_net_core.c
-index d67ec17f2cc8..6cec08cd0bb9 100644
---- a/net/core/sysctl_net_core.c
-+++ b/net/core/sysctl_net_core.c
-@@ -281,6 +281,7 @@ static int proc_dointvec_minmax_bpf_enable(struct ctl_table *table, int write,
- 	return ret;
- }
+diff --git a/drivers/net/ethernet/hisilicon/hip04_eth.c b/drivers/net/ethernet/hisilicon/hip04_eth.c
+index e8936ae46add..718afa4be2a0 100644
+--- a/drivers/net/ethernet/hisilicon/hip04_eth.c
++++ b/drivers/net/ethernet/hisilicon/hip04_eth.c
+@@ -456,9 +456,9 @@ hip04_mac_start_xmit(struct sk_buff *skb, struct net_device *ndev)
+ 	skb_tx_timestamp(skb);
  
-+# ifdef CONFIG_HAVE_EBPF_JIT
- static int
- proc_dointvec_minmax_bpf_restricted(struct ctl_table *table, int write,
- 				    void __user *buffer, size_t *lenp,
-@@ -291,6 +292,7 @@ proc_dointvec_minmax_bpf_restricted(struct ctl_table *table, int write,
+ 	hip04_set_xmit_desc(priv, phys);
+-	priv->tx_head = TX_NEXT(tx_head);
+ 	count++;
+ 	netdev_sent_queue(ndev, skb->len);
++	priv->tx_head = TX_NEXT(tx_head);
  
- 	return proc_dointvec_minmax(table, write, buffer, lenp, ppos);
- }
-+# endif /* CONFIG_HAVE_EBPF_JIT */
- 
- static int
- proc_dolongvec_minmax_bpf_restricted(struct ctl_table *table, int write,
+ 	stats->tx_bytes += skb->len;
+ 	stats->tx_packets++;
 -- 
 2.20.1
 
