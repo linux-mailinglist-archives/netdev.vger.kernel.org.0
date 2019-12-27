@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 49F9C12BA6E
-	for <lists+netdev@lfdr.de>; Fri, 27 Dec 2019 19:18:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EBBDB12BA77
+	for <lists+netdev@lfdr.de>; Fri, 27 Dec 2019 19:19:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727592AbfL0SO7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Dec 2019 13:14:59 -0500
-Received: from mail.kernel.org ([198.145.29.99]:39434 "EHLO mail.kernel.org"
+        id S1727695AbfL0STA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Dec 2019 13:19:00 -0500
+Received: from mail.kernel.org ([198.145.29.99]:39518 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727503AbfL0SOz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 27 Dec 2019 13:14:55 -0500
+        id S1727584AbfL0SO6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 27 Dec 2019 13:14:58 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 7CC1A20CC7;
-        Fri, 27 Dec 2019 18:14:54 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id EB5DD22B48;
+        Fri, 27 Dec 2019 18:14:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1577470495;
-        bh=4qsaJPCsqdeGWjUH3Q5NHhiloyBEEgLcVzLHgGTZ9jQ=;
+        s=default; t=1577470497;
+        bh=YakL7Z5jZvtAm2DDPTCZLaiFry5jg5EXIsKrVuUci3M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RRI/wfxZeSNv9eL3qnFDDVIvAzjpOBv0W2qGaqXeqBGc5ArhV7JL2g4V1dAZ5tb4d
-         hpAtNXItrX3gIEcD9WJJ3bsA7dplOy/KLMo7REq187va7bF9wI3nAUT8ULFwQ+aplQ
-         X/GLeulqi76wY5W9ccONvGNotZp/jDXCGvFdwhb8=
+        b=s+WC6FWjTXwbmgaBJfqL3DTn7d1MPoj5598ugd4G5T6F3xwyJhz+xEXnJjgMifBN8
+         +LyJvwlvN414Ha12JKYzgR4EilXY9cL7OScR17IkBXqdUm3nrxJOT3qNiVoJKmuDFk
+         wK5KiKnsLNH1DAGbEEc6EUS/o7fJ9tRZV4QegEC4=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     "Daniel T. Lee" <danieltimlee@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
+Cc:     Cristian Birsan <cristian.birsan@microchip.com>,
+        "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 15/38] samples: bpf: Replace symbol compare of trace_event
-Date:   Fri, 27 Dec 2019 13:14:12 -0500
-Message-Id: <20191227181435.7644-15-sashal@kernel.org>
+        linux-usb@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.9 17/38] net: usb: lan78xx: Fix suspend/resume PHY register access error
+Date:   Fri, 27 Dec 2019 13:14:14 -0500
+Message-Id: <20191227181435.7644-17-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191227181435.7644-1-sashal@kernel.org>
 References: <20191227181435.7644-1-sashal@kernel.org>
@@ -44,43 +44,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: "Daniel T. Lee" <danieltimlee@gmail.com>
+From: Cristian Birsan <cristian.birsan@microchip.com>
 
-[ Upstream commit bba1b2a890253528c45aa66cf856f289a215bfbc ]
+[ Upstream commit 20032b63586ac6c28c936dff696981159913a13f ]
 
-Previously, when this sample is added, commit 1c47910ef8013
-("samples/bpf: add perf_event+bpf example"), a symbol 'sys_read' and
-'sys_write' has been used without no prefixes. But currently there are
-no exact symbols with these under kallsyms and this leads to failure.
+Lan78xx driver accesses the PHY registers through MDIO bus over USB
+connection. When performing a suspend/resume, the PHY registers can be
+accessed before the USB connection is resumed. This will generate an
+error and will prevent the device to resume correctly.
+This patch adds the dependency between the MDIO bus and USB device to
+allow correct handling of suspend/resume.
 
-This commit changes exact compare to substring compare to keep compatible
-with exact symbol or prefixed symbol.
-
-Fixes: 1c47910ef8013 ("samples/bpf: add perf_event+bpf example")
-Signed-off-by: Daniel T. Lee <danieltimlee@gmail.com>
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-Link: https://lore.kernel.org/bpf/20191205080114.19766-2-danieltimlee@gmail.com
+Fixes: ce85e13ad6ef ("lan78xx: Update to use phylib instead of mii_if_info.")
+Signed-off-by: Cristian Birsan <cristian.birsan@microchip.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- samples/bpf/trace_event_user.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/usb/lan78xx.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/samples/bpf/trace_event_user.c b/samples/bpf/trace_event_user.c
-index 9a130d31ecf2..6fbb5eb9daf3 100644
---- a/samples/bpf/trace_event_user.c
-+++ b/samples/bpf/trace_event_user.c
-@@ -33,9 +33,9 @@ static void print_ksym(__u64 addr)
- 		return;
- 	sym = ksym_search(addr);
- 	printf("%s;", sym->name);
--	if (!strcmp(sym->name, "sys_read"))
-+	if (!strstr(sym->name, "sys_read"))
- 		sys_read_seen = true;
--	else if (!strcmp(sym->name, "sys_write"))
-+	else if (!strstr(sym->name, "sys_write"))
- 		sys_write_seen = true;
- }
+diff --git a/drivers/net/usb/lan78xx.c b/drivers/net/usb/lan78xx.c
+index a3f9d8f05db4..96258e6a1920 100644
+--- a/drivers/net/usb/lan78xx.c
++++ b/drivers/net/usb/lan78xx.c
+@@ -1763,6 +1763,7 @@ static int lan78xx_mdio_init(struct lan78xx_net *dev)
+ 	dev->mdiobus->read = lan78xx_mdiobus_read;
+ 	dev->mdiobus->write = lan78xx_mdiobus_write;
+ 	dev->mdiobus->name = "lan78xx-mdiobus";
++	dev->mdiobus->parent = &dev->udev->dev;
  
+ 	snprintf(dev->mdiobus->id, MII_BUS_ID_SIZE, "usb-%03d:%03d",
+ 		 dev->udev->bus->busnum, dev->udev->devnum);
 -- 
 2.20.1
 
