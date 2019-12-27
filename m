@@ -2,97 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 46CCE12B4B9
-	for <lists+netdev@lfdr.de>; Fri, 27 Dec 2019 14:02:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 38BAA12B4C7
+	for <lists+netdev@lfdr.de>; Fri, 27 Dec 2019 14:11:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727083AbfL0NCn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Dec 2019 08:02:43 -0500
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:55333 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727002AbfL0NCl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Dec 2019 08:02:41 -0500
-Received: by mail-wm1-f68.google.com with SMTP id q9so6440457wmj.5
-        for <netdev@vger.kernel.org>; Fri, 27 Dec 2019 05:02:40 -0800 (PST)
+        id S1726675AbfL0NLg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Dec 2019 08:11:36 -0500
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:41256 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726053AbfL0NLf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Dec 2019 08:11:35 -0500
+Received: by mail-pg1-f195.google.com with SMTP id x8so14433882pgk.8;
+        Fri, 27 Dec 2019 05:11:35 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=S1Zpjr9Ch6P6Dd5sTHnhhaojWVPaQFrvyYKRpuZw0Oo=;
-        b=g0yfjt1yhXdt92pIAqbjh6nYczHtJvs6mh9gEtFnqGNisQ9+C7mneClIbqbGsyY7hi
-         LGIpIjZbAzk++IN5HPHzONLV1IK/oxtjAcO0qGUIqm3ihwhnGWbNv71+ensiLTtLdGv8
-         uslC+GNhxhh4sZwsSCS6J2Uu14Ug/zUffN15gRAiwr2Q8abOQMrGC5tWjsbAdK+Q1FKb
-         dHzHtLLuU9ymeA7RuDQM4p1pZzZTXxooaf3VJ21Q5GtBalSrBkrBYLAeP163NLifBFi/
-         QrEDTFOlKd+sgi+F/4HZXI+yKSITnycde6YvX49upnYKZF3QzHglhlW3OGpOgWKrRYT0
-         9knQ==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=IX7kXlwKRYc8Z53ZAuzPPxbcKv6sYTixPprjeYYu2N0=;
+        b=nUjmkBrfxdpy6+7XPQO0Z0ypI/FHGMyoTPotggVI7iNtcL+UUKtxDV7WHHBUzGYUhL
+         m9CJF8xwQ1gMdxobpn3FOL679MWlsd9UmpdrgSnq/VlVhz704acs3JqnoPzZUJ74sHit
+         hTZo/IlLSY/byG0Y0Zy8W/D8WpUzxz5NDgAflLGn6wBWvAY90FpH9ru9cnGAbwvr9LvX
+         Oe22x5ECAsnwaNCWuaAmVra/9+R21+rja++DNHYzM9aUtdP6MEIClEmPqWdLaDFtAgCl
+         Lgy4NCiDOqB9TRog0li7IemcLHVsYrMCRJPIdr4+RjtHGvXHbLJO2B261U66c8zCVLeI
+         UGkQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=S1Zpjr9Ch6P6Dd5sTHnhhaojWVPaQFrvyYKRpuZw0Oo=;
-        b=aR+naZV2MIbTROYkZuXbbgFxaXSt6I1j6pidOkeOYoqpwudeyOKqkxzwIEfxxYKdNg
-         /rY/3aA+GrBN3ftr8dSIqHl9IPj/EuJEusZX5QFptrsmlZ+iEcw/D3q9RSYFRHfwpmud
-         cUofI0Nn13+f7Ad+L3JumD3uHwIU7TILXeq97fY0ELUwQY2t67q7kvMmjmfBmNRmLn0e
-         VdIJtZwtAutqRLwiPH3TEfR2kY34Ca6qkBqlVTNpcygpiI3MxXjDocdzAV0tCMgq2X4v
-         pi1a6uWYNOpRQFm/P9bLe9xHU5eCAQG5KW2rNdeZCIIGgnDCDIZplsGmihFVYT0B/Bsg
-         d2tQ==
-X-Gm-Message-State: APjAAAWH0BtsZQFG0iAL3hb8dtQ/tMduVS9QiVIbMiom9hoW45bu3TJP
-        HsSIR5MS5nP9TyAIhQn+5OM=
-X-Google-Smtp-Source: APXvYqxuJfEMzxb0vYg/Hmr6s13Eb0TktFrMdHCoD5g2pwK5SxGW0vwEgOm+Hi3JdPAmyF4NOmh0+A==
-X-Received: by 2002:a7b:cbc8:: with SMTP id n8mr19054097wmi.35.1577451759965;
-        Fri, 27 Dec 2019 05:02:39 -0800 (PST)
-Received: from localhost.localdomain ([188.25.254.226])
-        by smtp.gmail.com with ESMTPSA id i5sm34307357wrv.34.2019.12.27.05.02.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 27 Dec 2019 05:02:39 -0800 (PST)
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     davem@davemloft.net, jakub.kicinski@netronome.com
-Cc:     richardcochran@gmail.com, f.fainelli@gmail.com,
-        vivien.didelot@gmail.com, andrew@lunn.ch, netdev@vger.kernel.org,
-        Vladimir Oltean <olteanv@gmail.com>
-Subject: [PATCH v2 net-next 3/3] net: dsa: sja1105: Empty the RX timestamping queue on PTP settings change
-Date:   Fri, 27 Dec 2019 15:02:30 +0200
-Message-Id: <20191227130230.21541-4-olteanv@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20191227130230.21541-1-olteanv@gmail.com>
-References: <20191227130230.21541-1-olteanv@gmail.com>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=IX7kXlwKRYc8Z53ZAuzPPxbcKv6sYTixPprjeYYu2N0=;
+        b=FasRvbJWMPrZeRFJH1dr2OcPINEfy8Anq+Q98hH09hopeMftNSP/7h9j9RyNmewdZG
+         qdUj74jqBvXzAHc1IHYhQJujY4EBz06q/58a2RXKHAqSTQHY0fAK6tiM7iHnGtEmRZNd
+         Gbpu8yFwiGZux1vwlHDVi2UfRFqtWSbYNP74V39VrIAM2Oi2FqwLf4HwmCvKmr5H0uY9
+         61r7UcziUA9r9o5OyM3pIBeQWGvv4XbHc63NgjRKQDTvxbiM3g3eMvsQZkypCt3FqXQU
+         Oymo0MvFROgyRgOj3gFkYei3o7AcumsBRQQ2gmYQeGLx0+jyL37OltP5PJER6psttezG
+         VBbw==
+X-Gm-Message-State: APjAAAUyuKeeYLZ2fxlVY/jinfR1HjVpJ/FFHjN3hzHdM7vAk5vnYGSe
+        dALkT7DhOAU8EWU7QZeULjAYWuxKS1M=
+X-Google-Smtp-Source: APXvYqzCQvcrvhgM3vgWEUXSyIC1U1Y4Xy1YE+sx16hWJPE/CK/7VGILYrPbQvCuCMGRom6WGd0N3g==
+X-Received: by 2002:aa7:9567:: with SMTP id x7mr54624246pfq.133.1577452294814;
+        Fri, 27 Dec 2019 05:11:34 -0800 (PST)
+Received: from CV0038107N9.nsn-intra.net ([2408:8215:b21:57c1:d8e7:fc85:a755:1213])
+        by smtp.gmail.com with ESMTPSA id u20sm36097566pgf.29.2019.12.27.05.11.28
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 27 Dec 2019 05:11:34 -0800 (PST)
+From:   Kevin Kou <qdkevin.kou@gmail.com>
+To:     linux-sctp@vger.kernel.org, netdev@vger.kernel.org
+Cc:     nhorman@tuxdriver.com, marcelo.leitner@gmail.com,
+        davem@davemloft.net, qdkevin.kou@gmail.com
+Subject: [PATCH net-next] sctp: add enabled check for path tracepoint loop.
+Date:   Fri, 27 Dec 2019 13:11:16 +0000
+Message-Id: <20191227131116.375-1-qdkevin.kou@gmail.com>
+X-Mailer: git-send-email 2.23.0.windows.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When disabling PTP timestamping, don't reset the switch with the new
-static config until all existing PTP frames have been timestamped on the
-RX path or dropped. There's nothing we can do with these afterwards.
+sctp_outq_sack is the main function handles SACK, it is called very
+frequently. As the commit "move trace_sctp_probe_path into sctp_outq_sack"
+added below code to this function, sctp tracepoint is disabled most of time,
+but the loop of transport list will be always called even though the
+tracepoint is disabled, this is unnecessary.
 
-Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
++	/* SCTP path tracepoint for congestion control debugging. */
++	list_for_each_entry(transport, transport_list, transports) {
++		trace_sctp_probe_path(transport, asoc);
++	}
+
+This patch is to add tracepoint enabled check at outside of the loop of
+transport list, and avoid traversing the loop when trace is disabled,
+it is a small optimization.
+
+Signed-off-by: Kevin Kou <qdkevin.kou@gmail.com>
 ---
-Changes in v2:
-- Moved "struct sja1105_ptp_data *ptp_data" declaration in
-  sja1105_change_rxtstamping here from patch 2/3.
+ net/sctp/outqueue.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
- drivers/net/dsa/sja1105/sja1105_ptp.c | 3 +++
- 1 file changed, 3 insertions(+)
-
-diff --git a/drivers/net/dsa/sja1105/sja1105_ptp.c b/drivers/net/dsa/sja1105/sja1105_ptp.c
-index 93683cbf2062..a16628cd5f66 100644
---- a/drivers/net/dsa/sja1105/sja1105_ptp.c
-+++ b/drivers/net/dsa/sja1105/sja1105_ptp.c
-@@ -83,6 +83,7 @@ static int sja1105_init_avb_params(struct sja1105_private *priv,
- static int sja1105_change_rxtstamping(struct sja1105_private *priv,
- 				      bool on)
- {
-+	struct sja1105_ptp_data *ptp_data = &priv->ptp_data;
- 	struct sja1105_general_params_entry *general_params;
- 	struct sja1105_table *table;
- 	int rc;
-@@ -101,6 +102,8 @@ static int sja1105_change_rxtstamping(struct sja1105_private *priv,
- 		kfree_skb(priv->tagger_data.stampable_skb);
- 		priv->tagger_data.stampable_skb = NULL;
- 	}
-+	ptp_cancel_worker_sync(ptp_data->clock);
-+	skb_queue_purge(&ptp_data->skb_rxtstamp_queue);
+diff --git a/net/sctp/outqueue.c b/net/sctp/outqueue.c
+index adceb22..83ddcfe 100644
+--- a/net/sctp/outqueue.c
++++ b/net/sctp/outqueue.c
+@@ -1240,8 +1240,9 @@ int sctp_outq_sack(struct sctp_outq *q, struct sctp_chunk *chunk)
+ 	transport_list = &asoc->peer.transport_addr_list;
  
- 	return sja1105_static_config_reload(priv, SJA1105_RX_HWTSTAMPING);
- }
+ 	/* SCTP path tracepoint for congestion control debugging. */
+-	list_for_each_entry(transport, transport_list, transports) {
+-		trace_sctp_probe_path(transport, asoc);
++	if (trace_sctp_probe_path_enabled()) {
++		list_for_each_entry(transport, transport_list, transports)
++			trace_sctp_probe_path(transport, asoc);
+ 	}
+ 
+ 	sack_ctsn = ntohl(sack->cum_tsn_ack);
 -- 
-2.17.1
+1.8.3.1
 
