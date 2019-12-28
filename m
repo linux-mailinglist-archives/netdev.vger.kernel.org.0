@@ -2,75 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D31F212BC01
-	for <lists+netdev@lfdr.de>; Sat, 28 Dec 2019 01:36:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F191912BC03
+	for <lists+netdev@lfdr.de>; Sat, 28 Dec 2019 01:37:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726315AbfL1AgY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Dec 2019 19:36:24 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:53800 "EHLO
+        id S1726359AbfL1Ahz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Dec 2019 19:37:55 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:53818 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725306AbfL1AgY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Dec 2019 19:36:24 -0500
+        with ESMTP id S1725306AbfL1Ahy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Dec 2019 19:37:54 -0500
 Received: from localhost (unknown [IPv6:2601:601:9f00:1c3::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 4CE2F154D18C8;
-        Fri, 27 Dec 2019 16:36:23 -0800 (PST)
-Date:   Fri, 27 Dec 2019 16:36:22 -0800 (PST)
-Message-Id: <20191227.163622.1874013727124631819.davem@davemloft.net>
-To:     shmulik@metanetworks.com
-Cc:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
-        netdev@vger.kernel.org, shmulik.ladkani@gmail.com,
-        sladkani@proofpoint.com
-Subject: Re: [PATCH net] net/sched: act_mirred: Pull mac prior redir to non
- mac_header_xmit device
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 02E0C154D18D0;
+        Fri, 27 Dec 2019 16:37:53 -0800 (PST)
+Date:   Fri, 27 Dec 2019 16:37:53 -0800 (PST)
+Message-Id: <20191227.163753.1973785313910356084.davem@davemloft.net>
+To:     martin.blumenstingl@googlemail.com
+Cc:     andrew@lunn.ch, f.fainelli@gmail.com, netdev@vger.kernel.org,
+        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH v2 1/1] net: stmmac: dwmac-meson8b: Fix the RGMII TX
+ delay on Meson8b/8m2 SoCs
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20191225085101.19696-1-sladkani@proofpoint.com>
-References: <20191225085101.19696-1-sladkani@proofpoint.com>
+In-Reply-To: <20191226190101.3766479-2-martin.blumenstingl@googlemail.com>
+References: <20191226190101.3766479-1-martin.blumenstingl@googlemail.com>
+        <20191226190101.3766479-2-martin.blumenstingl@googlemail.com>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Fri, 27 Dec 2019 16:36:23 -0800 (PST)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Fri, 27 Dec 2019 16:37:54 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: shmulik@metanetworks.com
-Date: Wed, 25 Dec 2019 10:51:01 +0200
+From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Date: Thu, 26 Dec 2019 20:01:01 +0100
 
-> From: Shmulik Ladkani <sladkani@proofpoint.com>
+> GXBB and newer SoCs use the fixed FCLK_DIV2 (1GHz) clock as input for
+> the m250_sel clock. Meson8b and Meson8m2 use MPLL2 instead, whose rate
+> can be adjusted at runtime.
 > 
-> There's no skb_pull performed when a mirred action is set at egress of a
-> mac device, with a target device/action that expects skb->data to point
-> at the network header.
+> So far we have been running MPLL2 with ~250MHz (and the internal
+> m250_div with value 1), which worked enough that we could transfer data
+> with an TX delay of 4ns. Unfortunately there is high packet loss with
+> an RGMII PHY when transferring data (receiving data works fine though).
+> Odroid-C1's u-boot is running with a TX delay of only 2ns as well as
+> the internal m250_div set to 2 - no lost (TX) packets can be observed
+> with that setting in u-boot.
 > 
-> As a result, either the target device is errornously given an skb with
-> data pointing to the mac (egress case), or the net stack receives the
-> skb with data pointing to the mac (ingress case).
+> Manual testing has shown that the TX packet loss goes away when using
+> the following settings in Linux (the vendor kernel uses the same
+> settings):
+> - MPLL2 clock set to ~500MHz
+> - m250_div set to 2
+> - TX delay set to 2ns on the MAC side
 > 
-> E.g:
->  # tc qdisc add dev eth9 root handle 1: prio
->  # tc filter add dev eth9 parent 1: prio 9 protocol ip handle 9 basic \
->    action mirred egress redirect dev tun0
+> Update the m250_div divider settings to only accept dividers greater or
+> equal 2 to fix the TX delay generated by the MAC.
 > 
->  (tun0 is a tun device. result: tun0 errornously gets the eth header
->   instead of the iph)
+> iperf3 results before the change:
+> [ ID] Interval           Transfer     Bitrate         Retr
+> [  5]   0.00-10.00  sec   182 MBytes   153 Mbits/sec  514      sender
+> [  5]   0.00-10.00  sec   182 MBytes   152 Mbits/sec           receiver
 > 
-> Revise the push/pull logic of tcf_mirred_act() to not rely on the
-> skb_at_tc_ingress() vs tcf_mirred_act_wants_ingress() comparison, as it
-> does not cover all "pull" cases.
+> iperf3 results after the change (including an updated TX delay of 2ns):
+> [ ID] Interval           Transfer     Bitrate         Retr  Cwnd
+> [  5]   0.00-10.00  sec   927 MBytes   778 Mbits/sec    0      sender
+> [  5]   0.00-10.01  sec   927 MBytes   777 Mbits/sec           receiver
 > 
-> Instead, calculate whether the required action on the target device
-> requires the data to point at the network header, and compare this to
-> whether skb->data points to network header - and make the push/pull
-> adjustments as necessary.
-> 
-> Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-> Signed-off-by: Shmulik Ladkani <sladkani@proofpoint.com>
-> Tested-by: Jamal Hadi Salim <jhs@mojatatu.com>
-> Acked-by: Jamal Hadi Salim <jhs@mojatatu.com>
+> Fixes: 4f6a71b84e1afd ("net: stmmac: dwmac-meson8b: fix internal RGMII clock configuration")
+> Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 
-Applied and queued up for -stable.
+Applied and queued up for -stable, thanks.
