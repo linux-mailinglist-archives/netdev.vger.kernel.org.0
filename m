@@ -2,128 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CAC5112BE2A
-	for <lists+netdev@lfdr.de>; Sat, 28 Dec 2019 18:25:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 08D1512BE36
+	for <lists+netdev@lfdr.de>; Sat, 28 Dec 2019 19:02:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726343AbfL1RZp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 28 Dec 2019 12:25:45 -0500
-Received: from mail-eopbgr1400115.outbound.protection.outlook.com ([40.107.140.115]:28448
-        "EHLO JPN01-TY1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726088AbfL1RZp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 28 Dec 2019 12:25:45 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=nIO19QNln4E/012yJVOq7I9dD9H1HUkW6MZsalO14TuvQBX101jY+M36ITfS90wO5iSI48OmPfu+F/pfGCZ0u9tQehoZFoHN3UYOVyvI30vj+h9y5LBHGAlCiFMxjakNaWRScGpr6JEI/tKthSzhZ3CTdtaA6b7CxPaXOf1P8aQ2HegoobFBW7un3uZ+NwsdvLf0Xa8PMsu7Hhf8q/T7fxaqrr5dl5PtMh7oaI2QP0KBUP+18bR2N2Z/V47XQuhkNIQjUJm1oI577d4tRFb6LEhxoE4eZPjeMiL3ndb75gc28EVBDxmVrbWn9aCiXK1uxaRQ3/uMGeznvDdLX3MKFg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=LmPS+eJ9uGWqI/mVfgW4UvT/VlMQsQqDzLQVek7Va+I=;
- b=RfCEe+T5f6/AFPWdxL9ipm0PDE2c7qNqQL+hwtTeyNyuPUGJBDwyeKc6LsUR/Vy39bGDeWeL6VRRAIIwm9o28NcNoDsSCKdKAjBzYHAyejpJ+RQhBI3fi+d29lzckvVvQeUGsqBhocQcag3XBQaXhuExtUghO4RWDm6lsMCTIbz+Y+Od3mvH5XcPSCDUO0E4fQ7VKtUXge5OvEtywAUmw/CP/sQsxIHjYerqRujTNULMRZyzzewOQOhkKq5jhkPM/BQn55fRxUJMl04UV0ptygVgHqzfuAdi8H6SQCNPbrSDsIErlik3zHdB311XIT/BnmYq/NWNGhRPeT959o5vXA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=renesas.com; dmarc=pass action=none header.from=renesas.com;
- dkim=pass header.d=renesas.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=renesasgroup.onmicrosoft.com; s=selector2-renesasgroup-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=LmPS+eJ9uGWqI/mVfgW4UvT/VlMQsQqDzLQVek7Va+I=;
- b=lIARy5cfEJV3yWIWn7+0IYltNVSPp694EW19EPqAocApNgYQKPL6TAR6JvDsA2f0Xmd7bzUVNswOiwLiAX2E9V9lILz1rTl34qZw09z11O0qrxSM6X3wYftYE1uiRPqj7XogMdDRYWdSJpo+EZrf8yXLy8ZXycC7ZyPwV1TeONI=
-Received: from OSAPR01MB3025.jpnprd01.prod.outlook.com (52.134.248.22) by
- OSAPR01MB2418.jpnprd01.prod.outlook.com (52.134.247.149) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2581.12; Sat, 28 Dec 2019 17:25:27 +0000
-Received: from OSAPR01MB3025.jpnprd01.prod.outlook.com
- ([fe80::52c:1c46:6bf0:f01f]) by OSAPR01MB3025.jpnprd01.prod.outlook.com
- ([fe80::52c:1c46:6bf0:f01f%4]) with mapi id 15.20.2581.007; Sat, 28 Dec 2019
- 17:25:27 +0000
-Received: from renesas.com (173.195.53.163) by BYAPR08CA0068.namprd08.prod.outlook.com (2603:10b6:a03:117::45) with Microsoft SMTP Server (version=TLS1_2, cipher=) via Frontend Transport; Sat, 28 Dec 2019 17:25:24 +0000
-From:   Vincent Cheng <vincent.cheng.xh@renesas.com>
-To:     Rob Herring <robh@kernel.org>
-CC:     "mark.rutland@arm.com" <mark.rutland@arm.com>,
-        "richardcochran@gmail.com" <richardcochran@gmail.com>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net-next 1/3] dt-bindings: ptp: Rename ptp-idtcm.yaml to
- ptp-cm.yaml
-Thread-Topic: [PATCH net-next 1/3] dt-bindings: ptp: Rename ptp-idtcm.yaml to
- ptp-cm.yaml
-Thread-Index: AQHVtJdOIeGtsyMqZEGT92+XB+h0vKfM2mOAgAMD9IA=
-Date:   Sat, 28 Dec 2019 17:25:26 +0000
-Message-ID: <20191228172447.GA3223@renesas.com>
-References: <1576558988-20837-1-git-send-email-vincent.cheng.xh@renesas.com>
- <1576558988-20837-2-git-send-email-vincent.cheng.xh@renesas.com>
- <20191226192217.GA17727@bogus>
-In-Reply-To: <20191226192217.GA17727@bogus>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [173.195.53.163]
-x-clientproxiedby: BYAPR08CA0068.namprd08.prod.outlook.com
- (2603:10b6:a03:117::45) To OSAPR01MB3025.jpnprd01.prod.outlook.com
- (2603:1096:604:2::22)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=vincent.cheng.xh@renesas.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 6c85d20a-e9a0-432c-8408-08d78bbaedc2
-x-ms-traffictypediagnostic: OSAPR01MB2418:
-x-microsoft-antispam-prvs: <OSAPR01MB2418BE51E89410D013322E7DD2250@OSAPR01MB2418.jpnprd01.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:1303;
-x-forefront-prvs: 02652BD10A
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(4636009)(39840400004)(136003)(396003)(366004)(346002)(376002)(189003)(199004)(33656002)(26005)(2616005)(66556008)(4326008)(64756008)(66446008)(66476007)(66946007)(316002)(8886007)(71200400001)(16526019)(6916009)(2906002)(186003)(956004)(8936002)(52116002)(7696005)(55016002)(478600001)(36756003)(1076003)(54906003)(8676002)(81166006)(81156014)(5660300002)(86362001);DIR:OUT;SFP:1102;SCL:1;SRVR:OSAPR01MB2418;H:OSAPR01MB3025.jpnprd01.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: renesas.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: UxICnll+v3dM2tvzfX53VDqTdSLWYuyN2SKCH77PuTqHFWALjJwwQguL4gsw18wSh+S70JVkJoyngfIUDByX4AAWLNukgjBWUIRmnn9VeUEtLPAHb+dJjP5ttJD2n5fcFLPRIxsIKGSs9c8Wf7TFN0IdGQk4AquRHHZO3a+LFgik/Drwla0CSW6pLAAivhN3LxmvRnb/P2BRtGANNon1DtSFKBWNVITNW9J5Jezaq0HhMNhUxecdafkPO2sYa6eQ+9GmuM2kuyFtosCkqHE7Qr8cRcL/zhQs4Eayh1BhV2wxW7VbwzIMX2jaF3wKckDb4UjLYDe9jCJsgk2bbxcTZQSK/GW4YUZV5GedRgVsZTemrvZg46XtEhT5V1frLkdjj5lVnfpReV1oPhFBiS7g8ZoCblTv1eyXNK0/y4y4ZXVrhhikCTXTNIPe1JM2euhX
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <4D45D545BAB230419AA1BA58E5E16EFD@jpnprd01.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S1726362AbfL1R6n (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 28 Dec 2019 12:58:43 -0500
+Received: from wout3-smtp.messagingengine.com ([64.147.123.19]:58329 "EHLO
+        wout3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726088AbfL1R6n (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 28 Dec 2019 12:58:43 -0500
+Received: from compute2.internal (compute2.nyi.internal [10.202.2.42])
+        by mailout.west.internal (Postfix) with ESMTP id 7A0964A2;
+        Sat, 28 Dec 2019 12:58:41 -0500 (EST)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute2.internal (MEProxy); Sat, 28 Dec 2019 12:58:41 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        mendozajonas.com; h=message-id:subject:from:to:cc:date
+        :in-reply-to:references:content-type:mime-version
+        :content-transfer-encoding; s=fm1; bh=Ncp0zrMvtc2cM1rZlS/PPhDR8j
+        OjU2Rlpb7hbpuxZA4=; b=DBovQREcauum/OSipiv0fYE+L1R/d8PpvtVYgwibdJ
+        IYcfMvHZZhR3lc197VG9mbmZMDoPrvjw5iHtXsLbuxs6HCr5+gf0jHO4/mRMaBUv
+        MgTWl3x/iIvEQ446pBzqWLYlgEQckkgCApeZFlwPFf2aKp+ePKOQyddJOe+wNWAj
+        YNQGsI+mctI0Nm6EiAmnPlmIPlL0MtWZcEUSH2FUrtrV3qooiQn4TNIimE1yRNIP
+        usDq8BWMlcyLjG269wchgLRsaQDeotri4vcuVViM//BSGhshSIoJujnZ2SkNA0pZ
+        ILpp4+j91s/07OukN6/xCrX08SGamD3/6e5msHY8dolQ==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-transfer-encoding:content-type
+        :date:from:in-reply-to:message-id:mime-version:references
+        :subject:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
+        :x-sasl-enc; s=fm1; bh=Ncp0zrMvtc2cM1rZlS/PPhDR8jOjU2Rlpb7hbpuxZ
+        A4=; b=hgV+VtQryPHwybTkHU48vx6v5dRKAZicLhMyhsVppANH49hkdXyYVMalc
+        0pIz9I4OZPjggdxYpdZOMxklha8lBlwIOQujNgPiZ3VatWF/KzrvOnjSWc7RlX69
+        Gx5+L8n7M3ayBFW21fm09Aq2GfA/HbTjTHJ0YpiCbmvk+iWpHmK6a+Xg9yGjE6Uz
+        rNEuFKj3VKg9je9Jl3lKJ6OoC+Q1Fw5NCLVPNZD779rainKhhcrLEbcngoeADu2D
+        9hWh+E+tDKXgYWEdSRcOB1cNGBlbAT0KqrZ/TiRkBTq39PmlijI4vSgSXFmE4/Rg
+        JP/iQ/lveQS3iX8zozlHsItxWf0WA==
+X-ME-Sender: <xms:0JcHXhf8RNgGV52ygbjXFiev3qpfEGAsyFTNwWR9WD86um1Tu1Glsw>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedufedrvdeftddguddtlecutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
+    enucfjughrpefkuffhvfffjghftggfggfgsehtjeertddtreejnecuhfhrohhmpefurghm
+    uhgvlhcuofgvnhguohiirgdqlfhonhgrshcuoehsrghmsehmvghnughoiigrjhhonhgrsh
+    drtghomheqnecukfhppeejhedrudejvddrudelkedrleelnecurfgrrhgrmhepmhgrihhl
+    fhhrohhmpehsrghmsehmvghnughoiigrjhhonhgrshdrtghomhenucevlhhushhtvghruf
+    hiiigvpedt
+X-ME-Proxy: <xmx:0JcHXph6ZeBllcfU_KOkUOpLvMxsC2XIj-2r0H2YRTLk8aJKArKZJQ>
+    <xmx:0JcHXis8WtQ6ceXnfv7WnU083zUJbl6ddT-lGM_FgR788O7yjMc9pA>
+    <xmx:0JcHXl5cDgoW5_rsrhXfs4vNrDBW7r-eD1_rdF5MmdOqUUz8Ps0B7w>
+    <xmx:0ZcHXrzHhzb3m4paOkJHfvA82eBWxFuno_QDLfVImyVT8UAduI4fiQ>
+Received: from Singularity (unknown [75.172.198.99])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 5DF158005C;
+        Sat, 28 Dec 2019 12:58:39 -0500 (EST)
+Message-ID: <9d5d71d2cb6be3d98ccd85f971667c2e0ed32e06.camel@mendozajonas.com>
+Subject: Re: [net-next PATCH] net/ncsi: Fix gma flag setting after response
+From:   Samuel Mendoza-Jonas <sam@mendozajonas.com>
+To:     Vijay Khemka <vijaykhemka@fb.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     joel@jms.id.au, linux-aspeed@lists.ozlabs.org, sdasari@fb.com
+Date:   Sat, 28 Dec 2019 09:58:38 -0800
+In-Reply-To: <20191227224349.2182366-1-vijaykhemka@fb.com>
+References: <20191227224349.2182366-1-vijaykhemka@fb.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.34.2 
 MIME-Version: 1.0
-X-OriginatorOrg: renesas.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6c85d20a-e9a0-432c-8408-08d78bbaedc2
-X-MS-Exchange-CrossTenant-originalarrivaltime: 28 Dec 2019 17:25:26.8308
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: cnhanQn9fh5Y4h8naZu/Z56VvNcJ9Ax4yHpZ2q2FLWiBu4doi6U/l2zOICgq/PX4hs9fXtIRRZQq61XRvzhV7K+2Ya+giPcIYqRikwO6Egk=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: OSAPR01MB2418
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gVGh1LCBEZWMgMjYsIDIwMTkgYXQgMDI6MjI6MTdQTSBFU1QsIFJvYiBIZXJyaW5nIHdyb3Rl
-Og0KPk9uIFR1ZSwgRGVjIDE3LCAyMDE5IGF0IDEyOjAzOjA2QU0gLTA1MDAsIHZpbmNlbnQuY2hl
-bmcueGhAcmVuZXNhcy5jb20gd3JvdGU6DQo+PiBGcm9tOiBWaW5jZW50IENoZW5nIDx2aW5jZW50
-LmNoZW5nLnhoQHJlbmVzYXMuY29tPg0KPj4gDQo+PiBSZW5lc2FzIEVsZWN0cm9uaWNzIENvcnBv
-cmF0aW9uIGNvbXBsZXRlZCBhY3F1aXNpdGlvbiBvZiBJRFQgaW4gMjAxOS4NCj4+IA0KPj4gVGhp
-cyBwYXRjaCByZW1vdmVzIElEVCByZWZlcmVuY2VzIG9yIHJlcGxhY2VzIElEVCB3aXRoIFJlbmVz
-YXMuDQo+PiBSZW5hbWVkIHB0cC1pZHRjbS55YW1sIHRvIHB0cC1jbS55YW1sLg0KPj4gDQo+PiBT
-aWduZWQtb2ZmLWJ5OiBWaW5jZW50IENoZW5nIDx2aW5jZW50LmNoZW5nLnhoQHJlbmVzYXMuY29t
-Pg0KPj4gLS0tDQo+PiAgRG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdzL3B0cC9wdHAt
-Y20ueWFtbCAgfCA2OSArKysrKysrKysrKysrKysrKysrKysrDQo+PiAgLi4uL2RldmljZXRyZWUv
-YmluZGluZ3MvcHRwL3B0cC1pZHRjbS55YW1sICAgICAgICAgfCA2OSAtLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tDQo+PiAgMiBmaWxlcyBjaGFuZ2VkLCA2OSBpbnNlcnRpb25zKCspLCA2OSBkZWxldGlv
-bnMoLSkNCj4+ICBjcmVhdGUgbW9kZSAxMDA2NDQgRG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2Jp
-bmRpbmdzL3B0cC9wdHAtY20ueWFtbA0KPj4gIGRlbGV0ZSBtb2RlIDEwMDY0NCBEb2N1bWVudGF0
-aW9uL2RldmljZXRyZWUvYmluZGluZ3MvcHRwL3B0cC1pZHRjbS55YW1sDQo+PiANCj4+ICsgIGNv
-bXBhdGlibGU6DQo+PiArICAgIGVudW06DQo+PiArICAgICAgIyBGb3IgU3lzdGVtIFN5bmNocm9u
-aXplcg0KPj4gKyAgICAgIC0gcmVuZXNhcyw4YTM0MDAwDQo+PiArICAgICAgLSByZW5lc2FzLDhh
-MzQwMDENCj4+ICsgICAgICAtIHJlbmVzYXMsOGEzNDAwMg0KPj4gKyAgICAgIC0gcmVuZXNhcyw4
-YTM0MDAzDQo+PiArICAgICAgLSByZW5lc2FzLDhhMzQwMDQNCj4+ICsgICAgICAtIHJlbmVzYXMs
-OGEzNDAwNQ0KPj4gKyAgICAgIC0gcmVuZXNhcyw4YTM0MDA2DQo+PiArICAgICAgLSByZW5lc2Fz
-LDhhMzQwMDcNCj4+ICsgICAgICAtIHJlbmVzYXMsOGEzNDAwOA0KPj4gKyAgICAgIC0gcmVuZXNh
-cyw4YTM0MDA5DQo+DQo+DQo+PiAtICBjb21wYXRpYmxlOg0KPj4gLSAgICBlbnVtOg0KPj4gLSAg
-ICAgICMgRm9yIFN5c3RlbSBTeW5jaHJvbml6ZXINCj4+IC0gICAgICAtIGlkdCw4YTM0MDAwDQo+
-PiAtICAgICAgLSBpZHQsOGEzNDAwMQ0KPj4gLSAgICAgIC0gaWR0LDhhMzQwMDINCj4+IC0gICAg
-ICAtIGlkdCw4YTM0MDAzDQo+PiAtICAgICAgLSBpZHQsOGEzNDAwNA0KPj4gLSAgICAgIC0gaWR0
-LDhhMzQwMDUNCj4+IC0gICAgICAtIGlkdCw4YTM0MDA2DQo+PiAtICAgICAgLSBpZHQsOGEzNDAw
-Nw0KPj4gLSAgICAgIC0gaWR0LDhhMzQwMDgNCj4+IC0gICAgICAtIGlkdCw4YTM0MDA5DQo+DQo+
-TkFLLiBZb3UgY2FuJ3QgY2hhbmdlIHRoaXMgYXMgaXQgaXMgYW4gQUJJLg0KDQpPa2F5LCB0aGFu
-ay15b3UuICBUaGlzIGhhcyBiZSByZW1vdmVkIGluIHYyIHBhdGNoIG9mIHRoZSBzZXJpZXMuDQoN
-ClZpbmNlbnQNCg==
+On Fri, 2019-12-27 at 14:43 -0800, Vijay Khemka wrote:
+> gma_flag was set at the time of GMA command request but it should
+> only be set after getting successful response. Movinng this flag
+> setting in GMA response handler.
+> 
+> This flag is used mainly for not repeating GMA command once
+> received MAC address.
+> 
+> Signed-off-by: Vijay Khemka <vijaykhemka@fb.com>
+
+Technically this means the driver will always send this command every
+time it configures if the associated NIC doesn't respond to this
+command, but that won't change the behaviour otherwise.
+
+Reviewed-by: Samuel Mendoza-Jonas <sam@mendozajonas.com>
+
+> ---
+>  net/ncsi/ncsi-manage.c | 3 ---
+>  net/ncsi/ncsi-rsp.c    | 6 ++++++
+>  2 files changed, 6 insertions(+), 3 deletions(-)
+> 
+> diff --git a/net/ncsi/ncsi-manage.c b/net/ncsi/ncsi-manage.c
+> index 70fe02697544..e20b81514029 100644
+> --- a/net/ncsi/ncsi-manage.c
+> +++ b/net/ncsi/ncsi-manage.c
+> @@ -764,9 +764,6 @@ static int ncsi_gma_handler(struct ncsi_cmd_arg
+> *nca, unsigned int mf_id)
+>  		return -1;
+>  	}
+>  
+> -	/* Set the flag for GMA command which should only be called
+> once */
+> -	nca->ndp->gma_flag = 1;
+> -
+>  	/* Get Mac address from NCSI device */
+>  	return nch->handler(nca);
+>  }
+> diff --git a/net/ncsi/ncsi-rsp.c b/net/ncsi/ncsi-rsp.c
+> index d5611f04926d..a94bb59793f0 100644
+> --- a/net/ncsi/ncsi-rsp.c
+> +++ b/net/ncsi/ncsi-rsp.c
+> @@ -627,6 +627,9 @@ static int ncsi_rsp_handler_oem_mlx_gma(struct
+> ncsi_request *nr)
+>  	saddr.sa_family = ndev->type;
+>  	ndev->priv_flags |= IFF_LIVE_ADDR_CHANGE;
+>  	memcpy(saddr.sa_data, &rsp->data[MLX_MAC_ADDR_OFFSET],
+> ETH_ALEN);
+> +	/* Set the flag for GMA command which should only be called
+> once */
+> +	ndp->gma_flag = 1;
+> +
+>  	ret = ops->ndo_set_mac_address(ndev, &saddr);
+>  	if (ret < 0)
+>  		netdev_warn(ndev, "NCSI: 'Writing mac address to device
+> failed\n");
+> @@ -671,6 +674,9 @@ static int ncsi_rsp_handler_oem_bcm_gma(struct
+> ncsi_request *nr)
+>  	if (!is_valid_ether_addr((const u8 *)saddr.sa_data))
+>  		return -ENXIO;
+>  
+> +	/* Set the flag for GMA command which should only be called
+> once */
+> +	ndp->gma_flag = 1;
+> +
+>  	ret = ops->ndo_set_mac_address(ndev, &saddr);
+>  	if (ret < 0)
+>  		netdev_warn(ndev, "NCSI: 'Writing mac address to device
+> failed\n");
+
