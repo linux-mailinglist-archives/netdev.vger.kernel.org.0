@@ -2,116 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EAD7D12BC66
-	for <lists+netdev@lfdr.de>; Sat, 28 Dec 2019 04:13:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AA0A012BC68
+	for <lists+netdev@lfdr.de>; Sat, 28 Dec 2019 04:16:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726371AbfL1DNe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Dec 2019 22:13:34 -0500
-Received: from szxga04-in.huawei.com ([45.249.212.190]:8634 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725860AbfL1DNe (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 27 Dec 2019 22:13:34 -0500
-Received: from DGGEMS403-HUB.china.huawei.com (unknown [172.30.72.60])
-        by Forcepoint Email with ESMTP id C612A64DCE9497AB23CF;
-        Sat, 28 Dec 2019 11:13:32 +0800 (CST)
-Received: from localhost.localdomain.localdomain (10.175.113.25) by
- DGGEMS403-HUB.china.huawei.com (10.3.19.203) with Microsoft SMTP Server id
- 14.3.439.0; Sat, 28 Dec 2019 11:13:22 +0800
-From:   Chen Zhou <chenzhou10@huawei.com>
-To:     <qiang.zhao@nxp.com>, <davem@davemloft.net>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <chenzhou10@huawei.com>
-Subject: [PATCH next] net/wan/fsl_ucc_hdlc: remove set but not used variables 'ut_info' and 'ret'
-Date:   Sat, 28 Dec 2019 11:09:47 +0800
-Message-ID: <20191228030947.92765-1-chenzhou10@huawei.com>
-X-Mailer: git-send-email 2.20.1
+        id S1726425AbfL1DQC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Dec 2019 22:16:02 -0500
+Received: from mail-il1-f198.google.com ([209.85.166.198]:33083 "EHLO
+        mail-il1-f198.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725957AbfL1DQC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Dec 2019 22:16:02 -0500
+Received: by mail-il1-f198.google.com with SMTP id s9so1163052ilk.0
+        for <netdev@vger.kernel.org>; Fri, 27 Dec 2019 19:16:02 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=tENWWAE27YTP2yqe1cfIcG9EDWGCKbHOtQOZmBsBGGY=;
+        b=OQbv+jGYpDaOPTLUvQrAPPz+vaS5NafgELY9aAnoSLyLq6BQnXJCUC6T0UfBit37Il
+         CZfNTxVm1DZaGY85OnDYUrjrCfKt3w8S10/e6aLwvjKzOExi87hN3EQiG9KHlTxVm0vs
+         vRbwvIa+ogIYy87ZDkXE420TLdEJvGpvdEqj7HRqkib+dpOWb1InBuOL1BhowumrFseb
+         n2LwGBQI9EvD2RQtY37ZAGnF0Wp2ZqkDRqRdZGePjgZvH+cquy8vrv1kni9CbpVXoUo1
+         nRkxEl2jOuXAzwBEs334q3Pe4DSUZeh0/vovPoi0oUOuI0wYmLAxL2tdWQxV7hvBz60E
+         3OaQ==
+X-Gm-Message-State: APjAAAUfOpjbE75i+QXqf6v6INUP7j2WvyiAEs/qBVIaJLU3rYj+n33O
+        kZtU/jANFmPbpF/tFmcHulX5NGDqWSnN27QlTMFxqCRe61qn
+X-Google-Smtp-Source: APXvYqxY9e4ExCKBaEkRVOc0Gz/ijRbw/6DBPk1AZLfsryIA7+WPJ0/IOYZQU5ZmHPFx8KUtYJLK3dewq52wTtd7Gg6W58geGSRn
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.113.25]
-X-CFilter-Loop: Reflected
+X-Received: by 2002:a92:89c2:: with SMTP id w63mr46971728ilk.252.1577502961862;
+ Fri, 27 Dec 2019 19:16:01 -0800 (PST)
+Date:   Fri, 27 Dec 2019 19:16:01 -0800
+In-Reply-To: <089e0825d4a4d2cb2a0562e878f1@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000ac9246059abb072c@google.com>
+Subject: Re: possible deadlock in sch_direct_xmit
+From:   syzbot <syzbot+29cc278357da941e304e@syzkaller.appspotmail.com>
+To:     ap420073@gmail.com, davem@davemloft.net, ecree@solarflare.com,
+        edumazet@google.com, jhs@mojatatu.com, jiri@mellanox.com,
+        jiri@resnulli.us, kuznet@ms2.inr.ac.ru,
+        linux-kernel@vger.kernel.org, lucien.xin@gmail.com,
+        mcroce@redhat.com, netdev@vger.kernel.org, pabeni@redhat.com,
+        syzkaller-bugs@googlegroups.com, xiyou.wangcong@gmail.com,
+        yoshfuji@linux-ipv6.org
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fixes gcc '-Wunused-but-set-variable' warning:
+syzbot suspects this bug was fixed by commit:
 
-drivers/net/wan/fsl_ucc_hdlc.c: In function ucc_hdlc_irq_handler:
-drivers/net/wan/fsl_ucc_hdlc.c:643:23:
-	warning: variable ut_info set but not used [-Wunused-but-set-variable]
-drivers/net/wan/fsl_ucc_hdlc.c: In function uhdlc_suspend:
-drivers/net/wan/fsl_ucc_hdlc.c:880:23:
-	warning: variable ut_info set but not used [-Wunused-but-set-variable]
-drivers/net/wan/fsl_ucc_hdlc.c: In function uhdlc_resume:
-drivers/net/wan/fsl_ucc_hdlc.c:925:6:
-	warning: variable ret set but not used [-Wunused-but-set-variable]
+commit 323ebb61e32b478e2432c5a3cbf9e2ca678a9609
+Author: Edward Cree <ecree@solarflare.com>
+Date:   Tue Aug 6 13:53:55 2019 +0000
 
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Chen Zhou <chenzhou10@huawei.com>
----
- drivers/net/wan/fsl_ucc_hdlc.c | 10 +++-------
- 1 file changed, 3 insertions(+), 7 deletions(-)
+     net: use listified RX for handling GRO_NORMAL skbs
 
-diff --git a/drivers/net/wan/fsl_ucc_hdlc.c b/drivers/net/wan/fsl_ucc_hdlc.c
-index 8d6ec33..49b1aaf 100644
---- a/drivers/net/wan/fsl_ucc_hdlc.c
-+++ b/drivers/net/wan/fsl_ucc_hdlc.c
-@@ -640,11 +640,9 @@ static irqreturn_t ucc_hdlc_irq_handler(int irq, void *dev_id)
- 	struct ucc_hdlc_private *priv = (struct ucc_hdlc_private *)dev_id;
- 	struct net_device *dev = priv->ndev;
- 	struct ucc_fast_private *uccf;
--	struct ucc_tdm_info *ut_info;
- 	u32 ucce;
- 	u32 uccm;
- 
--	ut_info = priv->ut_info;
- 	uccf = priv->uccf;
- 
- 	ucce = ioread32be(uccf->p_ucce);
-@@ -877,7 +875,6 @@ static void resume_clk_config(struct ucc_hdlc_private *priv)
- static int uhdlc_suspend(struct device *dev)
- {
- 	struct ucc_hdlc_private *priv = dev_get_drvdata(dev);
--	struct ucc_tdm_info *ut_info;
- 	struct ucc_fast __iomem *uf_regs;
- 
- 	if (!priv)
-@@ -889,7 +886,6 @@ static int uhdlc_suspend(struct device *dev)
- 	netif_device_detach(priv->ndev);
- 	napi_disable(&priv->napi);
- 
--	ut_info = priv->ut_info;
- 	uf_regs = priv->uf_regs;
- 
- 	/* backup gumr guemr*/
-@@ -922,7 +918,7 @@ static int uhdlc_resume(struct device *dev)
- 	struct ucc_fast __iomem *uf_regs;
- 	struct ucc_fast_private *uccf;
- 	struct ucc_fast_info *uf_info;
--	int ret, i;
-+	int i;
- 	u32 cecr_subblock;
- 	u16 bd_status;
- 
-@@ -967,7 +963,7 @@ static int uhdlc_resume(struct device *dev)
- 
- 	/* Write to QE CECR, UCCx channel to Stop Transmission */
- 	cecr_subblock = ucc_fast_get_qe_cr_subblock(uf_info->ucc_num);
--	ret = qe_issue_cmd(QE_STOP_TX, cecr_subblock,
-+	qe_issue_cmd(QE_STOP_TX, cecr_subblock,
- 			   (u8)QE_CR_PROTOCOL_UNSPECIFIED, 0);
- 
- 	/* Set UPSMR normal mode */
-@@ -975,7 +971,7 @@ static int uhdlc_resume(struct device *dev)
- 
- 	/* init parameter base */
- 	cecr_subblock = ucc_fast_get_qe_cr_subblock(uf_info->ucc_num);
--	ret = qe_issue_cmd(QE_ASSIGN_PAGE_TO_DEVICE, cecr_subblock,
-+	qe_issue_cmd(QE_ASSIGN_PAGE_TO_DEVICE, cecr_subblock,
- 			   QE_CR_PROTOCOL_UNSPECIFIED, priv->ucc_pram_offset);
- 
- 	priv->ucc_pram = (struct ucc_hdlc_param __iomem *)
--- 
-2.7.4
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=14647ab9e00000
+start commit:   c92a9a46
+git tree:       upstream
+kernel config:  https://syzkaller.appspot.com/x/.config?x=46986c099cb53bc6
+dashboard link: https://syzkaller.appspot.com/bug?extid=29cc278357da941e304e
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=143636c9800000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=16856849800000
 
+If the result looks correct, please mark the bug fixed by replying with:
+
+#syz fix: net: use listified RX for handling GRO_NORMAL skbs
+
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
