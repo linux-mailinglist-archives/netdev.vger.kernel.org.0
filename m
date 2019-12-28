@@ -2,258 +2,281 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E05812BDEE
-	for <lists+netdev@lfdr.de>; Sat, 28 Dec 2019 16:37:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6B04A12BDFA
+	for <lists+netdev@lfdr.de>; Sat, 28 Dec 2019 17:10:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726187AbfL1PhO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 28 Dec 2019 10:37:14 -0500
-Received: from us-smtp-2.mimecast.com ([205.139.110.61]:38344 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726080AbfL1PhO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 28 Dec 2019 10:37:14 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1577547431;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=esqrg2+SrDkCed2GrHUpTDXcQ/FBa2asjQ4zWlXoAYg=;
-        b=KOV80LH+I5XbNtAbxblC6OLMvey2x0x6SWLC68SP0ExA/SGYBnWnh1lfXEyCJLvO1Zfn+o
-        uSLJu8J6hibH5F+MWl807tlIUd2s8aIRAz/Z3Vp3JpjJJPRz64HtLpZNcQod99aViKMkKL
-        wDNwAJvbH5kVjL04/vh8dZ66NU0fIq8=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-314-Z-wIBFEBMBu1SBrXA-BLOA-1; Sat, 28 Dec 2019 10:37:09 -0500
-X-MC-Unique: Z-wIBFEBMBu1SBrXA-BLOA-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 8347E10054E3;
-        Sat, 28 Dec 2019 15:37:08 +0000 (UTC)
-Received: from new-host-5.redhat.com (ovpn-204-20.brq.redhat.com [10.40.204.20])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 2D8BF60BE0;
-        Sat, 28 Dec 2019 15:37:04 +0000 (UTC)
-From:   Davide Caratti <dcaratti@redhat.com>
-To:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Vlad Buslov <vladbu@mellanox.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>
-Subject: [PATCH net] net/sched: add delete_empty() to filters and use it in cls_flower
-Date:   Sat, 28 Dec 2019 16:36:58 +0100
-Message-Id: <3f0b159cd943476d4beb8106b5a1405d050ec392.1577546059.git.dcaratti@redhat.com>
+        id S1726187AbfL1QKQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 28 Dec 2019 11:10:16 -0500
+Received: from mail-40135.protonmail.ch ([185.70.40.135]:32125 "EHLO
+        mail-40135.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726080AbfL1QKQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 28 Dec 2019 11:10:16 -0500
+Date:   Sat, 28 Dec 2019 16:10:03 +0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=protonmail.com;
+        s=default; t=1577549410;
+        bh=zWgrEil5xyp7zjBUG0shyo040wf6BBXm4oCHuaQNZZ0=;
+        h=Date:To:From:Cc:Reply-To:Subject:Feedback-ID:From;
+        b=I+CDu8k4RHT6nwp7dpjwVpSCCzd1F4uHOgzNdePbWLJhmaP5wsJ0LDyupFyZR7LZd
+         Vi9H97prLycVpc9ShAxOQAeTc2CeymWiu82tpyl2ht62gqkNKL6B1B3N+fWkFtd/73
+         u6Qjuj75B6J3x+XAFRzHqWloxMuxKTw9pllEsrrY=
+To:     Netdev <netdev@vger.kernel.org>
+From:   Ttttabcd <ttttabcd@protonmail.com>
+Cc:     "davem@davemloft.net" <davem@davemloft.net>,
+        "kuznet@ms2.inr.ac.ru" <kuznet@ms2.inr.ac.ru>,
+        "yoshfuji@linux-ipv6.org" <yoshfuji@linux-ipv6.org>
+Reply-To: Ttttabcd <ttttabcd@protonmail.com>
+Subject: [PATCH] Improved handling of incorrect IP fragments
+Message-ID: <NIK8V5mQHWZU7pO9H6W3BjBzlsZ-wjJOcqNEcRaDxLVswAF_ynPFCXOkIRKr-EF4EdDMMZ7Fa3cQEpoqa_Sjt0ZKUMqmZFHYI1FIVwPhJhs=@protonmail.com>
+Feedback-ID: EvWK9os_-weOBrycfL_HEFp-ixys9sxnciOqqctCHB9kjCM4ip8VR9shOcMQZgeZ7RCnmNC4HYjcUKNMz31NBA==:Ext:ProtonMail
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-0.2 required=7.0 tests=ALL_TRUSTED,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,HK_RANDOM_REPLYTO
+        shortcircuit=no autolearn=no autolearn_force=no version=3.4.2
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.protonmail.ch
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Revert "net/sched: cls_u32: fix refcount leak in the error path of
-u32_change()", and fix the u32 refcount leak in a more generic way that
-preserves the semantic of rule dumping.
-On tc filters that don't support lockless insertion/removal, there is no
-need to guard against concurrent insertion when a removal is in progress.
-Therefore, for most of them we can avoid a full walk() when deleting, and
-just decrease the refcount, like it was done on older Linux kernels.
-This fixes situations where walk() was wrongly detecting a non-empty
-filter, like it happened with cls_u32 in the error path of change(), thus
-leading to failures in the following tdc selftests:
+In both ip6_frag_queue and ip6_frag_reasm, it is checked whether it is an
+Oversized IPv6 packet, which is duplicated. The original code logic will
+only be processed in ip6_frag_queue. The code of ip6_frag_reasm will not
+be executed. Now change it to only process in ip6_frag_queue and output
+the prompt information.
 
- 6aa7: (filter, u32) Add/Replace u32 with source match and invalid indev
- 6658: (filter, u32) Add/Replace u32 with custom hash table and invalid h=
-andle
- 74c2: (filter, u32) Add/Replace u32 filter with invalid hash table id
+In ip6_frag_queue, set the prob_offset pointer to notify ipv6_frag_rcv
+to send the ICMPv6 parameter problem message. The logic is not concise,
+I merged the part that sent ICMPv6 messages into ip6_frag_queue.
 
-On cls_flower, and on (future) lockless filters, this check is necessary:
-move all the check_empty() logic in a callback so that each filter
-can have its own implementation. For cls_flower, it's sufficient to check
-if no IDRs have been allocated.
+In the original logic, receiving oversized IPv6 fragments and receiving
+IPv6 fragments whose end is not an integral multiple of 8 bytes both
+returns -1. This is inconsistent with other incorrect IPv6 fragmentation
+processing. For example, in other logic, end =3D=3D offset will goto discar=
+d_fq
+directly. I think that receiving any incorrect IPv6 fragment means that the
+fragment processing has failed as a whole, and the data carried in the
+fragments is likely to be wrong. I think we should also execute goto
+discard_fq to release this fragments queue.
 
-This reverts commit 275c44aa194b7159d1191817b20e076f55f0e620.
+Goto discard_fq at the end of the label send_param_prob, release the
+fragment queue. Since icmpv6_param_prob will call kfree_skb, it will also
+be kfree_skb in the label err, which will cause repeated free,
+so I added skb_get.
 
-Changes since v1:
- - document the need for delete_empty() when TCF_PROTO_OPS_DOIT_UNLOCKED
-   is used, thanks to Vlad Buslov
- - implement delete_empty() without doing fl_walk(), thanks to Vlad Buslo=
-v
- - squash revert and new fix in a single patch, to be nice with bisect
-   tests that run tdc on u32 filter, thanks to Dave Miller
+I also made similar changes in IPv4 fragmentation processing.
 
-Fixes: 275c44aa194b ("net/sched: cls_u32: fix refcount leak in the error =
-path of u32_change()")
-Fixes: 6676d5e416ee ("net: sched: set dedicated tcf_walker flag when tp i=
-s empty")
-Suggested-by: Jamal Hadi Salim <jhs@mojatatu.com>
-Suggested-by: Vlad Buslov <vladbu@mellanox.com>
-Signed-off-by: Davide Caratti <dcaratti@redhat.com>
+It is not good to use 65535 values directly,
+I added the IPV4_MAX_TOT_LEN macro.
+
+The oversized check in IPv4 fragment processing is in the ip_frag_reasm
+of the reassembly fragment. This is too late. The incorrect IP fragment
+has been inserted into the fragment queue. I modified it in ip_frag_queue.
+I changed the original net_info_ratelimited to net_dbg_ratelimited to make
+the debugging information more controllable.
+
+I also modified goto discard_qp directly
+when the end is not an integer multiple of 8 bytes.
+
+Signed-off-by: ttttabcd <ttttabcd@protonmail.com>
 ---
- include/net/sch_generic.h |  5 +++++
- net/sched/cls_api.c       | 31 +++++--------------------------
- net/sched/cls_flower.c    | 12 ++++++++++++
- net/sched/cls_u32.c       | 25 -------------------------
- 4 files changed, 22 insertions(+), 51 deletions(-)
+ include/net/ip.h       |  2 ++
+ net/ipv4/ip_fragment.c | 20 +++++++++----------
+ net/ipv6/reassembly.c  | 45 ++++++++++++++++++++----------------------
+ 3 files changed, 33 insertions(+), 34 deletions(-)
 
-diff --git a/include/net/sch_generic.h b/include/net/sch_generic.h
-index 144f264ea394..fceddf89592a 100644
---- a/include/net/sch_generic.h
-+++ b/include/net/sch_generic.h
-@@ -308,6 +308,7 @@ struct tcf_proto_ops {
- 	int			(*delete)(struct tcf_proto *tp, void *arg,
- 					  bool *last, bool rtnl_held,
- 					  struct netlink_ext_ack *);
-+	bool			(*delete_empty)(struct tcf_proto *tp);
- 	void			(*walk)(struct tcf_proto *tp,
- 					struct tcf_walker *arg, bool rtnl_held);
- 	int			(*reoffload)(struct tcf_proto *tp, bool add,
-@@ -336,6 +337,10 @@ struct tcf_proto_ops {
- 	int			flags;
- };
-=20
-+/* Classifiers setting TCF_PROTO_OPS_DOIT_UNLOCKED in tcf_proto_ops->fla=
-gs
-+ * are expected to implement tcf_proto_ops->delete_empty(), otherwise ra=
-ce
-+ * conditions can occur when filters are inserted/deleted simultaneously=
-.
-+ */
- enum tcf_proto_ops_flags {
- 	TCF_PROTO_OPS_DOIT_UNLOCKED =3D 1,
- };
-diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
-index 6a0eacafdb19..76e0d122616a 100644
---- a/net/sched/cls_api.c
-+++ b/net/sched/cls_api.c
-@@ -308,33 +308,12 @@ static void tcf_proto_put(struct tcf_proto *tp, boo=
-l rtnl_held,
- 		tcf_proto_destroy(tp, rtnl_held, true, extack);
- }
-=20
--static int walker_check_empty(struct tcf_proto *tp, void *fh,
--			      struct tcf_walker *arg)
-+static bool tcf_proto_check_delete(struct tcf_proto *tp)
- {
--	if (fh) {
--		arg->nonempty =3D true;
--		return -1;
--	}
--	return 0;
--}
--
--static bool tcf_proto_is_empty(struct tcf_proto *tp, bool rtnl_held)
--{
--	struct tcf_walker walker =3D { .fn =3D walker_check_empty, };
--
--	if (tp->ops->walk) {
--		tp->ops->walk(tp, &walker, rtnl_held);
--		return !walker.nonempty;
--	}
--	return true;
--}
-+	if (tp->ops->delete_empty)
-+		return tp->ops->delete_empty(tp);
-=20
--static bool tcf_proto_check_delete(struct tcf_proto *tp, bool rtnl_held)
--{
--	spin_lock(&tp->lock);
--	if (tcf_proto_is_empty(tp, rtnl_held))
--		tp->deleting =3D true;
--	spin_unlock(&tp->lock);
-+	tp->deleting =3D true;
- 	return tp->deleting;
- }
-=20
-@@ -1751,7 +1730,7 @@ static void tcf_chain_tp_delete_empty(struct tcf_ch=
-ain *chain,
- 	 * concurrently.
- 	 * Mark tp for deletion if it is empty.
- 	 */
--	if (!tp_iter || !tcf_proto_check_delete(tp, rtnl_held)) {
-+	if (!tp_iter || !tcf_proto_check_delete(tp)) {
- 		mutex_unlock(&chain->filter_chain_lock);
- 		return;
- 	}
-diff --git a/net/sched/cls_flower.c b/net/sched/cls_flower.c
-index 0d125de54285..b0f42e62dd76 100644
---- a/net/sched/cls_flower.c
-+++ b/net/sched/cls_flower.c
-@@ -2773,6 +2773,17 @@ static void fl_bind_class(void *fh, u32 classid, u=
-nsigned long cl)
- 		f->res.class =3D cl;
- }
-=20
-+static bool fl_delete_empty(struct tcf_proto *tp)
-+{
-+	struct cls_fl_head *head =3D fl_head_dereference(tp);
-+
-+	spin_lock(&tp->lock);
-+	tp->deleting =3D idr_is_empty(&head->handle_idr);
-+	spin_unlock(&tp->lock);
-+
-+	return tp->deleting;
-+}
-+
- static struct tcf_proto_ops cls_fl_ops __read_mostly =3D {
- 	.kind		=3D "flower",
- 	.classify	=3D fl_classify,
-@@ -2782,6 +2793,7 @@ static struct tcf_proto_ops cls_fl_ops __read_mostl=
-y =3D {
- 	.put		=3D fl_put,
- 	.change		=3D fl_change,
- 	.delete		=3D fl_delete,
-+	.delete_empty	=3D fl_delete_empty,
- 	.walk		=3D fl_walk,
- 	.reoffload	=3D fl_reoffload,
- 	.hw_add		=3D fl_hw_add,
-diff --git a/net/sched/cls_u32.c b/net/sched/cls_u32.c
-index 66c6bcec16cb..a0e6fac613de 100644
---- a/net/sched/cls_u32.c
-+++ b/net/sched/cls_u32.c
-@@ -1108,33 +1108,10 @@ static int u32_change(struct net *net, struct sk_=
-buff *in_skb,
- 	return err;
- }
-=20
--static bool u32_hnode_empty(struct tc_u_hnode *ht, bool *non_root_ht)
--{
--	int i;
--
--	if (!ht)
--		return true;
--	if (!ht->is_root) {
--		*non_root_ht =3D true;
--		return false;
--	}
--	if (*non_root_ht)
--		return false;
--	if (ht->refcnt < 2)
--		return true;
--
--	for (i =3D 0; i <=3D ht->divisor; i++) {
--		if (rtnl_dereference(ht->ht[i]))
--			return false;
--	}
--	return true;
--}
--
- static void u32_walk(struct tcf_proto *tp, struct tcf_walker *arg,
- 		     bool rtnl_held)
- {
- 	struct tc_u_common *tp_c =3D tp->data;
--	bool non_root_ht =3D false;
- 	struct tc_u_hnode *ht;
- 	struct tc_u_knode *n;
- 	unsigned int h;
-@@ -1147,8 +1124,6 @@ static void u32_walk(struct tcf_proto *tp, struct t=
-cf_walker *arg,
- 	     ht =3D rtnl_dereference(ht->next)) {
- 		if (ht->prio !=3D tp->prio)
- 			continue;
--		if (u32_hnode_empty(ht, &non_root_ht))
--			return;
- 		if (arg->count >=3D arg->skip) {
- 			if (arg->fn(tp, ht, arg) < 0) {
- 				arg->stop =3D 1;
---=20
-2.24.1
+diff --git a/include/net/ip.h b/include/net/ip.h
+index 5b317c9f4470..43e9dc51852b 100644
+--- a/include/net/ip.h
++++ b/include/net/ip.h
+@@ -34,6 +34,8 @@
+ #define IPV4_MAX_PMTU=09=0965535U=09=09/* RFC 2675, Section 5.1 */
+ #define IPV4_MIN_MTU=09=0968=09=09=09/* RFC 791 */
 
++#define IPV4_MAX_TOT_LEN=09=0965535
++
+ extern unsigned int sysctl_fib_sync_mem;
+ extern unsigned int sysctl_fib_sync_mem_min;
+ extern unsigned int sysctl_fib_sync_mem_max;
+diff --git a/net/ipv4/ip_fragment.c b/net/ipv4/ip_fragment.c
+index cfeb8890f94e..baee3383d0ac 100644
+--- a/net/ipv4/ip_fragment.c
++++ b/net/ipv4/ip_fragment.c
+@@ -300,6 +300,12 @@ static int ip_frag_queue(struct ipq *qp, struct sk_buf=
+f *skb)
+ =09end =3D offset + skb->len - skb_network_offset(skb) - ihl;
+ =09err =3D -EINVAL;
+
++=09if ((unsigned int)end + ihl > IPV4_MAX_TOT_LEN) {
++=09=09net_dbg_ratelimited("ip_frag_queue: Oversized IP packet from %pI4, e=
+nd =3D %d\n",
++=09=09=09=09    &qp->q.key.v4.saddr, end);
++=09=09goto discard_qp;
++=09}
++
+ =09/* Is this the final fragment? */
+ =09if ((flags & IP_MF) =3D=3D 0) {
+ =09=09/* If we already have some bits beyond end
+@@ -311,11 +317,10 @@ static int ip_frag_queue(struct ipq *qp, struct sk_bu=
+ff *skb)
+ =09=09qp->q.flags |=3D INET_FRAG_LAST_IN;
+ =09=09qp->q.len =3D end;
+ =09} else {
+-=09=09if (end&7) {
+-=09=09=09end &=3D ~7;
+-=09=09=09if (skb->ip_summed !=3D CHECKSUM_UNNECESSARY)
+-=09=09=09=09skb->ip_summed =3D CHECKSUM_NONE;
+-=09=09}
++=09=09/* Check if the fragment is rounded to 8 bytes. */
++=09=09if (end & 0x7)
++=09=09=09goto discard_qp;
++
+ =09=09if (end > qp->q.len) {
+ =09=09=09/* Some bits beyond end -> corruption. */
+ =09=09=09if (qp->q.flags & INET_FRAG_LAST_IN)
+@@ -423,8 +428,6 @@ static int ip_frag_reasm(struct ipq *qp, struct sk_buff=
+ *skb,
+
+ =09len =3D ip_hdrlen(skb) + qp->q.len;
+ =09err =3D -E2BIG;
+-=09if (len > 65535)
+-=09=09goto out_oversize;
+
+ =09inet_frag_reasm_finish(&qp->q, skb, reasm_data,
+ =09=09=09       ip_frag_coalesce_ok(qp));
+@@ -462,9 +465,6 @@ static int ip_frag_reasm(struct ipq *qp, struct sk_buff=
+ *skb,
+ out_nomem:
+ =09net_dbg_ratelimited("queue_glue: no memory for gluing queue %p\n", qp);
+ =09err =3D -ENOMEM;
+-=09goto out_fail;
+-out_oversize:
+-=09net_info_ratelimited("Oversized IP packet from %pI4\n", &qp->q.key.v4.s=
+addr);
+ out_fail:
+ =09__IP_INC_STATS(net, IPSTATS_MIB_REASMFAILS);
+ =09return err;
+diff --git a/net/ipv6/reassembly.c b/net/ipv6/reassembly.c
+index 1f5d4d196dcc..f6ababb5bb30 100644
+--- a/net/ipv6/reassembly.c
++++ b/net/ipv6/reassembly.c
+@@ -102,8 +102,7 @@ fq_find(struct net *net, __be32 id, const struct ipv6hd=
+r *hdr, int iif)
+ }
+
+ static int ip6_frag_queue(struct frag_queue *fq, struct sk_buff *skb,
+-=09=09=09  struct frag_hdr *fhdr, int nhoff,
+-=09=09=09  u32 *prob_offset)
++=09=09=09  struct frag_hdr *fhdr, int nhoff)
+ {
+ =09struct net *net =3D dev_net(skb_dst(skb)->dev);
+ =09int offset, end, fragsize;
+@@ -111,6 +110,7 @@ static int ip6_frag_queue(struct frag_queue *fq, struct=
+ sk_buff *skb,
+ =09struct net_device *dev;
+ =09int err =3D -ENOENT;
+ =09u8 ecn;
++=09u32 prob_offset =3D 0;
+
+ =09if (fq->q.flags & INET_FRAG_COMPLETE)
+ =09=09goto err;
+@@ -121,11 +121,10 @@ static int ip6_frag_queue(struct frag_queue *fq, stru=
+ct sk_buff *skb,
+ =09=09=09((u8 *)(fhdr + 1) - (u8 *)(ipv6_hdr(skb) + 1)));
+
+ =09if ((unsigned int)end > IPV6_MAXPLEN) {
+-=09=09*prob_offset =3D (u8 *)&fhdr->frag_off - skb_network_header(skb);
+-=09=09/* note that if prob_offset is set, the skb is freed elsewhere,
+-=09=09 * we do not free it here.
+-=09=09 */
+-=09=09return -1;
++=09=09prob_offset =3D (u8 *)&fhdr->frag_off - skb_network_header(skb);
++=09=09net_dbg_ratelimited("ip6_frag_queue: Oversized IPv6 packet from %pI6=
+c, end =3D %d\n",
++=09=09=09=09    &fq->q.key.v6.saddr, end);
++=09=09goto send_param_prob;
+ =09}
+
+ =09ecn =3D ip6_frag_ecn(ipv6_hdr(skb));
+@@ -155,8 +154,8 @@ static int ip6_frag_queue(struct frag_queue *fq, struct=
+ sk_buff *skb,
+ =09=09=09/* RFC2460 says always send parameter problem in
+ =09=09=09 * this case. -DaveM
+ =09=09=09 */
+-=09=09=09*prob_offset =3D offsetof(struct ipv6hdr, payload_len);
+-=09=09=09return -1;
++=09=09=09prob_offset =3D offsetof(struct ipv6hdr, payload_len);
++=09=09=09goto send_param_prob;
+ =09=09}
+ =09=09if (end > fq->q.len) {
+ =09=09=09/* Some bits beyond end -> corruption. */
+@@ -236,6 +235,18 @@ static int ip6_frag_queue(struct frag_queue *fq, struc=
+t sk_buff *skb,
+ err:
+ =09kfree_skb(skb);
+ =09return err;
++send_param_prob:
++=09=09__IP6_INC_STATS(net, __in6_dev_get_safely(skb->dev),
++=09=09=09=09IPSTATS_MIB_INHDRERRORS);
++=09=09/* icmpv6_param_prob() calls kfree_skb(skb),
++=09=09 * and the label err also calls kfree_skb(skb),
++=09=09 * so skb_get(skb) here increases the reference count
++=09=09 * to avoid duplicate release
++=09=09 */
++=09=09skb_get(skb);
++=09=09icmpv6_param_prob(skb, ICMPV6_HDR_FIELD, prob_offset);
++=09=09err =3D -1;
++=09=09goto discard_fq;
+ }
+
+ /*
+@@ -267,8 +278,6 @@ static int ip6_frag_reasm(struct frag_queue *fq, struct=
+ sk_buff *skb,
+ =09payload_len =3D ((skb->data - skb_network_header(skb)) -
+ =09=09       sizeof(struct ipv6hdr) + fq->q.len -
+ =09=09       sizeof(struct frag_hdr));
+-=09if (payload_len > IPV6_MAXPLEN)
+-=09=09goto out_oversize;
+
+ =09/* We have to remove fragment header from datagram and to relocate
+ =09 * header in order to calculate ICV correctly. */
+@@ -303,9 +312,6 @@ static int ip6_frag_reasm(struct frag_queue *fq, struct=
+ sk_buff *skb,
+ =09fq->q.last_run_head =3D NULL;
+ =09return 1;
+
+-out_oversize:
+-=09net_dbg_ratelimited("ip6_frag_reasm: payload len =3D %d\n", payload_len=
+);
+-=09goto out_fail;
+ out_oom:
+ =09net_dbg_ratelimited("ip6_frag_reasm: no memory for reassembly\n");
+ out_fail:
+@@ -354,23 +360,14 @@ static int ipv6_frag_rcv(struct sk_buff *skb)
+ =09iif =3D skb->dev ? skb->dev->ifindex : 0;
+ =09fq =3D fq_find(net, fhdr->identification, hdr, iif);
+ =09if (fq) {
+-=09=09u32 prob_offset =3D 0;
+ =09=09int ret;
+-
+ =09=09spin_lock(&fq->q.lock);
+
+ =09=09fq->iif =3D iif;
+-=09=09ret =3D ip6_frag_queue(fq, skb, fhdr, IP6CB(skb)->nhoff,
+-=09=09=09=09     &prob_offset);
++=09=09ret =3D ip6_frag_queue(fq, skb, fhdr, IP6CB(skb)->nhoff);
+
+ =09=09spin_unlock(&fq->q.lock);
+ =09=09inet_frag_put(&fq->q);
+-=09=09if (prob_offset) {
+-=09=09=09__IP6_INC_STATS(net, __in6_dev_get_safely(skb->dev),
+-=09=09=09=09=09IPSTATS_MIB_INHDRERRORS);
+-=09=09=09/* icmpv6_param_prob() calls kfree_skb(skb) */
+-=09=09=09icmpv6_param_prob(skb, ICMPV6_HDR_FIELD, prob_offset);
+-=09=09}
+ =09=09return ret;
+ =09}
+
+--
+2.24.0
