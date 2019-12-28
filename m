@@ -2,161 +2,258 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AE41612BDD4
-	for <lists+netdev@lfdr.de>; Sat, 28 Dec 2019 16:01:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E05812BDEE
+	for <lists+netdev@lfdr.de>; Sat, 28 Dec 2019 16:37:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726220AbfL1PBt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 28 Dec 2019 10:01:49 -0500
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:55648 "EHLO
-        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726075AbfL1PBs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 28 Dec 2019 10:01:48 -0500
-Received: by mail-wm1-f65.google.com with SMTP id q9so8853488wmj.5;
-        Sat, 28 Dec 2019 07:01:47 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=yC8Wr593B5wtduw4VrkVjj/ZwxY8V1O2vaeIv87237A=;
-        b=bVnktZvqowVmBzHkkb0JPOie+l2SpZIWi0alFHTXC6F/3uqR0LNh6CcsdgK4WQGBT7
-         vHMu6QDUKXNR6VRT0HSYKbrclT9VKVAe3Vf1RS6VJlOnac+LmiZaY5OFFGLsUc3sR5GG
-         ZiGsBCTkLahtxwYU4Z+q5He0lY2wK98WVr5n+TN4XdOICJ4snmDHC0VZmlB2Q8voGnIt
-         SQMbt5fHtjiolFYe1qaK4z88olCwGdzUjzDLwXAqzJMsBFuSC/d8ZgMxICA/3gsbuOdN
-         HtT8f3Y8Nq5jzs6rCJq8b9kHNRm+p8HNRPIZ/BLhrfC3k+Ulw7SWMflugrRCU3mh9UjP
-         3cGw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=yC8Wr593B5wtduw4VrkVjj/ZwxY8V1O2vaeIv87237A=;
-        b=VM0SUJd/VGO2xkf154axv+9W3PjYr3O0L1023lLXOC8wZ5NP778cH6n3ipeIboAMZ9
-         XeLqyMHtRFvgFgnihu0OIT4zrITj0qvSiBbRuVoZFMin3zIBkTCe3sEEOFbwQSxU6BlE
-         BdjvpCBiy+x5Dl2p7X44l49wYl0A1LFz3YkXi/wA1kJS67XEcGNezL+tkFmRWslG09v2
-         QSKQ0BX7oF9O1w1m0YfizPz3N5G+dmgSR36Kciiq0onh8UyBaZNc/nzyMFua1oHKPVLj
-         Map90cyDF384pXkK3zAHEXGQGz6omq/FsADGIlAnESJYf3NkSSQLMYflBmEu24UpRY9i
-         hNTA==
-X-Gm-Message-State: APjAAAWoYrDYwzDB9C0xz0M0jzzn1X3kVkhs+vrgqjEbv4+muT/n8kcB
-        i6cumg+C1ALuedNgIUb+smA=
-X-Google-Smtp-Source: APXvYqxzyRETFWCnJn23zt24iJDf9apLhnEN+OkRL+WGG0/53gfZkDaWbVVE9rd6Z9oCawAQPrJGZA==
-X-Received: by 2002:a1c:7e0b:: with SMTP id z11mr23123806wmc.88.1577545306424;
-        Sat, 28 Dec 2019 07:01:46 -0800 (PST)
-Received: from [192.168.8.147] (252.165.185.81.rev.sfr.net. [81.185.165.252])
-        by smtp.gmail.com with ESMTPSA id z123sm14770824wme.18.2019.12.28.07.01.45
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 28 Dec 2019 07:01:45 -0800 (PST)
-Subject: Re: INFO: rcu detected stall in br_handle_frame (2)
-To:     Florian Westphal <fw@strlen.de>,
-        syzbot <syzbot+dc9071cc5a85950bdfce@syzkaller.appspotmail.com>
-Cc:     davem@davemloft.net, jhs@mojatatu.com, jiri@resnulli.us,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com, xiyou.wangcong@gmail.com,
-        eric.dumazet@gmail.com
-References: <000000000000f9f9a8059a737d7e@google.com>
- <20191228111548.GI795@breakpoint.cc>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <30e6a8c6-b857-00b8-24d8-076b92409636@gmail.com>
-Date:   Sat, 28 Dec 2019 07:01:43 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        id S1726187AbfL1PhO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 28 Dec 2019 10:37:14 -0500
+Received: from us-smtp-2.mimecast.com ([205.139.110.61]:38344 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726080AbfL1PhO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 28 Dec 2019 10:37:14 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1577547431;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=esqrg2+SrDkCed2GrHUpTDXcQ/FBa2asjQ4zWlXoAYg=;
+        b=KOV80LH+I5XbNtAbxblC6OLMvey2x0x6SWLC68SP0ExA/SGYBnWnh1lfXEyCJLvO1Zfn+o
+        uSLJu8J6hibH5F+MWl807tlIUd2s8aIRAz/Z3Vp3JpjJJPRz64HtLpZNcQod99aViKMkKL
+        wDNwAJvbH5kVjL04/vh8dZ66NU0fIq8=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-314-Z-wIBFEBMBu1SBrXA-BLOA-1; Sat, 28 Dec 2019 10:37:09 -0500
+X-MC-Unique: Z-wIBFEBMBu1SBrXA-BLOA-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 8347E10054E3;
+        Sat, 28 Dec 2019 15:37:08 +0000 (UTC)
+Received: from new-host-5.redhat.com (ovpn-204-20.brq.redhat.com [10.40.204.20])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 2D8BF60BE0;
+        Sat, 28 Dec 2019 15:37:04 +0000 (UTC)
+From:   Davide Caratti <dcaratti@redhat.com>
+To:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Vlad Buslov <vladbu@mellanox.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>
+Subject: [PATCH net] net/sched: add delete_empty() to filters and use it in cls_flower
+Date:   Sat, 28 Dec 2019 16:36:58 +0100
+Message-Id: <3f0b159cd943476d4beb8106b5a1405d050ec392.1577546059.git.dcaratti@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <20191228111548.GI795@breakpoint.cc>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Revert "net/sched: cls_u32: fix refcount leak in the error path of
+u32_change()", and fix the u32 refcount leak in a more generic way that
+preserves the semantic of rule dumping.
+On tc filters that don't support lockless insertion/removal, there is no
+need to guard against concurrent insertion when a removal is in progress.
+Therefore, for most of them we can avoid a full walk() when deleting, and
+just decrease the refcount, like it was done on older Linux kernels.
+This fixes situations where walk() was wrongly detecting a non-empty
+filter, like it happened with cls_u32 in the error path of change(), thus
+leading to failures in the following tdc selftests:
 
+ 6aa7: (filter, u32) Add/Replace u32 with source match and invalid indev
+ 6658: (filter, u32) Add/Replace u32 with custom hash table and invalid h=
+andle
+ 74c2: (filter, u32) Add/Replace u32 filter with invalid hash table id
 
-On 12/28/19 3:15 AM, Florian Westphal wrote:
-> syzbot <syzbot+dc9071cc5a85950bdfce@syzkaller.appspotmail.com> wrote:
-> 
-> [ CC Eric, fq related ]
-> 
->> syzbot found the following crash on:
->>
->> HEAD commit:    7e0165b2 Merge branch 'akpm' (patches from Andrew)
->> git tree:       upstream
->> console output: https://syzkaller.appspot.com/x/log.txt?x=116ec09ee00000
->> kernel config:  https://syzkaller.appspot.com/x/.config?x=1b59a3066828ac4c
->> dashboard link: https://syzkaller.appspot.com/bug?extid=dc9071cc5a85950bdfce
->> compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
->> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=159182c1e00000
->> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1221218ee00000
->>
->> Bisection is inconclusive: the bug happens on the oldest tested release.
->>
->> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=158224c1e00000
->> final crash:    https://syzkaller.appspot.com/x/report.txt?x=178224c1e00000
->> console output: https://syzkaller.appspot.com/x/log.txt?x=138224c1e00000
->>
->> IMPORTANT: if you fix the bug, please add the following tag to the commit:
->> Reported-by: syzbot+dc9071cc5a85950bdfce@syzkaller.appspotmail.com
->>
->> rcu: INFO: rcu_preempt detected stalls on CPUs/tasks:
->> 	(detected by 0, t=10502 jiffies, g=10149, q=201)
->> rcu: All QSes seen, last rcu_preempt kthread activity 10502
->> (4294978441-4294967939), jiffies_till_next_fqs=1, root ->qsmask 0x0
->> sshd            R  running task    26584 10034   9965 0x00000008
->> Call Trace:
->>  <IRQ>
->>  sched_show_task kernel/sched/core.c:5954 [inline]
-> [..]
-> 
-> The reproducer sets up 'fq' sched with TCA_FQ_QUANTUM == 0x80000000
-> 
-> This causes infinite loop in fq_dequeue:
-> 
-> if (f->credit <= 0) {
->   f->credit += q->quantum;
->   goto begin;
-> }
-> 
-> ... because f->credit is either 0 or -2147483648.
-> 
-> Eric, what is a 'sane' ->quantum value?
-> 
-> One could simply add a 'quantum > 0 && quantum < INT_MAX'
-> constraint afaics.
-> 
-> If you don't have a better idea/suggestion for an upperlimit INT_MAX
-> would be enough to prevent perpetual <= 0 condition.
-> 
+On cls_flower, and on (future) lockless filters, this check is necessary:
+move all the check_empty() logic in a callback so that each filter
+can have its own implementation. For cls_flower, it's sufficient to check
+if no IDRs have been allocated.
 
-Thanks Florian for the analysis.
+This reverts commit 275c44aa194b7159d1191817b20e076f55f0e620.
 
-I guess we could use a conservative upper bound value of (1 << 20)
-( about 16 64KB packets )
+Changes since v1:
+ - document the need for delete_empty() when TCF_PROTO_OPS_DOIT_UNLOCKED
+   is used, thanks to Vlad Buslov
+ - implement delete_empty() without doing fl_walk(), thanks to Vlad Buslo=
+v
+ - squash revert and new fix in a single patch, to be nice with bisect
+   tests that run tdc on u32 filter, thanks to Dave Miller
 
-diff --git a/net/sched/sch_fq.c b/net/sched/sch_fq.c
-index ff4c5e9d0d7778d86f20f4bd67cc627eed0713d9..12f1d1c6044fac9db987f7ce3a50a7e2c711358b 100644
---- a/net/sched/sch_fq.c
-+++ b/net/sched/sch_fq.c
-@@ -786,15 +786,20 @@ static int fq_change(struct Qdisc *sch, struct nlattr *opt,
-        if (tb[TCA_FQ_QUANTUM]) {
-                u32 quantum = nla_get_u32(tb[TCA_FQ_QUANTUM]);
- 
--               if (quantum > 0)
-+               if (quantum > 0 && quantum <= (1 << 20))
-                        q->quantum = quantum;
-                else
-                        err = -EINVAL;
-        }
- 
--       if (tb[TCA_FQ_INITIAL_QUANTUM])
--               q->initial_quantum = nla_get_u32(tb[TCA_FQ_INITIAL_QUANTUM]);
-+       if (tb[TCA_FQ_INITIAL_QUANTUM]) {
-+               u32 quantum = nla_get_u32(tb[TCA_FQ_INITIAL_QUANTUM]);
- 
-+               if (quantum > 0 && quantum <= (1 << 20))
-+                       q->initial_quantum = quantum;
-+               else
-+                       err = -EINVAL;
-+       }
-        if (tb[TCA_FQ_FLOW_DEFAULT_RATE])
-                pr_warn_ratelimited("sch_fq: defrate %u ignored.\n",
-                                    nla_get_u32(tb[TCA_FQ_FLOW_DEFAULT_RATE]));
+Fixes: 275c44aa194b ("net/sched: cls_u32: fix refcount leak in the error =
+path of u32_change()")
+Fixes: 6676d5e416ee ("net: sched: set dedicated tcf_walker flag when tp i=
+s empty")
+Suggested-by: Jamal Hadi Salim <jhs@mojatatu.com>
+Suggested-by: Vlad Buslov <vladbu@mellanox.com>
+Signed-off-by: Davide Caratti <dcaratti@redhat.com>
+---
+ include/net/sch_generic.h |  5 +++++
+ net/sched/cls_api.c       | 31 +++++--------------------------
+ net/sched/cls_flower.c    | 12 ++++++++++++
+ net/sched/cls_u32.c       | 25 -------------------------
+ 4 files changed, 22 insertions(+), 51 deletions(-)
+
+diff --git a/include/net/sch_generic.h b/include/net/sch_generic.h
+index 144f264ea394..fceddf89592a 100644
+--- a/include/net/sch_generic.h
++++ b/include/net/sch_generic.h
+@@ -308,6 +308,7 @@ struct tcf_proto_ops {
+ 	int			(*delete)(struct tcf_proto *tp, void *arg,
+ 					  bool *last, bool rtnl_held,
+ 					  struct netlink_ext_ack *);
++	bool			(*delete_empty)(struct tcf_proto *tp);
+ 	void			(*walk)(struct tcf_proto *tp,
+ 					struct tcf_walker *arg, bool rtnl_held);
+ 	int			(*reoffload)(struct tcf_proto *tp, bool add,
+@@ -336,6 +337,10 @@ struct tcf_proto_ops {
+ 	int			flags;
+ };
+=20
++/* Classifiers setting TCF_PROTO_OPS_DOIT_UNLOCKED in tcf_proto_ops->fla=
+gs
++ * are expected to implement tcf_proto_ops->delete_empty(), otherwise ra=
+ce
++ * conditions can occur when filters are inserted/deleted simultaneously=
+.
++ */
+ enum tcf_proto_ops_flags {
+ 	TCF_PROTO_OPS_DOIT_UNLOCKED =3D 1,
+ };
+diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
+index 6a0eacafdb19..76e0d122616a 100644
+--- a/net/sched/cls_api.c
++++ b/net/sched/cls_api.c
+@@ -308,33 +308,12 @@ static void tcf_proto_put(struct tcf_proto *tp, boo=
+l rtnl_held,
+ 		tcf_proto_destroy(tp, rtnl_held, true, extack);
+ }
+=20
+-static int walker_check_empty(struct tcf_proto *tp, void *fh,
+-			      struct tcf_walker *arg)
++static bool tcf_proto_check_delete(struct tcf_proto *tp)
+ {
+-	if (fh) {
+-		arg->nonempty =3D true;
+-		return -1;
+-	}
+-	return 0;
+-}
+-
+-static bool tcf_proto_is_empty(struct tcf_proto *tp, bool rtnl_held)
+-{
+-	struct tcf_walker walker =3D { .fn =3D walker_check_empty, };
+-
+-	if (tp->ops->walk) {
+-		tp->ops->walk(tp, &walker, rtnl_held);
+-		return !walker.nonempty;
+-	}
+-	return true;
+-}
++	if (tp->ops->delete_empty)
++		return tp->ops->delete_empty(tp);
+=20
+-static bool tcf_proto_check_delete(struct tcf_proto *tp, bool rtnl_held)
+-{
+-	spin_lock(&tp->lock);
+-	if (tcf_proto_is_empty(tp, rtnl_held))
+-		tp->deleting =3D true;
+-	spin_unlock(&tp->lock);
++	tp->deleting =3D true;
+ 	return tp->deleting;
+ }
+=20
+@@ -1751,7 +1730,7 @@ static void tcf_chain_tp_delete_empty(struct tcf_ch=
+ain *chain,
+ 	 * concurrently.
+ 	 * Mark tp for deletion if it is empty.
+ 	 */
+-	if (!tp_iter || !tcf_proto_check_delete(tp, rtnl_held)) {
++	if (!tp_iter || !tcf_proto_check_delete(tp)) {
+ 		mutex_unlock(&chain->filter_chain_lock);
+ 		return;
+ 	}
+diff --git a/net/sched/cls_flower.c b/net/sched/cls_flower.c
+index 0d125de54285..b0f42e62dd76 100644
+--- a/net/sched/cls_flower.c
++++ b/net/sched/cls_flower.c
+@@ -2773,6 +2773,17 @@ static void fl_bind_class(void *fh, u32 classid, u=
+nsigned long cl)
+ 		f->res.class =3D cl;
+ }
+=20
++static bool fl_delete_empty(struct tcf_proto *tp)
++{
++	struct cls_fl_head *head =3D fl_head_dereference(tp);
++
++	spin_lock(&tp->lock);
++	tp->deleting =3D idr_is_empty(&head->handle_idr);
++	spin_unlock(&tp->lock);
++
++	return tp->deleting;
++}
++
+ static struct tcf_proto_ops cls_fl_ops __read_mostly =3D {
+ 	.kind		=3D "flower",
+ 	.classify	=3D fl_classify,
+@@ -2782,6 +2793,7 @@ static struct tcf_proto_ops cls_fl_ops __read_mostl=
+y =3D {
+ 	.put		=3D fl_put,
+ 	.change		=3D fl_change,
+ 	.delete		=3D fl_delete,
++	.delete_empty	=3D fl_delete_empty,
+ 	.walk		=3D fl_walk,
+ 	.reoffload	=3D fl_reoffload,
+ 	.hw_add		=3D fl_hw_add,
+diff --git a/net/sched/cls_u32.c b/net/sched/cls_u32.c
+index 66c6bcec16cb..a0e6fac613de 100644
+--- a/net/sched/cls_u32.c
++++ b/net/sched/cls_u32.c
+@@ -1108,33 +1108,10 @@ static int u32_change(struct net *net, struct sk_=
+buff *in_skb,
+ 	return err;
+ }
+=20
+-static bool u32_hnode_empty(struct tc_u_hnode *ht, bool *non_root_ht)
+-{
+-	int i;
+-
+-	if (!ht)
+-		return true;
+-	if (!ht->is_root) {
+-		*non_root_ht =3D true;
+-		return false;
+-	}
+-	if (*non_root_ht)
+-		return false;
+-	if (ht->refcnt < 2)
+-		return true;
+-
+-	for (i =3D 0; i <=3D ht->divisor; i++) {
+-		if (rtnl_dereference(ht->ht[i]))
+-			return false;
+-	}
+-	return true;
+-}
+-
+ static void u32_walk(struct tcf_proto *tp, struct tcf_walker *arg,
+ 		     bool rtnl_held)
+ {
+ 	struct tc_u_common *tp_c =3D tp->data;
+-	bool non_root_ht =3D false;
+ 	struct tc_u_hnode *ht;
+ 	struct tc_u_knode *n;
+ 	unsigned int h;
+@@ -1147,8 +1124,6 @@ static void u32_walk(struct tcf_proto *tp, struct t=
+cf_walker *arg,
+ 	     ht =3D rtnl_dereference(ht->next)) {
+ 		if (ht->prio !=3D tp->prio)
+ 			continue;
+-		if (u32_hnode_empty(ht, &non_root_ht))
+-			return;
+ 		if (arg->count >=3D arg->skip) {
+ 			if (arg->fn(tp, ht, arg) < 0) {
+ 				arg->stop =3D 1;
+--=20
+2.24.1
 
