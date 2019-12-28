@@ -2,64 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3673512BC00
-	for <lists+netdev@lfdr.de>; Sat, 28 Dec 2019 01:36:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D31F212BC01
+	for <lists+netdev@lfdr.de>; Sat, 28 Dec 2019 01:36:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726088AbfL1AgP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Dec 2019 19:36:15 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:53788 "EHLO
+        id S1726315AbfL1AgY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Dec 2019 19:36:24 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:53800 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725306AbfL1AgP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Dec 2019 19:36:15 -0500
+        with ESMTP id S1725306AbfL1AgY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Dec 2019 19:36:24 -0500
 Received: from localhost (unknown [IPv6:2601:601:9f00:1c3::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 65713154D18C7;
-        Fri, 27 Dec 2019 16:36:14 -0800 (PST)
-Date:   Fri, 27 Dec 2019 16:36:13 -0800 (PST)
-Message-Id: <20191227.163613.94954890256147556.davem@davemloft.net>
-To:     qdkevin.kou@gmail.com
-Cc:     linux-sctp@vger.kernel.org, netdev@vger.kernel.org,
-        vyasevich@gmail.com, nhorman@tuxdriver.com,
-        marcelo.leitner@gmail.com
-Subject: Re: [PATCHv3 net-next] sctp: do trace_sctp_probe after SACK
- validation and check
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 4CE2F154D18C8;
+        Fri, 27 Dec 2019 16:36:23 -0800 (PST)
+Date:   Fri, 27 Dec 2019 16:36:22 -0800 (PST)
+Message-Id: <20191227.163622.1874013727124631819.davem@davemloft.net>
+To:     shmulik@metanetworks.com
+Cc:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        netdev@vger.kernel.org, shmulik.ladkani@gmail.com,
+        sladkani@proofpoint.com
+Subject: Re: [PATCH net] net/sched: act_mirred: Pull mac prior redir to non
+ mac_header_xmit device
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20191225082725.1251-1-qdkevin.kou@gmail.com>
-References: <20191225082725.1251-1-qdkevin.kou@gmail.com>
+In-Reply-To: <20191225085101.19696-1-sladkani@proofpoint.com>
+References: <20191225085101.19696-1-sladkani@proofpoint.com>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Fri, 27 Dec 2019 16:36:14 -0800 (PST)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Fri, 27 Dec 2019 16:36:23 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Kevin Kou <qdkevin.kou@gmail.com>
-Date: Wed, 25 Dec 2019 08:27:25 +0000
+From: shmulik@metanetworks.com
+Date: Wed, 25 Dec 2019 10:51:01 +0200
 
-> The function sctp_sf_eat_sack_6_2 now performs the Verification
-> Tag validation, Chunk length validation, Bogu check, and also
-> the detection of out-of-order SACK based on the RFC2960
-> Section 6.2 at the beginning, and finally performs the further
-> processing of SACK. The trace_sctp_probe now triggered before
-> the above necessary validation and check.
+> From: Shmulik Ladkani <sladkani@proofpoint.com>
 > 
-> this patch is to do the trace_sctp_probe after the chunk sanity
-> tests, but keep doing trace if the SACK received is out of order,
-> for the out-of-order SACK is valuable to congestion control
-> debugging.
+> There's no skb_pull performed when a mirred action is set at egress of a
+> mac device, with a target device/action that expects skb->data to point
+> at the network header.
 > 
-> v1->v2:
->  - keep doing SCTP trace if the SACK is out of order as Marcelo's
->    suggestion.
-> v2->v3:
->  - regenerate the patch as v2 generated on top of v1, and add
->    'net-next' tag to the new one as Marcelo's comments.
+> As a result, either the target device is errornously given an skb with
+> data pointing to the mac (egress case), or the net stack receives the
+> skb with data pointing to the mac (ingress case).
 > 
-> Signed-off-by: Kevin Kou <qdkevin.kou@gmail.com>
+> E.g:
+>  # tc qdisc add dev eth9 root handle 1: prio
+>  # tc filter add dev eth9 parent 1: prio 9 protocol ip handle 9 basic \
+>    action mirred egress redirect dev tun0
+> 
+>  (tun0 is a tun device. result: tun0 errornously gets the eth header
+>   instead of the iph)
+> 
+> Revise the push/pull logic of tcf_mirred_act() to not rely on the
+> skb_at_tc_ingress() vs tcf_mirred_act_wants_ingress() comparison, as it
+> does not cover all "pull" cases.
+> 
+> Instead, calculate whether the required action on the target device
+> requires the data to point at the network header, and compare this to
+> whether skb->data points to network header - and make the push/pull
+> adjustments as necessary.
+> 
+> Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+> Signed-off-by: Shmulik Ladkani <sladkani@proofpoint.com>
+> Tested-by: Jamal Hadi Salim <jhs@mojatatu.com>
+> Acked-by: Jamal Hadi Salim <jhs@mojatatu.com>
 
-Applied.
+Applied and queued up for -stable.
