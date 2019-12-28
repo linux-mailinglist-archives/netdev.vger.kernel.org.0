@@ -2,281 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B04A12BDFA
-	for <lists+netdev@lfdr.de>; Sat, 28 Dec 2019 17:10:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CC85B12BE02
+	for <lists+netdev@lfdr.de>; Sat, 28 Dec 2019 17:28:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726187AbfL1QKQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 28 Dec 2019 11:10:16 -0500
-Received: from mail-40135.protonmail.ch ([185.70.40.135]:32125 "EHLO
-        mail-40135.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726080AbfL1QKQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 28 Dec 2019 11:10:16 -0500
-Date:   Sat, 28 Dec 2019 16:10:03 +0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=protonmail.com;
-        s=default; t=1577549410;
-        bh=zWgrEil5xyp7zjBUG0shyo040wf6BBXm4oCHuaQNZZ0=;
-        h=Date:To:From:Cc:Reply-To:Subject:Feedback-ID:From;
-        b=I+CDu8k4RHT6nwp7dpjwVpSCCzd1F4uHOgzNdePbWLJhmaP5wsJ0LDyupFyZR7LZd
-         Vi9H97prLycVpc9ShAxOQAeTc2CeymWiu82tpyl2ht62gqkNKL6B1B3N+fWkFtd/73
-         u6Qjuj75B6J3x+XAFRzHqWloxMuxKTw9pllEsrrY=
-To:     Netdev <netdev@vger.kernel.org>
-From:   Ttttabcd <ttttabcd@protonmail.com>
-Cc:     "davem@davemloft.net" <davem@davemloft.net>,
-        "kuznet@ms2.inr.ac.ru" <kuznet@ms2.inr.ac.ru>,
-        "yoshfuji@linux-ipv6.org" <yoshfuji@linux-ipv6.org>
-Reply-To: Ttttabcd <ttttabcd@protonmail.com>
-Subject: [PATCH] Improved handling of incorrect IP fragments
-Message-ID: <NIK8V5mQHWZU7pO9H6W3BjBzlsZ-wjJOcqNEcRaDxLVswAF_ynPFCXOkIRKr-EF4EdDMMZ7Fa3cQEpoqa_Sjt0ZKUMqmZFHYI1FIVwPhJhs=@protonmail.com>
-Feedback-ID: EvWK9os_-weOBrycfL_HEFp-ixys9sxnciOqqctCHB9kjCM4ip8VR9shOcMQZgeZ7RCnmNC4HYjcUKNMz31NBA==:Ext:ProtonMail
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-0.2 required=7.0 tests=ALL_TRUSTED,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,HK_RANDOM_REPLYTO
-        shortcircuit=no autolearn=no autolearn_force=no version=3.4.2
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.protonmail.ch
+        id S1726189AbfL1Q2d (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 28 Dec 2019 11:28:33 -0500
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:35342 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726088AbfL1Q2c (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 28 Dec 2019 11:28:32 -0500
+Received: by mail-pf1-f196.google.com with SMTP id i23so10803540pfo.2
+        for <netdev@vger.kernel.org>; Sat, 28 Dec 2019 08:28:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=eaIEiX/5DbaqEbvsgMIyO6WDIEiCMDx3xTJqLvbUvVo=;
+        b=XvJVJXbNL/jgBdGpDxTX/GWHDS+mcwVe9XkkqAX3pGUDGunIlofyImKiv6px7na275
+         vlK6cU5JoIxZhZSU9azijBIvfDr84neUUVxie0l1B5eqFYeSWI0tNi8oomGH0/IFKAdw
+         pvAh8bUNYRxHY54dZRFup9JOQAtC3Lr90m7sOXl0yBwaltUhINMRD+10WREVJlGx+KyN
+         ETVjJyuQMZlJBIx2DQqD8GQFDtmLP2lx2U33SsOc14aROtmnPD8ztd32fncOcK1BjX05
+         PgNghLwILxafTx+Ri7tGZ5HB91ITRIEdC8CAuU22S6wYxKVs3w1L2tWDAyX6d9f2AXlq
+         w8Kg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=eaIEiX/5DbaqEbvsgMIyO6WDIEiCMDx3xTJqLvbUvVo=;
+        b=loIBYh4NMFuB/TQyGiJ9DS9hO6vpU4s1GX0rB+kHilMivKrVUZP7NyujgNvRk6mvuD
+         YjBEl7KUK07XSAjRf8GQw9SFKIZ8JZEsno8xUCfd1BDOYSb8hnKfWEK4NDusbYo1o3JE
+         1dd0d9KiTQoQWy/xxnLG/zScWYhlolvlH4OPhB0QjxddE7VCNGnXpL7EpGrgoJrc7vpy
+         ooRSg5Wixx9iQlGy15p63qC1J+5jyo3k01T51EE6I7dh4auFvMVGKzFLaH3M/DpsL1fi
+         CggxiV66tk0s/uo7s339lGd3+GPRPkfRn9mWSoGLw8LLGeFhlSovgqYtiOrDhYd7qa32
+         SzyQ==
+X-Gm-Message-State: APjAAAVt1pTqCESFVXfNH+PVZYpCzGQhU7mTdZeRgCmZXL4GhOWCHCqU
+        XfJiLXjF9UlsKsWgNDKYSZQ=
+X-Google-Smtp-Source: APXvYqysmiaEO70JdEBCUx6AY3SbYOzhF44n8nszXwJgjqHi/47+RFF4tfMN+ZD2E9nVTbwvOXxmeA==
+X-Received: by 2002:aa7:94b0:: with SMTP id a16mr60582602pfl.35.1577550512055;
+        Sat, 28 Dec 2019 08:28:32 -0800 (PST)
+Received: from localhost.localdomain ([180.70.143.152])
+        by smtp.gmail.com with ESMTPSA id n1sm44826343pfd.47.2019.12.28.08.28.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 28 Dec 2019 08:28:30 -0800 (PST)
+From:   Taehee Yoo <ap420073@gmail.com>
+To:     davem@davemloft.net, jakub.kicinski@netronome.com,
+        netdev@vger.kernel.org
+Cc:     ap420073@gmail.com
+Subject: [PATCH net] hsr: fix slab-out-of-bounds Read in hsr_debugfs_rename()
+Date:   Sat, 28 Dec 2019 16:28:09 +0000
+Message-Id: <20191228162809.21370-1-ap420073@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In both ip6_frag_queue and ip6_frag_reasm, it is checked whether it is an
-Oversized IPv6 packet, which is duplicated. The original code logic will
-only be processed in ip6_frag_queue. The code of ip6_frag_reasm will not
-be executed. Now change it to only process in ip6_frag_queue and output
-the prompt information.
+hsr slave interfaces don't have debugfs directory.
+So, hsr_debugfs_rename() shouldn't be called when hsr slave interface name
+is changed.
 
-In ip6_frag_queue, set the prob_offset pointer to notify ipv6_frag_rcv
-to send the ICMPv6 parameter problem message. The logic is not concise,
-I merged the part that sent ICMPv6 messages into ip6_frag_queue.
+Test commands:
+    ip link add dummy0 type dummy
+    ip link add dummy1 type dummy
+    ip link add hsr0 type hsr slave1 dummy0 slave2 dummy1
+    ip link set dummy0 name ap
 
-In the original logic, receiving oversized IPv6 fragments and receiving
-IPv6 fragments whose end is not an integral multiple of 8 bytes both
-returns -1. This is inconsistent with other incorrect IPv6 fragmentation
-processing. For example, in other logic, end =3D=3D offset will goto discar=
-d_fq
-directly. I think that receiving any incorrect IPv6 fragment means that the
-fragment processing has failed as a whole, and the data carried in the
-fragments is likely to be wrong. I think we should also execute goto
-discard_fq to release this fragments queue.
+Splat looks like:
+[21071.899367][T22666] ap: renamed from dummy0
+[21071.914005][T22666] ==================================================================
+[21071.919008][T22666] BUG: KASAN: slab-out-of-bounds in hsr_debugfs_rename+0xaa/0xb0 [hsr]
+[21071.923640][T22666] Read of size 8 at addr ffff88805febcd98 by task ip/22666
+[21071.926941][T22666]
+[21071.927750][T22666] CPU: 0 PID: 22666 Comm: ip Not tainted 5.5.0-rc2+ #240
+[21071.929919][T22666] Hardware name: innotek GmbH VirtualBox/VirtualBox, BIOS VirtualBox 12/01/2006
+[21071.935094][T22666] Call Trace:
+[21071.935867][T22666]  dump_stack+0x96/0xdb
+[21071.936687][T22666]  ? hsr_debugfs_rename+0xaa/0xb0 [hsr]
+[21071.937774][T22666]  print_address_description.constprop.5+0x1be/0x360
+[21071.939019][T22666]  ? hsr_debugfs_rename+0xaa/0xb0 [hsr]
+[21071.940081][T22666]  ? hsr_debugfs_rename+0xaa/0xb0 [hsr]
+[21071.940949][T22666]  __kasan_report+0x12a/0x16f
+[21071.941758][T22666]  ? hsr_debugfs_rename+0xaa/0xb0 [hsr]
+[21071.942674][T22666]  kasan_report+0xe/0x20
+[21071.943325][T22666]  hsr_debugfs_rename+0xaa/0xb0 [hsr]
+[21071.944187][T22666]  hsr_netdev_notify+0x1fe/0x9b0 [hsr]
+[21071.945052][T22666]  ? __module_text_address+0x13/0x140
+[21071.945897][T22666]  notifier_call_chain+0x90/0x160
+[21071.946743][T22666]  dev_change_name+0x419/0x840
+[21071.947496][T22666]  ? __read_once_size_nocheck.constprop.6+0x10/0x10
+[21071.948600][T22666]  ? netdev_adjacent_rename_links+0x280/0x280
+[21071.949577][T22666]  ? __read_once_size_nocheck.constprop.6+0x10/0x10
+[21071.950672][T22666]  ? lock_downgrade+0x6e0/0x6e0
+[21071.951345][T22666]  ? do_setlink+0x811/0x2ef0
+[21071.951991][T22666]  do_setlink+0x811/0x2ef0
+[21071.952613][T22666]  ? is_bpf_text_address+0x81/0xe0
+[ ... ]
 
-Goto discard_fq at the end of the label send_param_prob, release the
-fragment queue. Since icmpv6_param_prob will call kfree_skb, it will also
-be kfree_skb in the label err, which will cause repeated free,
-so I added skb_get.
-
-I also made similar changes in IPv4 fragmentation processing.
-
-It is not good to use 65535 values directly,
-I added the IPV4_MAX_TOT_LEN macro.
-
-The oversized check in IPv4 fragment processing is in the ip_frag_reasm
-of the reassembly fragment. This is too late. The incorrect IP fragment
-has been inserted into the fragment queue. I modified it in ip_frag_queue.
-I changed the original net_info_ratelimited to net_dbg_ratelimited to make
-the debugging information more controllable.
-
-I also modified goto discard_qp directly
-when the end is not an integer multiple of 8 bytes.
-
-Signed-off-by: ttttabcd <ttttabcd@protonmail.com>
+Reported-by: syzbot+9328206518f08318a5fd@syzkaller.appspotmail.com
+Fixes: 4c2d5e33dcd3 ("hsr: rename debugfs file when interface name is changed")
+Signed-off-by: Taehee Yoo <ap420073@gmail.com>
 ---
- include/net/ip.h       |  2 ++
- net/ipv4/ip_fragment.c | 20 +++++++++----------
- net/ipv6/reassembly.c  | 45 ++++++++++++++++++++----------------------
- 3 files changed, 33 insertions(+), 34 deletions(-)
+ net/hsr/hsr_main.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/include/net/ip.h b/include/net/ip.h
-index 5b317c9f4470..43e9dc51852b 100644
---- a/include/net/ip.h
-+++ b/include/net/ip.h
-@@ -34,6 +34,8 @@
- #define IPV4_MAX_PMTU=09=0965535U=09=09/* RFC 2675, Section 5.1 */
- #define IPV4_MIN_MTU=09=0968=09=09=09/* RFC 791 */
+diff --git a/net/hsr/hsr_main.c b/net/hsr/hsr_main.c
+index d2ee7125a7f1..9e389accbfc7 100644
+--- a/net/hsr/hsr_main.c
++++ b/net/hsr/hsr_main.c
+@@ -46,7 +46,8 @@ static int hsr_netdev_notify(struct notifier_block *nb, unsigned long event,
+ 		hsr_check_carrier_and_operstate(hsr);
+ 		break;
+ 	case NETDEV_CHANGENAME:
+-		hsr_debugfs_rename(dev);
++		if (is_hsr_master(dev))
++			hsr_debugfs_rename(dev);
+ 		break;
+ 	case NETDEV_CHANGEADDR:
+ 		if (port->type == HSR_PT_MASTER) {
+-- 
+2.17.1
 
-+#define IPV4_MAX_TOT_LEN=09=0965535
-+
- extern unsigned int sysctl_fib_sync_mem;
- extern unsigned int sysctl_fib_sync_mem_min;
- extern unsigned int sysctl_fib_sync_mem_max;
-diff --git a/net/ipv4/ip_fragment.c b/net/ipv4/ip_fragment.c
-index cfeb8890f94e..baee3383d0ac 100644
---- a/net/ipv4/ip_fragment.c
-+++ b/net/ipv4/ip_fragment.c
-@@ -300,6 +300,12 @@ static int ip_frag_queue(struct ipq *qp, struct sk_buf=
-f *skb)
- =09end =3D offset + skb->len - skb_network_offset(skb) - ihl;
- =09err =3D -EINVAL;
-
-+=09if ((unsigned int)end + ihl > IPV4_MAX_TOT_LEN) {
-+=09=09net_dbg_ratelimited("ip_frag_queue: Oversized IP packet from %pI4, e=
-nd =3D %d\n",
-+=09=09=09=09    &qp->q.key.v4.saddr, end);
-+=09=09goto discard_qp;
-+=09}
-+
- =09/* Is this the final fragment? */
- =09if ((flags & IP_MF) =3D=3D 0) {
- =09=09/* If we already have some bits beyond end
-@@ -311,11 +317,10 @@ static int ip_frag_queue(struct ipq *qp, struct sk_bu=
-ff *skb)
- =09=09qp->q.flags |=3D INET_FRAG_LAST_IN;
- =09=09qp->q.len =3D end;
- =09} else {
--=09=09if (end&7) {
--=09=09=09end &=3D ~7;
--=09=09=09if (skb->ip_summed !=3D CHECKSUM_UNNECESSARY)
--=09=09=09=09skb->ip_summed =3D CHECKSUM_NONE;
--=09=09}
-+=09=09/* Check if the fragment is rounded to 8 bytes. */
-+=09=09if (end & 0x7)
-+=09=09=09goto discard_qp;
-+
- =09=09if (end > qp->q.len) {
- =09=09=09/* Some bits beyond end -> corruption. */
- =09=09=09if (qp->q.flags & INET_FRAG_LAST_IN)
-@@ -423,8 +428,6 @@ static int ip_frag_reasm(struct ipq *qp, struct sk_buff=
- *skb,
-
- =09len =3D ip_hdrlen(skb) + qp->q.len;
- =09err =3D -E2BIG;
--=09if (len > 65535)
--=09=09goto out_oversize;
-
- =09inet_frag_reasm_finish(&qp->q, skb, reasm_data,
- =09=09=09       ip_frag_coalesce_ok(qp));
-@@ -462,9 +465,6 @@ static int ip_frag_reasm(struct ipq *qp, struct sk_buff=
- *skb,
- out_nomem:
- =09net_dbg_ratelimited("queue_glue: no memory for gluing queue %p\n", qp);
- =09err =3D -ENOMEM;
--=09goto out_fail;
--out_oversize:
--=09net_info_ratelimited("Oversized IP packet from %pI4\n", &qp->q.key.v4.s=
-addr);
- out_fail:
- =09__IP_INC_STATS(net, IPSTATS_MIB_REASMFAILS);
- =09return err;
-diff --git a/net/ipv6/reassembly.c b/net/ipv6/reassembly.c
-index 1f5d4d196dcc..f6ababb5bb30 100644
---- a/net/ipv6/reassembly.c
-+++ b/net/ipv6/reassembly.c
-@@ -102,8 +102,7 @@ fq_find(struct net *net, __be32 id, const struct ipv6hd=
-r *hdr, int iif)
- }
-
- static int ip6_frag_queue(struct frag_queue *fq, struct sk_buff *skb,
--=09=09=09  struct frag_hdr *fhdr, int nhoff,
--=09=09=09  u32 *prob_offset)
-+=09=09=09  struct frag_hdr *fhdr, int nhoff)
- {
- =09struct net *net =3D dev_net(skb_dst(skb)->dev);
- =09int offset, end, fragsize;
-@@ -111,6 +110,7 @@ static int ip6_frag_queue(struct frag_queue *fq, struct=
- sk_buff *skb,
- =09struct net_device *dev;
- =09int err =3D -ENOENT;
- =09u8 ecn;
-+=09u32 prob_offset =3D 0;
-
- =09if (fq->q.flags & INET_FRAG_COMPLETE)
- =09=09goto err;
-@@ -121,11 +121,10 @@ static int ip6_frag_queue(struct frag_queue *fq, stru=
-ct sk_buff *skb,
- =09=09=09((u8 *)(fhdr + 1) - (u8 *)(ipv6_hdr(skb) + 1)));
-
- =09if ((unsigned int)end > IPV6_MAXPLEN) {
--=09=09*prob_offset =3D (u8 *)&fhdr->frag_off - skb_network_header(skb);
--=09=09/* note that if prob_offset is set, the skb is freed elsewhere,
--=09=09 * we do not free it here.
--=09=09 */
--=09=09return -1;
-+=09=09prob_offset =3D (u8 *)&fhdr->frag_off - skb_network_header(skb);
-+=09=09net_dbg_ratelimited("ip6_frag_queue: Oversized IPv6 packet from %pI6=
-c, end =3D %d\n",
-+=09=09=09=09    &fq->q.key.v6.saddr, end);
-+=09=09goto send_param_prob;
- =09}
-
- =09ecn =3D ip6_frag_ecn(ipv6_hdr(skb));
-@@ -155,8 +154,8 @@ static int ip6_frag_queue(struct frag_queue *fq, struct=
- sk_buff *skb,
- =09=09=09/* RFC2460 says always send parameter problem in
- =09=09=09 * this case. -DaveM
- =09=09=09 */
--=09=09=09*prob_offset =3D offsetof(struct ipv6hdr, payload_len);
--=09=09=09return -1;
-+=09=09=09prob_offset =3D offsetof(struct ipv6hdr, payload_len);
-+=09=09=09goto send_param_prob;
- =09=09}
- =09=09if (end > fq->q.len) {
- =09=09=09/* Some bits beyond end -> corruption. */
-@@ -236,6 +235,18 @@ static int ip6_frag_queue(struct frag_queue *fq, struc=
-t sk_buff *skb,
- err:
- =09kfree_skb(skb);
- =09return err;
-+send_param_prob:
-+=09=09__IP6_INC_STATS(net, __in6_dev_get_safely(skb->dev),
-+=09=09=09=09IPSTATS_MIB_INHDRERRORS);
-+=09=09/* icmpv6_param_prob() calls kfree_skb(skb),
-+=09=09 * and the label err also calls kfree_skb(skb),
-+=09=09 * so skb_get(skb) here increases the reference count
-+=09=09 * to avoid duplicate release
-+=09=09 */
-+=09=09skb_get(skb);
-+=09=09icmpv6_param_prob(skb, ICMPV6_HDR_FIELD, prob_offset);
-+=09=09err =3D -1;
-+=09=09goto discard_fq;
- }
-
- /*
-@@ -267,8 +278,6 @@ static int ip6_frag_reasm(struct frag_queue *fq, struct=
- sk_buff *skb,
- =09payload_len =3D ((skb->data - skb_network_header(skb)) -
- =09=09       sizeof(struct ipv6hdr) + fq->q.len -
- =09=09       sizeof(struct frag_hdr));
--=09if (payload_len > IPV6_MAXPLEN)
--=09=09goto out_oversize;
-
- =09/* We have to remove fragment header from datagram and to relocate
- =09 * header in order to calculate ICV correctly. */
-@@ -303,9 +312,6 @@ static int ip6_frag_reasm(struct frag_queue *fq, struct=
- sk_buff *skb,
- =09fq->q.last_run_head =3D NULL;
- =09return 1;
-
--out_oversize:
--=09net_dbg_ratelimited("ip6_frag_reasm: payload len =3D %d\n", payload_len=
-);
--=09goto out_fail;
- out_oom:
- =09net_dbg_ratelimited("ip6_frag_reasm: no memory for reassembly\n");
- out_fail:
-@@ -354,23 +360,14 @@ static int ipv6_frag_rcv(struct sk_buff *skb)
- =09iif =3D skb->dev ? skb->dev->ifindex : 0;
- =09fq =3D fq_find(net, fhdr->identification, hdr, iif);
- =09if (fq) {
--=09=09u32 prob_offset =3D 0;
- =09=09int ret;
--
- =09=09spin_lock(&fq->q.lock);
-
- =09=09fq->iif =3D iif;
--=09=09ret =3D ip6_frag_queue(fq, skb, fhdr, IP6CB(skb)->nhoff,
--=09=09=09=09     &prob_offset);
-+=09=09ret =3D ip6_frag_queue(fq, skb, fhdr, IP6CB(skb)->nhoff);
-
- =09=09spin_unlock(&fq->q.lock);
- =09=09inet_frag_put(&fq->q);
--=09=09if (prob_offset) {
--=09=09=09__IP6_INC_STATS(net, __in6_dev_get_safely(skb->dev),
--=09=09=09=09=09IPSTATS_MIB_INHDRERRORS);
--=09=09=09/* icmpv6_param_prob() calls kfree_skb(skb) */
--=09=09=09icmpv6_param_prob(skb, ICMPV6_HDR_FIELD, prob_offset);
--=09=09}
- =09=09return ret;
- =09}
-
---
-2.24.0
