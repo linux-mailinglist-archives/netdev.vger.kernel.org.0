@@ -2,80 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1415D12CA81
-	for <lists+netdev@lfdr.de>; Sun, 29 Dec 2019 19:47:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8204E12CA94
+	for <lists+netdev@lfdr.de>; Sun, 29 Dec 2019 20:14:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727180AbfL2Srf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 29 Dec 2019 13:47:35 -0500
-Received: from mail-ot1-f66.google.com ([209.85.210.66]:37973 "EHLO
-        mail-ot1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726465AbfL2Sre (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 29 Dec 2019 13:47:34 -0500
-Received: by mail-ot1-f66.google.com with SMTP id d7so39092937otf.5
-        for <netdev@vger.kernel.org>; Sun, 29 Dec 2019 10:47:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:sender:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=rA3eeMCep9SBN3nydHHLjYxLLs7J6SfEOEg2MtxCZjI=;
-        b=oVD3kUcTkJv6iaOqBRZKIsdUWCFrZUfsjhuEoGS6SvG1RPbphcOOkzQ+UDTrcz6YTb
-         HM4K+rd9H561MkOjemuTEwd0IT4Mw4dr3ANlhbbQAfBhseAt7e5wDgXjZexaECIbNpFB
-         0ggqOFmJcmluW3PSQ5A+gowd60g5UhkZlhmNNsroqvCJ3As7xU00gEvkBBQ9kOd6bgfA
-         SEIMLqz3g8stzupBZ88SO6K0ifcnAteYgPC4q47tAWnDeqw6w4SepXoxGnejxq49C/7C
-         ZrbkD/13NwEa00MnOdAZJmUxnGnXEXSgxI7XfzBbgVR0Tfh3f5Fmo/7Jr2PZGeowV+d4
-         6NCg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:sender:from:date
-         :message-id:subject:to:content-transfer-encoding;
-        bh=rA3eeMCep9SBN3nydHHLjYxLLs7J6SfEOEg2MtxCZjI=;
-        b=e549Sty5Xk5s+S7V4PgeVQJdKjKiyv53tsy5/FzNBMdtZ3qwZSBGmur67cHj33dOnp
-         +TK9AjfP+DGCvsLJxKgMKtSN5M85tsqhnbswyqy0KO+Xj16qgEc1lMadk2iuY3CZkxY5
-         OvIrCcNExLD8yD2zFpDqjlGjrC9+tbcealx2Bt4la1l4oFwisSUg1gmEohA3qTTCuGjw
-         rx6ws313M+ZcuyBNzMIjKxmgD8znK1TO7faE8GukL7vk9cqn+cjzeh9Uo00wmluEyXr9
-         OKxk3ALi8SzHe6gis3bZryE7RXQCKci80nmvtuTBRP3GezDl0TlcUiPSIr0TsmPcj0zQ
-         GdXg==
-X-Gm-Message-State: APjAAAVjWs9PaWZZaZldKcPGxdy36a0umwlCTyQZUefXLFshL60Jvew2
-        /AHs2ZqNMPOWqMSMEJYj1XLr2SRhh9SLHYQqXQ==
-X-Google-Smtp-Source: APXvYqyTsiHnlxmJjvJfpxCZRVXZNMsgrZ9gdAerMJHeFnAaBET2bRKKOq+n8/5TTvV21fWC6NRNdzdVp/DUvlRIrC0=
-X-Received: by 2002:a9d:6b06:: with SMTP id g6mr60986062otp.93.1577645253944;
- Sun, 29 Dec 2019 10:47:33 -0800 (PST)
+        id S1726677AbfL2TOi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 29 Dec 2019 14:14:38 -0500
+Received: from einhorn-mail.in-berlin.de ([217.197.80.20]:48003 "EHLO
+        einhorn-mail.in-berlin.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726369AbfL2TOi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 29 Dec 2019 14:14:38 -0500
+X-Greylist: delayed 583 seconds by postgrey-1.27 at vger.kernel.org; Sun, 29 Dec 2019 14:14:36 EST
+X-Envelope-From: willi@hobbit.in-berlin.de
+Received: from authenticated.user (localhost [127.0.0.1]) by einhorn.in-berlin.de  with ESMTPSA id xBTJ4fHi013399
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
+        Sun, 29 Dec 2019 20:04:42 +0100
+To:     nic_swsd@realtek.com, romieu@fr.zoreil.com, netdev@vger.kernel.org
+From:   Winfried Winkler <willi@hobbit.in-berlin.de>
+Subject: Realtek Network Driver - r8168-dkms needed
+Autocrypt: addr=willi@hobbit.in-berlin.de; prefer-encrypt=mutual; keydata=
+ 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
+ EQ923REaRP0=
+Message-ID: <58a8d231-9ef9-47a1-7368-04737237270e@hobbit.in-berlin.de>
+Date:   Sun, 29 Dec 2019 20:04:41 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.3.1
 MIME-Version: 1.0
-Reply-To: msamg2011@gmail.com
-Received: by 2002:aca:c355:0:0:0:0:0 with HTTP; Sun, 29 Dec 2019 10:47:33
- -0800 (PST)
-From:   Ayisha Gaddafi <mrssa8@gmail.com>
-Date:   Sun, 29 Dec 2019 18:47:33 +0000
-X-Google-Sender-Auth: sBIqYYEXXjcq1eUDiA1IQun2hus
-Message-ID: <CAP6R5mt7+pe8v-0bwD1nvG0rhA0OO-TRKmwqT=smcNEJ=FWx1Q@mail.gmail.com>
-Subject: =?UTF-8?B?2LHYrdio2KfYjFJlOkF0dGVuIERlYXIgSSBOZWVkIFlvdXIgSGVscCEh?=
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dearest One,
-I am writing this message with tears and sorrow from my heart asking
-for you to understand my present condition and come to my rescue. I=E2=80=
-=99d
-decided to come to you by this email for the security reason.I choose
-you,believing probability of you being a good trustee person; luck to
-help and share in this noble cause.
+Dear Sirs,
+the Debian ReadMe told to me to write this EMail, sorry if this might be
+considered spam...
 
-It will be very nice if I can trust you and open up with you.I need
-your help in conducting to recovering my Huge funds fixed  deposited
-in bank.
+It said:
+ "If no version of the in-kernel driver r8169 supports your NIC,
+  please report this to the r8169 maintainers, so that this can
+  be fixed"
 
-Ever since the terrible accident death of my father.I have passed
-through many pains and sorrow because all our bank accounts have been
-blocked by the Government Authority of Libya.Before the death of my
-father occurred,He deposited the Fund worths $28,5 Millions USD
-dollars in the one of the Financial Bank Institution.
+My new Asus motherboard has an RTL8117 network chip that is NOT working
+with the in-kernel 8169 driver, it needs the external 8168-dkms driver.
 
-You will be rewarded with the part of the funds if you can
-assist.Thanking you in advance.
-Yours truly,
-Ayisha Gaddafi
+Board:
+https://www.asus.com/Motherboards/Pro-WS-X570-ACE/specifications/
+
+"lspci" Output is:
+05:00.1 Ethernet controller: Realtek Semiconductor Co., Ltd.
+RTL8111/8168/8411 PCI Express Gigabit Ethernet Controller (rev 1a)
+
+Tested with latest stable kernel (5.4.6) at the time of this writing.
+
+Feel free to request any additional info needed that I might be able to
+supply -- thanks for listening.
+
+Happy new year and thanks for all the work you're doing,
+ Winfried Winkler
