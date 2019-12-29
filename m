@@ -2,53 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 80EF112C254
+	by mail.lfdr.de (Postfix) with ESMTP id 0031212C255
 	for <lists+netdev@lfdr.de>; Sun, 29 Dec 2019 12:44:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726278AbfL2LlV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 29 Dec 2019 06:41:21 -0500
-Received: from out1-smtp.messagingengine.com ([66.111.4.25]:57127 "EHLO
+        id S1726395AbfL2LlX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 29 Dec 2019 06:41:23 -0500
+Received: from out1-smtp.messagingengine.com ([66.111.4.25]:52303 "EHLO
         out1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726151AbfL2LlU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 29 Dec 2019 06:41:20 -0500
+        by vger.kernel.org with ESMTP id S1726151AbfL2LlW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 29 Dec 2019 06:41:22 -0500
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 52E5D21DC1;
-        Sun, 29 Dec 2019 06:41:19 -0500 (EST)
+        by mailout.nyi.internal (Postfix) with ESMTP id 199D021B88;
+        Sun, 29 Dec 2019 06:41:21 -0500 (EST)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Sun, 29 Dec 2019 06:41:19 -0500
+  by compute3.internal (MEProxy); Sun, 29 Dec 2019 06:41:21 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=CB8kgG60pgIN1UL/S
-        3OrWKXr3MohmiD2FJlTfT4Bpr4=; b=LPDIGEjghv7YAN6K3EeJyL+dufTEBDbN9
-        zzZmuBPONv7AyA52pwQq3LLgvUqgzGXqV0QppuJPIHkvd77r+7h9s8LN5GDaW9iZ
-        zM96Qr3VyZ0JsmsVTtMFYvqm3ERFEz/MmhUZdNQ8srEu1xOz1heLiD8VbX9LFymN
-        TUGyCAmHdIa3bszL0b50W8BONoYvtdUCMWY4F073Sw2L8vkgZqjh7hWq70jlWGzC
-        j1dpLG645pJpUMZ8K0ewQngbLDTlucuOeAfLOUzzzM/Bbf7ufM3kQC6tKQxlmgYP
-        SxnVcOGkCUEEnBKFqY9IENLtVT2rsSufudkoYPw4yw9nDNKX8ymZg==
-X-ME-Sender: <xms:35AIXiLpeYzvjSPuparCNRpJNsb4HVhLv5PqWLO6JGWxMJKjWUGFcw>
+        :in-reply-to:message-id:mime-version:references:subject:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm1; bh=6j0z5uLswp/o/7rNLDlkyVoHY0aXgbFBX+KjD2EtGAw=; b=LZXfevzA
+        smntBkB1tblKXJ8mt+nf5HLTXHiOuKeTlL20X4eHYPNlWxU86twsk8ymDCZ19Ewk
+        CA+Jon5Z1/TV7vDvpCKbR6fzpx4bFhd4Uw+iLbTFRGMdx9NgPNyti1sHKV70Yzrt
+        LgfPpr4TrcO4q7jTxSL6aItvBA5Cc3YujScC80RXafyhPlG3ygv/BYBpsaJBj39F
+        cFJP65y23a3OR4GiONUj0EbVyyg659vBkDNqHBeOsMYv31TKgIIdX8FguxbWq0lI
+        Q58OjGZ5QVECBYV1Zy0PifjI/BuqcpDaqhaTmYQv9eYT/az1M5OWcMhfj64VWg01
+        v0CGxDpO61mSRw==
+X-ME-Sender: <xms:4JAIXrzounfS3Cudl3G9KK9N5TYk1Wn53vYfi5Js-5LBuZ-JhQGjzA>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedufedrvdeffedgfedtucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgggfestdekredtre
-    dttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiughoshgt
-    hhdrohhrgheqnecukfhppeejledrudekuddriedurdduudejnecurfgrrhgrmhepmhgrih
-    hlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhgnecuvehluhhsthgvrhfuihii
-    vgeptd
-X-ME-Proxy: <xmx:35AIXubE2V-Jibo-SyKmhJ01prsfBzLs0fIza-UKfR7XvW9Q-lWU7Q>
-    <xmx:35AIXttmUjBDJp2vvSbT_g94XEcdbbvlhu0jFPrlDe05ioHOqBmUwg>
-    <xmx:35AIXruWYWZLoeY0_V7Sz_kX3R7TlWtc1VPPR2-fsxFrS6Gw8TkRbw>
-    <xmx:35AIXvZ40NIvFM8BEFrPG8_E_jI4D0xY98t0xOzJsml5iGkT7etKeg>
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhephffvufffkffojghfggfgsedtkeertdertddtnecuhfhrohhmpefkughoucfu
+    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucfkphepjeelrd
+    dukedurdeiuddruddujeenucfrrghrrghmpehmrghilhhfrhhomhepihguohhstghhsehi
+    ughoshgthhdrohhrghenucevlhhushhtvghrufhiiigvpedt
+X-ME-Proxy: <xmx:4ZAIXqWWWT2hbrOsPlNvwzWk5mRl9Is7XuZBHqUXqy8-W2EMP_ZyTw>
+    <xmx:4ZAIXtCDY5zguKeMwMOH5f0xzgr_x011QZJYpOJj5CAVZwAjBKsGSQ>
+    <xmx:4ZAIXr6zmqzoGtbQNjQlGSL-7HMn7YpYx0uYXK8A1SokFQ_RF9qSGw>
+    <xmx:4ZAIXjHIX3ws5vSaMDAXZdv8TBgToYZXpx-E2gu6Rh48RZufc2Alkg>
 Received: from splinter.mtl.com (bzq-79-181-61-117.red.bezeqint.net [79.181.61.117])
-        by mail.messagingengine.com (Postfix) with ESMTPA id B7FC93060AA8;
-        Sun, 29 Dec 2019 06:41:17 -0500 (EST)
+        by mail.messagingengine.com (Postfix) with ESMTPA id 5F31E3060AAA;
+        Sun, 29 Dec 2019 06:41:19 -0500 (EST)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, jiri@mellanox.com, mlxsw@mellanox.com,
+        Amit Cohen <amitc@mellanox.com>,
         Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net 0/2] mlxsw: Couple of fixes
-Date:   Sun, 29 Dec 2019 13:40:21 +0200
-Message-Id: <20191229114023.60873-1-idosch@idosch.org>
+Subject: [PATCH net 1/2] mlxsw: spectrum_router: Skip loopback RIFs during MAC validation
+Date:   Sun, 29 Dec 2019 13:40:22 +0200
+Message-Id: <20191229114023.60873-2-idosch@idosch.org>
 X-Mailer: git-send-email 2.24.1
+In-Reply-To: <20191229114023.60873-1-idosch@idosch.org>
+References: <20191229114023.60873-1-idosch@idosch.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -56,30 +60,49 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ido Schimmel <idosch@mellanox.com>
+From: Amit Cohen <amitc@mellanox.com>
 
-This patch set contains two fixes for mlxsw. Please consider both for
-stable.
+When a router interface (RIF) is created the MAC address of the backing
+netdev is verified to have the same MSBs as existing RIFs. This is
+required in order to avoid changing existing RIF MAC addresses that all
+share the same MSBs.
 
-Patch #1 from Amit fixes a wrong check during MAC validation when
-creating router interfaces (RIFs). Given a particular order of
-configuration this can result in the driver refusing to create new RIFs.
+Loopback RIFs are special in this regard as they do not have a MAC
+address, given they are only used to loop packets from the overlay to
+the underlay.
 
-Patch #2 fixes a wrong trap configuration in which VRRP packets and
-routing exceptions were policed by the same policer towards the CPU. In
-certain situations this can prevent VRRP packets from reaching the CPU.
+Without this change, an error is returned when trying to create a RIF
+after the creation of a GRE tunnel that is represented by a loopback
+RIF. 'rif->dev->dev_addr' points to the GRE device's local IP, which
+does not share the same MSBs as physical interfaces. Adding an IP
+address to any physical interface results in:
 
-Amit Cohen (1):
-  mlxsw: spectrum_router: Skip loopback RIFs during MAC validation
+Error: mlxsw_spectrum: All router interface MAC addresses must have the
+same prefix.
 
-Ido Schimmel (1):
-  mlxsw: spectrum: Use dedicated policer for VRRP packets
+Fix this by skipping loopback RIFs during MAC validation.
 
- drivers/net/ethernet/mellanox/mlxsw/reg.h             | 1 +
- drivers/net/ethernet/mellanox/mlxsw/spectrum.c        | 9 +++++++--
+Fixes: 74bc99397438 ("mlxsw: spectrum_router: Veto unsupported RIF MAC addresses")
+Signed-off-by: Amit Cohen <amitc@mellanox.com>
+Signed-off-by: Ido Schimmel <idosch@mellanox.com>
+---
  drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c | 3 +++
- 3 files changed, 11 insertions(+), 2 deletions(-)
+ 1 file changed, 3 insertions(+)
 
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
+index 08b7e9f964da..8290e82240fc 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
+@@ -7079,6 +7079,9 @@ static int mlxsw_sp_router_port_check_rif_addr(struct mlxsw_sp *mlxsw_sp,
+ 
+ 	for (i = 0; i < MLXSW_CORE_RES_GET(mlxsw_sp->core, MAX_RIFS); i++) {
+ 		rif = mlxsw_sp->router->rifs[i];
++		if (rif && rif->ops &&
++		    rif->ops->type == MLXSW_SP_RIF_TYPE_IPIP_LB)
++			continue;
+ 		if (rif && rif->dev && rif->dev != dev &&
+ 		    !ether_addr_equal_masked(rif->dev->dev_addr, dev_addr,
+ 					     mlxsw_sp->mac_mask)) {
 -- 
 2.24.1
 
