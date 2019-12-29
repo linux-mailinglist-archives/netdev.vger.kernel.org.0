@@ -2,121 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C85F12C82E
-	for <lists+netdev@lfdr.de>; Sun, 29 Dec 2019 19:16:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E000412C951
+	for <lists+netdev@lfdr.de>; Sun, 29 Dec 2019 19:18:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732156AbfL2Rvs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 29 Dec 2019 12:51:48 -0500
-Received: from mail.kernel.org ([198.145.29.99]:37386 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1732146AbfL2Rvp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 29 Dec 2019 12:51:45 -0500
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id CF47A207FF;
-        Sun, 29 Dec 2019 17:51:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1577641904;
-        bh=Wzwy2xJlxAlno0TwqjNdIp7sOH74/Dtoz4tgIgwYBA8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BVVXO7ohVqroAkW6lOqGoW6nyFv20CYKkNW3fKdDhFkQnUHkszk9+tv3UG/4vMBNx
-         S15YjKh+vKpJRXYGxO154qcMUER3j1Qt6DmSCjy7OUev6eIQbR43IeTlE/i81R3DWx
-         kw0UcQKe3Tl8ezJzeM8NftIDZptx5bfOgwp/S4pY=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ian Rogers <irogers@google.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andi Kleen <ak@linux.intel.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jin Yao <yao.jin@linux.intel.com>,
-        John Garry <john.garry@huawei.com>,
-        Kan Liang <kan.liang@linux.intel.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Song Liu <songliubraving@fb.com>,
-        Stephane Eranian <eranian@google.com>,
-        Yonghong Song <yhs@fb.com>, bpf@vger.kernel.org,
-        clang-built-linux@googlegroups.com, netdev@vger.kernel.org,
-        Arnaldo Carvalho de Melo <acme@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 260/434] perf parse: If pmu configuration fails free terms
-Date:   Sun, 29 Dec 2019 18:25:13 +0100
-Message-Id: <20191229172719.205964752@linuxfoundation.org>
-X-Mailer: git-send-email 2.24.1
-In-Reply-To: <20191229172702.393141737@linuxfoundation.org>
-References: <20191229172702.393141737@linuxfoundation.org>
-User-Agent: quilt/0.66
+        id S2387600AbfL2SEh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 29 Dec 2019 13:04:37 -0500
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:33386 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732220AbfL2SEf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 29 Dec 2019 13:04:35 -0500
+Received: by mail-pg1-f195.google.com with SMTP id 6so16986410pgk.0
+        for <netdev@vger.kernel.org>; Sun, 29 Dec 2019 10:04:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=YUrSj/QPvSWe9sDF33hbKWhr4NJQS9iwHC33OQIyAcc=;
+        b=0YbtmRID+Pz4j1hbPrifrYTbpUF/V1tGz+V/heNfod8ez1JYkGnBdXvfRZfoMdwzKL
+         sPVaH7IlmOGHoHoM4z16GcKIArr2EvVXJ+kFOq4rElMySN6z8mAcq84hNlWeLu+1jU+c
+         W9PiOwHkfdb2bY+KvWAYr4X3DY9Txs2Gx2REwGSCb6XdpMfN5dAI/5JYw+vi9N4gmjRA
+         Om7E+w4HUGBhWuewUNRyuw7v7K4PFJE4JStrF95EmNtGLLePMSStfuhtyu9ZXoixHq8b
+         zDlUpKJILPw2fk2gmDpBfGduF/+yzeeYpbIY6kOzrDwQ9/Oi1Hih3ONqtKZ3CZs7DGji
+         0XmA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=YUrSj/QPvSWe9sDF33hbKWhr4NJQS9iwHC33OQIyAcc=;
+        b=BrhLbTQ3Z7ssNaMxzSDhiUdgzeJxgv7AynkdaLXpv7l453+9cQkUH3SgVqdoPn40bu
+         JRwfcHT8NKQAodqI1QP7eujypMgm0AHzk4YS6em68cy20zutvl6skzYFPbOezIPowwAf
+         7kfAsGOB8ZaxaOcrwwjpsInUDbWyFoTo2NB4yrTt9ym+EwaBACYHsHLZZgOkVSmt5HYS
+         GeAIvDo7XzhhXEVtD0C9gVmBv7ikGj0GSPu+DtORxQwFiQ0WKeU5IfS9iNfQN0lICf6J
+         PyEAh3470YU4IVLIj0lrzqosUP4eRmNw/eEgHjtpudQJhSX4LVh/atpPcVXesAdJM7RZ
+         hLaA==
+X-Gm-Message-State: APjAAAVHoR30MhM+i0/yR69c97/sg8SoFv5eve6nbFlcSQk0D16LhPo2
+        +82dwT5Ss7hLpbJvrlNcp6h4f1bEXhM=
+X-Google-Smtp-Source: APXvYqxvamy0SVKPMR6jwNcZ0xHIIsxoPGIhFJf/csSUrQ2b2k3A3QmOaH4xVXOijHK9TcxLQaXxug==
+X-Received: by 2002:aa7:982d:: with SMTP id q13mr66575457pfl.152.1577642674909;
+        Sun, 29 Dec 2019 10:04:34 -0800 (PST)
+Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id r37sm22175969pjb.7.2019.12.29.10.04.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 29 Dec 2019 10:04:34 -0800 (PST)
+Date:   Sun, 29 Dec 2019 10:04:26 -0800
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Leslie Monis <lesliemonis@gmail.com>
+Cc:     Linux NetDev <netdev@vger.kernel.org>,
+        David Ahern <dsahern@gmail.com>
+Subject: Re: [PATCH iproute2-next 00/10] tc: add support for JSON output in
+ some qdiscs
+Message-ID: <20191229100426.08babcc5@hermes.lan>
+In-Reply-To: <20191225190418.8806-1-lesliemonis@gmail.com>
+References: <20191225190418.8806-1-lesliemonis@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ian Rogers <irogers@google.com>
+On Thu, 26 Dec 2019 00:34:08 +0530
+Leslie Monis <lesliemonis@gmail.com> wrote:
 
-[ Upstream commit 38f2c4226e6bc3e8c41c318242821ba5dc825aba ]
+> Several qdiscs do not yet support the JSON output format. This patch series
+> adds the missing compatibility to 9 classless qdiscs. Some of the patches
+> also improve the oneline output of the qdiscs. The last patch in the series
+> fixes a missing statistic in the JSON output of fq_codel.
+> 
+> Leslie Monis (10):
+>   tc: cbs: add support for JSON output
+>   tc: choke: add support for JSON output
+>   tc: codel: add support for JSON output
+>   tc: fq: add support for JSON output
+>   tc: hhf: add support for JSON output
+>   tc: pie: add support for JSON output
+>   tc: sfb: add support for JSON output
+>   tc: sfq: add support for JSON output
+>   tc: tbf: add support for JSON output
+>   tc: fq_codel: fix missing statistic in JSON output
+> 
+>  man/man8/tc-fq.8  |  14 +++---
+>  man/man8/tc-pie.8 |  16 +++----
+>  tc/q_cbs.c        |  10 ++---
+>  tc/q_choke.c      |  26 +++++++----
+>  tc/q_codel.c      |  45 +++++++++++++------
+>  tc/q_fq.c         | 108 ++++++++++++++++++++++++++++++++--------------
+>  tc/q_fq_codel.c   |   4 +-
+>  tc/q_hhf.c        |  33 +++++++++-----
+>  tc/q_pie.c        |  47 ++++++++++++--------
+>  tc/q_sfb.c        |  67 ++++++++++++++++++----------
+>  tc/q_sfq.c        |  66 +++++++++++++++++-----------
+>  tc/q_tbf.c        |  68 ++++++++++++++++++++---------
+>  12 files changed, 335 insertions(+), 169 deletions(-)
+> 
 
-Avoid a memory leak when the configuration fails.
-
-Signed-off-by: Ian Rogers <irogers@google.com>
-Acked-by: Jiri Olsa <jolsa@kernel.org>
-Cc: Adrian Hunter <adrian.hunter@intel.com>
-Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
-Cc: Alexei Starovoitov <ast@kernel.org>
-Cc: Andi Kleen <ak@linux.intel.com>
-Cc: Daniel Borkmann <daniel@iogearbox.net>
-Cc: Jin Yao <yao.jin@linux.intel.com>
-Cc: John Garry <john.garry@huawei.com>
-Cc: Kan Liang <kan.liang@linux.intel.com>
-Cc: Mark Rutland <mark.rutland@arm.com>
-Cc: Martin KaFai Lau <kafai@fb.com>
-Cc: Namhyung Kim <namhyung@kernel.org>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Song Liu <songliubraving@fb.com>
-Cc: Stephane Eranian <eranian@google.com>
-Cc: Yonghong Song <yhs@fb.com>
-Cc: bpf@vger.kernel.org
-Cc: clang-built-linux@googlegroups.com
-Cc: netdev@vger.kernel.org
-Link: http://lore.kernel.org/lkml/20191030223448.12930-9-irogers@google.com
-Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- tools/perf/util/parse-events.c | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
-
-diff --git a/tools/perf/util/parse-events.c b/tools/perf/util/parse-events.c
-index d5ea043d3fc4..422ad1888e74 100644
---- a/tools/perf/util/parse-events.c
-+++ b/tools/perf/util/parse-events.c
-@@ -1365,8 +1365,15 @@ int parse_events_add_pmu(struct parse_events_state *parse_state,
- 	if (get_config_terms(head_config, &config_terms))
- 		return -ENOMEM;
- 
--	if (perf_pmu__config(pmu, &attr, head_config, parse_state->error))
-+	if (perf_pmu__config(pmu, &attr, head_config, parse_state->error)) {
-+		struct perf_evsel_config_term *pos, *tmp;
-+
-+		list_for_each_entry_safe(pos, tmp, &config_terms, list) {
-+			list_del_init(&pos->list);
-+			free(pos);
-+		}
- 		return -EINVAL;
-+	}
- 
- 	evsel = __add_event(list, &parse_state->idx, &attr,
- 			    get_config_name(head_config), pmu,
--- 
-2.20.1
-
-
-
+Applied, thanks for doing this.
