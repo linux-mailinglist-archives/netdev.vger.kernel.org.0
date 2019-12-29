@@ -2,95 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D2B2F12C31C
-	for <lists+netdev@lfdr.de>; Sun, 29 Dec 2019 16:21:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A4B212C52C
+	for <lists+netdev@lfdr.de>; Sun, 29 Dec 2019 18:41:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726673AbfL2PVy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 29 Dec 2019 10:21:54 -0500
-Received: from smtp-fw-33001.amazon.com ([207.171.190.10]:60591 "EHLO
-        smtp-fw-33001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726230AbfL2PVx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 29 Dec 2019 10:21:53 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1577632913; x=1609168913;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-id:content-transfer-encoding:
-   mime-version;
-  bh=eByfHb4h6w802Ivr0ZpiXkOWLx4+alvaDzYckZ0drHY=;
-  b=ci0063RUm9cPJJoWN233TRyW3bRPemGPUXbxJwf8VDz5FOaShfY5kMt4
-   /4oUwst4BSH3UtTbHcl6Vvr5Vil+QaTEwSVhJ6hRYrhRJrzqhY+XA6wWM
-   cQMbIfdASDLWGwSPwHOMlpqjN/y/PIA6ISCzG2NbHH4x4pjay5Zr9wKam
-   Q=;
-IronPort-SDR: 9uArL40VCC3UyzJL470wwBxmevRUKWAbr9m3V0QPyw11dbKsgmJq+NBgmyDYTssfuHpH9Qz9vC
- S1r0dHe6CKfg==
-X-IronPort-AV: E=Sophos;i="5.69,371,1571702400"; 
-   d="scan'208";a="17276655"
-Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-2a-90c42d1d.us-west-2.amazon.com) ([10.47.23.38])
-  by smtp-border-fw-out-33001.sea14.amazon.com with ESMTP; 29 Dec 2019 15:21:40 +0000
-Received: from EX13MTAUEA002.ant.amazon.com (pdx4-ws-svc-p6-lb7-vlan3.pdx.amazon.com [10.170.41.166])
-        by email-inbound-relay-2a-90c42d1d.us-west-2.amazon.com (Postfix) with ESMTPS id DD7ACA1F02;
-        Sun, 29 Dec 2019 15:21:39 +0000 (UTC)
-Received: from EX13D22EUA003.ant.amazon.com (10.43.165.210) by
- EX13MTAUEA002.ant.amazon.com (10.43.61.77) with Microsoft SMTP Server (TLS)
- id 15.0.1236.3; Sun, 29 Dec 2019 15:21:39 +0000
-Received: from EX13D06EUA003.ant.amazon.com (10.43.165.206) by
- EX13D22EUA003.ant.amazon.com (10.43.165.210) with Microsoft SMTP Server (TLS)
- id 15.0.1367.3; Sun, 29 Dec 2019 15:21:38 +0000
-Received: from EX13D06EUA003.ant.amazon.com ([10.43.165.206]) by
- EX13D06EUA003.ant.amazon.com ([10.43.165.206]) with mapi id 15.00.1367.000;
- Sun, 29 Dec 2019 15:21:37 +0000
-From:   "Belgazal, Netanel" <netanel@amazon.com>
-To:     "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     "Woodhouse, David" <dwmw@amazon.co.uk>,
-        "Machulsky, Zorik" <zorik@amazon.com>,
-        "Matushevsky, Alexander" <matua@amazon.com>,
-        "Bshara, Saeed" <saeedb@amazon.com>,
-        "Wilson, Matt" <msw@amazon.com>,
-        "Liguori, Anthony" <aliguori@amazon.com>,
-        "Bshara, Nafea" <nafea@amazon.com>,
-        "Tzalik, Guy" <gtzalik@amazon.com>,
-        "Saidi, Ali" <alisaidi@amazon.com>,
-        "Herrenschmidt, Benjamin" <benh@amazon.com>,
-        "Kiyanovski, Arthur" <akiyano@amazon.com>
-Subject: Re: [PATCH V1 net] MAINTAINERS: Add additional maintainers to ENA
- Ethernet driver
-Thread-Topic: [PATCH V1 net] MAINTAINERS: Add additional maintainers to ENA
- Ethernet driver
-Thread-Index: AQHVvllty4BNSMXu/0Kh8b8XSyw0CqfRXCaA
-Date:   Sun, 29 Dec 2019 15:21:37 +0000
-Message-ID: <B77B1A34-FC14-47F9-A761-7618B7462615@amazon.com>
-References: <20191229150518.28771-1-netanel@amazon.com>
-In-Reply-To: <20191229150518.28771-1-netanel@amazon.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Microsoft-MacOutlook/10.10.f.191014
-x-ms-exchange-messagesentrepresentingtype: 1
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.43.165.110]
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <0EA8401B49DC7248B2A5D5BADD7CC612@amazon.com>
-Content-Transfer-Encoding: base64
+        id S1729635AbfL2ReZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 29 Dec 2019 12:34:25 -0500
+Received: from mail.kernel.org ([198.145.29.99]:37434 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729626AbfL2ReX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 29 Dec 2019 12:34:23 -0500
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 1E880207FD;
+        Sun, 29 Dec 2019 17:34:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1577640861;
+        bh=OrYIig8dP4ppL3UK+OMTrtPbODAkZQUMfRytpXlRnhQ=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=OmZ26Gw3SZcuY60Rk9ckRU2i8XKOWVd9UaFkFjrFj+brHIzUwifY61kYzmoTgkkpT
+         5R43oB4opO1mosmeOQDoFaH8UihFj0m1U18ZFapea432IdAlGA3CYX5XdHMnST3TOc
+         fzDpKagU2szRXfiwHo746pk1LzIGPD309khr9j1A=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Ian Rogers <irogers@google.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andi Kleen <ak@linux.intel.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jin Yao <yao.jin@linux.intel.com>,
+        John Garry <john.garry@huawei.com>,
+        Kan Liang <kan.liang@linux.intel.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Song Liu <songliubraving@fb.com>,
+        Stephane Eranian <eranian@google.com>,
+        Yonghong Song <yhs@fb.com>, bpf@vger.kernel.org,
+        clang-built-linux@googlegroups.com, netdev@vger.kernel.org,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 132/219] perf tools: Splice events onto evlist even on error
+Date:   Sun, 29 Dec 2019 18:18:54 +0100
+Message-Id: <20191229162528.519923158@linuxfoundation.org>
+X-Mailer: git-send-email 2.24.1
+In-Reply-To: <20191229162508.458551679@linuxfoundation.org>
+References: <20191229162508.458551679@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQrvu79PbiAxMi8yOS8xOSwgNTowNSBQTSwgIk5ldGFuZWwgQmVsZ2F6YWwiIDxuZXRhbmVsQGFt
-YXpvbi5jb20+IHdyb3RlOg0KDQogICAgU2lnbmVkLW9mZi1ieTogTmV0YW5lbCBCZWxnYXphbCA8
-bmV0YW5lbEBhbWF6b24uY29tPg0KICAgIC0tLQ0KICAgICBNQUlOVEFJTkVSUyB8IDIgKysNCiAg
-ICAgMSBmaWxlIGNoYW5nZWQsIDIgaW5zZXJ0aW9ucygrKQ0KICAgIA0KICAgIGRpZmYgLS1naXQg
-YS9NQUlOVEFJTkVSUyBiL01BSU5UQUlORVJTDQogICAgaW5kZXggYTA0OWFiY2NhYTI2Li5iYzM3
-MzZhZGU4OGIgMTAwNjQ0DQogICAgLS0tIGEvTUFJTlRBSU5FUlMNCiAgICArKysgYi9NQUlOVEFJ
-TkVSUw0KICAgIEBAIC03NzEsNiArNzcxLDggQEAgRjoJZHJpdmVycy90aGVybWFsL3RoZXJtYWxf
-bW1pby5jDQogICAgIA0KICAgICBBTUFaT04gRVRIRVJORVQgRFJJVkVSUw0KICAgICBNOglOZXRh
-bmVsIEJlbGdhemFsIDxuZXRhbmVsQGFtYXpvbi5jb20+DQogICAgK006CUFydGh1ciBLaXlhbm92
-c2tpIDxha2l5YW5vQGFtYXpvbi5jb20+DQogICAgK1I6CUd1eSBUemFsaWsgPGd0emFsaWtAYW1h
-em9uLmNvbT4NCiAgICAgUjoJU2FlZWQgQmlzaGFyYSA8c2FlZWRiQGFtYXpvbi5jb20+DQogICAg
-IFI6CVpvcmlrIE1hY2h1bHNreSA8em9yaWtAYW1hem9uLmNvbT4NCiAgICAgTDoJbmV0ZGV2QHZn
-ZXIua2VybmVsLm9yZw0KICAgIC0tIA0KICAgIDIuMTcuMg0KICAgIA0KU29ycnksIHJlc2VudCBt
-eSBtaXN0YWtlLg0KUGxlYXNlIGlnbm9yZS4NCiAgICANCg0K
+From: Ian Rogers <irogers@google.com>
+
+[ Upstream commit 8e8714c3d157568b7a769917a5e05573bbaf5af0 ]
+
+If event parsing fails the event list is leaked, instead splice the list
+onto the out result and let the caller cleanup.
+
+An example input for parse_events found by libFuzzer that reproduces
+this memory leak is 'm{'.
+
+Signed-off-by: Ian Rogers <irogers@google.com>
+Acked-by: Jiri Olsa <jolsa@kernel.org>
+Cc: Adrian Hunter <adrian.hunter@intel.com>
+Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
+Cc: Alexei Starovoitov <ast@kernel.org>
+Cc: Andi Kleen <ak@linux.intel.com>
+Cc: Daniel Borkmann <daniel@iogearbox.net>
+Cc: Jin Yao <yao.jin@linux.intel.com>
+Cc: John Garry <john.garry@huawei.com>
+Cc: Kan Liang <kan.liang@linux.intel.com>
+Cc: Mark Rutland <mark.rutland@arm.com>
+Cc: Martin KaFai Lau <kafai@fb.com>
+Cc: Namhyung Kim <namhyung@kernel.org>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Song Liu <songliubraving@fb.com>
+Cc: Stephane Eranian <eranian@google.com>
+Cc: Yonghong Song <yhs@fb.com>
+Cc: bpf@vger.kernel.org
+Cc: clang-built-linux@googlegroups.com
+Cc: netdev@vger.kernel.org
+Link: http://lore.kernel.org/lkml/20191025180827.191916-5-irogers@google.com
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ tools/perf/util/parse-events.c | 17 +++++++++++------
+ 1 file changed, 11 insertions(+), 6 deletions(-)
+
+diff --git a/tools/perf/util/parse-events.c b/tools/perf/util/parse-events.c
+index 1a7c76d2baa8..7ea1a230e89d 100644
+--- a/tools/perf/util/parse-events.c
++++ b/tools/perf/util/parse-events.c
+@@ -1843,15 +1843,20 @@ int parse_events(struct perf_evlist *evlist, const char *str,
+ 
+ 	ret = parse_events__scanner(str, &parse_state, PE_START_EVENTS);
+ 	perf_pmu__parse_cleanup();
++
++	if (!ret && list_empty(&parse_state.list)) {
++		WARN_ONCE(true, "WARNING: event parser found nothing\n");
++		return -1;
++	}
++
++	/*
++	 * Add list to the evlist even with errors to allow callers to clean up.
++	 */
++	perf_evlist__splice_list_tail(evlist, &parse_state.list);
++
+ 	if (!ret) {
+ 		struct perf_evsel *last;
+ 
+-		if (list_empty(&parse_state.list)) {
+-			WARN_ONCE(true, "WARNING: event parser found nothing\n");
+-			return -1;
+-		}
+-
+-		perf_evlist__splice_list_tail(evlist, &parse_state.list);
+ 		evlist->nr_groups += parse_state.nr_groups;
+ 		last = perf_evlist__last(evlist);
+ 		last->cmdline_group_boundary = true;
+-- 
+2.20.1
+
+
+
