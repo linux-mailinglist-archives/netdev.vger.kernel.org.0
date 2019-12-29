@@ -2,120 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6842E12CA57
-	for <lists+netdev@lfdr.de>; Sun, 29 Dec 2019 19:27:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1415D12CA81
+	for <lists+netdev@lfdr.de>; Sun, 29 Dec 2019 19:47:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726455AbfL2S1m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 29 Dec 2019 13:27:42 -0500
-Received: from mail-qk1-f196.google.com ([209.85.222.196]:43931 "EHLO
-        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726278AbfL2S1m (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 29 Dec 2019 13:27:42 -0500
-Received: by mail-qk1-f196.google.com with SMTP id t129so24949469qke.10
-        for <netdev@vger.kernel.org>; Sun, 29 Dec 2019 10:27:42 -0800 (PST)
+        id S1727180AbfL2Srf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 29 Dec 2019 13:47:35 -0500
+Received: from mail-ot1-f66.google.com ([209.85.210.66]:37973 "EHLO
+        mail-ot1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726465AbfL2Sre (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 29 Dec 2019 13:47:34 -0500
+Received: by mail-ot1-f66.google.com with SMTP id d7so39092937otf.5
+        for <netdev@vger.kernel.org>; Sun, 29 Dec 2019 10:47:34 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=fDYXZ0VQV9GRmyxFVste1F8uuEThz/v7xEooekXhh6U=;
-        b=PZ7E1q9OAusQa2mTnGqAl+3ByaDNnMcsSVJuCUdUp4HgMplkTr81GMHx48NxuoQwvi
-         Txl/Xq9c2ycOiS/lZ2/lY7Xq8hHqncMiiLxAr+aI4bGXyVNUklN03gmM7ZivIqpylukK
-         E+aFOxKu5R6hFNu5SUZ8i9WmGOS2sG8J8lEmxZgGiHEPRAtPsQ74F5pk2iNqF9A0mRJw
-         SSnT6IJoql2yONa99C+b3y0Mlv9N38TBG+h0xn5pQHjA6A8r4T54FH6SymML4Vd2oIKs
-         z989ndyaUtKbM8aKa2E9Yn7TPyLuvoi40mtvoQyrTe39KdGRMALHFVOu5hJgp2y2cPHR
-         YORA==
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:sender:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=rA3eeMCep9SBN3nydHHLjYxLLs7J6SfEOEg2MtxCZjI=;
+        b=oVD3kUcTkJv6iaOqBRZKIsdUWCFrZUfsjhuEoGS6SvG1RPbphcOOkzQ+UDTrcz6YTb
+         HM4K+rd9H561MkOjemuTEwd0IT4Mw4dr3ANlhbbQAfBhseAt7e5wDgXjZexaECIbNpFB
+         0ggqOFmJcmluW3PSQ5A+gowd60g5UhkZlhmNNsroqvCJ3As7xU00gEvkBBQ9kOd6bgfA
+         SEIMLqz3g8stzupBZ88SO6K0ifcnAteYgPC4q47tAWnDeqw6w4SepXoxGnejxq49C/7C
+         ZrbkD/13NwEa00MnOdAZJmUxnGnXEXSgxI7XfzBbgVR0Tfh3f5Fmo/7Jr2PZGeowV+d4
+         6NCg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=fDYXZ0VQV9GRmyxFVste1F8uuEThz/v7xEooekXhh6U=;
-        b=C8WkVsx1uSGW+baS8FAKBtYacOc2I8xQB6JgQkDIsujgILY9dOsV5NHPcvPHGWng2k
-         4VXVlWnXlaEF2ySMuIIvWCfB+WvRbXMVeESP1/M/Xm52UH3BXJohGd+sOcXShDTT9P/Y
-         ukshxn54WRz4A1Pf377dHVmTNMELHPpwK6wxsHOTzr53XeMag0bk9sFIdEC1wBI5ZbAA
-         jKIBN9yu7MDZvXfjv7qSIQL04UBUTQW9iMCm+W293gYRqb9dLlUkICtUi5KoLJe41UKp
-         CGISwnMX9MUD6c2sut+2rQ4Jpq9kMljaeWE5UwOFPWIH4sdQpa9IWuUEAjURtIEChX3e
-         1PQg==
-X-Gm-Message-State: APjAAAUf0Z0DMa+DyjOAcX5Ry8p09sJm84RbO2sjOkixJK4kTS3LCHvZ
-        9XeaEu1HSNN1gxEh3CmgzftHOg==
-X-Google-Smtp-Source: APXvYqyuvlW6zO2v2sYYYH8nA+FoPyZko4TL1XVm5pZ1YYeHFMPNbNqe34lueG9hwdHvyRPjetnE7g==
-X-Received: by 2002:a05:620a:1102:: with SMTP id o2mr50354326qkk.278.1577644061540;
-        Sun, 29 Dec 2019 10:27:41 -0800 (PST)
-Received: from [192.168.43.235] ([204.48.95.253])
-        by smtp.googlemail.com with ESMTPSA id i90sm12904808qtd.49.2019.12.29.10.27.40
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 29 Dec 2019 10:27:40 -0800 (PST)
-Subject: Re: [PATCH net] net/sched: add delete_empty() to filters and use it
- in cls_flower
-To:     Vlad Buslov <vladbu@mellanox.com>,
-        Davide Caratti <dcaratti@redhat.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>
-References: <3f0b159cd943476d4beb8106b5a1405d050ec392.1577546059.git.dcaratti@redhat.com>
- <vbfd0c7gh1d.fsf@mellanox.com>
-From:   Jamal Hadi Salim <jhs@mojatatu.com>
-Message-ID: <58ddffbd-240e-8b2b-7162-1d9a8f7d6973@mojatatu.com>
-Date:   Sun, 29 Dec 2019 13:27:38 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.3.1
+        h=x-gm-message-state:mime-version:reply-to:sender:from:date
+         :message-id:subject:to:content-transfer-encoding;
+        bh=rA3eeMCep9SBN3nydHHLjYxLLs7J6SfEOEg2MtxCZjI=;
+        b=e549Sty5Xk5s+S7V4PgeVQJdKjKiyv53tsy5/FzNBMdtZ3qwZSBGmur67cHj33dOnp
+         +TK9AjfP+DGCvsLJxKgMKtSN5M85tsqhnbswyqy0KO+Xj16qgEc1lMadk2iuY3CZkxY5
+         OvIrCcNExLD8yD2zFpDqjlGjrC9+tbcealx2Bt4la1l4oFwisSUg1gmEohA3qTTCuGjw
+         rx6ws313M+ZcuyBNzMIjKxmgD8znK1TO7faE8GukL7vk9cqn+cjzeh9Uo00wmluEyXr9
+         OKxk3ALi8SzHe6gis3bZryE7RXQCKci80nmvtuTBRP3GezDl0TlcUiPSIr0TsmPcj0zQ
+         GdXg==
+X-Gm-Message-State: APjAAAVjWs9PaWZZaZldKcPGxdy36a0umwlCTyQZUefXLFshL60Jvew2
+        /AHs2ZqNMPOWqMSMEJYj1XLr2SRhh9SLHYQqXQ==
+X-Google-Smtp-Source: APXvYqyTsiHnlxmJjvJfpxCZRVXZNMsgrZ9gdAerMJHeFnAaBET2bRKKOq+n8/5TTvV21fWC6NRNdzdVp/DUvlRIrC0=
+X-Received: by 2002:a9d:6b06:: with SMTP id g6mr60986062otp.93.1577645253944;
+ Sun, 29 Dec 2019 10:47:33 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <vbfd0c7gh1d.fsf@mellanox.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
+Reply-To: msamg2011@gmail.com
+Received: by 2002:aca:c355:0:0:0:0:0 with HTTP; Sun, 29 Dec 2019 10:47:33
+ -0800 (PST)
+From:   Ayisha Gaddafi <mrssa8@gmail.com>
+Date:   Sun, 29 Dec 2019 18:47:33 +0000
+X-Google-Sender-Auth: sBIqYYEXXjcq1eUDiA1IQun2hus
+Message-ID: <CAP6R5mt7+pe8v-0bwD1nvG0rhA0OO-TRKmwqT=smcNEJ=FWx1Q@mail.gmail.com>
+Subject: =?UTF-8?B?2LHYrdio2KfYjFJlOkF0dGVuIERlYXIgSSBOZWVkIFlvdXIgSGVscCEh?=
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2019-12-29 12:47 p.m., Vlad Buslov wrote:
-> 
-> On Sat 28 Dec 2019 at 17:36, Davide Caratti <dcaratti@redhat.com> wrote:
->> Revert "net/sched: cls_u32: fix refcount leak in the error path of
->> u32_change()", and fix the u32 refcount leak in a more generic way that
->> preserves the semantic of rule dumping.
->> On tc filters that don't support lockless insertion/removal, there is no
->> need to guard against concurrent insertion when a removal is in progress.
->> Therefore, for most of them we can avoid a full walk() when deleting, and
->> just decrease the refcount, like it was done on older Linux kernels.
->> This fixes situations where walk() was wrongly detecting a non-empty
->> filter, like it happened with cls_u32 in the error path of change(), thus
->> leading to failures in the following tdc selftests:
->>
->>   6aa7: (filter, u32) Add/Replace u32 with source match and invalid indev
->>   6658: (filter, u32) Add/Replace u32 with custom hash table and invalid handle
->>   74c2: (filter, u32) Add/Replace u32 filter with invalid hash table id
->>
->> On cls_flower, and on (future) lockless filters, this check is necessary:
->> move all the check_empty() logic in a callback so that each filter
->> can have its own implementation. For cls_flower, it's sufficient to check
->> if no IDRs have been allocated.
->>
->> This reverts commit 275c44aa194b7159d1191817b20e076f55f0e620.
->>
->> Changes since v1:
->>   - document the need for delete_empty() when TCF_PROTO_OPS_DOIT_UNLOCKED
->>     is used, thanks to Vlad Buslov
->>   - implement delete_empty() without doing fl_walk(), thanks to Vlad Buslov
->>   - squash revert and new fix in a single patch, to be nice with bisect
->>     tests that run tdc on u32 filter, thanks to Dave Miller
->>
->> Fixes: 275c44aa194b ("net/sched: cls_u32: fix refcount leak in the error path of u32_change()")
->> Fixes: 6676d5e416ee ("net: sched: set dedicated tcf_walker flag when tp is empty")
->> Suggested-by: Jamal Hadi Salim <jhs@mojatatu.com>
->> Suggested-by: Vlad Buslov <vladbu@mellanox.com>
->> Signed-off-by: Davide Caratti <dcaratti@redhat.com>
->> ---
-> 
-> Thanks again, Davide!
-> 
-> Reviewed-by: Vlad Buslov <vladbu@mellanox.com>
+Dearest One,
+I am writing this message with tears and sorrow from my heart asking
+for you to understand my present condition and come to my rescue. I=E2=80=
+=99d
+decided to come to you by this email for the security reason.I choose
+you,believing probability of you being a good trustee person; luck to
+help and share in this noble cause.
 
-Tested-by: Jamal Hadi Salim <jhs@mojatatu.com>
-Acked-by: Jamal Hadi Salim <jhs@mojatatu.com>
+It will be very nice if I can trust you and open up with you.I need
+your help in conducting to recovering my Huge funds fixed  deposited
+in bank.
 
-cheers,
-jamal
+Ever since the terrible accident death of my father.I have passed
+through many pains and sorrow because all our bank accounts have been
+blocked by the Government Authority of Libya.Before the death of my
+father occurred,He deposited the Fund worths $28,5 Millions USD
+dollars in the one of the Financial Bank Institution.
 
+You will be rewarded with the part of the funds if you can
+assist.Thanking you in advance.
+Yours truly,
+Ayisha Gaddafi
