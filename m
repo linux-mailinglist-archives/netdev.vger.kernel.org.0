@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F57D12C257
+	by mail.lfdr.de (Postfix) with ESMTP id F2EE212C259
 	for <lists+netdev@lfdr.de>; Sun, 29 Dec 2019 12:48:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726388AbfL2Lsy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 29 Dec 2019 06:48:54 -0500
-Received: from out1-smtp.messagingengine.com ([66.111.4.25]:55125 "EHLO
+        id S1726410AbfL2Ls4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 29 Dec 2019 06:48:56 -0500
+Received: from out1-smtp.messagingengine.com ([66.111.4.25]:36579 "EHLO
         out1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726151AbfL2Lsy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 29 Dec 2019 06:48:54 -0500
+        by vger.kernel.org with ESMTP id S1726151AbfL2Lsz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 29 Dec 2019 06:48:55 -0500
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 01F1621E50;
-        Sun, 29 Dec 2019 06:48:53 -0500 (EST)
+        by mailout.nyi.internal (Postfix) with ESMTP id C159B21DFB;
+        Sun, 29 Dec 2019 06:48:54 -0500 (EST)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Sun, 29 Dec 2019 06:48:53 -0500
+  by compute3.internal (MEProxy); Sun, 29 Dec 2019 06:48:54 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; bh=ucY23S/cPAFPu/ZYer2Gd2/y753lCSfnNXfEBZ2NM5U=; b=i1TaSLTM
-        a2fUSha4PjsliOBA+MLht3mMIKEaTm5NdkTVsr4B8f04xvxRAk6ww7G2BdBfFAWe
-        x52LGu+uyV39h7128L6jhUKuNPgSxCxJaliAK/nLhXoBXLP96onD9Ja7Fc4xrhcZ
-        y8cImtLYPJZ2yZ69kTGjTwTMlxX/G8hhYfaH3Ite1fLTPn1KFg+p6T3QIJ6RottF
-        FxEEVDR1uWBOtyxh3uWWsy3yrGPf+cJvGcgclXqEl+KdHPcssXH+FQxcq6Hk9uFb
-        jWpxICaD4RF6P90C8aJcpRshva91bsLi3qRIiXa7XPe5+rkoa5U6tobdT0LAxKdz
-        2Zp95C/dX0/8FA==
-X-ME-Sender: <xms:pJIIXgg7LbKzeN7tdxyB1nnc9oL59HLJOWg0EPVwPfuBby-OdYVTQw>
+        fm1; bh=N2t9DSuK9/u5fLbpDY+LkjGdMP4qJVIRtONzzABH2Xw=; b=iY+nzHZ6
+        Gi3tYO6hzNOl4SErUKSO0aDrD3Xdahm2WFaD1OTKPtTkg/LPuVyULTn0QlApU5FP
+        MsQmWgmg3TgzhaGSNvktaQePD/tuS8Z2PgUV3/88JTAjtaIfPkR9GicacYY7QBr/
+        GHFiHHvSd26eETO3EHl2P9ZFesqmjThPKEO9kG8vNz2/4mRnFo0HZURJOeYlBFHd
+        6mkgnOOLhgkT9rucKcvFN0xrFwuQLlZ8qdsjq6xK02nRiV/+gippov5pdxCP7Tq1
+        1r+LkK+ousbOa6uYANkFKIdZJupi8ozeafo14D9O3cKxoluELoSW81pcn8yZC9by
+        fMwqHA11wgoHsw==
+X-ME-Sender: <xms:ppIIXuJHZVGBrCCpb6-mhXRuDFo4uDggopAcNdelt4D_LpR2mx5dCg>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedufedrvdeffedgfedvucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
@@ -35,20 +35,20 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedufedrvdeffedgfedvucetufdoteggod
     shgthhdrohhrgheqnecukfhppeejledrudekuddriedurdduudejnecurfgrrhgrmhepmh
     grihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhgnecuvehluhhsthgvrhfu
     ihiivgeptd
-X-ME-Proxy: <xmx:pJIIXtRH0Hz52-PiJ_E0GyJJdlLFAVIo_1fEwItPM5eRAjtd1Si2hw>
-    <xmx:pJIIXjH6URZx_zBln6Js9CNWCJrKrqFoRDTr568kRZNZY98sK9Wa_Q>
-    <xmx:pJIIXlmW2lkSM_AoU_1igOK_YY0VoFa2hI7DmpgXUApD_3u4ajBDkQ>
-    <xmx:pJIIXnii6LckgNhU7I0KTBaOb5UIFDG4si92vOLAB2qJmjQpGmS84g>
+X-ME-Proxy: <xmx:ppIIXgdOunmn6WD-UpbkCh52zhN_qePOl2Jyfah-lEaKS5g_eN6KqQ>
+    <xmx:ppIIXmNzdHm17iEIJRWdyjepVeS_3iQdJz4O-WT1LKy_qbzKVjYmVQ>
+    <xmx:ppIIXiJINGPxcA3G1DLbuRkQd6_KBf8m2nkvszNu4LO_ZingUoTaTA>
+    <xmx:ppIIXnerCFS97LQKjMcMzzLu0vRWrNBSuWeMdb-RhCbH0cXw4CUrjg>
 Received: from splinter.mtl.com (bzq-79-181-61-117.red.bezeqint.net [79.181.61.117])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 5FAE93060A32;
-        Sun, 29 Dec 2019 06:48:51 -0500 (EST)
+        by mail.messagingengine.com (Postfix) with ESMTPA id 2A3213060A32;
+        Sun, 29 Dec 2019 06:48:53 -0500 (EST)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, jiri@mellanox.com, petrm@mellanox.com,
         mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net-next 1/3] mlxsw: reg: Add QoS Port DSCP to Priority Mapping Register
-Date:   Sun, 29 Dec 2019 13:48:27 +0200
-Message-Id: <20191229114829.61803-2-idosch@idosch.org>
+Subject: [PATCH net-next 2/3] mlxsw: spectrum_dcb: Allow setting default port priority
+Date:   Sun, 29 Dec 2019 13:48:28 +0200
+Message-Id: <20191229114829.61803-3-idosch@idosch.org>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20191229114829.61803-1-idosch@idosch.org>
 References: <20191229114829.61803-1-idosch@idosch.org>
@@ -61,70 +61,61 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Petr Machata <petrm@mellanox.com>
 
-Add QPDP. This register controls the port default Switch Priority and
-Color. The default Switch Priority and Color are used for frames where the
-trust state uses default values. Currently there are two cases where this
-applies: a port is in trust-PCP state, but a packet arrives untagged; and a
-port is in trust-DSCP state, but a non-IP packet arrives.
+When APP TLV selector 1 (EtherType) is used with PID of 0, the
+corresponding entry specifies "default application priority [...] when
+application priority is not otherwise specified."
+
+mlxsw currently supports this type of APP entry, but uses it only as a
+fallback for unspecified DSCP rules. However non-IP traffic is prioritized
+according to port-default priority, not according to the DSCP-to-prio
+tables, and thus it's currently not possible to prioritize such traffic
+correctly.
+
+Extend the use of the abovementioned APP entry to also set default port
+priority.
 
 Signed-off-by: Petr Machata <petrm@mellanox.com>
 Acked-by: Jiri Pirko <jiri@mellanox.com>
 Signed-off-by: Ido Schimmel <idosch@mellanox.com>
 ---
- drivers/net/ethernet/mellanox/mlxsw/reg.h | 33 +++++++++++++++++++++++
- 1 file changed, 33 insertions(+)
+ .../net/ethernet/mellanox/mlxsw/spectrum_dcb.c  | 17 +++++++++++++++++
+ 1 file changed, 17 insertions(+)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/reg.h b/drivers/net/ethernet/mellanox/mlxsw/reg.h
-index 86a2d575ae73..c343f5203e93 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/reg.h
-+++ b/drivers/net/ethernet/mellanox/mlxsw/reg.h
-@@ -3748,6 +3748,38 @@ mlxsw_reg_qpdsm_prio_pack(char *payload, unsigned short prio, u8 dscp)
- 	mlxsw_reg_qpdsm_prio_entry_color2_dscp_set(payload, prio, dscp);
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_dcb.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_dcb.c
+index fe3bbba90659..db66f2b56a6d 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_dcb.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_dcb.c
+@@ -368,6 +368,17 @@ mlxsw_sp_port_dcb_toggle_trust(struct mlxsw_sp_port *mlxsw_sp_port,
+ 	return err;
  }
  
-+/* QPDP - QoS Port DSCP to Priority Mapping Register
-+ * -------------------------------------------------
-+ * This register controls the port default Switch Priority and Color. The
-+ * default Switch Priority and Color are used for frames where the trust state
-+ * uses default values. All member ports of a LAG should be configured with the
-+ * same default values.
-+ */
-+#define MLXSW_REG_QPDP_ID 0x4007
-+#define MLXSW_REG_QPDP_LEN 0x8
-+
-+MLXSW_REG_DEFINE(qpdp, MLXSW_REG_QPDP_ID, MLXSW_REG_QPDP_LEN);
-+
-+/* reg_qpdp_local_port
-+ * Local Port. Supported for data packets from CPU port.
-+ * Access: Index
-+ */
-+MLXSW_ITEM32(reg, qpdp, local_port, 0x00, 16, 8);
-+
-+/* reg_qpdp_switch_prio
-+ * Default port Switch Priority (default 0)
-+ * Access: RW
-+ */
-+MLXSW_ITEM32(reg, qpdp, switch_prio, 0x04, 0, 4);
-+
-+static inline void mlxsw_reg_qpdp_pack(char *payload, u8 local_port,
-+				       u8 switch_prio)
++static int
++mlxsw_sp_port_dcb_app_update_qpdp(struct mlxsw_sp_port *mlxsw_sp_port,
++				  u8 default_prio)
 +{
-+	MLXSW_REG_ZERO(qpdp, payload);
-+	mlxsw_reg_qpdp_local_port_set(payload, local_port);
-+	mlxsw_reg_qpdp_switch_prio_set(payload, switch_prio);
++	struct mlxsw_sp *mlxsw_sp = mlxsw_sp_port->mlxsw_sp;
++	char qpdp_pl[MLXSW_REG_QPDP_LEN];
++
++	mlxsw_reg_qpdp_pack(qpdp_pl, mlxsw_sp_port->local_port, default_prio);
++	return mlxsw_reg_write(mlxsw_sp->core, MLXSW_REG(qpdp), qpdp_pl);
 +}
 +
- /* QPDPM - QoS Port DSCP to Priority Mapping Register
-  * --------------------------------------------------
-  * This register controls the mapping from DSCP field to
-@@ -10579,6 +10611,7 @@ static const struct mlxsw_reg_info *mlxsw_reg_infos[] = {
- 	MLXSW_REG(qeec),
- 	MLXSW_REG(qrwe),
- 	MLXSW_REG(qpdsm),
-+	MLXSW_REG(qpdp),
- 	MLXSW_REG(qpdpm),
- 	MLXSW_REG(qtctm),
- 	MLXSW_REG(qpsc),
+ static int
+ mlxsw_sp_port_dcb_app_update_qpdpm(struct mlxsw_sp_port *mlxsw_sp_port,
+ 				   struct dcb_ieee_app_dscp_map *map)
+@@ -405,6 +416,12 @@ static int mlxsw_sp_port_dcb_app_update(struct mlxsw_sp_port *mlxsw_sp_port)
+ 	int err;
+ 
+ 	default_prio = mlxsw_sp_port_dcb_app_default_prio(mlxsw_sp_port);
++	err = mlxsw_sp_port_dcb_app_update_qpdp(mlxsw_sp_port, default_prio);
++	if (err) {
++		netdev_err(mlxsw_sp_port->dev, "Couldn't configure port default priority\n");
++		return err;
++	}
++
+ 	have_dscp = mlxsw_sp_port_dcb_app_prio_dscp_map(mlxsw_sp_port,
+ 							&prio_map);
+ 
 -- 
 2.24.1
 
