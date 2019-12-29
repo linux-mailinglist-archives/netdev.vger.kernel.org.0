@@ -2,79 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 684A412C20D
-	for <lists+netdev@lfdr.de>; Sun, 29 Dec 2019 09:27:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 80EF112C254
+	for <lists+netdev@lfdr.de>; Sun, 29 Dec 2019 12:44:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726388AbfL2I1V (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 29 Dec 2019 03:27:21 -0500
-Received: from mail-io1-f65.google.com ([209.85.166.65]:39021 "EHLO
-        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726366AbfL2I1U (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 29 Dec 2019 03:27:20 -0500
-Received: by mail-io1-f65.google.com with SMTP id c16so27690158ioh.6
-        for <netdev@vger.kernel.org>; Sun, 29 Dec 2019 00:27:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=ED3lx+kwU0inDNGcCmyEX9CWBzuv7bcPK4RBun7XBaA=;
-        b=TmCyW8g5d1ZlU4jHnJa3gb1khrw5ALzihyiDAfz8D0TD2Y2cTEE4gexiQyqP2brjNZ
-         SbVaiLiYo8nPzXwdRokUbkVOqfjSIH3a/7Lvmd6afc8F5+6rCv4fwgGG4YcI2YdFm7hn
-         mae+Qd6utTL0r27sA6mBOJ2Diebuzt8g5ADE18OQqI25QItCp8FC7/6LRO+NZD5H8e6h
-         2K1DnZ7oMazJ6Xz3PxNiuSJQwYDR749wLQTCOAQtrtfknXqTgiduNNtvKtI/EzW/LxWy
-         /2mwPUWrwqK1AzkI2hF3PyXRLDIbh8qB7YI9KI3on2wuxMuHvMjLGJap2kbbntBTlTWc
-         zFig==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to:content-transfer-encoding;
-        bh=ED3lx+kwU0inDNGcCmyEX9CWBzuv7bcPK4RBun7XBaA=;
-        b=myuzSGVCf7PptID8jiKeDTJV9vhOw3PNE8i1WrBhpUWqirVNx0OgBJ0KxRqZotGY5y
-         MbsC247MqNlHeDa8Ne8v2mvynsxGFCxTgG/ugsid6FxFNo3eW+FyMZ/18sfpcKe40eTE
-         OhySgSvSknTUWKj4zBE2KEUraU+/S3h2P9/17kLRTX9gzQiCQNP5pteXi8rCH+eWKSLf
-         CQ0OjwYC8SsdSK5rTmFPVQbX0tF8S+lUBA6vI3n+42ljQefHFBv/TiQAOuPbCeNYbHxL
-         9uv7d1OVhNOpv2byRYeKTGH7oAxKsRqi7SIOFFIqoDCzCFwSFE5OHGVr0kUDKmW4Et+T
-         REVQ==
-X-Gm-Message-State: APjAAAUtTtrqPxpdttuOYIP6weQmH8bmumpu8f/sgaqoi3vFEUogzWcm
-        5QeRhoaKbk4by25MPZg+i9ea30CIKkofFyCFIB4=
-X-Google-Smtp-Source: APXvYqz2KVqK+KHLmwSYmfsXkWgo9j4z36E2QkfPscjfo0HTLkA2NYhfi0wEYCDH4sHsJ0m9TdTN+b1e6/jkZ0RpwTs=
-X-Received: by 2002:a6b:6e06:: with SMTP id d6mr38980967ioh.95.1577608040087;
- Sun, 29 Dec 2019 00:27:20 -0800 (PST)
+        id S1726278AbfL2LlV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 29 Dec 2019 06:41:21 -0500
+Received: from out1-smtp.messagingengine.com ([66.111.4.25]:57127 "EHLO
+        out1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726151AbfL2LlU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 29 Dec 2019 06:41:20 -0500
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id 52E5D21DC1;
+        Sun, 29 Dec 2019 06:41:19 -0500 (EST)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute3.internal (MEProxy); Sun, 29 Dec 2019 06:41:19 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-transfer-encoding:date:from
+        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=CB8kgG60pgIN1UL/S
+        3OrWKXr3MohmiD2FJlTfT4Bpr4=; b=LPDIGEjghv7YAN6K3EeJyL+dufTEBDbN9
+        zzZmuBPONv7AyA52pwQq3LLgvUqgzGXqV0QppuJPIHkvd77r+7h9s8LN5GDaW9iZ
+        zM96Qr3VyZ0JsmsVTtMFYvqm3ERFEz/MmhUZdNQ8srEu1xOz1heLiD8VbX9LFymN
+        TUGyCAmHdIa3bszL0b50W8BONoYvtdUCMWY4F073Sw2L8vkgZqjh7hWq70jlWGzC
+        j1dpLG645pJpUMZ8K0ewQngbLDTlucuOeAfLOUzzzM/Bbf7ufM3kQC6tKQxlmgYP
+        SxnVcOGkCUEEnBKFqY9IENLtVT2rsSufudkoYPw4yw9nDNKX8ymZg==
+X-ME-Sender: <xms:35AIXiLpeYzvjSPuparCNRpJNsb4HVhLv5PqWLO6JGWxMJKjWUGFcw>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedufedrvdeffedgfedtucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgggfestdekredtre
+    dttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiughoshgt
+    hhdrohhrgheqnecukfhppeejledrudekuddriedurdduudejnecurfgrrhgrmhepmhgrih
+    hlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhgnecuvehluhhsthgvrhfuihii
+    vgeptd
+X-ME-Proxy: <xmx:35AIXubE2V-Jibo-SyKmhJ01prsfBzLs0fIza-UKfR7XvW9Q-lWU7Q>
+    <xmx:35AIXttmUjBDJp2vvSbT_g94XEcdbbvlhu0jFPrlDe05ioHOqBmUwg>
+    <xmx:35AIXruWYWZLoeY0_V7Sz_kX3R7TlWtc1VPPR2-fsxFrS6Gw8TkRbw>
+    <xmx:35AIXvZ40NIvFM8BEFrPG8_E_jI4D0xY98t0xOzJsml5iGkT7etKeg>
+Received: from splinter.mtl.com (bzq-79-181-61-117.red.bezeqint.net [79.181.61.117])
+        by mail.messagingengine.com (Postfix) with ESMTPA id B7FC93060AA8;
+        Sun, 29 Dec 2019 06:41:17 -0500 (EST)
+From:   Ido Schimmel <idosch@idosch.org>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, jiri@mellanox.com, mlxsw@mellanox.com,
+        Ido Schimmel <idosch@mellanox.com>
+Subject: [PATCH net 0/2] mlxsw: Couple of fixes
+Date:   Sun, 29 Dec 2019 13:40:21 +0200
+Message-Id: <20191229114023.60873-1-idosch@idosch.org>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-Received: by 2002:a02:9628:0:0:0:0:0 with HTTP; Sun, 29 Dec 2019 00:27:19
- -0800 (PST)
-Reply-To: ghaziahmed@myself.com
-From:   Ghazi Ahmed <ghazia500@gmail.com>
-Date:   Sun, 29 Dec 2019 00:27:19 -0800
-Message-ID: <CAOo=X58ARAHwkxrc-9x6HqE_iaorxJLcLtrXi-bfzqVWzTtZmg@mail.gmail.com>
-Subject: YOUR URGENT RESPONSE IS NEEDED
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I have a business proposal in the tune of $10.2m USD for you to handle
-with me. I have opportunity to transfer this abandon fund to your bank
-account in your country which belongs to our client.
+From: Ido Schimmel <idosch@mellanox.com>
 
-I am inviting you in this transaction where this money can be shared
-between us at ratio of 50/50% and help the needy around us don=E2=80=99t be
-afraid of anything I am with you I will instruct you what you will do
-to maintain this fund.
+This patch set contains two fixes for mlxsw. Please consider both for
+stable.
 
-Please kindly contact me with your information's if you are interested
-in this tranasction for more details(ghaziahmed@myself.com)
+Patch #1 from Amit fixes a wrong check during MAC validation when
+creating router interfaces (RIFs). Given a particular order of
+configuration this can result in the driver refusing to create new RIFs.
 
-1. Your Full Name.....................
-2. Your Address......................
-3. Your Country of Origin.............
-4. What do you do for living ...............
-5. Your Age..........................
-6. Gender.........................
-7. Your ID card copy and telephone number for easy communication...........=
-....
+Patch #2 fixes a wrong trap configuration in which VRRP packets and
+routing exceptions were policed by the same policer towards the CPU. In
+certain situations this can prevent VRRP packets from reaching the CPU.
 
-Mr.Ghazi Ahmed
+Amit Cohen (1):
+  mlxsw: spectrum_router: Skip loopback RIFs during MAC validation
+
+Ido Schimmel (1):
+  mlxsw: spectrum: Use dedicated policer for VRRP packets
+
+ drivers/net/ethernet/mellanox/mlxsw/reg.h             | 1 +
+ drivers/net/ethernet/mellanox/mlxsw/spectrum.c        | 9 +++++++--
+ drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c | 3 +++
+ 3 files changed, 11 insertions(+), 2 deletions(-)
+
+-- 
+2.24.1
+
