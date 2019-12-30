@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2236812D330
-	for <lists+netdev@lfdr.de>; Mon, 30 Dec 2019 19:11:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 15A5812D34C
+	for <lists+netdev@lfdr.de>; Mon, 30 Dec 2019 19:21:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727537AbfL3SLk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Dec 2019 13:11:40 -0500
-Received: from mail-ed1-f66.google.com ([209.85.208.66]:41722 "EHLO
-        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727389AbfL3SLk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Dec 2019 13:11:40 -0500
-Received: by mail-ed1-f66.google.com with SMTP id c26so33386049eds.8;
-        Mon, 30 Dec 2019 10:11:38 -0800 (PST)
+        id S1727532AbfL3SU7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Dec 2019 13:20:59 -0500
+Received: from mail-ed1-f67.google.com ([209.85.208.67]:44088 "EHLO
+        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727498AbfL3SU7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Dec 2019 13:20:59 -0500
+Received: by mail-ed1-f67.google.com with SMTP id bx28so33399064edb.11;
+        Mon, 30 Dec 2019 10:20:57 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=ksjb5gz0GjdJg/RQLO0udB8fLMCfHx4VmQ3hHn7V26w=;
-        b=bSg1JcX/Okg2NrEA5I4J+DrlVnswO0mkVgSB8cVMEOMhBpSm6pvYmtT2H6CV80b/08
-         EYI42piVzAA/AcVB23h1LknWaIv9yDyNqOGpOijh1pX0iPrWtvpC9eHMgxwOqtT5WjkG
-         JNa9OzQgr2TuVrlgMSI6LSIfVfwkGud0pFPFuub0g3P6q3vVzABaFy3HI4zp5OnOvHDU
-         89WuXflJM/WOQJPPcRjRtSJAjn5n1UJ/I4v2Hmu0tH8HU+J2kiCSNJQZlhSNDJkKpti0
-         myoxU61bVtiAjuXiqWQ5MwdbSbuPPnsgO5FszCfT/H+VBzaTCXGa+QCHlUEXA8SMc/vV
-         R4bQ==
+        bh=w0q654yqDEnffJ0BauqH2GM/TgoupvqMZ4bdJnZRrYA=;
+        b=MG23K+tz5O/93loAW9k0F55CyVOXjs17QmgMRA6BN7XICGWToDF/npEWf/TF1zexim
+         tDDlPWaTiPX3W53v41Y9bgQ+7/JhxHPUsLbULg4YFZYTjmam6q76mAy8IC2u/zeBvuJ2
+         ZydaHRxR7MFtbMv2e7v6OzPILVzlNv37OFk+o4SHST7PwaIMjRNmBp4G88Jz3bYdM3LF
+         Hp/BOits5addgWkXD2KPkH9esfshnzZAM5oCurlel74wnKpDOA62/CUv2T2v9Iq619ms
+         6CwkcDNCrNKS8stc3w904JUQoAF0sKj9B6ntWRukRUO6c7Z6OIwWLgerfNaletdEHLkK
+         E2lg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=ksjb5gz0GjdJg/RQLO0udB8fLMCfHx4VmQ3hHn7V26w=;
-        b=WnmjFMN5iLrhRBQjtRLH2o7YeQ43W0B9P0E6ntgJHF+COzhls6Io5m5g71rT7BrTs4
-         nm2V/4vHSxRFS53xZEftkJNJprft9rogJ6X4FQb/FvsfrPHe0hIFwCVEAYeqedLsr6Fq
-         3/mB2OsFQ7wdXXB+TvpbuFGuLTVnw0eT14ueLoPvYbZ8M0bitx+8973TlDZrFddC2/Xo
-         LsKb7g40JFZ/CsY7HN12TwS2S5gMPR2AUrUJqpLa0VCkHgOIEmpiytyUT22JBr490id/
-         UQQFZuDCtM0aOabu+xifjacqTEn+FzFz+pE9ehE+KibUmEOlLLN7wKpT/+GeUPtC69Rl
-         ORlA==
-X-Gm-Message-State: APjAAAUF5CCHZM3T07JIU+Tvcb7V88C7cYc+TjJZyeKc+8ntVtnhXKfe
-        fFTZFgBFAeH7L4TBLrP+zE6VWe+5
-X-Google-Smtp-Source: APXvYqxuniQeq5M2j+lYM5DrPn+uy6hbytbWjqaT3Ycmwyfb0seOiaSHVV1nk4RoVbEB70FSbAPjtQ==
-X-Received: by 2002:a50:8326:: with SMTP id 35mr17297044edh.235.1577729498052;
-        Mon, 30 Dec 2019 10:11:38 -0800 (PST)
+        bh=w0q654yqDEnffJ0BauqH2GM/TgoupvqMZ4bdJnZRrYA=;
+        b=UeBbQHEml2Gbl1Oc24822/ibaCi2przzVyqH943HhWLfv+Q8uao6ImM1aBjNo9FKo/
+         gEZUo7tHK0d+62r2JjMxvZ5IECBBcXq5FRam4l2VgCklLDjyazCjDwnwRBt2aEz/p1bg
+         4S2kbGE/DL6iKaLyaJy3A9hLnyIRnX16g6sLh62Egw0JrnNJn3/cc+Myt/yejRbjooO5
+         /jVbS81IjYmVb8sZsCq/HMK6YrC8Z0iWxfiOL4iaQeOlpckVNlfLVLYjiidBiSD7wdwq
+         5qMqAkqaZ7dSDnrgmgRU26pbIgHZTL5BaF0Dkn3CbvzdvZmV1Zc1ByG8VN06l4x9MJCH
+         2Gpw==
+X-Gm-Message-State: APjAAAWuPmXrZ8pV2M1XYkJYS8Mx88GE7v1R/9qUYITLr5Aj6nl3vX00
+        Eu+esy1gIRy7YtiCqHPwwVs=
+X-Google-Smtp-Source: APXvYqxZn8C79IyACkJJnscuowAqiVaiO+0Bh4Sm/IygPWsVC6eZJaC43fr5Z24nJnQXOh9ILsKZfg==
+X-Received: by 2002:a17:906:2e46:: with SMTP id r6mr71882689eji.310.1577730056943;
+        Mon, 30 Dec 2019 10:20:56 -0800 (PST)
 Received: from [10.67.50.49] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id o9sm5711697ejj.25.2019.12.30.10.11.33
+        by smtp.googlemail.com with ESMTPSA id f13sm5411640edq.26.2019.12.30.10.20.52
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 30 Dec 2019 10:11:37 -0800 (PST)
-Subject: Re: [PATCH RFC net-next 01/19] net: dsa: make .flow_dissect()
- callback returning void
+        Mon, 30 Dec 2019 10:20:56 -0800 (PST)
+Subject: Re: [PATCH RFC net-next 05/19] net: dsa: tag_ar9331: add GRO
+ callbacks
 To:     Alexander Lobakin <alobakin@dlink.ru>,
         "David S. Miller" <davem@davemloft.net>
 Cc:     Edward Cree <ecree@solarflare.com>, Andrew Lunn <andrew@lunn.ch>,
@@ -71,7 +71,7 @@ Cc:     Edward Cree <ecree@solarflare.com>, Andrew Lunn <andrew@lunn.ch>,
         linux-arm-kernel@lists.infradead.org,
         linux-mediatek@lists.infradead.org
 References: <20191230143028.27313-1-alobakin@dlink.ru>
- <20191230143028.27313-2-alobakin@dlink.ru>
+ <20191230143028.27313-6-alobakin@dlink.ru>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  xsDiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
@@ -127,29 +127,111 @@ Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  HvsHIcv4lxCWkFXkwsuWqzEKK6kxVpRDoEQPDj+Oy/ZJ5fYuMbkdHrlegwoQ64LrqdmiVVPC
  TwQYEQIADwIbDAUCVF/S8QUJHlwd3wAKCRBhV5kVtWN2Do+FAJ956xSz2XpDHql+Wg/2qv3b
  G10n8gCguORqNGMsVRxrlLs7/himep7MrCc=
-Message-ID: <b3be83dc-efe1-be40-583d-c70324aff879@gmail.com>
-Date:   Mon, 30 Dec 2019 10:11:30 -0800
+Message-ID: <ee6f83fd-edf4-5a98-9868-4cbe9e226b9b@gmail.com>
+Date:   Mon, 30 Dec 2019 10:20:50 -0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.2.2
 MIME-Version: 1.0
-In-Reply-To: <20191230143028.27313-2-alobakin@dlink.ru>
+In-Reply-To: <20191230143028.27313-6-alobakin@dlink.ru>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On 12/30/19 6:30 AM, Alexander Lobakin wrote:
-> There are no tag protocols which return non-zero values from
-> flow_dissect() callback. Remove it to simplify code and save some
-> object size.
-> If a particular tagger can't calculate offset and proto for some
-> reason, it can simply leave the original values untouched.
+> Add GRO callbacks to the AR9331 tagger so GRO layer can now process
+> such frames.
 > 
 > Signed-off-by: Alexander Lobakin <alobakin@dlink.ru>
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+This is a good example and we should probably build a tagger abstraction
+that is much simpler to fill in callbacks for (although indirect
+function calls may end-up killing performance with retpoline and
+friends), but let's consider this idea.
+
+> ---
+>  net/dsa/tag_ar9331.c | 77 ++++++++++++++++++++++++++++++++++++++++++++
+>  1 file changed, 77 insertions(+)
+> 
+> diff --git a/net/dsa/tag_ar9331.c b/net/dsa/tag_ar9331.c
+> index c22c1b515e02..99cc7fd92d8e 100644
+> --- a/net/dsa/tag_ar9331.c
+> +++ b/net/dsa/tag_ar9331.c
+> @@ -100,12 +100,89 @@ static void ar9331_tag_flow_dissect(const struct sk_buff *skb, __be16 *proto,
+>  	*proto = ar9331_tag_encap_proto(skb->data);
+>  }
+>  
+> +static struct sk_buff *ar9331_tag_gro_receive(struct list_head *head,
+> +					      struct sk_buff *skb)
+> +{
+> +	const struct packet_offload *ptype;
+> +	struct sk_buff *p, *pp = NULL;
+> +	u32 data_off, data_end;
+> +	const u8 *data;
+> +	int flush = 1;
+> +
+> +	data_off = skb_gro_offset(skb);
+> +	data_end = data_off + AR9331_HDR_LEN;
+
+AR9331_HDR_LEN is a parameter here which is incidentally
+dsa_device_ops::overhead.
+
+> +
+> +	data = skb_gro_header_fast(skb, data_off);
+> +	if (skb_gro_header_hard(skb, data_end)) {
+> +		data = skb_gro_header_slow(skb, data_end, data_off);
+> +		if (unlikely(!data))
+> +			goto out;
+> +	}
+> +
+> +	/* Data that is to the left from the current position is already
+> +	 * pulled to the head
+> +	 */
+> +	if (unlikely(!ar9331_tag_sanity_check(skb->data + data_off)))
+> +		goto out;
+
+This is applicable to all taggers, they need to verify the sanity of the
+header they are being handed.
+
+> +
+> +	rcu_read_lock();
+> +
+> +	ptype = gro_find_receive_by_type(ar9331_tag_encap_proto(data));
+
+If there is no encapsulation a tagger can return the frame's protocol
+directly, so similarly the tagger can be interrogated for returning that.
+
+> +	if (!ptype)
+> +		goto out_unlock;
+> +
+> +	flush = 0;
+> +
+> +	list_for_each_entry(p, head, list) {
+> +		if (!NAPI_GRO_CB(p)->same_flow)
+> +			continue;
+> +
+> +		if (ar9331_tag_source_port(skb->data + data_off) ^
+> +		    ar9331_tag_source_port(p->data + data_off))
+
+Similarly here, the tagger could provide a function whose job is to
+return the port number from within its own tag.
+
+So with that being said, what do you think about building a tagger
+abstraction which is comprised of:
+
+- header length which is dsa_device_ops::overhead
+- validate_tag()
+- get_tag_encap_proto()
+- get_port_number()
+
+and the rest is just wrapping the general GRO list manipulation?
+
+Also, I am wondering should we somehow expose the DSA master
+net_device's napi_struct such that we could have the DSA slave
+net_devices call napi_gro_receive() themselves directly such that they
+could also perform additional GRO on top of Ethernet frames?
 -- 
 Florian
