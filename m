@@ -2,87 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E071512D481
-	for <lists+netdev@lfdr.de>; Mon, 30 Dec 2019 21:36:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F80F12D4B6
+	for <lists+netdev@lfdr.de>; Mon, 30 Dec 2019 22:54:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727742AbfL3Ugp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Dec 2019 15:36:45 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:43844 "EHLO vps0.lunn.ch"
+        id S1727734AbfL3Vx7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Dec 2019 16:53:59 -0500
+Received: from mga14.intel.com ([192.55.52.115]:28162 "EHLO mga14.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727667AbfL3Ugp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 30 Dec 2019 15:36:45 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=SXdGQUakfHybtX0jGG9d+Xw/HkMyol+MPHYTh6dQ3U4=; b=G6sDaIa4Z25UB8aomFAcrsYCxZ
-        sHFxTi0i4H9s4qWhRn4C48sxjLww49Qqy7d0sMS3bqs9wzaNysXFjyhJJ1HsaMmC5d2mVBuQrMqCY
-        XMAh9tp2x8TJRQRtngzHnGf9Eu8UdH6/Xkq5/TXmMV21bzOFORXZO94hq7H1fSecWwj4=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1im1lw-0006Vp-L5; Mon, 30 Dec 2019 21:36:16 +0100
-Date:   Mon, 30 Dec 2019 21:36:16 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Alexander Lobakin <alobakin@dlink.ru>,
-        "David S. Miller" <davem@davemloft.net>,
-        Edward Cree <ecree@solarflare.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Taehee Yoo <ap420073@gmail.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Stanislav Fomichev <sdf@google.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Song Liu <songliubraving@fb.com>,
-        Matteo Croce <mcroce@redhat.com>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Paul Blakey <paulb@mellanox.com>,
-        Yoshiki Komachi <komachi.yoshiki@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Subject: Re: [PATCH RFC net-next 05/19] net: dsa: tag_ar9331: add GRO
- callbacks
-Message-ID: <20191230203616.GA24733@lunn.ch>
-References: <20191230143028.27313-1-alobakin@dlink.ru>
- <20191230143028.27313-6-alobakin@dlink.ru>
- <ee6f83fd-edf4-5a98-9868-4cbe9e226b9b@gmail.com>
+        id S1727691AbfL3Vx7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 30 Dec 2019 16:53:59 -0500
+X-Amp-Result: UNSCANNABLE
+X-Amp-File-Uploaded: False
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 30 Dec 2019 13:53:58 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.69,376,1571727600"; 
+   d="scan'208";a="301360470"
+Received: from lkp-server01.sh.intel.com (HELO lkp-server01) ([10.239.97.150])
+  by orsmga001.jf.intel.com with ESMTP; 30 Dec 2019 13:53:56 -0800
+Received: from kbuild by lkp-server01 with local (Exim 4.89)
+        (envelope-from <lkp@intel.com>)
+        id 1im2z6-0007SD-Bm; Tue, 31 Dec 2019 05:53:56 +0800
+Date:   Tue, 31 Dec 2019 05:53:31 +0800
+From:   kbuild test robot <lkp@intel.com>
+To:     Ttttabcd <ttttabcd@protonmail.com>
+Cc:     kbuild-all@lists.01.org, Netdev <netdev@vger.kernel.org>,
+        "edumazet@google.com" <edumazet@google.com>,
+        David Miller <davem@davemloft.net>,
+        "kuznet@ms2.inr.ac.ru" <kuznet@ms2.inr.ac.ru>,
+        "yoshfuji@linux-ipv6.org" <yoshfuji@linux-ipv6.org>
+Subject: Re: [PATCH] tcp: Fix tcp_max_syn_backlog limit on connection requests
+Message-ID: <201912310520.gWWmntOp%lkp@intel.com>
+References: <BJWfRScnTTecyIVZcjhEgs-tp51FEx8gFA3pa0LE6I4q7p6v9Y0AmcSYcTqeV2FURjefo7XOwj4RTM5nIM7pyv--6woYCI_DAskQGbr9ltE=@protonmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <ee6f83fd-edf4-5a98-9868-4cbe9e226b9b@gmail.com>
+In-Reply-To: <BJWfRScnTTecyIVZcjhEgs-tp51FEx8gFA3pa0LE6I4q7p6v9Y0AmcSYcTqeV2FURjefo7XOwj4RTM5nIM7pyv--6woYCI_DAskQGbr9ltE=@protonmail.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 30, 2019 at 10:20:50AM -0800, Florian Fainelli wrote:
-> On 12/30/19 6:30 AM, Alexander Lobakin wrote:
-> > Add GRO callbacks to the AR9331 tagger so GRO layer can now process
-> > such frames.
-> > 
-> > Signed-off-by: Alexander Lobakin <alobakin@dlink.ru>
-> 
-> This is a good example and we should probably build a tagger abstraction
-> that is much simpler to fill in callbacks for (although indirect
-> function calls may end-up killing performance with retpoline and
-> friends), but let's consider this idea.
+Hi Ttttabcd,
 
-Hi Florian
+Thank you for the patch! Perhaps something to improve:
 
-We really do need some numbers here. Does GRO really help? On an ARM
-or MIPS platform, i don't think retpoline is an issue? But x86 is, and
-we do have a few x86 boards with switches.
+[auto build test WARNING on net/master]
+[also build test WARNING on net-next/master ipvs/master v5.5-rc4 next-20191220]
+[if your patch is applied to the wrong git tree, please drop us a note to help
+improve the system. BTW, we also suggest to use '--base' option to specify the
+base tree in git format-patch, please see https://stackoverflow.com/a/37406982]
 
-Maybe we can do some macro magic instead of function pointers, if we
-can keep it all within one object file?
+url:    https://github.com/0day-ci/linux/commits/Ttttabcd/tcp-Fix-tcp_max_syn_backlog-limit-on-connection-requests/20191230-164004
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net.git bb3d0b8bf5be61ab1d6f472c43cbf34de17e796b
+reproduce:
+        # apt-get install sparse
+        # sparse version: v0.6.1-129-g341daf20-dirty
+        make ARCH=x86_64 allmodconfig
+        make C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__'
 
-    Andrew
+If you fix the issue, kindly add following tag
+Reported-by: kbuild test robot <lkp@intel.com>
+
+
+sparse warnings: (new ones prefixed by >>)
+
+>> net/ipv4/tcp_input.c:6568:27: sparse: sparse: incompatible types in comparison expression (different signedness):
+>> net/ipv4/tcp_input.c:6568:27: sparse:    int *
+>> net/ipv4/tcp_input.c:6568:27: sparse:    unsigned int *
+   net/ipv4/tcp_input.c:6673:17: sparse: sparse: context imbalance in 'tcp_conn_request' - unexpected unlock
+
+vim +6568 net/ipv4/tcp_input.c
+
+  6551	
+  6552	int tcp_conn_request(struct request_sock_ops *rsk_ops,
+  6553			     const struct tcp_request_sock_ops *af_ops,
+  6554			     struct sock *sk, struct sk_buff *skb)
+  6555	{
+  6556		struct tcp_fastopen_cookie foc = { .len = -1 };
+  6557		__u32 isn = TCP_SKB_CB(skb)->tcp_tw_isn;
+  6558		struct tcp_options_received tmp_opt;
+  6559		struct tcp_sock *tp = tcp_sk(sk);
+  6560		struct net *net = sock_net(sk);
+  6561		struct sock *fastopen_sk = NULL;
+  6562		struct request_sock *req;
+  6563		bool want_cookie = false;
+  6564		struct dst_entry *dst;
+  6565		int max_syn_backlog;
+  6566		struct flowi fl;
+  6567	
+> 6568		max_syn_backlog = min(net->ipv4.sysctl_max_syn_backlog,
+
+---
+0-DAY kernel test infrastructure                 Open Source Technology Center
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org Intel Corporation
