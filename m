@@ -2,73 +2,236 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 519BD12CB67
-	for <lists+netdev@lfdr.de>; Mon, 30 Dec 2019 01:13:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6ACC912CBC6
+	for <lists+netdev@lfdr.de>; Mon, 30 Dec 2019 02:59:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726369AbfL3AM7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 29 Dec 2019 19:12:59 -0500
-Received: from sonic304-10.consmr.mail.bf2.yahoo.com ([74.6.128.33]:40210 "EHLO
-        sonic304-10.consmr.mail.bf2.yahoo.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726119AbfL3AM7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 29 Dec 2019 19:12:59 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1577664777; bh=RFkL5gy5YztyhjPEqb8C7YgdticOB4/BDMyv0010KkE=; h=Date:From:Reply-To:Subject:References:From:Subject; b=c/zMnb372gpk+v5JoiWjtVmTcrmyOFKHfcaedrGrZPJpC8fyXsHFLpBVI1SC59EzNLbnx/R5SLUkYweQEtX17JracIMLnknf41u6de2TjDA7sKqBX5WrvGDSSHoGkyBoqSfixjivqfbvQgAm+MsKPPw6ZACtwAtuThLCepcqsixebOcYAdT98OKGBBWM3JcWsiXe/e1mZ++kNLuiloOBBR5xAGgWM7oJ9Kh6U6Kb0D7oezTdkhMSTirQJEKlEbwupdkA333jnYMbsF3x/sbUjXuyTKUlZ+hFf+F4TtZvr41lIUlOKjq/JunAiqyn6wMZF0ZHHvM4GYnrP7cxdxONRA==
-X-YMail-OSG: IV2BasAVM1nJ1kiv9LqvnT8hHTVSII9Ji6B7BDlAnC_mf1ttQVIrukqbxxcr8p2
- 6fIi6TzzpaqGDbDugTGpMC170hqpXWW9tueXGwrKBDEPVHz4cemKpVb2X8KC2FZpTAX_osVc8TK9
- B5nIWP8z6cXsSa.fjPiCLXZOl4WEfc25V8vg3PybcpYzSSz6GNT5435X80Ix42l3F.Pz2fKtlA68
- p02aOfZ.newrvb9qy5d.mAGm618pYa6thkCP4QnFAmkWFnpv6eVfySbP.Aeg_300F63q5xyF5isl
- z0ZF_oMPHCw2KWMVOIPQQSWBEu6hJcFhH.QMg.ac89cBe2tkdp58A0LXEHrSFBL9ay7maFb9ehn5
- 1ztUGplDh2hZUpXwnHQNM.OvrHKauet6SVGW5KlBahDe5zqVsAzC60o5coJ6uh5pWOjGOkSdxvD7
- KwY_xs9T0cQis8wxFxwP7LMhlyUzgIfZP3RPsO6Iywjb8yRWR3e6D2N9zeyAYYtLt3abUqIhGgvG
- 5feYAjDkZbEoTX0AIxVri__gNlU8oblAm4OaSsrmFYHF54hA2vIleJk.Rdz9TeV.1LrqP0QfuV8D
- atHmdE9IIB_Oq2FgZQ9n51e19dwC2au3bumGe54kPLzAMJDphDvaAahTIbLJNt4fZJC2Li3BSWxr
- RXdbJHo0JpcE0NMGE3HfftC4C4d.li4AryX.RNGiSei9BiOFo_8CqL1X_eRWMmo5uVdiNsnotp0c
- SNijLAvMIn4wEsOJCiLH9GVv3vXf6ezuSxXMXE3XpReJkhsb3I4C0PkzhQHfVJWVcpgPiPposWe5
- eWipsRYuo_d8LqhjdpEdwo2TL3m1XEUj1BAdkVtHwidh5LGMO7s4x5EpPHFvkcogf0BqOBX8k5Jy
- tx24_qHdt1UEpuR4Ltuhc6FAKSfysQOVW5rPHhou7JgZE4KNZ2QISuYqgorA6ZMS5.8mDNJjNnLA
- EcJMRmQoMrW2cueNXmH9CS8Me0.m7TmlcjwuMGkrKQPtDQCP06iyHKt6ix3WISm08f_Hez4yBtSk
- pNwGAVbcHnLo28PLRGqe5b9PEjpGfkM9EZwTeZlykExeFSKAVfKulHX.3hTQ4Cw68g6DYyFXRzaG
- 2f1wK.OS61IhP2jiDuBtblV4e4TIe3gcdBrY6r5YxhBRTp1I937jqx8xCI__q_3zVbwbrmf40chy
- xKHtf4rhXiahQVTsbaQd_23bnQ.T8qyqQ6_BOiZG6vH.X2EYXE8jiwLcXvILb128QiMLtoEGRnI9
- ldeQkr2Bjemuj97uFr0VIxzRl1FJvWAPG8vA4FnryQ9vlWmVfEgTdafXGYTzP7rqyP2WOzg5i.Te
- qoFE679oeq4nm1rSqYeBKWc4SZFqly.d6_7nr
-Received: from sonic.gate.mail.ne1.yahoo.com by sonic304.consmr.mail.bf2.yahoo.com with HTTP; Mon, 30 Dec 2019 00:12:57 +0000
-Date:   Mon, 30 Dec 2019 00:12:54 +0000 (UTC)
-From:   Mrs Aisha Al-gaddafi <mrsaishagaddafi18@gmail.com>
-Reply-To: mrsaishaalgaddafi09@gmail.com
-Message-ID: <1430915175.3053192.1577664774108@mail.yahoo.com>
-Subject: Greetings
+        id S1726726AbfL3B7d (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 29 Dec 2019 20:59:33 -0500
+Received: from szxga04-in.huawei.com ([45.249.212.190]:8643 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726343AbfL3B7d (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 29 Dec 2019 20:59:33 -0500
+Received: from DGGEMS414-HUB.china.huawei.com (unknown [172.30.72.60])
+        by Forcepoint Email with ESMTP id CFD9A8827B07CF6BB30F;
+        Mon, 30 Dec 2019 09:59:29 +0800 (CST)
+Received: from [127.0.0.1] (10.74.191.121) by DGGEMS414-HUB.china.huawei.com
+ (10.3.19.214) with Microsoft SMTP Server id 14.3.439.0; Mon, 30 Dec 2019
+ 09:59:24 +0800
+Subject: Re: [net-next v6 PATCH 1/2] page_pool: handle page recycle for
+ NUMA_NO_NODE condition
+To:     Jesper Dangaard Brouer <brouer@redhat.com>,
+        <netdev@vger.kernel.org>
+CC:     <lirongqing@baidu.com>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Saeed Mahameed <saeedm@mellanox.com>, <mhocko@kernel.org>,
+        <peterz@infradead.org>, <linux-kernel@vger.kernel.org>
+References: <157746672570.257308.7385062978550192444.stgit@firesoul>
+ <157746679893.257308.4995193590996029483.stgit@firesoul>
+From:   Yunsheng Lin <linyunsheng@huawei.com>
+Message-ID: <b56069bd-ca8f-68bc-7e0b-bd0da423f891@huawei.com>
+Date:   Mon, 30 Dec 2019 09:59:23 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-References: <1430915175.3053192.1577664774108.ref@mail.yahoo.com>
-X-Mailer: WebService/1.1.14873 YMailNodin Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.120 Safari/537.36 AVG/77.2.2156.122
-To:     unlisted-recipients:; (no To-header on input)
+In-Reply-To: <157746679893.257308.4995193590996029483.stgit@firesoul>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.74.191.121]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear Friend,
+On 2019/12/28 1:13, Jesper Dangaard Brouer wrote:
+> The check in pool_page_reusable (page_to_nid(page) == pool->p.nid) is
+> not valid if page_pool was configured with pool->p.nid = NUMA_NO_NODE.
+> 
+> The goal of the NUMA changes in commit d5394610b1ba ("page_pool: Don't
+> recycle non-reusable pages"), were to have RX-pages that belongs to the
+> same NUMA node as the CPU processing RX-packet during softirq/NAPI. As
+> illustrated by the performance measurements.
+> 
+> This patch moves the NAPI checks out of fast-path, and at the same time
+> solves the NUMA_NO_NODE issue.
 
-Greetings and Nice Day.
+There seems to be a minor NUMA_NO_NODE case that has not been handled by
+this patch yet:
 
-Assalamu Alaikum
+1. When the page is always recycled to pool->alloc.cache.
+2. And page_pool_alloc_pages always return pages from pool->alloc.cache.
 
-May i =C2=A0use this medium to open a mutual communication with you seeking=
- your acceptance towards investing in your country under your management as=
- my partner, My name is Aisha =C2=A0Gaddafi and presently living in Oman, i=
- am a Widow and single Mother with three Children, the only biological Daug=
-hter of late Libyan President (Late Colonel Muammar Gaddafi) and presently =
-i am under political asylum protection by the Omani Government.
+Then non-local page will be reused when the rx NAPI affinity changes.
 
-I have funds worth "Twenty Seven Million Five Hundred Thousand United State=
- Dollars" -$27.500.000.00 US Dollars which i want to entrust on you for inv=
-estment project in your country.If you are willing to handle this project o=
-n my behalf, kindly reply urgent to enable me provide you more details to s=
-tart the transfer process.
-I shall appreciate your urgent response through my email address below:
+Of coure we can handle above by calling page_pool_update_nid(), which
+may require very user to call page_pool_update_nid() explicitly even
+the user has specify the pool->p.nid as NUMA_NO_NODE.
 
-mrsaishaalgaddafi09@gmail.com
+Any consideration for above case?
 
-Best Regards
-Mrs Aisha Gaddafi
+> 
+> First realize that alloc_pages_node() with pool->p.nid = NUMA_NO_NODE
+> will lookup current CPU nid (Numa ID) via numa_mem_id(), which is used
+> as the the preferred nid.  It is only in rare situations, where
+> e.g. NUMA zone runs dry, that page gets doesn't get allocated from
+> preferred nid.  The page_pool API allows drivers to control the nid
+> themselves via controlling pool->p.nid.
+> 
+> This patch moves the NAPI check to when alloc cache is refilled, via
+> dequeuing/consuming pages from the ptr_ring. Thus, we can allow placing
+> pages from remote NUMA into the ptr_ring, as the dequeue/consume step
+> will check the NUMA node. All current drivers using page_pool will
+> alloc/refill RX-ring from same CPU running softirq/NAPI process.
+> 
+> Drivers that control the nid explicitly, also use page_pool_update_nid
+> when changing nid runtime.  To speed up transision to new nid the alloc
+> cache is now flushed on nid changes.  This force pages to come from
+> ptr_ring, which does the appropate nid check.
+> 
+> For the NUMA_NO_NODE case, when a NIC IRQ is moved to another NUMA
+> node, we accept that transitioning the alloc cache doesn't happen
+> immediately. The preferred nid change runtime via consulting
+> numa_mem_id() based on the CPU processing RX-packets.
+> 
+> Notice, to avoid stressing the page buddy allocator and avoid doing too
+> much work under softirq with preempt disabled, the NUMA check at
+> ptr_ring dequeue will break the refill cycle, when detecting a NUMA
+> mismatch. This will cause a slower transition, but its done on purpose.
+> 
+> Fixes: d5394610b1ba ("page_pool: Don't recycle non-reusable pages")
+> Reported-by: Li RongQing <lirongqing@baidu.com>
+> Reported-by: Yunsheng Lin <linyunsheng@huawei.com>
+> Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
+> ---
+>  net/core/page_pool.c |   80 ++++++++++++++++++++++++++++++++++++++------------
+>  1 file changed, 61 insertions(+), 19 deletions(-)
+> 
+> diff --git a/net/core/page_pool.c b/net/core/page_pool.c
+> index a6aefe989043..748f0d36f4be 100644
+> --- a/net/core/page_pool.c
+> +++ b/net/core/page_pool.c
+> @@ -96,10 +96,60 @@ struct page_pool *page_pool_create(const struct page_pool_params *params)
+>  }
+>  EXPORT_SYMBOL(page_pool_create);
+>  
+> +static void __page_pool_return_page(struct page_pool *pool, struct page *page);
+> +
+> +noinline
+> +static struct page *page_pool_refill_alloc_cache(struct page_pool *pool,
+> +						 bool refill)
+> +{
+> +	struct ptr_ring *r = &pool->ring;
+> +	struct page *page;
+> +	int pref_nid; /* preferred NUMA node */
+> +
+> +	/* Quicker fallback, avoid locks when ring is empty */
+> +	if (__ptr_ring_empty(r))
+> +		return NULL;
+> +
+> +	/* Softirq guarantee CPU and thus NUMA node is stable. This,
+> +	 * assumes CPU refilling driver RX-ring will also run RX-NAPI.
+> +	 */
+> +	pref_nid = (pool->p.nid == NUMA_NO_NODE) ? numa_mem_id() : pool->p.nid;
+> +
+> +	/* Slower-path: Get pages from locked ring queue */
+> +	spin_lock(&r->consumer_lock);
+> +
+> +	/* Refill alloc array, but only if NUMA match */
+> +	do {
+> +		page = __ptr_ring_consume(r);
+> +		if (unlikely(!page))
+> +			break;
+> +
+> +		if (likely(page_to_nid(page) == pref_nid)) {
+> +			pool->alloc.cache[pool->alloc.count++] = page;
+> +		} else {
+> +			/* NUMA mismatch;
+> +			 * (1) release 1 page to page-allocator and
+> +			 * (2) break out to fallthough to alloc_pages_node.
+
+fallthough -> fallthrough ?
+
+> +			 * This limit stress on page buddy alloactor.
+> +			 */
+> +			__page_pool_return_page(pool, page);
+> +			page = NULL;
+> +			break;
+> +		}
+> +	} while (pool->alloc.count < PP_ALLOC_CACHE_REFILL &&
+> +		 refill);
+> +
+> +	/* Return last page */
+> +	if (likely(pool->alloc.count > 0))
+> +		page = pool->alloc.cache[--pool->alloc.count];
+> +
+> +	spin_unlock(&r->consumer_lock);
+> +	return page;
+> +}
+> +
+>  /* fast path */
+>  static struct page *__page_pool_get_cached(struct page_pool *pool)
+>  {
+> -	struct ptr_ring *r = &pool->ring;
+>  	bool refill = false;
+>  	struct page *page;
+>  
+> @@ -113,20 +163,7 @@ static struct page *__page_pool_get_cached(struct page_pool *pool)
+>  		refill = true;
+>  	}
+>  
+> -	/* Quicker fallback, avoid locks when ring is empty */
+> -	if (__ptr_ring_empty(r))
+> -		return NULL;
+> -
+> -	/* Slow-path: Get page from locked ring queue,
+> -	 * refill alloc array if requested.
+> -	 */
+> -	spin_lock(&r->consumer_lock);
+> -	page = __ptr_ring_consume(r);
+> -	if (refill)
+> -		pool->alloc.count = __ptr_ring_consume_batched(r,
+> -							pool->alloc.cache,
+> -							PP_ALLOC_CACHE_REFILL);
+> -	spin_unlock(&r->consumer_lock);
+> +	page = page_pool_refill_alloc_cache(pool, refill);
+>  	return page;
+>  }
+>  
+> @@ -311,13 +348,10 @@ static bool __page_pool_recycle_direct(struct page *page,
+>  
+>  /* page is NOT reusable when:
+>   * 1) allocated when system is under some pressure. (page_is_pfmemalloc)
+> - * 2) belongs to a different NUMA node than pool->p.nid.
+> - *
+> - * To update pool->p.nid users must call page_pool_update_nid.
+>   */
+>  static bool pool_page_reusable(struct page_pool *pool, struct page *page)
+>  {
+> -	return !page_is_pfmemalloc(page) && page_to_nid(page) == pool->p.nid;
+> +	return !page_is_pfmemalloc(page);
+>  }
+>  
+>  void __page_pool_put_page(struct page_pool *pool, struct page *page,
+> @@ -484,7 +518,15 @@ EXPORT_SYMBOL(page_pool_destroy);
+>  /* Caller must provide appropriate safe context, e.g. NAPI. */
+>  void page_pool_update_nid(struct page_pool *pool, int new_nid)
+>  {
+> +	struct page *page;
+> +
+>  	trace_page_pool_update_nid(pool, new_nid);
+>  	pool->p.nid = new_nid;
+> +
+> +	/* Flush pool alloc cache, as refill will check NUMA node */
+> +	while (pool->alloc.count) {
+> +		page = pool->alloc.cache[--pool->alloc.count];
+> +		__page_pool_return_page(pool, page);
+> +	}
+>  }
+>  EXPORT_SYMBOL(page_pool_update_nid);
+> 
+> 
+> 
+> .
+> 
+
