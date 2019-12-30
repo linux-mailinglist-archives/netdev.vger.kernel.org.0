@@ -2,59 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C72C412CF64
-	for <lists+netdev@lfdr.de>; Mon, 30 Dec 2019 12:17:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 92C1B12CF68
+	for <lists+netdev@lfdr.de>; Mon, 30 Dec 2019 12:21:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727377AbfL3LRx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Dec 2019 06:17:53 -0500
-Received: from sonic305-20.consmr.mail.ne1.yahoo.com ([66.163.185.146]:40720
-        "EHLO sonic305-20.consmr.mail.ne1.yahoo.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726196AbfL3LRx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Dec 2019 06:17:53 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1577704672; bh=YooljpITC31Cc9KXMfJzAPmr/1tCBEdX27fhfqn54Fs=; h=Date:From:Reply-To:Subject:References:From:Subject; b=A2XCFyk4duRb/fGdv/yAELWvo1IA9p9zTOt8l2wRUUNwXpOLfXdyiB/dSsNstgc0lRrgTk/dirJI0uQg9wx9d7uuy00L5dpMuIqsjWoLjHxO9dJ1JoyUi10RvZUk7kPvmxfBlunx6345feQvtb8lEjlCOQ/KfiRUS4dNDfeNqD0c5uijWOySpATd16fU/j8AmvugHQDzaVYP9KQE3vE3kpbEOMNDDKfH13uD33jsPiRDMYN2die6DAUxcncryMneJDpvBiXLTqV0eFjOJ+pDEKdhnsGrgsqEMKZjzpO1Zmb8J1498eisi7e02UcXzD6s1BEAKcBJmtNjntEkuBY3Pg==
-X-YMail-OSG: VVDV58kVM1nKuaw85KELCtUlOyH7sot2AFQTQIUDRqraNEgNdmbbUCTn9X_7O21
- P10CoFjqnU1a8iFqRtqrbj_jW8e_pP2zPbur2PuIUViCJKlk7Y0yhRl1Z9nP8uGCvEUd8KQIl5XS
- j_P5oDdFhZMKfmF6eK4NaIG5mI1_9l34wdV0NJepsZXApCfksrsWaW3Jc74.3RCmmdxi4jSQuRHW
- lIIzp5rxY_aycggEBVEStrNqf1Rhg5GmYt9CocSlO6OPgNTEyECiYfH9RvbBL8NMMN0_hjrcKGGH
- XGKu8Q2PgkfcLJIiKIWIFopgHy.MPP4vhfMK2pTCGyVc01BT2TtZMM1.MaUFP6gBwDvRZyggujqm
- hTWDgWIXBV8.XlkqqLJGqvXHQdWn6VF0XpPzJTUBK9zWpPAElR5AF8sNZ89R65zawDdBfj.Z3CO7
- pkUmoI8xuBZdE6TcoKPld12SRXYA6fnKlx93eT6SplfQJaDqNVlYEJw0Rdfm7uVrMmKcnkKJm6Fn
- lNKrq_iCc9_evq3iEVo0CkmG9HfPYtJPvkOZ4vmqeglxqW5pYw0IT50PKgHvwQmIsGSA0rUIVEuK
- 4yx9KSP2NCONn0GpMK12fP65gfH9ANd_4wzgGHVzqRa0oH3_JmANQ.fhtLecOdelyf40R3X_r_.N
- ySfAy8xTNXJpk_OXDxg0lwqTkZr6EO.2.AHfZunYNzLRAJsvpnQ9UHKxCp0E2F_OU9kqHUg3CgKZ
- oP.xTrpE7qHEHufFquhfhwbR7qZDxgFo_p3HNJzE9MGmbpMuRTsi3rp2Xx4AOft2D3TFv0VwShwU
- 0AsAbnBDpbbN05x3RHkefJBsQDM9dMcp3uE_l7w99113R0P7TZgxEwk857rqst_SzYcgpTODdLdo
- vaWWFS99ZSykZUceLPuXYDaFH5nDAKeDmOVNTUt6TI8ljvUORAsxUhrq0mj5RwnS1THq6D_WoYep
- Wkh_oo7LSwvBS5LEhbCmgTgcHKdBflUHA0b0ayyhBgpTmyPmsmYmVpLBlpp0zTa5jeEpN7TRZ16B
- Plkc.JjelzClJUPzXXWn51UCYhtrwT7ncneerePwA4NOUw2qX_Czz.XHod_5CFmiLbAaAmSgdBcr
- Ivt_e9XpulUSVYo2CWbKQIbsayQzOzV9rnM45bknhvj6BrGxV_b4d9trpdHu1FuWcm8Gjr6iQvmD
- .Fnlu5gSnM.SYAGe6kkfu9LUcTiR8wlZbFfzutT2yq4IkvxayxKaACZ865hXHfFLH39gB3PLXD.q
- jzyvUTj65vyldpIbV4goEKyx5o1qAZVFS2MNCPBSFtFYpwKE3PKeYvsFuuyRpdOzFh9lZM0H3OOr
- 7Rhw-
-Received: from sonic.gate.mail.ne1.yahoo.com by sonic305.consmr.mail.ne1.yahoo.com with HTTP; Mon, 30 Dec 2019 11:17:52 +0000
-Date:   Mon, 30 Dec 2019 11:17:51 +0000 (UTC)
-From:   Lisa Williams <ah1195485@gmail.com>
-Reply-To: lisawilliams003@yahoo.com
-Message-ID: <2065593099.4789026.1577704671254@mail.yahoo.com>
-Subject: Hello
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-References: <2065593099.4789026.1577704671254.ref@mail.yahoo.com>
-X-Mailer: WebService/1.1.14873 YMailNodin Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1; WOW64; Trident/4.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0; InfoPath.2)
-To:     unlisted-recipients:; (no To-header on input)
+        id S1727384AbfL3LVw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Dec 2019 06:21:52 -0500
+Received: from correo.us.es ([193.147.175.20]:59196 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726196AbfL3LVw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 30 Dec 2019 06:21:52 -0500
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id 7E93B4DE724
+        for <netdev@vger.kernel.org>; Mon, 30 Dec 2019 12:21:49 +0100 (CET)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 70255DA707
+        for <netdev@vger.kernel.org>; Mon, 30 Dec 2019 12:21:49 +0100 (CET)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id 65DC5DA710; Mon, 30 Dec 2019 12:21:49 +0100 (CET)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 5F0B4DA707;
+        Mon, 30 Dec 2019 12:21:47 +0100 (CET)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Mon, 30 Dec 2019 12:21:47 +0100 (CET)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from salvia.here (unknown [185.124.28.61])
+        (Authenticated sender: pneira@us.es)
+        by entrada.int (Postfix) with ESMTPA id D85CB41E4800;
+        Mon, 30 Dec 2019 12:21:46 +0100 (CET)
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     netfilter-devel@vger.kernel.org
+Cc:     davem@davemloft.net, netdev@vger.kernel.org
+Subject: [PATCH 00/17] Netfilter updates for net-next
+Date:   Mon, 30 Dec 2019 12:21:26 +0100
+Message-Id: <20191230112143.121708-1-pablo@netfilter.org>
+X-Mailer: git-send-email 2.11.0
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi,
 
+The following patchset contains Netfilter updates for net-next:
 
-Hi Dear,
+1) Remove #ifdef pollution around nf_ingress(), from Lukas Wunner.
 
-I was just going through the Internet search when I found your email address, I want to make a new and special friend, so I decided to contact you to see how we can make it work out if we can. Please I wish you will have the desire with me so that we can get to know each other better and see what happens in future.
+2) Document ingress hook in netdevice, also from Lukas.
 
-My name is Lisa Williams, I am an American, but presently I live in the UK, I will be glad to see your reply for us to know each other better to exchange pictures and details about us
+3) Remove htons() in tunnel metadata port netlink attributes,
+   from Xin Long.
 
-Yours
-Lisa
+4) Missing erspan netlink attribute validation also from Xin Long.
+
+5) Missing erspan version in tunnel, from Xin Long.
+
+6) Missing attribute nest in NFTA_TUNNEL_KEY_OPTS_{VXLAN,ERSPAN}
+   Patch from Xin Long.
+
+7) Missing nla_nest_cancel() in tunnel netlink dump path,
+   from Xin Long.
+
+8) Remove two exported conntrack symbols with no clients,
+   from Florian Westphal.
+
+9) Add nft_meta_get_eval_time() helper to nft_meta, from Florian.
+
+10) Add nft_meta_pkttype helper for loopback, also from Florian.
+
+11) Add nft_meta_socket uid helper, from Florian Westphal.
+
+12) Add nft_meta_cgroup helper, from Florian.
+
+13) Add nft_meta_ifkind helper, from Florian.
+
+14) Group all interface related meta selector, from Florian.
+
+15) Add nft_prandom_u32() helper, from Florian.
+
+16) Add nft_meta_rtclassid helper, from Florian.
+
+17) Add support for matching on the slave device index,
+    from Florian.
+
+This batch, among other things, contains updates for the netfilter
+tunnel netlink interface: This extension is still incomplete and lacking
+proper userspace support which is actually my fault, I did not find the
+time to go back and finish this. This update is breaking tunnel UAPI in
+some aspects to fix it but do it better sooner than never.
+
+You can pull these changes from:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/pablo/nf-next.git
+
+Thank you.
+
+----------------------------------------------------------------
+
+The following changes since commit 6f6dded1385cfb564de85f86126f1c054c8f47b1:
+
+  Merge branch 'WireGuard-CI-and-housekeeping' (2019-12-16 19:22:22 -0800)
+
+are available in the git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/pablo/nf-next.git HEAD
+
+for you to fetch changes up to c14ceb0ec727187f71a487a592ffa91767fed66e:
+
+  netfilter: nft_meta: add support for slave device ifindex matching (2019-12-26 17:41:34 +0100)
+
+----------------------------------------------------------------
+Florian Westphal (10):
+      netfilter: conntrack: remove two export symbols
+      netfilter: nft_meta: move time handling to helper
+      netfilter: nft_meta: move pkttype handling to helper
+      netfilter: nft_meta: move sk uid/git handling to helper
+      netfilter: nft_meta: move cgroup handling to helper
+      netfilter: nft_meta: move interface kind handling to helper
+      netfilter: nft_meta: move all interface related keys to helper
+      netfilter: nft_meta: place prandom handling in a helper
+      netfilter: nft_meta: place rtclassid handling in a helper
+      netfilter: nft_meta: add support for slave device ifindex matching
+
+Lukas Wunner (2):
+      netfilter: Clean up unnecessary #ifdef
+      netfilter: Document ingress hook
+
+Xin Long (5):
+      netfilter: nft_tunnel: no need to call htons() when dumping ports
+      netfilter: nft_tunnel: add the missing ERSPAN_VERSION nla_policy
+      netfilter: nft_tunnel: also dump ERSPAN_VERSION
+      netfilter: nft_tunnel: also dump OPTS_ERSPAN/VXLAN
+      netfilter: nft_tunnel: add the missing nla_nest_cancel()
+
+ include/linux/netdevice.h                |   1 +
+ include/uapi/linux/netfilter/nf_tables.h |   4 +
+ net/core/dev.c                           |   2 -
+ net/netfilter/nf_conntrack_core.c        |   1 -
+ net/netfilter/nf_conntrack_extend.c      |   1 -
+ net/netfilter/nft_meta.c                 | 440 ++++++++++++++++++++++---------
+ net/netfilter/nft_tunnel.c               |  52 +++-
+ 7 files changed, 357 insertions(+), 144 deletions(-)
