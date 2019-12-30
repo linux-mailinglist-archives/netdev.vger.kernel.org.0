@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 15A5812D34C
-	for <lists+netdev@lfdr.de>; Mon, 30 Dec 2019 19:21:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2811912D354
+	for <lists+netdev@lfdr.de>; Mon, 30 Dec 2019 19:22:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727532AbfL3SU7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Dec 2019 13:20:59 -0500
-Received: from mail-ed1-f67.google.com ([209.85.208.67]:44088 "EHLO
-        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727498AbfL3SU7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Dec 2019 13:20:59 -0500
-Received: by mail-ed1-f67.google.com with SMTP id bx28so33399064edb.11;
-        Mon, 30 Dec 2019 10:20:57 -0800 (PST)
+        id S1727577AbfL3SWp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Dec 2019 13:22:45 -0500
+Received: from mail-ed1-f68.google.com ([209.85.208.68]:46580 "EHLO
+        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727403AbfL3SWo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Dec 2019 13:22:44 -0500
+Received: by mail-ed1-f68.google.com with SMTP id m8so33416244edi.13;
+        Mon, 30 Dec 2019 10:22:43 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=w0q654yqDEnffJ0BauqH2GM/TgoupvqMZ4bdJnZRrYA=;
-        b=MG23K+tz5O/93loAW9k0F55CyVOXjs17QmgMRA6BN7XICGWToDF/npEWf/TF1zexim
-         tDDlPWaTiPX3W53v41Y9bgQ+7/JhxHPUsLbULg4YFZYTjmam6q76mAy8IC2u/zeBvuJ2
-         ZydaHRxR7MFtbMv2e7v6OzPILVzlNv37OFk+o4SHST7PwaIMjRNmBp4G88Jz3bYdM3LF
-         Hp/BOits5addgWkXD2KPkH9esfshnzZAM5oCurlel74wnKpDOA62/CUv2T2v9Iq619ms
-         6CwkcDNCrNKS8stc3w904JUQoAF0sKj9B6ntWRukRUO6c7Z6OIwWLgerfNaletdEHLkK
-         E2lg==
+        bh=1PCJd/PF3F895m58Bbet4dhzTSwbc0BhoKZ/thaid2A=;
+        b=XNvSZqeOjPbBghYGKMAqgzcoEQxQh7qz8z0epZqyyD84FktXAmQ+6VSUpknm3bi282
+         hmmz3vQdqAM1AmmLifZtHnFcFWGD7SyihttBgZ/ra87vP3IE2bIkyv6PctX3rH0FSrV0
+         pDd33S/6BTh5aR7ikuYH38r7h1Oc7zmRth2nxwSDTwe43I4LQU/DqgQvvxOZZFFf+jQf
+         GqpgJ1q7otLF6VntxRiVQcF83npY4MDiusBKbwAhZH1ynlG3QgsRNzSOU2+Plg8/DQPO
+         BjkaJWVsE095Xk+WBGZfg4TYwXlL/hrdNcVbMuLJbK0/R0Qx3hCyC/HuIBJhjniBka37
+         eBUQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=w0q654yqDEnffJ0BauqH2GM/TgoupvqMZ4bdJnZRrYA=;
-        b=UeBbQHEml2Gbl1Oc24822/ibaCi2przzVyqH943HhWLfv+Q8uao6ImM1aBjNo9FKo/
-         gEZUo7tHK0d+62r2JjMxvZ5IECBBcXq5FRam4l2VgCklLDjyazCjDwnwRBt2aEz/p1bg
-         4S2kbGE/DL6iKaLyaJy3A9hLnyIRnX16g6sLh62Egw0JrnNJn3/cc+Myt/yejRbjooO5
-         /jVbS81IjYmVb8sZsCq/HMK6YrC8Z0iWxfiOL4iaQeOlpckVNlfLVLYjiidBiSD7wdwq
-         5qMqAkqaZ7dSDnrgmgRU26pbIgHZTL5BaF0Dkn3CbvzdvZmV1Zc1ByG8VN06l4x9MJCH
-         2Gpw==
-X-Gm-Message-State: APjAAAWuPmXrZ8pV2M1XYkJYS8Mx88GE7v1R/9qUYITLr5Aj6nl3vX00
-        Eu+esy1gIRy7YtiCqHPwwVs=
-X-Google-Smtp-Source: APXvYqxZn8C79IyACkJJnscuowAqiVaiO+0Bh4Sm/IygPWsVC6eZJaC43fr5Z24nJnQXOh9ILsKZfg==
-X-Received: by 2002:a17:906:2e46:: with SMTP id r6mr71882689eji.310.1577730056943;
-        Mon, 30 Dec 2019 10:20:56 -0800 (PST)
+        bh=1PCJd/PF3F895m58Bbet4dhzTSwbc0BhoKZ/thaid2A=;
+        b=X1hSiQryQlIfGXS3OPJy7MSrxbrpo4zTRTf0rvkYfxqmknAz9wqep3xXGTs/Y72JX9
+         mTAUjpXi4tk5IPIOo1KwqIFiYHcIdqpI8ynR9hkXWdS+RqYkyYSfyGxN7/EIfmonn3e8
+         IIla6+bzw4ex90EalKlva7rlVZ0hMEV22kpp8Mrh7xZk3tfoe3uUkGBhSfvNFP0C4qok
+         aW9zQy8fzcYeFb9JlcyOvrd9D8rdCVZGQ1p5okQOBJmIoUJ2egYiaCNTnD8Q9iQI6Yyv
+         oqc04B+FVJy5Ixp8Irv8PiJBui1qsxHXsUgKb2XlRY1VzrfKsm4I0NJPAnYRr132Xft8
+         i7Bg==
+X-Gm-Message-State: APjAAAWibRBWz6PhRv9gdB/xGtiUeiklfHbWHpBwP+d4mzOICkHQc3ha
+        hHPOhCSihOPOyr8NO7XaoNY=
+X-Google-Smtp-Source: APXvYqycsD5svkUunq2bz6mbMT36LIYCNQr/Ym+gLT6E8LdO740CXm9+u1gLp3zDwdEnpVFna8Z0Yg==
+X-Received: by 2002:aa7:d6d1:: with SMTP id x17mr36095454edr.57.1577730162346;
+        Mon, 30 Dec 2019 10:22:42 -0800 (PST)
 Received: from [10.67.50.49] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id f13sm5411640edq.26.2019.12.30.10.20.52
+        by smtp.googlemail.com with ESMTPSA id y5sm5064437ejm.57.2019.12.30.10.22.37
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 30 Dec 2019 10:20:56 -0800 (PST)
-Subject: Re: [PATCH RFC net-next 05/19] net: dsa: tag_ar9331: add GRO
- callbacks
+        Mon, 30 Dec 2019 10:22:41 -0800 (PST)
+Subject: Re: [PATCH RFC net-next 03/19] net: dsa: tag_ar9331: add
+ .flow_dissect() callback
 To:     Alexander Lobakin <alobakin@dlink.ru>,
         "David S. Miller" <davem@davemloft.net>
 Cc:     Edward Cree <ecree@solarflare.com>, Andrew Lunn <andrew@lunn.ch>,
@@ -71,7 +71,7 @@ Cc:     Edward Cree <ecree@solarflare.com>, Andrew Lunn <andrew@lunn.ch>,
         linux-arm-kernel@lists.infradead.org,
         linux-mediatek@lists.infradead.org
 References: <20191230143028.27313-1-alobakin@dlink.ru>
- <20191230143028.27313-6-alobakin@dlink.ru>
+ <20191230143028.27313-4-alobakin@dlink.ru>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  xsDiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
@@ -127,12 +127,12 @@ Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  HvsHIcv4lxCWkFXkwsuWqzEKK6kxVpRDoEQPDj+Oy/ZJ5fYuMbkdHrlegwoQ64LrqdmiVVPC
  TwQYEQIADwIbDAUCVF/S8QUJHlwd3wAKCRBhV5kVtWN2Do+FAJ956xSz2XpDHql+Wg/2qv3b
  G10n8gCguORqNGMsVRxrlLs7/himep7MrCc=
-Message-ID: <ee6f83fd-edf4-5a98-9868-4cbe9e226b9b@gmail.com>
-Date:   Mon, 30 Dec 2019 10:20:50 -0800
+Message-ID: <74d9de44-95ff-2308-90df-ea5fe4f88ddf@gmail.com>
+Date:   Mon, 30 Dec 2019 10:22:36 -0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.2.2
 MIME-Version: 1.0
-In-Reply-To: <20191230143028.27313-6-alobakin@dlink.ru>
+In-Reply-To: <20191230143028.27313-4-alobakin@dlink.ru>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 8bit
@@ -142,96 +142,52 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On 12/30/19 6:30 AM, Alexander Lobakin wrote:
-> Add GRO callbacks to the AR9331 tagger so GRO layer can now process
-> such frames.
+> ...to make RPS work correctly if user would like to configure it.
+> Misc: fix identation of ar9331_netdev_ops structure.
 > 
 > Signed-off-by: Alexander Lobakin <alobakin@dlink.ru>
-
-This is a good example and we should probably build a tagger abstraction
-that is much simpler to fill in callbacks for (although indirect
-function calls may end-up killing performance with retpoline and
-friends), but let's consider this idea.
-
 > ---
->  net/dsa/tag_ar9331.c | 77 ++++++++++++++++++++++++++++++++++++++++++++
->  1 file changed, 77 insertions(+)
+>  net/dsa/tag_ar9331.c | 18 +++++++++++++-----
+>  1 file changed, 13 insertions(+), 5 deletions(-)
 > 
 > diff --git a/net/dsa/tag_ar9331.c b/net/dsa/tag_ar9331.c
-> index c22c1b515e02..99cc7fd92d8e 100644
+> index 466ffa92a474..399ca21ec03b 100644
 > --- a/net/dsa/tag_ar9331.c
 > +++ b/net/dsa/tag_ar9331.c
-> @@ -100,12 +100,89 @@ static void ar9331_tag_flow_dissect(const struct sk_buff *skb, __be16 *proto,
->  	*proto = ar9331_tag_encap_proto(skb->data);
+> @@ -83,12 +83,20 @@ static struct sk_buff *ar9331_tag_rcv(struct sk_buff *skb,
+>  	return skb;
 >  }
 >  
-> +static struct sk_buff *ar9331_tag_gro_receive(struct list_head *head,
-> +					      struct sk_buff *skb)
+> +static void ar9331_tag_flow_dissect(const struct sk_buff *skb, __be16 *proto,
+> +				    int *offset)
 > +{
-> +	const struct packet_offload *ptype;
-> +	struct sk_buff *p, *pp = NULL;
-> +	u32 data_off, data_end;
-> +	const u8 *data;
-> +	int flush = 1;
+> +	*offset = AR9331_HDR_LEN;
+> +	*proto = *(__be16 *)skb->data;
+
+If we provided an offset from the beginning of the frame, then there is
+no need to call .flow_dissect() at all and we can just return the
+dsa_device_ops::overhead and offset_start (whatever is the name we pick)
+and avoid a function call.
+
+> +}
 > +
-> +	data_off = skb_gro_offset(skb);
-> +	data_end = data_off + AR9331_HDR_LEN;
+>  static const struct dsa_device_ops ar9331_netdev_ops = {
+> -	.name	= "ar9331",
+> -	.proto	= DSA_TAG_PROTO_AR9331,
+> -	.xmit	= ar9331_tag_xmit,
+> -	.rcv	= ar9331_tag_rcv,
+> -	.overhead = AR9331_HDR_LEN,
+> +	.name		= "ar9331",
+> +	.proto		= DSA_TAG_PROTO_AR9331,
+> +	.xmit		= ar9331_tag_xmit,
+> +	.rcv		= ar9331_tag_rcv,
+> +	.flow_dissect	= ar9331_tag_flow_dissect,
+> +	.overhead	= AR9331_HDR_LEN,
+>  };
+>  
+>  MODULE_LICENSE("GPL v2");
+> 
 
-AR9331_HDR_LEN is a parameter here which is incidentally
-dsa_device_ops::overhead.
 
-> +
-> +	data = skb_gro_header_fast(skb, data_off);
-> +	if (skb_gro_header_hard(skb, data_end)) {
-> +		data = skb_gro_header_slow(skb, data_end, data_off);
-> +		if (unlikely(!data))
-> +			goto out;
-> +	}
-> +
-> +	/* Data that is to the left from the current position is already
-> +	 * pulled to the head
-> +	 */
-> +	if (unlikely(!ar9331_tag_sanity_check(skb->data + data_off)))
-> +		goto out;
-
-This is applicable to all taggers, they need to verify the sanity of the
-header they are being handed.
-
-> +
-> +	rcu_read_lock();
-> +
-> +	ptype = gro_find_receive_by_type(ar9331_tag_encap_proto(data));
-
-If there is no encapsulation a tagger can return the frame's protocol
-directly, so similarly the tagger can be interrogated for returning that.
-
-> +	if (!ptype)
-> +		goto out_unlock;
-> +
-> +	flush = 0;
-> +
-> +	list_for_each_entry(p, head, list) {
-> +		if (!NAPI_GRO_CB(p)->same_flow)
-> +			continue;
-> +
-> +		if (ar9331_tag_source_port(skb->data + data_off) ^
-> +		    ar9331_tag_source_port(p->data + data_off))
-
-Similarly here, the tagger could provide a function whose job is to
-return the port number from within its own tag.
-
-So with that being said, what do you think about building a tagger
-abstraction which is comprised of:
-
-- header length which is dsa_device_ops::overhead
-- validate_tag()
-- get_tag_encap_proto()
-- get_port_number()
-
-and the rest is just wrapping the general GRO list manipulation?
-
-Also, I am wondering should we somehow expose the DSA master
-net_device's napi_struct such that we could have the DSA slave
-net_devices call napi_gro_receive() themselves directly such that they
-could also perform additional GRO on top of Ethernet frames?
 -- 
 Florian
