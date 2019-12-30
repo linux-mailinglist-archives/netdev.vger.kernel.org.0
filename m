@@ -2,129 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 03F6A12D0D0
-	for <lists+netdev@lfdr.de>; Mon, 30 Dec 2019 15:34:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EB56F12D165
+	for <lists+netdev@lfdr.de>; Mon, 30 Dec 2019 16:15:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727680AbfL3OeJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Dec 2019 09:34:09 -0500
-Received: from mail.dlink.ru ([178.170.168.18]:42950 "EHLO fd.dlink.ru"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727538AbfL3OeJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 30 Dec 2019 09:34:09 -0500
-Received: by fd.dlink.ru (Postfix, from userid 5000)
-        id 87E981B2182A; Mon, 30 Dec 2019 17:34:05 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 fd.dlink.ru 87E981B2182A
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dlink.ru; s=mail;
-        t=1577716445; bh=oIQhxpQSU+of0GS4enDiLZVDRRd/vUUBvg7EXVnvZnE=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=fYhcqLolt1EhnpUopLGMSCLx9VpOQgXu/zRNEWuyCigv50pasfgr1/RzL2USUkerA
-         uu1BpXhpwBwAaVqvkPvnai4JOWLNZ+UsA6tVrJN5ixnmZ7t+7mFvNS2DY+9BNMU+0u
-         QfY1FbHU+6IyksnyTnh/Drtnk3DJOLt8ijzfnI4Y=
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.dlink.ru
-X-Spam-Level: 
-X-Spam-Status: No, score=-99.2 required=7.5 tests=BAYES_50,URIBL_BLOCKED,
-        USER_IN_WHITELIST autolearn=disabled version=3.4.2
-Received: from mail.rzn.dlink.ru (mail.rzn.dlink.ru [178.170.168.13])
-        by fd.dlink.ru (Postfix) with ESMTP id AD2C11B20206;
-        Mon, 30 Dec 2019 17:31:43 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 fd.dlink.ru AD2C11B20206
-Received: from mail.rzn.dlink.ru (localhost [127.0.0.1])
-        by mail.rzn.dlink.ru (Postfix) with ESMTP id BE9641B229CB;
-        Mon, 30 Dec 2019 17:31:41 +0300 (MSK)
-Received: from localhost.localdomain (unknown [196.196.203.126])
-        by mail.rzn.dlink.ru (Postfix) with ESMTPA;
-        Mon, 30 Dec 2019 17:31:41 +0300 (MSK)
-From:   Alexander Lobakin <alobakin@dlink.ru>
-To:     "David S. Miller" <davem@davemloft.net>
-Cc:     Edward Cree <ecree@solarflare.com>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Alexander Lobakin <alobakin@dlink.ru>,
-        Taehee Yoo <ap420073@gmail.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Stanislav Fomichev <sdf@google.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Song Liu <songliubraving@fb.com>,
-        Matteo Croce <mcroce@redhat.com>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Paul Blakey <paulb@mellanox.com>,
-        Yoshiki Komachi <komachi.yoshiki@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Subject: [PATCH RFC net-next 20/20] net: core: add (unlikely) DSA support in napi_gro_frags()
-Date:   Mon, 30 Dec 2019 17:30:28 +0300
-Message-Id: <20191230143028.27313-21-alobakin@dlink.ru>
-X-Mailer: git-send-email 2.24.1
-In-Reply-To: <20191230143028.27313-1-alobakin@dlink.ru>
-References: <20191230143028.27313-1-alobakin@dlink.ru>
+        id S1727543AbfL3PPd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Dec 2019 10:15:33 -0500
+Received: from mail-ot1-f67.google.com ([209.85.210.67]:46130 "EHLO
+        mail-ot1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727519AbfL3PPc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Dec 2019 10:15:32 -0500
+Received: by mail-ot1-f67.google.com with SMTP id k8so29437377otl.13
+        for <netdev@vger.kernel.org>; Mon, 30 Dec 2019 07:15:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=gftoodf3UOMrss5VLzXpaPA7ICiaDFzEeQJNPNT/ldY=;
+        b=PpZZvS/tw4InRiwrDqxUnBW6x5eCWvJaOxn+iaUi22UqeMR4nuj83P6ce4YeFhpevb
+         eJJ1UzCz5A/58M5neSGDGeoNxe9+ME5i/bJfpshZDOryQGSNxzsIexAwwgweWsFxSLy8
+         n6fGcnaiapybQvBtmxdjYRC0j6YJzct54PiFgiBXKJj4ZzbJWzXIUcih+WQa64Gj9czH
+         kV2SoLymwH2JtHxH1lqSh+Ulh2/cW8BZaifJ+0aac+6jxKNa1bkaPjEKCZwWnHW8BRpb
+         Ad0j0Mfivz164u2HZFu0+Zt8qVFo97vqHjjRLfUchYVQzisfoBfnObkwFRVe5w/BpJBX
+         SbCw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=gftoodf3UOMrss5VLzXpaPA7ICiaDFzEeQJNPNT/ldY=;
+        b=PACfSnvMJAnaiUYNViCWGdNtgddCJcDlJZI5CtjA/PtXwXqzXCdhEsjOWJM0/mu3RV
+         B5fbZKytnRby9jUjGExlnqreQzP/scaZw9UlOevdNE9B89W0LcCmhdfrP8ro/rkOfQcN
+         aNEWAqEhFQIeIZUXkt1ilWILJLvo2cWgo3zWHsm1hquZjED6tHKDiXJOA/0Hh/8leAsn
+         S16oyBiORu8omKUOUiH4td1zygxbuqJHbCh9FKZIuFIwurII+pxfLKt2mH/XGF88H9db
+         yBdWNkbNSDK8WXQwMT2IsOPBUqvO9QkWTfNixxym6hsVy1mBICcjHOlZYHweTSTSJh1P
+         qLYQ==
+X-Gm-Message-State: APjAAAVUzJc9bhxiyzONN9hahk56pWf85NoIRMfzRXmymhfZur3rxouQ
+        EpuVXRdoVzpFxYsBywANgWQPrrokMBSAlZARnmWIbw==
+X-Google-Smtp-Source: APXvYqypuaQ6XOSuw2C9shmtPEvd26q7CG57upNG/28g2q+CVoHCQ8cgQm8SOIZVw1Kz+GLDrMOUSGFKPbjs2vDNeZM=
+X-Received: by 2002:a9d:4c94:: with SMTP id m20mr72838757otf.341.1577718931520;
+ Mon, 30 Dec 2019 07:15:31 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20191230140619.137147-1-edumazet@google.com>
+In-Reply-To: <20191230140619.137147-1-edumazet@google.com>
+From:   Neal Cardwell <ncardwell@google.com>
+Date:   Mon, 30 Dec 2019 10:15:15 -0500
+Message-ID: <CADVnQynUzSEAH0OFuc=yy0cYpJLhVutiFy8Bp8KxbcpEr=ZoDA@mail.gmail.com>
+Subject: Re: [PATCH net] tcp_cubic: refactor code to perform a divide only
+ when needed
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Soheil Hassas Yeganeh <soheil@google.com>,
+        Yuchung Cheng <ycheng@google.com>,
+        Martin KaFai Lau <kafai@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Make napi_gro_frags() available for DSA-enabled device drivers by adding
-the same condition for them as the one in eth_type_trans().
+On Mon, Dec 30, 2019 at 9:06 AM Eric Dumazet <edumazet@google.com> wrote:
+>
+> Neal Cardwell suggested to not change ca->delay_min
+> and apply the ack delay cushion only when Hystart ACK train
+> is still under consideration. This should avoid a 64bit
+> divide unless needed.
+>
+> Tested:
+>
+> 40Gbit(mlx4) testbed (with sch_fq as packet scheduler)
+>
+> $ echo -n 'file tcp_cubic.c +p'  >/sys/kernel/debug/dynamic_debug/control
+> $ nstat -n;for f in {1..10}; do ./super_netperf 1 -H lpaa24 -l -4000000; done;nstat|egrep "Hystart"
+>   14815
+>   16280
+>   15293
+>   15563
+>   11574
+>   15145
+>   14789
+>   18548
+>   16972
+>   12520
+> TcpExtTCPHystartTrainDetect     10                 0.0
+> TcpExtTCPHystartTrainCwnd       1396               0.0
+> $ dmesg | tail -10
+> [ 4873.951350] hystart_ack_train (116 > 93) delay_min 24 (+ ack_delay 69) cwnd 80
+> [ 4875.155379] hystart_ack_train (55 > 50) delay_min 21 (+ ack_delay 29) cwnd 160
+> [ 4876.333921] hystart_ack_train (69 > 62) delay_min 23 (+ ack_delay 39) cwnd 130
+> [ 4877.519037] hystart_ack_train (69 > 60) delay_min 22 (+ ack_delay 38) cwnd 130
+> [ 4878.701559] hystart_ack_train (87 > 63) delay_min 24 (+ ack_delay 39) cwnd 160
+> [ 4879.844597] hystart_ack_train (93 > 50) delay_min 21 (+ ack_delay 29) cwnd 216
+> [ 4880.956650] hystart_ack_train (74 > 67) delay_min 20 (+ ack_delay 47) cwnd 108
+> [ 4882.098500] hystart_ack_train (61 > 57) delay_min 23 (+ ack_delay 34) cwnd 130
+> [ 4883.262056] hystart_ack_train (72 > 67) delay_min 21 (+ ack_delay 46) cwnd 130
+> [ 4884.418760] hystart_ack_train (74 > 67) delay_min 29 (+ ack_delay 38) cwnd 152
+>
+> 10Gbit(bnx2x) testbed (with sch_fq as packet scheduler)
+>
+> $ echo -n 'file tcp_cubic.c +p'  >/sys/kernel/debug/dynamic_debug/control
+> $ nstat -n;for f in {1..10}; do ./super_netperf 1 -H lpk52 -l -4000000; done;nstat|egrep "Hystart"
+>    7050
+>    7065
+>    7100
+>    6900
+>    7202
+>    7263
+>    7189
+>    6869
+>    7463
+>    7034
+> TcpExtTCPHystartTrainDetect     10                 0.0
+> TcpExtTCPHystartTrainCwnd       3199               0.0
+> $ dmesg | tail -10
+> [  176.920012] hystart_ack_train (161 > 141) delay_min 83 (+ ack_delay 58) cwnd 264
+> [  179.144645] hystart_ack_train (164 > 159) delay_min 120 (+ ack_delay 39) cwnd 444
+> [  181.354527] hystart_ack_train (214 > 168) delay_min 125 (+ ack_delay 43) cwnd 436
+> [  183.539565] hystart_ack_train (170 > 147) delay_min 96 (+ ack_delay 51) cwnd 326
+> [  185.727309] hystart_ack_train (177 > 160) delay_min 61 (+ ack_delay 99) cwnd 128
+> [  187.947142] hystart_ack_train (184 > 167) delay_min 123 (+ ack_delay 44) cwnd 367
+> [  190.166680] hystart_ack_train (230 > 153) delay_min 116 (+ ack_delay 37) cwnd 444
+> [  192.327285] hystart_ack_train (210 > 206) delay_min 86 (+ ack_delay 120) cwnd 152
+> [  194.511392] hystart_ack_train (173 > 151) delay_min 94 (+ ack_delay 57) cwnd 239
+> [  196.736023] hystart_ack_train (149 > 146) delay_min 105 (+ ack_delay 41) cwnd 399
+>
+> Fixes: 42f3a8aaae66 ("tcp_cubic: tweak Hystart detection for short RTT flows")
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
+> Reported-by: Neal Cardwell <ncardwell@google.com>
+> Link: https://www.spinics.net/lists/netdev/msg621886.html
+> Link: https://www.spinics.net/lists/netdev/msg621797.html
+> ---
 
-Signed-off-by: Alexander Lobakin <alobakin@dlink.ru>
----
- net/core/dev.c | 11 ++++++++---
- 1 file changed, 8 insertions(+), 3 deletions(-)
+Great!  Thanks, Eric.
 
-diff --git a/net/core/dev.c b/net/core/dev.c
-index f1b8afcfbc0f..923b930a4506 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -142,6 +142,7 @@
- #include <linux/net_namespace.h>
- #include <linux/indirect_call_wrapper.h>
- #include <net/devlink.h>
-+#include <net/dsa.h>
- 
- #include "net-sysfs.h"
- 
-@@ -5951,6 +5952,7 @@ static gro_result_t napi_frags_finish(struct napi_struct *napi,
-  */
- static struct sk_buff *napi_frags_skb(struct napi_struct *napi)
- {
-+	struct net_device *dev = napi->dev;
- 	struct sk_buff *skb = napi->skb;
- 	const struct ethhdr *eth;
- 	unsigned int hlen = sizeof(*eth);
-@@ -5964,7 +5966,7 @@ static struct sk_buff *napi_frags_skb(struct napi_struct *napi)
- 		eth = skb_gro_header_slow(skb, hlen, 0);
- 		if (unlikely(!eth)) {
- 			net_warn_ratelimited("%s: dropping impossible skb from %s\n",
--					     __func__, napi->dev->name);
-+					     __func__, dev->name);
- 			napi_reuse_skb(napi, skb);
- 			return NULL;
- 		}
-@@ -5978,10 +5980,13 @@ static struct sk_buff *napi_frags_skb(struct napi_struct *napi)
- 
- 	/*
- 	 * This works because the only protocols we care about don't require
--	 * special handling.
-+	 * special handling... except for DSA.
- 	 * We'll fix it up properly in napi_frags_finish()
- 	 */
--	skb->protocol = eth->h_proto;
-+	if (unlikely(netdev_uses_dsa(dev)) && dsa_can_decode(skb, dev))
-+		skb->protocol = htons(ETH_P_XDSA);
-+	else
-+		skb->protocol = eth->h_proto;
- 
- 	return skb;
- }
--- 
-2.24.1
+Acked-by: Neal Cardwell <ncardwell@google.com>
 
+neal
