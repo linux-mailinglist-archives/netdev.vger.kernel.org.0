@@ -2,38 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0312712D0AA
-	for <lists+netdev@lfdr.de>; Mon, 30 Dec 2019 15:31:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 394A512D0AC
+	for <lists+netdev@lfdr.de>; Mon, 30 Dec 2019 15:31:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727544AbfL3Obi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Dec 2019 09:31:38 -0500
-Received: from fd.dlink.ru ([178.170.168.18]:39574 "EHLO fd.dlink.ru"
+        id S1727573AbfL3Obq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Dec 2019 09:31:46 -0500
+Received: from fd.dlink.ru ([178.170.168.18]:39822 "EHLO fd.dlink.ru"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727397AbfL3Obi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 30 Dec 2019 09:31:38 -0500
+        id S1727397AbfL3Obq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 30 Dec 2019 09:31:46 -0500
 Received: by fd.dlink.ru (Postfix, from userid 5000)
-        id CC7B41B21836; Mon, 30 Dec 2019 17:31:33 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 fd.dlink.ru CC7B41B21836
+        id 416111B2189B; Mon, 30 Dec 2019 17:31:43 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 fd.dlink.ru 416111B2189B
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dlink.ru; s=mail;
-        t=1577716293; bh=L55d4XdjAtvKL0l9HxmdxPvldFzgURGS4JiXQm8SXdA=;
+        t=1577716303; bh=GSv5uxS8JB5ZFL1df4FA5xdldqWieg3v4SkX8gUq2MY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=mF95+ayjq0zPIcEQSB1FEez6ZDvINbvzYO3CSeoG6RFJNruhxeoyeLh09U3gfsQza
-         YdcpYgteE2a0tAvF8SGGwkDCWonmM8OPFQVkZ7lvKg7IBM7Gy0RzTgsIbNkBQLjmnv
-         9AQkbrYqtw8Y1jfa43jj34h4mzJuKY3ra/maXCCc=
+        b=mqnQsIA+caFid+jH4yK8H0odndwsP0uIaIt8YUT+ukX7t/jLzShPmdY9kPh98ogfG
+         rZDnSwhTDruv0lx/leNjumvsjn2gDn9WA1DtUHSzdXNW22oX1jfYoBadbs2zpLOjML
+         9jbuUhalzrWEC4jgmQpxwJsEEQTQkGcb9myd2l+A=
 X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.dlink.ru
 X-Spam-Level: 
 X-Spam-Status: No, score=-99.2 required=7.5 tests=BAYES_50,URIBL_BLOCKED,
         USER_IN_WHITELIST autolearn=disabled version=3.4.2
 Received: from mail.rzn.dlink.ru (mail.rzn.dlink.ru [178.170.168.13])
-        by fd.dlink.ru (Postfix) with ESMTP id 83F871B20206;
-        Mon, 30 Dec 2019 17:31:05 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 fd.dlink.ru 83F871B20206
+        by fd.dlink.ru (Postfix) with ESMTP id 286831B20805;
+        Mon, 30 Dec 2019 17:31:07 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 fd.dlink.ru 286831B20805
 Received: from mail.rzn.dlink.ru (localhost [127.0.0.1])
-        by mail.rzn.dlink.ru (Postfix) with ESMTP id C95A91B229D0;
-        Mon, 30 Dec 2019 17:31:03 +0300 (MSK)
+        by mail.rzn.dlink.ru (Postfix) with ESMTP id 71F111B229CB;
+        Mon, 30 Dec 2019 17:31:05 +0300 (MSK)
 Received: from localhost.localdomain (unknown [196.196.203.126])
         by mail.rzn.dlink.ru (Postfix) with ESMTPA;
-        Mon, 30 Dec 2019 17:31:03 +0300 (MSK)
+        Mon, 30 Dec 2019 17:31:05 +0300 (MSK)
 From:   Alexander Lobakin <alobakin@dlink.ru>
 To:     "David S. Miller" <davem@davemloft.net>
 Cc:     Edward Cree <ecree@solarflare.com>, Andrew Lunn <andrew@lunn.ch>,
@@ -59,9 +59,9 @@ Cc:     Edward Cree <ecree@solarflare.com>, Andrew Lunn <andrew@lunn.ch>,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org,
         linux-mediatek@lists.infradead.org
-Subject: [PATCH RFC net-next 01/19] net: dsa: make .flow_dissect() callback returning void
-Date:   Mon, 30 Dec 2019 17:30:09 +0300
-Message-Id: <20191230143028.27313-2-alobakin@dlink.ru>
+Subject: [PATCH RFC net-next 02/19] net: dsa: add GRO support infrastructure
+Date:   Mon, 30 Dec 2019 17:30:10 +0300
+Message-Id: <20191230143028.27313-3-alobakin@dlink.ru>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20191230143028.27313-1-alobakin@dlink.ru>
 References: <20191230143028.27313-1-alobakin@dlink.ru>
@@ -72,141 +72,134 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There are no tag protocols which return non-zero values from
-flow_dissect() callback. Remove it to simplify code and save some
-object size.
-If a particular tagger can't calculate offset and proto for some
-reason, it can simply leave the original values untouched.
+Add .gro_receive() (with shortcut) and .gro_complete() callbacks to
+tagger ops and basic ETH_P_XDSA packet_offload with wrappers around
+them, so DSA-tagged frames can now be processed within GRO layer if
+the particular tagger implements this (will be added in subsequent
+patches).
+
+Note: no need to take RCU read locks in dsa_gro_receive() and
+dsa_gro_complete() as dev->cpu_dp is not RCU-protected, at least
+for now. The corresponding locks must be taken in the actual
+tagger callbacks.
 
 Signed-off-by: Alexander Lobakin <alobakin@dlink.ru>
 ---
- include/net/dsa.h         | 5 ++---
- net/core/flow_dissector.c | 8 ++++----
- net/dsa/tag_dsa.c         | 5 ++---
- net/dsa/tag_edsa.c        | 5 ++---
- net/dsa/tag_mtk.c         | 6 ++----
- net/dsa/tag_qca.c         | 6 ++----
- 6 files changed, 14 insertions(+), 21 deletions(-)
+ include/net/dsa.h |  5 +++++
+ net/dsa/dsa.c     | 43 +++++++++++++++++++++++++++++++++++++++++--
+ net/dsa/dsa2.c    |  1 +
+ 3 files changed, 47 insertions(+), 2 deletions(-)
 
 diff --git a/include/net/dsa.h b/include/net/dsa.h
-index da5578db228e..633d9894ab87 100644
+index 633d9894ab87..8a7f80709d51 100644
 --- a/include/net/dsa.h
 +++ b/include/net/dsa.h
-@@ -72,8 +72,8 @@ struct dsa_device_ops {
- 	struct sk_buff *(*xmit)(struct sk_buff *skb, struct net_device *dev);
+@@ -79,6 +79,9 @@ struct dsa_device_ops {
+ 	 * as regular on the master net device.
+ 	 */
+ 	bool (*filter)(const struct sk_buff *skb, struct net_device *dev);
++	struct sk_buff *(*gro_receive)(struct list_head *head,
++				       struct sk_buff *skb);
++	int (*gro_complete)(struct sk_buff *skb, int nhoff);
+ 	unsigned int overhead;
+ 	const char *name;
+ 	enum dsa_tag_protocol proto;
+@@ -170,6 +173,8 @@ struct dsa_port {
  	struct sk_buff *(*rcv)(struct sk_buff *skb, struct net_device *dev,
  			       struct packet_type *pt);
--	int (*flow_dissect)(const struct sk_buff *skb, __be16 *proto,
--			    int *offset);
-+	void (*flow_dissect)(const struct sk_buff *skb, __be16 *proto,
-+			     int *offset);
- 	/* Used to determine which traffic should match the DSA filter in
- 	 * eth_type_trans, and which, if any, should bypass it and be processed
- 	 * as regular on the master net device.
-@@ -774,4 +774,3 @@ static struct dsa_tag_driver *dsa_tag_driver_array[] =	{		\
- };									\
- module_dsa_tag_drivers(dsa_tag_driver_array)
+ 	bool (*filter)(const struct sk_buff *skb, struct net_device *dev);
++	struct sk_buff *(*gro_receive)(struct list_head *head,
++				       struct sk_buff *skb);
+ 
+ 	enum {
+ 		DSA_PORT_TYPE_UNUSED = 0,
+diff --git a/net/dsa/dsa.c b/net/dsa/dsa.c
+index 17281fec710c..9a8d8ce7473c 100644
+--- a/net/dsa/dsa.c
++++ b/net/dsa/dsa.c
+@@ -243,6 +243,34 @@ static int dsa_switch_rcv(struct sk_buff *skb, struct net_device *dev,
+ 	return 0;
+ }
+ 
++static struct sk_buff *dsa_gro_receive(struct list_head *head,
++				       struct sk_buff *skb)
++{
++	const struct dsa_port *cpu_dp = skb->dev->dsa_ptr;
++	struct sk_buff *pp = NULL;
++	int flush = 1;
++
++	if (unlikely(!cpu_dp) || !cpu_dp->gro_receive)
++		goto flush;
++
++	pp = cpu_dp->gro_receive(head, skb);
++	flush = 0;
++
++flush:
++	skb_gro_flush_final(skb, pp, flush);
++	return pp;
++}
++
++static int dsa_gro_complete(struct sk_buff *skb, int nhoff)
++{
++	const struct dsa_port *cpu_dp = skb->dev->dsa_ptr;
++
++	if (likely(cpu_dp) && cpu_dp->tag_ops->gro_complete)
++		return cpu_dp->tag_ops->gro_complete(skb, nhoff);
++
++	return -ENOENT;
++}
++
+ #ifdef CONFIG_PM_SLEEP
+ static bool dsa_is_port_initialized(struct dsa_switch *ds, int p)
+ {
+@@ -298,8 +326,17 @@ EXPORT_SYMBOL_GPL(dsa_switch_resume);
  #endif
--
-diff --git a/net/core/flow_dissector.c b/net/core/flow_dissector.c
-index 2dbbb030fbed..2c9d8c7c76b3 100644
---- a/net/core/flow_dissector.c
-+++ b/net/core/flow_dissector.c
-@@ -971,12 +971,12 @@ bool __skb_flow_dissect(const struct net *net,
- #if IS_ENABLED(CONFIG_NET_DSA)
- 		if (unlikely(skb->dev && netdev_uses_dsa(skb->dev) &&
- 			     proto == htons(ETH_P_XDSA))) {
--			const struct dsa_device_ops *ops;
-+			typeof_member(struct dsa_device_ops, flow_dissect) fd;
- 			int offset = 0;
  
--			ops = skb->dev->dsa_ptr->tag_ops;
--			if (ops->flow_dissect &&
--			    !ops->flow_dissect(skb, &proto, &offset)) {
-+			fd = skb->dev->dsa_ptr->tag_ops->flow_dissect;
-+			if (fd) {
-+				fd(skb, &proto, &offset);
- 				hlen -= offset;
- 				nhoff += offset;
- 			}
-diff --git a/net/dsa/tag_dsa.c b/net/dsa/tag_dsa.c
-index 7ddec9794477..ef15aee58dfc 100644
---- a/net/dsa/tag_dsa.c
-+++ b/net/dsa/tag_dsa.c
-@@ -142,12 +142,11 @@ static struct sk_buff *dsa_rcv(struct sk_buff *skb, struct net_device *dev,
- 	return skb;
+ static struct packet_type dsa_pack_type __read_mostly = {
+-	.type	= cpu_to_be16(ETH_P_XDSA),
+-	.func	= dsa_switch_rcv,
++	.type		= htons(ETH_P_XDSA),
++	.func		= dsa_switch_rcv,
++};
++
++static struct packet_offload dsa_pack_offload __read_mostly = {
++	.type		= htons(ETH_P_XDSA),
++	.priority	= 10,
++	.callbacks	= {
++		.gro_receive	= dsa_gro_receive,
++		.gro_complete	= dsa_gro_complete,
++	},
+ };
+ 
+ static struct workqueue_struct *dsa_owq;
+@@ -430,6 +467,7 @@ static int __init dsa_init_module(void)
+ 		goto register_notifier_fail;
+ 
+ 	dev_add_pack(&dsa_pack_type);
++	dev_add_offload(&dsa_pack_offload);
+ 
+ 	dsa_tag_driver_register(&DSA_TAG_DRIVER_NAME(none_ops),
+ 				THIS_MODULE);
+@@ -448,6 +486,7 @@ static void __exit dsa_cleanup_module(void)
+ 	dsa_tag_driver_unregister(&DSA_TAG_DRIVER_NAME(none_ops));
+ 
+ 	dsa_slave_unregister_notifier();
++	dev_remove_offload(&dsa_pack_offload);
+ 	dev_remove_pack(&dsa_pack_type);
+ 	destroy_workqueue(dsa_owq);
  }
+diff --git a/net/dsa/dsa2.c b/net/dsa/dsa2.c
+index c66abbed4daf..5f66e0280e8e 100644
+--- a/net/dsa/dsa2.c
++++ b/net/dsa/dsa2.c
+@@ -631,6 +631,7 @@ static int dsa_port_parse_cpu(struct dsa_port *dp, struct net_device *master)
+ 	}
  
--static int dsa_tag_flow_dissect(const struct sk_buff *skb, __be16 *proto,
--				int *offset)
-+static void dsa_tag_flow_dissect(const struct sk_buff *skb, __be16 *proto,
-+				 int *offset)
- {
- 	*offset = 4;
- 	*proto = ((__be16 *)skb->data)[1];
--	return 0;
- }
- 
- static const struct dsa_device_ops dsa_netdev_ops = {
-diff --git a/net/dsa/tag_edsa.c b/net/dsa/tag_edsa.c
-index e8eaa804ccb9..37a99254b411 100644
---- a/net/dsa/tag_edsa.c
-+++ b/net/dsa/tag_edsa.c
-@@ -161,12 +161,11 @@ static struct sk_buff *edsa_rcv(struct sk_buff *skb, struct net_device *dev,
- 	return skb;
- }
- 
--static int edsa_tag_flow_dissect(const struct sk_buff *skb, __be16 *proto,
--				 int *offset)
-+static void edsa_tag_flow_dissect(const struct sk_buff *skb, __be16 *proto,
-+				  int *offset)
- {
- 	*offset = 8;
- 	*proto = ((__be16 *)skb->data)[3];
--	return 0;
- }
- 
- static const struct dsa_device_ops edsa_netdev_ops = {
-diff --git a/net/dsa/tag_mtk.c b/net/dsa/tag_mtk.c
-index b5705cba8318..c3ad7b7b142a 100644
---- a/net/dsa/tag_mtk.c
-+++ b/net/dsa/tag_mtk.c
-@@ -89,13 +89,11 @@ static struct sk_buff *mtk_tag_rcv(struct sk_buff *skb, struct net_device *dev,
- 	return skb;
- }
- 
--static int mtk_tag_flow_dissect(const struct sk_buff *skb, __be16 *proto,
--				int *offset)
-+static void mtk_tag_flow_dissect(const struct sk_buff *skb, __be16 *proto,
-+				 int *offset)
- {
- 	*offset = 4;
- 	*proto = ((__be16 *)skb->data)[1];
--
--	return 0;
- }
- 
- static const struct dsa_device_ops mtk_netdev_ops = {
-diff --git a/net/dsa/tag_qca.c b/net/dsa/tag_qca.c
-index c95885215525..8e2dbaaffe59 100644
---- a/net/dsa/tag_qca.c
-+++ b/net/dsa/tag_qca.c
-@@ -90,13 +90,11 @@ static struct sk_buff *qca_tag_rcv(struct sk_buff *skb, struct net_device *dev,
- 	return skb;
- }
- 
--static int qca_tag_flow_dissect(const struct sk_buff *skb, __be16 *proto,
--                                int *offset)
-+static void qca_tag_flow_dissect(const struct sk_buff *skb, __be16 *proto,
-+				 int *offset)
- {
- 	*offset = QCA_HDR_LEN;
- 	*proto = ((__be16 *)skb->data)[0];
--
--	return 0;
- }
- 
- static const struct dsa_device_ops qca_netdev_ops = {
+ 	dp->type = DSA_PORT_TYPE_CPU;
++	dp->gro_receive = tag_ops->gro_receive;
+ 	dp->filter = tag_ops->filter;
+ 	dp->rcv = tag_ops->rcv;
+ 	dp->tag_ops = tag_ops;
 -- 
 2.24.1
 
