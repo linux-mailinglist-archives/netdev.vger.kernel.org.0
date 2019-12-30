@@ -2,98 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F80F12D4B6
-	for <lists+netdev@lfdr.de>; Mon, 30 Dec 2019 22:54:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A16E912D4C8
+	for <lists+netdev@lfdr.de>; Mon, 30 Dec 2019 23:19:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727734AbfL3Vx7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Dec 2019 16:53:59 -0500
-Received: from mga14.intel.com ([192.55.52.115]:28162 "EHLO mga14.intel.com"
+        id S1727769AbfL3WTf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Dec 2019 17:19:35 -0500
+Received: from mail.kernel.org ([198.145.29.99]:53458 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727691AbfL3Vx7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 30 Dec 2019 16:53:59 -0500
-X-Amp-Result: UNSCANNABLE
-X-Amp-File-Uploaded: False
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 30 Dec 2019 13:53:58 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.69,376,1571727600"; 
-   d="scan'208";a="301360470"
-Received: from lkp-server01.sh.intel.com (HELO lkp-server01) ([10.239.97.150])
-  by orsmga001.jf.intel.com with ESMTP; 30 Dec 2019 13:53:56 -0800
-Received: from kbuild by lkp-server01 with local (Exim 4.89)
-        (envelope-from <lkp@intel.com>)
-        id 1im2z6-0007SD-Bm; Tue, 31 Dec 2019 05:53:56 +0800
-Date:   Tue, 31 Dec 2019 05:53:31 +0800
-From:   kbuild test robot <lkp@intel.com>
-To:     Ttttabcd <ttttabcd@protonmail.com>
-Cc:     kbuild-all@lists.01.org, Netdev <netdev@vger.kernel.org>,
-        "edumazet@google.com" <edumazet@google.com>,
-        David Miller <davem@davemloft.net>,
-        "kuznet@ms2.inr.ac.ru" <kuznet@ms2.inr.ac.ru>,
-        "yoshfuji@linux-ipv6.org" <yoshfuji@linux-ipv6.org>
-Subject: Re: [PATCH] tcp: Fix tcp_max_syn_backlog limit on connection requests
-Message-ID: <201912310520.gWWmntOp%lkp@intel.com>
-References: <BJWfRScnTTecyIVZcjhEgs-tp51FEx8gFA3pa0LE6I4q7p6v9Y0AmcSYcTqeV2FURjefo7XOwj4RTM5nIM7pyv--6woYCI_DAskQGbr9ltE=@protonmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <BJWfRScnTTecyIVZcjhEgs-tp51FEx8gFA3pa0LE6I4q7p6v9Y0AmcSYcTqeV2FURjefo7XOwj4RTM5nIM7pyv--6woYCI_DAskQGbr9ltE=@protonmail.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
+        id S1727734AbfL3WTe (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 30 Dec 2019 17:19:34 -0500
+Received: from kenny.it.cumulusnetworks.com. (fw.cumulusnetworks.com [216.129.126.126])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id C699F20663;
+        Mon, 30 Dec 2019 22:11:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1577743878;
+        bh=NyJxuSbkq2Kpbb5d2SCH6RAqhGEjRL1DCYaZI54Nlrs=;
+        h=From:To:Cc:Subject:Date:From;
+        b=jsYJjZ25qKttM4HBh5oAxEvq3f0NFFAnhm+HfHrAMlZ4bEXTIq670ix2BAwjgz0yW
+         Vj8vh3z6+92BNVIDZEW/00KP+759hTcdiK3t/Lg2QWT1lu0ilKCNoEQG98DgyNMfYk
+         mYbSoH+rproS/CS61165N1uCa+lornTa12WNiv/A=
+From:   David Ahern <dsahern@kernel.org>
+To:     davem@davemloft.net, jakub.kicinski@netronome.com
+Cc:     netdev@vger.kernel.org, eric.dumazet@gmail.com,
+        roopa@cumulusnetworks.com, sharpd@cumulusnetworks.com,
+        David Ahern <dsahern@gmail.com>
+Subject: [PATCH net-next 0/9] tcp: Add support for L3 domains to MD5 auth
+Date:   Mon, 30 Dec 2019 14:14:24 -0800
+Message-Id: <20191230221433.2717-1-dsahern@kernel.org>
+X-Mailer: git-send-email 2.11.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Ttttabcd,
+From: David Ahern <dsahern@gmail.com>
 
-Thank you for the patch! Perhaps something to improve:
+With VRF, the scope of network addresses is limited to the L3 domain
+the device is associated. MD5 keys are based on addresses, so proper
+VRF support requires an L3 domain to be considered for the lookups.
 
-[auto build test WARNING on net/master]
-[also build test WARNING on net-next/master ipvs/master v5.5-rc4 next-20191220]
-[if your patch is applied to the wrong git tree, please drop us a note to help
-improve the system. BTW, we also suggest to use '--base' option to specify the
-base tree in git format-patch, please see https://stackoverflow.com/a/37406982]
+Leverage the new TCP_MD5SIG_EXT option to add support for a device index
+to MD5 keys. The __tcpm_pad entry in tcp_md5sig is renamed to tcpm_ifindex
+and a new flag, TCP_MD5SIG_FLAG_IFINDEX, in tcpm_flags determines if the
+entry is examined. This follows what was done for MD5 and prefixes with
+commits
+   8917a777be3b ("tcp: md5: add TCP_MD5SIG_EXT socket option to set a key address prefix")
+   6797318e623d ("tcp: md5: add an address prefix for key lookup")
 
-url:    https://github.com/0day-ci/linux/commits/Ttttabcd/tcp-Fix-tcp_max_syn_backlog-limit-on-connection-requests/20191230-164004
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net.git bb3d0b8bf5be61ab1d6f472c43cbf34de17e796b
-reproduce:
-        # apt-get install sparse
-        # sparse version: v0.6.1-129-g341daf20-dirty
-        make ARCH=x86_64 allmodconfig
-        make C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__'
+Handling both a device AND L3 domain is much more complicated for the
+response paths. This set focuses only on L3 support - requiring the
+device index to be an l3mdev (ie, VRF). Support for slave devices can
+be added later if desired, much like the progression of support for
+sockets bound to a VRF and then bound to a device in a VRF. Kernel
+code is setup to explicitly call out that current lookup is for an L3
+index, while the uapi just references a device index allowing its
+meaning to include other devices in the future.
 
-If you fix the issue, kindly add following tag
-Reported-by: kbuild test robot <lkp@intel.com>
+David Ahern (9):
+  ipv4/tcp: Use local variable for tcp_md5_addr
+  ipv6/tcp: Pass dif and sdif to tcp_v6_inbound_md5_hash
+  ipv4/tcp: Pass dif and sdif to tcp_v4_inbound_md5_hash
+  tcp: Add l3index to tcp_md5sig_key and md5 functions
+  net: Add device index to tcp_md5sig
+  nettest: Return 1 on MD5 failure for server mode
+  nettest: Add support for TCP_MD5 extensions
+  fcnal-test: Add TCP MD5 tests
+  fcnal-test: Add TCP MD5 tests for VRF
 
+ include/net/tcp.h                         |  24 +-
+ include/uapi/linux/tcp.h                  |   5 +-
+ net/ipv4/tcp_ipv4.c                       | 126 +++++---
+ net/ipv6/tcp_ipv6.c                       | 105 +++++--
+ tools/testing/selftests/net/fcnal-test.sh | 458 ++++++++++++++++++++++++++++++
+ tools/testing/selftests/net/nettest.c     |  84 +++++-
+ 6 files changed, 715 insertions(+), 87 deletions(-)
 
-sparse warnings: (new ones prefixed by >>)
+-- 
+2.11.0
 
->> net/ipv4/tcp_input.c:6568:27: sparse: sparse: incompatible types in comparison expression (different signedness):
->> net/ipv4/tcp_input.c:6568:27: sparse:    int *
->> net/ipv4/tcp_input.c:6568:27: sparse:    unsigned int *
-   net/ipv4/tcp_input.c:6673:17: sparse: sparse: context imbalance in 'tcp_conn_request' - unexpected unlock
-
-vim +6568 net/ipv4/tcp_input.c
-
-  6551	
-  6552	int tcp_conn_request(struct request_sock_ops *rsk_ops,
-  6553			     const struct tcp_request_sock_ops *af_ops,
-  6554			     struct sock *sk, struct sk_buff *skb)
-  6555	{
-  6556		struct tcp_fastopen_cookie foc = { .len = -1 };
-  6557		__u32 isn = TCP_SKB_CB(skb)->tcp_tw_isn;
-  6558		struct tcp_options_received tmp_opt;
-  6559		struct tcp_sock *tp = tcp_sk(sk);
-  6560		struct net *net = sock_net(sk);
-  6561		struct sock *fastopen_sk = NULL;
-  6562		struct request_sock *req;
-  6563		bool want_cookie = false;
-  6564		struct dst_entry *dst;
-  6565		int max_syn_backlog;
-  6566		struct flowi fl;
-  6567	
-> 6568		max_syn_backlog = min(net->ipv4.sysctl_max_syn_backlog,
-
----
-0-DAY kernel test infrastructure                 Open Source Technology Center
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org Intel Corporation
