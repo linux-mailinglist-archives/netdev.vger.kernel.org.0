@@ -2,40 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AA9FA12D249
-	for <lists+netdev@lfdr.de>; Mon, 30 Dec 2019 17:51:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9738E12D258
+	for <lists+netdev@lfdr.de>; Mon, 30 Dec 2019 17:58:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727296AbfL3QvT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Dec 2019 11:51:19 -0500
-Received: from fllv0015.ext.ti.com ([198.47.19.141]:45744 "EHLO
-        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726675AbfL3QvT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Dec 2019 11:51:19 -0500
+        id S1727242AbfL3Q5x (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Dec 2019 11:57:53 -0500
+Received: from lelv0142.ext.ti.com ([198.47.23.249]:60922 "EHLO
+        lelv0142.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726675AbfL3Q5w (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Dec 2019 11:57:52 -0500
 Received: from fllv0034.itg.ti.com ([10.64.40.246])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id xBUGoDto057943;
-        Mon, 30 Dec 2019 10:50:13 -0600
+        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id xBUGvCDQ129124;
+        Mon, 30 Dec 2019 10:57:12 -0600
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1577724613;
-        bh=y3ejdbcO06ztSrqG83DjXxIrb7+BUV7nRNT8h955s04=;
+        s=ti-com-17Q1; t=1577725032;
+        bh=sKJLGO6nmBPM/ZBAMfajvSis1tS/s/vjgC8bGxOXYzs=;
         h=Subject:To:CC:References:From:Date:In-Reply-To;
-        b=jJUIFrAS+G9lq1cqC5lCsjlUaxFoTa8phca+8Wn7kVCZhzMR26EVkE7/E5cN8iKHg
-         aHBgJ0+F4TecQWK0f45s7Q7sIbydpw/UlpsWhwmjccEAuCN4QiPje35SQmtDHQsZ1O
-         Siw1ZphV65Nupj3gL9aW1KFMHUKY7uUfplqFl/6o=
-Received: from DLEE107.ent.ti.com (dlee107.ent.ti.com [157.170.170.37])
-        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id xBUGoCu8054701
+        b=eYhjxGrqo9G0uTUdrAHMbwOIBzTMqS4OGfl8sMYYmiNNC20aMU2s4qGJcx4vGmRUA
+         Zbw8dqHq/PuuPEiZTkLp6jQk+vPQ0S6r1hCpjqeMplXVu8W1S/skkC4vBG/Qm87SJy
+         dj22RGkLye48jsZYRbrg4Ve+ldaN5TpWtG4xjEiM=
+Received: from DLEE112.ent.ti.com (dlee112.ent.ti.com [157.170.170.23])
+        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id xBUGvCFG063886
         (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Mon, 30 Dec 2019 10:50:12 -0600
-Received: from DLEE110.ent.ti.com (157.170.170.21) by DLEE107.ent.ti.com
- (157.170.170.37) with Microsoft SMTP Server (version=TLS1_2,
+        Mon, 30 Dec 2019 10:57:12 -0600
+Received: from DLEE105.ent.ti.com (157.170.170.35) by DLEE112.ent.ti.com
+ (157.170.170.23) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3; Mon, 30
- Dec 2019 10:50:12 -0600
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE110.ent.ti.com
- (157.170.170.21) with Microsoft SMTP Server (version=TLS1_2,
+ Dec 2019 10:57:09 -0600
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE105.ent.ti.com
+ (157.170.170.35) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3 via
- Frontend Transport; Mon, 30 Dec 2019 10:50:12 -0600
+ Frontend Transport; Mon, 30 Dec 2019 10:57:09 -0600
 Received: from [158.218.113.14] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id xBUGoA6F071921;
-        Mon, 30 Dec 2019 10:50:11 -0600
+        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id xBUGv7PW082400;
+        Mon, 30 Dec 2019 10:57:08 -0600
 Subject: Re: [EXT] Re: [v1,net-next, 1/2] ethtool: add setting frame
  preemption of traffic classes
 To:     Vinicius Costa Gomes <vinicius.gomes@intel.com>,
@@ -70,8 +70,8 @@ References: <20191127094517.6255-1-Po.Liu@nxp.com>
  <87eex43pzm.fsf@linux.intel.com> <20191219004322.GA20146@khorivan>
  <87lfr9axm8.fsf@linux.intel.com>
 From:   Murali Karicheri <m-karicheri2@ti.com>
-Message-ID: <2400f5bd-eb82-23ad-215f-bf4ae5eb66a8@ti.com>
-Date:   Mon, 30 Dec 2019 11:56:48 -0500
+Message-ID: <b7e1cb8b-b6b1-c0fa-3864-4036750f3164@ti.com>
+Date:   Mon, 30 Dec 2019 12:03:46 -0500
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
  Thunderbird/52.7.0
 MIME-Version: 1.0
@@ -186,12 +186,6 @@ On 12/18/2019 08:54 PM, Vinicius Costa Gomes wrote:
 > make sense to allow "preemption" to be changed. We can extend taprio to
 > support changing the fragment size, if that makes sense.
 > 
-The point is it make sense to configure pre-emption related parameters
-independently of taprio since they are not related. User may use just
-pre-emption to reduce latency in the communication path for their end
-application.. So there should be a way to configure it independently of
-taprio. Right??
-
 >>
 >> 2) What if I want to use frame preemption with another "transmission selection
 >> algorithm"? Say another one "time sensitive" - CBS? How is it going to be
@@ -201,15 +195,6 @@ taprio. Right??
 > example) qdisc into one of taprio children. Or, are you talking about a
 > more general problem?
 > 
-
-If I understand it correctly problem is not stacking taprio with cbs,
-but rather pre-emption with other qdiscs and allow configuring
-the parameters such as frag size. How do I use frame pre-emption as
-an independent feature and configure frag size? Ethool appears to be
-better from this point of view as Ivan has mentioned below.
-
-Murali
-
 > * here I am considering that support for taprio without an schedule is
 >   added.
 > 
@@ -226,12 +211,24 @@ Murali
 > On the other hand, as there isn't a way to implement frame preemption in
 > software, I agree that it makes it kind of awkward to have it in the tc
 > subsystem.
+Absolutely. I think frame pre-emption feature flag, per queue express/
+pre-empt state, frag size, timers (hold/release) to be configured
+independently (perhaps through ethtool) and then taprio should check
+this with the lower device and then allow supporting additional Gate
+operations such as Hold/release if supported by underlying device.
+
+What do you think? Why to abuse tc for this?
+
+Thanks and regards,
+
+Murali
 > 
 > At this point, I am slightly in favor of the taprio approach (yes, I am
 > biased :-), but I can be convinced otherwise. I will be only a little
 > sad if we choose to go with ethtool for now, and then add support up in
 > the stack, something similar to "ethtool -N" and "tc-flower".
 > 
+
 >>
 >>>
 >>> 2. extend mqprio to support frame-preemption;
