@@ -2,146 +2,345 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3CD7512D16C
-	for <lists+netdev@lfdr.de>; Mon, 30 Dec 2019 16:23:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AA9FA12D249
+	for <lists+netdev@lfdr.de>; Mon, 30 Dec 2019 17:51:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727549AbfL3PXH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Dec 2019 10:23:07 -0500
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:39309 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727397AbfL3PXH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Dec 2019 10:23:07 -0500
-Received: by mail-wr1-f68.google.com with SMTP id y11so32934699wrt.6
-        for <netdev@vger.kernel.org>; Mon, 30 Dec 2019 07:23:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=GydzxHeGMht0ekdO8ir6DwgLrf0DQ6Yc6+ohGaskFH8=;
-        b=BtvmmCmKK4iWBKa+CMcFD66u+ujfROP/vAuuB4OZ+p0Sh6PlRKPKNu8V4yA/anFPoI
-         MN5FpPs4HZNUtKjXpkp6Sfd3G/brEJBsy6HSMJucdRb8m/RIXzYvqh4Ka3dpJurJRsb/
-         5xRjWsOkILUgxA3thFNvk21ibEu2swbE5vtZAYLHLa4o7HsECFNCsYBm+P5gXuXQPiGX
-         vuJu3NFgvchDtupG8afQMwxCeBMCFdy5otzyxk9OfxjDyTlQQwzmHu4wxnru13Y5uu7E
-         Uto+Jca8Ibjq0BP59X9AQbh0oq7MumJAYIM4KmyCIocLSXFMN49tvrr9I+V5qZIeWhE+
-         qnmw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=GydzxHeGMht0ekdO8ir6DwgLrf0DQ6Yc6+ohGaskFH8=;
-        b=E54HvcWE6lvDg4D+wks14/5ibDuUishsZfXlz4d/3JjMMhm57kUMWO/4XIhd0L8yIV
-         vhU+lZYSxhq4tXEvcFsqW3lOuwhGG25i9+PLDEAoo9iPpBnSXXRFfQvHOSrRQE/74AcC
-         zEcovjWjpFXXc54GbZo6wHmLlpcx/chh/WQgYl++qXnhSGkgWGfk8RfP5sJE1bIjn2b0
-         wiJnxR6gOJYxbJM1bw2VA8c4HV2Y/octjYcnwhfj8ZB4AZGaKXb8NVYCIq2nGLVdSlHQ
-         5/JyygYEovsYH03tHvPeJp86ty4VvT7L9E1rATWTsEcdg2eSPldGbO0Pvcw/5Jx5ezb9
-         H9nA==
-X-Gm-Message-State: APjAAAUK6siYulIM6Ekz0YZl5Q89VEsZbvjr9pUbjbcSjhBkZikbl4M0
-        Up37qTLitKRuthVDDjtEnojObnpezH8voB7f3TzBng==
-X-Google-Smtp-Source: APXvYqyyYfszSYMpZOBpxVZbKaQVJvKboRtFnOGufeBtqvKZDQHVJq+N2P/5+AmDjFsZTXy8N0Ri0mcabFhrS7ahBw4=
-X-Received: by 2002:a5d:46c7:: with SMTP id g7mr66940728wrs.11.1577719384379;
- Mon, 30 Dec 2019 07:23:04 -0800 (PST)
+        id S1727296AbfL3QvT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Dec 2019 11:51:19 -0500
+Received: from fllv0015.ext.ti.com ([198.47.19.141]:45744 "EHLO
+        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726675AbfL3QvT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Dec 2019 11:51:19 -0500
+Received: from fllv0034.itg.ti.com ([10.64.40.246])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id xBUGoDto057943;
+        Mon, 30 Dec 2019 10:50:13 -0600
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1577724613;
+        bh=y3ejdbcO06ztSrqG83DjXxIrb7+BUV7nRNT8h955s04=;
+        h=Subject:To:CC:References:From:Date:In-Reply-To;
+        b=jJUIFrAS+G9lq1cqC5lCsjlUaxFoTa8phca+8Wn7kVCZhzMR26EVkE7/E5cN8iKHg
+         aHBgJ0+F4TecQWK0f45s7Q7sIbydpw/UlpsWhwmjccEAuCN4QiPje35SQmtDHQsZ1O
+         Siw1ZphV65Nupj3gL9aW1KFMHUKY7uUfplqFl/6o=
+Received: from DLEE107.ent.ti.com (dlee107.ent.ti.com [157.170.170.37])
+        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id xBUGoCu8054701
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Mon, 30 Dec 2019 10:50:12 -0600
+Received: from DLEE110.ent.ti.com (157.170.170.21) by DLEE107.ent.ti.com
+ (157.170.170.37) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3; Mon, 30
+ Dec 2019 10:50:12 -0600
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE110.ent.ti.com
+ (157.170.170.21) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3 via
+ Frontend Transport; Mon, 30 Dec 2019 10:50:12 -0600
+Received: from [158.218.113.14] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id xBUGoA6F071921;
+        Mon, 30 Dec 2019 10:50:11 -0600
+Subject: Re: [EXT] Re: [v1,net-next, 1/2] ethtool: add setting frame
+ preemption of traffic classes
+To:     Vinicius Costa Gomes <vinicius.gomes@intel.com>,
+        Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
+CC:     Po Liu <po.liu@nxp.com>,
+        Andre Guedes <andre.guedes@linux.intel.com>,
+        "alexandru.ardelean@analog.com" <alexandru.ardelean@analog.com>,
+        "allison@lohutok.net" <allison@lohutok.net>,
+        "andrew@lunn.ch" <andrew@lunn.ch>,
+        "ayal@mellanox.com" <ayal@mellanox.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "hauke.mehrtens@intel.com" <hauke.mehrtens@intel.com>,
+        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
+        "jiri@mellanox.com" <jiri@mellanox.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "pablo@netfilter.org" <pablo@netfilter.org>,
+        "saeedm@mellanox.com" <saeedm@mellanox.com>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        "simon.horman@netronome.com" <simon.horman@netronome.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandru Marginean <alexandru.marginean@nxp.com>,
+        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
+        Roy Zang <roy.zang@nxp.com>, Mingkai Hu <mingkai.hu@nxp.com>,
+        Jerry Huang <jerry.huang@nxp.com>, Leo Li <leoyang.li@nxp.com>
+References: <20191127094517.6255-1-Po.Liu@nxp.com>
+ <157603276975.18462.4638422874481955289@pipeline>
+ <VE1PR04MB6496CEA449E9B844094E580492510@VE1PR04MB6496.eurprd04.prod.outlook.com>
+ <87eex43pzm.fsf@linux.intel.com> <20191219004322.GA20146@khorivan>
+ <87lfr9axm8.fsf@linux.intel.com>
+From:   Murali Karicheri <m-karicheri2@ti.com>
+Message-ID: <2400f5bd-eb82-23ad-215f-bf4ae5eb66a8@ti.com>
+Date:   Mon, 30 Dec 2019 11:56:48 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
+ Thunderbird/52.7.0
 MIME-Version: 1.0
-References: <20191230140619.137147-1-edumazet@google.com> <CADVnQynUzSEAH0OFuc=yy0cYpJLhVutiFy8Bp8KxbcpEr=ZoDA@mail.gmail.com>
-In-Reply-To: <CADVnQynUzSEAH0OFuc=yy0cYpJLhVutiFy8Bp8KxbcpEr=ZoDA@mail.gmail.com>
-From:   Soheil Hassas Yeganeh <soheil@google.com>
-Date:   Mon, 30 Dec 2019 10:22:27 -0500
-Message-ID: <CACSApvaaXmFcnio1d6gEYdCcPPpU6qdumg4eDqwQFrhu4R0DxA@mail.gmail.com>
-Subject: Re: [PATCH net] tcp_cubic: refactor code to perform a divide only
- when needed
-To:     Neal Cardwell <ncardwell@google.com>
-Cc:     Eric Dumazet <edumazet@google.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Yuchung Cheng <ycheng@google.com>,
-        Martin KaFai Lau <kafai@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <87lfr9axm8.fsf@linux.intel.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 30, 2019 at 10:15 AM Neal Cardwell <ncardwell@google.com> wrote:
->
-> On Mon, Dec 30, 2019 at 9:06 AM Eric Dumazet <edumazet@google.com> wrote:
-> >
-> > Neal Cardwell suggested to not change ca->delay_min
-> > and apply the ack delay cushion only when Hystart ACK train
-> > is still under consideration. This should avoid a 64bit
-> > divide unless needed.
-> >
-> > Tested:
-> >
-> > 40Gbit(mlx4) testbed (with sch_fq as packet scheduler)
-> >
-> > $ echo -n 'file tcp_cubic.c +p'  >/sys/kernel/debug/dynamic_debug/control
-> > $ nstat -n;for f in {1..10}; do ./super_netperf 1 -H lpaa24 -l -4000000; done;nstat|egrep "Hystart"
-> >   14815
-> >   16280
-> >   15293
-> >   15563
-> >   11574
-> >   15145
-> >   14789
-> >   18548
-> >   16972
-> >   12520
-> > TcpExtTCPHystartTrainDetect     10                 0.0
-> > TcpExtTCPHystartTrainCwnd       1396               0.0
-> > $ dmesg | tail -10
-> > [ 4873.951350] hystart_ack_train (116 > 93) delay_min 24 (+ ack_delay 69) cwnd 80
-> > [ 4875.155379] hystart_ack_train (55 > 50) delay_min 21 (+ ack_delay 29) cwnd 160
-> > [ 4876.333921] hystart_ack_train (69 > 62) delay_min 23 (+ ack_delay 39) cwnd 130
-> > [ 4877.519037] hystart_ack_train (69 > 60) delay_min 22 (+ ack_delay 38) cwnd 130
-> > [ 4878.701559] hystart_ack_train (87 > 63) delay_min 24 (+ ack_delay 39) cwnd 160
-> > [ 4879.844597] hystart_ack_train (93 > 50) delay_min 21 (+ ack_delay 29) cwnd 216
-> > [ 4880.956650] hystart_ack_train (74 > 67) delay_min 20 (+ ack_delay 47) cwnd 108
-> > [ 4882.098500] hystart_ack_train (61 > 57) delay_min 23 (+ ack_delay 34) cwnd 130
-> > [ 4883.262056] hystart_ack_train (72 > 67) delay_min 21 (+ ack_delay 46) cwnd 130
-> > [ 4884.418760] hystart_ack_train (74 > 67) delay_min 29 (+ ack_delay 38) cwnd 152
-> >
-> > 10Gbit(bnx2x) testbed (with sch_fq as packet scheduler)
-> >
-> > $ echo -n 'file tcp_cubic.c +p'  >/sys/kernel/debug/dynamic_debug/control
-> > $ nstat -n;for f in {1..10}; do ./super_netperf 1 -H lpk52 -l -4000000; done;nstat|egrep "Hystart"
-> >    7050
-> >    7065
-> >    7100
-> >    6900
-> >    7202
-> >    7263
-> >    7189
-> >    6869
-> >    7463
-> >    7034
-> > TcpExtTCPHystartTrainDetect     10                 0.0
-> > TcpExtTCPHystartTrainCwnd       3199               0.0
-> > $ dmesg | tail -10
-> > [  176.920012] hystart_ack_train (161 > 141) delay_min 83 (+ ack_delay 58) cwnd 264
-> > [  179.144645] hystart_ack_train (164 > 159) delay_min 120 (+ ack_delay 39) cwnd 444
-> > [  181.354527] hystart_ack_train (214 > 168) delay_min 125 (+ ack_delay 43) cwnd 436
-> > [  183.539565] hystart_ack_train (170 > 147) delay_min 96 (+ ack_delay 51) cwnd 326
-> > [  185.727309] hystart_ack_train (177 > 160) delay_min 61 (+ ack_delay 99) cwnd 128
-> > [  187.947142] hystart_ack_train (184 > 167) delay_min 123 (+ ack_delay 44) cwnd 367
-> > [  190.166680] hystart_ack_train (230 > 153) delay_min 116 (+ ack_delay 37) cwnd 444
-> > [  192.327285] hystart_ack_train (210 > 206) delay_min 86 (+ ack_delay 120) cwnd 152
-> > [  194.511392] hystart_ack_train (173 > 151) delay_min 94 (+ ack_delay 57) cwnd 239
-> > [  196.736023] hystart_ack_train (149 > 146) delay_min 105 (+ ack_delay 41) cwnd 399
-> >
-> > Fixes: 42f3a8aaae66 ("tcp_cubic: tweak Hystart detection for short RTT flows")
-> > Signed-off-by: Eric Dumazet <edumazet@google.com>
-> > Reported-by: Neal Cardwell <ncardwell@google.com>
-> > Link: https://www.spinics.net/lists/netdev/msg621886.html
-> > Link: https://www.spinics.net/lists/netdev/msg621797.html
-> > ---
->
-> Great!  Thanks, Eric.
->
-> Acked-by: Neal Cardwell <ncardwell@google.com>
+Hi Vinicius,
 
-Acked-by: Soheil Hassas Yeganeh <soheil@google.com>
+On 12/18/2019 08:54 PM, Vinicius Costa Gomes wrote:
+> Hi Ivan,
+> 
+> Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org> writes:
+> 
+>>>>> Quoting Po Liu (2019-11-27 01:59:18)
+>>>>>> IEEE Std 802.1Qbu standard defined the frame preemption of port
+>>>>>> traffic classes. This patch introduce a method to set traffic classes
+>>>>>> preemption. Add a parameter 'preemption' in struct
+>>>>>> ethtool_link_settings. The value will be translated to a binary, each
+>>>>>> bit represent a traffic class. Bit "1" means preemptable traffic
+>>>>>> class. Bit "0" means express traffic class.  MSB represent high number
+>>>>>> traffic class.
+>>>>>>
+>>>>>> If hardware support the frame preemption, driver could set the
+>>>>>> ethernet device with hw_features and features with NETIF_F_PREEMPTION
+>>>>>> when initializing the port driver.
+>>>>>>
+>>>>>> User can check the feature 'tx-preemption' by command 'ethtool -k
+>>>>>> devname'. If hareware set preemption feature. The property would be a
+>>>>>> fixed value 'on' if hardware support the frame preemption.
+>>>>>> Feature would show a fixed value 'off' if hardware don't support the
+>>>>>> frame preemption.
+>>>
+>>> Having some knobs in ethtool to enable when/how Frame Preemption is
+>>> advertised on the wire makes sense. I also agree that it should be "on"
+>>> by default.
+>>>
+>>>>>>
+>>>>>> Command 'ethtool devname' and 'ethtool -s devname preemption N'
+>>>>>> would show/set which traffic classes are frame preemptable.
+>>>>>>
+>>>>>> Port driver would implement the frame preemption in the function
+>>>>>> get_link_ksettings() and set_link_ksettings() in the struct ethtool_ops.
+>>>>>
+>>>>> In an early RFC series [1], we proposed a way to support frame preemption. I'm
+>>>>> not sure if you have considered it before implementing this other proposal
+>>>>> based on ethtool interface so I thought it would be a good idea to bring that up
+>>>>> to your attention, just in case.
+>>>>
+>>>> Sorry, I didn't notice the RFC proposal. Using ethtool set the
+>>>> preemption just thinking about 8021Qbu as standalone. And not limit to
+>>>> the taprio if user won't set 802.1Qbv.
+>>>
+>>> I see your point of using frame-preemption "standalone", I have two
+>>> ideas:
+>>>
+>>> 1. add support in taprio to be configured without any schedule in the
+>>> "full offload" mode. In practice, allowing taprio to work somewhat
+>>> similar to (mqprio + frame-preemption), changes in the code should de
+>>> fairly small;
+>>
+>> +
+>>
+>> And if follow mqprio settings logic then preemption also can be enabled
+>> immediately while configuring taprio first time, and similarly new ADMIN
+>> can't change it and can be set w/o preemption option afterwards.
+>>
+>> So that following is correct:
+>>
+>> OPER
+>> $ tc qdisc add dev IFACE parent root handle 100 taprio \
+>>        base-time 10000000 \
+>>        num_tc 3 \
+>>        map 2 2 1 0 2 2 2 2 2 2 2 2 2 2 2 2 \
+>>        queues 1@0 1@1 2@2 \
+>>        preemption 0 1 1 1
+>>        flags 1
+>>
+>> then
+>> ADMIN
+>> $ tc qdisc add dev IFACE parent root handle 100 taprio \
+>>        base-time 12000000 \
+>>        num_tc 3 \
+>>        map 2 2 1 0 2 2 2 2 2 2 2 2 2 2 2 2 \
+>>        queues 1@0 1@1 2@2 \
+>>        preemption 0 1 1 1
+>>        sched-entry S 01 300000 \
+>>        sched-entry S 02 300000 \
+>>        flags 1
+>>
+>> then
+>> ADMIN
+>> $ tc qdisc add dev IFACE parent root handle 100 taprio \
+>>        base-time 13000000 \
+>>        sched-entry S 01 300000 \
+>>        sched-entry S 02 300000 \
+>>        flags 1
+>>
+>> BUT:
+>>
+>> 1) The question is only should it be in this way? I mean preemption to be
+>> enabled immediately? Also should include other parameters like
+>> fragment size.
+> 
+> We can decide what things are allowed/useful here. For example, it might
+> make sense to allow "preemption" to be changed. We can extend taprio to
+> support changing the fragment size, if that makes sense.
+> 
+The point is it make sense to configure pre-emption related parameters
+independently of taprio since they are not related. User may use just
+pre-emption to reduce latency in the communication path for their end
+application.. So there should be a way to configure it independently of
+taprio. Right??
 
-Thank you, Eric!
+>>
+>> 2) What if I want to use frame preemption with another "transmission selection
+>> algorithm"? Say another one "time sensitive" - CBS? How is it going to be
+>> stacked?
+> 
+> I am not seeing any (conceptual*) problems when plugging a cbs (for
+> example) qdisc into one of taprio children. Or, are you talking about a
+> more general problem?
+> 
 
->
-> neal
+If I understand it correctly problem is not stacking taprio with cbs,
+but rather pre-emption with other qdiscs and allow configuring
+the parameters such as frag size. How do I use frame pre-emption as
+an independent feature and configure frag size? Ethool appears to be
+better from this point of view as Ivan has mentioned below.
+
+Murali
+
+> * here I am considering that support for taprio without an schedule is
+>   added.
+> 
+>>
+>> In this case ethtool looks better, allowing this "MAC level" feature, to be
+>> configured separately.
+> 
+> My only issue with using ethtool is that then we would have two
+> different interfaces for "complementary" features. And it would make
+> things even harder to configure and debug. The fact that one talks about
+> traffic classes and the other transmission queues doesn't make me more
+> comfortable as well.
+> 
+> On the other hand, as there isn't a way to implement frame preemption in
+> software, I agree that it makes it kind of awkward to have it in the tc
+> subsystem.
+> 
+> At this point, I am slightly in favor of the taprio approach (yes, I am
+> biased :-), but I can be convinced otherwise. I will be only a little
+> sad if we choose to go with ethtool for now, and then add support up in
+> the stack, something similar to "ethtool -N" and "tc-flower".
+> 
+>>
+>>>
+>>> 2. extend mqprio to support frame-preemption;
+>>>
+>>>>
+>>>> As some feedback  also want to set the MAC merge minimal fragment size
+>>>> and get some more information of 802.3br.
+>>>
+>>> The minimal fragment size, I guess, also makes sense to be kept in
+>>> ethtool. That is we have a sane default, and allow the user to change
+>>> this setting for special cases.
+>>>
+>>>>
+>>>>>
+>>>>> In that initial proposal, Frame Preemption feature is configured via taprio qdisc.
+>>>>> For example:
+>>>>>
+>>>>> $ tc qdisc add dev IFACE parent root handle 100 taprio \
+>>>>>        num_tc 3 \
+>>>>>        map 2 2 1 0 2 2 2 2 2 2 2 2 2 2 2 2 \
+>>>>>        queues 1@0 1@1 2@2 \
+>>>>>        preemption 0 1 1 1 \
+>>>>>        base-time 10000000 \
+>>>>>        sched-entry S 01 300000 \
+>>>>>        sched-entry S 02 300000 \
+>>>>>        sched-entry S 04 400000 \
+>>>>>        clockid CLOCK_TAI
+>>>>>
+>>>>> It also aligns with the gate control operations Set-And-Hold-MAC and Set-And-
+>>>>> Release-MAC that can be set via 'sched-entry' (see Table 8.7 from
+>>>>> 802.1Q-2018 for further details.
+>>>>
+>>>> I am curious about Set-And-Hold-Mac via 'sched-entry'. Actually, it
+>>>> could be understand as guardband by hardware preemption. MAC should
+>>>> auto calculate the nano seconds before  express entry slot start to
+>>>> break to two fragments. Set-And-Hold-MAC should minimal larger than
+>>>> the fragment-size oct times.
+>>>
+>>> Another interesting point. My first idea is that when the schedule is
+>>> offloaded to the driver and the driver detects that the "entry" width is
+>>> smaller than the fragment side, the driver could reject that schedule
+>>> with a nice error message.
+>>
+>> Looks ok, if entry command is RELEASE or SET only, but not HOLD, and
+>> only if it contains express queues. And if for entry is expectable to have
+>> interval shorter, the entry has to be marked as HOLD then.
+>>
+>> But not every offload is able to support mac/hold per sched (there is
+>> no HOLD/RELEASE commands in this case). For this case seems like here can
+>> be 2 cases:
+> 
+> Yeah, the hw I have in hand also doesn't support the HOLD/RELEASE
+> commands.
+> 
+>>
+>> 1) there is no “gate close” event for the preemptible traffic
+>> 2) there is "gate close" event for the preemptable traffic
+>>
+>> And both can have the following impact, if assume the main reason to
+>> this guard check is to guarantee the express queue cannot be blocked while
+>> this "close to short" interval opening ofc:
+>>
+>> If a preemption fragment is started before "express" frame, then interval
+>> should allow to complete preemption fragment and has to have enough time
+>> to insert express frame. So here situation when maximum packet size per
+>> each queue can have place.
+>>
+>> In case of TI am65 this queue MTU is configurable per queue (for similar
+>> reasons and couple more (packet fill feature for instance)) and can be
+>> used for guard check also, but not clear where it should be. Seems like
+>> it should be done using ethtool also, but can be needed for taprio
+>> interface....
+> 
+> For now, at least for the hardware I am working on, something like this
+> is configurable, but I wasn't planning on exposing it, using the maximum
+> ethernet frame size seemed a good default.
+> 
+>>
+>>>>
+>>>>>
+>>>>> Please share your thoughts on this.
+>>>>
+>>>> I am good to see there is frame preemption proposal. Each way is ok
+>>>> for me but ethtool is more flexible. I've seen the RFC the code. The
+>>>> hardware offload is in the mainline, but preemption is not yet, I
+>>>> don't know why. Could you post it again?
+>>>
+>>> It's not mainline because this kind of stuff will not be accepted
+>>> upstream without in-tree users. And you are the first one to propose
+>>> such a thing :-)
+>>>
+>>> It's just now that I have something that supports frame-preemption, the
+>>> code I have is approaching RFC-like quality. I will send another RFC
+>>> this week hopefully, and we can see how things look in practice.
+>>>
+>>>
+>>> Cheers,
+>>> --
+>>> Vinicius
+>>
+>> -- 
+>> Regards,
+>> Ivan Khoronzhuk
+> 
+> Cheers,
+> --
+> Vinicius
+> 
+
+-- 
+Murali Karicheri
+Texas Instruments
