@@ -2,144 +2,199 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7650812DA1B
-	for <lists+netdev@lfdr.de>; Tue, 31 Dec 2019 17:10:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B90AE12DA2E
+	for <lists+netdev@lfdr.de>; Tue, 31 Dec 2019 17:12:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727158AbfLaQKY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Dec 2019 11:10:24 -0500
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:41146 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727145AbfLaQKY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Dec 2019 11:10:24 -0500
-Received: by mail-wr1-f66.google.com with SMTP id c9so35507249wrw.8
-        for <netdev@vger.kernel.org>; Tue, 31 Dec 2019 08:10:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=pSVzl6FnvnAVr+Wik5Wob1+V4iu+RFzLiuBag7qyOkc=;
-        b=PCOTdxkNw3zc1q31J8mx5irA2ODvERZTgxptK0SPYLE90S7DjlDfGn68RiCqcjMCzC
-         4oJlsFVCvQxjzkt0giXP9bLlyr4crCVcYDKOaVi52O6iuwVoNa3OVIlB7Y7rZuozvUwd
-         3S1GBZE1T8n70N2es4bBoJY9ywehgKe9i5VP9AOuJ+y1weKTzQWmIUDzewuA22QOr0mM
-         IgOhUH1KxJ2H0dJ3geysLCtZejOcSnWtB6baMaRLNsTaVCJqMgurPeH7BJM4pPcGBxWk
-         nko9tZyu4JYiq9V1SL2GFQTOq7GQKIwUHXRvcHIsQu5upsV56DV/9Y3lf20VvvIq2mjS
-         0vhw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=pSVzl6FnvnAVr+Wik5Wob1+V4iu+RFzLiuBag7qyOkc=;
-        b=M9XP/AvtWDi6GR81Fx3J90ZZ/w7m5wv40u+BsqySVfcyYJFROeKDQwLuzn1+7xAWy8
-         SG/ANqWnGphxTsNQ8hyGZNqF6fgU1QTeF40/YFBnGzNx/oGpnDlAjwIINwyJ1pHjANKg
-         Cd6cdbvU7hm7r/CIOv2ANb/1VfdrMYl1I61kEpzL1KCyqqaMzvp475cASyY2bkFIT6QO
-         c8/rmtOmZDPd0AbgQJcafWuYaxnn5bYNyKG9QclA4p9mkSjg/hMpVW9Zw0iodYPMx+g4
-         ahn4xDvmfhCTz6jyf+CSqHfDorC3jVLOPriZgqtwBqY8CzEGhY1GQOKvhDazmIOAW0Tp
-         Zn6A==
-X-Gm-Message-State: APjAAAVQgMo0XEmhptzQyOwl2ZSAm+WblFHk2q7cEkJQkSbArhOLRrPx
-        SOWc6suvQi5JEHbWw7ko/cQ=
-X-Google-Smtp-Source: APXvYqy3G8ppPIQ3fuEIi0rbaOP7R3rqfES3t/SSipS0zG048ICKuJUr9al69LyXYRw2vxwZQh0ZrA==
-X-Received: by 2002:adf:8541:: with SMTP id 59mr72192070wrh.307.1577808622580;
-        Tue, 31 Dec 2019 08:10:22 -0800 (PST)
-Received: from pali ([2a02:2b88:2:1::5cc6:2f])
-        by smtp.gmail.com with ESMTPSA id i10sm50009819wru.16.2019.12.31.08.10.21
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Tue, 31 Dec 2019 08:10:21 -0800 (PST)
-Date:   Tue, 31 Dec 2019 17:10:20 +0100
-From:   Pali =?utf-8?B?Um9ow6Fy?= <pali.rohar@gmail.com>
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Cc:     netdev@vger.kernel.org, Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>
-Subject: Re: [RFC 0/3] VLANs, DSA switches and multiple bridges
-Message-ID: <20191231161020.stzil224ziyduepd@pali>
-References: <20191222192235.GK25745@shell.armlinux.org.uk>
+        id S1727121AbfLaQMl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Dec 2019 11:12:41 -0500
+Received: from mail-co1nam11on2109.outbound.protection.outlook.com ([40.107.220.109]:50689
+        "EHLO NAM11-CO1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727071AbfLaQMl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 31 Dec 2019 11:12:41 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=mfpMXs7L8ZyZtu3yrPtfPephUmqBb4UItFIIeDEGWT3yd1LYueTO/IO3uqVtY/kz3Wtw1pXlQILHGcqGN5gg28+FQMLxO/O3TfMBeH3rCN+Jbp0WmM3cfxM1QcDV92lkK6G+XmADB60tAh3Nih1zzxO8aTUYtAvKUONmqPLvz6455JtYnr/neSfkJ9t9ryONCFsDySxr8NIeRmuXOdyGFDWoHLBix/etjacMunq0ftT6lZEfrYJtHO4ngzsGjBwm9Z2tPmUH96g7bjrp/A3S9lf/Pkcp8YV5rqZd/XB5csG9B9Lhv5Ydm+j5RvZ/PTKac1BTkG6TZI6FGJSogWViiQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=DFcOrsJWnhnWYE1Bm2mQ89IikbOPI+LdbnjuXoMNZUU=;
+ b=fk91IKmEXZPmYrI5+GwfkzJdUCOJaNBKwnYuRWO/mvA1vDuKAJYRUDMsk7wEMTrSzj870K2dfvwM3FbXjxMex83th/CFyTGgOnfoNK0w4wAMMt9H2Z1/KdE1Q8tHDhxWklvjWm9Eodvwn+RP7wisNo0SRWArKA2wFNfwJpg4EffbQeZIx+7KBtZriUTxW2Zi9XllqtLaBhl7yOOpDj4nqiGRseCkQpKxPmifSn7nfRm2KHWoSVQgSu0UK6sfKluf8S819jLl/lFG3O1KGqtzv3HTgWMHLDH9TmUUTtCTwVbd9tjgnafH6rIh7ciosh6lYOWEQgUHkKrH8EZF6MxJuQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microsoft.com; dmarc=pass action=none
+ header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=DFcOrsJWnhnWYE1Bm2mQ89IikbOPI+LdbnjuXoMNZUU=;
+ b=IFjjpyeFG+agROQP5Z/qmHFNTQyVSzR100qtA7/OTEF/MAH1sFh/tqvYVYA3sA2xUWeCKjygSWhTmOJ3o7WnngoxCyvmZoBU4Sox1+KSDoZZA5/5OhbHOh9tOAv2CLxeAvX08+LJCJ2NoPKfcfwcdT2IjdJ/Sz733vLGPlpHzAk=
+Received: from MN2PR21MB1375.namprd21.prod.outlook.com (20.179.23.160) by
+ MN2PR21MB1215.namprd21.prod.outlook.com (20.179.20.143) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2602.8; Tue, 31 Dec 2019 16:12:36 +0000
+Received: from MN2PR21MB1375.namprd21.prod.outlook.com
+ ([fe80::6de3:c062:9e55:ffc4]) by MN2PR21MB1375.namprd21.prod.outlook.com
+ ([fe80::6de3:c062:9e55:ffc4%5]) with mapi id 15.20.2623.002; Tue, 31 Dec 2019
+ 16:12:36 +0000
+From:   Haiyang Zhang <haiyangz@microsoft.com>
+To:     Roman Kagan <rkagan@virtuozzo.com>
+CC:     "sashal@kernel.org" <sashal@kernel.org>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        KY Srinivasan <kys@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        "olaf@aepfle.de" <olaf@aepfle.de>, vkuznets <vkuznets@redhat.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH V2,net-next, 3/3] hv_netvsc: Name NICs based on vmbus
+ offer sequence and use async probe
+Thread-Topic: [PATCH V2,net-next, 3/3] hv_netvsc: Name NICs based on vmbus
+ offer sequence and use async probe
+Thread-Index: AQHVv027GHCeFuKLhUO4V+gfj0XECKfUHfwAgABK1lA=
+Date:   Tue, 31 Dec 2019 16:12:36 +0000
+Message-ID: <MN2PR21MB1375D41039A8A68A2117DDFCCA260@MN2PR21MB1375.namprd21.prod.outlook.com>
+References: <1577736814-21112-1-git-send-email-haiyangz@microsoft.com>
+ <1577736814-21112-4-git-send-email-haiyangz@microsoft.com>
+ <20191231113440.GA380228@rkaganb.sw.ru>
+In-Reply-To: <20191231113440.GA380228@rkaganb.sw.ru>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=True;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Owner=haiyangz@microsoft.com;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2019-12-31T16:12:35.0522984Z;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=General;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Application=Microsoft Azure
+ Information Protection;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=4b094d31-eadc-468c-a104-560efbd636a0;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Extended_MSFT_Method=Automatic
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=haiyangz@microsoft.com; 
+x-originating-ip: [96.61.92.94]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 7b083eab-7ba7-40c9-9d05-08d78e0c406a
+x-ms-traffictypediagnostic: MN2PR21MB1215:|MN2PR21MB1215:|MN2PR21MB1215:
+x-ms-exchange-transport-forked: True
+x-ld-processed: 72f988bf-86f1-41af-91ab-2d7cd011db47,ExtAddr
+x-microsoft-antispam-prvs: <MN2PR21MB12153412C5C71AFF16615EB0CA260@MN2PR21MB1215.namprd21.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-forefront-prvs: 0268246AE7
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(39860400002)(346002)(376002)(136003)(396003)(366004)(13464003)(199004)(189003)(66446008)(66946007)(64756008)(66556008)(66476007)(81166006)(8936002)(8676002)(81156014)(33656002)(10290500003)(4326008)(9686003)(55016002)(5660300002)(71200400001)(54906003)(76116006)(316002)(8990500004)(2906002)(6916009)(52536014)(6506007)(186003)(7696005)(478600001)(86362001)(26005)(53546011);DIR:OUT;SFP:1102;SCL:1;SRVR:MN2PR21MB1215;H:MN2PR21MB1375.namprd21.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: microsoft.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: reKVrnE/IFhKI/yltPr9es2FQS+C1eBSnS/kP4a2UKDhCxWOYSBbMhH2vI5bMSjzMsNtoluZJsLk7qmIDmR0EqCHmeKZE5OvPlrYUrcobofA+6wZiuxvKMB1uREb4XUy2UyV5hRo4O0Ue2Ha+m5S9szmVoSZ4+qedUAZAFUhTWbt5IASrlMdvL8rtD34T14wnPFcJEMkGQHXSeOZpNbZmHlNHYI5gwALg/J+f1/0w9jVixil+8epNWsVb/2xl1tudJ1IrExZp0loJKxKTAYp6IloWDWmd9l9j9l5Z2atw2jPorJ3Zg8+3I/uom0DiSOJuv2mUYkd3AeRmHWZmjuhiX2BEF90DSEGez7pFTl79W/lOzkvIiBQN8eE0mFf5V1vRXj6XlT33uDS7ugHO5GBlA4KbiiM4R5gelv11AyfNNs7Njj516848XaUE+TaccYmBaB74pEvpXtFqL+MmHZe/WTPpRJVVIRH3NUr3bnvxOJaYGCwJvsvYUZr98oxFhre
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-        protocol="application/pgp-signature"; boundary="x3gd6wbnle6ehxjt"
-Content-Disposition: inline
-In-Reply-To: <20191222192235.GK25745@shell.armlinux.org.uk>
-User-Agent: NeoMutt/20170113 (1.7.2)
+X-OriginatorOrg: microsoft.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7b083eab-7ba7-40c9-9d05-08d78e0c406a
+X-MS-Exchange-CrossTenant-originalarrivaltime: 31 Dec 2019 16:12:36.5346
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: tlH+l21cTlzIAzjJs2gJzOo4/jeJF1T2JSvjUHdaxgqwiuWRaeJJs+93ud1+opWT+/yn+EUBs0lLHenvo5FuVA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR21MB1215
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
---x3gd6wbnle6ehxjt
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
 
-On Sunday 22 December 2019 19:22:35 Russell King - ARM Linux admin wrote:
-> Hi,
+> -----Original Message-----
+> From: Roman Kagan <rkagan@virtuozzo.com>
+> Sent: Tuesday, December 31, 2019 6:35 AM
+> To: Haiyang Zhang <haiyangz@microsoft.com>
+> Cc: sashal@kernel.org; linux-hyperv@vger.kernel.org; netdev@vger.kernel.o=
+rg;
+> KY Srinivasan <kys@microsoft.com>; Stephen Hemminger
+> <sthemmin@microsoft.com>; olaf@aepfle.de; vkuznets
+> <vkuznets@redhat.com>; davem@davemloft.net; linux-kernel@vger.kernel.org
+> Subject: Re: [PATCH V2,net-next, 3/3] hv_netvsc: Name NICs based on vmbus
+> offer sequence and use async probe
 >=20
-> I've been trying to configure DSA for VLANs and not having much success.
-> The setup is quite simple:
+> On Mon, Dec 30, 2019 at 12:13:34PM -0800, Haiyang Zhang wrote:
+> > The dev_num field in vmbus channel structure is assigned to the first
+> > available number when the channel is offered. So netvsc driver uses it
+> > for NIC naming based on channel offer sequence. Now re-enable the
+> > async probing mode for faster probing.
+> >
+> > Signed-off-by: Haiyang Zhang <haiyangz@microsoft.com>
+> > ---
+> >  drivers/net/hyperv/netvsc_drv.c | 18 +++++++++++++++---
+> >  1 file changed, 15 insertions(+), 3 deletions(-)
+> >
+> > diff --git a/drivers/net/hyperv/netvsc_drv.c
+> > b/drivers/net/hyperv/netvsc_drv.c index f3f9eb8..39c412f 100644
+> > --- a/drivers/net/hyperv/netvsc_drv.c
+> > +++ b/drivers/net/hyperv/netvsc_drv.c
+> > @@ -2267,10 +2267,14 @@ static int netvsc_probe(struct hv_device *dev,
+> >  	struct net_device_context *net_device_ctx;
+> >  	struct netvsc_device_info *device_info =3D NULL;
+> >  	struct netvsc_device *nvdev;
+> > +	char name[IFNAMSIZ];
+> >  	int ret =3D -ENOMEM;
+> >
+> > -	net =3D alloc_etherdev_mq(sizeof(struct net_device_context),
+> > -				VRSS_CHANNEL_MAX);
+> > +	snprintf(name, IFNAMSIZ, "eth%d", dev->channel->dev_num);
 >=20
-> - The main network is untagged
-> - The wifi network is a vlan tagged with id $VN running over the main
->   network.
+> How is this supposed to work when there are other ethernet device types o=
+n the
+> system, which may claim the same device names?
 >=20
-> I have an Armada 388 Clearfog with a PCIe wifi card which I'm trying to
-> setup to provide wifi access to the vlan $VN network, while the switch
-> is also part of the main network.
+> > +	net =3D alloc_netdev_mqs(sizeof(struct net_device_context), name,
+> > +			       NET_NAME_ENUM, ether_setup,
+> > +			       VRSS_CHANNEL_MAX, VRSS_CHANNEL_MAX);
+> > +
+> >  	if (!net)
+> >  		goto no_net;
+> >
+> > @@ -2355,6 +2359,14 @@ static int netvsc_probe(struct hv_device *dev,
+> >  		net->max_mtu =3D ETH_DATA_LEN;
+> >
+> >  	ret =3D register_netdevice(net);
+> > +
+> > +	if (ret =3D=3D -EEXIST) {
+> > +		pr_info("NIC name %s exists, request another name.\n",
+> > +			net->name);
+> > +		strlcpy(net->name, "eth%d", IFNAMSIZ);
+> > +		ret =3D register_netdevice(net);
+> > +	}
+>=20
+> IOW you want the device naming to be predictable, but don't guarantee thi=
+s?
+>=20
+> I think the problem this patchset is trying to solve is much better solve=
+d with a
+> udev rule, similar to how it's done for PCI net devices.
+> And IMO the primary channel number, being a device's "hardware"
+> property, is more suited to be used in the device name, than this complet=
+ely
+> ephemeral device number.
 
-Hello, I do not know if it is related, but I have a problem with DSa,
-VLAN and mv88e6085 on Espressobin board (armada-3720).
+The vmbus number can be affected by other types of devices and/or subchanne=
+l
+offerings. They are not stable either. That's why this patch set keeps trac=
+k of the=20
+offering sequence within the same device type in a new variable "dev_num".
 
-My setup/topology is similar:
+As in my earlier email, to avoid impact by other types of NICs, we should p=
+ut them
+into different naming formats, like "vf*", "enP*", etc. And yes, these can =
+be done in
+udev.
 
-eth0 --> main interface for mv88e6085 switch
-wan --> first RJ45 port from eth0
-lan0 --> second RJ45 port from eth0
-wan.10 --> unpacked VLAN with id 10 packets from wan
+But for netvsc (synthetic) NICs, we still want the default naming format "e=
+th*". And
+the variable "dev_num" gives them the basis for stable naming with Async pr=
+obing.
 
-Just one note, wan and wan.10 uses different MAC addresses. Also lan0
-has another MAC address.
+Thanks,
+- Haiyang
 
-Basically on upstream wan are two different/separated networks. First
-one is untagged, second one is tagged with vlan id 10 and tagged packets
-should come on wan interface (linux kernel then pass untagged packets to
-wan and vlan id 10 tagged as "untagged" to wan.10). lan0 is downstream
-network and in this configuration Espressobin works as router. So there
-is no switching between RJ45 ports, all packets should come to CPU and
-Linux's iptables do all stuff.
-
-And now the problem. All (untagged) traffic for first network on wan
-works fine (incoming + outgoing). Also all outgoing packets from wan.10
-interface are correctly transmitted (other side see on first RJ45 port
-that packets are properly tagged by id 10). But for unknown reason all
-incoming packets with vlan id 10 on first RJ45 port are dropped. Even
-tcpdump on eth0 does not see them.
-
-Could be this problem related to one which Russel described? I tried to
-debug this problem but I give up 2 days before Russel send this email
-with patches, so I have not had a chance to test it.
-
-One very strange behavior is that sometimes mv88e6085 starts accepting
-those vlan id 10 packets and kernel them properly send to wan.10
-interface and userspacee applications see them. And once they start
-appearing it works for 5 minutes, exactly 300s. After 300s they are
-again silently somehow dropped (tcpdump again does not see them). I was
-not able to detect anything which could cause that kernel started seeing
-them. Looks for me it was really random. But exact time 300s is really
-strange.
-
-I used default Debian Buster kernel (without any custom patches). Also
-one from Debian Buster backports, but behavior was still same.
-
---=20
-Pali Roh=C3=A1r
-pali.rohar@gmail.com
-
---x3gd6wbnle6ehxjt
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iF0EABECAB0WIQS4VrIQdKium2krgIWL8Mk9A+RDUgUCXgty6gAKCRCL8Mk9A+RD
-Ujn7AJ0e7bmhb7RFeU6j51TVJm+Y4AkLkgCfYyxjE3FFqzdiRLY0upR3ZnGwKpU=
-=1XvK
------END PGP SIGNATURE-----
-
---x3gd6wbnle6ehxjt--
