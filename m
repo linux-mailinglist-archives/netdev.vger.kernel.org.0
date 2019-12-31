@@ -2,48 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5109E12D59D
-	for <lists+netdev@lfdr.de>; Tue, 31 Dec 2019 02:52:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A4B1A12D5AC
+	for <lists+netdev@lfdr.de>; Tue, 31 Dec 2019 03:04:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726579AbfLaBwi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Dec 2019 20:52:38 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:49936 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725379AbfLaBwi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Dec 2019 20:52:38 -0500
-Received: from localhost (unknown [IPv6:2601:601:9f00:1c3::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id C6F411556051F;
-        Mon, 30 Dec 2019 17:52:37 -0800 (PST)
-Date:   Mon, 30 Dec 2019 17:52:35 -0800 (PST)
-Message-Id: <20191230.175235.1109525824306658097.davem@davemloft.net>
-To:     christophe.jaillet@wanadoo.fr
-Cc:     linux-net-drivers@solarflare.com, ecree@solarflare.com,
-        mhabets@solarflare.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH] sfc: avoid duplicate error handling code in
- 'efx_ef10_sriov_set_vf_mac()'
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20191226150224.8701-1-christophe.jaillet@wanadoo.fr>
-References: <20191226150224.8701-1-christophe.jaillet@wanadoo.fr>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 30 Dec 2019 17:52:38 -0800 (PST)
+        id S1726674AbfLaCE1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Dec 2019 21:04:27 -0500
+Received: from mail.windriver.com ([147.11.1.11]:45560 "EHLO
+        mail.windriver.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725379AbfLaCE1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Dec 2019 21:04:27 -0500
+Received: from ALA-HCA.corp.ad.wrs.com (ala-hca.corp.ad.wrs.com [147.11.189.40])
+        by mail.windriver.com (8.15.2/8.15.2) with ESMTPS id xBV241I2021546
+        (version=TLSv1 cipher=AES256-SHA bits=256 verify=FAIL);
+        Mon, 30 Dec 2019 18:04:01 -0800 (PST)
+Received: from pek-lpggp2 (128.224.153.75) by ALA-HCA.corp.ad.wrs.com
+ (147.11.189.40) with Microsoft SMTP Server id 14.3.468.0; Mon, 30 Dec 2019
+ 18:04:00 -0800
+Received: by pek-lpggp2 (Postfix, from userid 20544)    id 02289721563; Tue, 31
+ Dec 2019 10:03:02 +0800 (CST)
+From:   Jiping Ma <jiping.ma2@windriver.com>
+To:     <peppe.cavallaro@st.com>, <alexandre.torgue@st.com>
+CC:     <joabreu@synopsys.com>, <mcoquelin.stm32@gmail.com>,
+        <netdev@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-kernel@vger.kernel.org>, <jiping.ma2@windriver.com>
+Subject: [PATCH] stmmac: debugfs entry name is not be changed when udev rename device name.
+Date:   Tue, 31 Dec 2019 10:03:02 +0800
+Message-ID: <20191231020302.71792-1-jiping.ma2@windriver.com>
+X-Mailer: git-send-email 2.23.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Date: Thu, 26 Dec 2019 16:02:24 +0100
+Add one notifier for udev changes net device name.
 
-> 'eth_zero_addr()' is already called in the error handling path. This is
-> harmless, but there is no point in calling it twice, so remove one.
-> 
-> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Signed-off-by: Jiping Ma <jiping.ma2@windriver.com>
+---
+ .../net/ethernet/stmicro/stmmac/stmmac_main.c | 38 ++++++++++++++++++-
+ 1 file changed, 37 insertions(+), 1 deletion(-)
 
-Applied to net-next, thank you.
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+index b14f46a57154..c1c877bb4421 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+@@ -4038,6 +4038,40 @@ static int stmmac_dma_cap_show(struct seq_file *seq, void *v)
+ }
+ DEFINE_SHOW_ATTRIBUTE(stmmac_dma_cap);
+ 
++/**
++ * Use network device events to create/remove/rename
++ * debugfs file entries
++ */
++static int stmmac_device_event(struct notifier_block *unused,
++			       unsigned long event, void *ptr)
++{
++	struct net_device *dev = netdev_notifier_info_to_dev(ptr);
++	struct stmmac_priv *priv = netdev_priv(dev);
++
++	switch (event) {
++	case NETDEV_CHANGENAME:
++		if (priv->dbgfs_dir)
++			priv->dbgfs_dir = debugfs_rename(stmmac_fs_dir,
++							 priv->dbgfs_dir,
++							 stmmac_fs_dir,
++							 dev->name);
++		break;
++
++	case NETDEV_GOING_DOWN:
++		break;
++
++	case NETDEV_UP:
++		break;
++	}
++
++done:
++	return NOTIFY_DONE;
++}
++
++static struct notifier_block stmmac_notifier = {
++	.notifier_call = stmmac_device_event,
++};
++
+ static int stmmac_init_fs(struct net_device *dev)
+ {
+ 	struct stmmac_priv *priv = netdev_priv(dev);
+@@ -4050,7 +4084,6 @@ static int stmmac_init_fs(struct net_device *dev)
+ 
+ 		return -ENOMEM;
+ 	}
+-
+ 	/* Entry to report DMA RX/TX rings */
+ 	priv->dbgfs_rings_status =
+ 		debugfs_create_file("descriptors_status", 0444,
+@@ -4076,6 +4109,8 @@ static int stmmac_init_fs(struct net_device *dev)
+ 		return -ENOMEM;
+ 	}
+ 
++	register_netdevice_notifier(&stmmac_notifier);
++
+ 	return 0;
+ }
+ 
+@@ -4083,6 +4118,7 @@ static void stmmac_exit_fs(struct net_device *dev)
+ {
+ 	struct stmmac_priv *priv = netdev_priv(dev);
+ 
++	unregister_netdevice_notifier(&stmmac_notifier);
+ 	debugfs_remove_recursive(priv->dbgfs_dir);
+ }
+ #endif /* CONFIG_DEBUG_FS */
+-- 
+2.23.0
+
