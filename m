@@ -2,77 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 11F4812DC25
-	for <lists+netdev@lfdr.de>; Tue, 31 Dec 2019 23:28:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5FB2812DC3D
+	for <lists+netdev@lfdr.de>; Wed,  1 Jan 2020 00:01:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727249AbfLaW16 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Dec 2019 17:27:58 -0500
-Received: from mga01.intel.com ([192.55.52.88]:1528 "EHLO mga01.intel.com"
+        id S1727116AbfLaXBW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Dec 2019 18:01:22 -0500
+Received: from mail.kernel.org ([198.145.29.99]:52892 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727221AbfLaW1y (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 31 Dec 2019 17:27:54 -0500
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 31 Dec 2019 14:27:53 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.69,380,1571727600"; 
-   d="scan'208";a="209403609"
-Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.74])
-  by orsmga007.jf.intel.com with ESMTP; 31 Dec 2019 14:27:52 -0800
-From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-To:     davem@davemloft.net
-Cc:     Sasha Neftin <sasha.neftin@intel.com>, netdev@vger.kernel.org,
-        nhorman@redhat.com, sassmann@redhat.com,
-        Aaron Brown <aaron.f.brown@intel.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Subject: [net-next 11/11] igc: Remove serdes comments from a description of methods
-Date:   Tue, 31 Dec 2019 14:27:50 -0800
-Message-Id: <20191231222750.3749984-12-jeffrey.t.kirsher@intel.com>
-X-Mailer: git-send-email 2.24.1
-In-Reply-To: <20191231222750.3749984-1-jeffrey.t.kirsher@intel.com>
-References: <20191231222750.3749984-1-jeffrey.t.kirsher@intel.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        id S1727031AbfLaXBW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 31 Dec 2019 18:01:22 -0500
+Received: from localhost.localdomain (c-73-231-172-41.hsd1.ca.comcast.net [73.231.172.41])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id C93F2206DA;
+        Tue, 31 Dec 2019 23:01:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1577833282;
+        bh=5PSVQVMJwAZEcbk4g8uRnQsHkkdsZNVyarptzACKuaI=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=rIjODME4v2nVQqa2B5i49LUuq7PS7JL4arbLZGIhTsshh3cmP84L3vHP14LEFahf6
+         Hg8xBAjly92r9eMsZXwgS9w+4DKtkc6UZD8NqbTlxV+RcCUWH01RQJbBPBjn7i8BEv
+         zwKpqsImGFaOjKX9IudBVIizpPCK0XqWTAlnwwMk=
+Date:   Tue, 31 Dec 2019 15:01:21 -0800
+From:   Andrew Morton <akpm@linux-foundation.org>
+To:     Alexey Dobriyan <adobriyan@gmail.com>
+Cc:     linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-arch@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH 2/2] proc: convert everything to "struct proc_ops"
+Message-Id: <20191231150121.5b09e34205444f6c65277b73@linux-foundation.org>
+In-Reply-To: <20191225172546.GB13378@avx2>
+References: <20191225172228.GA13378@avx2>
+        <20191225172546.GB13378@avx2>
+X-Mailer: Sylpheed 3.5.1 (GTK+ 2.24.31; x86_64-pc-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sasha Neftin <sasha.neftin@intel.com>
+On Wed, 25 Dec 2019 20:25:46 +0300 Alexey Dobriyan <adobriyan@gmail.com> wrote:
 
-Serdes interface is not applicable for i225 devices.
-Remove this from comments and make comments more clearly.
+> The most notable change is DEFINE_SHOW_ATTRIBUTE macro split in
+> seq_file.h.
+> 
+> Conversion rule is:
+> 
+> 	llseek		=> proc_lseek
+> 	unlocked_ioctl	=> proc_ioctl
+> 
+> 	xxx		=> proc_xxx
+> 
+> 	delete ".owner = THIS_MODULE" line
+> 
+> ...
+>
+>  drivers/staging/isdn/hysdn/hysdn_procconf.c           |   15 +-
+>  drivers/staging/isdn/hysdn/hysdn_proclog.c            |   17 +-
 
-Signed-off-by: Sasha Neftin <sasha.neftin@intel.com>
-Tested-by: Aaron Brown <aaron.f.brown@intel.com>
-Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
----
- drivers/net/ethernet/intel/igc/igc_main.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/ethernet/intel/igc/igc_main.c b/drivers/net/ethernet/intel/igc/igc_main.c
-index ca7b8d6791f1..25989c087aca 100644
---- a/drivers/net/ethernet/intel/igc/igc_main.c
-+++ b/drivers/net/ethernet/intel/igc/igc_main.c
-@@ -115,7 +115,7 @@ void igc_reset(struct igc_adapter *adapter)
- }
- 
- /**
-- * igc_power_up_link - Power up the phy/serdes link
-+ * igc_power_up_link - Power up the phy link
-  * @adapter: address of board private structure
-  */
- static void igc_power_up_link(struct igc_adapter *adapter)
-@@ -129,7 +129,7 @@ static void igc_power_up_link(struct igc_adapter *adapter)
- }
- 
- /**
-- * igc_power_down_link - Power down the phy/serdes link
-+ * igc_power_down_link - Power down the phy link
-  * @adapter: address of board private structure
-  */
- static void igc_power_down_link(struct igc_adapter *adapter)
--- 
-2.24.1
-
+These seem to have disappeared in linux-next.
