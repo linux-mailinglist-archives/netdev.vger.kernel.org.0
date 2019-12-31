@@ -2,57 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A888A12D727
-	for <lists+netdev@lfdr.de>; Tue, 31 Dec 2019 09:51:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2097D12D729
+	for <lists+netdev@lfdr.de>; Tue, 31 Dec 2019 09:52:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725913AbfLaIv0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Dec 2019 03:51:26 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:51470 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725497AbfLaIvZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Dec 2019 03:51:25 -0500
-Received: from localhost (unknown [IPv6:2601:601:9f00:1c3::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id EAFE11518AA73;
-        Tue, 31 Dec 2019 00:51:24 -0800 (PST)
-Date:   Tue, 31 Dec 2019 00:51:22 -0800 (PST)
-Message-Id: <20191231.005122.573539968032058973.davem@davemloft.net>
-To:     ap420073@gmail.com
-Cc:     jakub.kicinski@netronome.com, netdev@vger.kernel.org
-Subject: Re: [PATCH net] hsr: fix slab-out-of-bounds Read in
- hsr_debugfs_rename()
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20191228162809.21370-1-ap420073@gmail.com>
-References: <20191228162809.21370-1-ap420073@gmail.com>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
+        id S1726396AbfLaIwb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Dec 2019 03:52:31 -0500
+Received: from mga06.intel.com ([134.134.136.31]:15961 "EHLO mga06.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725497AbfLaIwa (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 31 Dec 2019 03:52:30 -0500
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by orsmga104.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 31 Dec 2019 00:52:29 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.69,378,1571727600"; 
+   d="scan'208";a="215534602"
+Received: from dlmurray-mobl.ger.corp.intel.com ([10.252.21.252])
+  by fmsmga007.fm.intel.com with ESMTP; 31 Dec 2019 00:52:23 -0800
+Message-ID: <fe9a5800538628e5ad107fe650471da1ddf7bdd9.camel@intel.com>
+Subject: Re: [PATCH] iwlwifi: mvm: Revert "iwlwifi: mvm: fix scan config
+ command size"
+From:   Luciano Coelho <luciano.coelho@intel.com>
+To:     Jian-Hong Pan <jian-hong@endlessm.com>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Shahar S Matityahu <shahar.s.matityahu@intel.com>,
+        Tova Mussai <tova.mussai@intel.com>,
+        Ayala Beker <ayala.beker@intel.com>
+Cc:     Intel Linux Wireless <linuxwifi@intel.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux@endlessm.com
+Date:   Tue, 31 Dec 2019 10:52:22 +0200
+In-Reply-To: <20191231083604.5639-1-jian-hong@endlessm.com>
+References: <20191231083604.5639-1-jian-hong@endlessm.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.34.1-2+b1 
+MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 31 Dec 2019 00:51:25 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Taehee Yoo <ap420073@gmail.com>
-Date: Sat, 28 Dec 2019 16:28:09 +0000
-
-> hsr slave interfaces don't have debugfs directory.
-> So, hsr_debugfs_rename() shouldn't be called when hsr slave interface name
-> is changed.
+On Tue, 2019-12-31 at 16:36 +0800, Jian-Hong Pan wrote:
+> The Intel(R) Dual Band Wireless AC 9461 WiFi keeps restarting until
+> commit 06eb547c4ae4 ("wlwifi: mvm: fix scan config command size") is
+> reverted.
 > 
-> Test commands:
->     ip link add dummy0 type dummy
->     ip link add dummy1 type dummy
->     ip link add hsr0 type hsr slave1 dummy0 slave2 dummy1
->     ip link set dummy0 name ap
-> 
-> Splat looks like:
- ...
-> Reported-by: syzbot+9328206518f08318a5fd@syzkaller.appspotmail.com
-> Fixes: 4c2d5e33dcd3 ("hsr: rename debugfs file when interface name is changed")
-> Signed-off-by: Taehee Yoo <ap420073@gmail.com>
+> Buglink: https://bugzilla.kernel.org/show_bug.cgi?id=206025
+> Fixes: commit 06eb547c4ae4 ("wlwifi: mvm: fix scan config command size")
+> Signed-off-by: Jian-Hong Pan <jian-hong@endlessm.com>
+> ---
 
-Applied, thank you.
+We already have this fix queued up for v5.5-rc*:
+
+https://patchwork.kernel.org/patch/11313069/
+
+Thanks for the patch anyway!
+
+--
+Cheers,
+Luca.
+
