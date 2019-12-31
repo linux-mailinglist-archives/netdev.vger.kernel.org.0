@@ -2,762 +2,179 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9DF9C12D837
-	for <lists+netdev@lfdr.de>; Tue, 31 Dec 2019 12:27:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ADA6A12D86B
+	for <lists+netdev@lfdr.de>; Tue, 31 Dec 2019 12:35:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727085AbfLaLY0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Dec 2019 06:24:26 -0500
-Received: from mail-pl1-f195.google.com ([209.85.214.195]:39366 "EHLO
-        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726643AbfLaLYZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Dec 2019 06:24:25 -0500
-Received: by mail-pl1-f195.google.com with SMTP id g6so12866764plp.6
-        for <netdev@vger.kernel.org>; Tue, 31 Dec 2019 03:24:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=doikSdb+DZM303sh5svv+Cab1cXozwQNYyz/bip24ns=;
-        b=OlEizPAuHIR9jKeC2Kvk1K7j4Qifmc6u6ZkFPkPyh0dkzWrYw10iQ65stAEspe/e/B
-         YYSC5WrKLtz0HwIhKAhq7r3nQh6lQVJ2+gkmqvqGCxwQOr4XalGhaGwcHV3vBGl2dBaX
-         7twsTqihAcRN5KVrOR6Qv44HF8VlOjg526G1jF7lETu12w+DNlq1D7Uk4K1W0mRJG/3G
-         1UACwQoeJ4UqesiAYeF04vC3PFeNYvoZKKNjBekLQaQ0ypFCVZTkrc9EK7PWxzxBwZV6
-         MdBNQUPCnyex9HT58G8Au7umyA867dixiP5bPuvBBFxFfnF0vm0izdCTrClt6J+LL3iu
-         x6cA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=doikSdb+DZM303sh5svv+Cab1cXozwQNYyz/bip24ns=;
-        b=ObbLFigK5rsG0sDdStHlYofTDG2A81US+iLh2h3fk9N09gptUmufFw58xn/XyAcuqT
-         2OgzS1M6ycXe9vp0qRF7EV07FOuu4QgNY7ZdF7pCmZwwvNiTVzbiXEvEdiiVP6r0W/y8
-         HZ3GSIrhD0JY4fB4OJgXQfFVVwQgfctS1blUF7iVz4GZD2sW/kMAKC0oqCXgkJNjmhxv
-         udoGzLJ7+STKyfGw0RLLAG0GoYy7+rmCLGhVluVil1jwsAzMHHmterHbmWt/Gb34FyDa
-         yMgj0Alj4ROCfQL+YgsjfapKAiaE9OKqLYD08SuG+4oNg00TOAKLZZHmfz6ZUB9mAgkY
-         wUNw==
-X-Gm-Message-State: APjAAAXlnUlKDj9GmqnOLjmXt3JXPUUTkQRSc/1fx72DZzUsAd0CFMxx
-        D2ZPpMksDGaryy3X0ZmZVWaAxegs6pufPA==
-X-Google-Smtp-Source: APXvYqz7LxqYG6Db3z5ViYi9NDMW0S0nCmQpPEogHUhCcq6ABpT7ftL/KOZibR2FV6iK8PJxgDsHtw==
-X-Received: by 2002:a17:90a:cb96:: with SMTP id a22mr5640344pju.96.1577791464401;
-        Tue, 31 Dec 2019 03:24:24 -0800 (PST)
-Received: from localhost.localdomain ([223.186.204.218])
-        by smtp.gmail.com with ESMTPSA id 68sm51208848pge.14.2019.12.31.03.24.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 31 Dec 2019 03:24:23 -0800 (PST)
-From:   gautamramk@gmail.com
-To:     netdev@vger.kernel.org
-Cc:     "Mohit P. Tahiliani" <tahiliani@nitk.edu.in>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Dave Taht <dave.taht@gmail.com>,
-        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        Leslie Monis <lesliemonis@gmail.com>,
-        "Sachin D . Patil" <sdp.sachin@gmail.com>,
-        "V . Saicharan" <vsaicharan1998@gmail.com>,
-        Mohit Bhasi <mohitbhasi1998@gmail.com>,
-        Gautam Ramakrishnan <gautamramk@gmail.com>
-Subject: [PATCH net-next v2 2/2] net: sched: add Flow Queue PIE packet scheduler
-Date:   Tue, 31 Dec 2019 16:53:16 +0530
-Message-Id: <20191231112316.2788-3-gautamramk@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20191231112316.2788-1-gautamramk@gmail.com>
-References: <20191231112316.2788-1-gautamramk@gmail.com>
+        id S1727109AbfLaLfi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Dec 2019 06:35:38 -0500
+Received: from mail-he1eur04hn2080.outbound.protection.outlook.com ([52.101.137.80]:48355
+        "EHLO EUR04-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726659AbfLaLfi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 31 Dec 2019 06:35:38 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=j+UzeDrneiApAIVpCay4uAI96cb+HIWHOErJ+yfrOjikPptQAHokk+UiBe/nkUXsKd2+WarT+Ia0vsIm/KVSg7JmK0eN8UHV4Qtj2dDB00730U4gYq7XhAlRsIR3Eact1d9Oul3yLFP1Pvwe5D8opbuk87EuaKlTWFmvvdaFPX0Cv+plE+hCWGA3+UwOwtIB5Yq2vHY7uphv0C1LKQUSFl+W0njjXpSGqE6Z50sscfxKxcZYUcdOeyFge5ey22Jkr2JtJddZFYqYUceWW1nZke/jELH/hVXowQdlu/DQqaBNNm/oJCXTatXLsUiU5WP0+uH+GEWRSvVJsvUQZECSDw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=dLS1qIm9Xr7h8dtoVOkjJQC7YykMD5LDx6JoRXpPelw=;
+ b=aCQGRZ5pCDm1SCLdiPVldduHGd90s5Lkq61ABLqm5E+9YJoyNyT2ORGtAh5+u6gPy4AdKlah1iOoVkFXOlWduq5WDVNq0xKhO8GDyvH6kpvRQ2Fntnj0tyomLZ0NPnj4bBJ/qPz6sh+HH6f/g8jXjR6scXcA9I0N1bfhTU2tVVWhLbU1Ab1gLO4gjnnOmm6UBtf1Ll4F1uee/MAVTVN5yg8ZSHr+knjvkp7fWgOmFW5XAr/kqVUajh+b/ZgSbn/N8ExrGK3byu8/3aQp50VIVthBS0iKkR2kWZsVMBsfJWvDTopATWeagK4ZZTReAOF2cr1ipDRDRAiNTtfAy/e6tQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=virtuozzo.com; dmarc=pass action=none
+ header.from=virtuozzo.com; dkim=pass header.d=virtuozzo.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=virtuozzo.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=dLS1qIm9Xr7h8dtoVOkjJQC7YykMD5LDx6JoRXpPelw=;
+ b=mpNgr/TwI9oDm6neeHEmmkNV1gVqxp92r+97gT4A533z45RDRAK7+LrILwJRkjLIRFYCL1aprF0iht9UNtcdUEMBeKaimJPVK/F7UwyI68QsBSMrU9jeXxlV+iFavyfo4/baoLekd/qJwAJaoDT/SY70URh4iVdIUXE1zuYFJkE=
+Received: from VI1PR08MB4608.eurprd08.prod.outlook.com (20.178.80.22) by
+ VI1PR08MB3439.eurprd08.prod.outlook.com (20.177.59.82) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2581.12; Tue, 31 Dec 2019 11:34:44 +0000
+Received: from VI1PR08MB4608.eurprd08.prod.outlook.com
+ ([fe80::acb0:a61d:f08a:1c12]) by VI1PR08MB4608.eurprd08.prod.outlook.com
+ ([fe80::acb0:a61d:f08a:1c12%7]) with mapi id 15.20.2581.007; Tue, 31 Dec 2019
+ 11:34:44 +0000
+Received: from rkaganb.sw.ru (185.231.240.5) by HE1P189CA0008.EURP189.PROD.OUTLOOK.COM (2603:10a6:7:53::21) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2602.10 via Frontend Transport; Tue, 31 Dec 2019 11:34:43 +0000
+From:   Roman Kagan <rkagan@virtuozzo.com>
+To:     Haiyang Zhang <haiyangz@microsoft.com>
+CC:     "sashal@kernel.org" <sashal@kernel.org>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "kys@microsoft.com" <kys@microsoft.com>,
+        "sthemmin@microsoft.com" <sthemmin@microsoft.com>,
+        "olaf@aepfle.de" <olaf@aepfle.de>,
+        "vkuznets@redhat.com" <vkuznets@redhat.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH V2,net-next, 3/3] hv_netvsc: Name NICs based on vmbus
+ offer sequence and use async probe
+Thread-Topic: [PATCH V2,net-next, 3/3] hv_netvsc: Name NICs based on vmbus
+ offer sequence and use async probe
+Thread-Index: AQHVv03LHhmTIWa4QkCi/JM0N1XuXafUHfgA
+Date:   Tue, 31 Dec 2019 11:34:44 +0000
+Message-ID: <20191231113440.GA380228@rkaganb.sw.ru>
+References: <1577736814-21112-1-git-send-email-haiyangz@microsoft.com>
+ <1577736814-21112-4-git-send-email-haiyangz@microsoft.com>
+In-Reply-To: <1577736814-21112-4-git-send-email-haiyangz@microsoft.com>
+Accept-Language: en-US, ru-RU
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+mail-followup-to: Roman Kagan <rkagan@virtuozzo.com>,   Haiyang Zhang
+ <haiyangz@microsoft.com>, sashal@kernel.org,   linux-hyperv@vger.kernel.org,
+ netdev@vger.kernel.org,        kys@microsoft.com, sthemmin@microsoft.com,
+ olaf@aepfle.de,        vkuznets@redhat.com, davem@davemloft.net,
+        linux-kernel@vger.kernel.org
+x-originating-ip: [185.231.240.5]
+x-clientproxiedby: HE1P189CA0008.EURP189.PROD.OUTLOOK.COM (2603:10a6:7:53::21)
+ To VI1PR08MB4608.eurprd08.prod.outlook.com (2603:10a6:803:c0::22)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=rkagan@virtuozzo.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 4fc0f803-5cef-4acf-90c0-08d78de56ec3
+x-ms-traffictypediagnostic: VI1PR08MB3439:|VI1PR08MB3439:|VI1PR08MB3439:
+x-microsoft-antispam-prvs: <VI1PR08MB3439EDA69115A7AA246AFD85C9260@VI1PR08MB3439.eurprd08.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-forefront-prvs: 0268246AE7
+x-forefront-antispam-report: SFV:SPM;SFS:(10019020)(346002)(39840400004)(376002)(366004)(136003)(396003)(199004)(189003)(55016002)(66476007)(478600001)(66446008)(4326008)(66556008)(33656002)(5660300002)(64756008)(66946007)(9686003)(6506007)(7416002)(86362001)(52116002)(6916009)(8936002)(956004)(81166006)(7696005)(54906003)(71200400001)(186003)(316002)(26005)(8676002)(36756003)(2906002)(16526019)(1076003)(81156014)(30126003);DIR:OUT;SFP:1501;SCL:5;SRVR:VI1PR08MB3439;H:VI1PR08MB4608.eurprd08.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;CAT:OSPM;
+received-spf: None (protection.outlook.com: virtuozzo.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: zIhszu+VGE6/aaBr3RPCxV+yjuEoKwTIJ3W5C2ax1tT8NpnRRt4aUH25wsMq3OMlVFI6rqNT462avneG44Tpc6KWcbjCPDC0EQSJwgYN2GRfwJ9/uvswkDQblkd3HBvkThqYJQjM8iVhMac1EiEugDTXAgIWGZuVYMl74Lg+7L0KUmBwNqnn2EJaDTpjkBhs9XJQUWVaUl4eiM512MN/2JXtEhEo10S2/5yZH4abnUCFhRSBn9cILiFiNYBXvOHEJxaZDHaOP5xeQoAPlQoGwz55QCuYsEPCIJdH5Yvlcv/nEWNs/MbXGPEKYRgIUALLhuQLcDu0+nq+TU8QiI/E+RU7KFDTy5QFuMTmW8mizw2AZ+EW3SBvBc3OBY++R8XzzIssUw6mH/hbEN9+NGfG+IJag3qKZxZWjkSMcup69IG29+aZavXaEZy5N/LH39gsfQ07XuJ3nr+RsIb00CML4l9p3Y2ihyGmYFaWHruUpUThZ00JfWBnunLl/Z8U/EnUoYmXpmCxhq0Ifz/fm7Kv21956AGkALVnxbtFsckukxSmsZ64j+rjqn6pGJiXKILA9D3INL5l+O/uSitrnnzc4Tl1hh/5d+PMYgDFlEE80S5DN0Ztt80m0EETBNYq44W8ECy2pWLycElnyUDiAVlWYIlOLXF8viNCiISc1/Q2wdF5R1Ge8hlt9neOof4AXzUNacQjagG+JxBNREaGJL/kuJDObNhpBzkEzH2IJWTZXi68FVvF9fhMtAKiig3ispr+i2IfFMOg4vwK/Zf0JcZGBA==
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <3A4816A744BDFA418BF8E475928DE17C@eurprd08.prod.outlook.com>
+MIME-Version: 1.0
+X-OriginatorOrg: virtuozzo.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4fc0f803-5cef-4acf-90c0-08d78de56ec3
+X-MS-Exchange-CrossTenant-originalarrivaltime: 31 Dec 2019 11:34:44.3680
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 0bc7f26d-0264-416e-a6fc-8352af79c58f
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 6Qrgaj3CLSfuSlAY+uwP94wiX0CnOiRTM5UI3M+YtIuG40Llf701QQn9qHVObf9TFZ3XZ+kfPDMdeElMBCIzMQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR08MB3439
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: "Mohit P. Tahiliani" <tahiliani@nitk.edu.in>
+On Mon, Dec 30, 2019 at 12:13:34PM -0800, Haiyang Zhang wrote:
+> The dev_num field in vmbus channel structure is assigned to the first
+> available number when the channel is offered. So netvsc driver uses it
+> for NIC naming based on channel offer sequence. Now re-enable the async
+> probing mode for faster probing.
+> 
+> Signed-off-by: Haiyang Zhang <haiyangz@microsoft.com>
+> ---
+>  drivers/net/hyperv/netvsc_drv.c | 18 +++++++++++++++---
+>  1 file changed, 15 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/net/hyperv/netvsc_drv.c b/drivers/net/hyperv/netvsc_drv.c
+> index f3f9eb8..39c412f 100644
+> --- a/drivers/net/hyperv/netvsc_drv.c
+> +++ b/drivers/net/hyperv/netvsc_drv.c
+> @@ -2267,10 +2267,14 @@ static int netvsc_probe(struct hv_device *dev,
+>  	struct net_device_context *net_device_ctx;
+>  	struct netvsc_device_info *device_info = NULL;
+>  	struct netvsc_device *nvdev;
+> +	char name[IFNAMSIZ];
+>  	int ret = -ENOMEM;
+>  
+> -	net = alloc_etherdev_mq(sizeof(struct net_device_context),
+> -				VRSS_CHANNEL_MAX);
+> +	snprintf(name, IFNAMSIZ, "eth%d", dev->channel->dev_num);
 
-Principles:
-  - Packets are classified on flows.
-  - This is a Stochastic model (as we use a hash, several flows might
-                                be hashed on the same slot)
-  - Each flow has a PIE managed queue.
-  - Flows are linked onto two (Round Robin) lists,
-    so that new flows have priority on old ones.
-  - For a given flow, packets are not reordered.
-  - Drops during enqueue only.
-  - ECN capability is off by default.
-  - ECN threshold is at 10% by default.
-  - Uses timestamps to calculate queue delay by default.
+How is this supposed to work when there are other ethernet device types
+on the system, which may claim the same device names?
 
-Usage:
-tc qdisc ... fq_pie [ limit PACKETS ] [ flows NUMBER ]
-                    [ alpha NUMBER ] [ beta NUMBER ]
-                    [ target TIME us ] [ tupdate TIME us ]
-                    [ memory_limit BYTES ] [ quantum BYTES ]
-                    [ ecnprob PERCENTAGE ] [ [no]ecn ]
-                    [ [no]bytemode ] [ [no_]dq_rate_estimator ]
+> +	net = alloc_netdev_mqs(sizeof(struct net_device_context), name,
+> +			       NET_NAME_ENUM, ether_setup,
+> +			       VRSS_CHANNEL_MAX, VRSS_CHANNEL_MAX);
+> +
+>  	if (!net)
+>  		goto no_net;
+>  
+> @@ -2355,6 +2359,14 @@ static int netvsc_probe(struct hv_device *dev,
+>  		net->max_mtu = ETH_DATA_LEN;
+>  
+>  	ret = register_netdevice(net);
+> +
+> +	if (ret == -EEXIST) {
+> +		pr_info("NIC name %s exists, request another name.\n",
+> +			net->name);
+> +		strlcpy(net->name, "eth%d", IFNAMSIZ);
+> +		ret = register_netdevice(net);
+> +	}
 
-defaults:
-  limit: 10240 packets, flows: 1024
-  alpha: 1/8, beta : 5/4
-  target: 15 ms, tupdate: 15 ms (in jiffies)
-  memory_limit: 32 Mb, quantum: device MTU
-  ecnprob: 10%, ecn: off
-  bytemode: off, dq_rate_estimator: off
+IOW you want the device naming to be predictable, but don't guarantee
+this?
 
-Signed-off-by: Mohit P. Tahiliani <tahiliani@nitk.edu.in>
-Signed-off-by: Sachin D. Patil <sdp.sachin@gmail.com>
-Signed-off-by: V. Saicharan <vsaicharan1998@gmail.com>
-Signed-off-by: Mohit Bhasi <mohitbhasi1998@gmail.com>
-Signed-off-by: Leslie Monis <lesliemonis@gmail.com>
-Signed-off-by: Gautam Ramakrishnan <gautamramk@gmail.com>
----
- include/net/pie.h              |   1 +
- include/uapi/linux/pkt_sched.h |  33 ++
- net/sched/Kconfig              |  11 +
- net/sched/Makefile             |   1 +
- net/sched/sch_fq_pie.c         | 550 +++++++++++++++++++++++++++++++++
- 5 files changed, 596 insertions(+)
- create mode 100644 net/sched/sch_fq_pie.c
+I think the problem this patchset is trying to solve is much better
+solved with a udev rule, similar to how it's done for PCI net devices.
+And IMO the primary channel number, being a device's "hardware"
+property, is more suited to be used in the device name, than this
+completely ephemeral device number.
 
-diff --git a/include/net/pie.h b/include/net/pie.h
-index 09f074d273e9..d41fe4d62d5d 100644
---- a/include/net/pie.h
-+++ b/include/net/pie.h
-@@ -103,6 +103,7 @@ static void pie_vars_init(struct pie_vars *vars)
- /* private skb vars */
- struct pie_skb_cb {
- 	psched_time_t enqueue_time;
-+	u32 mem_usage;
- };
- 
- static struct pie_skb_cb *get_pie_cb(const struct sk_buff *skb)
-diff --git a/include/uapi/linux/pkt_sched.h b/include/uapi/linux/pkt_sched.h
-index bf5a5b1dfb0b..e7c994c9e76e 100644
---- a/include/uapi/linux/pkt_sched.h
-+++ b/include/uapi/linux/pkt_sched.h
-@@ -971,6 +971,39 @@ struct tc_pie_xstats {
- 	__u32 ecn_mark;			/* packets marked with ecn*/
- };
- 
-+/* FQ PIE */
-+enum {
-+	TCA_FQ_PIE_UNSPEC,
-+	TCA_FQ_PIE_LIMIT,
-+	TCA_FQ_PIE_FLOWS,
-+	TCA_FQ_PIE_ALPHA,
-+	TCA_FQ_PIE_BETA,
-+	TCA_FQ_PIE_TARGET,
-+	TCA_FQ_PIE_TUPDATE,
-+	TCA_FQ_PIE_MEMORY_LIMIT,
-+	TCA_FQ_PIE_QUANTUM,
-+	TCA_FQ_PIE_ECN_PROB,
-+	TCA_FQ_PIE_ECN,
-+	TCA_FQ_PIE_BYTEMODE,
-+	TCA_FQ_PIE_DQ_RATE_ESTIMATOR,
-+	__TCA_FQ_PIE_MAX
-+};
-+#define TCA_FQ_PIE_MAX   (__TCA_FQ_PIE_MAX - 1)
-+
-+struct tc_fq_pie_xstats {
-+	__u32 packets_in;       /* total number of packets enqueued */
-+	__u32 dropped;          /* packets dropped due to fq_pie_action */
-+	__u32 overlimit;        /* dropped due to lack of space in queue */
-+	__u32 overmemory;	/* dropped due to lack of memory in queue */
-+	__u32 ecn_mark;         /* packets marked with ecn */
-+	__u32 new_flow_count;   /* number of times packets
-+				 * created a 'new flow'
-+				 */
-+	__u32 new_flows_len;	/* count of flows in new list */
-+	__u32 old_flows_len;	/* count of flows in old list */
-+	__u32 memory_usage;	/* total memory across all queues */
-+};
-+
- /* CBS */
- struct tc_cbs_qopt {
- 	__u8 offload;
-diff --git a/net/sched/Kconfig b/net/sched/Kconfig
-index b1e7ec726958..f34e1b38ecf0 100644
---- a/net/sched/Kconfig
-+++ b/net/sched/Kconfig
-@@ -366,6 +366,17 @@ config NET_SCH_PIE
- 
- 	  If unsure, say N.
- 
-+config NET_SCH_FQ_PIE
-+	tristate "Flow Queue Proportional Integral controller Enhanced (FQ-PIE) scheduler"
-+	help
-+	  Say Y here if you want to use the Flow Queue Proportional Integral controller
-+	  Enhanced scheduler.
-+
-+	  To compile this driver as a module, choose M here: the module
-+	  will be called sch_fq_pie.
-+
-+	  If unsure, say N.
-+
- config NET_SCH_INGRESS
- 	tristate "Ingress/classifier-action Qdisc"
- 	depends on NET_CLS_ACT
-diff --git a/net/sched/Makefile b/net/sched/Makefile
-index bc8856b865ff..31c367a6cd09 100644
---- a/net/sched/Makefile
-+++ b/net/sched/Makefile
-@@ -59,6 +59,7 @@ obj-$(CONFIG_NET_SCH_CAKE)	+= sch_cake.o
- obj-$(CONFIG_NET_SCH_FQ)	+= sch_fq.o
- obj-$(CONFIG_NET_SCH_HHF)	+= sch_hhf.o
- obj-$(CONFIG_NET_SCH_PIE)	+= sch_pie.o
-+obj-$(CONFIG_NET_SCH_FQ_PIE)	+= sch_fq_pie.o
- obj-$(CONFIG_NET_SCH_CBS)	+= sch_cbs.o
- obj-$(CONFIG_NET_SCH_ETF)	+= sch_etf.o
- obj-$(CONFIG_NET_SCH_TAPRIO)	+= sch_taprio.o
-diff --git a/net/sched/sch_fq_pie.c b/net/sched/sch_fq_pie.c
-new file mode 100644
-index 000000000000..5fd3da4d7a69
---- /dev/null
-+++ b/net/sched/sch_fq_pie.c
-@@ -0,0 +1,550 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/* Flow Queue PIE discipline
-+ *
-+ * Copyright (C) 2019 Mohit P. Tahiliani <tahiliani@nitk.edu.in>
-+ * Copyright (C) 2019 Sachin D. Patil <sdp.sachin@gmail.com>
-+ * Copyright (C) 2019 V. Saicharan <vsaicharan1998@gmail.com>
-+ * Copyright (C) 2019 Mohit Bhasi <mohitbhasi1998@gmail.com>
-+ * Copyright (C) 2019 Leslie Monis <lesliemonis@gmail.com>
-+ * Copyright (C) 2019 Gautam Ramakrishnan <gautamramk@gmail.com>
-+ */
-+
-+#include <linux/jhash.h>
-+#include <linux/vmalloc.h>
-+#include <net/pkt_cls.h>
-+#include <net/pie.h>
-+
-+/* Flow Queue PIE
-+ *
-+ * Principles:
-+ *   - Packets are classified on flows.
-+ *   - This is a Stochastic model (as we use a hash, several flows might
-+ *                                 be hashed on the same slot)
-+ *   - Each flow has a PIE managed queue.
-+ *   - Flows are linked onto two (Round Robin) lists,
-+ *     so that new flows have priority on old ones.
-+ *   - For a given flow, packets are not reordered.
-+ *   - Drops during enqueue only.
-+ *   - ECN capability is off by default.
-+ *   - ECN threshold is at 10% by default.
-+ *   - Uses timestamps to calculate queue delay by default.
-+ */
-+
-+/**
-+ * struct fq_pie_flow - contains data for each flow
-+ * @head: first packet in the flow
-+ * @tail: last packet in the flow
-+ * @flowchain: flowchain for the flow
-+ * @vars: pie vars associated with the flow
-+ * @deficit: number of remaining byte credits
-+ * @backlog: size of data in the flow
-+ * @qlen: number of packets in the flow
-+ */
-+struct fq_pie_flow {
-+	struct sk_buff *head;
-+	struct sk_buff *tail;
-+	struct list_head flowchain;
-+	struct pie_vars vars;
-+	s32 deficit;
-+	u32 backlog;
-+	u32 qlen;
-+};
-+
-+struct fq_pie_sched_data {
-+	struct tcf_proto __rcu *filter_list; /* optional external classifier */
-+	struct tcf_block *block;
-+	struct fq_pie_flow *flows;
-+	struct Qdisc *sch;
-+	struct pie_params p_params;
-+	struct pie_stats stats;
-+	struct list_head old_flows;
-+	struct list_head new_flows;
-+	struct timer_list adapt_timer;
-+	u32 ecn_prob;
-+	u32 flows_cnt;
-+	u32 memory_limit;
-+	u32 quantum;
-+	u32 new_flow_count;
-+	u32 memory_usage;
-+	u32 overmemory;
-+};
-+
-+static unsigned int fq_pie_hash(const struct fq_pie_sched_data *q,
-+				struct sk_buff *skb)
-+{
-+	return reciprocal_scale(skb_get_hash(skb), q->flows_cnt);
-+}
-+
-+static unsigned int fq_pie_classify(struct sk_buff *skb, struct Qdisc *sch,
-+				    int *qerr)
-+{
-+	struct fq_pie_sched_data *q = qdisc_priv(sch);
-+	struct tcf_proto *filter;
-+	struct tcf_result res;
-+	int result;
-+
-+	if (TC_H_MAJ(skb->priority) == sch->handle &&
-+	    TC_H_MIN(skb->priority) > 0 &&
-+	    TC_H_MIN(skb->priority) <= q->flows_cnt)
-+		return TC_H_MIN(skb->priority);
-+
-+	filter = rcu_dereference_bh(q->filter_list);
-+	if (!filter)
-+		return fq_pie_hash(q, skb) + 1;
-+
-+	*qerr = NET_XMIT_SUCCESS | __NET_XMIT_BYPASS;
-+	result = tcf_classify(skb, filter, &res, false);
-+	if (result >= 0) {
-+#ifdef CONFIG_NET_CLS_ACT
-+		switch (result) {
-+		case TC_ACT_STOLEN:
-+		case TC_ACT_QUEUED:
-+		case TC_ACT_TRAP:
-+			*qerr = NET_XMIT_SUCCESS | __NET_XMIT_STOLEN;
-+			/* fall through */
-+		case TC_ACT_SHOT:
-+			return 0;
-+		}
-+#endif
-+		if (TC_H_MIN(res.classid) <= q->flows_cnt)
-+			return TC_H_MIN(res.classid);
-+	}
-+	return 0;
-+}
-+
-+/* add skb to flow queue (tail add) */
-+static inline void flow_queue_add(struct fq_pie_flow *flow,
-+				  struct sk_buff *skb)
-+{
-+	if (!flow->head)
-+		flow->head = skb;
-+	else
-+		flow->tail->next = skb;
-+	flow->tail = skb;
-+	skb->next = NULL;
-+}
-+
-+static int fq_pie_qdisc_enqueue(struct sk_buff *skb, struct Qdisc *sch,
-+				struct sk_buff **to_free)
-+{
-+	struct fq_pie_sched_data *q = qdisc_priv(sch);
-+	struct fq_pie_flow *sel_flow;
-+	int uninitialized_var(ret);
-+	u32 pkt_len;
-+	u32 idx;
-+	u8 enqueue = false;
-+	u8 memory_limited = false;
-+
-+	/* Classifies packet into corresponding flow */
-+	idx = fq_pie_classify(skb, sch, &ret);
-+	sel_flow = &q->flows[idx];
-+
-+	/* Checks whether adding a new packet would exceed memory limit */
-+	get_pie_cb(skb)->mem_usage = skb->truesize;
-+	memory_limited = q->memory_usage > q->memory_limit +
-+						 skb->truesize;
-+	/* Checks if the qdisc is full */
-+	if (unlikely(qdisc_qlen(sch) >= sch->limit)) {
-+		q->stats.overlimit++;
-+		goto out;
-+	} else if (unlikely(memory_limited)) {
-+		q->overmemory++;
-+	}
-+
-+	if (!drop_early(sch, &q->p_params, &sel_flow->vars, sel_flow->backlog,
-+			skb->len)) {
-+		enqueue = true;
-+	} else if (q->p_params.ecn &&
-+		   sel_flow->vars.prob <= (MAX_PROB / 100) * q->ecn_prob &&
-+		   INET_ECN_set_ce(skb)) {
-+		/* If packet is ecn capable, mark it if drop probability
-+		 * is lower than the parameter ecn_prob, else drop it.
-+		 */
-+		q->stats.ecn_mark++;
-+		enqueue = true;
-+	}
-+	if (enqueue) {
-+		/* Set enqueue time only when dq_rate_estimator is disabled. */
-+		if (!q->p_params.dq_rate_estimator)
-+			pie_set_enqueue_time(skb);
-+
-+		pkt_len = qdisc_pkt_len(skb);
-+		q->stats.packets_in++;
-+		q->memory_usage += skb->truesize;
-+		sch->qstats.backlog += pkt_len;
-+		sch->q.qlen++;
-+		flow_queue_add(sel_flow, skb);
-+		if (list_empty(&sel_flow->flowchain)) {
-+			list_add_tail(&sel_flow->flowchain, &q->new_flows);
-+			q->new_flow_count++;
-+			sel_flow->deficit = q->quantum;
-+			sel_flow->qlen = 0;
-+			sel_flow->backlog = 0;
-+		}
-+		sel_flow->qlen++;
-+		sel_flow->backlog += pkt_len;
-+		return NET_XMIT_SUCCESS;
-+	}
-+out:
-+	q->stats.dropped++;
-+	__qdisc_drop(skb, to_free);
-+	qdisc_qstats_drop(sch);
-+	return NET_XMIT_CN;
-+}
-+
-+static const struct nla_policy fq_pie_policy[TCA_FQ_PIE_MAX + 1] = {
-+	[TCA_FQ_PIE_LIMIT]		= {.type = NLA_U32},
-+	[TCA_FQ_PIE_FLOWS]		= {.type = NLA_U32},
-+	[TCA_FQ_PIE_ALPHA]		= {.type = NLA_U32},
-+	[TCA_FQ_PIE_BETA]		= {.type = NLA_U32},
-+	[TCA_FQ_PIE_TARGET]		= {.type = NLA_U32},
-+	[TCA_FQ_PIE_TUPDATE]		= {.type = NLA_U32},
-+	[TCA_FQ_PIE_MEMORY_LIMIT]	= {.type = NLA_U32},
-+	[TCA_FQ_PIE_QUANTUM]		= {.type = NLA_U32},
-+	[TCA_FQ_PIE_ECN_PROB]		= {.type = NLA_U32},
-+	[TCA_FQ_PIE_ECN]		= {.type = NLA_U32},
-+	[TCA_FQ_PIE_BYTEMODE]		= {.type = NLA_U32},
-+	[TCA_FQ_PIE_DQ_RATE_ESTIMATOR]	= {.type = NLA_U32},
-+};
-+
-+static inline struct sk_buff *dequeue_head(struct fq_pie_flow *flow)
-+{
-+	struct sk_buff *skb = flow->head;
-+
-+	flow->head = skb->next;
-+	skb->next = NULL;
-+	return skb;
-+}
-+
-+static struct sk_buff *fq_pie_qdisc_dequeue(struct Qdisc *sch)
-+{
-+	struct fq_pie_sched_data *q = qdisc_priv(sch);
-+	struct sk_buff *skb = NULL;
-+	struct fq_pie_flow *flow;
-+	struct list_head *head;
-+	u32 pkt_len;
-+
-+begin:
-+	head = &q->new_flows;
-+	if (list_empty(head)) {
-+		head = &q->old_flows;
-+		if (list_empty(head))
-+			return NULL;
-+	}
-+
-+	flow = list_first_entry(head, struct fq_pie_flow, flowchain);
-+	/* Flow has exhausted all its credits */
-+	if (flow->deficit <= 0) {
-+		flow->deficit += q->quantum;
-+		list_move_tail(&flow->flowchain, &q->old_flows);
-+		goto begin;
-+	}
-+
-+	if (flow->head) {
-+		skb = dequeue_head(flow);
-+		pkt_len = qdisc_pkt_len(skb);
-+		sch->qstats.backlog -= pkt_len;
-+		sch->q.qlen--;
-+		qdisc_bstats_update(sch, skb);
-+	}
-+
-+	if (!skb) {
-+		/* force a pass through old_flows to prevent starvation */
-+		if (head == &q->new_flows && !list_empty(&q->old_flows))
-+			list_move_tail(&flow->flowchain, &q->old_flows);
-+		else
-+			list_del_init(&flow->flowchain);
-+		goto begin;
-+	}
-+
-+	flow->qlen--;
-+	flow->deficit -= pkt_len;
-+	flow->backlog -= pkt_len;
-+	q->memory_usage -= get_pie_cb(skb)->mem_usage;
-+	pie_process_dequeue(skb, &q->p_params, &flow->vars, flow->backlog);
-+	return skb;
-+}
-+
-+static int fq_pie_change(struct Qdisc *sch, struct nlattr *opt,
-+			 struct netlink_ext_ack *extack)
-+{
-+	struct fq_pie_sched_data *q = qdisc_priv(sch);
-+	struct nlattr *tb[TCA_FQ_PIE_MAX + 1];
-+	unsigned int len_dropped = 0;
-+	unsigned int num_dropped = 0;
-+	unsigned int qlen;
-+	int err;
-+
-+	if (!opt)
-+		return -EINVAL;
-+
-+	err = nla_parse_nested_deprecated(tb, TCA_FQ_PIE_MAX, opt,
-+					  fq_pie_policy, NULL);
-+	if (err < 0)
-+		return err;
-+
-+	sch_tree_lock(sch);
-+	if (tb[TCA_FQ_PIE_LIMIT]) {
-+		u32 limit = nla_get_u32(tb[TCA_FQ_PIE_LIMIT]);
-+
-+		q->p_params.limit = limit;
-+		sch->limit = limit;
-+	}
-+	if (tb[TCA_FQ_PIE_FLOWS]) {
-+		if (q->flows)
-+			return -EINVAL;
-+		q->flows_cnt = nla_get_u32(tb[TCA_FQ_PIE_FLOWS]);
-+		if (!q->flows_cnt ||
-+		    q->flows_cnt > 65536)
-+			return -EINVAL;
-+	}
-+
-+	if (tb[TCA_FQ_PIE_ALPHA])
-+		q->p_params.alpha = nla_get_u32(tb[TCA_FQ_PIE_ALPHA]);
-+
-+	if (tb[TCA_FQ_PIE_BETA])
-+		q->p_params.beta = nla_get_u32(tb[TCA_FQ_PIE_BETA]);
-+
-+	/* convert from microseconds to pschedtime */
-+	if (tb[TCA_FQ_PIE_TARGET]) {
-+		/* target is in us */
-+		u32 target = nla_get_u32(tb[TCA_FQ_PIE_TARGET]);
-+
-+		/* convert to pschedtime */
-+		q->p_params.target =
-+		PSCHED_NS2TICKS((u64)target * NSEC_PER_USEC);
-+	}
-+
-+	/* tupdate is in jiffies */
-+	if (tb[TCA_FQ_PIE_TUPDATE])
-+		q->p_params.tupdate =
-+		usecs_to_jiffies(nla_get_u32(tb[TCA_FQ_PIE_TUPDATE]));
-+
-+	if (tb[TCA_FQ_PIE_MEMORY_LIMIT])
-+		q->memory_limit = nla_get_u32(tb[TCA_FQ_PIE_MEMORY_LIMIT]);
-+	if (tb[TCA_FQ_PIE_QUANTUM])
-+		q->quantum = nla_get_u32(tb[TCA_FQ_PIE_QUANTUM]);
-+
-+	if (tb[TCA_FQ_PIE_ECN_PROB])
-+		q->ecn_prob = nla_get_u32(tb[TCA_FQ_PIE_ECN_PROB]);
-+
-+	if (tb[TCA_FQ_PIE_ECN])
-+		q->p_params.ecn = nla_get_u32(tb[TCA_FQ_PIE_ECN]);
-+
-+	if (tb[TCA_FQ_PIE_BYTEMODE])
-+		q->p_params.bytemode = nla_get_u32(tb[TCA_FQ_PIE_BYTEMODE]);
-+
-+	if (tb[TCA_FQ_PIE_DQ_RATE_ESTIMATOR])
-+		q->p_params.dq_rate_estimator =
-+		nla_get_u32(tb[TCA_FQ_PIE_DQ_RATE_ESTIMATOR]);
-+
-+	/* Drop excess packets if new limit is lower */
-+	qlen = sch->q.qlen;
-+	while (sch->q.qlen > sch->limit) {
-+		struct sk_buff *skb = fq_pie_qdisc_dequeue(sch);
-+
-+		kfree_skb(skb);
-+		len_dropped += qdisc_pkt_len(skb);
-+		num_dropped += 1;
-+	}
-+	qdisc_tree_reduce_backlog(sch, num_dropped, len_dropped);
-+
-+	sch_tree_unlock(sch);
-+	return 0;
-+}
-+
-+static void fq_pie_timer(struct timer_list *t)
-+{
-+	struct fq_pie_sched_data *q = from_timer(q, t, adapt_timer);
-+	struct Qdisc *sch = q->sch;
-+	spinlock_t *root_lock = qdisc_lock(qdisc_root_sleeping(sch));
-+	u16 idx;
-+
-+	spin_lock(root_lock);
-+
-+	for (idx = 0; idx < q->flows_cnt; idx++)
-+		calculate_probability(&q->p_params, &q->flows[idx].vars,
-+				      q->flows[idx].backlog);
-+
-+	/* reset the timer to fire after 'tupdate'. tupdate is in jiffies. */
-+	if (q->p_params.tupdate)
-+		mod_timer(&q->adapt_timer, jiffies + q->p_params.tupdate);
-+	spin_unlock(root_lock);
-+}
-+
-+static int fq_pie_init(struct Qdisc *sch, struct nlattr *opt,
-+		       struct netlink_ext_ack *extack)
-+{
-+	struct fq_pie_sched_data *q = qdisc_priv(sch);
-+	int err;
-+	u16 idx;
-+
-+	pie_params_init(&q->p_params);
-+	sch->limit = 10 * 1024;
-+	q->p_params.limit = sch->limit;
-+	q->quantum = psched_mtu(qdisc_dev(sch));
-+	q->sch = sch;
-+	q->ecn_prob = 10;
-+	q->flows_cnt = 1024;
-+	q->memory_limit = 32 << 20;
-+
-+	INIT_LIST_HEAD(&q->new_flows);
-+	INIT_LIST_HEAD(&q->old_flows);
-+
-+	timer_setup(&q->adapt_timer, fq_pie_timer, 0);
-+	mod_timer(&q->adapt_timer, jiffies + HZ / 2);
-+
-+	if (opt) {
-+		int err = fq_pie_change(sch, opt, extack);
-+
-+		if (err)
-+			return err;
-+	}
-+
-+	err = tcf_block_get(&q->block, &q->filter_list, sch, extack);
-+	if (err)
-+		goto init_failure;
-+
-+	if (!q->flows) {
-+		q->flows = kvcalloc(q->flows_cnt,
-+				    sizeof(struct fq_pie_flow),
-+				    GFP_KERNEL);
-+		if (!q->flows) {
-+			err = -ENOMEM;
-+			goto init_failure;
-+		}
-+		for (idx = 0; idx < q->flows_cnt; idx++) {
-+			struct fq_pie_flow *flow = q->flows + idx;
-+
-+			INIT_LIST_HEAD(&flow->flowchain);
-+			pie_vars_init(&flow->vars);
-+		}
-+	}
-+	return 0;
-+
-+init_failure:
-+	q->flows_cnt = 0;
-+
-+	return err;
-+}
-+
-+static int fq_pie_dump(struct Qdisc *sch, struct sk_buff *skb)
-+{
-+	struct fq_pie_sched_data *q = qdisc_priv(sch);
-+	struct nlattr *opts;
-+
-+	opts = nla_nest_start_noflag(skb, TCA_OPTIONS);
-+	if (!opts)
-+		goto nla_put_failure;
-+
-+	/* convert target from pschedtime to us */
-+	if (nla_put_u32(skb, TCA_FQ_PIE_LIMIT, sch->limit) ||
-+	    nla_put_u32(skb, TCA_FQ_PIE_FLOWS, q->flows_cnt) ||
-+	    nla_put_u32(skb, TCA_FQ_PIE_ALPHA, q->p_params.alpha) ||
-+	    nla_put_u32(skb, TCA_FQ_PIE_BETA, q->p_params.beta) ||
-+	    nla_put_u32(skb, TCA_FQ_PIE_TARGET,
-+			((u32)PSCHED_TICKS2NS(q->p_params.target)) /
-+			NSEC_PER_USEC) ||
-+	    nla_put_u32(skb, TCA_FQ_PIE_TUPDATE,
-+			jiffies_to_usecs(q->p_params.tupdate)) ||
-+	    nla_put_u32(skb, TCA_FQ_PIE_MEMORY_LIMIT, q->memory_limit) ||
-+	    nla_put_u32(skb, TCA_FQ_PIE_QUANTUM, q->quantum) ||
-+	    nla_put_u32(skb, TCA_FQ_PIE_ECN_PROB, q->ecn_prob) ||
-+	    nla_put_u32(skb, TCA_FQ_PIE_ECN, q->p_params.ecn) ||
-+	    nla_put_u32(skb, TCA_FQ_PIE_BYTEMODE, q->p_params.bytemode) ||
-+	    nla_put_u32(skb, TCA_FQ_PIE_DQ_RATE_ESTIMATOR,
-+			q->p_params.dq_rate_estimator))
-+		goto nla_put_failure;
-+
-+	return nla_nest_end(skb, opts);
-+
-+nla_put_failure:
-+	return -1;
-+}
-+
-+static int fq_pie_dump_stats(struct Qdisc *sch, struct gnet_dump *d)
-+{
-+	struct fq_pie_sched_data *q = qdisc_priv(sch);
-+	struct tc_fq_pie_xstats st = {
-+		.packets_in	= q->stats.packets_in,
-+		.overlimit	= q->stats.overlimit,
-+		.overmemory	= q->overmemory,
-+		.dropped	= q->stats.dropped,
-+		.ecn_mark	= q->stats.ecn_mark,
-+		.new_flow_count = q->new_flow_count,
-+		.memory_usage   = q->memory_usage,
-+	};
-+	struct list_head *pos;
-+
-+	sch_tree_lock(sch);
-+	list_for_each(pos, &q->new_flows)
-+		st.new_flows_len++;
-+
-+	list_for_each(pos, &q->old_flows)
-+		st.old_flows_len++;
-+	sch_tree_unlock(sch);
-+
-+	return gnet_stats_copy_app(d, &st, sizeof(st));
-+}
-+
-+static void fq_pie_reset(struct Qdisc *sch)
-+{
-+	struct fq_pie_sched_data *q = qdisc_priv(sch);
-+	u16 idx;
-+
-+	INIT_LIST_HEAD(&q->new_flows);
-+	INIT_LIST_HEAD(&q->old_flows);
-+	for (idx = 0; idx < q->flows_cnt; idx++) {
-+		struct fq_pie_flow *flow = q->flows + idx;
-+
-+		/* Removes all packets from flow */
-+		rtnl_kfree_skbs(flow->head, flow->tail);
-+		flow->head = NULL;
-+
-+		INIT_LIST_HEAD(&flow->flowchain);
-+		pie_vars_init(&flow->vars);
-+	}
-+
-+	sch->q.qlen = 0;
-+	sch->qstats.backlog = 0;
-+}
-+
-+static void fq_pie_destroy(struct Qdisc *sch)
-+{
-+	struct fq_pie_sched_data *q = qdisc_priv(sch);
-+
-+	kvfree(q->flows);
-+	del_timer_sync(&q->adapt_timer);
-+}
-+
-+static struct Qdisc_ops fq_pie_qdisc_ops __read_mostly = {
-+	.id		= "fq_pie",
-+	.priv_size	= sizeof(struct fq_pie_sched_data),
-+	.enqueue	= fq_pie_qdisc_enqueue,
-+	.dequeue	= fq_pie_qdisc_dequeue,
-+	.peek		= qdisc_peek_dequeued,
-+	.init		= fq_pie_init,
-+	.destroy	= fq_pie_destroy,
-+	.reset		= fq_pie_reset,
-+	.change		= fq_pie_change,
-+	.dump		= fq_pie_dump,
-+	.dump_stats	= fq_pie_dump_stats,
-+	.owner		= THIS_MODULE,
-+};
-+
-+static int __init fq_pie_module_init(void)
-+{
-+	return register_qdisc(&fq_pie_qdisc_ops);
-+}
-+
-+static void __exit fq_pie_module_exit(void)
-+{
-+	unregister_qdisc(&fq_pie_qdisc_ops);
-+}
-+
-+module_init(fq_pie_module_init);
-+module_exit(fq_pie_module_exit);
-+
-+MODULE_DESCRIPTION("Flow Queue Proportional Integral controller Enhanced (FQ-PIE) scheduler");
-+MODULE_AUTHOR("Mohit P. Tahiliani");
-+MODULE_LICENSE("GPL");
--- 
-2.17.1
+Thanks,
+Roman.
 
+> +
+>  	if (ret != 0) {
+>  		pr_err("Unable to register netdev.\n");
+>  		goto register_failed;
+> @@ -2496,7 +2508,7 @@ static int netvsc_resume(struct hv_device *dev)
+>  	.suspend = netvsc_suspend,
+>  	.resume = netvsc_resume,
+>  	.driver = {
+> -		.probe_type = PROBE_FORCE_SYNCHRONOUS,
+> +		.probe_type = PROBE_PREFER_ASYNCHRONOUS,
+>  	},
+>  };
+>  
+> -- 
+> 1.8.3.1
+> 
