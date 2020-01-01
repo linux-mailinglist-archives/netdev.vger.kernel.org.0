@@ -2,189 +2,217 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EDB3812DC75
-	for <lists+netdev@lfdr.de>; Wed,  1 Jan 2020 01:57:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A678012DCD4
+	for <lists+netdev@lfdr.de>; Wed,  1 Jan 2020 02:10:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727166AbgAAA5t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Dec 2019 19:57:49 -0500
-Received: from egyptian.birch.relay.mailchannels.net ([23.83.209.56]:13180
-        "EHLO egyptian.birch.relay.mailchannels.net" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727130AbgAAA5s (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Dec 2019 19:57:48 -0500
-X-Sender-Id: dreamhost|x-authsender|stevie@qrpff.net
-Received: from relay.mailchannels.net (localhost [127.0.0.1])
-        by relay.mailchannels.net (Postfix) with ESMTP id E95D27403C1;
-        Wed,  1 Jan 2020 00:49:21 +0000 (UTC)
-Received: from pdx1-sub0-mail-a23.g.dreamhost.com (100-96-85-12.trex.outbound.svc.cluster.local [100.96.85.12])
-        (Authenticated sender: dreamhost)
-        by relay.mailchannels.net (Postfix) with ESMTPA id 7B588740826;
-        Wed,  1 Jan 2020 00:49:21 +0000 (UTC)
-X-Sender-Id: dreamhost|x-authsender|stevie@qrpff.net
-Received: from pdx1-sub0-mail-a23.g.dreamhost.com ([TEMPUNAVAIL].
- [64.90.62.162])
-        (using TLSv1.2 with cipher DHE-RSA-AES256-GCM-SHA384)
-        by 0.0.0.0:2500 (trex/5.18.5);
-        Wed, 01 Jan 2020 00:49:21 +0000
-X-MC-Relay: Neutral
-X-MailChannels-SenderId: dreamhost|x-authsender|stevie@qrpff.net
-X-MailChannels-Auth-Id: dreamhost
-X-Scare-Towering: 37433ba95e9f52fa_1577839761745_1607478431
-X-MC-Loop-Signature: 1577839761745:3007572954
-X-MC-Ingress-Time: 1577839761745
-Received: from pdx1-sub0-mail-a23.g.dreamhost.com (localhost [127.0.0.1])
-        by pdx1-sub0-mail-a23.g.dreamhost.com (Postfix) with ESMTP id 6CE197F652;
-        Tue, 31 Dec 2019 16:49:19 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=qrpff.net; h=mime-version
-        :from:date:message-id:subject:to:cc:content-type; s=qrpff.net;
-         bh=IdDsUeZzxkRY3vzVfF0jYDoTJKs=; b=KdY6uTQrsaT3zFkjw7FyaPIQLf5Y
-        qmrObrfRGro5iyOOSYa6mm1itQbhWL3TMfApfGvZ9OL25fvu/8M0yoS25tWPwNhf
-        5OZUWt9wwDvKy3JcCSNEoC4uuhB/HQQAmJOyJIiMtqpck866sCtXCh14B/j9GPv5
-        Sed+1YmHoQfbQ04=
-Received: from mail-lj1-f173.google.com (mail-lj1-f173.google.com [209.85.208.173])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: stevie@qrpff.net)
-        by pdx1-sub0-mail-a23.g.dreamhost.com (Postfix) with ESMTPSA id 8705C7F651;
-        Tue, 31 Dec 2019 16:49:18 -0800 (PST)
-Received: by mail-lj1-f173.google.com with SMTP id a13so37481510ljm.10;
-        Tue, 31 Dec 2019 16:49:18 -0800 (PST)
-X-Gm-Message-State: APjAAAVeQ71tjkq1cLCPHLvfZ+bhtO+8YKSqlDA0sfpiBGtFV+9o3kbf
-        rsD/h30v1pC96klDExCqQqCT752AgfqehejR0pk=
-X-Google-Smtp-Source: APXvYqyadK0g2j37BFcyuvxwrIM6nKkD733uJxbBxdUGAXsFR4ik/VyIXd9Jw5hsreAHgue9Zrn+LV1NZ9N3SOikrow=
-X-Received: by 2002:a2e:9196:: with SMTP id f22mr44373035ljg.18.1577839756557;
- Tue, 31 Dec 2019 16:49:16 -0800 (PST)
+        id S1727173AbgAABKc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Dec 2019 20:10:32 -0500
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:53721 "EHLO
+        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727132AbgAABKb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Dec 2019 20:10:31 -0500
+Received: by mail-wm1-f68.google.com with SMTP id m24so2830943wmc.3
+        for <netdev@vger.kernel.org>; Tue, 31 Dec 2019 17:10:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=BMVACOLyhCuv9p4CVdepD/sdEmDNfTie/NP95io9W9A=;
+        b=uc/ULnnRYCm5WBeT1oIBvc8Y5ifhEZTtSwr2SOGGmtUv3xaHmO5DwWRZRcPL2ooit6
+         dD3SgHCt79KdsqOwMi378ae131QF37Jpryz+AgoYiwd4ojqGYCDPTTKhSXnVrPcbg1Q2
+         iy7nd02m2Yg1zWjev8UfyapAFRONF0sjnPLctp1yNWr1fKTuEi+pwXd4WN750sv4W3rs
+         hoMbyfmLlPFU42c9/iO5GXKlkfhejCu0T0LXCWnGyQOgYq6IPiB7Il3Cpc5xpvNgZe7X
+         Z7TMN+DPDSarps+4EcCMT8Cntb1kQvTsj0oz1U51qsKnkJ2gBDhOzNFOygHltrhXGrbe
+         c/Jg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=BMVACOLyhCuv9p4CVdepD/sdEmDNfTie/NP95io9W9A=;
+        b=tSn5epPsmQaF6adeVYnii/PkwVacfWGtVO2hl41t4yRrmNDHV8EGGC8uXXRoYMdBqH
+         ec4ucaSa75LMTIGbZpus6//6egP+bIJjF1pt1a6fV744lLhTKc9qI8unor1PsFYT/uqn
+         HQQOubPc5VkrBqyph6rAVM2ZFQOX/WlFpAwRd0WGAIHq3FIi9NDjAoLWWOqRX8Upr5XS
+         /GRbVL3fpD8AW/ud365AbPOWjwI37SxOIsLK3IbjfCkJAOI0bNXiCsfKEuL9p+hnnGj/
+         BB+Q69+Dwt6U0/FckOzpPfzvAA90K7NA78q1jyE0jfogQzp66S4Bj2nDiYaXh+sFyVYu
+         Ayjg==
+X-Gm-Message-State: APjAAAXzrwBQ7dHtILef9HL1ZUyY9b91h+JNCyCFjhd0BvmKh6CAc66l
+        qoF476NADmXehQ4+OJo5nAE=
+X-Google-Smtp-Source: APXvYqzrPc2LwANzX7zQaqqZs7uVNBLW5eQNXV2ID3Zqs5CDcjgRNX1aunBykntAz1/GdZcpIyZphw==
+X-Received: by 2002:a7b:c450:: with SMTP id l16mr6200219wmi.166.1577841029838;
+        Tue, 31 Dec 2019 17:10:29 -0800 (PST)
+Received: from pali ([2a02:2b88:2:1::5cc6:2f])
+        by smtp.gmail.com with ESMTPSA id z11sm51206087wrt.82.2019.12.31.17.10.28
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Tue, 31 Dec 2019 17:10:28 -0800 (PST)
+Date:   Wed, 1 Jan 2020 02:10:27 +0100
+From:   Pali =?utf-8?B?Um9ow6Fy?= <pali.rohar@gmail.com>
+To:     Ido Schimmel <idosch@idosch.org>
+Cc:     Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        netdev@vger.kernel.org, Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>
+Subject: Re: [RFC 0/3] VLANs, DSA switches and multiple bridges
+Message-ID: <20200101011027.gpxnbq57wp6mwzjk@pali>
+References: <20191222192235.GK25745@shell.armlinux.org.uk>
+ <20191231161020.stzil224ziyduepd@pali>
+ <20191231180614.GA120120@splinter>
 MIME-Version: 1.0
-X-DH-BACKEND: pdx1-sub0-mail-a23
-From:   Stephen Oberholtzer <stevie@qrpff.net>
-Date:   Tue, 31 Dec 2019 19:49:04 -0500
-X-Gmail-Original-Message-ID: <CAD_xR9eDL+9jzjYxPXJjS7U58ypCPWHYzrk0C3_vt-w26FZeAQ@mail.gmail.com>
-Message-ID: <CAD_xR9eDL+9jzjYxPXJjS7U58ypCPWHYzrk0C3_vt-w26FZeAQ@mail.gmail.com>
-Subject: PROBLEM: Wireless networking goes down on Acer C720P Chromebook (bisected)
-To:     toke@redhat.com
-Cc:     Johannes Berg <johannes@sipsolutions.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-VR-OUT-STATUS: OK
-X-VR-OUT-SCORE: -100
-X-VR-OUT-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedufedrvdefkedgvdeiucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuggftfghnshhusghstghrihgsvgdpffftgfetoffjqffuvfenuceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhepggfhfffkuffvtgesthdtredttddtjeenucfhrhhomhepufhtvghphhgvnhcuqfgsvghrhhholhhtiigvrhcuoehsthgvvhhivgesqhhrphhffhdrnhgvtheqnecukfhppedvtdelrdekhedrvddtkedrudejfeenucfrrghrrghmpehmohguvgepshhmthhppdhhvghlohepmhgrihhlqdhljhduqdhfudejfedrghhoohhglhgvrdgtohhmpdhinhgvthepvddtledrkeehrddvtdekrddujeefpdhrvghtuhhrnhdqphgrthhhpefuthgvphhhvghnucfqsggvrhhhohhlthiivghruceoshhtvghvihgvsehqrhhpfhhfrdhnvghtqedpmhgrihhlfhhrohhmpehsthgvvhhivgesqhhrphhffhdrnhgvthdpnhhrtghpthhtoheplhhinhhugidqkhgvrhhnvghlsehvghgvrhdrkhgvrhhnvghlrdhorhhgnecuvehluhhsthgvrhfuihiivgeptd
+Content-Type: multipart/signed; micalg=pgp-sha1;
+        protocol="application/pgp-signature"; boundary="phnrv7jhts2jnaxk"
+Content-Disposition: inline
+In-Reply-To: <20191231180614.GA120120@splinter>
+User-Agent: NeoMutt/20170113 (1.7.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Wireless networking goes down on Acer C720P Chromebook (bisected)
 
-Culprit: 7a89233a ("mac80211: Use Airtime-based Queue Limits (AQL) on
-packet dequeue")
+--phnrv7jhts2jnaxk
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-I found that the newest kernel (5.4) displayed a curious issue on my
-Acer C720P Chromebook: shortly after bringing networking up, all
-connections would suddenly fail.  I discovered that I could
-consistently reproduce the issue by ssh'ing into the machine and
-running 'dmesg' -- on a non-working kernel; I would get partial
-output, and then the connection would completely hang. This was so
-consistent, in fact, that I was able to leverage it to automate the
-process from 'git bisect run'.
+On Tuesday 31 December 2019 20:06:14 Ido Schimmel wrote:
+> On Tue, Dec 31, 2019 at 05:10:20PM +0100, Pali Roh=C3=A1r wrote:
+> > On Sunday 22 December 2019 19:22:35 Russell King - ARM Linux admin wrot=
+e:
+> > > Hi,
+> > >=20
+> > > I've been trying to configure DSA for VLANs and not having much succe=
+ss.
+> > > The setup is quite simple:
+> > >=20
+> > > - The main network is untagged
+> > > - The wifi network is a vlan tagged with id $VN running over the main
+> > >   network.
+> > >=20
+> > > I have an Armada 388 Clearfog with a PCIe wifi card which I'm trying =
+to
+> > > setup to provide wifi access to the vlan $VN network, while the switch
+> > > is also part of the main network.
+> >=20
+> > Hello, I do not know if it is related, but I have a problem with DSa,
+> > VLAN and mv88e6085 on Espressobin board (armada-3720).
+> >=20
+> > My setup/topology is similar:
+> >=20
+> > eth0 --> main interface for mv88e6085 switch
+>=20
+> This is the DSA master interface?
 
-KEYWORDS: c720p, chromebook, wireless, networking, mac80211
+Yes.
 
-KERNEL: any kernel containing commit 7a89233a ("mac80211: Use
-Airtime-based Queue Limits (AQL) on packet dequeue")
+> > wan --> first RJ45 port from eth0
+> > lan0 --> second RJ45 port from eth0
+> > wan.10 --> unpacked VLAN with id 10 packets from wan
+> >=20
+> > Just one note, wan and wan.10 uses different MAC addresses.
+>=20
+> Is this something you configured?
 
-I find this bit in the offending commit's message suspicious:
+Yes. My configuration is:
 
-> This patch does *not* include any mechanism to wake a throttled TXQ again,
-> on the assumption that this will happen anyway as a side effect of whatever
->  freed the skb (most commonly a TX completion).
+  ip link set dev wan address <address1>
+  ip link add link wan name wan.10 type vlan id 10
+  ip link set dev wan.10 address <address2>
 
-Methinks this assumption is not a fully valid one.
+Just to note that same setup on Raspberry PI is working fine. Here on
+Raspberry PI for second RJ45 port I'm using external USB based network
+adapter, so DSA on RPI is not used at all. Which means that Linux kernel
+does not have any problem with setting / using two different MAC
+addresses on one physical network adapter.
 
-I'll be happy to test any patches. If you need some printk calls, just
-tell me where to put 'em.
+> By default the MAC address of the VLAN
+> device should be inherited from the real device. What happens if they
+> have the same MAC address?
 
-This is the card:
+I do not know. I have not tested this scenario. Currently I have my
+Espressobin with mv88e6085 out of my hands and is disconnected from
+internet, so I cannot do this test right now.
 
-01:00.0 Network controller: Qualcomm Atheros AR9462 Wireless Network
-Adapter (rev 01)
-        Subsystem: Foxconn International, Inc. AR9462 Wireless Network Adapter
-        Control: I/O- Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop-
-ParErr- Stepping- SERR- FastB2B- DisINTx-
-        Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=fast >TAbort-
-<TAbort- <MAbort- >SERR- <PERR- INTx-
-        Latency: 0, Cache Line Size: 64 bytes
-        Interrupt: pin A routed to IRQ 16
-        Region 0: Memory at e0400000 (64-bit, non-prefetchable) [size=512K]
-        Expansion ROM at e0480000 [disabled] [size=64K]
-        Capabilities: [40] Power Management version 2
-                Flags: PMEClk- DSI- D1+ D2+ AuxCurrent=375mA
-PME(D0+,D1+,D2+,D3hot+,D3cold+)
-                Status: D0 NoSoftRst- PME-Enable- DSel=0 DScale=0 PME-
-        Capabilities: [50] MSI: Enable- Count=1/4 Maskable+ 64bit+
-                Address: 0000000000000000  Data: 0000
-                Masking: 00000000  Pending: 00000000
-        Capabilities: [70] Express (v2) Endpoint, MSI 00
-                DevCap: MaxPayload 128 bytes, PhantFunc 0, Latency L0s
-unlimited, L1 <64us
-                        ExtTag- AttnBtn- AttnInd- PwrInd- RBE+
-FLReset- SlotPowerLimit 0.000W
-                DevCtl: CorrErr- NonFatalErr- FatalErr- UnsupReq-
-                        RlxdOrd+ ExtTag- PhantFunc- AuxPwr- NoSnoop-
-                        MaxPayload 128 bytes, MaxReadReq 512 bytes
-                DevSta: CorrErr- NonFatalErr- FatalErr- UnsupReq-
-AuxPwr+ TransPend-
-                LnkCap: Port #0, Speed 2.5GT/s, Width x1, ASPM L0s L1,
-Exit Latency L0s <4us, L1 <64us
-                        ClockPM- Surprise- LLActRep- BwNot- ASPMOptComp-
-                LnkCtl: ASPM L0s L1 Enabled; RCB 64 bytes Disabled- CommClk+
-                        ExtSynch- ClockPM- AutWidDis- BWInt- AutBWInt-
-                LnkSta: Speed 2.5GT/s (ok), Width x1 (ok)
-                        TrErr- Train- SlotClk+ DLActive- BWMgmt- ABWMgmt-
-                DevCap2: Completion Timeout: Not Supported,
-TimeoutDis+, LTR-, OBFF Not Supported
-                         AtomicOpsCap: 32bit- 64bit- 128bitCAS-
-                DevCtl2: Completion Timeout: 50us to 50ms,
-TimeoutDis-, LTR-, OBFF Disabled
-                         AtomicOpsCtl: ReqEn-
-                LnkCtl2: Target Link Speed: 2.5GT/s, EnterCompliance- SpeedDis-
-                         Transmit Margin: Normal Operating Range,
-EnterModifiedCompliance- ComplianceSOS-
-                         Compliance De-emphasis: -6dB
-                LnkSta2: Current De-emphasis Level: -6dB,
-EqualizationComplete-, EqualizationPhase1-
-                         EqualizationPhase2-, EqualizationPhase3-,
-LinkEqualizationRequest-
-        Capabilities: [100 v1] Advanced Error Reporting
-                UESta:  DLP- SDES- TLP- FCP- CmpltTO- CmpltAbrt-
-UnxCmplt- RxOF- MalfTLP- ECRC- UnsupReq- ACSViol-
-                UEMsk:  DLP- SDES- TLP- FCP- CmpltTO- CmpltAbrt-
-UnxCmplt- RxOF- MalfTLP- ECRC- UnsupReq- ACSViol-
-                UESvrt: DLP+ SDES+ TLP- FCP+ CmpltTO- CmpltAbrt-
-UnxCmplt- RxOF+ MalfTLP+ ECRC- UnsupReq- ACSViol-
-                CESta:  RxErr- BadTLP- BadDLLP- Rollover- Timeout-
-AdvNonFatalErr-
-                CEMsk:  RxErr- BadTLP- BadDLLP- Rollover- Timeout-
-AdvNonFatalErr+
-                AERCap: First Error Pointer: 00, ECRCGenCap-
-ECRCGenEn- ECRCChkCap- ECRCChkEn-
-                        MultHdrRecCap- MultHdrRecEn- TLPPfxPres- HdrLogCap-
-                HeaderLog: 00000000 00000000 00000000 00000000
-        Capabilities: [140 v1] Virtual Channel
-                Caps:   LPEVC=0 RefClk=100ns PATEntryBits=1
-                Arb:    Fixed- WRR32- WRR64- WRR128-
-                Ctrl:   ArbSelect=Fixed
-                Status: InProgress-
-                VC0:    Caps:   PATOffset=00 MaxTimeSlots=1 RejSnoopTrans-
-                        Arb:    Fixed- WRR32- WRR64- WRR128- TWRR128- WRR256-
-                        Ctrl:   Enable+ ID=0 ArbSelect=Fixed TC/VC=ff
-                        Status: NegoPending- InProgress-
-        Capabilities: [160 v1] Device Serial Number 00-00-00-00-00-00-00-00
-        Kernel driver in use: ath9k
-        Kernel modules: ath9k
+> > Also lan0 has another MAC address.
+> >=20
+> > Basically on upstream wan are two different/separated networks. First
+> > one is untagged, second one is tagged with vlan id 10 and tagged packets
+> > should come on wan interface (linux kernel then pass untagged packets to
+> > wan and vlan id 10 tagged as "untagged" to wan.10). lan0 is downstream
+> > network and in this configuration Espressobin works as router. So there
+> > is no switching between RJ45 ports, all packets should come to CPU and
+> > Linux's iptables do all stuff.
+> >=20
+> > And now the problem. All (untagged) traffic for first network on wan
+> > works fine (incoming + outgoing). Also all outgoing packets from wan.10
+> > interface are correctly transmitted (other side see on first RJ45 port
+> > that packets are properly tagged by id 10). But for unknown reason all
+> > incoming packets with vlan id 10 on first RJ45 port are dropped. Even
+> > tcpdump on eth0 does not see them.
+> >=20
+> > Could be this problem related to one which Russel described? I tried to
+> > debug this problem but I give up 2 days before Russel send this email
+> > with patches, so I have not had a chance to test it.
+>=20
+> I'm not sure. I believe Russel was not able to receive tagged packets at
+> all and he was using a bridged setup, unlike you (IIUC). Also, below you
+> write that sometimes you're able to receive packets with VLAN 10.
 
+Yes, sometimes I was able to receive packets, but I run this setup for
+about 4 hours (or more) and only few times (for 5 minutes) it worked.
 
+> > One very strange behavior is that sometimes mv88e6085 starts accepting
+> > those vlan id 10 packets and kernel them properly send to wan.10
+> > interface and userspacee applications see them. And once they start
+> > appearing it works for 5 minutes, exactly 300s. After 300s they are
+> > again silently somehow dropped (tcpdump again does not see them). I was
+> > not able to detect anything which could cause that kernel started seeing
+> > them. Looks for me it was really random. But exact time 300s is really
+> > strange.
+>=20
+> 300 seconds is the default ageing time the Linux bridge uses, so maybe
+> the problem is the hardware FDB table and not the VLAN filter.
+>=20
+> Andrew / Vivien, how routed traffic is handled on this platform? Is it
+> possible that the FDB table is consulted first and the expectation is
+> that it would direct the packet towards the CPU port? If so, I guess
+> that the FDB entry with {VID 10, wan.10's MAC} is aged-out and flooding
+> towards the CPU is disabled?
 
--- 
--- Stevie-O
-Real programmers use COPY CON PROGRAM.EXE
+Hm... that is interesting.
+
+When run was running tcpdump I did not passed -p flag, so tcpdump
+automatically was listening in promiscuous mode.
+
+And I was trying those tests also with setting "promisc" mode via ip
+link and nothing was changed.
+
+So if above is truth then also promiscuous mode is broken and filtered.
+
+(I expect that network adapter in promiscuous mode receive also packets
+which target MAC address is not same as MAC address configured for
+network interface.)
+
+> >=20
+> > I used default Debian Buster kernel (without any custom patches). Also
+> > one from Debian Buster backports, but behavior was still same.
+> >=20
+> > --=20
+> > Pali Roh=C3=A1r
+> > pali.rohar@gmail.com
+>=20
+>=20
+
+--=20
+Pali Roh=C3=A1r
+pali.rohar@gmail.com
+
+--phnrv7jhts2jnaxk
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iF0EABECAB0WIQS4VrIQdKium2krgIWL8Mk9A+RDUgUCXgvxgQAKCRCL8Mk9A+RD
+UtUKAKCqAAE1ysrL8b+iqVV6GxC1YONIaACfUmx9F9Yhh3YA9B2tUMx4PN46who=
+=R7mU
+-----END PGP SIGNATURE-----
+
+--phnrv7jhts2jnaxk--
