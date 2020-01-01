@@ -2,103 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B5FF112DFE2
-	for <lists+netdev@lfdr.de>; Wed,  1 Jan 2020 19:07:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 98D7A12E015
+	for <lists+netdev@lfdr.de>; Wed,  1 Jan 2020 19:29:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727268AbgAASHi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Jan 2020 13:07:38 -0500
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:34426 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727237AbgAASHi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jan 2020 13:07:38 -0500
-Received: by mail-wr1-f67.google.com with SMTP id t2so37417571wrr.1
-        for <netdev@vger.kernel.org>; Wed, 01 Jan 2020 10:07:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=tSsf8/xfqPdJeJctKG6h41zZ7/8fVKylPwotO+3zUKk=;
-        b=S4AQ2erYci9i4NPiYYSGCIYHliClRirW2aO8Vn9w31MwiBjTZ9QGm3RRn+BeR00uEC
-         xOqVVTVGasaHzcOAj76wbTo6flK2vD4qsq+UQwxPndGDKxBclE/bgw/o65otNVMqvl1d
-         /Yt5Um+szDDxv36EBTFPjsZUajuykSFTcNsZnXnPOuJr4zeDaJLdvgDDFXKna3wYvrwI
-         UNiMo+apX7t6V7llO5qiBmCIlvk+6AehK6AxQ0yIwuCs65MmzdqiKcf5fx0X8n0bkdeo
-         5Vygp7Yz5OiDfKbKyFZUCr6ZUWzs+jZl68UtZwCtMpJDblFgnLMRyX3vyJVRftghki//
-         i8bA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=tSsf8/xfqPdJeJctKG6h41zZ7/8fVKylPwotO+3zUKk=;
-        b=LET5JKVpJCzmntrIlOtKf7mQqtt9cBI/BSIHPQ4Tnn5lg/AOGYtsJAnmxn/2lW0O79
-         +3Ccr+X4+tSnYLzynKW63Ps6BehE7kmyRDTb6H9tvavzya57t/mPeKQji7OQapwQm1hl
-         Mufg9AVMB6is09yC9QIywls7jAsLeHAQ73P+uvcKBnzh7puZxvq7mGKJtuui3L3FCyKt
-         BlINqUM6sTHYsxseZxPM21rlvTN2NwGu//mJdp2ceYRwfk5FgNcGz7CRFZ1WadR/50Ux
-         cOZG5y9KWalifFnhsMXhEQsQ34AH8yEHphjTxLI6gSV54IBjEYNM0DuzJFAnPa/HMJWf
-         ADiw==
-X-Gm-Message-State: APjAAAX3idlatxrtxKjHLLnHoOymKQM9CyuHoDBteycrRZGk7QcoZjID
-        ccx/jTUxQTV5OF5OAR1Rf6g=
-X-Google-Smtp-Source: APXvYqxSf0BzWFmD0FdkiKf3w+knekYUd24pqHzU0YB9sfijn3/1CeWdYramJC+G9wIGQY8mYcKUHA==
-X-Received: by 2002:a5d:6886:: with SMTP id h6mr65676477wru.154.1577902056410;
-        Wed, 01 Jan 2020 10:07:36 -0800 (PST)
-Received: from pali ([2a02:2b88:2:1::5cc6:2f])
-        by smtp.gmail.com with ESMTPSA id i16sm6149586wmb.36.2020.01.01.10.07.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 01 Jan 2020 10:07:35 -0800 (PST)
-Date:   Wed, 1 Jan 2020 19:07:27 +0100
-From:   Pali =?utf-8?B?Um9ow6Fy?= <pali.rohar@gmail.com>
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
+        id S1727313AbgAAS3n (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Jan 2020 13:29:43 -0500
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:41006 "EHLO
+        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727268AbgAAS3n (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jan 2020 13:29:43 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
+        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=VzTEGUiG26m4IPXQov3Kr211cp49Tm2n/Y5QNBshkGs=; b=CpwPdyJg3nkVXnq37F5+PDEi8
+        7VbFXxGofUxbbGtjOUF4O8M/22X+dZ5DaFMjQlCdAEGkekuykFmsLW6kDh7M/OXOyJbpzcx+hphGU
+        PqsuqsiTrNMgDP7ysZJf4vWN1NGGfPjUCe+FLQV+g9mZ9R0m+22IQztQ1nQwGdaBLe8dqpCj/L92a
+        LadBM4vLGWI6mQNUe6WNqR8RMLZK4fnhB0XjR6ZgVvp83dEpCiku3hU50uU0n4Jo2Zq/rm2vO1zLq
+        0Nwet+AaM4Ua8qRjzI4SHakZcAZu2GHnPCOHN2Rk2uglcp33Wu+cq7M2viAnUjHtWC1KNYCKYxIyp
+        R+4FT9B3Q==;
+Received: from shell.armlinux.org.uk ([2002:4e20:1eda:1:5054:ff:fe00:4ec]:56758)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1imikQ-00082F-Sn; Wed, 01 Jan 2020 18:29:35 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1imikN-0001MK-Lv; Wed, 01 Jan 2020 18:29:31 +0000
+Date:   Wed, 1 Jan 2020 18:29:31 +0000
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Pali =?iso-8859-1?Q?Roh=E1r?= <pali.rohar@gmail.com>
 Cc:     Ido Schimmel <idosch@idosch.org>, netdev@vger.kernel.org,
         Jiri Pirko <jiri@resnulli.us>,
         Ivan Vecera <ivecera@redhat.com>, Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>
 Subject: Re: [RFC 0/3] VLANs, DSA switches and multiple bridges
-Message-ID: <20200101180727.ldqu4rsuucjimem5@pali>
+Message-ID: <20200101182931.GA25745@shell.armlinux.org.uk>
 References: <20191222192235.GK25745@shell.armlinux.org.uk>
  <20191231161020.stzil224ziyduepd@pali>
  <20191231180614.GA120120@splinter>
  <20200101011027.gpxnbq57wp6mwzjk@pali>
  <20200101173014.GZ25745@shell.armlinux.org.uk>
+ <20200101180727.ldqu4rsuucjimem5@pali>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-        protocol="application/pgp-signature"; boundary="j2uayulgwrv3uiyz"
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <20200101173014.GZ25745@shell.armlinux.org.uk>
-User-Agent: NeoMutt/20180716
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200101180727.ldqu4rsuucjimem5@pali>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Jan 01, 2020 at 07:07:27PM +0100, Pali Rohár wrote:
+> On Wednesday 01 January 2020 17:30:14 Russell King - ARM Linux admin wrote:
+> > I think the most important thing to do if you're suffering problems
+> > like this is to monitor and analyse packets being received from the
+> > DSA switch on the host interface:
+> > 
+> > # tcpdump -enXXi $host_dsa_interface
+> 
+> Hello Russell! Main dsa interface for me is eth0 and it does not see any
+> incoming vlan tagged packets. (Except that sometimes for those 5 minutes
+> periods it sometimes see them. And when tcpdump saw them also they
+> arrived to userspace.)
 
---j2uayulgwrv3uiyz
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+I think having Vivien's debugfs patch would be really useful to take
+this further forward. This patch provides direct access to the atu
+(address translation unit) entries, vtu (vlan translation unit)
+entries and all the device registers. The atu takes a long time to
+dump.
 
-On Wednesday 01 January 2020 17:30:14 Russell King - ARM Linux admin wrote:
-> I think the most important thing to do if you're suffering problems
-> like this is to monitor and analyse packets being received from the
-> DSA switch on the host interface:
->=20
-> # tcpdump -enXXi $host_dsa_interface
+It also allows for some experimentation, by writing these files,
+entries can be added to or removed from the translation units, and
+registers written.
 
-Hello Russell! Main dsa interface for me is eth0 and it does not see any
-incoming vlan tagged packets. (Except that sometimes for those 5 minutes
-periods it sometimes see them. And when tcpdump saw them also they
-arrived to userspace.)
+I think dumping the on-chip ATU contents with it in the "working"
+state and the "non-working" state may be revealing.
 
---=20
-Pali Roh=C3=A1r
-pali.rohar@gmail.com
+I'm afraid that I couldn't tell you where to get Vivien's debugfs
+patch from; I'm using an old version that I've ported forward to
+subsequent kernels - probably much like anyone else who gets their
+hands dirty with Marvell DSA hacking.  Vivien's copied on this
+thread already, so might chime in...
 
---j2uayulgwrv3uiyz
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iF0EARECAB0WIQS4VrIQdKium2krgIWL8Mk9A+RDUgUCXgzf3QAKCRCL8Mk9A+RD
-UkmbAKDFHDgOJLTv2xyx7hqgsZXVM/M15QCgtgP0R0Wwom/vShGFeSwDvt162Lc=
-=zeb+
------END PGP SIGNATURE-----
-
---j2uayulgwrv3uiyz--
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
+According to speedtest.net: 11.9Mbps down 500kbps up
