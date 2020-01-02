@@ -2,110 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8002B12E875
-	for <lists+netdev@lfdr.de>; Thu,  2 Jan 2020 17:10:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7723412E8DD
+	for <lists+netdev@lfdr.de>; Thu,  2 Jan 2020 17:46:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728842AbgABQJo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Jan 2020 11:09:44 -0500
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:42529 "EHLO
-        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728821AbgABQJn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jan 2020 11:09:43 -0500
-Received: from heimdall.vpn.pengutronix.de ([2001:67c:670:205:1d::14] helo=blackshift.org)
-        by metis.ext.pengutronix.de with esmtp (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1in32b-0000mM-HD; Thu, 02 Jan 2020 17:09:41 +0100
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, linux-can@vger.kernel.org,
-        kernel@pengutronix.de, Florian Faber <faber@faberman.de>,
-        linux-stable <stable@vger.kernel.org>,
-        Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH 9/9] can: mscan: mscan_rx_poll(): fix rx path lockup when returning from polling to irq mode
-Date:   Thu,  2 Jan 2020 17:09:34 +0100
-Message-Id: <20200102160934.1524-10-mkl@pengutronix.de>
-X-Mailer: git-send-email 2.24.1
-In-Reply-To: <20200102160934.1524-1-mkl@pengutronix.de>
-References: <20200102160934.1524-1-mkl@pengutronix.de>
+        id S1728828AbgABQqG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Jan 2020 11:46:06 -0500
+Received: from mail-ot1-f66.google.com ([209.85.210.66]:41087 "EHLO
+        mail-ot1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728836AbgABQqF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jan 2020 11:46:05 -0500
+Received: by mail-ot1-f66.google.com with SMTP id r27so57720743otc.8
+        for <netdev@vger.kernel.org>; Thu, 02 Jan 2020 08:46:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=HrXZHjoaqPfSnNyTU19HMM3kSDFb9R+CP52wZpLZIuo=;
+        b=oZDMXInUNArVNUW5UNFWUMC7Jp695Zoz74GDjl3LBV/bbxKG4HUUE40V3jrzG3y8Ui
+         zui1rKKQiyH1UjgmgJUeBORIa0he8Ne2fxb7MCqdhLjMnvQlSs6rMeDncPncb9oMWR++
+         SlRcj6X6nm8RU3QrlEQO0zwdSBSVKAir5650sALyjB4rksyfnGJeBaHAQHLznsN/hNgr
+         DV7Zq2a6w9mu2w0P92jtFgWwCD2gH23ZyQ8B2EpNp7Dwr2xY1jVoBZ7aOL501MrVfpJs
+         bpaMb8W8TuVqIKLf2aQOYr8rqtn3e4y74kMvmvpN2RoYk8mJsqhHCz6kcAnQKCMS/Au6
+         2/Cw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=HrXZHjoaqPfSnNyTU19HMM3kSDFb9R+CP52wZpLZIuo=;
+        b=QRhdZmzp6ODYqiVyMP5N3yxJwIuIUeDkYSi4doxcf0rCdnbxgGiq2E/DW2sOTj2PqQ
+         gSdfbQ1XhmdD49wwct340IJeed+MDb/eizIBTc/Gon2wxnGFmLgB8XezdSekzzAQwuXo
+         ilOjTVpj/smJHXU/ecZEyzHpfVmUc2Ub0/CElsmXs9vuDBEQNp07AI7lmudH1h2KjfkF
+         Xru83EWFkPb7igaEDw8O6KgT9LMuuaQzKIhxPSS/nDjzcmzNQBfZX10hZLs7/e8i8UHO
+         uwGpSep29HyauKJvdIagyCyP74cbPDuHtV0HLRgOxhLTUe5jtR6OdOObLXBNS1KeSoYD
+         oRJA==
+X-Gm-Message-State: APjAAAVYxfcIXEh/1DAHKuxpJ8fw9eft1GC5O9vY6cAY+g4EiUJyV3RS
+        rCIiQPimlg7JJKCrU6KlTTVEqGk00LxgpbK6d6Yh2/pGlDk=
+X-Google-Smtp-Source: APXvYqxNR6tJSFG+nNhBns9AiJC4Vz3aJuxdYOA+lViL6S/GhV34pahJfNY4e6HdAyOhE+9OkDjamKNTONdnU5WDZgA=
+X-Received: by 2002:a05:6830:13da:: with SMTP id e26mr19927139otq.302.1577983564414;
+ Thu, 02 Jan 2020 08:46:04 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:205:1d::14
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+References: <20200102140227.77780-1-maowenan@huawei.com>
+In-Reply-To: <20200102140227.77780-1-maowenan@huawei.com>
+From:   Neal Cardwell <ncardwell@google.com>
+Date:   Thu, 2 Jan 2020 11:45:47 -0500
+Message-ID: <CADVnQy=osX-HAnRduPid27tNZHLrzudT+5C4-+K3ERY-BMW3VA@mail.gmail.com>
+Subject: Re: [PATCH net-next] tcp: use REXMIT_NEW instead of magic number
+To:     Mao Wenan <maowenan@huawei.com>
+Cc:     Eric Dumazet <edumazet@google.com>,
+        David Miller <davem@davemloft.net>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        kernel-janitors@vger.kernel.org, Yuchung Cheng <ycheng@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Florian Faber <faber@faberman.de>
+On Thu, Jan 2, 2020 at 9:07 AM Mao Wenan <maowenan@huawei.com> wrote:
+>
+> REXMIT_NEW is a macro for "FRTO-style
+> transmit of unsent/new packets", this patch
+> makes it more readable.
+>
+> Signed-off-by: Mao Wenan <maowenan@huawei.com>
+> ---
+>  net/ipv4/tcp_input.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
+> index 88b987ca9ebb..1d1e3493965f 100644
+> --- a/net/ipv4/tcp_input.c
+> +++ b/net/ipv4/tcp_input.c
+> @@ -3550,7 +3550,7 @@ static void tcp_xmit_recovery(struct sock *sk, int rexmit)
+>         if (rexmit == REXMIT_NONE || sk->sk_state == TCP_SYN_SENT)
+>                 return;
+>
+> -       if (unlikely(rexmit == 2)) {
+> +       if (unlikely(rexmit == REXMIT_NEW)) {
+>                 __tcp_push_pending_frames(sk, tcp_current_mss(sk),
+>                                           TCP_NAGLE_OFF);
+>                 if (after(tp->snd_nxt, tp->high_seq))
+> --
 
-Under load, the RX side of the mscan driver can get stuck while TX still
-works. Restarting the interface locks up the system. This behaviour
-could be reproduced reliably on a MPC5121e based system.
+Acked-by: Neal Cardwell <ncardwell@google.com>
 
-The patch fixes the return value of the NAPI polling function (should be
-the number of processed packets, not constant 1) and the condition under
-which IRQs are enabled again after polling is finished.
+Thanks for sending this patch!
 
-With this patch, no more lockups were observed over a test period of ten
-days.
-
-Fixes: afa17a500a36 ("net/can: add driver for mscan family & mpc52xx_mscan")
-Signed-off-by: Florian Faber <faber@faberman.de>
-Cc: linux-stable <stable@vger.kernel.org>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
----
- drivers/net/can/mscan/mscan.c | 21 ++++++++++-----------
- 1 file changed, 10 insertions(+), 11 deletions(-)
-
-diff --git a/drivers/net/can/mscan/mscan.c b/drivers/net/can/mscan/mscan.c
-index 8caf7af0dee2..99101d7027a8 100644
---- a/drivers/net/can/mscan/mscan.c
-+++ b/drivers/net/can/mscan/mscan.c
-@@ -381,13 +381,12 @@ static int mscan_rx_poll(struct napi_struct *napi, int quota)
- 	struct net_device *dev = napi->dev;
- 	struct mscan_regs __iomem *regs = priv->reg_base;
- 	struct net_device_stats *stats = &dev->stats;
--	int npackets = 0;
--	int ret = 1;
-+	int work_done = 0;
- 	struct sk_buff *skb;
- 	struct can_frame *frame;
- 	u8 canrflg;
- 
--	while (npackets < quota) {
-+	while (work_done < quota) {
- 		canrflg = in_8(&regs->canrflg);
- 		if (!(canrflg & (MSCAN_RXF | MSCAN_ERR_IF)))
- 			break;
-@@ -408,18 +407,18 @@ static int mscan_rx_poll(struct napi_struct *napi, int quota)
- 
- 		stats->rx_packets++;
- 		stats->rx_bytes += frame->can_dlc;
--		npackets++;
-+		work_done++;
- 		netif_receive_skb(skb);
- 	}
- 
--	if (!(in_8(&regs->canrflg) & (MSCAN_RXF | MSCAN_ERR_IF))) {
--		napi_complete(&priv->napi);
--		clear_bit(F_RX_PROGRESS, &priv->flags);
--		if (priv->can.state < CAN_STATE_BUS_OFF)
--			out_8(&regs->canrier, priv->shadow_canrier);
--		ret = 0;
-+	if (work_done < quota) {
-+		if (likely(napi_complete_done(&priv->napi, work_done))) {
-+			clear_bit(F_RX_PROGRESS, &priv->flags);
-+			if (priv->can.state < CAN_STATE_BUS_OFF)
-+				out_8(&regs->canrier, priv->shadow_canrier);
-+		}
- 	}
--	return ret;
-+	return work_done;
- }
- 
- static irqreturn_t mscan_isr(int irq, void *dev_id)
--- 
-2.24.1
-
+neal
