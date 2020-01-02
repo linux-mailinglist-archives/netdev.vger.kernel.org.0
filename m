@@ -2,62 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 08EFF12E6D9
-	for <lists+netdev@lfdr.de>; Thu,  2 Jan 2020 14:37:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3AC1D12E70F
+	for <lists+netdev@lfdr.de>; Thu,  2 Jan 2020 15:07:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728374AbgABNhr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Jan 2020 08:37:47 -0500
-Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:33808 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728342AbgABNhr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jan 2020 08:37:47 -0500
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1-us3.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 99F039C0059;
-        Thu,  2 Jan 2020 13:37:45 +0000 (UTC)
-Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
- (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Thu, 2 Jan 2020
- 13:37:40 +0000
-Subject: Re: [PATCH net-next] sfc: Remove unnecessary dependencies on I2C
-To:     Ben Hutchings <ben@decadent.org.uk>,
-        <linux-net-drivers@solarflare.com>
-CC:     <netdev@vger.kernel.org>
-References: <20191231165908.GA329936@decadent.org.uk>
-From:   Edward Cree <ecree@solarflare.com>
-Message-ID: <a83e91a0-dece-3702-6537-0c1ce148fb8a@solarflare.com>
-Date:   Thu, 2 Jan 2020 13:37:37 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
+        id S1728471AbgABOHD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Jan 2020 09:07:03 -0500
+Received: from szxga06-in.huawei.com ([45.249.212.32]:58480 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1728288AbgABOHC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 2 Jan 2020 09:07:02 -0500
+Received: from DGGEMS409-HUB.china.huawei.com (unknown [172.30.72.60])
+        by Forcepoint Email with ESMTP id E4515439ADF421E9329E;
+        Thu,  2 Jan 2020 22:06:58 +0800 (CST)
+Received: from localhost.localdomain.localdomain (10.175.113.25) by
+ DGGEMS409-HUB.china.huawei.com (10.3.19.209) with Microsoft SMTP Server id
+ 14.3.439.0; Thu, 2 Jan 2020 22:06:53 +0800
+From:   Mao Wenan <maowenan@huawei.com>
+To:     <edumazet@google.com>, <davem@davemloft.net>,
+        <kuznet@ms2.inr.ac.ru>, <yoshfuji@linux-ipv6.org>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <kernel-janitors@vger.kernel.org>
+Subject: [PATCH net-next] tcp: use REXMIT_NEW instead of magic number
+Date:   Thu, 2 Jan 2020 22:02:27 +0800
+Message-ID: <20200102140227.77780-1-maowenan@huawei.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-In-Reply-To: <20191231165908.GA329936@decadent.org.uk>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Content-Language: en-GB
-X-Originating-IP: [10.17.20.203]
-X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
- ukex01.SolarFlarecom.com (10.17.10.4)
-X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1010-25142.003
-X-TM-AS-Result: No-1.559100-8.000000-10
-X-TMASE-MatchedRID: ZrceL/U8jXTmLzc6AOD8DfHkpkyUphL94OB3iDG6iklLxCuBTCXaKoS2
-        oc9zOIJx4vM1YF6AJbZFi+KwZZttL9ObmsOXUd7v7Z4ofcsZ/0vA3uQfVY1UMY6HM5rqDwqtFOC
-        V+nSJRraBqo1vjsdPhCLj9aJ8D+VcalQJUEF/TTzjME0FhuyavYfMZMegLDIeGU0pKnas+RbnCJ
-        ftFZkZizYJYNFU00e7N+XOQZygrvY=
-X-TM-AS-User-Approved-Sender: Yes
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--1.559100-8.000000
-X-TMASE-Version: SMEX-12.5.0.1300-8.5.1010-25142.003
-X-MDID: 1577972266-cilSCz3tr0cV
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.113.25]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 31/12/2019 16:59, Ben Hutchings wrote:
-> Only the SFC4000 code, now moved to sfc-falcon, needed I2C.
->
-> Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
-Acked-by: Edward Cree <ecree@solarflare.com>
+REXMIT_NEW is a macro for "FRTO-style
+transmit of unsent/new packets", this patch
+makes it more readable.
 
-Thanks Ben!
+Signed-off-by: Mao Wenan <maowenan@huawei.com>
+---
+ net/ipv4/tcp_input.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
+index 88b987ca9ebb..1d1e3493965f 100644
+--- a/net/ipv4/tcp_input.c
++++ b/net/ipv4/tcp_input.c
+@@ -3550,7 +3550,7 @@ static void tcp_xmit_recovery(struct sock *sk, int rexmit)
+ 	if (rexmit == REXMIT_NONE || sk->sk_state == TCP_SYN_SENT)
+ 		return;
+ 
+-	if (unlikely(rexmit == 2)) {
++	if (unlikely(rexmit == REXMIT_NEW)) {
+ 		__tcp_push_pending_frames(sk, tcp_current_mss(sk),
+ 					  TCP_NAGLE_OFF);
+ 		if (after(tp->snd_nxt, tp->high_seq))
+-- 
+2.20.1
+
