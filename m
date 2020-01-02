@@ -2,227 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E4ED12EAF9
-	for <lists+netdev@lfdr.de>; Thu,  2 Jan 2020 21:58:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 21F4E12EB4B
+	for <lists+netdev@lfdr.de>; Thu,  2 Jan 2020 22:24:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725972AbgABU6u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Jan 2020 15:58:50 -0500
-Received: from mail-qv1-f66.google.com ([209.85.219.66]:36714 "EHLO
-        mail-qv1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725851AbgABU6u (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jan 2020 15:58:50 -0500
-Received: by mail-qv1-f66.google.com with SMTP id m14so15495787qvl.3
-        for <netdev@vger.kernel.org>; Thu, 02 Jan 2020 12:58:49 -0800 (PST)
+        id S1725884AbgABVYY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Jan 2020 16:24:24 -0500
+Received: from mail-wr1-f52.google.com ([209.85.221.52]:47033 "EHLO
+        mail-wr1-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725783AbgABVYY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jan 2020 16:24:24 -0500
+Received: by mail-wr1-f52.google.com with SMTP id z7so40541670wrl.13;
+        Thu, 02 Jan 2020 13:24:23 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to
-         :user-agent;
-        bh=HbbQW1SNhxlXdo8dRCo3E6RQ6shpJULnhLge56/pWLw=;
-        b=luXfpcsqbSZluOn7NXNq7cVW9QRBhsx0EZ3vnn61bEcip7knpE1Zq3mYr3UVFYKYDc
-         dGqiOtnTJDDaGkhCbFCYJvsBmDawvWxi3Ui5k0FyJhwX1oGh8j7HT/3+jxT5/jXM3MuM
-         iKCGgxV7rHTDeIUfZYlvagZoZz5kveuXD0auv3no2eAssAExqzfYaKmE3QvRHCO2hZkL
-         3bTG2b3PmNDCG+4foUqOSfakc08OiX23xH7r8UrJkenXMu687xCE0vYBgrV13Udra8g1
-         6s/Ll+Qht0zeDO+WjHfHhPbORPyjOLPo5KY2xjWk1d72zwfal4hAGvEFtCQCJNAwFqL8
-         +IIw==
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=vHCgb0VDUU7IJBJSOfc8QemdJLTUS/nR2k3bIfhqBds=;
+        b=ZZHDOlNwA6nw69bwkxRMJuUqfWyxZEuvxchBwNNqElLQCV71/h+yz1nrDlFdElU5Iv
+         QSqOYPwgnJdecbn5mzasm/D3a+AKZnZUMTndsjuy9BW/geRdLJKxz9387kd2b+a6rl51
+         3T61NBXpC9yoYxL2pR3jOKKpAfQVBtaY2LCZAxToKnn9PQ1Fxcem8fRW97+VmBY98uJO
+         NuLyyMIdWVMuUnnS/dpGFxAJ+z1fc/ZwWE3zQT25a9cFzUf6aRz/E1TVxjTNc422X9r6
+         hE2OAuKATwh1/5iMBIoM8pv3T5d5koH5S6QZT12PsS2OfzIfO/z9j0RA79yUaIepi28g
+         XdJA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to:user-agent;
-        bh=HbbQW1SNhxlXdo8dRCo3E6RQ6shpJULnhLge56/pWLw=;
-        b=rcISNXTycv8bLMWxUoWE/6T3EDDJOrGJDQuzDceWNseWXcc25rH2xENLCbrQIq03f5
-         0k9u5DtSoXaIbZnEloiYnC6x4qL8o3GcY5oDdMvgz9N/dt8wPSy1pefUveRyCvi5UW8x
-         KeP1mvHOcamTaCdkcwQkopiQOZs0zpLYZUN0wKSDWKMUq3nu0sjPoydm4rdy/oZvjfFZ
-         ZRPlO2XZ+/eFENDO8+596rt9o7eIK6ROKpxLeHmHxGzOurRrptAgaXVWxEMK3M0GS10j
-         lBo4h4LuJtkxC89biRX9eoCsdcWgoAcbt1F+I7tFajQtNV5u4aosistp1A09F2jMLl/G
-         Id4g==
-X-Gm-Message-State: APjAAAU0+Q3BoFjfDLy2h+jfgXQhoS2eryha0YmPf9mIGvG06u8iPzbo
-        FSIC9pY3uTaERR+FoAcNCeKsoQ==
-X-Google-Smtp-Source: APXvYqxdu7b7Fx1/rS3BQvK+CufVCJZ4TqFCc+X7ghDfnIN20RBoPM3aSN1SxVzaSDk84kwyh0PCPQ==
-X-Received: by 2002:a0c:f685:: with SMTP id p5mr62193558qvn.44.1577998729075;
-        Thu, 02 Jan 2020 12:58:49 -0800 (PST)
-Received: from ziepe.ca (hlfxns017vw-142-68-57-212.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.57.212])
-        by smtp.gmail.com with ESMTPSA id o7sm15419804qkd.119.2020.01.02.12.58.48
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Thu, 02 Jan 2020 12:58:48 -0800 (PST)
-Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)
-        (envelope-from <jgg@ziepe.ca>)
-        id 1in7YO-0008Mv-0O; Thu, 02 Jan 2020 16:58:48 -0400
-Date:   Thu, 2 Jan 2020 16:58:48 -0400
-From:   Jason Gunthorpe <jgg@ziepe.ca>
-To:     Liran Alon <liran.alon@oracle.com>, Will Deacon <will@kernel.org>
-Cc:     saeedm@mellanox.com, leon@kernel.org, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, eli@mellanox.com, tariqt@mellanox.com,
-        danielm@mellanox.com,
-        =?utf-8?B?SMOla29u?= Bugge <haakon.bugge@oracle.com>
-Subject: Re: [PATCH] net: mlx5: Use writeX() to ring doorbell and remove
- reduntant wmb()
-Message-ID: <20200102205847.GJ9282@ziepe.ca>
-References: <20200102174436.66329-1-liran.alon@oracle.com>
- <20200102192934.GH9282@ziepe.ca>
- <6524AE07-2ED7-41B5-B761-9F6BE8D2049B@oracle.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=vHCgb0VDUU7IJBJSOfc8QemdJLTUS/nR2k3bIfhqBds=;
+        b=hdl6OLxJhNPysoPtnQ4kFjvLb+V96KGKLv79/1ux/I1iAjWXl8K+umFB0Vr6v/MvJ2
+         Xr4j/FZvTeptTvcW7eL/VBDBHflM00JgWp+k2CjHiqvwlUXSkcb32sBg3jX92Zpu79XB
+         W/rdbtNyTMC1P6+Leaoq5lPJgy3qSu8H2IRQl4LeyM4EjZZqQbbm0Z53yZ3mnWfTANch
+         oC9uW2oNXElrZd7vegjLW8zOejBwNXaMg0Pq8ExXBON0ELYnMLGuyHcTHg+PS9YHeV7W
+         Edztdalx8aJBRUBscjwE6VVoYsC4xLuPGQa2hMmqrbAycc0lZTML7mVLUQD5sFJLedbz
+         Budw==
+X-Gm-Message-State: APjAAAXXG/CkenOQjBvs7Nt6MXMfJPYKAog0ZD/C03OZbeHTXOVgB6WE
+        gwdJOF4OtiryCpQgyZjjxQu22AuH
+X-Google-Smtp-Source: APXvYqy7uSDrw8+NdILTuBJyFYZWauIh/O14WUJ44YjjkMJ/NWfglTUv6t1l7iOtrRNkuf6UDx1B5A==
+X-Received: by 2002:a5d:66c3:: with SMTP id k3mr78699916wrw.370.1578000262666;
+        Thu, 02 Jan 2020 13:24:22 -0800 (PST)
+Received: from [192.168.178.85] (pD9F901D9.dip0.t-ipconnect.de. [217.249.1.217])
+        by smtp.googlemail.com with ESMTPSA id q19sm9710392wmc.12.2020.01.02.13.24.21
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 02 Jan 2020 13:24:22 -0800 (PST)
+Subject: Re: SFP+ support for 8168fp/8117
+To:     Kai-Heng Feng <kai.heng.feng@canonical.com>,
+        Andrew Lunn <andrew@lunn.ch>, Chun-Hao Lin <hau@realtek.com>
+Cc:     Linux Netdev List <netdev@vger.kernel.org>,
+        Kernel development list <linux-kernel@vger.kernel.org>,
+        Anthony Wong <anthony.wong@canonical.com>,
+        Jason Yen <jason.yen@canonical.com>
+References: <2D8F5FFE-3EC3-480B-9D15-23CACE5556DF@canonical.com>
+ <20200102152143.GB1397@lunn.ch>
+ <DC28A43E-4F1A-40B6-84B0-3E79215527C9@canonical.com>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Message-ID: <c148fefc-fd56-26a8-9f9b-fbefbaf25050@gmail.com>
+Date:   Thu, 2 Jan 2020 22:24:03 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.3.1
 MIME-Version: 1.0
+In-Reply-To: <DC28A43E-4F1A-40B6-84B0-3E79215527C9@canonical.com>
 Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <6524AE07-2ED7-41B5-B761-9F6BE8D2049B@oracle.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 02, 2020 at 09:45:52PM +0200, Liran Alon wrote:
+On 02.01.2020 17:46, Kai-Heng Feng wrote:
+> Hi Andrew,
 > 
+>> On Jan 2, 2020, at 23:21, Andrew Lunn <andrew@lunn.ch> wrote:
+>>
+>> On Thu, Jan 02, 2020 at 02:59:42PM +0800, Kai Heng Feng wrote:
+>>> Hi Heiner,
+>>>
+>>> There's an 8168fp/8117 chip has SFP+ port instead of RJ45, the phy device ID matches "Generic FE-GE Realtek PHY" nevertheless.
+>>> The problems is that, since it uses SFP+, both BMCR and BMSR read are always zero, so Realtek phylib never knows if the link is up.
+>>>
+>>> However, the old method to read through MMIO correctly shows the link is up:
+>>> static unsigned int rtl8169_xmii_link_ok(struct rtl8169_private *tp)
+>>> {
+>>>       return RTL_R8(tp, PHYstatus) & LinkStatus;
+>>> }
+>>>
+>>> Few ideas here:
+>>> - Add a link state callback for phylib like phylink's phylink_fixed_state_cb(). However there's no guarantee that other parts of this chip works.
+>>> - Add SFP+ support for this chip. However the phy device matches to "Generic FE-GE Realtek PHY" which may complicate things.
+>>>
+>>> Any advice will be welcome.
+>>
+>> Hi Kai
+>>
+>> Is the i2c bus accessible?
 > 
-> > On 2 Jan 2020, at 21:29, Jason Gunthorpe <jgg@ziepe.ca> wrote:
-> > 
-> > On Thu, Jan 02, 2020 at 07:44:36PM +0200, Liran Alon wrote:
-> >> Currently, mlx5e_notify_hw() executes wmb() to complete writes to cache-coherent
-> >> memory before ringing doorbell. Doorbell is written to by mlx5_write64()
-> >> which use __raw_writeX().
-> >> 
-> >> This is semantically correct but executes reduntant wmb() in some architectures.
-> >> For example, in x86, a write to UC memory guarantees that any previous write to
-> >> WB memory will be globally visible before the write to UC memory. Therefore, there
-> >> is no need to also execute wmb() before write to doorbell which is mapped as UC memory.
-> >> 
-> >> The consideration regarding this between different architectures is handled
-> >> properly by the writeX() macro. Which is defined differently for different
-> >> architectures. E.g. On x86, it is just a memory write. However, on ARM, it
-> >> is defined as __iowmb() folowed by a memory write. __iowmb() is defined
-> >> as wmb().
-> > 
-> > This reasoning seems correct, though I would recommend directly
-> > refering to locking/memory-barriers.txt which explains this.
+> I don't think so. It seems to be a regular Realtek 8168 device with generic PCI ID [10ec:8168].
 > 
-> I find memory-barriers.txt not explicit enough on the semantics of writeX().
-> (For example: Should it flush write-combined buffers before writing to the UC memory?)
-> That’s why I preferred to explicitly state here how I perceive it.
-
-AFAIK WC is largely unspecified by the memory model. Is wmb() even
-formally specified to interact with WC?
-
-At least in this mlx5 case there is no WC, right? The kernel UAR is
-mapped UC?
-
-So we don't need to worry about the poor specification of WC access
-and you can refer to memory-barriers.txt at least for this patch.
-
-> > 
-> >> Therefore, change mlx5_write64() to use writeX() and remove wmb() from
-> >> it's callers.
-> > 
-> > Yes, wmb(); writel(); is always redundant
+>> Is there any documentation or example code?
 > 
-> Well, unfortunately not…
-> See: https://marc.info/?l=linux-netdev&m=157798859215697&w=2
-> (See my suggestion to add flush_wc_writeX())
-
-Well, the last time wmb & writel came up Linus was pretty clear that
-writel is supposed to remain in program order and have the barriers
-needed to do that.
-
-I don't think WC was considered when that discussion happened, but we
-really don't have a formal model for how WC works at all within the
-kernel.
-
-The above patch is really not a wmb(); writel() pairing, the wmb() is
-actually closing/serializing an earlier WC transaction, and yes you need various
-special things to keep WC working right.
-
-IMHO you should start there before going around and adding/removing wmbs
-related to WC. Update membory-barriers.txt and related with the model
-ordering for WC access and get agreement.
-
-For instance does wmb() even effect WC? Does WC have to be contained
-by spinlocks? Do we need extra special barriers like flush_wc and
-flush_wc_before_spin_unlock ? etc.
-
-Perhaps Will has some advice?
-
-> >> diff --git a/include/linux/mlx5/cq.h b/include/linux/mlx5/cq.h
-> >> index 40748fc1b11b..28744a725e64 100644
-> >> +++ b/include/linux/mlx5/cq.h
-> >> @@ -162,11 +162,6 @@ static inline void mlx5_cq_arm(struct mlx5_core_cq *cq, u32 cmd,
-> >> 
-> >> 	*cq->arm_db = cpu_to_be32(sn << 28 | cmd | ci);
-> >> 
-> >> -	/* Make sure that the doorbell record in host memory is
-> >> -	 * written before ringing the doorbell via PCI MMIO.
-> >> -	 */
-> >> -	wmb();
-> >> -
-> > 
-> > Why did this one change? The doorbell memory here is not a writel():
+> Unfortunately no.
 > 
-> Well, it’s not seen in the diff but actually the full code is:
+>>
+>> In order to correctly support SFP+ cages, we need access to the i2c
+>> bus to determine what sort of module has been inserted. It would also
+>> be good to have access to LOS, transmitter disable, etc, from the SFP
+>> cage.
 > 
->     /* Make sure that the doorbell record in host memory is
->      * written before ringing the doorbell via PCI MMIO.
->      */
->     wmb();
+> Seems like we need Realtek to provide more information to support this chip with SFP+.
 > 
->     doorbell[0] = cpu_to_be32(sn << 28 | cmd | ci);
->     doorbell[1] = cpu_to_be32(cq->cqn);
+Indeed it would be good to have some more details how this chip handles SFP+,
+therefore I add Hau to the discussion.
+
+As I see it the PHY registers are simply dummies on this chip. Or does this chip
+support both, PHY and SFP+? Hopefully SFP presence can be autodetected, we could
+skip the complete PHY handling in this case. Interesting would be which parts of
+the SFP interface are exposed how via (proprietary) registers.
+Recently the STMMAC driver was converted from phylib to phylink, maybe we have
+to do the same with r8169 one fine day. But w/o more details this is just
+speculation, much appreciated would be documentation from Realtek about the
+SFP+ interface.
+
+Kai, which hardware/board are we talking about?
+
+> Kai-Heng
 > 
->     mlx5_write64(doorbell, uar_page + MLX5_CQ_DOORBELL);
-
-Ah OK, we have another thing called doorbell which is actually DMA'ble
-memory.
-
-> >> 	doorbell[0] = cpu_to_be32(sn << 28 | cmd | ci);
-> >> 	doorbell[1] = cpu_to_be32(cq->cqn);
-> > 
-> >> static inline void mlx5_write64(__be32 val[2], void __iomem *dest)
-> >> {
-> >> #if BITS_PER_LONG == 64
-> >> -	__raw_writeq(*(u64 *)val, dest);
-> >> +	writeq(*(u64 *)val, dest);
-> > 
-> > I want to say this might cause problems with endian swapping as writeq
-> > also does some swaps that __raw does not? Is this true?
+>>
+>>   Andrew
 > 
-> Hmm... Looking at ARM64 version, writeq() indeed calls cpu_to_le64()
-> on parameter before passing it to __raw_writeq().  Quite surprising
-> from API perspective to be honest.
-
-For PCI-E devices writel(x) is defined to generate the same TLP on the
-PCI-E bus, across all arches. __raw_* does something arch specific and
-should not be called from drivers. It is a long standing bug that this
-code is written like this.
-
-> So should I change this instead to iowrite64be(*(u64 *)val, dest)?
-
-This always made my head hurt, but IIRC, when I looked at it years ago
-the weird array construction caused problems with that simple conversion.
-
-The userspace version looks like this now:
-
-        uint64_t doorbell;
-        uint32_t sn;
-        uint32_t ci;
-        uint32_t cmd;
-
-        sn  = cq->arm_sn & 3;
-        ci  = cq->cons_index & 0xffffff;
-        cmd = solicited ? MLX5_CQ_DB_REQ_NOT_SOL : MLX5_CQ_DB_REQ_NOT;
-
-        doorbell = sn << 28 | cmd | ci;
-        doorbell <<= 32;
-        doorbell |= cq->cqn;
-
-        mmio_write64_be(ctx->uar[0].reg + MLX5_CQ_DOORBELL, htobe64(doorbell));
-
-Where on all supported platforms the mmio_write64_be() expands to a
-simple store (no swap)
-
-Which does look functionally the same as
-
-   iowrite64be(doorbell, dest);
-
-So this patch should change the mlx5_write64 to accept a u64 like we
-did in userspace when this was all cleaned there.
-
-Jason
+Heiner
