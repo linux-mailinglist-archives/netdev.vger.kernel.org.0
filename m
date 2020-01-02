@@ -2,136 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7587312E373
-	for <lists+netdev@lfdr.de>; Thu,  2 Jan 2020 08:53:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3AE3712E388
+	for <lists+netdev@lfdr.de>; Thu,  2 Jan 2020 08:56:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727801AbgABHxk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Jan 2020 02:53:40 -0500
-Received: from mail-yw1-f54.google.com ([209.85.161.54]:43169 "EHLO
-        mail-yw1-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727781AbgABHxj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jan 2020 02:53:39 -0500
-Received: by mail-yw1-f54.google.com with SMTP id v126so16929289ywc.10
-        for <netdev@vger.kernel.org>; Wed, 01 Jan 2020 23:53:39 -0800 (PST)
+        id S1727771AbgABHz6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Jan 2020 02:55:58 -0500
+Received: from mail-lf1-f67.google.com ([209.85.167.67]:45555 "EHLO
+        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727663AbgABHz6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jan 2020 02:55:58 -0500
+Received: by mail-lf1-f67.google.com with SMTP id 203so29306827lfa.12
+        for <netdev@vger.kernel.org>; Wed, 01 Jan 2020 23:55:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
+        d=linaro.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Sa1eTCii+IrC8uZVOeJ+HY4hJ5ZDbDbfl8jfzAJ9Y5E=;
-        b=XeBPTLAJzZWOxbzvXL+8zb3r4cO5903yO4GL4MyFXzYraEEqbtGYhktHKqb9R4f5ry
-         og+AJ7FxUW445ngAnOmf0jy2wy7fcRWK+4rB+ZzLZ09SMVOeJx+HMyt9cRCAmmY4dvMi
-         ShD6Vm0cX+UoWI2H84E1zGAdzyar8ojWBc3Q2ratrzl8JnBBE7iTIZzshaOzcaayqZap
-         78tiDAcLSAMKEUrxuAMowgbN5ewoZGF39HlX1Frgpv/lve6kpzsUNNBFHM02Nh+T4+Uv
-         muXzRrf95TKkwpBW8dAc4B8FzJnKJsFK2dv3zYRoqQShpca3q0dwDvGiHbrgUWPxejK6
-         +RaA==
+         :cc:content-transfer-encoding;
+        bh=eGohEk6S6aS69bKKZtdPwikjBlLgnLVNXqA4xcC4Kho=;
+        b=w5FCHCPcoy7So8XJA9xIRexZGLLWbE/hk5imTz9sah34ckqci+zpYnZqWeC+TQW+ZP
+         0zD5fYB6jyusZl2JflmxXTmq4UGSYONrwfkNhO5zzcRD4xgR5Y5Tmb4SZmHuy6fPVlwH
+         226p43eMEapBGGnlGdMQMcTbcQ62SjQLeYen08k2cegDF3UKo9fkUTPjKJ5Y7r3FpLVp
+         OuaeWmVkT9FaAZQyT7dQxDpijNlTlYh/wvRc1nE486CWvie96fTD1mtS4YZmMRdnrBwn
+         D3Ytvxwxb3dmBcXCvdpUzgXX6K9BmcuCwDuPHUplHOE9MErG9Uxgyt7RWOn8Y3t4Fet/
+         lYJg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Sa1eTCii+IrC8uZVOeJ+HY4hJ5ZDbDbfl8jfzAJ9Y5E=;
-        b=daOIT2dREW4kuFD4HKWmmIKsqo1MeJ9sF52Ohs0AGhh0Bwd3P6RzdVYUR/2/WDHYIj
-         2ubiJf/DTs95ydDYN4kJOGQj+/ib3evjnEQ1gi1u9VFLRYj5AbfoDaAz/kqyKHv5GUpx
-         06Vy45KPydD9iaFetghed7aH6oCzh1orS9k5rCTNA7wDQp+hE3lqwDIRw7EZXqmwJice
-         2NWPuNYYrJZ9eTQXVdbLORIbOf1OZQ2Xf39T02JwFZzIkRJCzjX3LmHj1w2OfyyVjD5k
-         3ztyxmXenzHhcFM2y8S14vfHm+M6hdS2KYQ3hpOdvFfyZFoadURCTZRtwm0TsGNB3nAn
-         Ndqw==
-X-Gm-Message-State: APjAAAVxjCFet0+B8gRtkqMVVHTiUCjZeNk4Hcw7znGnKrE4O/SArpQN
-        EQFAKLGradrytNEaMdXnnrG87fTUT7dHfuQNxzk=
-X-Google-Smtp-Source: APXvYqygMbg+ZXuASSLgTWaoMOMzEUh0BtHu4fPzIlcpHOzfkwv5RSMPEOu+IZWdASvmKy/gqr6oluKNrLOCN8aTuIo=
-X-Received: by 2002:a81:498c:: with SMTP id w134mr62666448ywa.391.1577951618585;
- Wed, 01 Jan 2020 23:53:38 -0800 (PST)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=eGohEk6S6aS69bKKZtdPwikjBlLgnLVNXqA4xcC4Kho=;
+        b=rWQIGkh3hYcvDIYU1Hp2IefN9yxxgv1Vtv5pOKQm1uG0mhULshgcF/9KjLi1GNVeEH
+         HrFK/BfFCLXAqWXzhuzsJaQ1BaIR1E6S5QoV+zKXwNIdMaBq96Vahn8+1bTirl2NwRUp
+         ifyy/M3alfaJP+lKncK/bt37PY8jQWmM9lrjLsY8Ib8L4jYIGB4W12d8dYm+4h1hHdvj
+         JmxAibiCJY2FY6/ORPuL4GGwiYCs/+LV8EGvpDiHhXjrTwWzwXGmHJuFEZcHydg9b+ct
+         pDFqNAsBSpLX7MS2i4fDUIFMEx6n0Y5+7ZdY2z1oA0Aw2KcdHyEw0SnAI1//j9L22zgm
+         G6ow==
+X-Gm-Message-State: APjAAAUQ4HykTqxVTQ6TqD9QKP5JxMWgYD2MSn5sQKJzEJDdX+D8yXqm
+        galLW1CYu26taspVGK4KHCu3lQGzgBTJWQCQxbLduQ==
+X-Google-Smtp-Source: APXvYqyjCkSGCjGJ9B28da0wZQwDRT9CO/xuV+W8Khgy8GH2aJkxDx6Qv0HJANMb32fem+zQhK9aA2k6fU2SmCETnWc=
+X-Received: by 2002:ac2:4a91:: with SMTP id l17mr47045202lfp.75.1577951755636;
+ Wed, 01 Jan 2020 23:55:55 -0800 (PST)
 MIME-Version: 1.0
-References: <CAMDZJNVLEEzAwCHZG_8D+CdWQRDRiTeL1N2zj1wQ0jh3vS67rA@mail.gmail.com>
- <CAJ3xEMiqf9-EP0CCAEhhnU3PnvdWpqSR8VbJa=2JFPiHAQwVcw@mail.gmail.com> <CAMDZJNXWG6jkNwub_nenx9FpKJB8PK7VTFj9wiUn+xM7-CfK3w@mail.gmail.com>
-In-Reply-To: <CAMDZJNXWG6jkNwub_nenx9FpKJB8PK7VTFj9wiUn+xM7-CfK3w@mail.gmail.com>
-From:   Or Gerlitz <gerlitz.or@gmail.com>
-Date:   Thu, 2 Jan 2020 09:53:27 +0200
-Message-ID: <CAJ3xEMhVZUt-8fOCPBa8mre_=rtj_SN=_B4-7NqH2-NJGQj2LQ@mail.gmail.com>
-Subject: Re: mlx5e question about PF fwd packets to PF
-To:     Tonghao Zhang <xiangxia.m.yue@gmail.com>
-Cc:     Saeed Mahameed <saeedm@dev.mellanox.co.il>,
-        Roi Dayan <roid@mellanox.com>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>
+References: <CA+G9fYv3=oJSFodFp4wwF7G7_g5FWYRYbc4F0AMU6jyfLT689A@mail.gmail.com>
+In-Reply-To: <CA+G9fYv3=oJSFodFp4wwF7G7_g5FWYRYbc4F0AMU6jyfLT689A@mail.gmail.com>
+From:   Naresh Kamboju <naresh.kamboju@linaro.org>
+Date:   Thu, 2 Jan 2020 13:25:44 +0530
+Message-ID: <CA+G9fYvPWFtA77k=yx46FRd2wGW+_SMtzgZtYQFgkzmwPhNhdw@mail.gmail.com>
+Subject: Re: stable-rc-4.19.93-rc1/4e040169e8b7 : kernel panic RIP: 0010:__inet_lookup_listener
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>
+Cc:     Eric Dumazet <edumazet@google.com>,
+        Michal Kubecek <mkubecek@suse.cz>,
+        Firo Yang <firo.yang@suse.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        rcu@vger.kernel.org, Netdev <netdev@vger.kernel.org>,
+        lkft-triage@lists.linaro.org
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 2, 2020 at 5:04 AM Tonghao Zhang <xiangxia.m.yue@gmail.com> wrote:
+On Thu, 2 Jan 2020 at 12:24, Naresh Kamboju <naresh.kamboju@linaro.org> wro=
+te:
 >
-> On Wed, Jan 1, 2020 at 4:40 AM Or Gerlitz <gerlitz.or@gmail.com> wrote:
-> > On Tue, Dec 31, 2019 at 10:39 AM Tonghao Zhang <xiangxia.m.yue@gmail.com> wrote:
-> > > In one case, we want forward the packets from one PF to otter PF in eswitchdev mode.
-
-
+> Results from Linaro=E2=80=99s test farm.
+> Regressions on arm64, arm, x86_64, and i386.
 >
-> > Did you want to say from one uplink to the other uplink? -- this is not supported.
-> yes, I try to install one rule and hope that one uplink can forward
-> the packets to other uplink of PF.
-> But the rule can be installed successfully, and the counter of rule is
-> changed as show below:
+> While running LTP syscalls accept* test cases on stable-rc-4.19 branch ke=
+rnel.
+> This report log extracted from qemu_x86_64.
 >
-> # tc filter add dev $PF0 protocol all parent ffff: prio 1 handle 1
-> flower action mirred egress redirect dev $PF1
+> metadata:
+>   git branch: linux-4.19.y
+>   git repo: https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-=
+stable-rc.git
+>   git commit: 4e040169e8b7f4e1c50ceb0f6596015ecc67a052
+>   git describe: v4.19.92-112-g4e040169e8b7
+>   make_kernelversion: 4.19.93-rc1
+>   kernel-config:
+> http://snapshots.linaro.org/openembedded/lkft/lkft/sumo/intel-corei7-64/l=
+kft/linux-stable-rc-4.19/396/config
 >
-
-you didn't ask for skip_sw, if you install a rule with "none" and adding to hw
-fails, still the rule is fine in the SW data-path
-
+> Crash log,
 >
-> # tc -d -s filter show dev $PF0 ingress
-> filter protocol all pref 1 flower chain 0
-> filter protocol all pref 1 flower chain 0 handle 0x1
->   in_hw
+> BUG: unable to handle kernel paging request at 0000000040000001
+> [   23.578222] PGD 138f25067 P4D 138f25067 PUD 0
+> er run is 0h 15m[   23.578222] Oops: 0000 [#1] SMP NOPTI
+> [   23.578222] CPU: 1 PID: 2216 Comm: accept02 Not tainted 4.19.93-rc1 #1
+> [   23.578222] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996),
+> BIOS 1.12.0-1 04/01/2014
+> [   23.578222] RIP: 0010:__inet_lookup_listener+0x12d/0x300
 
+Reverting below patch solve this kernel panic,
 
-this (in_hw) seems to be a bug, we don't support it AFAIK
+tcp/dccp: fix possible race __inet_lookup_established()
+[ Upstream commit 8dbd76e79a16b45b2ccb01d2f2e08dbf64e71e40 ]
 
-> action order 1: mirred (Egress Redirect to device enp130s0f1) stolen
->   index 1 ref 1 bind 1 installed 19 sec used 0 sec
->   Action statistics:
-> Sent 3206840 bytes 32723 pkt (dropped 0, overlimits 0 requeues 0)
-> backlog 0b 0p requeues 0
+Michal Kubecek and Firo Yang did a very nice analysis of crashes
+happening in __inet_lookup_established().
 
+Since a TCP socket can go from TCP_ESTABLISH to TCP_LISTEN
+(via a close()/socket()/listen() cycle) without a RCU grace period,
+I should not have changed listeners linkage in their hash table.
 
-I think newish (for about a year now or maybe more)  kernels and iproute have
-per data-path (SW/HW) rule traffic counters - this would help you
-realize what is
-going on down there
+They must use the nulls protocol (Documentation/RCU/rculist_nulls.txt),
+so that a lookup can detect a socket in a hash list was moved in
+another one.
 
->
-> The PF1 uplink don't sent the packets out(as you say, we don't support it now).
-> If we don't support it, should we return -NOSUPPORT when we install
-> the hairpin rule between
-> uplink of PF, because it makes me confuse.
+Since we added code in commit d296ba60d8e2 ("soreuseport: Resolve
+merge conflict for v4/v6 ordering fix"), we have to add
+hlist_nulls_add_tail_rcu() helper.
 
-
-indeed, but only if you use skip_sw
-
-still the in_hw indication suggests there a driver bug
-
-
->
-> > What we do support is the following (I think you do it by now):
-> > PF0.uplink --> esw --> PF0.VFx --> hairpin --> PF1.VFy --> esw --> PF1.uplink
-
-
->
-> Yes, I have tested it, and it work fine for us.
-
-
-cool, so production can keep using these rules..
-
-
->
-> > Hence the claim here is that if PF0.uplink --> hairpin --> PF1.uplink
-> > would have been supported
-
-
->
-> Did we have plan to support that function.
-
-
-I don't think so, what is the need? something wrong with N+2 rules as
-I suggested?
+Fixes: 3b24d854cb35 ("tcp/dccp: do not touch listener sk_refcnt under synfl=
+ood")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reported-by: Michal Kubecek <mkubecek@suse.cz>
+Reported-by: Firo Yang <firo.yang@suse.com>
+Reviewed-by: Michal Kubecek <mkubecek@suse.cz>
+Link: https://lore.kernel.org/netdev/20191120083919.GH27852@unicorn.suse.cz=
+/
+Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
