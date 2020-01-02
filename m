@@ -2,75 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9962712EB75
-	for <lists+netdev@lfdr.de>; Thu,  2 Jan 2020 22:41:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C5C1912EB84
+	for <lists+netdev@lfdr.de>; Thu,  2 Jan 2020 22:48:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725890AbgABVln (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Jan 2020 16:41:43 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:44770 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725837AbgABVln (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jan 2020 16:41:43 -0500
-Received: from localhost (unknown [IPv6:2601:601:9f00:1c3::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id A7A921568B3D5;
-        Thu,  2 Jan 2020 13:41:42 -0800 (PST)
-Date:   Thu, 02 Jan 2020 13:41:38 -0800 (PST)
-Message-Id: <20200102.134138.1618913847173804689.davem@davemloft.net>
-To:     tom@herbertland.com
-Cc:     netdev@vger.kernel.org, simon.horman@netronome.com,
-        willemdebruijn.kernel@gmail.com
-Subject: Re: [PATCH v8 net-next 0/9] ipv6: Extension header infrastructure
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <1577400698-4836-1-git-send-email-tom@herbertland.com>
-References: <1577400698-4836-1-git-send-email-tom@herbertland.com>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 02 Jan 2020 13:41:42 -0800 (PST)
+        id S1726083AbgABVsW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Jan 2020 16:48:22 -0500
+Received: from mail.kernel.org ([198.145.29.99]:58760 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725837AbgABVsW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 2 Jan 2020 16:48:22 -0500
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 17DDD20863;
+        Thu,  2 Jan 2020 21:48:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1578001701;
+        bh=2WXjLqQbps2a6F38F9m9ASGc4E7E4qO9KBQB0pZiS/s=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=ChnEJTAvI7DSzADhF4xt8jED3CPXr3vS4YW3KPb+PiK/qm9oKKW7Rer8Cq/42UYwo
+         XnuAhVqELmoj3plWmKpRtqMrzCQWsLyvDmUcw4repVTJU+4yncndX/v4YWVLYRFa5v
+         8EqDycQLYCLokgf9eMd7Bzpt2ELML+SwC5TEpI5s=
+Date:   Thu, 2 Jan 2020 22:48:19 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Michal Kubecek <mkubecek@suse.cz>
+Cc:     Sasha Levin <sashal@kernel.org>, stable@vger.kernel.org,
+        Eric Dumazet <edumazet@google.com>,
+        Firo Yang <firo.yang@suse.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        rcu@vger.kernel.org, netdev@vger.kernel.org,
+        lkft-triage@lists.linaro.org,
+        Naresh Kamboju <naresh.kamboju@linaro.org>
+Subject: Re: [PATCH stable-4.19] tcp/dccp: fix possible race
+ __inet_lookup_established()
+Message-ID: <20200102214819.GA745235@kroah.com>
+References: <CA+G9fYv3=oJSFodFp4wwF7G7_g5FWYRYbc4F0AMU6jyfLT689A@mail.gmail.com>
+ <20200102212844.0D734E0095@unicorn.suse.cz>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200102212844.0D734E0095@unicorn.suse.cz>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tom Herbert <tom@herbertland.com>
-Date: Thu, 26 Dec 2019 14:51:29 -0800
+On Thu, Jan 02, 2020 at 10:28:44PM +0100, Michal Kubecek wrote:
+> From: Eric Dumazet <edumazet@google.com>
+> 
+> [ Upstream commit 8dbd76e79a16b45b2ccb01d2f2e08dbf64e71e40 ]
+> 
+> Michal Kubecek and Firo Yang did a very nice analysis of crashes
+> happening in __inet_lookup_established().
+> 
+> Since a TCP socket can go from TCP_ESTABLISH to TCP_LISTEN
+> (via a close()/socket()/listen() cycle) without a RCU grace period,
+> I should not have changed listeners linkage in their hash table.
+> 
+> They must use the nulls protocol (Documentation/RCU/rculist_nulls.txt),
+> so that a lookup can detect a socket in a hash list was moved in
+> another one.
+> 
+> Since we added code in commit d296ba60d8e2 ("soreuseport: Resolve
+> merge conflict for v4/v6 ordering fix"), we have to add
+> hlist_nulls_add_tail_rcu() helper.
+> 
+> stable-4.19: we also need to update code in __inet_lookup_listener() and
+> inet6_lookup_listener() which has been removed in 5.0-rc1.
+> 
+> Fixes: 3b24d854cb35 ("tcp/dccp: do not touch listener sk_refcnt under synflood")
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
+> Reported-by: Michal Kubecek <mkubecek@suse.cz>
+> Reported-by: Firo Yang <firo.yang@suse.com>
+> Reviewed-by: Michal Kubecek <mkubecek@suse.cz>
+> Link: https://lore.kernel.org/netdev/20191120083919.GH27852@unicorn.suse.cz/
+> Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+> Signed-off-by: Michal Kubecek <mkubecek@suse.cz>
 
-> The fundamental rationale here is to make various TLVs, in particular
-> Hop-by-Hop and Destination options, usable, robust, scalable, and
-> extensible to support emerging functionality.
+Thanks for the updated patches, all now queued up.
 
-So, patch #1 is fine and it seems to structure the code to more easily
-enable support for:
-
-https://tools.ietf.org/html/draft-ietf-6man-icmp-limits-07
-
-(I'll note in passing how frustrating it is that, based upon your
-handling of things in that past, I know that I have to go out and
-explicitly look for draft RFCs containing your name in order to figure
-out what your overall long term agenda actually is.  You should be
-stating these kinds of things in your commit messages)
-
-But as for the rest of the patch series, what are these "emerging
-functionalities" you are talking about?
-
-I've heard some noises about people wanting to do some kind of "kerberos
-for packets".  Or even just plain putting app + user ID information into
-options.
-
-Is that where this is going?  I have no idea, because you won't say.
-
-And honestly, this stuff sounds so easy to misuse by governments and
-other entities.  It could also be used to allow ISPs to limit users
-in very undesirable and unfair ways.   And honestly, surveilance and
-limiting are the most likely uses for such a facility.  I can't see
-it legitimately being promoted as a "security" feature, really.
-
-I think the whole TX socket option can wait.
-
-And because of that the whole consolidation and cleanup of the option
-handling code is untenable, because without a use case all it does is
-make -stable backports insanely painful.
+greg k-h
