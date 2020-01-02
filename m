@@ -2,108 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 47EAA12E593
-	for <lists+netdev@lfdr.de>; Thu,  2 Jan 2020 12:17:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E12912E5D3
+	for <lists+netdev@lfdr.de>; Thu,  2 Jan 2020 12:46:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728180AbgABLQ4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Jan 2020 06:16:56 -0500
-Received: from mail.kernel.org ([198.145.29.99]:55834 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728115AbgABLQ4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 2 Jan 2020 06:16:56 -0500
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1728255AbgABLqa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Jan 2020 06:46:30 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:58380 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1728216AbgABLq3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jan 2020 06:46:29 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1577965587;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=US4wYhMCc3xHAX0fNldkKecHiJE+JAQdaMN2H3eHOPw=;
+        b=T9LWkkF+gRv9pgQUsEtWdxuIPJGp6D2IvPORrByd6r2OVC64PK/70NogwBTnwfcGYDkzdy
+        x6X7ePJKM7yf63+NEQwmJiqz5kXdeE0Hma0q2cQBaCr7UkoTyjvbFbEdEId78B4qIxgyDM
+        ZxwYHTXmzv1SDf7Abij63m8ybfBeXys=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-425-wsBGg0_lPQaqR5iCEBYzyQ-1; Thu, 02 Jan 2020 06:46:23 -0500
+X-MC-Unique: wsBGg0_lPQaqR5iCEBYzyQ-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 186F6217F4;
-        Thu,  2 Jan 2020 11:16:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1577963815;
-        bh=sSSSJ8ifsPR9hBm/oLWc3nWtuHM8c0p+74Uqt6dnvps=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=GkTkSmBcb38g2LmL8koBMfB4pIbvjbX32IsWFtqt7ldEesewHy2q3VJThO6HC1QM2
-         NcxSECCE0telsm8gkd9gT2FopLJJP1LRAHr0jCpplvtGiDcmKXTWV4wJuilZPdrOn7
-         vS3PfaoF9ipPZ4BjSEo4srOKQCT54+XWgaQeTCqQ=
-Date:   Thu, 2 Jan 2020 12:16:53 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Amrita Patole <longlivelinux@yahoo.com>
-Cc:     manishc@marvell.com, GR-Linux-NIC-Dev@marvell.com,
-        netdev@vger.kernel.org, devel@driverdev.osuosl.org,
-        linux-kernel@vger.kernel.org,
-        Amrita Patole <amritapatole@gmail.com>
-Subject: Re: [PATCH] Fixing coding style. Signed-off-by:
- amritapatole@gmail.com
-Message-ID: <20200102111653.GB3961630@kroah.com>
-References: <20200102072929.21636-1-longlivelinux.ref@yahoo.com>
- <20200102072929.21636-1-longlivelinux@yahoo.com>
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C53EC10CE781;
+        Thu,  2 Jan 2020 11:46:21 +0000 (UTC)
+Received: from carbon (ovpn-200-18.brq.redhat.com [10.40.200.18])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 36B365D9C9;
+        Thu,  2 Jan 2020 11:46:15 +0000 (UTC)
+Date:   Thu, 2 Jan 2020 12:46:14 +0100
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Yunsheng Lin <linyunsheng@huawei.com>
+Cc:     <netdev@vger.kernel.org>, <lirongqing@baidu.com>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Saeed Mahameed <saeedm@mellanox.com>, <mhocko@kernel.org>,
+        <peterz@infradead.org>, <linux-kernel@vger.kernel.org>,
+        brouer@redhat.com
+Subject: Re: [net-next v6 PATCH 1/2] page_pool: handle page recycle for
+ NUMA_NO_NODE condition
+Message-ID: <20200102124614.1335fa32@carbon>
+In-Reply-To: <b56069bd-ca8f-68bc-7e0b-bd0da423f891@huawei.com>
+References: <157746672570.257308.7385062978550192444.stgit@firesoul>
+        <157746679893.257308.4995193590996029483.stgit@firesoul>
+        <b56069bd-ca8f-68bc-7e0b-bd0da423f891@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200102072929.21636-1-longlivelinux@yahoo.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 02, 2020 at 12:59:29PM +0530, Amrita Patole wrote:
-> From: Amrita Patole <amritapatole@gmail.com>
+On Mon, 30 Dec 2019 09:59:23 +0800
+Yunsheng Lin <linyunsheng@huawei.com> wrote:
+
+> On 2019/12/28 1:13, Jesper Dangaard Brouer wrote:
+> > The check in pool_page_reusable (page_to_nid(page) == pool->p.nid) is
+> > not valid if page_pool was configured with pool->p.nid = NUMA_NO_NODE.
+> > 
+> > The goal of the NUMA changes in commit d5394610b1ba ("page_pool: Don't
+> > recycle non-reusable pages"), were to have RX-pages that belongs to the
+> > same NUMA node as the CPU processing RX-packet during softirq/NAPI. As
+> > illustrated by the performance measurements.
+> > 
+> > This patch moves the NAPI checks out of fast-path, and at the same time
+> > solves the NUMA_NO_NODE issue.  
 > 
-> ---
->  drivers/staging/qlge/qlge_mpi.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
+> There seems to be a minor NUMA_NO_NODE case that has not been handled by
+> this patch yet:
 > 
-> diff --git a/drivers/staging/qlge/qlge_mpi.c b/drivers/staging/qlge/qlge_mpi.c
-> index 9e422bbbb6ab..f63db2c79fac 100644
-> --- a/drivers/staging/qlge/qlge_mpi.c
-> +++ b/drivers/staging/qlge/qlge_mpi.c
-> @@ -136,7 +136,8 @@ static int ql_get_mb_sts(struct ql_adapter *qdev, struct mbox_params *mbcp)
->  		    ql_read_mpi_reg(qdev, qdev->mailbox_out + i,
->  				     &mbcp->mbox_out[i]);
->  		if (status) {
-> -			netif_err(qdev, drv, qdev->ndev, "Failed mailbox read.\n");
-> +			netif_err(qdev, drv, qdev->ndev,
-> +                                  "Failed mailbox read. \n");
->  			break;
->  		}
->  	}
-> -- 
-> 2.20.1
+> 1. When the page is always recycled to pool->alloc.cache.
+> 2. And page_pool_alloc_pages always return pages from pool->alloc.cache.
+> 
+> Then non-local page will be reused when the rx NAPI affinity changes.
+> 
+> Of coure we can handle above by calling page_pool_update_nid(), which
+> may require very user to call page_pool_update_nid() explicitly even
+> the user has specify the pool->p.nid as NUMA_NO_NODE.
+> 
+> Any consideration for above case?
 
-Hi,
+Yes, I tried to explain below, that "we accept that transitioning the
+alloc cache doesn't happen immediately.".  Thus, I've not forgotten
+about this case, and I still consider this patch correct.
 
-This is the friendly patch-bot of Greg Kroah-Hartman.  You have sent him
-a patch that has triggered this response.  He used to manually respond
-to these common problems, but in order to save his sanity (he kept
-writing the same thing over and over, yet to different people), I was
-created.  Hopefully you will not take offence and will fix the problem
-in your patch and resubmit it so that it can be accepted into the Linux
-kernel tree.
+You have to consider/understand how this page_pool cache is used.  The
+alloc cache can only get "recycled" pages in rare situations.  The case
+basically only happen for XDP_DROP (which have extreme performance
+needs).  Sure, in a 100% XDP_DROP case, then your described case can
+happen, but that case is unlikely/useless in real-life production. Some
+packets must be let through, which will have to travel through the
+ptr_ring, where the NUMA check is done.  Thus, pages will eventually
+transition to the new NAPI node of the new IRQ-CPU.
 
-You are receiving this message because of the following common error(s)
-as indicated below:
 
-- Your patch does not have a Signed-off-by: line.  Please read the
-  kernel file, Documentation/SubmittingPatches and resend it after
-  adding that line.  Note, the line needs to be in the body of the
-  email, before the patch, not at the bottom of the patch or in the
-  email signature.
+> > 
+> > First realize that alloc_pages_node() with pool->p.nid = NUMA_NO_NODE
+> > will lookup current CPU nid (Numa ID) via numa_mem_id(), which is used
+> > as the the preferred nid.  It is only in rare situations, where
+> > e.g. NUMA zone runs dry, that page gets doesn't get allocated from
+> > preferred nid.  The page_pool API allows drivers to control the nid
+> > themselves via controlling pool->p.nid.
+> > 
+> > This patch moves the NAPI check to when alloc cache is refilled, via
+> > dequeuing/consuming pages from the ptr_ring. Thus, we can allow placing
+> > pages from remote NUMA into the ptr_ring, as the dequeue/consume step
+> > will check the NUMA node. All current drivers using page_pool will
+> > alloc/refill RX-ring from same CPU running softirq/NAPI process.
+> > 
+> > Drivers that control the nid explicitly, also use page_pool_update_nid
+> > when changing nid runtime.  To speed up transision to new nid the alloc
+> > cache is now flushed on nid changes.  This force pages to come from
+> > ptr_ring, which does the appropate nid check.
+> > 
+> > For the NUMA_NO_NODE case, when a NIC IRQ is moved to another NUMA
+> > node, we accept that transitioning the alloc cache doesn't happen
+> > immediately. The preferred nid change runtime via consulting
+> > numa_mem_id() based on the CPU processing RX-packets.
 
-- You did not specify a description of why the patch is needed, or
-  possibly, any description at all, in the email body.  Please read the
-  section entitled "The canonical patch format" in the kernel file,
-  Documentation/SubmittingPatches for what is needed in order to
-  properly describe the change.
+This is the section, where I say: "we accept that transitioning the
+alloc cache doesn't happen immediately. "
 
-- You did not write a descriptive Subject: for the patch, allowing Greg,
-  and everyone else, to know what this patch is all about.  Please read
-  the section entitled "The canonical patch format" in the kernel file,
-  Documentation/SubmittingPatches for what a proper Subject: line should
-  look like.
 
-If you wish to discuss this problem further, or you have questions about
-how to resolve this issue, please feel free to respond to this email and
-Greg will reply once he has dug out from the pending patches received
-from other developers.
+> > Notice, to avoid stressing the page buddy allocator and avoid doing too
+> > much work under softirq with preempt disabled, the NUMA check at
+> > ptr_ring dequeue will break the refill cycle, when detecting a NUMA
+> > mismatch. This will cause a slower transition, but its done on purpose.
+> > 
+> > Fixes: d5394610b1ba ("page_pool: Don't recycle non-reusable pages")
+> > Reported-by: Li RongQing <lirongqing@baidu.com>
+> > Reported-by: Yunsheng Lin <linyunsheng@huawei.com>
+> > Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
 
-thanks,
 
-greg k-h's patch email bot
+
+-- 
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
+
