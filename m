@@ -2,175 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8DF2612F19D
-	for <lists+netdev@lfdr.de>; Fri,  3 Jan 2020 00:05:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B755E12F1C9
+	for <lists+netdev@lfdr.de>; Fri,  3 Jan 2020 00:28:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727074AbgABXFr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Jan 2020 18:05:47 -0500
-Received: from egyptian.birch.relay.mailchannels.net ([23.83.209.56]:1964 "EHLO
-        egyptian.birch.relay.mailchannels.net" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725890AbgABXFr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jan 2020 18:05:47 -0500
-X-Sender-Id: dreamhost|x-authsender|stevie@qrpff.net
-Received: from relay.mailchannels.net (localhost [127.0.0.1])
-        by relay.mailchannels.net (Postfix) with ESMTP id 5CF175E1C9E;
-        Thu,  2 Jan 2020 23:05:45 +0000 (UTC)
-Received: from pdx1-sub0-mail-a6.g.dreamhost.com (100-96-86-164.trex.outbound.svc.cluster.local [100.96.86.164])
-        (Authenticated sender: dreamhost)
-        by relay.mailchannels.net (Postfix) with ESMTPA id BDA6A5E1854;
-        Thu,  2 Jan 2020 23:05:44 +0000 (UTC)
-X-Sender-Id: dreamhost|x-authsender|stevie@qrpff.net
-Received: from pdx1-sub0-mail-a6.g.dreamhost.com ([TEMPUNAVAIL].
- [64.90.62.162])
-        (using TLSv1.2 with cipher DHE-RSA-AES256-GCM-SHA384)
-        by 0.0.0.0:2500 (trex/5.18.5);
-        Thu, 02 Jan 2020 23:05:45 +0000
-X-MC-Relay: Neutral
-X-MailChannels-SenderId: dreamhost|x-authsender|stevie@qrpff.net
-X-MailChannels-Auth-Id: dreamhost
-X-Daffy-Spicy: 070e7e9b61f0b289_1578006345195_399340049
-X-MC-Loop-Signature: 1578006345195:71854839
-X-MC-Ingress-Time: 1578006345194
-Received: from pdx1-sub0-mail-a6.g.dreamhost.com (localhost [127.0.0.1])
-        by pdx1-sub0-mail-a6.g.dreamhost.com (Postfix) with ESMTP id 7843B7F37E;
-        Thu,  2 Jan 2020 15:05:39 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=qrpff.net; h=mime-version
-        :references:in-reply-to:from:date:message-id:subject:to:cc
-        :content-type; s=qrpff.net; bh=rJVu1oJ5OXoPfH59J1rx+8VLjrI=; b=k
-        OH8+yfsAgBUg4q/tg+qsxE2UWzZtyuSZkapGQY5A8X8QLC1qpI0/lA1e7VZMRQBD
-        c2UeJ9GDly2OWzY6v2+YtwkZaXOd3CDcZ422lClcG09RqAUBkqNlhsnJB+YYChQC
-        rNhRnnCBhS5bn0WEsI+C8KIeAgNz1RWCugFYANGczE=
-Received: from mail-lj1-f172.google.com (mail-lj1-f172.google.com [209.85.208.172])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: stevie@qrpff.net)
-        by pdx1-sub0-mail-a6.g.dreamhost.com (Postfix) with ESMTPSA id 0B9427F380;
-        Thu,  2 Jan 2020 15:05:38 -0800 (PST)
-Received: by mail-lj1-f172.google.com with SMTP id y6so34212048lji.0;
-        Thu, 02 Jan 2020 15:05:38 -0800 (PST)
-X-Gm-Message-State: APjAAAXjggjtOlDoZ/sRyXJR4M6m89xaGgGLKDoGilVEC7RPpMn2bgUM
-        CkwcV/VHidJ7LzlTO4v6uDPYHaQ4FzyLHZe/qOY=
-X-Google-Smtp-Source: APXvYqyX88202Y94oL3z3iKty2TRFCRwIZICQA3PUCWFaRomHJocbdmqtWdzdWlwGQOBuUF1kmWTCVC8bsuqINoezCE=
-X-Received: by 2002:a2e:8016:: with SMTP id j22mr51293445ljg.24.1578006332987;
- Thu, 02 Jan 2020 15:05:32 -0800 (PST)
+        id S1726204AbgABX2d (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Jan 2020 18:28:33 -0500
+Received: from dpmailmta01-38.doteasy.com ([65.61.219.18]:42595 "EHLO
+        dpmailmta01.doteasy.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726039AbgABX2d (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jan 2020 18:28:33 -0500
+X-Greylist: delayed 962 seconds by postgrey-1.27 at vger.kernel.org; Thu, 02 Jan 2020 18:28:33 EST
+X-Default-Received-SPF: pass (skip=forwardok (res=PASS)) x-ip-name=192.168.101.83;
+Received: from dpmailrp03.doteasy.com (unverified [192.168.101.83]) 
+        by dpmailmta01.doteasy.com (DEO) with ESMTP id 53015151-1394429 
+        for <netdev@vger.kernel.org>; Thu, 02 Jan 2020 15:12:31 -0800
+Received: from dpmail22.doteasy.com (dpmail22.doteasy.com [192.168.101.22])
+        by dpmailrp03.doteasy.com (8.14.4/8.14.4/Debian-8+deb8u2) with ESMTP id 002NCUE0007942
+        for <netdev@vger.kernel.org>; Thu, 2 Jan 2020 15:12:30 -0800
+X-SmarterMail-Authenticated-As: trev@larock.ca
+Received: from mail-lj1-f169.google.com (mail-lj1-f169.google.com [209.85.208.169]) by dpmail22.doteasy.com with SMTP;
+   Thu, 2 Jan 2020 15:12:13 -0800
+Received: by mail-lj1-f169.google.com with SMTP id j1so34856174lja.2
+        for <netdev@vger.kernel.org>; Thu, 02 Jan 2020 15:12:05 -0800 (PST)
+X-Gm-Message-State: APjAAAVUWlWrYBN3jhQevWK3n6MPFl7u4ssS7NKCRQMXbAjFBSXP0yZd
+        JN88CpIz+TO7oA0G6ydJMf39IdHgbCX1lz09IH0=
+X-Google-Smtp-Source: APXvYqx17mEECKr/jUg4IhI5SXcIuRW2S0uWLNnr+lO/++leJ+9cbfG+PdEW53i6Z498V+1aq6FMETZv0G0B3ADbckc=
+X-Received: by 2002:a2e:9e43:: with SMTP id g3mr34795643ljk.37.1578006724289;
+ Thu, 02 Jan 2020 15:12:04 -0800 (PST)
 MIME-Version: 1.0
-References: <CAD_xR9eDL+9jzjYxPXJjS7U58ypCPWHYzrk0C3_vt-w26FZeAQ@mail.gmail.com>
- <1762437703fd150bb535ee488c78c830f107a531.camel@sipsolutions.net>
-In-Reply-To: <1762437703fd150bb535ee488c78c830f107a531.camel@sipsolutions.net>
-X-DH-BACKEND: pdx1-sub0-mail-a6
-From:   Stephen Oberholtzer <stevie@qrpff.net>
-Date:   Thu, 2 Jan 2020 18:05:21 -0500
-X-Gmail-Original-Message-ID: <CAD_xR9eh=CAYeQZ3Vp9Yj9h3ifMu2exy0ihaXyE+736tJrPVLA@mail.gmail.com>
-Message-ID: <CAD_xR9eh=CAYeQZ3Vp9Yj9h3ifMu2exy0ihaXyE+736tJrPVLA@mail.gmail.com>
-Subject: Re: PROBLEM: Wireless networking goes down on Acer C720P Chromebook (bisected)
-To:     Johannes Berg <johannes@sipsolutions.net>
-Cc:     toke@redhat.com, "David S. Miller" <davem@davemloft.net>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+From:   Trev Larock <trev@larock.ca>
+Date:   Thu, 2 Jan 2020 18:11:54 -0500
+X-Gmail-Original-Message-ID: <CAHgT=KfpKenfzn3+uiVdF-B3mGv30Ngu70y6Zn+wH0GcGcDFYQ@mail.gmail.com>
+Message-ID: <CAHgT=KfpKenfzn3+uiVdF-B3mGv30Ngu70y6Zn+wH0GcGcDFYQ@mail.gmail.com>
+Subject: VRF + ip xfrm, egress ESP packet looping when qdisc configured
+To:     netdev@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
-X-VR-OUT-STATUS: OK
-X-VR-OUT-SCORE: -100
-X-VR-OUT-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedufedrvdegvddgtddvucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuggftfghnshhusghstghrihgsvgdpffftgfetoffjqffuvfenuceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhepgghfjgfhfffkuffvtgesthdtredttddtjeenucfhrhhomhepufhtvghphhgvnhcuqfgsvghrhhholhhtiigvrhcuoehsthgvvhhivgesqhhrphhffhdrnhgvtheqnecuffhomhgrihhnpehkvghrnhgvlhdrohhrghenucfkphepvddtledrkeehrddvtdekrddujedvnecurfgrrhgrmhepmhhouggvpehsmhhtphdphhgvlhhopehmrghilhdqlhhjuddqfhdujedvrdhgohhoghhlvgdrtghomhdpihhnvghtpedvtdelrdekhedrvddtkedrudejvddprhgvthhurhhnqdhprghthhepufhtvghphhgvnhcuqfgsvghrhhholhhtiigvrhcuoehsthgvvhhivgesqhhrphhffhdrnhgvtheqpdhmrghilhhfrhhomhepshhtvghvihgvsehqrhhpfhhfrdhnvghtpdhnrhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrghenucevlhhushhtvghrufhiiigvpedt
+X-Exim-Id: CAHgT=KfpKenfzn3+uiVdF-B3mGv30Ngu70y6Zn+wH0GcGcDFYQ
+X-Bayes-Prob: 0.0001 (Score 0, tokens from: base:default, @@RPTN)
+X-Spam-Score: 0.00 () [Hold at 5.00] 
+X-CanIt-Geo: No geolocation information available for 192.168.101.22
+X-CanItPRO-Stream: base:default
+X-Canit-Stats-ID: 011Jzcuej - 96a7d9b25fc6 - 20200102
+X-Scanned-By: CanIt (www . roaringpenguin . com) on 192.168.101.83
+X-Originating-IP: 192.168.101.83
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 2, 2020 at 8:28 AM Johannes Berg <johannes@sipsolutions.net> wrote:
->
-> On Tue, 2019-12-31 at 19:49 -0500, Stephen Oberholtzer wrote:
-> > Wireless networking goes down on Acer C720P Chromebook (bisected)
-> >
-> > Culprit: 7a89233a ("mac80211: Use Airtime-based Queue Limits (AQL) on
-> > packet dequeue")
-> >
+With a vrf configured and an xfrm policy I see some ESP packet looping,
+only with qdisc.  Tried on:
+fedora31 kernel 5.3.7-301.fc31.x86_64
+fedora26 kernel 4.16.11
 
-<snip>
+1. VRF case, host-host tunnel mode xfrm, no qdisc
+          host1                                |  host2
+         +---------------+                     |
+         |     vrf0      |                     |
+         +---------------+                     |
+            |                                  |
+            |                                  |
+         +--------+                            |
+         | enp0s8 | 192.168.56.14 --------------- 192.168.56.16
+         +--------+                            |
+                                               |
+vrf config:
+ sysctl net.ipv4.tcp_l3mdev_accept=1
+ ip link add dev vrf0 type vrf table 300
+ ip link set dev vrf0 up
+ ip link set dev enp0s8  master vrf0
 
-> I think I found at least one hole in this, but IIRC (it was before my
-> vacation, sorry) it was pretty unlikely to actually happen. Perhaps
-> there are more though.
->
-> https://lore.kernel.org/r/b14519e81b6d2335bd0cb7dcf074f0d1a4eec707.camel@sipsolutions.net
+xfrm config:
+ ip xfrm policy add src 192.168.56.114/32 dst 192.168.56.116/32 \
+ dir out priority 367231 ptype main tmpl src 192.168.56.114 dst \
+ 192.168.56.116 proto esp spi 0x1234567 reqid 1 mode tunnel
 
-<snippety-snip>
+ ip xfrm state add src 192.168.56.114 dst 192.168.56.116 proto esp \
+ spi 0x1234567 reqid 1 mode tunnel aead rfc4106\(gcm\(aes\)\) \
+ 0x68db8eabd7f61557247f28f95e668f19855e086d02b21488fde4f5fcc9d42fcfbc9a2e35 \
+ 128 sel src 192.168.56.114/32 dst 192.168.56.116/32
 
-> Do you get any output at all? Like a WARN_ON() for an underflow, or
-> something?
->
-> johannes
->
+(No namespace or virtual xfrm interface config involved).
 
-Johannes,
+ping -c 1 -w 1 -I vrf0 192.168.56.116
+tcpdump -n -i enp0s8
+05:01:27.085768 IP 192.168.56.114 > 192.168.56.116:
+ESP(spi=0x01234567,seq=0x1), length 120
+(ESP packet goes out ok)
 
-To answer your immediate question, no, I don't get any dmesg output at
-all. Nothing about underruns.
-However, while pursuing other avenues -- specifically, enabling
-mac80211 debugfs and log messages -- I realized that my 'master' was
-out-of-date from linux-stable and did a git pull.  Imagine my surprise
-when the resulting kernel did not exhibit the problem!
+2.  VRF + qdisc
+If activating qdisc, there is increasing sized 'looping' ESP packet:
+tc qdisc add dev vrf0 root netem delay 0ms
 
-Apparently, I had been a bit too pessimistic; since the problem
-existed in 5.5-rc1 release, I'd assumed that the problem wouldn't get
-rectified before 5.5.
+tcpdump -n -i enp0s8
+(shows nothing)
 
-However, I decided to bisect the fix, and ended up with: 911bde0f
-("mac80211: Turn AQL into an NL80211_EXT_FEATURE"), which appears to
-have "solved" the problem by just disabling the feature (this is
-ath9k, by the way.)
+tcpdump -n -i vrf0
+05:08:22.583088 IP 192.168.56.114 > 192.168.56.116: ICMP echo request,
+id 8873, seq 1, length 64
+05:08:22.583155 IP 192.168.56.114 > 192.168.56.116:
+ESP(spi=0x01234567,seq=0xe), length 120
+05:08:22.583163 IP 192.168.56.114 > 192.168.56.116:
+ESP(spi=0x01234567,seq=0xf), length 176
+05:08:22.583168 IP 192.168.56.114 > 192.168.56.116:
+ESP(spi=0x01234567,seq=0x10), length 232
+05:08:22.583172 IP 192.168.56.114 > 192.168.56.116:
+ESP(spi=0x01234567,seq=0x11), length 288
+05:08:22.583177 IP 192.168.56.114 > 192.168.56.116:
+ESP(spi=0x01234567,seq=0x12), length 344
+05:08:22.583182 IP 192.168.56.114 > 192.168.56.116:
+ESP(spi=0x01234567,seq=0x13), length 400
 
-This AQL stuff sounds pretty nifty, and I'd love to try my hand at
-making it work for ath9k (also, since I put so much effort into an
-automated build-and-test framework, it'd be a shame to just abandon
-it.)  However, the ath9k code is rather lacking for comments, so I
-don't even know where I should start, except for (I suspect) a call to
-`wiphy_ext_feature_set(whatever, NL80211_EXT_FEATURE_AQL);` from
-inside ath9k_set_hw_capab()?
+Transport mode is same behavior.  Anyone have reference config for vrf + xfrm?
+Adding "dev vrf0" to the xfrm policy/state yields cleartext pings as the
+oif for xfrm_lookup is enp0s8.
 
-In the meantime, I went back to e548f749b096 -- the commit prior to
-the one making AQL support opt-in -- and cranked up the debugging.
+Thanks,
+Trev
 
-I'm not sure how to interpret any of this, but  here's what I got:
-
-dmesg output:
-
-Last relevant mention is "moving STA <my AP's MAC> to state 4" which
-happened during startup, before everything shut down.
-
-/sys/kernel/debug/ieee80211/phy0
-
-airtime_flags = 7
-
-stations/<my AP's MAC>/airtime =
-
-RX: 6583578 us
-TX: 32719 us
-Weight: 256
-Deficit: VO: -1128 us VI: 11 us BE: -5098636 us BK: 256 us
-Q depth: VO: 3868 us VI: 3636 us BE: 12284 us BK: 0 us
-Q limit[low/high]: VO: 5000/12000 VI: 5000/12000 BE: 5000/12000 BK: 5000/12000
-
-(I have no idea how to interpret this, but that '32719 us' seems odd,
-I thought the airtime usage was in 4us units?)
-
-
-Doing an 'echo 3 | tee airtime_flags' to clear the (old) AQL-enabled
-bit seemed to *immediately* restore network connectivity.
-
-I ran a ping, and saw this:
-
-- pings coming back in <5ms
-- re-enable AQL (echo 7 | tee airtime_flags)
-- pings stop coming back immediately
-- some seconds later, disable AQL again (echo 3 | tee airtime_flags)
-- immediate *flood* of ping replies registered, with times 16000ms,
-15000ms, 14000ms, .. down to 1000ms, 15ms, then stabilizing sub-5ms
-- According to the icmp_seq values, all 28 requests were replied to,
-and their replies were delivered in-order
-
-This certainly looks like a missing TX queue restart to me?
-
-
--- 
--- Stevie-O
-Real programmers use COPY CON PROGRAM.EXE
