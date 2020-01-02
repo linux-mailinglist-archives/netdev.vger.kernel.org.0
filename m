@@ -2,27 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 47E9D12E871
-	for <lists+netdev@lfdr.de>; Thu,  2 Jan 2020 17:09:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AF02712E870
+	for <lists+netdev@lfdr.de>; Thu,  2 Jan 2020 17:09:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728787AbgABQJi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Jan 2020 11:09:38 -0500
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:49037 "EHLO
+        id S1728798AbgABQJj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Jan 2020 11:09:39 -0500
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:54449 "EHLO
         metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728678AbgABQJi (ORCPT
+        with ESMTP id S1728755AbgABQJi (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 2 Jan 2020 11:09:38 -0500
 Received: from heimdall.vpn.pengutronix.de ([2001:67c:670:205:1d::14] helo=blackshift.org)
         by metis.ext.pengutronix.de with esmtp (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1in32W-0000mM-I9; Thu, 02 Jan 2020 17:09:36 +0100
+        id 1in32X-0000mM-5Y; Thu, 02 Jan 2020 17:09:37 +0100
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, linux-can@vger.kernel.org,
-        kernel@pengutronix.de
-Subject: pull-request: can 2020-01-02
-Date:   Thu,  2 Jan 2020 17:09:25 +0100
-Message-Id: <20200102160934.1524-1-mkl@pengutronix.de>
+        kernel@pengutronix.de, Sean Nyekjaer <sean@geanix.com>,
+        stable@vger.kernel.org, Dan Murphy <dmurphy@ti.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>
+Subject: [PATCH 1/9] can: tcan4x5x: tcan4x5x_can_probe(): get the device out of standby before register access
+Date:   Thu,  2 Jan 2020 17:09:26 +0100
+Message-Id: <20200102160934.1524-2-mkl@pengutronix.de>
 X-Mailer: git-send-email 2.24.1
+In-Reply-To: <20200102160934.1524-1-mkl@pengutronix.de>
+References: <20200102160934.1524-1-mkl@pengutronix.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2001:67c:670:205:1d::14
@@ -34,74 +38,46 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello David,
+From: Sean Nyekjaer <sean@geanix.com>
 
-this is a pull request of 9 patches for net/master.
+The m_can tries to detect if Non ISO Operation is available while in
+standby mode, this function results in the following error:
 
-The first 5 patches target all the tcan4x5x driver. The first 3 patches
-of them are by Dan Murphy and Sean Nyekjaer and improve the device
-initialization (power on, reset and get device out of standby before
-register access). The next patch is by Dan Murphy and disables the INH
-pin device-state if the GPIO is unavailable. The last patch for the
-tcan4x5x driver is by Gustavo A. R. Silva and fixes an inconsistent
-PTR_ERR check in the tcan4x5x_parse_config() function.
+| tcan4x5x spi2.0 (unnamed net_device) (uninitialized): Failed to init module
+| tcan4x5x spi2.0: m_can device registered (irq=84, version=32)
+| tcan4x5x spi2.0 can2: TCAN4X5X successfully initialized.
 
-The next patch is by Oliver Hartkopp and targets the generic CAN device
-infrastructure. It ensures that an initialized headroom in outgoing CAN
-sk_buffs (e.g. if injected by AF_PACKET).
+When the tcan device comes out of reset it goes in standby mode. The
+m_can driver tries to access the control register but fails due to the
+device being in standby mode.
 
-The last 2 patches are by Johan Hovold and fix the kvaser_usb and gs_usb
-drivers by always using the current alternate setting not blindly the
-first one.
+So this patch will put the tcan device in normal mode before the m_can
+driver does the initialization.
 
-regards,
-Marc
-
+Fixes: 5443c226ba91 ("can: tcan4x5x: Add tcan4x5x driver to the kernel")
+Cc: stable@vger.kernel.org
+Signed-off-by: Sean Nyekjaer <sean@geanix.com>
+Acked-by: Dan Murphy <dmurphy@ti.com>
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 ---
+ drivers/net/can/m_can/tcan4x5x.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-The following changes since commit 738d2902773e30939a982c8df7a7f94293659810:
-
-  Merge git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net (2019-12-31 11:14:58 -0800)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/mkl/linux-can.git tags/linux-can-fixes-for-5.5-20200102
-
-for you to fetch changes up to 2d77bd61a2927be8f4e00d9478fe6996c47e8d45:
-
-  can: mscan: mscan_rx_poll(): fix rx path lockup when returning from polling to irq mode (2020-01-02 15:34:27 +0100)
-
-----------------------------------------------------------------
-linux-can-fixes-for-5.5-20200102
-
-----------------------------------------------------------------
-Dan Murphy (2):
-      can: tcan4x5x: tcan4x5x_can_probe(): turn on the power before parsing the config
-      can: tcan4x5x: tcan4x5x_parse_config(): Disable the INH pin device-state GPIO is unavailable
-
-Florian Faber (1):
-      can: mscan: mscan_rx_poll(): fix rx path lockup when returning from polling to irq mode
-
-Gustavo A. R. Silva (1):
-      can: tcan4x5x: tcan4x5x_parse_config(): fix inconsistent IS_ERR and PTR_ERR
-
-Johan Hovold (2):
-      can: kvaser_usb: fix interface sanity check
-      can: gs_usb: gs_usb_probe(): use descriptors of current altsetting
-
-Oliver Hartkopp (1):
-      can: can_dropped_invalid_skb(): ensure an initialized headroom in outgoing CAN sk_buffs
-
-Sean Nyekjaer (2):
-      can: tcan4x5x: tcan4x5x_can_probe(): get the device out of standby before register access
-      can: tcan4x5x: tcan4x5x_parse_config(): reset device before register access
-
- drivers/net/can/m_can/tcan4x5x.c                  | 63 +++++++++++++++++++----
- drivers/net/can/mscan/mscan.c                     | 21 ++++----
- drivers/net/can/usb/gs_usb.c                      |  4 +-
- drivers/net/can/usb/kvaser_usb/kvaser_usb_hydra.c |  2 +-
- drivers/net/can/usb/kvaser_usb/kvaser_usb_leaf.c  |  2 +-
- include/linux/can/dev.h                           | 34 ++++++++++++
- 6 files changed, 101 insertions(+), 25 deletions(-)
-
+diff --git a/drivers/net/can/m_can/tcan4x5x.c b/drivers/net/can/m_can/tcan4x5x.c
+index 4e1789ea2bc3..c9fb864fcfa1 100644
+--- a/drivers/net/can/m_can/tcan4x5x.c
++++ b/drivers/net/can/m_can/tcan4x5x.c
+@@ -457,6 +457,10 @@ static int tcan4x5x_can_probe(struct spi_device *spi)
+ 
+ 	tcan4x5x_power_enable(priv->power, 1);
+ 
++	ret = tcan4x5x_init(mcan_class);
++	if (ret)
++		goto out_power;
++
+ 	ret = m_can_class_register(mcan_class);
+ 	if (ret)
+ 		goto out_power;
+-- 
+2.24.1
 
