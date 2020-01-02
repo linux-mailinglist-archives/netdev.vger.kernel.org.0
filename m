@@ -2,69 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 40C3912E8E9
-	for <lists+netdev@lfdr.de>; Thu,  2 Jan 2020 17:48:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CDA5E12E8F6
+	for <lists+netdev@lfdr.de>; Thu,  2 Jan 2020 17:53:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728904AbgABQsC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Jan 2020 11:48:02 -0500
-Received: from frisell.zx2c4.com ([192.95.5.64]:39917 "EHLO frisell.zx2c4.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728873AbgABQsB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 2 Jan 2020 11:48:01 -0500
-Received: by frisell.zx2c4.com (ZX2C4 Mail Server) with ESMTP id 1109f8c7;
-        Thu, 2 Jan 2020 15:49:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=zx2c4.com; h=from:to:cc
-        :subject:date:message-id:in-reply-to:references:mime-version
-        :content-transfer-encoding; s=mail; bh=BATYiML4GhOdQnrYLFcV86CqX
-        rA=; b=eDRjNkF2CsuODsnnh5WQkEODelKVdv5rkUMWzqRIIVh+VDz9yzaizK8Rk
-        bob7uqSZt3v9u5FTSJton+3tl32FQWkvuARnkVaiMNz6Pb3YsnCl4H4JvB41xVUE
-        SSBD/Q8FFDGnfgP8MS/U+au5sgHZBiJINFJTV/bAl00Jb9RdQL9/A3nQ8UBI2/W1
-        NSz1AFM15Plr3e/MrP++jn7MH3TtAis47uj4tWcYc2whbDbUx0SZ//b32P8+zyUw
-        RoviiBO1pV7UAJ/0NY5srQKdbNpKKoEesBInyYY1OuegnZGnLyM4dTmazNcnd9U1
-        KrFvpG8qTJqH9XAwUpn2ohp6YARyQ==
-Received: by frisell.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id e564623e (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256:NO);
-        Thu, 2 Jan 2020 15:49:28 +0000 (UTC)
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     netdev@vger.kernel.org, davem@davemloft.net
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH net-next 3/3] wireguard: socket: mark skbs as not on list when receiving via gro
-Date:   Thu,  2 Jan 2020 17:47:51 +0100
-Message-Id: <20200102164751.416922-4-Jason@zx2c4.com>
-In-Reply-To: <20200102164751.416922-1-Jason@zx2c4.com>
-References: <20200102164751.416922-1-Jason@zx2c4.com>
+        id S1728881AbgABQxO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Jan 2020 11:53:14 -0500
+Received: from mail-pg1-f179.google.com ([209.85.215.179]:46193 "EHLO
+        mail-pg1-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728824AbgABQxN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jan 2020 11:53:13 -0500
+Received: by mail-pg1-f179.google.com with SMTP id z124so22118099pgb.13
+        for <netdev@vger.kernel.org>; Thu, 02 Jan 2020 08:53:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=sS6FrVYGbVCXU+pQLC9vyfkAZT8PvRcphG1N23Bc4nU=;
+        b=sH/qRybuGLENwEAxuz2RVbGSPUHo2VDjItwNnGR+nNFobiSqufr9I13n30F8U10wY8
+         ZbJacv+tDRDMC9RCc8BihAaRAOzE6Xbr3murDG7hs1jFyoajUoc9+aZVF3fZdovnH+4J
+         k8SuN6fCXfQyt6vOhXG5/vXneo+9PQhYinIAT27ZnzWJfNM6w0L2gYBOO9/3zBztGSbx
+         QSqUzeHfypgSDtreip1l1F5zNpx4bzHcSlHle5va+HiSx8rkS8VU7V/f2HPYoCKo76fx
+         M6EKivVuz8Sp7HPbyJvezZKNAHNO0TOJq1OhyQRXsIRE3J5PQs+WulMRKlYdoOxgjqij
+         jycw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=sS6FrVYGbVCXU+pQLC9vyfkAZT8PvRcphG1N23Bc4nU=;
+        b=BdHSRdrrD8Ig9q3/vuSuz5wdgDAnBtxhHQ+BnzH8gs28PDuSe2r6s4X9nwb2FkLSJC
+         DaX1+kcMNdpBt/sqPsBbBUtF+bRJe/QEkyMz82DNxCEeNCxDKi+1zXzFouUg2oRqLEu7
+         oxEnPi9uLrcK/axDf7fnGfk4S2dTomGoaxvz5AOK+3YxzGX13/SPhAv7aiDOwpfiZopP
+         Z3iLEiBQzzSg7h05LopHVZETbGzRzeNW5uzh7j8xaopp5hVoDW7gkN1C6Z3b5tiiTh2R
+         +zpHgaW3zHFTGmwYFws9FY6rPYaPqg2rMpyoInyUFRUBIXfOFx2jgTdZytmuA136M7A+
+         V7OA==
+X-Gm-Message-State: APjAAAVlj7bVpOruo5nXfd5T+DgBGR8SmWCzvk2oqGiUmQkv4BGVzvxa
+        WJh6f3MIZ0zEyAUCiVHvG9evW4B+
+X-Google-Smtp-Source: APXvYqzjAYmGzcm/lB4uRWD/fCmaSgEeaS+qdwdLAiqom/ChUri7wP2tLmdC+IONHWNgC67pNmivEQ==
+X-Received: by 2002:a62:78c1:: with SMTP id t184mr87324171pfc.222.1577983993010;
+        Thu, 02 Jan 2020 08:53:13 -0800 (PST)
+Received: from ?IPv6:2601:282:800:7a:b448:6aaa:b24c:65b2? ([2601:282:800:7a:b448:6aaa:b24c:65b2])
+        by smtp.googlemail.com with ESMTPSA id d14sm69232795pfq.117.2020.01.02.08.53.10
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 02 Jan 2020 08:53:12 -0800 (PST)
+Subject: Re: IPv6 addresses stay tentative (Linux 5.4.6, 5.4.7)
+To:     Nico Schottelius <nico.schottelius@ungleich.ch>,
+        netdev@vger.kernel.org
+References: <87mub7tbr3.fsf@ungleich.ch>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <cd988e58-5e75-5ba5-185b-fd0f2a2f84df@gmail.com>
+Date:   Thu, 2 Jan 2020 09:53:06 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.3.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <87mub7tbr3.fsf@ungleich.ch>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Certain drivers will pass gro skbs to udp, at which point the udp driver
-simply iterates through them and passes them off to encap_rcv, which is
-where we pick up. At the moment, we're not attempting to coalesce these
-into bundles, but we also don't want to wind up having cascaded lists of
-skbs treated separately. The right behavior here, then, is to just mark
-each incoming one as not on a list. This can be seen in practice, for
-example, with Qualcomm's rmnet_perf driver.
+On 1/1/20 4:30 PM, Nico Schottelius wrote:
+> 
+> https://roy.marples.name/archives/dhcpcd-discuss/0002774.html
+> 
+> p.s.: I am using accept_ra = 2, because forwarding is also enabled.
+> 
+> Hello,
+> 
+> it seems something in the kernel code changed in regard to setting IPv6
+> addresses usable (i.e. dad done). Since 5.4.6 IPv6 addresses setup
+> statically or via autoconf (router advertisements) seem so stay in
+> "tentative" state forever.
+> 
+> I did not experience this behaviour in 5.3.13 (*) and it seems I am not
+> the only one affected:
+> 
+> I turned dhcpcd off to test whether it happens without it and indeed the
+> problem seems to be unrelated to dhcpcd.
+> 
+> Does anyone know about a recent change that may cause this behaviour?
+> 
+> Best regards,
+> 
+> Nico
+> 
+> (*) I cannot boot kernels 5.4.x < 5.4.6, as the wifi card does not show
+> up with them.
+> 
 
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-Tested-by: Yaroslav Furman <yaro330@gmail.com>
----
- drivers/net/wireguard/socket.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/net/wireguard/socket.c b/drivers/net/wireguard/socket.c
-index c46256d0d81c..262f3b5c819d 100644
---- a/drivers/net/wireguard/socket.c
-+++ b/drivers/net/wireguard/socket.c
-@@ -333,6 +333,7 @@ static int wg_receive(struct sock *sk, struct sk_buff *skb)
- 	wg = sk->sk_user_data;
- 	if (unlikely(!wg))
- 		goto err;
-+	skb_mark_not_on_list(skb);
- 	wg_packet_receive(wg, skb);
- 	return 0;
- 
--- 
-2.24.1
-
+I do not see this behavior with vanilla 5.5.
