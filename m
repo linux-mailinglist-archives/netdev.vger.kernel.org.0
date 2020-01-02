@@ -2,117 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E2CA812E1A0
-	for <lists+netdev@lfdr.de>; Thu,  2 Jan 2020 03:17:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BA28712E1D1
+	for <lists+netdev@lfdr.de>; Thu,  2 Jan 2020 04:04:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727526AbgABCQu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Jan 2020 21:16:50 -0500
-Received: from mail-eopbgr30042.outbound.protection.outlook.com ([40.107.3.42]:42886
-        "EHLO EUR03-AM5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727511AbgABCQu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 1 Jan 2020 21:16:50 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=IPlhPZcK8DkH8GbT/iFP1Vx1jfVEo4aP6HJLzs5DDWYZ2viwWJaoFTRIJ+90zkONKLiLYhLkqlkz6k8N5rb5odQaBz8an0gu5DA1nWYzXmOrs8/QB46K65KpBSf6ZgFAXVzk7q8xCJHAPhbKmVMzEQXZGI/xycMKfFCHe7wBPVNRL4342LTjudZP5S+dmCEx3AalROylPU7V+mqcWT5v13GGpRTD/adx/EovDnjNNKilH5mnB0djbpEUpMiUXdrU/V+8XMN9snjCwMRZFBmHmlnFodX7XjKKERI6Vum5hlux3myIIqCPlDLcqvCEooN8FCHYj7Y4F4crCArXS6MD5A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=B9LJ1ONiRUjizdKb4XSzL7fqWm10GzotmXyVmJIhHGo=;
- b=oQLDJ4p/gMRwwECHcgjdRL5kABEgWMSZBt+9Nz607I52g9OXkN/9MYa16o9OaHXpnwz4vNoCVn6bsFIl98iaCEnHv5txuyuK0TRDn0qjFs5qFT34TqZVqhwIIKQZ+pww5uNxV0W4EGbQJLW3fHbSLMOfqDKbNlnnkUNjv3qVQcBaWPvpMlIif2s4Q5V98njThgCvESasj2kJDzNygLMZkQCKt9BuoYwwqrON6CBGhBmsB/qeUq1nMZMqr/KKaP2KsU8XYEzWBKptQULU4X5iFQ9ZODf6lK7CsG/YK7WAkvuGq/AuPbHKTBgG20RpzEPPcao3dAEVKJkO/aeGeJgOdw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=B9LJ1ONiRUjizdKb4XSzL7fqWm10GzotmXyVmJIhHGo=;
- b=OdMZxjqe8h7xzMN+MpzHRMJLst2LbSJyTZKgaxmFGZkZDTrSQWMfjlSfLHqGW0aFrhinM/usuokcbkn7fNx6V5J/Mr4CEM37EpTi3UP0g4zOOiOrdnRQtoO5clvxJUGG8nola4zPa5uChONZrcFBLcgY00YiPgUp5LdDVQ3oKgs=
-Received: from VE1PR04MB6496.eurprd04.prod.outlook.com (20.179.232.221) by
- VE1PR04MB6590.eurprd04.prod.outlook.com (20.179.234.29) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2581.11; Thu, 2 Jan 2020 02:16:43 +0000
-Received: from VE1PR04MB6496.eurprd04.prod.outlook.com
- ([fe80::b870:829f:748a:4bc]) by VE1PR04MB6496.eurprd04.prod.outlook.com
- ([fe80::b870:829f:748a:4bc%3]) with mapi id 15.20.2581.013; Thu, 2 Jan 2020
- 02:16:42 +0000
-From:   Po Liu <po.liu@nxp.com>
-To:     David Miller <davem@davemloft.net>
-CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "vinicius.gomes@intel.com" <vinicius.gomes@intel.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Alexandru Marginean <alexandru.marginean@nxp.com>,
-        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
-        Roy Zang <roy.zang@nxp.com>, Mingkai Hu <mingkai.hu@nxp.com>,
-        Jerry Huang <jerry.huang@nxp.com>, Leo Li <leoyang.li@nxp.com>,
-        "ivan.khoronzhuk@linaro.org" <ivan.khoronzhuk@linaro.org>
-Subject: RE: [EXT] Re: [v2,net-next] enetc: add support time specific
- departure base on the qos etf
-Thread-Topic: [EXT] Re: [v2,net-next] enetc: add support time specific
- departure base on the qos etf
-Thread-Index: AQHVvGNyrgSmwD+0RU+o/s0aZaT5DqfTrEYAgAMAKwA=
-Date:   Thu, 2 Jan 2020 02:16:42 +0000
-Message-ID: <VE1PR04MB6496E2419F471AF65339E7C892200@VE1PR04MB6496.eurprd04.prod.outlook.com>
-References: <20191223032618.18205-1-Po.Liu@nxp.com>
-        <20191227025547.4452-1-Po.Liu@nxp.com>
- <20191230.202652.128958107020164612.davem@davemloft.net>
-In-Reply-To: <20191230.202652.128958107020164612.davem@davemloft.net>
-Accept-Language: zh-CN, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is ) smtp.mailfrom=po.liu@nxp.com; 
-x-originating-ip: [119.31.174.73]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 95855fbc-5e69-48ba-d162-08d78f29cf3d
-x-ms-traffictypediagnostic: VE1PR04MB6590:|VE1PR04MB6590:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VE1PR04MB6590DFCF532F896E3A0A0A1592200@VE1PR04MB6590.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:2958;
-x-forefront-prvs: 0270ED2845
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(366004)(376002)(136003)(39850400004)(396003)(346002)(13464003)(199004)(189003)(66556008)(66476007)(66446008)(44832011)(66946007)(53546011)(4744005)(52536014)(316002)(7696005)(2906002)(76116006)(71200400001)(64756008)(33656002)(54906003)(4326008)(9686003)(81156014)(6506007)(186003)(55016002)(5660300002)(26005)(8936002)(8676002)(6916009)(478600001)(86362001)(81166006);DIR:OUT;SFP:1101;SCL:1;SRVR:VE1PR04MB6590;H:VE1PR04MB6496.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: nxp.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: EETZOtWcuBFEt5OpQw3qDdp3vOP/TkIrziL0U7tb6Gepl7RfCUXAvR7nr//7dUD4qm227NdRpfxX+LS2MCdg8MUsqerVAC1dmWI7MxOauQq011ZYAR03LpdgJTLpkMzTZGz7EsvL2kZNh3y1f3AxfpRot5by/O7TmRzFfGakXwdmonPCFybkvjTcNusSZP1HPLs+UEeGj0g9Yn3/bB35m319EGt+25bGmhQUML9BjLx6BF4th8bYLxIIv44SA+fbPHUk+0gnGS++yE25m5N4fa0h6HOBMGTcCw+Qo+LgUsdFWTkqU9XX1D80io3e3qSqBxPI6Q65uv3LX8asOt4tiIdsGhE6uhtnJa2P5OwcYswYxmLXVVNNd49o+MKzpnUeZQGwT4Cg+rlZ5eGVR5SKlHq9P1YIr+H45oDCm1qVW1wKDCEiPqLh8rAHQoKCxcHRr5Hc9xGXPG/nDdnIBAtzAQ9zhR9+bo2ebThmMBtAWbs7KBkP2iGOAwPy4s90/XPs
-Content-Type: text/plain; charset="gb2312"
-Content-Transfer-Encoding: base64
+        id S1727607AbgABDE0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Jan 2020 22:04:26 -0500
+Received: from mail-lj1-f172.google.com ([209.85.208.172]:39455 "EHLO
+        mail-lj1-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727525AbgABDE0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jan 2020 22:04:26 -0500
+Received: by mail-lj1-f172.google.com with SMTP id l2so39418675lja.6
+        for <netdev@vger.kernel.org>; Wed, 01 Jan 2020 19:04:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=No0w7DnojZ/t4DhNe0vKJFQzQ30+UJs07dkzQKDkybQ=;
+        b=EEeuXNe79O7ejaTfiY8xERjRANOmPIjEyY5G9dy7B3OtUUsqBZsc8ZJIHL5mJCD6CK
+         a0ICqdOFL89WDFONVMAj4hHK7Nl1ySKd6d3l3NfvVso+ZbAVJaI3UTHUEvDzBiBAF8MN
+         pVTB3uh7/NfRIglVjSWsS+JZ92AhVBElb3GbHBU60iLFA85ATC2QqESxchz+998ur4mo
+         14/K+nCg/mUpVMQaAiZyxQeJdVxT2WQmBGq4CyYx/0UelO2VtX744JXbzOMCBsDsZaKn
+         aixOHJGcuy20sTULyFfwQpcsehDahMEmA35KWUCig0pb+aKxU8qzK5afi+Fp0BNlqGJp
+         tpAA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=No0w7DnojZ/t4DhNe0vKJFQzQ30+UJs07dkzQKDkybQ=;
+        b=iDoQ1mZlQ1T9KN45TmzHMqLQLWdToU2Stcx6bu86EAuqxYwtlF/2eznajj/U0dNE1G
+         OBWfY0Ht8jDzxtVDUxrTlNtgV0ZcfrnDyUsz+rz6dAVGAqfhtTv9P+rsAqLEsACrXns/
+         emc5k+/eKtXBp7NrJySc5rv3VP35VC9GmQMD+MyZqJWB0lurcvcD6aO9yqLNmjr0teFu
+         8v/Pc8LRT7Aehtan9Gih2IrCznJnhbtwSEgU0qDoc5pa3XWuiFmya6BtKAoPWtgfNokA
+         p5GDwfZIwtH85FwBdMWG8AWjleJcYmlOHHYNXlrADEsT0MS/pKpLycTviSNRTB1W/a2G
+         w46g==
+X-Gm-Message-State: APjAAAVah3KcuL0HMUJphYA2H/BOtK9n3AJ28xxdu6Sx1ae4LHJslDIx
+        nTJgR66124fldGBRJu7x+rUeJCFghPVNxW+5zu8=
+X-Google-Smtp-Source: APXvYqznFRwlirVxmrOTHGfWvF2ByO70G0zOWeoRIE493mkU5AMFAj5KCTbZ7sOQZnFPe/ooIQMfjfSAnLvAsWVcswY=
+X-Received: by 2002:a2e:7c08:: with SMTP id x8mr40419904ljc.185.1577934264269;
+ Wed, 01 Jan 2020 19:04:24 -0800 (PST)
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 95855fbc-5e69-48ba-d162-08d78f29cf3d
-X-MS-Exchange-CrossTenant-originalarrivaltime: 02 Jan 2020 02:16:42.8031
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: qF3NqKmCrHOF4SnGusa4Ugrhexrqic0OA5l+sE6CGAlTvIHx4uYWx5gu3Z2MUgKr
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VE1PR04MB6590
+References: <CAMDZJNVLEEzAwCHZG_8D+CdWQRDRiTeL1N2zj1wQ0jh3vS67rA@mail.gmail.com>
+ <CAJ3xEMiqf9-EP0CCAEhhnU3PnvdWpqSR8VbJa=2JFPiHAQwVcw@mail.gmail.com>
+In-Reply-To: <CAJ3xEMiqf9-EP0CCAEhhnU3PnvdWpqSR8VbJa=2JFPiHAQwVcw@mail.gmail.com>
+From:   Tonghao Zhang <xiangxia.m.yue@gmail.com>
+Date:   Thu, 2 Jan 2020 11:03:47 +0800
+Message-ID: <CAMDZJNXWG6jkNwub_nenx9FpKJB8PK7VTFj9wiUn+xM7-CfK3w@mail.gmail.com>
+Subject: Re: mlx5e question about PF fwd packets to PF
+To:     Or Gerlitz <gerlitz.or@gmail.com>
+Cc:     Saeed Mahameed <saeedm@dev.mellanox.co.il>,
+        Roi Dayan <roid@mellanox.com>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQo+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+IEZyb206IERhdmlkIE1pbGxlciA8ZGF2
-ZW1AZGF2ZW1sb2Z0Lm5ldD4NCj4gU2VudDogMjAxOcTqMTLUwjMxyNUgMTI6MjcNCj4gVG86IFBv
-IExpdSA8cG8ubGl1QG54cC5jb20+DQo+IENjOiBsaW51eC1rZXJuZWxAdmdlci5rZXJuZWwub3Jn
-OyBuZXRkZXZAdmdlci5rZXJuZWwub3JnOw0KPiB2aW5pY2l1cy5nb21lc0BpbnRlbC5jb207IENs
-YXVkaXUgTWFub2lsIDxjbGF1ZGl1Lm1hbm9pbEBueHAuY29tPjsNCj4gVmxhZGltaXIgT2x0ZWFu
-IDx2bGFkaW1pci5vbHRlYW5AbnhwLmNvbT47IEFsZXhhbmRydSBNYXJnaW5lYW4NCj4gPGFsZXhh
-bmRydS5tYXJnaW5lYW5AbnhwLmNvbT47IFhpYW9saWFuZyBZYW5nDQo+IDx4aWFvbGlhbmcueWFu
-Z18xQG54cC5jb20+OyBSb3kgWmFuZyA8cm95LnphbmdAbnhwLmNvbT47IE1pbmdrYWkgSHUNCj4g
-PG1pbmdrYWkuaHVAbnhwLmNvbT47IEplcnJ5IEh1YW5nIDxqZXJyeS5odWFuZ0BueHAuY29tPjsg
-TGVvIExpDQo+IDxsZW95YW5nLmxpQG54cC5jb20+OyBpdmFuLmtob3JvbnpodWtAbGluYXJvLm9y
-Zw0KPiBTdWJqZWN0OiBbRVhUXSBSZTogW3YyLG5ldC1uZXh0XSBlbmV0YzogYWRkIHN1cHBvcnQg
-dGltZSBzcGVjaWZpYyBkZXBhcnR1cmUgYmFzZQ0KPiBvbiB0aGUgcW9zIGV0Zg0KPiANCj4gQ2F1
-dGlvbjogRVhUIEVtYWlsDQo+IA0KPiBGcm9tOiBQbyBMaXUgPHBvLmxpdUBueHAuY29tPg0KPiBE
-YXRlOiBGcmksIDI3IERlYyAyMDE5IDAzOjEyOjE4ICswMDAwDQo+IA0KPiA+IHYyOg0KPiA+IC0g
-Zml4IHRoZSBjc3VtIGFuZCB0aW1lIHNwZWNpZmljIGRlYXBydHVyZSByZXR1cm4gZGlyZWN0bHkg
-aWYgYm90aA0KPiA+IG9mZmxvYWRpbmcgZW5hYmxlZA0KPiANCj4gVGhlIHRlc3QgaXMgaW4gdGhl
-IHdyb25nIGxvY2F0aW9uLg0KPiANCj4gWW91IGFyZSB0ZXN0aW5nIGF0IHJ1biB0aW1lIHdoZW4g
-cGFja2V0cyBhcmUgYmVpbmcgdHJhbnNtaXR0ZWQuDQo+IA0KPiBJbnN0ZWFkLCB5b3Ugc2hvdWxk
-IHRlc3Qgd2hlbiB0aGUgY29uZmlndXJhdGlvbiBjaGFuZ2UgaXMgbWFkZSB3aGljaCBjcmVhdGVz
-DQo+IHRoZSBjb25mbGljdCwgYW5kIGRpc2FsbG93IHRoZSBjb25maWd1cmF0aW9uIGNoYW5nZSBp
-biBzdWNoIGEgY29uZmxpY3RpbmcgY2FzZS4NCg0KT2ssIHRoYW5rcyENCg0KQnIsDQpQbyBMaXUN
-Cg==
+On Wed, Jan 1, 2020 at 4:40 AM Or Gerlitz <gerlitz.or@gmail.com> wrote:
+>
+> On Tue, Dec 31, 2019 at 10:39 AM Tonghao Zhang <xiangxia.m.yue@gmail.com> wrote:
+>
+> > In one case, we want forward the packets from one PF to otter PF in eswitchdev mode.
+>
+> Did you want to say from one uplink to the other uplink? -- this is
+> not supported.
+yes, I try to install one rule and hope that one uplink can forward
+the packets to other uplink of PF.
+But the rule can be installed successfully, and the counter of rule is
+changed as show below:
+
+# tc filter add dev $PF0 protocol all parent ffff: prio 1 handle 1
+flower action mirred egress redirect dev $PF1
+
+# tc -d -s filter show dev $PF0 ingress
+filter protocol all pref 1 flower chain 0
+filter protocol all pref 1 flower chain 0 handle 0x1
+  in_hw
+action order 1: mirred (Egress Redirect to device enp130s0f1) stolen
+  index 1 ref 1 bind 1 installed 19 sec used 0 sec
+  Action statistics:
+Sent 3206840 bytes 32723 pkt (dropped 0, overlimits 0 requeues 0)
+backlog 0b 0p requeues 0
+
+The PF1 uplink don't sent the packets out(as you say, we don't support it now).
+If we don't support it, should we return -NOSUPPORT when we install
+the hairpin rule between
+uplink of PF, because it makes me confuse.
+> What we do support is the following (I think you do it by now):
+>
+> PF0.uplink --> esw --> PF0.VFx --> hairpin --> PF1.VFy --> esw --> PF1.uplink
+Yes, I have tested it, and it work fine for us.
+> Hairpin is an offload for SW gateway, SW gateway is an **application** that runs
+> over two NIC ports -- we allow them to be virtual NIC ports  -- PF0.VFx/PF1.VFy
+>
+> since e-switch != (SW) gateway --> eswitch offload != (SW) gateway offload
+>
+> note that steering rules ## (wise)
+>
+> PF0.uplink --> T1 --> PF0.VFx --> T2 --> PF1.VFy --> T3 --> PF1.uplink
+>
+> since you use instantiate eswitch on the system, T(ype)1 and T(ype)3 rules
+> are ones that differentiate packets that belong to this GW. But, T(ype)2 rules,
+> can be just "fwd everything" -- TC wise, you can even mask out the ethertype,
+> just a tc/flower rules that fwd everything from ingress PF0.VFx vNIC
+> to egress  PF1.VFy vNIC.
+>
+> Further, you can also you this match-all (but with flower..) rule for
+> the PF1.VFy --> PF1.uplink
+> part of the chain since you know that everything that originates in
+> this VF should go to the uplink.
+>
+> Hence the claim here is that if PF0.uplink --> hairpin --> PF1.uplink
+> would have been
+> supported
+Did we have plan to support that function.
+> and the system had N steering rules, with what is currently
+> supported you
+> need N+2 rules -- N rules + one T2 rule and one T3 rul
