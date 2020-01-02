@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3942F12EB60
-	for <lists+netdev@lfdr.de>; Thu,  2 Jan 2020 22:28:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2C8CD12EB62
+	for <lists+netdev@lfdr.de>; Thu,  2 Jan 2020 22:28:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726295AbgABV2s (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Jan 2020 16:28:48 -0500
-Received: from mx2.suse.de ([195.135.220.15]:36574 "EHLO mx2.suse.de"
+        id S1726307AbgABV2w (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Jan 2020 16:28:52 -0500
+Received: from mx2.suse.de ([195.135.220.15]:36612 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725851AbgABV2s (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 2 Jan 2020 16:28:48 -0500
+        id S1725851AbgABV2w (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 2 Jan 2020 16:28:52 -0500
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id AB688ADD5;
-        Thu,  2 Jan 2020 21:28:44 +0000 (UTC)
+        by mx2.suse.de (Postfix) with ESMTP id 658DEADD5;
+        Thu,  2 Jan 2020 21:28:49 +0000 (UTC)
 Received: by unicorn.suse.cz (Postfix, from userid 1000)
-        id 0D734E0095; Thu,  2 Jan 2020 22:28:44 +0100 (CET)
+        id 12ACEE0095; Thu,  2 Jan 2020 22:28:49 +0100 (CET)
 In-Reply-To: <CA+G9fYv3=oJSFodFp4wwF7G7_g5FWYRYbc4F0AMU6jyfLT689A@mail.gmail.com>
 References: <CA+G9fYv3=oJSFodFp4wwF7G7_g5FWYRYbc4F0AMU6jyfLT689A@mail.gmail.com>
 From:   Michal Kubecek <mkubecek@suse.cz>
-Subject: [PATCH stable-4.19] tcp/dccp: fix possible race
+Subject: [PATCH stable-4.14] tcp/dccp: fix possible race
  __inet_lookup_established()
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Sasha Levin <sashal@kernel.org>
@@ -30,8 +30,8 @@ Cc:     stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
         rcu@vger.kernel.org, netdev@vger.kernel.org,
         lkft-triage@lists.linaro.org,
         Naresh Kamboju <naresh.kamboju@linaro.org>
-Message-Id: <20200102212844.0D734E0095@unicorn.suse.cz>
-Date:   Thu,  2 Jan 2020 22:28:44 +0100 (CET)
+Message-Id: <20200102212849.12ACEE0095@unicorn.suse.cz>
+Date:   Thu,  2 Jan 2020 22:28:49 +0100 (CET)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -56,7 +56,7 @@ Since we added code in commit d296ba60d8e2 ("soreuseport: Resolve
 merge conflict for v4/v6 ordering fix"), we have to add
 hlist_nulls_add_tail_rcu() helper.
 
-stable-4.19: we also need to update code in __inet_lookup_listener() and
+stable-4.14: we also need to update code in __inet_lookup_listener() and
 inet6_lookup_listener() which has been removed in 5.0-rc1.
 
 Fixes: 3b24d854cb35 ("tcp/dccp: do not touch listener sk_refcnt under synflood")
@@ -72,13 +72,13 @@ Signed-off-by: Michal Kubecek <mkubecek@suse.cz>
  include/net/inet_hashtables.h | 12 +++++++++---
  include/net/sock.h            |  5 +++++
  net/ipv4/inet_diag.c          |  3 ++-
- net/ipv4/inet_hashtables.c    | 19 +++++++++---------
+ net/ipv4/inet_hashtables.c    | 18 ++++++++---------
  net/ipv4/tcp_ipv4.c           |  7 ++++---
  net/ipv6/inet6_hashtables.c   |  3 ++-
- 7 files changed, 69 insertions(+), 17 deletions(-)
+ 7 files changed, 68 insertions(+), 17 deletions(-)
 
 diff --git a/include/linux/rculist_nulls.h b/include/linux/rculist_nulls.h
-index bc8206a8f30e..61974c4c566b 100644
+index e4b257ff881b..a10da545b3f6 100644
 --- a/include/linux/rculist_nulls.h
 +++ b/include/linux/rculist_nulls.h
 @@ -100,6 +100,43 @@ static inline void hlist_nulls_add_head_rcu(struct hlist_nulls_node *n,
@@ -126,10 +126,10 @@ index bc8206a8f30e..61974c4c566b 100644
   * hlist_nulls_for_each_entry_rcu - iterate over rcu list of given type
   * @tpos:	the type * to use as a loop cursor.
 diff --git a/include/net/inet_hashtables.h b/include/net/inet_hashtables.h
-index 9141e95529e7..b875dcef173c 100644
+index 2dbbbff5e1e3..573ab110c9ec 100644
 --- a/include/net/inet_hashtables.h
 +++ b/include/net/inet_hashtables.h
-@@ -106,13 +106,19 @@ struct inet_bind_hashbucket {
+@@ -106,12 +106,18 @@ struct inet_bind_hashbucket {
  	struct hlist_head	chain;
  };
  
@@ -143,7 +143,6 @@ index 9141e95529e7..b875dcef173c 100644
 +#define LISTENING_NULLS_BASE (1U << 29)
  struct inet_listen_hashbucket {
  	spinlock_t		lock;
- 	unsigned int		count;
 -	struct hlist_head	head;
 +	union {
 +		struct hlist_head	head;
@@ -153,10 +152,10 @@ index 9141e95529e7..b875dcef173c 100644
  
  /* This is for listening sockets, thus all sockets which possess wildcards. */
 diff --git a/include/net/sock.h b/include/net/sock.h
-index 4545a9ecc219..f359e5c94762 100644
+index 0af46cbd3649..c6a003bc4737 100644
 --- a/include/net/sock.h
 +++ b/include/net/sock.h
-@@ -721,6 +721,11 @@ static inline void __sk_nulls_add_node_rcu(struct sock *sk, struct hlist_nulls_h
+@@ -693,6 +693,11 @@ static inline void __sk_nulls_add_node_rcu(struct sock *sk, struct hlist_nulls_h
  	hlist_nulls_add_head_rcu(&sk->sk_nulls_node, list);
  }
  
@@ -169,10 +168,10 @@ index 4545a9ecc219..f359e5c94762 100644
  {
  	sock_hold(sk);
 diff --git a/net/ipv4/inet_diag.c b/net/ipv4/inet_diag.c
-index 5731670c560b..9742b37afe1d 100644
+index 33edccfebc30..eb158badebc4 100644
 --- a/net/ipv4/inet_diag.c
 +++ b/net/ipv4/inet_diag.c
-@@ -918,11 +918,12 @@ void inet_diag_dump_icsk(struct inet_hashinfo *hashinfo, struct sk_buff *skb,
+@@ -911,11 +911,12 @@ void inet_diag_dump_icsk(struct inet_hashinfo *hashinfo, struct sk_buff *skb,
  
  		for (i = s_i; i < INET_LHTABLE_SIZE; i++) {
  			struct inet_listen_hashbucket *ilb;
@@ -187,27 +186,22 @@ index 5731670c560b..9742b37afe1d 100644
  
  				if (!net_eq(sock_net(sk), net))
 diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c
-index 7be966a60801..b53da2691adb 100644
+index 1f26627c7fad..0af13f5bdc9a 100644
 --- a/net/ipv4/inet_hashtables.c
 +++ b/net/ipv4/inet_hashtables.c
-@@ -308,6 +308,7 @@ struct sock *__inet_lookup_listener(struct net *net,
+@@ -219,9 +219,10 @@ struct sock *__inet_lookup_listener(struct net *net,
+ 	int score, hiscore = 0, matches = 0, reuseport = 0;
  	bool exact_dif = inet_exact_dif_match(net, skb);
- 	struct inet_listen_hashbucket *ilb2;
  	struct sock *sk, *result = NULL;
 +	struct hlist_nulls_node *node;
- 	int score, hiscore = 0;
- 	unsigned int hash2;
  	u32 phash = 0;
-@@ -343,7 +344,7 @@ struct sock *__inet_lookup_listener(struct net *net,
- 	goto done;
  
- port_lookup:
 -	sk_for_each_rcu(sk, &ilb->head) {
 +	sk_nulls_for_each_rcu(sk, node, &ilb->nulls_head) {
  		score = compute_score(sk, net, hnum, daddr,
  				      dif, sdif, exact_dif);
  		if (score > hiscore) {
-@@ -560,10 +561,11 @@ static int inet_reuseport_add_sock(struct sock *sk,
+@@ -442,10 +443,11 @@ static int inet_reuseport_add_sock(struct sock *sk,
  				   struct inet_listen_hashbucket *ilb)
  {
  	struct inet_bind_bucket *tb = inet_csk(sk)->icsk_bind_hash;
@@ -220,7 +214,7 @@ index 7be966a60801..b53da2691adb 100644
  		if (sk2 != sk &&
  		    sk2->sk_family == sk->sk_family &&
  		    ipv6_only_sock(sk2) == ipv6_only_sock(sk) &&
-@@ -599,9 +601,9 @@ int __inet_hash(struct sock *sk, struct sock *osk)
+@@ -480,9 +482,9 @@ int __inet_hash(struct sock *sk, struct sock *osk)
  	}
  	if (IS_ENABLED(CONFIG_IPV6) && sk->sk_reuseport &&
  		sk->sk_family == AF_INET6)
@@ -229,38 +223,36 @@ index 7be966a60801..b53da2691adb 100644
  	else
 -		hlist_add_head_rcu(&sk->sk_node, &ilb->head);
 +		__sk_nulls_add_node_rcu(sk, &ilb->nulls_head);
- 	inet_hash2(hashinfo, sk);
- 	ilb->count++;
  	sock_set_flag(sk, SOCK_RCU_FREE);
-@@ -650,11 +652,9 @@ void inet_unhash(struct sock *sk)
- 		reuseport_detach_sock(sk);
- 	if (ilb) {
- 		inet_unhash2(hashinfo, sk);
--		 __sk_del_node_init(sk);
--		 ilb->count--;
--	} else {
--		__sk_nulls_del_node_init_rcu(sk);
-+		ilb->count--;
- 	}
-+	__sk_nulls_del_node_init_rcu(sk);
- 	sock_prot_inuse_add(sock_net(sk), sk->sk_prot, -1);
+ 	sock_prot_inuse_add(sock_net(sk), sk->sk_prot, 1);
  unlock:
+@@ -525,10 +527,7 @@ void inet_unhash(struct sock *sk)
+ 	spin_lock_bh(lock);
+ 	if (rcu_access_pointer(sk->sk_reuseport_cb))
+ 		reuseport_detach_sock(sk);
+-	if (listener)
+-		done = __sk_del_node_init(sk);
+-	else
+-		done = __sk_nulls_del_node_init_rcu(sk);
++	done = __sk_nulls_del_node_init_rcu(sk);
+ 	if (done)
+ 		sock_prot_inuse_add(sock_net(sk), sk->sk_prot, -1);
  	spin_unlock_bh(lock);
-@@ -790,7 +790,8 @@ void inet_hashinfo_init(struct inet_hashinfo *h)
+@@ -664,7 +663,8 @@ void inet_hashinfo_init(struct inet_hashinfo *h)
  
  	for (i = 0; i < INET_LHTABLE_SIZE; i++) {
  		spin_lock_init(&h->listening_hash[i].lock);
 -		INIT_HLIST_HEAD(&h->listening_hash[i].head);
 +		INIT_HLIST_NULLS_HEAD(&h->listening_hash[i].nulls_head,
 +				      i + LISTENING_NULLS_BASE);
- 		h->listening_hash[i].count = 0;
  	}
- 
+ }
+ EXPORT_SYMBOL_GPL(inet_hashinfo_init);
 diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
-index bfec48849735..5553f6a833f3 100644
+index 44a41ac2b0ca..b4f0fc34b0ed 100644
 --- a/net/ipv4/tcp_ipv4.c
 +++ b/net/ipv4/tcp_ipv4.c
-@@ -2020,13 +2020,14 @@ static void *listening_get_next(struct seq_file *seq, void *cur)
+@@ -1936,13 +1936,14 @@ static void *listening_get_next(struct seq_file *seq, void *cur)
  	struct tcp_iter_state *st = seq->private;
  	struct net *net = seq_file_net(seq);
  	struct inet_listen_hashbucket *ilb;
@@ -276,7 +268,7 @@ index bfec48849735..5553f6a833f3 100644
  		st->offset = 0;
  		goto get_sk;
  	}
-@@ -2034,9 +2035,9 @@ static void *listening_get_next(struct seq_file *seq, void *cur)
+@@ -1950,9 +1951,9 @@ static void *listening_get_next(struct seq_file *seq, void *cur)
  	++st->num;
  	++st->offset;
  
@@ -287,28 +279,23 @@ index bfec48849735..5553f6a833f3 100644
 +	sk_nulls_for_each_from(sk, node) {
  		if (!net_eq(sock_net(sk), net))
  			continue;
- 		if (sk->sk_family == afinfo->family)
+ 		if (sk->sk_family == st->family)
 diff --git a/net/ipv6/inet6_hashtables.c b/net/ipv6/inet6_hashtables.c
-index 91d6ea937ffb..d9e2575dad94 100644
+index 228983a5531b..24a21979d7df 100644
 --- a/net/ipv6/inet6_hashtables.c
 +++ b/net/ipv6/inet6_hashtables.c
-@@ -171,6 +171,7 @@ struct sock *inet6_lookup_listener(struct net *net,
+@@ -137,9 +137,10 @@ struct sock *inet6_lookup_listener(struct net *net,
+ 	int score, hiscore = 0, matches = 0, reuseport = 0;
  	bool exact_dif = inet6_exact_dif_match(net, skb);
- 	struct inet_listen_hashbucket *ilb2;
  	struct sock *sk, *result = NULL;
 +	struct hlist_nulls_node *node;
- 	int score, hiscore = 0;
- 	unsigned int hash2;
  	u32 phash = 0;
-@@ -206,7 +207,7 @@ struct sock *inet6_lookup_listener(struct net *net,
- 	goto done;
  
- port_lookup:
 -	sk_for_each(sk, &ilb->head) {
 +	sk_nulls_for_each(sk, node, &ilb->nulls_head) {
  		score = compute_score(sk, net, hnum, daddr, dif, sdif, exact_dif);
  		if (score > hiscore) {
- 			if (sk->sk_reuseport) {
+ 			reuseport = sk->sk_reuseport;
 -- 
 2.24.1
 
