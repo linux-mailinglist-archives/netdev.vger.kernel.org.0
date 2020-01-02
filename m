@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BD86112E8E8
-	for <lists+netdev@lfdr.de>; Thu,  2 Jan 2020 17:48:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 40C3912E8E9
+	for <lists+netdev@lfdr.de>; Thu,  2 Jan 2020 17:48:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728899AbgABQr7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Jan 2020 11:47:59 -0500
+        id S1728904AbgABQsC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Jan 2020 11:48:02 -0500
 Received: from frisell.zx2c4.com ([192.95.5.64]:39917 "EHLO frisell.zx2c4.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728873AbgABQr7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 2 Jan 2020 11:47:59 -0500
-Received: by frisell.zx2c4.com (ZX2C4 Mail Server) with ESMTP id 788c11af;
-        Thu, 2 Jan 2020 15:49:27 +0000 (UTC)
+        id S1728873AbgABQsB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 2 Jan 2020 11:48:01 -0500
+Received: by frisell.zx2c4.com (ZX2C4 Mail Server) with ESMTP id 1109f8c7;
+        Thu, 2 Jan 2020 15:49:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=zx2c4.com; h=from:to:cc
         :subject:date:message-id:in-reply-to:references:mime-version
-        :content-transfer-encoding; s=mail; bh=+xbH0+5KnPLYCpQC34RESx3BY
-        Bs=; b=wjdK86hmzO1iIQdfWDuooT6IbcmLUfX+ahMz81cahPxIIhLjS0FyRcxIH
-        wLpvl/q/7Pr5sZ+ASNTOHA6QYbDczM313tvw9cgnHTRdW5vdkVLjQAPMj3pU1byv
-        y+tIU/PdN92IwG1U4BXJWTKveb5eVmbmJwKuy9BtVdmvKfohXw+BSS+j/EaiKs30
-        N+3xAoQsAyfaNIeif+GlOWMoTSo1tBPrsUjRmf3/vNHviaj83GiqXeqaa6Pbpbih
-        pkwv+Vl0F5xPNLN35x6qo77XneeZyuVEVRAc7Bu6V6GKQ2nP0eedJpP/zwGf70tl
-        XZbmVmNQEzGu9wNlPeUPL7t9ZqEVg==
-Received: by frisell.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id e6e7a26a (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256:NO);
-        Thu, 2 Jan 2020 15:49:26 +0000 (UTC)
+        :content-transfer-encoding; s=mail; bh=BATYiML4GhOdQnrYLFcV86CqX
+        rA=; b=eDRjNkF2CsuODsnnh5WQkEODelKVdv5rkUMWzqRIIVh+VDz9yzaizK8Rk
+        bob7uqSZt3v9u5FTSJton+3tl32FQWkvuARnkVaiMNz6Pb3YsnCl4H4JvB41xVUE
+        SSBD/Q8FFDGnfgP8MS/U+au5sgHZBiJINFJTV/bAl00Jb9RdQL9/A3nQ8UBI2/W1
+        NSz1AFM15Plr3e/MrP++jn7MH3TtAis47uj4tWcYc2whbDbUx0SZ//b32P8+zyUw
+        RoviiBO1pV7UAJ/0NY5srQKdbNpKKoEesBInyYY1OuegnZGnLyM4dTmazNcnd9U1
+        KrFvpG8qTJqH9XAwUpn2ohp6YARyQ==
+Received: by frisell.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id e564623e (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256:NO);
+        Thu, 2 Jan 2020 15:49:28 +0000 (UTC)
 From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
 To:     netdev@vger.kernel.org, davem@davemloft.net
 Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH net-next 2/3] wireguard: queueing: do not account for pfmemalloc when clearing skb header
-Date:   Thu,  2 Jan 2020 17:47:50 +0100
-Message-Id: <20200102164751.416922-3-Jason@zx2c4.com>
+Subject: [PATCH net-next 3/3] wireguard: socket: mark skbs as not on list when receiving via gro
+Date:   Thu,  2 Jan 2020 17:47:51 +0100
+Message-Id: <20200102164751.416922-4-Jason@zx2c4.com>
 In-Reply-To: <20200102164751.416922-1-Jason@zx2c4.com>
 References: <20200102164751.416922-1-Jason@zx2c4.com>
 MIME-Version: 1.0
@@ -39,37 +39,32 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Before 8b7008620b84 ("net: Don't copy pfmemalloc flag in __copy_skb_
-header()"), the pfmemalloc flag used to be between headers_start and
-headers_end, which is a region we clear when preparing the packet for
-encryption/decryption. This is a parameter we certainly want to
-preserve, which is why 8b7008620b84 moved it out of there. The code here
-was written in a world before 8b7008620b84, though, where we had to
-manually account for it. This commit brings things up to speed.
+Certain drivers will pass gro skbs to udp, at which point the udp driver
+simply iterates through them and passes them off to encap_rcv, which is
+where we pick up. At the moment, we're not attempting to coalesce these
+into bundles, but we also don't want to wind up having cascaded lists of
+skbs treated separately. The right behavior here, then, is to just mark
+each incoming one as not on a list. This can be seen in practice, for
+example, with Qualcomm's rmnet_perf driver.
 
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Tested-by: Yaroslav Furman <yaro330@gmail.com>
 ---
- drivers/net/wireguard/queueing.h | 3 ---
- 1 file changed, 3 deletions(-)
+ drivers/net/wireguard/socket.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/wireguard/queueing.h b/drivers/net/wireguard/queueing.h
-index e49a464238fd..fecb559cbdb6 100644
---- a/drivers/net/wireguard/queueing.h
-+++ b/drivers/net/wireguard/queueing.h
-@@ -83,13 +83,10 @@ static inline __be16 wg_skb_examine_untrusted_ip_hdr(struct sk_buff *skb)
+diff --git a/drivers/net/wireguard/socket.c b/drivers/net/wireguard/socket.c
+index c46256d0d81c..262f3b5c819d 100644
+--- a/drivers/net/wireguard/socket.c
++++ b/drivers/net/wireguard/socket.c
+@@ -333,6 +333,7 @@ static int wg_receive(struct sock *sk, struct sk_buff *skb)
+ 	wg = sk->sk_user_data;
+ 	if (unlikely(!wg))
+ 		goto err;
++	skb_mark_not_on_list(skb);
+ 	wg_packet_receive(wg, skb);
+ 	return 0;
  
- static inline void wg_reset_packet(struct sk_buff *skb)
- {
--	const int pfmemalloc = skb->pfmemalloc;
--
- 	skb_scrub_packet(skb, true);
- 	memset(&skb->headers_start, 0,
- 	       offsetof(struct sk_buff, headers_end) -
- 		       offsetof(struct sk_buff, headers_start));
--	skb->pfmemalloc = pfmemalloc;
- 	skb->queue_mapping = 0;
- 	skb->nohdr = 0;
- 	skb->peeked = 0;
 -- 
 2.24.1
 
