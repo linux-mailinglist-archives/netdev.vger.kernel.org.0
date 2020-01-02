@@ -2,77 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C620912EA53
-	for <lists+netdev@lfdr.de>; Thu,  2 Jan 2020 20:27:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6FE0D12EA7C
+	for <lists+netdev@lfdr.de>; Thu,  2 Jan 2020 20:29:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728215AbgABT1m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Jan 2020 14:27:42 -0500
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:43830 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727951AbgABT1l (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jan 2020 14:27:41 -0500
-Received: by mail-pf1-f194.google.com with SMTP id x6so21385362pfo.10
-        for <netdev@vger.kernel.org>; Thu, 02 Jan 2020 11:27:41 -0800 (PST)
+        id S1728772AbgABT3g (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Jan 2020 14:29:36 -0500
+Received: from mail-qk1-f195.google.com ([209.85.222.195]:37358 "EHLO
+        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728420AbgABT3f (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jan 2020 14:29:35 -0500
+Received: by mail-qk1-f195.google.com with SMTP id 21so32175049qky.4
+        for <netdev@vger.kernel.org>; Thu, 02 Jan 2020 11:29:35 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=ptxbpox1IIAFHRiR2gnZN0uv/ZUxPhUYaeW5IxjOobs=;
-        b=qYDRCt4ldE2oJn0Kz+1fovHMkKOdpKtsgjufVGALRMQUYQ5lYULBocROneGOjv8AFm
-         fwOlz8+xT9EJAMhuPgXE9RAjQ2sxnOsP9YUGKA1ow72Uv4ukjZiwXTRJC8/g69qLHO3P
-         qb/oMGGiA4XJY9wq7py7WazZluBYQnv2mdxnf4MT6UwFs3Uzx67OQW6bSvzHnBWnJtFZ
-         9xybnyAngR/MjGl0I3YtJ1OixRX/c3RQOe+1iuov72Pf+hd1v1WW3AxFBS+6gvTERK7m
-         ofSydADj+LZzWkATvOry3MN26khGLqlxLsUsdV1A92alMBuVnZ8c0ElN/s9Wy0CpHNFl
-         8pvg==
+        d=ziepe.ca; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=lZawS7LGBxSe67WYxo4+2TlBhXSo7e1vXlOhgZaRFGA=;
+        b=QdlVzk/9rTnnZmcfS4UM55LnlRhp1CQyFlnaGCqlttXPXPKK2C4PdVfXa4AqNKaz3f
+         qAJz2IbW8160zbhmmqlonOOuxN9pqxRt5R7ao9j6JiY+WXC6mbJNm4Ga3jQoOZ3xzMNN
+         hMJ/W9S4SCrPdYV2aj9AZPjfyAf+sixb9lyB92pBggsAObC1H9ttH5NEFN6VXvOy2PSN
+         sjPxtZqErcA5Rd4I8KJLpZo3Pa9VIhGQJ+7VI2DtFjSrp29jf8+7nrBPtyL7SalBYUtE
+         riv72932/EGIwk5LzYfyzaz0mu9tql65EGVnjXvWpmIW1TsDCdWDcjt7UyMa1/cOONmK
+         MQSA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=ptxbpox1IIAFHRiR2gnZN0uv/ZUxPhUYaeW5IxjOobs=;
-        b=ah2ZaZpzt7nirP3nye5KD5QzC/pc5FzZA46r1mZb5YF2+CszFwdEvpykY9hM6RxIKy
-         cf7D/uuZaYIZn+LPIGfOaoJ+Uvh2cOBEmv7oc9NpzFqUCRkwizOEDWGTxTLhoeEfKL7k
-         M4s2IfCJl+fsig0ltDYHdqrwiIRmi2LpD/3E0TcP3duK1DL2G20/a9G2pvTe1ZfNRqm2
-         cmelA5QhPNmNf6BIT/rH7G06CT2sU7yuMNIcNMB7qKrsGxxCHmls44GshlQL3egcj6Uo
-         jW39mKr1fPvFoYUDOb9tAUlDSpAh3nloE0qMkd6HXN+XpnoM6e4W32Wz/8KBFRQOQdsh
-         3Gag==
-X-Gm-Message-State: APjAAAUPQKEoMjuOYuFk8FHWAb/uq5mtdVrtdAtEn7fZHnMlqQSWoBcH
-        7ManuNYPDp+WYHpe90Md78TwZg==
-X-Google-Smtp-Source: APXvYqyN7c3JKoqmj9IxkmJAw5eadUVtCaKkLLSO6qCpgnzCVs+cNRMfzJd+3Byu9Zt9+4n2K1UfCg==
-X-Received: by 2002:aa7:940e:: with SMTP id x14mr72251074pfo.42.1577993261252;
-        Thu, 02 Jan 2020 11:27:41 -0800 (PST)
-Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id b98sm12117400pjc.16.2020.01.02.11.27.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 02 Jan 2020 11:27:41 -0800 (PST)
-Date:   Thu, 2 Jan 2020 11:27:31 -0800
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Ttttabcd <ttttabcd@protonmail.com>
-Cc:     Netdev <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        "kuznet@ms2.inr.ac.ru" <kuznet@ms2.inr.ac.ru>,
-        "yoshfuji@linux-ipv6.org" <yoshfuji@linux-ipv6.org>
-Subject: Re: [PATCH] fragment: Improved handling of incorrect IP fragments
-Message-ID: <20200102112731.299b5fe4@hermes.lan>
-In-Reply-To: <u0QFePiYSfxBeUsNVFRhPjsGViwg-pXLIApJaVLdUICuvLTQg5y5-rdNhh9lPcDsyO24c7wXxy5m6b6dK0aB6kqR0ypk8X9ekiLe3NQ3ICY=@protonmail.com>
-References: <u0QFePiYSfxBeUsNVFRhPjsGViwg-pXLIApJaVLdUICuvLTQg5y5-rdNhh9lPcDsyO24c7wXxy5m6b6dK0aB6kqR0ypk8X9ekiLe3NQ3ICY=@protonmail.com>
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=lZawS7LGBxSe67WYxo4+2TlBhXSo7e1vXlOhgZaRFGA=;
+        b=tKw9i1ijbtS7YZjlwodlTLd/NSo18unPUyPTJtoNP7DMdQVIhzGOAIqHXr3DSk7MnA
+         lbxKjH2Xgc3bMwqyMYvE4OzSNpi++1TZB1Df0Hnqq6gSsE7r0lengYNif7XhKLe9L5nb
+         PiSG0euU9mM+tkg9Fei0TyRTgBgkXRZzbRLF+QBloWdUv/loHCIaUHahm5bFk74EtV1R
+         6o4KxpBN3GGHLqGci3wzRRKvoRbhS8nYMwfKTyZTg7ctmt04OPsYMYWTP9+gfw9EUYbG
+         YrjPIugdL19wDPRqka4MwOp9KFY5FZIkyLPxXH9sRSjofd0k2DV2tzF8yzevNtcrqXBJ
+         MoYQ==
+X-Gm-Message-State: APjAAAVfglljjkBpw2TpqkRMmMC1OT/2KiiN5nIhs4y6zqlp2wP9aFeO
+        e+Usa7d++Gc8Eiz19oillJeFgA==
+X-Google-Smtp-Source: APXvYqyT0jnZMEQTogE6nq/iKpifSkHJ7/jv2qA6H8QXBJY9qsxB6DK1bc0V5PIcN/3wpFofDWoNMg==
+X-Received: by 2002:ae9:f016:: with SMTP id l22mr67838939qkg.101.1577993374877;
+        Thu, 02 Jan 2020 11:29:34 -0800 (PST)
+Received: from ziepe.ca (hlfxns017vw-142-68-57-212.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.57.212])
+        by smtp.gmail.com with ESMTPSA id g52sm14467349qta.58.2020.01.02.11.29.34
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Thu, 02 Jan 2020 11:29:34 -0800 (PST)
+Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)
+        (envelope-from <jgg@ziepe.ca>)
+        id 1in6A2-0005bl-1D; Thu, 02 Jan 2020 15:29:34 -0400
+Date:   Thu, 2 Jan 2020 15:29:34 -0400
+From:   Jason Gunthorpe <jgg@ziepe.ca>
+To:     Liran Alon <liran.alon@oracle.com>
+Cc:     saeedm@mellanox.com, leon@kernel.org, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, eli@mellanox.com, tariqt@mellanox.com,
+        danielm@mellanox.com,
+        =?utf-8?B?SMOla29u?= Bugge <haakon.bugge@oracle.com>
+Subject: Re: [PATCH] net: mlx5: Use writeX() to ring doorbell and remove
+ reduntant wmb()
+Message-ID: <20200102192934.GH9282@ziepe.ca>
+References: <20200102174436.66329-1-liran.alon@oracle.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200102174436.66329-1-liran.alon@oracle.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 31 Dec 2019 01:19:27 +0000
-Ttttabcd <ttttabcd@protonmail.com> wrote:
+On Thu, Jan 02, 2020 at 07:44:36PM +0200, Liran Alon wrote:
+> Currently, mlx5e_notify_hw() executes wmb() to complete writes to cache-coherent
+> memory before ringing doorbell. Doorbell is written to by mlx5_write64()
+> which use __raw_writeX().
+> 
+> This is semantically correct but executes reduntant wmb() in some architectures.
+> For example, in x86, a write to UC memory guarantees that any previous write to
+> WB memory will be globally visible before the write to UC memory. Therefore, there
+> is no need to also execute wmb() before write to doorbell which is mapped as UC memory.
+> 
+> The consideration regarding this between different architectures is handled
+> properly by the writeX() macro. Which is defined differently for different
+> architectures. E.g. On x86, it is just a memory write. However, on ARM, it
+> is defined as __iowmb() folowed by a memory write. __iowmb() is defined
+> as wmb().
 
-> @@ -267,8 +278,6 @@ static int ip6_frag_reasm(struct frag_queue *fq, struct sk_buff *skb,
->  	payload_len = ((skb->data - skb_network_header(skb)) -
->  		       sizeof(struct ipv6hdr) + fq->q.len -
->  		       sizeof(struct frag_hdr));
-> -	if (payload_len > IPV6_MAXPLEN)
-> -		goto out_oversize;
+This reasoning seems correct, though I would recommend directly
+refering to locking/memory-barriers.txt which explains this.
 
-You can not safely drop this check.
-With recursive fragmentation it is possible that the initial payload ends
-up exceeding the maximum packet length.
+> Therefore, change mlx5_write64() to use writeX() and remove wmb() from
+> it's callers.
+
+Yes, wmb(); writel(); is always redundant
+  
+> diff --git a/include/linux/mlx5/cq.h b/include/linux/mlx5/cq.h
+> index 40748fc1b11b..28744a725e64 100644
+> +++ b/include/linux/mlx5/cq.h
+> @@ -162,11 +162,6 @@ static inline void mlx5_cq_arm(struct mlx5_core_cq *cq, u32 cmd,
+>  
+>  	*cq->arm_db = cpu_to_be32(sn << 28 | cmd | ci);
+>  
+> -	/* Make sure that the doorbell record in host memory is
+> -	 * written before ringing the doorbell via PCI MMIO.
+> -	 */
+> -	wmb();
+> -
+
+Why did this one change? The doorbell memory here is not a writel():
+
+>  	doorbell[0] = cpu_to_be32(sn << 28 | cmd | ci);
+>  	doorbell[1] = cpu_to_be32(cq->cqn);
+
+>  static inline void mlx5_write64(__be32 val[2], void __iomem *dest)
+>  {
+>  #if BITS_PER_LONG == 64
+> -	__raw_writeq(*(u64 *)val, dest);
+> +	writeq(*(u64 *)val, dest);
+
+I want to say this might cause problems with endian swapping as writeq
+also does some swaps that __raw does not? Is this true?
+
+ie writeq does not accept a be32
+
+Some time ago I reworked this similar code in userspace to use a u64
+and remove the swapping from the caller.
+
+Jason
