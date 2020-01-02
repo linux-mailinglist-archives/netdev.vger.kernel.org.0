@@ -2,175 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 517AA12EAAD
-	for <lists+netdev@lfdr.de>; Thu,  2 Jan 2020 20:56:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 39C2412EAF0
+	for <lists+netdev@lfdr.de>; Thu,  2 Jan 2020 21:46:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728528AbgABT4L (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Jan 2020 14:56:11 -0500
-Received: from mail-yb1-f193.google.com ([209.85.219.193]:41126 "EHLO
-        mail-yb1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728297AbgABT4L (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jan 2020 14:56:11 -0500
-Received: by mail-yb1-f193.google.com with SMTP id b145so17758235yba.8
-        for <netdev@vger.kernel.org>; Thu, 02 Jan 2020 11:56:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=CaTdsyEa7sA8vxY85XYBqRBhF0wGhIqfMIzlh3tANHE=;
-        b=dT0QkTZFbEM1Pj5sT3Hf+Qnv3hWbIshRKFgOB2+tU6NzbqGmOUPBVk7SoRdBDHwdL/
-         R1ymxS7drU4G+U8rZb2i+vUyQZqMtUb1I4vtjqrMkh3KeT6kEjq8jOLk4xdJPknBaIlQ
-         46lG3olOO00KqWJn7sKBk7VM+0oysPYfMa22XLmgwCD87q7JwEQEj9AVNPEuFiSQHsET
-         u1E9698UPNctOr04YJrxS0r0uJc66RsW7KWSn186IUvPTDEqCPAiF/1mu8GIMYNNwfNz
-         J0rzI2FXjDUGmJUMEr2IeAWaCzRyq62dFowvtvkVXTGqD6RU0NsuSgnHhkAJPEy4QO1n
-         qGSA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=CaTdsyEa7sA8vxY85XYBqRBhF0wGhIqfMIzlh3tANHE=;
-        b=O7NkY5JiZrmpDRlu0/pabukCC+P+CytiIrDLuyixVYx2Hn9gx/qL7p86GGZPGT0Kkt
-         j6/U9+YyEst1V6bLSOVrKo40BZq5VknqRDJ3il28Hlp7Jp3wRPco6F2s2fH1Xjd7SwjV
-         UTvvuy/hcuOgYvWHgzuujwh86DsD8wMFKZuuJ0XuiEjVQQxgHjszVgO+wCFGxycxgaGU
-         lCflcXsPjVfhTqnQJkFTUUKyWyy6UeZu3BANdBcyYMsV9cYqvnNcEdQg6LLsWWaJJG33
-         yn8MK2LWfQoE0MC3hU6E/9+QeHS3EPK5f/fik8QWQgnduxSeI6BvmhCkhyfZdW+6fkNz
-         M+cw==
-X-Gm-Message-State: APjAAAXJ7WSTlqHqpVS/jN8WbQmON5DGa4iFejFGj63IMYnxzWUoRJsy
-        uUDsUmKsjaGGYCz/5+DnqWc0o6T7
-X-Google-Smtp-Source: APXvYqx9yG9lcXT+o8hiLLFtYaKa8vyBsf/mz3QyFJ4DhJcGSRvhRsUPgTPCcfQZMQ8zu4HammkUpA==
-X-Received: by 2002:a25:da50:: with SMTP id n77mr27998194ybf.126.1577994969308;
-        Thu, 02 Jan 2020 11:56:09 -0800 (PST)
-Received: from mail-yw1-f44.google.com (mail-yw1-f44.google.com. [209.85.161.44])
-        by smtp.gmail.com with ESMTPSA id z12sm22581580ywl.27.2020.01.02.11.56.07
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 02 Jan 2020 11:56:07 -0800 (PST)
-Received: by mail-yw1-f44.google.com with SMTP id 10so17669545ywv.5
-        for <netdev@vger.kernel.org>; Thu, 02 Jan 2020 11:56:07 -0800 (PST)
-X-Received: by 2002:a0d:e8ca:: with SMTP id r193mr61308139ywe.64.1577994967042;
- Thu, 02 Jan 2020 11:56:07 -0800 (PST)
-MIME-Version: 1.0
-References: <cover.1573872263.git.martin.varghese@nokia.com>
- <5acab9e9da8aa9d1e554880b1f548d3057b70b75.1573872263.git.martin.varghese@nokia.com>
- <CA+FuTSeUGsWH-GR7N_N7PChaW4S6Hucmvo_1s_9bbisxz1eOAA@mail.gmail.com>
- <20191128162427.GB2633@martin-VirtualBox> <CA+FuTSc1GBxnWgMSVPNxx1wndFmauvTd7r54dDV92PeNprouWA@mail.gmail.com>
- <20191231153255.GA2327@martin-VirtualBox>
-In-Reply-To: <20191231153255.GA2327@martin-VirtualBox>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Thu, 2 Jan 2020 14:55:30 -0500
-X-Gmail-Original-Message-ID: <CA+FuTSfznBBAZ0d0AqXeb9VqUoBQz+MZPLF6=EcQdpZiVz7dxw@mail.gmail.com>
-Message-ID: <CA+FuTSfznBBAZ0d0AqXeb9VqUoBQz+MZPLF6=EcQdpZiVz7dxw@mail.gmail.com>
-Subject: Re: [PATCH v3 net-next 1/2] UDP tunnel encapsulation module for
- tunnelling different protocols like MPLS,IP,NSH etc.
-To:     Martin Varghese <martinvarghesenokia@gmail.com>
-Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        Network Development <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>, corbet@lwn.net,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        scott.drennan@nokia.com, Jiri Benc <jbenc@redhat.com>,
-        martin.varghese@nokia.com
-Content-Type: text/plain; charset="UTF-8"
+        id S1725924AbgABUp7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Jan 2020 15:45:59 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:41212 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725790AbgABUp7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jan 2020 15:45:59 -0500
+Received: from localhost (unknown [IPv6:2601:601:9f00:1c3::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id DAFAA153B9DF9;
+        Thu,  2 Jan 2020 12:45:58 -0800 (PST)
+Date:   Thu, 02 Jan 2020 12:45:56 -0800 (PST)
+Message-Id: <20200102.124556.1780903980066866154.davem@davemloft.net>
+To:     baruch@tkos.co.il
+Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, marek.behun@nic.cz,
+        netdev@vger.kernel.org, d.odintsov@traviangames.com
+Subject: Re: [PATCH] net: dsa: mv88e6xxx: force cmode write on 6141/6341
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <dd029665fdacef34a17f4fb8c5db4584211eacf6.1576748902.git.baruch@tkos.co.il>
+References: <dd029665fdacef34a17f4fb8c5db4584211eacf6.1576748902.git.baruch@tkos.co.il>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 02 Jan 2020 12:45:59 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Dec 31, 2019 at 10:33 AM Martin Varghese
-<martinvarghesenokia@gmail.com> wrote:
->
-> On Fri, Nov 29, 2019 at 01:18:36PM -0500, Willem de Bruijn wrote:
-> > On Thu, Nov 28, 2019 at 11:25 AM Martin Varghese
-> > <martinvarghesenokia@gmail.com> wrote:
-> > >
-> > > On Mon, Nov 18, 2019 at 12:23:09PM -0500, Willem de Bruijn wrote:
-> > > > On Sat, Nov 16, 2019 at 12:45 AM Martin Varghese
-> > > > <martinvarghesenokia@gmail.com> wrote:
-> > > > >
-> > > > > From: Martin Varghese <martin.varghese@nokia.com>
-> > > > >
-> > > > > The Bareudp tunnel module provides a generic L3 encapsulation
-> > > > > tunnelling module for tunnelling different protocols like MPLS,
-> > > > > IP,NSH etc inside a UDP tunnel.
-> > > > >
-> > > > > Signed-off-by: Martin Varghese <martin.varghese@nokia.com>
-> >
-> > > > > +static int bareudp_fill_metadata_dst(struct net_device *dev,
-> > > > > +                                    struct sk_buff *skb)
-> > > > > +{
-> > > > > +       struct ip_tunnel_info *info = skb_tunnel_info(skb);
-> > > > > +       struct bareudp_dev *bareudp = netdev_priv(dev);
-> > > > > +       bool use_cache = ip_tunnel_dst_cache_usable(skb, info);
-> > > > > +
-> > > > > +       if (ip_tunnel_info_af(info) == AF_INET) {
-> > > > > +               struct rtable *rt;
-> > > > > +               struct flowi4 fl4;
-> > > > > +
-> > > > > +               rt = iptunnel_get_v4_rt(skb, dev, bareudp->net, &fl4, info,
-> > > > > +                                       use_cache);
-> > > > > +               if (IS_ERR(rt))
-> > > > > +                       return PTR_ERR(rt);
-> > > > > +
-> > > > > +               ip_rt_put(rt);
-> > > > > +               info->key.u.ipv4.src = fl4.saddr;
-> > > > > +#if IS_ENABLED(CONFIG_IPV6)
-> > > > > +       } else if (ip_tunnel_info_af(info) == AF_INET6) {
-> > > > > +               struct dst_entry *dst;
-> > > > > +               struct flowi6 fl6;
-> > > > > +               struct bareudp_sock *bs6 = rcu_dereference(bareudp->sock);
-> > > > > +
-> > > > > +               dst = ip6tunnel_get_dst(skb, dev, bareudp->net, bs6->sock, &fl6,
-> > > > > +                                       info, use_cache);
-> > > > > +               if (IS_ERR(dst))
-> > > > > +                       return PTR_ERR(dst);
-> > > > > +
-> > > > > +               dst_release(dst);
-> > > > > +               info->key.u.ipv6.src = fl6.saddr;
-> > > > > +#endif
-> > > > > +       } else {
-> > > > > +               return -EINVAL;
-> > > > > +       }
-> > > > > +
-> > > > > +       info->key.tp_src = udp_flow_src_port(bareudp->net, skb,
-> > > > > +                                            bareudp->sport_min,
-> > > > > +                                            USHRT_MAX, true);
-> > > > > +       info->key.tp_dst = bareudp->conf.port;
-> > > > > +       return 0;
-> > > > > +}
-> > > >
-> > > > This can probably all be deduplicated with geneve_fill_metadata_dst
-> > > > once both use iptunnel_get_v4_rt.
-> > > >
-> > >
-> > > Do you have any preference of file to keep the common function
-> >
-> > Perhaps net/ipv4/udp_tunnel.c
->
-> I was trying this change and i found i dont have a lot of generic code here.
->
-> Populating L4 ports is function of the protocol implementation
-> and it is differnt for geneve and for bareudp
+From: Baruch Siach <baruch@tkos.co.il>
+Date: Thu, 19 Dec 2019 11:48:22 +0200
 
-If geneve can use iptunnel_get_v4_rt, then it seems like the only
-implementation specific logic is deriving net and sk. Would it help to
-just pass those explicitly to the shared helper
-(udptunnel_fill_metadata_dst)?
+> mv88e6xxx_port_set_cmode() relies on cmode stored in struct
+> mv88e6xxx_port to skip cmode update when the requested value matches the
+> cached value. It turns out that mv88e6xxx_port_hidden_write() might
+> change the port cmode setting as a side effect, so we can't rely on the
+> cached value to determine that cmode update in not necessary.
+> 
+> Force cmode update in mv88e6341_port_set_cmode(), to make
+> serdes configuration work again. Other mv88e6xxx_port_set_cmode()
+> callers keep the current behaviour.
+> 
+> This fixes serdes configuration of the 6141 switch on SolidRun Clearfog
+> GT-8K.
+> 
+> Fixes: 7a3007d22e8 ("net: dsa: mv88e6xxx: fully support SERDES on Topaz family")
+> Reported-by: Denis Odintsov <d.odintsov@traviangames.com>
+> Signed-off-by: Baruch Siach <baruch@tkos.co.il>
 
-It is hard to say without seeing the geneve conversion to
-iptunnel_get_v4_rt. Maybe that throws up a constraint I'm missing.
-Lacking that, I'll trust your judgment.
+This thread has stalled on December 20th with Baruch asking if we can put this
+in for now as a temporary fix that solves the given problem whilst a better
+long term analysis and change is being worked on.
 
-> The one thing we could do is to write a generic API to derive the
-> tunnel src address.
->
-> But since it is a very small piece i dont see much value add by making it
-> generic and i prefer to keep the way as it is now
+Vivien/Andrew/etc. please follow up with either a NACK or ACK.
 
-In that case, that sounds sensible.
-
-
->
-> But i am open for both the option. What you think ?
->
->
->
+Thanks.
