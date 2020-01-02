@@ -2,111 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A35912E8E1
-	for <lists+netdev@lfdr.de>; Thu,  2 Jan 2020 17:46:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 909C412E8E6
+	for <lists+netdev@lfdr.de>; Thu,  2 Jan 2020 17:47:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728881AbgABQqy convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 2 Jan 2020 11:46:54 -0500
-Received: from youngberry.canonical.com ([91.189.89.112]:41549 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728280AbgABQqy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jan 2020 11:46:54 -0500
-Received: from mail-pj1-f70.google.com ([209.85.216.70])
-        by youngberry.canonical.com with esmtps (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <kai.heng.feng@canonical.com>)
-        id 1in3ca-0000uj-3w
-        for netdev@vger.kernel.org; Thu, 02 Jan 2020 16:46:52 +0000
-Received: by mail-pj1-f70.google.com with SMTP id 9so5468440pjn.8
-        for <netdev@vger.kernel.org>; Thu, 02 Jan 2020 08:46:52 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
-         :content-transfer-encoding:message-id:references:to;
-        bh=N+0SMH83DEMdXBxklWnpSdQi+VtqH5p+lcgEClqwKXc=;
-        b=SEl6BjajWysF9LVBqmz9SIG8USAvu+vk8d1NRQ5dslth1w4j2wxDgPelvSheDOs1jT
-         ICJImB3XlqBpJBh490DFbDF12OZTiJl3b+bILeb07WgWzW0Z12Qw9HviTC/QI52j7CUc
-         W+BeD4lK/3u4vytx6jV7GvjcHP6VjXtCIWytAhYZRDEzputCyvsVzQCgxdVVC35HwGVR
-         zcS20BgtnY9nlWfYFMKGXuYGCAIfGLwPuDulq6VyBz9rKmW2dvWfYVMHLxT+pY2zdLQS
-         6S3m7LrZlMMUkmVObyMgwubvJ0kapt0fhUI/ZohDe3gNOxUTfg5MdxyGsOq1VfRBuSFY
-         37kg==
-X-Gm-Message-State: APjAAAU4NdrbBBEBtaH3Rt0ZkXtH6EpaW+1Iw9xOG7Ra5ZWbpexVKEcA
-        I/hKimpciDE3MXgzIYw9Hi5v/ahga69IvrIfRW/xDWtlZyCWO3PyuVlPAubTngpDcfN7ujp6aXq
-        yT/uJdNVC6YgRPNRkf2jUwZhHjJQGxHid+w==
-X-Received: by 2002:a17:902:b609:: with SMTP id b9mr85940504pls.70.1577983610835;
-        Thu, 02 Jan 2020 08:46:50 -0800 (PST)
-X-Google-Smtp-Source: APXvYqzIk9aPVIqBcPxzYk6x48gY3qrrcgKVCBBz9vFSwtTE8Mot2uF3FKpgNC3MV0XYtVt/cJfSfw==
-X-Received: by 2002:a17:902:b609:: with SMTP id b9mr85940479pls.70.1577983610489;
-        Thu, 02 Jan 2020 08:46:50 -0800 (PST)
-Received: from 2001-b011-380f-35a3-d94d-dd84-8131-7958.dynamic-ip6.hinet.net (2001-b011-380f-35a3-d94d-dd84-8131-7958.dynamic-ip6.hinet.net. [2001:b011:380f:35a3:d94d:dd84:8131:7958])
-        by smtp.gmail.com with ESMTPSA id b4sm65574395pfd.18.2020.01.02.08.46.48
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 02 Jan 2020 08:46:49 -0800 (PST)
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 13.0 \(3608.40.2.2.4\))
-Subject: Re: SFP+ support for 8168fp/8117
-From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
-In-Reply-To: <20200102152143.GB1397@lunn.ch>
-Date:   Fri, 3 Jan 2020 00:46:46 +0800
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Linux Netdev List <netdev@vger.kernel.org>,
-        Kernel development list <linux-kernel@vger.kernel.org>,
-        Anthony Wong <anthony.wong@canonical.com>,
-        Jason Yen <jason.yen@canonical.com>
-Content-Transfer-Encoding: 8BIT
-Message-Id: <DC28A43E-4F1A-40B6-84B0-3E79215527C9@canonical.com>
-References: <2D8F5FFE-3EC3-480B-9D15-23CACE5556DF@canonical.com>
- <20200102152143.GB1397@lunn.ch>
-To:     Andrew Lunn <andrew@lunn.ch>
-X-Mailer: Apple Mail (2.3608.40.2.2.4)
+        id S1728864AbgABQr4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Jan 2020 11:47:56 -0500
+Received: from frisell.zx2c4.com ([192.95.5.64]:39917 "EHLO frisell.zx2c4.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728795AbgABQrz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 2 Jan 2020 11:47:55 -0500
+Received: by frisell.zx2c4.com (ZX2C4 Mail Server) with ESMTP id 79356afe;
+        Thu, 2 Jan 2020 15:49:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=zx2c4.com; h=from:to:cc
+        :subject:date:message-id:mime-version:content-transfer-encoding;
+         s=mail; bh=p1rkLRS8iqQZ7lUXVYusVpRdY5Y=; b=KhvU5+M/5cVxlaMt8ETX
+        QzB3fo1r7ecC0g6HW43yY6rmVy4HmZwwWu+lyx9VzYo9tkmGKWjNDLiRaX32Mj4f
+        Nw8gh232Ir83jJq+MXMAPmRLdtDpR3uFbUQ4OnQdDI9tfpzS0oOo1ClosprPXc4i
+        AHwsUBNHxDK1P6I3stbCNGg2IeCJ+0KtZbsw6SBKuAY3Zl+nrMjrBBL17nxHfTZE
+        wiYm0eENL3S3mbR7bCrNx0RwlfnqOhvMrgh4h4+xm2mPYoovoY44gB/ENbdXpXs3
+        3zyZsQOah3kX6/67rvrev0n8Kc9VznfQ9LVymyVUSba5x8CycUgh15TDQ8iEteAZ
+        OQ==
+Received: by frisell.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 0866deab (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256:NO);
+        Thu, 2 Jan 2020 15:49:22 +0000 (UTC)
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+To:     netdev@vger.kernel.org, davem@davemloft.net
+Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH net-next 0/3] WireGuard bug fixes and cleanups
+Date:   Thu,  2 Jan 2020 17:47:48 +0100
+Message-Id: <20200102164751.416922-1-Jason@zx2c4.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Andrew,
+I've been working through some personal notes and also the whole git
+repo history of the out-of-tree module, looking for places where
+tradeoffs were made (and subsequently forgotten about) for old kernels.
+The first two patches in this series clean up those. The first one does
+so in the self-tests and self-test harness, where we're now able to
+expand test coverage by a bit, and we're now cooking away tests on every
+commit to both the wireguard-linux repo and to net-next. The second one
+removes a workaround for a skbuff.h bug that was fixed long ago.
+Finally, the last patch in the series fixes in a bug unearthed by newer
+Qualcomm chipsets running the rmnet_perf driver, which does UDP GRO.
 
-> On Jan 2, 2020, at 23:21, Andrew Lunn <andrew@lunn.ch> wrote:
-> 
-> On Thu, Jan 02, 2020 at 02:59:42PM +0800, Kai Heng Feng wrote:
->> Hi Heiner,
->> 
->> There's an 8168fp/8117 chip has SFP+ port instead of RJ45, the phy device ID matches "Generic FE-GE Realtek PHY" nevertheless.
->> The problems is that, since it uses SFP+, both BMCR and BMSR read are always zero, so Realtek phylib never knows if the link is up.
->> 
->> However, the old method to read through MMIO correctly shows the link is up:
->> static unsigned int rtl8169_xmii_link_ok(struct rtl8169_private *tp)
->> {
->>       return RTL_R8(tp, PHYstatus) & LinkStatus;
->> }
->> 
->> Few ideas here:
->> - Add a link state callback for phylib like phylink's phylink_fixed_state_cb(). However there's no guarantee that other parts of this chip works.
->> - Add SFP+ support for this chip. However the phy device matches to "Generic FE-GE Realtek PHY" which may complicate things.
->> 
->> Any advice will be welcome.
-> 
-> Hi Kai
-> 
-> Is the i2c bus accessible?
+Jason A. Donenfeld (3):
+  wireguard: selftests: remove ancient kernel compatibility code
+  wireguard: queueing: do not account for pfmemalloc when clearing skb
+    header
+  wireguard: socket: mark skbs as not on list when receiving via gro
 
-I don't think so. It seems to be a regular Realtek 8168 device with generic PCI ID [10ec:8168].
+ drivers/net/wireguard/queueing.h              |  3 -
+ drivers/net/wireguard/socket.c                |  1 +
+ tools/testing/selftests/wireguard/netns.sh    | 11 +--
+ .../testing/selftests/wireguard/qemu/Makefile | 82 ++++++++++---------
+ .../selftests/wireguard/qemu/arch/m68k.config |  2 +-
+ tools/testing/selftests/wireguard/qemu/init.c |  1 +
+ .../selftests/wireguard/qemu/kernel.config    |  2 +
+ 7 files changed, 51 insertions(+), 51 deletions(-)
 
-> Is there any documentation or example code?
-
-Unfortunately no.
-
-> 
-> In order to correctly support SFP+ cages, we need access to the i2c
-> bus to determine what sort of module has been inserted. It would also
-> be good to have access to LOS, transmitter disable, etc, from the SFP
-> cage.
-
-Seems like we need Realtek to provide more information to support this chip with SFP+.
-
-Kai-Heng
-
-> 
->   Andrew
+-- 
+2.24.1
 
