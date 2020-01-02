@@ -2,101 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 303B612E460
-	for <lists+netdev@lfdr.de>; Thu,  2 Jan 2020 10:24:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D992D12E463
+	for <lists+netdev@lfdr.de>; Thu,  2 Jan 2020 10:26:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727926AbgABJYD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Jan 2020 04:24:03 -0500
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:36819 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727801AbgABJYD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jan 2020 04:24:03 -0500
-Received: by mail-pg1-f193.google.com with SMTP id k3so21627915pgc.3
-        for <netdev@vger.kernel.org>; Thu, 02 Jan 2020 01:24:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=2IH9WStj1rdeyfsfmC5g7DkdrKHSQ98yL1eZh7F0lzc=;
-        b=s4KwDGUAS24xZdNjn1mIuuoHXEeYB+s9+aLkXKJl87vYe1qxwJpjUchVYu/uwVQIGu
-         katOy+oR860Lh1WxWjP/f0LfeHKtpUXwiSlaVr3QWVA/mP5TXTOMBuXaoA2p6sP5Nl1k
-         XFfWia0Z1uRiNbHcQFe5Lv095iZaJcfYt+GUF1ZJtXdC3/QM7tRxED9Jhw7KEs5fAb3R
-         FYojcqf6ez0rrSlqy9zg7SdEEZGESUnuYEJMpohLqxERPPTe89Y54XH2w80paEu2Eu0v
-         WcSHjonvUOgv52nQCEbYblhHU96oRzcRU9yDVEJuAeAOq37omFx85JODyjhsW2yuCTL3
-         SQow==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=2IH9WStj1rdeyfsfmC5g7DkdrKHSQ98yL1eZh7F0lzc=;
-        b=IhGayMUMD8P4DoOPVcAuu0IgR67dSjjKHCxc5VVRvFFTqa6MQMga+sExPCm+8VHGs7
-         7HAoiUPMFPkdsxpfZF6nxPf1cM4B7BYUGJW+I015i1/ah6ydtuFxiBYuc2SBIzGdCqPX
-         Fx1/POZj+HluZYKd/HYj0cuHPYjxD8npinr1RTbu5MBK5ET7I0Ey/XIpF/XKvuRu8Vv7
-         5un+K5x9Ui9n+MJjwR86/gUYekNPTHpvN87Cl0q7sRZYW5RS/KTNqhPf2hcWbhk2luyK
-         dlm9bM+PCo/MA9RD21cfzPMQfEhbJ5/pvoAvQCV2sDQADINLqn0TdUsF62xKSAATrzQc
-         tARw==
-X-Gm-Message-State: APjAAAUAAgr64iw2fO03MAKhgworXHqg8awK7AhSQsm09ZbF1avGs3Aj
-        Inr3KZZZQ6yjwT4K2+Vuq3Nxv/2afeg=
-X-Google-Smtp-Source: APXvYqwVbpne9kZ2OZk6b9rje5IyP7Ib5RPFqSoEviFXKMsf85kcCBP+1WiFkOu0vUpDGW+6H1bNbQ==
-X-Received: by 2002:a63:1f21:: with SMTP id f33mr89504101pgf.91.1577957042049;
-        Thu, 02 Jan 2020 01:24:02 -0800 (PST)
-Received: from dhcp-12-139.nay.redhat.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id t63sm63481267pfb.70.2020.01.02.01.23.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 02 Jan 2020 01:24:01 -0800 (PST)
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Pravin B Shelar <pshelar@ovn.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        David Miller <davem@davemloft.net>,
-        Hangbin Liu <liuhangbin@gmail.com>
-Subject: [PATCH net] vxlan: fix tos value before xmit
-Date:   Thu,  2 Jan 2020 17:23:45 +0800
-Message-Id: <20200102092345.19748-1-liuhangbin@gmail.com>
-X-Mailer: git-send-email 2.19.2
+        id S1727925AbgABJ0Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Jan 2020 04:26:16 -0500
+Received: from mx2.suse.de ([195.135.220.15]:52680 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727801AbgABJ0P (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 2 Jan 2020 04:26:15 -0500
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx2.suse.de (Postfix) with ESMTP id 24DB4AB91;
+        Thu,  2 Jan 2020 09:26:13 +0000 (UTC)
+Received: by unicorn.suse.cz (Postfix, from userid 1000)
+        id CCB71E0095; Thu,  2 Jan 2020 10:26:11 +0100 (CET)
+Date:   Thu, 2 Jan 2020 10:26:11 +0100
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     Naresh Kamboju <naresh.kamboju@linaro.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Firo Yang <firo.yang@suse.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        rcu@vger.kernel.org, Netdev <netdev@vger.kernel.org>,
+        lkft-triage@lists.linaro.org
+Subject: Re: stable-rc-4.19.93-rc1/4e040169e8b7 : kernel panic RIP:
+ 0010:__inet_lookup_listener
+Message-ID: <20200102092611.GB22327@unicorn.suse.cz>
+References: <CA+G9fYv3=oJSFodFp4wwF7G7_g5FWYRYbc4F0AMU6jyfLT689A@mail.gmail.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <CA+G9fYv3=oJSFodFp4wwF7G7_g5FWYRYbc4F0AMU6jyfLT689A@mail.gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Before ip_tunnel_ecn_encap() and udp_tunnel_xmit_skb() we should filter
-tos value by RT_TOS() instead of using config tos directly.
+On Thu, Jan 02, 2020 at 12:24:35PM +0530, Naresh Kamboju wrote:
+> Results from Linaro’s test farm.
+> Regressions on arm64, arm, x86_64, and i386.
+> 
+> While running LTP syscalls accept* test cases on stable-rc-4.19 branch kernel.
+> This report log extracted from qemu_x86_64.
+> 
+> metadata:
+>   git branch: linux-4.19.y
+>   git repo: https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
+>   git commit: 4e040169e8b7f4e1c50ceb0f6596015ecc67a052
+>   git describe: v4.19.92-112-g4e040169e8b7
+>   make_kernelversion: 4.19.93-rc1
+>   kernel-config:
+> http://snapshots.linaro.org/openembedded/lkft/lkft/sumo/intel-corei7-64/lkft/linux-stable-rc-4.19/396/config
+> 
+> Crash log,
+> 
+> BUG: unable to handle kernel paging request at 0000000040000001
+> [   23.578222] PGD 138f25067 P4D 138f25067 PUD 0
+> er run is 0h 15m[   23.578222] Oops: 0000 [#1] SMP NOPTI
+> [   23.578222] CPU: 1 PID: 2216 Comm: accept02 Not tainted 4.19.93-rc1 #1
+> [   23.578222] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996),
+> BIOS 1.12.0-1 04/01/2014
+> [   23.578222] RIP: 0010:__inet_lookup_listener+0x12d/0x300
+>  00s
+> [ts t_buffe r 23.578222] Code: 18 48 85 db 0f 84 fe 00 00 00 48 83 eb
+> 68 0f 84 f4 00 00 00 0f b7 75 d0 44 8b 55 10 45 89 f1 45 31 ff 31 c0
+> 45 89 de 89 75 b0 <4c> 3b 63 30 75 43 66 44 3b 6b 0e 75 3c 0f b6 73 13
+> 40 f6 c6 20 75
+> [   23.578222] RSP: 0018:ffff9e0dbba83c38 EFLAGS: 00010206
+> [   23.578222] RAX: ffff9e0db6ff8a80 RBX: 000000003fffffd1 RCX: 0000000000000000
+> [   23.578222] RDX: 0000000000000006 RSI: 0000000000000000 RDI: 00000000ffffffff
+> [   23.578222] RBP: ffff9e0dbba83c88 R08: 000000000100007f R09: 0000000000000000
+> [   23.578222] R10: 000000000100007f R11: 0000000000000000 R12: ffffffffbeb2fe40
+> [   23.578222] R13: 000000000000d59f R14: 0000000000000000 R15: 0000000000000006
+> [   23.578222] FS:  00007fbb30e57700(0000) GS:ffff9e0dbba80000(0000)
+> knlGS:0000000000000000
+> [   23.578222] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [   23.578222] CR2: 0000000040000001 CR3: 000000013276c000 CR4: 00000000003406e0
+> [   23.578222] Call Trace:
+> [   23.578222]  <IRQ>
+> [   23.578222]  tcp_v4_rcv+0x4fe/0xc80
+> [   23.578222]  ip_local_deliver_finish+0xaf/0x390
+> [   23.578222]  ip_local_deliver+0x1a1/0x200
+> [   23.578222]  ? ip_sublist_rcv+0x420/0x420
+> [   23.578222]  ip_rcv_finish+0x88/0xd0
+> s.c:55: INFO: Te[   23.578222]  ip_rcv+0x142/0x200
+> [   23.578222]  ? ip_rcv_finish_core.isra.18+0x4e0/0x4e0
+> st is[ us ing guar  23.578222]  ? process_backlog+0x6d/0x230
+> [   23.578222]  __netif_receive_skb_one_core+0x57/0x80
+> ded [bu ffe rs
+>  ac2c3.578222]  __netif_receive_skb+0x18/0x60
+> [   23.578222]  process_backlog+0xd4/0x230
+> [   23.578222]  net_rx_action+0x13e/0x420
+> [   23.578222]  ? __do_softirq+0x9b/0x426
+> [   23.578222]  __do_softirq+0xc7/0x426
+> [   23.578222]  ? ip_finish_output2+0x255/0x660
+> [   23.578222]  do_softirq_own_stack+0x2a/0x40
+> [   23.578222]  </IRQ>
+> [   23.578222]  do_softirq.part.19+0x4d/0x60
+> [   23.578222]  __local_bh_enable_ip+0xd9/0xf0
+> [   23.578222]  ip_finish_output2+0x27e/0x660
+> [   23.578222]  ip_finish_output+0x235/0x370
+> [   23.578222]  ? ip_finish_output+0x235/0x370
+> [   23.578222]  ip_output+0x76/0x250
+> [   23.578222]  ? ip_fragment.constprop.50+0x80/0x80
+> [   23.578222]  ip_local_out+0x3f/0x70
+> [   23.578222]  __ip_queue_xmit+0x1ea/0x5f0
+> [   23.578222]  ? __lock_is_held+0x5a/0xa0
+> [   23.578222]  ip_queue_xmit+0x10/0x20
+> [   23.578222]  __tcp_transmit_skb+0x57c/0xb60
+> [   23.578222]  tcp_connect+0xccd/0x1030
+> [   23.578222]  tcp_v4_connect+0x515/0x550
+> [   23.578222]  __inet_stream_connect+0x249/0x390
+> [   23.578222]  ? __local_bh_enable_ip+0x7f/0xf0
+> [   23.578222]  inet_stream_connect+0x3b/0x60
+> [   23.578222]  __sys_connect+0xa3/0x120
+> [   23.578222]  ? kfree+0x203/0x240
+> [   23.578222]  ? syscall_trace_enter+0x1e3/0x350
+> [   23.578222]  ? trace_hardirqs_off_caller+0x22/0xf0
+> [   23.578222]  ? do_syscall_64+0x17/0x1a0
+> [   23.578222]  ? lockdep_hardirqs_on+0xef/0x180
+> [   23.578222]  ? do_syscall_64+0x17/0x1a0
+> [   23.578222]  __x64_sys_connect+0x1a/0x20
+> [   23.578222]  do_syscall_64+0x55/0x1a0
+> [   23.578222]  entry_SYSCALL_64_after_hwframe+0x49/0xbe
+> [   23.578222] RIP: 0033:0x7fbb31a1c927
+> [   23.578222] Code: 44 00 00 41 54 41 89 d4 55 48 89 f5 53 89 fb 48
+> 83 ec 10 e8 0b f9 ff ff 44 89 e2 48 89 ee 89 df 41 89 c0 b8 2a 00 00
+> 00 0f 05 <48> 3d 00 f0 ff ff 77 33 44 89 c7 89 44 24 0c e8 45 f9 ff ff
+> 8b 44
 
-vxlan_get_route() would filter the tos to fl4.flowi4_tos but we didn't
-return it back, as geneve_get_v4_rt() did. So we have to use RT_TOS()
-directly in function ip_tunnel_ecn_encap().
+In __inet_lookup_listener(), we need to replace
 
-Fixes: 206aaafcd279 ("VXLAN: Use IP Tunnels tunnel ENC encap API")
-Fixes: 1400615d64cf ("vxlan: allow setting ipv6 traffic class")
-Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
----
- drivers/net/vxlan.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+	sk_for_each_rcu(sk, &ilb->head) 
 
-diff --git a/drivers/net/vxlan.c b/drivers/net/vxlan.c
-index 3ec6b506033d..1c5159dcc720 100644
---- a/drivers/net/vxlan.c
-+++ b/drivers/net/vxlan.c
-@@ -2541,7 +2541,7 @@ static void vxlan_xmit_one(struct sk_buff *skb, struct net_device *dev,
- 		ndst = &rt->dst;
- 		skb_tunnel_check_pmtu(skb, ndst, VXLAN_HEADROOM);
- 
--		tos = ip_tunnel_ecn_encap(tos, old_iph, skb);
-+		tos = ip_tunnel_ecn_encap(RT_TOS(tos), old_iph, skb);
- 		ttl = ttl ? : ip4_dst_hoplimit(&rt->dst);
- 		err = vxlan_build_skb(skb, ndst, sizeof(struct iphdr),
- 				      vni, md, flags, udp_sum);
-@@ -2581,7 +2581,7 @@ static void vxlan_xmit_one(struct sk_buff *skb, struct net_device *dev,
- 
- 		skb_tunnel_check_pmtu(skb, ndst, VXLAN6_HEADROOM);
- 
--		tos = ip_tunnel_ecn_encap(tos, old_iph, skb);
-+		tos = ip_tunnel_ecn_encap(RT_TOS(tos), old_iph, skb);
- 		ttl = ttl ? : ip6_dst_hoplimit(ndst);
- 		skb_scrub_packet(skb, xnet);
- 		err = vxlan_build_skb(skb, ndst, sizeof(struct ipv6hdr),
--- 
-2.19.2
+by
+
+	sk_nulls_for_each_rcu(sk2, node, &ilb->nulls_head)
+
+This loop was eliminated in mainline 5.0-rc1 by commit d9fbc7f6431f
+("net: tcp: prefer listeners bound to an address"). I'll have to check
+if there are more places in stable-4.14 and stable-4.19 which also need
+to be updated.
+
+This also makes me think... AFAICS, since commit d9fbc7f6431f, only the
+(addr,port) hashtable is used for listener lookup and the traditional
+port only hashtable is only used to iterate through all listening
+sockets for netlink dumps and /proc/net/tcp. Maybe we could switch these
+two also to the (addr,port) hashtable and keep only one listener
+hashtable.
+
+Michal Kubecek
 
