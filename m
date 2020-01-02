@@ -2,116 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1512812E9B5
-	for <lists+netdev@lfdr.de>; Thu,  2 Jan 2020 19:06:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 06D1612E9BE
+	for <lists+netdev@lfdr.de>; Thu,  2 Jan 2020 19:10:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727984AbgABSG5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Jan 2020 13:06:57 -0500
-Received: from mail-qt1-f195.google.com ([209.85.160.195]:46546 "EHLO
-        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727952AbgABSG5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jan 2020 13:06:57 -0500
-Received: by mail-qt1-f195.google.com with SMTP id g1so28302050qtr.13
-        for <netdev@vger.kernel.org>; Thu, 02 Jan 2020 10:06:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=kKodLo/bwDXK8D0TLbyN4sF1my9cqh3pcja+/KKW6A8=;
-        b=Jal5LxvL4znSnvCGWhZHX1UxzRTC1NMg5N3vzxMVApWblzPxKXc84C/b0BegS9MkZr
-         fQTVzk0QJjEM+WtlXsH2FmriNHoOPCIlY1pQICUS9nyFpeWzHmd9TdsoDNRd0httOUbg
-         AcyC2is5KwCtI+7WQek6hoo2E40I5goBb81hp6/wlvkz/gIT5GXNFLtVuDf07uKUBlCJ
-         kzP+7Kgn6K1iENfcHPoNPRke8JvZJtMdWFLif20U6ZpgKrvH4jNkwrDjT5bvw32Ncvmi
-         5BD9Z5yY2kyNkLPQOBG7fDmYuhskV61HDaNWodCoBETKeIi//8ShhGwpqy+R38/U5iIw
-         eMWQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=kKodLo/bwDXK8D0TLbyN4sF1my9cqh3pcja+/KKW6A8=;
-        b=nvoqmLw+ATFSFJNnIN67IGaY9mDKa+dcXa/qQJ4ZpWNL3GZ4LoR+xjHE5OVFF7bqnt
-         rkFIbZbW8LrXcTfbnnPVViGIgM4gLRkayOqNykaNLqLJVjuIve7iTnmVTOxD3UclixsT
-         313NdJtQvwiJgcKXZ/fQiMTKDWGFwgaY8eZCTwRjVmuQnz5E4OnSea4dRNyN6V1u9BY4
-         LisIUjlkQDJ7qbNvNR5oOYjGnymf6uTwvdUZS9t9ef/ETXGEFaE0Q9ldRClY1uQh86Qb
-         g9rin6Kvj23MEzf/pGWo1VFERX6mxrpizAWOfOhAtYO3wTzdowR/KBq95YmdevO3yGuF
-         I8Fw==
-X-Gm-Message-State: APjAAAWqyiF36dQOfBIzt72XMZl2EZFvBWW+wjSnz7dVuRH5oF7VokfH
-        ZztouVaRKhmpxUBIfhzHgkMiHQ==
-X-Google-Smtp-Source: APXvYqxglEhq9d4CAJnBtJBjaPLfDCM65z+Q3Qr+0mNjpmBu3AjCflRpQWW8Zznps5r6KVFhxWfaug==
-X-Received: by 2002:ac8:5257:: with SMTP id y23mr60734501qtn.88.1577988416092;
-        Thu, 02 Jan 2020 10:06:56 -0800 (PST)
-Received: from ziepe.ca (hlfxns017vw-142-68-57-212.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.57.212])
-        by smtp.gmail.com with ESMTPSA id u15sm15303346qku.67.2020.01.02.10.06.55
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Thu, 02 Jan 2020 10:06:55 -0800 (PST)
-Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)
-        (envelope-from <jgg@ziepe.ca>)
-        id 1in4s2-0002mo-Os; Thu, 02 Jan 2020 14:06:54 -0400
-Date:   Thu, 2 Jan 2020 14:06:54 -0400
-From:   Jason Gunthorpe <jgg@ziepe.ca>
-To:     "Saleem, Shiraz" <shiraz.saleem@intel.com>
-Cc:     "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "nhorman@redhat.com" <nhorman@redhat.com>,
-        "sassmann@redhat.com" <sassmann@redhat.com>,
-        "parav@mellanox.com" <parav@mellanox.com>
-Subject: Re: [PATCH v3 19/20] RDMA: Add irdma Kconfig/Makefile and remove
- i40iw
-Message-ID: <20200102180654.GB9282@ziepe.ca>
-References: <20191209224935.1780117-1-jeffrey.t.kirsher@intel.com>
- <20191209224935.1780117-20-jeffrey.t.kirsher@intel.com>
- <20191211200200.GA13279@ziepe.ca>
- <9DD61F30A802C4429A01CA4200E302A7B6B9343F@fmsmsx124.amr.corp.intel.com>
- <20191217210406.GC17227@ziepe.ca>
- <9DD61F30A802C4429A01CA4200E302A7C1DEF259@fmsmsx123.amr.corp.intel.com>
- <20200102170426.GA9282@ziepe.ca>
- <9DD61F30A802C4429A01CA4200E302A7C1DEF79B@fmsmsx123.amr.corp.intel.com>
+        id S1728099AbgABSJz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Jan 2020 13:09:55 -0500
+Received: from userp2120.oracle.com ([156.151.31.85]:44930 "EHLO
+        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727890AbgABSJw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jan 2020 13:09:52 -0500
+Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
+        by userp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id 002I4KpQ106456;
+        Thu, 2 Jan 2020 18:09:39 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-transfer-encoding;
+ s=corp-2019-08-05; bh=XsUI/x0iISalOwHxyzvImUw1zJeV7hwLGtPbtmy9lVI=;
+ b=EiwjUT06o8kYbRAB1FQCbzEvVf0WVjRtNxWQiXMkn+oIhBxk3CmyRIlnE1cBCv6UxoCf
+ 4m6+M2SeUeNTBLEEitW/zYAXMYUdDQTp/J4JApznD4YoZDQ1MTvxB5fy8Qj6C1eVIuxh
+ xQJt2ZuZjVLDolzTcMnrU3XwnyGHU+C55zAtc1NkHswYtsjYJJwxM6NRart1E1F2VwIr
+ TnKTUgfsqg3Z6BP7/TrwfU6wVzP74jy0Fu8dqg1UNnDdU7vdL0aBniVAGx06c4Ou9ulj
+ NAZL/2h3SqMYj5dh7xo5IjJRO2+pwMaG55vli4JZgDBj+zs5nZKzEwNHr8+RMOxfAC61 bw== 
+Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
+        by userp2120.oracle.com with ESMTP id 2x5ypqrmqx-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 02 Jan 2020 18:09:38 +0000
+Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
+        by userp3030.oracle.com (8.16.0.27/8.16.0.27) with SMTP id 002I3bPA091764;
+        Thu, 2 Jan 2020 18:09:38 GMT
+Received: from userv0121.oracle.com (userv0121.oracle.com [156.151.31.72])
+        by userp3030.oracle.com with ESMTP id 2x8gjauup3-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 02 Jan 2020 18:09:38 +0000
+Received: from abhmp0014.oracle.com (abhmp0014.oracle.com [141.146.116.20])
+        by userv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 002I9agf009555;
+        Thu, 2 Jan 2020 18:09:36 GMT
+Received: from Lirans-MBP.Home (/79.178.220.19)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Thu, 02 Jan 2020 10:09:35 -0800
+From:   Liran Alon <liran.alon@oracle.com>
+To:     netanel@amazon.com, davem@davemloft.net, netdev@vger.kernel.org
+Cc:     saeedb@amazon.com, zorik@amazon.com, sameehj@amazon.com,
+        igorch@amazon.com, akiyano@amazon.com, evgenys@amazon.com,
+        gtzalik@amazon.com, ndagan@amazon.com, matua@amazon.com,
+        galpress@amazon.com
+Subject: [PATCH 0/2] net: AWS ENA: Fix memory barrier usage when using LLQ
+Date:   Thu,  2 Jan 2020 20:08:28 +0200
+Message-Id: <20200102180830.66676-1-liran.alon@oracle.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <9DD61F30A802C4429A01CA4200E302A7C1DEF79B@fmsmsx123.amr.corp.intel.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9488 signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
+ phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=771
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.0.1-1911140001 definitions=main-2001020151
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9488 signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
+ suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1011
+ lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=829 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1911140001
+ definitions=main-2001020151
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 02, 2020 at 05:50:45PM +0000, Saleem, Shiraz wrote:
-> > Subject: Re: [PATCH v3 19/20] RDMA: Add irdma Kconfig/Makefile and remove
-> > i40iw
-> > 
-> > On Thu, Jan 02, 2020 at 04:00:37PM +0000, Saleem, Shiraz wrote:
-> > > > Subject: Re: [PATCH v3 19/20] RDMA: Add irdma Kconfig/Makefile and
-> > > > remove i40iw
-> > > >
-> > > >
-> > > > > >  - The whole cqp_compl_thread thing looks really weird
-> > > > > What is the concern?
-> > > >
-> > > > It looks like an open coded work queue
-> > > >
-> > >
-> > > The cqp_compl_thread is not a work queue in the sense that no work is
-> > > queued to it. It is a thread that is signaled to check for and handle
-> > > CQP completion events if present.
-> > 
-> > How is that not a work queue? The work is the signal to handle CQP completion
-> > events.
-> > 
-> 
-> Yes we could use the work as a signal. But this would mean,
-> we allocate a work item, initialize it to an 'identical' value,
-> queue it up and then free it.
+Hi,
 
-You don't have to allocate a work item every time.
+This simple patch-series address 2 issues found during code-review of AWS ENA NIC driver
+related to how it use memory barriers when NIC is running in "low-latency queue" mode (LLQ).
 
-> Why is this better than using a single kthread that just
-> wake ups to handle the CQP completion?
+1st patch removes an unnecessary wmb().
 
-We'd have endless kthreads if people did this everytime they needed a
-bit of async work.
+2nd patch fix a bug of not flushing write-combined buffers holding LLQ transmit descriptors
+and first packet bytes before writing new SQ tail to device. This bug is introduced because
+of a weird behaviour of x86 AMD CPU that it doesn't flush write-combined buffers when CPU
+writes to UC memory as x86 Intel CPU does. Which makes writeX() insufficient in order to
+guarantee write-combined buffers are flushed.
+This patch makes sure to just fix AWS ENA to handle this case properly, but a future patch-series
+should be submitted to probably introduce a new flush_wc_writeX() macro that handles this case
+properly for all CPU archs and vendors. For more info, see patch commit message itself.
 
-Jason
+Regards,
+-Liran
+
