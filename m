@@ -2,95 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CDA5E12E8F6
-	for <lists+netdev@lfdr.de>; Thu,  2 Jan 2020 17:53:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A03B012E911
+	for <lists+netdev@lfdr.de>; Thu,  2 Jan 2020 18:04:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728881AbgABQxO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Jan 2020 11:53:14 -0500
-Received: from mail-pg1-f179.google.com ([209.85.215.179]:46193 "EHLO
-        mail-pg1-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728824AbgABQxN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jan 2020 11:53:13 -0500
-Received: by mail-pg1-f179.google.com with SMTP id z124so22118099pgb.13
-        for <netdev@vger.kernel.org>; Thu, 02 Jan 2020 08:53:13 -0800 (PST)
+        id S1726488AbgABRE3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Jan 2020 12:04:29 -0500
+Received: from mail-qt1-f196.google.com ([209.85.160.196]:36489 "EHLO
+        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726125AbgABRE3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jan 2020 12:04:29 -0500
+Received: by mail-qt1-f196.google.com with SMTP id q20so35093944qtp.3
+        for <netdev@vger.kernel.org>; Thu, 02 Jan 2020 09:04:28 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=sS6FrVYGbVCXU+pQLC9vyfkAZT8PvRcphG1N23Bc4nU=;
-        b=sH/qRybuGLENwEAxuz2RVbGSPUHo2VDjItwNnGR+nNFobiSqufr9I13n30F8U10wY8
-         ZbJacv+tDRDMC9RCc8BihAaRAOzE6Xbr3murDG7hs1jFyoajUoc9+aZVF3fZdovnH+4J
-         k8SuN6fCXfQyt6vOhXG5/vXneo+9PQhYinIAT27ZnzWJfNM6w0L2gYBOO9/3zBztGSbx
-         QSqUzeHfypgSDtreip1l1F5zNpx4bzHcSlHle5va+HiSx8rkS8VU7V/f2HPYoCKo76fx
-         M6EKivVuz8Sp7HPbyJvezZKNAHNO0TOJq1OhyQRXsIRE3J5PQs+WulMRKlYdoOxgjqij
-         jycw==
+        d=ziepe.ca; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=WPbPynAGzUK346pY05E9MVEd+DVJe9NYlWunsc4F7bI=;
+        b=hyl+VdR64NWXOm10aZiX8etyFy+/+mlNJSllMAbT9XxWEZPuTYbIgRCjMc7bVLUBcY
+         OzMdZ39E5SK168KPzQqV+1fEdiKEuErblQYeLCFYg3vIzE1Ud6tOZqs9s8Eal3J7U9Dr
+         Rd3Tmv0WcuQf9HhL24BeVaSMQWZFcO1achF3+xJKSOq7rVRxE0yeF4A8rXSVbof9foIr
+         OlLeOD1ofyuevh8taYLZhbW/STPLxGQX3Eu+DVQ8Msc3BDPr1Cr1366POjNpgiQhyin6
+         +InkriT2+j7+E7oeb0FAPNv53IVIcMNUhuLlg9qAXdGKf6YVf2dOKke7BF/ElNyXGE75
+         /sKQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=sS6FrVYGbVCXU+pQLC9vyfkAZT8PvRcphG1N23Bc4nU=;
-        b=BdHSRdrrD8Ig9q3/vuSuz5wdgDAnBtxhHQ+BnzH8gs28PDuSe2r6s4X9nwb2FkLSJC
-         DaX1+kcMNdpBt/sqPsBbBUtF+bRJe/QEkyMz82DNxCEeNCxDKi+1zXzFouUg2oRqLEu7
-         oxEnPi9uLrcK/axDf7fnGfk4S2dTomGoaxvz5AOK+3YxzGX13/SPhAv7aiDOwpfiZopP
-         Z3iLEiBQzzSg7h05LopHVZETbGzRzeNW5uzh7j8xaopp5hVoDW7gkN1C6Z3b5tiiTh2R
-         +zpHgaW3zHFTGmwYFws9FY6rPYaPqg2rMpyoInyUFRUBIXfOFx2jgTdZytmuA136M7A+
-         V7OA==
-X-Gm-Message-State: APjAAAVlj7bVpOruo5nXfd5T+DgBGR8SmWCzvk2oqGiUmQkv4BGVzvxa
-        WJh6f3MIZ0zEyAUCiVHvG9evW4B+
-X-Google-Smtp-Source: APXvYqzjAYmGzcm/lB4uRWD/fCmaSgEeaS+qdwdLAiqom/ChUri7wP2tLmdC+IONHWNgC67pNmivEQ==
-X-Received: by 2002:a62:78c1:: with SMTP id t184mr87324171pfc.222.1577983993010;
-        Thu, 02 Jan 2020 08:53:13 -0800 (PST)
-Received: from ?IPv6:2601:282:800:7a:b448:6aaa:b24c:65b2? ([2601:282:800:7a:b448:6aaa:b24c:65b2])
-        by smtp.googlemail.com with ESMTPSA id d14sm69232795pfq.117.2020.01.02.08.53.10
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 02 Jan 2020 08:53:12 -0800 (PST)
-Subject: Re: IPv6 addresses stay tentative (Linux 5.4.6, 5.4.7)
-To:     Nico Schottelius <nico.schottelius@ungleich.ch>,
-        netdev@vger.kernel.org
-References: <87mub7tbr3.fsf@ungleich.ch>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <cd988e58-5e75-5ba5-185b-fd0f2a2f84df@gmail.com>
-Date:   Thu, 2 Jan 2020 09:53:06 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.3.1
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=WPbPynAGzUK346pY05E9MVEd+DVJe9NYlWunsc4F7bI=;
+        b=okbIGbTlyoKmtVLGMWqG0c6JO/zb8z1G8gBR2qOWpieXse9N9jLKYMv6PhVOEnuvyt
+         iL9h6RucaNXmQFfAuZdAI81J4+f2kzeoQVYljwfmQbTiuRwxWzy0EsaraGcGVi/ITrS+
+         1/h3sZz2yJc0u1NFPfQmLo9JdQ4B4mSP1i89P5ViRdBEYR1036WqsQn0ZE/rtPbxG85u
+         KTbFYKMl7lZBRmzlU626fAuccstXnaoeOw+fg48Ch+3G4dpSkMV9psEU8pQmBFewJCDg
+         o/wiLfoC4TXQ8s9N/gpL6hWagEieZzqGE0NsQLV2lIt8TjRm66pQb4OBlE8gBfKZaJLV
+         8Lqw==
+X-Gm-Message-State: APjAAAWqvefMuZSYtqlGPL6EmeDiYG6J3vEsn/XyjcrjQMVyc/E8uf6E
+        35Jis3GbNoUJue2sQK4MRFup1w==
+X-Google-Smtp-Source: APXvYqycZUV7O47HiA4P1kXVkI+MdtpEn6M3jTtOOK9XaCvrjBzH6g3r7l4R2UlRy4gtbJ1q4nLNug==
+X-Received: by 2002:ac8:540d:: with SMTP id b13mr58796970qtq.244.1577984668023;
+        Thu, 02 Jan 2020 09:04:28 -0800 (PST)
+Received: from ziepe.ca (hlfxns017vw-142-68-57-212.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.57.212])
+        by smtp.gmail.com with ESMTPSA id e19sm17357377qtc.75.2020.01.02.09.04.27
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Thu, 02 Jan 2020 09:04:27 -0800 (PST)
+Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)
+        (envelope-from <jgg@ziepe.ca>)
+        id 1in3ta-000223-LR; Thu, 02 Jan 2020 13:04:26 -0400
+Date:   Thu, 2 Jan 2020 13:04:26 -0400
+From:   Jason Gunthorpe <jgg@ziepe.ca>
+To:     "Saleem, Shiraz" <shiraz.saleem@intel.com>
+Cc:     "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "nhorman@redhat.com" <nhorman@redhat.com>,
+        "sassmann@redhat.com" <sassmann@redhat.com>,
+        "parav@mellanox.com" <parav@mellanox.com>
+Subject: Re: [PATCH v3 19/20] RDMA: Add irdma Kconfig/Makefile and remove
+ i40iw
+Message-ID: <20200102170426.GA9282@ziepe.ca>
+References: <20191209224935.1780117-1-jeffrey.t.kirsher@intel.com>
+ <20191209224935.1780117-20-jeffrey.t.kirsher@intel.com>
+ <20191211200200.GA13279@ziepe.ca>
+ <9DD61F30A802C4429A01CA4200E302A7B6B9343F@fmsmsx124.amr.corp.intel.com>
+ <20191217210406.GC17227@ziepe.ca>
+ <9DD61F30A802C4429A01CA4200E302A7C1DEF259@fmsmsx123.amr.corp.intel.com>
 MIME-Version: 1.0
-In-Reply-To: <87mub7tbr3.fsf@ungleich.ch>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <9DD61F30A802C4429A01CA4200E302A7C1DEF259@fmsmsx123.amr.corp.intel.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/1/20 4:30 PM, Nico Schottelius wrote:
+On Thu, Jan 02, 2020 at 04:00:37PM +0000, Saleem, Shiraz wrote:
+> > Subject: Re: [PATCH v3 19/20] RDMA: Add irdma Kconfig/Makefile and remove
+> > i40iw
+> > 
+> > 
+> > > >  - The whole cqp_compl_thread thing looks really weird
+> > > What is the concern?
+> > 
+> > It looks like an open coded work queue
+> > 
 > 
-> https://roy.marples.name/archives/dhcpcd-discuss/0002774.html
-> 
-> p.s.: I am using accept_ra = 2, because forwarding is also enabled.
-> 
-> Hello,
-> 
-> it seems something in the kernel code changed in regard to setting IPv6
-> addresses usable (i.e. dad done). Since 5.4.6 IPv6 addresses setup
-> statically or via autoconf (router advertisements) seem so stay in
-> "tentative" state forever.
-> 
-> I did not experience this behaviour in 5.3.13 (*) and it seems I am not
-> the only one affected:
-> 
-> I turned dhcpcd off to test whether it happens without it and indeed the
-> problem seems to be unrelated to dhcpcd.
-> 
-> Does anyone know about a recent change that may cause this behaviour?
-> 
-> Best regards,
-> 
-> Nico
-> 
-> (*) I cannot boot kernels 5.4.x < 5.4.6, as the wifi card does not show
-> up with them.
-> 
+> The cqp_compl_thread is not a work queue in the sense
+> that no work is queued to it. It is a thread that is signaled to
+> check for and handle CQP completion events if present.
 
-I do not see this behavior with vanilla 5.5.
+How is that not a work queue? The work is the signal to handle CQP
+completion events.
+
+Jason
