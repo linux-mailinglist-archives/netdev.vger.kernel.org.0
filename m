@@ -2,106 +2,313 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1964D12EB59
-	for <lists+netdev@lfdr.de>; Thu,  2 Jan 2020 22:27:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3942F12EB60
+	for <lists+netdev@lfdr.de>; Thu,  2 Jan 2020 22:28:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726148AbgABV1J (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Jan 2020 16:27:09 -0500
-Received: from mga04.intel.com ([192.55.52.120]:61675 "EHLO mga04.intel.com"
+        id S1726295AbgABV2s (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Jan 2020 16:28:48 -0500
+Received: from mx2.suse.de ([195.135.220.15]:36574 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726103AbgABV1I (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 2 Jan 2020 16:27:08 -0500
-X-Amp-Result: UNKNOWN
-X-Amp-Original-Verdict: FILE UNKNOWN
-X-Amp-File-Uploaded: False
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 02 Jan 2020 13:27:08 -0800
-X-IronPort-AV: E=Sophos;i="5.69,388,1571727600"; 
-   d="scan'208";a="214266298"
-Received: from agluck-desk2.sc.intel.com (HELO agluck-desk2.amr.corp.intel.com) ([10.3.52.68])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 02 Jan 2020 13:27:07 -0800
-Date:   Thu, 2 Jan 2020 13:27:06 -0800
-From:   "Luck, Tony" <tony.luck@intel.com>
-To:     David Miller <davem@davemloft.net>
-Cc:     fenghua.yu@intel.com, michael.chan@broadcom.com,
-        netdev@vger.kernel.org, tglx@linutronix.de, luto@kernel.org,
-        peterz@infradead.org, David.Laight@aculab.com,
-        ravi.v.shankar@intel.com
-Subject: [Patch v2] drivers/net/b44: Change to non-atomic bit operations on
- pwol_mask
-Message-ID: <20200102212706.GA29778@agluck-desk2.amr.corp.intel.com>
-References: <1576884551-9518-1-git-send-email-fenghua.yu@intel.com>
- <20191224.161826.37676943451935844.davem@davemloft.net>
- <20191225011020.GE241295@romley-ivt3.sc.intel.com>
- <20191224.182307.2303352806218314412.davem@davemloft.net>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191224.182307.2303352806218314412.davem@davemloft.net>
+        id S1725851AbgABV2s (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 2 Jan 2020 16:28:48 -0500
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx2.suse.de (Postfix) with ESMTP id AB688ADD5;
+        Thu,  2 Jan 2020 21:28:44 +0000 (UTC)
+Received: by unicorn.suse.cz (Postfix, from userid 1000)
+        id 0D734E0095; Thu,  2 Jan 2020 22:28:44 +0100 (CET)
+In-Reply-To: <CA+G9fYv3=oJSFodFp4wwF7G7_g5FWYRYbc4F0AMU6jyfLT689A@mail.gmail.com>
+References: <CA+G9fYv3=oJSFodFp4wwF7G7_g5FWYRYbc4F0AMU6jyfLT689A@mail.gmail.com>
+From:   Michal Kubecek <mkubecek@suse.cz>
+Subject: [PATCH stable-4.19] tcp/dccp: fix possible race
+ __inet_lookup_established()
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>
+Cc:     stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        Firo Yang <firo.yang@suse.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        rcu@vger.kernel.org, netdev@vger.kernel.org,
+        lkft-triage@lists.linaro.org,
+        Naresh Kamboju <naresh.kamboju@linaro.org>
+Message-Id: <20200102212844.0D734E0095@unicorn.suse.cz>
+Date:   Thu,  2 Jan 2020 22:28:44 +0100 (CET)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Eric Dumazet <edumazet@google.com>
 
-From: Fenghua Yu <fenghua.yu@intel.com>
+[ Upstream commit 8dbd76e79a16b45b2ccb01d2f2e08dbf64e71e40 ]
 
-Atomic operations that span cache lines are super-expensive on x86
-(not just to the current processor, but also to other processes as all
-memory operations are blocked until the operation completes). Upcoming
-x86 processors have a switch to cause such operations to generate a #AC
-trap. It is expected that some real time systems will enable this mode
-in BIOS.
+Michal Kubecek and Firo Yang did a very nice analysis of crashes
+happening in __inet_lookup_established().
 
-In preparation for this, it is necessary to fix code that may execute
-atomic instructions with operands that cross cachelines because the #AC
-trap will crash the kernel.
+Since a TCP socket can go from TCP_ESTABLISH to TCP_LISTEN
+(via a close()/socket()/listen() cycle) without a RCU grace period,
+I should not have changed listeners linkage in their hash table.
 
-Since "pwol_mask" is local and never exposed to concurrency, there is
-no need to set bits in pwol_mask using atomic operations.
+They must use the nulls protocol (Documentation/RCU/rculist_nulls.txt),
+so that a lookup can detect a socket in a hash list was moved in
+another one.
 
-Directly operate on the byte which contains the bit instead of using
-__set_bit() to avoid any big endian concern due to type cast to
-unsigned long in __set_bit().
+Since we added code in commit d296ba60d8e2 ("soreuseport: Resolve
+merge conflict for v4/v6 ordering fix"), we have to add
+hlist_nulls_add_tail_rcu() helper.
 
-Suggested-by: Peter Zijlstra <peterz@infradead.org>
-Signed-off-by: Fenghua Yu <fenghua.yu@intel.com>
-Signed-off-by: Tony Luck <tony.luck@intel.com>
+stable-4.19: we also need to update code in __inet_lookup_listener() and
+inet6_lookup_listener() which has been removed in 5.0-rc1.
+
+Fixes: 3b24d854cb35 ("tcp/dccp: do not touch listener sk_refcnt under synflood")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reported-by: Michal Kubecek <mkubecek@suse.cz>
+Reported-by: Firo Yang <firo.yang@suse.com>
+Reviewed-by: Michal Kubecek <mkubecek@suse.cz>
+Link: https://lore.kernel.org/netdev/20191120083919.GH27852@unicorn.suse.cz/
+Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+Signed-off-by: Michal Kubecek <mkubecek@suse.cz>
 ---
+ include/linux/rculist_nulls.h | 37 +++++++++++++++++++++++++++++++++++
+ include/net/inet_hashtables.h | 12 +++++++++---
+ include/net/sock.h            |  5 +++++
+ net/ipv4/inet_diag.c          |  3 ++-
+ net/ipv4/inet_hashtables.c    | 19 +++++++++---------
+ net/ipv4/tcp_ipv4.c           |  7 ++++---
+ net/ipv6/inet6_hashtables.c   |  3 ++-
+ 7 files changed, 69 insertions(+), 17 deletions(-)
 
-Tony: Updated commit comment with background information motivating
-this change.  No changes to code.
-
- drivers/net/ethernet/broadcom/b44.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/net/ethernet/broadcom/b44.c b/drivers/net/ethernet/broadcom/b44.c
-index 035dbb1b2c98..ec25fd81985d 100644
---- a/drivers/net/ethernet/broadcom/b44.c
-+++ b/drivers/net/ethernet/broadcom/b44.c
-@@ -1516,8 +1516,10 @@ static int b44_magic_pattern(u8 *macaddr, u8 *ppattern, u8 *pmask, int offset)
- 	int ethaddr_bytes = ETH_ALEN;
+diff --git a/include/linux/rculist_nulls.h b/include/linux/rculist_nulls.h
+index bc8206a8f30e..61974c4c566b 100644
+--- a/include/linux/rculist_nulls.h
++++ b/include/linux/rculist_nulls.h
+@@ -100,6 +100,43 @@ static inline void hlist_nulls_add_head_rcu(struct hlist_nulls_node *n,
+ 		first->pprev = &n->next;
+ }
  
- 	memset(ppattern + offset, 0xff, magicsync);
--	for (j = 0; j < magicsync; j++)
--		set_bit(len++, (unsigned long *) pmask);
-+	for (j = 0; j < magicsync; j++) {
-+		pmask[len >> 3] |= BIT(len & 7);
-+		len++;
++/**
++ * hlist_nulls_add_tail_rcu
++ * @n: the element to add to the hash list.
++ * @h: the list to add to.
++ *
++ * Description:
++ * Adds the specified element to the specified hlist_nulls,
++ * while permitting racing traversals.
++ *
++ * The caller must take whatever precautions are necessary
++ * (such as holding appropriate locks) to avoid racing
++ * with another list-mutation primitive, such as hlist_nulls_add_head_rcu()
++ * or hlist_nulls_del_rcu(), running on this same list.
++ * However, it is perfectly legal to run concurrently with
++ * the _rcu list-traversal primitives, such as
++ * hlist_nulls_for_each_entry_rcu(), used to prevent memory-consistency
++ * problems on Alpha CPUs.  Regardless of the type of CPU, the
++ * list-traversal primitive must be guarded by rcu_read_lock().
++ */
++static inline void hlist_nulls_add_tail_rcu(struct hlist_nulls_node *n,
++					    struct hlist_nulls_head *h)
++{
++	struct hlist_nulls_node *i, *last = NULL;
++
++	/* Note: write side code, so rcu accessors are not needed. */
++	for (i = h->first; !is_a_nulls(i); i = i->next)
++		last = i;
++
++	if (last) {
++		n->next = last->next;
++		n->pprev = &last->next;
++		rcu_assign_pointer(hlist_next_rcu(last), n);
++	} else {
++		hlist_nulls_add_head_rcu(n, h);
 +	}
++}
++
+ /**
+  * hlist_nulls_for_each_entry_rcu - iterate over rcu list of given type
+  * @tpos:	the type * to use as a loop cursor.
+diff --git a/include/net/inet_hashtables.h b/include/net/inet_hashtables.h
+index 9141e95529e7..b875dcef173c 100644
+--- a/include/net/inet_hashtables.h
++++ b/include/net/inet_hashtables.h
+@@ -106,13 +106,19 @@ struct inet_bind_hashbucket {
+ 	struct hlist_head	chain;
+ };
  
- 	for (j = 0; j < B44_MAX_PATTERNS; j++) {
- 		if ((B44_PATTERN_SIZE - len) >= ETH_ALEN)
-@@ -1529,7 +1531,8 @@ static int b44_magic_pattern(u8 *macaddr, u8 *ppattern, u8 *pmask, int offset)
- 		for (k = 0; k< ethaddr_bytes; k++) {
- 			ppattern[offset + magicsync +
- 				(j * ETH_ALEN) + k] = macaddr[k];
--			set_bit(len++, (unsigned long *) pmask);
-+			pmask[len >> 3] |= BIT(len & 7);
-+			len++;
- 		}
+-/*
+- * Sockets can be hashed in established or listening table
++/* Sockets can be hashed in established or listening table.
++ * We must use different 'nulls' end-of-chain value for all hash buckets :
++ * A socket might transition from ESTABLISH to LISTEN state without
++ * RCU grace period. A lookup in ehash table needs to handle this case.
+  */
++#define LISTENING_NULLS_BASE (1U << 29)
+ struct inet_listen_hashbucket {
+ 	spinlock_t		lock;
+ 	unsigned int		count;
+-	struct hlist_head	head;
++	union {
++		struct hlist_head	head;
++		struct hlist_nulls_head	nulls_head;
++	};
+ };
+ 
+ /* This is for listening sockets, thus all sockets which possess wildcards. */
+diff --git a/include/net/sock.h b/include/net/sock.h
+index 4545a9ecc219..f359e5c94762 100644
+--- a/include/net/sock.h
++++ b/include/net/sock.h
+@@ -721,6 +721,11 @@ static inline void __sk_nulls_add_node_rcu(struct sock *sk, struct hlist_nulls_h
+ 	hlist_nulls_add_head_rcu(&sk->sk_nulls_node, list);
+ }
+ 
++static inline void __sk_nulls_add_node_tail_rcu(struct sock *sk, struct hlist_nulls_head *list)
++{
++	hlist_nulls_add_tail_rcu(&sk->sk_nulls_node, list);
++}
++
+ static inline void sk_nulls_add_node_rcu(struct sock *sk, struct hlist_nulls_head *list)
+ {
+ 	sock_hold(sk);
+diff --git a/net/ipv4/inet_diag.c b/net/ipv4/inet_diag.c
+index 5731670c560b..9742b37afe1d 100644
+--- a/net/ipv4/inet_diag.c
++++ b/net/ipv4/inet_diag.c
+@@ -918,11 +918,12 @@ void inet_diag_dump_icsk(struct inet_hashinfo *hashinfo, struct sk_buff *skb,
+ 
+ 		for (i = s_i; i < INET_LHTABLE_SIZE; i++) {
+ 			struct inet_listen_hashbucket *ilb;
++			struct hlist_nulls_node *node;
+ 
+ 			num = 0;
+ 			ilb = &hashinfo->listening_hash[i];
+ 			spin_lock(&ilb->lock);
+-			sk_for_each(sk, &ilb->head) {
++			sk_nulls_for_each(sk, node, &ilb->nulls_head) {
+ 				struct inet_sock *inet = inet_sk(sk);
+ 
+ 				if (!net_eq(sock_net(sk), net))
+diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c
+index 7be966a60801..b53da2691adb 100644
+--- a/net/ipv4/inet_hashtables.c
++++ b/net/ipv4/inet_hashtables.c
+@@ -308,6 +308,7 @@ struct sock *__inet_lookup_listener(struct net *net,
+ 	bool exact_dif = inet_exact_dif_match(net, skb);
+ 	struct inet_listen_hashbucket *ilb2;
+ 	struct sock *sk, *result = NULL;
++	struct hlist_nulls_node *node;
+ 	int score, hiscore = 0;
+ 	unsigned int hash2;
+ 	u32 phash = 0;
+@@ -343,7 +344,7 @@ struct sock *__inet_lookup_listener(struct net *net,
+ 	goto done;
+ 
+ port_lookup:
+-	sk_for_each_rcu(sk, &ilb->head) {
++	sk_nulls_for_each_rcu(sk, node, &ilb->nulls_head) {
+ 		score = compute_score(sk, net, hnum, daddr,
+ 				      dif, sdif, exact_dif);
+ 		if (score > hiscore) {
+@@ -560,10 +561,11 @@ static int inet_reuseport_add_sock(struct sock *sk,
+ 				   struct inet_listen_hashbucket *ilb)
+ {
+ 	struct inet_bind_bucket *tb = inet_csk(sk)->icsk_bind_hash;
++	const struct hlist_nulls_node *node;
+ 	struct sock *sk2;
+ 	kuid_t uid = sock_i_uid(sk);
+ 
+-	sk_for_each_rcu(sk2, &ilb->head) {
++	sk_nulls_for_each_rcu(sk2, node, &ilb->nulls_head) {
+ 		if (sk2 != sk &&
+ 		    sk2->sk_family == sk->sk_family &&
+ 		    ipv6_only_sock(sk2) == ipv6_only_sock(sk) &&
+@@ -599,9 +601,9 @@ int __inet_hash(struct sock *sk, struct sock *osk)
  	}
- 	return len - 1;
+ 	if (IS_ENABLED(CONFIG_IPV6) && sk->sk_reuseport &&
+ 		sk->sk_family == AF_INET6)
+-		hlist_add_tail_rcu(&sk->sk_node, &ilb->head);
++		__sk_nulls_add_node_tail_rcu(sk, &ilb->nulls_head);
+ 	else
+-		hlist_add_head_rcu(&sk->sk_node, &ilb->head);
++		__sk_nulls_add_node_rcu(sk, &ilb->nulls_head);
+ 	inet_hash2(hashinfo, sk);
+ 	ilb->count++;
+ 	sock_set_flag(sk, SOCK_RCU_FREE);
+@@ -650,11 +652,9 @@ void inet_unhash(struct sock *sk)
+ 		reuseport_detach_sock(sk);
+ 	if (ilb) {
+ 		inet_unhash2(hashinfo, sk);
+-		 __sk_del_node_init(sk);
+-		 ilb->count--;
+-	} else {
+-		__sk_nulls_del_node_init_rcu(sk);
++		ilb->count--;
+ 	}
++	__sk_nulls_del_node_init_rcu(sk);
+ 	sock_prot_inuse_add(sock_net(sk), sk->sk_prot, -1);
+ unlock:
+ 	spin_unlock_bh(lock);
+@@ -790,7 +790,8 @@ void inet_hashinfo_init(struct inet_hashinfo *h)
+ 
+ 	for (i = 0; i < INET_LHTABLE_SIZE; i++) {
+ 		spin_lock_init(&h->listening_hash[i].lock);
+-		INIT_HLIST_HEAD(&h->listening_hash[i].head);
++		INIT_HLIST_NULLS_HEAD(&h->listening_hash[i].nulls_head,
++				      i + LISTENING_NULLS_BASE);
+ 		h->listening_hash[i].count = 0;
+ 	}
+ 
+diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
+index bfec48849735..5553f6a833f3 100644
+--- a/net/ipv4/tcp_ipv4.c
++++ b/net/ipv4/tcp_ipv4.c
+@@ -2020,13 +2020,14 @@ static void *listening_get_next(struct seq_file *seq, void *cur)
+ 	struct tcp_iter_state *st = seq->private;
+ 	struct net *net = seq_file_net(seq);
+ 	struct inet_listen_hashbucket *ilb;
++	struct hlist_nulls_node *node;
+ 	struct sock *sk = cur;
+ 
+ 	if (!sk) {
+ get_head:
+ 		ilb = &tcp_hashinfo.listening_hash[st->bucket];
+ 		spin_lock(&ilb->lock);
+-		sk = sk_head(&ilb->head);
++		sk = sk_nulls_head(&ilb->nulls_head);
+ 		st->offset = 0;
+ 		goto get_sk;
+ 	}
+@@ -2034,9 +2035,9 @@ static void *listening_get_next(struct seq_file *seq, void *cur)
+ 	++st->num;
+ 	++st->offset;
+ 
+-	sk = sk_next(sk);
++	sk = sk_nulls_next(sk);
+ get_sk:
+-	sk_for_each_from(sk) {
++	sk_nulls_for_each_from(sk, node) {
+ 		if (!net_eq(sock_net(sk), net))
+ 			continue;
+ 		if (sk->sk_family == afinfo->family)
+diff --git a/net/ipv6/inet6_hashtables.c b/net/ipv6/inet6_hashtables.c
+index 91d6ea937ffb..d9e2575dad94 100644
+--- a/net/ipv6/inet6_hashtables.c
++++ b/net/ipv6/inet6_hashtables.c
+@@ -171,6 +171,7 @@ struct sock *inet6_lookup_listener(struct net *net,
+ 	bool exact_dif = inet6_exact_dif_match(net, skb);
+ 	struct inet_listen_hashbucket *ilb2;
+ 	struct sock *sk, *result = NULL;
++	struct hlist_nulls_node *node;
+ 	int score, hiscore = 0;
+ 	unsigned int hash2;
+ 	u32 phash = 0;
+@@ -206,7 +207,7 @@ struct sock *inet6_lookup_listener(struct net *net,
+ 	goto done;
+ 
+ port_lookup:
+-	sk_for_each(sk, &ilb->head) {
++	sk_nulls_for_each(sk, node, &ilb->nulls_head) {
+ 		score = compute_score(sk, net, hnum, daddr, dif, sdif, exact_dif);
+ 		if (score > hiscore) {
+ 			if (sk->sk_reuseport) {
 -- 
-2.21.0
+2.24.1
 
