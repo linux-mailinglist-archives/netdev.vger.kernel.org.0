@@ -2,100 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 797BD12E051
-	for <lists+netdev@lfdr.de>; Wed,  1 Jan 2020 20:57:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 26C1A12E15A
+	for <lists+netdev@lfdr.de>; Thu,  2 Jan 2020 01:38:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726792AbgAAT44 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Jan 2020 14:56:56 -0500
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:45078 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725871AbgAAT4z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jan 2020 14:56:55 -0500
-Received: by mail-wr1-f65.google.com with SMTP id j42so37517761wrj.12
-        for <netdev@vger.kernel.org>; Wed, 01 Jan 2020 11:56:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=tN9FjHivli12Xw2gc8vB16xvnXaogigtA44xz1rIX98=;
-        b=K0ZGh9PbmkEastjM/nfAeuUZKhV/hnRcKSzxXTTRSxQGDNUyWgnVcNLMpi3q0qpvhU
-         muTMirIOLr+3/nAqc2l4YNMvMgYo3Q+Y3PkFzob2D3ABWUS/4JsA4mmHAY0LoJgd1noy
-         EqBuQTQBBaYB7/jrpiVoPqWw7yJo38vtuZuNFij9L5+SRCKZXWgySGHExPu2uBgpvejx
-         WzQbW9/rTw0QzEDpEdm1ttpo8AbmD18h7KiHT5IGLBaBwsyO7MZcVmp17nz9MxIglRx1
-         HL4cIS6mVd8pS6kCjinmdOadVKweViWoCprDxDwJeYejdx0y3qdxI9IXuDFH2jg7v742
-         KCTA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=tN9FjHivli12Xw2gc8vB16xvnXaogigtA44xz1rIX98=;
-        b=YSgIe5AhPL5aM8tlOHUNFrZKXU3SxHgG1C563m/sfoUbyYd7rw/I8l4SWNahj/Lh1o
-         2B2QK6QlfHAlK6omYanmYoyKF7a/fPEwVwbmnaqU9yNXYU4ginw9cUNWAThU6J1iaRGa
-         2bpSFQEndPcGuCBKkGzAWd1dFeeee8RhPBl18GN3hUhVSnNeCNEBAcVLeJO2Kffjkomx
-         aDtJBmlB0IOE/S6w5CIQ8bS6Z3HvbJt6gLn/XlmCTr99Z771++dMOTh7o5URtjh5VyoG
-         s1aiU6jOV/3tfZDyJx2PXb8VbXzKG/55V8XXt/hv6fBSGENjm+o2eRct9xYJGFFg15AM
-         biJg==
-X-Gm-Message-State: APjAAAXPsp+fPFvgIuWZdD1i9vi5dmiKZAIZ8H+M0Rm3V9xnGw9p/feO
-        bz+YzPB7NH1x8TuWhbBhCGzoM1ei
-X-Google-Smtp-Source: APXvYqxpLfZtS8LlV/gUjYAs2iJICqwBR7VVZObY4TPxICpoXP+XBMV6vOsESAcxQYh9zOgiiDd7kA==
-X-Received: by 2002:adf:ef4e:: with SMTP id c14mr79821060wrp.142.1577908613315;
-        Wed, 01 Jan 2020 11:56:53 -0800 (PST)
-Received: from [192.168.178.85] (pD9F901D9.dip0.t-ipconnect.de. [217.249.1.217])
-        by smtp.googlemail.com with ESMTPSA id a9sm6162531wmm.15.2020.01.01.11.56.52
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 01 Jan 2020 11:56:52 -0800 (PST)
-Subject: Re: Realtek Network Driver - r8168-dkms needed
-To:     Winfried Winkler <willi@hobbit.in-berlin.de>, nic_swsd@realtek.com,
-        romieu@fr.zoreil.com, netdev@vger.kernel.org
-References: <58a8d231-9ef9-47a1-7368-04737237270e@hobbit.in-berlin.de>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <d295ab1a-28ff-234a-eaa5-28df741720cf@gmail.com>
-Date:   Wed, 1 Jan 2020 20:56:34 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.3.1
+        id S1727498AbgABAih (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Jan 2020 19:38:37 -0500
+Received: from mail.windriver.com ([147.11.1.11]:61497 "EHLO
+        mail.windriver.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727393AbgABAig (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jan 2020 19:38:36 -0500
+Received: from ALA-HCA.corp.ad.wrs.com (ala-hca.corp.ad.wrs.com [147.11.189.40])
+        by mail.windriver.com (8.15.2/8.15.2) with ESMTPS id 0020cM24027929
+        (version=TLSv1 cipher=AES256-SHA bits=256 verify=FAIL);
+        Wed, 1 Jan 2020 16:38:22 -0800 (PST)
+Received: from [128.224.162.195] (128.224.162.195) by ALA-HCA.corp.ad.wrs.com
+ (147.11.189.50) with Microsoft SMTP Server id 14.3.468.0; Wed, 1 Jan 2020
+ 16:38:20 -0800
+Subject: Re: [PATCH] stmmac: debugfs entry name is not be changed when udev
+ rename device name.
+To:     Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>,
+        <peppe.cavallaro@st.com>, <alexandre.torgue@st.com>
+CC:     <joabreu@synopsys.com>, <mcoquelin.stm32@gmail.com>,
+        <netdev@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-kernel@vger.kernel.org>
+References: <20191231020302.71792-1-jiping.ma2@windriver.com>
+ <57dcdaa1-feff-1134-919e-57b37e306431@cogentembedded.com>
+From:   Jiping Ma <Jiping.Ma2@windriver.com>
+Message-ID: <4de343a7-e47f-2f72-4f5a-17ea9c7c0e1a@windriver.com>
+Date:   Thu, 2 Jan 2020 08:38:18 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
+ Thunderbird/52.5.0
 MIME-Version: 1.0
-In-Reply-To: <58a8d231-9ef9-47a1-7368-04737237270e@hobbit.in-berlin.de>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <57dcdaa1-feff-1134-919e-57b37e306431@cogentembedded.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 8bit
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 29.12.2019 20:04, Winfried Winkler wrote:
-> Dear Sirs,
-> the Debian ReadMe told to me to write this EMail, sorry if this might be
-> considered spam...
-> 
-> It said:
->  "If no version of the in-kernel driver r8169 supports your NIC,
->   please report this to the r8169 maintainers, so that this can
->   be fixed"
-> 
-> My new Asus motherboard has an RTL8117 network chip that is NOT working
-> with the in-kernel 8169 driver, it needs the external 8168-dkms driver.
-> 
-Support for RTL8117 was added for 5.5, you can test with any 5.5 release
-candidate (latest is 5.5-rc4). Make sure that you also have the latest
-linux-firmware package from Dec 15th. It may work w/o it, however there
-may be compatibility issues.
 
-> Board:
-> https://www.asus.com/Motherboards/Pro-WS-X570-ACE/specifications/
-> 
-> "lspci" Output is:
-> 05:00.1 Ethernet controller: Realtek Semiconductor Co., Ltd.
-> RTL8111/8168/8411 PCI Express Gigabit Ethernet Controller (rev 1a)
-> 
-> Tested with latest stable kernel (5.4.6) at the time of this writing.
-> 
-> Feel free to request any additional info needed that I might be able to
-> supply -- thanks for listening.
-> 
-> Happy new year and thanks for all the work you're doing,
->  Winfried Winkler
-> 
-Heiner
+
+On 12/31/2019 06:12 PM, Sergei Shtylyov wrote:
+> Hello!
+>
+> On 31.12.2019 5:03, Jiping Ma wrote:
+>
+>> Add one notifier for udev changes net device name.
+>>
+>> Signed-off-by: Jiping Ma <jiping.ma2@windriver.com>
+>> ---
+>>   .../net/ethernet/stmicro/stmmac/stmmac_main.c | 38 ++++++++++++++++++-
+>>   1 file changed, 37 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c 
+>> b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+>> index b14f46a57154..c1c877bb4421 100644
+>> --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+>> +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+>> @@ -4038,6 +4038,40 @@ static int stmmac_dma_cap_show(struct seq_file 
+>> *seq, void *v)
+>>   }
+>>   DEFINE_SHOW_ATTRIBUTE(stmmac_dma_cap);
+>>   +/**
+>> + * Use network device events to create/remove/rename
+>> + * debugfs file entries
+>> + */
+>> +static int stmmac_device_event(struct notifier_block *unused,
+>> +                   unsigned long event, void *ptr)
+>> +{
+>> +    struct net_device *dev = netdev_notifier_info_to_dev(ptr);
+>> +    struct stmmac_priv *priv = netdev_priv(dev);
+>> +
+>> +    switch (event) {
+>> +    case NETDEV_CHANGENAME:
+>> +        if (priv->dbgfs_dir)
+>> +            priv->dbgfs_dir = debugfs_rename(stmmac_fs_dir,
+>> +                             priv->dbgfs_dir,
+>> +                             stmmac_fs_dir,
+>> +                             dev->name);
+>> +        break;
+>> +
+>> +    case NETDEV_GOING_DOWN:
+>> +        break;
+>> +
+>> +    case NETDEV_UP:
+>> +        break;
+>
+>    Why not merge the above 2 cases? Or just remove them('event' is not 
+> *enum*)?
+I will remove them.
+
+Thanks,
+>
+>> +    }
+>> +
+>> +done:
+>> +    return NOTIFY_DONE;
+>> +}
+> [...]
+>
+> MBR, Sergei
+>
 
