@@ -2,58 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F279F12F1D7
-	for <lists+netdev@lfdr.de>; Fri,  3 Jan 2020 00:38:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 03D0C12F1DC
+	for <lists+netdev@lfdr.de>; Fri,  3 Jan 2020 00:40:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726504AbgABXi1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Jan 2020 18:38:27 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:52140 "EHLO
+        id S1726508AbgABXkf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Jan 2020 18:40:35 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:52284 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725872AbgABXi1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jan 2020 18:38:27 -0500
+        with ESMTP id S1726219AbgABXkf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jan 2020 18:40:35 -0500
 Received: from localhost (unknown [IPv6:2601:601:9f00:1c3::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 452DE156EEC0C;
-        Thu,  2 Jan 2020 15:38:26 -0800 (PST)
-Date:   Thu, 02 Jan 2020 15:38:25 -0800 (PST)
-Message-Id: <20200102.153825.425008126689372806.davem@davemloft.net>
-To:     brouer@redhat.com
-Cc:     netdev@vger.kernel.org, lirongqing@baidu.com,
-        linyunsheng@huawei.com, ilias.apalodimas@linaro.org,
-        saeedm@mellanox.com, mhocko@kernel.org, peterz@infradead.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [net-next v6 PATCH 0/2] page_pool: NUMA node handling fixes
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id CB7FE156EF06E;
+        Thu,  2 Jan 2020 15:40:34 -0800 (PST)
+Date:   Thu, 02 Jan 2020 15:40:34 -0800 (PST)
+Message-Id: <20200102.154034.2123269473192368005.davem@davemloft.net>
+To:     idosch@idosch.org
+Cc:     netdev@vger.kernel.org, jiri@mellanox.com, petrm@mellanox.com,
+        mlxsw@mellanox.com, idosch@mellanox.com
+Subject: Re: [PATCH net-next 0/3] mlxsw: Allow setting default port priority
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <157746672570.257308.7385062978550192444.stgit@firesoul>
-References: <157746672570.257308.7385062978550192444.stgit@firesoul>
+In-Reply-To: <20191229114829.61803-1-idosch@idosch.org>
+References: <20191229114829.61803-1-idosch@idosch.org>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 02 Jan 2020 15:38:26 -0800 (PST)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 02 Jan 2020 15:40:35 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jesper Dangaard Brouer <brouer@redhat.com>
-Date: Fri, 27 Dec 2019 18:13:13 +0100
+From: Ido Schimmel <idosch@idosch.org>
+Date: Sun, 29 Dec 2019 13:48:26 +0200
 
-> The recently added NUMA changes (merged for v5.5) to page_pool, it both
-> contains a bug in handling NUMA_NO_NODE condition, and added code to
-> the fast-path.
+> From: Ido Schimmel <idosch@mellanox.com>
 > 
-> This patchset fixes the bug and moves code out of fast-path. The first
-> patch contains a fix that should be considered for 5.5. The second
-> patch reduce code size and overhead in case CONFIG_NUMA is disabled.
+> Petr says:
 > 
-> Currently the NUMA_NO_NODE setting bug only affects driver 'ti_cpsw'
-> (drivers/net/ethernet/ti/), but after this patchset, we plan to move
-> other drivers (netsec and mvneta) to use NUMA_NO_NODE setting.
+> When LLDP APP TLV selector 1 (EtherType) is used with PID of 0, the
+> corresponding entry specifies "default application priority [...] when
+> application priority is not otherwise specified."
+> 
+> mlxsw currently supports this type of APP entry, but uses it only as a
+> fallback for unspecified DSCP rules. However non-IP traffic is prioritized
+> according to port-default priority, not according to the DSCP-to-prio
+> tables, and thus it's currently not possible to prioritize such traffic
+> correctly.
+> 
+> This patchset extends the use of the abovementioned APP entry to also set
+> default port priority (in patches #1 and #2) and then (in patch #3) adds a
+> selftest.
 
-Series applied to net-next with the "fallthrough" misspelling fixed in
-patch #1.
+Series applied, thanks Ido.
 
-Thank you.
+Always nice to see those test cases.
