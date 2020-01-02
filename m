@@ -2,147 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A653E12E721
-	for <lists+netdev@lfdr.de>; Thu,  2 Jan 2020 15:13:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9AC2112E744
+	for <lists+netdev@lfdr.de>; Thu,  2 Jan 2020 15:34:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728473AbgABONX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Jan 2020 09:13:23 -0500
-Received: from us-smtp-1.mimecast.com ([205.139.110.61]:47987 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728427AbgABONX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jan 2020 09:13:23 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1577974402;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ag2JLgB6MWnezzVJRs86QwTCJWVo9Yhvt0qhzObIR9Y=;
-        b=E9JQL4zxCMq5s1latY5Qm09kSHXM/gpnoKKtNpv7tRrtXWoYAIIXj9oUH/6U79HeGgZmrO
-        ylcKO4duycL2QvWvqvKTUitNnkxOkAgdkodFbirMgidXx8XTUnHPqeVTuQPveln5RuzN45
-        JGnSm97YGGUOTGe9+vqVE8ikND04HAs=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-370-Ir9Eq76HOneKCW92U3vOHA-1; Thu, 02 Jan 2020 09:13:19 -0500
-X-MC-Unique: Ir9Eq76HOneKCW92U3vOHA-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id DB56A107ACC4;
-        Thu,  2 Jan 2020 14:13:17 +0000 (UTC)
-Received: from [10.36.116.211] (ovpn-116-211.ams2.redhat.com [10.36.116.211])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id D2CE219C4F;
-        Thu,  2 Jan 2020 14:13:16 +0000 (UTC)
-From:   "Eelco Chaudron" <echaudro@redhat.com>
-To:     "Andrii Nakryiko" <andrii.nakryiko@gmail.com>
-Cc:     bpf <bpf@vger.kernel.org>, "David S. Miller" <davem@davemloft.net>,
-        "Alexei Starovoitov" <ast@kernel.org>,
-        Networking <netdev@vger.kernel.org>
-Subject: Re: [PATCH bpf-next] selftests/bpf: Add a test for attaching a bpf
- fentry/fexit trace to an XDP program
-Date:   Thu, 02 Jan 2020 15:13:15 +0100
-Message-ID: <8F140E5A-2E29-4594-94BA-4D43B592A5B1@redhat.com>
-In-Reply-To: <CAEf4BzYxDE5VoBiCaPwv=buUk87Cv0JF09usmQf0WvUceb8A5A@mail.gmail.com>
-References: <157675340354.60799.13351496736033615965.stgit@xdp-tutorial>
- <CAEf4BzYxDE5VoBiCaPwv=buUk87Cv0JF09usmQf0WvUceb8A5A@mail.gmail.com>
+        id S1728553AbgABOeD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Jan 2020 09:34:03 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:45184 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728425AbgABOeC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 2 Jan 2020 09:34:02 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Subject:
+        Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:Content-Description:
+        Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
+        In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=9cijHxvq6hVJXJ7FywKVqDaxPz6YWqX2rA+HUx8caeI=; b=Z3bvCIjef4y3Fzq0yrlKi+RY1r
+        Wfb52zxmVIbEtn172kEAwHpJy1G3T0DcAOFAP138ehb5yyZZn/3RzF8Nq/52W9LgzM9QENcj3G2NJ
+        ywLUB7n4oWv5T15yCQmhwE/jTSx9NUm1tHiGIpZOBtDJuwIMyy9PaKjbzyuPYbDq3bNQ=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1in1Xx-0007CT-Vi; Thu, 02 Jan 2020 15:33:57 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     David Miller <davem@davemloft.net>
+Cc:     netdev <netdev@vger.kernel.org>, fugang.duan@nxp.com,
+        Chris Healy <Chris.Healy@zii.aero>,
+        Andrew Lunn <andrew@lunn.ch>
+Subject: [PATCH net] net: freescale: fec: Fix ethtool -d runtime PM
+Date:   Thu,  2 Jan 2020 15:33:34 +0100
+Message-Id: <20200102143334.27613-1-andrew@lunn.ch>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+In order to dump the FECs registers the clocks have to be ticking,
+otherwise a data abort occurs.  Add calls to runtime PM so they are
+enabled and later disabled.
 
+Fixes: e8fcfcd5684a ("net: fec: optimize the clock management to save power")
+Reported-by: Chris Healy <Chris.Healy@zii.aero>
+Signed-off-by: Andrew Lunn <andrew@lunn.ch>
+---
+ drivers/net/ethernet/freescale/fec_main.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-On 20 Dec 2019, at 0:02, Andrii Nakryiko wrote:
-
-> On Thu, Dec 19, 2019 at 3:04 AM Eelco Chaudron <echaudro@redhat.com>=20
-> wrote:
->>
->> Add a test that will attach a FENTRY and FEXIT program to the XDP=20
->> test
->> program. It will also verify data from the XDP context on FENTRY and
->> verifies the return code on exit.
->>
->> Signed-off-by: Eelco Chaudron <echaudro@redhat.com>
->> ---
->>  .../testing/selftests/bpf/prog_tests/xdp_bpf2bpf.c |   95=20
->> ++++++++++++++++++++
->>  .../testing/selftests/bpf/progs/test_xdp_bpf2bpf.c |   44 +++++++++
->>  2 files changed, 139 insertions(+)
->>  create mode 100644=20
->> tools/testing/selftests/bpf/prog_tests/xdp_bpf2bpf.c
->>  create mode 100644=20
->> tools/testing/selftests/bpf/progs/test_xdp_bpf2bpf.c
->>
->
-> [...]
->
->> +       /* Load XDP program to introspect */
->> +       err =3D bpf_prog_load(file, BPF_PROG_TYPE_XDP, &obj, &prog_fd)=
-;
->
-> Please use BPF skeleton for this test. It will make it significantly
-> shorter and clearer. See other fentry_fexit selftest for example.
->
-
-Trying to do this, however, I=E2=80=99m getting the following when trying=
- to=20
-execute the test:
-
-test_xdp_bpf2bpf:PASS:pkt_skel_load 0 nsec
-libbpf: fentry/_xdp_tx_iptunnel is not found in vmlinux BTF
-libbpf: failed to load object 'test_xdp_bpf2bpf'
-libbpf: failed to load BPF skeleton 'test_xdp_bpf2bpf': -2
-test_xdp_bpf2bpf:FAIL:ftrace_skel_load ftrace skeleton failed
-
-
-My program is straight forward following the fentry_fexit.c example:
-
-     pkt_skel =3D test_xdp__open_and_load();
-     if (CHECK(!pkt_skel, "pkt_skel_load", "test_xdp skeleton=20
-failed\n"))
-         return;
-
-     map_fd =3D bpf_map__fd(pkt_skel->maps.vip2tnl);
-     bpf_map_update_elem(map_fd, &key4, &value4, 0);
-
-     /* Load eBPF trace program */
-     ftrace_skel =3D test_xdp_bpf2bpf__open_and_load();
-     if (CHECK(!ftrace_skel, "ftrace_skel_load", "ftrace skeleton=20
-failed\n"))
-         goto out;
-
-I assume this is due to the missing link from the XDP program to the=20
-eBPF trace program.
-Previously I did this trough:
-
-+	DECLARE_LIBBPF_OPTS(bpf_object_open_opts, opts,
-+			    .attach_prog_fd =3D prog_fd,
-+			   );
+diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
+index 05c1899f6628..9294027e9d90 100644
+--- a/drivers/net/ethernet/freescale/fec_main.c
++++ b/drivers/net/ethernet/freescale/fec_main.c
+@@ -2199,8 +2199,14 @@ static void fec_enet_get_regs(struct net_device *ndev,
+ {
+ 	struct fec_enet_private *fep = netdev_priv(ndev);
+ 	u32 __iomem *theregs = (u32 __iomem *)fep->hwp;
++	struct device *dev = &fep->pdev->dev;
+ 	u32 *buf = (u32 *)regbuf;
+ 	u32 i, off;
++	int ret;
 +
-+	tracer_obj =3D bpf_object__open_file("./test_xdp_bpf2bpf.o", &opts);
-
-
-If I use this approach as before it works, i.e.:
-
-         DECLARE_LIBBPF_OPTS(bpf_object_open_opts, opts,
-                             .attach_prog_fd =3D pkt_fd,
-                            );
-
-         ftrace_skel =3D test_xdp_bpf2bpf__open_opts(&opts);
-         if (CHECK(!ftrace_skel, "__open_opts=E2=80=9D, "ftrace skeleton=20
-failed\n"))
-           goto out;
-         if (CHECK(test_xdp_bpf2bpf__load(ftrace_skel), "__load",=20
-"ftrace skeleton failed\n"))
-           goto out;
-
-But I do not see this in the fentry_fexit.c example, guess I might be=20
-missing something that is right in front of me :(
-
-
-[...]
++	ret = pm_runtime_get_sync(dev);
++	if (ret < 0)
++		return;
+ 
+ 	regs->version = fec_enet_register_version;
+ 
+@@ -2216,6 +2222,9 @@ static void fec_enet_get_regs(struct net_device *ndev,
+ 		off >>= 2;
+ 		buf[off] = readl(&theregs[off]);
+ 	}
++
++	pm_runtime_mark_last_busy(dev);
++	pm_runtime_put_autosuspend(dev);
+ }
+ 
+ static int fec_enet_get_ts_info(struct net_device *ndev,
+-- 
+2.24.0
 
