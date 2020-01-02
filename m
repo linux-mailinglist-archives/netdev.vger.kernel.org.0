@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B6DFF12E872
-	for <lists+netdev@lfdr.de>; Thu,  2 Jan 2020 17:09:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4BB4B12E885
+	for <lists+netdev@lfdr.de>; Thu,  2 Jan 2020 17:10:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728814AbgABQJl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Jan 2020 11:09:41 -0500
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:50729 "EHLO
+        id S1728861AbgABQJ4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Jan 2020 11:09:56 -0500
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:57665 "EHLO
         metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728774AbgABQJi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jan 2020 11:09:38 -0500
+        with ESMTP id S1728791AbgABQJk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jan 2020 11:09:40 -0500
 Received: from heimdall.vpn.pengutronix.de ([2001:67c:670:205:1d::14] helo=blackshift.org)
         by metis.ext.pengutronix.de with esmtp (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1in32X-0000mM-GX; Thu, 02 Jan 2020 17:09:37 +0100
+        id 1in32X-0000mM-RJ; Thu, 02 Jan 2020 17:09:37 +0100
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, linux-can@vger.kernel.org,
-        kernel@pengutronix.de, Dan Murphy <dmurphy@ti.com>,
+        kernel@pengutronix.de, Sean Nyekjaer <sean@geanix.com>,
         Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH 2/9] can: tcan4x5x: tcan4x5x_can_probe(): turn on the power before parsing the config
-Date:   Thu,  2 Jan 2020 17:09:27 +0100
-Message-Id: <20200102160934.1524-3-mkl@pengutronix.de>
+Subject: [PATCH 3/9] can: tcan4x5x: tcan4x5x_parse_config(): reset device before register access
+Date:   Thu,  2 Jan 2020 17:09:28 +0100
+Message-Id: <20200102160934.1524-4-mkl@pengutronix.de>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20200102160934.1524-1-mkl@pengutronix.de>
 References: <20200102160934.1524-1-mkl@pengutronix.de>
@@ -37,67 +37,71 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Dan Murphy <dmurphy@ti.com>
+From: Sean Nyekjaer <sean@geanix.com>
 
-The tcan4x5x_parse_config() function now performs action on the device
-either reading or writing and a reset. If the devive has a switchable
-power supppy (i.e. regulator is managed) it needs to be turned on.
+It's a good idea to reset a ip-block/spi device before using it, this
+patch will reset the device.
 
-So turn on the regulator if available. If the parsing fails, turn off
-the regulator.
+And a generic reset function if needed elsewhere.
 
-Fixes: 2de497356955 ("can: tcan45x: Make wake-up GPIO an optional GPIO")
-Signed-off-by: Dan Murphy <dmurphy@ti.com>
+Signed-off-by: Sean Nyekjaer <sean@geanix.com>
 Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 ---
- drivers/net/can/m_can/tcan4x5x.c | 17 ++++++++++-------
- 1 file changed, 10 insertions(+), 7 deletions(-)
+ drivers/net/can/m_can/tcan4x5x.c | 27 ++++++++++++++++++++++++++-
+ 1 file changed, 26 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/net/can/m_can/tcan4x5x.c b/drivers/net/can/m_can/tcan4x5x.c
-index c9fb864fcfa1..a69476f5aec6 100644
+index a69476f5aec6..ee22e39f131b 100644
 --- a/drivers/net/can/m_can/tcan4x5x.c
 +++ b/drivers/net/can/m_can/tcan4x5x.c
-@@ -374,11 +374,6 @@ static int tcan4x5x_parse_config(struct m_can_classdev *cdev)
- 	if (IS_ERR(tcan4x5x->device_state_gpio))
- 		tcan4x5x->device_state_gpio = NULL;
- 
--	tcan4x5x->power = devm_regulator_get_optional(cdev->dev,
--						      "vsup");
--	if (PTR_ERR(tcan4x5x->power) == -EPROBE_DEFER)
--		return -EPROBE_DEFER;
--
- 	return 0;
+@@ -166,6 +166,28 @@ static void tcan4x5x_check_wake(struct tcan4x5x_priv *priv)
+ 	}
  }
  
-@@ -412,6 +407,12 @@ static int tcan4x5x_can_probe(struct spi_device *spi)
- 	if (!priv)
- 		return -ENOMEM;
- 
-+	priv->power = devm_regulator_get_optional(&spi->dev, "vsup");
-+	if (PTR_ERR(priv->power) == -EPROBE_DEFER)
-+		return -EPROBE_DEFER;
-+	else
-+		priv->power = NULL;
++static int tcan4x5x_reset(struct tcan4x5x_priv *priv)
++{
++	int ret = 0;
 +
- 	mcan_class->device_data = priv;
++	if (priv->reset_gpio) {
++		gpiod_set_value(priv->reset_gpio, 1);
++
++		/* tpulse_width minimum 30us */
++		usleep_range(30, 100);
++		gpiod_set_value(priv->reset_gpio, 0);
++	} else {
++		ret = regmap_write(priv->regmap, TCAN4X5X_CONFIG,
++				   TCAN4X5X_SW_RESET);
++		if (ret)
++			return ret;
++	}
++
++	usleep_range(700, 1000);
++
++	return ret;
++}
++
+ static int regmap_spi_gather_write(void *context, const void *reg,
+ 				   size_t reg_len, const void *val,
+ 				   size_t val_len)
+@@ -351,6 +373,7 @@ static int tcan4x5x_disable_wake(struct m_can_classdev *cdev)
+ static int tcan4x5x_parse_config(struct m_can_classdev *cdev)
+ {
+ 	struct tcan4x5x_priv *tcan4x5x = cdev->device_data;
++	int ret;
  
- 	m_can_class_get_clocks(mcan_class);
-@@ -451,11 +452,13 @@ static int tcan4x5x_can_probe(struct spi_device *spi)
- 	priv->regmap = devm_regmap_init(&spi->dev, &tcan4x5x_bus,
- 					&spi->dev, &tcan4x5x_regmap);
+ 	tcan4x5x->device_wake_gpio = devm_gpiod_get(cdev->dev, "device-wake",
+ 						    GPIOD_OUT_HIGH);
+@@ -366,7 +389,9 @@ static int tcan4x5x_parse_config(struct m_can_classdev *cdev)
+ 	if (IS_ERR(tcan4x5x->reset_gpio))
+ 		tcan4x5x->reset_gpio = NULL;
  
--	ret = tcan4x5x_parse_config(mcan_class);
-+	ret = tcan4x5x_power_enable(priv->power, 1);
- 	if (ret)
- 		goto out_clk;
- 
--	tcan4x5x_power_enable(priv->power, 1);
-+	ret = tcan4x5x_parse_config(mcan_class);
+-	usleep_range(700, 1000);
++	ret = tcan4x5x_reset(tcan4x5x);
 +	if (ret)
-+		goto out_power;
++		return ret;
  
- 	ret = tcan4x5x_init(mcan_class);
- 	if (ret)
+ 	tcan4x5x->device_state_gpio = devm_gpiod_get_optional(cdev->dev,
+ 							      "device-state",
 -- 
 2.24.1
 
