@@ -2,222 +2,307 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 88F3D12FBA7
-	for <lists+netdev@lfdr.de>; Fri,  3 Jan 2020 18:35:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A7F012FBB7
+	for <lists+netdev@lfdr.de>; Fri,  3 Jan 2020 18:46:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728183AbgACRfW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Jan 2020 12:35:22 -0500
-Received: from mail-ed1-f66.google.com ([209.85.208.66]:43472 "EHLO
-        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728164AbgACRfW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Jan 2020 12:35:22 -0500
-Received: by mail-ed1-f66.google.com with SMTP id dc19so42162996edb.10
-        for <netdev@vger.kernel.org>; Fri, 03 Jan 2020 09:35:20 -0800 (PST)
+        id S1728187AbgACRqQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Jan 2020 12:46:16 -0500
+Received: from mail-pl1-f194.google.com ([209.85.214.194]:33151 "EHLO
+        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728111AbgACRqQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Jan 2020 12:46:16 -0500
+Received: by mail-pl1-f194.google.com with SMTP id c13so19299178pls.0;
+        Fri, 03 Jan 2020 09:46:15 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=herbertland-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=U8I/Xm5TvYBJo1cYXIzzKI4hL0KN+qaj3LQaK4iUQ6Q=;
-        b=zWEHmE/Kf2qTWtLCB7tx846wxzau0AH3d0LKgIM4LGIr23brpWykG4vIG2bCAOMasf
-         GeqzbmjZUle5qiPOkYNayJCvbdcedXV8xxFzUbN1Dph/Qy0kE7HjzpU9THxjKgl5CwYL
-         uRWGInFbRzzsagnJ2slKxwSbv6kXammTLUU/oUdntV6+iyYAow6hNfbGqbnTYAbrZcQm
-         vX2tuaChxQa5cxYPHoJHXCXpOvdUNhx3ck+AIgn1wPxp9T0xGOUyUZsEsZtQyDSAB4Ci
-         2CWwy9RNSs5SADsK/g9EDWJCyi3mMqdTGCFIQFg3c/oXD8MAVNWWb14Wnsn+Vecl5sze
-         GVfg==
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=zT72xreIxe6i6mK/tG3rIOhTx/8pgQ1JvzEt0GmjgrU=;
+        b=ceq6sdHkbaX6JcTa+J4Mw4W/RDww8TLRkWJ2SR/o8XURq3zJGHOFvIucx2yv+YJIW5
+         DqAATm8goVkLvFPUhC05l5dPEaRaIcNxgSkON6EbVx4OQ0t6qqedfKdkUHnONaOnq9Ip
+         Nv2fOa8Im42qvzCcXo7JdAPHqsujmnYKxE9iRujgymqU6vqBgowTRUVt76hrMDH4Ovqz
+         qP9LE3rWT5xKbH2Xh2nfarXzK3i+UQg6DB22gHoLl7cK9ij2q/3nkON7YE5bLMxEiM9l
+         1R+zbFQ4yAo+E/1Vnt/6/ASsInKTyOb3yFASAzCNbIQF1o4TbPFxWMno1NtFwD6aA+qj
+         0+IQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=U8I/Xm5TvYBJo1cYXIzzKI4hL0KN+qaj3LQaK4iUQ6Q=;
-        b=hga8ijZXHCLO/7IARwLIeDST1hqt03ePOfmsqn4BEVN25t7hhafclNKvRez//AL80v
-         0lJeiHVpG2fYx+kZtqw/ap6uLe9TF0qjidlFEhAWqO21AQFcQRkSuAQNSFAaUhTCTWOL
-         4CqyeCArYVf3gqkNN2o/qU1bo5RrQM0HTVHeZtRwDPv2FJ/GJCdODahNLIKWcNqRm/5Z
-         2iMROP2v2IE8A8cey8l+0sKFPlNWNvP7I+M5JYcEOE05M+ejkn5IQjFk8BaxpL+3Y+EH
-         XIE9heYrYsFqXXjqTD6d4WkG0ZaGRDMyom08J5boXSZW230WOv3gCzy2s9ZVVElLUvv8
-         TTzA==
-X-Gm-Message-State: APjAAAWsslkTtV0Zhc4qzWGs031flMvbFt0EN54yiEg/HSLQlwJlLSbr
-        6qSiO5Rj8AM78s2tGhxTJtvq6eZcDmMIbodMw3zdWQ==
-X-Google-Smtp-Source: APXvYqwHwBCty1tWgkqC9SojsKI+Ngu+3PgaMoN1wW1YW/bUkFMhrfw5N48hsUavKiMpTQKrEEzHUvXi9tmQ4IWBB5g=
-X-Received: by 2002:a50:c048:: with SMTP id u8mr93330278edd.226.1578072919259;
- Fri, 03 Jan 2020 09:35:19 -0800 (PST)
+        h=x-gm-message-state:subject:to:cc:references:from:autocrypt
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=zT72xreIxe6i6mK/tG3rIOhTx/8pgQ1JvzEt0GmjgrU=;
+        b=EYlRpkuIt66lb7TsE2BK/FEmuSMwQEamufTywQk0XfGJHkaX8icLYIXmcAENeN+/2U
+         MXAIoWXsySx2MmeXGYLMYtrLs6HCOGyCw8fkDwF/pZ3+Aqn160mGaHNyX72OIHPkTyzH
+         Fc14FTJ2QxtcsHhUrz51g5kPVF0Lo/PHRRjaVU5Uhxzl4A2Ph/4KZw8BYgmWzV9JOnyb
+         PV+/YXJA4qjikr2BkO8oq6iD2uxz+XUGvtolfufRTHWyY/Ht0n/vd8bMowket9zHQYje
+         KzhOuq42ix0v3cGcREg+bIp0tSt/syTtl+yIMaYBRoNTzlAwE50eMV7eqeI1fnljGUXf
+         lHnQ==
+X-Gm-Message-State: APjAAAW7M8+jC9P6X0ojbp7WqvUKaUOqgKjSYe4LMSqcFUyXJ332Df0G
+        tBcYrPH8gnIFPj7uWnv5gEI=
+X-Google-Smtp-Source: APXvYqzqK0WkNNukgCIbsCM0jqwpp2MckKJ3i/oMmyQ3hDkZ8PnccnENvC3hsNZOCY32Qdkm8pHR/w==
+X-Received: by 2002:a17:902:8d95:: with SMTP id v21mr92483239plo.61.1578073575017;
+        Fri, 03 Jan 2020 09:46:15 -0800 (PST)
+Received: from [10.67.50.49] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id p16sm52267570pfq.184.2020.01.03.09.46.13
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 03 Jan 2020 09:46:14 -0800 (PST)
+Subject: Re: broonie-regmap/for-next bisection: boot on
+ ox820-cloudengines-pogoplug-series-3
+To:     Sriram Dash <sriram.dash@samsung.com>,
+        "'kernelci.org bot'" <bot@kernelci.org>,
+        tomeu.vizoso@collabora.com, khilman@baylibre.com,
+        "'David S. Miller'" <davem@davemloft.net>, mgalka@collabora.com,
+        guillaume.tucker@collabora.com, broonie@kernel.org,
+        'Jayati Sahu' <jayati.sahu@samsung.com>,
+        'Padmanabhan Rajanbabu' <p.rajanbabu@samsung.com>,
+        enric.balletbo@collabora.com, narmstrong@baylibre.com
+Cc:     'Jose Abreu' <Jose.Abreu@synopsys.com>,
+        'Alexandre Torgue' <alexandre.torgue@st.com>,
+        rcsekar@samsung.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        'Maxime Coquelin' <mcoquelin.stm32@gmail.com>,
+        pankaj.dubey@samsung.com,
+        'Giuseppe Cavallaro' <peppe.cavallaro@st.com>,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org
+References: <CGME20191225075056epcas4p2ab51fc6ff1642705a61f906189bb29f0@epcas4p2.samsung.com>
+ <5e0314da.1c69fb81.a7d63.29c1@mx.google.com>
+ <03ca01d5c23a$09921d00$1cb65700$@samsung.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
+ xsDiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
+ xGlkaOSDuu09rxuW+69Y2f1TzjFuGpBk4ysWOR85O2Nx8AJ6fYGCoeTbovrNlGT1M9obSFGQ
+ X3IzRnWoqlfudjTO5TKoqkbOgpYqIo5n1QbEjCCwCwCg3DOH/4ug2AUUlcIT9/l3pGvoRJ0E
+ AICDzi3l7pmC5IWn2n1mvP5247urtHFs/uusE827DDj3K8Upn2vYiOFMBhGsxAk6YKV6IP0d
+ ZdWX6fqkJJlu9cSDvWtO1hXeHIfQIE/xcqvlRH783KrihLcsmnBqOiS6rJDO2x1eAgC8meAX
+ SAgsrBhcgGl2Rl5gh/jkeA5ykwbxA/9u1eEuL70Qzt5APJmqVXR+kWvrqdBVPoUNy/tQ8mYc
+ nzJJ63ng3tHhnwHXZOu8hL4nqwlYHRa9eeglXYhBqja4ZvIvCEqSmEukfivk+DlIgVoOAJbh
+ qIWgvr3SIEuR6ayY3f5j0f2ejUMYlYYnKdiHXFlF9uXm1ELrb0YX4GMHz80nRmxvcmlhbiBG
+ YWluZWxsaSA8Zi5mYWluZWxsaUBnbWFpbC5jb20+wmYEExECACYCGyMGCwkIBwMCBBUCCAME
+ FgIDAQIeAQIXgAUCVF/S8QUJHlwd3wAKCRBhV5kVtWN2DvCVAJ4u4/bPF4P3jxb4qEY8I2gS
+ 6hG0gACffNWlqJ2T4wSSn+3o7CCZNd7SLSDOwU0EVxvH8AEQAOqv6agYuT4x3DgFIJNv9i0e
+ S443rCudGwmg+CbjXGA4RUe1bNdPHYgbbIaN8PFkXfb4jqg64SyU66FXJJJO+DmPK/t7dRNA
+ 3eMB1h0GbAHlLzsAzD0DKk1ARbjIusnc02aRQNsAUfceqH5fAMfs2hgXBa0ZUJ4bLly5zNbr
+ r0t/fqZsyI2rGQT9h1D5OYn4oF3KXpSpo+orJD93PEDeseho1EpmMfsVH7PxjVUlNVzmZ+tc
+ IDw24CDSXf0xxnaojoicQi7kzKpUrJodfhNXUnX2JAm/d0f9GR7zClpQMezJ2hYAX7BvBajb
+ Wbtzwi34s8lWGI121VjtQNt64mSqsK0iQAE6OYk0uuQbmMaxbBTT63+04rTPBO+gRAWZNDmQ
+ b2cTLjrOmdaiPGClSlKx1RhatzW7j1gnUbpfUl91Xzrp6/Rr9BgAZydBE/iu57KWsdMaqu84
+ JzO9UBGomh9eyBWBkrBt+Fe1qN78kM7JO6i3/QI56NA4SflV+N4PPgI8TjDVaxgrfUTV0gVa
+ cr9gDE5VgnSeSiOleChM1jOByZu0JTShOkT6AcSVW0kCz3fUrd4e5sS3J3uJezSvXjYDZ53k
+ +0GS/Hy//7PSvDbNVretLkDWL24Sgxu/v8i3JiYIxe+F5Br8QpkwNa1tm7FK4jOd95xvYADl
+ BUI1EZMCPI7zABEBAAHCwagEGBECAAkFAlcbx/ACGwICKQkQYVeZFbVjdg7BXSAEGQECAAYF
+ Alcbx/AACgkQh9CWnEQHBwSJBw//Z5n6IO19mVzMy/ZLU/vu8flv0Aa0kwk5qvDyvuvfiDTd
+ WQzq2PLs+obX0y1ffntluhvP+8yLzg7h5O6/skOfOV26ZYD9FeV3PIgR3QYF26p2Ocwa3B/k
+ P6ENkk2pRL2hh6jaA1Bsi0P34iqC2UzzLq+exctXPa07ioknTIJ09BT31lQ36Udg7NIKalnj
+ 5UbkRjqApZ+Rp0RAP9jFtq1n/gjvZGyEfuuo/G+EVCaiCt3Vp/cWxDYf2qsX6JxkwmUNswuL
+ C3duQ0AOMNYrT6Pn+Vf0kMboZ5UJEzgnSe2/5m8v6TUc9ZbC5I517niyC4+4DY8E2m2V2LS9
+ es9uKpA0yNcd4PfEf8bp29/30MEfBWOf80b1yaubrP5y7yLzplcGRZMF3PgBfi0iGo6kM/V2
+ 13iD/wQ45QTV0WTXaHVbklOdRDXDHIpT69hFJ6hAKnnM7AhqZ70Qi31UHkma9i/TeLLzYYXz
+ zhLHGIYaR04dFT8sSKTwTSqvm8rmDzMpN54/NeDSoSJitDuIE8givW/oGQFb0HGAF70qLgp0
+ 2XiUazRyRU4E4LuhNHGsUxoHOc80B3l+u3jM6xqJht2ZyMZndbAG4LyVA2g9hq2JbpX8BlsF
+ skzW1kbzIoIVXT5EhelxYEGqLFsZFdDhCy8tjePOWK069lKuuFSssaZ3C4edHtkZ8gCfWWtA
+ 8dMsqeOIg9Trx7ZBCDOZGNAAnjYQmSb2eYOAti3PX3Ex7vI8ZhJCzsNNBEjPuBIQEAC/6NPW
+ 6EfQ91ZNU7e/oKWK91kOoYGFTjfdOatp3RKANidHUMSTUcN7J2mxww80AQHKjr3Yu2InXwVX
+ SotMMR4UrkQX7jqabqXV5G+88bj0Lkr3gi6qmVkUPgnNkIBe0gaoM523ujYKLreal2OQ3GoJ
+ PS6hTRoSUM1BhwLCLIWqdX9AdT6FMlDXhCJ1ffA/F3f3nTN5oTvZ0aVF0SvQb7eIhGVFxrlb
+ WS0+dpyulr9hGdU4kzoqmZX9T/r8WCwcfXipmmz3Zt8o2pYWPMq9Utby9IEgPwultaP06MHY
+ nhda1jfzGB5ZKco/XEaXNvNYADtAD91dRtNGMwRHWMotIGiWwhEJ6vFc9bw1xcR88oYBs+7p
+ gbFSpmMGYAPA66wdDKGj9+cLhkd0SXGht9AJyaRA5AWB85yNmqcXXLkzzh2chIpSEawRsw8B
+ rQIZXc5QaAcBN2dzGN9UzqQArtWaTTjMrGesYhN+aVpMHNCmJuISQORhX5lkjeg54oplt6Zn
+ QyIsOCH3MfG95ha0TgWwyFtdxOdY/UY2zv5wGivZ3WeS0TtQf/BcGre2y85rAohFziWOzTaS
+ BKZKDaBFHwnGcJi61Pnjkz82hena8OmsnsBIucsz4N0wE+hVd6AbDYN8ZcFNIDyt7+oGD1+c
+ PfqLz2df6qjXzq27BBUboklbGUObNwADBQ//V45Z51Q4fRl/6/+oY5q+FPbRLDPlUF2lV6mb
+ hymkpqIzi1Aj/2FUKOyImGjbLAkuBQj3uMqy+BSSXyQLG3sg8pDDe8AJwXDpG2fQTyTzQm6l
+ OnaMCzosvALk2EOPJryMkOCI52+hk67cSFA0HjgTbkAv4Mssd52y/5VZR28a+LW+mJIZDurI
+ Y14UIe50G99xYxjuD1lNdTa/Yv6qFfEAqNdjEBKNuOEUQOlTLndOsvxOOPa1mRUk8Bqm9BUt
+ LHk3GDb8bfDwdos1/h2QPEi+eI+O/bm8YX7qE7uZ13bRWBY+S4+cd+Cyj8ezKYAJo9B+0g4a
+ RVhdhc3AtW44lvZo1h2iml9twMLfewKkGV3oG35CcF9mOd7n6vDad3teeNpYd/5qYhkopQrG
+ k2oRBqxyvpSLrJepsyaIpfrt5NNaH7yTCtGXcxlGf2jzGdei6H4xQPjDcVq2Ra5GJohnb/ix
+ uOc0pWciL80ohtpSspLlWoPiIowiKJu/D/Y0bQdatUOZcGadkywCZc/dg5hcAYNYchc8AwA4
+ 2dp6w8SlIsm1yIGafWlNnfvqbRBglSTnxFuKqVggiz2zk+1wa/oP+B96lm7N4/3Aw6uy7lWC
+ HvsHIcv4lxCWkFXkwsuWqzEKK6kxVpRDoEQPDj+Oy/ZJ5fYuMbkdHrlegwoQ64LrqdmiVVPC
+ TwQYEQIADwIbDAUCVF/S8QUJHlwd3wAKCRBhV5kVtWN2Do+FAJ956xSz2XpDHql+Wg/2qv3b
+ G10n8gCguORqNGMsVRxrlLs7/himep7MrCc=
+Message-ID: <1c3531f8-7ae2-209d-b6ed-1c89bd9f2bb6@gmail.com>
+Date:   Fri, 3 Jan 2020 09:46:10 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-References: <1577400698-4836-1-git-send-email-tom@herbertland.com>
- <20200102.134138.1618913847173804689.davem@davemloft.net> <CALx6S37uWDOgWqx_8B0YunQZRGCyjeBY_TLczxmKZySDK4CteA@mail.gmail.com>
- <20200103081147.8c27b18aec79bb1cd8ad1a1f@gmail.com>
-In-Reply-To: <20200103081147.8c27b18aec79bb1cd8ad1a1f@gmail.com>
-From:   Tom Herbert <tom@herbertland.com>
-Date:   Fri, 3 Jan 2020 09:35:08 -0800
-Message-ID: <CALx6S361vkhp8rLzP804oMz2reuDgQDjm9G_+eXfq5oQpVscyg@mail.gmail.com>
-Subject: Re: [PATCH v8 net-next 0/9] ipv6: Extension header infrastructure
-To:     kernel Dev <ahabdels.dev@gmail.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Simon Horman <simon.horman@netronome.com>,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <03ca01d5c23a$09921d00$1cb65700$@samsung.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 2, 2020 at 11:11 PM kernel Dev <ahabdels.dev@gmail.com> wrote:
->
-> Tom,
-> Happy new year!!
->
-Happy new year to you!
+On 1/3/20 5:30 AM, Sriram Dash wrote:
+>> From: kernelci.org bot <bot@kernelci.org>
+>> Subject: broonie-regmap/for-next bisection: boot on ox820-cloudengines-
+>> pogoplug-series-3
+>>
+>> * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+>> * This automated bisection report was sent to you on the basis  *
+>> * that you may be involved with the breaking commit it has      *
+>> * found.  No manual investigation has been done to verify it,   *
+>> * and the root cause of the problem may be somewhere else.      *
+>> *                                                               *
+>> * If you do send a fix, please include this trailer:            *
+>> *   Reported-by: "kernelci.org bot" <bot@kernelci.org>          *
+>> *                                                               *
+>> * Hope this helps!                                              *
+>> * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+>>
+>> broonie-regmap/for-next bisection: boot on ox820-cloudengines-pogoplug-
+>> series-3
+>>
+>> Summary:
+>>   Start:      46cf053efec6 Linux 5.5-rc3
+>>   Details:    https://protect2.fireeye.com/url?k=36fb52ed-6b2b5a21-36fad9a2-
+>> 000babff3793-
+>> f64e7c227e0a8b34&u=https://kernelci.org/boot/id/5e02ce65451524462f9731
+>> 4f
+>>   Plain log:  https://protect2.fireeye.com/url?k=58f5fc3b-0525f4f7-58f47774-
+>> 000babff3793-f96a18481add0d7f&u=https://storage.kernelci.org//broonie-
+>> regmap/for-next/v5.5-rc3/arm/oxnas_v6_defconfig/gcc-8/lab-
+>> baylibre/boot-ox820-cloudengines-pogoplug-series-3.txt
+>>   HTML log:   https://protect2.fireeye.com/url?k=eaed2629-b73d2ee5-
+>> eaecad66-000babff3793-
+>> 84ba1e41025b4f73&u=https://storage.kernelci.org//broonie-regmap/for-
+>> next/v5.5-rc3/arm/oxnas_v6_defconfig/gcc-8/lab-baylibre/boot-ox820-
+>> cloudengines-pogoplug-series-3.html
+>>   Result:     d3e014ec7d5e net: stmmac: platform: Fix MDIO init for platforms
+>> without PHY
+>>
+>> Checks:
+>>   revert:     PASS
+>>   verify:     PASS
+>>
+>> Parameters:
+>>   Tree:       broonie-regmap
+>>   URL:
+>> https://git.kernel.org/pub/scm/linux/kernel/git/broonie/regmap.git
+>>   Branch:     for-next
+>>   Target:     ox820-cloudengines-pogoplug-series-3
+>>   CPU arch:   arm
+>>   Lab:        lab-baylibre
+>>   Compiler:   gcc-8
+>>   Config:     oxnas_v6_defconfig
+>>   Test suite: boot
+>>
+>> Breaking commit found:
+>>
+>> -------------------------------------------------------------------------------
+>> commit d3e014ec7d5ebe9644b5486bc530b91e62bbf624
+>> Author: Padmanabhan Rajanbabu <p.rajanbabu@samsung.com>
+>> Date:   Thu Dec 19 15:47:01 2019 +0530
+>>
+>>     net: stmmac: platform: Fix MDIO init for platforms without PHY
+>>
+>>     The current implementation of "stmmac_dt_phy" function initializes
+>>     the MDIO platform bus data, even in the absence of PHY. This fix
+>>     will skip MDIO initialization if there is no PHY present.
+>>
+>>     Fixes: 7437127 ("net: stmmac: Convert to phylink and remove phylib logic")
+>>     Acked-by: Jayati Sahu <jayati.sahu@samsung.com>
+>>     Signed-off-by: Sriram Dash <sriram.dash@samsung.com>
+>>     Signed-off-by: Padmanabhan Rajanbabu <p.rajanbabu@samsung.com>
+>>     Signed-off-by: David S. Miller <davem@davemloft.net>
+>>
+>> diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
+>> b/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
+>> index bedaff0c13bd..cc8d7e7bf9ac 100644
+>> --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
+>> +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
+>> @@ -320,7 +320,7 @@ static int stmmac_mtl_setup(struct platform_device
+>> *pdev,  static int stmmac_dt_phy(struct plat_stmmacenet_data *plat,
+>>  			 struct device_node *np, struct device *dev)  {
+>> -	bool mdio = true;
+>> +	bool mdio = false;
+>>  	static const struct of_device_id need_mdio_ids[] = {
+>>  		{ .compatible = "snps,dwc-qos-ethernet-4.10" },
+>>  		{},
+>> -------------------------------------------------------------------------------
+>>
+>>
+>> Git bisection log:
+>>
+>> -------------------------------------------------------------------------------
+>> git bisect start
+>> # good: [e42617b825f8073569da76dc4510bfa019b1c35a] Linux 5.5-rc1 git
+>> bisect good e42617b825f8073569da76dc4510bfa019b1c35a
+>> # bad: [46cf053efec6a3a5f343fead837777efe8252a46] Linux 5.5-rc3 git bisect
+>> bad 46cf053efec6a3a5f343fead837777efe8252a46
+>> # good: [2187f215ebaac73ddbd814696d7c7fa34f0c3de0] Merge tag 'for-5.5-
+>> rc2-tag' of git://git.kernel.org/pub/scm/linux/kernel/git/kdave/linux
+>> git bisect good 2187f215ebaac73ddbd814696d7c7fa34f0c3de0
+>> # good: [0dd1e3773ae8afc4bfdce782bdeffc10f9cae6ec] pipe: fix empty pipe
+>> check in pipe_write() git bisect good
+>> 0dd1e3773ae8afc4bfdce782bdeffc10f9cae6ec
+>> # good: [040cda8a15210f19da7e29232c897ca6ca6cc950] Merge tag 'wireless-
+>> drivers-2019-12-17' of
+>> git://git.kernel.org/pub/scm/linux/kernel/git/kvalo/wireless-drivers
+>> git bisect good 040cda8a15210f19da7e29232c897ca6ca6cc950
+>> # bad: [4bfeadfc0712bbc8a6556eef6d47cbae1099dea3] Merge branch 'sfc-
+>> fix-bugs-introduced-by-XDP-patches'
+>> git bisect bad 4bfeadfc0712bbc8a6556eef6d47cbae1099dea3
+>> # good: [0fd260056ef84ede8f444c66a3820811691fe884] Merge
+>> git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf
+>> git bisect good 0fd260056ef84ede8f444c66a3820811691fe884
+>> # good: [90b3b339364c76baa2436445401ea9ade040c216] net: hisilicon: Fix a
+>> BUG trigered by wrong bytes_compl git bisect good
+>> 90b3b339364c76baa2436445401ea9ade040c216
+>> # bad: [4c8dc00503db24deaf0b89dddfa84b7cba7cd4ce] qede: Disable
+>> hardware gro when xdp prog is installed git bisect bad
+>> 4c8dc00503db24deaf0b89dddfa84b7cba7cd4ce
+>> # bad: [28a3b8408f70b646e78880a7eb0a97c22ace98d1] net/smc: unregister
+>> ib devices in reboot_event git bisect bad
+>> 28a3b8408f70b646e78880a7eb0a97c22ace98d1
+>> # bad: [d3e014ec7d5ebe9644b5486bc530b91e62bbf624] net: stmmac:
+>> platform: Fix MDIO init for platforms without PHY git bisect bad
+>> d3e014ec7d5ebe9644b5486bc530b91e62bbf624
+>> # good: [af1c0e4e00f3cc76cb136ebf2e2c04e8b6446285] llc2: Fix return
+>> statement of llc_stat_ev_rx_null_dsap_xid_c (and _test_c) git bisect good
+>> af1c0e4e00f3cc76cb136ebf2e2c04e8b6446285
+>> # first bad commit: [d3e014ec7d5ebe9644b5486bc530b91e62bbf624] net:
+>> stmmac: platform: Fix MDIO init for platforms without PHY
+>> -------------------------------------------------------------------------------
+> 
+> 
+> The mdio bus will be allocated in case of a phy transceiver is on board, but if
+> fixed-link is configured, it will be NULL and of_mdiobus_register will
+> not take effect.
 
-> I believe that these patches cost you great effort. However, we would lik=
-e to see the 6-10 subsequent patch set to be really able to understand wher=
-e are you going with these ones.
->
-I can post those as RFC.
+There appears to be another possible flaw in the code here:
 
-> At some point you mentioned that router vendors make protocol in miserabl=
-e way. Do you believe the right way is that every individual defines the pr=
-otocol the way he wants in a single authored IETF draft ?
->
-No, that defies the whole purpose of standard and interoperable
-protocols. The problem we are finding with IETF is that it has no
-means to enforce conformance of the protocols it standardizes. Router
-vendors openly exploit this, for instance at the last IETF the Cisco
-engineer presenting extension header insertion (a clear violation of
-RFC8200) plainly said upfront that regardless of any feedback or input
-they will continue developing and deploying it the way they want. Note
-this is not an indictment of all router vendors and their engineers,
-there are many that are trying to do the right thing-- but it's really
-pretty easy for a few engineers at large vendors to cheat the system
-in different ways. The only pushback IETF can do is to not standardize
-these non-conformant quasi-proprietary protocols. The real way to
-combat this provide open implementation that demonstrates the correct
-use of the protocols and show that's more extensible and secure than
-these "hacks".
+                for_each_child_of_node(np, plat->mdio_node) {
+                        if (of_device_is_compatible(plat->mdio_node,
+                                                    "snps,dwmac-mdio"))
+                                break;
+                }
 
-> Regarding 10) Support IPv4 extension headers.
-> I see that your drafts describing the idea are expired [1][2].
-> Do you plan to add to the kernel the implementation of expired contents ?=
- or did you abandoned these drafts and described the idea somewhere else th=
-at I=E2=80=99m not aware of ?
->
-> [1] https://tools.ietf.org/html/draft-herbert-ipv4-udpencap-eh-01
-> [2] https://tools.ietf.org/html/draft-herbert-ipv4-eh-01
->
-[1] is obsoleted by [2]. I will update [2] shortly. I may also propose
-an IETF hackathon project to bring up IOAM over IPv4 if you are
-interested.
+the loop should use for_each_available_child_of_node() such that if a
+platform has a Device Tree definition where the MDIO bus node was
+provided but it was not disabled by default (a mistake, it should be
+disabled by default), and a "fixed-link" property ended up being used at
+the board level, we should not end-up with an invalid plat->mdio_node
+reference. Then the code could possibly eliminate the use of 'mdio' as a
+boolean and rely exclusively on plat->mdio_node. What do you think?
 
-Tom
+And an alternative to your fix would be to scan even further the MDIO
+bus node for available child nodes, if there are none, do not perform
+the MDIO initialization at all since we have no MDIO devices beneath.
 
-> Ahmed
->
->
-> On Thu, 2 Jan 2020 16:42:24 -0800
-> Tom Herbert <tom@herbertland.com> wrote:
->
-> > On Thu, Jan 2, 2020 at 1:41 PM David Miller <davem@davemloft.net> wrote=
-:
-> > >
-> > > From: Tom Herbert <tom@herbertland.com>
-> > > Date: Thu, 26 Dec 2019 14:51:29 -0800
-> > >
-> > > > The fundamental rationale here is to make various TLVs, in particul=
-ar
-> > > > Hop-by-Hop and Destination options, usable, robust, scalable, and
-> > > > extensible to support emerging functionality.
-> > >
-> > > So, patch #1 is fine and it seems to structure the code to more easil=
-y
-> > > enable support for:
-> > >
-> > > https://tools.ietf.org/html/draft-ietf-6man-icmp-limits-07
-> > >
-> > > (I'll note in passing how frustrating it is that, based upon your
-> > > handling of things in that past, I know that I have to go out and
-> > > explicitly look for draft RFCs containing your name in order to figur=
-e
-> > > out what your overall long term agenda actually is.  You should be
-> > > stating these kinds of things in your commit messages)
-> > >
-> > > But as for the rest of the patch series, what are these "emerging
-> > > functionalities" you are talking about?
-> > >
-> > > I've heard some noises about people wanting to do some kind of "kerbe=
-ros
-> > > for packets".  Or even just plain putting app + user ID information i=
-nto
-> > > options.
-> > >
-> > > Is that where this is going?  I have no idea, because you won't say.
-> > >
-> > Yes, there is some of that. Here are some of the use cases for HBH opti=
-ons:
-> >
-> > PMTU option: draft-ietf-6man-mtu-option-01. There is a P4
-> > implementation as well as Linux PoC for this that was demonstated
-> > @IETF103 hackathon.
-> > IOAM option: https://tools.ietf.org/html/draft-ietf-ippm-ioam-ipv6-opti=
-ons-00.
-> > There is also P4 implementation and Linux router support demonstrated
-> > at IETF104 hackathon. INT is a related technology that would also use
-> > this.
-> > FAST option: https://datatracker.ietf.org/doc/draft-herbert-fast/. I
-> > have PoC for this. There are some other protocol proposals in the is
-> > are (I know Huawei has something to describe the QoS that should be
-> > applied).
-> >
-> > There are others including the whole space especially as a real
-> > solution for host to networking signaling gets fleshed out. There's
-> > also the whole world of segment routing options and where that's
-> > going.
-> >
-> > > And honestly, this stuff sounds so easy to misuse by governments and
-> > > other entities.  It could also be used to allow ISPs to limit users
-> > > in very undesirable and unfair ways.   And honestly, surveilance and
-> > > limiting are the most likely uses for such a facility.  I can't see
-> > > it legitimately being promoted as a "security" feature, really.
-> > >
-> > Yes, but the problem isn't unique to IPv6 options nor would abuse be
-> > prevented by not implementing them in Linux. Router vendors will
-> > happily provide the necessary support to allow abuse :-) AH is the
-> > prescribed way to prevent this sort of abuse (aside from encrypting
-> > everything that isn't necessary to route packets, but that's another
-> > story). AH is fully supported by Linux, good luck finding a router
-> > vendor that cares about it :-)
-> >
-> > > I think the whole TX socket option can wait.
-> > >
-> > > And because of that the whole consolidation and cleanup of the option
-> > > handling code is untenable, because without a use case all it does is
-> > > make -stable backports insanely painful.
-> >
-> > The problem with "wait and see" approach is that Linux is not the only
-> > game in town. There are other players that are pursuing this area
-> > (Cisco and Huawei in particular). They are able to implement protocols
-> > more to appease their short term marketing requirements with little
-> > regard for what is best for the community. This is why Linux is so
-> > critical to networking, it is the only open forum where real scrutiny
-> > is applied to how protocols are implemented. If the alternatives are
-> > given free to lead then it's very likely we'll end up being stuck with
-> > what they do and probably have to follow their lead regardless of how
-> > miserable they make the protocols. We've already seen this in segment
-> > routing, their attempts to kill IP fragmentation, and all the other
-> > examples of protocol ossification that unnecessarily restrict what
-> > hosts are allowed to send in the network and hence reduce the utility
-> > and security we are able to offer the user.
-> >
-> > The other data point I will offer is that the current Linux
-> > implementation of IPv6 destination and hop-by-hop options in the
-> > kernel is next to useless. Nobody is using the ones that have been
-> > implemented, and adding support for a new is a major pain-- the
-> > ability for modules to register support for an option seems like an
-> > obvious feature to me. Similarly, the restriction that only admin can
-> > set options is overly restrictive-- allowing to non-privileged users
-> > to send options under tightly controlled constraints set by the admin
-> > also seems reasonable to me.
-> >
-> > Tom
->
->
-> --
-> kernel Dev <ahabdels.dev@gmail.com>
+
+> The commit d3e014ec7d5e fixes the code for fixed-link configuration.
+> However, some platforms like oxnas820 which have phy
+> transceivers (rgmii), fail. This is because the platforms expect the allocation
+> of mdio_bus_data during stmmac_dt_phy. 
+> 
+> Proper solution to this is adding the mdio node in the device tree of the
+> platform which can be fetched by stmmac_dt_phy.
+
+That sounds reasonable, but we should also not break existing platforms
+with existing Device Trees out there, as much as possible.
+-- 
+Florian
