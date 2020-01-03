@@ -2,107 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 288DD12F611
-	for <lists+netdev@lfdr.de>; Fri,  3 Jan 2020 10:28:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A5FA212F613
+	for <lists+netdev@lfdr.de>; Fri,  3 Jan 2020 10:28:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727481AbgACJ2E (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Jan 2020 04:28:04 -0500
-Received: from userp2130.oracle.com ([156.151.31.86]:33874 "EHLO
-        userp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727059AbgACJ2E (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Jan 2020 04:28:04 -0500
-Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
-        by userp2130.oracle.com (8.16.0.27/8.16.0.27) with SMTP id 0039OHtG168169;
-        Fri, 3 Jan 2020 09:27:56 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : mime-version : content-type :
- content-transfer-encoding : in-reply-to; s=corp-2019-08-05;
- bh=55Sdflq6CCBRAEIAmvKQYMAyn61XPUnwtABoljVNW78=;
- b=NkL5319kGrZJXDz1md0RsG7/t7Nmn1HzGWA9iHp2MwFynQqM0IIteKp8ZLJjPmUI5rcc
- LBDMBtwo/+nA36BAD+u+aPeDJOrXpv+hJU/0k7GcS36+oBxr4znYMciaddCqeyzKX+Yg
- 55JN46+eaArqhR/8m7hUMafbG5PxofcGJXfPP9zEkzWxEjaL/xwZiUMAJnxCHusHRNJ9
- A0yCPlzfM/DSktZS1z77RS66ODJ3uBi2QlbLgxG2Bvzi+m/k5ywXN7njcIWYs3GiKoB7
- VHtNtSvlqbiC7hpTgI4YxB8JgWJaTnpIxjrz2BU9k6hcWdo/A7pE/8hGk9ZNQ5n1+VGx 1Q== 
-Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
-        by userp2130.oracle.com with ESMTP id 2x5xftuh5x-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 03 Jan 2020 09:27:56 +0000
-Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
-        by aserp3020.oracle.com (8.16.0.27/8.16.0.27) with SMTP id 0039ORRY177272;
-        Fri, 3 Jan 2020 09:27:55 GMT
-Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
-        by aserp3020.oracle.com with ESMTP id 2x8guwd7a3-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 03 Jan 2020 09:27:55 +0000
-Received: from abhmp0003.oracle.com (abhmp0003.oracle.com [141.146.116.9])
-        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 0039RsGe005579;
-        Fri, 3 Jan 2020 09:27:54 GMT
-Received: from kadam (/129.205.23.165)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Fri, 03 Jan 2020 01:27:53 -0800
-Date:   Fri, 3 Jan 2020 12:27:44 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     =?iso-8859-1?B?Suly9G1l?= Pouiller <Jerome.Pouiller@silabs.com>
-Cc:     "devel@driverdev.osuosl.org" <devel@driverdev.osuosl.org>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Kalle Valo <kvalo@codeaurora.org>
-Subject: Re: [PATCH 25/55] staging: wfx: fix name of struct
- hif_req_start_scan_alt
-Message-ID: <20200103092744.GC3911@kadam>
-References: <20191216170302.29543-1-Jerome.Pouiller@silabs.com>
- <20191216170302.29543-26-Jerome.Pouiller@silabs.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20191216170302.29543-26-Jerome.Pouiller@silabs.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9488 signatures=668685
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
- phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.0.1-1911140001 definitions=main-2001030089
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9488 signatures=668685
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
- suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1015
- lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1911140001
- definitions=main-2001030089
+        id S1727499AbgACJ21 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Jan 2020 04:28:27 -0500
+Received: from smtp23.cstnet.cn ([159.226.251.23]:35676 "EHLO cstnet.cn"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725972AbgACJ21 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 3 Jan 2020 04:28:27 -0500
+Received: from localhost.localdomain (unknown [159.226.5.100])
+        by APP-03 (Coremail) with SMTP id rQCowACHJnAyCQ9eyDDEAQ--.52S3;
+        Fri, 03 Jan 2020 17:28:18 +0800 (CST)
+From:   Xu Wang <vulab@iscas.ac.cn>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] l2tp: Remove redundant BUG_ON() check in l2tp_pernet
+Date:   Fri,  3 Jan 2020 09:28:16 +0000
+Message-Id: <1578043696-35911-1-git-send-email-vulab@iscas.ac.cn>
+X-Mailer: git-send-email 2.7.4
+X-CM-TRANSID: rQCowACHJnAyCQ9eyDDEAQ--.52S3
+X-Coremail-Antispam: 1UD129KBjvdXoW7Gr45Ww43XF18Kr4fAFyDGFg_yoWxZFX_t3
+        yxGa1I9r1kJ3W8Cr47Aw4YvF9Yva95Zr1rC34kKrsrta4Dtrn5Z3yrAa4DCr1UursY9F9F
+        krnxZw4UJw45WjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUIcSsGvfJTRUUUb7AYjsxI4VWDJwAYFVCjjxCrM7AC8VAFwI0_Jr0_Gr1l1xkIjI8I
+        6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AEw4v_Jr0_Jr4l8cAvFVAK0II2c7xJM2
+        8CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2IY67AKxVW5JVW7JwA2z4x0Y4vE2Ix0
+        cI8IcVCY1x0267AKxVW8JVWxJwA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwVC2z2
+        80aVCY1x0267AKxVW0oVCq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAK
+        zVAqx4xG6I80ewAv7VC0I7IYx2IY67AKxVWUGVWUXwAv7VC2z280aVAFwI0_Jr0_Gr1lOx
+        8S6xCaFVCjc4AY6r1j6r4UM4x0Y48IcxkI7VAKI48JMxkIecxEwVAFwVW8uwCF04k20xvY
+        0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r18MI8I3I
+        0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_Jrv_JF1lIxkGc2Ij64vIr41lIxAI
+        cVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Jr0_Gr1lIxAIcV
+        CF04k26cxKx2IYs7xG6rWUJVWrZr1UMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4A2
+        jsIEc7CjxVAFwI0_Jr0_GrUvcSsGvfC2KfnxnUUI43ZEXa7IU8LjjDUUUUU==
+X-Originating-IP: [159.226.5.100]
+X-CM-SenderInfo: pyxotu46lvutnvoduhdfq/1tbiBgMEA10Tegr+WAAAsa
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Dec 16, 2019 at 05:03:46PM +0000, Jérôme Pouiller wrote:
-> From: Jérôme Pouiller <jerome.pouiller@silabs.com>
-> 
-> The original name did not make any sense.
-> 
-> Signed-off-by: Jérôme Pouiller <jerome.pouiller@silabs.com>
-> ---
->  drivers/staging/wfx/hif_api_cmd.h | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/staging/wfx/hif_api_cmd.h b/drivers/staging/wfx/hif_api_cmd.h
-> index 3e77fbe3d5ff..4ce3bb51cf04 100644
-> --- a/drivers/staging/wfx/hif_api_cmd.h
-> +++ b/drivers/staging/wfx/hif_api_cmd.h
-> @@ -188,7 +188,7 @@ struct hif_req_start_scan {
->  	u8    ssid_and_channel_lists[];
->  } __packed;
->  
-> -struct hif_start_scan_req_cstnbssid_body {
-> +struct hif_req_start_scan_alt {
->  	u8    band;
->  	struct hif_scan_type scan_type;
->  	struct hif_scan_flags scan_flags;
+Passing NULL to l2tp_pernet causes a crash via BUG_ON.
+Dereferencing net in net_generic() also has the same effect.
+This patch removes the redundant BUG_ON check on the same parameter.
 
-Why not just delete this if it isn't used?
+Signed-off-by: Xu Wang <vulab@iscas.ac.cn>
+---
+ net/l2tp/l2tp_core.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-regards,
-dan carpenter
+diff --git a/net/l2tp/l2tp_core.c b/net/l2tp/l2tp_core.c
+index f82ea12..c99223c 100644
+--- a/net/l2tp/l2tp_core.c
++++ b/net/l2tp/l2tp_core.c
+@@ -122,8 +122,6 @@ static inline struct l2tp_tunnel *l2tp_tunnel(struct sock *sk)
+ 
+ static inline struct l2tp_net *l2tp_pernet(const struct net *net)
+ {
+-	BUG_ON(!net);
+-
+ 	return net_generic(net, l2tp_net_id);
+ }
+ 
+-- 
+2.7.4
 
