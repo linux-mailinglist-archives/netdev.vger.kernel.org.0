@@ -2,181 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C779112F4E6
-	for <lists+netdev@lfdr.de>; Fri,  3 Jan 2020 08:22:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 066E512F4F6
+	for <lists+netdev@lfdr.de>; Fri,  3 Jan 2020 08:37:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726739AbgACHWJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Jan 2020 02:22:09 -0500
-Received: from mail-ot1-f65.google.com ([209.85.210.65]:33852 "EHLO
-        mail-ot1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725890AbgACHWJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Jan 2020 02:22:09 -0500
-Received: by mail-ot1-f65.google.com with SMTP id a15so60048820otf.1;
-        Thu, 02 Jan 2020 23:22:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=o43WK0aGQfxtR36Yk2dMmC8IKe8HC2vf043dM8fz/J0=;
-        b=kBHjrs1XnSyfWoGPfctBX/UaQV+2CNFQiPTPd/Y01UbdDbmQau1AHdLldzBtIEVBxW
-         Xlq+HQwZ3DkZRiYhm2WL8NVNftcQZMTsUBedt/BGOihOWTIHtGA8Jtd7MZ6IJrFlDyvY
-         Ieyrbn61qQoi8zCilr+LU+ZkmSDPahF/zMKxK2i0GTxL7RYJho2P7GD8I5ffiuRJP/rK
-         o03DXNJc8n0gZGxx/WExyayA3Ih4rfBgPRnBSBP2JQQtjp+g6NYLdee2A+tHY293TrdH
-         sSinmfuC25QZLd4Gjs3HmMSVVZlt2k0RN5IiV/CwR4D3Rkqh9nlFp5nz1sMdYbOf10uf
-         889Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=o43WK0aGQfxtR36Yk2dMmC8IKe8HC2vf043dM8fz/J0=;
-        b=TBjhYPsYTpOGC6PlDgHbu0L7QoT7YwvlDexAS9h7mBy4U/v+eVKownSQ6OMBMqN5Oh
-         9Rq95O4rfbFslv+oahH0un2MLsKN2dJqUjP22n1v2O0ETs/ys3q7Kj3SUixqY+XE/mlr
-         YEvuGKhv1BJCG6A8S8MKrxR4N9t/ZDQC0BKolRXXpaFez/LmdnNQzo67jHboLSUbeOkb
-         DQc+vIA0NHFH+7CqHg5YIkOFH8S1UD4n45jWaZs1a7zz8S5/ZNa022eR4ALTuMWrC13k
-         aB6yTvaFmFmY9AGukeV4ihJjNC/Wap/U76D4F8B1g/LAIsgnh7hUWONU07IqxI48swBz
-         FAQA==
-X-Gm-Message-State: APjAAAVxexPxMcyHDQh8Hr/22RYqy7V8Y/VMY9P9A2bWs1ZShdOZse35
-        h+eKTuUIoUvc+jptdkc+eCM650LdoxKro8zBY9I=
-X-Google-Smtp-Source: APXvYqySDXOnLw7kJKhe72eMXvoQUtPXGwbXBK+RARSAlJHRXKujxFmp2PP49cECDcsrEE9JZ9Zu4JvoRjkzEU78Fns=
-X-Received: by 2002:a05:6830:2141:: with SMTP id r1mr97473012otd.39.1578036128160;
- Thu, 02 Jan 2020 23:22:08 -0800 (PST)
+        id S1726181AbgACHhm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Jan 2020 02:37:42 -0500
+Received: from mail-eopbgr20054.outbound.protection.outlook.com ([40.107.2.54]:42048
+        "EHLO EUR02-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726050AbgACHhm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 3 Jan 2020 02:37:42 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=SZCx8B16+//RaicU7FN11zBsvjt4pruYL0NagB8q4BCPV8hEWdI/7+xPCacoqX8jVN8UnNm0uLiz9vfdMPwAwVystTdswzIrL6MH6QsQjVjPxNCDQ0sizVEbddbXpp88nWGG2OMugWRwC7c3YHZ02tlUn+fgpZlBJG3CIUdHyJzQawWBzGILv0GoVkXHk5qWgNM8WstRID2hWrIe0jX7PtrhQAdp4UVn82UlqcETaduJaLOtilKLfrmFbOc2TxpVX4iHrClwFoMkdoiAntPkAuBJySKLx/Avput1eaTA/YwVm0btohXpL/efcvzXnj7vWt6C2TLGkJMgXX0LSnDHvQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=/Qweras4IazrK8R7pB1JLfhJxJMxX2Hl4o/1Hio5Rao=;
+ b=clL5gjtT2dDKQXFdTD31Urt0uchHfXBUNtVAHzA7popL6sd0tMuYdIYr8dz7vs4ZfhP9NAOb0aRXOwZrxSjoJPxQU/AxPufptlv7E9St7VA4sneAGZ+4hAlgtRUh81AcNtBB8he5wm/eXsHBEXVEVKtR8ItiYw/9wkdxs70OdA+Yuyr1ZXc6fty1OJDIUZIHmcXyENgKfDQZ4DEWi7lQo3eEhnzVtG399OyC9dUwbn1mdoq9HneI0cwlM5iFZ0pmtnxiIBUunw3T1aaPT6HCfphxDyCqgFdCrt8R0eow51WNfprfDoDjiTzAPtpe59GnG3DIsWk2WNJG8via7aEq1A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=/Qweras4IazrK8R7pB1JLfhJxJMxX2Hl4o/1Hio5Rao=;
+ b=SyIzpB0g8GYq/RlwxzOcehAZ0y0aQr0/czi3HO7daP89jNzuUvKn1pxW5SyEoujGEO4c/J4lbprNGlvXKU72P3xDo9UP+82b4fPvujnTlOYqM6Q101s1H3CNxBV9+gM4u68NxoesSiKvP7j4kmgBUBRzScdwvB8JqQfh1GTgrH8=
+Received: from DB7PR04MB4618.eurprd04.prod.outlook.com (52.135.139.151) by
+ DB7PR04MB4105.eurprd04.prod.outlook.com (52.135.130.138) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2581.12; Fri, 3 Jan 2020 07:37:38 +0000
+Received: from DB7PR04MB4618.eurprd04.prod.outlook.com
+ ([fe80::b40b:46af:9458:f2df]) by DB7PR04MB4618.eurprd04.prod.outlook.com
+ ([fe80::b40b:46af:9458:f2df%6]) with mapi id 15.20.2602.012; Fri, 3 Jan 2020
+ 07:37:38 +0000
+From:   Joakim Zhang <qiangqing.zhang@nxp.com>
+To:     Sean Nyekjaer <sean@geanix.com>,
+        "mkl@pengutronix.de" <mkl@pengutronix.de>,
+        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>
+CC:     dl-linux-imx <linux-imx@nxp.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: RE: [PATCH V2 1/2] can: flexcan: disable runtime PM if register
+ flexcandev failed
+Thread-Topic: [PATCH V2 1/2] can: flexcan: disable runtime PM if register
+ flexcandev failed
+Thread-Index: AQHVrzg6EKh7HkIWdEajMXWfT23TG6e96VeggAIQLwCAAPjvwIAXuw5g
+Date:   Fri, 3 Jan 2020 07:37:37 +0000
+Message-ID: <DB7PR04MB461861DC1DBDB5C04998E4C6E6230@DB7PR04MB4618.eurprd04.prod.outlook.com>
+References: <20191210085721.9853-1-qiangqing.zhang@nxp.com>
+ <DB7PR04MB46181D2F1538A53B4F1892E2E6500@DB7PR04MB4618.eurprd04.prod.outlook.com>
+ <935f466b-a9c9-de73-be12-6ebb7b77e058@geanix.com>
+ <VI1PR04MB46223042279D18D20C955881E6520@VI1PR04MB4622.eurprd04.prod.outlook.com>
+In-Reply-To: <VI1PR04MB46223042279D18D20C955881E6520@VI1PR04MB4622.eurprd04.prod.outlook.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=qiangqing.zhang@nxp.com; 
+x-originating-ip: [119.31.174.71]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 63f15333-02ea-4b77-3584-08d7901fce9a
+x-ms-traffictypediagnostic: DB7PR04MB4105:|DB7PR04MB4105:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <DB7PR04MB4105439DD15F1B4858E8389EE6230@DB7PR04MB4105.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:2201;
+x-forefront-prvs: 0271483E06
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(39860400002)(376002)(136003)(346002)(366004)(396003)(54534003)(13464003)(189003)(199004)(9686003)(7696005)(54906003)(110136005)(53546011)(6506007)(71200400001)(8936002)(81156014)(8676002)(55016002)(81166006)(86362001)(33656002)(2906002)(52536014)(5660300002)(76116006)(4326008)(66946007)(478600001)(316002)(66476007)(64756008)(26005)(186003)(66446008)(66556008);DIR:OUT;SFP:1101;SCL:1;SRVR:DB7PR04MB4105;H:DB7PR04MB4618.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: nxp.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: OVdPeXkgfeeANBi72wDLmq/ZGb2Y9pBvJrMx7dUXyzTxgXNiU2TPA5wA3+7v5d1rOJgO2MYFOUEqM98GZjX6heP05iW9w4G3fHFk4jrr9MAyUD3Jc4xZWcfgAkR+VDCiZ41X8UZkmtC5EgbVHAXrmAPOGtOEH5He6Jl7u7A+UdmI7I3y6JA5BHxM3nQNc6UtO1TU3IeEl/zOLN16M0TcHjnIQ9ZRMStxYvuv0Ss8zjYDSGwhZotih8DHZ4bl4h7jxnC4kMy+6sh38RJcYj5rc6kstWH5EzlhXboDiJ/obSKtZ6sUIL7M2nOOYZVbdMR7Z5Tzal222RuxiDjzxDUdQCAyD18ZKUsC6iqCTcFMGNfVdFAOd8qgyeZlqMAq3tPr4P2+GPPqCPfzgr0f/Xm8wRcC/zUHPHoTvu6oBJd7mbwQ4mELwWRH/xEKY57mH1yPH7LhpT+snYMYktQD+wStjq3tL99gUX0/vSTXgYo2RLYBh8iMHoXDENfph8/Bzh0HR1IEOAOVnsWEPgSFXoEUPQ==
+Content-Type: text/plain; charset="gb2312"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <CAD_xR9eDL+9jzjYxPXJjS7U58ypCPWHYzrk0C3_vt-w26FZeAQ@mail.gmail.com>
- <1762437703fd150bb535ee488c78c830f107a531.camel@sipsolutions.net> <CAD_xR9eh=CAYeQZ3Vp9Yj9h3ifMu2exy0ihaXyE+736tJrPVLA@mail.gmail.com>
-In-Reply-To: <CAD_xR9eh=CAYeQZ3Vp9Yj9h3ifMu2exy0ihaXyE+736tJrPVLA@mail.gmail.com>
-From:   Justin Capella <justincapella@gmail.com>
-Date:   Thu, 2 Jan 2020 23:21:56 -0800
-Message-ID: <CAMrEMU-QF8HCTMFhzHd0w2f132iA4GLUXHmBPGnuetPqkz=U7A@mail.gmail.com>
-Subject: Re: PROBLEM: Wireless networking goes down on Acer C720P Chromebook (bisected)
-To:     Stephen Oberholtzer <stevie@qrpff.net>
-Cc:     Johannes Berg <johannes@sipsolutions.net>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 63f15333-02ea-4b77-3584-08d7901fce9a
+X-MS-Exchange-CrossTenant-originalarrivaltime: 03 Jan 2020 07:37:37.8824
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: CiWIUHKFiKPPu3RatqwiPHQHjohcSM/tgupVnqKuUas5PrZxQFCMYKom0NNHF4xprpmCUVmv3zG21uomZaLhJQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR04MB4105
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The rather large negative deficit stands out to me. See this patch,
-https://patchwork.kernel.org/patch/11246363/ specifically the comments
-by Kan Yan
-
-On Thu, Jan 2, 2020, 3:14 PM Stephen Oberholtzer <stevie@qrpff.net> wrote:
->
->
-> /sys/kernel/debug/ieee80211/phy0
->
-> airtime_flags = 7
->
-> stations/<my AP's MAC>/airtime =
->
-> RX: 6583578 us
-> TX: 32719 us
-> Weight: 256
-> Deficit: VO: -1128 us VI: 11 us BE: -5098636 us BK: 256 us
-> Q depth: VO: 3868 us VI: 3636 us BE: 12284 us BK: 0 us
-> Q limit[low/high]: VO: 5000/12000 VI: 5000/12000 BE: 5000/12000 BK: 5000/1200
-
-On Thu, Jan 2, 2020 at 3:14 PM Stephen Oberholtzer <stevie@qrpff.net> wrote:
->
-> On Thu, Jan 2, 2020 at 8:28 AM Johannes Berg <johannes@sipsolutions.net> wrote:
-> >
-> > On Tue, 2019-12-31 at 19:49 -0500, Stephen Oberholtzer wrote:
-> > > Wireless networking goes down on Acer C720P Chromebook (bisected)
-> > >
-> > > Culprit: 7a89233a ("mac80211: Use Airtime-based Queue Limits (AQL) on
-> > > packet dequeue")
-> > >
->
-> <snip>
->
-> > I think I found at least one hole in this, but IIRC (it was before my
-> > vacation, sorry) it was pretty unlikely to actually happen. Perhaps
-> > there are more though.
-> >
-> > https://lore.kernel.org/r/b14519e81b6d2335bd0cb7dcf074f0d1a4eec707.camel@sipsolutions.net
->
-> <snippety-snip>
->
-> > Do you get any output at all? Like a WARN_ON() for an underflow, or
-> > something?
-> >
-> > johannes
-> >
->
-> Johannes,
->
-> To answer your immediate question, no, I don't get any dmesg output at
-> all. Nothing about underruns.
-> However, while pursuing other avenues -- specifically, enabling
-> mac80211 debugfs and log messages -- I realized that my 'master' was
-> out-of-date from linux-stable and did a git pull.  Imagine my surprise
-> when the resulting kernel did not exhibit the problem!
->
-> Apparently, I had been a bit too pessimistic; since the problem
-> existed in 5.5-rc1 release, I'd assumed that the problem wouldn't get
-> rectified before 5.5.
->
-> However, I decided to bisect the fix, and ended up with: 911bde0f
-> ("mac80211: Turn AQL into an NL80211_EXT_FEATURE"), which appears to
-> have "solved" the problem by just disabling the feature (this is
-> ath9k, by the way.)
->
-> This AQL stuff sounds pretty nifty, and I'd love to try my hand at
-> making it work for ath9k (also, since I put so much effort into an
-> automated build-and-test framework, it'd be a shame to just abandon
-> it.)  However, the ath9k code is rather lacking for comments, so I
-> don't even know where I should start, except for (I suspect) a call to
-> `wiphy_ext_feature_set(whatever, NL80211_EXT_FEATURE_AQL);` from
-> inside ath9k_set_hw_capab()?
->
-> In the meantime, I went back to e548f749b096 -- the commit prior to
-> the one making AQL support opt-in -- and cranked up the debugging.
->
-> I'm not sure how to interpret any of this, but  here's what I got:
->
-> dmesg output:
->
-> Last relevant mention is "moving STA <my AP's MAC> to state 4" which
-> happened during startup, before everything shut down.
->
-> /sys/kernel/debug/ieee80211/phy0
->
-> airtime_flags = 7
->
-> stations/<my AP's MAC>/airtime =
->
-> RX: 6583578 us
-> TX: 32719 us
-> Weight: 256
-> Deficit: VO: -1128 us VI: 11 us BE: -5098636 us BK: 256 us
-> Q depth: VO: 3868 us VI: 3636 us BE: 12284 us BK: 0 us
-> Q limit[low/high]: VO: 5000/12000 VI: 5000/12000 BE: 5000/12000 BK: 5000/12000
->
-> (I have no idea how to interpret this, but that '32719 us' seems odd,
-> I thought the airtime usage was in 4us units?)
->
->
-> Doing an 'echo 3 | tee airtime_flags' to clear the (old) AQL-enabled
-> bit seemed to *immediately* restore network connectivity.
->
-> I ran a ping, and saw this:
->
-> - pings coming back in <5ms
-> - re-enable AQL (echo 7 | tee airtime_flags)
-> - pings stop coming back immediately
-> - some seconds later, disable AQL again (echo 3 | tee airtime_flags)
-> - immediate *flood* of ping replies registered, with times 16000ms,
-> 15000ms, 14000ms, .. down to 1000ms, 15ms, then stabilizing sub-5ms
-> - According to the icmp_seq values, all 28 requests were replied to,
-> and their replies were delivered in-order
->
-> This certainly looks like a missing TX queue restart to me?
->
->
-> --
-> -- Stevie-O
-> Real programmers use COPY CON PROGRAM.EXE
+DQo+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+IEZyb206IEpvYWtpbSBaaGFuZyA8cWlh
+bmdxaW5nLnpoYW5nQG54cC5jb20+DQo+IFNlbnQ6IDIwMTnE6jEy1MIxOcjVIDEzOjAwDQo+IFRv
+OiBTZWFuIE55ZWtqYWVyIDxzZWFuQGdlYW5peC5jb20+OyBta2xAcGVuZ3V0cm9uaXguZGU7DQo+
+IGxpbnV4LWNhbkB2Z2VyLmtlcm5lbC5vcmcNCj4gQ2M6IGRsLWxpbnV4LWlteCA8bGludXgtaW14
+QG54cC5jb20+OyBuZXRkZXZAdmdlci5rZXJuZWwub3JnDQo+IFN1YmplY3Q6IFJFOiBbUEFUQ0gg
+VjIgMS8yXSBjYW46IGZsZXhjYW46IGRpc2FibGUgcnVudGltZSBQTSBpZiByZWdpc3Rlcg0KPiBm
+bGV4Y2FuZGV2IGZhaWxlZA0KPiANCj4gDQo+ID4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0N
+Cj4gPiBGcm9tOiBTZWFuIE55ZWtqYWVyIDxzZWFuQGdlYW5peC5jb20+DQo+ID4gU2VudDogMjAx
+OcTqMTLUwjE4yNUgMjI6MDQNCj4gPiBUbzogSm9ha2ltIFpoYW5nIDxxaWFuZ3FpbmcuemhhbmdA
+bnhwLmNvbT47IG1rbEBwZW5ndXRyb25peC5kZTsNCj4gPiBsaW51eC1jYW5Admdlci5rZXJuZWwu
+b3JnDQo+ID4gQ2M6IGRsLWxpbnV4LWlteCA8bGludXgtaW14QG54cC5jb20+OyBuZXRkZXZAdmdl
+ci5rZXJuZWwub3JnDQo+ID4gU3ViamVjdDogUmU6IFtQQVRDSCBWMiAxLzJdIGNhbjogZmxleGNh
+bjogZGlzYWJsZSBydW50aW1lIFBNIGlmDQo+ID4gcmVnaXN0ZXIgZmxleGNhbmRldiBmYWlsZWQN
+Cj4gPg0KPiA+DQo+ID4NCj4gPiBPbiAxNy8xMi8yMDE5IDA3LjM2LCBKb2FraW0gWmhhbmcgd3Jv
+dGU6DQo+ID4gPg0KPiA+ID4gSGkgU2VhbiwNCj4gPiA+DQo+ID4gPiBIYXZlIHlvdSBmb3VuZCB0
+aW1lIHRvIHRlc3QgdGhpcyBwYXRjaCBzZXQ/IFRoYW5rcyA6LSkNCj4gPiA+DQo+ID4gPiBCZXN0
+IFJlZ2FyZHMsDQo+ID4gPiBKb2FraW0gWmhhbmcNCj4gPiA+DQo+ID4NCj4gPiBIaSBKb2FraW0N
+Cj4gPg0KPiA+IFNvcnJ5IGZvciB0aGUgZGVsYXkgOikNCj4gPg0KPiA+IEkgaGF2ZSB0ZXN0ZWQg
+dGhpcyBwYXRjaHNldCBhbmQgZm91bmQgbm8gaXNzdWVzLi4uDQo+IFRoYW5rcyBhIGxvdCBmb3Ig
+eW91ciB0ZXN0LCBTZWFuIDotKQ0KPiANCj4gPiBKdXN0IGEgaGVhZHMgdXAgd2hlbiBhZGRpbmcg
+IkNoYW5nZUxvZzoiIGRvIGl0IHVuZGVyIHRoZSAiLS0tIiBhbmQNCj4gPiBhYm92ZSB0aGUgZGlm
+Zi4gVGhhdCB3YXkgdGhlIENoYW5nZUxvZyBkb2Vzbid0IGVuZCB1cCBpbiB0aGUgY29tbWl0IG1z
+Zy4uLg0KPiBJIHdpbGwga2VlcCBpbiBtaW5kLCBwYXkgYXR0ZW50aW9uIHRvIGl0IG5leHQgdGlt
+ZS4NCj4gDQo+IEJlc3QgUmVnYXJkcywNCj4gSm9ha2ltIFpoYW5nDQo+ID4gL1NlYW4NCj4gPg0K
+DQpIaSBNYXJjLA0KDQpIb3cgYWJvdXQgdGhpcyBwYXRjaCBzZXQ/IFNlYW4gaGFzIGFscmVhZHkg
+dGVzdCBpdC4NCg0KQW5kIHdoZW4geW91IHBsYW4gdG8gc2VuZCBGbGV4Y2FuIEZEIHJlbGF0ZWQg
+cGF0Y2hlZCB0byBtYWlubGluZSwgc2luY2UgaXQgaXMgcGVuZGluZyBvbiBsaW51eC1jYW4tbmV4
+dC9mbGV4Y2FuIGJyYW5jaCBmb3IgYSBsb25nIHRpbWUuIENvdWxkIGl0IGdvIGludG8gdjUuNiBr
+ZXJuZWw/IFRoYW5rcyBhIGxvdCA6LSkNCg0KTWFyYywgU2VhbiwgeW91IGFyZSBhbGwgQ0FOIGV4
+cGVydHMuIEEgcXVlc3Rpb24gY29uZnVzZWQgbWUgZm9yIGEgbG9uZyB0aW1lLCBpcyB0aGF0IHdo
+eSBDQU4gbXVzdCBuZWVkIGEgdHJhbnNjZWl2ZXIgdG8gY29udmVydCBkaWdpdGFsIHNpZ25hbCB0
+byBkaWZmZXJlbnRpYWwgc2lnbmFsPyBXaHkgQ0FOIGNhbm5vdCBjb21tdW5pY2F0ZSB3aXRoIGRp
+Z2l0YWwgc2lnbmFsPw0KQ291bGQgeW91IGdpdmUgbWUgYSBzaW1wbGUgZXhwbGFuYXRpb24/IFRo
+YW5rcy4NCg0KQmVzdCBSZWdhcmRzLA0KSm9ha2ltIFpoYW5nDQo=
