@@ -2,84 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D6E0B12F5B3
-	for <lists+netdev@lfdr.de>; Fri,  3 Jan 2020 09:47:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D415012F601
+	for <lists+netdev@lfdr.de>; Fri,  3 Jan 2020 10:21:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727404AbgACIrp convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 3 Jan 2020 03:47:45 -0500
-Received: from eu-smtp-delivery-151.mimecast.com ([207.82.80.151]:55560 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725972AbgACIro (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Jan 2020 03:47:44 -0500
-Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
- TLS) by relay.mimecast.com with ESMTP id uk-mta-4-jhwEWOrINo2lwVFTKiwkcA-1;
- Fri, 03 Jan 2020 08:47:41 +0000
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
- Server (TLS) id 15.0.1347.2; Fri, 3 Jan 2020 08:47:40 +0000
-Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
- AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
- Fri, 3 Jan 2020 08:47:40 +0000
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     "'Luck, Tony'" <tony.luck@intel.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        "Yu, Fenghua" <fenghua.yu@intel.com>
-CC:     David Miller <davem@davemloft.net>,
-        "michael.chan@broadcom.com" <michael.chan@broadcom.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "luto@kernel.org" <luto@kernel.org>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "Shankar, Ravi V" <ravi.v.shankar@intel.com>
-Subject: RE: [PATCH] drivers/net/b44: Change to non-atomic bit operations
-Thread-Topic: [PATCH] drivers/net/b44: Change to non-atomic bit operations
-Thread-Index: AQHVt4u4RnJ8wHjyUkiWRBJZ56DwGKfKiKsAgAAOgACAAUJyAIAL6e1QgADxkEA=
-Date:   Fri, 3 Jan 2020 08:47:40 +0000
-Message-ID: <884d937e56ba4a91abad0d1e42cc2dd4@AcuMS.aculab.com>
-References: <1576884551-9518-1-git-send-email-fenghua.yu@intel.com>
-        <20191224.161826.37676943451935844.davem@davemloft.net>
-        <20191225011020.GE241295@romley-ivt3.sc.intel.com>
- <20191225122424.5bc18036@hermes.lan>
- <3908561D78D1C84285E8C5FCA982C28F7F515CBB@ORSMSX115.amr.corp.intel.com>
-In-Reply-To: <3908561D78D1C84285E8C5FCA982C28F7F515CBB@ORSMSX115.amr.corp.intel.com>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
-MIME-Version: 1.0
-X-MC-Unique: jhwEWOrINo2lwVFTKiwkcA-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+        id S1727221AbgACJUy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Jan 2020 04:20:54 -0500
+Received: from smtp23.cstnet.cn ([159.226.251.23]:55528 "EHLO cstnet.cn"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725972AbgACJUy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 3 Jan 2020 04:20:54 -0500
+Received: from localhost.localdomain (unknown [159.226.5.100])
+        by APP-03 (Coremail) with SMTP id rQCowAAXt3BqBw9e7zfDAQ--.37S3;
+        Fri, 03 Jan 2020 17:20:43 +0800 (CST)
+From:   Xu Wang <vulab@iscas.ac.cn>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] net: Remove redundant BUG_ON() check in phonet_pernet
+Date:   Fri,  3 Jan 2020 09:20:40 +0000
+Message-Id: <1578043240-35541-1-git-send-email-vulab@iscas.ac.cn>
+X-Mailer: git-send-email 2.7.4
+X-CM-TRANSID: rQCowAAXt3BqBw9e7zfDAQ--.37S3
+X-Coremail-Antispam: 1UD129KBjvdXoW7Gr45Ww43XF18tw15XrW7twb_yoWxAFcEyF
+        4xu3Wjvw10gr1j9r4Yqw45ArZxXa4vqF1xGr1DKFZ7Aa98Krn8Z3ykur18GFW7Wrs0kr1f
+        A3W7Ary5uwnxujkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUIcSsGvfJTRUUUbFxYjsxI4VWDJwAYFVCjjxCrM7AC8VAFwI0_Jr0_Gr1l1xkIjI8I
+        6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AEw4v_Jr0_Jr4l8cAvFVAK0II2c7xJM2
+        8CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2IY67AKxVW5JVW7JwA2z4x0Y4vE2Ix0
+        cI8IcVCY1x0267AKxVW8JVWxJwA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwVC2z2
+        80aVCY1x0267AKxVW0oVCq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAK
+        zVAqx4xG6I80ewAv7VC0I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx
+        8S6xCaFVCjc4AY6r1j6r4UM4x0Y48IcxkI7VAKI48JMxAIw28IcxkI7VAKI48JMxC20s02
+        6xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_Jr
+        I_JrWlx4CE17CEb7AF67AKxVWUXVWUAwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v2
+        6r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxVWUJVW8JwCI42IY6xAIw20EY4v20xvaj4
+        0_WFyUJVCq3wCI42IY6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E87Iv6xkF7I0E14v26r1j
+        6r4UYxBIdaVFxhVjvjDU0xZFpf9x07jY6wZUUUUU=
+X-Originating-IP: [159.226.5.100]
+X-CM-SenderInfo: pyxotu46lvutnvoduhdfq/1tbiBAMEA102S2KgFwAAs1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Luck, Tony
-> Sent: 02 January 2020 18:23
-> 
-> > Why not just make pwol_pattern aligned and choose the right word to do
-> > the operation on?
-> 
-> We use that approach for places where the operation needs to be atomic.
-> 
-> But this one doesn't need an atomic operation since there can be no other
-> entity operating on the same bitmap in parallel.
+Passing NULL to phonet_pernet causes a crash via BUG_ON.
+Dereferencing net in net_generic() also has the same effect.
+This patch removes the redundant BUG_ON check on the same parameter.
 
-From what I remember this code is setting up a bitmap that is transferred
-to the hardware (it might be the multicast filter).
-As such it shouldn't be relying on the implementation of the bitmap
-functions (which operate on long[]) to generate the required byte map
-required by the hardware.
+Signed-off-by: Xu Wang <vulab@iscas.ac.cn>
+---
+ net/phonet/pn_dev.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-The code is horrid.
-
-	David
-
+diff --git a/net/phonet/pn_dev.c b/net/phonet/pn_dev.c
+index 49bd76a..ac0fae0 100644
+--- a/net/phonet/pn_dev.c
++++ b/net/phonet/pn_dev.c
+@@ -35,8 +35,6 @@ static unsigned int phonet_net_id __read_mostly;
+ 
+ static struct phonet_net *phonet_pernet(struct net *net)
+ {
+-	BUG_ON(!net);
 -
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
+ 	return net_generic(net, phonet_net_id);
+ }
+ 
+-- 
+2.7.4
 
