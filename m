@@ -2,199 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 17D7E12FCA8
-	for <lists+netdev@lfdr.de>; Fri,  3 Jan 2020 19:39:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A3C2412FCB5
+	for <lists+netdev@lfdr.de>; Fri,  3 Jan 2020 19:45:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728335AbgACSjk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Jan 2020 13:39:40 -0500
-Received: from userp2120.oracle.com ([156.151.31.85]:45542 "EHLO
-        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728279AbgACSjk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Jan 2020 13:39:40 -0500
-Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
-        by userp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id 003Id8Oh183370;
-        Fri, 3 Jan 2020 18:39:35 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=content-type :
- mime-version : subject : from : in-reply-to : date : cc :
- content-transfer-encoding : message-id : references : to;
- s=corp-2019-08-05; bh=dX26BP7QIFdhpUmPnL8k8nYzVsRvDK3fMTnVqxnXXOw=;
- b=QIKOvfh0oqdfbglNT6AU6149y3Zw0qknUeEIDdRQu4VeHaAfA0WTrJG1bE5DTrta7srl
- AaAIIYI9v8HxCFi+6yphx/CMVa5r18hli52dyv6XILIKf9JjFeOHsaCMY/6A8LS75lGe
- 3UvMKaiVzvOf8uGlX8LZiSf2j7btiG7Et/7UKUN4Rs3CWxFv20PzUCFLqLrzrZcFHTtt
- oX7vfU5SZy39+OaEZVHvPPHDpNtDZTzTyUYpOiTyqrE/VEIXVmots3rgs8cO0F7ncDfB
- w7Jtfu+8jTkbTjzak5ZKFYcCyTQVlWYWBtwR7xWVrUCrU2f03Ni3oeTlq1nfEBmmAfbA VA== 
-Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
-        by userp2120.oracle.com with ESMTP id 2x5ypqwpk1-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 03 Jan 2020 18:39:35 +0000
-Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
-        by userp3030.oracle.com (8.16.0.27/8.16.0.27) with SMTP id 003IdP7P114077;
-        Fri, 3 Jan 2020 18:39:34 GMT
-Received: from userv0121.oracle.com (userv0121.oracle.com [156.151.31.72])
-        by userp3030.oracle.com with ESMTP id 2xa5fgst93-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 03 Jan 2020 18:39:32 +0000
-Received: from abhmp0001.oracle.com (abhmp0001.oracle.com [141.146.116.7])
-        by userv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 003IcugC016083;
-        Fri, 3 Jan 2020 18:38:56 GMT
-Received: from [192.168.14.112] (/79.178.220.19)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Fri, 03 Jan 2020 10:38:56 -0800
-Content-Type: text/plain;
-        charset=utf-8
-Mime-Version: 1.0 (Mac OS X Mail 11.1 \(3445.4.7\))
-Subject: Re: [PATCH] net: mlx5: Use writeX() to ring doorbell and remove
- reduntant wmb()
-From:   Liran Alon <liran.alon@oracle.com>
-In-Reply-To: <F7C45792-2F17-42AE-88A2-F744EEAD68A5@oracle.com>
-Date:   Fri, 3 Jan 2020 20:38:51 +0200
-Cc:     Jason Gunthorpe <jgg@ziepe.ca>, Will Deacon <will@kernel.org>,
-        saeedm@mellanox.com, leon@kernel.org, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, eli@mellanox.com, tariqt@mellanox.com,
-        danielm@mellanox.com,
-        =?utf-8?Q?H=C3=A5kon_Bugge?= <haakon.bugge@oracle.com>
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <1C8D5596-F9AD-4E9F-B462-D63DCEEFFE54@oracle.com>
-References: <20200102174436.66329-1-liran.alon@oracle.com>
- <20200102192934.GH9282@ziepe.ca>
- <6524AE07-2ED7-41B5-B761-9F6BE8D2049B@oracle.com>
- <20200102205847.GJ9282@ziepe.ca>
- <79BB7EDF-406D-4FA1-ADDC-634D55F15C37@oracle.com>
- <20200103133749.GA9706@ziepe.ca>
- <F7C45792-2F17-42AE-88A2-F744EEAD68A5@oracle.com>
-To:     Liran Alon <liran.alon@oracle.com>
-X-Mailer: Apple Mail (2.3445.4.7)
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9489 signatures=668685
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
- phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.0.1-1911140001 definitions=main-2001030169
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9489 signatures=668685
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
- suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1015
- lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1911140001
- definitions=main-2001030169
+        id S1728372AbgACSpI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Jan 2020 13:45:08 -0500
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:44948 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728319AbgACSpI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Jan 2020 13:45:08 -0500
+Received: by mail-pg1-f196.google.com with SMTP id x7so23777012pgl.11
+        for <netdev@vger.kernel.org>; Fri, 03 Jan 2020 10:45:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=43ppfGDsLVOKi9tj4yWxvnZyAKpW0ouTGYPNeB0SGBI=;
+        b=ZiYGlVmwQW59mJnHKbg6ArtCloscM43TYfczeW4QXLtXNgBusA3GbwwKuoLFTkyHiO
+         dLIBMOWuPgvSzgA8F9JuuFmO9QDo2ju45bDZqfE5B80ofLDzUBC15VxdqG9lO4EMooY7
+         NJKvjWswDhJcVx3/4RNMHBRVLS8KvbWA7kvocQ4fAHrYkgbBDN5iWtY+2lMryR7OfjRG
+         /KGH2nvLEZI9PFkiRY0y+F7sl8+kgadw9JmADmm3KKTxS02ksTev3kTHyFqHhkII5ORV
+         hIcg0bQJsAHniYf8Hd9wONv+udHexnCluLNFk4EJcP32avM6/yTcYKLBZg92qOwGJd7R
+         he6Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:autocrypt
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=43ppfGDsLVOKi9tj4yWxvnZyAKpW0ouTGYPNeB0SGBI=;
+        b=TK5S1b+10xickJfq5zZiNaPithZJCKMHEt0AUVEjIvJ67UVaqu4MEd7V3H7qjxQ+zW
+         w3gsfGSEazqkLUWMbthQRe5vqj3QiEG1IRd9uyUlbeiXEfyo0kNxxlFCDUuOGMyRUhhE
+         4rUCjKcPy61hlyhMftJvc1V/SEQCpBP4dPC7RvPbyQ0qAoAdy5BVqtkqHXei9L/AW3zv
+         H0URSC4pBx/iCrSSA7lZb1zcBWG5Yl4ARHj73WPwm9O5/zMXpzVBIHqeBQXt/rh6cyUE
+         xRU2Fg2YjERtLgMO8Ab7njcVM5N4T6Bg+YlJKHtXTE7mS6C/OaYRg3EmSeZbPKawDfDA
+         I2Nw==
+X-Gm-Message-State: APjAAAXf75Jjr69zttjNcbo9utCvzXGf1UYr+BkxrqT0XDCiteFmQAOJ
+        FjXLu3/hpiIvO6JvmAmKbFEot5YQ
+X-Google-Smtp-Source: APXvYqx6erw2QOlamh4GNPTuPMOVsu0WcDmb/j+cJ5ia0jfOd3mxx1xk7sbUzMq0lSs6ILfr44pzPA==
+X-Received: by 2002:a63:d017:: with SMTP id z23mr97885839pgf.110.1578077107495;
+        Fri, 03 Jan 2020 10:45:07 -0800 (PST)
+Received: from [10.67.50.49] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id m128sm69382511pfm.183.2020.01.03.10.45.06
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 03 Jan 2020 10:45:07 -0800 (PST)
+Subject: Re: [PATCH net] net: phylink: fix failure to register on x86 systems
+To:     Russell King <rmk+kernel@armlinux.org.uk>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+References: <E1inOeC-00004q-18@rmk-PC.armlinux.org.uk>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
+ 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
+ G10n8gCguORqNGMsVRxrlLs7/himep7MrCc=
+Message-ID: <64a54769-c8ce-d123-3426-bb730933f10f@gmail.com>
+Date:   Fri, 3 Jan 2020 10:45:06 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
+MIME-Version: 1.0
+In-Reply-To: <E1inOeC-00004q-18@rmk-PC.armlinux.org.uk>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 1/3/20 7:13 AM, Russell King wrote:
+> The kernel test robot reports a boot failure with qemu in 5.5-rc,
+> referencing commit 2203cbf2c8b5 ("net: sfp: move fwnode parsing into
+> sfp-bus layer"). This is caused by phylink_create() being passed a
+> NULL fwnode, causing fwnode_property_get_reference_args() to return
+> -EINVAL.
+> 
+> Don't attempt to attach to a SFP bus if we have no fwnode, which
+> avoids this issue.
+> 
+> Reported-by: kernel test robot <rong.a.chen@intel.com>
+> Fixes: 2203cbf2c8b5 ("net: sfp: move fwnode parsing into sfp-bus layer")
+> Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
 
-
-> On 3 Jan 2020, at 18:31, Liran Alon <liran.alon@oracle.com> wrote:
->=20
->=20
->=20
->> On 3 Jan 2020, at 15:37, Jason Gunthorpe <jgg@ziepe.ca> wrote:
->>=20
->> On Fri, Jan 03, 2020 at 12:21:06AM +0200, Liran Alon wrote:
->>=20
->>>> AFAIK WC is largely unspecified by the memory model. Is wmb() even
->>>> formally specified to interact with WC?
->>>=20
->>> As I said, I haven=E2=80=99t seen such semantics defined in kernel
->>> documentation such as memory-barriers.txt.  However, in practice, it
->>> does flush WC buffers. At least for x86 and ARM which I=E2=80=99m =
-familiar
->>> enough with.  I think it=E2=80=99s reasonable to assume that wmb() =
-should
->>> flush WC buffers while dma_wmb()/smp_wmb() doesn=E2=80=99t =
-necessarily have
->>> to do this.
->>=20
->> It is because WC is rarely used and laregly undefined for the kernel
->> :(
->=20
-> Yep.
->=20
->>=20
->>>>>>> Therefore, change mlx5_write64() to use writeX() and remove =
-wmb() from
->>>>>>> it's callers.
->>>>>>=20
->>>>>> Yes, wmb(); writel(); is always redundant
->>>>>=20
->>>>> Well, unfortunately not=E2=80=A6
->>>>> See: =
-https://urldefense.proofpoint.com/v2/url?u=3Dhttps-3A__marc.info_-3Fl-3Dli=
-nux-2Dnetdev-26m-3D157798859215697-26w-3D2&d=3DDwIDaQ&c=3DRoP1YumCXCgaWHvl=
-ZYR8PZh8Bv7qIrMUB65eapI_JnE&r=3DJk6Q8nNzkQ6LJ6g42qARkg6ryIDGQr-yKXPNGZbpTx=
-0&m=3DOx1lCS1KAGBvJrf24kiFQrranIaNi_zeo05sqCUEf7Y&s=3DMz6MJzUQ862DGjgGnj3n=
-eX4ZpjI88nOI9KpZhNF9TqQ&e=3D
->>>>> (See my suggestion to add flush_wc_writeX())
->>>>=20
->>>> Well, the last time wmb & writel came up Linus was pretty clear =
-that
->>>> writel is supposed to remain in program order and have the barriers
->>>> needed to do that.
->>>=20
->>> Right. But that doesn=E2=80=99t take into account that WC writes are
->>> considered completed when they are still posted in CPU WC buffers.
->>=20
->>> The semantics as I understand of writeX() is that it guarantees all
->>> prior writes have been completed.  It means that all prior stores
->>> have executed and that store-buffer is flushed. But it doesn=E2=80=99t=
- mean
->>> that WC buffers is flushed as-well.
->>=20
->> The semantic for writel is that prior program order stores will be
->> observable by DMA from the device receiving the writel. This is
->> required for UC and NC stores today. WC is undefined, I think.
->>=20
->> This is why ARM has the additional barrier in writel.
->=20
-> Yep.
->=20
->>=20
->> It would logically make sense if WC followed the same rule, however,
->> adding a barrier to writel to make WC ordered would not be popular, =
-so
->> I think we are left with using special accessors for WC and placing
->> the barrier there..
->=20
-> Right.
->=20
->>=20
->>>> IMHO you should start there before going around and adding/removing =
-wmbs
->>>> related to WC. Update membory-barriers.txt and related with the =
-model
->>>> ordering for WC access and get agreement.
->>>=20
->>> I disagree here. It=E2=80=99s more important to fix a real bug (e.g. =
-Not
->>> flushing WC buffers on x86 AMD).  Then, we can later formalise this
->>> and refactor code as necessary. Which will also optimise it as-well.
->>> Bug fix can be merged before we finish all these discussions and get
->>> agreement.
->>=20
->> Is it a real bug that people actually hit? It wasn't clear from the
->> commit message. If so, sure, it should be fixed and the commit =
-message
->> clarified. (but I'd put the wmb near the WC writes..)
->=20
-> I found this bug during code review. I=E2=80=99m not aware if AWS saw =
-this bug happening in production.
-> But according to AMD SDM and Optimization Guide SDM, this is a bug.
->=20
-> I think it doesn=E2=80=99t happen in practice because the write of the =
-Tx descriptor + 128 first bytes of packet
-> Effectively fills the relevant WC buffers and when a WC buffer is =
-fully written to, the CPU *should*
-> (Not *must*) flush the WC buffer to memory.
-
-Actually after re-reading AMD Optimization Guide SDM, I see it is =
-guaranteed that:
-=E2=80=9CWrite-combining is closed if all 64 bytes of the write buffer =
-are valid=E2=80=9D.
-And this is indeed always the case for AWS ENA LLQ. Because as can be =
-seen at
-ena_com_config_llq_info(), desc_list_entry_size is either 128, 192 or =
-256. i.e. Always
-a multiple of 64 bytes. So this explains why this wasn=E2=80=99t an =
-issue in production.
-
--Liran
-
-
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
