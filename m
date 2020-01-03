@@ -2,76 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C3CDF12F571
-	for <lists+netdev@lfdr.de>; Fri,  3 Jan 2020 09:29:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D6E0B12F5B3
+	for <lists+netdev@lfdr.de>; Fri,  3 Jan 2020 09:47:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726528AbgACI3G (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Jan 2020 03:29:06 -0500
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:56101 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726180AbgACI3G (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Jan 2020 03:29:06 -0500
-Received: by mail-wm1-f68.google.com with SMTP id q9so7675673wmj.5
-        for <netdev@vger.kernel.org>; Fri, 03 Jan 2020 00:29:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=d8QckrXtxP7FvoIRKyIsLQOJ71lgzvl6xXmzyIzStEI=;
-        b=bnNSvMYeyjaAczA+PkMh93bUKFnlnYHcWW1IjcScGQwEtg1LAbkAVibbPFd7+z1lX7
-         Bw1HFohTKPQeRusDPmy42U9AsVLWDkqsaizKlzi/QYTgLPtbnYW2wWjlqtupk3cpr8YQ
-         PNK8AgNH2Lj8Qg8HywSbhpNDJi4FU0hBYa6k2fUJNjTgqT5plHmA35NfwBSIimU9LN9q
-         4SYOJ108XdnIVW/g5bVWBB9i612UYcCqoY6dRLCmzGhUHkD/yYPgK6aAtgUTp9UUgCY+
-         O5+2eyRC9SeemCkpIl7su8UNgY9ef1FEsxwcGPThq5VlFYEknJN1ofEULxJW0j0Wapov
-         nEkg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=d8QckrXtxP7FvoIRKyIsLQOJ71lgzvl6xXmzyIzStEI=;
-        b=SW2bhr4tI/KfrRG3Arur3291gHrJ77/C+uGAig9Ym8DFb/SadE+AQv2tyPerTPblCG
-         6SBzEDRRL9JOjMdD60+qL24eDkEs2NJIooXkzqGzRd21YVG7dIiByKClz1MUm7masrjN
-         Uf4O/XZml/wQ4n0KJ+9TPlfoVouwyAR5/mXiZxCWQGoQV2vjQqXoIRCzdierVdpeD0qU
-         J7yKlpd4VOiW5Cow8OmmvdOSAyof92fDIDcrR+RZlgv7VFnW3hYJZs3WaRG1c8U1BC8N
-         eelj3RO6S3dnHj4YRxjz5sR1IjvfRjlNqR50cxWMwV2kKc48E+0gwHYI0Ubf2pAD1PWp
-         zfHw==
-X-Gm-Message-State: APjAAAW11/itMF8+IWpg9eAEhWyHS9t98c7gvN0Ri1eNHKCxaJ53+DvG
-        Oc4RrvyFbGIrJceci1aWTdtj4A==
-X-Google-Smtp-Source: APXvYqyB1m4XhEnTgly7Ix7Q3smfdLmVY2iHsEKJXfJu1fBYDYlNtlP1mVKMdp8yM2ifpjJ8NtHr0A==
-X-Received: by 2002:a1c:740b:: with SMTP id p11mr19625288wmc.78.1578040144156;
-        Fri, 03 Jan 2020 00:29:04 -0800 (PST)
-Received: from netronome.com ([2001:982:756:703:d63d:7eff:fe99:ac9d])
-        by smtp.gmail.com with ESMTPSA id z6sm61226032wrw.36.2020.01.03.00.29.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 03 Jan 2020 00:29:04 -0800 (PST)
-Date:   Fri, 3 Jan 2020 09:29:03 +0100
-From:   Simon Horman <simon.horman@netronome.com>
-To:     Hangbin Liu <liuhangbin@gmail.com>
-Cc:     netdev@vger.kernel.org, Jiri Pirko <jiri@mellanox.com>,
-        Ido Schimmel <idosch@mellanox.com>,
-        "David S . Miller" <davem@davemloft.net>
-Subject: Re: [PATCH net] selftests: loopback.sh: skip this test if the driver
- does not support
-Message-ID: <20200103082903.GH12930@netronome.com>
-References: <20200103074124.30369-1-liuhangbin@gmail.com>
+        id S1727404AbgACIrp convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 3 Jan 2020 03:47:45 -0500
+Received: from eu-smtp-delivery-151.mimecast.com ([207.82.80.151]:55560 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725972AbgACIro (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Jan 2020 03:47:44 -0500
+Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
+ TLS) by relay.mimecast.com with ESMTP id uk-mta-4-jhwEWOrINo2lwVFTKiwkcA-1;
+ Fri, 03 Jan 2020 08:47:41 +0000
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
+ Server (TLS) id 15.0.1347.2; Fri, 3 Jan 2020 08:47:40 +0000
+Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
+ AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
+ Fri, 3 Jan 2020 08:47:40 +0000
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     "'Luck, Tony'" <tony.luck@intel.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        "Yu, Fenghua" <fenghua.yu@intel.com>
+CC:     David Miller <davem@davemloft.net>,
+        "michael.chan@broadcom.com" <michael.chan@broadcom.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "luto@kernel.org" <luto@kernel.org>,
+        "peterz@infradead.org" <peterz@infradead.org>,
+        "Shankar, Ravi V" <ravi.v.shankar@intel.com>
+Subject: RE: [PATCH] drivers/net/b44: Change to non-atomic bit operations
+Thread-Topic: [PATCH] drivers/net/b44: Change to non-atomic bit operations
+Thread-Index: AQHVt4u4RnJ8wHjyUkiWRBJZ56DwGKfKiKsAgAAOgACAAUJyAIAL6e1QgADxkEA=
+Date:   Fri, 3 Jan 2020 08:47:40 +0000
+Message-ID: <884d937e56ba4a91abad0d1e42cc2dd4@AcuMS.aculab.com>
+References: <1576884551-9518-1-git-send-email-fenghua.yu@intel.com>
+        <20191224.161826.37676943451935844.davem@davemloft.net>
+        <20191225011020.GE241295@romley-ivt3.sc.intel.com>
+ <20191225122424.5bc18036@hermes.lan>
+ <3908561D78D1C84285E8C5FCA982C28F7F515CBB@ORSMSX115.amr.corp.intel.com>
+In-Reply-To: <3908561D78D1C84285E8C5FCA982C28F7F515CBB@ORSMSX115.amr.corp.intel.com>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200103074124.30369-1-liuhangbin@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+X-MC-Unique: jhwEWOrINo2lwVFTKiwkcA-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 03, 2020 at 03:41:24PM +0800, Hangbin Liu wrote:
-> The loopback feature is only supported on a few drivers like broadcom,
-> mellanox, etc. The default veth driver has not supported it yet. To avoid
-> returning failed and making the runner feel confused, let's just skip
-> the test on drivers that not support loopback.
+From: Luck, Tony
+> Sent: 02 January 2020 18:23
 > 
-> Fixes: ad11340994d5 ("selftests: Add loopback test")
-> Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
+> > Why not just make pwol_pattern aligned and choose the right word to do
+> > the operation on?
+> 
+> We use that approach for places where the operation needs to be atomic.
+> 
+> But this one doesn't need an atomic operation since there can be no other
+> entity operating on the same bitmap in parallel.
 
-Reviewed-by: Simon Horman <simon.horman@netronome.com>
+From what I remember this code is setting up a bitmap that is transferred
+to the hardware (it might be the multicast filter).
+As such it shouldn't be relying on the implementation of the bitmap
+functions (which operate on long[]) to generate the required byte map
+required by the hardware.
+
+The code is horrid.
+
+	David
+
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
 
