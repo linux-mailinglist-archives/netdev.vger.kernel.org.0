@@ -2,37 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A4D912F7CB
-	for <lists+netdev@lfdr.de>; Fri,  3 Jan 2020 12:51:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 69D6412F7D5
+	for <lists+netdev@lfdr.de>; Fri,  3 Jan 2020 12:52:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727542AbgACLvk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Jan 2020 06:51:40 -0500
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:40006 "EHLO
+        id S1727695AbgACLwc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Jan 2020 06:52:32 -0500
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:40028 "EHLO
         pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727220AbgACLvk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Jan 2020 06:51:40 -0500
+        with ESMTP id S1727489AbgACLwc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Jan 2020 06:52:32 -0500
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:Content-Type:MIME-Version:
-        Message-ID:Subject:Cc:To:From:Date:Reply-To:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=PpBtuak8qUL7f5RLjOLw2ZkNLqAt2sDHkfTbc2zkOpY=; b=MC95k6Qv4KZnJSUB2RkPdQ3Ln
-        zPOwJKGUW/11XhudDKFk1Yvdmv41sdJRjc+xKjCr+TzP6zNfLAYbEVSe2bppO34S354uKe68sUFhF
-        cgTqETOZng+wLMWGQ+Wvoak66bVDj7bZ6kxvc+e6OQr4BEzgLavhyAz1aRf3ZUgWbFZiXqTKjEmbH
-        NMiEZD1ZqPMuJnbNPM/pfH68kOcKmNAdVlborEdumPdtxqaxm5YqpCp7UdmLnXyTmukfg7yKFbtxc
-        OESeLboU9X5IgvC1HNDG6yv8ZLms56HyFpjFuWSYX2bLl/bOI9TAuht6euZ4YYTkEvIA2cldhZdne
-        S6Xj7c9Tg==;
-Received: from shell.armlinux.org.uk ([2001:4d48:ad52:3201:5054:ff:fe00:4ec]:50010)
+        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
+        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:References:
+        In-Reply-To:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=PhGka1SHr5ATbkwxsjCrY/MmFiWjNb6F53a2r/6YVz8=; b=FJF/nsMwgrRIRkbEgS99N80qKP
+        GjtSjmWQW7rmdKknb8Slsqn3VRkUdLaRlbsDfpAPTkzkdy7eeEphxyF1VGTHL0z2iWOA2HW7IvN4V
+        bQZ7cy2sW3vc5DvJ7SMrnUsCdtGnidLrYKU8b4vjuNZshtJyBuZm0cUqOnIQ+ZJ9lt1cFZQ3An5oi
+        wc0zeFREveso5odulaLQ4fXr0Rcxt49vaAbMPhCVfHone6pizKZyWZf56aBYicVCKIT8cWOEkz9Ky
+        LTdK6+CK0Gxxi/mhanJKOZW/fBmBpkn0f8ZyU8xuzKkK1ZECTpyv6Oves/ah7b1q2S4XKz7LTxwET
+        u/9pj95Q==;
+Received: from e0022681537dd.dyn.armlinux.org.uk ([2002:4e20:1eda:1:222:68ff:fe15:37dd]:44896 helo=rmk-PC.armlinux.org.uk)
         by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
         (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1inLUG-0001rX-PZ; Fri, 03 Jan 2020 11:51:29 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1inLUD-00036R-UD; Fri, 03 Jan 2020 11:51:25 +0000
-Date:   Fri, 3 Jan 2020 11:51:25 +0000
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+        (envelope-from <rmk@armlinux.org.uk>)
+        id 1inLV9-0001s6-Kn; Fri, 03 Jan 2020 11:52:23 +0000
+Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <rmk@armlinux.org.uk>)
+        id 1inLV8-0006gD-P7; Fri, 03 Jan 2020 11:52:22 +0000
+In-Reply-To: <20200103115125.GC25745@shell.armlinux.org.uk>
+References: <20200103115125.GC25745@shell.armlinux.org.uk>
+From:   Russell King <rmk+kernel@armlinux.org.uk>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Heiner Kallweit <hkallweit1@gmail.com>
@@ -40,74 +41,90 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Jonathan Corbet <corbet@lwn.net>,
         Kishon Vijay Abraham I <kishon@ti.com>,
         linux-doc@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH net-next 0/2] Fix 10G PHY interface types
-Message-ID: <20200103115125.GC25745@shell.armlinux.org.uk>
+Subject: [PATCH net-next 1/2] net: phy: add PHY_INTERFACE_MODE_10GBASER
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Message-Id: <E1inLV8-0006gD-P7@rmk-PC.armlinux.org.uk>
+Date:   Fri, 03 Jan 2020 11:52:22 +0000
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Recent discussion has revealed that our current usage of the 10GKR
-phy_interface_t is not correct. This is based on a misunderstanding
-caused in part by the various specifications being difficult to
-obtain. Now that a better understanding has been reached, we ought
-to correct this.
+Recent discussion has revealed that the use of PHY_INTERFACE_MODE_10GKR
+is incorrect. Add a 10GBASE-R definition, document both the -R and -KR
+versions, and the fact that 10GKR was used incorrectly.
 
-This series introduce PHY_INTERFACE_MODE_10GBASER to replace the
-existing usage of 10GKR mode, and document their differences in the
-phylib documentation. Then switch PHY, SFP/phylink, the Marvell
-PP2 network driver, and its associated comphy driver over to use
-the correct interface mode. None of the existing platform usage
-was actually using 10GBASE-KR.
+Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
+---
+ Documentation/networking/phy.rst | 18 ++++++++++++++++++
+ include/linux/phy.h              | 12 ++++++++----
+ 2 files changed, 26 insertions(+), 4 deletions(-)
 
-In order to maintain compatibility with existing DT files, arrange
-for the Marvell PP2 driver to rewrite the phy interface mode; this
-allows other drivers to adopt correct behaviour w.r.t whether the
-10G connection conforms to the backplane 10GBASE-KR protocol vs
-normal 10GBASE-R protocol.
-
-After applying these locally to net-next I've validated that the
-only places which mention the old PHY_INTERFACE_MODE_10GKR
-definition are:
-
-Documentation/networking/phy.rst:``PHY_INTERFACE_MODE_10GKR``
-drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c:        if (phy_mode == PHY_INTERFACE_MODE_10GKR)
-drivers/net/phy/aquantia_main.c:                phydev->interface = PHY_INTERFACE_MODE_10GKR;
-drivers/net/phy/aquantia_main.c:            phydev->interface != PHY_INTERFACE_MODE_10GKR &&
-include/linux/phy.h:    PHY_INTERFACE_MODE_10GKR,
-include/linux/phy.h:    case PHY_INTERFACE_MODE_10GKR:
-
-which is as expected.  The only users of "10gbase-kr" in DT are:
-
-arch/arm64/boot/dts/marvell/armada-7040-db.dts: phy-mode = "10gbase-kr";
-arch/arm64/boot/dts/marvell/armada-8040-clearfog-gt-8k.dts:     phy-mode = "10gbase-kr";
-arch/arm64/boot/dts/marvell/armada-8040-db.dts: phy-mode = "10gbase-kr";
-arch/arm64/boot/dts/marvell/armada-8040-db.dts: phy-mode = "10gbase-kr";
-arch/arm64/boot/dts/marvell/armada-8040-mcbin-singleshot.dts:   phy-mode = "10gbase-kr";
-arch/arm64/boot/dts/marvell/armada-8040-mcbin-singleshot.dts:   phy-mode = "10gbase-kr";
-arch/arm64/boot/dts/marvell/armada-8040-mcbin.dts:      phy-mode = "10gbase-kr";arch/arm64/boot/dts/marvell/armada-8040-mcbin.dts:      phy-mode = "10gbase-kr";arch/arm64/boot/dts/marvell/cn9130-db.dts:      phy-mode = "10gbase-kr";
-arch/arm64/boot/dts/marvell/cn9131-db.dts:      phy-mode = "10gbase-kr";
-arch/arm64/boot/dts/marvell/cn9132-db.dts:      phy-mode = "10gbase-kr";
-
-which all use the mvpp2 driver, and these will be updated in a
-separate patch to be submitted in the following kernel cycle.
-
- Documentation/networking/phy.rst                | 18 ++++++++++++++++++
- drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 13 ++++++++-----
- drivers/net/phy/aquantia_main.c                 |  7 +++++--
- drivers/net/phy/bcm84881.c                      |  4 ++--
- drivers/net/phy/marvell10g.c                    | 11 ++++++-----
- drivers/net/phy/phylink.c                       |  1 +
- drivers/net/phy/sfp-bus.c                       |  2 +-
- drivers/phy/marvell/phy-mvebu-cp110-comphy.c    | 20 ++++++++++----------
- include/linux/phy.h                             | 12 ++++++++----
- 9 files changed, 59 insertions(+), 29 deletions(-)
-
+diff --git a/Documentation/networking/phy.rst b/Documentation/networking/phy.rst
+index e0a7c7af6525..6af94dadf132 100644
+--- a/Documentation/networking/phy.rst
++++ b/Documentation/networking/phy.rst
+@@ -267,6 +267,24 @@ negotiation results.
+     duplex, pause or other settings.  This is dependent on the MAC and/or
+     PHY behaviour.
+ 
++``PHY_INTERFACE_MODE_10GBASER``
++    This is the IEEE 802.3 Clause 49 defined 10GBASE-R protocol used with
++    various different mediums. Please refer to the IEEE standard for a
++    definition of this.
++
++    Note: 10GBASE-R is just one protocol that can be used with XFI and SFI.
++    XFI and SFI permit multiple protocols over a single SERDES lane, and
++    also define the electrical characteristics of the signals with a host
++    compliance board plugged into the host XFP/SFP connector. Therefore,
++    XFI and SFI are not PHY interface types in their own right.
++
++``PHY_INTERFACE_MODE_10GKR``
++    This is the IEEE 802.3 Clause 49 defined 10GBASE-R with Clause 73
++    autonegotiation. Please refer to the IEEE standard for further
++    information.
++
++    Note: due to legacy usage, some 10GBASE-R usage incorrectly makes
++    use of this definition.
+ 
+ Pause frames / flow control
+ ===========================
+diff --git a/include/linux/phy.h b/include/linux/phy.h
+index 30e599c454db..5932bb8e9c35 100644
+--- a/include/linux/phy.h
++++ b/include/linux/phy.h
+@@ -100,9 +100,11 @@ typedef enum {
+ 	PHY_INTERFACE_MODE_2500BASEX,
+ 	PHY_INTERFACE_MODE_RXAUI,
+ 	PHY_INTERFACE_MODE_XAUI,
+-	/* 10GBASE-KR, XFI, SFI - single lane 10G Serdes */
+-	PHY_INTERFACE_MODE_10GKR,
++	/* 10GBASE-R, XFI, SFI - single lane 10G Serdes */
++	PHY_INTERFACE_MODE_10GBASER,
+ 	PHY_INTERFACE_MODE_USXGMII,
++	/* 10GBASE-KR - with Clause 73 AN */
++	PHY_INTERFACE_MODE_10GKR,
+ 	PHY_INTERFACE_MODE_MAX,
+ } phy_interface_t;
+ 
+@@ -176,10 +178,12 @@ static inline const char *phy_modes(phy_interface_t interface)
+ 		return "rxaui";
+ 	case PHY_INTERFACE_MODE_XAUI:
+ 		return "xaui";
+-	case PHY_INTERFACE_MODE_10GKR:
+-		return "10gbase-kr";
++	case PHY_INTERFACE_MODE_10GBASER:
++		return "10gbase-r";
+ 	case PHY_INTERFACE_MODE_USXGMII:
+ 		return "usxgmii";
++	case PHY_INTERFACE_MODE_10GKR:
++		return "10gbase-kr";
+ 	default:
+ 		return "unknown";
+ 	}
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-According to speedtest.net: 11.9Mbps down 500kbps up
+2.20.1
+
