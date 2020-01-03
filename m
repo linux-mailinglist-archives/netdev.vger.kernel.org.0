@@ -2,49 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F15C12FDDB
-	for <lists+netdev@lfdr.de>; Fri,  3 Jan 2020 21:24:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1CBF012FDDF
+	for <lists+netdev@lfdr.de>; Fri,  3 Jan 2020 21:25:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727723AbgACUYu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Jan 2020 15:24:50 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:46540 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727221AbgACUYt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Jan 2020 15:24:49 -0500
-Received: from localhost (unknown [IPv6:2601:601:9f00:1c3::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 58E8C15976323;
-        Fri,  3 Jan 2020 12:24:49 -0800 (PST)
-Date:   Fri, 03 Jan 2020 12:24:48 -0800 (PST)
-Message-Id: <20200103.122448.535296179519230066.davem@davemloft.net>
-To:     simon.horman@netronome.com
-Cc:     lirongqing@baidu.com, netdev@vger.kernel.org
-Subject: Re: [PATCH][net-next] net: remove the check argument from
- __skb_gro_checksum_convert
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200103081039.GE12930@netronome.com>
-References: <1578023460-12331-1-git-send-email-lirongqing@baidu.com>
-        <20200103081039.GE12930@netronome.com>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Fri, 03 Jan 2020 12:24:49 -0800 (PST)
+        id S1728512AbgACUZL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Jan 2020 15:25:11 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:47012 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728490AbgACUZK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 3 Jan 2020 15:25:10 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=9mxXhdbtgN94d+uB0sJfQe/q2KayN2aAHVTKpNWCx6k=; b=Z3vMqoJvM9r53K1Dq/uexXxWwU
+        jsaxIMsOOH8gK/gmoSnSp5dGjECGLPbWdIK96x1ROs4Ab35f2A3QB9C2xku5kJVhVXI3WhvtonBeO
+        l5no/SL5S94DyFBeZQ0Z87L1+He4EuaEE20+ueca4tPUqmxuBezEY9Lgiai5foupmXl4=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1inTVI-0002pw-OO; Fri, 03 Jan 2020 21:25:04 +0100
+Date:   Fri, 3 Jan 2020 21:25:04 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Russell King <rmk+kernel@armlinux.org.uk>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        linux-doc@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next 2/2] net: switch to using
+ PHY_INTERFACE_MODE_10GBASER rather than 10GKR
+Message-ID: <20200103202504.GQ1397@lunn.ch>
+References: <20200103115125.GC25745@shell.armlinux.org.uk>
+ <E1inLVE-0006gO-0S@rmk-PC.armlinux.org.uk>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <E1inLVE-0006gO-0S@rmk-PC.armlinux.org.uk>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Simon Horman <simon.horman@netronome.com>
-Date: Fri, 3 Jan 2020 09:10:39 +0100
-
-> On Fri, Jan 03, 2020 at 11:51:00AM +0800, Li RongQing wrote:
->> The argument is always ignored, so remove it.
->> 
->> Signed-off-by: Li RongQing <lirongqing@baidu.com>
+> For Marvell mvpp2, we detect 10GBASE-KR, and rewrite it to 10GBASE-R
+> for compatibility with existing DT - this is the only network driver
+> at present that makes use of PHY_INTERFACE_MODE_10GKR.
 > 
-> Reviewed-by: Simon Horman <simon.horman@netronome.com>
+> Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
+> @@ -5247,6 +5247,9 @@ static int mvpp2_port_probe(struct platform_device *pdev,
+>  		goto err_free_netdev;
+>  	}
+>  
+> +	if (phy_mode == PHY_INTERFACE_MODE_10GKR)
+> +		phy_mode = PHY_INTERFACE_MODE_10GBASER;
 
-Applied, thanks.
+Hi Russell
+
+Maybe consider adding a comment here, or suggest readers to read the
+commit message of the patch that added these two lines to get the full
+story.
+
+Apart from that:
+
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+
+    Andrew
