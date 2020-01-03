@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7BFDC12F6BB
-	for <lists+netdev@lfdr.de>; Fri,  3 Jan 2020 11:30:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9B29912F6CC
+	for <lists+netdev@lfdr.de>; Fri,  3 Jan 2020 11:39:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727518AbgACKa1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Jan 2020 05:30:27 -0500
-Received: from mail-mw2nam10on2069.outbound.protection.outlook.com ([40.107.94.69]:48834
-        "EHLO NAM10-MW2-obe.outbound.protection.outlook.com"
+        id S1727556AbgACKjU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Jan 2020 05:39:20 -0500
+Received: from mail-dm6nam12on2062.outbound.protection.outlook.com ([40.107.243.62]:64225
+        "EHLO NAM12-DM6-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727220AbgACKa1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 3 Jan 2020 05:30:27 -0500
+        id S1727350AbgACKjT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 3 Jan 2020 05:39:19 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=cEWP7rKipD4Y+Ki9Gd82jaNMgnZP1uOWLGmtPXdHP5NC8+KuTbiXS8kjsdlqV+mpSKplpuyU2FHk0pCpCqQe5QEfdSsTIpv8vZ/eU9EQve0fthvvr+NHGuWj08ZwnB3VgB8a1zU0yULDISErNjtlfDqW+42mbU8iPN2cZeWZUyLEDrmZxTHaEjFwLYc0sOGH24ofLbYY4C1gAj3U0pYOjJXSAA3+Qp9Kh0OAWBMr4rt540skEfAXKWsClr3VBkefd2bhrkS4f4I71YnGNpXhdk5IiTF2KbMmM7ISLXbvUgerna99h0j4FzdJrfnvTApOdqvv+FUEGPeV9X5RlQL2Cg==
+ b=Vo+1S9Lh99AJH9eP2Z0/vQ3DbkKpZ9NRuli0hJReuxpOMJmDCuf0PtNwDKbyEFJe142bYn5yOzRYKKU97WHYXgbX9G+hfhhepqMM6UcGvyjF5dmJuATS9ai4Yh6doGBc5xuu2+Fsg0inxnyaeP0Nl2yF5DMH5AoCLoySzcaOG8nEf9bhxiYLb/gWBvKrL6ShT2CPpYt8lYp4SD1GAP1+yvQFtJ3ioTx1aY5hjUegaBWxiBHWtdSL5Co88l6+cFM4FzM/sY5x9lqJWEmflrDBoXG5HSjL7i6dWc9s2WzgVDBquN/0/+f5c/sl7IGNmUbfuRJstBMdIzWnjFSIGj0Elg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=TAa4pxEUhjTn7Fz0hdC1SgooL5EhxD6HuZfMNNChnEU=;
- b=KPs17wJMOBb7OmfS2dwBHid0ox6tb6EGFugFZ+QemLCUxo8b0rGKnwPN4/SI+undv+40+HonqXLWtvm//HvLYwCYe0NZofFPSyPLVsyPS4lfkBjbAEFksFh8euigUn8CwFP1d56CduHLqSmiY7wnHdlY5SYBA1Fs/n0K4dj0J0f+MjeG0yzdFDcsWV7FblU+e9Be1zoYtplkEyO1HxwK0o5p9n57fKMATJDnQiWk/gdcAAMlCG0c5h0o8Tv3Df+STbMRqk7zM1U2kMpIAKXZSrr9Ot2cxUkKit/a/7MmfwNVERn4SV1CtcDChqnnqK+QIWOduNIQSYiQVjkbRhboJA==
+ bh=1qEWolf3bLpqauwpvas6kP0B4J1efodT+hvqLk1m58k=;
+ b=h6jm7ujKqXI5sBR4e64BXDmmvaHeX1jeBDzTv45MBdc7LKS/lTmAu8TLDPiNTDPQEtXLY13hfDGEvA7T/jbiHaAkFZInkiOVXRuHt+Lm8pVbPdWXrD7SBFCahhEa0NmgnjRKAuJWY5E0zohHZ2s3cwVDyTfg91mlkuxkjiScDnxmMKow+6P9QG1w+QvOTKB34PFtJ/yo3cxG+2AYw6SjMv32+rkWFC1CoNSu9p7wmkWHPc8/4cXhTu9Kbr9U5RaeTrXpZC7NWCRS9KsEKmnvhFP4yMO6KRj5Ympu0zyjAF1wdigPZoEIvafSAvByqyKv81rh/aiYkvo0IONU7dNLNA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=silabs.com; dmarc=pass action=none header.from=silabs.com;
  dkim=pass header.d=silabs.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=silabs.onmicrosoft.com; s=selector2-silabs-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=TAa4pxEUhjTn7Fz0hdC1SgooL5EhxD6HuZfMNNChnEU=;
- b=m30RMU1OuxMfalrbtH5fUA4v9bX3KUxVor7jcwoSs0TudSaFu6eP6BtqDFVCKO65tM9zykZvbeorMBfYpFUpQ7NU1Z4fBeDXvGULWXLVaRlr/EKMJH89HYi6Ix+JPA/amIu3QDpvBJ1ZBXmVTDEtSP8gi9V00m0SNzIwpV18tgY=
+ bh=1qEWolf3bLpqauwpvas6kP0B4J1efodT+hvqLk1m58k=;
+ b=XpPwYDWgIAfQ6jUcP2vGRqWNQRjxxcqLSCdsVdModZcK/igmm3Prn8Tgzb2qyHnGfd4xDPsUcIWLwNwmEOHDCeHa3aF2odFZCfhnSqoFQlnQsyv6U/+oYgSYyxmK7hggLdHYH8IDy7SuG22+km3Q4X4+sq0aOCDW0UZBvTCrZiM=
 Received: from MN2PR11MB4063.namprd11.prod.outlook.com (10.255.180.22) by
- MN2PR11MB4125.namprd11.prod.outlook.com (10.255.181.152) with Microsoft SMTP
+ MN2PR11MB3838.namprd11.prod.outlook.com (20.178.252.202) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2581.12; Fri, 3 Jan 2020 10:30:22 +0000
+ 15.20.2602.12; Fri, 3 Jan 2020 10:39:16 +0000
 Received: from MN2PR11MB4063.namprd11.prod.outlook.com
  ([fe80::f46c:e5b4:2a85:f0bf]) by MN2PR11MB4063.namprd11.prod.outlook.com
  ([fe80::f46c:e5b4:2a85:f0bf%4]) with mapi id 15.20.2602.012; Fri, 3 Jan 2020
- 10:30:22 +0000
+ 10:39:16 +0000
 From:   =?iso-8859-1?Q?J=E9r=F4me_Pouiller?= <Jerome.Pouiller@silabs.com>
 To:     Dan Carpenter <dan.carpenter@oracle.com>
 CC:     "devel@driverdev.osuosl.org" <devel@driverdev.osuosl.org>,
@@ -44,17 +44,17 @@ CC:     "devel@driverdev.osuosl.org" <devel@driverdev.osuosl.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         "David S . Miller" <davem@davemloft.net>,
         Kalle Valo <kvalo@codeaurora.org>
-Subject: Re: [PATCH 25/55] staging: wfx: fix name of struct
- hif_req_start_scan_alt
-Thread-Topic: [PATCH 25/55] staging: wfx: fix name of struct
- hif_req_start_scan_alt
-Thread-Index: AQHVtDLHrXJIw8KXhEKG+rORdR0cIqfYx7UAgAARf4A=
-Date:   Fri, 3 Jan 2020 10:30:22 +0000
-Message-ID: <50905928.71mObdnaeR@pc-42>
+Subject: Re: [PATCH 13/55] staging: wfx: avoid double warning when no more tx
+ policy are available
+Thread-Topic: [PATCH 13/55] staging: wfx: avoid double warning when no more tx
+ policy are available
+Thread-Index: AQHVtDLD8xTkZNX3aEu0AqQlv1La16fYxecAgAAVyYA=
+Date:   Fri, 3 Jan 2020 10:39:16 +0000
+Message-ID: <2726644.RsKqsKUrSp@pc-42>
 References: <20191216170302.29543-1-Jerome.Pouiller@silabs.com>
- <20191216170302.29543-26-Jerome.Pouiller@silabs.com>
- <20200103092744.GC3911@kadam>
-In-Reply-To: <20200103092744.GC3911@kadam>
+ <20191216170302.29543-14-Jerome.Pouiller@silabs.com>
+ <20200103092116.GB3911@kadam>
+In-Reply-To: <20200103092116.GB3911@kadam>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
@@ -63,73 +63,74 @@ authentication-results: spf=none (sender IP is )
  smtp.mailfrom=Jerome.Pouiller@silabs.com; 
 x-originating-ip: [37.71.187.125]
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 8da04030-e909-40bd-2db5-08d79037f07f
-x-ms-traffictypediagnostic: MN2PR11MB4125:
-x-microsoft-antispam-prvs: <MN2PR11MB4125C4CCBA4CE9248ECC562F93230@MN2PR11MB4125.namprd11.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:7219;
+x-ms-office365-filtering-correlation-id: f8b3bc84-07fe-400c-78ba-08d790392e87
+x-ms-traffictypediagnostic: MN2PR11MB3838:
+x-microsoft-antispam-prvs: <MN2PR11MB38387CC6E175EC692841599493230@MN2PR11MB3838.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:1923;
 x-forefront-prvs: 0271483E06
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(7916004)(39850400004)(376002)(396003)(366004)(136003)(346002)(199004)(189003)(6506007)(26005)(186003)(86362001)(5660300002)(66574012)(4326008)(71200400001)(66556008)(76116006)(64756008)(66446008)(66946007)(6916009)(316002)(66476007)(91956017)(54906003)(9686003)(478600001)(6486002)(2906002)(33716001)(8676002)(81156014)(8936002)(81166006)(6512007)(39026012);DIR:OUT;SFP:1101;SCL:1;SRVR:MN2PR11MB4125;H:MN2PR11MB4063.namprd11.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(7916004)(366004)(396003)(346002)(136003)(376002)(39850400004)(199004)(189003)(33716001)(66476007)(6916009)(66446008)(186003)(64756008)(8676002)(478600001)(66556008)(8936002)(54906003)(81166006)(6486002)(71200400001)(6506007)(9686003)(2906002)(6512007)(91956017)(66946007)(76116006)(4326008)(26005)(66574012)(86362001)(81156014)(316002)(5660300002)(29513003);DIR:OUT;SFP:1101;SCL:1;SRVR:MN2PR11MB3838;H:MN2PR11MB4063.namprd11.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
 received-spf: None (protection.outlook.com: silabs.com does not designate
  permitted sender hosts)
 x-ms-exchange-senderadcheck: 1
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: s/PtN3otIuJ7sgTyHcgeq4wc1ytyKPD8Ocmu93W9wHjguilC7eobn/Kik+q28XQ3YYXyvIRBFnzOgpskBAqW3D+M1Br4ZPCiFXkPzP9TIppjg7P8/H7SX2I30En31TK9o3dOHFUNgqGfhthlyJmV9hFnV8g1FE+s3uNdh7xdmZgCUEEhyNYcACgRafjDlqSTXB3QHsjC7Va1/SLiaRBtJbyVZYfhcL9wk237oN2V6dVtv9vXADm7gQwUEmsBMJYfYvtGkl/356WQ9FqwutImBnMPMWej659yAbR7q74+20+UalJKHVFzytXX+JRBGKkXIe7yH/YFsYAkUh1+FC6pBwszmrhZ8GEIQDigmX5dtKAkG9mwRREThpf6aDB/2UxArc25RhbAklkwW4FGpWnzGdmrkmBqd4MlnNs2HAb9W4T70ydbXYUf7yiO8VdqEtQ7SA2kpIaODLz79yHLJqcP1Wpsvoml8rLeEkUeIlemGwEif/VNELVV2y2wI2BLiAGV
+x-microsoft-antispam-message-info: fr4s130kFyupY7ALfR84zkYNNTizUsgY0FH09OFvBic6NCX1Q568927//HVoFc+uzaGk8ZITabKRTlGe90XWHwGW+YgZiZG/GaMRkBSTd8qfaBAk9jSnbst5wfwgYT9tPxvssiEvf4OWVfVwFqp5zAGgxY+fijtpRl25P6nN5TtvZajMsjQoToZ23SkfZnL0y3Kgx8fv9KdfpRYGKIwmmicf0vcxyp7ZVfvPzOVWAq743Cdka4BnlIPDMMFfBDgPwwvO2cKBVb3Jg9ywjuvh7/dPgH1qcp31XAbUABn1X2QHWHJ+GJCy7qE5gcajiW3eFpdczDq4xngtyVuCHAujxH8Qv7KhrBLdND4Nwl2+UcBZYRcfRnfGwROVOZl2NdUtvMXTyUPH+Dc6EQKmIx/YI9bxiEt2RaCmOfoqRSNaumQeOPQR6S5ATltkk+zDW8VjvbX8NNgvie1PJsi07oTiAf0F6mANVJ2DJGwndKegzAlbXfFUCwY6mKEL72BYIC0t
 x-ms-exchange-transport-forked: True
 Content-Type: text/plain; charset="iso-8859-1"
-Content-ID: <9C9EB63A0D80AD4B93E929299CCA5861@namprd11.prod.outlook.com>
+Content-ID: <229EAFC715B6E54EBEBFD888D1EA8753@namprd11.prod.outlook.com>
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 X-OriginatorOrg: silabs.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8da04030-e909-40bd-2db5-08d79037f07f
-X-MS-Exchange-CrossTenant-originalarrivaltime: 03 Jan 2020 10:30:22.7063
+X-MS-Exchange-CrossTenant-Network-Message-Id: f8b3bc84-07fe-400c-78ba-08d790392e87
+X-MS-Exchange-CrossTenant-originalarrivaltime: 03 Jan 2020 10:39:16.2621
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 54dbd822-5231-4b20-944d-6f4abcd541fb
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 6eXWyP15qyQ73Vi1arZQjzEbokUcL0hmDDx1r7wG4v4JU/OLTh3VBH8widZSJJkg2dFKnhbCb6Olfb65sdu6vQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR11MB4125
+X-MS-Exchange-CrossTenant-userprincipalname: C4j0qcksboSv+FL2P22lSB0qoFoKUjMS+w5/yDXtZXCzlGyUnUjm8/1LJqwO+mzpminoIWFbUnMBEkIPOmvFhw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR11MB3838
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Friday 3 January 2020 10:27:44 CET Dan Carpenter wrote:
-> On Mon, Dec 16, 2019 at 05:03:46PM +0000, J=E9r=F4me Pouiller wrote:
+On Friday 3 January 2020 10:21:16 CET Dan Carpenter wrote:
+> On Mon, Dec 16, 2019 at 05:03:40PM +0000, J=E9r=F4me Pouiller wrote:
 > > From: J=E9r=F4me Pouiller <jerome.pouiller@silabs.com>
 > >
-> > The original name did not make any sense.
+> > Currently, number of available tx retry policies is checked two times.
+> > Only one is sufficient.
 > >
 > > Signed-off-by: J=E9r=F4me Pouiller <jerome.pouiller@silabs.com>
 > > ---
-> >  drivers/staging/wfx/hif_api_cmd.h | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> >  drivers/staging/wfx/data_tx.c | 3 ++-
+> >  1 file changed, 2 insertions(+), 1 deletion(-)
 > >
-> > diff --git a/drivers/staging/wfx/hif_api_cmd.h b/drivers/staging/wfx/hi=
-f_api_cmd.h
-> > index 3e77fbe3d5ff..4ce3bb51cf04 100644
-> > --- a/drivers/staging/wfx/hif_api_cmd.h
-> > +++ b/drivers/staging/wfx/hif_api_cmd.h
-> > @@ -188,7 +188,7 @@ struct hif_req_start_scan {
-> >       u8    ssid_and_channel_lists[];
-> >  } __packed;
+> > diff --git a/drivers/staging/wfx/data_tx.c b/drivers/staging/wfx/data_t=
+x.c
+> > index 32e269becd75..c9dea627661f 100644
+> > --- a/drivers/staging/wfx/data_tx.c
+> > +++ b/drivers/staging/wfx/data_tx.c
+> > @@ -169,7 +169,8 @@ static int wfx_tx_policy_get(struct wfx_vif *wvif,
+> >       wfx_tx_policy_build(wvif, &wanted, rates);
 > >
-> > -struct hif_start_scan_req_cstnbssid_body {
-> > +struct hif_req_start_scan_alt {
-> >       u8    band;
-> >       struct hif_scan_type scan_type;
-> >       struct hif_scan_flags scan_flags;
+> >       spin_lock_bh(&cache->lock);
+> > -     if (WARN_ON(list_empty(&cache->free))) {
+> > +     if (list_empty(&cache->free)) {
+> > +             WARN(1, "unable to get a valid Tx policy");
+> >               spin_unlock_bh(&cache->lock);
+> >               return WFX_INVALID_RATE_ID;
 >=20
-> Why not just delete this if it isn't used?
+> This warning is more clear than the original which is good, but that's
+> not what the commit message says.  How does this fix a double warning?
 
-Patch 47/55 start to use it.
+Err... Indeed, it don't. From wfx_tx_get_rate_id():
 
-However, since patch 47, struct hif_req_start_scan is no more used.
-There is an item in TODO file about this:
+       rate_id =3D wfx_tx_policy_get(wvif, ...);
+       if (rate_id =3D=3D WFX_INVALID_RATE_ID)
+               dev_warn(wvif->wdev->dev, "unable to get a valid Tx policy")=
+;
 
-    hif_api_*.h have been imported from firmware code. Some of the structur=
-es
-    are never used in driver.
-
+I will fix that in my next PR.
 
 --=20
 J=E9r=F4me Pouiller
