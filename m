@@ -2,65 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A5C1A12FD02
-	for <lists+netdev@lfdr.de>; Fri,  3 Jan 2020 20:27:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2EB0312FD25
+	for <lists+netdev@lfdr.de>; Fri,  3 Jan 2020 20:38:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728488AbgACT11 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Jan 2020 14:27:27 -0500
-Received: from mail-qk1-f171.google.com ([209.85.222.171]:37715 "EHLO
-        mail-qk1-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728485AbgACT11 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Jan 2020 14:27:27 -0500
-Received: by mail-qk1-f171.google.com with SMTP id 21so34636593qky.4;
-        Fri, 03 Jan 2020 11:27:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=dMeBWVG91pHubNQWYivBpH2U/MdEbVYxoDpB6kBimc8=;
-        b=bBcQoSAZqxJ86WrFmQLxtF0khw3qu8NdpIqVsiNsZz5FwVjuSH0+rUPAJwSCk6zm0V
-         U0199OaSF+u0TVC43kgylZJJzSmQvieO3ppgiAnXpRH2GGjy+/fg0YD5A32pg48eDvCz
-         eTpkaLntLRrQW2e8LjSvEW9/SzNP23ovgt6vxfWRJbhAn+NLJ6F6QDI7NLLyA2rHdwd3
-         XdDPSBcWDDOSYkdgSGgysfQtdQAM8CcVl2JYGsEHQ4hew5sbw1rsXOtSwLIarm/ZSrIB
-         UZnBkhW29ZC2WxxeKSrY6kXL+INVQwlSjtpdrEy1uW/6V82OtAgKHE4OyCQb7vsTfCpT
-         SQSg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=dMeBWVG91pHubNQWYivBpH2U/MdEbVYxoDpB6kBimc8=;
-        b=nDnibp90X0rGb0YqNQYSUThTyAzDc1FtbOieK0rPcdO20rhxtUvoMbAmo1922iXY1s
-         iaQKCvOiQ2DI9yHoSctizICI77ER/w05/B0aOcx1iWSUyU2/AylegBh6Uuounwzx1l7w
-         HL/EGu/srDXGDwAu5j09xFBT3rAS9SyzG2Y4rwrG8QfTlx9FDspJNg+ohSyiCe6U4TsI
-         J4bn/Q4PldLzKGJYDqAfBQwpY7mAJZKX8WdcmR7vAlgrDPAlUhtwZVGOVCq6PEocIiS7
-         8PvJh7Um2pyGclbFBWtn+YHZmF40982eptcvXeXoMN05qbC84/crPPbSLNCd3o1oWO9u
-         S5SQ==
-X-Gm-Message-State: APjAAAU9rmDxY+ijlymRAZUllJejxqd5d8Jfua1FQ7qCmoTuyYHFTizv
-        XwDec3BcJffrbK0S5J/YM5KA+5GjnFy57K6N95w=
-X-Google-Smtp-Source: APXvYqwpj0MxNUn2no56Ue+nb3rSr2sEVuat2D3u1eAsTiEmDw4u3iOiGU+9ogvAkWCDGjnipY9zW5knmlNjOZzf5lc=
-X-Received: by 2002:a05:620a:1324:: with SMTP id p4mr74143048qkj.497.1578079646156;
- Fri, 03 Jan 2020 11:27:26 -0800 (PST)
+        id S1728564AbgACTiO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Jan 2020 14:38:14 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:46922 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728488AbgACTiN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 3 Jan 2020 14:38:13 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=XIf32WVRgKWUO8SMfC0JjcU81vftzRzK1CmLURrg6/Y=; b=V23sxuuNIuebNcyNQsI/qqXSei
+        svb4FDGyd/iIjSfIolpU+iWqnA29z5wVMvO7uWEfMMzvWggT10nkqqugFmMBvisdutI7kaLrGfuJH
+        0ISyYAmpz855jM6r5/RwwtBlFkEdDeRCo32MtPaSS1u2fZPU/mcCv5DPIffdqYg08U6Y=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1inSli-0002FQ-HX; Fri, 03 Jan 2020 20:37:58 +0100
+Date:   Fri, 3 Jan 2020 20:37:58 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     Vladimir Oltean <olteanv@gmail.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        yu kuai <yukuai3@huawei.com>, klassert@kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        hslester96@gmail.com, mst@redhat.com, yang.wei9@zte.com.cn,
+        netdev <netdev@vger.kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>, yi.zhang@huawei.com,
+        zhengbin13@huawei.com
+Subject: Re: [PATCH] net: 3com: 3c59x: remove set but not used variable
+ 'mii_reg1'
+Message-ID: <20200103193758.GO1397@lunn.ch>
+References: <20200103121907.5769-1-yukuai3@huawei.com>
+ <20200103144623.GI6788@bombadil.infradead.org>
+ <20200103175318.GN1397@lunn.ch>
+ <CA+h21hqcz=QF8bq285JjdOn+gsOGvGSnDiWzDOS5-XGAGGGr9w@mail.gmail.com>
+ <b4697457-51d2-c987-4138-b4b2b92e391d@gmail.com>
 MIME-Version: 1.0
-References: <1578032749-18197-1-git-send-email-lirongqing@baidu.com>
-In-Reply-To: <1578032749-18197-1-git-send-email-lirongqing@baidu.com>
-From:   Song Liu <liu.song.a23@gmail.com>
-Date:   Fri, 3 Jan 2020 11:27:15 -0800
-Message-ID: <CAPhsuW6FOKjAzjqfnddJKMxcH2VQKXqLdoxzBQ558UK8fiCrXA@mail.gmail.com>
-Subject: Re: [PATCH][bpf-next] bpf: return EOPNOTSUPP when invalid map type in __bpf_tx_xdp_map
-To:     Li RongQing <lirongqing@baidu.com>
-Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <b4697457-51d2-c987-4138-b4b2b92e391d@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 2, 2020 at 10:26 PM Li RongQing <lirongqing@baidu.com> wrote:
->
-> a negative value -EOPNOTSUPP should be returned if map->map_type
-> is invalid although that seems unlikely now, then the caller will
-> continue to handle buffer, or else the buffer will be leaked
->
-> Signed-off-by: Li RongQing <lirongqing@baidu.com>
+> And since more reviewers are on the same boat, the fix should probably
+> look to eliminate the warning by doing something like:
+> 
+> (void)mdio_read(dev, vp->phys[0], MII_BMSR);
 
-Acked-by: Song Liu <songliubraving@fb.com>
+Yes, this is the safe option.
+
+     Andrew
