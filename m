@@ -2,96 +2,200 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A28BD12FBDA
-	for <lists+netdev@lfdr.de>; Fri,  3 Jan 2020 18:55:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D93912FBDB
+	for <lists+netdev@lfdr.de>; Fri,  3 Jan 2020 18:55:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728183AbgACRz0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Jan 2020 12:55:26 -0500
-Received: from mail-pl1-f195.google.com ([209.85.214.195]:44338 "EHLO
-        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728110AbgACRz0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Jan 2020 12:55:26 -0500
-Received: by mail-pl1-f195.google.com with SMTP id az3so19283184plb.11
-        for <netdev@vger.kernel.org>; Fri, 03 Jan 2020 09:55:26 -0800 (PST)
+        id S1728220AbgACRz1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Jan 2020 12:55:27 -0500
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:38961 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728110AbgACRz1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Jan 2020 12:55:27 -0500
+Received: by mail-pf1-f196.google.com with SMTP id q10so23836928pfs.6
+        for <netdev@vger.kernel.org>; Fri, 03 Jan 2020 09:55:27 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=pensando.io; s=google;
-        h=from:to:cc:subject:date:message-id;
-        bh=HwKI0nFSGJXtdEsG1Lt3W2AZ3z47nYG9ydGEl21lRNc=;
-        b=VHjS+NcMaEqK2rXCNKKowgU47LnBRLafwNo8diuX9QukQD8nSAntG8z1e3j+dibEV0
-         yX6MkUMRGnvcv3ix0UZiyv28+rg6FB3uCaDnqgwuaOdds87GeM0e9eGAgpRegCvYnqOM
-         7/8qWRS5hVVq9iouKtAlxNW0gyn7CTFoq2DAS52ROB1ZAmICmLikcPa+l2hr2ny7woHS
-         IFHg8NNf/OVs8Vp+cr0qeXITv3PXEhp+FJybkQfAJEW+/l1OOIn69Krj0mLBlncoyFyQ
-         SYByI+xHbYOUISulP4NTogcc1bRrEBaT5rgn2yHKli+BKCzouECZoiDLoxqAQcwJXn7M
-         QmHg==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=Rpgp8Qbo8YTkJ7o9V/hmrmF55MqGZvPgztBHYlkkui8=;
+        b=MK5NX6EsgD/IFVqNtx+kNBrcBRbDPRNOjiDsz/5ZsRl3X+DGy6dww2HjAvN4TVkDpT
+         reeunjN+Uz5h9FMPSbHr6D1vVv9Ya3bTEUHhBcNQ2jPmRrwoSQUTFW9hSWQmxmpDchiv
+         UE4JNbQEmGZ7b5o/CzJgjbhQnsq6R1ZMsFZAZnojBZxVqIg7z0DeJHW3wjVQ3oj3X0X7
+         9zMMbEJwgKuNLCTWuset8s2W/9BsXHS7IrswezpPMZkQVPZYqNeJvzPU4/XEJvFsfBnD
+         jDZLRmXeRiO0JLOGwotli1/BAneVLeONlI9QuZmR0kLXGg+CLezpqZWG75jfudKL8tbb
+         4GPQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=HwKI0nFSGJXtdEsG1Lt3W2AZ3z47nYG9ydGEl21lRNc=;
-        b=i62hVcUeMJRjNCSaMedSqE5p1sDbYvPIlLC+o8Jj4WslfLtFS0UA7Cem4NOk9b90Am
-         FZTpok2DmsFDkJOJexI+t6Bj3j+5hQmvnW4r6YlKNh4ONrzZ33ARuNWJ4kuoE++6dHh6
-         x75h38YpL9QqW+Gmz0NdTGTr7NjWEQLeS90GD6GlqkNTSxxIIqPlQ2Z1/GyxGPUZ7G/j
-         t7ep52h/L6LQ/CTVWr4SVzvjn0zTZJWKCdVG+uWnJGX2qgL1hCajAQCd/X3GWYI9UNRo
-         3sCF1eJLUqoTpMvfECu7ed2JUb5F9FHVmC0BA1r2dfEiVTBjlnwSRh8gdCsIZ6jr52Nl
-         2SfQ==
-X-Gm-Message-State: APjAAAWkyIhBtFcFUlcjZPcf1qaMxmx3/qwwgx9UIzBD4jGH05PIjhMF
-        /q2DHWu3iTYCbZkbD/NujbC5TxOHXCxTTg==
-X-Google-Smtp-Source: APXvYqwS5j5re7S3rJbWibyODWGejL29CrcA5/GfJnAsE5dslgP5M/fgarSz8XK5hyHqGgmd3e6jJQ==
-X-Received: by 2002:a17:90b:258:: with SMTP id fz24mr27174453pjb.6.1578074125741;
-        Fri, 03 Jan 2020 09:55:25 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=Rpgp8Qbo8YTkJ7o9V/hmrmF55MqGZvPgztBHYlkkui8=;
+        b=hzn0nG/m+1slYyJepAmOr5LPwAJ0kNnMA1AXxXs3G9nu6sqCSrRuX6fGiXLGifKsyU
+         5EAnfagG61LGAVpF3/6z3v5PIcpzEazFkyohNuvx88vUTKo8SXFGcVyoo+sPUOKlgI6V
+         8XLFTjsXvk5G2fU0QUkbJ4hPqDWf5eb6S7qCeFheE2BvCwPOzT04gLekOb4RN5xCaD0O
+         T30k7PXeBgTnBZ1Y/yVfAXFdf/+LZV177cUwn6QvjNdQhrJnMCA59NueSJ5qxIk/tGJ9
+         +IYt1JKXyfBL1aBDlXjeKPZrtuA5gBwWCEuoIW/T6HSgtHbzwwFZVJEfSrm3UL3Ie9u8
+         oKDw==
+X-Gm-Message-State: APjAAAVDKZ8t8P4oKat3fFm9ZpzeEXqyGwdjIz8NioOvNM8k2ODQMmcY
+        TGNavAKwj/4taRYfdrhiV4UXHTnyJ+9vWw==
+X-Google-Smtp-Source: APXvYqy++5P+27O1RPz0egirFCGrCYas5BiF/vuKe2e/d+DT4WuEaThHpRy06GpvxLuGO/V3IlS5yg==
+X-Received: by 2002:a63:4006:: with SMTP id n6mr88793694pga.139.1578074126436;
+        Fri, 03 Jan 2020 09:55:26 -0800 (PST)
 Received: from driver-dev1.pensando.io ([12.226.153.42])
-        by smtp.gmail.com with ESMTPSA id u20sm61516655pgf.29.2020.01.03.09.55.24
+        by smtp.gmail.com with ESMTPSA id u20sm61516655pgf.29.2020.01.03.09.55.25
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 03 Jan 2020 09:55:25 -0800 (PST)
+        Fri, 03 Jan 2020 09:55:26 -0800 (PST)
 From:   Shannon Nelson <snelson@pensando.io>
 To:     netdev@vger.kernel.org, davem@davemloft.net
 Cc:     parav@mellanox.com, Shannon Nelson <snelson@pensando.io>
-Subject: [PATCH v4 net-next 0/2] ionic: add sriov support
-Date:   Fri,  3 Jan 2020 09:55:06 -0800
-Message-Id: <20200103175508.32176-1-snelson@pensando.io>
+Subject: [PATCH v4 net-next 1/2] ionic: ionic_if bits for sr-iov support
+Date:   Fri,  3 Jan 2020 09:55:07 -0800
+Message-Id: <20200103175508.32176-2-snelson@pensando.io>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20200103175508.32176-1-snelson@pensando.io>
+References: <20200103175508.32176-1-snelson@pensando.io>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Set up the basic support for enabling SR-IOV devices in the
-ionic driver.  Since most of the management work happens in
-the NIC firmware, the driver becomes mostly a pass-through
-for the network stack commands that want to control and
-configure the VFs.
+Adds new AdminQ calls and their related structs for
+supporting PF controls on VFs:
+    CMD_OPCODE_VF_GETATTR
+    CMD_OPCODE_VF_SETATTR
 
-v4:	changed "vf too big" checks to use pci_num_vf()
-	changed from vf[] array of pointers of individually allocated
-	  vf structs to single allocated vfs[] array of vf structs
-	added clean up of vfs[] on probe fail
-	added setup for vf stats dma
+Signed-off-by: Shannon Nelson <snelson@pensando.io>
+---
+ .../net/ethernet/pensando/ionic/ionic_if.h    | 97 +++++++++++++++++++
+ 1 file changed, 97 insertions(+)
 
-v3:	added check in probe for pre-existing VFs
-	split out the alloc and dealloc of vf structs to better deal
-	  with pre-existing VFs (left enabled on remove)
-	restored the checks for vf too big because of a potential
-	  case where VFs are already enabled but driver failed to
-	  alloc the vf structs
-
-v2:	use pci_num_vf() and kcalloc()
-	remove checks for vf too big
-	add locking for the VF operations
-	disable VFs in ionic_remove() if they are still running
-
-
-Shannon Nelson (2):
-  ionic: ionic_if bits for sr-iov support
-  ionic: support sr-iov operations
-
- drivers/net/ethernet/pensando/ionic/ionic.h   |  17 +-
- .../ethernet/pensando/ionic/ionic_bus_pci.c   | 113 ++++++++
- .../net/ethernet/pensando/ionic/ionic_dev.c   |  58 ++++
- .../net/ethernet/pensando/ionic/ionic_dev.h   |   7 +
- .../net/ethernet/pensando/ionic/ionic_if.h    |  97 +++++++
- .../net/ethernet/pensando/ionic/ionic_lif.c   | 247 +++++++++++++++++-
- .../net/ethernet/pensando/ionic/ionic_main.c  |   4 +
- 7 files changed, 535 insertions(+), 8 deletions(-)
-
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic_if.h b/drivers/net/ethernet/pensando/ionic/ionic_if.h
+index 39317cdfa6cf..f131adad96e3 100644
+--- a/drivers/net/ethernet/pensando/ionic/ionic_if.h
++++ b/drivers/net/ethernet/pensando/ionic/ionic_if.h
+@@ -51,6 +51,10 @@ enum ionic_cmd_opcode {
+ 	IONIC_CMD_RDMA_CREATE_CQ		= 52,
+ 	IONIC_CMD_RDMA_CREATE_ADMINQ		= 53,
+ 
++	/* SR/IOV commands */
++	IONIC_CMD_VF_GETATTR			= 60,
++	IONIC_CMD_VF_SETATTR			= 61,
++
+ 	/* QoS commands */
+ 	IONIC_CMD_QOS_CLASS_IDENTIFY		= 240,
+ 	IONIC_CMD_QOS_CLASS_INIT		= 241,
+@@ -1639,6 +1643,93 @@ enum ionic_qos_sched_type {
+ 	IONIC_QOS_SCHED_TYPE_DWRR	= 1,	/* Deficit weighted round-robin */
+ };
+ 
++enum ionic_vf_attr {
++	IONIC_VF_ATTR_SPOOFCHK	= 1,
++	IONIC_VF_ATTR_TRUST	= 2,
++	IONIC_VF_ATTR_MAC	= 3,
++	IONIC_VF_ATTR_LINKSTATE	= 4,
++	IONIC_VF_ATTR_VLAN	= 5,
++	IONIC_VF_ATTR_RATE	= 6,
++	IONIC_VF_ATTR_STATSADDR	= 7,
++};
++
++/**
++ * VF link status
++ */
++enum ionic_vf_link_status {
++	IONIC_VF_LINK_STATUS_AUTO = 0,	/* link state of the uplink */
++	IONIC_VF_LINK_STATUS_UP   = 1,	/* link is always up */
++	IONIC_VF_LINK_STATUS_DOWN = 2,	/* link is always down */
++};
++
++/**
++ * struct ionic_vf_setattr_cmd - Set VF attributes on the NIC
++ * @opcode:     Opcode
++ * @index:      VF index
++ * @attr:       Attribute type (enum ionic_vf_attr)
++ *	macaddr		mac address
++ *	vlanid		vlan ID
++ *	maxrate		max Tx rate in Mbps
++ *	spoofchk	enable address spoof checking
++ *	trust		enable VF trust
++ *	linkstate	set link up or down
++ *	stats_pa	set DMA address for VF stats
++ */
++struct ionic_vf_setattr_cmd {
++	u8     opcode;
++	u8     attr;
++	__le16 vf_index;
++	union {
++		u8     macaddr[6];
++		__le16 vlanid;
++		__le32 maxrate;
++		u8     spoofchk;
++		u8     trust;
++		u8     linkstate;
++		__le64 stats_pa;
++		u8     pad[60];
++	};
++};
++
++struct ionic_vf_setattr_comp {
++	u8     status;
++	u8     attr;
++	__le16 vf_index;
++	__le16 comp_index;
++	u8     rsvd[9];
++	u8     color;
++};
++
++/**
++ * struct ionic_vf_getattr_cmd - Get VF attributes from the NIC
++ * @opcode:     Opcode
++ * @index:      VF index
++ * @attr:       Attribute type (enum ionic_vf_attr)
++ */
++struct ionic_vf_getattr_cmd {
++	u8     opcode;
++	u8     attr;
++	__le16 vf_index;
++	u8     rsvd[60];
++};
++
++struct ionic_vf_getattr_comp {
++	u8     status;
++	u8     attr;
++	__le16 vf_index;
++	union {
++		u8     macaddr[6];
++		__le16 vlanid;
++		__le32 maxrate;
++		u8     spoofchk;
++		u8     trust;
++		u8     linkstate;
++		__le64 stats_pa;
++		u8     pad[11];
++	};
++	u8     color;
++};
++
+ /**
+  * union ionic_qos_config - Qos configuration structure
+  * @flags:		Configuration flags
+@@ -2289,6 +2380,9 @@ union ionic_dev_cmd {
+ 	struct ionic_port_getattr_cmd port_getattr;
+ 	struct ionic_port_setattr_cmd port_setattr;
+ 
++	struct ionic_vf_setattr_cmd vf_setattr;
++	struct ionic_vf_getattr_cmd vf_getattr;
++
+ 	struct ionic_lif_identify_cmd lif_identify;
+ 	struct ionic_lif_init_cmd lif_init;
+ 	struct ionic_lif_reset_cmd lif_reset;
+@@ -2318,6 +2412,9 @@ union ionic_dev_cmd_comp {
+ 	struct ionic_port_getattr_comp port_getattr;
+ 	struct ionic_port_setattr_comp port_setattr;
+ 
++	struct ionic_vf_setattr_comp vf_setattr;
++	struct ionic_vf_getattr_comp vf_getattr;
++
+ 	struct ionic_lif_identify_comp lif_identify;
+ 	struct ionic_lif_init_comp lif_init;
+ 	ionic_lif_reset_comp lif_reset;
 -- 
 2.17.1
 
