@@ -2,336 +2,256 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A9E9812F7D7
-	for <lists+netdev@lfdr.de>; Fri,  3 Jan 2020 12:52:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E1A6412F7ED
+	for <lists+netdev@lfdr.de>; Fri,  3 Jan 2020 13:03:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727710AbgACLwj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Jan 2020 06:52:39 -0500
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:40044 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727489AbgACLwj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Jan 2020 06:52:39 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
-        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:References:
-        In-Reply-To:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=wrkXre3RB2c8lZLiX8hGv7W7WHPd2d4YoiltVqbubhc=; b=pgeyOYxYuKlLsIjyVBTnCfRoAj
-        wdnIO575LrpqHG7l5U4r+1l4nXWVmLgFJ9FmPr00DUETKLipOilYyFCNhQgtnBaoZhXHetrX8O6cF
-        2mmlQPq8yqlwlSmF8AphM9LGRJsgwjMa1V7Ei+e4k3NjK05i+LXBvvOKRMW1B9TvUMWqiD8Fefz8C
-        MKXJzYl8CD2xJdrrp/7ejVqHj+DCJ/CixyGTI8M4/Pi7Ggh16CaKAiHkdFWg/E9pvMzXqvLycYSSS
-        b9ELWDSOLbyJWWJB4KOVDANdvbL80ACbXYEdldwS9wkMHxFgX5Q3Fc2wXTsdxAOXfPjW5uXgWwXmR
-        0xqKFL1A==;
-Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:49140 helo=rmk-PC.armlinux.org.uk)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1inLVF-0001sG-Ao; Fri, 03 Jan 2020 11:52:29 +0000
-Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1inLVE-0006gO-0S; Fri, 03 Jan 2020 11:52:28 +0000
-In-Reply-To: <20200103115125.GC25745@shell.armlinux.org.uk>
-References: <20200103115125.GC25745@shell.armlinux.org.uk>
-From:   Russell King <rmk+kernel@armlinux.org.uk>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        linux-doc@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH net-next 2/2] net: switch to using PHY_INTERFACE_MODE_10GBASER
- rather than 10GKR
-MIME-Version: 1.0
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+        id S1727572AbgACMDw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Jan 2020 07:03:52 -0500
+Received: from mail-eopbgr10062.outbound.protection.outlook.com ([40.107.1.62]:25056
+        "EHLO EUR02-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727489AbgACMDv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 3 Jan 2020 07:03:51 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=IHV2BgZdBKSoM1jae0tApWukO/ylBGJ+zKqvMj5mc5R+qtO4WQgJzHmJirmUGkdwzCAthtEz6wFka75EsP+0JazPTT3Z3kC4MMuiZHLh4Ca3S/G0hzg/K5XksPvwCrkDvzzTL+ety8pF8TdZ6ZJnyNqtlW7W+PCO/of47y62ZxtQkcjuOdeMpaqJAdvXgo4y0NarGxHFGzratGu69TDlK8KVOsjON7YKIjHiZEF7/4JFBZZ07Ki21FSEt4wLXpyk6GiOJaeewrvm6MPipXh29yuzHx+y4rTKox8nCO2XaymcHqr48TSssho86JyMhEv7cTLuZvoSD0hctYJV6ufOYA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=FtyVuFi9O0IIDWaLTaowk8ob+FgHcf9uh23Kt6bIRVg=;
+ b=AF5CbcaGGOUfGPw7lM3JO709g2qn1AoLu1ff3k4gjNlGT2ao4hersb3E5cP7EPWsOekpw9zxzbeXsHak5MIp21xLDAqGJ6K3qdf3ApVKqM4+V1r0GuN9nCEHuRaT1kOCRASIYwDk7+bBogHs0faQ85zaz9Of5Qg5B5M3tpWTCk5eFKbYuegIgjOFW9zGQ42E7gDWY5PtXVIZ5l8qL4KNg2EPKsh5l+qU8ccEihhvPluGRqsvcR9uyRluN9rJnGixxkHHIaLqRe5fIDszzx+F8lzeIyNZszl+f/75PRHrjuTB7LgDbGrjUWdkPd10cIcCGBLTCylhuel+6PIdVSZRQQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
+ dkim=pass header.d=oss.nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
+ s=selector2-NXP1-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=FtyVuFi9O0IIDWaLTaowk8ob+FgHcf9uh23Kt6bIRVg=;
+ b=Fx4157Apj9F318ojSspbL6ME0wvforX3CxPk8SkhDcbq2vmeMgqcgJ/Cbs3m5f5BPR4AcpiZVUltLhteE+zDbgRdPYve4IeFzx3PUgExitiO65qzG677NfYJDuNlAf4oEQ4NQuTdlI/YI6mzbVEYVmIGPVEiy5yEPAE8remGP+Y=
+Received: from DB8PR04MB6985.eurprd04.prod.outlook.com (52.133.243.85) by
+ DB8PR04MB7049.eurprd04.prod.outlook.com (52.135.63.215) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2602.12; Fri, 3 Jan 2020 12:03:44 +0000
+Received: from DB8PR04MB6985.eurprd04.prod.outlook.com
+ ([fe80::c181:4a83:14f2:27e3]) by DB8PR04MB6985.eurprd04.prod.outlook.com
+ ([fe80::c181:4a83:14f2:27e3%6]) with mapi id 15.20.2602.012; Fri, 3 Jan 2020
+ 12:03:44 +0000
+From:   "Madalin Bucur (OSS)" <madalin.bucur@oss.nxp.com>
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        "Madalin Bucur (OSS)" <madalin.bucur@oss.nxp.com>
+CC:     "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "andrew@lunn.ch" <andrew@lunn.ch>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
+        "shawnguo@kernel.org" <shawnguo@kernel.org>
+Subject: RE: [PATCH 1/6] net: phy: add interface modes for XFI, SFI
+Thread-Topic: [PATCH 1/6] net: phy: add interface modes for XFI, SFI
+Thread-Index: AQHVuYmNemqdPRPEmEKC7Ncoej9h46fBtnoAgAAR9oCABd2qgIAQ9D0AgAAopQCAAAQgAIAAGkPw
+Date:   Fri, 3 Jan 2020 12:03:44 +0000
+Message-ID: <DB8PR04MB698591AAC029ADE9F7FFF69BEC230@DB8PR04MB6985.eurprd04.prod.outlook.com>
+References: <1576768881-24971-1-git-send-email-madalin.bucur@oss.nxp.com>
+ <1576768881-24971-2-git-send-email-madalin.bucur@oss.nxp.com>
+ <20191219172834.GC25745@shell.armlinux.org.uk>
+ <VI1PR04MB5567FA3170CF45F877870E8CEC520@VI1PR04MB5567.eurprd04.prod.outlook.com>
+ <20191223120730.GO25745@shell.armlinux.org.uk>
+ <DB8PR04MB69858081021729EC70216BE3EC230@DB8PR04MB6985.eurprd04.prod.outlook.com>
+ <20200103092718.GB25745@shell.armlinux.org.uk>
+ <20200103094204.GA18808@shell.armlinux.org.uk>
+In-Reply-To: <20200103094204.GA18808@shell.armlinux.org.uk>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=madalin.bucur@oss.nxp.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [212.146.100.6]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 49fc692c-737e-419f-8afe-08d79044fb78
+x-ms-traffictypediagnostic: DB8PR04MB7049:|DB8PR04MB7049:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <DB8PR04MB7049C00536ED1EFD14D74485AD230@DB8PR04MB7049.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:3383;
+x-forefront-prvs: 0271483E06
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(136003)(376002)(366004)(396003)(346002)(39860400002)(199004)(13464003)(189003)(9686003)(26005)(8936002)(81166006)(81156014)(8676002)(5660300002)(52536014)(55016002)(186003)(71200400001)(478600001)(316002)(66946007)(66446008)(64756008)(76116006)(66556008)(66476007)(7696005)(110136005)(53546011)(6506007)(2906002)(33656002)(86362001)(54906003)(4326008);DIR:OUT;SFP:1101;SCL:1;SRVR:DB8PR04MB7049;H:DB8PR04MB6985.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:0;MX:1;
+received-spf: None (protection.outlook.com: oss.nxp.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: auDh5wYAkNMTFQY4qY10TXJHNrJ/QHLWWAdE1ujah15JRKsPnQBw8RjfUI28q+1szpfV/fkL2WlD6/mJFoYlI3F3A6aqug9Es4yrW6O8oNzuQGCEEsDinwDRNvcDmgt/iRa2RA+eWrtrQxA0dCN0TR+VxX/x2I0Rnl5vW92ADjT1Uc4QD9Naj+u/rhAee1z9FeAaW1y/frZ6MeTulRVw/V/8EaG0PJvxSIpNohG7GUER8y/B2C3HdH7sIYSNozu5xHILlY8fMzhlcvYivWxwjLaapUMrci8eHCA9iohzzCdZtA1njgTxXCjd1OV6tGvO8ypFKmNioxM1Yql9x9zG3/kzRhy89MTjhy0JYCq86JyenuiykbOMVgQjnF7aywiVCPA0HvFUeKNkrtKQwfGbMdD3KvCV/KIBoYiKg4m2jeTBzJC4LIkHEGRRqmShwF/XiJCv47bKEv2qQQ7MkYii+LfAclFoS0rA4trgMg4FsiWYa3j3Zt1YfIueSJKtf//B
 Content-Type: text/plain; charset="utf-8"
-Message-Id: <E1inLVE-0006gO-0S@rmk-PC.armlinux.org.uk>
-Date:   Fri, 03 Jan 2020 11:52:28 +0000
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-OriginatorOrg: oss.nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 49fc692c-737e-419f-8afe-08d79044fb78
+X-MS-Exchange-CrossTenant-originalarrivaltime: 03 Jan 2020 12:03:44.6823
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 0otuA9H/3B2Kuqv4U5cQzzNDeotFhSvXJuH3y7s72fE+4N7ocMGp3Uq+pcZPQnyZ6dYxxq7iCFfbAhb7wlHfEg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB8PR04MB7049
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Switch network drivers, phy drivers, and SFP/phylink over to use the
-more correct 10GBASE-R, rather than 10GBASE-KR. 10GBASE-KR is backplane
-ethernet, which is 10GBASE-R with autonegotiation on top, which our
-current usage on the affected platforms does not have.
-
-The only remaining user of PHY_INTERFACE_MODE_10GKR is the Aquantia
-PHY, which has a separate mode for 10GBASE-KR.
-
-For Marvell mvpp2, we detect 10GBASE-KR, and rewrite it to 10GBASE-R
-for compatibility with existing DT - this is the only network driver
-at present that makes use of PHY_INTERFACE_MODE_10GKR.
-
-Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
----
- .../net/ethernet/marvell/mvpp2/mvpp2_main.c   | 13 +++++++-----
- drivers/net/phy/aquantia_main.c               |  7 +++++--
- drivers/net/phy/bcm84881.c                    |  4 ++--
- drivers/net/phy/marvell10g.c                  | 11 +++++-----
- drivers/net/phy/phylink.c                     |  1 +
- drivers/net/phy/sfp-bus.c                     |  2 +-
- drivers/phy/marvell/phy-mvebu-cp110-comphy.c  | 20 +++++++++----------
- 7 files changed, 33 insertions(+), 25 deletions(-)
-
-diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-index cd32c7196a7f..5113dae11906 100644
---- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-+++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-@@ -1114,7 +1114,7 @@ mvpp2_shared_interrupt_mask_unmask(struct mvpp2_port *port, bool mask)
- /* Port configuration routines */
- static bool mvpp2_is_xlg(phy_interface_t interface)
- {
--	return interface == PHY_INTERFACE_MODE_10GKR ||
-+	return interface == PHY_INTERFACE_MODE_10GBASER ||
- 	       interface == PHY_INTERFACE_MODE_XAUI;
- }
- 
-@@ -1200,7 +1200,7 @@ static int mvpp22_gop_init(struct mvpp2_port *port)
- 	case PHY_INTERFACE_MODE_2500BASEX:
- 		mvpp22_gop_init_sgmii(port);
- 		break;
--	case PHY_INTERFACE_MODE_10GKR:
-+	case PHY_INTERFACE_MODE_10GBASER:
- 		if (port->gop_id != 0)
- 			goto invalid_conf;
- 		mvpp22_gop_init_10gkr(port);
-@@ -1649,7 +1649,7 @@ static void mvpp22_pcs_reset_deassert(struct mvpp2_port *port)
- 	xpcs = priv->iface_base + MVPP22_XPCS_BASE(port->gop_id);
- 
- 	switch (port->phy_interface) {
--	case PHY_INTERFACE_MODE_10GKR:
-+	case PHY_INTERFACE_MODE_10GBASER:
- 		val = readl(mpcs + MVPP22_MPCS_CLK_RESET);
- 		val |= MAC_CLK_RESET_MAC | MAC_CLK_RESET_SD_RX |
- 		       MAC_CLK_RESET_SD_TX;
-@@ -4758,7 +4758,7 @@ static void mvpp2_phylink_validate(struct phylink_config *config,
- 
- 	/* Invalid combinations */
- 	switch (state->interface) {
--	case PHY_INTERFACE_MODE_10GKR:
-+	case PHY_INTERFACE_MODE_10GBASER:
- 	case PHY_INTERFACE_MODE_XAUI:
- 		if (port->gop_id != 0)
- 			goto empty_set;
-@@ -4780,7 +4780,7 @@ static void mvpp2_phylink_validate(struct phylink_config *config,
- 	phylink_set(mask, Asym_Pause);
- 
- 	switch (state->interface) {
--	case PHY_INTERFACE_MODE_10GKR:
-+	case PHY_INTERFACE_MODE_10GBASER:
- 	case PHY_INTERFACE_MODE_XAUI:
- 	case PHY_INTERFACE_MODE_NA:
- 		if (port->gop_id == 0) {
-@@ -5247,6 +5247,9 @@ static int mvpp2_port_probe(struct platform_device *pdev,
- 		goto err_free_netdev;
- 	}
- 
-+	if (phy_mode == PHY_INTERFACE_MODE_10GKR)
-+		phy_mode = PHY_INTERFACE_MODE_10GBASER;
-+
- 	if (port_node) {
- 		comphy = devm_of_phy_get(&pdev->dev, port_node, NULL);
- 		if (IS_ERR(comphy)) {
-diff --git a/drivers/net/phy/aquantia_main.c b/drivers/net/phy/aquantia_main.c
-index 975789d9349d..31927b2c7d5a 100644
---- a/drivers/net/phy/aquantia_main.c
-+++ b/drivers/net/phy/aquantia_main.c
-@@ -358,9 +358,11 @@ static int aqr107_read_status(struct phy_device *phydev)
- 
- 	switch (FIELD_GET(MDIO_PHYXS_VEND_IF_STATUS_TYPE_MASK, val)) {
- 	case MDIO_PHYXS_VEND_IF_STATUS_TYPE_KR:
--	case MDIO_PHYXS_VEND_IF_STATUS_TYPE_XFI:
- 		phydev->interface = PHY_INTERFACE_MODE_10GKR;
- 		break;
-+	case MDIO_PHYXS_VEND_IF_STATUS_TYPE_XFI:
-+		phydev->interface = PHY_INTERFACE_MODE_10GBASER;
-+		break;
- 	case MDIO_PHYXS_VEND_IF_STATUS_TYPE_USXGMII:
- 		phydev->interface = PHY_INTERFACE_MODE_USXGMII;
- 		break;
-@@ -493,7 +495,8 @@ static int aqr107_config_init(struct phy_device *phydev)
- 	    phydev->interface != PHY_INTERFACE_MODE_2500BASEX &&
- 	    phydev->interface != PHY_INTERFACE_MODE_XGMII &&
- 	    phydev->interface != PHY_INTERFACE_MODE_USXGMII &&
--	    phydev->interface != PHY_INTERFACE_MODE_10GKR)
-+	    phydev->interface != PHY_INTERFACE_MODE_10GKR &&
-+	    phydev->interface != PHY_INTERFACE_MODE_10GBASER)
- 		return -ENODEV;
- 
- 	WARN(phydev->interface == PHY_INTERFACE_MODE_XGMII,
-diff --git a/drivers/net/phy/bcm84881.c b/drivers/net/phy/bcm84881.c
-index db59911b9b3c..14d55a77eb28 100644
---- a/drivers/net/phy/bcm84881.c
-+++ b/drivers/net/phy/bcm84881.c
-@@ -53,7 +53,7 @@ static int bcm84881_config_init(struct phy_device *phydev)
- 	switch (phydev->interface) {
- 	case PHY_INTERFACE_MODE_SGMII:
- 	case PHY_INTERFACE_MODE_2500BASEX:
--	case PHY_INTERFACE_MODE_10GKR:
-+	case PHY_INTERFACE_MODE_10GBASER:
- 		break;
- 	default:
- 		return -ENODEV;
-@@ -218,7 +218,7 @@ static int bcm84881_read_status(struct phy_device *phydev)
- 	if (mode == 1 || mode == 2)
- 		phydev->interface = PHY_INTERFACE_MODE_SGMII;
- 	else if (mode == 3)
--		phydev->interface = PHY_INTERFACE_MODE_10GKR;
-+		phydev->interface = PHY_INTERFACE_MODE_10GBASER;
- 	else if (mode == 4)
- 		phydev->interface = PHY_INTERFACE_MODE_2500BASEX;
- 	switch (mode & 7) {
-diff --git a/drivers/net/phy/marvell10g.c b/drivers/net/phy/marvell10g.c
-index 512f27b0b5cd..64c9f3bba2cd 100644
---- a/drivers/net/phy/marvell10g.c
-+++ b/drivers/net/phy/marvell10g.c
-@@ -216,7 +216,7 @@ static int mv3310_sfp_insert(void *upstream, const struct sfp_eeprom_id *id)
- 	sfp_parse_support(phydev->sfp_bus, id, support);
- 	iface = sfp_select_interface(phydev->sfp_bus, support);
- 
--	if (iface != PHY_INTERFACE_MODE_10GKR) {
-+	if (iface != PHY_INTERFACE_MODE_10GBASER) {
- 		dev_err(&phydev->mdio.dev, "incompatible SFP module inserted\n");
- 		return -EINVAL;
- 	}
-@@ -304,7 +304,7 @@ static int mv3310_config_init(struct phy_device *phydev)
- 	    phydev->interface != PHY_INTERFACE_MODE_2500BASEX &&
- 	    phydev->interface != PHY_INTERFACE_MODE_XAUI &&
- 	    phydev->interface != PHY_INTERFACE_MODE_RXAUI &&
--	    phydev->interface != PHY_INTERFACE_MODE_10GKR)
-+	    phydev->interface != PHY_INTERFACE_MODE_10GBASER)
- 		return -ENODEV;
- 
- 	return 0;
-@@ -386,16 +386,17 @@ static void mv3310_update_interface(struct phy_device *phydev)
- {
- 	if ((phydev->interface == PHY_INTERFACE_MODE_SGMII ||
- 	     phydev->interface == PHY_INTERFACE_MODE_2500BASEX ||
--	     phydev->interface == PHY_INTERFACE_MODE_10GKR) && phydev->link) {
-+	     phydev->interface == PHY_INTERFACE_MODE_10GBASER) &&
-+	    phydev->link) {
- 		/* The PHY automatically switches its serdes interface (and
--		 * active PHYXS instance) between Cisco SGMII, 10GBase-KR and
-+		 * active PHYXS instance) between Cisco SGMII, 10GBase-R and
- 		 * 2500BaseX modes according to the speed.  Florian suggests
- 		 * setting phydev->interface to communicate this to the MAC.
- 		 * Only do this if we are already in one of the above modes.
- 		 */
- 		switch (phydev->speed) {
- 		case SPEED_10000:
--			phydev->interface = PHY_INTERFACE_MODE_10GKR;
-+			phydev->interface = PHY_INTERFACE_MODE_10GBASER;
- 			break;
- 		case SPEED_2500:
- 			phydev->interface = PHY_INTERFACE_MODE_2500BASEX;
-diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
-index ba9468cc8e13..cf9ce4b67826 100644
---- a/drivers/net/phy/phylink.c
-+++ b/drivers/net/phy/phylink.c
-@@ -298,6 +298,7 @@ static int phylink_parse_mode(struct phylink *pl, struct fwnode_handle *fwnode)
- 			break;
- 
- 		case PHY_INTERFACE_MODE_10GKR:
-+		case PHY_INTERFACE_MODE_10GBASER:
- 			phylink_set(pl->supported, 10baseT_Half);
- 			phylink_set(pl->supported, 10baseT_Full);
- 			phylink_set(pl->supported, 100baseT_Half);
-diff --git a/drivers/net/phy/sfp-bus.c b/drivers/net/phy/sfp-bus.c
-index 06e6429b8b71..d949ea7b4f8c 100644
---- a/drivers/net/phy/sfp-bus.c
-+++ b/drivers/net/phy/sfp-bus.c
-@@ -373,7 +373,7 @@ phy_interface_t sfp_select_interface(struct sfp_bus *bus,
- 	    phylink_test(link_modes, 10000baseLRM_Full) ||
- 	    phylink_test(link_modes, 10000baseER_Full) ||
- 	    phylink_test(link_modes, 10000baseT_Full))
--		return PHY_INTERFACE_MODE_10GKR;
-+		return PHY_INTERFACE_MODE_10GBASER;
- 
- 	if (phylink_test(link_modes, 2500baseX_Full))
- 		return PHY_INTERFACE_MODE_2500BASEX;
-diff --git a/drivers/phy/marvell/phy-mvebu-cp110-comphy.c b/drivers/phy/marvell/phy-mvebu-cp110-comphy.c
-index e3b87c94aaf6..e41367f36ee1 100644
---- a/drivers/phy/marvell/phy-mvebu-cp110-comphy.c
-+++ b/drivers/phy/marvell/phy-mvebu-cp110-comphy.c
-@@ -221,7 +221,7 @@ static const struct mvebu_comphy_conf mvebu_comphy_cp110_modes[] = {
- 	ETH_CONF(2, 0, PHY_INTERFACE_MODE_SGMII, 0x1, COMPHY_FW_MODE_SGMII),
- 	ETH_CONF(2, 0, PHY_INTERFACE_MODE_2500BASEX, 0x1, COMPHY_FW_MODE_HS_SGMII),
- 	ETH_CONF(2, 0, PHY_INTERFACE_MODE_RXAUI, 0x1, COMPHY_FW_MODE_RXAUI),
--	ETH_CONF(2, 0, PHY_INTERFACE_MODE_10GKR, 0x1, COMPHY_FW_MODE_XFI),
-+	ETH_CONF(2, 0, PHY_INTERFACE_MODE_10GBASER, 0x1, COMPHY_FW_MODE_XFI),
- 	GEN_CONF(2, 0, PHY_MODE_USB_HOST_SS, COMPHY_FW_MODE_USB3H),
- 	GEN_CONF(2, 0, PHY_MODE_SATA, COMPHY_FW_MODE_SATA),
- 	GEN_CONF(2, 0, PHY_MODE_PCIE, COMPHY_FW_MODE_PCIE),
-@@ -235,14 +235,14 @@ static const struct mvebu_comphy_conf mvebu_comphy_cp110_modes[] = {
- 	/* lane 4 */
- 	ETH_CONF(4, 0, PHY_INTERFACE_MODE_SGMII, 0x2, COMPHY_FW_MODE_SGMII),
- 	ETH_CONF(4, 0, PHY_INTERFACE_MODE_2500BASEX, 0x2, COMPHY_FW_MODE_HS_SGMII),
--	ETH_CONF(4, 0, PHY_INTERFACE_MODE_10GKR, 0x2, COMPHY_FW_MODE_XFI),
-+	ETH_CONF(4, 0, PHY_INTERFACE_MODE_10GBASER, 0x2, COMPHY_FW_MODE_XFI),
- 	ETH_CONF(4, 0, PHY_INTERFACE_MODE_RXAUI, 0x2, COMPHY_FW_MODE_RXAUI),
- 	GEN_CONF(4, 0, PHY_MODE_USB_DEVICE_SS, COMPHY_FW_MODE_USB3D),
- 	GEN_CONF(4, 1, PHY_MODE_USB_HOST_SS, COMPHY_FW_MODE_USB3H),
- 	GEN_CONF(4, 1, PHY_MODE_PCIE, COMPHY_FW_MODE_PCIE),
- 	ETH_CONF(4, 1, PHY_INTERFACE_MODE_SGMII, 0x1, COMPHY_FW_MODE_SGMII),
- 	ETH_CONF(4, 1, PHY_INTERFACE_MODE_2500BASEX, -1, COMPHY_FW_MODE_HS_SGMII),
--	ETH_CONF(4, 1, PHY_INTERFACE_MODE_10GKR, -1, COMPHY_FW_MODE_XFI),
-+	ETH_CONF(4, 1, PHY_INTERFACE_MODE_10GBASER, -1, COMPHY_FW_MODE_XFI),
- 	/* lane 5 */
- 	ETH_CONF(5, 1, PHY_INTERFACE_MODE_RXAUI, 0x2, COMPHY_FW_MODE_RXAUI),
- 	GEN_CONF(5, 1, PHY_MODE_SATA, COMPHY_FW_MODE_SATA),
-@@ -342,7 +342,7 @@ static int mvebu_comphy_ethernet_init_reset(struct mvebu_comphy_lane *lane)
- 		 MVEBU_COMPHY_SERDES_CFG0_RXAUI_MODE);
- 
- 	switch (lane->submode) {
--	case PHY_INTERFACE_MODE_10GKR:
-+	case PHY_INTERFACE_MODE_10GBASER:
- 		val |= MVEBU_COMPHY_SERDES_CFG0_GEN_RX(0xe) |
- 		       MVEBU_COMPHY_SERDES_CFG0_GEN_TX(0xe);
- 		break;
-@@ -417,7 +417,7 @@ static int mvebu_comphy_ethernet_init_reset(struct mvebu_comphy_lane *lane)
- 	/* refclk selection */
- 	val = readl(priv->base + MVEBU_COMPHY_MISC_CTRL0(lane->id));
- 	val &= ~MVEBU_COMPHY_MISC_CTRL0_REFCLK_SEL;
--	if (lane->submode == PHY_INTERFACE_MODE_10GKR)
-+	if (lane->submode == PHY_INTERFACE_MODE_10GBASER)
- 		val |= MVEBU_COMPHY_MISC_CTRL0_ICP_FORCE;
- 	writel(val, priv->base + MVEBU_COMPHY_MISC_CTRL0(lane->id));
- 
-@@ -564,7 +564,7 @@ static int mvebu_comphy_set_mode_rxaui(struct phy *phy)
- 	return mvebu_comphy_init_plls(lane);
- }
- 
--static int mvebu_comphy_set_mode_10gkr(struct phy *phy)
-+static int mvebu_comphy_set_mode_10gbaser(struct phy *phy)
- {
- 	struct mvebu_comphy_lane *lane = phy_get_drvdata(phy);
- 	struct mvebu_comphy_priv *priv = lane->priv;
-@@ -735,8 +735,8 @@ static int mvebu_comphy_power_on_legacy(struct phy *phy)
- 	case PHY_INTERFACE_MODE_RXAUI:
- 		ret = mvebu_comphy_set_mode_rxaui(phy);
- 		break;
--	case PHY_INTERFACE_MODE_10GKR:
--		ret = mvebu_comphy_set_mode_10gkr(phy);
-+	case PHY_INTERFACE_MODE_10GBASER:
-+		ret = mvebu_comphy_set_mode_10gbaser(phy);
- 		break;
- 	default:
- 		return -ENOTSUPP;
-@@ -782,8 +782,8 @@ static int mvebu_comphy_power_on(struct phy *phy)
- 				lane->id);
- 			fw_speed = COMPHY_FW_SPEED_3125;
- 			break;
--		case PHY_INTERFACE_MODE_10GKR:
--			dev_dbg(priv->dev, "set lane %d to 10G-KR mode\n",
-+		case PHY_INTERFACE_MODE_10GBASER:
-+			dev_dbg(priv->dev, "set lane %d to 10GBASE-R mode\n",
- 				lane->id);
- 			fw_speed = COMPHY_FW_SPEED_103125;
- 			break;
--- 
-2.20.1
-
+PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBSdXNzZWxsIEtpbmcgLSBBUk0g
+TGludXggYWRtaW4gPGxpbnV4QGFybWxpbnV4Lm9yZy51az4NCj4gU2VudDogRnJpZGF5LCBKYW51
+YXJ5IDMsIDIwMjAgMTE6NDIgQU0NCj4gVG86IE1hZGFsaW4gQnVjdXIgKE9TUykgPG1hZGFsaW4u
+YnVjdXJAb3NzLm54cC5jb20+DQo+IENjOiBkZXZpY2V0cmVlQHZnZXIua2VybmVsLm9yZzsgZGF2
+ZW1AZGF2ZW1sb2Z0Lm5ldDsNCj4gbmV0ZGV2QHZnZXIua2VybmVsLm9yZzsgYW5kcmV3QGx1bm4u
+Y2g7IGYuZmFpbmVsbGlAZ21haWwuY29tOw0KPiBoa2FsbHdlaXQxQGdtYWlsLmNvbTsgc2hhd25n
+dW9Aa2VybmVsLm9yZw0KPiBTdWJqZWN0OiBSZTogW1BBVENIIDEvNl0gbmV0OiBwaHk6IGFkZCBp
+bnRlcmZhY2UgbW9kZXMgZm9yIFhGSSwgU0ZJDQo+IA0KPiBPbiBGcmksIEphbiAwMywgMjAyMCBh
+dCAwOToyNzoxOEFNICswMDAwLCBSdXNzZWxsIEtpbmcgLSBBUk0gTGludXggYWRtaW4NCj4gd3Jv
+dGU6DQo+ID4gTWVyZWx5IHNwZWNpZnlpbmcgInhmaSIgZG9lcyBub3QgdGVsbCB5b3Ugd2hhdCB5
+b3UgbmVlZCB0byBkbyB0byBhY2hpZXZlDQo+ID4gWEZJIGNvbXBsaWFuY2UgYXQgdGhlIHBvaW50
+IGRlZmluZWQgaW4gSU5GODA3N2kuICBQbHVzLCBYRkkgY2FuIGFsc28gYmUNCj4gPiBwcm90b2Nv
+bHMgX290aGVyXyB0aGFuIDEwR0JBU0UtUi4NCj4gPg0KPiA+IENsYWltaW5nIHRoYXQgIlhGSSIg
+cHJvcGVybHkgZGVmaW5lcyB0aGUgaW50ZXJmYWNlIGlzIHV0dGVyIHJ1YmJpc2guIEl0DQo+ID4g
+ZG9lcyBub3QuIFhGSSBkZWZpbmVzIHRoZSBlbGVjdHJpY2FsIGNoYXJhY3RlcmlzdGljcyAqb25s
+eSogYW5kIG5vdA0KPiA+IHRoZSB1bmRlcmx5aW5nIHByb3RvY29sLiBJdCBpcyBub3QgbGltaXRl
+ZCB0byAxMEdCQVNFLVIsIGJ1dCBpbmNsdWRlcw0KPiA+IG90aGVyIHByb3RvY29scyBhcyB3ZWxs
+Lg0KPiANCj4gTGV0IG1lIHF1b3RlIGZyb20gSU5GLTgwNzdpLCB3aGljaCBpcyB0aGUgWEZQIE1T
+QSwgdGhlIGRvY3VtZW50DQo+IHJlc3BvbnNpYmxlIGZvciBkZWZpbmluZyBYRkk6DQo+IA0KPiAz
+LjEgSU5UUk9EVUNUSU9ODQo+ICAgIFhGSSBzaWduYWxpbmcgaXMgYmFzZWQgb24gaGlnaCBzcGVl
+ZCBsb3cgdm9sdGFnZSBsb2dpYywgd2l0aCBub21pbmFsDQo+IDEwMA0KPiAgICBPaG1zIGRpZmZl
+cmVudGlhbCBpbXBlZGFuY2UgYW5kIEFDIGNvdXBsZWQgaW4gdGhlIG1vZHVsZS4gWEZJIHdhcyBk
+ZS0NCj4gICAgdmVsb3BlZCB3aXRoIHRoZSBwcmltYXJ5IGdvYWwgb2YgbG93IHBvd2VyIGFuZCBs
+b3cgRWxlY3Ryby1NYWduZXRpYy1Jbi0NCj4gDQo+ICAgIHRlcmZlcmVuY2UgKEVNSSkuIFRvIHNh
+dGlzZnkgdGhpcyByZXF1aXJlbWVudCB0aGUgbm9taW5hbCBkaWZmZXJlbnRpYWwNCj4gc2lnbmFs
+ICAgbGV2ZWxzIGFyZSA1MDAgbVYgcC1wIHdpdGggZWRnZSBzcGVlZCBjb250cm9sIHRvIHJlZHVj
+ZSBFTUkuDQo+IA0KPiAzLjIgWEZJIEFQUExJQ0FUSU9OUyBERUZJTklUSU9ODQo+ICAgIFRoZSBh
+cHBsaWNhdGlvbiByZWZlcmVuY2UgbW9kZWwgZm9yIFhGSSwgd2hpY2ggY29ubmVjdHMgYSBoaWdo
+IHNwZWVkDQo+ICAgIEFTSUMvU0VSREVTIHRvIHRoZSBYRlAgbW9kdWxlIGlzIHNob3duIGluIEZp
+Z3VyZSA0LiBUaGUgWEZJIGludGVyZmFjZQ0KPiAgICBpcyBkZXNpZ25lZCB0byBzdXBwb3J0IFNP
+TkVUIE9DLTE5MiwgSUVFRS5TdGQtODAyLjNhZSwgMTBHRkMgYW5kDQo+ICAgIEcuNzA5KE9UVS0y
+KSBhcHBsaWNhdGlvbnMuIFRoZSBTRVJERVMgaXMgcmVxdWlyZWQgdG8gbWVldCB0aGUgYXBwbGlj
+YS0NCj4gICAgdGlvbiByZXF1aXJlbWVudHMgZm9yIGppdHRlciBnZW5lcmF0aW9uIGFuZCB0cmFu
+c2ZlciB3aGVuIGludGVyZmFjZWQNCj4gd2l0aCBhDQo+ICAgIGNvbXBsaWFudCBYRlAgbW9kdWxl
+IHRocm91Z2ggYW4gWEZQIGNvbXBsaWFudCBjaGFubmVsLiBNb2R1bGVzIG9yDQo+IA0KPiAgICBo
+b3N0cyBkZXNpZ25lZCBvbmx5IGZvciAxMCBHaWdhYml0IEV0aGVybmV0IG9yIDEwR0ZDIGFyZSBu
+b3QgcmVxdWlyZWQNCj4gdG8NCj4gICAgbWVldCBtb3JlIHN0cmluZ2VudCBUZWxlY29tIGppdHRl
+ciByZXF1aXJlbWVudHMuIFhGSSBzdXBwb3J0ZWQgZGF0YQ0KPiAgICByYXRlcyBhcmUgbGlzdGVk
+IGluIFRhYmxlIDUuIFhGUCBjb21wbGlhbnQgbW9kdWxlIGFyZSBub3QgcmVxdWlyZWQgdG8NCj4g
+c3VwLQ0KPiAgICBwb3J0IGFsbCB0aGUgcmF0ZXMgbGlzdGVkIGluIFRhYmxlIDUgaW4gc2ltdWx0
+YW5lb3VzbHkuDQo+IA0KPiAgICBTdGFuZGFyZCAgICAgICAgICAgICAgICAgICAgICAgICAgICBE
+ZXNjcmlwdGlvbiAgICAgICAgICAgTm9taW5hbCBCaXQNCj4gUmF0ZSAgICAgVW5pdHMNCj4gICAg
+T0MtMTkyL1NESC02NCAgICAgICAgICAgICAgICAgICAgICAgICBTT05FVCAgICAgICAgICAgICAg
+ICAgICAgIDkuOTUNCj4gR2lnYWJhdWQNCj4gICAgSUVFRSBzdGQtODAyLjNhZSAgICAgICAgICAg
+ICAxMCBHYi9zIEV0aGVybmV0IExBTiBQSFkgICAgICAgICAgIDEwLjMxDQo+IEdpZ2FiYXVkDQo+
+ICAgIElOQ0lUUy9UMTEgUHJvamVjdCAxNDEzLUQgICAgICAgICAgICAgMTBHRkMgICAgICAgICAg
+ICAgICAgICAgICAxMC41Mg0KPiBHaWdhYmF1ZA0KPiAgICBJVFUgRy43MDkoT1RVLTIpICAgICAg
+ICAgICAgICAgICBPQy0xOTIgT3ZlciBGRUMgICAgICAgICAgICAgICAgMTAuNzANCj4gR2lnYWJh
+dWQNCj4gICAgRW1lcmdpbmcgICAgICAgICAgICAgICAgICAgICAxMEdiL3MgRXRoZXJuZXQgT3Zl
+ciBHLjcwOSAgICAgICAgIDExLjA5DQo+IEdpZ2FiYXVkDQo+IA0KPiBTbyBoZXJlLCB3ZSBjYW4g
+Y2xlYXJseSBzZWUgdGhhdCBpdCdzIHBvc3NpYmxlIHRvIHJ1biBTT05FVCwgMTBHQkFTRS1SLA0K
+PiAxMEcgRmliZXJjaGFubmVsLCBPQy0xOTIsIGFuZCBHLjcwOSBvdmVyIFhGSSwgc28gWEZJIGRv
+ZXMgbm90IGRlc2NyaWJlDQo+IF9qdXN0XyBldGhlcm5ldC4gSWYgd2UncmUgZ29pbmcgdG8gYmUg
+Y29uZmlndXJpbmcgYSBzZXJkZXMgdG8gb3V0cHV0DQo+IFhGSSwgd2UgbmVlZCB0byBrbm93IGEg
+bG90IG1vcmUgdGhhbiBqdXN0ICJYRkkiLg0KPiANCj4gICAgWEZJIENvbXBsaWFuY2UgcG9pbnRz
+IGFyZSBkZWZpbmVkIGFzIHRoZSBmb2xsb3dpbmc6DQo+IA0KPiAgICDigKIgICBBOiBTZXJEZXMg
+dHJhbnNtaXR0ZXIgb3V0cHV0IGF0IEFTSUMvU2VyRGVzIHBhY2thZ2UgcGluIG9uIGEgRFVUDQo+
+ICAgICAgICBib2FyZCAzLjYgYW5kIEEuMQ0KPiAgICDigKIgICBCOiBIb3N0IHN5c3RlbSBTZXJE
+ZXMgb3V0cHV0IGFjcm9zcyB0aGUgaG9zdCBib2FyZCBhbmQgY29ubmVjdG9yDQo+ICAgICAgICBh
+dCB0aGUgSG9zdCBDb21wbGlhbmNlIFRlc3QgQ2FyZCAzLjcuMSBhbmQgQS4yDQo+ICAgIOKAoiAg
+IEInOiBYRlAgdHJhbnNtaXR0ZXIgaW5wdXQgYWNyb3NzIHRoZSBNb2R1bGUgQ29tcGxpYW5jZSBU
+ZXN0IEJvYXJkDQo+ICAgICAgICAzLjguMSBhbmQgQS4zLg0KPiAgICDigKIgICBDOiBIb3N0IHN5
+c3RlbSBpbnB1dCBhdCB0aGUgSG9zdCBDb21wbGlhbmNlIFRlc3QgQ2FyZCBpbnB1dCAzLjcuMg0K
+PiAgICAgICAgYW5kIEEuMg0KPiAgICDigKIgICBDJzogWEZQIG1vZHVsZSBvdXRwdXQgYWNyb3Nz
+IHRoZSBNb2R1bGUgQ29tcGxpYW5jZSBUZXN0IEJvYXJkDQo+ICAgICAgICAzLjguMiBhbmQgQS4z
+Lg0KPiANCj4gICAg4oCiICAgRDogQVNJQy9TZXJEZXMgaW5wdXQgcGFja2FnZSBwaW4gb24gdGhl
+IERVVCBib2FyZCAzLjYuMiBhbmQgQS4xLg0KPiANCj4gICAgQVNJQy9TZXJEZXMgY29tcGxpYW5j
+ZSBwb2ludHMgYXJlIGluZm9ybWF0aXZlLg0KPiANCj4gU28gdGhlIGVsZWN0cmljYWwgcG9pbnRz
+IHRoYXQgY291bnQgYXJlIEIsIEInLCBDIGFuZCBDJy4gQSBhbmQgRA0KPiBhcmUgbWVyZWx5ICJp
+bmZvcm1hdGl2ZSIuICBIZW5jZSwgY29tcGxpYW5jZSB3aXRoIFhGSSBpcyByZXF1aXJlZA0KPiB0
+byB0YWtlIHRoZSBlbnRpcmUgcGxhdGZvcm0gaW50byBhY2NvdW50LCBub3QganVzdCB0aGUgb3V0
+cHV0IG9mDQo+IHRoZSBzZXJkZXMvYXNpYy4gIFRoYXQgbWVhbnMgdGhlIHBlcmZvcm1hbmNlIG9m
+IHRoZSBQQ0IgbmVlZHMgdG8NCj4gYmUgZGVzY3JpYmVkIGluIERUIGlmIHlvdSB3YW50IHRvIGFj
+aGlldmUgY29tcGxpYW5jZSB3aXRoIFhGSS4NCj4gcGh5X2ludGVyZmFjZV90IGNhbid0IGRvIHRo
+YXQuDQo+IA0KPiBTbywgbGV0IG1lIHJlLWl0ZXJhdGU6IG5laXRoZXIgWEZJIG5vciBTRkkgYXJl
+IHN1aXRhYmxlIGZvcg0KPiBwaHlfaW50ZXJmYWNlX3QuIFhGSSBkZWZpbmVzIG1lcmVseSBhIGdy
+b3VwIG9mIHBvc3NpYmxlIHByb3RvY29scw0KPiBhbmQgYW4gZWxlY3RyaWNhbCBzcGVjaWZpY2F0
+aW9uLiBJdCBkb2Vzbid0IHRlbGwgeW91IHdoaWNoIG9mIHRob3NlDQo+IHByb3RvY29scyB5b3Ug
+c2hvdWxkIGJlIHVzaW5nLg0KDQpUaGUgZGlzY29ubmVjdCBpcyB5b3UgYXJlIGZvY3VzZWQgb24g
+cGh5X2ludGVyZmFjZV90IGFuZCBJJ20gbG9va2luZyBhdA0KdGhlIGRldmljZSB0cmVlIGFzIHRo
+ZXJlJ3Mgd2hlcmUgb25lIHN0YXJ0cyAoYWN0dWFsbHkgYXQgdGhlIGRldmljZSB0cmVlDQpiaW5k
+aW5nIGRvY3VtZW50KS4gWW91ciBjb25jZXJuIGlzIHdpdGggY29uZmlndXJpbmcgdGhlIEhXIHRv
+IHVzZSBhIGNlcnRhaW4NClBDUyBzZXR0aW5nLCB0aHVzIDEwR0JBU0UtUiwgd2hpbGUgSSdtIGNv
+bmNlcm5lZCB3aXRoIHRoZSBmYWN0IHRoZSBkZXZpY2UNCnRyZWUgbXVzdCBub3QgY29uZmlndXJl
+IHNvZnR3YXJlIGJ1dCBkZXNjcmliZSBIVy4gU28gbGV0J3MgZG8gc29tZSBhcmNoZW9sb2d5DQpv
+biB0aGUgbWF0dGVyLCB0byB0cnkgdG8gdW5kZXJzdGFuZCB3aGVyZSB0aGlzIGlzIGNvbWluZyBm
+cm9tLg0KDQpBIGRldmljZSB0cmVlIGVudHJ5IHRoYXQgZGVzY3JpYmVkIHRoZSBlbGVjdHJpY2Fs
+IGludGVyZmFjZSBiZXR3ZWVuIHRoZSBjaGlwDQpoYXJib3JpbmcgYW4gRXRoZXJuZXQgTUFDIGJs
+b2MgYW5kIGFub3RoZXIgY2hpcCB0aGF0IHNlcnZlZCB0aGUgcHVycG9zZSBvZiBhbg0KRXRoZXJu
+ZXQgUEhZIHdhcyBuZWVkZWQuIEluIHRoZSBwYXN0IHRoaXMgcGFyYW1ldGVyIHdhcyAicGh5LWNv
+bm5lY3Rpb24tdHlwZSIuDQpXZSBmaW5kIGl0IGRldGFpbGVkIGluIGtlcm5lbCB2My4wIGluIA0K
+RG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdzL25ldC9mc2wtdHNlYy1waHkudHh0OjUy
+DQoNCiAgLSBwaHktY29ubmVjdGlvbi10eXBlIDogYSBzdHJpbmcgbmFtaW5nIHRoZSBjb250cm9s
+bGVyL1BIWSBpbnRlcmZhY2UgdHlwZSwNCiAgICBpLmUuLCAibWlpIiAoZGVmYXVsdCksICJybWlp
+IiwgImdtaWkiLCAicmdtaWkiLCAicmdtaWktaWQiLCAic2dtaWkiLA0KICAgICJ0YmkiLCBvciAi
+cnRiaSIuICBUaGlzIHByb3BlcnR5IGlzIG9ubHkgcmVhbGx5IG5lZWRlZCBpZiB0aGUgY29ubmVj
+dGlvbg0KICAgIGlzIG9mIHR5cGUgInJnbWlpLWlkIiwgYXMgYWxsIG90aGVyIGNvbm5lY3Rpb24g
+dHlwZXMgYXJlIGRldGVjdGVkIGJ5DQogICAgaGFyZHdhcmUuDQoNCkxhdGVyLCBpbiBrZXJuZWwg
+dmVyc2lvbiB2NC4wIHdlIGZpbmQgaXQgZGVzY3JpYmVkIGluIA0KRG9jdW1lbnRhdGlvbi9kZXZp
+Y2V0cmVlL2JpbmRpbmdzL25ldC9ldGhlcm5ldC50eHQ6MTYNCg0KLSBwaHktbW9kZTogc3RyaW5n
+LCBvcGVyYXRpb24gbW9kZSBvZiB0aGUgUEhZIGludGVyZmFjZTsgc3VwcG9ydGVkIHZhbHVlcyBh
+cmUNCiAgIm1paSIsICJnbWlpIiwgInNnbWlpIiwgInFzZ21paSIsICJ0YmkiLCAicmV2LW1paSIs
+ICJybWlpIiwgInJnbWlpIiwgInJnbWlpLWlkIiwNCiAgInJnbWlpLXJ4aWQiLCAicmdtaWktdHhp
+ZCIsICJydGJpIiwgInNtaWkiLCAieGdtaWkiOyB0aGlzIGlzIG5vdyBhIGRlLWZhY3RvDQogIHN0
+YW5kYXJkIHByb3BlcnR5Ow0KLSBwaHktY29ubmVjdGlvbi10eXBlOiB0aGUgc2FtZSBhcyAicGh5
+LW1vZGUiIHByb3BlcnR5IGJ1dCBkZXNjcmliZWQgaW4gZVBBUFI7DQoNCk5vdyAodjUuNS1yYzMp
+IHdlIGZpbmQgaXQgbW92ZWQgdG8NCkRvY3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9u
+ZXQvZXRoZXJuZXQtY29udHJvbGxlci55YW1sOjU3Og0KDQogIHBoeS1jb25uZWN0aW9uLXR5cGU6
+DQogICAgZGVzY3JpcHRpb246DQogICAgICBPcGVyYXRpb24gbW9kZSBvZiB0aGUgUEhZIGludGVy
+ZmFjZQ0KICAgIGVudW06DQogICAgICAjIFRoZXJlIGlzIG5vdCBhIHN0YW5kYXJkIGJ1cyBiZXR3
+ZWVuIHRoZSBNQUMgYW5kIHRoZSBQSFksDQogICAgICAjIHNvbWV0aGluZyBwcm9wcmlldGFyeSBp
+cyBiZWluZyB1c2VkIHRvIGVtYmVkIHRoZSBQSFkgaW4gdGhlDQogICAgICAjIE1BQy4NCiAgICAg
+IC0gaW50ZXJuYWwNCiAgICAgIC0gbWlpDQogICAgICAtIGdtaWkNCiAgICAgIC0gc2dtaWkNCiAg
+ICAgIC0gcXNnbWlpDQogICAgICAtIHRiaQ0KICAgICAgLSByZXYtbWlpDQogICAgICAtIHJtaWkN
+Cg0KICAgICAgIyBSWCBhbmQgVFggZGVsYXlzIGFyZSBhZGRlZCBieSB0aGUgTUFDIHdoZW4gcmVx
+dWlyZWQNCiAgICAgIC0gcmdtaWkNCg0KICAgICAgIyBSR01JSSB3aXRoIGludGVybmFsIFJYIGFu
+ZCBUWCBkZWxheXMgcHJvdmlkZWQgYnkgdGhlIFBIWSwNCiAgICAgICMgdGhlIE1BQyBzaG91bGQg
+bm90IGFkZCB0aGUgUlggb3IgVFggZGVsYXlzIGluIHRoaXMgY2FzZQ0KICAgICAgLSByZ21paS1p
+ZA0KDQogICAgICAjIFJHTUlJIHdpdGggaW50ZXJuYWwgUlggZGVsYXkgcHJvdmlkZWQgYnkgdGhl
+IFBIWSwgdGhlIE1BQw0KICAgICAgIyBzaG91bGQgbm90IGFkZCBhbiBSWCBkZWxheSBpbiB0aGlz
+IGNhc2UNCiAgICAgIC0gcmdtaWktcnhpZA0KDQogICAgICAjIFJHTUlJIHdpdGggaW50ZXJuYWwg
+VFggZGVsYXkgcHJvdmlkZWQgYnkgdGhlIFBIWSwgdGhlIE1BQw0KICAgICAgIyBzaG91bGQgbm90
+IGFkZCBhbiBUWCBkZWxheSBpbiB0aGlzIGNhc2UNCiAgICAgIC0gcmdtaWktdHhpZA0KICAgICAg
+LSBydGJpDQogICAgICAtIHNtaWkNCiAgICAgIC0geGdtaWkgDQogICAgICAtIHRyZ21paQ0KICAg
+ICAgLSAxMDAwYmFzZS14DQogICAgICAtIDI1MDBiYXNlLXgNCiAgICAgIC0gcnhhdWkNCiAgICAg
+IC0geGF1aQ0KDQogICAgICAjIDEwR0JBU0UtS1IsIFhGSSwgU0ZJDQogICAgICAtIDEwZ2Jhc2Ut
+a3INCiAgICAgIC0gdXN4Z21paQ0KDQogIHBoeS1tb2RlOg0KICAgICRyZWY6ICIjL3Byb3BlcnRp
+ZXMvcGh5LWNvbm5lY3Rpb24tdHlwZSINCg0KQXQgZWFjaCBzdGVwLCBpdCB3YXMgY2hhbmdlZCBh
+IGJpdC4gSXQgc3RhcnRlZCBieSBkZXNjcmliaW5nIHRoZSBhY3R1YWwgTUlJDQpjb25uZWN0aW9u
+IChSR01JSSwgU0dNSUksIFhHTUlJKS4gTGF0ZXIgaXMgd2FzIGNoYW5nZWQgdG8gZGVub3RlICJv
+cGVyYXRpb24NCm1vZGUiIG9mIHRoZSBpbnRlcmZhY2UuIFRoZXJlIGlzIG5vIHJlZmVyZW5jZSBo
+ZXJlIHRvIFBDUyBjb25maWd1cmF0aW9uIChpdA0KY291bGQgbm90IGJlIGFzIHRoZSBkZXZpY2Ug
+dHJlZSBkb2VzIG5vdCBjb25maWd1cmUgYnV0IGRlc2NyaWJlcyB0aGUgSFcpLiBJDQpzZWUgbm8g
+cmVmZXJlbmNlIGFib3V0IHRoaXMgZGV2aWNlIHRyZWUgZW50cnkgZGVzY3JpYmluZyB0aGUgcHJv
+dG9jb2wgb25seQ0KKEknbSByZWZlcnJpbmcgdG8geW91ciBzZWNvbmQgcmVwbHkgb24gdGhpcyBo
+ZXJlKS4gSWYgdGhlIGRldmljZSB0cmVlIGJpbmRpbmcNCmRvZXMgbm90IGRlc2NyaWJlIHRoZSBw
+cm90b2NvbCBvbmx5LCBidXQgd2hlbiBpdCdzIHBhcnNlZCBpbiBzb2Z0d2FyZSwgaW50bw0KdGhl
+IHBoeV9pbnRlcmZhY2VfdCBpdCBkZXNjcmliZXMgb25seSB0aGUgcHJvdG9jb2wgYW5kIG5vdCB0
+aGUgYWN0dWFsIGludGVyZmFjZQ0KdHlwZSgibW9kZSIpLCB0aGVuIHdlIGhhdmUgYSBkaXNjb25u
+ZWN0IGhlcmUuIFRoaXMgdHlwZSBpcyBkZXNjcmliZWQgYXM6DQoNCi8qIEludGVyZmFjZSBNb2Rl
+IGRlZmluaXRpb25zICovDQp0eXBlZGVmIGVudW0gew0KICAgICAgICBQSFlfSU5URVJGQUNFX01P
+REVfTkEsDQogICAgICAgIFBIWV9JTlRFUkZBQ0VfTU9ERV9JTlRFUk5BTCwNCiAgICAgICAgUEhZ
+X0lOVEVSRkFDRV9NT0RFX01JSSwNCiAgICAgICAgUEhZX0lOVEVSRkFDRV9NT0RFX0dNSUksDQog
+ICAgICAgIFBIWV9JTlRFUkZBQ0VfTU9ERV9TR01JSSwNCiAgICAgICAgUEhZX0lOVEVSRkFDRV9N
+T0RFX1RCSSwNCiAgICAgICAgUEhZX0lOVEVSRkFDRV9NT0RFX1JFVk1JSSwNCiAgICAgICAgUEhZ
+X0lOVEVSRkFDRV9NT0RFX1JNSUksDQogICAgICAgIFBIWV9JTlRFUkZBQ0VfTU9ERV9SR01JSSwN
+CiAgICAgICAgUEhZX0lOVEVSRkFDRV9NT0RFX1JHTUlJX0lELA0KICAgICAgICBQSFlfSU5URVJG
+QUNFX01PREVfUkdNSUlfUlhJRCwNCiAgICAgICAgUEhZX0lOVEVSRkFDRV9NT0RFX1JHTUlJX1RY
+SUQsDQogICAgICAgIFBIWV9JTlRFUkZBQ0VfTU9ERV9SVEJJLA0KICAgICAgICBQSFlfSU5URVJG
+QUNFX01PREVfU01JSSwNCiAgICAgICAgUEhZX0lOVEVSRkFDRV9NT0RFX1hHTUlJLA0KLi4uDQp9
+IHBoeV9pbnRlcmZhY2VfdDsNCg0KDQpTbyB3ZSBjYW4gbm90aWNlIHRoYXQgaXMgaW4gc3luYyB3
+aXRoIHRoZSBkZXZpY2UgdHJlZSBiaW5kaW5nIGRvY3VtZW50Lg0KUGxlYXNlIG5vdGUgdGhlIFJH
+TUlJLCBSR01JSV9JRCwgUkdNSUlfUlhJRCwgUkdNSUlfVFhJRC4gVGhlIG9ubHkNCmRpZmZlcmVu
+Y2UgdGhlcmUgaXMgaW4gdGhlIGRlbGF5cyBvbiB0aGUgZWxlY3RyaWNhbCBjb25uZWN0aW9ucyBi
+ZXR3ZWVuDQp0aGUgY2hpcHMuIFRha2UgYSBzdGVwIGJhY2ssIGxvb2sgYXQgdGhlIGxpc3Qgb2Yg
+ZXhpc3RpbmcgZW50cmllcywgYXQNCnRoZSBoaXN0b3J5IG9mIHRoaXMgYW5kIHNlZSBpZiBpdCBt
+YXBzIHRvIG9uZSBzdG9yeSBvciBhbm90aGVyLg0KDQpSZWdhcmRzLA0KTWFkYWxpbg0K
