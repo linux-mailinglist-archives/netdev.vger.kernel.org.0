@@ -2,58 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C6C5E12F8B5
-	for <lists+netdev@lfdr.de>; Fri,  3 Jan 2020 14:20:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E07512F8C2
+	for <lists+netdev@lfdr.de>; Fri,  3 Jan 2020 14:26:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727654AbgACNTE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Jan 2020 08:19:04 -0500
-Received: from mail-40130.protonmail.ch ([185.70.40.130]:38545 "EHLO
-        mail-40130.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727494AbgACNTE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Jan 2020 08:19:04 -0500
-Date:   Fri, 03 Jan 2020 13:19:00 +0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=protonmail.com;
-        s=default; t=1578057542;
-        bh=EgfevZt6ZMwl4DISGfvsdGPG17nr00sGLRZI3GwcHlA=;
-        h=Date:To:From:Cc:Reply-To:Subject:In-Reply-To:References:
-         Feedback-ID:From;
-        b=qZR7euC+VTbesmvelpJCRCEe1/2SXH2o3wZOT/tufSZIYrpmIK3P5qh5LMOuykmWZ
-         ymWWYrNFdRvk+WHxxyNizOSJmX2w/HnQ/NJOcDya7oxP1N4HYdCq+sV9Z2esQX5QSK
-         pzgibBcZ3f/Qq9oGCRWnECV+02NIpgViOu/4uzjI=
-To:     Eric Dumazet <edumazet@google.com>
-From:   Ttttabcd <ttttabcd@protonmail.com>
-Cc:     Netdev <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        "kuznet@ms2.inr.ac.ru" <kuznet@ms2.inr.ac.ru>,
-        "yoshfuji@linux-ipv6.org" <yoshfuji@linux-ipv6.org>
-Reply-To: Ttttabcd <ttttabcd@protonmail.com>
-Subject: Re: [PATCH] tcp: Fix tcp_max_syn_backlog limit on connection requests
-Message-ID: <5gI82sir9U2gaHqvZgEXtxtdFJnbS_9geSflUCqgXjNKjtQfHmBWsfqaNuauMKKpefp5yrcgF7rs7O65ZBGFXL8mLFODpfc_bmB2ZBUgyQM=@protonmail.com>
-In-Reply-To: <CANn89iLiDnDfoeuEE-AsbG_bsU5Ojt9VQcZ53FmEOStT9_fj6A@mail.gmail.com>
-References: <0GtwbnKBeenJLjYDiEqWz1RxHrIwx7PSbAxVS-oif8zDKbB97dg5TwYLUmWww8xIFQ3u4mOIcRvA27LqGYmSiF68CjFnubwPqDJyAO9FlQA=@protonmail.com>
- <CANn89iLiDnDfoeuEE-AsbG_bsU5Ojt9VQcZ53FmEOStT9_fj6A@mail.gmail.com>
-Feedback-ID: EvWK9os_-weOBrycfL_HEFp-ixys9sxnciOqqctCHB9kjCM4ip8VR9shOcMQZgeZ7RCnmNC4HYjcUKNMz31NBA==:Ext:ProtonMail
+        id S1727673AbgACN0U (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Jan 2020 08:26:20 -0500
+Received: from aserp2120.oracle.com ([141.146.126.78]:55906 "EHLO
+        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727494AbgACN0T (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Jan 2020 08:26:19 -0500
+Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
+        by aserp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id 003D9WTL115180;
+        Fri, 3 Jan 2020 13:26:13 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=corp-2019-08-05;
+ bh=faABLOu71+lODjbDQ6nSu1CaZn+sv8YumvLotaVUVnA=;
+ b=BhiVQH4g84d24jC3klev0mn4m73nwgF8LFrOYh+pTsj2mUEut/jdp/u32znkTuXzCn2o
+ RbV8g23Hw1Exi/UNTIen2TjLfVqMTQTauC2NpnAGrllhyhMzaosJrMr85TA9kttY/uVo
+ a9K/5KHSYJPu/NKCqCP/eiPN3oe3U0qZ0f3cziClWBjJGuTRyHHKEtcDZQjMoeW6D5us
+ kd78GWrKK+Opz6KhnzUNlbi1a0M82f0y7m7++G86Y1qym6jq+QwwsTxeGO+rii6WUVZ2
+ +NwpYJuqhkd1rVMtUQD53JUCIS7Skr2wb0Ivf2Dl/3CC3QSj4u+mGl6eZT/ZrcFegtNi AQ== 
+Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
+        by aserp2120.oracle.com with ESMTP id 2x5y0pv988-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 03 Jan 2020 13:26:13 +0000
+Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
+        by userp3030.oracle.com (8.16.0.27/8.16.0.27) with SMTP id 003DE650163778;
+        Fri, 3 Jan 2020 13:26:13 GMT
+Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
+        by userp3030.oracle.com with ESMTP id 2xa5fga7m8-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 03 Jan 2020 13:26:12 +0000
+Received: from abhmp0020.oracle.com (abhmp0020.oracle.com [141.146.116.26])
+        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 003DQBYs004754;
+        Fri, 3 Jan 2020 13:26:11 GMT
+Received: from kadam (/129.205.23.165)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Fri, 03 Jan 2020 05:26:10 -0800
+Date:   Fri, 3 Jan 2020 16:25:49 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     Amrita Patole <longlivelinux@yahoo.com>
+Cc:     Greg KH <gregkh@linuxfoundation.org>, devel@driverdev.osuosl.org,
+        GR-Linux-NIC-Dev@marvell.com, manishc@marvell.com,
+        Amrita Patole <amritapatole@gmail.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] Fixing coding style. Signed-off-by:
+ amritapatole@gmail.com
+Message-ID: <20200103132506.GK3911@kadam>
+References: <20200102072929.21636-1-longlivelinux.ref@yahoo.com>
+ <20200102072929.21636-1-longlivelinux@yahoo.com>
+ <20200102111653.GB3961630@kroah.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-0.2 required=7.0 tests=ALL_TRUSTED,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,HK_RANDOM_REPLYTO
-        shortcircuit=no autolearn=no autolearn_force=no version=3.4.2
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.protonmail.ch
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200102111653.GB3961630@kroah.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9488 signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
+ phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=825
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.0.1-1911140001 definitions=main-2001030126
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9488 signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
+ suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1011
+ lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=886 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1911140001
+ definitions=main-2001030126
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-However, I think that backward compatibility should not be too serious beca=
-use sysctl_max_syn_backlog is only enabled when syn_cookies is turned off.
+On Thu, Jan 02, 2020 at 12:16:53PM +0100, Greg KH wrote:
+> On Thu, Jan 02, 2020 at 12:59:29PM +0530, Amrita Patole wrote:
+> > From: Amrita Patole <amritapatole@gmail.com>
+> > 
+> > ---
+> >  drivers/staging/qlge/qlge_mpi.c | 3 ++-
+> >  1 file changed, 2 insertions(+), 1 deletion(-)
+> > 
+> > diff --git a/drivers/staging/qlge/qlge_mpi.c b/drivers/staging/qlge/qlge_mpi.c
+> > index 9e422bbbb6ab..f63db2c79fac 100644
+> > --- a/drivers/staging/qlge/qlge_mpi.c
+> > +++ b/drivers/staging/qlge/qlge_mpi.c
+> > @@ -136,7 +136,8 @@ static int ql_get_mb_sts(struct ql_adapter *qdev, struct mbox_params *mbcp)
+> >  		    ql_read_mpi_reg(qdev, qdev->mailbox_out + i,
+> >  				     &mbcp->mbox_out[i]);
+> >  		if (status) {
+> > -			netif_err(qdev, drv, qdev->ndev, "Failed mailbox read.\n");
+> > +			netif_err(qdev, drv, qdev->ndev,
+> > +                                  "Failed mailbox read. \n");
 
-If sysctl_max_syn_backlog is set small, there is no difference between the =
-original code and the new code.
 
-Only in the BUG scenarios I mentioned in the patch, the system behavior wil=
-l change, but these are corrections that have no impact on users.
+			netif_err(qdev, drv, qdev->ndev,
+                                  "Failed mailbox read. \n");
+				  "Failed mailbox read. \n");
 
-It's just that the part of the request retention queue will not be mistaken=
-ly occupied, and earlier use of syn cookies instead of filling up the backl=
-og.
+
+I'm pretty sure this will introduce a couplee new checkpatch warnings...
+It should be indented:
+[tab][tab][tab][tab][space][space]"Failed mailbox read.\n");
+
+No space after the period, please.
+
+regards,
+dan carpenter
+
