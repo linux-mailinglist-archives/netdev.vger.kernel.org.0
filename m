@@ -2,140 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9EB2812F492
-	for <lists+netdev@lfdr.de>; Fri,  3 Jan 2020 07:31:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7148912F4A1
+	for <lists+netdev@lfdr.de>; Fri,  3 Jan 2020 07:44:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726390AbgACGbW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Jan 2020 01:31:22 -0500
-Received: from s3.sipsolutions.net ([144.76.43.62]:55664 "EHLO
-        sipsolutions.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725890AbgACGbW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Jan 2020 01:31:22 -0500
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.92.3)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1inGUM-007Xa9-Ba; Fri, 03 Jan 2020 07:31:14 +0100
-Message-ID: <4abacaad51ce3c7d0b867472605a366dc9ae7994.camel@sipsolutions.net>
-Subject: Re: PROBLEM: Wireless networking goes down on Acer C720P Chromebook
- (bisected)
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     Stephen Oberholtzer <stevie@qrpff.net>
-Cc:     toke@redhat.com, "David S. Miller" <davem@davemloft.net>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Date:   Fri, 03 Jan 2020 07:31:13 +0100
-In-Reply-To: <CAD_xR9eh=CAYeQZ3Vp9Yj9h3ifMu2exy0ihaXyE+736tJrPVLA@mail.gmail.com>
-References: <CAD_xR9eDL+9jzjYxPXJjS7U58ypCPWHYzrk0C3_vt-w26FZeAQ@mail.gmail.com>
-         <1762437703fd150bb535ee488c78c830f107a531.camel@sipsolutions.net>
-         <CAD_xR9eh=CAYeQZ3Vp9Yj9h3ifMu2exy0ihaXyE+736tJrPVLA@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.34.2 (3.34.2-1.fc31) 
+        id S1726077AbgACGm5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Jan 2020 01:42:57 -0500
+Received: from mail-io1-f44.google.com ([209.85.166.44]:38971 "EHLO
+        mail-io1-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725890AbgACGm5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Jan 2020 01:42:57 -0500
+Received: by mail-io1-f44.google.com with SMTP id c16so10629271ioh.6
+        for <netdev@vger.kernel.org>; Thu, 02 Jan 2020 22:42:56 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=mime-version:from:date:message-id:subject:to;
+        bh=GXRrWVRXxQSkvms00APKrJdsAUTRC8dmWXHdSaPman4=;
+        b=vkI7/C9JhnN4NSFKlGNvSYWKMmIvvlaLuKY5/kwqvrAMlszeeADQpFAEEJCA32BDuU
+         mmJOG/ZtaL13t345XMY+tCk1mY76vL9ezi0jfyAaipDwW9wSNYsTqSMbD8L9EIIP0BL7
+         4iOBQ06KaRV/xlRm34Gm9aCPDyCA83v2Suc9E=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
+        bh=GXRrWVRXxQSkvms00APKrJdsAUTRC8dmWXHdSaPman4=;
+        b=hnmNbZpT/yVTyDu6OHDfb1lDPZd0GYhcutYrET5xe0Br71LZQ4FtNvtrViQnjz+d5s
+         EvwxBQ9ZhenGwOaCSUbUR3Ro73D/yeO5mQ2/MDnnTLoY3AR//yzSvU1WYCgJ3lwbaCRU
+         62tcmFec8nCNWeqquGj+qcTPGqkLlWkwBjolZyYDPimhID6n2Sr8T47xTmQh/+29ryzw
+         qnBdCOGoingoEDCcWnxRNsSDtTWmh9/bKi8lreRxUgkCoSTQ5WuuVSdrX1Dt8yvTepCR
+         V7iKOX/9DNE6k7RHAbJP0fF1+wx68Udhl20TMxdLAh4AaHY53dBcypZ1nBI47m6uzDsb
+         IHZA==
+X-Gm-Message-State: APjAAAVibC5fjtBfS2OOVjJ/NJx1thfcDIPsLbI0Jn0e1vMFqB6Fn34e
+        xebMGaFTmvr19EtaNwDboaKSUoZgBqEpTRwMZEG10Z2Kuxw51w==
+X-Google-Smtp-Source: APXvYqx/p0vGgwimQn6/N9nkQGc9iuCIQQ7Zd9kNtiQVnlqPG/SSvtkBTPjoFOFY0RyWh6eX9RM5YyvI5HyTzuS09dg=
+X-Received: by 2002:a5d:88c8:: with SMTP id i8mr51901870iol.176.1578033776311;
+ Thu, 02 Jan 2020 22:42:56 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+From:   Yan Zhai <yan@cloudflare.com>
+Date:   Thu, 2 Jan 2020 22:42:45 -0800
+Message-ID: <CAO3-PboKFJm_RmrExrUidg8t-E5efvDg7+HDzsMO6R5V1G5cAA@mail.gmail.com>
+Subject: Peer losing IP address after moving veth into namespace
+To:     netdev@vger.kernel.org, kernel-team <kernel-team@cloudflare.com>,
+        Ivan Babrou <ivan@cloudflare.com>,
+        Erich Heine <erich@cloudflare.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Stephen,
+Hi netdev folks,
 
+  we have encountered a situation where moving veth into network
+namespace can drop address on its peer.
+ In the first case, I run following command:
 
-> To answer your immediate question, no, I don't get any dmesg output at
-> all. Nothing about underruns.
+yan@133m23:~$ sudo ip netns add foo
+yan@133m23:~$ sudo ip link add dev foo type veth peer name Ifoo
+yan@133m23:~$ sudo ip link set foo up
+yan@133m23:~$ sudo ip addr add 10.1.128.2/31 dev foo
+yan@133m23:~$ sudo ip addr show dev foo
+437: foo@Ifoo: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc
+noqueue state UP group default qlen 1000
+    link/ether f2:6a:39:d1:2b:75 brd ff:ff:ff:ff:ff:ff
+    inet 10.1.128.2/31 scope global foo
+       valid_lft forever preferred_lft forever
+    inet6 fe80::f06a:39ff:fed1:2b75/64 scope link
+       valid_lft forever preferred_lft forever
+yan@133m23:~$ sudo ip link set Ifoo netns foo
+yan@133m23:~$ sudo ip addr show dev foo
+437: foo@if436: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc
+noqueue state LOWERLAYERDOWN group default qlen 1000
+    link/ether f2:6a:39:d1:2b:75 brd ff:ff:ff:ff:ff:ff link-netns foo
+    inet6 fe80::f06a:39ff:fed1:2b75/64 scope link
+       valid_lft forever preferred_lft forever
 
-OK.
+If I add address to a veth, it always gets lost after its peer is moved into ns.
 
-> However, while pursuing other avenues -- specifically, enabling
-> mac80211 debugfs and log messages -- I realized that my 'master' was
-> out-of-date from linux-stable and did a git pull.  Imagine my surprise
-> when the resulting kernel did not exhibit the problem!
-> 
-> Apparently, I had been a bit too pessimistic; since the problem
-> existed in 5.5-rc1 release, I'd assumed that the problem wouldn't get
-> rectified before 5.5.
-> 
-> However, I decided to bisect the fix, and ended up with: 911bde0f
-> ("mac80211: Turn AQL into an NL80211_EXT_FEATURE"), which appears to
-> have "solved" the problem by just disabling the feature (this is
-> ath9k, by the way.)
+Somehow interesting thing is, if I set its peer to "Down" state, then
+things seem to be OK!
 
-Oh. I didn't pay attention and thought you actually had ath10k, not
-ath9k!
+yan@133m23:~$ sudo ip netns add foo
+yan@133m23:~$ sudo ip link add dev foo type veth peer name Ifoo
+yan@133m23:~$ sudo ip link set Ifoo down
+yan@133m23:~$ sudo ip addr add 10.1.128.2/31 dev foo
+yan@133m23:~$ sudo ip addr show dev foo
+439: foo@Ifoo: <NO-CARRIER,BROADCAST,MULTICAST,UP,M-DOWN> mtu 1500
+qdisc noqueue state LOWERLAYERDOWN group default qlen 1000
+    link/ether 3a:94:12:d8:01:30 brd ff:ff:ff:ff:ff:ff
+    inet 10.1.128.2/31 scope global foo
+       valid_lft forever preferred_lft forever
+    inet6 fe80::3894:12ff:fed8:130/64 scope link
+       valid_lft forever preferred_lft forever
+yan@133m23:~$ sudo ip link set Ifoo netns foo
+yan@133m23:~$ sudo ip addr show dev foo
+439: foo@if438: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc
+noqueue state LOWERLAYERDOWN group default qlen 1000
+    link/ether 3a:94:12:d8:01:30 brd ff:ff:ff:ff:ff:ff link-netns foo
+    inet 10.1.128.2/31 scope global foo
+       valid_lft forever preferred_lft forever
+    inet6 fe80::3894:12ff:fed8:130/64 scope link
+       valid_lft forever preferred_lft forever
 
-> This AQL stuff sounds pretty nifty, and I'd love to try my hand at
-> making it work for ath9k (also, since I put so much effort into an
-> automated build-and-test framework, it'd be a shame to just abandon
-> it.)
+The address is still on the device after its peer moved. But if I put
+these commands in a shell, then it is not working again:
 
-:-)
+yan@133m23:~$ cat up.sh
+#!/bin/sh -x
 
-> However, the ath9k code is rather lacking for comments, so I
-> don't even know where I should start, except for (I suspect) a call to
-> `wiphy_ext_feature_set(whatever, NL80211_EXT_FEATURE_AQL);` from
-> inside ath9k_set_hw_capab()?
+ip netns add foo
+ip link add dev foo type veth peer name Ifoo
+ip link set Ifoo down
+ip addr add 10.1.128.2/31 dev foo
+ip link set Ifoo netns foo
+sleep 1
+ip addr show dev foo
+yan@133m23:~$ sudo bash up.sh
+451: foo@if450: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc
+noqueue state LOWERLAYERDOWN group default qlen 1000
+    link/ether 86:24:e7:5b:d8:f0 brd ff:ff:ff:ff:ff:ff link-netns foo
 
-Honestly, I don't know, you'd probably have to wait for Toke to be back
-from vacations to get a pointer on what could be done here.
+If I add a "sleep 1" after dev creation, then it seems to be fine again.
 
-> In the meantime, I went back to e548f749b096 -- the commit prior to
-> the one making AQL support opt-in -- and cranked up the debugging.
-> 
-> I'm not sure how to interpret any of this, but  here's what I got:
-> 
-> dmesg output:
-> 
-> Last relevant mention is "moving STA <my AP's MAC> to state 4" which
-> happened during startup, before everything shut down.
+Question: what is the expected behavior on a freshly created veth
+pair? It seems to me that there is some race condition regarding the
+2nd and 3rd case. Is this a known thing, or I accidentally triggered
+some buggy path? Can someone help me sort out what is happening in
+these cases? I am happy to provide more information if needed.
 
-That just means the STA was set to authorized (state 4) due to the 4-
-way-handshake completing, nothing more.
+Thanks!
 
-> /sys/kernel/debug/ieee80211/phy0
-> 
-> airtime_flags = 7
-> 
-> stations/<my AP's MAC>/airtime =
-> 
-> RX: 6583578 us
-> TX: 32719 us
-> Weight: 256
-> Deficit: VO: -1128 us VI: 11 us BE: -5098636 us BK: 256 us
-> Q depth: VO: 3868 us VI: 3636 us BE: 12284 us BK: 0 us
-> Q limit[low/high]: VO: 5000/12000 VI: 5000/12000 BE: 5000/12000 BK: 5000/12000
-> 
-> (I have no idea how to interpret this, but that '32719 us' seems odd,
-> I thought the airtime usage was in 4us units?)
-
-Me neither, off the top of my head, let's wait for Toke.
-
-> Doing an 'echo 3 | tee airtime_flags' to clear the (old) AQL-enabled
-> bit seemed to *immediately* restore network connectivity.
-
-Hmm. That probably means it was blocked on AQL and not some kind of soft
-"didn't know I had to transmit" type scenario that the comment in the
-commit log you quoted would have implied (if it was actually wrong).
-
-> I ran a ping, and saw this:
-> 
-> - pings coming back in <5ms
-> - re-enable AQL (echo 7 | tee airtime_flags)
-> - pings stop coming back immediately
-> - some seconds later, disable AQL again (echo 3 | tee airtime_flags)
-> - immediate *flood* of ping replies registered, with times 16000ms,
-> 15000ms, 14000ms, .. down to 1000ms, 15ms, then stabilizing sub-5ms
-> - According to the icmp_seq values, all 28 requests were replied to,
-> and their replies were delivered in-order
-> 
-> This certainly looks like a missing TX queue restart to me?
-
-I don't think it does. If it was just a missing TX queue restart then
-changing the AQL bit shouldn't have had any effect, since changing the
-flags via debugfs doesn't trigger a TX queue restart.
-
-Rather, it seems to me that this implies some accounting went wrong, and
-doing this clears/recovers that?
-
-But I guess Toke will have a much better idea from the debug data above.
-
-johannes
-
+-- 
+Yan
