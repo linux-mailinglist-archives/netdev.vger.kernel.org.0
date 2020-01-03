@@ -2,63 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0997812FAC7
-	for <lists+netdev@lfdr.de>; Fri,  3 Jan 2020 17:47:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A6A712FB5A
+	for <lists+netdev@lfdr.de>; Fri,  3 Jan 2020 18:13:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728088AbgACQrz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Jan 2020 11:47:55 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:46676 "EHLO vps0.lunn.ch"
+        id S1728390AbgACRNH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Jan 2020 12:13:07 -0500
+Received: from mail.kernel.org ([198.145.29.99]:48870 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727912AbgACQrz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 3 Jan 2020 11:47:55 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=3aXMrkKOicDj+Xuhu+/Su5Nn/ZXQ5Fj+Ba8BuVhIHPM=; b=c/P6DUyJpiXqEFuUsQDWvUAvNq
-        wDWDRHf3kxb7xSqfWA0JA651XgVAxlOtKPsYrsCX41CTqh6H+nZeZap7kBMdkcoW/awOhLFVPbHag
-        AjIJa2TcLIh4X8ln1JWj5vbbY2fD+CmtgCMD/lYRZjbu6ZvkYQQOK4Xec0i/s/8YeTwA=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1inQ6z-0000BO-Cj; Fri, 03 Jan 2020 17:47:45 +0100
-Date:   Fri, 3 Jan 2020 17:47:45 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     "Madalin Bucur (OSS)" <madalin.bucur@oss.nxp.com>
-Cc:     Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
+        id S1728380AbgACRND (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 3 Jan 2020 12:13:03 -0500
+Received: from localhost.localdomain (unknown [194.230.155.149])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id C8FB720866;
+        Fri,  3 Jan 2020 17:13:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1578071583;
+        bh=OBmIUek42cnzUQDrrnU/oY+P3xCSkIfYAxlHss1KdT4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=uiD9arbHhZ0CKZeFVc225Ku1AjGfslX4oMLieAR1Pyh85u4kv3cowzQAwxlDE1HBq
+         PDPrCQefryo3lWg7CZx/GCCFAhGYRjed1f2wAPz/lEfP6SjkaIfHdKxIgDN9qA98LT
+         ggJGdr9WnWGuCkxxJcG4UPudG/nVPMkvuz4IPEr0=
+From:   Krzysztof Kozlowski <krzk@kernel.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Krzysztof Kozlowski <krzk@kernel.org>,
+        Byungho An <bh74.an@samsung.com>,
+        Girish K S <ks.giri@samsung.com>,
+        Vipul Pandya <vipul.pandya@samsung.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH net-next 0/2] Fix 10G PHY interface types
-Message-ID: <20200103164745.GL1397@lunn.ch>
-References: <20200103115125.GC25745@shell.armlinux.org.uk>
- <DB8PR04MB698593C7DB07A82577562348EC230@DB8PR04MB6985.eurprd04.prod.outlook.com>
- <20200103141743.GC22988@lunn.ch>
- <DB8PR04MB698518D97251CB15938279C3EC230@DB8PR04MB6985.eurprd04.prod.outlook.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <DB8PR04MB698518D97251CB15938279C3EC230@DB8PR04MB6985.eurprd04.prod.outlook.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        Andrew Lunn <andrew@lunn.ch>,
+        Kate Stewart <kstewart@linuxfoundation.org>,
+        Enrico Weigelt <info@metux.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Thomas Gleixner <tglx@linutronix.de>, netdev@vger.kernel.org
+Subject: [PATCH 18/19] net: ethernet: sxgbe: Rename Samsung to lowercase
+Date:   Fri,  3 Jan 2020 18:11:30 +0100
+Message-Id: <20200103171131.9900-19-krzk@kernel.org>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20200103171131.9900-1-krzk@kernel.org>
+References: <20200103171131.9900-1-krzk@kernel.org>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> And here is a LS1046A SoC document that describes XFI and 10GBASE_KR:
-> 
-> https://www.mouser.com/pdfdocs/LS1046A.pdf
+Fix up inconsistent usage of upper and lowercase letters in "Samsung"
+name.
 
-I don't see any register descriptions here. So you failed to answer my
-question. What do you actually need to configure? What needs to go
-into DT? 
+"SAMSUNG" is not an abbreviation but a regular trademarked name.
+Therefore it should be written with lowercase letters starting with
+capital letter.
 
-You keep avoiding the questions Russell and I pose, which is not
-helping your argument. We need details, not hand waiving.
+Although advertisement materials usually use uppercase "SAMSUNG", the
+lowercase version is used in all legal aspects (e.g. on Wikipedia and in
+privacy/legal statements on
+https://www.samsung.com/semiconductor/privacy-global/).
 
-	Andrew
+Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
+---
+ drivers/net/ethernet/samsung/sxgbe/sxgbe_main.c | 2 +-
+ include/linux/sxgbe_platform.h                  | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/ethernet/samsung/sxgbe/sxgbe_main.c b/drivers/net/ethernet/samsung/sxgbe/sxgbe_main.c
+index cd6e0de48248..7d3a1c0df09c 100644
+--- a/drivers/net/ethernet/samsung/sxgbe/sxgbe_main.c
++++ b/drivers/net/ethernet/samsung/sxgbe/sxgbe_main.c
+@@ -2296,7 +2296,7 @@ __setup("sxgbeeth=", sxgbe_cmdline_opt);
+ 
+ 
+ 
+-MODULE_DESCRIPTION("SAMSUNG 10G/2.5G/1G Ethernet PLATFORM driver");
++MODULE_DESCRIPTION("Samsung 10G/2.5G/1G Ethernet PLATFORM driver");
+ 
+ MODULE_PARM_DESC(debug, "Message Level (-1: default, 0: no output, 16: all)");
+ MODULE_PARM_DESC(eee_timer, "EEE-LPI Default LS timer value");
+diff --git a/include/linux/sxgbe_platform.h b/include/linux/sxgbe_platform.h
+index 85ec745767bd..966146f7267a 100644
+--- a/include/linux/sxgbe_platform.h
++++ b/include/linux/sxgbe_platform.h
+@@ -1,6 +1,6 @@
+ /* SPDX-License-Identifier: GPL-2.0-only */
+ /*
+- * 10G controller driver for Samsung EXYNOS SoCs
++ * 10G controller driver for Samsung Exynos SoCs
+  *
+  * Copyright (C) 2013 Samsung Electronics Co., Ltd.
+  *		http://www.samsung.com
+-- 
+2.17.1
+
