@@ -2,76 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 00FBF12F39C
-	for <lists+netdev@lfdr.de>; Fri,  3 Jan 2020 04:52:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2B6F712F39B
+	for <lists+netdev@lfdr.de>; Fri,  3 Jan 2020 04:51:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726781AbgACDw5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Jan 2020 22:52:57 -0500
-Received: from szxga06-in.huawei.com ([45.249.212.32]:43986 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726112AbgACDw4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 2 Jan 2020 22:52:56 -0500
-Received: from DGGEMS414-HUB.china.huawei.com (unknown [172.30.72.60])
-        by Forcepoint Email with ESMTP id E1165D6122B42F7420C4;
-        Fri,  3 Jan 2020 11:52:54 +0800 (CST)
-Received: from localhost.localdomain.localdomain (10.175.113.25) by
- DGGEMS414-HUB.china.huawei.com (10.3.19.214) with Microsoft SMTP Server id
- 14.3.439.0; Fri, 3 Jan 2020 11:52:44 +0800
-From:   YueHaibing <yuehaibing@huawei.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Michal Kubecek <mkubecek@suse.cz>
-CC:     YueHaibing <yuehaibing@huawei.com>, <netdev@vger.kernel.org>,
-        <kernel-janitors@vger.kernel.org>, Hulk Robot <hulkci@huawei.com>
-Subject: [PATCH net-next] ethtool: remove set but not used variable 'lsettings'
-Date:   Fri, 3 Jan 2020 03:48:56 +0000
-Message-ID: <20200103034856.177906-1-yuehaibing@huawei.com>
-X-Mailer: git-send-email 2.20.1
-MIME-Version: 1.0
-Content-Type:   text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7BIT
-X-Originating-IP: [10.175.113.25]
-X-CFilter-Loop: Reflected
+        id S1726654AbgACDvO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Jan 2020 22:51:14 -0500
+Received: from mx60.baidu.com ([61.135.168.60]:24783 "EHLO
+        tc-sys-mailedm05.tc.baidu.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726292AbgACDvO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jan 2020 22:51:14 -0500
+Received: from localhost (cp01-cos-dev01.cp01.baidu.com [10.92.119.46])
+        by tc-sys-mailedm05.tc.baidu.com (Postfix) with ESMTP id 7A3831EBA002
+        for <netdev@vger.kernel.org>; Fri,  3 Jan 2020 11:51:00 +0800 (CST)
+From:   Li RongQing <lirongqing@baidu.com>
+To:     netdev@vger.kernel.org
+Subject: [PATCH][net-next] net: remove the check argument from __skb_gro_checksum_convert
+Date:   Fri,  3 Jan 2020 11:51:00 +0800
+Message-Id: <1578023460-12331-1-git-send-email-lirongqing@baidu.com>
+X-Mailer: git-send-email 1.7.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fixes gcc '-Wunused-but-set-variable' warning:
+The argument is always ignored, so remove it.
 
-net/ethtool/linkmodes.c: In function 'ethnl_set_linkmodes':
-net/ethtool/linkmodes.c:326:32: warning:
- variable 'lsettings' set but not used [-Wunused-but-set-variable]
-  struct ethtool_link_settings *lsettings;
-                                ^
-It is never used, so remove it.
-
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+Signed-off-by: Li RongQing <lirongqing@baidu.com>
 ---
- net/ethtool/linkmodes.c | 2 --
- 1 file changed, 2 deletions(-)
+ include/linux/netdevice.h | 6 +++---
+ net/ipv4/gre_offload.c    | 2 +-
+ net/ipv4/udp_offload.c    | 2 +-
+ net/ipv6/udp_offload.c    | 2 +-
+ 4 files changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/net/ethtool/linkmodes.c b/net/ethtool/linkmodes.c
-index 0b99f494ad3b..96f20be64553 100644
---- a/net/ethtool/linkmodes.c
-+++ b/net/ethtool/linkmodes.c
-@@ -323,7 +323,6 @@ int ethnl_set_linkmodes(struct sk_buff *skb, struct genl_info *info)
- {
- 	struct nlattr *tb[ETHTOOL_A_LINKMODES_MAX + 1];
- 	struct ethtool_link_ksettings ksettings = {};
--	struct ethtool_link_settings *lsettings;
- 	struct ethnl_req_info req_info = {};
- 	struct net_device *dev;
- 	bool mod = false;
-@@ -354,7 +353,6 @@ int ethnl_set_linkmodes(struct sk_buff *skb, struct genl_info *info)
- 			GENL_SET_ERR_MSG(info, "failed to retrieve link settings");
- 		goto out_ops;
- 	}
--	lsettings = &ksettings.base;
+diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+index 2fd19fb8826d..2741aa35bec6 100644
+--- a/include/linux/netdevice.h
++++ b/include/linux/netdevice.h
+@@ -2826,16 +2826,16 @@ static inline bool __skb_gro_checksum_convert_check(struct sk_buff *skb)
+ }
  
- 	ret = ethnl_update_linkmodes(info, tb, &ksettings, &mod);
- 	if (ret < 0)
-
-
+ static inline void __skb_gro_checksum_convert(struct sk_buff *skb,
+-					      __sum16 check, __wsum pseudo)
++					      __wsum pseudo)
+ {
+ 	NAPI_GRO_CB(skb)->csum = ~pseudo;
+ 	NAPI_GRO_CB(skb)->csum_valid = 1;
+ }
+ 
+-#define skb_gro_checksum_try_convert(skb, proto, check, compute_pseudo)	\
++#define skb_gro_checksum_try_convert(skb, proto, compute_pseudo)	\
+ do {									\
+ 	if (__skb_gro_checksum_convert_check(skb))			\
+-		__skb_gro_checksum_convert(skb, check,			\
++		__skb_gro_checksum_convert(skb, 			\
+ 					   compute_pseudo(skb, proto));	\
+ } while (0)
+ 
+diff --git a/net/ipv4/gre_offload.c b/net/ipv4/gre_offload.c
+index 4de7e962d3da..2e6d1b7a7bc9 100644
+--- a/net/ipv4/gre_offload.c
++++ b/net/ipv4/gre_offload.c
+@@ -174,7 +174,7 @@ static struct sk_buff *gre_gro_receive(struct list_head *head,
+ 		if (skb_gro_checksum_simple_validate(skb))
+ 			goto out_unlock;
+ 
+-		skb_gro_checksum_try_convert(skb, IPPROTO_GRE, 0,
++		skb_gro_checksum_try_convert(skb, IPPROTO_GRE,
+ 					     null_compute_pseudo);
+ 	}
+ 
+diff --git a/net/ipv4/udp_offload.c b/net/ipv4/udp_offload.c
+index a3908e55ed89..b25e42100ceb 100644
+--- a/net/ipv4/udp_offload.c
++++ b/net/ipv4/udp_offload.c
+@@ -480,7 +480,7 @@ struct sk_buff *udp4_gro_receive(struct list_head *head, struct sk_buff *skb)
+ 						 inet_gro_compute_pseudo))
+ 		goto flush;
+ 	else if (uh->check)
+-		skb_gro_checksum_try_convert(skb, IPPROTO_UDP, uh->check,
++		skb_gro_checksum_try_convert(skb, IPPROTO_UDP,
+ 					     inet_gro_compute_pseudo);
+ skip:
+ 	NAPI_GRO_CB(skb)->is_ipv6 = 0;
+diff --git a/net/ipv6/udp_offload.c b/net/ipv6/udp_offload.c
+index 64b8f05d6735..f0d5fc27d0b5 100644
+--- a/net/ipv6/udp_offload.c
++++ b/net/ipv6/udp_offload.c
+@@ -127,7 +127,7 @@ struct sk_buff *udp6_gro_receive(struct list_head *head, struct sk_buff *skb)
+ 						 ip6_gro_compute_pseudo))
+ 		goto flush;
+ 	else if (uh->check)
+-		skb_gro_checksum_try_convert(skb, IPPROTO_UDP, uh->check,
++		skb_gro_checksum_try_convert(skb, IPPROTO_UDP,
+ 					     ip6_gro_compute_pseudo);
+ 
+ skip:
+-- 
+2.16.2
 
