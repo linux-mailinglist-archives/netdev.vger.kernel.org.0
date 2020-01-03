@@ -2,80 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C259B12FBD9
-	for <lists+netdev@lfdr.de>; Fri,  3 Jan 2020 18:53:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A28BD12FBDA
+	for <lists+netdev@lfdr.de>; Fri,  3 Jan 2020 18:55:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728225AbgACRxe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Jan 2020 12:53:34 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:46780 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728110AbgACRxe (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 3 Jan 2020 12:53:34 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=Ik53vLhmD+EUsy1sL+CsKQR1KxqBKtMb4tA7fcFpO+w=; b=QUTR2W8shqqZiTDH2jgUPvAyHw
-        tZDvbAED4kSORlvuj56UaZa28Xq4KqVKnjVKFotuoyHj+QwgouApJqIQUfCTRAPXp3bFQkQFCHLM9
-        JkmGINPf/mEnk1l+HdspUGPlOJhPnZ5QGYlbT0mgfT7pfSKAoUPiqVuXwLDdPm9Lan0A=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1inR8Q-0000zy-9G; Fri, 03 Jan 2020 18:53:18 +0100
-Date:   Fri, 3 Jan 2020 18:53:18 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Matthew Wilcox <willy@infradead.org>
-Cc:     yu kuai <yukuai3@huawei.com>, klassert@kernel.org,
-        davem@davemloft.net, hkallweit1@gmail.com,
-        jakub.kicinski@netronome.com, hslester96@gmail.com, mst@redhat.com,
-        yang.wei9@zte.com.cn, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, yi.zhang@huawei.com,
-        zhengbin13@huawei.com
-Subject: Re: [PATCH] net: 3com: 3c59x: remove set but not used variable
- 'mii_reg1'
-Message-ID: <20200103175318.GN1397@lunn.ch>
-References: <20200103121907.5769-1-yukuai3@huawei.com>
- <20200103144623.GI6788@bombadil.infradead.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20200103144623.GI6788@bombadil.infradead.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        id S1728183AbgACRz0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Jan 2020 12:55:26 -0500
+Received: from mail-pl1-f195.google.com ([209.85.214.195]:44338 "EHLO
+        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728110AbgACRz0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Jan 2020 12:55:26 -0500
+Received: by mail-pl1-f195.google.com with SMTP id az3so19283184plb.11
+        for <netdev@vger.kernel.org>; Fri, 03 Jan 2020 09:55:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=pensando.io; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=HwKI0nFSGJXtdEsG1Lt3W2AZ3z47nYG9ydGEl21lRNc=;
+        b=VHjS+NcMaEqK2rXCNKKowgU47LnBRLafwNo8diuX9QukQD8nSAntG8z1e3j+dibEV0
+         yX6MkUMRGnvcv3ix0UZiyv28+rg6FB3uCaDnqgwuaOdds87GeM0e9eGAgpRegCvYnqOM
+         7/8qWRS5hVVq9iouKtAlxNW0gyn7CTFoq2DAS52ROB1ZAmICmLikcPa+l2hr2ny7woHS
+         IFHg8NNf/OVs8Vp+cr0qeXITv3PXEhp+FJybkQfAJEW+/l1OOIn69Krj0mLBlncoyFyQ
+         SYByI+xHbYOUISulP4NTogcc1bRrEBaT5rgn2yHKli+BKCzouECZoiDLoxqAQcwJXn7M
+         QmHg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=HwKI0nFSGJXtdEsG1Lt3W2AZ3z47nYG9ydGEl21lRNc=;
+        b=i62hVcUeMJRjNCSaMedSqE5p1sDbYvPIlLC+o8Jj4WslfLtFS0UA7Cem4NOk9b90Am
+         FZTpok2DmsFDkJOJexI+t6Bj3j+5hQmvnW4r6YlKNh4ONrzZ33ARuNWJ4kuoE++6dHh6
+         x75h38YpL9QqW+Gmz0NdTGTr7NjWEQLeS90GD6GlqkNTSxxIIqPlQ2Z1/GyxGPUZ7G/j
+         t7ep52h/L6LQ/CTVWr4SVzvjn0zTZJWKCdVG+uWnJGX2qgL1hCajAQCd/X3GWYI9UNRo
+         3sCF1eJLUqoTpMvfECu7ed2JUb5F9FHVmC0BA1r2dfEiVTBjlnwSRh8gdCsIZ6jr52Nl
+         2SfQ==
+X-Gm-Message-State: APjAAAWkyIhBtFcFUlcjZPcf1qaMxmx3/qwwgx9UIzBD4jGH05PIjhMF
+        /q2DHWu3iTYCbZkbD/NujbC5TxOHXCxTTg==
+X-Google-Smtp-Source: APXvYqwS5j5re7S3rJbWibyODWGejL29CrcA5/GfJnAsE5dslgP5M/fgarSz8XK5hyHqGgmd3e6jJQ==
+X-Received: by 2002:a17:90b:258:: with SMTP id fz24mr27174453pjb.6.1578074125741;
+        Fri, 03 Jan 2020 09:55:25 -0800 (PST)
+Received: from driver-dev1.pensando.io ([12.226.153.42])
+        by smtp.gmail.com with ESMTPSA id u20sm61516655pgf.29.2020.01.03.09.55.24
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 03 Jan 2020 09:55:25 -0800 (PST)
+From:   Shannon Nelson <snelson@pensando.io>
+To:     netdev@vger.kernel.org, davem@davemloft.net
+Cc:     parav@mellanox.com, Shannon Nelson <snelson@pensando.io>
+Subject: [PATCH v4 net-next 0/2] ionic: add sriov support
+Date:   Fri,  3 Jan 2020 09:55:06 -0800
+Message-Id: <20200103175508.32176-1-snelson@pensando.io>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 03, 2020 at 06:46:23AM -0800, Matthew Wilcox wrote:
-> On Fri, Jan 03, 2020 at 08:19:07PM +0800, yu kuai wrote:
-> > Fixes gcc '-Wunused-but-set-variable' warning:
-> > 
-> > drivers/net/ethernet/3com/3c59x.c: In function ‘vortex_up’:
-> > drivers/net/ethernet/3com/3c59x.c:1551:9: warning: variable
-> > ‘mii_reg1’ set but not used [-Wunused-but-set-variable]
-> > 
-> > It is never used, and so can be removed.
-> ...
-> >  	if (dev->if_port == XCVR_MII || dev->if_port == XCVR_NWAY) {
-> > -		mii_reg1 = mdio_read(dev, vp->phys[0], MII_BMSR);
-> >  		mii_reg5 = mdio_read(dev, vp->phys[0], MII_LPA);
-> 
-> I know nothing about the MII interface, but in general this is not
-> a safe thing to do.
+Set up the basic support for enabling SR-IOV devices in the
+ionic driver.  Since most of the management work happens in
+the NIC firmware, the driver becomes mostly a pass-through
+for the network stack commands that want to control and
+configure the VFs.
 
-Hi Matthew
+v4:	changed "vf too big" checks to use pci_num_vf()
+	changed from vf[] array of pointers of individually allocated
+	  vf structs to single allocated vfs[] array of vf structs
+	added clean up of vfs[] on probe fail
+	added setup for vf stats dma
 
-I fully agree about the general case. However, reading the MII_BMSR
-should not have any side affects. It would be an odd Ethernet PHY if
-it did.
+v3:	added check in probe for pre-existing VFs
+	split out the alloc and dealloc of vf structs to better deal
+	  with pre-existing VFs (left enabled on remove)
+	restored the checks for vf too big because of a potential
+	  case where VFs are already enabled but driver failed to
+	  alloc the vf structs
 
-But I am curious why this read is here. There is a slim change the
-MDIO bus is broken, and this is a workaround. So it would be good if
-somebody dug into the history and found out when this read was added
-and if there are any comments about why it is there. Or if the usage
-of mii_reg1 as been removed at some point, and the read was not
-cleaned up.
+v2:	use pci_num_vf() and kcalloc()
+	remove checks for vf too big
+	add locking for the VF operations
+	disable VFs in ionic_remove() if they are still running
 
-   Andrew
+
+Shannon Nelson (2):
+  ionic: ionic_if bits for sr-iov support
+  ionic: support sr-iov operations
+
+ drivers/net/ethernet/pensando/ionic/ionic.h   |  17 +-
+ .../ethernet/pensando/ionic/ionic_bus_pci.c   | 113 ++++++++
+ .../net/ethernet/pensando/ionic/ionic_dev.c   |  58 ++++
+ .../net/ethernet/pensando/ionic/ionic_dev.h   |   7 +
+ .../net/ethernet/pensando/ionic/ionic_if.h    |  97 +++++++
+ .../net/ethernet/pensando/ionic/ionic_lif.c   | 247 +++++++++++++++++-
+ .../net/ethernet/pensando/ionic/ionic_main.c  |   4 +
+ 7 files changed, 535 insertions(+), 8 deletions(-)
+
+-- 
+2.17.1
+
