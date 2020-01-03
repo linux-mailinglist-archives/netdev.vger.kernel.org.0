@@ -2,185 +2,181 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 360E012F4DC
-	for <lists+netdev@lfdr.de>; Fri,  3 Jan 2020 08:11:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C779112F4E6
+	for <lists+netdev@lfdr.de>; Fri,  3 Jan 2020 08:22:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726180AbgACHLx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Jan 2020 02:11:53 -0500
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:39772 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725928AbgACHLw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Jan 2020 02:11:52 -0500
-Received: by mail-wr1-f66.google.com with SMTP id y11so41470241wrt.6
-        for <netdev@vger.kernel.org>; Thu, 02 Jan 2020 23:11:50 -0800 (PST)
+        id S1726739AbgACHWJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Jan 2020 02:22:09 -0500
+Received: from mail-ot1-f65.google.com ([209.85.210.65]:33852 "EHLO
+        mail-ot1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725890AbgACHWJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Jan 2020 02:22:09 -0500
+Received: by mail-ot1-f65.google.com with SMTP id a15so60048820otf.1;
+        Thu, 02 Jan 2020 23:22:08 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=qDWtwUVrKd0wTpBxfHT8UEBmPYWKVE1f1rQ5fs4ZTtw=;
-        b=bBvQRPyFfctPoXZcWcVbig6ev8x/k5qw7PfESw1dOuUGneaf/m/wplbRjZBq26ML23
-         CqKyjhYlFJ9DpsDiiCE6ks9u0vLEw20FIW3t7J2dpRcderBDksNEPgHazRnaZZLj/H69
-         qGmwLyyWefjcoml7OyFY0fnDiSbRbO1ujEwy/STi19O2G5iZOEWaJ31VOjNUYIua1Rnu
-         sZxMGPnDsUWidHKsbPsIUnIiPicaXJfu9dBmgIPgSJNBYVAM+UA7jMoSidIN9EdP6eAm
-         b0g+LDKIFquUBgNCoyl+GB+V7e2VpfJxdODABEOi8pF4kJjvtNMN/GvTlYlLVrbkMVnb
-         qlcA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=o43WK0aGQfxtR36Yk2dMmC8IKe8HC2vf043dM8fz/J0=;
+        b=kBHjrs1XnSyfWoGPfctBX/UaQV+2CNFQiPTPd/Y01UbdDbmQau1AHdLldzBtIEVBxW
+         Xlq+HQwZ3DkZRiYhm2WL8NVNftcQZMTsUBedt/BGOihOWTIHtGA8Jtd7MZ6IJrFlDyvY
+         Ieyrbn61qQoi8zCilr+LU+ZkmSDPahF/zMKxK2i0GTxL7RYJho2P7GD8I5ffiuRJP/rK
+         o03DXNJc8n0gZGxx/WExyayA3Ih4rfBgPRnBSBP2JQQtjp+g6NYLdee2A+tHY293TrdH
+         sSinmfuC25QZLd4Gjs3HmMSVVZlt2k0RN5IiV/CwR4D3Rkqh9nlFp5nz1sMdYbOf10uf
+         889Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=qDWtwUVrKd0wTpBxfHT8UEBmPYWKVE1f1rQ5fs4ZTtw=;
-        b=h3RQ4wNEoGPG9YJNr8R9w5VHcEglEGfAwmcQ7JuTF1gEgNGvgKn5k8Ls62EIICOUmV
-         FPqvwWR5rzA7DdTrfovapKZV4s+yXSVHkY3jIheZs1J88t7XrJfy8VuzexobNgsa+YUP
-         74PmFCzFdatyQdHKW9X3kLWZpRsnoc3SPOItFN189S6ZikNUMN3m0MIvDlIzfBujLkmC
-         DUK+EGiAbFjB8klXxJMPke++jrWXjQUEMrYgCylQ2YgpyPWZoF4L/fSsrg0Jz1rPfnKW
-         RktgWpBCa4Rp2HeI+8pibAd/NQT99qSLfDXMn9p54Ra4syHNAgRRFaZd/mTU7MzJ6nxD
-         W71Q==
-X-Gm-Message-State: APjAAAVET73EuPry6YiWcxKO1q6BwM0EXeL90xwSujncG2AYsmK+lUzh
-        5+Bt6S3BRXSS9t6RrwQMyxA=
-X-Google-Smtp-Source: APXvYqw60zfp8+66h94/Led1fzf3v5Yo5tzqVi3EGN2Y0IbwW89bsxHDgaBNtIsMNFxXPB+uiMlKHg==
-X-Received: by 2002:adf:eb48:: with SMTP id u8mr83216618wrn.283.1578035509820;
-        Thu, 02 Jan 2020 23:11:49 -0800 (PST)
-Received: from AHABDELS-M-J3JG ([85.119.46.8])
-        by smtp.gmail.com with ESMTPSA id x26sm10870641wmc.30.2020.01.02.23.11.48
-        (version=TLS1 cipher=AES128-SHA bits=128/128);
-        Thu, 02 Jan 2020 23:11:49 -0800 (PST)
-Date:   Fri, 3 Jan 2020 08:11:47 +0100
-From:   kernel Dev <ahabdels.dev@gmail.com>
-To:     Tom Herbert <tom@herbertland.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Simon Horman <simon.horman@netronome.com>,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Subject: Re: [PATCH v8 net-next 0/9] ipv6: Extension header infrastructure
-Message-Id: <20200103081147.8c27b18aec79bb1cd8ad1a1f@gmail.com>
-In-Reply-To: <CALx6S37uWDOgWqx_8B0YunQZRGCyjeBY_TLczxmKZySDK4CteA@mail.gmail.com>
-References: <1577400698-4836-1-git-send-email-tom@herbertland.com>
-        <20200102.134138.1618913847173804689.davem@davemloft.net>
-        <CALx6S37uWDOgWqx_8B0YunQZRGCyjeBY_TLczxmKZySDK4CteA@mail.gmail.com>
-X-Mailer: Sylpheed 3.4.1 (GTK+ 2.24.21; x86_64-apple-darwin10.8.0)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=o43WK0aGQfxtR36Yk2dMmC8IKe8HC2vf043dM8fz/J0=;
+        b=TBjhYPsYTpOGC6PlDgHbu0L7QoT7YwvlDexAS9h7mBy4U/v+eVKownSQ6OMBMqN5Oh
+         9Rq95O4rfbFslv+oahH0un2MLsKN2dJqUjP22n1v2O0ETs/ys3q7Kj3SUixqY+XE/mlr
+         YEvuGKhv1BJCG6A8S8MKrxR4N9t/ZDQC0BKolRXXpaFez/LmdnNQzo67jHboLSUbeOkb
+         DQc+vIA0NHFH+7CqHg5YIkOFH8S1UD4n45jWaZs1a7zz8S5/ZNa022eR4ALTuMWrC13k
+         aB6yTvaFmFmY9AGukeV4ihJjNC/Wap/U76D4F8B1g/LAIsgnh7hUWONU07IqxI48swBz
+         FAQA==
+X-Gm-Message-State: APjAAAVxexPxMcyHDQh8Hr/22RYqy7V8Y/VMY9P9A2bWs1ZShdOZse35
+        h+eKTuUIoUvc+jptdkc+eCM650LdoxKro8zBY9I=
+X-Google-Smtp-Source: APXvYqySDXOnLw7kJKhe72eMXvoQUtPXGwbXBK+RARSAlJHRXKujxFmp2PP49cECDcsrEE9JZ9Zu4JvoRjkzEU78Fns=
+X-Received: by 2002:a05:6830:2141:: with SMTP id r1mr97473012otd.39.1578036128160;
+ Thu, 02 Jan 2020 23:22:08 -0800 (PST)
+MIME-Version: 1.0
+References: <CAD_xR9eDL+9jzjYxPXJjS7U58ypCPWHYzrk0C3_vt-w26FZeAQ@mail.gmail.com>
+ <1762437703fd150bb535ee488c78c830f107a531.camel@sipsolutions.net> <CAD_xR9eh=CAYeQZ3Vp9Yj9h3ifMu2exy0ihaXyE+736tJrPVLA@mail.gmail.com>
+In-Reply-To: <CAD_xR9eh=CAYeQZ3Vp9Yj9h3ifMu2exy0ihaXyE+736tJrPVLA@mail.gmail.com>
+From:   Justin Capella <justincapella@gmail.com>
+Date:   Thu, 2 Jan 2020 23:21:56 -0800
+Message-ID: <CAMrEMU-QF8HCTMFhzHd0w2f132iA4GLUXHmBPGnuetPqkz=U7A@mail.gmail.com>
+Subject: Re: PROBLEM: Wireless networking goes down on Acer C720P Chromebook (bisected)
+To:     Stephen Oberholtzer <stevie@qrpff.net>
+Cc:     Johannes Berg <johannes@sipsolutions.net>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Tom, 
-Happy new year!!
+The rather large negative deficit stands out to me. See this patch,
+https://patchwork.kernel.org/patch/11246363/ specifically the comments
+by Kan Yan
 
-I believe that these patches cost you great effort. However, we would like to see the 6-10 subsequent patch set to be really able to understand where are you going with these ones.
+On Thu, Jan 2, 2020, 3:14 PM Stephen Oberholtzer <stevie@qrpff.net> wrote:
+>
+>
+> /sys/kernel/debug/ieee80211/phy0
+>
+> airtime_flags = 7
+>
+> stations/<my AP's MAC>/airtime =
+>
+> RX: 6583578 us
+> TX: 32719 us
+> Weight: 256
+> Deficit: VO: -1128 us VI: 11 us BE: -5098636 us BK: 256 us
+> Q depth: VO: 3868 us VI: 3636 us BE: 12284 us BK: 0 us
+> Q limit[low/high]: VO: 5000/12000 VI: 5000/12000 BE: 5000/12000 BK: 5000/1200
 
-At some point you mentioned that router vendors make protocol in miserable way. Do you believe the right way is that every individual defines the protocol the way he wants in a single authored IETF draft ? 
-
-Regarding 10) Support IPv4 extension headers.
-I see that your drafts describing the idea are expired [1][2]. 
-Do you plan to add to the kernel the implementation of expired contents ? or did you abandoned these drafts and described the idea somewhere else that I’m not aware of ?   
-
-[1] https://tools.ietf.org/html/draft-herbert-ipv4-udpencap-eh-01
-[2] https://tools.ietf.org/html/draft-herbert-ipv4-eh-01
-
-Ahmed 
-
-
-On Thu, 2 Jan 2020 16:42:24 -0800
-Tom Herbert <tom@herbertland.com> wrote:
-
-> On Thu, Jan 2, 2020 at 1:41 PM David Miller <davem@davemloft.net> wrote:
+On Thu, Jan 2, 2020 at 3:14 PM Stephen Oberholtzer <stevie@qrpff.net> wrote:
+>
+> On Thu, Jan 2, 2020 at 8:28 AM Johannes Berg <johannes@sipsolutions.net> wrote:
 > >
-> > From: Tom Herbert <tom@herbertland.com>
-> > Date: Thu, 26 Dec 2019 14:51:29 -0800
+> > On Tue, 2019-12-31 at 19:49 -0500, Stephen Oberholtzer wrote:
+> > > Wireless networking goes down on Acer C720P Chromebook (bisected)
+> > >
+> > > Culprit: 7a89233a ("mac80211: Use Airtime-based Queue Limits (AQL) on
+> > > packet dequeue")
+> > >
+>
+> <snip>
+>
+> > I think I found at least one hole in this, but IIRC (it was before my
+> > vacation, sorry) it was pretty unlikely to actually happen. Perhaps
+> > there are more though.
 > >
-> > > The fundamental rationale here is to make various TLVs, in particular
-> > > Hop-by-Hop and Destination options, usable, robust, scalable, and
-> > > extensible to support emerging functionality.
+> > https://lore.kernel.org/r/b14519e81b6d2335bd0cb7dcf074f0d1a4eec707.camel@sipsolutions.net
+>
+> <snippety-snip>
+>
+> > Do you get any output at all? Like a WARN_ON() for an underflow, or
+> > something?
 > >
-> > So, patch #1 is fine and it seems to structure the code to more easily
-> > enable support for:
+> > johannes
 > >
-> > https://tools.ietf.org/html/draft-ietf-6man-icmp-limits-07
-> >
-> > (I'll note in passing how frustrating it is that, based upon your
-> > handling of things in that past, I know that I have to go out and
-> > explicitly look for draft RFCs containing your name in order to figure
-> > out what your overall long term agenda actually is.  You should be
-> > stating these kinds of things in your commit messages)
-> >
-> > But as for the rest of the patch series, what are these "emerging
-> > functionalities" you are talking about?
-> >
-> > I've heard some noises about people wanting to do some kind of "kerberos
-> > for packets".  Or even just plain putting app + user ID information into
-> > options.
-> >
-> > Is that where this is going?  I have no idea, because you won't say.
-> >
-> Yes, there is some of that. Here are some of the use cases for HBH options:
-> 
-> PMTU option: draft-ietf-6man-mtu-option-01. There is a P4
-> implementation as well as Linux PoC for this that was demonstated
-> @IETF103 hackathon.
-> IOAM option: https://tools.ietf.org/html/draft-ietf-ippm-ioam-ipv6-options-00.
-> There is also P4 implementation and Linux router support demonstrated
-> at IETF104 hackathon. INT is a related technology that would also use
-> this.
-> FAST option: https://datatracker.ietf.org/doc/draft-herbert-fast/. I
-> have PoC for this. There are some other protocol proposals in the is
-> are (I know Huawei has something to describe the QoS that should be
-> applied).
-> 
-> There are others including the whole space especially as a real
-> solution for host to networking signaling gets fleshed out. There's
-> also the whole world of segment routing options and where that's
-> going.
-> 
-> > And honestly, this stuff sounds so easy to misuse by governments and
-> > other entities.  It could also be used to allow ISPs to limit users
-> > in very undesirable and unfair ways.   And honestly, surveilance and
-> > limiting are the most likely uses for such a facility.  I can't see
-> > it legitimately being promoted as a "security" feature, really.
-> >
-> Yes, but the problem isn't unique to IPv6 options nor would abuse be
-> prevented by not implementing them in Linux. Router vendors will
-> happily provide the necessary support to allow abuse :-) AH is the
-> prescribed way to prevent this sort of abuse (aside from encrypting
-> everything that isn't necessary to route packets, but that's another
-> story). AH is fully supported by Linux, good luck finding a router
-> vendor that cares about it :-)
-> 
-> > I think the whole TX socket option can wait.
-> >
-> > And because of that the whole consolidation and cleanup of the option
-> > handling code is untenable, because without a use case all it does is
-> > make -stable backports insanely painful.
-> 
-> The problem with "wait and see" approach is that Linux is not the only
-> game in town. There are other players that are pursuing this area
-> (Cisco and Huawei in particular). They are able to implement protocols
-> more to appease their short term marketing requirements with little
-> regard for what is best for the community. This is why Linux is so
-> critical to networking, it is the only open forum where real scrutiny
-> is applied to how protocols are implemented. If the alternatives are
-> given free to lead then it's very likely we'll end up being stuck with
-> what they do and probably have to follow their lead regardless of how
-> miserable they make the protocols. We've already seen this in segment
-> routing, their attempts to kill IP fragmentation, and all the other
-> examples of protocol ossification that unnecessarily restrict what
-> hosts are allowed to send in the network and hence reduce the utility
-> and security we are able to offer the user.
-> 
-> The other data point I will offer is that the current Linux
-> implementation of IPv6 destination and hop-by-hop options in the
-> kernel is next to useless. Nobody is using the ones that have been
-> implemented, and adding support for a new is a major pain-- the
-> ability for modules to register support for an option seems like an
-> obvious feature to me. Similarly, the restriction that only admin can
-> set options is overly restrictive-- allowing to non-privileged users
-> to send options under tightly controlled constraints set by the admin
-> also seems reasonable to me.
-> 
-> Tom
-
-
--- 
-kernel Dev <ahabdels.dev@gmail.com>
+>
+> Johannes,
+>
+> To answer your immediate question, no, I don't get any dmesg output at
+> all. Nothing about underruns.
+> However, while pursuing other avenues -- specifically, enabling
+> mac80211 debugfs and log messages -- I realized that my 'master' was
+> out-of-date from linux-stable and did a git pull.  Imagine my surprise
+> when the resulting kernel did not exhibit the problem!
+>
+> Apparently, I had been a bit too pessimistic; since the problem
+> existed in 5.5-rc1 release, I'd assumed that the problem wouldn't get
+> rectified before 5.5.
+>
+> However, I decided to bisect the fix, and ended up with: 911bde0f
+> ("mac80211: Turn AQL into an NL80211_EXT_FEATURE"), which appears to
+> have "solved" the problem by just disabling the feature (this is
+> ath9k, by the way.)
+>
+> This AQL stuff sounds pretty nifty, and I'd love to try my hand at
+> making it work for ath9k (also, since I put so much effort into an
+> automated build-and-test framework, it'd be a shame to just abandon
+> it.)  However, the ath9k code is rather lacking for comments, so I
+> don't even know where I should start, except for (I suspect) a call to
+> `wiphy_ext_feature_set(whatever, NL80211_EXT_FEATURE_AQL);` from
+> inside ath9k_set_hw_capab()?
+>
+> In the meantime, I went back to e548f749b096 -- the commit prior to
+> the one making AQL support opt-in -- and cranked up the debugging.
+>
+> I'm not sure how to interpret any of this, but  here's what I got:
+>
+> dmesg output:
+>
+> Last relevant mention is "moving STA <my AP's MAC> to state 4" which
+> happened during startup, before everything shut down.
+>
+> /sys/kernel/debug/ieee80211/phy0
+>
+> airtime_flags = 7
+>
+> stations/<my AP's MAC>/airtime =
+>
+> RX: 6583578 us
+> TX: 32719 us
+> Weight: 256
+> Deficit: VO: -1128 us VI: 11 us BE: -5098636 us BK: 256 us
+> Q depth: VO: 3868 us VI: 3636 us BE: 12284 us BK: 0 us
+> Q limit[low/high]: VO: 5000/12000 VI: 5000/12000 BE: 5000/12000 BK: 5000/12000
+>
+> (I have no idea how to interpret this, but that '32719 us' seems odd,
+> I thought the airtime usage was in 4us units?)
+>
+>
+> Doing an 'echo 3 | tee airtime_flags' to clear the (old) AQL-enabled
+> bit seemed to *immediately* restore network connectivity.
+>
+> I ran a ping, and saw this:
+>
+> - pings coming back in <5ms
+> - re-enable AQL (echo 7 | tee airtime_flags)
+> - pings stop coming back immediately
+> - some seconds later, disable AQL again (echo 3 | tee airtime_flags)
+> - immediate *flood* of ping replies registered, with times 16000ms,
+> 15000ms, 14000ms, .. down to 1000ms, 15ms, then stabilizing sub-5ms
+> - According to the icmp_seq values, all 28 requests were replied to,
+> and their replies were delivered in-order
+>
+> This certainly looks like a missing TX queue restart to me?
+>
+>
+> --
+> -- Stevie-O
+> Real programmers use COPY CON PROGRAM.EXE
