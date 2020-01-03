@@ -2,183 +2,308 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B9A5712FA35
-	for <lists+netdev@lfdr.de>; Fri,  3 Jan 2020 17:21:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D73FD12FA78
+	for <lists+netdev@lfdr.de>; Fri,  3 Jan 2020 17:31:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727928AbgACQVQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Jan 2020 11:21:16 -0500
-Received: from mail-eopbgr140081.outbound.protection.outlook.com ([40.107.14.81]:12609
-        "EHLO EUR01-VE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727701AbgACQVQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 3 Jan 2020 11:21:16 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=VeOZlkUPu6puqBBrLT7BIgZO+dbwPz01sTzu/ex9Mg4bmzKDOAT1rmdndmSKYjG/Nzp4e0WLqMnXOB7dOT3MjPBbfjwtmwWQPf9pSenquXUQA+WrCD35Zz7MsZeadPlL0RJyIg7f4Po7CGKoKKkR/V0Ad6IN50qFTVWJ/JbN/kKtZ6FOcm1w5W+mVeutBuumOFd42MGzsnCndGV/5LdOzRs/osMCuksOyNfNaKC6Re7SJVwntIy6QmCiCmqVJ8fTqShPWOSDU38rhErrzhHm7GgW0sp+pMy2VGT9aS/BLHAEN4Q87xd+LYzbbLVHRMHmJ3IPJm3IQPizLyiEB/MLgQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=sD+8TgLXXgg7hpgI+xdM7yFg+uRH1CXsfwt8NlmEgjI=;
- b=nsecV4Xr+L/sH0lU94aPunHAP+Z7v21mLuAn5Av3PkY2abXTxad0yPJoWHTYwgMwaUaUGIyhgk7F5EhX8JpyRJFYNZxRJp0PksVzOShr7dFci/tJ6yMDAGOIf65av6aILNLXbtL0lwds8+eNdaBSSezFs5ATZx5JjHevUaGVFX7GAmZeVPlbxqXA1aYzXsX/uDgDtTo8nlZCECP7P/oR7VVG2jPO6viPpikrZ+1HsPSgb63jXgOjgM1A5JU+hflZedzMmosEawSlhsX1JNxDolXYuYdObhx60YJQFzprqkyioqkFIg4ZccGJWzh92KpFmi+y/N4fm67nTYhQt92iSA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
- dkim=pass header.d=oss.nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
- s=selector2-NXP1-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=sD+8TgLXXgg7hpgI+xdM7yFg+uRH1CXsfwt8NlmEgjI=;
- b=mwvN2PadRVgCbMEiUGHsIxIvSCoQwRBc3fy95fziYo63e6D0ntewp793pEWPHKX74iUc/7sKekRqv0DAVkwDNml/yswJeSgBYa9JSypOv6RGyq4u1q9kIJUFnmBIf6Gle8X+YHxgpecRVL5XfPu7GXlQ5dS7Hw3FT+1Wy0p0sTg=
-Received: from DB8PR04MB6985.eurprd04.prod.outlook.com (52.133.243.85) by
- DB8PR04MB6524.eurprd04.prod.outlook.com (20.179.248.17) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2581.12; Fri, 3 Jan 2020 16:21:09 +0000
-Received: from DB8PR04MB6985.eurprd04.prod.outlook.com
- ([fe80::c181:4a83:14f2:27e3]) by DB8PR04MB6985.eurprd04.prod.outlook.com
- ([fe80::c181:4a83:14f2:27e3%6]) with mapi id 15.20.2602.012; Fri, 3 Jan 2020
- 16:21:09 +0000
-From:   "Madalin Bucur (OSS)" <madalin.bucur@oss.nxp.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Russell King - ARM Linux admin <linux@armlinux.org.uk>
-CC:     "Madalin Bucur (OSS)" <madalin.bucur@oss.nxp.com>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        "shawnguo@kernel.org" <shawnguo@kernel.org>
-Subject: RE: [PATCH 1/6] net: phy: add interface modes for XFI, SFI
-Thread-Topic: [PATCH 1/6] net: phy: add interface modes for XFI, SFI
-Thread-Index: AQHVtoABZZFXn6n8UUGKWfe6RtVAuKfBtnoAgAAR9oCABd2qgIAQ9D0AgAAopQCAAAQgAIAAJ5UAgAANzwCAAAvMgIAAKI7w
-Date:   Fri, 3 Jan 2020 16:21:09 +0000
-Message-ID: <DB8PR04MB6985AD897CC0159E324DF992EC230@DB8PR04MB6985.eurprd04.prod.outlook.com>
-References: <1576768881-24971-1-git-send-email-madalin.bucur@oss.nxp.com>
- <1576768881-24971-2-git-send-email-madalin.bucur@oss.nxp.com>
- <20191219172834.GC25745@shell.armlinux.org.uk>
- <VI1PR04MB5567FA3170CF45F877870E8CEC520@VI1PR04MB5567.eurprd04.prod.outlook.com>
- <20191223120730.GO25745@shell.armlinux.org.uk>
- <DB8PR04MB69858081021729EC70216BE3EC230@DB8PR04MB6985.eurprd04.prod.outlook.com>
- <20200103092718.GB25745@shell.armlinux.org.uk>
- <20200103094204.GA18808@shell.armlinux.org.uk>
- <DB8PR04MB698591AAC029ADE9F7FFF69BEC230@DB8PR04MB6985.eurprd04.prod.outlook.com>
- <20200103125310.GE25745@shell.armlinux.org.uk>
- <20200103133523.GA22988@lunn.ch>
-In-Reply-To: <20200103133523.GA22988@lunn.ch>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=madalin.bucur@oss.nxp.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [212.146.100.6]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 351468e3-8b28-4f85-519f-08d79068f11a
-x-ms-traffictypediagnostic: DB8PR04MB6524:|DB8PR04MB6524:
-x-ms-exchange-sharedmailbox-routingagent-processed: True
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <DB8PR04MB6524687DB1BC200FF1CD9705AD230@DB8PR04MB6524.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:4941;
-x-forefront-prvs: 0271483E06
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(396003)(39860400002)(366004)(136003)(346002)(376002)(13464003)(199004)(189003)(7696005)(2906002)(86362001)(55016002)(71200400001)(9686003)(186003)(6506007)(53546011)(5660300002)(26005)(478600001)(316002)(66946007)(4326008)(66556008)(52536014)(33656002)(8936002)(54906003)(110136005)(66446008)(8676002)(76116006)(64756008)(81166006)(81156014)(66476007);DIR:OUT;SFP:1101;SCL:1;SRVR:DB8PR04MB6524;H:DB8PR04MB6985.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:0;MX:1;
-received-spf: None (protection.outlook.com: oss.nxp.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: nQKBoLONJQFUNUoSpclrjpqIpQzMox5BOvT5XBdPZi9IXgVTfsEuvFxMvzpyydUqBKj14/I8wSarcC58JoQQhViIrEFXlgc57CgBH9LlP3+SLHrBHbbu/TWQ+6COykwiM96WLO+zq/Kgch373P4iUNaGw4IVg6wrNTJSUFR3WsYoEr3GMFUd3MuHWVgtYjiGiwT4R8wpKo1kAKj83YGmsiJXEOKSu4Cfphe2pEdgrp4tAQZ/vL+tl/AyxVJXMWORFIBilTt8rBd3vdlgsv9aKnX1M7F2IsDdal6uccSaUM6/2yKkze3zDQL+meuIz/eooktz0c6FYAuI2/FN/YWVTPIaNA8g1Cd5dkhGRV3wKWJLaMoqAIQP8gf7uBleud6xrs7lFkSRbuU93UdYeX2ewmYJd0AwNV6GYglrlRWTi7gllRt12QQTx64+xQAIZe+wcr/clBoVSrp38avt2eg4h9HGABlXD3UgTrFgzBfkTov0JUxUGJfXbu0c2+w1oOIR
-Content-Type: text/plain; charset="us-ascii"
+        id S1727969AbgACQbb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Jan 2020 11:31:31 -0500
+Received: from aserp2120.oracle.com ([141.146.126.78]:40426 "EHLO
+        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727859AbgACQba (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Jan 2020 11:31:30 -0500
+Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
+        by aserp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id 003GTOc9073919;
+        Fri, 3 Jan 2020 16:31:25 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=content-type :
+ mime-version : subject : from : in-reply-to : date : cc :
+ content-transfer-encoding : message-id : references : to;
+ s=corp-2019-08-05; bh=MCxYQsBaQc/0r53GJBQloDBNau19kLxx+ZWgJIG73yU=;
+ b=HJ1BwP3qUX0HX17Agd95w345APBbQmWb7x7cMln6v8GcvJdXvH/iH/1UCr8Mz2fbnrYb
+ g//huKlSJLwRrOlfYOfpetg6hun+Q+i45imd8JjYw7MRv39v0mvHl//RGTNyRq4IQs7R
+ M0hG2lnJ1wXar3qqK7Wtoc3vtlzpTwCGXzxpOXnDdKB5Zivul7AAcUq8D1pSTMjHtTrk
+ DTWg3KuQGRLKTgQ9c7/6FEpDht93jbqWEuiT9HfJ1Vphd3sJM1Ot5sQOxxwKTIAANqxn
+ lLn0MkZsPcLgsx2K3qRet4AB716VsrmQN3Zi0TnXLhF6M/0Yv0yPlNKzBKFfx3UHi4jc RA== 
+Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
+        by aserp2120.oracle.com with ESMTP id 2x5y0pw3s4-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 03 Jan 2020 16:31:25 +0000
+Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
+        by aserp3020.oracle.com (8.16.0.27/8.16.0.27) with SMTP id 003GSduV051923;
+        Fri, 3 Jan 2020 16:31:25 GMT
+Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
+        by aserp3020.oracle.com with ESMTP id 2xa7ty60a1-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 03 Jan 2020 16:31:24 +0000
+Received: from abhmp0002.oracle.com (abhmp0002.oracle.com [141.146.116.8])
+        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 003GVNkY019507;
+        Fri, 3 Jan 2020 16:31:23 GMT
+Received: from [192.168.14.112] (/79.178.220.19)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Fri, 03 Jan 2020 08:31:23 -0800
+Content-Type: text/plain;
+        charset=utf-8
+Mime-Version: 1.0 (Mac OS X Mail 11.1 \(3445.4.7\))
+Subject: Re: [PATCH] net: mlx5: Use writeX() to ring doorbell and remove
+ reduntant wmb()
+From:   Liran Alon <liran.alon@oracle.com>
+In-Reply-To: <20200103133749.GA9706@ziepe.ca>
+Date:   Fri, 3 Jan 2020 18:31:18 +0200
+Cc:     Will Deacon <will@kernel.org>, saeedm@mellanox.com,
+        leon@kernel.org, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, eli@mellanox.com, tariqt@mellanox.com,
+        danielm@mellanox.com,
+        =?utf-8?Q?H=C3=A5kon_Bugge?= <haakon.bugge@oracle.com>
 Content-Transfer-Encoding: quoted-printable
-MIME-Version: 1.0
-X-OriginatorOrg: oss.nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 351468e3-8b28-4f85-519f-08d79068f11a
-X-MS-Exchange-CrossTenant-originalarrivaltime: 03 Jan 2020 16:21:09.0792
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: kWKK0o7WwuFHlLGe7c+Tv7hQ9weIYuCwOL6YJd67TCMET/XHeLWnNKGApGPUGg4TzcF54gh4P0Py7C0gesqPNA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB8PR04MB6524
+Message-Id: <F7C45792-2F17-42AE-88A2-F744EEAD68A5@oracle.com>
+References: <20200102174436.66329-1-liran.alon@oracle.com>
+ <20200102192934.GH9282@ziepe.ca>
+ <6524AE07-2ED7-41B5-B761-9F6BE8D2049B@oracle.com>
+ <20200102205847.GJ9282@ziepe.ca>
+ <79BB7EDF-406D-4FA1-ADDC-634D55F15C37@oracle.com>
+ <20200103133749.GA9706@ziepe.ca>
+To:     Jason Gunthorpe <jgg@ziepe.ca>
+X-Mailer: Apple Mail (2.3445.4.7)
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9489 signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
+ phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.0.1-1911140001 definitions=main-2001030151
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9489 signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
+ suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1015
+ lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1911140001
+ definitions=main-2001030151
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> -----Original Message-----
-> From: Andrew Lunn <andrew@lunn.ch>
-> Sent: Friday, January 3, 2020 3:35 PM
-> To: Russell King - ARM Linux admin <linux@armlinux.org.uk>
-> Cc: Madalin Bucur (OSS) <madalin.bucur@oss.nxp.com>;
-> devicetree@vger.kernel.org; davem@davemloft.net; netdev@vger.kernel.org;
-> f.fainelli@gmail.com; hkallweit1@gmail.com; shawnguo@kernel.org
-> Subject: Re: [PATCH 1/6] net: phy: add interface modes for XFI, SFI
+
+
+> On 3 Jan 2020, at 15:37, Jason Gunthorpe <jgg@ziepe.ca> wrote:
 >=20
-> > What I might be willing to accept is if we were to introduce
-> > XFI_10GBASER, XFI_10GBASEW, XFI_10GFC, XFI_G709 and their SFI
-> > counterparts - but, there would remain one HUGE problem with that,
-> > which is the total lack of specification of the board characteristics
-> > required to achieve XFI electrical compliance.
+> On Fri, Jan 03, 2020 at 12:21:06AM +0200, Liran Alon wrote:
 >=20
-> Hi Russell
+>>> AFAIK WC is largely unspecified by the memory model. Is wmb() even
+>>> formally specified to interact with WC?
+>>=20
+>> As I said, I haven=E2=80=99t seen such semantics defined in kernel
+>> documentation such as memory-barriers.txt.  However, in practice, it
+>> does flush WC buffers. At least for x86 and ARM which I=E2=80=99m =
+familiar
+>> enough with.  I think it=E2=80=99s reasonable to assume that wmb() =
+should
+>> flush WC buffers while dma_wmb()/smp_wmb() doesn=E2=80=99t =
+necessarily have
+>> to do this.
 >=20
-> The four RGMII variants are precedents for mixing protocol and
-> 'electrical' properties, in terms of clock delays. But having four
-> RGMII variants has been a pain point, implementations getting it
-> wrong, etc.
+> It is because WC is rarely used and laregly undefined for the kernel
+> :(
 
-I always thought that a separate property would of simplified code a lot,
-there are things to be done for RGMII and one ends up with ugly code:
+Yep.
 
-        /* check RGMII support */
-        if (iface =3D=3D PHY_INTERFACE_MODE_RGMII ||
-            iface =3D=3D PHY_INTERFACE_MODE_RGMII_ID ||
-            iface =3D=3D PHY_INTERFACE_MODE_RGMII_RXID ||
-            iface =3D=3D PHY_INTERFACE_MODE_RGMII_TXID)
-
-That's the reason I've commented on the recent patch set, that maybe it's
-time to stop and fix this mess properly, provided that we find a better
-solution.
-
-> So i would avoid mixing them in one property. I would prefer we keep
-> phy-mode as a protocol property, and we define additional DT
-> properties to describe the electrical parts of the SERDES interface.
 >=20
-> Madalin, what electrical properties do you actually need in DT?  I
-> guess you need to know if it is using XFI or SFI. But that is only the
-> start. Do you want to place all the other properties in DT as well, or
-> are they in a board specific firmware blobs, and you just need to know
-> if you should use the XFI blob or the SFI blob?
-
-I do not have other electrical propertied to set. Nor do I have a different
-blob to load. We're using u-boot as a a bootloader. It supports SFI as a
-valid mode for a long time now:
-
-commit d11e9347461cff9ce89e6e65764f73fad0f19c6f
-Author: Stefan Roese <sr@denx.de>
-Date:   Thu Feb 23 11:58:26 2017 +0100
-
-    net: include/phy.h: Add new PHY interface modes
-
-    This patch adds the new PHY interface modes XAUI, RXAUI and SFI that wi=
-ll
-    be used by the PPv2.2 support in the Marvell mvpp2 ethernet driver.
-
-    Signed-off-by: Stefan Roese <sr@denx.de>
-    Cc: Stefan Chulski <stefanc@marvell.com>
-    Cc: Kostya Porotchkin <kostap@marvell.com>
-    Cc: Nadav Haklai <nadavh@marvell.com>
-    Acked-by: Joe Hershberger <joe.hershberger@ni.com>
-
-There are many things pushed down to u-boot so the Linux driver has less
-work to do, that's one of the reasons there is little left there. Ideally
-this dependency should be removed but then we'd need to make a clearer
-distinction. As you've noticed, currently I don't even need to distinguish
-XFI from SFI because for basic scenarios the code does the same thing.
-Problem is, if I select a common denominator now, and later I need to
-make this distinction, I'll need to update device trees, code, etc. Just
-like "xgmii" was just fine as a placeholder until recently. I'd rather use
-a correct description now.
-
-> We can probably define a vendor neutral DT property for XFI vs SFI,
-> but i expect all the other electrical properties are going to be
-> vendor specific.
+>>>>>> Therefore, change mlx5_write64() to use writeX() and remove wmb() =
+from
+>>>>>> it's callers.
+>>>>>=20
+>>>>> Yes, wmb(); writel(); is always redundant
+>>>>=20
+>>>> Well, unfortunately not=E2=80=A6
+>>>> See: =
+https://urldefense.proofpoint.com/v2/url?u=3Dhttps-3A__marc.info_-3Fl-3Dli=
+nux-2Dnetdev-26m-3D157798859215697-26w-3D2&d=3DDwIDaQ&c=3DRoP1YumCXCgaWHvl=
+ZYR8PZh8Bv7qIrMUB65eapI_JnE&r=3DJk6Q8nNzkQ6LJ6g42qARkg6ryIDGQr-yKXPNGZbpTx=
+0&m=3DOx1lCS1KAGBvJrf24kiFQrranIaNi_zeo05sqCUEf7Y&s=3DMz6MJzUQ862DGjgGnj3n=
+eX4ZpjI88nOI9KpZhNF9TqQ&e=3D
+>>>> (See my suggestion to add flush_wc_writeX())
+>>>=20
+>>> Well, the last time wmb & writel came up Linus was pretty clear that
+>>> writel is supposed to remain in program order and have the barriers
+>>> needed to do that.
+>>=20
+>> Right. But that doesn=E2=80=99t take into account that WC writes are
+>> considered completed when they are still posted in CPU WC buffers.
 >=20
->        Andrew
+>> The semantics as I understand of writeX() is that it guarantees all
+>> prior writes have been completed.  It means that all prior stores
+>> have executed and that store-buffer is flushed. But it doesn=E2=80=99t =
+mean
+>> that WC buffers is flushed as-well.
+>=20
+> The semantic for writel is that prior program order stores will be
+> observable by DMA from the device receiving the writel. This is
+> required for UC and NC stores today. WC is undefined, I think.
+>=20
+> This is why ARM has the additional barrier in writel.
+
+Yep.
+
+>=20
+> It would logically make sense if WC followed the same rule, however,
+> adding a barrier to writel to make WC ordered would not be popular, so
+> I think we are left with using special accessors for WC and placing
+> the barrier there..
+
+Right.
+
+>=20
+>>> IMHO you should start there before going around and adding/removing =
+wmbs
+>>> related to WC. Update membory-barriers.txt and related with the =
+model
+>>> ordering for WC access and get agreement.
+>>=20
+>> I disagree here. It=E2=80=99s more important to fix a real bug (e.g. =
+Not
+>> flushing WC buffers on x86 AMD).  Then, we can later formalise this
+>> and refactor code as necessary. Which will also optimise it as-well.
+>> Bug fix can be merged before we finish all these discussions and get
+>> agreement.
+>=20
+> Is it a real bug that people actually hit? It wasn't clear from the
+> commit message. If so, sure, it should be fixed and the commit message
+> clarified. (but I'd put the wmb near the WC writes..)
+
+I found this bug during code review. I=E2=80=99m not aware if AWS saw =
+this bug happening in production.
+But according to AMD SDM and Optimization Guide SDM, this is a bug.
+
+I think it doesn=E2=80=99t happen in practice because the write of the =
+Tx descriptor + 128 first bytes of packet
+Effectively fills the relevant WC buffers and when a WC buffer is fully =
+written to, the CPU *should*
+(Not *must*) flush the WC buffer to memory.
+
+Having said that, I (and AWS maintainers of this code which I spoke with =
+them about this) still think
+that we should first apply this patch and later refactor this code when =
+we will introduce the proper
+memory accessor (flush_wc_writeX()).
+
+But I would be glad to hear thoughts from memory-barriers.txt =
+maintainers such as Will on this.
+
+>=20
+> I am surprised that AMD is different here, the evolution of the WC
+> feature on x86 was to transparently speed up graphics, so I'm pretty
+> surprised AMD can get away with not ordering the same as Intel..
+
+Completely agree. I was very surprised to see this from AMD SDM and =
+Optimization Guide SDM.
+It made sense to me too that graphics frame buffer is written to WC =
+memory and then is committed
+to GPU by writing to some doorbell register mapped as UC memory.
+
+My personal theory is that the difference is rooted from the fact that =
+AMD use dedicated CPU registers
+for WC buffers in contrast to Intel which utilise LFB entries for that =
+(In addition to their standard role).
+But this is a pure guess of course. :)
+
+>=20
+>> I do completely agree we should have this discussion on WC and
+>> barriers and I already sent an email on this to all the
+>> memory-barriers.txt maintainers. Waiting to see how that discussion
+>> go and get community feedback before I will submit a patch-series
+>> that will introduce new changes to memory-barriers.txt and probably
+>> also new barrier macro.
+>=20
+> The barrier macros have been unpopular, ie the confusing mmiowb was
+> dumped, and I strongly suspect to contain WC within a spinlock (which
+> is very important!) you need a barrier instruction on some archs.
+>=20
+> New accessors might work better.
+
+We agree. I just use wrong terminology :)
+I meant we should probably introduce something as flush_wc_writeX().
+
+>=20
+>>>>>> 	doorbell[0] =3D cpu_to_be32(sn << 28 | cmd | ci);
+>>>>>> 	doorbell[1] =3D cpu_to_be32(cq->cqn);
+>>>>>=20
+>>>>>> static inline void mlx5_write64(__be32 val[2], void __iomem =
+*dest)
+>>>>>> {
+>>>>>> #if BITS_PER_LONG =3D=3D 64
+>>>>>> -	__raw_writeq(*(u64 *)val, dest);
+>>>>>> +	writeq(*(u64 *)val, dest);
+>>>>>=20
+>>>>> I want to say this might cause problems with endian swapping as =
+writeq
+>>>>> also does some swaps that __raw does not? Is this true?
+>>>>=20
+>>>> Hmm... Looking at ARM64 version, writeq() indeed calls =
+cpu_to_le64()
+>>>> on parameter before passing it to __raw_writeq().  Quite surprising
+>>>> from API perspective to be honest.
+>>>=20
+>>> For PCI-E devices writel(x) is defined to generate the same TLP on =
+the
+>>> PCI-E bus, across all arches.
+>>=20
+>> Good to know.
+>> Question: Where is this documented?
+>=20
+> Hmm, haven't ever seen it documented like that. It is sort of a
+> logical requirement. If writel(x) produces different TLPs (ie
+> different byte order) how could a driver ever work with a PCI-E device
+> that requires only one TLP for x?
+
+Makes sense indeed.
+
+>=20
+>>>> So should I change this instead to iowrite64be(*(u64 *)val, dest)?
+>>>=20
+>>> This always made my head hurt, but IIRC, when I looked at it years =
+ago
+>>> the weird array construction caused problems with that simple =
+conversion.
+>>>=20
+>>> The userspace version looks like this now:
+>>>=20
+>>>       uint64_t doorbell;
+>>>       uint32_t sn;
+>>>       uint32_t ci;
+>>>       uint32_t cmd;
+>>>=20
+>>>       sn  =3D cq->arm_sn & 3;
+>>>       ci  =3D cq->cons_index & 0xffffff;
+>>>       cmd =3D solicited ? MLX5_CQ_DB_REQ_NOT_SOL : =
+MLX5_CQ_DB_REQ_NOT;
+>>>=20
+>>>       doorbell =3D sn << 28 | cmd | ci;
+>>>       doorbell <<=3D 32;
+>>>       doorbell |=3D cq->cqn;
+>>>=20
+>>>       mmio_write64_be(ctx->uar[0].reg + MLX5_CQ_DOORBELL, =
+htobe64(doorbell));
+>>>=20
+>>> Where on all supported platforms the mmio_write64_be() expands to a
+>>> simple store (no swap)
+>>>=20
+>>> Which does look functionally the same as
+>>>=20
+>>>  iowrite64be(doorbell, dest);
+>>>=20
+>>> So this patch should change the mlx5_write64 to accept a u64 like we
+>>> did in userspace when this was all cleaned there.
+>>=20
+>> If I understand you correctly, you suggest to change callers to pass
+>> here a standard u64 and then modify mlx5_write64() to just call
+>> iowrite64be(). If so, I agree. Just want to confirm before sending
+>> v2.
+>=20
+> Yes, this is what I did to userspace and it made this all make
+> sense. I strongly recommend to do the same in the kernel, particularly
+> now that we have iowrite64be()!
+
+Ack.
+
+Thanks,
+-Liran
+
+>=20
+> Jason
+
