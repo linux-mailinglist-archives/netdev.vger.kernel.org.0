@@ -2,69 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4490212F533
-	for <lists+netdev@lfdr.de>; Fri,  3 Jan 2020 09:10:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3088612F564
+	for <lists+netdev@lfdr.de>; Fri,  3 Jan 2020 09:25:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727313AbgACIKm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Jan 2020 03:10:42 -0500
-Received: from mail-wr1-f45.google.com ([209.85.221.45]:42135 "EHLO
-        mail-wr1-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725890AbgACIKl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Jan 2020 03:10:41 -0500
-Received: by mail-wr1-f45.google.com with SMTP id q6so41520661wro.9
-        for <netdev@vger.kernel.org>; Fri, 03 Jan 2020 00:10:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=DL+xar8hELNsnJ6V6TESrpzFghV2T3jgNThfwGiRJ2s=;
-        b=EeIyEVYd+3AOkeqcEpkfa0RNTkp5vijOVz+b9Ws9Q4Xyoz8Z5SkDwlMPCNrM5kc/Tl
-         20bBcdVRTi3HhLlpVGDEKgJvtVgg0SzSI4l8nWI2RU2jBGi4E+iIZuyHic0QcehDSM3p
-         q1rkMtDk+qd3g1jMb5/+i/BUuvFwD322MgLFuk5a9/fiM1XX87aDvcMBOVatTBDZmVgw
-         3bBoOQGr8V+QC++lOljuhrHHhgrFUHwvIlGAQ31RXVz3u3qI4J5PomxqS9oEm8XBmZ8+
-         tzib6zt4sCcJTjFAccTjobKG3hSJj8nWrryHqPwGK5FrdF00CpX7b6k3GtJBmItncD9X
-         2jNA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=DL+xar8hELNsnJ6V6TESrpzFghV2T3jgNThfwGiRJ2s=;
-        b=ow9qHZUCndrus3hHhiOigv5FSGTFxi35E834z5XB4TEBmzspd7jRg2KK3aa88bZOUq
-         8yc5JYYo9uacga1SrHH2wV5AJyU7SfnePf6wr5cdDmp3EUJpjbtHrbCEkOboMDjNkCdM
-         AkoJKbh1VUgEyqIrHIaKQkj3vQe9h5hhY4Q5hNCBqXMJBGh30c6R4lc5wjvgr+GO7Q4U
-         c9bUAtQQXi5Yf7xVyR9Ik4haF9Z9TemIxr9/9gFZiKn64swK4LGX0QkrJykHJvogsQYN
-         wYpgFlldVoon+/1IDi2pyR8jBOP2Gg9WVb7cru50TPcdW0GGT49zZCAPyNYfcCpXryba
-         3MoA==
-X-Gm-Message-State: APjAAAUj7oX0Az4COQQWeO0s0OBejGYBce0/avjXBKdY3eyort16zu6D
-        tau5chHrkQSAlw2mGu0Kza9mLFoOs4U=
-X-Google-Smtp-Source: APXvYqzq5ort6t2Z20ODESdYr9o7Rh/hCLcjtqdksHdJUDzK2X40mJgG/f9uW0MA4bPZ0kyCnsMiqQ==
-X-Received: by 2002:a5d:5267:: with SMTP id l7mr92449030wrc.84.1578039040319;
-        Fri, 03 Jan 2020 00:10:40 -0800 (PST)
-Received: from netronome.com ([2001:982:756:703:d63d:7eff:fe99:ac9d])
-        by smtp.gmail.com with ESMTPSA id k16sm61684789wru.0.2020.01.03.00.10.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 03 Jan 2020 00:10:40 -0800 (PST)
-Date:   Fri, 3 Jan 2020 09:10:39 +0100
-From:   Simon Horman <simon.horman@netronome.com>
-To:     Li RongQing <lirongqing@baidu.com>
-Cc:     netdev@vger.kernel.org
-Subject: Re: [PATCH][net-next] net: remove the check argument from
- __skb_gro_checksum_convert
-Message-ID: <20200103081039.GE12930@netronome.com>
-References: <1578023460-12331-1-git-send-email-lirongqing@baidu.com>
+        id S1727210AbgACIZd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Jan 2020 03:25:33 -0500
+Received: from szxga04-in.huawei.com ([45.249.212.190]:8664 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726054AbgACIZd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 3 Jan 2020 03:25:33 -0500
+Received: from DGGEMS402-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id A244BD010FAE0F605C51;
+        Fri,  3 Jan 2020 16:25:29 +0800 (CST)
+Received: from [127.0.0.1] (10.133.213.239) by DGGEMS402-HUB.china.huawei.com
+ (10.3.19.202) with Microsoft SMTP Server id 14.3.439.0; Fri, 3 Jan 2020
+ 16:25:23 +0800
+Subject: Re: [PATCH net-next] ethtool: remove set but not used variable
+ 'lsettings'
+To:     Michal Kubecek <mkubecek@suse.cz>, <netdev@vger.kernel.org>
+References: <20200103034856.177906-1-yuehaibing@huawei.com>
+ <20200103073923.GA4769@unicorn.suse.cz>
+CC:     "David S . Miller" <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        <kernel-janitors@vger.kernel.org>, Hulk Robot <hulkci@huawei.com>
+From:   Yuehaibing <yuehaibing@huawei.com>
+Message-ID: <532c6c68-4dd6-bd08-2a86-a257f3384156@huawei.com>
+Date:   Fri, 3 Jan 2020 16:25:22 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:45.0) Gecko/20100101
+ Thunderbird/45.2.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1578023460-12331-1-git-send-email-lirongqing@baidu.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20200103073923.GA4769@unicorn.suse.cz>
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.133.213.239]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 03, 2020 at 11:51:00AM +0800, Li RongQing wrote:
-> The argument is always ignored, so remove it.
+On 2020/1/3 15:39, Michal Kubecek wrote:
+> On Fri, Jan 03, 2020 at 03:48:56AM +0000, YueHaibing wrote:
+>> Fixes gcc '-Wunused-but-set-variable' warning:
+>>
+>> net/ethtool/linkmodes.c: In function 'ethnl_set_linkmodes':
+>> net/ethtool/linkmodes.c:326:32: warning:
+>>  variable 'lsettings' set but not used [-Wunused-but-set-variable]
+>>   struct ethtool_link_settings *lsettings;
+>>                                 ^
+>> It is never used, so remove it.
+>>
+>> Reported-by: Hulk Robot <hulkci@huawei.com>
+>> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+>> ---
+>>  net/ethtool/linkmodes.c | 2 --
+>>  1 file changed, 2 deletions(-)
+>>
+>> diff --git a/net/ethtool/linkmodes.c b/net/ethtool/linkmodes.c
+>> index 0b99f494ad3b..96f20be64553 100644
+>> --- a/net/ethtool/linkmodes.c
+>> +++ b/net/ethtool/linkmodes.c
+>> @@ -323,7 +323,6 @@ int ethnl_set_linkmodes(struct sk_buff *skb, struct genl_info *info)
+>>  {
+>>  	struct nlattr *tb[ETHTOOL_A_LINKMODES_MAX + 1];
+>>  	struct ethtool_link_ksettings ksettings = {};
+>> -	struct ethtool_link_settings *lsettings;
+>>  	struct ethnl_req_info req_info = {};
+>>  	struct net_device *dev;
+>>  	bool mod = false;
+>> @@ -354,7 +353,6 @@ int ethnl_set_linkmodes(struct sk_buff *skb, struct genl_info *info)
+>>  			GENL_SET_ERR_MSG(info, "failed to retrieve link settings");
+>>  		goto out_ops;
+>>  	}
+>> -	lsettings = &ksettings.base;
+>>  
+>>  	ret = ethnl_update_linkmodes(info, tb, &ksettings, &mod);
+>>  	if (ret < 0)
 > 
-> Signed-off-by: Li RongQing <lirongqing@baidu.com>
+> Reviewed-by: Michal Kubecek <mkubecek@suse.cz>
+> 
+> Thank you. I wonder why my compiler does not complain.
 
-Reviewed-by: Simon Horman <simon.horman@netronome.com>
+Using make W=1
+
+> 
+> Michal
+> 
+> .
+> 
+
