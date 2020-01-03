@@ -2,74 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1DA7F12F91B
-	for <lists+netdev@lfdr.de>; Fri,  3 Jan 2020 15:17:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A8FD12F954
+	for <lists+netdev@lfdr.de>; Fri,  3 Jan 2020 15:46:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727670AbgACORy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Jan 2020 09:17:54 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:46546 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727523AbgACORx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 3 Jan 2020 09:17:53 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=SPSoKaVWvvfOmi0iWxF8OTB5u3tMvNZWBpDZy5pArsw=; b=w+U8h2NmPqJUSto7bxoXcsRufT
-        /1hIhKGWL/t/JVAD/9mVUNzRGe5KfY5ET5CZ9FwIOgZLUE4rUzB6WRb3qwJe5biCwWDZgGeuUaygK
-        1FnauURFWaoTB9yOvUDEtHy4MDLsZfOj91aEbax511bFa3GvwLSxptfy33fHO2+YnfbI=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1inNln-0006of-Np; Fri, 03 Jan 2020 15:17:43 +0100
-Date:   Fri, 3 Jan 2020 15:17:43 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     "Madalin Bucur (OSS)" <madalin.bucur@oss.nxp.com>
-Cc:     Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH net-next 0/2] Fix 10G PHY interface types
-Message-ID: <20200103141743.GC22988@lunn.ch>
-References: <20200103115125.GC25745@shell.armlinux.org.uk>
- <DB8PR04MB698593C7DB07A82577562348EC230@DB8PR04MB6985.eurprd04.prod.outlook.com>
+        id S1727884AbgACOqm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Jan 2020 09:46:42 -0500
+Received: from bombadil.infradead.org ([198.137.202.133]:60574 "EHLO
+        bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725890AbgACOqm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Jan 2020 09:46:42 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20170209; h=In-Reply-To:Content-Transfer-Encoding
+        :Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:
+        Sender:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=dxGlP6E/0HnbmMgn1yCwGjBQHVH0nxVSC6z7ysmlKDs=; b=OL7BdYVsmhrEZ6PqewWXvrrH/b
+        EiWzXJN80gQf8xZL1AGC7lanLRcuhef2luI/P0Bp1QDWo4gTSMcnyQSnYTJ+lUGtaBpRvpAeGPWXs
+        Gue5FGGBUKoLkMAR1ShHf0hyKuREbHBeI5zr5WfMZWWVWXpq818HrvNWl3vjW75kcGrwW2Pix6emS
+        DGJRxyiDxDx09lAFEEO+9TRFUUMzGlWl14DDUI6eVLPYMttzrNHspsBmplwjzdwdnRl7Tz/nystz5
+        EMRDpQn/0LfqNFI6QbcABSG2tkdfI2OuOJG+9QemWA3sm1msZxij2u23XGtYpanGu6NRuj3Zn/aFt
+        zD/4hdjA==;
+Received: from willy by bombadil.infradead.org with local (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1inODX-0005ig-Sz; Fri, 03 Jan 2020 14:46:23 +0000
+Date:   Fri, 3 Jan 2020 06:46:23 -0800
+From:   Matthew Wilcox <willy@infradead.org>
+To:     yu kuai <yukuai3@huawei.com>
+Cc:     klassert@kernel.org, davem@davemloft.net, hkallweit1@gmail.com,
+        jakub.kicinski@netronome.com, hslester96@gmail.com, mst@redhat.com,
+        yang.wei9@zte.com.cn, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, yi.zhang@huawei.com,
+        zhengbin13@huawei.com
+Subject: Re: [PATCH] net: 3com: 3c59x: remove set but not used variable
+ 'mii_reg1'
+Message-ID: <20200103144623.GI6788@bombadil.infradead.org>
+References: <20200103121907.5769-1-yukuai3@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <DB8PR04MB698593C7DB07A82577562348EC230@DB8PR04MB6985.eurprd04.prod.outlook.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200103121907.5769-1-yukuai3@huawei.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Describing the actual interface at chip to chip level (RGMII, SGMII, XAUI,
-> XFI, etc.). This may be incomplete for people trying to configure their HW
-> that supports multiple modes (reminder - device trees describe HW, they do
-> not configure SW). More details would be required and the list would be...
-> eclectic.
+On Fri, Jan 03, 2020 at 08:19:07PM +0800, yu kuai wrote:
+> Fixes gcc '-Wunused-but-set-variable' warning:
+> 
+> drivers/net/ethernet/3com/3c59x.c: In function ‘vortex_up’:
+> drivers/net/ethernet/3com/3c59x.c:1551:9: warning: variable
+> ‘mii_reg1’ set but not used [-Wunused-but-set-variable]
+> 
+> It is never used, and so can be removed.
+...
+>  	if (dev->if_port == XCVR_MII || dev->if_port == XCVR_NWAY) {
+> -		mii_reg1 = mdio_read(dev, vp->phys[0], MII_BMSR);
+>  		mii_reg5 = mdio_read(dev, vp->phys[0], MII_LPA);
 
-Hi Madalin
-
-Please forget the existing DT binding for the moment. Please describe
-what values you need to program into your hardware to make it
-work. Please don't use the existing DT naming when describing what you
-need. Maybe use the terms from the reference manual?
-
-Once we have a list, we can figure out what could be generic, what
-could be vendor specific, and how to describe it in ACPI, DT, etc.
-
-At LPC 2019, Claudiu and Vladimir talked about wanting to describe the
-eye configuration for some hardware. It would be interesting if there
-is any overlap. Aquantia also have some values used to configure the
-SERDES of their PHYs. I think this is a board specific binary blob
-which is loaded into the PHY as part of the firmware. That then limits
-their firmware to a specific board, which is not so nice. But does
-that also indicate that how the MAC is configured might also depend on
-how the PHY configures its electrical properties?
-
-    Andrew
+I know nothing about the MII interface, but in general this is not
+a safe thing to do.  You're removing a read from a device register.
+Register reads can have side effects.  I'm actually quite surprised
+that GCC emits this warning, since there should be some kind of
+volatile cast in mdio_read() to let GCC know that something unusual
+is going on here.
