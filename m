@@ -2,74 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A5891302B2
-	for <lists+netdev@lfdr.de>; Sat,  4 Jan 2020 15:33:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7193413032C
+	for <lists+netdev@lfdr.de>; Sat,  4 Jan 2020 16:23:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726292AbgADOdP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 4 Jan 2020 09:33:15 -0500
-Received: from mail.kernel.org ([198.145.29.99]:46648 "EHLO mail.kernel.org"
+        id S1726080AbgADPXG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 4 Jan 2020 10:23:06 -0500
+Received: from mail.kernel.org ([198.145.29.99]:33170 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725924AbgADOdP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 4 Jan 2020 09:33:15 -0500
+        id S1727310AbgADPXE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 4 Jan 2020 10:23:04 -0500
 Received: from localhost.localdomain (unknown [194.230.155.149])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id BB4C524650;
-        Sat,  4 Jan 2020 14:33:13 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 03AC624655;
+        Sat,  4 Jan 2020 15:23:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1578148394;
-        bh=YeNEiLUWQA87Z0m6j5gu6gXNwNO93yKxXGJ9/FGVlQQ=;
-        h=From:To:Subject:Date:In-Reply-To:References:From;
-        b=YdKu57Wytfnm3qTlKA0BW018kdDOc4IF0EzgA9r2Fh3gMYpM7rpCnWCqsMGLKYE/I
-         h9BSfDIJi820i5bQCMNu2W3DL2Cqd6QSB5BoZ4dtBmLGugqXKVm0mVx8vrOGePZD5q
-         RwhqAy3rkgvwlbFaRPtgkroxITpDa1NgaqaCPY98=
+        s=default; t=1578151384;
+        bh=OBmIUek42cnzUQDrrnU/oY+P3xCSkIfYAxlHss1KdT4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=q6NPfec85LcFZQHlGOIyNJdrCLNqsEoMqnIESh/DST97qj/AzBPdkEuvCt+F1pnWs
+         wC2HjcQt3FyHMwd84oj6EOG9G1sOeYhUdMrijThEqdYB8tHzvXAAv/nWL9uNi00aXS
+         bvRYojbVQ77pey9oKabM6Fep68RTKwyrX+L8EHxE=
 From:   Krzysztof Kozlowski <krzk@kernel.org>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Krzysztof Kozlowski <krzk@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 2/2] net: ethernet: ni65: Fix cast from pointer to integer of different size
-Date:   Sat,  4 Jan 2020 15:33:06 +0100
-Message-Id: <20200104143306.21210-2-krzk@kernel.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Krzysztof Kozlowski <krzk@kernel.org>,
+        Byungho An <bh74.an@samsung.com>,
+        Girish K S <ks.giri@samsung.com>,
+        Vipul Pandya <vipul.pandya@samsung.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Allison Randal <allison@lohutok.net>,
+        Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org
+Subject: [PATCH v2 19/20] net: ethernet: sxgbe: Rename Samsung to lowercase
+Date:   Sat,  4 Jan 2020 16:21:06 +0100
+Message-Id: <20200104152107.11407-20-krzk@kernel.org>
 X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200104143306.21210-1-krzk@kernel.org>
-References: <20200104143306.21210-1-krzk@kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200104152107.11407-1-krzk@kernel.org>
+References: <20200104152107.11407-1-krzk@kernel.org>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-"buffer" array is unsigned long so casting of pointer to u32 causes
-warning (compile testing on alpha architecture):
+Fix up inconsistent usage of upper and lowercase letters in "Samsung"
+name.
 
-    drivers/net/ethernet/amd/ni65.c: In function ‘ni65_stop_start’:
-    drivers/net/ethernet/amd/ni65.c:751:16: warning:
-        cast from pointer to integer of different size [-Wpointer-to-int-cast]
+"SAMSUNG" is not an abbreviation but a regular trademarked name.
+Therefore it should be written with lowercase letters starting with
+capital letter.
+
+Although advertisement materials usually use uppercase "SAMSUNG", the
+lowercase version is used in all legal aspects (e.g. on Wikipedia and in
+privacy/legal statements on
+https://www.samsung.com/semiconductor/privacy-global/).
 
 Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
-
 ---
+ drivers/net/ethernet/samsung/sxgbe/sxgbe_main.c | 2 +-
+ include/linux/sxgbe_platform.h                  | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-Only compile tested
----
- drivers/net/ethernet/amd/ni65.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/amd/ni65.c b/drivers/net/ethernet/amd/ni65.c
-index c38edf6f03a3..60c194680bdf 100644
---- a/drivers/net/ethernet/amd/ni65.c
-+++ b/drivers/net/ethernet/amd/ni65.c
-@@ -748,7 +748,7 @@ static void ni65_stop_start(struct net_device *dev,struct priv *p)
- #ifdef XMT_VIA_SKB
- 			skb_save[i] = p->tmd_skb[i];
- #endif
--			buffer[i] = (u32) isa_bus_to_virt(tmdp->u.buffer);
-+			buffer[i] = (unsigned long)isa_bus_to_virt(tmdp->u.buffer);
- 			blen[i] = tmdp->blen;
- 			tmdp->u.s.status = 0x0;
- 		}
+diff --git a/drivers/net/ethernet/samsung/sxgbe/sxgbe_main.c b/drivers/net/ethernet/samsung/sxgbe/sxgbe_main.c
+index cd6e0de48248..7d3a1c0df09c 100644
+--- a/drivers/net/ethernet/samsung/sxgbe/sxgbe_main.c
++++ b/drivers/net/ethernet/samsung/sxgbe/sxgbe_main.c
+@@ -2296,7 +2296,7 @@ __setup("sxgbeeth=", sxgbe_cmdline_opt);
+ 
+ 
+ 
+-MODULE_DESCRIPTION("SAMSUNG 10G/2.5G/1G Ethernet PLATFORM driver");
++MODULE_DESCRIPTION("Samsung 10G/2.5G/1G Ethernet PLATFORM driver");
+ 
+ MODULE_PARM_DESC(debug, "Message Level (-1: default, 0: no output, 16: all)");
+ MODULE_PARM_DESC(eee_timer, "EEE-LPI Default LS timer value");
+diff --git a/include/linux/sxgbe_platform.h b/include/linux/sxgbe_platform.h
+index 85ec745767bd..966146f7267a 100644
+--- a/include/linux/sxgbe_platform.h
++++ b/include/linux/sxgbe_platform.h
+@@ -1,6 +1,6 @@
+ /* SPDX-License-Identifier: GPL-2.0-only */
+ /*
+- * 10G controller driver for Samsung EXYNOS SoCs
++ * 10G controller driver for Samsung Exynos SoCs
+  *
+  * Copyright (C) 2013 Samsung Electronics Co., Ltd.
+  *		http://www.samsung.com
 -- 
 2.17.1
 
