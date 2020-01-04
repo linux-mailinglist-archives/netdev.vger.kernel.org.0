@@ -2,93 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 41E3A1304C0
-	for <lists+netdev@lfdr.de>; Sat,  4 Jan 2020 22:52:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AEA141304DE
+	for <lists+netdev@lfdr.de>; Sat,  4 Jan 2020 23:05:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726373AbgADVwJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 4 Jan 2020 16:52:09 -0500
-Received: from mout.kundenserver.de ([217.72.192.75]:37265 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726170AbgADVwJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 4 Jan 2020 16:52:09 -0500
-Received: from threadripper.lan ([149.172.19.189]) by mrelayeu.kundenserver.de
- (mreue106 [212.227.15.145]) with ESMTPA (Nemesis) id
- 1M3UEW-1ioPZE0kDa-000dUZ; Sat, 04 Jan 2020 22:51:58 +0100
-From:   Arnd Bergmann <arnd@arndb.de>
-To:     Saeed Mahameed <saeedm@mellanox.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Adhemerval Zanella <adhemerval.zanella@linaro.org>,
-        Tariq Toukan <tariqt@mellanox.com>,
-        Shay Agroskin <shayag@mellanox.com>,
-        Eran Ben Elisha <eranbe@mellanox.com>,
-        Maxim Mikityanskiy <maximmi@mellanox.com>,
-        Aya Levin <ayal@mellanox.com>,
-        Moshe Shemesh <moshe@mellanox.com>, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] mlx5: work around high stack usage with gcc
-Date:   Sat,  4 Jan 2020 22:51:44 +0100
-Message-Id: <20200104215156.689245-1-arnd@arndb.de>
-X-Mailer: git-send-email 2.20.0
+        id S1726263AbgADWFB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 4 Jan 2020 17:05:01 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:47688 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726207AbgADWFA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 4 Jan 2020 17:05:00 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=6qaFRHn5+CKjUMpDrE+I93BDIrr67iIOP7igS1MNER4=; b=zX7zhcOcn+RRaw9KSRZgZLux71
+        /uE+xfwbcuDEmoM3iuVRf4GI9Jn2i1Y0ayMw5xDlUXphtpSCMjk+Y3EVUabip9QxLib+ImOHXCIOb
+        yoiQSg64nXuGtfpg9H0zuYuP+o9fbrA/w366mz+qb0YBFKFQK3x/wOEpQJrZ1NXU+0uA=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1inrXT-0002W2-FU; Sat, 04 Jan 2020 23:04:55 +0100
+Date:   Sat, 4 Jan 2020 23:04:55 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     David Miller <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Chris Healy <Chris.Healy@zii.aero>
+Subject: Re: [PATCH net] net: dsa: mv88e6xxx: Preserve priority went setting
+ CPU port.
+Message-ID: <20200104220455.GC27771@lunn.ch>
+References: <20200104161335.27662-1-andrew@lunn.ch>
+ <CA+h21hoxY=4L53JGFmRTx5=CGbjY0pNpTSKd=ynDLdP_-CTO5g@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:g72rzurjLl3a9U3yjh/EbwX9fa7SXEwNpbEDnrITAImdtZIfC7N
- evlvGuMj0S9VcMfKOlipNf+RIBizk5jL/mKupNu9QMLUMfq8+dj6g0zi+RHMTfaeUCEnINu
- uruwYWICaYjJ8WxZ6RJkoI+IXkKpHr9WKegoiTdG9DK+UP9Vk89jmGIO7a/LghtDHdq8GQQ
- N3jNZ5qZGTm7hw8+xsFxw==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:oaTz2g1s6cM=:TQvMn5LxbABK3px/0bp5mg
- j7zGiJuuBm6sMzRmi/SAofqpVlUH23ublfdfvXBZLagx02K9DSO4v7d4znLbpaiUw2lUyKJd4
- R37P9RTnvJJcBlGPk2Nk+Av6uVpnjOdyhaj0mWWZr29VrUdNDRosKQl7AkHsPShf06dVxivRN
- JJ5e8vPfwP99nqktLJQCMp6e71eDx7WK7zRI+wQOFFA7kkKU4vtE+cBqmEHqmfJsAs6o++8mj
- TFwDc38Nu5iAq7pqV2pYpdWIxCv2Ex3ZNGUfoFzwqnXV1gami9Pje1xNbU2vTdNSQfLxjs5x8
- 6T3/KHZOUAnmzH1WFvxoYxbwS/YVZTrHIRH4B53Qh959E50qaXtxDGoEIKcGvvz0SV1/Mezbp
- uBj6QPrOUG7PDeL5y7HhKuUSFtnrrL6RrnCSje0l1wKG99pzBBhvMkOoWwvveeSTgxWEM67XM
- f+nzi/Axus1rzO+bZ6cH30avx6+uRjOws2THQwXNiM9hSPa9FFD9IFRji1/Bt5eZwAeaQzoln
- DmoV2v+9AFIqoNqJwTrWViuCHPfoPnuTy6nUtMNBv8rAUwiqAv4CEEgIWJ5XdYw4Ctvu9xP9K
- li4cAUbFgmJ4/8E222G8SSR/eSzbeS53lXSifSZj3zjb22IenHjqpef+rXpjTl7dFq7iSV497
- d0Y5xv2uSfBXGqH5fu7BcYtbO9kL261P8xT+AVTThi7XcER1yrtBBOQQWL8n8/G/viG1PgtEl
- tWtDYW8IG+WTOO9QL50xYhkIZx6Da5yRZq/IuYWfIkpeQpiHN8q7qW20GV2bBUdZmRr1HZqa6
- OR573yzv1PHQcyaPYdzpTGlltRDKPbL/iLHn8jOh8GTZKoyQRKFrUNgDo0uGLCSCFpCbu8kqU
- mxVOvqVihoBfAvmFq4bw==
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CA+h21hoxY=4L53JGFmRTx5=CGbjY0pNpTSKd=ynDLdP_-CTO5g@mail.gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In some configurations, gcc tries too hard to optimize this code:
+On Sat, Jan 04, 2020 at 08:56:12PM +0200, Vladimir Oltean wrote:
+> Hi Andrew,
+> 
+> Is there a typo in the commit message? (went -> when)
 
-drivers/net/ethernet/mellanox/mlx5/core/en_stats.c: In function 'mlx5e_grp_sw_update_stats':
-drivers/net/ethernet/mellanox/mlx5/core/en_stats.c:302:1: error: the frame size of 1336 bytes is larger than 1024 bytes [-Werror=frame-larger-than=]
+Yep. Thanks for pointing it out.
 
-As was stated in the bug report, the reason is that gcc runs into a corner
-case in the register allocator that is rather hard to fix in a good way.
+> 
+> On Sat, 4 Jan 2020 at 18:16, Andrew Lunn <andrew@lunn.ch> wrote:
+> >
+> > The 6390 family uses an extended register to set the port connected to
+> > the CPU. The lower 5 bits indicate the port, the upper three bits are
+> > the priority of the frames as they pass through the switch, what
+> > egress queue they should use, etc. Since frames being set to the CPU
+> > are typically management frames, BPDU, IGMP, ARP, etc set the priority
+> > to 7, the reset default, and the highest.
+> >
+> > Fixes: 33641994a676 ("net: dsa: mv88e6xxx: Monitor and Management tables")
+> > Signed-off-by: Andrew Lunn <andrew@lunn.ch>
+> > ---
+> 
+> Offtopic: Does the switch look at VLAN PCP for these frames at all, or
+> is the priority fixed to the value from this register?
 
-As there is an easy way to work around it, just add a comment and the
-barrier that stops gcc from trying to overoptimize the function.
+I _think_ it is fixed. But this is just for "management"
+frames. Normal data frames heading to the CPU because of MAC address
+learning should have all the normal QoS operations the switch supports
+to determining their priority.
 
-Link: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=92657
-Cc: Adhemerval Zanella <adhemerval.zanella@linaro.org>
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
----
- drivers/net/ethernet/mellanox/mlx5/core/en_stats.c | 3 +++
- 1 file changed, 3 insertions(+)
+> >  drivers/net/dsa/mv88e6xxx/global1.c | 5 +++++
+> >  drivers/net/dsa/mv88e6xxx/global1.h | 1 +
+> >  2 files changed, 6 insertions(+)
+> >
+> > diff --git a/drivers/net/dsa/mv88e6xxx/global1.c b/drivers/net/dsa/mv88e6xxx/global1.c
+> > index 120a65d3e3ef..ce03f155e9fb 100644
+> > --- a/drivers/net/dsa/mv88e6xxx/global1.c
+> > +++ b/drivers/net/dsa/mv88e6xxx/global1.c
+> > @@ -360,6 +360,11 @@ int mv88e6390_g1_set_cpu_port(struct mv88e6xxx_chip *chip, int port)
+> >  {
+> >         u16 ptr = MV88E6390_G1_MONITOR_MGMT_CTL_PTR_CPU_DEST;
+> >
+> > +       /* Use the default high priority for manegement frames sent to
+> 
+> management
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c b/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c
-index 9f09253f9f46..a05158472ed1 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c
-@@ -297,6 +297,9 @@ static void mlx5e_grp_sw_update_stats(struct mlx5e_priv *priv)
- 			s->tx_tls_drop_bypass_req   += sq_stats->tls_drop_bypass_req;
- #endif
- 			s->tx_cqes		+= sq_stats->cqes;
-+
-+			/* https://gcc.gnu.org/bugzilla/show_bug.cgi?id=92657 */
-+			barrier();
- 		}
- 	}
- }
--- 
-2.20.0
+Humm. What happened to my spell checker?
 
+> > +        * the CPU.
+> > +        */
+> > +       port |= MV88E6390_G1_MONITOR_MGMT_CTL_PTR_CPU_DEST_MGMTPRI;
+> > +
+> >         return mv88e6390_g1_monitor_write(chip, ptr, port);
+> >  }
+> >
+> > diff --git a/drivers/net/dsa/mv88e6xxx/global1.h b/drivers/net/dsa/mv88e6xxx/global1.h
+> > index bc5a6b2bb1e4..5324c6f4ae90 100644
+> > --- a/drivers/net/dsa/mv88e6xxx/global1.h
+> > +++ b/drivers/net/dsa/mv88e6xxx/global1.h
+> > @@ -211,6 +211,7 @@
+> >  #define MV88E6390_G1_MONITOR_MGMT_CTL_PTR_INGRESS_DEST         0x2000
+> >  #define MV88E6390_G1_MONITOR_MGMT_CTL_PTR_EGRESS_DEST          0x2100
+> >  #define MV88E6390_G1_MONITOR_MGMT_CTL_PTR_CPU_DEST             0x3000
+> > +#define MV88E6390_G1_MONITOR_MGMT_CTL_PTR_CPU_DEST_MGMTPRI     0x00e0
+> 
+> I suppose this could be more nicely expressed as
+> MV88E6390_G1_MONITOR_MGMT_CTL_PTR_CPU_DEST_MGMTPRI(x)    ((x) << 5 &
+> GENMASK(7, 5)), in case somebody wants to change it from 7?
+
+It could be. But i'm not aware of any suitable existing API to
+configure this. So i went KISS and used the hard coded value.
+
+	  Andrew
