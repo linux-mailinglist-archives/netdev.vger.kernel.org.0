@@ -2,186 +2,310 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F3F4A13044D
-	for <lists+netdev@lfdr.de>; Sat,  4 Jan 2020 21:06:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2EA4D13045A
+	for <lists+netdev@lfdr.de>; Sat,  4 Jan 2020 21:22:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726260AbgADUGr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 4 Jan 2020 15:06:47 -0500
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:33342 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726118AbgADUGr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 4 Jan 2020 15:06:47 -0500
-Received: by mail-pf1-f194.google.com with SMTP id z16so25073291pfk.0;
-        Sat, 04 Jan 2020 12:06:46 -0800 (PST)
+        id S1726207AbgADUWc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 4 Jan 2020 15:22:32 -0500
+Received: from mail-ed1-f66.google.com ([209.85.208.66]:38624 "EHLO
+        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726118AbgADUWb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 4 Jan 2020 15:22:31 -0500
+Received: by mail-ed1-f66.google.com with SMTP id i16so44392237edr.5
+        for <netdev@vger.kernel.org>; Sat, 04 Jan 2020 12:22:29 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=r5iWhJ/XxofOoVh5Ayf4EuuLp7gjFaaA/RHvMdC8uzY=;
-        b=UERXUXK3e029ndVqB3TiaFgSl6qIqo8Y0eUeNiY2YPiDP+uO2s93A6CN0M1vJuMtgf
-         iFeKed//NkZpWUONyCvIm+5itWTTGOmy7xZUk7rNSFS/97fpItzcorghMecICoH28Jbr
-         S7aCOy7oGup1ZGBp4uxvCyuhFTQcaIBT66RNeYyGL4KIxkpGfm6paQFY8bF0kJfEABow
-         E4uWVZ10HAVH1qvyoujyuJd+vHOUpGWtuRBSyuhml6OIV5DvQ6E+7LbgLS9bCVOHiM4a
-         nW5TlcWF3V5KstbN9qm09N73z/2fsZ0dhHavGnPJhDhZvSFHpYrGFQ4U9aE20D4b38+B
-         J2LA==
+        d=herbertland-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=Jo/es1bK9TL9ZxtJXz72HZbUQDjbaMXm4JH5pDJSadU=;
+        b=0xMqOf3walrxOucfGDHZiJSymLsCOoZkcjLigWHuY6wuoC/bfa3E8vObf6P/WxP3RU
+         U5TZyHj9QFz7OMSWJZT67QrPaHcGutgdnjSigIFTYNPJ3RMZ+oBaWcPyJe1rF3l9GSeR
+         bARu5KRWu3LTgpljGxbaSQ2HHwbYc74L895G6PKsY3pNAg4T/uDW518jGbesgqco14/C
+         MwL/OWahma14J14gmB/eTaKYAPt+gH+TFi2CREe6cC9DZ+tuC2Ll7Ud5VpfUtdsol/CS
+         kGA3oTj53zjg2KBh339brKPu6mXwsYPzZEB6SA1iDLzN2H59zu3aj+/MtpWdSQdm5IK5
+         +xCg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:autocrypt
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=r5iWhJ/XxofOoVh5Ayf4EuuLp7gjFaaA/RHvMdC8uzY=;
-        b=da386EI7RMsPo38/QX1cqkEq5RAUFt20Gc0Vk25P/dLK3SLuqBz5dZGR9zowVQm9A5
-         qUw2Fc3et+/UyYdG7TCrLA9gOfJmaGb60sNeCOpc1aRgNRtCpfi4UjNBDkGFGvZgyseq
-         jK0KyedVajK3cSW+N34kmVF5/9NfedLxUckkp90c2nXL7QsksAb+lSZT32mtbxeDOqww
-         pgMnEKcSZlmkKWnP3z4DEd9peigyWHWpDiQooSDu46ItATcjn4n1k0J4R7cR/sITnM3l
-         BL6b/FRYjUDqiXLTOIUblTzKGCJKrgwtXGBmoB8mEBOv23XL4vYq4WzZ6X0E8ECkWNk7
-         tfLA==
-X-Gm-Message-State: APjAAAXWzOoLnmmL4W6Etr22nuMuh6nrlrwCCQdymEeZsIc74Hc2WOm9
-        fvD3by1eCXlRKrl4JPGwW0RfoYXJ
-X-Google-Smtp-Source: APXvYqwjjo5IyhDatXKYVakeqFk37BZuQVb4MiNjDePESEig2TvGYKVdc6jBwTK0zDN3WIGwqlxb4w==
-X-Received: by 2002:aa7:968d:: with SMTP id f13mr98765867pfk.67.1578168405514;
-        Sat, 04 Jan 2020 12:06:45 -0800 (PST)
-Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
-        by smtp.gmail.com with ESMTPSA id b19sm56768548pfo.56.2020.01.04.12.06.43
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 04 Jan 2020 12:06:44 -0800 (PST)
-Subject: Re: [PATCH 2/8] net: 8021q: use netdev_info()/netdev_warn()
-To:     "Enrico Weigelt, metux IT consult" <info@metux.net>,
-        linux-kernel@vger.kernel.org
-Cc:     davem@davemloft.net, mareklindner@neomailbox.ch,
-        sw@simonwunderlich.de, a@unstable.cc, sven@narfation.org,
-        marcel@holtmann.org, johan.hedberg@gmail.com,
-        roopa@cumulusnetworks.com, nikolay@cumulusnetworks.com,
-        edumazet@google.com, kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
-        jon.maloy@ericsson.com, ying.xue@windriver.com, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
-        netdev@vger.kernel.org, linux-bluetooth@vger.kernel.org,
-        tipc-discussion@lists.sourceforge.net,
-        linux-hyperv@vger.kernel.org, bpf@vger.kernel.org
-References: <20200104195131.16577-1-info@metux.net>
- <20200104195131.16577-2-info@metux.net>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Autocrypt: addr=f.fainelli@gmail.com; keydata=
- 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
- a9BQwACgnzGuH1BVeT2J0Ra+ZYgkx7DaPR0=
-Message-ID: <cd748d24-7eef-d3b5-7ed0-07c4a40906aa@gmail.com>
-Date:   Sat, 4 Jan 2020 12:06:42 -0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.3.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=Jo/es1bK9TL9ZxtJXz72HZbUQDjbaMXm4JH5pDJSadU=;
+        b=b9/Ojv/B7hoV3vAyOWAxkmSLx3KbBrvwROK5MW0IwU/wrde6jwSospvdAPHH7Sthto
+         QTZznE5o6Wg0031NFt/rXatdFtZc7ql8bTvMKyIBOqprS8Uf/MTGYUTJFBD2zHGsZ24h
+         1Ojy84LNkuChLPXwUWm1WHRnh4Gw5tWnyLVkt/2TYIpt97gTOxv75fKLCmNXFQQ8Nay2
+         ZeiZu/HLwGHqOZJke//COup679+4h5EivYYeyaBW1MeyCpUdfvBfsAvWFuCQzn+g1oZ7
+         VtWZFjb38ZZtsrW4IoqY2OBC9Q6/ZkENFOEEpVbMkVl79ZSqwEJgpwrQGoQ/vVUAwZ7+
+         GXTg==
+X-Gm-Message-State: APjAAAWzIztx61XlA1vkmbiztpUIUtUTFa3UlPGU9Znyyzm1g7LAue0O
+        9rgduchYW0HUcSZV3tFfeu80QAdmSUjtXToU4t52BA==
+X-Google-Smtp-Source: APXvYqxSIPJkID/Ovtq2y3uaDTnDu4nhHRzqvp7vzFLnUxR6XsZajE934qSv8LDJY2p2L/tibWqIKAYJpMSLnXMrTsU=
+X-Received: by 2002:a17:906:2e53:: with SMTP id r19mr99905534eji.306.1578169348714;
+ Sat, 04 Jan 2020 12:22:28 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20200104195131.16577-2-info@metux.net>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <CALx6S361vkhp8rLzP804oMz2reuDgQDjm9G_+eXfq5oQpVscyg@mail.gmail.com>
+ <20200103.124517.1721098411789807467.davem@davemloft.net> <CALx6S34vyjNnVbYfjqB1mNDDr3-zQixzXk=kgDqjJ0yxHVCgKg@mail.gmail.com>
+ <20200103.145739.1949735492303739713.davem@davemloft.net> <CALx6S359YAzpJgzOFbb7c6VPe9Sin0F0Vn_vR+8iOo4rY57xQA@mail.gmail.com>
+ <CAAedzxpG77vB3Z8XsTmCYPRB2Hn43otPMXZW4t0r3E-Wh98kNQ@mail.gmail.com>
+ <CALx6S37eaWwst7H3ZsuOrPkhoes4dkVLHfi60WFv9hXPJo0KPw@mail.gmail.com>
+ <20200104100556.43a28151003a1f379daec40c@gmail.com> <CALx6S341Uad+31k9sGsRWTHyHmNgJWdN0s87c_KUfk=_-4SAjw@mail.gmail.com>
+ <20200104210229.30c753f96317b6e0974aefe9@gmail.com>
+In-Reply-To: <20200104210229.30c753f96317b6e0974aefe9@gmail.com>
+From:   Tom Herbert <tom@herbertland.com>
+Date:   Sat, 4 Jan 2020 12:22:17 -0800
+Message-ID: <CALx6S34LC+cOmJvfqQVDS7JdAWRAQ7M+cays8VFrmEgXWt4Ggw@mail.gmail.com>
+Subject: Re: [PATCH v8 net-next 0/9] ipv6: Extension header infrastructure
+To:     kernel Dev <ahabdels.dev@gmail.com>
+Cc:     Erik Kline <ek@loon.com>, David Miller <davem@davemloft.net>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Simon Horman <simon.horman@netronome.com>,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Sat, Jan 4, 2020 at 11:02 AM kernel Dev <ahabdels.dev@gmail.com> wrote:
+>
+> Hi Tom,
+>
+> I wasn=E2=80=99t accusing anyone in my message. It is a personal opinion.
+> If my message was misunderstood, then please accept my apologies.
+>
+> Also SRv6 is not highly controversial and this is proven by its adoption =
+rate and ecosystem.
+
+It was controversial in the five years it look to get to WGLC, and
+thanks to things like extension header insertion it will remain
+controversial.
+
+> I have never seen a highly controversial technology that has (in two year=
+s) at least 8 public deployments and is supported by 18 publicly known rout=
+ing platforms from 8 different vendors. Also has support in the mainline of=
+ Linux kernel, FD.io VPP, Wireshark, tcpdump, iptables and nftables.
+>
+
+These support only support some subset of the protocol. For instance,
+SRv6 TLVs including HMAC TLV are defined in SRH, however only Linux
+claims to support them. However, the Linux implementation isn't
+protocol conformant: it doesn't support required padding options and
+just assumes HMAC is the one and only TLV. Previously, I've posted
+patches to fix that based on the generic parser in this patch set.
+Those original patches for fixing SRv6 would now be out of date since
+it was decided to change the PADN option type in SRv6 to be 5 instead
+of 1 thereby breaking compatibility with HBH and Destination Options.
+Seeing as how you seem interested in SRv6, it would be nice if you
+could look into fixing the SRv6 TLV implementation to be conformant (I
+can repost my original patches if that would help).
+
+Thanks,
+Tom
 
 
-On 1/4/2020 11:51 AM, Enrico Weigelt, metux IT consult wrote:
-> Use netdev_info() / netdev_warn() instead of pr_info() / pr_warn()
-> for more consistent log output.
-> 
-> Signed-off-by: Enrico Weigelt, metux IT consult <info@metux.net>
-> ---
->  net/8021q/vlan.c      | 4 ++--
->  net/8021q/vlan_core.c | 2 +-
->  2 files changed, 3 insertions(+), 3 deletions(-)
-> 
-> diff --git a/net/8021q/vlan.c b/net/8021q/vlan.c
-> index ded7bf7229cf..7f18c8406ff8 100644
-> --- a/net/8021q/vlan.c
-> +++ b/net/8021q/vlan.c
-> @@ -123,7 +123,7 @@ int vlan_check_real_dev(struct net_device *real_dev,
->  	const char *name = real_dev->name;
->  
->  	if (real_dev->features & NETIF_F_VLAN_CHALLENGED) {
-> -		pr_info("VLANs not supported on %s\n", name);
-> +		netdev_info(real_dev, "VLANs not supported on %s\n", name);
-
-Since we use netdev_info which does internally use net_device::name for
-printing, the name argument is now redundant.
-
->  		NL_SET_ERR_MSG_MOD(extack, "VLANs not supported on device");
->  		return -EOPNOTSUPP;
->  	}
-> @@ -376,7 +376,7 @@ static int vlan_device_event(struct notifier_block *unused, unsigned long event,
->  
->  	if ((event == NETDEV_UP) &&
->  	    (dev->features & NETIF_F_HW_VLAN_CTAG_FILTER)) {
-> -		pr_info("adding VLAN 0 to HW filter on device %s\n",
-> +		netdev_info(dev, "adding VLAN 0 to HW filter on device %s\n",
->  			dev->name);
-
-Likewise.
-
->  		vlan_vid_add(dev, htons(ETH_P_8021Q), 0);
->  	}
-> diff --git a/net/8021q/vlan_core.c b/net/8021q/vlan_core.c
-> index a313165e7a67..bc32b33e0da8 100644
-> --- a/net/8021q/vlan_core.c
-> +++ b/net/8021q/vlan_core.c
-> @@ -360,7 +360,7 @@ static void __vlan_vid_del(struct vlan_info *vlan_info,
->  
->  	err = vlan_kill_rx_filter_info(dev, proto, vid);
->  	if (err)
-> -		pr_warn("failed to kill vid %04x/%d for device %s\n",
-> +		netdev_warn(dev, "failed to kill vid %04x/%d for device %s\n",
->  			proto, vid, dev->name);
-
-And here as well.
--- 
-Florian
+> If you are a network operator, would you deply a highly controversial tec=
+hnology in your network ?
+>
+>
+> On Sat, 4 Jan 2020 09:45:59 -0800
+> Tom Herbert <tom@herbertland.com> wrote:
+>
+> > On Sat, Jan 4, 2020 at 12:05 AM kernel Dev <ahabdels.dev@gmail.com> wro=
+te:
+> > >
+> > > Tom,
+> > >
+> > > I will not go into whether Tom or router vendors is right from IETF p=
+erspective as here is not the place to discuss.
+> > >
+> > > But it seems to me that the motivation behind these patches is just t=
+o pushback on the current IETF proposals.
+> > >
+> > Sorry, but that is completely untrue. The patches are a general
+> > improvement. The ability to allow modules to register handlers for
+> > options code points has nothing to do with "pushback on the current
+> > IETF protocols". This sort of registration is a mechanism used all
+> > over the place. Similarly, allowing non-priveledged users to send
+> > options is not for any specific protocol-- it is a *general*
+> > mechanism.
+> >
+> > > The patches timeline is completely aligned with when IETF threads get=
+ into tough discussions (May 2019, August 2019, and now).
+> > >
+> > Yes, discussion about new protocols in IETF tends to correlate with
+> > development and implementation of the protocols. That shouldn't
+> > surprise anyone. SRv6 for instance was highly controversial in IETF
+> > and yet the patches went in.
+> >
+> > > I=E2=80=99m not the one to decide, but IMO people should not add stuf=
+f to the kernel just to enforce their opinions on other mailers.
+> >
+> > I take exception with your insinuation. Seeing as how you might be new
+> > to Linux kernel development I will ignore it. But, in the future, I
+> > strongly suggest you be careful about accusing people about their
+> > motivations based solely on one interaction.
+> >
+> > Tom
+> >
+> >
+> > >
+> > >
+> > > On Fri, 3 Jan 2020 16:37:33 -0800
+> > > Tom Herbert <tom@herbertland.com> wrote:
+> > >
+> > > > On Fri, Jan 3, 2020 at 3:53 PM Erik Kline <ek@loon.com> wrote:
+> > > > >
+> > > > > On Fri, 3 Jan 2020 at 15:49, Tom Herbert <tom@herbertland.com> wr=
+ote:
+> > > > > >
+> > > > > > On Fri, Jan 3, 2020 at 2:57 PM David Miller <davem@davemloft.ne=
+t> wrote:
+> > > > > > >
+> > > > > > > From: Tom Herbert <tom@herbertland.com>
+> > > > > > > Date: Fri, 3 Jan 2020 14:31:58 -0800
+> > > > > > >
+> > > > > > > > On Fri, Jan 3, 2020 at 12:45 PM David Miller <davem@davemlo=
+ft.net> wrote:
+> > > > > > > >>
+> > > > > > > >> From: Tom Herbert <tom@herbertland.com>
+> > > > > > > >> Date: Fri, 3 Jan 2020 09:35:08 -0800
+> > > > > > > >>
+> > > > > > > >> > The real way to combat this provide open implementation =
+that
+> > > > > > > >> > demonstrates the correct use of the protocols and show t=
+hat's more
+> > > > > > > >> > extensible and secure than these "hacks".
+> > > > > > > >>
+> > > > > > > >> Keep dreaming, this won't stop Cisco from doing whatever i=
+t wants to do.
+> > > > > > > >
+> > > > > > > > See QUIC. See TLS. See TCP fast open. See transport layer e=
+ncryption.
+> > > > > > > > These are prime examples where we've steered the Internet f=
+rom host
+> > > > > > > > protocols and implementation to successfully obsolete or at=
+ least work
+> > > > > > > > around protocol ossification that was perpetuated by router=
+ vendors.
+> > > > > > > > Cisco is not the Internet!
+> > > > > > >
+> > > > > > > Seriously, I wish you luck stopping the SRv6 header insertion=
+ stuff.
+> > > > > > >
+> > > > > > Dave,
+> > > > > >
+> > > > > > I agree we can't stop it, but maybe we can steer it to be at le=
+ast
+> > > > > > palatable. There are valid use cases for extension header inser=
+tion.
+> > > > > > Ironically, SRv6 header insertion isn't one of them; the propon=
+ents
+> > > > > > have failed to offer even a single reason why the alternative o=
+f IPv6
+> > > > > > encapsulation isn't sufficient (believe me, we've asked _many_ =
+times
+> > > > > > for some justification and only get hand waving!). There are, h=
+owever,
+> > > > > > some interesting uses cases like in IOAM where the operator wou=
+ld like
+> > > > > > to annotate packets as they traverse the network. Encapsulation=
+ is
+> > > > > > insufficient if they don't know what the end point would be or =
+they
+> > > > > > don't want the annotation to change the path the packets take (=
+versus
+> > > > > > those that aren't annotated).
+> > > > > >
+> > > > > > The salient problem with extension header insertion is lost of
+> > > > >
+> > > > > And the problems that can be introduced by changing the effective=
+ path MTU...
+> > > > >
+> > > > Eric,
+> > > >
+> > > > Yep, increasing the size of packet in transit potentially wreaks ha=
+voc
+> > > > on PMTU discovery, however I personally think that the issue might =
+be
+> > > > overblown. We already have the same problem when tunneling is done =
+in
+> > > > the network since most tunneling implementations and deployments ju=
+st
+> > > > assume the operator has set large enough MTUs. As long as all the
+> > > > overhead inserted into the packet doesn't reduce the end host PMTU
+> > > > below 1280, PMTU discovery and probably even PTB for a packet with
+> > > > inserted headers still has right effect.
+> > > >
+> > > > > > attribution. It is fundamental in the IP protocol that the cont=
+ents of
+> > > > > > a packet are attributed to the source host identified by the so=
+urce
+> > > > > > address. If some intermediate node inserts an extension header =
+that
+> > > > > > subsequently breaks the packet downstream then there is no obvi=
+ous way
+> > > > > > to debug this. If an ICMP message is sent because of the receiv=
+ing
+> > > > > > data, then receiving host can't do much with it; it's not the s=
+ource
+> > > > > > of the data in error and nothing in the packet tells who the cu=
+lprit
+> > > > > > is. The Cisco guys have at least conceded one point on SRv6 ins=
+ertion
+> > > > > > due to pushback on this, their latest draft only does SRv6 inse=
+rtion
+> > > > > > on packets that have already been encapsulated in IPIP on ingre=
+ss into
+> > > > > > the domain. This is intended to at least restrict the modified =
+packets
+> > > > > > to a controlled domain (I'm note sure if any implementations en=
+force
+> > > > > > this though). My proposal is to require an "attribution" HBH op=
+tion
+> > > > > > that would clearly identify inserted data put in a packet by
+> > > > > > middleboxes (draft-herbert-6man-eh-attrib-00). This is a tradeo=
+ff to
+> > > > > > allow extension header insertion, but require protocol to give
+> > > > > > attribution and make it at least somewhat robust and manageable=
+.
+> > > > > >
+> > > > > > Tom
+> > > > >
+> > > > > FWIW the SRv6 header insertion stuff is still under discussion in
+> > > > > spring wg (last I knew).  I proposed one option that could be use=
+d to
+> > > >
+> > > > It's also under discussion in 6man.
+> > > >
+> > > > > avoid insertion (allow for extra scratch space
+> > > > > https://mailarchive.ietf.org/arch/msg/spring/UhThRTNxbHWNiMGgRi3U=
+0SqLaDA),
+> > > > > but nothing has been conclusively resolved last I checked.
+> > > > >
+> > > >
+> > > > I saw your proposal. It's a good idea from POV to be conformant wit=
+h
+> > > > RFC8200 and avoid the PMTU problems, but the header insertion
+> > > > proponents aren't going to like it at all. First, it means that the
+> > > > source is in control of the insertion policy and host is required t=
+o
+> > > > change-- no way they'll buy into that ;-). Secondly, if the scratch
+> > > > space isn't used they'll undoubtedly claim that is unnecessary
+> > > > overhead.
+> > > >
+> > > > Tom
+> > > >
+> > > > > As everyone probably knows, the draft-ietf-* documents are
+> > > > > working-group-adopted documents (though final publication is neve=
+r
+> > > > > guaranteed).  My current reading of 6man tea leaves is that neith=
+er
+> > > > > "ICMP limits" and "MTU option" docs were terribly contentious.
+> > > > > Whether code reorg is important for implementing these I'm not
+> > > > > competent enough to say.
+> > >
+> > >
+> > > --
+>
+>
+> --
+> kernel Dev <ahabdels.dev@gmail.com>
