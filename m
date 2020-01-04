@@ -2,14 +2,14 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D585213003A
-	for <lists+netdev@lfdr.de>; Sat,  4 Jan 2020 03:50:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 952F7130042
+	for <lists+netdev@lfdr.de>; Sat,  4 Jan 2020 03:50:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727537AbgADCuA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Jan 2020 21:50:00 -0500
-Received: from mga12.intel.com ([192.55.52.136]:64695 "EHLO mga12.intel.com"
+        id S1727585AbgADCuS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Jan 2020 21:50:18 -0500
+Received: from mga12.intel.com ([192.55.52.136]:64694 "EHLO mga12.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727491AbgADCt5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1727495AbgADCt5 (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 3 Jan 2020 21:49:57 -0500
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
@@ -17,19 +17,19 @@ Received: from orsmga004.jf.intel.com ([10.7.209.38])
   by fmsmga106.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 03 Jan 2020 18:49:54 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.69,393,1571727600"; 
-   d="scan'208";a="369757870"
+   d="scan'208";a="369757873"
 Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.74])
   by orsmga004.jf.intel.com with ESMTP; 03 Jan 2020 18:49:54 -0800
 From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 To:     davem@davemloft.net
-Cc:     Vignesh Sridhar <vignesh.sridhar@intel.com>,
-        netdev@vger.kernel.org, nhorman@redhat.com, sassmann@redhat.com,
+Cc:     Brett Creeley <brett.creeley@intel.com>, netdev@vger.kernel.org,
+        nhorman@redhat.com, sassmann@redhat.com,
         Tony Nguyen <anthony.l.nguyen@intel.com>,
         Andrew Bowers <andrewx.bowers@intel.com>,
         Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Subject: [net-next 08/16] ice: Remove Rx flex descriptor programming
-Date:   Fri,  3 Jan 2020 18:49:45 -0800
-Message-Id: <20200104024953.2336731-9-jeffrey.t.kirsher@intel.com>
+Subject: [net-next 09/16] ice: Fix VF link state when it's IFLA_VF_LINK_STATE_AUTO
+Date:   Fri,  3 Jan 2020 18:49:46 -0800
+Message-Id: <20200104024953.2336731-10-jeffrey.t.kirsher@intel.com>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20200104024953.2336731-1-jeffrey.t.kirsher@intel.com>
 References: <20200104024953.2336731-1-jeffrey.t.kirsher@intel.com>
@@ -40,169 +40,140 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vignesh Sridhar <vignesh.sridhar@intel.com>
+From: Brett Creeley <brett.creeley@intel.com>
 
-Remove Rx flex descriptor metadata and flag programming; per specification
-these registers cannot be written to as they are read only.
+Currently the flow for ice_set_vf_link_state() is not configuring link
+the same as all other VF link configuration flows. Fix this by only
+setting the necessary VF members in ice_set_vf_link_state() and then
+call ice_vc_notify_link_state() to actually configure link for the
+VF. This made ice_set_pfe_link_forced() unnecessary, so it was
+deleted. Also, this commonizes the link flows for the VF to all call
+ice_vc_notify_link_state().
 
-Signed-off-by: Vignesh Sridhar <vignesh.sridhar@intel.com>
+Signed-off-by: Brett Creeley <brett.creeley@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
 Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 ---
- drivers/net/ethernet/intel/ice/ice_common.c   | 104 ------------------
- .../net/ethernet/intel/ice/ice_hw_autogen.h   |   9 --
- 2 files changed, 113 deletions(-)
+ drivers/net/ethernet/intel/ice/ice_main.c     |  3 +-
+ .../net/ethernet/intel/ice/ice_virtchnl_pf.c  | 56 ++++---------------
+ 2 files changed, 12 insertions(+), 47 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_common.c b/drivers/net/ethernet/intel/ice/ice_common.c
-index fb1d930470c7..a03b4fdc01e6 100644
---- a/drivers/net/ethernet/intel/ice/ice_common.c
-+++ b/drivers/net/ethernet/intel/ice/ice_common.c
-@@ -7,25 +7,6 @@
+diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
+index 0c46e7fe7250..3adeb7059ac5 100644
+--- a/drivers/net/ethernet/intel/ice/ice_main.c
++++ b/drivers/net/ethernet/intel/ice/ice_main.c
+@@ -844,8 +844,7 @@ ice_link_event(struct ice_pf *pf, struct ice_port_info *pi, bool link_up,
+ 	ice_vsi_link_event(vsi, link_up);
+ 	ice_print_link_msg(vsi, link_up);
  
- #define ICE_PF_RESET_WAIT_COUNT	200
+-	if (pf->num_alloc_vfs)
+-		ice_vc_notify_link_state(pf);
++	ice_vc_notify_link_state(pf);
  
--#define ICE_PROG_FLEX_ENTRY(hw, rxdid, mdid, idx) \
--	wr32((hw), GLFLXP_RXDID_FLX_WRD_##idx(rxdid), \
--	     ((ICE_RX_OPC_MDID << \
--	       GLFLXP_RXDID_FLX_WRD_##idx##_RXDID_OPCODE_S) & \
--	      GLFLXP_RXDID_FLX_WRD_##idx##_RXDID_OPCODE_M) | \
--	     (((mdid) << GLFLXP_RXDID_FLX_WRD_##idx##_PROT_MDID_S) & \
--	      GLFLXP_RXDID_FLX_WRD_##idx##_PROT_MDID_M))
--
--#define ICE_PROG_FLG_ENTRY(hw, rxdid, flg_0, flg_1, flg_2, flg_3, idx) \
--	wr32((hw), GLFLXP_RXDID_FLAGS(rxdid, idx), \
--	     (((flg_0) << GLFLXP_RXDID_FLAGS_FLEXIFLAG_4N_S) & \
--	      GLFLXP_RXDID_FLAGS_FLEXIFLAG_4N_M) | \
--	     (((flg_1) << GLFLXP_RXDID_FLAGS_FLEXIFLAG_4N_1_S) & \
--	      GLFLXP_RXDID_FLAGS_FLEXIFLAG_4N_1_M) | \
--	     (((flg_2) << GLFLXP_RXDID_FLAGS_FLEXIFLAG_4N_2_S) & \
--	      GLFLXP_RXDID_FLAGS_FLEXIFLAG_4N_2_M) | \
--	     (((flg_3) << GLFLXP_RXDID_FLAGS_FLEXIFLAG_4N_3_S) & \
--	      GLFLXP_RXDID_FLAGS_FLEXIFLAG_4N_3_M))
--
- /**
-  * ice_set_mac_type - Sets MAC type
-  * @hw: pointer to the HW structure
-@@ -347,88 +328,6 @@ ice_aq_get_link_info(struct ice_port_info *pi, bool ena_lse,
- 	return 0;
+ 	return result;
+ }
+diff --git a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
+index 88cb0f9e928e..f080f3af182a 100644
+--- a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
++++ b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
+@@ -121,26 +121,6 @@ ice_set_pfe_link(struct ice_vf *vf, struct virtchnl_pf_event *pfe,
+ 	}
  }
  
 -/**
-- * ice_init_flex_flags
-- * @hw: pointer to the hardware structure
-- * @prof_id: Rx Descriptor Builder profile ID
-- *
-- * Function to initialize Rx flex flags
+- * ice_set_pfe_link_forced - Force the virtchnl_pf_event link speed/status
+- * @vf: pointer to the VF structure
+- * @pfe: pointer to the virtchnl_pf_event to set link speed/status for
+- * @link_up: whether or not to set the link up/down
 - */
--static void ice_init_flex_flags(struct ice_hw *hw, enum ice_rxdid prof_id)
+-static void
+-ice_set_pfe_link_forced(struct ice_vf *vf, struct virtchnl_pf_event *pfe,
+-			bool link_up)
 -{
--	u8 idx = 0;
+-	u16 link_speed;
 -
--	/* Flex-flag fields (0-2) are programmed with FLG64 bits with layout:
--	 * flexiflags0[5:0] - TCP flags, is_packet_fragmented, is_packet_UDP_GRE
--	 * flexiflags1[3:0] - Not used for flag programming
--	 * flexiflags2[7:0] - Tunnel and VLAN types
--	 * 2 invalid fields in last index
--	 */
--	switch (prof_id) {
--	/* Rx flex flags are currently programmed for the NIC profiles only.
--	 * Different flag bit programming configurations can be added per
--	 * profile as needed.
--	 */
--	case ICE_RXDID_FLEX_NIC:
--	case ICE_RXDID_FLEX_NIC_2:
--		ICE_PROG_FLG_ENTRY(hw, prof_id, ICE_FLG_PKT_FRG,
--				   ICE_FLG_UDP_GRE, ICE_FLG_PKT_DSI,
--				   ICE_FLG_FIN, idx++);
--		/* flex flag 1 is not used for flexi-flag programming, skipping
--		 * these four FLG64 bits.
--		 */
--		ICE_PROG_FLG_ENTRY(hw, prof_id, ICE_FLG_SYN, ICE_FLG_RST,
--				   ICE_FLG_PKT_DSI, ICE_FLG_PKT_DSI, idx++);
--		ICE_PROG_FLG_ENTRY(hw, prof_id, ICE_FLG_PKT_DSI,
--				   ICE_FLG_PKT_DSI, ICE_FLG_EVLAN_x8100,
--				   ICE_FLG_EVLAN_x9100, idx++);
--		ICE_PROG_FLG_ENTRY(hw, prof_id, ICE_FLG_VLAN_x8100,
--				   ICE_FLG_TNL_VLAN, ICE_FLG_TNL_MAC,
--				   ICE_FLG_TNL0, idx++);
--		ICE_PROG_FLG_ENTRY(hw, prof_id, ICE_FLG_TNL1, ICE_FLG_TNL2,
--				   ICE_FLG_PKT_DSI, ICE_FLG_PKT_DSI, idx);
--		break;
+-	if (link_up)
+-		link_speed = ICE_AQ_LINK_SPEED_100GB;
+-	else
+-		link_speed = ICE_AQ_LINK_SPEED_UNKNOWN;
 -
--	default:
--		ice_debug(hw, ICE_DBG_INIT,
--			  "Flag programming for profile ID %d not supported\n",
--			  prof_id);
--	}
--}
--
--/**
-- * ice_init_flex_flds
-- * @hw: pointer to the hardware structure
-- * @prof_id: Rx Descriptor Builder profile ID
-- *
-- * Function to initialize flex descriptors
-- */
--static void ice_init_flex_flds(struct ice_hw *hw, enum ice_rxdid prof_id)
--{
--	enum ice_flex_rx_mdid mdid;
--
--	switch (prof_id) {
--	case ICE_RXDID_FLEX_NIC:
--	case ICE_RXDID_FLEX_NIC_2:
--		ICE_PROG_FLEX_ENTRY(hw, prof_id, ICE_RX_MDID_HASH_LOW, 0);
--		ICE_PROG_FLEX_ENTRY(hw, prof_id, ICE_RX_MDID_HASH_HIGH, 1);
--		ICE_PROG_FLEX_ENTRY(hw, prof_id, ICE_RX_MDID_FLOW_ID_LOWER, 2);
--
--		mdid = (prof_id == ICE_RXDID_FLEX_NIC_2) ?
--			ICE_RX_MDID_SRC_VSI : ICE_RX_MDID_FLOW_ID_HIGH;
--
--		ICE_PROG_FLEX_ENTRY(hw, prof_id, mdid, 3);
--
--		ice_init_flex_flags(hw, prof_id);
--		break;
--
--	default:
--		ice_debug(hw, ICE_DBG_INIT,
--			  "Field init for profile ID %d not supported\n",
--			  prof_id);
--	}
+-	ice_set_pfe_link(vf, pfe, link_speed, link_up);
 -}
 -
  /**
-  * ice_init_fltr_mgmt_struct - initializes filter management list and locks
-  * @hw: pointer to the HW struct
-@@ -882,9 +781,6 @@ enum ice_status ice_init_hw(struct ice_hw *hw)
+  * ice_vc_notify_vf_link_state - Inform a VF of link status
+  * @vf: pointer to the VF structure
+@@ -161,13 +141,17 @@ static void ice_vc_notify_vf_link_state(struct ice_vf *vf)
+ 	pfe.severity = PF_EVENT_SEVERITY_INFO;
  
- 	if (status)
- 		goto err_unroll_fltr_mgmt_struct;
+ 	/* Always report link is down if the VF queues aren't enabled */
+-	if (!vf->num_qs_ena)
++	if (!vf->num_qs_ena) {
+ 		ice_set_pfe_link(vf, &pfe, ICE_AQ_LINK_SPEED_UNKNOWN, false);
+-	else if (vf->link_forced)
+-		ice_set_pfe_link_forced(vf, &pfe, vf->link_up);
+-	else
+-		ice_set_pfe_link(vf, &pfe, ls->link_speed, ls->link_info &
+-				 ICE_AQ_LINK_UP);
++	} else if (vf->link_forced) {
++		u16 link_speed = vf->link_up ?
++			ls->link_speed : ICE_AQ_LINK_SPEED_UNKNOWN;
++
++		ice_set_pfe_link(vf, &pfe, link_speed, vf->link_up);
++	} else {
++		ice_set_pfe_link(vf, &pfe, ls->link_speed,
++				 ls->link_info & ICE_AQ_LINK_UP);
++	}
+ 
+ 	ice_aq_send_msg_to_vf(hw, vf->vf_id, VIRTCHNL_OP_EVENT,
+ 			      VIRTCHNL_STATUS_SUCCESS, (u8 *)&pfe,
+@@ -3392,28 +3376,18 @@ int ice_set_vf_trust(struct net_device *netdev, int vf_id, bool trusted)
+ int ice_set_vf_link_state(struct net_device *netdev, int vf_id, int link_state)
+ {
+ 	struct ice_pf *pf = ice_netdev_to_pf(netdev);
+-	struct virtchnl_pf_event pfe = { 0 };
+-	struct ice_link_status *ls;
+ 	struct ice_vf *vf;
+-	struct ice_hw *hw;
+ 
+ 	if (ice_validate_vf_id(pf, vf_id))
+ 		return -EINVAL;
+ 
+ 	vf = &pf->vf[vf_id];
+-	hw = &pf->hw;
+-	ls = &pf->hw.port_info->phy.link_info;
 -
--	ice_init_flex_flds(hw, ICE_RXDID_FLEX_NIC);
--	ice_init_flex_flds(hw, ICE_RXDID_FLEX_NIC_2);
- 	status = ice_init_hw_tbls(hw);
- 	if (status)
- 		goto err_unroll_fltr_mgmt_struct;
-diff --git a/drivers/net/ethernet/intel/ice/ice_hw_autogen.h b/drivers/net/ethernet/intel/ice/ice_hw_autogen.h
-index e8f32350fed2..f2cababf2561 100644
---- a/drivers/net/ethernet/intel/ice/ice_hw_autogen.h
-+++ b/drivers/net/ethernet/intel/ice/ice_hw_autogen.h
-@@ -60,15 +60,6 @@
- #define PRTDCB_GENS_DCBX_STATUS_M		ICE_M(0x7, 0)
- #define GL_PREEXT_L2_PMASK0(_i)			(0x0020F0FC + ((_i) * 4))
- #define GL_PREEXT_L2_PMASK1(_i)			(0x0020F108 + ((_i) * 4))
--#define GLFLXP_RXDID_FLAGS(_i, _j)		(0x0045D000 + ((_i) * 4 + (_j) * 256))
--#define GLFLXP_RXDID_FLAGS_FLEXIFLAG_4N_S	0
--#define GLFLXP_RXDID_FLAGS_FLEXIFLAG_4N_M	ICE_M(0x3F, 0)
--#define GLFLXP_RXDID_FLAGS_FLEXIFLAG_4N_1_S	8
--#define GLFLXP_RXDID_FLAGS_FLEXIFLAG_4N_1_M	ICE_M(0x3F, 8)
--#define GLFLXP_RXDID_FLAGS_FLEXIFLAG_4N_2_S	16
--#define GLFLXP_RXDID_FLAGS_FLEXIFLAG_4N_2_M	ICE_M(0x3F, 16)
--#define GLFLXP_RXDID_FLAGS_FLEXIFLAG_4N_3_S	24
--#define GLFLXP_RXDID_FLAGS_FLEXIFLAG_4N_3_M	ICE_M(0x3F, 24)
- #define GLFLXP_RXDID_FLX_WRD_0(_i)		(0x0045c800 + ((_i) * 4))
- #define GLFLXP_RXDID_FLX_WRD_0_PROT_MDID_S	0
- #define GLFLXP_RXDID_FLX_WRD_0_PROT_MDID_M	ICE_M(0xFF, 0)
+ 	if (ice_check_vf_init(pf, vf))
+ 		return -EBUSY;
+ 
+-	pfe.event = VIRTCHNL_EVENT_LINK_CHANGE;
+-	pfe.severity = PF_EVENT_SEVERITY_INFO;
+-
+ 	switch (link_state) {
+ 	case IFLA_VF_LINK_STATE_AUTO:
+ 		vf->link_forced = false;
+-		vf->link_up = ls->link_info & ICE_AQ_LINK_UP;
+ 		break;
+ 	case IFLA_VF_LINK_STATE_ENABLE:
+ 		vf->link_forced = true;
+@@ -3427,15 +3401,7 @@ int ice_set_vf_link_state(struct net_device *netdev, int vf_id, int link_state)
+ 		return -EINVAL;
+ 	}
+ 
+-	if (vf->link_forced)
+-		ice_set_pfe_link_forced(vf, &pfe, vf->link_up);
+-	else
+-		ice_set_pfe_link(vf, &pfe, ls->link_speed, vf->link_up);
+-
+-	/* Notify the VF of its new link state */
+-	ice_aq_send_msg_to_vf(hw, vf->vf_id, VIRTCHNL_OP_EVENT,
+-			      VIRTCHNL_STATUS_SUCCESS, (u8 *)&pfe,
+-			      sizeof(pfe), NULL);
++	ice_vc_notify_vf_link_state(vf);
+ 
+ 	return 0;
+ }
 -- 
 2.24.1
 
