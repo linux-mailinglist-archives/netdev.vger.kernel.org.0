@@ -2,153 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1AEB312FFEC
-	for <lists+netdev@lfdr.de>; Sat,  4 Jan 2020 02:13:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 443E512FFF6
+	for <lists+netdev@lfdr.de>; Sat,  4 Jan 2020 02:32:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727196AbgADBNk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Jan 2020 20:13:40 -0500
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:63296 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726968AbgADBNk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Jan 2020 20:13:40 -0500
-Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0041AwV0014159;
-        Fri, 3 Jan 2020 17:13:26 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type : content-id
- : content-transfer-encoding : mime-version; s=facebook;
- bh=2B7sRZu/IXS5r/ddttMrVkIE1jGEo1pL5oaSs+e7Hro=;
- b=WmbHoarUcrAk5SQSacRdmrolNpMdf60+SPJBvhAPn+KYj+RX81EssOCAwPRisjYK7vEk
- PxE5Ciw5OLxVKpPE9F2Y7sHjpIh4+5UjPPF7VkgWMe2Wb8qy8hMI3JXuK4jEQaDb3AXC
- FI+1G9ZVmZ6oZjy9VjtivCb5ZR70twWdKG4= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 2x9e34yp1d-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Fri, 03 Jan 2020 17:13:26 -0800
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (100.104.31.183)
- by o365-in.thefacebook.com (100.104.36.102) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Fri, 3 Jan 2020 17:13:25 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=My23QtM1xR4cXFrwj/gLHqwqdKDvJ6LS+pDRU+OlMLqKVaVh6zk2c12nPxE6ydYIu52k24XEX87iNTMSP19vWgKrMxYXkWFx8FfijbIwY2HiEE8enNOpIUMgQ1eUdm+rb1PIIGu776KxM0OWeRG+VtB6cA/+Gak1xvO4MG5FihlLOYwiIJd9DOyowEJAtJiwltz8fNnylYhpEd++VUUYIpuOo8JzKx1x5MOOmpURQIPyzp9/wDIXLAFvvSZ9bhjtu6J247+aBRPNq007WzXwZZnagcX2E+elIpr8Oqqed6of9FrCiGVLLRbMOp6iVH91oenaqrp1H1u4yYoDXt8uYQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=2B7sRZu/IXS5r/ddttMrVkIE1jGEo1pL5oaSs+e7Hro=;
- b=hA0P+C3yE7sz6Y8l8oimgFqJ5aPtiQC1EjGWuhBdam9DGmakcrUP+050uuU58IvM9+ZGkVY5Nsap95HRc/OI1VvqEwsL98MP+7y2hBlf6pir2rYARY1+U/+XqXUY1712CgKhYYeEs1Wh5d6Cp6YI+uPyWeeEY+pvtY+ICYmVc7qh6x0zfSwAnfT8kUn4hRdXChG5N17i2uCOb3L5siceyl/ktPdR/+V9KQR7kIcf5JKVYP5wfD1K3XSk21extNhvAsJ3aooWNzpVscnYgYCKQM60ILdUOU3CQ6LQDe0B6Yt4fc5TR0bQCIE7/qQFUm8+1d57MX9KFVQMH8AZHaypFA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=2B7sRZu/IXS5r/ddttMrVkIE1jGEo1pL5oaSs+e7Hro=;
- b=BN1YCtCzmt3rPi2LiscJmzStPZUJnbdoLZhisRLbJ62KteThwcTaJparW74t1v89uawgsoF3ZeQmPVgJQGHe7xDqTW43EzR/Z+rGmrOj+kLuwVz9XdQgR7s/ZYDAg7p3uQ3njLn4PrkjLdRRcqlfsxt862NYEtxRXxQdHqx9Fg0=
-Received: from BN8PR15MB2626.namprd15.prod.outlook.com (20.179.136.151) by
- BN8PR15MB3380.namprd15.prod.outlook.com (20.179.76.22) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2602.12; Sat, 4 Jan 2020 01:13:24 +0000
-Received: from BN8PR15MB2626.namprd15.prod.outlook.com
- ([fe80::506c:fb1f:2e5a:4652]) by BN8PR15MB2626.namprd15.prod.outlook.com
- ([fe80::506c:fb1f:2e5a:4652%6]) with mapi id 15.20.2602.010; Sat, 4 Jan 2020
- 01:13:24 +0000
-Received: from localhost.localdomain (2620:10d:c090:180::5d5) by MWHPR14CA0001.namprd14.prod.outlook.com (2603:10b6:300:ae::11) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2602.10 via Frontend Transport; Sat, 4 Jan 2020 01:13:22 +0000
-From:   Roman Gushchin <guro@fb.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-CC:     "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        id S1727228AbgADBcF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Jan 2020 20:32:05 -0500
+Received: from mail-il1-f195.google.com ([209.85.166.195]:37145 "EHLO
+        mail-il1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727194AbgADBcF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Jan 2020 20:32:05 -0500
+Received: by mail-il1-f195.google.com with SMTP id t8so38094901iln.4
+        for <netdev@vger.kernel.org>; Fri, 03 Jan 2020 17:32:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=sifive.com; s=google;
+        h=date:from:to:cc:subject:in-reply-to:message-id:references
+         :user-agent:mime-version;
+        bh=iKdXV40zp7HYQhCw5RprjfcGR+hom7KuV7z8YSCgMYs=;
+        b=HmRuxu85O6nXMh3jZKc0jQ4vIRFwSX7D1SDnRXGAlQJlFXBJTiUs5MQzfLSpm3iX5v
+         yn01sJE8UQj+QFu6XeqVbvbjhNUlkV9K2k1a3Sz5ksjhuzlDtSBDHt1kYkcgToGD1Srs
+         2y7sh8jVk9CJYRYursqhw/FJi1XOLlIWjh6vE00ty231/eeQOkr46nnXnzWNmRuzkw3k
+         hy2BeeYy0zIFLUOJ0FQzRgocSV1exn3sxnjceHNWp5xLehgeUYUHmcavpP6mwGRBCofU
+         m4EfZmBz3TJsQp4PbBAQISdlk5+YHy4XGV6LIcwVkyYvgsa46SCwnKd66J1fr3XQh62a
+         b2bQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:in-reply-to:message-id
+         :references:user-agent:mime-version;
+        bh=iKdXV40zp7HYQhCw5RprjfcGR+hom7KuV7z8YSCgMYs=;
+        b=hueLuJVBGU+PzUf4gDaLZvPctZPKVqs+cduJY42QS57OWEvQK+ULloipNXsucxsJF1
+         jxQS3Z9jXoa/VlCAd3lTIzvJqBb5F8bXUxLh0LIPml08BtGv3oIMvgE+5ODGezRidhVD
+         NacL+cWGIy+rmYL7m/9L7cT0UdWEeGr0BfXL1UlRwZkoic0kptmQ30FQ9p0/BfDhu/v8
+         7hQVnTcYIodMJX0OKyYhMjgHMErJqCpOF4+nl6SovdEbjTgmtTlCUwV3i5Vw3uFgLDIk
+         4lSzGQUcJeKKFi4I87eDx8rBhMMPuHZiN70YMKh/Bf0FO5PxMspLyYKwBSd1ZV3XOj5Y
+         aGGA==
+X-Gm-Message-State: APjAAAVd+6KEYgjoSbwMjsmIIuEYFpi/KoMzO0ifHBqiGIydglSq9fxb
+        y1TCBX4EFlfOrqg0Qb5U+ftUaA==
+X-Google-Smtp-Source: APXvYqxC81dX9dHMssrjHa5TmlbNO4RsuH5crfUxEdlHwXaJLKMHx5AGZAhB3yUDZRovGPY/3S4k2g==
+X-Received: by 2002:a92:884e:: with SMTP id h75mr78174164ild.199.1578101524531;
+        Fri, 03 Jan 2020 17:32:04 -0800 (PST)
+Received: from localhost ([64.62.168.194])
+        by smtp.gmail.com with ESMTPSA id 75sm21496162ila.61.2020.01.03.17.32.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 03 Jan 2020 17:32:03 -0800 (PST)
+Date:   Fri, 3 Jan 2020 17:32:02 -0800 (PST)
+From:   Paul Walmsley <paul.walmsley@sifive.com>
+X-X-Sender: paulw@viisi.sifive.com
+To:     =?ISO-8859-15?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@gmail.com>
+cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
         Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Kernel Team <Kernel-team@fb.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "stable@vger.kernel.org" <stable@vger.kernel.org>
-Subject: Re: [PATCH bpf] bpf: cgroup: prevent out-of-order release of cgroup
- bpf
-Thread-Topic: [PATCH bpf] bpf: cgroup: prevent out-of-order release of cgroup
- bpf
-Thread-Index: AQHVvP+26yjH3drshkGEPJ14gI885qfZs7aAgAAKlQA=
-Date:   Sat, 4 Jan 2020 01:13:24 +0000
-Message-ID: <20200104011318.GA11376@localhost.localdomain>
-References: <20191227215034.3169624-1-guro@fb.com>
- <20200104003523.rfte5rw6hbnncjes@ast-mbp>
-In-Reply-To: <20200104003523.rfte5rw6hbnncjes@ast-mbp>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: MWHPR14CA0001.namprd14.prod.outlook.com
- (2603:10b6:300:ae::11) To BN8PR15MB2626.namprd15.prod.outlook.com
- (2603:10b6:408:c2::23)
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [2620:10d:c090:180::5d5]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 1fd92055-1ac1-41bc-a566-08d790b34bc7
-x-ms-traffictypediagnostic: BN8PR15MB3380:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <BN8PR15MB3380D408A9FE72DBE6A85F9DBE220@BN8PR15MB3380.namprd15.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:1284;
-x-forefront-prvs: 02723F29C4
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(396003)(376002)(39860400002)(366004)(136003)(346002)(199004)(189003)(52116002)(6916009)(2906002)(66446008)(4326008)(316002)(16526019)(186003)(86362001)(66556008)(6506007)(66946007)(64756008)(33656002)(54906003)(1076003)(478600001)(66476007)(7696005)(8676002)(8936002)(69590400006)(81156014)(81166006)(5660300002)(9686003)(71200400001)(55016002);DIR:OUT;SFP:1102;SCL:1;SRVR:BN8PR15MB3380;H:BN8PR15MB2626.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: fb.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 3Qrp22IHn2Y+tjv8EQnwk8IOFxm6Xtx1oFEwXTbZRxoEDlVTneECE2JNvo5lJqF4C5P64MvXMwlnveNDH6/ITKk+bYaerFFTL7I103+Z24ZzI36BsM0P0XZ/wyJPpewpub45mcOsADkNORl/kHTYWZ8mysIML+Np+LClXFLW6TMLrMSxNV9tZdUmqqXIDBHpboJgqTT1Z0nYWc3KdD5TeKMxfqNL8ou8vJi1SCJQrwec3CZ+fpw/XoeJmw4pmNfpreRCKsBUBQ+qDoHa7LlAsS+OqTKrDrLwmff+kbgYJYnHBsPTu7Z6drGjQ4QW+DvXLNkDwe578Fcbflq3j68cq6xNfmImAiVO3DufULBoIWRwFZakosUWXW/WdGk4IjkcNELbjvHHXmRoI5/gsvZCEcpBYGzTnV8nzUj5yhKabcAnH7hOxogG+toNyOsIzpEkM08NemncazroO7wlnT7uXt1Z8lFdWcVUiTIPDQ2SAmucGxx3HPsSGV0AMVlbKhzX
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <2EC9F6EE2BBA334D8C4F001C4E795C81@namprd15.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        Netdev <netdev@vger.kernel.org>, linux-riscv@lists.infradead.org,
+        bpf <bpf@vger.kernel.org>
+Subject: Re: [PATCH bpf-next v2 6/9] riscv, bpf: provide RISC-V specific JIT
+ image alloc/free
+In-Reply-To: <CAJ+HfNgmcjLniyG0oj7OE60=NASfskVzP_bgX_JXp+SLczmyOQ@mail.gmail.com>
+Message-ID: <alpine.DEB.2.21.9999.2001031730370.283180@viisi.sifive.com>
+References: <20191216091343.23260-1-bjorn.topel@gmail.com> <20191216091343.23260-7-bjorn.topel@gmail.com> <7ceab77a-92e7-6415-3045-3e16876d4ef8@iogearbox.net> <CAJ+HfNgmcjLniyG0oj7OE60=NASfskVzP_bgX_JXp+SLczmyOQ@mail.gmail.com>
+User-Agent: Alpine 2.21.9999 (DEB 301 2018-08-15)
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1fd92055-1ac1-41bc-a566-08d790b34bc7
-X-MS-Exchange-CrossTenant-originalarrivaltime: 04 Jan 2020 01:13:24.2704
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: zu/1pzShoXCeGnGU679XUN2c6dWYubz1487Mkd8AS06vP9eoU8KBONd+Vs0J3ncu
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR15MB3380
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
- definitions=2020-01-03_06:2020-01-02,2020-01-03 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 lowpriorityscore=0
- mlxscore=0 phishscore=0 clxscore=1011 bulkscore=0 mlxlogscore=948
- adultscore=0 malwarescore=0 impostorscore=0 spamscore=0 suspectscore=0
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-1910280000 definitions=main-2001040009
-X-FB-Internal: deliver
+Content-Type: multipart/mixed; boundary="8323329-452107929-1578101522=:283180"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 03, 2020 at 04:35:25PM -0800, Alexei Starovoitov wrote:
-> On Fri, Dec 27, 2019 at 01:50:34PM -0800, Roman Gushchin wrote:
-> > Before commit 4bfc0bb2c60e ("bpf: decouple the lifetime of cgroup_bpf
-> > from cgroup itself") cgroup bpf structures were released with
-> > corresponding cgroup structures. It guaranteed the hierarchical order
-> > of destruction: children were always first. It preserved attached
-> > programs from being released before their propagated copies.
-> >=20
-> > But with cgroup auto-detachment there are no such guarantees anymore:
-> > cgroup bpf is released as soon as the cgroup is offline and there are
-> > no live associated sockets. It means that an attached program can be
-> > detached and released, while its propagated copy is still living
-> > in the cgroup subtree. This will obviously lead to an use-after-free
-> > bug.
-> ...
-> > @@ -65,6 +65,9 @@ static void cgroup_bpf_release(struct work_struct *wo=
-rk)
-> > =20
-> >  	mutex_unlock(&cgroup_mutex);
-> > =20
-> > +	for (p =3D cgroup_parent(cgrp); p; p =3D cgroup_parent(p))
-> > +		cgroup_bpf_put(p);
-> > +
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
+
+--8323329-452107929-1578101522=:283180
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+
+On Wed, 18 Dec 2019, Bj=C3=B6rn T=C3=B6pel wrote:
+
+> On Mon, 16 Dec 2019 at 16:09, Daniel Borkmann <daniel@iogearbox.net> wrot=
+e:
+> >
+> > On 12/16/19 10:13 AM, Bj=C3=B6rn T=C3=B6pel wrote:
+> > > This commit makes sure that the JIT images is kept close to the kerne=
+l
+> > > text, so BPF calls can use relative calling with auipc/jalr or jal
+> > > instead of loading the full 64-bit address and jalr.
+> > >
+> > > The BPF JIT image region is 128 MB before the kernel text.
+> > >
+> > > Signed-off-by: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail.com>
+> > > ---
+> > >   arch/riscv/include/asm/pgtable.h |  4 ++++
+> > >   arch/riscv/net/bpf_jit_comp.c    | 13 +++++++++++++
+> > >   2 files changed, 17 insertions(+)
+> > >
+> > > diff --git a/arch/riscv/include/asm/pgtable.h b/arch/riscv/include/as=
+m/pgtable.h
+> > > index 7ff0ed4f292e..cc3f49415620 100644
+> > > --- a/arch/riscv/include/asm/pgtable.h
+> > > +++ b/arch/riscv/include/asm/pgtable.h
+> > > @@ -404,6 +404,10 @@ static inline int ptep_clear_flush_young(struct =
+vm_area_struct *vma,
+> > >   #define VMALLOC_END      (PAGE_OFFSET - 1)
+> > >   #define VMALLOC_START    (PAGE_OFFSET - VMALLOC_SIZE)
+> > >
+> > > +#define BPF_JIT_REGION_SIZE  (SZ_128M)
+> > > +#define BPF_JIT_REGION_START (PAGE_OFFSET - BPF_JIT_REGION_SIZE)
+> > > +#define BPF_JIT_REGION_END   (VMALLOC_END)
+> > > +
+> >
+> > Series looks good to me, thanks; I'd like to get an ACK from Palmer/oth=
+ers on this one.
+> >
 >=20
-> The fix makes sense, but is it really safe to walk cgroup hierarchy
-> without holding cgroup_mutex?
+> Palmer/Paul/Albert, any thoughts/input? I can respin the the series
+> w/o the call optimizations (excluding this patch and the next), but
+> I'd prefer not given it's a nice speed/clean up for calls.
 
-It is, because we're holding a reference to the original cgroup and going
-towards the root. On each level the cgroup is protected by a reference
-from their child cgroup.
+Looks like Palmer's already reviewed it.  One additional request: could=20
+you update the VM layout debugging messages in arch/riscv/mm/init.c to=20
+include this new area?
 
-Thanks!
+thanks,
+
+- Paul
+--8323329-452107929-1578101522=:283180--
