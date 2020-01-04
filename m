@@ -2,92 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7193413032C
-	for <lists+netdev@lfdr.de>; Sat,  4 Jan 2020 16:23:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 041FD13036B
+	for <lists+netdev@lfdr.de>; Sat,  4 Jan 2020 17:15:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726080AbgADPXG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 4 Jan 2020 10:23:06 -0500
-Received: from mail.kernel.org ([198.145.29.99]:33170 "EHLO mail.kernel.org"
+        id S1726135AbgADQN4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 4 Jan 2020 11:13:56 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:47556 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727310AbgADPXE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 4 Jan 2020 10:23:04 -0500
-Received: from localhost.localdomain (unknown [194.230.155.149])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 03AC624655;
-        Sat,  4 Jan 2020 15:23:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1578151384;
-        bh=OBmIUek42cnzUQDrrnU/oY+P3xCSkIfYAxlHss1KdT4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=q6NPfec85LcFZQHlGOIyNJdrCLNqsEoMqnIESh/DST97qj/AzBPdkEuvCt+F1pnWs
-         wC2HjcQt3FyHMwd84oj6EOG9G1sOeYhUdMrijThEqdYB8tHzvXAAv/nWL9uNi00aXS
-         bvRYojbVQ77pey9oKabM6Fep68RTKwyrX+L8EHxE=
-From:   Krzysztof Kozlowski <krzk@kernel.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Krzysztof Kozlowski <krzk@kernel.org>,
-        Byungho An <bh74.an@samsung.com>,
-        Girish K S <ks.giri@samsung.com>,
-        Vipul Pandya <vipul.pandya@samsung.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Allison Randal <allison@lohutok.net>,
-        Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org
-Subject: [PATCH v2 19/20] net: ethernet: sxgbe: Rename Samsung to lowercase
-Date:   Sat,  4 Jan 2020 16:21:06 +0100
-Message-Id: <20200104152107.11407-20-krzk@kernel.org>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200104152107.11407-1-krzk@kernel.org>
-References: <20200104152107.11407-1-krzk@kernel.org>
+        id S1726054AbgADQNz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 4 Jan 2020 11:13:55 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Subject:
+        Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:Content-Description:
+        Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
+        In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=6lsIo+fijmhjBOG7Qq/zXdj92iFEKE8QmWTHjPXElT4=; b=qs/WVTyeCoEpOdmZX5867cSDBH
+        S7w2/JUhhHWWulBb7zWT/SOqyrg3qHwKJ+Znm3DgxYZFApmX7E1K+lsE5sdOMs4IDkguaU5rBRRzE
+        ZOr7pxZombk0Ob+ns2bIz6pPAkipl6qh5sHc8SV3+ozWokXHU3Jn9MYlWG/HnpLMIpv8=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1inm3j-0007DB-La; Sat, 04 Jan 2020 17:13:51 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     David Miller <davem@davemloft.net>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Chris Healy <Chris.Healy@zii.aero>,
+        Andrew Lunn <andrew@lunn.ch>
+Subject: [PATCH net] net: dsa: mv88e6xxx: Preserve priority went setting CPU port.
+Date:   Sat,  4 Jan 2020 17:13:35 +0100
+Message-Id: <20200104161335.27662-1-andrew@lunn.ch>
+X-Mailer: git-send-email 2.24.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix up inconsistent usage of upper and lowercase letters in "Samsung"
-name.
+The 6390 family uses an extended register to set the port connected to
+the CPU. The lower 5 bits indicate the port, the upper three bits are
+the priority of the frames as they pass through the switch, what
+egress queue they should use, etc. Since frames being set to the CPU
+are typically management frames, BPDU, IGMP, ARP, etc set the priority
+to 7, the reset default, and the highest.
 
-"SAMSUNG" is not an abbreviation but a regular trademarked name.
-Therefore it should be written with lowercase letters starting with
-capital letter.
-
-Although advertisement materials usually use uppercase "SAMSUNG", the
-lowercase version is used in all legal aspects (e.g. on Wikipedia and in
-privacy/legal statements on
-https://www.samsung.com/semiconductor/privacy-global/).
-
-Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
+Fixes: 33641994a676 ("net: dsa: mv88e6xxx: Monitor and Management tables")
+Signed-off-by: Andrew Lunn <andrew@lunn.ch>
 ---
- drivers/net/ethernet/samsung/sxgbe/sxgbe_main.c | 2 +-
- include/linux/sxgbe_platform.h                  | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/dsa/mv88e6xxx/global1.c | 5 +++++
+ drivers/net/dsa/mv88e6xxx/global1.h | 1 +
+ 2 files changed, 6 insertions(+)
 
-diff --git a/drivers/net/ethernet/samsung/sxgbe/sxgbe_main.c b/drivers/net/ethernet/samsung/sxgbe/sxgbe_main.c
-index cd6e0de48248..7d3a1c0df09c 100644
---- a/drivers/net/ethernet/samsung/sxgbe/sxgbe_main.c
-+++ b/drivers/net/ethernet/samsung/sxgbe/sxgbe_main.c
-@@ -2296,7 +2296,7 @@ __setup("sxgbeeth=", sxgbe_cmdline_opt);
+diff --git a/drivers/net/dsa/mv88e6xxx/global1.c b/drivers/net/dsa/mv88e6xxx/global1.c
+index 120a65d3e3ef..ce03f155e9fb 100644
+--- a/drivers/net/dsa/mv88e6xxx/global1.c
++++ b/drivers/net/dsa/mv88e6xxx/global1.c
+@@ -360,6 +360,11 @@ int mv88e6390_g1_set_cpu_port(struct mv88e6xxx_chip *chip, int port)
+ {
+ 	u16 ptr = MV88E6390_G1_MONITOR_MGMT_CTL_PTR_CPU_DEST;
  
++	/* Use the default high priority for manegement frames sent to
++	 * the CPU.
++	 */
++	port |= MV88E6390_G1_MONITOR_MGMT_CTL_PTR_CPU_DEST_MGMTPRI;
++
+ 	return mv88e6390_g1_monitor_write(chip, ptr, port);
+ }
  
+diff --git a/drivers/net/dsa/mv88e6xxx/global1.h b/drivers/net/dsa/mv88e6xxx/global1.h
+index bc5a6b2bb1e4..5324c6f4ae90 100644
+--- a/drivers/net/dsa/mv88e6xxx/global1.h
++++ b/drivers/net/dsa/mv88e6xxx/global1.h
+@@ -211,6 +211,7 @@
+ #define MV88E6390_G1_MONITOR_MGMT_CTL_PTR_INGRESS_DEST		0x2000
+ #define MV88E6390_G1_MONITOR_MGMT_CTL_PTR_EGRESS_DEST		0x2100
+ #define MV88E6390_G1_MONITOR_MGMT_CTL_PTR_CPU_DEST		0x3000
++#define MV88E6390_G1_MONITOR_MGMT_CTL_PTR_CPU_DEST_MGMTPRI	0x00e0
+ #define MV88E6390_G1_MONITOR_MGMT_CTL_DATA_MASK			0x00ff
  
--MODULE_DESCRIPTION("SAMSUNG 10G/2.5G/1G Ethernet PLATFORM driver");
-+MODULE_DESCRIPTION("Samsung 10G/2.5G/1G Ethernet PLATFORM driver");
- 
- MODULE_PARM_DESC(debug, "Message Level (-1: default, 0: no output, 16: all)");
- MODULE_PARM_DESC(eee_timer, "EEE-LPI Default LS timer value");
-diff --git a/include/linux/sxgbe_platform.h b/include/linux/sxgbe_platform.h
-index 85ec745767bd..966146f7267a 100644
---- a/include/linux/sxgbe_platform.h
-+++ b/include/linux/sxgbe_platform.h
-@@ -1,6 +1,6 @@
- /* SPDX-License-Identifier: GPL-2.0-only */
- /*
-- * 10G controller driver for Samsung EXYNOS SoCs
-+ * 10G controller driver for Samsung Exynos SoCs
-  *
-  * Copyright (C) 2013 Samsung Electronics Co., Ltd.
-  *		http://www.samsung.com
+ /* Offset 0x1C: Global Control 2 */
 -- 
-2.17.1
+2.24.0
 
