@@ -2,96 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0BA3612FF79
-	for <lists+netdev@lfdr.de>; Sat,  4 Jan 2020 01:19:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A4B712FFA6
+	for <lists+netdev@lfdr.de>; Sat,  4 Jan 2020 01:35:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726781AbgADATX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Jan 2020 19:19:23 -0500
-Received: from mail.kernel.org ([198.145.29.99]:43842 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726229AbgADATW (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 3 Jan 2020 19:19:22 -0500
-Received: from mail.kernel.org (unknown [104.132.0.74])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 9476321D7D;
-        Sat,  4 Jan 2020 00:19:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1578097161;
-        bh=MqqVqEIn41z92rrv1mY/TDM3b2e1uTCwKfL18Xyebts=;
-        h=From:To:Cc:Subject:Date:From;
-        b=PUIAYGFXuHqL4mmr94yU/nMuQZvNIKlaZ5OFdQ8ENVc1c2tkxkT6MFobMqpnT8RNM
-         SfnJh3AQFAoqiX1IYPCUiTlIXxBJNcFiodnEXj+cEh37bO8mVMkYLNmLWknVoj3Nzp
-         HeZv+lqZ2L1n3hY7XfEzqtuM/tDyTBcGWAQBWMyY=
-From:   Stephen Boyd <sboyd@kernel.org>
-To:     "David S. Miller" <davem@davemloft.net>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Yash Shah <yash.shah@sifive.com>,
-        Guenter Roeck <linux@roeck-us.net>
-Subject: [PATCH] macb: Don't unregister clks unconditionally
-Date:   Fri,  3 Jan 2020 16:19:21 -0800
-Message-Id: <20200104001921.225529-1-sboyd@kernel.org>
-X-Mailer: git-send-email 2.24.1.735.g03f4e72817-goog
+        id S1727183AbgADAf2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Jan 2020 19:35:28 -0500
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:40297 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726697AbgADAf2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Jan 2020 19:35:28 -0500
+Received: by mail-pf1-f194.google.com with SMTP id q8so24203657pfh.7;
+        Fri, 03 Jan 2020 16:35:27 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=0FeJsQCW8mOlSS3IAGDGeSDz6EFOBAfSnpTVUbJ/CcA=;
+        b=Pe+JvrhBVcnH/QgurCh/bCtFgT69K3nPua37Yh0GkzuzUC3mGEnLv9PxU7Lbln9Bg8
+         OclxtQpvDZbg0iwxOzkQSDXn7V2gGJSJvbOJ5+K1c2/cDcDkvSBUQhuSEvotiACo03AG
+         EXAXZlCu3SMTamgvr3NATzz16GqDr93/qMW1AKF/L6b6VZ90QMOBJimjIGNtZODlP/9R
+         cSl/PxVWl2GcmVVE8nX39y2MEjKTtsx08k5JcXm+Dcvjmuw33YhN6jlvInp9mWifo4ai
+         f0pBJjhKaQNdvxo9vFLaqRmRJxFu391QA50Jo3LhM+26SqprKggKg4ytzfzEXlnHw+5l
+         zBvA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=0FeJsQCW8mOlSS3IAGDGeSDz6EFOBAfSnpTVUbJ/CcA=;
+        b=mFtkire9xpX2lyjFwUyj85/AVEgbUQJsyMRofJZavytQqOc7xuBm8ByakTUSzjoAyz
+         gb5Vcoi8EOt0ZgPLzNoayw1K5boMVBPGQMCCZ2V96wwQrefnLNbYBs4pr8ef+IikSB7f
+         B7WL3wDFIvW7amd9On9fQj6rJtok4Zutu5icwhNgy1CwnuTWyuOxL815qWz9I2Wt+pm5
+         MmtOU7V+0/3iz4sTyYMwOYhKMP3eSF//EkjKruWzdO35I+6jfHtrlCeId93T/7zCqtmz
+         Hrh+OsO0WKMZFB6NyIeRgIO2boLTgK/dBKdvHqvpiOO9cOAebi4+0VJucfUWde9kfVeC
+         t9Ug==
+X-Gm-Message-State: APjAAAXApXT7DBwP0vgY0qW3C/wWSPGTyE0+05E26XZs9aLnOp4VDiNq
+        Ryzjd3RmDmuq+60eDo1kLsg3ovE9
+X-Google-Smtp-Source: APXvYqygvWuLJRzXmYofvMGVP0Kzs5BW8aRNk2YICK61NMLb1BUG24l1C8Av1F4y6BbNEdpWgIeSqQ==
+X-Received: by 2002:aa7:9ec9:: with SMTP id r9mr97508349pfq.85.1578098127504;
+        Fri, 03 Jan 2020 16:35:27 -0800 (PST)
+Received: from ast-mbp ([2620:10d:c090:200::3:4269])
+        by smtp.gmail.com with ESMTPSA id o19sm16578944pjr.2.2020.01.03.16.35.26
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 03 Jan 2020 16:35:26 -0800 (PST)
+Date:   Fri, 3 Jan 2020 16:35:25 -0800
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Roman Gushchin <guro@fb.com>
+Cc:     bpf@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        linux-kernel@vger.kernel.org, kernel-team@fb.com,
+        netdev@vger.kernel.org, stable@vger.kernel.org
+Subject: Re: [PATCH bpf] bpf: cgroup: prevent out-of-order release of cgroup
+ bpf
+Message-ID: <20200104003523.rfte5rw6hbnncjes@ast-mbp>
+References: <20191227215034.3169624-1-guro@fb.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191227215034.3169624-1-guro@fb.com>
+User-Agent: NeoMutt/20180223
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The only clk init function in this driver that register a clk is
-fu540_c000_clk_init(), and thus we need to unregister the clk when this
-driver is removed on that platform. Other init functions, for example
-macb_clk_init(), don't register clks and therefore we shouldn't
-unregister the clks when this driver is removed. Convert this
-registration path to devm so it gets auto-unregistered when this driver
-is removed and drop the clk_unregister() calls in driver remove (and
-error paths) so that we don't erroneously remove a clk from the system
-that isn't registered by this driver.
+On Fri, Dec 27, 2019 at 01:50:34PM -0800, Roman Gushchin wrote:
+> Before commit 4bfc0bb2c60e ("bpf: decouple the lifetime of cgroup_bpf
+> from cgroup itself") cgroup bpf structures were released with
+> corresponding cgroup structures. It guaranteed the hierarchical order
+> of destruction: children were always first. It preserved attached
+> programs from being released before their propagated copies.
+> 
+> But with cgroup auto-detachment there are no such guarantees anymore:
+> cgroup bpf is released as soon as the cgroup is offline and there are
+> no live associated sockets. It means that an attached program can be
+> detached and released, while its propagated copy is still living
+> in the cgroup subtree. This will obviously lead to an use-after-free
+> bug.
+...
+> @@ -65,6 +65,9 @@ static void cgroup_bpf_release(struct work_struct *work)
+>  
+>  	mutex_unlock(&cgroup_mutex);
+>  
+> +	for (p = cgroup_parent(cgrp); p; p = cgroup_parent(p))
+> +		cgroup_bpf_put(p);
+> +
 
-Otherwise we get strange crashes with a use-after-free when the
-devm_clk_get() call in macb_clk_init() calls clk_put() on a clk pointer
-that has become invalid because it is freed in clk_unregister().
-
-Cc: Nicolas Ferre <nicolas.ferre@microchip.com>
-Cc: Yash Shah <yash.shah@sifive.com>
-Reported-by: Guenter Roeck <linux@roeck-us.net>
-Fixes: c218ad559020 ("macb: Add support for SiFive FU540-C000")
-Signed-off-by: Stephen Boyd <sboyd@kernel.org>
----
- drivers/net/ethernet/cadence/macb_main.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
-
-diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
-index 9c767ee252ac..7dce403fd27c 100644
---- a/drivers/net/ethernet/cadence/macb_main.c
-+++ b/drivers/net/ethernet/cadence/macb_main.c
-@@ -4069,7 +4069,7 @@ static int fu540_c000_clk_init(struct platform_device *pdev, struct clk **pclk,
- 	mgmt->rate = 0;
- 	mgmt->hw.init = &init;
- 
--	*tx_clk = clk_register(NULL, &mgmt->hw);
-+	*tx_clk = devm_clk_register(&pdev->dev, &mgmt->hw);
- 	if (IS_ERR(*tx_clk))
- 		return PTR_ERR(*tx_clk);
- 
-@@ -4397,7 +4397,6 @@ static int macb_probe(struct platform_device *pdev)
- 
- err_disable_clocks:
- 	clk_disable_unprepare(tx_clk);
--	clk_unregister(tx_clk);
- 	clk_disable_unprepare(hclk);
- 	clk_disable_unprepare(pclk);
- 	clk_disable_unprepare(rx_clk);
-@@ -4427,7 +4426,6 @@ static int macb_remove(struct platform_device *pdev)
- 		pm_runtime_dont_use_autosuspend(&pdev->dev);
- 		if (!pm_runtime_suspended(&pdev->dev)) {
- 			clk_disable_unprepare(bp->tx_clk);
--			clk_unregister(bp->tx_clk);
- 			clk_disable_unprepare(bp->hclk);
- 			clk_disable_unprepare(bp->pclk);
- 			clk_disable_unprepare(bp->rx_clk);
--- 
-Sent by a computer, using git, on the internet
+The fix makes sense, but is it really safe to walk cgroup hierarchy
+without holding cgroup_mutex?
 
