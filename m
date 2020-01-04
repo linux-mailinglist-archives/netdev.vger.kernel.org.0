@@ -2,75 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 94B5C130047
-	for <lists+netdev@lfdr.de>; Sat,  4 Jan 2020 03:51:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 85BBB130044
+	for <lists+netdev@lfdr.de>; Sat,  4 Jan 2020 03:50:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727374AbgADCtk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Jan 2020 21:49:40 -0500
-Received: from szxga04-in.huawei.com ([45.249.212.190]:8670 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727194AbgADCtj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 3 Jan 2020 21:49:39 -0500
-Received: from DGGEMS413-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id 914983BC149815AC4723;
-        Sat,  4 Jan 2020 10:49:37 +0800 (CST)
-Received: from localhost.localdomain (10.69.192.56) by
- DGGEMS413-HUB.china.huawei.com (10.3.19.213) with Microsoft SMTP Server id
- 14.3.439.0; Sat, 4 Jan 2020 10:49:28 +0800
-From:   Huazhong Tan <tanhuazhong@huawei.com>
-To:     <davem@davemloft.net>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <salil.mehta@huawei.com>, <yisen.zhuang@huawei.com>,
-        <linuxarm@huawei.com>, <jakub.kicinski@netronome.com>,
-        Huazhong Tan <tanhuazhong@huawei.com>
-Subject: [PATCH net-next 8/8] net: hns3: modify an unsuitable reset level for hardware error
-Date:   Sat, 4 Jan 2020 10:49:31 +0800
-Message-ID: <1578106171-17238-9-git-send-email-tanhuazhong@huawei.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1578106171-17238-1-git-send-email-tanhuazhong@huawei.com>
-References: <1578106171-17238-1-git-send-email-tanhuazhong@huawei.com>
+        id S1727600AbgADCuX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Jan 2020 21:50:23 -0500
+Received: from mga12.intel.com ([192.55.52.136]:64694 "EHLO mga12.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727471AbgADCtz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 3 Jan 2020 21:49:55 -0500
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 03 Jan 2020 18:49:54 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.69,393,1571727600"; 
+   d="scan'208";a="369757849"
+Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.74])
+  by orsmga004.jf.intel.com with ESMTP; 03 Jan 2020 18:49:53 -0800
+From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+To:     davem@davemloft.net
+Cc:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>, netdev@vger.kernel.org,
+        nhorman@redhat.com, sassmann@redhat.com
+Subject: [net-next 00/16][pull request] 100GbE Intel Wired LAN Driver Updates 2020-01-03
+Date:   Fri,  3 Jan 2020 18:49:37 -0800
+Message-Id: <20200104024953.2336731-1-jeffrey.t.kirsher@intel.com>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.69.192.56]
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-According to hardware user manual, when hardware reports error
-'roc_pkt_without_key_port', the driver should assert function
-reset to do the recovery.
+This series contains updates to the ice driver only.
 
-So this patch uses HNAE3_FUNC_RESET to replace HNAE3_GLOBAL_RESET.
+Brett adds support for UDP segmentation offload (USO) based on the work
+Alex Duyck did for other Intel drivers. Refactored how the VF sets
+spoof checking to resolve a couple of issues found in
+ice_set_vf_spoofchk().  Adds the ability to track of the dflt_vsI
+(default VSI), since we cannot have more than one default VSI.  Add a
+macro for commonly used "for loop" used repeatedly in the code.  Cleaned
+up and made the VF link flows all similar.  Refactor the flows of adding
+and deleting MAC addresses in order to simplify the logic for error
+conditions and setting/clearing the VF's default MAC address field. 
 
-Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
----
- drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_err.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Michal moves the setting of the default ITR value from ice_cfg_itr() to
+the function we allocate queue vectors.  Adds support for saving and
+restoring the ITR value for each queue.  Adds a check for all invalid
+or unused parameters to log the information and return an error.
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_err.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_err.c
-index dc66b4e..f8127d7 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_err.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_err.c
-@@ -505,7 +505,7 @@ static const struct hclge_hw_error hclge_ssu_mem_ecc_err_int[] = {
- 
- static const struct hclge_hw_error hclge_ssu_port_based_err_int[] = {
- 	{ .int_msk = BIT(0), .msg = "roc_pkt_without_key_port",
--	  .reset_level = HNAE3_GLOBAL_RESET },
-+	  .reset_level = HNAE3_FUNC_RESET },
- 	{ .int_msk = BIT(1), .msg = "tpu_pkt_without_key_port",
- 	  .reset_level = HNAE3_GLOBAL_RESET },
- 	{ .int_msk = BIT(2), .msg = "igu_pkt_without_key_port",
-@@ -599,7 +599,7 @@ static const struct hclge_hw_error hclge_ssu_ets_tcg_int[] = {
- 
- static const struct hclge_hw_error hclge_ssu_port_based_pf_int[] = {
- 	{ .int_msk = BIT(0), .msg = "roc_pkt_without_key_port",
--	  .reset_level = HNAE3_GLOBAL_RESET },
-+	  .reset_level = HNAE3_FUNC_RESET },
- 	{ .int_msk = BIT(9), .msg = "low_water_line_err_port",
- 	  .reset_level = HNAE3_NONE_RESET },
- 	{ .int_msk = BIT(10), .msg = "hi_water_line_err_port",
+Vignesh cleans up the driver where we were trying to write to read-only
+registers for the receive flex descriptors.
+
+Tony changes a netdev_info() to netdev_dbg() when the MTU value is
+changed.
+
+Bruce suppresses a coverity reported error that was not really an error
+by adding a code comment.
+
+Mitch adds a check for a NULL receive descriptor to resolve a coverity
+reported issue.
+
+Krzysztof prevents a potential general protection fault by adding a
+boundary check to see if the queue id is greater than the size of a UMEM
+array.  Adds additional code comments to assist coverity in its scans to
+prevent false positives.
+
+Jake adds support for E822 devices to the driver.
+
+The following are changes since commit 3c85efb8f15ffa5bd165881b9fd1f9e5dd1d705f:
+  bna: remove set but not used variable 'pgoff'
+and are available in the git repository at:
+  git://git.kernel.org/pub/scm/linux/kernel/git/jkirsher/next-queue 100GbE
+
+Brett Creeley (6):
+  ice: Support UDP segmentation offload
+  ice: Fix VF spoofchk
+  ice: Add code to keep track of current dflt_vsi
+  ice: Add ice_for_each_vf() macro
+  ice: Fix VF link state when it's IFLA_VF_LINK_STATE_AUTO
+  ice: Enable ip link show on the PF to display VF unicast MAC(s)
+
+Bruce Allan (1):
+  ice: suppress checked_return error
+
+Jacob Keller (1):
+  ice: Add device ids for E822 devices
+
+Krzysztof Kazimierczak (2):
+  ice: Add a boundary check in ice_xsk_umem()
+  ice: Suppress Coverity warnings for xdp_rxq_info_reg
+
+Michal Swiatkowski (3):
+  ice: Set default value for ITR in alloc function
+  ice: Restore interrupt throttle settings after VSI rebuild
+  ice: Return error on not supported ethtool -C parameters
+
+Mitch Williams (1):
+  ice: add extra check for null Rx descriptor
+
+Tony Nguyen (1):
+  ice: Demote MTU change print to debug
+
+Vignesh Sridhar (1):
+  ice: Remove Rx flex descriptor programming
+
+ drivers/net/ethernet/intel/ice/ice.h          |   8 +-
+ drivers/net/ethernet/intel/ice/ice_base.c     |  16 +-
+ drivers/net/ethernet/intel/ice/ice_common.c   | 104 ----
+ drivers/net/ethernet/intel/ice/ice_dcb_lib.c  |   6 +
+ drivers/net/ethernet/intel/ice/ice_devids.h   |  18 +
+ drivers/net/ethernet/intel/ice/ice_ethtool.c  |  57 +-
+ .../net/ethernet/intel/ice/ice_hw_autogen.h   |   9 -
+ drivers/net/ethernet/intel/ice/ice_lib.c      | 254 ++++++++-
+ drivers/net/ethernet/intel/ice/ice_lib.h      |   8 +
+ drivers/net/ethernet/intel/ice/ice_main.c     |  64 ++-
+ drivers/net/ethernet/intel/ice/ice_nvm.c      |  12 +
+ drivers/net/ethernet/intel/ice/ice_txrx.c     |  28 +-
+ drivers/net/ethernet/intel/ice/ice_txrx.h     |   6 +
+ .../net/ethernet/intel/ice/ice_virtchnl_pf.c  | 485 +++++++++---------
+ .../net/ethernet/intel/ice/ice_virtchnl_pf.h  |   4 +-
+ drivers/net/ethernet/intel/ice/ice_xsk.c      |   3 +-
+ 16 files changed, 672 insertions(+), 410 deletions(-)
+
 -- 
-2.7.4
+2.24.1
 
