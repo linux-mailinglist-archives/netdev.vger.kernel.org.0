@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CD72F1305B2
-	for <lists+netdev@lfdr.de>; Sun,  5 Jan 2020 05:40:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 391331305B3
+	for <lists+netdev@lfdr.de>; Sun,  5 Jan 2020 05:42:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726358AbgAEEkD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 4 Jan 2020 23:40:03 -0500
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:46713 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726240AbgAEEkC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 4 Jan 2020 23:40:02 -0500
-Received: by mail-pf1-f194.google.com with SMTP id n9so17485799pff.13
-        for <netdev@vger.kernel.org>; Sat, 04 Jan 2020 20:40:02 -0800 (PST)
+        id S1726373AbgAEEmt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 4 Jan 2020 23:42:49 -0500
+Received: from mail-pl1-f193.google.com ([209.85.214.193]:35984 "EHLO
+        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726240AbgAEEms (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 4 Jan 2020 23:42:48 -0500
+Received: by mail-pl1-f193.google.com with SMTP id a6so19800828plm.3
+        for <netdev@vger.kernel.org>; Sat, 04 Jan 2020 20:42:48 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=f4id91ddAot90NXa+69+IkdH2Z+W2AQIB9NVBNm4UH8=;
-        b=IpyCKzDkYUAUfujBBTqhpoTusStewthSihFNFSiiztrGCnzaR0avhNK8z4BePrMr/p
-         9f/H0yytyrP56N5zJBVrqL7EHgeCMCBqE59xyOM9gBcOHIXCm4RUCyDLD9autI7LGw/P
-         uCMQNnvDhISVkECzp3ewjTe+fUcYqktC6n14ebYMIfWYNYR07wlxNb32l8pjpzV4mE1X
-         0Yu2Y+kvjx7U/zlpItxU8xt2JJ1hLM+XHiNH0WW5u5rlFOgvmv/AhQb2XXCnVa/Pzv/3
-         Gfbc8orThC6eNxmTfgwFvAOToUv0bUAj3eisM43TVzEAuT594oPzJNV+2N3m8y/fPuVk
-         0hKA==
+        bh=55UnE/fGuQxKziii5MvlKf8Ol54YNy7G1gIgm2XCvXQ=;
+        b=JpngyhXRCS07hPSBWmx6aWSfpEw7kRhcZ95LyRCJDpGYxHh+Zg3JDvViCaWWBUXRRU
+         obhlcGAXWdlcTjamr9MQmA26TtBlVqKA3ZG47FE6STfcamM9l3UNeYeiS/9tS1kVyRgE
+         +ErpRtmajvxNzgUOP6nyqS41rqzZx4T/caF2u1GbV5DZS9TOffYqx7ziz9OBc3y1pt/b
+         6UA7fPjbvcG5b3b+IcHj5A10esPUlOuBxTXm3v/a/FocW+PrbKaWSIx6BfVkzXHzFkP1
+         +3XH8Ee2j7j4bgBPys68ZRLG7mmEpfL8bWqsfZbnBLbT0NJ7v9mh39zvf7RAj//PKkZK
+         wrDA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=f4id91ddAot90NXa+69+IkdH2Z+W2AQIB9NVBNm4UH8=;
-        b=sboym5Cs+SBg2AkTuXzNbJauxeRT7zsJhVlZuJmkwK4ChgEdC1Q3tzZQKxiV788RMP
-         jSlsjqh3EQYy6kL6QG6PRHL76gvrZ1MIMraGqtMkLANdcmrDxkzHIqOyo4ecjkRn/s+p
-         Txk1sYvFrM5jkQgj53XFtD4/W2D1FsP06VPTCkAsdQg0+4WktTJ0gd12ljl12uTq66UA
-         mE9yicUOvzFrdw51qcAOQLxpvgPIjofuWs+fpckgXsXZw0nEaOmYif1SSjB9oBCMUVQB
-         LvzL38OP072n8OFDtwzCiHZXcV5k6vtQlYA0EZywuGxvWjKvwf6AVvJrzglXWG6LDvcR
-         Vbaw==
-X-Gm-Message-State: APjAAAXTue9CPtD1YtNKu8MAmDl7OPTliXHEMgKyZRBplFKPsuEpMBwI
-        fmBRRahYWcUh1xn2CfvQp8rl+7vz
-X-Google-Smtp-Source: APXvYqwS26wF11797znSIEwbjWLqhUrVl+hY6VsgZcaX9kXp14V3xn4Sf1WVNu6HXiLxkJy6F7rEtw==
-X-Received: by 2002:a65:5a8f:: with SMTP id c15mr95823853pgt.259.1578199201309;
-        Sat, 04 Jan 2020 20:40:01 -0800 (PST)
+        bh=55UnE/fGuQxKziii5MvlKf8Ol54YNy7G1gIgm2XCvXQ=;
+        b=AHNU93vPI6j2S5I3cgz7n+WagrfRj5+gSIQmNJNtRUbGvdpV9vIIx/Lg0BrBm+dZtt
+         C3JTFPVHOvNcHZia0LZ70pOs+trvEgr+tBEB99KRP26IoytBcDms37Lx+UWe6YbLwwaE
+         VsWkuHwsHQTICjCPhWnfFf3EqV/1HTs/ejiRI9Xh0k4kJHzBG89wr5lUUbv6JGXVUiyG
+         we4yl6smrYao3NZXNZW9lx+R5LKmAd09tL/hveQ3XHQHy9tC5zjaxt0rBSkPpNOEF69T
+         aCJeS+r815D3jAvakfZbDB18aEfxbfQ2VH27oY3gCy8z0+mi+2qfapvImqsbXYYDgZik
+         LUfA==
+X-Gm-Message-State: APjAAAXMFtGhpQAtEwkqVBHzAe8oPuYMJf2HGgrYl9al+ExRVSscrF4N
+        j/HffrWA7oYTmQUvKP9Ae5ATAFi5
+X-Google-Smtp-Source: APXvYqzUsannph+A3KxvaFuApQpNuUV3iuEgnD9k5kIM9cSqC83z46ljhaqXCmMN/a+BhrROKs0Qzg==
+X-Received: by 2002:a17:902:9695:: with SMTP id n21mr78989752plp.192.1578199367652;
+        Sat, 04 Jan 2020 20:42:47 -0800 (PST)
 Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
-        by smtp.gmail.com with ESMTPSA id d3sm31752295pfn.113.2020.01.04.20.40.00
+        by smtp.gmail.com with ESMTPSA id y62sm76561341pfg.45.2020.01.04.20.42.46
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 04 Jan 2020 20:40:00 -0800 (PST)
-Subject: Re: [PATCH v2 net-next 3/3] net: dsa: tag_sja1105: Slightly improve
- the Xmas tree in sja1105_xmit
+        Sat, 04 Jan 2020 20:42:47 -0800 (PST)
+Subject: Re: [PATCH v2 net-next 1/3] net: dsa: sja1105: Always send through
+ management routes in slot 0
 To:     Vladimir Oltean <olteanv@gmail.com>, vivien.didelot@gmail.com,
         andrew@lunn.ch, davem@davemloft.net
 Cc:     netdev@vger.kernel.org
 References: <20200104003711.18366-1-olteanv@gmail.com>
- <20200104003711.18366-4-olteanv@gmail.com>
+ <20200104003711.18366-2-olteanv@gmail.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Autocrypt: addr=f.fainelli@gmail.com; keydata=
  mQGiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
@@ -107,12 +107,12 @@ Autocrypt: addr=f.fainelli@gmail.com; keydata=
  caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
  6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9qfUATKC9NgZjRvBztfqy4
  a9BQwACgnzGuH1BVeT2J0Ra+ZYgkx7DaPR0=
-Message-ID: <f3a1e726-13a0-38dd-4d54-4ee70a283ce7@gmail.com>
-Date:   Sat, 4 Jan 2020 20:40:00 -0800
+Message-ID: <352e5121-5404-b6b9-a0b0-db8cb4024dc8@gmail.com>
+Date:   Sat, 4 Jan 2020 20:42:47 -0800
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
  Thunderbird/68.3.1
 MIME-Version: 1.0
-In-Reply-To: <20200104003711.18366-4-olteanv@gmail.com>
+In-Reply-To: <20200104003711.18366-2-olteanv@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -124,11 +124,56 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 On 1/3/2020 4:37 PM, Vladimir Oltean wrote:
-> This is a cosmetic patch that makes the dp, tx_vid, queue_mapping and
-> pcp local variable definitions a bit closer in length, so they don't
-> look like an eyesore as much.
+> I finally found out how the 4 management route slots are supposed to
+> be used, but.. it's not worth it.
 > 
-> The 'ds' variable is not used otherwise, except for ds->dp.
+> The description from the comment I've just deleted in this commit is
+> still true: when more than 1 management slot is active at the same time,
+> the switch will match frames incoming [from the CPU port] on the lowest
+> numbered management slot that matches the frame's DMAC.
+> 
+> My issue was that one was not supposed to statically assign each port a
+> slot. Yes, there are 4 slots and also 4 non-CPU ports, but that is a
+> mere coincidence.
+> 
+> Instead, the switch can be used like this: every management frame gets a
+> slot at the right of the most recently assigned slot:
+> 
+> Send mgmt frame 1 through S0:    S0 x  x  x
+> Send mgmt frame 2 through S1:    S0 S1 x  x
+> Send mgmt frame 3 through S2:    S0 S1 S2 x
+> Send mgmt frame 4 through S3:    S0 S1 S2 S3
+> 
+> The difference compared to the old usage is that the transmission of
+> frames 1-4 doesn't need to wait until the completion of the management
+> route. It is safe to use a slot to the right of the most recently used
+> one, because by protocol nobody will program a slot to your left and
+> "steal" your route towards the correct egress port.
+> 
+> So there is a potential throughput benefit here.
+> 
+> But mgmt frame 5 has no more free slot to use, so it has to wait until
+> _all_ of S0, S1, S2, S3 are full, in order to use S0 again.
+> 
+> And that's actually exactly the problem: I was looking for something
+> that would bring more predictable transmission latency, but this is
+> exactly the opposite: 3 out of 4 frames would be transmitted quicker,
+> but the 4th would draw the short straw and have a worse worst-case
+> latency than before.
+> 
+> Useless.
+> 
+> Things are made even worse by PTP TX timestamping, which is something I
+> won't go deeply into here. Suffice to say that the fact there is a
+> driver-level lock on the SPI bus offsets any potential throughput gains
+> that parallelism might bring.
+> 
+> So there's no going back to the multi-slot scheme, remove the
+> "mgmt_slot" variable from sja1105_port and the dummy static assignment
+> made at probe time.
+> 
+> While passing by, also remove the assignment to casc_port altogether.
+> Don't pretend that we support cascaded setups.
 > 
 > Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
 
