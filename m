@@ -2,74 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AAECB130A22
-	for <lists+netdev@lfdr.de>; Sun,  5 Jan 2020 23:08:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D1C82130A27
+	for <lists+netdev@lfdr.de>; Sun,  5 Jan 2020 23:13:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727170AbgAEWIq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 5 Jan 2020 17:08:46 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:48182 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726851AbgAEWIq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 5 Jan 2020 17:08:46 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=aEHWEEo6XrkuQmxbIi/VOLDO1KN+ijDmrPx0ATskWBA=; b=idZIs0K6tVwGiyWJKDRknZN0An
-        cRoK7GkFfUEADbdBu9CL598ESka2Oin0LiGpIE4vWlU5iTY9VUTiavkoUe/iUb7Cbzm9MGMQv1lig
-        XWKrMnskOLwxGWAliUaeS1KKZGFf94dkS4jFTQzTGVNZcgco3owQkWJkj/kCgA8ESaYc=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1ioE4W-0000rJ-HB; Sun, 05 Jan 2020 23:08:32 +0100
-Date:   Sun, 5 Jan 2020 23:08:32 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Michal Kubecek <mkubecek@suse.cz>
-Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Maya Erez <merez@codeaurora.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        linux-wireless@vger.kernel.org, wil6210@qti.qualcomm.com,
-        Francois Romieu <romieu@fr.zoreil.com>,
-        linux-kernel@vger.kernel.org,
-        Florian Fainelli <f.fainelli@gmail.com>
-Subject: Re: [PATCH net-next 3/3] epic100: allow nesting of ethtool_ops
- begin() and complete()
-Message-ID: <20200105220832.GA21914@lunn.ch>
-References: <cover.1578257976.git.mkubecek@suse.cz>
- <146ace9856b8576eea83a1a5dc6329315831c44e.1578257976.git.mkubecek@suse.cz>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <146ace9856b8576eea83a1a5dc6329315831c44e.1578257976.git.mkubecek@suse.cz>
+        id S1727027AbgAEWNe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 Jan 2020 17:13:34 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:40034 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726851AbgAEWNe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 5 Jan 2020 17:13:34 -0500
+Received: from localhost (unknown [IPv6:2601:601:9f00:1c3::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 24FED15729AD5;
+        Sun,  5 Jan 2020 14:13:33 -0800 (PST)
+Date:   Sun, 05 Jan 2020 14:13:32 -0800 (PST)
+Message-Id: <20200105.141332.1037832872586677248.davem@davemloft.net>
+To:     Jason@zx2c4.com
+Cc:     netdev@vger.kernel.org
+Subject: Re: [PATCH net-next 0/3] WireGuard bug fixes and cleanups
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20200102164751.416922-1-Jason@zx2c4.com>
+References: <20200102164751.416922-1-Jason@zx2c4.com>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sun, 05 Jan 2020 14:13:33 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> @@ -1435,8 +1436,10 @@ static int ethtool_begin(struct net_device *dev)
->  	struct epic_private *ep = netdev_priv(dev);
->  	void __iomem *ioaddr = ep->ioaddr;
->  
-> +	if (ep->ethtool_ops_nesting == U32_MAX)
-> +		return -EBUSY;
->  	/* power-up, if interface is down */
-> -	if (!netif_running(dev)) {
-> +	if (ep->ethtool_ops_nesting++ && !netif_running(dev)) {
->  		ew32(GENCTL, 0x0200);
->  		ew32(NVCTL, (er32(NVCTL) & ~0x003c) | 0x4800);
->  	}
+From: "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date: Thu,  2 Jan 2020 17:47:48 +0100
 
-Hi Michal
+> I've been working through some personal notes and also the whole git
+> repo history of the out-of-tree module, looking for places where
+> tradeoffs were made (and subsequently forgotten about) for old kernels.
+> The first two patches in this series clean up those. The first one does
+> so in the self-tests and self-test harness, where we're now able to
+> expand test coverage by a bit, and we're now cooking away tests on every
+> commit to both the wireguard-linux repo and to net-next. The second one
+> removes a workaround for a skbuff.h bug that was fixed long ago.
+> Finally, the last patch in the series fixes in a bug unearthed by newer
+> Qualcomm chipsets running the rmnet_perf driver, which does UDP GRO.
 
-In the via-velocity you added:
+Series applied.
 
-+       if (vptr->ethtool_ops_nesting == U32_MAX)
-+               return -EBUSY;
-+       if (!vptr->ethtool_ops_nesting++ && !netif_running(dev))
-                velocity_set_power_state(vptr, PCI_D0);
-        return 0;
-
-These two fragments differ by a ! . Is that correct?
-
-      Andrew
+I wonder if, for patch #3, we should have a gro cells helper which just
+does that list thing and thus makes the situation self documenting.
