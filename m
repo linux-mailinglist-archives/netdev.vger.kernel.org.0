@@ -2,104 +2,197 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0BFE8130721
-	for <lists+netdev@lfdr.de>; Sun,  5 Jan 2020 11:42:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A2CF1307A4
+	for <lists+netdev@lfdr.de>; Sun,  5 Jan 2020 12:16:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726368AbgAEKmY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 5 Jan 2020 05:42:24 -0500
-Received: from new1-smtp.messagingengine.com ([66.111.4.221]:48361 "EHLO
-        new1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725985AbgAEKmX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 5 Jan 2020 05:42:23 -0500
-Received: from compute6.internal (compute6.nyi.internal [10.202.2.46])
-        by mailnew.nyi.internal (Postfix) with ESMTP id 7A3323FDE;
-        Sun,  5 Jan 2020 05:42:22 -0500 (EST)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute6.internal (MEProxy); Sun, 05 Jan 2020 05:42:22 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kroah.com; h=
-        date:from:to:cc:subject:message-id:references:mime-version
-        :content-type:in-reply-to; s=fm2; bh=Bg70TfGSOPAvhp+LYYPCxqiBNS2
-        gPRtQUG933et+lgI=; b=AJetH91vtZKhzoj2u3iripRVedByRfzvJr2EFhO4KVA
-        iJAHXiFLyQvNAFUhZJ82BKhTRhNvCkE0sWg2K4iHzQN7w05zW73zgPnfvW4nmJdR
-        CLoP1LOiJMa+JCVLg70uPcm/H2zLCyzXOgGqN4/1C/+wux/VIR/1qr48XpjLXfjb
-        YfRHOXHCA7fXnPBM9p+GCfALYZjQND0sF747M713tMjE5eQlIOjS9UivwPZS+tAE
-        VdQxQ3OoI6HNrJnu7RZFKUBMCeiEVQvp3+Ocv04ehS9DVS4MwisbkGcFle9qiZpq
-        hCD/pOCMMsMTuBwt8TH+lv9xWcLVWL0sTMuecUl0SvA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=Bg70Tf
-        GSOPAvhp+LYYPCxqiBNS2gPRtQUG933et+lgI=; b=VfqPxNwwpUYiqfxyxFEW2N
-        jDFREgf+OQmOwR6HcArC+SF4YjPIHtNSJs2pbdS/iaJP5Fd4W2EpemB5OEj/xOA5
-        ckeaHKqu0qW9owyk6w9h6gPm+iAk/pA80FuPZ9fZvhFjvR9xeCSRAHK7qcmMtkpn
-        SG1tlBtw1B/imKkYl5zoijKTE124KE/n08frvrYLtAA6AB3jPHYaUlGfUHZH1EdW
-        IAqnoE3LQUZ2d3Uq5N4Xtm9PxKkQ/kuUueHCxD5mKJ6zdcc5u5kPyfXgmg5eZKKw
-        Y7zxLsTflB7oHrajucxBQWP53ToOlwy/VVRfD9F4zeAhsbHngyp+h32Ljc0NfQlA
-        ==
-X-ME-Sender: <xms:i70RXuVqxQ_zXFMmKy3X0BWIQL-8lKCPui4HVlam_Fj4zkH9Oghv4w>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedufedrvdegkedgudekucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefirhgvghcu
-    mffjuceoghhrvghgsehkrhhorghhrdgtohhmqeenucfkphepkeefrdekiedrkeelrddutd
-    ejnecurfgrrhgrmhepmhgrihhlfhhrohhmpehgrhgvgheskhhrohgrhhdrtghomhenucev
-    lhhushhtvghrufhiiigvpedt
-X-ME-Proxy: <xmx:i70RXuEm9pwTWEvGq7QvCVWuZ2MOqXCCuZepAw1PuxDtVBah1QsBjw>
-    <xmx:i70RXq5aOrfgtxtk_klO_P-_rX6tcrYPVhFaieCAfzHVGoDbwaHYhg>
-    <xmx:i70RXoKMs7vv0lB9H6TMytOHNCH8sUOtKK_bHGlMAPFa-iKN_sS9KA>
-    <xmx:jr0RXsfDqkWFV76bHvqVh_Xgk6EIOvxzaZ6inZz_mHCETvipE0fDgw>
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 3D04E8005C;
-        Sun,  5 Jan 2020 05:42:19 -0500 (EST)
-Date:   Sun, 5 Jan 2020 11:42:16 +0100
-From:   Greg KH <greg@kroah.com>
-To:     Marcel Holtmann <marcel@holtmann.org>
-Cc:     "Enrico Weigelt, metux IT consult" <info@metux.net>,
-        lkml <linux-kernel@vger.kernel.org>,
+        id S1726307AbgAELQn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 Jan 2020 06:16:43 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:56481 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1725897AbgAELQl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 5 Jan 2020 06:16:41 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1578222999;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=+GGlSSbeC4Kbhr61r3dRU9qa1eVoeraY/lQ162mo0Jg=;
+        b=WtHbvrcnb7uj/nbsnYYHVHjmVdQ9yrNOKlV0Kq+ZP3LErUs8VCq1UHFdIiQetc5KKxHxgi
+        jWDusYJ0aPYIxL8tsbZnmOwbi2QcMcQLy+6OeVfLRd8x8FLY3FPbxeD8m5DGjL0qghYxKa
+        UUwyRYgGOifxfwJPRoJoeUAUBS0Ry80=
+Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com
+ [209.85.222.199]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-334-GqMQVPdVM_OGZW18jZ7XHQ-1; Sun, 05 Jan 2020 06:16:37 -0500
+X-MC-Unique: GqMQVPdVM_OGZW18jZ7XHQ-1
+Received: by mail-qk1-f199.google.com with SMTP id s9so14659682qkg.21
+        for <netdev@vger.kernel.org>; Sun, 05 Jan 2020 03:16:37 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=+GGlSSbeC4Kbhr61r3dRU9qa1eVoeraY/lQ162mo0Jg=;
+        b=X2NCGtolgTUY/VmdvKakntD76kA2M5lXSNhJLONvWeVU87auqaYuYsZcYeKvMu8MyR
+         BcCNwTGs4El1Au8Ngyc6dxnnvAJnl6UPSF4Pq9G/jTxoyP7HXzkTy5wlyvl2f8Jc8pKl
+         IwdbEhRbyE8FozdEoTonJSeI8UBj6wlhWyAxr6jZ1uJh4GT9NUlt70p6scqGsWgY+aAL
+         dQ0ZNqfGcIFeG0qmNNwcNMZKVGaOamUOP0P3voWq+xAfh3CPlHZrHUkCeaoFUMBNt6qa
+         5VZTCLAH8Gz5XqbevB4Ks3hd/4jESlo95+3ZsclIQf7wDWlPXq8gxU7SewqYea9lxB+H
+         ZwLA==
+X-Gm-Message-State: APjAAAWR+N1cJthUuqbrw/8lGBY2J6r1VPJIicLVb/cORUUt+oEhrws/
+        TrN1DdPSiEGjpWu7bBUyFs9eNuxmsOxpWzaA4n6wwXkcxsj2oE8sfMIkwSbMoVQlPfcTxpes0Lh
+        ITBYe0ylBLkIs+gXu
+X-Received: by 2002:a37:68d5:: with SMTP id d204mr78760686qkc.171.1578222997286;
+        Sun, 05 Jan 2020 03:16:37 -0800 (PST)
+X-Google-Smtp-Source: APXvYqzPMMvBqmBN4Gem7zky32ejHiDxpzbcW8rhw1eSZVpEgSTWT6x4f+E8PIcPfp2MrIjZ3t+TIA==
+X-Received: by 2002:a37:68d5:: with SMTP id d204mr78760671qkc.171.1578222996963;
+        Sun, 05 Jan 2020 03:16:36 -0800 (PST)
+Received: from redhat.com (bzq-79-183-34-164.red.bezeqint.net. [79.183.34.164])
+        by smtp.gmail.com with ESMTPSA id t7sm19125131qkm.136.2020.01.05.03.16.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 05 Jan 2020 03:16:36 -0800 (PST)
+Date:   Sun, 5 Jan 2020 06:16:30 -0500
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     Alistair Delva <adelva@google.com>,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        LKML <linux-kernel@vger.kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
-        mareklindner@neomailbox.ch, sw@simonwunderlich.de, a@unstable.cc,
-        sven@narfation.org, Johan Hedberg <johan.hedberg@gmail.com>,
-        roopa@cumulusnetworks.com, nikolay@cumulusnetworks.com,
-        edumazet@google.com, kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
-        jon.maloy@ericsson.com, ying.xue@windriver.com, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
-        netdev <netdev@vger.kernel.org>,
-        BlueZ devel list <linux-bluetooth@vger.kernel.org>,
-        tipc-discussion@lists.sourceforge.net,
-        linux-hyperv@vger.kernel.org, bpf@vger.kernel.org
-Subject: Re: [PATCH 5/8] net: bluetooth: remove unneeded MODULE_VERSION()
- usage
-Message-ID: <20200105104216.GA1679409@kroah.com>
-References: <20200104195131.16577-1-info@metux.net>
- <20200104195131.16577-5-info@metux.net>
- <22BD3D36-DE54-4062-B3A1-15D9E0E256A8@holtmann.org>
+        virtualization@lists.linux-foundation.org,
+        Network Development <netdev@vger.kernel.org>
+Subject: Re: [PATCH net] virtio_net: CTRL_GUEST_OFFLOADS depends on CTRL_VQ
+Message-ID: <20200105061532-mutt-send-email-mst@kernel.org>
+References: <20191223140322.20013-1-mst@redhat.com>
+ <CANDihLHPk5khpv-f-M+qhkzgTkygAts38GGb-HChg-VL2bo+Uw@mail.gmail.com>
+ <CA+FuTSfq5v3-0VYmTG7YFFUqT8uG53eXXhqc8WvVvMbp3s0nvA@mail.gmail.com>
+ <CA+FuTScwwajN2ny2w8EBkBQd191Eb1ZsrRhbh3=5eQervArnEA@mail.gmail.com>
+ <CANDihLFv+DJYOD1m_Z3CKuxoXG-z4zPy_Tc2eoggq1KRo+GeWw@mail.gmail.com>
+ <ea5131fc-cda6-c773-73fc-c862be6ecb7b@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <22BD3D36-DE54-4062-B3A1-15D9E0E256A8@holtmann.org>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <ea5131fc-cda6-c773-73fc-c862be6ecb7b@redhat.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Jan 05, 2020 at 10:34:56AM +0100, Marcel Holtmann wrote:
-> Hi Enrico,
+On Tue, Dec 24, 2019 at 10:49:13AM +0800, Jason Wang wrote:
 > 
-> > Remove MODULE_VERSION(), as it isn't needed at all: the only version
-> > making sense is the kernel version.
+> On 2019/12/24 上午4:21, Alistair Delva wrote:
+> > On Mon, Dec 23, 2019 at 12:12 PM Willem de Bruijn
+> > <willemdebruijn.kernel@gmail.com> wrote:
+> > > On Mon, Dec 23, 2019 at 2:56 PM Willem de Bruijn
+> > > <willemdebruijn.kernel@gmail.com> wrote:
+> > > > 00fffe0ff0 DR7: 0000000000000400
+> > > > > > Call Trace:
+> > > > > >   ? preempt_count_add+0x58/0xb0
+> > > > > >   ? _raw_spin_lock_irqsave+0x36/0x70
+> > > > > >   ? _raw_spin_unlock_irqrestore+0x1a/0x40
+> > > > > >   ? __wake_up+0x70/0x190
+> > > > > >   virtnet_set_features+0x90/0xf0 [virtio_net]
+> > > > > >   __netdev_update_features+0x271/0x980
+> > > > > >   ? nlmsg_notify+0x5b/0xa0
+> > > > > >   dev_disable_lro+0x2b/0x190
+> > > > > >   ? inet_netconf_notify_devconf+0xe2/0x120
+> > > > > >   devinet_sysctl_forward+0x176/0x1e0
+> > > > > >   proc_sys_call_handler+0x1f0/0x250
+> > > > > >   proc_sys_write+0xf/0x20
+> > > > > >   __vfs_write+0x3e/0x190
+> > > > > >   ? __sb_start_write+0x6d/0xd0
+> > > > > >   vfs_write+0xd3/0x190
+> > > > > >   ksys_write+0x68/0xd0
+> > > > > >   __ia32_sys_write+0x14/0x20
+> > > > > >   do_fast_syscall_32+0x86/0xe0
+> > > > > >   entry_SYSENTER_compat+0x7c/0x8e
+> > > > > > 
+> > > > > > A similar crash will likely trigger when enabling XDP.
+> > > > > > 
+> > > > > > Reported-by: Alistair Delva <adelva@google.com>
+> > > > > > Reported-by: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+> > > > > > Fixes: 3f93522ffab2 ("virtio-net: switch off offloads on demand if possible on XDP set")
+> > > > > > Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+> > > > > > ---
+> > > > > > 
+> > > > > > Lightly tested.
+> > > > > > 
+> > > > > > Alistair, could you please test and confirm that this resolves the
+> > > > > > crash for you?
+> > > > > This patch doesn't work. The reason is that NETIF_F_LRO is also turned
+> > > > > on by TSO4/TSO6, which your patch didn't check for. So it ends up
+> > > > > going through the same path and crashing in the same way.
+> > > > > 
+> > > > >          if (virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_TSO4) ||
+> > > > >              virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_TSO6))
+> > > > >                  dev->features |= NETIF_F_LRO;
+> > > > > 
+> > > > > It sounds like this patch is fixing something slightly differently to
+> > > > > my patch fixed. virtnet_set_features() doesn't care about
+> > > > > GUEST_OFFLOADS, it only tests against NETIF_F_LRO. Even if "offloads"
+> > > > > is zero, it will call virtnet_set_guest_offloads(), which triggers the
+> > > > > crash.
+> > > > 
+> > > > Interesting. It's surprising that it is trying to configure a flag
+> > > > that is not configurable, i.e., absent from dev->hw_features
+> > > > after Michael's change.
+> > > > 
+> > > > > So either we need to ensure NETIF_F_LRO is never set, or
+> > > > LRO might be available, just not configurable. Indeed this was what I
+> > > > observed in the past.
+> > > dev_disable_lro expects that NETIF_F_LRO is always configurable. Which
+> > > I guess is a reasonable assumption, just not necessarily the case in
+> > > virtio_net.
+> > > 
+> > > So I think we need both patches. Correctly mark the feature as fixed
+> > > by removing from dev->hw_features and also ignore the request from
+> > > dev_disable_lro, which does not check for this.
+> > Something like this maybe:
+> > 
+> > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> > index 4d7d5434cc5d..0556f42b0fb5 100644
+> > --- a/drivers/net/virtio_net.c
+> > +++ b/drivers/net/virtio_net.c
+> > @@ -2560,6 +2560,9 @@ static int virtnet_set_features(struct net_device *dev,
+> >          u64 offloads;
+> >          int err;
+> > 
+> > +       if (!virtio_has_feature(vi->vdev, VIRTIO_NET_F_CTRL_GUEST_OFFLOADS))
+> > +               return 0;
+> > +
+> >          if ((dev->features ^ features) & NETIF_F_LRO) {
+> >                  if (vi->xdp_queue_pairs)
+> >                          return -EBUSY;
+> > @@ -2971,6 +2974,15 @@ static int virtnet_validate(struct virtio_device *vdev)
+> >          if (!virtnet_validate_features(vdev))
+> >                  return -EINVAL;
+> > 
+> > +       /* VIRTIO_NET_F_CTRL_GUEST_OFFLOADS does not work without
+> > +        * VIRTIO_NET_F_CTRL_VQ. However the virtio spec does not
+> > +        * specify that VIRTIO_NET_F_CTRL_GUEST_OFFLOADS depends
+> > +        * on VIRTIO_NET_F_CTRL_VQ so devices can set the later but
+> > +        * not the former.
+> > +        */
+> > +       if (!virtio_has_feature(vdev, VIRTIO_NET_F_CTRL_VQ))
+> > +               __virtio_clear_bit(vdev, VIRTIO_NET_F_CTRL_GUEST_OFFLOADS);
+> > +
+> >          if (virtio_has_feature(vdev, VIRTIO_NET_F_MTU)) {
+> >                  int mtu = virtio_cread16(vdev,
+> >                                           offsetof(struct virtio_net_config,
+> > 
 > 
-> I prefer to keep the MODULE_VERSION info since it provides this
-> information via modinfo.
+> We check feature dependency and fail the probe in
+> virtnet_validate_features().
+> 
+> Is it more straightforward to fail the probe there when CTRL_GUEST_OFFLOADS
+> was set but CTRL_VQ wasn't?
+> 
+> Thanks
 
-Sure, but it's really pointless :)
+Expanding on what the comment above says, we can't fail probe
+in this configuration without breaking the driver for
+spec compliant devices.
 
-> Unless there is a kernel wide consent to remove MODULE_VERSION
-> altogether, the Bluetooth subsystem is keeping it.
+-- 
+MST
 
-I've deleted them from lots of drivers/subsystems already as they do not
-make any sense when you think about vendor kernels, stable kernels, and
-upstream kernel versions.
-
-thanks,
-
-greg k-h
