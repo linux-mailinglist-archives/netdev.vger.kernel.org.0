@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2AFC21309FA
-	for <lists+netdev@lfdr.de>; Sun,  5 Jan 2020 22:17:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A4A911309FB
+	for <lists+netdev@lfdr.de>; Sun,  5 Jan 2020 22:17:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727035AbgAEVRF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 5 Jan 2020 16:17:05 -0500
-Received: from mx2.suse.de ([195.135.220.15]:50038 "EHLO mx2.suse.de"
+        id S1727132AbgAEVRK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 Jan 2020 16:17:10 -0500
+Received: from mx2.suse.de ([195.135.220.15]:50066 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726792AbgAEVRE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 5 Jan 2020 16:17:04 -0500
+        id S1726792AbgAEVRJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 5 Jan 2020 16:17:09 -0500
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id 448BAAEF8;
-        Sun,  5 Jan 2020 21:17:02 +0000 (UTC)
+        by mx2.suse.de (Postfix) with ESMTP id 4078AB15D;
+        Sun,  5 Jan 2020 21:17:07 +0000 (UTC)
 Received: by unicorn.suse.cz (Postfix, from userid 1000)
-        id E160FE048B; Sun,  5 Jan 2020 22:17:01 +0100 (CET)
-Message-Id: <b7d5e3d374f30b6452c2e92644e085d1ae7ff787.1578257976.git.mkubecek@suse.cz>
+        id E7E4CE048B; Sun,  5 Jan 2020 22:17:06 +0100 (CET)
+Message-Id: <f7f3ec1f5e97bd40f6427ce554c3e4d9e0adb63d.1578257976.git.mkubecek@suse.cz>
 In-Reply-To: <cover.1578257976.git.mkubecek@suse.cz>
 References: <cover.1578257976.git.mkubecek@suse.cz>
 From:   Michal Kubecek <mkubecek@suse.cz>
-Subject: [PATCH net-next 1/3] wil6210: get rid of begin() and complete()
- ethtool_ops
+Subject: [PATCH net-next 2/3] via-velocity: allow nesting of ethtool_ops
+ begin() and complete()
 To:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
 Cc:     Maya Erez <merez@codeaurora.org>,
         Kalle Valo <kvalo@codeaurora.org>,
@@ -30,133 +30,83 @@ Cc:     Maya Erez <merez@codeaurora.org>,
         Francois Romieu <romieu@fr.zoreil.com>,
         linux-kernel@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>
-Date:   Sun,  5 Jan 2020 22:17:01 +0100 (CET)
+Date:   Sun,  5 Jan 2020 22:17:06 +0100 (CET)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The wil6210 driver locks a mutex in begin() ethtool_ops callback and
-unlocks it in complete() so that all ethtool requests are serialized. This
-is not going to work correctly with netlink interface; e.g. when ioctl
-triggers a netlink notification, netlink code would call begin() again
-while the mutex taken by ioctl code is still held by the same task.
+Unlike most networking drivers using begin() and complete() ethtool_ops
+callbacks to resume a device which is down and suspend it again when done,
+via-velocity does not use standard refcounted infrastructure but sets
+device sleep state directly.
 
-Let's get rid of the begin() and complete() callbacks and move the mutex
-locking into the remaining ethtool_ops handlers except get_drvinfo which
-only copies strings that are not changing so that there is no need for
-serialization.
+With the introduction of netlink ethtool interface, we may have nested
+begin-complete blocks so that inner complete() would put the device back to
+sleep for the rest of the outer block.
+
+To avoid rewriting an old and not very actively developed driver, just add
+a nesting counter and only perform resume and suspend on the outermost
+level.
 
 Signed-off-by: Michal Kubecek <mkubecek@suse.cz>
 ---
- drivers/net/wireless/ath/wil6210/ethtool.c | 43 ++++++++--------------
- 1 file changed, 16 insertions(+), 27 deletions(-)
+ drivers/net/ethernet/via/via-velocity.c | 14 ++++++++++----
+ drivers/net/ethernet/via/via-velocity.h |  1 +
+ 2 files changed, 11 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/wil6210/ethtool.c b/drivers/net/wireless/ath/wil6210/ethtool.c
-index 912c4eaf017b..fef10886ca4a 100644
---- a/drivers/net/wireless/ath/wil6210/ethtool.c
-+++ b/drivers/net/wireless/ath/wil6210/ethtool.c
-@@ -11,26 +11,6 @@
- 
- #include "wil6210.h"
- 
--static int wil_ethtoolops_begin(struct net_device *ndev)
--{
--	struct wil6210_priv *wil = ndev_to_wil(ndev);
--
--	mutex_lock(&wil->mutex);
--
--	wil_dbg_misc(wil, "ethtoolops_begin\n");
--
--	return 0;
--}
--
--static void wil_ethtoolops_complete(struct net_device *ndev)
--{
--	struct wil6210_priv *wil = ndev_to_wil(ndev);
--
--	wil_dbg_misc(wil, "ethtoolops_complete\n");
--
--	mutex_unlock(&wil->mutex);
--}
--
- static int wil_ethtoolops_get_coalesce(struct net_device *ndev,
- 				       struct ethtool_coalesce *cp)
+diff --git a/drivers/net/ethernet/via/via-velocity.c b/drivers/net/ethernet/via/via-velocity.c
+index 346e44115c4e..4b556b74541a 100644
+--- a/drivers/net/ethernet/via/via-velocity.c
++++ b/drivers/net/ethernet/via/via-velocity.c
+@@ -3257,12 +3257,16 @@ static struct platform_driver velocity_platform_driver = {
+  *	@dev: network device
+  *
+  *	Called before an ethtool operation. We need to make sure the
+- *	chip is out of D3 state before we poke at it.
++ *	chip is out of D3 state before we poke at it. In case of ethtool
++ *	ops nesting, only wake the device up in the outermost block.
+  */
+ static int velocity_ethtool_up(struct net_device *dev)
  {
-@@ -39,11 +19,12 @@ static int wil_ethtoolops_get_coalesce(struct net_device *ndev,
- 	u32 rx_itr_en, rx_itr_val = 0;
- 	int ret;
- 
-+	mutex_lock(&wil->mutex);
- 	wil_dbg_misc(wil, "ethtoolops_get_coalesce\n");
- 
- 	ret = wil_pm_runtime_get(wil);
- 	if (ret < 0)
--		return ret;
-+		goto out;
- 
- 	tx_itr_en = wil_r(wil, RGF_DMA_ITR_TX_CNT_CTL);
- 	if (tx_itr_en & BIT_DMA_ITR_TX_CNT_CTL_EN)
-@@ -57,7 +38,11 @@ static int wil_ethtoolops_get_coalesce(struct net_device *ndev,
- 
- 	cp->tx_coalesce_usecs = tx_itr_val;
- 	cp->rx_coalesce_usecs = rx_itr_val;
--	return 0;
-+	ret = 0;
+ 	struct velocity_info *vptr = netdev_priv(dev);
+-	if (!netif_running(dev))
 +
-+out:
-+	mutex_unlock(&wil->mutex);
-+	return ret;
++	if (vptr->ethtool_ops_nesting == U32_MAX)
++		return -EBUSY;
++	if (!vptr->ethtool_ops_nesting++ && !netif_running(dev))
+ 		velocity_set_power_state(vptr, PCI_D0);
+ 	return 0;
+ }
+@@ -3272,12 +3276,14 @@ static int velocity_ethtool_up(struct net_device *dev)
+  *	@dev: network device
+  *
+  *	Called after an ethtool operation. Restore the chip back to D3
+- *	state if it isn't running.
++ *	state if it isn't running. In case of ethtool ops nesting, only
++ *	put the device to sleep in the outermost block.
+  */
+ static void velocity_ethtool_down(struct net_device *dev)
+ {
+ 	struct velocity_info *vptr = netdev_priv(dev);
+-	if (!netif_running(dev))
++
++	if (!--vptr->ethtool_ops_nesting && !netif_running(dev))
+ 		velocity_set_power_state(vptr, PCI_D3hot);
  }
  
- static int wil_ethtoolops_set_coalesce(struct net_device *ndev,
-@@ -67,12 +52,14 @@ static int wil_ethtoolops_set_coalesce(struct net_device *ndev,
- 	struct wireless_dev *wdev = ndev->ieee80211_ptr;
- 	int ret;
+diff --git a/drivers/net/ethernet/via/via-velocity.h b/drivers/net/ethernet/via/via-velocity.h
+index cdfe7809e3c1..f196e71d2c04 100644
+--- a/drivers/net/ethernet/via/via-velocity.h
++++ b/drivers/net/ethernet/via/via-velocity.h
+@@ -1483,6 +1483,7 @@ struct velocity_info {
+ 	struct velocity_context context;
  
-+	mutex_lock(&wil->mutex);
- 	wil_dbg_misc(wil, "ethtoolops_set_coalesce: rx %d usec, tx %d usec\n",
- 		     cp->rx_coalesce_usecs, cp->tx_coalesce_usecs);
+ 	u32 ticks;
++	u32 ethtool_ops_nesting;
  
- 	if (wdev->iftype == NL80211_IFTYPE_MONITOR) {
- 		wil_dbg_misc(wil, "No IRQ coalescing in monitor mode\n");
--		return -EINVAL;
-+		ret = -EINVAL;
-+		goto out;
- 	}
+ 	u8 rev_id;
  
- 	/* only @rx_coalesce_usecs and @tx_coalesce_usecs supported,
-@@ -88,24 +75,26 @@ static int wil_ethtoolops_set_coalesce(struct net_device *ndev,
- 
- 	ret = wil_pm_runtime_get(wil);
- 	if (ret < 0)
--		return ret;
-+		goto out;
- 
- 	wil->txrx_ops.configure_interrupt_moderation(wil);
- 
- 	wil_pm_runtime_put(wil);
-+	ret = 0;
- 
--	return 0;
-+out:
-+	mutex_unlock(&wil->mutex);
-+	return ret;
- 
- out_bad:
- 	wil_dbg_misc(wil, "Unsupported coalescing params. Raw command:\n");
- 	print_hex_dump_debug("DBG[MISC] coal ", DUMP_PREFIX_OFFSET, 16, 4,
- 			     cp, sizeof(*cp), false);
-+	mutex_unlock(&wil->mutex);
- 	return -EINVAL;
- }
- 
- static const struct ethtool_ops wil_ethtool_ops = {
--	.begin		= wil_ethtoolops_begin,
--	.complete	= wil_ethtoolops_complete,
- 	.get_drvinfo	= cfg80211_get_drvinfo,
- 	.get_coalesce	= wil_ethtoolops_get_coalesce,
- 	.set_coalesce	= wil_ethtoolops_set_coalesce,
 -- 
 2.24.1
 
