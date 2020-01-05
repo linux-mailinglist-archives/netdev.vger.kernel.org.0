@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 51E361305B1
-	for <lists+netdev@lfdr.de>; Sun,  5 Jan 2020 05:39:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CD72F1305B2
+	for <lists+netdev@lfdr.de>; Sun,  5 Jan 2020 05:40:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726293AbgAEEjS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 4 Jan 2020 23:39:18 -0500
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:43565 "EHLO
-        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726240AbgAEEjS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 4 Jan 2020 23:39:18 -0500
-Received: by mail-pg1-f195.google.com with SMTP id k197so25251156pga.10
-        for <netdev@vger.kernel.org>; Sat, 04 Jan 2020 20:39:17 -0800 (PST)
+        id S1726358AbgAEEkD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 4 Jan 2020 23:40:03 -0500
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:46713 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726240AbgAEEkC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 4 Jan 2020 23:40:02 -0500
+Received: by mail-pf1-f194.google.com with SMTP id n9so17485799pff.13
+        for <netdev@vger.kernel.org>; Sat, 04 Jan 2020 20:40:02 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=btNboQ5Spk/+AUDdJagF8ukvr5d84/WRoFmMpaxmyEM=;
-        b=QYlHJTVUN1lj4QJ9/B0BP9hKSkGLMHOteODXp4sFTi193cZHeUh0Oi5veQNdVoh07g
-         HwrcRHSXzfI2zP1X1b6lUuaEBGLfDN2wgZwJzw+pBRvoAIH3zwX0O6XKHmwDDL3jwWV8
-         xEGWIVfey8gDWOd8wDyRMuyzl53HG9YPLtrsTFqYjm1yOdpOOJrhaI68x2VoCMtThO+o
-         7HvAAi1UDe1wMbCc86v+DF42DZn84V5WLqHcrMkzCeUqdmOeUoRKWPYXC8dUdrRDPlFn
-         ddnfgB27zCjmVrnIkMYA5P43csmTLz1wrmTs32BsjM9ZwrRYUWYY223NDft6gig6tjBJ
-         VbtA==
+        bh=f4id91ddAot90NXa+69+IkdH2Z+W2AQIB9NVBNm4UH8=;
+        b=IpyCKzDkYUAUfujBBTqhpoTusStewthSihFNFSiiztrGCnzaR0avhNK8z4BePrMr/p
+         9f/H0yytyrP56N5zJBVrqL7EHgeCMCBqE59xyOM9gBcOHIXCm4RUCyDLD9autI7LGw/P
+         uCMQNnvDhISVkECzp3ewjTe+fUcYqktC6n14ebYMIfWYNYR07wlxNb32l8pjpzV4mE1X
+         0Yu2Y+kvjx7U/zlpItxU8xt2JJ1hLM+XHiNH0WW5u5rlFOgvmv/AhQb2XXCnVa/Pzv/3
+         Gfbc8orThC6eNxmTfgwFvAOToUv0bUAj3eisM43TVzEAuT594oPzJNV+2N3m8y/fPuVk
+         0hKA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=btNboQ5Spk/+AUDdJagF8ukvr5d84/WRoFmMpaxmyEM=;
-        b=AtpzAJOrC8vo1apNwtgpL/IDE+ChHQj0ulJ/Ir03yr+F9uhoT9avBu922T0bmFQDWR
-         S8IT6vePvQtt2ZYz2IAaDmZokRPFEk7QW5EQVVgaEuDYZzn8hXHN7Ww0y+Rf6b50tdSi
-         PhygrMmzskfU7QDshSSNgLBDa/iAtSgM4GB4/tBHIW08IH8ts6vdu1oe1SILFXVXmBxl
-         2x5vR+CnJvbFhWG0TqVey3PVxvviIFnIZhSY/nKrPYughmeu+dUycy1AEWSyrp1o49YD
-         RWQGCXD3r2ZtALopVlu8zBTJ4p3cQJZH7m0Uj/YSIanhQKEzHemr5wlRdwaFDeyy4CAI
-         baAw==
-X-Gm-Message-State: APjAAAX59rPZyaUdwIeu7rRaB0J6i7B124rk1fC2memMGhFcigexOrpu
-        F4dg0PqK9JF8IlJCDyI0db8hcTdm
-X-Google-Smtp-Source: APXvYqx6lD9bCyE50xAXT23T87MsKH9oZ87XeLRdGFohwu8Ta17Mdm4tFOvBGx0PBBKi7BxrOuH8PA==
-X-Received: by 2002:aa7:8e13:: with SMTP id c19mr68434179pfr.227.1578199156972;
-        Sat, 04 Jan 2020 20:39:16 -0800 (PST)
+        bh=f4id91ddAot90NXa+69+IkdH2Z+W2AQIB9NVBNm4UH8=;
+        b=sboym5Cs+SBg2AkTuXzNbJauxeRT7zsJhVlZuJmkwK4ChgEdC1Q3tzZQKxiV788RMP
+         jSlsjqh3EQYy6kL6QG6PRHL76gvrZ1MIMraGqtMkLANdcmrDxkzHIqOyo4ecjkRn/s+p
+         Txk1sYvFrM5jkQgj53XFtD4/W2D1FsP06VPTCkAsdQg0+4WktTJ0gd12ljl12uTq66UA
+         mE9yicUOvzFrdw51qcAOQLxpvgPIjofuWs+fpckgXsXZw0nEaOmYif1SSjB9oBCMUVQB
+         LvzL38OP072n8OFDtwzCiHZXcV5k6vtQlYA0EZywuGxvWjKvwf6AVvJrzglXWG6LDvcR
+         Vbaw==
+X-Gm-Message-State: APjAAAXTue9CPtD1YtNKu8MAmDl7OPTliXHEMgKyZRBplFKPsuEpMBwI
+        fmBRRahYWcUh1xn2CfvQp8rl+7vz
+X-Google-Smtp-Source: APXvYqwS26wF11797znSIEwbjWLqhUrVl+hY6VsgZcaX9kXp14V3xn4Sf1WVNu6HXiLxkJy6F7rEtw==
+X-Received: by 2002:a65:5a8f:: with SMTP id c15mr95823853pgt.259.1578199201309;
+        Sat, 04 Jan 2020 20:40:01 -0800 (PST)
 Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
-        by smtp.gmail.com with ESMTPSA id d4sm19498667pjz.12.2020.01.04.20.39.15
+        by smtp.gmail.com with ESMTPSA id d3sm31752295pfn.113.2020.01.04.20.40.00
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 04 Jan 2020 20:39:16 -0800 (PST)
-Subject: Re: [PATCH v2 net-next 2/3] net: dsa: Make deferred_xmit private to
- sja1105
+        Sat, 04 Jan 2020 20:40:00 -0800 (PST)
+Subject: Re: [PATCH v2 net-next 3/3] net: dsa: tag_sja1105: Slightly improve
+ the Xmas tree in sja1105_xmit
 To:     Vladimir Oltean <olteanv@gmail.com>, vivien.didelot@gmail.com,
         andrew@lunn.ch, davem@davemloft.net
 Cc:     netdev@vger.kernel.org
 References: <20200104003711.18366-1-olteanv@gmail.com>
- <20200104003711.18366-3-olteanv@gmail.com>
+ <20200104003711.18366-4-olteanv@gmail.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Autocrypt: addr=f.fainelli@gmail.com; keydata=
  mQGiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
@@ -107,12 +107,12 @@ Autocrypt: addr=f.fainelli@gmail.com; keydata=
  caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
  6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9qfUATKC9NgZjRvBztfqy4
  a9BQwACgnzGuH1BVeT2J0Ra+ZYgkx7DaPR0=
-Message-ID: <06cfe113-745c-5a67-1eae-b1305943f46f@gmail.com>
-Date:   Sat, 4 Jan 2020 20:39:16 -0800
+Message-ID: <f3a1e726-13a0-38dd-4d54-4ee70a283ce7@gmail.com>
+Date:   Sat, 4 Jan 2020 20:40:00 -0800
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
  Thunderbird/68.3.1
 MIME-Version: 1.0
-In-Reply-To: <20200104003711.18366-3-olteanv@gmail.com>
+In-Reply-To: <20200104003711.18366-4-olteanv@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -124,61 +124,14 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 On 1/3/2020 4:37 PM, Vladimir Oltean wrote:
-> There are 3 things that are wrong with the DSA deferred xmit mechanism:
+> This is a cosmetic patch that makes the dp, tx_vid, queue_mapping and
+> pcp local variable definitions a bit closer in length, so they don't
+> look like an eyesore as much.
 > 
-> 1. Its introduction has made the DSA hotpath ever so slightly more
->    inefficient for everybody, since DSA_SKB_CB(skb)->deferred_xmit needs
->    to be initialized to false for every transmitted frame, in order to
->    figure out whether the driver requested deferral or not (a very rare
->    occasion, rare even for the only driver that does use this mechanism:
->    sja1105). That was necessary to avoid kfree_skb from freeing the skb.
+> The 'ds' variable is not used otherwise, except for ds->dp.
 > 
-> 2. Because L2 PTP is a link-local protocol like STP, it requires
->    management routes and deferred xmit with this switch. But as opposed
->    to STP, the deferred work mechanism needs to schedule the packet
->    rather quickly for the TX timstamp to be collected in time and sent
->    to user space. But there is no provision for controlling the
->    scheduling priority of this deferred xmit workqueue. Too bad this is
->    a rather specific requirement for a feature that nobody else uses
->    (more below).
-> 
-> 3. Perhaps most importantly, it makes the DSA core adhere a bit too
->    much to the NXP company-wide policy "Innovate Where It Doesn't
->    Matter". The sja1105 is probably the only DSA switch that requires
->    some frames sent from the CPU to be routed to the slave port via an
->    out-of-band configuration (register write) rather than in-band (DSA
->    tag). And there are indeed very good reasons to not want to do that:
->    if that out-of-band register is at the other end of a slow bus such
->    as SPI, then you limit that Ethernet flow's throughput to effectively
->    the throughput of the SPI bus. So hardware vendors should definitely
->    not be encouraged to design this way. We do _not_ want more
->    widespread use of this mechanism.
-> 
-> Luckily we have a solution for each of the 3 issues:
-> 
-> For 1, we can just remove that variable in the skb->cb and counteract
-> the effect of kfree_skb with skb_get, much to the same effect. The
-> advantage, of course, being that anybody who doesn't use deferred xmit
-> doesn't need to do any extra operation in the hotpath.
-> 
-> For 2, we can create a kernel thread for each port's deferred xmit work.
-> If the user switch ports are named swp0, swp1, swp2, the kernel threads
-> will be named swp0_xmit, swp1_xmit, swp2_xmit (there appears to be a 15
-> character length limit on kernel thread names). With this, the user can
-> change the scheduling priority with chrt $(pidof swp2_xmit).
-> 
-> For 3, we can actually move the entire implementation to the sja1105
-> driver.
-> 
-> So this patch deletes the generic implementation from the DSA core and
-> adds a new one, more adequate to the requirements of PTP TX
-> timestamping, in sja1105_main.c.
-> 
-> Suggested-by: Florian Fainelli <f.fainelli@gmail.com>
 > Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
 
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-
-Thanks for addressing this so quickly.
 -- 
 Florian
