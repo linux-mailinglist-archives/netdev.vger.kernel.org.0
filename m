@@ -2,222 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B14A1307CB
-	for <lists+netdev@lfdr.de>; Sun,  5 Jan 2020 12:58:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8406E13082A
+	for <lists+netdev@lfdr.de>; Sun,  5 Jan 2020 14:11:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726092AbgAEL6C (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 5 Jan 2020 06:58:02 -0500
-Received: from mail.kernel.org ([198.145.29.99]:59126 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725897AbgAEL6C (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 5 Jan 2020 06:58:02 -0500
-Received: from new-host-5.station (net-2-42-61-77.cust.vodafonedsl.it [2.42.61.77])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 1B6DE20866;
-        Sun,  5 Jan 2020 11:57:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1578225480;
-        bh=auA62vwi4ZTisNq7zoJSsZyP2vvPWS9CZn3iP/TSowI=;
-        h=From:To:Cc:Subject:Date:From;
-        b=A22pJmFG/toJcU5aRKWOeN78wetVvwmrf30TTCtBB7Sz2mielMG8R9Wx0yPcfgu7j
-         k6zlv9JWwzgAcXR96rnVni+PWOzfxwvTOW4kRHCypr+nRD3O6VLjFokJpqZgrxoqkv
-         o8b3tWmFqVOnio5UQTLABx6fo8S9rnIBNvgztblg=
-From:   Lorenzo Bianconi <lorenzo@kernel.org>
-To:     ilias.apalodimas@linaro.org
-Cc:     netdev@vger.kernel.org, brouer@redhat.com, davem@davemloft.net,
-        lorenzo.bianconi@redhat.com
-Subject: [RFC/RFT net-next] net: socionext: get rid of huge dma sync in netsec_alloc_rx_data
-Date:   Sun,  5 Jan 2020 12:57:56 +0100
-Message-Id: <20094a678ea3d76fc1b8817ae0dd6d136cdc3860.1578225300.git.lorenzo@kernel.org>
-X-Mailer: git-send-email 2.21.1
+        id S1726368AbgAENLz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 Jan 2020 08:11:55 -0500
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:39031 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726260AbgAENLy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 5 Jan 2020 08:11:54 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1578229913;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=iyYUzIHEBzvMmT9xAB0gUkIWrPMEuu7IviISm1YnXRw=;
+        b=Jrg5AMR7AhXgI3YS4Ge3ezsBy1bf/uMcdRXaQ9U1K3A7FAR8edhaaFhdpVjMeZuyGqun/v
+        kth+s57WEujP3a54Bfu+n1/nN6ZBV8bfLDU5cIEYnEdQo7wDwqDvXDwdG69sZzmvaN5o1X
+        S+Poi2/eUTwcMftWPiroJ8C6rXBdxB4=
+Received: from mail-qt1-f198.google.com (mail-qt1-f198.google.com
+ [209.85.160.198]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-295-Ln-Pp-YVMkO9gO97-WRHjg-1; Sun, 05 Jan 2020 08:11:51 -0500
+X-MC-Unique: Ln-Pp-YVMkO9gO97-WRHjg-1
+Received: by mail-qt1-f198.google.com with SMTP id r9so8065927qtc.4
+        for <netdev@vger.kernel.org>; Sun, 05 Jan 2020 05:11:51 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=iyYUzIHEBzvMmT9xAB0gUkIWrPMEuu7IviISm1YnXRw=;
+        b=PuDqDJ6YybDrxfaVSnCXzmiOC/qbuOQH8xDRoWfp+Gqkzv7/BocvcoJmD1oGv+RBRZ
+         YTLrT272fEgvIE+M4+3JPWn78zzUpdyku16VLGDNoUmOYE5s5JDugxPsKFUmvw3Fnt90
+         GOnltPvA/P5DHLXGE/VSR2CjpNFCPzMIhuWMrJNjMtDiMgSZGOUQo8674h/IWQENxZPz
+         PRLMG841OBr/k0NoIodaHZAnTbaonL/3os/dktLJmyso6V02ebDwQ2feHddlYoIBSoCd
+         MDUWNnWqyJ7/YMRkIhQUYHRJ0lAe/06D/096FypuNUTuaAD0tfpuf/M361Y8a85D89t+
+         wc7g==
+X-Gm-Message-State: APjAAAWgq0PxsZNBYoNBnXgsyXuLGV5fyy4UKTYJsozC4WY6MIeJnz2H
+        W2N6QQ7XDQFrmgeJ6C2aDgVp5Bh1GlrJwTup2e78e8oUPFmHy/+tTgcBVqTuIEqZ/SMLhxLh9q8
+        a3nqxGXQC6VgJn4AI
+X-Received: by 2002:a37:4b8b:: with SMTP id y133mr78104278qka.210.1578229909728;
+        Sun, 05 Jan 2020 05:11:49 -0800 (PST)
+X-Google-Smtp-Source: APXvYqwrCL6RBFjmX9xJsJ45MZDzlT2zeFXkFnFsnHGjIbM3E+IYUvdGdsKolBDECkX6lm0VqOHfQQ==
+X-Received: by 2002:a37:4b8b:: with SMTP id y133mr78104255qka.210.1578229909431;
+        Sun, 05 Jan 2020 05:11:49 -0800 (PST)
+Received: from redhat.com (bzq-79-183-34-164.red.bezeqint.net. [79.183.34.164])
+        by smtp.gmail.com with ESMTPSA id v4sm21599657qtd.24.2020.01.05.05.11.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 05 Jan 2020 05:11:48 -0800 (PST)
+Date:   Sun, 5 Jan 2020 08:11:43 -0500
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Alistair Delva <adelva@google.com>
+Cc:     netdev@vger.kernel.org, stable@vger.kernel.org,
+        Jason Wang <jasowang@redhat.com>,
+        "David S . Miller" <davem@davemloft.net>, kernel-team@android.com,
+        virtualization@lists.linux-foundation.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net] virtio-net: Skip set_features on non-cvq devices
+Message-ID: <20200105081111-mutt-send-email-mst@kernel.org>
+References: <20191220212207.76726-1-adelva@google.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191220212207.76726-1-adelva@google.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Socionext driver can run on dma coherent and non-coherent devices.
-Get rid of huge dma_sync_single_for_device in netsec_alloc_rx_data since
-now the driver can let page_pool API to managed needed DMA sync
+On Fri, Dec 20, 2019 at 01:22:07PM -0800, Alistair Delva wrote:
+> On devices without control virtqueue support, such as the virtio_net
+> implementation in crosvm[1], attempting to configure LRO will panic the
+> kernel:
+> 
+> kernel BUG at drivers/net/virtio_net.c:1591!
+> invalid opcode: 0000 [#1] PREEMPT SMP PTI
+> CPU: 1 PID: 483 Comm: Binder:330_1 Not tainted 5.4.5-01326-g19463e9acaac #1
+> Hardware name: ChromiumOS crosvm, BIOS 0
+> RIP: 0010:virtnet_send_command+0x15d/0x170 [virtio_net]
+> Code: d8 00 00 00 80 78 02 00 0f 94 c0 65 48 8b 0c 25 28 00 00 00 48 3b 4c 24 70 75 11 48 8d 65 d8 5b 41 5c 41 5d 41 5e 41 5f 5d c3 <0f> 0b e8 ec a4 12 c8 66 90 66 2e 0f 1f 84 00 00 00 00 00 55 48 89
+> RSP: 0018:ffffb97940e7bb50 EFLAGS: 00010246
+> RAX: ffffffffc0596020 RBX: ffffa0e1fc8ea840 RCX: 0000000000000017
+> RDX: ffffffffc0596110 RSI: 0000000000000011 RDI: 000000000000000d
+> RBP: ffffb97940e7bbf8 R08: ffffa0e1fc8ea0b0 R09: ffffa0e1fc8ea0b0
+> R10: ffffffffffffffff R11: ffffffffc0590940 R12: 0000000000000005
+> R13: ffffa0e1ffad2c00 R14: ffffb97940e7bc08 R15: 0000000000000000
+> FS:  0000000000000000(0000) GS:ffffa0e1fd100000(006b) knlGS:00000000e5ef7494
+> CS:  0010 DS: 002b ES: 002b CR0: 0000000080050033
+> CR2: 00000000e5eeb82c CR3: 0000000079b06001 CR4: 0000000000360ee0
+> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> Call Trace:
+>  ? preempt_count_add+0x58/0xb0
+>  ? _raw_spin_lock_irqsave+0x36/0x70
+>  ? _raw_spin_unlock_irqrestore+0x1a/0x40
+>  ? __wake_up+0x70/0x190
+>  virtnet_set_features+0x90/0xf0 [virtio_net]
+>  __netdev_update_features+0x271/0x980
+>  ? nlmsg_notify+0x5b/0xa0
+>  dev_disable_lro+0x2b/0x190
+>  ? inet_netconf_notify_devconf+0xe2/0x120
+>  devinet_sysctl_forward+0x176/0x1e0
+>  proc_sys_call_handler+0x1f0/0x250
+>  proc_sys_write+0xf/0x20
+>  __vfs_write+0x3e/0x190
+>  ? __sb_start_write+0x6d/0xd0
+>  vfs_write+0xd3/0x190
+>  ksys_write+0x68/0xd0
+>  __ia32_sys_write+0x14/0x20
+>  do_fast_syscall_32+0x86/0xe0
+>  entry_SYSENTER_compat+0x7c/0x8e
+> 
+> This happens because virtio_set_features() does not check the presence
+> of the control virtqueue feature, which is sanity checked by a BUG_ON
+> in virtnet_send_command().
+> 
+> Fix this by skipping any feature processing if the control virtqueue is
+> missing. This should be OK for any future feature that is added, as
+> presumably all of them would require control virtqueue support to notify
+> the endpoint that offload etc. should begin.
+> 
+> [1] https://chromium.googlesource.com/chromiumos/platform/crosvm/
+> 
+> Fixes: a02e8964eaf9 ("virtio-net: ethtool configurable LRO")
+> Cc: stable@vger.kernel.org [4.20+]
+> Cc: Michael S. Tsirkin <mst@redhat.com>
+> Cc: Jason Wang <jasowang@redhat.com>
+> Cc: David S. Miller <davem@davemloft.net>
+> Cc: kernel-team@android.com
+> Cc: virtualization@lists.linux-foundation.org
+> Cc: linux-kernel@vger.kernel.org
+> Signed-off-by: Alistair Delva <adelva@google.com>
+> ---
+>  drivers/net/virtio_net.c | 3 +++
+>  1 file changed, 3 insertions(+)
+> 
+> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> index 4d7d5434cc5d..709bcd34e485 100644
+> --- a/drivers/net/virtio_net.c
+> +++ b/drivers/net/virtio_net.c
+> @@ -2560,6 +2560,9 @@ static int virtnet_set_features(struct net_device *dev,
+>  	u64 offloads;
+>  	int err;
+>  
+> +	if (!vi->has_cvq)
+> +		return 0;
+> +
 
-Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
----
- drivers/net/ethernet/socionext/netsec.c | 60 ++++++++++++++-----------
- 1 file changed, 33 insertions(+), 27 deletions(-)
+So should this return an error then?
 
-diff --git a/drivers/net/ethernet/socionext/netsec.c b/drivers/net/ethernet/socionext/netsec.c
-index b5a9e947a4a8..7a2eb0e71d2a 100644
---- a/drivers/net/ethernet/socionext/netsec.c
-+++ b/drivers/net/ethernet/socionext/netsec.c
-@@ -243,6 +243,7 @@
- 			       NET_IP_ALIGN)
- #define NETSEC_RX_BUF_NON_DATA (NETSEC_RXBUF_HEADROOM + \
- 				SKB_DATA_ALIGN(sizeof(struct skb_shared_info)))
-+#define NETSEC_RX_BUF_SIZE	(PAGE_SIZE - NETSEC_RX_BUF_NON_DATA)
- 
- #define DESC_SZ	sizeof(struct netsec_de)
- 
-@@ -714,12 +715,11 @@ static void netsec_process_tx(struct netsec_priv *priv)
- }
- 
- static void *netsec_alloc_rx_data(struct netsec_priv *priv,
--				  dma_addr_t *dma_handle, u16 *desc_len)
-+				  dma_addr_t *dma_handle)
- 
- {
- 
- 	struct netsec_desc_ring *dring = &priv->desc_ring[NETSEC_RING_RX];
--	enum dma_data_direction dma_dir;
- 	struct page *page;
- 
- 	page = page_pool_dev_alloc_pages(dring->page_pool);
-@@ -734,10 +734,6 @@ static void *netsec_alloc_rx_data(struct netsec_priv *priv,
- 	/* Make sure the incoming payload fits in the page for XDP and non-XDP
- 	 * cases and reserve enough space for headroom + skb_shared_info
- 	 */
--	*desc_len = PAGE_SIZE - NETSEC_RX_BUF_NON_DATA;
--	dma_dir = page_pool_get_dma_dir(dring->page_pool);
--	dma_sync_single_for_device(priv->dev, *dma_handle, *desc_len, dma_dir);
--
- 	return page_address(page);
- }
- 
-@@ -883,6 +879,7 @@ static u32 netsec_xdp_xmit_back(struct netsec_priv *priv, struct xdp_buff *xdp)
- static u32 netsec_run_xdp(struct netsec_priv *priv, struct bpf_prog *prog,
- 			  struct xdp_buff *xdp)
- {
-+	struct netsec_desc_ring *dring = &priv->desc_ring[NETSEC_RING_RX];
- 	u32 ret = NETSEC_XDP_PASS;
- 	int err;
- 	u32 act;
-@@ -896,7 +893,10 @@ static u32 netsec_run_xdp(struct netsec_priv *priv, struct bpf_prog *prog,
- 	case XDP_TX:
- 		ret = netsec_xdp_xmit_back(priv, xdp);
- 		if (ret != NETSEC_XDP_TX)
--			xdp_return_buff(xdp);
-+			__page_pool_put_page(dring->page_pool,
-+				     virt_to_head_page(xdp->data),
-+				     xdp->data_end - xdp->data_hard_start,
-+				     true);
- 		break;
- 	case XDP_REDIRECT:
- 		err = xdp_do_redirect(priv->ndev, xdp, prog);
-@@ -904,7 +904,10 @@ static u32 netsec_run_xdp(struct netsec_priv *priv, struct bpf_prog *prog,
- 			ret = NETSEC_XDP_REDIR;
- 		} else {
- 			ret = NETSEC_XDP_CONSUMED;
--			xdp_return_buff(xdp);
-+			__page_pool_put_page(dring->page_pool,
-+				     virt_to_head_page(xdp->data),
-+				     xdp->data_end - xdp->data_hard_start,
-+				     true);
- 		}
- 		break;
- 	default:
-@@ -915,7 +918,10 @@ static u32 netsec_run_xdp(struct netsec_priv *priv, struct bpf_prog *prog,
- 		/* fall through -- handle aborts by dropping packet */
- 	case XDP_DROP:
- 		ret = NETSEC_XDP_CONSUMED;
--		xdp_return_buff(xdp);
-+		__page_pool_put_page(dring->page_pool,
-+				     virt_to_head_page(xdp->data),
-+				     xdp->data_end - xdp->data_hard_start,
-+				     true);
- 		break;
- 	}
- 
-@@ -944,10 +950,10 @@ static int netsec_process_rx(struct netsec_priv *priv, int budget)
- 		struct netsec_desc *desc = &dring->desc[idx];
- 		struct page *page = virt_to_page(desc->addr);
- 		u32 xdp_result = XDP_PASS;
--		u16 pkt_len, desc_len;
- 		dma_addr_t dma_handle;
- 		struct xdp_buff xdp;
- 		void *buf_addr;
-+		u16 pkt_len;
- 
- 		if (de->attr & (1U << NETSEC_RX_PKT_OWN_FIELD)) {
- 			/* reading the register clears the irq */
-@@ -982,8 +988,7 @@ static int netsec_process_rx(struct netsec_priv *priv, int budget)
- 		/* allocate a fresh buffer and map it to the hardware.
- 		 * This will eventually replace the old buffer in the hardware
- 		 */
--		buf_addr = netsec_alloc_rx_data(priv, &dma_handle, &desc_len);
--
-+		buf_addr = netsec_alloc_rx_data(priv, &dma_handle);
- 		if (unlikely(!buf_addr))
- 			break;
- 
-@@ -1014,7 +1019,8 @@ static int netsec_process_rx(struct netsec_priv *priv, int budget)
- 			 * cache state. Since we paid the allocation cost if
- 			 * building an skb fails try to put the page into cache
- 			 */
--			page_pool_recycle_direct(dring->page_pool, page);
-+			__page_pool_put_page(dring->page_pool, page,
-+					     desc->len, true);
- 			netif_err(priv, drv, priv->ndev,
- 				  "rx failed to build skb\n");
- 			break;
-@@ -1037,7 +1043,7 @@ static int netsec_process_rx(struct netsec_priv *priv, int budget)
- 		}
- 
- 		/* Update the descriptor with fresh buffers */
--		desc->len = desc_len;
-+		desc->len = NETSEC_RX_BUF_SIZE;
- 		desc->dma_addr = dma_handle;
- 		desc->addr = buf_addr;
- 
-@@ -1272,17 +1278,19 @@ static int netsec_setup_rx_dring(struct netsec_priv *priv)
- {
- 	struct netsec_desc_ring *dring = &priv->desc_ring[NETSEC_RING_RX];
- 	struct bpf_prog *xdp_prog = READ_ONCE(priv->xdp_prog);
--	struct page_pool_params pp_params = { 0 };
-+	struct page_pool_params pp_params = {
-+		.order = 0,
-+		/* internal DMA mapping in page_pool */
-+		.flags = PP_FLAG_DMA_MAP | PP_FLAG_DMA_SYNC_DEV,
-+		.pool_size = DESC_NUM,
-+		.nid = NUMA_NO_NODE,
-+		.dev = priv->dev,
-+		.dma_dir = xdp_prog ? DMA_BIDIRECTIONAL : DMA_FROM_DEVICE,
-+		.offset = NETSEC_RXBUF_HEADROOM,
-+		.max_len = NETSEC_RX_BUF_SIZE,
-+	};
- 	int i, err;
- 
--	pp_params.order = 0;
--	/* internal DMA mapping in page_pool */
--	pp_params.flags = PP_FLAG_DMA_MAP;
--	pp_params.pool_size = DESC_NUM;
--	pp_params.nid = NUMA_NO_NODE;
--	pp_params.dev = priv->dev;
--	pp_params.dma_dir = xdp_prog ? DMA_BIDIRECTIONAL : DMA_FROM_DEVICE;
--
- 	dring->page_pool = page_pool_create(&pp_params);
- 	if (IS_ERR(dring->page_pool)) {
- 		err = PTR_ERR(dring->page_pool);
-@@ -1303,17 +1311,15 @@ static int netsec_setup_rx_dring(struct netsec_priv *priv)
- 		struct netsec_desc *desc = &dring->desc[i];
- 		dma_addr_t dma_handle;
- 		void *buf;
--		u16 len;
--
--		buf = netsec_alloc_rx_data(priv, &dma_handle, &len);
- 
-+		buf = netsec_alloc_rx_data(priv, &dma_handle);
- 		if (!buf) {
- 			err = -ENOMEM;
- 			goto err_out;
- 		}
-+		desc->len = NETSEC_RX_BUF_SIZE;
- 		desc->dma_addr = dma_handle;
- 		desc->addr = buf;
--		desc->len = len;
- 	}
- 
- 	netsec_rx_fill(priv, 0, DESC_NUM);
--- 
-2.21.1
+>  	if ((dev->features ^ features) & NETIF_F_LRO) {
+>  		if (vi->xdp_queue_pairs)
+>  			return -EBUSY;
+> -- 
+> 2.24.1.735.g03f4e72817-goog
 
