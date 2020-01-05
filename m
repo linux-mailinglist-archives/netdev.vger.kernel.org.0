@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3FF48130906
-	for <lists+netdev@lfdr.de>; Sun,  5 Jan 2020 17:22:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C3B91130902
+	for <lists+netdev@lfdr.de>; Sun,  5 Jan 2020 17:22:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726772AbgAEQWN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 5 Jan 2020 11:22:13 -0500
-Received: from out5-smtp.messagingengine.com ([66.111.4.29]:58223 "EHLO
+        id S1726739AbgAEQWK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 Jan 2020 11:22:10 -0500
+Received: from out5-smtp.messagingengine.com ([66.111.4.29]:52975 "EHLO
         out5-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726504AbgAEQWF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 5 Jan 2020 11:22:05 -0500
+        by vger.kernel.org with ESMTP id S1726646AbgAEQWG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 5 Jan 2020 11:22:06 -0500
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 1294421111;
-        Sun,  5 Jan 2020 11:22:05 -0500 (EST)
+        by mailout.nyi.internal (Postfix) with ESMTP id 4EEC22106A;
+        Sun,  5 Jan 2020 11:22:06 -0500 (EST)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Sun, 05 Jan 2020 11:22:05 -0500
+  by compute3.internal (MEProxy); Sun, 05 Jan 2020 11:22:06 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; bh=1Ige5fePV/tEBlSktpmmzjOwOjHAmUmNdaMcvJVMGL8=; b=Ol7cwUdk
-        boV5dssVe2vH4bXtsQamIVklcjnUgB0arfn5ytDbz4l4FQKKWK32OQXjOS1mUJJF
-        /3vMGge82h/fvMB7Kh0mM9Oy+q8UVCbdRLpqP8C5qq+LZ6/e8N+cKR/LRfAKILIe
-        G8gW55fULKeoq8FtkQEnB2Z/BfLlcd3Y8UoWcOwa0omf7zDzHIlwI1zxFS3u06mF
-        Oxn6AASIbsxwJrqYK7i8raBUBBMa0ZTBKLJpDkNvlSDiy/oK0kDfd6ni3jQJZuTJ
-        9RUeoqV3iAWm69d5f0ZFzcVxqS+5dQRxppmRJ+TdV/dkK3NS2K8oul9PNuGntjiB
-        6CiX9qDjN33IHw==
-X-ME-Sender: <xms:LA0SXtCLpPxfKgputxsXBkCaRv00VnhPlpIyPA-2Bwb5GxeX_E67yg>
+        fm1; bh=H78F2VKOEvkdOv0b4/zgbOt0bpuOKiMbyNCs0AY5zK4=; b=qVOciTJO
+        SuR3bseAeLJtMrzEMVDLW4n+96jsBdZiGvQSABekID2yS/Hn781kBNNj0nWIfzxk
+        kwAFFrdURtpe9LGwsAL1BD4RzpOR4N9WJdqzqQnpsH4pAPwj3qu1HeBfY3PV3335
+        7ahnh9oFGLHMuISzK9XVESRALiKvz9x8D9kccvzaK8+Uf8lof9RtyACMSVk4WY6f
+        66I1xGaOk4PM1X1yDDFe3iUjrQIY+L/pcK15wsdKwIwyVSwafyyLzpcWjks8SAQv
+        sUbaKSbZtNCse/5okRQJczj9g6izPF+IrLsvrVIyseXbbOT7HNBmKHOAUA2H6US8
+        /SXKMHSxZm28cg==
+X-ME-Sender: <xms:Lg0SXvencSzVDHaEk8JZRf-yTJqBBdDDRxQkKPjMD_jsLBjRxNoYDw>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedufedrvdegkedgkeeiucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
@@ -35,20 +35,20 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedufedrvdegkedgkeeiucetufdoteggod
     shgthhdrohhrgheqnecukfhppeduleefrdegjedrudeihedrvdehudenucfrrghrrghmpe
     hmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrghenucevlhhushhtvghr
     ufhiiigvpeef
-X-ME-Proxy: <xmx:LA0SXnCxO-ArU7dlJ0vDi0kMfprtIDWQRZQOwxywfJrUhMwZ_zkcEw>
-    <xmx:LA0SXvlv6R1_y_VydD-UGR78SQQhOmsdLJBUj5sZ0TbEHmiyRJcjoQ>
-    <xmx:LA0SXgtpXxerUjcS8NUs-ClpCkUXbQG6mPrla2nO17CdzRxfZJfVfQ>
-    <xmx:LQ0SXjQn3QdTzFOT7FQkxD4qFZnH4BXnO25GoDB6BtS1qoDXOHwGOg>
+X-ME-Proxy: <xmx:Lg0SXoVwJOanYD4drOaCE1cQjuP9jq39yU4v4WbU02Ak-veSpD-eKA>
+    <xmx:Lg0SXl_4d-961D8LN1yimesRxEJwmSd3dPrs-8QyMB2ClKP8VsOQyA>
+    <xmx:Lg0SXliZ8Cfg3hJCdjDgBZXsfQ46VpPaMnJLGF3eSqHbNZ06NJ4XSA>
+    <xmx:Lg0SXrrmafsid8pTitkD0Ll7ju1nRVCnUDihbkZVeCaOCR6KEeqZjw>
 Received: from splinter.mtl.com (unknown [193.47.165.251])
-        by mail.messagingengine.com (Postfix) with ESMTPA id B947F8005C;
-        Sun,  5 Jan 2020 11:22:03 -0500 (EST)
+        by mail.messagingengine.com (Postfix) with ESMTPA id 174418005A;
+        Sun,  5 Jan 2020 11:22:04 -0500 (EST)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, jiri@mellanox.com, amitc@mellanox.com,
         mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net-next 6/8] selftests: forwarding: router: Add test case for source IP equals destination IP
-Date:   Sun,  5 Jan 2020 18:20:55 +0200
-Message-Id: <20200105162057.182547-7-idosch@idosch.org>
+Subject: [PATCH net-next 7/8] mlxsw: spectrum: Disable DIP_LINK_LOCAL check in hardware pipeline
+Date:   Sun,  5 Jan 2020 18:20:56 +0200
+Message-Id: <20200105162057.182547-8-idosch@idosch.org>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20200105162057.182547-1-idosch@idosch.org>
 References: <20200105162057.182547-1-idosch@idosch.org>
@@ -61,78 +61,45 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Amit Cohen <amitc@mellanox.com>
 
-Add test case to check that packets are not dropped when they need to be
-routed and their source IP equals to their destination IP.
+The check drops packets if they need to be routed and their destination
+IP is link-local, i.e., belongs to 169.254.0.0/16 address range.
+
+Disable the check since the kernel forwards such packets and does not
+drop them.
 
 Signed-off-by: Amit Cohen <amitc@mellanox.com>
 Acked-by: Jiri Pirko <jiri@mellanox.com>
 Signed-off-by: Ido Schimmel <idosch@mellanox.com>
 ---
- .../selftests/net/forwarding/router.sh        | 44 +++++++++++++++++++
- 1 file changed, 44 insertions(+)
+ drivers/net/ethernet/mellanox/mlxsw/spectrum.c | 2 ++
+ drivers/net/ethernet/mellanox/mlxsw/trap.h     | 1 +
+ 2 files changed, 3 insertions(+)
 
-diff --git a/tools/testing/selftests/net/forwarding/router.sh b/tools/testing/selftests/net/forwarding/router.sh
-index e1f4d6145326..c894f7240417 100755
---- a/tools/testing/selftests/net/forwarding/router.sh
-+++ b/tools/testing/selftests/net/forwarding/router.sh
-@@ -6,6 +6,8 @@ ALL_TESTS="
- 	ping_ipv6
- 	sip_in_class_e
- 	mc_mac_mismatch
-+	ipv4_sip_equal_dip
-+	ipv6_sip_equal_dip
- "
- 
- NUM_NETIFS=4
-@@ -243,6 +245,48 @@ mc_mac_mismatch()
- 	__mc_mac_mismatch "IPv6" "ipv6" 2001:db8:1::2 ff0e::3 "-6"
- }
- 
-+ipv4_sip_equal_dip()
-+{
-+	RET=0
-+
-+	# Disable rpfilter to prevent packets to be dropped because of it.
-+	sysctl_set net.ipv4.conf.all.rp_filter 0
-+	sysctl_set net.ipv4.conf.$rp1.rp_filter 0
-+
-+	tc filter add dev $rp2 egress protocol ip pref 1 handle 101 \
-+		flower src_ip 198.51.100.2  action pass
-+
-+	$MZ $h1 -t udp "sp=54321,dp=12345" -c 5 -d 1msec \
-+		-A 198.51.100.2 -b $rp1mac -B 198.51.100.2 -q
-+
-+	tc_check_packets "dev $rp2 egress" 101 5
-+	check_err $? "Packets were dropped"
-+
-+	log_test "Source IP is equal to destination IP: IPv4"
-+
-+	tc filter del dev $rp2 egress protocol ip pref 1 handle 101 flower
-+	sysctl_restore net.ipv4.conf.$rp1.rp_filter
-+	sysctl_restore net.ipv4.conf.all.rp_filter
-+}
-+
-+ipv6_sip_equal_dip()
-+{
-+	RET=0
-+
-+	tc filter add dev $rp2 egress protocol ipv6 pref 1 handle 101 \
-+		flower src_ip 2001:db8:2::2 action pass
-+
-+	$MZ -6 $h1 -t udp "sp=54321,dp=12345" -c 5 -d 1msec \
-+		-A 2001:db8:2::2 -b $rp1mac -B 2001:db8:2::2 -q
-+
-+	tc_check_packets "dev $rp2 egress" 101 5
-+	check_err $? "Packets were dropped"
-+
-+	log_test "Source IP is equal to destination IP: IPv6"
-+
-+	tc filter del dev $rp2 egress protocol ipv6 pref 1 handle 101 flower
-+}
-+
- trap cleanup EXIT
- 
- setup_prepare
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
+index 74a08eb45ec8..845201c344ed 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
+@@ -4551,6 +4551,8 @@ static const struct mlxsw_listener mlxsw_sp_listener[] = {
+ 			     ROUTER_EXP, false),
+ 	MLXSW_SP_RXL_NO_MARK(DISCARD_ING_ROUTER_SIP_DIP, FORWARD,
+ 			     ROUTER_EXP, false),
++	MLXSW_SP_RXL_NO_MARK(DISCARD_ING_ROUTER_DIP_LINK_LOCAL, FORWARD,
++			     ROUTER_EXP, false),
+ 	/* PKT Sample trap */
+ 	MLXSW_RXL(mlxsw_sp_rx_listener_sample_func, PKT_SAMPLE, MIRROR_TO_CPU,
+ 		  false, SP_IP2ME, DISCARD),
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/trap.h b/drivers/net/ethernet/mellanox/mlxsw/trap.h
+index 02c68820eae5..3d2331be05d8 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/trap.h
++++ b/drivers/net/ethernet/mellanox/mlxsw/trap.h
+@@ -87,6 +87,7 @@ enum {
+ 	MLXSW_TRAP_ID_DISCARD_ING_ROUTER_SIP_DIP = 0x169,
+ 	MLXSW_TRAP_ID_DISCARD_ING_ROUTER_IPV4_SIP_BC = 0x16A,
+ 	MLXSW_TRAP_ID_DISCARD_ING_ROUTER_IPV4_DIP_LOCAL_NET = 0x16B,
++	MLXSW_TRAP_ID_DISCARD_ING_ROUTER_DIP_LINK_LOCAL = 0x16C,
+ 	MLXSW_TRAP_ID_DISCARD_ROUTER_LPM4 = 0x17B,
+ 	MLXSW_TRAP_ID_DISCARD_ROUTER_LPM6 = 0x17C,
+ 	MLXSW_TRAP_ID_DISCARD_IPV6_MC_DIP_RESERVED_SCOPE = 0x1B0,
 -- 
 2.24.1
 
