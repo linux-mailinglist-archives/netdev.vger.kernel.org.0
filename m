@@ -2,54 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BF02B130A53
-	for <lists+netdev@lfdr.de>; Sun,  5 Jan 2020 23:49:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DCBBA130A6E
+	for <lists+netdev@lfdr.de>; Sun,  5 Jan 2020 23:52:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727232AbgAEWtq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 5 Jan 2020 17:49:46 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:41698 "EHLO
+        id S1727370AbgAEWvS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 Jan 2020 17:51:18 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:41786 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726851AbgAEWtq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 5 Jan 2020 17:49:46 -0500
+        with ESMTP id S1727210AbgAEWvR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 5 Jan 2020 17:51:17 -0500
 Received: from localhost (unknown [IPv6:2601:601:9f00:1c3::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id BFDB015572976;
-        Sun,  5 Jan 2020 14:49:45 -0800 (PST)
-Date:   Sun, 05 Jan 2020 14:49:45 -0800 (PST)
-Message-Id: <20200105.144945.1887147568639526288.davem@davemloft.net>
-To:     krzk@kernel.org
-Cc:     bh74.an@samsung.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] MAINTAINERS: Drop obsolete entries from Samsung sxgbe
- ethernet driver
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 4DEA21557B503;
+        Sun,  5 Jan 2020 14:51:17 -0800 (PST)
+Date:   Sun, 05 Jan 2020 14:51:16 -0800 (PST)
+Message-Id: <20200105.145116.517086738576726939.davem@davemloft.net>
+To:     snelson@pensando.io
+Cc:     netdev@vger.kernel.org, parav@mellanox.com
+Subject: Re: [PATCH v4 net-next 0/2] ionic: add sriov support
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200103172549.11048-1-krzk@kernel.org>
-References: <20200103172549.11048-1-krzk@kernel.org>
+In-Reply-To: <20200103175508.32176-1-snelson@pensando.io>
+References: <20200103175508.32176-1-snelson@pensando.io>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sun, 05 Jan 2020 14:49:45 -0800 (PST)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sun, 05 Jan 2020 14:51:17 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Krzysztof Kozlowski <krzk@kernel.org>
-Date: Fri,  3 Jan 2020 18:25:49 +0100
+From: Shannon Nelson <snelson@pensando.io>
+Date: Fri,  3 Jan 2020 09:55:06 -0800
 
-> The emails to ks.giri@samsung.com and vipul.pandya@samsung.com bounce
-> with 550 error code:
+> Set up the basic support for enabling SR-IOV devices in the
+> ionic driver.  Since most of the management work happens in
+> the NIC firmware, the driver becomes mostly a pass-through
+> for the network stack commands that want to control and
+> configure the VFs.
 > 
->     host mailin.samsung.com[203.254.224.12] said: 550
->     5.1.1 Recipient address rejected: User unknown (in reply to RCPT TO
->     command)"
+> v4:	changed "vf too big" checks to use pci_num_vf()
+> 	changed from vf[] array of pointers of individually allocated
+> 	  vf structs to single allocated vfs[] array of vf structs
+> 	added clean up of vfs[] on probe fail
+> 	added setup for vf stats dma
 > 
-> Drop Girish K S and Vipul Pandya from sxgbe maintainers entry.
+> v3:	added check in probe for pre-existing VFs
+> 	split out the alloc and dealloc of vf structs to better deal
+> 	  with pre-existing VFs (left enabled on remove)
+> 	restored the checks for vf too big because of a potential
+> 	  case where VFs are already enabled but driver failed to
+> 	  alloc the vf structs
 > 
-> Cc: Byungho An <bh74.an@samsung.com>
-> Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
+> v2:	use pci_num_vf() and kcalloc()
+> 	remove checks for vf too big
+> 	add locking for the VF operations
+> 	disable VFs in ionic_remove() if they are still running
 
-Applied.
+Series applied, thanks Shannon.
