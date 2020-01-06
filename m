@@ -2,72 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 08DFB130D57
-	for <lists+netdev@lfdr.de>; Mon,  6 Jan 2020 07:02:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5EE4C130D67
+	for <lists+netdev@lfdr.de>; Mon,  6 Jan 2020 07:09:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726963AbgAFGCr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Jan 2020 01:02:47 -0500
-Received: from mail.kernel.org ([198.145.29.99]:46416 "EHLO mail.kernel.org"
+        id S1726952AbgAFGIz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Jan 2020 01:08:55 -0500
+Received: from mx2.suse.de ([195.135.220.15]:37024 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726338AbgAFGCr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 6 Jan 2020 01:02:47 -0500
-Received: from kernel.org (unknown [104.132.0.74])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 49A5720848;
-        Mon,  6 Jan 2020 06:02:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1578290566;
-        bh=5hxva25df32tAsqNh8cqFx9odnLgu5hRKNw8HZPCLjk=;
-        h=In-Reply-To:References:Cc:To:Subject:From:Date:From;
-        b=eJpHhyL6Zn+jn0TWh26dV/uWPfkkWmsibBqQhvb21LVcA6A7krW1p2EYvzXNOKOcK
-         ZHOPLcOkOfPCnDSxRNQ3b9pxbUrX2wYkH4wWSFdwiASwgMB9KVTYbGmcU+0aeg6ay6
-         vV9ndySbUZQE22ipz4z55cTxtK2FyQVvBOuHX2Vk=
-Content-Type: text/plain; charset="utf-8"
+        id S1726338AbgAFGIz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 6 Jan 2020 01:08:55 -0500
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx2.suse.de (Postfix) with ESMTP id 40CA6AC46;
+        Mon,  6 Jan 2020 06:08:53 +0000 (UTC)
+Received: by unicorn.suse.cz (Postfix, from userid 1000)
+        id 53217E048A; Mon,  6 Jan 2020 07:08:51 +0100 (CET)
+Date:   Mon, 6 Jan 2020 07:08:51 +0100
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     netdev@vger.kernel.org
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        "David S. Miller" <davem@davemloft.net>,
+        Maya Erez <merez@codeaurora.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        linux-wireless@vger.kernel.org, wil6210@qti.qualcomm.com,
+        Francois Romieu <romieu@fr.zoreil.com>,
+        linux-kernel@vger.kernel.org,
+        Florian Fainelli <f.fainelli@gmail.com>
+Subject: Re: [PATCH net-next 3/3] epic100: allow nesting of ethtool_ops
+ begin() and complete()
+Message-ID: <20200106060851.GE22387@unicorn.suse.cz>
+References: <cover.1578257976.git.mkubecek@suse.cz>
+ <146ace9856b8576eea83a1a5dc6329315831c44e.1578257976.git.mkubecek@suse.cz>
+ <20200105220832.GA21914@lunn.ch>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <20200106045833.1725-1-masahiroy@kernel.org>
-References: <20200106045833.1725-1-masahiroy@kernel.org>
-Cc:     Julia Lawall <julia.lawall@lip6.fr>, linux-acpi@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org,
-        linux-crypto@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-i2c@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mtd@lists.infradead.org, netdev@vger.kernel.org,
-        alsa-devel@alsa-project.org, devicetree@vger.kernel.org,
-        Masahiro Yamada <masahiroy@kernel.org>
-To:     Andrew Morton <akpm@linux-foundation.org>,
-        Masahiro Yamada <masahiroy@kernel.org>
-Subject: Re: [PATCH] treewide: remove redundent IS_ERR() before error code check
-From:   Stephen Boyd <sboyd@kernel.org>
-User-Agent: alot/0.8.1
-Date:   Sun, 05 Jan 2020 22:02:45 -0800
-Message-Id: <20200106060246.49A5720848@mail.kernel.org>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200105220832.GA21914@lunn.ch>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Quoting Masahiro Yamada (2020-01-05 20:58:33)
-> 'PTR_ERR(p) =3D=3D -E*' is a stronger condition than IS_ERR(p).
-> Hence, IS_ERR(p) is unneeded.
->=20
-> The semantic patch that generates this commit is as follows:
->=20
-> // <smpl>
-> @@
-> expression ptr;
-> constant error_code;
-> @@
-> -IS_ERR(ptr) && (PTR_ERR(ptr) =3D=3D - error_code)
-> +PTR_ERR(ptr) =3D=3D - error_code
-> // </smpl>
->=20
-> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-> ---
+On Sun, Jan 05, 2020 at 11:08:32PM +0100, Andrew Lunn wrote:
+> > @@ -1435,8 +1436,10 @@ static int ethtool_begin(struct net_device *dev)
+> >  	struct epic_private *ep = netdev_priv(dev);
+> >  	void __iomem *ioaddr = ep->ioaddr;
+> >  
+> > +	if (ep->ethtool_ops_nesting == U32_MAX)
+> > +		return -EBUSY;
+> >  	/* power-up, if interface is down */
+> > -	if (!netif_running(dev)) {
+> > +	if (ep->ethtool_ops_nesting++ && !netif_running(dev)) {
+> >  		ew32(GENCTL, 0x0200);
+> >  		ew32(NVCTL, (er32(NVCTL) & ~0x003c) | 0x4800);
+> >  	}
+> 
+> Hi Michal
+> 
+> In the via-velocity you added:
+> 
+> +       if (vptr->ethtool_ops_nesting == U32_MAX)
+> +               return -EBUSY;
+> +       if (!vptr->ethtool_ops_nesting++ && !netif_running(dev))
+>                 velocity_set_power_state(vptr, PCI_D0);
+>         return 0;
+> 
+> These two fragments differ by a ! . Is that correct?
 
-For
+You are right, thank you for catching it. This should be 
 
->  drivers/clk/clk.c                    | 2 +-
+	if (!ep->ethtool_ops_nesting++ && !netif_running(dev)) {
 
-Acked-by: Stephen Boyd <sboyd@kernel.org>
+as well, we only want to wake the device up in the first (outermost)
+->begin(). (It would probably do no harm to do it each time but not
+doing it in the first would be wrong.)
 
+I'll send v2 in a moment.
+
+Michal
