@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C276130D9D
-	for <lists+netdev@lfdr.de>; Mon,  6 Jan 2020 07:39:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 23EA3130DA3
+	for <lists+netdev@lfdr.de>; Mon,  6 Jan 2020 07:39:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727509AbgAFGjk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Jan 2020 01:39:40 -0500
-Received: from mx2.suse.de ([195.135.220.15]:42598 "EHLO mx2.suse.de"
+        id S1727533AbgAFGjo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Jan 2020 01:39:44 -0500
+Received: from mx2.suse.de ([195.135.220.15]:42620 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727496AbgAFGji (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 6 Jan 2020 01:39:38 -0500
+        id S1727522AbgAFGjn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 6 Jan 2020 01:39:43 -0500
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id CC754ADBE;
-        Mon,  6 Jan 2020 06:39:36 +0000 (UTC)
+        by mx2.suse.de (Postfix) with ESMTP id D0BECADBE;
+        Mon,  6 Jan 2020 06:39:41 +0000 (UTC)
 Received: by unicorn.suse.cz (Postfix, from userid 1000)
-        id 7E191E048A; Mon,  6 Jan 2020 07:39:36 +0100 (CET)
-Message-Id: <fbfb2126891f9194fd1ed4904b278496830ff779.1578292157.git.mkubecek@suse.cz>
+        id 847C5E048A; Mon,  6 Jan 2020 07:39:41 +0100 (CET)
+Message-Id: <4d6d90454847364e49b104caf5736493170f2bea.1578292157.git.mkubecek@suse.cz>
 In-Reply-To: <cover.1578292157.git.mkubecek@suse.cz>
 References: <cover.1578292157.git.mkubecek@suse.cz>
 From:   Michal Kubecek <mkubecek@suse.cz>
-Subject: [PATCH net-next v2 2/3] via-velocity: allow nesting of ethtool_ops
- begin() and complete()
+Subject: [PATCH net-next v2 3/3] epic100: allow nesting of ethtool_ops begin()
+ and complete()
 To:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
 Cc:     Maya Erez <merez@codeaurora.org>,
         Kalle Valo <kvalo@codeaurora.org>,
@@ -30,7 +30,7 @@ Cc:     Maya Erez <merez@codeaurora.org>,
         Francois Romieu <romieu@fr.zoreil.com>,
         linux-kernel@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>
-Date:   Mon,  6 Jan 2020 07:39:36 +0100 (CET)
+Date:   Mon,  6 Jan 2020 07:39:41 +0100 (CET)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -38,8 +38,8 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Unlike most networking drivers using begin() and complete() ethtool_ops
 callbacks to resume a device which is down and suspend it again when done,
-via-velocity does not use standard refcounted infrastructure but sets
-device sleep state directly.
+epic100 does not use standard refcounted infrastructure but sets device
+sleep state directly.
 
 With the introduction of netlink ethtool interface, we may have nested
 begin-complete blocks so that inner complete() would put the device back to
@@ -51,62 +51,44 @@ level.
 
 Signed-off-by: Michal Kubecek <mkubecek@suse.cz>
 ---
- drivers/net/ethernet/via/via-velocity.c | 14 ++++++++++----
- drivers/net/ethernet/via/via-velocity.h |  1 +
- 2 files changed, 11 insertions(+), 4 deletions(-)
+v2: fix inverted condition in ethtool_begin() (thanks to Andrew Lunn)
+---
+ drivers/net/ethernet/smsc/epic100.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/via/via-velocity.c b/drivers/net/ethernet/via/via-velocity.c
-index 346e44115c4e..4b556b74541a 100644
---- a/drivers/net/ethernet/via/via-velocity.c
-+++ b/drivers/net/ethernet/via/via-velocity.c
-@@ -3257,12 +3257,16 @@ static struct platform_driver velocity_platform_driver = {
-  *	@dev: network device
-  *
-  *	Called before an ethtool operation. We need to make sure the
-- *	chip is out of D3 state before we poke at it.
-+ *	chip is out of D3 state before we poke at it. In case of ethtool
-+ *	ops nesting, only wake the device up in the outermost block.
-  */
- static int velocity_ethtool_up(struct net_device *dev)
- {
- 	struct velocity_info *vptr = netdev_priv(dev);
--	if (!netif_running(dev))
-+
-+	if (vptr->ethtool_ops_nesting == U32_MAX)
-+		return -EBUSY;
-+	if (!vptr->ethtool_ops_nesting++ && !netif_running(dev))
- 		velocity_set_power_state(vptr, PCI_D0);
- 	return 0;
- }
-@@ -3272,12 +3276,14 @@ static int velocity_ethtool_up(struct net_device *dev)
-  *	@dev: network device
-  *
-  *	Called after an ethtool operation. Restore the chip back to D3
-- *	state if it isn't running.
-+ *	state if it isn't running. In case of ethtool ops nesting, only
-+ *	put the device to sleep in the outermost block.
-  */
- static void velocity_ethtool_down(struct net_device *dev)
- {
- 	struct velocity_info *vptr = netdev_priv(dev);
--	if (!netif_running(dev))
-+
-+	if (!--vptr->ethtool_ops_nesting && !netif_running(dev))
- 		velocity_set_power_state(vptr, PCI_D3hot);
- }
- 
-diff --git a/drivers/net/ethernet/via/via-velocity.h b/drivers/net/ethernet/via/via-velocity.h
-index cdfe7809e3c1..f196e71d2c04 100644
---- a/drivers/net/ethernet/via/via-velocity.h
-+++ b/drivers/net/ethernet/via/via-velocity.h
-@@ -1483,6 +1483,7 @@ struct velocity_info {
- 	struct velocity_context context;
- 
- 	u32 ticks;
+diff --git a/drivers/net/ethernet/smsc/epic100.c b/drivers/net/ethernet/smsc/epic100.c
+index 912760e8514c..61ddee0c2a2e 100644
+--- a/drivers/net/ethernet/smsc/epic100.c
++++ b/drivers/net/ethernet/smsc/epic100.c
+@@ -280,6 +280,7 @@ struct epic_private {
+ 	signed char phys[4];				/* MII device addresses. */
+ 	u16 advertising;					/* NWay media advertisement */
+ 	int mii_phy_cnt;
 +	u32 ethtool_ops_nesting;
+ 	struct mii_if_info mii;
+ 	unsigned int tx_full:1;				/* The Tx queue is full. */
+ 	unsigned int default_port:4;		/* Last dev->if_port value. */
+@@ -1435,8 +1436,10 @@ static int ethtool_begin(struct net_device *dev)
+ 	struct epic_private *ep = netdev_priv(dev);
+ 	void __iomem *ioaddr = ep->ioaddr;
  
- 	u8 rev_id;
++	if (ep->ethtool_ops_nesting == U32_MAX)
++		return -EBUSY;
+ 	/* power-up, if interface is down */
+-	if (!netif_running(dev)) {
++	if (!ep->ethtool_ops_nesting++ && !netif_running(dev)) {
+ 		ew32(GENCTL, 0x0200);
+ 		ew32(NVCTL, (er32(NVCTL) & ~0x003c) | 0x4800);
+ 	}
+@@ -1449,7 +1452,7 @@ static void ethtool_complete(struct net_device *dev)
+ 	void __iomem *ioaddr = ep->ioaddr;
  
+ 	/* power-down, if interface is down */
+-	if (!netif_running(dev)) {
++	if (!--ep->ethtool_ops_nesting && !netif_running(dev)) {
+ 		ew32(GENCTL, 0x0008);
+ 		ew32(NVCTL, (er32(NVCTL) & ~0x483c) | 0x0000);
+ 	}
 -- 
 2.24.1
 
