@@ -2,82 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CD2C5131347
-	for <lists+netdev@lfdr.de>; Mon,  6 Jan 2020 14:58:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D17013135B
+	for <lists+netdev@lfdr.de>; Mon,  6 Jan 2020 15:10:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726437AbgAFN6J (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Jan 2020 08:58:09 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:48964 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726300AbgAFN6J (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 6 Jan 2020 08:58:09 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=97+1a0OUmjC005rZI2tCejdDM4hZZ9AyUJJceGu9StM=; b=T7WtDgolImD6JVRK4kcLdtzCTi
-        qq3qabUVAs0su2WIg4hXpmgkBYYI0MocWzqm8iB6hzEgdtObegQ6glPPeh+2fAZH30Mnmn2E4nu8z
-        S1bZ7iGGlNahf0hXPF9MZ/lgAM0a6rBDO2ZV788vOsuLZNUdViAzJkMwtYx/6bG2EwT8=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1ioStL-00081l-CN; Mon, 06 Jan 2020 14:57:59 +0100
-Date:   Mon, 6 Jan 2020 14:57:59 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     "Madalin Bucur (OSS)" <madalin.bucur@oss.nxp.com>
-Cc:     Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        "shawnguo@kernel.org" <shawnguo@kernel.org>
-Subject: Re: [PATCH 1/6] net: phy: add interface modes for XFI, SFI
-Message-ID: <20200106135759.GA23820@lunn.ch>
-References: <VI1PR04MB5567FA3170CF45F877870E8CEC520@VI1PR04MB5567.eurprd04.prod.outlook.com>
- <20191223120730.GO25745@shell.armlinux.org.uk>
- <DB8PR04MB69858081021729EC70216BE3EC230@DB8PR04MB6985.eurprd04.prod.outlook.com>
- <20200103092718.GB25745@shell.armlinux.org.uk>
- <20200103094204.GA18808@shell.armlinux.org.uk>
- <DB8PR04MB698591AAC029ADE9F7FFF69BEC230@DB8PR04MB6985.eurprd04.prod.outlook.com>
- <20200103125310.GE25745@shell.armlinux.org.uk>
- <DB8PR04MB6985FB286A71FC6CFF04BE50EC230@DB8PR04MB6985.eurprd04.prod.outlook.com>
- <20200103171952.GH25745@shell.armlinux.org.uk>
- <DB8PR04MB698500B73BDA9794D242BEDAEC3C0@DB8PR04MB6985.eurprd04.prod.outlook.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <DB8PR04MB698500B73BDA9794D242BEDAEC3C0@DB8PR04MB6985.eurprd04.prod.outlook.com>
+        id S1726463AbgAFOKo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Jan 2020 09:10:44 -0500
+Received: from mail-ua1-f73.google.com ([209.85.222.73]:35206 "EHLO
+        mail-ua1-f73.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726422AbgAFOKo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jan 2020 09:10:44 -0500
+Received: by mail-ua1-f73.google.com with SMTP id n23so2526069uao.2
+        for <netdev@vger.kernel.org>; Mon, 06 Jan 2020 06:10:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=Lby6/1HCjr1ttcdqc9WcEVzlNfwkYXlBMw6C0GCuB1g=;
+        b=ivxS/mmXynWeVZFCgOQ9T+slkE72A2xa+4cSYtscWY+79RKj4sHOIHf9bjEzFivRXM
+         vNlg3VjXFpLmKYEk4gXj1MJbFpS0LOSnZMHTsAHZcDao4ygeMiXYOK8RtblqI+uNWDjS
+         En19wdju0qub+OkESWF+cKlV8nKw131XXswhuWZlnaRAR483k07VIi74PCgcDq91qx3/
+         BgrRwawHF2HHeAQO36XI50LdpH4TUlEph4oc1xv6fZCIyzSGtFpjrA4gtpHg/rtnCCd5
+         0jwkuH0D9LxzN4ObeHCzQIZwYkFpplr5Vg5XRgPJulaXN2WTb5uzd6IoGRA6K+Ise3AN
+         Tl3A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=Lby6/1HCjr1ttcdqc9WcEVzlNfwkYXlBMw6C0GCuB1g=;
+        b=OOS0P0RoDSM6FdjPTnxNIHXIiQ5tiHC9kh2yFBbT4PAxtY0cFmGUxGn3ISggcEFovd
+         2k3x1rK/FPp0MNGOh0c3zdQ510VOLgiSA+ledL77K85ggfsQAjEvhXKukR7238pWwVT/
+         /asuVjqHq0qLUI+jd/GF81DHExifpvMXRurrxjvFTRsQodHWyPJdcHg8TxdUETcWgZNd
+         aB+wlFKCI3vQLI7KepsJgBfUsAEqpnlE4AeauX1BTTgc8lDjVLgb6UzDMmQz7WBNMAOm
+         DVm5LaEIGk6+RYfB0XT/3MCHuwZE8kmO2+V76NEkNJO5RrSo2Yae+ETDb4gHN5OBVYhR
+         GvxA==
+X-Gm-Message-State: APjAAAU06sgdMDiiR+cR2UiO42kwmqZtzxyvzXdpRYDZD8cM7pumdddl
+        2ydaajupM8tfRlFff5aI4dfXSACZKbsT2g==
+X-Google-Smtp-Source: APXvYqyaz4WooYVH0MovbEKdzVBQ5/Qw3vKLe6a3XPP8EqWzx6VZi1Qxz7mprYMkjeQOgGqsUu8cdkIjl+mnyg==
+X-Received: by 2002:ab0:710c:: with SMTP id x12mr56201669uan.81.1578319843021;
+ Mon, 06 Jan 2020 06:10:43 -0800 (PST)
+Date:   Mon,  6 Jan 2020 06:10:39 -0800
+Message-Id: <20200106141039.204089-1-edumazet@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.24.1.735.g03f4e72817-goog
+Subject: [PATCH net] pkt_sched: fq: do not accept silly TCA_FQ_QUANTUM
+From:   Eric Dumazet <edumazet@google.com>
+To:     "David S . Miller" <davem@davemloft.net>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Florian Westphal <fw@strlen.de>,
+        syzbot+dc9071cc5a85950bdfce@syzkaller.appspotmail.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> You missed my argument about the device tree describing the HW (thus the
-> wires, electrical aspects too) and not configuring a certain protocol (the
-> device tree does not configure HW, it describes HW).
+As diagnosed by Florian :
 
-Hi Madalin
+If TCA_FQ_QUANTUM is set to 0x80000000, fq_deueue()
+can loop forever in :
 
-You have lots of different points here. I'm just picking out one.
+if (f->credit <= 0) {
+  f->credit += q->quantum;
+  goto begin;
+}
 
-I would say this is a grey area. You need to ensure both devices on
-the XFI bus are using the same protocol. There are a few ways you
-could do this:
+... because f->credit is either 0 or -2147483648.
 
-The MAC and the PHY tells phylink what each is capable of, and phylink
-picks a common protocol.
+Let's limit TCA_FQ_QUANTUM to no more than 1 << 20 :
+This max value should limit risks of breaking user setups
+while fixing this bug.
 
-Leave it to the boot loader/firmware and cross your fingers.
+Fixes: afe4fd062416 ("pkt_sched: fq: Fair Queue packet scheduler")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Diagnosed-by: Florian Westphal <fw@strlen.de>
+Reported-by: syzbot+dc9071cc5a85950bdfce@syzkaller.appspotmail.com
+---
+ net/sched/sch_fq.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-Make a design decision, this board will use protocol X, and put that
-in device tree. It is describing how we expect the hardware to be
-used.
+diff --git a/net/sched/sch_fq.c b/net/sched/sch_fq.c
+index ff4c5e9d0d7778d86f20f4bd67cc627eed0713d9..a5a295477eccd52952e26e2ce121315341dddd0f 100644
+--- a/net/sched/sch_fq.c
++++ b/net/sched/sch_fq.c
+@@ -786,10 +786,12 @@ static int fq_change(struct Qdisc *sch, struct nlattr *opt,
+ 	if (tb[TCA_FQ_QUANTUM]) {
+ 		u32 quantum = nla_get_u32(tb[TCA_FQ_QUANTUM]);
+ 
+-		if (quantum > 0)
++		if (quantum > 0 && quantum <= (1 << 20)) {
+ 			q->quantum = quantum;
+-		else
++		} else {
++			NL_SET_ERR_MSG_MOD(extack, "invalid quantum");
+ 			err = -EINVAL;
++		}
+ 	}
+ 
+ 	if (tb[TCA_FQ_INITIAL_QUANTUM])
+-- 
+2.24.1.735.g03f4e72817-goog
 
-The Marvell SERDES interfaces are pretty generic. They can be used for
-SATA, USB3, or networking. But these are all protocols running on top
-of SERDES. So would you argue we cannot describe in device tree that
-one SERDES is to be used for USB and another for SATA?
-
-    Andrew
