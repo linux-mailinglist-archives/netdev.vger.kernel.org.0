@@ -2,107 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E21A1319FB
-	for <lists+netdev@lfdr.de>; Mon,  6 Jan 2020 22:01:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AA5C51319FF
+	for <lists+netdev@lfdr.de>; Mon,  6 Jan 2020 22:04:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726932AbgAFVBY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Jan 2020 16:01:24 -0500
-Received: from mail-il1-f199.google.com ([209.85.166.199]:55455 "EHLO
-        mail-il1-f199.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726699AbgAFVBY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jan 2020 16:01:24 -0500
-Received: by mail-il1-f199.google.com with SMTP id p8so21545677ilp.22
-        for <netdev@vger.kernel.org>; Mon, 06 Jan 2020 13:01:24 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to
-         :content-transfer-encoding;
-        bh=hQ0VUd4anpfZBkhboMtHMpou3T+xFEcqGfWYXlUJbuI=;
-        b=TPQ8kTtW6DrjJ8tGgOrMk1ozqBx1uSkc4MAEpyfzWMjyvGzZzwBtrZ67R0j3JHKv8l
-         Q7IILDQtV0wEN76EgRKFZcIqMGXwMNOJlDzCLDEsASu66kC5/NBTNvplrPH94Mg/VzPy
-         OF3eWiOUO4CIMOswJLw5hCWITqh6ZyFQQWFAx0hWrTddScwUe9caUqhRK0ZQlkFfK5L1
-         n8cgd7zwkuuq4BIb52U2X9RnlIMWparTh+DhKNTv+bEqotJpjqm8jk0XJZ3Yoa4yyEJ3
-         zr2ZPGON74/us0wdYU617VaAogOTI6cFYQ8d36HNY6LPBtmhIrqvSfqN79BMIqVhBjkL
-         v6IA==
-X-Gm-Message-State: APjAAAX/5ubLaDXpq8Ci3I4cx3jMEzQ4EPLTHV6MMB37YCExPMqH7sJl
-        UgVk70wMmMM7eBQ8DG6sLPuOhIdX6nIiGsZr55SFU8h1AeJg
-X-Google-Smtp-Source: APXvYqxQ6z9NKh46eCnFOPrOGqkIJJlqV0WOPFrKnwNTf0qTq4nxAyE+TIuBaHSp9KMJW4jCsgR5ofszXvdpoNT28Hv21mm2rYx7
+        id S1726723AbgAFVEC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Jan 2020 16:04:02 -0500
+Received: from www262.sakura.ne.jp ([202.181.97.72]:65427 "EHLO
+        www262.sakura.ne.jp" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725298AbgAFVEC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jan 2020 16:04:02 -0500
+Received: from fsav404.sakura.ne.jp (fsav404.sakura.ne.jp [133.242.250.103])
+        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTP id 006L3rRk079409;
+        Tue, 7 Jan 2020 06:03:53 +0900 (JST)
+        (envelope-from penguin-kernel@i-love.sakura.ne.jp)
+Received: from www262.sakura.ne.jp (202.181.97.72)
+ by fsav404.sakura.ne.jp (F-Secure/fsigk_smtp/550/fsav404.sakura.ne.jp);
+ Tue, 07 Jan 2020 06:03:53 +0900 (JST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/fsav404.sakura.ne.jp)
+Received: from [192.168.1.9] (softbank126040062084.bbtec.net [126.40.62.84])
+        (authenticated bits=0)
+        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTPSA id 006L3mLr079397
+        (version=TLSv1.2 cipher=DHE-RSA-AES256-SHA bits=256 verify=NO);
+        Tue, 7 Jan 2020 06:03:53 +0900 (JST)
+        (envelope-from penguin-kernel@i-love.sakura.ne.jp)
+Subject: Re: commit b9ef5513c99b breaks ping to ipv6 linklocal addresses on
+ debian buster
+To:     David Ahern <dsahern@gmail.com>
+Cc:     Casey Schaufler <casey@schaufler-ca.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+References: <90fbf526-9edc-4e38-f4f7-a4c9e4aff42f@gmail.com>
+ <202001060351.0063pLqJ023952@www262.sakura.ne.jp>
+ <c0c9ee18-98f6-9888-4b80-c6e3e5a4a4f4@gmail.com>
+ <a2612f24-00b7-7e9e-5a9e-d0d82b22ea8e@i-love.sakura.ne.jp>
+ <d8bc9dce-fba2-685b-c26a-89ef05aa004a@gmail.com>
+From:   Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
+Message-ID: <153de016-8274-5d62-83fe-ce7d8218f906@i-love.sakura.ne.jp>
+Date:   Tue, 7 Jan 2020 06:03:44 +0900
+User-Agent: Mozilla/5.0 (Windows NT 6.3; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.3.1
 MIME-Version: 1.0
-X-Received: by 2002:a02:620c:: with SMTP id d12mr9247806jac.116.1578344052401;
- Mon, 06 Jan 2020 12:54:12 -0800 (PST)
-Date:   Mon, 06 Jan 2020 12:54:12 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000093b204059b7edce0@google.com>
-Subject: WARNING in restore_regulatory_settings
-From:   syzbot <syzbot+d451401ffd00a60677ee@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, johannes@sipsolutions.net,
-        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
-Content-Transfer-Encoding: base64
+In-Reply-To: <d8bc9dce-fba2-685b-c26a-89ef05aa004a@gmail.com>
+Content-Type: text/plain; charset=iso-2022-jp
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGVsbG8sDQoNCnN5emJvdCBmb3VuZCB0aGUgZm9sbG93aW5nIGNyYXNoIG9uOg0KDQpIRUFEIGNv
-bW1pdDogICAgYzc5ZjQ2YTIgTGludXggNS41LXJjNQ0KZ2l0IHRyZWU6ICAgICAgIHVwc3RyZWFt
-DQpjb25zb2xlIG91dHB1dDogaHR0cHM6Ly9zeXprYWxsZXIuYXBwc3BvdC5jb20veC9sb2cudHh0
-P3g9MTM1NzUxM2VlMDAwMDANCmtlcm5lbCBjb25maWc6ICBodHRwczovL3N5emthbGxlci5hcHBz
-cG90LmNvbS94Ly5jb25maWc/eD00MmM4MjY5NGY3OTJiMmY1DQpkYXNoYm9hcmQgbGluazogaHR0
-cHM6Ly9zeXprYWxsZXIuYXBwc3BvdC5jb20vYnVnP2V4dGlkPWQ0NTE0MDFmZmQwMGE2MDY3N2Vl
-DQpjb21waWxlcjogICAgICAgZ2NjIChHQ0MpIDkuMC4wIDIwMTgxMjMxIChleHBlcmltZW50YWwp
-DQpzeXogcmVwcm86ICAgICAgaHR0cHM6Ly9zeXprYWxsZXIuYXBwc3BvdC5jb20veC9yZXByby5z
-eXo/eD0xMTUzODExNWUwMDAwMA0KQyByZXByb2R1Y2VyOiAgIGh0dHBzOi8vc3l6a2FsbGVyLmFw
-cHNwb3QuY29tL3gvcmVwcm8uYz94PTExZDZlZTNlZTAwMDAwDQoNCklNUE9SVEFOVDogaWYgeW91
-IGZpeCB0aGUgYnVnLCBwbGVhc2UgYWRkIHRoZSBmb2xsb3dpbmcgdGFnIHRvIHRoZSBjb21taXQ6
-DQpSZXBvcnRlZC1ieTogc3l6Ym90K2Q0NTE0MDFmZmQwMGE2MDY3N2VlQHN5emthbGxlci5hcHBz
-cG90bWFpbC5jb20NCg0KLS0tLS0tLS0tLS0tWyBjdXQgaGVyZSBdLS0tLS0tLS0tLS0tDQpVbmV4
-cGVjdGVkIHVzZXIgYWxwaGEyOiAAAA0KV0FSTklORzogQ1BVOiAwIFBJRDogMjgxMCBhdCBuZXQv
-d2lyZWxlc3MvcmVnLmM6NDE4IGlzX3VzZXJfcmVnZG9tX3NhdmVkICANCm5ldC93aXJlbGVzcy9y
-ZWcuYzo0MTggW2lubGluZV0NCldBUk5JTkc6IENQVTogMCBQSUQ6IDI4MTAgYXQgbmV0L3dpcmVs
-ZXNzL3JlZy5jOjQxOCByZXN0b3JlX2FscGhhMiAgDQpuZXQvd2lyZWxlc3MvcmVnLmM6MzA5MiBb
-aW5saW5lXQ0KV0FSTklORzogQ1BVOiAwIFBJRDogMjgxMCBhdCBuZXQvd2lyZWxlc3MvcmVnLmM6
-NDE4ICANCnJlc3RvcmVfcmVndWxhdG9yeV9zZXR0aW5ncysweDIyNi8weDEzZTAgbmV0L3dpcmVs
-ZXNzL3JlZy5jOjMxODQNCktlcm5lbCBwYW5pYyAtIG5vdCBzeW5jaW5nOiBwYW5pY19vbl93YXJu
-IHNldCAuLi4NCkNQVTogMCBQSUQ6IDI4MTAgQ29tbToga3dvcmtlci8wOjU1IE5vdCB0YWludGVk
-IDUuNS4wLXJjNS1zeXprYWxsZXIgIzANCkhhcmR3YXJlIG5hbWU6IEdvb2dsZSBHb29nbGUgQ29t
-cHV0ZSBFbmdpbmUvR29vZ2xlIENvbXB1dGUgRW5naW5lLCBCSU9TICANCkdvb2dsZSAwMS8wMS8y
-MDExDQpXb3JrcXVldWU6IGV2ZW50c19wb3dlcl9lZmZpY2llbnQgY3JkYV90aW1lb3V0X3dvcmsN
-CkNhbGwgVHJhY2U6DQogIF9fZHVtcF9zdGFjayBsaWIvZHVtcF9zdGFjay5jOjc3IFtpbmxpbmVd
-DQogIGR1bXBfc3RhY2srMHgxOTcvMHgyMTAgbGliL2R1bXBfc3RhY2suYzoxMTgNCiAgcGFuaWMr
-MHgyZTMvMHg3NWMga2VybmVsL3BhbmljLmM6MjIxDQogIF9fd2Fybi5jb2xkKzB4MmYvMHgzZSBr
-ZXJuZWwvcGFuaWMuYzo1ODINCiAgcmVwb3J0X2J1ZysweDI4OS8weDMwMCBsaWIvYnVnLmM6MTk1
-DQogIGZpeHVwX2J1ZyBhcmNoL3g4Ni9rZXJuZWwvdHJhcHMuYzoxNzQgW2lubGluZV0NCiAgZml4
-dXBfYnVnIGFyY2gveDg2L2tlcm5lbC90cmFwcy5jOjE2OSBbaW5saW5lXQ0KICBkb19lcnJvcl90
-cmFwKzB4MTFiLzB4MjAwIGFyY2gveDg2L2tlcm5lbC90cmFwcy5jOjI2Nw0KICBkb19pbnZhbGlk
-X29wKzB4MzcvMHg1MCBhcmNoL3g4Ni9rZXJuZWwvdHJhcHMuYzoyODYNCiAgaW52YWxpZF9vcCsw
-eDIzLzB4MzAgYXJjaC94ODYvZW50cnkvZW50cnlfNjQuUzoxMDI3DQpSSVA6IDAwMTA6aXNfdXNl
-cl9yZWdkb21fc2F2ZWQgbmV0L3dpcmVsZXNzL3JlZy5jOjQxOCBbaW5saW5lXQ0KUklQOiAwMDEw
-OnJlc3RvcmVfYWxwaGEyIG5ldC93aXJlbGVzcy9yZWcuYzozMDkyIFtpbmxpbmVdDQpSSVA6IDAw
-MTA6cmVzdG9yZV9yZWd1bGF0b3J5X3NldHRpbmdzKzB4MjI2LzB4MTNlMCBuZXQvd2lyZWxlc3Mv
-cmVnLmM6MzE4NA0KQ29kZTogMDMgNDQgODkgZjYgZTggMmIgYmEgMWYgZmEgNDUgODQgZjYgMGYg
-ODUgOWEgMDcgMDAgMDAgZTggZGQgYjggMWYgZmEgIA0KNDEgMGYgYmUgZDUgMGYgYmUgZjMgNDgg
-YzcgYzcgMDAgYmEgZWQgODggZTggZjkgNjAgZjAgZjkgPDBmPiAwYiBlOCBjMyBiOCAgDQoxZiBm
-YSA0YyA4YiAyZCA2YyBlMiAxMiAwMyA0OCBiOCAwMCAwMCAwMCAwMCAwMCBmYw0KUlNQOiAwMDE4
-OmZmZmZjOTAwMDgwZGZjMjAgRUZMQUdTOiAwMDAxMDI4Ng0KUkFYOiAwMDAwMDAwMDAwMDAwMDAw
-IFJCWDogMDAwMDAwMDAwMDAwMDAwMCBSQ1g6IDAwMDAwMDAwMDAwMDAwMDANClJEWDogMDAwMDAw
-MDAwMDAwMDAwMCBSU0k6IGZmZmZmZmZmODE1ZThiNDYgUkRJOiBmZmZmZjUyMDAxMDFiZjc2DQpS
-QlA6IGZmZmZjOTAwMDgwZGZkMjAgUjA4OiBmZmZmODg4MDlmNmNhMDgwIFIwOTogZmZmZmVkMTAx
-NWQwNjYyMQ0KUjEwOiBmZmZmZWQxMDE1ZDA2NjIwIFIxMTogZmZmZjg4ODBhZTgzMzEwNyBSMTI6
-IDAwMDAwMDAwMDAwMDAwMDENClIxMzogMDAwMDAwMDAwMDAwMDAwMCBSMTQ6IDAwMDAwMDAwMDAw
-MDAwMDAgUjE1OiBmZmZmODg4MGFlODM2YjQwDQogIGNyZGFfdGltZW91dF93b3JrKzB4MjEvMHgz
-MCBuZXQvd2lyZWxlc3MvcmVnLmM6NTIwDQogIHByb2Nlc3Nfb25lX3dvcmsrMHg5YWYvMHgxNzQw
-IGtlcm5lbC93b3JrcXVldWUuYzoyMjY0DQogIHdvcmtlcl90aHJlYWQrMHg5OC8weGU0MCBrZXJu
-ZWwvd29ya3F1ZXVlLmM6MjQxMA0KICBrdGhyZWFkKzB4MzYxLzB4NDMwIGtlcm5lbC9rdGhyZWFk
-LmM6MjU1DQogIHJldF9mcm9tX2ZvcmsrMHgyNC8weDMwIGFyY2gveDg2L2VudHJ5L2VudHJ5XzY0
-LlM6MzUyDQpLZXJuZWwgT2Zmc2V0OiBkaXNhYmxlZA0KUmVib290aW5nIGluIDg2NDAwIHNlY29u
-ZHMuLg0KDQoNCi0tLQ0KVGhpcyBidWcgaXMgZ2VuZXJhdGVkIGJ5IGEgYm90LiBJdCBtYXkgY29u
-dGFpbiBlcnJvcnMuDQpTZWUgaHR0cHM6Ly9nb28uZ2wvdHBzbUVKIGZvciBtb3JlIGluZm9ybWF0
-aW9uIGFib3V0IHN5emJvdC4NCnN5emJvdCBlbmdpbmVlcnMgY2FuIGJlIHJlYWNoZWQgYXQgc3l6
-a2FsbGVyQGdvb2dsZWdyb3Vwcy5jb20uDQoNCnN5emJvdCB3aWxsIGtlZXAgdHJhY2sgb2YgdGhp
-cyBidWcgcmVwb3J0LiBTZWU6DQpodHRwczovL2dvby5nbC90cHNtRUojc3RhdHVzIGZvciBob3cg
-dG8gY29tbXVuaWNhdGUgd2l0aCBzeXpib3QuDQpzeXpib3QgY2FuIHRlc3QgcGF0Y2hlcyBmb3Ig
-dGhpcyBidWcsIGZvciBkZXRhaWxzIHNlZToNCmh0dHBzOi8vZ29vLmdsL3Rwc21FSiN0ZXN0aW5n
-LXBhdGNoZXMNCg==
+On 2020/01/07 1:41, David Ahern wrote:
+>>>  #ifdef SMACK_IPV6_SECMARK_LABELING
+>>>                 rsp = smack_ipv6host_label(sip);
+>>>
+>>>
+>>> ie., if the socket family is AF_INET6 the address length should be an
+>>> IPv6 address. The family in the sockaddr is not as important.
+>>>
+>>
+>> Commit b9ef5513c99b was wrong, but we need to also fix commit c673944347ed ?
+>>
+> 
+> not sure. I have not seen a problem related to it yet.
+> 
+
+A sample program shown below is expected to return 0.
+Casey, what does smack wants to do for IPv4 address on IPv6 socket case?
+
+----------
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <sys/un.h>
+#include <arpa/inet.h>
+#include <unistd.h>
+
+int main(int argc, char *argv[])
+{
+        const int fd1 = socket(PF_INET6, SOCK_DGRAM, 0);
+        const int fd2 = socket(PF_INET, SOCK_DGRAM, 0);
+        struct sockaddr_in addr1 = {
+                .sin_family = AF_INET,
+                .sin_addr.s_addr = htonl(INADDR_LOOPBACK),
+                .sin_port = htons(10000)
+        };
+        struct sockaddr_in addr2 = { };
+        char c = 0;
+        struct iovec iov1 = { "", 1 };
+        struct iovec iov2 = { &c, 1 };
+        const struct msghdr msg1 = {
+                .msg_iov = &iov1,
+                .msg_iovlen = 1,
+                .msg_name = &addr1,
+                .msg_namelen = sizeof(addr1)
+        };
+        struct msghdr msg2 = {
+                .msg_iov = &iov2,
+                .msg_iovlen = 1,
+                .msg_name = &addr2,
+                .msg_namelen = sizeof(addr2)
+        };
+        if (bind(fd2, (struct sockaddr *) &addr1, sizeof(addr1)))
+                return 1;
+        if (sendmsg(fd1, &msg1, 0) != 1 || recvmsg(fd2, &msg2, 0) != 1)
+                return 1;
+        if (connect(fd1, (struct sockaddr *) &addr1, sizeof(addr1)))
+                return 1;
+        if (send(fd1, "", 1, 0) != 1 || recv(fd2, &c, 1, 0) != 1)
+                return 1;
+        return 0;
+}
+----------
