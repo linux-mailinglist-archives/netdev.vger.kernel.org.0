@@ -2,79 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6AF28130BFC
-	for <lists+netdev@lfdr.de>; Mon,  6 Jan 2020 03:04:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C578130C25
+	for <lists+netdev@lfdr.de>; Mon,  6 Jan 2020 03:35:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727365AbgAFCEb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 5 Jan 2020 21:04:31 -0500
-Received: from mail26.static.mailgun.info ([104.130.122.26]:60330 "EHLO
-        mail26.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727210AbgAFCEb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 5 Jan 2020 21:04:31 -0500
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1578276270; h=Message-ID: References: In-Reply-To: Subject:
- Cc: To: From: Date: Content-Transfer-Encoding: Content-Type:
- MIME-Version: Sender; bh=ibkKkQF713Ci0VoGdUa5r7/qydExaOgwC183n6zUSwg=;
- b=hiWOUE/13fxRR01sjBApoJdxOUHg4FvAGWY4pWqjJUbFeKRabO607OPKHNH1vJEsIyMJbXyA
- XiCOLrRxCb2Arxrzx0PAFh4Z2tW8VnUAgYnivP/lvmNoMShjVQ70CPumUu/NwjHUv3eWKhov
- gYewIlZ/moyP+u52alPBb+fbUa8=
-X-Mailgun-Sending-Ip: 104.130.122.26
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
- by mxa.mailgun.org with ESMTP id 5e1295aa.7f2e0b6cb110-smtp-out-n03;
- Mon, 06 Jan 2020 02:04:26 -0000 (UTC)
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 2AC92C4479F; Mon,  6 Jan 2020 02:04:26 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED
-        autolearn=unavailable autolearn_force=no version=3.4.0
-Received: from mail.codeaurora.org (localhost.localdomain [127.0.0.1])
-        (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: wgong)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id B9C18C43383;
-        Mon,  6 Jan 2020 02:04:25 +0000 (UTC)
+        id S1727334AbgAFCe4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 Jan 2020 21:34:56 -0500
+Received: from mail.windriver.com ([147.11.1.11]:54151 "EHLO
+        mail.windriver.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727307AbgAFCe4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 5 Jan 2020 21:34:56 -0500
+Received: from ALA-HCA.corp.ad.wrs.com (ala-hca.corp.ad.wrs.com [147.11.189.40])
+        by mail.windriver.com (8.15.2/8.15.2) with ESMTPS id 0062Ydr3018153
+        (version=TLSv1 cipher=AES256-SHA bits=256 verify=FAIL);
+        Sun, 5 Jan 2020 18:34:40 -0800 (PST)
+Received: from pek-lpggp2 (128.224.153.75) by ALA-HCA.corp.ad.wrs.com
+ (147.11.189.40) with Microsoft SMTP Server id 14.3.468.0; Sun, 5 Jan 2020
+ 18:34:39 -0800
+Received: by pek-lpggp2 (Postfix, from userid 20544)    id 37ED9720E75; Mon,  6
+ Jan 2020 10:33:41 +0800 (CST)
+From:   Jiping Ma <jiping.ma2@windriver.com>
+To:     <peppe.cavallaro@st.com>, <alexandre.torgue@st.com>
+CC:     <joabreu@synopsys.com>, <mcoquelin.stm32@gmail.com>,
+        <netdev@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-kernel@vger.kernel.org>, <jiping.ma2@windriver.com>
+Subject: [PATCH] stmmac: debugfs entry name is not be changed when udev rename device name.
+Date:   Mon, 6 Jan 2020 10:33:41 +0800
+Message-ID: <20200106023341.206459-1-jiping.ma2@windriver.com>
+X-Mailer: git-send-email 2.23.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Mon, 06 Jan 2020 10:04:25 +0800
-From:   Wen Gong <wgong@codeaurora.org>
-To:     David Miller <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        ath11k@lists.infradead.org
-Subject: Re: [PATCH v2] net: qrtr: fix len of skb_put_padto in
- qrtr_node_enqueue
-In-Reply-To: <20200105.144704.221506192255563950.davem@davemloft.net>
-References: <20200103045016.12459-1-wgong@codeaurora.org>
- <20200105.144704.221506192255563950.davem@davemloft.net>
-Message-ID: <2540a09c73dd896bb793924275bdab0e@codeaurora.org>
-X-Sender: wgong@codeaurora.org
-User-Agent: Roundcube Webmail/1.3.9
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020-01-06 06:47, David Miller wrote:
-> From: Wen Gong <wgong@codeaurora.org>
-> Date: Fri,  3 Jan 2020 12:50:16 +0800
-> 
->> The len used for skb_put_padto is wrong, it need to add len of hdr.
-> 
-> Thanks, applied.
-> 
-> There is another bug here, skb_put_padto() returns an error and frees
-> the SKB when the put fails.  There really needs to be a check here,
-> because currently the code right now will keep using the freed up
-> skb in that situation.
-> 
+Add one notifier for udev changes net device name.
 
-Thanks David.
+Signed-off-by: Jiping Ma <jiping.ma2@windriver.com>
+---
+ .../net/ethernet/stmicro/stmmac/stmmac_main.c | 32 +++++++++++++++++++
+ 1 file changed, 32 insertions(+)
 
-Yes, __skb_put_padto will return -ENOMEM if __skb_pad fail.
-I think it can return the same error immediately and do not do the next 
-steps in qrtr_node_enqueue.
-> Thanks.
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+index b14f46a57154..8d927e455123 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+@@ -104,6 +104,7 @@ MODULE_PARM_DESC(chain_mode, "To use chain instead of ring mode");
+ static irqreturn_t stmmac_interrupt(int irq, void *dev_id);
+ 
+ #ifdef CONFIG_DEBUG_FS
++static const struct net_device_ops stmmac_netdev_ops;
+ static int stmmac_init_fs(struct net_device *dev);
+ static void stmmac_exit_fs(struct net_device *dev);
+ #endif
+@@ -4038,6 +4039,34 @@ static int stmmac_dma_cap_show(struct seq_file *seq, void *v)
+ }
+ DEFINE_SHOW_ATTRIBUTE(stmmac_dma_cap);
+ 
++/* Use network device events to rename debugfs file entries.
++ */
++static int stmmac_device_event(struct notifier_block *unused,
++			       unsigned long event, void *ptr)
++{
++	struct net_device *dev = netdev_notifier_info_to_dev(ptr);
++	struct stmmac_priv *priv = netdev_priv(dev);
++
++	if (dev->netdev_ops != &stmmac_netdev_ops)
++		goto done;
++
++	switch (event) {
++	case NETDEV_CHANGENAME:
++		if (priv->dbgfs_dir)
++			priv->dbgfs_dir = debugfs_rename(stmmac_fs_dir,
++							 priv->dbgfs_dir,
++							 stmmac_fs_dir,
++							 dev->name);
++		break;
++	}
++done:
++	return NOTIFY_DONE;
++}
++
++static struct notifier_block stmmac_notifier = {
++	.notifier_call = stmmac_device_event,
++};
++
+ static int stmmac_init_fs(struct net_device *dev)
+ {
+ 	struct stmmac_priv *priv = netdev_priv(dev);
+@@ -4076,6 +4105,8 @@ static int stmmac_init_fs(struct net_device *dev)
+ 		return -ENOMEM;
+ 	}
+ 
++	register_netdevice_notifier(&stmmac_notifier);
++
+ 	return 0;
+ }
+ 
+@@ -4083,6 +4114,7 @@ static void stmmac_exit_fs(struct net_device *dev)
+ {
+ 	struct stmmac_priv *priv = netdev_priv(dev);
+ 
++	unregister_netdevice_notifier(&stmmac_notifier);
+ 	debugfs_remove_recursive(priv->dbgfs_dir);
+ }
+ #endif /* CONFIG_DEBUG_FS */
+-- 
+2.23.0
+
