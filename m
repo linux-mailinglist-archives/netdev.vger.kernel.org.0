@@ -2,112 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AA5C51319FF
-	for <lists+netdev@lfdr.de>; Mon,  6 Jan 2020 22:04:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 25AC0131A0C
+	for <lists+netdev@lfdr.de>; Mon,  6 Jan 2020 22:05:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726723AbgAFVEC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Jan 2020 16:04:02 -0500
-Received: from www262.sakura.ne.jp ([202.181.97.72]:65427 "EHLO
-        www262.sakura.ne.jp" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725298AbgAFVEC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jan 2020 16:04:02 -0500
-Received: from fsav404.sakura.ne.jp (fsav404.sakura.ne.jp [133.242.250.103])
-        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTP id 006L3rRk079409;
-        Tue, 7 Jan 2020 06:03:53 +0900 (JST)
-        (envelope-from penguin-kernel@i-love.sakura.ne.jp)
-Received: from www262.sakura.ne.jp (202.181.97.72)
- by fsav404.sakura.ne.jp (F-Secure/fsigk_smtp/550/fsav404.sakura.ne.jp);
- Tue, 07 Jan 2020 06:03:53 +0900 (JST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/fsav404.sakura.ne.jp)
-Received: from [192.168.1.9] (softbank126040062084.bbtec.net [126.40.62.84])
-        (authenticated bits=0)
-        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTPSA id 006L3mLr079397
-        (version=TLSv1.2 cipher=DHE-RSA-AES256-SHA bits=256 verify=NO);
-        Tue, 7 Jan 2020 06:03:53 +0900 (JST)
-        (envelope-from penguin-kernel@i-love.sakura.ne.jp)
-Subject: Re: commit b9ef5513c99b breaks ping to ipv6 linklocal addresses on
- debian buster
-To:     David Ahern <dsahern@gmail.com>
-Cc:     Casey Schaufler <casey@schaufler-ca.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <90fbf526-9edc-4e38-f4f7-a4c9e4aff42f@gmail.com>
- <202001060351.0063pLqJ023952@www262.sakura.ne.jp>
- <c0c9ee18-98f6-9888-4b80-c6e3e5a4a4f4@gmail.com>
- <a2612f24-00b7-7e9e-5a9e-d0d82b22ea8e@i-love.sakura.ne.jp>
- <d8bc9dce-fba2-685b-c26a-89ef05aa004a@gmail.com>
-From:   Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
-Message-ID: <153de016-8274-5d62-83fe-ce7d8218f906@i-love.sakura.ne.jp>
-Date:   Tue, 7 Jan 2020 06:03:44 +0900
-User-Agent: Mozilla/5.0 (Windows NT 6.3; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.3.1
-MIME-Version: 1.0
-In-Reply-To: <d8bc9dce-fba2-685b-c26a-89ef05aa004a@gmail.com>
-Content-Type: text/plain; charset=iso-2022-jp
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        id S1727078AbgAFVFV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Jan 2020 16:05:21 -0500
+Received: from mail-pl1-f193.google.com ([209.85.214.193]:44247 "EHLO
+        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726906AbgAFVFU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jan 2020 16:05:20 -0500
+Received: by mail-pl1-f193.google.com with SMTP id az3so22280960plb.11
+        for <netdev@vger.kernel.org>; Mon, 06 Jan 2020 13:05:19 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=pensando.io; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=EJqzgtafuLEMKWeDTRfLHopVpmSdKzKynlPe3lrgYJE=;
+        b=dueQpANJxYdMud3SrfvsnFxFM4mUKkX+jCljHkiBa7CTKNfVmtZT8VOtnO9MzYl9K3
+         KbjkWRKIbejuNWBchG2fjedxrDp/xtGTUgRb3JGfd7RIe19a35uhZ15oAN2sR6GV6rOI
+         wZCUs/sLeIQdTSxGs0dLH3ZjIOYlCfc1FSZwq8UtIDUmyovCnAfofByad8yXWHRp3Thz
+         HZFTf1ANiYdcboPF9fDdHJZfEit61rZv20zcggsRlv3Z7NFYVvNYMWeIFatyTESWPgvR
+         X2YHDDV61jSvEm5TeOV7egsP/m3YJikB5GCXDnolbQRx7TMTQc9bHT36xbNwY4aMJxG2
+         a10w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=EJqzgtafuLEMKWeDTRfLHopVpmSdKzKynlPe3lrgYJE=;
+        b=guSg3qzw0dkKEbZ2AOv21xwgqgA+lxPaJcd21Zx8xVXAYe50tpdVHy95guaJ8vyRjJ
+         ow9AxLnrvRA6dyi3YK3P55YoP+x0IBvs3T0nDtXzfB5O+ufT05bltdRPuRiqF8uLczHd
+         9D376Z+icdEcWjkyaIPV4TEx06V+Gp8NbLRSSCaJGuwsB++6ry/nL53bXSU6HIEpOTpp
+         ZS14Neez1msFSGGs3UUForWOcTUYxqUA0DCWyRfiQ08wZRYuaDklnicS64OA3DLNSwSB
+         jA/UNqcKZGgqVgB5tnB8FAv1r8P2iRlx2dtKLh7k6CHsLIX2V7n+gz1CZVHGomWJKl5B
+         5mtA==
+X-Gm-Message-State: APjAAAV2PplvPGBm1c3SFyeMYovoz6iQjmj08Frf4+Dc6sqVh5Sb1ynI
+        zlAD2ClB6kD9gx2BmS48h6BBjuWYN9A=
+X-Google-Smtp-Source: APXvYqzPBV3GezyvCOmJPSNR6OgPGiiKlGIBMcJKJQL2HAC7eYFS9U1KiU7+lh5JSkUmv+i2/EpSlw==
+X-Received: by 2002:a17:90b:3011:: with SMTP id hg17mr44717545pjb.90.1578344719342;
+        Mon, 06 Jan 2020 13:05:19 -0800 (PST)
+Received: from driver-dev1.pensando.io ([12.226.153.42])
+        by smtp.gmail.com with ESMTPSA id p16sm63183003pfq.184.2020.01.06.13.05.18
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 06 Jan 2020 13:05:18 -0800 (PST)
+From:   Shannon Nelson <snelson@pensando.io>
+To:     netdev@vger.kernel.org, davem@davemloft.net
+Cc:     Shannon Nelson <snelson@pensando.io>
+Subject: [PATCH net-next 0/4] ionic: driver updates
+Date:   Mon,  6 Jan 2020 13:05:08 -0800
+Message-Id: <20200106210512.34244-1-snelson@pensando.io>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020/01/07 1:41, David Ahern wrote:
->>>  #ifdef SMACK_IPV6_SECMARK_LABELING
->>>                 rsp = smack_ipv6host_label(sip);
->>>
->>>
->>> ie., if the socket family is AF_INET6 the address length should be an
->>> IPv6 address. The family in the sockaddr is not as important.
->>>
->>
->> Commit b9ef5513c99b was wrong, but we need to also fix commit c673944347ed ?
->>
-> 
-> not sure. I have not seen a problem related to it yet.
-> 
+These are a few little updates for the ionic network driver.
 
-A sample program shown below is expected to return 0.
-Casey, what does smack wants to do for IPv4 address on IPv6 socket case?
+Shannon Nelson (4):
+  ionic: drop use of subdevice tags
+  ionic: fix for ppc msix layout
+  ionic: add Rx dropped packet counter
+  ionic: restrict received packets to mtu size
 
-----------
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <sys/un.h>
-#include <arpa/inet.h>
-#include <unistd.h>
+ drivers/net/ethernet/pensando/ionic/ionic.h   |  4 ----
+ .../ethernet/pensando/ionic/ionic_bus_pci.c   |  3 +++
+ .../net/ethernet/pensando/ionic/ionic_lif.h   |  1 +
+ .../net/ethernet/pensando/ionic/ionic_stats.c |  1 +
+ .../net/ethernet/pensando/ionic/ionic_txrx.c  | 23 +++++++++++++++----
+ 5 files changed, 23 insertions(+), 9 deletions(-)
 
-int main(int argc, char *argv[])
-{
-        const int fd1 = socket(PF_INET6, SOCK_DGRAM, 0);
-        const int fd2 = socket(PF_INET, SOCK_DGRAM, 0);
-        struct sockaddr_in addr1 = {
-                .sin_family = AF_INET,
-                .sin_addr.s_addr = htonl(INADDR_LOOPBACK),
-                .sin_port = htons(10000)
-        };
-        struct sockaddr_in addr2 = { };
-        char c = 0;
-        struct iovec iov1 = { "", 1 };
-        struct iovec iov2 = { &c, 1 };
-        const struct msghdr msg1 = {
-                .msg_iov = &iov1,
-                .msg_iovlen = 1,
-                .msg_name = &addr1,
-                .msg_namelen = sizeof(addr1)
-        };
-        struct msghdr msg2 = {
-                .msg_iov = &iov2,
-                .msg_iovlen = 1,
-                .msg_name = &addr2,
-                .msg_namelen = sizeof(addr2)
-        };
-        if (bind(fd2, (struct sockaddr *) &addr1, sizeof(addr1)))
-                return 1;
-        if (sendmsg(fd1, &msg1, 0) != 1 || recvmsg(fd2, &msg2, 0) != 1)
-                return 1;
-        if (connect(fd1, (struct sockaddr *) &addr1, sizeof(addr1)))
-                return 1;
-        if (send(fd1, "", 1, 0) != 1 || recv(fd2, &c, 1, 0) != 1)
-                return 1;
-        return 0;
-}
-----------
+-- 
+2.17.1
+
