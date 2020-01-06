@@ -2,100 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C703131C4E
-	for <lists+netdev@lfdr.de>; Tue,  7 Jan 2020 00:27:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B357A131C71
+	for <lists+netdev@lfdr.de>; Tue,  7 Jan 2020 00:36:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727233AbgAFX10 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Jan 2020 18:27:26 -0500
-Received: from mail-pj1-f68.google.com ([209.85.216.68]:53294 "EHLO
-        mail-pj1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726545AbgAFX1Z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jan 2020 18:27:25 -0500
-Received: by mail-pj1-f68.google.com with SMTP id n96so8173818pjc.3;
-        Mon, 06 Jan 2020 15:27:24 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=jPn73DMtcSflnfxRH7mWnc629ZU8jN1Lxj0uZf2hOW0=;
-        b=gBvU4+agLc1idy19vdOvtBbeFKjO+2hSsumc0LK9UAWUbq7dkUSufpzJGJYVdzE1QQ
-         OTnKOjHXusalohw0qFO92P5S6OULk50DMcNXoCGDgvT1a2kQRaiECkpLwmeitBLb+uP0
-         vwoCduIf7uNHOfkwwgf84KNXXVAbDZbSMyBxf96sQC8fhadlY0eOvvmtgFtPuYo7qx+Q
-         NWBbVXxkjuzAWdhuET7xeo3gt5dWs9DGx/dQEPtfqT+rQ7nckzwJ1ZusipvQNue4NC95
-         CBZHJ13A0NRvSwNDBUTeO8/hqnqzGpCsSN4MjHvONx0j8wR/YwBbUAMlJkPMResUQp4p
-         owTg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=jPn73DMtcSflnfxRH7mWnc629ZU8jN1Lxj0uZf2hOW0=;
-        b=sViqPgia3Wynv1zAPyztjwHzykMCcszq2AhMsQHfS1pM/ONngi5+bmxozayz4Nnws1
-         U/L3LYB7kK5vT9OHzNKdvKGqdBW4NLTU29bqpS0O1Cxe+ok5tYDQ6gCeaa4QFaN7H4r8
-         ERfjsHD+WCj6xxIRKawH2Ku7NtogofD2fZQwSiy/a+XS1ugfZMtE1IyOHour3hNP6IaS
-         xcixOcMtC428tBqxml4vZHHg7Cs56EySyUicTxDdz+JAxfUZpjyZ/rZZFqZSdA+QQzAz
-         T+pHP92P7WRTG+wEMXywPjxg2R6+lryg2ALDdKKQIp9bTgMZmHmrseXQyAVilE6m4PCE
-         6lOg==
-X-Gm-Message-State: APjAAAU4Q3yApwiJPM4WVTvXZbEt08JsQr6HZ+VEZMHuklAlHuWfgfMk
-        KPc0idFtn0H3iqAx6SGBvUo=
-X-Google-Smtp-Source: APXvYqyNDfvHrzZmSH+QSReWHcBP97ZKs44mvqrr6GoukkUQJo/HkqO2I7JmQSw9nQPE/HunDnazsw==
-X-Received: by 2002:a17:902:bf49:: with SMTP id u9mr54991136pls.199.1578353244147;
-        Mon, 06 Jan 2020 15:27:24 -0800 (PST)
-Received: from ast-mbp ([2620:10d:c090:200::1:2bf6])
-        by smtp.gmail.com with ESMTPSA id o31sm74415725pgb.56.2020.01.06.15.27.22
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 06 Jan 2020 15:27:23 -0800 (PST)
-Date:   Mon, 6 Jan 2020 15:27:21 -0800
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Jiri Olsa <jolsa@kernel.org>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Andrii Nakryiko <andriin@fb.com>,
-        Yonghong Song <yhs@fb.com>, Martin KaFai Lau <kafai@fb.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        David Miller <davem@redhat.com>
-Subject: Re: [PATCH 2/5] bpf: Add bpf_perf_event_output_kfunc
-Message-ID: <20200106232719.nk4k27ijm4uuwwo3@ast-mbp>
-References: <20191229143740.29143-1-jolsa@kernel.org>
- <20191229143740.29143-3-jolsa@kernel.org>
+        id S1727217AbgAFXg1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Jan 2020 18:36:27 -0500
+Received: from mail-eopbgr20053.outbound.protection.outlook.com ([40.107.2.53]:32391
+        "EHLO EUR02-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726599AbgAFXg1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 6 Jan 2020 18:36:27 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=mtyLctKWx2fB1Tb5gZ1jefM4BI5sXP5vWcLGp42R9X7G3V+CWX4NpIREMmaJdjzJVIF84N2gxOpL/tYYeyuwbSdkDX+0oHVzvi7kxcXeOaYL7f6FJO70VM3rgOIiDuUluc9Mhlg1PnFpPaaII/1jmPRuugqMijZzyqkRNtjAG+h3K4Ss9HzmWD5TZz6XbtK0b0v53gDvOKf7qoo/PWtpiitJEym3J2NFiCiAT8xE83WlcQafQFIPCX+b/7fBujyK32NBZtTyvJjyq6e+YcLuaho+QfzwKd2e/QM+YSladcgXBkFGvHh0Pdb0qitJsqC5oEl+xLrCb5uQGU7QsLGQVw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=xsyZkbL5ncfKZvptAGRpdx3Ir243nNzb0ysomf31RY0=;
+ b=cBzGbCOhS83XElmvJuJon2kfFyKBuS9c20XS+C2PoRaDC1l8qBGDrgJhUuyBf9lXLQcOo3PjCLS2qOrsdzh7o6fHyjAQ7l2/d6owJg7adsQ7isNI7F7Ku9ymEFcQ/jKkBygPJkhJZ5NQ2DlrNMdwge8mQhAVRq1cNrVKwBztNkL3JDpeVIS2Cn7JfGJ0Q+1WltYNnbsFRF5FxxCXR5AJXuNMDlQJvj8z4BNfB8MiVH6+j7eo6ZyIZTlNARkoJ5sTge8KmvxIHVrJLvwqxb0AZZZoFumPeNK973EnPShE0WdaPq8h68u9uouLkR49fs/R0adyn37nRdeBDGni4UaHDA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=xsyZkbL5ncfKZvptAGRpdx3Ir243nNzb0ysomf31RY0=;
+ b=lROmfOq6jTs3ov4YBkpPqPxc4nL60fKQe3iIUaoIBYYeACJ0wL8DTHsmG9sHaPir/759fcTyAANi1ia1Je4dIol9X/TbVjhWKdFm1DBxQOSnLe5Yo3JDjuIaEIrlFALd4RodEyA9y6m3CEMECvdYJtBk1bXuLohp5AY6WJS/lSI=
+Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (20.177.51.151) by
+ VI1PR05MB6397.eurprd05.prod.outlook.com (20.179.25.77) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2602.15; Mon, 6 Jan 2020 23:36:22 +0000
+Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
+ ([fe80::d830:96fc:e928:c096]) by VI1PR05MB5102.eurprd05.prod.outlook.com
+ ([fe80::d830:96fc:e928:c096%6]) with mapi id 15.20.2602.015; Mon, 6 Jan 2020
+ 23:36:22 +0000
+Received: from smtp.office365.com (209.116.155.178) by BYAPR05CA0090.namprd05.prod.outlook.com (2603:10b6:a03:e0::31) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2623.3 via Frontend Transport; Mon, 6 Jan 2020 23:36:20 +0000
+From:   Saeed Mahameed <saeedm@mellanox.com>
+To:     "David S. Miller" <davem@davemloft.net>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Saeed Mahameed <saeedm@mellanox.com>
+Subject: [pull request][net 0/7] Mellanox, mlx5 fixes 2020-01-06
+Thread-Topic: [pull request][net 0/7] Mellanox, mlx5 fixes 2020-01-06
+Thread-Index: AQHVxOoaE5zSv1d2Mk2eRpdSALoadw==
+Date:   Mon, 6 Jan 2020 23:36:21 +0000
+Message-ID: <20200106233248.58700-1-saeedm@mellanox.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-mailer: git-send-email 2.24.1
+x-originating-ip: [209.116.155.178]
+x-clientproxiedby: BYAPR05CA0090.namprd05.prod.outlook.com
+ (2603:10b6:a03:e0::31) To VI1PR05MB5102.eurprd05.prod.outlook.com
+ (2603:10a6:803:5e::23)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=saeedm@mellanox.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: aa0ee740-89cc-4148-ff78-08d793013c8f
+x-ms-traffictypediagnostic: VI1PR05MB6397:|VI1PR05MB6397:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <VI1PR05MB6397E5AD15493ECBF6187818BE3C0@VI1PR05MB6397.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:3173;
+x-forefront-prvs: 0274272F87
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(136003)(39860400002)(346002)(376002)(366004)(396003)(189003)(199004)(4326008)(5660300002)(2616005)(956004)(6916009)(54906003)(8936002)(478600001)(6512007)(26005)(107886003)(81166006)(8676002)(71200400001)(81156014)(64756008)(66946007)(66446008)(66476007)(66556008)(52116002)(6486002)(6506007)(1076003)(86362001)(316002)(36756003)(16526019)(2906002)(186003)(54420400002);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB6397;H:VI1PR05MB5102.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: fr/Ck/sQz76iWFC38Tc+ECZpD/t/eeQOnUXmA0I2DT64fYEByP19kvyaoBvqhJaDmEjRNN41/xjFdYPpRxSYl/nQSkTjOovD4s+rX68aNtrbDVWzPB1t7psKiLzbAuqZbCnkUZebtgmwx70Gdtjkl2vvZnEsDzyGpFSsVCGy8DF+SEwogkHq9jxlKn4BdK/7s/QiKWinpJ4+03yhvaI77PaYwEqRvhhsJgtneUWvJuhqizxjhNx0V9NRS+pmgcA+wxpQkjYwz4ATfmnCPhiyGF4zET46TW4ovvhJi21RkoceLd8+IrTSBpSuva8gTLDbIiQ9dAja9WmBzHs6Cer6iphEmbJDEW4n1+drco8GF+DCxGNTjGYELYCvMW6X4xmfKusFYb9kKmLuODrjl52dOLF/KTSzrxfoFce4IVOC/njninwQATQLNe/abrjVOe7qbv28SSo4UZtqYNqgZFVxywViyxGHfhLCMUfmjPwRYsZPy3Pq9Nc8ECxz3KtF2A9H4L3OChJES2m5EbOehnCKEQ58FtfQ4LQ/rJ4HaWpE8uc=
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191229143740.29143-3-jolsa@kernel.org>
-User-Agent: NeoMutt/20180223
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: aa0ee740-89cc-4148-ff78-08d793013c8f
+X-MS-Exchange-CrossTenant-originalarrivaltime: 06 Jan 2020 23:36:21.8893
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: SRFlqWCeze3ZJiWskVnDOnsrW5CYDx9W76WNKVZyzOWNTxprg5+WZPlO9U9TcclmO8EkSVHjYlNKDBA8TZKSGQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB6397
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Dec 29, 2019 at 03:37:37PM +0100, Jiri Olsa wrote:
-> Adding support to use perf_event_output in
-> BPF_TRACE_FENTRY/BPF_TRACE_FEXIT programs.
-> 
-> There are no pt_regs available in the trampoline,
-> so getting one via bpf_kfunc_regs array.
-> 
-> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-> ---
->  kernel/trace/bpf_trace.c | 67 ++++++++++++++++++++++++++++++++++++++++
->  1 file changed, 67 insertions(+)
-> 
-> diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
-> index e5ef4ae9edb5..1b270bbd9016 100644
-> --- a/kernel/trace/bpf_trace.c
-> +++ b/kernel/trace/bpf_trace.c
-> @@ -1151,6 +1151,69 @@ raw_tp_prog_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
->  	}
->  }
->  
-> +struct bpf_kfunc_regs {
-> +	struct pt_regs regs[3];
-> +};
-> +
-> +static DEFINE_PER_CPU(struct bpf_kfunc_regs, bpf_kfunc_regs);
-> +static DEFINE_PER_CPU(int, bpf_kfunc_nest_level);
+Hi Dave,
 
-Thanks a bunch for working on it.
+This series introduces some fixes to mlx5 driver.
 
-I don't understand why new regs array and nest level is needed.
-Can raw_tp_prog_func_proto() be reused as-is?
-Instead of patches 2,3,4 ?
+Please pull and let me know if there is any problem.
+
+
+For -stable v5.3
+ ('net/mlx5: Move devlink registration before interfaces load')
+
+For -stable v5.4
+ ('net/mlx5e: Fix hairpin RSS table size')
+ ('net/mlx5: DR, Init lists that are used in rule's member')
+ ('net/mlx5e: Always print health reporter message to dmesg')
+ ('net/mlx5: DR, No need for atomic refcount for internal SW steering resou=
+rces')
+
+Thanks,
+Saeed.
+
+---
+The following changes since commit d76063c506da79247e626018c9ed0b916d78f358=
+:
+
+  Merge branch 'atlantic-bugfixes' (2020-01-06 14:06:11 -0800)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-f=
+ixes-2020-01-06
+
+for you to fetch changes up to df55c5586e5185f890192a6802dc5b46fddd3606:
+
+  net/mlx5: DR, Init lists that are used in rule's member (2020-01-06 15:30=
+:05 -0800)
+
+----------------------------------------------------------------
+mlx5-fixes-2020-01-06
+
+----------------------------------------------------------------
+Dmytro Linkin (1):
+      net/mlx5e: Avoid duplicating rule destinations
+
+Eli Cohen (1):
+      net/mlx5e: Fix hairpin RSS table size
+
+Eran Ben Elisha (1):
+      net/mlx5e: Always print health reporter message to dmesg
+
+Erez Shitrit (1):
+      net/mlx5: DR, Init lists that are used in rule's member
+
+Michael Guralnik (1):
+      net/mlx5: Move devlink registration before interfaces load
+
+Parav Pandit (1):
+      Revert "net/mlx5: Support lockless FTE read lookups"
+
+Yevgeny Kliteynik (1):
+      net/mlx5: DR, No need for atomic refcount for internal SW steering re=
+sources
+
+ drivers/net/ethernet/mellanox/mlx5/core/en/fs.h    | 16 +++++
+ .../net/ethernet/mellanox/mlx5/core/en/health.c    |  7 ++-
+ drivers/net/ethernet/mellanox/mlx5/core/en_fs.c    | 16 -----
+ drivers/net/ethernet/mellanox/mlx5/core/en_tc.c    | 60 ++++++++++++++++++=
+-
+ drivers/net/ethernet/mellanox/mlx5/core/fs_core.c  | 70 +++++-------------=
+----
+ drivers/net/ethernet/mellanox/mlx5/core/fs_core.h  |  1 -
+ drivers/net/ethernet/mellanox/mlx5/core/main.c     | 16 ++---
+ .../ethernet/mellanox/mlx5/core/steering/dr_rule.c |  5 +-
+ .../ethernet/mellanox/mlx5/core/steering/dr_ste.c  | 10 ++--
+ .../mellanox/mlx5/core/steering/dr_types.h         | 14 +++--
+ 10 files changed, 119 insertions(+), 96 deletions(-)
