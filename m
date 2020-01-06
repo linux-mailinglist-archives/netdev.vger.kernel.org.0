@@ -2,103 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D17013135B
-	for <lists+netdev@lfdr.de>; Mon,  6 Jan 2020 15:10:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8547213136C
+	for <lists+netdev@lfdr.de>; Mon,  6 Jan 2020 15:20:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726463AbgAFOKo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Jan 2020 09:10:44 -0500
-Received: from mail-ua1-f73.google.com ([209.85.222.73]:35206 "EHLO
-        mail-ua1-f73.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726422AbgAFOKo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jan 2020 09:10:44 -0500
-Received: by mail-ua1-f73.google.com with SMTP id n23so2526069uao.2
-        for <netdev@vger.kernel.org>; Mon, 06 Jan 2020 06:10:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=Lby6/1HCjr1ttcdqc9WcEVzlNfwkYXlBMw6C0GCuB1g=;
-        b=ivxS/mmXynWeVZFCgOQ9T+slkE72A2xa+4cSYtscWY+79RKj4sHOIHf9bjEzFivRXM
-         vNlg3VjXFpLmKYEk4gXj1MJbFpS0LOSnZMHTsAHZcDao4ygeMiXYOK8RtblqI+uNWDjS
-         En19wdju0qub+OkESWF+cKlV8nKw131XXswhuWZlnaRAR483k07VIi74PCgcDq91qx3/
-         BgrRwawHF2HHeAQO36XI50LdpH4TUlEph4oc1xv6fZCIyzSGtFpjrA4gtpHg/rtnCCd5
-         0jwkuH0D9LxzN4ObeHCzQIZwYkFpplr5Vg5XRgPJulaXN2WTb5uzd6IoGRA6K+Ise3AN
-         Tl3A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=Lby6/1HCjr1ttcdqc9WcEVzlNfwkYXlBMw6C0GCuB1g=;
-        b=OOS0P0RoDSM6FdjPTnxNIHXIiQ5tiHC9kh2yFBbT4PAxtY0cFmGUxGn3ISggcEFovd
-         2k3x1rK/FPp0MNGOh0c3zdQ510VOLgiSA+ledL77K85ggfsQAjEvhXKukR7238pWwVT/
-         /asuVjqHq0qLUI+jd/GF81DHExifpvMXRurrxjvFTRsQodHWyPJdcHg8TxdUETcWgZNd
-         aB+wlFKCI3vQLI7KepsJgBfUsAEqpnlE4AeauX1BTTgc8lDjVLgb6UzDMmQz7WBNMAOm
-         DVm5LaEIGk6+RYfB0XT/3MCHuwZE8kmO2+V76NEkNJO5RrSo2Yae+ETDb4gHN5OBVYhR
-         GvxA==
-X-Gm-Message-State: APjAAAU06sgdMDiiR+cR2UiO42kwmqZtzxyvzXdpRYDZD8cM7pumdddl
-        2ydaajupM8tfRlFff5aI4dfXSACZKbsT2g==
-X-Google-Smtp-Source: APXvYqyaz4WooYVH0MovbEKdzVBQ5/Qw3vKLe6a3XPP8EqWzx6VZi1Qxz7mprYMkjeQOgGqsUu8cdkIjl+mnyg==
-X-Received: by 2002:ab0:710c:: with SMTP id x12mr56201669uan.81.1578319843021;
- Mon, 06 Jan 2020 06:10:43 -0800 (PST)
-Date:   Mon,  6 Jan 2020 06:10:39 -0800
-Message-Id: <20200106141039.204089-1-edumazet@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.24.1.735.g03f4e72817-goog
-Subject: [PATCH net] pkt_sched: fq: do not accept silly TCA_FQ_QUANTUM
-From:   Eric Dumazet <edumazet@google.com>
-To:     "David S . Miller" <davem@davemloft.net>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Florian Westphal <fw@strlen.de>,
-        syzbot+dc9071cc5a85950bdfce@syzkaller.appspotmail.com
+        id S1726427AbgAFOTo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Jan 2020 09:19:44 -0500
+Received: from szxga04-in.huawei.com ([45.249.212.190]:8681 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726303AbgAFOTo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 6 Jan 2020 09:19:44 -0500
+Received: from DGGEMS413-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id BDCF4F26A169909898F5;
+        Mon,  6 Jan 2020 22:19:35 +0800 (CST)
+Received: from huawei.com (10.175.124.28) by DGGEMS413-HUB.china.huawei.com
+ (10.3.19.213) with Microsoft SMTP Server id 14.3.439.0; Mon, 6 Jan 2020
+ 22:19:24 +0800
+From:   yu kuai <yukuai3@huawei.com>
+To:     <klassert@kernel.org>, <davem@davemloft.net>,
+        <hkallweit1@gmail.com>, <jakub.kicinski@netronome.com>,
+        <hslester96@gmail.com>, <mst@redhat.com>, <yang.wei9@zte.com.cn>,
+        <willy@infradead.org>, <netdev@vger.kernel.org>
+CC:     <yukuai3@huawei.com>, <yi.zhang@huawei.com>,
+        <zhengbin13@huawei.com>
+Subject: [PATCH V3] net: 3com: 3c59x: remove set but not used variable 'mii_reg1'
+Date:   Mon, 6 Jan 2020 22:18:45 +0800
+Message-ID: <20200106141845.18151-1-yukuai3@huawei.com>
+X-Mailer: git-send-email 2.17.2
+MIME-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.175.124.28]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As diagnosed by Florian :
+Fixes gcc '-Wunused-but-set-variable' warning:
 
-If TCA_FQ_QUANTUM is set to 0x80000000, fq_deueue()
-can loop forever in :
+drivers/net/ethernet/3com/3c59x.c: In function ‘vortex_up’:
+drivers/net/ethernet/3com/3c59x.c:1551:9: warning: variable
+‘mii_reg1’ set but not used [-Wunused-but-set-variable]
 
-if (f->credit <= 0) {
-  f->credit += q->quantum;
-  goto begin;
-}
+It is never used, and so can be removed.
 
-... because f->credit is either 0 or -2147483648.
-
-Let's limit TCA_FQ_QUANTUM to no more than 1 << 20 :
-This max value should limit risks of breaking user setups
-while fixing this bug.
-
-Fixes: afe4fd062416 ("pkt_sched: fq: Fair Queue packet scheduler")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Diagnosed-by: Florian Westphal <fw@strlen.de>
-Reported-by: syzbot+dc9071cc5a85950bdfce@syzkaller.appspotmail.com
+Signed-off-by: yu kuai <yukuai3@huawei.com>
 ---
- net/sched/sch_fq.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+changes in V2
+-The read might have side effects, don't remove it.
 
-diff --git a/net/sched/sch_fq.c b/net/sched/sch_fq.c
-index ff4c5e9d0d7778d86f20f4bd67cc627eed0713d9..a5a295477eccd52952e26e2ce121315341dddd0f 100644
---- a/net/sched/sch_fq.c
-+++ b/net/sched/sch_fq.c
-@@ -786,10 +786,12 @@ static int fq_change(struct Qdisc *sch, struct nlattr *opt,
- 	if (tb[TCA_FQ_QUANTUM]) {
- 		u32 quantum = nla_get_u32(tb[TCA_FQ_QUANTUM]);
+ drivers/net/ethernet/3com/3c59x.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/drivers/net/ethernet/3com/3c59x.c b/drivers/net/ethernet/3com/3c59x.c
+index fc046797c0ea..6e537e5dc208 100644
+--- a/drivers/net/ethernet/3com/3c59x.c
++++ b/drivers/net/ethernet/3com/3c59x.c
+@@ -1548,7 +1548,7 @@ vortex_up(struct net_device *dev)
+ 	struct vortex_private *vp = netdev_priv(dev);
+ 	void __iomem *ioaddr = vp->ioaddr;
+ 	unsigned int config;
+-	int i, mii_reg1, mii_reg5, err = 0;
++	int i, mii_reg5, err = 0;
  
--		if (quantum > 0)
-+		if (quantum > 0 && quantum <= (1 << 20)) {
- 			q->quantum = quantum;
--		else
-+		} else {
-+			NL_SET_ERR_MSG_MOD(extack, "invalid quantum");
- 			err = -EINVAL;
-+		}
- 	}
+ 	if (VORTEX_PCI(vp)) {
+ 		pci_set_power_state(VORTEX_PCI(vp), PCI_D0);	/* Go active */
+@@ -1605,7 +1605,7 @@ vortex_up(struct net_device *dev)
+ 	window_write32(vp, config, 3, Wn3_Config);
  
- 	if (tb[TCA_FQ_INITIAL_QUANTUM])
+ 	if (dev->if_port == XCVR_MII || dev->if_port == XCVR_NWAY) {
+-		mii_reg1 = mdio_read(dev, vp->phys[0], MII_BMSR);
++		mdio_read(dev, vp->phys[0], MII_BMSR);
+ 		mii_reg5 = mdio_read(dev, vp->phys[0], MII_LPA);
+ 		vp->partner_flow_ctrl = ((mii_reg5 & 0x0400) != 0);
+ 		vp->mii.full_duplex = vp->full_duplex;
 -- 
-2.24.1.735.g03f4e72817-goog
+2.17.2
 
