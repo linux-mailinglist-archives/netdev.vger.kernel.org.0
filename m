@@ -2,59 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 84754130AB2
-	for <lists+netdev@lfdr.de>; Mon,  6 Jan 2020 00:13:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CAC24130AF1
+	for <lists+netdev@lfdr.de>; Mon,  6 Jan 2020 01:40:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727217AbgAEXN1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 5 Jan 2020 18:13:27 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:42596 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726494AbgAEXN1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 5 Jan 2020 18:13:27 -0500
-Received: from localhost (unknown [IPv6:2601:601:9f00:1c3::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id CAF5615714151;
-        Sun,  5 Jan 2020 15:13:26 -0800 (PST)
-Date:   Sun, 05 Jan 2020 15:13:26 -0800 (PST)
-Message-Id: <20200105.151326.1142785260688730914.davem@davemloft.net>
-To:     olteanv@gmail.com
-Cc:     f.fainelli@gmail.com, vivien.didelot@gmail.com, andrew@lunn.ch,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH v2 net-next 0/3] Improvements to the DSA deferred xmit
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200104003711.18366-1-olteanv@gmail.com>
-References: <20200104003711.18366-1-olteanv@gmail.com>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
+        id S1726788AbgAFAks (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 Jan 2020 19:40:48 -0500
+Received: from mail-pl1-f196.google.com ([209.85.214.196]:36309 "EHLO
+        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726496AbgAFAks (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 5 Jan 2020 19:40:48 -0500
+Received: by mail-pl1-f196.google.com with SMTP id a6so20452025plm.3
+        for <netdev@vger.kernel.org>; Sun, 05 Jan 2020 16:40:47 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:subject:message-id:mime-version
+         :content-transfer-encoding;
+        bh=blNSsCKp4husVO2Af0BOYpXVQnjJZ7QeuE2gH9pnnQc=;
+        b=NCemfYb1ZJ/O0T3P/HJzIJi/v2ZqLzAwEbBj+mXPdN9lFMfX2VdXh6FCEX6mwbEg3j
+         0vSCBjR6x1Sc2NRzkk6j0rp7t8kqZCKpIX9JpWQGi+israKTUGIHC/y8NC3firg3c6/n
+         y1z6sATvU7PmFNhlUn4T1AOEpRcJkt1VOcZDWv9hAIylkVXJRr02yxjbfr7gjiqB5qf+
+         lNfj5OK5+GTxlskLl8raTwFq8QtFo23WUDlrKs4lnhvDtCM7TfxmEkl6z42c3jseEHxg
+         JKbDG6w+dwrCX1xUoqiZIKtEWyMosS6f6ctunavJo/VpY0u/zhwTkL5k5Off40iB0AwM
+         Di1Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:subject:message-id:mime-version
+         :content-transfer-encoding;
+        bh=blNSsCKp4husVO2Af0BOYpXVQnjJZ7QeuE2gH9pnnQc=;
+        b=b0xW01RNPQX+iPICkRDc9l/qZPnpZEiyMJkIKGeXap3jlG2O+KuodEZ6SBRseXN+UO
+         nHz7qQOnnb5xx+WpICI1YY5MdYwVeReL+ojWHAqQun+nl2JZV8r7VR4SSVLEh/8VYyQm
+         LCM0Nmt7bAyu4nrSstJkxRKGSq/IwVRJHGW90pAQqA5NNYjncP5JR3flIUd4yArs1W/S
+         g5FzdBbF2MO6/ut7Ywn/jekUAVoLcjmRtIDboTaX2kj0jR30Ris/TAgkVc3kxQEJ2plu
+         FsUDKGIPr93I8pNXeI9a41zP/3sK9CJYOppiHKMrUfNqW7pWKeDGkczfMKFxyG77HrEg
+         ymcw==
+X-Gm-Message-State: APjAAAVP06nURKCwKLL0x1JKz4+156YOh8B3MM2d5YkQ1tAG2fQlm7Zt
+        0KUVw4jx4UJb7qywaPbMShTh6INEyUg=
+X-Google-Smtp-Source: APXvYqwEn63IjgMIUZJtsJc1Y5BIoVxx6xsQzgjokYkTJYewKpraODa+RCqr3D7a2h+gLMk0RXR3Ew==
+X-Received: by 2002:a17:90a:f88:: with SMTP id 8mr41389835pjz.72.1578271246656;
+        Sun, 05 Jan 2020 16:40:46 -0800 (PST)
+Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id s185sm55176790pfc.35.2020.01.05.16.40.45
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 05 Jan 2020 16:40:46 -0800 (PST)
+Date:   Sun, 5 Jan 2020 16:40:38 -0800
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     netdev@vger.kernel.org
+Subject: Fw: [Bug 206089] New: veth, virtio tx checksum wrong, forwarding
+ drops packets
+Message-ID: <20200105164038.03dcb625@hermes.lan>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sun, 05 Jan 2020 15:13:27 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Oltean <olteanv@gmail.com>
-Date: Sat,  4 Jan 2020 02:37:08 +0200
 
-> After the feedback received on v1:
-> https://www.spinics.net/lists/netdev/msg622617.html
-> 
-> I've decided to move the deferred xmit implementation completely within
-> the sja1105 driver.
-> 
-> The executive summary for this series is the same as it was for v1
-> (better for everybody):
-> 
-> - For those who don't use it, thanks to one less assignment in the
->   hotpath (and now also thanks to less code in the DSA core)
-> - For those who do, by making its scheduling more amenable and moving it
->   outside the generic workqueue (since it still deals with packet
->   hotpath, after all)
-> 
-> There are some simplification (1/3) and cosmetic (3/3) patches in the
-> areas next to the code touched by the main patch (2/3).
 
-Series applied, thanks.
+Begin forwarded message:
+
+Date: Sun, 05 Jan 2020 21:34:41 +0000
+From: bugzilla-daemon@bugzilla.kernel.org
+To: stephen@networkplumber.org
+Subject: [Bug 206089] New: veth, virtio tx checksum wrong, forwarding drops packets
+
+
+https://bugzilla.kernel.org/show_bug.cgi?id=206089
+
+            Bug ID: 206089
+           Summary: veth, virtio tx checksum wrong, forwarding drops
+                    packets
+           Product: Networking
+           Version: 2.5
+    Kernel Version: 5.3.0-24-generic #26-Ubuntu SMP
+          Hardware: All
+                OS: Linux
+              Tree: Mainline
+            Status: NEW
+          Severity: normal
+          Priority: P1
+         Component: IPV4
+          Assignee: stephen@networkplumber.org
+          Reporter: hcoin@quietfountain.com
+        Regression: No
+
+Both using ipv4 and ipv6 when iface below is a:
+virtio net driver in a kvm 
+and
+on baremetal when one end of a veth pair when the other end is in a filtering
+bridge:
+
+ethtool -K iface tx-checksum-ip-generic on
+echo -n "rsschecksum test" | nc -w 3 -4 -u -b -s 192.168.172.3 192.168.172.63
+52722
+tcpdump -e -p -c 3 -n -vv -i iface ...
+
+Bad TX Checksum generated by interface cephnoc0iface
+15:04:21.350281 52:54:bc:75:61:1b > ff:ff:ff:ff:ff:ff, ethertype IPv4 (0x0800),
+length 58: (tos 0x0, ttl 64, id 39761, offset 0, flags [DF], proto UDP (17),
+length 44)
+192.168.172.3.48926 > 192.168.172.63.52722: [bad udp cksum 0xd9bd -> 0x1f01!]
+UDP, length 16
+
+But when
+
+ethtool -K iface tx-checksum-ip-generic off
+echo -n "rsschecksum test" | nc -w 3 -4 -u -b -s 192.168.172.3 192.168.172.63
+52722
+tcpdump -e -p -c 3 -n -vv -i iface ...
+tcpdump: listening on ens3, link-type EN10MB (Ethernet), capture size 262144
+bytes
+14:06:50.791664 52:54:00:0b:3d:7c > 52:54:a2:98:33:f0, ethertype IPv4 (0x0800),
+length 61: (tos 0x0, ttl 64, id 9609, offset 0, flags [DF], proto UDP (17),
+length 47)
+10.12.112.180.34476 > 10.12.112.65.52722: [udp sum ok] UDP, length 19
+14:06:50.791734 52:54:00:0b:3d:7c > 52:54:e6:39:16:e8, ethertype IPv4 (0x0800),
+length 61: (tos 0x0, ttl 64, id 20912, offset 0, flags [DF], proto UDP (17),
+length 47)
+10.12.112.180.34476 > 10.12.112.66.52722: [udp sum ok] UDP, length 19
+14:06:50.791784 52:54:00:0b:3d:7c > 52:54:da:59:f5:e0, ethertype IPv4 (0x0800),
+length 61: (tos 0x0, ttl 64, id 1977, offset 0, flags [DF], proto UDP (17),
+length 47)
+10.12.112.180.34476 > 10.12.112.67.52722: [udp sum ok] UDP, length 19
+
+The problem was detected when packets got dropped passing through all-linux
+routers and filtering vlan bridges.  A vanilla VM instance running chrony on
+one VM couldn't access an ntpsec time server on a different subnet running on
+bare metal on a physically adjacent server using ipv6.   The above examples are
+ip4, but the results are the same with ip6.  The above examples are udp, the
+results are the same with tcp.
+
+-- 
+You are receiving this mail because:
+You are the assignee for the bug.
