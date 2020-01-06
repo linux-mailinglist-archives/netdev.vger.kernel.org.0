@@ -2,134 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B78713172B
-	for <lists+netdev@lfdr.de>; Mon,  6 Jan 2020 19:02:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7410E131781
+	for <lists+netdev@lfdr.de>; Mon,  6 Jan 2020 19:30:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726701AbgAFSCP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Jan 2020 13:02:15 -0500
-Received: from mail-vi1eur05on2059.outbound.protection.outlook.com ([40.107.21.59]:39567
-        "EHLO EUR05-VI1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726677AbgAFSCP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 6 Jan 2020 13:02:15 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=RcPdSltryTFr9N3+AObgm/zDf2tY6H0uMjTfgHa7CwU3WIQzFkKoS2TchqrI/Lm2V/2AbMCUrETGIy2/xofDKieuMJL5+H2FxwKH9NkvmJO1yZc9IMhAX1xUeFxLw57OEGY/aaRTdqccHs+PMdTPUw4VHIrAJw5RRSKYz/zDLopGvz4qH2j7bXPA5SApaFc6CtjfLrS/0eCJo1I4BsnFAmIvZ6pSbUuu2IDRIXuaMNWZ05tqU6fbNukPujN1YG/sh7ucu+V3Wkj0BBTK/9qrmzb4doLv0ZIfQSNmFds2IyVq95UPRZhYV1z/0JijiSmPGxXGoTZ5BHE9yko82UKfRQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=X6Txzk6m825/7W9xpHnAbt85HYpxSqckyv1boHUAkvc=;
- b=H1AgjMIjpM/kcmkedKNPQ5wu7MCzHVikoUqa5D+mxWFSf+AKLte7d3ud3INwCAqB9dlbE1hNfwq7VVl14Ik1DxsbQrB84TacGxDRxZlxQVTz7HTyY1xokQYzCHO+puuIYw4/52C4rA9lpMfQzUcolitxgOD1nYSmZ6RI87YZ1rRW1xe/pFxOeHlMvaI0BeIE/jpRAfgShEvIMAKDF6zmiSybu8O5oh5Q6JvSSKT2uM/N4WzozkwvIkUyFrYEaqOaiNm7bRpsqgJOo5EiCizjVaUrBXNSZep2BHPoWqbGoeFeQl74ptOzjxOfZciGdgkO66fQBxf3lYIw1XGbnFUEwQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=X6Txzk6m825/7W9xpHnAbt85HYpxSqckyv1boHUAkvc=;
- b=kw7uSMpEEVWCDPMr3HLVxla0KGVv2SqnHGFxDqQ5aLx4NspbysHP/N8mZOrGrlLM109knbP7cxkUszNz2mxY6muCHzkn2f0aD2MDPEveyFX5w0XFjPJdGn13p6L5fvzfYdIAuxYZB3cqeQ/mzU4gGxDFA3xxwj/YQOAz4sMhtjE=
-Received: from HE1PR05MB4746.eurprd05.prod.outlook.com (20.176.168.150) by
- HE1PR05MB4762.eurprd05.prod.outlook.com (20.176.164.27) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2602.15; Mon, 6 Jan 2020 18:01:56 +0000
-Received: from HE1PR05MB4746.eurprd05.prod.outlook.com
- ([fe80::4145:5526:973b:718b]) by HE1PR05MB4746.eurprd05.prod.outlook.com
- ([fe80::4145:5526:973b:718b%7]) with mapi id 15.20.2602.015; Mon, 6 Jan 2020
- 18:01:56 +0000
-Received: from dev-r-vrt-156.mtr.labs.mlnx (37.142.13.130) by PR0P264CA0100.FRAP264.PROD.OUTLOOK.COM (2603:10a6:100:19::16) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2602.11 via Frontend Transport; Mon, 6 Jan 2020 18:01:55 +0000
-From:   Petr Machata <petrm@mellanox.com>
-To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     Jiri Pirko <jiri@mellanox.com>, Petr Machata <petrm@mellanox.com>
-Subject: [PATCH net 2/2] net: sch_prio: When ungrafting, replace with FIFO
-Thread-Topic: [PATCH net 2/2] net: sch_prio: When ungrafting, replace with
- FIFO
-Thread-Index: AQHVxLtiAiT8Rf0SM0i7h94tzVo84w==
-Date:   Mon, 6 Jan 2020 18:01:56 +0000
-Message-ID: <ead37a85f4b86130add5d6756c0755a59d788822.1578333529.git.petrm@mellanox.com>
-References: <cover.1578333529.git.petrm@mellanox.com>
-In-Reply-To: <cover.1578333529.git.petrm@mellanox.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-mailer: git-send-email 2.20.1
-x-clientproxiedby: PR0P264CA0100.FRAP264.PROD.OUTLOOK.COM
- (2603:10a6:100:19::16) To HE1PR05MB4746.eurprd05.prod.outlook.com
- (2603:10a6:7:a3::22)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=petrm@mellanox.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [37.142.13.130]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 83e2d9dd-403b-43b6-f347-08d792d2848b
-x-ms-traffictypediagnostic: HE1PR05MB4762:|HE1PR05MB4762:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <HE1PR05MB4762DDD31721925FFCC85FD1DB3C0@HE1PR05MB4762.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:4303;
-x-forefront-prvs: 0274272F87
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(136003)(366004)(346002)(39860400002)(396003)(376002)(189003)(199004)(8676002)(86362001)(81166006)(6512007)(478600001)(36756003)(8936002)(52116002)(81156014)(16526019)(6506007)(66946007)(26005)(186003)(2616005)(956004)(6486002)(107886003)(2906002)(6916009)(4326008)(54906003)(71200400001)(5660300002)(66446008)(64756008)(66556008)(66476007)(316002);DIR:OUT;SFP:1101;SCL:1;SRVR:HE1PR05MB4762;H:HE1PR05MB4746.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: e9H9N9hfJg6wjLrOWk7zG34tKWQPflpVQU/pgOd6sIxpB0AUicD2PUnqChuOsrzi3gy6bAgxwF211a4E3qj4Xzr/9xdY5T3BtqjCW5H9FK9o8p87S7FTYwpPK5oTx1+ncp7R4YOPaHY2J9VszAvr9rth/4qhnPKsExc0KFaOig8/FzAlry23G4Z/oKFaRMoPydk3AHnANQ26wMKvZS9h3qsWBuRuhi4IeQSIN0+x4hZ3QmQm0098eeohXYgsqn5Pf4tUuAUPliNhZ6TDXLiqZbZejAv5ACdDBWE/YJJum0ZRmE/mVf7iw2fkC9ePBAzAjKbV0oWpzq8VeeERPNZesZbmK1/LYL2oWXgfPdRGJ/35aNdxtSqmGJd1Ina3rVX3OT9dVjB3Y4FgrlQbbyjskwb5WSfqSHrvthuW+kpI7qnFEBMp1/8tmvgre8TuvDeJ
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+        id S1726707AbgAFSav (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Jan 2020 13:30:51 -0500
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:35604 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726569AbgAFSau (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jan 2020 13:30:50 -0500
+Received: by mail-pf1-f196.google.com with SMTP id i23so21909606pfo.2;
+        Mon, 06 Jan 2020 10:30:50 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=lwNkNxAxt5RiszwcMy9mSZOaABUAK2TKRwwI9nTvIPA=;
+        b=OBEQQ7h5YBXgMF9vHxc3LTGjNvuXMTpMN6IeQfezE/BkowPSN5m40RBPauWJO2OCGr
+         kGhCJOT2jl8BMQxtArH9HCE1TP0u3p2QzNBlJEqpFwc5iLZ/OVowlnywzp4lC5SkAjw2
+         OtcUL8WNtYKagndKP079qb4jkEBG6SVcM++PxlbwAmHQXGEUVHyVuRj97ZONdCi6Orkn
+         6AecgOb5MrNWitVZIpXxEGF7lfGCZYt9DgdKXcHlbxEd0zRBGPwpGkV48NGcTB/NVvVB
+         MYez+hh56qNUZO1LlEe61XidtKlxeiV7822wNibD51Vc+8Q8wO6rrHQfswQ5gkfs3FOp
+         ttJw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:autocrypt
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=lwNkNxAxt5RiszwcMy9mSZOaABUAK2TKRwwI9nTvIPA=;
+        b=I0fCDryXliRVdju/l8nXTIcHoDgYnlt2XdGnqyBTqx96IPMhvpOIpPFldHQzxxjB6S
+         3XcNA2FKiuVgGc8XbFjgCCIm5xdn8D6A2br9Ouo7BISJs40mryPuhtmnRWaLnuyLq+VE
+         vyEzRfyeLYw8tVG45Cuq3nacfHho3cKF2Bia87ho2AYUC1pgf4T13RON2ylEsqnET9zS
+         H+rasUjNi051QiqvNzkA+04sh2rI+LFo9FQmF8hA+xCEjRQOdsplCiEs1Kv+Nzq7dfGL
+         gl+u/54y39l5Ub5gG0wtTLselnqI47dE83BIQpQADxe4e4DaHoW8E+kXc/ChHDdktxQR
+         kNKQ==
+X-Gm-Message-State: APjAAAXt3WchupwIgDSq3JEpYqZX+jg6PgA8yPfXe0APbTKT3aM8wlUJ
+        FsPbflOy8rVSEKWOf6/LsA0=
+X-Google-Smtp-Source: APXvYqx2TVS5+rcoh7wX9izDROc4BancdTh5JRPSgHF2j3R7r4eTVTYhzUli8HJLVZa7hfnLsSjY5w==
+X-Received: by 2002:a63:1402:: with SMTP id u2mr111004301pgl.224.1578335449643;
+        Mon, 06 Jan 2020 10:30:49 -0800 (PST)
+Received: from [10.67.50.49] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id 68sm73027752pge.14.2020.01.06.10.30.48
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 06 Jan 2020 10:30:49 -0800 (PST)
+Subject: Re: [PATCH net-next v2 1/3] wil6210: get rid of begin() and
+ complete() ethtool_ops
+To:     Michal Kubecek <mkubecek@suse.cz>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Cc:     Maya Erez <merez@codeaurora.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        linux-wireless@vger.kernel.org, wil6210@qti.qualcomm.com,
+        Francois Romieu <romieu@fr.zoreil.com>,
+        linux-kernel@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>
+References: <cover.1578292157.git.mkubecek@suse.cz>
+ <27c09c8633c2c34a78ae528e5f4850bcd964acc7.1578292157.git.mkubecek@suse.cz>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
+ xsDiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
+ xGlkaOSDuu09rxuW+69Y2f1TzjFuGpBk4ysWOR85O2Nx8AJ6fYGCoeTbovrNlGT1M9obSFGQ
+ X3IzRnWoqlfudjTO5TKoqkbOgpYqIo5n1QbEjCCwCwCg3DOH/4ug2AUUlcIT9/l3pGvoRJ0E
+ AICDzi3l7pmC5IWn2n1mvP5247urtHFs/uusE827DDj3K8Upn2vYiOFMBhGsxAk6YKV6IP0d
+ ZdWX6fqkJJlu9cSDvWtO1hXeHIfQIE/xcqvlRH783KrihLcsmnBqOiS6rJDO2x1eAgC8meAX
+ SAgsrBhcgGl2Rl5gh/jkeA5ykwbxA/9u1eEuL70Qzt5APJmqVXR+kWvrqdBVPoUNy/tQ8mYc
+ nzJJ63ng3tHhnwHXZOu8hL4nqwlYHRa9eeglXYhBqja4ZvIvCEqSmEukfivk+DlIgVoOAJbh
+ qIWgvr3SIEuR6ayY3f5j0f2ejUMYlYYnKdiHXFlF9uXm1ELrb0YX4GMHz80nRmxvcmlhbiBG
+ YWluZWxsaSA8Zi5mYWluZWxsaUBnbWFpbC5jb20+wmYEExECACYCGyMGCwkIBwMCBBUCCAME
+ FgIDAQIeAQIXgAUCVF/S8QUJHlwd3wAKCRBhV5kVtWN2DvCVAJ4u4/bPF4P3jxb4qEY8I2gS
+ 6hG0gACffNWlqJ2T4wSSn+3o7CCZNd7SLSDOwU0EVxvH8AEQAOqv6agYuT4x3DgFIJNv9i0e
+ S443rCudGwmg+CbjXGA4RUe1bNdPHYgbbIaN8PFkXfb4jqg64SyU66FXJJJO+DmPK/t7dRNA
+ 3eMB1h0GbAHlLzsAzD0DKk1ARbjIusnc02aRQNsAUfceqH5fAMfs2hgXBa0ZUJ4bLly5zNbr
+ r0t/fqZsyI2rGQT9h1D5OYn4oF3KXpSpo+orJD93PEDeseho1EpmMfsVH7PxjVUlNVzmZ+tc
+ IDw24CDSXf0xxnaojoicQi7kzKpUrJodfhNXUnX2JAm/d0f9GR7zClpQMezJ2hYAX7BvBajb
+ Wbtzwi34s8lWGI121VjtQNt64mSqsK0iQAE6OYk0uuQbmMaxbBTT63+04rTPBO+gRAWZNDmQ
+ b2cTLjrOmdaiPGClSlKx1RhatzW7j1gnUbpfUl91Xzrp6/Rr9BgAZydBE/iu57KWsdMaqu84
+ JzO9UBGomh9eyBWBkrBt+Fe1qN78kM7JO6i3/QI56NA4SflV+N4PPgI8TjDVaxgrfUTV0gVa
+ cr9gDE5VgnSeSiOleChM1jOByZu0JTShOkT6AcSVW0kCz3fUrd4e5sS3J3uJezSvXjYDZ53k
+ +0GS/Hy//7PSvDbNVretLkDWL24Sgxu/v8i3JiYIxe+F5Br8QpkwNa1tm7FK4jOd95xvYADl
+ BUI1EZMCPI7zABEBAAHCwagEGBECAAkFAlcbx/ACGwICKQkQYVeZFbVjdg7BXSAEGQECAAYF
+ Alcbx/AACgkQh9CWnEQHBwSJBw//Z5n6IO19mVzMy/ZLU/vu8flv0Aa0kwk5qvDyvuvfiDTd
+ WQzq2PLs+obX0y1ffntluhvP+8yLzg7h5O6/skOfOV26ZYD9FeV3PIgR3QYF26p2Ocwa3B/k
+ P6ENkk2pRL2hh6jaA1Bsi0P34iqC2UzzLq+exctXPa07ioknTIJ09BT31lQ36Udg7NIKalnj
+ 5UbkRjqApZ+Rp0RAP9jFtq1n/gjvZGyEfuuo/G+EVCaiCt3Vp/cWxDYf2qsX6JxkwmUNswuL
+ C3duQ0AOMNYrT6Pn+Vf0kMboZ5UJEzgnSe2/5m8v6TUc9ZbC5I517niyC4+4DY8E2m2V2LS9
+ es9uKpA0yNcd4PfEf8bp29/30MEfBWOf80b1yaubrP5y7yLzplcGRZMF3PgBfi0iGo6kM/V2
+ 13iD/wQ45QTV0WTXaHVbklOdRDXDHIpT69hFJ6hAKnnM7AhqZ70Qi31UHkma9i/TeLLzYYXz
+ zhLHGIYaR04dFT8sSKTwTSqvm8rmDzMpN54/NeDSoSJitDuIE8givW/oGQFb0HGAF70qLgp0
+ 2XiUazRyRU4E4LuhNHGsUxoHOc80B3l+u3jM6xqJht2ZyMZndbAG4LyVA2g9hq2JbpX8BlsF
+ skzW1kbzIoIVXT5EhelxYEGqLFsZFdDhCy8tjePOWK069lKuuFSssaZ3C4edHtkZ8gCfWWtA
+ 8dMsqeOIg9Trx7ZBCDOZGNAAnjYQmSb2eYOAti3PX3Ex7vI8ZhJCzsNNBEjPuBIQEAC/6NPW
+ 6EfQ91ZNU7e/oKWK91kOoYGFTjfdOatp3RKANidHUMSTUcN7J2mxww80AQHKjr3Yu2InXwVX
+ SotMMR4UrkQX7jqabqXV5G+88bj0Lkr3gi6qmVkUPgnNkIBe0gaoM523ujYKLreal2OQ3GoJ
+ PS6hTRoSUM1BhwLCLIWqdX9AdT6FMlDXhCJ1ffA/F3f3nTN5oTvZ0aVF0SvQb7eIhGVFxrlb
+ WS0+dpyulr9hGdU4kzoqmZX9T/r8WCwcfXipmmz3Zt8o2pYWPMq9Utby9IEgPwultaP06MHY
+ nhda1jfzGB5ZKco/XEaXNvNYADtAD91dRtNGMwRHWMotIGiWwhEJ6vFc9bw1xcR88oYBs+7p
+ gbFSpmMGYAPA66wdDKGj9+cLhkd0SXGht9AJyaRA5AWB85yNmqcXXLkzzh2chIpSEawRsw8B
+ rQIZXc5QaAcBN2dzGN9UzqQArtWaTTjMrGesYhN+aVpMHNCmJuISQORhX5lkjeg54oplt6Zn
+ QyIsOCH3MfG95ha0TgWwyFtdxOdY/UY2zv5wGivZ3WeS0TtQf/BcGre2y85rAohFziWOzTaS
+ BKZKDaBFHwnGcJi61Pnjkz82hena8OmsnsBIucsz4N0wE+hVd6AbDYN8ZcFNIDyt7+oGD1+c
+ PfqLz2df6qjXzq27BBUboklbGUObNwADBQ//V45Z51Q4fRl/6/+oY5q+FPbRLDPlUF2lV6mb
+ hymkpqIzi1Aj/2FUKOyImGjbLAkuBQj3uMqy+BSSXyQLG3sg8pDDe8AJwXDpG2fQTyTzQm6l
+ OnaMCzosvALk2EOPJryMkOCI52+hk67cSFA0HjgTbkAv4Mssd52y/5VZR28a+LW+mJIZDurI
+ Y14UIe50G99xYxjuD1lNdTa/Yv6qFfEAqNdjEBKNuOEUQOlTLndOsvxOOPa1mRUk8Bqm9BUt
+ LHk3GDb8bfDwdos1/h2QPEi+eI+O/bm8YX7qE7uZ13bRWBY+S4+cd+Cyj8ezKYAJo9B+0g4a
+ RVhdhc3AtW44lvZo1h2iml9twMLfewKkGV3oG35CcF9mOd7n6vDad3teeNpYd/5qYhkopQrG
+ k2oRBqxyvpSLrJepsyaIpfrt5NNaH7yTCtGXcxlGf2jzGdei6H4xQPjDcVq2Ra5GJohnb/ix
+ uOc0pWciL80ohtpSspLlWoPiIowiKJu/D/Y0bQdatUOZcGadkywCZc/dg5hcAYNYchc8AwA4
+ 2dp6w8SlIsm1yIGafWlNnfvqbRBglSTnxFuKqVggiz2zk+1wa/oP+B96lm7N4/3Aw6uy7lWC
+ HvsHIcv4lxCWkFXkwsuWqzEKK6kxVpRDoEQPDj+Oy/ZJ5fYuMbkdHrlegwoQ64LrqdmiVVPC
+ TwQYEQIADwIbDAUCVF/S8QUJHlwd3wAKCRBhV5kVtWN2Do+FAJ956xSz2XpDHql+Wg/2qv3b
+ G10n8gCguORqNGMsVRxrlLs7/himep7MrCc=
+Message-ID: <e491e623-dd95-b453-4656-c18f6526562c@gmail.com>
+Date:   Mon, 6 Jan 2020 10:30:47 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 83e2d9dd-403b-43b6-f347-08d792d2848b
-X-MS-Exchange-CrossTenant-originalarrivaltime: 06 Jan 2020 18:01:56.3534
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 5vGfuFbHdSwGU8DG6pN91IHiSKG+YSHQrGwSJ4VtZsXGJKux9tp2uiWFdj1kB5T3iLkzb17XsklxaxrNLecL0g==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: HE1PR05MB4762
+In-Reply-To: <27c09c8633c2c34a78ae528e5f4850bcd964acc7.1578292157.git.mkubecek@suse.cz>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When a child Qdisc is removed from one of the PRIO Qdisc's bands, it is
-replaced unconditionally by a NOOP qdisc. As a result, any traffic hitting
-that band gets dropped. That is incorrect--no Qdisc was explicitly added
-when PRIO was created, and after removal, none should have to be added
-either.
+On 1/5/20 10:39 PM, Michal Kubecek wrote:
+> The wil6210 driver locks a mutex in begin() ethtool_ops callback and
+> unlocks it in complete() so that all ethtool requests are serialized. This
+> is not going to work correctly with netlink interface; e.g. when ioctl
+> triggers a netlink notification, netlink code would call begin() again
+> while the mutex taken by ioctl code is still held by the same task.
+> 
+> Let's get rid of the begin() and complete() callbacks and move the mutex
+> locking into the remaining ethtool_ops handlers except get_drvinfo which
+> only copies strings that are not changing so that there is no need for
+> serialization.
+> 
+> Signed-off-by: Michal Kubecek <mkubecek@suse.cz>
 
-Fix PRIO by first attempting to create a default Qdisc and only falling
-back to noop when that fails. This pattern of attempting to create an
-invisible FIFO, using NOOP only as a fallback, is also seen in other
-Qdiscs.
-
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Petr Machata <petrm@mellanox.com>
-Acked-by: Jiri Pirko <jiri@mellanox.com>
----
- net/sched/sch_prio.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
-
-diff --git a/net/sched/sch_prio.c b/net/sched/sch_prio.c
-index 18b884cfdfe8..647941702f9f 100644
---- a/net/sched/sch_prio.c
-+++ b/net/sched/sch_prio.c
-@@ -292,8 +292,14 @@ static int prio_graft(struct Qdisc *sch, unsigned long=
- arg, struct Qdisc *new,
- 	struct tc_prio_qopt_offload graft_offload;
- 	unsigned long band =3D arg - 1;
-=20
--	if (new =3D=3D NULL)
--		new =3D &noop_qdisc;
-+	if (!new) {
-+		new =3D qdisc_create_dflt(sch->dev_queue, &pfifo_qdisc_ops,
-+					TC_H_MAKE(sch->handle, arg), extack);
-+		if (!new)
-+			new =3D &noop_qdisc;
-+		else
-+			qdisc_hash_add(new, true);
-+	}
-=20
- 	*old =3D qdisc_replace(sch, new, &q->queues[band]);
-=20
---=20
-2.20.1
-
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
