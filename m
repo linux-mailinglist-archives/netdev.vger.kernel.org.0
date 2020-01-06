@@ -2,68 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B676131AAA
-	for <lists+netdev@lfdr.de>; Mon,  6 Jan 2020 22:46:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 221B9131AAC
+	for <lists+netdev@lfdr.de>; Mon,  6 Jan 2020 22:47:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727001AbgAFVqL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Jan 2020 16:46:11 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:26237 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726731AbgAFVqL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jan 2020 16:46:11 -0500
+        id S1726760AbgAFVrV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Jan 2020 16:47:21 -0500
+Received: from us-smtp-1.mimecast.com ([207.211.31.81]:24246 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726683AbgAFVrV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jan 2020 16:47:21 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1578347170;
+        s=mimecast20190719; t=1578347240;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=LNwRHyI2AjpDdbwvKWA3E8D6dUXFXM87APIN8g0WhXQ=;
-        b=Ujw9mmvCDe6FQNuEx9s8F9ntY9p1bQ2JLQWS7k8f5mI8hSoRrnHOJ4HwjSJ+IiZYPPCVT3
-        cA/sPvxLVNyyYe0ZmWUNBc9uXtVqTbj9wuR1T93hRpEdHklM+mtEiS4cfzAQbiZZkUp0c7
-        jzEFw7MqIH9UPWjFCSYMIRkSpuHUq9k=
+        bh=wVymaL2YR0nFZX0XYU+2dgAryYfSl5ztE4IIW1BSF58=;
+        b=eGMOjc58zkM3U+7bNnKBdvCHCjxyhGoIjIM/pYrpsFWt4BnnmkOQx728N2pS6Mn7cBI7T0
+        9/ZqZyFAZsrXDkhWKwCCA4DOAjzlkhUua963izjzP/xl31cW+Ju8Oq5qWpAzRMmmGUjqMX
+        9joMNyp7RjUwZKPkp6gqNJ9ugdu+28A=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-174-3Mf2JKw9MZisqS9uRU7tBA-1; Mon, 06 Jan 2020 16:46:06 -0500
-X-MC-Unique: 3Mf2JKw9MZisqS9uRU7tBA-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+ us-mta-271-TCcTQo0nM-aMoZc71vjK0A-1; Mon, 06 Jan 2020 16:47:15 -0500
+X-MC-Unique: TCcTQo0nM-aMoZc71vjK0A-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 90D72801E6C;
-        Mon,  6 Jan 2020 21:46:01 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 9C0D3801E77;
+        Mon,  6 Jan 2020 21:47:13 +0000 (UTC)
 Received: from localhost (ovpn-112-4.rdu2.redhat.com [10.10.112.4])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id C192160CD1;
-        Mon,  6 Jan 2020 21:45:58 +0000 (UTC)
-Date:   Mon, 06 Jan 2020 13:45:57 -0800 (PST)
-Message-Id: <20200106.134557.2214546621758238890.davem@redhat.com>
-To:     jiping.ma2@windriver.com
+        by smtp.corp.redhat.com (Postfix) with ESMTP id B113E85882;
+        Mon,  6 Jan 2020 21:47:10 +0000 (UTC)
+Date:   Mon, 06 Jan 2020 13:47:09 -0800 (PST)
+Message-Id: <20200106.134709.1814886107715198121.davem@redhat.com>
+To:     wens@kernel.org
 Cc:     peppe.cavallaro@st.com, alexandre.torgue@st.com,
-        joabreu@synopsys.com, mcoquelin.stm32@gmail.com,
+        joabreu@synopsys.com, mripard@kernel.org, wens@csie.org,
         netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-stm32@st-md-mailman.stormreply.com,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] stmmac: debugfs entry name is not be changed when udev
- rename device name.
+Subject: Re: [PATCH netdev] net: stmmac: dwmac-sunxi: Allow all RGMII modes
 From:   David Miller <davem@redhat.com>
-In-Reply-To: <20200106023341.206459-1-jiping.ma2@windriver.com>
-References: <20200106023341.206459-1-jiping.ma2@windriver.com>
+In-Reply-To: <20200106030922.19721-1-wens@kernel.org>
+References: <20200106030922.19721-1-wens@kernel.org>
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jiping Ma <jiping.ma2@windriver.com>
-Date: Mon, 6 Jan 2020 10:33:41 +0800
+From: Chen-Yu Tsai <wens@kernel.org>
+Date: Mon,  6 Jan 2020 11:09:22 +0800
 
-> Add one notifier for udev changes net device name.
-> 
-> Signed-off-by: Jiping Ma <jiping.ma2@windriver.com>
+> Maybe CC stable so future device trees can be used with stable kernels?
 
-This doesn't apply to 'net' and since this is a bug fix that is where
-you should target this change.
-
-Thank you.
+Please read the netdev FAQ, you should never CC: stable for networking
+changes.
 
