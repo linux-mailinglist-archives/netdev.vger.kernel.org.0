@@ -2,72 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 50765131A97
-	for <lists+netdev@lfdr.de>; Mon,  6 Jan 2020 22:39:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3493D131A9A
+	for <lists+netdev@lfdr.de>; Mon,  6 Jan 2020 22:40:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726739AbgAFVjA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Jan 2020 16:39:00 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:44781 "EHLO
+        id S1726906AbgAFVkG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Jan 2020 16:40:06 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:34475 "EHLO
         us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726713AbgAFVjA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jan 2020 16:39:00 -0500
+        with ESMTP id S1726713AbgAFVkF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jan 2020 16:40:05 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1578346739;
+        s=mimecast20190719; t=1578346804;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=f0LgFNwZxihKfuviANiCqT3WVQL5fQ8EuZV/o+jTQC4=;
-        b=d+tCQ99rTCvN7+rTRZ+HXeAhgJscB354RChdh66pYt/xL8IltghHxvF3I/kMVR8t797Bc7
-        6Q9FUaKhtzPpNhMsys6dc3VKZ0xzBDc/5TuCa+bD17OMqv0AFrWFssmS9zNe7PrNG428G3
-        9Up7Xiu8O8dyckesIRJiukoO8zDCnqA=
+        bh=92IBDcXHrCniaPpYzIDDSbya4Iw/pUq5jseI84k5wbg=;
+        b=YapnuVqdzHjiTKWi2t/GNa1WK3AtQxGeKso78MkqvQCM65aIWCzGUynduWBAmhdQHkt7tT
+        +hHlZb23ch4tZd6jfc+aix3Et5OAmC2W6UcKLPQggW2kU3Dh2y67K+qRIX7g0QQRdOf8ub
+        PKEBljmJdfFePiupz3Tvgd3pGE8Z1ms=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-45-ommxtHHzN_y21C5mKPV7Zg-1; Mon, 06 Jan 2020 16:38:55 -0500
-X-MC-Unique: ommxtHHzN_y21C5mKPV7Zg-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+ us-mta-226-VkcnwEa9M_2i3M_AYQK7-Q-1; Mon, 06 Jan 2020 16:40:00 -0500
+X-MC-Unique: VkcnwEa9M_2i3M_AYQK7-Q-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id F215D801E76;
-        Mon,  6 Jan 2020 21:38:53 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 598AF10054E3;
+        Mon,  6 Jan 2020 21:39:58 +0000 (UTC)
 Received: from localhost (ovpn-112-4.rdu2.redhat.com [10.10.112.4])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 1A4557DB5F;
-        Mon,  6 Jan 2020 21:38:51 +0000 (UTC)
-Date:   Mon, 06 Jan 2020 13:38:50 -0800 (PST)
-Message-Id: <20200106.133850.2113771138393198443.davem@redhat.com>
-To:     idosch@idosch.org
-Cc:     netdev@vger.kernel.org, jiri@mellanox.com, amitc@mellanox.com,
-        mlxsw@mellanox.com, idosch@mellanox.com
-Subject: Re: [PATCH net-next 0/8] mlxsw: Disable checks in hardware pipeline
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 0154D60E1C;
+        Mon,  6 Jan 2020 21:39:55 +0000 (UTC)
+Date:   Mon, 06 Jan 2020 13:39:54 -0800 (PST)
+Message-Id: <20200106.133954.516759492863458363.davem@redhat.com>
+To:     christophe.jaillet@wanadoo.fr
+Cc:     pablo@netfilter.org, laforge@gnumonks.org,
+        osmocom-net-gprs@lists.osmocom.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
+Subject: Re: [PATCH] gtp: simplify error handling code in
+ 'gtp_encap_enable()'
 From:   David Miller <davem@redhat.com>
-In-Reply-To: <20200105162057.182547-1-idosch@idosch.org>
-References: <20200105162057.182547-1-idosch@idosch.org>
+In-Reply-To: <20200105173607.5456-1-christophe.jaillet@wanadoo.fr>
+References: <20200105173607.5456-1-christophe.jaillet@wanadoo.fr>
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ido Schimmel <idosch@idosch.org>
-Date: Sun,  5 Jan 2020 18:20:49 +0200
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Date: Sun,  5 Jan 2020 18:36:07 +0100
 
-> From: Ido Schimmel <idosch@mellanox.com>
+> 'gtp_encap_disable_sock(sk)' handles the case where sk is NULL, so there
+> is no need to test it before calling the function.
 > 
-> Amit says:
+> This saves a few line of code.
 > 
-> The hardware pipeline contains some checks that, by default, are
-> configured to drop packets. Since the software data path does not drop
-> packets due to these reasons and since we are interested in offloading
-> the software data path to hardware, then these checks should be disabled
-> in the hardware pipeline as well.
-> 
-> This patch set changes mlxsw to disable four of these checks and adds
-> corresponding selftests. The tests pass both when the software data path
-> is exercised (using veth pair) and when the hardware data path is
-> exercised (using mlxsw ports in loopback).
+> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-Series applied, thanks.
+Applied to net-next.
 
