@@ -2,53 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C4717131C76
-	for <lists+netdev@lfdr.de>; Tue,  7 Jan 2020 00:36:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E987131C77
+	for <lists+netdev@lfdr.de>; Tue,  7 Jan 2020 00:36:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727366AbgAFXgp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Jan 2020 18:36:45 -0500
+        id S1727380AbgAFXgq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Jan 2020 18:36:46 -0500
 Received: from mail-eopbgr20053.outbound.protection.outlook.com ([40.107.2.53]:32391
         "EHLO EUR02-VE1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726735AbgAFXgo (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 6 Jan 2020 18:36:44 -0500
+        id S1727315AbgAFXgq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 6 Jan 2020 18:36:46 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Y0gPdmFMtIASgGQlKlhXCs+V3zYWxA8C3AtyfVC7oykjhO3FgstldlMhPGIJmP9zmZM1v26ok0hi5tugy+WC7asQrccj/4WcqTGhQAZyQtfCnNKQKZHaZ5V5/OZGNzSJbxcBv/30nTHhPyQLMO7VplVqqpqy7HrPSig9WQXoUqjpLx+HrRcaG/xf5l9oxDZZ1UbLpTuaHTvc6sEM5skeUnaL38ovvcFQiOupCIpP4JP9j1xxdhFamVw9lrfKX5HjCAa4prO1eZ1FCeS6d7DEmMUbhHdA1K2DPGwZ1j7qumYZeNE7ij6QH9DGf6PKu0zLqWEKoHh6Z0BWBT/LlU8jGg==
+ b=ItwTYqBuYzmgrQCukirAuYI66Jzl/JM9chjoXPTfnnyczADHoGa2Ln8xwFRW5Dk2D+hf0y53P/TeuYY7nNizLdQsWYIxR/TpA+dzHkE78vrt2R7WFV+fVHfSKnII0twGLQ2id0TElwhMVEShrfl9x8Ih0VeuBmuvUS925KHxCvn8unERIeNMPJZUxV1KfYbdNr6JHB2Xe7YKjQnEfTZ9k1QlATidLE6IJbAl/WlaB6Ssj9U5qHT778eH4E0NJNl0lwqXW20qh/sqUhcQlQK5HWCko36p3Uf7sKRKZh50g61k/jYLJ5YDYtDGQkrJ66h0upOVYhva+Z0Ubtob+4gH0Q==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ZptRjQBL6taTdzXIYNyQyn8zgwdUFkhJBbkbRNw+beQ=;
- b=KtdM+mgt+6/iQYKI0J6w3GLnIZFZCfIZAAIP3v/2nbsMbwakoFsH2JNS67U9HsMp96LiAjic9jKSBOdJj51wJrs4LOtJ6iCyRyYqLrU27UPNn4aJovM8JLPobsyz0aP4MfVB2Z+LsZlEVkNk6DLvmFh0EkEKMUzl7Q7WEnNrle3omzFhW6MoevcvS5dn/1IY+p1fcG6pWFAos36SuzDlyonCXjhWME9vOOGgaxyibBb2duH5gzcUzKe8G4Nd0knw27YzGmxXsqdSXBiBemwApjrxYZkKj2Oy0NLULNWuOgAMpjYLB959CS9BIoR3GSpGA3tn9c8kOgR93/qOLss7sw==
+ bh=JCPXvwjy2TchSoNTRqgANNwzbYQIoON24o5bAl5FDKc=;
+ b=cN2VXutv4xNQ/jl9q3KhamqiGTaG+Udy1zy1/UDkrOwF14/TxsuHQMg9MaEmAE1fePPU78Tn9wUYVMDTE4jq0NX/eojGskzVSIsw1McVhDkcU6A2Cy9/HRXPK/jcoPO5uJ58w3nLCsjjlizVIRAyABtPLWTUpys4jAPl1HCPp4TQHDxoM/LqgLmSJNw/kxlFoEr20UARcG4uJ7lnCcmHxd7gNQN1cmFd7KUfTnYAE1gFFvmi14NlZgqg20NkfZBq3osHFIVxf4wzaecy/XHtEKcrEmsi0yhNdw62Ff6LT1qGk1XAkXUO9Bdm24acbj4MedSF+7d1s7PXu7zVUv881g==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
  dkim=pass header.d=mellanox.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
  s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ZptRjQBL6taTdzXIYNyQyn8zgwdUFkhJBbkbRNw+beQ=;
- b=U4m7M8pYCquojqqexwD+6SYDPXhLZsCJ2IxfSpbJSu4fN0tVFDY9LBwLJP/lc9dhW0Y9FX7PvkJois9fwU/TnfBwsR9qatzA6Ce+F95rBpr2CKGVFcghJ9ZBtE/r+weHhXsdoFjd02H9VORAr7cnedfH+oxbwZkICGHHsG740l0=
+ bh=JCPXvwjy2TchSoNTRqgANNwzbYQIoON24o5bAl5FDKc=;
+ b=Q1fNJuaA5D+dPrRco0Cz8qE2obhYpGq+1975Ed5sfzFguZl3959lMeC/9Lj+Cs4KDWiQxmqVt/27mXo58DViZZw9OYdjwo6hdOFAPhL0Hx3yFk8GUDnj4eOQ+nPfZQ+uWKPmlTN2B3IpvYFLPtgWHmLP2fg6GGpu/lgpNK8elxc=
 Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (20.177.51.151) by
  VI1PR05MB6397.eurprd05.prod.outlook.com (20.179.25.77) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2602.15; Mon, 6 Jan 2020 23:36:31 +0000
+ 15.20.2602.15; Mon, 6 Jan 2020 23:36:33 +0000
 Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
  ([fe80::d830:96fc:e928:c096]) by VI1PR05MB5102.eurprd05.prod.outlook.com
  ([fe80::d830:96fc:e928:c096%6]) with mapi id 15.20.2602.015; Mon, 6 Jan 2020
- 23:36:31 +0000
-Received: from smtp.office365.com (209.116.155.178) by BYAPR05CA0090.namprd05.prod.outlook.com (2603:10b6:a03:e0::31) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2623.3 via Frontend Transport; Mon, 6 Jan 2020 23:36:29 +0000
+ 23:36:33 +0000
+Received: from smtp.office365.com (209.116.155.178) by BYAPR05CA0090.namprd05.prod.outlook.com (2603:10b6:a03:e0::31) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2623.3 via Frontend Transport; Mon, 6 Jan 2020 23:36:31 +0000
 From:   Saeed Mahameed <saeedm@mellanox.com>
 To:     "David S. Miller" <davem@davemloft.net>
 CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Yevgeny Kliteynik <kliteyn@mellanox.com>,
-        Alex Vesker <valex@mellanox.com>,
+        Eli Cohen <eli@mellanox.com>, Mark Bloch <markb@mellanox.com>,
         Saeed Mahameed <saeedm@mellanox.com>
-Subject: [net 5/7] net/mlx5: DR, No need for atomic refcount for internal SW
- steering resources
-Thread-Topic: [net 5/7] net/mlx5: DR, No need for atomic refcount for internal
- SW steering resources
-Thread-Index: AQHVxOofIvJ7NgJ/y0WQPgQn5eb+EQ==
-Date:   Mon, 6 Jan 2020 23:36:31 +0000
-Message-ID: <20200106233248.58700-6-saeedm@mellanox.com>
+Subject: [net 6/7] net/mlx5e: Fix hairpin RSS table size
+Thread-Topic: [net 6/7] net/mlx5e: Fix hairpin RSS table size
+Thread-Index: AQHVxOohhQa5pSl6s022N+4GiZZUlA==
+Date:   Mon, 6 Jan 2020 23:36:33 +0000
+Message-ID: <20200106233248.58700-7-saeedm@mellanox.com>
 References: <20200106233248.58700-1-saeedm@mellanox.com>
 In-Reply-To: <20200106233248.58700-1-saeedm@mellanox.com>
 Accept-Language: en-US
@@ -65,190 +62,128 @@ authentication-results: spf=none (sender IP is )
 x-ms-exchange-messagesentrepresentingtype: 1
 x-ms-publictraffictype: Email
 x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 492f157f-7e1f-4edf-6f51-08d79301422a
+x-ms-office365-filtering-correlation-id: 2e2daa37-9c58-4a03-6656-08d793014371
 x-ms-traffictypediagnostic: VI1PR05MB6397:|VI1PR05MB6397:
 x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VI1PR05MB6397678640CDEB97032ECE23BE3C0@VI1PR05MB6397.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:5797;
+x-microsoft-antispam-prvs: <VI1PR05MB6397B6FC9C176466EBE09C45BE3C0@VI1PR05MB6397.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:7219;
 x-forefront-prvs: 0274272F87
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(366004)(189003)(199004)(4326008)(5660300002)(2616005)(956004)(6916009)(54906003)(8936002)(498600001)(6512007)(26005)(107886003)(6666004)(81166006)(8676002)(71200400001)(81156014)(64756008)(66946007)(66446008)(66476007)(66556008)(52116002)(6486002)(6506007)(1076003)(86362001)(36756003)(16526019)(2906002)(186003)(54420400002);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB6397;H:VI1PR05MB5102.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(366004)(189003)(199004)(4326008)(5660300002)(2616005)(956004)(6916009)(54906003)(8936002)(498600001)(6512007)(26005)(107886003)(81166006)(8676002)(71200400001)(81156014)(64756008)(66946007)(66446008)(66476007)(66556008)(52116002)(6486002)(6506007)(1076003)(86362001)(36756003)(16526019)(2906002)(186003)(54420400002);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB6397;H:VI1PR05MB5102.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
 received-spf: None (protection.outlook.com: mellanox.com does not designate
  permitted sender hosts)
 x-ms-exchange-senderadcheck: 1
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: EYKALpROzWTTtpXLLsoIBgu2l8yFPM9wwQac7mhF1orf+LJGgOqtxcIV7fU/KQ9NWMudTWb7D1fpi9ppH7BxlrSw1wySV/v2eqLWhDd5UVlX4Osd6fJa6obP/r3vZX/AMG1eEzxKY8h9cbRkjdyy2E9WQBlddtckHEE/GA/vnUjlMDEzcSCXoRojqwT2kK4mhVgk08r44++5djXO+AROE3zilga9Yfhz7zvNDbUjeguPuip0LkIUEcebrBqFeKAE3VX4/BaWB4c71KK6fiP8wdfLHvgd2VUm4vamWCgR2L+9dTZnfiJYD1bs8EA/VPCDMQFgGiU4uattaWRCUklOAf4BJla8PsqQJCxTu1YVlURfHt/yhCNR99OmQcmBfhWaF/fEl/MrmzKLOjWu6G8zabTx0OxDyByOsY3LxfDfAYjQMQm2O9UxMXcBxnG4+/ntZVmuji+P6wWHOG4UUDKuV+XpMzzomNkXchjG+aYKjwYzI+uYTOfG5MKxMDmrh2hYzeuLUe/KONaKIkWbtcs69HWhrYeOIJGDb901JhqrjwY=
+x-microsoft-antispam-message-info: AZoMEqaqdCL9od5DfiWhEN/8IB/ih8hZe/KInqeidsfBq8MeWNtGIkoU+cv/9c4ethz2QayXzLWD+KsbbKwulYvKsCGkbsk4NXFq7nqZoPetLBKTyL4SyDtt5OYJgaXwvpr0Uw5iYqycXH4JGFvYya/EPm56b10LgWNfGwAXkJjfQ+2YOXpseJfhfVR4LgrkYEyID0A/BkqAbfqDIP+n7RO4l09xe/l9FoBRt1MtDaOdrQfK6lIo74JvyCWsSkNSl17iWAw8sN7JGHHYCTGQbmf80uJYd9RYsKzv71fc5gIDfevCIW39KPA0Y/CVL3RD8SkLhQQJ3j9csCVBE1KzQuO76xfHkl8pzXmvALDAl3Xq+Smb8rcxNxI091JdLbxJQvbi7per7XVu894i7zNrVxqjYXkDzp6yycpXOOOHoz0l1krIs/3KK5owyxiueW5NLJEk2pTMdKYwSRgJGmuMWDfh8K+tK/Lg3vcPYHhFEPrpTu2WUm1cBawbk2t31GawmMVZOViWRsgNL4AZj70H4uDpsTwTyPEzsz/d+ccv3iM=
 Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 492f157f-7e1f-4edf-6f51-08d79301422a
-X-MS-Exchange-CrossTenant-originalarrivaltime: 06 Jan 2020 23:36:31.4040
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2e2daa37-9c58-4a03-6656-08d793014371
+X-MS-Exchange-CrossTenant-originalarrivaltime: 06 Jan 2020 23:36:33.5308
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: lX1HJ+LF3fyeQGx3SobcDNt/BpoqVGV5MkmZwuTbOvDgKYQ5M+yBdRmyGKComkhu2Y0varfnHHhjBf4K/x603w==
+X-MS-Exchange-CrossTenant-userprincipalname: iHpWwJeja8kcpIrd2HKULhkgOl0Qy1wfM3L62ZOM/rG90TmmMmohYpy6jHftI00kii7KjBjWAXL49V/hNBCZHQ==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB6397
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Yevgeny Kliteynik <kliteyn@mellanox.com>
+From: Eli Cohen <eli@mellanox.com>
 
-No need for an atomic refcounter for the STE and hashtables.
-These are internal SW steering resources and they are always
-under domain mutex.
+Set hairpin table size to the corret size, based on the groups that
+would be created in it. Groups are laid out on the table such that a
+group occupies a range of entries in the table. This implies that the
+group ranges should have correspondence to the table they are laid upon.
 
-This also fixes the following refcount error:
-  refcount_t: addition on 0; use-after-free.
-  WARNING: CPU: 9 PID: 3527 at lib/refcount.c:25 refcount_warn_saturate+0x8=
-1/0xe0
-  Call Trace:
-   dr_table_init_nic+0x10d/0x110 [mlx5_core]
-   mlx5dr_table_create+0xb4/0x230 [mlx5_core]
-   mlx5_cmd_dr_create_flow_table+0x39/0x120 [mlx5_core]
-   __mlx5_create_flow_table+0x221/0x5f0 [mlx5_core]
-   esw_create_offloads_fdb_tables+0x180/0x5a0 [mlx5_core]
-   ...
+The patch cited below  made group 1's size to grow hence causing
+overflow of group range laid on the table.
 
-Fixes: 26d688e33f88 ("net/mlx5: DR, Add Steering entry (STE) utilities")
-Signed-off-by: Yevgeny Kliteynik <kliteyn@mellanox.com>
-Reviewed-by: Alex Vesker <valex@mellanox.com>
+Fixes: a795d8db2a6d ("net/mlx5e: Support RSS for IP-in-IP and IPv6 tunneled=
+ packets")
+Signed-off-by: Eli Cohen <eli@mellanox.com>
+Signed-off-by: Mark Bloch <markb@mellanox.com>
 Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
 ---
- .../ethernet/mellanox/mlx5/core/steering/dr_rule.c |  2 +-
- .../ethernet/mellanox/mlx5/core/steering/dr_ste.c  | 10 +++++-----
- .../mellanox/mlx5/core/steering/dr_types.h         | 14 ++++++++------
- 3 files changed, 14 insertions(+), 12 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/en/fs.h | 16 ++++++++++++++++
+ drivers/net/ethernet/mellanox/mlx5/core/en_fs.c | 16 ----------------
+ drivers/net/ethernet/mellanox/mlx5/core/en_tc.c |  2 +-
+ 3 files changed, 17 insertions(+), 17 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_rule.c b/d=
-rivers/net/ethernet/mellanox/mlx5/core/steering/dr_rule.c
-index 32e94d2ee5e4..f21bc1bc77d7 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_rule.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_rule.c
-@@ -209,7 +209,7 @@ static void dr_rule_rehash_copy_ste_ctrl(struct mlx5dr_=
-matcher *matcher,
- 	/* We need to copy the refcount since this ste
- 	 * may have been traversed several times
- 	 */
--	refcount_set(&new_ste->refcount, refcount_read(&cur_ste->refcount));
-+	new_ste->refcount =3D cur_ste->refcount;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/fs.h b/drivers/net/=
+ethernet/mellanox/mlx5/core/en/fs.h
+index 68d593074f6c..d48292ccda29 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/fs.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/fs.h
+@@ -122,6 +122,22 @@ enum {
+ #endif
+ };
 =20
- 	/* Link old STEs rule_mem list to the new ste */
- 	mlx5dr_rule_update_rule_member(cur_ste, new_ste);
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste.c b/dr=
-ivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste.c
-index a5a266983dd3..c6c7d1defbd7 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste.c
-@@ -348,7 +348,7 @@ static void dr_ste_replace(struct mlx5dr_ste *dst, stru=
-ct mlx5dr_ste *src)
- 	if (dst->next_htbl)
- 		dst->next_htbl->pointing_ste =3D dst;
++#define MLX5E_TTC_NUM_GROUPS	3
++#define MLX5E_TTC_GROUP1_SIZE	(BIT(3) + MLX5E_NUM_TUNNEL_TT)
++#define MLX5E_TTC_GROUP2_SIZE	 BIT(1)
++#define MLX5E_TTC_GROUP3_SIZE	 BIT(0)
++#define MLX5E_TTC_TABLE_SIZE	(MLX5E_TTC_GROUP1_SIZE +\
++				 MLX5E_TTC_GROUP2_SIZE +\
++				 MLX5E_TTC_GROUP3_SIZE)
++
++#define MLX5E_INNER_TTC_NUM_GROUPS	3
++#define MLX5E_INNER_TTC_GROUP1_SIZE	BIT(3)
++#define MLX5E_INNER_TTC_GROUP2_SIZE	BIT(1)
++#define MLX5E_INNER_TTC_GROUP3_SIZE	BIT(0)
++#define MLX5E_INNER_TTC_TABLE_SIZE	(MLX5E_INNER_TTC_GROUP1_SIZE +\
++					 MLX5E_INNER_TTC_GROUP2_SIZE +\
++					 MLX5E_INNER_TTC_GROUP3_SIZE)
++
+ #ifdef CONFIG_MLX5_EN_RXNFC
 =20
--	refcount_set(&dst->refcount, refcount_read(&src->refcount));
-+	dst->refcount =3D src->refcount;
-=20
- 	INIT_LIST_HEAD(&dst->rule_list);
- 	list_splice_tail_init(&src->rule_list, &dst->rule_list);
-@@ -565,7 +565,7 @@ bool mlx5dr_ste_is_not_valid_entry(u8 *p_hw_ste)
-=20
- bool mlx5dr_ste_not_used_ste(struct mlx5dr_ste *ste)
- {
--	return !refcount_read(&ste->refcount);
-+	return !ste->refcount;
+ struct mlx5e_ethtool_table {
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_fs.c b/drivers/net/=
+ethernet/mellanox/mlx5/core/en_fs.c
+index 15b7f0f1427c..73d3dc07331f 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_fs.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_fs.c
+@@ -904,22 +904,6 @@ static int mlx5e_generate_ttc_table_rules(struct mlx5e=
+_priv *priv,
+ 	return err;
  }
 =20
- /* Init one ste as a pattern for ste data array */
-@@ -689,14 +689,14 @@ struct mlx5dr_ste_htbl *mlx5dr_ste_htbl_alloc(struct =
-mlx5dr_icm_pool *pool,
- 	htbl->ste_arr =3D chunk->ste_arr;
- 	htbl->hw_ste_arr =3D chunk->hw_ste_arr;
- 	htbl->miss_list =3D chunk->miss_list;
--	refcount_set(&htbl->refcount, 0);
-+	htbl->refcount =3D 0;
-=20
- 	for (i =3D 0; i < chunk->num_of_entries; i++) {
- 		struct mlx5dr_ste *ste =3D &htbl->ste_arr[i];
-=20
- 		ste->hw_ste =3D htbl->hw_ste_arr + i * DR_STE_SIZE_REDUCED;
- 		ste->htbl =3D htbl;
--		refcount_set(&ste->refcount, 0);
-+		ste->refcount =3D 0;
- 		INIT_LIST_HEAD(&ste->miss_list_node);
- 		INIT_LIST_HEAD(&htbl->miss_list[i]);
- 		INIT_LIST_HEAD(&ste->rule_list);
-@@ -713,7 +713,7 @@ struct mlx5dr_ste_htbl *mlx5dr_ste_htbl_alloc(struct ml=
-x5dr_icm_pool *pool,
-=20
- int mlx5dr_ste_htbl_free(struct mlx5dr_ste_htbl *htbl)
+-#define MLX5E_TTC_NUM_GROUPS	3
+-#define MLX5E_TTC_GROUP1_SIZE	(BIT(3) + MLX5E_NUM_TUNNEL_TT)
+-#define MLX5E_TTC_GROUP2_SIZE	 BIT(1)
+-#define MLX5E_TTC_GROUP3_SIZE	 BIT(0)
+-#define MLX5E_TTC_TABLE_SIZE	(MLX5E_TTC_GROUP1_SIZE +\
+-				 MLX5E_TTC_GROUP2_SIZE +\
+-				 MLX5E_TTC_GROUP3_SIZE)
+-
+-#define MLX5E_INNER_TTC_NUM_GROUPS	3
+-#define MLX5E_INNER_TTC_GROUP1_SIZE	BIT(3)
+-#define MLX5E_INNER_TTC_GROUP2_SIZE	BIT(1)
+-#define MLX5E_INNER_TTC_GROUP3_SIZE	BIT(0)
+-#define MLX5E_INNER_TTC_TABLE_SIZE	(MLX5E_INNER_TTC_GROUP1_SIZE +\
+-					 MLX5E_INNER_TTC_GROUP2_SIZE +\
+-					 MLX5E_INNER_TTC_GROUP3_SIZE)
+-
+ static int mlx5e_create_ttc_table_groups(struct mlx5e_ttc_table *ttc,
+ 					 bool use_ipv)
  {
--	if (refcount_read(&htbl->refcount))
-+	if (htbl->refcount)
- 		return -EBUSY;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/=
+ethernet/mellanox/mlx5/core/en_tc.c
+index fe83886f5435..024e1cddfd0e 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+@@ -592,7 +592,7 @@ static void mlx5e_hairpin_set_ttc_params(struct mlx5e_h=
+airpin *hp,
+ 	for (tt =3D 0; tt < MLX5E_NUM_INDIR_TIRS; tt++)
+ 		ttc_params->indir_tirn[tt] =3D hp->indir_tirn[tt];
 =20
- 	mlx5dr_icm_free_chunk(htbl->chunk);
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h b/=
-drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h
-index 290fe61c33d0..3fdf4a5eb031 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h
-@@ -123,7 +123,7 @@ struct mlx5dr_matcher_rx_tx;
- struct mlx5dr_ste {
- 	u8 *hw_ste;
- 	/* refcount: indicates the num of rules that using this ste */
--	refcount_t refcount;
-+	u32 refcount;
-=20
- 	/* attached to the miss_list head at each htbl entry */
- 	struct list_head miss_list_node;
-@@ -155,7 +155,7 @@ struct mlx5dr_ste_htbl_ctrl {
- struct mlx5dr_ste_htbl {
- 	u8 lu_type;
- 	u16 byte_mask;
--	refcount_t refcount;
-+	u32 refcount;
- 	struct mlx5dr_icm_chunk *chunk;
- 	struct mlx5dr_ste *ste_arr;
- 	u8 *hw_ste_arr;
-@@ -206,13 +206,14 @@ int mlx5dr_ste_htbl_free(struct mlx5dr_ste_htbl *htbl=
-);
-=20
- static inline void mlx5dr_htbl_put(struct mlx5dr_ste_htbl *htbl)
- {
--	if (refcount_dec_and_test(&htbl->refcount))
-+	htbl->refcount--;
-+	if (!htbl->refcount)
- 		mlx5dr_ste_htbl_free(htbl);
+-	ft_attr->max_fte =3D MLX5E_NUM_TT;
++	ft_attr->max_fte =3D MLX5E_TTC_TABLE_SIZE;
+ 	ft_attr->level =3D MLX5E_TC_TTC_FT_LEVEL;
+ 	ft_attr->prio =3D MLX5E_TC_PRIO;
  }
-=20
- static inline void mlx5dr_htbl_get(struct mlx5dr_ste_htbl *htbl)
- {
--	refcount_inc(&htbl->refcount);
-+	htbl->refcount++;
- }
-=20
- /* STE utils */
-@@ -254,14 +255,15 @@ static inline void mlx5dr_ste_put(struct mlx5dr_ste *=
-ste,
- 				  struct mlx5dr_matcher *matcher,
- 				  struct mlx5dr_matcher_rx_tx *nic_matcher)
- {
--	if (refcount_dec_and_test(&ste->refcount))
-+	ste->refcount--;
-+	if (!ste->refcount)
- 		mlx5dr_ste_free(ste, matcher, nic_matcher);
- }
-=20
- /* initial as 0, increased only when ste appears in a new rule */
- static inline void mlx5dr_ste_get(struct mlx5dr_ste *ste)
- {
--	refcount_inc(&ste->refcount);
-+	ste->refcount++;
- }
-=20
- void mlx5dr_ste_set_hit_addr_by_next_htbl(u8 *hw_ste,
 --=20
 2.24.1
 
