@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B482130E21
-	for <lists+netdev@lfdr.de>; Mon,  6 Jan 2020 08:47:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 18A0C130E22
+	for <lists+netdev@lfdr.de>; Mon,  6 Jan 2020 08:47:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726515AbgAFHrA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Jan 2020 02:47:00 -0500
-Received: from mail-lf1-f66.google.com ([209.85.167.66]:39747 "EHLO
-        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726536AbgAFHq7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jan 2020 02:46:59 -0500
-Received: by mail-lf1-f66.google.com with SMTP id y1so35747533lfb.6
-        for <netdev@vger.kernel.org>; Sun, 05 Jan 2020 23:46:57 -0800 (PST)
+        id S1726618AbgAFHrC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Jan 2020 02:47:02 -0500
+Received: from mail-lj1-f193.google.com ([209.85.208.193]:35970 "EHLO
+        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726546AbgAFHrB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jan 2020 02:47:01 -0500
+Received: by mail-lj1-f193.google.com with SMTP id r19so49980863ljg.3
+        for <netdev@vger.kernel.org>; Sun, 05 Jan 2020 23:46:59 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=oQoejQubsLFGlgvz23/d0hrQOAzAKQDxGd+MzZ2RoM8=;
-        b=CepMQmzWmOUsI3fJgerXT/Pf3qO4UVAt78aCjEwkphKjHxUItAR/GKhOkfKTbkeL/q
-         z+JdhYUNVNXI5LpfuUEL6Rc5pn8AE9iXCeneeIfl0hy4DqQe0O4btXFGuvK5l+oVPYUD
-         F/N73VI0Gnj2Au6spFpeYz61L4KyJKXLg4VXmY+zbKiYPfC2bZBFTzG/Ma8UAm7plckr
-         dpc0+vUo1TlsjkAdPvB/WeDZLlT5DteZRfZRZ8nPpPfmu/7fCpnd2vmKLfe8shp+cXR5
-         9EXMmEXR5nm3NmeA3kB2f0tDNwZCV3Xe9C8zNJe6g3G2qrEcxpDosVFAMXoYHh3Ek38S
-         niLg==
+        bh=L5br/Q1dPlb6jV9exYpxiZf0cUo4raQUyYwLmLJT4sg=;
+        b=ebwYYZcEbXJOIx0Ryw1LdzXMtJSB9nar0f8jlptxZIJkXMg7FdMQbHzfxTRLm3G7ac
+         ilF9Ke7yq/rmA1NJXJ052u2ziirPucyuFHcWwitlBN0Dh5ww+zzY8sEcJ6Ej7sm6mtxv
+         3PZhANMQKAqNFtX3JHc/3wmMhePJvgXSfGb9S7qpbIBFiTQQfmiCnVdc5lcHXsHYd+xo
+         /ZMjx/i9XsIjhR56Wjx9OP/AtJnWeZ7dTB9gWbVj1X7XJmRcztU1LXGrI/UPbHaQeg+S
+         /ZwBMtpyRn8NjnPPuRNrOQecfbCjrWTaqHK1itrKDlkllmO7UWCoDJEGrw8ZJGgEuHgb
+         3Emg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=oQoejQubsLFGlgvz23/d0hrQOAzAKQDxGd+MzZ2RoM8=;
-        b=eriWHZ6sqIpj6WMbXQ+g8DZ90yHskgHVMWyAF01XfNyhxjBH12udX3l5oUihz4/rXs
-         7f3IFK/JCyxJ+SR+n7IajGIlsezgeBkZkVT30WY3XejxJ7zxOz69WBLy0Fd1MMWpCwwU
-         sol49Fm5m5xWA8C8WtnsI9XSXEcw8VgCqdfJhrc2DeKYgKIAtzqnsYyczpGsXynb5x04
-         nJyPMmFNfTXa9CRzpY6WtqNiWECBtOzjHOfBUPO179ebZr3932kVJ2H8bXTHcwPc2/qG
-         w0IVayFI4Qk37oAMEx8NneaJ3edvh3OZFRDFng7JPF69pg9TlrlJ5LP6Dtk9V2UiQiLc
-         LzmA==
-X-Gm-Message-State: APjAAAV2G9/9nn7vKJXC5SO9J52EzoqeT1UEr7vfGRvV1sUcJIaf1O3j
-        +580wZrBFz994MGkdF4dFJNfYqTqMhPQNA==
-X-Google-Smtp-Source: APXvYqyyXJhCAatKMfVED4GAqp3S+Qtq2lqxZWDv/ytwmXJ8S1051ZnDrlQuhe9mdQ0leA81qsCfjA==
-X-Received: by 2002:ac2:5549:: with SMTP id l9mr55279170lfk.53.1578296816906;
-        Sun, 05 Jan 2020 23:46:56 -0800 (PST)
+        bh=L5br/Q1dPlb6jV9exYpxiZf0cUo4raQUyYwLmLJT4sg=;
+        b=Ke7mSy1Q5ND/2oO8ft0rgT9YfxDyEx58V59l1WgNxunm0vUV+QXp9idwyUP4/u7JCU
+         94uUe7UR/M66C3Nkh4nh5kPUiiotnvyyt4QWky1t7gYS1ugmay9AWOWQJveboC61gpWo
+         tFzW/cscmZKhkZWRVXZ5lZsG5rRMKLNW5xmUAtubrjxiVBQBZswriNEEMIO16KmHfix5
+         voE8WcdkyhZ9qZ0DO12yLC+iQQFME5MVRAN4fBR4RKlCUphg0m5DYWLWWPIP7exOFqtl
+         ZXYGvd1812UoEc9Y4dH+yHNCvCkneZnKO9BDgZ8IEdGoT8FDMcJtYUwDpb2bkIfEk4Dt
+         /A9w==
+X-Gm-Message-State: APjAAAUlezZfXXHXDRIPbo5xWQLU8SFqeYg+pZjauRry5sJ1Xu7fys42
+        MqsgvB37bNCLLxnoZInUG5Bk68ZPmKuevg==
+X-Google-Smtp-Source: APXvYqyEBjrgT3G0sBGxuvn6M4QE0Lgl6SiXy7BsSLCu91fQbcRnWFKfC61HJ7oDthk8l30CimrM9g==
+X-Received: by 2002:a2e:2e14:: with SMTP id u20mr52128451lju.82.1578296818565;
+        Sun, 05 Jan 2020 23:46:58 -0800 (PST)
 Received: from localhost.bredbandsbolaget (c-5ac9225c.014-348-6c756e10.bbcust.telenor.se. [92.34.201.90])
-        by smtp.gmail.com with ESMTPSA id n14sm28625551lfe.5.2020.01.05.23.46.55
+        by smtp.gmail.com with ESMTPSA id n14sm28625551lfe.5.2020.01.05.23.46.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 05 Jan 2020 23:46:56 -0800 (PST)
+        Sun, 05 Jan 2020 23:46:57 -0800 (PST)
 From:   Linus Walleij <linus.walleij@linaro.org>
 To:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>
 Cc:     Arnd Bergmann <arnd@arndb.de>,
         Jakub Kicinski <jakub.kicinski@netronome.com>,
         Linus Walleij <linus.walleij@linaro.org>
-Subject: [PATCH net-next 3/9 v3] ptp: ixp46x: move adjacent to ethernet driver
-Date:   Mon,  6 Jan 2020 08:46:41 +0100
-Message-Id: <20200106074647.23771-4-linus.walleij@linaro.org>
+Subject: [PATCH net-next 4/9 v3] ixp4xx_eth: move platform_data definition
+Date:   Mon,  6 Jan 2020 08:46:42 +0100
+Message-Id: <20200106074647.23771-5-linus.walleij@linaro.org>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20200106074647.23771-1-linus.walleij@linaro.org>
 References: <20200106074647.23771-1-linus.walleij@linaro.org>
@@ -64,14 +64,8 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Arnd Bergmann <arnd@arndb.de>
 
-The ixp46x ptp driver has a somewhat unusual setup, where the ptp
-driver and the ethernet driver are in different directories but
-access the same registers that are defined a platform specific
-header file.
-
-Moving everything into drivers/net/ makes it look more like most
-other ptp drivers and allows compile-testing this driver on
-other targets.
+The platform data is needed to compile the driver as standalone,
+so move it to a global location along with similar files.
 
 Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
@@ -79,128 +73,88 @@ Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 ChanegLog v2->v3:
 - Rebased on v5.5-rc1
 ChangeLog v1->v2:
-- Rename patch as "move ADJACENT" which makes more sense
+- Rebased on the rest of the series.
 ---
- drivers/net/ethernet/xscale/Kconfig                | 14 ++++++++++++++
- drivers/net/ethernet/xscale/Makefile               |  3 ++-
- drivers/net/ethernet/xscale/ixp4xx_eth.c           |  3 ++-
- drivers/{ptp => net/ethernet/xscale}/ptp_ixp46x.c  |  3 ++-
- .../net/ethernet/xscale/ptp_ixp46x.h               |  0
- drivers/ptp/Kconfig                                | 14 --------------
- drivers/ptp/Makefile                               |  1 -
- 7 files changed, 20 insertions(+), 18 deletions(-)
- rename drivers/{ptp => net/ethernet/xscale}/ptp_ixp46x.c (99%)
- rename arch/arm/mach-ixp4xx/include/mach/ixp46x_ts.h => drivers/net/ethernet/xscale/ptp_ixp46x.h (100%)
+ arch/arm/mach-ixp4xx/include/mach/platform.h  | 13 +------------
+ .../xscale/{ptp_ixp46x.h => ixp46x_ts.h}      |  0
+ drivers/net/ethernet/xscale/ixp4xx_eth.c      |  1 +
+ include/linux/platform_data/eth_ixp4xx.h      | 19 +++++++++++++++++++
+ 4 files changed, 21 insertions(+), 12 deletions(-)
+ rename drivers/net/ethernet/xscale/{ptp_ixp46x.h => ixp46x_ts.h} (100%)
+ create mode 100644 include/linux/platform_data/eth_ixp4xx.h
 
-diff --git a/drivers/net/ethernet/xscale/Kconfig b/drivers/net/ethernet/xscale/Kconfig
-index cd0a8f46e7c6..98aa7b8ddb06 100644
---- a/drivers/net/ethernet/xscale/Kconfig
-+++ b/drivers/net/ethernet/xscale/Kconfig
-@@ -27,4 +27,18 @@ config IXP4XX_ETH
- 	  Say Y here if you want to use built-in Ethernet ports
- 	  on IXP4xx processor.
+diff --git a/arch/arm/mach-ixp4xx/include/mach/platform.h b/arch/arm/mach-ixp4xx/include/mach/platform.h
+index 04ef8025accc..6d403fe0bf52 100644
+--- a/arch/arm/mach-ixp4xx/include/mach/platform.h
++++ b/arch/arm/mach-ixp4xx/include/mach/platform.h
+@@ -15,6 +15,7 @@
+ #ifndef __ASSEMBLY__
  
-+config PTP_1588_CLOCK_IXP46X
-+	tristate "Intel IXP46x as PTP clock"
-+	depends on IXP4XX_ETH
-+	depends on PTP_1588_CLOCK
-+	default y
-+	help
-+	  This driver adds support for using the IXP46X as a PTP
-+	  clock. This clock is only useful if your PTP programs are
-+	  getting hardware time stamps on the PTP Ethernet packets
-+	  using the SO_TIMESTAMPING API.
-+
-+	  To compile this driver as a module, choose M here: the module
-+	  will be called ptp_ixp46x.
-+
- endif # NET_VENDOR_XSCALE
-diff --git a/drivers/net/ethernet/xscale/Makefile b/drivers/net/ethernet/xscale/Makefile
-index 794a519d07b3..607f91b1e878 100644
---- a/drivers/net/ethernet/xscale/Makefile
-+++ b/drivers/net/ethernet/xscale/Makefile
-@@ -3,4 +3,5 @@
- # Makefile for the Intel XScale IXP device drivers.
- #
+ #include <linux/reboot.h>
++#include <linux/platform_data/eth_ixp4xx.h>
  
--obj-$(CONFIG_IXP4XX_ETH) += ixp4xx_eth.o
-+obj-$(CONFIG_IXP4XX_ETH)		+= ixp4xx_eth.o
-+obj-$(CONFIG_PTP_1588_CLOCK_IXP46X)	+= ptp_ixp46x.o
+ #include <asm/types.h>
+ 
+@@ -92,18 +93,6 @@ struct ixp4xx_pata_data {
+ 	void __iomem	*cs1;
+ };
+ 
+-#define IXP4XX_ETH_NPEA		0x00
+-#define IXP4XX_ETH_NPEB		0x10
+-#define IXP4XX_ETH_NPEC		0x20
+-
+-/* Information about built-in Ethernet MAC interfaces */
+-struct eth_plat_info {
+-	u8 phy;		/* MII PHY ID, 0 - 31 */
+-	u8 rxq;		/* configurable, currently 0 - 31 only */
+-	u8 txreadyq;
+-	u8 hwaddr[6];
+-};
+-
+ /*
+  * Frequency of clock used for primary clocksource
+  */
+diff --git a/drivers/net/ethernet/xscale/ptp_ixp46x.h b/drivers/net/ethernet/xscale/ixp46x_ts.h
+similarity index 100%
+rename from drivers/net/ethernet/xscale/ptp_ixp46x.h
+rename to drivers/net/ethernet/xscale/ixp46x_ts.h
 diff --git a/drivers/net/ethernet/xscale/ixp4xx_eth.c b/drivers/net/ethernet/xscale/ixp4xx_eth.c
-index 6fc04ffb22c2..0075ecdb21f4 100644
+index 0075ecdb21f4..e811bf0d23cb 100644
 --- a/drivers/net/ethernet/xscale/ixp4xx_eth.c
 +++ b/drivers/net/ethernet/xscale/ixp4xx_eth.c
-@@ -33,10 +33,11 @@
+@@ -29,6 +29,7 @@
+ #include <linux/net_tstamp.h>
+ #include <linux/of.h>
+ #include <linux/phy.h>
++#include <linux/platform_data/eth_ixp4xx.h>
+ #include <linux/platform_device.h>
  #include <linux/ptp_classify.h>
  #include <linux/slab.h>
- #include <linux/module.h>
--#include <mach/ixp46x_ts.h>
- #include <linux/soc/ixp4xx/npe.h>
- #include <linux/soc/ixp4xx/qmgr.h>
- 
-+#include "ixp46x_ts.h"
+diff --git a/include/linux/platform_data/eth_ixp4xx.h b/include/linux/platform_data/eth_ixp4xx.h
+new file mode 100644
+index 000000000000..6f652ea0c6ae
+--- /dev/null
++++ b/include/linux/platform_data/eth_ixp4xx.h
+@@ -0,0 +1,19 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++#ifndef __PLATFORM_DATA_ETH_IXP4XX
++#define __PLATFORM_DATA_ETH_IXP4XX
 +
- #define DEBUG_DESC		0
- #define DEBUG_RX		0
- #define DEBUG_TX		0
-diff --git a/drivers/ptp/ptp_ixp46x.c b/drivers/net/ethernet/xscale/ptp_ixp46x.c
-similarity index 99%
-rename from drivers/ptp/ptp_ixp46x.c
-rename to drivers/net/ethernet/xscale/ptp_ixp46x.c
-index 67028484e9a0..9ecc395239e9 100644
---- a/drivers/ptp/ptp_ixp46x.c
-+++ b/drivers/net/ethernet/xscale/ptp_ixp46x.c
-@@ -15,7 +15,8 @@
- #include <linux/module.h>
- 
- #include <linux/ptp_clock_kernel.h>
--#include <mach/ixp46x_ts.h>
++#include <linux/types.h>
 +
-+#include "ixp46x_ts.h"
- 
- #define DRIVER		"ptp_ixp46x"
- #define N_EXT_TS	2
-diff --git a/arch/arm/mach-ixp4xx/include/mach/ixp46x_ts.h b/drivers/net/ethernet/xscale/ptp_ixp46x.h
-similarity index 100%
-rename from arch/arm/mach-ixp4xx/include/mach/ixp46x_ts.h
-rename to drivers/net/ethernet/xscale/ptp_ixp46x.h
-diff --git a/drivers/ptp/Kconfig b/drivers/ptp/Kconfig
-index b45d2b86d8ca..dc3d8ecb4231 100644
---- a/drivers/ptp/Kconfig
-+++ b/drivers/ptp/Kconfig
-@@ -56,20 +56,6 @@ config PTP_1588_CLOCK_QORIQ
- 	  To compile this driver as a module, choose M here: the module
- 	  will be called ptp-qoriq.
- 
--config PTP_1588_CLOCK_IXP46X
--	tristate "Intel IXP46x as PTP clock"
--	depends on IXP4XX_ETH
--	depends on PTP_1588_CLOCK
--	default y
--	help
--	  This driver adds support for using the IXP46X as a PTP
--	  clock. This clock is only useful if your PTP programs are
--	  getting hardware time stamps on the PTP Ethernet packets
--	  using the SO_TIMESTAMPING API.
--
--	  To compile this driver as a module, choose M here: the module
--	  will be called ptp_ixp46x.
--
- comment "Enable PHYLIB and NETWORK_PHY_TIMESTAMPING to see the additional clocks."
- 	depends on PHYLIB=n || NETWORK_PHY_TIMESTAMPING=n
- 
-diff --git a/drivers/ptp/Makefile b/drivers/ptp/Makefile
-index 69a06f86a450..74dd39f9d967 100644
---- a/drivers/ptp/Makefile
-+++ b/drivers/ptp/Makefile
-@@ -6,7 +6,6 @@
- ptp-y					:= ptp_clock.o ptp_chardev.o ptp_sysfs.o
- obj-$(CONFIG_PTP_1588_CLOCK)		+= ptp.o
- obj-$(CONFIG_PTP_1588_CLOCK_DTE)	+= ptp_dte.o
--obj-$(CONFIG_PTP_1588_CLOCK_IXP46X)	+= ptp_ixp46x.o
- obj-$(CONFIG_PTP_1588_CLOCK_PCH)	+= ptp_pch.o
- obj-$(CONFIG_PTP_1588_CLOCK_KVM)	+= ptp_kvm.o
- obj-$(CONFIG_PTP_1588_CLOCK_QORIQ)	+= ptp-qoriq.o
++#define IXP4XX_ETH_NPEA		0x00
++#define IXP4XX_ETH_NPEB		0x10
++#define IXP4XX_ETH_NPEC		0x20
++
++/* Information about built-in Ethernet MAC interfaces */
++struct eth_plat_info {
++	u8 phy;		/* MII PHY ID, 0 - 31 */
++	u8 rxq;		/* configurable, currently 0 - 31 only */
++	u8 txreadyq;
++	u8 hwaddr[6];
++};
++
++#endif
 -- 
 2.21.0
 
