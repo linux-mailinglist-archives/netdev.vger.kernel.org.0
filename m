@@ -2,80 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8547213136C
-	for <lists+netdev@lfdr.de>; Mon,  6 Jan 2020 15:20:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 233F3131383
+	for <lists+netdev@lfdr.de>; Mon,  6 Jan 2020 15:21:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726427AbgAFOTo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Jan 2020 09:19:44 -0500
-Received: from szxga04-in.huawei.com ([45.249.212.190]:8681 "EHLO huawei.com"
+        id S1726454AbgAFOU6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Jan 2020 09:20:58 -0500
+Received: from szxga06-in.huawei.com ([45.249.212.32]:34664 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726303AbgAFOTo (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 6 Jan 2020 09:19:44 -0500
-Received: from DGGEMS413-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id BDCF4F26A169909898F5;
-        Mon,  6 Jan 2020 22:19:35 +0800 (CST)
-Received: from huawei.com (10.175.124.28) by DGGEMS413-HUB.china.huawei.com
- (10.3.19.213) with Microsoft SMTP Server id 14.3.439.0; Mon, 6 Jan 2020
- 22:19:24 +0800
-From:   yu kuai <yukuai3@huawei.com>
-To:     <klassert@kernel.org>, <davem@davemloft.net>,
+        id S1726307AbgAFOU6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 6 Jan 2020 09:20:58 -0500
+Received: from DGGEMS402-HUB.china.huawei.com (unknown [172.30.72.58])
+        by Forcepoint Email with ESMTP id 0CDA09A57A8BF1DACDFD;
+        Mon,  6 Jan 2020 22:20:56 +0800 (CST)
+Received: from [127.0.0.1] (10.173.220.96) by DGGEMS402-HUB.china.huawei.com
+ (10.3.19.202) with Microsoft SMTP Server id 14.3.439.0; Mon, 6 Jan 2020
+ 22:20:45 +0800
+Subject: Re: [PATCH V2] net: 3com: 3c59x: remove set but not used variable
+ 'mii_reg1'
+To:     Michal Kubecek <mkubecek@suse.cz>, <netdev@vger.kernel.org>
+CC:     <klassert@kernel.org>, <davem@davemloft.net>,
         <hkallweit1@gmail.com>, <jakub.kicinski@netronome.com>,
         <hslester96@gmail.com>, <mst@redhat.com>, <yang.wei9@zte.com.cn>,
-        <willy@infradead.org>, <netdev@vger.kernel.org>
-CC:     <yukuai3@huawei.com>, <yi.zhang@huawei.com>,
+        <willy@infradead.org>, <yi.zhang@huawei.com>,
         <zhengbin13@huawei.com>
-Subject: [PATCH V3] net: 3com: 3c59x: remove set but not used variable 'mii_reg1'
-Date:   Mon, 6 Jan 2020 22:18:45 +0800
-Message-ID: <20200106141845.18151-1-yukuai3@huawei.com>
-X-Mailer: git-send-email 2.17.2
+References: <20200106125337.40297-1-yukuai3@huawei.com>
+ <20200106131329.GH22387@unicorn.suse.cz>
+From:   "yukuai (C)" <yukuai3@huawei.com>
+Message-ID: <77169545-c903-db6b-7a8c-7361caa27dc5@huawei.com>
+Date:   Mon, 6 Jan 2020 22:20:43 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.175.124.28]
+In-Reply-To: <20200106131329.GH22387@unicorn.suse.cz>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.173.220.96]
 X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fixes gcc '-Wunused-but-set-variable' warning:
 
-drivers/net/ethernet/3com/3c59x.c: In function ‘vortex_up’:
-drivers/net/ethernet/3com/3c59x.c:1551:9: warning: variable
-‘mii_reg1’ set but not used [-Wunused-but-set-variable]
 
-It is never used, and so can be removed.
+On 2020/1/6 21:13, Michal Kubecek wrote:
+>> @@ -1605,7 +1605,6 @@ vortex_up(struct net_device *dev)
+>>   	window_write32(vp, config, 3, Wn3_Config);
+>>   
+>>   	if (dev->if_port == XCVR_MII || dev->if_port == XCVR_NWAY) {
+>> -		mii_reg1 = mdio_read(dev, vp->phys[0], MII_BMSR);
+>>   		mdio_read(dev, vp->phys[0], MII_LPA);
+>>   		vp->partner_flow_ctrl = ((mii_reg5 & 0x0400) != 0);
+>>   		vp->mii.full_duplex = vp->full_duplex;
+> Here you removed the read, as you did in previous version of the patch.
 
-Signed-off-by: yu kuai <yukuai3@huawei.com>
----
-changes in V2
--The read might have side effects, don't remove it.
+Sorry about the stupit mistake.
 
- drivers/net/ethernet/3com/3c59x.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
-
-diff --git a/drivers/net/ethernet/3com/3c59x.c b/drivers/net/ethernet/3com/3c59x.c
-index fc046797c0ea..6e537e5dc208 100644
---- a/drivers/net/ethernet/3com/3c59x.c
-+++ b/drivers/net/ethernet/3com/3c59x.c
-@@ -1548,7 +1548,7 @@ vortex_up(struct net_device *dev)
- 	struct vortex_private *vp = netdev_priv(dev);
- 	void __iomem *ioaddr = vp->ioaddr;
- 	unsigned int config;
--	int i, mii_reg1, mii_reg5, err = 0;
-+	int i, mii_reg5, err = 0;
- 
- 	if (VORTEX_PCI(vp)) {
- 		pci_set_power_state(VORTEX_PCI(vp), PCI_D0);	/* Go active */
-@@ -1605,7 +1605,7 @@ vortex_up(struct net_device *dev)
- 	window_write32(vp, config, 3, Wn3_Config);
- 
- 	if (dev->if_port == XCVR_MII || dev->if_port == XCVR_NWAY) {
--		mii_reg1 = mdio_read(dev, vp->phys[0], MII_BMSR);
-+		mdio_read(dev, vp->phys[0], MII_BMSR);
- 		mii_reg5 = mdio_read(dev, vp->phys[0], MII_LPA);
- 		vp->partner_flow_ctrl = ((mii_reg5 & 0x0400) != 0);
- 		vp->mii.full_duplex = vp->full_duplex;
--- 
-2.17.2
+Yu Kuai
 
