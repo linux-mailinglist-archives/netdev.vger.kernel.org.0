@@ -2,88 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 532EB131A91
-	for <lists+netdev@lfdr.de>; Mon,  6 Jan 2020 22:35:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 63387131A92
+	for <lists+netdev@lfdr.de>; Mon,  6 Jan 2020 22:36:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726902AbgAFVfa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Jan 2020 16:35:30 -0500
-Received: from mail.kernel.org ([198.145.29.99]:53940 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726713AbgAFVfa (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 6 Jan 2020 16:35:30 -0500
-Received: from mail-qt1-f180.google.com (mail-qt1-f180.google.com [209.85.160.180])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        id S1726774AbgAFVgK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Jan 2020 16:36:10 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:39816 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726713AbgAFVgK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jan 2020 16:36:10 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1578346569;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=emzzafBpSFz6uRW0DN5iJAM0+UGzONZS2zNxagu73Qw=;
+        b=E0Nk94AY02rgomdf7X0Wd52ZCqtmrS0JaJt3iDOUis4MgP6oB4FbMXgmZkv65UPOOCtGaI
+        lqsYBdTlqtHaPOeuPdFQhdJciiyLuA8t6fkqSIo64hTQLg2gNT/3IqnVopwR9bqQdIvYun
+        MB+Vi+QHgKI5K/+YhJmbMmEZ2vLRHQM=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-313-dyQyQsQ8NZurwYpIFEJdlQ-1; Mon, 06 Jan 2020 16:36:05 -0500
+X-MC-Unique: dyQyQsQ8NZurwYpIFEJdlQ-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 930BE2146E
-        for <netdev@vger.kernel.org>; Mon,  6 Jan 2020 21:35:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1578346529;
-        bh=3klmo43vWaZ8zqoPrQyOi7XPXZ4dEBC+uYpSOaUPegQ=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=pBVnPKl8KQF/q2tzKYwP0DiVv5oPEZgbnxq/OCLe8pfgnlgFbNVW3MbsPVHoIKRWg
-         Sb9apPTHEbkej9D4+WcfZs5VhGPjp8NVw2iogjobuy0iMWXj2/dHvM8BVXPzK1GFv/
-         5WuiOd9jBxGWj0GCaxMnyHWpZaiPD3CsVk9ozBZI=
-Received: by mail-qt1-f180.google.com with SMTP id q20so43669189qtp.3
-        for <netdev@vger.kernel.org>; Mon, 06 Jan 2020 13:35:29 -0800 (PST)
-X-Gm-Message-State: APjAAAXkMW4JZcp1EOXfe55P/5umv31zHNViaKkrcHUWvHhoZ1K9Jw4v
-        JR+/8uyf+RO7vHrlREjHtiQE0alOO/2nuBunZnQ=
-X-Google-Smtp-Source: APXvYqxUhna8vC/QhED/hk+20u6I2fWVXtd3AFGBtjDg5h56YK39NE3POMtwk5bA71oAlZJspFOU65wjCyXoiK4u8as=
-X-Received: by 2002:aed:24c7:: with SMTP id u7mr76187079qtc.335.1578346528807;
- Mon, 06 Jan 2020 13:35:28 -0800 (PST)
-MIME-Version: 1.0
-References: <20200106124908.3784-1-michal.kalderon@marvell.com>
-In-Reply-To: <20200106124908.3784-1-michal.kalderon@marvell.com>
-From:   Josh Boyer <jwboyer@kernel.org>
-Date:   Mon, 6 Jan 2020 16:35:06 -0500
-X-Gmail-Original-Message-ID: <CA+5PVA5rmLVdUV90uAStAMg5wczoK_W2PJJNY045c1=nJXKSTw@mail.gmail.com>
-Message-ID: <CA+5PVA5rmLVdUV90uAStAMg5wczoK_W2PJJNY045c1=nJXKSTw@mail.gmail.com>
-Subject: Re: [PATCH linux-firmware] qed: Add firmware 8.42.2.0
-To:     Michal Kalderon <michal.kalderon@marvell.com>
-Cc:     Linux Firmware <linux-firmware@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Ariel Elior <Ariel.Elior@marvell.com>
-Content-Type: text/plain; charset="UTF-8"
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id A24CE107ACC9;
+        Mon,  6 Jan 2020 21:36:04 +0000 (UTC)
+Received: from localhost (ovpn-112-4.rdu2.redhat.com [10.10.112.4])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 27A1A5D9CA;
+        Mon,  6 Jan 2020 21:36:02 +0000 (UTC)
+Date:   Mon, 06 Jan 2020 13:36:01 -0800 (PST)
+Message-Id: <20200106.133601.272741948830304328.davem@redhat.com>
+To:     andrew@lunn.ch
+Cc:     netdev@vger.kernel.org, vivien.didelot@gmail.com, cphealy@gmail.com
+Subject: Re: [PATCH net v2] net: dsa: mv88e6xxx: Preserve priority when
+ setting CPU port.
+From:   David Miller <davem@redhat.com>
+In-Reply-To: <20200104221451.10379-1-andrew@lunn.ch>
+References: <20200104221451.10379-1-andrew@lunn.ch>
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 6, 2020 at 7:52 AM Michal Kalderon
-<michal.kalderon@marvell.com> wrote:
->
-> This FW contains several fixes and features, main ones listed below.
->
-> - RoCE
->         - SRIOV support
->         - Fixes in following flows:
->                 - latency optimization flow for inline WQEs
->                 - iwarp OOO packed DDPs flow
->                 - tx-dif workaround calculations flow
->                 - XRC-SRQ exceed cache num
->
-> - iSCSI
->         - Fixes:
->                 - iSCSI TCP out-of-order handling.
->                 - iscsi retransmit flow
->
-> - Fcoe
->         - Fixes:
->                 - upload + cleanup flows
->
-> - Eth
->         - Support USO for non-tunneled UDP packets
->
-> - Debug
->         - Better handling of extracting data during traffic
->
-> Signed-off-by: Ariel Elior <Ariel.Elior@marvell.com>
-> Signed-off-by: Michal Kalderon <michal.kalderon@marvell.com>
+From: Andrew Lunn <andrew@lunn.ch>
+Date: Sat,  4 Jan 2020 23:14:51 +0100
+
+> The 6390 family uses an extended register to set the port connected to
+> the CPU. The lower 5 bits indicate the port, the upper three bits are
+> the priority of the frames as they pass through the switch, what
+> egress queue they should use, etc. Since frames being set to the CPU
+> are typically management frames, BPDU, IGMP, ARP, etc set the priority
+> to 7, the reset default, and the highest.
+> 
+> Fixes: 33641994a676 ("net: dsa: mv88e6xxx: Monitor and Management tables")
+> Signed-off-by: Andrew Lunn <andrew@lunn.ch>
+> 
 > ---
->  WHENCE                                  |   1 +
->  qed/qed_init_values_zipped-8.42.2.0.bin | Bin 0 -> 890336 bytes
->  2 files changed, 1 insertion(+)
->  create mode 100755 qed/qed_init_values_zipped-8.42.2.0.bin
+> v2: Fix a couple of spelling errors.
 
-Applied and pushed out.
+Applied and queued up for -stable, thanks Andrew.
 
-josh
