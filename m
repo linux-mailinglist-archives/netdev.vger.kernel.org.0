@@ -2,51 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A1D281315B4
-	for <lists+netdev@lfdr.de>; Mon,  6 Jan 2020 17:07:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 699E51315DD
+	for <lists+netdev@lfdr.de>; Mon,  6 Jan 2020 17:14:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727077AbgAFQHr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Jan 2020 11:07:47 -0500
-Received: from mail.kernel.org ([198.145.29.99]:45624 "EHLO mail.kernel.org"
+        id S1726779AbgAFQOk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Jan 2020 11:14:40 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:49088 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726945AbgAFQHp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 6 Jan 2020 11:07:45 -0500
-Received: from quaco.ghostprotocols.net (unknown [179.97.35.50])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 995CE20848;
-        Mon,  6 Jan 2020 16:07:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1578326865;
-        bh=+bP/ptlSmJSO82qQTP0/FgN73UUbcDYZmeD0+TwlNZM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Il7nXo9CytiaNTDU2a5xvVwMIrv15W9ZsliwdD+7CLLQQka9PCWVnpIHmORggBdWV
-         Wzo9/sz3jE9hc8PcCvjhapJGNo8gaihi+3eSEeRlIrmROAEH9p2R/RZ+rQ4OEsY8+3
-         PzvjLU+aLmrGHpBAbo2PXh67whOokf3NwOq0Enfo=
-From:   Arnaldo Carvalho de Melo <acme@kernel.org>
-To:     Ingo Molnar <mingo@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>
-Cc:     Jiri Olsa <jolsa@kernel.org>, Namhyung Kim <namhyung@kernel.org>,
-        Clark Williams <williams@redhat.com>,
-        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        Andrey Zhizhikin <andrey.z@gmail.com>,
-        Andrey Zhizhikin <andrey.zhizhikin@leica-geosystems.com>,
-        Petr Mladek <pmladek@suse.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kefeng Wang <wangkefeng.wang@huawei.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        bpf@vger.kernel.org, netdev@vger.kernel.org,
-        Arnaldo Carvalho de Melo <acme@redhat.com>
-Subject: [PATCH 08/20] tools lib api fs: Fix gcc9 stringop-truncation compilation error
-Date:   Mon,  6 Jan 2020 13:06:53 -0300
-Message-Id: <20200106160705.10899-9-acme@kernel.org>
-X-Mailer: git-send-email 2.21.1
-In-Reply-To: <20200106160705.10899-1-acme@kernel.org>
-References: <20200106160705.10899-1-acme@kernel.org>
+        id S1726477AbgAFQOk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 6 Jan 2020 11:14:40 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Subject:
+        Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:Content-Description:
+        Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
+        In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=2KTCVSvFPOHUS6R1rv4MAR08o+tqRzY+MkXczpNV5z0=; b=FaYMI/vKurQ6+8d2CcWnkKDttw
+        MlFxHnOWRzbBnQo1JTz0VV0hDgflnYJfhST5egf/oBBIlDScT9R/Hp7HmhyFouaq0U0AjxKWEOXNk
+        PLNDSB3T4SddUYYUyoXmllnNGV5mI7GXxc+ND2CT76IKPIpZ3D8//gWqQJFGxw6xYDlA=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1ioV13-0001Aq-SC; Mon, 06 Jan 2020 17:14:05 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     David Miller <davem@davemloft.net>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Vivien Didelot <vivien.didelot@gmail.com>, cphealy@gmail.com,
+        Andrew Lunn <andrew@lunn.ch>
+Subject: [PATCH net-next 0/5] Unique mv88e6xxx IRQ names
+Date:   Mon,  6 Jan 2020 17:13:47 +0100
+Message-Id: <20200106161352.4461-1-andrew@lunn.ch>
+X-Mailer: git-send-email 2.25.0.rc1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -54,62 +39,53 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Andrey Zhizhikin <andrey.z@gmail.com>
+There are a few boards which have multiple mv88e6xxx switches. With
+such boards, it can be hard to determine which interrupts belong to
+which switches. Make the interrupt names unique by including the
+device name in the interrupt name. For the SERDES interrupt, also
+include the port number. As a result of these patches ZII devel C
+looks like:
 
-GCC9 introduced string hardening mechanisms, which exhibits the error
-during fs api compilation:
+ 50:          0  gpio-vf610  27 Level     mv88e6xxx-0.1:00
+ 54:          0  mv88e6xxx-g1   3 Edge      mv88e6xxx-0.1:00-g1-atu-prob
+ 56:          0  mv88e6xxx-g1   5 Edge      mv88e6xxx-0.1:00-g1-vtu-prob
+ 58:          0  mv88e6xxx-g1   7 Edge      mv88e6xxx-0.1:00-g2
+ 61:          0  mv88e6xxx-g2   1 Edge      !mdio-mux!mdio@1!switch@0!mdio:01
+ 62:          0  mv88e6xxx-g2   2 Edge      !mdio-mux!mdio@1!switch@0!mdio:02
+ 63:          0  mv88e6xxx-g2   3 Edge      !mdio-mux!mdio@1!switch@0!mdio:03
+ 64:          0  mv88e6xxx-g2   4 Edge      !mdio-mux!mdio@1!switch@0!mdio:04
+ 70:          0  mv88e6xxx-g2  10 Edge      mv88e6xxx-0.1:00-serdes-10
+ 75:          0  mv88e6xxx-g2  15 Edge      mv88e6xxx-0.1:00-watchdog
+ 76:          5  gpio-vf610  26 Level     mv88e6xxx-0.2:00
+ 80:          0  mv88e6xxx-g1   3 Edge      mv88e6xxx-0.2:00-g1-atu-prob
+ 82:          0  mv88e6xxx-g1   5 Edge      mv88e6xxx-0.2:00-g1-vtu-prob
+ 84:          4  mv88e6xxx-g1   7 Edge      mv88e6xxx-0.2:00-g2
+ 87:          2  mv88e6xxx-g2   1 Edge      !mdio-mux!mdio@2!switch@0!mdio:01
+ 88:          0  mv88e6xxx-g2   2 Edge      !mdio-mux!mdio@2!switch@0!mdio:02
+ 89:          0  mv88e6xxx-g2   3 Edge      !mdio-mux!mdio@2!switch@0!mdio:03
+ 90:          0  mv88e6xxx-g2   4 Edge      !mdio-mux!mdio@2!switch@0!mdio:04
+ 95:          3  mv88e6xxx-g2   9 Edge      mv88e6xxx-0.2:00-serdes-9
+ 96:          0  mv88e6xxx-g2  10 Edge      mv88e6xxx-0.2:00-serdes-10
+101:          0  mv88e6xxx-g2  15 Edge      mv88e6xxx-0.2:00-watchdog
 
-error: '__builtin_strncpy' specified bound 4096 equals destination size
-[-Werror=stringop-truncation]
+Interrupt names like !mdio-mux!mdio@2!switch@0!mdio:01 are created by
+phylib for the integrated PHYs. The mv88e6xxx driver does not
+determine these names.
 
-This comes when the length of copy passed to strncpy is is equal to
-destination size, which could potentially lead to buffer overflow.
+Andrew Lunn (5):
+  net: dsa: mv88e6xxx: Unique IRQ name
+  net: dsa: mv88e6xxx: Unique SERDES interrupt names
+  net: dsa: mv88e6xxx: Unique watchdog IRQ name
+  net: dsa: mv88e6xxx: Unique g2 IRQ name
+  net: dsa: mv88e6xxx: Unique ATU and VTU IRQ names
 
-There is a need to mitigate this potential issue by limiting the size of
-destination by 1 and explicitly terminate the destination with NULL.
+ drivers/net/dsa/mv88e6xxx/chip.c        | 11 +++++++++--
+ drivers/net/dsa/mv88e6xxx/chip.h        |  6 ++++++
+ drivers/net/dsa/mv88e6xxx/global1_atu.c |  5 ++++-
+ drivers/net/dsa/mv88e6xxx/global1_vtu.c |  5 ++++-
+ drivers/net/dsa/mv88e6xxx/global2.c     | 10 ++++++++--
+ 5 files changed, 31 insertions(+), 6 deletions(-)
 
-Signed-off-by: Andrey Zhizhikin <andrey.zhizhikin@leica-geosystems.com>
-Reviewed-by: Petr Mladek <pmladek@suse.com>
-Acked-by: Jiri Olsa <jolsa@kernel.org>
-Cc: Alexei Starovoitov <ast@kernel.org>
-Cc: Andrii Nakryiko <andriin@fb.com>
-Cc: Daniel Borkmann <daniel@iogearbox.net>
-Cc: Kefeng Wang <wangkefeng.wang@huawei.com>
-Cc: Martin KaFai Lau <kafai@fb.com>
-Cc: Petr Mladek <pmladek@suse.com>
-Cc: Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
-Cc: Song Liu <songliubraving@fb.com>
-Cc: Yonghong Song <yhs@fb.com>
-Cc: bpf@vger.kernel.org
-Cc: netdev@vger.kernel.org
-Link: http://lore.kernel.org/lkml/20191211080109.18765-1-andrey.zhizhikin@leica-geosystems.com
-Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
----
- tools/lib/api/fs/fs.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
-
-diff --git a/tools/lib/api/fs/fs.c b/tools/lib/api/fs/fs.c
-index 11b3885e833e..027b18f7ed8c 100644
---- a/tools/lib/api/fs/fs.c
-+++ b/tools/lib/api/fs/fs.c
-@@ -210,6 +210,7 @@ static bool fs__env_override(struct fs *fs)
- 	size_t name_len = strlen(fs->name);
- 	/* name + "_PATH" + '\0' */
- 	char upper_name[name_len + 5 + 1];
-+
- 	memcpy(upper_name, fs->name, name_len);
- 	mem_toupper(upper_name, name_len);
- 	strcpy(&upper_name[name_len], "_PATH");
-@@ -219,7 +220,8 @@ static bool fs__env_override(struct fs *fs)
- 		return false;
- 
- 	fs->found = true;
--	strncpy(fs->path, override_path, sizeof(fs->path));
-+	strncpy(fs->path, override_path, sizeof(fs->path) - 1);
-+	fs->path[sizeof(fs->path) - 1] = '\0';
- 	return true;
- }
- 
 -- 
-2.21.1
+2.25.0.rc1
 
