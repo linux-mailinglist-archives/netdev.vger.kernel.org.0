@@ -2,148 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 40D0F131AB7
-	for <lists+netdev@lfdr.de>; Mon,  6 Jan 2020 22:52:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B8010131ABB
+	for <lists+netdev@lfdr.de>; Mon,  6 Jan 2020 22:52:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726735AbgAFVwJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Jan 2020 16:52:09 -0500
-Received: from www62.your-server.de ([213.133.104.62]:32854 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726683AbgAFVwJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jan 2020 16:52:09 -0500
-Received: from 51.249.197.178.dynamic.dsl-lte-bonding.lssmb00p-msn.res.cust.swisscom.ch ([178.197.249.51] helo=localhost)
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1ioaIB-0000Op-F6; Mon, 06 Jan 2020 22:52:07 +0100
-From:   Daniel Borkmann <daniel@iogearbox.net>
-To:     ast@kernel.org
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        anatoly.trosinenko@gmail.com,
-        Daniel Borkmann <daniel@iogearbox.net>
-Subject: [PATCH bpf] bpf: Fix passing modified ctx to ld/abs/ind instruction
-Date:   Mon,  6 Jan 2020 22:51:57 +0100
-Message-Id: <20200106215157.3553-1-daniel@iogearbox.net>
-X-Mailer: git-send-email 2.21.0
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.101.4/25686/Mon Jan  6 10:55:07 2020)
+        id S1727053AbgAFVw2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Jan 2020 16:52:28 -0500
+Received: from us-smtp-1.mimecast.com ([207.211.31.81]:54523 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726683AbgAFVw2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jan 2020 16:52:28 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1578347547;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Y61KpsVyl/YLbt8otiT+45kb3aY1xMUXUKipAqqJL54=;
+        b=d386VcVhgGFD2qSwLMB6RqxGY39x5lsSnA/z8XhRPlg+QXKXf1xc0eMnIij0lvcjArgW1u
+        H82a7RBHXWLF+ajnWnvflsOSzz6fpMdbp52uhpvvtUCQPcg6+js4hWVB3+u8HtdN6Qtu8U
+        GskbeN5Qozfs7W6yq53K6cZYuuHFP50=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-147-lslrMzDTPYufy8jxzDjGkw-1; Mon, 06 Jan 2020 16:52:21 -0500
+X-MC-Unique: lslrMzDTPYufy8jxzDjGkw-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 61ED710054E3;
+        Mon,  6 Jan 2020 21:52:19 +0000 (UTC)
+Received: from localhost (ovpn-112-4.rdu2.redhat.com [10.10.112.4])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id B8F3F7C017;
+        Mon,  6 Jan 2020 21:52:16 +0000 (UTC)
+Date:   Mon, 06 Jan 2020 13:52:15 -0800 (PST)
+Message-Id: <20200106.135215.943336427582010563.davem@redhat.com>
+To:     vikas.gupta@broadcom.com
+Cc:     zajec5@gmail.com, sheetal.tigadoli@broadcom.com,
+        netdev@vger.kernel.org, linux-mips@vger.kernel.org,
+        linux-kernel@vger.kernel.org, sumit.garg@linaro.org,
+        vikram.prakash@broadcom.com, vasundhara-v.volam@broadcom.com
+Subject: Re: [PATCH v1] firmware: tee_bnxt: Fix multiple call to
+ tee_client_close_context
+From:   David Miller <davem@redhat.com>
+In-Reply-To: <1578291843-27613-1-git-send-email-vikas.gupta@broadcom.com>
+References: <1578291843-27613-1-git-send-email-vikas.gupta@broadcom.com>
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=iso-2022-jp
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Anatoly has been fuzzing with kBdysch harness and reported a KASAN
-slab oob in one of the outcomes:
+From: Vikas Gupta <vikas.gupta@broadcom.com>
+Date: Mon,  6 Jan 2020 11:54:02 +0530
 
-  [...]
-  [   77.359642] BUG: KASAN: slab-out-of-bounds in bpf_skb_load_helper_8_no_cache+0x71/0x130
-  [   77.360463] Read of size 4 at addr ffff8880679bac68 by task bpf/406
-  [   77.361119]
-  [   77.361289] CPU: 2 PID: 406 Comm: bpf Not tainted 5.5.0-rc2-xfstests-00157-g2187f215eba #1
-  [   77.362134] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.12.0-1 04/01/2014
-  [   77.362984] Call Trace:
-  [   77.363249]  dump_stack+0x97/0xe0
-  [   77.363603]  print_address_description.constprop.0+0x1d/0x220
-  [   77.364251]  ? bpf_skb_load_helper_8_no_cache+0x71/0x130
-  [   77.365030]  ? bpf_skb_load_helper_8_no_cache+0x71/0x130
-  [   77.365860]  __kasan_report.cold+0x37/0x7b
-  [   77.366365]  ? bpf_skb_load_helper_8_no_cache+0x71/0x130
-  [   77.366940]  kasan_report+0xe/0x20
-  [   77.367295]  bpf_skb_load_helper_8_no_cache+0x71/0x130
-  [   77.367821]  ? bpf_skb_load_helper_8+0xf0/0xf0
-  [   77.368278]  ? mark_lock+0xa3/0x9b0
-  [   77.368641]  ? kvm_sched_clock_read+0x14/0x30
-  [   77.369096]  ? sched_clock+0x5/0x10
-  [   77.369460]  ? sched_clock_cpu+0x18/0x110
-  [   77.369876]  ? bpf_skb_load_helper_8+0xf0/0xf0
-  [   77.370330]  ___bpf_prog_run+0x16c0/0x28f0
-  [   77.370755]  __bpf_prog_run32+0x83/0xc0
-  [   77.371153]  ? __bpf_prog_run64+0xc0/0xc0
-  [   77.371568]  ? match_held_lock+0x1b/0x230
-  [   77.371984]  ? rcu_read_lock_held+0xa1/0xb0
-  [   77.372416]  ? rcu_is_watching+0x34/0x50
-  [   77.372826]  sk_filter_trim_cap+0x17c/0x4d0
-  [   77.373259]  ? sock_kzfree_s+0x40/0x40
-  [   77.373648]  ? __get_filter+0x150/0x150
-  [   77.374059]  ? skb_copy_datagram_from_iter+0x80/0x280
-  [   77.374581]  ? do_raw_spin_unlock+0xa5/0x140
-  [   77.375025]  unix_dgram_sendmsg+0x33a/0xa70
-  [   77.375459]  ? do_raw_spin_lock+0x1d0/0x1d0
-  [   77.375893]  ? unix_peer_get+0xa0/0xa0
-  [   77.376287]  ? __fget_light+0xa4/0xf0
-  [   77.376670]  __sys_sendto+0x265/0x280
-  [   77.377056]  ? __ia32_sys_getpeername+0x50/0x50
-  [   77.377523]  ? lock_downgrade+0x350/0x350
-  [   77.377940]  ? __sys_setsockopt+0x2a6/0x2c0
-  [   77.378374]  ? sock_read_iter+0x240/0x240
-  [   77.378789]  ? __sys_socketpair+0x22a/0x300
-  [   77.379221]  ? __ia32_sys_socket+0x50/0x50
-  [   77.379649]  ? mark_held_locks+0x1d/0x90
-  [   77.380059]  ? trace_hardirqs_on_thunk+0x1a/0x1c
-  [   77.380536]  __x64_sys_sendto+0x74/0x90
-  [   77.380938]  do_syscall_64+0x68/0x2a0
-  [   77.381324]  entry_SYSCALL_64_after_hwframe+0x49/0xbe
-  [   77.381878] RIP: 0033:0x44c070
-  [...]
+> Fix calling multiple tee_client_close_context in case of shm allocation
+> fails.
+> 
+> Fixes: 246880958ac9 (“firmware: broadcom: add OP-TEE based BNXT f/w manager”)
+> Signed-off-by: Vikas Gupta <vikas.gupta@broadcom.com>
 
-After further debugging, turns out while in case of other helper functions
-we disallow passing modified ctx, the special case of ld/abs/ind instruction
-which has similar semantics (except r6 being the ctx argument) is missing
-such check. Modified ctx is impossible here as bpf_skb_load_helper_8_no_cache()
-and others are expecting skb fields in original position, hence, add
-check_ctx_reg() to reject any modified ctx. Issue was first introduced back
-in f1174f77b50c ("bpf/verifier: rework value tracking").
-
-Fixes: f1174f77b50c ("bpf/verifier: rework value tracking")
-Reported-by: Anatoly Trosinenko <anatoly.trosinenko@gmail.com>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
----
- kernel/bpf/verifier.c | 9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
-
-diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-index 6f63ae7a370c..ce85e7041f0c 100644
---- a/kernel/bpf/verifier.c
-+++ b/kernel/bpf/verifier.c
-@@ -6264,6 +6264,7 @@ static bool may_access_skb(enum bpf_prog_type type)
- static int check_ld_abs(struct bpf_verifier_env *env, struct bpf_insn *insn)
- {
- 	struct bpf_reg_state *regs = cur_regs(env);
-+	static const int ctx_reg = BPF_REG_6;
- 	u8 mode = BPF_MODE(insn->code);
- 	int i, err;
- 
-@@ -6297,7 +6298,7 @@ static int check_ld_abs(struct bpf_verifier_env *env, struct bpf_insn *insn)
- 	}
- 
- 	/* check whether implicit source operand (register R6) is readable */
--	err = check_reg_arg(env, BPF_REG_6, SRC_OP);
-+	err = check_reg_arg(env, ctx_reg, SRC_OP);
- 	if (err)
- 		return err;
- 
-@@ -6316,7 +6317,7 @@ static int check_ld_abs(struct bpf_verifier_env *env, struct bpf_insn *insn)
- 		return -EINVAL;
- 	}
- 
--	if (regs[BPF_REG_6].type != PTR_TO_CTX) {
-+	if (regs[ctx_reg].type != PTR_TO_CTX) {
- 		verbose(env,
- 			"at the time of BPF_LD_ABS|IND R6 != pointer to skb\n");
- 		return -EINVAL;
-@@ -6329,6 +6330,10 @@ static int check_ld_abs(struct bpf_verifier_env *env, struct bpf_insn *insn)
- 			return err;
- 	}
- 
-+	err = check_ctx_reg(env, &regs[ctx_reg], ctx_reg);
-+	if (err < 0)
-+		return err;
-+
- 	/* reset caller saved regs to unreadable */
- 	for (i = 0; i < CALLER_SAVED_REGS; i++) {
- 		mark_reg_not_init(env, regs, caller_saved[i]);
--- 
-2.20.1
+Applied.
 
