@@ -2,124 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 49473131C78
-	for <lists+netdev@lfdr.de>; Tue,  7 Jan 2020 00:36:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 03E55131C87
+	for <lists+netdev@lfdr.de>; Tue,  7 Jan 2020 00:46:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727386AbgAFXgu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Jan 2020 18:36:50 -0500
-Received: from mail-eopbgr20053.outbound.protection.outlook.com ([40.107.2.53]:32391
-        "EHLO EUR02-VE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726735AbgAFXgt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 6 Jan 2020 18:36:49 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=mnr+xXxQ6ssK+0rrpGzJi9FnUKTvgGpWuZ9e86bxDsqMKL0/MyM5TY/KMGW9Ff27z087WFBX0gqCiVlWc8o7aXhNUafK6QKtZPzIYZu04gzjs6HJkbpIhYZ6p8r12nYU1IQcqHtQCnhlLM2wEpgjgSbIeWE+xKGXyQBnCV67dZcINXEjJvV9VBdcBafmDDjnkGG9kNFrR3homFejVVIB2YPWXJ3SxMg610kbxyumgayFLGjg0e9gYvQB9YOOuoT9YdaT4Td7PUyKGHVc2pVCB9XesouyL6laH9SDn6lcwMz3aK8DjASA0A0zb3wAORVBaZlDd4uEGnFBJHjXzUulRA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Hphl934cmOfr5qY8knlIPDnMu3xeNnevABjLrbHmC1E=;
- b=Cyl+ohgmQbJj2Fvvzld+i6uWCQUTKluid1fklrJ8BPdlZkboxGV6Vxn078p0bVD4jdZm+ebk6gBQl/NMlr4GU9UHsyanDDCKNoC0Waph/Lqtl6wK+pPX6SNGOdEFBnMOPc6QU+t6TZZX0TOArN44Ri1ytYJn0W8xE0Ybu/GNAPihwElc0AdfX1A7jD+a5pGmO5MTW5crOcoNUvVULCqlSaPwhLyASOivj8nDK3MuN3QAIAOtOx4K+LGx+y9siPVuarDUowUPb3hdVSS105VE135Sx8S4wodQKWyb86POT+ClkdojIT8f595w2da2cfoCxruy5WD+r3KVFVN3/AAYOg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Hphl934cmOfr5qY8knlIPDnMu3xeNnevABjLrbHmC1E=;
- b=jT3f9oB1/WKzxSLa036kWTSrnBzwFb10NzlbXBWnlfBRbGC97nSRVLHJxFzlkmYIeDiyx6Y7xVmC0HBO0jW1ZF9EjRwuMqqvdRQUpD/40e5+nfbwafoCmtRK6o7OGWo12XjWfCqApfN9ztEebQBo6dt1DVHJ4xuyBg+UWJoQHxs=
-Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (20.177.51.151) by
- VI1PR05MB6397.eurprd05.prod.outlook.com (20.179.25.77) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2602.15; Mon, 6 Jan 2020 23:36:35 +0000
-Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
- ([fe80::d830:96fc:e928:c096]) by VI1PR05MB5102.eurprd05.prod.outlook.com
- ([fe80::d830:96fc:e928:c096%6]) with mapi id 15.20.2602.015; Mon, 6 Jan 2020
- 23:36:35 +0000
-Received: from smtp.office365.com (209.116.155.178) by BYAPR05CA0090.namprd05.prod.outlook.com (2603:10b6:a03:e0::31) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2623.3 via Frontend Transport; Mon, 6 Jan 2020 23:36:33 +0000
-From:   Saeed Mahameed <saeedm@mellanox.com>
-To:     "David S. Miller" <davem@davemloft.net>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Erez Shitrit <erezsh@mellanox.com>,
-        Saeed Mahameed <saeedm@mellanox.com>
-Subject: [net 7/7] net/mlx5: DR, Init lists that are used in rule's member
-Thread-Topic: [net 7/7] net/mlx5: DR, Init lists that are used in rule's
- member
-Thread-Index: AQHVxOoisjZKyKJBdUC/uF4204sXtQ==
-Date:   Mon, 6 Jan 2020 23:36:35 +0000
-Message-ID: <20200106233248.58700-8-saeedm@mellanox.com>
-References: <20200106233248.58700-1-saeedm@mellanox.com>
-In-Reply-To: <20200106233248.58700-1-saeedm@mellanox.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-mailer: git-send-email 2.24.1
-x-originating-ip: [209.116.155.178]
-x-clientproxiedby: BYAPR05CA0090.namprd05.prod.outlook.com
- (2603:10b6:a03:e0::31) To VI1PR05MB5102.eurprd05.prod.outlook.com
- (2603:10a6:803:5e::23)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=saeedm@mellanox.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: cb2d3dd7-59a7-4029-b049-08d793014470
-x-ms-traffictypediagnostic: VI1PR05MB6397:|VI1PR05MB6397:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VI1PR05MB6397AF916A9DF57CBAF6F714BE3C0@VI1PR05MB6397.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:1169;
-x-forefront-prvs: 0274272F87
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(136003)(39860400002)(346002)(376002)(366004)(396003)(189003)(199004)(4744005)(4326008)(5660300002)(2616005)(956004)(6916009)(54906003)(8936002)(478600001)(6512007)(26005)(107886003)(81166006)(8676002)(71200400001)(81156014)(64756008)(66946007)(66446008)(66476007)(66556008)(52116002)(6486002)(6506007)(1076003)(86362001)(316002)(36756003)(16526019)(2906002)(186003)(54420400002);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB6397;H:VI1PR05MB5102.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: sW13x2erEooggFrZ7YaKD6i3CHqdjG6pPWl2bnl5t6yO5Wft0+fuvCgC4ogrDaW77qMp26YSVxzwxndKQ8JUUAOwU+2rYgyJblqQu1SjPOhtTyeB6FfHWz0vVLt2qSJw8sRYUOoW+LPAXHCbldkK6pIfKPFN3EqTFxOdGL4e1K6gch1VQ5RicMoZk5DrNUWexJh/ZwFtOFZxAzAi5vEip+n46xV64ES32Zn8+AnZ0tYcXhuoGX0wP7f0kt7npECdzejp7c4nr4B6d+M7w9KbjMx2ubjMNj6P+30pqofNsLNrdniooQLDEozLLBxNsXkx/I+PYvXswdQ9SfOWRt+p4QBmn84ELmZcG+NjPwjstyZKSZy+PWuvAv2FaCSoIXGfyohGOvfJy0GvdNEoVo2+wup3Q6dHvgna/VNUsX2HdxNL0SuHyAmxM4raioEph4jKu08iIySWPX0YLvLt0c5xUMC3F8OoxT5huSYGKlAxh1jnrHIM+Vu+g6EFgku0BdYCVXKX9gzKwrogUohixFhE0Z+4Kauf31RP4WB1ENutz74=
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+        id S1727190AbgAFXqn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Jan 2020 18:46:43 -0500
+Received: from mail-pj1-f65.google.com ([209.85.216.65]:37890 "EHLO
+        mail-pj1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726599AbgAFXqn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jan 2020 18:46:43 -0500
+Received: by mail-pj1-f65.google.com with SMTP id l35so8416148pje.3;
+        Mon, 06 Jan 2020 15:46:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=lXzoNNYg+iL14F+bP33SlPZMJC722e8o96/p03q5+eU=;
+        b=AhB2kstvXC4bjVGm9u3+Ft9mq2oBei9/53hsYBcE/6iGpONhX5ZIeDcx5OwTrNNRX+
+         z/qQB0r3WwLxuhj5NY4dj3tF354VQ4VPdkEeKbw0GHxhigUenl/I4uAMdYJ40dGmGVPe
+         C21WjDqVt5gYo1r4FgMf0roUJzpHsRRrm4ukuCNAQ2Ns/dXfs0YkomOw7Uc5i0Syyi5y
+         1N0hwr/1fB9z3RbSAjsmH141qZ7E/isZse+77mnMW1/ppPo3ix7R8qEV2AcACX7bUETb
+         EUi+gBjGXjo0/MVqvGJbnY2dF3eALQ4TfUWE62qLgkCnljiy3KFcc0ChJgbcyrJiwyw8
+         QKzA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=lXzoNNYg+iL14F+bP33SlPZMJC722e8o96/p03q5+eU=;
+        b=B3STh9qR0xAP+w6X81nTVCAeRn/d6fC5pBtU/dUBCqiJGQPMvcR76X6XAxf3vANVx6
+         dzE/ggKjKqk375bmXKllBwpt9a39a+Urr0Pu9uo0ul6PYfVS5gw13D7KQVD2HCpHHYyF
+         WYbThvmthB++sO/Q11/bH75Zg3y/vLuYisnN1TZ69RP6zS3PalOHhdWzkNSAKiknikty
+         if62p8Zfi1Dn+gcRll3loDRiL3ptgtX2NbvmcD45pRMHX2aWsea6r+TCVE3WdaRc0WS3
+         lTbX3G05IAZi4P962YdWzzB0CsPzb1D6+TaiJGNXrlnyGGmJyYXaeSd5LmAdeyXPotJ1
+         s4dg==
+X-Gm-Message-State: APjAAAWL/AMHcj1bkQ8vI/QxeIh5A1W0rjOwjfuZ7vqxm/bHRd+z6dLr
+        kX/nVozjZSlOPH24MqHLnE4=
+X-Google-Smtp-Source: APXvYqzs+BBcsUpY85BwooDMbFNUg82RZQ28blt2CVIjO/xu7m2nxo0kG7BS75dYe3uFLAV/E2czIg==
+X-Received: by 2002:a17:90a:778a:: with SMTP id v10mr43717211pjk.26.1578354402800;
+        Mon, 06 Jan 2020 15:46:42 -0800 (PST)
+Received: from ast-mbp ([2620:10d:c090:200::1:2bf6])
+        by smtp.gmail.com with ESMTPSA id e16sm72115828pgk.77.2020.01.06.15.46.41
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 06 Jan 2020 15:46:42 -0800 (PST)
+Date:   Mon, 6 Jan 2020 15:46:40 -0800
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Jiri Olsa <jolsa@kernel.org>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, Andrii Nakryiko <andriin@fb.com>,
+        Yonghong Song <yhs@fb.com>, Martin KaFai Lau <kafai@fb.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        David Miller <davem@redhat.com>, bjorn.topel@intel.com
+Subject: Re: [PATCH 5/5] bpf: Allow to resolve bpf trampoline in unwind
+Message-ID: <20200106234639.fo2ctgkb5vumayyl@ast-mbp>
+References: <20191229143740.29143-1-jolsa@kernel.org>
+ <20191229143740.29143-6-jolsa@kernel.org>
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: cb2d3dd7-59a7-4029-b049-08d793014470
-X-MS-Exchange-CrossTenant-originalarrivaltime: 06 Jan 2020 23:36:35.2488
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: JROJuF4yhBQC3XYzKghUYy/s1tR/x4BFYSajRzo0nYMd+ZaymtD6ZqDthEmoZ2C0kf1ZHe07fopddoAQBEH01g==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB6397
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191229143740.29143-6-jolsa@kernel.org>
+User-Agent: NeoMutt/20180223
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Erez Shitrit <erezsh@mellanox.com>
+On Sun, Dec 29, 2019 at 03:37:40PM +0100, Jiri Olsa wrote:
+> When unwinding the stack we need to identify each
+> address to successfully continue. Adding latch tree
+> to keep trampolines for quick lookup during the
+> unwind.
+> 
+> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+...
+> +bool is_bpf_trampoline(void *addr)
+> +{
+> +	return latch_tree_find(addr, &tree, &tree_ops) != NULL;
+> +}
+> +
+>  struct bpf_trampoline *bpf_trampoline_lookup(u64 key)
+>  {
+>  	struct bpf_trampoline *tr;
+> @@ -65,6 +98,7 @@ struct bpf_trampoline *bpf_trampoline_lookup(u64 key)
+>  	for (i = 0; i < BPF_TRAMP_MAX; i++)
+>  		INIT_HLIST_HEAD(&tr->progs_hlist[i]);
+>  	tr->image = image;
+> +	latch_tree_insert(&tr->tnode, &tree, &tree_ops);
 
-Whenever adding new member of rule object we attach it to 2 lists,
-These 2 lists should be initialized first.
-
-Fixes: 41d07074154c ("net/mlx5: DR, Expose steering rule functionality")
-Signed-off-by: Erez Shitrit <erezsh@mellanox.com>
-Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
----
- drivers/net/ethernet/mellanox/mlx5/core/steering/dr_rule.c | 3 +++
- 1 file changed, 3 insertions(+)
-
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_rule.c b/d=
-rivers/net/ethernet/mellanox/mlx5/core/steering/dr_rule.c
-index f21bc1bc77d7..e4cff7abb348 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_rule.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_rule.c
-@@ -638,6 +638,9 @@ static int dr_rule_add_member(struct mlx5dr_rule_rx_tx =
-*nic_rule,
- 	if (!rule_mem)
- 		return -ENOMEM;
-=20
-+	INIT_LIST_HEAD(&rule_mem->list);
-+	INIT_LIST_HEAD(&rule_mem->use_ste_list);
-+
- 	rule_mem->ste =3D ste;
- 	list_add_tail(&rule_mem->list, &nic_rule->rule_members_list);
-=20
---=20
-2.24.1
-
+Thanks for the fix. I was thinking to apply it, but then realized that bpf
+dispatcher logic has the same issue.
+Could you generalize the fix for both?
+May be bpf_jit_alloc_exec_page() can do latch_tree_insert() ?
+and new version of bpf_jit_free_exec() is needed that will do latch_tree_erase().
+Wdyt?
