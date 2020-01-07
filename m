@@ -2,81 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 21F6E13228F
-	for <lists+netdev@lfdr.de>; Tue,  7 Jan 2020 10:35:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F9261322BC
+	for <lists+netdev@lfdr.de>; Tue,  7 Jan 2020 10:42:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727747AbgAGJet (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jan 2020 04:34:49 -0500
-Received: from www62.your-server.de ([213.133.104.62]:52526 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727720AbgAGJes (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jan 2020 04:34:48 -0500
-Received: from [2001:1620:665:0:5795:5b0a:e5d5:5944] (helo=localhost)
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1iolG3-0005pp-LS; Tue, 07 Jan 2020 10:34:39 +0100
-From:   Daniel Borkmann <daniel@iogearbox.net>
-To:     davem@davemloft.net
-Cc:     jakub.kicinski@netronome.com, daniel@iogearbox.net, ast@kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: pull-request: bpf 2020-01-07
-Date:   Tue,  7 Jan 2020 10:34:38 +0100
-Message-Id: <20200107093438.10089-1-daniel@iogearbox.net>
-X-Mailer: git-send-email 2.21.0
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.101.4/25686/Mon Jan  6 10:55:07 2020)
+        id S1727658AbgAGJm3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Jan 2020 04:42:29 -0500
+Received: from mail-pl1-f202.google.com ([209.85.214.202]:47187 "EHLO
+        mail-pl1-f202.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727177AbgAGJm3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jan 2020 04:42:29 -0500
+Received: by mail-pl1-f202.google.com with SMTP id g16so3191395plo.14
+        for <netdev@vger.kernel.org>; Tue, 07 Jan 2020 01:42:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=SXoDe/k8aiSVjnD1sy0eKxdpitDDrivUkflvobi24MY=;
+        b=dW+lSPgff/g6IQxxSRbl8kqiKWy6UKb2nB5t2PxivOhiOjT3CsygXUD0T6fRrLaLIV
+         elF8joAFTMoVE6whXW8ui23d/261sAYqSk5D1xCUQnI6XGqJnqwMc12XTLFbVCjGyGKY
+         jvGjS5zH51rVpxj9V5PXhcJIbz74+iVAo7yvu9H0vTlKSvf86dNtQeZw5EEhF5BxxFsc
+         FrpTiZsFN0aKaugr2aUFXne3m7bhZgY+qFwf/A6D0QOJZI4+BEPq9eWgumRgZbKwP07J
+         CkADGorvFHYa2St2gnB1J+V8+dC5D1/8BYh8uFG30s44lrt9phq5cCcXxEhoaeLl1C80
+         WLJg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=SXoDe/k8aiSVjnD1sy0eKxdpitDDrivUkflvobi24MY=;
+        b=nWLNTdySb64tInA5eLq68EOgTPGtdWJPwxIex52XSNGkYxv5LhxxxMF1gsPdiPrW+H
+         XdlsurA+ea3QO8aRqJA6gAYGBw9jZj/Bpvq7oCJKBktcj7Vm2Jdvsl/Xu/TRJH4VgqTb
+         w1Lxqjp7mGA3EgXJXBpW4WqY0gpAJXjoDwbIPXLwndPjzFVL3qha6QDc5s5wZhWq+E9B
+         PUTc2LHOnGe5dbcOzs6qRd8wgIn6sjvZiR10tLtq5jXtYBk7CuWz0ahU3C/dovui/pIU
+         dw9EXq5sSu+hXsojn5Bqdg8e8LK7m0ZiumNzLGJUgGEqk2GRmd8ZpC7vke3Rb39l41ok
+         VWKg==
+X-Gm-Message-State: APjAAAWrIE2ynkO2gSEFYfn80jhOZrcbDCXcmSfMIDaqRYbjynpqwHoq
+        fumJTcczxCX+zBbHQX+CpD/ApdSIEGqrCw==
+X-Google-Smtp-Source: APXvYqw/fMW+uljm/x111gZz0BAxOC95HmDrHrmqqcBDai6F8nS0vOVr6PKockxy7Flp+7r9mWyeug3nUzJ/xg==
+X-Received: by 2002:a63:9d07:: with SMTP id i7mr120984524pgd.344.1578390148597;
+ Tue, 07 Jan 2020 01:42:28 -0800 (PST)
+Date:   Tue,  7 Jan 2020 01:42:23 -0800
+Message-Id: <20200107094225.21243-1-edumazet@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.24.1.735.g03f4e72817-goog
+Subject: [PATCH net 0/2] vlan: rtnetlink newlink fixes
+From:   Eric Dumazet <edumazet@google.com>
+To:     "David S . Miller" <davem@davemloft.net>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi David,
+First patch fixes a potential memory leak found by syzbot
 
-The following pull-request contains BPF updates for your *net* tree.
+Second patch makes vlan_changelink() aware of errors
+and report them to user.
 
-We've added 2 non-merge commits during the last 1 day(s) which contain
-a total of 2 files changed, 16 insertions(+), 4 deletions(-).
+Eric Dumazet (2):
+  vlan: fix memory leak in vlan_dev_set_egress_priority
+  vlan: vlan_changelink() should propagate errors
 
-The main changes are:
+ net/8021q/vlan.h         |  1 +
+ net/8021q/vlan_dev.c     |  3 ++-
+ net/8021q/vlan_netlink.c | 19 ++++++++++++-------
+ 3 files changed, 15 insertions(+), 8 deletions(-)
 
-1) Fix a use-after-free in cgroup BPF due to auto-detachment, from Roman Gushchin.
+-- 
+2.24.1.735.g03f4e72817-goog
 
-2) Fix skb out-of-bounds access in ld_abs/ind instruction, from Daniel Borkmann.
-
-Please consider pulling these changes from:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git
-
-Thanks a lot!
-
-Also thanks to reporters, reviewers and testers of commits in this pull-request:
-
-Anatoly Trosinenko, Josef Bacik, Song Liu
-
-----------------------------------------------------------------
-
-The following changes since commit 4012a6f2fa562b4b2884ea96db263caa4c6057a8:
-
-  firmware: tee_bnxt: Fix multiple call to tee_client_close_context (2020-01-06 13:51:37 -0800)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git 
-
-for you to fetch changes up to 6d4f151acf9a4f6fab09b615f246c717ddedcf0c:
-
-  bpf: Fix passing modified ctx to ld/abs/ind instruction (2020-01-06 14:19:47 -0800)
-
-----------------------------------------------------------------
-Daniel Borkmann (1):
-      bpf: Fix passing modified ctx to ld/abs/ind instruction
-
-Roman Gushchin (1):
-      bpf: cgroup: prevent out-of-order release of cgroup bpf
-
- kernel/bpf/cgroup.c   | 11 +++++++++--
- kernel/bpf/verifier.c |  9 +++++++--
- 2 files changed, 16 insertions(+), 4 deletions(-)
