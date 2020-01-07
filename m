@@ -2,45 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 189B61337A3
-	for <lists+netdev@lfdr.de>; Wed,  8 Jan 2020 00:45:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 856AA1337A7
+	for <lists+netdev@lfdr.de>; Wed,  8 Jan 2020 00:45:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727738AbgAGXol (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jan 2020 18:44:41 -0500
-Received: from smtp-fw-4101.amazon.com ([72.21.198.25]:49868 "EHLO
-        smtp-fw-4101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726470AbgAGXol (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jan 2020 18:44:41 -0500
+        id S1727164AbgAGXps (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Jan 2020 18:45:48 -0500
+Received: from smtp-fw-2101.amazon.com ([72.21.196.25]:60707 "EHLO
+        smtp-fw-2101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726470AbgAGXpr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jan 2020 18:45:47 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1578440680; x=1609976680;
+  t=1578440746; x=1609976746;
   h=date:from:to:cc:subject:message-id:mime-version;
-  bh=f6Z3Yh5Svpg3B2CNoDg+pE4bEOLYIDxF72khvbH/8BY=;
-  b=jPvScGo5QEpUBPzh7LP5nv5KKNgTK80b5wox5ndDK4Cf6qEDfDXjLTko
-   NSBsKxFb/S/CEIC/4C1f+5rw4mB9kJ/BEzX873Qsz3tBeSHoA5L1ZqYv6
-   /TsV0N/DZoDuN3c+WRNt801wm9CDaNq/RsXHryTP9cCbdCL25VgWE99M+
-   k=;
-IronPort-SDR: VN1Xhl+bt3NNnO0zmMcnfsgfdV3B10I31QHUCoO03TuuoIqc3+CWPtyE1hCWoqAapXVMKhX0hf
- /se6u6x4A+3Q==
+  bh=NHm42TlJLKDMXwfLCWbPw7bKb/s9QHjU3lyklyyG0cI=;
+  b=EI/EFyjfG0QSvSKGZQrLy3ruBsZhASNC7DTJtlviSuSDbYOtly12AUGQ
+   5L3IEuk90suW/RQUiQv6N9mwmLK4S7dWb2eM4wtz9BgeV1RR+X92Uapdt
+   0vm/LJesemandrsGUNnOTUX7/QroFH52cRO0Wk7RtFPy6OEK0670o9/uO
+   I=;
+IronPort-SDR: gkNYw935e97eoztM5ARiz4jflA1dZJd8BbTSLZxwZdbg2Lz2qjmfDCPJWMmvzfDoR8KoPOg4GN
+ Ps++MVqJl7vA==
 X-IronPort-AV: E=Sophos;i="5.69,407,1571702400"; 
-   d="scan'208";a="11335463"
-Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-2a-119b4f96.us-west-2.amazon.com) ([10.43.8.6])
-  by smtp-border-fw-out-4101.iad4.amazon.com with ESMTP; 07 Jan 2020 23:44:39 +0000
-Received: from EX13MTAUEB002.ant.amazon.com (pdx4-ws-svc-p6-lb7-vlan2.pdx.amazon.com [10.170.41.162])
-        by email-inbound-relay-2a-119b4f96.us-west-2.amazon.com (Postfix) with ESMTPS id 8A5F71A0AC3;
-        Tue,  7 Jan 2020 23:44:36 +0000 (UTC)
-Received: from EX13D08UEB003.ant.amazon.com (10.43.60.11) by
+   d="scan'208";a="11408855"
+Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-1d-f273de60.us-east-1.amazon.com) ([10.43.8.2])
+  by smtp-border-fw-out-2101.iad2.amazon.com with ESMTP; 07 Jan 2020 23:45:46 +0000
+Received: from EX13MTAUEB002.ant.amazon.com (iad55-ws-svc-p15-lb9-vlan2.iad.amazon.com [10.40.159.162])
+        by email-inbound-relay-1d-f273de60.us-east-1.amazon.com (Postfix) with ESMTPS id D093FA2715;
+        Tue,  7 Jan 2020 23:45:38 +0000 (UTC)
+Received: from EX13D08UEB001.ant.amazon.com (10.43.60.245) by
  EX13MTAUEB002.ant.amazon.com (10.43.60.12) with Microsoft SMTP Server (TLS)
- id 15.0.1367.3; Tue, 7 Jan 2020 23:44:21 +0000
-Received: from EX13MTAUEB002.ant.amazon.com (10.43.60.12) by
- EX13D08UEB003.ant.amazon.com (10.43.60.11) with Microsoft SMTP Server (TLS)
- id 15.0.1367.3; Tue, 7 Jan 2020 23:44:21 +0000
+ id 15.0.1367.3; Tue, 7 Jan 2020 23:44:58 +0000
+Received: from EX13MTAUEA001.ant.amazon.com (10.43.61.82) by
+ EX13D08UEB001.ant.amazon.com (10.43.60.245) with Microsoft SMTP Server (TLS)
+ id 15.0.1367.3; Tue, 7 Jan 2020 23:44:57 +0000
 Received: from dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com
- (172.22.96.68) by mail-relay.amazon.com (10.43.60.234) with Microsoft SMTP
- Server id 15.0.1367.3 via Frontend Transport; Tue, 7 Jan 2020 23:44:20 +0000
+ (172.22.96.68) by mail-relay.amazon.com (10.43.61.243) with Microsoft SMTP
+ Server id 15.0.1367.3 via Frontend Transport; Tue, 7 Jan 2020 23:44:57 +0000
 Received: by dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com (Postfix, from userid 4335130)
-        id CE67040E65; Tue,  7 Jan 2020 23:44:20 +0000 (UTC)
-Date:   Tue, 7 Jan 2020 23:44:20 +0000
+        id 9A92F40E65; Tue,  7 Jan 2020 23:44:57 +0000 (UTC)
+Date:   Tue, 7 Jan 2020 23:44:57 +0000
 From:   Anchal Agarwal <anchalag@amazon.com>
 To:     <tglx@linutronix.de>, <mingo@redhat.com>, <bp@alien8.de>,
         <hpa@zytor.com>, <x86@kernel.org>, <boris.ostrovsky@oracle.com>,
@@ -56,9 +56,9 @@ To:     <tglx@linutronix.de>, <mingo@redhat.com>, <bp@alien8.de>,
         <Woodhouse@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>,
         <dwmw@amazon.co.uk>, <fllinden@amaozn.com>
 CC:     <anchalag@amazon.com>
-Subject: [RFC PATCH V2 09/11] xen: Clear IRQD_IRQ_STARTED flag during
- shutdown PIRQs
-Message-ID: <20200107234420.GA18738@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
+Subject: [RFC PATCH V2 10/11] PM / hibernate: update the resume offset on
+ SNAPSHOT_SET_SWAP_AREA
+Message-ID: <20200107234457.GA18829@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
@@ -68,71 +68,43 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-shutdown_pirq is invoked during hibernation path and hence
-PIRQs should be restarted during resume.
-Before this commit'020db9d3c1dc0a' xen/events: Fix interrupt lost
-during irq_disable and irq_enable startup_pirq was automatically
-called during irq_enable however, after this commit pirq's did not
-get explicitly started once resumed from hibernation.
+From: Aleksei Besogonov <cyberax@amazon.com>
 
-chip->irq_startup is called only if IRQD_IRQ_STARTED is unset during
-irq_startup on resume. This flag gets cleared by free_irq->irq_shutdown
-during suspend. free_irq() never gets explicitly called for ioapic-edge
-and ioapic-level interrupts as respective drivers do nothing during
-suspend/resume. So we shut them down explicitly in the first place in
-syscore_suspend path to clear IRQ<>event channel mapping. shutdown_pirq
-being called explicitly during suspend does not clear this flags, hence
-.irq_enable is called in irq_startup during resume instead and pirq's
-never start up.
+The SNAPSHOT_SET_SWAP_AREA is supposed to be used to set the hibernation
+offset on a running kernel to enable hibernating to a swap file.
+However, it doesn't actually update the swsusp_resume_block variable. As
+a result, the hibernation fails at the last step (after all the data is
+written out) in the validation of the swap signature in
+mark_swapfiles().
 
+Before this patch, the command line processing was the only place where
+swsusp_resume_block was set.
+
+Signed-off-by: Aleksei Besogonov <cyberax@amazon.com>
+Signed-off-by: Munehisa Kamata <kamatam@amazon.com>
 Signed-off-by: Anchal Agarwal <anchalag@amazon.com>
 ---
- drivers/xen/events/events_base.c | 1 +
- include/linux/irq.h              | 1 +
- kernel/irq/chip.c                | 3 ++-
- 3 files changed, 4 insertions(+), 1 deletion(-)
+ kernel/power/user.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/xen/events/events_base.c b/drivers/xen/events/events_base.c
-index b893536d8af4..aae7c4997b51 100644
---- a/drivers/xen/events/events_base.c
-+++ b/drivers/xen/events/events_base.c
-@@ -1606,6 +1606,7 @@ void xen_shutdown_pirqs(void)
- 			continue;
- 
- 		shutdown_pirq(irq_get_irq_data(info->irq));
-+		irq_state_clr_started(irq_to_desc(info->irq));
- 	}
- }
- 
-diff --git a/include/linux/irq.h b/include/linux/irq.h
-index fb301cf29148..1e125cd22cf0 100644
---- a/include/linux/irq.h
-+++ b/include/linux/irq.h
-@@ -745,6 +745,7 @@ extern int irq_set_msi_desc(unsigned int irq, struct msi_desc *entry);
- extern int irq_set_msi_desc_off(unsigned int irq_base, unsigned int irq_offset,
- 				struct msi_desc *entry);
- extern struct irq_data *irq_get_irq_data(unsigned int irq);
-+extern void irq_state_clr_started(struct irq_desc *desc);
- 
- static inline struct irq_chip *irq_get_chip(unsigned int irq)
- {
-diff --git a/kernel/irq/chip.c b/kernel/irq/chip.c
-index b76703b2c0af..3e8a36c673d6 100644
---- a/kernel/irq/chip.c
-+++ b/kernel/irq/chip.c
-@@ -173,10 +173,11 @@ static void irq_state_clr_masked(struct irq_desc *desc)
- 	irqd_clear(&desc->irq_data, IRQD_IRQ_MASKED);
- }
- 
--static void irq_state_clr_started(struct irq_desc *desc)
-+void irq_state_clr_started(struct irq_desc *desc)
- {
- 	irqd_clear(&desc->irq_data, IRQD_IRQ_STARTED);
- }
-+EXPORT_SYMBOL_GPL(irq_state_clr_started);
- 
- static void irq_state_set_started(struct irq_desc *desc)
- {
+diff --git a/kernel/power/user.c b/kernel/power/user.c
+index 77438954cc2b..d396e313cb7b 100644
+--- a/kernel/power/user.c
++++ b/kernel/power/user.c
+@@ -374,8 +374,12 @@ static long snapshot_ioctl(struct file *filp, unsigned int cmd,
+ 			if (swdev) {
+ 				offset = swap_area.offset;
+ 				data->swap = swap_type_of(swdev, offset, NULL);
+-				if (data->swap < 0)
++				if (data->swap < 0) {
+ 					error = -ENODEV;
++				} else {
++					swsusp_resume_device = swdev;
++					swsusp_resume_block = offset;
++				}
+ 			} else {
+ 				data->swap = -1;
+ 				error = -EINVAL;
 -- 
 2.15.3.AMZN
 
