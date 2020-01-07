@@ -2,104 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 66C30132419
-	for <lists+netdev@lfdr.de>; Tue,  7 Jan 2020 11:47:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3609D132440
+	for <lists+netdev@lfdr.de>; Tue,  7 Jan 2020 11:56:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727904AbgAGKrm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jan 2020 05:47:42 -0500
-Received: from mail-il1-f196.google.com ([209.85.166.196]:33484 "EHLO
-        mail-il1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727875AbgAGKrm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jan 2020 05:47:42 -0500
-Received: by mail-il1-f196.google.com with SMTP id v15so45365243iln.0
-        for <netdev@vger.kernel.org>; Tue, 07 Jan 2020 02:47:41 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sifive.com; s=google;
-        h=date:from:to:cc:subject:in-reply-to:message-id:references
-         :user-agent:mime-version;
-        bh=v9o63yWZgkgdSqghjfIhGgS/KdbPOOBvJuoX59hXFcg=;
-        b=aX2bnmlWN9plSqAoINXMqsgVHWNef1GkvlzA0IV7hHx0JF8uycYnbE4r5o1B6GrZjr
-         I4j9RRmxRQBHcewEnVIo+eMa1dbHawpkUnHCCYskwAj4GgRvicLYP7aYimgpB+mmNrOx
-         sIujYzd2mEaOJnYEXEOuwOW4p7UrqS/OrWfzWvgFc0LPKvjIGNjHljnkZpNd35CV12Ey
-         KP1rOcYBKCsuyVizHxpNFPL9jnad949cgMnGJ/gIFe1eQcCrJOyQkX5+IldFaA55hu37
-         ehG3oklaxhTNyyhdKLhI6POXc/My9hI/EuHUsSEllLccPmEr5DdA0GDUoLhxJosunPRa
-         GSfw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:in-reply-to:message-id
-         :references:user-agent:mime-version;
-        bh=v9o63yWZgkgdSqghjfIhGgS/KdbPOOBvJuoX59hXFcg=;
-        b=rZcS92nAE8LoFr8wbVUXDfcZsXDMMJkgNQT+62X30gyaVVAu16kzZrMgGvPwDvXXfL
-         +F3GP8GknkEf3/LSIexAi3wXz5lv1wAqr797dkJhObMrgq1tvDmDPPhrAa1oBl+Unv8x
-         El5cAjqpRfSBilXLfjlsX/0Uo2f0B6maWN0LvnTGF27Y+Vyu3leCvIgjvug0cK/KG8/y
-         SGMmLSUhw/W41O87ijJ+Q9g4pLEq+JTJkDNaJTZQgP74/ywxVaAWgdXYQTqMAoH7VeRx
-         B+A+xssyafjWidiZjXqvs953++YQtrRDVbm2kJdsrHbkxj8BgwQntF7u/es1UXtC3AJm
-         yslA==
-X-Gm-Message-State: APjAAAVpcrbRBjJOyu7WNLFR7uUM/demJZWfPesmac1aOxhFeeQOa5Je
-        osZrTBJ05i01WxN24aQSiJHIpw==
-X-Google-Smtp-Source: APXvYqyxCOxBpeNyqV1KRHHkYJIOm33zBzLtBlGF3pl+3N/mseE+EV2DexXOcKQXfTO5bMjTAcPFKw==
-X-Received: by 2002:a92:4818:: with SMTP id v24mr82585142ila.96.1578394061469;
-        Tue, 07 Jan 2020 02:47:41 -0800 (PST)
-Received: from localhost (67-0-46-172.albq.qwest.net. [67.0.46.172])
-        by smtp.gmail.com with ESMTPSA id z17sm2493899ior.22.2020.01.07.02.47.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Jan 2020 02:47:40 -0800 (PST)
-Date:   Tue, 7 Jan 2020 02:47:39 -0800 (PST)
-From:   Paul Walmsley <paul.walmsley@sifive.com>
-X-X-Sender: paulw@viisi.sifive.com
-To:     =?ISO-8859-15?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@gmail.com>
-cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Netdev <netdev@vger.kernel.org>, linux-riscv@lists.infradead.org,
-        bpf <bpf@vger.kernel.org>
-Subject: Re: [PATCH bpf-next v2 6/9] riscv, bpf: provide RISC-V specific JIT
- image alloc/free
-In-Reply-To: <CAJ+HfNgrekRMM_XS1eK_Cn77BNEgs2gxEsTEvxDpKH9M4R7TJQ@mail.gmail.com>
-Message-ID: <alpine.DEB.2.21.9999.2001070243310.75790@viisi.sifive.com>
-References: <20191216091343.23260-1-bjorn.topel@gmail.com> <20191216091343.23260-7-bjorn.topel@gmail.com> <7ceab77a-92e7-6415-3045-3e16876d4ef8@iogearbox.net> <CAJ+HfNgmcjLniyG0oj7OE60=NASfskVzP_bgX_JXp+SLczmyOQ@mail.gmail.com>
- <alpine.DEB.2.21.9999.2001031730370.283180@viisi.sifive.com> <CAJ+HfNgrekRMM_XS1eK_Cn77BNEgs2gxEsTEvxDpKH9M4R7TJQ@mail.gmail.com>
-User-Agent: Alpine 2.21.9999 (DEB 301 2018-08-15)
+        id S1727743AbgAGK4X (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Jan 2020 05:56:23 -0500
+Received: from foss.arm.com ([217.140.110.172]:55780 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726690AbgAGK4X (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 7 Jan 2020 05:56:23 -0500
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 0A884328;
+        Tue,  7 Jan 2020 02:56:23 -0800 (PST)
+Received: from [10.1.196.37] (e121345-lin.cambridge.arm.com [10.1.196.37])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 644873F534;
+        Tue,  7 Jan 2020 02:56:20 -0800 (PST)
+Subject: Re: [PATCH net] Revert "net: stmmac: platform: Fix MDIO init for
+ platforms without PHY"
+To:     Sriram Dash <sriram.dash@samsung.com>,
+        'Florian Fainelli' <f.fainelli@gmail.com>,
+        netdev@vger.kernel.org
+Cc:     'Jose Abreu' <Jose.Abreu@synopsys.com>,
+        'Jayati Sahu' <jayati.sahu@samsung.com>,
+        'Alexandre Torgue' <alexandre.torgue@st.com>,
+        tomeu.vizoso@collabora.com, rcsekar@samsung.com,
+        khilman@baylibre.com, mgalka@collabora.com,
+        linux-kernel@vger.kernel.org,
+        'Padmanabhan Rajanbabu' <p.rajanbabu@samsung.com>,
+        linux-stm32@st-md-mailman.stormreply.com, broonie@kernel.org,
+        pankaj.dubey@samsung.com,
+        'Maxime Coquelin' <mcoquelin.stm32@gmail.com>,
+        guillaume.tucker@collabora.com, enric.balletbo@collabora.com,
+        'Giuseppe Cavallaro' <peppe.cavallaro@st.com>,
+        "'David S. Miller'" <davem@davemloft.net>,
+        linux-arm-kernel@lists.infradead.org, heiko@sntech.de
+References: <CGME20200107050854epcas1p3c1a66e67f14802322063f6c9747f1986@epcas1p3.samsung.com>
+ <20200107050846.16838-1-f.fainelli@gmail.com>
+ <011a01d5c51d$d7482290$85d867b0$@samsung.com>
+From:   Robin Murphy <robin.murphy@arm.com>
+Message-ID: <59cb4087-6a71-9684-c4cf-d203600b45a9@arm.com>
+Date:   Tue, 7 Jan 2020 10:56:18 +0000
+User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-531874526-1578394059=:75790"
+In-Reply-To: <011a01d5c51d$d7482290$85d867b0$@samsung.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-GB
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+On 07/01/2020 5:46 am, Sriram Dash wrote:
+>> From: Florian Fainelli <f.fainelli@gmail.com>
+>> Subject: [PATCH net] Revert "net: stmmac: platform: Fix MDIO init for
+> platforms
+>> without PHY"
+>>
+>> This reverts commit d3e014ec7d5ebe9644b5486bc530b91e62bbf624 ("net:
+>> stmmac: platform: Fix MDIO init for platforms without PHY") because it
+> breaks
+>> existing systems with stmmac which do not have a MDIO bus sub-node nor a
+>> 'phy-handle' property declared in their Device Tree. On those systems, the
+>> stmmac MDIO bus is expected to be created and then scanned by
+>> of_mdiobus_register() to create PHY devices.
+>>
+>> While these systems should arguably make use of a more accurate Device
+> Tree
+>> reprensentation with the use of the MDIO bus sub-node an appropriate 'phy-
+>> handle', we cannot break them, therefore restore the behavior prior to the
+> said
+>> commit.
+>>
+>> Fixes: d3e014ec7d5e ("net: stmmac: platform: Fix MDIO init for platforms
+>> without PHY")
+>> Reported-by: Heiko Stuebner <heiko@sntech.de>
+>> Reported-by: kernelci.org bot <bot@kernelci.org>
+>> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+> Nacked-by: Sriram Dash <Sriram.dash@samsung.com>
+> 
+>> ---
+>> Heiko,
+>>
+>> I did not add the Tested-by because the patch is a little bit different
+> from what
+>> you tested, even if you most likely were not hitting the other part that I
+> was
+>> changing. Thanks!
+>>
+>>   drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c | 2 +-
+>>   1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
+>> b/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
+>> index cc8d7e7bf9ac..bedaff0c13bd 100644
+>> --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
+>> +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
+>> @@ -320,7 +320,7 @@ static int stmmac_mtl_setup(struct platform_device
+>> *pdev,  static int stmmac_dt_phy(struct plat_stmmacenet_data *plat,
+>>   			 struct device_node *np, struct device *dev)  {
+>> -	bool mdio = false;
+>> +	bool mdio = true;
+> 
+> 
+> This is breaking for the platforms with fixed-link.
+> stih418-b2199.dts and 169445.dts to name a few.
+> 
+> For the newer platforms, they should provide the mdio/ snps,dwmac-mdio
+> property in the device tree as we are checking the mdio/ snps,dwmac-mdio
+> property in the stmmac_platform driver for the mdio bus memory allocation.
+> For existing platforms, I agree we should not break them, but we should make
+> the code correct. And make the existing platforms adapt to the proper code.
+> There is a proposed solution.
+> https://lkml.org/lkml/2020/1/7/14
+> 
+> What do you think?
 
---8323329-531874526-1578394059=:75790
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+The binding says that the phy handle and mdio child node are optional, 
+so "update all of the DTBs!" is not a viable solution. I'm far from an 
+expert here, but AFAICS the fault of the current code is that it assumes 
+the lack of a phy handle implies a fixed link, so the obvious answer is 
+to actually check whether the "fixed-link" property is present.
 
-On Tue, 7 Jan 2020, Bj=C3=B6rn T=C3=B6pel wrote:
+Robin.
 
-> On Sat, 4 Jan 2020 at 02:32, Paul Walmsley <paul.walmsley@sifive.com> wro=
-te:
->
-> > Looks like Palmer's already reviewed it.  One additional request: could
-> > you update the VM layout debugging messages in arch/riscv/mm/init.c to
-> > include this new area?
->=20
-> Sure, I'll send that as a follow-up!=20
-
-Thanks.
-
-> Related; Other archs, e.g. arm64, has moved away from dumping the VM=20
-> layout (commit 071929dbdd86 ("arm64: Stop printing the virtual memory=20
-> layout")), and instead rely on _PTDUMP. Going forward that probably=20
-> applies to riscv as well!
-
-For the specific case of the page table dumper: we're waiting for the=20
-generic ptdump patchset to be merged first - hopefully for v5.6.  The=20
-RISC-V integration patches against it were posted to the lists back in=20
-October.  But, to me, that targets a different use-case than the VM layout=
-=20
-debug print code.
-
-
-- Paul
---8323329-531874526-1578394059=:75790--
+> 
+>>   	static const struct of_device_id need_mdio_ids[] = {
+>>   		{ .compatible = "snps,dwc-qos-ethernet-4.10" },
+>>   		{},
+>> --
+>> 2.19.1
+> 
+> 
+> 
+> _______________________________________________
+> linux-arm-kernel mailing list
+> linux-arm-kernel@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+> 
