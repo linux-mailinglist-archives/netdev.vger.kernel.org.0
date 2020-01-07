@@ -2,45 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 64FFC133795
-	for <lists+netdev@lfdr.de>; Wed,  8 Jan 2020 00:43:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B43413379C
+	for <lists+netdev@lfdr.de>; Wed,  8 Jan 2020 00:43:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727646AbgAGXm5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jan 2020 18:42:57 -0500
-Received: from smtp-fw-4101.amazon.com ([72.21.198.25]:49444 "EHLO
-        smtp-fw-4101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726111AbgAGXm4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jan 2020 18:42:56 -0500
+        id S1727313AbgAGXng (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Jan 2020 18:43:36 -0500
+Received: from smtp-fw-9102.amazon.com ([207.171.184.29]:11255 "EHLO
+        smtp-fw-9102.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726932AbgAGXnf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jan 2020 18:43:35 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1578440575; x=1609976575;
+  t=1578440614; x=1609976614;
   h=date:from:to:cc:subject:message-id:mime-version;
-  bh=sgXQv4HvJqf6D8SBsviwIGss++68y1oAXrGUWnu7jvU=;
-  b=Nk9iZD9EoqPb4RmsNroiCSNKDg/uYCfxMD7e5NjCro4T0IRel75xtB6N
-   uJCcuL+pOovyhT8XaNbSeNYwTkvBO26sE6q2MPq+ghkbEHn0PGQx+XVuy
-   lI+2WjMjejeKpiWac22+ZibWb3zbDdcvaX0Gy9Iykm4s3uu7CKH/uGfot
+  bh=rdcg1lWycoz2N6RBe/TY1zMNmoMIsPWFhPaqjiy0cqo=;
+  b=WWfVw+9p/is/nhE0J1Pu4xxEMlotTsl0ERg4FgAutT8zjCt3V8+xMpn6
+   TgLeL+JlUXI65sK8wv8FYciwlsBCHUSaZRaocnm6uPr65FTS1pcfejTeu
+   V7r2/qJTFelQ8vvhGBwPaPIvqJehLXItX6mVkn8PA5cyrw8BDtUbLB9Rn
    A=;
-IronPort-SDR: 57VXmmoMg6hbEEZWTqehsLwBen+n3tl5ousARI1x9jy4QLiZ16ebtWxRwKwT3oYp1H7pdP4u8n
- 4i+h94Q8irww==
+IronPort-SDR: axEFrB4PTHlFKe/HXSD29MdTq89JZXh7B1fKqv3wb6QDgYRWQBHq3hPDRCvX3S368jrGZCfCgc
+ QU7WOYAKbDQA==
 X-IronPort-AV: E=Sophos;i="5.69,407,1571702400"; 
-   d="scan'208";a="11335300"
-Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-1e-57e1d233.us-east-1.amazon.com) ([10.43.8.6])
-  by smtp-border-fw-out-4101.iad4.amazon.com with ESMTP; 07 Jan 2020 23:42:53 +0000
-Received: from EX13MTAUEE002.ant.amazon.com (iad55-ws-svc-p15-lb9-vlan3.iad.amazon.com [10.40.159.166])
-        by email-inbound-relay-1e-57e1d233.us-east-1.amazon.com (Postfix) with ESMTPS id 0C74B141884;
-        Tue,  7 Jan 2020 23:42:44 +0000 (UTC)
+   d="scan'208";a="17326029"
+Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-1e-a70de69e.us-east-1.amazon.com) ([10.47.23.38])
+  by smtp-border-fw-out-9102.sea19.amazon.com with ESMTP; 07 Jan 2020 23:43:32 +0000
+Received: from EX13MTAUEE002.ant.amazon.com (iad55-ws-svc-p15-lb9-vlan2.iad.amazon.com [10.40.159.162])
+        by email-inbound-relay-1e-a70de69e.us-east-1.amazon.com (Postfix) with ESMTPS id E2104A01E2;
+        Tue,  7 Jan 2020 23:43:24 +0000 (UTC)
 Received: from EX13D08UEE002.ant.amazon.com (10.43.62.92) by
  EX13MTAUEE002.ant.amazon.com (10.43.62.24) with Microsoft SMTP Server (TLS)
- id 15.0.1367.3; Tue, 7 Jan 2020 23:42:23 +0000
-Received: from EX13MTAUEA001.ant.amazon.com (10.43.61.82) by
+ id 15.0.1367.3; Tue, 7 Jan 2020 23:43:06 +0000
+Received: from EX13MTAUEA002.ant.amazon.com (10.43.61.77) by
  EX13D08UEE002.ant.amazon.com (10.43.62.92) with Microsoft SMTP Server (TLS)
- id 15.0.1367.3; Tue, 7 Jan 2020 23:42:23 +0000
+ id 15.0.1367.3; Tue, 7 Jan 2020 23:43:06 +0000
 Received: from dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com
- (172.22.96.68) by mail-relay.amazon.com (10.43.61.243) with Microsoft SMTP
- Server id 15.0.1367.3 via Frontend Transport; Tue, 7 Jan 2020 23:42:23 +0000
+ (172.22.96.68) by mail-relay.amazon.com (10.43.61.169) with Microsoft SMTP
+ Server id 15.0.1236.3 via Frontend Transport; Tue, 7 Jan 2020 23:43:06 +0000
 Received: by dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com (Postfix, from userid 4335130)
-        id 9A4CE40E65; Tue,  7 Jan 2020 23:42:23 +0000 (UTC)
-Date:   Tue, 7 Jan 2020 23:42:23 +0000
+        id 0A80440E65; Tue,  7 Jan 2020 23:43:06 +0000 (UTC)
+Date:   Tue, 7 Jan 2020 23:43:06 +0000
 From:   Anchal Agarwal <anchalag@amazon.com>
 To:     <tglx@linutronix.de>, <mingo@redhat.com>, <bp@alien8.de>,
         <hpa@zytor.com>, <x86@kernel.org>, <boris.ostrovsky@oracle.com>,
@@ -56,9 +56,9 @@ To:     <tglx@linutronix.de>, <mingo@redhat.com>, <bp@alien8.de>,
         <Woodhouse@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>,
         <dwmw@amazon.co.uk>, <fllinden@amaozn.com>
 CC:     <anchalag@amazon.com>
-Subject: [RFC PATCH V2 06/11] xen-blkfront: add callbacks for PM suspend and
+Subject: [RFC PATCH V2 07/11] x86/xen: save and restore steal clock during
  hibernation
-Message-ID: <20200107234223.GA18539@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
+Message-ID: <20200107234306.GA18610@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
@@ -70,268 +70,161 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Munehisa Kamata <kamatam@amazon.com>
 
-Add freeze, thaw and restore callbacks for PM suspend and hibernation
-support. All frontend drivers that needs to use PM_HIBERNATION/PM_SUSPEND
-events, need to implement these xenbus_driver callbacks.
-The freeze handler stops a block-layer queue and disconnect the
-frontend from the backend while freeing ring_info and associated resources.
-The restore handler re-allocates ring_info and re-connect to the
-backend, so the rest of the kernel can continue to use the block device
-transparently. Also, the handlers are used for both PM suspend and
-hibernation so that we can keep the existing suspend/resume callbacks for
-Xen suspend without modification. Before disconnecting from backend,
-we need to prevent any new IO from being queued and wait for existing
-IO to complete. Freeze/unfreeze of the queues will guarantee that there
-are no requests in use on the shared ring.
+Currently, steal time accounting code in scheduler expects steal clock
+callback to provide monotonically increasing value. If the accounting
+code receives a smaller value than previous one, it uses a negative
+value to calculate steal time and results in incorrectly updated idle
+and steal time accounting. This breaks userspace tools which read
+/proc/stat.
 
-Note:For older backends,if a backend doesn't have commit'12ea729645ace'
-xen/blkback: unmap all persistent grants when frontend gets disconnected,
-the frontend may see massive amount of grant table warning when freeing
-resources.
-[   36.852659] deferring g.e. 0xf9 (pfn 0xffffffffffffffff)
-[   36.855089] xen:grant_table: WARNING:e.g. 0x112 still in use!
+top - 08:05:35 up  2:12,  3 users,  load average: 0.00, 0.07, 0.23
+Tasks:  80 total,   1 running,  79 sleeping,   0 stopped,   0 zombie
+Cpu(s):  0.0%us,  0.0%sy,  0.0%ni,30100.0%id,  0.0%wa,  0.0%hi, 0.0%si,
+-1253874204672.0%st
 
-In this case, persistent grants would need to be disabled.
+This can actually happen when a Xen PVHVM guest gets restored from
+hibernation, because such a restored guest is just a fresh domain from
+Xen perspective and the time information in runstate info starts over
+from scratch.
 
-[Anchal Changelog: Removed timeout/request during blkfront freeze.
-Fixed major part of the code to work with blk-mq]
+Introduce xen_save_steal_clock() which saves current steal clock values
+of all present CPUs in runstate info into per-cpu variables during system
+core ops suspend callbacks. Its couterpart, xen_restore_steal_clock(),
+restores a boot CPU's steal clock in the system core resume callback. It
+sets offset if it found the current values in runstate info are smaller
+than previous ones. xen_steal_clock() is also modified to use the offset
+to ensure that scheduler only sees monotonically increasing number.
+
+For non-boot CPUs, restore after they're brought up, because runstate
+info for non-boot CPUs are not active until then.
+
+[Anchal Changelog: Merged patch xen/time: introduce xen_{save,restore}_steal_clock
+with this one for better code readability]
 Signed-off-by: Anchal Agarwal <anchalag@amazon.com>
 Signed-off-by: Munehisa Kamata <kamatam@amazon.com>
 ---
- drivers/block/xen-blkfront.c | 119 ++++++++++++++++++++++++++++++++++++++++---
- 1 file changed, 112 insertions(+), 7 deletions(-)
+ arch/x86/xen/suspend.c | 13 ++++++++++++-
+ arch/x86/xen/time.c    |  3 +++
+ drivers/xen/time.c     | 28 +++++++++++++++++++++++++++-
+ include/xen/xen-ops.h  |  2 ++
+ 4 files changed, 44 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/block/xen-blkfront.c b/drivers/block/xen-blkfront.c
-index a74d03913822..b1d38ca4600f 100644
---- a/drivers/block/xen-blkfront.c
-+++ b/drivers/block/xen-blkfront.c
-@@ -47,6 +47,8 @@
- #include <linux/bitmap.h>
- #include <linux/list.h>
- #include <linux/workqueue.h>
-+#include <linux/completion.h>
-+#include <linux/delay.h>
- 
- #include <xen/xen.h>
- #include <xen/xenbus.h>
-@@ -79,6 +81,8 @@ enum blkif_state {
- 	BLKIF_STATE_DISCONNECTED,
- 	BLKIF_STATE_CONNECTED,
- 	BLKIF_STATE_SUSPENDED,
-+	BLKIF_STATE_FREEZING,
-+	BLKIF_STATE_FROZEN
- };
- 
- struct grant {
-@@ -220,6 +224,7 @@ struct blkfront_info
- 	struct list_head requests;
- 	struct bio_list bio_list;
- 	struct list_head info_list;
-+	struct completion wait_backend_disconnected;
- };
- 
- static unsigned int nr_minors;
-@@ -261,6 +266,7 @@ static DEFINE_SPINLOCK(minor_lock);
- static int blkfront_setup_indirect(struct blkfront_ring_info *rinfo);
- static void blkfront_gather_backend_features(struct blkfront_info *info);
- static int negotiate_mq(struct blkfront_info *info);
-+static void __blkif_free(struct blkfront_info *info);
- 
- static int get_id_from_freelist(struct blkfront_ring_info *rinfo)
+diff --git a/arch/x86/xen/suspend.c b/arch/x86/xen/suspend.c
+index 784c4484100b..dae0f74f5390 100644
+--- a/arch/x86/xen/suspend.c
++++ b/arch/x86/xen/suspend.c
+@@ -91,12 +91,20 @@ void xen_arch_suspend(void)
+ static int xen_syscore_suspend(void)
  {
-@@ -995,6 +1001,7 @@ static int xlvbd_init_blk_queue(struct gendisk *gd, u16 sector_size,
- 	info->sector_size = sector_size;
- 	info->physical_sector_size = physical_sector_size;
- 	blkif_set_queue_limits(info);
-+	init_completion(&info->wait_backend_disconnected);
+ 	struct xen_remove_from_physmap xrfp;
+-	int ret;
++	int cpu, ret;
  
- 	return 0;
- }
-@@ -1218,6 +1225,8 @@ static void xlvbd_release_gendisk(struct blkfront_info *info)
- /* Already hold rinfo->ring_lock. */
- static inline void kick_pending_request_queues_locked(struct blkfront_ring_info *rinfo)
- {
-+	if (unlikely(rinfo->dev_info->connected == BLKIF_STATE_FREEZING))
-+		return;
- 	if (!RING_FULL(&rinfo->ring))
- 		blk_mq_start_stopped_hw_queues(rinfo->dev_info->rq, true);
- }
-@@ -1341,8 +1350,6 @@ static void blkif_free_ring(struct blkfront_ring_info *rinfo)
+ 	/* Xen suspend does similar stuffs in its own logic */
+ 	if (xen_suspend_mode_is_xen_suspend())
+ 		return 0;
  
- static void blkif_free(struct blkfront_info *info, int suspend)
- {
--	unsigned int i;
--
- 	/* Prevent new requests being issued until we fix things up. */
- 	info->connected = suspend ?
- 		BLKIF_STATE_SUSPENDED : BLKIF_STATE_DISCONNECTED;
-@@ -1350,6 +1357,13 @@ static void blkif_free(struct blkfront_info *info, int suspend)
- 	if (info->rq)
- 		blk_mq_stop_hw_queues(info->rq);
- 
-+	__blkif_free(info);
-+}
-+
-+static void __blkif_free(struct blkfront_info *info)
-+{
-+	unsigned int i;
-+
- 	for (i = 0; i < info->nr_rings; i++)
- 		blkif_free_ring(&info->rinfo[i]);
- 
-@@ -1553,8 +1567,10 @@ static irqreturn_t blkif_interrupt(int irq, void *dev_id)
- 	struct blkfront_ring_info *rinfo = (struct blkfront_ring_info *)dev_id;
- 	struct blkfront_info *info = rinfo->dev_info;
- 
--	if (unlikely(info->connected != BLKIF_STATE_CONNECTED))
--		return IRQ_HANDLED;
-+	if (unlikely(info->connected != BLKIF_STATE_CONNECTED)) {
-+		if (info->connected != BLKIF_STATE_FREEZING)
-+			return IRQ_HANDLED;
-+	}
- 
- 	spin_lock_irqsave(&rinfo->ring_lock, flags);
-  again:
-@@ -2020,6 +2036,7 @@ static int blkif_recover(struct blkfront_info *info)
- 	struct bio *bio;
- 	unsigned int segs;
- 
-+	bool frozen = info->connected == BLKIF_STATE_FROZEN;
- 	blkfront_gather_backend_features(info);
- 	/* Reset limits changed by blk_mq_update_nr_hw_queues(). */
- 	blkif_set_queue_limits(info);
-@@ -2046,6 +2063,9 @@ static int blkif_recover(struct blkfront_info *info)
- 		kick_pending_request_queues(rinfo);
- 	}
- 
-+	if (frozen)
-+		return 0;
-+
- 	list_for_each_entry_safe(req, n, &info->requests, queuelist) {
- 		/* Requeue pending requests (flush or discard) */
- 		list_del_init(&req->queuelist);
-@@ -2359,6 +2379,7 @@ static void blkfront_connect(struct blkfront_info *info)
- 
- 		return;
- 	case BLKIF_STATE_SUSPENDED:
-+	case BLKIF_STATE_FROZEN:
- 		/*
- 		 * If we are recovering from suspension, we need to wait
- 		 * for the backend to announce it's features before
-@@ -2476,12 +2497,37 @@ static void blkback_changed(struct xenbus_device *dev,
- 		break;
- 
- 	case XenbusStateClosed:
--		if (dev->state == XenbusStateClosed)
-+		if (dev->state == XenbusStateClosed) {
-+			if (info->connected == BLKIF_STATE_FREEZING) {
-+				__blkif_free(info);
-+				info->connected = BLKIF_STATE_FROZEN;
-+				complete(&info->wait_backend_disconnected);
-+				break;
-+			}
-+
- 			break;
-+		}
-+
++	for_each_present_cpu(cpu) {
 +		/*
-+		 * We may somehow receive backend's Closed again while thawing
-+		 * or restoring and it causes thawing or restoring to fail.
-+		 * Ignore such unexpected state anyway.
++		 * Nonboot CPUs are already offline, but the last copy of
++		 * runstate info is still accessible.
 +		 */
-+		if (info->connected == BLKIF_STATE_FROZEN &&
-+				dev->state == XenbusStateInitialised) {
-+			dev_dbg(&dev->dev,
-+					"ignore the backend's Closed state: %s",
-+					dev->nodename);
-+			break;
-+		}
- 		/* fall through */
- 	case XenbusStateClosing:
--		if (info)
--			blkfront_closing(info);
-+		if (info) {
-+			if (info->connected == BLKIF_STATE_FREEZING)
-+				xenbus_frontend_closed(dev);
-+			else
-+				blkfront_closing(info);
-+		}
- 		break;
- 	}
- }
-@@ -2625,6 +2671,62 @@ static void blkif_release(struct gendisk *disk, fmode_t mode)
- 	mutex_unlock(&blkfront_mutex);
++		xen_save_steal_clock(cpu);
++	}
++
+ 	xrfp.domid = DOMID_SELF;
+ 	xrfp.gpfn = __pa(HYPERVISOR_shared_info) >> PAGE_SHIFT;
+ 
+@@ -118,6 +126,9 @@ static void xen_syscore_resume(void)
+ 
+ 	pvclock_resume();
+ 
++	/* Nonboot CPUs will be resumed when they're brought up */
++	xen_restore_steal_clock(smp_processor_id());
++
+ 	gnttab_resume();
  }
  
-+static int blkfront_freeze(struct xenbus_device *dev)
-+{
-+	unsigned int i;
-+	struct blkfront_info *info = dev_get_drvdata(&dev->dev);
-+	struct blkfront_ring_info *rinfo;
-+	/* This would be reasonable timeout as used in xenbus_dev_shutdown() */
-+	unsigned int timeout = 5 * HZ;
-+	int err = 0;
-+
-+	info->connected = BLKIF_STATE_FREEZING;
-+
-+	blk_mq_freeze_queue(info->rq);
-+	blk_mq_quiesce_queue(info->rq);
-+
-+	for (i = 0; i < info->nr_rings; i++) {
-+		rinfo = &info->rinfo[i];
-+
-+		gnttab_cancel_free_callback(&rinfo->callback);
-+		flush_work(&rinfo->work);
-+	}
-+
-+	/* Kick the backend to disconnect */
-+	xenbus_switch_state(dev, XenbusStateClosing);
-+
-+	/*
-+	 * We don't want to move forward before the frontend is diconnected
-+	 * from the backend cleanly.
-+	 */
-+	timeout = wait_for_completion_timeout(&info->wait_backend_disconnected,
-+					      timeout);
-+	if (!timeout) {
-+		err = -EBUSY;
-+		xenbus_dev_error(dev, err, "Freezing timed out;"
-+				 "the device may become inconsistent state");
-+	}
-+
-+	return err;
-+}
-+
-+static int blkfront_restore(struct xenbus_device *dev)
-+{
-+	struct blkfront_info *info = dev_get_drvdata(&dev->dev);
-+	int err = 0;
-+
-+	err = talk_to_blkback(dev, info);
-+	blk_mq_unquiesce_queue(info->rq);
-+	blk_mq_unfreeze_queue(info->rq);
-+
-+	if (err)
-+		goto out;
-+	blk_mq_update_nr_hw_queues(&info->tag_set, info->nr_rings);
-+
-+out:
-+	return err;
-+}
-+
- static const struct block_device_operations xlvbd_block_fops =
+diff --git a/arch/x86/xen/time.c b/arch/x86/xen/time.c
+index befbdd8b17f0..8cf632dda605 100644
+--- a/arch/x86/xen/time.c
++++ b/arch/x86/xen/time.c
+@@ -537,6 +537,9 @@ static void xen_hvm_setup_cpu_clockevents(void)
  {
- 	.owner = THIS_MODULE,
-@@ -2647,6 +2749,9 @@ static struct xenbus_driver blkfront_driver = {
- 	.resume = blkfront_resume,
- 	.otherend_changed = blkback_changed,
- 	.is_ready = blkfront_is_ready,
-+	.freeze = blkfront_freeze,
-+	.thaw = blkfront_restore,
-+	.restore = blkfront_restore
- };
+ 	int cpu = smp_processor_id();
+ 	xen_setup_runstate_info(cpu);
++	if (cpu)
++		xen_restore_steal_clock(cpu);
++
+ 	/*
+ 	 * xen_setup_timer(cpu) - snprintf is bad in atomic context. Hence
+ 	 * doing it xen_hvm_cpu_notify (which gets called by smp_init during
+diff --git a/drivers/xen/time.c b/drivers/xen/time.c
+index 0968859c29d0..3713d716070c 100644
+--- a/drivers/xen/time.c
++++ b/drivers/xen/time.c
+@@ -20,6 +20,8 @@
  
- static void purge_persistent_grants(struct blkfront_info *info)
+ /* runstate info updated by Xen */
+ static DEFINE_PER_CPU(struct vcpu_runstate_info, xen_runstate);
++static DEFINE_PER_CPU(u64, xen_prev_steal_clock);
++static DEFINE_PER_CPU(u64, xen_steal_clock_offset);
+ 
+ static DEFINE_PER_CPU(u64[4], old_runstate_time);
+ 
+@@ -149,7 +151,7 @@ bool xen_vcpu_stolen(int vcpu)
+ 	return per_cpu(xen_runstate, vcpu).state == RUNSTATE_runnable;
+ }
+ 
+-u64 xen_steal_clock(int cpu)
++static u64 __xen_steal_clock(int cpu)
+ {
+ 	struct vcpu_runstate_info state;
+ 
+@@ -157,6 +159,30 @@ u64 xen_steal_clock(int cpu)
+ 	return state.time[RUNSTATE_runnable] + state.time[RUNSTATE_offline];
+ }
+ 
++u64 xen_steal_clock(int cpu)
++{
++	return __xen_steal_clock(cpu) + per_cpu(xen_steal_clock_offset, cpu);
++}
++
++void xen_save_steal_clock(int cpu)
++{
++	per_cpu(xen_prev_steal_clock, cpu) = xen_steal_clock(cpu);
++}
++
++void xen_restore_steal_clock(int cpu)
++{
++	u64 steal_clock = __xen_steal_clock(cpu);
++
++	if (per_cpu(xen_prev_steal_clock, cpu) > steal_clock) {
++		/* Need to update the offset */
++		per_cpu(xen_steal_clock_offset, cpu) =
++			per_cpu(xen_prev_steal_clock, cpu) - steal_clock;
++	} else {
++		/* Avoid unnecessary steal clock warp */
++		per_cpu(xen_steal_clock_offset, cpu) = 0;
++	}
++}
++
+ void xen_setup_runstate_info(int cpu)
+ {
+ 	struct vcpu_register_runstate_memory_area area;
+diff --git a/include/xen/xen-ops.h b/include/xen/xen-ops.h
+index 3b3992b5b0c2..12b3f4474a05 100644
+--- a/include/xen/xen-ops.h
++++ b/include/xen/xen-ops.h
+@@ -37,6 +37,8 @@ void xen_time_setup_guest(void);
+ void xen_manage_runstate_time(int action);
+ void xen_get_runstate_snapshot(struct vcpu_runstate_info *res);
+ u64 xen_steal_clock(int cpu);
++void xen_save_steal_clock(int cpu);
++void xen_restore_steal_clock(int cpu);
+ 
+ int xen_setup_shutdown_event(void);
+ 
 -- 
 2.15.3.AMZN
 
