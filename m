@@ -2,142 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3609D132440
-	for <lists+netdev@lfdr.de>; Tue,  7 Jan 2020 11:56:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E0C79132488
+	for <lists+netdev@lfdr.de>; Tue,  7 Jan 2020 12:10:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727743AbgAGK4X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jan 2020 05:56:23 -0500
-Received: from foss.arm.com ([217.140.110.172]:55780 "EHLO foss.arm.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726690AbgAGK4X (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 7 Jan 2020 05:56:23 -0500
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 0A884328;
-        Tue,  7 Jan 2020 02:56:23 -0800 (PST)
-Received: from [10.1.196.37] (e121345-lin.cambridge.arm.com [10.1.196.37])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 644873F534;
-        Tue,  7 Jan 2020 02:56:20 -0800 (PST)
-Subject: Re: [PATCH net] Revert "net: stmmac: platform: Fix MDIO init for
- platforms without PHY"
-To:     Sriram Dash <sriram.dash@samsung.com>,
-        'Florian Fainelli' <f.fainelli@gmail.com>,
-        netdev@vger.kernel.org
-Cc:     'Jose Abreu' <Jose.Abreu@synopsys.com>,
-        'Jayati Sahu' <jayati.sahu@samsung.com>,
-        'Alexandre Torgue' <alexandre.torgue@st.com>,
-        tomeu.vizoso@collabora.com, rcsekar@samsung.com,
-        khilman@baylibre.com, mgalka@collabora.com,
-        linux-kernel@vger.kernel.org,
-        'Padmanabhan Rajanbabu' <p.rajanbabu@samsung.com>,
-        linux-stm32@st-md-mailman.stormreply.com, broonie@kernel.org,
-        pankaj.dubey@samsung.com,
-        'Maxime Coquelin' <mcoquelin.stm32@gmail.com>,
-        guillaume.tucker@collabora.com, enric.balletbo@collabora.com,
-        'Giuseppe Cavallaro' <peppe.cavallaro@st.com>,
-        "'David S. Miller'" <davem@davemloft.net>,
-        linux-arm-kernel@lists.infradead.org, heiko@sntech.de
-References: <CGME20200107050854epcas1p3c1a66e67f14802322063f6c9747f1986@epcas1p3.samsung.com>
- <20200107050846.16838-1-f.fainelli@gmail.com>
- <011a01d5c51d$d7482290$85d867b0$@samsung.com>
-From:   Robin Murphy <robin.murphy@arm.com>
-Message-ID: <59cb4087-6a71-9684-c4cf-d203600b45a9@arm.com>
-Date:   Tue, 7 Jan 2020 10:56:18 +0000
-User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        id S1727787AbgAGLK4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Jan 2020 06:10:56 -0500
+Received: from mail-qk1-f194.google.com ([209.85.222.194]:42247 "EHLO
+        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726937AbgAGLKz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jan 2020 06:10:55 -0500
+Received: by mail-qk1-f194.google.com with SMTP id z14so40990163qkg.9;
+        Tue, 07 Jan 2020 03:10:55 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=LVBBfMH6pYaLqf4yYGX0Dv8Vt871LszKjSjUOY6Uw/4=;
+        b=l8SyAsazPlptluoPonbBtnfO4NXpBvXC9rmFcQAWaGoRMEJgc2waciKeb8luqUKK3t
+         gC7BpSsowLQ7iqqdzLnvMU+Lfv4lZgI23wASK+mVv9wv2XzZZK5YZU9KoagE5yzYrKtj
+         CMUmnzKoMpKo/RKbLKXpbeFMLR7TGt//3bYUj6CgduRRJo3pXAzdsze6kKwoz1gKZPb1
+         ZBe5lgklzZf++YsF9d6zhipazBGEydB+qIg/8yA4vtTH0RV3VJGHwSLcd1GmweoWeyFE
+         Vn6btW1+XZxum+HKIg2C8ZnjwktbJkqoXI0Qy5QmaJKFmevY+OC57R/PgUE7/NpURsao
+         Uqvw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=LVBBfMH6pYaLqf4yYGX0Dv8Vt871LszKjSjUOY6Uw/4=;
+        b=BY/lmW8uzRREuOeIH6z3T2AYZfdSVkPrkFnVqv/R5gjTs6L+XCGaMLx0NbypAeCss8
+         OzOHDwUK6lqJt1bbJlWrFSFOEZ9MBgTPE0D+epwR6R0oqwgVOOw9oOM57HdKUmOB7dy9
+         OQHLB0fdcblB8rLKXC+3lqS7F+Y3HIDiwqsxnnPNequtlXDflZVTtx1G/buD4v29ShXN
+         sPamUHTMs6YZfzPBxaf23X6KJ6LdZ7m73f+SnO4DzFEvZLtNHLqwOZKy6ZzXKZzyebvt
+         kem5nxGoNLbsj+dJaCrRnRVXd9dpne1aNpppYi4m22+6BrHY4NjjOQpEjpuBsuV/mFMn
+         gxEw==
+X-Gm-Message-State: APjAAAU8OtO7nVh8haq4utf74IClZIRAVkyuAyUcsBhGY+qzHweEgluu
+        bnwgwd0Nmuvig23jMncHnhYqt899VxsP3d6m1gGu4s7G
+X-Google-Smtp-Source: APXvYqy/YV4XqVhAJbEc6tWA6nMWEIpoOyUomKJ2MAtIXVl7B9Sbo/XMpQ/bZ7TUxdVX/Up/1eYApW2GEONUoLj/R4g=
+X-Received: by 2002:a05:620a:14a4:: with SMTP id x4mr86611772qkj.493.1578395454804;
+ Tue, 07 Jan 2020 03:10:54 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <011a01d5c51d$d7482290$85d867b0$@samsung.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
+References: <20191219061006.21980-1-bjorn.topel@gmail.com> <CAADnVQL1x8AJmCOjesA_6Z3XprFVEdWgbREfpn3CC-XO8k4PDA@mail.gmail.com>
+ <20191220084651.6dacb941@carbon> <20191220102615.45fe022d@carbon> <87mubn2st4.fsf@toke.dk>
+In-Reply-To: <87mubn2st4.fsf@toke.dk>
+From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
+Date:   Tue, 7 Jan 2020 12:10:43 +0100
+Message-ID: <CAJ+HfNhLDi1MJAughKFCVUjSvdOfPUcbvO9=RXmXQBS6Q3mv3w@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2 0/8] Simplify xdp_do_redirect_map()/xdp_do_flush_map()
+ and XDP maps
+To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Cc:     Jesper Dangaard Brouer <brouer@redhat.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Network Development <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        bpf <bpf@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 07/01/2020 5:46 am, Sriram Dash wrote:
->> From: Florian Fainelli <f.fainelli@gmail.com>
->> Subject: [PATCH net] Revert "net: stmmac: platform: Fix MDIO init for
-> platforms
->> without PHY"
->>
->> This reverts commit d3e014ec7d5ebe9644b5486bc530b91e62bbf624 ("net:
->> stmmac: platform: Fix MDIO init for platforms without PHY") because it
-> breaks
->> existing systems with stmmac which do not have a MDIO bus sub-node nor a
->> 'phy-handle' property declared in their Device Tree. On those systems, the
->> stmmac MDIO bus is expected to be created and then scanned by
->> of_mdiobus_register() to create PHY devices.
->>
->> While these systems should arguably make use of a more accurate Device
-> Tree
->> reprensentation with the use of the MDIO bus sub-node an appropriate 'phy-
->> handle', we cannot break them, therefore restore the behavior prior to the
-> said
->> commit.
->>
->> Fixes: d3e014ec7d5e ("net: stmmac: platform: Fix MDIO init for platforms
->> without PHY")
->> Reported-by: Heiko Stuebner <heiko@sntech.de>
->> Reported-by: kernelci.org bot <bot@kernelci.org>
->> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
-> Nacked-by: Sriram Dash <Sriram.dash@samsung.com>
-> 
->> ---
->> Heiko,
->>
->> I did not add the Tested-by because the patch is a little bit different
-> from what
->> you tested, even if you most likely were not hitting the other part that I
-> was
->> changing. Thanks!
->>
->>   drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c | 2 +-
->>   1 file changed, 1 insertion(+), 1 deletion(-)
->>
->> diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
->> b/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
->> index cc8d7e7bf9ac..bedaff0c13bd 100644
->> --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
->> +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
->> @@ -320,7 +320,7 @@ static int stmmac_mtl_setup(struct platform_device
->> *pdev,  static int stmmac_dt_phy(struct plat_stmmacenet_data *plat,
->>   			 struct device_node *np, struct device *dev)  {
->> -	bool mdio = false;
->> +	bool mdio = true;
-> 
-> 
-> This is breaking for the platforms with fixed-link.
-> stih418-b2199.dts and 169445.dts to name a few.
-> 
-> For the newer platforms, they should provide the mdio/ snps,dwmac-mdio
-> property in the device tree as we are checking the mdio/ snps,dwmac-mdio
-> property in the stmmac_platform driver for the mdio bus memory allocation.
-> For existing platforms, I agree we should not break them, but we should make
-> the code correct. And make the existing platforms adapt to the proper code.
-> There is a proposed solution.
-> https://lkml.org/lkml/2020/1/7/14
-> 
-> What do you think?
+On Fri, 20 Dec 2019 at 11:30, Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat=
+.com> wrote:
+>
+> Jesper Dangaard Brouer <brouer@redhat.com> writes:
+>
+[...]
+> > I have now went over the entire patchset, and everything look perfect,
+> > I will go as far as saying it is brilliant.  We previously had the
+> > issue, that using different redirect maps in a BPF-prog would cause the
+> > bulking effect to be reduced, as map_to_flush cause previous map to get
+> > flushed. This is now solved :-)
+>
+> Another thing that occurred to me while thinking about this: Now that we
+> have a single flush list, is there any reason we couldn't move the
+> devmap xdp_bulk_queue into struct net_device? That way it could also be
+> used for the non-map variant of bpf_redirect()?
+>
 
-The binding says that the phy handle and mdio child node are optional, 
-so "update all of the DTBs!" is not a viable solution. I'm far from an 
-expert here, but AFAICS the fault of the current code is that it assumes 
-the lack of a phy handle implies a fixed link, so the obvious answer is 
-to actually check whether the "fixed-link" property is present.
-
-Robin.
-
-> 
->>   	static const struct of_device_id need_mdio_ids[] = {
->>   		{ .compatible = "snps,dwc-qos-ethernet-4.10" },
->>   		{},
->> --
->> 2.19.1
-> 
-> 
-> 
-> _______________________________________________
-> linux-arm-kernel mailing list
-> linux-arm-kernel@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
-> 
+Indeed! (At least I don't see any blockers...)
