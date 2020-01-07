@@ -2,135 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EFBCF1321F2
-	for <lists+netdev@lfdr.de>; Tue,  7 Jan 2020 10:11:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8DDC5132205
+	for <lists+netdev@lfdr.de>; Tue,  7 Jan 2020 10:16:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727458AbgAGJLg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jan 2020 04:11:36 -0500
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:46291 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726327AbgAGJLg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jan 2020 04:11:36 -0500
-Received: by mail-wr1-f66.google.com with SMTP id z7so52932190wrl.13
-        for <netdev@vger.kernel.org>; Tue, 07 Jan 2020 01:11:33 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=DykfsJMTrlBsOmof65s5+53qX785X3Wsx6L7OIVas9c=;
-        b=Bh5qVeLk4iQqGpEKpGmk37AHNeRtl4TqWn34Yul2N/w+NoPbgaWbqnadHz8WCg03oC
-         z9d+M8Vb2znalEf+GIy6uHBQAZM8JReU3JWvk2Cxda4F7BHzKBX/jqIQ83N8MOV1FtUK
-         KjOfr9vbCicC4KzTnaYAztWZQqi2Safosbge8NlQLt8avIS1nxz+nUYLA8g2drC1O0SM
-         Qo1RC3o/7bxUxc4NuyDXOcuesPzbIToAmXGk6eW08LFpi6BuvD8JVdb4jh7R9i8ReyJu
-         C7YODZglKtS/SzBoXTm6tHMuN2qEscqUwq3DHgLAqp/zQ1T/xUjS9HMll8Ic469smGG6
-         kF3A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=DykfsJMTrlBsOmof65s5+53qX785X3Wsx6L7OIVas9c=;
-        b=d3argzqS6TI+PxGJ3T0U7yS6jgvcDMUrCjTmiGHJ3v+KkyYKpCzVfFNHi+pWdUwnlb
-         6ia9FTx3YjuzG4gEXmQv9GVAymcRDK2uYJ2fLKsCElH/Y8R5FkmYrLBcG4WueUY6IpBG
-         cOR4voF1MLf5ARN7eRnjPDXKgVRRevBNz8XNBfmTrarnhvWiFWV3HWYmNE0sdFgBNgDK
-         tmo8mUV9RqHCUxj1UnysJA3quwTbMiIstsMwN6H5o91d6oR1hug5h72r96ydEArpHUPU
-         ySFDri+L9TvDtGZkOikvhxxqKYBLo36+3pSd4ka2NWN+Oal11ERvpVfjo7p+FRxVzibl
-         3qfA==
-X-Gm-Message-State: APjAAAXCayCEAbMceEWiLiLhVXq2JtcoWnDaMWO/W3CqhgaNTmq8tDnk
-        ANBHZ9B7FPJ2f6C6U6xgF6QoOA==
-X-Google-Smtp-Source: APXvYqzB5YH6tW2N9qwoZ6NzyHxd8hhXAq7jAtUrKeSOTXmw+pgYgzkqK+fAn6zOwCC8T6+8LoxIrQ==
-X-Received: by 2002:a5d:4281:: with SMTP id k1mr111528745wrq.72.1578388292513;
-        Tue, 07 Jan 2020 01:11:32 -0800 (PST)
-Received: from localhost (ip-89-176-199-63.net.upcbroadband.cz. [89.176.199.63])
-        by smtp.gmail.com with ESMTPSA id u1sm25761422wmc.5.2020.01.07.01.11.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Jan 2020 01:11:31 -0800 (PST)
-Date:   Tue, 7 Jan 2020 10:11:30 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     David Ahern <dsahern@gmail.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net,
-        jakub.kicinski@netronome.com, saeedm@mellanox.com, leon@kernel.org,
-        tariqt@mellanox.com, ayal@mellanox.com, vladbu@mellanox.com,
-        michaelgur@mellanox.com, moshe@mellanox.com, mlxsw@mellanox.com
-Subject: Re: [patch net-next 0/4] net: allow per-net notifier to follow
- netdev into namespace
-Message-ID: <20200107091130.GB2185@nanopsycho>
-References: <20191220123542.26315-1-jiri@resnulli.us>
- <72587b16-d459-aa6e-b813-cf14b4118b0c@gmail.com>
- <20191221081406.GB2246@nanopsycho.orion>
- <e66fee63-ad27-c5e0-8321-76999e7d82c9@gmail.com>
- <20200106091519.GB9150@nanopsycho.orion>
- <b3fe2a66-baaf-86bb-5347-1ffcaadb3d14@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <b3fe2a66-baaf-86bb-5347-1ffcaadb3d14@gmail.com>
+        id S1727167AbgAGJQJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Jan 2020 04:16:09 -0500
+Received: from m9785.mail.qiye.163.com ([220.181.97.85]:52787 "EHLO
+        m9785.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726565AbgAGJQJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jan 2020 04:16:09 -0500
+Received: from localhost.localdomain (unknown [123.59.132.129])
+        by m9785.mail.qiye.163.com (Hmail) with ESMTPA id E47CE5C1C3D;
+        Tue,  7 Jan 2020 17:16:06 +0800 (CST)
+From:   wenxu@ucloud.cn
+To:     paulb@mellanox.com, saeedm@mellanox.com
+Cc:     netdev@vger.kernel.org
+Subject: [PATCH net-next v2] net/mlx5e: Add mlx5e_flower_parse_meta support
+Date:   Tue,  7 Jan 2020 17:16:06 +0800
+Message-Id: <1578388566-27310-1-git-send-email-wenxu@ucloud.cn>
+X-Mailer: git-send-email 1.8.3.1
+X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZSVVJQ09CQkJDT0xPSklKSllXWShZQU
+        lCN1dZLVlBSVdZCQ4XHghZQVk1NCk2OjckKS43PlkG
+X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6PRQ6MBw5MTg3PD8YHRJRCRwC
+        CQgKCjVVSlVKTkxDSENDTk1MTEpIVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpJSFVO
+        QlVKSElVSklCWVdZCAFZQUhMSko3Bg++
+X-HM-Tid: 0a6f7f4a33dd2087kuqye47ce5c1c3d
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Mon, Jan 06, 2020 at 05:37:21PM CET, dsahern@gmail.com wrote:
->On 1/6/20 2:15 AM, Jiri Pirko wrote:
->> 
->> I do not follow. This patchset assures that driver does not get
->> notification of namespace it does not care about. I'm not sure what do
->> you mean by "half of the problem".
->
->originally, notifiers were only global. drivers registered for them, got
->the replay of existing data, and notifications across namespaces.
+From: wenxu <wenxu@ucloud.cn>
 
-Not sure what do you mean by "replay of existing data".
+In the flowtables offload all the devices in the flowtables
+share the same flow_block. An offload rule will be installed on
+all the devices. This scenario is not correct.
 
+It is no problem if there are only two devices in the flowtable,
+The rule with ingress and egress on the same device can be reject
+by driver.
 
->
->You added code to allow drivers to register for events in a specific
->namespace.
+But more than two devices in the flowtable will install the wrong
+rules on hardware.
 
-For some drivers, like "mlxsw" this is just enough as it does not
-support move of netdevices to different namespaces and the namespace of
-all netdevices is taken according to namespace of parent devlink
-instance.
+For example:
+Three devices in a offload flowtables: dev_a, dev_b, dev_c
 
+A rule ingress from dev_a and egress to dev_b:
+The rule will install on device dev_a.
+The rule will try to install on dev_b but failed for ingress
+and egress on the same device.
+The rule will install on dev_c. This is not correct.
 
->
->Now you are saying that is not enough as devices can be moved from one
->namespace to another and you want core code to automagically register a
->driver for events as its devices are moved.
->
->My point is if a driver is trying to be efficient and not handle events
->in namespaces it does not care about (the argument for per-namespace
->notifiers) then something needs to track that a driver no longer cares
->about events in a given namespace once all devices are moved out of Only
->the driver knows that and IMHO the driver should be the one managing
->what namespaces it wants events.
+The flowtables offload avoid this case through restricting the ingress dev
+with FLOW_DISSECTOR_KEY_META as following patch.
+http://patchwork.ozlabs.org/patch/1218109/
 
-Definitelly. This would be the case for per-driver notifiers.
-However, the ones in mlx5 I'm taking care of are per-netdevice
-notifiers. Each netdev registers a separate notifier.
+So the mlx5e driver also should support the FLOW_DISSECTOR_KEY_META parse.
 
+Signed-off-by: wenxu <wenxu@ucloud.cn>
+---
+v2: remap the patch description
 
->
->Example:
->driver A has 2 devices eth0, eth1. It registers for events ONLY in
->init_net. eth0 is moved to ns0. eth1 is moved to ns1. On the move, core
->code registers driver A for events in ns0 and ns1.
->
->Driver A now no longer cares about events in init_net, yet it still
->receives them. If this is not a big concern for driver A, then why the
->namespace only registration? ie., just use the global and move on. If it
->is a concern (your point in this thread), you have not solved the
->unregister problem.
+ drivers/net/ethernet/mellanox/mlx5/core/en_tc.c | 39 +++++++++++++++++++++++++
+ 1 file changed, 39 insertions(+)
 
-Wait, why do you think that there is a "unregister problem"?
-move_netdevice_notifiers_dev_net() unregisters from the original netns.
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+index 9b32a9c..33d1ce5 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+@@ -1805,6 +1805,40 @@ static void *get_match_headers_value(u32 flags,
+ 			     outer_headers);
+ }
+ 
++static int mlx5e_flower_parse_meta(struct net_device *filter_dev,
++				   struct flow_cls_offload *f)
++{
++	struct flow_rule *rule = flow_cls_offload_flow_rule(f);
++	struct netlink_ext_ack *extack = f->common.extack;
++	struct net_device *ingress_dev;
++	struct flow_match_meta match;
++
++	if (!flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_META))
++		return 0;
++
++	flow_rule_match_meta(rule, &match);
++	if (match.mask->ingress_ifindex != 0xFFFFFFFF) {
++		NL_SET_ERR_MSG_MOD(extack, "Unsupported ingress ifindex mask");
++		return -EINVAL;
++	}
++
++	ingress_dev = __dev_get_by_index(dev_net(filter_dev),
++					 match.key->ingress_ifindex);
++	if (!ingress_dev) {
++		NL_SET_ERR_MSG_MOD(extack,
++				   "Can't find the ingress port to match on");
++		return -EINVAL;
++	}
++
++	if (ingress_dev != filter_dev) {
++		NL_SET_ERR_MSG_MOD(extack,
++				   "Can't match on the ingress filter port");
++		return -EINVAL;
++	}
++
++	return 0;
++}
++
+ static int __parse_cls_flower(struct mlx5e_priv *priv,
+ 			      struct mlx5_flow_spec *spec,
+ 			      struct flow_cls_offload *f,
+@@ -1825,6 +1859,7 @@ static int __parse_cls_flower(struct mlx5e_priv *priv,
+ 	u16 addr_type = 0;
+ 	u8 ip_proto = 0;
+ 	u8 *match_level;
++	int err;
+ 
+ 	match_level = outer_match_level;
+ 
+@@ -1868,6 +1903,10 @@ static int __parse_cls_flower(struct mlx5e_priv *priv,
+ 						    spec);
+ 	}
+ 
++	err = mlx5e_flower_parse_meta(filter_dev, f);
++	if (err)
++		return err;
++
+ 	if (flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_BASIC)) {
+ 		struct flow_match_basic match;
+ 
+-- 
+1.8.3.1
 
-
->
->ie., I don't like the automagic registration in the new namespace.
->drivers should be explicit about what it wants.
->
->> 
->> 
->>> driver cares for granularity, it can deal with namespace changes on its
->>> own. If that's too much, use the global registration.
->
