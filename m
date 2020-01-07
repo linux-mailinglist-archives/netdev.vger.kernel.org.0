@@ -2,169 +2,279 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 995461328C7
-	for <lists+netdev@lfdr.de>; Tue,  7 Jan 2020 15:23:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C648B1328DF
+	for <lists+netdev@lfdr.de>; Tue,  7 Jan 2020 15:28:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728352AbgAGOXN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jan 2020 09:23:13 -0500
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:43972 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728330AbgAGOXL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jan 2020 09:23:11 -0500
-Received: by mail-wr1-f67.google.com with SMTP id d16so54130639wre.10
-        for <netdev@vger.kernel.org>; Tue, 07 Jan 2020 06:23:08 -0800 (PST)
+        id S1728323AbgAGO17 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Jan 2020 09:27:59 -0500
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:56051 "EHLO
+        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728307AbgAGO16 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jan 2020 09:27:58 -0500
+Received: by mail-wm1-f65.google.com with SMTP id q9so19172927wmj.5
+        for <netdev@vger.kernel.org>; Tue, 07 Jan 2020 06:27:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:autocrypt:organization:message-id
-         :date:user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=d5jqYXsZf9wizN5r7ku4wxLHhyx6beHVqHA/bzv6tvI=;
-        b=xd9WLIp8YxUMnKNqK1IuEYjVEIddn0zuUYs1nAuq/h9LAvkiuBcdZbXzKsHghEXkCA
-         16Slbt0WCTDJ+YFd1NKy1Qb4IbdhWWPpwJ0LwqOdLz+UCPGkGLmrVeuD79E92uJBIt+4
-         PxUYaUWmorq+oMYOQfnz1BKMFeozJYp3JyocaU19ShbK0ELoWTRPzc9N+lSTfoJ5gEW1
-         lRfubygykujiRTmMYzWaAZwLMuvfwjZ3lI8DPVDCyZALLyJyXP8Joegb9fVaE6B3W4Vc
-         YWfZo0nmMbU+eXltQOaBbBcTaVGAea8H7IMqdPpcWlRyduwdgEijz8r7WUPxR89SHQZZ
-         rumA==
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=8ll6pfs0Lc5//nYvpISCuHiKbMMPSEB1tli1fUPNlSg=;
+        b=C2Zgb0gk53QFakA+hm0alU0B6aizD6IyrrLToQCUKL+u/c1IoZRtViOlYhgNyl7jVA
+         A7akQeSwCuMi8Sd2PaBUGpdcA9pSb+bsD7bIYvGaE/DOIAzbC0FNcLcEmDhHcMg1BSwZ
+         wMtfV83Gyw/4c6wKowXV7H+ifSJDaE4+fr1IKCrF6ONREPFBcslrEZq7YzdL98jqAX2X
+         lw4ktk3VmjADXFOIgfFctELEJbGfBS5YXqB5wy20iWgN1Nv6FM2Dz0KnB8unJU46J9gL
+         8E/7uCGlWyN5aHNS4Mw8+mlbQBGDuqWJ0GKID59uYPayOsrrBRCKILFBJZYVYapZbHlS
+         X4iA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:autocrypt
-         :organization:message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=d5jqYXsZf9wizN5r7ku4wxLHhyx6beHVqHA/bzv6tvI=;
-        b=Nd6rIHAnXf0N7afhlKcWIduRlhSO3RIP65AtonwPqHXtju0vcGLYCb1HLR2EqHlcOd
-         DtCO3HQgd9vyHkXeMT8+8XTB8WJiFmJjdRR53qZ5msY8YylqoGadC+Cr5lNiuWPVah+I
-         IVBIT6ALm0I0CseBO3e52skxBipfof/xJDiOF8ueVJ4PZnmi7rDKbfpGDtU83ExXqftQ
-         nGew6aROMWgneiuVjhYJrzUP1gUMogtbjJGKpEx11Ra2YM57Vrlxd18/vbBpv5bRZ7fR
-         unRpwvfTBk1oTxANaBV2GWxk2cP5bEAaoSgCZuCIhmBG4K7lSPyn5mCIbunm4JYPhncg
-         G7DQ==
-X-Gm-Message-State: APjAAAUUD0TFb6kz5YptNpeZDKEi7ll0h82GlBChb80K4ALzZw6NDWIf
-        /JK2fU/IVy+g0U1zspppCFB5Uw==
-X-Google-Smtp-Source: APXvYqwTsUHP7jiYrDH4sG/Hvqdv5VCYSrMe5k2cqctiZ8V8EHOQ7aTd/f328cdBigGztfZe/lBu9w==
-X-Received: by 2002:adf:8541:: with SMTP id 59mr108223330wrh.307.1578406988025;
-        Tue, 07 Jan 2020 06:23:08 -0800 (PST)
-Received: from [10.1.2.12] (laubervilliers-658-1-213-31.w90-63.abo.wanadoo.fr. [90.63.244.31])
-        by smtp.gmail.com with ESMTPSA id v17sm77442183wrt.91.2020.01.07.06.23.06
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 07 Jan 2020 06:23:07 -0800 (PST)
-Subject: Re: [PATCH net] net: stmmac: Fixed link does not need MDIO Bus
-To:     Jose Abreu <Jose.Abreu@synopsys.com>, netdev@vger.kernel.org
-Cc:     Joao Pinto <Joao.Pinto@synopsys.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        "kernelci . org bot" <bot@kernelci.org>,
-        Sriram Dash <sriram.dash@samsung.com>,
-        linux-kernel@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-arm-kernel@lists.infradead.org,
-        Heiko Stuebner <heiko@sntech.de>
-References: <5764e60da6d3af7e76c30f63b07f1a12b4787918.1578400471.git.Jose.Abreu@synopsys.com>
-From:   Neil Armstrong <narmstrong@baylibre.com>
-Autocrypt: addr=narmstrong@baylibre.com; prefer-encrypt=mutual; keydata=
- xsBNBE1ZBs8BCAD78xVLsXPwV/2qQx2FaO/7mhWL0Qodw8UcQJnkrWmgTFRobtTWxuRx8WWP
- GTjuhvbleoQ5Cxjr+v+1ARGCH46MxFP5DwauzPekwJUD5QKZlaw/bURTLmS2id5wWi3lqVH4
- BVF2WzvGyyeV1o4RTCYDnZ9VLLylJ9bneEaIs/7cjCEbipGGFlfIML3sfqnIvMAxIMZrvcl9
- qPV2k+KQ7q+aXavU5W+yLNn7QtXUB530Zlk/d2ETgzQ5FLYYnUDAaRl+8JUTjc0CNOTpCeik
- 80TZcE6f8M76Xa6yU8VcNko94Ck7iB4vj70q76P/J7kt98hklrr85/3NU3oti3nrIHmHABEB
- AAHNKE5laWwgQXJtc3Ryb25nIDxuYXJtc3Ryb25nQGJheWxpYnJlLmNvbT7CwHsEEwEKACUC
- GyMGCwkIBwMCBhUIAgkKCwQWAgMBAh4BAheABQJXDO2CAhkBAAoJEBaat7Gkz/iubGIH/iyk
- RqvgB62oKOFlgOTYCMkYpm2aAOZZLf6VKHKc7DoVwuUkjHfIRXdslbrxi4pk5VKU6ZP9AKsN
- NtMZntB8WrBTtkAZfZbTF7850uwd3eU5cN/7N1Q6g0JQihE7w4GlIkEpQ8vwSg5W7hkx3yQ6
- 2YzrUZh/b7QThXbNZ7xOeSEms014QXazx8+txR7jrGF3dYxBsCkotO/8DNtZ1R+aUvRfpKg5
- ZgABTC0LmAQnuUUf2PHcKFAHZo5KrdO+tyfL+LgTUXIXkK+tenkLsAJ0cagz1EZ5gntuheLD
- YJuzS4zN+1Asmb9kVKxhjSQOcIh6g2tw7vaYJgL/OzJtZi6JlIXOwU0EVid/pAEQAND7AFhr
- 5faf/EhDP9FSgYd/zgmb7JOpFPje3uw7jz9wFb28Cf0Y3CcncdElYoBNbRlesKvjQRL8mozV
- 9RN+IUMHdUx1akR/A4BPXNdL7StfzKWOCxZHVS+rIQ/fE3Qz/jRmT6t2ZkpplLxVBpdu95qJ
- YwSZjuwFXdC+A7MHtQXYi3UfCgKiflj4+/ITcKC6EF32KrmIRqamQwiRsDcUUKlAUjkCLcHL
- CQvNsDdm2cxdHxC32AVm3Je8VCsH7/qEPMQ+cEZk47HOR3+Ihfn1LEG5LfwsyWE8/JxsU2a1
- q44LQM2lcK/0AKAL20XDd7ERH/FCBKkNVzi+svYJpyvCZCnWT0TRb72mT+XxLWNwfHTeGALE
- +1As4jIS72IglvbtONxc2OIid3tR5rX3k2V0iud0P7Hnz/JTdfvSpVj55ZurOl2XAXUpGbq5
- XRk5CESFuLQV8oqCxgWAEgFyEapI4GwJsvfl/2Er8kLoucYO1Id4mz6N33+omPhaoXfHyLSy
- dxD+CzNJqN2GdavGtobdvv/2V0wukqj86iKF8toLG2/Fia3DxMaGUxqI7GMOuiGZjXPt/et/
- qeOySghdQ7Sdpu6fWc8CJXV2mOV6DrSzc6ZVB4SmvdoruBHWWOR6YnMz01ShFE49pPucyU1h
- Av4jC62El3pdCrDOnWNFMYbbon3vABEBAAHCwn4EGAECAAkFAlYnf6QCGwICKQkQFpq3saTP
- +K7BXSAEGQECAAYFAlYnf6QACgkQd9zb2sjISdGToxAAkOjSfGxp0ulgHboUAtmxaU3viucV
- e2Hl1BVDtKSKmbIVZmEUvx9D06IijFaEzqtKD34LXD6fjl4HIyDZvwfeaZCbJbO10j3k7FJE
- QrBtpdVqkJxme/nYlGOVzcOiKIepNkwvnHVnuVDVPcXyj2wqtsU7VZDDX41z3X4xTQwY3SO1
- 9nRO+f+i4RmtJcITgregMa2PcB0LvrjJlWroI+KAKCzoTHzSTpCXMJ1U/dEqyc87bFBdc+DI
- k8mWkPxsccdbs4t+hH0NoE3Kal9xtAl56RCtO/KgBLAQ5M8oToJVatxAjO1SnRYVN1EaAwrR
- xkHdd97qw6nbg9BMcAoa2NMc0/9MeiaQfbgW6b0reIz/haHhXZ6oYSCl15Knkr4t1o3I2Bqr
- Mw623gdiTzotgtId8VfLB2Vsatj35OqIn5lVbi2ua6I0gkI6S7xJhqeyrfhDNgzTHdQVHB9/
- 7jnM0ERXNy1Ket6aDWZWCvM59dTyu37g3VvYzGis8XzrX1oLBU/tTXqo1IFqqIAmvh7lI0Se
- gCrXz7UanxCwUbQBFjzGn6pooEHJYRLuVGLdBuoApl/I4dLqCZij2AGa4CFzrn9W0cwm3HCO
- lR43gFyz0dSkMwNUd195FrvfAz7Bjmmi19DnORKnQmlvGe/9xEEfr5zjey1N9+mt3//geDP6
- clwKBkq0JggA+RTEAELzkgPYKJ3NutoStUAKZGiLOFMpHY6KpItbbHjF2ZKIU1whaRYkHpB2
- uLQXOzZ0d7x60PUdhqG3VmFnzXSztA4vsnDKk7x2xw0pMSTKhMafpxaPQJf494/jGnwBHyi3
- h3QGG1RjfhQ/OMTX/HKtAUB2ct3Q8/jBfF0hS5GzT6dYtj0Ci7+8LUsB2VoayhNXMnaBfh+Q
- pAhaFfRZWTjUFIV4MpDdFDame7PB50s73gF/pfQbjw5Wxtes/0FnqydfId95s+eej+17ldGp
- lMv1ok7K0H/WJSdr7UwDAHEYU++p4RRTJP6DHWXcByVlpNQ4SSAiivmWiwOt490+Ac7ATQRN
- WQbPAQgAvIoM384ZRFocFXPCOBir5m2J+96R2tI2XxMgMfyDXGJwFilBNs+fpttJlt2995A8
- 0JwPj8SFdm6FBcxygmxBBCc7i/BVQuY8aC0Z/w9Vzt3Eo561r6pSHr5JGHe8hwBQUcNPd/9l
- 2ynP57YTSE9XaGJK8gIuTXWo7pzIkTXfN40Wh5jeCCspj4jNsWiYhljjIbrEj300g8RUT2U0
- FcEoiV7AjJWWQ5pi8lZJX6nmB0lc69Jw03V6mblgeZ/1oTZmOepkagwy2zLDXxihf0GowUif
- GphBDeP8elWBNK+ajl5rmpAMNRoKxpN/xR4NzBg62AjyIvigdywa1RehSTfccQARAQABwsBf
- BBgBAgAJBQJNWQbPAhsMAAoJEBaat7Gkz/iuteIH+wZuRDqK0ysAh+czshtG6JJlLW6eXJJR
- Vi7dIPpgFic2LcbkSlvB8E25Pcfz/+tW+04Urg4PxxFiTFdFCZO+prfd4Mge7/OvUcwoSub7
- ZIPo8726ZF5/xXzajahoIu9/hZ4iywWPAHRvprXaim5E/vKjcTeBMJIqZtS4u/UK3EpAX59R
- XVxVpM8zJPbk535ELUr6I5HQXnihQm8l6rt9TNuf8p2WEDxc8bPAZHLjNyw9a/CdeB97m2Tr
- zR8QplXA5kogS4kLe/7/JmlDMO8Zgm9vKLHSUeesLOrjdZ59EcjldNNBszRZQgEhwaarfz46
- BSwxi7g3Mu7u5kUByanqHyA=
-Organization: Baylibre
-Message-ID: <437a073e-1610-ffa2-891c-692bea3541fd@baylibre.com>
-Date:   Tue, 7 Jan 2020 15:23:06 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
-MIME-Version: 1.0
-In-Reply-To: <5764e60da6d3af7e76c30f63b07f1a12b4787918.1578400471.git.Jose.Abreu@synopsys.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=8ll6pfs0Lc5//nYvpISCuHiKbMMPSEB1tli1fUPNlSg=;
+        b=Ab1VE+cvfVI/s+oFgVXyFXYtLx0RD+fiWvCIINiwZjvxi7yTxyvHiwKwfIO6Ap7Rnh
+         WU03hkmDgIULlUvqBa6rsmTCnPzaP5e/+IoUpA75Kj8dK+zKHFDF6dbUiiF8e6VKGhAS
+         M9zao/g6gfX9E+t3tv2LLAS0800t+EW4cf64M+YfvN1wiAcf57fgvIxArHbWHLw3+zJ7
+         hvzBDj4TRQkCusoaO9+Cw6Nr6QY2T+60HvJL93v6jPZTHBux6GYFvOa9V1NoVaushi+/
+         gtSTOor06M5VpUgcEnoh6hQIOqLyY9S6N883Rs1eHDjNy03cTZF2b0+QAnvkbVUmPVjg
+         FTNg==
+X-Gm-Message-State: APjAAAUV+qP3i9ot5noXPgrF6KRoCDWHMNBwgXORjpNIGJsY1xXGehVT
+        Kop08yIFw/OYREPfbg1TUcM=
+X-Google-Smtp-Source: APXvYqzG+rEUWpb/IQfJrvw4PvjZD0C4vtygtpGzb1hMkVOVDvbL4HflHIIRbBxu8UHors3mO2lebA==
+X-Received: by 2002:a1c:dc08:: with SMTP id t8mr42127219wmg.139.1578407275698;
+        Tue, 07 Jan 2020 06:27:55 -0800 (PST)
+Received: from AHABDELS-M-J3JG ([192.135.27.141])
+        by smtp.gmail.com with ESMTPSA id z83sm27294079wmg.2.2020.01.07.06.27.54
+        (version=TLS1 cipher=AES128-SHA bits=128/128);
+        Tue, 07 Jan 2020 06:27:55 -0800 (PST)
+Date:   Tue, 7 Jan 2020 15:27:54 +0100
+From:   kernel Dev <ahabdels.dev@gmail.com>
+To:     Tom Herbert <tom@herbertland.com>
+Cc:     Erik Kline <ek@loon.com>, David Miller <davem@davemloft.net>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Simon Horman <simon.horman@netronome.com>,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Subject: Re: [PATCH v8 net-next 0/9] ipv6: Extension header infrastructure
+Message-Id: <20200107152754.eb96a3c6424422fffb694c86@gmail.com>
+In-Reply-To: <CALx6S34LC+cOmJvfqQVDS7JdAWRAQ7M+cays8VFrmEgXWt4Ggw@mail.gmail.com>
+References: <CALx6S361vkhp8rLzP804oMz2reuDgQDjm9G_+eXfq5oQpVscyg@mail.gmail.com>
+        <20200103.124517.1721098411789807467.davem@davemloft.net>
+        <CALx6S34vyjNnVbYfjqB1mNDDr3-zQixzXk=kgDqjJ0yxHVCgKg@mail.gmail.com>
+        <20200103.145739.1949735492303739713.davem@davemloft.net>
+        <CALx6S359YAzpJgzOFbb7c6VPe9Sin0F0Vn_vR+8iOo4rY57xQA@mail.gmail.com>
+        <CAAedzxpG77vB3Z8XsTmCYPRB2Hn43otPMXZW4t0r3E-Wh98kNQ@mail.gmail.com>
+        <CALx6S37eaWwst7H3ZsuOrPkhoes4dkVLHfi60WFv9hXPJo0KPw@mail.gmail.com>
+        <20200104100556.43a28151003a1f379daec40c@gmail.com>
+        <CALx6S341Uad+31k9sGsRWTHyHmNgJWdN0s87c_KUfk=_-4SAjw@mail.gmail.com>
+        <20200104210229.30c753f96317b6e0974aefe9@gmail.com>
+        <CALx6S34LC+cOmJvfqQVDS7JdAWRAQ7M+cays8VFrmEgXWt4Ggw@mail.gmail.com>
+X-Mailer: Sylpheed 3.4.1 (GTK+ 2.24.21; x86_64-apple-darwin10.8.0)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 07/01/2020 13:35, Jose Abreu wrote:
-> When using fixed link we don't need the MDIO bus support.
-> 
-> Reported-by: Heiko Stuebner <heiko@sntech.de>
-> Reported-by: kernelci.org bot <bot@kernelci.org>
-> Fixes: d3e014ec7d5e ("net: stmmac: platform: Fix MDIO init for platforms without PHY")
-> Signed-off-by: Jose Abreu <Jose.Abreu@synopsys.com>
-> 
-> ---
-> Cc: Giuseppe Cavallaro <peppe.cavallaro@st.com>
-> Cc: Alexandre Torgue <alexandre.torgue@st.com>
-> Cc: Jose Abreu <joabreu@synopsys.com>
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: Maxime Coquelin <mcoquelin.stm32@gmail.com>
-> Cc: netdev@vger.kernel.org
-> Cc: linux-stm32@st-md-mailman.stormreply.com
-> Cc: linux-arm-kernel@lists.infradead.org
-> Cc: linux-kernel@vger.kernel.org
-> Cc: Heiko Stuebner <heiko@sntech.de>
-> Cc: kernelci.org bot <bot@kernelci.org>
-> Cc: Florian Fainelli <f.fainelli@gmail.com>
-> Cc: Sriram Dash <sriram.dash@samsung.com>
-> ---
->  drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
-> index cc8d7e7bf9ac..4775f49d7f3b 100644
-> --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
-> +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
-> @@ -320,7 +320,7 @@ static int stmmac_mtl_setup(struct platform_device *pdev,
->  static int stmmac_dt_phy(struct plat_stmmacenet_data *plat,
->  			 struct device_node *np, struct device *dev)
->  {
-> -	bool mdio = false;
-> +	bool mdio = !of_phy_is_fixed_link(np);
->  	static const struct of_device_id need_mdio_ids[] = {
->  		{ .compatible = "snps,dwc-qos-ethernet-4.10" },
->  		{},
-> 
+On Sat, 4 Jan 2020 12:22:17 -0800
+Tom Herbert <tom@herbertland.com> wrote:
 
-Acked-by: Neil Armstrong <narmstrong@baylibre.com>
+> On Sat, Jan 4, 2020 at 11:02 AM kernel Dev <ahabdels.dev@gmail.com> wrote:
+> >
+> > Hi Tom,
+> >
+> > I wasn’t accusing anyone in my message. It is a personal opinion.
+> > If my message was misunderstood, then please accept my apologies.
+> >
+> > Also SRv6 is not highly controversial and this is proven by its adoption rate and ecosystem.
+> 
+> It was controversial in the five years it look to get to WGLC, and
+> thanks to things like extension header insertion it will remain
+> controversial.
+
+But it is not anymore :) 
+
+> 
+> > I have never seen a highly controversial technology that has (in two years) at least 8 public deployments and is supported by 18 publicly known routing platforms from 8 different vendors. Also has support in the mainline of Linux kernel, FD.io VPP, Wireshark, tcpdump, iptables and nftables.
+> >
+> 
+> These support only support some subset of the protocol. For instance,
+> SRv6 TLVs including HMAC TLV are defined in SRH, however only Linux
+> claims to support them. However, the Linux implementation isn't
+> protocol conformant: it doesn't support required padding options and
+> just assumes HMAC is the one and only TLV. Previously, I've posted
+> patches to fix that based on the generic parser in this patch set.
+> Those original patches for fixing SRv6 would now be out of date since
+> it was decided to change the PADN option type in SRv6 to be 5 instead
+> of 1 thereby breaking compatibility with HBH and Destination Options.
+> Seeing as how you seem interested in SRv6, it would be nice if you
+> could look into fixing the SRv6 TLV implementation to be conformant (I
+> can repost my original patches if that would help).
+
+I’m ok and willing to contribute to add missing pieces of SRv6 to the Linux kernel. 
+
+I was just not convinced with the idea of IPv4 extensions headers as we do not need to reinvent the wheel. 
+
+We need IPv6 as we ran out of IPv4, and I believe SRv6 can handle most of IPv6 use-cases. 
+
+> 
+> Thanks,
+> Tom
+> 
+> 
+> > If you are a network operator, would you deply a highly controversial technology in your network ?
+> >
+> >
+> > On Sat, 4 Jan 2020 09:45:59 -0800
+> > Tom Herbert <tom@herbertland.com> wrote:
+> >
+> > > On Sat, Jan 4, 2020 at 12:05 AM kernel Dev <ahabdels.dev@gmail.com> wrote:
+> > > >
+> > > > Tom,
+> > > >
+> > > > I will not go into whether Tom or router vendors is right from IETF perspective as here is not the place to discuss.
+> > > >
+> > > > But it seems to me that the motivation behind these patches is just to pushback on the current IETF proposals.
+> > > >
+> > > Sorry, but that is completely untrue. The patches are a general
+> > > improvement. The ability to allow modules to register handlers for
+> > > options code points has nothing to do with "pushback on the current
+> > > IETF protocols". This sort of registration is a mechanism used all
+> > > over the place. Similarly, allowing non-priveledged users to send
+> > > options is not for any specific protocol-- it is a *general*
+> > > mechanism.
+> > >
+> > > > The patches timeline is completely aligned with when IETF threads get into tough discussions (May 2019, August 2019, and now).
+> > > >
+> > > Yes, discussion about new protocols in IETF tends to correlate with
+> > > development and implementation of the protocols. That shouldn't
+> > > surprise anyone. SRv6 for instance was highly controversial in IETF
+> > > and yet the patches went in.
+> > >
+> > > > I’m not the one to decide, but IMO people should not add stuff to the kernel just to enforce their opinions on other mailers.
+> > >
+> > > I take exception with your insinuation. Seeing as how you might be new
+> > > to Linux kernel development I will ignore it. But, in the future, I
+> > > strongly suggest you be careful about accusing people about their
+> > > motivations based solely on one interaction.
+> > >
+> > > Tom
+> > >
+> > >
+> > > >
+> > > >
+> > > > On Fri, 3 Jan 2020 16:37:33 -0800
+> > > > Tom Herbert <tom@herbertland.com> wrote:
+> > > >
+> > > > > On Fri, Jan 3, 2020 at 3:53 PM Erik Kline <ek@loon.com> wrote:
+> > > > > >
+> > > > > > On Fri, 3 Jan 2020 at 15:49, Tom Herbert <tom@herbertland.com> wrote:
+> > > > > > >
+> > > > > > > On Fri, Jan 3, 2020 at 2:57 PM David Miller <davem@davemloft.net> wrote:
+> > > > > > > >
+> > > > > > > > From: Tom Herbert <tom@herbertland.com>
+> > > > > > > > Date: Fri, 3 Jan 2020 14:31:58 -0800
+> > > > > > > >
+> > > > > > > > > On Fri, Jan 3, 2020 at 12:45 PM David Miller <davem@davemloft.net> wrote:
+> > > > > > > > >>
+> > > > > > > > >> From: Tom Herbert <tom@herbertland.com>
+> > > > > > > > >> Date: Fri, 3 Jan 2020 09:35:08 -0800
+> > > > > > > > >>
+> > > > > > > > >> > The real way to combat this provide open implementation that
+> > > > > > > > >> > demonstrates the correct use of the protocols and show that's more
+> > > > > > > > >> > extensible and secure than these "hacks".
+> > > > > > > > >>
+> > > > > > > > >> Keep dreaming, this won't stop Cisco from doing whatever it wants to do.
+> > > > > > > > >
+> > > > > > > > > See QUIC. See TLS. See TCP fast open. See transport layer encryption.
+> > > > > > > > > These are prime examples where we've steered the Internet from host
+> > > > > > > > > protocols and implementation to successfully obsolete or at least work
+> > > > > > > > > around protocol ossification that was perpetuated by router vendors.
+> > > > > > > > > Cisco is not the Internet!
+> > > > > > > >
+> > > > > > > > Seriously, I wish you luck stopping the SRv6 header insertion stuff.
+> > > > > > > >
+> > > > > > > Dave,
+> > > > > > >
+> > > > > > > I agree we can't stop it, but maybe we can steer it to be at least
+> > > > > > > palatable. There are valid use cases for extension header insertion.
+> > > > > > > Ironically, SRv6 header insertion isn't one of them; the proponents
+> > > > > > > have failed to offer even a single reason why the alternative of IPv6
+> > > > > > > encapsulation isn't sufficient (believe me, we've asked _many_ times
+> > > > > > > for some justification and only get hand waving!). There are, however,
+> > > > > > > some interesting uses cases like in IOAM where the operator would like
+> > > > > > > to annotate packets as they traverse the network. Encapsulation is
+> > > > > > > insufficient if they don't know what the end point would be or they
+> > > > > > > don't want the annotation to change the path the packets take (versus
+> > > > > > > those that aren't annotated).
+> > > > > > >
+> > > > > > > The salient problem with extension header insertion is lost of
+> > > > > >
+> > > > > > And the problems that can be introduced by changing the effective path MTU...
+> > > > > >
+> > > > > Eric,
+> > > > >
+> > > > > Yep, increasing the size of packet in transit potentially wreaks havoc
+> > > > > on PMTU discovery, however I personally think that the issue might be
+> > > > > overblown. We already have the same problem when tunneling is done in
+> > > > > the network since most tunneling implementations and deployments just
+> > > > > assume the operator has set large enough MTUs. As long as all the
+> > > > > overhead inserted into the packet doesn't reduce the end host PMTU
+> > > > > below 1280, PMTU discovery and probably even PTB for a packet with
+> > > > > inserted headers still has right effect.
+> > > > >
+> > > > > > > attribution. It is fundamental in the IP protocol that the contents of
+> > > > > > > a packet are attributed to the source host identified by the source
+> > > > > > > address. If some intermediate node inserts an extension header that
+> > > > > > > subsequently breaks the packet downstream then there is no obvious way
+> > > > > > > to debug this. If an ICMP message is sent because of the receiving
+> > > > > > > data, then receiving host can't do much with it; it's not the source
+> > > > > > > of the data in error and nothing in the packet tells who the culprit
+> > > > > > > is. The Cisco guys have at least conceded one point on SRv6 insertion
+> > > > > > > due to pushback on this, their latest draft only does SRv6 insertion
+> > > > > > > on packets that have already been encapsulated in IPIP on ingress into
+> > > > > > > the domain. This is intended to at least restrict the modified packets
+> > > > > > > to a controlled domain (I'm note sure if any implementations enforce
+> > > > > > > this though). My proposal is to require an "attribution" HBH option
+> > > > > > > that would clearly identify inserted data put in a packet by
+> > > > > > > middleboxes (draft-herbert-6man-eh-attrib-00). This is a tradeoff to
+> > > > > > > allow extension header insertion, but require protocol to give
+> > > > > > > attribution and make it at least somewhat robust and manageable.
+> > > > > > >
+> > > > > > > Tom
+> > > > > >
+> > > > > > FWIW the SRv6 header insertion stuff is still under discussion in
+> > > > > > spring wg (last I knew).  I proposed one option that could be used to
+> > > > >
+> > > > > It's also under discussion in 6man.
+> > > > >
+> > > > > > avoid insertion (allow for extra scratch space
+> > > > > > https://mailarchive.ietf.org/arch/msg/spring/UhThRTNxbHWNiMGgRi3U0SqLaDA),
+> > > > > > but nothing has been conclusively resolved last I checked.
+> > > > > >
+> > > > >
+> > > > > I saw your proposal. It's a good idea from POV to be conformant with
+> > > > > RFC8200 and avoid the PMTU problems, but the header insertion
+> > > > > proponents aren't going to like it at all. First, it means that the
+> > > > > source is in control of the insertion policy and host is required to
+> > > > > change-- no way they'll buy into that ;-). Secondly, if the scratch
+> > > > > space isn't used they'll undoubtedly claim that is unnecessary
+> > > > > overhead.
+> > > > >
+> > > > > Tom
+> > > > >
+> > > > > > As everyone probably knows, the draft-ietf-* documents are
+> > > > > > working-group-adopted documents (though final publication is never
+> > > > > > guaranteed).  My current reading of 6man tea leaves is that neither
+> > > > > > "ICMP limits" and "MTU option" docs were terribly contentious.
+> > > > > > Whether code reorg is important for implementing these I'm not
+> > > > > > competent enough to say.
+> > > >
+> > > >
+> > > > --
+> >
+> >
+> > --
+> > kernel Dev <ahabdels.dev@gmail.com>
+
+
+-- 
+kernel Dev <ahabdels.dev@gmail.com>
