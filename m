@@ -2,97 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 25A03132A39
-	for <lists+netdev@lfdr.de>; Tue,  7 Jan 2020 16:42:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5403E132A4E
+	for <lists+netdev@lfdr.de>; Tue,  7 Jan 2020 16:45:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728344AbgAGPmZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jan 2020 10:42:25 -0500
-Received: from mail-pl1-f194.google.com ([209.85.214.194]:43300 "EHLO
-        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727559AbgAGPmY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jan 2020 10:42:24 -0500
-Received: by mail-pl1-f194.google.com with SMTP id p27so23335071pli.10;
-        Tue, 07 Jan 2020 07:42:24 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=mOKAUWML1TFTWaJ7wVdgP8BJ4Cjz8s+9gtXGI6Ex/jk=;
-        b=gSW7HO4pTdqJxlWVKCR6uhC6jdezVM9/xLJYNkDAbKHsfQnU2Bksu127W3XS1FH0NP
-         MjGwlvOUDUOY7W8PL3RGhQt857tc2SA98S0w0pminHY6s4pVzjgXG8V9zF7Yb5LYOEgA
-         +Ci7RaZfP4MSX9kP/OAoqqzMnsHIg0B3iyvQFrCOY7rvwAztaVkBadB34g7JBF1lWkzG
-         Q+pqOxLIXkknIc9CP7QrVRtpK4N528gW6wV9ko9n8h8esaOebmAr8gu4VsFUiWAD+YJb
-         pZmDkVkH2Uh5M7YAv6n4or5zr9KL04ETPHtqqi7wGwplDUS82kU6kOxZ+x9rEPdSE5yD
-         DMJQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=mOKAUWML1TFTWaJ7wVdgP8BJ4Cjz8s+9gtXGI6Ex/jk=;
-        b=oRTT7kxSOSFs55bsohbxbShVaaB6ozarFodw/u3sBq5gwToFxhmVTOSubZgc08oW6Z
-         Ysc2rS8996LTCDoAnKL/+funr33qIFbXJxOSWat37yhphpDUG3admSoZPTHXMztnb6Ra
-         4QW78Xg7UsMHguDGNXtQ6wCEomyu44VDj3CsU6ziACMqP2b/l6Rcnkt+IVUXE9zeF4yA
-         chJuQA5T9I/WVEaX+JuWV7wEigqUm39jN4/ymlGvIB9haF9lhJU0/zYhvpNC1e+0WNKj
-         tuCWnZNXzV92uhSz9YvfAAxPiGcKsTaFg8PIvzaF2hogdi0iafLJqbSlVJCloohyKXVN
-         Sfuw==
-X-Gm-Message-State: APjAAAVOclqHsffmNitzm3cyDG9Qn94KLWbrZLIzKmbAAnneoMN/SZHI
-        c/uv5CsVNENMgb+uXBpVcmI=
-X-Google-Smtp-Source: APXvYqzjYtn6/YzemGIzVUvI2cuoJB3lK2QEiULmrIBAz8zX6VTg45Sni+wFU8KjnZOEKfD9mOElDA==
-X-Received: by 2002:a17:902:7209:: with SMTP id ba9mr289009plb.118.1578411744231;
-        Tue, 07 Jan 2020 07:42:24 -0800 (PST)
-Received: from localhost (199.168.140.36.16clouds.com. [199.168.140.36])
-        by smtp.gmail.com with ESMTPSA id v10sm141764pgk.24.2020.01.07.07.42.23
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Tue, 07 Jan 2020 07:42:23 -0800 (PST)
-Date:   Tue, 7 Jan 2020 23:42:21 +0800
-From:   Dejin Zheng <zhengdejin5@gmail.com>
-To:     Jose Abreu <Jose.Abreu@synopsys.com>
-Cc:     "davem@davemloft.net" <davem@davemloft.net>,
-        "corbet@lwn.net" <corbet@lwn.net>,
-        "mcoquelin.stm32@gmail.com" <mcoquelin.stm32@gmail.com>,
-        "alexandre.torgue@st.com" <alexandre.torgue@st.com>,
-        "linus.walleij@linaro.org" <linus.walleij@linaro.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
-        "linux-stm32@st-md-mailman.stormreply.com" 
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] Documentation: networking: device drivers: sync
- stmmac_mdio_bus_data info
-Message-ID: <20200107154221.GA28873@nuc8i5>
-References: <20200107150254.28604-1-zhengdejin5@gmail.com>
- <BN8PR12MB3266661B136050259B5F7FD7D33F0@BN8PR12MB3266.namprd12.prod.outlook.com>
+        id S1728355AbgAGPpt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Jan 2020 10:45:49 -0500
+Received: from out5-smtp.messagingengine.com ([66.111.4.29]:55185 "EHLO
+        out5-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727974AbgAGPpt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jan 2020 10:45:49 -0500
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id A43FA21B2A;
+        Tue,  7 Jan 2020 10:45:47 -0500 (EST)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute3.internal (MEProxy); Tue, 07 Jan 2020 10:45:47 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-transfer-encoding:date:from
+        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=sXs6y3fRAURypMciO
+        R4uh+IPPhnOQhxrCWWr7KyR6Os=; b=lUeIox/bOWFSNEDZKnFoTIFSqajVfNZqx
+        aMZfgEPX/oydPNiZgStgfZJFHAvSbiE3qcNI3wpNZXFHcV0zHbHplfe5Hbw3yNrR
+        wd1Awo/FJGnwgxiOcHPbUkXb65zwWe8BCr2jQlo9nmj4Jrl5wxVMlxyvH/wOwG7O
+        aBdwOpdhQdzVss6keCivZ+TTnIi3kmp2m+MkuJTCAZ5T88lM5UmQAJmr6jQ1tgyt
+        ZMyjNirfCDH18vWyqRtpc4N2QT6pZ4/mwOKmIoFyVNcSchED25ydCBJQTmTUj0WC
+        A0rsXgrmZa4PhPM1IEeqMX3ijHpUlSsgqjQsbxZbQmsZGjcKDyRFA==
+X-ME-Sender: <xms:q6cUXnFnsBVAm5dsky1R9VxmEH10YASnSuAwsBFi0sBJY7apFXJn-w>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedufedrvdehgedgfeegucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgggfestdekredtre
+    dttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiughoshgt
+    hhdrohhrgheqnecuffhomhgrihhnpehoiihlrggsshdrohhrghenucfkphepudelfedrge
+    ejrdduieehrddvhedunecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihgu
+    ohhstghhrdhorhhgnecuvehluhhsthgvrhfuihiivgeptd
+X-ME-Proxy: <xmx:q6cUXqHWXf7BnGRtvJuaevD1tqEKzAOpzHTzQJEnDm4okY8Wz7NAVw>
+    <xmx:q6cUXv-pY4zrqBMMD6kvGA5pLU33V1Jn5w5BkyuViRByrntSSCSZPw>
+    <xmx:q6cUXsQSz-XdHk6mNhkCYXuk9CCRoWjub4RcpEJBCNVv6k3OaZkN9w>
+    <xmx:q6cUXpaX0N3WB40D2TsO2Y63nqyuMUVxe90AObksgyn51HDnQxqD-Q>
+Received: from splinter.mtl.com (unknown [193.47.165.251])
+        by mail.messagingengine.com (Postfix) with ESMTPA id CB5888005C;
+        Tue,  7 Jan 2020 10:45:45 -0500 (EST)
+From:   Ido Schimmel <idosch@idosch.org>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, jiri@mellanox.com,
+        jakub.kicinski@netronome.com, dsahern@gmail.com,
+        roopa@cumulusnetworks.com, mlxsw@mellanox.com,
+        Ido Schimmel <idosch@mellanox.com>
+Subject: [PATCH net-next 00/10] net: Add route offload indication
+Date:   Tue,  7 Jan 2020 17:45:07 +0200
+Message-Id: <20200107154517.239665-1-idosch@idosch.org>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <BN8PR12MB3266661B136050259B5F7FD7D33F0@BN8PR12MB3266.namprd12.prod.outlook.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 07, 2020 at 03:16:10PM +0000, Jose Abreu wrote:
-> From: Dejin Zheng <zhengdejin5@gmail.com>
-> Date: Jan/07/2020, 15:02:54 (UTC+00:00)
-> 
-> > Recent changes in the stmmac driver, it removes the phy_reset hook
-> > from struct stmmac_mdio_bus_data by commit <fead5b1b5838ba2>, and
-> > add the member of needs_reset to struct stmmac_mdio_bus_data by
-> > commit <1a981c0586c0387>.
-> 
-> This will file be no longer maitained as we are moving to RST format. 
-> Please see [1].
-> 
-> [1] https://patchwork.ozlabs.org/project/netdev/list/?series=151601
->
-Jose, Thanks for your notice, abandon this commit.
+From: Ido Schimmel <idosch@mellanox.com>
 
-BR,
-dejin
+This patch set adds offload indication to IPv4 and IPv6 routes. So far
+offload indication was only available for the nexthop via
+'RTNH_F_OFFLOAD', which is problematic as a nexthop is usually shared
+between multiple routes.
 
-> ---
-> Thanks,
-> Jose Miguel Abreu
+Based on feedback from Roopa and David on the RFC [1], the indication is
+split to 'offload' and 'trap'. This is done because not all the routes
+present in hardware actually offload traffic from the kernel. For
+example, host routes merely trap packets to the kernel. The two flags
+are dumped to user space via the 'rtm_flags' field in the ancillary
+header of the rtnetlink message.
+
+In addition, the patch set uses the new flags in order to test the FIB
+offload API by adding a dummy FIB offload implementation to netdevsim.
+The new tests are added to a shared library and can be therefore shared
+between different drivers.
+
+Patches #1-#3 add offload indication to IPv4 routes.
+Patches #4 adds offload indication to IPv6 routes.
+Patches #5-#6 add support for the offload indication in mlxsw.
+Patch #7 adds dummy FIB offload implementation in netdevsim.
+Patches #8-#10 add selftests.
+
+[1] https://patchwork.ozlabs.org/cover/1170530/
+
+Ido Schimmel (10):
+  ipv4: Replace route in list before notifying
+  ipv4: Encapsulate function arguments in a struct
+  ipv4: Add "offload" and "trap" indications to routes
+  ipv6: Add "offload" and "trap" indications to routes
+  mlxsw: spectrum_router: Separate nexthop offload indication from route
+  mlxsw: spectrum_router: Set hardware flags for routes
+  netdevsim: fib: Add dummy implementation for FIB offload
+  selftests: forwarding: Add helpers and tests for FIB offload
+  selftests: netdevsim: Add test for FIB offload API
+  selftests: mlxsw: Add test for FIB offload API
+
+ drivers/net/Kconfig                           |   1 +
+ .../ethernet/mellanox/mlxsw/spectrum_router.c | 233 +++--
+ drivers/net/netdevsim/fib.c                   | 664 ++++++++++++-
+ include/net/ip6_fib.h                         |  11 +-
+ include/net/ip_fib.h                          |   4 +
+ include/uapi/linux/rtnetlink.h                |   2 +
+ net/ipv4/fib_lookup.h                         |  20 +-
+ net/ipv4/fib_semantics.c                      |  33 +-
+ net/ipv4/fib_trie.c                           |  81 +-
+ net/ipv4/route.c                              |  31 +-
+ net/ipv6/route.c                              |   7 +
+ .../selftests/drivers/net/mlxsw/fib.sh        | 180 ++++
+ .../selftests/drivers/net/netdevsim/fib.sh    | 341 +++++++
+ .../net/forwarding/fib_offload_lib.sh         | 873 ++++++++++++++++++
+ 14 files changed, 2352 insertions(+), 129 deletions(-)
+ create mode 100755 tools/testing/selftests/drivers/net/mlxsw/fib.sh
+ create mode 100755 tools/testing/selftests/drivers/net/netdevsim/fib.sh
+ create mode 100644 tools/testing/selftests/net/forwarding/fib_offload_lib.sh
+
+-- 
+2.24.1
+
