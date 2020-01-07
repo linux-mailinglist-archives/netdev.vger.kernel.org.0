@@ -2,168 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2AE8913216B
-	for <lists+netdev@lfdr.de>; Tue,  7 Jan 2020 09:31:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EEE83132178
+	for <lists+netdev@lfdr.de>; Tue,  7 Jan 2020 09:35:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727641AbgAGIbT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jan 2020 03:31:19 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:53595 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1727167AbgAGIbS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jan 2020 03:31:18 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1578385877;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=vF6sDbkc+WEm8XglHdUKDkPI3i4BPn8PiMseQ0QvR8o=;
-        b=DUWyglsB2giCwW9RMk2msv1MTqUslNbWJkX6E6wgtNRBaqcNTRnP+UY0msjeIl+Xq5YjM2
-        EBzu8li+jyIOr92yD5inoU9SERyk5bcS7CMTK9ETci2kdZ9Ord73WZgSJ6VG2zk6tMr9RC
-        SXZkaTzMUJJ7dqNNxXMWMaomZaa0Ao0=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-167-0qH6OMJ0PnqNauFDKp8scQ-1; Tue, 07 Jan 2020 03:31:14 -0500
-X-MC-Unique: 0qH6OMJ0PnqNauFDKp8scQ-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 0B10F1807465;
-        Tue,  7 Jan 2020 08:31:13 +0000 (UTC)
-Received: from [10.72.12.248] (ovpn-12-248.pek2.redhat.com [10.72.12.248])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 8FE3F85EE6;
-        Tue,  7 Jan 2020 08:31:07 +0000 (UTC)
-Subject: Re: [PATCH v2] virtio_net: CTRL_GUEST_OFFLOADS depends on CTRL_VQ
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, Alistair Delva <adelva@google.com>,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
-References: <20200105132120.92370-1-mst@redhat.com>
- <2d7053b5-295c-4051-a722-7656350bdb74@redhat.com>
- <20200106074426-mutt-send-email-mst@kernel.org>
- <eab75b06-453d-2e17-1e77-439a66c3c86a@redhat.com>
- <20200107020303-mutt-send-email-mst@kernel.org>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <6febe3fd-f243-13d2-b3cf-efd172f229c7@redhat.com>
-Date:   Tue, 7 Jan 2020 16:31:14 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S1727584AbgAGIfx convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 7 Jan 2020 03:35:53 -0500
+Received: from mail-ed1-f68.google.com ([209.85.208.68]:45973 "EHLO
+        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726485AbgAGIfx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jan 2020 03:35:53 -0500
+Received: by mail-ed1-f68.google.com with SMTP id v28so49626586edw.12;
+        Tue, 07 Jan 2020 00:35:52 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=4NPbL5gfhr82BUT1F8pxPLF2ghzVDIFlv2yg5NjGG5M=;
+        b=fUk9SKmlX8LagpLK9eeISQ+sk1eNOCusNZYfclzE9pURPuJ7Fsr2S/C33tPJHJ6wxU
+         GH3CXgiGzTTm8Ai9UNAWufvYobb0mq4xo2KoOYGogNLZdGRgr6tWD2ZZDeAfmaG14JBn
+         1XE6hsuz2adCtfFKcmY0CrGOedW8oE+3o99R6LeHEe8DF2SsZhjmhawNImTPlMI4icts
+         +BzGAZFToCQtiBF00P/U1uYLcXUaOvv1lk1PuBpBc4Vsa5pflOGpOv8gr2NQr0H+gboL
+         tRoZY+S0rmOsrEJjKu19sxpQP46ShF//iJkDF2ngEKG4c8HPTLRxFPGShzm6TDY5yMlO
+         j/QQ==
+X-Gm-Message-State: APjAAAXX/gOkJYNf4qiF77LnzfSSVUiCwl14cfbwpzCa5lM2U9xy93G6
+        LV1UfBbQgyt53T8ejsyKgnxN1Jqv
+X-Google-Smtp-Source: APXvYqyEpGGSHizJFu4q7AZbNrpA3xN2XeePmWxFFUvPAbTS4xzuSkWc58Bib3qx5TWcDqiNWXR3qQ==
+X-Received: by 2002:a17:906:9248:: with SMTP id c8mr113760646ejx.37.1578386151548;
+        Tue, 07 Jan 2020 00:35:51 -0800 (PST)
+Received: from pi3 ([194.230.155.149])
+        by smtp.googlemail.com with ESMTPSA id u23sm7441830edq.74.2020.01.07.00.35.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 07 Jan 2020 00:35:50 -0800 (PST)
+Date:   Tue, 7 Jan 2020 09:35:48 +0100
+From:   Krzysztof Kozlowski <krzk@kernel.org>
+To:     David Miller <davem@redhat.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/2] net: ethernet: 3c515: Fix cast from pointer to
+ integer of different size
+Message-ID: <20200107083548.GA31906@pi3>
+References: <20200104143306.21210-1-krzk@kernel.org>
+ <20200106.133155.1221137250116950495.davem@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <20200107020303-mutt-send-email-mst@kernel.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8BIT
+In-Reply-To: <20200106.133155.1221137250116950495.davem@redhat.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, Jan 06, 2020 at 01:31:55PM -0800, David Miller wrote:
+> From: Krzysztof Kozlowski <krzk@kernel.org>
+> Date: Sat,  4 Jan 2020 15:33:05 +0100
+> 
+> > Pointer passed as integer should be cast to unsigned long to
+> > avoid warning (compile testing on alpha architecture):
+> > 
+> >     drivers/net/ethernet/3com/3c515.c: In function ‘corkscrew_start_xmit’:
+> >     drivers/net/ethernet/3com/3c515.c:1066:8: warning:
+> >         cast from pointer to integer of different size [-Wpointer-to-int-cast]
+> > 
+> > Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
+> > 
+> > ---
+> > 
+> > Only compile tested
+> 
+> Sorry, I'm not applying these two.
+> 
+> It is clear that these drivers only work properly on 32-bit architectures
+> where virtual address equals the DMA address.
+> 
+> Making this warning goes away creates a false sense that they are in
+> fact 64-bit clean and capable, they are not.
 
-On 2020/1/7 =E4=B8=8B=E5=8D=883:06, Michael S. Tsirkin wrote:
-> On Tue, Jan 07, 2020 at 10:29:08AM +0800, Jason Wang wrote:
->> On 2020/1/6 =E4=B8=8B=E5=8D=888:54, Michael S. Tsirkin wrote:
->>> On Mon, Jan 06, 2020 at 10:47:35AM +0800, Jason Wang wrote:
->>>> On 2020/1/5 =E4=B8=8B=E5=8D=889:22, Michael S. Tsirkin wrote:
->>>>> The only way for guest to control offloads (as enabled by
->>>>> VIRTIO_NET_F_CTRL_GUEST_OFFLOADS) is by sending commands
->>>>> through CTRL_VQ. So it does not make sense to
->>>>> acknowledge VIRTIO_NET_F_CTRL_GUEST_OFFLOADS without
->>>>> VIRTIO_NET_F_CTRL_VQ.
->>>>>
->>>>> The spec does not outlaw devices with such a configuration, so we h=
-ave
->>>>> to support it. Simply clear VIRTIO_NET_F_CTRL_GUEST_OFFLOADS.
->>>>> Note that Linux is still crashing if it tries to
->>>>> change the offloads when there's no control vq.
->>>>> That needs to be fixed by another patch.
->>>>>
->>>>> Reported-by: Alistair Delva <adelva@google.com>
->>>>> Reported-by: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
->>>>> Fixes: 3f93522ffab2 ("virtio-net: switch off offloads on demand if =
-possible on XDP set")
->>>>> Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
->>>>> ---
->>>>>
->>>>> Same patch as v1 but update documentation so it's clear it's not
->>>>> enough to fix the crash.
->>>>>
->>>>>     drivers/net/virtio_net.c | 9 +++++++++
->>>>>     1 file changed, 9 insertions(+)
->>>>>
->>>>> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
->>>>> index 4d7d5434cc5d..7b8805b47f0d 100644
->>>>> --- a/drivers/net/virtio_net.c
->>>>> +++ b/drivers/net/virtio_net.c
->>>>> @@ -2971,6 +2971,15 @@ static int virtnet_validate(struct virtio_de=
-vice *vdev)
->>>>>     	if (!virtnet_validate_features(vdev))
->>>>>     		return -EINVAL;
->>>>> +	/* VIRTIO_NET_F_CTRL_GUEST_OFFLOADS does not work without
->>>>> +	 * VIRTIO_NET_F_CTRL_VQ. Unfortunately spec forgot to
->>>>> +	 * specify that VIRTIO_NET_F_CTRL_GUEST_OFFLOADS depends
->>>>> +	 * on VIRTIO_NET_F_CTRL_VQ so devices can set the later but
->>>>> +	 * not the former.
->>>>> +	 */
->>>>> +	if (!virtio_has_feature(vdev, VIRTIO_NET_F_CTRL_VQ))
->>>>> +			__virtio_clear_bit(vdev, VIRTIO_NET_F_CTRL_GUEST_OFFLOADS);
->>>> If it's just because a bug of spec, should we simply fix the bug and=
- fail
->>>> the negotiation in virtnet_validate_feature()?
->>> One man's bug is another man's feature: arguably leaving the features
->>> independent in the spec might allow reuse of the feature bit without
->>> breaking guests.
->>>
->>> And even if we say it's a bug we can't simply fix the bug in the
->>> spec: changing the text for a future version does not change the fact
->>> that devices behaving according to the spec exist.
->>>
->>>> Otherwise there would be inconsistency in handling feature dependenc=
-ies for
->>>> ctrl vq.
->>>>
->>>> Thanks
->>> That's a cosmetic problem ATM. It might be a good idea to generally
->>> change our handling of dependencies, and clear feature bits instead o=
-f
->>> failing probe on a mismatch.
->>
->> Something like I proposed in the past ? [1]
->>
->> [1] https://lore.kernel.org/patchwork/patch/519074/
->
-> No that still fails probe.
->
-> I am asking whether it's more future proof to fail probe
-> on feature combinations disallowed by spec, or to clear bits
-> to get to an expected combination.
+The existing casts are clearly wrong - the convention is that pointer
+should be cast to unsigned long, not int. In the second case it is even
+weirder - the buffer array is actually unsigned long so the cast is
+confusing.
 
+However I understand your argument that these casts serve as a
+documentation purpose of only 32-bit support, so let it be.
 
-Sorry wrong link.
+Thanks!
 
-It should be: https://lkml.org/lkml/2014/11/17/82
-
-
->
-> In any case, we should probably document in the spec how
-> drivers behave on such combinations.
-
-
-Yes.
-
-Thanks
-
-
->
->
->>>    It's worth thinking  - at the spec level -
->>> how we can best make the configuration extensible.
->>> But that's not something spec should worry about.
->>>
->>>
->>>>> +
->>>>>     	if (virtio_has_feature(vdev, VIRTIO_NET_F_MTU)) {
->>>>>     		int mtu =3D virtio_cread16(vdev,
->>>>>     					 offsetof(struct virtio_net_config,
+Best regards,
+Krzysztof
 
