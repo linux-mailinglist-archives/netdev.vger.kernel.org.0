@@ -2,85 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DE973131E17
-	for <lists+netdev@lfdr.de>; Tue,  7 Jan 2020 04:44:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8677F131E9D
+	for <lists+netdev@lfdr.de>; Tue,  7 Jan 2020 05:23:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727571AbgAGDoG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Jan 2020 22:44:06 -0500
-Received: from mail-pj1-f67.google.com ([209.85.216.67]:39689 "EHLO
-        mail-pj1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727565AbgAGDoF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jan 2020 22:44:05 -0500
-Received: by mail-pj1-f67.google.com with SMTP id t101so8634449pjb.4
-        for <netdev@vger.kernel.org>; Mon, 06 Jan 2020 19:44:04 -0800 (PST)
+        id S1727520AbgAGEXK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Jan 2020 23:23:10 -0500
+Received: from mail-pl1-f194.google.com ([209.85.214.194]:34259 "EHLO
+        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727493AbgAGEXK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jan 2020 23:23:10 -0500
+Received: by mail-pl1-f194.google.com with SMTP id x17so22676691pln.1
+        for <netdev@vger.kernel.org>; Mon, 06 Jan 2020 20:23:10 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pensando.io; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=VZVhy+Yyn6AdsuXyrtHafMm4sXy0ifL8/0aHmsi6DMU=;
-        b=jWDhQzpIzqryLFI2Nd64wCcOBASoBTwgdkKpQj3sDl4lT3n3hcICBCiKjK0IS2gWg0
-         W9TD+r3eV0s2fOYNlyydIFn1MY3EfOCvN10s9sBG3tA8IRvJkBYs39u+Wx68SuYo4toW
-         c9QpTENa9s9c0rPr46ZnVLhki9k2nbUdAjjIPabAcIhqVwvaarnaN3naeyzzt4f9x24g
-         mm8/yPEJrQ9Z5P6CpM56GaJZvsRqEMvnH9v0CLqe2hOQmGXm9RwIQ28D5j7Nd3r9c2gU
-         BAmxDIh49ABwN/JpE63GqWieXBj5cZL0xFxRc7C84lYkx1w8GTGRjeMTL9Kx3BNnQxD0
-         fk6A==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=7sdYEEdWKIHcigZDGjeKamKrFeCwvmgv9bOzZ4kn1XM=;
+        b=N4VMsmUDrzkK84FdmxBbpdgfMBgxJ/o/NybCvSos5lvruEU0BARhwOtQ/nxJGIGWL5
+         Pqu6XR671mxQALZ43i3GKSgyk8CtAqmvgglgyhcOKfAx2u6gEIdWHfLtO0kgUGGM98Ip
+         fZnsHQMQI6hZzPu383mqn4pwGltqlgG7UqSuFo3bcwwHoNtimUDtGtkISkT7wAgglOIV
+         oA9hmhjnYvpY4cMvRyXtu411i8/9pyxx5EQEw0BJ2le02k08+t6SPtGKR/BBXaifqE3h
+         BlJCDsqGtFnwgWAwcw3TnF4RXb4B3Mlm+8JGdQn5ftoeBL/DWtwQkj7lnEeuJrIYLL4r
+         Wrxw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=VZVhy+Yyn6AdsuXyrtHafMm4sXy0ifL8/0aHmsi6DMU=;
-        b=EtSp11Tj03YMBc/QSfmuA+8eYiU4f7ptax+wSkLcfL7RZ3Na+acWRyQ+4e4dnzp6vC
-         NEhxxQ2ka1ZyQ4J6RmFuaHGCWP2FIRSXPxMG8Np7om46SrhS/N+IcmJpvy7kvP4RGP0U
-         8khhU6JC1Lq1X+YFky4AXDjPfiPv1MwizykbHiCIo0HETi9VAFXz5+rZQ0ZL8SQVDeR8
-         If9oe5IN43hOU6SzfDJgQ0TGxWkb0578kTb/Yydh0fnROOYo9xe4Wl1flRMvcX5J8F+Z
-         4U5MYPqDzhKZirV18KNwf8tquDVtf+RWnVDNljikRlcdzp/oJxaT62P8QxpG3G5g1kxC
-         jHoA==
-X-Gm-Message-State: APjAAAVhFYNCV+530P+WaGBGugrPX+nVyTM5WuQcL0HvFy5A49gN/d5s
-        nCM2ACdVuytOJenx9ejQ/VPgFHmYUmA=
-X-Google-Smtp-Source: APXvYqwDz6Ea2rxJZflVxRJRs63PyUmO0+r3+YPhDITniPRemFdRtHIVLRTapvdBbG85rZM2VXCDcA==
-X-Received: by 2002:a17:902:9a0c:: with SMTP id v12mr72505035plp.71.1578368644246;
-        Mon, 06 Jan 2020 19:44:04 -0800 (PST)
-Received: from driver-dev1.pensando.io ([12.226.153.42])
-        by smtp.gmail.com with ESMTPSA id a22sm85262959pfk.108.2020.01.06.19.44.03
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 06 Jan 2020 19:44:03 -0800 (PST)
-From:   Shannon Nelson <snelson@pensando.io>
-To:     netdev@vger.kernel.org, davem@davemloft.net
-Cc:     Shannon Nelson <snelson@pensando.io>
-Subject: [PATCH v2 net-next 4/4] ionic: clear compiler warning on hb use before set
-Date:   Mon,  6 Jan 2020 19:43:49 -0800
-Message-Id: <20200107034349.59268-5-snelson@pensando.io>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=7sdYEEdWKIHcigZDGjeKamKrFeCwvmgv9bOzZ4kn1XM=;
+        b=V2r3JD4MjOQAPUNJRnHzHW208UEug6uCJBLo3E/flPLPKfYFmWfwsRfgcaAfg9pNVA
+         T8phNyqMAy8H7d0BEzB04+ZSIXCrWTJmlo2kh0VqCgUoKs0jio1aKN7rOpE1illD/WG1
+         ciI5vHrY769ncjqPHV4AW/7gy05snCPopBlZbYKE6Lwutj6Y1FAzWqtu8hIwLQIH/56/
+         Q99uYCZ8RrH2qfKlklXQZU9FKt11Iusu0u4naYZpExcxQR/dUCAsM/cwi5fWFL9HSsLT
+         4w0yjcEkzOv8fzrUZ6zlZdo+yv/3xe5emYcosP7oApxmLYRAsiIpyqC/rB9bR4oE3KIs
+         n3Rw==
+X-Gm-Message-State: APjAAAWYOGxeQUq/+WXnWuW41Tdq6iJbeQS9QvnvlX9vYHiGtI6wCflu
+        aKPyBvI/4a6dKfRdam3xX8vll13J3Njq5A==
+X-Google-Smtp-Source: APXvYqzVaBtjo7cRt3bBylINFitaMEpU5IVvRGpJLFGO937emYmLZheKs0hRbMYha0Z13rcWq4lotA==
+X-Received: by 2002:a17:902:9a95:: with SMTP id w21mr87187173plp.91.1578370989946;
+        Mon, 06 Jan 2020 20:23:09 -0800 (PST)
+Received: from localhost.localdomain ([150.109.61.200])
+        by smtp.gmail.com with ESMTPSA id 65sm83415006pfu.140.2020.01.06.20.23.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 06 Jan 2020 20:23:09 -0800 (PST)
+From:   Lingpeng Chen <forrest0579@gmail.com>
+To:     John Fastabend <john.fastabend@gmail.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
+        bpf@vger.kernel.or, Lingpeng Chen <forrest0579@gmail.com>
+Subject: [PATCH] bpf/sockmap: read psock ingress_msg before sk_receive_queue
+Date:   Tue,  7 Jan 2020 12:22:47 +0800
+Message-Id: <20200107042247.16614-1-forrest0579@gmail.com>
 X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200107034349.59268-1-snelson@pensando.io>
-References: <20200107034349.59268-1-snelson@pensando.io>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Build checks have pointed out that 'hb' can theoretically
-be used before set, so let's initialize it and get rid
-of the compiler complaint.
+Right now in tcp_bpf_recvmsg, sock read data first from sk_receive_queue
+if not empty than psock->ingress_msg otherwise. If a FIN packet arrives
+and there's also some data in psock->ingress_msg, the data in
+psock->ingress_msg will be purged. It is always happen when request to a
+HTTP1.0 server like python SimpleHTTPServer since the server send FIN
+packet after data is sent out.
 
-Signed-off-by: Shannon Nelson <snelson@pensando.io>
+Signed-off-by: Lingpeng Chen <forrest0579@gmail.com>
 ---
- drivers/net/ethernet/pensando/ionic/ionic_main.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/ipv4/tcp_bpf.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_main.c b/drivers/net/ethernet/pensando/ionic/ionic_main.c
-index 837b85f2fed9..a8e3fb73b465 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_main.c
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_main.c
-@@ -330,9 +330,9 @@ int ionic_dev_cmd_wait(struct ionic *ionic, unsigned long max_seconds)
- 	unsigned long max_wait;
- 	unsigned long duration;
- 	int opcode;
-+	int hb = 0;
- 	int done;
- 	int err;
--	int hb;
+diff --git a/net/ipv4/tcp_bpf.c b/net/ipv4/tcp_bpf.c
+index e38705165ac9..cd4b699d3d0d 100644
+--- a/net/ipv4/tcp_bpf.c
++++ b/net/ipv4/tcp_bpf.c
+@@ -123,8 +123,6 @@ int tcp_bpf_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
  
- 	WARN_ON(in_interrupt());
+ 	if (unlikely(flags & MSG_ERRQUEUE))
+ 		return inet_recv_error(sk, msg, len, addr_len);
+-	if (!skb_queue_empty(&sk->sk_receive_queue))
+-		return tcp_recvmsg(sk, msg, len, nonblock, flags, addr_len);
  
+ 	psock = sk_psock_get(sk);
+ 	if (unlikely(!psock))
+@@ -139,7 +137,7 @@ int tcp_bpf_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
+ 		timeo = sock_rcvtimeo(sk, nonblock);
+ 		data = tcp_bpf_wait_data(sk, psock, flags, timeo, &err);
+ 		if (data) {
+-			if (skb_queue_empty(&sk->sk_receive_queue))
++			if (!sk_psock_queue_empty(psock))
+ 				goto msg_bytes_ready;
+ 			release_sock(sk);
+ 			sk_psock_put(sk, psock);
 -- 
 2.17.1
 
