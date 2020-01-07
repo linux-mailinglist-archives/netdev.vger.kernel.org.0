@@ -2,97 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B7903132FDF
-	for <lists+netdev@lfdr.de>; Tue,  7 Jan 2020 20:52:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 700E313303D
+	for <lists+netdev@lfdr.de>; Tue,  7 Jan 2020 21:04:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728519AbgAGTwb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jan 2020 14:52:31 -0500
-Received: from mx2.suse.de ([195.135.220.15]:42648 "EHLO mx2.suse.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728358AbgAGTwa (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 7 Jan 2020 14:52:30 -0500
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id 20171AF98;
-        Tue,  7 Jan 2020 19:52:29 +0000 (UTC)
-Received: by incl.suse.cz (Postfix, from userid 1000)
-        id CF9FA1DB5E; Tue,  7 Jan 2020 20:52:27 +0100 (CET)
-Date:   Tue, 7 Jan 2020 20:52:27 +0100
-From:   Jiri Wiesner <jwiesner@suse.com>
-To:     netdev@vger.kernel.org
-Cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
+        id S1728619AbgAGUEB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Jan 2020 15:04:01 -0500
+Received: from mout.kundenserver.de ([212.227.126.130]:42257 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728358AbgAGUEB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jan 2020 15:04:01 -0500
+Received: from threadripper.lan ([149.172.19.189]) by mrelayeu.kundenserver.de
+ (mreue012 [212.227.15.129]) with ESMTPA (Nemesis) id
+ 1MJnnV-1j8w0N2oEj-00K6Dy; Tue, 07 Jan 2020 21:03:50 +0100
+From:   Arnd Bergmann <arnd@arndb.de>
+To:     Arvid Brodin <arvid.brodin@alten.se>,
         "David S. Miller" <davem@davemloft.net>,
-        Michal Kubecek <mkubecek@suse.cz>
-Subject: [PATCH net] netfilter: conntrack: use distinct states for new SCTP
- connections
-Message-ID: <20200107195227.GA6296@incl>
+        Taehee Yoo <ap420073@gmail.com>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Murali Karicheri <m-karicheri2@ti.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH net-next] hsr: fix dummy hsr_debugfs_rename() declaration
+Date:   Tue,  7 Jan 2020 21:03:39 +0100
+Message-Id: <20200107200347.3374445-1-arnd@arndb.de>
+X-Mailer: git-send-email 2.20.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
+X-Provags-ID: V03:K1:CUXJi1Tq3W0V+VbCAFGkPpkT/YOTIHx0LzCaN38WI+u8M7LI2id
+ E+5NfhgOFFX8KSoOSK2y6xcv34UdanrEXES5kNgmtPJqrT4Ou41rjH/lzar+4MYVwj+cEz6
+ fLnp636IrOKuWkOebAaigXFCe6IH6YX+Bqi0u5+dcfbP18Q6Aw9JwHSe1l0B2E6sIG8/YgQ
+ +2Fq8uXferZs6dLQvnQaw==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:ZVUXRmvyAaI=:2nn+y6XsGq2+TZSOwWUUL1
+ M9QiP8eppGTbZoaFZXpIQdg8LGjAnLoZEVgjqaPkmma+zaVCFr8PqlPJZH3Aiclx5dM+xDVQT
+ cokm4Mw/reJNstn0TyJHvOzUUlZlVu0UjwoNlQjqqYPSs5igeWjU9iBMS/BkAlWEvlNTTdhc1
+ B0lgJcneaqkxYDXt1n03ICR82x3/YToB51nUgNEs+e4PDCuV5wR6wlkqfd2BaEiQybojz1Za9
+ DsX4hU9p1qLHjz1Gbm//VDiKd8cE4PgnVDi/JeFWqTLDCSglfX18lYSkxAHsZD6Pe00PvAQzI
+ aNJRsiwOHMyNPfwEnF6h28qGs968zuhvXFFtbmiZzh8ZOCjymzdn0TIhifR6Ml1sQ6IyR3VYp
+ s8F9RtnN4/krMuWYGTkdEy2Y1cbaQ6hSBwQE0rmu+ZJ2UQWiquC+gktrTJjX3EVk8y1KFx6p/
+ H2GRKvwMdoOz5pyROd+JDvRW4FGVK+i73x/Nz4e0jv/xFqoHFeZxraHRkfu0l2sAOIlY8Hd3o
+ 6onhvVzTIWOz2/PmbGzpcub4p3tm7L7q7hsTpwLG97ObD44KEBIhIw4WnpehVQteUhZEFM6NB
+ MYXCvwYntoNVlOve+NP+ceN8oQpyknXT+kwNtc2KN1OEIi6oQsDFJC+4Vt7/tiMQhTlN1SBzc
+ 8maiQLyI9Jl2NHlEcwaIL0YGBILps5apSUnYYqbBdWlKR61aGne0MAYgIyGnxMQHuzDa3hFMU
+ Izh4U7aimhiIr0D7713RlwM/zQy+njhIj2mg8O9wbGWpBNpZiGOzUblu2tSr6CB+Jw0bkQzDA
+ pK4jGeipuVy4fb/0kTNtzwuBldInlXG8Ib85RlcNJvjyxdfaT62qNNpu+cp6zSOv98Ia0xBeB
+ uLIJCU5X36PwyYi/uP9g==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The netlink notifications triggered by the INIT and INIT_ACK chunks
-for a tracked SCTP association do not include protocol information
-for the corresponding connection - SCTP state and verification tags
-for the original and reply direction are missing. Since the connection
-tracking implementation allows user space programs to receive
-notifications about a connection and then create a new connection
-based on the values received in a notification, it makes sense that
-INIT and INIT_ACK notifications should contain the SCTP state
-and verification tags available at the time when a notification
-is sent. The missing verification tags cause a newly created
-netfilter connection to fail to verify the tags of SCTP packets
-when this connection has been created from the values previously
-received in an INIT or INIT_ACK notification.
+The hsr_debugfs_rename prototype got an extra 'void' that needs to
+be removed again:
 
-A PROTOINFO event is cached in sctp_packet() when the state
-of a connection changes. The CLOSED and COOKIE_WAIT state will
-be used for connections that have seen an INIT and INIT_ACK chunk,
-respectively. The distinct states will cause a connection state
-change in sctp_packet().
+In file included from /git/arm-soc/net/hsr/hsr_main.c:12:
+net/hsr/hsr_main.h:194:20: error: two or more data types in declaration specifiers
+ static inline void void hsr_debugfs_rename(struct net_device *dev)
 
-Signed-off-by: Jiri Wiesner <jwiesner@suse.com>
+Fixes: 4c2d5e33dcd3 ("hsr: rename debugfs file when interface name is changed")
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 ---
- net/netfilter/nf_conntrack_proto_sctp.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ net/hsr/hsr_main.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/netfilter/nf_conntrack_proto_sctp.c b/net/netfilter/nf_conntrack_proto_sctp.c
-index fce3d93f1541..e410cb37f2a0 100644
---- a/net/netfilter/nf_conntrack_proto_sctp.c
-+++ b/net/netfilter/nf_conntrack_proto_sctp.c
-@@ -114,7 +114,7 @@ static const u8 sctp_conntracks[2][11][SCTP_CONNTRACK_MAX] = {
- 	{
- /*	ORIGINAL	*/
- /*                  sNO, sCL, sCW, sCE, sES, sSS, sSR, sSA, sHS, sHA */
--/* init         */ {sCW, sCW, sCW, sCE, sES, sSS, sSR, sSA, sCW, sHA},
-+/* init         */ {sCL, sCL, sCW, sCE, sES, sSS, sSR, sSA, sCW, sHA},
- /* init_ack     */ {sCL, sCL, sCW, sCE, sES, sSS, sSR, sSA, sCL, sHA},
- /* abort        */ {sCL, sCL, sCL, sCL, sCL, sCL, sCL, sCL, sCL, sCL},
- /* shutdown     */ {sCL, sCL, sCW, sCE, sSS, sSS, sSR, sSA, sCL, sSS},
-@@ -130,7 +130,7 @@ static const u8 sctp_conntracks[2][11][SCTP_CONNTRACK_MAX] = {
- /*	REPLY	*/
- /*                  sNO, sCL, sCW, sCE, sES, sSS, sSR, sSA, sHS, sHA */
- /* init         */ {sIV, sCL, sCW, sCE, sES, sSS, sSR, sSA, sIV, sHA},/* INIT in sCL Big TODO */
--/* init_ack     */ {sIV, sCL, sCW, sCE, sES, sSS, sSR, sSA, sIV, sHA},
-+/* init_ack     */ {sIV, sCW, sCW, sCE, sES, sSS, sSR, sSA, sIV, sHA},
- /* abort        */ {sIV, sCL, sCL, sCL, sCL, sCL, sCL, sCL, sIV, sCL},
- /* shutdown     */ {sIV, sCL, sCW, sCE, sSR, sSS, sSR, sSA, sIV, sSR},
- /* shutdown_ack */ {sIV, sCL, sCW, sCE, sES, sSA, sSA, sSA, sIV, sHA},
-@@ -316,7 +316,7 @@ sctp_new(struct nf_conn *ct, const struct sk_buff *skb,
- 			ct->proto.sctp.vtag[IP_CT_DIR_REPLY] = sh->vtag;
- 		}
- 
--		ct->proto.sctp.state = new_state;
-+		ct->proto.sctp.state = SCTP_CONNTRACK_NONE;
- 	}
- 
- 	return true;
+diff --git a/net/hsr/hsr_main.h b/net/hsr/hsr_main.h
+index d40de84a637f..754d84b217f0 100644
+--- a/net/hsr/hsr_main.h
++++ b/net/hsr/hsr_main.h
+@@ -191,7 +191,7 @@ void hsr_debugfs_term(struct hsr_priv *priv);
+ void hsr_debugfs_create_root(void);
+ void hsr_debugfs_remove_root(void);
+ #else
+-static inline void void hsr_debugfs_rename(struct net_device *dev)
++static inline void hsr_debugfs_rename(struct net_device *dev)
+ {
+ }
+ static inline void hsr_debugfs_init(struct hsr_priv *priv,
 -- 
-2.16.4
+2.20.0
 
