@@ -2,143 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 70C2B132655
-	for <lists+netdev@lfdr.de>; Tue,  7 Jan 2020 13:37:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9DD821326B8
+	for <lists+netdev@lfdr.de>; Tue,  7 Jan 2020 13:52:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728099AbgAGMgm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jan 2020 07:36:42 -0500
-Received: from smtprelay-out1.synopsys.com ([149.117.73.133]:37404 "EHLO
-        smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727834AbgAGMgm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jan 2020 07:36:42 -0500
-Received: from mailhost.synopsys.com (badc-mailhost2.synopsys.com [10.192.0.18])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (No client certificate requested)
-        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id D0DE3405EC;
-        Tue,  7 Jan 2020 12:36:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
-        t=1578400601; bh=HZEWeToSluP2P7XemVLVhSS2ICpKePUp1ZMffsTD9vA=;
-        h=From:To:CC:Subject:Date:References:In-Reply-To:From;
-        b=kfLVBGmMFSRtWGWJn6lODq9cORpGEfjMsIhcvbS/nQ4lv4dqfTYtFVeC4v/3FcXk4
-         rb/onrxgNZ4m/tlr1fZoxq4aK1Qc9SD3iNMYqNzqkCpO6+7sI21Tl3WbcthjZfIOFz
-         F3sH6z56QoloShYACS0DKoduRwGtjg2DaY7NHOuyyiwNW0sLoLu9MOE3Izj5uzRzit
-         765wlTyScYepTuZdZW5Io5iaPPD0t9OL1lITPUgz64NX45Mh7Sj/xvrb6g5zjoAQUb
-         OknHQutAYJS04zZeGQDNalT/N5Ff/XDTz7icmGDyUh1kP9Wvccqvy4HAPXXDOubHcI
-         SfRvycV5phpWw==
-Received: from US01WEHTC3.internal.synopsys.com (us01wehtc3.internal.synopsys.com [10.15.84.232])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mailhost.synopsys.com (Postfix) with ESMTPS id 80ED0A007A;
-        Tue,  7 Jan 2020 12:36:39 +0000 (UTC)
-Received: from us01hybrid1.internal.synopsys.com (10.200.27.51) by
- US01WEHTC3.internal.synopsys.com (10.15.84.232) with Microsoft SMTP Server
- (TLS) id 14.3.408.0; Tue, 7 Jan 2020 04:36:38 -0800
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (10.202.3.67) by
- mrs.synopsys.com (10.200.27.51) with Microsoft SMTP Server (TLS) id
- 14.3.408.0; Tue, 7 Jan 2020 04:36:37 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Dyfaja/ZaRloGLABwSprA1hhAuy5gnO56R3r2SJ0VxjZa8LdgT9PByPD3HhJKPBNN9Or5DTsS7TOt19IFDVkh/g3mgKs9A6ljgwXKGaIIutozdIj6IHZWR5lnd15GBB1FTN7E7fc++uJalUC3LRY9vZQw8tbPwPovncsVy47l15Lra75q5HFkFonEt20kAWBjQSVUYCm80ZzB7jILI2Zp9TRdD6VWakIC+xHM6QmilEZq2ohmtKhIjvs88aMJd36/dnPgAEVlx5wywgnSx7BFPAKxmmlV5kzGLhAWI0jF2Lj+2AB238JimB0tg6TDMmN/hhdXbJO1DMbFRQmolMIIQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=HZEWeToSluP2P7XemVLVhSS2ICpKePUp1ZMffsTD9vA=;
- b=ixqql9ZOvWChegMCloPpGYU1eJNL3VAs/eVuP7BCQTupYclD+/Z70rm1vKjzPN9zBVWNt42i/jYauqLjKLK65TLbs19XzyaITpNt6llQOXDswCcdsPKJnOQYDD1S13XgkepFbbW5hFBGCS37tfhVNy0Gf4MOwFDoP0rx9Jo7o1YSIuCMBBQNjhTA7iAlP1lxthHmnC4cWqTcXyOgdzasaqMY6DBbKm9x3ETYtL4w2qBwvvETQHzd3F6AYwUtwKNpbdlwRM8pvTg5gHtlHR8DM8ZYvPCA68mUuNbMZfFi8i5Gy22onGg6LNL/41F8ahy+bMWIR8zPSaeDxvFHnpb41g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=synopsys.com; dmarc=pass action=none header.from=synopsys.com;
- dkim=pass header.d=synopsys.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=synopsys.onmicrosoft.com; s=selector2-synopsys-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=HZEWeToSluP2P7XemVLVhSS2ICpKePUp1ZMffsTD9vA=;
- b=H+MMPLoUFbVu0J1ptR8dpMa6AZI7+EvfmfrJbUgroNhlXAeakgW3Ms+7rXfUr8/vOzz6u/4HPOGHqWWQRFg/WOnehlGh/L46/yfXdlmtuHVvcQxPx+bjmtEkW0JpCyEcS0jm1V+TtrOuhoCQjeb55O/kROhd+q1IN4wtrlatuNQ=
-Received: from BN8PR12MB3266.namprd12.prod.outlook.com (20.179.67.145) by
- BN8PR12MB3009.namprd12.prod.outlook.com (20.178.210.160) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2602.11; Tue, 7 Jan 2020 12:36:32 +0000
-Received: from BN8PR12MB3266.namprd12.prod.outlook.com
- ([fe80::c62:b247:6963:9da2]) by BN8PR12MB3266.namprd12.prod.outlook.com
- ([fe80::c62:b247:6963:9da2%6]) with mapi id 15.20.2602.016; Tue, 7 Jan 2020
- 12:36:32 +0000
-From:   Jose Abreu <Jose.Abreu@synopsys.com>
-To:     Sriram Dash <sriram.dash@samsung.com>,
-        'Robin Murphy' <robin.murphy@arm.com>,
-        'Florian Fainelli' <f.fainelli@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "narmstrong@baylibre.com" <narmstrong@baylibre.com>,
-        'Heiko Stuebner' <heiko@sntech.de>
-CC:     'Jayati Sahu' <jayati.sahu@samsung.com>,
-        'Alexandre Torgue' <alexandre.torgue@st.com>,
-        "tomeu.vizoso@collabora.com" <tomeu.vizoso@collabora.com>,
-        "rcsekar@samsung.com" <rcsekar@samsung.com>,
-        "khilman@baylibre.com" <khilman@baylibre.com>,
-        "mgalka@collabora.com" <mgalka@collabora.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        'Padmanabhan Rajanbabu' <p.rajanbabu@samsung.com>,
-        "linux-stm32@st-md-mailman.stormreply.com" 
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        "broonie@kernel.org" <broonie@kernel.org>,
-        "pankaj.dubey@samsung.com" <pankaj.dubey@samsung.com>,
-        'Maxime Coquelin' <mcoquelin.stm32@gmail.com>,
-        "guillaume.tucker@collabora.com" <guillaume.tucker@collabora.com>,
-        "enric.balletbo@collabora.com" <enric.balletbo@collabora.com>,
+        id S1728034AbgAGMwE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Jan 2020 07:52:04 -0500
+Received: from mailout2.samsung.com ([203.254.224.25]:41870 "EHLO
+        mailout2.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727903AbgAGMwD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jan 2020 07:52:03 -0500
+Received: from epcas5p4.samsung.com (unknown [182.195.41.42])
+        by mailout2.samsung.com (KnoxPortal) with ESMTP id 20200107125158epoutp024869a2be5d5a76249549d7408f885377~nm9GJySKF0107101071epoutp02H
+        for <netdev@vger.kernel.org>; Tue,  7 Jan 2020 12:51:58 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.samsung.com 20200107125158epoutp024869a2be5d5a76249549d7408f885377~nm9GJySKF0107101071epoutp02H
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1578401518;
+        bh=z3QqzQeWELWtbdYfxbjfYm18/UmAbiaEUXAhmAM2oBo=;
+        h=From:To:Cc:In-Reply-To:Subject:Date:References:From;
+        b=CEkLvv/X55mJb2k1eu6x8gvr48b+4nths8qKaq2VswJDF/+c4OWsMSxHZx4y1OUCn
+         oJGAAKkTusqqZFy3UomjrLdwthk1yNY1ZykXOLrDKYLeux/CuJNkFy5Z6Z+FqEuvvN
+         Mo+NTraqRTkZBipdG5RIv74mdPcz23VdLr6kVDwY=
+Received: from epsmges5p1new.samsung.com (unknown [182.195.42.73]) by
+        epcas5p4.samsung.com (KnoxPortal) with ESMTP id
+        20200107125158epcas5p48bb7fc12493c86c760b299c8d4713026~nm9FmzniC2920629206epcas5p4F;
+        Tue,  7 Jan 2020 12:51:58 +0000 (GMT)
+Received: from epcas5p1.samsung.com ( [182.195.41.39]) by
+        epsmges5p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
+        A0.AA.19726.EEE741E5; Tue,  7 Jan 2020 21:51:58 +0900 (KST)
+Received: from epsmtrp2.samsung.com (unknown [182.195.40.14]) by
+        epcas5p3.samsung.com (KnoxPortal) with ESMTPA id
+        20200107125156epcas5p32d73c07df46c7ef9737bc1c2f2834823~nm9Eda_M22813728137epcas5p3q;
+        Tue,  7 Jan 2020 12:51:56 +0000 (GMT)
+Received: from epsmgms1p1new.samsung.com (unknown [182.195.42.41]) by
+        epsmtrp2.samsung.com (KnoxPortal) with ESMTP id
+        20200107125156epsmtrp21cc851de8abadd6f9b0cba8944cf5713~nm9EcyYy21083110831epsmtrp2i;
+        Tue,  7 Jan 2020 12:51:56 +0000 (GMT)
+X-AuditID: b6c32a49-7c1ff70000014d0e-91-5e147eee958f
+Received: from epsmtip2.samsung.com ( [182.195.34.31]) by
+        epsmgms1p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
+        23.7F.10238.CEE741E5; Tue,  7 Jan 2020 21:51:56 +0900 (KST)
+Received: from sriramdash03 (unknown [107.111.85.29]) by
+        epsmtip2.samsung.com (KnoxPortal) with ESMTPA id
+        20200107125154epsmtip28f9f64ea37fb59c4ce9d5b7f134b24f9~nm9BzaH2g2079120791epsmtip2Q;
+        Tue,  7 Jan 2020 12:51:53 +0000 (GMT)
+From:   "Sriram Dash" <sriram.dash@samsung.com>
+To:     "'Jose Abreu'" <Jose.Abreu@synopsys.com>, <netdev@vger.kernel.org>
+Cc:     "'Joao Pinto'" <Joao.Pinto@synopsys.com>,
         "'Giuseppe Cavallaro'" <peppe.cavallaro@st.com>,
+        "'Alexandre Torgue'" <alexandre.torgue@st.com>,
         "'David S. Miller'" <davem@davemloft.net>,
-        "linux-arm-kernel@lists.infradead.org" 
+        "'Maxime Coquelin'" <mcoquelin.stm32@gmail.com>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
         <linux-arm-kernel@lists.infradead.org>,
-        "heiko@sntech.de" <heiko@sntech.de>
-Subject: RE: [PATCH net] Revert "net: stmmac: platform: Fix MDIO init for
- platforms without PHY"
-Thread-Topic: [PATCH net] Revert "net: stmmac: platform: Fix MDIO init for
- platforms without PHY"
-Thread-Index: AQHVxRimtok0wFzL+UGNRMlNrZMzLafesXQAgABWhwCAABXNgIAABhTw
-Date:   Tue, 7 Jan 2020 12:36:32 +0000
-Message-ID: <BN8PR12MB3266EC51599357258E6E2292D33F0@BN8PR12MB3266.namprd12.prod.outlook.com>
-References: <CGME20200107050854epcas1p3c1a66e67f14802322063f6c9747f1986@epcas1p3.samsung.com>
-        <20200107050846.16838-1-f.fainelli@gmail.com>
-        <011a01d5c51d$d7482290$85d867b0$@samsung.com>
-        <59cb4087-6a71-9684-c4cf-d203600b45a9@arm.com>
- <014001d5c553$ff7f06d0$fe7d1470$@samsung.com>
-In-Reply-To: <014001d5c553$ff7f06d0$fe7d1470$@samsung.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=joabreu@synopsys.com; 
-x-originating-ip: [83.174.63.141]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: b7be4ce4-4321-4e75-1d96-08d7936e3a21
-x-ms-traffictypediagnostic: BN8PR12MB3009:
-x-microsoft-antispam-prvs: <BN8PR12MB30092DF05339C75A6EC5D0A0D33F0@BN8PR12MB3009.namprd12.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:6790;
-x-forefront-prvs: 027578BB13
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(346002)(396003)(136003)(376002)(366004)(39860400002)(199004)(189003)(55016002)(478600001)(54906003)(110136005)(966005)(4326008)(6506007)(26005)(316002)(186003)(9686003)(71200400001)(81166006)(2906002)(5660300002)(7416002)(8936002)(81156014)(86362001)(33656002)(76116006)(66556008)(66476007)(66446008)(7696005)(66946007)(558084003)(64756008)(52536014)(8676002);DIR:OUT;SFP:1102;SCL:1;SRVR:BN8PR12MB3009;H:BN8PR12MB3266.namprd12.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: synopsys.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: Y8NsU4IZ7AB1nwFzf//h6MepTFJeUU81AW1r8PzSWnIoShfBRqtamYk2nIlN7lFUR6V1xnj895/x4p1Ksi53a8dOVmokrjENm3A6hhvspye0FEtMUDcNquOVR4wlxBgpMj6wbF9MW35CB+aCQKDuyWWfNafeF+obFebcpgqs8UQd+F1YRIiMK9BLLFfFKwyyuWiRbcRYaGKb5fMH0XIoW2dfPQsJ9DEVjVv7OS7ajrjyZEFW+/IP9pTgqsQiAKRY2WLx3HSJt8YnekuBL+vlBzkMuQYxHa5nYJyS4nXIBfPWOYoNKgNBx2iUsubqagCslGDhBhSMu4lhPS9QMJ+dHHbpBXeEQxjFqnYq5NREdwvF1tOFtzNARb8/PTy8Cd4YcuSVPc+GLL6CVuN0DKdCwp2GYiQAPzYxRKk0iFH6cZc1mS7pIs+1dwAJeMG67OECNVBR2rTNS6xZuVkB/c4zgzcQYALCWWh2CfSTlJSlINI=
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        <linux-kernel@vger.kernel.org>,
+        "'Heiko Stuebner'" <heiko@sntech.de>,
+        "'kernelci . org bot'" <bot@kernelci.org>,
+        "'Florian Fainelli'" <f.fainelli@gmail.com>
+In-Reply-To: <5764e60da6d3af7e76c30f63b07f1a12b4787918.1578400471.git.Jose.Abreu@synopsys.com>
+Subject: RE: [PATCH net] net: stmmac: Fixed link does not need MDIO Bus
+Date:   Tue, 7 Jan 2020 18:21:52 +0530
+Message-ID: <014201d5c559$3e6204b0$bb260e10$@samsung.com>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: b7be4ce4-4321-4e75-1d96-08d7936e3a21
-X-MS-Exchange-CrossTenant-originalarrivaltime: 07 Jan 2020 12:36:32.5120
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: c33c9f88-1eb7-4099-9700-16013fd9e8aa
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 4RoLGqUQSwR8N5j5cws/UuSJEIqG15q2OTZkA4DE1THboL5zj101BHRpX9vukOYE/gYGt5lC34o+qmkpMmgrCQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR12MB3009
-X-OriginatorOrg: synopsys.com
+Content-Transfer-Encoding: 7bit
+X-Mailer: Microsoft Outlook 16.0
+Content-Language: en-in
+Thread-Index: AQFZUtiDrXKRSclDK/XtxWw9Crh9QgFfdnd3qM0QNJA=
+X-Brightmail-Tracker: H4sIAAAAAAAAA02SeyxVcRzA97vnnHuPx9XpEl9U6iIjj2y0w1Q2rU6trf6o9VZ3nBAuuwfF
+        H2VR2Z2aolW361XNymbyLlHekojolkcxrsk1pizznNx7WP77fF+/z/e7/UhM0kvYkGHyGFYh
+        l0VIhcZ4eb2zk9vkNYvAXVolRhdpWxH9paeGoNWfk3F6frJBRC8PjRP07FAjRv9cnCLo4mEN
+        QXdVqoW0UqMl6KylAoJuyrGkl8fLkL+YKX3ZI2DeqH6ImKoxU6bk+XWmQpOFMbXvPJmR2WqM
+        KX0/jZjp4q3HjM4Y+wWzEWFxrMJj70Xj0NzaHGH0b7Or87eJRNRpqkRGJFBe0DCSRCiRMSmh
+        3iJIfKpGfPAHQffQ4Gowg2Dw4SyxNlL0YBHXs4SqRpA3JeebdAiS23IE+oKQcoO27zeEerag
+        DkB/34DBgVGjGLR8m8T0BSMqENqmMwxsTh2EzKpxgwGnHKD3SYohL6Z8oPPTM5znjdDyWGtg
+        jLKDigk1xm+0DeZG8gg+bwWNc6kYL/aFRs2CQQxUuQgmhpMQP7AfFhYbVtkcdM2lIp5tYHqy
+        WshzOHTdHV0VxMAjXS7O8z6o6VavMLkic4bCSg/eawZ3FrQCfRooMaTckvDdjqDrK1l93RZq
+        CloFPDOQMTUoSkPbVesuU627TLXuGtV/WQ7C85E1G81FhrCcd7SnnL3izskiuVh5iHtQVGQx
+        Mvw4l0Ovkar9SB2iSCQ1FadtNg+UELI4Lj6yDgGJSS3ELq4WgRJxsCw+gVVEXVDERrBcHbIl
+        camV+D7x9ZyECpHFsOEsG80q1qoC0sgmEe1uHjOrtz5vT57wdg1XntqS+eHwJvVYfoB1vEuq
+        g1PsyFHPINvxlNGOdvuPlSYQ3uFjW7OzbMZE9+ps74A0+XLahl9LhenpPe2lhS+SduQued/c
+        o/E7uISy+1p9L0WZePladuZbBzj2+6dwp5vmTooSskV29+bzq+2Ou3M9bundf6U4FyrzdMEU
+        nOwfVautm20DAAA=
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrDIsWRmVeSWpSXmKPExsWy7bCSvO6bOpE4g1WbdC02PjnNaHHp5gFW
+        iznnW1gsfr07wm7x/9FrVosfj44yW9z784HVYtPja6wWl3fNYbPouvaE1WLe37WsFscWiFn8
+        f72V0YHXY8vKm0weO2fdZffY85LHY/OSeo/t1+YxexzcZ+jx9MdeZo8t+z8zenzeJBfAGcVl
+        k5Kak1mWWqRvl8CVsfDgAraCj3wVv9pZGxgv8nQxcnJICJhIbJz6h6WLkYtDSGA3o8TGxTdY
+        uxg5gBLSEj/v6kLUCEus/PecHaLmBaPE5YvfWEESbAK6EmdvNLGB2CICHhI7Dq0EK2IWeM8s
+        8W/1NSaIjvWMErO3XwCr4hSIkzj7eQoziC0s4C4xd89rsEksAioSt2Z3gMV5BSwlLp5ZzAJh
+        C0qcnPmEBeQiZgE9ibaNjCBhZgF5ie1v5zBDXKcg8fPpMlaIuLjE0Z89zBAHWUkcvfabdQKj
+        8Cwkk2YhTJqFZNIsJN0LGFlWMUqmFhTnpucWGxYY5qWW6xUn5haX5qXrJefnbmIEx6mW5g7G
+        y0viDzEKcDAq8fBaSAnHCbEmlhVX5h5ilOBgVhLh1dIRiRPiTUmsrEotyo8vKs1JLT7EKM3B
+        oiTO+zTvWKSQQHpiSWp2ampBahFMlomDU6qBUZptiaNjNZfsuzUh5iFR3sscVZkOOyUWnJ0V
+        dUJr9ZNLTe/l5oic2xFuJGD5ZckHTsvulh+lk31q9t32Pr7o+cPbS25Nmld5p3rxKeElTA07
+        lY15Z3w8LLHl0j3DU0tybh6dqm178vFH1k8dD6o6mtR65z/ZnuBRv9R/xmMjST7XZtHtvZl2
+        0UosxRmJhlrMRcWJAO6yr/7PAgAA
+X-CMS-MailID: 20200107125156epcas5p32d73c07df46c7ef9737bc1c2f2834823
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+CMS-TYPE: 105P
+X-CMS-RootMailID: 20200107123550epcas5p2d1914646e71e0ff0095b4a14eb5e1551
+References: <CGME20200107123550epcas5p2d1914646e71e0ff0095b4a14eb5e1551@epcas5p2.samsung.com>
+        <5764e60da6d3af7e76c30f63b07f1a12b4787918.1578400471.git.Jose.Abreu@synopsys.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RnJvbTogU3JpcmFtIERhc2ggPHNyaXJhbS5kYXNoQHNhbXN1bmcuY29tPg0KRGF0ZTogSmFuLzA3
-LzIwMjAsIDEyOjE0OjE5IChVVEMrMDA6MDApDQoNCj4gQ2FuIHlvdSBndXlzIHBsZWFzZSB0ZXN0
-IHRoaXMgb24geW91ciBwbGF0Zm9ybXM/DQo+IFdlIGNhbiBwb3N0IGEgbW9yZSBjbGVhbmVyIHZl
-cnNpb24gb2YgdGhlIHBhdGNoIGlmIGFsbCBhZ3JlZSB0byBpdC4NCg0KQ2FuIHlvdSBhbHNvIHRl
-c3QgdGhpcyBvbmUgWzFdID8NCg0KWzFdIGh0dHBzOi8vcGF0Y2h3b3JrLm96bGFicy5vcmcvcGF0
-Y2gvMTIxODc2Mi8NCg0KLS0tDQpUaGFua3MsDQpKb3NlIE1pZ3VlbCANCkFicmV1DQo=
+> From: Jose Abreu <Jose.Abreu@synopsys.com>
+> Subject: [PATCH net] net: stmmac: Fixed link does not need MDIO Bus
+> 
+> When using fixed link we don't need the MDIO bus support.
+> 
+> Reported-by: Heiko Stuebner <heiko@sntech.de>
+> Reported-by: kernelci.org bot <bot@kernelci.org>
+> Fixes: d3e014ec7d5e ("net: stmmac: platform: Fix MDIO init for platforms
+> without PHY")
+> Signed-off-by: Jose Abreu <Jose.Abreu@synopsys.com>
+
+Acked-by: Sriram Dash <Sriram.dash@samsung.com>
+
+> 
+> ---
+> Cc: Giuseppe Cavallaro <peppe.cavallaro@st.com>
+> Cc: Alexandre Torgue <alexandre.torgue@st.com>
+> Cc: Jose Abreu <joabreu@synopsys.com>
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: Maxime Coquelin <mcoquelin.stm32@gmail.com>
+> Cc: netdev@vger.kernel.org
+> Cc: linux-stm32@st-md-mailman.stormreply.com
+> Cc: linux-arm-kernel@lists.infradead.org
+> Cc: linux-kernel@vger.kernel.org
+> Cc: Heiko Stuebner <heiko@sntech.de>
+> Cc: kernelci.org bot <bot@kernelci.org>
+> Cc: Florian Fainelli <f.fainelli@gmail.com>
+> Cc: Sriram Dash <sriram.dash@samsung.com>
+> ---
+>  drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
+> b/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
+> index cc8d7e7bf9ac..4775f49d7f3b 100644
+> --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
+> +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
+> @@ -320,7 +320,7 @@ static int stmmac_mtl_setup(struct platform_device
+> *pdev,  static int stmmac_dt_phy(struct plat_stmmacenet_data *plat,
+>  			 struct device_node *np, struct device *dev)  {
+> -	bool mdio = false;
+> +	bool mdio = !of_phy_is_fixed_link(np);
+>  	static const struct of_device_id need_mdio_ids[] = {
+>  		{ .compatible = "snps,dwc-qos-ethernet-4.10" },
+>  		{},
+> --
+> 2.7.4
+
+
