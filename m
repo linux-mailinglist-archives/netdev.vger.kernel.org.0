@@ -2,87 +2,168 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B02E132166
-	for <lists+netdev@lfdr.de>; Tue,  7 Jan 2020 09:30:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2AE8913216B
+	for <lists+netdev@lfdr.de>; Tue,  7 Jan 2020 09:31:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727574AbgAGIaV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jan 2020 03:30:21 -0500
-Received: from www62.your-server.de ([213.133.104.62]:39152 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726485AbgAGIaV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jan 2020 03:30:21 -0500
-Received: from sslproxy06.your-server.de ([78.46.172.3])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1iokFj-0008Ry-JY; Tue, 07 Jan 2020 09:30:15 +0100
-Received: from [2001:1620:665:0:5795:5b0a:e5d5:5944] (helo=linux.fritz.box)
-        by sslproxy06.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1iokFj-000N0L-1Z; Tue, 07 Jan 2020 09:30:15 +0100
-Subject: Re: [PATCH 5/5] bpf: Allow to resolve bpf trampoline in unwind
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Jiri Olsa <jolsa@kernel.org>
-Cc:     Alexei Starovoitov <ast@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Andrii Nakryiko <andriin@fb.com>,
-        Yonghong Song <yhs@fb.com>, Martin KaFai Lau <kafai@fb.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        David Miller <davem@redhat.com>, bjorn.topel@intel.com
-References: <20191229143740.29143-1-jolsa@kernel.org>
- <20191229143740.29143-6-jolsa@kernel.org>
- <20200106234639.fo2ctgkb5vumayyl@ast-mbp>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <fab5466e-95e7-8abf-c416-6a6f7b7151ba@iogearbox.net>
-Date:   Tue, 7 Jan 2020 09:30:12 +0100
+        id S1727641AbgAGIbT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Jan 2020 03:31:19 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:53595 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1727167AbgAGIbS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jan 2020 03:31:18 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1578385877;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=vF6sDbkc+WEm8XglHdUKDkPI3i4BPn8PiMseQ0QvR8o=;
+        b=DUWyglsB2giCwW9RMk2msv1MTqUslNbWJkX6E6wgtNRBaqcNTRnP+UY0msjeIl+Xq5YjM2
+        EBzu8li+jyIOr92yD5inoU9SERyk5bcS7CMTK9ETci2kdZ9Ord73WZgSJ6VG2zk6tMr9RC
+        SXZkaTzMUJJ7dqNNxXMWMaomZaa0Ao0=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-167-0qH6OMJ0PnqNauFDKp8scQ-1; Tue, 07 Jan 2020 03:31:14 -0500
+X-MC-Unique: 0qH6OMJ0PnqNauFDKp8scQ-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 0B10F1807465;
+        Tue,  7 Jan 2020 08:31:13 +0000 (UTC)
+Received: from [10.72.12.248] (ovpn-12-248.pek2.redhat.com [10.72.12.248])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 8FE3F85EE6;
+        Tue,  7 Jan 2020 08:31:07 +0000 (UTC)
+Subject: Re: [PATCH v2] virtio_net: CTRL_GUEST_OFFLOADS depends on CTRL_VQ
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, Alistair Delva <adelva@google.com>,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
+References: <20200105132120.92370-1-mst@redhat.com>
+ <2d7053b5-295c-4051-a722-7656350bdb74@redhat.com>
+ <20200106074426-mutt-send-email-mst@kernel.org>
+ <eab75b06-453d-2e17-1e77-439a66c3c86a@redhat.com>
+ <20200107020303-mutt-send-email-mst@kernel.org>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <6febe3fd-f243-13d2-b3cf-efd172f229c7@redhat.com>
+Date:   Tue, 7 Jan 2020 16:31:14 +0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-In-Reply-To: <20200106234639.fo2ctgkb5vumayyl@ast-mbp>
+In-Reply-To: <20200107020303-mutt-send-email-mst@kernel.org>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.101.4/25686/Mon Jan  6 10:55:07 2020)
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/7/20 12:46 AM, Alexei Starovoitov wrote:
-> On Sun, Dec 29, 2019 at 03:37:40PM +0100, Jiri Olsa wrote:
->> When unwinding the stack we need to identify each
->> address to successfully continue. Adding latch tree
->> to keep trampolines for quick lookup during the
->> unwind.
+
+On 2020/1/7 =E4=B8=8B=E5=8D=883:06, Michael S. Tsirkin wrote:
+> On Tue, Jan 07, 2020 at 10:29:08AM +0800, Jason Wang wrote:
+>> On 2020/1/6 =E4=B8=8B=E5=8D=888:54, Michael S. Tsirkin wrote:
+>>> On Mon, Jan 06, 2020 at 10:47:35AM +0800, Jason Wang wrote:
+>>>> On 2020/1/5 =E4=B8=8B=E5=8D=889:22, Michael S. Tsirkin wrote:
+>>>>> The only way for guest to control offloads (as enabled by
+>>>>> VIRTIO_NET_F_CTRL_GUEST_OFFLOADS) is by sending commands
+>>>>> through CTRL_VQ. So it does not make sense to
+>>>>> acknowledge VIRTIO_NET_F_CTRL_GUEST_OFFLOADS without
+>>>>> VIRTIO_NET_F_CTRL_VQ.
+>>>>>
+>>>>> The spec does not outlaw devices with such a configuration, so we h=
+ave
+>>>>> to support it. Simply clear VIRTIO_NET_F_CTRL_GUEST_OFFLOADS.
+>>>>> Note that Linux is still crashing if it tries to
+>>>>> change the offloads when there's no control vq.
+>>>>> That needs to be fixed by another patch.
+>>>>>
+>>>>> Reported-by: Alistair Delva <adelva@google.com>
+>>>>> Reported-by: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+>>>>> Fixes: 3f93522ffab2 ("virtio-net: switch off offloads on demand if =
+possible on XDP set")
+>>>>> Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+>>>>> ---
+>>>>>
+>>>>> Same patch as v1 but update documentation so it's clear it's not
+>>>>> enough to fix the crash.
+>>>>>
+>>>>>     drivers/net/virtio_net.c | 9 +++++++++
+>>>>>     1 file changed, 9 insertions(+)
+>>>>>
+>>>>> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+>>>>> index 4d7d5434cc5d..7b8805b47f0d 100644
+>>>>> --- a/drivers/net/virtio_net.c
+>>>>> +++ b/drivers/net/virtio_net.c
+>>>>> @@ -2971,6 +2971,15 @@ static int virtnet_validate(struct virtio_de=
+vice *vdev)
+>>>>>     	if (!virtnet_validate_features(vdev))
+>>>>>     		return -EINVAL;
+>>>>> +	/* VIRTIO_NET_F_CTRL_GUEST_OFFLOADS does not work without
+>>>>> +	 * VIRTIO_NET_F_CTRL_VQ. Unfortunately spec forgot to
+>>>>> +	 * specify that VIRTIO_NET_F_CTRL_GUEST_OFFLOADS depends
+>>>>> +	 * on VIRTIO_NET_F_CTRL_VQ so devices can set the later but
+>>>>> +	 * not the former.
+>>>>> +	 */
+>>>>> +	if (!virtio_has_feature(vdev, VIRTIO_NET_F_CTRL_VQ))
+>>>>> +			__virtio_clear_bit(vdev, VIRTIO_NET_F_CTRL_GUEST_OFFLOADS);
+>>>> If it's just because a bug of spec, should we simply fix the bug and=
+ fail
+>>>> the negotiation in virtnet_validate_feature()?
+>>> One man's bug is another man's feature: arguably leaving the features
+>>> independent in the spec might allow reuse of the feature bit without
+>>> breaking guests.
+>>>
+>>> And even if we say it's a bug we can't simply fix the bug in the
+>>> spec: changing the text for a future version does not change the fact
+>>> that devices behaving according to the spec exist.
+>>>
+>>>> Otherwise there would be inconsistency in handling feature dependenc=
+ies for
+>>>> ctrl vq.
+>>>>
+>>>> Thanks
+>>> That's a cosmetic problem ATM. It might be a good idea to generally
+>>> change our handling of dependencies, and clear feature bits instead o=
+f
+>>> failing probe on a mismatch.
 >>
->> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-> ...
->> +bool is_bpf_trampoline(void *addr)
->> +{
->> +	return latch_tree_find(addr, &tree, &tree_ops) != NULL;
->> +}
->> +
->>   struct bpf_trampoline *bpf_trampoline_lookup(u64 key)
->>   {
->>   	struct bpf_trampoline *tr;
->> @@ -65,6 +98,7 @@ struct bpf_trampoline *bpf_trampoline_lookup(u64 key)
->>   	for (i = 0; i < BPF_TRAMP_MAX; i++)
->>   		INIT_HLIST_HEAD(&tr->progs_hlist[i]);
->>   	tr->image = image;
->> +	latch_tree_insert(&tr->tnode, &tree, &tree_ops);
-> 
-> Thanks for the fix. I was thinking to apply it, but then realized that bpf
-> dispatcher logic has the same issue.
-> Could you generalize the fix for both?
-> May be bpf_jit_alloc_exec_page() can do latch_tree_insert() ?
-> and new version of bpf_jit_free_exec() is needed that will do latch_tree_erase().
-> Wdyt?
+>> Something like I proposed in the past ? [1]
+>>
+>> [1] https://lore.kernel.org/patchwork/patch/519074/
+>
+> No that still fails probe.
+>
+> I am asking whether it's more future proof to fail probe
+> on feature combinations disallowed by spec, or to clear bits
+> to get to an expected combination.
 
-Also this patch is buggy since your latch lookup happens under RCU, but
-I don't see anything that waits a grace period once you remove from the
-tree. Instead you free the trampoline right away.
 
-On a different question, given we have all the kallsym infrastructure
-for BPF already in place, did you look into whether it's feasible to
-make it a bit more generic to also cover JITed buffers from trampolines?
+Sorry wrong link.
+
+It should be: https://lkml.org/lkml/2014/11/17/82
+
+
+>
+> In any case, we should probably document in the spec how
+> drivers behave on such combinations.
+
+
+Yes.
+
+Thanks
+
+
+>
+>
+>>>    It's worth thinking  - at the spec level -
+>>> how we can best make the configuration extensible.
+>>> But that's not something spec should worry about.
+>>>
+>>>
+>>>>> +
+>>>>>     	if (virtio_has_feature(vdev, VIRTIO_NET_F_MTU)) {
+>>>>>     		int mtu =3D virtio_cread16(vdev,
+>>>>>     					 offsetof(struct virtio_net_config,
+
