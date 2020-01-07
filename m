@@ -2,92 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 64A1213227A
-	for <lists+netdev@lfdr.de>; Tue,  7 Jan 2020 10:34:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 21F6E13228F
+	for <lists+netdev@lfdr.de>; Tue,  7 Jan 2020 10:35:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727805AbgAGJd6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jan 2020 04:33:58 -0500
-Received: from mail.kernel.org ([198.145.29.99]:37506 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726565AbgAGJd5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 7 Jan 2020 04:33:57 -0500
-Received: from disco-boy.misterjones.org (disco-boy.misterjones.org [51.254.78.96])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 1D9B7206DB;
-        Tue,  7 Jan 2020 09:33:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1578389637;
-        bh=0RwFzwAEmrIP5sG0tKGrxv2D/cxDWEkx4BvAxCF7YcY=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=H4MhWpEv9OaFCgT3pOtwNa8691FoPe9u0TYSCg/+0HvXNb3xrg8Z0UMTp3WlgCN9V
-         sZneQrxj1cZTzcdnNMP4HyRW3GUYvhQYxpSdzhrj9w+ugT+W+e09aturGqr6jVjdnQ
-         EuPegGrp4+ChfhOaNGONnb4I074kMSLOP/LCXt6g=
-Received: from disco-boy.misterjones.org ([51.254.78.96] helo=www.loen.fr)
-        by disco-boy.misterjones.org with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.92)
-        (envelope-from <maz@kernel.org>)
-        id 1iolFL-000143-D1; Tue, 07 Jan 2020 09:33:55 +0000
+        id S1727747AbgAGJet (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Jan 2020 04:34:49 -0500
+Received: from www62.your-server.de ([213.133.104.62]:52526 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727720AbgAGJes (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jan 2020 04:34:48 -0500
+Received: from [2001:1620:665:0:5795:5b0a:e5d5:5944] (helo=localhost)
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1iolG3-0005pp-LS; Tue, 07 Jan 2020 10:34:39 +0100
+From:   Daniel Borkmann <daniel@iogearbox.net>
+To:     davem@davemloft.net
+Cc:     jakub.kicinski@netronome.com, daniel@iogearbox.net, ast@kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: pull-request: bpf 2020-01-07
+Date:   Tue,  7 Jan 2020 10:34:38 +0100
+Message-Id: <20200107093438.10089-1-daniel@iogearbox.net>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Tue, 07 Jan 2020 09:33:55 +0000
-From:   Marc Zyngier <maz@kernel.org>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Jianyong Wu <Jianyong.Wu@arm.com>, netdev@vger.kernel.org,
-        yangbo.lu@nxp.com, john.stultz@linaro.org, tglx@linutronix.de,
-        sean.j.christopherson@intel.com, richardcochran@gmail.com,
-        Mark Rutland <Mark.Rutland@arm.com>, will@kernel.org,
-        Suzuki Poulose <Suzuki.Poulose@arm.com>,
-        Steven Price <Steven.Price@arm.com>,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        kvmarm@lists.cs.columbia.edu, kvm@vger.kernel.org,
-        Steve Capper <Steve.Capper@arm.com>,
-        Kaly Xin <Kaly.Xin@arm.com>, Justin He <Justin.He@arm.com>,
-        nd <nd@arm.com>
-Subject: Re: [RFC PATCH v9 0/8] Enable ptp_kvm for arm64
-In-Reply-To: <bf333cdc-3455-7c64-89c2-014639614904@redhat.com>
-References: <20191210034026.45229-1-jianyong.wu@arm.com>
- <HE1PR0801MB1676CFC9A06B6CE800052A99F43C0@HE1PR0801MB1676.eurprd08.prod.outlook.com>
- <bf333cdc-3455-7c64-89c2-014639614904@redhat.com>
-Message-ID: <7a589be6dc0d5562caf8c8f795b31efc@kernel.org>
-X-Sender: maz@kernel.org
-User-Agent: Roundcube Webmail/1.3.8
-X-SA-Exim-Connect-IP: 51.254.78.96
-X-SA-Exim-Rcpt-To: pbonzini@redhat.com, Jianyong.Wu@arm.com, netdev@vger.kernel.org, yangbo.lu@nxp.com, john.stultz@linaro.org, tglx@linutronix.de, sean.j.christopherson@intel.com, richardcochran@gmail.com, Mark.Rutland@arm.com, will@kernel.org, Suzuki.Poulose@arm.com, Steven.Price@arm.com, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu, kvm@vger.kernel.org, Steve.Capper@arm.com, Kaly.Xin@arm.com, Justin.He@arm.com, nd@arm.com
-X-SA-Exim-Mail-From: maz@kernel.org
-X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
+Content-Transfer-Encoding: 8bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.101.4/25686/Mon Jan  6 10:55:07 2020)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020-01-07 08:15, Paolo Bonzini wrote:
-> On 06/01/20 10:38, Jianyong Wu wrote:
->> Ping ...
->> Any comments to this patch set?
-> 
-> Marc, Will, can you ack it?  Since the sticky point was the detection 
-> of
-> the clocksource and it was solved by Thomas's patch, I don't have any
-> more problems including it.
+Hi David,
 
-Boo. I had forgotten about this series. :-(
+The following pull-request contains BPF updates for your *net* tree.
 
-Going back to it, there is a few ugly points in the arm-specific code
-(I'm OK with the generic changes though).
+We've added 2 non-merge commits during the last 1 day(s) which contain
+a total of 2 files changed, 16 insertions(+), 4 deletions(-).
 
-Another thing is that the whole series depends on three patches that 
-have
-never been posted to any list, hence never reviewed.
+The main changes are:
 
-Jianyong: Please repost this series *with* the dependencies so that they
-can be reviewed, once you've addressed my comments on two of the 
-patches.
+1) Fix a use-after-free in cgroup BPF due to auto-detachment, from Roman Gushchin.
 
-Thanks,
+2) Fix skb out-of-bounds access in ld_abs/ind instruction, from Daniel Borkmann.
 
-         M.
--- 
-Jazz is not dead. It just smells funny...
+Please consider pulling these changes from:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git
+
+Thanks a lot!
+
+Also thanks to reporters, reviewers and testers of commits in this pull-request:
+
+Anatoly Trosinenko, Josef Bacik, Song Liu
+
+----------------------------------------------------------------
+
+The following changes since commit 4012a6f2fa562b4b2884ea96db263caa4c6057a8:
+
+  firmware: tee_bnxt: Fix multiple call to tee_client_close_context (2020-01-06 13:51:37 -0800)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git 
+
+for you to fetch changes up to 6d4f151acf9a4f6fab09b615f246c717ddedcf0c:
+
+  bpf: Fix passing modified ctx to ld/abs/ind instruction (2020-01-06 14:19:47 -0800)
+
+----------------------------------------------------------------
+Daniel Borkmann (1):
+      bpf: Fix passing modified ctx to ld/abs/ind instruction
+
+Roman Gushchin (1):
+      bpf: cgroup: prevent out-of-order release of cgroup bpf
+
+ kernel/bpf/cgroup.c   | 11 +++++++++--
+ kernel/bpf/verifier.c |  9 +++++++--
+ 2 files changed, 16 insertions(+), 4 deletions(-)
