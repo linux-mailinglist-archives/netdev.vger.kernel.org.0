@@ -2,36 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5023F1334B3
-	for <lists+netdev@lfdr.de>; Tue,  7 Jan 2020 22:27:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F755133474
+	for <lists+netdev@lfdr.de>; Tue,  7 Jan 2020 22:26:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728539AbgAGV1i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jan 2020 16:27:38 -0500
-Received: from mail.kernel.org ([198.145.29.99]:54838 "EHLO mail.kernel.org"
+        id S1728063AbgAGU7F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Jan 2020 15:59:05 -0500
+Received: from mail.kernel.org ([198.145.29.99]:59570 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727592AbgAGU5d (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 7 Jan 2020 15:57:33 -0500
+        id S1728036AbgAGU7E (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 7 Jan 2020 15:59:04 -0500
 Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 15A482081E;
-        Tue,  7 Jan 2020 20:57:31 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 9B19A2087F;
+        Tue,  7 Jan 2020 20:59:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1578430652;
-        bh=A64t3xi++pgaS/FV2RW0dRsxnqvTG6K3/WIFHAi0uak=;
+        s=default; t=1578430744;
+        bh=+8/l5PDbTPjHpcojaSQlovgVrTLf3sxj8sgQ4f4RTCE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SkKkPeDuiujMUoZ9ZxeguIoZGeQvpA3qwQKz3qOE3GNrmAEECTM50HcxZIy9mYJm0
-         DMpc8vAVLIK3ftEPxJJEC4d8OV5B2y9a/94tV9xooUKG81oDx/TlzU+UYvTaqlmWm8
-         Rl67kTSRumzdPhpylj9nLi+ztgQbnvpYCnNING64=
+        b=xd/I2THQfD9fwWq2l0VueCBWyySIJ5qh/674ou4KpZKnl0eqCh0l0rN8zZu9VSU10
+         vZEvBNSSNzj6o+sdQX2b+AKBJWqap/Rnxx66DrQXxVo7ryRTHPz31xMmeCTZ0joGxd
+         AUBFhLLs1JULdhrj7F6+95Z1UohgxF8nOkJUpZpk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, netdev@vger.kernel.org,
-        David Miller <davem@davemloft.net>,
-        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 040/191] net: make socket read/write_iter() honor IOCB_NOWAIT
-Date:   Tue,  7 Jan 2020 21:52:40 +0100
-Message-Id: <20200107205335.139933986@linuxfoundation.org>
+        stable@vger.kernel.org, Alexander Lobakin <alobakin@dlink.ru>,
+        Paul Burton <paulburton@kernel.org>,
+        Ralf Baechle <ralf@linux-mips.org>,
+        James Hogan <jhogan@kernel.org>,
+        Hassan Naveed <hnaveed@wavecomp.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>, linux-mips@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: [PATCH 5.4 077/191] MIPS: BPF: eBPF JIT: check for MIPS ISA compliance in Kconfig
+Date:   Tue,  7 Jan 2020 21:53:17 +0100
+Message-Id: <20200107205337.103399328@linuxfoundation.org>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20200107205332.984228665@linuxfoundation.org>
 References: <20200107205332.984228665@linuxfoundation.org>
@@ -44,47 +52,65 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jens Axboe <axboe@kernel.dk>
+From: Alexander Lobakin <alobakin@dlink.ru>
 
-[ Upstream commit ebfcd8955c0b52eb793bcbc9e71140e3d0cdb228 ]
+commit f596cf0d8062cb5d0a4513a8b3afca318c13be10 upstream.
 
-The socket read/write helpers only look at the file O_NONBLOCK. not
-the iocb IOCB_NOWAIT flag. This breaks users like preadv2/pwritev2
-and io_uring that rely on not having the file itself marked nonblocking,
-but rather the iocb itself.
+It is completely wrong to check for compile-time MIPS ISA revision in
+the body of bpf_int_jit_compile() as it may lead to get MIPS JIT fully
+omitted by the CC while the rest system will think that the JIT is
+actually present and works [1].
+We can check if the selected CPU really supports MIPS eBPF JIT at
+configure time and avoid such situations when kernel can be built
+without both JIT and interpreter, but with CONFIG_BPF_SYSCALL=y.
 
+[1] https://lore.kernel.org/linux-mips/09d713a59665d745e21d021deeaebe0a@dlink.ru/
+
+Fixes: 716850ab104d ("MIPS: eBPF: Initial eBPF support for MIPS32 architecture.")
+Cc: <stable@vger.kernel.org> # v5.2+
+Signed-off-by: Alexander Lobakin <alobakin@dlink.ru>
+Signed-off-by: Paul Burton <paulburton@kernel.org>
+Cc: Ralf Baechle <ralf@linux-mips.org>
+Cc: James Hogan <jhogan@kernel.org>
+Cc: Hassan Naveed <hnaveed@wavecomp.com>
+Cc: Alexei Starovoitov <ast@kernel.org>
+Cc: Daniel Borkmann <daniel@iogearbox.net>
+Cc: Martin KaFai Lau <kafai@fb.com>
+Cc: Song Liu <songliubraving@fb.com>
+Cc: Yonghong Song <yhs@fb.com>
+Cc: Andrii Nakryiko <andriin@fb.com>
+Cc: linux-mips@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
 Cc: netdev@vger.kernel.org
-Acked-by: David Miller <davem@davemloft.net>
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Cc: bpf@vger.kernel.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
 ---
- net/socket.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ arch/mips/Kconfig        |    2 +-
+ arch/mips/net/ebpf_jit.c |    2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/net/socket.c b/net/socket.c
-index d7a106028f0e..ca8de9e1582d 100644
---- a/net/socket.c
-+++ b/net/socket.c
-@@ -955,7 +955,7 @@ static ssize_t sock_read_iter(struct kiocb *iocb, struct iov_iter *to)
- 			     .msg_iocb = iocb};
- 	ssize_t res;
+--- a/arch/mips/Kconfig
++++ b/arch/mips/Kconfig
+@@ -46,7 +46,7 @@ config MIPS
+ 	select HAVE_ARCH_TRACEHOOK
+ 	select HAVE_ARCH_TRANSPARENT_HUGEPAGE if CPU_SUPPORTS_HUGEPAGES
+ 	select HAVE_ASM_MODVERSIONS
+-	select HAVE_EBPF_JIT if (64BIT && !CPU_MICROMIPS)
++	select HAVE_EBPF_JIT if 64BIT && !CPU_MICROMIPS && TARGET_ISA_REV >= 2
+ 	select HAVE_CONTEXT_TRACKING
+ 	select HAVE_COPY_THREAD_TLS
+ 	select HAVE_C_RECORDMCOUNT
+--- a/arch/mips/net/ebpf_jit.c
++++ b/arch/mips/net/ebpf_jit.c
+@@ -1803,7 +1803,7 @@ struct bpf_prog *bpf_int_jit_compile(str
+ 	unsigned int image_size;
+ 	u8 *image_ptr;
  
--	if (file->f_flags & O_NONBLOCK)
-+	if (file->f_flags & O_NONBLOCK || (iocb->ki_flags & IOCB_NOWAIT))
- 		msg.msg_flags = MSG_DONTWAIT;
+-	if (!prog->jit_requested || MIPS_ISA_REV < 2)
++	if (!prog->jit_requested)
+ 		return prog;
  
- 	if (iocb->ki_pos != 0)
-@@ -980,7 +980,7 @@ static ssize_t sock_write_iter(struct kiocb *iocb, struct iov_iter *from)
- 	if (iocb->ki_pos != 0)
- 		return -ESPIPE;
- 
--	if (file->f_flags & O_NONBLOCK)
-+	if (file->f_flags & O_NONBLOCK || (iocb->ki_flags & IOCB_NOWAIT))
- 		msg.msg_flags = MSG_DONTWAIT;
- 
- 	if (sock->type == SOCK_SEQPACKET)
--- 
-2.20.1
-
+ 	tmp = bpf_jit_blind_constants(prog);
 
 
