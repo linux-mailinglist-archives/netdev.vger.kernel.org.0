@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2AF5C132C0A
-	for <lists+netdev@lfdr.de>; Tue,  7 Jan 2020 17:57:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 04E5A132C10
+	for <lists+netdev@lfdr.de>; Tue,  7 Jan 2020 17:57:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728427AbgAGQyn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jan 2020 11:54:43 -0500
-Received: from mail.kernel.org ([198.145.29.99]:42320 "EHLO mail.kernel.org"
+        id S1728686AbgAGQyw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Jan 2020 11:54:52 -0500
+Received: from mail.kernel.org ([198.145.29.99]:42646 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728391AbgAGQym (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 7 Jan 2020 11:54:42 -0500
+        id S1728391AbgAGQyv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 7 Jan 2020 11:54:51 -0500
 Received: from PC-kkoz.proceq.com (unknown [213.160.61.66])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 4E4BC24676;
-        Tue,  7 Jan 2020 16:54:32 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 95E1224677;
+        Tue,  7 Jan 2020 16:54:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1578416081;
-        bh=pyS3wZ02TYoQQFrhCaT28XntjPpq/hHYDQKnecGVi1c=;
+        s=default; t=1578416090;
+        bh=kYrH24ncGNFFYQLQ9wHiRAtooGLl8xeKtAWqiO+vhmI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MyjPtgApzAeWBBxzp9EQBWQXZ+iwA999spRine79c7OM4lsnSPBUGIGrBr9MZxl+K
-         qVZbWWFCLhelBQoFuIPPOarD6WgO7KDyfRquNgQ3rTLR4Z1FvS7QTS1zTSCX5JmiYr
-         znxaQdgOb6csvJ/r8Qjz1jvr9IFWhhb4LsApylCQ=
+        b=ktJ602nrKO22v0uNZz36NC/2TQ72yN6ijh2qShGKTyM6sP8S4sHzrYeq95duxemBM
+         F0Hlx7sC2SFMxEUl0tafeD+qmflFDYmaI7aUvp442eXhKcmauRa4vF7iN/d/RiSgKl
+         +G0tMhwntosCt0ljDnAplFNWUVM/SIIt7orUHcV0=
 From:   Krzysztof Kozlowski <krzk@kernel.org>
 To:     Richard Henderson <rth@twiddle.net>,
         Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
@@ -63,9 +63,9 @@ To:     Richard Henderson <rth@twiddle.net>,
         virtualization@lists.linux-foundation.org,
         linux-arch@vger.kernel.org
 Cc:     Krzysztof Kozlowski <krzk@kernel.org>
-Subject: [RFT 06/13] arc: Constify ioreadX() iomem argument (as in generic implementation)
-Date:   Tue,  7 Jan 2020 17:53:05 +0100
-Message-Id: <1578415992-24054-9-git-send-email-krzk@kernel.org>
+Subject: [RFT 07/13] drm/mgag200: Constify ioreadX() iomem argument (as in generic implementation)
+Date:   Tue,  7 Jan 2020 17:53:06 +0100
+Message-Id: <1578415992-24054-10-git-send-email-krzk@kernel.org>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1578415992-24054-1-git-send-email-krzk@kernel.org>
 References: <1578415992-24054-1-git-send-email-krzk@kernel.org>
@@ -77,37 +77,31 @@ X-Mailing-List: netdev@vger.kernel.org
 The ioreadX() helpers have inconsistent interface.  On some architectures
 void *__iomem address argument is a pointer to const, on some not.
 
-Implementations of ioreadX() do not modify the memory under the
-address so they can be converted to a "const" version for const-safety
-and consistency among architectures.
+Implementations of ioreadX() do not modify the memory under the address
+so they can be converted to a "const" version for const-safety and
+consistency among architectures.
 
 Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
 ---
- arch/arc/plat-axs10x/axs10x.c | 4 ++--
+ drivers/gpu/drm/mgag200/mgag200_drv.h | 4 ++--
  1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/arc/plat-axs10x/axs10x.c b/arch/arc/plat-axs10x/axs10x.c
-index 63ea5a606ecd..180c260a8221 100644
---- a/arch/arc/plat-axs10x/axs10x.c
-+++ b/arch/arc/plat-axs10x/axs10x.c
-@@ -84,7 +84,7 @@ static void __init axs10x_print_board_ver(unsigned int creg, const char *str)
- 		unsigned int val;
- 	} board;
+diff --git a/drivers/gpu/drm/mgag200/mgag200_drv.h b/drivers/gpu/drm/mgag200/mgag200_drv.h
+index aa32aad222c2..6512b3af4fb7 100644
+--- a/drivers/gpu/drm/mgag200/mgag200_drv.h
++++ b/drivers/gpu/drm/mgag200/mgag200_drv.h
+@@ -34,9 +34,9 @@
  
--	board.val = ioread32((void __iomem *)creg);
-+	board.val = ioread32((const void __iomem *)creg);
- 	pr_info("AXS: %s FPGA Date: %u-%u-%u\n", str, board.d, board.m,
- 		board.y);
- }
-@@ -95,7 +95,7 @@ static void __init axs10x_early_init(void)
- 	char mb[32];
+ #define MGAG200FB_CONN_LIMIT 1
  
- 	/* Determine motherboard version */
--	if (ioread32((void __iomem *) CREG_MB_CONFIG) & (1 << 28))
-+	if (ioread32((const void __iomem *) CREG_MB_CONFIG) & (1 << 28))
- 		mb_rev = 3;	/* HT-3 (rev3.0) */
- 	else
- 		mb_rev = 2;	/* HT-2 (rev2.0) */
+-#define RREG8(reg) ioread8(((void __iomem *)mdev->rmmio) + (reg))
++#define RREG8(reg) ioread8(((const void __iomem *)mdev->rmmio) + (reg))
+ #define WREG8(reg, v) iowrite8(v, ((void __iomem *)mdev->rmmio) + (reg))
+-#define RREG32(reg) ioread32(((void __iomem *)mdev->rmmio) + (reg))
++#define RREG32(reg) ioread32(((const void __iomem *)mdev->rmmio) + (reg))
+ #define WREG32(reg, v) iowrite32(v, ((void __iomem *)mdev->rmmio) + (reg))
+ 
+ #define ATTR_INDEX 0x1fc0
 -- 
 2.7.4
 
