@@ -2,268 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 330D0132823
-	for <lists+netdev@lfdr.de>; Tue,  7 Jan 2020 14:53:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AEC36132852
+	for <lists+netdev@lfdr.de>; Tue,  7 Jan 2020 15:02:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728181AbgAGNxT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jan 2020 08:53:19 -0500
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:40991 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727858AbgAGNxS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jan 2020 08:53:18 -0500
-Received: by mail-wr1-f67.google.com with SMTP id c9so54033909wrw.8
-        for <netdev@vger.kernel.org>; Tue, 07 Jan 2020 05:53:17 -0800 (PST)
+        id S1728255AbgAGOB0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Jan 2020 09:01:26 -0500
+Received: from mail-ed1-f66.google.com ([209.85.208.66]:42148 "EHLO
+        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728243AbgAGOBZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jan 2020 09:01:25 -0500
+Received: by mail-ed1-f66.google.com with SMTP id e10so50430260edv.9;
+        Tue, 07 Jan 2020 06:01:24 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=uaeKo4VT49jwGKztAivUR4UjDufk6EpfBX+3gEJz9CY=;
-        b=JtVycx8RI3UzymG4mb8AwolLkkQ9xUjdty95lINk6iXJLvUEYyVAxHRM5KSpxR3snu
-         sVB0hS/aN5VY8rcT4HnSNKRakBhuX/AU5SQOR5qHSGw5ir4nFUAF3YOQRrlhbIKv9lh5
-         KTQ4b7FutyuSSxMfD4VCetf7Sy+7K5QSFcYJp4l2WAMgURUgXlhoRvRAgRyDRQIgumM1
-         4QyzNHXUeeK0TPURJ1ALuJXWDmj0dM9X+gIOuS7IXgkyIzHzrRu7cac9Rzl1gn/rZAaZ
-         qGJLIQGMphAjOKaN5LvoIzI8XCr+WOkF18HuVxXaXYYbYtZJQH+vP7A/uV9K9m/OATJs
-         LGPg==
+        d=googlemail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=1DdkH/5E1tsHkzF5jhXew/z+AFPdpz7/Gvbqbl9G+dg=;
+        b=d098/Ap5WZLDYOVx0LUlRnuUilSy+QZyFpM2S+2zMcaSMbQYhJs7Zsv6FI/Ks5jxXv
+         dQO2dtGfqCwe9noHFs3y6uhVVyyaaGYPvZwl65t38wPj+hyImcuTHeqj5VyIA4f2lLWb
+         UFEa9gC++l0TOhMPwTDLWof0xt/wpRXKZdRfavRYAv8KnTTjshhiZxdDSWfOtyFbT1Bv
+         ymkgIQhCEUdCHX9AxIdCz7QsLJrymPx3I4pwcbwTXRCmuq1rwukCSqsog4onHzB8ED3B
+         As0e8Ppu27OLG9hHYWl1FLz5+jvWgt0sYgd2BvjO6PTzcD9XD4qEGylhNQzi6oZNCc0p
+         +UOg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=uaeKo4VT49jwGKztAivUR4UjDufk6EpfBX+3gEJz9CY=;
-        b=t7TotnyY9T8euUrf4kCTeDknZlUfxDA0/R0nYPB/WOzwFysobgHIuySSWaHSNRN2om
-         334vxHpxOJB4FAK74EHV4UqFuDxvIpLURIzkYIshGJs0rFm+foPI523M5xQLNbyGm7Of
-         zjGNukApax6sWCGxBcfdmRQdFOKjCXIJREJTeDHnBfXz4Udm1tuWJeTlf7j7fvVuWUSm
-         NlViu9AOF0kylcqN7AjuljHOFuHVVJdnmdukpX8xxlSJD6Z/WRPE/UrcH110P5LSAg22
-         d++p28BpAMYhjDBAFGtYd0hNERWFCkoYcjHCmWjSzHb2lk0xCfwcaJNawn7VJjsacw9T
-         4iOA==
-X-Gm-Message-State: APjAAAUvvWyNQ8en7Jubx55loHIgJVe9BEdpK4nlGJpfCfX/7BforhNC
-        2/exZYY17M53etrJoWX4yml2lw==
-X-Google-Smtp-Source: APXvYqzM0dIbm/tM3ck6f2Mk2+/eiWq/3sPbuzqNhewmeWJiHIK2s38Yuf3/yRAVt6cD8bMq5M58RA==
-X-Received: by 2002:adf:81c2:: with SMTP id 60mr105576084wra.8.1578405196497;
-        Tue, 07 Jan 2020 05:53:16 -0800 (PST)
-Received: from apalos.home (athedsl-321073.home.otenet.gr. [85.72.109.207])
-        by smtp.gmail.com with ESMTPSA id v3sm78037657wru.32.2020.01.07.05.53.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Jan 2020 05:53:16 -0800 (PST)
-Date:   Tue, 7 Jan 2020 15:53:13 +0200
-From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
-To:     Lorenzo Bianconi <lorenzo@kernel.org>
-Cc:     netdev@vger.kernel.org, brouer@redhat.com, davem@davemloft.net,
-        lorenzo.bianconi@redhat.com
-Subject: Re: [RFC/RFT net-next] net: socionext: get rid of huge dma sync in
- netsec_alloc_rx_data
-Message-ID: <20200107135313.GA121856@apalos.home>
-References: <20094a678ea3d76fc1b8817ae0dd6d136cdc3860.1578225300.git.lorenzo@kernel.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=1DdkH/5E1tsHkzF5jhXew/z+AFPdpz7/Gvbqbl9G+dg=;
+        b=lq8YThUGlMsKIZE4i7vF5A4PutyGuvXe/5S7kgV9OZc8TYBk+KTfidY0yQtEUEmYPO
+         MgpXrKAp6VowgAy3e/sg2DQmsIbNLHWbV7iLGWfZ9lbz/bftTyIQyFOJMqmRC+wOJkfy
+         VnwB/JTjglqEPLGSgf76Wg47yJgEnDabWwiAj7U94XuBc/5jCWe3boDjHE7PxpJFxdbT
+         IH9sX3QBgVDlFldBHcIruhf+NHh6XlCoZZ4ycDHC/c7k/dIJO8+NVJwdF9tAQLxYBSEU
+         4htvJU7i5PhP232KFhK+bGpkn02LRTq12rrfvcwH9/H3svyReTc4Hm41aT9t8aX/NimN
+         FWVg==
+X-Gm-Message-State: APjAAAWcXviDAnnAqK+FAGCeNRjwFr1GP4Z3FweORL89ja7TPCMgWF/S
+        yZfDdjK2xZXbUqDicadoGo8z9NXqSCT6N0j3A4I=
+X-Google-Smtp-Source: APXvYqyj/Sjok9k+8DFvLcnokJSMsKngAK+B55iujYFUBH+0eeHn408PpI8AyVvrp43iXISHPpiSNBLhnBPRapSUjiQ=
+X-Received: by 2002:aa7:c80b:: with SMTP id a11mr115581083edt.240.1578405684201;
+ Tue, 07 Jan 2020 06:01:24 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20094a678ea3d76fc1b8817ae0dd6d136cdc3860.1578225300.git.lorenzo@kernel.org>
+References: <20191226203655.4046170-1-martin.blumenstingl@googlemail.com>
+In-Reply-To: <20191226203655.4046170-1-martin.blumenstingl@googlemail.com>
+From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Date:   Tue, 7 Jan 2020 15:01:13 +0100
+Message-ID: <CAFBinCBJwHmQaHMEdZziD=qopqzG6sc2PABkt4E5Hrf927ussQ@mail.gmail.com>
+Subject: Re: [RFC v1 0/2] dwmac-meson8b Ethernet RX delay configuration
+To:     jianxin.pan@amlogic.com
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        andrew@lunn.ch, f.fainelli@gmail.com,
+        linux-amlogic@lists.infradead.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Lorenzo, 
+Hello Jianxin,
 
-Although the box using thei NIC usually runs with coherent DMA, there's a
-configuration that disables that. So having this is has some meaning.
-Minor comments below.
+On Thu, Dec 26, 2019 at 9:37 PM Martin Blumenstingl
+<martin.blumenstingl@googlemail.com> wrote:
+>
+> The Ethernet TX performance has been historically bad on Meson8b and
+> Meson8m2 SoCs because high packet loss was seen. I found out that this
+> was related (yet again) to the RGMII TX delay configuration.
+> In the process of discussing the big picture (and not just a single
+> patch) [0] with Andrew I discovered that the IP block behind the
+> dwmac-meson8b driver actually seems to support the configuration of the
+> RGMII RX delay (at least on the Meson8b SoC generation).
+>
+> The goal of this series is to start the discussion around how to
+> implement the RGMII RX delay on this IP block. Additionally it seems
+> that the RX delay can also be applied for RMII PHYs?
+>
+> @Jianxin: can you please add the Amlogic internal Ethernet team to this
+> discussion? My questions are documented in the patch description of
+> patch #2.
+do you already have an update for me on this topic?
 
-On Sun, Jan 05, 2020 at 12:57:56PM +0100, Lorenzo Bianconi wrote:
-> Socionext driver can run on dma coherent and non-coherent devices.
-> Get rid of huge dma_sync_single_for_device in netsec_alloc_rx_data since
-> now the driver can let page_pool API to managed needed DMA sync
-> 
-> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-> ---
->  drivers/net/ethernet/socionext/netsec.c | 60 ++++++++++++++-----------
->  1 file changed, 33 insertions(+), 27 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/socionext/netsec.c b/drivers/net/ethernet/socionext/netsec.c
-> index b5a9e947a4a8..7a2eb0e71d2a 100644
-> --- a/drivers/net/ethernet/socionext/netsec.c
-> +++ b/drivers/net/ethernet/socionext/netsec.c
-> @@ -243,6 +243,7 @@
->  			       NET_IP_ALIGN)
->  #define NETSEC_RX_BUF_NON_DATA (NETSEC_RXBUF_HEADROOM + \
->  				SKB_DATA_ALIGN(sizeof(struct skb_shared_info)))
-> +#define NETSEC_RX_BUF_SIZE	(PAGE_SIZE - NETSEC_RX_BUF_NON_DATA)
->  
->  #define DESC_SZ	sizeof(struct netsec_de)
->  
-> @@ -714,12 +715,11 @@ static void netsec_process_tx(struct netsec_priv *priv)
->  }
->  
->  static void *netsec_alloc_rx_data(struct netsec_priv *priv,
-> -				  dma_addr_t *dma_handle, u16 *desc_len)
-
-i'd prefer having this function fill in the size, insetad of defining it every
-time we refill the descriptors
-You can keep the new define for PAGE_SIZE - NETSEC_RX_BUF_NON_DATA, it looks
-cleaner
-
-> +				  dma_addr_t *dma_handle)
->  
->  {
->  
->  	struct netsec_desc_ring *dring = &priv->desc_ring[NETSEC_RING_RX];
-> -	enum dma_data_direction dma_dir;
->  	struct page *page;
->  
->  	page = page_pool_dev_alloc_pages(dring->page_pool);
-> @@ -734,10 +734,6 @@ static void *netsec_alloc_rx_data(struct netsec_priv *priv,
->  	/* Make sure the incoming payload fits in the page for XDP and non-XDP
->  	 * cases and reserve enough space for headroom + skb_shared_info
->  	 */
-> -	*desc_len = PAGE_SIZE - NETSEC_RX_BUF_NON_DATA;
-> -	dma_dir = page_pool_get_dma_dir(dring->page_pool);
-> -	dma_sync_single_for_device(priv->dev, *dma_handle, *desc_len, dma_dir);
-> -
->  	return page_address(page);
->  }
->  
-> @@ -883,6 +879,7 @@ static u32 netsec_xdp_xmit_back(struct netsec_priv *priv, struct xdp_buff *xdp)
->  static u32 netsec_run_xdp(struct netsec_priv *priv, struct bpf_prog *prog,
->  			  struct xdp_buff *xdp)
->  {
-> +	struct netsec_desc_ring *dring = &priv->desc_ring[NETSEC_RING_RX];
->  	u32 ret = NETSEC_XDP_PASS;
->  	int err;
->  	u32 act;
-> @@ -896,7 +893,10 @@ static u32 netsec_run_xdp(struct netsec_priv *priv, struct bpf_prog *prog,
->  	case XDP_TX:
->  		ret = netsec_xdp_xmit_back(priv, xdp);
->  		if (ret != NETSEC_XDP_TX)
-> -			xdp_return_buff(xdp);
-> +			__page_pool_put_page(dring->page_pool,
-> +				     virt_to_head_page(xdp->data),
-> +				     xdp->data_end - xdp->data_hard_start,
-> +				     true);
->  		break;
->  	case XDP_REDIRECT:
->  		err = xdp_do_redirect(priv->ndev, xdp, prog);
-> @@ -904,7 +904,10 @@ static u32 netsec_run_xdp(struct netsec_priv *priv, struct bpf_prog *prog,
->  			ret = NETSEC_XDP_REDIR;
->  		} else {
->  			ret = NETSEC_XDP_CONSUMED;
-> -			xdp_return_buff(xdp);
-> +			__page_pool_put_page(dring->page_pool,
-> +				     virt_to_head_page(xdp->data),
-> +				     xdp->data_end - xdp->data_hard_start,
-> +				     true);
->  		}
->  		break;
->  	default:
-> @@ -915,7 +918,10 @@ static u32 netsec_run_xdp(struct netsec_priv *priv, struct bpf_prog *prog,
->  		/* fall through -- handle aborts by dropping packet */
->  	case XDP_DROP:
->  		ret = NETSEC_XDP_CONSUMED;
-> -		xdp_return_buff(xdp);
-> +		__page_pool_put_page(dring->page_pool,
-> +				     virt_to_head_page(xdp->data),
-> +				     xdp->data_end - xdp->data_hard_start,
-> +				     true);
->  		break;
->  	}
->  
-> @@ -944,10 +950,10 @@ static int netsec_process_rx(struct netsec_priv *priv, int budget)
->  		struct netsec_desc *desc = &dring->desc[idx];
->  		struct page *page = virt_to_page(desc->addr);
->  		u32 xdp_result = XDP_PASS;
-> -		u16 pkt_len, desc_len;
->  		dma_addr_t dma_handle;
->  		struct xdp_buff xdp;
->  		void *buf_addr;
-> +		u16 pkt_len;
->  
->  		if (de->attr & (1U << NETSEC_RX_PKT_OWN_FIELD)) {
->  			/* reading the register clears the irq */
-> @@ -982,8 +988,7 @@ static int netsec_process_rx(struct netsec_priv *priv, int budget)
->  		/* allocate a fresh buffer and map it to the hardware.
->  		 * This will eventually replace the old buffer in the hardware
->  		 */
-> -		buf_addr = netsec_alloc_rx_data(priv, &dma_handle, &desc_len);
-> -
-> +		buf_addr = netsec_alloc_rx_data(priv, &dma_handle);
->  		if (unlikely(!buf_addr))
->  			break;
->  
-> @@ -1014,7 +1019,8 @@ static int netsec_process_rx(struct netsec_priv *priv, int budget)
->  			 * cache state. Since we paid the allocation cost if
->  			 * building an skb fails try to put the page into cache
->  			 */
-> -			page_pool_recycle_direct(dring->page_pool, page);
-> +			__page_pool_put_page(dring->page_pool, page,
-> +					     desc->len, true);
->  			netif_err(priv, drv, priv->ndev,
->  				  "rx failed to build skb\n");
->  			break;
-> @@ -1037,7 +1043,7 @@ static int netsec_process_rx(struct netsec_priv *priv, int budget)
->  		}
->  
->  		/* Update the descriptor with fresh buffers */
-> -		desc->len = desc_len;
-> +		desc->len = NETSEC_RX_BUF_SIZE;
-
-Similar comment here, i'd prefer having a sinlge fucntion calculate the length.
-
->  		desc->dma_addr = dma_handle;
->  		desc->addr = buf_addr;
->  
-> @@ -1272,17 +1278,19 @@ static int netsec_setup_rx_dring(struct netsec_priv *priv)
->  {
->  	struct netsec_desc_ring *dring = &priv->desc_ring[NETSEC_RING_RX];
->  	struct bpf_prog *xdp_prog = READ_ONCE(priv->xdp_prog);
-> -	struct page_pool_params pp_params = { 0 };
-> +	struct page_pool_params pp_params = {
-> +		.order = 0,
-> +		/* internal DMA mapping in page_pool */
-> +		.flags = PP_FLAG_DMA_MAP | PP_FLAG_DMA_SYNC_DEV,
-> +		.pool_size = DESC_NUM,
-> +		.nid = NUMA_NO_NODE,
-> +		.dev = priv->dev,
-> +		.dma_dir = xdp_prog ? DMA_BIDIRECTIONAL : DMA_FROM_DEVICE,
-> +		.offset = NETSEC_RXBUF_HEADROOM,
-> +		.max_len = NETSEC_RX_BUF_SIZE,
-> +	};
->  	int i, err;
->  
-> -	pp_params.order = 0;
-> -	/* internal DMA mapping in page_pool */
-> -	pp_params.flags = PP_FLAG_DMA_MAP;
-> -	pp_params.pool_size = DESC_NUM;
-> -	pp_params.nid = NUMA_NO_NODE;
-> -	pp_params.dev = priv->dev;
-> -	pp_params.dma_dir = xdp_prog ? DMA_BIDIRECTIONAL : DMA_FROM_DEVICE;
-> -
->  	dring->page_pool = page_pool_create(&pp_params);
->  	if (IS_ERR(dring->page_pool)) {
->  		err = PTR_ERR(dring->page_pool);
-> @@ -1303,17 +1311,15 @@ static int netsec_setup_rx_dring(struct netsec_priv *priv)
->  		struct netsec_desc *desc = &dring->desc[i];
->  		dma_addr_t dma_handle;
->  		void *buf;
-> -		u16 len;
-> -
-> -		buf = netsec_alloc_rx_data(priv, &dma_handle, &len);
->  
-> +		buf = netsec_alloc_rx_data(priv, &dma_handle);
->  		if (!buf) {
->  			err = -ENOMEM;
->  			goto err_out;
->  		}
-> +		desc->len = NETSEC_RX_BUF_SIZE;
->  		desc->dma_addr = dma_handle;
->  		desc->addr = buf;
-> -		desc->len = len;
->  	}
->  
->  	netsec_rx_fill(priv, 0, DESC_NUM);
-> -- 
-> 2.21.1
-> 
-
-Other than that this looks good, re-send it as a non RFC patch and i can test it
+while we're discussing unknown bits of the Ethernet controller I also
+remembered that we're currently not describing the relation between
+the "fclk_div2" clock and the Ethernet controller. however, as
+described in commit 72e1f230204039 ("clk: meson: meson8b: mark
+fclk_div2 gate clocks as CLK_IS_CRITICAL") this is needed for RGMII
+mode.
+it would be great to know the relation between fclk_div2 and RGMII
+mode on the Ethernet controller!
 
 
-Thanks!
-/Ilias
+Thank you!
+Martin
