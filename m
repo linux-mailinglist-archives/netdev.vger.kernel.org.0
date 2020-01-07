@@ -2,45 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 71D9D13378C
-	for <lists+netdev@lfdr.de>; Wed,  8 Jan 2020 00:41:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 50746133791
+	for <lists+netdev@lfdr.de>; Wed,  8 Jan 2020 00:41:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727434AbgAGXlB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jan 2020 18:41:01 -0500
-Received: from smtp-fw-6001.amazon.com ([52.95.48.154]:62199 "EHLO
-        smtp-fw-6001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726683AbgAGXlA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jan 2020 18:41:00 -0500
+        id S1727569AbgAGXlk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Jan 2020 18:41:40 -0500
+Received: from smtp-fw-9101.amazon.com ([207.171.184.25]:4478 "EHLO
+        smtp-fw-9101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726683AbgAGXlk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jan 2020 18:41:40 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1578440459; x=1609976459;
+  t=1578440499; x=1609976499;
   h=date:from:to:cc:subject:message-id:mime-version;
-  bh=R/ChRdUub8GaU9C55T2reGXH2khOUkoMgXccaQMjyI4=;
-  b=SF4dCTB8IsKeN/VdRKwCZ3QjbKruP0lWSOXIsBf2ZozAVK2AARa+Pveu
-   Vrd7F2XP+lmaVx5OcJrulV7lrcLvYL1thiRQAfyMVDo/UGJhyAIwjVaWk
-   ZiSYeLuRyyxOhjySYbx2pZTYMLOy/ja5Z3f553cqIL2CTRFik0hLL0srP
+  bh=m7DYcnBI9gmGpe+riHUBGW0Onro5UMfNyKRrS0IAdiY=;
+  b=A5acF6BbQfPfC0Wu9EguU2Uc4I+4JPtNJs04NmLq3AYwNNlyOvkgzwGe
+   jFVF8qxk7zvBJWAtwD3h/Ewu4iJfgomwrZ9TyXlYMa5Qa2ly0aC0daF7W
+   Do/Mpn2EgH9nw0C4s9e1UwAwUNC03QR4aVJYzaNCCep0MzgO2HGHVYFN9
    g=;
-IronPort-SDR: 5g/iqkzFvYugBmDKt0Glzcp1Q3t/ykf/uYOlIE5v/VAcV7ggyE/V7zO/wgrTEjPikfKPNIr6jw
- N16mKYQ8zZGw==
+IronPort-SDR: lTsuHM0/+/woxFw4I9bXNXC0Nl376lr4jISIAOoFp5l29xoI/fu0Wgba1K9w+vvnJyCLIwZ/ht
+ o6rXvwsq/gcg==
 X-IronPort-AV: E=Sophos;i="5.69,407,1571702400"; 
-   d="scan'208";a="11930671"
-Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-2a-6e2fc477.us-west-2.amazon.com) ([10.43.8.6])
-  by smtp-border-fw-out-6001.iad6.amazon.com with ESMTP; 07 Jan 2020 23:40:57 +0000
-Received: from EX13MTAUEB002.ant.amazon.com (pdx4-ws-svc-p6-lb7-vlan2.pdx.amazon.com [10.170.41.162])
-        by email-inbound-relay-2a-6e2fc477.us-west-2.amazon.com (Postfix) with ESMTPS id 1A4B4A1EE3;
-        Tue,  7 Jan 2020 23:40:55 +0000 (UTC)
-Received: from EX13D08UEB002.ant.amazon.com (10.43.60.107) by
- EX13MTAUEB002.ant.amazon.com (10.43.60.12) with Microsoft SMTP Server (TLS)
- id 15.0.1367.3; Tue, 7 Jan 2020 23:40:39 +0000
-Received: from EX13MTAUEB002.ant.amazon.com (10.43.60.12) by
- EX13D08UEB002.ant.amazon.com (10.43.60.107) with Microsoft SMTP Server (TLS)
- id 15.0.1367.3; Tue, 7 Jan 2020 23:40:38 +0000
+   d="scan'208";a="8918613"
+Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-2a-8549039f.us-west-2.amazon.com) ([10.47.23.38])
+  by smtp-border-fw-out-9101.sea19.amazon.com with ESMTP; 07 Jan 2020 23:41:28 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (pdx4-ws-svc-p6-lb7-vlan2.pdx.amazon.com [10.170.41.162])
+        by email-inbound-relay-2a-8549039f.us-west-2.amazon.com (Postfix) with ESMTPS id 1F481A1EDC;
+        Tue,  7 Jan 2020 23:41:26 +0000 (UTC)
+Received: from EX13D07UWB002.ant.amazon.com (10.43.161.131) by
+ EX13MTAUWB001.ant.amazon.com (10.43.161.249) with Microsoft SMTP Server (TLS)
+ id 15.0.1367.3; Tue, 7 Jan 2020 23:41:21 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (10.43.161.207) by
+ EX13D07UWB002.ant.amazon.com (10.43.161.131) with Microsoft SMTP Server (TLS)
+ id 15.0.1367.3; Tue, 7 Jan 2020 23:41:21 +0000
 Received: from dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com
- (172.22.96.68) by mail-relay.amazon.com (10.43.60.234) with Microsoft SMTP
- Server id 15.0.1367.3 via Frontend Transport; Tue, 7 Jan 2020 23:40:38 +0000
+ (172.22.96.68) by mail-relay.amazon.com (10.43.161.249) with Microsoft SMTP
+ Server id 15.0.1367.3 via Frontend Transport; Tue, 7 Jan 2020 23:41:21 +0000
 Received: by dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com (Postfix, from userid 4335130)
-        id 4B11640E65; Tue,  7 Jan 2020 23:40:38 +0000 (UTC)
-Date:   Tue, 7 Jan 2020 23:40:38 +0000
+        id 7E4B640E65; Tue,  7 Jan 2020 23:41:21 +0000 (UTC)
+Date:   Tue, 7 Jan 2020 23:41:21 +0000
 From:   Anchal Agarwal <anchalag@amazon.com>
 To:     <tglx@linutronix.de>, <mingo@redhat.com>, <bp@alien8.de>,
         <hpa@zytor.com>, <x86@kernel.org>, <boris.ostrovsky@oracle.com>,
@@ -56,9 +56,9 @@ To:     <tglx@linutronix.de>, <mingo@redhat.com>, <bp@alien8.de>,
         <Woodhouse@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>,
         <dwmw@amazon.co.uk>, <fllinden@amaozn.com>
 CC:     <anchalag@amazon.com>
-Subject: [RFC PATCH V2 04/11] x86/xen: add system core suspend and resume
- callbacks
-Message-ID: <20200107234038.GA18296@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
+Subject: [RFC PATCH V2 05/11] xen-netfront: add callbacks for PM suspend and
+ hibernation support
+Message-ID: <20200107234121.GA18336@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
@@ -70,126 +70,205 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Munehisa Kamata <kamatam@amazon.com>
 
-Add Xen PVHVM specific system core callbacks for PM suspend and
-hibernation support. The callbacks suspend and resume Xen
-primitives,like shared_info, pvclock and grant table. Note that
-Xen suspend can handle them in a different manner, but system
-core callbacks are called from the context. So if the callbacks
-are called from Xen suspend context, return immediately.
+Add freeze, thaw and restore callbacks for PM suspend and hibernation
+support. The freeze handler simply disconnects the frotnend from the
+backend and frees resources associated with queues after disabling the
+net_device from the system. The restore handler just changes the
+frontend state and let the xenbus handler to re-allocate the resources
+and re-connect to the backend. This can be performed transparently to
+the rest of the system. The handlers are used for both PM suspend and
+hibernation so that we can keep the existing suspend/resume callbacks
+for Xen suspend without modification. Freezing netfront devices is
+normally expected to finish within a few hundred milliseconds, but it
+can rarely take more than 5 seconds and hit the hard coded timeout,
+it would depend on backend state which may be congested and/or have
+complex configuration. While it's rare case, longer default timeout
+seems a bit more reasonable here to avoid hitting the timeout.
+Also, make it configurable via module parameter so that we can cover
+broader setups than what we know currently.
 
-Signed-off-by: Agarwal Anchal <anchalag@amazon.com>
+[Anchal changelog: Variable name fix and checkpatch.pl fixes]
+Signed-off-by: Anchal Agarwal <anchalag@amazon.com>
 Signed-off-by: Munehisa Kamata <kamatam@amazon.com>
 ---
- arch/x86/xen/enlighten_hvm.c |  1 +
- arch/x86/xen/suspend.c       | 53 ++++++++++++++++++++++++++++++++++++++++++++
- include/xen/xen-ops.h        |  3 +++
- 3 files changed, 57 insertions(+)
+ drivers/net/xen-netfront.c | 98 +++++++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 97 insertions(+), 1 deletion(-)
 
-diff --git a/arch/x86/xen/enlighten_hvm.c b/arch/x86/xen/enlighten_hvm.c
-index 75b1ec7a0fcd..138e71786e03 100644
---- a/arch/x86/xen/enlighten_hvm.c
-+++ b/arch/x86/xen/enlighten_hvm.c
-@@ -204,6 +204,7 @@ static void __init xen_hvm_guest_init(void)
- 	if (xen_feature(XENFEAT_hvm_callback_vector))
- 		xen_have_vector_callback = 1;
- 
-+	xen_setup_syscore_ops();
- 	xen_hvm_smp_init();
- 	WARN_ON(xen_cpuhp_setup(xen_cpu_up_prepare_hvm, xen_cpu_dead_hvm));
- 	xen_unplug_emulated_devices();
-diff --git a/arch/x86/xen/suspend.c b/arch/x86/xen/suspend.c
-index 1d83152c761b..784c4484100b 100644
---- a/arch/x86/xen/suspend.c
-+++ b/arch/x86/xen/suspend.c
-@@ -2,17 +2,22 @@
- #include <linux/types.h>
- #include <linux/tick.h>
- #include <linux/percpu-defs.h>
-+#include <linux/syscore_ops.h>
-+#include <linux/kernel_stat.h>
+diff --git a/drivers/net/xen-netfront.c b/drivers/net/xen-netfront.c
+index 467fd0f0ffcd..aa7ef40378ca 100644
+--- a/drivers/net/xen-netfront.c
++++ b/drivers/net/xen-netfront.c
+@@ -43,6 +43,7 @@
+ #include <linux/moduleparam.h>
+ #include <linux/mm.h>
+ #include <linux/slab.h>
++#include <linux/completion.h>
+ #include <net/ip.h>
  
  #include <xen/xen.h>
- #include <xen/interface/xen.h>
-+#include <xen/interface/memory.h>
- #include <xen/grant_table.h>
- #include <xen/events.h>
-+#include <xen/xen-ops.h>
+@@ -56,6 +57,12 @@
+ #include <xen/interface/memory.h>
+ #include <xen/interface/grant_table.h>
  
- #include <asm/cpufeatures.h>
- #include <asm/msr-index.h>
- #include <asm/xen/hypercall.h>
- #include <asm/xen/page.h>
- #include <asm/fixmap.h>
-+#include <asm/pvclock.h>
- 
- #include "xen-ops.h"
- #include "mmu.h"
-@@ -82,3 +87,51 @@ void xen_arch_suspend(void)
- 
- 	on_each_cpu(xen_vcpu_notify_suspend, NULL, 1);
- }
-+
-+static int xen_syscore_suspend(void)
-+{
-+	struct xen_remove_from_physmap xrfp;
-+	int ret;
-+
-+	/* Xen suspend does similar stuffs in its own logic */
-+	if (xen_suspend_mode_is_xen_suspend())
-+		return 0;
-+
-+	xrfp.domid = DOMID_SELF;
-+	xrfp.gpfn = __pa(HYPERVISOR_shared_info) >> PAGE_SHIFT;
-+
-+	ret = HYPERVISOR_memory_op(XENMEM_remove_from_physmap, &xrfp);
-+	if (!ret)
-+		HYPERVISOR_shared_info = &xen_dummy_shared_info;
-+
-+	return ret;
-+}
-+
-+static void xen_syscore_resume(void)
-+{
-+	/* Xen suspend does similar stuffs in its own logic */
-+	if (xen_suspend_mode_is_xen_suspend())
-+		return;
-+
-+	/* No need to setup vcpu_info as it's already moved off */
-+	xen_hvm_map_shared_info();
-+
-+	pvclock_resume();
-+
-+	gnttab_resume();
-+}
-+
-+/*
-+ * These callbacks will be called with interrupts disabled and when having only
-+ * one CPU online.
-+ */
-+static struct syscore_ops xen_hvm_syscore_ops = {
-+	.suspend = xen_syscore_suspend,
-+	.resume = xen_syscore_resume
++enum netif_freeze_state {
++	NETIF_FREEZE_STATE_UNFROZEN,
++	NETIF_FREEZE_STATE_FREEZING,
++	NETIF_FREEZE_STATE_FROZEN,
 +};
 +
-+void __init xen_setup_syscore_ops(void)
-+{
-+	if (xen_hvm_domain())
-+		register_syscore_ops(&xen_hvm_syscore_ops);
-+}
-diff --git a/include/xen/xen-ops.h b/include/xen/xen-ops.h
-index 6c36e161dfd1..3b3992b5b0c2 100644
---- a/include/xen/xen-ops.h
-+++ b/include/xen/xen-ops.h
-@@ -43,6 +43,9 @@ int xen_setup_shutdown_event(void);
- bool xen_suspend_mode_is_xen_suspend(void);
- bool xen_suspend_mode_is_pm_suspend(void);
- bool xen_suspend_mode_is_pm_hibernation(void);
-+
-+void xen_setup_syscore_ops(void);
-+
- extern unsigned long *xen_contiguous_bitmap;
+ /* Module parameters */
+ #define MAX_QUEUES_DEFAULT 8
+ static unsigned int xennet_max_queues;
+@@ -63,6 +70,12 @@ module_param_named(max_queues, xennet_max_queues, uint, 0644);
+ MODULE_PARM_DESC(max_queues,
+ 		 "Maximum number of queues per virtual interface");
  
- #if defined(CONFIG_XEN_PV) || defined(CONFIG_ARM) || defined(CONFIG_ARM64)
++static unsigned int netfront_freeze_timeout_secs = 10;
++module_param_named(freeze_timeout_secs,
++		   netfront_freeze_timeout_secs, uint, 0644);
++MODULE_PARM_DESC(freeze_timeout_secs,
++		 "timeout when freezing netfront device in seconds");
++
+ static const struct ethtool_ops xennet_ethtool_ops;
+ 
+ struct netfront_cb {
+@@ -160,6 +173,10 @@ struct netfront_info {
+ 	struct netfront_stats __percpu *tx_stats;
+ 
+ 	atomic_t rx_gso_checksum_fixup;
++
++	int freeze_state;
++
++	struct completion wait_backend_disconnected;
+ };
+ 
+ struct netfront_rx_info {
+@@ -721,6 +738,21 @@ static int xennet_close(struct net_device *dev)
+ 	return 0;
+ }
+ 
++static int xennet_disable_interrupts(struct net_device *dev)
++{
++	struct netfront_info *np = netdev_priv(dev);
++	unsigned int num_queues = dev->real_num_tx_queues;
++	unsigned int queue_index;
++	struct netfront_queue *queue;
++
++	for (queue_index = 0; queue_index < num_queues; ++queue_index) {
++		queue = &np->queues[queue_index];
++		disable_irq(queue->tx_irq);
++		disable_irq(queue->rx_irq);
++	}
++	return 0;
++}
++
+ static void xennet_move_rx_slot(struct netfront_queue *queue, struct sk_buff *skb,
+ 				grant_ref_t ref)
+ {
+@@ -1301,6 +1333,8 @@ static struct net_device *xennet_create_dev(struct xenbus_device *dev)
+ 
+ 	np->queues = NULL;
+ 
++	init_completion(&np->wait_backend_disconnected);
++
+ 	err = -ENOMEM;
+ 	np->rx_stats = netdev_alloc_pcpu_stats(struct netfront_stats);
+ 	if (np->rx_stats == NULL)
+@@ -1794,6 +1828,50 @@ static int xennet_create_queues(struct netfront_info *info,
+ 	return 0;
+ }
+ 
++static int netfront_freeze(struct xenbus_device *dev)
++{
++	struct netfront_info *info = dev_get_drvdata(&dev->dev);
++	unsigned long timeout = netfront_freeze_timeout_secs * HZ;
++	int err = 0;
++
++	xennet_disable_interrupts(info->netdev);
++
++	netif_device_detach(info->netdev);
++
++	info->freeze_state = NETIF_FREEZE_STATE_FREEZING;
++
++	/* Kick the backend to disconnect */
++	xenbus_switch_state(dev, XenbusStateClosing);
++
++	/* We don't want to move forward before the frontend is diconnected
++	 * from the backend cleanly.
++	 */
++	timeout = wait_for_completion_timeout(&info->wait_backend_disconnected,
++					      timeout);
++	if (!timeout) {
++		err = -EBUSY;
++		xenbus_dev_error(dev, err, "Freezing timed out;"
++				 "the device may become inconsistent state");
++		return err;
++	}
++
++	/* Tear down queues */
++	xennet_disconnect_backend(info);
++	xennet_destroy_queues(info);
++
++	info->freeze_state = NETIF_FREEZE_STATE_FROZEN;
++
++	return err;
++}
++
++static int netfront_restore(struct xenbus_device *dev)
++{
++	/* Kick the backend to re-connect */
++	xenbus_switch_state(dev, XenbusStateInitialising);
++
++	return 0;
++}
++
+ /* Common code used when first setting up, and when resuming. */
+ static int talk_to_netback(struct xenbus_device *dev,
+ 			   struct netfront_info *info)
+@@ -2006,6 +2084,8 @@ static int xennet_connect(struct net_device *dev)
+ 		spin_unlock_bh(&queue->rx_lock);
+ 	}
+ 
++	np->freeze_state = NETIF_FREEZE_STATE_UNFROZEN;
++
+ 	return 0;
+ }
+ 
+@@ -2043,10 +2123,23 @@ static void netback_changed(struct xenbus_device *dev,
+ 		break;
+ 
+ 	case XenbusStateClosed:
+-		if (dev->state == XenbusStateClosed)
++		if (dev->state == XenbusStateClosed) {
++		     /* dpm context is waiting for the backend */
++			if (np->freeze_state == NETIF_FREEZE_STATE_FREEZING)
++				complete(&np->wait_backend_disconnected);
+ 			break;
++		}
++
+ 		/* Fall through - Missed the backend's CLOSING state. */
+ 	case XenbusStateClosing:
++	       /* We may see unexpected Closed or Closing from the backend.
++		* Just ignore it not to prevent the frontend from being
++		* re-connected in the case of PM suspend or hibernation.
++		*/
++		if (np->freeze_state == NETIF_FREEZE_STATE_FROZEN &&
++		    dev->state == XenbusStateInitialising) {
++			break;
++		}
+ 		xenbus_frontend_closed(dev);
+ 		break;
+ 	}
+@@ -2193,6 +2286,9 @@ static struct xenbus_driver netfront_driver = {
+ 	.probe = netfront_probe,
+ 	.remove = xennet_remove,
+ 	.resume = netfront_resume,
++	.freeze = netfront_freeze,
++	.thaw	= netfront_restore,
++	.restore = netfront_restore,
+ 	.otherend_changed = netback_changed,
+ };
+ 
 -- 
 2.15.3.AMZN
 
