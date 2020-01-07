@@ -2,134 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E10C2132AF4
-	for <lists+netdev@lfdr.de>; Tue,  7 Jan 2020 17:19:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D01F132B0C
+	for <lists+netdev@lfdr.de>; Tue,  7 Jan 2020 17:23:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728391AbgAGQSz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jan 2020 11:18:55 -0500
-Received: from userp2120.oracle.com ([156.151.31.85]:57690 "EHLO
-        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727974AbgAGQSz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jan 2020 11:18:55 -0500
-Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
-        by userp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id 007GC1l8073481;
-        Tue, 7 Jan 2020 16:18:37 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : mime-version : content-type :
- in-reply-to; s=corp-2019-08-05;
- bh=LrUamD+V8wbn5/d7X40R8tpABzP39MyqAKN7D5HtWXc=;
- b=YPAXbqoVr3cTDeqFBB4Nz6GhRhpaQiNLlaj1xNdMcLkBtF0ngywq9yRXvYToJ9bViSA3
- Esgaj70CkduG48RRyZ8pMtLe0W1Qii8EstRPyJZI81+nUqgdIFg7HvwUiIFN/rlWQTWL
- gsNlTsrEzmjCVnF35m/S36gxeU/WUdINnH3X8tobEmYliVHEEPH3flnvGYND2rIt4NqW
- jx2eHScgjPX7Lv4mW7xSe6Z6vdZR/8cxFwJ4l3vX3R29LCuRElqVmasJ+hV7VUBaSQmB
- 7HZ4TlPVYtZAC1fO77g61AgMpk02MuUTWXXblHDkH8aAMxqbu2dcX+TENZLPPPKPXUT7 rQ== 
-Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
-        by userp2120.oracle.com with ESMTP id 2xakbqpg4b-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 07 Jan 2020 16:18:37 +0000
-Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
-        by userp3020.oracle.com (8.16.0.27/8.16.0.27) with SMTP id 007G4Heb015586;
-        Tue, 7 Jan 2020 16:18:37 GMT
-Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
-        by userp3020.oracle.com with ESMTP id 2xcpcqk745-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 07 Jan 2020 16:18:37 +0000
-Received: from abhmp0003.oracle.com (abhmp0003.oracle.com [141.146.116.9])
-        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 007GIZha024022;
-        Tue, 7 Jan 2020 16:18:35 GMT
-Received: from kadam (/129.205.23.165)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Tue, 07 Jan 2020 08:18:35 -0800
-Date:   Tue, 7 Jan 2020 19:18:27 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Colin King <colin.king@canonical.com>
-Cc:     Ralf Baechle <ralf@linux-mips.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        linux-hams@vger.kernel.org, netdev@vger.kernel.org,
-        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net/rose: remove redundant assignment to variable failed
-Message-ID: <20200107161827.GO3911@kadam>
-References: <20200107152415.106353-1-colin.king@canonical.com>
+        id S1728388AbgAGQXg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Jan 2020 11:23:36 -0500
+Received: from mail-lf1-f68.google.com ([209.85.167.68]:37401 "EHLO
+        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727994AbgAGQXf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jan 2020 11:23:35 -0500
+Received: by mail-lf1-f68.google.com with SMTP id b15so153627lfc.4;
+        Tue, 07 Jan 2020 08:23:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=O/bmJUGYaSPiqae8SdBJMnI+D+zAGfBGbWHgwMFDxAM=;
+        b=Ew8tukmrLS5wGQ4OZbkjMjsfJxlwUD62IHCNMH421sapQiIkB2oJw0qwjbVNFnmTq+
+         a9KbU1u5Vwo0m4+Vkocvo1iVm4ZtiDsLJDE6oIt2s969KD8Yu8ci0vHUWrNrya8xaXxa
+         a7MMLBIrcNUijX7vTsidwADS01DuuNC7FumdIgC8eT2cirle/makwZWqJfyWO5MzSuO5
+         9IhdHOyhSuMgMjEXUuxmRrmLtjrAhgVWn++Ui2BIhIMOCQoAGE3T/bD7OlumzssyiXvX
+         FTn9qDWprappNDJ7GzrtGD954TgBaCMwy4OFdCJZX7cKGebCtQ4N8CnX9+y60bxxn8AU
+         hLMQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=O/bmJUGYaSPiqae8SdBJMnI+D+zAGfBGbWHgwMFDxAM=;
+        b=baxWpPJpLKqPCvEAP2tZx5wkrw4TeB5+pXChNN19RkXFIpq3fge1bIWyJSUYH4CsDN
+         nr+N1pcH+5EMyEmaVlqK7u1+vbSvOdKYdF3sbtDzwwx5/gsbgcyoq6AwmmwIiCuVMs1t
+         ZOeXZ/IDenJn+8JYf4Rahw5DkDdg4sZDnJCdBanCBbLcxFtdNvTuLgDtV51pXOw8/rGy
+         bCRQZpX2WCtJM3/q9ysLqOsVThmG/9axLX9jYUvPRmodjruS9TazeD5tsjYn0rg1AhCR
+         4+ghxCSOnrqyVi5uYi5MrKYQfoVP7jsUU4XPDwgwcwDk+Sl8TzdainYBJs/VBYTiDswv
+         C/YA==
+X-Gm-Message-State: APjAAAV06pxiBbU0vNKSohOSR/bqlFA4Zxcul0DQXPUyYdoc8oh39XJr
+        /2uumSXprINh6XJaDrh/LuSOHCjO
+X-Google-Smtp-Source: APXvYqwzd16CLdeHDTjCg1TkpuQJdYa209eu5WrMIGe+3aJfzsD/JpNoIONEe/yU7+uDuc8u2dqkcA==
+X-Received: by 2002:a19:710a:: with SMTP id m10mr177115lfc.58.1578414213714;
+        Tue, 07 Jan 2020 08:23:33 -0800 (PST)
+Received: from [192.168.2.145] (79-139-233-37.dynamic.spd-mgts.ru. [79.139.233.37])
+        by smtp.googlemail.com with ESMTPSA id m16sm54962ljb.47.2020.01.07.08.23.32
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 07 Jan 2020 08:23:33 -0800 (PST)
+Subject: Re: [PATCH] brcmfmac: sdio: Fix OOB interrupt initialization on
+ brcm43362
+To:     Jean-Philippe Brucker <jean-philippe@linaro.org>
+Cc:     Arend Van Spriel <arend.vanspriel@broadcom.com>,
+        linux-wireless@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        brcm80211-dev-list@cypress.com, netdev@vger.kernel.org,
+        hdegoede@redhat.com, franky.lin@broadcom.com,
+        hante.meuleman@broadcom.com, chi-hsien.lin@cypress.com,
+        wright.feng@cypress.com, kvalo@codeaurora.org, davem@davemloft.net
+References: <20191226092033.12600-1-jean-philippe@linaro.org>
+ <16f419a7070.279b.9b12b7fc0a3841636cfb5e919b41b954@broadcom.com>
+ <141f055a-cd1d-66cb-7052-007cda629d3a@gmail.com>
+ <20200106191919.GA826263@myrica>
+ <c2bb1067-9b9c-3be1-b87e-e733a668a056@gmail.com>
+ <20200107072354.GA832497@myrica>
+From:   Dmitry Osipenko <digetx@gmail.com>
+Message-ID: <34dbd037-0a40-bf5f-4988-6b821811ffcd@gmail.com>
+Date:   Tue, 7 Jan 2020 19:23:32 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.3.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200107152415.106353-1-colin.king@canonical.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9492 signatures=668685
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
- phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.0.1-1911140001 definitions=main-2001070134
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9492 signatures=668685
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
- suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1011
- lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1911140001
- definitions=main-2001070134
+In-Reply-To: <20200107072354.GA832497@myrica>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 07, 2020 at 03:24:15PM +0000, Colin King wrote:
-> From: Colin Ian King <colin.king@canonical.com>
+07.01.2020 10:23, Jean-Philippe Brucker пишет:
+> On Tue, Jan 07, 2020 at 02:15:18AM +0300, Dmitry Osipenko wrote:
+>> 06.01.2020 22:19, Jean-Philippe Brucker пишет:
+>>> Hi Dmitry,
+>>>
+>>> On Thu, Dec 26, 2019 at 05:37:58PM +0300, Dmitry Osipenko wrote:
+>>>> I haven't seen any driver probe failures due to OOB on NVIDIA Tegra,
+>>>> only suspend-resume was problematic due to the unbalanced OOB
+>>>> interrupt-wake enabling.
+>>>>
+>>>> But maybe checking whether OOB interrupt-wake works by invoking
+>>>> enable_irq_wake() during brcmf_sdiod_intr_register() causes trouble for
+>>>> the cubietruck board.
+>>>>
+>>>> @Jean-Philippe, could you please try this change (on top of recent
+>>>> linux-next):
+>>>
+>>> Sorry for the delay, linux-next doesn't boot for me at the moment and I
+>>> have little time to investigate why, so I might retry closer to the merge
+>>> window.
+>>>
+>>> However, isn't the interrupt-wake issue independent from the problem
+>>> (introduced in v4.17) that my patch fixes? I applied "brcmfmac: Keep OOB
+>>> wake-interrupt disabled when it shouldn't be enabled" on v5.5-rc5 and it
+>>> doesn't seem to cause a regression, but the wifi only works if I apply my
+>>> patch as well.
+>>>
+>>> Thanks,
+>>> Jean
+>>>
+>>>>
+>>>> diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c
+>>>> b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c
+>>>> index b684a5b6d904..80d7106b10a9 100644
+>>>> --- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c
+>>>> +++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c
+>>>> @@ -115,13 +115,6 @@ int brcmf_sdiod_intr_register(struct brcmf_sdio_dev
+>>>> *sdiodev)
+>>>>                 }
+>>>>                 sdiodev->oob_irq_requested = true;
+>>>>
+>>>> -               ret = enable_irq_wake(pdata->oob_irq_nr);
+>>>> -               if (ret != 0) {
+>>>> -                       brcmf_err("enable_irq_wake failed %d\n", ret);
+>>>> -                       return ret;
+>>>> -               }
+>>>> -               disable_irq_wake(pdata->oob_irq_nr);
+>>>> -
+>>>>                 sdio_claim_host(sdiodev->func1);
+>>>>
+>>>>                 if (sdiodev->bus_if->chip == BRCM_CC_43362_CHIP_ID) {
+>>
+>> Hello Jean,
+>>
+>> Could you please clarify whether you applied [1] and then the above
+>> snippet on top of it or you only applied [1] without the snippet?
 > 
-> The variable failed is being assigned a value that is never read, the
-> following goto statement jumps to the end of the function and variable
-> failed is not referenced at all.  Remove the redundant assignment.
+> I applied [1] without the snippet
 > 
-> Addresses-Coverity: ("Unused value")
-> Signed-off-by: Colin Ian King <colin.king@canonical.com>
-> ---
->  net/rose/rose_route.c | 1 -
->  1 file changed, 1 deletion(-)
+> Thanks,
+> Jean
 > 
-> diff --git a/net/rose/rose_route.c b/net/rose/rose_route.c
-> index c53307623236..5277631fa14c 100644
-> --- a/net/rose/rose_route.c
-> +++ b/net/rose/rose_route.c
-> @@ -696,7 +696,6 @@ struct rose_neigh *rose_get_neigh(rose_address *addr, unsigned char *cause,
->  				for (i = 0; i < node->count; i++) {
->  					if (!rose_ftimer_running(node->neighbour[i])) {
->  						res = node->neighbour[i];
-> -						failed = 0;
->  						goto out;
->  					}
->  					failed = 1;
+>>
+>> [1] brcmfmac: Keep OOB wake-interrupt disabled when it shouldn't be enabled
 
-I don't know the code, but I would have expected the out label to come
-earlier:
-
-
-        }
-        if (!route_frame) { /* connect request */
-                for (node = rose_node_list; node != NULL; node = node->next) {
-                        if (rosecmpm(addr, &node->address, node->mask) == 0) {
-                                for (i = 0; i < node->count; i++) {
-                                        if (!rose_ftimer_running(node->neighbour[i])) {
-                                                res = node->neighbour[i];
-                                                failed = 0;
-                                                goto out;
-                                        }
-                                        failed = 1;
-                                }
-                        }
-                }
-        }
-
-<--------***********  I would have expected it to be right here.
-        if (failed) {
-                *cause      = ROSE_OUT_OF_ORDER;
-                *diagnostic = 0;
-        } else {
-                *cause      = ROSE_NOT_OBTAINABLE;
-                *diagnostic = 0;
-        }
-
-out:
-        if (!route_frame) spin_unlock_bh(&rose_node_list_lock);
-        return res;
-
-regards,
-dan carpenter
-
+Will you be able to test *with* the snippet? I guess chances that it
+will make any difference are not high, nevertheless will be good to know
+for sure.
