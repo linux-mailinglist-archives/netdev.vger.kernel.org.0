@@ -2,144 +2,268 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9FFCA13281C
-	for <lists+netdev@lfdr.de>; Tue,  7 Jan 2020 14:52:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 330D0132823
+	for <lists+netdev@lfdr.de>; Tue,  7 Jan 2020 14:53:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728129AbgAGNwW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jan 2020 08:52:22 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:42969 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1727658AbgAGNwV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jan 2020 08:52:21 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1578405140;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=bBb8vAuu0IE/ylefHBaFu6JrntXatLcFwAw8i7bsmGM=;
-        b=hh83FETxV+S4Jz6uJvh3flZ+0wh0lqlS3rkyGW9xzF0jNxzMGsNmim4kpOW16qqfDL9OGT
-        gbEEPFjzS0rIBnNOB7A67DY7+8wXD2/3s7IEvNdnRAzStWDi/pWwOKRaTHVut3O5XpRJoe
-        5PhyuNQBTXmsMR5nNCuoJGEYm7TbZns=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-384-yWdAZ2k9NuC_IxCi9bNLJw-1; Tue, 07 Jan 2020 08:52:17 -0500
-X-MC-Unique: yWdAZ2k9NuC_IxCi9bNLJw-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 2D53B18C35B1;
-        Tue,  7 Jan 2020 13:52:15 +0000 (UTC)
-Received: from carbon (ovpn-200-37.brq.redhat.com [10.40.200.37])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id E834A84672;
-        Tue,  7 Jan 2020 13:52:05 +0000 (UTC)
-Date:   Tue, 7 Jan 2020 14:52:04 +0100
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>
-Cc:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Network Development <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        bpf <bpf@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        "Karlsson\, Magnus" <magnus.karlsson@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>, brouer@redhat.com
-Subject: Re: [PATCH bpf-next v2 0/8] Simplify
- xdp_do_redirect_map()/xdp_do_flush_map() and XDP maps
-Message-ID: <20200107145204.76710703@carbon>
-In-Reply-To: <87r20biegi.fsf@toke.dk>
-References: <20191219061006.21980-1-bjorn.topel@gmail.com>
-        <CAADnVQL1x8AJmCOjesA_6Z3XprFVEdWgbREfpn3CC-XO8k4PDA@mail.gmail.com>
-        <20191220084651.6dacb941@carbon>
-        <20191220102615.45fe022d@carbon>
-        <87mubn2st4.fsf@toke.dk>
-        <CAJ+HfNhLDi1MJAughKFCVUjSvdOfPUcbvO9=RXmXQBS6Q3mv3w@mail.gmail.com>
-        <87zhezik3o.fsf@toke.dk>
-        <20200107140544.6b860e28@carbon>
-        <87r20biegi.fsf@toke.dk>
+        id S1728181AbgAGNxT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Jan 2020 08:53:19 -0500
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:40991 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727858AbgAGNxS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jan 2020 08:53:18 -0500
+Received: by mail-wr1-f67.google.com with SMTP id c9so54033909wrw.8
+        for <netdev@vger.kernel.org>; Tue, 07 Jan 2020 05:53:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=uaeKo4VT49jwGKztAivUR4UjDufk6EpfBX+3gEJz9CY=;
+        b=JtVycx8RI3UzymG4mb8AwolLkkQ9xUjdty95lINk6iXJLvUEYyVAxHRM5KSpxR3snu
+         sVB0hS/aN5VY8rcT4HnSNKRakBhuX/AU5SQOR5qHSGw5ir4nFUAF3YOQRrlhbIKv9lh5
+         KTQ4b7FutyuSSxMfD4VCetf7Sy+7K5QSFcYJp4l2WAMgURUgXlhoRvRAgRyDRQIgumM1
+         4QyzNHXUeeK0TPURJ1ALuJXWDmj0dM9X+gIOuS7IXgkyIzHzrRu7cac9Rzl1gn/rZAaZ
+         qGJLIQGMphAjOKaN5LvoIzI8XCr+WOkF18HuVxXaXYYbYtZJQH+vP7A/uV9K9m/OATJs
+         LGPg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=uaeKo4VT49jwGKztAivUR4UjDufk6EpfBX+3gEJz9CY=;
+        b=t7TotnyY9T8euUrf4kCTeDknZlUfxDA0/R0nYPB/WOzwFysobgHIuySSWaHSNRN2om
+         334vxHpxOJB4FAK74EHV4UqFuDxvIpLURIzkYIshGJs0rFm+foPI523M5xQLNbyGm7Of
+         zjGNukApax6sWCGxBcfdmRQdFOKjCXIJREJTeDHnBfXz4Udm1tuWJeTlf7j7fvVuWUSm
+         NlViu9AOF0kylcqN7AjuljHOFuHVVJdnmdukpX8xxlSJD6Z/WRPE/UrcH110P5LSAg22
+         d++p28BpAMYhjDBAFGtYd0hNERWFCkoYcjHCmWjSzHb2lk0xCfwcaJNawn7VJjsacw9T
+         4iOA==
+X-Gm-Message-State: APjAAAUvvWyNQ8en7Jubx55loHIgJVe9BEdpK4nlGJpfCfX/7BforhNC
+        2/exZYY17M53etrJoWX4yml2lw==
+X-Google-Smtp-Source: APXvYqzM0dIbm/tM3ck6f2Mk2+/eiWq/3sPbuzqNhewmeWJiHIK2s38Yuf3/yRAVt6cD8bMq5M58RA==
+X-Received: by 2002:adf:81c2:: with SMTP id 60mr105576084wra.8.1578405196497;
+        Tue, 07 Jan 2020 05:53:16 -0800 (PST)
+Received: from apalos.home (athedsl-321073.home.otenet.gr. [85.72.109.207])
+        by smtp.gmail.com with ESMTPSA id v3sm78037657wru.32.2020.01.07.05.53.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 07 Jan 2020 05:53:16 -0800 (PST)
+Date:   Tue, 7 Jan 2020 15:53:13 +0200
+From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
+To:     Lorenzo Bianconi <lorenzo@kernel.org>
+Cc:     netdev@vger.kernel.org, brouer@redhat.com, davem@davemloft.net,
+        lorenzo.bianconi@redhat.com
+Subject: Re: [RFC/RFT net-next] net: socionext: get rid of huge dma sync in
+ netsec_alloc_rx_data
+Message-ID: <20200107135313.GA121856@apalos.home>
+References: <20094a678ea3d76fc1b8817ae0dd6d136cdc3860.1578225300.git.lorenzo@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20094a678ea3d76fc1b8817ae0dd6d136cdc3860.1578225300.git.lorenzo@kernel.org>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 07 Jan 2020 14:27:41 +0100
-Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com> wrote:
+Hi Lorenzo, 
 
-> Jesper Dangaard Brouer <brouer@redhat.com> writes:
->=20
-> > On Tue, 07 Jan 2020 12:25:47 +0100
-> > Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com> wrote:
-> > =20
-> >> Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail.com> writes:
-> >>  =20
-> >> > On Fri, 20 Dec 2019 at 11:30, Toke H=C3=B8iland-J=C3=B8rgensen <toke=
-@redhat.com> wrote:   =20
-> >> >>
-> >> >> Jesper Dangaard Brouer <brouer@redhat.com> writes:
-> >> >>   =20
-> >> > [...]   =20
-> >> >> > I have now went over the entire patchset, and everything look per=
-fect,
-> >> >> > I will go as far as saying it is brilliant.  We previously had the
-> >> >> > issue, that using different redirect maps in a BPF-prog would cau=
-se the
-> >> >> > bulking effect to be reduced, as map_to_flush cause previous map =
-to get
-> >> >> > flushed. This is now solved :-)   =20
-> >> >>
-> >> >> Another thing that occurred to me while thinking about this: Now th=
-at we
-> >> >> have a single flush list, is there any reason we couldn't move the
-> >> >> devmap xdp_bulk_queue into struct net_device? That way it could als=
-o be
-> >> >> used for the non-map variant of bpf_redirect()?
-> >> >>   =20
-> >> >
-> >> > Indeed! (At least I don't see any blockers...)   =20
-> >>=20
-> >> Cool, that's what I thought. Maybe I'll give that a shot, then, unless
-> >> you beat me to it ;) =20
-> > =20
-> > Generally sounds like a good idea.
-> >
-> > It this only for devmap xdp_bulk_queue? =20
->=20
-> Non-map redirect only supports redirecting across interfaces (the
-> parameter is an ifindex), so yeah, this would be just for that.
+Although the box using thei NIC usually runs with coherent DMA, there's a
+configuration that disables that. So having this is has some meaning.
+Minor comments below.
 
-Sure, then you don't need to worry about below gotchas.
+On Sun, Jan 05, 2020 at 12:57:56PM +0100, Lorenzo Bianconi wrote:
+> Socionext driver can run on dma coherent and non-coherent devices.
+> Get rid of huge dma_sync_single_for_device in netsec_alloc_rx_data since
+> now the driver can let page_pool API to managed needed DMA sync
+> 
+> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> ---
+>  drivers/net/ethernet/socionext/netsec.c | 60 ++++++++++++++-----------
+>  1 file changed, 33 insertions(+), 27 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/socionext/netsec.c b/drivers/net/ethernet/socionext/netsec.c
+> index b5a9e947a4a8..7a2eb0e71d2a 100644
+> --- a/drivers/net/ethernet/socionext/netsec.c
+> +++ b/drivers/net/ethernet/socionext/netsec.c
+> @@ -243,6 +243,7 @@
+>  			       NET_IP_ALIGN)
+>  #define NETSEC_RX_BUF_NON_DATA (NETSEC_RXBUF_HEADROOM + \
+>  				SKB_DATA_ALIGN(sizeof(struct skb_shared_info)))
+> +#define NETSEC_RX_BUF_SIZE	(PAGE_SIZE - NETSEC_RX_BUF_NON_DATA)
+>  
+>  #define DESC_SZ	sizeof(struct netsec_de)
+>  
+> @@ -714,12 +715,11 @@ static void netsec_process_tx(struct netsec_priv *priv)
+>  }
+>  
+>  static void *netsec_alloc_rx_data(struct netsec_priv *priv,
+> -				  dma_addr_t *dma_handle, u16 *desc_len)
 
-I do like the idea, as this would/should solve the non-map redirect
-performance issue.
+i'd prefer having this function fill in the size, insetad of defining it every
+time we refill the descriptors
+You can keep the new define for PAGE_SIZE - NETSEC_RX_BUF_NON_DATA, it looks
+cleaner
+
+> +				  dma_addr_t *dma_handle)
+>  
+>  {
+>  
+>  	struct netsec_desc_ring *dring = &priv->desc_ring[NETSEC_RING_RX];
+> -	enum dma_data_direction dma_dir;
+>  	struct page *page;
+>  
+>  	page = page_pool_dev_alloc_pages(dring->page_pool);
+> @@ -734,10 +734,6 @@ static void *netsec_alloc_rx_data(struct netsec_priv *priv,
+>  	/* Make sure the incoming payload fits in the page for XDP and non-XDP
+>  	 * cases and reserve enough space for headroom + skb_shared_info
+>  	 */
+> -	*desc_len = PAGE_SIZE - NETSEC_RX_BUF_NON_DATA;
+> -	dma_dir = page_pool_get_dma_dir(dring->page_pool);
+> -	dma_sync_single_for_device(priv->dev, *dma_handle, *desc_len, dma_dir);
+> -
+>  	return page_address(page);
+>  }
+>  
+> @@ -883,6 +879,7 @@ static u32 netsec_xdp_xmit_back(struct netsec_priv *priv, struct xdp_buff *xdp)
+>  static u32 netsec_run_xdp(struct netsec_priv *priv, struct bpf_prog *prog,
+>  			  struct xdp_buff *xdp)
+>  {
+> +	struct netsec_desc_ring *dring = &priv->desc_ring[NETSEC_RING_RX];
+>  	u32 ret = NETSEC_XDP_PASS;
+>  	int err;
+>  	u32 act;
+> @@ -896,7 +893,10 @@ static u32 netsec_run_xdp(struct netsec_priv *priv, struct bpf_prog *prog,
+>  	case XDP_TX:
+>  		ret = netsec_xdp_xmit_back(priv, xdp);
+>  		if (ret != NETSEC_XDP_TX)
+> -			xdp_return_buff(xdp);
+> +			__page_pool_put_page(dring->page_pool,
+> +				     virt_to_head_page(xdp->data),
+> +				     xdp->data_end - xdp->data_hard_start,
+> +				     true);
+>  		break;
+>  	case XDP_REDIRECT:
+>  		err = xdp_do_redirect(priv->ndev, xdp, prog);
+> @@ -904,7 +904,10 @@ static u32 netsec_run_xdp(struct netsec_priv *priv, struct bpf_prog *prog,
+>  			ret = NETSEC_XDP_REDIR;
+>  		} else {
+>  			ret = NETSEC_XDP_CONSUMED;
+> -			xdp_return_buff(xdp);
+> +			__page_pool_put_page(dring->page_pool,
+> +				     virt_to_head_page(xdp->data),
+> +				     xdp->data_end - xdp->data_hard_start,
+> +				     true);
+>  		}
+>  		break;
+>  	default:
+> @@ -915,7 +918,10 @@ static u32 netsec_run_xdp(struct netsec_priv *priv, struct bpf_prog *prog,
+>  		/* fall through -- handle aborts by dropping packet */
+>  	case XDP_DROP:
+>  		ret = NETSEC_XDP_CONSUMED;
+> -		xdp_return_buff(xdp);
+> +		__page_pool_put_page(dring->page_pool,
+> +				     virt_to_head_page(xdp->data),
+> +				     xdp->data_end - xdp->data_hard_start,
+> +				     true);
+>  		break;
+>  	}
+>  
+> @@ -944,10 +950,10 @@ static int netsec_process_rx(struct netsec_priv *priv, int budget)
+>  		struct netsec_desc *desc = &dring->desc[idx];
+>  		struct page *page = virt_to_page(desc->addr);
+>  		u32 xdp_result = XDP_PASS;
+> -		u16 pkt_len, desc_len;
+>  		dma_addr_t dma_handle;
+>  		struct xdp_buff xdp;
+>  		void *buf_addr;
+> +		u16 pkt_len;
+>  
+>  		if (de->attr & (1U << NETSEC_RX_PKT_OWN_FIELD)) {
+>  			/* reading the register clears the irq */
+> @@ -982,8 +988,7 @@ static int netsec_process_rx(struct netsec_priv *priv, int budget)
+>  		/* allocate a fresh buffer and map it to the hardware.
+>  		 * This will eventually replace the old buffer in the hardware
+>  		 */
+> -		buf_addr = netsec_alloc_rx_data(priv, &dma_handle, &desc_len);
+> -
+> +		buf_addr = netsec_alloc_rx_data(priv, &dma_handle);
+>  		if (unlikely(!buf_addr))
+>  			break;
+>  
+> @@ -1014,7 +1019,8 @@ static int netsec_process_rx(struct netsec_priv *priv, int budget)
+>  			 * cache state. Since we paid the allocation cost if
+>  			 * building an skb fails try to put the page into cache
+>  			 */
+> -			page_pool_recycle_direct(dring->page_pool, page);
+> +			__page_pool_put_page(dring->page_pool, page,
+> +					     desc->len, true);
+>  			netif_err(priv, drv, priv->ndev,
+>  				  "rx failed to build skb\n");
+>  			break;
+> @@ -1037,7 +1043,7 @@ static int netsec_process_rx(struct netsec_priv *priv, int budget)
+>  		}
+>  
+>  		/* Update the descriptor with fresh buffers */
+> -		desc->len = desc_len;
+> +		desc->len = NETSEC_RX_BUF_SIZE;
+
+Similar comment here, i'd prefer having a sinlge fucntion calculate the length.
+
+>  		desc->dma_addr = dma_handle;
+>  		desc->addr = buf_addr;
+>  
+> @@ -1272,17 +1278,19 @@ static int netsec_setup_rx_dring(struct netsec_priv *priv)
+>  {
+>  	struct netsec_desc_ring *dring = &priv->desc_ring[NETSEC_RING_RX];
+>  	struct bpf_prog *xdp_prog = READ_ONCE(priv->xdp_prog);
+> -	struct page_pool_params pp_params = { 0 };
+> +	struct page_pool_params pp_params = {
+> +		.order = 0,
+> +		/* internal DMA mapping in page_pool */
+> +		.flags = PP_FLAG_DMA_MAP | PP_FLAG_DMA_SYNC_DEV,
+> +		.pool_size = DESC_NUM,
+> +		.nid = NUMA_NO_NODE,
+> +		.dev = priv->dev,
+> +		.dma_dir = xdp_prog ? DMA_BIDIRECTIONAL : DMA_FROM_DEVICE,
+> +		.offset = NETSEC_RXBUF_HEADROOM,
+> +		.max_len = NETSEC_RX_BUF_SIZE,
+> +	};
+>  	int i, err;
+>  
+> -	pp_params.order = 0;
+> -	/* internal DMA mapping in page_pool */
+> -	pp_params.flags = PP_FLAG_DMA_MAP;
+> -	pp_params.pool_size = DESC_NUM;
+> -	pp_params.nid = NUMA_NO_NODE;
+> -	pp_params.dev = priv->dev;
+> -	pp_params.dma_dir = xdp_prog ? DMA_BIDIRECTIONAL : DMA_FROM_DEVICE;
+> -
+>  	dring->page_pool = page_pool_create(&pp_params);
+>  	if (IS_ERR(dring->page_pool)) {
+>  		err = PTR_ERR(dring->page_pool);
+> @@ -1303,17 +1311,15 @@ static int netsec_setup_rx_dring(struct netsec_priv *priv)
+>  		struct netsec_desc *desc = &dring->desc[i];
+>  		dma_addr_t dma_handle;
+>  		void *buf;
+> -		u16 len;
+> -
+> -		buf = netsec_alloc_rx_data(priv, &dma_handle, &len);
+>  
+> +		buf = netsec_alloc_rx_data(priv, &dma_handle);
+>  		if (!buf) {
+>  			err = -ENOMEM;
+>  			goto err_out;
+>  		}
+> +		desc->len = NETSEC_RX_BUF_SIZE;
+>  		desc->dma_addr = dma_handle;
+>  		desc->addr = buf;
+> -		desc->len = len;
+>  	}
+>  
+>  	netsec_rx_fill(priv, 0, DESC_NUM);
+> -- 
+> 2.21.1
+> 
+
+Other than that this looks good, re-send it as a non RFC patch and i can test it
 
 
-> > Some gotchas off the top of my head.
-> >
-> > The cpumap also have a struct xdp_bulk_queue, which have a different
-> > layout. (sidenote: due to BTF we likely want rename that).
-> >
-> > If you want to generalize this across all redirect maps type. You
-> > should know, that it was on purpose that I designed the bulking to be
-> > map specific, because that allowed each map to control its own optimal
-> > bulking.  E.g. devmap does 16 frames bulking, cpumap does 8 frames (as
-> > it matches sending 1 cacheline into underlying ptr_ring), xskmap does
-> > 64 AFAIK (which could hurt-latency, but that is another discussion). =20
->=20
-> Bj=C3=B6rn's patches do leave the per-type behaviour, they just get rid of
-> the per-map flush queues... :)
-
-Yes, I know ;-)
-
---=20
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
-
+Thanks!
+/Ilias
