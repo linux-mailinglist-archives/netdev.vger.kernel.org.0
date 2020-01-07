@@ -2,49 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A306F131F92
-	for <lists+netdev@lfdr.de>; Tue,  7 Jan 2020 06:51:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 42938131F93
+	for <lists+netdev@lfdr.de>; Tue,  7 Jan 2020 06:51:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726598AbgAGFuu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jan 2020 00:50:50 -0500
-Received: from mail-pj1-f66.google.com ([209.85.216.66]:51463 "EHLO
-        mail-pj1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725267AbgAGFuu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jan 2020 00:50:50 -0500
-Received: by mail-pj1-f66.google.com with SMTP id j11so8536577pjs.1;
-        Mon, 06 Jan 2020 21:50:49 -0800 (PST)
+        id S1727276AbgAGFuy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Jan 2020 00:50:54 -0500
+Received: from mail-pj1-f65.google.com ([209.85.216.65]:52824 "EHLO
+        mail-pj1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725267AbgAGFuv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jan 2020 00:50:51 -0500
+Received: by mail-pj1-f65.google.com with SMTP id a6so8541540pjh.2;
+        Mon, 06 Jan 2020 21:50:51 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
         bh=upFgnCPUP6bUNf0w4clZ6s4PfWYYFquwuIgCR0kvv0I=;
-        b=RRgpM4IZ7Ugi4x7YbgRZeN0WtO7LqwkD4dg6w5KkY/r8hNPZGdjI46i0C8m+jPdvuS
-         yncrE4QiBQuCRIiO/Usg8lAVFBg0o6J5lv8o8G+SP82CYeezie5r94ra5JE7UczeG3ix
-         aiXnyFhAJ2/NUAeHGfiaFxv0/070gsHra0Sbua2jsKxQyYxLRvjqNnHmnWqB7pEhwBAC
-         6q1ywn7QjYjDMkeFbbkMdjYgpIWEXmCqbFaa5+LQvAlYrwWj0EIZcwN+2XJ23gzPJcOu
-         qBRnmFnwqc7EGLh0ong3a2xuFnKqEWI3Dh5QoV0IagD1faJXXAYHBl8S5Tb4fKQIZNMy
-         5Q6A==
+        b=TEavNkJX+k/qA/roydejXmwwkeuJyf1H/Tf0GIc2hrC8eOo8QHKUAjvNbWKsX7Ep5O
+         heIrJTpMRK+kTuV+eGHm1lPDmDLydZcaC+GEpRPXDgUA1nge3fOmqc47PLcXecDYMnXL
+         kY+hOUohlNLbhy7vbptPpQQGwNGUy3kkStrLCX2/r0VaQzD91Y6QrcfxZgo8K6D8DTiH
+         jHhwfcgUK4xZ0l4Vw2ObBAG9sKNw6StMi0yp28OgLQT6W+SnMZIaiGPnvzkw9BSUVmjS
+         6QEu51Dgj65UoLgNjgKuRclZavvUxSr2mWHB9qFeBesf2VD0LjeYaAu94hFS4Ls0q1Ef
+         RO9A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
         bh=upFgnCPUP6bUNf0w4clZ6s4PfWYYFquwuIgCR0kvv0I=;
-        b=qz84QmBOo3laog2lzc5Mtq4AuiP9CgJy1IWj9M0+EgNeNgV3L+plJooFkJr/EbWEVw
-         PeaUoBxmQ/GIqFzTT7ZT7nM9pJQF0zqjqAQvrTLdg0PcKJnX5cFF+Op5MrUnYjhWQv0y
-         fXx4C/YvTvbHeT/rQFPieHETBkipPcmOxFZ+etpqOlP4qn8Ne7qjeQ29iYDapeqJvYYC
-         75vILxTfW9XFUisLRGjC8zNO/sd4QeymfxMxacVUTbGjjFYLbkEyOI1Jp7FzWr3Vewu1
-         M4SSg9kEv9FVprdfVk8RRkJbrpE6SfYlSwTskWE3IoHIYOXEtyHUrxrE7+V6wXVOHLUL
-         +dog==
-X-Gm-Message-State: APjAAAXZ9DKoVTVvUQURXZb7TOI//BZet0VFRjdbdG6FckWk4h/Ve7Sd
-        B09tvSMfVvj+HLkjsiEDbN0=
-X-Google-Smtp-Source: APXvYqzMjEBLGmJ5W55zjacQs7lGU1d7RAurGeHTe+UGPbEspBa7NgnLaj1BmlmXGXuj49IiezMW0g==
-X-Received: by 2002:a17:90a:cb96:: with SMTP id a22mr47019768pju.96.1578376249131;
-        Mon, 06 Jan 2020 21:50:49 -0800 (PST)
+        b=brCIi/Yeof6O9qt8AmHSN4fCeSN8DMrASUcb0XQLm3io7tgYCfwKnP+TT95uHtMsEw
+         G+RU8sUNUaVzICbs23cMh7v1bxAm2AjGevJuMc6xTwOvLxmUwqC014kwT+EqXExxssve
+         3+TS7Bftt3D9B2sFcRDDUMsx0raa8//KjT9v+baKnwt/ckl2KchX60fKEHKvWeJuqIH6
+         QUKtRVBzVNbbxjmtn82oGEbsekgJs5UJNlc6w/PSd3msn7b8Ld37gbgk3W+5k0+T+Q4j
+         4AAsA+qBF55oeuxBxHRhS+Rf5pBUB+76zyrX1NRgmEPENkAxqR2QuL6CK51JPuiOF867
+         k11Q==
+X-Gm-Message-State: APjAAAU8i0gRV6PCZYMh4Gjl+1JJnQqm9AnLZPpmMX3n9EIfja10KqU0
+        IOcVJ8/QNz/SDlS8sK/8mI4=
+X-Google-Smtp-Source: APXvYqypnbXjmjzfFiLtZwGRE8uynkBQpr3ZCa2ju53uEjXtfBkVe8I+mcbjmxrxP9s/2wiptwhCHw==
+X-Received: by 2002:a17:902:b908:: with SMTP id bf8mr81302846plb.293.1578376250668;
+        Mon, 06 Jan 2020 21:50:50 -0800 (PST)
 Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
-        by smtp.gmail.com with ESMTPSA id g19sm80983651pfh.134.2020.01.06.21.50.47
+        by smtp.gmail.com with ESMTPSA id 64sm77921171pfd.48.2020.01.06.21.50.47
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 06 Jan 2020 21:50:48 -0800 (PST)
+        Mon, 06 Jan 2020 21:50:49 -0800 (PST)
 Subject: Re: broonie-regmap/for-next bisection: boot on
  ox820-cloudengines-pogoplug-series-3
 To:     Sriram Dash <sriram.dash@samsung.com>,
@@ -125,7 +125,7 @@ Autocrypt: addr=f.fainelli@gmail.com; keydata=
  caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
  6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9qfUATKC9NgZjRvBztfqy4
  a9BQwACgnzGuH1BVeT2J0Ra+ZYgkx7DaPR0=
-Message-ID: <54a292b8-3cac-0caf-08c7-841c469fb68f@gmail.com>
+Message-ID: <a925da0f-4840-1d30-8acd-b1f069da920a@gmail.com>
 Date:   Mon, 6 Jan 2020 21:50:47 -0800
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
  Thunderbird/68.3.1
