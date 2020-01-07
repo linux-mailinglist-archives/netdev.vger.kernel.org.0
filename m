@@ -2,197 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B98A132942
-	for <lists+netdev@lfdr.de>; Tue,  7 Jan 2020 15:48:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B191D132988
+	for <lists+netdev@lfdr.de>; Tue,  7 Jan 2020 16:03:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728345AbgAGOsY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jan 2020 09:48:24 -0500
-Received: from mxout2.idt.com ([157.165.5.26]:45224 "EHLO mxout2.idt.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728020AbgAGOsY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 7 Jan 2020 09:48:24 -0500
-Received: from mail3.idt.com (localhost [127.0.0.1])
-        by mxout2.idt.com (8.14.4/8.14.4) with ESMTP id 007EmKLg025903;
-        Tue, 7 Jan 2020 06:48:20 -0800
-Received: from corpml1.corp.idt.com (corpml1.corp.idt.com [157.165.140.20])
-        by mail3.idt.com (8.14.4/8.14.4) with ESMTP id 007EmKVC009801;
-        Tue, 7 Jan 2020 06:48:20 -0800
-Received: from vcheng-VirtualBox.na.ads.idt.com (corpimss2.corp.idt.com [157.165.141.30])
-        by corpml1.corp.idt.com (8.11.7p1+Sun/8.11.7) with ESMTP id 007EmJV02488;
-        Tue, 7 Jan 2020 06:48:19 -0800 (PST)
-From:   vincent.cheng.xh@renesas.com
-To:     richardcochran@gmail.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Vincent Cheng <vincent.cheng.xh@renesas.com>
-Subject: [PATCH v4 net-next 1/1] ptp: clockmatrix: Rework clockmatrix version information.
-Date:   Tue,  7 Jan 2020 09:47:57 -0500
-Message-Id: <1578408477-4650-2-git-send-email-vincent.cheng.xh@renesas.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1578408477-4650-1-git-send-email-vincent.cheng.xh@renesas.com>
-References: <1578408477-4650-1-git-send-email-vincent.cheng.xh@renesas.com>
-X-TM-AS-MML: disable
+        id S1728255AbgAGPDN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Jan 2020 10:03:13 -0500
+Received: from mail-pj1-f67.google.com ([209.85.216.67]:50337 "EHLO
+        mail-pj1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727814AbgAGPDN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jan 2020 10:03:13 -0500
+Received: by mail-pj1-f67.google.com with SMTP id r67so9134289pjb.0;
+        Tue, 07 Jan 2020 07:03:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=7Vp5Vy5j9yM6zzEKiWqAsDsmN6F0gjsulGDFzYzW5ms=;
+        b=FRdc/pEtLxybKATPi0gWX2OnrpPVH/gGawy/tcqojjMjvopFGGM068hu4YFt3qmt8A
+         6R5y0yJvntjkO8rsWhyzfx23MOZxhzl/6e8Z+UKVVBc1Gihd/WO9l45YcNrgpYi9rKXD
+         tWIIDANUvg28Kn7rZ9lTElzHP9SNKUJwcKPS6+aZR3KuKyMWVSR3aJ2aGRsUgKXN+aRD
+         hUqAoVldM0Wyh88gr372bKNGydSXKln+wJOHPMUw8udR26H1B/JSx3TpR0H+RTBJJfYV
+         huQgd0dDZJWNtdUEMbumFGCV7R864/LXirQdWi2VM5u/CpZOL4tJmLKL4i+gsWM2v2qk
+         /wlw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=7Vp5Vy5j9yM6zzEKiWqAsDsmN6F0gjsulGDFzYzW5ms=;
+        b=BQgaBnYb372ibzhYZNO5JT0EmwzYVAMBxKhLMHnQBEUNwSsyGw4895KNoXPu3kTkUP
+         +OH5T+6Jk/sZ5YeNpQDrdSp1ZUJ9OxB9FoM6yY+8RrnHkYiSH4b/0Xwv0Vr9uFS7nxe8
+         KKam3q10BxwV6QFS4A+JryiWb+2GLzizpwjClLTGUw/Yhzj9fPspGdXfS/0RsY5kMTMo
+         zxVUmC0qxfUHs2Gt5tgf/SgH1r1aN2T251PpFO45LXMdwDdHa/L6KQNOceLyvaL4znDq
+         jsSSaLMOhivGx4M0TFmPZ0/FP9avpC1GhjvWv+kO2mBdEh2XqAbgW8C5ffYc4+K3dSmC
+         nhew==
+X-Gm-Message-State: APjAAAVPTiN5m2ZWBR/sAAbii41lgjJgqnUz4jOlaJziZwmUlEBbqC0N
+        H4u5543H1sStMj+0JThIHNw=
+X-Google-Smtp-Source: APXvYqzftM+e7fYt4IHv4fHcbdCZwaijynpYGwn5PKAuo5WlUzUl87fCknMZfMefV1A2363vPvEgwQ==
+X-Received: by 2002:a17:902:654d:: with SMTP id d13mr33352pln.187.1578409392867;
+        Tue, 07 Jan 2020 07:03:12 -0800 (PST)
+Received: from localhost (199.168.140.36.16clouds.com. [199.168.140.36])
+        by smtp.gmail.com with ESMTPSA id h3sm35881215pfo.132.2020.01.07.07.03.11
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Tue, 07 Jan 2020 07:03:12 -0800 (PST)
+From:   Dejin Zheng <zhengdejin5@gmail.com>
+To:     davem@davemloft.net, corbet@lwn.net, mcoquelin.stm32@gmail.com,
+        alexandre.torgue@st.com, linus.walleij@linaro.org
+Cc:     netdev@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Dejin Zheng <zhengdejin5@gmail.com>
+Subject: [PATCH] Documentation: networking: device drivers: sync stmmac_mdio_bus_data info
+Date:   Tue,  7 Jan 2020 23:02:54 +0800
+Message-Id: <20200107150254.28604-1-zhengdejin5@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vincent Cheng <vincent.cheng.xh@renesas.com>
+Recent changes in the stmmac driver, it removes the phy_reset hook
+from struct stmmac_mdio_bus_data by commit <fead5b1b5838ba2>, and
+add the member of needs_reset to struct stmmac_mdio_bus_data by
+commit <1a981c0586c0387>.
 
-Simplify and fix the version information displayed by the driver.
-The new info better relects what is needed to support the hardware.
-
-Prev:
-Version: 4.8.0, Pipeline 22169 0x4001, Rev 0, Bond 5, CSR 311, IRQ 2
-
-New:
-Version: 4.8.0, Id: 0x4001  Hw Rev: 5  OTP Config Select: 15
-
-- Remove pipeline, CSR and IRQ because version x.y.z already incorporates
-  this information.
-- Remove bond number because it is not used.
-- Remove rev number because register was not implemented, always 0
-- Add HW Rev ID register to replace rev number
-- Add OTP config select to show the user configuration chosen by
-  the configurable GPIO pins on start-up
-
-Signed-off-by: Vincent Cheng <vincent.cheng.xh@renesas.com>
+Signed-off-by: Dejin Zheng <zhengdejin5@gmail.com>
 ---
- drivers/ptp/idt8a340_reg.h    |  2 ++
- drivers/ptp/ptp_clockmatrix.c | 77 ++++++++-----------------------------------
- 2 files changed, 15 insertions(+), 64 deletions(-)
+ Documentation/networking/device_drivers/stmicro/stmmac.txt | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/ptp/idt8a340_reg.h b/drivers/ptp/idt8a340_reg.h
-index 9263bc3..69eedda 100644
---- a/drivers/ptp/idt8a340_reg.h
-+++ b/drivers/ptp/idt8a340_reg.h
-@@ -77,6 +77,8 @@
- #define JTAG_DEVICE_ID                    0x001c
- #define PRODUCT_ID                        0x001e
+diff --git a/Documentation/networking/device_drivers/stmicro/stmmac.txt b/Documentation/networking/device_drivers/stmicro/stmmac.txt
+index 1ae979fd90d2..3d8a83158309 100644
+--- a/Documentation/networking/device_drivers/stmicro/stmmac.txt
++++ b/Documentation/networking/device_drivers/stmicro/stmmac.txt
+@@ -190,17 +190,17 @@ Where:
+ For MDIO bus The we have:
  
-+#define OTP_SCSR_CONFIG_SELECT            0x0022
-+
- #define STATUS                            0xc03c
- #define USER_GPIO0_TO_7_STATUS            0x008a
- #define USER_GPIO8_TO_15_STATUS           0x008b
-diff --git a/drivers/ptp/ptp_clockmatrix.c b/drivers/ptp/ptp_clockmatrix.c
-index e858367..032e112 100644
---- a/drivers/ptp/ptp_clockmatrix.c
-+++ b/drivers/ptp/ptp_clockmatrix.c
-@@ -405,6 +405,7 @@ static int _idtcm_set_dpll_tod(struct idtcm_channel *channel,
- 	if (wr_trig == HW_TOD_WR_TRIG_SEL_MSB) {
+  struct stmmac_mdio_bus_data {
+-	int (*phy_reset)(void *priv);
+ 	unsigned int phy_mask;
+ 	int *irqs;
+ 	int probed_phy_irq;
++	bool needs_reset;
+  };
  
- 		if (idtcm->calculate_overhead_flag) {
-+			/* Assumption: I2C @ 400KHz */
- 			total_overhead_ns =  ktime_to_ns(ktime_get_raw()
- 							 - idtcm->start_time)
- 					     + idtcm->tod_write_overhead_ns
-@@ -596,44 +597,7 @@ static int idtcm_state_machine_reset(struct idtcm *idtcm)
+ Where:
+- o phy_reset: hook to reset the phy device attached to the bus.
+  o phy_mask: phy mask passed when register the MDIO bus within the driver.
+  o irqs: list of IRQs, one per PHY.
+  o probed_phy_irq: if irqs is NULL, use this for probed PHY.
++ o needs_reset: make MDIO bus reset optional.
  
- static int idtcm_read_hw_rev_id(struct idtcm *idtcm, u8 *hw_rev_id)
- {
--	return idtcm_read(idtcm,
--			  GENERAL_STATUS,
--			  HW_REV_ID,
--			  hw_rev_id,
--			  sizeof(u8));
--}
--
--static int idtcm_read_bond_id(struct idtcm *idtcm, u8 *bond_id)
--{
--	return idtcm_read(idtcm,
--			  GENERAL_STATUS,
--			  BOND_ID,
--			  bond_id,
--			  sizeof(u8));
--}
--
--static int idtcm_read_hw_csr_id(struct idtcm *idtcm, u16 *hw_csr_id)
--{
--	int err;
--	u8 buf[2] = {0};
--
--	err = idtcm_read(idtcm, GENERAL_STATUS, HW_CSR_ID, buf, sizeof(buf));
--
--	*hw_csr_id = (buf[1] << 8) | buf[0];
--
--	return err;
--}
--
--static int idtcm_read_hw_irq_id(struct idtcm *idtcm, u16 *hw_irq_id)
--{
--	int err;
--	u8 buf[2] = {0};
--
--	err = idtcm_read(idtcm, GENERAL_STATUS, HW_IRQ_ID, buf, sizeof(buf));
--
--	*hw_irq_id = (buf[1] << 8) | buf[0];
--
--	return err;
-+	return idtcm_read(idtcm, HW_REVISION, REV_ID, hw_rev_id, sizeof(u8));
- }
- 
- static int idtcm_read_product_id(struct idtcm *idtcm, u16 *product_id)
-@@ -674,20 +638,11 @@ static int idtcm_read_hotfix_release(struct idtcm *idtcm, u8 *hotfix)
- 			  sizeof(u8));
- }
- 
--static int idtcm_read_pipeline(struct idtcm *idtcm, u32 *pipeline)
-+static int idtcm_read_otp_scsr_config_select(struct idtcm *idtcm,
-+					     u8 *config_select)
- {
--	int err;
--	u8 buf[4] = {0};
--
--	err = idtcm_read(idtcm,
--			 GENERAL_STATUS,
--			 PIPELINE_ID,
--			 &buf[0],
--			 sizeof(buf));
--
--	*pipeline = (buf[3] << 24) | (buf[2] << 16) | (buf[1] << 8) | buf[0];
--
--	return err;
-+	return idtcm_read(idtcm, GENERAL_STATUS, OTP_SCSR_CONFIG_SELECT,
-+			  config_select, sizeof(u8));
- }
- 
- static int process_pll_mask(struct idtcm *idtcm, u32 addr, u8 val, u8 *mask)
-@@ -1078,28 +1033,22 @@ static void idtcm_display_version_info(struct idtcm *idtcm)
- 	u8 major;
- 	u8 minor;
- 	u8 hotfix;
--	u32 pipeline;
- 	u16 product_id;
--	u16 csr_id;
--	u16 irq_id;
- 	u8 hw_rev_id;
--	u8 bond_id;
-+	u8 config_select;
-+	char *fmt = "%d.%d.%d, Id: 0x%04x  HW Rev: %d  OTP Config Select: %d\n";
- 
- 	idtcm_read_major_release(idtcm, &major);
- 	idtcm_read_minor_release(idtcm, &minor);
- 	idtcm_read_hotfix_release(idtcm, &hotfix);
--	idtcm_read_pipeline(idtcm, &pipeline);
- 
- 	idtcm_read_product_id(idtcm, &product_id);
- 	idtcm_read_hw_rev_id(idtcm, &hw_rev_id);
--	idtcm_read_bond_id(idtcm, &bond_id);
--	idtcm_read_hw_csr_id(idtcm, &csr_id);
--	idtcm_read_hw_irq_id(idtcm, &irq_id);
--
--	dev_info(&idtcm->client->dev, "Version:  %d.%d.%d, Pipeline %u\t"
--		 "0x%04x, Rev %d, Bond %d, CSR %d, IRQ %d\n",
--		 major, minor, hotfix, pipeline,
--		 product_id, hw_rev_id, bond_id, csr_id, irq_id);
-+
-+	idtcm_read_otp_scsr_config_select(idtcm, &config_select);
-+
-+	dev_info(&idtcm->client->dev, fmt, major, minor, hotfix,
-+		 product_id, hw_rev_id, config_select);
- }
- 
- static const struct ptp_clock_info idtcm_caps = {
+ For DMA engine we have the following internal fields that should be
+ tuned according to the HW capabilities.
 -- 
-2.7.4
+2.17.1
 
