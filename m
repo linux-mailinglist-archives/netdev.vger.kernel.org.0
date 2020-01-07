@@ -2,119 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 24B8B131CCC
-	for <lists+netdev@lfdr.de>; Tue,  7 Jan 2020 01:38:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3FDA6131CCD
+	for <lists+netdev@lfdr.de>; Tue,  7 Jan 2020 01:39:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727302AbgAGAiA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Jan 2020 19:38:00 -0500
-Received: from mail-40135.protonmail.ch ([185.70.40.135]:28699 "EHLO
-        mail-40135.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727228AbgAGAiA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jan 2020 19:38:00 -0500
-Date:   Tue, 07 Jan 2020 00:37:51 +0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=protonmail.com;
-        s=default; t=1578357476;
-        bh=DoEzISZfAUvKRmOU+Fq9jpnaryuQ7BvqJN1Fe8PbrgI=;
-        h=Date:To:From:Cc:Reply-To:Subject:In-Reply-To:References:
-         Feedback-ID:From;
-        b=ky7LmuCTGRPHGZ0NPC5L8wV9DPoPUxdD3c1jKvSPQA8UZmIR7YHIWxET6rEzizWR7
-         MW6HLPqgpE1vQ9Q+JKedOIqBvRd+SLbVaDbWtuuyiE/jDx9+uvc2V8GDQzC8JQqLY9
-         ku2uFpkYcJtf569pT3nuHHlZnaa7soM8X09Akj8w=
-To:     Stephen Hemminger <stephen@networkplumber.org>
-From:   Ttttabcd <ttttabcd@protonmail.com>
-Cc:     Netdev <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        "kuznet@ms2.inr.ac.ru" <kuznet@ms2.inr.ac.ru>,
-        "yoshfuji@linux-ipv6.org" <yoshfuji@linux-ipv6.org>
-Reply-To: Ttttabcd <ttttabcd@protonmail.com>
-Subject: Re: [PATCH] fragment: Improved handling of incorrect IP fragments
-Message-ID: <Kzdjj3swtF0OuPXyJNmMt2qALVQ3Hob3fvSXhMkyqTbp9qUer0B1s_Lj1uYJJV4hEXp2v1M6bJ0XCS3zbYWOrZrzyydP-Bb4P15pDPFj0FY=@protonmail.com>
-In-Reply-To: <20200106160635.2550c92f@hermes.lan>
-References: <u0QFePiYSfxBeUsNVFRhPjsGViwg-pXLIApJaVLdUICuvLTQg5y5-rdNhh9lPcDsyO24c7wXxy5m6b6dK0aB6kqR0ypk8X9ekiLe3NQ3ICY=@protonmail.com>
- <20200102112731.299b5fe4@hermes.lan>
- <BRNuMFiJpql6kgRrEdMdQfo3cypcBpqGRtfWvbW8QFsv2MSUj_fUV-s8Fx-xopJ8kvR3ZMJM0tck6FYxm8S0EcpZngEzrfFg5w22Qo8asEQ=@protonmail.com>
- <20200106160635.2550c92f@hermes.lan>
-Feedback-ID: EvWK9os_-weOBrycfL_HEFp-ixys9sxnciOqqctCHB9kjCM4ip8VR9shOcMQZgeZ7RCnmNC4HYjcUKNMz31NBA==:Ext:ProtonMail
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-0.2 required=7.0 tests=ALL_TRUSTED,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,HK_RANDOM_REPLYTO
-        shortcircuit=no autolearn=no autolearn_force=no version=3.4.2
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.protonmail.ch
+        id S1727322AbgAGAjr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Jan 2020 19:39:47 -0500
+Received: from us-smtp-1.mimecast.com ([207.211.31.81]:27865 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727228AbgAGAjr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jan 2020 19:39:47 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1578357586;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=WpcYMvOyg6EdL+sJ/qoxt77vYeujMEcskFueY35/2Bw=;
+        b=IUSZyt1QRV0PY4Q/GKKvd+iVg1xfaXDc+wg8QX3/PFhYdp4f6AJiURteW73pPNQlY1VNHC
+        YQEr8NXPia0GxZyL2SxA6gAHfazCHCSk4cnxkoodBuueeVQRcI2jchtfFyWlERn+B8/xXU
+        XwYVB7w5n51eQj2lh9gaALpXAyW6L/A=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-183-l75FqxgqO2qJWF5f3asirQ-1; Mon, 06 Jan 2020 19:39:44 -0500
+X-MC-Unique: l75FqxgqO2qJWF5f3asirQ-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 0955C801E7A;
+        Tue,  7 Jan 2020 00:39:43 +0000 (UTC)
+Received: from localhost (ovpn-112-4.rdu2.redhat.com [10.10.112.4])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 1A32D80600;
+        Tue,  7 Jan 2020 00:39:40 +0000 (UTC)
+Date:   Mon, 06 Jan 2020 16:39:39 -0800 (PST)
+Message-Id: <20200106.163939.1819867450425607038.davem@redhat.com>
+To:     linus.walleij@linaro.org
+Cc:     netdev@vger.kernel.org, arnd@arndb.de,
+        jakub.kicinski@netronome.com, stable@vger.kernel.org
+Subject: Re: [PATCH net-next 9/9 v3] net: ethernet: ixp4xx: Use parent dev
+ for DMA pool
+From:   David Miller <davem@redhat.com>
+In-Reply-To: <CACRpkdagGWBcQz8mVj9OqH+xL_tr1hbVv7sTnJ9GeLVq0dRamw@mail.gmail.com>
+References: <20200106074647.23771-10-linus.walleij@linaro.org>
+        <20200106.140130.1426441348209333206.davem@redhat.com>
+        <CACRpkdagGWBcQz8mVj9OqH+xL_tr1hbVv7sTnJ9GeLVq0dRamw@mail.gmail.com>
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> With current (correct) Linux kernel code this gets reassembled and droppe=
-d.
-> As seen in dmesg log and statistics.
->
-> With your Ipv4 patch the oversize packet gets passed on up the stack.
->
-> Testing this stuff is hard, it requires packet hacker tools.
+From: Linus Walleij <linus.walleij@linaro.org>
+Date: Mon, 6 Jan 2020 23:39:19 +0100
 
-I know what you mean. What you are talking about is a "ping of death" attac=
-k. The use of fragments to construct packets longer than 65535 made the sys=
-tem buffer overflow and crash.
+> On Mon, Jan 6, 2020 at 11:01 PM David Miller <davem@redhat.com> wrote:
+>> If you want to submit this bug fix, submit to 'net' and provide an
+>> appropriate Fixes: tag.
+> 
+> It's no big deal so let's skip that, do you want me to resend the lot
+> or can you just strip the stable tag when applying?
 
-This situation has been considered in my code. In the original logic of IPv=
-6, the judgment of data packets exceeding 65535 is duplicated, and the judg=
-ment in IPv4 is too late.
+Please resubmit, it helps me a lot.
 
-I have improved this situation, you can see my explanation of the patch at =
-the beginning.
+Thanks.
 
-> In both ip6_frag_queue and ip6_frag_reasm, it is checked whether it is an
-> Oversized IPv6 packet, which is duplicated. The original code logic will
-> only be processed in ip6_frag_queue. The code of ip6_frag_reasm will not
-> be executed. Now change it to only process in ip6_frag_queue and output
-> the prompt information.
-
-> I also made similar changes in IPv4 fragmentation processing.
->
-> It is not good to use 65535 values directly,
-> I added the IPV4_MAX_TOT_LEN macro.
->
-> The oversized check in IPv4 fragment processing is in the ip_frag_reasm
-> of the reassembly fragment. This is too late. The incorrect IP fragment
-> has been inserted into the fragment queue. I modified it in ip_frag_queue=
-.
-> I changed the original net_info_ratelimited to net_dbg_ratelimited to mak=
-e
-> the debugging information more controllable.
-
-
-@@ -300,6 +300,12 @@ static int ip_frag_queue(struct ipq *qp, struct sk_buf=
-f *skb)
- =09end =3D offset + skb->len - skb_network_offset(skb) - ihl;
- =09err =3D -EINVAL;
-
-+=09if ((unsigned int)end + ihl > IPV4_MAX_TOT_LEN) {
-+=09=09net_dbg_ratelimited("ip_frag_queue: Oversized IP packet from %pI4, e=
-nd =3D %d\n",
-+=09=09=09=09    &qp->q.key.v4.saddr, end);
-+=09=09goto discard_qp;
-+=09}
-+
-
-@@ -121,11 +121,10 @@ static int ip6_frag_queue(struct frag_queue *fq, stru=
-ct sk_buff *skb,
- =09=09=09((u8 *)(fhdr + 1) - (u8 *)(ipv6_hdr(skb) + 1)));
-
- =09if ((unsigned int)end > IPV6_MAXPLEN) {
--=09=09*prob_offset =3D (u8 *)&fhdr->frag_off - skb_network_header(skb);
--=09=09/* note that if prob_offset is set, the skb is freed elsewhere,
--=09=09 * we do not free it here.
--=09=09 */
--=09=09return -1;
-+=09=09prob_offset =3D (u8 *)&fhdr->frag_off - skb_network_header(skb);
-+=09=09net_dbg_ratelimited("ip6_frag_queue: Oversized IPv6 packet from %pI6=
-c, end =3D %d\n",
-+=09=09=09=09    &fq->q.key.v6.saddr, end);
-+=09=09goto send_param_prob;
- =09}
-
-As long as the IP fragment length exceeds 65535, I will discard the entire =
-fragment queue.
