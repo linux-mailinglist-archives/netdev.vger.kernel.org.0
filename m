@@ -2,143 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1CE1B1327B1
-	for <lists+netdev@lfdr.de>; Tue,  7 Jan 2020 14:32:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9FFCA13281C
+	for <lists+netdev@lfdr.de>; Tue,  7 Jan 2020 14:52:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728171AbgAGNcW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jan 2020 08:32:22 -0500
-Received: from mail-wr1-f45.google.com ([209.85.221.45]:45088 "EHLO
-        mail-wr1-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727880AbgAGNcW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jan 2020 08:32:22 -0500
-Received: by mail-wr1-f45.google.com with SMTP id j42so53896745wrj.12;
-        Tue, 07 Jan 2020 05:32:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:from:to:references:message-id:date:user-agent:mime-version
-         :in-reply-to:content-transfer-encoding:content-language;
-        bh=iwseRYdnEFLKIiL5+UtUR55Qh0pC+BNHbWOaIgon+Ss=;
-        b=ETcBOF7Xb21BVbDersgBk+meXnCTfjhZMdJR0KK1d12YLN9NS0odJG/OVCRGpPmfzC
-         vHMlTWb5LVrDzQJQkjEr2ZRJEA3inJjJshTdoWH3brNWFKho8vReZq8rD0D/af9yO+wT
-         SdKY4xiR3AbnAf0zeTZ0OCq89lZ/r6uMG/WxWbD0xUHvd1z5pucEgFk32pJt9ZvAKUHF
-         XYxX9+qRsnFaeqqrG068hy/QeAIURsBs5nvP7eGuA5Vn9T+9AotB6UlnJniXP1U0zU/9
-         eVAo99E/oG+KSXTEdC7TExth4fXcS+Y0NxrUTl1SNX2XSevcP7qTDy1FQ5i7mmjN3Yj/
-         2F+Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=iwseRYdnEFLKIiL5+UtUR55Qh0pC+BNHbWOaIgon+Ss=;
-        b=l/SSfLNpdByIrpTBybPujxGU/X4KWojK40Vtihddq/tuIAQf43AH7UCxurCqWcEDe9
-         H61CgDC8BFH24I9X7giyv8VTj8wxmqazWjhGoXbZqVC1tMNT91lVYDnN498stB/tO7yn
-         UvJuoVMywihnBbSINUrVTbH7+BMDPyMrVQgwb7k0tPruPi0wz+ld11LTzZ8DsB5VOAr5
-         ObTrFB8NvAGVMmNC3O/JQ/9W5bxG951FNCYpE7BKR1MRxwkDWAU6O4hiTPs1nvHa1NyA
-         AsdXDWPI7QSR7pOJyUWJbfTi9I4BhFR+QlEEEREhhIymLA4ykP2MI9fGuVwC7iyvbOZ3
-         gfjw==
-X-Gm-Message-State: APjAAAXFCzESstjH2dFdb7L2SfGRzhVaz7StKEA4xGC7qaDdTmRiR0DH
-        ZM2tELN4/x3OC0KoKDyse4k=
-X-Google-Smtp-Source: APXvYqxWqLEKNyzSpq4WliWRICCKbiiiUFNUw2tpqjv46UrW6bDtkpWyW+Pe9VzWbgMw9YbrveJcTw==
-X-Received: by 2002:adf:eb89:: with SMTP id t9mr111039655wrn.5.1578403939586;
-        Tue, 07 Jan 2020 05:32:19 -0800 (PST)
-Received: from xps13.intranet.net (82-64-122-65.subs.proxad.net. [82.64.122.65])
-        by smtp.googlemail.com with ESMTPSA id m3sm75970007wrs.53.2020.01.07.05.32.18
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 07 Jan 2020 05:32:18 -0800 (PST)
-Subject: Re: [RPI 3B+ / TSO / lan78xx ]
-From:   RENARD Pierre-Francois <pfrenard@gmail.com>
-To:     nsaenzjulienne@suse.de, woojung.huh@microchip.com,
-        UNGLinuxDriver@microchip.com, netdev@vger.kernel.org,
-        linux-usb@vger.kernel.org, stefan.wahren@i2se.com
-References: <5267da21-8f12-2750-c0c5-4ed31b03833b@gmail.com>
-Message-ID: <78b94ba2-9a87-78bb-8916-e6ef5a0668ae@gmail.com>
-Date:   Tue, 7 Jan 2020 14:32:17 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        id S1728129AbgAGNwW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Jan 2020 08:52:22 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:42969 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1727658AbgAGNwV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jan 2020 08:52:21 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1578405140;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=bBb8vAuu0IE/ylefHBaFu6JrntXatLcFwAw8i7bsmGM=;
+        b=hh83FETxV+S4Jz6uJvh3flZ+0wh0lqlS3rkyGW9xzF0jNxzMGsNmim4kpOW16qqfDL9OGT
+        gbEEPFjzS0rIBnNOB7A67DY7+8wXD2/3s7IEvNdnRAzStWDi/pWwOKRaTHVut3O5XpRJoe
+        5PhyuNQBTXmsMR5nNCuoJGEYm7TbZns=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-384-yWdAZ2k9NuC_IxCi9bNLJw-1; Tue, 07 Jan 2020 08:52:17 -0500
+X-MC-Unique: yWdAZ2k9NuC_IxCi9bNLJw-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 2D53B18C35B1;
+        Tue,  7 Jan 2020 13:52:15 +0000 (UTC)
+Received: from carbon (ovpn-200-37.brq.redhat.com [10.40.200.37])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id E834A84672;
+        Tue,  7 Jan 2020 13:52:05 +0000 (UTC)
+Date:   Tue, 7 Jan 2020 14:52:04 +0100
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>
+Cc:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Network Development <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        bpf <bpf@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        "Karlsson\, Magnus" <magnus.karlsson@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>, brouer@redhat.com
+Subject: Re: [PATCH bpf-next v2 0/8] Simplify
+ xdp_do_redirect_map()/xdp_do_flush_map() and XDP maps
+Message-ID: <20200107145204.76710703@carbon>
+In-Reply-To: <87r20biegi.fsf@toke.dk>
+References: <20191219061006.21980-1-bjorn.topel@gmail.com>
+        <CAADnVQL1x8AJmCOjesA_6Z3XprFVEdWgbREfpn3CC-XO8k4PDA@mail.gmail.com>
+        <20191220084651.6dacb941@carbon>
+        <20191220102615.45fe022d@carbon>
+        <87mubn2st4.fsf@toke.dk>
+        <CAJ+HfNhLDi1MJAughKFCVUjSvdOfPUcbvO9=RXmXQBS6Q3mv3w@mail.gmail.com>
+        <87zhezik3o.fsf@toke.dk>
+        <20200107140544.6b860e28@carbon>
+        <87r20biegi.fsf@toke.dk>
 MIME-Version: 1.0
-In-Reply-To: <5267da21-8f12-2750-c0c5-4ed31b03833b@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, 07 Jan 2020 14:27:41 +0100
+Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com> wrote:
 
-Hello all
+> Jesper Dangaard Brouer <brouer@redhat.com> writes:
+>=20
+> > On Tue, 07 Jan 2020 12:25:47 +0100
+> > Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com> wrote:
+> > =20
+> >> Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail.com> writes:
+> >>  =20
+> >> > On Fri, 20 Dec 2019 at 11:30, Toke H=C3=B8iland-J=C3=B8rgensen <toke=
+@redhat.com> wrote:   =20
+> >> >>
+> >> >> Jesper Dangaard Brouer <brouer@redhat.com> writes:
+> >> >>   =20
+> >> > [...]   =20
+> >> >> > I have now went over the entire patchset, and everything look per=
+fect,
+> >> >> > I will go as far as saying it is brilliant.  We previously had the
+> >> >> > issue, that using different redirect maps in a BPF-prog would cau=
+se the
+> >> >> > bulking effect to be reduced, as map_to_flush cause previous map =
+to get
+> >> >> > flushed. This is now solved :-)   =20
+> >> >>
+> >> >> Another thing that occurred to me while thinking about this: Now th=
+at we
+> >> >> have a single flush list, is there any reason we couldn't move the
+> >> >> devmap xdp_bulk_queue into struct net_device? That way it could als=
+o be
+> >> >> used for the non-map variant of bpf_redirect()?
+> >> >>   =20
+> >> >
+> >> > Indeed! (At least I don't see any blockers...)   =20
+> >>=20
+> >> Cool, that's what I thought. Maybe I'll give that a shot, then, unless
+> >> you beat me to it ;) =20
+> > =20
+> > Generally sounds like a good idea.
+> >
+> > It this only for devmap xdp_bulk_queue? =20
+>=20
+> Non-map redirect only supports redirecting across interfaces (the
+> parameter is an ifindex), so yeah, this would be just for that.
 
-I am facing an issue related to Raspberry PI 3B+ and onboard ethernet card.
+Sure, then you don't need to worry about below gotchas.
 
-When doing a huge transfer (more than 1GB) in a row, transfer hanges and 
-failed after a few minutes.
-
-
-I have two ways to reproduce this issue
-
-
-using NFS (v3 or v4)
-
-     dd if=/dev/zero of=/NFSPATH/file bs=4M count=1000 status=progress
-
-
-     we can see that at some point dd hangs and becomes non interrutible 
-(no way to ctrl-c it or kill it)
-
-     after afew minutes, dd dies and a bunch of NFS server not 
-responding / NFS server is OK are seens into the journal
-
-
-Using SCP
-
-     dd if=/dev/zero of=/tmp/file bs=4M count=1000
-
-     scp /tmp/file user@server:/directory
-
-
-     scp hangs after 1GB and after a few minutes scp is failing with 
-message "client_loop: send disconnect: Broken pipe lostconnection"
-
-
-
-
-It appears, this is a known bug relatted to TCP Segmentation Offload & 
-Selective Acknowledge.
-
-disabling this TSO (ethtool -K eth0 tso off & ethtool -K eth0 gso off) 
-solves the issue.
-
-A patch has been created to disable the feature by default by the 
-raspberry team and is by default applied wihtin raspbian.
-
-comment from the patch :
-
-/* TSO seems to be having some issue with Selective Acknowledge (SACK) that
-  * results in lost data never being retransmitted.
-  * Disable it by default now, but adds a module parameter to enable it for
-  * debug purposes (the full cause is not currently understood).
-  */
+I do like the idea, as this would/should solve the non-map redirect
+performance issue.
 
 
-For reference you can find
+> > Some gotchas off the top of my head.
+> >
+> > The cpumap also have a struct xdp_bulk_queue, which have a different
+> > layout. (sidenote: due to BTF we likely want rename that).
+> >
+> > If you want to generalize this across all redirect maps type. You
+> > should know, that it was on purpose that I designed the bulking to be
+> > map specific, because that allowed each map to control its own optimal
+> > bulking.  E.g. devmap does 16 frames bulking, cpumap does 8 frames (as
+> > it matches sending 1 cacheline into underlying ptr_ring), xskmap does
+> > 64 AFAIK (which could hurt-latency, but that is another discussion). =20
+>=20
+> Bj=C3=B6rn's patches do leave the per-type behaviour, they just get rid of
+> the per-map flush queues... :)
 
-a link to the issue I created yesterday : 
-https://github.com/raspberrypi/linux/issues/3395
+Yes, I know ;-)
 
-links to raspberry dev team : 
-https://github.com/raspberrypi/linux/issues/2482 & 
-https://github.com/raspberrypi/linux/issues/2449
-
-
-
-If you need me to test things, or give you more informations, I ll be 
-pleased to help.
-
-
-
-Fox
-
-
-PS : this is a resent in with plain text because vger rejected the first 
-one with html formating ...:)
+--=20
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
 
