@@ -2,89 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 50519133246
-	for <lists+netdev@lfdr.de>; Tue,  7 Jan 2020 22:09:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EE47C1333FE
+	for <lists+netdev@lfdr.de>; Tue,  7 Jan 2020 22:23:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729743AbgAGVIv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jan 2020 16:08:51 -0500
-Received: from mail.kernel.org ([198.145.29.99]:33490 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729740AbgAGVIt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 7 Jan 2020 16:08:49 -0500
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id E255B20678;
-        Tue,  7 Jan 2020 21:08:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1578431328;
-        bh=u8nBtxr5Vk8ZYc+pl37NvtifH+6EGTSzMPS+Y/gMMQo=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=T5K73ArqI9H8UGmGm8V7Z7vjKXdn4t8L7QcS/MXQKi9bJXQkiIvbis4QFiQ9d3koq
-         ZHC7bUJJ64bDD7hsEy0tsidg9edSKvpYWgiPi8uvAr8TnyNBa62pIaFURkvXvyAdje
-         K9vsqZnCF5sQhlPoCncSWuFaQbqUekBYCEQqejV0=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, netdev@vger.kernel.org,
-        David Miller <davem@davemloft.net>,
-        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 12/74] net: make socket read/write_iter() honor IOCB_NOWAIT
-Date:   Tue,  7 Jan 2020 21:54:37 +0100
-Message-Id: <20200107205143.809489508@linuxfoundation.org>
-X-Mailer: git-send-email 2.24.1
-In-Reply-To: <20200107205135.369001641@linuxfoundation.org>
-References: <20200107205135.369001641@linuxfoundation.org>
-User-Agent: quilt/0.66
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        id S1728824AbgAGVXC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Jan 2020 16:23:02 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:38018 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728134AbgAGVBh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jan 2020 16:01:37 -0500
+Received: from localhost (unknown [IPv6:2601:601:9f00:1c3::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id B237515A15B85;
+        Tue,  7 Jan 2020 13:01:35 -0800 (PST)
+Date:   Tue, 07 Jan 2020 13:01:33 -0800 (PST)
+Message-Id: <20200107.130133.1900367587695369052.davem@davemloft.net>
+To:     Jiping.Ma2@windriver.com
+Cc:     peppe.cavallaro@st.com, alexandre.torgue@st.com,
+        joabreu@synopsys.com, mcoquelin.stm32@gmail.com,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] stmmac: debugfs entry name is not be changed when udev
+ rename device name.
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <99d183bc-7668-7749-54d6-3649c549dec8@windriver.com>
+References: <15aedd71-e077-4c6c-e30c-9396d16eaeec@windriver.com>
+        <20200106.182259.1907306689510314367.davem@davemloft.net>
+        <99d183bc-7668-7749-54d6-3649c549dec8@windriver.com>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 07 Jan 2020 13:01:36 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jens Axboe <axboe@kernel.dk>
+From: Jiping Ma <Jiping.Ma2@windriver.com>
+Date: Tue, 7 Jan 2020 10:59:22 +0800
 
-[ Upstream commit ebfcd8955c0b52eb793bcbc9e71140e3d0cdb228 ]
+> 
+> 
+> On 01/07/2020 10:22 AM, David Miller wrote:
+>> From: Jiping Ma <Jiping.Ma2@windriver.com>
+>> Date: Tue, 7 Jan 2020 09:00:53 +0800
+>>
+>>>
+>>> On 01/07/2020 05:45 AM, David Miller wrote:
+>>>> From: Jiping Ma <jiping.ma2@windriver.com>
+>>>> Date: Mon, 6 Jan 2020 10:33:41 +0800
+>>>>
+>>>>> Add one notifier for udev changes net device name.
+>>>>>
+>>>>> Signed-off-by: Jiping Ma <jiping.ma2@windriver.com>
+>>>> This doesn't apply to 'net' and since this is a bug fix that is where
+>>>> you should target this change.
+>>> What's the next step that I can do?
+>> Respin your patch against the net GIT tree so that it applies clean.y
+> OK, I will generate the new patch based on the latest linux kernel
+> code.
+> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
 
-The socket read/write helpers only look at the file O_NONBLOCK. not
-the iocb IOCB_NOWAIT flag. This breaks users like preadv2/pwritev2
-and io_uring that rely on not having the file itself marked nonblocking,
-but rather the iocb itself.
-
-Cc: netdev@vger.kernel.org
-Acked-by: David Miller <davem@davemloft.net>
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- net/socket.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/net/socket.c b/net/socket.c
-index aab65277314d..5b134a6b6216 100644
---- a/net/socket.c
-+++ b/net/socket.c
-@@ -891,7 +891,7 @@ static ssize_t sock_read_iter(struct kiocb *iocb, struct iov_iter *to)
- 			     .msg_iocb = iocb};
- 	ssize_t res;
- 
--	if (file->f_flags & O_NONBLOCK)
-+	if (file->f_flags & O_NONBLOCK || (iocb->ki_flags & IOCB_NOWAIT))
- 		msg.msg_flags = MSG_DONTWAIT;
- 
- 	if (iocb->ki_pos != 0)
-@@ -916,7 +916,7 @@ static ssize_t sock_write_iter(struct kiocb *iocb, struct iov_iter *from)
- 	if (iocb->ki_pos != 0)
- 		return -ESPIPE;
- 
--	if (file->f_flags & O_NONBLOCK)
-+	if (file->f_flags & O_NONBLOCK || (iocb->ki_flags & IOCB_NOWAIT))
- 		msg.msg_flags = MSG_DONTWAIT;
- 
- 	if (sock->type == SOCK_SEQPACKET)
--- 
-2.20.1
-
-
-
+That's not the networking GIT tree.
