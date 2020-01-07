@@ -2,73 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A475F132FAF
-	for <lists+netdev@lfdr.de>; Tue,  7 Jan 2020 20:43:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D417E132FCA
+	for <lists+netdev@lfdr.de>; Tue,  7 Jan 2020 20:45:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728651AbgAGTnC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jan 2020 14:43:02 -0500
-Received: from mail-il1-f199.google.com ([209.85.166.199]:45741 "EHLO
-        mail-il1-f199.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728618AbgAGTnC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jan 2020 14:43:02 -0500
-Received: by mail-il1-f199.google.com with SMTP id w6so382993ill.12
-        for <netdev@vger.kernel.org>; Tue, 07 Jan 2020 11:43:02 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=zJNitKAgVyD6L05mimG8VM/c6DYKBTWRutBYb9hJfsg=;
-        b=XQAnKPeeU5QB2UpPl6QEYFbZ5xzlq3GURDfMOGGTv3qUpZP+k5eCM9kXPRM0Oiw8Km
-         CMbZctorf89Q8WyGXQrZGvstPkympO4sOcLST7dWvCEq+PguonDqi0BlzP5sEW11q5Mz
-         OOnlaFN3mjdmirTGrSt3DW3GTtXO0u66uqtScSvtrPbUN15RCP5u4KJLNB+I4tp8Gj/o
-         aOAbrXVuu2/Lfz5eQPqYtFOa9nNB8Joo0oWzdnAtJAY6aUizWFsldHVJG1E0K5nVVznx
-         0RX8xnrCFlkWUe/B0l81VFfpbh5kpcWsYVnAqG5HNPTY+6142uLVP0EZMwyM5WV1ydPX
-         3o7A==
-X-Gm-Message-State: APjAAAWTbKmlLx/IDbQIQn0xa/Tjr8WKv3UkFVUDNIierZ/AWKLNH+Nj
-        dJq10BR0nW/CSQCflvj+NUF8x5oCWGAn8aJLaHFRxJ0/pD3g
-X-Google-Smtp-Source: APXvYqxzHYUUKPkOmQcPvEfIBx0vVL1cBuV0YQ2jq2bdAO99TQxTbcUhwD9QCib5JPi2GrYjV7Q7faGDMF0Lr3JsMKGszJFwr3Zv
+        id S1728760AbgAGTpj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Jan 2020 14:45:39 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:51266 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728748AbgAGTpj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 7 Jan 2020 14:45:39 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=fLI3vbFuQeo6MNH7rDpLpEc7V3nP+2LA0KTZKh7sdb0=; b=ej2rYTh/Mm4onKMAJCnljY8y6y
+        yPFbdNCvIAZxLpwpC2uA1BNLJR9pSOcK6m1Fm1mh05w7wjdDK5pgOUO7OYu+VYxLMS1X5YfY7WCu9
+        ZMTJLnMulzTO/UYS0hlxo4euE/9sCWTJ8PRfVUXtV+C5bkAIi7jKVZPdIdXC0NK+s3io=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1iounI-0004k6-Nk; Tue, 07 Jan 2020 20:45:36 +0100
+Date:   Tue, 7 Jan 2020 20:45:36 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Shannon Nelson <snelson@pensando.io>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net
+Subject: Re: [PATCH v2 net-next 3/4] ionic: restrict received packets to mtu
+ size
+Message-ID: <20200107194536.GB16895@lunn.ch>
+References: <20200107034349.59268-1-snelson@pensando.io>
+ <20200107034349.59268-4-snelson@pensando.io>
+ <20200107130949.GA23819@lunn.ch>
+ <112c6fd3-6565-e88a-dde5-520770d9f024@pensando.io>
 MIME-Version: 1.0
-X-Received: by 2002:a92:c9cc:: with SMTP id k12mr674567ilq.269.1578426181701;
- Tue, 07 Jan 2020 11:43:01 -0800 (PST)
-Date:   Tue, 07 Jan 2020 11:43:01 -0800
-In-Reply-To: <0000000000001483d7059b8eed67@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000dd593e059b91fbff@google.com>
-Subject: Re: general protection fault in hash_mac4_uadt
-From:   syzbot <syzbot+cabfabc5c6bf63369d04@syzkaller.appspotmail.com>
-To:     coreteam@netfilter.org, davem@davemloft.net, fw@strlen.de,
-        info@metux.net, jeremy@azazel.net, kadlec@blackhole.kfki.hu,
-        kadlec@netfilter.org, kstewart@linuxfoundation.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, pablo@netfilter.org,
-        syzkaller-bugs@googlegroups.com, tglx@linutronix.de
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <112c6fd3-6565-e88a-dde5-520770d9f024@pensando.io>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has bisected this bug to:
+> Hi Andrew,
+> 
 
-commit 23c42a403a9cfdbad6004a556c927be7dd61a8ee
-Author: Jozsef Kadlecsik <kadlec@blackhole.kfki.hu>
-Date:   Sat Oct 27 13:07:40 2018 +0000
+Hi Shannon
 
-     netfilter: ipset: Introduction of new commands and protocol version 7
+> In my experience the driver typically tells the NIC about the current
+> max_frame size (e.g. MTU + ETH_HLEN), the NIC only copies max_frame bytes,
+> and the NIC returns an error indication on a packets that had more than
+> max_frame.
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=16b9d5fee00000
-start commit:   c101fffc Merge tag 'mlx5-fixes-2020-01-06' of git://git.ke..
-git tree:       net
-final crash:    https://syzkaller.appspot.com/x/report.txt?x=15b9d5fee00000
-console output: https://syzkaller.appspot.com/x/log.txt?x=11b9d5fee00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=f2f3ef188b7e16cf
-dashboard link: https://syzkaller.appspot.com/bug?extid=cabfabc5c6bf63369d04
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=14896eb9e00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=139ed115e00000
+Having played around with a few different NICs for DSA, it seems more
+like 75% don't care about the 'MRU' and will happily accept bigger
+frames.
 
-Reported-by: syzbot+cabfabc5c6bf63369d04@syzkaller.appspotmail.com
-Fixes: 23c42a403a9c ("netfilter: ipset: Introduction of new commands and  
-protocol version 7")
+Anyway, it does not hurt to drop received frames bigger than what you
+can transmit.
 
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+
+    Andrew
