@@ -2,96 +2,195 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 03E55131C87
-	for <lists+netdev@lfdr.de>; Tue,  7 Jan 2020 00:46:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 72D9C131CA0
+	for <lists+netdev@lfdr.de>; Tue,  7 Jan 2020 01:06:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727190AbgAFXqn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Jan 2020 18:46:43 -0500
-Received: from mail-pj1-f65.google.com ([209.85.216.65]:37890 "EHLO
-        mail-pj1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726599AbgAFXqn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jan 2020 18:46:43 -0500
-Received: by mail-pj1-f65.google.com with SMTP id l35so8416148pje.3;
-        Mon, 06 Jan 2020 15:46:43 -0800 (PST)
+        id S1727233AbgAGAGo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Jan 2020 19:06:44 -0500
+Received: from mail-pl1-f193.google.com ([209.85.214.193]:41822 "EHLO
+        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726858AbgAGAGo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jan 2020 19:06:44 -0500
+Received: by mail-pl1-f193.google.com with SMTP id bd4so22452870plb.8
+        for <netdev@vger.kernel.org>; Mon, 06 Jan 2020 16:06:44 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=lXzoNNYg+iL14F+bP33SlPZMJC722e8o96/p03q5+eU=;
-        b=AhB2kstvXC4bjVGm9u3+Ft9mq2oBei9/53hsYBcE/6iGpONhX5ZIeDcx5OwTrNNRX+
-         z/qQB0r3WwLxuhj5NY4dj3tF354VQ4VPdkEeKbw0GHxhigUenl/I4uAMdYJ40dGmGVPe
-         C21WjDqVt5gYo1r4FgMf0roUJzpHsRRrm4ukuCNAQ2Ns/dXfs0YkomOw7Uc5i0Syyi5y
-         1N0hwr/1fB9z3RbSAjsmH141qZ7E/isZse+77mnMW1/ppPo3ix7R8qEV2AcACX7bUETb
-         EUi+gBjGXjo0/MVqvGJbnY2dF3eALQ4TfUWE62qLgkCnljiy3KFcc0ChJgbcyrJiwyw8
-         QKzA==
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=hXeyVMFmGmToxPkSIcISzKFgdbx9YHPrVDzmQfN3CR8=;
+        b=PZaJ3IFwOmtXXQ4vm1o66XMiXioajbDA/XY7U7Y9ZSUaj9zyOKp6jQoDICJdRy9DJV
+         iJEMvU3Vwa+EfPhE5B0pCv2j9sWQ6sVGJuQ6JxcbeATp0XkPE5iDk4RUxeHIADElafXv
+         vX3TnOA7/xobsFUqTaOX7Vb3b4tajnDGNjx/LVuidshVfwEf3NVLWBYfjbmnlx8fOz5G
+         Z00ObOs87u5y9cKvORJve1E8RJFBs4RxcvAgPu3ED5sF46tWfzoOOP0oHAy+QhqtAKCV
+         wTp/2WZS3uQMArv92oKNQmiQQgkuIoyLQJrH4zRC36KbidT3lLdv3rI+VL8OjRjNTdCF
+         S3BA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=lXzoNNYg+iL14F+bP33SlPZMJC722e8o96/p03q5+eU=;
-        b=B3STh9qR0xAP+w6X81nTVCAeRn/d6fC5pBtU/dUBCqiJGQPMvcR76X6XAxf3vANVx6
-         dzE/ggKjKqk375bmXKllBwpt9a39a+Urr0Pu9uo0ul6PYfVS5gw13D7KQVD2HCpHHYyF
-         WYbThvmthB++sO/Q11/bH75Zg3y/vLuYisnN1TZ69RP6zS3PalOHhdWzkNSAKiknikty
-         if62p8Zfi1Dn+gcRll3loDRiL3ptgtX2NbvmcD45pRMHX2aWsea6r+TCVE3WdaRc0WS3
-         lTbX3G05IAZi4P962YdWzzB0CsPzb1D6+TaiJGNXrlnyGGmJyYXaeSd5LmAdeyXPotJ1
-         s4dg==
-X-Gm-Message-State: APjAAAWL/AMHcj1bkQ8vI/QxeIh5A1W0rjOwjfuZ7vqxm/bHRd+z6dLr
-        kX/nVozjZSlOPH24MqHLnE4=
-X-Google-Smtp-Source: APXvYqzs+BBcsUpY85BwooDMbFNUg82RZQ28blt2CVIjO/xu7m2nxo0kG7BS75dYe3uFLAV/E2czIg==
-X-Received: by 2002:a17:90a:778a:: with SMTP id v10mr43717211pjk.26.1578354402800;
-        Mon, 06 Jan 2020 15:46:42 -0800 (PST)
-Received: from ast-mbp ([2620:10d:c090:200::1:2bf6])
-        by smtp.gmail.com with ESMTPSA id e16sm72115828pgk.77.2020.01.06.15.46.41
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 06 Jan 2020 15:46:42 -0800 (PST)
-Date:   Mon, 6 Jan 2020 15:46:40 -0800
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Jiri Olsa <jolsa@kernel.org>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Andrii Nakryiko <andriin@fb.com>,
-        Yonghong Song <yhs@fb.com>, Martin KaFai Lau <kafai@fb.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        David Miller <davem@redhat.com>, bjorn.topel@intel.com
-Subject: Re: [PATCH 5/5] bpf: Allow to resolve bpf trampoline in unwind
-Message-ID: <20200106234639.fo2ctgkb5vumayyl@ast-mbp>
-References: <20191229143740.29143-1-jolsa@kernel.org>
- <20191229143740.29143-6-jolsa@kernel.org>
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=hXeyVMFmGmToxPkSIcISzKFgdbx9YHPrVDzmQfN3CR8=;
+        b=LKYlkoA17dp4ZBVr6wuPIGU5xoBJV3CEXUJvKosxXMuZI6kZSbF8AkBl/icq0sf0Jo
+         Wn3sD/ghFFHXcVGdv9g6P6mESiop8+8k7EKNE0njuk22cUOS503bbXCbhr7DhbtXLQY8
+         eVyHhbHGk85mR+nNv4bEKssgemAZzISUNaBORve1rtIoqd6Ao4+Tp+srQ5RtqIZ53Rgo
+         WOE3wOyTvd50GCVJXLtEArcVFBTM8SJGLICWboRAvLjlFIOh6uNT52EY//xxHyptL8at
+         ktmQswGBvZ1tHv15FesCKSIIFU3P7VOFimjdDPpVtflpVbczUWv86b/2OEWNCig2y9Dv
+         bldA==
+X-Gm-Message-State: APjAAAVGxipJTiU4FN7xWHUO5Zm8NAqv9bRFH9XLOIuRJwiUHUKr6Klt
+        dLONhnn4Df1/TEnDzLfo/vrGog==
+X-Google-Smtp-Source: APXvYqwWJDDGU55CFH5Kg+5I0sQou/OOR3fPXtKcOaqKe9/viEUVuPIQzH1yUY8b9uAPQcZeJ+VjxA==
+X-Received: by 2002:a17:902:b908:: with SMTP id bf8mr80141322plb.293.1578355603544;
+        Mon, 06 Jan 2020 16:06:43 -0800 (PST)
+Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id b17sm68647128pfb.146.2020.01.06.16.06.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 06 Jan 2020 16:06:43 -0800 (PST)
+Date:   Mon, 6 Jan 2020 16:06:35 -0800
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Ttttabcd <ttttabcd@protonmail.com>
+Cc:     Netdev <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        "kuznet@ms2.inr.ac.ru" <kuznet@ms2.inr.ac.ru>,
+        "yoshfuji@linux-ipv6.org" <yoshfuji@linux-ipv6.org>
+Subject: Re: [PATCH] fragment: Improved handling of incorrect IP fragments
+Message-ID: <20200106160635.2550c92f@hermes.lan>
+In-Reply-To: <BRNuMFiJpql6kgRrEdMdQfo3cypcBpqGRtfWvbW8QFsv2MSUj_fUV-s8Fx-xopJ8kvR3ZMJM0tck6FYxm8S0EcpZngEzrfFg5w22Qo8asEQ=@protonmail.com>
+References: <u0QFePiYSfxBeUsNVFRhPjsGViwg-pXLIApJaVLdUICuvLTQg5y5-rdNhh9lPcDsyO24c7wXxy5m6b6dK0aB6kqR0ypk8X9ekiLe3NQ3ICY=@protonmail.com>
+        <20200102112731.299b5fe4@hermes.lan>
+        <BRNuMFiJpql6kgRrEdMdQfo3cypcBpqGRtfWvbW8QFsv2MSUj_fUV-s8Fx-xopJ8kvR3ZMJM0tck6FYxm8S0EcpZngEzrfFg5w22Qo8asEQ=@protonmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191229143740.29143-6-jolsa@kernel.org>
-User-Agent: NeoMutt/20180223
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Dec 29, 2019 at 03:37:40PM +0100, Jiri Olsa wrote:
-> When unwinding the stack we need to identify each
-> address to successfully continue. Adding latch tree
-> to keep trampolines for quick lookup during the
-> unwind.
-> 
-> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-...
-> +bool is_bpf_trampoline(void *addr)
-> +{
-> +	return latch_tree_find(addr, &tree, &tree_ops) != NULL;
-> +}
-> +
->  struct bpf_trampoline *bpf_trampoline_lookup(u64 key)
->  {
->  	struct bpf_trampoline *tr;
-> @@ -65,6 +98,7 @@ struct bpf_trampoline *bpf_trampoline_lookup(u64 key)
->  	for (i = 0; i < BPF_TRAMP_MAX; i++)
->  		INIT_HLIST_HEAD(&tr->progs_hlist[i]);
->  	tr->image = image;
-> +	latch_tree_insert(&tr->tnode, &tree, &tree_ops);
+On Fri, 03 Jan 2020 00:44:30 +0000
+Ttttabcd <ttttabcd@protonmail.com> wrote:
 
-Thanks for the fix. I was thinking to apply it, but then realized that bpf
-dispatcher logic has the same issue.
-Could you generalize the fix for both?
-May be bpf_jit_alloc_exec_page() can do latch_tree_insert() ?
-and new version of bpf_jit_free_exec() is needed that will do latch_tree_erase().
-Wdyt?
+> > You can not safely drop this check.
+> > With recursive fragmentation it is possible that the initial payload en=
+ds
+> > up exceeding the maximum packet length. =20
+>=20
+> Can you give an example? What is "recursive fragmentation"?
+>=20
+> In my previous tests, all fragment packets with a payload length exceedin=
+g 65535 will be in the ip6_frag_queue
+>=20
+> if ((unsigned int) end> IPV6_MAXPLEN)
+>=20
+> Was discarded.
+>=20
+>=20
+
+I get wary of any changes to fragmentation code. It has a long history
+of bugs and is complex. See recent FragSmack for some backstory.
+
+You need to split IPv4 and IPv6 parts into two different patches.
+In the IPv4 part, you dropped the test for oversize IPv4 packet.
+
+With raw packet tools it is possible to generate a packet that reassembles =
+into
+a packet larger than 64K.  An example is:
+
+$ tshark -r oversize-ipv4.pcap=20
+    1   0.000000    127.0.0.1 =E2=86=92 127.0.0.1    IPv4 1514 Fragmented I=
+P protocol (proto=3DTCP 6, off=3D0, ID=3D9b39)
+    2   0.001615    127.0.0.1 =E2=86=92 127.0.0.1    IPv4 1514 Fragmented I=
+P protocol (proto=3DTCP 6, off=3D1440, ID=3D9b39)
+    3   0.004115    127.0.0.1 =E2=86=92 127.0.0.1    IPv4 1514 Fragmented I=
+P protocol (proto=3DTCP 6, off=3D2920, ID=3D9b39)
+    4   0.006502    127.0.0.1 =E2=86=92 127.0.0.1    IPv4 1514 Fragmented I=
+P protocol (proto=3DTCP 6, off=3D4400, ID=3D9b39)
+    5   0.008819    127.0.0.1 =E2=86=92 127.0.0.1    IPv4 1514 Fragmented I=
+P protocol (proto=3DTCP 6, off=3D5880, ID=3D9b39)
+    6   0.011178    127.0.0.1 =E2=86=92 127.0.0.1    IPv4 1514 Fragmented I=
+P protocol (proto=3DTCP 6, off=3D7360, ID=3D9b39)
+    7   0.013465    127.0.0.1 =E2=86=92 127.0.0.1    IPv4 1514 Fragmented I=
+P protocol (proto=3DTCP 6, off=3D8840, ID=3D9b39)
+    8   0.016040    127.0.0.1 =E2=86=92 127.0.0.1    IPv4 1514 Fragmented I=
+P protocol (proto=3DTCP 6, off=3D10320, ID=3D9b39)
+    9   0.018369    127.0.0.1 =E2=86=92 127.0.0.1    IPv4 1514 Fragmented I=
+P protocol (proto=3DTCP 6, off=3D11800, ID=3D9b39)
+   10   0.020679    127.0.0.1 =E2=86=92 127.0.0.1    IPv4 1514 Fragmented I=
+P protocol (proto=3DTCP 6, off=3D13280, ID=3D9b39)
+   11   0.022965    127.0.0.1 =E2=86=92 127.0.0.1    IPv4 1514 Fragmented I=
+P protocol (proto=3DTCP 6, off=3D14760, ID=3D9b39)
+   12   0.025186    127.0.0.1 =E2=86=92 127.0.0.1    IPv4 1514 Fragmented I=
+P protocol (proto=3DTCP 6, off=3D16240, ID=3D9b39)
+   13   0.027277    127.0.0.1 =E2=86=92 127.0.0.1    IPv4 1514 Fragmented I=
+P protocol (proto=3DTCP 6, off=3D17720, ID=3D9b39)
+   14   0.028917    127.0.0.1 =E2=86=92 127.0.0.1    IPv4 1514 Fragmented I=
+P protocol (proto=3DTCP 6, off=3D19200, ID=3D9b39)
+   15   0.030832    127.0.0.1 =E2=86=92 127.0.0.1    IPv4 1514 Fragmented I=
+P protocol (proto=3DTCP 6, off=3D20680, ID=3D9b39)
+   16   0.032232    127.0.0.1 =E2=86=92 127.0.0.1    IPv4 1514 Fragmented I=
+P protocol (proto=3DTCP 6, off=3D22160, ID=3D9b39)
+   17   0.033742    127.0.0.1 =E2=86=92 127.0.0.1    IPv4 1514 Fragmented I=
+P protocol (proto=3DTCP 6, off=3D23640, ID=3D9b39)
+   18   0.035106    127.0.0.1 =E2=86=92 127.0.0.1    IPv4 1514 Fragmented I=
+P protocol (proto=3DTCP 6, off=3D25120, ID=3D9b39)
+   19   0.036736    127.0.0.1 =E2=86=92 127.0.0.1    IPv4 1514 Fragmented I=
+P protocol (proto=3DTCP 6, off=3D26600, ID=3D9b39)
+   20   0.037728    127.0.0.1 =E2=86=92 127.0.0.1    IPv4 1514 Fragmented I=
+P protocol (proto=3DTCP 6, off=3D28080, ID=3D9b39)
+   21   0.038983    127.0.0.1 =E2=86=92 127.0.0.1    IPv4 1514 Fragmented I=
+P protocol (proto=3DTCP 6, off=3D29560, ID=3D9b39)
+   22   0.040007    127.0.0.1 =E2=86=92 127.0.0.1    IPv4 1514 Fragmented I=
+P protocol (proto=3DTCP 6, off=3D31040, ID=3D9b39)
+   23   0.041459    127.0.0.1 =E2=86=92 127.0.0.1    IPv4 1514 Fragmented I=
+P protocol (proto=3DTCP 6, off=3D32520, ID=3D9b39)
+   24   0.042833    127.0.0.1 =E2=86=92 127.0.0.1    IPv4 1514 Fragmented I=
+P protocol (proto=3DTCP 6, off=3D34000, ID=3D9b39)
+   25   0.044030    127.0.0.1 =E2=86=92 127.0.0.1    IPv4 1514 Fragmented I=
+P protocol (proto=3DTCP 6, off=3D35480, ID=3D9b39)
+   26   0.044909    127.0.0.1 =E2=86=92 127.0.0.1    IPv4 1514 Fragmented I=
+P protocol (proto=3DTCP 6, off=3D36960, ID=3D9b39)
+   27   0.045921    127.0.0.1 =E2=86=92 127.0.0.1    IPv4 1514 Fragmented I=
+P protocol (proto=3DTCP 6, off=3D38440, ID=3D9b39)
+   28   0.046767    127.0.0.1 =E2=86=92 127.0.0.1    IPv4 1514 Fragmented I=
+P protocol (proto=3DTCP 6, off=3D39920, ID=3D9b39)
+   29   0.047581    127.0.0.1 =E2=86=92 127.0.0.1    IPv4 1514 Fragmented I=
+P protocol (proto=3DTCP 6, off=3D41400, ID=3D9b39)
+   30   0.048610    127.0.0.1 =E2=86=92 127.0.0.1    IPv4 1514 Fragmented I=
+P protocol (proto=3DTCP 6, off=3D42880, ID=3D9b39)
+   31   0.049323    127.0.0.1 =E2=86=92 127.0.0.1    IPv4 1514 Fragmented I=
+P protocol (proto=3DTCP 6, off=3D44360, ID=3D9b39)
+   32   0.050102    127.0.0.1 =E2=86=92 127.0.0.1    IPv4 1514 Fragmented I=
+P protocol (proto=3DTCP 6, off=3D45840, ID=3D9b39)
+   33   0.051014    127.0.0.1 =E2=86=92 127.0.0.1    IPv4 1514 Fragmented I=
+P protocol (proto=3DTCP 6, off=3D47320, ID=3D9b39)
+   34   0.051787    127.0.0.1 =E2=86=92 127.0.0.1    IPv4 1514 Fragmented I=
+P protocol (proto=3DTCP 6, off=3D48800, ID=3D9b39)
+   35   0.052576    127.0.0.1 =E2=86=92 127.0.0.1    IPv4 1514 Fragmented I=
+P protocol (proto=3DTCP 6, off=3D50280, ID=3D9b39)
+   36   0.053448    127.0.0.1 =E2=86=92 127.0.0.1    IPv4 1514 Fragmented I=
+P protocol (proto=3DTCP 6, off=3D51760, ID=3D9b39)
+   37   0.054260    127.0.0.1 =E2=86=92 127.0.0.1    IPv4 1514 Fragmented I=
+P protocol (proto=3DTCP 6, off=3D53240, ID=3D9b39)
+   38   0.055036    127.0.0.1 =E2=86=92 127.0.0.1    IPv4 1514 Fragmented I=
+P protocol (proto=3DTCP 6, off=3D54720, ID=3D9b39)
+   39   0.055823    127.0.0.1 =E2=86=92 127.0.0.1    IPv4 1514 Fragmented I=
+P protocol (proto=3DTCP 6, off=3D56200, ID=3D9b39)
+   40   0.056614    127.0.0.1 =E2=86=92 127.0.0.1    IPv4 1514 Fragmented I=
+P protocol (proto=3DTCP 6, off=3D57680, ID=3D9b39)
+   41   0.057512    127.0.0.1 =E2=86=92 127.0.0.1    IPv4 1514 Fragmented I=
+P protocol (proto=3DTCP 6, off=3D59160, ID=3D9b39)
+   42   0.058313    127.0.0.1 =E2=86=92 127.0.0.1    IPv4 1514 Fragmented I=
+P protocol (proto=3DTCP 6, off=3D60640, ID=3D9b39)
+   43   0.059073    127.0.0.1 =E2=86=92 127.0.0.1    IPv4 1514 Fragmented I=
+P protocol (proto=3DTCP 6, off=3D62120, ID=3D9b39)
+   44   0.059945    127.0.0.1 =E2=86=92 127.0.0.1    IPv4 1514 Fragmented I=
+P protocol (proto=3DTCP 6, off=3D63600, ID=3D9b39)
+   45   0.060705    127.0.0.1 =E2=86=92 127.0.0.1    TCP 469 16705 =E2=86=
+=92 16705 [FIN, ECN, NS] Seq=3D1 Win=3D16705, bogus TCP header length (16, =
+must be at least 20)
+
+With current (correct) Linux kernel code this gets reassembled and dropped.
+As seen in dmesg log and statistics.
+
+With your Ipv4 patch the oversize packet gets passed on up the stack.
+
+Testing this stuff is hard, it requires packet hacker tools.
+
