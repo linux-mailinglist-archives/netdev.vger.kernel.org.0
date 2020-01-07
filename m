@@ -2,316 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C00F13222C
-	for <lists+netdev@lfdr.de>; Tue,  7 Jan 2020 10:22:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6022213222D
+	for <lists+netdev@lfdr.de>; Tue,  7 Jan 2020 10:23:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726690AbgAGJWZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jan 2020 04:22:25 -0500
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:44132 "EHLO
-        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726327AbgAGJWZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jan 2020 04:22:25 -0500
-Received: from Internal Mail-Server by MTLPINE1 (envelope-from roid@mellanox.com)
-        with ESMTPS (AES256-SHA encrypted); 7 Jan 2020 11:22:16 +0200
-Received: from dev-r-vrt-139.mtr.labs.mlnx (dev-r-vrt-139.mtr.labs.mlnx [10.212.139.1])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 0079MGmc027378;
-        Tue, 7 Jan 2020 11:22:16 +0200
-From:   Roi Dayan <roid@mellanox.com>
-To:     netdev@vger.kernel.org
-Cc:     David Ahern <dsahern@gmail.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Jiri Pirko <jiri@mellanox.com>, Roi Dayan <roid@mellanox.com>
-Subject: [PATCH iproute2] tc: flower: fix print with oneline option
-Date:   Tue,  7 Jan 2020 11:22:10 +0200
-Message-Id: <20200107092210.1562-1-roid@mellanox.com>
-X-Mailer: git-send-email 2.8.4
+        id S1727427AbgAGJXJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Jan 2020 04:23:09 -0500
+Received: from sv2-smtprelay2.synopsys.com ([149.117.73.133]:59362 "EHLO
+        smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726327AbgAGJXJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jan 2020 04:23:09 -0500
+Received: from mailhost.synopsys.com (badc-mailhost1.synopsys.com [10.192.0.17])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (No client certificate requested)
+        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 947224065A;
+        Tue,  7 Jan 2020 09:23:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
+        t=1578388988; bh=rF49R7wK663Cb+9DQWpm+psd5Who6XkF+k3pqUaMJXs=;
+        h=From:To:CC:Subject:Date:References:In-Reply-To:From;
+        b=Q3NaHrBEI1j1PC9TxW2wvZoDpSvWZq+7FStF9JTtmCGKcLXPzqT3A7pRkHbQTtrM8
+         ygeyQVD7umTy74bHg4h0aRxmxV9n73HmBEwc+nmNY+iOciRFkmxbyR1TzsSsT7I6SK
+         znAgkmIKcx/W2Jx9RSRDEJszfphAGwnn41n5ZLkNjM+pM4sU5hq/xXJaMYJkm6eNf+
+         dbe+AaZRg4Ih7hygQb+5U0wzqcxLfROeWBP+fnrQ3xcGo6GoBcFfEqYOF6gJg08G6F
+         dFbj1J+F28hr682vOQllsgITRFlSXSaQtORuJ7v84NsFCuJGIQxfvaDBL5SdWClFJ1
+         xYfyb/GkzR36w==
+Received: from US01WEHTC3.internal.synopsys.com (us01wehtc3.internal.synopsys.com [10.15.84.232])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mailhost.synopsys.com (Postfix) with ESMTPS id 664A7A0085;
+        Tue,  7 Jan 2020 09:23:08 +0000 (UTC)
+Received: from US01HYBRID2.internal.synopsys.com (10.15.246.24) by
+ US01WEHTC3.internal.synopsys.com (10.15.84.232) with Microsoft SMTP Server
+ (TLS) id 14.3.408.0; Tue, 7 Jan 2020 01:23:08 -0800
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (10.202.3.67) by
+ mrs.synopsys.com (10.15.246.24) with Microsoft SMTP Server (TLS) id
+ 14.3.408.0; Tue, 7 Jan 2020 01:23:08 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=A8FW3jwdiB7UKgSfFpqeWpewTdpHltcKygDk/gzpzx1nTfdLpxDGo+Kp7gn8DCdFsFg6gYZPWvteYw49rFxxJ2/7DPHlnbpzXs0wf61tfSgZTTOUQ5cv8jr5qiuHqUWJlgwGvDvIZ0YGwedPdyAyaqbfb3+4PQB0E2fIRBFX65dU8nVLfrJ2n5JZdg2wAmRsK2de8k7AkgIAqQwM0MvwK79UZLbQSvlDQsy8Gzrv4GEne+jITJCkNi7AgxoKQJ9x57Zee8FAtOybQkkV2bxC6CfGowEaaiBl+u2MSqHLsSr5irsN98C+zMEIo1KR8qSaJRp/DnOoJ8Er4aOZcofVZg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=rF49R7wK663Cb+9DQWpm+psd5Who6XkF+k3pqUaMJXs=;
+ b=V9rB1aURFiUfwsHLd7J9P0hx/VXTdo7RU/s9ukxofbQv83h0MKj0LEp5WbBKwVv7cnT9pWY4FqHY+D3sdLkgJhkpTURgt6XOSt7SOfjzvg9Ko4roQ6y22Bd8EEmQ3t7TN5cGCNjMb5C56GOzcsZ9K68LoQOepHkizJQMtcp+v19EcKa9gDXIzg47p3MMV1ds59o/WdrR1YAcMS64+gcMkSfjZQfIFUbZ80xRTchC2ZyNRbFP1B2T3xk0FwAYo1AAKMERh0yanUziemKzGbUrdBYEsfA7sumggDSoLrsn8NJUhG4/HhD4KNH0WMPJwE+mKpESn1Rp+3IxDF0p5K8kbQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=synopsys.com; dmarc=pass action=none header.from=synopsys.com;
+ dkim=pass header.d=synopsys.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=synopsys.onmicrosoft.com; s=selector2-synopsys-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=rF49R7wK663Cb+9DQWpm+psd5Who6XkF+k3pqUaMJXs=;
+ b=jn37Pk7xt5RN4ohyWwbtwC8FpMVuzYrdo5cpAaZFC5LHGT4G1Vzu7nuT7DuPo0MnRdGJCTAQZ2o1uPx+v6js9V2MHMCbAK5SsTfLCMgPC1Se0Kz8SB5MM4LwyxBXGyVGW/vj9gXOsp9mttkJyZhEG309vD6FMLn7l4F+WTGrnoo=
+Received: from BN8PR12MB3266.namprd12.prod.outlook.com (20.179.67.145) by
+ BN8PR12MB3235.namprd12.prod.outlook.com (20.179.67.147) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2602.15; Tue, 7 Jan 2020 09:23:07 +0000
+Received: from BN8PR12MB3266.namprd12.prod.outlook.com
+ ([fe80::c62:b247:6963:9da2]) by BN8PR12MB3266.namprd12.prod.outlook.com
+ ([fe80::c62:b247:6963:9da2%6]) with mapi id 15.20.2602.015; Tue, 7 Jan 2020
+ 09:23:07 +0000
+From:   Jose Abreu <Jose.Abreu@synopsys.com>
+To:     David Ahern <dsahern@gmail.com>,
+        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     Joao Pinto <Joao.Pinto@synopsys.com>
+Subject: RE: [PATCH iproute2-next] taprio: Add support for the SetAndHold and
+ SetAndRelease commands
+Thread-Topic: [PATCH iproute2-next] taprio: Add support for the SetAndHold and
+ SetAndRelease commands
+Thread-Index: AQHVtOPaDcyycxk/7Eqs7zmpoaCgzqfAhW2AgBM2+ACAC1GK0A==
+Date:   Tue, 7 Jan 2020 09:23:07 +0000
+Message-ID: <BN8PR12MB3266194DA97893C39EEF472DD33F0@BN8PR12MB3266.namprd12.prod.outlook.com>
+References: <060ba6e2de48763aec25df3ed87b64f86022f8b1.1576591746.git.Jose.Abreu@synopsys.com>
+ <874kxxck0m.fsf@linux.intel.com>
+ <8230b532-ffe6-4218-94ae-2609eb9034c1@gmail.com>
+In-Reply-To: <8230b532-ffe6-4218-94ae-2609eb9034c1@gmail.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=joabreu@synopsys.com; 
+x-originating-ip: [83.174.63.141]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 0313d5ac-88db-42b3-6967-08d7935334b5
+x-ms-traffictypediagnostic: BN8PR12MB3235:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <BN8PR12MB3235F1052C4CB90952706F90D33F0@BN8PR12MB3235.namprd12.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:357;
+x-forefront-prvs: 027578BB13
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(396003)(366004)(136003)(39860400002)(376002)(346002)(189003)(199004)(4744005)(55016002)(4326008)(2906002)(52536014)(66556008)(9686003)(86362001)(33656002)(107886003)(316002)(5660300002)(71200400001)(110136005)(186003)(8936002)(64756008)(66446008)(81166006)(81156014)(8676002)(6506007)(478600001)(76116006)(7696005)(66946007)(26005)(66476007);DIR:OUT;SFP:1102;SCL:1;SRVR:BN8PR12MB3235;H:BN8PR12MB3266.namprd12.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: synopsys.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: O65zhft4OygrBgTFS0in8l5/WXjRa9ML5aCPqwB05X7r/Lc6O0/yZSxBUmlnluW0q9bJAbIy1wLOU5PYbS8dUQBBOstuB+t7NUcLR4PAooEdc2u0w7ASdJxIycXR7iKkb6OxpXr0tNlymke17RTkJobBjeNVKEQ8GPE5MNtAKH6RAEH25+XgO/CPl4kdtuvDFfoK0fRJVgsc4N8LXnpT4wo8ysH7RTztlxlvI//vjg2GK3QwJU7j5hneMBFAxGB+KFVCco5JsWMWs3i8/l7hNRXUN4QjuKriqk0AbNubQqOtnNaWCEKgbK1vUxw9mIT8C3InWisPGHh5ku3PZFwuK2MDgY8Aov5rvAo66BjA8FxjIfI3VXOUYkoPOKfmRIwuhdfiDxrFnNJ1BFbSptgCRUZG5ui4YX8ZRsYIzMQjjb+BENrawSGUbQ25QBfQz98E
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0313d5ac-88db-42b3-6967-08d7935334b5
+X-MS-Exchange-CrossTenant-originalarrivaltime: 07 Jan 2020 09:23:07.0868
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: c33c9f88-1eb7-4099-9700-16013fd9e8aa
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: y4cLgyad3KqXGIda9RGLlB72w38Zcx1jkkoTP2tW6surO8OLXNJULPTYTc1TZhKAWNTm5fqf+ouz1pooMID72g==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR12MB3235
+X-OriginatorOrg: synopsys.com
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This commit fix all location in flower to use _SL_ instead of \n for
-newline to allow support for oneline option.
-
-Example before this commit:
-
-filter protocol ip pref 2 flower chain 0 handle 0x1
-  indev ens1f0
-  dst_mac 11:22:33:44:55:66
-  eth_type ipv4
-  ip_proto tcp
-  src_ip 2.2.2.2
-  src_port 99
-  dst_port 1-10\  tcp_flags 0x5/5
-  ip_flags frag
-  ct_state -trk\  ct_zone 4\  ct_mark 255
-  ct_label 00000000000000000000000000000000
-  skip_hw
-  not_in_hw\    action order 1: ct zone 5 pipe
-         index 1 ref 1 bind 1 installed 287 sec used 287 sec
-        Action statistics:\     Sent 0 bytes 0 pkt (dropped 0, overlimits 0 requeues 0)
-        backlog 0b 0p requeues 0\
-
-Example output after this commit:
-
-filter protocol ip pref 2 flower chain 0 handle 0x1 \  indev ens1f0\  dst_mac 11:22:33:44:55:66\  eth_type ipv4\  ip_proto tcp\  src_ip 2.2.2.2\  src_port 99\  dst_port 1-10\  tcp_flags 0x5/5\  ip_flags frag\  ct_state -trk\  ct_zone 4\  ct_mark 255\  ct_label 00000000000000000000000000000000\  skip_hw\  not_in_hw\action order 1: ct zone 5 pipe
-         index 1 ref 1 bind 1 installed 346 sec used 346 sec
-        Action statistics:\     Sent 0 bytes 0 pkt (dropped 0, overlimits 0 requeues 0)
-        backlog 0b 0p requeues 0\
-
-Signed-off-by: Roi Dayan <roid@mellanox.com>
-Acked-by: Jiri Pirko <jiri@mellanox.com>
----
- tc/f_flower.c | 83 ++++++++++++++++++++++++++++++++++++++---------------------
- 1 file changed, 54 insertions(+), 29 deletions(-)
-
-diff --git a/tc/f_flower.c b/tc/f_flower.c
-index a193c0eca22a..2d7a4ffe409e 100644
---- a/tc/f_flower.c
-+++ b/tc/f_flower.c
-@@ -1599,7 +1599,8 @@ static void flower_print_eth_addr(char *name, struct rtattr *addr_attr,
- 			sprintf(out + done, "/%d", bits);
- 	}
- 
--	sprintf(namefrm, "\n  %s %%s", name);
-+	print_nl();
-+	sprintf(namefrm, "  %s %%s", name);
- 	print_string(PRINT_ANY, name, namefrm, out);
- }
- 
-@@ -1624,7 +1625,8 @@ static void flower_print_eth_type(__be16 *p_eth_type,
- 	else
- 		sprintf(out, "%04x", ntohs(eth_type));
- 
--	print_string(PRINT_ANY, "eth_type", "\n  eth_type %s", out);
-+	print_nl();
-+	print_string(PRINT_ANY, "eth_type", "  eth_type %s", out);
- 	*p_eth_type = eth_type;
- }
- 
-@@ -1651,7 +1653,8 @@ static void flower_print_ip_proto(__u8 *p_ip_proto,
- 	else
- 		sprintf(out, "%02x", ip_proto);
- 
--	print_string(PRINT_ANY, "ip_proto", "\n  ip_proto %s", out);
-+	print_nl();
-+	print_string(PRINT_ANY, "ip_proto", "  ip_proto %s", out);
- 	*p_ip_proto = ip_proto;
- }
- 
-@@ -1682,7 +1685,8 @@ static void flower_print_matching_flags(char *name,
- 			continue;
- 		if (mtf_mask & flags_str[i].flag) {
- 			if (++count == 1) {
--				print_string(PRINT_FP, NULL, "\n  %s ", name);
-+				print_nl();
-+				print_string(PRINT_FP, NULL, "  %s ", name);
- 				open_json_object(name);
- 			} else {
- 				print_string(PRINT_FP, NULL, "/", NULL);
-@@ -1741,7 +1745,8 @@ static void flower_print_ip_addr(char *name, __be16 eth_type,
- 	else if (bits < len * 8)
- 		sprintf(out + done, "/%d", bits);
- 
--	sprintf(namefrm, "\n  %s %%s", name);
-+	print_nl();
-+	sprintf(namefrm, "  %s %%s", name);
- 	print_string(PRINT_ANY, name, namefrm, out);
- }
- static void flower_print_ip4_addr(char *name, struct rtattr *addr_attr,
-@@ -1775,7 +1780,8 @@ static void flower_print_port_range(char *name, struct rtattr *min_attr,
- 
- 		done = sprintf(out, "%u", rta_getattr_be16(min_attr));
- 		sprintf(out + done, "-%u", rta_getattr_be16(max_attr));
--		sprintf(namefrm, "\n  %s %%s", name);
-+		print_nl();
-+		sprintf(namefrm, "  %s %%s", name);
- 		print_string(PRINT_ANY, name, namefrm, out);
- 	}
- }
-@@ -1794,8 +1800,8 @@ static void flower_print_tcp_flags(const char *name, struct rtattr *flags_attr,
- 	if (mask_attr)
- 		sprintf(out + done, "/%x", rta_getattr_be16(mask_attr));
- 
--	print_string(PRINT_FP, NULL, "%s  ", _SL_);
--	sprintf(namefrm, "%s %%s", name);
-+	print_nl();
-+	sprintf(namefrm, "  %s %%s", name);
- 	print_string(PRINT_ANY, name, namefrm, out);
- }
- 
-@@ -1829,7 +1835,8 @@ static void flower_print_ct_state(struct rtattr *flags_attr,
- 					flower_ct_states[i].str);
- 	}
- 
--	print_string(PRINT_ANY, "ct_state", "\n  ct_state %s", out);
-+	print_nl();
-+	print_string(PRINT_ANY, "ct_state", "  ct_state %s", out);
- }
- 
- static void flower_print_ct_label(struct rtattr *attr,
-@@ -1864,7 +1871,8 @@ static void flower_print_ct_label(struct rtattr *attr,
- 	}
- 	*p = '\0';
- 
--	print_string(PRINT_ANY, "ct_label", "\n  ct_label %s", out);
-+	print_nl();
-+	print_string(PRINT_ANY, "ct_label", "  ct_label %s", out);
- }
- 
- static void flower_print_ct_zone(struct rtattr *attr,
-@@ -1886,7 +1894,8 @@ static void flower_print_key_id(const char *name, struct rtattr *attr)
- 	if (!attr)
- 		return;
- 
--	sprintf(namefrm,"\n  %s %%u", name);
-+	print_nl();
-+	sprintf(namefrm,"  %s %%u", name);
- 	print_uint(PRINT_ANY, name, namefrm, rta_getattr_be32(attr));
- }
- 
-@@ -1934,7 +1943,7 @@ static void flower_print_geneve_opts(const char *name, struct rtattr *attr,
- static void flower_print_geneve_parts(const char *name, struct rtattr *attr,
- 				      char *key, char *mask)
- {
--	char *namefrm = "\n  geneve_opt %s";
-+	char *namefrm = "  geneve_opt %s";
- 	char *key_token, *mask_token, *out;
- 	int len;
- 
-@@ -1952,6 +1961,7 @@ static void flower_print_geneve_parts(const char *name, struct rtattr *attr,
- 	}
- 
- 	out[len - 1] = '\0';
-+	print_nl();
- 	print_string(PRINT_FP, name, namefrm, out);
- 	free(out);
- }
-@@ -2015,7 +2025,8 @@ static void flower_print_masked_u8(const char *name, struct rtattr *attr,
- 	if (mask != UINT8_MAX)
- 		sprintf(out + done, "/%d", mask);
- 
--	sprintf(namefrm,"\n  %s %%s", name);
-+	print_nl();
-+	sprintf(namefrm, "  %s %%s", name);
- 	print_string(PRINT_ANY, name, namefrm, out);
- }
- 
-@@ -2031,7 +2042,8 @@ static void flower_print_u32(const char *name, struct rtattr *attr)
- 	if (!attr)
- 		return;
- 
--	sprintf(namefrm,"\n  %s %%u", name);
-+	print_nl();
-+	sprintf(namefrm, "  %s %%u", name);
- 	print_uint(PRINT_ANY, name, namefrm, rta_getattr_u32(attr));
- }
- 
-@@ -2077,7 +2089,8 @@ static int flower_print_opt(struct filter_util *qu, FILE *f,
- 	if (tb[TCA_FLOWER_INDEV]) {
- 		struct rtattr *attr = tb[TCA_FLOWER_INDEV];
- 
--		print_string(PRINT_ANY, "indev", "\n  indev %s",
-+		print_nl();
-+		print_string(PRINT_ANY, "indev", "  indev %s",
- 			     rta_getattr_str(attr));
- 	}
- 
-@@ -2086,14 +2099,16 @@ static int flower_print_opt(struct filter_util *qu, FILE *f,
- 	if (tb[TCA_FLOWER_KEY_VLAN_ID]) {
- 		struct rtattr *attr = tb[TCA_FLOWER_KEY_VLAN_ID];
- 
--		print_uint(PRINT_ANY, "vlan_id", "\n  vlan_id %u",
-+		print_nl();
-+		print_uint(PRINT_ANY, "vlan_id", "  vlan_id %u",
- 			   rta_getattr_u16(attr));
- 	}
- 
- 	if (tb[TCA_FLOWER_KEY_VLAN_PRIO]) {
- 		struct rtattr *attr = tb[TCA_FLOWER_KEY_VLAN_PRIO];
- 
--		print_uint(PRINT_ANY, "vlan_prio", "\n  vlan_prio %d",
-+		print_nl();
-+		print_uint(PRINT_ANY, "vlan_prio", "  vlan_prio %d",
- 			   rta_getattr_u8(attr));
- 	}
- 
-@@ -2101,7 +2116,8 @@ static int flower_print_opt(struct filter_util *qu, FILE *f,
- 		SPRINT_BUF(buf);
- 		struct rtattr *attr = tb[TCA_FLOWER_KEY_VLAN_ETH_TYPE];
- 
--		print_string(PRINT_ANY, "vlan_ethtype", "\n  vlan_ethtype %s",
-+		print_nl();
-+		print_string(PRINT_ANY, "vlan_ethtype", "  vlan_ethtype %s",
- 			     ll_proto_n2a(rta_getattr_u16(attr),
- 			     buf, sizeof(buf)));
- 	}
-@@ -2109,14 +2125,16 @@ static int flower_print_opt(struct filter_util *qu, FILE *f,
- 	if (tb[TCA_FLOWER_KEY_CVLAN_ID]) {
- 		struct rtattr *attr = tb[TCA_FLOWER_KEY_CVLAN_ID];
- 
--		print_uint(PRINT_ANY, "cvlan_id", "\n  cvlan_id %u",
-+		print_nl();
-+		print_uint(PRINT_ANY, "cvlan_id", "  cvlan_id %u",
- 			   rta_getattr_u16(attr));
- 	}
- 
- 	if (tb[TCA_FLOWER_KEY_CVLAN_PRIO]) {
- 		struct rtattr *attr = tb[TCA_FLOWER_KEY_CVLAN_PRIO];
- 
--		print_uint(PRINT_ANY, "cvlan_prio", "\n  cvlan_prio %d",
-+		print_nl();
-+		print_uint(PRINT_ANY, "cvlan_prio", " cvlan_prio %d",
- 			   rta_getattr_u8(attr));
- 	}
- 
-@@ -2124,7 +2142,8 @@ static int flower_print_opt(struct filter_util *qu, FILE *f,
- 		SPRINT_BUF(buf);
- 		struct rtattr *attr = tb[TCA_FLOWER_KEY_CVLAN_ETH_TYPE];
- 
--		print_string(PRINT_ANY, "cvlan_ethtype", "\n  cvlan_ethtype %s",
-+		print_nl();
-+		print_string(PRINT_ANY, "cvlan_ethtype", "  cvlan_ethtype %s",
- 			     ll_proto_n2a(rta_getattr_u16(attr),
- 			     buf, sizeof(buf)));
- 	}
-@@ -2254,13 +2273,17 @@ static int flower_print_opt(struct filter_util *qu, FILE *f,
- 	if (tb[TCA_FLOWER_FLAGS]) {
- 		__u32 flags = rta_getattr_u32(tb[TCA_FLOWER_FLAGS]);
- 
--		if (flags & TCA_CLS_FLAGS_SKIP_HW)
--			print_bool(PRINT_ANY, "skip_hw", "\n  skip_hw", true);
--		if (flags & TCA_CLS_FLAGS_SKIP_SW)
--			print_bool(PRINT_ANY, "skip_sw", "\n  skip_sw", true);
--
-+		if (flags & TCA_CLS_FLAGS_SKIP_HW) {
-+			print_nl();
-+			print_bool(PRINT_ANY, "skip_hw", "  skip_hw", true);
-+		}
-+		if (flags & TCA_CLS_FLAGS_SKIP_SW) {
-+			print_nl();
-+			print_bool(PRINT_ANY, "skip_sw", "  skip_sw", true);
-+		}
- 		if (flags & TCA_CLS_FLAGS_IN_HW) {
--			print_bool(PRINT_ANY, "in_hw", "\n  in_hw", true);
-+			print_nl();
-+			print_bool(PRINT_ANY, "in_hw", "  in_hw", true);
- 
- 			if (tb[TCA_FLOWER_IN_HW_COUNT]) {
- 				__u32 count = rta_getattr_u32(tb[TCA_FLOWER_IN_HW_COUNT]);
-@@ -2269,8 +2292,10 @@ static int flower_print_opt(struct filter_util *qu, FILE *f,
- 					   " in_hw_count %u", count);
- 			}
- 		}
--		else if (flags & TCA_CLS_FLAGS_NOT_IN_HW)
--			print_bool(PRINT_ANY, "not_in_hw", "\n  not_in_hw", true);
-+		else if (flags & TCA_CLS_FLAGS_NOT_IN_HW) {
-+			print_nl();
-+			print_bool(PRINT_ANY, "not_in_hw", "  not_in_hw", true);
-+		}
- 	}
- 
- 	if (tb[TCA_FLOWER_ACT])
--- 
-2.8.4
-
+RnJvbTogRGF2aWQgQWhlcm4gPGRzYWhlcm5AZ21haWwuY29tPg0KRGF0ZTogRGVjLzMxLzIwMTks
+IDA0OjMwOjU0IChVVEMrMDA6MDApDQoNCj4gdGhpcyBwYXRjaCBoYXMgYmVlbiBsaW5nZXJpbmcg
+Zm9yIGEgd2hpbGUuIFdoYXQncyB0aGUgc3RhdHVzPyBnb29kDQo+IGVub3VnaCBmb3IgY29tbWl0
+IG9yIGFyZSBjaGFuZ2VzIG5lZWRlZD8NCg0KVGhhbmtzIGZvciBhc2tpbmcgRGF2aWQuIFRoZXJl
+IGFyZSBzb21lIG9uLWdvaW5nIGRpc2N1c3Npb25zIChJJ2xsIGFkZCANCnlvdSBvbiBjYyksIGxl
+dCdzIHNlZSBob3cgdGhhdCBnb2VzLg0KDQotLS0NClRoYW5rcywNCkpvc2UgTWlndWVsIEFicmV1
+DQo=
