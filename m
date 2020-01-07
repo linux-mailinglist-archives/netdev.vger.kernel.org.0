@@ -2,137 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 08C0313205A
-	for <lists+netdev@lfdr.de>; Tue,  7 Jan 2020 08:24:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 64A4813211C
+	for <lists+netdev@lfdr.de>; Tue,  7 Jan 2020 09:14:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727211AbgAGHYC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jan 2020 02:24:02 -0500
-Received: from mail-wm1-f66.google.com ([209.85.128.66]:52530 "EHLO
-        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725874AbgAGHYB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jan 2020 02:24:01 -0500
-Received: by mail-wm1-f66.google.com with SMTP id p9so17756302wmc.2
-        for <netdev@vger.kernel.org>; Mon, 06 Jan 2020 23:24:00 -0800 (PST)
+        id S1727277AbgAGIOI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Jan 2020 03:14:08 -0500
+Received: from mail-qk1-f194.google.com ([209.85.222.194]:38080 "EHLO
+        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725987AbgAGIOI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jan 2020 03:14:08 -0500
+Received: by mail-qk1-f194.google.com with SMTP id k6so41928607qki.5;
+        Tue, 07 Jan 2020 00:14:07 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=hS02mr1KQqtn1L2M7x0gAEGGeyTPnAaCI8Fi6777qXo=;
-        b=D8vO8J+/UrejXMFUPsaq0tPZKX0tESDcJxgdJ2cb+CbxRcCzmGheBCePqfbpr6SnYe
-         Q+BuCue2Mv2ov46zAJYD9jma1KeFdKTFwZhySxi8srMr13pgOZ9ia8SBjeg+wERlJQYL
-         ezciRb1LIYhvCENNd+dPcqutvpk1xglYs5trMvLMoqDm4fJCGrWktZDnKzSapy0aPAtU
-         HzADB2JHivrYH6JiAsDuXvTRTo9cqU1FntFWapIyplE25jvbsuPiYglgV5H1VtKNud6B
-         8gYIG990t/m+Krbhp1rH+5hJF8Kv5UaxUZXL7FBsad/a97UjJNR2b5zfM2tnGzAYIF1B
-         h2DA==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=akW4UWcOdP6Grp2KonZlQcBnfvoYSwriz8j1t5Jkqsc=;
+        b=bwwjdTWn07UYSehfmFp9lXNZC24KgC9QAy12z2S2u1lZBdj13/bm4d6XXe3pYuUf/t
+         CEj1OTDObiRuzXXlhrVP26ofMrwaJJsjbXfpkuEj2JXgDI1h69BPWLTP1QoM7YoUVE0P
+         VxwgCqzfjFhrUqd++O79MhTVv1KM0jcQtMO/D4Azgpz4n0MHdqZn5qY8nUCJpdQZyfMv
+         GF1/udulvUP+3WPiKoP+h4XX71z1aBrcBh0UKCsYhscb/Di3O4fCHXRGyOp6iDbamCqv
+         JJ+78i+6xp5i8/1SvT5mnlCJ5MeNM45ttLClkLYXGdV147/NKVOV0JFujb4C+ehp3lPi
+         Jubw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=hS02mr1KQqtn1L2M7x0gAEGGeyTPnAaCI8Fi6777qXo=;
-        b=CXWMPZI78ntYLyljEny2DTNQmS2LJCl4of4xPamO3Ia/NwleIVdmr1gsN+mtOl5Z8Y
-         Nt5uUWItcUcPfx0UJ2huCC/XM5v4FociqbsZEuk2ifCdnRP+2qYeR/E3ZXvZJGTG2lRc
-         gq5qnO99+bQSDqZW0Wz8bTCQm8R2MMi0d1conxe4cMkOdKFO62+NEK4mjLaBmZ1pyIKx
-         PmL/p/EXz8z5zT0qjpm7qDscyavGTR0+JpPmmC6xRKX4NFsj4FWDAsDKJGw3m2AY7DfC
-         0JrcgE7lQnNuv946/vHELRI4YmB5SwYRff06Wv32M4sZ3gF+pAtb7SOCgGBBBfPp0Yyi
-         3VSA==
-X-Gm-Message-State: APjAAAUZGu/z88vVpUna5JDAhFlDK/+zMP50nmrC/NMMlsYvGXyrKY6G
-        Xmq+aZAg3VGtTMLl0d9SxzsDDQ==
-X-Google-Smtp-Source: APXvYqzEngBqpWpVaXaQWBumdzr7GXAcqIEKqq2Y9SOJoJLMyJ8aakL563yhaKn+90EQlOQu375csg==
-X-Received: by 2002:a05:600c:2c06:: with SMTP id q6mr36778338wmg.154.1578381839342;
-        Mon, 06 Jan 2020 23:23:59 -0800 (PST)
-Received: from myrica (adsl-84-227-176-239.adslplus.ch. [84.227.176.239])
-        by smtp.gmail.com with ESMTPSA id q3sm25675275wmc.47.2020.01.06.23.23.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Jan 2020 23:23:58 -0800 (PST)
-Date:   Tue, 7 Jan 2020 08:23:54 +0100
-From:   Jean-Philippe Brucker <jean-philippe@linaro.org>
-To:     Dmitry Osipenko <digetx@gmail.com>
-Cc:     Arend Van Spriel <arend.vanspriel@broadcom.com>,
-        linux-wireless@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com,
-        brcm80211-dev-list@cypress.com, netdev@vger.kernel.org,
-        hdegoede@redhat.com, franky.lin@broadcom.com,
-        hante.meuleman@broadcom.com, chi-hsien.lin@cypress.com,
-        wright.feng@cypress.com, kvalo@codeaurora.org, davem@davemloft.net
-Subject: Re: [PATCH] brcmfmac: sdio: Fix OOB interrupt initialization on
- brcm43362
-Message-ID: <20200107072354.GA832497@myrica>
-References: <20191226092033.12600-1-jean-philippe@linaro.org>
- <16f419a7070.279b.9b12b7fc0a3841636cfb5e919b41b954@broadcom.com>
- <141f055a-cd1d-66cb-7052-007cda629d3a@gmail.com>
- <20200106191919.GA826263@myrica>
- <c2bb1067-9b9c-3be1-b87e-e733a668a056@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=akW4UWcOdP6Grp2KonZlQcBnfvoYSwriz8j1t5Jkqsc=;
+        b=shaN5QHCTAaLuSwe+BsIyjQWQQkIf0CSwq55l+/aChyK70objwzq9mcaxBzXfjOMnu
+         pcXYuO3qgYpWRAuhaPuieXTHnEmCjl1535rpLF1M8eTqeaF1SKAak5WWVSyN2zfj8wOQ
+         wMnn+Nyp27NlMUGjiAVrRLJhrdEU2YsEZ9NaJXmVSCkMPVSPjOsgbbhMVQcLsU+E7W2Z
+         E6CLaCjUeFzCSf+wvTl9UkgUwOU08YYz3sJyAARf8XYkkkrXUABTi5iheysyfVSTs1dI
+         Z94RkIVhnx/qZaiy8eUs7UPaBQLgNJtL0588qOnKShcbZasiXGdVl00dsWj44GhEmCUQ
+         Cdpg==
+X-Gm-Message-State: APjAAAVJeNLXxR+YiAmWKsey8Iekr2K+Is0YmA/XQAlvm6p1iZ8peGBr
+        oUysGH+8NupvmG6prMs4EzkG97EZRAmiCZoHvCM=
+X-Google-Smtp-Source: APXvYqzWFUk7QyJ3Tpw6LqkcUf8FNEwTpCYweqa0ESJaK3f6n2P2SGGbBoxMUIMqV1Q2T354z2gOCnCjI/oeb9i8fvo=
+X-Received: by 2002:a05:620a:14a4:: with SMTP id x4mr86046437qkj.493.1578384847200;
+ Tue, 07 Jan 2020 00:14:07 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <c2bb1067-9b9c-3be1-b87e-e733a668a056@gmail.com>
+References: <20191216091343.23260-1-bjorn.topel@gmail.com> <20191216091343.23260-3-bjorn.topel@gmail.com>
+ <mhng-6be38b2a-78df-4016-aaea-f35aa0acd7e0@palmerdabbelt-glaptop>
+In-Reply-To: <mhng-6be38b2a-78df-4016-aaea-f35aa0acd7e0@palmerdabbelt-glaptop>
+From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
+Date:   Tue, 7 Jan 2020 09:13:56 +0100
+Message-ID: <CAJ+HfNjoO2ihHMh2NHMQfxG8X1zLdzEq6Ywr=b2qD0tNwXreFA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2 2/9] riscv, bpf: add support for far branching
+To:     Palmer Dabbelt <palmerdabbelt@google.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Netdev <netdev@vger.kernel.org>, linux-riscv@lists.infradead.org,
+        Luke Nelson <lukenels@cs.washington.edu>,
+        bpf <bpf@vger.kernel.org>, Xi Wang <xi.wang@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 07, 2020 at 02:15:18AM +0300, Dmitry Osipenko wrote:
-> 06.01.2020 22:19, Jean-Philippe Brucker пишет:
-> > Hi Dmitry,
-> > 
-> > On Thu, Dec 26, 2019 at 05:37:58PM +0300, Dmitry Osipenko wrote:
-> >> I haven't seen any driver probe failures due to OOB on NVIDIA Tegra,
-> >> only suspend-resume was problematic due to the unbalanced OOB
-> >> interrupt-wake enabling.
-> >>
-> >> But maybe checking whether OOB interrupt-wake works by invoking
-> >> enable_irq_wake() during brcmf_sdiod_intr_register() causes trouble for
-> >> the cubietruck board.
-> >>
-> >> @Jean-Philippe, could you please try this change (on top of recent
-> >> linux-next):
-> > 
-> > Sorry for the delay, linux-next doesn't boot for me at the moment and I
-> > have little time to investigate why, so I might retry closer to the merge
-> > window.
-> > 
-> > However, isn't the interrupt-wake issue independent from the problem
-> > (introduced in v4.17) that my patch fixes? I applied "brcmfmac: Keep OOB
-> > wake-interrupt disabled when it shouldn't be enabled" on v5.5-rc5 and it
-> > doesn't seem to cause a regression, but the wifi only works if I apply my
-> > patch as well.
-> > 
-> > Thanks,
-> > Jean
-> > 
-> >>
-> >> diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c
-> >> b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c
-> >> index b684a5b6d904..80d7106b10a9 100644
-> >> --- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c
-> >> +++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c
-> >> @@ -115,13 +115,6 @@ int brcmf_sdiod_intr_register(struct brcmf_sdio_dev
-> >> *sdiodev)
-> >>                 }
-> >>                 sdiodev->oob_irq_requested = true;
-> >>
-> >> -               ret = enable_irq_wake(pdata->oob_irq_nr);
-> >> -               if (ret != 0) {
-> >> -                       brcmf_err("enable_irq_wake failed %d\n", ret);
-> >> -                       return ret;
-> >> -               }
-> >> -               disable_irq_wake(pdata->oob_irq_nr);
-> >> -
-> >>                 sdio_claim_host(sdiodev->func1);
-> >>
-> >>                 if (sdiodev->bus_if->chip == BRCM_CC_43362_CHIP_ID) {
-> 
-> Hello Jean,
-> 
-> Could you please clarify whether you applied [1] and then the above
-> snippet on top of it or you only applied [1] without the snippet?
+Back from the holidays; Sorry about the delayed reply.
 
-I applied [1] without the snippet
+On Mon, 23 Dec 2019 at 19:03, Palmer Dabbelt <palmerdabbelt@google.com> wro=
+te:
+>
+> On Mon, 16 Dec 2019 01:13:36 PST (-0800), Bjorn Topel wrote:
+> > This commit adds branch relaxation to the BPF JIT, and with that
+[...]
+> > @@ -1557,6 +1569,7 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_p=
+rog *prog)
+> >  {
+> >       bool tmp_blinded =3D false, extra_pass =3D false;
+> >       struct bpf_prog *tmp, *orig_prog =3D prog;
+> > +     int pass =3D 0, prev_ninsns =3D 0, i;
+> >       struct rv_jit_data *jit_data;
+> >       struct rv_jit_context *ctx;
+> >       unsigned int image_size;
+> > @@ -1596,15 +1609,25 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf=
+_prog *prog)
+> >               prog =3D orig_prog;
+> >               goto out_offset;
+> >       }
+> > +     for (i =3D 0; i < prog->len; i++) {
+> > +             prev_ninsns +=3D 32;
+> > +             ctx->offset[i] =3D prev_ninsns;
+> > +     }
+>
+> It feels like the first-order implementation is the same as binutils here=
+: the
+> first round is worst cased, after which things can be more exact.  We're =
+only
+> doing one pass in binutils because most of the relaxation happens in the
+> linker, but this approach seems reasonable to me.  I'd be interested in s=
+eeing
+> some benchmarks, as it may be worth relaxing these in the binutils linker=
+ as
+> well -- I can certainly come up with contrived test cases that aren't rel=
+axed,
+> but I'm not sure how common this is.
+>
 
-Thanks,
-Jean
+Ah, interesting! Let me try to pull out some branch relaxation
+statistics/benchmarks for the BPF selftests.
 
-> 
-> [1] brcmfmac: Keep OOB wake-interrupt disabled when it shouldn't be enabled
+> My only worry is that that invariant should be more explicit.  Specifical=
+ly,
+> I'm thinking that every time offset is updated there should be some sort =
+of
+> assertion that the offset is shrinking.  This is enforced structurally in=
+ the
+> binutils code because we only generate code once and then move it around,=
+ but
+> since you're generating code every time it'd be easy for a bug to sneak i=
+n as
+> the JIT gets more complicated.
+>
+
+Hmm, yes. Maybe use a checksum for the program in addition to the
+length invariant, and converge condition would then be prev_len =3D=3D len
+&& prev_crc =3D=3D crc?
+
+> Since most of the branches should be forward, you'll probably end up with=
+ way
+> fewer iterations if you do the optimization passes backwards.
+>
+
+Good idea!
+
+> > -     /* First pass generates the ctx->offset, but does not emit an ima=
+ge. */
+> > -     if (build_body(ctx, extra_pass)) {
+> > -             prog =3D orig_prog;
+> > -             goto out_offset;
+> > +     for (i =3D 0; i < 16; i++) {
+> > +             pass++;
+> > +             ctx->ninsns =3D 0;
+> > +             if (build_body(ctx, extra_pass)) {
+> > +                     prog =3D orig_prog;
+> > +                     goto out_offset;
+>
+> Isn't this returning a broken program if build_body() errors out the firs=
+t time
+> through?
+>
+
+Hmm, care to elaborate? I don't see how?
+
+> > +             }
+> > +             build_prologue(ctx);
+> > +             ctx->epilogue_offset =3D ctx->ninsns;
+> > +             build_epilogue(ctx);
+> > +             if (ctx->ninsns =3D=3D prev_ninsns)
+> > +                     break;
+> > +             prev_ninsns =3D ctx->ninsns;
+>
+> IDK how important the performance of the JIT is, but you could probably g=
+et
+> away with skipping an iteration by keeping track of some simple metric th=
+at
+> determines if it would be possible to
+>
+
+...to? Given that the programs are getting larger, performance of the
+JIT is important. So, any means the number of passes can be reduced is
+a good thing!
+
+
+Thanks for the review/suggestions!
+Bj=C3=B6rn
