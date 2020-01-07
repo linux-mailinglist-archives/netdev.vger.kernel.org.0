@@ -2,30 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 749641336BA
-	for <lists+netdev@lfdr.de>; Tue,  7 Jan 2020 23:49:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3CFDB13362A
+	for <lists+netdev@lfdr.de>; Tue,  7 Jan 2020 23:47:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728446AbgAGWs4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jan 2020 17:48:56 -0500
-Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:5120 "EHLO
-        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727174AbgAGWqF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jan 2020 17:46:05 -0500
-Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
-        id <B5e150a160001>; Tue, 07 Jan 2020 14:45:42 -0800
+        id S1727806AbgAGWqQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Jan 2020 17:46:16 -0500
+Received: from hqnvemgate24.nvidia.com ([216.228.121.143]:11357 "EHLO
+        hqnvemgate24.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727518AbgAGWqG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jan 2020 17:46:06 -0500
+Received: from hqpgpgate102.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate24.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
+        id <B5e1509f80001>; Tue, 07 Jan 2020 14:45:12 -0800
 Received: from hqmail.nvidia.com ([172.20.161.6])
-  by hqpgpgate101.nvidia.com (PGP Universal service);
+  by hqpgpgate102.nvidia.com (PGP Universal service);
   Tue, 07 Jan 2020 14:46:00 -0800
 X-PGP-Universal: processed;
-        by hqpgpgate101.nvidia.com on Tue, 07 Jan 2020 14:46:00 -0800
-Received: from HQMAIL105.nvidia.com (172.20.187.12) by HQMAIL101.nvidia.com
- (172.20.187.10) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Tue, 7 Jan
- 2020 22:45:59 +0000
-Received: from hqnvemgw03.nvidia.com (10.124.88.68) by HQMAIL105.nvidia.com
- (172.20.187.12) with Microsoft SMTP Server (TLS) id 15.0.1473.3 via Frontend
- Transport; Tue, 7 Jan 2020 22:45:59 +0000
+        by hqpgpgate102.nvidia.com on Tue, 07 Jan 2020 14:46:00 -0800
+Received: from HQMAIL107.nvidia.com (172.20.187.13) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Tue, 7 Jan
+ 2020 22:46:00 +0000
+Received: from hqnvemgw03.nvidia.com (10.124.88.68) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3 via Frontend
+ Transport; Tue, 7 Jan 2020 22:46:00 +0000
 Received: from blueforge.nvidia.com (Not Verified[10.110.48.28]) by hqnvemgw03.nvidia.com with Trustwave SEG (v7,5,8,10121)
-        id <B5e150a270002>; Tue, 07 Jan 2020 14:45:59 -0800
+        id <B5e150a270005>; Tue, 07 Jan 2020 14:45:59 -0800
 From:   John Hubbard <jhubbard@nvidia.com>
 To:     Andrew Morton <akpm@linux-foundation.org>
 CC:     Al Viro <viro@zeniv.linux.org.uk>,
@@ -57,220 +57,239 @@ CC:     Al Viro <viro@zeniv.linux.org.uk>,
         <linux-media@vger.kernel.org>, <linux-rdma@vger.kernel.org>,
         <linuxppc-dev@lists.ozlabs.org>, <netdev@vger.kernel.org>,
         <linux-mm@kvack.org>, LKML <linux-kernel@vger.kernel.org>,
-        John Hubbard <jhubbard@nvidia.com>
-Subject: [PATCH v12 00/22] mm/gup: prereqs to track dma-pinned pages: FOLL_PIN
-Date:   Tue, 7 Jan 2020 14:45:36 -0800
-Message-ID: <20200107224558.2362728-1-jhubbard@nvidia.com>
+        John Hubbard <jhubbard@nvidia.com>,
+        Christoph Hellwig <hch@lst.de>,
+        "Aneesh Kumar K . V" <aneesh.kumar@linux.ibm.com>
+Subject: [PATCH v12 01/22] mm/gup: factor out duplicate code from four routines
+Date:   Tue, 7 Jan 2020 14:45:37 -0800
+Message-ID: <20200107224558.2362728-2-jhubbard@nvidia.com>
 X-Mailer: git-send-email 2.24.1
+In-Reply-To: <20200107224558.2362728-1-jhubbard@nvidia.com>
+References: <20200107224558.2362728-1-jhubbard@nvidia.com>
 MIME-Version: 1.0
 X-NVConfidentiality: public
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1578437143; bh=e35VbuH+5Gvq6hzdX1wkd7Gwo0Ev1/RydrM5ojZBtqQ=;
+        t=1578437112; bh=3UN+pZEMmKNfRZpugUWk2xqc0GntLXSHLik6fdzsQds=;
         h=X-PGP-Universal:From:To:CC:Subject:Date:Message-ID:X-Mailer:
-         MIME-Version:X-NVConfidentiality:Content-Type:
-         Content-Transfer-Encoding;
-        b=q07jqBkOQ+8W+FWIGxHzDq9+K2aqK0l1baYh9tHJ5YgbVqzpzGrCVUbh8IIOz9ivr
-         N8DeNKRxsksmaQmBj8DLUTfJNvVvliRP3A7UvdrQSBrUtqohAPvBbP6gW+d+uir7zj
-         N71u+jUUFG3a29ne3zY3zxuWMeCOBJOlbx0/C+htFPSQNDX+WeFBXBUo/FQBTcKPK+
-         fsKaVOXRA1UshywnsPhWCDuIhCymH6YPuMQwJ7/7x7UJimvasG4+G3pmoTyD3poYdy
-         39n4NbY3ownCfiBLFE6x3ANsClgsjxgyIpUe1k8mz3p84SQo7eboSdCD6jky2z1c7L
-         WmXHM0fQFkghw==
+         In-Reply-To:References:MIME-Version:X-NVConfidentiality:
+         Content-Type:Content-Transfer-Encoding;
+        b=rh11n4oaBxWFqT8lK+qes4B5xBWDrco6QyD2M2yDm+QCE+vBQ16klE+qS3zQfGzXq
+         +qKyTBawgNO5qGQ7ZIXXKfnm4o4JYFvrI9UhRPq3mm7KLBpYIbTL8lzOpAFMxs5WZu
+         gONM+uwb608m3ELiQ8GQLAxmAkxyvlQggWH8XGBLcI1kYFai16CTU1o7a5A084zOg3
+         rrnPIrSCakAKg5jxbHBxvOTGHf5ZZi16qF4+V2nMym+rgt0MPHjAcqTlB2OnPTyKBP
+         MQ1luy1XuSDr1oKu91qrUiCF1gb/vfw5L46WA/jsyc34Ll0oadvtnbj9JQWBIrH/6x
+         G98kFBFiMKA2g==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+There are four locations in gup.c that have a fair amount of code
+duplication. This means that changing one requires making the same
+changes in four places, not to mention reading the same code four
+times, and wondering if there are subtle differences.
 
-The "track FOLL_PIN pages" would have been the very next patch, but it is
-not included here because I'm still debugging a bug report from Leon.
-Let's get all of the prerequisite work (it's been reviewed) into the tree
-so that future reviews are easier. It's clear that any fixes that are
-required to the tracking patch, won't affect these patches here.
+Factor out the common code into static functions, thus reducing the
+overall line count and the code's complexity.
 
-This implements an API naming change (put_user_page*() -->
-unpin_user_page*()), and also adds FOLL_PIN page support, up to
-*but not including* actually tracking FOLL_PIN pages. It extends
-the FOLL_PIN support to a few select subsystems. More subsystems will
-be added in follow up work.
+Also, take the opportunity to slightly improve the efficiency of the
+error cases, by doing a mass subtraction of the refcount, surrounded
+by get_page()/put_page().
 
-Christoph Hellwig, a point of interest:
+Also, further simplify (slightly), by waiting until the the successful
+end of each routine, to increment *nr.
 
-a) I've moved the bulk of the code out of the inline functions, as
-   requested, for the devmap changes (patch 4: "mm: devmap: refactor
-   1-based refcounting for ZONE_DEVICE pages").
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Reviewed-by: J=C3=A9r=C3=B4me Glisse <jglisse@redhat.com>
+Reviewed-by: Jan Kara <jack@suse.cz>
+Cc: Kirill A. Shutemov <kirill@shutemov.name>
+Cc: Ira Weiny <ira.weiny@intel.com>
+Cc: Christoph Hellwig <hch@lst.de>
+Cc: Aneesh Kumar K.V <aneesh.kumar@linux.ibm.com>
+Signed-off-by: John Hubbard <jhubbard@nvidia.com>
+---
+ mm/gup.c | 95 ++++++++++++++++++++++++--------------------------------
+ 1 file changed, 40 insertions(+), 55 deletions(-)
 
-Changes since v11: Fixes resulting from Kirill Shutemov's review, plus
-a fix for a kbuild robot-reported warning.
-
-* Only include the first 22 patches: up to, but not including, the "track
-  FOLL_PIN pages" patch.
-
-* Improved the efficiency of put_compound_head(), by avoiding get_page()
-  entirely, and instead doing the mass subtraction on one less than
-  refs, followed by a final put_page().
-
-* Got rid of the forward declaration of __gup_longterm_locked(), by
-  moving get_user_pages_remote() further down in gup.c
-
-* Got rid of a redundant page_is_devmap_managed() call, and simplified
-  put_devmap_managed_page() as part of that small cleanup.
-
-* Changed put_devmap_managed_page() to do an early out if the page is
-  not devmap managed. This saves an indentation level.
-
-* Applied the same type of change to __unpin_devmap_managed_user_page(),
-  which has the same checks.
-
-* Changed release_pages() to handle the changed put_devmap_managed_page()
-  API.
-
-* Removed EXPORT_SYMBOL(free_devmap_managed_page), as it is not required,
-  after the other refactoring.
-
-* Fixed a kbuild robot sparse warning: added "static" to
-  try_pin_compound_head()'s declaration.
-
-There is a git repo and branch, for convenience:
-
-    git@github.com:johnhubbard/linux.git pin_user_pages_tracking_v8
-
-For the remaining list of "changes since version N", those are all in
-v11, which is here:
-
-  https://lore.kernel.org/r/20191216222537.491123-1-jhubbard@nvidia.com
-
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-Overview:
-
-This is a prerequisite to solving the problem of proper interactions
-between file-backed pages, and [R]DMA activities, as discussed in [1],
-[2], [3], and in a remarkable number of email threads since about
-2017. :)
-
-A new internal gup flag, FOLL_PIN is introduced, and thoroughly
-documented in the last patch's Documentation/vm/pin_user_pages.rst.
-
-I believe that this will provide a good starting point for doing the
-layout lease work that Ira Weiny has been working on. That's because
-these new wrapper functions provide a clean, constrained, systematically
-named set of functionality that, again, is required in order to even
-know if a page is "dma-pinned".
-
-In contrast to earlier approaches, the page tracking can be
-incrementally applied to the kernel call sites that, until now, have
-been simply calling get_user_pages() ("gup"). In other words, opt-in by
-changing from this:
-
-    get_user_pages() (sets FOLL_GET)
-    put_page()
-
-to this:
-    pin_user_pages() (sets FOLL_PIN)
-    unpin_user_page()
-
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-Testing:
-
-* I've done some overall kernel testing (LTP, and a few other goodies),
-  and some directed testing to exercise some of the changes. And as you
-  can see, gup_benchmark is enhanced to exercise this. Basically, I've
-  been able to runtime test the core get_user_pages() and
-  pin_user_pages() and related routines, but not so much on several of
-  the call sites--but those are generally just a couple of lines
-  changed, each.
-
-  Not much of the kernel is actually using this, which on one hand
-  reduces risk quite a lot. But on the other hand, testing coverage
-  is low. So I'd love it if, in particular, the Infiniband and PowerPC
-  folks could do a smoke test of this series for me.
-
-  Runtime testing for the call sites so far is pretty light:
-
-    * io_uring: Some directed tests from liburing exercise this, and
-                they pass.
-    * process_vm_access.c: A small directed test passes.
-    * gup_benchmark: the enhanced version hits the new gup.c code, and
-                     passes.
-    * infiniband: Ran rdma-core tests: rdma-core/build/bin/run_tests.py
-    * VFIO: compiles (I'm vowing to set up a run time test soon, but it's
-                      not ready just yet)
-    * powerpc: it compiles...
-    * drm/via: compiles...
-    * goldfish: compiles...
-    * net/xdp: compiles...
-    * media/v4l2: compiles...
-
-[1] Some slow progress on get_user_pages() (Apr 2, 2019): https://lwn.net/A=
-rticles/784574/
-[2] DMA and get_user_pages() (LPC: Dec 12, 2018): https://lwn.net/Articles/=
-774411/
-[3] The trouble with get_user_pages() (Apr 30, 2018): https://lwn.net/Artic=
-les/753027/
-
-
-Dan Williams (1):
-  mm: Cleanup __put_devmap_managed_page() vs ->page_free()
-
-John Hubbard (21):
-  mm/gup: factor out duplicate code from four routines
-  mm/gup: move try_get_compound_head() to top, fix minor issues
-  mm: devmap: refactor 1-based refcounting for ZONE_DEVICE pages
-  goldish_pipe: rename local pin_user_pages() routine
-  mm: fix get_user_pages_remote()'s handling of FOLL_LONGTERM
-  vfio: fix FOLL_LONGTERM use, simplify get_user_pages_remote() call
-  mm/gup: allow FOLL_FORCE for get_user_pages_fast()
-  IB/umem: use get_user_pages_fast() to pin DMA pages
-  media/v4l2-core: set pages dirty upon releasing DMA buffers
-  mm/gup: introduce pin_user_pages*() and FOLL_PIN
-  goldish_pipe: convert to pin_user_pages() and put_user_page()
-  IB/{core,hw,umem}: set FOLL_PIN via pin_user_pages*(), fix up ODP
-  mm/process_vm_access: set FOLL_PIN via pin_user_pages_remote()
-  drm/via: set FOLL_PIN via pin_user_pages_fast()
-  fs/io_uring: set FOLL_PIN via pin_user_pages()
-  net/xdp: set FOLL_PIN via pin_user_pages()
-  media/v4l2-core: pin_user_pages (FOLL_PIN) and put_user_page()
-    conversion
-  vfio, mm: pin_user_pages (FOLL_PIN) and put_user_page() conversion
-  powerpc: book3s64: convert to pin_user_pages() and put_user_page()
-  mm/gup_benchmark: use proper FOLL_WRITE flags instead of hard-coding
-    "1"
-  mm, tree-wide: rename put_user_page*() to unpin_user_page*()
-
- Documentation/core-api/index.rst            |   1 +
- Documentation/core-api/pin_user_pages.rst   | 232 +++++++++
- arch/powerpc/mm/book3s64/iommu_api.c        |  10 +-
- drivers/gpu/drm/via/via_dmablit.c           |   6 +-
- drivers/infiniband/core/umem.c              |  19 +-
- drivers/infiniband/core/umem_odp.c          |  13 +-
- drivers/infiniband/hw/hfi1/user_pages.c     |   4 +-
- drivers/infiniband/hw/mthca/mthca_memfree.c |   8 +-
- drivers/infiniband/hw/qib/qib_user_pages.c  |   4 +-
- drivers/infiniband/hw/qib/qib_user_sdma.c   |   8 +-
- drivers/infiniband/hw/usnic/usnic_uiom.c    |   4 +-
- drivers/infiniband/sw/siw/siw_mem.c         |   4 +-
- drivers/media/v4l2-core/videobuf-dma-sg.c   |   8 +-
- drivers/nvdimm/pmem.c                       |   6 -
- drivers/platform/goldfish/goldfish_pipe.c   |  35 +-
- drivers/vfio/vfio_iommu_type1.c             |  35 +-
- fs/io_uring.c                               |   6 +-
- include/linux/mm.h                          |  95 +++-
- mm/gup.c                                    | 495 ++++++++++++--------
- mm/gup_benchmark.c                          |   9 +-
- mm/memremap.c                               |  75 ++-
- mm/process_vm_access.c                      |  28 +-
- mm/swap.c                                   |  27 +-
- net/xdp/xdp_umem.c                          |   4 +-
- tools/testing/selftests/vm/gup_benchmark.c  |   6 +-
- 25 files changed, 762 insertions(+), 380 deletions(-)
- create mode 100644 Documentation/core-api/pin_user_pages.rst
-
+diff --git a/mm/gup.c b/mm/gup.c
+index 7646bf993b25..d56c6d6b85d3 100644
+--- a/mm/gup.c
++++ b/mm/gup.c
+@@ -1978,6 +1978,29 @@ static int __gup_device_huge_pud(pud_t pud, pud_t *p=
+udp, unsigned long addr,
+ }
+ #endif
+=20
++static int record_subpages(struct page *page, unsigned long addr,
++			   unsigned long end, struct page **pages)
++{
++	int nr;
++
++	for (nr =3D 0; addr !=3D end; addr +=3D PAGE_SIZE)
++		pages[nr++] =3D page++;
++
++	return nr;
++}
++
++static void put_compound_head(struct page *page, int refs)
++{
++	VM_BUG_ON_PAGE(page_ref_count(page) < refs, page);
++	/*
++	 * Calling put_page() for each ref is unnecessarily slow. Only the last
++	 * ref needs a put_page().
++	 */
++	if (refs > 1)
++		page_ref_sub(page, refs - 1);
++	put_page(page);
++}
++
+ #ifdef CONFIG_ARCH_HAS_HUGEPD
+ static unsigned long hugepte_addr_end(unsigned long addr, unsigned long en=
+d,
+ 				      unsigned long sz)
+@@ -2007,32 +2030,20 @@ static int gup_hugepte(pte_t *ptep, unsigned long s=
+z, unsigned long addr,
+ 	/* hugepages are never "special" */
+ 	VM_BUG_ON(!pfn_valid(pte_pfn(pte)));
+=20
+-	refs =3D 0;
+ 	head =3D pte_page(pte);
+-
+ 	page =3D head + ((addr & (sz-1)) >> PAGE_SHIFT);
+-	do {
+-		VM_BUG_ON(compound_head(page) !=3D head);
+-		pages[*nr] =3D page;
+-		(*nr)++;
+-		page++;
+-		refs++;
+-	} while (addr +=3D PAGE_SIZE, addr !=3D end);
++	refs =3D record_subpages(page, addr, end, pages + *nr);
+=20
+ 	head =3D try_get_compound_head(head, refs);
+-	if (!head) {
+-		*nr -=3D refs;
++	if (!head)
+ 		return 0;
+-	}
+=20
+ 	if (unlikely(pte_val(pte) !=3D pte_val(*ptep))) {
+-		/* Could be optimized better */
+-		*nr -=3D refs;
+-		while (refs--)
+-			put_page(head);
++		put_compound_head(head, refs);
+ 		return 0;
+ 	}
+=20
++	*nr +=3D refs;
+ 	SetPageReferenced(head);
+ 	return 1;
+ }
+@@ -2079,28 +2090,19 @@ static int gup_huge_pmd(pmd_t orig, pmd_t *pmdp, un=
+signed long addr,
+ 		return __gup_device_huge_pmd(orig, pmdp, addr, end, pages, nr);
+ 	}
+=20
+-	refs =3D 0;
+ 	page =3D pmd_page(orig) + ((addr & ~PMD_MASK) >> PAGE_SHIFT);
+-	do {
+-		pages[*nr] =3D page;
+-		(*nr)++;
+-		page++;
+-		refs++;
+-	} while (addr +=3D PAGE_SIZE, addr !=3D end);
++	refs =3D record_subpages(page, addr, end, pages + *nr);
+=20
+ 	head =3D try_get_compound_head(pmd_page(orig), refs);
+-	if (!head) {
+-		*nr -=3D refs;
++	if (!head)
+ 		return 0;
+-	}
+=20
+ 	if (unlikely(pmd_val(orig) !=3D pmd_val(*pmdp))) {
+-		*nr -=3D refs;
+-		while (refs--)
+-			put_page(head);
++		put_compound_head(head, refs);
+ 		return 0;
+ 	}
+=20
++	*nr +=3D refs;
+ 	SetPageReferenced(head);
+ 	return 1;
+ }
+@@ -2120,28 +2122,19 @@ static int gup_huge_pud(pud_t orig, pud_t *pudp, un=
+signed long addr,
+ 		return __gup_device_huge_pud(orig, pudp, addr, end, pages, nr);
+ 	}
+=20
+-	refs =3D 0;
+ 	page =3D pud_page(orig) + ((addr & ~PUD_MASK) >> PAGE_SHIFT);
+-	do {
+-		pages[*nr] =3D page;
+-		(*nr)++;
+-		page++;
+-		refs++;
+-	} while (addr +=3D PAGE_SIZE, addr !=3D end);
++	refs =3D record_subpages(page, addr, end, pages + *nr);
+=20
+ 	head =3D try_get_compound_head(pud_page(orig), refs);
+-	if (!head) {
+-		*nr -=3D refs;
++	if (!head)
+ 		return 0;
+-	}
+=20
+ 	if (unlikely(pud_val(orig) !=3D pud_val(*pudp))) {
+-		*nr -=3D refs;
+-		while (refs--)
+-			put_page(head);
++		put_compound_head(head, refs);
+ 		return 0;
+ 	}
+=20
++	*nr +=3D refs;
+ 	SetPageReferenced(head);
+ 	return 1;
+ }
+@@ -2157,28 +2150,20 @@ static int gup_huge_pgd(pgd_t orig, pgd_t *pgdp, un=
+signed long addr,
+ 		return 0;
+=20
+ 	BUILD_BUG_ON(pgd_devmap(orig));
+-	refs =3D 0;
++
+ 	page =3D pgd_page(orig) + ((addr & ~PGDIR_MASK) >> PAGE_SHIFT);
+-	do {
+-		pages[*nr] =3D page;
+-		(*nr)++;
+-		page++;
+-		refs++;
+-	} while (addr +=3D PAGE_SIZE, addr !=3D end);
++	refs =3D record_subpages(page, addr, end, pages + *nr);
+=20
+ 	head =3D try_get_compound_head(pgd_page(orig), refs);
+-	if (!head) {
+-		*nr -=3D refs;
++	if (!head)
+ 		return 0;
+-	}
+=20
+ 	if (unlikely(pgd_val(orig) !=3D pgd_val(*pgdp))) {
+-		*nr -=3D refs;
+-		while (refs--)
+-			put_page(head);
++		put_compound_head(head, refs);
+ 		return 0;
+ 	}
+=20
++	*nr +=3D refs;
+ 	SetPageReferenced(head);
+ 	return 1;
+ }
 --=20
 2.24.1
 
