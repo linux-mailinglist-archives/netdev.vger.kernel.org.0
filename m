@@ -2,186 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 96DF6132D08
-	for <lists+netdev@lfdr.de>; Tue,  7 Jan 2020 18:30:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 636EB132D13
+	for <lists+netdev@lfdr.de>; Tue,  7 Jan 2020 18:32:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728468AbgAGRaL convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 7 Jan 2020 12:30:11 -0500
-Received: from mout.kundenserver.de ([212.227.17.24]:38075 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728321AbgAGRaK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jan 2020 12:30:10 -0500
-Received: from [192.168.1.176] ([37.4.249.154]) by mrelayeu.kundenserver.de
- (mreue109 [212.227.15.183]) with ESMTPSA (Nemesis) id
- 1MqJuP-1jTDmD2EAV-00nTer; Tue, 07 Jan 2020 18:30:02 +0100
-Subject: Re: [RPI 3B+ / TSO / lan78xx ]
-To:     Eric Dumazet <eric.dumazet@gmail.com>,
-        RENARD Pierre-Francois <pfrenard@gmail.com>,
-        nsaenzjulienne@suse.de, woojung.huh@microchip.com,
-        UNGLinuxDriver@microchip.com, netdev@vger.kernel.org,
-        linux-usb@vger.kernel.org
-References: <5267da21-8f12-2750-c0c5-4ed31b03833b@gmail.com>
- <78b94ba2-9a87-78bb-8916-e6ef5a0668ae@gmail.com>
- <863777f2-3a7b-0736-d0a4-d9966bea3f96@gmail.com>
-From:   Stefan Wahren <stefan.wahren@i2se.com>
-Openpgp: preference=signencrypt
-Autocrypt: addr=stefan.wahren@i2se.com; keydata=
- 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 AQ==
-Message-ID: <f7e1f498-d90b-1685-dc02-4c24273957a7@i2se.com>
-Date:   Tue, 7 Jan 2020 18:30:00 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
-MIME-Version: 1.0
-In-Reply-To: <863777f2-3a7b-0736-d0a4-d9966bea3f96@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8BIT
-Content-Language: en-US
-X-Provags-ID: V03:K1:NP238M/sIC7ImzJ4Yk8d0oC7DYq5fYSzCxzV1DykE363RMWuFM0
- J9yyJRXfOyxs3HI14tPeI5nG95uNKRbLLD9kV1pbXcqXOthzuhk2E2EkTbiEVvWXcG2xILs
- NUrABIq0DzBKH7edBCA6u2KQOFDpW9By4wAH61UHHSXdsGvzLqThmEfhb6darH/1sM+Pgr7
- 6/L1C+vcetUxcEg1w8KTw==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:vm6/ZvQlDQQ=:FLjGkNXlazz31py+qhEAKr
- koIOsF21nek0XF/7dME/RSmxAAeLVdg9zO50vw/AuyOaNgxws3Z3bCbr7Sljjmn8HrdiZEvd9
- MuICD8InHAE79M9b973djay7+r3V64+Rf5LFiMUfMHbcYuwDnE0/y/8F5MU4tKb/QGvHCixAq
- uftuWEoh9MLNMA7BHKo9fSURHFBE0otOmSu5rXGtIFwsRVZ8Piwvw71YViD+y67CTUr9XhMpW
- 1tnUmlCRG69S9uXOSOuULO7tlpCgLKd3q3LgOia4FzdTmG1JFzeADaX/vhdhZ//U4UWkdpbOO
- rFxUfQg5jnWxwIQ6nD3we9kjIri0z5y4A55bVHC+2VpvkN5fQtrt28inzZeNqjbsKNIuuayYs
- QYjpb+m2EsduWZgIGkUwBL2XeRMOB27tIbME065jvMjcLtsgKJlTywM12PyylsdwabvJfkod4
- rZpEAntkGYfDIlRMsXmDkot6N9h0PcvDo5w1u9pxmp5JofpWrxWKW0LkCb47oET0zifAlKqBa
- PQgBrG+CLD+5vEu122KmPE2BSc8JmD1CEF2Bd7FhjpoidqP1Cz7UkNU6WjBFStsuhZKjzxIDo
- h4/I1FU2PejKksokiE9jtyWjuimZ3xGYZitGRsB9azcid5oMtvdWyZgyvUe+Z4OaV5DslqIBw
- OZk4Y3Hzs25L6voDvzpJQM5hQeY/aAhNDJcHJ/jD/I5PXufeL550W2UgWEFjnr4DwQj8k6oYe
- gkkjkW00H0qKYZaYV01UbG+fgW6SHY/o3Q/Qs0RRpgy5TpS37J3LuwlWxUQfCPoL8QribyjT8
- li8vucLaN2wDB3/iq9tySyxWVthF9aVUnHAWr98eHI3gh3U9aMrPWeHM+vsOW+Gu3nnyH9Avi
- tnbWu+kZQ3j/xLUspwpSHMoqYYS4pt3K4TOt4xfcA=
+        id S1728474AbgAGRcn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Jan 2020 12:32:43 -0500
+Received: from mail-il1-f194.google.com ([209.85.166.194]:41907 "EHLO
+        mail-il1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728325AbgAGRcm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jan 2020 12:32:42 -0500
+Received: by mail-il1-f194.google.com with SMTP id f10so257125ils.8;
+        Tue, 07 Jan 2020 09:32:42 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=5/kHjCEs62h1faHWfCUdOVVEQSiVDI+7+0pArTEC4Tw=;
+        b=MlAN7OTONzWQICMe80rTKHut2UQJGNNOPyx8Wclo+BBy4pXRERNHznOw1BU84DIJ4g
+         0gEzBFT06FwqdvUkDI0f7Mptq3axi242xZt+UNQGPrRp0ayDF5ujQxaiT7Jjr9+aLTfJ
+         Y1BqVaBeydVK1vLBFA0Ss+Sz4UgHbVpLHkCWu7YhPqdX249JcjR1FGgVMis+Ih/RKx/f
+         JFBOyY1aFfFjTjzwEbUSQ0RD08rH894GcWS3m/NUDBnx4m+YzjKztH0Y/O5w+7v5mC68
+         RhxV91GNH8d5s5YHAli5lYChBGfnAlJ+Lq1zbVjJERR1eoU/tlABtVTRwYmFTH6y9XJT
+         FSyg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=5/kHjCEs62h1faHWfCUdOVVEQSiVDI+7+0pArTEC4Tw=;
+        b=qBNtUYhJp04xVmsQD5Qxxdb3oEmb4MUW7+eFtl+QVliBBubCFCeGPCiTGm6B8sWBaq
+         d9fWqvIeCL1Ywvv257BQeQ74FjT3j/OkTzyWE2NjztoRBubKcxHkKtPcT7txMV/OY31U
+         s35nK39zrheT22mDjkC7KPOYSb0HBuqF+D0FVK75LZ/oJ3eZvAr+5OaI6QO0AlwWR1gY
+         43lYmjbEFkWPk0JQCEaDBKYi+ldiiYs6wlPVoWusLpcdxDxa95KLhOqMs0XhGAIUAkIa
+         Mkn2qNM03vLIVwp/p9CqQPdxGpqSuTDm7ONgoxkvHBdFKS8o7IeY+WkYtGvJW5GuRlXa
+         uruQ==
+X-Gm-Message-State: APjAAAULKy+Mq71mSFyHewnV4AdXgUXknsidmTfFtIWVXeJ/0FpsDxRo
+        pBWWm641c23ZmfRx3REEBlA=
+X-Google-Smtp-Source: APXvYqys0Ci4OFCUjTb9h8G30XjjNZSlpzB6cSx8PE+JktmIp4Xd0EV9K+791h2+SmQefbTiUbSs2Q==
+X-Received: by 2002:a92:a1c7:: with SMTP id b68mr208205ill.134.1578418361778;
+        Tue, 07 Jan 2020 09:32:41 -0800 (PST)
+Received: from localhost ([184.63.162.180])
+        by smtp.gmail.com with ESMTPSA id g3sm27915ioq.75.2020.01.07.09.32.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 07 Jan 2020 09:32:41 -0800 (PST)
+Date:   Tue, 07 Jan 2020 09:32:33 -0800
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
+        netdev@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net
+Cc:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        bpf@vger.kernel.org, davem@davemloft.net,
+        jakub.kicinski@netronome.com, hawk@kernel.org,
+        john.fastabend@gmail.com, magnus.karlsson@intel.com,
+        jonathan.lemon@gmail.com,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Message-ID: <5e14c0b1740ca_67962afd051fc5c0a5@john-XPS-13-9370.notmuch>
+In-Reply-To: <20191219061006.21980-2-bjorn.topel@gmail.com>
+References: <20191219061006.21980-1-bjorn.topel@gmail.com>
+ <20191219061006.21980-2-bjorn.topel@gmail.com>
+Subject: RE: [PATCH bpf-next v2 1/8] xdp: simplify devmap cleanup
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Eric,
+Bj=C3=B6rn T=C3=B6pel wrote:
+> From: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
+> =
 
-Am 07.01.20 um 18:04 schrieb Eric Dumazet:
->
-> On 1/7/20 5:32 AM, RENARD Pierre-Francois wrote:
->> Hello all
->>
->> I am facing an issue related to Raspberry PI 3B+ and onboard ethernet card.
->>
->> When doing a huge transfer (more than 1GB) in a row, transfer hanges and failed after a few minutes.
->>
->>
->> I have two ways to reproduce this issue
->>
->>
->> using NFS (v3 or v4)
->>
->>     dd if=/dev/zero of=/NFSPATH/file bs=4M count=1000 status=progress
->>
->>
->>     we can see that at some point dd hangs and becomes non interrutible (no way to ctrl-c it or kill it)
->>
->>     after afew minutes, dd dies and a bunch of NFS server not responding / NFS server is OK are seens into the journal
->>
->>
->> Using SCP
->>
->>     dd if=/dev/zero of=/tmp/file bs=4M count=1000
->>
->>     scp /tmp/file user@server:/directory
->>
->>
->>     scp hangs after 1GB and after a few minutes scp is failing with message "client_loop: send disconnect: Broken pipe lostconnection"
->>
->>
->>
->>
->> It appears, this is a known bug relatted to TCP Segmentation Offload & Selective Acknowledge.
->>
->> disabling this TSO (ethtool -K eth0 tso off & ethtool -K eth0 gso off) solves the issue.
->>
->> A patch has been created to disable the feature by default by the raspberry team and is by default applied wihtin raspbian.
->>
->> comment from the patch :
->>
->> /* TSO seems to be having some issue with Selective Acknowledge (SACK) that
->>  * results in lost data never being retransmitted.
->>  * Disable it by default now, but adds a module parameter to enable it for
->>  * debug purposes (the full cause is not currently understood).
->>  */
->>
->>
->> For reference you can find
->>
->> a link to the issue I created yesterday : https://github.com/raspberrypi/linux/issues/3395
->>
->> links to raspberry dev team : https://github.com/raspberrypi/linux/issues/2482 & https://github.com/raspberrypi/linux/issues/2449
->>
->>
->>
->> If you need me to test things, or give you more informations, I ll be pleased to help.
->>
->
-> I doubt TSO and SACK have a serious generic bug like that.
->
-> Most likely the TSO implementation on the driver/NIC has a bug .
+> After the RCU flavor consolidation [1], call_rcu() and
+> synchronize_rcu() waits for preempt-disable regions (NAPI) in addition
+> to the read-side critical sections. As a result of this, the cleanup
+> code in devmap can be simplified
 
-Yes, the issue isn't reproducible with the Raspberry Pi 3B and the same
-kernel (without +). The main difference between both boards is the
-different ethernet USB chip:
+OK great makes sense. One comment below.
 
-Raspberry Pi 3B: smsc95xx
-Raspberry Pi 3B+: lan78xx
+> =
 
->
-> Anyway you do not provide a kernel version, I am not sure what you expect from us.
+> * There is no longer a need to flush in __dev_map_entry_free, since we
+>   know that this has been done when the call_rcu() callback is
+>   triggered.
+> =
 
-It's Linux 5.4.7 (arm64) as in the provided github link. I asked
-Pierre-Francois to report this issue here, so the issue get addressed
-properly. Currently this very old bug not fixed in mainline and the
-Raspberry Pi vendor tree uses a workaround (disable TSO).
+> * When freeing the map, there is no need to explicitly wait for a
+>   flush. It's guaranteed to be done after the synchronize_rcu() call
+>   in dev_map_free(). The rcu_barrier() is still needed, so that the
+>   map is not freed prior the elements.
+> =
 
-Stefan
+> [1] https://lwn.net/Articles/777036/
+> =
+
+> Acked-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+> Signed-off-by: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
+> ---
+>  kernel/bpf/devmap.c | 43 +++++--------------------------------------
+>  1 file changed, 5 insertions(+), 38 deletions(-)
+> =
+
+> diff --git a/kernel/bpf/devmap.c b/kernel/bpf/devmap.c
+> index 3d3d61b5985b..b7595de6a91a 100644
+> --- a/kernel/bpf/devmap.c
+> +++ b/kernel/bpf/devmap.c
+> @@ -201,7 +201,7 @@ static struct bpf_map *dev_map_alloc(union bpf_attr=
+ *attr)
+>  static void dev_map_free(struct bpf_map *map)
+>  {
+>  	struct bpf_dtab *dtab =3D container_of(map, struct bpf_dtab, map);
+> -	int i, cpu;
+> +	int i;
+>  =
+
+>  	/* At this point bpf_prog->aux->refcnt =3D=3D 0 and this map->refcnt =
+=3D=3D 0,
+>  	 * so the programs (can be more than one that used this map) were
+> @@ -221,18 +221,6 @@ static void dev_map_free(struct bpf_map *map)
+>  	/* Make sure prior __dev_map_entry_free() have completed. */
+>  	rcu_barrier();
+>  =
 
 
+The comment at the start of this function also needs to be fixed it says,=
+
+
+  /* At this point bpf_prog->aux->refcnt =3D=3D 0 and this map->refcnt =3D=
+=3D 0,
+   * so the programs (can be more than one that used this map) were
+   * disconnected from events. Wait for outstanding critical sections in
+   * these programs to complete. The rcu critical section only guarantees=
+
+   * no further reads against netdev_map. It does __not__ ensure pending
+   * flush operations (if any) are complete.
+   */
+
+also comment in dev_map_delete_elem() needs update.
+
+> -	/* To ensure all pending flush operations have completed wait for flu=
+sh
+> -	 * list to empty on _all_ cpus.
+> -	 * Because the above synchronize_rcu() ensures the map is disconnecte=
+d
+> -	 * from the program we can assume no new items will be added.
+> -	 */
+> -	for_each_online_cpu(cpu) {
+> -		struct list_head *flush_list =3D per_cpu_ptr(dtab->flush_list, cpu);=
+
+> -
+> -		while (!list_empty(flush_list))
+> -			cond_resched();
+> -	}
+> -
+>  	if (dtab->map.map_type =3D=3D BPF_MAP_TYPE_DEVMAP_HASH) {
+>  		for (i =3D 0; i < dtab->n_buckets; i++) {
+>  			struct bpf_dtab_netdev *dev;
+> @@ -345,8 +333,7 @@ static int dev_map_hash_get_next_key(struct bpf_map=
+ *map, void *key,
+>  	return -ENOENT;
+>  }
+
+Otherwise LGTM thanks.=
