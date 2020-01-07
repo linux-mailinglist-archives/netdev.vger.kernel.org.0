@@ -2,80 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B8441322FA
-	for <lists+netdev@lfdr.de>; Tue,  7 Jan 2020 10:53:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9BF2F132348
+	for <lists+netdev@lfdr.de>; Tue,  7 Jan 2020 11:12:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727714AbgAGJxK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jan 2020 04:53:10 -0500
-Received: from mail-ot1-f68.google.com ([209.85.210.68]:37397 "EHLO
-        mail-ot1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726485AbgAGJxJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jan 2020 04:53:09 -0500
-Received: by mail-ot1-f68.google.com with SMTP id k14so75721552otn.4;
-        Tue, 07 Jan 2020 01:53:09 -0800 (PST)
+        id S1727747AbgAGKMC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Jan 2020 05:12:02 -0500
+Received: from mail-io1-f71.google.com ([209.85.166.71]:41757 "EHLO
+        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727705AbgAGKMC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jan 2020 05:12:02 -0500
+Received: by mail-io1-f71.google.com with SMTP id m12so12157747ioh.8
+        for <netdev@vger.kernel.org>; Tue, 07 Jan 2020 02:12:01 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=rcKJiBOHF/a0+MDVGltwkYmA7kAiSShXv3OfBucNo/w=;
-        b=spnwUusnFCnaGf0nGyhvYIrZK7fZxpchw6XZAQvKRpfSTstjz1xbvLHYrIer0tt1NQ
-         pOmR9iHuZCi+Xad2SBPYWR6XjJkc4WH7f3RhtWQkE6vD+CgiLwJIigIoZNqKDFrTCOi7
-         ekkK6FQuLloN7K5IWcCA84W2PhEU4sDup6KXC05A4Xxe9Lasl3W4GTxQgROtxvrI9bd6
-         q9tMJfTKCxvF+uud38NFqdU1SayNNThFi/oRzzlSbqgduMZHY3uh04R+StFmSVF4ESxl
-         NTcdfFFqTxRKvTLoH8H8z21jlPBhA70Ue0eYGza7RPMIyHLRyx+YU+ZjKOKrdfSJXYgf
-         EnLA==
-X-Gm-Message-State: APjAAAU2zApQ8IQFnvMckrK9/w5ky0goBRLpYuAYc5ANu/OU/zxkuzeR
-        TbAhQBPYuloBuxZ1Rhvfa5fE9o92Le7TkqYwgCQ=
-X-Google-Smtp-Source: APXvYqyijdjeyq4HJ5FCDcI015uTWnvTRQoFeaQRgxTWy1DfLN1zgBL6llgNmNnOtPrGgkpTZXmDGjkn5Is6S8EHkt8=
-X-Received: by 2002:a9d:62c7:: with SMTP id z7mr111166052otk.189.1578390788841;
- Tue, 07 Jan 2020 01:53:08 -0800 (PST)
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=uY0IMSD0dpLD3QQHBJ18OrMq7eBYbFB7tHn+vZdbCpU=;
+        b=KXGJO9P5QxTxfuispER/3iauXg2RhVDi30qc7sU2VymtEWrvsjrtOoFEo8Nne7SDmx
+         iPrbWnrXpc1usK2oAT/UECuTjxFwXtO3GvTyisGd6x3Gczd2XN9szx8xymfHBK9URi4a
+         EBzip9hGmlyo0cx7IuchpTOlwhpb6eTK+WAABU844qLNT0udMUP4o8rCN93XrYdsvytm
+         fS8hvW/zage7/sA2KBZ6oRVjLWyQVOUyekcFwF6NvjoigIHeFkJAxfRb3GFDUQjnctyO
+         25UnkHO6EuGkm4E1VRQqVhjQZpUSsdU3Mg3271BzM0mjI32Q2M8hivyZ/CO8nhWhrmtl
+         rVbQ==
+X-Gm-Message-State: APjAAAUeUGzHJZMSSh06qbz9dYPFBHsL6NmD2emGVlWOsBsAIoKLbwH5
+        iR9IKQjrt5eT53mEeVrzgwMHbhGLzuFrGa20WnwvZ8usE2LC
+X-Google-Smtp-Source: APXvYqwv0/OkCF9+faxbADAvRTX3QIb9FKZF7SgcrbkDTc9kexfy5mcSiu6q64gZKoVVyGS18zybmgeFYRrHU+aAiI+B41Zqko2l
 MIME-Version: 1.0
-References: <20200106045833.1725-1-masahiroy@kernel.org>
-In-Reply-To: <20200106045833.1725-1-masahiroy@kernel.org>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Tue, 7 Jan 2020 10:52:57 +0100
-Message-ID: <CAJZ5v0jBEq+GiTP8V4ZzQvR9qbSBdEz_P8EZNX7yNZMzTjB86Q@mail.gmail.com>
-Subject: Re: [PATCH] treewide: remove redundent IS_ERR() before error code check
-To:     Masahiro Yamada <masahiroy@kernel.org>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Julia Lawall <julia.lawall@lip6.fr>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linux-clk <linux-clk@vger.kernel.org>,
-        linux-crypto@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-i2c <linux-i2c@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-mtd@lists.infradead.org, netdev <netdev@vger.kernel.org>,
-        "moderated list:SOUND - SOC LAYER / DYNAMIC AUDIO POWER MANAGEM..." 
-        <alsa-devel@alsa-project.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+X-Received: by 2002:a5d:8cda:: with SMTP id k26mr48129317iot.26.1578391921440;
+ Tue, 07 Jan 2020 02:12:01 -0800 (PST)
+Date:   Tue, 07 Jan 2020 02:12:01 -0800
+In-Reply-To: <0000000000004ceb27059b868b57@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000cb3c3c059b8a01e3@google.com>
+Subject: Re: BUG: unable to handle kernel NULL pointer dereference in cfg80211_wext_siwfrag
+From:   syzbot <syzbot+e8a797964a4180eb57d5@syzkaller.appspotmail.com>
+To:     astrachan@google.com, davem@davemloft.net, ghartman@google.com,
+        johannes.berg@intel.com, johannes@sipsolutions.net,
+        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
+        muntsinger@google.com, netdev@vger.kernel.org,
+        schuffelen@google.com, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 6, 2020 at 6:11 AM Masahiro Yamada <masahiroy@kernel.org> wrote:
->
-> 'PTR_ERR(p) == -E*' is a stronger condition than IS_ERR(p).
-> Hence, IS_ERR(p) is unneeded.
->
-> The semantic patch that generates this commit is as follows:
->
-> // <smpl>
-> @@
-> expression ptr;
-> constant error_code;
-> @@
-> -IS_ERR(ptr) && (PTR_ERR(ptr) == - error_code)
-> +PTR_ERR(ptr) == - error_code
-> // </smpl>
->
-> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-> ---
+syzbot has bisected this bug to:
 
-Acked-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+commit c7cdba31ed8b87526db978976392802d3f93110c
+Author: Cody Schuffelen <schuffelen@google.com>
+Date:   Wed Nov 21 03:14:49 2018 +0000
 
-for the acpi/scan.c change, but there seems to be a typo in the subject:
+     mac80211-next: rtnetlink wifi simulation device
 
-s/redundent/redundant/
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=11cf6885e00000
+start commit:   d89091a4 macb: Don't unregister clks unconditionally
+git tree:       net
+final crash:    https://syzkaller.appspot.com/x/report.txt?x=13cf6885e00000
+console output: https://syzkaller.appspot.com/x/log.txt?x=15cf6885e00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=f2f3ef188b7e16cf
+dashboard link: https://syzkaller.appspot.com/bug?extid=e8a797964a4180eb57d5
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=15c85915e00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=11c02bc1e00000
+
+Reported-by: syzbot+e8a797964a4180eb57d5@syzkaller.appspotmail.com
+Fixes: c7cdba31ed8b ("mac80211-next: rtnetlink wifi simulation device")
+
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
