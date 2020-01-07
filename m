@@ -2,300 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DE912132028
-	for <lists+netdev@lfdr.de>; Tue,  7 Jan 2020 08:03:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 09D5F132035
+	for <lists+netdev@lfdr.de>; Tue,  7 Jan 2020 08:06:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727211AbgAGHCU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jan 2020 02:02:20 -0500
-Received: from mail-lj1-f194.google.com ([209.85.208.194]:41514 "EHLO
-        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725781AbgAGHCT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jan 2020 02:02:19 -0500
-Received: by mail-lj1-f194.google.com with SMTP id h23so53569686ljc.8;
-        Mon, 06 Jan 2020 23:02:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=otoI+u7orc5dRlizjzTthDQTWcCumvJBfaQq5FSxrGU=;
-        b=VGnb+cbEYS1htdtN7ueHhtCNl5FNlEVcRv31h+gdRjUHQVlAovKIqRnRaAYVbYUS6O
-         g8pWMoWmy13CTP5jMRWB2U6EVgKtSjzjN6kxODYyyBLShG1JoOQBYNGcRLsgKfu2BC1T
-         CeKXhli/JFwleWQG5L8wxM+dBU3HOPJlGZpd2ZLuDPL2G5Vhai+qbD28RxHv+/wMC25r
-         iePX6Lfconq76GqXZcoAUlgaDF5GDMEOhV/Z99QqLldMQah2U6W2QVYFxtvlhsC+ilNo
-         0X5dIoPFkgjKOATodsYiMUV9MnYyd3YWCSkyMyQw2BN31QK9NihaZtqwjHOelo2mcwgm
-         DV3g==
+        id S1726651AbgAGHGX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Jan 2020 02:06:23 -0500
+Received: from us-smtp-2.mimecast.com ([205.139.110.61]:30494 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725781AbgAGHGX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jan 2020 02:06:23 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1578380780;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=/efjXzZHBg1iCroxSDJqHPrwvRqUs+JXRk92V6GEKaU=;
+        b=DTexhIJXIOMefzaoInUaxp09cs492MOYlRlr8IHFbB6Aj3wWCEY3SWr/eJa5O4HAdDjLYN
+        QZCZEA4Y6XPDHRNbjURIGkRiIYdsIDfK1LCO8iMYe86STWXZDJdwFLidx5UPbvKTpma2kG
+        ndjJ4lWIpkW34xEqOSdsF16WEHxUYpM=
+Received: from mail-qv1-f70.google.com (mail-qv1-f70.google.com
+ [209.85.219.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-254-cpy1Mh5vNMGDNJVj2Qs9FQ-1; Tue, 07 Jan 2020 02:06:19 -0500
+X-MC-Unique: cpy1Mh5vNMGDNJVj2Qs9FQ-1
+Received: by mail-qv1-f70.google.com with SMTP id g15so29311052qvk.11
+        for <netdev@vger.kernel.org>; Mon, 06 Jan 2020 23:06:19 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=otoI+u7orc5dRlizjzTthDQTWcCumvJBfaQq5FSxrGU=;
-        b=nuXY6hg03hsdew9yqb7MJs0xBf1F6w7CuGF2QYnRNaxFf3TtFivIwJib5xCXcNhVcX
-         HoF8kUiJCw2XNWTlQEifVGIwJK9FPwqsgtDHOap2YCMqvE7NUteVguE0RcJ3AOVh7DSj
-         8q/H2kyWE01xN00w0TGf3cnLs6QJeEWg5tQE1TqY+HraQyJA4e+elt8j7Qyn48MQyV+q
-         EszZuSYQLUVWpaS/14uUT5JVVSYp5b3lYSVcMwnczDoHbiE729sBU0ah/h2Tw2RxtuuG
-         EoPPPWF61rk81+22GEceCILLZqZa1KQ7L9n+n8wnx3wfN+OrV6fhvFX14SeutAQS9WSH
-         c4og==
-X-Gm-Message-State: APjAAAWAe8oaTxpMsVzdBbjau5JV48nhNIHpIJ6627sbPTZQtSeW2I3N
-        VpHhnCWZ8OUf+JlmwnA+W89BPGZPLKkHFXZbrrCceQ==
-X-Google-Smtp-Source: APXvYqzXPmBqodoErMJZqJFDV5mPw27PaZ4GJyNSdHdme4355OC8ntuo4ejjWgUJqqxcnW6sqVVqL0PIBRTtCWwVV/g=
-X-Received: by 2002:a2e:858b:: with SMTP id b11mr56964986lji.135.1578380537246;
- Mon, 06 Jan 2020 23:02:17 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=/efjXzZHBg1iCroxSDJqHPrwvRqUs+JXRk92V6GEKaU=;
+        b=uJSE7Qjrf6VX1JCa8lzl2nlbCpjN4+xdwPJ7xFOCMZAVZIGDh320HnSaQl4vbtyQTR
+         znWNKADlgeHTaijStogkfMeGFsS0GFQuGTvLFCB4X8CkDTCJe+7kVYmH85e79VaU7N65
+         uNnzOYVBOKZPJmAQKTTBUDKroKce/EjPs9hrH0+/lKgInfuwVlZ5cwfhj4x+rRgOAHWL
+         vPOPQMsCismIWkpcx3hySnmftuC8exfDdZiwEeoHBYYd3x34VvX30j8ivVpmEib04zlS
+         3xBS1f2yPmPjCL7DnO+P2qS4bdiPT1c912+w7QOqX9wjvxQA3QUfkRX3iyYCu1p1QAKK
+         u2vQ==
+X-Gm-Message-State: APjAAAXHyUBqh2pP85HGkVihd0RCadFAlW9wxhLOPVuXyvZNf/UHknA+
+        AKTPSqOxZ4s2bsBz/xl3xtLTqUGZajF/Ncx6LQLhAhW4Us5k8KeDHRAY3I22pmpZQ+uiGu8qOYk
+        EUVKDYry0A/rVVUcj
+X-Received: by 2002:ac8:709a:: with SMTP id y26mr78234903qto.304.1578380779295;
+        Mon, 06 Jan 2020 23:06:19 -0800 (PST)
+X-Google-Smtp-Source: APXvYqyK5Mb+pOAlU+KoIVfxx6YvoZ+HKotsgyRPL144jEGAH30ilnJpURC7Q9CI21MUoelMWJIJHQ==
+X-Received: by 2002:ac8:709a:: with SMTP id y26mr78234888qto.304.1578380779070;
+        Mon, 06 Jan 2020 23:06:19 -0800 (PST)
+Received: from redhat.com (bzq-79-183-34-164.red.bezeqint.net. [79.183.34.164])
+        by smtp.gmail.com with ESMTPSA id o16sm21915243qkj.91.2020.01.06.23.06.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 06 Jan 2020 23:06:18 -0800 (PST)
+Date:   Tue, 7 Jan 2020 02:06:13 -0500
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, Alistair Delva <adelva@google.com>,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
+Subject: Re: [PATCH v2] virtio_net: CTRL_GUEST_OFFLOADS depends on CTRL_VQ
+Message-ID: <20200107020303-mutt-send-email-mst@kernel.org>
+References: <20200105132120.92370-1-mst@redhat.com>
+ <2d7053b5-295c-4051-a722-7656350bdb74@redhat.com>
+ <20200106074426-mutt-send-email-mst@kernel.org>
+ <eab75b06-453d-2e17-1e77-439a66c3c86a@redhat.com>
 MIME-Version: 1.0
-References: <20191211223344.165549-1-brianvv@google.com> <20191211223344.165549-7-brianvv@google.com>
- <a33dab7b-0f46-c29f-0db1-a5539c433b3d@fb.com>
-In-Reply-To: <a33dab7b-0f46-c29f-0db1-a5539c433b3d@fb.com>
-From:   Brian Vazquez <brianvv.kernel@gmail.com>
-Date:   Tue, 7 Jan 2020 01:02:05 -0600
-Message-ID: <CABCgpaVC-gCf58VmCx2XwwHoZ2FXHmtBfqzqJoPeeg2Q=DvRzg@mail.gmail.com>
-Subject: Re: [PATCH v3 bpf-next 06/11] bpf: add batch ops to all htab bpf map
-To:     Yonghong Song <yhs@fb.com>
-Cc:     Brian Vazquez <brianvv@google.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "David S . Miller" <davem@davemloft.net>,
-        Stanislav Fomichev <sdf@google.com>,
-        Petar Penkov <ppenkov@google.com>,
-        Willem de Bruijn <willemb@google.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <eab75b06-453d-2e17-1e77-439a66c3c86a@redhat.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Dec 13, 2019 at 12:58 PM Yonghong Song <yhs@fb.com> wrote:
->
->
->
-> On 12/11/19 2:33 PM, Brian Vazquez wrote:
-> > From: Yonghong Song <yhs@fb.com>
-> >
-> > htab can't use generic batch support due some problematic behaviours
-> > inherent to the data structre, i.e. while iterating the bpf map  a
-> > concurrent program might delete the next entry that batch was about to
-> > use, in that case there's no easy solution to retrieve the next entry,
-> > the issue has been discussed multiple times (see [1] and [2]).
-> >
-> > The only way hmap can be traversed without the problem previously
-> > exposed is by making sure that the map is traversing entire buckets.
-> > This commit implements those strict requirements for hmap, the
-> > implementation follows the same interaction that generic support with
-> > some exceptions:
-> >
-> >   - If keys/values buffer are not big enough to traverse a bucket,
-> >     ENOSPC will be returned.
-> >   - out_batch contains the value of the next bucket in the iteration, not
-> >     the next key, but this is transparent for the user since the user
-> >     should never use out_batch for other than bpf batch syscalls.
-> >
-> > Note that only lookup and lookup_and_delete batch ops require the hmap
-> > specific implementation, update/delete batch ops can be the generic
-> > ones.
-> >
-> > [1] https://lore.kernel.org/bpf/20190724165803.87470-1-brianvv@google.com/
-> > [2] https://lore.kernel.org/bpf/20190906225434.3635421-1-yhs@fb.com/
-> >
-> > Signed-off-by: Yonghong Song <yhs@fb.com>
-> > Signed-off-by: Brian Vazquez <brianvv@google.com>
-> > ---
-> >   kernel/bpf/hashtab.c | 242 +++++++++++++++++++++++++++++++++++++++++++
-> >   1 file changed, 242 insertions(+)
-> >
-> > diff --git a/kernel/bpf/hashtab.c b/kernel/bpf/hashtab.c
-> > index 22066a62c8c97..fac107bdaf9ec 100644
-> > --- a/kernel/bpf/hashtab.c
-> > +++ b/kernel/bpf/hashtab.c
-> > @@ -17,6 +17,17 @@
-> >       (BPF_F_NO_PREALLOC | BPF_F_NO_COMMON_LRU | BPF_F_NUMA_NODE |    \
-> >        BPF_F_ACCESS_MASK | BPF_F_ZERO_SEED)
-> >
-> > +#define BATCH_OPS(_name)                     \
-> > +     .map_lookup_batch =                     \
-> > +     _name##_map_lookup_batch,               \
-> > +     .map_lookup_and_delete_batch =          \
-> > +     _name##_map_lookup_and_delete_batch,    \
-> > +     .map_update_batch =                     \
-> > +     generic_map_update_batch,               \
-> > +     .map_delete_batch =                     \
-> > +     generic_map_delete_batch
-> > +
-> > +
-> >   struct bucket {
-> >       struct hlist_nulls_head head;
-> >       raw_spinlock_t lock;
-> > @@ -1232,6 +1243,233 @@ static void htab_map_seq_show_elem(struct bpf_map *map, void *key,
-> >       rcu_read_unlock();
-> >   }
-> >
-> > +static int
-> > +__htab_map_lookup_and_delete_batch(struct bpf_map *map,
-> > +                                const union bpf_attr *attr,
-> > +                                union bpf_attr __user *uattr,
-> > +                                bool do_delete, bool is_lru_map,
-> > +                                bool is_percpu)
-> > +{
-> > +     struct bpf_htab *htab = container_of(map, struct bpf_htab, map);
-> > +     u32 bucket_cnt, total, key_size, value_size, roundup_key_size;
-> > +     void *keys = NULL, *values = NULL, *value, *dst_key, *dst_val;
-> > +     void __user *uvalues = u64_to_user_ptr(attr->batch.values);
-> > +     void __user *ukeys = u64_to_user_ptr(attr->batch.keys);
-> > +     void *ubatch = u64_to_user_ptr(attr->batch.in_batch);
-> > +     u64 elem_map_flags, map_flags;
-> > +     struct hlist_nulls_head *head;
-> > +     u32 batch, max_count, size;
-> > +     struct hlist_nulls_node *n;
-> > +     unsigned long flags;
-> > +     struct htab_elem *l;
-> > +     struct bucket *b;
-> > +     int ret = 0;
-> > +
-> > +     max_count = attr->batch.count;
-> > +     if (!max_count)
-> > +             return 0;
-> > +
-> > +     elem_map_flags = attr->batch.elem_flags;
-> > +     if ((elem_map_flags & ~BPF_F_LOCK) ||
-> > +         ((elem_map_flags & BPF_F_LOCK) && !map_value_has_spin_lock(map)))
-> > +             return -EINVAL;
-> > +
-> > +     map_flags = attr->batch.flags;
-> > +     if (map_flags)
-> > +             return -EINVAL;
-> > +
-> > +     batch = 0;
-> > +     if (ubatch && copy_from_user(&batch, ubatch, sizeof(batch)))
-> > +             return -EFAULT;
-> > +
-> > +     if (batch >= htab->n_buckets)
-> > +             return -ENOENT;
-> > +
-> > +     /* We cannot do copy_from_user or copy_to_user inside
-> > +      * the rcu_read_lock. Allocate enough space here.
-> > +      */
-> > +     key_size = htab->map.key_size;
-> > +     roundup_key_size = round_up(htab->map.key_size, 8);
-> > +     value_size = htab->map.value_size;
-> > +     size = round_up(value_size, 8);
-> > +     if (is_percpu)
-> > +             value_size = size * num_possible_cpus();
-> > +     keys = kvmalloc(key_size, GFP_USER | __GFP_NOWARN);
-> > +     values = kvmalloc(value_size, GFP_USER | __GFP_NOWARN);
-> > +     if (!keys || !values) {
-> > +             ret = -ENOMEM;
-> > +             goto out;
-> > +     }
-> > +
-> > +     dst_key = keys;
-> > +     dst_val = values;
-> > +     total = 0;
-> > +
-> > +     preempt_disable();
-> > +     this_cpu_inc(bpf_prog_active);
-> > +     rcu_read_lock();
-> > +
-> > +again:
-> > +     b = &htab->buckets[batch];
-> > +     head = &b->head;
-> > +     raw_spin_lock_irqsave(&b->lock, flags);
-> > +
-> > +     bucket_cnt = 0;
-> > +     hlist_nulls_for_each_entry_rcu(l, n, head, hash_node)
-> > +             bucket_cnt++;
-> > +
-> > +     if (bucket_cnt > (max_count - total)) {
-> > +             if (total == 0)
-> > +                     ret = -ENOSPC;
-> > +             goto after_loop;
-> > +     }
-> > +
-> > +     hlist_nulls_for_each_entry_safe(l, n, head, hash_node) {
-> > +             memcpy(dst_key, l->key, key_size);
-> > +
-> > +             if (is_percpu) {
-> > +                     int off = 0, cpu;
-> > +                     void __percpu *pptr;
-> > +
-> > +                     pptr = htab_elem_get_ptr(l, map->key_size);
-> > +                     for_each_possible_cpu(cpu) {
-> > +                             bpf_long_memcpy(dst_val + off,
-> > +                                             per_cpu_ptr(pptr, cpu), size);
-> > +                             off += size;
-> > +                     }
-> > +             } else {
-> > +                     value = l->key + roundup_key_size;
-> > +                     if (elem_map_flags & BPF_F_LOCK)
-> > +                             copy_map_value_locked(map, dst_val, value,
-> > +                                                   true);
-> > +                     else
-> > +                             copy_map_value(map, dst_val, value);
-> > +                     check_and_init_map_lock(map, dst_val);
-> > +             }
-> > +             if (do_delete) {
-> > +                     hlist_nulls_del_rcu(&l->hash_node);
-> > +                     if (is_lru_map)
-> > +                             bpf_lru_push_free(&htab->lru, &l->lru_node);
-> > +                     else
-> > +                             free_htab_elem(htab, l);
-> > +             }
-> > +             if (copy_to_user(ukeys + total * key_size, keys, key_size) ||
-> > +                copy_to_user(uvalues + total * value_size, values,
-> > +                value_size)) {
->
-> We cannot do copy_to_user inside atomic region where irq is disabled
-> with raw_spin_lock_irqsave(). We could do the following:
->     . we kalloc memory before preempt_disable() with the current count
->       of bucket size.
->     . inside the raw_spin_lock_irqsave() region, we can do copy to kernel
->       memory.
->     . inside the raw_spin_lock_irqsave() region, if the bucket size
->       changes, we can have a few retries to increase allocation size
->       before giving up.
-> Do you think this may work?
+On Tue, Jan 07, 2020 at 10:29:08AM +0800, Jason Wang wrote:
+> 
+> On 2020/1/6 下午8:54, Michael S. Tsirkin wrote:
+> > On Mon, Jan 06, 2020 at 10:47:35AM +0800, Jason Wang wrote:
+> > > On 2020/1/5 下午9:22, Michael S. Tsirkin wrote:
+> > > > The only way for guest to control offloads (as enabled by
+> > > > VIRTIO_NET_F_CTRL_GUEST_OFFLOADS) is by sending commands
+> > > > through CTRL_VQ. So it does not make sense to
+> > > > acknowledge VIRTIO_NET_F_CTRL_GUEST_OFFLOADS without
+> > > > VIRTIO_NET_F_CTRL_VQ.
+> > > > 
+> > > > The spec does not outlaw devices with such a configuration, so we have
+> > > > to support it. Simply clear VIRTIO_NET_F_CTRL_GUEST_OFFLOADS.
+> > > > Note that Linux is still crashing if it tries to
+> > > > change the offloads when there's no control vq.
+> > > > That needs to be fixed by another patch.
+> > > > 
+> > > > Reported-by: Alistair Delva <adelva@google.com>
+> > > > Reported-by: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+> > > > Fixes: 3f93522ffab2 ("virtio-net: switch off offloads on demand if possible on XDP set")
+> > > > Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+> > > > ---
+> > > > 
+> > > > Same patch as v1 but update documentation so it's clear it's not
+> > > > enough to fix the crash.
+> > > > 
+> > > >    drivers/net/virtio_net.c | 9 +++++++++
+> > > >    1 file changed, 9 insertions(+)
+> > > > 
+> > > > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> > > > index 4d7d5434cc5d..7b8805b47f0d 100644
+> > > > --- a/drivers/net/virtio_net.c
+> > > > +++ b/drivers/net/virtio_net.c
+> > > > @@ -2971,6 +2971,15 @@ static int virtnet_validate(struct virtio_device *vdev)
+> > > >    	if (!virtnet_validate_features(vdev))
+> > > >    		return -EINVAL;
+> > > > +	/* VIRTIO_NET_F_CTRL_GUEST_OFFLOADS does not work without
+> > > > +	 * VIRTIO_NET_F_CTRL_VQ. Unfortunately spec forgot to
+> > > > +	 * specify that VIRTIO_NET_F_CTRL_GUEST_OFFLOADS depends
+> > > > +	 * on VIRTIO_NET_F_CTRL_VQ so devices can set the later but
+> > > > +	 * not the former.
+> > > > +	 */
+> > > > +	if (!virtio_has_feature(vdev, VIRTIO_NET_F_CTRL_VQ))
+> > > > +			__virtio_clear_bit(vdev, VIRTIO_NET_F_CTRL_GUEST_OFFLOADS);
+> > > 
+> > > If it's just because a bug of spec, should we simply fix the bug and fail
+> > > the negotiation in virtnet_validate_feature()?
+> > One man's bug is another man's feature: arguably leaving the features
+> > independent in the spec might allow reuse of the feature bit without
+> > breaking guests.
+> > 
+> > And even if we say it's a bug we can't simply fix the bug in the
+> > spec: changing the text for a future version does not change the fact
+> > that devices behaving according to the spec exist.
+> > 
+> > > Otherwise there would be inconsistency in handling feature dependencies for
+> > > ctrl vq.
+> > > 
+> > > Thanks
+> > That's a cosmetic problem ATM. It might be a good idea to generally
+> > change our handling of dependencies, and clear feature bits instead of
+> > failing probe on a mismatch.
+> 
+> 
+> Something like I proposed in the past ? [1]
+> 
+> [1] https://lore.kernel.org/patchwork/patch/519074/
 
-Yes, it does.
 
-What should be the initial value for the allocated memory
-max_entries/2? Do you see any issue if we just kalloc the entire
-buffer?
+No that still fails probe.
 
->
-> > +                     ret = -EFAULT;
-> > +                     goto after_loop;
-> > +             }
-> > +             total++;
-> > +     }
-> > +
-> > +     batch++;
-> > +     if (batch >= htab->n_buckets) {
-> > +             ret = -ENOENT;
-> > +             goto after_loop;
-> > +     }
-> > +
-> > +     raw_spin_unlock_irqrestore(&b->lock, flags);
-> > +     goto again;
-> > +
-> > +after_loop:
-> > +     raw_spin_unlock_irqrestore(&b->lock, flags);
-> > +
-> > +     rcu_read_unlock();
-> > +     this_cpu_dec(bpf_prog_active);
-> > +     preempt_enable();
-> > +
-> > +     if (ret && ret != -ENOENT)
-> > +             goto out;
-> > +
-> > +     /* copy data back to user */
-> > +     ubatch = u64_to_user_ptr(attr->batch.out_batch);
-> > +     if (copy_to_user(ubatch, &batch, sizeof(batch)) ||
-> > +         put_user(total, &uattr->batch.count))
-> > +             ret = -EFAULT;
-> > +
-> > +out:
-> > +     kvfree(keys);
-> > +     kvfree(values);
-> > +     return ret;
-> > +}
-> > +
-> [...]
+I am asking whether it's more future proof to fail probe
+on feature combinations disallowed by spec, or to clear bits
+to get to an expected combination.
+
+In any case, we should probably document in the spec how
+drivers behave on such combinations.
+
+
+> 
+> >   It's worth thinking  - at the spec level -
+> > how we can best make the configuration extensible.
+> > But that's not something spec should worry about.
+> > 
+> > 
+> > > > +
+> > > >    	if (virtio_has_feature(vdev, VIRTIO_NET_F_MTU)) {
+> > > >    		int mtu = virtio_cread16(vdev,
+> > > >    					 offsetof(struct virtio_net_config,
+
