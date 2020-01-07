@@ -2,263 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 87C4A132A58
-	for <lists+netdev@lfdr.de>; Tue,  7 Jan 2020 16:46:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2314E132A6B
+	for <lists+netdev@lfdr.de>; Tue,  7 Jan 2020 16:49:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728427AbgAGPqI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jan 2020 10:46:08 -0500
-Received: from out5-smtp.messagingengine.com ([66.111.4.29]:45503 "EHLO
-        out5-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728410AbgAGPqE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jan 2020 10:46:04 -0500
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id C94C222233;
-        Tue,  7 Jan 2020 10:46:03 -0500 (EST)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Tue, 07 Jan 2020 10:46:03 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :in-reply-to:message-id:mime-version:references:subject:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; bh=RH3GcOKScMopXdOIeQ3naMkD99aPgZXK3xQKTzjCnxU=; b=eayXArrC
-        SgL0aoSmMZEOmDBpWyJIUv9FetUgsQr/+wRoAzmwez0aFy6i7ep9vsFVDKqNnTtf
-        EvptmLULLNKUXy/uDNPy7TrSiCBBr7tb88vk+vBcqbhXkNw2Ry6XKZt9OBwqtzNi
-        UYWwip7hsyrmU0QsTbcKQmmOj3RJjmPr2388UKqcOmNR7kGaaeH5XJ+eG3u96Gro
-        okfiZtBajk5tnD4amM7KeuZtr5JnQuVtm+j4EmTtpO8DzHi9nRzxBWmOSGxF69RI
-        7yj/orxStmhzj84TFIBqeZuDgAg/JALMqEGOOaDLzLV5g5To/s67fYFVFoT6OSbg
-        H/J9THfSsg9y7A==
-X-ME-Sender: <xms:u6cUXvJkXioEVcFCnk5UQsX5ppCIKZOaAGjanPsqmc5WRBlkkumcWw>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedufedrvdehgedgfeegucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
-    dtredttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiugho
-    shgthhdrohhrgheqnecukfhppeduleefrdegjedrudeihedrvdehudenucfrrghrrghmpe
-    hmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrghenucevlhhushhtvghr
-    ufhiiigvpeek
-X-ME-Proxy: <xmx:u6cUXuDOX_CbAcrLeKM54h8DH-XEyKaSF1AbLFkMQJks9r7P1_cJvQ>
-    <xmx:u6cUXoo1MNHRGC51fbRQVZnePt3mOkuVNGTtVN9XW2PWi-zYFC8Lhw>
-    <xmx:u6cUXvYlr2MYKFC7nUmVPCuKfG5b6t8VlKFpujo7a1FuoGNGeXJzjg>
-    <xmx:u6cUXu9wKa2hQS8XmDzPZEiM5Fi-T-w1EB_mI5V3FVWs69RdSKJ_fw>
-Received: from splinter.mtl.com (unknown [193.47.165.251])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 4321F8005B;
-        Tue,  7 Jan 2020 10:46:02 -0500 (EST)
-From:   Ido Schimmel <idosch@idosch.org>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, jiri@mellanox.com,
-        jakub.kicinski@netronome.com, dsahern@gmail.com,
-        roopa@cumulusnetworks.com, mlxsw@mellanox.com,
-        Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net-next 10/10] selftests: mlxsw: Add test for FIB offload API
-Date:   Tue,  7 Jan 2020 17:45:17 +0200
-Message-Id: <20200107154517.239665-11-idosch@idosch.org>
-X-Mailer: git-send-email 2.24.1
-In-Reply-To: <20200107154517.239665-1-idosch@idosch.org>
-References: <20200107154517.239665-1-idosch@idosch.org>
+        id S1728423AbgAGPtZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Jan 2020 10:49:25 -0500
+Received: from mail-ed1-f68.google.com ([209.85.208.68]:41547 "EHLO
+        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727559AbgAGPtZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jan 2020 10:49:25 -0500
+Received: by mail-ed1-f68.google.com with SMTP id c26so50715505eds.8;
+        Tue, 07 Jan 2020 07:49:24 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=Q2dBMzJh1iqJhUE2UWcOEtoI19XwUDJebl5Ro3YyPJU=;
+        b=KUlABEirfWRnzjtocFxdIdVHqfMySuShVFGI6CrCqeviroT2bWoz7jMJ+ue0nO09Gs
+         jx5GKl0ptt9RV17YIu2BLBI8Nbh5cj+teqlXm/Fe2pDPGOS/QuTTcF2hi6SXIUdCI9oH
+         TzfVyBkXNDrvLIg13dWjGGkHmyU0L9pUmhk658bcVFejA9PVvmrAt5oYHsvO6FpUKZZ/
+         m4CA+ZAxNRKigoTM2l1u71Y/lv+AmIH1QUVsSmZIWIlCdFIPaZ9TUArWn6okwCTsO4pI
+         st1kdE6bEziDEJqxbjh1rtvS0ytNjfdgh81Mt47Js3oB2xKcLjcVefpmQ7tT9tRPPzGv
+         ojDA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=Q2dBMzJh1iqJhUE2UWcOEtoI19XwUDJebl5Ro3YyPJU=;
+        b=aaeZdhKeCIJdnoLsEPYWPdboGhkyAArigdFWgqi9/ilejom6uYm7FoseKOpjP+pcoJ
+         PmFk5kyasTe8fVvcFSSQeYZfRfH18FnF54mICLvCV/y2oH7Ki72tkO6Wc9bjWoti35/h
+         rwHg3suFPFnh4+qfF4ac8scx+ozTfvR3cujkg+NKxqauuK8LkEPWz5sLBR7G6kfK0ZXg
+         /4KoHATmtlc8WWv6yNKtFkiBgoPPoBAzpmJifH3gdQ0wIKBph6KuRRPjh9RyazSR6W/2
+         nm6Aein5E2S/Govewm1a1JPeQZsATXEUkACNIBaBBHjT8TTrjJ4ykqjFf40klqwrKzGO
+         iChw==
+X-Gm-Message-State: APjAAAUiGMCJQOq+AU4a+SjMx+XFcMekWg9Vh1RrXDuObuDkCtTYqDSs
+        PBwowgS3gFy8eH8Ny8s69nWKkmpTjpLQU1nGAjKbog==
+X-Google-Smtp-Source: APXvYqzhf3gjK3FTDjFr5iw2WqmK9Jg7BY+62kmOfi7P7wa+NKewrDAuHRr/r5Q1CtrRCIy2HzoxKaKKII4JfC5I9mI=
+X-Received: by 2002:a50:fb96:: with SMTP id e22mr515499edq.18.1578412163371;
+ Tue, 07 Jan 2020 07:49:23 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <HK0PR01MB3521C806FE109E04FA72858CFA3F0@HK0PR01MB3521.apcprd01.prod.exchangelabs.com>
+In-Reply-To: <HK0PR01MB3521C806FE109E04FA72858CFA3F0@HK0PR01MB3521.apcprd01.prod.exchangelabs.com>
+From:   Vladimir Oltean <olteanv@gmail.com>
+Date:   Tue, 7 Jan 2020 17:49:12 +0200
+Message-ID: <CA+h21hpERd-yko+X9G-D9eFwu3LVq625qDUYvNGtEA8Ere_vYw@mail.gmail.com>
+Subject: Re: [PATCH] gianfar: Solve ethernet TX/RX problems for ls1021a
+To:     =?UTF-8?B?Sm9obnNvbiBDSCBDaGVuICjpmbPmmK3li7Mp?= 
+        <JohnsonCH.Chen@moxa.com>
+Cc:     "claudiu.manoil@nxp.com" <claudiu.manoil@nxp.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "zero19850401@gmail.com" <zero19850401@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ido Schimmel <idosch@mellanox.com>
+Hi Chen,
 
-The test reuses the common FIB offload tests in order to make sure that
-mlxsw correctly implements FIB offload.
+On Tue, 7 Jan 2020 at 12:37, Johnson CH Chen (=E9=99=B3=E6=98=AD=E5=8B=B3)
+<JohnsonCH.Chen@moxa.com> wrote:
+>
+> Add dma_endian_le to solve ethernet TX/RX problems for freescale ls1021a.=
+ Without this, it will result in
+> rx-busy-errors by ethtool, and transmit queue timeout in ls1021a's platfo=
+rms.
+>
+> Signed-off-by: Johnson Chen <johnsonch.chen@moxa.com>
+> ---
 
-Signed-off-by: Ido Schimmel <idosch@mellanox.com>
-Acked-by: Jiri Pirko <jiri@mellanox.com>
----
- .../selftests/drivers/net/mlxsw/fib.sh        | 180 ++++++++++++++++++
- 1 file changed, 180 insertions(+)
- create mode 100755 tools/testing/selftests/drivers/net/mlxsw/fib.sh
+This patch is not valid. The endianness configuration in
+eTSECx_DMACTRL is reserved and not applicable.
+What is the value of SCFG_ETSECDMAMCR bits ETSEC_BD and ETSEC_FR_DATA
+on your board? Typically this is configured by the bootloader.
 
-diff --git a/tools/testing/selftests/drivers/net/mlxsw/fib.sh b/tools/testing/selftests/drivers/net/mlxsw/fib.sh
-new file mode 100755
-index 000000000000..45115f81c2b1
---- /dev/null
-+++ b/tools/testing/selftests/drivers/net/mlxsw/fib.sh
-@@ -0,0 +1,180 @@
-+#!/bin/bash
-+# SPDX-License-Identifier: GPL-2.0
-+#
-+# This test is for checking the FIB offload API on top of mlxsw.
-+
-+lib_dir=$(dirname $0)/../../../net/forwarding
-+
-+ALL_TESTS="
-+	ipv4_identical_routes
-+	ipv4_tos
-+	ipv4_metric
-+	ipv4_replace
-+	ipv4_delete
-+	ipv4_plen
-+	ipv4_replay
-+	ipv4_flush
-+	ipv6_add
-+	ipv6_metric
-+	ipv6_append_single
-+	ipv6_replace_single
-+	ipv6_metric_multipath
-+	ipv6_append_multipath
-+	ipv6_replace_multipath
-+	ipv6_append_multipath_to_single
-+	ipv6_delete_single
-+	ipv6_delete_multipath
-+	ipv6_replay_single
-+	ipv6_replay_multipath
-+"
-+NUM_NETIFS=0
-+source $lib_dir/lib.sh
-+source $lib_dir/devlink_lib.sh
-+source $lib_dir/fib_offload_lib.sh
-+
-+ipv4_identical_routes()
-+{
-+	fib_ipv4_identical_routes_test "testns1"
-+}
-+
-+ipv4_tos()
-+{
-+	fib_ipv4_tos_test "testns1"
-+}
-+
-+ipv4_metric()
-+{
-+	fib_ipv4_metric_test "testns1"
-+}
-+
-+ipv4_replace()
-+{
-+	fib_ipv4_replace_test "testns1"
-+}
-+
-+ipv4_delete()
-+{
-+	fib_ipv4_delete_test "testns1"
-+}
-+
-+ipv4_plen()
-+{
-+	fib_ipv4_plen_test "testns1"
-+}
-+
-+ipv4_replay_metric()
-+{
-+	fib_ipv4_replay_metric_test "testns1" "$DEVLINK_DEV"
-+}
-+
-+ipv4_replay_tos()
-+{
-+	fib_ipv4_replay_tos_test "testns1" "$DEVLINK_DEV"
-+}
-+
-+ipv4_replay_plen()
-+{
-+	fib_ipv4_replay_plen_test "testns1" "$DEVLINK_DEV"
-+}
-+
-+ipv4_replay()
-+{
-+	ipv4_replay_metric
-+	ipv4_replay_tos
-+	ipv4_replay_plen
-+}
-+
-+ipv4_flush()
-+{
-+	fib_ipv4_flush_test "testns1"
-+}
-+
-+ipv6_add()
-+{
-+	fib_ipv6_add_test "testns1"
-+}
-+
-+ipv6_metric()
-+{
-+	fib_ipv6_metric_test "testns1"
-+}
-+
-+ipv6_append_single()
-+{
-+	fib_ipv6_append_single_test "testns1"
-+}
-+
-+ipv6_replace_single()
-+{
-+	fib_ipv6_replace_single_test "testns1"
-+}
-+
-+ipv6_metric_multipath()
-+{
-+	fib_ipv6_metric_multipath_test "testns1"
-+}
-+
-+ipv6_append_multipath()
-+{
-+	fib_ipv6_append_multipath_test "testns1"
-+}
-+
-+ipv6_replace_multipath()
-+{
-+	fib_ipv6_replace_multipath_test "testns1"
-+}
-+
-+ipv6_append_multipath_to_single()
-+{
-+	fib_ipv6_append_multipath_to_single_test "testns1"
-+}
-+
-+ipv6_delete_single()
-+{
-+	fib_ipv6_delete_single_test "testns1"
-+}
-+
-+ipv6_delete_multipath()
-+{
-+	fib_ipv6_delete_multipath_test "testns1"
-+}
-+
-+ipv6_replay_single()
-+{
-+	fib_ipv6_replay_single_test "testns1" "$DEVLINK_DEV"
-+}
-+
-+ipv6_replay_multipath()
-+{
-+	fib_ipv6_replay_multipath_test "testns1" "$DEVLINK_DEV"
-+}
-+
-+setup_prepare()
-+{
-+	ip netns add testns1
-+	if [ $? -ne 0 ]; then
-+		echo "Failed to add netns \"testns1\""
-+		exit 1
-+	fi
-+
-+	devlink dev reload $DEVLINK_DEV netns testns1
-+	if [ $? -ne 0 ]; then
-+		echo "Failed to reload into netns \"testns1\""
-+		exit 1
-+	fi
-+}
-+
-+cleanup()
-+{
-+	pre_cleanup
-+	devlink -N testns1 dev reload $DEVLINK_DEV netns $$
-+	ip netns del testns1
-+}
-+
-+trap cleanup EXIT
-+
-+setup_prepare
-+
-+tests_run
-+
-+exit $EXIT_STATUS
--- 
-2.24.1
+>  drivers/net/ethernet/freescale/gianfar.c | 3 +++
+>  drivers/net/ethernet/freescale/gianfar.h | 4 ++++
+>  2 files changed, 7 insertions(+)
+>
+> diff --git a/drivers/net/ethernet/freescale/gianfar.c b/drivers/net/ether=
+net/freescale/gianfar.c
+> index 72868a28b621..ab4e45199df9 100644
+> --- a/drivers/net/ethernet/freescale/gianfar.c
+> +++ b/drivers/net/ethernet/freescale/gianfar.c
+> @@ -833,6 +833,7 @@ static int gfar_of_init(struct platform_device *ofdev=
+, struct net_device **pdev)
+>
+>         /* Find the TBI PHY.  If it's not there, we don't support SGMII *=
+/
+>         priv->tbi_node =3D of_parse_phandle(np, "tbi-handle", 0);
+> +       priv->dma_endian_le =3D of_property_read_bool(np, "fsl,dma-endian=
+-le");
+>
+>         return 0;
+>
+> @@ -1209,6 +1210,8 @@ static void gfar_start(struct gfar_private *priv)
+>         /* Initialize DMACTRL to have WWR and WOP */
+>         tempval =3D gfar_read(&regs->dmactrl);
+>         tempval |=3D DMACTRL_INIT_SETTINGS;
+> +       if (priv->dma_endian_le)
+> +               tempval |=3D DMACTRL_LE;
+>         gfar_write(&regs->dmactrl, tempval);
+>
+>         /* Make sure we aren't stopped */
+> diff --git a/drivers/net/ethernet/freescale/gianfar.h b/drivers/net/ether=
+net/freescale/gianfar.h
+> index 432c6a818ae5..aae07db5206b 100644
+> --- a/drivers/net/ethernet/freescale/gianfar.h
+> +++ b/drivers/net/ethernet/freescale/gianfar.h
+> @@ -215,6 +215,7 @@ extern const char gfar_driver_version[];
+>  #define DMACTRL_INIT_SETTINGS   0x000000c3
+>  #define DMACTRL_GRS             0x00000010
+>  #define DMACTRL_GTS             0x00000008
+> +#define DMACTRL_LE             0x00008000
+>
+>  #define TSTAT_CLEAR_THALT_ALL  0xFF000000
+>  #define TSTAT_CLEAR_THALT      0x80000000
+> @@ -1140,6 +1141,9 @@ struct gfar_private {
+>                 tx_pause_en:1,
+>                 rx_pause_en:1;
+>
+> +       /* little endian dma buffer and descriptor host interface */
+> +       unsigned int dma_endian_le;
+> +
+>         /* The total tx and rx ring size for the enabled queues */
+>         unsigned int total_tx_ring_size;
+>         unsigned int total_rx_ring_size;
+> --
+> 2.11.0
+>
+> Best regards,
+> Johnson
 
+Regards,
+-Vladimir
