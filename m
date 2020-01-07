@@ -2,142 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 18EE0131D97
-	for <lists+netdev@lfdr.de>; Tue,  7 Jan 2020 03:29:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C4A40131D9C
+	for <lists+netdev@lfdr.de>; Tue,  7 Jan 2020 03:30:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727464AbgAGC3T (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Jan 2020 21:29:19 -0500
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:24886 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727295AbgAGC3T (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jan 2020 21:29:19 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1578364157;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=a3NrYC6nLk2sIb5nX+9+ItV/rLLzipIiRhUOZDl8IvI=;
-        b=GQEuvQXyrA+gtiFHbDjbW2HiJTi5ZMLZ3QVOOgnjES7LnA7VhB1pMm/mwEubRUVGnN3/FP
-        dQaa2WlMMBLKDZ0DQAPVxs316hiGNwrQHMA5rHtbCWWK4mKsSet/PSu9tQeoNnsVsy0Ocx
-        e8GOce++jhfTVI7eeFYzeKiKtY58A/w=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-341-un0kcg4QPnac9ZYn9AzVQA-1; Mon, 06 Jan 2020 21:29:16 -0500
-X-MC-Unique: un0kcg4QPnac9ZYn9AzVQA-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id A7EE88024E7;
-        Tue,  7 Jan 2020 02:29:14 +0000 (UTC)
-Received: from [10.72.12.248] (ovpn-12-248.pek2.redhat.com [10.72.12.248])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 7B1DE5D9CA;
-        Tue,  7 Jan 2020 02:29:09 +0000 (UTC)
-Subject: Re: [PATCH v2] virtio_net: CTRL_GUEST_OFFLOADS depends on CTRL_VQ
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, Alistair Delva <adelva@google.com>,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
-References: <20200105132120.92370-1-mst@redhat.com>
- <2d7053b5-295c-4051-a722-7656350bdb74@redhat.com>
- <20200106074426-mutt-send-email-mst@kernel.org>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <eab75b06-453d-2e17-1e77-439a66c3c86a@redhat.com>
-Date:   Tue, 7 Jan 2020 10:29:08 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
-MIME-Version: 1.0
-In-Reply-To: <20200106074426-mutt-send-email-mst@kernel.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
-Content-Transfer-Encoding: quoted-printable
+        id S1727405AbgAGCag (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Jan 2020 21:30:36 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:57212 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727332AbgAGCag (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jan 2020 21:30:36 -0500
+Received: from localhost (unknown [IPv6:2601:601:9f00:1c3::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 470AC159E7B15;
+        Mon,  6 Jan 2020 18:30:35 -0800 (PST)
+Date:   Mon, 06 Jan 2020 18:30:34 -0800 (PST)
+Message-Id: <20200106.183034.1628108721792526991.davem@davemloft.net>
+To:     andrew@lunn.ch
+Cc:     netdev@vger.kernel.org, vivien.didelot@gmail.com, cphealy@gmail.com
+Subject: Re: [PATCH net-next 5/5] net: dsa: mv88e6xxx: Unique ATU and VTU
+ IRQ names
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20200106161352.4461-6-andrew@lunn.ch>
+References: <20200106161352.4461-1-andrew@lunn.ch>
+        <20200106161352.4461-6-andrew@lunn.ch>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 06 Jan 2020 18:30:35 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Andrew Lunn <andrew@lunn.ch>
+Date: Mon,  6 Jan 2020 17:13:52 +0100
 
-On 2020/1/6 =E4=B8=8B=E5=8D=888:54, Michael S. Tsirkin wrote:
-> On Mon, Jan 06, 2020 at 10:47:35AM +0800, Jason Wang wrote:
->> On 2020/1/5 =E4=B8=8B=E5=8D=889:22, Michael S. Tsirkin wrote:
->>> The only way for guest to control offloads (as enabled by
->>> VIRTIO_NET_F_CTRL_GUEST_OFFLOADS) is by sending commands
->>> through CTRL_VQ. So it does not make sense to
->>> acknowledge VIRTIO_NET_F_CTRL_GUEST_OFFLOADS without
->>> VIRTIO_NET_F_CTRL_VQ.
->>>
->>> The spec does not outlaw devices with such a configuration, so we hav=
-e
->>> to support it. Simply clear VIRTIO_NET_F_CTRL_GUEST_OFFLOADS.
->>> Note that Linux is still crashing if it tries to
->>> change the offloads when there's no control vq.
->>> That needs to be fixed by another patch.
->>>
->>> Reported-by: Alistair Delva <adelva@google.com>
->>> Reported-by: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
->>> Fixes: 3f93522ffab2 ("virtio-net: switch off offloads on demand if po=
-ssible on XDP set")
->>> Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
->>> ---
->>>
->>> Same patch as v1 but update documentation so it's clear it's not
->>> enough to fix the crash.
->>>
->>>    drivers/net/virtio_net.c | 9 +++++++++
->>>    1 file changed, 9 insertions(+)
->>>
->>> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
->>> index 4d7d5434cc5d..7b8805b47f0d 100644
->>> --- a/drivers/net/virtio_net.c
->>> +++ b/drivers/net/virtio_net.c
->>> @@ -2971,6 +2971,15 @@ static int virtnet_validate(struct virtio_devi=
-ce *vdev)
->>>    	if (!virtnet_validate_features(vdev))
->>>    		return -EINVAL;
->>> +	/* VIRTIO_NET_F_CTRL_GUEST_OFFLOADS does not work without
->>> +	 * VIRTIO_NET_F_CTRL_VQ. Unfortunately spec forgot to
->>> +	 * specify that VIRTIO_NET_F_CTRL_GUEST_OFFLOADS depends
->>> +	 * on VIRTIO_NET_F_CTRL_VQ so devices can set the later but
->>> +	 * not the former.
->>> +	 */
->>> +	if (!virtio_has_feature(vdev, VIRTIO_NET_F_CTRL_VQ))
->>> +			__virtio_clear_bit(vdev, VIRTIO_NET_F_CTRL_GUEST_OFFLOADS);
->>
->> If it's just because a bug of spec, should we simply fix the bug and f=
-ail
->> the negotiation in virtnet_validate_feature()?
-> One man's bug is another man's feature: arguably leaving the features
-> independent in the spec might allow reuse of the feature bit without
-> breaking guests.
->
-> And even if we say it's a bug we can't simply fix the bug in the
-> spec: changing the text for a future version does not change the fact
-> that devices behaving according to the spec exist.
->
->> Otherwise there would be inconsistency in handling feature dependencie=
-s for
->> ctrl vq.
->>
->> Thanks
-> That's a cosmetic problem ATM. It might be a good idea to generally
-> change our handling of dependencies, and clear feature bits instead of
-> failing probe on a mismatch.
+> Dynamically generate a unique interrupt name for the VTU and ATU,
+> based on the device name.
+> 
+> Signed-off-by: Andrew Lunn <andrew@lunn.ch>
 
-
-Something like I proposed in the past ? [1]
-
-[1] https://lore.kernel.org/patchwork/patch/519074/
-
-
->   It's worth thinking  - at the spec level -
-> how we can best make the configuration extensible.
-> But that's not something spec should worry about.
->
->
->>> +
->>>    	if (virtio_has_feature(vdev, VIRTIO_NET_F_MTU)) {
->>>    		int mtu =3D virtio_cread16(vdev,
->>>    					 offsetof(struct virtio_net_config,
-
+Series applied, thanks Andrew.
