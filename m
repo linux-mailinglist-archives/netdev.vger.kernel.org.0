@@ -2,165 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 40A6E132A11
-	for <lists+netdev@lfdr.de>; Tue,  7 Jan 2020 16:31:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D7481132A26
+	for <lists+netdev@lfdr.de>; Tue,  7 Jan 2020 16:38:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728156AbgAGPbO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jan 2020 10:31:14 -0500
-Received: from mail.kernel.org ([198.145.29.99]:45932 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727559AbgAGPbO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 7 Jan 2020 10:31:14 -0500
-Received: from new-host-3.redhat.com (net-2-42-61-77.cust.vodafonedsl.it [2.42.61.77])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id F0F662073D;
-        Tue,  7 Jan 2020 15:31:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1578411073;
-        bh=WGrJX7cWDr5YQT0zAy87MDn/xj8k75om37ctNuv9pj0=;
-        h=From:To:Cc:Subject:Date:From;
-        b=zlXSlirBuQXnoQSp+21xFD6Tg8NNwPLHjGmuA9TmzzP1uNrCvMR18CjBcm9Tjrw6m
-         zdhgnLZCNJhnKhrh9VBykhyQzrDvUsQ+mr6aBhkyyAxyLtoXGf8LFh1chWCg4kAQuZ
-         WLGMpmYCzcDbfG94HzGdV6dBFzteScovJiyQGLEk=
-From:   Lorenzo Bianconi <lorenzo@kernel.org>
-To:     ilias.apalodimas@linaro.org
-Cc:     netdev@vger.kernel.org, brouer@redhat.com, davem@davemloft.net,
-        lorenzo.bianconi@redhat.com
-Subject: [PATCH] net: socionext: get rid of huge dma sync in netsec_alloc_rx_data
-Date:   Tue,  7 Jan 2020 16:30:32 +0100
-Message-Id: <5ed1bbf3e27f5b0105346838dfe405670183d723.1578410912.git.lorenzo@kernel.org>
-X-Mailer: git-send-email 2.21.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        id S1728343AbgAGPis (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Jan 2020 10:38:48 -0500
+Received: from mail-io1-f65.google.com ([209.85.166.65]:41140 "EHLO
+        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727559AbgAGPis (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jan 2020 10:38:48 -0500
+Received: by mail-io1-f65.google.com with SMTP id c16so49471354ioo.8
+        for <netdev@vger.kernel.org>; Tue, 07 Jan 2020 07:38:47 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=laL5Et/tnqXix8pcJeVj+Yi7gV6H+jg8d0q8BZyW6sw=;
+        b=byjRWHUedO1d56yL89C+qYnBLeWmlk9rZAKENAnZ7ofPXjFzEaaMTrONJiRy7iKDWq
+         b/qnkmiUHqo6rHWZTXiw5hs5OYzruQ94f7c/FW4E5UwsDnhaQhqjX6pjOGXhIE0YNqrZ
+         g+w/aWPwVi9Z1031pAeVAFP1s+8gqg4Vgq+XdZsszEs5q6TXywxh79PSUYpzwiebo5Bg
+         M/QhkzH8CBfazeRvMsOgHY8JVM7XPS3DzkZc9KsaJnGsXl7eyPIvEjtgIFZ2DggsHo7J
+         LINMIJN6pViIjzcULNMfHW52SA/F9TFpy6xpJI2jEHp9XEN+s8lsXpNjUBOWl6gTaKqH
+         tWiA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=laL5Et/tnqXix8pcJeVj+Yi7gV6H+jg8d0q8BZyW6sw=;
+        b=C00ncEh3HdyX7f/TFWV6F78tF4wPYBUNFfGXx1oxMQhi5gbFcQU5MpLm5cETiS4HW1
+         ppxc71pvAOUGras62/58snzIJ/HRZeh+0TKLSEAu9LJaKrEmEbkGiKbllJNlf9qN4lbW
+         MD2p9PTIvykKjEhQddCPeJHzPnrNlFgzdVMo+zB7q3NmWD0dQBKvzT5R755S6sjyaBg1
+         8yd4bFPR8GTXIAP4DF4wgEkWKjZMLaohcujnXkJNWeuDMdnR/8AVF4IJ1n10uUdMqxD5
+         uVoEDhzlIdsYFQZ4eAjicYpXVT0cJTqDmFAyze1fDdHCl7yqFLVLxNeP1ubmdCG8NzPh
+         DGeA==
+X-Gm-Message-State: APjAAAWwl9ZmWf1VeX6RJFinKDNivwNkPZfGe0udEDXEIsD4Ei6bK3/d
+        2KOEgZS8jZOG21LVP6VNDKM=
+X-Google-Smtp-Source: APXvYqymLotY+/gPNktLMrtB/d/K6p+d2C3beMJEFGYeryo2ApRX619L5stfaXCjM96zFiRUSSvkzg==
+X-Received: by 2002:a5d:9953:: with SMTP id v19mr73935774ios.118.1578411526991;
+        Tue, 07 Jan 2020 07:38:46 -0800 (PST)
+Received: from localhost ([184.63.162.180])
+        by smtp.gmail.com with ESMTPSA id c3sm18002516ioc.63.2020.01.07.07.38.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 07 Jan 2020 07:38:46 -0800 (PST)
+Date:   Tue, 07 Jan 2020 07:38:38 -0800
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Lingpeng Chen <forrest0579@gmail.com>,
+        John Fastabend <john.fastabend@gmail.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
+        bpf@vger.kernel.or, Lingpeng Chen <forrest0579@gmail.com>
+Message-ID: <5e14a5fe53ac8_67962afd051fc5c0ea@john-XPS-13-9370.notmuch>
+In-Reply-To: <20200107042247.16614-1-forrest0579@gmail.com>
+References: <20200107042247.16614-1-forrest0579@gmail.com>
+Subject: RE: [PATCH] bpf/sockmap: read psock ingress_msg before
+ sk_receive_queue
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Socionext driver can run on dma coherent and non-coherent devices.
-Get rid of huge dma_sync_single_for_device in netsec_alloc_rx_data since
-now the driver can let page_pool API to managed needed DMA sync
+Lingpeng Chen wrote:
+> Right now in tcp_bpf_recvmsg, sock read data first from sk_receive_queue
+> if not empty than psock->ingress_msg otherwise. If a FIN packet arrives
+> and there's also some data in psock->ingress_msg, the data in
+> psock->ingress_msg will be purged. It is always happen when request to a
+> HTTP1.0 server like python SimpleHTTPServer since the server send FIN
+> packet after data is sent out.
+> 
+> Signed-off-by: Lingpeng Chen <forrest0579@gmail.com>
 
-Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
----
- drivers/net/ethernet/socionext/netsec.c | 45 +++++++++++++++----------
- 1 file changed, 28 insertions(+), 17 deletions(-)
+Hi, Good timing I have a very similar patch I was just about to send out
+on my queue as well. Also needs Fixes tag but see patch below
 
-diff --git a/drivers/net/ethernet/socionext/netsec.c b/drivers/net/ethernet/socionext/netsec.c
-index b5a9e947a4a8..00404fef17e8 100644
---- a/drivers/net/ethernet/socionext/netsec.c
-+++ b/drivers/net/ethernet/socionext/netsec.c
-@@ -243,6 +243,7 @@
- 			       NET_IP_ALIGN)
- #define NETSEC_RX_BUF_NON_DATA (NETSEC_RXBUF_HEADROOM + \
- 				SKB_DATA_ALIGN(sizeof(struct skb_shared_info)))
-+#define NETSEC_RX_BUF_SIZE	(PAGE_SIZE - NETSEC_RX_BUF_NON_DATA)
+> ---
+>  net/ipv4/tcp_bpf.c | 4 +---
+>  1 file changed, 1 insertion(+), 3 deletions(-)
+> 
+> diff --git a/net/ipv4/tcp_bpf.c b/net/ipv4/tcp_bpf.c
+> index e38705165ac9..cd4b699d3d0d 100644
+> --- a/net/ipv4/tcp_bpf.c
+> +++ b/net/ipv4/tcp_bpf.c
+> @@ -123,8 +123,6 @@ int tcp_bpf_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
+>  
+>  	if (unlikely(flags & MSG_ERRQUEUE))
+>  		return inet_recv_error(sk, msg, len, addr_len);
+> -	if (!skb_queue_empty(&sk->sk_receive_queue))
+> -		return tcp_recvmsg(sk, msg, len, nonblock, flags, addr_len);
+
+I agree with this part.
+
+>  
+>  	psock = sk_psock_get(sk);
+>  	if (unlikely(!psock))
+> @@ -139,7 +137,7 @@ int tcp_bpf_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
+>  		timeo = sock_rcvtimeo(sk, nonblock);
+>  		data = tcp_bpf_wait_data(sk, psock, flags, timeo, &err);
+>  		if (data) {
+> -			if (skb_queue_empty(&sk->sk_receive_queue))
+> +			if (!sk_psock_queue_empty(psock))
+
++1
+
+>  				goto msg_bytes_ready;
+>  			release_sock(sk);
+>  			sk_psock_put(sk, psock);
+
+I think it just misses one extra piece. We don't want to grab lock, call
+__tcp_bpf_recvmsg(), call tcp_bpf_wait_data(), etc. when we know the
+psock queue is empty. How about this patch I think it would solve your
+case as well. If you think this also works go ahead and add your
+Signed-off-by and send it. Or I'll send it later today with the upcoming
+series I have with a couple syzbot fixes as well.
+
+commit 40d1c0965cda3713f444c7c0b570364220b94a8a
+Author: John Fastabend <john.fastabend@gmail.com>
+Date:   Thu Dec 19 17:18:42 2019 +0000
+
+    bpf: bpf redirect should handle any received data before sk_receive_queue
+    
+    Arika reported that when SOCK_DONE occurs we handle sk_receive_queue before
+    psock->ingress_msg so we may leave data in the ingress_msg queue. Resulting
+    in a possible error on application side.
+    
+    Fix this by handling ingress_msg queue first so that data is not left in
+    the insgress_msg queue.
+    
+    Fixes: 604326b41a6fb ("bpf, sockmap: convert to generic sk_msg interface")
+    Reported-by: Arika Chen <eaglesora@gmail.com>
+    Suggested-by: Arika Chen <eaglesora@gmail.com>
+    Signed-off-by: John Fastabend <john.fastabend@gmail.com>
+
+diff --git a/net/ipv4/tcp_bpf.c b/net/ipv4/tcp_bpf.c
+index e38705165ac9..3b235c2cbc83 100644
+--- a/net/ipv4/tcp_bpf.c
++++ b/net/ipv4/tcp_bpf.c
+@@ -123,12 +123,14 @@ int tcp_bpf_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
  
- #define DESC_SZ	sizeof(struct netsec_de)
+        if (unlikely(flags & MSG_ERRQUEUE))
+                return inet_recv_error(sk, msg, len, addr_len);
+-       if (!skb_queue_empty(&sk->sk_receive_queue))
+-               return tcp_recvmsg(sk, msg, len, nonblock, flags, addr_len);
  
-@@ -719,7 +720,6 @@ static void *netsec_alloc_rx_data(struct netsec_priv *priv,
- {
- 
- 	struct netsec_desc_ring *dring = &priv->desc_ring[NETSEC_RING_RX];
--	enum dma_data_direction dma_dir;
- 	struct page *page;
- 
- 	page = page_pool_dev_alloc_pages(dring->page_pool);
-@@ -734,9 +734,7 @@ static void *netsec_alloc_rx_data(struct netsec_priv *priv,
- 	/* Make sure the incoming payload fits in the page for XDP and non-XDP
- 	 * cases and reserve enough space for headroom + skb_shared_info
- 	 */
--	*desc_len = PAGE_SIZE - NETSEC_RX_BUF_NON_DATA;
--	dma_dir = page_pool_get_dma_dir(dring->page_pool);
--	dma_sync_single_for_device(priv->dev, *dma_handle, *desc_len, dma_dir);
-+	*desc_len = NETSEC_RX_BUF_SIZE;
- 
- 	return page_address(page);
- }
-@@ -883,6 +881,7 @@ static u32 netsec_xdp_xmit_back(struct netsec_priv *priv, struct xdp_buff *xdp)
- static u32 netsec_run_xdp(struct netsec_priv *priv, struct bpf_prog *prog,
- 			  struct xdp_buff *xdp)
- {
-+	struct netsec_desc_ring *dring = &priv->desc_ring[NETSEC_RING_RX];
- 	u32 ret = NETSEC_XDP_PASS;
- 	int err;
- 	u32 act;
-@@ -896,7 +895,10 @@ static u32 netsec_run_xdp(struct netsec_priv *priv, struct bpf_prog *prog,
- 	case XDP_TX:
- 		ret = netsec_xdp_xmit_back(priv, xdp);
- 		if (ret != NETSEC_XDP_TX)
--			xdp_return_buff(xdp);
-+			__page_pool_put_page(dring->page_pool,
-+				     virt_to_head_page(xdp->data),
-+				     xdp->data_end - xdp->data_hard_start,
-+				     true);
- 		break;
- 	case XDP_REDIRECT:
- 		err = xdp_do_redirect(priv->ndev, xdp, prog);
-@@ -904,7 +906,10 @@ static u32 netsec_run_xdp(struct netsec_priv *priv, struct bpf_prog *prog,
- 			ret = NETSEC_XDP_REDIR;
- 		} else {
- 			ret = NETSEC_XDP_CONSUMED;
--			xdp_return_buff(xdp);
-+			__page_pool_put_page(dring->page_pool,
-+				     virt_to_head_page(xdp->data),
-+				     xdp->data_end - xdp->data_hard_start,
-+				     true);
- 		}
- 		break;
- 	default:
-@@ -915,7 +920,10 @@ static u32 netsec_run_xdp(struct netsec_priv *priv, struct bpf_prog *prog,
- 		/* fall through -- handle aborts by dropping packet */
- 	case XDP_DROP:
- 		ret = NETSEC_XDP_CONSUMED;
--		xdp_return_buff(xdp);
-+		__page_pool_put_page(dring->page_pool,
-+				     virt_to_head_page(xdp->data),
-+				     xdp->data_end - xdp->data_hard_start,
-+				     true);
- 		break;
- 	}
- 
-@@ -1014,7 +1022,8 @@ static int netsec_process_rx(struct netsec_priv *priv, int budget)
- 			 * cache state. Since we paid the allocation cost if
- 			 * building an skb fails try to put the page into cache
- 			 */
--			page_pool_recycle_direct(dring->page_pool, page);
-+			__page_pool_put_page(dring->page_pool, page,
-+					     desc->len, true);
- 			netif_err(priv, drv, priv->ndev,
- 				  "rx failed to build skb\n");
- 			break;
-@@ -1272,17 +1281,19 @@ static int netsec_setup_rx_dring(struct netsec_priv *priv)
- {
- 	struct netsec_desc_ring *dring = &priv->desc_ring[NETSEC_RING_RX];
- 	struct bpf_prog *xdp_prog = READ_ONCE(priv->xdp_prog);
--	struct page_pool_params pp_params = { 0 };
-+	struct page_pool_params pp_params = {
-+		.order = 0,
-+		/* internal DMA mapping in page_pool */
-+		.flags = PP_FLAG_DMA_MAP | PP_FLAG_DMA_SYNC_DEV,
-+		.pool_size = DESC_NUM,
-+		.nid = NUMA_NO_NODE,
-+		.dev = priv->dev,
-+		.dma_dir = xdp_prog ? DMA_BIDIRECTIONAL : DMA_FROM_DEVICE,
-+		.offset = NETSEC_RXBUF_HEADROOM,
-+		.max_len = NETSEC_RX_BUF_SIZE,
-+	};
- 	int i, err;
- 
--	pp_params.order = 0;
--	/* internal DMA mapping in page_pool */
--	pp_params.flags = PP_FLAG_DMA_MAP;
--	pp_params.pool_size = DESC_NUM;
--	pp_params.nid = NUMA_NO_NODE;
--	pp_params.dev = priv->dev;
--	pp_params.dma_dir = xdp_prog ? DMA_BIDIRECTIONAL : DMA_FROM_DEVICE;
--
- 	dring->page_pool = page_pool_create(&pp_params);
- 	if (IS_ERR(dring->page_pool)) {
- 		err = PTR_ERR(dring->page_pool);
--- 
-2.21.1
+        psock = sk_psock_get(sk);
+        if (unlikely(!psock))
+                return tcp_recvmsg(sk, msg, len, nonblock, flags, addr_len);
++
++       if (!skb_queue_empty(&sk->sk_receive_queue) && sk_psock_queue_empty(psock))
++               return tcp_recvmsg(sk, msg, len, nonblock, flags, addr_len);
++
+        lock_sock(sk);
+ msg_bytes_ready:
+        copied = __tcp_bpf_recvmsg(sk, psock, msg, len, flags);
+@@ -139,7 +141,7 @@ int tcp_bpf_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
+                timeo = sock_rcvtimeo(sk, nonblock);
+                data = tcp_bpf_wait_data(sk, psock, flags, timeo, &err);
+                if (data) {
+-                       if (skb_queue_empty(&sk->sk_receive_queue))
++                       if (!sk_psock_queue_empty(psock))
+                                goto msg_bytes_ready;
+                        release_sock(sk);
+                        sk_psock_put(sk, psock);
 
