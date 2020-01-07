@@ -2,45 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 55A8B133786
-	for <lists+netdev@lfdr.de>; Wed,  8 Jan 2020 00:39:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C68E313378B
+	for <lists+netdev@lfdr.de>; Wed,  8 Jan 2020 00:40:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727647AbgAGXjc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jan 2020 18:39:32 -0500
-Received: from smtp-fw-6002.amazon.com ([52.95.49.90]:5032 "EHLO
-        smtp-fw-6002.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726530AbgAGXjc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jan 2020 18:39:32 -0500
+        id S1727313AbgAGXkV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Jan 2020 18:40:21 -0500
+Received: from smtp-fw-9102.amazon.com ([207.171.184.29]:10701 "EHLO
+        smtp-fw-9102.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726530AbgAGXkV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jan 2020 18:40:21 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1578440371; x=1609976371;
+  t=1578440421; x=1609976421;
   h=date:from:to:cc:subject:message-id:mime-version;
-  bh=8k8sGsakX6275HxmCSLtp8CAl2REJh9iWDzm6vn7+t8=;
-  b=vLlJeUmtFQLX7OUWDEG0CM2c+4Nixm+XCQpzwazWeSi3I7Fu1RGuSYWg
-   7UlioRUN7piK5RyVi1o4WAMOXtp06QBBVthyITRjXZjjqEYZ5ySUcUfji
-   P80egOH/yknAw+TaO6iQgB5m+OPOU6MQH/PPpQW5a3FQJR0K1pyckW1TJ
-   0=;
-IronPort-SDR: ATzQ/OHt0lWTRM3BF5DleKH7VKVdviQKtnYElMoY9euEFvBH8DdLYieCeM/PXNxBSu3YepGRMB
- Dk6NTQFJzXZw==
+  bh=fKBHoK09YZBwiKXNN6RfSgjFeH+5bNsX0xukKXYpamw=;
+  b=jtucKk9KpH1S+Gr6UTTFJA3H6DCGSi9EwFkg6puLDX3NzKrkR1YoS5yo
+   QlEpLYn1XW2pQWeAXOh6TxZcOvZTAYIlZUvZcYotpj4hcr4qT7C679aj/
+   ltKBcPJ+wNO6rtP0Sw16gS/g/yBn+6y++a0pphXSK+jAUMcy7oHjJQwVQ
+   s=;
+IronPort-SDR: +5WXZR3aQI5IaNTfkU7fCO+qrdocNvSC8Btqi8thp07FiCmMP6fRqrvnOSUa1k56Gzc7llX4Wq
+ QvHj7bPazjDg==
 X-IronPort-AV: E=Sophos;i="5.69,407,1571702400"; 
-   d="scan'208";a="10488187"
-Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-2c-6f38efd9.us-west-2.amazon.com) ([10.43.8.6])
-  by smtp-border-fw-out-6002.iad6.amazon.com with ESMTP; 07 Jan 2020 23:39:28 +0000
-Received: from EX13MTAUEB002.ant.amazon.com (pdx4-ws-svc-p6-lb7-vlan3.pdx.amazon.com [10.170.41.166])
-        by email-inbound-relay-2c-6f38efd9.us-west-2.amazon.com (Postfix) with ESMTPS id 5040AA1F6A;
-        Tue,  7 Jan 2020 23:39:26 +0000 (UTC)
-Received: from EX13D08UEB004.ant.amazon.com (10.43.60.142) by
+   d="scan'208";a="17325704"
+Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-2b-a7fdc47a.us-west-2.amazon.com) ([10.47.23.38])
+  by smtp-border-fw-out-9102.sea19.amazon.com with ESMTP; 07 Jan 2020 23:40:10 +0000
+Received: from EX13MTAUEB002.ant.amazon.com (pdx4-ws-svc-p6-lb7-vlan2.pdx.amazon.com [10.170.41.162])
+        by email-inbound-relay-2b-a7fdc47a.us-west-2.amazon.com (Postfix) with ESMTPS id E3EF9C2E0A;
+        Tue,  7 Jan 2020 23:40:07 +0000 (UTC)
+Received: from EX13D08UEB003.ant.amazon.com (10.43.60.11) by
  EX13MTAUEB002.ant.amazon.com (10.43.60.12) with Microsoft SMTP Server (TLS)
- id 15.0.1367.3; Tue, 7 Jan 2020 23:39:06 +0000
-Received: from EX13MTAUEB002.ant.amazon.com (10.43.60.12) by
- EX13D08UEB004.ant.amazon.com (10.43.60.142) with Microsoft SMTP Server (TLS)
- id 15.0.1367.3; Tue, 7 Jan 2020 23:39:06 +0000
+ id 15.0.1367.3; Tue, 7 Jan 2020 23:39:47 +0000
+Received: from EX13MTAUEA002.ant.amazon.com (10.43.61.77) by
+ EX13D08UEB003.ant.amazon.com (10.43.60.11) with Microsoft SMTP Server (TLS)
+ id 15.0.1367.3; Tue, 7 Jan 2020 23:39:47 +0000
 Received: from dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com
- (172.22.96.68) by mail-relay.amazon.com (10.43.60.234) with Microsoft SMTP
- Server id 15.0.1367.3 via Frontend Transport; Tue, 7 Jan 2020 23:39:06 +0000
+ (172.22.96.68) by mail-relay.amazon.com (10.43.61.169) with Microsoft SMTP
+ Server id 15.0.1236.3 via Frontend Transport; Tue, 7 Jan 2020 23:39:47 +0000
 Received: by dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com (Postfix, from userid 4335130)
-        id 417C040E65; Tue,  7 Jan 2020 23:39:06 +0000 (UTC)
-Date:   Tue, 7 Jan 2020 23:39:06 +0000
+        id E3FD440E65; Tue,  7 Jan 2020 23:39:46 +0000 (UTC)
+Date:   Tue, 7 Jan 2020 23:39:46 +0000
 From:   Anchal Agarwal <anchalag@amazon.com>
 To:     <tglx@linutronix.de>, <mingo@redhat.com>, <bp@alien8.de>,
         <hpa@zytor.com>, <x86@kernel.org>, <boris.ostrovsky@oracle.com>,
@@ -56,9 +56,8 @@ To:     <tglx@linutronix.de>, <mingo@redhat.com>, <bp@alien8.de>,
         <Woodhouse@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>,
         <dwmw@amazon.co.uk>, <fllinden@amaozn.com>
 CC:     <anchalag@amazon.com>
-Subject: [RFC PATCH V2 02/11] xenbus: add freeze/thaw/restore callbacks
- support
-Message-ID: <20200107233906.GA18057@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
+Subject: [RFC PATCH V2 03/11] x86/xen: Introduce new function to map
+Message-ID: <20200107233946.GA18143@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
@@ -68,199 +67,48 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Munehisa Kamata <kamatam@amazon.com>
+Introduce a small function which re-uses shared page's PA allocated
+during guest initialization time in reserve_shared_info() and not
+allocate new page during resume flow.
+It also  does the mapping of shared_info_page by calling
+xen_hvm_init_shared_info() to use the function.
 
-Since commit b3e96c0c7562 ("xen: use freeze/restore/thaw PM events for
-suspend/resume/chkpt"), xenbus uses PMSG_FREEZE, PMSG_THAW and
-PMSG_RESTORE events for Xen suspend. However, they're actually assigned
-to xenbus_dev_suspend(), xenbus_dev_cancel() and xenbus_dev_resume()
-respectively, and only suspend and resume callbacks are supported at
-driver level. To support PM suspend and PM hibernation, modify the bus
-level PM callbacks to invoke not only device driver's suspend/resume but
-also freeze/thaw/restore.
-
-Note that we'll use freeze/restore callbacks even for PM suspend whereas
-suspend/resume callbacks are normally used in the case, becausae the
-existing xenbus device drivers already have suspend/resume callbacks
-specifically designed for Xen suspend. So we can allow the device
-drivers to keep the existing callbacks wihtout modification.
-
-[Anchal Changelog: Refactored the callbacks code]
-Signed-off-by: Agarwal Anchal <anchalag@amazon.com>
-Signed-off-by: Munehisa Kamata <kamatam@amazon.com>
+Signed-off-by: Anchal Agarwal <anchalag@amazon.com>
 ---
- drivers/xen/xenbus/xenbus_probe.c | 99 ++++++++++++++++++++++++++++++++-------
- include/xen/xenbus.h              |  3 ++
- 2 files changed, 84 insertions(+), 18 deletions(-)
+ arch/x86/xen/enlighten_hvm.c | 7 +++++++
+ arch/x86/xen/xen-ops.h       | 1 +
+ 2 files changed, 8 insertions(+)
 
-diff --git a/drivers/xen/xenbus/xenbus_probe.c b/drivers/xen/xenbus/xenbus_probe.c
-index 5b471889d723..0fa8eeee68c2 100644
---- a/drivers/xen/xenbus/xenbus_probe.c
-+++ b/drivers/xen/xenbus/xenbus_probe.c
-@@ -49,6 +49,7 @@
- #include <linux/io.h>
- #include <linux/slab.h>
- #include <linux/module.h>
-+#include <linux/suspend.h>
+diff --git a/arch/x86/xen/enlighten_hvm.c b/arch/x86/xen/enlighten_hvm.c
+index e138f7de52d2..75b1ec7a0fcd 100644
+--- a/arch/x86/xen/enlighten_hvm.c
++++ b/arch/x86/xen/enlighten_hvm.c
+@@ -27,6 +27,13 @@
  
- #include <asm/page.h>
- #include <asm/pgtable.h>
-@@ -597,27 +598,44 @@ int xenbus_dev_suspend(struct device *dev)
- 	struct xenbus_driver *drv;
- 	struct xenbus_device *xdev
- 		= container_of(dev, struct xenbus_device, dev);
--
-+	bool xen_suspend = xen_suspend_mode_is_xen_suspend();
- 	DPRINTK("%s", xdev->nodename);
+ static unsigned long shared_info_pfn;
  
- 	if (dev->driver == NULL)
- 		return 0;
- 	drv = to_xenbus_driver(dev->driver);
--	if (drv->suspend)
--		err = drv->suspend(xdev);
--	if (err)
--		pr_warn("suspend %s failed: %i\n", dev_name(dev), err);
++void xen_hvm_map_shared_info(void)
++{
++	xen_hvm_init_shared_info();
++	if (shared_info_pfn)
++		HYPERVISOR_shared_info = __va(PFN_PHYS(shared_info_pfn));
++}
 +
-+	if (xen_suspend) {
-+		if (drv->suspend)
-+			err = drv->suspend(xdev);
-+	} else {
-+		if (drv->freeze) {
-+			err = drv->freeze(xdev);
-+			if (!err) {
-+				free_otherend_watch(xdev);
-+				free_otherend_details(xdev);
-+				return 0;
-+			}
-+		}
-+	}
-+
-+	if (err) {
-+		pr_warn("%s %s failed: %i\n", xen_suspend ?
-+			"suspend" : "freeze", dev_name(dev), err);
-+		return err;
-+	}
-+
- 	return 0;
- }
- EXPORT_SYMBOL_GPL(xenbus_dev_suspend);
- 
- int xenbus_dev_resume(struct device *dev)
+ void xen_hvm_init_shared_info(void)
  {
--	int err;
-+	int err = 0;
- 	struct xenbus_driver *drv;
- 	struct xenbus_device *xdev
- 		= container_of(dev, struct xenbus_device, dev);
--
-+	bool xen_suspend = xen_suspend_mode_is_xen_suspend();
- 	DPRINTK("%s", xdev->nodename);
+ 	struct xen_add_to_physmap xatp;
+diff --git a/arch/x86/xen/xen-ops.h b/arch/x86/xen/xen-ops.h
+index 45a441c33d6d..d84c357994bd 100644
+--- a/arch/x86/xen/xen-ops.h
++++ b/arch/x86/xen/xen-ops.h
+@@ -56,6 +56,7 @@ void xen_enable_syscall(void);
+ void xen_vcpu_restore(void);
  
- 	if (dev->driver == NULL)
-@@ -625,24 +643,32 @@ int xenbus_dev_resume(struct device *dev)
- 	drv = to_xenbus_driver(dev->driver);
- 	err = talk_to_otherend(xdev);
- 	if (err) {
--		pr_warn("resume (talk_to_otherend) %s failed: %i\n",
-+		pr_warn("%s (talk_to_otherend) %s failed: %i\n",
-+			xen_suspend ? "resume" : "restore",
- 			dev_name(dev), err);
- 		return err;
- 	}
+ void xen_callback_vector(void);
++void xen_hvm_map_shared_info(void);
+ void xen_hvm_init_shared_info(void);
+ void xen_unplug_emulated_devices(void);
  
--	xdev->state = XenbusStateInitialising;
-+	if (xen_suspend) {
-+		xdev->state = XenbusStateInitialising;
-+		if (drv->resume)
-+			err = drv->resume(xdev);
-+	} else {
-+		if (drv->restore)
-+			err = drv->restore(xdev);
-+	}
- 
--	if (drv->resume) {
--		err = drv->resume(xdev);
--		if (err) {
--			pr_warn("resume %s failed: %i\n", dev_name(dev), err);
--			return err;
--		}
-+	if (err) {
-+		pr_warn("%s %s failed: %i\n",
-+			xen_suspend ? "resume" : "restore",
-+			dev_name(dev), err);
-+		return err;
- 	}
- 
- 	err = watch_otherend(xdev);
- 	if (err) {
--		pr_warn("resume (watch_otherend) %s failed: %d.\n",
-+		pr_warn("%s (watch_otherend) %s failed: %d.\n",
-+			xen_suspend ? "resume" : "restore",
- 			dev_name(dev), err);
- 		return err;
- 	}
-@@ -653,8 +679,45 @@ EXPORT_SYMBOL_GPL(xenbus_dev_resume);
- 
- int xenbus_dev_cancel(struct device *dev)
- {
--	/* Do nothing */
--	DPRINTK("cancel");
-+	int err = 0;
-+	struct xenbus_driver *drv;
-+	struct xenbus_device *xdev
-+		= container_of(dev, struct xenbus_device, dev);
-+	bool xen_suspend = xen_suspend_mode_is_xen_suspend();
-+
-+	if (xen_suspend) {
-+		/* Do nothing */
-+		DPRINTK("cancel");
-+		return 0;
-+	}
-+
-+	DPRINTK("%s", xdev->nodename);
-+
-+	if (dev->driver == NULL)
-+		return 0;
-+	drv = to_xenbus_driver(dev->driver);
-+	err = talk_to_otherend(xdev);
-+	if (err) {
-+		pr_warn("thaw (talk_to_otherend) %s failed: %d.\n",
-+			dev_name(dev), err);
-+		return err;
-+	}
-+
-+	if (drv->thaw) {
-+		err = drv->thaw(xdev);
-+		if (err) {
-+			pr_warn("thaw %s failed: %i\n", dev_name(dev), err);
-+			return err;
-+		}
-+	}
-+
-+	err = watch_otherend(xdev);
-+	if (err) {
-+		pr_warn("thaw (watch_otherend) %s failed: %d.\n",
-+			dev_name(dev), err);
-+		return err;
-+	}
-+
- 	return 0;
- }
- EXPORT_SYMBOL_GPL(xenbus_dev_cancel);
-diff --git a/include/xen/xenbus.h b/include/xen/xenbus.h
-index 869c816d5f8c..20261d5f4e78 100644
---- a/include/xen/xenbus.h
-+++ b/include/xen/xenbus.h
-@@ -100,6 +100,9 @@ struct xenbus_driver {
- 	int (*remove)(struct xenbus_device *dev);
- 	int (*suspend)(struct xenbus_device *dev);
- 	int (*resume)(struct xenbus_device *dev);
-+	int (*freeze)(struct xenbus_device *dev);
-+	int (*thaw)(struct xenbus_device *dev);
-+	int (*restore)(struct xenbus_device *dev);
- 	int (*uevent)(struct xenbus_device *, struct kobj_uevent_env *);
- 	struct device_driver driver;
- 	int (*read_otherend_details)(struct xenbus_device *dev);
 -- 
 2.15.3.AMZN
 
