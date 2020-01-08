@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 628FD134F33
-	for <lists+netdev@lfdr.de>; Wed,  8 Jan 2020 22:59:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3FE1D134F36
+	for <lists+netdev@lfdr.de>; Wed,  8 Jan 2020 22:59:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727321AbgAHV71 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jan 2020 16:59:27 -0500
+        id S1727387AbgAHV73 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jan 2020 16:59:29 -0500
 Received: from frisell.zx2c4.com ([192.95.5.64]:47029 "EHLO frisell.zx2c4.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726179AbgAHV7X (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 8 Jan 2020 16:59:23 -0500
-Received: by frisell.zx2c4.com (ZX2C4 Mail Server) with ESMTP id b0e47a77;
-        Wed, 8 Jan 2020 21:00:02 +0000 (UTC)
+        id S1726390AbgAHV70 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 8 Jan 2020 16:59:26 -0500
+Received: by frisell.zx2c4.com (ZX2C4 Mail Server) with ESMTP id d72a25a0;
+        Wed, 8 Jan 2020 21:00:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=zx2c4.com; h=from:to:cc
         :subject:date:message-id:in-reply-to:references:mime-version
-        :content-transfer-encoding; s=mail; bh=tvWX41NmdgS7E5unBxvZAmWb5
-        lk=; b=vCZHIzaGEf26+LY5Gn+Eji6IlThlonQtywUhOnGhH1Vu1mlysy/4lPrd0
-        vbc6L5Z5syGCQ7FrmP7Hfv+0OteJno2wjaXDbQJl3bILMqPRDx6aOR0En9kl/62a
-        W1H7UiwoP3k389I5WfZ8CGuNkYM3oruKAyT+8fd8qiad+TYK3gh7DPDkkJLyDquY
-        PXAz+M0sMvZMsoktrDnBfArHXE4cUZ/3wb3lBdxafNZia7Fa0VY+f4fCS5q4ay4U
-        +KdVh4/4uqEUvsuSDzRV7KJFybcUgkmIJ6C47UDadjSujN4hGym2SvFcwKU1BfTl
-        X2zb4Rdlm2g6p62eanDi7F8doqieA==
-Received: by frisell.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 6ea430c1 (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256:NO);
+        :content-transfer-encoding; s=mail; bh=z7T7sTA5oRZMsD0geCtnpKcFR
+        l0=; b=hpc7Fie2XGfKrGbG1NaHWuP3zeV0UnDRgjunH4BOVL5tO2reT4ulVNGjo
+        sYEIYd2rRpnWdyDW3xUAjJUswJMuClb8aosgFU/WMVFQFyWJoz6l0HyEiNYf61Zf
+        cYSZHUHdOnQnC85M4CuHopx9BAMSztaGMN+sDYRpt6gIyAlXzX+SfNx9dXoiTWtz
+        /eispTu4j2IwqA0fPue9KcH34ZX+Tbf8aO0h7Aw5/MDse/zMAn0acvz1M6cuEdAE
+        71tiNBgxLwcdD4MEmvpLNMYUN44BC+veH8gYd9CuJQtoJpTK05iHyL3T25hWIK1R
+        wgRywNSvbFEmg7OsYyddPnFPQFjfg==
+Received: by frisell.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 6c5895cb (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256:NO);
         Wed, 8 Jan 2020 21:00:02 +0000 (UTC)
 From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
 To:     netdev@vger.kernel.org, davem@davemloft.net,
         siva.kallam@broadcom.com, christopher.lee@cspi.com,
         ecree@solarflare.com, johannes.berg@intel.com
 Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 3/8] net: r8152: use skb_list_walk_safe helper for gso segments
-Date:   Wed,  8 Jan 2020 16:59:04 -0500
-Message-Id: <20200108215909.421487-4-Jason@zx2c4.com>
+Subject: [PATCH 4/8] net: tg3: use skb_list_walk_safe helper for gso segments
+Date:   Wed,  8 Jan 2020 16:59:05 -0500
+Message-Id: <20200108215909.421487-5-Jason@zx2c4.com>
 In-Reply-To: <20200108215909.421487-1-Jason@zx2c4.com>
 References: <20200108215909.421487-1-Jason@zx2c4.com>
 MIME-Version: 1.0
@@ -47,40 +47,40 @@ it with skb_mark_not_on_list.
 
 Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 ---
- drivers/net/usb/r8152.c | 12 +++++-------
+ drivers/net/ethernet/broadcom/tg3.c | 12 +++++-------
  1 file changed, 5 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/net/usb/r8152.c b/drivers/net/usb/r8152.c
-index 9ec1da429514..fe22a582373b 100644
---- a/drivers/net/usb/r8152.c
-+++ b/drivers/net/usb/r8152.c
-@@ -1897,8 +1897,8 @@ static void r8152_csum_workaround(struct r8152 *tp, struct sk_buff *skb,
+diff --git a/drivers/net/ethernet/broadcom/tg3.c b/drivers/net/ethernet/broadcom/tg3.c
+index 460b4992914a..88466255bf66 100644
+--- a/drivers/net/ethernet/broadcom/tg3.c
++++ b/drivers/net/ethernet/broadcom/tg3.c
+@@ -7874,8 +7874,8 @@ static netdev_tx_t tg3_start_xmit(struct sk_buff *, struct net_device *);
+ static int tg3_tso_bug(struct tg3 *tp, struct tg3_napi *tnapi,
+ 		       struct netdev_queue *txq, struct sk_buff *skb)
  {
- 	if (skb_shinfo(skb)->gso_size) {
- 		netdev_features_t features = tp->netdev->features;
-+		struct sk_buff *segs, *seg, *next;
- 		struct sk_buff_head seg_list;
--		struct sk_buff *segs, *nskb;
+-	struct sk_buff *segs, *nskb;
+ 	u32 frag_cnt_est = skb_shinfo(skb)->gso_segs * 3;
++	struct sk_buff *segs, *seg, *next;
  
- 		features &= ~(NETIF_F_SG | NETIF_F_IPV6_CSUM | NETIF_F_TSO6);
- 		segs = skb_gso_segment(skb, features);
-@@ -1907,12 +1907,10 @@ static void r8152_csum_workaround(struct r8152 *tp, struct sk_buff *skb,
+ 	/* Estimate the number of fragments in the worst case */
+ 	if (unlikely(tg3_tx_avail(tnapi) <= frag_cnt_est)) {
+@@ -7898,12 +7898,10 @@ static int tg3_tso_bug(struct tg3 *tp, struct tg3_napi *tnapi,
+ 	if (IS_ERR(segs) || !segs)
+ 		goto tg3_tso_bug_end;
  
- 		__skb_queue_head_init(&seg_list);
+-	do {
+-		nskb = segs;
+-		segs = segs->next;
+-		nskb->next = NULL;
+-		tg3_start_xmit(nskb, tp->dev);
+-	} while (segs);
++	skb_list_walk_safe(segs, seg, next) {
++		skb_mark_not_on_list(seg);
++		tg3_start_xmit(seg, tp->dev);
++	}
  
--		do {
--			nskb = segs;
--			segs = segs->next;
--			nskb->next = NULL;
--			__skb_queue_tail(&seg_list, nskb);
--		} while (segs);
-+		skb_list_walk_safe(segs, seg, next) {
-+			skb_mark_not_on_list(seg);
-+			__skb_queue_tail(&seg_list, seg);
-+		}
- 
- 		skb_queue_splice(&seg_list, list);
- 		dev_kfree_skb(skb);
+ tg3_tso_bug_end:
+ 	dev_consume_skb_any(skb);
 -- 
 2.24.1
 
