@@ -2,209 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D1B01337AB
-	for <lists+netdev@lfdr.de>; Wed,  8 Jan 2020 00:46:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B95471337E8
+	for <lists+netdev@lfdr.de>; Wed,  8 Jan 2020 01:21:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727742AbgAGXqD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jan 2020 18:46:03 -0500
-Received: from smtp-fw-9101.amazon.com ([207.171.184.25]:5234 "EHLO
-        smtp-fw-9101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727563AbgAGXqC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jan 2020 18:46:02 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1578440763; x=1609976763;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=C+JaTHQLVFTnM8u9L8ZSkRBth8A1GrfPB1444d3zUEk=;
-  b=Sr9NWBfYr6ulkMkmcFHEzSiwvc0g0eAjiTkqpLLBYc2/3t4/dVKFqR95
-   Do7mIs2bQBbtpyX5AUEL3C5jVkolmJ6faHxFTbFlZ/Pza6obA4kGp2B5r
-   JChND7g4GwILW0PlTH91rspBZ0sB3LgcHihQr23kjXX0aOamypKS61tRf
-   0=;
-IronPort-SDR: tgZkjPccZ3NN32ilYfpUAqXwfPAg3ycN79+7mbg/yBELHAIIAEhZkb41aLfWqiI5YJOmjh5N2D
- RKzL0UoG9vhw==
-X-IronPort-AV: E=Sophos;i="5.69,407,1571702400"; 
-   d="scan'208";a="8919095"
-Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-1d-474bcd9f.us-east-1.amazon.com) ([10.47.23.38])
-  by smtp-border-fw-out-9101.sea19.amazon.com with ESMTP; 07 Jan 2020 23:46:01 +0000
-Received: from EX13MTAUEE002.ant.amazon.com (iad55-ws-svc-p15-lb9-vlan2.iad.amazon.com [10.40.159.162])
-        by email-inbound-relay-1d-474bcd9f.us-east-1.amazon.com (Postfix) with ESMTPS id 04022A2516;
-        Tue,  7 Jan 2020 23:45:52 +0000 (UTC)
-Received: from EX13D08UEE003.ant.amazon.com (10.43.62.118) by
- EX13MTAUEE002.ant.amazon.com (10.43.62.24) with Microsoft SMTP Server (TLS)
- id 15.0.1367.3; Tue, 7 Jan 2020 23:45:26 +0000
-Received: from EX13MTAUEE002.ant.amazon.com (10.43.62.24) by
- EX13D08UEE003.ant.amazon.com (10.43.62.118) with Microsoft SMTP Server (TLS)
- id 15.0.1367.3; Tue, 7 Jan 2020 23:45:26 +0000
-Received: from dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com
- (172.22.96.68) by mail-relay.amazon.com (10.43.62.224) with Microsoft SMTP
- Server id 15.0.1367.3 via Frontend Transport; Tue, 7 Jan 2020 23:45:26 +0000
-Received: by dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com (Postfix, from userid 4335130)
-        id 982CE40E65; Tue,  7 Jan 2020 23:45:26 +0000 (UTC)
-Date:   Tue, 7 Jan 2020 23:45:26 +0000
-From:   Anchal Agarwal <anchalag@amazon.com>
-To:     <tglx@linutronix.de>, <mingo@redhat.com>, <bp@alien8.de>,
-        <hpa@zytor.com>, <x86@kernel.org>, <boris.ostrovsky@oracle.com>,
-        <jgross@suse.com>, <linux-pm@vger.kernel.org>,
-        <linux-mm@kvack.org>, <kamatam@amazon.com>,
-        <sstabellini@kernel.org>, <konrad.wilk@oracle.co>,
-        <roger.pau@citrix.com>, <axboe@kernel.dk>, <davem@davemloft.net>,
-        <rjw@rjwysocki.net>, <len.brown@intel.com>, <pavel@ucw.cz>,
-        <peterz@infradead.org>, <eduval@amazon.com>, <sblbir@amazon.com>,
-        <anchalag@amazon.com>, <xen-devel@lists.xenproject.org>,
-        <vkuznets@redhat.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <Woodhouse@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>,
-        <dwmw@amazon.co.uk>, <fllinden@amaozn.com>
-CC:     <anchalag@amazon.com>
-Subject: [RFC PATCH V2 11/11] x86: tsc: avoid system instability in
- hibernation
-Message-ID: <20200107234526.GA19034@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
+        id S1726955AbgAHAVq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Jan 2020 19:21:46 -0500
+Received: from www62.your-server.de ([213.133.104.62]:50370 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726558AbgAHAVq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jan 2020 19:21:46 -0500
+Received: from sslproxy02.your-server.de ([78.47.166.47])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1ioz6T-0004Ri-87; Wed, 08 Jan 2020 01:21:41 +0100
+Received: from [178.197.249.51] (helo=pc-9.home)
+        by sslproxy02.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1ioz6S-000MQf-Qe; Wed, 08 Jan 2020 01:21:41 +0100
+Subject: Re: [PATCH bpf-next v3 06/11] bpf: Introduce BPF_MAP_TYPE_STRUCT_OPS
+To:     Martin KaFai Lau <kafai@fb.com>, bpf@vger.kernel.org
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        David Miller <davem@davemloft.net>, kernel-team@fb.com,
+        netdev@vger.kernel.org
+References: <20191231062037.280596-1-kafai@fb.com>
+ <20191231062050.281712-1-kafai@fb.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <4ea486a8-61cf-3c2e-c72c-96bb4f69d006@iogearbox.net>
+Date:   Wed, 8 Jan 2020 01:21:39 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-User-Agent: Mutt/1.5.21 (2010-09-15)
+In-Reply-To: <20191231062050.281712-1-kafai@fb.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.101.4/25687/Tue Jan  7 10:56:22 2020)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eduardo Valentin <eduval@amazon.com>
+On 12/31/19 7:20 AM, Martin KaFai Lau wrote:
+> The patch introduces BPF_MAP_TYPE_STRUCT_OPS.  The map value
+> is a kernel struct with its func ptr implemented in bpf prog.
+> This new map is the interface to register/unregister/introspect
+> a bpf implemented kernel struct.
+> 
+> The kernel struct is actually embedded inside another new struct
+> (or called the "value" struct in the code).  For example,
+> "struct tcp_congestion_ops" is embbeded in:
+> struct bpf_struct_ops_tcp_congestion_ops {
+> 	refcount_t refcnt;
+> 	enum bpf_struct_ops_state state;
+> 	struct tcp_congestion_ops data;  /* <-- kernel subsystem struct here */
+> }
+> The map value is "struct bpf_struct_ops_tcp_congestion_ops".
+> The "bpftool map dump" will then be able to show the
+> state ("inuse"/"tobefree") and the number of subsystem's refcnt (e.g.
+> number of tcp_sock in the tcp_congestion_ops case).  This "value" struct
+> is created automatically by a macro.  Having a separate "value" struct
+> will also make extending "struct bpf_struct_ops_XYZ" easier (e.g. adding
+> "void (*init)(void)" to "struct bpf_struct_ops_XYZ" to do some
+> initialization works before registering the struct_ops to the kernel
+> subsystem).  The libbpf will take care of finding and populating the
+> "struct bpf_struct_ops_XYZ" from "struct XYZ".
+> 
+> Register a struct_ops to a kernel subsystem:
+> 1. Load all needed BPF_PROG_TYPE_STRUCT_OPS prog(s)
+> 2. Create a BPF_MAP_TYPE_STRUCT_OPS with attr->btf_vmlinux_value_type_id
+>     set to the btf id "struct bpf_struct_ops_tcp_congestion_ops" of the
+>     running kernel.
+>     Instead of reusing the attr->btf_value_type_id,
+>     btf_vmlinux_value_type_id s added such that attr->btf_fd can still be
+>     used as the "user" btf which could store other useful sysadmin/debug
+>     info that may be introduced in the furture,
+>     e.g. creation-date/compiler-details/map-creator...etc.
+> 3. Create a "struct bpf_struct_ops_tcp_congestion_ops" object as described
+>     in the running kernel btf.  Populate the value of this object.
+>     The function ptr should be populated with the prog fds.
+> 4. Call BPF_MAP_UPDATE with the object created in (3) as
+>     the map value.  The key is always "0".
+> 
+> During BPF_MAP_UPDATE, the code that saves the kernel-func-ptr's
+> args as an array of u64 is generated.  BPF_MAP_UPDATE also allows
+> the specific struct_ops to do some final checks in "st_ops->init_member()"
+> (e.g. ensure all mandatory func ptrs are implemented).
+> If everything looks good, it will register this kernel struct
+> to the kernel subsystem.  The map will not allow further update
+> from this point.
 
-System instability are seen during resume from hibernation when system
-is under heavy CPU load. This is due to the lack of update of sched
-clock data, and the scheduler would then think that heavy CPU hog
-tasks need more time in CPU, causing the system to freeze
-during the unfreezing of tasks. For example, threaded irqs,
-and kernel processes servicing network interface may be delayed
-for several tens of seconds, causing the system to be unreachable.
+Btw, did you have any thoughts on whether it would have made sense to add
+a new core construct for BPF aside from progs or maps, e.g. BPF modules
+which then resemble a collection of progs/ops (given this would not be limited
+to tcp congestion control only). Given the possibilities, having a bit of second
+thoughts on abusing BPF map interface this way which is not overly pretty. It's
+not a map anymore at this point anyway, we're just reusing the syscall interface
+since it's convenient though cannot be linked to any prog is just a single slot
+etc, but technically some sort of BPF module registration would be nicer. Also in
+terms of 'bpftool modules' then listing all such currently loaded modules which
+need to be cleaned up this way through explicit removal (similar to insmod/
+lsmod/rmmod); at least feels more natural conceptually than BPF maps and the way
+you refcount them, and would perhaps also be a fit for BPF lib helpers for dynamic
+linking to load that way. So essentially similar but more lightweight infrastructure
+as with kernel modules. Thoughts?
 
-Situation like this can be reported by using lockup detectors
-such as workqueue lockup detectors:
-
-[root@ip-172-31-67-114 ec2-user]# echo disk > /sys/power/state
-
-Message from syslogd@ip-172-31-67-114 at May  7 18:23:21 ...
- kernel:BUG: workqueue lockup - pool cpus=0 node=0 flags=0x0 nice=0 stuck for 57s!
-
-Message from syslogd@ip-172-31-67-114 at May  7 18:23:21 ...
- kernel:BUG: workqueue lockup - pool cpus=1 node=0 flags=0x0 nice=0 stuck for 57s!
-
-Message from syslogd@ip-172-31-67-114 at May  7 18:23:21 ...
- kernel:BUG: workqueue lockup - pool cpus=3 node=0 flags=0x1 nice=0 stuck for 57s!
-
-Message from syslogd@ip-172-31-67-114 at May  7 18:29:06 ...
- kernel:BUG: workqueue lockup - pool cpus=3 node=0 flags=0x1 nice=0 stuck for 403s!
-
-The fix for this situation is to mark the sched clock as unstable
-as early as possible in the resume path, leaving it unstable
-for the duration of the resume process. This will force the
-scheduler to attempt to align the sched clock across CPUs using
-the delta with time of day, updating sched clock data. In a post
-hibernation event, we can then mark the sched clock as stable
-again, avoiding unnecessary syncs with time of day on systems
-in which TSC is reliable.
-
-Reviewed-by: Erik Quanstrom <quanstro@amazon.com>
-Reviewed-by: Frank van der Linden <fllinden@amazon.com>
-Reviewed-by: Balbir Singh <sblbir@amazon.com>
-Reviewed-by: Munehisa Kamata <kamatam@amazon.com>
-Tested-by: Anchal Agarwal <anchalag@amazon.com>
-Signed-off-by: Eduardo Valentin <eduval@amazon.com>
----
- arch/x86/kernel/tsc.c       | 29 +++++++++++++++++++++++++++++
- include/linux/sched/clock.h |  5 +++++
- kernel/sched/clock.c        |  4 ++--
- 3 files changed, 36 insertions(+), 2 deletions(-)
-
-diff --git a/arch/x86/kernel/tsc.c b/arch/x86/kernel/tsc.c
-index 7e322e2daaf5..ae77b8bc4e46 100644
---- a/arch/x86/kernel/tsc.c
-+++ b/arch/x86/kernel/tsc.c
-@@ -14,6 +14,7 @@
- #include <linux/percpu.h>
- #include <linux/timex.h>
- #include <linux/static_key.h>
-+#include <linux/suspend.h>
- 
- #include <asm/hpet.h>
- #include <asm/timer.h>
-@@ -1534,3 +1535,31 @@ unsigned long calibrate_delay_is_known(void)
- 	return 0;
- }
- #endif
-+
-+static int tsc_pm_notifier(struct notifier_block *notifier,
-+			    unsigned long pm_event, void *unused)
-+{
-+	switch (pm_event) {
-+	case PM_HIBERNATION_PREPARE:
-+		clear_sched_clock_stable();
-+		break;
-+	case PM_POST_HIBERNATION:
-+		/* Set back to the default */
-+		if (!check_tsc_unstable())
-+			set_sched_clock_stable();
-+		break;
-+	}
-+
-+	return 0;
-+};
-+
-+static struct notifier_block tsc_pm_notifier_block = {
-+       .notifier_call = tsc_pm_notifier,
-+};
-+
-+static int tsc_setup_pm_notifier(void)
-+{
-+       return register_pm_notifier(&tsc_pm_notifier_block);
-+}
-+
-+subsys_initcall(tsc_setup_pm_notifier);
-diff --git a/include/linux/sched/clock.h b/include/linux/sched/clock.h
-index 867d588314e0..902654ac5f7e 100644
---- a/include/linux/sched/clock.h
-+++ b/include/linux/sched/clock.h
-@@ -32,6 +32,10 @@ static inline void clear_sched_clock_stable(void)
- {
- }
- 
-+static inline void set_sched_clock_stable(void)
-+{
-+}
-+
- static inline void sched_clock_idle_sleep_event(void)
- {
- }
-@@ -51,6 +55,7 @@ static inline u64 local_clock(void)
- }
- #else
- extern int sched_clock_stable(void);
-+extern void set_sched_clock_stable(void);
- extern void clear_sched_clock_stable(void);
- 
- /*
-diff --git a/kernel/sched/clock.c b/kernel/sched/clock.c
-index 1152259a4ca0..374d40e5b1a2 100644
---- a/kernel/sched/clock.c
-+++ b/kernel/sched/clock.c
-@@ -116,7 +116,7 @@ static void __scd_stamp(struct sched_clock_data *scd)
- 	scd->tick_raw = sched_clock();
- }
- 
--static void __set_sched_clock_stable(void)
-+void set_sched_clock_stable(void)
- {
- 	struct sched_clock_data *scd;
- 
-@@ -236,7 +236,7 @@ static int __init sched_clock_init_late(void)
- 	smp_mb(); /* matches {set,clear}_sched_clock_stable() */
- 
- 	if (__sched_clock_stable_early)
--		__set_sched_clock_stable();
-+		set_sched_clock_stable();
- 
- 	return 0;
- }
--- 
-2.15.3.AMZN
-
+Thanks,
+Daniel
