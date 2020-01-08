@@ -2,89 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C8EF133C37
-	for <lists+netdev@lfdr.de>; Wed,  8 Jan 2020 08:26:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 673EF133C42
+	for <lists+netdev@lfdr.de>; Wed,  8 Jan 2020 08:26:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726863AbgAHHZ5 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 8 Jan 2020 02:25:57 -0500
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:32160 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726715AbgAHHZ4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jan 2020 02:25:56 -0500
-Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0087N2pB025315
-        for <netdev@vger.kernel.org>; Tue, 7 Jan 2020 23:25:55 -0800
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 2xcqhantpt-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Tue, 07 Jan 2020 23:25:55 -0800
-Received: from intmgw002.06.prn3.facebook.com (2620:10d:c085:208::11) by
- mail.thefacebook.com (2620:10d:c085:21d::4) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1779.2; Tue, 7 Jan 2020 23:25:54 -0800
-Received: by devbig007.ftw2.facebook.com (Postfix, from userid 572438)
-        id EBC09760DB5; Tue,  7 Jan 2020 23:25:50 -0800 (PST)
-Smtp-Origin-Hostprefix: devbig
-From:   Alexei Starovoitov <ast@kernel.org>
-Smtp-Origin-Hostname: devbig007.ftw2.facebook.com
-To:     <davem@davemloft.net>
-CC:     <daniel@iogearbox.net>, <netdev@vger.kernel.org>,
-        <bpf@vger.kernel.org>, <kernel-team@fb.com>
-Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH bpf-next 6/6] selftests/bpf: Modify a test to check global functions
-Date:   Tue, 7 Jan 2020 23:25:38 -0800
-Message-ID: <20200108072538.3359838-7-ast@kernel.org>
-X-Mailer: git-send-email 2.23.0
-In-Reply-To: <20200108072538.3359838-1-ast@kernel.org>
-References: <20200108072538.3359838-1-ast@kernel.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
- definitions=2020-01-08_01:2020-01-07,2020-01-08 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 bulkscore=0 phishscore=0
- impostorscore=0 clxscore=1034 priorityscore=1501 suspectscore=1 mlxscore=0
- mlxlogscore=664 adultscore=0 spamscore=0 malwarescore=0 lowpriorityscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-1910280000
- definitions=main-2001080062
-X-FB-Internal: deliver
+        id S1726955AbgAHH0Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jan 2020 02:26:24 -0500
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:34704 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726931AbgAHH0X (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jan 2020 02:26:23 -0500
+Received: by mail-pg1-f195.google.com with SMTP id r11so1138982pgf.1;
+        Tue, 07 Jan 2020 23:26:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=BGo10uJ7yfot4T+e9WxjVmggP6J1wCJOQgtZDEvps6k=;
+        b=DZYTvdIW+43poxmXAWsnbKEMXfMgAYTNSNSjzrKvHcbxYUNT70lgy3dQKoQG768UuR
+         y/4QnZ41Z2U3eHE/WyeZxE7goX74Z6fTViI2rtkRlsG1+kLZX9o56Nr8Hf5pbVnmR+Lq
+         xO2XIfYh4WJYvL9FM8OKz27dOyW+woGROnWGCj+7ePioeXlCFJbDT3OrkIQzSWTxbwBK
+         C7gNn+O/JZlSIUHDuES4e78GNWe0O+MJRMUqv2PTJJQJE3V0644vAgqpYYvGB1Uo8liZ
+         etu8LY3BomXKXaUE1mhQnk/KJqmRstxgYvxUOI4+rjn8OSNRK6jpeax5YJoH6y8k6T0b
+         PYog==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=BGo10uJ7yfot4T+e9WxjVmggP6J1wCJOQgtZDEvps6k=;
+        b=CRZqDO//5bpavvXVCG/JHM4eWpMez9/c3pc01NdahU1pYB6bXcHR8ApFgHzarSsZqs
+         DTuUK0qIjbVudIM9gybrvNZrBVJ8TI3L/OC5LS1+irRDyegY9qSS4NDisPIPRsR64Dlo
+         RbAjgrtswY68Yf7qNJfUuWVSSTm5RGDkSdxfNWGvJC0WHXSQxaJqiUCS8pilTSBuq5Il
+         Pg642SRCAPZNrvuiFG3sqKNzkzvoXoRKDC9+dwTQOGQj+A9dgcXzQOzbnkFL68OENQ/d
+         V1VdgLcd6zsGHrRZB1BPAq9ula1Rt0iNTpMmwYSKaBO9ItrptbdWxdXoz840+yswWdQ6
+         dwaw==
+X-Gm-Message-State: APjAAAXkzX9EC3+sA5kO3qKR8rL5+tqthfsZC//eNeHoJ9xyHEp58OsM
+        RWvH/4+b5dVX9SFICEfPy4E=
+X-Google-Smtp-Source: APXvYqxghKJ14QjOwmxrl6htFh2WX6svt01e28xiCtneF71s3aUeytu3/ouF1j764HyGERYD9M/y4g==
+X-Received: by 2002:a65:4587:: with SMTP id o7mr3730787pgq.303.1578468383088;
+        Tue, 07 Jan 2020 23:26:23 -0800 (PST)
+Received: from localhost (199.168.140.36.16clouds.com. [199.168.140.36])
+        by smtp.gmail.com with ESMTPSA id o31sm2231827pgb.56.2020.01.07.23.26.22
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Tue, 07 Jan 2020 23:26:22 -0800 (PST)
+From:   Dejin Zheng <zhengdejin5@gmail.com>
+To:     peppe.cavallaro@st.com, alexandre.torgue@st.com,
+        joabreu@synopsys.com, davem@davemloft.net,
+        mcoquelin.stm32@gmail.com, martin.blumenstingl@googlemail.com,
+        treding@nvidia.com, andrew@lunn.ch, weifeng.voon@intel.com,
+        tglx@linutronix.de
+Cc:     netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Dejin Zheng <zhengdejin5@gmail.com>
+Subject: [PATCH v2 0/2] net: stmmac: remove useless code of phy_mask
+Date:   Wed,  8 Jan 2020 15:25:48 +0800
+Message-Id: <20200108072550.28613-1-zhengdejin5@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Make two static functions in test_xdp_noinline.c global:
-before: processed 2790 insns
-after: processed 2598 insns
+These patches just for cleanup codes in stmmac driver.
 
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
----
- tools/testing/selftests/bpf/progs/test_xdp_noinline.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Changes since v1:
+	1, add a new commit for remove the useless member phy_mask.
+	2, adjust some commit comments for the original commit.
 
-diff --git a/tools/testing/selftests/bpf/progs/test_xdp_noinline.c b/tools/testing/selftests/bpf/progs/test_xdp_noinline.c
-index e88d7b9d65ab..f95bc1a17667 100644
---- a/tools/testing/selftests/bpf/progs/test_xdp_noinline.c
-+++ b/tools/testing/selftests/bpf/progs/test_xdp_noinline.c
-@@ -86,7 +86,7 @@ u32 jhash(const void *key, u32 length, u32 initval)
- 	return c;
- }
- 
--static __attribute__ ((noinline))
-+__attribute__ ((noinline))
- u32 __jhash_nwords(u32 a, u32 b, u32 c, u32 initval)
- {
- 	a += initval;
-@@ -96,7 +96,7 @@ u32 __jhash_nwords(u32 a, u32 b, u32 c, u32 initval)
- 	return c;
- }
- 
--static __attribute__ ((noinline))
-+__attribute__ ((noinline))
- u32 jhash_2words(u32 a, u32 b, u32 initval)
- {
- 	return __jhash_nwords(a, b, 0, initval + JHASH_INITVAL + (2 << 2));
+Dejin Zheng (2):
+  net: stmmac: pci: remove the duplicate code of set phy_mask
+  net: stmmac: remove the useless member phy_mask
+
+ drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c | 1 -
+ drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c  | 5 -----
+ include/linux/stmmac.h                            | 1 -
+ 3 files changed, 7 deletions(-)
+
 -- 
-2.23.0
+2.17.1
 
