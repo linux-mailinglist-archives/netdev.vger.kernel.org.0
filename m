@@ -2,143 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 39674133D82
-	for <lists+netdev@lfdr.de>; Wed,  8 Jan 2020 09:45:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BBDB7133D88
+	for <lists+netdev@lfdr.de>; Wed,  8 Jan 2020 09:46:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727427AbgAHIo7 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 8 Jan 2020 03:44:59 -0500
-Received: from mout.kundenserver.de ([212.227.17.13]:52877 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726313AbgAHIo6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jan 2020 03:44:58 -0500
-Received: from mail-qk1-f182.google.com ([209.85.222.182]) by
- mrelayeu.kundenserver.de (mreue108 [212.227.15.145]) with ESMTPSA (Nemesis)
- id 1MfHMj-1jMEiy0Wjr-00gm0v; Wed, 08 Jan 2020 09:44:55 +0100
-Received: by mail-qk1-f182.google.com with SMTP id a203so1957447qkc.3;
-        Wed, 08 Jan 2020 00:44:54 -0800 (PST)
-X-Gm-Message-State: APjAAAX/HqfzxlmtV4x1U/fKGxAmv9rT/vfSvMM8DmSA2x3G6g5atz9c
-        FEdHLPGupeYZbVYLaoyimUSYpqqYMug0lHm0vUo=
-X-Google-Smtp-Source: APXvYqwBkJ8QmnIL+nEzdyW4cVb2dCgT1+bxTVHrv/QXRUdjO9mWLnIecKxCrEVE9XkgL278ZPmA2bqFRRwBDXNH4F8=
-X-Received: by 2002:a05:620a:a5b:: with SMTP id j27mr3333439qka.286.1578473093254;
- Wed, 08 Jan 2020 00:44:53 -0800 (PST)
+        id S1727391AbgAHIpj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jan 2020 03:45:39 -0500
+Received: from mail-ed1-f67.google.com ([209.85.208.67]:36181 "EHLO
+        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726313AbgAHIpi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jan 2020 03:45:38 -0500
+Received: by mail-ed1-f67.google.com with SMTP id j17so1917648edp.3;
+        Wed, 08 Jan 2020 00:45:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=QnWskoTIz3+0WWc/wqZuLn45bZinITtoNoTf51obx3o=;
+        b=CvcK7z1033Lo7+sq/yON9EJqldCmoe1MWZ9BM7y5vcmmrPDiNCm1Y8S3LyC6irY1wb
+         MILrFeqJQbgqoenECkSVeLbLtoH9aBgf7aZIr6GYoFRvHcKR4mlP4/XCoUqGnkP4rI1R
+         RYzXl/tyC/m+n6xXKuRNzA7i7agOWdTLJS+jUaEpUD9aU3LncW53JwTF8GVLHIb01BpD
+         vQY5px4NXOOi7FddkpFzy/9uw1VMGrS0/hGGu25VKCo9LHHej82OGx6zDXH0Rb4z5Bvl
+         f5T6CUvYazI5A+uDsSAiPlYSacgMysxfNH18PgJdlyqHub+6xDLpEUqQJRpzkydwWjsu
+         G0uQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=QnWskoTIz3+0WWc/wqZuLn45bZinITtoNoTf51obx3o=;
+        b=U9sNClBxQqbE+hF5Q3rc4xz94LMnkJp591OMXHmlyD67GpikAWsWgqg7z1FfSHHa7x
+         kzFxRTQSsHEUygUjFHnn2r6GR6+cTMsENTyVmcsmkLe+AFAGI/OZ3fNWGoD81ZOY49n/
+         bZIYM/R7OrrkTkFe+BlLmmzY1ZreK2vyj9dXhirynjVzYta7othFE03tkSGI/1RW3jNO
+         DLS+pdA5/zDgnl9wv/5xx0vJA6YEiCsYzzNOqzEFTAJWqN478MwxCGlkK0QdyUx60iF2
+         hnYRwctxAcglAATFcTDa/IcOLCQwkwLPnxNYTl53zA3AfzJJ+b7rLiuYh8QTMtgbX2+Q
+         8KNg==
+X-Gm-Message-State: APjAAAWpx4BjGnqsRPf/fQJVjLABofwfKjr5XflR7ehFQhmXip5x2ecM
+        lX6B10ZEY3UlEC5UmHDYIBfCsNIe9gjnu88RJh3ou/ni
+X-Google-Smtp-Source: APXvYqzaPH4LL5IgQE5ZnyP/RQ+XF7fSarAbsPkQV2bzIqELGcYCeM3z8WdTxSsTmGAZJnLGdDngulZzVIgzNXrJLMs=
+X-Received: by 2002:aa7:d34d:: with SMTP id m13mr4242930edr.140.1578473136752;
+ Wed, 08 Jan 2020 00:45:36 -0800 (PST)
 MIME-Version: 1.0
-References: <1578415992-24054-1-git-send-email-krzk@kernel.org>
- <CAMuHMdW4ek0OYQDrrbcpZjNUTTP04nSbwkmiZvBmKcU=PQM9qA@mail.gmail.com>
- <CAMuHMdUBmYtJKtSYzS_5u67hVZOqcKSgFY1rDGme6gLNRBJ_gA@mail.gmail.com>
- <CAJKOXPfq9vS4kSyx1jOPHBvi9_HjviRv0LU2A8ZwdmqgUuebHQ@mail.gmail.com> <2355489c-a207-1927-54cf-85c04b62f18f@c-s.fr>
-In-Reply-To: <2355489c-a207-1927-54cf-85c04b62f18f@c-s.fr>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Wed, 8 Jan 2020 09:44:36 +0100
-X-Gmail-Original-Message-ID: <CAK8P3a21yPrmp4ik3Ei1BZfeqZNf0wL5NZNF3uXqb4FLRDyUPw@mail.gmail.com>
-Message-ID: <CAK8P3a21yPrmp4ik3Ei1BZfeqZNf0wL5NZNF3uXqb4FLRDyUPw@mail.gmail.com>
-Subject: Re: [RFT 00/13] iomap: Constify ioreadX() iomem argument
-To:     Christophe Leroy <christophe.leroy@c-s.fr>
-Cc:     Krzysztof Kozlowski <krzk@kernel.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Rich Felker <dalias@libc.org>,
-        Jiri Slaby <jirislaby@gmail.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        David Airlie <airlied@linux.ie>,
-        Jason Wang <jasowang@redhat.com>,
-        DRI Development <dri-devel@lists.freedesktop.org>,
-        virtualization@lists.linux-foundation.org,
-        "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
+References: <20200108062151.GA2614@embeddedor>
+In-Reply-To: <20200108062151.GA2614@embeddedor>
+From:   Vladimir Oltean <olteanv@gmail.com>
+Date:   Wed, 8 Jan 2020 10:45:26 +0200
+Message-ID: <CA+h21hrhWDF6-nWVqkbYc5xFvfR6R6bEiimdRB5rRwXmceZEYA@mail.gmail.com>
+Subject: Re: [PATCH net-next] enetc: enetc_pci_mdio: Fix inconsistent IS_ERR
+ and PTR_ERR
+To:     "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+Cc:     Claudiu Manoil <claudiu.manoil@nxp.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
         netdev <netdev@vger.kernel.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Linux-Arch <linux-arch@vger.kernel.org>,
-        Dave Jiang <dave.jiang@intel.com>,
-        Yoshinori Sato <ysato@users.sourceforge.jp>,
-        Helge Deller <deller@gmx.de>,
-        Linux-sh list <linux-sh@vger.kernel.org>,
-        Alexey Brodkin <abrodkin@synopsys.com>,
-        Ben Skeggs <bskeggs@redhat.com>,
-        ML nouveau <nouveau@lists.freedesktop.org>,
-        Dave Airlie <airlied@redhat.com>,
-        Matt Turner <mattst88@gmail.com>,
-        arcml <linux-snps-arc@lists.infradead.org>,
-        Nick Kossifidis <mickflemm@gmail.com>,
-        Allen Hubbe <allenbh@gmail.com>,
-        alpha <linux-alpha@vger.kernel.org>,
-        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Richard Henderson <rth@twiddle.net>,
-        Parisc List <linux-parisc@vger.kernel.org>,
-        Vineet Gupta <vgupta@synopsys.com>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        Daniel Vetter <daniel@ffwll.ch>, Jon Mason <jdmason@kudzu.us>,
-        linux-ntb@googlegroups.com,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linux Media Mailing List <linux-media@vger.kernel.org>,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        "David S. Miller" <davem@davemloft.net>
+        lkml <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
-X-Provags-ID: V03:K1:QwaGXiRich5wImpYp8FQnHgp5kz2EKPSRExzga2LIzGLBfSa0WJ
- YnmgjVSYdk7STyuVgrutKdQc7aoKqByAaVnwi68AgQg3IFWh04Gh6pqjpKwH3m7wy2iRCA1
- PvzHznSMskO2L/HVIAkGLVZhQ2nbXsMe5JX3qhXYDTaGmuCa8roKlNaJ8gtk4H96Hm0BIPI
- zBw/C+qVbQbtL0MIhk1oQ==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:UcFnSV1veRY=:yAYfQVlOazrC0OSa/xZ2Nn
- yp42v9FkRaF2KA4UJ3hjLCp/g9EzGQLUUTq//7jvX8/1CNRrXY8VT91084KTIyxk5Vs+EPryg
- aj2xlfhVVGolkKoUV/BYXQ1UzgTF+jRGGxmvzbPbwcRznWjbl/0+uRFH3IKIgZ3tHYMvGImty
- NSMXcL9iShsH5E6VqRg6pjGR2qpkRHXy7xlxlS++W6GEH/tAkTdr0W8n7scB8zJDHoFww+gm1
- mtNLiJQNf7AvKEuJc1lc/zQM7FFsH7pzEpFfLHipJsUdUZez7aWC5PjeoaCPO0CYMAgP6aqIK
- t3ZuhjdM2x3mdYDPc4ytUKByu0kMK6SzuEgpSNsE1h1OBPNZIN/0iVEzl5a+CGrKarZpXA9NA
- fxBdYShqIjl5+TtpR1po0zbDoSVf+6imCQsw5j4oJxHcsgl1hiJ5mif+Sw+p+65ElTSANGZfz
- 3isHRrC0FZg7bZTy6rZsBC9Fh81yzVhvb8ut8Epv5wp+AyiNKbL+Dtsv8mrPCQ6CFVXCDQIIV
- K2m8Y4gxk0BomOAq4MJywrsw25fODcLK1jVRlwZuWuyNZ/SNtdEko4BaJb5ECWS3OM3qB9j06
- RwjrEWLGO9an6mnuQqyFg8XcOq32zG5kYZphVInaxus9CsKlR2cxv7i8A9nB3LXmVBZXYxyHs
- Rx1ltzngDZdduOi0jQG/AVGiV6D/+uNwvPGg2VBVnufTIpjgMlYQhVohLhEZ4Ed+OAg6nB8uu
- LY2MUEZJYDPxl1zj4vm9pEQ9ulHV5pF3leUwNDwFRt+SLKh7CShdNt/xa4q8afWm/NAtMzk0F
- s9mraeWNkFoevqmtlU9H/+y6nNpPiZ6YfrT6GLSmJZVC1QU8R+9ystFFly9223I8kpFenpElw
- yHqdix5nJ7UFSyxlyduw==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 8, 2020 at 9:36 AM Christophe Leroy <christophe.leroy@c-s.fr> wrote:
-> Le 08/01/2020 à 09:18, Krzysztof Kozlowski a écrit :
-> > On Wed, 8 Jan 2020 at 09:13, Geert Uytterhoeven <geert@linux-m68k.org> wrote:
-> > I'll add to this one also changes to ioreadX_rep() and add another
-> > patch for volatile for reads and writes. I guess your review will be
-> > appreciated once more because of ioreadX_rep()
-> >
+Hi Gustavo,
+
+On Wed, 8 Jan 2020 at 08:41, Gustavo A. R. Silva <gustavo@embeddedor.com> wrote:
 >
-> volatile should really only be used where deemed necessary:
+> Fix inconsistent IS_ERR and PTR_ERR in enetc_pci_mdio_probe().
 >
-> https://www.kernel.org/doc/html/latest/process/volatile-considered-harmful.html
+> The proper pointer to be passed as argument is hw.
 >
-> It is said: " ...  accessor functions might use volatile on
-> architectures where direct I/O memory access does work. Essentially,
-> each accessor call becomes a little critical section on its own and
-> ensures that the access happens as expected by the programmer."
+> This bug was detected with the help of Coccinelle.
+>
+> Fixes: 6517798dd343 ("enetc: Make MDIO accessors more generic and export to include/linux/fsl")
+> Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
+> ---
 
-The I/O accessors are one of the few places in which 'volatile' generally
-makes sense, at least for the implementations that do a plain pointer
-dereference (probably none of the ones in question here).
+This was fixed yesterday:
 
-In case of readl/writel, this is what we do in asm-generic:
+https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/commit/?id=4addbcb387c9519b320a9411cad68f0c01e9ed4b
 
-static inline u32 __raw_readl(const volatile void __iomem *addr)
-{
-        return *(const volatile u32 __force *)addr;
-}
+>  drivers/net/ethernet/freescale/enetc/enetc_pci_mdio.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/drivers/net/ethernet/freescale/enetc/enetc_pci_mdio.c b/drivers/net/ethernet/freescale/enetc/enetc_pci_mdio.c
+> index 87c0e969da40..ebc635f8a4cc 100644
+> --- a/drivers/net/ethernet/freescale/enetc/enetc_pci_mdio.c
+> +++ b/drivers/net/ethernet/freescale/enetc/enetc_pci_mdio.c
+> @@ -27,7 +27,7 @@ static int enetc_pci_mdio_probe(struct pci_dev *pdev,
+>         }
+>
+>         hw = enetc_hw_alloc(dev, port_regs);
+> -       if (IS_ERR(enetc_hw_alloc)) {
+> +       if (IS_ERR(hw)) {
+>                 err = PTR_ERR(hw);
+>                 goto err_hw_alloc;
+>         }
+> --
+> 2.23.0
+>
 
-The __force-cast that removes the __iomem here also means that
-the 'volatile' keyword could be dropped from the argument list,
-as it has no real effect any more, but then there are a few drivers
-that mark their iomem pointers as either 'volatile void __iomem*' or
-(worse) 'volatile void *', so we keep it in the argument list to not
-add warnings for those drivers.
-
-It may be time to change these drivers to not use volatile for __iomem
-pointers, but that seems out of scope for what Krzysztof is trying
-to do. Ideally we would be consistent here though, either using volatile
-all the time or never.
-
-        Arnd
+Thanks,
+-Vladimir
