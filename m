@@ -2,85 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B62A1134399
-	for <lists+netdev@lfdr.de>; Wed,  8 Jan 2020 14:15:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C6A11343C4
+	for <lists+netdev@lfdr.de>; Wed,  8 Jan 2020 14:25:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727039AbgAHNPt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jan 2020 08:15:49 -0500
-Received: from mout.kundenserver.de ([212.227.126.131]:58903 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726087AbgAHNPs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jan 2020 08:15:48 -0500
-Received: from threadripper.lan ([149.172.19.189]) by mrelayeu.kundenserver.de
- (mreue010 [212.227.15.129]) with ESMTPA (Nemesis) id
- 1MA7X0-1j0m1Z2aB0-00Bg3r; Wed, 08 Jan 2020 14:15:39 +0100
-From:   Arnd Bergmann <arnd@arndb.de>
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        John Hurley <john.hurley@netronome.com>,
-        Simon Horman <simon.horman@netronome.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>, Jiri Pirko <jiri@mellanox.com>,
-        oss-drivers@netronome.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] [net-next] [v2] netronome: fix ipv6 link error
-Date:   Wed,  8 Jan 2020 14:15:15 +0100
-Message-Id: <20200108131534.1874078-1-arnd@arndb.de>
-X-Mailer: git-send-email 2.20.0
+        id S1728053AbgAHNZd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jan 2020 08:25:33 -0500
+Received: from sv2-smtprelay2.synopsys.com ([149.117.73.133]:35192 "EHLO
+        smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726087AbgAHNZd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jan 2020 08:25:33 -0500
+Received: from mailhost.synopsys.com (badc-mailhost2.synopsys.com [10.192.0.18])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (No client certificate requested)
+        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 881A8404CE;
+        Wed,  8 Jan 2020 13:25:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
+        t=1578489932; bh=uii8S55lkyXF530tXve56vi1H/yL7N+3SwH2y7gLmn8=;
+        h=From:To:CC:Subject:Date:References:In-Reply-To:From;
+        b=ZWi06K3DqNIYSvfPZ9NWNB+UykrHiwB9I61yostoUglY7F/QR7LUYrB/sctnoLgx+
+         a/xeBjUKC86tPFabxdQJNvoDp09GO+9hd+rZqCYiC2aUloxQId0amQzKmGhC/K840A
+         C/oNIjlzjfR8KqK6MPsSs6ZjLsOP3NHelAvSI85qmsxeQyM7OXADWu3IEsrJFjnmSs
+         o6Xa8FMSyQtDtGfVNLViXmp50AvueBj8jqr/DV0MWYG5kxSAe6LFJmlvx4+QuTk3ei
+         fPvPtftnuCU61nCAo1j0k5ycchkGo/sqG9IjLiyCpkkYuQVSfFjtQD/KNWyISVD9G7
+         2FcHxghTatZ0w==
+Received: from US01WEHTC3.internal.synopsys.com (us01wehtc3.internal.synopsys.com [10.15.84.232])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mailhost.synopsys.com (Postfix) with ESMTPS id 18F99A0069;
+        Wed,  8 Jan 2020 13:25:24 +0000 (UTC)
+Received: from us01hybrid1.internal.synopsys.com (10.200.27.51) by
+ US01WEHTC3.internal.synopsys.com (10.15.84.232) with Microsoft SMTP Server
+ (TLS) id 14.3.408.0; Wed, 8 Jan 2020 05:25:23 -0800
+Received: from NAM02-CY1-obe.outbound.protection.outlook.com (10.202.3.67) by
+ mrs.synopsys.com (10.200.27.51) with Microsoft SMTP Server (TLS) id
+ 14.3.408.0; Wed, 8 Jan 2020 05:25:22 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ikLIopKqcRJ8g7Ks2/IkgUlv+mUyNpZqj5V0mwtq+kJjpc1eq9oK3ro0WgAVzCpIz3hS9wClr4JVCrMUvZ43z4KsG996rRp2CrAeKnKyJgWAR1FIEQkoE8td+AURmgTmBylfYBdZHoVHYG6cI9BlEEXesWn/zJh+14hqR/hEE8IX+bKXJfAoZ3bVOPIjRz55gXNm5eeW9rRMtUlSoVLriL6TKLxAR4WGqemMoymNaa7TXo9cMiK+Gl1azSs1lkFntzcW8Q40uL25f5gYbcr9gqf5JwFEi3mm/mDXobmrZD+iALK1S+Nj2js4bogwB1XbudjyZI1PUO0/240IsqGCKQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=hleNpS0fHQ1LqzJ/Ih7ary9XjeItZY6tcm8lcdghJxE=;
+ b=JJvOpX4HWMpv0XXZawck+8yfpAFG2ESewMQJPno4inMWAbaZTa0ds8Awtc4l3O7um9ci9tuCHJy8CpvJGRPLADRS50HJUAl/KOqsfnohgKea4tFOgw4F7oWxfULCeCAWafkacLxWJSconyQJCcG/IXHi5Cn5eZqgJmTykj3vnO32DM/DQOeVgwkPrihawgOw8PIvWEx/R+w94k9MorILNjhj89YKBxq9rYYeBY21K5T15qCPwbspR9DY61PHUu1C1I2gzvLCLsXb6/VUTkvln6Gl5Z72dYQpW2rR4pUUir7b8f8Rz1YgZt4zdm+lbmAyuVcpVFGf2i5A7bN3vVQyIA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=synopsys.com; dmarc=pass action=none header.from=synopsys.com;
+ dkim=pass header.d=synopsys.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=synopsys.onmicrosoft.com; s=selector2-synopsys-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=hleNpS0fHQ1LqzJ/Ih7ary9XjeItZY6tcm8lcdghJxE=;
+ b=Ti/rx/0G5wMvr29PKzWmSjrtrvXOqVtRns5/sooiC78u6ksFGQ7wn4Gc4hN3INcDLYLIb/t6ctYSzM4Vk1pek212SazwTEzfAsUOwI5mgBDG9uVDU0Tuh419cPHhjqRM4WxtJf9EdCcCF1uQCRO7bSMO2xWwrIt1SjMzr5L13Po=
+Received: from BN8PR12MB3266.namprd12.prod.outlook.com (20.179.67.145) by
+ BN8PR12MB3075.namprd12.prod.outlook.com (20.178.209.203) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2623.9; Wed, 8 Jan 2020 13:25:21 +0000
+Received: from BN8PR12MB3266.namprd12.prod.outlook.com
+ ([fe80::c62:b247:6963:9da2]) by BN8PR12MB3266.namprd12.prod.outlook.com
+ ([fe80::c62:b247:6963:9da2%6]) with mapi id 15.20.2602.017; Wed, 8 Jan 2020
+ 13:25:21 +0000
+From:   Jose Abreu <Jose.Abreu@synopsys.com>
+To:     Dejin Zheng <zhengdejin5@gmail.com>
+CC:     "peppe.cavallaro@st.com" <peppe.cavallaro@st.com>,
+        "alexandre.torgue@st.com" <alexandre.torgue@st.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "mcoquelin.stm32@gmail.com" <mcoquelin.stm32@gmail.com>,
+        "martin.blumenstingl@googlemail.com" 
+        <martin.blumenstingl@googlemail.com>,
+        "treding@nvidia.com" <treding@nvidia.com>,
+        "andrew@lunn.ch" <andrew@lunn.ch>,
+        "weifeng.voon@intel.com" <weifeng.voon@intel.com>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-stm32@st-md-mailman.stormreply.com" 
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH v2 0/2] net: stmmac: remove useless code of phy_mask
+Thread-Topic: [PATCH v2 0/2] net: stmmac: remove useless code of phy_mask
+Thread-Index: AQHVxfUGgqwdWhtbcEaMF7LHLdtnx6fgZjWAgAA67QCAACDesA==
+Date:   Wed, 8 Jan 2020 13:25:21 +0000
+Message-ID: <BN8PR12MB3266601BC7BA0F414BD60E19D33E0@BN8PR12MB3266.namprd12.prod.outlook.com>
+References: <20200108072550.28613-1-zhengdejin5@gmail.com>
+ <BN8PR12MB326627D0E1F17AE7515B78E4D33E0@BN8PR12MB3266.namprd12.prod.outlook.com>
+ <20200108112652.GA5316@nuc8i5>
+In-Reply-To: <20200108112652.GA5316@nuc8i5>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=joabreu@synopsys.com; 
+x-originating-ip: [83.174.63.141]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 647f51b0-59ea-4571-b86b-08d7943e366b
+x-ms-traffictypediagnostic: BN8PR12MB3075:
+x-microsoft-antispam-prvs: <BN8PR12MB30757FBCDA46D53EA5FB8A81D33E0@BN8PR12MB3075.namprd12.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:1013;
+x-forefront-prvs: 02760F0D1C
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(346002)(39860400002)(396003)(136003)(366004)(376002)(189003)(199004)(2906002)(81166006)(316002)(81156014)(7416002)(52536014)(86362001)(5660300002)(4744005)(55016002)(8936002)(9686003)(8676002)(54906003)(66556008)(66476007)(64756008)(66446008)(76116006)(66946007)(4326008)(186003)(26005)(478600001)(6506007)(6916009)(33656002)(7696005)(71200400001);DIR:OUT;SFP:1102;SCL:1;SRVR:BN8PR12MB3075;H:BN8PR12MB3266.namprd12.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: synopsys.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: GfwNb5DxBXQiEMbkSHfptl+bmDx4mmEPmft75Z0/Lk9uvs2VYIV6mURElhCMMGfHVHqeTP0gAyArinqmnb+WOwMUaxSIZ0dJ9V0yhL8jKwaTQJb3SQPKO/0KTE8AAXIN6PlE8E6rfUjOdYL1/fQqTH6V7tX265A2AtuudTQ594bcCLbkinv2p5+eKjA6KbJmEB7Qp7+q6th2fxtkkpYW7rlsviKDPRGZTnjw49rTuf0s3eRJHS1tw8efuyiB7Oo/ONjMHuCojFc87S8Rxp402+b0FTfeJKermJqRI2sBs+AwEzVuPbDoQqNEnn6LBMUNbQKUUEM4Yo8GtXya/fio3ij+FQoyBRit4qdH72LDMD+qxqmVKYvcJUGoDqvqz2cWTxsNeMREYSLk5ycfkuC8SzXMExUDXlS0TCkWsSYyJwkcpvUXYG11jUkfxX+tajil
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:SpGETPyIfycO9sZ78r+DE7z3+PLuGaU6+CnTGR2HBoxCavh3bUe
- Pj8YTdBKSCrQs158706QpszFvboth3TO1B3LEK0artEqoMHBrdbCKKs82khvm4LPKtPfgHl
- cBSOv3fj2NrOS+g5k+KmLEdXklyjbvxQ26Ac9asOXJ1Oc/ileJZDkSzYtiieoDa6Gj5bpIk
- mv0NFnKnGGI6iMVMWzVEg==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:KeWPqLVjJKk=:tlMZegCFEnndMuUouPuRYf
- /A3JtqJf2W90Xr/9yVnnwMJ6wTlLOpXFhkDGNm7fWYoOl7jSvVOkAnbmAwqyWq0w12iO/5aBP
- tmFtCZMEsHJ5h5sN444V+7GVOuT+xAXIZDIaceU39aUgBsurltpkdNUqeCXntifg6AhiR0uWn
- 0PYQtdSqp4uriQ695RN5zgqhrc4HXPVwlgfZlRe9SmNp33rL5C74Z/KPzI1OmjSUoXm1v9T/j
- wp0UTpMKvDXWcgs24MmR11UKS2nSfWzV+RdgRKojP0ROLthM/wlKhjrj4721ZnOBF7n6gmdDk
- E3GjAWRDM/5tarEN119HK10Gf72oeoLm/IWLDP7+NwpsxscqiI8pGK5LnCHcD9mn1Y+eaZrx3
- WUA7TzsjQWN67RJ8HKDXyr4tU2uOOFGiDmFxdOjA8OCiVigvLCm2Z91j0sWc/YX+IjTxShfCf
- 2N4l9M7xhZkSgPtIYjb9dqhDb8yYED9WWc7ENfq/3+ZvKwZGGwop8vZiJDVlwmGXKN5OvXcPG
- 7dUXnHy1vqSo8O/EjlZUJeRV1aiy+7FRVkt/IA9SKdLRKH+x9gCqNP1ttCzMMIOen7YhWNyn5
- e/kLChVKG2B+e6Bgj+plTxrd2wdnx5hW9d2GilABDZQAvSaQTCdP/AtDIX/1uk2IhV75tsVLA
- lt7j5NqtE+DzX4oKQ+27l8gD+7myMZze/8TX52SHZmJILE6704zf+1taezHFBfS4PJxTxUKbi
- wFZwJi2WS11U2iS6EHng0kZ2UKBpSnvuTtzSgT/pGOi2lg7SL09KEhBgFTd3U7tXWI/qNuzej
- 2Wx90lKe9E94CSG99L8b/8kJiGLwk8hudtT/2W908MNOejqeG7BTqErKn1Rr1k1gN5SjUuyN6
- so9kgKE1IR63OuV3nk0Q==
+X-MS-Exchange-CrossTenant-Network-Message-Id: 647f51b0-59ea-4571-b86b-08d7943e366b
+X-MS-Exchange-CrossTenant-originalarrivaltime: 08 Jan 2020 13:25:21.6827
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: c33c9f88-1eb7-4099-9700-16013fd9e8aa
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: YzcUUzTc9nsSJRMyiKdOzzSl6NAYODc6NUkheSXreqRpv76DcbmPH2kBT1O/k2Jd1u11XIQ6CiUSCUmbkeLgAw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR12MB3075
+X-OriginatorOrg: synopsys.com
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When the driver is built-in but ipv6 is a module, the flower
-support produces a link error:
+From: Dejin Zheng <zhengdejin5@gmail.com>
+Date: Jan/08/2020, 11:26:52 (UTC+00:00)
 
-drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.o: In function `nfp_tunnel_keep_alive_v6':
-tunnel_conf.c:(.text+0x2aa8): undefined reference to `nd_tbl'
+> On Wed, Jan 08, 2020 at 07:57:14AM +0000, Jose Abreu wrote:
+> > From: Dejin Zheng <zhengdejin5@gmail.com>
+> > Date: Jan/08/2020, 07:25:48 (UTC+00:00)
+> >=20
+> > > Changes since v1:
+> > > 	1, add a new commit for remove the useless member phy_mask.
+> >=20
+> > No, this is not useless. It's an API for developers that need only=20
+> > certain PHYs to be detected. Please do not remove this.
+> >
+> Hi Jose:
+>=20
+> Okay, If you think it is a feature that needs to be retained, I will
+> abandon it. since I am a newbie, after that, Do I need to update the
+> other commit in this patchset for patch v3? Thanks!
 
-Add a Kconfig dependency to avoid that configuration.
+Your first commit (1/2) looks okay so you can submit that stand-alone in=20
+my opinion.
 
-Fixes: 9ea9bfa12240 ("nfp: flower: support ipv6 tunnel keep-alive messages from fw")
-Acked-by: Jakub Kicinski <jakub.kicinski@netronome.com>
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 ---
-v2: whitespace fix
----
- drivers/net/ethernet/netronome/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/net/ethernet/netronome/Kconfig b/drivers/net/ethernet/netronome/Kconfig
-index bac5be4d4f43..a3f68a718813 100644
---- a/drivers/net/ethernet/netronome/Kconfig
-+++ b/drivers/net/ethernet/netronome/Kconfig
-@@ -31,6 +31,7 @@ config NFP_APP_FLOWER
- 	bool "NFP4000/NFP6000 TC Flower offload support"
- 	depends on NFP
- 	depends on NET_SWITCHDEV
-+	depends on IPV6!=m || NFP=m
- 	default y
- 	---help---
- 	  Enable driver support for TC Flower offload on NFP4000 and NFP6000.
--- 
-2.20.0
-
+Thanks,
+Jose Miguel Abreu
