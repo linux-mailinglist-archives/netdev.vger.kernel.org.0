@@ -2,81 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 02A701343F8
-	for <lists+netdev@lfdr.de>; Wed,  8 Jan 2020 14:37:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 600C4134425
+	for <lists+netdev@lfdr.de>; Wed,  8 Jan 2020 14:44:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727777AbgAHNh0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jan 2020 08:37:26 -0500
-Received: from relay.sw.ru ([185.231.240.75]:59824 "EHLO relay.sw.ru"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726144AbgAHNh0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 8 Jan 2020 08:37:26 -0500
-Received: from dhcp-172-16-24-104.sw.ru ([172.16.24.104])
-        by relay.sw.ru with esmtp (Exim 4.92.3)
-        (envelope-from <ktkhai@virtuozzo.com>)
-        id 1ipBWC-0005kp-73; Wed, 08 Jan 2020 16:37:04 +0300
-Subject: Re: [PATCH] [net-next] socket: fix unused-function warning
-To:     Arnd Bergmann <arnd@arndb.de>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     Jens Axboe <axboe@kernel.dk>,
-        Willem de Bruijn <willemb@google.com>,
-        Deepa Dinamani <deepa.kernel@gmail.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Pedro Tammela <pctammela@gmail.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20200107213609.520236-1-arnd@arndb.de>
-From:   Kirill Tkhai <ktkhai@virtuozzo.com>
-Message-ID: <8bc0e3d2-c2e0-b4ab-63fa-8b124ab4d0f8@virtuozzo.com>
-Date:   Wed, 8 Jan 2020 16:37:03 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        id S1728326AbgAHNoW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jan 2020 08:44:22 -0500
+Received: from szxga06-in.huawei.com ([45.249.212.32]:47158 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726556AbgAHNoW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 8 Jan 2020 08:44:22 -0500
+Received: from DGGEMS407-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id DAEC7D65DF3EF50D2D83;
+        Wed,  8 Jan 2020 21:44:15 +0800 (CST)
+Received: from localhost.localdomain.localdomain (10.175.113.25) by
+ DGGEMS407-HUB.china.huawei.com (10.3.19.207) with Microsoft SMTP Server id
+ 14.3.439.0; Wed, 8 Jan 2020 21:44:09 +0800
+From:   Chen Zhou <chenzhou10@huawei.com>
+To:     <jeffrey.t.kirsher@intel.com>, <davem@davemloft.net>
+CC:     <intel-wired-lan@lists.osuosl.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <chenzhou10@huawei.com>
+Subject: [PATCH next] igc: make non-global functions static
+Date:   Wed, 8 Jan 2020 21:39:59 +0800
+Message-ID: <20200108133959.93035-1-chenzhou10@huawei.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-In-Reply-To: <20200107213609.520236-1-arnd@arndb.de>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.113.25]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 08.01.2020 00:35, Arnd Bergmann wrote:
-> When procfs is disabled, the fdinfo code causes a harmless
-> warning:
-> 
-> net/socket.c:1000:13: error: 'sock_show_fdinfo' defined but not used [-Werror=unused-function]
->  static void sock_show_fdinfo(struct seq_file *m, struct file *f)
-> 
-> Change the preprocessor conditional to a compiler conditional
-> to avoid the warning and let the compiler throw away the
-> function itself.
-> 
-> Fixes: b4653342b151 ("net: Allow to show socket-specific information in /proc/[pid]/fdinfo/[fd]")
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Fix sparse warning:
+drivers/net/ethernet/intel/igc/igc_ptp.c:512:6:
+	warning: symbol 'igc_ptp_tx_work' was not declared. Should it be static?
+drivers/net/ethernet/intel/igc/igc_ptp.c:644:6:
+	warning: symbol 'igc_ptp_suspend' was not declared. Should it be static?
 
-Thanks for fixing.
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Chen Zhou <chenzhou10@huawei.com>
+---
+ drivers/net/ethernet/intel/igc/igc_ptp.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Acked-by: Kirill Tkhai <ktkhai@virtuozzo.com>
-
-> ---
->  net/socket.c | 4 +---
->  1 file changed, 1 insertion(+), 3 deletions(-)
-> 
-> diff --git a/net/socket.c b/net/socket.c
-> index 5230c9e1bdec..444a617819f0 100644
-> --- a/net/socket.c
-> +++ b/net/socket.c
-> @@ -151,9 +151,7 @@ static const struct file_operations socket_file_ops = {
->  	.sendpage =	sock_sendpage,
->  	.splice_write = generic_splice_sendpage,
->  	.splice_read =	sock_splice_read,
-> -#ifdef CONFIG_PROC_FS
-> -	.show_fdinfo =	sock_show_fdinfo,
-> -#endif
-> +	.show_fdinfo =	IS_ENABLED(CONFIG_PROC_FS) ? sock_show_fdinfo : NULL,
->  };
->  
->  /*
-> 
+diff --git a/drivers/net/ethernet/intel/igc/igc_ptp.c b/drivers/net/ethernet/intel/igc/igc_ptp.c
+index 6935065..389a969 100644
+--- a/drivers/net/ethernet/intel/igc/igc_ptp.c
++++ b/drivers/net/ethernet/intel/igc/igc_ptp.c
+@@ -509,7 +509,7 @@ static void igc_ptp_tx_hwtstamp(struct igc_adapter *adapter)
+  * This work function polls the TSYNCTXCTL valid bit to determine when a
+  * timestamp has been taken for the current stored skb.
+  */
+-void igc_ptp_tx_work(struct work_struct *work)
++static void igc_ptp_tx_work(struct work_struct *work)
+ {
+ 	struct igc_adapter *adapter = container_of(work, struct igc_adapter,
+ 						   ptp_tx_work);
+@@ -641,7 +641,7 @@ void igc_ptp_init(struct igc_adapter *adapter)
+  * This function stops the overflow check work and PTP Tx timestamp work, and
+  * will prepare the device for OS suspend.
+  */
+-void igc_ptp_suspend(struct igc_adapter *adapter)
++static void igc_ptp_suspend(struct igc_adapter *adapter)
+ {
+ 	if (!(adapter->ptp_flags & IGC_PTP_ENABLED))
+ 		return;
+-- 
+2.7.4
 
