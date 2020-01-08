@@ -2,56 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B259134EA5
-	for <lists+netdev@lfdr.de>; Wed,  8 Jan 2020 22:14:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D93D2134EA7
+	for <lists+netdev@lfdr.de>; Wed,  8 Jan 2020 22:14:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727408AbgAHVOS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jan 2020 16:14:18 -0500
-Received: from mail-il1-f196.google.com ([209.85.166.196]:34851 "EHLO
-        mail-il1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726836AbgAHVOS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jan 2020 16:14:18 -0500
-Received: by mail-il1-f196.google.com with SMTP id g12so3913657ild.2;
-        Wed, 08 Jan 2020 13:14:17 -0800 (PST)
+        id S1727437AbgAHVOg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jan 2020 16:14:36 -0500
+Received: from mail-io1-f44.google.com ([209.85.166.44]:41332 "EHLO
+        mail-io1-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726836AbgAHVOg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jan 2020 16:14:36 -0500
+Received: by mail-io1-f44.google.com with SMTP id c16so4784097ioo.8;
+        Wed, 08 Jan 2020 13:14:36 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:from:to:cc:date:message-id:in-reply-to:references
          :user-agent:mime-version:content-transfer-encoding;
-        bh=nMRe4g2ztcBCA+0caE9RNqwQ4Lc8GtMpZaK2DzSrUsM=;
-        b=BbAFJbMe9TZRthB6a4MS8rtfV1zJ7RrRj8Rh56+c8yRuvntm+9zyVC6kxcHZuwtk+y
-         ryC7FE6d9lE/KmfeJqD42JHlHVTv+po3gESX3VGJXoWa1b1j+Shwi51d9EHtczwatZnl
-         wdsViO/z465L7nPG10c/qQXpvSZSxjHzLP8uxti+mBzOuHPoAm6FbdMFWkz7xD/cO2oQ
-         kgtWoT+YchGPyjPWHDprLPflQ+hoiK+GTw1ChblILVssvg9XRrMsRcsxpEfpKQVe8gTR
-         FP/XVK+bgLxEL0w1bjer9FfW0jN3KK1LTwmu8hlyHL/pfDOOlPl02Om9z/UGysegCmMy
-         Z0Aw==
+        bh=XO2r01lOBNDBiQXSDfixnJ606GokxgdaQBqmQyr/bDs=;
+        b=GU2OoX1zol0xRDr+Sntblx5PC4N0fXQk0lICdSZo2Qs6EGUqZfE1bcP6WfkEglPxk0
+         VFlz4NAi8CbEiw2x1gpjeHvtuDvBfxJzXGxlkPshGx6H5d4UswrN/V+E2JMNemqU+wZc
+         2RRwNHJxfE2h1vts7OeouIbswjA1Dqi/KJ6yhTrSdvYTn9DIy4ej5KOLIGRjmokl9QTd
+         qFtmOFsiaEe//fKBgMO7QuiRSKkrDq/1fLBBGQLHD274AS972XIW6aO/BWUTsHFuXyBG
+         oWUSa7VYenusLF9mLkYb9T8/rd9Y3OfdGzGinVuvB4qiGsGlvY/gUIhL4mS6QAefh8qc
+         gI7w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:from:to:cc:date:message-id:in-reply-to
          :references:user-agent:mime-version:content-transfer-encoding;
-        bh=nMRe4g2ztcBCA+0caE9RNqwQ4Lc8GtMpZaK2DzSrUsM=;
-        b=T4QO/u08FVgH1065UicaL1u8AJ4HOvOZC0wzLfY6JJHhf1mtkep3Hne0lVYfnjwdno
-         IrlgztJwOaC8RHPgPQHMaEVlDLuddaWU8+jmq3WWiwBhSJRETjRMAOb6uBdWdJU7Qztq
-         gEiDTLyFf377VLS5170g7BmWrcyEfeCkvi/n8aAkEKgcOihyXdj3j77rM2XXTXuOUZtU
-         1w8FW8NzsdlG4gLFiWbKsaSG9tbVEnH5Yla6SK11r2UFQ3/Q7/Fcgoov0m5wSEaAGfPk
-         zEh3o7JwfdWgDbjzUPEcGZkzWTbKC+Mp38oko+6G7SGMlYAuOeH0BpC3XVjxdAwo+a+T
-         qRRw==
-X-Gm-Message-State: APjAAAVGe+FXXQMv8XpC/pj3TFszxNzJoM6Oj98YMEh8ihGFaeaM1nZ5
-        jc36DnWwldCkSDpjKzbNzgZpn/Ak
-X-Google-Smtp-Source: APXvYqw41PT2AvWhZaH6mUG/T1dIDe6mvXYfmBktVueNgJFlJ80hkWzsw58KLQ1pAvGc7YcLN7c8rg==
-X-Received: by 2002:a92:4448:: with SMTP id a8mr5802073ilm.256.1578518057406;
-        Wed, 08 Jan 2020 13:14:17 -0800 (PST)
+        bh=XO2r01lOBNDBiQXSDfixnJ606GokxgdaQBqmQyr/bDs=;
+        b=e1pZjSxf599Z3mLBsl/s93NPQ0hlK7POWQDcP5dy+JZlFMYzPQiKM+5KsnVZfzfL6Q
+         O7OivLPKOjBWgdV9xdqtvtleZ/fEHGTcBjFDxApXsnARHJhX0AkBZ1GRllbGxLLaTE+x
+         NZb8iTlXyNFAvlAjmC1l4eohsJY2AtM1mavRhZNbTnvu1rDSf49rpIIj3CjOWsrjMMVC
+         2zeddw1rLad8PSJJbZZfH2BrHHWH81yLhxClJjLQfvJtLU7v43AL1kXGCRxNGavETtw9
+         5FX+pylmOJEVfLP5WlI7w804gW8EP5d41N6ThliPtzkRMunDZMqdb9c4DvyPKXEJ9o/p
+         aNKg==
+X-Gm-Message-State: APjAAAXGHlrduZr5nkty/V3ffwTB+F5zHHjDaWbL0AEK8P81x/vAHf22
+        Qcm5rJ4HR7UyKiYRLULh2MD7Jvzo
+X-Google-Smtp-Source: APXvYqxWsuNbq+D+y5zzDCTdrZ5TpAb6lZSV2uJ9ICG89wthJmqK7P1335uf7Nmw5baqZgHZ490cfQ==
+X-Received: by 2002:a6b:ed15:: with SMTP id n21mr4840178iog.128.1578518074544;
+        Wed, 08 Jan 2020 13:14:34 -0800 (PST)
 Received: from [127.0.1.1] ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id w16sm1319972ilq.5.2020.01.08.13.14.11
+        by smtp.gmail.com with ESMTPSA id h6sm911558iom.43.2020.01.08.13.14.27
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 08 Jan 2020 13:14:17 -0800 (PST)
-Subject: [bpf PATCH 1/9] bpf: sockmap/tls,
- during free we may call tcp_bpf_unhash() in loop
+        Wed, 08 Jan 2020 13:14:34 -0800 (PST)
+Subject: [bpf PATCH 2/9] bpf: sockmap, ensure sock lock held during tear down
 From:   John Fastabend <john.fastabend@gmail.com>
 To:     bpf@vger.kernel.org
 Cc:     netdev@vger.kernel.org, john.fastabend@gmail.com, ast@kernel.org,
         daniel@iogearbox.net
-Date:   Wed, 08 Jan 2020 21:14:07 +0000
-Message-ID: <157851804766.1732.2480524840189309989.stgit@ubuntu3-kvm2>
+Date:   Wed, 08 Jan 2020 21:14:23 +0000
+Message-ID: <157851806382.1732.8320375873100251133.stgit@ubuntu3-kvm2>
 In-Reply-To: <157851776348.1732.12600714815781177085.stgit@ubuntu3-kvm2>
 References: <157851776348.1732.12600714815781177085.stgit@ubuntu3-kvm2>
 User-Agent: StGit/0.17.1-dirty
@@ -63,44 +62,73 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When a sockmap is free'd and a socket in the map is enabled with tls
-we tear down the bpf context on the socket, the psock struct and state,
-and then call tcp_update_ulp(). The tcp_update_ulp() call is to inform
-the tls stack it needs to update its saved sock ops so that when the tls
-socket is later destroyed it doesn't try to call the now destroyed psock
-hooks.
+The sock_map_free() and sock_hash_free() paths used to delete sockmap
+and sockhash maps walk the maps and destroy psock and bpf state associated
+with the socks in the map. When done the socks no longer have BPF programs
+attached and will function normally. This can happen while the socks in
+the map are still "live" meaning data may be sent/received during the walk.
 
-This is about keeping stacked ULPs in good shape so they always have
-the right set of stacked ops.
+Currently, though we don't take the sock_lock when the psock and bpf state
+is removed through this path. Specifically, this means we can be writing
+into the ops structure pointers such as sendmsg, sendpage, recvmsg, etc.
+while they are also being called from the networking side. This is not
+safe, we never used proper READ_ONCE/WRITE_ONCE semantics here if we
+believed it was safe. Further its not clear to me its even a good idea
+to try and do this on "live" sockets while networking side might also
+be using the socket. Instead of trying to reason about using the socks
+from both sides lets realize that every use case I'm aware of rarely
+deletes maps, in fact kubernetes/Cilium case builds map at init and
+never tears it down except on errors. So lets do the simple fix and
+grab sock lock.
 
-However, recently unhash() hook was removed from TLS side. But, the
-sockmap/bpf side is not doing any extra work to update the unhash op
-when is torn down instead expecting TLS side to manage it. So both
-TLS and sockmap believe the other side is managing the op and instead
-no one updates the hook so it continues to point at tcp_bpf_unhash().
-When unhash hook is called we call tcp_bpf_unhash() which detects the
-psock has already been destroyed and calls sk->sk_prot_unhash() which
-calls tcp_bpf_unhash() yet again and so on looping and hanging the core.
+This patch wraps sock deletes from maps in sock lock and adds some
+annotations so we catch any other cases easier.
 
-To fix have sockmap tear down logic fixup the stale pointer.
-
-Fixes: 5d92e631b8be ("net/tls: partially revert fix transition through disconnect with close")
-Reported-by: syzbot+83979935eb6304f8cd46@syzkaller.appspotmail.com
+Fixes: 604326b41a6fb ("bpf, sockmap: convert to generic sk_msg interface")
 Signed-off-by: John Fastabend <john.fastabend@gmail.com>
 ---
- include/linux/skmsg.h |    1 +
- 1 file changed, 1 insertion(+)
+ net/core/skmsg.c    |    2 ++
+ net/core/sock_map.c |    7 ++++++-
+ 2 files changed, 8 insertions(+), 1 deletion(-)
 
-diff --git a/include/linux/skmsg.h b/include/linux/skmsg.h
-index ef7031f8a304..b6afe01f8592 100644
---- a/include/linux/skmsg.h
-+++ b/include/linux/skmsg.h
-@@ -358,6 +358,7 @@ static inline void sk_psock_update_proto(struct sock *sk,
- static inline void sk_psock_restore_proto(struct sock *sk,
- 					  struct sk_psock *psock)
- {
-+	sk->sk_prot->unhash = psock->saved_unhash;
- 	sk->sk_write_space = psock->saved_write_space;
+diff --git a/net/core/skmsg.c b/net/core/skmsg.c
+index ded2d5227678..3866d7e20c07 100644
+--- a/net/core/skmsg.c
++++ b/net/core/skmsg.c
+@@ -594,6 +594,8 @@ EXPORT_SYMBOL_GPL(sk_psock_destroy);
  
- 	if (psock->sk_proto) {
+ void sk_psock_drop(struct sock *sk, struct sk_psock *psock)
+ {
++	sock_owned_by_me(sk);
++
+ 	sk_psock_cork_free(psock);
+ 	sk_psock_zap_ingress(psock);
+ 
+diff --git a/net/core/sock_map.c b/net/core/sock_map.c
+index eb114ee419b6..8998e356f423 100644
+--- a/net/core/sock_map.c
++++ b/net/core/sock_map.c
+@@ -241,8 +241,11 @@ static void sock_map_free(struct bpf_map *map)
+ 		struct sock *sk;
+ 
+ 		sk = xchg(psk, NULL);
+-		if (sk)
++		if (sk) {
++			lock_sock(sk);
+ 			sock_map_unref(sk, psk);
++			release_sock(sk);
++		}
+ 	}
+ 	raw_spin_unlock_bh(&stab->lock);
+ 	rcu_read_unlock();
+@@ -862,7 +865,9 @@ static void sock_hash_free(struct bpf_map *map)
+ 		raw_spin_lock_bh(&bucket->lock);
+ 		hlist_for_each_entry_safe(elem, node, &bucket->head, node) {
+ 			hlist_del_rcu(&elem->node);
++			lock_sock(elem->sk);
+ 			sock_map_unref(elem->sk, elem);
++			release_sock(elem->sk);
+ 		}
+ 		raw_spin_unlock_bh(&bucket->lock);
+ 	}
 
