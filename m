@@ -2,89 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 87E26133EF8
-	for <lists+netdev@lfdr.de>; Wed,  8 Jan 2020 11:10:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B5F66133F09
+	for <lists+netdev@lfdr.de>; Wed,  8 Jan 2020 11:13:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727705AbgAHKKg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jan 2020 05:10:36 -0500
-Received: from bilbo.ozlabs.org ([203.11.71.1]:44511 "EHLO ozlabs.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726368AbgAHKKg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 8 Jan 2020 05:10:36 -0500
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 47t4kd1JBdz9sRh;
-        Wed,  8 Jan 2020 21:10:32 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1578478233;
-        bh=GoeUl6jdFt0zbRK3QhJAcx6XrW9/e/Rs6BFNwoM1vD4=;
-        h=Date:From:To:Cc:Subject:From;
-        b=BDi5gRFk71OW72kGHtdac/YUpr5iqWXf6OaYt2id8LRlOu84Xyz9rnBmiL95g+hr6
-         WCwv7SNWpxrxNlzKtDNorKkCOUz9ua/bgCwvBf34z2K5SPV2EExWCYwibL83uyWwSB
-         vwc0Ld2u+GYP2S//MRKsOg/9XUtoJTLVg5vO3Cj3C9AHOo5uYK4AhksQUFAdt8Wjva
-         ED4QH+B0/V6lswT3S8YnFjO5OC2bDLLM6oV7yf9cBf7nuKb3xRpN8s/dq9pD4WBqIU
-         AV6rwh7FoFCqcroD9+hmtP5LY0cpF491UYVfYcvAk8sy5zTLZfmPW1lN/Ir6IfzJc0
-         a2uNiWQTmspKA==
-Date:   Wed, 8 Jan 2020 21:10:30 +1100
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Jiping Ma <jiping.ma2@windriver.com>
-Subject: linux-next: Fixes tag needs some work in the net tree
-Message-ID: <20200108211030.7a888ca7@canb.auug.org.au>
+        id S1727582AbgAHKNq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jan 2020 05:13:46 -0500
+Received: from mail-qv1-f66.google.com ([209.85.219.66]:43766 "EHLO
+        mail-qv1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726368AbgAHKNq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jan 2020 05:13:46 -0500
+Received: by mail-qv1-f66.google.com with SMTP id p2so1135848qvo.10;
+        Wed, 08 Jan 2020 02:13:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=AUINI16yK6pZHAU/xXt2qsWSZUyaKAoaO+uyiNHoP1I=;
+        b=e/8iumBBd7Idf61d3znHNv0/2gp6gqhHLqKXb8D4XrpY6aCK8Ps1g6HI4sCEF1EkL3
+         Xny00h/moxJQIfqcN0Lm2HifW4KOXu14M0c12DZGZOt2AmAAA5pSkBWzdEI3c1TZDQ3G
+         pBWEeq8hwfpisXH9dF10jDLbA118b6QpMXh20PWuIpnJXPufjqlJ5JyIU6mwg92pOBM9
+         fr+WvmzYaZegDy4lVw/1becGHj7YV4cgadM3OydiaNRtbFeBvF8/nbCzrfWFkT06+Yt9
+         LrS3wa/FgUA+2sNgU5qiZWsUVykItR6RV9sQ4labxNMHUU1MZE6UmY0nr7S6Zz3OLZ58
+         jGmg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=AUINI16yK6pZHAU/xXt2qsWSZUyaKAoaO+uyiNHoP1I=;
+        b=F7iuj/2c3giEjkYt4EJ2vuWaJReAmFZZJ6zyDEOpFYqhJEWA7K8iGxqiUDgTJLVhhW
+         TtEwhAGn3JFZYQSsAgewlBdzW9mccuz2vPX5Onf7l5Isu3499tBgbrHEo9Nxs0vVsXCj
+         JOfcIFcNB2Gm4tQmeB36fUZ5/S6NC8TQSCgKQ/UXwHJjnHzLJ9vCKXCKEq+SsOdfsU1G
+         3Uy1FXukwcrg8VwbQhJ/fqmFFvqwUNNLmhfR2GHgthxBJCA3NINwnwbvhMg2XEkGNpaP
+         Soo7B8sdiORoBa6WOKmmb5M1iFGX0vE3s5olmgqu2aVHpF3EcFOwWASrfSKBHFbZtbKa
+         Vc8Q==
+X-Gm-Message-State: APjAAAWaI4JpnSsR4QZw0xTIv/D27VkOtDiSjplpoVJo//RQuKhu1z3N
+        IEqYTanKxwakynyw7GxJlecyo46PIiR8cSnCPKk=
+X-Google-Smtp-Source: APXvYqwOviWQIIezPLyl++ERkZ4/MPAnPMIPwAi7IkXjU8cJMBvA+cLZSomC0AT6OKdxubCN13nY404Zx8Qol/aW+wg=
+X-Received: by 2002:a0c:e2cf:: with SMTP id t15mr3449252qvl.127.1578478425415;
+ Wed, 08 Jan 2020 02:13:45 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/0Ck8cTm=3oTzyxStfTnUbSb";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+References: <20191219061006.21980-1-bjorn.topel@gmail.com> <20191219061006.21980-5-bjorn.topel@gmail.com>
+ <5e14c5d4c4959_67962afd051fc5c062@john-XPS-13-9370.notmuch>
+In-Reply-To: <5e14c5d4c4959_67962afd051fc5c062@john-XPS-13-9370.notmuch>
+From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
+Date:   Wed, 8 Jan 2020 11:13:34 +0100
+Message-ID: <CAJ+HfNiQOpAbHHT9V-gcp9u=vVDoP6uSoz2f-diEFrfX_88pMg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2 4/8] xsk: make xskmap flush_list common for
+ all map instances
+To:     John Fastabend <john.fastabend@gmail.com>
+Cc:     Netdev <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        bpf <bpf@vger.kernel.org>, David Miller <davem@davemloft.net>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/0Ck8cTm=3oTzyxStfTnUbSb
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+On Tue, 7 Jan 2020 at 18:54, John Fastabend <john.fastabend@gmail.com> wrot=
+e:
+>
+> Bj=C3=B6rn T=C3=B6pel wrote:
+> > From: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
+> >
+> > The xskmap flush list is used to track entries that need to flushed
+> > from via the xdp_do_flush_map() function. This list used to be
+> > per-map, but there is really no reason for that. Instead make the
+> > flush list global for all xskmaps, which simplifies __xsk_map_flush()
+> > and xsk_map_alloc().
+> >
+> > Acked-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+> > Signed-off-by: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
+> > ---
+>
+> Just to check. The reason this is OK is because xdp_do_flush_map()
+> is called from NAPI context and is per CPU so the only entries on
+> the list will be from the current cpu napi context?
 
-Hi all,
+Correct!
 
-In commit
+> Even in the case
+> where multiple xskmaps exist we can't have entries from more than
+> a single map on any list at the same time by my reading.
+>
 
-  481a7d154cbb ("stmmac: debugfs entry name is not be changed when udev ren=
-ame device name.")
+No, there can be entries from different (XSK) maps. Instead of
+focusing on maps to flush, focus on *entries* to flush. At the end of
+the poll function, all entries (regardless of map origin) will be
+flushed. Makes sense?
 
-Fixes tag
 
-  Fixes: b6601323ef9e ("net: stmmac: debugfs entry name is not be changed w=
-hen udev rename")
+Bj=C3=B6rn
 
-has these problem(s):
 
-  - Target SHA1 does not exist
-
-Also, please keep all the commit message tags together at the end of
-the commit message.
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/0Ck8cTm=3oTzyxStfTnUbSb
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl4VqpYACgkQAVBC80lX
-0GxMvQgAhPOYt2i9gXKK2PB2UZxf5sFrNXQIpAGrHl6R8OhLUdTaDtbpp8dpgSk9
-9KO/ktPPg+q4Air5x6DpZnDUtnWs6Iy34zErE45oXPUeqqheRX0pOLdw1FWTqULR
-ABwJdX16yZgYJl9fV0kwCsSD1iT+75iSaT4BNmHdROxZ87P6E/BfteDsORIOInx1
-E4Pn/c+H+T368uLlyj7654OQXgmHGgIuYXk4dO6Q6H9L1nCLdLWfm883mdNeNDPH
-DoAMaXUdecSaYJE9b+a9uzViFhPvDfjvT3kADZGxhPbgtKGXGvKNr2M6HS6CLeot
-UcnEzOinmFj5RbFo7txGRMS3gCSSxQ==
-=aMmy
------END PGP SIGNATURE-----
-
---Sig_/0Ck8cTm=3oTzyxStfTnUbSb--
+> LGTM,
+> Acked-by: John Fastabend <john.fastabend@gmail.com>
