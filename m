@@ -2,145 +2,193 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5470013474A
-	for <lists+netdev@lfdr.de>; Wed,  8 Jan 2020 17:11:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E7BD134747
+	for <lists+netdev@lfdr.de>; Wed,  8 Jan 2020 17:10:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729349AbgAHQLP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jan 2020 11:11:15 -0500
-Received: from mail-vi1eur05on2105.outbound.protection.outlook.com ([40.107.21.105]:40289
-        "EHLO EUR05-VI1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727668AbgAHQLO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 8 Jan 2020 11:11:14 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=odRMS8Fa2jSnFpcehvyjAFpnmTZdOdYukuUmkIdT13la8Ia2BqG9/MT2xQk/8ISnzDoquRk2yfgX8Vtd1k6QQ6LraiFWjROEjRvIVOrB1+MyhHjWZUBh+llZV1iR6oJP1t4BSjh4on5SpMBtC9XyLzupDjXPrfy8DiU5gXiCZ4YaQSAZEr8nB8x7Gtig/2cfy7caZlBD1qBab1yLicH5KPfI0hJzUEKh91VXi4/WekxyKEKez67h09n9VdZG0p01Vc7ANLKPOUvEtvSnFsMAYjiLB5KfArA4OEPYlYWPgkrn4SkRAIOTEODNTwwU2G7UhtuOk4Foci1RYttBt8WJIQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=JvOHxOTqy1Hi6qakSLyQqpXe/nPMBCh9fxZIFbD2Lrg=;
- b=gt//p+j2E9lNZEbY7JReYV7b8aVF4jyhmWvbPq+AElf6rKfuIgG6Yh0FXdVCm93ZqaCjHkizquqxoRFND0sSW26wSxKS/m0CgvfU/X7g5OfzKMk+doWwnGUzaxjHx76CTGMWV5lKWkD6XlEpg2YhnCdu7UvRpv09oUHvEFXd19VUZWe2prBEkliqqNXl2N0tJHqk1JDOT9gsUJxE0HUKcu/oW6AW+rDLnti6bP7PhpCbkzZlW0CmkH7DsuCSPMl1SCBkJEJmbFZP7yYng6AI2bIqsaV+vOYp3jfUFXKZ5IndGKUJ9BYNgW3tT/I5sWfG8t2FQk+h6n/WS//7mFmPQw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nokia.com; dmarc=pass action=none header.from=nokia.com;
- dkim=pass header.d=nokia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nokia.onmicrosoft.com;
- s=selector1-nokia-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=JvOHxOTqy1Hi6qakSLyQqpXe/nPMBCh9fxZIFbD2Lrg=;
- b=iWEsdkNjCRMR/Q4ewu0cNnSQANNixP7+2QY/AclEHtfXYtm7gC+g5Jer0hsyH6JwuCnTxSB7wmio+odYcEX++FjsPjLG3DOOPHpONV/v7+/CVj/PaMlWOQJxGW7EmpYPQp76ZqmqeGkdGVIHFZMs9+60740V2/iCLg660JF9PYw=
-Authentication-Results: spf=none (sender IP is )
- smtp.mailfrom=alexander.sverdlin@nokia.com; 
-Received: from VI1PR07MB5040.eurprd07.prod.outlook.com (20.177.203.20) by
- VI1PR07MB5454.eurprd07.prod.outlook.com (20.178.81.157) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2623.6; Wed, 8 Jan 2020 16:11:11 +0000
-Received: from VI1PR07MB5040.eurprd07.prod.outlook.com
- ([fe80::20c4:7ce8:f735:316e]) by VI1PR07MB5040.eurprd07.prod.outlook.com
- ([fe80::20c4:7ce8:f735:316e%2]) with mapi id 15.20.2644.006; Wed, 8 Jan 2020
- 16:11:11 +0000
-From:   Alexander X Sverdlin <alexander.sverdlin@nokia.com>
-To:     devel@driverdev.osuosl.org
-Cc:     Alexander Sverdlin <alexander.sverdlin@nokia.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Aaro Koskinen <aaro.koskinen@iki.fi>,
-        Ralf Baechle <ralf@linux-mips.org>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: [PATCH] staging: octeon: Drop on uncorrectable alignment or FCS error
-Date:   Wed,  8 Jan 2020 17:10:42 +0100
-Message-Id: <20200108161042.253618-1-alexander.sverdlin@nokia.com>
-X-Mailer: git-send-email 2.24.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: HE1PR0402CA0017.eurprd04.prod.outlook.com
- (2603:10a6:3:d0::27) To VI1PR07MB5040.eurprd07.prod.outlook.com
- (2603:10a6:803:9c::20)
+        id S1729099AbgAHQKy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jan 2020 11:10:54 -0500
+Received: from dispatch1-us1.ppe-hosted.com ([148.163.129.52]:34156 "EHLO
+        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728904AbgAHQKy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jan 2020 11:10:54 -0500
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 2B441B40055;
+        Wed,  8 Jan 2020 16:10:53 +0000 (UTC)
+Received: from amm-opti7060.uk.solarflarecom.com (10.17.20.147) by
+ ukex01.SolarFlarecom.com (10.17.10.4) with Microsoft SMTP Server (TLS) id
+ 15.0.1395.4; Wed, 8 Jan 2020 16:10:48 +0000
+From:   "Alex Maftei (amaftei)" <amaftei@solarflare.com>
+Subject: [PATCH net-next 02/14] sfc: further preparation for code split
+To:     <netdev@vger.kernel.org>, <davem@davemloft.net>
+CC:     <linux-net-drivers@solarflare.com>, <scrum-linux@solarflare.com>
+References: <a0cfb828-b98e-3a63-15d9-592675e81b5f@solarflare.com>
+Message-ID: <d54e7738-72d9-5afb-252b-e560feb5132a@solarflare.com>
+Date:   Wed, 8 Jan 2020 16:10:45 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-Received: from ulegcpsvdell.emea.nsn-net.net (131.228.32.181) by HE1PR0402CA0017.eurprd04.prod.outlook.com (2603:10a6:3:d0::27) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2602.12 via Frontend Transport; Wed, 8 Jan 2020 16:11:10 +0000
-X-Mailer: git-send-email 2.24.0
-X-Originating-IP: [131.228.32.181]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 6afef9c0-8621-4a44-22a9-08d794556089
-X-MS-TrafficTypeDiagnostic: VI1PR07MB5454:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <VI1PR07MB5454BA4E0427D25F59FDEDB8883E0@VI1PR07MB5454.eurprd07.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
-X-Forefront-PRVS: 02760F0D1C
-X-Forefront-Antispam-Report: SFV:NSPM;SFS:(10019020)(376002)(346002)(366004)(39860400002)(136003)(396003)(199004)(189003)(81166006)(316002)(54906003)(8676002)(86362001)(81156014)(186003)(16526019)(2906002)(8936002)(6506007)(6916009)(52116002)(4326008)(6512007)(26005)(5660300002)(6486002)(66476007)(1076003)(36756003)(66556008)(6666004)(2616005)(478600001)(66946007)(956004);DIR:OUT;SFP:1102;SCL:1;SRVR:VI1PR07MB5454;H:VI1PR07MB5040.eurprd07.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-Received-SPF: None (protection.outlook.com: nokia.com does not designate
- permitted sender hosts)
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Wjj6/Xcwzwy8RkO9IUhFnxWy2igiem8JdgUGNBokHgTC187GRhGJJbFoLbiH9nnZg42LAkwVjfgGKXeEXp6ZeqOLX26t9fiybncmVGPYtBfDKGXbPS2KRXDMkuWSDyoyEj/jgR1XfJhyGhe6+LBTDOIwKdMUq0VsGV002PLErEP2GIPDMOuvTzofNhUqM1H/cYata02N/Pjp3h1RzQMw7zJbo75iLNULa+rqDC4kpyN+eyeteDj4zVCf9tlDgJrZ/OfRoCfjSieXTap7z7yPNk9uVVgO94CfPOtjdPiUxh4xVHWf0uwHHuouzyjp+2nBGkSpVnZSMN3kbTXTlPihsvDGeEnTeYtmXq2Fat9YtXBTvv7+RrhFDMuY7JR1/C72gihVq3cEuyWgzrJH06nCO3yuep2qeQ5fV0ttJj7+6lJZom5PanTlI+PuSSu9bO3o
-X-OriginatorOrg: nokia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6afef9c0-8621-4a44-22a9-08d794556089
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Jan 2020 16:11:11.0514
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 5d471751-9675-428d-917b-70f44f9630b0
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: TL6yenyC+qdzkPSwtOzgvckY5B4dIT2loOCgEY0o3espwQK8p1UoTVt1NlXNyBP8kzm5i3EYINA03m3ue5c7g2jljz6vQ46SnBhsujg6x6g=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR07MB5454
+In-Reply-To: <a0cfb828-b98e-3a63-15d9-592675e81b5f@solarflare.com>
+Content-Type: text/plain; charset="windows-1252"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.17.20.147]
+X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
+ ukex01.SolarFlarecom.com (10.17.10.4)
+X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1010-25154.003
+X-TM-AS-Result: No-9.068000-8.000000-10
+X-TMASE-MatchedRID: DcqGgPTZcVldZy3SxU1dnHYZxYoZm58FMHi1Ydy2WEhjLp8Cm8vwFwoe
+        RRhCZWIBnvBWG5GT8Jdw5T4Iaj538mJZXQNDzktSGjzBgnFZvQ4vV5f7P0HVDKSiMyrXKm9UQGn
+        3MUIZ+3uEqK732q7561wDAh1dfD74ppxtrT/r6lEyIyttzvQ99w/o5bNHEsCTI7vGkGphvBhfMR
+        ZFmBPqiPlf//t8PlzgHTKb768hcJGDzdmvk4Gt0sebIMlISwjbXGjQf7uckKs9phCcpYL3wQrer
+        Kgs93AsEfK4ZMBzHazTwqurdQMjUvnmhzCNpxuqJDhQKCgPbQLgXnxE81iysZtxcHs098N0ngIg
+        pj8eDcC063Wh9WVqgt063cjuGtrt+gtHj7OwNO2BSJy8ngwKGRrXF0qM1gk/MKouZLuWDIpnPk5
+        Rwm2g8KfQz/MPf7d8870wkN6HZb4=
+X-TM-AS-User-Approved-Sender: Yes
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--9.068000-8.000000
+X-TMASE-Version: SMEX-12.5.0.1300-8.5.1010-25154.003
+X-MDID: 1578499853-ZA3EZIIlboQ5
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Alexander Sverdlin <alexander.sverdlin@nokia.com>
+Added more arguments for a couple of functions.
+Also moved a function to the common header.
 
-Currently in case of alignment or FCS error if the packet cannot be
-corrected it's still not dropped. Report the error properly and drop the
-packet while making the code around a little bit more readable.
-
-Fixes: 80ff0fd3ab ("Staging: Add octeon-ethernet driver files.")
-Signed-off-by: Alexander Sverdlin <alexander.sverdlin@nokia.com>
+Signed-off-by: Alexandru-Mihai Maftei <amaftei@solarflare.com>
 ---
- drivers/staging/octeon/ethernet-rx.c | 18 +++++++++---------
- 1 file changed, 9 insertions(+), 9 deletions(-)
+ drivers/net/ethernet/sfc/efx.c        | 31 +++++++--------------------
+ drivers/net/ethernet/sfc/efx_common.h | 15 ++++++++++---
+ 2 files changed, 20 insertions(+), 26 deletions(-)
 
-diff --git a/drivers/staging/octeon/ethernet-rx.c b/drivers/staging/octeon/ethernet-rx.c
-index 2c16230..edee9b5 100644
---- a/drivers/staging/octeon/ethernet-rx.c
-+++ b/drivers/staging/octeon/ethernet-rx.c
-@@ -69,15 +69,17 @@ static inline int cvm_oct_check_rcv_error(struct cvmx_wqe *work)
- 	else
- 		port = work->word1.cn38xx.ipprt;
+diff --git a/drivers/net/ethernet/sfc/efx.c b/drivers/net/ethernet/sfc/efx.c
+index c5bcdfcfee87..ce8c0db2ba4b 100644
+--- a/drivers/net/ethernet/sfc/efx.c
++++ b/drivers/net/ethernet/sfc/efx.c
+@@ -233,16 +233,6 @@ static int efx_xdp_xmit(struct net_device *dev, int n, struct xdp_frame **xdpfs,
+ 			ASSERT_RTNL();			\
+ 	} while (0)
  
--	if ((work->word2.snoip.err_code == 10) && (work->word1.len <= 64)) {
-+	if ((work->word2.snoip.err_code == 10) && (work->word1.len <= 64))
- 		/*
- 		 * Ignore length errors on min size packets. Some
- 		 * equipment incorrectly pads packets to 64+4FCS
- 		 * instead of 60+4FCS.  Note these packets still get
- 		 * counted as frame errors.
- 		 */
--	} else if (work->word2.snoip.err_code == 5 ||
--		   work->word2.snoip.err_code == 7) {
-+		return 0;
-+
-+	if (work->word2.snoip.err_code == 5 ||
-+	    work->word2.snoip.err_code == 7) {
- 		/*
- 		 * We received a packet with either an alignment error
- 		 * or a FCS error. This may be signalling that we are
-@@ -125,14 +127,12 @@ static inline int cvm_oct_check_rcv_error(struct cvmx_wqe *work)
- 				return 1;
- 			}
- 		}
--	} else {
--		printk_ratelimited("Port %d receive error code %d, packet dropped\n",
--				   port, work->word2.snoip.err_code);
--		cvm_oct_free_work(work);
--		return 1;
- 	}
- 
+-int efx_check_disabled(struct efx_nic *efx)
+-{
+-	if (efx->state == STATE_DISABLED || efx->state == STATE_RECOVERY) {
+-		netif_err(efx, drv, efx->net_dev,
+-			  "device is disabled due to earlier errors\n");
+-		return -EIO;
+-	}
 -	return 0;
-+	printk_ratelimited("Port %d receive error code %d, packet dropped\n",
-+			   port, work->word2.snoip.err_code);
-+	cvm_oct_free_work(work);
-+	return 1;
+-}
+-
+ /**************************************************************************
+  *
+  * Event queue processing
+@@ -1283,17 +1273,14 @@ static void efx_dissociate(struct efx_nic *efx)
  }
  
- static void copy_segments_to_skb(struct cvmx_wqe *work, struct sk_buff *skb)
+ /* This configures the PCI device to enable I/O and DMA. */
+-int efx_init_io(struct efx_nic *efx)
++int efx_init_io(struct efx_nic *efx, int bar, dma_addr_t dma_mask,
++		unsigned int mem_map_size)
+ {
+ 	struct pci_dev *pci_dev = efx->pci_dev;
+-	dma_addr_t dma_mask = efx->type->max_dma_mask;
+-	unsigned int mem_map_size = efx->type->mem_map_size(efx);
+-	int rc, bar;
++	int rc;
+ 
+ 	netif_dbg(efx, probe, efx->net_dev, "initialising I/O\n");
+ 
+-	bar = efx->type->mem_bar(efx);
+-
+ 	rc = pci_enable_device(pci_dev);
+ 	if (rc) {
+ 		netif_err(efx, probe, efx->net_dev,
+@@ -1354,10 +1341,8 @@ int efx_init_io(struct efx_nic *efx)
+ 	return rc;
+ }
+ 
+-void efx_fini_io(struct efx_nic *efx)
++void efx_fini_io(struct efx_nic *efx, int bar)
+ {
+-	int bar;
+-
+ 	netif_dbg(efx, drv, efx->net_dev, "shutting down I/O\n");
+ 
+ 	if (efx->membase) {
+@@ -1366,7 +1351,6 @@ void efx_fini_io(struct efx_nic *efx)
+ 	}
+ 
+ 	if (efx->membase_phys) {
+-		bar = efx->type->mem_bar(efx);
+ 		pci_release_region(efx->pci_dev, bar);
+ 		efx->membase_phys = 0;
+ 	}
+@@ -3548,7 +3532,7 @@ static void efx_pci_remove(struct pci_dev *pci_dev)
+ 
+ 	efx_pci_remove_main(efx);
+ 
+-	efx_fini_io(efx);
++	efx_fini_io(efx, efx->type->mem_bar(efx));
+ 	netif_dbg(efx, drv, efx->net_dev, "shutdown successful\n");
+ 
+ 	efx_fini_struct(efx);
+@@ -3771,7 +3755,8 @@ static int efx_pci_probe(struct pci_dev *pci_dev,
+ 		efx_probe_vpd_strings(efx);
+ 
+ 	/* Set up basic I/O (BAR mappings etc) */
+-	rc = efx_init_io(efx);
++	rc = efx_init_io(efx, efx->type->mem_bar(efx), efx->type->max_dma_mask,
++			 efx->type->mem_map_size(efx));
+ 	if (rc)
+ 		goto fail2;
+ 
+@@ -3815,7 +3800,7 @@ static int efx_pci_probe(struct pci_dev *pci_dev,
+ 	return 0;
+ 
+  fail3:
+-	efx_fini_io(efx);
++	efx_fini_io(efx, efx->type->mem_bar(efx));
+  fail2:
+ 	efx_fini_struct(efx);
+  fail1:
+diff --git a/drivers/net/ethernet/sfc/efx_common.h b/drivers/net/ethernet/sfc/efx_common.h
+index cb690d01adbc..c602e5257088 100644
+--- a/drivers/net/ethernet/sfc/efx_common.h
++++ b/drivers/net/ethernet/sfc/efx_common.h
+@@ -11,8 +11,9 @@
+ #ifndef EFX_COMMON_H
+ #define EFX_COMMON_H
+ 
+-int efx_init_io(struct efx_nic *efx);
+-void efx_fini_io(struct efx_nic *efx);
++int efx_init_io(struct efx_nic *efx, int bar, dma_addr_t dma_mask,
++		unsigned int mem_map_size);
++void efx_fini_io(struct efx_nic *efx, int bar);
+ int efx_init_struct(struct efx_nic *efx, struct pci_dev *pci_dev,
+ 		    struct net_device *net_dev);
+ void efx_fini_struct(struct efx_nic *efx);
+@@ -44,7 +45,15 @@ int efx_reset_up(struct efx_nic *efx, enum reset_type method, bool ok);
+ int efx_reset(struct efx_nic *efx, enum reset_type method);
+ void efx_schedule_reset(struct efx_nic *efx, enum reset_type type);
+ 
+-int efx_check_disabled(struct efx_nic *efx);
++static inline int efx_check_disabled(struct efx_nic *efx)
++{
++	if (efx->state == STATE_DISABLED || efx->state == STATE_RECOVERY) {
++		netif_err(efx, drv, efx->net_dev,
++			  "device is disabled due to earlier errors\n");
++		return -EIO;
++	}
++	return 0;
++}
+ 
+ void efx_mac_reconfigure(struct efx_nic *efx);
+ void efx_link_status_changed(struct efx_nic *efx);
 -- 
-2.4.6
+2.20.1
+
 
