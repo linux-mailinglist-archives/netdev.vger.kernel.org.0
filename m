@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DB051134EB5
-	for <lists+netdev@lfdr.de>; Wed,  8 Jan 2020 22:16:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 77048134EB7
+	for <lists+netdev@lfdr.de>; Wed,  8 Jan 2020 22:16:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727484AbgAHVQY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jan 2020 16:16:24 -0500
-Received: from mail-il1-f193.google.com ([209.85.166.193]:37214 "EHLO
-        mail-il1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726836AbgAHVQY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jan 2020 16:16:24 -0500
-Received: by mail-il1-f193.google.com with SMTP id t8so3908506iln.4;
-        Wed, 08 Jan 2020 13:16:23 -0800 (PST)
+        id S1727500AbgAHVQn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jan 2020 16:16:43 -0500
+Received: from mail-il1-f181.google.com ([209.85.166.181]:37119 "EHLO
+        mail-il1-f181.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726836AbgAHVQn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jan 2020 16:16:43 -0500
+Received: by mail-il1-f181.google.com with SMTP id t8so3909251iln.4;
+        Wed, 08 Jan 2020 13:16:42 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:from:to:cc:date:message-id:in-reply-to:references
          :user-agent:mime-version:content-transfer-encoding;
-        bh=m8Rchxp7WynrVrNQW7gz1KcCJvgeZh/2BETow1fq1Bo=;
-        b=QqoQBK2bwdHuoMAaimQOxerVbNsi3Px0z5fL7uQStVjOYFThjmYpGsflbYQ8WpzBA9
-         qlqk9seUe0pi1gaoOGZ921XYu6osXCCnFLeZIuEE3AeIhO+g0P7azgC67qcOsYAs4EbY
-         uIshlgN+ptvIT1ZjyEreSn2LnBc0Dl1vF+kZ5NVcfhbcGx6NFN+/ECqVK/8gTOW3nmDa
-         R2i56OKSSoySGNKLUK5CaByP8VRZ/akk1wmeyC7WL5GMawgew8dcIzId/A3CaOhLdUPo
-         l+3nggYaJmX6zt3qaymCWhc32I/tZRnjXki49E5qwkcwsuoL8E5eX7RDNb/sAUGl3DBI
-         WtYA==
+        bh=yXmxsUzDxx3UVsdYKuZEr+cwB6nejckACPxlNU4PCDI=;
+        b=gEBJ6yFTCLzNUV+2DjSCesjosoyDVuqIxuLlyiVdjNgjtVWSX0jzyLBoD4cRMfbu9A
+         pYabl6YXqgONs0OKZ8FAXog8hbJfUKofqm3w2YOkyffeX9+IC86uoPyUjspYzhBPupWB
+         Enc4pZ2d4mOynBelKWbnRoZ5/maTpfCHp/BnyQo3akYOBTr02wvhLhUpvtN7LzzoZmMv
+         fhkvb1c6FxOhHyzM2oxnonGijqLfGqvxL3LTBQuLXJWCVmc3bEYcMscGmPX8ZajMQaDL
+         liL/YRJMPr2bvAIQgZLVj61TLCFuAd4qdTKC0+W0lsuUzo1GB3S/pd/36h+sdBohuirq
+         hY8g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:from:to:cc:date:message-id:in-reply-to
          :references:user-agent:mime-version:content-transfer-encoding;
-        bh=m8Rchxp7WynrVrNQW7gz1KcCJvgeZh/2BETow1fq1Bo=;
-        b=HBbtowahChIcy9DRF7g24lErfy0+QwB+iPEdr/rzIcBGd6gD7We1pqjjK4t8NqCpS8
-         SS8VozMSccZzZ7eYgj4zxdEk7eI+Y5fN/5COv9vrQEQIPF/1UqeACOW8AlaHnpf6Defi
-         5BQk0MsYpRKXMTt3S487hvbz0Kg2xTDa1tFqkSuBd9mLgZkl3/n8Hp2JWUMmGl+pAgy6
-         MB5JsFLjpDkrlmbk3oKWFxWaQKpvwjGmpUQ3R6c1tzGmVJuWLL3EJ9mvXmQX52nKqg2P
-         kImxkxbsFhmR9kWrAYRQsRNU+5uxZV7zzeQ7KMZLHAqVs2yznjGZT5RG5vzpdvpry6aw
-         ugVA==
-X-Gm-Message-State: APjAAAVSZEvDkV3QdLvquZFT+ouze3VY3moXUhWwDiUqNk2n1B0KPKvS
-        pS94Yi4muSwuoD1JqU1eEvjDYEp5
-X-Google-Smtp-Source: APXvYqzr/9d+tadjw2nMeNKOAHWft++tJnwtK6W4m0lHXF08zQkV8JkIWyv+pnuzwuKNBpbmcl/NpA==
-X-Received: by 2002:a92:d5cf:: with SMTP id d15mr5490293ilq.306.1578518183266;
-        Wed, 08 Jan 2020 13:16:23 -0800 (PST)
+        bh=yXmxsUzDxx3UVsdYKuZEr+cwB6nejckACPxlNU4PCDI=;
+        b=lg397/DYWLW0eRrLcPxKTplN5Wz6TBw01CJAS1J14MkI9Ya026dAdrRiz1e6n0uRSi
+         v4kKCPfYQteaqHTp56Vvf4RtpTlv1geMocF43IUeXcREvIuLO9up1GPYf7DtAU1fg0P/
+         wi9ljWXDhIslGrCmOSEGi8u5gnCVvxaUPyg9YZdsB5R6Pbn8gYUwUR1wM8hYjb1WoGED
+         TAoun/UfJybXdmhWtJkPrUaVj+ZZEd0l7Iv3na+dlNSEDo6LSCJC+nb8XPXPHuEnL5Lt
+         J1V+bWk3nwfSIeGTpJRJzGBRMyGQJMd5yukKp66GsjDfuuf3nJZiDEI7KulWxypBJYAn
+         pErQ==
+X-Gm-Message-State: APjAAAVth7CCSx7qBz8pie23fajEpMfSFTCubm6KSzDJ8bMcTCk7sYx5
+        dHGxMY+kG7cqNt0kzhOoT4jHTlBs
+X-Google-Smtp-Source: APXvYqzpurPMotm6OEYRJQfLw4fcefi+5q6PwNDWbC4NIpgURuLX+9VLaBRqKmKJgc/bP26CO6lc4A==
+X-Received: by 2002:a92:5b49:: with SMTP id p70mr5501604ilb.209.1578518202313;
+        Wed, 08 Jan 2020 13:16:42 -0800 (PST)
 Received: from [127.0.1.1] ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id i13sm903229ioi.67.2020.01.08.13.16.16
+        by smtp.gmail.com with ESMTPSA id x2sm1309186ila.74.2020.01.08.13.16.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 08 Jan 2020 13:16:22 -0800 (PST)
-Subject: [bpf PATCH 8/9] bpf: sockmap/tls,
- tls_push_record can not handle zero length skmsg
+        Wed, 08 Jan 2020 13:16:41 -0800 (PST)
+Subject: [bpf PATCH 9/9] bpf: sockmap/tls,
+ fix pop data with SK_DROP return code
 From:   John Fastabend <john.fastabend@gmail.com>
 To:     bpf@vger.kernel.org
 Cc:     netdev@vger.kernel.org, john.fastabend@gmail.com, ast@kernel.org,
         daniel@iogearbox.net
-Date:   Wed, 08 Jan 2020 21:16:11 +0000
-Message-ID: <157851817088.1732.14988301389495595092.stgit@ubuntu3-kvm2>
+Date:   Wed, 08 Jan 2020 21:16:29 +0000
+Message-ID: <157851818932.1732.14521897338802839226.stgit@ubuntu3-kvm2>
 In-Reply-To: <157851776348.1732.12600714815781177085.stgit@ubuntu3-kvm2>
 References: <157851776348.1732.12600714815781177085.stgit@ubuntu3-kvm2>
 User-Agent: StGit/0.17.1-dirty
@@ -63,32 +63,60 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When passed a zero length skmsg tls_push_record() causes a NULL ptr
-deref. To resolve for fixes do a simple length check at start of
-routine.
+When user returns SK_DROP we need to reset the number of copied bytes
+to indicate to the user the bytes were dropped and not sent. If we
+don't reset the copied arg sendmsg will return as if those bytes were
+copied giving the user a positive return value.
 
-To create this case a user can create a BPF program to pop all the
-data off the message then return SK_PASS. Its not a very practical
-or useful thing to do so we mark it unlikely.
+This works as expected today except in the case where the user also
+pops bytes. In the pop case the sg.size is reduced but we don't correctly
+account for this when copied bytes is reset. The popped bytes are not
+accounted for and we return a small positive value potentially confusing
+the user.
 
-Fixes: d3b18ad31f93d ("tls: add bpf support to sk_msg handling")
+The reason this happens is due to a typo where we do the wrong comparison
+when accounting for pop bytes. In this fix notice the if/else is not
+needed and that we have a similar problem if we push data except its not
+visible to the user because if delta is larger the sg.size we return a
+negative value so it appears as an error regardless.
+
+Fixes: 7246d8ed4dcce ("bpf: helper to pop data from messages")
 Signed-off-by: John Fastabend <john.fastabend@gmail.com>
 ---
- net/tls/tls_sw.c |    3 +++
- 1 file changed, 3 insertions(+)
+ net/ipv4/tcp_bpf.c |    5 +----
+ net/tls/tls_sw.c   |    5 +----
+ 2 files changed, 2 insertions(+), 8 deletions(-)
 
+diff --git a/net/ipv4/tcp_bpf.c b/net/ipv4/tcp_bpf.c
+index e38705165ac9..587d55611814 100644
+--- a/net/ipv4/tcp_bpf.c
++++ b/net/ipv4/tcp_bpf.c
+@@ -315,10 +315,7 @@ static int tcp_bpf_send_verdict(struct sock *sk, struct sk_psock *psock,
+ 		 */
+ 		delta = msg->sg.size;
+ 		psock->eval = sk_psock_msg_verdict(sk, psock, msg);
+-		if (msg->sg.size < delta)
+-			delta -= msg->sg.size;
+-		else
+-			delta = 0;
++		delta -= msg->sg.size;
+ 	}
+ 
+ 	if (msg->cork_bytes &&
 diff --git a/net/tls/tls_sw.c b/net/tls/tls_sw.c
-index 21c7725d17ca..0326e916ab01 100644
+index 0326e916ab01..d9a757c0ba0c 100644
 --- a/net/tls/tls_sw.c
 +++ b/net/tls/tls_sw.c
-@@ -680,6 +680,9 @@ static int tls_push_record(struct sock *sk, int flags,
- 	msg_pl = &rec->msg_plaintext;
- 	msg_en = &rec->msg_encrypted;
- 
-+	if (unlikely(!msg_pl->sg.size))
-+		return 0;
-+
- 	split_point = msg_pl->apply_bytes;
- 	split = split_point && split_point < msg_pl->sg.size;
- 	if (unlikely((!split &&
+@@ -812,10 +812,7 @@ static int bpf_exec_tx_verdict(struct sk_msg *msg, struct sock *sk,
+ 	if (psock->eval == __SK_NONE) {
+ 		delta = msg->sg.size;
+ 		psock->eval = sk_psock_msg_verdict(sk, psock, msg);
+-		if (delta < msg->sg.size)
+-			delta -= msg->sg.size;
+-		else
+-			delta = 0;
++		delta -= msg->sg.size;
+ 	}
+ 	if (msg->cork_bytes && msg->cork_bytes > msg->sg.size &&
+ 	    !enospc && !full_record) {
 
