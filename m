@@ -2,135 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D96EB1339B7
-	for <lists+netdev@lfdr.de>; Wed,  8 Jan 2020 04:45:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 158E51339D3
+	for <lists+netdev@lfdr.de>; Wed,  8 Jan 2020 04:54:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726333AbgAHDpZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jan 2020 22:45:25 -0500
-Received: from mail-il1-f169.google.com ([209.85.166.169]:38094 "EHLO
-        mail-il1-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726142AbgAHDpZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jan 2020 22:45:25 -0500
-Received: by mail-il1-f169.google.com with SMTP id f5so1494883ilq.5;
-        Tue, 07 Jan 2020 19:45:24 -0800 (PST)
+        id S1726694AbgAHDya (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Jan 2020 22:54:30 -0500
+Received: from mail-io1-f68.google.com ([209.85.166.68]:44173 "EHLO
+        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726594AbgAHDya (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jan 2020 22:54:30 -0500
+Received: by mail-io1-f68.google.com with SMTP id b10so1651893iof.11;
+        Tue, 07 Jan 2020 19:54:29 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:message-id:in-reply-to:references:subject
          :mime-version:content-transfer-encoding;
-        bh=ZhEXkz/Ikgaa2TPZMXb0nNQRN/vT/dP6jXGgHVXgmxo=;
-        b=Bwwo+FdjiCvyI61VjrtnVA038Ig6cGYfxYTHl2P8WBHFvLfER1gku3JN4MfBHjKZW8
-         dEN4mH8UYmcSlEpR7iUzjre4aXzjrb6zIgEvncRA1ooJMNjoMSh/7Pd8hzvfmCkVNFzh
-         enUuJN4fSBT0LsBsjpMFJK5Btk3oAB/IsBdpgN79fMPjV0aroMuNfCm6TS1bhwdz6eNg
-         9P9gductqwL7LzXKkp63dHv34/nZhYIU+ecTqXLbESygo2KqsbAD5PcNzcBP0QKplpwR
-         YlzIEE+F/h+LZzInVNA8cpa4aLkABfxcxuJ9yR2T5phfyIMB/DGZZWfuTLaMQ09flcV8
-         U6BA==
+        bh=PA2NXViCpuZd13BKIQ60jNtIF1Z4TVH/UHFfmG1BJeg=;
+        b=VEU5dl4eSKlyqmE+Ajd1zho06cUgGSbIsAL4CiLtlSTCh6BU3QMAKEtD717gaOhQ4J
+         01zIAWKPLvE+vXkxefefJvG3fovRP34yjN69JoodODrJRlyTSuxEmsIrMQymu6Q0/BjD
+         DBBv6Teizx881mJCTNg7+wMMYCPMfCCLlr8tPqQPnIcChzBuCrA5RTVngWeVFpLaCvid
+         m86gw4QxOwa98j/1ryYSuHrkbwbN/tM7kyEyFQ6XFMM6U3SR4FgxVbMzyb2KCq/DczzS
+         35mq+0IOyUmxW2dS/jObS67t38C9oaGR0/xR4hYrOzy+FLTr8/7JwoGhG3qFrklrPpcf
+         jsXw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
          :references:subject:mime-version:content-transfer-encoding;
-        bh=ZhEXkz/Ikgaa2TPZMXb0nNQRN/vT/dP6jXGgHVXgmxo=;
-        b=ktwlL+2w1Ai+BMM+F3+3q9hIpaBvNKIgSEQ7HNtLrxu97LVel212H/74jlZZQ0bbGK
-         1/XyO1bfyNYCLoVcIZh9QTGfDln+2JdlBmLwEUHIFabxJxf3jj/jmsAi+YCGyhQO+4Ve
-         W4jFVTAoQsHRh1kUFIr2m/WJAGjV4jMkVAn8aD1bsb2vYqCvTJ/F/5Xmh90asRIZ7td9
-         7v5Vw7hM/IYImdzDWwbbzBtRyCNhlft9zNzUTG5J9tw2nToVbvC++ozfaCO0FvQbw9e5
-         m32MPDKIQpN+zek39MBdgtmCXS/aULAN2gRQUoOsYHo/qTHPZDrQxeRn56wJh51heeF+
-         zU9A==
-X-Gm-Message-State: APjAAAUCqMKyJu7imHaQOriWcGtiU6hztQaI8AcV/iiEq9U8auoKfpE/
-        uF90hmplbf92GosFjKipeO4=
-X-Google-Smtp-Source: APXvYqzkdRP47LR7codGlznu8B+mG30W2DgydK83fa7ocXOyasXBFEBA74AdKTexeZLZUlaW0EtaKg==
-X-Received: by 2002:a92:d84d:: with SMTP id h13mr2154105ilq.180.1578455124433;
-        Tue, 07 Jan 2020 19:45:24 -0800 (PST)
+        bh=PA2NXViCpuZd13BKIQ60jNtIF1Z4TVH/UHFfmG1BJeg=;
+        b=PDWe9tVsgf7+5igx5A8FhyTU3tyEBmgTlNBsDatnBc8t35Z/TChjtyk/Shjhj4+fbn
+         LuZ2ih3GQl+8Q+Cc8/BbrRWqs5GrJVw/x7OlluuCwwatpVXdzVodtTxuemGYz7uuxB9L
+         +bNO3rY9DnbA9gG7pvwnp3PlJIlsw+9RMZQvbGf2DreMZ8FA3kjG+Xl1DzfgnbiTzA+u
+         z77kgBfy8l57NHsPTQQy4E9hUuw1KSc2Ifj5aCMWwbf4pN3YihEf7+wu5oTqc+eu1R/E
+         Fcehz25sVXJVfBzsiHpSJh24lT0YDn4zpmk2DNz7XwfQU5J5QN5ex+NBU+aYdlDD6fRx
+         TnVQ==
+X-Gm-Message-State: APjAAAVGjyY9UFxvKbOSSnIbdCgfqkz6EhwoaxnZM84Hj3N/Hcq7twKs
+        cpTnj4JacZoEsq9iZCWDQjI=
+X-Google-Smtp-Source: APXvYqw2+UeKJUViHKAcarA/oRX814m+hGNCWAMCjiwXczYrYN13tQex7j+mU5WVzqWiRUrSSLc+vA==
+X-Received: by 2002:a6b:dd02:: with SMTP id f2mr1781221ioc.304.1578455669208;
+        Tue, 07 Jan 2020 19:54:29 -0800 (PST)
 Received: from localhost ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id s7sm518737ild.73.2020.01.07.19.45.21
+        by smtp.gmail.com with ESMTPSA id u80sm528157ili.77.2020.01.07.19.54.27
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Jan 2020 19:45:23 -0800 (PST)
-Date:   Tue, 07 Jan 2020 19:45:15 -0800
+        Tue, 07 Jan 2020 19:54:28 -0800 (PST)
+Date:   Tue, 07 Jan 2020 19:54:21 -0800
 From:   John Fastabend <john.fastabend@gmail.com>
-To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
-        netdev@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net
-Cc:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        bpf@vger.kernel.org, davem@davemloft.net,
-        jakub.kicinski@netronome.com, hawk@kernel.org,
-        john.fastabend@gmail.com, magnus.karlsson@intel.com,
-        jonathan.lemon@gmail.com
-Message-ID: <5e15504b79ddb_68832ae93d7145c063@john-XPS-13-9370.notmuch>
-In-Reply-To: <87imlnht6k.fsf@toke.dk>
-References: <20191219061006.21980-1-bjorn.topel@gmail.com>
- <20191219061006.21980-8-bjorn.topel@gmail.com>
- <5e14caaaab6f7_67962afd051fc5c06f@john-XPS-13-9370.notmuch>
- <87imlnht6k.fsf@toke.dk>
-Subject: RE: [PATCH bpf-next v2 7/8] xdp: remove map_to_flush and map swap
- detection
+To:     Forrest Chen <forrest0579@gmail.com>,
+        John Fastabend <john.fastabend@gmail.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Message-ID: <5e15526d2ebb6_68832ae93d7145c08c@john-XPS-13-9370.notmuch>
+In-Reply-To: <CAH+Qyb+37gaWZzEvvXeX9ghsCYw1JyH_23S+1HW0ML-MZkcYfg@mail.gmail.com>
+References: <20200107042247.16614-1-forrest0579@gmail.com>
+ <5e14a5fe53ac8_67962afd051fc5c0ea@john-XPS-13-9370.notmuch>
+ <CAH+Qyb+37gaWZzEvvXeX9ghsCYw1JyH_23S+1HW0ML-MZkcYfg@mail.gmail.com>
+Subject: Re: [PATCH] bpf/sockmap: read psock ingress_msg before
+ sk_receive_queue
 Mime-Version: 1.0
 Content-Type: text/plain;
  charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Toke H=C3=B8iland-J=C3=B8rgensen wrote:
-> John Fastabend <john.fastabend@gmail.com> writes:
-> =
+Forrest Chen wrote:
+> Thanks John for the review.
 
-> > Bj=C3=B6rn T=C3=B6pel wrote:
-> >> From: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
-> >> =
+Usually try not to top post.
 
-> >> Now that all XDP maps that can be used with bpf_redirect_map() track=
-s
-> >> entries to be flushed in a global fashion, there is not need to trac=
-k
-> >> that the map has changed and flush from xdp_do_generic_map()
-> >> anymore. All entries will be flushed in xdp_do_flush_map().
-> >> =
+> 
+> I think you are right for the missing part. I would like to update the
+> patch and re-send it, is it ok for you?
 
-> >> This means that the map_to_flush can be removed, and the correspondi=
-ng
-> >> checks. Moving the flush logic to one place, xdp_do_flush_map(), giv=
-e
-> >> a bulking behavior and performance boost.
-> >> =
+Yep glad to have more folks looking over sockmap code and looks like it
+already hit the list so that is good.
 
-> >> Acked-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
-> >> Signed-off-by: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
-> >> ---
-> >
-> > __dev_map_flush() still has rcu_read_lock/unlock() around flush_list =
-by
-> > this point, assuming I've followed along correctly. Can we drop those=
+> 
+> Since it is my first kernel patch, I'm not familiar with the process.
+> What''s the meaning of 'add your Signed-off-by'?
+> I think I have add  Signed-off-by in the first patch, do you mean I should
+> add 'Signed-off-by: John Fastabend <john.fastabend@gmail.com>' as well?
+> 
 
-> > now seeing its per CPU and all list ops are per-cpu inside napi conte=
-xt?
-> =
+I was just saying feel free to add _your_ Signed-off-by to the patch I
+attached and send it. You added my signed-off-by to your patch which is
+also fine I don't think it matters much as long as we get the fix.
 
-> Hmm, I guess so? :)
-> =
+Also we should add Fixes tag and a tag to give Arika some credit. Seems
+we had the same fix in mind. I'll just add those now, next time for
+fixes please add a Fixes tag so we can track where we need to backport
+the fix.
 
-> > Two reasons to consider, with this patch dev_map_flush() is always
-> > called even if the list is empty so even in TX case without redirect.=
-
-> > But probably more important it makes the locking requirements more cl=
-ear.
-> > Could probably be done in a follow up patch but wanted to bring it up=
-.
-> =
-
-> This series was already merged, but I'll follow up with the non-map
-> redirect change. This requires a bit of refactoring anyway, so I can
-> incorporate the lock removal into that...
-> =
-
-> -Toke
-> =
-
-
-Ah I was just catching up with email and missed itwas already applied.
-
-I can also submit a few fixup patches no problem for the comments and thi=
-s.
-
-.John=
+Thanks for looking into this.
