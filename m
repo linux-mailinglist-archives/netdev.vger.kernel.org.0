@@ -2,169 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B8A04134D0F
-	for <lists+netdev@lfdr.de>; Wed,  8 Jan 2020 21:20:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F732134D26
+	for <lists+netdev@lfdr.de>; Wed,  8 Jan 2020 21:25:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726290AbgAHUUr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jan 2020 15:20:47 -0500
-Received: from mail-pj1-f65.google.com ([209.85.216.65]:37461 "EHLO
-        mail-pj1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725881AbgAHUUr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jan 2020 15:20:47 -0500
-Received: by mail-pj1-f65.google.com with SMTP id m13so103746pjb.2;
-        Wed, 08 Jan 2020 12:20:46 -0800 (PST)
+        id S1726536AbgAHUZx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jan 2020 15:25:53 -0500
+Received: from mail-yb1-f193.google.com ([209.85.219.193]:40250 "EHLO
+        mail-yb1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726149AbgAHUZx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jan 2020 15:25:53 -0500
+Received: by mail-yb1-f193.google.com with SMTP id a2so2028114ybr.7
+        for <netdev@vger.kernel.org>; Wed, 08 Jan 2020 12:25:52 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=aeyJoba8uJ+DuqzxagZ15T2uRzxkV/DOR+oSEvEwDi0=;
-        b=Y/RSOi2+vqeiPrZ+a0lHXl/z4ydSo1x+iPCD6R51fgyk7qGSUQjuFv+9x7DVZaosyo
-         kC9PVByQP0XdI83G/Q7uHPfnBzxJU76yu8KozwXDRTDebumJ3kBmfVzHqhrDC46HKw+K
-         BZeDwcjNsENgv67eAvbzYKHRjsgvUdEphrRwBkOV3Syt6jHio/COD6ZBhGUSm6yxnugc
-         s6EIUXji/ha9YV6P4cwKDH8YmnFocHlnrW8ZUNiVB1Ah6pju6Tfra+tKvvjqlTJymW2y
-         y4BILGYxFkXbl4MEdL3DVlOj3fqK8YWKYgnIOCe+Uu8/TPwrsrop85YD/06lWDex4jxV
-         pwCQ==
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=wfJqX5R/FmgkyI2bl1EsKAOo5BNWaygPKIsDVxMmKmc=;
+        b=lqZb1QzDni172YMBxksX8MJJH+FhCXTVBS0RIh4VTEB6Dn+3/93AjsLrXjOrYawF+C
+         ZFZv55xEyiExDXQJClEWVqCoPoe2bji2ejJc5jAEEJMcsd4UXCT3+E/Gef1PTrgIZEAm
+         N9idVk6kClD9UEovRkp0t1V/U/npR677B+6ecK1mmcDiEktYXYtkoszeJx0xUMQ/9OyP
+         qXgZOxENOpxKrm9ULqfkNd4aEYSW1IkPrlfbi9L1sbTePV0ZFzmf+J+xjpOQPGWJPgfk
+         K6wOAOjtZrAx8KxKtTZNDPwbbf/2pxgAHC55sY4zN5xC9DR2OwwB0YRtxLZc3hs9DeBg
+         KwAw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=aeyJoba8uJ+DuqzxagZ15T2uRzxkV/DOR+oSEvEwDi0=;
-        b=Jsytt8iG4eEOIf8a3aDvFaE6RL9ptNe5j0vzk3Bc0zPdcfr5UbqcikVymTUEFWrLHz
-         6QVLPVC4ahutyRfLvFoKOyYVLW8MSClNHhOgo1qev0S9EjwZYkNS6D24fqRFNFw30MAT
-         +smSSnLEuww/21dMtiybwejyu3mmHtQpfMgRlqpYl4Bs3btkiy+nFXqsGgOP8LWo7wG5
-         ZUu4OkOszde1tLRGOVuydkjrTbaF+wHrXzWsTmXHjdcX99cll/Cmd4WPYTZ4YGjXeqqG
-         0FTcUqAQFn1w/Dc6ndUDruk0U2VQ8bqnRe00yCW2UdhND9O8QujcfCHad7tCV47Oh4QQ
-         G8uw==
-X-Gm-Message-State: APjAAAUx2G6fjSY4Scg/cY0e+Hc7BzFe43h9GirTiJT0u8CvpD0wiGk3
-        7TmExqntSgoRHWyn3wll9aw=
-X-Google-Smtp-Source: APXvYqyuFE6wfN8uogNqwaovQuoUK6ixP9f6X30h8BcnssDgiqFRp/04a+LgnMVGyuql4CiwAJVGDA==
-X-Received: by 2002:a17:902:ac90:: with SMTP id h16mr6900632plr.164.1578514846221;
-        Wed, 08 Jan 2020 12:20:46 -0800 (PST)
-Received: from ast-mbp ([2620:10d:c090:200::3:1e54])
-        by smtp.gmail.com with ESMTPSA id l2sm118372pjt.31.2020.01.08.12.20.44
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 08 Jan 2020 12:20:45 -0800 (PST)
-Date:   Wed, 8 Jan 2020 12:20:44 -0800
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Song Liu <songliubraving@fb.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        Kernel Team <Kernel-team@fb.com>
-Subject: Re: [PATCH bpf-next 3/6] bpf: Introduce function-by-function
- verification
-Message-ID: <20200108202043.bo6sdqe5i7lttgvp@ast-mbp>
-References: <20200108072538.3359838-1-ast@kernel.org>
- <20200108072538.3359838-4-ast@kernel.org>
- <2A66F154-7F54-4856-B6ED-E787EE215631@fb.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=wfJqX5R/FmgkyI2bl1EsKAOo5BNWaygPKIsDVxMmKmc=;
+        b=dCM+py7o3CBjQsuHtEM5Gkuu7l0m/9VepZKl/ve30VBhpnqL2+gYA8D3K35SCT8WlH
+         QS61sJ9BV3aWgbSCxQ/fHpj1JbH33lF6y6EaCQAx79JlybePKX1Gj+8XBRlYOn3pRNI3
+         Cz+cIZyUUQ+a96DH/0sQ+wTl2w0MdKU3fNUXB6jYDe3r8JaOHbgtZW/k7t0z0oqRADVL
+         EwprYRIHGwvshE3FYUnOSfwmqcs4MO+U789qOIx6Kyx7+ufR9OOoT8cwUzSLsc6ceZnr
+         CKd67Wi2qULRGtOd8JqgNFhpKDh0RcofslrOQbDHPe6Q9fuHURAuVU348+iQsxvJceYN
+         smOQ==
+X-Gm-Message-State: APjAAAVq7kLPV/CM3Lfk2xNM/0KFihhhD/GHhUcE2OUHe9/HJ62lUao7
+        L2BzSPunDNPth9xTQwEJV53FQM2r/4uKbNGOgYJHXw==
+X-Google-Smtp-Source: APXvYqzQvL12Vmh98kaZwm/NhyJvlTM/jFjgLBeBjdYfzN4YjXY35S2VO2Mp6wfHK8fylskjf+gdav+bJiwhqgNKMgA=
+X-Received: by 2002:a5b:489:: with SMTP id n9mr4907888ybp.395.1578515151988;
+ Wed, 08 Jan 2020 12:25:51 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <2A66F154-7F54-4856-B6ED-E787EE215631@fb.com>
-User-Agent: NeoMutt/20180223
+References: <20200107185701.137063-1-edumazet@google.com> <393ec56d-5d37-ac75-13af-25ade6aabac8@gmail.com>
+In-Reply-To: <393ec56d-5d37-ac75-13af-25ade6aabac8@gmail.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Wed, 8 Jan 2020 12:25:40 -0800
+Message-ID: <CANn89iKD6DSnz-QdBMYgm=1N2V7UZpCD3TiB+yTO_tGu7XKReg@mail.gmail.com>
+Subject: Re: [PATCH net] net: usb: lan78xx: fix possible skb leak
+To:     RENARD Pierre-Francois <pfrenard@gmail.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Stefan Wahren <stefan.wahren@i2se.com>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 08, 2020 at 07:10:59PM +0000, Song Liu wrote:
-> 
-> 
-> > On Jan 7, 2020, at 11:25 PM, Alexei Starovoitov <ast@kernel.org> wrote:
-> > 
-> > New llvm and old llvm with libbpf help produce BTF that distinguish global and
-> > static functions. Unlike arguments of static function the arguments of global
-> > functions cannot be removed or optimized away by llvm. The compiler has to use
-> > exactly the arguments specified in a function prototype. The argument type
-> > information allows the verifier validate each global function independently.
-> > For now only supported argument types are pointer to context and scalars. In
-> > the future pointers to structures, sizes, pointer to packet data can be
-> > supported as well. Consider the following example:
-> 
-> [...]
-> 
-> > The type information and static/global kind is preserved after the verification
-> > hence in the above example global function f2() and f3() can be replaced later
-> > by equivalent functions with the same types that are loaded and verified later
-> > without affecting safety of this main() program. Such replacement (re-linking)
-> > of global functions is a subject of future patches.
-> > 
-> > Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+On Wed, Jan 8, 2020 at 11:13 AM RENARD Pierre-Francois
+<pfrenard@gmail.com> wrote:
+>
+> I tried with last rawhide kernel 5.5.0-0.rc5.git0.1.local.fc32.aarch64
+> I compiled it this night. (I check it includes the patch for lan78xx.c )
+>
+> Both tests (scp and nfs ) are failing the same way as before.
+>
+> Fox
+>
+
+Please report the output of " grep skb /proc/slabinfo"
+
+before and after your test.
+
+The symptoms (of retransmit being not attempted by TCP) match the fact
+that skb(s) is(are) not freed by a driver (or some layer)
+
+When TCP detects this (function skb_still_in_host_queue()), one SNMP
+counter is incremented
+
+nstat -a | grep TCPSpuriousRtxHostQueues
+
+Thanks.
+
+>
+>
+> On 1/7/20 7:57 PM, Eric Dumazet wrote:
+> > If skb_linearize() fails, we need to free the skb.
+> >
+> > TSO makes skb bigger, and this bug might be the reason
+> > Raspberry Pi 3B+ users had to disable TSO.
+> >
+> > Fixes: 55d7de9de6c3 ("Microchip's LAN7800 family USB 2/3 to 10/100/1000 Ethernet device driver")
+> > Signed-off-by: Eric Dumazet <edumazet@google.com>
+> > Reported-by: RENARD Pierre-Francois <pfrenard@gmail.com>
+> > Cc: Stefan Wahren <stefan.wahren@i2se.com>
+> > Cc: Woojung Huh <woojung.huh@microchip.com>
+> > Cc: Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>
 > > ---
-> > include/linux/bpf.h          |   7 +-
-> > include/linux/bpf_verifier.h |   7 +-
-> > include/uapi/linux/btf.h     |   6 +
-> > kernel/bpf/btf.c             | 147 +++++++++++++++++-----
-> > kernel/bpf/verifier.c        | 228 +++++++++++++++++++++++++++--------
-> > 5 files changed, 317 insertions(+), 78 deletions(-)
-> > 
-> > diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-> > index b14e51d56a82..ceb5b6c13abc 100644
-> > --- a/include/linux/bpf.h
-> > +++ b/include/linux/bpf.h
-> > @@ -558,6 +558,7 @@ static inline void bpf_dispatcher_change_prog(struct bpf_dispatcher *d,
-> > #endif
-> > 
-> > struct bpf_func_info_aux {
-> > +	u32 linkage;
-> 
-> How about we use u16 or even u8 for linkage? We are using BTF_INFO_VLEN() which 
-> is 16-bit long. Maybe we should save some bits for future extensions?
-
-sure. u16 is fine.
-Will also introduce btf_func_kind() helper to avoid misleading BTF_INFO_VLEN macro.
-
-> > -int btf_check_func_arg_match(struct bpf_verifier_env *env, int subprog)
-> > +/* Compare BTF of a function with given bpf_reg_state */
-> > +int btf_check_func_arg_match(struct bpf_verifier_env *env, int subprog,
-> > +			     struct bpf_reg_state *reg)
-> 
-> I think we need more comments for the retval of btf_check_func_arg_match().
-
-sure.
-
-> > {
-> > -	struct bpf_verifier_state *st = env->cur_state;
-> > -	struct bpf_func_state *func = st->frame[st->curframe];
-> > -	struct bpf_reg_state *reg = func->regs;
-> > 	struct bpf_verifier_log *log = &env->log;
-> > 	struct bpf_prog *prog = env->prog;
-> > 	struct btf *btf = prog->aux->btf;
-> [...]
-> > +
-> > +/* Convert BTF of a function into bpf_reg_state if possible */
-> > +int btf_prepare_func_args(struct bpf_verifier_env *env, int subprog,
-> > +			  struct bpf_reg_state *reg)
-> > +{
-> > +	struct bpf_verifier_log *log = &env->log;
-> > +	struct bpf_prog *prog = env->prog;
-> > +	struct btf *btf = prog->aux->btf;
-> > +	const struct btf_param *args;
-> > +	const struct btf_type *t;
-> > +	u32 i, nargs, btf_id;
-> > +	const char *tname;
-> > +
-> > +	if (!prog->aux->func_info ||
-> > +	    prog->aux->func_info_aux[subprog].linkage != BTF_FUNC_GLOBAL) {
-> > +		bpf_log(log, "Verifier bug\n");
-> 
-> IIUC, this should never happen? Maybe we need more details in the log, and 
-> maybe also WARN_ONCE()?
-
-Should never happen and I think it's pretty clear from the diff, since
-this function is called after == FUNC_GLOBAL check in the caller.
-I didn't add WARN to avoid wasting .text even more here.
-Single 'if' above already feels a bit overly defensive.
-It's not like other cases in the verifier where we have WARN_ONCE.
-Those are for complex things. Here it's one callsite and trivial control flow.
-
-> > +	if (prog->aux->func_info_aux[subprog].unreliable) {
-> > +		bpf_log(log, "Verifier bug in function %s()\n", tname);
-> > +		return -EFAULT;
-> 
-> Why -EFAULT instead of -EINVAL? I think we treat them the same? 
-
-EFAULT is a verifier bug like in all other places in the verifier
-where EFAULT is returned. EINVAL is normal error.
+> >   drivers/net/usb/lan78xx.c | 9 +++------
+> >   1 file changed, 3 insertions(+), 6 deletions(-)
+> >
+> > diff --git a/drivers/net/usb/lan78xx.c b/drivers/net/usb/lan78xx.c
+> > index f940dc6485e56a7e8f905082ce920f5dd83232b0..fb4781080d6dec2af22f41c5e064350ea74130b3 100644
+> > --- a/drivers/net/usb/lan78xx.c
+> > +++ b/drivers/net/usb/lan78xx.c
+> > @@ -2724,11 +2724,6 @@ static int lan78xx_stop(struct net_device *net)
+> >       return 0;
+> >   }
+> >
+> > -static int lan78xx_linearize(struct sk_buff *skb)
+> > -{
+> > -     return skb_linearize(skb);
+> > -}
+> > -
+> >   static struct sk_buff *lan78xx_tx_prep(struct lan78xx_net *dev,
+> >                                      struct sk_buff *skb, gfp_t flags)
+> >   {
+> > @@ -2740,8 +2735,10 @@ static struct sk_buff *lan78xx_tx_prep(struct lan78xx_net *dev,
+> >               return NULL;
+> >       }
+> >
+> > -     if (lan78xx_linearize(skb) < 0)
+> > +     if (skb_linearize(skb)) {
+> > +             dev_kfree_skb_any(skb);
+> >               return NULL;
+> > +     }
+> >
+> >       tx_cmd_a = (u32)(skb->len & TX_CMD_A_LEN_MASK_) | TX_CMD_A_FCS_;
+> >
+>
+>
