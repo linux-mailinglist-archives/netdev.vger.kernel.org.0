@@ -2,162 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B7129134A1E
-	for <lists+netdev@lfdr.de>; Wed,  8 Jan 2020 19:06:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 38DDF134A57
+	for <lists+netdev@lfdr.de>; Wed,  8 Jan 2020 19:17:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730109AbgAHSGN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jan 2020 13:06:13 -0500
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:45130 "EHLO
-        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1730100AbgAHSGM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jan 2020 13:06:12 -0500
-Received: from Internal Mail-Server by MTLPINE1 (envelope-from yishaih@mellanox.com)
-        with ESMTPS (AES256-SHA encrypted); 8 Jan 2020 20:06:05 +0200
-Received: from vnc17.mtl.labs.mlnx (vnc17.mtl.labs.mlnx [10.7.2.17])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 008I65Eu030047;
-        Wed, 8 Jan 2020 20:06:05 +0200
-Received: from vnc17.mtl.labs.mlnx (vnc17.mtl.labs.mlnx [127.0.0.1])
-        by vnc17.mtl.labs.mlnx (8.13.8/8.13.8) with ESMTP id 008I65u4022359;
-        Wed, 8 Jan 2020 20:06:05 +0200
-Received: (from yishaih@localhost)
-        by vnc17.mtl.labs.mlnx (8.13.8/8.13.8/Submit) id 008I65xB022357;
-        Wed, 8 Jan 2020 20:06:05 +0200
-From:   Yishai Hadas <yishaih@mellanox.com>
-To:     linux-rdma@vger.kernel.org, jgg@mellanox.com, dledford@redhat.com
-Cc:     saeedm@mellanox.com, yishaih@mellanox.com, maorg@mellanox.com,
-        michaelgur@mellanox.com, netdev@vger.kernel.org
-Subject: [PATCH rdma-next 10/10] RDMA/mlx5: Set relaxed ordering when requested
-Date:   Wed,  8 Jan 2020 20:05:40 +0200
-Message-Id: <1578506740-22188-11-git-send-email-yishaih@mellanox.com>
-X-Mailer: git-send-email 1.8.2.3
-In-Reply-To: <1578506740-22188-1-git-send-email-yishaih@mellanox.com>
-References: <1578506740-22188-1-git-send-email-yishaih@mellanox.com>
+        id S1728989AbgAHSRy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jan 2020 13:17:54 -0500
+Received: from www62.your-server.de ([213.133.104.62]:55474 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727507AbgAHSRy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jan 2020 13:17:54 -0500
+Received: from sslproxy06.your-server.de ([78.46.172.3])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1ipFtw-0008N1-I5; Wed, 08 Jan 2020 19:17:52 +0100
+Received: from [2001:1620:665:0:5795:5b0a:e5d5:5944] (helo=linux-3.fritz.box)
+        by sslproxy06.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1ipFtw-000387-9i; Wed, 08 Jan 2020 19:17:52 +0100
+Subject: Re: [PATCH] bpf/sockmap: read psock ingress_msg before
+ sk_receive_queue
+To:     John Fastabend <john.fastabend@gmail.com>,
+        Lingpeng Chen <forrest0579@gmail.com>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org
+References: <5e15526d2ebb6_68832ae93d7145c08c@john-XPS-13-9370.notmuch>
+ <20200108045708.31240-1-forrest0579@gmail.com>
+ <20200108170259.GA7665@linux-3.fritz.box>
+ <5e161913342f2_67ea2afd262665bc1c@john-XPS-13-9370.notmuch>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <e40286e9-107c-4af9-e596-4af426408eca@iogearbox.net>
+Date:   Wed, 8 Jan 2020 19:17:49 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
+MIME-Version: 1.0
+In-Reply-To: <5e161913342f2_67ea2afd262665bc1c@john-XPS-13-9370.notmuch>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.101.4/25688/Wed Jan  8 10:56:24 2020)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Michael Guralnik <michaelgur@mellanox.com>
+On 1/8/20 7:01 PM, John Fastabend wrote:
+> Daniel Borkmann wrote:
+>> On Wed, Jan 08, 2020 at 12:57:08PM +0800, Lingpeng Chen wrote:
+>>> Right now in tcp_bpf_recvmsg, sock read data first from sk_receive_queue
+>>> if not empty than psock->ingress_msg otherwise. If a FIN packet arrives
+>>> and there's also some data in psock->ingress_msg, the data in
+>>> psock->ingress_msg will be purged. It is always happen when request to a
+>>> HTTP1.0 server like python SimpleHTTPServer since the server send FIN
+>>> packet after data is sent out.
+>>>
+>>> Fixes: 604326b41a6fb ("bpf, sockmap: convert to generic sk_msg interface")
+>>> Reported-by: Arika Chen <eaglesora@gmail.com>
+>>> Suggested-by: Arika Chen <eaglesora@gmail.com>
+>>> Signed-off-by: Lingpeng Chen <forrest0579@gmail.com>
+>>> Signed-off-by: John Fastabend <john.fastabend@gmail.com>
+>>> ---
+>>>   net/ipv4/tcp_bpf.c | 7 ++++---
+>>>   1 file changed, 4 insertions(+), 3 deletions(-)
+>>>
+>>> diff --git a/net/ipv4/tcp_bpf.c b/net/ipv4/tcp_bpf.c
+>>> index e38705165ac9..f7e902868fce 100644
+>>> --- a/net/ipv4/tcp_bpf.c
+>>> +++ b/net/ipv4/tcp_bpf.c
+>>> @@ -123,12 +123,13 @@ int tcp_bpf_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
+>>>   
+>>>   	if (unlikely(flags & MSG_ERRQUEUE))
+>>>   		return inet_recv_error(sk, msg, len, addr_len);
+>>
+>> Shouldn't we also move the error queue handling below the psock test as
+>> well and let tcp_recvmsg() natively do it in case of !psock?
+>>
+> 
+> You mean the MSG_ERRQUEUE flag handling? If the user sets MSG_ERRQUEUE
+> they expect to receive any queued errors it would be wrong to return
+> psock data in this case if psock is attached and has data on queue and
+> user passes MSG_ERRQUEUE flag.
+> 
+>   MSG_ERRQUEUE (since Linux 2.2)
+>    This flag specifies that queued errors should be received from the socket
+>    error queue.  The error is passed in an ancillary message with a type
+>    dependent on the protocol (for IPv4 IP_RECVERR).  The user should supply
+>    a buffer of sufficient size. See cmsg(3) and ip(7) for more information.
+>    The payload of the original packet that caused the error is passed as
+>    normal data via msg_iovec. The original destination address of the
+>    datagram that caused the error is supplied via msg_name.
+> 
+> I believe it needs to be where it is.
 
-Enable relaxed ordering in mkey context when requested.
-As relaxed ordering is not currently supported in UMR, disable UMR usage
-for relaxed ordering MRs.
+I meant that it should have looked as follows (aka moving both below the
+psock test) ...
 
-Signed-off-by: Michael Guralnik <michaelgur@mellanox.com>
-Signed-off-by: Yishai Hadas <yishaih@mellanox.com>
----
- drivers/infiniband/hw/mlx5/mlx5_ib.h |  5 ++++-
- drivers/infiniband/hw/mlx5/mr.c      | 19 +++++++++++++++++--
- drivers/infiniband/hw/mlx5/odp.c     |  2 +-
- drivers/infiniband/hw/mlx5/qp.c      |  2 +-
- 4 files changed, 23 insertions(+), 5 deletions(-)
+         psock = sk_psock_get(sk);
+         if (unlikely(!psock))
+             return tcp_recvmsg(sk, msg, len, nonblock, flags, addr_len);
+         if (unlikely(flags & MSG_ERRQUEUE))
+             return inet_recv_error(sk, msg, len, addr_len);
+	if (!skb_queue_empty(&sk->sk_receive_queue) && [...]
 
-diff --git a/drivers/infiniband/hw/mlx5/mlx5_ib.h b/drivers/infiniband/hw/mlx5/mlx5_ib.h
-index b06f32f..3f0a55c 100644
---- a/drivers/infiniband/hw/mlx5/mlx5_ib.h
-+++ b/drivers/infiniband/hw/mlx5/mlx5_ib.h
-@@ -1507,7 +1507,7 @@ int bfregn_to_uar_index(struct mlx5_ib_dev *dev,
- u16 mlx5_ib_get_counters_id(struct mlx5_ib_dev *dev, u8 port_num);
- 
- static inline bool mlx5_ib_can_use_umr(struct mlx5_ib_dev *dev,
--				       bool do_modify_atomic)
-+				       bool do_modify_atomic, int access_flags)
- {
- 	if (MLX5_CAP_GEN(dev->mdev, umr_modify_entity_size_disabled))
- 		return false;
-@@ -1517,6 +1517,9 @@ static inline bool mlx5_ib_can_use_umr(struct mlx5_ib_dev *dev,
- 	    MLX5_CAP_GEN(dev->mdev, umr_modify_atomic_disabled))
- 		return false;
- 
-+	if (access_flags & IB_ACCESS_RELAXED_ORDERING)
-+		return false;
-+
- 	return true;
- }
- 
-diff --git a/drivers/infiniband/hw/mlx5/mr.c b/drivers/infiniband/hw/mlx5/mr.c
-index ea8bfc3..75b825a 100644
---- a/drivers/infiniband/hw/mlx5/mr.c
-+++ b/drivers/infiniband/hw/mlx5/mr.c
-@@ -661,12 +661,21 @@ int mlx5_mr_cache_cleanup(struct mlx5_ib_dev *dev)
- static void set_mkc_access_pd_addr_fields(void *mkc, int acc, u64 start_addr,
- 					  struct ib_pd *pd)
- {
-+	struct mlx5_ib_dev *dev = to_mdev(pd->device);
-+
- 	MLX5_SET(mkc, mkc, a, !!(acc & IB_ACCESS_REMOTE_ATOMIC));
- 	MLX5_SET(mkc, mkc, rw, !!(acc & IB_ACCESS_REMOTE_WRITE));
- 	MLX5_SET(mkc, mkc, rr, !!(acc & IB_ACCESS_REMOTE_READ));
- 	MLX5_SET(mkc, mkc, lw, !!(acc & IB_ACCESS_LOCAL_WRITE));
- 	MLX5_SET(mkc, mkc, lr, 1);
- 
-+	if (MLX5_CAP_GEN(dev->mdev, relaxed_ordering_write))
-+		MLX5_SET(mkc, mkc, relaxed_ordering_write,
-+			 !!(acc & IB_ACCESS_RELAXED_ORDERING));
-+	if (MLX5_CAP_GEN(dev->mdev, relaxed_ordering_read))
-+		MLX5_SET(mkc, mkc, relaxed_ordering_read,
-+			 !!(acc & IB_ACCESS_RELAXED_ORDERING));
-+
- 	MLX5_SET(mkc, mkc, pd, to_mpd(pd)->pdn);
- 	MLX5_SET(mkc, mkc, qpn, 0xffffff);
- 	MLX5_SET64(mkc, mkc, start_addr, start_addr);
-@@ -1075,6 +1084,12 @@ static struct mlx5_ib_mr *reg_create(struct ib_mr *ibmr, struct ib_pd *pd,
- 	mkc = MLX5_ADDR_OF(create_mkey_in, in, memory_key_mkey_entry);
- 	MLX5_SET(mkc, mkc, free, !populate);
- 	MLX5_SET(mkc, mkc, access_mode_1_0, MLX5_MKC_ACCESS_MODE_MTT);
-+	if (MLX5_CAP_GEN(dev->mdev, relaxed_ordering_write))
-+		MLX5_SET(mkc, mkc, relaxed_ordering_write,
-+			 !!(access_flags & IB_ACCESS_RELAXED_ORDERING));
-+	if (MLX5_CAP_GEN(dev->mdev, relaxed_ordering_read))
-+		MLX5_SET(mkc, mkc, relaxed_ordering_read,
-+			 !!(access_flags & IB_ACCESS_RELAXED_ORDERING));
- 	MLX5_SET(mkc, mkc, a, !!(access_flags & IB_ACCESS_REMOTE_ATOMIC));
- 	MLX5_SET(mkc, mkc, rw, !!(access_flags & IB_ACCESS_REMOTE_WRITE));
- 	MLX5_SET(mkc, mkc, rr, !!(access_flags & IB_ACCESS_REMOTE_READ));
-@@ -1263,7 +1278,7 @@ struct ib_mr *mlx5_ib_reg_user_mr(struct ib_pd *pd, u64 start, u64 length,
- 	if (err < 0)
- 		return ERR_PTR(err);
- 
--	use_umr = mlx5_ib_can_use_umr(dev, true);
-+	use_umr = mlx5_ib_can_use_umr(dev, true, access_flags);
- 
- 	if (order <= mr_cache_max_order(dev) && use_umr) {
- 		mr = alloc_mr_from_cache(pd, umem, virt_addr, length, ncont,
-@@ -1431,7 +1446,7 @@ int mlx5_ib_rereg_user_mr(struct ib_mr *ib_mr, int flags, u64 start,
- 			goto err;
- 	}
- 
--	if (!mlx5_ib_can_use_umr(dev, true) ||
-+	if (!mlx5_ib_can_use_umr(dev, true, access_flags) ||
- 	    (flags & IB_MR_REREG_TRANS && !use_umr_mtt_update(mr, addr, len))) {
- 		/*
- 		 * UMR can't be used - MKey needs to be replaced.
-diff --git a/drivers/infiniband/hw/mlx5/odp.c b/drivers/infiniband/hw/mlx5/odp.c
-index f924250..bed81dc 100644
---- a/drivers/infiniband/hw/mlx5/odp.c
-+++ b/drivers/infiniband/hw/mlx5/odp.c
-@@ -342,7 +342,7 @@ void mlx5_ib_internal_fill_odp_caps(struct mlx5_ib_dev *dev)
- 	memset(caps, 0, sizeof(*caps));
- 
- 	if (!MLX5_CAP_GEN(dev->mdev, pg) ||
--	    !mlx5_ib_can_use_umr(dev, true))
-+	    !mlx5_ib_can_use_umr(dev, true, 0))
- 		return;
- 
- 	caps->general_caps = IB_ODP_SUPPORT;
-diff --git a/drivers/infiniband/hw/mlx5/qp.c b/drivers/infiniband/hw/mlx5/qp.c
-index 7e51870..76e30ad 100644
---- a/drivers/infiniband/hw/mlx5/qp.c
-+++ b/drivers/infiniband/hw/mlx5/qp.c
-@@ -4823,7 +4823,7 @@ static int set_reg_wr(struct mlx5_ib_qp *qp,
- 	bool atomic = wr->access & IB_ACCESS_REMOTE_ATOMIC;
- 	u8 flags = 0;
- 
--	if (!mlx5_ib_can_use_umr(dev, atomic)) {
-+	if (!mlx5_ib_can_use_umr(dev, atomic, wr->access)) {
- 		mlx5_ib_warn(to_mdev(qp->ibqp.device),
- 			     "Fast update of %s for MR is disabled\n",
- 			     (MLX5_CAP_GEN(dev->mdev,
--- 
-1.8.3.1
+... since when detached it's handled already via tcp_recvmsg() internals.
+
+>>> -	if (!skb_queue_empty(&sk->sk_receive_queue))
+>>> -		return tcp_recvmsg(sk, msg, len, nonblock, flags, addr_len);
+>>>   
+>>>   	psock = sk_psock_get(sk);
+>>>   	if (unlikely(!psock))
+>>>   		return tcp_recvmsg(sk, msg, len, nonblock, flags, addr_len);
+>>> +	if (!skb_queue_empty(&sk->sk_receive_queue) &&
+>>> +	    sk_psock_queue_empty(psock))
+>>> +		return tcp_recvmsg(sk, msg, len, nonblock, flags, addr_len);
+>>>   	lock_sock(sk);
+>>>   msg_bytes_ready:
+>>>   	copied = __tcp_bpf_recvmsg(sk, psock, msg, len, flags);
+>>> @@ -139,7 +140,7 @@ int tcp_bpf_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
+>>>   		timeo = sock_rcvtimeo(sk, nonblock);
+>>>   		data = tcp_bpf_wait_data(sk, psock, flags, timeo, &err);
+>>>   		if (data) {
+>>> -			if (skb_queue_empty(&sk->sk_receive_queue))
+>>> +			if (!sk_psock_queue_empty(psock))
+>>>   				goto msg_bytes_ready;
+>>>   			release_sock(sk);
+>>>   			sk_psock_put(sk, psock);
+>>> -- 
+>>> 2.17.1
+>>>
+> 
+> 
 
