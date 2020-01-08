@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E054134EB2
-	for <lists+netdev@lfdr.de>; Wed,  8 Jan 2020 22:16:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DB051134EB5
+	for <lists+netdev@lfdr.de>; Wed,  8 Jan 2020 22:16:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727429AbgAHVQF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jan 2020 16:16:05 -0500
-Received: from mail-io1-f67.google.com ([209.85.166.67]:35796 "EHLO
-        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726836AbgAHVQF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jan 2020 16:16:05 -0500
-Received: by mail-io1-f67.google.com with SMTP id h8so4837473iob.2;
-        Wed, 08 Jan 2020 13:16:05 -0800 (PST)
+        id S1727484AbgAHVQY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jan 2020 16:16:24 -0500
+Received: from mail-il1-f193.google.com ([209.85.166.193]:37214 "EHLO
+        mail-il1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726836AbgAHVQY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jan 2020 16:16:24 -0500
+Received: by mail-il1-f193.google.com with SMTP id t8so3908506iln.4;
+        Wed, 08 Jan 2020 13:16:23 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:from:to:cc:date:message-id:in-reply-to:references
          :user-agent:mime-version:content-transfer-encoding;
-        bh=HW7dGFRN4q8bVZHBetakZ6zy0wQpBxJQHxmfLpTAask=;
-        b=JbP+xeCvCBV0fUzxT0Z0He+ZVY2XR3uiUCiTYzgKhIr2tgVzx12O9F8wPnt3vplWQS
-         WU1KbPFYf4+fclhsaJeaDzYMRDSr3N+ESmAEIUCFSzC9iXIxPB2F8xLhP4MBoA/hRSWV
-         7Dingq1msS4AqeiKtDU1pege/lu9/K8nRCMAxiHJf/dW3XBIJ/xvSpnWvVcR7Wo5yKGH
-         e4gcushclqiEwkqW2ubs++igPTfVdgASmXYXdF2V65sGvc3pg0QAJx9D7X72v5ruMBA1
-         8MB8AbHIZw7TJrByJSGDW1WaWRFM6SL6sF2t7TrRDpelvcfkMh7sAwNzK2hVyg2bbEYg
-         CuwQ==
+        bh=m8Rchxp7WynrVrNQW7gz1KcCJvgeZh/2BETow1fq1Bo=;
+        b=QqoQBK2bwdHuoMAaimQOxerVbNsi3Px0z5fL7uQStVjOYFThjmYpGsflbYQ8WpzBA9
+         qlqk9seUe0pi1gaoOGZ921XYu6osXCCnFLeZIuEE3AeIhO+g0P7azgC67qcOsYAs4EbY
+         uIshlgN+ptvIT1ZjyEreSn2LnBc0Dl1vF+kZ5NVcfhbcGx6NFN+/ECqVK/8gTOW3nmDa
+         R2i56OKSSoySGNKLUK5CaByP8VRZ/akk1wmeyC7WL5GMawgew8dcIzId/A3CaOhLdUPo
+         l+3nggYaJmX6zt3qaymCWhc32I/tZRnjXki49E5qwkcwsuoL8E5eX7RDNb/sAUGl3DBI
+         WtYA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:from:to:cc:date:message-id:in-reply-to
          :references:user-agent:mime-version:content-transfer-encoding;
-        bh=HW7dGFRN4q8bVZHBetakZ6zy0wQpBxJQHxmfLpTAask=;
-        b=Xnz0J3FrWmi+m0M00exeQzsLC1fvsRRSEQhN5g0G/PD1O7Ik3+Ua26Mq7WtQCGzvL3
-         D0ijpl7iZFEZnXGrUQFTo/sVziHkRjNydy8475v9L5A7bJ43cLxwAq/IDhcbbxGek2Lc
-         Hql67IhAWhdy/YrNTivxXBWQsGh3f5ZzCMBM1+1NlKtUpGtJ0vSpYxWJtpWyIJ/6s8q+
-         mVCMzojT5HrM7zlttOMg7JxNSdPLA0VlnXyEGOqfj4QmT+IOdqBrRVqmPXOyanCrsfSl
-         uVqbneQ7/na24wggtbGlIZAcL+kwgt8PO/wl5dQwsAWhi0zpCpOWM7IWseULjekcg7Jr
-         16ew==
-X-Gm-Message-State: APjAAAWLWHTWXRwMfo6CjRc+5i7JVp71B8SCswl0oV5JDjLQQ5bGmuNF
-        hu2bb0SL//wI1uG3ArfSAr19/fxi
-X-Google-Smtp-Source: APXvYqxrAz+2+NHfFm0dIV73z87vKm/FbqDyeTNBvHbNH65M+DoitYwuv2iFN8i4AXMe1LkxVjL8Dw==
-X-Received: by 2002:a5d:8353:: with SMTP id q19mr4904287ior.163.1578518164602;
-        Wed, 08 Jan 2020 13:16:04 -0800 (PST)
+        bh=m8Rchxp7WynrVrNQW7gz1KcCJvgeZh/2BETow1fq1Bo=;
+        b=HBbtowahChIcy9DRF7g24lErfy0+QwB+iPEdr/rzIcBGd6gD7We1pqjjK4t8NqCpS8
+         SS8VozMSccZzZ7eYgj4zxdEk7eI+Y5fN/5COv9vrQEQIPF/1UqeACOW8AlaHnpf6Defi
+         5BQk0MsYpRKXMTt3S487hvbz0Kg2xTDa1tFqkSuBd9mLgZkl3/n8Hp2JWUMmGl+pAgy6
+         MB5JsFLjpDkrlmbk3oKWFxWaQKpvwjGmpUQ3R6c1tzGmVJuWLL3EJ9mvXmQX52nKqg2P
+         kImxkxbsFhmR9kWrAYRQsRNU+5uxZV7zzeQ7KMZLHAqVs2yznjGZT5RG5vzpdvpry6aw
+         ugVA==
+X-Gm-Message-State: APjAAAVSZEvDkV3QdLvquZFT+ouze3VY3moXUhWwDiUqNk2n1B0KPKvS
+        pS94Yi4muSwuoD1JqU1eEvjDYEp5
+X-Google-Smtp-Source: APXvYqzr/9d+tadjw2nMeNKOAHWft++tJnwtK6W4m0lHXF08zQkV8JkIWyv+pnuzwuKNBpbmcl/NpA==
+X-Received: by 2002:a92:d5cf:: with SMTP id d15mr5490293ilq.306.1578518183266;
+        Wed, 08 Jan 2020 13:16:23 -0800 (PST)
 Received: from [127.0.1.1] ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id v10sm886889iol.85.2020.01.08.13.15.58
+        by smtp.gmail.com with ESMTPSA id i13sm903229ioi.67.2020.01.08.13.16.16
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 08 Jan 2020 13:16:04 -0800 (PST)
-Subject: [bpf PATCH 7/9] bpf: sockmap/tls,
- skmsg can have wrapped skmsg that needs extra chaining
+        Wed, 08 Jan 2020 13:16:22 -0800 (PST)
+Subject: [bpf PATCH 8/9] bpf: sockmap/tls,
+ tls_push_record can not handle zero length skmsg
 From:   John Fastabend <john.fastabend@gmail.com>
 To:     bpf@vger.kernel.org
 Cc:     netdev@vger.kernel.org, john.fastabend@gmail.com, ast@kernel.org,
         daniel@iogearbox.net
-Date:   Wed, 08 Jan 2020 21:15:52 +0000
-Message-ID: <157851815284.1732.9999561233745329569.stgit@ubuntu3-kvm2>
+Date:   Wed, 08 Jan 2020 21:16:11 +0000
+Message-ID: <157851817088.1732.14988301389495595092.stgit@ubuntu3-kvm2>
 In-Reply-To: <157851776348.1732.12600714815781177085.stgit@ubuntu3-kvm2>
 References: <157851776348.1732.12600714815781177085.stgit@ubuntu3-kvm2>
 User-Agent: StGit/0.17.1-dirty
@@ -63,41 +63,32 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Its possible through a set of push, pop, apply helper calls to construct
-a skmsg, which is just a ring of scatterlist elements, with the start
-value larger than the end value. For example,
+When passed a zero length skmsg tls_push_record() causes a NULL ptr
+deref. To resolve for fixes do a simple length check at start of
+routine.
 
-      end       start
-  |_0_|_1_| ... |_n_|_n+1_|
-
-Where end points at 1 and start points and n so that valid elements is
-the set {n, n+1, 0, 1}.
-
-Currently, because we don't build the correct chain only {n, n+1} will
-be sent. This adds a check and sg_chain call to correctly submit the
-above to the crypto and tls send path.
+To create this case a user can create a BPF program to pop all the
+data off the message then return SK_PASS. Its not a very practical
+or useful thing to do so we mark it unlikely.
 
 Fixes: d3b18ad31f93d ("tls: add bpf support to sk_msg handling")
 Signed-off-by: John Fastabend <john.fastabend@gmail.com>
 ---
- net/tls/tls_sw.c |    6 ++++++
- 1 file changed, 6 insertions(+)
+ net/tls/tls_sw.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
 diff --git a/net/tls/tls_sw.c b/net/tls/tls_sw.c
-index 31f6bbbc8992..21c7725d17ca 100644
+index 21c7725d17ca..0326e916ab01 100644
 --- a/net/tls/tls_sw.c
 +++ b/net/tls/tls_sw.c
-@@ -729,6 +729,12 @@ static int tls_push_record(struct sock *sk, int flags,
- 		sg_mark_end(sk_msg_elem(msg_pl, i));
- 	}
+@@ -680,6 +680,9 @@ static int tls_push_record(struct sock *sk, int flags,
+ 	msg_pl = &rec->msg_plaintext;
+ 	msg_en = &rec->msg_encrypted;
  
-+	if (msg_pl->sg.end < msg_pl->sg.start) {
-+		sg_chain(&msg_pl->sg.data[msg_pl->sg.start],
-+			 MAX_SKB_FRAGS - msg_pl->sg.start + 1,
-+			 msg_pl->sg.data);
-+	}
++	if (unlikely(!msg_pl->sg.size))
++		return 0;
 +
- 	i = msg_pl->sg.start;
- 	sg_chain(rec->sg_aead_in, 2, &msg_pl->sg.data[i]);
- 
+ 	split_point = msg_pl->apply_bytes;
+ 	split = split_point && split_point < msg_pl->sg.size;
+ 	if (unlikely((!split &&
 
