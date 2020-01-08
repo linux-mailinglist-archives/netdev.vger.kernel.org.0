@@ -2,55 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D93D2134EA7
-	for <lists+netdev@lfdr.de>; Wed,  8 Jan 2020 22:14:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BA891134EAA
+	for <lists+netdev@lfdr.de>; Wed,  8 Jan 2020 22:14:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727437AbgAHVOg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jan 2020 16:14:36 -0500
-Received: from mail-io1-f44.google.com ([209.85.166.44]:41332 "EHLO
-        mail-io1-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726836AbgAHVOg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jan 2020 16:14:36 -0500
-Received: by mail-io1-f44.google.com with SMTP id c16so4784097ioo.8;
-        Wed, 08 Jan 2020 13:14:36 -0800 (PST)
+        id S1727358AbgAHVOx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jan 2020 16:14:53 -0500
+Received: from mail-io1-f67.google.com ([209.85.166.67]:41366 "EHLO
+        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726836AbgAHVOx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jan 2020 16:14:53 -0500
+Received: by mail-io1-f67.google.com with SMTP id c16so4784901ioo.8;
+        Wed, 08 Jan 2020 13:14:52 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:from:to:cc:date:message-id:in-reply-to:references
          :user-agent:mime-version:content-transfer-encoding;
-        bh=XO2r01lOBNDBiQXSDfixnJ606GokxgdaQBqmQyr/bDs=;
-        b=GU2OoX1zol0xRDr+Sntblx5PC4N0fXQk0lICdSZo2Qs6EGUqZfE1bcP6WfkEglPxk0
-         VFlz4NAi8CbEiw2x1gpjeHvtuDvBfxJzXGxlkPshGx6H5d4UswrN/V+E2JMNemqU+wZc
-         2RRwNHJxfE2h1vts7OeouIbswjA1Dqi/KJ6yhTrSdvYTn9DIy4ej5KOLIGRjmokl9QTd
-         qFtmOFsiaEe//fKBgMO7QuiRSKkrDq/1fLBBGQLHD274AS972XIW6aO/BWUTsHFuXyBG
-         oWUSa7VYenusLF9mLkYb9T8/rd9Y3OfdGzGinVuvB4qiGsGlvY/gUIhL4mS6QAefh8qc
-         gI7w==
+        bh=TRxE7RDfuYSml0D0IusqQY61z0CPE8spL8tPdO24lwg=;
+        b=B3EzAvZcJpv0qz7V1l+z8gkxismQaCPByV7jXiiKKu4SLbGRR/FvUWEhpOH4tV1Uu2
+         4MgAPrU4aatis1mtuc9B7e228z1xWWWSyuYGV9r3wUhpBKcBrQbKOLJ0ivHejSvst9rs
+         fobfUs4KzByJlZFmwhgynDVNOyp9Jn8WgAOq8OGFzSYqp4EvDHBI0m/q1iJknNXHxP7v
+         jN/RaQnbFVxaRGOCUJACu4klsZhWsSblyQxFxodw7iq5MPkL+BEDdOKMnhjpr+bEe4nX
+         932hlduyugBeeZKaUrVeVXmOh3gmqZKF55e2xAoZpOcQt9thE69mISYVaWaHtcg83OTD
+         3Qiw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:from:to:cc:date:message-id:in-reply-to
          :references:user-agent:mime-version:content-transfer-encoding;
-        bh=XO2r01lOBNDBiQXSDfixnJ606GokxgdaQBqmQyr/bDs=;
-        b=e1pZjSxf599Z3mLBsl/s93NPQ0hlK7POWQDcP5dy+JZlFMYzPQiKM+5KsnVZfzfL6Q
-         O7OivLPKOjBWgdV9xdqtvtleZ/fEHGTcBjFDxApXsnARHJhX0AkBZ1GRllbGxLLaTE+x
-         NZb8iTlXyNFAvlAjmC1l4eohsJY2AtM1mavRhZNbTnvu1rDSf49rpIIj3CjOWsrjMMVC
-         2zeddw1rLad8PSJJbZZfH2BrHHWH81yLhxClJjLQfvJtLU7v43AL1kXGCRxNGavETtw9
-         5FX+pylmOJEVfLP5WlI7w804gW8EP5d41N6ThliPtzkRMunDZMqdb9c4DvyPKXEJ9o/p
-         aNKg==
-X-Gm-Message-State: APjAAAXGHlrduZr5nkty/V3ffwTB+F5zHHjDaWbL0AEK8P81x/vAHf22
-        Qcm5rJ4HR7UyKiYRLULh2MD7Jvzo
-X-Google-Smtp-Source: APXvYqxWsuNbq+D+y5zzDCTdrZ5TpAb6lZSV2uJ9ICG89wthJmqK7P1335uf7Nmw5baqZgHZ490cfQ==
-X-Received: by 2002:a6b:ed15:: with SMTP id n21mr4840178iog.128.1578518074544;
-        Wed, 08 Jan 2020 13:14:34 -0800 (PST)
+        bh=TRxE7RDfuYSml0D0IusqQY61z0CPE8spL8tPdO24lwg=;
+        b=Un/5IR4U95xlS4gxEA3pPIKGSpTQpQAR2gYn22zqihCr6c+3Udr0c5qAzf8+FPnYzW
+         YGCV4wcMW5XWWT8L0QchgN2/pQJwm3JEQH2x56+T3F/4DQIVT+sD61XJfkicJLNniX+v
+         6ut01IB7Cq+3G9FRqe1FfI3wOsIxVcQFBrXBL93YaLQ3kX7Va1mrPXjEXyNTs4OCYtT7
+         T2HLJZfKwyt5OmqK7KrE8w8yZrR0CNy9llruklJbcgFIuJjNwGnJ9HlMi5+yAWvM4K8B
+         KyKnrf7WUO8eEF3/yY1YN9S5Im9VLIZdvJFq/YR5W1tvkJN5dsRih45SvsEeZaTDo3VK
+         gNYQ==
+X-Gm-Message-State: APjAAAUKVwQnJb3FvExPws5Kt7PWG961QHM26pk6x2Qy0cFwZiXqixV8
+        VKJUKV9dgbUJFyqzYEQ/na/JIq/I
+X-Google-Smtp-Source: APXvYqwd3+k3g9LbxdN9D+vjHiO5nb/Jis9a6lJk5DwFwAxbhtKgTkNhVHSHQFKkMSFgJQwdTR/GzQ==
+X-Received: by 2002:a02:b602:: with SMTP id h2mr6090455jam.20.1578518092292;
+        Wed, 08 Jan 2020 13:14:52 -0800 (PST)
 Received: from [127.0.1.1] ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id h6sm911558iom.43.2020.01.08.13.14.27
+        by smtp.gmail.com with ESMTPSA id w16sm1320379ilq.5.2020.01.08.13.14.45
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 08 Jan 2020 13:14:34 -0800 (PST)
-Subject: [bpf PATCH 2/9] bpf: sockmap, ensure sock lock held during tear down
+        Wed, 08 Jan 2020 13:14:51 -0800 (PST)
+Subject: [bpf PATCH 3/9] bpf: sockmap/tls,
+ push write_space updates through ulp updates
 From:   John Fastabend <john.fastabend@gmail.com>
 To:     bpf@vger.kernel.org
 Cc:     netdev@vger.kernel.org, john.fastabend@gmail.com, ast@kernel.org,
         daniel@iogearbox.net
-Date:   Wed, 08 Jan 2020 21:14:23 +0000
-Message-ID: <157851806382.1732.8320375873100251133.stgit@ubuntu3-kvm2>
+Date:   Wed, 08 Jan 2020 21:14:41 +0000
+Message-ID: <157851808101.1732.11616068811837364406.stgit@ubuntu3-kvm2>
 In-Reply-To: <157851776348.1732.12600714815781177085.stgit@ubuntu3-kvm2>
 References: <157851776348.1732.12600714815781177085.stgit@ubuntu3-kvm2>
 User-Agent: StGit/0.17.1-dirty
@@ -62,73 +63,131 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The sock_map_free() and sock_hash_free() paths used to delete sockmap
-and sockhash maps walk the maps and destroy psock and bpf state associated
-with the socks in the map. When done the socks no longer have BPF programs
-attached and will function normally. This can happen while the socks in
-the map are still "live" meaning data may be sent/received during the walk.
+When sockmap sock with TLS enabled is removed we cleanup bpf/psock state
+and call tcp_update_ulp() to push updates to TLS ULP on top. However, we
+don't push the write_space callback up and instead simply overwrite the
+op with the psock stored previous op. This may or may not be correct so
+to ensure we don't overwrite the TLS write space hook pass this field to
+the ULP and have it fixup the ctx.
 
-Currently, though we don't take the sock_lock when the psock and bpf state
-is removed through this path. Specifically, this means we can be writing
-into the ops structure pointers such as sendmsg, sendpage, recvmsg, etc.
-while they are also being called from the networking side. This is not
-safe, we never used proper READ_ONCE/WRITE_ONCE semantics here if we
-believed it was safe. Further its not clear to me its even a good idea
-to try and do this on "live" sockets while networking side might also
-be using the socket. Instead of trying to reason about using the socks
-from both sides lets realize that every use case I'm aware of rarely
-deletes maps, in fact kubernetes/Cilium case builds map at init and
-never tears it down except on errors. So lets do the simple fix and
-grab sock lock.
+This completes a previous fix that pushed the ops through to the ULP
+but at the time missed doing this for write_space, presumably because
+write_space TLS hook was added around the same time.
 
-This patch wraps sock deletes from maps in sock lock and adds some
-annotations so we catch any other cases easier.
-
-Fixes: 604326b41a6fb ("bpf, sockmap: convert to generic sk_msg interface")
+Fixes: 95fa145479fbc ("bpf: sockmap/tls, close can race with map free")
 Signed-off-by: John Fastabend <john.fastabend@gmail.com>
 ---
- net/core/skmsg.c    |    2 ++
- net/core/sock_map.c |    7 ++++++-
- 2 files changed, 8 insertions(+), 1 deletion(-)
+ include/linux/skmsg.h |   12 ++++++++----
+ include/net/tcp.h     |    6 ++++--
+ net/ipv4/tcp_ulp.c    |    6 ++++--
+ net/tls/tls_main.c    |   10 +++++++---
+ 4 files changed, 23 insertions(+), 11 deletions(-)
 
-diff --git a/net/core/skmsg.c b/net/core/skmsg.c
-index ded2d5227678..3866d7e20c07 100644
---- a/net/core/skmsg.c
-+++ b/net/core/skmsg.c
-@@ -594,6 +594,8 @@ EXPORT_SYMBOL_GPL(sk_psock_destroy);
- 
- void sk_psock_drop(struct sock *sk, struct sk_psock *psock)
+diff --git a/include/linux/skmsg.h b/include/linux/skmsg.h
+index b6afe01f8592..14d61bba0b79 100644
+--- a/include/linux/skmsg.h
++++ b/include/linux/skmsg.h
+@@ -359,17 +359,21 @@ static inline void sk_psock_restore_proto(struct sock *sk,
+ 					  struct sk_psock *psock)
  {
-+	sock_owned_by_me(sk);
-+
- 	sk_psock_cork_free(psock);
- 	sk_psock_zap_ingress(psock);
+ 	sk->sk_prot->unhash = psock->saved_unhash;
+-	sk->sk_write_space = psock->saved_write_space;
  
-diff --git a/net/core/sock_map.c b/net/core/sock_map.c
-index eb114ee419b6..8998e356f423 100644
---- a/net/core/sock_map.c
-+++ b/net/core/sock_map.c
-@@ -241,8 +241,11 @@ static void sock_map_free(struct bpf_map *map)
- 		struct sock *sk;
+ 	if (psock->sk_proto) {
+ 		struct inet_connection_sock *icsk = inet_csk(sk);
+ 		bool has_ulp = !!icsk->icsk_ulp_data;
  
- 		sk = xchg(psk, NULL);
--		if (sk)
-+		if (sk) {
-+			lock_sock(sk);
- 			sock_map_unref(sk, psk);
-+			release_sock(sk);
+-		if (has_ulp)
+-			tcp_update_ulp(sk, psock->sk_proto);
+-		else
++		if (has_ulp) {
++			tcp_update_ulp(sk, psock->sk_proto,
++				       psock->saved_write_space);
++		} else {
+ 			sk->sk_prot = psock->sk_proto;
++			sk->sk_write_space = psock->saved_write_space;
 +		}
+ 		psock->sk_proto = NULL;
++	} else {
++		sk->sk_write_space = psock->saved_write_space;
  	}
- 	raw_spin_unlock_bh(&stab->lock);
+ }
+ 
+diff --git a/include/net/tcp.h b/include/net/tcp.h
+index e460ea7f767b..e6f48384dc71 100644
+--- a/include/net/tcp.h
++++ b/include/net/tcp.h
+@@ -2147,7 +2147,8 @@ struct tcp_ulp_ops {
+ 	/* initialize ulp */
+ 	int (*init)(struct sock *sk);
+ 	/* update ulp */
+-	void (*update)(struct sock *sk, struct proto *p);
++	void (*update)(struct sock *sk, struct proto *p,
++		       void (*write_space)(struct sock *sk));
+ 	/* cleanup ulp */
+ 	void (*release)(struct sock *sk);
+ 	/* diagnostic */
+@@ -2162,7 +2163,8 @@ void tcp_unregister_ulp(struct tcp_ulp_ops *type);
+ int tcp_set_ulp(struct sock *sk, const char *name);
+ void tcp_get_available_ulp(char *buf, size_t len);
+ void tcp_cleanup_ulp(struct sock *sk);
+-void tcp_update_ulp(struct sock *sk, struct proto *p);
++void tcp_update_ulp(struct sock *sk, struct proto *p,
++		    void (*write_space)(struct sock *sk));
+ 
+ #define MODULE_ALIAS_TCP_ULP(name)				\
+ 	__MODULE_INFO(alias, alias_userspace, name);		\
+diff --git a/net/ipv4/tcp_ulp.c b/net/ipv4/tcp_ulp.c
+index 12ab5db2b71c..38d3ad141161 100644
+--- a/net/ipv4/tcp_ulp.c
++++ b/net/ipv4/tcp_ulp.c
+@@ -99,17 +99,19 @@ void tcp_get_available_ulp(char *buf, size_t maxlen)
  	rcu_read_unlock();
-@@ -862,7 +865,9 @@ static void sock_hash_free(struct bpf_map *map)
- 		raw_spin_lock_bh(&bucket->lock);
- 		hlist_for_each_entry_safe(elem, node, &bucket->head, node) {
- 			hlist_del_rcu(&elem->node);
-+			lock_sock(elem->sk);
- 			sock_map_unref(elem->sk, elem);
-+			release_sock(elem->sk);
- 		}
- 		raw_spin_unlock_bh(&bucket->lock);
+ }
+ 
+-void tcp_update_ulp(struct sock *sk, struct proto *proto)
++void tcp_update_ulp(struct sock *sk, struct proto *proto,
++		    void (*write_space)(struct sock *sk))
+ {
+ 	struct inet_connection_sock *icsk = inet_csk(sk);
+ 
+ 	if (!icsk->icsk_ulp_ops) {
++		sk->sk_write_space = write_space;
+ 		sk->sk_prot = proto;
+ 		return;
  	}
+ 
+ 	if (icsk->icsk_ulp_ops->update)
+-		icsk->icsk_ulp_ops->update(sk, proto);
++		icsk->icsk_ulp_ops->update(sk, proto, write_space);
+ }
+ 
+ void tcp_cleanup_ulp(struct sock *sk)
+diff --git a/net/tls/tls_main.c b/net/tls/tls_main.c
+index dac24c7aa7d4..94774c0e5ff3 100644
+--- a/net/tls/tls_main.c
++++ b/net/tls/tls_main.c
+@@ -732,15 +732,19 @@ static int tls_init(struct sock *sk)
+ 	return rc;
+ }
+ 
+-static void tls_update(struct sock *sk, struct proto *p)
++static void tls_update(struct sock *sk, struct proto *p,
++		       void (*write_space)(struct sock *sk))
+ {
+ 	struct tls_context *ctx;
+ 
+ 	ctx = tls_get_ctx(sk);
+-	if (likely(ctx))
++	if (likely(ctx)) {
++		ctx->sk_write_space = write_space;
+ 		ctx->sk_proto = p;
+-	else
++	} else {
+ 		sk->sk_prot = p;
++		sk->sk_write_space = write_space;
++	}
+ }
+ 
+ static int tls_get_info(const struct sock *sk, struct sk_buff *skb)
 
