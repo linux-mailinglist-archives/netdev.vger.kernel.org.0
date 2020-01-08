@@ -2,113 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8BCE313472D
-	for <lists+netdev@lfdr.de>; Wed,  8 Jan 2020 17:07:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0299F134745
+	for <lists+netdev@lfdr.de>; Wed,  8 Jan 2020 17:10:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729016AbgAHQGc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jan 2020 11:06:32 -0500
-Received: from dispatch1-us1.ppe-hosted.com ([148.163.129.52]:43604 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727606AbgAHQGb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jan 2020 11:06:31 -0500
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1-us3.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 45A7260007C;
-        Wed,  8 Jan 2020 16:06:29 +0000 (UTC)
-Received: from amm-opti7060.uk.solarflarecom.com (10.17.20.147) by
- ukex01.SolarFlarecom.com (10.17.10.4) with Microsoft SMTP Server (TLS) id
- 15.0.1395.4; Wed, 8 Jan 2020 16:06:24 +0000
-From:   "Alex Maftei (amaftei)" <amaftei@solarflare.com>
-Subject: [PATCH net-next 00/14] sfc: code refactoring
-To:     <netdev@vger.kernel.org>, <davem@davemloft.net>
-CC:     <linux-net-drivers@solarflare.com>, <scrum-linux@solarflare.com>
-Message-ID: <a0cfb828-b98e-3a63-15d9-592675e81b5f@solarflare.com>
-Date:   Wed, 8 Jan 2020 16:06:20 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        id S1727763AbgAHQKb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jan 2020 11:10:31 -0500
+Received: from mail-am6eur05on2099.outbound.protection.outlook.com ([40.107.22.99]:13928
+        "EHLO EUR05-AM6-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727127AbgAHQKa (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 8 Jan 2020 11:10:30 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ZZsDtYVnodN7FymDNX88l22aETsfHoy7OaHd1LOUKwxwRPQi2S7Vi21Eg9p695W0aRsZwhgqGEBJtyHX+yOK/eOAmOBKjwHr7veg6cpNHRjzqvXYLu4ecT0Lr9hQk7DTtp7LVKuPkLONabD4XQgPBsOvPgcqtXrMGhQzdPy4/9xFWcfNzPNmE1V9uTQtzsRC+9K1qGAckumzok7BumJ4B69FE8eszwxLuCLIq3zqmWzV4shj4MWHd8G8UiCXkgVsIsjwvSWlMplIbQ3Fl+t4w0sQt3oPnGxJANlyUPVeWFUL2UFWP6alYGGRBocdHSS1oI97lEOynMvgybuc7gHckA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=N3yKSQIsj8F3huyV+KmT9VyryTVpJf+903b8XMB3VvA=;
+ b=Ci8pob9cPVd/o7YZr0B/5z46Cc3ARkzp6UYcUyuoQSfyhEGg4cK+puwwUObpMhQHVqvdTqfcsum8TC3sjn9V17+nfW9d9otjcSvU2ouBw4D6uoP2xZkJ5l+6NDKLtDfSXYIDwCk/NnDyXdM7pxK0hTNquUzCjaOiYLW93ZoBwJmjb4NcUpvP8hFAMt5pGFj6Gsr965cfJr+M+2g80anW1HGItQOL3ZjaDf/FN0fl9AesNpJ2BVDH5JavzdtiPCTwV7neaSf4C87qL0yY8o9cJBP2gm7qVqtk+JXH4JCi2qEb+fo9MLnhGIXYw+JJXtFDm7MhaMUl542scnmQ1Tqvxg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nokia.com; dmarc=pass action=none header.from=nokia.com;
+ dkim=pass header.d=nokia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nokia.onmicrosoft.com;
+ s=selector1-nokia-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=N3yKSQIsj8F3huyV+KmT9VyryTVpJf+903b8XMB3VvA=;
+ b=fWs914g+oCWrHMQa3CIF6ceruJi1Zpis8qav68VGJamXqVQlW9Z+1SlA/7DSOdulj/aqU6WHKJXGnrN5jd5sWmlMnd9R15d+g6OEe+fub5nlTyk7Xk1bpLdKafCU/SWotChw8aMD1y/pFf57xj4xgY2BVeFJKfa/cpd8G+0ibto=
+Authentication-Results: spf=none (sender IP is )
+ smtp.mailfrom=alexander.sverdlin@nokia.com; 
+Received: from VI1PR07MB5040.eurprd07.prod.outlook.com (20.177.203.20) by
+ VI1PR07MB3870.eurprd07.prod.outlook.com (52.134.26.148) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2644.5; Wed, 8 Jan 2020 16:10:27 +0000
+Received: from VI1PR07MB5040.eurprd07.prod.outlook.com
+ ([fe80::20c4:7ce8:f735:316e]) by VI1PR07MB5040.eurprd07.prod.outlook.com
+ ([fe80::20c4:7ce8:f735:316e%2]) with mapi id 15.20.2644.006; Wed, 8 Jan 2020
+ 16:10:27 +0000
+From:   Alexander X Sverdlin <alexander.sverdlin@nokia.com>
+To:     devel@driverdev.osuosl.org
+Cc:     Alexander Sverdlin <alexander.sverdlin@nokia.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Aaro Koskinen <aaro.koskinen@iki.fi>,
+        Ralf Baechle <ralf@linux-mips.org>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Subject: [PATCH] staging: octeon: repair "fixed-link" support
+Date:   Wed,  8 Jan 2020 17:09:56 +0100
+Message-Id: <20200108160957.253567-1-alexander.sverdlin@nokia.com>
+X-Mailer: git-send-email 2.24.0
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: HE1P192CA0020.EURP192.PROD.OUTLOOK.COM (2603:10a6:3:fe::30)
+ To VI1PR07MB5040.eurprd07.prod.outlook.com (2603:10a6:803:9c::20)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="windows-1252"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.17.20.147]
-X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
- ukex01.SolarFlarecom.com (10.17.10.4)
-X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1010-25154.003
-X-TM-AS-Result: No-1.178800-8.000000-10
-X-TMASE-MatchedRID: zZPFt0T/L0VD/MGHLum03pxVZzZr7+O7DmTV5r5yWnp+SLLtNOiBhkFG
-        uw+l+IJd6Efa2in+vIv5fCAmw1KRHEgMxOkBoMP0xi///JpaHQMvV5f7P0HVDAVwF1Qcvctuouh
-        IsT8EDFmt2/peTn4i5BRRlRwitBdJNo3mPlHYPyKolIr4dI9j7+lUxvXGcRIycBqXYDUNCaz+bp
-        nisGGokKdepjGFSN7iU8PGMvdw2WyjxYyRBa/qJX3mXSdV7KK4mVLlQk0G3GfCttcwYNipX6Lm7
-        9W+wVodlSOQ4E0tjFBKeJhVFbsv9BpQNTEm3YowJbSz0JaefOaMTlXmNyEl09MIMg/A6cb6iOWx
-        zLtVQJAYd5oLNfLxtUSnXm+74riPfObqGK9JplminaV/dK0aEhK3Vty8oXtkps2YVnJpfNg=
-X-TM-AS-User-Approved-Sender: Yes
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--1.178800-8.000000
-X-TMASE-Version: SMEX-12.5.0.1300-8.5.1010-25154.003
-X-MDID: 1578499590-w9mIz060KePi
+Received: from ulegcpsvdell.emea.nsn-net.net (131.228.32.181) by HE1P192CA0020.EURP192.PROD.OUTLOOK.COM (2603:10a6:3:fe::30) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2602.12 via Frontend Transport; Wed, 8 Jan 2020 16:10:26 +0000
+X-Mailer: git-send-email 2.24.0
+X-Originating-IP: [131.228.32.181]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: caebf886-b604-431f-bab5-08d79455467a
+X-MS-TrafficTypeDiagnostic: VI1PR07MB3870:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <VI1PR07MB3870F618A76B4136E6D3829E883E0@VI1PR07MB3870.eurprd07.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:6430;
+X-Forefront-PRVS: 02760F0D1C
+X-Forefront-Antispam-Report: SFV:NSPM;SFS:(10019020)(376002)(396003)(136003)(39860400002)(346002)(366004)(189003)(199004)(956004)(54906003)(66946007)(36756003)(2616005)(5660300002)(6512007)(316002)(52116002)(16526019)(186003)(26005)(6506007)(86362001)(6486002)(6916009)(2906002)(81166006)(6666004)(8936002)(1076003)(478600001)(8676002)(4326008)(66476007)(81156014)(66556008);DIR:OUT;SFP:1102;SCL:1;SRVR:VI1PR07MB3870;H:VI1PR07MB5040.eurprd07.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+Received-SPF: None (protection.outlook.com: nokia.com does not designate
+ permitted sender hosts)
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: LEZuzKu6ksDbb+CquHPzC5cTdyrk49IaC6/4o0wY76biHOrwK8N/yZ1omdL00+0I4DPIw/rftkLXObmxtxQwClYNQGS1TT7HaDLm7Cp/9+R24sNNza+6r2NrgLcodySxtcXXg2PktKw1wi+vjplN6YvLvh4rfbHn7bZNau9swJhiHb7mxPN8uwPitM6po98mtjLZgP4+u8tGW/FhOtYJW83rjaXKQEN8ffIb0JeLFpIAdDY3ODwjvkTADuwmPefE07I9Tv190tvE35MsyqWUTmmeIaUzqR1mrwqu5aS5Z2qwIN0tbSh65dQV0dQ73xCWKfnj0aqiSBlOcDeB8S3cYcfZgBhal1AUsSHr2814ud09DZ1dVcKWvyBBFZZS+Rmd+GB3ul5roT22Z+qDxJUUtTRNj+Vqk1NzFmOMYBf805i35GKGlmltDLrGy9kH9afz
+X-OriginatorOrg: nokia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: caebf886-b604-431f-bab5-08d79455467a
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Jan 2020 16:10:27.3432
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 5d471751-9675-428d-917b-70f44f9630b0
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: A7nur7Yj+iz4jyQjlYXHv/T+AEHWyHeBRlZDrY6a9JuZxoyBLc06yJLOZDOMakrHBdc0l48u3HZODRjYi/VqNu3e3i/Bm4wWMow4beQhyZA=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR07MB3870
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Splitting some of the driver code into different files, which will
-later be used in another driver for a new product.
+From: Alexander Sverdlin <alexander.sverdlin@nokia.com>
 
-Alexandru-Mihai Maftei (14):
-  sfc: add new headers in preparation for code split
-  sfc: further preparation for code split
-  sfc: move reset workqueue code
-  sfc: move mac configuration and status functions
-  sfc: move datapath management code
-  sfc: move some device reset code
-  sfc: move struct init and fini code
-  sfc: move some channel-related code
-  sfc: move channel start/stop code
-  sfc: move channel alloc/removal code
-  sfc: move channel interrupt management code
-  sfc: move event queue management code
-  sfc: move common rx code
-  sfc: move common tx code
+The PHYs must be registered once in device probe function, not in device
+open callback because it's only possible to register them once.
 
- drivers/net/ethernet/sfc/Makefile           |    7 +-
- drivers/net/ethernet/sfc/ef10.c             |    3 +
- drivers/net/ethernet/sfc/efx.c              | 2139 +------------------
- drivers/net/ethernet/sfc/efx.h              |   39 +-
- drivers/net/ethernet/sfc/efx_channels.c     | 1232 +++++++++++
- drivers/net/ethernet/sfc/efx_channels.h     |   55 +
- drivers/net/ethernet/sfc/efx_common.c       |  999 +++++++++
- drivers/net/ethernet/sfc/efx_common.h       |   61 +
- drivers/net/ethernet/sfc/ethtool.c          |    3 +
- drivers/net/ethernet/sfc/farch.c            |    1 +
- drivers/net/ethernet/sfc/mcdi.h             |    1 -
- drivers/net/ethernet/sfc/mcdi_functions.h   |   30 +
- drivers/net/ethernet/sfc/mcdi_port.c        |   50 +-
- drivers/net/ethernet/sfc/mcdi_port_common.h |   53 +
- drivers/net/ethernet/sfc/net_driver.h       |   13 +-
- drivers/net/ethernet/sfc/nic.h              |    6 +
- drivers/net/ethernet/sfc/rx.c               |  376 +---
- drivers/net/ethernet/sfc/rx_common.c        |  375 ++++
- drivers/net/ethernet/sfc/rx_common.h        |   42 +
- drivers/net/ethernet/sfc/selftest.c         |    2 +
- drivers/net/ethernet/sfc/siena.c            |    1 +
- drivers/net/ethernet/sfc/siena_sriov.c      |    1 +
- drivers/net/ethernet/sfc/tx.c               |  296 +--
- drivers/net/ethernet/sfc/tx_common.c        |  310 +++
- drivers/net/ethernet/sfc/tx_common.h        |   31 +
- 25 files changed, 3270 insertions(+), 2856 deletions(-)
- create mode 100644 drivers/net/ethernet/sfc/efx_channels.c
- create mode 100644 drivers/net/ethernet/sfc/efx_channels.h
- create mode 100644 drivers/net/ethernet/sfc/efx_common.c
- create mode 100644 drivers/net/ethernet/sfc/efx_common.h
- create mode 100644 drivers/net/ethernet/sfc/mcdi_functions.h
- create mode 100644 drivers/net/ethernet/sfc/mcdi_port_common.h
- create mode 100644 drivers/net/ethernet/sfc/rx_common.c
- create mode 100644 drivers/net/ethernet/sfc/rx_common.h
- create mode 100644 drivers/net/ethernet/sfc/tx_common.c
- create mode 100644 drivers/net/ethernet/sfc/tx_common.h
+Fixes: a25e278020 ("staging: octeon: support fixed-link phys")
+Signed-off-by: Alexander Sverdlin <alexander.sverdlin@nokia.com>
+---
+ drivers/staging/octeon/ethernet-mdio.c |  6 ------
+ drivers/staging/octeon/ethernet.c      | 11 +++++++++++
+ 2 files changed, 11 insertions(+), 6 deletions(-)
 
+diff --git a/drivers/staging/octeon/ethernet-mdio.c b/drivers/staging/octeon/ethernet-mdio.c
+index c798672..d81bddf 100644
+--- a/drivers/staging/octeon/ethernet-mdio.c
++++ b/drivers/staging/octeon/ethernet-mdio.c
+@@ -147,12 +147,6 @@ int cvm_oct_phy_setup_device(struct net_device *dev)
+ 
+ 	phy_node = of_parse_phandle(priv->of_node, "phy-handle", 0);
+ 	if (!phy_node && of_phy_is_fixed_link(priv->of_node)) {
+-		int rc;
+-
+-		rc = of_phy_register_fixed_link(priv->of_node);
+-		if (rc)
+-			return rc;
+-
+ 		phy_node = of_node_get(priv->of_node);
+ 	}
+ 	if (!phy_node)
+diff --git a/drivers/staging/octeon/ethernet.c b/drivers/staging/octeon/ethernet.c
+index f42c381..241a1db 100644
+--- a/drivers/staging/octeon/ethernet.c
++++ b/drivers/staging/octeon/ethernet.c
+@@ -13,6 +13,7 @@
+ #include <linux/phy.h>
+ #include <linux/slab.h>
+ #include <linux/interrupt.h>
++#include <linux/of_mdio.h>
+ #include <linux/of_net.h>
+ #include <linux/if_ether.h>
+ #include <linux/if_vlan.h>
+@@ -894,6 +895,16 @@ static int cvm_oct_probe(struct platform_device *pdev)
+ 				break;
+ 			}
+ 
++			if (priv->of_node &&
++			    of_phy_is_fixed_link(priv->of_node)) {
++				r = of_phy_register_fixed_link(priv->of_node);
++				if (r) {
++					netdev_err(dev, "Failed to register fixed link for interface %d, port %d\n",
++						   interface, priv->ipd_port);
++					dev->netdev_ops = NULL;
++				}
++			}
++
+ 			if (!dev->netdev_ops) {
+ 				free_netdev(dev);
+ 			} else if (register_netdev(dev) < 0) {
 -- 
-2.20.1
+2.4.6
 
