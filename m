@@ -2,106 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BA07B134A87
-	for <lists+netdev@lfdr.de>; Wed,  8 Jan 2020 19:37:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 79C23134A89
+	for <lists+netdev@lfdr.de>; Wed,  8 Jan 2020 19:37:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726426AbgAHShb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jan 2020 13:37:31 -0500
-Received: from mail-io1-f68.google.com ([209.85.166.68]:44073 "EHLO
-        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725941AbgAHSha (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jan 2020 13:37:30 -0500
-Received: by mail-io1-f68.google.com with SMTP id b10so4247529iof.11
-        for <netdev@vger.kernel.org>; Wed, 08 Jan 2020 10:37:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=hk1Kq6Dpojomo9iAYHQJvWF5j1qQEv1wXmovGYH98vA=;
-        b=n0QuYAFn9iDVlvnB3kN/zuJf29g0REEci/dBdS81ddEfWS9DCKoj1vvUSr1uGAWpS+
-         2DRtViZ0YQI4gMteFMfpvmW1kAc4oORjZZdLOtAj5p7ILAipDnahM3Xi2gb59hcMOcZ+
-         3T/syq5SAM28JgAkSHkcFU0+REEASrpfo2HFcuSXkr8t3ID2XqV7CuMtggO1ZuwPay+R
-         gsx7L2SlAzSiVoE3nLpyIdAOqNbirpPo5wP3b5y6AHmhEdYe4k1Sth8gKIeghEQi4aWM
-         7ZVHT8Z5/ocOFstbCAZbqKZYst8MpFykp7ljDK51zEac28CcEP0BzvnufmOI7fNjrm73
-         Qdwg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=hk1Kq6Dpojomo9iAYHQJvWF5j1qQEv1wXmovGYH98vA=;
-        b=JsDWefgmii9xvGDUiv5pT6NmxkRQL/dhtldq6MiKpQBSZPD11J4D9EzPK3HmdAB0hZ
-         UGDPLaRzPmJAwHzCz6C51XU1VzNqApe3ArTJG4wee1xk7YW4quG/xuxsSV+pZu9YyCWW
-         dwmAc8Vq3c5YMYJoECFFulG+ZMz+IIa94s9j5MVGc2Yt0sseZf/sYopPLEquAcnFhB6Z
-         NQm2d5hTzx4n35HjZ2/6QyeZt3jinDua0aY3oZfq7c0NTdyvobKveUt5k7j6VEo9WJfe
-         Rkl5/tWQrG09ZgJmuItV+h2ArD3soxAaAfygdBDUBlQRoQSFG7DAI3FdZgcfa/iy0NC1
-         z+Yw==
-X-Gm-Message-State: APjAAAUftUH9GsDB0is9fsuXxBV/tc+lNs9d2ppVF/pZGwK8AUJenJgN
-        CIjGcOZPQHT+B9LFzNe18DM=
-X-Google-Smtp-Source: APXvYqw+ZK3je0gUQox1Lbd5NtLpY3MMmQRH7SWTT16io/ajdvDNzTFGVyVC3TY5vWTmKcXX2CAung==
-X-Received: by 2002:a6b:8b01:: with SMTP id n1mr4441010iod.111.1578508650035;
-        Wed, 08 Jan 2020 10:37:30 -0800 (PST)
-Received: from ?IPv6:2601:282:800:7a:601d:4dc7:bf1b:dae9? ([2601:282:800:7a:601d:4dc7:bf1b:dae9])
-        by smtp.googlemail.com with ESMTPSA id a9sm1191058ilk.14.2020.01.08.10.37.28
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 08 Jan 2020 10:37:29 -0800 (PST)
-Subject: Re: [PATCH net-next 02/10] ipv4: Encapsulate function arguments in a
- struct
-To:     Ido Schimmel <idosch@idosch.org>, netdev@vger.kernel.org
-Cc:     davem@davemloft.net, jiri@mellanox.com,
-        jakub.kicinski@netronome.com, roopa@cumulusnetworks.com,
-        mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
-References: <20200107154517.239665-1-idosch@idosch.org>
- <20200107154517.239665-3-idosch@idosch.org>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <c35c97d7-d1dc-d0d6-6ea8-deaf33441c7c@gmail.com>
-Date:   Wed, 8 Jan 2020 11:37:28 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.3.1
+        id S1726510AbgAHShy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jan 2020 13:37:54 -0500
+Received: from www62.your-server.de ([213.133.104.62]:32830 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725941AbgAHShy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jan 2020 13:37:54 -0500
+Received: from sslproxy05.your-server.de ([78.46.172.2])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1ipGDG-0001FX-7d; Wed, 08 Jan 2020 19:37:50 +0100
+Received: from [2001:1620:665:0:5795:5b0a:e5d5:5944] (helo=linux-3.fritz.box)
+        by sslproxy05.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1ipGDF-000UdI-OC; Wed, 08 Jan 2020 19:37:49 +0100
+Subject: Re: [PATCH bpf-next v3 0/2] bpftool/libbpf: Add probe for large INSN
+ limit
+To:     Quentin Monnet <quentin.monnet@netronome.com>,
+        Michal Rostecki <mrostecki@opensuse.org>, bpf@vger.kernel.org
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Stanislav Fomichev <sdf@google.com>,
+        Prashant Bhole <bhole_prashant_q7@lab.ntt.co.jp>,
+        Peter Wu <peter@lekensteyn.nl>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20200108162428.25014-1-mrostecki@opensuse.org>
+ <01feb8cd-6e24-91d8-4c78-a489c1170965@netronome.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <fffe7581-c2ef-ced0-7df6-3db895a0e3d2@iogearbox.net>
+Date:   Wed, 8 Jan 2020 19:37:49 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-In-Reply-To: <20200107154517.239665-3-idosch@idosch.org>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <01feb8cd-6e24-91d8-4c78-a489c1170965@netronome.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.101.4/25688/Wed Jan  8 10:56:24 2020)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/7/20 8:45 AM, Ido Schimmel wrote:
-> diff --git a/net/ipv4/fib_lookup.h b/net/ipv4/fib_lookup.h
-> index a68b5e21ec51..b34594a9965f 100644
-> --- a/net/ipv4/fib_lookup.h
-> +++ b/net/ipv4/fib_lookup.h
-> @@ -21,6 +21,15 @@ struct fib_alias {
->  
->  #define FA_S_ACCESSED	0x01
->  
-> +struct fib_rt_info {
-> +	struct fib_info		*fi;
-> +	u32			tb_id;
-> +	__be32			dst;
-> +	int			dst_len;
-> +	u8			tos;
-> +	u8			type;
-> +};
-> +
->  /* Dont write on fa_state unless needed, to keep it shared on all cpus */
->  static inline void fib_alias_accessed(struct fib_alias *fa)
->  {
-> @@ -35,9 +44,8 @@ struct fib_info *fib_create_info(struct fib_config *cfg,
->  int fib_nh_match(struct fib_config *cfg, struct fib_info *fi,
->  		 struct netlink_ext_ack *extack);
->  bool fib_metrics_match(struct fib_config *cfg, struct fib_info *fi);
-> -int fib_dump_info(struct sk_buff *skb, u32 pid, u32 seq, int event, u32 tb_id,
-> -		  u8 type, __be32 dst, int dst_len, u8 tos, struct fib_info *fi,
-> -		  unsigned int);
-> +int fib_dump_info(struct sk_buff *skb, u32 pid, u32 seq, int event,
-> +		  struct fib_rt_info *fri, unsigned int);
+On 1/8/20 6:48 PM, Quentin Monnet wrote:
+> 2020-01-08 17:23 UTC+0100 ~ Michal Rostecki <mrostecki@opensuse.org>
+>> This series implements a new BPF feature probe which checks for the
+>> commit c04c0d2b968a ("bpf: increase complexity limit and maximum program
+>> size"), which increases the maximum program size to 1M. It's based on
+>> the similar check in Cilium, although Cilium is already aiming to use
+>> bpftool checks and eventually drop all its custom checks.
+>>
+>> Examples of outputs:
+>>
+>> # bpftool feature probe
+>> [...]
+>> Scanning miscellaneous eBPF features...
+>> Large complexity limit and maximum program size (1M) is available
+>>
+>> # bpftool feature probe macros
+>> [...]
+>> /*** eBPF misc features ***/
+>> #define HAVE_HAVE_LARGE_INSN_LIMIT
+>>
+>> # bpftool feature probe -j | jq '.["misc"]'
+>> {
+>>    "have_large_insn_limit": true
+>> }
+>>
+>> v1 -> v2:
+>> - Test for 'BPF_MAXINSNS + 1' number of total insns.
+>> - Remove info about current 1M limit from probe's description.
+>>
+>> v2 -> v3:
+>> - Remove the "complexity" word from probe's description.
+> 
+> Series looks good to me, thanks!
+> 
+> Reviewed-by: Quentin Monnet <quentin.monnet@netronome.com>
 
-since you are modifying this, can you add a name for that last argument?
-
-
-Otherwise, nice cleanup.
-
-Reviewed-by: David Ahern <dsahern@gmail.com>
+Applied, thanks!
