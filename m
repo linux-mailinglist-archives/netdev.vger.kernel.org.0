@@ -2,80 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2EAFA134226
-	for <lists+netdev@lfdr.de>; Wed,  8 Jan 2020 13:48:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 963EB134262
+	for <lists+netdev@lfdr.de>; Wed,  8 Jan 2020 13:56:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728138AbgAHMsy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jan 2020 07:48:54 -0500
-Received: from mout.kundenserver.de ([212.227.126.131]:42667 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727145AbgAHMsy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jan 2020 07:48:54 -0500
-Received: from threadripper.lan ([149.172.19.189]) by mrelayeu.kundenserver.de
- (mreue009 [212.227.15.129]) with ESMTPA (Nemesis) id
- 1MAfQe-1j0CJU0vU0-00B0YH; Wed, 08 Jan 2020 13:48:48 +0100
-From:   Arnd Bergmann <arnd@arndb.de>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next] net: dsa: felix: fix link error
-Date:   Wed,  8 Jan 2020 13:48:38 +0100
-Message-Id: <20200108124844.1348395-1-arnd@arndb.de>
-X-Mailer: git-send-email 2.20.0
+        id S1727701AbgAHM4G (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jan 2020 07:56:06 -0500
+Received: from esa4.microchip.iphmx.com ([68.232.154.123]:31331 "EHLO
+        esa4.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726254AbgAHM4F (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jan 2020 07:56:05 -0500
+Received-SPF: Pass (esa4.microchip.iphmx.com: domain of
+  Claudiu.Beznea@microchip.com designates 198.175.253.82 as
+  permitted sender) identity=mailfrom;
+  client-ip=198.175.253.82; receiver=esa4.microchip.iphmx.com;
+  envelope-from="Claudiu.Beznea@microchip.com";
+  x-sender="Claudiu.Beznea@microchip.com";
+  x-conformance=spf_only; x-record-type="v=spf1";
+  x-record-text="v=spf1 mx a:ushub1.microchip.com
+  a:smtpout.microchip.com -exists:%{i}.spf.microchip.iphmx.com
+  include:servers.mcsv.net include:mktomail.com
+  include:spf.protection.outlook.com ~all"
+Received-SPF: None (esa4.microchip.iphmx.com: no sender
+  authenticity information available from domain of
+  postmaster@email.microchip.com) identity=helo;
+  client-ip=198.175.253.82; receiver=esa4.microchip.iphmx.com;
+  envelope-from="Claudiu.Beznea@microchip.com";
+  x-sender="postmaster@email.microchip.com";
+  x-conformance=spf_only
+Authentication-Results: esa4.microchip.iphmx.com; dkim=none (message not signed) header.i=none; spf=Pass smtp.mailfrom=Claudiu.Beznea@microchip.com; spf=None smtp.helo=postmaster@email.microchip.com; dmarc=pass (p=none dis=none) d=microchip.com
+IronPort-SDR: feLro1JNCFp1+UpYxfUe+bG2IPLSvnlmgEXzWgR/sW3uX4OwPBSjnIj8qhK2OnwOjjDOqzVpbt
+ g8bZUzYBbwpp+khpk6/ata/+DQPt9aBwtnPADf6kO2iqyJour8APSLqAWRCsC61k0Iv5val3AB
+ +w32RZ3p2/hGM7Abr6FCBcun5Lp4TmpY9srfoUiBepWiL5KArSMVzb6N8wh8mTDnlI4CxH7Kr6
+ OQwyP26353aBoemlTeFG5Bpj+fE3wiMJjSz0Au3d7cS/SPDHITUHuvh3QHOPTtmyV4EvzqeVnH
+ K3Q=
+X-IronPort-AV: E=Sophos;i="5.69,410,1571727600"; 
+   d="scan'208";a="60517506"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 08 Jan 2020 05:56:03 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Wed, 8 Jan 2020 05:56:02 -0700
+Received: from m18063-ThinkPad-T460p.microchip.com (10.10.85.251) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
+ 15.1.1713.5 via Frontend Transport; Wed, 8 Jan 2020 05:55:55 -0700
+From:   Claudiu Beznea <claudiu.beznea@microchip.com>
+To:     <robh+dt@kernel.org>, <mark.rutland@arm.com>,
+        <nicolas.ferre@microchip.com>, <alexandre.belloni@bootlin.com>,
+        <ludovic.desroches@microchip.com>, <vkoul@kernel.org>,
+        <eugen.hristev@microchip.com>, <jic23@kernel.org>,
+        <knaack.h@gmx.de>, <lars@metafoo.de>, <pmeerw@pmeerw.net>,
+        <mchehab@kernel.org>, <lee.jones@linaro.org>,
+        <richard.genoud@gmail.com>, <radu_nicolae.pirea@upb.ro>,
+        <tudor.ambarus@microchip.com>, <miquel.raynal@bootlin.com>,
+        <richard@nod.at>, <vigneshr@ti.com>, <wg@grandegger.com>,
+        <mkl@pengutronix.de>, <a.zummo@towertech.it>, <broonie@kernel.org>
+CC:     <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <dmaengine@vger.kernel.org>,
+        <linux-iio@vger.kernel.org>, <linux-media@vger.kernel.org>,
+        <linux-spi@vger.kernel.org>, <linux-mtd@lists.infradead.org>,
+        <linux-can@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-rtc@vger.kernel.org>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>
+Subject: [PATCH 00/16] add device tree for SAM9X60 SoC and SAM9X60-EK board
+Date:   Wed, 8 Jan 2020 14:55:07 +0200
+Message-ID: <1578488123-26127-1-git-send-email-claudiu.beznea@microchip.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:5e88e3Rt8vGBDypbvNaW0AJB2I5iFs7xvxm/ZKF/cCcj72o/Fjg
- 3VEv599loYxX0CiHwDxS5+LymYjOkcjmOuYdXrOM+rDPzBCaSlOxJuwM4GNNL0u17gXMOaq
- Gzn7vK2CLy1uUiZ+5Dlj7p+bwF3YVnPVJK79Of5fsLfCQeXhMOUH7L+ks5RASFt3qhjyfFG
- RLQv0TCPtrzF2Wt7ELbVg==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:aDPWaKRbaz8=:QCKlrKk1mjq3OoRwoniRyM
- PVOQBdaLu9TD8odFYETbf8G8ni5qHvt0YydK6mmjOwRH6LCsmNAQG/wdBVLifJXJctbB0weo6
- 9uVANGelk9bBGhQCV3XJSDyc1trB74zbT4Bl54oBQ6rBicjvMJ8qazJURYUxiFKdWsnSEYbNP
- cMccLvF7OrcIhxR6Vpgqn0raIILk8jITKlisjDOhCGqb8x3x22CHEpd2FphSenn/AckaoHZ97
- 0B660nnutvo6ZhQ//p5aYLZr902Ob1sLSgDkePDJD6vF80PPWKz8qlvrY3uQd0Io30vap3g71
- JJmaeZN5GXz9yyxZ3rRcERqAYs7X45Ps41Srbj4yPg3m36NYuE/yr3jqmGJdK2wlGZpXGi/QE
- 262PHvDb2xdhk87GjoqRULCVVQIiMXmWqaoYyrJxG6p0aQ8q7X/4fnhOwezDHFcAx5UwO8JA8
- fj6SrUohgJRMwpdhjhkZaMhXAiueCw8AhvEU4eKDhs+8DNuQgtZ5PkFruSedmbCD4wwpkijP+
- hQxPSBxOEOCdVfSLbSpP2rHTTV2O3/UjMg0A9W7k81kxdh4NOnExz6PKlM60Uzb+GOtkHc9Fy
- TVLOt3mBXBVzfJFk7CQPVa1NipUApnawoIxP10CjlIaT2CVrOXFFOTTEhd8YU6Lcn6AvhGweS
- 14xCgBU6k6fnBIDm00Nn1VBRxNOlB7trzWD3HI+2qRopdqka8TpKafHwcGD7uidjSYZSUG0Gm
- GC1nOumBMwj/LKu4kdL1Xgtq4IfgNS9kkuVfBfEKkyNbVW3KhsCOaHFRD9FQUQkPvn/1Pqbe7
- mfLn+biYD0TQHoY+kwFGB6hBdGdh70laXfGrYagS/JrV3I5pi8Smv7nyM2V+lHFzvhDxrzIYT
- X87x47HifjZ5j4CksWvA==
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When the enetc driver is disabled, the mdio support fails to
-get built:
+This series add device tree for SAM9X60 SoC and SAM9X60-EK board.
+Allong with these, there are patches that documents some compatibles
+for SAM9X60's IPs.
 
-drivers/net/dsa/ocelot/felix_vsc9959.o: In function `vsc9959_mdio_bus_alloc':
-felix_vsc9959.c:(.text+0x19c): undefined reference to `enetc_hw_alloc'
-felix_vsc9959.c:(.text+0x1d1): undefined reference to `enetc_mdio_read'
-felix_vsc9959.c:(.text+0x1d8): undefined reference to `enetc_mdio_write'
+Claudiu Beznea (15):
+  dt-bindings: at_xdmac: add entry for microchip compatibles
+  dt-bindings: atmel-can: add microchip,sam9x60-can
+  dt-bindings: atmel-tcb: add microchip,<chip>-tcb
+  dt-bindings: atmel-isi: add microchip,sam9x60-isi
+  dt-bindings: at91-sama5d2_adc: add microchip,sam9x60-adc
+  dt-bindings: atmel-matrix: add microchip,sam9x60-matrix
+  dt-bindings: atmel-nand: add microchip,sam9x60-pmecc
+  dt-bindings: atmel-sysreg: add microchip,sam9x60-ddramc
+  dt-bindings: atmel-smc: add microchip,sam9x60-smc
+  dt-bindings: atmel-gpbr: add microchip,sam9x60-gpbr
+  dt-bindings: atmel,at91rm9200-rtc: add microchip,sam9x60-rtc
+  dt-bindings: spi_atmel: add microchip,sam9x60-spi
+  dt-bindings: atmel-usart: add microchip,<chip>-usart
+  dt-bindings: arm: add sam9x60-ek board
+  ARM: at91/defconfig: enable MMC_SDHCI_OF_AT91 and MICROCHIP_PIT64B
 
-Change the Makefile to enter the subdirectory for this as well.
+Sandeep Sheriker Mallikarjun (1):
+  ARM: dts: at91: sam9x60: add device tree for soc and board
 
-Fixes: bdeced75b13f ("net: dsa: felix: Add PCS operations for PHYLINK")
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
----
- drivers/net/ethernet/freescale/Makefile | 1 +
- 1 file changed, 1 insertion(+)
+ .../devicetree/bindings/arm/atmel-at91.yaml        |   6 +
+ .../devicetree/bindings/arm/atmel-sysregs.txt      |   1 +
+ .../devicetree/bindings/dma/atmel-xdma.txt         |   3 +-
+ .../bindings/iio/adc/at91-sama5d2_adc.txt          |   2 +-
+ .../devicetree/bindings/media/atmel-isi.txt        |   2 +-
+ .../devicetree/bindings/mfd/atmel-gpbr.txt         |   4 +-
+ .../devicetree/bindings/mfd/atmel-matrix.txt       |   1 +
+ .../devicetree/bindings/mfd/atmel-smc.txt          |   1 +
+ .../devicetree/bindings/mfd/atmel-tcb.txt          |   5 +-
+ .../devicetree/bindings/mfd/atmel-usart.txt        |   6 +-
+ .../devicetree/bindings/mtd/atmel-nand.txt         |   1 +
+ .../devicetree/bindings/net/can/atmel-can.txt      |   3 +-
+ .../bindings/rtc/atmel,at91rm9200-rtc.txt          |   3 +-
+ .../devicetree/bindings/spi/spi_atmel.txt          |   2 +-
+ arch/arm/boot/dts/Makefile                         |   2 +
+ arch/arm/boot/dts/at91-sam9x60ek.dts               | 647 +++++++++++++++++++
+ arch/arm/boot/dts/sam9x60.dtsi                     | 691 +++++++++++++++++++++
+ arch/arm/configs/at91_dt_defconfig                 |   4 +
+ 18 files changed, 1373 insertions(+), 11 deletions(-)
+ create mode 100644 arch/arm/boot/dts/at91-sam9x60ek.dts
+ create mode 100644 arch/arm/boot/dts/sam9x60.dtsi
 
-diff --git a/drivers/net/ethernet/freescale/Makefile b/drivers/net/ethernet/freescale/Makefile
-index 6a93293d31e0..67c436400352 100644
---- a/drivers/net/ethernet/freescale/Makefile
-+++ b/drivers/net/ethernet/freescale/Makefile
-@@ -25,4 +25,5 @@ obj-$(CONFIG_FSL_DPAA_ETH) += dpaa/
- obj-$(CONFIG_FSL_DPAA2_ETH) += dpaa2/
- 
- obj-$(CONFIG_FSL_ENETC) += enetc/
-+obj-$(CONFIG_FSL_ENETC_MDIO) += enetc/
- obj-$(CONFIG_FSL_ENETC_VF) += enetc/
 -- 
-2.20.0
+2.7.4
 
