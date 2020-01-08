@@ -2,393 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B90AD133F60
-	for <lists+netdev@lfdr.de>; Wed,  8 Jan 2020 11:37:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B4B2F133FAE
+	for <lists+netdev@lfdr.de>; Wed,  8 Jan 2020 11:51:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727210AbgAHKhe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jan 2020 05:37:34 -0500
-Received: from a3.inai.de ([88.198.85.195]:35418 "EHLO a3.inai.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726751AbgAHKhd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 8 Jan 2020 05:37:33 -0500
-Received: by a3.inai.de (Postfix, from userid 65534)
-        id 9F60958754CE2; Wed,  8 Jan 2020 11:37:29 +0100 (CET)
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on a3.inai.de
-X-Spam-Level: 
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,URIBL_BLOCKED
-        autolearn=unavailable autolearn_force=no version=3.4.2
-Received: from a4.inai.de (a4.inai.de [IPv6:2a01:4f8:10b:45d8::f8])
-        by a3.inai.de (Postfix) with ESMTP id DC90658742E69;
-        Wed,  8 Jan 2020 11:37:26 +0100 (CET)
-From:   Jan Engelhardt <jengelh@inai.de>
-To:     fw@strlen.de
-Cc:     netfilter-devel@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com, kadlec@blackhole.kfki.hu,
-        syzbot+34bd2369d38707f3f4a7@syzkaller.appspotmail.com
-Subject: [PATCH] netfilter: ipset: avoid null deref when IPSET_ATTR_LINENO is present
-Date:   Wed,  8 Jan 2020 11:37:26 +0100
-Message-Id: <20200108103726.32253-1-jengelh@inai.de>
-X-Mailer: git-send-email 2.24.1
-In-Reply-To: <20200108095938.3704-1-fw@strlen.de>
-References: <20200108095938.3704-1-fw@strlen.de>
+        id S1727547AbgAHKv2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jan 2020 05:51:28 -0500
+Received: from merlin.infradead.org ([205.233.59.134]:35100 "EHLO
+        merlin.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726295AbgAHKv2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jan 2020 05:51:28 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=merlin.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=UqJ+/pT3izXu8kjYbbiezAa/YocSHtlN1XVLHEFRKJs=; b=h1hY+k92RryrIdTBhr5FexAw8
+        O11fOafKK2pe28cad9xN3w5YC34MHOc8hOWB8aSF5ZjC4dagLW4Ma/0kLVb7woD8LikhFaOmCggkJ
+        tGj6ZF/m8LSvTqTKZyMP0PiFTtEWolCan0If+IvY/U+RhWEd59XTazjWez3mvFGUqz2I2uaQnIthm
+        xWGbmTwjpUTQg2ojRszkMLE7I3h5arSfW5f/vsqoPHTlTF8hBF73JlvH3LaJ8cmVuHmk/ZkvZDPlJ
+        6rlLIighU6yX4hf5dztz9In1qHEMM4u/Z2M90C6vdcHgH9EOOe687bUXiPyWnDC+dNrkWrcOJJgAm
+        fc6jza4hg==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
+        by merlin.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1ip8uo-00019z-P9; Wed, 08 Jan 2020 10:50:19 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id DE995300693;
+        Wed,  8 Jan 2020 11:48:38 +0100 (CET)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id AF2B320B79C98; Wed,  8 Jan 2020 11:50:11 +0100 (CET)
+Date:   Wed, 8 Jan 2020 11:50:11 +0100
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Anchal Agarwal <anchalag@amazon.com>
+Cc:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de, hpa@zytor.com,
+        x86@kernel.org, boris.ostrovsky@oracle.com, jgross@suse.com,
+        linux-pm@vger.kernel.org, linux-mm@kvack.org, kamatam@amazon.com,
+        sstabellini@kernel.org, konrad.wilk@oracle.co,
+        roger.pau@citrix.com, axboe@kernel.dk, davem@davemloft.net,
+        rjw@rjwysocki.net, len.brown@intel.com, pavel@ucw.cz,
+        eduval@amazon.com, sblbir@amazon.com,
+        xen-devel@lists.xenproject.org, vkuznets@redhat.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Woodhouse@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com,
+        dwmw@amazon.co.uk, fllinden@amaozn.com
+Subject: Re: [RFC PATCH V2 11/11] x86: tsc: avoid system instability in
+ hibernation
+Message-ID: <20200108105011.GY2827@hirez.programming.kicks-ass.net>
+References: <20200107234526.GA19034@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200107234526.GA19034@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The set uadt functions assume lineno is never NULL, but it is in
-case of ip_set_utest().
+On Tue, Jan 07, 2020 at 11:45:26PM +0000, Anchal Agarwal wrote:
+> From: Eduardo Valentin <eduval@amazon.com>
+> 
+> System instability are seen during resume from hibernation when system
+> is under heavy CPU load. This is due to the lack of update of sched
+> clock data, and the scheduler would then think that heavy CPU hog
+> tasks need more time in CPU, causing the system to freeze
+> during the unfreezing of tasks. For example, threaded irqs,
+> and kernel processes servicing network interface may be delayed
+> for several tens of seconds, causing the system to be unreachable.
 
-syzkaller managed to generate a netlink message that calls this with
-LINENO attr present:
+> The fix for this situation is to mark the sched clock as unstable
+> as early as possible in the resume path, leaving it unstable
+> for the duration of the resume process. This will force the
+> scheduler to attempt to align the sched clock across CPUs using
+> the delta with time of day, updating sched clock data. In a post
+> hibernation event, we can then mark the sched clock as stable
+> again, avoiding unnecessary syncs with time of day on systems
+> in which TSC is reliable.
 
-general protection fault: 0000 [#1] PREEMPT SMP KASAN
-RIP: 0010:hash_mac4_uadt+0x1bc/0x470 net/netfilter/ipset/ip_set_hash_mac.c:104
-Call Trace:
- ip_set_utest+0x55b/0x890 net/netfilter/ipset/ip_set_core.c:1867
- nfnetlink_rcv_msg+0xcf2/0xfb0 net/netfilter/nfnetlink.c:229
- netlink_rcv_skb+0x177/0x450 net/netlink/af_netlink.c:2477
- nfnetlink_rcv+0x1ba/0x460 net/netfilter/nfnetlink.c:563
+This makes no frigging sense what so bloody ever. If the clock is
+stable, we don't care about sched_clock_data. When it is stable you get
+a linear function of the TSC without complicated bits on.
 
-Cc: Jozsef Kadlecsik <kadlec@blackhole.kfki.hu>
-Reported-by: syzbot+34bd2369d38707f3f4a7@syzkaller.appspotmail.com
-Fixes: a7b4f989a6294 ("netfilter: ipset: IP set core support")
-Signed-off-by: Jan Engelhardt <jengelh@inai.de>
----
+When it is unstable, only then do we care about the sched_clock_data.
 
- "Pass a dummy lineno storage, its easier than patching all set
- implementations". This may be so, but that does not mean patching
- the implementations is much harder (does not even warrant running
- coccinelle), so I present this alternative patch.
+> Reviewed-by: Erik Quanstrom <quanstro@amazon.com>
+> Reviewed-by: Frank van der Linden <fllinden@amazon.com>
+> Reviewed-by: Balbir Singh <sblbir@amazon.com>
+> Reviewed-by: Munehisa Kamata <kamatam@amazon.com>
+> Tested-by: Anchal Agarwal <anchalag@amazon.com>
+> Signed-off-by: Eduardo Valentin <eduval@amazon.com>
+> ---
 
+NAK, the code very much relies on never getting marked stable again
+after it gets set to unstable.
 
- net/netfilter/ipset/ip_set_bitmap_ip.c       | 2 +-
- net/netfilter/ipset/ip_set_bitmap_ipmac.c    | 2 +-
- net/netfilter/ipset/ip_set_bitmap_port.c     | 2 +-
- net/netfilter/ipset/ip_set_hash_ip.c         | 4 ++--
- net/netfilter/ipset/ip_set_hash_ipmac.c      | 4 ++--
- net/netfilter/ipset/ip_set_hash_ipmark.c     | 4 ++--
- net/netfilter/ipset/ip_set_hash_ipport.c     | 4 ++--
- net/netfilter/ipset/ip_set_hash_ipportip.c   | 4 ++--
- net/netfilter/ipset/ip_set_hash_ipportnet.c  | 4 ++--
- net/netfilter/ipset/ip_set_hash_mac.c        | 2 +-
- net/netfilter/ipset/ip_set_hash_net.c        | 4 ++--
- net/netfilter/ipset/ip_set_hash_netiface.c   | 4 ++--
- net/netfilter/ipset/ip_set_hash_netnet.c     | 4 ++--
- net/netfilter/ipset/ip_set_hash_netport.c    | 4 ++--
- net/netfilter/ipset/ip_set_hash_netportnet.c | 4 ++--
- net/netfilter/ipset/ip_set_list_set.c        | 2 +-
- 16 files changed, 27 insertions(+), 27 deletions(-)
-
-diff --git a/net/netfilter/ipset/ip_set_bitmap_ip.c b/net/netfilter/ipset/ip_set_bitmap_ip.c
-index abe8f77d7d23..9403730ca686 100644
---- a/net/netfilter/ipset/ip_set_bitmap_ip.c
-+++ b/net/netfilter/ipset/ip_set_bitmap_ip.c
-@@ -137,7 +137,7 @@ bitmap_ip_uadt(struct ip_set *set, struct nlattr *tb[],
- 	struct ip_set_ext ext = IP_SET_INIT_UEXT(set);
- 	int ret = 0;
- 
--	if (tb[IPSET_ATTR_LINENO])
-+	if (tb[IPSET_ATTR_LINENO] != NULL && lineno != NULL)
- 		*lineno = nla_get_u32(tb[IPSET_ATTR_LINENO]);
- 
- 	if (unlikely(!tb[IPSET_ATTR_IP]))
-diff --git a/net/netfilter/ipset/ip_set_bitmap_ipmac.c b/net/netfilter/ipset/ip_set_bitmap_ipmac.c
-index b618713297da..b16ebdddca83 100644
---- a/net/netfilter/ipset/ip_set_bitmap_ipmac.c
-+++ b/net/netfilter/ipset/ip_set_bitmap_ipmac.c
-@@ -248,7 +248,7 @@ bitmap_ipmac_uadt(struct ip_set *set, struct nlattr *tb[],
- 	u32 ip = 0;
- 	int ret = 0;
- 
--	if (tb[IPSET_ATTR_LINENO])
-+	if (tb[IPSET_ATTR_LINENO] != NULL && lineno != NULL)
- 		*lineno = nla_get_u32(tb[IPSET_ATTR_LINENO]);
- 
- 	if (unlikely(!tb[IPSET_ATTR_IP]))
-diff --git a/net/netfilter/ipset/ip_set_bitmap_port.c b/net/netfilter/ipset/ip_set_bitmap_port.c
-index 23d6095cb196..cb22d85cef01 100644
---- a/net/netfilter/ipset/ip_set_bitmap_port.c
-+++ b/net/netfilter/ipset/ip_set_bitmap_port.c
-@@ -161,7 +161,7 @@ bitmap_port_uadt(struct ip_set *set, struct nlattr *tb[],
- 	u16 port_to;
- 	int ret = 0;
- 
--	if (tb[IPSET_ATTR_LINENO])
-+	if (tb[IPSET_ATTR_LINENO] != NULL && lineno != NULL)
- 		*lineno = nla_get_u32(tb[IPSET_ATTR_LINENO]);
- 
- 	if (unlikely(!ip_set_attr_netorder(tb, IPSET_ATTR_PORT) ||
-diff --git a/net/netfilter/ipset/ip_set_hash_ip.c b/net/netfilter/ipset/ip_set_hash_ip.c
-index 5d6d68eaf6a9..1195ee3539fb 100644
---- a/net/netfilter/ipset/ip_set_hash_ip.c
-+++ b/net/netfilter/ipset/ip_set_hash_ip.c
-@@ -104,7 +104,7 @@ hash_ip4_uadt(struct ip_set *set, struct nlattr *tb[],
- 	u32 ip = 0, ip_to = 0, hosts;
- 	int ret = 0;
- 
--	if (tb[IPSET_ATTR_LINENO])
-+	if (tb[IPSET_ATTR_LINENO] != NULL && lineno != NULL)
- 		*lineno = nla_get_u32(tb[IPSET_ATTR_LINENO]);
- 
- 	if (unlikely(!tb[IPSET_ATTR_IP]))
-@@ -238,7 +238,7 @@ hash_ip6_uadt(struct ip_set *set, struct nlattr *tb[],
- 	struct ip_set_ext ext = IP_SET_INIT_UEXT(set);
- 	int ret;
- 
--	if (tb[IPSET_ATTR_LINENO])
-+	if (tb[IPSET_ATTR_LINENO] != NULL && lineno != NULL)
- 		*lineno = nla_get_u32(tb[IPSET_ATTR_LINENO]);
- 
- 	if (unlikely(!tb[IPSET_ATTR_IP]))
-diff --git a/net/netfilter/ipset/ip_set_hash_ipmac.c b/net/netfilter/ipset/ip_set_hash_ipmac.c
-index eceb7bc4a93a..9a1dc251988e 100644
---- a/net/netfilter/ipset/ip_set_hash_ipmac.c
-+++ b/net/netfilter/ipset/ip_set_hash_ipmac.c
-@@ -126,7 +126,7 @@ hash_ipmac4_uadt(struct ip_set *set, struct nlattr *tb[],
- 		     !ip_set_optattr_netorder(tb, IPSET_ATTR_SKBQUEUE)))
- 		return -IPSET_ERR_PROTOCOL;
- 
--	if (tb[IPSET_ATTR_LINENO])
-+	if (tb[IPSET_ATTR_LINENO] != NULL && lineno != NULL)
- 		*lineno = nla_get_u32(tb[IPSET_ATTR_LINENO]);
- 
- 	ret = ip_set_get_ipaddr4(tb[IPSET_ATTR_IP], &e.ip) ||
-@@ -245,7 +245,7 @@ hash_ipmac6_uadt(struct ip_set *set, struct nlattr *tb[],
- 		     !ip_set_optattr_netorder(tb, IPSET_ATTR_SKBQUEUE)))
- 		return -IPSET_ERR_PROTOCOL;
- 
--	if (tb[IPSET_ATTR_LINENO])
-+	if (tb[IPSET_ATTR_LINENO] != NULL && lineno != NULL)
- 		*lineno = nla_get_u32(tb[IPSET_ATTR_LINENO]);
- 
- 	ret = ip_set_get_ipaddr6(tb[IPSET_ATTR_IP], &e.ip) ||
-diff --git a/net/netfilter/ipset/ip_set_hash_ipmark.c b/net/netfilter/ipset/ip_set_hash_ipmark.c
-index aba1df617d6e..6b975573db7c 100644
---- a/net/netfilter/ipset/ip_set_hash_ipmark.c
-+++ b/net/netfilter/ipset/ip_set_hash_ipmark.c
-@@ -103,7 +103,7 @@ hash_ipmark4_uadt(struct ip_set *set, struct nlattr *tb[],
- 	u32 ip, ip_to = 0;
- 	int ret;
- 
--	if (tb[IPSET_ATTR_LINENO])
-+	if (tb[IPSET_ATTR_LINENO] != NULL && lineno != NULL)
- 		*lineno = nla_get_u32(tb[IPSET_ATTR_LINENO]);
- 
- 	if (unlikely(!tb[IPSET_ATTR_IP] ||
-@@ -228,7 +228,7 @@ hash_ipmark6_uadt(struct ip_set *set, struct nlattr *tb[],
- 	struct ip_set_ext ext = IP_SET_INIT_UEXT(set);
- 	int ret;
- 
--	if (tb[IPSET_ATTR_LINENO])
-+	if (tb[IPSET_ATTR_LINENO] != NULL && lineno != NULL)
- 		*lineno = nla_get_u32(tb[IPSET_ATTR_LINENO]);
- 
- 	if (unlikely(!tb[IPSET_ATTR_IP] ||
-diff --git a/net/netfilter/ipset/ip_set_hash_ipport.c b/net/netfilter/ipset/ip_set_hash_ipport.c
-index 1ff228717e29..7cec674af6de 100644
---- a/net/netfilter/ipset/ip_set_hash_ipport.c
-+++ b/net/netfilter/ipset/ip_set_hash_ipport.c
-@@ -112,7 +112,7 @@ hash_ipport4_uadt(struct ip_set *set, struct nlattr *tb[],
- 	bool with_ports = false;
- 	int ret;
- 
--	if (tb[IPSET_ATTR_LINENO])
-+	if (tb[IPSET_ATTR_LINENO] != NULL && lineno != NULL)
- 		*lineno = nla_get_u32(tb[IPSET_ATTR_LINENO]);
- 
- 	if (unlikely(!tb[IPSET_ATTR_IP] ||
-@@ -270,7 +270,7 @@ hash_ipport6_uadt(struct ip_set *set, struct nlattr *tb[],
- 	bool with_ports = false;
- 	int ret;
- 
--	if (tb[IPSET_ATTR_LINENO])
-+	if (tb[IPSET_ATTR_LINENO] != NULL && lineno != NULL)
- 		*lineno = nla_get_u32(tb[IPSET_ATTR_LINENO]);
- 
- 	if (unlikely(!tb[IPSET_ATTR_IP] ||
-diff --git a/net/netfilter/ipset/ip_set_hash_ipportip.c b/net/netfilter/ipset/ip_set_hash_ipportip.c
-index fa88afd812fa..9ea4b8119cbe 100644
---- a/net/netfilter/ipset/ip_set_hash_ipportip.c
-+++ b/net/netfilter/ipset/ip_set_hash_ipportip.c
-@@ -115,7 +115,7 @@ hash_ipportip4_uadt(struct ip_set *set, struct nlattr *tb[],
- 	bool with_ports = false;
- 	int ret;
- 
--	if (tb[IPSET_ATTR_LINENO])
-+	if (tb[IPSET_ATTR_LINENO] != NULL && lineno != NULL)
- 		*lineno = nla_get_u32(tb[IPSET_ATTR_LINENO]);
- 
- 	if (unlikely(!tb[IPSET_ATTR_IP] || !tb[IPSET_ATTR_IP2] ||
-@@ -281,7 +281,7 @@ hash_ipportip6_uadt(struct ip_set *set, struct nlattr *tb[],
- 	bool with_ports = false;
- 	int ret;
- 
--	if (tb[IPSET_ATTR_LINENO])
-+	if (tb[IPSET_ATTR_LINENO] != NULL && lineno != NULL)
- 		*lineno = nla_get_u32(tb[IPSET_ATTR_LINENO]);
- 
- 	if (unlikely(!tb[IPSET_ATTR_IP] || !tb[IPSET_ATTR_IP2] ||
-diff --git a/net/netfilter/ipset/ip_set_hash_ipportnet.c b/net/netfilter/ipset/ip_set_hash_ipportnet.c
-index eef6ecfcb409..bf089de34330 100644
---- a/net/netfilter/ipset/ip_set_hash_ipportnet.c
-+++ b/net/netfilter/ipset/ip_set_hash_ipportnet.c
-@@ -169,7 +169,7 @@ hash_ipportnet4_uadt(struct ip_set *set, struct nlattr *tb[],
- 	u8 cidr;
- 	int ret;
- 
--	if (tb[IPSET_ATTR_LINENO])
-+	if (tb[IPSET_ATTR_LINENO] != NULL && lineno != NULL)
- 		*lineno = nla_get_u32(tb[IPSET_ATTR_LINENO]);
- 
- 	if (unlikely(!tb[IPSET_ATTR_IP] || !tb[IPSET_ATTR_IP2] ||
-@@ -419,7 +419,7 @@ hash_ipportnet6_uadt(struct ip_set *set, struct nlattr *tb[],
- 	u8 cidr;
- 	int ret;
- 
--	if (tb[IPSET_ATTR_LINENO])
-+	if (tb[IPSET_ATTR_LINENO] != NULL && lineno != NULL)
- 		*lineno = nla_get_u32(tb[IPSET_ATTR_LINENO]);
- 
- 	if (unlikely(!tb[IPSET_ATTR_IP] || !tb[IPSET_ATTR_IP2] ||
-diff --git a/net/netfilter/ipset/ip_set_hash_mac.c b/net/netfilter/ipset/ip_set_hash_mac.c
-index 0b61593165ef..6cfabfedc44f 100644
---- a/net/netfilter/ipset/ip_set_hash_mac.c
-+++ b/net/netfilter/ipset/ip_set_hash_mac.c
-@@ -100,7 +100,7 @@ hash_mac4_uadt(struct ip_set *set, struct nlattr *tb[],
- 	struct ip_set_ext ext = IP_SET_INIT_UEXT(set);
- 	int ret;
- 
--	if (tb[IPSET_ATTR_LINENO])
-+	if (tb[IPSET_ATTR_LINENO] != NULL && lineno != NULL)
- 		*lineno = nla_get_u32(tb[IPSET_ATTR_LINENO]);
- 
- 	if (unlikely(!tb[IPSET_ATTR_ETHER] ||
-diff --git a/net/netfilter/ipset/ip_set_hash_net.c b/net/netfilter/ipset/ip_set_hash_net.c
-index 136cf0781d3a..3d74b249db7b 100644
---- a/net/netfilter/ipset/ip_set_hash_net.c
-+++ b/net/netfilter/ipset/ip_set_hash_net.c
-@@ -142,7 +142,7 @@ hash_net4_uadt(struct ip_set *set, struct nlattr *tb[],
- 	u32 ip = 0, ip_to = 0;
- 	int ret;
- 
--	if (tb[IPSET_ATTR_LINENO])
-+	if (tb[IPSET_ATTR_LINENO] != NULL && lineno != NULL)
- 		*lineno = nla_get_u32(tb[IPSET_ATTR_LINENO]);
- 
- 	if (unlikely(!tb[IPSET_ATTR_IP] ||
-@@ -308,7 +308,7 @@ hash_net6_uadt(struct ip_set *set, struct nlattr *tb[],
- 	struct ip_set_ext ext = IP_SET_INIT_UEXT(set);
- 	int ret;
- 
--	if (tb[IPSET_ATTR_LINENO])
-+	if (tb[IPSET_ATTR_LINENO] != NULL && lineno != NULL)
- 		*lineno = nla_get_u32(tb[IPSET_ATTR_LINENO]);
- 
- 	if (unlikely(!tb[IPSET_ATTR_IP] ||
-diff --git a/net/netfilter/ipset/ip_set_hash_netiface.c b/net/netfilter/ipset/ip_set_hash_netiface.c
-index be5e95a0d876..32fc8f794d6a 100644
---- a/net/netfilter/ipset/ip_set_hash_netiface.c
-+++ b/net/netfilter/ipset/ip_set_hash_netiface.c
-@@ -204,7 +204,7 @@ hash_netiface4_uadt(struct ip_set *set, struct nlattr *tb[],
- 	u32 ip = 0, ip_to = 0;
- 	int ret;
- 
--	if (tb[IPSET_ATTR_LINENO])
-+	if (tb[IPSET_ATTR_LINENO] != NULL && lineno != NULL)
- 		*lineno = nla_get_u32(tb[IPSET_ATTR_LINENO]);
- 
- 	if (unlikely(!tb[IPSET_ATTR_IP] ||
-@@ -416,7 +416,7 @@ hash_netiface6_uadt(struct ip_set *set, struct nlattr *tb[],
- 	struct ip_set_ext ext = IP_SET_INIT_UEXT(set);
- 	int ret;
- 
--	if (tb[IPSET_ATTR_LINENO])
-+	if (tb[IPSET_ATTR_LINENO] != NULL && lineno != NULL)
- 		*lineno = nla_get_u32(tb[IPSET_ATTR_LINENO]);
- 
- 	if (unlikely(!tb[IPSET_ATTR_IP] ||
-diff --git a/net/netfilter/ipset/ip_set_hash_netnet.c b/net/netfilter/ipset/ip_set_hash_netnet.c
-index da4ef910b12d..789fc367476e 100644
---- a/net/netfilter/ipset/ip_set_hash_netnet.c
-+++ b/net/netfilter/ipset/ip_set_hash_netnet.c
-@@ -170,7 +170,7 @@ hash_netnet4_uadt(struct ip_set *set, struct nlattr *tb[],
- 	u32 ip2 = 0, ip2_from = 0, ip2_to = 0;
- 	int ret;
- 
--	if (tb[IPSET_ATTR_LINENO])
-+	if (tb[IPSET_ATTR_LINENO] != NULL && lineno != NULL)
- 		*lineno = nla_get_u32(tb[IPSET_ATTR_LINENO]);
- 
- 	hash_netnet4_init(&e);
-@@ -401,7 +401,7 @@ hash_netnet6_uadt(struct ip_set *set, struct nlattr *tb[],
- 	struct ip_set_ext ext = IP_SET_INIT_UEXT(set);
- 	int ret;
- 
--	if (tb[IPSET_ATTR_LINENO])
-+	if (tb[IPSET_ATTR_LINENO] != NULL && lineno != NULL)
- 		*lineno = nla_get_u32(tb[IPSET_ATTR_LINENO]);
- 
- 	hash_netnet6_init(&e);
-diff --git a/net/netfilter/ipset/ip_set_hash_netport.c b/net/netfilter/ipset/ip_set_hash_netport.c
-index 34448df80fb9..292aeee525f9 100644
---- a/net/netfilter/ipset/ip_set_hash_netport.c
-+++ b/net/netfilter/ipset/ip_set_hash_netport.c
-@@ -162,7 +162,7 @@ hash_netport4_uadt(struct ip_set *set, struct nlattr *tb[],
- 	u8 cidr;
- 	int ret;
- 
--	if (tb[IPSET_ATTR_LINENO])
-+	if (tb[IPSET_ATTR_LINENO] != NULL && lineno != NULL)
- 		*lineno = nla_get_u32(tb[IPSET_ATTR_LINENO]);
- 
- 	if (unlikely(!tb[IPSET_ATTR_IP] ||
-@@ -378,7 +378,7 @@ hash_netport6_uadt(struct ip_set *set, struct nlattr *tb[],
- 	u8 cidr;
- 	int ret;
- 
--	if (tb[IPSET_ATTR_LINENO])
-+	if (tb[IPSET_ATTR_LINENO] != NULL && lineno != NULL)
- 		*lineno = nla_get_u32(tb[IPSET_ATTR_LINENO]);
- 
- 	if (unlikely(!tb[IPSET_ATTR_IP] ||
-diff --git a/net/netfilter/ipset/ip_set_hash_netportnet.c b/net/netfilter/ipset/ip_set_hash_netportnet.c
-index 934c1712cba8..35c7b953507e 100644
---- a/net/netfilter/ipset/ip_set_hash_netportnet.c
-+++ b/net/netfilter/ipset/ip_set_hash_netportnet.c
-@@ -185,7 +185,7 @@ hash_netportnet4_uadt(struct ip_set *set, struct nlattr *tb[],
- 	bool with_ports = false;
- 	int ret;
- 
--	if (tb[IPSET_ATTR_LINENO])
-+	if (tb[IPSET_ATTR_LINENO] != NULL && lineno != NULL)
- 		*lineno = nla_get_u32(tb[IPSET_ATTR_LINENO]);
- 
- 	hash_netportnet4_init(&e);
-@@ -463,7 +463,7 @@ hash_netportnet6_uadt(struct ip_set *set, struct nlattr *tb[],
- 	bool with_ports = false;
- 	int ret;
- 
--	if (tb[IPSET_ATTR_LINENO])
-+	if (tb[IPSET_ATTR_LINENO] != NULL && lineno != NULL)
- 		*lineno = nla_get_u32(tb[IPSET_ATTR_LINENO]);
- 
- 	hash_netportnet6_init(&e);
-diff --git a/net/netfilter/ipset/ip_set_list_set.c b/net/netfilter/ipset/ip_set_list_set.c
-index cd747c0962fd..36b544c488d1 100644
---- a/net/netfilter/ipset/ip_set_list_set.c
-+++ b/net/netfilter/ipset/ip_set_list_set.c
-@@ -353,7 +353,7 @@ list_set_uadt(struct ip_set *set, struct nlattr *tb[],
- 	struct ip_set *s;
- 	int ret = 0;
- 
--	if (tb[IPSET_ATTR_LINENO])
-+	if (tb[IPSET_ATTR_LINENO] != NULL && lineno != NULL)
- 		*lineno = nla_get_u32(tb[IPSET_ATTR_LINENO]);
- 
- 	if (unlikely(!tb[IPSET_ATTR_NAME] ||
--- 
-2.24.1
-
+> diff --git a/kernel/sched/clock.c b/kernel/sched/clock.c
+> index 1152259a4ca0..374d40e5b1a2 100644
+> --- a/kernel/sched/clock.c
+> +++ b/kernel/sched/clock.c
+> @@ -116,7 +116,7 @@ static void __scd_stamp(struct sched_clock_data *scd)
+>  	scd->tick_raw = sched_clock();
+>  }
+>  
+> -static void __set_sched_clock_stable(void)
+> +void set_sched_clock_stable(void)
+>  {
+>  	struct sched_clock_data *scd;
+>  
+> @@ -236,7 +236,7 @@ static int __init sched_clock_init_late(void)
+>  	smp_mb(); /* matches {set,clear}_sched_clock_stable() */
+>  
+>  	if (__sched_clock_stable_early)
+> -		__set_sched_clock_stable();
+> +		set_sched_clock_stable();
+>  
+>  	return 0;
+>  }
+> -- 
+> 2.15.3.AMZN
+> 
