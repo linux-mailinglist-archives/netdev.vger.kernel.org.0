@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B15E213474C
-	for <lists+netdev@lfdr.de>; Wed,  8 Jan 2020 17:11:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 32C2B13474E
+	for <lists+netdev@lfdr.de>; Wed,  8 Jan 2020 17:12:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729036AbgAHQLk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jan 2020 11:11:40 -0500
-Received: from dispatch1-us1.ppe-hosted.com ([148.163.129.52]:39950 "EHLO
+        id S1727841AbgAHQL5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jan 2020 11:11:57 -0500
+Received: from dispatch1-us1.ppe-hosted.com ([148.163.129.52]:46504 "EHLO
         dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727618AbgAHQLk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jan 2020 11:11:40 -0500
+        by vger.kernel.org with ESMTP id S1726186AbgAHQL5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jan 2020 11:11:57 -0500
 X-Virus-Scanned: Proofpoint Essentials engine
 Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mx1-us2.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id D461B700098;
-        Wed,  8 Jan 2020 16:11:37 +0000 (UTC)
+        by mx1-us3.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id C83E1480097;
+        Wed,  8 Jan 2020 16:11:55 +0000 (UTC)
 Received: from amm-opti7060.uk.solarflarecom.com (10.17.20.147) by
  ukex01.SolarFlarecom.com (10.17.10.4) with Microsoft SMTP Server (TLS) id
- 15.0.1395.4; Wed, 8 Jan 2020 16:11:32 +0000
+ 15.0.1395.4; Wed, 8 Jan 2020 16:11:49 +0000
 From:   "Alex Maftei (amaftei)" <amaftei@solarflare.com>
-Subject: [PATCH net-next 05/14] sfc: move datapath management code
+Subject: [PATCH net-next 06/14] sfc: move some device reset code
 To:     <netdev@vger.kernel.org>, <davem@davemloft.net>
 CC:     <linux-net-drivers@solarflare.com>, <scrum-linux@solarflare.com>
 References: <a0cfb828-b98e-3a63-15d9-592675e81b5f@solarflare.com>
-Message-ID: <597fd5b1-10f7-b746-3958-c86f21cdbde9@solarflare.com>
-Date:   Wed, 8 Jan 2020 16:11:29 +0000
+Message-ID: <077eafab-8c33-8c12-d9b2-29a0c08c1315@solarflare.com>
+Date:   Wed, 8 Jan 2020 16:11:46 +0000
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.2.2
 MIME-Version: 1.0
@@ -38,726 +38,527 @@ X-Originating-IP: [10.17.20.147]
 X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
  ukex01.SolarFlarecom.com (10.17.10.4)
 X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1010-25154.003
-X-TM-AS-Result: No-9.813900-8.000000-10
-X-TMASE-MatchedRID: Dfm6MwZEehZsMVyAAdvrLbBZAi3nrnzbfhrkUjP10lNW/Z+zkKZQo3h0
-        psEsz2/KSgJB0j15cgZTvVffeIwvQwUcfW/oedmqPwKTD1v8YV5MkOX0UoduuRpX1zEL4nq3dBL
-        3GfDwgFc5DMhaYtGyT74agoH9nQ8LYTyt9zWQpTMwYApm54/SZmcCy3wC35zd0SxMhOhuA0Tygx
-        +IRquskBZpZqDuNEN2eiBv/L4i0xAoGsCID/XH5ZK9FvwQx1hFUHV7v8X++rmo8aocg8ZmI4opg
-        HeEYgzITbj7ZuBkpoiRvev4WycxTfWGuKlZ9MVSfc7cX82yHHlITFAcgVBxK0sdqJmf7mJ0ee+p
-        suSMY7r5FGNheH+Pun+3pSKK4h3y9Lx+1Xe7ffeKR0fcRBoRNd9GcpCvqzHahMZOnOKs8fLccF+
-        vY4fYYTcXL74M2tRpMsTFI4iGNTmHWAZx0LGJkV7Sq0XKoGHrQt4kQKXEUArHN9tnHHgXhFk0uh
-        bVrhisb2/BU61FVSMNxcYy/bAom6acba0/6+pRq0reih3E9rF+CWCcHScOE+D0a1g8E91LY0kwZ
-        RxIQCaCXoRNGj51F6BO6HZx9xBZ9juqgbPpsfGPQVakDkJU+dxWLypmYlZzyzyspHLq+J9koPm7
-        JRrAs20UE1UndaNY8XG3zT5yERnvl7ZvLqtgspzEHTUOuMX3ZAGtCJE23YhXy6SPHzrw7tShvIc
-        hwjOuW7bq9gwZaCC/UvVB4i+TYghPSs3fzpSMO8xKBrjenTTnEl/YQBxicK0ke9m+oOm0R0hOfM
-        hcLSthcaGxbMucnwZksWsMqIQUSs5dDi8K1lirm7DrUlmNkJGTpe1iiCJqb5ic6rRyh48LbigRn
-        pKlKTpcQTtiHDgWovh7GMKhDRSJB3X3VzMiuJenp1c+s80TNUB0OvkzpPUmaVoIh9BM9g==
+X-TM-AS-Result: No-6.820900-8.000000-10
+X-TMASE-MatchedRID: NRXuyqgiqGkCs1JL6zcjxRouoVvF2i0ZAf1C358hdK9jLp8Cm8vwFwoe
+        RRhCZWIBnvBWG5GT8Jdw5T4Iaj538mJZXQNDzktSGjzBgnFZvQ4Qtuqs6BbPJ58TZJWHqTM8zHU
+        ZBlJiIJcaEIxiUoPdLx8dLzBRS5b1sz/yBXbG+DdC4WIP7GtYLN1eFEoaE12nMTkWY9HYyZEyyy
+        fr0UIbOYYFGTrTbnHnM0v0qdFfgIUx8mf5Szr6KUf49ONH0RaSdQbBMo+jd6WtyIlQ9jhSMWyuN
+        axLNX09fXbyT9/TnYkt4c78JOvk9j99VOuv+/DjUPktDdOX0fvVLWM3sYUOfznZfxjBVQRb1mwi
+        z5WhcjT3zpQCE1ys/idWGNeDxvoBMvu44h/tYPcjRwcsjqWGAudppbZRNp/IfE7unL5EELwK/Gq
+        AMST36/xRYvlIka/iaFNCiX4IOVTDDpxXTlwoXcGNvKPnBgOa56ZiKymUcU41Z0DEBOIiJUPBKj
+        2tpM4OYKGJzLOZyQSmCsrK53xgEUL5qYNMJ0izvoQkZKo949MvsOOmgOo1mSdcFmaShWFJM6KP1
+        fFjVRW6/xa0MoJu7vEZXTnjP2GbWhGKUaUS+phbUzvsaHW6BmKA1HVKZBuTvGAx/1ATZ5vYnVNI
+        SjHqWyiIeL9Ckv5pLgjs0Uv5Ssq+zVeD5435mhaon88GOG1afXRAc+s3RFdXiLrvhpKLfKJFmbm
+        fOdw3sZlS4sU6vZWbKItl61J/ycnjLTA/UDoAGL0faaTpb9b3FLeZXNZS4EZLVcXaUbdi4N18eL
+        Y835VvUf4+rrqhywPxWdOhW1Usnkb7aOtOcGaeqD9WtJkSIw==
 X-TM-AS-User-Approved-Sender: Yes
 X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--9.813900-8.000000
+X-TMASE-Result: 10--6.820900-8.000000
 X-TMASE-Version: SMEX-12.5.0.1300-8.5.1010-25154.003
-X-MDID: 1578499898-WED-mOV4V9_2
+X-MDID: 1578499916-Ba8zlnjT1AdS
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The code that manages the datapath (starting, stopping, including the
-port-related bits) will be common.
-Three functions have been added that contain bits from other
-functions. These will be moved to their final files in later patches.
+The rest of the reset code will be moved later.
 Small code styling fixes included.
 
 Signed-off-by: Alexandru-Mihai Maftei <amaftei@solarflare.com>
 ---
- drivers/net/ethernet/sfc/efx.c        | 310 +-----------------------
- drivers/net/ethernet/sfc/efx_common.c | 328 ++++++++++++++++++++++++++
- 2 files changed, 335 insertions(+), 303 deletions(-)
+ drivers/net/ethernet/sfc/efx.c        | 227 ------------------------
+ drivers/net/ethernet/sfc/efx_common.c | 237 ++++++++++++++++++++++++++
+ 2 files changed, 237 insertions(+), 227 deletions(-)
 
 diff --git a/drivers/net/ethernet/sfc/efx.c b/drivers/net/ethernet/sfc/efx.c
-index 752470baf4be..988687a80abe 100644
+index 988687a80abe..40d1e8ef672d 100644
 --- a/drivers/net/ethernet/sfc/efx.c
 +++ b/drivers/net/ethernet/sfc/efx.c
-@@ -618,152 +618,6 @@ int efx_probe_channels(struct efx_nic *efx)
- 	return rc;
- }
+@@ -2483,184 +2483,6 @@ static void efx_unregister_netdev(struct efx_nic *efx)
+  *
+  **************************************************************************/
  
--/* Channels are shutdown and reinitialised whilst the NIC is running
-- * to propagate configuration changes (mtu, checksum offload), or
-- * to clear hardware error conditions
-- */
--static void efx_start_datapath(struct efx_nic *efx)
+-/* Tears down the entire software state and most of the hardware state
+- * before reset.  */
+-void efx_reset_down(struct efx_nic *efx, enum reset_type method)
 -{
--	netdev_features_t old_features = efx->net_dev->features;
--	bool old_rx_scatter = efx->rx_scatter;
--	struct efx_tx_queue *tx_queue;
--	struct efx_rx_queue *rx_queue;
--	struct efx_channel *channel;
--	size_t rx_buf_len;
+-	EFX_ASSERT_RESET_SERIALISED(efx);
 -
--	/* Calculate the rx buffer allocation parameters required to
--	 * support the current MTU, including padding for header
--	 * alignment and overruns.
--	 */
--	efx->rx_dma_len = (efx->rx_prefix_size +
--			   EFX_MAX_FRAME_LEN(efx->net_dev->mtu) +
--			   efx->type->rx_buffer_padding);
--	rx_buf_len = (sizeof(struct efx_rx_page_state) + XDP_PACKET_HEADROOM +
--		      efx->rx_ip_align + efx->rx_dma_len);
--	if (rx_buf_len <= PAGE_SIZE) {
--		efx->rx_scatter = efx->type->always_rx_scatter;
--		efx->rx_buffer_order = 0;
--	} else if (efx->type->can_rx_scatter) {
--		BUILD_BUG_ON(EFX_RX_USR_BUF_SIZE % L1_CACHE_BYTES);
--		BUILD_BUG_ON(sizeof(struct efx_rx_page_state) +
--			     2 * ALIGN(NET_IP_ALIGN + EFX_RX_USR_BUF_SIZE,
--				       EFX_RX_BUF_ALIGNMENT) >
--			     PAGE_SIZE);
--		efx->rx_scatter = true;
--		efx->rx_dma_len = EFX_RX_USR_BUF_SIZE;
--		efx->rx_buffer_order = 0;
--	} else {
--		efx->rx_scatter = false;
--		efx->rx_buffer_order = get_order(rx_buf_len);
--	}
+-	if (method == RESET_TYPE_MCDI_TIMEOUT)
+-		efx->type->prepare_flr(efx);
 -
--	efx_rx_config_page_split(efx);
--	if (efx->rx_buffer_order)
--		netif_dbg(efx, drv, efx->net_dev,
--			  "RX buf len=%u; page order=%u batch=%u\n",
--			  efx->rx_dma_len, efx->rx_buffer_order,
--			  efx->rx_pages_per_batch);
--	else
--		netif_dbg(efx, drv, efx->net_dev,
--			  "RX buf len=%u step=%u bpp=%u; page batch=%u\n",
--			  efx->rx_dma_len, efx->rx_page_buf_step,
--			  efx->rx_bufs_per_page, efx->rx_pages_per_batch);
+-	efx_stop_all(efx);
+-	efx_disable_interrupts(efx);
 -
--	/* Restore previously fixed features in hw_features and remove
--	 * features which are fixed now
--	 */
--	efx->net_dev->hw_features |= efx->net_dev->features;
--	efx->net_dev->hw_features &= ~efx->fixed_features;
--	efx->net_dev->features |= efx->fixed_features;
--	if (efx->net_dev->features != old_features)
--		netdev_features_change(efx->net_dev);
--
--	/* RX filters may also have scatter-enabled flags */
--	if (efx->rx_scatter != old_rx_scatter)
--		efx->type->filter_update_rx_scatter(efx);
--
--	/* We must keep at least one descriptor in a TX ring empty.
--	 * We could avoid this when the queue size does not exactly
--	 * match the hardware ring size, but it's not that important.
--	 * Therefore we stop the queue when one more skb might fill
--	 * the ring completely.  We wake it when half way back to
--	 * empty.
--	 */
--	efx->txq_stop_thresh = efx->txq_entries - efx_tx_max_skb_descs(efx);
--	efx->txq_wake_thresh = efx->txq_stop_thresh / 2;
--
--	/* Initialise the channels */
--	efx_for_each_channel(channel, efx) {
--		efx_for_each_channel_tx_queue(tx_queue, channel) {
--			efx_init_tx_queue(tx_queue);
--			atomic_inc(&efx->active_queues);
--		}
--
--		efx_for_each_channel_rx_queue(rx_queue, channel) {
--			efx_init_rx_queue(rx_queue);
--			atomic_inc(&efx->active_queues);
--			efx_stop_eventq(channel);
--			efx_fast_push_rx_descriptors(rx_queue, false);
--			efx_start_eventq(channel);
--		}
--
--		WARN_ON(channel->rx_pkt_n_frags);
--	}
--
--	efx_ptp_start_datapath(efx);
--
--	if (netif_device_present(efx->net_dev))
--		netif_tx_wake_all_queues(efx->net_dev);
+-	mutex_lock(&efx->mac_lock);
+-	down_write(&efx->filter_sem);
+-	mutex_lock(&efx->rss_lock);
+-	if (efx->port_initialized && method != RESET_TYPE_INVISIBLE &&
+-	    method != RESET_TYPE_DATAPATH)
+-		efx->phy_op->fini(efx);
+-	efx->type->fini(efx);
 -}
 -
--static void efx_stop_datapath(struct efx_nic *efx)
+-/* This function will always ensure that the locks acquired in
+- * efx_reset_down() are released. A failure return code indicates
+- * that we were unable to reinitialise the hardware, and the
+- * driver should be disabled. If ok is false, then the rx and tx
+- * engines are not restarted, pending a RESET_DISABLE. */
+-int efx_reset_up(struct efx_nic *efx, enum reset_type method, bool ok)
 -{
--	struct efx_channel *channel;
--	struct efx_tx_queue *tx_queue;
--	struct efx_rx_queue *rx_queue;
 -	int rc;
 -
 -	EFX_ASSERT_RESET_SERIALISED(efx);
--	BUG_ON(efx->port_enabled);
 -
--	efx_ptp_stop_datapath(efx);
+-	if (method == RESET_TYPE_MCDI_TIMEOUT)
+-		efx->type->finish_flr(efx);
 -
--	/* Stop RX refill */
--	efx_for_each_channel(channel, efx) {
--		efx_for_each_channel_rx_queue(rx_queue, channel)
--			rx_queue->refill_enabled = false;
--	}
--
--	efx_for_each_channel(channel, efx) {
--		/* RX packet processing is pipelined, so wait for the
--		 * NAPI handler to complete.  At least event queue 0
--		 * might be kept active by non-data events, so don't
--		 * use napi_synchronize() but actually disable NAPI
--		 * temporarily.
--		 */
--		if (efx_channel_has_rx_queue(channel)) {
--			efx_stop_eventq(channel);
--			efx_start_eventq(channel);
--		}
--	}
--
--	rc = efx->type->fini_dmaq(efx);
+-	/* Ensure that SRAM is initialised even if we're disabling the device */
+-	rc = efx->type->init(efx);
 -	if (rc) {
--		netif_err(efx, drv, efx->net_dev, "failed to flush queues\n");
--	} else {
--		netif_dbg(efx, drv, efx->net_dev,
--			  "successfully flushed all queues\n");
+-		netif_err(efx, drv, efx->net_dev, "failed to initialise NIC\n");
+-		goto fail;
 -	}
 -
--	efx_for_each_channel(channel, efx) {
--		efx_for_each_channel_rx_queue(rx_queue, channel)
--			efx_fini_rx_queue(rx_queue);
--		efx_for_each_possible_channel_tx_queue(tx_queue, channel)
--			efx_fini_tx_queue(tx_queue);
+-	if (!ok)
+-		goto fail;
+-
+-	if (efx->port_initialized && method != RESET_TYPE_INVISIBLE &&
+-	    method != RESET_TYPE_DATAPATH) {
+-		rc = efx->phy_op->init(efx);
+-		if (rc)
+-			goto fail;
+-		rc = efx->phy_op->reconfigure(efx);
+-		if (rc && rc != -EPERM)
+-			netif_err(efx, drv, efx->net_dev,
+-				  "could not restore PHY settings\n");
 -	}
--	efx->xdp_rxq_info_failed = false;
--}
 -
- void efx_remove_channel(struct efx_channel *channel)
- {
- 	struct efx_tx_queue *tx_queue;
-@@ -976,50 +830,6 @@ void efx_link_set_wanted_fc(struct efx_nic *efx, u8 wanted_fc)
- 
- static void efx_fini_port(struct efx_nic *efx);
- 
--/* Push loopback/power/transmit disable settings to the PHY, and reconfigure
-- * the MAC appropriately. All other PHY configuration changes are pushed
-- * through phy_op->set_settings(), and pushed asynchronously to the MAC
-- * through efx_monitor().
-- *
-- * Callers must hold the mac_lock
-- */
--int __efx_reconfigure_port(struct efx_nic *efx)
--{
--	enum efx_phy_mode phy_mode;
--	int rc;
--
--	WARN_ON(!mutex_is_locked(&efx->mac_lock));
--
--	/* Disable PHY transmit in mac level loopbacks */
--	phy_mode = efx->phy_mode;
--	if (LOOPBACK_INTERNAL(efx))
--		efx->phy_mode |= PHY_MODE_TX_DISABLED;
--	else
--		efx->phy_mode &= ~PHY_MODE_TX_DISABLED;
--
--	rc = efx->type->reconfigure_port(efx);
--
+-	rc = efx_enable_interrupts(efx);
 -	if (rc)
--		efx->phy_mode = phy_mode;
+-		goto fail;
 -
--	return rc;
--}
+-#ifdef CONFIG_SFC_SRIOV
+-	rc = efx->type->vswitching_restore(efx);
+-	if (rc) /* not fatal; the PF will still work fine */
+-		netif_warn(efx, probe, efx->net_dev,
+-			   "failed to restore vswitching rc=%d;"
+-			   " VFs may not function\n", rc);
+-#endif
 -
--/* Reinitialise the MAC to pick up new PHY settings, even if the port is
-- * disabled. */
--int efx_reconfigure_port(struct efx_nic *efx)
--{
--	int rc;
+-	if (efx->type->rx_restore_rss_contexts)
+-		efx->type->rx_restore_rss_contexts(efx);
+-	mutex_unlock(&efx->rss_lock);
+-	efx->type->filter_table_restore(efx);
+-	up_write(&efx->filter_sem);
+-	if (efx->type->sriov_reset)
+-		efx->type->sriov_reset(efx);
 -
--	EFX_ASSERT_RESET_SERIALISED(efx);
+-	mutex_unlock(&efx->mac_lock);
 -
--	mutex_lock(&efx->mac_lock);
--	rc = __efx_reconfigure_port(efx);
+-	efx_start_all(efx);
+-
+-	if (efx->type->udp_tnl_push_ports)
+-		efx->type->udp_tnl_push_ports(efx);
+-
+-	return 0;
+-
+-fail:
+-	efx->port_initialized = false;
+-
+-	mutex_unlock(&efx->rss_lock);
+-	up_write(&efx->filter_sem);
 -	mutex_unlock(&efx->mac_lock);
 -
 -	return rc;
 -}
 -
- /* Asynchronous work item for changing MAC promiscuity and multicast
-  * hash.  Avoid a drain/rx_ingress enable by reconfiguring the current
-  * MAC directly. */
-@@ -1086,44 +896,6 @@ static int efx_init_port(struct efx_nic *efx)
- 	return rc;
- }
- 
--static void efx_start_port(struct efx_nic *efx)
--{
--	netif_dbg(efx, ifup, efx->net_dev, "start port\n");
--	BUG_ON(efx->port_enabled);
--
--	mutex_lock(&efx->mac_lock);
--	efx->port_enabled = true;
--
--	/* Ensure MAC ingress/egress is enabled */
--	efx_mac_reconfigure(efx);
--
--	mutex_unlock(&efx->mac_lock);
--}
--
--/* Cancel work for MAC reconfiguration, periodic hardware monitoring
-- * and the async self-test, wait for them to finish and prevent them
-- * being scheduled again.  This doesn't cover online resets, which
-- * should only be cancelled when removing the device.
+-/* Reset the NIC using the specified method.  Note that the reset may
+- * fail, in which case the card will be left in an unusable state.
+- *
+- * Caller must hold the rtnl_lock.
 - */
--static void efx_stop_port(struct efx_nic *efx)
+-int efx_reset(struct efx_nic *efx, enum reset_type method)
 -{
--	netif_dbg(efx, ifdown, efx->net_dev, "stop port\n");
+-	int rc, rc2;
+-	bool disabled;
 -
--	EFX_ASSERT_RESET_SERIALISED(efx);
+-	netif_info(efx, drv, efx->net_dev, "resetting (%s)\n",
+-		   RESET_TYPE(method));
 -
--	mutex_lock(&efx->mac_lock);
--	efx->port_enabled = false;
--	mutex_unlock(&efx->mac_lock);
+-	efx_device_detach_sync(efx);
+-	efx_reset_down(efx, method);
 -
--	/* Serialise against efx_set_multicast_list() */
--	netif_addr_lock_bh(efx->net_dev);
--	netif_addr_unlock_bh(efx->net_dev);
+-	rc = efx->type->reset(efx, method);
+-	if (rc) {
+-		netif_err(efx, drv, efx->net_dev, "failed to reset hardware\n");
+-		goto out;
+-	}
 -
--	cancel_delayed_work_sync(&efx->monitor_work);
--	efx_selftest_async_cancel(efx);
--	cancel_work_sync(&efx->mac_work);
+-	/* Clear flags for the scopes we covered.  We assume the NIC and
+-	 * driver are now quiescent so that there is no race here.
+-	 */
+-	if (method < RESET_TYPE_MAX_METHOD)
+-		efx->reset_pending &= -(1 << (method + 1));
+-	else /* it doesn't fit into the well-ordered scope hierarchy */
+-		__clear_bit(method, &efx->reset_pending);
+-
+-	/* Reinitialise bus-mastering, which may have been turned off before
+-	 * the reset was scheduled. This is still appropriate, even in the
+-	 * RESET_TYPE_DISABLE since this driver generally assumes the hardware
+-	 * can respond to requests. */
+-	pci_set_master(efx->pci_dev);
+-
+-out:
+-	/* Leave device stopped if necessary */
+-	disabled = rc ||
+-		method == RESET_TYPE_DISABLE ||
+-		method == RESET_TYPE_RECOVER_OR_DISABLE;
+-	rc2 = efx_reset_up(efx, method, !disabled);
+-	if (rc2) {
+-		disabled = true;
+-		if (!rc)
+-			rc = rc2;
+-	}
+-
+-	if (disabled) {
+-		dev_close(efx->net_dev);
+-		netif_err(efx, drv, efx->net_dev, "has been disabled\n");
+-		efx->state = STATE_DISABLED;
+-	} else {
+-		netif_dbg(efx, drv, efx->net_dev, "reset complete\n");
+-		efx_device_attach_if_not_resetting(efx);
+-	}
+-	return rc;
 -}
 -
- static void efx_fini_port(struct efx_nic *efx)
+-/* Try recovery mechanisms.
+- * For now only EEH is supported.
+- * Returns 0 if the recovery mechanisms are unsuccessful.
+- * Returns a non-zero value otherwise.
+- */
+-int efx_try_recovery(struct efx_nic *efx)
+-{
+-#ifdef CONFIG_EEH
+-	/* A PCI error can occur and not be seen by EEH because nothing
+-	 * happens on the PCI bus. In this case the driver may fail and
+-	 * schedule a 'recover or reset', leading to this recovery handler.
+-	 * Manually call the eeh failure check function.
+-	 */
+-	struct eeh_dev *eehdev = pci_dev_to_eeh_dev(efx->pci_dev);
+-	if (eeh_dev_check_failure(eehdev)) {
+-		/* The EEH mechanisms will handle the error and reset the
+-		 * device if necessary.
+-		 */
+-		return 1;
+-	}
+-#endif
+-	return 0;
+-}
+-
+ static void efx_wait_for_bist_end(struct efx_nic *efx)
  {
- 	netif_dbg(efx, drv, efx->net_dev, "shut down port\n");
-@@ -1990,81 +1762,6 @@ static int efx_probe_all(struct efx_nic *efx)
- 	return rc;
+ 	int i;
+@@ -2714,55 +2536,6 @@ static void efx_reset_work(struct work_struct *data)
+ 	rtnl_unlock();
  }
  
--/* If the interface is supposed to be running but is not, start
-- * the hardware and software data path, regular activity for the port
-- * (MAC statistics, link polling, etc.) and schedule the port to be
-- * reconfigured.  Interrupts must already be enabled.  This function
-- * is safe to call multiple times, so long as the NIC is not disabled.
-- * Requires the RTNL lock.
-- */
--void efx_start_all(struct efx_nic *efx)
+-void efx_schedule_reset(struct efx_nic *efx, enum reset_type type)
 -{
--	EFX_ASSERT_RESET_SERIALISED(efx);
--	BUG_ON(efx->state == STATE_DISABLED);
+-	enum reset_type method;
 -
--	/* Check that it is appropriate to restart the interface. All
--	 * of these flags are safe to read under just the rtnl lock */
--	if (efx->port_enabled || !netif_running(efx->net_dev) ||
--	    efx->reset_pending)
+-	if (efx->state == STATE_RECOVERY) {
+-		netif_dbg(efx, drv, efx->net_dev,
+-			  "recovering: skip scheduling %s reset\n",
+-			  RESET_TYPE(type));
+-		return;
+-	}
+-
+-	switch (type) {
+-	case RESET_TYPE_INVISIBLE:
+-	case RESET_TYPE_ALL:
+-	case RESET_TYPE_RECOVER_OR_ALL:
+-	case RESET_TYPE_WORLD:
+-	case RESET_TYPE_DISABLE:
+-	case RESET_TYPE_RECOVER_OR_DISABLE:
+-	case RESET_TYPE_DATAPATH:
+-	case RESET_TYPE_MC_BIST:
+-	case RESET_TYPE_MCDI_TIMEOUT:
+-		method = type;
+-		netif_dbg(efx, drv, efx->net_dev, "scheduling %s reset\n",
+-			  RESET_TYPE(method));
+-		break;
+-	default:
+-		method = efx->type->map_reset_reason(type);
+-		netif_dbg(efx, drv, efx->net_dev,
+-			  "scheduling %s reset for %s\n",
+-			  RESET_TYPE(method), RESET_TYPE(type));
+-		break;
+-	}
+-
+-	set_bit(method, &efx->reset_pending);
+-	smp_mb(); /* ensure we change reset_pending before checking state */
+-
+-	/* If we're not READY then just leave the flags set as the cue
+-	 * to abort probing or reschedule the reset later.
+-	 */
+-	if (READ_ONCE(efx->state) != STATE_READY)
 -		return;
 -
--	efx_start_port(efx);
--	efx_start_datapath(efx);
+-	/* efx_process_channel() will no longer read events once a
+-	 * reset is scheduled. So switch back to poll'd MCDI completions. */
+-	efx_mcdi_mode_poll(efx);
 -
--	/* Start the hardware monitor if there is one */
--	if (efx->type->monitor != NULL)
--		queue_delayed_work(efx->workqueue, &efx->monitor_work,
--				   efx_monitor_interval);
--
--	/* Link state detection is normally event-driven; we have
--	 * to poll now because we could have missed a change
--	 */
--	mutex_lock(&efx->mac_lock);
--	if (efx->phy_op->poll(efx))
--		efx_link_status_changed(efx);
--	mutex_unlock(&efx->mac_lock);
--
--	efx->type->start_stats(efx);
--	efx->type->pull_stats(efx);
--	spin_lock_bh(&efx->stats_lock);
--	efx->type->update_stats(efx, NULL, NULL);
--	spin_unlock_bh(&efx->stats_lock);
+-	efx_queue_reset_work(efx);
 -}
 -
--/* Quiesce the hardware and software data path, and regular activity
-- * for the port without bringing the link down.  Safe to call multiple
-- * times with the NIC in almost any state, but interrupts should be
-- * enabled.  Requires the RTNL lock.
-- */
--void efx_stop_all(struct efx_nic *efx)
--{
--	EFX_ASSERT_RESET_SERIALISED(efx);
--
--	/* port_enabled can be read safely under the rtnl lock */
--	if (!efx->port_enabled)
--		return;
--
--	/* update stats before we go down so we can accurately count
--	 * rx_nodesc_drops
--	 */
--	efx->type->pull_stats(efx);
--	spin_lock_bh(&efx->stats_lock);
--	efx->type->update_stats(efx, NULL, NULL);
--	spin_unlock_bh(&efx->stats_lock);
--	efx->type->stop_stats(efx);
--	efx_stop_port(efx);
--
--	/* Stop the kernel transmit interface.  This is only valid if
--	 * the device is stopped or detached; otherwise the watchdog
--	 * may fire immediately.
--	 */
--	WARN_ON(netif_running(efx->net_dev) &&
--		netif_device_present(efx->net_dev));
--	netif_tx_disable(efx->net_dev);
--
--	efx_stop_datapath(efx);
--}
--
- static void efx_remove_all(struct efx_nic *efx)
- {
- 	rtnl_lock();
-@@ -2188,6 +1885,13 @@ static void efx_monitor(struct work_struct *data)
- 			   efx_monitor_interval);
- }
- 
-+void efx_start_monitor(struct efx_nic *efx)
-+{
-+	if (efx->type->monitor)
-+		queue_delayed_work(efx->workqueue, &efx->monitor_work,
-+				   efx_monitor_interval);
-+}
-+
  /**************************************************************************
   *
-  * ioctls
+  * List of NICs we support
 diff --git a/drivers/net/ethernet/sfc/efx_common.c b/drivers/net/ethernet/sfc/efx_common.c
-index be8e80c9d513..445340c903b1 100644
+index 445340c903b1..813ebdda50f6 100644
 --- a/drivers/net/ethernet/sfc/efx_common.c
 +++ b/drivers/net/ethernet/sfc/efx_common.c
-@@ -101,3 +101,331 @@ void efx_link_status_changed(struct efx_nic *efx)
- 	else
- 		netif_info(efx, link, efx->net_dev, "link down\n");
+@@ -429,3 +429,240 @@ int efx_reconfigure_port(struct efx_nic *efx)
+ 
+ 	return rc;
  }
 +
 +/**************************************************************************
 + *
-+ * Event queue processing
-+ *
-+ *************************************************************************/
-+
-+void efx_start_channels(struct efx_nic *efx)
-+{
-+	struct efx_tx_queue *tx_queue;
-+	struct efx_rx_queue *rx_queue;
-+	struct efx_channel *channel;
-+
-+	efx_for_each_channel(channel, efx) {
-+		efx_for_each_channel_tx_queue(tx_queue, channel) {
-+			efx_init_tx_queue(tx_queue);
-+			atomic_inc(&efx->active_queues);
-+		}
-+
-+		efx_for_each_channel_rx_queue(rx_queue, channel) {
-+			efx_init_rx_queue(rx_queue);
-+			atomic_inc(&efx->active_queues);
-+			efx_stop_eventq(channel);
-+			efx_fast_push_rx_descriptors(rx_queue, false);
-+			efx_start_eventq(channel);
-+		}
-+
-+		WARN_ON(channel->rx_pkt_n_frags);
-+	}
-+}
-+
-+/* Channels are shutdown and reinitialised whilst the NIC is running
-+ * to propagate configuration changes (mtu, checksum offload), or
-+ * to clear hardware error conditions
-+ */
-+static void efx_start_datapath(struct efx_nic *efx)
-+{
-+	netdev_features_t old_features = efx->net_dev->features;
-+	bool old_rx_scatter = efx->rx_scatter;
-+	size_t rx_buf_len;
-+
-+	/* Calculate the rx buffer allocation parameters required to
-+	 * support the current MTU, including padding for header
-+	 * alignment and overruns.
-+	 */
-+	efx->rx_dma_len = (efx->rx_prefix_size +
-+			   EFX_MAX_FRAME_LEN(efx->net_dev->mtu) +
-+			   efx->type->rx_buffer_padding);
-+	rx_buf_len = (sizeof(struct efx_rx_page_state) + XDP_PACKET_HEADROOM +
-+		      efx->rx_ip_align + efx->rx_dma_len);
-+	if (rx_buf_len <= PAGE_SIZE) {
-+		efx->rx_scatter = efx->type->always_rx_scatter;
-+		efx->rx_buffer_order = 0;
-+	} else if (efx->type->can_rx_scatter) {
-+		BUILD_BUG_ON(EFX_RX_USR_BUF_SIZE % L1_CACHE_BYTES);
-+		BUILD_BUG_ON(sizeof(struct efx_rx_page_state) +
-+			     2 * ALIGN(NET_IP_ALIGN + EFX_RX_USR_BUF_SIZE,
-+				       EFX_RX_BUF_ALIGNMENT) >
-+			     PAGE_SIZE);
-+		efx->rx_scatter = true;
-+		efx->rx_dma_len = EFX_RX_USR_BUF_SIZE;
-+		efx->rx_buffer_order = 0;
-+	} else {
-+		efx->rx_scatter = false;
-+		efx->rx_buffer_order = get_order(rx_buf_len);
-+	}
-+
-+	efx_rx_config_page_split(efx);
-+	if (efx->rx_buffer_order)
-+		netif_dbg(efx, drv, efx->net_dev,
-+			  "RX buf len=%u; page order=%u batch=%u\n",
-+			  efx->rx_dma_len, efx->rx_buffer_order,
-+			  efx->rx_pages_per_batch);
-+	else
-+		netif_dbg(efx, drv, efx->net_dev,
-+			  "RX buf len=%u step=%u bpp=%u; page batch=%u\n",
-+			  efx->rx_dma_len, efx->rx_page_buf_step,
-+			  efx->rx_bufs_per_page, efx->rx_pages_per_batch);
-+
-+	/* Restore previously fixed features in hw_features and remove
-+	 * features which are fixed now
-+	 */
-+	efx->net_dev->hw_features |= efx->net_dev->features;
-+	efx->net_dev->hw_features &= ~efx->fixed_features;
-+	efx->net_dev->features |= efx->fixed_features;
-+	if (efx->net_dev->features != old_features)
-+		netdev_features_change(efx->net_dev);
-+
-+	/* RX filters may also have scatter-enabled flags */
-+	if (efx->rx_scatter != old_rx_scatter)
-+		efx->type->filter_update_rx_scatter(efx);
-+
-+	/* We must keep at least one descriptor in a TX ring empty.
-+	 * We could avoid this when the queue size does not exactly
-+	 * match the hardware ring size, but it's not that important.
-+	 * Therefore we stop the queue when one more skb might fill
-+	 * the ring completely.  We wake it when half way back to
-+	 * empty.
-+	 */
-+	efx->txq_stop_thresh = efx->txq_entries - efx_tx_max_skb_descs(efx);
-+	efx->txq_wake_thresh = efx->txq_stop_thresh / 2;
-+
-+	/* Initialise the channels */
-+	efx_start_channels(efx);
-+
-+	efx_ptp_start_datapath(efx);
-+
-+	if (netif_device_present(efx->net_dev))
-+		netif_tx_wake_all_queues(efx->net_dev);
-+}
-+
-+void efx_stop_channels(struct efx_nic *efx)
-+{
-+	struct efx_tx_queue *tx_queue;
-+	struct efx_rx_queue *rx_queue;
-+	struct efx_channel *channel;
-+	int rc = 0;
-+
-+	/* Stop RX refill */
-+	efx_for_each_channel(channel, efx) {
-+		efx_for_each_channel_rx_queue(rx_queue, channel)
-+			rx_queue->refill_enabled = false;
-+	}
-+
-+	efx_for_each_channel(channel, efx) {
-+		/* RX packet processing is pipelined, so wait for the
-+		 * NAPI handler to complete.  At least event queue 0
-+		 * might be kept active by non-data events, so don't
-+		 * use napi_synchronize() but actually disable NAPI
-+		 * temporarily.
-+		 */
-+		if (efx_channel_has_rx_queue(channel)) {
-+			efx_stop_eventq(channel);
-+			efx_start_eventq(channel);
-+		}
-+	}
-+
-+	if (efx->type->fini_dmaq)
-+		rc = efx->type->fini_dmaq(efx);
-+
-+	if (rc) {
-+		netif_err(efx, drv, efx->net_dev, "failed to flush queues\n");
-+	} else {
-+		netif_dbg(efx, drv, efx->net_dev,
-+			  "successfully flushed all queues\n");
-+	}
-+
-+	efx_for_each_channel(channel, efx) {
-+		efx_for_each_channel_rx_queue(rx_queue, channel)
-+			efx_fini_rx_queue(rx_queue);
-+		efx_for_each_possible_channel_tx_queue(tx_queue, channel)
-+			efx_fini_tx_queue(tx_queue);
-+	}
-+	efx->xdp_rxq_info_failed = false;
-+}
-+
-+static void efx_stop_datapath(struct efx_nic *efx)
-+{
-+	EFX_ASSERT_RESET_SERIALISED(efx);
-+	BUG_ON(efx->port_enabled);
-+
-+	efx_ptp_stop_datapath(efx);
-+
-+	efx_stop_channels(efx);
-+}
-+
-+/**************************************************************************
-+ *
-+ * Port handling
++ * Device reset and suspend
 + *
 + **************************************************************************/
 +
-+static void efx_start_port(struct efx_nic *efx)
-+{
-+	netif_dbg(efx, ifup, efx->net_dev, "start port\n");
-+	BUG_ON(efx->port_enabled);
-+
-+	mutex_lock(&efx->mac_lock);
-+	efx->port_enabled = true;
-+
-+	/* Ensure MAC ingress/egress is enabled */
-+	efx_mac_reconfigure(efx);
-+
-+	mutex_unlock(&efx->mac_lock);
-+}
-+
-+/* Cancel work for MAC reconfiguration, periodic hardware monitoring
-+ * and the async self-test, wait for them to finish and prevent them
-+ * being scheduled again.  This doesn't cover online resets, which
-+ * should only be cancelled when removing the device.
++/* Try recovery mechanisms.
++ * For now only EEH is supported.
++ * Returns 0 if the recovery mechanisms are unsuccessful.
++ * Returns a non-zero value otherwise.
 + */
-+static void efx_stop_port(struct efx_nic *efx)
++int efx_try_recovery(struct efx_nic *efx)
 +{
-+	netif_dbg(efx, ifdown, efx->net_dev, "stop port\n");
-+
-+	EFX_ASSERT_RESET_SERIALISED(efx);
-+
-+	mutex_lock(&efx->mac_lock);
-+	efx->port_enabled = false;
-+	mutex_unlock(&efx->mac_lock);
-+
-+	/* Serialise against efx_set_multicast_list() */
-+	netif_addr_lock_bh(efx->net_dev);
-+	netif_addr_unlock_bh(efx->net_dev);
-+
-+	cancel_delayed_work_sync(&efx->monitor_work);
-+	efx_selftest_async_cancel(efx);
-+	cancel_work_sync(&efx->mac_work);
-+}
-+
-+/* If the interface is supposed to be running but is not, start
-+ * the hardware and software data path, regular activity for the port
-+ * (MAC statistics, link polling, etc.) and schedule the port to be
-+ * reconfigured.  Interrupts must already be enabled.  This function
-+ * is safe to call multiple times, so long as the NIC is not disabled.
-+ * Requires the RTNL lock.
-+ */
-+void efx_start_all(struct efx_nic *efx)
-+{
-+	EFX_ASSERT_RESET_SERIALISED(efx);
-+	BUG_ON(efx->state == STATE_DISABLED);
-+
-+	/* Check that it is appropriate to restart the interface. All
-+	 * of these flags are safe to read under just the rtnl lock
++#ifdef CONFIG_EEH
++	/* A PCI error can occur and not be seen by EEH because nothing
++	 * happens on the PCI bus. In this case the driver may fail and
++	 * schedule a 'recover or reset', leading to this recovery handler.
++	 * Manually call the eeh failure check function.
 +	 */
-+	if (efx->port_enabled || !netif_running(efx->net_dev) ||
-+	    efx->reset_pending)
-+		return;
-+
-+	efx_start_port(efx);
-+	efx_start_datapath(efx);
-+
-+	/* Start the hardware monitor if there is one */
-+	efx_start_monitor(efx);
-+
-+	/* Link state detection is normally event-driven; we have
-+	 * to poll now because we could have missed a change
-+	 */
-+	mutex_lock(&efx->mac_lock);
-+	if (efx->phy_op->poll(efx))
-+		efx_link_status_changed(efx);
-+	mutex_unlock(&efx->mac_lock);
-+
-+	efx->type->start_stats(efx);
-+	efx->type->pull_stats(efx);
-+	spin_lock_bh(&efx->stats_lock);
-+	efx->type->update_stats(efx, NULL, NULL);
-+	spin_unlock_bh(&efx->stats_lock);
++	struct eeh_dev *eehdev = pci_dev_to_eeh_dev(efx->pci_dev);
++	if (eeh_dev_check_failure(eehdev)) {
++		/* The EEH mechanisms will handle the error and reset the
++		 * device if necessary.
++		 */
++		return 1;
++	}
++#endif
++	return 0;
 +}
 +
-+/* Quiesce the hardware and software data path, and regular activity
-+ * for the port without bringing the link down.  Safe to call multiple
-+ * times with the NIC in almost any state, but interrupts should be
-+ * enabled.  Requires the RTNL lock.
++/* Tears down the entire software state and most of the hardware state
++ * before reset.
 + */
-+void efx_stop_all(struct efx_nic *efx)
++void efx_reset_down(struct efx_nic *efx, enum reset_type method)
 +{
 +	EFX_ASSERT_RESET_SERIALISED(efx);
 +
-+	/* port_enabled can be read safely under the rtnl lock */
-+	if (!efx->port_enabled)
-+		return;
++	if (method == RESET_TYPE_MCDI_TIMEOUT)
++		efx->type->prepare_flr(efx);
 +
-+	/* update stats before we go down so we can accurately count
-+	 * rx_nodesc_drops
-+	 */
-+	efx->type->pull_stats(efx);
-+	spin_lock_bh(&efx->stats_lock);
-+	efx->type->update_stats(efx, NULL, NULL);
-+	spin_unlock_bh(&efx->stats_lock);
-+	efx->type->stop_stats(efx);
-+	efx_stop_port(efx);
++	efx_stop_all(efx);
++	efx_disable_interrupts(efx);
 +
-+	/* Stop the kernel transmit interface.  This is only valid if
-+	 * the device is stopped or detached; otherwise the watchdog
-+	 * may fire immediately.
-+	 */
-+	WARN_ON(netif_running(efx->net_dev) &&
-+		netif_device_present(efx->net_dev));
-+	netif_tx_disable(efx->net_dev);
-+
-+	efx_stop_datapath(efx);
++	mutex_lock(&efx->mac_lock);
++	down_write(&efx->filter_sem);
++	mutex_lock(&efx->rss_lock);
++	if (efx->port_initialized && method != RESET_TYPE_INVISIBLE &&
++	    method != RESET_TYPE_DATAPATH)
++		efx->phy_op->fini(efx);
++	efx->type->fini(efx);
 +}
 +
-+/* Push loopback/power/transmit disable settings to the PHY, and reconfigure
-+ * the MAC appropriately. All other PHY configuration changes are pushed
-+ * through phy_op->set_settings(), and pushed asynchronously to the MAC
-+ * through efx_monitor().
-+ *
-+ * Callers must hold the mac_lock
++/* This function will always ensure that the locks acquired in
++ * efx_reset_down() are released. A failure return code indicates
++ * that we were unable to reinitialise the hardware, and the
++ * driver should be disabled. If ok is false, then the rx and tx
++ * engines are not restarted, pending a RESET_DISABLE.
 + */
-+int __efx_reconfigure_port(struct efx_nic *efx)
++int efx_reset_up(struct efx_nic *efx, enum reset_type method, bool ok)
 +{
-+	enum efx_phy_mode phy_mode;
 +	int rc;
 +
-+	WARN_ON(!mutex_is_locked(&efx->mac_lock));
++	EFX_ASSERT_RESET_SERIALISED(efx);
 +
-+	/* Disable PHY transmit in mac level loopbacks */
-+	phy_mode = efx->phy_mode;
-+	if (LOOPBACK_INTERNAL(efx))
-+		efx->phy_mode |= PHY_MODE_TX_DISABLED;
-+	else
-+		efx->phy_mode &= ~PHY_MODE_TX_DISABLED;
++	if (method == RESET_TYPE_MCDI_TIMEOUT)
++		efx->type->finish_flr(efx);
 +
-+	rc = efx->type->reconfigure_port(efx);
++	/* Ensure that SRAM is initialised even if we're disabling the device */
++	rc = efx->type->init(efx);
++	if (rc) {
++		netif_err(efx, drv, efx->net_dev, "failed to initialise NIC\n");
++		goto fail;
++	}
 +
++	if (!ok)
++		goto fail;
++
++	if (efx->port_initialized && method != RESET_TYPE_INVISIBLE &&
++	    method != RESET_TYPE_DATAPATH) {
++		rc = efx->phy_op->init(efx);
++		if (rc)
++			goto fail;
++		rc = efx->phy_op->reconfigure(efx);
++		if (rc && rc != -EPERM)
++			netif_err(efx, drv, efx->net_dev,
++				  "could not restore PHY settings\n");
++	}
++
++	rc = efx_enable_interrupts(efx);
 +	if (rc)
-+		efx->phy_mode = phy_mode;
++		goto fail;
++
++#ifdef CONFIG_SFC_SRIOV
++	rc = efx->type->vswitching_restore(efx);
++	if (rc) /* not fatal; the PF will still work fine */
++		netif_warn(efx, probe, efx->net_dev,
++			   "failed to restore vswitching rc=%d;"
++			   " VFs may not function\n", rc);
++#endif
++
++	if (efx->type->rx_restore_rss_contexts)
++		efx->type->rx_restore_rss_contexts(efx);
++	mutex_unlock(&efx->rss_lock);
++	efx->type->filter_table_restore(efx);
++	up_write(&efx->filter_sem);
++	if (efx->type->sriov_reset)
++		efx->type->sriov_reset(efx);
++
++	mutex_unlock(&efx->mac_lock);
++
++	efx_start_all(efx);
++
++	if (efx->type->udp_tnl_push_ports)
++		efx->type->udp_tnl_push_ports(efx);
++
++	return 0;
++
++fail:
++	efx->port_initialized = false;
++
++	mutex_unlock(&efx->rss_lock);
++	up_write(&efx->filter_sem);
++	mutex_unlock(&efx->mac_lock);
 +
 +	return rc;
 +}
 +
-+/* Reinitialise the MAC to pick up new PHY settings, even if the port is
-+ * disabled.
++/* Reset the NIC using the specified method.  Note that the reset may
++ * fail, in which case the card will be left in an unusable state.
++ *
++ * Caller must hold the rtnl_lock.
 + */
-+int efx_reconfigure_port(struct efx_nic *efx)
++int efx_reset(struct efx_nic *efx, enum reset_type method)
 +{
-+	int rc;
++	bool disabled;
++	int rc, rc2;
 +
-+	EFX_ASSERT_RESET_SERIALISED(efx);
++	netif_info(efx, drv, efx->net_dev, "resetting (%s)\n",
++		   RESET_TYPE(method));
 +
-+	mutex_lock(&efx->mac_lock);
-+	rc = __efx_reconfigure_port(efx);
-+	mutex_unlock(&efx->mac_lock);
++	efx_device_detach_sync(efx);
++	efx_reset_down(efx, method);
 +
++	rc = efx->type->reset(efx, method);
++	if (rc) {
++		netif_err(efx, drv, efx->net_dev, "failed to reset hardware\n");
++		goto out;
++	}
++
++	/* Clear flags for the scopes we covered.  We assume the NIC and
++	 * driver are now quiescent so that there is no race here.
++	 */
++	if (method < RESET_TYPE_MAX_METHOD)
++		efx->reset_pending &= -(1 << (method + 1));
++	else /* it doesn't fit into the well-ordered scope hierarchy */
++		__clear_bit(method, &efx->reset_pending);
++
++	/* Reinitialise bus-mastering, which may have been turned off before
++	 * the reset was scheduled. This is still appropriate, even in the
++	 * RESET_TYPE_DISABLE since this driver generally assumes the hardware
++	 * can respond to requests.
++	 */
++	pci_set_master(efx->pci_dev);
++
++out:
++	/* Leave device stopped if necessary */
++	disabled = rc ||
++		method == RESET_TYPE_DISABLE ||
++		method == RESET_TYPE_RECOVER_OR_DISABLE;
++	rc2 = efx_reset_up(efx, method, !disabled);
++	if (rc2) {
++		disabled = true;
++		if (!rc)
++			rc = rc2;
++	}
++
++	if (disabled) {
++		dev_close(efx->net_dev);
++		netif_err(efx, drv, efx->net_dev, "has been disabled\n");
++		efx->state = STATE_DISABLED;
++	} else {
++		netif_dbg(efx, drv, efx->net_dev, "reset complete\n");
++		efx_device_attach_if_not_resetting(efx);
++	}
 +	return rc;
++}
++
++void efx_schedule_reset(struct efx_nic *efx, enum reset_type type)
++{
++	enum reset_type method;
++
++	if (efx->state == STATE_RECOVERY) {
++		netif_dbg(efx, drv, efx->net_dev,
++			  "recovering: skip scheduling %s reset\n",
++			  RESET_TYPE(type));
++		return;
++	}
++
++	switch (type) {
++	case RESET_TYPE_INVISIBLE:
++	case RESET_TYPE_ALL:
++	case RESET_TYPE_RECOVER_OR_ALL:
++	case RESET_TYPE_WORLD:
++	case RESET_TYPE_DISABLE:
++	case RESET_TYPE_RECOVER_OR_DISABLE:
++	case RESET_TYPE_DATAPATH:
++	case RESET_TYPE_MC_BIST:
++	case RESET_TYPE_MCDI_TIMEOUT:
++		method = type;
++		netif_dbg(efx, drv, efx->net_dev, "scheduling %s reset\n",
++			  RESET_TYPE(method));
++		break;
++	default:
++		method = efx->type->map_reset_reason(type);
++		netif_dbg(efx, drv, efx->net_dev,
++			  "scheduling %s reset for %s\n",
++			  RESET_TYPE(method), RESET_TYPE(type));
++		break;
++	}
++
++	set_bit(method, &efx->reset_pending);
++	smp_mb(); /* ensure we change reset_pending before checking state */
++
++	/* If we're not READY then just leave the flags set as the cue
++	 * to abort probing or reschedule the reset later.
++	 */
++	if (READ_ONCE(efx->state) != STATE_READY)
++		return;
++
++	/* efx_process_channel() will no longer read events once a
++	 * reset is scheduled. So switch back to poll'd MCDI completions.
++	 */
++	efx_mcdi_mode_poll(efx);
++
++	efx_queue_reset_work(efx);
 +}
 -- 
 2.20.1
