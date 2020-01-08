@@ -2,177 +2,217 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 51E8713413A
-	for <lists+netdev@lfdr.de>; Wed,  8 Jan 2020 12:53:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E695E134176
+	for <lists+netdev@lfdr.de>; Wed,  8 Jan 2020 13:13:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727290AbgAHLxm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jan 2020 06:53:42 -0500
-Received: from mail-eopbgr10080.outbound.protection.outlook.com ([40.107.1.80]:22913
-        "EHLO EUR02-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726290AbgAHLxl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 8 Jan 2020 06:53:41 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=hUebKui3AzzZu69zWnoUjMG0+zhx4HjLFM5KhaMT0oPZXAZO/0mdSAmB7/UR4NO7//F390md13vQ1QxxmYd2zRQwePxTctnnr4lpcwkZ8xKYC50C3Pz0bWthOid5rtJ3WqdgNq/qb2d0/Yoz441UX0hK4T72Fss+2JTyhxCykrd9c2at8GDskNVR6P3J/R2eobXWERJh6RLPDwDp2w5giIE4Jy8+9tD8nqxMC5wpSK0p838j0dRqtFoclJlOpQ+hEvUcecnk/mIWHjbbjtVeXhOVhLLLLsPaDe4G+d/UQaLERYvfKJJbLoS79iOrsk1EhSVFK+ZdG2XXaOqmpPLO6g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=+mHyNybkMvgUwsv4huJGeIikZNJGB3pqjWCYyQz2caQ=;
- b=AP8YHvy5w3yMO/hJAdgwziSZFpKHMFhlmgqbSn9CU6TLWs7r3V65c+FL/k76qRk2sLgMIjPnPvjnRg3IC+XSRqeTlfgczsOGyWcD4yiHo2XnsvvUkTgx3jC+32coBYExY9lWM1BnJyt6NvOw8g9oxkdHuCngetyzrCdOuBK9B1s5Xsi1t0IQ+lrvPx67H6I+4sWEBQHEggmOCr9hwp2HnnDnQAqJYU63W2ddM4YF/JSpBgH89tf7i9Sv0DhjULG1MUVA5J1vhqTwr1Awri0aUeHSHdu+8VMpp8+WpIa0XHwHPicudA8u/jeH3yXFGEbMe/HFjGZPqQ77kCFXtuqALQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=ch.abb.com; dmarc=pass action=none header.from=ch.abb.com;
- dkim=pass header.d=ch.abb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ch.abb.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=+mHyNybkMvgUwsv4huJGeIikZNJGB3pqjWCYyQz2caQ=;
- b=N/T16gN13ilih3pJGKmFHoQCMiebatNdbmkMZP6T05eM6ZEwNpp7uyvZq9foHkKz6jirOSBdUo7OYvLyp/8wpX9CV9fN0KKUBP031AqPOfHwqyzDpN1UV1foMy7YQzIGQDtPwZ0ORDNEfaOD0pEWkn8ptHSb1Ulb+PfzxndL71o=
-Received: from AM0PR06MB5427.eurprd06.prod.outlook.com (20.178.23.156) by
- AM0PR06MB3953.eurprd06.prod.outlook.com (52.133.58.157) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2602.13; Wed, 8 Jan 2020 11:53:37 +0000
-Received: from AM0PR06MB5427.eurprd06.prod.outlook.com
- ([fe80::bde5:65c9:a39a:23c4]) by AM0PR06MB5427.eurprd06.prod.outlook.com
- ([fe80::bde5:65c9:a39a:23c4%5]) with mapi id 15.20.2602.017; Wed, 8 Jan 2020
- 11:53:37 +0000
-From:   Matteo Ghidoni <matteo.ghidoni@ch.abb.com>
-To:     Heiner Kallweit <hkallweit1@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Li Yang <leoyang.li@nxp.com>
-CC:     "sux@loplof.de" <sux@loplof.de>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>
-Subject: RE: Freescale network device not activated on mpc8360 (kmeter1 board)
-Thread-Topic: Freescale network device not activated on mpc8360 (kmeter1
- board)
-Thread-Index: AQHVxVqfalFIjdyzCE+lQXaLrMtWbKffgEcAgAEGaKA=
-Date:   Wed, 8 Jan 2020 11:53:36 +0000
-Message-ID: <AM0PR06MB5427E1BDB8C23FD09E625BD2B33E0@AM0PR06MB5427.eurprd06.prod.outlook.com>
-References: <AM0PR06MB5427E4BDF8FB1BEC5DF3D45FB33F0@AM0PR06MB5427.eurprd06.prod.outlook.com>
- <55f4ba5d-fd05-4a14-6319-d5d76c9675f2@gmail.com>
-In-Reply-To: <55f4ba5d-fd05-4a14-6319-d5d76c9675f2@gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=matteo.ghidoni@ch.abb.com; 
-x-originating-ip: [80.75.192.108]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 5df8be22-ec59-4dcc-56af-08d79431654d
-x-ms-traffictypediagnostic: AM0PR06MB3953:
-x-microsoft-antispam-prvs: <AM0PR06MB39532ABA95E5B221EB120900B33E0@AM0PR06MB3953.eurprd06.prod.outlook.com>
-x-abb-o365-outbound: ABBOUTBOUND1
-x-ms-oob-tlc-oobclassifiers: OLM:3968;
-x-forefront-prvs: 02760F0D1C
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(39860400002)(346002)(376002)(136003)(366004)(396003)(51234002)(189003)(199004)(53754006)(66446008)(64756008)(66946007)(7696005)(66556008)(66476007)(186003)(4326008)(6506007)(26005)(33656002)(478600001)(110136005)(55016002)(54906003)(76116006)(9686003)(5660300002)(71200400001)(316002)(81156014)(8936002)(52536014)(86362001)(44832011)(2906002)(8676002)(81166006);DIR:OUT;SFP:1101;SCL:1;SRVR:AM0PR06MB3953;H:AM0PR06MB5427.eurprd06.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:0;
-received-spf: None (protection.outlook.com: ch.abb.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: dQEfDwN76tmQj11CKZuUBvXHynfNndjNTDzIW9NP3ESzcGKTG4yxDoblTRd5Zm92P8CW1yO1cUi59gu1HmPyjA+qhjxw+nYS1KAoGGQYqnzbvG9OWUzKKKIxFn8hOYYeGV1XGE6TO+91OudUA1NMRJb2V8NIekmgsXvZX6TqlLZ6sPlWuyK8UGYhKPgIcnAVuY8PP2cGV7uxSGb5xQp+EGBQfeGBrM7cI063WF5Ma4qaoPQgqi8DZUCTxy3octgKpQF2MCQ0YAsKjcvEsay6X1ERyBHo87pFkFKSda+VoR03z983uHtFmBIpktQNgeRfLk3jmqKINCeQJOPD0+8UVJ9dUH891E1nQKTKGxm3gFcGIlkj2mNFIwdeG0bj3aXkNr7tK8pvtRuYd9CFUwd3pNpDgA/gpVqXf8lYR8y6q+hVX8HRRIkVRMkWimQuiYu02dnbz5jnOn/8MLTeU+pm6XzPXFxPjlMXyBCay6OYrObKvdLZWVeIbf31VIxnTwZgGJv36vZT23/L4LUseCS3LQ==
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S1727314AbgAHMNV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jan 2020 07:13:21 -0500
+Received: from mga01.intel.com ([192.55.52.88]:14791 "EHLO mga01.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726252AbgAHMNV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 8 Jan 2020 07:13:21 -0500
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 08 Jan 2020 04:13:20 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.69,409,1571727600"; 
+   d="scan'208";a="246327364"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by fmsmga004.fm.intel.com with ESMTP; 08 Jan 2020 04:13:17 -0800
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id E2FA014B; Wed,  8 Jan 2020 14:13:16 +0200 (EET)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Mark Fasheh <mark@fasheh.com>, Joel Becker <jlbec@evilplan.org>,
+        Joseph Qi <joseph.qi@linux.alibaba.com>,
+        ocfs2-devel@oss.oracle.com, Ariel Elior <aelior@marvell.com>,
+        Sudarsana Kalluru <skalluru@marvell.com>,
+        GR-everest-linux-l2@marvell.com,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Colin Ian King <colin.king@canonical.com>,
+        Andrew Morton <akpm@linux-foundation.org>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v3 1/1] ocfs2/dlm: Move BITS_TO_BYTES() to bitops.h for wider use
+Date:   Wed,  8 Jan 2020 14:13:16 +0200
+Message-Id: <20200108121316.22411-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-X-OriginatorOrg: ch.abb.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5df8be22-ec59-4dcc-56af-08d79431654d
-X-MS-Exchange-CrossTenant-originalarrivaltime: 08 Jan 2020 11:53:36.8521
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 372ee9e0-9ce0-4033-a64a-c07073a91ecd
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 9nQZqlaAObJsSSkDcF+SN8Gl7n47nS9Oo6ogBVwzx3OjnnAwY24ITLNexlwL1Nc0w1eOSH1QTC4Zo0o9zcwUqBOy9tLUOBq480ty1A3CPcs=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR06MB3953
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGkgSGVpbmVyLCB0aGFuayB5b3UgZm9yIHRoZSBxdWljayBhbnN3ZXIuDQoNCj4gPiAgSGkgYWxs
-LA0KPiA+DQo+ID4gV2l0aCB0aGUgaW50cm9kdWN0aW9uIG9mIHRoZSBmb2xsb3dpbmcgcGF0Y2gs
-IHdlIGFyZSBmYWNpbmcgYW4gaXNzdWUgd2l0aA0KPiB0aGUgYWN0aXZhdGlvbiBvZiB0aGUgRnJl
-ZXNjYWxlIG5ldHdvcmsgZGV2aWNlICh1Y2NfZ2V0aCBkcml2ZXIpIG9uIG91cg0KPiBrbWV0ZXIx
-IGJvYXJkIGJhc2VkIG9uIGEgTVBDODM2MDoNCj4gDQo+ICtMaSBhcyB1Y2NfZ2V0aCBtYWludGFp
-bmVyDQo+IA0KPiBDYW4geW91IGRlc2NyaWJlIHRoZSBzeW1wdG9tcyBvZiB0aGUgaXNzdWU/DQoN
-CkkgYW0gdHJ5aW5nIHRvIGJvb3QgaW4gTkZTLCBidXQgYXMgc29vbiBhcyB0aGUgYm9vdCBwcm9j
-ZXNzIGlzIGZpbmlzaGVkIHRoZXJlIGlzIG5vIG5ldHdvcmsgY29ubmVjdGlvbnMgYmV0d2VlbiB0
-aGUgYm9hcmQgYW5kIHRoZSBob3N0Lg0KDQo+ID4NCj4gPiBjb21taXQgMTI0ZWVlM2Y2OTU1Zjdh
-YTE5YjllNmZmNWM5YjZkMzdjYjNkMWUyYw0KPiA+IEF1dGhvcjogSGVpbmVyIEthbGx3ZWl0IDxo
-a2FsbHdlaXQxQGdtYWlsLmNvbT4NCj4gPiBEYXRlOiAgIFR1ZSBTZXAgMTggMjE6NTU6MzYgMjAx
-OCArMDIwMA0KPiA+DQo+ID4gICAgIG5ldDogbGlua3dhdGNoOiBhZGQgY2hlY2sgZm9yIG5ldGRl
-dmljZSBiZWluZyBwcmVzZW50IHRvDQo+ID4gbGlua3dhdGNoX2RvX2Rldg0KPiA+DQo+ID4gQmFz
-ZWQgb24gbXkgb2JzZXJ2YXRpb25zLCBqdXN0IGJlZm9yZSB0cnlpbmcgdG8gYWN0aXZhdGUgdGhl
-IGRldmljZSB0aHJvdWdoDQo+IGxpbmt3YXRjaF9ldmVudCwgdGhlIGNvbnRyb2xsZXIgd2FudHMg
-dG8gYWRqdXN0IHRoZSBNQUMgY29uZmlndXJhdGlvbiBhbmQgaW4NCj4gb3JkZXIgdG8gYWNoaWV2
-ZSB0aGlzIGl0IGRldGFjaGVzIHRoZSBkZXZpY2UuIFRoaXMgYXZvaWRzIHRoZSBhY3RpdmF0aW9u
-IG9mIHRoZQ0KPiBuZXQgZGV2aWNlLg0KPiA+DQo+IEl0IHNvdW5kcyBhIGxpdHRsZSBiaXQgb2Rk
-IHRvIHJlbHkgb24gYW4gYXN5bmNocm9ub3VzIGxpbmt3YXRjaCBldmVudCBoZXJlLg0KPiBDYW4g
-eW91IGdpdmUgYSBjYWxsIHRyYWNlPw0KDQpIZXJlIGlzIGEgY2FsbCB0cmFjZSBmb3JtIHRoZSBh
-ZGp1c3RfbGluayBmdW5jdGlvbiBpbiB0aGUgaWYgY29uZGl0aW9uIGF0IGxpbmUgMTY0NCAodWNj
-X2dldGguYyBmaWxlKToNCg0KQ1BVOiAwIFBJRDogMzUgQ29tbToga3dvcmtlci8wOjEgTm90IHRh
-aW50ZWQgNS40LjgtZGlydHkgIzE5DQpXb3JrcXVldWU6IGV2ZW50c19wb3dlcl9lZmZpY2llbnQg
-cGh5X3N0YXRlX21hY2hpbmUNCkNhbGwgVHJhY2U6DQpbY2Y4OGJkZThdIFtjMDJkZGNhOF0gYWRq
-dXN0X2xpbmsrMHgzMDQvMHgzMjAgKHVucmVsaWFibGUpDQpbY2Y4OGJlMjhdIFtjMDJjYmYzY10g
-cGh5X2NoZWNrX2xpbmtfc3RhdHVzKzB4ZTQvMHhmYw0KW2NmODhiZTQ4XSBbYzAyY2NjZGNdIHBo
-eV9zdGF0ZV9tYWNoaW5lKzB4NDQvMHgxNzANCltjZjg4YmU3OF0gW2MwMDM2MWEwXSBwcm9jZXNz
-X29uZV93b3JrKzB4MjY0LzB4NDA4DQpbY2Y4OGJlYThdIFtjMDAzNzBmOF0gd29ya2VyX3RocmVh
-ZCsweDE0MC8weDUzYw0KW2NmODhiZWY4XSBbYzAwM2Q4MThdIGt0aHJlYWQrMHhkYy8weDEwOA0K
-W2NmODhiZjM4XSBbYzAwMTAyNzRdIHJldF9mcm9tX2tlcm5lbF90aHJlYWQrMHgxNC8weDFjDQoN
-CkhlcmUgdGhlIGNhbGwgdHJhY2UgZnJvbSB0aGUgbmV0aWZfY2Fycmllcl9vbiBmdW5jdGlvbiBq
-dXN0IGJlZm9yZSB0aGUgY2FsbCB0byB0aGUgbGlua3dhdGNoX2ZpcmVfZXZlbnQgZnVuY3Rpb24g
-KGxpbmUgNDk4LCBzY2hfZ2VuZXJpYy5jIGZpbGUpOg0KDQpDUFU6IDAgUElEOiAzNSBDb21tOiBr
-d29ya2VyLzA6MSBOb3QgdGFpbnRlZCA1LjQuOC1kaXJ0eSAjMjANCldvcmtxdWV1ZTogZXZlbnRz
-X3Bvd2VyX2VmZmljaWVudCBwaHlfc3RhdGVfbWFjaGluZQ0KQ2FsbCBUcmFjZToNCltjZjg4YmRl
-OF0gW2MwMzUyMDY0XSBuZXRpZl9jYXJyaWVyX29uKzB4YzQvMHhjOCAodW5yZWxpYWJsZSkNCltj
-Zjg4YmUwOF0gW2MwMmNmNGVjXSBwaHlfbGlua19jaGFuZ2UrMHg4NC8weGI0DQpbY2Y4OGJlMjhd
-IFtjMDJjYmYzY10gcGh5X2NoZWNrX2xpbmtfc3RhdHVzKzB4ZTQvMHhmYw0KW2NmODhiZTQ4XSBb
-YzAyY2NjZGNdIHBoeV9zdGF0ZV9tYWNoaW5lKzB4NDQvMHgxNzANCltjZjg4YmU3OF0gW2MwMDM2
-MWEwXSBwcm9jZXNzX29uZV93b3JrKzB4MjY0LzB4NDA4DQpbY2Y4OGJlYThdIFtjMDAzNzBmOF0g
-d29ya2VyX3RocmVhZCsweDE0MC8weDUzYw0KW2NmODhiZWY4XSBbYzAwM2Q4MThdIGt0aHJlYWQr
-MHhkYy8weDEwOA0KW2NmODhiZjM4XSBbYzAwMTAyNzRdIHJldF9mcm9tX2tlcm5lbF90aHJlYWQr
-MHgxNC8weDFjDQoNCk1vcmVvdmVyLCBJIG5vdGljZWQgdGhhdCBieSBhZGRpbmcgdGhlIGR1bXAg
-ZGlyZWN0bHkgaW4gdGhlIGxpbmt3YXRjaF9kb19kZXYgZnVuY3Rpb24gKGxpbmtfd2F0Y2guYykg
-dGhlIGludGVyZmFjZSBjb21lcyB1cCBjb3JyZWN0bHksIGJlY2F1c2Ugb2YgdGhlIGRlbGF5IGlu
-dHJvZHVjZWQgYnkgdGhlIGR1bXBfc3RhY2sgZnVuY3Rpb24uDQoNCkhlcmUgYW5vdGhlciBsb2cg
-d2l0aCBzb21lIHByaW50cyB0aGF0IG1heWJlIGNhbiBoZWxwIHRvIHVuZGVyc3RhbmQgdGhlIHNp
-dHVhdGlvbi4gVGhlIHByaW50cyBhcmUgcGxhY2VkIGp1c3QgYmVmb3JlIGNhbGxpbmcgdGhlIGZ1
-bmN0aW9uIG1lbnRpb25lZCBpbiB0aGUgc2Vjb25kIHBhcnQgb2YgdGhlIG1lc3NhZ2UgKGhvcGVm
-dWxseSB0aGlzIHdpbGwgbm90IGJyaW5nIG1vcmUgY29uZnVzaW9uKToNCg0KPC4uLj4NCnViaTA6
-IGF2YWlsYWJsZSBQRUJzOiAyMzUsIHRvdGFsIHJlc2VydmVkIFBFQnM6IDI2OSwgUEVCcyByZXNl
-cnZlZCBmb3IgYmFkIFBFQiBoYW5kbGluZzogMA0KdWJpMDogYmFja2dyb3VuZCB0aHJlYWQgInVi
-aV9iZ3QwZCIgc3RhcnRlZCwgUElEIDQ1DQojIyMjIyMjIyMjIyMjIyMjIyBbcGh5X2RldmljZS5j
-XSBwaHlfbGlua19jaGFuZ2UgLSBjYWxsaW5nIG5ldGlmX2NhcnJpZXJfb24gKGV0aDIpDQojIyMj
-IyMjIyMjIyMjIyMjIyBbc2NoZWRfZ2VuZXJpYy5jXSBuZXRpZl9jYXJyaWVyX29uIC0gY2FsbGlu
-ZyBsaW5rd2F0Y2hfZmlyZV9ldmVudCAoZXRoMikNCiMjIyMjIyMjIyMjIyMjIyMjIFtwaHlfZGV2
-aWNlLmNdIHBoeV9saW5rX2NoYW5nZSAtIGNhbGxpbmcgYWRqdXN0X2xpbmsgKGV0aDIpDQojIyMj
-IyMjIyMjIyMjIyMjIyBbdWNjX2dldGguY10gYWRqdXN0X2xpbmsgLSBjYWxsaW5nIHVnZXRoX3F1
-aWVzY2UgKGRldGFjaGluZyBkZXZpY2UpIChldGgyKQ0KIyMjIyMjIyMjIyMjIyMjIyMgW2xpbmtf
-d2F0Y2guY10gbGlua3dhdGNoX2RvX2RldiAtIGNoZWNraW5nIGZvciBuZXRpZl9kZXZpY2VfcHJl
-c2VudChldGgyKSA9PiAwDQpJUC1Db25maWc6IEd1ZXNzaW5nIG5ldG1hc2sgMjU1LjI1NS4yNTUu
-MA0KSVAtQ29uZmlnOiBDb21wbGV0ZToNCiAgICAgZGV2aWNlPWV0aDIsIGh3YWRkcj0wMDplMDpk
-Zjo1Njo1NDowNywgaXBhZGRyPTE5Mi4xNjguMS4yMCwgbWFzaz0yNTUuMjU1LjI1NS4wLCBndz0y
-NTUuMjU1LjI1NS4yNTUNCiAgICAgaG9zdD1rbWV0ZXIxLCBkb21haW49LCBuaXMtZG9tYWluPShu
-b25lKQ0KICAgICBib290c2VydmVyPTE5Mi4xNjguMS4xMDAsIHJvb3RzZXJ2ZXI9MTkyLjE2OC4x
-LjEwMCwgcm9vdHBhdGg9DQojIyMjIyMjIyMjIyMjIyMjIyBbdWNjX2dldGguY10gYWRqdXN0X2xp
-bmsgLSBjYWxsaW5nIHVnZXRoX2FjdGl2YXRlIChhdHRhY2hpbmcgZGV2aWNlKSAoZXRoMikNCnVj
-Y19nZXRoIGUwMTAzMjAwLnVjYyBldGgyOiBMaW5rIGlzIFVwIC0gMTAwTWJwcy9GdWxsIC0gZmxv
-dyBjb250cm9sIG9mZg0KcnBjYmluZDogc2VydmVyIDE5Mi4xNjguMS4xMDAgbm90IHJlc3BvbmRp
-bmcsIHRpbWVkIG91dA0KcnBjYmluZDogc2VydmVyIDE5Mi4xNjguMS4xMDAgbm90IHJlc3BvbmRp
-bmcsIHRpbWVkIG91dA0KDQpBcyBtZW50aW9uZWQsIGp1c3QgYmVmb3JlIHRoYXQgdGhlIGxpbmt3
-YXRjaCBjaGVja3MgZm9yIHRoZSBuZXRfZGV2aWNlIHByZXNlbmNlLCB0aGlzIG9uZSBpcyBkZXRh
-Y2hlZCBieSB0aGUgdWNjX2dldGggZHJpdmVyIGFuZCByZWF0dGFjaGVkIGxhdGVyLg0KDQo+IFRo
-ZSBkcml2ZXIgaXMgcXVpdGUgb2xkIGFuZCBtYXliZSBzb21lIHBhcnRzIG5lZWQgdG8gYmUgaW1w
-cm92ZWQuIFRoZQ0KPiByZWZlcmVuY2VkIGNoYW5nZSBpcyBtb3JlIHRoYW4gYSB5ZWFyIG9sZCBh
-bmQgSSdtIG5vdCBhd2FyZSBvZiBhbnkgb3RoZXINCj4gcHJvYmxlbSB3aXRoIGl0LiBTbyBpdCBz
-ZWVtcyB0aGUgY2hhbmdlIGlzbid0IHdyb25nLg0KDQpJIGFncmVlLiBJIHBvaW50ZWQgb3V0IHRo
-ZSBjb21taXQgYnkgYmlzZWN0aW5nLiBUaGlzIGdhdmUgbWUgdGhlIGRpcmVjdGlvbiB0byB3aGVy
-ZSB0aGUgcHJvYmxlbSBjb3VsZCBiZS4gDQoNCj4gPiBUaGlzIGlzIGFscmVhZHkgaGFwcGVuaW5n
-IHdpdGggb2xkZXIgdmVyc2lvbnMgKEkgY2hlY2tlZCB3aXRoIHRoZSB2NC4xNC4xNjIpDQo+IGFu
-ZCBhbHNvIHRoZXJlIHRoZSBzaXR1YXRpb24gaXMgdGhlIHNhbWUsIGJ1dCB3aXRob3V0IHRoZSBh
-ZGRpdGlvbmFsIGNoZWNrIGluDQo+IHRoZSBpZiBjb25kaXRpb24gdGhlIGRldmljZSBpcyBhY3Rp
-dmF0ZWQuDQo+ID4NCj4gPiBJIGFtIGN1cnJlbnRseSB3b3JraW5nIHdpdGggdGhlIHY1LjQuOCBr
-ZXJuZWwgdmVyc2lvbiwgYnV0IHRoZSBiZWhhdmlvcg0KPiByZW1haW5zIHRoZSBzYW1lIGFsc28g
-d2l0aCB0aGUgbGF0ZXN0IHY1LjUtcmM0Lg0KPiA+DQo+ID4gQW55IGlkZWEgaG93IHRvIHNvbHZl
-IHRoaXM/IEFueSBoZWxwIGlzIGFwcHJlY2lhdGVkLg0KPiA+DQo+ID4gUmVnYXJkcywNCj4gPiBN
-YXR0ZW8NCj4gPg0KPiBIZWluZXINCg0KTWF0dGVvDQo=
+There are users already and will be more of BITS_TO_BYTES() macro.
+Move it to bitops.h for wider use.
+
+In the case of ocfs2 the replacement is identical.
+
+As for bnx2x, there are two places where floor version is used.
+In the first case to calculate the amount of structures that can fit
+one memory page. In this case obviously the ceiling variant is correct and
+original code might have a potential bug, if amount of bits % 8 is not 0.
+In the second case the macro is used to calculate bytes transmitted in one
+microsecond. This will work for all speeds which is multiply of 1Gbps without
+any change, for the rest new code will give ceiling value, for instance 100Mbps
+will give 13 bytes, while old code gives 12 bytes and the arithmetically
+correct one is 12.5 bytes. Further the value is used to setup timer threshold
+which in any case has its own margins due to certain resolution. I don't see
+here an issue with slightly shifting thresholds for low speed connections, the
+card is supposed to utilize highest available rate, which is usually 10Gbps.
+
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Reviewed-by: Joseph Qi <joseph.qi@linux.alibaba.com>
+Acked-by: Sudarsana Reddy Kalluru <skalluru@marvell.com>
+---
+- Add Ack
+- resend as requested by Andrew (Cc'ing him as well)
+- should prepend Yuri's series (hope no conflicts, though easy to fix)
+base-commit: 7ddd09fc4b745fb1d8942f95389583e08412e0cd (next-20191220)
+
+ drivers/net/ethernet/broadcom/bnx2x/bnx2x_init.h | 1 -
+ fs/ocfs2/dlm/dlmcommon.h                         | 4 ----
+ include/linux/bitops.h                           | 1 +
+ 3 files changed, 1 insertion(+), 5 deletions(-)
+
+diff --git a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_init.h b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_init.h
+index 066765fbef06..0a59a09ef82f 100644
+--- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_init.h
++++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_init.h
+@@ -296,7 +296,6 @@ static inline void bnx2x_dcb_config_qm(struct bnx2x *bp, enum cos_mode mode,
+  *    possible, the driver should only write the valid vnics into the internal
+  *    ram according to the appropriate port mode.
+  */
+-#define BITS_TO_BYTES(x) ((x)/8)
+ 
+ /* CMNG constants, as derived from system spec calculations */
+ 
+diff --git a/fs/ocfs2/dlm/dlmcommon.h b/fs/ocfs2/dlm/dlmcommon.h
+index aaf24548b02a..0463dce65bb2 100644
+--- a/fs/ocfs2/dlm/dlmcommon.h
++++ b/fs/ocfs2/dlm/dlmcommon.h
+@@ -688,10 +688,6 @@ struct dlm_begin_reco
+ 	__be32 pad2;
+ };
+ 
+-
+-#define BITS_PER_BYTE 8
+-#define BITS_TO_BYTES(bits) (((bits)+BITS_PER_BYTE-1)/BITS_PER_BYTE)
+-
+ struct dlm_query_join_request
+ {
+ 	u8 node_idx;
+diff --git a/include/linux/bitops.h b/include/linux/bitops.h
+index e479067c202c..6c7c4133c25c 100644
+--- a/include/linux/bitops.h
++++ b/include/linux/bitops.h
+@@ -13,6 +13,7 @@
+ 
+ #define BITS_PER_TYPE(type) (sizeof(type) * BITS_PER_BYTE)
+ #define BITS_TO_LONGS(nr)	DIV_ROUND_UP(nr, BITS_PER_TYPE(long))
++#define BITS_TO_BYTES(nr)	DIV_ROUND_UP(nr, BITS_PER_TYPE(char))
+ 
+ extern unsigned int __sw_hweight8(unsigned int w);
+ extern unsigned int __sw_hweight16(unsigned int w);
+
+base-commit: 7ddd09fc4b745fb1d8942f95389583e08412e0cd
+prerequisite-patch-id: 8c46b63287f964be053ed632f2a46d969997d355
+prerequisite-patch-id: f4e7e58f97b8888751046488215a7a685dcc95b6
+prerequisite-patch-id: 3915ce7ccc2aff558098fcf25d8e52b5df91a7d1
+prerequisite-patch-id: 2f30eabc11e9dc27282f5b27b8055bc0422cf4f1
+prerequisite-patch-id: b1424a21c7e4d242d7222686b19a3ac9852f70d3
+prerequisite-patch-id: 546242d21e0b3275ce19c417d590c760cffc1e7a
+prerequisite-patch-id: cafa11f9ed5e3c097e3201ba6a8562c586fd2582
+prerequisite-patch-id: 426e6a9acac90f4af0533e96c8cc5efa550b5c7b
+prerequisite-patch-id: 084a1c28a6b02fb4d3745c327f34d5b5bbac9317
+prerequisite-patch-id: 2c4f0219d05eb9de76b41aa4ba219520f827c6ad
+prerequisite-patch-id: 711fb0ffe8e903684291c2573501cf598e0a5d69
+prerequisite-patch-id: d449e74889256c65157523a97e30f4d71b47c140
+prerequisite-patch-id: 9bed4a5a30d4cc9960305b16b1a88542bd362fc3
+prerequisite-patch-id: c8f5b1df1da5250ad7a27e909ee83958678fbf3d
+prerequisite-patch-id: e49955e8470a591ba1a32920368407b8eeb49b84
+prerequisite-patch-id: 52086fa30b52c5fa844773023051c056e52b62e5
+prerequisite-patch-id: d3987cd14576577c34a20b667b9f0f70baf40282
+prerequisite-patch-id: 9910494d95cb01c209d4ed53570206217ab7f6c9
+prerequisite-patch-id: d465cb41c42f4058c5da1ee7c055b07c5d96ce99
+prerequisite-patch-id: c0d7d0591fa8d4a9e555eb6f45ab684501064277
+prerequisite-patch-id: 54bb5fac9b837cfbeeec5e03e06aff23caf5978a
+prerequisite-patch-id: 761dd682febe454edcffcf43a0f44729292a27bd
+prerequisite-patch-id: 96cd088ad86e4c5b88870e3a301b211d1c9cde89
+prerequisite-patch-id: 6531853d54a97753692a39311bfa6df65d4cb9d3
+prerequisite-patch-id: 535b317ebc7bb8d8331b76be353592b75e6cc64d
+prerequisite-patch-id: 3318c2c0c82b3111769521f50f7716f424897b3f
+prerequisite-patch-id: db3fa96489a55d25a0f64add2cf3f3cefa659534
+prerequisite-patch-id: 61090c00690a2138d4c1721011d65e9fd2b1cc38
+prerequisite-patch-id: 11bc0049783ccb6c81323525efd219178ecfdab8
+prerequisite-patch-id: 639e8bf0212078dd96fe9358592d31c22cfebe18
+prerequisite-patch-id: 5a48c1cd87c5458e8495b7c00148fcf8fe4fbaee
+prerequisite-patch-id: 298de587b3611266560fd0363627cf28aa123ffd
+prerequisite-patch-id: 9fc4caf7cce4844174486f91d84ab2b6f7f8494a
+prerequisite-patch-id: fa0d16350ea839b8e1896fd6d61d6f2e7413e276
+prerequisite-patch-id: 445ecbc737af75d4140efea40ae6e0b0126e75b1
+prerequisite-patch-id: 250a47bb62525f422d52f942dd95fea375d80cde
+prerequisite-patch-id: 6e2f1a3215d6ca7a31c83f158c015065fc36ea9d
+prerequisite-patch-id: 1bfcf5bc5a583a61db57906d40e11f70254dc2ff
+prerequisite-patch-id: 9e4e8d1f13b743ebfa2568b9c4bc50febe925a6e
+prerequisite-patch-id: c6a46453cf296a6f9f72d586fc0261c910889cf1
+prerequisite-patch-id: 9aaf65f1232acb252c82d47fb588badcdc3c5df3
+prerequisite-patch-id: 45e9f78620bdcea63bed6308575caaed82da8d66
+prerequisite-patch-id: 980447357d87531b2403a17c1e14674bcce9c5a9
+prerequisite-patch-id: 354b62bba651c8ec0ab0b00e21e9848c5c849fff
+prerequisite-patch-id: 6259439a900d8556e48cbfe51a24c13196cbdfed
+prerequisite-patch-id: 437274000542d567d3518a732939565b5c74fcd4
+prerequisite-patch-id: 539078a0bfb6001145652a4c0ce2a30f6b8e3128
+prerequisite-patch-id: adfbb2fe373f626e7f060ab7d357abc554911ffe
+prerequisite-patch-id: aed0c10fa87e9ede8eb354ea1949084060138a8c
+prerequisite-patch-id: d1a37752b3091aea0191c549698f22c1344aa064
+prerequisite-patch-id: 19b18513c00d0bcc0dcdacf66842be1c58fb2be4
+prerequisite-patch-id: fa96d9111dfca6f82c2af092115d4dcb454c9a29
+prerequisite-patch-id: c655f03d165b1190317706b6c2e9929234baed2c
+prerequisite-patch-id: 0d67e631e04a839ed7c3a209a062af24d3bd0c08
+prerequisite-patch-id: 22940d4ae6d1e568060f557e9410b694943490c8
+prerequisite-patch-id: a09ed014ab229db10ba30f7c3892fdb408cb61c3
+prerequisite-patch-id: 6ca5d7335f589574535331563d7965e170484f01
+prerequisite-patch-id: 60823a6a82d2a2bd8e9b8eae670918a27148fead
+prerequisite-patch-id: e7dc2bcd6c0d418fbcbe42da2699fba3e537ebcb
+prerequisite-patch-id: 7726fdcf47609e43ba55b413737be4cc82afe9b1
+prerequisite-patch-id: fe812e1831b58149f7adf23de48365a2954ae3bc
+prerequisite-patch-id: f22e58cc59c579fdd23a20f131679674a58e78a7
+prerequisite-patch-id: d0242c9c33aa3b0eacfbd556e3194dafcbafc490
+prerequisite-patch-id: beacb3ec64dc9712f31590b641f1bfb0fb3284a5
+prerequisite-patch-id: 6dcd1f4c5eb15ba76bd26c90704cfc796d209e19
+prerequisite-patch-id: 5c53f6dffc7d47c62dfbaa76c041092606d0809d
+prerequisite-patch-id: c3ad41a1bdfff661656d49d18d922a12c781135a
+prerequisite-patch-id: aec5c401060b4c186c10f22fe7e0dc4281aed8d2
+prerequisite-patch-id: 6f0de4ed92c9022d94429f3612bce9a16ab0b114
+prerequisite-patch-id: 9fdcf1bd133d3019e956bb4deb931cf2af551bdb
+prerequisite-patch-id: 33d2bd29562d07a1610c345d783d545df33ce11b
+prerequisite-patch-id: 90bd8ae4ffac5f9ca05cd372138da8475a66ab81
+prerequisite-patch-id: 2df7c38b75c82abec437a1b62296f3910db33efc
+prerequisite-patch-id: 410a2b543f4be1140ee360af0d7091d3f6815247
+prerequisite-patch-id: 4c0581ac30bda9f83f39d5b00f6b7ed55d42f1ae
+prerequisite-patch-id: 7db88039be613c02e3150d0e8f5bb7670789f6a1
+prerequisite-patch-id: 9c6f9f0534c60da294109ed02e13e2fcf2315a0e
+prerequisite-patch-id: da3c18cc5b992e68714ae8cacbc4d45b8ab522de
+prerequisite-patch-id: 8a4d6c01907b808bc12520c9d13dfcda0166891c
+prerequisite-patch-id: d867005a4a1671d56c0003c48d1f66aa7d403857
+prerequisite-patch-id: 237b0bfe258dda31d1089fc5170d3a94d6bb604f
+prerequisite-patch-id: 660007eaccbc5f98e2f8f3e9da0723f1c159c430
+prerequisite-patch-id: 46120f7232e5a66dc08db473e15fea7b9053edc0
+prerequisite-patch-id: 95eb66644e87ebb009521cd8b4201dbb0ce09849
+prerequisite-patch-id: 1b3cb7a85b3bdb2de921945d9d80f503bc907bfa
+prerequisite-patch-id: 84548c75e7643070fbb058a7d8f8ef00ad138b04
+prerequisite-patch-id: 0d938183249fe8ce76fac840c37d249988f89380
+prerequisite-patch-id: 245a6261ce8646dc2ae2d66cd7e7e6b1c13243b2
+prerequisite-patch-id: 9a9f1c3930fefde9d08efee2fcf7d950e7970a49
+prerequisite-patch-id: 8043e900aa7cdf954401dda2cb251ca9a5aa16c5
+prerequisite-patch-id: fc89f2721f08ab0f1245d528d70da4788054c9e8
+prerequisite-patch-id: 22b3aca902ba8b6b14cb296071b398574019062b
+prerequisite-patch-id: 2136aa36a6dcb927128e2dc7f839e848a169d126
+prerequisite-patch-id: 69a7efecf0ec8374c211f5f92e2703ec34538701
+prerequisite-patch-id: bfd5115d16d329e8a17018b1ebf1d29461cb7e11
+prerequisite-patch-id: 69734ff8ba0e90455d139c879354c16661fbea59
+prerequisite-patch-id: 21e4496ad6b72e80e77bf542a1c7f1d39683195d
+-- 
+2.24.1
+
