@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 776AB134CB2
-	for <lists+netdev@lfdr.de>; Wed,  8 Jan 2020 21:07:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C501134CC7
+	for <lists+netdev@lfdr.de>; Wed,  8 Jan 2020 21:07:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726401AbgAHUHB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jan 2020 15:07:01 -0500
-Received: from mail.kernel.org ([198.145.29.99]:32884 "EHLO mail.kernel.org"
+        id S1727406AbgAHUHM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jan 2020 15:07:12 -0500
+Received: from mail.kernel.org ([198.145.29.99]:33272 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726182AbgAHUHA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 8 Jan 2020 15:07:00 -0500
+        id S1726390AbgAHUHK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 8 Jan 2020 15:07:10 -0500
 Received: from localhost.localdomain (unknown [83.218.167.187])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 20BA520643;
-        Wed,  8 Jan 2020 20:06:50 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 45F7F2070E;
+        Wed,  8 Jan 2020 20:07:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1578514019;
-        bh=HDn1c+OCg4Fxwj0uJTYLgnTqOgR4bEcc2OImuEKXcQg=;
+        s=default; t=1578514029;
+        bh=e7zymn5GkwXFBJ9xZ48Z4+1aODcYqk4TrhvOgBsVevY=;
         h=From:To:Subject:Date:In-Reply-To:References:From;
-        b=Z7kr39OMPyJ7syJjfpiv7bYYzQQTmxY9i9gDEMUNchIHddpcw2Lt4bYaf/iod/izt
-         l7HWaMdttfnaO+wtU8l705qwszkyEX8ot1OUlgStQffxrEPRngbVy628F/iddqGwJl
-         qXHxpQpnurQB1zdPn/z3aZU9m+VOfqbtddzmv7+s=
+        b=uacif0uikEAKR8gpyD7Ls1NQI8Y6LsrG1L/r1o4hEjkq1Wwh+zgyPZ47gh8ceWBCk
+         vWBz4kRD0kxM96/7ABU7hPXwiIzwJ6gtZlvNehakTu9WI+k8NatOKFhPCrBa1sx28l
+         cpvYGF3xktkqqjlDb2jAQUKLkXSIhWAXFeHArp1s=
 From:   Krzysztof Kozlowski <krzk@kernel.org>
 To:     Richard Henderson <rth@twiddle.net>,
         Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
@@ -62,9 +62,9 @@ To:     Richard Henderson <rth@twiddle.net>,
         netdev@vger.kernel.org, linux-ntb@googlegroups.com,
         virtualization@lists.linux-foundation.org,
         linux-arch@vger.kernel.org
-Subject: [PATCH v2 8/9] media: fsl-viu: Constify ioreadX() iomem argument (as in generic implementation)
-Date:   Wed,  8 Jan 2020 21:05:27 +0100
-Message-Id: <20200108200528.4614-9-krzk@kernel.org>
+Subject: [PATCH v2 9/9] net: wireless: ath5k: Constify ioreadX() iomem argument (as in generic implementation)
+Date:   Wed,  8 Jan 2020 21:05:28 +0100
+Message-Id: <20200108200528.4614-10-krzk@kernel.org>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200108200528.4614-1-krzk@kernel.org>
 References: <20200108200528.4614-1-krzk@kernel.org>
@@ -82,22 +82,50 @@ consistency among architectures.
 
 Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
 ---
- drivers/media/platform/fsl-viu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/wireless/ath/ath5k/ahb.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/media/platform/fsl-viu.c b/drivers/media/platform/fsl-viu.c
-index 81a8faedbba6..991d9dc82749 100644
---- a/drivers/media/platform/fsl-viu.c
-+++ b/drivers/media/platform/fsl-viu.c
-@@ -34,7 +34,7 @@
- /* Allow building this driver with COMPILE_TEST */
- #if !defined(CONFIG_PPC) && !defined(CONFIG_MICROBLAZE)
- #define out_be32(v, a)	iowrite32be(a, (void __iomem *)v)
--#define in_be32(a)	ioread32be((void __iomem *)a)
-+#define in_be32(a)	ioread32be((const void __iomem *)a)
- #endif
+diff --git a/drivers/net/wireless/ath/ath5k/ahb.c b/drivers/net/wireless/ath/ath5k/ahb.c
+index 2c9cec8b53d9..8bd01df369fb 100644
+--- a/drivers/net/wireless/ath/ath5k/ahb.c
++++ b/drivers/net/wireless/ath/ath5k/ahb.c
+@@ -138,18 +138,18 @@ static int ath_ahb_probe(struct platform_device *pdev)
  
- #define BUFFER_TIMEOUT		msecs_to_jiffies(500)  /* 0.5 seconds */
+ 	if (bcfg->devid >= AR5K_SREV_AR2315_R6) {
+ 		/* Enable WMAC AHB arbitration */
+-		reg = ioread32((void __iomem *) AR5K_AR2315_AHB_ARB_CTL);
++		reg = ioread32((const void __iomem *) AR5K_AR2315_AHB_ARB_CTL);
+ 		reg |= AR5K_AR2315_AHB_ARB_CTL_WLAN;
+ 		iowrite32(reg, (void __iomem *) AR5K_AR2315_AHB_ARB_CTL);
+ 
+ 		/* Enable global WMAC swapping */
+-		reg = ioread32((void __iomem *) AR5K_AR2315_BYTESWAP);
++		reg = ioread32((const void __iomem *) AR5K_AR2315_BYTESWAP);
+ 		reg |= AR5K_AR2315_BYTESWAP_WMAC;
+ 		iowrite32(reg, (void __iomem *) AR5K_AR2315_BYTESWAP);
+ 	} else {
+ 		/* Enable WMAC DMA access (assuming 5312 or 231x*/
+ 		/* TODO: check other platforms */
+-		reg = ioread32((void __iomem *) AR5K_AR5312_ENABLE);
++		reg = ioread32((const void __iomem *) AR5K_AR5312_ENABLE);
+ 		if (to_platform_device(ah->dev)->id == 0)
+ 			reg |= AR5K_AR5312_ENABLE_WLAN0;
+ 		else
+@@ -202,12 +202,12 @@ static int ath_ahb_remove(struct platform_device *pdev)
+ 
+ 	if (bcfg->devid >= AR5K_SREV_AR2315_R6) {
+ 		/* Disable WMAC AHB arbitration */
+-		reg = ioread32((void __iomem *) AR5K_AR2315_AHB_ARB_CTL);
++		reg = ioread32((const void __iomem *) AR5K_AR2315_AHB_ARB_CTL);
+ 		reg &= ~AR5K_AR2315_AHB_ARB_CTL_WLAN;
+ 		iowrite32(reg, (void __iomem *) AR5K_AR2315_AHB_ARB_CTL);
+ 	} else {
+ 		/*Stop DMA access */
+-		reg = ioread32((void __iomem *) AR5K_AR5312_ENABLE);
++		reg = ioread32((const void __iomem *) AR5K_AR5312_ENABLE);
+ 		if (to_platform_device(ah->dev)->id == 0)
+ 			reg &= ~AR5K_AR5312_ENABLE_WLAN0;
+ 		else
 -- 
 2.17.1
 
