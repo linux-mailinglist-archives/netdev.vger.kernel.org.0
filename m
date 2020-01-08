@@ -2,134 +2,331 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 772B9133C84
-	for <lists+netdev@lfdr.de>; Wed,  8 Jan 2020 08:57:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D518A133CBD
+	for <lists+netdev@lfdr.de>; Wed,  8 Jan 2020 09:12:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726482AbgAHH5a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jan 2020 02:57:30 -0500
-Received: from smtprelay-out1.synopsys.com ([149.117.87.133]:53288 "EHLO
-        smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725944AbgAHH53 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jan 2020 02:57:29 -0500
-Received: from mailhost.synopsys.com (badc-mailhost2.synopsys.com [10.192.0.18])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (No client certificate requested)
-        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 542AAC0094;
-        Wed,  8 Jan 2020 07:57:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
-        t=1578470248; bh=rdpIj5Q2mFtZNLegJ/FDpcIDbFpk68d55dEhY77CYRM=;
-        h=From:To:CC:Subject:Date:References:In-Reply-To:From;
-        b=JZIPctlb66fWQuKarJu8FruyW+4S8FQguLcZIhhWUfDaYjRjFuFZvyczZfkiH1zSE
-         vZZMb+Ww4+YbTXij3dFqCUiMtEuUTP3dywYu3+VY/S00ZtJ9LJUbGzg7LgYJOt1kSw
-         xRd+ppyInVpsr6zTOrmUSaDJgZ8lREnIxH/vibvYaGMZ+SNRThWNOECc6hOfDGNg9v
-         qxMW0+zo2CD62rXSmXPOEwbciSxdM3pWIvR9rVaw+XGDVBU3HSobS3wNxlKtUorx4c
-         eBgTJSpZ2QaetSAZafLDpYPGWMBzgCLmCszc3c9t9ZKj8T/eTuKMPLhhPZ7IifDYyS
-         ItKY9/vDX4k+g==
-Received: from US01WEHTC3.internal.synopsys.com (us01wehtc3.internal.synopsys.com [10.15.84.232])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mailhost.synopsys.com (Postfix) with ESMTPS id 7EF6BA006A;
-        Wed,  8 Jan 2020 07:57:16 +0000 (UTC)
-Received: from US01HYBRID2.internal.synopsys.com (10.15.246.24) by
- US01WEHTC3.internal.synopsys.com (10.15.84.232) with Microsoft SMTP Server
- (TLS) id 14.3.408.0; Tue, 7 Jan 2020 23:57:16 -0800
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (10.202.3.67) by
- mrs.synopsys.com (10.15.246.24) with Microsoft SMTP Server (TLS) id
- 14.3.408.0; Tue, 7 Jan 2020 23:57:16 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=MylaaYMTP+a5nhKjLgtz7R1aFArliv6QzGHXmObDnK+HgOXhCQhIXIAQfPe6eCbN2YjEkqsx7lDFs5jGyddnib323Bgh4AN5HhrG0Wdgh7EHsmHTgheuWmuy6FagEGYMgqy8aqnUvtAHh/SSdBvJcbhg8ZQSAahy3DPVOo/m84d++hJIJWJXKJkU/VZoHwG5nAXxu1+2QE5C4MLJiCqA9be/cfxHQNbFAsKYacZCnN3BN+e+BsNUQoY76tGBXBTUekgELXSjYu6b2JubFqSu72O46yrmjlCkYwen/0KV5wbbmgnyam556fm5LOUlyFj7NlWHZEtff+dNv39r/LwnMg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=mIDMBg8T2OMnD/g6/Yf+dezWLytWG+B/8mdWKeSV0q8=;
- b=nk//l+HwIfAix5RqZovyPO8Biwx7g8ynH/eKkZYzYOUyrCR7PIJdymqOg6eon5V5XOS/TGiql32kCpvlwwfqBInXMxqyuvP+giHD/IvfNhS2x5xnbTdVjnKWpGEcILUttRWoVgWu8Pd1ao/4E3g8SULsf4wS8P17/RY85bS1gNHlI148lK2Y/JuLGzOdcotMPMVGmpvSWB3KeGDzWgEapYDAtsEDNXShbZqGTNsYx+fZFTSIJ9vKoWk5Z1nBcBUsKxQvgExCUtH+Zg5UFF6APmChcLR5pkpalKPi4OR4gjPWZpUUB7N0HiXR8C8m2lQilQd7PT4GDeDc5AyTkM3rzg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=synopsys.com; dmarc=pass action=none header.from=synopsys.com;
- dkim=pass header.d=synopsys.com; arc=none
+        id S1727161AbgAHIMZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jan 2020 03:12:25 -0500
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:38543 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726594AbgAHIMY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jan 2020 03:12:24 -0500
+Received: by mail-wr1-f66.google.com with SMTP id y17so2336624wrh.5
+        for <netdev@vger.kernel.org>; Wed, 08 Jan 2020 00:12:23 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=synopsys.onmicrosoft.com; s=selector2-synopsys-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=mIDMBg8T2OMnD/g6/Yf+dezWLytWG+B/8mdWKeSV0q8=;
- b=l2u7BomT9rHK28TjeIzbg4XcEjU4rR/32PckXAFkId+aUk6sIHzlZe8AOCkBzXEaTewOk6B5/e6XbEloc99b0IvSUikO/6hDvn+6mmVl6lxbyEBzfZ0a7hGDfiIYVTbJAbZogxQW1AkC+fiu6bPv/CcpxWinfs8FWGLesF+KRnE=
-Received: from BN8PR12MB3266.namprd12.prod.outlook.com (20.179.67.145) by
- BN8PR12MB2866.namprd12.prod.outlook.com (20.179.66.14) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2623.9; Wed, 8 Jan 2020 07:57:14 +0000
-Received: from BN8PR12MB3266.namprd12.prod.outlook.com
- ([fe80::c62:b247:6963:9da2]) by BN8PR12MB3266.namprd12.prod.outlook.com
- ([fe80::c62:b247:6963:9da2%6]) with mapi id 15.20.2602.017; Wed, 8 Jan 2020
- 07:57:14 +0000
-From:   Jose Abreu <Jose.Abreu@synopsys.com>
-To:     Dejin Zheng <zhengdejin5@gmail.com>,
-        "peppe.cavallaro@st.com" <peppe.cavallaro@st.com>,
-        "alexandre.torgue@st.com" <alexandre.torgue@st.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "mcoquelin.stm32@gmail.com" <mcoquelin.stm32@gmail.com>,
-        "martin.blumenstingl@googlemail.com" 
-        <martin.blumenstingl@googlemail.com>,
-        "treding@nvidia.com" <treding@nvidia.com>,
-        "andrew@lunn.ch" <andrew@lunn.ch>,
-        "weifeng.voon@intel.com" <weifeng.voon@intel.com>,
-        "tglx@linutronix.de" <tglx@linutronix.de>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-stm32@st-md-mailman.stormreply.com" 
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH v2 0/2] net: stmmac: remove useless code of phy_mask
-Thread-Topic: [PATCH v2 0/2] net: stmmac: remove useless code of phy_mask
-Thread-Index: AQHVxfUGgqwdWhtbcEaMF7LHLdtnx6fgZjWA
-Date:   Wed, 8 Jan 2020 07:57:14 +0000
-Message-ID: <BN8PR12MB326627D0E1F17AE7515B78E4D33E0@BN8PR12MB3266.namprd12.prod.outlook.com>
-References: <20200108072550.28613-1-zhengdejin5@gmail.com>
-In-Reply-To: <20200108072550.28613-1-zhengdejin5@gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=joabreu@synopsys.com; 
-x-originating-ip: [83.174.63.141]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: f546a490-8c27-4d16-47bb-08d794105fec
-x-ms-traffictypediagnostic: BN8PR12MB2866:
-x-microsoft-antispam-prvs: <BN8PR12MB2866F218CE08712B56B2C9C0D33E0@BN8PR12MB2866.namprd12.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:1388;
-x-forefront-prvs: 02760F0D1C
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(376002)(346002)(366004)(396003)(39860400002)(136003)(189003)(199004)(2906002)(316002)(110136005)(54906003)(55016002)(9686003)(81156014)(33656002)(81166006)(8936002)(7416002)(8676002)(71200400001)(76116006)(558084003)(478600001)(66556008)(66446008)(7696005)(64756008)(66476007)(86362001)(26005)(52536014)(5660300002)(4326008)(186003)(6506007)(66946007)(921003)(1121003);DIR:OUT;SFP:1102;SCL:1;SRVR:BN8PR12MB2866;H:BN8PR12MB3266.namprd12.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: synopsys.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: LSScbBxyL3s4+nLoLBKcxxQsftu2GCb6KORsekJBNoq2r3r7wxU9lQesh+aMlJ4ERxIEaHQ+BiYb+dCG0vz6RJuzrM6ocBTi9lBOdGwD/O8Rhvsv69iPTy4HGvPaiKWqYhtyh8Y9U7YC+7RWZyS6RrRV5Ezs/VMi1P2nXoPHRpfYe4vBRYDYKuNWnWhCodvCEW/VKY32iAJloS9DvxRYcT2kLAgn0tABXtxgctMkqGYO8AAz28hdNlttYJQeQTzpqm1XjSH5aRccejQhvTO8RfQGUOZodr6+alI9lB8y8musFmtiH4gQrWApJ7epAHFc5+np5xXzsE6I4KxCpTV7vcplLvlFM3JtzoWbDXm/L1pNMsigKjkSKGYt8eG/XOg6dn7ZAutTiJUADzQqv3pscvW4g8UqrBAGC9EHMPMhkUplo87f45bsqXM81uhp9P+mV8BJRzUb3Viz8DSygyjbZv0tZHftXFzPBdBSUtzfEEYHbWpEMU27WYJ4pVSEA+l2
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        d=dev-mellanox-co-il.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=dMZqe76g3HeJVp3imNpZ/6c4OMHJ6wvKq/mNqHnHKlk=;
+        b=OlXLRP5JShf/Hd5vPV29pQnR5bWBKdlqYydFZK7ix+N4g/ml/mRZXAXG1MjKOklYrE
+         I2aofiuLEZC8uk9TiqmSmcsDEI6gwTiLr65xmOPIwcSuhyuRY94SH4VHVul3B73FSZVe
+         Ft8M8IUhdnykG03gNjZZaoBMp6U6DbO+H+iyFa6fWt57ynRljtYdOrNTAuhhlnkLZuxk
+         DNRR568cjU8AKF+US8MOzIrE4Jc5lSG+q3I8Rw6M6iOrHZezYll1EQrUVNXlg/EHXCj0
+         /WEHoGdEnYJxTrOkFqqZL/I/ZyLwT+wICYIUXKh1KmvQrhcaEcvImXxPxt/vyypaZGsG
+         TkiQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=dMZqe76g3HeJVp3imNpZ/6c4OMHJ6wvKq/mNqHnHKlk=;
+        b=O+RWXefuOMBLFfDREjvX5vaglGNrNCjdifFRTGYmW/Y57J86R4VbyX0lV2iSpIMpEN
+         +m3duIhhjnCtrUR9cJe3xMVSw4qKp5GLmZdB/YFqed1AOlIz2KryEvn779U8ckTxeS9K
+         XMuQiVSO0FlakN1kux9KKgWsiDxkfx521+HP7slEZA7viqxBOa8pF4BzWrvxjpiuEwZb
+         0o77+jQVWqCE4i+JWTtA/BiHwPY0sB8cjy1ue2eYR3nsrl6UbknRnoKR8QDnm3VMN+PR
+         Yk/aNzhA/FcBeJ4Ha5cClIiadSM92YIlhEhbZpPKrs9kg5BkG91+X3eiYQbPTJkKF6rH
+         Ok9g==
+X-Gm-Message-State: APjAAAWJCcjmrIUTgH6jSDlMhQOm4k30hRR9oya+I2hTO1Zk6ExRP4OH
+        /owbO2u44e4zxF8/ImEG14bI5jYdgqM=
+X-Google-Smtp-Source: APXvYqyYVI75EWsO8IAc4YPcZAFSO5n6p8rkkF3EFGMDTh5sURQ7Q66YkXTX5SUNXjWpncY2Wm+PGA==
+X-Received: by 2002:a5d:5273:: with SMTP id l19mr3058608wrc.175.1578471141987;
+        Wed, 08 Jan 2020 00:12:21 -0800 (PST)
+Received: from [10.80.2.221] ([193.47.165.251])
+        by smtp.googlemail.com with ESMTPSA id q68sm3065530wme.14.2020.01.08.00.12.20
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 08 Jan 2020 00:12:21 -0800 (PST)
+Subject: Re: [PATCH rdma-next 4/5] IB/mlx5: Introduce VAR object and its
+ alloc/destroy methods
+To:     Jason Gunthorpe <jgg@ziepe.ca>
+Cc:     Leon Romanovsky <leon@kernel.org>,
+        Doug Ledford <dledford@redhat.com>,
+        Leon Romanovsky <leonro@mellanox.com>,
+        RDMA mailing list <linux-rdma@vger.kernel.org>,
+        Shahaf Shuler <shahafs@mellanox.com>,
+        Yishai Hadas <yishaih@mellanox.com>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        linux-netdev <netdev@vger.kernel.org>
+References: <20191212110928.334995-1-leon@kernel.org>
+ <20191212110928.334995-5-leon@kernel.org> <20200107193643.GA18256@ziepe.ca>
+From:   Yishai Hadas <yishaih@dev.mellanox.co.il>
+Message-ID: <7de35c2d-ec3c-9d1e-b20c-76e9c5e0e3ff@dev.mellanox.co.il>
+Date:   Wed, 8 Jan 2020 10:12:20 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.3.1
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: f546a490-8c27-4d16-47bb-08d794105fec
-X-MS-Exchange-CrossTenant-originalarrivaltime: 08 Jan 2020 07:57:14.3423
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: c33c9f88-1eb7-4099-9700-16013fd9e8aa
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: NynmEP2QEd1CN6tyWpka2b0xiaMHE7k+yS5frUVK2JxzwGSqX83PRHP3T7bF4zNptNYlE+N9kBqp4j8pZipksw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR12MB2866
-X-OriginatorOrg: synopsys.com
+In-Reply-To: <20200107193643.GA18256@ziepe.ca>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Dejin Zheng <zhengdejin5@gmail.com>
-Date: Jan/08/2020, 07:25:48 (UTC+00:00)
+On 1/7/2020 9:36 PM, Jason Gunthorpe wrote:
+> On Thu, Dec 12, 2019 at 01:09:27PM +0200, Leon Romanovsky wrote:
+>> From: Yishai Hadas <yishaih@mellanox.com>
+>>
+>> Introduce VAR object and its alloc/destroy KABI methods. The internal
+>> implementation uses the IB core API to manage mmap/munamp calls.
+>>
+>> Signed-off-by: Yishai Hadas <yishaih@mellanox.com>
+>> Signed-off-by: Leon Romanovsky <leonro@mellanox.com>
+>>   drivers/infiniband/hw/mlx5/main.c        | 157 +++++++++++++++++++++++
+>>   drivers/infiniband/hw/mlx5/mlx5_ib.h     |   7 +
+>>   include/uapi/rdma/mlx5_user_ioctl_cmds.h |  17 +++
+>>   3 files changed, 181 insertions(+)
+>>
+>> diff --git a/drivers/infiniband/hw/mlx5/main.c b/drivers/infiniband/hw/mlx5/main.c
+>> index 79a5b8824b9d..873480b07686 100644
+>> +++ b/drivers/infiniband/hw/mlx5/main.c
+>> @@ -2078,6 +2078,7 @@ static void mlx5_ib_mmap_free(struct rdma_user_mmap_entry *entry)
+>>   {
+>>   	struct mlx5_user_mmap_entry *mentry = to_mmmap(entry);
+>>   	struct mlx5_ib_dev *dev = to_mdev(entry->ucontext->device);
+>> +	struct mlx5_var_table *var_table = &dev->var_table;
+>>   	struct mlx5_ib_dm *mdm;
+>>   
+>>   	switch (mentry->mmap_flag) {
+>> @@ -2087,6 +2088,12 @@ static void mlx5_ib_mmap_free(struct rdma_user_mmap_entry *entry)
+>>   				       mdm->size);
+>>   		kfree(mdm);
+>>   		break;
+>> +	case MLX5_IB_MMAP_TYPE_VAR:
+>> +		mutex_lock(&var_table->bitmap_lock);
+>> +		clear_bit(mentry->page_idx, var_table->bitmap);
+>> +		mutex_unlock(&var_table->bitmap_lock);
+>> +		kfree(mentry);
+>> +		break;
+>>   	default:
+>>   		WARN_ON(true);
+>>   	}
+>> @@ -2255,6 +2262,15 @@ static int mlx5_ib_mmap_offset(struct mlx5_ib_dev *dev,
+>>   	return ret;
+>>   }
+>>   
+>> +static u64 mlx5_entry_to_mmap_offset(struct mlx5_user_mmap_entry *entry)
+>> +{
+>> +	u16 cmd = entry->rdma_entry.start_pgoff >> 16;
+>> +	u16 index = entry->rdma_entry.start_pgoff & 0xFFFF;
+>> +
+>> +	return (((index >> 8) << 16) | (cmd << MLX5_IB_MMAP_CMD_SHIFT) |
+>> +		(index & 0xFF)) << PAGE_SHIFT;
+>> +}
+>> +
+>>   static int mlx5_ib_mmap(struct ib_ucontext *ibcontext, struct vm_area_struct *vma)
+>>   {
+>>   	struct mlx5_ib_ucontext *context = to_mucontext(ibcontext);
+>> @@ -6034,6 +6050,145 @@ static void mlx5_ib_cleanup_multiport_master(struct mlx5_ib_dev *dev)
+>>   	mlx5_nic_vport_disable_roce(dev->mdev);
+>>   }
+>>   
+>> +static int var_obj_cleanup(struct ib_uobject *uobject,
+>> +			   enum rdma_remove_reason why,
+>> +			   struct uverbs_attr_bundle *attrs)
+>> +{
+>> +	struct mlx5_user_mmap_entry *obj = uobject->object;
+>> +
+>> +	rdma_user_mmap_entry_remove(&obj->rdma_entry);
+>> +	return 0;
+>> +}
+>> +
+>> +static struct mlx5_user_mmap_entry *
+>> +alloc_var_entry(struct mlx5_ib_ucontext *c)
+>> +{
+>> +	struct mlx5_user_mmap_entry *entry;
+>> +	struct mlx5_var_table *var_table;
+>> +	u32 page_idx;
+>> +	int err;
+>> +
+>> +	var_table = &to_mdev(c->ibucontext.device)->var_table;
+>> +	entry = kzalloc(sizeof(*entry), GFP_KERNEL);
+>> +	if (!entry)
+>> +		return ERR_PTR(-ENOMEM);
+>> +
+>> +	mutex_lock(&var_table->bitmap_lock);
+>> +	page_idx = find_first_zero_bit(var_table->bitmap,
+>> +				       var_table->num_var_hw_entries);
+>> +	if (page_idx >= var_table->num_var_hw_entries) {
+>> +		err = -ENOSPC;
+>> +		mutex_unlock(&var_table->bitmap_lock);
+>> +		goto end;
+>> +	}
+>> +
+>> +	set_bit(page_idx, var_table->bitmap);
+>> +	mutex_unlock(&var_table->bitmap_lock);
+>> +
+>> +	entry->address = var_table->hw_start_addr +
+>> +				(page_idx * var_table->stride_size);
+>> +	entry->page_idx = page_idx;
+>> +	entry->mmap_flag = MLX5_IB_MMAP_TYPE_VAR;
+>> +
+>> +	err = rdma_user_mmap_entry_insert_range(
+>> +		&c->ibucontext, &entry->rdma_entry, var_table->stride_size,
+>> +		MLX5_IB_MMAP_OFFSET_START << 16,
+>> +		(MLX5_IB_MMAP_OFFSET_END << 16) + (1UL << 16) - 1);
+>> +	if (err)
+>> +		goto err_insert;
+>> +
+>> +	return entry;
+>> +
+>> +err_insert:
+>> +	mutex_lock(&var_table->bitmap_lock);
+>> +	clear_bit(page_idx, var_table->bitmap);
+>> +	mutex_unlock(&var_table->bitmap_lock);
+>> +end:
+>> +	kfree(entry);
+>> +	return ERR_PTR(err);
+>> +}
+>> +
+>> +static int UVERBS_HANDLER(MLX5_IB_METHOD_VAR_OBJ_ALLOC)(
+>> +	struct uverbs_attr_bundle *attrs)
+>> +{
+>> +	struct ib_uobject *uobj = uverbs_attr_get_uobject(
+>> +		attrs, MLX5_IB_ATTR_VAR_OBJ_ALLOC_HANDLE);
+>> +	struct mlx5_ib_ucontext *c;
+>> +	struct mlx5_user_mmap_entry *entry;
+>> +	u64 mmap_offset;
+>> +	u32 length;
+>> +	int err;
+>> +
+>> +	c = to_mucontext(ib_uverbs_get_ucontext(attrs));
+>> +	if (IS_ERR(c))
+>> +		return PTR_ERR(c);
+>> +
+>> +	entry = alloc_var_entry(c);
+>> +	if (IS_ERR(entry))
+>> +		return PTR_ERR(entry);
+>> +
+>> +	mmap_offset = mlx5_entry_to_mmap_offset(entry);
+>> +	length = entry->rdma_entry.npages * PAGE_SIZE;
+>> +	uobj->object = entry;
+>> +
+>> +	err = uverbs_copy_to(attrs, MLX5_IB_ATTR_VAR_OBJ_ALLOC_MMAP_OFFSET,
+>> +			     &mmap_offset, sizeof(mmap_offset));
+>> +	if (err)
+>> +		goto err;
+>> +
+>> +	err = uverbs_copy_to(attrs, MLX5_IB_ATTR_VAR_OBJ_ALLOC_PAGE_ID,
+>> +			     &entry->page_idx, sizeof(entry->page_idx));
+>> +	if (err)
+>> +		goto err;
+>> +
+>> +	err = uverbs_copy_to(attrs, MLX5_IB_ATTR_VAR_OBJ_ALLOC_MMAP_LENGTH,
+>> +			     &length, sizeof(length));
+>> +	if (err)
+>> +		goto err;
+>> +
+>> +	return 0;
+>> +
+>> +err:
+>> +	rdma_user_mmap_entry_remove(&entry->rdma_entry);
+>> +	return err;
+>> +}
+>> +
+>> +DECLARE_UVERBS_NAMED_METHOD(
+>> +	MLX5_IB_METHOD_VAR_OBJ_ALLOC,
+>> +	UVERBS_ATTR_IDR(MLX5_IB_ATTR_VAR_OBJ_ALLOC_HANDLE,
+>> +			MLX5_IB_OBJECT_VAR,
+>> +			UVERBS_ACCESS_NEW,
+>> +			UA_MANDATORY),
+>> +	UVERBS_ATTR_PTR_OUT(MLX5_IB_ATTR_VAR_OBJ_ALLOC_PAGE_ID,
+>> +			   UVERBS_ATTR_TYPE(u32),
+>> +			   UA_MANDATORY),
+>> +	UVERBS_ATTR_PTR_OUT(MLX5_IB_ATTR_VAR_OBJ_ALLOC_MMAP_LENGTH,
+>> +			   UVERBS_ATTR_TYPE(u32),
+>> +			   UA_MANDATORY),
+>> +	UVERBS_ATTR_PTR_OUT(MLX5_IB_ATTR_VAR_OBJ_ALLOC_MMAP_OFFSET,
+>> +			    UVERBS_ATTR_TYPE(u64),
+>> +			    UA_MANDATORY));
+>> +
+>> +DECLARE_UVERBS_NAMED_METHOD_DESTROY(
+>> +	MLX5_IB_METHOD_VAR_OBJ_DESTROY,
+>> +	UVERBS_ATTR_IDR(MLX5_IB_ATTR_VAR_OBJ_DESTROY_HANDLE,
+>> +			MLX5_IB_OBJECT_VAR,
+>> +			UVERBS_ACCESS_DESTROY,
+>> +			UA_MANDATORY));
+>> +
+>> +DECLARE_UVERBS_NAMED_OBJECT(MLX5_IB_OBJECT_VAR,
+>> +			    UVERBS_TYPE_ALLOC_IDR(var_obj_cleanup),
+>> +			    &UVERBS_METHOD(MLX5_IB_METHOD_VAR_OBJ_ALLOC),
+>> +			    &UVERBS_METHOD(MLX5_IB_METHOD_VAR_OBJ_DESTROY));
+>> +
+>> +static bool var_is_supported(struct ib_device *device)
+>> +{
+>> +	struct mlx5_ib_dev *dev = to_mdev(device);
+>> +
+>> +	return (MLX5_CAP_GEN_64(dev->mdev, general_obj_types) &
+>> +			MLX5_GENERAL_OBJ_TYPES_CAP_VIRTIO_NET_Q);
+>> +}
+>> +
+>>   ADD_UVERBS_ATTRIBUTES_SIMPLE(
+>>   	mlx5_ib_dm,
+>>   	UVERBS_OBJECT_DM,
+>> @@ -6064,6 +6219,8 @@ static const struct uapi_definition mlx5_ib_defs[] = {
+>>   	UAPI_DEF_CHAIN_OBJ_TREE(UVERBS_OBJECT_FLOW_ACTION,
+>>   				&mlx5_ib_flow_action),
+>>   	UAPI_DEF_CHAIN_OBJ_TREE(UVERBS_OBJECT_DM, &mlx5_ib_dm),
+>> +	UAPI_DEF_CHAIN_OBJ_TREE_NAMED(MLX5_IB_OBJECT_VAR,
+>> +				UAPI_DEF_IS_OBJ_SUPPORTED(var_is_supported)),
+>>   	{}
+>>   };
+>>   
+>> diff --git a/drivers/infiniband/hw/mlx5/mlx5_ib.h b/drivers/infiniband/hw/mlx5/mlx5_ib.h
+>> index 23ad949e247f..489128fe8603 100644
+>> +++ b/drivers/infiniband/hw/mlx5/mlx5_ib.h
+>> @@ -71,6 +71,11 @@
+>>   
+>>   #define MLX5_MKEY_PAGE_SHIFT_MASK __mlx5_mask(mkc, log_page_size)
+>>   
+>> +enum {
+>> +	MLX5_IB_MMAP_OFFSET_START = 9,
+>> +	MLX5_IB_MMAP_OFFSET_END = 255,
+>> +};
+>> +
+>>   enum {
+>>   	MLX5_IB_MMAP_CMD_SHIFT	= 8,
+>>   	MLX5_IB_MMAP_CMD_MASK	= 0xff,
+>> @@ -120,6 +125,7 @@ enum {
+>>   
+>>   enum mlx5_ib_mmap_type {
+>>   	MLX5_IB_MMAP_TYPE_MEMIC = 1,
+>> +	MLX5_IB_MMAP_TYPE_VAR = 2,
+>>   };
+>>   
+>>   #define MLX5_LOG_SW_ICM_BLOCK_SIZE(dev)                                        \
+>> @@ -563,6 +569,7 @@ struct mlx5_user_mmap_entry {
+>>   	struct rdma_user_mmap_entry rdma_entry;
+>>   	u8 mmap_flag;
+>>   	u64 address;
+>> +	u32 page_idx;
+> 
+> Why are we storing this in the global struct when it is never read
+> except by the caller of alloc_var_entry()? Return it from
+> alloc_var_entry?
+> 
 
-> Changes since v1:
-> 	1, add a new commit for remove the useless member phy_mask.
+It's required as part of mlx5_ib_mmap_free() to claer the matching bit 
+map entry of the device var table, see above in this patch.
 
-No, this is not useless. It's an API for developers that need only=20
-certain PHYs to be detected. Please do not remove this.
+> Also the final patch in the series should be here as at this point
+> mmap will succeed but return the wrong cachability flags.
+> 
 
----
-Thanks,
-Jose Miguel Abreu
+Right, let's squash it to this patch.
+
+> Since Leon is away I can fix this two things if you agree.
+
+Yes, thanks.
+
+Yishai
