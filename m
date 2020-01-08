@@ -2,78 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E8D6D1347E5
-	for <lists+netdev@lfdr.de>; Wed,  8 Jan 2020 17:25:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A281F1347FD
+	for <lists+netdev@lfdr.de>; Wed,  8 Jan 2020 17:30:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728773AbgAHQZ0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jan 2020 11:25:26 -0500
-Received: from mail-ot1-f65.google.com ([209.85.210.65]:33451 "EHLO
-        mail-ot1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727347AbgAHQZY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jan 2020 11:25:24 -0500
-Received: by mail-ot1-f65.google.com with SMTP id b18so4178936otp.0
-        for <netdev@vger.kernel.org>; Wed, 08 Jan 2020 08:25:24 -0800 (PST)
+        id S1728657AbgAHQaq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jan 2020 11:30:46 -0500
+Received: from mail-ed1-f67.google.com ([209.85.208.67]:37272 "EHLO
+        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727437AbgAHQap (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jan 2020 11:30:45 -0500
+Received: by mail-ed1-f67.google.com with SMTP id cy15so3086763edb.4;
+        Wed, 08 Jan 2020 08:30:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=7o9krT2FUFfJzalxomNVkht5y8lOkSzgYqZOdm5yd0M=;
+        b=X8TgNDuz+uEj76NEkllamJk67PcA5BUx9CHYIBn0iZCL1hhHXUlYs14iUvNwIuuS7f
+         kTTfoDZxbxkhEIZLHTP4UQ3cCdGf28XCWMfZ9WIr3KBzfiTihOqAjllKOzkWCKE1DGAR
+         svr5zwYLmkCY+wocqYDhNi5qyjWvN80z8QvAZEINIiB96tTe1HtDtSwe+yT/qjqGv7pM
+         0DVCSJefobFFR3r0Jazu9+7z1cRsncaZqKySZzYhssuLnMc58cjMCUDsSX1gKNQH+6Rg
+         FVxYDocWq5DzrIhtY2iEVv4/YIi0jygNC7pBCJdH2QfpjFthNLvQ8+9CX0YWyKrMP2so
+         hU+w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=Yz35zFP2aSNw0+gIRfSaZMhcsEm+gudXf2tyLjffdvY=;
-        b=nIs9Pg0nJfN+XDpsV1XbuY04VEgL8CoUSNLJR9iDreZ9hTsRizqLNQnbx8OoASZt+a
-         j/YCo4l1yEkg+gRxTP63pD5XofXuau4upsly/sXcjm/0IPR/8FqEJ89dj/UHBk1d3Ho/
-         DFjJDMqBIeP2yJB46aLWm7IdXibV+DyIbB8CJF8yLtPeQCooPm84ulaYtNkr6xvqKZwZ
-         PQmyNGS4RNQz7EGkbCCRa3yvQmTTUWQI0kpdQMGLAcla0743LoojxbNZv+ZycnwLfV8o
-         dXdncXId84221dBuR0/sOrjH9Ky56wJyC5G295alJQlD0otKZyJ5AHPF90qvwh6vRrCY
-         CVFg==
-X-Gm-Message-State: APjAAAUGL/qKlW8s2ztDuYDwapIU2nA23OKFaEGUcWacRv0QF7yZSoXv
-        4vHmgeUkvbxAAZ7fIRwDZAGifuA=
-X-Google-Smtp-Source: APXvYqwAAHK/YGLrrrTyxVVhip2M/1jZKAySRfH5F+BIZAxCRSETkCzWdGBkgIzXSCpE8iHNSOiXoQ==
-X-Received: by 2002:a9d:7315:: with SMTP id e21mr4988878otk.255.1578500723448;
-        Wed, 08 Jan 2020 08:25:23 -0800 (PST)
-Received: from rob-hp-laptop (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
-        by smtp.gmail.com with ESMTPSA id n2sm1205789oia.58.2020.01.08.08.25.22
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 08 Jan 2020 08:25:22 -0800 (PST)
-Received: from rob (uid 1000)
-        (envelope-from rob@rob-hp-laptop)
-        id 220333
-        by rob-hp-laptop (DragonFly Mail Agent v0.11);
-        Wed, 08 Jan 2020 10:25:21 -0600
-Date:   Wed, 8 Jan 2020 10:25:21 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Andy Gross <agross@kernel.org>, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        ath10k@lists.infradead.org
-Subject: Re: [PATCH 1/2] ath10k: Add optional qdss clk
-Message-ID: <20200108162521.GA23484@bogus>
-References: <20191223054855.3020665-1-bjorn.andersson@linaro.org>
- <20191223054855.3020665-2-bjorn.andersson@linaro.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=7o9krT2FUFfJzalxomNVkht5y8lOkSzgYqZOdm5yd0M=;
+        b=CgbOac+xOxRm7UxAdFcjKnXYM+1mxa0FPjr812YAXY+uoDq/6QbDNrDAAiTfIIszlW
+         mG1obcBJ6xKELrxzCq2DpuTCYqbwhiL2UZfngb7TBSTgoCvdcrR0yrN/FKyR3GGJGwtw
+         UdDI6bwDp3Qet0EHazJmixAGZoIfOdg62DcGDikX2MgrJZRNLGLQ5CM1LXiy+KqRszzS
+         VCZ4RyXb2hTOObOFBr7uza7bULV9XUW13CS1bg0qTdbssYf1Umy2um8/WNmXnkyS3NCJ
+         HicCQlSH+gb1+PL7OcJLvqxlEEXXsPVAuJOd5B4JRY+5ryKJuuzQFXJt/R5T/R4rcPvL
+         +0sg==
+X-Gm-Message-State: APjAAAVUHfxhRY72T9xBATfrbwsMCAzVW4i719kppu9kMcEAzFieyWG6
+        NDCUz8TBBE1f/FeCaEiX1yoWpqo97WGubIOtf3U=
+X-Google-Smtp-Source: APXvYqzF4ARmkb+wNjI820dBjXqHoID1H5hB7nCDR7eZCrEtV123/DMTKyIfpgBjt0+My1LvwCjXkpgwBJXhyAFw3xo=
+X-Received: by 2002:a17:907:11cc:: with SMTP id va12mr5803958ejb.164.1578501043781;
+ Wed, 08 Jan 2020 08:30:43 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191223054855.3020665-2-bjorn.andersson@linaro.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <HK0PR01MB3521C806FE109E04FA72858CFA3F0@HK0PR01MB3521.apcprd01.prod.exchangelabs.com>
+ <CA+h21hpERd-yko+X9G-D9eFwu3LVq625qDUYvNGtEA8Ere_vYw@mail.gmail.com> <HK0PR01MB35219F5DF16CE54D088ACE2CFA3E0@HK0PR01MB3521.apcprd01.prod.exchangelabs.com>
+In-Reply-To: <HK0PR01MB35219F5DF16CE54D088ACE2CFA3E0@HK0PR01MB3521.apcprd01.prod.exchangelabs.com>
+From:   Vladimir Oltean <olteanv@gmail.com>
+Date:   Wed, 8 Jan 2020 18:30:31 +0200
+Message-ID: <CA+h21hrb70QTaaXzxSxXGE=JaOLPazKmAEqSdMxOEcAYFVrxCg@mail.gmail.com>
+Subject: Re: [PATCH] gianfar: Solve ethernet TX/RX problems for ls1021a
+To:     =?UTF-8?B?Sm9obnNvbiBDSCBDaGVuICjpmbPmmK3li7Mp?= 
+        <JohnsonCH.Chen@moxa.com>
+Cc:     "claudiu.manoil@nxp.com" <claudiu.manoil@nxp.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "zero19850401@gmail.com" <zero19850401@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 22 Dec 2019 21:48:54 -0800, Bjorn Andersson wrote:
-> The WiFi firmware found on sm8150 requires that the QDSS clock is
-> ticking in order to operate, so add an optional clock to the binding to
-> allow this to be specified in the sm8150 dts and add the clock to the
-> list of clocks in the driver.
-> 
-> Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-> ---
->  Documentation/devicetree/bindings/net/wireless/qcom,ath10k.txt | 2 +-
->  drivers/net/wireless/ath/ath10k/snoc.c                         | 2 +-
->  2 files changed, 2 insertions(+), 2 deletions(-)
-> 
+Hi Johnson,
 
-Acked-by: Rob Herring <robh@kernel.org>
+On Wed, 8 Jan 2020 at 09:15, Johnson CH Chen (=E9=99=B3=E6=98=AD=E5=8B=B3)
+<JohnsonCH.Chen@moxa.com> wrote:
+>
+> Hi Vladimir,
+>
+> Vladimir Oltean <olteanv@gmail.com> =E6=96=BC 2020=E5=B9=B41=E6=9C=887=E6=
+=97=A5 =E9=80=B1=E4=BA=8C =E4=B8=8B=E5=8D=8811:49=E5=AF=AB=E9=81=93=EF=BC=
+=9A
+> >
+> > Hi Chen,
+> >
+> > On Tue, 7 Jan 2020 at 12:37, Johnson CH Chen (=E9=99=B3=E6=98=AD=E5=8B=
+=B3)
+> > <JohnsonCH.Chen@moxa.com> wrote:
+> > >
+> > > Add dma_endian_le to solve ethernet TX/RX problems for freescale
+> > > ls1021a. Without this, it will result in rx-busy-errors by ethtool, a=
+nd transmit queue timeout in ls1021a's platforms.
+> > >
+> > > Signed-off-by: Johnson Chen <johnsonch.chen@moxa.com>
+> > > ---
+> >
+> > This patch is not valid. The endianness configuration in
+> > eTSECx_DMACTRL is reserved and not applicable.
+> > What is the value of SCFG_ETSECDMAMCR bits ETSEC_BD and ETSEC_FR_DATA
+> > on your board? Typically this is configured by the bootloader.
+> >
+>
+> Thanks your suggestion. I use linux-fsl-sdk-v1.7, and find "dma-endian-le=
+" is used in ls1021a.dtsi and gianfar.c/.h. For bootloader, version is U-Bo=
+ot version is 2015.01-dirty and it seems old and not includes "SCFG_ETSECDM=
+AMCR bits".
+>
+> It seems solution is included in bootloader, not in device tree for
+> freescale/NXP: https://lxr.missinglinkelectronics.com/uboot/board/freesca=
+le/ls1021aiot/ls1021aiot.c
+>
+> It means bootloader provides functions are the same as device tree's.
+> So what's benefit for this desgin? It seems we need to upgrade kernel and=
+ bootloader to satisfy our need, not just upgrade kernel only. So many than=
+ks!
+>
+
+I'm not sure that the Freescale SDK 1.7 is of any relevance here. The
+point is that this patch is breaking Ethernet for every other LS1021A
+board except yours.
+
+Regards,
+-Vladimir
