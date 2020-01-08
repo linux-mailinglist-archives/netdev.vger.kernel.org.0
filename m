@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 62293134A2A
-	for <lists+netdev@lfdr.de>; Wed,  8 Jan 2020 19:06:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D4A5C134A19
+	for <lists+netdev@lfdr.de>; Wed,  8 Jan 2020 19:06:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730075AbgAHSGH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1730080AbgAHSGH (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Wed, 8 Jan 2020 13:06:07 -0500
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:45049 "EHLO
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:45056 "EHLO
         mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1728905AbgAHSGG (ORCPT
+        with ESMTP id S1730070AbgAHSGG (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 8 Jan 2020 13:06:06 -0500
 Received: from Internal Mail-Server by MTLPINE1 (envelope-from yishaih@mellanox.com)
         with ESMTPS (AES256-SHA encrypted); 8 Jan 2020 20:06:05 +0200
 Received: from vnc17.mtl.labs.mlnx (vnc17.mtl.labs.mlnx [10.7.2.17])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 008I65pn030021;
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 008I65nP030024;
         Wed, 8 Jan 2020 20:06:05 +0200
 Received: from vnc17.mtl.labs.mlnx (vnc17.mtl.labs.mlnx [127.0.0.1])
-        by vnc17.mtl.labs.mlnx (8.13.8/8.13.8) with ESMTP id 008I64eC022322;
-        Wed, 8 Jan 2020 20:06:04 +0200
+        by vnc17.mtl.labs.mlnx (8.13.8/8.13.8) with ESMTP id 008I65tD022326;
+        Wed, 8 Jan 2020 20:06:05 +0200
 Received: (from yishaih@localhost)
-        by vnc17.mtl.labs.mlnx (8.13.8/8.13.8/Submit) id 008I643O022321;
-        Wed, 8 Jan 2020 20:06:04 +0200
+        by vnc17.mtl.labs.mlnx (8.13.8/8.13.8/Submit) id 008I6557022325;
+        Wed, 8 Jan 2020 20:06:05 +0200
 From:   Yishai Hadas <yishaih@mellanox.com>
 To:     linux-rdma@vger.kernel.org, jgg@mellanox.com, dledford@redhat.com
 Cc:     saeedm@mellanox.com, yishaih@mellanox.com, maorg@mellanox.com,
         michaelgur@mellanox.com, netdev@vger.kernel.org
-Subject: [PATCH rdma-next 02/10] RDMA/core: Add UVERBS_METHOD_ASYNC_EVENT_ALLOC
-Date:   Wed,  8 Jan 2020 20:05:32 +0200
-Message-Id: <1578506740-22188-3-git-send-email-yishaih@mellanox.com>
+Subject: [PATCH rdma-next 03/10] RDMA/core: Remove ucontext_lock from the uverbs_destry_ufile_hw() path
+Date:   Wed,  8 Jan 2020 20:05:33 +0200
+Message-Id: <1578506740-22188-4-git-send-email-yishaih@mellanox.com>
 X-Mailer: git-send-email 1.8.2.3
 In-Reply-To: <1578506740-22188-1-git-send-email-yishaih@mellanox.com>
 References: <1578506740-22188-1-git-send-email-yishaih@mellanox.com>
@@ -39,102 +39,95 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jason Gunthorpe <jgg@mellanox.com>
 
-Allow the async FD to be allocated separately from the context.
+This lock only serializes ucontext creation. Instead of checking the
+ucontext_lock during destruction hold the existing hw_destroy_rwsem
+during creation, which is the standard pattern for object creation.
 
-This is necessary to introduce the ioctl to create a context, as an ioctl
-should only ever create a single uobject at a time.
-
-If multiple async FDs are created then the first one is used to deliver
-affiliated events from any ib_uevent_object, with all subsequent ones will
-receive only unaffiliated events.
+The simplification of locking is needed for the next patch.
 
 Signed-off-by: Yishai Hadas <yishaih@mellanox.com>
 Signed-off-by: Jason Gunthorpe <jgg@mellanox.com>
 ---
- drivers/infiniband/core/uverbs_main.c              |  4 +++-
- .../infiniband/core/uverbs_std_types_async_fd.c    | 23 +++++++++++++++++++++-
- include/uapi/rdma/ib_user_ioctl_cmds.h             |  8 ++++++++
- 3 files changed, 33 insertions(+), 2 deletions(-)
+ drivers/infiniband/core/rdma_core.c  | 21 +--------------------
+ drivers/infiniband/core/uverbs_cmd.c |  5 ++++-
+ 2 files changed, 5 insertions(+), 21 deletions(-)
 
-diff --git a/drivers/infiniband/core/uverbs_main.c b/drivers/infiniband/core/uverbs_main.c
-index 1f279b0a..fb9e752 100644
---- a/drivers/infiniband/core/uverbs_main.c
-+++ b/drivers/infiniband/core/uverbs_main.c
-@@ -475,7 +475,9 @@ void ib_uverbs_init_async_event_file(
- 
- 	ib_uverbs_init_event_queue(&async_file->ev_queue);
- 
--	if (!WARN_ON(uverbs_file->async_file)) {
-+	/* The first async_event_file becomes the default one for the file. */
-+	lockdep_assert_held(&uverbs_file->ucontext_lock);
-+	if (!uverbs_file->async_file) {
- 		/* Pairs with the put in ib_uverbs_release_file */
- 		uverbs_uobject_get(&async_file->uobj);
- 		smp_store_release(&uverbs_file->async_file, async_file);
-diff --git a/drivers/infiniband/core/uverbs_std_types_async_fd.c b/drivers/infiniband/core/uverbs_std_types_async_fd.c
-index 31ff968..484dba1 100644
---- a/drivers/infiniband/core/uverbs_std_types_async_fd.c
-+++ b/drivers/infiniband/core/uverbs_std_types_async_fd.c
-@@ -8,6 +8,19 @@
- #include "rdma_core.h"
- #include "uverbs.h"
- 
-+static int UVERBS_HANDLER(UVERBS_METHOD_ASYNC_EVENT_ALLOC)(
-+	struct uverbs_attr_bundle *attrs)
-+{
-+	struct ib_uobject *uobj =
-+		uverbs_attr_get_uobject(attrs, UVERBS_METHOD_ASYNC_EVENT_ALLOC);
-+
-+	mutex_lock(&attrs->ufile->ucontext_lock);
-+	ib_uverbs_init_async_event_file(
-+		container_of(uobj, struct ib_uverbs_async_event_file, uobj));
-+	mutex_unlock(&attrs->ufile->ucontext_lock);
-+	return 0;
-+}
-+
- static int uverbs_async_event_destroy_uobj(struct ib_uobject *uobj,
- 					   enum rdma_remove_reason why)
- {
-@@ -19,13 +32,21 @@ static int uverbs_async_event_destroy_uobj(struct ib_uobject *uobj,
- 	return 0;
+diff --git a/drivers/infiniband/core/rdma_core.c b/drivers/infiniband/core/rdma_core.c
+index f839b93..58af6a7 100644
+--- a/drivers/infiniband/core/rdma_core.c
++++ b/drivers/infiniband/core/rdma_core.c
+@@ -863,9 +863,7 @@ static int __uverbs_cleanup_ufile(struct ib_uverbs_file *ufile,
  }
  
-+DECLARE_UVERBS_NAMED_METHOD(
-+	UVERBS_METHOD_ASYNC_EVENT_ALLOC,
-+	UVERBS_ATTR_FD(UVERBS_ATTR_ASYNC_EVENT_ALLOC_FD_HANDLE,
-+		       UVERBS_OBJECT_ASYNC_EVENT,
-+		       UVERBS_ACCESS_NEW,
-+		       UA_MANDATORY));
-+
- DECLARE_UVERBS_NAMED_OBJECT(
- 	UVERBS_OBJECT_ASYNC_EVENT,
- 	UVERBS_TYPE_ALLOC_FD(sizeof(struct ib_uverbs_async_event_file),
- 			     uverbs_async_event_destroy_uobj,
- 			     &uverbs_async_event_fops,
- 			     "[infinibandevent]",
--			     O_RDONLY));
-+			     O_RDONLY),
-+	&UVERBS_METHOD(UVERBS_METHOD_ASYNC_EVENT_ALLOC));
+ /*
+- * Destroy the uncontext and every uobject associated with it. If called with
+- * reason != RDMA_REMOVE_CLOSE this will not return until the destruction has
+- * been completed and ufile->ucontext is NULL.
++ * Destroy the uncontext and every uobject associated with it.
+  *
+  * This is internally locked and can be called in parallel from multiple
+  * contexts.
+@@ -873,22 +871,6 @@ static int __uverbs_cleanup_ufile(struct ib_uverbs_file *ufile,
+ void uverbs_destroy_ufile_hw(struct ib_uverbs_file *ufile,
+ 			     enum rdma_remove_reason reason)
+ {
+-	if (reason == RDMA_REMOVE_CLOSE) {
+-		/*
+-		 * During destruction we might trigger something that
+-		 * synchronously calls release on any file descriptor. For
+-		 * this reason all paths that come from file_operations
+-		 * release must use try_lock. They can progress knowing that
+-		 * there is an ongoing uverbs_destroy_ufile_hw that will clean
+-		 * up the driver resources.
+-		 */
+-		if (!mutex_trylock(&ufile->ucontext_lock))
+-			return;
+-
+-	} else {
+-		mutex_lock(&ufile->ucontext_lock);
+-	}
+-
+ 	down_write(&ufile->hw_destroy_rwsem);
  
- const struct uapi_definition uverbs_def_obj_async_fd[] = {
- 	UAPI_DEF_CHAIN_OBJ_TREE_NAMED(UVERBS_OBJECT_ASYNC_EVENT),
-diff --git a/include/uapi/rdma/ib_user_ioctl_cmds.h b/include/uapi/rdma/ib_user_ioctl_cmds.h
-index 9cfadb5..498955c 100644
---- a/include/uapi/rdma/ib_user_ioctl_cmds.h
-+++ b/include/uapi/rdma/ib_user_ioctl_cmds.h
-@@ -242,4 +242,12 @@ enum uverbs_attrs_flow_destroy_ids {
- 	UVERBS_ATTR_DESTROY_FLOW_HANDLE,
- };
+ 	/*
+@@ -917,7 +899,6 @@ void uverbs_destroy_ufile_hw(struct ib_uverbs_file *ufile,
  
-+enum uverbs_method_async_event {
-+	UVERBS_METHOD_ASYNC_EVENT_ALLOC,
-+};
-+
-+enum uverbs_attrs_async_event_create {
-+	UVERBS_ATTR_ASYNC_EVENT_ALLOC_FD_HANDLE,
-+};
-+
- #endif
+ done:
+ 	up_write(&ufile->hw_destroy_rwsem);
+-	mutex_unlock(&ufile->ucontext_lock);
+ }
+ 
+ const struct uverbs_obj_type_class uverbs_fd_class = {
+diff --git a/drivers/infiniband/core/uverbs_cmd.c b/drivers/infiniband/core/uverbs_cmd.c
+index 29b1b5a..d71ffe4 100644
+--- a/drivers/infiniband/core/uverbs_cmd.c
++++ b/drivers/infiniband/core/uverbs_cmd.c
+@@ -218,6 +218,8 @@ static int ib_uverbs_get_context(struct uverbs_attr_bundle *attrs)
+ 	if (ret)
+ 		return ret;
+ 
++	if (!down_read_trylock(&file->hw_destroy_rwsem))
++		return -EIO;
+ 	mutex_lock(&file->ucontext_lock);
+ 	ib_dev = srcu_dereference(file->device->ib_dev,
+ 				  &file->device->disassociate_srcu);
+@@ -284,7 +286,7 @@ static int ib_uverbs_get_context(struct uverbs_attr_bundle *attrs)
+ 	smp_store_release(&file->ucontext, ucontext);
+ 
+ 	mutex_unlock(&file->ucontext_lock);
+-
++	up_read(&file->hw_destroy_rwsem);
+ 	return 0;
+ 
+ err_uobj:
+@@ -298,6 +300,7 @@ static int ib_uverbs_get_context(struct uverbs_attr_bundle *attrs)
+ 
+ err:
+ 	mutex_unlock(&file->ucontext_lock);
++	up_read(&file->hw_destroy_rwsem);
+ 	return ret;
+ }
+ 
 -- 
 1.8.3.1
 
