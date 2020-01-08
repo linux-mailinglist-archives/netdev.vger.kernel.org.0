@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 28ACF134C75
-	for <lists+netdev@lfdr.de>; Wed,  8 Jan 2020 21:06:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5049A134C82
+	for <lists+netdev@lfdr.de>; Wed,  8 Jan 2020 21:06:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727108AbgAHUGS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jan 2020 15:06:18 -0500
-Received: from mail.kernel.org ([198.145.29.99]:59286 "EHLO mail.kernel.org"
+        id S1727179AbgAHUG0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jan 2020 15:06:26 -0500
+Received: from mail.kernel.org ([198.145.29.99]:59654 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725835AbgAHUGP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 8 Jan 2020 15:06:15 -0500
+        id S1727127AbgAHUGY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 8 Jan 2020 15:06:24 -0500
 Received: from localhost.localdomain (unknown [83.218.167.187])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id A25EE2072A;
-        Wed,  8 Jan 2020 20:06:05 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id D0CD320705;
+        Wed,  8 Jan 2020 20:06:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1578513974;
-        bh=7WvpgXtbKaASLJmny49byk2BAQpG0TKX5P0WxQ0MehA=;
+        s=default; t=1578513983;
+        bh=GncZJES9Pi+VGkKtqPts7U7bz/5zDiGW+ajpMZK1gUg=;
         h=From:To:Subject:Date:In-Reply-To:References:From;
-        b=PY+oqH9cwJtxC08CiGcYoOkgsuI2NSHiP77prbq2gYqP2xSGczGXIgEMTc/owkVIN
-         vhNFskU2UiqY1/W/YV36+LG4BmVnSUnil/ubLCY4oaijqC6ilW7CTqS70Urax38QKs
-         BFMv93uAqjblGY8osoaDNGPj76OXCck3behyHCR4=
+        b=kZmAdTXAIH93VZ7xMF5Tlek9euzWKJeDMcMLgREM96Lm0wU6+4tSnGhi3xZVs0qsy
+         7HMtGcLv4d3nPEcSEgyudvX4g/JRIQY1BmbYHTuBqturlEGI3oBAItsgQ9JvRd2+zR
+         bWS5j+8gDixdaKa8O8oxs69s2fpbmcWBqAK1Jq2k=
 From:   Krzysztof Kozlowski <krzk@kernel.org>
 To:     Richard Henderson <rth@twiddle.net>,
         Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
@@ -62,9 +62,9 @@ To:     Richard Henderson <rth@twiddle.net>,
         netdev@vger.kernel.org, linux-ntb@googlegroups.com,
         virtualization@lists.linux-foundation.org,
         linux-arch@vger.kernel.org
-Subject: [PATCH v2 3/9] ntb: intel: Constify ioreadX() iomem argument (as in generic implementation)
-Date:   Wed,  8 Jan 2020 21:05:22 +0100
-Message-Id: <20200108200528.4614-4-krzk@kernel.org>
+Subject: [PATCH v2 4/9] virtio: pci: Constify ioreadX() iomem argument (as in generic implementation)
+Date:   Wed,  8 Jan 2020 21:05:23 +0100
+Message-Id: <20200108200528.4614-5-krzk@kernel.org>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200108200528.4614-1-krzk@kernel.org>
 References: <20200108200528.4614-1-krzk@kernel.org>
@@ -88,50 +88,33 @@ Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
 Changes since v1:
 1. Add Geert's review.
 ---
- drivers/ntb/hw/intel/ntb_hw_gen1.c  | 2 +-
- drivers/ntb/hw/intel/ntb_hw_gen3.h  | 2 +-
- drivers/ntb/hw/intel/ntb_hw_intel.h | 2 +-
- 3 files changed, 3 insertions(+), 3 deletions(-)
+ drivers/virtio/virtio_pci_modern.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/ntb/hw/intel/ntb_hw_gen1.c b/drivers/ntb/hw/intel/ntb_hw_gen1.c
-index bb57ec239029..9202502a9787 100644
---- a/drivers/ntb/hw/intel/ntb_hw_gen1.c
-+++ b/drivers/ntb/hw/intel/ntb_hw_gen1.c
-@@ -1202,7 +1202,7 @@ int intel_ntb_peer_spad_write(struct ntb_dev *ntb, int pidx, int sidx,
- 			       ndev->peer_reg->spad);
+diff --git a/drivers/virtio/virtio_pci_modern.c b/drivers/virtio/virtio_pci_modern.c
+index 7abcc50838b8..fc58db4ab6c3 100644
+--- a/drivers/virtio/virtio_pci_modern.c
++++ b/drivers/virtio/virtio_pci_modern.c
+@@ -26,16 +26,16 @@
+  * method, i.e. 32-bit accesses for 32-bit fields, 16-bit accesses
+  * for 16-bit fields and 8-bit accesses for 8-bit fields.
+  */
+-static inline u8 vp_ioread8(u8 __iomem *addr)
++static inline u8 vp_ioread8(const u8 __iomem *addr)
+ {
+ 	return ioread8(addr);
+ }
+-static inline u16 vp_ioread16 (__le16 __iomem *addr)
++static inline u16 vp_ioread16 (const __le16 __iomem *addr)
+ {
+ 	return ioread16(addr);
  }
  
--static u64 xeon_db_ioread(void __iomem *mmio)
-+static u64 xeon_db_ioread(const void __iomem *mmio)
+-static inline u32 vp_ioread32(__le32 __iomem *addr)
++static inline u32 vp_ioread32(const __le32 __iomem *addr)
  {
- 	return (u64)ioread16(mmio);
+ 	return ioread32(addr);
  }
-diff --git a/drivers/ntb/hw/intel/ntb_hw_gen3.h b/drivers/ntb/hw/intel/ntb_hw_gen3.h
-index 75fb86ca27bb..d1455f24ec99 100644
---- a/drivers/ntb/hw/intel/ntb_hw_gen3.h
-+++ b/drivers/ntb/hw/intel/ntb_hw_gen3.h
-@@ -91,7 +91,7 @@
- #define GEN3_DB_TOTAL_SHIFT		33
- #define GEN3_SPAD_COUNT			16
- 
--static inline u64 gen3_db_ioread(void __iomem *mmio)
-+static inline u64 gen3_db_ioread(const void __iomem *mmio)
- {
- 	return ioread64(mmio);
- }
-diff --git a/drivers/ntb/hw/intel/ntb_hw_intel.h b/drivers/ntb/hw/intel/ntb_hw_intel.h
-index e071e28bca3f..3c0a5a2da241 100644
---- a/drivers/ntb/hw/intel/ntb_hw_intel.h
-+++ b/drivers/ntb/hw/intel/ntb_hw_intel.h
-@@ -102,7 +102,7 @@ struct intel_ntb_dev;
- struct intel_ntb_reg {
- 	int (*poll_link)(struct intel_ntb_dev *ndev);
- 	int (*link_is_up)(struct intel_ntb_dev *ndev);
--	u64 (*db_ioread)(void __iomem *mmio);
-+	u64 (*db_ioread)(const void __iomem *mmio);
- 	void (*db_iowrite)(u64 db_bits, void __iomem *mmio);
- 	unsigned long			ntb_ctl;
- 	resource_size_t			db_size;
 -- 
 2.17.1
 
