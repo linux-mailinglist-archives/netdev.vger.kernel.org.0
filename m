@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B5F66133F09
-	for <lists+netdev@lfdr.de>; Wed,  8 Jan 2020 11:13:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D524E133F11
+	for <lists+netdev@lfdr.de>; Wed,  8 Jan 2020 11:17:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727582AbgAHKNq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jan 2020 05:13:46 -0500
-Received: from mail-qv1-f66.google.com ([209.85.219.66]:43766 "EHLO
-        mail-qv1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726368AbgAHKNq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jan 2020 05:13:46 -0500
-Received: by mail-qv1-f66.google.com with SMTP id p2so1135848qvo.10;
-        Wed, 08 Jan 2020 02:13:45 -0800 (PST)
+        id S1727392AbgAHKRC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jan 2020 05:17:02 -0500
+Received: from mail-qt1-f194.google.com ([209.85.160.194]:43706 "EHLO
+        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726368AbgAHKRC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jan 2020 05:17:02 -0500
+Received: by mail-qt1-f194.google.com with SMTP id d18so2307441qtj.10;
+        Wed, 08 Jan 2020 02:17:01 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc:content-transfer-encoding;
-        bh=AUINI16yK6pZHAU/xXt2qsWSZUyaKAoaO+uyiNHoP1I=;
-        b=e/8iumBBd7Idf61d3znHNv0/2gp6gqhHLqKXb8D4XrpY6aCK8Ps1g6HI4sCEF1EkL3
-         Xny00h/moxJQIfqcN0Lm2HifW4KOXu14M0c12DZGZOt2AmAAA5pSkBWzdEI3c1TZDQ3G
-         pBWEeq8hwfpisXH9dF10jDLbA118b6QpMXh20PWuIpnJXPufjqlJ5JyIU6mwg92pOBM9
-         fr+WvmzYaZegDy4lVw/1becGHj7YV4cgadM3OydiaNRtbFeBvF8/nbCzrfWFkT06+Yt9
-         LrS3wa/FgUA+2sNgU5qiZWsUVykItR6RV9sQ4labxNMHUU1MZE6UmY0nr7S6Zz3OLZ58
-         jGmg==
+        bh=j1l/3YmY8cOPKY2kAlEBXs4uj2kbtX5hdAErR6P5rHg=;
+        b=Meho3hOaSSuovx8T9Bg4jC+WqrXIunJm0lqrJ9onQRfWMK7UpbcWbyAd9yU74KHb/+
+         6w7FtK8rM6ydvHywBhvDxz/zJhy/u25jly/fgLjuke3N3XwN0zcxdSpyBi0ZZFnYa83V
+         52grHE4N/yil8eBq/nDYJwHCaENokFWjHXYmH51GN3CcbhbnaHw892WeK36rq5u2/esu
+         IjbzA9fIBe2XL/O4sFtf5fiiF6KSaAmoDGrYOi0yG1h3AP9tVSN/CGB9uM39TvinPHtx
+         mHzjZAK8qV0aZWWfQ+UQLyI7G4/BT4gwbWg/QFAk9t1riF5Z7xXNmyZ7g1++7t01SeZK
+         srsw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc:content-transfer-encoding;
-        bh=AUINI16yK6pZHAU/xXt2qsWSZUyaKAoaO+uyiNHoP1I=;
-        b=F7iuj/2c3giEjkYt4EJ2vuWaJReAmFZZJ6zyDEOpFYqhJEWA7K8iGxqiUDgTJLVhhW
-         TtEwhAGn3JFZYQSsAgewlBdzW9mccuz2vPX5Onf7l5Isu3499tBgbrHEo9Nxs0vVsXCj
-         JOfcIFcNB2Gm4tQmeB36fUZ5/S6NC8TQSCgKQ/UXwHJjnHzLJ9vCKXCKEq+SsOdfsU1G
-         3Uy1FXukwcrg8VwbQhJ/fqmFFvqwUNNLmhfR2GHgthxBJCA3NINwnwbvhMg2XEkGNpaP
-         Soo7B8sdiORoBa6WOKmmb5M1iFGX0vE3s5olmgqu2aVHpF3EcFOwWASrfSKBHFbZtbKa
-         Vc8Q==
-X-Gm-Message-State: APjAAAWaI4JpnSsR4QZw0xTIv/D27VkOtDiSjplpoVJo//RQuKhu1z3N
-        IEqYTanKxwakynyw7GxJlecyo46PIiR8cSnCPKk=
-X-Google-Smtp-Source: APXvYqwOviWQIIezPLyl++ERkZ4/MPAnPMIPwAi7IkXjU8cJMBvA+cLZSomC0AT6OKdxubCN13nY404Zx8Qol/aW+wg=
-X-Received: by 2002:a0c:e2cf:: with SMTP id t15mr3449252qvl.127.1578478425415;
- Wed, 08 Jan 2020 02:13:45 -0800 (PST)
+        bh=j1l/3YmY8cOPKY2kAlEBXs4uj2kbtX5hdAErR6P5rHg=;
+        b=XsJVEryORQoFQXV8+2eoo8BgMqPls85GkJip/8G5I/JwE//cWlAwEaX51f2SDygyjB
+         b3ht5CHczhbT8pmf8Ikvgzw3Ree//35D2SXP5ONtsabd0vPiVG8RZRApRoGZTTny7mJN
+         cMkUB3DcnMajzQEvI4G+YPbg++VX5Cbgb/6u73EhvVExyDHMhi4n9AOOVO3rgYfgNAlZ
+         FmGr24Xaajxm85Mvx8mR/Mu8MeAoCJOZWpZNjtuXzVw4II3ZMoqpgMrJepyPRi41qugo
+         XxnOcD0qyMDnatjg8UOY3pJIJeGmzDctSmETFJVVrgM0q6KZJVP1osJ+wv+Z5JmrE2Yu
+         LOaA==
+X-Gm-Message-State: APjAAAVsnL0ip2k1tcgSQRqI/U5njQfYtyone4rTYOm4VBM3EujxYW4Z
+        DRoWaVu6MrwpiSKLqxPc5p0p7G5PKgy/0a99ofw=
+X-Google-Smtp-Source: APXvYqxLbdu9Jqs2g/nfUNNWZcGHy/KrJ6qtvV5BxKWtJsLpc3u3WjKBlpwSsS1zqz6RxuDX6Y909Db/apgOF18XONQ=
+X-Received: by 2002:ac8:104:: with SMTP id e4mr2805748qtg.37.1578478621551;
+ Wed, 08 Jan 2020 02:17:01 -0800 (PST)
 MIME-Version: 1.0
-References: <20191219061006.21980-1-bjorn.topel@gmail.com> <20191219061006.21980-5-bjorn.topel@gmail.com>
- <5e14c5d4c4959_67962afd051fc5c062@john-XPS-13-9370.notmuch>
-In-Reply-To: <5e14c5d4c4959_67962afd051fc5c062@john-XPS-13-9370.notmuch>
+References: <20191219061006.21980-1-bjorn.topel@gmail.com> <20191219061006.21980-6-bjorn.topel@gmail.com>
+ <5e14c6b07e670_67962afd051fc5c05d@john-XPS-13-9370.notmuch>
+In-Reply-To: <5e14c6b07e670_67962afd051fc5c05d@john-XPS-13-9370.notmuch>
 From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
-Date:   Wed, 8 Jan 2020 11:13:34 +0100
-Message-ID: <CAJ+HfNiQOpAbHHT9V-gcp9u=vVDoP6uSoz2f-diEFrfX_88pMg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 4/8] xsk: make xskmap flush_list common for
+Date:   Wed, 8 Jan 2020 11:16:50 +0100
+Message-ID: <CAJ+HfNg2QFfhrwuEkZJjTKEYHhd1ByHgfmSp7wtwN_w2qB4rqA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2 5/8] xdp: make devmap flush_list common for
  all map instances
 To:     John Fastabend <john.fastabend@gmail.com>
 Cc:     Netdev <netdev@vger.kernel.org>,
@@ -67,41 +67,22 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 7 Jan 2020 at 18:54, John Fastabend <john.fastabend@gmail.com> wrot=
+On Tue, 7 Jan 2020 at 18:58, John Fastabend <john.fastabend@gmail.com> wrot=
 e:
 >
-> Bj=C3=B6rn T=C3=B6pel wrote:
-> > From: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
-> >
-> > The xskmap flush list is used to track entries that need to flushed
-> > from via the xdp_do_flush_map() function. This list used to be
-> > per-map, but there is really no reason for that. Instead make the
-> > flush list global for all xskmaps, which simplifies __xsk_map_flush()
-> > and xsk_map_alloc().
-> >
-> > Acked-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
-> > Signed-off-by: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
-> > ---
+[...]
+> __dev_flush()?
 >
-> Just to check. The reason this is OK is because xdp_do_flush_map()
-> is called from NAPI context and is per CPU so the only entries on
-> the list will be from the current cpu napi context?
-
-Correct!
-
-> Even in the case
-> where multiple xskmaps exist we can't have entries from more than
-> a single map on any list at the same time by my reading.
+[...]
+>
+> Looks good changing the function name would make things a bit cleaner IMO=
+.
 >
 
-No, there can be entries from different (XSK) maps. Instead of
-focusing on maps to flush, focus on *entries* to flush. At the end of
-the poll function, all entries (regardless of map origin) will be
-flushed. Makes sense?
+Hmm, I actually prefer the _map_ naming, since it's more clear that
+"entries from the devmap" are being flushed -- but dev_flush() works
+as well! :-) I can send a follow-up with the name change!
 
 
+Thanks,
 Bj=C3=B6rn
-
-
-> LGTM,
-> Acked-by: John Fastabend <john.fastabend@gmail.com>
