@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D4CF5133C3B
-	for <lists+netdev@lfdr.de>; Wed,  8 Jan 2020 08:26:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4DACF133C34
+	for <lists+netdev@lfdr.de>; Wed,  8 Jan 2020 08:26:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726927AbgAHH0D convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 8 Jan 2020 02:26:03 -0500
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:60764 "EHLO
+        id S1726808AbgAHHZx convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 8 Jan 2020 02:25:53 -0500
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:62154 "EHLO
         mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726789AbgAHHZx (ORCPT
+        by vger.kernel.org with ESMTP id S1726768AbgAHHZx (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 8 Jan 2020 02:25:53 -0500
 Received: from pps.filterd (m0109331.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0087Ns5W012567
-        for <netdev@vger.kernel.org>; Tue, 7 Jan 2020 23:25:52 -0800
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0087Ns5T012567
+        for <netdev@vger.kernel.org>; Tue, 7 Jan 2020 23:25:51 -0800
 Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 2xd5auscdt-4
+        by mx0a-00082601.pphosted.com with ESMTP id 2xd5auscdu-2
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Tue, 07 Jan 2020 23:25:52 -0800
-Received: from intmgw004.06.prn3.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:83::6) with Microsoft SMTP Server
+        for <netdev@vger.kernel.org>; Tue, 07 Jan 2020 23:25:51 -0800
+Received: from intmgw005.05.ash5.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:83::5) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Tue, 7 Jan 2020 23:25:51 -0800
+ 15.1.1713.5; Tue, 7 Jan 2020 23:25:49 -0800
 Received: by devbig007.ftw2.facebook.com (Postfix, from userid 572438)
-        id D159F760DB5; Tue,  7 Jan 2020 23:25:46 -0800 (PST)
+        id DD893760DB5; Tue,  7 Jan 2020 23:25:48 -0800 (PST)
 Smtp-Origin-Hostprefix: devbig
 From:   Alexei Starovoitov <ast@kernel.org>
 Smtp-Origin-Hostname: devbig007.ftw2.facebook.com
@@ -31,9 +31,9 @@ To:     <davem@davemloft.net>
 CC:     <daniel@iogearbox.net>, <netdev@vger.kernel.org>,
         <bpf@vger.kernel.org>, <kernel-team@fb.com>
 Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH bpf-next 4/6] selftests/bpf: Add fexit-to-skb test for global funcs
-Date:   Tue, 7 Jan 2020 23:25:36 -0800
-Message-ID: <20200108072538.3359838-5-ast@kernel.org>
+Subject: [PATCH bpf-next 5/6] selftests/bpf: Add a test for a large global function
+Date:   Tue, 7 Jan 2020 23:25:37 -0800
+Message-ID: <20200108072538.3359838-6-ast@kernel.org>
 X-Mailer: git-send-email 2.23.0
 In-Reply-To: <20200108072538.3359838-1-ast@kernel.org>
 References: <20200108072538.3359838-1-ast@kernel.org>
@@ -43,7 +43,7 @@ X-FB-Internal: Safe
 Content-Type: text/plain
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
  definitions=2020-01-08_01:2020-01-07,2020-01-08 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxlogscore=999
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxlogscore=989
  phishscore=0 spamscore=0 malwarescore=0 impostorscore=0 suspectscore=1
  bulkscore=0 mlxscore=0 priorityscore=1501 adultscore=0 lowpriorityscore=0
  clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
@@ -54,98 +54,69 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add simple fexit prog type to skb prog type test when subprogram is a global
-function.
+test results:
+pyperf50 with always_inlined the same function five times: processed 46378 insns
+pyperf50 with global function: processed 6102 insns
 
 Signed-off-by: Alexei Starovoitov <ast@kernel.org>
 ---
- .../selftests/bpf/prog_tests/fexit_bpf2bpf.c  |  1 +
- .../selftests/bpf/progs/fexit_bpf2bpf.c       | 15 ++++++++++
- .../selftests/bpf/progs/test_pkt_access.c     | 28 +++++++++++++++++++
- 3 files changed, 44 insertions(+)
+ tools/testing/selftests/bpf/prog_tests/bpf_verif_scale.c | 2 ++
+ tools/testing/selftests/bpf/progs/pyperf.h               | 9 +++++++--
+ tools/testing/selftests/bpf/progs/pyperf_global.c        | 5 +++++
+ 3 files changed, 14 insertions(+), 2 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/progs/pyperf_global.c
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/fexit_bpf2bpf.c b/tools/testing/selftests/bpf/prog_tests/fexit_bpf2bpf.c
-index b426bf2f97e4..7d3740d38965 100644
---- a/tools/testing/selftests/bpf/prog_tests/fexit_bpf2bpf.c
-+++ b/tools/testing/selftests/bpf/prog_tests/fexit_bpf2bpf.c
-@@ -98,6 +98,7 @@ static void test_target_yes_callees(void)
- 		"fexit/test_pkt_access",
- 		"fexit/test_pkt_access_subprog1",
- 		"fexit/test_pkt_access_subprog2",
-+		"fexit/test_pkt_access_subprog3",
- 	};
- 	test_fexit_bpf2bpf_common("./fexit_bpf2bpf.o",
- 				  "./test_pkt_access.o",
-diff --git a/tools/testing/selftests/bpf/progs/fexit_bpf2bpf.c b/tools/testing/selftests/bpf/progs/fexit_bpf2bpf.c
-index 2d211ee98a1c..81d7b4aaf79e 100644
---- a/tools/testing/selftests/bpf/progs/fexit_bpf2bpf.c
-+++ b/tools/testing/selftests/bpf/progs/fexit_bpf2bpf.c
-@@ -79,4 +79,19 @@ int test_subprog2(struct args_subprog2 *ctx)
- 	test_result_subprog2 = 1;
- 	return 0;
- }
+diff --git a/tools/testing/selftests/bpf/prog_tests/bpf_verif_scale.c b/tools/testing/selftests/bpf/prog_tests/bpf_verif_scale.c
+index 9486c13af6b2..e9f2f12ba06b 100644
+--- a/tools/testing/selftests/bpf/prog_tests/bpf_verif_scale.c
++++ b/tools/testing/selftests/bpf/prog_tests/bpf_verif_scale.c
+@@ -48,6 +48,8 @@ void test_bpf_verif_scale(void)
+ 		{ "test_verif_scale2.o", BPF_PROG_TYPE_SCHED_CLS },
+ 		{ "test_verif_scale3.o", BPF_PROG_TYPE_SCHED_CLS },
+ 
++		{ "pyperf_global.o", BPF_PROG_TYPE_RAW_TRACEPOINT },
 +
-+__u64 test_result_subprog3 = 0;
-+BPF_TRACE_3("fexit/test_pkt_access_subprog3", test_subprog3,
-+	    int, val, struct sk_buff *, skb, int, ret)
-+{
-+	int len;
-+
-+	__builtin_preserve_access_index(({
-+		len = skb->len;
-+	}));
-+	if (len != 74 || ret != 74 * val || val != 3)
-+		return 0;
-+	test_result_subprog3 = 1;
-+	return 0;
-+}
- char _license[] SEC("license") = "GPL";
-diff --git a/tools/testing/selftests/bpf/progs/test_pkt_access.c b/tools/testing/selftests/bpf/progs/test_pkt_access.c
-index 3a7b4b607ed3..b77cebf71e66 100644
---- a/tools/testing/selftests/bpf/progs/test_pkt_access.c
-+++ b/tools/testing/selftests/bpf/progs/test_pkt_access.c
-@@ -47,6 +47,32 @@ int test_pkt_access_subprog2(int val, volatile struct __sk_buff *skb)
- 	return skb->len * val;
+ 		/* full unroll by llvm */
+ 		{ "pyperf50.o", BPF_PROG_TYPE_RAW_TRACEPOINT },
+ 		{ "pyperf100.o", BPF_PROG_TYPE_RAW_TRACEPOINT },
+diff --git a/tools/testing/selftests/bpf/progs/pyperf.h b/tools/testing/selftests/bpf/progs/pyperf.h
+index 71d383cc9b85..e186899954e9 100644
+--- a/tools/testing/selftests/bpf/progs/pyperf.h
++++ b/tools/testing/selftests/bpf/progs/pyperf.h
+@@ -154,7 +154,12 @@ struct {
+ 	__uint(value_size, sizeof(long long) * 127);
+ } stackmap SEC(".maps");
+ 
+-static __always_inline int __on_event(struct pt_regs *ctx)
++#ifdef GLOBAL_FUNC
++__attribute__((noinline))
++#else
++static __always_inline
++#endif
++int __on_event(struct bpf_raw_tracepoint_args *ctx)
+ {
+ 	uint64_t pid_tgid = bpf_get_current_pid_tgid();
+ 	pid_t pid = (pid_t)(pid_tgid >> 32);
+@@ -254,7 +259,7 @@ static __always_inline int __on_event(struct pt_regs *ctx)
  }
  
-+#define MAX_STACK (512 - 2 * 32)
-+
-+__attribute__ ((noinline))
-+int get_skb_len(struct __sk_buff *skb)
-+{
-+	volatile char buf[MAX_STACK] = {};
-+
-+	return skb->len;
-+}
-+
-+int get_skb_ifindex(int, struct __sk_buff *skb, int);
-+
-+__attribute__ ((noinline))
-+int test_pkt_access_subprog3(int val, struct __sk_buff *skb)
-+{
-+	return get_skb_len(skb) * get_skb_ifindex(val, skb, 1);
-+}
-+
-+__attribute__ ((noinline))
-+int get_skb_ifindex(int val, struct __sk_buff *skb, int var)
-+{
-+	volatile char buf[MAX_STACK] = {};
-+
-+	return skb->ifindex * val * var;
-+}
-+
- SEC("classifier/test_pkt_access")
- int test_pkt_access(struct __sk_buff *skb)
+ SEC("raw_tracepoint/kfree_skb")
+-int on_event(struct pt_regs* ctx)
++int on_event(struct bpf_raw_tracepoint_args* ctx)
  {
-@@ -82,6 +108,8 @@ int test_pkt_access(struct __sk_buff *skb)
- 		return TC_ACT_SHOT;
- 	if (test_pkt_access_subprog2(2, skb) != skb->len * 2)
- 		return TC_ACT_SHOT;
-+	if (test_pkt_access_subprog3(3, skb) != skb->len * 3 * skb->ifindex)
-+		return TC_ACT_SHOT;
- 	if (tcp) {
- 		if (((void *)(tcp) + 20) > data_end || proto != 6)
- 			return TC_ACT_SHOT;
+ 	int i, ret = 0;
+ 	ret |= __on_event(ctx);
+diff --git a/tools/testing/selftests/bpf/progs/pyperf_global.c b/tools/testing/selftests/bpf/progs/pyperf_global.c
+new file mode 100644
+index 000000000000..079e78a7562b
+--- /dev/null
++++ b/tools/testing/selftests/bpf/progs/pyperf_global.c
+@@ -0,0 +1,5 @@
++// SPDX-License-Identifier: GPL-2.0
++/* Copyright (c) 2020 Facebook */
++#define STACK_MAX_LEN 50
++#define GLOBAL_FUNC
++#include "pyperf.h"
 -- 
 2.23.0
 
