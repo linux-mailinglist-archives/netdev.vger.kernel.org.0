@@ -2,52 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 282EF134E83
-	for <lists+netdev@lfdr.de>; Wed,  8 Jan 2020 22:11:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C9B99134E86
+	for <lists+netdev@lfdr.de>; Wed,  8 Jan 2020 22:11:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727347AbgAHVKF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jan 2020 16:10:05 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:47856 "EHLO
+        id S1727299AbgAHVLQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jan 2020 16:11:16 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:47908 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726155AbgAHVKF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jan 2020 16:10:05 -0500
+        with ESMTP id S1726426AbgAHVLQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jan 2020 16:11:16 -0500
 Received: from localhost (unknown [IPv6:2601:601:9f00:1c3::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 925F61584D0BE;
-        Wed,  8 Jan 2020 13:10:04 -0800 (PST)
-Date:   Wed, 08 Jan 2020 13:10:04 -0800 (PST)
-Message-Id: <20200108.131004.491620925338376038.davem@davemloft.net>
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id A4E891584D0C9;
+        Wed,  8 Jan 2020 13:11:15 -0800 (PST)
+Date:   Wed, 08 Jan 2020 13:11:15 -0800 (PST)
+Message-Id: <20200108.131115.1879538107195635308.davem@davemloft.net>
 To:     arnd@arndb.de
-Cc:     arvid.brodin@alten.se, ap420073@gmail.com, m-karicheri2@ti.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next] hsr: fix dummy hsr_debugfs_rename()
- declaration
+Cc:     3chas3@gmail.com, oleksandr@redhat.com, tglx@linutronix.de,
+        gregkh@linuxfoundation.org, jonathan.lemon@gmail.com,
+        linux-atm-general@lists.sourceforge.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] atm: eni: fix uninitialized variable warning
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200107200347.3374445-1-arnd@arndb.de>
-References: <20200107200347.3374445-1-arnd@arndb.de>
+In-Reply-To: <20200107204405.1422392-1-arnd@arndb.de>
+References: <20200107204405.1422392-1-arnd@arndb.de>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 08 Jan 2020 13:10:04 -0800 (PST)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 08 Jan 2020 13:11:16 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 From: Arnd Bergmann <arnd@arndb.de>
-Date: Tue,  7 Jan 2020 21:03:39 +0100
+Date: Tue,  7 Jan 2020 21:43:59 +0100
 
-> The hsr_debugfs_rename prototype got an extra 'void' that needs to
-> be removed again:
+> With -O3, gcc has found an actual unintialized variable stored
+> into an mmio register in two instances:
 > 
-> In file included from /git/arm-soc/net/hsr/hsr_main.c:12:
-> net/hsr/hsr_main.h:194:20: error: two or more data types in declaration specifiers
->  static inline void void hsr_debugfs_rename(struct net_device *dev)
+> drivers/atm/eni.c: In function 'discard':
+> drivers/atm/eni.c:465:13: error: 'dma[1]' is used uninitialized in this function [-Werror=uninitialized]
+>    writel(dma[i*2+1],eni_dev->rx_dma+dma_wr*8+4);
+>              ^
+> drivers/atm/eni.c:465:13: error: 'dma[3]' is used uninitialized in this function [-Werror=uninitialized]
 > 
-> Fixes: 4c2d5e33dcd3 ("hsr: rename debugfs file when interface name is changed")
+> Change the code to always write zeroes instead.
+> 
 > Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 
-Applied, thanks Arnd.
+Applied.
