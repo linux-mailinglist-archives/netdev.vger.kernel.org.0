@@ -2,73 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 04E5413469E
-	for <lists+netdev@lfdr.de>; Wed,  8 Jan 2020 16:47:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C0491346B9
+	for <lists+netdev@lfdr.de>; Wed,  8 Jan 2020 16:52:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726757AbgAHPrN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jan 2020 10:47:13 -0500
-Received: from sonic310-14.consmr.mail.bf2.yahoo.com ([74.6.135.124]:44144
-        "EHLO sonic310-14.consmr.mail.bf2.yahoo.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726401AbgAHPrN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jan 2020 10:47:13 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1578498428; bh=E+ks7AydzaUb4ISZTuxin7s0E6gVmk5020fTLYVYB5E=; h=Date:From:Reply-To:Subject:References:From:Subject; b=jVi7I+ElIEJEQSbYeQ/tTAfSgVPSJijBYygrAsTcWcs2UGaG46WNw2ihYhz+lqs9ejyCcaQNMhN7p0SJivy0AuiLs7RG4LZp3LJp6djh6gN9fgWJvwVYyeIYML757jl7z5pUAxoF9pL1lEr0ZG37XoIAqZHQOZeHsmK+2ZB40zq4IV/X0tGb2MmwWB6edME8AsACgYih6KKnTJhcOnzxXj3S7QnUehJyJi8L40xcxq40dOu4OvsaXajK5woqEyzENSn43ShpLbaenKjyj1DhcLt5sYCNODicvRTQu1kHSRhRG+sMyGFeb56XZYrvR9uVBjTAo5kfcBSOtT37b9sODA==
-X-YMail-OSG: 8sqjnJkVM1nP67nn_Kedj.b6gjz1a5OuAJq6rqasQWOkVvwqHZHqKH_xShuGDwg
- ii6R4AjKC_LdUzwb4kiV3EkYRxm5Gc9Y711BKLauDr7zzhSU83zf6lULXcoYN98FPZHDIOe_d.o8
- yfigugyVqrhKMSjKwI3BaOzS2IpfZSU5hro5vJIwz_cn7oEQhsA5FGG7b2pwOLL0.p5XiZZCSw.9
- 0e7gnKmEupfSVnDVlEfuUjfQd3DLvrTRi0SScqXHlaRhxYVcWfgrH3wt25Z5ZpSmJ0zPb2LFmm0O
- YwpnQvUCjSkgP6xnvcSQLIW7rYP6SvpOC3ZRR4KbLrm92SCvBWQqUNR4bEBK.pwHPkkiX75rbgpg
- qmBRmUpSCZApj.yTdPPQvbfjJ.DI0sXRBrsOvJQ9en1TViHiz4ijOvcA71iGZOcgHEax_bb9OAUA
- uXun7qJBPi5nkZ1OgXaTqWtoAdyo2KGxZ2QHffjl0VhNyp0ig3W0sHLZETjU4nMDrQIg5ETqQtuq
- 4ZaWGg0XFQNEVtqUU2ZmFFm6Ucr33z8oUldGAtIreuLy4A6zxMvqVulV7E7.g3bSMK8CoN1KQ3u2
- 4Z_W3nVNflKRrhVZce7AyWOgshgIe1bZqmX7zp3AkA0zpcdttnw35.IXqrdA3m6zgXqCqVuWKuwY
- vRAdzA7XJdbqmlUV.hsRDCF3V2q8FRMQUhJVpQYRcQRNcNnnu4fbryiyp3QKkFu8X0wSIPxa7LTW
- kiqDz8eTj_1_KRpD1DE11ZFP7sI27rDjiBvnhyot8grGnZnmOgau6P0vxKRyuFE_zWnXzsPwaR96
- ZBV_1IGtsjJw8lSg3j87fcasWOpZ1tiFg1Vu8A.9sGeVCx5wmlOQYIc7fn2Irltm9AdjPKdLXhWh
- HQa2IABkjm7REf322TzG7.zzEt.zSBGhVxUYrOuEBpHg3H9jOjTBj0fqBHtEZ3PSZNiWyA3p9UoS
- WBQSwUSY72Epa2KocV_H2WklUMRNmA2.atMktpSmJI20AxfTEVuswmqQjDO9qqUx2T1OJc63UBnH
- tCeUMPlP1fdf0Knb55Wz_GvNQR5bfkaSFIP.GDnG1oLjBOxNpFwXuBDubOhnDpNZGr_zgfewCEQ.
- UQNteDcRMBenTHfMdD8uhSig5cS7r4vuLZBJL9nzOOIZZ_XhIonJZLnzW4UxcC22SQikrI.Kc_Ss
- 1GwIIvjaZ9BsbFNO0xB8ERm.YQor0nHvvMjb1IX4Qxgx9H84OgxShmWqlyZ6tVHbjN.HnHfNt87a
- yYwulDZ5qEZJfLC5jMzWebjNrljNeE6Xyt0NR_EVBSRsijLk8aroTslxDnj_y7CPasMUDCnIf_Mq
- ics.DU0_vpjochpAUFrIXWFo-
-Received: from sonic.gate.mail.ne1.yahoo.com by sonic310.consmr.mail.bf2.yahoo.com with HTTP; Wed, 8 Jan 2020 15:47:08 +0000
-Date:   Wed, 8 Jan 2020 15:47:06 +0000 (UTC)
-From:   Aisha Gaddafi <edwardben25@gmail.com>
-Reply-To: gaddafia504@gmail.com
-Message-ID: <1380056764.5547339.1578498426889@mail.yahoo.com>
-Subject: Dear Friend,
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-References: <1380056764.5547339.1578498426889.ref@mail.yahoo.com>
-X-Mailer: WebService/1.1.14873 YMailNodin Mozilla/5.0 (Windows NT 6.1; rv:71.0) Gecko/20100101 Firefox/71.0
-To:     unlisted-recipients:; (no To-header on input)
+        id S1729069AbgAHPwU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jan 2020 10:52:20 -0500
+Received: from mail-il1-f194.google.com ([209.85.166.194]:40275 "EHLO
+        mail-il1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729000AbgAHPwU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jan 2020 10:52:20 -0500
+Received: by mail-il1-f194.google.com with SMTP id c4so3049619ilo.7;
+        Wed, 08 Jan 2020 07:52:19 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=qIv1PnuERywBQG5WraXdtfKx72H7bbU6jM2vkfwtKqw=;
+        b=uy1oZRS5TrmGZKEErVJqoegIz/SVOzAth33rJQoV278SxQRD+f2pFVJQGvUKcdeOC6
+         x5dYKMVUMEb8aAloaXKlfwIKRTCL6l80D2ORbpu6JF2Pe3iPULgNYsF+MN9jKTotyfHN
+         RCK8dtMsolQiU4N6/lL2GSuj6m+bam7JbAib5FukjE1JtIx3ONEf9chShKPxRoLDUpk7
+         7JWShTMfLcXPxGCuredpsH6PTdNtdehL737lsHYBFGhn6C96PtwyqyfMjjMd5Ytle04e
+         2E1Fyl13Vp7uCfdIh0pUDvN9VYkujrd81NmqXy+48KzmgVD03IbQr6r2qPwf3vWc24l+
+         DiVA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=qIv1PnuERywBQG5WraXdtfKx72H7bbU6jM2vkfwtKqw=;
+        b=jZOETcNNZ7w27Pvh84qVeGvz3ePQk33/RyWDYPbQuVSN959GjF0h0cCqxHxGb7GI63
+         ppCkQ+CBHphc6QBIgLrmOLWtZDTG8sYYia/25bcmhl5NojFQ++twStIW04k7EgHGO32z
+         PwaUhmVM+SduvOmh7sHfl/13an+iuwYefZYBh1oT0kLXTf2ZMDxDdyiYx4NilxPyrZKG
+         iSJm7Nj0lS7tmUjueBgxfqp/fsI/uRW3axAyZ2zSryGiqznIMDk5tyN/pUeIj7RO531N
+         ioBuTaMuC2HYj/TERLJmCAGak5GClbvMHiui4viwwyGbWlXOknxp/1jBbKRHs2qxqGrt
+         ZFlQ==
+X-Gm-Message-State: APjAAAXmFSIA3EjAcgM9x52Y/EkCveb0vH1LcQ64+/OJgm2vOcUSQ+0M
+        nImazcoihH+WBfyJUhpWgVe0S0rD
+X-Google-Smtp-Source: APXvYqwnEDfyOOR8XPyZVs5H1AgXTfHEOvPLrMoH4xj4NN9ym1tXCm/jEr6RNRAxnUnH4Ik7oPq78g==
+X-Received: by 2002:a92:d902:: with SMTP id s2mr4673986iln.223.1578498739507;
+        Wed, 08 Jan 2020 07:52:19 -0800 (PST)
+Received: from localhost ([184.63.162.180])
+        by smtp.gmail.com with ESMTPSA id g12sm735539iom.5.2020.01.08.07.52.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 08 Jan 2020 07:52:18 -0800 (PST)
+Date:   Wed, 08 Jan 2020 07:52:10 -0800
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
+        John Fastabend <john.fastabend@gmail.com>
+Cc:     Netdev <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        bpf <bpf@vger.kernel.org>, David Miller <davem@davemloft.net>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Message-ID: <5e15faaac42e7_67ea2afd262665bc44@john-XPS-13-9370.notmuch>
+In-Reply-To: <CAJ+HfNiQOpAbHHT9V-gcp9u=vVDoP6uSoz2f-diEFrfX_88pMg@mail.gmail.com>
+References: <20191219061006.21980-1-bjorn.topel@gmail.com>
+ <20191219061006.21980-5-bjorn.topel@gmail.com>
+ <5e14c5d4c4959_67962afd051fc5c062@john-XPS-13-9370.notmuch>
+ <CAJ+HfNiQOpAbHHT9V-gcp9u=vVDoP6uSoz2f-diEFrfX_88pMg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2 4/8] xsk: make xskmap flush_list common for
+ all map instances
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear Friend,
+Bj=C3=B6rn T=C3=B6pel wrote:
+> On Tue, 7 Jan 2020 at 18:54, John Fastabend <john.fastabend@gmail.com> =
+wrote:
+> >
+> > Bj=C3=B6rn T=C3=B6pel wrote:
+> > > From: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
+> > >
+> > > The xskmap flush list is used to track entries that need to flushed=
 
-I came across your e-mail contact prior a private search while in need of 
-your assistance. My name is Aisha  Gaddafi a single Mother and a Widow with 
-three Children. I am the only biological Daughter of late Libyan President 
-(Late Colonel Muammar Gaddafi).
+> > > from via the xdp_do_flush_map() function. This list used to be
+> > > per-map, but there is really no reason for that. Instead make the
+> > > flush list global for all xskmaps, which simplifies __xsk_map_flush=
+()
+> > > and xsk_map_alloc().
+> > >
+> > > Acked-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+> > > Signed-off-by: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
+> > > ---
+> >
+> > Just to check. The reason this is OK is because xdp_do_flush_map()
+> > is called from NAPI context and is per CPU so the only entries on
+> > the list will be from the current cpu napi context?
+> =
 
-I have investment funds worth Twenty Seven Million Five Hundred Thousand 
-United State Dollar ($27.500.000.00 ) and i need a trusted investment 
-Manager/Partner because of my current refugee status, however, I am 
-interested in you for investment project assistance in your country, may be 
-from there, we can build business relationship in the nearest future.
+> Correct!
+> =
 
-I am willing to negotiate investment/business profit sharing ratio with you 
-base on the future investment earning profits.
+> > Even in the case
+> > where multiple xskmaps exist we can't have entries from more than
+> > a single map on any list at the same time by my reading.
+> >
+> =
 
-If you are willing to handle this project on my behalf kindly reply urgent 
-to enable me provide you more information about the investment funds.
+> No, there can be entries from different (XSK) maps. Instead of
+> focusing on maps to flush, focus on *entries* to flush. At the end of
+> the poll function, all entries (regardless of map origin) will be
+> flushed. Makes sense?
 
-Your Urgent Reply Will Be Appreciated.
+Ah OK. This would mean that a single program used multiple maps
+though correct? Because we can only run a single BPF program per
+NAPI context.
 
-Best Regards
-Mrs Aisha Gaddafi
-(gaddafia504@gmail.com)
+What I was after is checking that semantics haven't changed which
+I believe is true, just checking.
+
+> =
+
+> =
+
+> Bj=C3=B6rn
+> =
+
+> =
+
+> > LGTM,
+> > Acked-by: John Fastabend <john.fastabend@gmail.com>
+
+
