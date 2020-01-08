@@ -2,67 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 72698134FC1
-	for <lists+netdev@lfdr.de>; Thu,  9 Jan 2020 00:05:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C94F2134FC2
+	for <lists+netdev@lfdr.de>; Thu,  9 Jan 2020 00:05:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727237AbgAHXFx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jan 2020 18:05:53 -0500
-Received: from mail-lj1-f196.google.com ([209.85.208.196]:42046 "EHLO
-        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726721AbgAHXFw (ORCPT
+        id S1727352AbgAHXF5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jan 2020 18:05:57 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:49250 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726548AbgAHXFw (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 8 Jan 2020 18:05:52 -0500
-Received: by mail-lj1-f196.google.com with SMTP id y4so5080752ljj.9;
-        Wed, 08 Jan 2020 15:05:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=U3HPxq+JaW3pFiI3JEEs7YjUhltYkB8RZv+GfM+9QN0=;
-        b=rHN1WWEmH1HX3GAQDZmboMD6pXD7lDzxL7dZ/wWDDvp3v2YEElZ4l+6K7zjY3F/Mn7
-         L5LyojHf7T7zbRxR2nQ2YRgWbKjgEBkcBTqG3xBGMkNogMBMNtBIGImZMarcbY2I+1Ni
-         TueaiPAVx3Cvf2bPyhcRnTIePHWDV2nEQU8b9doS9mv/eziwfWVuMCfAwD5R9vkbXBEs
-         te/NTPhAHn7AaEbMy+tw7jLr39arfOp9q8pX6hIEoSUgBCQAOWdRhvg2tBjypDa5Ne36
-         +PIEvhyx1oK9Jjt6CXtI7kMx1ASAEvskbqezFVBtP/j6MjSgmKIFnUFXGttYz3EYpQXn
-         zwPQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=U3HPxq+JaW3pFiI3JEEs7YjUhltYkB8RZv+GfM+9QN0=;
-        b=AcO/3CwV8NigDQ40y90ZfMxgO93MoEhbhthPPSqs6Wcz1Er9Hma7rQHqafVSF+eIiX
-         pzsI+QN6InxvJWZ2vHBa0nQFM0DWwp7AKpHPZ3ykNwim2JcQFJleYC1F/JqILlkgz/3y
-         vGBU389wYumGd+pLS+uQZBdmfgBYUkiKVKEO3D1M7SVzP5tqiKB6QcxN2K2N9LDuwT4i
-         HBDZz2iwvuHeWWv5fi8qdylsuMwg4xuJio4gzy9z85Vtx/jEIljSPNHywNEh52M8PUAc
-         YJiaTy8mSC5WFgfL+ubGXPA0cMMPHnVnotva/IYhpsG2+0i0tCwhxtQtEUhtvE3XnPn2
-         RC+Q==
-X-Gm-Message-State: APjAAAXV3GIV1EnNFhrCNJU7h//y9txh1zgkYhhN18vA9hKNyhAHFgHj
-        1D7M5VXzYkv3NE7lqUHNO91t2WMpQD4XWaQ4DOE=
-X-Google-Smtp-Source: APXvYqzTuS9Q0QvxC9u/Dzmy4m72UQ1BJMgE0SJpYNDGrSFfFqNl0bRsgv2Nj3FOR2BWhioDY0F+8pU363wKvYBk4Ko=
-X-Received: by 2002:a2e:89d0:: with SMTP id c16mr4417580ljk.228.1578524750262;
- Wed, 08 Jan 2020 15:05:50 -0800 (PST)
-MIME-Version: 1.0
-References: <20200108072538.3359838-1-ast@kernel.org> <20200108072538.3359838-4-ast@kernel.org>
-In-Reply-To: <20200108072538.3359838-4-ast@kernel.org>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Wed, 8 Jan 2020 15:05:39 -0800
-Message-ID: <CAADnVQLrvMm35VwTsf-+TFFbimZEFm15kCFrUW2=hySXGEiRPw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 3/6] bpf: Introduce function-by-function verification
-To:     Alexei Starovoitov <ast@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Received: from localhost (unknown [IPv6:2601:601:9f00:1c3::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id B0DF21585B0C7;
+        Wed,  8 Jan 2020 15:05:49 -0800 (PST)
+Date:   Wed, 08 Jan 2020 15:05:49 -0800 (PST)
+Message-Id: <20200108.150549.1889209588136221613.davem@davemloft.net>
+To:     willy@infradead.org
+Cc:     yukuai3@huawei.com, klassert@kernel.org, hkallweit1@gmail.com,
+        jakub.kicinski@netronome.com, hslester96@gmail.com, mst@redhat.com,
+        yang.wei9@zte.com.cn, netdev@vger.kernel.org, yi.zhang@huawei.com,
+        zhengbin13@huawei.com
+Subject: Re: [PATCH V2] net: 3com: 3c59x: remove set but not used variable
+ 'mii_reg1'
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20200108215929.GM6788@bombadil.infradead.org>
+References: <20200106125337.40297-1-yukuai3@huawei.com>
+        <20200108.124021.2097001545081493183.davem@davemloft.net>
+        <20200108215929.GM6788@bombadil.infradead.org>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 08 Jan 2020 15:05:50 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 7, 2020 at 11:27 PM Alexei Starovoitov <ast@kernel.org> wrote:
-> +       if (subprog) {
-> +               ret = btf_prepare_func_args(env, subprog, regs);
-> +               if (ret)
-> +                       return ret;
+From: Matthew Wilcox <willy@infradead.org>
+Date: Wed, 8 Jan 2020 13:59:29 -0800
 
-noticed a memory leak here.
-Will respin with all comments addressed soon.
+> This waas a mistaken version; please revert and apply v3 instead.
+
+Are you sure?
+
+[davem@localhost net-next]$ git show e102774588b3ac0d221ed2d03a5153e056f1354f >x.diff
+[davem@localhost net-next]$ patch -p1 -R <x.diff 
+patching file drivers/net/ethernet/3com/3c59x.c
+[davem@localhost net-next]$ mv ~/Downloads/V3-net-3com-3c59x-remove-set-but-not-used-variable-mii_reg1.patch ./
+[davem@localhost net-next]$ patch -p1 <V3-net-3com-3c59x-remove-set-but-not-used-variable-mii_reg1.patch 
+patching file drivers/net/ethernet/3com/3c59x.c
+[davem@localhost net-next]$ git diff
+[davem@localhost net-next]$
+
+There is no difference in the code of the commit at all between V2 and V3.
