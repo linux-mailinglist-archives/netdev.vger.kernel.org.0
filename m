@@ -2,68 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C8E70134F39
-	for <lists+netdev@lfdr.de>; Wed,  8 Jan 2020 22:59:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 16E08134F69
+	for <lists+netdev@lfdr.de>; Wed,  8 Jan 2020 23:32:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727518AbgAHV7l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jan 2020 16:59:41 -0500
-Received: from bombadil.infradead.org ([198.137.202.133]:53802 "EHLO
-        bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727392AbgAHV7i (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jan 2020 16:59:38 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20170209; h=In-Reply-To:Content-Transfer-Encoding
-        :Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:
-        Sender:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=fpLQMPlqsm+ctr9jMLLdhQwTELJKINmmXpMUEFwKJhY=; b=NKWbI2inFNNSnucVY4N58bq5MF
-        zTeWOZwUNDS3BbaJMIpwvytUDmoKfwUdOAoEwGMFzHYtMbSnHcEWg4VTL4hr1QRE1WlizuOsMqFR/
-        aOD5hfi1sNeBtI34begJz4NEKC8pPD0o0vPiJGPwynr9xSJUNYEVnlqcEB8vmL7F6WbjOGiSxFBwO
-        h68dStYkkK17q5k6euPuNzghJULxUCxJYi7k/rT1Z8h3xPZqPw17QJlwN7CRvOLLrT6/CpsUmWwPA
-        oTc9H+8efakkUoOcYcet8JjTL9U50C72WoaOyDIKdtzT0guygUX3MwcjsuyPmECYce+orHYB1VNMc
-        YkKhDpxA==;
-Received: from willy by bombadil.infradead.org with local (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1ipJMP-0002Pt-6H; Wed, 08 Jan 2020 21:59:29 +0000
-Date:   Wed, 8 Jan 2020 13:59:29 -0800
-From:   Matthew Wilcox <willy@infradead.org>
-To:     David Miller <davem@davemloft.net>
-Cc:     yukuai3@huawei.com, klassert@kernel.org, hkallweit1@gmail.com,
-        jakub.kicinski@netronome.com, hslester96@gmail.com, mst@redhat.com,
-        yang.wei9@zte.com.cn, netdev@vger.kernel.org, yi.zhang@huawei.com,
-        zhengbin13@huawei.com
-Subject: Re: [PATCH V2] net: 3com: 3c59x: remove set but not used variable
- 'mii_reg1'
-Message-ID: <20200108215929.GM6788@bombadil.infradead.org>
-References: <20200106125337.40297-1-yukuai3@huawei.com>
- <20200108.124021.2097001545081493183.davem@davemloft.net>
+        id S1727298AbgAHWcU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jan 2020 17:32:20 -0500
+Received: from correo.us.es ([193.147.175.20]:55662 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726721AbgAHWcU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 8 Jan 2020 17:32:20 -0500
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id D22D7C514A
+        for <netdev@vger.kernel.org>; Wed,  8 Jan 2020 23:32:16 +0100 (CET)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id C5DAADA712
+        for <netdev@vger.kernel.org>; Wed,  8 Jan 2020 23:32:16 +0100 (CET)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id B7978DA707; Wed,  8 Jan 2020 23:32:16 +0100 (CET)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id A888ADA705;
+        Wed,  8 Jan 2020 23:32:14 +0100 (CET)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Wed, 08 Jan 2020 23:32:14 +0100 (CET)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (unknown [90.77.255.23])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id 89BBF426CCB9;
+        Wed,  8 Jan 2020 23:32:14 +0100 (CET)
+Date:   Wed, 8 Jan 2020 23:32:14 +0100
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Florian Westphal <fw@strlen.de>
+Cc:     netfilter-devel@vger.kernel.org, syzkaller-bugs@googlegroups.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        syzbot+46a4ad33f345d1dd346e@syzkaller.appspotmail.com
+Subject: Re: [PATCH nf] netfilter: conntrack: dccp, sctp: handle null timeout
+ argument
+Message-ID: <20200108223214.3niyo2o2sr2zf3fg@salvia>
+References: <0000000000009cd5e0059b7eb836@google.com>
+ <20200106223417.18279-1-fw@strlen.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20200108.124021.2097001545081493183.davem@davemloft.net>
+In-Reply-To: <20200106223417.18279-1-fw@strlen.de>
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 08, 2020 at 12:40:21PM -0800, David Miller wrote:
-> From: yu kuai <yukuai3@huawei.com>
-> Date: Mon, 6 Jan 2020 20:53:37 +0800
+On Mon, Jan 06, 2020 at 11:34:17PM +0100, Florian Westphal wrote:
+> The timeout pointer can be NULL which means we should modify the
+> per-nets timeout instead.
 > 
-> > Fixes gcc '-Wunused-but-set-variable' warning:
-> > 
-> > drivers/net/ethernet/3com/3c59x.c: In function ‘vortex_up’:
-> > drivers/net/ethernet/3com/3c59x.c:1551:9: warning: variable
-> > ‘mii_reg1’ set but not used [-Wunused-but-set-variable]
-> > 
-> > It is never used, and so can be removed.
-> > 
-> > Signed-off-by: yu kuai <yukuai3@huawei.com>
-> > ---
-> > changes in V2
-> > -The read might have side effects, don't remove it.
+> All do this, except sctp and dccp which instead give:
 > 
-> Applied to net-next, thank you.
+> general protection fault: 0000 [#1] PREEMPT SMP KASAN
+> net/netfilter/nf_conntrack_proto_dccp.c:682
+>  ctnl_timeout_parse_policy+0x150/0x1d0 net/netfilter/nfnetlink_cttimeout.c:67
+>  cttimeout_default_set+0x150/0x1c0 net/netfilter/nfnetlink_cttimeout.c:368
+>  nfnetlink_rcv_msg+0xcf2/0xfb0 net/netfilter/nfnetlink.c:229
+>  netlink_rcv_skb+0x177/0x450 net/netlink/af_netlink.c:2477
 
-This waas a mistaken version; please revert and apply v3 instead.
+Applied, thanks Florian.
