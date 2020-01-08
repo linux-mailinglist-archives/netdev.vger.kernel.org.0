@@ -2,85 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C0B7134848
-	for <lists+netdev@lfdr.de>; Wed,  8 Jan 2020 17:44:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C88CE13487B
+	for <lists+netdev@lfdr.de>; Wed,  8 Jan 2020 17:51:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729370AbgAHQoB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jan 2020 11:44:01 -0500
-Received: from mail-oi1-f195.google.com ([209.85.167.195]:34672 "EHLO
-        mail-oi1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727427AbgAHQoA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jan 2020 11:44:00 -0500
-Received: by mail-oi1-f195.google.com with SMTP id l136so3205943oig.1
-        for <netdev@vger.kernel.org>; Wed, 08 Jan 2020 08:44:00 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to:user-agent;
-        bh=7YudrN+HcdAitESoUxkwkQAilxZS2k+YB5rlrRgMBQ0=;
-        b=Vq71Xu2W++feGBM0vyHXxCYOFqC8ZZGVo7LYygbWrQ/WoxuGMt3GwXsgRYFlYxk5Ae
-         C2tH5n9jMnlyClZ6NBlNWcHMmmunt4t9wicJck6v5upVkkg6AhxLkESwR02U8hltat3S
-         qzBe5jNwrnVNuwHeUg6MU/OOTo8jDM6S7D4siPOpOaOKnVVN/SGcYKjCy5zdhPn68kT9
-         dtZV78AZys9UpZAl6j0cGFf+hQZKJLfLNFGxpyftC8TvMCz8n/BxsGjkNqHbCx0sui5g
-         DTcnuvPb8BYA0W6lM/aqF9Ct2Wv6+ErmAfVqnBiAPXuqvWKcBKnsX7Sf+8F3J9+hkJjE
-         uU2w==
-X-Gm-Message-State: APjAAAUz9EG+8BV+aSoA9LM7D/ozwT49KdqTpIkMIPFIZwr7VT7M8DAm
-        GbFSf1l0248KTEC5a937YEOkewU=
-X-Google-Smtp-Source: APXvYqy7wrq3omGb4YmdEI5OKvlOg+1dWF9JTkhFxYdZkQvxXeMaT/WlTagvl4lmOc3q0drFCs1PUA==
-X-Received: by 2002:aca:8d5:: with SMTP id 204mr3585113oii.141.1578501839929;
-        Wed, 08 Jan 2020 08:43:59 -0800 (PST)
-Received: from rob-hp-laptop (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
-        by smtp.gmail.com with ESMTPSA id o20sm1228209oie.23.2020.01.08.08.43.58
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 08 Jan 2020 08:43:58 -0800 (PST)
-Received: from rob (uid 1000)
-        (envelope-from rob@rob-hp-laptop)
-        id 220333
-        by rob-hp-laptop (DragonFly Mail Agent v0.11);
-        Wed, 08 Jan 2020 10:43:57 -0600
-Date:   Wed, 8 Jan 2020 10:43:57 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Tiezhu Yang <yangtiezhu@loongson.cn>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Antoine Tenart <antoine.tenart@bootlin.com>,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: phy: Fix compile warning about
- of_mdiobus_child_is_phy
-Message-ID: <20200108164357.GA17209@bogus>
-References: <1577442659-12134-1-git-send-email-yangtiezhu@loongson.cn>
+        id S1729514AbgAHQvJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jan 2020 11:51:09 -0500
+Received: from mail.kernel.org ([198.145.29.99]:47790 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726401AbgAHQvJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 8 Jan 2020 11:51:09 -0500
+Received: from mail-qk1-f169.google.com (mail-qk1-f169.google.com [209.85.222.169])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id C1E2220720;
+        Wed,  8 Jan 2020 16:51:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1578502268;
+        bh=C/HNmaVtqAILoV5xCv+ws2hrk8QbFe2yN/GTNdsh374=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=GHDY91E4P322n23eUtHPoi5ZY5HvrAFg8dSa8cRyzQxfJ3xYecJjrSLy/3QEIqlAN
+         7nAh3HPoS3XlKHLw6eWUA1hidTWYcDEROpZKGQz11lmb/ZIipnBZL0BH203Z+fDhvp
+         zzc7sXZ9loe1hDt9OSLH3rwn34KUoUMonpwUGx/E=
+Received: by mail-qk1-f169.google.com with SMTP id t129so3207916qke.10;
+        Wed, 08 Jan 2020 08:51:08 -0800 (PST)
+X-Gm-Message-State: APjAAAV4Fq73ixth96mxcpQyxl85MQVM7zLd8JyrpbskFDRNlZGHxJC8
+        PgI5tkRHvOIPlL9EAZFrTBGnadC1MbVtjCJChSc=
+X-Google-Smtp-Source: APXvYqyl1pAS9EIW7I7jpJp9tWfmIvQvL5AeJ5iq4foV+nizgUSq4PVaPrFn+mbecg/wNv05GrkFkqHLUeRtz2wxiTk=
+X-Received: by 2002:a37:7b43:: with SMTP id w64mr5163096qkc.203.1578502267905;
+ Wed, 08 Jan 2020 08:51:07 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <1577442659-12134-1-git-send-email-yangtiezhu@loongson.cn>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <5e15526d2ebb6_68832ae93d7145c08c@john-XPS-13-9370.notmuch> <20200108045708.31240-1-forrest0579@gmail.com>
+In-Reply-To: <20200108045708.31240-1-forrest0579@gmail.com>
+From:   Song Liu <song@kernel.org>
+Date:   Wed, 8 Jan 2020 08:50:56 -0800
+X-Gmail-Original-Message-ID: <CAPhsuW4457A1JKrPJSjdabbRAPBo1qucrnSirnYkM868zp9VKw@mail.gmail.com>
+Message-ID: <CAPhsuW4457A1JKrPJSjdabbRAPBo1qucrnSirnYkM868zp9VKw@mail.gmail.com>
+Subject: Re: [PATCH] bpf/sockmap: read psock ingress_msg before sk_receive_queue
+To:     Lingpeng Chen <forrest0579@gmail.com>
+Cc:     John Fastabend <john.fastabend@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Dec 27, 2019 at 06:30:59PM +0800, Tiezhu Yang wrote:
-> Fix the following compile warning when CONFIG_OF_MDIO is not set:
-> 
->   CC      drivers/net/phy/mdio_bus.o
-> In file included from drivers/net/phy/mdio_bus.c:23:0:
-> ./include/linux/of_mdio.h:58:13: warning: ‘of_mdiobus_child_is_phy’ defined but not used [-Wunused-function]
->  static bool of_mdiobus_child_is_phy(struct device_node *child)
->              ^
-> 
-> Fixes: 0aa4d016c043 ("of: mdio: export of_mdiobus_child_is_phy")
-> Signed-off-by: Tiezhu Yang <yangtiezhu@loongson.cn>
-> ---
->  include/linux/of_mdio.h | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+On Tue, Jan 7, 2020 at 8:58 PM Lingpeng Chen <forrest0579@gmail.com> wrote:
+>
+> Right now in tcp_bpf_recvmsg, sock read data first from sk_receive_queue
+> if not empty than psock->ingress_msg otherwise. If a FIN packet arrives
+> and there's also some data in psock->ingress_msg, the data in
+> psock->ingress_msg will be purged. It is always happen when request to a
+> HTTP1.0 server like python SimpleHTTPServer since the server send FIN
+> packet after data is sent out.
+>
+> Fixes: 604326b41a6fb ("bpf, sockmap: convert to generic sk_msg interface")
+> Reported-by: Arika Chen <eaglesora@gmail.com>
+> Suggested-by: Arika Chen <eaglesora@gmail.com>
+> Signed-off-by: Lingpeng Chen <forrest0579@gmail.com>
+> Signed-off-by: John Fastabend <john.fastabend@gmail.com>
 
-A similar patch was already applied.
-
-Rob
+Cc: stable@vger.kernel.org # v4.20+
+Acked-by: Song Liu <songliubraving@fb.com>
