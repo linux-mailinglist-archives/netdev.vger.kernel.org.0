@@ -2,331 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D518A133CBD
-	for <lists+netdev@lfdr.de>; Wed,  8 Jan 2020 09:12:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 80BD4133D42
+	for <lists+netdev@lfdr.de>; Wed,  8 Jan 2020 09:36:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727161AbgAHIMZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jan 2020 03:12:25 -0500
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:38543 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726594AbgAHIMY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jan 2020 03:12:24 -0500
-Received: by mail-wr1-f66.google.com with SMTP id y17so2336624wrh.5
-        for <netdev@vger.kernel.org>; Wed, 08 Jan 2020 00:12:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=dev-mellanox-co-il.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=dMZqe76g3HeJVp3imNpZ/6c4OMHJ6wvKq/mNqHnHKlk=;
-        b=OlXLRP5JShf/Hd5vPV29pQnR5bWBKdlqYydFZK7ix+N4g/ml/mRZXAXG1MjKOklYrE
-         I2aofiuLEZC8uk9TiqmSmcsDEI6gwTiLr65xmOPIwcSuhyuRY94SH4VHVul3B73FSZVe
-         Ft8M8IUhdnykG03gNjZZaoBMp6U6DbO+H+iyFa6fWt57ynRljtYdOrNTAuhhlnkLZuxk
-         DNRR568cjU8AKF+US8MOzIrE4Jc5lSG+q3I8Rw6M6iOrHZezYll1EQrUVNXlg/EHXCj0
-         /WEHoGdEnYJxTrOkFqqZL/I/ZyLwT+wICYIUXKh1KmvQrhcaEcvImXxPxt/vyypaZGsG
-         TkiQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=dMZqe76g3HeJVp3imNpZ/6c4OMHJ6wvKq/mNqHnHKlk=;
-        b=O+RWXefuOMBLFfDREjvX5vaglGNrNCjdifFRTGYmW/Y57J86R4VbyX0lV2iSpIMpEN
-         +m3duIhhjnCtrUR9cJe3xMVSw4qKp5GLmZdB/YFqed1AOlIz2KryEvn779U8ckTxeS9K
-         XMuQiVSO0FlakN1kux9KKgWsiDxkfx521+HP7slEZA7viqxBOa8pF4BzWrvxjpiuEwZb
-         0o77+jQVWqCE4i+JWTtA/BiHwPY0sB8cjy1ue2eYR3nsrl6UbknRnoKR8QDnm3VMN+PR
-         Yk/aNzhA/FcBeJ4Ha5cClIiadSM92YIlhEhbZpPKrs9kg5BkG91+X3eiYQbPTJkKF6rH
-         Ok9g==
-X-Gm-Message-State: APjAAAWJCcjmrIUTgH6jSDlMhQOm4k30hRR9oya+I2hTO1Zk6ExRP4OH
-        /owbO2u44e4zxF8/ImEG14bI5jYdgqM=
-X-Google-Smtp-Source: APXvYqyYVI75EWsO8IAc4YPcZAFSO5n6p8rkkF3EFGMDTh5sURQ7Q66YkXTX5SUNXjWpncY2Wm+PGA==
-X-Received: by 2002:a5d:5273:: with SMTP id l19mr3058608wrc.175.1578471141987;
-        Wed, 08 Jan 2020 00:12:21 -0800 (PST)
-Received: from [10.80.2.221] ([193.47.165.251])
-        by smtp.googlemail.com with ESMTPSA id q68sm3065530wme.14.2020.01.08.00.12.20
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 08 Jan 2020 00:12:21 -0800 (PST)
-Subject: Re: [PATCH rdma-next 4/5] IB/mlx5: Introduce VAR object and its
- alloc/destroy methods
-To:     Jason Gunthorpe <jgg@ziepe.ca>
-Cc:     Leon Romanovsky <leon@kernel.org>,
-        Doug Ledford <dledford@redhat.com>,
-        Leon Romanovsky <leonro@mellanox.com>,
-        RDMA mailing list <linux-rdma@vger.kernel.org>,
-        Shahaf Shuler <shahafs@mellanox.com>,
-        Yishai Hadas <yishaih@mellanox.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        linux-netdev <netdev@vger.kernel.org>
-References: <20191212110928.334995-1-leon@kernel.org>
- <20191212110928.334995-5-leon@kernel.org> <20200107193643.GA18256@ziepe.ca>
-From:   Yishai Hadas <yishaih@dev.mellanox.co.il>
-Message-ID: <7de35c2d-ec3c-9d1e-b20c-76e9c5e0e3ff@dev.mellanox.co.il>
-Date:   Wed, 8 Jan 2020 10:12:20 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.3.1
+        id S1727309AbgAHIf6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jan 2020 03:35:58 -0500
+Received: from pegase1.c-s.fr ([93.17.236.30]:54687 "EHLO pegase1.c-s.fr"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726313AbgAHIf5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 8 Jan 2020 03:35:57 -0500
+Received: from localhost (mailhub1-int [192.168.12.234])
+        by localhost (Postfix) with ESMTP id 47t2dP2tfYz9v3gf;
+        Wed,  8 Jan 2020 09:35:53 +0100 (CET)
+Authentication-Results: localhost; dkim=pass
+        reason="1024-bit key; insecure key"
+        header.d=c-s.fr header.i=@c-s.fr header.b=fxUelGuu; dkim-adsp=pass;
+        dkim-atps=neutral
+X-Virus-Scanned: Debian amavisd-new at c-s.fr
+Received: from pegase1.c-s.fr ([192.168.12.234])
+        by localhost (pegase1.c-s.fr [192.168.12.234]) (amavisd-new, port 10024)
+        with ESMTP id I0TjIRBHFA-4; Wed,  8 Jan 2020 09:35:53 +0100 (CET)
+Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
+        by pegase1.c-s.fr (Postfix) with ESMTP id 47t2dP1Xwtz9v3gS;
+        Wed,  8 Jan 2020 09:35:53 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=c-s.fr; s=mail;
+        t=1578472553; bh=pyCqgPPZ7kRofrDb80nScePrylWdxYR2l2/ULCClPrs=;
+        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
+        b=fxUelGuuZbXfGsWb57/3BxUjvtvdC/2QbyAEo6YqIvKJAL5rv4xC8YAPDeq7nhud3
+         dkB/UdAQUigd1rFWPHMhgX/6Fa4jCdXgPI62S3zygNDeTcqR1ZOBKH62ej2i0cflHq
+         zb2g6a/VdTBtVa3azjNLc7pwBVFpYUnXR94BgWzQ=
+Received: from localhost (localhost [127.0.0.1])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 2FF4A8B7EC;
+        Wed,  8 Jan 2020 09:35:54 +0100 (CET)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from messagerie.si.c-s.fr ([127.0.0.1])
+        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
+        with ESMTP id PkGUzhhRpTGx; Wed,  8 Jan 2020 09:35:54 +0100 (CET)
+Received: from [172.25.230.100] (po15451.idsi0.si.c-s.fr [172.25.230.100])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id BE1C98B7EA;
+        Wed,  8 Jan 2020 09:35:53 +0100 (CET)
+Subject: Re: [RFT 00/13] iomap: Constify ioreadX() iomem argument
+To:     Krzysztof Kozlowski <krzk@kernel.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Rich Felker <dalias@libc.org>, Jiri Slaby <jirislaby@gmail.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        David Airlie <airlied@linux.ie>,
+        Jason Wang <jasowang@redhat.com>,
+        DRI Development <dri-devel@lists.freedesktop.org>,
+        virtualization@lists.linux-foundation.org,
+        "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
+        netdev <netdev@vger.kernel.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Linux-Arch <linux-arch@vger.kernel.org>,
+        Dave Jiang <dave.jiang@intel.com>,
+        Yoshinori Sato <ysato@users.sourceforge.jp>,
+        Helge Deller <deller@gmx.de>,
+        Linux-sh list <linux-sh@vger.kernel.org>,
+        Alexey Brodkin <abrodkin@synopsys.com>,
+        Ben Skeggs <bskeggs@redhat.com>, nouveau@lists.freedesktop.org,
+        Dave Airlie <airlied@redhat.com>,
+        Matt Turner <mattst88@gmail.com>,
+        arcml <linux-snps-arc@lists.infradead.org>,
+        Nick Kossifidis <mickflemm@gmail.com>,
+        Allen Hubbe <allenbh@gmail.com>, Arnd Bergmann <arnd@arndb.de>,
+        alpha <linux-alpha@vger.kernel.org>,
+        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Richard Henderson <rth@twiddle.net>,
+        Parisc List <linux-parisc@vger.kernel.org>,
+        Vineet Gupta <vgupta@synopsys.com>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        Daniel Vetter <daniel@ffwll.ch>, Jon Mason <jdmason@kudzu.us>,
+        linux-ntb@googlegroups.com,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linux Media Mailing List <linux-media@vger.kernel.org>,
+        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
+        "David S. Miller" <davem@davemloft.net>
+References: <1578415992-24054-1-git-send-email-krzk@kernel.org>
+ <CAMuHMdW4ek0OYQDrrbcpZjNUTTP04nSbwkmiZvBmKcU=PQM9qA@mail.gmail.com>
+ <CAMuHMdUBmYtJKtSYzS_5u67hVZOqcKSgFY1rDGme6gLNRBJ_gA@mail.gmail.com>
+ <CAJKOXPfq9vS4kSyx1jOPHBvi9_HjviRv0LU2A8ZwdmqgUuebHQ@mail.gmail.com>
+From:   Christophe Leroy <christophe.leroy@c-s.fr>
+Message-ID: <2355489c-a207-1927-54cf-85c04b62f18f@c-s.fr>
+Date:   Wed, 8 Jan 2020 09:35:54 +0100
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.1
 MIME-Version: 1.0
-In-Reply-To: <20200107193643.GA18256@ziepe.ca>
+In-Reply-To: <CAJKOXPfq9vS4kSyx1jOPHBvi9_HjviRv0LU2A8ZwdmqgUuebHQ@mail.gmail.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Language: fr
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/7/2020 9:36 PM, Jason Gunthorpe wrote:
-> On Thu, Dec 12, 2019 at 01:09:27PM +0200, Leon Romanovsky wrote:
->> From: Yishai Hadas <yishaih@mellanox.com>
+
+
+Le 08/01/2020 à 09:18, Krzysztof Kozlowski a écrit :
+> On Wed, 8 Jan 2020 at 09:13, Geert Uytterhoeven <geert@linux-m68k.org> wrote:
 >>
->> Introduce VAR object and its alloc/destroy KABI methods. The internal
->> implementation uses the IB core API to manage mmap/munamp calls.
+>> Hi Krzysztof,
 >>
->> Signed-off-by: Yishai Hadas <yishaih@mellanox.com>
->> Signed-off-by: Leon Romanovsky <leonro@mellanox.com>
->>   drivers/infiniband/hw/mlx5/main.c        | 157 +++++++++++++++++++++++
->>   drivers/infiniband/hw/mlx5/mlx5_ib.h     |   7 +
->>   include/uapi/rdma/mlx5_user_ioctl_cmds.h |  17 +++
->>   3 files changed, 181 insertions(+)
+>> On Wed, Jan 8, 2020 at 9:07 AM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
+>>> On Tue, Jan 7, 2020 at 5:53 PM Krzysztof Kozlowski <krzk@kernel.org> wrote:
+>>>> The ioread8/16/32() and others have inconsistent interface among the
+>>>> architectures: some taking address as const, some not.
+>>>>
+>>>> It seems there is nothing really stopping all of them to take
+>>>> pointer to const.
+>>>
+>>> Shouldn't all of them take const volatile __iomem pointers?
+>>> It seems the "volatile" is missing from all but the implementations in
+>>> include/asm-generic/io.h.
 >>
->> diff --git a/drivers/infiniband/hw/mlx5/main.c b/drivers/infiniband/hw/mlx5/main.c
->> index 79a5b8824b9d..873480b07686 100644
->> +++ b/drivers/infiniband/hw/mlx5/main.c
->> @@ -2078,6 +2078,7 @@ static void mlx5_ib_mmap_free(struct rdma_user_mmap_entry *entry)
->>   {
->>   	struct mlx5_user_mmap_entry *mentry = to_mmmap(entry);
->>   	struct mlx5_ib_dev *dev = to_mdev(entry->ucontext->device);
->> +	struct mlx5_var_table *var_table = &dev->var_table;
->>   	struct mlx5_ib_dm *mdm;
->>   
->>   	switch (mentry->mmap_flag) {
->> @@ -2087,6 +2088,12 @@ static void mlx5_ib_mmap_free(struct rdma_user_mmap_entry *entry)
->>   				       mdm->size);
->>   		kfree(mdm);
->>   		break;
->> +	case MLX5_IB_MMAP_TYPE_VAR:
->> +		mutex_lock(&var_table->bitmap_lock);
->> +		clear_bit(mentry->page_idx, var_table->bitmap);
->> +		mutex_unlock(&var_table->bitmap_lock);
->> +		kfree(mentry);
->> +		break;
->>   	default:
->>   		WARN_ON(true);
->>   	}
->> @@ -2255,6 +2262,15 @@ static int mlx5_ib_mmap_offset(struct mlx5_ib_dev *dev,
->>   	return ret;
->>   }
->>   
->> +static u64 mlx5_entry_to_mmap_offset(struct mlx5_user_mmap_entry *entry)
->> +{
->> +	u16 cmd = entry->rdma_entry.start_pgoff >> 16;
->> +	u16 index = entry->rdma_entry.start_pgoff & 0xFFFF;
->> +
->> +	return (((index >> 8) << 16) | (cmd << MLX5_IB_MMAP_CMD_SHIFT) |
->> +		(index & 0xFF)) << PAGE_SHIFT;
->> +}
->> +
->>   static int mlx5_ib_mmap(struct ib_ucontext *ibcontext, struct vm_area_struct *vma)
->>   {
->>   	struct mlx5_ib_ucontext *context = to_mucontext(ibcontext);
->> @@ -6034,6 +6050,145 @@ static void mlx5_ib_cleanup_multiport_master(struct mlx5_ib_dev *dev)
->>   	mlx5_nic_vport_disable_roce(dev->mdev);
->>   }
->>   
->> +static int var_obj_cleanup(struct ib_uobject *uobject,
->> +			   enum rdma_remove_reason why,
->> +			   struct uverbs_attr_bundle *attrs)
->> +{
->> +	struct mlx5_user_mmap_entry *obj = uobject->object;
->> +
->> +	rdma_user_mmap_entry_remove(&obj->rdma_entry);
->> +	return 0;
->> +}
->> +
->> +static struct mlx5_user_mmap_entry *
->> +alloc_var_entry(struct mlx5_ib_ucontext *c)
->> +{
->> +	struct mlx5_user_mmap_entry *entry;
->> +	struct mlx5_var_table *var_table;
->> +	u32 page_idx;
->> +	int err;
->> +
->> +	var_table = &to_mdev(c->ibucontext.device)->var_table;
->> +	entry = kzalloc(sizeof(*entry), GFP_KERNEL);
->> +	if (!entry)
->> +		return ERR_PTR(-ENOMEM);
->> +
->> +	mutex_lock(&var_table->bitmap_lock);
->> +	page_idx = find_first_zero_bit(var_table->bitmap,
->> +				       var_table->num_var_hw_entries);
->> +	if (page_idx >= var_table->num_var_hw_entries) {
->> +		err = -ENOSPC;
->> +		mutex_unlock(&var_table->bitmap_lock);
->> +		goto end;
->> +	}
->> +
->> +	set_bit(page_idx, var_table->bitmap);
->> +	mutex_unlock(&var_table->bitmap_lock);
->> +
->> +	entry->address = var_table->hw_start_addr +
->> +				(page_idx * var_table->stride_size);
->> +	entry->page_idx = page_idx;
->> +	entry->mmap_flag = MLX5_IB_MMAP_TYPE_VAR;
->> +
->> +	err = rdma_user_mmap_entry_insert_range(
->> +		&c->ibucontext, &entry->rdma_entry, var_table->stride_size,
->> +		MLX5_IB_MMAP_OFFSET_START << 16,
->> +		(MLX5_IB_MMAP_OFFSET_END << 16) + (1UL << 16) - 1);
->> +	if (err)
->> +		goto err_insert;
->> +
->> +	return entry;
->> +
->> +err_insert:
->> +	mutex_lock(&var_table->bitmap_lock);
->> +	clear_bit(page_idx, var_table->bitmap);
->> +	mutex_unlock(&var_table->bitmap_lock);
->> +end:
->> +	kfree(entry);
->> +	return ERR_PTR(err);
->> +}
->> +
->> +static int UVERBS_HANDLER(MLX5_IB_METHOD_VAR_OBJ_ALLOC)(
->> +	struct uverbs_attr_bundle *attrs)
->> +{
->> +	struct ib_uobject *uobj = uverbs_attr_get_uobject(
->> +		attrs, MLX5_IB_ATTR_VAR_OBJ_ALLOC_HANDLE);
->> +	struct mlx5_ib_ucontext *c;
->> +	struct mlx5_user_mmap_entry *entry;
->> +	u64 mmap_offset;
->> +	u32 length;
->> +	int err;
->> +
->> +	c = to_mucontext(ib_uverbs_get_ucontext(attrs));
->> +	if (IS_ERR(c))
->> +		return PTR_ERR(c);
->> +
->> +	entry = alloc_var_entry(c);
->> +	if (IS_ERR(entry))
->> +		return PTR_ERR(entry);
->> +
->> +	mmap_offset = mlx5_entry_to_mmap_offset(entry);
->> +	length = entry->rdma_entry.npages * PAGE_SIZE;
->> +	uobj->object = entry;
->> +
->> +	err = uverbs_copy_to(attrs, MLX5_IB_ATTR_VAR_OBJ_ALLOC_MMAP_OFFSET,
->> +			     &mmap_offset, sizeof(mmap_offset));
->> +	if (err)
->> +		goto err;
->> +
->> +	err = uverbs_copy_to(attrs, MLX5_IB_ATTR_VAR_OBJ_ALLOC_PAGE_ID,
->> +			     &entry->page_idx, sizeof(entry->page_idx));
->> +	if (err)
->> +		goto err;
->> +
->> +	err = uverbs_copy_to(attrs, MLX5_IB_ATTR_VAR_OBJ_ALLOC_MMAP_LENGTH,
->> +			     &length, sizeof(length));
->> +	if (err)
->> +		goto err;
->> +
->> +	return 0;
->> +
->> +err:
->> +	rdma_user_mmap_entry_remove(&entry->rdma_entry);
->> +	return err;
->> +}
->> +
->> +DECLARE_UVERBS_NAMED_METHOD(
->> +	MLX5_IB_METHOD_VAR_OBJ_ALLOC,
->> +	UVERBS_ATTR_IDR(MLX5_IB_ATTR_VAR_OBJ_ALLOC_HANDLE,
->> +			MLX5_IB_OBJECT_VAR,
->> +			UVERBS_ACCESS_NEW,
->> +			UA_MANDATORY),
->> +	UVERBS_ATTR_PTR_OUT(MLX5_IB_ATTR_VAR_OBJ_ALLOC_PAGE_ID,
->> +			   UVERBS_ATTR_TYPE(u32),
->> +			   UA_MANDATORY),
->> +	UVERBS_ATTR_PTR_OUT(MLX5_IB_ATTR_VAR_OBJ_ALLOC_MMAP_LENGTH,
->> +			   UVERBS_ATTR_TYPE(u32),
->> +			   UA_MANDATORY),
->> +	UVERBS_ATTR_PTR_OUT(MLX5_IB_ATTR_VAR_OBJ_ALLOC_MMAP_OFFSET,
->> +			    UVERBS_ATTR_TYPE(u64),
->> +			    UA_MANDATORY));
->> +
->> +DECLARE_UVERBS_NAMED_METHOD_DESTROY(
->> +	MLX5_IB_METHOD_VAR_OBJ_DESTROY,
->> +	UVERBS_ATTR_IDR(MLX5_IB_ATTR_VAR_OBJ_DESTROY_HANDLE,
->> +			MLX5_IB_OBJECT_VAR,
->> +			UVERBS_ACCESS_DESTROY,
->> +			UA_MANDATORY));
->> +
->> +DECLARE_UVERBS_NAMED_OBJECT(MLX5_IB_OBJECT_VAR,
->> +			    UVERBS_TYPE_ALLOC_IDR(var_obj_cleanup),
->> +			    &UVERBS_METHOD(MLX5_IB_METHOD_VAR_OBJ_ALLOC),
->> +			    &UVERBS_METHOD(MLX5_IB_METHOD_VAR_OBJ_DESTROY));
->> +
->> +static bool var_is_supported(struct ib_device *device)
->> +{
->> +	struct mlx5_ib_dev *dev = to_mdev(device);
->> +
->> +	return (MLX5_CAP_GEN_64(dev->mdev, general_obj_types) &
->> +			MLX5_GENERAL_OBJ_TYPES_CAP_VIRTIO_NET_Q);
->> +}
->> +
->>   ADD_UVERBS_ATTRIBUTES_SIMPLE(
->>   	mlx5_ib_dm,
->>   	UVERBS_OBJECT_DM,
->> @@ -6064,6 +6219,8 @@ static const struct uapi_definition mlx5_ib_defs[] = {
->>   	UAPI_DEF_CHAIN_OBJ_TREE(UVERBS_OBJECT_FLOW_ACTION,
->>   				&mlx5_ib_flow_action),
->>   	UAPI_DEF_CHAIN_OBJ_TREE(UVERBS_OBJECT_DM, &mlx5_ib_dm),
->> +	UAPI_DEF_CHAIN_OBJ_TREE_NAMED(MLX5_IB_OBJECT_VAR,
->> +				UAPI_DEF_IS_OBJ_SUPPORTED(var_is_supported)),
->>   	{}
->>   };
->>   
->> diff --git a/drivers/infiniband/hw/mlx5/mlx5_ib.h b/drivers/infiniband/hw/mlx5/mlx5_ib.h
->> index 23ad949e247f..489128fe8603 100644
->> +++ b/drivers/infiniband/hw/mlx5/mlx5_ib.h
->> @@ -71,6 +71,11 @@
->>   
->>   #define MLX5_MKEY_PAGE_SHIFT_MASK __mlx5_mask(mkc, log_page_size)
->>   
->> +enum {
->> +	MLX5_IB_MMAP_OFFSET_START = 9,
->> +	MLX5_IB_MMAP_OFFSET_END = 255,
->> +};
->> +
->>   enum {
->>   	MLX5_IB_MMAP_CMD_SHIFT	= 8,
->>   	MLX5_IB_MMAP_CMD_MASK	= 0xff,
->> @@ -120,6 +125,7 @@ enum {
->>   
->>   enum mlx5_ib_mmap_type {
->>   	MLX5_IB_MMAP_TYPE_MEMIC = 1,
->> +	MLX5_IB_MMAP_TYPE_VAR = 2,
->>   };
->>   
->>   #define MLX5_LOG_SW_ICM_BLOCK_SIZE(dev)                                        \
->> @@ -563,6 +569,7 @@ struct mlx5_user_mmap_entry {
->>   	struct rdma_user_mmap_entry rdma_entry;
->>   	u8 mmap_flag;
->>   	u64 address;
->> +	u32 page_idx;
+>> As my "volatile" comment applies to iowrite*(), too, probably that should be
+>> done in a separate patch.
+>>
+>> Hence with patches 1-5 squashed, and for patches 11-13:
+>> Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
 > 
-> Why are we storing this in the global struct when it is never read
-> except by the caller of alloc_var_entry()? Return it from
-> alloc_var_entry?
+> I'll add to this one also changes to ioreadX_rep() and add another
+> patch for volatile for reads and writes. I guess your review will be
+> appreciated once more because of ioreadX_rep()
 > 
 
-It's required as part of mlx5_ib_mmap_free() to claer the matching bit 
-map entry of the device var table, see above in this patch.
+volatile should really only be used where deemed necessary:
 
-> Also the final patch in the series should be here as at this point
-> mmap will succeed but return the wrong cachability flags.
-> 
+https://www.kernel.org/doc/html/latest/process/volatile-considered-harmful.html
 
-Right, let's squash it to this patch.
+It is said: " ...  accessor functions might use volatile on 
+architectures where direct I/O memory access does work. Essentially, 
+each accessor call becomes a little critical section on its own and 
+ensures that the access happens as expected by the programmer."
 
-> Since Leon is away I can fix this two things if you agree.
-
-Yes, thanks.
-
-Yishai
+Christophe
