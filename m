@@ -2,100 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 58C0B133BC4
-	for <lists+netdev@lfdr.de>; Wed,  8 Jan 2020 07:40:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9FCC0133BBC
+	for <lists+netdev@lfdr.de>; Wed,  8 Jan 2020 07:36:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726144AbgAHGkw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jan 2020 01:40:52 -0500
-Received: from gateway24.websitewelcome.com ([192.185.51.253]:35799 "EHLO
-        gateway24.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725944AbgAHGkw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jan 2020 01:40:52 -0500
-X-Greylist: delayed 1257 seconds by postgrey-1.27 at vger.kernel.org; Wed, 08 Jan 2020 01:40:52 EST
-Received: from cm14.websitewelcome.com (cm14.websitewelcome.com [100.42.49.7])
-        by gateway24.websitewelcome.com (Postfix) with ESMTP id 099D4476AC4
-        for <netdev@vger.kernel.org>; Wed,  8 Jan 2020 00:19:55 -0600 (CST)
-Received: from gator4166.hostgator.com ([108.167.133.22])
-        by cmsmtp with SMTP
-        id p4h9iEG3C4kpjp4h9ihzXp; Wed, 08 Jan 2020 00:19:55 -0600
-X-Authority-Reason: nr=8
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=embeddedor.com; s=default; h=Content-Type:MIME-Version:Message-ID:Subject:
-        Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=UB0pNY3t0e/gnEfmmzpDKqL3cM/QaZd+sLLuuXXQRCw=; b=DgXVQrea59DMowvFywLtqiIdEn
-        jyTyhiU+O8aCWP6jUswjqs8C1J9HyUhyjeXAumydC54/lCXNyxRx6nblE1EF/o/TIyCvp3sY8i9tQ
-        WMC9zXm8QBurtar4MkcdjtIQLu/5JjUOrac/Sst+PR+PeLxCXEZQGIEaCW8keA2QVF2b+gYtjWyq6
-        XQBKD576Jd3N0h+Bd8sh98oYeXw+KoL0w6Ig6R+mbalECvDvCFTQaiP79CSk/pSL9+YH/tYUKIeoM
-        jq3RbpU8AC7H0RafpZeEnfpXb//wkqjmwFdMvx+oU4dRKK+sGZZ6JEsEEEQRevR0DGIH763sTmoUb
-        89kFPttw==;
-Received: from [189.152.215.240] (port=53698 helo=embeddedor)
-        by gator4166.hostgator.com with esmtpa (Exim 4.92)
-        (envelope-from <gustavo@embeddedor.com>)
-        id 1ip4h7-002N98-Fw; Wed, 08 Jan 2020 00:19:53 -0600
-Date:   Wed, 8 Jan 2020 00:21:51 -0600
-From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-To:     Claudiu Manoil <claudiu.manoil@nxp.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-Subject: [PATCH net-next] enetc: enetc_pci_mdio: Fix inconsistent IS_ERR and
- PTR_ERR
-Message-ID: <20200108062151.GA2614@embeddedor>
+        id S1726319AbgAHGg2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jan 2020 01:36:28 -0500
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:35935 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725907AbgAHGg2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jan 2020 01:36:28 -0500
+Received: by mail-wm1-f66.google.com with SMTP id p17so1243227wma.1
+        for <netdev@vger.kernel.org>; Tue, 07 Jan 2020 22:36:27 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=to:cc:from:subject:message-id:date:user-agent:mime-version
+         :content-language:content-transfer-encoding;
+        bh=BeKj5O3Xib5ZCx804gMXC/Kng3AUdCyFQK4esyIDfCc=;
+        b=GuRnmOvVlaTjwaeQ/RWfyFaWM/i9KvqY0GdSWbH3ePHtcjDSHH8mh84i1MjzI8cXOz
+         jy6O11FimLrRvtTnF7y8OMkXQpZP5xocEhsEDGqLkv8IMAh9KYCY+weRosnxDX6KEeQU
+         chm2bS7W4hwK3wE6RbCG9FO2ujHoLNROfU5iHR8vYYNKJnEuR3wY4J6TwG/OQOwinGnk
+         wUhGiMPGXhCZ7jbyD4j5JIv+QAL2ScpFjOCYtO7BC29MARPD4XQN7bTiBbGZIZ5jukfV
+         Sv3pwIzD0r+SFoIL89cEQ/N4QXWHCgoLIGol8POMvGIxABSi8s9rkbkoDlgnL7t9T9GK
+         pXRA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
+         :mime-version:content-language:content-transfer-encoding;
+        bh=BeKj5O3Xib5ZCx804gMXC/Kng3AUdCyFQK4esyIDfCc=;
+        b=LO2CZO+pRRSIrMRbvufjW2b2V3+pxJlfs87aLJvWxyCsugBwt0qyeif0m5ke1RQkw9
+         WxYHspIJcdDSD2av/P6d9L4lrqHitPKt4+QQwxBtcWpJ/BB5EdxwrtVF83nUyb6SoxdU
+         gF+7FdeBgNSAu5INeTSNj1K+0BtjihfeXNzYgFJqu3B3gLcOMHppEjp+pM8F6rkUt7zP
+         2nd4zkGnXkI7wOw2K1NZLRlc7yLXOJ0lrZBXcoxoqV0ycQnoF6uipn3xOCIRflw18GTA
+         FwOZswZzupB7VI9r5T+yNZlsf0+/N0P3AIG+01lq/E3valz6UB2Wrn1qXNYVvk5P5G5I
+         0ptQ==
+X-Gm-Message-State: APjAAAVgrb2+o3O4DiQwoHEWuMVvrIcwzAoSo0fL4GK7WfrT6VAXg/2n
+        c0H91yXTolz011IUYsb6YO14quw0
+X-Google-Smtp-Source: APXvYqyxYnTt5z6LAjvCqskJ/ZXIIdJMx9Or5a8JDLIKF3KlsAlx2GrLpuboVGVPm0b0SI/vXtBZwg==
+X-Received: by 2002:a1c:3d07:: with SMTP id k7mr1916003wma.79.1578465386293;
+        Tue, 07 Jan 2020 22:36:26 -0800 (PST)
+Received: from [192.168.178.85] (pD9F901D9.dip0.t-ipconnect.de. [217.249.1.217])
+        by smtp.googlemail.com with ESMTPSA id g25sm34873503wmh.3.2020.01.07.22.36.25
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 07 Jan 2020 22:36:25 -0800 (PST)
+To:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
+        David Miller <davem@davemloft.net>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Subject: [PATCH net-next] r8169: add constant EnAnaPLL
+Message-ID: <14a9a6bd-ff54-0912-07ec-a38e3dfd55f2@gmail.com>
+Date:   Wed, 8 Jan 2020 07:36:08 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.3.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - embeddedor.com
-X-BWhitelist: no
-X-Source-IP: 189.152.215.240
-X-Source-L: No
-X-Exim-ID: 1ip4h7-002N98-Fw
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: (embeddedor) [189.152.215.240]:53698
-X-Source-Auth: gustavo@embeddedor.com
-X-Email-Count: 4
-X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
-X-Local-Domain: yes
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix inconsistent IS_ERR and PTR_ERR in enetc_pci_mdio_probe().
+Use constant EnAnaPLL for bit 14 as in vendor driver. The vendor
+driver sets this bit for chip version 02 only, but I'm not aware of
+any issues, so better leave it as it is.
+In addition remove the useless debug message.
 
-The proper pointer to be passed as argument is hw.
-
-This bug was detected with the help of Coccinelle.
-
-Fixes: 6517798dd343 ("enetc: Make MDIO accessors more generic and export to include/linux/fsl")
-Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
+Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
 ---
- drivers/net/ethernet/freescale/enetc/enetc_pci_mdio.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/realtek/r8169_main.c | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/ethernet/freescale/enetc/enetc_pci_mdio.c b/drivers/net/ethernet/freescale/enetc/enetc_pci_mdio.c
-index 87c0e969da40..ebc635f8a4cc 100644
---- a/drivers/net/ethernet/freescale/enetc/enetc_pci_mdio.c
-+++ b/drivers/net/ethernet/freescale/enetc/enetc_pci_mdio.c
-@@ -27,7 +27,7 @@ static int enetc_pci_mdio_probe(struct pci_dev *pdev,
- 	}
+diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
+index 0161d839f..9c61ce294 100644
+--- a/drivers/net/ethernet/realtek/r8169_main.c
++++ b/drivers/net/ethernet/realtek/r8169_main.c
+@@ -492,6 +492,7 @@ enum rtl_register_content {
+ 	/* CPlusCmd p.31 */
+ 	EnableBist	= (1 << 15),	// 8168 8101
+ 	Mac_dbgo_oe	= (1 << 14),	// 8168 8101
++	EnAnaPLL	= (1 << 14),	// 8169
+ 	Normal_mode	= (1 << 13),	// unused
+ 	Force_half_dup	= (1 << 12),	// 8168 8101
+ 	Force_rxflow_en	= (1 << 11),	// 8168 8101
+@@ -5212,11 +5213,8 @@ static void rtl_hw_start_8169(struct rtl8169_private *tp)
+ 	tp->cp_cmd |= PCIMulRW;
  
- 	hw = enetc_hw_alloc(dev, port_regs);
--	if (IS_ERR(enetc_hw_alloc)) {
-+	if (IS_ERR(hw)) {
- 		err = PTR_ERR(hw);
- 		goto err_hw_alloc;
- 	}
+ 	if (tp->mac_version == RTL_GIGA_MAC_VER_02 ||
+-	    tp->mac_version == RTL_GIGA_MAC_VER_03) {
+-		netif_dbg(tp, drv, tp->dev,
+-			  "Set MAC Reg C+CR Offset 0xe0. Bit 3 and Bit 14 MUST be 1\n");
+-		tp->cp_cmd |= (1 << 14);
+-	}
++	    tp->mac_version == RTL_GIGA_MAC_VER_03)
++		tp->cp_cmd |= EnAnaPLL;
+ 
+ 	RTL_W16(tp, CPlusCmd, tp->cp_cmd);
+ 
 -- 
-2.23.0
+2.24.1
 
