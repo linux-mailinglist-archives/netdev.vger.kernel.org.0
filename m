@@ -2,51 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 845C8134E78
-	for <lists+netdev@lfdr.de>; Wed,  8 Jan 2020 22:09:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 282EF134E83
+	for <lists+netdev@lfdr.de>; Wed,  8 Jan 2020 22:11:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727370AbgAHVJe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jan 2020 16:09:34 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:47842 "EHLO
+        id S1727347AbgAHVKF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jan 2020 16:10:05 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:47856 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726836AbgAHVJd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jan 2020 16:09:33 -0500
+        with ESMTP id S1726155AbgAHVKF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jan 2020 16:10:05 -0500
 Received: from localhost (unknown [IPv6:2601:601:9f00:1c3::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id D713D1584D0BD;
-        Wed,  8 Jan 2020 13:09:32 -0800 (PST)
-Date:   Wed, 08 Jan 2020 13:09:32 -0800 (PST)
-Message-Id: <20200108.130932.721413767130819084.davem@davemloft.net>
-To:     vijaykhemka@fb.com
-Cc:     sam@mendozajonas.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, joel@jms.id.au,
-        linux-aspeed@lists.ozlabs.org, sdasari@fb.com
-Subject: Re: [net-next PATCH] net/ncsi: Send device address as source
- address
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 925F61584D0BE;
+        Wed,  8 Jan 2020 13:10:04 -0800 (PST)
+Date:   Wed, 08 Jan 2020 13:10:04 -0800 (PST)
+Message-Id: <20200108.131004.491620925338376038.davem@davemloft.net>
+To:     arnd@arndb.de
+Cc:     arvid.brodin@alten.se, ap420073@gmail.com, m-karicheri2@ti.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next] hsr: fix dummy hsr_debugfs_rename()
+ declaration
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200107193034.1322431-1-vijaykhemka@fb.com>
-References: <20200107193034.1322431-1-vijaykhemka@fb.com>
+In-Reply-To: <20200107200347.3374445-1-arnd@arndb.de>
+References: <20200107200347.3374445-1-arnd@arndb.de>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 08 Jan 2020 13:09:33 -0800 (PST)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 08 Jan 2020 13:10:04 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vijay Khemka <vijaykhemka@fb.com>
-Date: Tue, 7 Jan 2020 11:30:33 -0800
+From: Arnd Bergmann <arnd@arndb.de>
+Date: Tue,  7 Jan 2020 21:03:39 +0100
 
-> After receiving device mac address from device, send this as
-> a source address for further commands instead of broadcast
-> address.
+> The hsr_debugfs_rename prototype got an extra 'void' that needs to
+> be removed again:
 > 
-> This will help in multi host NIC cards.
+> In file included from /git/arm-soc/net/hsr/hsr_main.c:12:
+> net/hsr/hsr_main.h:194:20: error: two or more data types in declaration specifiers
+>  static inline void void hsr_debugfs_rename(struct net_device *dev)
 > 
-> Signed-off-by: Vijay Khemka <vijaykhemka@fb.com>
+> Fixes: 4c2d5e33dcd3 ("hsr: rename debugfs file when interface name is changed")
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 
-Applied to net-next, thanks.
+Applied, thanks Arnd.
