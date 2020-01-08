@@ -2,107 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9AE22133AA3
-	for <lists+netdev@lfdr.de>; Wed,  8 Jan 2020 05:57:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2B2F7133AAD
+	for <lists+netdev@lfdr.de>; Wed,  8 Jan 2020 06:06:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726667AbgAHE5f (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jan 2020 23:57:35 -0500
-Received: from mail-pj1-f67.google.com ([209.85.216.67]:40240 "EHLO
-        mail-pj1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726149AbgAHE5e (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jan 2020 23:57:34 -0500
-Received: by mail-pj1-f67.google.com with SMTP id bg7so532254pjb.5;
-        Tue, 07 Jan 2020 20:57:34 -0800 (PST)
+        id S1725908AbgAHFGO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jan 2020 00:06:14 -0500
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:34571 "EHLO
+        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725773AbgAHFGN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jan 2020 00:06:13 -0500
+Received: by mail-wm1-f68.google.com with SMTP id w5so363530wmi.1
+        for <netdev@vger.kernel.org>; Tue, 07 Jan 2020 21:06:12 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=m44dl7x3yj9tSaGx90GMMD8DB8B0At1oc8yRgAas6R4=;
-        b=JPvKYAAsITPbOs0K3JHyudWUya8Z2965e3sSKlAx8wpoL0ADpTZeEBBzgRJrDQBWT4
-         /FYUZoqJv38aXfDO7VvrouMU8aT+twvOb/c5elUZn95gS6oAKYXSs/Yjh2xBj/gViHWP
-         HLhZPHWsMTJgaOwEBHteWObUFZa+ozNIDyQcm0V7RCjF9KXkmRoAh0tnvTl2No35LEe3
-         RmrfeE1yEIJhxEzXjVK1aE4kx9Agl/clT1h/nC/4CRazmncJd+DAowqtpOymVO/PgNrL
-         TTH2cFp/3dXoSCmvZOgusTRWovyfum7tA0UUf4skNrPd5u6GQUNRP8XgcakU6T4jhAiP
-         tVeQ==
+        h=from:to:cc:subject:date:message-id;
+        bh=jLVqObeYLC7d7UNxZ9ns6Cteqy8w8gwWc7xioogb6kI=;
+        b=bgCnaSxXQ07Z1Q7ua5EP8Ah15XuIaVbUyA+slni3YI8jRHmcttnQXX5oPd9ohAv3fs
+         KzJoG9GhGA0GIiUg5eA150sjamhDe5PCs+iy3+qBehJWOve9IKMzQVkoDI2wtNxy83Gv
+         QIGJ1ABg6sySvwsQ5zmjRXQLyMvfICN+5CQR/fqxV4N4UUhdCIBATxqHdVN8+piRcxEK
+         uP6rfQo7qdBJYCcBpv0gTHNtSNZuAbJwYthNGBDT1nNmsgnPEcCXu06eThoGvLa5WYoY
+         /F5jO0c6zT7zOQRLyDLw1JvlBPJRsE5GY2LHlwlASzh+kDAUPJdUuipTGZclDNB5MqZg
+         ofaw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=m44dl7x3yj9tSaGx90GMMD8DB8B0At1oc8yRgAas6R4=;
-        b=AjoUbUcASd+aLqxTUwLFYLy04h6Sd8s84GpFr2u6Qr2KddI03ze+9XHbXhivXRagHA
-         OW64VMvj9h1pT4oXumOY3XlhjdnkMYdX5xjQdJSOco0ZHSGpiVifYLWUsUb6adLVYmpH
-         RuBOnHO6jYrzJPhRK9XnQ9nBVNJfKxUSG095UoOV1Wu4iDWYiuZoKGK1ftMUyybURPU2
-         JG7r8JQp3zyCoxKjRe6f1b+Gca0wN2s7IOrRqzVTa654HD33RGgZunnfXC1LElpvj3dX
-         bx3js3fVKDBMiDQdfJYHMTZc3WUV6sx76U4KkKDmdXPp7uZzMYMewNy/GBsJ5AsYwoDd
-         0TvQ==
-X-Gm-Message-State: APjAAAVuVtxzDOQ7HpLF7uq+Gdi9F6kIHjb+EbkM8JTKtzQtBu5/BndQ
-        FFpkgX1md9VUnejnDQC+4M5qbKLuGNg=
-X-Google-Smtp-Source: APXvYqx0623rZY4Fw6qW70WOdQ0IR+MsBERVAIMuxZLpf1r82C2am8FafrT4FAcdBeWKLpvEQEKAtA==
-X-Received: by 2002:a17:902:b186:: with SMTP id s6mr3493629plr.333.1578459453787;
-        Tue, 07 Jan 2020 20:57:33 -0800 (PST)
-Received: from localhost.localdomain ([150.109.61.200])
-        by smtp.gmail.com with ESMTPSA id v7sm1224280pjs.2.2020.01.07.20.57.32
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=jLVqObeYLC7d7UNxZ9ns6Cteqy8w8gwWc7xioogb6kI=;
+        b=n1vSa4cSL+M+o2V/nj8bbDWuvD5jpxFqSIMpTnUCQ7TDBGq7lhNA25h2j0g6jhtvL9
+         LrjktqMabwjjb5T7ULcwkV4fy7pGU46AEuUjuA+lmafkV77jEGv7U5qkot02+VtJs6sr
+         6TIylDfdP4GMLngkObaBEQQCtaLrTpsM5e1Qa/LJHQFXTIQbv+6NYSM4eNfQarsiomLp
+         zRYLAX5shWTCX3Q/Q0Fc1RoO3uVh+BCS/rBhQ1KEhljP8g0Jr++bTrg86WSgdPz0rRNL
+         VCEZD2Ry/BG7lWg9aVEJT0RJvqomrauM4LU3ONYP4wo7uic0SkGu3XctbmPIeQdLojEy
+         iFuw==
+X-Gm-Message-State: APjAAAWQGI9qcHSJZ9mllTtoCnOy2AsBuqouIBrXyg9FVP/KDEawZSzy
+        E4/vo47qH2FrJ7AmvmgI9HrfykeX
+X-Google-Smtp-Source: APXvYqyKYGcKQVhQBFnnzfOXlzMwG71UDR2ra8qx39HykjBBuVlctPdqWES4pU2fCE16EfD9fB9ywA==
+X-Received: by 2002:a1c:6404:: with SMTP id y4mr1516583wmb.143.1578459971406;
+        Tue, 07 Jan 2020 21:06:11 -0800 (PST)
+Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id p5sm2730048wrt.79.2020.01.07.21.06.09
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Jan 2020 20:57:33 -0800 (PST)
-From:   Lingpeng Chen <forrest0579@gmail.com>
-To:     John Fastabend <john.fastabend@gmail.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Lingpeng Chen <forrest0579@gmail.com>
-Subject: [PATCH] bpf/sockmap: read psock ingress_msg before sk_receive_queue
-Date:   Wed,  8 Jan 2020 12:57:08 +0800
-Message-Id: <20200108045708.31240-1-forrest0579@gmail.com>
+        Tue, 07 Jan 2020 21:06:10 -0800 (PST)
+From:   Florian Fainelli <f.fainelli@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Florian Fainelli <f.fainelli@gmail.com>, andrew@lunn.ch,
+        vivien.didelot@gmail.com, davem@davemloft.net,
+        Jakub Kicinski <jakub.kicinski@netronome.com>
+Subject: [PATCH net-next 0/2] Broadcom tags support for 531x5/539x families
+Date:   Tue,  7 Jan 2020 21:06:04 -0800
+Message-Id: <20200108050606.22090-1-f.fainelli@gmail.com>
 X-Mailer: git-send-email 2.17.1
-In-Reply-To: <5e15526d2ebb6_68832ae93d7145c08c@john-XPS-13-9370.notmuch>
-References: <5e15526d2ebb6_68832ae93d7145c08c@john-XPS-13-9370.notmuch>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Right now in tcp_bpf_recvmsg, sock read data first from sk_receive_queue
-if not empty than psock->ingress_msg otherwise. If a FIN packet arrives
-and there's also some data in psock->ingress_msg, the data in
-psock->ingress_msg will be purged. It is always happen when request to a
-HTTP1.0 server like python SimpleHTTPServer since the server send FIN
-packet after data is sent out.
+Hi David,
 
-Fixes: 604326b41a6fb ("bpf, sockmap: convert to generic sk_msg interface")
-Reported-by: Arika Chen <eaglesora@gmail.com>
-Suggested-by: Arika Chen <eaglesora@gmail.com>
-Signed-off-by: Lingpeng Chen <forrest0579@gmail.com>
-Signed-off-by: John Fastabend <john.fastabend@gmail.com>
----
- net/ipv4/tcp_bpf.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+This patch series finally allows us to enable Broadcom tags on the
+BCM531x5/BCM539x switch series which are very often cascaded onto
+another on-chip Broadcom switch. Because of that we need to be able to
+detect that Broadcom tags are already enabled on our DSA master which
+happens to be a DSA slave in that case since they are not part of the
+same DSA switch tree, the protocol does not support that.
 
-diff --git a/net/ipv4/tcp_bpf.c b/net/ipv4/tcp_bpf.c
-index e38705165ac9..f7e902868fce 100644
---- a/net/ipv4/tcp_bpf.c
-+++ b/net/ipv4/tcp_bpf.c
-@@ -123,12 +123,13 @@ int tcp_bpf_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
- 
- 	if (unlikely(flags & MSG_ERRQUEUE))
- 		return inet_recv_error(sk, msg, len, addr_len);
--	if (!skb_queue_empty(&sk->sk_receive_queue))
--		return tcp_recvmsg(sk, msg, len, nonblock, flags, addr_len);
- 
- 	psock = sk_psock_get(sk);
- 	if (unlikely(!psock))
- 		return tcp_recvmsg(sk, msg, len, nonblock, flags, addr_len);
-+	if (!skb_queue_empty(&sk->sk_receive_queue) &&
-+	    sk_psock_queue_empty(psock))
-+		return tcp_recvmsg(sk, msg, len, nonblock, flags, addr_len);
- 	lock_sock(sk);
- msg_bytes_ready:
- 	copied = __tcp_bpf_recvmsg(sk, psock, msg, len, flags);
-@@ -139,7 +140,7 @@ int tcp_bpf_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
- 		timeo = sock_rcvtimeo(sk, nonblock);
- 		data = tcp_bpf_wait_data(sk, psock, flags, timeo, &err);
- 		if (data) {
--			if (skb_queue_empty(&sk->sk_receive_queue))
-+			if (!sk_psock_queue_empty(psock))
- 				goto msg_bytes_ready;
- 			release_sock(sk);
- 			sk_psock_put(sk, psock);
+Due to the way DSA works, get_tag_protocol() is called prior to
+ds->ops->setup and we do not have all data structures set-up (in
+particular dsa_port::cpu_dp is not filed yet) so doing this at the time
+get_tag_protocol() is called and without exporting a helper function is
+desirable to limit our footprint into the framework.
+
+Having the core (net/dsa/dsa2.c) return and enforce DSA_TAG_PROTO_NONE
+was considered and done initially but this leaves the driver outside of
+the decision to force/fallback to a particular protocol, instead of
+letting it in control. Also there is no reason to suspect that all
+tagging protocols are problematic, e.g.: "inner" Marvell EDSA with
+"outer" Broadcom tag may work just fine, and vice versa.
+
+This was tested on:
+
+- Lamobo R1 which now has working Broadcom tags for its external BCM53125 switch
+- BCM7445 which has a BCM53125 hanging off one of its internal switch
+  port, the BCM53125 still works with DSA_TAG_PROTO_NONE
+- BCM7278 which has a peculiar dual CPU port set-up (so dual IMP mode
+  needs to be enabled)
+- Northstar Plus with DSA_TAG_PROTO_BRCM_PREPEND and no external
+  switches hanging off the internal switch
+
+Thanks!
+
+Florian Fainelli (2):
+  net: dsa: Get information about stacked DSA protocol
+  net: dsa: b53: Enable Broadcom tags for 531x5/539x families
+
+ drivers/net/dsa/b53/b53_common.c       | 66 +++++++++++++++++++-------
+ drivers/net/dsa/b53/b53_priv.h         |  4 +-
+ drivers/net/dsa/dsa_loop.c             |  3 +-
+ drivers/net/dsa/lan9303-core.c         |  3 +-
+ drivers/net/dsa/lantiq_gswip.c         |  3 +-
+ drivers/net/dsa/microchip/ksz8795.c    |  3 +-
+ drivers/net/dsa/microchip/ksz9477.c    |  3 +-
+ drivers/net/dsa/mt7530.c               |  3 +-
+ drivers/net/dsa/mv88e6060.c            |  3 +-
+ drivers/net/dsa/mv88e6xxx/chip.c       |  3 +-
+ drivers/net/dsa/ocelot/felix.c         |  3 +-
+ drivers/net/dsa/qca/ar9331.c           |  3 +-
+ drivers/net/dsa/qca8k.c                |  3 +-
+ drivers/net/dsa/rtl8366rb.c            |  3 +-
+ drivers/net/dsa/sja1105/sja1105_main.c |  3 +-
+ drivers/net/dsa/vitesse-vsc73xx-core.c |  3 +-
+ include/net/dsa.h                      |  3 +-
+ net/dsa/dsa2.c                         | 31 +++++++++++-
+ net/dsa/dsa_priv.h                     |  1 +
+ net/dsa/slave.c                        |  4 +-
+ 20 files changed, 114 insertions(+), 37 deletions(-)
+
 -- 
 2.17.1
 
