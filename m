@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 45563134CA7
-	for <lists+netdev@lfdr.de>; Wed,  8 Jan 2020 21:06:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 776AB134CB2
+	for <lists+netdev@lfdr.de>; Wed,  8 Jan 2020 21:07:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727316AbgAHUGw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jan 2020 15:06:52 -0500
-Received: from mail.kernel.org ([198.145.29.99]:60788 "EHLO mail.kernel.org"
+        id S1726401AbgAHUHB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jan 2020 15:07:01 -0500
+Received: from mail.kernel.org ([198.145.29.99]:32884 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727052AbgAHUGv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 8 Jan 2020 15:06:51 -0500
+        id S1726182AbgAHUHA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 8 Jan 2020 15:07:00 -0500
 Received: from localhost.localdomain (unknown [83.218.167.187])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 186642084D;
-        Wed,  8 Jan 2020 20:06:41 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 20BA520643;
+        Wed,  8 Jan 2020 20:06:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1578514010;
-        bh=4G9U4hbwpjc43HA1VaCSm2knWdxpECK/Qm3J7uuyiGY=;
+        s=default; t=1578514019;
+        bh=HDn1c+OCg4Fxwj0uJTYLgnTqOgR4bEcc2OImuEKXcQg=;
         h=From:To:Subject:Date:In-Reply-To:References:From;
-        b=L0JByfH82fI10MazHw+qyYQZ7ZEaLpg6nJdjXcllD8SsyRut9af5aObLYz9vOIvHH
-         D+1E4n3QQA3rcx3fqbrfPWnXhadJS6dDc8TIg4sQEYfba1RBaB2QbsYG+DNHUeblja
-         AQPDxweWn1lMMwEPz4YtSI/zKx8892RAcVGsp3t8=
+        b=Z7kr39OMPyJ7syJjfpiv7bYYzQQTmxY9i9gDEMUNchIHddpcw2Lt4bYaf/iod/izt
+         l7HWaMdttfnaO+wtU8l705qwszkyEX8ot1OUlgStQffxrEPRngbVy628F/iddqGwJl
+         qXHxpQpnurQB1zdPn/z3aZU9m+VOfqbtddzmv7+s=
 From:   Krzysztof Kozlowski <krzk@kernel.org>
 To:     Richard Henderson <rth@twiddle.net>,
         Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
@@ -62,9 +62,9 @@ To:     Richard Henderson <rth@twiddle.net>,
         netdev@vger.kernel.org, linux-ntb@googlegroups.com,
         virtualization@lists.linux-foundation.org,
         linux-arch@vger.kernel.org
-Subject: [PATCH v2 7/9] drm/nouveau: Constify ioreadX() iomem argument (as in generic implementation)
-Date:   Wed,  8 Jan 2020 21:05:26 +0100
-Message-Id: <20200108200528.4614-8-krzk@kernel.org>
+Subject: [PATCH v2 8/9] media: fsl-viu: Constify ioreadX() iomem argument (as in generic implementation)
+Date:   Wed,  8 Jan 2020 21:05:27 +0100
+Message-Id: <20200108200528.4614-9-krzk@kernel.org>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200108200528.4614-1-krzk@kernel.org>
 References: <20200108200528.4614-1-krzk@kernel.org>
@@ -82,22 +82,22 @@ consistency among architectures.
 
 Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
 ---
- drivers/gpu/drm/nouveau/nouveau_bo.c | 2 +-
+ drivers/media/platform/fsl-viu.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/nouveau/nouveau_bo.c b/drivers/gpu/drm/nouveau/nouveau_bo.c
-index f8015e0318d7..5120d062c2df 100644
---- a/drivers/gpu/drm/nouveau/nouveau_bo.c
-+++ b/drivers/gpu/drm/nouveau/nouveau_bo.c
-@@ -613,7 +613,7 @@ nouveau_bo_rd32(struct nouveau_bo *nvbo, unsigned index)
- 	mem += index;
+diff --git a/drivers/media/platform/fsl-viu.c b/drivers/media/platform/fsl-viu.c
+index 81a8faedbba6..991d9dc82749 100644
+--- a/drivers/media/platform/fsl-viu.c
++++ b/drivers/media/platform/fsl-viu.c
+@@ -34,7 +34,7 @@
+ /* Allow building this driver with COMPILE_TEST */
+ #if !defined(CONFIG_PPC) && !defined(CONFIG_MICROBLAZE)
+ #define out_be32(v, a)	iowrite32be(a, (void __iomem *)v)
+-#define in_be32(a)	ioread32be((void __iomem *)a)
++#define in_be32(a)	ioread32be((const void __iomem *)a)
+ #endif
  
- 	if (is_iomem)
--		return ioread32_native((void __force __iomem *)mem);
-+		return ioread32_native((const void __force __iomem *)mem);
- 	else
- 		return *mem;
- }
+ #define BUFFER_TIMEOUT		msecs_to_jiffies(500)  /* 0.5 seconds */
 -- 
 2.17.1
 
