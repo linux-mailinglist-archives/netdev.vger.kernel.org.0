@@ -2,135 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F52C1349EF
-	for <lists+netdev@lfdr.de>; Wed,  8 Jan 2020 18:58:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2FDF9134A04
+	for <lists+netdev@lfdr.de>; Wed,  8 Jan 2020 19:02:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728276AbgAHR6m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jan 2020 12:58:42 -0500
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:2294 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727127AbgAHR6m (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jan 2020 12:58:42 -0500
-Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 008HwMfr027841;
-        Wed, 8 Jan 2020 09:58:25 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type : content-id
- : content-transfer-encoding : mime-version; s=facebook;
- bh=IRI+7DiGppIsLZ3MK1DmV1J2CoegoNI8Dzw9vhVBVbo=;
- b=F5cn7GcejV/fR4qvzKZJgymNBLtd2v4gqXrI0PHfouQuX4gxhI4aNfdtyOTDA5EWRdF3
- SuQUv56YaK1pyblzbJYsTmffu5kZRUzqh16fprZq9Lmk44BC0upgx9oMOUAcRvwWZXzb
- ZnjPx+/5J2GyBanbKAUm8VL+E4gZYRKwoDE= 
-Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by mx0a-00082601.pphosted.com with ESMTP id 2xdkut8119-8
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Wed, 08 Jan 2020 09:58:25 -0800
-Received: from prn-hub04.TheFacebook.com (2620:10d:c081:35::128) by
- prn-hub06.TheFacebook.com (2620:10d:c081:35::130) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.1.1713.5; Wed, 8 Jan 2020 09:57:56 -0800
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (192.168.54.28)
- by o365-in.thefacebook.com (192.168.16.28) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.1.1713.5
- via Frontend Transport; Wed, 8 Jan 2020 09:57:56 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=X0sMQsqx2OkwHoWrAjewHtChlaWVWRlVEmANHq6FkDN64Ngt9Q1a8VJfweca8DvqOrWmxiKrVQVrh1A6LOR4CUTIy8/pgZO0JR0AICH8fEP1xajISYv/swE58vtN0A85gW89heBPSFWSxcYBiOSDj3hf7UwYYR/Vn5BwvNZGTKq2zpJy1SdRVIalT8jRXtlfARhpvxYSXFmgoYDqDx8JQJsejh+FkNewv2OU+VKtp3rpTUfcIaAE12+0ZPUgYsgzFTKFzaOj7Tjtvj9g1waHmC8nZjPN6VGIMDjvBNxk+lFghoaTyaoAX0G4wUMQIcR6D9De/+0Q9GDX5fnPn/zrJQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=IRI+7DiGppIsLZ3MK1DmV1J2CoegoNI8Dzw9vhVBVbo=;
- b=CcNOIQLX3tclXUvs0f4sLyQ0ePCJCJ+JGvYQUbdwt3UI8EmkheQ/hZbLzNSuXPENN/uYbW4Nc1XPi3NrONDezYRiHE+4xGPFiM217Rry9ihD5xLYU6ytsCMgGoUHpk/1ss0g/x9Vdwgt2CgrJqcvJIz4Vu1xnNSEy8GvDLInNuFiPPKnSAD2xm6XjU9liTBoHDxjsOV9baBGmqd2oPUvMlKnc5Fe2g+x8ARu79+mUyd1Qi2IRGtToziD+U/k1J4/15IVIg8M+NsZyCkQX89FJNsEn8pszTtCJ4ZTqMK6nniwtSuQTvmoD9IgiNclgeKgoRYiV023/lBuSXhpu47G8Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=IRI+7DiGppIsLZ3MK1DmV1J2CoegoNI8Dzw9vhVBVbo=;
- b=EzqGXS3Pl8zGr8LggugR4Uvj/hlg2hJl7bdgaiy2yzHHXT3GoD7dnW3UPA3VRWwXewMLtHerXZHpGF0+SeWs8gRWVW3gOuzl4F6JaTuWfIO5uLGBs/U/yOrLMo7Sk5f/7vClOxJf2eWIlIlZUz/iZ9fjZdlzIgPQfcmKO5OCs48=
-Received: from BYAPR15MB3029.namprd15.prod.outlook.com (20.178.238.208) by
- BYAPR15MB3045.namprd15.prod.outlook.com (20.178.237.215) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2623.9; Wed, 8 Jan 2020 17:57:55 +0000
-Received: from BYAPR15MB3029.namprd15.prod.outlook.com
- ([fe80::3541:85d8:c4c8:760d]) by BYAPR15MB3029.namprd15.prod.outlook.com
- ([fe80::3541:85d8:c4c8:760d%3]) with mapi id 15.20.2602.017; Wed, 8 Jan 2020
- 17:57:55 +0000
-From:   Song Liu <songliubraving@fb.com>
-To:     =?utf-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-CC:     Alexei Starovoitov <ast@kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        Kernel Team <Kernel-team@fb.com>
-Subject: Re: [PATCH bpf-next 2/6] libbpf: Collect static vs global info about
- functions
-Thread-Topic: [PATCH bpf-next 2/6] libbpf: Collect static vs global info about
- functions
-Thread-Index: AQHVxfThMozInHXHykGjLFHsqut+uqfgj9sAgAB+iAA=
-Date:   Wed, 8 Jan 2020 17:57:55 +0000
-Message-ID: <76F721B3-A848-40BD-8B1D-A0AA3EB1AB39@fb.com>
-References: <20200108072538.3359838-1-ast@kernel.org>
- <20200108072538.3359838-3-ast@kernel.org> <871rsai6td.fsf@toke.dk>
-In-Reply-To: <871rsai6td.fsf@toke.dk>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-mailer: Apple Mail (2.3608.40.2.2.4)
-x-originating-ip: [2620:10d:c090:180::c159]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: b2125502-2950-408e-645f-08d7946449d5
-x-ms-traffictypediagnostic: BYAPR15MB3045:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <BYAPR15MB30456F6168CF80AAFC1D2C15B33E0@BYAPR15MB3045.namprd15.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:663;
-x-forefront-prvs: 02760F0D1C
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(39860400002)(136003)(366004)(346002)(376002)(396003)(189003)(199004)(33656002)(53546011)(81156014)(316002)(2616005)(54906003)(6512007)(91956017)(6506007)(186003)(6916009)(86362001)(66556008)(66446008)(36756003)(66476007)(81166006)(6486002)(4744005)(5660300002)(66946007)(478600001)(76116006)(64756008)(2906002)(8936002)(8676002)(71200400001)(4326008);DIR:OUT;SFP:1102;SCL:1;SRVR:BYAPR15MB3045;H:BYAPR15MB3029.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: fb.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: lE/rhy09OSB+JqwFDZbYBMCPaz23wKlXR2zAcdIF/V7ofVtz3v8OsxYkqTIKCe44ajY7evgRL49Vgd2nMTH3GukaYWPdFwiBv0nig8gSyunHcGij6jEGIPndYl8uSKEOa7H/TO0aqfSQ+eIKWzV9P2hXx6Be2Kms9MdDeoCiTgviWztZU6XY4DaYogGqe8dOcqqZjK7nC/tvOhDCfZ5Cmx7lqjnYGo/qWEjGMXUuJaLNrAhfOIJs5HEm24CM6Ee1yZh/mgCQCv44wUlLVx9JQCqYApXmmoQzXS406wbJjXfRE2WSzX6FhXY5vaPpoREl+BUUCcarCrhm2V8Y5JcJEYjO22JJAVUlBMqmgk4yS1llgHK3rOnXIvMnf3heB0yAVcLZPk5GGvEuEIseHZ0oVReVS4jKyW9iKJyWTnic6pQ8n7l3PTXTu8r1SQrOfvfQ
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <8E703A59BDA2254DA4FBD6912CA166B8@namprd15.prod.outlook.com>
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: b2125502-2950-408e-645f-08d7946449d5
-X-MS-Exchange-CrossTenant-originalarrivaltime: 08 Jan 2020 17:57:55.0457
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: hBpesmXdJeEvZreoNl3x4Z1pZSJJmt7CoxeRfKWAUek72jcM31qMPnKSnh5KVGfFwsWolE9iOS/LN8n+hOagaA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB3045
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
- definitions=2020-01-08_05:2020-01-08,2020-01-08 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxscore=0
- lowpriorityscore=0 adultscore=0 suspectscore=0 phishscore=0 spamscore=0
- bulkscore=0 clxscore=1011 mlxlogscore=961 impostorscore=0
- priorityscore=1501 malwarescore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-1910280000 definitions=main-2001080143
-X-FB-Internal: deliver
+        id S1729328AbgAHSCE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jan 2020 13:02:04 -0500
+Received: from mail-il1-f194.google.com ([209.85.166.194]:44180 "EHLO
+        mail-il1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727090AbgAHSCD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jan 2020 13:02:03 -0500
+Received: by mail-il1-f194.google.com with SMTP id z12so3378883iln.11;
+        Wed, 08 Jan 2020 10:02:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=HEqWOcCms6EGHUmPBqScOdh4FBytf1vClXXJetZ8LjY=;
+        b=IMLMRM5fFiKVLkFZ8PesI5XEP9AZBHFSxmdQSvVNp1ZfbeulcNQ5mCi7DhSFsiFZ+h
+         zlPIeNbVcpNPBZ3bfGH14gjLiMKkoihvGXYQhUd7orA5m93Z4z+TLb0c2i7t4thlq/Jf
+         5aojGPaWlydfnqGEaKYTG4/OD4moRHfP5CWLBZnWnpe131jVjecA4xj6aEc+PYGD8kBk
+         e2/w9mEgNM5rkKNMqn+nJeuA0xER/EbJ5FGJA4lbpyHFXfWaybCr6FuqKXuNWZN5gnrr
+         o6NCBdC4uWFtIsOOo9A5gg3J9bsjo++lFKL1mn79pLY5OUIjcYWx+TSjAKCYQWCBfHeR
+         7vaQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=HEqWOcCms6EGHUmPBqScOdh4FBytf1vClXXJetZ8LjY=;
+        b=Y0/jF8kzauSlJM64LEnzAKe5qWddF9xIborb3L5QUxuJpKysb8RvCBIC5mQQEW7k4R
+         CRPw5541yQ3YM0aElkzyiZI2aJ9sE6lK6r11EovewtUrOdoy4K/VE4KMkMjBhT25K/3m
+         rWVuiDcppboZvW8yl+LHI1xJyHbRgoSU4jHT75SV1Rzu08oO5GS5aHG+mXW5J3q05Trw
+         GsvxJsm9Xu3cBKKI5qDPrD6ZNIbM4snsyWJHYryq6by/690pqfEyEi1RcukMylAkyJ1e
+         NVlmcRgftP3iaU5XoSqW9Adq2pBvQ+VWkJsxhFAT9eQvu/UFIMf00ClXeIy0++pJGFA9
+         uTjA==
+X-Gm-Message-State: APjAAAUODtL53WQgd6Eph0EKerUhZ7Gxu84m4/CEbFe9wg3dfc1yJ5P9
+        he9sX27EjoiOimIEXorPjHU=
+X-Google-Smtp-Source: APXvYqwo2+3HqTmybI36dsktHbjLPiIVgQ+3aIQMuEzGMBdETJt2THiEgaaVqNpQ7IzC30uYzxtiAA==
+X-Received: by 2002:a92:9c04:: with SMTP id h4mr5182648ili.6.1578506522684;
+        Wed, 08 Jan 2020 10:02:02 -0800 (PST)
+Received: from localhost ([184.63.162.180])
+        by smtp.gmail.com with ESMTPSA id v13sm800850ioh.53.2020.01.08.10.01.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 08 Jan 2020 10:02:01 -0800 (PST)
+Date:   Wed, 08 Jan 2020 10:01:55 -0800
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Daniel Borkmann <daniel@iogearbox.net>,
+        Lingpeng Chen <forrest0579@gmail.com>
+Cc:     John Fastabend <john.fastabend@gmail.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Message-ID: <5e161913342f2_67ea2afd262665bc1c@john-XPS-13-9370.notmuch>
+In-Reply-To: <20200108170259.GA7665@linux-3.fritz.box>
+References: <5e15526d2ebb6_68832ae93d7145c08c@john-XPS-13-9370.notmuch>
+ <20200108045708.31240-1-forrest0579@gmail.com>
+ <20200108170259.GA7665@linux-3.fritz.box>
+Subject: Re: [PATCH] bpf/sockmap: read psock ingress_msg before
+ sk_receive_queue
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQoNCj4gT24gSmFuIDgsIDIwMjAsIGF0IDI6MjUgQU0sIFRva2UgSMO4aWxhbmQtSsO4cmdlbnNl
-biA8dG9rZUByZWRoYXQuY29tPiB3cm90ZToNCj4gDQo+IEFsZXhlaSBTdGFyb3ZvaXRvdiA8YXN0
-QGtlcm5lbC5vcmc+IHdyaXRlczoNCj4gDQo+PiBDb2xsZWN0IHN0YXRpYyB2cyBnbG9iYWwgaW5m
-b3JtYXRpb24gYWJvdXQgQlBGIGZ1bmN0aW9ucyBmcm9tIEVMRiBmaWxlIGFuZA0KPj4gaW1wcm92
-ZSBCVEYgd2l0aCB0aGlzIGFkZGl0aW9uYWwgaW5mbyBpZiBsbHZtIGlzIHRvbyBvbGQgYW5kIGRv
-ZXNuJ3QgZW1pdCBpdCBvbg0KPj4gaXRzIG93bi4NCj4gDQo+IEhhcyB0aGUgc3VwcG9ydCBmb3Ig
-dGhpcyBhY3R1YWxseSBsYW5kZWQgaW4gTExWTSB5ZXQ/IEkgdHJpZWQgZ3JlcCdpbmcNCj4gaW4g
-dGhlIGNvbW1pdCBsb2cgYW5kIGNvdWxkbid0IGZpbmQgYW55dGhpbmcuLi4NCj4gDQo+IFsuLi5d
-DQo+PiBAQCAtMzEzLDYgKzMyMSw3IEBAIHN0cnVjdCBicGZfb2JqZWN0IHsNCj4+IAlib29sIGxv
-YWRlZDsNCj4+IAlib29sIGhhc19wc2V1ZG9fY2FsbHM7DQo+PiAJYm9vbCByZWxheGVkX2NvcmVf
-cmVsb2NzOw0KPj4gKwlib29sIGxsdm1fZW1pdHNfZnVuY19saW5rYWdlOw0KPiANCj4gTml0OiBz
-L2xsdm0vY29tcGlsZXIvPyBQcmVzdW1hYmx5IEdDQyB3aWxsIGFsc28gc3VwcG9ydCB0aGlzIGF0
-IHNvbWUNCj4gcG9pbnQ/DQoNCkVjaG9pbmcgdGhpcyBuaXQgKGFuZCBvdGhlciByZWZlcmVuY2Vz
-IHRvIGxsdm0pLiBPdGhlcndpc2UsDQoNCkFja2VkLWJ5OiBTb25nIExpdSA8c29uZ2xpdWJyYXZp
-bmdAZmIuY29tPg==
+Daniel Borkmann wrote:
+> On Wed, Jan 08, 2020 at 12:57:08PM +0800, Lingpeng Chen wrote:
+> > Right now in tcp_bpf_recvmsg, sock read data first from sk_receive_queue
+> > if not empty than psock->ingress_msg otherwise. If a FIN packet arrives
+> > and there's also some data in psock->ingress_msg, the data in
+> > psock->ingress_msg will be purged. It is always happen when request to a
+> > HTTP1.0 server like python SimpleHTTPServer since the server send FIN
+> > packet after data is sent out.
+> > 
+> > Fixes: 604326b41a6fb ("bpf, sockmap: convert to generic sk_msg interface")
+> > Reported-by: Arika Chen <eaglesora@gmail.com>
+> > Suggested-by: Arika Chen <eaglesora@gmail.com>
+> > Signed-off-by: Lingpeng Chen <forrest0579@gmail.com>
+> > Signed-off-by: John Fastabend <john.fastabend@gmail.com>
+> > ---
+> >  net/ipv4/tcp_bpf.c | 7 ++++---
+> >  1 file changed, 4 insertions(+), 3 deletions(-)
+> > 
+> > diff --git a/net/ipv4/tcp_bpf.c b/net/ipv4/tcp_bpf.c
+> > index e38705165ac9..f7e902868fce 100644
+> > --- a/net/ipv4/tcp_bpf.c
+> > +++ b/net/ipv4/tcp_bpf.c
+> > @@ -123,12 +123,13 @@ int tcp_bpf_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
+> >  
+> >  	if (unlikely(flags & MSG_ERRQUEUE))
+> >  		return inet_recv_error(sk, msg, len, addr_len);
+> 
+> Shouldn't we also move the error queue handling below the psock test as
+> well and let tcp_recvmsg() natively do it in case of !psock?
+> 
+
+You mean the MSG_ERRQUEUE flag handling? If the user sets MSG_ERRQUEUE
+they expect to receive any queued errors it would be wrong to return
+psock data in this case if psock is attached and has data on queue and
+user passes MSG_ERRQUEUE flag.
+
+ MSG_ERRQUEUE (since Linux 2.2)
+  This flag specifies that queued errors should be received from the socket
+  error queue.  The error is passed in an ancillary message with a type
+  dependent on the protocol (for IPv4 IP_RECVERR).  The user should supply
+  a buffer of sufficient size. See cmsg(3) and ip(7) for more information.
+  The payload of the original packet that caused the error is passed as
+  normal data via msg_iovec. The original destination address of the
+  datagram that caused the error is supplied via msg_name.
+
+I believe it needs to be where it is.
+
+
+> > -	if (!skb_queue_empty(&sk->sk_receive_queue))
+> > -		return tcp_recvmsg(sk, msg, len, nonblock, flags, addr_len);
+> >  
+> >  	psock = sk_psock_get(sk);
+> >  	if (unlikely(!psock))
+> >  		return tcp_recvmsg(sk, msg, len, nonblock, flags, addr_len);
+> > +	if (!skb_queue_empty(&sk->sk_receive_queue) &&
+> > +	    sk_psock_queue_empty(psock))
+> > +		return tcp_recvmsg(sk, msg, len, nonblock, flags, addr_len);
+> >  	lock_sock(sk);
+> >  msg_bytes_ready:
+> >  	copied = __tcp_bpf_recvmsg(sk, psock, msg, len, flags);
+> > @@ -139,7 +140,7 @@ int tcp_bpf_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
+> >  		timeo = sock_rcvtimeo(sk, nonblock);
+> >  		data = tcp_bpf_wait_data(sk, psock, flags, timeo, &err);
+> >  		if (data) {
+> > -			if (skb_queue_empty(&sk->sk_receive_queue))
+> > +			if (!sk_psock_queue_empty(psock))
+> >  				goto msg_bytes_ready;
+> >  			release_sock(sk);
+> >  			sk_psock_put(sk, psock);
+> > -- 
+> > 2.17.1
+> > 
+
+
