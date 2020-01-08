@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E7BD134747
-	for <lists+netdev@lfdr.de>; Wed,  8 Jan 2020 17:10:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DB04E134749
+	for <lists+netdev@lfdr.de>; Wed,  8 Jan 2020 17:11:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729099AbgAHQKy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jan 2020 11:10:54 -0500
-Received: from dispatch1-us1.ppe-hosted.com ([148.163.129.52]:34156 "EHLO
+        id S1729333AbgAHQLJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jan 2020 11:11:09 -0500
+Received: from dispatch1-us1.ppe-hosted.com ([148.163.129.52]:36414 "EHLO
         dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728904AbgAHQKy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jan 2020 11:10:54 -0500
+        by vger.kernel.org with ESMTP id S1728083AbgAHQLI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jan 2020 11:11:08 -0500
 X-Virus-Scanned: Proofpoint Essentials engine
 Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 2B441B40055;
-        Wed,  8 Jan 2020 16:10:53 +0000 (UTC)
+        by mx1-us5.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 482FC180062;
+        Wed,  8 Jan 2020 16:11:07 +0000 (UTC)
 Received: from amm-opti7060.uk.solarflarecom.com (10.17.20.147) by
  ukex01.SolarFlarecom.com (10.17.10.4) with Microsoft SMTP Server (TLS) id
- 15.0.1395.4; Wed, 8 Jan 2020 16:10:48 +0000
+ 15.0.1395.4; Wed, 8 Jan 2020 16:11:02 +0000
 From:   "Alex Maftei (amaftei)" <amaftei@solarflare.com>
-Subject: [PATCH net-next 02/14] sfc: further preparation for code split
+Subject: [PATCH net-next 03/14] sfc: move reset workqueue code
 To:     <netdev@vger.kernel.org>, <davem@davemloft.net>
 CC:     <linux-net-drivers@solarflare.com>, <scrum-linux@solarflare.com>
 References: <a0cfb828-b98e-3a63-15d9-592675e81b5f@solarflare.com>
-Message-ID: <d54e7738-72d9-5afb-252b-e560feb5132a@solarflare.com>
-Date:   Wed, 8 Jan 2020 16:10:45 +0000
+Message-ID: <a2d0f42b-61c4-42b8-df6e-184d8f3b503e@solarflare.com>
+Date:   Wed, 8 Jan 2020 16:10:59 +0000
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.2.2
 MIME-Version: 1.0
@@ -38,156 +38,194 @@ X-Originating-IP: [10.17.20.147]
 X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
  ukex01.SolarFlarecom.com (10.17.10.4)
 X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1010-25154.003
-X-TM-AS-Result: No-9.068000-8.000000-10
-X-TMASE-MatchedRID: DcqGgPTZcVldZy3SxU1dnHYZxYoZm58FMHi1Ydy2WEhjLp8Cm8vwFwoe
-        RRhCZWIBnvBWG5GT8Jdw5T4Iaj538mJZXQNDzktSGjzBgnFZvQ4vV5f7P0HVDKSiMyrXKm9UQGn
-        3MUIZ+3uEqK732q7561wDAh1dfD74ppxtrT/r6lEyIyttzvQ99w/o5bNHEsCTI7vGkGphvBhfMR
-        ZFmBPqiPlf//t8PlzgHTKb768hcJGDzdmvk4Gt0sebIMlISwjbXGjQf7uckKs9phCcpYL3wQrer
-        Kgs93AsEfK4ZMBzHazTwqurdQMjUvnmhzCNpxuqJDhQKCgPbQLgXnxE81iysZtxcHs098N0ngIg
-        pj8eDcC063Wh9WVqgt063cjuGtrt+gtHj7OwNO2BSJy8ngwKGRrXF0qM1gk/MKouZLuWDIpnPk5
-        Rwm2g8KfQz/MPf7d8870wkN6HZb4=
+X-TM-AS-Result: No-6.559100-8.000000-10
+X-TMASE-MatchedRID: AvNNcJ0njJ+0sP6cmNYpOKiUivh0j2Pv6VTG9cZxEjJwGpdgNQ0JrEwS
+        eVQnSS/F/SrcY9Zl4TqPQi9XuOWoOMOJmY4XRXkVB8Lglj0iCABKgIbix5+XxEPJD9TF1GCwpZX
+        MpWZIsI4Ka+KeKWIfys15zhPQfP58Kdr48H7XWFvCWOwlsiwAbW9Xf86cwKVaLVW/BafIUxXSJJ
+        cbp1Y+WyYhpFLNY0umKP2/buXOXzW6QAtC4sI1vzvMSga43p0036DIeK03Kb9UjspoiX02F+LRG
+        GmsnnSD7eAwavPQoIWCFezKcF3T/bWfqrMzDJSXuoibJpHRrFkvV5f7P0HVDPpruoHpsPduEUS3
+        3ulD4LxmGBR/0obHSn2/RqwseasXcePffSvsvWCcxB01DrjF96LwP+jjbL9Kv5ndmnZN3UQ/yCf
+        99zBqMb/YkCk00rZtRT0ctbI6uxy9b+2IefOhtLu9iqQJLR0vqV3VmuIFNEsIPuuOlevAylAxnW
+        8l7v5mtTSHCTzZZhLLjIHRTtAWF6PFjJEFr+olfeZdJ1XsoriZUuVCTQbcZ8K21zBg2KlfiPbfA
+        0kXryG7TiNjlMSBIThyh1fI+WWckrh5ixLsopF7tsYs2GGj8FZca9RSYo/b
 X-TM-AS-User-Approved-Sender: Yes
 X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--9.068000-8.000000
+X-TMASE-Result: 10--6.559100-8.000000
 X-TMASE-Version: SMEX-12.5.0.1300-8.5.1010-25154.003
-X-MDID: 1578499853-ZA3EZIIlboQ5
+X-MDID: 1578499868-r1r367RFXkkH
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Added more arguments for a couple of functions.
-Also moved a function to the common header.
+Small functions doing work that will be common, related to reset
+workqueue management.
 
 Signed-off-by: Alexandru-Mihai Maftei <amaftei@solarflare.com>
 ---
- drivers/net/ethernet/sfc/efx.c        | 31 +++++++--------------------
- drivers/net/ethernet/sfc/efx_common.h | 15 ++++++++++---
- 2 files changed, 20 insertions(+), 26 deletions(-)
+ drivers/net/ethernet/sfc/Makefile     |  7 +++-
+ drivers/net/ethernet/sfc/efx.c        | 22 ++++------
+ drivers/net/ethernet/sfc/efx_common.c | 58 +++++++++++++++++++++++++++
+ 3 files changed, 70 insertions(+), 17 deletions(-)
+ create mode 100644 drivers/net/ethernet/sfc/efx_common.c
 
+diff --git a/drivers/net/ethernet/sfc/Makefile b/drivers/net/ethernet/sfc/Makefile
+index c5c297e78d06..7022cffa31f8 100644
+--- a/drivers/net/ethernet/sfc/Makefile
++++ b/drivers/net/ethernet/sfc/Makefile
+@@ -1,7 +1,10 @@
+ # SPDX-License-Identifier: GPL-2.0
+-sfc-y			+= efx.o nic.o farch.o siena.o ef10.o tx.o rx.o \
++sfc-y			+= efx.o efx_common.o nic.o \
++			   farch.o siena.o ef10.o \
++			   tx.o rx.o \
+ 			   selftest.o ethtool.o ptp.o tx_tso.o \
+-			   mcdi.o mcdi_port.o mcdi_mon.o
++			   mcdi.o mcdi_port.o \
++			   mcdi_mon.o
+ sfc-$(CONFIG_SFC_MTD)	+= mtd.o
+ sfc-$(CONFIG_SFC_SRIOV)	+= sriov.o siena_sriov.o ef10_sriov.o
+ 
 diff --git a/drivers/net/ethernet/sfc/efx.c b/drivers/net/ethernet/sfc/efx.c
-index c5bcdfcfee87..ce8c0db2ba4b 100644
+index ce8c0db2ba4b..c881e35b0477 100644
 --- a/drivers/net/ethernet/sfc/efx.c
 +++ b/drivers/net/ethernet/sfc/efx.c
-@@ -233,16 +233,6 @@ static int efx_xdp_xmit(struct net_device *dev, int n, struct xdp_frame **xdpfs,
- 			ASSERT_RTNL();			\
- 	} while (0)
+@@ -108,12 +108,6 @@ void efx_get_udp_tunnel_type_name(u16 type, char *buf, size_t buflen)
+ 		snprintf(buf, buflen, "type %d", type);
+ }
  
--int efx_check_disabled(struct efx_nic *efx)
--{
--	if (efx->state == STATE_DISABLED || efx->state == STATE_RECOVERY) {
--		netif_err(efx, drv, efx->net_dev,
--			  "device is disabled due to earlier errors\n");
--		return -EIO;
--	}
--	return 0;
--}
+-/* Reset workqueue. If any NIC has a hardware failure then a reset will be
+- * queued onto this work queue. This is not a per-nic work queue, because
+- * efx_reset_work() acquires the rtnl lock, so resets are naturally serialised.
+- */
+-static struct workqueue_struct *reset_workqueue;
 -
+ /* How often and how many times to poll for a reset while waiting for a
+  * BIST that another function started to complete.
+  */
+@@ -3106,7 +3100,7 @@ void efx_schedule_reset(struct efx_nic *efx, enum reset_type type)
+ 	 * reset is scheduled. So switch back to poll'd MCDI completions. */
+ 	efx_mcdi_mode_poll(efx);
+ 
+-	queue_work(reset_workqueue, &efx->reset_work);
++	efx_queue_reset_work(efx);
+ }
+ 
  /**************************************************************************
-  *
-  * Event queue processing
-@@ -1283,17 +1273,14 @@ static void efx_dissociate(struct efx_nic *efx)
- }
+@@ -3492,7 +3486,7 @@ static void efx_pci_remove_main(struct efx_nic *efx)
+ 	 * are not READY.
+ 	 */
+ 	BUG_ON(efx->state == STATE_READY);
+-	cancel_work_sync(&efx->reset_work);
++	efx_flush_reset_workqueue(efx);
  
- /* This configures the PCI device to enable I/O and DMA. */
--int efx_init_io(struct efx_nic *efx)
-+int efx_init_io(struct efx_nic *efx, int bar, dma_addr_t dma_mask,
-+		unsigned int mem_map_size)
- {
- 	struct pci_dev *pci_dev = efx->pci_dev;
--	dma_addr_t dma_mask = efx->type->max_dma_mask;
--	unsigned int mem_map_size = efx->type->mem_map_size(efx);
--	int rc, bar;
-+	int rc;
+ 	efx_disable_interrupts(efx);
+ 	efx_clear_interrupt_affinity(efx);
+@@ -3878,7 +3872,7 @@ static int efx_pm_thaw(struct device *dev)
+ 	rtnl_unlock();
  
- 	netif_dbg(efx, probe, efx->net_dev, "initialising I/O\n");
+ 	/* Reschedule any quenched resets scheduled during efx_pm_freeze() */
+-	queue_work(reset_workqueue, &efx->reset_work);
++	efx_queue_reset_work(efx);
  
--	bar = efx->type->mem_bar(efx);
--
- 	rc = pci_enable_device(pci_dev);
- 	if (rc) {
- 		netif_err(efx, probe, efx->net_dev,
-@@ -1354,10 +1341,8 @@ int efx_init_io(struct efx_nic *efx)
- 	return rc;
- }
- 
--void efx_fini_io(struct efx_nic *efx)
-+void efx_fini_io(struct efx_nic *efx, int bar)
- {
--	int bar;
--
- 	netif_dbg(efx, drv, efx->net_dev, "shutting down I/O\n");
- 
- 	if (efx->membase) {
-@@ -1366,7 +1351,6 @@ void efx_fini_io(struct efx_nic *efx)
- 	}
- 
- 	if (efx->membase_phys) {
--		bar = efx->type->mem_bar(efx);
- 		pci_release_region(efx->pci_dev, bar);
- 		efx->membase_phys = 0;
- 	}
-@@ -3548,7 +3532,7 @@ static void efx_pci_remove(struct pci_dev *pci_dev)
- 
- 	efx_pci_remove_main(efx);
- 
--	efx_fini_io(efx);
-+	efx_fini_io(efx, efx->type->mem_bar(efx));
- 	netif_dbg(efx, drv, efx->net_dev, "shutdown successful\n");
- 
- 	efx_fini_struct(efx);
-@@ -3771,7 +3755,8 @@ static int efx_pci_probe(struct pci_dev *pci_dev,
- 		efx_probe_vpd_strings(efx);
- 
- 	/* Set up basic I/O (BAR mappings etc) */
--	rc = efx_init_io(efx);
-+	rc = efx_init_io(efx, efx->type->mem_bar(efx), efx->type->max_dma_mask,
-+			 efx->type->mem_map_size(efx));
- 	if (rc)
- 		goto fail2;
- 
-@@ -3815,7 +3800,7 @@ static int efx_pci_probe(struct pci_dev *pci_dev,
  	return 0;
  
-  fail3:
--	efx_fini_io(efx);
-+	efx_fini_io(efx, efx->type->mem_bar(efx));
-  fail2:
- 	efx_fini_struct(efx);
-  fail1:
-diff --git a/drivers/net/ethernet/sfc/efx_common.h b/drivers/net/ethernet/sfc/efx_common.h
-index cb690d01adbc..c602e5257088 100644
---- a/drivers/net/ethernet/sfc/efx_common.h
-+++ b/drivers/net/ethernet/sfc/efx_common.h
-@@ -11,8 +11,9 @@
- #ifndef EFX_COMMON_H
- #define EFX_COMMON_H
+@@ -4077,11 +4071,9 @@ static int __init efx_init_module(void)
+ 		goto err_sriov;
+ #endif
  
--int efx_init_io(struct efx_nic *efx);
--void efx_fini_io(struct efx_nic *efx);
-+int efx_init_io(struct efx_nic *efx, int bar, dma_addr_t dma_mask,
-+		unsigned int mem_map_size);
-+void efx_fini_io(struct efx_nic *efx, int bar);
- int efx_init_struct(struct efx_nic *efx, struct pci_dev *pci_dev,
- 		    struct net_device *net_dev);
- void efx_fini_struct(struct efx_nic *efx);
-@@ -44,7 +45,15 @@ int efx_reset_up(struct efx_nic *efx, enum reset_type method, bool ok);
- int efx_reset(struct efx_nic *efx, enum reset_type method);
- void efx_schedule_reset(struct efx_nic *efx, enum reset_type type);
+-	reset_workqueue = create_singlethread_workqueue("sfc_reset");
+-	if (!reset_workqueue) {
+-		rc = -ENOMEM;
++	rc = efx_create_reset_workqueue();
++	if (rc)
+ 		goto err_reset;
+-	}
  
--int efx_check_disabled(struct efx_nic *efx);
-+static inline int efx_check_disabled(struct efx_nic *efx)
+ 	rc = pci_register_driver(&efx_pci_driver);
+ 	if (rc < 0)
+@@ -4090,7 +4082,7 @@ static int __init efx_init_module(void)
+ 	return 0;
+ 
+  err_pci:
+-	destroy_workqueue(reset_workqueue);
++	efx_destroy_reset_workqueue();
+  err_reset:
+ #ifdef CONFIG_SFC_SRIOV
+ 	efx_fini_sriov();
+@@ -4106,7 +4098,7 @@ static void __exit efx_exit_module(void)
+ 	printk(KERN_INFO "Solarflare NET driver unloading\n");
+ 
+ 	pci_unregister_driver(&efx_pci_driver);
+-	destroy_workqueue(reset_workqueue);
++	efx_destroy_reset_workqueue();
+ #ifdef CONFIG_SFC_SRIOV
+ 	efx_fini_sriov();
+ #endif
+diff --git a/drivers/net/ethernet/sfc/efx_common.c b/drivers/net/ethernet/sfc/efx_common.c
+new file mode 100644
+index 000000000000..5cadfba37fc4
+--- /dev/null
++++ b/drivers/net/ethernet/sfc/efx_common.c
+@@ -0,0 +1,58 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/****************************************************************************
++ * Driver for Solarflare network controllers and boards
++ * Copyright 2018 Solarflare Communications Inc.
++ *
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms of the GNU General Public License version 2 as published
++ * by the Free Software Foundation, incorporated herein by reference.
++ */
++
++#include "net_driver.h"
++#include <linux/module.h>
++#include <linux/netdevice.h>
++#include "efx_common.h"
++#include "efx_channels.h"
++#include "efx.h"
++#include "mcdi.h"
++#include "selftest.h"
++#include "rx_common.h"
++#include "tx_common.h"
++#include "nic.h"
++#include "io.h"
++#include "mcdi_pcol.h"
++
++/* Reset workqueue. If any NIC has a hardware failure then a reset will be
++ * queued onto this work queue. This is not a per-nic work queue, because
++ * efx_reset_work() acquires the rtnl lock, so resets are naturally serialised.
++ */
++static struct workqueue_struct *reset_workqueue;
++
++int efx_create_reset_workqueue(void)
 +{
-+	if (efx->state == STATE_DISABLED || efx->state == STATE_RECOVERY) {
-+		netif_err(efx, drv, efx->net_dev,
-+			  "device is disabled due to earlier errors\n");
-+		return -EIO;
++	reset_workqueue = create_singlethread_workqueue("sfc_reset");
++	if (!reset_workqueue) {
++		printk(KERN_ERR "Failed to create reset workqueue\n");
++		return -ENOMEM;
 +	}
++
 +	return 0;
 +}
- 
- void efx_mac_reconfigure(struct efx_nic *efx);
- void efx_link_status_changed(struct efx_nic *efx);
++
++void efx_queue_reset_work(struct efx_nic *efx)
++{
++	queue_work(reset_workqueue, &efx->reset_work);
++}
++
++void efx_flush_reset_workqueue(struct efx_nic *efx)
++{
++	cancel_work_sync(&efx->reset_work);
++}
++
++void efx_destroy_reset_workqueue(void)
++{
++	if (reset_workqueue) {
++		destroy_workqueue(reset_workqueue);
++		reset_workqueue = NULL;
++	}
++}
 -- 
 2.20.1
 
