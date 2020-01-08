@@ -2,130 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 853B3134972
-	for <lists+netdev@lfdr.de>; Wed,  8 Jan 2020 18:36:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 985561349C1
+	for <lists+netdev@lfdr.de>; Wed,  8 Jan 2020 18:49:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729819AbgAHRgB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jan 2020 12:36:01 -0500
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:63742 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727328AbgAHRgB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jan 2020 12:36:01 -0500
-Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
-        by m0089730.ppops.net (8.16.0.42/8.16.0.42) with SMTP id 008HZgO8007959;
-        Wed, 8 Jan 2020 09:35:45 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type : content-id
- : content-transfer-encoding : mime-version; s=facebook;
- bh=QcQpzPpFPVSOPuDmZlxekZH47qK2py5LhsgKZDnxxks=;
- b=T5rSUPhnxhFC4/xGeDLlJ+t6hRdhdXM7hSi6lcFGqHyWD6ul4eSIdaP1OmlfQ59qH1dt
- 1FSaClE713vTHlU2TzyhVi+Lkv5TnAuqY5i5vZJciLM4IXTwNQw9Db347XHMIWRYSOeB
- El8eAsTupInT+Sc3FYXJnwGJOzhWDtnZXPo= 
-Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by m0089730.ppops.net with ESMTP id 2xdh770uks-6
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Wed, 08 Jan 2020 09:35:45 -0800
-Received: from prn-hub06.TheFacebook.com (2620:10d:c081:35::130) by
- prn-hub02.TheFacebook.com (2620:10d:c081:35::126) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.1.1713.5; Wed, 8 Jan 2020 09:35:39 -0800
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (192.168.54.28)
- by o365-in.thefacebook.com (192.168.16.30) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.1.1713.5
- via Frontend Transport; Wed, 8 Jan 2020 09:35:39 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=X6juItI2oMzpq+ZfkaPRFTte3D5FI60dBFS9Leb2dsv5/pLDbr37g94QlpasnfmOIRXvlt3bhOMUaY4TzbVTpe1X0/CM/go7DWZ4Oj2yOsV+5y1ObuweC4byoYMXSaaIiks9o7jYc3pNaaUcnGFgyRf11xorlPzbfmtGKQDNlj3bsTYQzFBvo0WGU/JRVtb+oDpweC1ruCI5GOgrPPcJjXFYCT8SHp/dWaZdW2lMuVgBrG9ctZRD9DjvIOwUI+kjxnPTA4cnzn54JT4nSTv0+wHBP3o414zpPvSg1dNzsyGwYEHWkdAZb2QYnronckywU5eE8ZmDMpQmpjqmT9jL5A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=QcQpzPpFPVSOPuDmZlxekZH47qK2py5LhsgKZDnxxks=;
- b=TPdFSS32HR8E3BwLOqxpVOd5J4h/G6dYbU5tQcHpfP7Dwh0AJuNQaBzzGSJYTS2l+8vKeKvbDRcNa47DaxouzTjcr0R168LLY8qr64JHw4+TR9eCgDQT17tSiqfSg2QNw1+fz9ljohs0f7H09gGJCm91shX+vWowEmvh5vbZi4jUV8ugDTavfJ6dmZJ0ywFH4UdQV73hRKl+pY5m7d3R3aGtbKYBpSYarjCT4YlAfR4VTy9wVhzEUNFNt5jgNMse51wzLMZIjAG2S0E3WpbSr6kjttzdVc12IZkyY6cm9TcXV9x6uA0Dkl/BsLcLL4tjIR0rRhXVeURNFOQhAkzGiA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=QcQpzPpFPVSOPuDmZlxekZH47qK2py5LhsgKZDnxxks=;
- b=b622ZL5eroD3V80mAkSKzjEF3tSjvR1SdgvYj7JwCeQ/lidaMN4puXozpS9f7jAuY9zYR0rN5NWIHWQTGPtrAlzYbkAfKfbyTLuz3CXvSt+xQd1WvYNkWqn4Zv+Zb6IFXdDaiUqwiegME494vLwbvPjFFtYW+clGazZhmQGNreM=
-Received: from BYAPR15MB3029.namprd15.prod.outlook.com (20.178.238.208) by
- BYAPR15MB3080.namprd15.prod.outlook.com (20.178.239.96) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2602.10; Wed, 8 Jan 2020 17:35:38 +0000
-Received: from BYAPR15MB3029.namprd15.prod.outlook.com
- ([fe80::3541:85d8:c4c8:760d]) by BYAPR15MB3029.namprd15.prod.outlook.com
- ([fe80::3541:85d8:c4c8:760d%3]) with mapi id 15.20.2602.017; Wed, 8 Jan 2020
- 17:35:38 +0000
-From:   Song Liu <songliubraving@fb.com>
-To:     Alexei Starovoitov <ast@kernel.org>
-CC:     David Miller <davem@davemloft.net>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        Kernel Team <Kernel-team@fb.com>
-Subject: Re: [PATCH bpf-next 1/6] libbpf: Sanitize BTF_KIND_FUNC linkage
-Thread-Topic: [PATCH bpf-next 1/6] libbpf: Sanitize BTF_KIND_FUNC linkage
-Thread-Index: AQHVxfTmliKARNE5qUWqn7g+hk2ocafhCCmA
-Date:   Wed, 8 Jan 2020 17:35:37 +0000
-Message-ID: <72DB93B5-BFEA-4FB6-8E5E-CCF69F0B32DA@fb.com>
-References: <20200108072538.3359838-1-ast@kernel.org>
- <20200108072538.3359838-2-ast@kernel.org>
-In-Reply-To: <20200108072538.3359838-2-ast@kernel.org>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-mailer: Apple Mail (2.3608.40.2.2.4)
-x-originating-ip: [2620:10d:c090:180::c159]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 228c3561-b455-49a9-8a93-08d794612ce3
-x-ms-traffictypediagnostic: BYAPR15MB3080:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <BYAPR15MB3080B3B9B135580E95FD9DAAB33E0@BYAPR15MB3080.namprd15.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:663;
-x-forefront-prvs: 02760F0D1C
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(346002)(136003)(396003)(39860400002)(376002)(366004)(189003)(199004)(4326008)(5660300002)(316002)(6486002)(6512007)(36756003)(6916009)(71200400001)(558084003)(54906003)(478600001)(186003)(66946007)(66476007)(8936002)(81156014)(2616005)(81166006)(76116006)(86362001)(53546011)(2906002)(66446008)(64756008)(66556008)(8676002)(6506007)(33656002);DIR:OUT;SFP:1102;SCL:1;SRVR:BYAPR15MB3080;H:BYAPR15MB3029.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: fb.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: w/z2sSiFjydGicGXnN6zc+kQjSb9QCeBYmc2yX67HL0JllFrWlz87D7DG0OFwM/J09trPWy37Pz2vkBx15RiZ26vI4/I+F4aVwlrgpLeDUHJz605MsRsnRuGrKeH5Yd20m+dchULnPMS1l5i1rhy+42o+5JkkkVphti1/V4648R9PFA912N6NWuhUQlPfOK4fNZD3fHJVpxkB3h/TPNmTtgj8OFRX0kIhsKKP9Ro9amj1U8D/Bli4KBfx4eQ4J1wt73v4FHRIRgaRwornom65AstTBIps/r4WGC3QT5caB8ZLa4S2caA9U7YHJeswJh+BKiFhA8OtB4G3LcD0jNZA/wOELia///JNSYIH/bdki20ZIEzGVJE9K/cMkhWnmHvnRaUbtHnIilV7U8dMo+mjNRtx5UFr7FmU/bIFvsjku4BUIeibX6Xi7pLUKkwI+5C
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <E83F05268465D64895F805EC12AA5FE6@namprd15.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        id S1729181AbgAHRs1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jan 2020 12:48:27 -0500
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:33291 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728791AbgAHRs0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jan 2020 12:48:26 -0500
+Received: by mail-wr1-f67.google.com with SMTP id b6so4408190wrq.0
+        for <netdev@vger.kernel.org>; Wed, 08 Jan 2020 09:48:24 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:openpgp:autocrypt:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=vezZj2TeOMyTZ9Ka6PQUreocbb3g59W67BRJHCbJR/Q=;
+        b=TO0/+ZpDaA5Hrd4Fcaja8zf9jm3EI9R+SZ3AK0hIfWoQ1U6ncMZKKIayioSNq7ETNJ
+         P4eVnr++xzR1vrgoAElFIaW5STveIFl82fFZwEL+kemB+7PeM5X/Z69BoRVK0jV7TfTP
+         3lmaptXbzGITFFoo5I+nro0cM1CBVWX3to4Ec69xW2KmsDDlr6BptQ+5WMcpV1xNSuOZ
+         7ynlD0YtAdsZntGASqnuKDi4qa8sGOtGqrqjBOIZ0NB/rv7QqzY+ru+lSx9kwHpP6IZ+
+         EUhgCa6/41xWAlAYNPuRjMmNqmwfjK4NkDYwKN+tJdarMtYXBjy54BrnW5oDQgpRHp93
+         na6g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=vezZj2TeOMyTZ9Ka6PQUreocbb3g59W67BRJHCbJR/Q=;
+        b=acbYW7YE+8ECpmGGdYiITfa7SMrk6ds3mve+moGF3qsUDMQsMiy/pDigv/Ip6Yazfa
+         wK0GTteMwiIkQtDXvMpwPWoH4WAd4Ro4xz+2MNL5i2HCRARaPTKH6SMh/1qzAFmmE5Sq
+         26tX9b15n7L96Z9ZdOR3e66WoOnO2z1uqzHjy6amlSLVpW3gu5xK7ZwQTupjKlcb9F0r
+         jo2R3zmhsUcsVbA6qwSdodVVGaGqtxnnYVZ/Bkc5bB+DQ+V5as+Nc/eo/EQs/96Mlta8
+         UOLLGh9B9CxdEY3fjOLSLHD8+Bh4ORBaky3XNvQmIXfN1BtzEFgqwqZGtS2g3mTgUhab
+         P1Zw==
+X-Gm-Message-State: APjAAAVszXHpMGGcQNdjScp45+BtuXxw+R9E6Ezx+3hIVZMKatQzdkGu
+        3krs7zEforURsQtjHpiRBK4IOg==
+X-Google-Smtp-Source: APXvYqzw9lbQhNDv0ekPMfA2EXZ3h1DPrEkds6Rhks25RKRygdYWU5oojPbcTwB2ub63C9bWqfi8zA==
+X-Received: by 2002:a5d:6350:: with SMTP id b16mr6069265wrw.132.1578505703968;
+        Wed, 08 Jan 2020 09:48:23 -0800 (PST)
+Received: from [172.20.1.104] ([217.38.71.146])
+        by smtp.gmail.com with ESMTPSA id i8sm5449760wro.47.2020.01.08.09.48.22
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 08 Jan 2020 09:48:23 -0800 (PST)
+Subject: Re: [PATCH bpf-next v3 0/2] bpftool/libbpf: Add probe for large INSN
+ limit
+To:     Michal Rostecki <mrostecki@opensuse.org>, bpf@vger.kernel.org
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Stanislav Fomichev <sdf@google.com>,
+        Prashant Bhole <bhole_prashant_q7@lab.ntt.co.jp>,
+        Peter Wu <peter@lekensteyn.nl>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20200108162428.25014-1-mrostecki@opensuse.org>
+From:   Quentin Monnet <quentin.monnet@netronome.com>
+Openpgp: preference=signencrypt
+Autocrypt: addr=quentin.monnet@netronome.com; prefer-encrypt=mutual; keydata=
+ mQINBFnqRlsBEADfkCdH/bkkfjbglpUeGssNbYr/TD4aopXiDZ0dL2EwafFImsGOWmCIIva2
+ MofTQHQ0tFbwY3Ir74exzU9X0aUqrtHirQHLkKeMwExgDxJYysYsZGfM5WfW7j8X4aVwYtfs
+ AVRXxAOy6/bw1Mccq8ZMTYKhdCgS3BfC7qK+VYC4bhM2AOWxSQWlH5WKQaRbqGOVLyq8Jlxk
+ 2FGLThUsPRlXKz4nl+GabKCX6x3rioSuNoHoWdoPDKsRgYGbP9LKRRQy3ZeJha4x+apy8rAM
+ jcGHppIrciyfH38+LdV1FVi6sCx8sRKX++ypQc3fa6O7d7mKLr6uy16xS9U7zauLu1FYLy2U
+ N/F1c4F+bOlPMndxEzNc/XqMOM9JZu1XLluqbi2C6JWGy0IYfoyirddKpwzEtKIwiDBI08JJ
+ Cv4jtTWKeX8pjTmstay0yWbe0sTINPh+iDw+ybMwgXhr4A/jZ1wcKmPCFOpb7U3JYC+ysD6m
+ 6+O/eOs21wVag/LnnMuOKHZa2oNsi6Zl0Cs6C7Vve87jtj+3xgeZ8NLvYyWrQhIHRu1tUeuf
+ T8qdexDphTguMGJbA8iOrncHXjpxWhMWykIyN4TYrNwnyhqP9UgqRPLwJt5qB1FVfjfAlaPV
+ sfsxuOEwvuIt19B/3pAP0nbevNymR3QpMPRl4m3zXCy+KPaSSQARAQABtC1RdWVudGluIE1v
+ bm5ldCA8cXVlbnRpbi5tb25uZXRAbmV0cm9ub21lLmNvbT6JAj0EEwEIACcFAlnqRlsCGyMF
+ CQlmAYAFCwkIBwIGFQgJCgsCBBYCAwECHgECF4AACgkQNvcEyYwwfB7tChAAqFWG30+DG3Sx
+ B7lfPaqs47oW98s5tTMprA+0QMqUX2lzHX7xWb5v8qCpuujdiII6RU0ZhwNKh/SMJ7rbYlxK
+ qCOw54kMI+IU7UtWCej+Ps3LKyG54L5HkBpbdM8BLJJXZvnMqfNWx9tMISHkd/LwogvCMZrP
+ TAFkPf286tZCIz0EtGY/v6YANpEXXrCzboWEiIccXRmbgBF4VK/frSveuS7OHKCu66VVbK7h
+ kyTgBsbfyQi7R0Z6w6sgy+boe7E71DmCnBn57py5OocViHEXRgO/SR7uUK3lZZ5zy3+rWpX5
+ nCCo0C1qZFxp65TWU6s8Xt0Jq+Fs7Kg/drI7b5/Z+TqJiZVrTfwTflqPRmiuJ8lPd+dvuflY
+ JH0ftAWmN3sT7cTYH54+HBIo1vm5UDvKWatTNBmkwPh6d3cZGALZvwL6lo0KQHXZhCVdljdQ
+ rwWdE25aCQkhKyaCFFuxr3moFR0KKLQxNykrVTJIRuBS8sCyxvWcZYB8tA5gQ/DqNKBdDrT8
+ F9z2QvNE5LGhWDGddEU4nynm2bZXHYVs2uZfbdZpSY31cwVS/Arz13Dq+McMdeqC9J2wVcyL
+ DJPLwAg18Dr5bwA8SXgILp0QcYWtdTVPl+0s82h+ckfYPOmkOLMgRmkbtqPhAD95vRD7wMnm
+ ilTVmCi6+ND98YblbzL64YG5Ag0EWepGWwEQAM45/7CeXSDAnk5UMXPVqIxF8yCRzVe+UE0R
+ QQsdNwBIVdpXvLxkVwmeu1I4aVvNt3Hp2eiZJjVndIzKtVEoyi5nMvgwMVs8ZKCgWuwYwBzU
+ Vs9eKABnT0WilzH3gA5t9LuumekaZS7z8IfeBlZkGXEiaugnSAESkytBvHRRlQ8b1qnXha3g
+ XtxyEqobKO2+dI0hq0CyUnGXT40Pe2woVPm50qD4HYZKzF5ltkl/PgRNHo4gfGq9D7dW2OlL
+ 5I9qp+zNYj1G1e/ytPWuFzYJVT30MvaKwaNdurBiLc9VlWXbp53R95elThbrhEfUqWbAZH7b
+ ALWfAotD07AN1msGFCES7Zes2AfAHESI8UhVPfJcwLPlz/Rz7/K6zj5U6WvH6aj4OddQFvN/
+ icvzlXna5HljDZ+kRkVtn+9zrTMEmgay8SDtWliyR8i7fvnHTLny5tRnE5lMNPRxO7wBwIWX
+ TVCoBnnI62tnFdTDnZ6C3rOxVF6FxUJUAcn+cImb7Vs7M5uv8GufnXNUlsvsNS6kFTO8eOjh
+ 4fe5IYLzvX9uHeYkkjCNVeUH5NUsk4NGOhAeCS6gkLRA/3u507UqCPFvVXJYLSjifnr92irt
+ 0hXm89Ms5fyYeXppnO3l+UMKLkFUTu6T1BrDbZSiHXQoqrvU9b1mWF0CBM6aAYFGeDdIVe4x
+ ABEBAAGJAiUEGAEIAA8FAlnqRlsCGwwFCQlmAYAACgkQNvcEyYwwfB4QwhAAqBTOgI9k8MoM
+ gVA9SZj92vYet9gWOVa2Inj/HEjz37tztnywYVKRCRfCTG5VNRv1LOiCP1kIl/+crVHm8g78
+ iYc5GgBKj9O9RvDm43NTDrH2uzz3n66SRJhXOHgcvaNE5ViOMABU+/pzlg34L/m4LA8SfwUG
+ ducP39DPbF4J0OqpDmmAWNYyHh/aWf/hRBFkyM2VuizN9cOS641jrhTO/HlfTlYjIb4Ccu9Y
+ S24xLj3kkhbFVnOUZh8celJ31T9GwCK69DXNwlDZdri4Bh0N8DtRfrhkHj9JRBAun5mdwF4m
+ yLTMSs4Jwa7MaIwwb1h3d75Ws7oAmv7y0+RgZXbAk2XN32VM7emkKoPgOx6Q5o8giPRX8mpc
+ PiYojrO4B4vaeKAmsmVer/Sb5y9EoD7+D7WygJu2bDrqOm7U7vOQybzZPBLqXYxl/F5vOobC
+ 5rQZgudR5bI8uQM0DpYb+Pwk3bMEUZQ4t497aq2vyMLRi483eqT0eG1QBE4O8dFNYdK5XUIz
+ oHhplrRgXwPBSOkMMlLKu+FJsmYVFeLAJ81sfmFuTTliRb3Fl2Q27cEr7kNKlsz/t6vLSEN2
+ j8x+tWD8x53SEOSn94g2AyJA9Txh2xBhWGuZ9CpBuXjtPrnRSd8xdrw36AL53goTt/NiLHUd
+ RHhSHGnKaQ6MfrTge5Q0h5A=
+Message-ID: <01feb8cd-6e24-91d8-4c78-a489c1170965@netronome.com>
+Date:   Wed, 8 Jan 2020 17:48:22 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.1
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: 228c3561-b455-49a9-8a93-08d794612ce3
-X-MS-Exchange-CrossTenant-originalarrivaltime: 08 Jan 2020 17:35:37.9644
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: gveAG0jGFgCs1Z+a8OdOtpSYeo5QtfRiaIawMQM/Ru8dPDxfFPwG6n3bdKpWE7WfG0QheTFTvE+G1MV96fVWnQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB3080
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
- definitions=2020-01-08_05:2020-01-08,2020-01-08 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 malwarescore=0
- suspectscore=0 bulkscore=0 lowpriorityscore=0 mlxscore=0
- priorityscore=1501 impostorscore=0 adultscore=0 spamscore=0 clxscore=1015
- mlxlogscore=771 phishscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-1910280000 definitions=main-2001080142
-X-FB-Internal: deliver
+In-Reply-To: <20200108162428.25014-1-mrostecki@opensuse.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-GB
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+2020-01-08 17:23 UTC+0100 ~ Michal Rostecki <mrostecki@opensuse.org>
+> This series implements a new BPF feature probe which checks for the
+> commit c04c0d2b968a ("bpf: increase complexity limit and maximum program
+> size"), which increases the maximum program size to 1M. It's based on
+> the similar check in Cilium, although Cilium is already aiming to use
+> bpftool checks and eventually drop all its custom checks.
+> 
+> Examples of outputs:
+> 
+> # bpftool feature probe
+> [...]
+> Scanning miscellaneous eBPF features...
+> Large complexity limit and maximum program size (1M) is available
+> 
+> # bpftool feature probe macros
+> [...]
+> /*** eBPF misc features ***/
+> #define HAVE_HAVE_LARGE_INSN_LIMIT
+> 
+> # bpftool feature probe -j | jq '.["misc"]'
+> {
+>   "have_large_insn_limit": true
+> }
+> 
+> v1 -> v2:
+> - Test for 'BPF_MAXINSNS + 1' number of total insns.
+> - Remove info about current 1M limit from probe's description.
+> 
+> v2 -> v3:
+> - Remove the "complexity" word from probe's description.
 
+Series looks good to me, thanks!
 
-> On Jan 7, 2020, at 11:25 PM, Alexei Starovoitov <ast@kernel.org> wrote:
->=20
-> In case kernel doesn't support static/global/extern liknage of BTF_KIND_F=
-UNC
-                                                     ^^^ linkage
-> sanitize BTF produced by llvm.
->=20
-> Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-
-Acked-by: Song Liu <songliubraving@fb.com>
-
+Reviewed-by: Quentin Monnet <quentin.monnet@netronome.com>
