@@ -2,117 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C724F134376
-	for <lists+netdev@lfdr.de>; Wed,  8 Jan 2020 14:09:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B62A1134399
+	for <lists+netdev@lfdr.de>; Wed,  8 Jan 2020 14:15:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726947AbgAHNJS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jan 2020 08:09:18 -0500
-Received: from mail-qk1-f193.google.com ([209.85.222.193]:41620 "EHLO
-        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726683AbgAHNJS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jan 2020 08:09:18 -0500
-Received: by mail-qk1-f193.google.com with SMTP id x129so2498584qke.8
-        for <netdev@vger.kernel.org>; Wed, 08 Jan 2020 05:09:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=T1UOaKySeFJ0zKePKXqAI7V9b9QgvGnZL/Q3FtxcxRw=;
-        b=hooMOcE6opMbVdDJ7nmkFDN8Zp6CmRzc5r5pztAQmfT0T6Q1tdPnQ46RLDwiG02Day
-         Glb6+fWlPHqMGE9GXQWAQomFlk35zPedNaVupcNKQiNjMJXS4GUA/zJybWpFVHH9EkVZ
-         ixPvXakHhWguyTMogEGL06x+MLJtSPzn0mPEzm4240ZDFOvhNWXEK/XwxfZqgJz4G6gn
-         MlvgbeGwRwSubDfzRhlgQrFwi64Bhyo45xPY6tHjw9N8RDxY57R4G3aeOW/v7JfFqicR
-         pAbN58Z5EtHvqqLRPKnlkje8EyXgzlNToN4DZjPiMXLCH/G5TR3xSJDJv4JZMqrEACj3
-         V3rQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=T1UOaKySeFJ0zKePKXqAI7V9b9QgvGnZL/Q3FtxcxRw=;
-        b=c7N1QPvIK1U6IZfPYjd77emfs6sl/EuTrA5F4bx5nof84aE8Hv32E0kYDM18rp9L+T
-         RFXG6Ekn6vHp9GUWXKaFWGNNkL+76cVRFBcwSb32kYQ7h+/xN+8f7LE+lJhx8qE5BFkI
-         KWP/maHUovlQKLmhmOJcYVr4FnRZULpNbVnGuZ2GgK4s/A/W8sKuG2O259RUewCWro0c
-         Aq6/4ulxeZmX/2mPSBSvixU+RdmL8jyoW727eeCeN6AMN6Cvzh5rp6i7BIszfnY5lVlt
-         VfeKX1ZBR74jIN5RZVLz7YUEeU3loLKvyGJozMnm5VprOuve/xMHu69v2mPpLw25wWmr
-         dZbg==
-X-Gm-Message-State: APjAAAUW5P9gisTz7dyozIKReY4QDtLylPjrD2USHpKmLJWcqxOOSk83
-        rOjt4sThs6hKKYqwOKLJCsYRjTP1dqA=
-X-Google-Smtp-Source: APXvYqzc8kfgPN9AN9MgcitXkpdCWilW0meQ9p/ArvJ2UJspNn9/Jjt6TwseF4fe6UUI8HtF11Z8UA==
-X-Received: by 2002:a37:66c2:: with SMTP id a185mr4060253qkc.211.1578488957243;
-        Wed, 08 Jan 2020 05:09:17 -0800 (PST)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id s11sm1325512qkg.99.2020.01.08.05.09.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 08 Jan 2020 05:09:17 -0800 (PST)
-Date:   Wed, 8 Jan 2020 05:09:12 -0800
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Simon Horman <simon.horman@netronome.com>,
+        id S1727039AbgAHNPt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jan 2020 08:15:49 -0500
+Received: from mout.kundenserver.de ([212.227.126.131]:58903 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726087AbgAHNPs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jan 2020 08:15:48 -0500
+Received: from threadripper.lan ([149.172.19.189]) by mrelayeu.kundenserver.de
+ (mreue010 [212.227.15.129]) with ESMTPA (Nemesis) id
+ 1MA7X0-1j0m1Z2aB0-00Bg3r; Wed, 08 Jan 2020 14:15:39 +0100
+From:   Arnd Bergmann <arnd@arndb.de>
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>,
+        "David S. Miller" <davem@davemloft.net>,
         John Hurley <john.hurley@netronome.com>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        oss-drivers@netronome.com, Networking <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] netronome: fix ipv6 link error
-Message-ID: <20200108050912.6a07008b@cakuba.netronome.com>
-In-Reply-To: <CAK8P3a27tFJpMeEuJDQWCHvGyETjM+XbPKenQwroxjc8Qpw=TQ@mail.gmail.com>
-References: <20200107200659.3538375-1-arnd@arndb.de>
-        <20200107124417.5239a6cf@cakuba.netronome.com>
-        <CAK8P3a27tFJpMeEuJDQWCHvGyETjM+XbPKenQwroxjc8Qpw=TQ@mail.gmail.com>
-Organization: Netronome Systems, Ltd.
+        Simon Horman <simon.horman@netronome.com>
+Cc:     Arnd Bergmann <arnd@arndb.de>, Jiri Pirko <jiri@mellanox.com>,
+        oss-drivers@netronome.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] [net-next] [v2] netronome: fix ipv6 link error
+Date:   Wed,  8 Jan 2020 14:15:15 +0100
+Message-Id: <20200108131534.1874078-1-arnd@arndb.de>
+X-Mailer: git-send-email 2.20.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Provags-ID: V03:K1:SpGETPyIfycO9sZ78r+DE7z3+PLuGaU6+CnTGR2HBoxCavh3bUe
+ Pj8YTdBKSCrQs158706QpszFvboth3TO1B3LEK0artEqoMHBrdbCKKs82khvm4LPKtPfgHl
+ cBSOv3fj2NrOS+g5k+KmLEdXklyjbvxQ26Ac9asOXJ1Oc/ileJZDkSzYtiieoDa6Gj5bpIk
+ mv0NFnKnGGI6iMVMWzVEg==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:KeWPqLVjJKk=:tlMZegCFEnndMuUouPuRYf
+ /A3JtqJf2W90Xr/9yVnnwMJ6wTlLOpXFhkDGNm7fWYoOl7jSvVOkAnbmAwqyWq0w12iO/5aBP
+ tmFtCZMEsHJ5h5sN444V+7GVOuT+xAXIZDIaceU39aUgBsurltpkdNUqeCXntifg6AhiR0uWn
+ 0PYQtdSqp4uriQ695RN5zgqhrc4HXPVwlgfZlRe9SmNp33rL5C74Z/KPzI1OmjSUoXm1v9T/j
+ wp0UTpMKvDXWcgs24MmR11UKS2nSfWzV+RdgRKojP0ROLthM/wlKhjrj4721ZnOBF7n6gmdDk
+ E3GjAWRDM/5tarEN119HK10Gf72oeoLm/IWLDP7+NwpsxscqiI8pGK5LnCHcD9mn1Y+eaZrx3
+ WUA7TzsjQWN67RJ8HKDXyr4tU2uOOFGiDmFxdOjA8OCiVigvLCm2Z91j0sWc/YX+IjTxShfCf
+ 2N4l9M7xhZkSgPtIYjb9dqhDb8yYED9WWc7ENfq/3+ZvKwZGGwop8vZiJDVlwmGXKN5OvXcPG
+ 7dUXnHy1vqSo8O/EjlZUJeRV1aiy+7FRVkt/IA9SKdLRKH+x9gCqNP1ttCzMMIOen7YhWNyn5
+ e/kLChVKG2B+e6Bgj+plTxrd2wdnx5hW9d2GilABDZQAvSaQTCdP/AtDIX/1uk2IhV75tsVLA
+ lt7j5NqtE+DzX4oKQ+27l8gD+7myMZze/8TX52SHZmJILE6704zf+1taezHFBfS4PJxTxUKbi
+ wFZwJi2WS11U2iS6EHng0kZ2UKBpSnvuTtzSgT/pGOi2lg7SL09KEhBgFTd3U7tXWI/qNuzej
+ 2Wx90lKe9E94CSG99L8b/8kJiGLwk8hudtT/2W908MNOejqeG7BTqErKn1Rr1k1gN5SjUuyN6
+ so9kgKE1IR63OuV3nk0Q==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 7 Jan 2020 23:01:50 +0100, Arnd Bergmann wrote:
-> On Tue, Jan 7, 2020 at 9:44 PM Jakub Kicinski wrote:
-> > On Tue,  7 Jan 2020 21:06:40 +0100, Arnd Bergmann wrote:  
-> > > When the driver is built-in but ipv6 is a module, the flower
-> > > support produces a link error:
-> > >
-> > > drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.o: In function `nfp_tunnel_keep_alive_v6':
-> > > tunnel_conf.c:(.text+0x2aa8): undefined reference to `nd_tbl'  
-> >
-> > Damn, I guess the v2 of that patch set did not solve _all_ v6 linking
-> > issues :/ Thanks for the patch.
-> >  
-> > > Add a Kconfig dependency to avoid that configuration.
-> > >
-> > > Fixes: 9ea9bfa12240 ("nfp: flower: support ipv6 tunnel keep-alive messages from fw")
-> > > Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-> > > ---
-> > >  drivers/net/ethernet/netronome/Kconfig | 1 +
-> > >  1 file changed, 1 insertion(+)
-> > >
-> > > diff --git a/drivers/net/ethernet/netronome/Kconfig b/drivers/net/ethernet/netronome/Kconfig
-> > > index bac5be4d4f43..dcb02ce28460 100644
-> > > --- a/drivers/net/ethernet/netronome/Kconfig
-> > > +++ b/drivers/net/ethernet/netronome/Kconfig
-> > > @@ -31,6 +31,7 @@ config NFP_APP_FLOWER
-> > >       bool "NFP4000/NFP6000 TC Flower offload support"
-> > >       depends on NFP
-> > >       depends on NET_SWITCHDEV
-> > > +     depends on IPV6 != m || NFP =m  
-> >
-> > Could we perhaps do the more standard:
-> >
-> >         depends on IPV6 || IPV6=n  
-> 
-> That would have to be on CONFIG_NFP instead of CONFIG_NFP_APP_FLOWER
-> then, making the entire driver a module if IPV6=m but always allowing
-> CONFIG_NFP_APP_FLOWER.
+When the driver is built-in but ipv6 is a module, the flower
+support produces a link error:
 
-Ah, indeed.
+drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.o: In function `nfp_tunnel_keep_alive_v6':
+tunnel_conf.c:(.text+0x2aa8): undefined reference to `nd_tbl'
 
-> > The whitespace around = and != seems a little random as is..  
-> 
-> Yep, my mistake. I can send a fixed version, please let me know which
-> version you want, or fix it up yourself if you find that easier.
+Add a Kconfig dependency to avoid that configuration.
 
-Adding the dependency just to NFP_APP_FLOWER seems clean, please just
-fix the whitespace and feel free to add my Acked-by to v2.
+Fixes: 9ea9bfa12240 ("nfp: flower: support ipv6 tunnel keep-alive messages from fw")
+Acked-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+---
+v2: whitespace fix
+---
+ drivers/net/ethernet/netronome/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/net/ethernet/netronome/Kconfig b/drivers/net/ethernet/netronome/Kconfig
+index bac5be4d4f43..a3f68a718813 100644
+--- a/drivers/net/ethernet/netronome/Kconfig
++++ b/drivers/net/ethernet/netronome/Kconfig
+@@ -31,6 +31,7 @@ config NFP_APP_FLOWER
+ 	bool "NFP4000/NFP6000 TC Flower offload support"
+ 	depends on NFP
+ 	depends on NET_SWITCHDEV
++	depends on IPV6!=m || NFP=m
+ 	default y
+ 	---help---
+ 	  Enable driver support for TC Flower offload on NFP4000 and NFP6000.
+-- 
+2.20.0
+
