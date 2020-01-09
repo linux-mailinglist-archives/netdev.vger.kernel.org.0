@@ -2,212 +2,213 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E811135FFC
-	for <lists+netdev@lfdr.de>; Thu,  9 Jan 2020 19:10:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AFE4F136021
+	for <lists+netdev@lfdr.de>; Thu,  9 Jan 2020 19:24:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388411AbgAISJ6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jan 2020 13:09:58 -0500
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:9220 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728653AbgAISJ6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jan 2020 13:09:58 -0500
-Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 009I9fg9026657;
-        Thu, 9 Jan 2020 10:09:41 -0800
+        id S2388482AbgAISYF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jan 2020 13:24:05 -0500
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:34978 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1730924AbgAISYE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jan 2020 13:24:04 -0500
+Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 009INSHm004291;
+        Thu, 9 Jan 2020 10:23:47 -0800
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
  : date : message-id : references : in-reply-to : content-type : content-id
  : content-transfer-encoding : mime-version; s=facebook;
- bh=x2ocn6toyw87uXf7LZGL2A6O8oO9dWZ+0wfkwomDkJo=;
- b=LNgSgcgHGGHCOYAl/st8WVlPkFWCfjhRFb3J4tkvBUZLaO00W37qijResFqdMV/B7AsG
- lq3aVpRNnKsGUNrlehDhRGtUHZFrgxgoiKGA1Ui8nv1wEEEZQHQHNDrlusP5az4HAucT
- X1Dmn6ZP4Wz6qg+7qKfFt4ZMoO6ixKqxn7A= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 2xe2exta27-1
+ bh=SAgpDlm7p2DSxMVGzvsogbe+eAwoSRC/ZWVbKOYbDlE=;
+ b=pPh+gZ65PguBsXBEMotXkEZILWEQMtGcGiZUC48HP47Q+oVQ2WnJ5anq8oH6kGJlMqUN
+ iGKYdigJX3ka8A1YRuUxll1T/1AssszTZmeL6mFsT6ZXm+GCTSCeWUeAAnlGemfGXeQ8
+ RxGwuVdKD1csRYjXscrxA2JL/qiRQdRG5j8= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com with ESMTP id 2xdrj8mv1y-11
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Thu, 09 Jan 2020 10:09:41 -0800
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (100.104.31.183)
- by o365-in.thefacebook.com (100.104.36.102) with Microsoft SMTP Server
+        Thu, 09 Jan 2020 10:23:47 -0800
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (100.104.98.9) by
+ o365-in.thefacebook.com (100.104.94.228) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Thu, 9 Jan 2020 10:09:11 -0800
+ 15.1.1779.2; Thu, 9 Jan 2020 10:23:44 -0800
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=k3JpGLLDoW3otAYu7gNyCGWK6z5++722QX9ulq7oTEbu+XcRe7BqSOkLByg1BOG5rvf5WeFxvu38nACrWaDmEVlE/xyqkc+xnVzXyyKpYBZ8AKa6j7tn583eo44WT2T4rHYfkC/dWQaO0LqzfRRIKQmlQltdnosdHEruuTlFn/v909TDHhOQKHA3xmRDTU4qanBngY3GHBEjh+xiyQV/4h8+InbZ//YZl/2lJ4r3m7hf6EuEeEGR+b4acEvQrTXPE+L3FfumGKUGNpa2R/oDiYA1Smh5zxkOoMcYQgWeS4F2FLBzu1V5BR9vxky27ZQUIO53+k7wTEPIKUEKTePZDg==
+ b=ZSxiNNunp9ke6FI6QJ6jXBFw7tjSU7Yh5U0safI7LY7xzl7ghlgdgrH2SBMjUBrcU0RwkSCz4GnG4Bu2OV3yxGaNU0rm20Pg0CSowZbntO74GgVr5/ful+QMNo6CcLOjU6WTEC7ekVlDC/+fIyameuguJxKUu9XjwM4Uehi9+DZkdetnU60y75iciWkSOzoSCV6DqLumgBPylFtFcOimrl0aWXcGjIkX4lhB6BlBbPNQwvr/UF4jO6yNpWwkZeO0DovnVpnfzz79fSTS7EBVM2x0tsdaZBOaoRFKquN0Zoz6ZvaP2KSL8nlrcHIBLQpPuoGK5GyKnNoicTCPy8Yo2w==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=x2ocn6toyw87uXf7LZGL2A6O8oO9dWZ+0wfkwomDkJo=;
- b=Nc5dItn1y23bOMwHxkt/PK6EWJeLUZ3htODe2WpbQ/5jz4GGNtIj4ci1S1U1T9mLwC8qiqormKvCA3tyowomcmw2IlQOiTxW5mAksTaRKSiX031ee3mbhJIaSk/qYgRumNfB/Zy2mgSqL7EfE9YCtnhiLIiVWvlcwmiMMosiO+ECQSxO24cEOL4/cSbJnGkpHorMwvcC+mvdafwGD3/OvmfrdAL8OLuM4PSUKMaBcG3ucTFjLyNW9Q1ByDQq87O9J+GdWqre8e09nSyU63rwJ032Xv4RCbadEuuwy2w+HaEgzRKZGoqfoK86AWc41Keo11sEnGCAKECOFBMMOBGAhQ==
+ bh=SAgpDlm7p2DSxMVGzvsogbe+eAwoSRC/ZWVbKOYbDlE=;
+ b=ZCna0LwENllldUpQ/z24oTu0GoGEm3dRVgdAdL4dJTSSoMWUSEf/aWjkFa5SmGmHXwKmLdi6qGJviSmLkbN8CMbvFz6uWj0JQD2fHefkVxDWnTw8BcjcSSoyV+4qWWTzbpopkLJFl1whS4A+SYsUNif7Vxl8/ZpKwfg8/vTIcdcR2uTXK4/bkM1GClckrLnY1OEy3OO47392vqH+eBXvJeAr9OBDmr2BMA52ag+COSODud3qysL24xOV8VXgcVuUQztB3YuKIRTlfLnrF7eFbacxBZfj7CBGsFfPF+UteGrFiV6E/V1z/zDGjmDf0zGB3peUE5ogV8bNS6F3l7Kryg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
  header.d=fb.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
  s=selector2-fb-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=x2ocn6toyw87uXf7LZGL2A6O8oO9dWZ+0wfkwomDkJo=;
- b=Z+uykXygawIqEwbS6Xh27tfUqLFzvB6PS43idsV5g0Gnz/91AYOKNGQ73FXGEifcVpzV+YC9YY6yYbm8nVZh2svlqfNOaepJP7d9ZnW7LTmYdaqNEuOcVf308j0GDWcfxEOkmTxjvObokbyMg11tVTyHwykdwfEKhApr9BGCd4I=
-Received: from BYAPR15MB3029.namprd15.prod.outlook.com (20.178.238.208) by
- BYAPR15MB3461.namprd15.prod.outlook.com (20.179.57.205) with Microsoft SMTP
+ bh=SAgpDlm7p2DSxMVGzvsogbe+eAwoSRC/ZWVbKOYbDlE=;
+ b=H05DaeKLuXukld5S1Mphx6+1Mjif+6TqM5sQ6ESCz13iD9PJnGBVFrrE3k/FvSNdTOQQlarjCLiz68fq5aB2xHvct6Fx3O/gS0kyF2fdrJl8+nV4eI4JLfxQqJUu7IO0QQFciIJ9GHcI2m6DHiS1Y1Ju41B2W0+siVIa0lzFdZI=
+Received: from MN2PR15MB3213.namprd15.prod.outlook.com (20.179.21.76) by
+ MN2PR15MB2672.namprd15.prod.outlook.com (20.179.145.26) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2623.8; Thu, 9 Jan 2020 18:09:08 +0000
-Received: from BYAPR15MB3029.namprd15.prod.outlook.com
- ([fe80::3541:85d8:c4c8:760d]) by BYAPR15MB3029.namprd15.prod.outlook.com
- ([fe80::3541:85d8:c4c8:760d%3]) with mapi id 15.20.2602.017; Thu, 9 Jan 2020
- 18:09:08 +0000
-From:   Song Liu <songliubraving@fb.com>
-To:     Alexei Starovoitov <ast@kernel.org>
-CC:     David Miller <davem@davemloft.net>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+ 15.20.2623.9; Thu, 9 Jan 2020 18:23:43 +0000
+Received: from MN2PR15MB3213.namprd15.prod.outlook.com
+ ([fe80::6d1e:f2f7:d36:a42f]) by MN2PR15MB3213.namprd15.prod.outlook.com
+ ([fe80::6d1e:f2f7:d36:a42f%4]) with mapi id 15.20.2623.011; Thu, 9 Jan 2020
+ 18:23:43 +0000
+Received: from kafai-mbp.dhcp.thefacebook.com (2620:10d:c090:200::1:f006) by MWHPR1401CA0020.namprd14.prod.outlook.com (2603:10b6:301:4b::30) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2623.10 via Frontend Transport; Thu, 9 Jan 2020 18:23:42 +0000
+From:   Martin Lau <kafai@fb.com>
+To:     Lorenz Bauer <lmb@cloudflare.com>
+CC:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Joe Stringer <joe@isovalent.com>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        Kernel Team <Kernel-team@fb.com>
-Subject: Re: [PATCH v2 bpf-next 3/7] bpf: Introduce function-by-function
- verification
-Thread-Topic: [PATCH v2 bpf-next 3/7] bpf: Introduce function-by-function
- verification
-Thread-Index: AQHVxrdeNOx9FMXwt0uTmbe0Gk8rjqfiolYA
-Date:   Thu, 9 Jan 2020 18:09:08 +0000
-Message-ID: <B7A2A8DD-B070-4F80-A9A0-6570260D4346@fb.com>
-References: <20200109063745.3154913-1-ast@kernel.org>
- <20200109063745.3154913-4-ast@kernel.org>
-In-Reply-To: <20200109063745.3154913-4-ast@kernel.org>
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "kernel-team@cloudflare.com" <kernel-team@cloudflare.com>,
+        "edumazet@google.com" <edumazet@google.com>
+Subject: Re: [PATCH bpf 1/1] net: bpf: don't leak time wait and request
+ sockets
+Thread-Topic: [PATCH bpf 1/1] net: bpf: don't leak time wait and request
+ sockets
+Thread-Index: AQHVxuQpbYb7rSAgA0egZ1v2EYm9DqfipgaA
+Date:   Thu, 9 Jan 2020 18:23:43 +0000
+Message-ID: <20200109182335.um72tp73krvvubnl@kafai-mbp.dhcp.thefacebook.com>
+References: <20200109115749.12283-1-lmb@cloudflare.com>
+ <20200109115749.12283-2-lmb@cloudflare.com>
+In-Reply-To: <20200109115749.12283-2-lmb@cloudflare.com>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
-x-mailer: Apple Mail (2.3608.40.2.2.4)
-x-originating-ip: [2620:10d:c090:200::455d]
+x-clientproxiedby: MWHPR1401CA0020.namprd14.prod.outlook.com
+ (2603:10b6:301:4b::30) To MN2PR15MB3213.namprd15.prod.outlook.com
+ (2603:10b6:208:3d::12)
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [2620:10d:c090:200::1:f006]
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: d2c6a583-b64e-474d-2dfc-08d7952f05b1
-x-ms-traffictypediagnostic: BYAPR15MB3461:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <BYAPR15MB34616CE501C4565B542C3109B3390@BYAPR15MB3461.namprd15.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8882;
+x-ms-office365-filtering-correlation-id: 705e8ce4-b115-4f67-ffb9-08d795310eed
+x-ms-traffictypediagnostic: MN2PR15MB2672:
+x-microsoft-antispam-prvs: <MN2PR15MB26723206BD7259DB55CA8626D5390@MN2PR15MB2672.namprd15.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:4303;
 x-forefront-prvs: 02778BF158
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(366004)(39860400002)(136003)(396003)(346002)(376002)(189003)(199004)(53546011)(6506007)(186003)(6486002)(2906002)(5660300002)(54906003)(81166006)(6916009)(8936002)(15650500001)(8676002)(81156014)(71200400001)(2616005)(6512007)(4326008)(86362001)(66556008)(66946007)(66476007)(478600001)(66446008)(316002)(64756008)(76116006)(36756003)(33656002)(91956017);DIR:OUT;SFP:1102;SCL:1;SRVR:BYAPR15MB3461;H:BYAPR15MB3029.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(136003)(396003)(39860400002)(346002)(376002)(366004)(199004)(189003)(51914003)(8676002)(81166006)(81156014)(86362001)(316002)(7696005)(6916009)(5660300002)(4326008)(6506007)(7416002)(1076003)(66946007)(186003)(52116002)(8936002)(16526019)(2906002)(66556008)(64756008)(66446008)(54906003)(478600001)(66476007)(71200400001)(55016002)(9686003);DIR:OUT;SFP:1102;SCL:1;SRVR:MN2PR15MB2672;H:MN2PR15MB3213.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
 received-spf: None (protection.outlook.com: fb.com does not designate
  permitted sender hosts)
 x-ms-exchange-senderadcheck: 1
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: B8doMEOIdPMepTfoNmJodOUl6/5MdxoX3eSUIfWJg3gJ+0MNKcjvPmHoe7CGNX64JfDC//2XXP6OYVmyXcojKATzD/s40utYhxG3NfCqqyA3QnTN6qr7SFzJM74DopkBCQKV8EU56zPubnSvh+odyZRkCbYTjavknwqr1cbyW3eXhSMoGO/zxhW02sXJA9itCrteyI13FDpJ8q61NZcBRjO+4ASVXyv8v/5LeSAj1zpnhrdTKlfGR9+e1YPqf1U0r7yz/GZ7PKCbt2UQHdmzpMLMvv8e3ERjBZepUrKTA83UU4sDK8uGRYuMC44yeh1MxFQVyCcgXKSM3IPTBHED+Y01Y2Jgl5+c1qCeGfIEDY/XVDo7VZAMShZntlsG3s4IGDkHmHoFYqIev2jou1NDuKTNaZtDsuiaskZfiNz6b03Av7XkDIuvnlBUf7/pjU6N
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <32FBEBA2318D274DB30CDF6D9DBC69FD@namprd15.prod.outlook.com>
+x-microsoft-antispam-message-info: hTBusLA8VCTBV0YzD/Iex34Ab+nbWrrlm84584iUkutl2gkNwWqbzuRXbyRzaM5t5RZkxbPKcAFpeqSQRAO4YOawe+nsHDiX3bZkeCSK8Qemf04hoVpc/WFR8zsMg8caWxZDKy4Apir31r+9usoxT7h6gRFGIropVgXL/NR+7skjx4sRY28A1n0U+W/Jz99S1XjlkNL8+w2+A4d8bqAnfAHmckpP3FHzN0vh956J9sA3+UqwrZPJiVAyHIqZcT/ebprljGAFqLn5xBJ451PBSiLmv7OTkxEcwLj9NQphfwEAyTTTnM3vC8K6wIqNEcadHJEcvU+qJFDLf5vt0A0rxYgm2zkUZn6EavArmk4tZlr1QdDjmLNASsoc5fz2HWCjSkL8ctWjUglO2+dvJurJjAyWORBbZEigjK8UzsCKC7x3n2sPdSRjU+aZ+qvo04+Qnm9jQnhTtiVu6pxeV2XoOJo7J3hg4eECRDFfXPnK40o/jbSWlUALhd95jgjEjNAz
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="iso-8859-1"
+Content-ID: <9A8B39E549285845877F2A261FD20EE5@namprd15.prod.outlook.com>
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: d2c6a583-b64e-474d-2dfc-08d7952f05b1
-X-MS-Exchange-CrossTenant-originalarrivaltime: 09 Jan 2020 18:09:08.6514
+X-MS-Exchange-CrossTenant-Network-Message-Id: 705e8ce4-b115-4f67-ffb9-08d795310eed
+X-MS-Exchange-CrossTenant-originalarrivaltime: 09 Jan 2020 18:23:43.4338
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: gZCDQV1vDooZGZsARp8Vw8xX0lUdQN9nnzyogSjf5diX4MNvwJHAjiPKXGWjjQKxz01/sxwyTtmw4ORnmPtd6g==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB3461
+X-MS-Exchange-CrossTenant-userprincipalname: x7mltBreaZu5TReU/IVjkAG9ey9D6eikYV848Tc2z/UxriMYaTpzkC40ZuJrKN1x
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR15MB2672
 X-OriginatorOrg: fb.com
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
  definitions=2020-01-09_03:2020-01-09,2020-01-09 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 phishscore=0
- impostorscore=0 spamscore=0 suspectscore=0 malwarescore=0
- priorityscore=1501 mlxlogscore=604 mlxscore=0 clxscore=1015 adultscore=0
- bulkscore=0 lowpriorityscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-1910280000 definitions=main-2001090150
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 suspectscore=0
+ adultscore=0 bulkscore=0 impostorscore=0 lowpriorityscore=0 phishscore=0
+ clxscore=1011 mlxscore=0 mlxlogscore=946 priorityscore=1501 spamscore=0
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-1910280000 definitions=main-2001090151
 X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-> On Jan 8, 2020, at 10:37 PM, Alexei Starovoitov <ast@kernel.org> wrote:
-
-[...]
+On Thu, Jan 09, 2020 at 11:57:48AM +0000, Lorenz Bauer wrote:
+> It's possible to leak time wait and request sockets via the following
+> BPF pseudo code:
+> =A0
+>   sk =3D bpf_skc_lookup_tcp(...)
+>   if (sk)
+>     bpf_sk_release(sk)
+>=20
+> If sk->sk_state is TCP_NEW_SYN_RECV or TCP_TIME_WAIT the refcount taken
+> by bpf_skc_lookup_tcp is not undone by bpf_sk_release. This is because
+> sk_flags is re-used for other data in both kinds of sockets. The check
+Thanks for the report.
 
 >=20
-> Note that the stack limit of 512 still applies to the call chain regardle=
-ss whether
-> functions were static or global. The nested level of 8 also still applies=
-. The
-> same recursion prevention checks are in place as well.
+>   !sock_flag(sk, SOCK_RCU_FREE)
 >=20
-> The type information and static/global kind is preserved after the verifi=
-cation
-> hence in the above example global function f2() and f3() can be replaced =
-later
-> by equivalent functions with the same types that are loaded and verified =
-later
-> without affecting safety of this main() program. Such replacement (re-lin=
-king)
-> of global functions is a subject of future patches.
+> therefore returns a bogus result.
 >=20
-> Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-
-Acked-by: Song Liu <songliubraving@fb.com>
-
-With one nit below.=20
-
-[...]
-
-> +
-> +static int do_check_common(struct bpf_verifier_env *env, int subprog)
+> Introduce a helper to account for this complication, and call it from
+> the necessary places.
+>=20
+> Fixes: edbf8c01de5a ("bpf: add skc_lookup_tcp helper")
+> Fixes: f7355a6c0497 ("bpf: Check sk_fullsock() before returning from bpf_=
+sk_lookup()")
+> Signed-off-by: Lorenz Bauer <lmb@cloudflare.com>
+> ---
+>  net/core/filter.c | 17 +++++++++++------
+>  1 file changed, 11 insertions(+), 6 deletions(-)
+>=20
+> diff --git a/net/core/filter.c b/net/core/filter.c
+> index 42fd17c48c5f..d98dc4526d82 100644
+> --- a/net/core/filter.c
+> +++ b/net/core/filter.c
+> @@ -5266,6 +5266,14 @@ __bpf_skc_lookup(struct sk_buff *skb, struct bpf_s=
+ock_tuple *tuple, u32 len,
+>  	return sk;
+>  }
+> =20
+> +static void __bpf_sk_release(struct sock *sk)
 > +{
-> +	struct bpf_verifier_state *state;
-> +	struct bpf_reg_state *regs;
-> +	int ret, i;
-> +
-> +	env->prev_linfo =3D NULL;
-> +	env->pass_cnt++;
-> +
-> +	state =3D kzalloc(sizeof(struct bpf_verifier_state), GFP_KERNEL);
-> +	if (!state)
-> +		return -ENOMEM;
-> +	state->curframe =3D 0;
-> +	state->speculative =3D false;
-> +	state->branches =3D 1;
-> +	state->frame[0] =3D kzalloc(sizeof(struct bpf_func_state), GFP_KERNEL);
-> +	if (!state->frame[0]) {
-> +		kfree(state);
-> +		return -ENOMEM;
-> +	}
-> +	env->cur_state =3D state;
-> +	init_func_state(env, state->frame[0],
-> +			BPF_MAIN_FUNC /* callsite */,
-> +			0 /* frameno */,
-> +			subprog);
-> +
-> +	regs =3D state->frame[state->curframe]->regs;
-> +	if (subprog) {
-> +		ret =3D btf_prepare_func_args(env, subprog, regs);
-> +		if (ret)
-> +			goto out;
-> +		for (i =3D BPF_REG_1; i <=3D BPF_REG_5; i++) {
-> +			if (regs[i].type =3D=3D PTR_TO_CTX)
-> +				mark_reg_known_zero(env, regs, i);
-> +			else if (regs[i].type =3D=3D SCALAR_VALUE)
-> +				mark_reg_unknown(env, regs, i);
-> +		}
-> +	} else {
-> +		/* 1st arg to a function */
-> +		regs[BPF_REG_1].type =3D PTR_TO_CTX;
-> +		mark_reg_known_zero(env, regs, BPF_REG_1);
-> +		ret =3D btf_check_func_arg_match(env, subprog, regs);
-> +		if (ret =3D=3D -EFAULT)
-> +			/* unlikely verifier bug. abort.
-> +			 * ret =3D=3D 0 and ret < 0 are sadly acceptable for
-> +			 * main() function due to backward compatibility.
-> +			 * Like socket filter program may be written as:
-> +			 * int bpf_prog(struct pt_regs *ctx)
-> +			 * and never dereference that ctx in the program.
-> +			 * 'struct pt_regs' is a type mismatch for socket
-> +			 * filter that should be using 'struct __sk_buff'.
-> +			 */
-> +			goto out;
-> +	}
-> +
-> +	ret =3D do_check(env);
-> +out:
-> +	if (env->cur_state) {
+> +	/* time wait and request socks don't have sk_flags. */
+> +	if (sk->sk_state =3D=3D TCP_TIME_WAIT || sk->sk_state =3D=3D TCP_NEW_SY=
+N_RECV ||
+> +	    !sock_flag(sk, SOCK_RCU_FREE))
+Would this work too?
+	if (!sk_fullsock(sk) || !sock_flag(sk, SOCK_RCU_FREE))
 
-I think env->cur_state will never be NULL here. This check is necessary=20
-before this patch (when we allocate cur_state in do_check()).=20
-
-Thanks,
-Song
-
+> +		sock_gen_put(sk);
+> +}
+> +
+>  static struct sock *
+>  __bpf_sk_lookup(struct sk_buff *skb, struct bpf_sock_tuple *tuple, u32 l=
+en,
+>  		struct net *caller_net, u32 ifindex, u8 proto, u64 netns_id,
+> @@ -5277,8 +5285,7 @@ __bpf_sk_lookup(struct sk_buff *skb, struct bpf_soc=
+k_tuple *tuple, u32 len,
+>  	if (sk) {
+>  		sk =3D sk_to_full_sk(sk);
+>  		if (!sk_fullsock(sk)) {
+> -			if (!sock_flag(sk, SOCK_RCU_FREE))
+> -				sock_gen_put(sk);
+> +			__bpf_sk_release(sk);
+>  			return NULL;
+>  		}
+>  	}
+> @@ -5315,8 +5322,7 @@ bpf_sk_lookup(struct sk_buff *skb, struct bpf_sock_=
+tuple *tuple, u32 len,
+>  	if (sk) {
+>  		sk =3D sk_to_full_sk(sk);
+>  		if (!sk_fullsock(sk)) {
+> -			if (!sock_flag(sk, SOCK_RCU_FREE))
+> -				sock_gen_put(sk);
+> +			__bpf_sk_release(sk);
+>  			return NULL;
+>  		}
+>  	}
+> @@ -5383,8 +5389,7 @@ static const struct bpf_func_proto bpf_sk_lookup_ud=
+p_proto =3D {
+> =20
+>  BPF_CALL_1(bpf_sk_release, struct sock *, sk)
+>  {
+> -	if (!sock_flag(sk, SOCK_RCU_FREE))
+> -		sock_gen_put(sk);
+> +	__bpf_sk_release(sk);
+>  	return 0;
+>  }
+> =20
+> --=20
+> 2.20.1
+>=20
