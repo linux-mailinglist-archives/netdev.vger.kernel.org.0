@@ -2,80 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 65602135F88
-	for <lists+netdev@lfdr.de>; Thu,  9 Jan 2020 18:43:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3EE62135F9A
+	for <lists+netdev@lfdr.de>; Thu,  9 Jan 2020 18:47:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388245AbgAIRn1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jan 2020 12:43:27 -0500
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:56416 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728724AbgAIRn1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jan 2020 12:43:27 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
-        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=6wa6i6mhkY3ce0uMFZmUBWteqlMn4kIMrBvOJQGwKEE=; b=1yCMabnn0U9eSKvrRcvsortgR
-        IPCTkngKw7W+EqJsdDS7N70UB+8XDMCgPIwYdgKkqVHE53pIknyiuxYlRI1ZqPCB+87m9rvNYICZ5
-        QYRR0kNstYwh8MBmOjbKKOh7yXrPemwc/4VAvKBPXVCoSkuJ2NXH0eirWIcLWOteYiqxTYRIY6CMk
-        d9OViz67azJPfSHibL3b2utnwLK+yDZD2XeRan/rfCBexIEHt20dm7bh2A8HW4/JpLoH5ziCF9FQN
-        mHg2EvAZVyPY8AcBSBkZwJJqyHiohNHosmm3T/6tKZJnEQT6uDyDTSWW1BCdcUrCnYy5ewvyUAc6E
-        Z9wWoux/Q==;
-Received: from shell.armlinux.org.uk ([2001:4d48:ad52:3201:5054:ff:fe00:4ec]:52720)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1ipbq7-0006Uf-QF; Thu, 09 Jan 2020 17:43:23 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1ipbq6-0000gb-Fr; Thu, 09 Jan 2020 17:43:22 +0000
-Date:   Thu, 9 Jan 2020 17:43:22 +0000
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     =?utf-8?B?0b3SieG2rOG4s+KEoA==?= <vtol@gmx.net>
-Cc:     Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org
-Subject: Re: [drivers/net/phy/sfp] intermittent failure in state machine
- checks
-Message-ID: <20200109174322.GR25745@shell.armlinux.org.uk>
-References: <d8d595ff-ec35-3426-ec43-9afd67c15e3d@gmx.net>
- <20200109144106.GA24459@lunn.ch>
- <513d6fe7-65b2-733b-1d17-b3a40b8161cf@gmx.net>
- <20200109155809.GQ25745@shell.armlinux.org.uk>
- <bb2c2eed-5efa-00f6-0e52-1326669c1b0d@gmx.net>
+        id S2388291AbgAIRrO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jan 2020 12:47:14 -0500
+Received: from mga17.intel.com ([192.55.52.151]:61385 "EHLO mga17.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1731837AbgAIRrO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 9 Jan 2020 12:47:14 -0500
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 09 Jan 2020 09:47:14 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.69,414,1571727600"; 
+   d="scan'208";a="254669778"
+Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.74])
+  by fmsmga002.fm.intel.com with ESMTP; 09 Jan 2020 09:47:13 -0800
+From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+To:     davem@davemloft.net
+Cc:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>, netdev@vger.kernel.org,
+        nhorman@redhat.com, sassmann@redhat.com
+Subject: [net 0/7][pull request] Intel Wired LAN Driver Updates 2020-01-09
+Date:   Thu,  9 Jan 2020 09:47:06 -0800
+Message-Id: <20200109174713.2940499-1-jeffrey.t.kirsher@intel.com>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <bb2c2eed-5efa-00f6-0e52-1326669c1b0d@gmx.net>
-User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 09, 2020 at 05:35:23PM +0000, ѽ҉ᶬḳ℠ wrote:
-> Thank you for the extensive feedback and explanation.
-> 
-> Pardon for having mixed up the semantics on module specifications vs. EEPROM
-> dump...
-> 
-> The module (chipset) been designed by Metanoia, not sure who is the actual
-> manufacturer, and probably just been branded Allnet.
-> The designer provides some proprietary management software (called EBM) to
-> their wholesale buyers only
+This series contains fixes to e1000e, igb, ixgbe, ixgbevf, i40e and iavf
+drivers.
 
-I have one of their early MT-V5311 modules, but it has no accessible
-EEPROM, and even if it did, it would be of no use to me being
-unapproved for connection to the BT Openreach network.  (BT SIN 498
-specifies non-standard power profile to avoid crosstalk issues with
-existing ADSL infrastructure, and I believe they regularly check the
-connected modem type and firmware versions against an approved list.)
+Brett fixes the validation of the virtchnl queue select bitmaps by
+comparing the bitmaps against BIT(I40E_MAX_VF_QUEUES).
 
-I haven't noticed the module I have asserting its TX_FAULT signal,
-but then its RJ45 has never been connected to anything.
+Radoslaw removes the limitation of only 10 filter entries for a VF and
+allows use of all free RAR entries for the forwarding database, if
+needed.
+
+Cambda Zhu fixes the calculation of queue when restoring flow director
+filters after resetting the adapter for ixgbe.
+
+Manfred Rudigier fixes the SGMIISFP module discovery for 100FX/LX
+modules for igb.
+
+Stefan Assmann fixes iavf where during a VF reset event, MAC filters
+were not altered, which could lead to a stale filter when an
+administratively set MAC address is forced by the PF.
+
+Adam adds the missing code to set the PHY access flag on X722 devices,
+which supports accessing PHY registers with the admin queue command.
+
+Revert a previous commit for e1000e to use "delayed work" which was
+causing connections to reset unexpectedly and possible driver crashes.
+
+The following are changes since commit 9546a0b7ce0077d827470f603f2522b845ce5954:
+  tipc: fix wrong connect() return code
+and are available in the git repository at:
+  git://git.kernel.org/pub/scm/linux/kernel/git/jkirsher/net-queue 40GbE
+
+Adam Ludkiewicz (1):
+  i40e: Set PHY Access flag on X722
+
+Brett Creeley (1):
+  i40e: Fix virtchnl_queue_select bitmap validation
+
+Cambda Zhu (1):
+  ixgbe: Fix calculation of queue with VFs and flow director on
+    interface flap
+
+Jeff Kirsher (1):
+  e1000e: Revert "e1000e: Make watchdog use delayed work"
+
+Manfred Rudigier (1):
+  igb: Fix SGMII SFP module discovery for 100FX/LX.
+
+Radoslaw Tyl (1):
+  ixgbevf: Remove limit of 10 entries for unicast filter list
+
+Stefan Assmann (1):
+  iavf: remove current MAC address filter on VF reset
+
+ drivers/net/ethernet/intel/e1000e/e1000.h     |  5 +-
+ drivers/net/ethernet/intel/e1000e/netdev.c    | 54 +++++++++----------
+ drivers/net/ethernet/intel/i40e/i40e_adminq.c |  5 ++
+ .../ethernet/intel/i40e/i40e_virtchnl_pf.c    | 22 ++++++--
+ drivers/net/ethernet/intel/iavf/iavf.h        |  2 +
+ drivers/net/ethernet/intel/iavf/iavf_main.c   | 17 ++++--
+ .../net/ethernet/intel/iavf/iavf_virtchnl.c   |  3 ++
+ drivers/net/ethernet/intel/igb/e1000_82575.c  |  8 +--
+ drivers/net/ethernet/intel/igb/igb_ethtool.c  |  2 +-
+ drivers/net/ethernet/intel/ixgbe/ixgbe_main.c | 37 +++++++++----
+ .../net/ethernet/intel/ixgbevf/ixgbevf_main.c |  5 --
+ 11 files changed, 98 insertions(+), 62 deletions(-)
 
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-According to speedtest.net: 11.9Mbps down 500kbps up
+2.24.1
+
