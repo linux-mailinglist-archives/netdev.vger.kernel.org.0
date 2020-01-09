@@ -2,75 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D28F213579F
-	for <lists+netdev@lfdr.de>; Thu,  9 Jan 2020 12:08:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A1B421358A6
+	for <lists+netdev@lfdr.de>; Thu,  9 Jan 2020 12:58:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729108AbgAILIP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jan 2020 06:08:15 -0500
-Received: from us-smtp-2.mimecast.com ([205.139.110.61]:24121 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728635AbgAILIP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jan 2020 06:08:15 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1578568094;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=YrHYOyRs6hoyDkOjYUzoqFP4GilVsBwh6oetNdV0tBI=;
-        b=fADj1EBZxCPXgB0E8T+zFOdkJtx5g0eukVZv1jh22BY2PDnUDFrc2mfIzUbVEOU5e1wT6B
-        4zqk2dp6GJTkSwHV64C+vD/yYNiUuS6Tn5WWYInaUyMTqwrXwRzwqk1GADcIha0lLQyulv
-        iZMasok89MSRVuivbiQILBVd2U3n03g=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-26-nroMf2vpPCGV7xPo08JRmQ-1; Thu, 09 Jan 2020 06:08:10 -0500
-X-MC-Unique: nroMf2vpPCGV7xPo08JRmQ-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C84DF801E6C;
-        Thu,  9 Jan 2020 11:08:09 +0000 (UTC)
-Received: from wlan-180-229.mxp.redhat.com (wlan-180-229.mxp.redhat.com [10.32.180.229])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id E42111001B28;
-        Thu,  9 Jan 2020 11:08:08 +0000 (UTC)
-From:   Davide Caratti <dcaratti@redhat.com>
-To:     Saeed Mahameed <saeedm@mellanox.com>
-Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: [PATCH net-next] net/mlx5e: allow TSO on VXLAN over VLAN topologies
-Date:   Thu,  9 Jan 2020 12:07:59 +0100
-Message-Id: <c1f4cc6214c28ce9a39147db9f3b66927dbae612.1578567988.git.dcaratti@redhat.com>
+        id S1730301AbgAIL6p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jan 2020 06:58:45 -0500
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:34668 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730251AbgAIL6p (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jan 2020 06:58:45 -0500
+Received: by mail-wm1-f66.google.com with SMTP id w5so1885337wmi.1
+        for <netdev@vger.kernel.org>; Thu, 09 Jan 2020 03:58:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=XW/jU4nMv4mGFekrAe/bVdVaRHEifMOWCDSe/Rg3qfU=;
+        b=rpbyJddq33B9qvSn4dhdc1kg2jDsQ5NECfImsJP0BmRVxX8YUmk+GZcwqJ/9GgwemW
+         SkhY18OP1SxlTsHKFBzzBjzzArXq/PvYW5botlr9MrTX37wAcoZbEusNvNDDoddttatK
+         20KjUtmfCziPSocV4nL54W0IvoVY7BP+gDu/8=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=XW/jU4nMv4mGFekrAe/bVdVaRHEifMOWCDSe/Rg3qfU=;
+        b=jqHpqHEMTf46gR1fYaw7cQgJZege5SF4KMNL2fAfKOD3pkOClTZAMjJmOWsf4fFrpm
+         rLtAahYgW48sRKPeM1OB6y8356SSdR1D7suIneHDjneV3qVvx517IuIQ7nnBinN1ulId
+         fKHIuIxeR1sto4YldSWwiVM4ebs6bRlQPCkTY1khiCVw/MSaCVngpozEuhqEGHHISG3K
+         vf61fN/lIBMmVVJCn1FtxoYgluCD/O6ykv68dLBCxLJ+w1v68qNjxtEU7WB86tHOR3Rn
+         w8yKS679B7eeU37O9vT4FcDL49CDr3SS6B4mS4G4OdOCk1Xokiazj2AKRsg9NzfmuUIC
+         LxEQ==
+X-Gm-Message-State: APjAAAVh8z+M1Gxiw8/uNaTT9Eb3oY/loZE5R6+4unN693/HFuvR1tpL
+        vyYO31wCVIV5GohEdzFZ95o1Eg==
+X-Google-Smtp-Source: APXvYqyBBcuvlKP3rGxkVcWLSllnjwn3aZuUrL+BdEqPQQcw/OUbBeFbOxs/AISfrFWwOfHd6Su6cg==
+X-Received: by 2002:a7b:cc14:: with SMTP id f20mr4618431wmh.58.1578571123550;
+        Thu, 09 Jan 2020 03:58:43 -0800 (PST)
+Received: from localhost.localdomain ([2a06:98c0:1000:8250:cd2c:908b:e15b:9937])
+        by smtp.gmail.com with ESMTPSA id z124sm2728120wmc.20.2020.01.09.03.58.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 09 Jan 2020 03:58:42 -0800 (PST)
+From:   Lorenz Bauer <lmb@cloudflare.com>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Joe Stringer <joe@isovalent.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     kernel-team@cloudflare.com, edumazet@google.com
+Subject: [PATCH bpf 0/1] Fix memory leak in helpers dealing with sockets
+Date:   Thu,  9 Jan 2020 11:57:47 +0000
+Message-Id: <20200109115749.12283-1-lmb@cloudflare.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-since mlx5 hardware can segment correctly TSO packets on VXLAN over VLAN
-topologies, CPU usage can improve significantly if we enable tunnel
-offloads in dev->vlan_features, like it was done in the past with other
-NIC drivers (e.g. mlx4, be2net and ixgbe).
+While rolling out a new BPF based TC classifier I hit a memory leak, which
+manifests in large numbers of request and time wait sockets not being released.
 
-Signed-off-by: Davide Caratti <dcaratti@redhat.com>
----
- drivers/net/ethernet/mellanox/mlx5/core/en_main.c | 2 ++
- 1 file changed, 2 insertions(+)
+The root cause is that the current BPF helpers dealing with sockets are naive:
+they assume that sk->sk_flags is always valid. struct request_sock and
+struct inet_timewait_sock break this.
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/=
-net/ethernet/mellanox/mlx5/core/en_main.c
-index 78737fd42616..87267c18ff8c 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-@@ -4878,6 +4878,8 @@ static void mlx5e_build_nic_netdev(struct net_devic=
-e *netdev)
- 		netdev->hw_enc_features |=3D NETIF_F_GSO_UDP_TUNNEL |
- 					   NETIF_F_GSO_UDP_TUNNEL_CSUM;
- 		netdev->gso_partial_features =3D NETIF_F_GSO_UDP_TUNNEL_CSUM;
-+		netdev->vlan_features |=3D NETIF_F_GSO_UDP_TUNNEL |
-+					 NETIF_F_GSO_UDP_TUNNEL_CSUM;
- 	}
-=20
- 	if (mlx5e_tunnel_proto_supported(mdev, IPPROTO_GRE)) {
---=20
-2.24.1
+I've fixed this up by adding a helper that checks sk_state in addition to sk_flags.
+The solution is a bit clumsy: it encapsulates details of struct sock in BPF.
+It would probably be nicer to have a sock_gen_put + SOCK_RCU_FREE function exposed
+in sock.h, but that might be too big a change for backports.
+
+Thoughts?
+
+Lorenz Bauer (1):
+  net: bpf: don't leak time wait and request sockets
+
+ net/core/filter.c | 17 +++++++++++------
+ 1 file changed, 11 insertions(+), 6 deletions(-)
+
+-- 
+2.20.1
 
