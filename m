@@ -2,81 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C43113626B
-	for <lists+netdev@lfdr.de>; Thu,  9 Jan 2020 22:25:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 87D2E136292
+	for <lists+netdev@lfdr.de>; Thu,  9 Jan 2020 22:31:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728629AbgAIVZn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jan 2020 16:25:43 -0500
-Received: from mail-io1-f67.google.com ([209.85.166.67]:36655 "EHLO
-        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725763AbgAIVZn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jan 2020 16:25:43 -0500
-Received: by mail-io1-f67.google.com with SMTP id d15so8807000iog.3;
-        Thu, 09 Jan 2020 13:25:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=AuCVOpJkuZYE65RYLpf1B4iFvHjGfRQouDs+XczOndo=;
-        b=p64eofYK9oeCPFw8Zo1/iEf2/4l1dCaGTq73L+5EpPn0fZK4PM/bzOqdiyrieA3NF1
-         PsLWKLMpIsCAgSfzy7oCqWz3R5WHGrNQ30yfo4uwO4Ds6GhU9lACB0W7Oex39GjuUPJ9
-         nY8cFJBgl8NOd/ng0BnBsx2P4J5OaXrAq5OcBfBsp9wo0FuYFbjytJFfjctmlN+382cc
-         NjZtQ9D4krYQsfAmE6ePS2hNsq6npBDXVeqQPa+Hi5xaLiyP5092XdgWV9SFgjS+kE+I
-         sU3e0/GoX0EvDhtoXzGOVxypF2E2YDf8fsv5FoMnmSkSNM7qPZqcQoVQId+WyKYNzYWd
-         vy5A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=AuCVOpJkuZYE65RYLpf1B4iFvHjGfRQouDs+XczOndo=;
-        b=qrUN8rCGDkt95O+VrtjeyEkdu6Z2ys92fAmuUPu1uvyKgSNvAktqfc68TVYS3mMuan
-         eF7iMsS5MMotGldxUaDuME86z2DCv4OEIMQre5UGiFUoA1Mks/+eqIrLIlTOEXNP/3/p
-         UIm4HlFCUF5FE7flxOyioFECrePJKr9TxWBOrZDFnFqr7F3LxojzW77KX+kUVUlWFVVL
-         i/csJk6U889txRpIdtxQCG88iOMdF26w2eiFfbzLo7jJGB8OwJWSpT6mF8+LqvnfYeCY
-         Q+PoxsSQg95HzsLLjtoGOQJVCNdhE5y3tJuEGnmtKmk+9s37aLHMiye9ZS/YN90Vbvut
-         AkVw==
-X-Gm-Message-State: APjAAAUuSsfX/kOR/8A0O42dWoIqawd48H0yZByrBPnu+WWtJ2zKOiJx
-        04nFcJKIOTbEO01Hum8H7Tc=
-X-Google-Smtp-Source: APXvYqxC12MAF27FGhFHFxwOJMwZeqbmfBs0U9vrTtY43nOyCc10QKpGBcY6i/DQr/WWgfS7NHmhAw==
-X-Received: by 2002:a05:6602:cd:: with SMTP id z13mr9821376ioe.291.1578605142509;
-        Thu, 09 Jan 2020 13:25:42 -0800 (PST)
-Received: from localhost ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id g62sm16043ile.39.2020.01.09.13.25.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Jan 2020 13:25:42 -0800 (PST)
-Date:   Thu, 09 Jan 2020 13:25:33 -0800
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Song Liu <song@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>
-Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <5e179a4def787_28762abb601485c027@john-XPS-13-9370.notmuch>
-In-Reply-To: <CAPhsuW774z68g_Y-C1XU70H-x6S2mr+Hd0-qY02E9aZBJjepkA@mail.gmail.com>
-References: <157851776348.1732.12600714815781177085.stgit@ubuntu3-kvm2>
- <157851817088.1732.14988301389495595092.stgit@ubuntu3-kvm2>
- <CAPhsuW774z68g_Y-C1XU70H-x6S2mr+Hd0-qY02E9aZBJjepkA@mail.gmail.com>
-Subject: Re: [bpf PATCH 8/9] bpf: sockmap/tls, tls_push_record can not handle
- zero length skmsg
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: 7bit
+        id S1728281AbgAIVbJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jan 2020 16:31:09 -0500
+Received: from foss.arm.com ([217.140.110.172]:37060 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725763AbgAIVbI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 9 Jan 2020 16:31:08 -0500
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 59B6931B;
+        Thu,  9 Jan 2020 13:31:07 -0800 (PST)
+Received: from localhost (unknown [10.37.6.21])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id BB1DB3F534;
+        Thu,  9 Jan 2020 13:31:06 -0800 (PST)
+Date:   Thu, 09 Jan 2020 21:31:05 +0000
+From:   Mark Brown <broonie@kernel.org>
+To:     Claudiu Beznea <claudiu.beznea@microchip.com>
+Cc:     alexandre.belloni@bootlin.com, a.zummo@towertech.it,
+        broonie@kernel.org, devicetree@vger.kernel.org,
+        dmaengine@vger.kernel.org, eugen.hristev@microchip.com,
+        jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+        lee.jones@linaro.org, linux-arm-kernel@lists.infradead.org,
+        linux-can@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
+        linux-mtd@lists.infradead.org, linux-rtc@vger.kernel.org,
+        linux-spi@vger.kernel.org, ludovic.desroches@microchip.com,
+        Mark Brown <broonie@kernel.org>, mark.rutland@arm.com,
+        mchehab@kernel.org, miquel.raynal@bootlin.com, mkl@pengutronix.de,
+        netdev@vger.kernel.org, nicolas.ferre@microchip.com,
+        pmeerw@pmeerw.net, radu_nicolae.pirea@upb.ro,
+        richard.genoud@gmail.com, richard@nod.at, robh+dt@kernel.org,
+        tudor.ambarus@microchip.com, vigneshr@ti.com, vkoul@kernel.org,
+        wg@grandegger.com
+Subject: Applied "dt-bindings: spi_atmel: add microchip,sam9x60-spi" to the spi tree
+In-Reply-To: <1578488123-26127-13-git-send-email-claudiu.beznea@microchip.com>
+Message-Id: <applied-1578488123-26127-13-git-send-email-claudiu.beznea@microchip.com>
+X-Patchwork-Hint: ignore
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Song Liu wrote:
-> On Wed, Jan 8, 2020 at 1:17 PM John Fastabend <john.fastabend@gmail.com> wrote:
-> >
-> > When passed a zero length skmsg tls_push_record() causes a NULL ptr
-> > deref. To resolve for fixes do a simple length check at start of
-> > routine.
-> 
-> Could you please include the stack dump for the NULL deref?
-> 
-> Thanks,
-> Song
+The patch
 
-Sure I'll send a v2 with the stack dump.
+   dt-bindings: spi_atmel: add microchip,sam9x60-spi
+
+has been applied to the spi tree at
+
+   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/spi.git for-5.6
+
+All being well this means that it will be integrated into the linux-next
+tree (usually sometime in the next 24 hours) and sent to Linus during
+the next merge window (or sooner if it is a bug fix), however if
+problems are discovered then the patch may be dropped or reverted.  
+
+You may get further e-mails resulting from automated or manual testing
+and review of the tree, please engage with people reporting problems and
+send followup patches addressing any issues that are reported if needed.
+
+If any updates are required or you are submitting further changes they
+should be sent as incremental updates against current git, existing
+patches will not be replaced.
+
+Please add any relevant lists and maintainers to the CCs when replying
+to this mail.
+
+Thanks,
+Mark
+
+From 0a1eb761ff30cdc089bcc94e1bd540b6956487c5 Mon Sep 17 00:00:00 2001
+From: Claudiu Beznea <claudiu.beznea@microchip.com>
+Date: Wed, 8 Jan 2020 14:55:19 +0200
+Subject: [PATCH] dt-bindings: spi_atmel: add microchip,sam9x60-spi
+
+Add microchip,sam9x60-spi to DT bindings documentation.
+
+Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+Link: https://lore.kernel.org/r/1578488123-26127-13-git-send-email-claudiu.beznea@microchip.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+---
+ Documentation/devicetree/bindings/spi/spi_atmel.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/Documentation/devicetree/bindings/spi/spi_atmel.txt b/Documentation/devicetree/bindings/spi/spi_atmel.txt
+index f99c733d75c1..5bb4a8f1df7a 100644
+--- a/Documentation/devicetree/bindings/spi/spi_atmel.txt
++++ b/Documentation/devicetree/bindings/spi/spi_atmel.txt
+@@ -1,7 +1,7 @@
+ Atmel SPI device
+ 
+ Required properties:
+-- compatible : should be "atmel,at91rm9200-spi".
++- compatible : should be "atmel,at91rm9200-spi" or "microchip,sam9x60-spi".
+ - reg: Address and length of the register set for the device
+ - interrupts: Should contain spi interrupt
+ - cs-gpios: chipselects (optional for SPI controller version >= 2 with the
+-- 
+2.20.1
+
