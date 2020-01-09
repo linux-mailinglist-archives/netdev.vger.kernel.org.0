@@ -2,108 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 066E913626D
-	for <lists+netdev@lfdr.de>; Thu,  9 Jan 2020 22:25:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C43113626B
+	for <lists+netdev@lfdr.de>; Thu,  9 Jan 2020 22:25:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728686AbgAIVZp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jan 2020 16:25:45 -0500
-Received: from Chamillionaire.breakpoint.cc ([193.142.43.52]:57082 "EHLO
-        Chamillionaire.breakpoint.cc" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728579AbgAIVZo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jan 2020 16:25:44 -0500
-Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
-        (envelope-from <fw@strlen.de>)
-        id 1ipfJ2-0006kW-9m; Thu, 09 Jan 2020 22:25:28 +0100
-Date:   Thu, 9 Jan 2020 22:25:28 +0100
-From:   Florian Westphal <fw@strlen.de>
-To:     David Miller <davem@davemloft.net>
-Cc:     mathew.j.martineau@linux.intel.com, netdev@vger.kernel.org,
-        mptcp@lists.01.org, ast@kernel.org, daniel@iogearbox.net,
-        bpf@vger.kernel.org
-Subject: Re: [MPTCP] Re: [PATCH net-next v7 02/11] sock: Make sk_protocol a
- 16-bit value
-Message-ID: <20200109212528.GF795@breakpoint.cc>
-References: <20200109155924.30122-1-mathew.j.martineau@linux.intel.com>
- <20200109155924.30122-3-mathew.j.martineau@linux.intel.com>
- <20200109.110514.747612850299504416.davem@davemloft.net>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200109.110514.747612850299504416.davem@davemloft.net>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        id S1728629AbgAIVZn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jan 2020 16:25:43 -0500
+Received: from mail-io1-f67.google.com ([209.85.166.67]:36655 "EHLO
+        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725763AbgAIVZn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jan 2020 16:25:43 -0500
+Received: by mail-io1-f67.google.com with SMTP id d15so8807000iog.3;
+        Thu, 09 Jan 2020 13:25:42 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=AuCVOpJkuZYE65RYLpf1B4iFvHjGfRQouDs+XczOndo=;
+        b=p64eofYK9oeCPFw8Zo1/iEf2/4l1dCaGTq73L+5EpPn0fZK4PM/bzOqdiyrieA3NF1
+         PsLWKLMpIsCAgSfzy7oCqWz3R5WHGrNQ30yfo4uwO4Ds6GhU9lACB0W7Oex39GjuUPJ9
+         nY8cFJBgl8NOd/ng0BnBsx2P4J5OaXrAq5OcBfBsp9wo0FuYFbjytJFfjctmlN+382cc
+         NjZtQ9D4krYQsfAmE6ePS2hNsq6npBDXVeqQPa+Hi5xaLiyP5092XdgWV9SFgjS+kE+I
+         sU3e0/GoX0EvDhtoXzGOVxypF2E2YDf8fsv5FoMnmSkSNM7qPZqcQoVQId+WyKYNzYWd
+         vy5A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=AuCVOpJkuZYE65RYLpf1B4iFvHjGfRQouDs+XczOndo=;
+        b=qrUN8rCGDkt95O+VrtjeyEkdu6Z2ys92fAmuUPu1uvyKgSNvAktqfc68TVYS3mMuan
+         eF7iMsS5MMotGldxUaDuME86z2DCv4OEIMQre5UGiFUoA1Mks/+eqIrLIlTOEXNP/3/p
+         UIm4HlFCUF5FE7flxOyioFECrePJKr9TxWBOrZDFnFqr7F3LxojzW77KX+kUVUlWFVVL
+         i/csJk6U889txRpIdtxQCG88iOMdF26w2eiFfbzLo7jJGB8OwJWSpT6mF8+LqvnfYeCY
+         Q+PoxsSQg95HzsLLjtoGOQJVCNdhE5y3tJuEGnmtKmk+9s37aLHMiye9ZS/YN90Vbvut
+         AkVw==
+X-Gm-Message-State: APjAAAUuSsfX/kOR/8A0O42dWoIqawd48H0yZByrBPnu+WWtJ2zKOiJx
+        04nFcJKIOTbEO01Hum8H7Tc=
+X-Google-Smtp-Source: APXvYqxC12MAF27FGhFHFxwOJMwZeqbmfBs0U9vrTtY43nOyCc10QKpGBcY6i/DQr/WWgfS7NHmhAw==
+X-Received: by 2002:a05:6602:cd:: with SMTP id z13mr9821376ioe.291.1578605142509;
+        Thu, 09 Jan 2020 13:25:42 -0800 (PST)
+Received: from localhost ([184.63.162.180])
+        by smtp.gmail.com with ESMTPSA id g62sm16043ile.39.2020.01.09.13.25.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 09 Jan 2020 13:25:42 -0800 (PST)
+Date:   Thu, 09 Jan 2020 13:25:33 -0800
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Song Liu <song@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>
+Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <5e179a4def787_28762abb601485c027@john-XPS-13-9370.notmuch>
+In-Reply-To: <CAPhsuW774z68g_Y-C1XU70H-x6S2mr+Hd0-qY02E9aZBJjepkA@mail.gmail.com>
+References: <157851776348.1732.12600714815781177085.stgit@ubuntu3-kvm2>
+ <157851817088.1732.14988301389495595092.stgit@ubuntu3-kvm2>
+ <CAPhsuW774z68g_Y-C1XU70H-x6S2mr+Hd0-qY02E9aZBJjepkA@mail.gmail.com>
+Subject: Re: [bpf PATCH 8/9] bpf: sockmap/tls, tls_push_record can not handle
+ zero length skmsg
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-David Miller <davem@davemloft.net> wrote:
-> From: Mat Martineau <mathew.j.martineau@linux.intel.com>
-> Date: Thu,  9 Jan 2020 07:59:15 -0800
+Song Liu wrote:
+> On Wed, Jan 8, 2020 at 1:17 PM John Fastabend <john.fastabend@gmail.com> wrote:
+> >
+> > When passed a zero length skmsg tls_push_record() causes a NULL ptr
+> > deref. To resolve for fixes do a simple length check at start of
+> > routine.
 > 
-> > Match the 16-bit width of skbuff->protocol. Fills an 8-bit hole so
-> > sizeof(struct sock) does not change.
-> > 
-> > Also take care of BPF field access for sk_type/sk_protocol. Both of them
-> > are now outside the bitfield, so we can use load instructions without
-> > further shifting/masking.
-> > 
-> > v5 -> v6:
-> >  - update eBPF accessors, too (Intel's kbuild test robot)
-> > v2 -> v3:
-> >  - keep 'sk_type' 2 bytes aligned (Eric)
-> > v1 -> v2:
-> >  - preserve sk_pacing_shift as bit field (Eric)
-> > 
-> > Cc: Alexei Starovoitov <ast@kernel.org>
-> > Cc: Daniel Borkmann <daniel@iogearbox.net>
-> > Cc: bpf@vger.kernel.org
-> > Co-developed-by: Paolo Abeni <pabeni@redhat.com>
-> > Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-> > Co-developed-by: Matthieu Baerts <matthieu.baerts@tessares.net>
-> > Signed-off-by: Matthieu Baerts <matthieu.baerts@tessares.net>
-> > Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
+> Could you please include the stack dump for the NULL deref?
 > 
-> This is worrisome for me.
-> 
-> We have lots of places that now are going to be assigning  sk->sk_protocol
-> into a u8 somewhere else.  A lot of them are ok because limits are enforced
-> in various places, but for example:
-> 
-> net/ipv6/udp.c:	fl6.flowi6_proto = sk->sk_protocol;
-> net/l2tp/l2tp_ip6.c:	fl6.flowi6_proto = sk->sk_protocol;
-> 
-> net/ipv6/inet6_connection_sock.c:	fl6->flowi6_proto = sk->sk_protocol;
-> 
-> net/ipv6/af_inet6.c:		fl6.flowi6_proto = sk->sk_protocol;
-> net/ipv6/datagram.c:	fl6->flowi6_proto = sk->sk_protocol;
-> 
-> This is one just one small example situation, where flowi6_proto is a u8.
+> Thanks,
+> Song
 
-There are parts in the stack (e.g. in setsockopt code paths) that test
-sk->sk_protocol vs. IPPROTO_TCP, then call tcp specific code under the sane
-assumption that sk is a tcp_sock struct.
-
-With 8bit sk_protocol, mptcp_sock structs (which is what kernel gets via
-file descriptor number) would be treated as a tcp socket, because
-"IPPROTO_MPTCP & 0xff" yields IPPROTO_TCP.
-
-Changing IPPROTO_MPTCP to a value <= 255 could lead to conflicts with
-real inet protocols in the future, so we can't redefine it to a 8bit
-value.
-
-If we keep sk_protocol as 8bit field, we will need to make sure that all
-places testing sk_protocol == IPPROTO_TCP gain an additional sanity check
-to tell tcp and mptcp sockets apart.  Moreover, any further changes to
-kernel code would need same extra test, so this is a non-starter to me.
-
-Alternatively we could change the first member of mptcp_sk struct from
-inet_connection_sock to a full tcp_sock struct.  Thats roughly 1k increase
-of mptcp_sock struct to ~ 3744 bytes, but then we would not have to
-worry about mptcp sockets ending up in tcp code paths.
-
-If you think such a size increase is ok I could give that solution a shot
-and see what other problems with 8bit sk_protocol might remain.
-
-Mat reported /sys/kernel/debug/tracing/trace lists mptcp sockets as
-IPPROTO_TCP in the '8 bit sk_protocol' case, but if thats the only issue
-this might have a smaller/acceptable "avoidance fix".
+Sure I'll send a v2 with the stack dump.
