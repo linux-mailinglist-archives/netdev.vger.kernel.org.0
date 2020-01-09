@@ -2,14 +2,14 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B7F0135D58
-	for <lists+netdev@lfdr.de>; Thu,  9 Jan 2020 17:00:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F5F3135D5D
+	for <lists+netdev@lfdr.de>; Thu,  9 Jan 2020 17:00:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732783AbgAIQAI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jan 2020 11:00:08 -0500
+        id S1732805AbgAIQAS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jan 2020 11:00:18 -0500
 Received: from mga09.intel.com ([134.134.136.24]:6700 "EHLO mga09.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731190AbgAIQAG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1732770AbgAIQAG (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 9 Jan 2020 11:00:06 -0500
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
@@ -17,17 +17,17 @@ Received: from fmsmga008.fm.intel.com ([10.253.24.58])
   by orsmga102.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 09 Jan 2020 08:00:05 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.69,414,1571727600"; 
-   d="scan'208";a="218399287"
+   d="scan'208";a="218399296"
 Received: from mjmartin-nuc02.mjmartin-nuc02 (HELO mjmartin-nuc02.sea.intel.com) ([10.251.4.119])
   by fmsmga008.fm.intel.com with ESMTP; 09 Jan 2020 08:00:05 -0800
 From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
 To:     netdev@vger.kernel.org, mptcp@lists.01.org
 Cc:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        Peter Krystad <peter.krystad@linux.intel.com>,
+        Paolo Abeni <pabeni@redhat.com>,
         Eric Dumazet <edumazet@google.com>
-Subject: [PATCH net-next v7 08/11] tcp: Export TCP functions and ops struct
-Date:   Thu,  9 Jan 2020 07:59:21 -0800
-Message-Id: <20200109155924.30122-9-mathew.j.martineau@linux.intel.com>
+Subject: [PATCH net-next v7 09/11] tcp: Check for filled TCP option space before SACK
+Date:   Thu,  9 Jan 2020 07:59:22 -0800
+Message-Id: <20200109155924.30122-10-mathew.j.martineau@linux.intel.com>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20200109155924.30122-1-mathew.j.martineau@linux.intel.com>
 References: <20200109155924.30122-1-mathew.j.martineau@linux.intel.com>
@@ -38,117 +38,51 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-MPTCP will make use of tcp_send_mss() and tcp_push() when sending
-data to specific TCP subflows.
+Update the SACK check to work with zero option space available, a case
+that's possible with MPTCP but not MD5+TS. Maintained only one
+conditional branch for insufficient SACK space.
 
-tcp_request_sock_ipvX_ops and ipvX_specific will be referenced
-during TCP subflow creation.
+v1 -> v2:
+- Moves the check inside the SACK branch by taking recent SACK fix:
 
-Co-developed-by: Peter Krystad <peter.krystad@linux.intel.com>
-Signed-off-by: Peter Krystad <peter.krystad@linux.intel.com>
+    9424e2e7ad93 (tcp: md5: fix potential overestimation of TCP option space)
+
+  in to account, but modifies it to work in MPTCP scenarios beyond the
+  MD5+TS corner case.
+
+Co-developed-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Reviewed-by: Eric Dumazet <edumazet@google.com>
 Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
 ---
- include/net/tcp.h   | 8 ++++++++
- net/ipv4/tcp.c      | 6 +++---
- net/ipv4/tcp_ipv4.c | 2 +-
- net/ipv6/tcp_ipv6.c | 6 +++---
- 4 files changed, 15 insertions(+), 7 deletions(-)
+ net/ipv4/tcp_output.c | 10 +++++++---
+ 1 file changed, 7 insertions(+), 3 deletions(-)
 
-diff --git a/include/net/tcp.h b/include/net/tcp.h
-index 13bc83fab454..5e4133d09b9d 100644
---- a/include/net/tcp.h
-+++ b/include/net/tcp.h
-@@ -330,6 +330,9 @@ int tcp_sendpage_locked(struct sock *sk, struct page *page, int offset,
- 			size_t size, int flags);
- ssize_t do_tcp_sendpages(struct sock *sk, struct page *page, int offset,
- 		 size_t size, int flags);
-+int tcp_send_mss(struct sock *sk, int *size_goal, int flags);
-+void tcp_push(struct sock *sk, int flags, int mss_now, int nonagle,
-+	      int size_goal);
- void tcp_release_cb(struct sock *sk);
- void tcp_wfree(struct sk_buff *skb);
- void tcp_write_timer_handler(struct sock *sk);
-@@ -2011,6 +2014,11 @@ struct tcp_request_sock_ops {
- 			   enum tcp_synack_type synack_type);
- };
- 
-+extern const struct tcp_request_sock_ops tcp_request_sock_ipv4_ops;
-+#if IS_ENABLED(CONFIG_IPV6)
-+extern const struct tcp_request_sock_ops tcp_request_sock_ipv6_ops;
-+#endif
+diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
+index 3ce7fe1c4076..05109d0c675b 100644
+--- a/net/ipv4/tcp_output.c
++++ b/net/ipv4/tcp_output.c
+@@ -754,13 +754,17 @@ static unsigned int tcp_established_options(struct sock *sk, struct sk_buff *skb
+ 	eff_sacks = tp->rx_opt.num_sacks + tp->rx_opt.dsack;
+ 	if (unlikely(eff_sacks)) {
+ 		const unsigned int remaining = MAX_TCP_OPTION_SPACE - size;
++		if (unlikely(remaining < TCPOLEN_SACK_BASE_ALIGNED +
++					 TCPOLEN_SACK_PERBLOCK))
++			return size;
 +
- #ifdef CONFIG_SYN_COOKIES
- static inline __u32 cookie_init_sequence(const struct tcp_request_sock_ops *ops,
- 					 const struct sock *sk, struct sk_buff *skb,
-diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index f09fbc85b108..6711a97de3ce 100644
---- a/net/ipv4/tcp.c
-+++ b/net/ipv4/tcp.c
-@@ -690,8 +690,8 @@ static bool tcp_should_autocork(struct sock *sk, struct sk_buff *skb,
- 	       refcount_read(&sk->sk_wmem_alloc) > skb->truesize;
- }
+ 		opts->num_sack_blocks =
+ 			min_t(unsigned int, eff_sacks,
+ 			      (remaining - TCPOLEN_SACK_BASE_ALIGNED) /
+ 			      TCPOLEN_SACK_PERBLOCK);
+-		if (likely(opts->num_sack_blocks))
+-			size += TCPOLEN_SACK_BASE_ALIGNED +
+-				opts->num_sack_blocks * TCPOLEN_SACK_PERBLOCK;
++
++		size += TCPOLEN_SACK_BASE_ALIGNED +
++			opts->num_sack_blocks * TCPOLEN_SACK_PERBLOCK;
+ 	}
  
--static void tcp_push(struct sock *sk, int flags, int mss_now,
--		     int nonagle, int size_goal)
-+void tcp_push(struct sock *sk, int flags, int mss_now,
-+	      int nonagle, int size_goal)
- {
- 	struct tcp_sock *tp = tcp_sk(sk);
- 	struct sk_buff *skb;
-@@ -925,7 +925,7 @@ static unsigned int tcp_xmit_size_goal(struct sock *sk, u32 mss_now,
- 	return max(size_goal, mss_now);
- }
- 
--static int tcp_send_mss(struct sock *sk, int *size_goal, int flags)
-+int tcp_send_mss(struct sock *sk, int *size_goal, int flags)
- {
- 	int mss_now;
- 
-diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
-index 4adac9c75343..fedb537839ec 100644
---- a/net/ipv4/tcp_ipv4.c
-+++ b/net/ipv4/tcp_ipv4.c
-@@ -1426,7 +1426,7 @@ struct request_sock_ops tcp_request_sock_ops __read_mostly = {
- 	.syn_ack_timeout =	tcp_syn_ack_timeout,
- };
- 
--static const struct tcp_request_sock_ops tcp_request_sock_ipv4_ops = {
-+const struct tcp_request_sock_ops tcp_request_sock_ipv4_ops = {
- 	.mss_clamp	=	TCP_MSS_DEFAULT,
- #ifdef CONFIG_TCP_MD5SIG
- 	.req_md5_lookup	=	tcp_v4_md5_lookup,
-diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
-index 95e4e1e95db2..5b5260103b65 100644
---- a/net/ipv6/tcp_ipv6.c
-+++ b/net/ipv6/tcp_ipv6.c
-@@ -75,7 +75,7 @@ static void	tcp_v6_reqsk_send_ack(const struct sock *sk, struct sk_buff *skb,
- static int	tcp_v6_do_rcv(struct sock *sk, struct sk_buff *skb);
- 
- static const struct inet_connection_sock_af_ops ipv6_mapped;
--static const struct inet_connection_sock_af_ops ipv6_specific;
-+const struct inet_connection_sock_af_ops ipv6_specific;
- #ifdef CONFIG_TCP_MD5SIG
- static const struct tcp_sock_af_ops tcp_sock_ipv6_specific;
- static const struct tcp_sock_af_ops tcp_sock_ipv6_mapped_specific;
-@@ -819,7 +819,7 @@ struct request_sock_ops tcp6_request_sock_ops __read_mostly = {
- 	.syn_ack_timeout =	tcp_syn_ack_timeout,
- };
- 
--static const struct tcp_request_sock_ops tcp_request_sock_ipv6_ops = {
-+const struct tcp_request_sock_ops tcp_request_sock_ipv6_ops = {
- 	.mss_clamp	=	IPV6_MIN_MTU - sizeof(struct tcphdr) -
- 				sizeof(struct ipv6hdr),
- #ifdef CONFIG_TCP_MD5SIG
-@@ -1794,7 +1794,7 @@ static struct timewait_sock_ops tcp6_timewait_sock_ops = {
- 	.twsk_destructor = tcp_twsk_destructor,
- };
- 
--static const struct inet_connection_sock_af_ops ipv6_specific = {
-+const struct inet_connection_sock_af_ops ipv6_specific = {
- 	.queue_xmit	   = inet6_csk_xmit,
- 	.send_check	   = tcp_v6_send_check,
- 	.rebuild_header	   = inet6_sk_rebuild_header,
+ 	return size;
 -- 
 2.24.1
 
