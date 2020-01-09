@@ -2,78 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 25D56136042
-	for <lists+netdev@lfdr.de>; Thu,  9 Jan 2020 19:37:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9DB4813606D
+	for <lists+netdev@lfdr.de>; Thu,  9 Jan 2020 19:48:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388508AbgAIShl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jan 2020 13:37:41 -0500
-Received: from mail.kernel.org ([198.145.29.99]:43486 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728037AbgAIShl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 9 Jan 2020 13:37:41 -0500
-Received: from mail-qt1-f175.google.com (mail-qt1-f175.google.com [209.85.160.175])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 8775F2072E;
-        Thu,  9 Jan 2020 18:37:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1578595060;
-        bh=AWXr9TAHgl3A++gRuJ+T9npWU4essRmA3mnfkKG1qvw=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=uhHNufr3hu5SCPTE7cjw0NA4hCDxiRow/r3KHLVBCzCO5mjZ7RIiuYkBasS9Ij1df
-         Dv3QcbZqwabpklhWU6rOSsKkV6x9u1p1GtI5O2Kx+2+DI0XAin412EEO/BZdZ/wsyd
-         asVbRO7/fyrp3ipFitf2Vl1G8DeN9oynZLLJ9c4I=
-Received: by mail-qt1-f175.google.com with SMTP id g1so6660798qtr.13;
-        Thu, 09 Jan 2020 10:37:40 -0800 (PST)
-X-Gm-Message-State: APjAAAXeuILqAJoMgrVEf+RodLvVKoJ86rVk53Fop8XA3Jy2KD2rthft
-        lvIvqTEtOHPMtHovVoHKQO6NXNIQw3JbPJo4DEc=
-X-Google-Smtp-Source: APXvYqzRcyX/P/2RFqjAPRRJEmg/ICmY619JfUoJ4KfvchBl5iE7AZsl/2VQYqwqQqdntG4OJ6z/zB/lyAUyWQI+AX8=
-X-Received: by 2002:aed:21b6:: with SMTP id l51mr9299539qtc.22.1578595059706;
- Thu, 09 Jan 2020 10:37:39 -0800 (PST)
+        id S1732198AbgAISs0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jan 2020 13:48:26 -0500
+Received: from mail-pf1-f195.google.com ([209.85.210.195]:33830 "EHLO
+        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732160AbgAISsZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jan 2020 13:48:25 -0500
+Received: by mail-pf1-f195.google.com with SMTP id i6so3787776pfc.1;
+        Thu, 09 Jan 2020 10:48:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=fI9WHgKaFp4DfI/TYFPMR/7QFlU9Q2XOkMBqxZUqqL0=;
+        b=WrOcwzIrWyMIesK9AQZAtapOgrNXy2+3/atJAYnueTaed2FJP6NkQLweM+SCNVtpe3
+         lnTjwzh4CwuNJyFWIdTEH9FuU195I0SjkuSIXeLqO6xi/LInch4brpI/wG01SN8cHA1R
+         6yB/8aUQtxKske5MWCzbAHoL/M8Go9MB2aFjPJQW9a/4H80aMSJ+AWgqBesTsBQG3Ou/
+         XsjDqszKO8drUvMSHXGSzPd+BxSdmjEddjyOIKkR5tVkCaLCEz3pliW2xjzOg5PvN2J+
+         NjE1xRvgpudlkSFyms+XiKiSUy75uTwteOj/VikvF/j8wZf4BPsP8jVLHzEjA8nj27Cs
+         qOzA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=fI9WHgKaFp4DfI/TYFPMR/7QFlU9Q2XOkMBqxZUqqL0=;
+        b=InpI8lI5eW28J8icmHnxBZtcHQ+XJtGgFQr73lDKUNkRHt3h0dUEmn4l6NCTCVlZGN
+         s/kICMxAMCw2TZrXyA1C0+5UsYnlsFnKV3LXwYhFqKt/mAeX6n4Myr4gk//2ufKK4STN
+         VzQGPPbMihETMC1XO83RJXrfHel8TRMhv1dq/s/cXvSmyOAK/P3P+VadqhjVNavr7bdT
+         7pd9lSN9P/fWEG8cfzHjcxeoYINapoqXOlRDeFVQYO6ep30HpTHIonuqSiBlRzsqBBI0
+         XGkTQOEmteJN6cydfCos+nngiXxZSeMP9yBr0MXRMT7SeXNIilCP9JuZGeajxfAJS40d
+         7+XQ==
+X-Gm-Message-State: APjAAAVpsexLPp5I5sbX3JGptZlfo5C+u/yddpMYnamdib9Yyfsnl18Q
+        sq1Uffy/9oQBNP8ZYF4/Fvc=
+X-Google-Smtp-Source: APXvYqzD6PorXUKSy9cEuJdIbN1Rctlh83qXO8KyUBVbrVfEAS+q3ARGyT2uWi9i9VrHI3En/6wWFg==
+X-Received: by 2002:a62:6d01:: with SMTP id i1mr12543714pfc.94.1578595704837;
+        Thu, 09 Jan 2020 10:48:24 -0800 (PST)
+Received: from ast-mbp ([2620:10d:c090:200::3:d3c9])
+        by smtp.gmail.com with ESMTPSA id k44sm4125916pjb.20.2020.01.09.10.48.23
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 09 Jan 2020 10:48:24 -0800 (PST)
+Date:   Thu, 9 Jan 2020 10:48:22 -0800
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Andrii Nakryiko <andriin@fb.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@fb.com,
+        daniel@iogearbox.net, yhs@fb.com, kafai@fb.com,
+        andrii.nakryiko@gmail.com, kernel-team@fb.com
+Subject: Re: [PATCH bpf-next] selftests/bpf: add BPF_HANDLER, BPF_KPROBE, and
+ BPF_KRETPROBE macros
+Message-ID: <20200109184820.mvgtxql7435bhzx3@ast-mbp>
+References: <20191226211855.3190765-1-andriin@fb.com>
 MIME-Version: 1.0
-References: <157851776348.1732.12600714815781177085.stgit@ubuntu3-kvm2> <157851809847.1732.8255673984543824278.stgit@ubuntu3-kvm2>
-In-Reply-To: <157851809847.1732.8255673984543824278.stgit@ubuntu3-kvm2>
-From:   Song Liu <song@kernel.org>
-Date:   Thu, 9 Jan 2020 10:37:28 -0800
-X-Gmail-Original-Message-ID: <CAPhsuW4kjsDehABaN9JWegfNcu2J3u2K+=0vbxZQCO8172gQMg@mail.gmail.com>
-Message-ID: <CAPhsuW4kjsDehABaN9JWegfNcu2J3u2K+=0vbxZQCO8172gQMg@mail.gmail.com>
-Subject: Re: [bpf PATCH 4/9] bpf: sockmap, skmsg helper overestimates push,
- pull, and pop bounds
-To:     John Fastabend <john.fastabend@gmail.com>
-Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191226211855.3190765-1-andriin@fb.com>
+User-Agent: NeoMutt/20180223
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 8, 2020 at 1:15 PM John Fastabend <john.fastabend@gmail.com> wrote:
->
-> In the push, pull, and pop helpers operating on skmsg objects to make
-> data writable or insert/remove data we use this bounds check to ensure
-> specified data is valid,
->
->  /* Bounds checks: start and pop must be inside message */
->  if (start >= offset + l || last >= msg->sg.size)
->      return -EINVAL;
->
-> The problem here is offset has already included the length of the
-> current element the 'l' above. So start could be past the end of
-> the scatterlist element in the case where start also points into an
-> offset on the last skmsg element.
->
-> To fix do the accounting slightly different by adding the length of
-> the previous entry to offset at the start of the iteration. And
-> ensure its initialized to zero so that the first iteration does
-> nothing.
->
-> Fixes: 604326b41a6fb ("bpf, sockmap: convert to generic sk_msg interface")
-> Fixes: 6fff607e2f14b ("bpf: sk_msg program helper bpf_msg_push_data")
-> Fixes: 7246d8ed4dcce ("bpf: helper to pop data from messages")
-> Signed-off-by: John Fastabend <john.fastabend@gmail.com>
+On Thu, Dec 26, 2019 at 01:18:55PM -0800, Andrii Nakryiko wrote:
+> Streamline BPF_TRACE_x macro by moving out return type and section attribute
+> definition out of macro itself. That makes those function look in source code
+> similar to other BPF programs. Additionally, simplify its usage by determining
+> number of arguments automatically (so just single BPF_TRACE vs a family of
+> BPF_TRACE_1, BPF_TRACE_2, etc). Also, allow more natural function argument
+> syntax without commas inbetween argument type and name.
+> 
+> Given this helper is useful not only for tracing tp_btf/fenty/fexit programs,
+> but could be used for LSM programs and others following the same pattern,
+> rename BPF_TRACE macro into more generic BPF_HANDLER. Existing BPF_TRACE_x
+> usages in selftests are converted to new BPF_HANDLER macro.
+> 
+> Following the same pattern, define BPF_KPROBE and BPF_KRETPROBE macros for
+> nicer usage of kprobe/kretprobe arguments, respectively. BPF_KRETPROBE, adopts
+> same convention used by fexit programs, that last defined argument is probed
+> function's return result.
+> 
+> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+...
+> +
+> +#define BPF_HANDLER(name, args...)					    \
+> +name(unsigned long long *ctx);						    \
+> +static __always_inline typeof(name(0)) ____##name(args);		    \
+> +typeof(name(0)) name(unsigned long long *ctx)				    \
+> +{									    \
+> +	_Pragma("GCC diagnostic push")					    \
+> +	_Pragma("GCC diagnostic ignored \"-Wint-conversion\"")		    \
+> +	return ____##name(___bpf_ctx_cast(args));			    \
+> +	_Pragma("GCC diagnostic pop")					    \
 
-This is pretty tricky... But it looks right.
+It says "GCC ..", but does it actually work with gcc?
+If the answer is no, I think it's still ok, but would be good to document.
 
-Acked-by: Song Liu <songliubraving@fb.com>
+Other than the above BPF_HANDLER, BPF_KPROBE, BPF_KRETPROBE distinction make sense.
+Please document it. It's not obvious when to use each one.
+
+Also the intent is do let users do s/BPF_KRETPROBE/BPF_HANDLER/ conversion
+when they transition from kretprobe to fexit without changing anything else
+in the function body and function declaration? That's neat if that can work.
