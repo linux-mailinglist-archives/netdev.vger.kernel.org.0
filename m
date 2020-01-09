@@ -2,80 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D911E1360B3
-	for <lists+netdev@lfdr.de>; Thu,  9 Jan 2020 20:05:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C5E9A1360C0
+	for <lists+netdev@lfdr.de>; Thu,  9 Jan 2020 20:08:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388661AbgAITFQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jan 2020 14:05:16 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:57162 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729054AbgAITFP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jan 2020 14:05:15 -0500
-Received: from localhost (unknown [IPv6:2601:601:9f00:1c3::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id B72701584B060;
-        Thu,  9 Jan 2020 11:05:14 -0800 (PST)
-Date:   Thu, 09 Jan 2020 11:05:14 -0800 (PST)
-Message-Id: <20200109.110514.747612850299504416.davem@davemloft.net>
-To:     mathew.j.martineau@linux.intel.com
-Cc:     netdev@vger.kernel.org, mptcp@lists.01.org, ast@kernel.org,
-        daniel@iogearbox.net, bpf@vger.kernel.org, pabeni@redhat.com,
-        matthieu.baerts@tessares.net
-Subject: Re: [PATCH net-next v7 02/11] sock: Make sk_protocol a 16-bit value
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200109155924.30122-3-mathew.j.martineau@linux.intel.com>
-References: <20200109155924.30122-1-mathew.j.martineau@linux.intel.com>
-        <20200109155924.30122-3-mathew.j.martineau@linux.intel.com>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 09 Jan 2020 11:05:15 -0800 (PST)
+        id S2388667AbgAITIZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jan 2020 14:08:25 -0500
+Received: from mga07.intel.com ([134.134.136.100]:22128 "EHLO mga07.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730193AbgAITIY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 9 Jan 2020 14:08:24 -0500
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga105.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 09 Jan 2020 11:08:24 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.69,414,1571727600"; 
+   d="scan'208";a="371388510"
+Received: from jekeller-desk.amr.corp.intel.com ([10.166.244.172])
+  by orsmga004.jf.intel.com with ESMTP; 09 Jan 2020 11:08:23 -0800
+From:   Jacob Keller <jacob.e.keller@intel.com>
+To:     netdev@vger.kernel.org
+Cc:     valex@mellanox.com, jiri@resnulli.us,
+        Jacob Keller <jacob.e.keller@intel.com>
+Subject: [PATCH 1/2] devlink: correct misspelling of snapshot
+Date:   Thu,  9 Jan 2020 11:08:20 -0800
+Message-Id: <20200109190821.1335579-1-jacob.e.keller@intel.com>
+X-Mailer: git-send-email 2.25.0.rc1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Mat Martineau <mathew.j.martineau@linux.intel.com>
-Date: Thu,  9 Jan 2020 07:59:15 -0800
+The function to obtain a unique snapshot id was mistakenly typo'd as
+devlink_region_shapshot_id_get. Fix this typo by renaming the function
+and all of its users.
 
-> Match the 16-bit width of skbuff->protocol. Fills an 8-bit hole so
-> sizeof(struct sock) does not change.
-> 
-> Also take care of BPF field access for sk_type/sk_protocol. Both of them
-> are now outside the bitfield, so we can use load instructions without
-> further shifting/masking.
-> 
-> v5 -> v6:
->  - update eBPF accessors, too (Intel's kbuild test robot)
-> v2 -> v3:
->  - keep 'sk_type' 2 bytes aligned (Eric)
-> v1 -> v2:
->  - preserve sk_pacing_shift as bit field (Eric)
-> 
-> Cc: Alexei Starovoitov <ast@kernel.org>
-> Cc: Daniel Borkmann <daniel@iogearbox.net>
-> Cc: bpf@vger.kernel.org
-> Co-developed-by: Paolo Abeni <pabeni@redhat.com>
-> Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-> Co-developed-by: Matthieu Baerts <matthieu.baerts@tessares.net>
-> Signed-off-by: Matthieu Baerts <matthieu.baerts@tessares.net>
-> Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
+Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
+---
+ drivers/net/ethernet/mellanox/mlx4/crdump.c | 2 +-
+ drivers/net/netdevsim/dev.c                 | 2 +-
+ include/net/devlink.h                       | 2 +-
+ net/core/devlink.c                          | 6 +++---
+ 4 files changed, 6 insertions(+), 6 deletions(-)
 
-This is worrisome for me.
+diff --git a/drivers/net/ethernet/mellanox/mlx4/crdump.c b/drivers/net/ethernet/mellanox/mlx4/crdump.c
+index eaf08f7ad128..64ed725aec28 100644
+--- a/drivers/net/ethernet/mellanox/mlx4/crdump.c
++++ b/drivers/net/ethernet/mellanox/mlx4/crdump.c
+@@ -182,7 +182,7 @@ int mlx4_crdump_collect(struct mlx4_dev *dev)
+ 	crdump_enable_crspace_access(dev, cr_space);
+ 
+ 	/* Get the available snapshot ID for the dumps */
+-	id = devlink_region_shapshot_id_get(devlink);
++	id = devlink_region_snapshot_id_get(devlink);
+ 
+ 	/* Try to capture dumps */
+ 	mlx4_crdump_collect_crspace(dev, cr_space, id);
+diff --git a/drivers/net/netdevsim/dev.c b/drivers/net/netdevsim/dev.c
+index 059711edfc61..4b39aba2e9c4 100644
+--- a/drivers/net/netdevsim/dev.c
++++ b/drivers/net/netdevsim/dev.c
+@@ -53,7 +53,7 @@ static ssize_t nsim_dev_take_snapshot_write(struct file *file,
+ 
+ 	get_random_bytes(dummy_data, NSIM_DEV_DUMMY_REGION_SIZE);
+ 
+-	id = devlink_region_shapshot_id_get(priv_to_devlink(nsim_dev));
++	id = devlink_region_snapshot_id_get(priv_to_devlink(nsim_dev));
+ 	err = devlink_region_snapshot_create(nsim_dev->dummy_region,
+ 					     dummy_data, id, kfree);
+ 	if (err) {
+diff --git a/include/net/devlink.h b/include/net/devlink.h
+index 47f87b2fcf63..38b4acb93f74 100644
+--- a/include/net/devlink.h
++++ b/include/net/devlink.h
+@@ -938,7 +938,7 @@ struct devlink_region *devlink_region_create(struct devlink *devlink,
+ 					     u32 region_max_snapshots,
+ 					     u64 region_size);
+ void devlink_region_destroy(struct devlink_region *region);
+-u32 devlink_region_shapshot_id_get(struct devlink *devlink);
++u32 devlink_region_snapshot_id_get(struct devlink *devlink);
+ int devlink_region_snapshot_create(struct devlink_region *region,
+ 				   u8 *data, u32 snapshot_id,
+ 				   devlink_snapshot_data_dest_t *data_destructor);
+diff --git a/net/core/devlink.c b/net/core/devlink.c
+index 4c63c9a4c09e..b6fc67dbd612 100644
+--- a/net/core/devlink.c
++++ b/net/core/devlink.c
+@@ -7563,7 +7563,7 @@ void devlink_region_destroy(struct devlink_region *region)
+ EXPORT_SYMBOL_GPL(devlink_region_destroy);
+ 
+ /**
+- *	devlink_region_shapshot_id_get - get snapshot ID
++ *	devlink_region_snapshot_id_get - get snapshot ID
+  *
+  *	This callback should be called when adding a new snapshot,
+  *	Driver should use the same id for multiple snapshots taken
+@@ -7571,7 +7571,7 @@ EXPORT_SYMBOL_GPL(devlink_region_destroy);
+  *
+  *	@devlink: devlink
+  */
+-u32 devlink_region_shapshot_id_get(struct devlink *devlink)
++u32 devlink_region_snapshot_id_get(struct devlink *devlink)
+ {
+ 	u32 id;
+ 
+@@ -7581,7 +7581,7 @@ u32 devlink_region_shapshot_id_get(struct devlink *devlink)
+ 
+ 	return id;
+ }
+-EXPORT_SYMBOL_GPL(devlink_region_shapshot_id_get);
++EXPORT_SYMBOL_GPL(devlink_region_snapshot_id_get);
+ 
+ /**
+  *	devlink_region_snapshot_create - create a new snapshot
+-- 
+2.25.0.rc1
 
-We have lots of places that now are going to be assigning  sk->sk_protocol
-into a u8 somewhere else.  A lot of them are ok because limits are enforced
-in various places, but for example:
-
-net/ipv6/udp.c:	fl6.flowi6_proto = sk->sk_protocol;
-net/l2tp/l2tp_ip6.c:	fl6.flowi6_proto = sk->sk_protocol;
-
-net/ipv6/inet6_connection_sock.c:	fl6->flowi6_proto = sk->sk_protocol;
-
-net/ipv6/af_inet6.c:		fl6.flowi6_proto = sk->sk_protocol;
-net/ipv6/datagram.c:	fl6->flowi6_proto = sk->sk_protocol;
-
-This is one just one small example situation, where flowi6_proto is a u8.
