@@ -2,95 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 77089136148
-	for <lists+netdev@lfdr.de>; Thu,  9 Jan 2020 20:41:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8B32B136149
+	for <lists+netdev@lfdr.de>; Thu,  9 Jan 2020 20:42:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731601AbgAITlM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jan 2020 14:41:12 -0500
-Received: from mail-qv1-f68.google.com ([209.85.219.68]:43240 "EHLO
-        mail-qv1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728567AbgAITlM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jan 2020 14:41:12 -0500
-Received: by mail-qv1-f68.google.com with SMTP id p2so3473270qvo.10
-        for <netdev@vger.kernel.org>; Thu, 09 Jan 2020 11:41:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=Q4vnsEfzNIrALLcCZXDUP8/YAasqG1VcRqRjbyzH4Pk=;
-        b=zl8EIOKCOGCZkvs7u4amSbTiz9Tx441o70QA7dyqSM0Fjf3SBq7qSa+D0nxL9aDHem
-         LujGcwK3HNSN+RPUEjBKUscnOTMSBeBG4u2G8ATC9A8+XBr465SgXY/evCqlfNvU0isv
-         3AQudtni0bk5TTgGRVeqvxezZKw/DJiVvXvCz+bZwGv1J2nHPwstgR6CIrLX2XylwhT2
-         Mr6rQJmtbJI5n99M7HuS4yJuHekrhp/AC6gp2ihg3gviAsNjZ5rbyKeM78otiLOm20+Y
-         VFrFZRboUslMG5S8x5khsB9aKfnR154LLtSS/jFPDH8slKVy9LkiJ2O3BOnk74fYOXBc
-         3UAA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=Q4vnsEfzNIrALLcCZXDUP8/YAasqG1VcRqRjbyzH4Pk=;
-        b=nqmiItmpzYPtTau+d+ZHwp4uWywPhU/GhfL4ApYE61aMvITRXBAjEbihagKBeRCvbS
-         L+Wh0Xt9HX8kzJ1gq7EiV8DWsQ+u6lCmmrhE7kezRe4I9XxEhiziX+c7ST0Rx4L5GGl+
-         hn1tmU7Mv6rdpPndmDc210U1nc9BNWb7j2eaXQSaPMA8EgE+7iB85ZtH/82KpOTYEkkm
-         rFtj8ZMWuy9kaWK8I6ncxMjM7Mlb5UheVPid0QJDnZT2DD8RNwPV8FrF2Bx7xSY7uLOK
-         /xwG8sMxlKwq4ncfHI0Y+hpZPMHaPc0G+uLTJrUIIKFvyKQkLgGE73+XZZAbpKRVHtFd
-         dyKQ==
-X-Gm-Message-State: APjAAAXZ58xGKpSCp4bTJEnmhv2azHh1+Gv3PbB+givUlhF8JmMKLb7M
-        hxKzGYmgs4x80/nbMGBKlM6grw==
-X-Google-Smtp-Source: APXvYqwoX3MLGoSE2L8uKK84oTc1WHbGM0aK/cg8QIKuOJetoSr3FJUo2lYXObUVYAd1xhNHFLw7/w==
-X-Received: by 2002:a0c:e610:: with SMTP id z16mr10254764qvm.215.1578598871363;
-        Thu, 09 Jan 2020 11:41:11 -0800 (PST)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id m5sm3757474qtq.6.2020.01.09.11.41.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Jan 2020 11:41:11 -0800 (PST)
-Date:   Thu, 9 Jan 2020 11:41:05 -0800
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Jacob Keller <jacob.e.keller@intel.com>
-Cc:     Alex Vesker <valex@mellanox.com>, davem@davemloft.net,
-        Jiri Pirko <jiri@mellanox.com>, linuxarm@huawei.com,
-        linyunsheng@huawei.com, netdev@vger.kernel.org,
-        Jiri Pirko <jiri@resnulli.us>
-Subject: Re: [question] About triggering a region snapshot through the
- devlink cmd
-Message-ID: <20200109114105.142dc3dd@cakuba.netronome.com>
-In-Reply-To: <18867ab8-6200-20c6-6ce0-8c123609622f@intel.com>
-References: <02874ECE860811409154E81DA85FBB58B26FA36F@fmsmsx101.amr.corp.intel.com>
-        <HE1PR0502MB3771BD83B728249E6C21967AC33E0@HE1PR0502MB3771.eurprd05.prod.outlook.com>
-        <HE1PR0502MB3771D512C2D23F551EB922F4C33E0@HE1PR0502MB3771.eurprd05.prod.outlook.com>
-        <18867ab8-6200-20c6-6ce0-8c123609622f@intel.com>
-Organization: Netronome Systems, Ltd.
+        id S1731631AbgAITmb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jan 2020 14:42:31 -0500
+Received: from mout.gmx.net ([212.227.15.18]:40623 "EHLO mout.gmx.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728567AbgAITmb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 9 Jan 2020 14:42:31 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1578598947;
+        bh=IyC0rvUgmhtgQMim64qJtNLHuXiIT/7S3HN5+xHDVe0=;
+        h=X-UI-Sender-Class:Reply-To:Subject:From:To:Cc:References:Date:
+         In-Reply-To;
+        b=ihiLG+u8Vd7rlYRJAeT25z4OCsL5C9mrWpLzMNGx02xrFbOMyc4rLrMNpVpCzwuF1
+         dAczoUgEEjptFDoIcHiccI+5OlQDtpN7Bd7hHfQ1PsfyY/khNXBObQiy9xZIGYs1Ci
+         ZESoNfHssdYmZgvL8A6U89npGHgL8DWmsoFKzBD0=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [192.168.84.205] ([95.81.25.209]) by mail.gmx.com (mrgmx004
+ [212.227.17.190]) with ESMTPSA (Nemesis) id 1M9FnZ-1ijKqK1Vdn-006RSi; Thu, 09
+ Jan 2020 20:42:27 +0100
+Reply-To: vtol@gmx.net
+Subject: Re: [drivers/net/phy/sfp] intermittent failure in state machine
+ checks
+From:   =?UTF-8?B?0b3SieG2rOG4s+KEoA==?= <vtol@gmx.net>
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Cc:     Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org
+References: <d8d595ff-ec35-3426-ec43-9afd67c15e3d@gmx.net>
+ <20200109144106.GA24459@lunn.ch>
+ <513d6fe7-65b2-733b-1d17-b3a40b8161cf@gmx.net>
+ <20200109155809.GQ25745@shell.armlinux.org.uk>
+ <bb2c2eed-5efa-00f6-0e52-1326669c1b0d@gmx.net>
+ <20200109174322.GR25745@shell.armlinux.org.uk>
+ <acd4d7e4-7f8e-d578-c9c9-b45f062f4fe2@gmx.net>
+Message-ID: <7ebee7c5-4bf3-134d-bc57-ea71e0bdfc60@gmx.net>
+Date:   Thu, 9 Jan 2020 19:42:27 +0000
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:68.0) Gecko/20100101 Firefox/68.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <acd4d7e4-7f8e-d578-c9c9-b45f062f4fe2@gmx.net>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: quoted-printable
+Content-Language: en-GB
+X-Provags-ID: V03:K1:MPvSpxp1EHUkO35+yhb1Maq8kmCaOVAnXr4EticMR8G5cs52w8o
+ Ne8x7RoTBKtH70nWpIBIyn1DSHR0hkRbH8UmHctT1RpgwsIekinFa0QMcZWTDT4oOxCUJlh
+ GXyszC1/NHFqbvqAZz9pnayA5mmUR3Y0Q/iDiY2jnLEJes0+NPH+rI7z4/ycUKot774hj55
+ yICY1TyOFGCfHaAxywqGA==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:0Dd8HncLj64=:g79unTjya/KoQQKxuiP3E/
+ MyVcvV4joSqYq1cf4c8SiDy5Zr/IDSXKJkCDvq4pvNTgW1B+qPeSphnQMkglYE2JGZCIIhp3Y
+ cQ+vC/MqrTltxCoxQbjwtZCTtAtv/RF6xIQgwU/d0GkA5simFZdpH15lX+dPV23WmZEuD/joF
+ xNhaJPq9YS1vE63Y+ZxaZuQa056K2bo/bSIkmZmrZIu9WpgNvum4W5ZbRSJnmuD2sGyyh3NZi
+ H5LrU4U93KcxY1DGLyGSuR+tOPQiOclKdMkbzRSAmyPKPMeAoiRON34pnn54sLTisv/C+rI/t
+ rf7pbGYiAfUvzLuCZyC1cnNuZ1z7tiDjG13w5lIq3b/8PVfN6Zwep3TOnTcgMdUR3E+Mk9IUQ
+ hG9TO88zlXRVOKBUqg/tzjWu/glhGZHYBmQ+z+ByfJ6E9Fwxv9tQrEN3RLOpYnLNRR31d+9sq
+ AeLcZa0SAbp1tL7CnycFixk35kZfOnAbZX0GGHEQOIxaM3SRy/pp7p5ggaC3lFrlyQtvHgAMl
+ QCc1FsmrFbCZ43CCPcMfPzCGji9TZMYDOYoBxSC4Uv/18Nluj6m8OH4YQk8MPn3h38Js2U2nF
+ MXjsmRbbqCU90TiNhTCDJAFIDqwGDQb5cfaGZ8k07PH1UeRZv0IyGcyAgpv2hBgCSNx3bQub9
+ 2xbdyNZHHivjLu92S1Fk8jE3SD7cHZFsD1O5wPz+9H1i14FfyVkxLcqTvnuFdnSp4VDzKpbUC
+ XSMQrCpgufoEmMHvK2uMGtaEaXWTJ8EbgVwG7G2ezzfEnRi18AsbRWcZReBVWHJM5944D9wZg
+ Ie/BOTyS87ZAMxow/DPhhps5C7/TpOQEn8MFLixAjF8OXJ6WJEOJqdVwb0LcHCp2TSL4iC2us
+ 7xr5IsO0J+tR/e7Mq0qoY5hgs2c5WQTGiDfEDM72QxfLAGd4ibgm/dzQ3I3e9lVIK2BbMWhjW
+ x/0afknVaFxdY1c41+fAYZ++y36vq26wMGjIgV0E88FcQFwaZl0e6BMhlVW0ji+KphxCqpU40
+ PFY6vqr4FxETEZ5xyJNX022kzQdkTuGl+MlxIERTUQBRbwK5anxP0VC3837wJdOHhIRLZtMPn
+ wE+Xf93DLN8eQxu7YprGQnIns1/k72FLA4wAaGVt5YEOTfUWp+NLX9aUqcb8se9zLEaIhbfug
+ a/NhwIkp6WcQgJv0tcwhcevfJYhQJhJNzRj/nBedo/vsi2W2xtcXmhByx/j9TKdZbSCZbBOIU
+ tgHFTwgssCTUTCPmquzeSdwRemEM4eHNdQhvX9A==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 8 Jan 2020 11:14:38 -0800, Jacob Keller wrote:
-> On 1/8/2020 4:15 AM, Alex Vesker wrote:
-> > I am a biased here but, devlink trigger can be useful... I am not aware
-> > of other alternatives,
-> > devlink health has it`s benefits but it is not devlink region. If you
-> > will decide to implement I can
-> > review the design, if Jiri is ok with the idea.
-> >   
-> 
-> Sure. I am not quite sure how long it will be till patches are on the
-> list, as I'm currently in the process of implementing devlink support
-> for one of the Intel drivers, and would be using that driver as an example.
-> 
-> Actually, come to think of it, I may just implement the region trigger
-> and use netdevsim as the example. That should enable those patches to
-> hit the list sooner than the patches for implementing devlink for the
-> ice driver.
+On 09/01/2020 19:01, =D1=BD=D2=89=E1=B6=AC=E1=B8=B3=E2=84=A0 wrote:
+> On 09/01/2020 17:43, Russell King - ARM Linux admin wrote:
+>> On Thu, Jan 09, 2020 at 05:35:23PM +0000, =D1=BD=D2=89=E1=B6=AC=E1=B8=B3=
+=E2=84=A0 wrote:
+>>> Thank you for the extensive feedback and explanation.
+>>>
+>>> Pardon for having mixed up the semantics on module specifications=20
+>>> vs. EEPROM
+>>> dump...
+>>>
+>>> The module (chipset) been designed by Metanoia, not sure who is the=20
+>>> actual
+>>> manufacturer, and probably just been branded Allnet.
+>>> The designer provides some proprietary management software (called=20
+>>> EBM) to
+>>> their wholesale buyers only
+>> I have one of their early MT-V5311 modules, but it has no accessible
+>> EEPROM, and even if it did, it would be of no use to me being
+>> unapproved for connection to the BT Openreach network.=C2=A0 (BT SIN 4=
+98
+>> specifies non-standard power profile to avoid crosstalk issues with
+>> existing ADSL infrastructure, and I believe they regularly check the
+>> connected modem type and firmware versions against an approved list.)
+>>
+>> I haven't noticed the module I have asserting its TX_FAULT signal,
+>> but then its RJ45 has never been connected to anything.
+>>
+>
+> The curious (and sort of inexplicable) thing is that the module in=20
+> general works, i.e. at some point it must pass the sm checks or=20
+> connectivity would be failing constantly and thus the module being=20
+> generally unusable.
+>
+> The reported issues however are intermittent, usually reliably=20
+> reproducible with
+>
+> ifdown <iface> && ifup <iface>
+>
+> or rebooting the router that hosts the module.
+>
+> If some times passes, not sure but seems in excess of 3 minutes,=20
+> between ifdown and ifup the sm checks mostly are not failing.
+> It somehow "feels" that the module is storing some link signal=20
+> information in a register which does not suit the sm check routine and =
 
-Just to be clear - you mean implement triggering the dump over netlink?
-FWIW that seems fairly reasonable to me, but please do explain the use
-case clearly in the patches.
+> only when that register clears the sm check routine passes and=20
+> connectivity is restored.
+> ____
+>
+> Since there are probably other such SFP modules, xDSL and g.fast, out=20
+> there that do not provide laser safety circuitry by design (since not=20
+> providing connectivity over fibre) would it perhaps not make sense to=20
+> try checking for the existence of laser safety circuitry first prior=20
+> getting to the sm checks?
+> ____
+>
 
-netdevsim is a driver mock up, and debugfs is its control interface.
-The trigger there is to simulate an async device error, this trigger
-should not be used as example or justification for anything real driver
-may need.
+I am wondering whether this mentioned in=20
+https://gitlab.labs.nic.cz/turris/turris-build/issues/89 is the cause of =
+
+the issue perhaps:
+
+Even when/after the SFP module is recognized and the link mode it set=20
+for the NIC to the proper value there can still be the link-up signal=20
+mismatch that we have seen on many non-ethernet SFPs. The thing is that=20
+one of the SFP pins is called LOS (loss of signal) and when the pin is=20
+in active state it is being interpreted by the Linux kernel as "link is=20
+down", turn off the NIC. Unfortunatelly we have seen chicken-and-egg=20
+problem with some GPON and DSL SFPs - the SFP does not come up and=20
+deassert LOS unless there is SGMII link from NIC and NIC is not coming=20
+up unless LOS is deasserted.
+
+
+
+
