@@ -2,77 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D25E135E1C
-	for <lists+netdev@lfdr.de>; Thu,  9 Jan 2020 17:22:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 00AF7135E85
+	for <lists+netdev@lfdr.de>; Thu,  9 Jan 2020 17:43:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733095AbgAIQWH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jan 2020 11:22:07 -0500
-Received: from mail-ed1-f67.google.com ([209.85.208.67]:33825 "EHLO
-        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731343AbgAIQWG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jan 2020 11:22:06 -0500
-Received: by mail-ed1-f67.google.com with SMTP id l8so6140586edw.1
-        for <netdev@vger.kernel.org>; Thu, 09 Jan 2020 08:22:05 -0800 (PST)
+        id S1730602AbgAIQny (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jan 2020 11:43:54 -0500
+Received: from mail-lj1-f195.google.com ([209.85.208.195]:39713 "EHLO
+        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725791AbgAIQny (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jan 2020 11:43:54 -0500
+Received: by mail-lj1-f195.google.com with SMTP id l2so7953732lja.6;
+        Thu, 09 Jan 2020 08:43:52 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cumulusnetworks.com; s=google;
+        d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=YqRY3/0o9dC9SLR0E/AbmkzMGeajnGiCClhJJgN0l/c=;
-        b=YdyElQCH47WiNjIgR+kZ1xIeeO3h/KkvgjBJR+0wwAIL8zuO1ElRkrjmw2x/uBAj32
-         P6R92Ur8PHhP0rOShoSyF7AnYZBr5H68k1IiAql/szXSicCAPcSwswVY60sDgfS7zjL8
-         NoApCOlBjs/giRdvMK5qk3MRTYWcf7EmW2IIA=
+        bh=LstMW2CeiYcPoqZkf4bg1xOXdmhfKRp00gDByJT6DSE=;
+        b=kltnbXuntI/H/jDYjgovcp6nWBDQMzX3eS+ZtOdRWXZHypHJmK7SvjMAjrq0Zshk4z
+         4QfdSdx/X28cHxEFSMGwFmz9CqFZlJOF7L3jFxQTs/wu3y3efGmBHC+R8Ecd2YKotN59
+         y5sCmzGWO8rNlPfiOpq/TLswVJ57CcHyRcR1hxixohmyKOmSZpvSorYVh3fMSE5jSqn2
+         NfwfS561T0wPWD3JMJz2kBp1P8LzBDeaYbQj5x0jkAEopP469ZoXhal47MOK12NtvYdL
+         pXOO/JZNulPWw0ym+LN08w0zw4ONdkt6CW4EoD23WabPHFRzM8ktNYnF58mFcW0Z0uhc
+         vwkQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=YqRY3/0o9dC9SLR0E/AbmkzMGeajnGiCClhJJgN0l/c=;
-        b=VzDHRj5QqkguP3CRA6n4vVrDiv/wBv19YEirlJpgV16pEktcIFeS4UHQBoQqMkU1zb
-         7fpcXUXL/IgUAVHF1XLIGEMFe4xkmnRtnuvHJhcmfTQKQe+h4rdQhYGGWpJvJXNK50BS
-         qfBsFzB5qJMh384+b92ng+Jnxy+4YQ9arF+pYMkVUvtDt9Pt6YV86mgs0FzKc4zFCt0Y
-         BdYBFVOxjm1baOY9nvx3ubryWjy06YU6whlOM6s/prw1dQXjYRiaq84ejPnvPCQH4tXM
-         fsrdZxtaMxR58kBHYK5hesoFSJZJL+Bkc6arMmwNPnNUtgB75FPUhKGLARNv/EZSYJu6
-         ruEA==
-X-Gm-Message-State: APjAAAWC/ZJZxmgTs7QfXkRgGekyeUC3LcXMh3ALZeobOKg6HAO0W7AY
-        L6ZO1IFcRldivDOW26jdasQYH2jqqPifgl/PV7uWvQ==
-X-Google-Smtp-Source: APXvYqwlqS2n/fOPF8yvlTtnPUKvIc2ov7IIFH/LsC+tfvyP8nC5SHfrqJM+tixVYznf5O+UZL0y4ou97mlONNVkao4=
-X-Received: by 2002:a05:6402:1496:: with SMTP id e22mr12050287edv.132.1578586925132;
- Thu, 09 Jan 2020 08:22:05 -0800 (PST)
+        bh=LstMW2CeiYcPoqZkf4bg1xOXdmhfKRp00gDByJT6DSE=;
+        b=gaLJeF7955HVI6E9iuDzx5J7oGWHAo7lulgZ6lLxS8OoY7jqktfj2+vDTWcxXy3mIx
+         Pkz2sf9hiTwMw388lyUWDwBegcSZ0CQLGJrCqXB5GBjAHGmrzDz1Ll+PuOSMiZiG6wNL
+         eU+SY2R88ffBSzDHFr+EB7L3Rlojsn6E38CxvOFGL2k3dOg2rkfQhlprMK8+LNXPv5ZH
+         SBA0tkn3DroGBfUVJYXELieiKzAf4yCaq2OKPifEr0DLg4tb4rrE8/CHrMyeHxv/Mp5M
+         vKVeNzYpKwRlDC0QHhVstrwW58VcYBGinVBEqVbPj0k69nUHtgJWSww+8Q2fqUrhiy67
+         NxOQ==
+X-Gm-Message-State: APjAAAXHCOkATmzLBNX7DD3XqpHXxiXq4E3kqQoAI1ZYsvPNtkmR1qPN
+        Wro8kDywMAFasxb0do8meqt0lgYpvhItemws1h4=
+X-Google-Smtp-Source: APXvYqwBiTR85br0hmaAJGwV0RxrMee7f0r77b5ZsIRyEDGgSErSKU8WL1jR1AcYkwFujc2mwtkGEZVb1RGcu+HEWM4=
+X-Received: by 2002:a2e:9cd8:: with SMTP id g24mr7014355ljj.243.1578588231956;
+ Thu, 09 Jan 2020 08:43:51 -0800 (PST)
 MIME-Version: 1.0
-References: <20200107154517.239665-1-idosch@idosch.org> <20200107154517.239665-5-idosch@idosch.org>
-In-Reply-To: <20200107154517.239665-5-idosch@idosch.org>
-From:   Roopa Prabhu <roopa@cumulusnetworks.com>
-Date:   Thu, 9 Jan 2020 08:24:55 -0800
-Message-ID: <CAJieiUhXp9=-L1Qmy0ssBdsasVw5Qnu5_NcNMaY7VLKQ-kFyPA@mail.gmail.com>
-Subject: Re: [PATCH net-next 04/10] ipv6: Add "offload" and "trap" indications
- to routes
-To:     Ido Schimmel <idosch@idosch.org>
-Cc:     netdev <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        David Ahern <dsahern@gmail.com>, mlxsw <mlxsw@mellanox.com>,
-        Ido Schimmel <idosch@mellanox.com>
+References: <20200108192132.189221-1-sdf@google.com>
+In-Reply-To: <20200108192132.189221-1-sdf@google.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Thu, 9 Jan 2020 08:43:40 -0800
+Message-ID: <CAADnVQJX9b22SuzgPoMUjyaeUaJA2cvgybZ-KhYHEWKfi_FV7w@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] selftests/bpf: restore original comm in test_overhead
+To:     Stanislav Fomichev <sdf@google.com>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 7, 2020 at 7:45 AM Ido Schimmel <idosch@idosch.org> wrote:
+On Wed, Jan 8, 2020 at 11:21 AM Stanislav Fomichev <sdf@google.com> wrote:
 >
-> From: Ido Schimmel <idosch@mellanox.com>
+> test_overhead changes task comm in order to estimate BPF trampoline
+> overhead but never sets the comm back to the original one.
+> We have the tests (like core_reloc.c) that have 'test_progs'
+> as hard-coded expected comm, so let's try to preserve the
+> original comm.
 >
-> In a similar fashion to previous patch, add "offload" and "trap"
-> indication to IPv6 routes.
+> Currently, everything works because the order of execution is:
+> first core_recloc, then test_overhead; but let's make it a bit
+> future-proof.
 >
-> This is done by using two unused bits in 'struct fib6_info' to hold
-> these indications. Capable drivers are expected to set these when
-> processing the various in-kernel route notifications.
+> Other related changes: use 'test_overhead' as new comm instead of
+> 'test' to make it easy to debug and drop '\n' at the end.
 >
-> Signed-off-by: Ido Schimmel <idosch@mellanox.com>
-> Reviewed-by: Jiri Pirko <jiri@mellanox.com>
-> ---
+> Signed-off-by: Stanislav Fomichev <sdf@google.com>
 
-Acked-by: Roopa Prabhu <roopa@cumulusnetworks.com>
-
-Nice, Thanks Ido!
+Applied. Thanks
