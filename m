@@ -2,73 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 03C211350D5
-	for <lists+netdev@lfdr.de>; Thu,  9 Jan 2020 02:05:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B67921350D9
+	for <lists+netdev@lfdr.de>; Thu,  9 Jan 2020 02:07:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727794AbgAIBFK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jan 2020 20:05:10 -0500
-Received: from mail.kernel.org ([198.145.29.99]:58976 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727767AbgAIBFK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 8 Jan 2020 20:05:10 -0500
-Received: from mail-qv1-f50.google.com (mail-qv1-f50.google.com [209.85.219.50])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id BCBC02072A;
-        Thu,  9 Jan 2020 01:05:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1578531909;
-        bh=FNlmc+/eAgBXxoCL8FGWCsvNNUglyxf7b3ZtgzFhf18=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=WeaTpxeV9OAgLar52QwUtI3qK7yFzKuYCCJIGy+UVVyku76D09Otq/YfzEIuNKR9S
-         tqNL/T3KyG9thrh8orphIlmOoQprjpC2NLl9SsiQlmytZ0vMWXeUKxWQMQmzjLCo5U
-         lZt4ZwGfBiokTAmrDUdA9XoeICVpbHJ+DuL511Ps=
-Received: by mail-qv1-f50.google.com with SMTP id n8so2273520qvg.11;
-        Wed, 08 Jan 2020 17:05:09 -0800 (PST)
-X-Gm-Message-State: APjAAAUUN00Xf3MqbEy29YkGZVLRYhSCXiNClhFFFyPrT9Xx6iwvKJ8q
-        gaeSxHk2+Et04QZIcCN9OzfQIsdqfPWFIe7n904=
-X-Google-Smtp-Source: APXvYqxmjiW+C9Z/rsYFmn2j5Y0xCdedwR5S6HI5cRWGgaN9Qz3VysE8C8EzQwxHlIihyiw/OfzIvfijh61/lmIy0oU=
-X-Received: by 2002:a05:6214:923:: with SMTP id dk3mr6437811qvb.96.1578531908825;
- Wed, 08 Jan 2020 17:05:08 -0800 (PST)
+        id S1727703AbgAIBH1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jan 2020 20:07:27 -0500
+Received: from mail-qk1-f194.google.com ([209.85.222.194]:43725 "EHLO
+        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726654AbgAIBH1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jan 2020 20:07:27 -0500
+Received: by mail-qk1-f194.google.com with SMTP id t129so4502959qke.10;
+        Wed, 08 Jan 2020 17:07:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:date:user-agent:in-reply-to:references:mime-version
+         :content-transfer-encoding:subject:to:cc:message-id;
+        bh=Y/4MDExChkZau02Wyj1Y9rypHfHdC+K+/ULNVewLyV4=;
+        b=AdLvJBTLCdz1L+u7Aal3o+we9LitdL6/Zr1Xy9Yq1UtZJwDtSR8UMYzGWwqQO/rr+Z
+         zRAKhVebPSMisthZ0R2LPsrWcUozqT6pgOgw+4Y3+XQ5JnzVu2Jk1gSRcYGOGo/qYl6z
+         uOEnPQokz3CCjhCdQuPw9rK5uv5lY/ZOtEbAasa6TJ5NdumJawg7BZIPoD1uM6zIBIV4
+         xrNUImt7YTrie+PeUOHPX87UG9k8KQC0PgA4B4HwSnn84Kv6BYacKy1MMiq+nE89hagI
+         FnoHpANU24JkVeCGwZeHXdN85kUarVf2FuD74YtWmgjOJvFaGVx0QyReOEZc7uTlQP7I
+         EnGA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:date:user-agent:in-reply-to:references
+         :mime-version:content-transfer-encoding:subject:to:cc:message-id;
+        bh=Y/4MDExChkZau02Wyj1Y9rypHfHdC+K+/ULNVewLyV4=;
+        b=ebyqh0ZMQ0GPNjH+NPNauuR86YCYAK7RN6oYqHNJS2/5EvLaoKrkuQOhspEZDaqoH3
+         /GrM31FfzHZG3m62SxUhbTDSGtAsebv6LroMBa62HyYV6/uueqCsMzCpq49mghp6zNGY
+         tkMgcIPjKYl9PPzld6ooPMcOERWVmcKGP93D7MmqwpvLWH/oxzgX73EJSh6I8ZAYah/0
+         j9q5FoYEDQLWqWZdLIK2YQm4jZIZ9hrG2BOi00Xm7xbWrbMAIYzX0pOWcuj5eKuRNdFq
+         K7Gd+UY7y6hbs2PYuSrjRSbflSjV4KC1mRYY5eYb0T8CuYVBEemGwdvJGwVErdokrDvD
+         JTaw==
+X-Gm-Message-State: APjAAAU+4hv72KmiBzmF/rPGICCwRAM4HIUzuCJhnRI/2VciQwDbaaL/
+        irp05hxaaKyyUqkjmu6ZdW8=
+X-Google-Smtp-Source: APXvYqwgJQ2BszMYnV1btisfImyOM+p0XvPTgCDWb0r9CEOvCDYOSMrquTbKXDCdjmE85633xiDrJQ==
+X-Received: by 2002:a37:ac16:: with SMTP id e22mr7316063qkm.186.1578532046405;
+        Wed, 08 Jan 2020 17:07:26 -0800 (PST)
+Received: from [192.168.86.249] ([179.97.37.151])
+        by smtp.gmail.com with ESMTPSA id 2sm2262575qkv.98.2020.01.08.17.07.25
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 08 Jan 2020 17:07:25 -0800 (PST)
+From:   Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>
+X-Google-Original-From: Arnaldo Carvalho de Melo <acme@kernel.org>
+Date:   Wed, 08 Jan 2020 22:06:44 -0300
+User-Agent: K-9 Mail for Android
+In-Reply-To: <20200109004424.3894196-1-kafai@fb.com>
+References: <20200109003453.3854769-1-kafai@fb.com> <20200109004424.3894196-1-kafai@fb.com>
 MIME-Version: 1.0
-References: <20200108192132.189221-1-sdf@google.com> <CAGdtWsS7hBF0d8F_Nidar-c+NRsDSwbk6K=cXbAOu-0kW74F8g@mail.gmail.com>
-In-Reply-To: <CAGdtWsS7hBF0d8F_Nidar-c+NRsDSwbk6K=cXbAOu-0kW74F8g@mail.gmail.com>
-From:   Song Liu <song@kernel.org>
-Date:   Wed, 8 Jan 2020 17:04:56 -0800
-X-Gmail-Original-Message-ID: <CAPhsuW6_Xwo3x59B==NhnboQFY_xFqO8vn+OXeXzhnKGjyJiGg@mail.gmail.com>
-Message-ID: <CAPhsuW6_Xwo3x59B==NhnboQFY_xFqO8vn+OXeXzhnKGjyJiGg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] selftests/bpf: restore original comm in test_overhead
-To:     Petar Penkov <ppenkov.kernel@gmail.com>
-Cc:     Stanislav Fomichev <sdf@google.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [PATCH bpf-next v4 01/11] bpf: Save PTR_TO_BTF_ID register state when spilling to stack
+To:     Martin KaFai Lau <kafai@fb.com>, bpf@vger.kernel.org
+CC:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        David Miller <davem@davemloft.net>, kernel-team@fb.com,
+        netdev@vger.kernel.org
+Message-ID: <9EC7DCC9-B219-4545-BA93-E2AC0569C843@kernel.org>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 8, 2020 at 3:19 PM Petar Penkov <ppenkov.kernel@gmail.com> wrote:
->
-> On Wed, Jan 8, 2020 at 11:49 AM Stanislav Fomichev <sdf@google.com> wrote:
-> >
-> > test_overhead changes task comm in order to estimate BPF trampoline
-> > overhead but never sets the comm back to the original one.
-> > We have the tests (like core_reloc.c) that have 'test_progs'
-> > as hard-coded expected comm, so let's try to preserve the
-> > original comm.
-> >
-> > Currently, everything works because the order of execution is:
-> > first core_recloc, then test_overhead; but let's make it a bit
-> > future-proof.
-> >
-> > Other related changes: use 'test_overhead' as new comm instead of
-> > 'test' to make it easy to debug and drop '\n' at the end.
-> >
-> > Signed-off-by: Stanislav Fomichev <sdf@google.com>
->
-> Acked-by: Petar Penkov <ppenkov@google.com>
+On January 8, 2020 9:44:24 PM GMT-03:00, Martin KaFai Lau <kafai@fb=2Ecom> =
+wrote:
+>This patch makes the verifier save the PTR_TO_BTF_ID register state
+>when
+>spilling to the stack=2E
 
-Acked-by: Song Liu <songliubraving@fb.com>
+You say what it does, but not why that is needed :-/
+
+- Arnaldo
+>
+>Acked-by: Yonghong Song <yhs@fb=2Ecom>
+>Signed-off-by: Martin KaFai Lau <kafai@fb=2Ecom>
+>---
+> kernel/bpf/verifier=2Ec | 1 +
+> 1 file changed, 1 insertion(+)
+>
+>diff --git a/kernel/bpf/verifier=2Ec b/kernel/bpf/verifier=2Ec
+>index 6f63ae7a370c=2E=2Ed433d70022fd 100644
+>--- a/kernel/bpf/verifier=2Ec
+>+++ b/kernel/bpf/verifier=2Ec
+>@@ -1916,6 +1916,7 @@ static bool is_spillable_regtype(enum
+>bpf_reg_type type)
+> 	case PTR_TO_TCP_SOCK:
+> 	case PTR_TO_TCP_SOCK_OR_NULL:
+> 	case PTR_TO_XDP_SOCK:
+>+	case PTR_TO_BTF_ID:
+> 		return true;
+> 	default:
+> 		return false;
+
