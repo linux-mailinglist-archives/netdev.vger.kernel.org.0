@@ -2,51 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2FF1513609F
-	for <lists+netdev@lfdr.de>; Thu,  9 Jan 2020 19:58:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CDF5C1360A6
+	for <lists+netdev@lfdr.de>; Thu,  9 Jan 2020 20:01:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388657AbgAIS6w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jan 2020 13:58:52 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:57114 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729054AbgAIS6v (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jan 2020 13:58:51 -0500
-Received: from localhost (unknown [IPv6:2601:601:9f00:1c3::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 2305615841E92;
-        Thu,  9 Jan 2020 10:58:50 -0800 (PST)
-Date:   Thu, 09 Jan 2020 10:58:49 -0800 (PST)
-Message-Id: <20200109.105849.1926189565071852143.davem@davemloft.net>
-To:     amaftei@solarflare.com
-Cc:     netdev@vger.kernel.org, linux-net-drivers@solarflare.com,
-        scrum-linux@solarflare.com
-Subject: Re: [PATCH net-next 0/9] sfc: more code refactoring
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <4d915542-3699-e864-5558-bef616b2fe66@solarflare.com>
-References: <4d915542-3699-e864-5558-bef616b2fe66@solarflare.com>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 09 Jan 2020 10:58:50 -0800 (PST)
+        id S2388661AbgAITBR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jan 2020 14:01:17 -0500
+Received: from mout.gmx.net ([212.227.17.20]:38121 "EHLO mout.gmx.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729054AbgAITBQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 9 Jan 2020 14:01:16 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1578596469;
+        bh=CWvTxIkaRHDEHHs8VLNv+/1pm87U6TJcKnCD0FoskSU=;
+        h=X-UI-Sender-Class:Reply-To:Subject:To:Cc:References:From:Date:
+         In-Reply-To;
+        b=iFtKKUJgSfCFjo+BDIf1981lUyPzPHv9aOBG2joBK0jOkH9Gx2njYmpmqc0jmcAjB
+         vnYwmuMM5p/ZN6zfawRJPz2hPY+3GURLdcCDyKccWhaPdnyIz/8lJKOppN9zZVXjAg
+         cB35ORkzxb9yL7b2NAvUqEpkaBzA0yLNFeykqX6Q=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [192.168.84.205] ([95.81.25.209]) by mail.gmx.com (mrgmx105
+ [212.227.17.168]) with ESMTPSA (Nemesis) id 1MqJmF-1jSUUw0ump-00nSBk; Thu, 09
+ Jan 2020 20:01:09 +0100
+Reply-To: vtol@gmx.net
+Subject: Re: [drivers/net/phy/sfp] intermittent failure in state machine
+ checks
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Cc:     Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org
+References: <d8d595ff-ec35-3426-ec43-9afd67c15e3d@gmx.net>
+ <20200109144106.GA24459@lunn.ch>
+ <513d6fe7-65b2-733b-1d17-b3a40b8161cf@gmx.net>
+ <20200109155809.GQ25745@shell.armlinux.org.uk>
+ <bb2c2eed-5efa-00f6-0e52-1326669c1b0d@gmx.net>
+ <20200109174322.GR25745@shell.armlinux.org.uk>
+From:   =?UTF-8?B?0b3SieG2rOG4s+KEoA==?= <vtol@gmx.net>
+Message-ID: <acd4d7e4-7f8e-d578-c9c9-b45f062f4fe2@gmx.net>
+Date:   Thu, 9 Jan 2020 19:01:10 +0000
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:68.0) Gecko/20100101 Firefox/68.0
+MIME-Version: 1.0
+In-Reply-To: <20200109174322.GR25745@shell.armlinux.org.uk>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: base64
+Content-Language: en-GB
+X-Provags-ID: V03:K1:pYG1VbK43I87al6QzdCMZvhRfJQxxT5v/FJPWWeFn6NuXJOEyE4
+ OBTZFgABWUanOSDFoBPlGZSVBJSeZQAl6/MOR2bU1hv/ozxD4NNr4Jn+E/hCLUZ+j6TxNn2
+ hJNzGx7/DL2JSVtOUZDCy0c9T7QmzO8XTBHxPAIv7ODQS2JGELclloUYPvNQAbaKynvRj9G
+ 9W08OCKTsk+vHiGT13rkA==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:5iV/tOqOsYs=:nN5p1863qiOMp6+MJHxGek
+ O2WY8FjESQA22oRAtI38P8FNUVSOy7T2DV2GK0dZKv63/s+xxP0W1ull8Bkf7YHOxK4l2CSi0
+ D42qjt+5c2/hA8unD7VoG3hCYW4Qu8d6gjp+O083iOo0IhaD6tmh5gZJ8C7kGnZNF0qOj1lHX
+ KWgSeDhNYhmfK8MXGkviD12YbPCMJnYtdXX0tcT7vVRK15CVQrRO5VGlV+ueGQOAbjEq/OlET
+ 2/c4uifcsUYVuGeqnR9ImF3vsWqPIIHDpChPUu5LVPRilMRRj3UG3XJgyxeeVwQWfIjo/dCGO
+ BS6pDVEVCdrT+WBsNUbTsGKhqjQCGD5tyZtHKSljwL7jnmXAooIkPq1sHmkJEOoDAEJpbrJOS
+ qGYEnKitDX5Nux3BgzYlr4O/7TPuOr3bcXmkiMurC5iaqTd96c0g+JXDp+DQ4dWvKwnuG+x9h
+ CpFf0pU2+5ezIokfjDkyWBugHJkWbE4TVDE3fGsLEt5VUNilmdMFtcrJNed+48BSJji1X2xlZ
+ O8+TdqdBjBAmdxOtkUiq5Pg0sDQtsOzyMjFQPWuhKfq3/d55rmq0S7uAd0nwGXVRlugmngIkl
+ bt68MXLxBdFljxM40dmkiMH50cywAl3hR7xSdmyNjmtpynU2gd/swychq6BnykhLLcMkjQQj5
+ m+y/IsceXPZ08otDKLCGNvXxFWj7FIjgN+y35ofjyvJv1blVxg1EfuX+b1+9tXUAVASxF+Gyf
+ /mA1nl7ornKakqIiJMUoyfXWHX2tFQ+a2p6vNWYHmlPPE7x64Od1nf42NIvMM1pEuqi4BlOrw
+ zsUazLIJh7ymXZQWOQUbOTK5x2wEntuO4VQPaGmSaKVawvlb5H2rlZHcMpbGcI2LNS6PPDmfi
+ xgrY3r+lBsJGC+/RwOBmKrA6shZElF/x3MnyumcxVB4pvqxNyYf2jAc210x4CFRG7N/dAeqU3
+ PCl2kV4ujCwGDkKoHbFlTSbokGcBdlhjsloOFP0pljY33njtfWXwY93e4CAR9Dpt45IqJ/HP2
+ MJsqcfwSTIQT/BKV9CaJy2Yks/hIp7ODXVIsF2+sq9uTWLgIkuSy4MnQS2QuX9JqTreK1BGsi
+ GW9lsFyvY8u3GU04YJty65boXf7ULVwPkwVuBfyLAAP0bg9FCe6iH+iWmANQiT58OKe5JL8uM
+ k6nECxxDjzbs3qMcmMtxi1Q/GwTi535Rs8CrfagIIN24MBc30FvBtAwL1/QqnXI2R6pb3Ay6X
+ kj+hdYVXpWDykxbsCdRlUrg4OG8dRLR9VMqBV0A==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: "Alex Maftei (amaftei)" <amaftei@solarflare.com>
-Date: Thu, 9 Jan 2020 15:41:43 +0000
-
-> Splitting more of the driver code into different files, which will
-> later be used in another driver for a new product.
-> 
-> This is a continuation to my previous patch series.
-> There will be another series and a stand-alone patch as well
-> after this.
-> 
-> This series in particular covers MCDI (management controller
-> driver interface) code.
-
-Series applied, thanks.
+T24gMDkvMDEvMjAyMCAxNzo0MywgUnVzc2VsbCBLaW5nIC0gQVJNIExpbnV4IGFkbWluIHdy
+b3RlOg0KPiBPbiBUaHUsIEphbiAwOSwgMjAyMCBhdCAwNTozNToyM1BNICswMDAwLCDRvdKJ
+4bas4biz4oSgIHdyb3RlOg0KPj4gVGhhbmsgeW91IGZvciB0aGUgZXh0ZW5zaXZlIGZlZWRi
+YWNrIGFuZCBleHBsYW5hdGlvbi4NCj4+DQo+PiBQYXJkb24gZm9yIGhhdmluZyBtaXhlZCB1
+cCB0aGUgc2VtYW50aWNzIG9uIG1vZHVsZSBzcGVjaWZpY2F0aW9ucyB2cy4gRUVQUk9NDQo+
+PiBkdW1wLi4uDQo+Pg0KPj4gVGhlIG1vZHVsZSAoY2hpcHNldCkgYmVlbiBkZXNpZ25lZCBi
+eSBNZXRhbm9pYSwgbm90IHN1cmUgd2hvIGlzIHRoZSBhY3R1YWwNCj4+IG1hbnVmYWN0dXJl
+ciwgYW5kIHByb2JhYmx5IGp1c3QgYmVlbiBicmFuZGVkIEFsbG5ldC4NCj4+IFRoZSBkZXNp
+Z25lciBwcm92aWRlcyBzb21lIHByb3ByaWV0YXJ5IG1hbmFnZW1lbnQgc29mdHdhcmUgKGNh
+bGxlZCBFQk0pIHRvDQo+PiB0aGVpciB3aG9sZXNhbGUgYnV5ZXJzIG9ubHkNCj4gSSBoYXZl
+IG9uZSBvZiB0aGVpciBlYXJseSBNVC1WNTMxMSBtb2R1bGVzLCBidXQgaXQgaGFzIG5vIGFj
+Y2Vzc2libGUNCj4gRUVQUk9NLCBhbmQgZXZlbiBpZiBpdCBkaWQsIGl0IHdvdWxkIGJlIG9m
+IG5vIHVzZSB0byBtZSBiZWluZw0KPiB1bmFwcHJvdmVkIGZvciBjb25uZWN0aW9uIHRvIHRo
+ZSBCVCBPcGVucmVhY2ggbmV0d29yay4gIChCVCBTSU4gNDk4DQo+IHNwZWNpZmllcyBub24t
+c3RhbmRhcmQgcG93ZXIgcHJvZmlsZSB0byBhdm9pZCBjcm9zc3RhbGsgaXNzdWVzIHdpdGgN
+Cj4gZXhpc3RpbmcgQURTTCBpbmZyYXN0cnVjdHVyZSwgYW5kIEkgYmVsaWV2ZSB0aGV5IHJl
+Z3VsYXJseSBjaGVjayB0aGUNCj4gY29ubmVjdGVkIG1vZGVtIHR5cGUgYW5kIGZpcm13YXJl
+IHZlcnNpb25zIGFnYWluc3QgYW4gYXBwcm92ZWQgbGlzdC4pDQo+DQo+IEkgaGF2ZW4ndCBu
+b3RpY2VkIHRoZSBtb2R1bGUgSSBoYXZlIGFzc2VydGluZyBpdHMgVFhfRkFVTFQgc2lnbmFs
+LA0KPiBidXQgdGhlbiBpdHMgUko0NSBoYXMgbmV2ZXIgYmVlbiBjb25uZWN0ZWQgdG8gYW55
+dGhpbmcuDQo+DQoNClRoZSBjdXJpb3VzIChhbmQgc29ydCBvZiBpbmV4cGxpY2FibGUpIHRo
+aW5nIGlzIHRoYXQgdGhlIG1vZHVsZSBpbiANCmdlbmVyYWwgd29ya3MsIGkuZS4gYXQgc29t
+ZSBwb2ludCBpdCBtdXN0IHBhc3MgdGhlIHNtIGNoZWNrcyBvciANCmNvbm5lY3Rpdml0eSB3
+b3VsZCBiZSBmYWlsaW5nIGNvbnN0YW50bHkgYW5kIHRodXMgdGhlIG1vZHVsZSBiZWluZyAN
+CmdlbmVyYWxseSB1bnVzYWJsZS4NCg0KVGhlIHJlcG9ydGVkIGlzc3VlcyBob3dldmVyIGFy
+ZSBpbnRlcm1pdHRlbnQsIHVzdWFsbHkgcmVsaWFibHkgDQpyZXByb2R1Y2libGUgd2l0aA0K
+DQppZmRvd24gPGlmYWNlPiAmJiBpZnVwIDxpZmFjZT4NCg0Kb3IgcmVib290aW5nIHRoZSBy
+b3V0ZXIgdGhhdCBob3N0cyB0aGUgbW9kdWxlLg0KDQpJZiBzb21lIHRpbWVzIHBhc3Nlcywg
+bm90IHN1cmUgYnV0IHNlZW1zIGluIGV4Y2VzcyBvZiAzIG1pbnV0ZXMsIGJldHdlZW4gDQpp
+ZmRvd24gYW5kIGlmdXAgdGhlIHNtIGNoZWNrcyBtb3N0bHkgYXJlIG5vdCBmYWlsaW5nLg0K
+SXQgc29tZWhvdyAiZmVlbHMiIHRoYXQgdGhlIG1vZHVsZSBpcyBzdG9yaW5nIHNvbWUgbGlu
+ayBzaWduYWwgDQppbmZvcm1hdGlvbiBpbiBhIHJlZ2lzdGVyIHdoaWNoIGRvZXMgbm90IHN1
+aXQgdGhlIHNtIGNoZWNrIHJvdXRpbmUgYW5kIA0Kb25seSB3aGVuIHRoYXQgcmVnaXN0ZXIg
+Y2xlYXJzIHRoZSBzbSBjaGVjayByb3V0aW5lIHBhc3NlcyBhbmQgDQpjb25uZWN0aXZpdHkg
+aXMgcmVzdG9yZWQuDQpfX19fDQoNClNpbmNlIHRoZXJlIGFyZSBwcm9iYWJseSBvdGhlciBz
+dWNoIFNGUCBtb2R1bGVzLCB4RFNMIGFuZCBnLmZhc3QsIG91dCANCnRoZXJlIHRoYXQgZG8g
+bm90IHByb3ZpZGUgbGFzZXIgc2FmZXR5IGNpcmN1aXRyeSBieSBkZXNpZ24gKHNpbmNlIG5v
+dCANCnByb3ZpZGluZyBjb25uZWN0aXZpdHkgb3ZlciBmaWJyZSkgd291bGQgaXQgcGVyaGFw
+cyBub3QgbWFrZSBzZW5zZSB0byANCnRyeSBjaGVja2luZyBmb3IgdGhlIGV4aXN0ZW5jZSBv
+ZiBsYXNlciBzYWZldHkgY2lyY3VpdHJ5IGZpcnN0IHByaW9yIA0KZ2V0dGluZyB0byB0aGUg
+c20gY2hlY2tzPw0KX19fXw0KDQpTb21ldGltZSBpbiB0aGUgcGFzdCBzZnAuYyB3YXMgbm90
+IGF2YWlsYWJsZSBpbiB0aGUgZGlzdHJvIGFuZCB0aGUgaXNzdWUgDQpuZXZlciBleGhpYml0
+ZWQuIEJhY2sgdGhlbiB0aGUgbW9kdWxlJ3Mgb3BlcmF0aW9ucyBtb2RlIGJlZW4gc2V0IHRo
+cm91Z2ggDQphIHB5IHNjcmlwdCAtIHNlZSBib3R0b20gLSBidXQgaXQgd291bGQgYXBwZWFy
+IHRoYXQgaXQgZGlkIG5vdCBpbXBsZW1lbnQgDQphbnkgc20gY2hlY2tzLg0KDQotLS1weSBz
+Y3JpcHQNCg0KY2xhc3MgU0ZQOg0KIMKgwqDCoCBkZWYgX19pbml0X18oc2VsZiwgaTJjYnVz
+KToNCiDCoMKgwqAgwqDCoMKgIHNlbGYuaTJjYnVzID0gaTJjYnVzDQoNCiDCoMKgwqAgQHN0
+YXRpY21ldGhvZA0KIMKgwqDCoCBkZWYgZGV0ZWN0X21ldGFub2lhX3hkc2woZWVwcm9tKToN
+CiDCoMKgwqAgwqDCoMKgIHJldHVybiBbJ1gnLCAnQycsICdWJywgJ1InLCAnLScsICcwJywg
+JzgnLCAnMCcsICdZJywgJzUnLA0KIMKgwqDCoCDCoMKgwqAgwqDCoMKgICc1JyxdID09IGVl
+cHJvbVs0MDo1MV0NCg0KIMKgwqDCoCBAc3RhdGljbWV0aG9kDQogwqDCoMKgIGRlZiBkZXRl
+Y3RfemlzYV9ncG9uKGVlcHJvbSk6DQogwqDCoMKgIMKgwqDCoCByZXR1cm4gWydUJywgJ1cn
+LCAnMicsICczJywgJzYnLCAnMicsICdIJ10gPT0gZWVwcm9tWzQwOjQ3XQ0KDQogwqDCoMKg
+IEBzdGF0aWNtZXRob2QNCiDCoMKgwqAgZGVmIGRldGVjdF9zZ21paShlZXByb20pOg0KIMKg
+wqDCoCDCoMKgwqAgaWYgb3JkKGVlcHJvbVs2XSkgJiAweDA4Og0KIMKgwqDCoCDCoMKgwqAg
+wqDCoMKgIGQoIk1vZGUgc2VsZWN0ZWQ6IGdlbmVyaWMgU0dNSUkiKQ0KIMKgwqDCoCDCoMKg
+wqAgwqDCoMKgIHJldHVybiBUcnVlDQogwqDCoMKgIMKgwqDCoCBlbHNlOg0KIMKgwqDCoCDC
+oMKgwqAgwqDCoMKgIGQoIk1vZGUgc2VsZWN0ZWQ6IGdlbmVyaWMgMTAwMEJBU0UtWCIpDQoN
+CiDCoMKgwqAgwqDCoMKgIHJldHVybiBGYWxzZQ0KDQoNCiDCoMKgwqAgZGVmIGRlY2lkZV9z
+ZnBtb2RlKHNlbGYpOg0KIMKgwqDCoCDCoMKgwqAgZWMgPSBbXQ0KIMKgwqDCoCDCoMKgwqAg
+dHJ5Og0KIMKgwqDCoCDCoMKgwqAgwqDCoMKgIGVjID0gbGlzdChFRVBST00oc2VsZi5pMmNi
+dXMpLnJlYWRfZWVwcm9tKCkpDQogwqDCoMKgIMKgwqDCoCDCoMKgwqAgZCgiU0ZQIEVFUFJP
+TTogJXMiICUgc3RyKGVjKSkNCiDCoMKgwqAgwqDCoMKgIGV4Y2VwdCBFeGNlcHRpb24gYXMg
+ZToNCiDCoMKgwqAgwqDCoMKgIMKgwqDCoCBsKCJFRVBST00gcmVhZCBlcnJvcjogIiArIHN0
+cihlKSkNCiDCoMKgwqAgwqDCoMKgIMKgwqDCoCByZXR1cm4gJ3BoeS1zZnAnDQoNCiDCoMKg
+wqAgwqDCoMKgICMgc3BlY2lhbCBjYXNlOiBNZXRhbm9pYSB4RFNMIFNGUCwgMTAwMEJBU0Ut
+WCwgbm8gbGluayANCmF1dG9uZWdvdGlhdGlvbg0KIMKgwqDCoCDCoMKgwqAgaWYgc2VsZi5k
+ZXRlY3RfbWV0YW5vaWFfeGRzbChlYyk6DQogwqDCoMKgIMKgwqDCoCDCoMKgwqAgbCgiTWV0
+YW5vaWEgRFNMIFNGUCBkZXRlY3RlZC4gU3dpdGNoaW5nIHRvIHBoeS1zZnAtbm9uZWcgDQpt
+b2RlLiIpDQogwqDCoMKgIMKgwqDCoCDCoMKgwqAgcmV0dXJuICdwaHktc2ZwLW5vbmVnJw0K
+DQogwqDCoMKgIMKgwqDCoCAjIHNwZWNpYWwgY2FzZTogWmlzYSBHUE9OIFNGUCwgU0dNSUkN
+CiDCoMKgwqAgwqDCoMKgIGlmIHNlbGYuZGV0ZWN0X3ppc2FfZ3BvbihlYyk6DQogwqDCoMKg
+IMKgwqDCoCDCoMKgwqAgbCgiWmlzYSBHUE9OIFNGUCBkZXRlY3RlZC4gU3dpdGNoaW5nIHRv
+IHBoeS1zZnAtc2dtaWkgbW9kZS4iKQ0KIMKgwqDCoCDCoMKgwqAgwqDCoMKgIHJldHVybiAn
+cGh5LXNmcC1zZ21paScNCg0KIMKgwqDCoCDCoMKgwqAgIyBTR01JSSBkZXRlY3Rpb24NCiDC
+oMKgwqAgwqDCoMKgIGlmIHNlbGYuZGV0ZWN0X3NnbWlpKGVjKToNCiDCoMKgwqAgwqDCoMKg
+IMKgwqDCoCByZXR1cm4gJ3BoeS1zZnAtc2dtaWknDQoNCiDCoMKgwqAgwqDCoMKgICMgZGVm
+YXVsdCAxMDAwQkFTRS1YDQogwqDCoMKgIMKgwqDCoCByZXR1cm4gJ3BoeS1zZnAnDQoNCg0K
+DQo=
