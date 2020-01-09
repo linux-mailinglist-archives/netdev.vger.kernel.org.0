@@ -2,67 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C60E1350E2
-	for <lists+netdev@lfdr.de>; Thu,  9 Jan 2020 02:09:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 710F71350E9
+	for <lists+netdev@lfdr.de>; Thu,  9 Jan 2020 02:14:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727571AbgAIBJt convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 8 Jan 2020 20:09:49 -0500
-Received: from mga17.intel.com ([192.55.52.151]:54097 "EHLO mga17.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726654AbgAIBJs (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 8 Jan 2020 20:09:48 -0500
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 08 Jan 2020 17:09:48 -0800
-X-IronPort-AV: E=Sophos;i="5.69,412,1571727600"; 
-   d="scan'208";a="217661586"
-Received: from aguedesl-mac01.jf.intel.com (HELO localhost) ([10.24.12.236])
-  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 08 Jan 2020 17:09:48 -0800
-Content-Type: text/plain; charset="utf-8"
+        id S1727754AbgAIBO1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jan 2020 20:14:27 -0500
+Received: from szxga05-in.huawei.com ([45.249.212.191]:8245 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727770AbgAIBO0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 8 Jan 2020 20:14:26 -0500
+Received: from DGGEMS404-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id 131E76EE3DEA34F1B8A4;
+        Thu,  9 Jan 2020 09:14:24 +0800 (CST)
+Received: from [127.0.0.1] (10.173.220.96) by DGGEMS404-HUB.china.huawei.com
+ (10.3.19.204) with Microsoft SMTP Server id 14.3.439.0; Thu, 9 Jan 2020
+ 09:14:18 +0800
+Subject: Re: [PATCH V2] net: 3com: 3c59x: remove set but not used variable
+ 'mii_reg1'
+To:     Matthew Wilcox <willy@infradead.org>,
+        David Miller <davem@davemloft.net>
+CC:     <klassert@kernel.org>, <hkallweit1@gmail.com>,
+        <jakub.kicinski@netronome.com>, <hslester96@gmail.com>,
+        <mst@redhat.com>, <yang.wei9@zte.com.cn>, <netdev@vger.kernel.org>,
+        <yi.zhang@huawei.com>, <zhengbin13@huawei.com>
+References: <20200106125337.40297-1-yukuai3@huawei.com>
+ <20200108.124021.2097001545081493183.davem@davemloft.net>
+ <20200108215929.GM6788@bombadil.infradead.org>
+ <20200108.150549.1889209588136221613.davem@davemloft.net>
+ <20200109010344.GN6788@bombadil.infradead.org>
+From:   "yukuai (C)" <yukuai3@huawei.com>
+Message-ID: <b5dacc18-b93f-3760-966a-c36d058139e3@huawei.com>
+Date:   Thu, 9 Jan 2020 09:14:16 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-In-Reply-To: <BN8PR12MB3266015708808170D71B17C6D33F0@BN8PR12MB3266.namprd12.prod.outlook.com>
-References: <060ba6e2de48763aec25df3ed87b64f86022f8b1.1576591746.git.Jose.Abreu@synopsys.com> <874kxxck0m.fsf@linux.intel.com> <BN8PR12MB3266C894D60449BD86E7CE69D3530@BN8PR12MB3266.namprd12.prod.outlook.com> <157835635771.12437.5922951778370014410@aguedesl-mac01.jf.intel.com> <BN8PR12MB3266015708808170D71B17C6D33F0@BN8PR12MB3266.namprd12.prod.outlook.com>
-Subject: RE: [PATCH iproute2-next] taprio: Add support for the SetAndHold and SetAndRelease commands
-From:   Andre Guedes <andre.guedes@linux.intel.com>
-Cc:     Joao Pinto <Joao.Pinto@synopsys.com>,
-        David Ahern <dsahern@gmail.com>
-To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Jose Abreu <Jose.Abreu@synopsys.com>,
-        Vinicius Costa Gomes <vinicius.gomes@intel.com>
-Message-ID: <157853218801.36295.5868678705134050101@aguedesl-mac01.jf.intel.com>
-User-Agent: alot/0.8.1
-Date:   Wed, 08 Jan 2020 17:09:48 -0800
+In-Reply-To: <20200109010344.GN6788@bombadil.infradead.org>
+Content-Type: text/plain; charset="gbk"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.173.220.96]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jose,
 
-> > > On our IPs Queue 0 is by preemptible and all remaining ones are express 
-> > > by default.
-> > 
-> > Is this configuration fixed in your IP or the user can control if a specific
-> > queue is preemptible or express?
+
+On 2020/1/9 9:03, Matthew Wilcox wrote:
+
+> v2:
+> -               mii_reg1 = mdio_read(dev, vp->phys[0], MII_BMSR);
 > 
-> It's configurable for all Queues except 0 which is fixed as preemptible.
+> v3:
+> -               mii_reg1 = mdio_read(dev, vp->phys[0], MII_BMSR);
+> +               mdio_read(dev, vp->phys[0], MII_BMSR);
 
-Thanks for the clarification.
+Yes, V2 was a mistaken, my bad.
+Please apply v3 instead.
 
-> > I'm trying to figure out how this discussion relates to the Qbu discussion
-> > we're having in "[v1,net-next, 1/2] ethtool: add setting frame preemption of
-> > traffic classes".
-> 
-> Hmmm.
-> 
-> I think tc utility is the right way to do this, and not ethtool because 
-> EST and FP are highly tied ... Do you agree ?
+Thanks!
+Yu Kuai
 
-I'm still wrapping my head around this :) See my last reply on that other
-thread. (BTW, let's concentrate this 'Qbu enabling' discussion there)
-
-Thanks,
-
-Andre
