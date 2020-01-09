@@ -2,85 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A846135EE2
-	for <lists+netdev@lfdr.de>; Thu,  9 Jan 2020 18:07:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D17CD135EEC
+	for <lists+netdev@lfdr.de>; Thu,  9 Jan 2020 18:10:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387959AbgAIRHt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jan 2020 12:07:49 -0500
-Received: from mx2.suse.de ([195.135.220.15]:49716 "EHLO mx2.suse.de"
+        id S2387975AbgAIRKi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jan 2020 12:10:38 -0500
+Received: from mail.kernel.org ([198.145.29.99]:47296 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731444AbgAIRHt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 9 Jan 2020 12:07:49 -0500
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id 56469AE03;
-        Thu,  9 Jan 2020 17:07:47 +0000 (UTC)
-Received: by unicorn.suse.cz (Postfix, from userid 1000)
-        id 1454DE008B; Thu,  9 Jan 2020 18:07:46 +0100 (CET)
-Date:   Thu, 9 Jan 2020 18:07:46 +0100
-From:   Michal Kubecek <mkubecek@suse.cz>
-To:     Sasha Levin <sashal@kernel.org>
-Cc:     Naresh Kamboju <naresh.kamboju@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        linux- stable <stable@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Firo Yang <firo.yang@suse.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        rcu@vger.kernel.org, Netdev <netdev@vger.kernel.org>,
-        lkft-triage@lists.linaro.org
-Subject: Re: [PATCH AUTOSEL 4.19 46/84] tcp/dccp: fix possible race
- __inet_lookup_established()
-Message-ID: <20200109170746.GO22387@unicorn.suse.cz>
-References: <20191227174352.6264-1-sashal@kernel.org>
- <20191227174352.6264-46-sashal@kernel.org>
- <CA+G9fYv8o4he83kqpxB9asT7eUMAeODyX3MBbmwsCdgqLcXPWw@mail.gmail.com>
- <20200109153226.GG1706@sasha-vm>
+        id S1731544AbgAIRKi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 9 Jan 2020 12:10:38 -0500
+Received: from mail-qv1-f48.google.com (mail-qv1-f48.google.com [209.85.219.48])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id C6F352067D;
+        Thu,  9 Jan 2020 17:10:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1578589837;
+        bh=lsmfN75tT3y2ZzCHh1gZs0tkBZ8Qzf3q8K+xDOnI9Lg=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=DY+i+bSZcVP598O9FzGDOOxSWqOE2RIxedZW0w5ofNupS5TQcQrsEtwqsI/XPBA9k
+         SMiTOKGLF10gf5u7Q2sa2revWsxLxqyQJRVLCBco3OsdADi7maYg1Ce7w9O9UFYbfy
+         +9HO8Hvy+NZJ8qIQlZNtH+uE1+8cJD9LyCeXueoE=
+Received: by mail-qv1-f48.google.com with SMTP id y8so3265864qvk.6;
+        Thu, 09 Jan 2020 09:10:37 -0800 (PST)
+X-Gm-Message-State: APjAAAUof1C6Dgsow2pEm8rm9QesUSo+LviCXf3MWRPfXZE6RnH8U0dO
+        /4pVNYaBXL+94dATLQ56atYHTUndnQZDFe2zge4=
+X-Google-Smtp-Source: APXvYqzJx++tLk9e5/Pav1+ioq++/OIhjqGNoyldFYjVbM+ULektPHWvA9pQzIyayWBIRRKRy9HAfQcFSCFlPb3DeT0=
+X-Received: by 2002:a05:6214:14a6:: with SMTP id bo6mr9935842qvb.8.1578589836935;
+ Thu, 09 Jan 2020 09:10:36 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200109153226.GG1706@sasha-vm>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <157851776348.1732.12600714815781177085.stgit@ubuntu3-kvm2> <157851806382.1732.8320375873100251133.stgit@ubuntu3-kvm2>
+In-Reply-To: <157851806382.1732.8320375873100251133.stgit@ubuntu3-kvm2>
+From:   Song Liu <song@kernel.org>
+Date:   Thu, 9 Jan 2020 09:10:25 -0800
+X-Gmail-Original-Message-ID: <CAPhsuW697e5umg2JLBiFLmSQ-hYLLeVxGAvc9W0BPzMAs0cH8Q@mail.gmail.com>
+Message-ID: <CAPhsuW697e5umg2JLBiFLmSQ-hYLLeVxGAvc9W0BPzMAs0cH8Q@mail.gmail.com>
+Subject: Re: [bpf PATCH 2/9] bpf: sockmap, ensure sock lock held during tear down
+To:     John Fastabend <john.fastabend@gmail.com>
+Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 09, 2020 at 10:32:26AM -0500, Sasha Levin wrote:
-> On Thu, Jan 02, 2020 at 01:31:22PM +0530, Naresh Kamboju wrote:
-> > On Fri, 27 Dec 2019 at 23:17, Sasha Levin <sashal@kernel.org> wrote:
-> > > 
-> > > From: Eric Dumazet <edumazet@google.com>
-> > > 
-> > > [ Upstream commit 8dbd76e79a16b45b2ccb01d2f2e08dbf64e71e40 ]
-> > > 
-> > > Michal Kubecek and Firo Yang did a very nice analysis of crashes
-> > > happening in __inet_lookup_established().
-> > > 
-> > > Since a TCP socket can go from TCP_ESTABLISH to TCP_LISTEN
-> > > (via a close()/socket()/listen() cycle) without a RCU grace period,
-> > > I should not have changed listeners linkage in their hash table.
-> > > 
-> > > They must use the nulls protocol (Documentation/RCU/rculist_nulls.txt),
-> > > so that a lookup can detect a socket in a hash list was moved in
-> > > another one.
-> > > 
-> > > Since we added code in commit d296ba60d8e2 ("soreuseport: Resolve
-> > > merge conflict for v4/v6 ordering fix"), we have to add
-> > > hlist_nulls_add_tail_rcu() helper.
-> > 
-> > The kernel panic reported on all devices,
-> > While running LTP syscalls accept* test cases on stable-rc-4.19 branch kernel.
-> > This report log extracted from qemu_x86_64.
-> > 
-> > Reverting this patch re-solved kernel crash.
-> 
-> I'll drop it until we can look into what's happening here, thanks!
+On Wed, Jan 8, 2020 at 1:14 PM John Fastabend <john.fastabend@gmail.com> wrote:
+>
+> The sock_map_free() and sock_hash_free() paths used to delete sockmap
+> and sockhash maps walk the maps and destroy psock and bpf state associated
+> with the socks in the map. When done the socks no longer have BPF programs
+> attached and will function normally. This can happen while the socks in
+> the map are still "live" meaning data may be sent/received during the walk.
+>
+> Currently, though we don't take the sock_lock when the psock and bpf state
+> is removed through this path. Specifically, this means we can be writing
+> into the ops structure pointers such as sendmsg, sendpage, recvmsg, etc.
+> while they are also being called from the networking side. This is not
+> safe, we never used proper READ_ONCE/WRITE_ONCE semantics here if we
+> believed it was safe. Further its not clear to me its even a good idea
+> to try and do this on "live" sockets while networking side might also
+> be using the socket. Instead of trying to reason about using the socks
+> from both sides lets realize that every use case I'm aware of rarely
+> deletes maps, in fact kubernetes/Cilium case builds map at init and
+> never tears it down except on errors. So lets do the simple fix and
+> grab sock lock.
+>
+> This patch wraps sock deletes from maps in sock lock and adds some
+> annotations so we catch any other cases easier.
+>
+> Fixes: 604326b41a6fb ("bpf, sockmap: convert to generic sk_msg interface")
+> Signed-off-by: John Fastabend <john.fastabend@gmail.com>
 
-It was already discussed here:
-
-  http://lkml.kernel.org/r/CA+G9fYv3=oJSFodFp4wwF7G7_g5FWYRYbc4F0AMU6jyfLT689A@mail.gmail.com
-
-and fixed version should be in 4.19, 4.14 and 4.9 stable branches now.
-
-Michal Kubecek
+Acked-by: Song Liu <songliubraving@fb.com>
