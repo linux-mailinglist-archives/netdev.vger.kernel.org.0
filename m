@@ -2,186 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1D96A135F59
-	for <lists+netdev@lfdr.de>; Thu,  9 Jan 2020 18:31:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C5E3135F67
+	for <lists+netdev@lfdr.de>; Thu,  9 Jan 2020 18:34:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729311AbgAIRaF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jan 2020 12:30:05 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:30711 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1725775AbgAIRaF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jan 2020 12:30:05 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1578591003;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=WEbJMVoXKZc7Mcq0IlBQE0Aok1RVoeFXM59wAGcOfkI=;
-        b=c5WGd5U6eKK7NbavhVebNztoKxLUJeRpFTpkqGhhVzAfhngIXJZssl1FtUzpJwGyewYGkW
-        yyEvL13PitmYbO105SAcrBd7bpSlgayVV+uE4dZhZeSzBmF2TKHgtCk9RrFqnXIVU0qO8e
-        ZUVhakVqwukuAtKjOp1icWzGUDldbp0=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-270-UHfa0YhjPG-MVGqqkVtyIw-1; Thu, 09 Jan 2020 12:30:01 -0500
-X-MC-Unique: UHfa0YhjPG-MVGqqkVtyIw-1
-Received: by mail-wm1-f71.google.com with SMTP id t4so1198245wmf.2
-        for <netdev@vger.kernel.org>; Thu, 09 Jan 2020 09:30:01 -0800 (PST)
+        id S1728220AbgAIReF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jan 2020 12:34:05 -0500
+Received: from mail-qt1-f196.google.com ([209.85.160.196]:44348 "EHLO
+        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731982AbgAIReE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jan 2020 12:34:04 -0500
+Received: by mail-qt1-f196.google.com with SMTP id t3so6499413qtr.11
+        for <netdev@vger.kernel.org>; Thu, 09 Jan 2020 09:34:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=nLZ40X4AYSx/4IufI5neDGOXIt1DrkaYWqpJijj50lU=;
+        b=YtRa8QvPTdA4j+IGrYzf5ipFgbr/DCJAJVWKc8q8BT+ICZP0hiqMU61CEmmNrt9Kor
+         1IedsTdhwZO2biCYk5RspEZKHbssaZuGMTwt1u/nTHu5kT5nnZ8RqSpE8QD/CJybCbMQ
+         60ASxWqybxd7rDSd1T7Q9LX9QjO3f0AB9nP/g=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=WEbJMVoXKZc7Mcq0IlBQE0Aok1RVoeFXM59wAGcOfkI=;
-        b=VPjAOngCBwNczcb2uyKINh5oR6SbQaMEB6dEz7JMefNqc9Q0DSidw1F64GN78gFX+5
-         QdtOYHtVzNTApHl5IF6kyh5+x1l5R0j5EHRLez0947uE7e8tVlkM9/+SyLUl1BK27pES
-         tHN+bVkOGAzTvnp2L4gROaYbkjoaabiL1K6K9nx02a5TbIv8Oi/PnC8nH7797QY+uKbc
-         cbXeGVGKcl5M3IUxyCKp1IRX022dAarbxar6pfanv8ZlJ3Y7wu6IUqm4S+kUIZM5xY1A
-         jl9NpEXyjvrUkwYVngf39HzKwjyRTl/6iKBtj+pPV51v+2pLWrHxk4fyesYS8LKr0rkS
-         3Eww==
-X-Gm-Message-State: APjAAAXrJUJ8LWbsa4yrgvxVoXsIk5zIB9x7+6FAtb9bjz7YIRB9VT1a
-        yRJ1NGrGL9CiRnehT6XHkB6+IC02c6T2Ox3Kg5ye50TCdaHO5vO1042SZNA6OmLK+guYIynu8xo
-        92kxdMWEWycDgHJKp
-X-Received: by 2002:a7b:cc82:: with SMTP id p2mr6334183wma.159.1578591000129;
-        Thu, 09 Jan 2020 09:30:00 -0800 (PST)
-X-Google-Smtp-Source: APXvYqx1BpP1PMD/hi6zn1BAihvdPSsBH2NbuRaz3Pm8k4ozDAvuoLzXW5PR6hbWraBQkPwKy790ow==
-X-Received: by 2002:a7b:cc82:: with SMTP id p2mr6334157wma.159.1578590999850;
-        Thu, 09 Jan 2020 09:29:59 -0800 (PST)
-Received: from localhost.localdomain (mob-176-246-50-46.net.vodafone.it. [176.246.50.46])
-        by smtp.gmail.com with ESMTPSA id j2sm3585180wmk.23.2020.01.09.09.29.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Jan 2020 09:29:59 -0800 (PST)
-Date:   Thu, 9 Jan 2020 18:29:56 +0100
-From:   Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
-To:     Jesper Dangaard Brouer <brouer@redhat.com>
-Cc:     Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Lorenzo Bianconi <lorenzo@kernel.org>, netdev@vger.kernel.org,
-        davem@davemloft.net
-Subject: Re: [PATCH] net: socionext: get rid of huge dma sync in
- netsec_alloc_rx_data
-Message-ID: <20200109172956.GB2626@localhost.localdomain>
-References: <5ed1bbf3e27f5b0105346838dfe405670183d723.1578410912.git.lorenzo@kernel.org>
- <20200108145322.GA2975@apalos.home>
- <20200109182038.3840b285@carbon>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=nLZ40X4AYSx/4IufI5neDGOXIt1DrkaYWqpJijj50lU=;
+        b=ZUfzfnGtepQXYA5fhKQ1euC3zhNGkheHPfeWVTpCgWefUh1LAABprYhZjQN1w/USGa
+         NtI53qe4uDZt0AiSgujXU5nzuXKi8tgO03hG1DM8kK0jZwPKF/hJsfvRSHdSfRO6cy7M
+         wjqAd/65hGC4/EHXx5vsqBujr5QQn2DZAJVSl2T8lvPu6+vpp8swB9WQYU1X4D4F/MRU
+         5ckqbr8/Y1ZZCYgHMK9kK1vIHOBSprYRTXlKT4u/HvMGcFlHn8ZMZAYy8OacAQHBWIw1
+         6Hv4unrZIHQWccJCrLsGEDAKJe0XJ21uwsraayGvMzPzu+h1wSUlsIqCAi36kRCHx/RS
+         nZvw==
+X-Gm-Message-State: APjAAAXIs4NHw18gJrPkq+e1seNTdg6358UBeI+8eFhXhv3l8Em+UnxL
+        Eum0M7+4K/om4tBgxmDi1fhWt5LqDOQ=
+X-Google-Smtp-Source: APXvYqx+m6ywrvexj6HpvbuKYmUXEbFtAdq0ZdCVkJEOXGPn/gc8hkiGUs/sYupQ0ccv7SfzLFMhEg==
+X-Received: by 2002:ac8:6ec5:: with SMTP id f5mr8989578qtv.137.1578591242115;
+        Thu, 09 Jan 2020 09:34:02 -0800 (PST)
+Received: from mail-qk1-f171.google.com (mail-qk1-f171.google.com. [209.85.222.171])
+        by smtp.gmail.com with ESMTPSA id m27sm3657808qta.21.2020.01.09.09.34.00
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 09 Jan 2020 09:34:01 -0800 (PST)
+Received: by mail-qk1-f171.google.com with SMTP id c16so6735360qko.6
+        for <netdev@vger.kernel.org>; Thu, 09 Jan 2020 09:34:00 -0800 (PST)
+X-Received: by 2002:ae9:e40d:: with SMTP id q13mr10878417qkc.2.1578591240318;
+ Thu, 09 Jan 2020 09:34:00 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="K8nIJk4ghYZn606h"
-Content-Disposition: inline
-In-Reply-To: <20200109182038.3840b285@carbon>
+References: <20191227174055.4923-1-sashal@kernel.org> <20191227174055.4923-8-sashal@kernel.org>
+ <CA+ASDXM6UvVCDYGq7gMEai_v3d79Pi_ZH=UFs1gfw_pL_BLMJg@mail.gmail.com> <20200109152925.GF1706@sasha-vm>
+In-Reply-To: <20200109152925.GF1706@sasha-vm>
+From:   Brian Norris <briannorris@chromium.org>
+Date:   Thu, 9 Jan 2020 09:33:49 -0800
+X-Gmail-Original-Message-ID: <CA+ASDXPy+K2DGYAy+8pXbDQ3e87Vd+KazsS7JneCc5CHa_NaKA@mail.gmail.com>
+Message-ID: <CA+ASDXPy+K2DGYAy+8pXbDQ3e87Vd+KazsS7JneCc5CHa_NaKA@mail.gmail.com>
+Subject: Re: [PATCH AUTOSEL 5.4 008/187] mwifiex: fix possible heap overflow
+ in mwifiex_process_country_ie()
+To:     Sasha Levin <sashal@kernel.org>
+Cc:     Linux Kernel <linux-kernel@vger.kernel.org>,
+        stable <stable@vger.kernel.org>,
+        huangwen <huangwenabc@gmail.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        "<netdev@vger.kernel.org>" <netdev@vger.kernel.org>,
+        Ganapathi Bhat <ganapathi.bhat@nxp.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, Jan 9, 2020 at 7:29 AM Sasha Levin <sashal@kernel.org> wrote:
+> On Mon, Jan 06, 2020 at 02:51:28PM -0800, Brian Norris wrote:
+> >I'd recommend holding off until that gets landed somewhere. (Same for
+> >the AUTOSEL patches sent to other kernel branches.)
+>
+> I'll drop it for now, just ping us when the fix is in and we'll get both
+> patches queued back up.
 
---K8nIJk4ghYZn606h
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+I'll try to do that. The maintainer is seemingly busy (likely
+vacation), but I'll try to keep this in mind when they get back to me.
 
-> On Wed, 8 Jan 2020 16:53:22 +0200
-> Ilias Apalodimas <ilias.apalodimas@linaro.org> wrote:
->=20
-> > Hi Lorenzo,=20
-> >=20
-> > On Tue, Jan 07, 2020 at 04:30:32PM +0100, Lorenzo Bianconi wrote:
-
-Hi Jesper and Ilias,
-
-thx for the review :)
-
-> > > Socionext driver can run on dma coherent and non-coherent devices.
-> > > Get rid of huge dma_sync_single_for_device in netsec_alloc_rx_data si=
-nce
-> > > now the driver can let page_pool API to managed needed DMA sync
-> > >=20
-> > > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-> > > ---
-> > >  drivers/net/ethernet/socionext/netsec.c | 45 +++++++++++++++--------=
---
-> > >  1 file changed, 28 insertions(+), 17 deletions(-)
-> > >=20
-> > > diff --git a/drivers/net/ethernet/socionext/netsec.c b/drivers/net/et=
-hernet/socionext/netsec.c
-> > > index b5a9e947a4a8..00404fef17e8 100644
-> > > --- a/drivers/net/ethernet/socionext/netsec.c
-> > > +++ b/drivers/net/ethernet/socionext/netsec.c
->=20
-> [...]
-> > > @@ -734,9 +734,7 @@ static void *netsec_alloc_rx_data(struct netsec_p=
-riv *priv,
-> > >  	/* Make sure the incoming payload fits in the page for XDP and non-=
-XDP
-> > >  	 * cases and reserve enough space for headroom + skb_shared_info
-> > >  	 */
-> > > -	*desc_len =3D PAGE_SIZE - NETSEC_RX_BUF_NON_DATA;
-> > > -	dma_dir =3D page_pool_get_dma_dir(dring->page_pool);
-> > > -	dma_sync_single_for_device(priv->dev, *dma_handle, *desc_len, dma_d=
-ir);
-> > > +	*desc_len =3D NETSEC_RX_BUF_SIZE;
-> > > =20
-> > >  	return page_address(page);
-> > >  }
-> > > @@ -883,6 +881,7 @@ static u32 netsec_xdp_xmit_back(struct netsec_pri=
-v *priv, struct xdp_buff *xdp)
-> > >  static u32 netsec_run_xdp(struct netsec_priv *priv, struct bpf_prog =
-*prog,
-> > >  			  struct xdp_buff *xdp)
-> > >  {
-> > > +	struct netsec_desc_ring *dring =3D &priv->desc_ring[NETSEC_RING_RX];
-> > >  	u32 ret =3D NETSEC_XDP_PASS;
-> > >  	int err;
-> > >  	u32 act;
-> > > @@ -896,7 +895,10 @@ static u32 netsec_run_xdp(struct netsec_priv *pr=
-iv, struct bpf_prog *prog,
-> > >  	case XDP_TX:
-> > >  		ret =3D netsec_xdp_xmit_back(priv, xdp);
-> > >  		if (ret !=3D NETSEC_XDP_TX)
-> > > -			xdp_return_buff(xdp);
-> > > +			__page_pool_put_page(dring->page_pool,
-> > > +				     virt_to_head_page(xdp->data),
-> > > +				     xdp->data_end - xdp->data_hard_start, =20
-> >=20
-> > Do we have to include data_hard_start?
->=20
-> That does look wrong.
-
-ack, will fix it in v2
-
->=20
-> > @Jesper i know bpf programs can modify the packet, but isn't it safe
-> > to only sync for xdp->data_end - xdp->data in this case since the DMA t=
-ransfer
-> > in this driver will always start *after* the XDP headroom?
->=20
-> I agree.
->=20
-> For performance it is actually important that we avoid "cache-flushing"
-> (which what happens on these non-coherent devices) the headroom.  As the
-> headroom is used for e.g. storing xdp_frame.
-
-IIRC on mvneta there is the same issue. I will post a patch to fix it.
-
-Regards,
-Lorenzo
-
->=20
->=20
-> --=20
-> Best regards,
->   Jesper Dangaard Brouer
->   MSc.CS, Principal Kernel Engineer at Red Hat
->   LinkedIn: http://www.linkedin.com/in/brouer
->=20
-
---K8nIJk4ghYZn606h
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCXhdjEQAKCRA6cBh0uS2t
-rCYZAQC+TAWtNtfCNZ4T8PLdwXizYHYlNuvdm1YA3owSRkibNAEAymRjKZe4mH64
-SnsQcEQ5LwcdZgQwfqBtxZLwjwwjGAs=
-=ChR5
------END PGP SIGNATURE-----
-
---K8nIJk4ghYZn606h--
-
+Thanks,
+Brian
