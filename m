@@ -2,167 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DC65813634F
-	for <lists+netdev@lfdr.de>; Thu,  9 Jan 2020 23:40:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B39E136360
+	for <lists+netdev@lfdr.de>; Thu,  9 Jan 2020 23:46:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726380AbgAIWkb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jan 2020 17:40:31 -0500
-Received: from mout.gmx.net ([212.227.17.22]:49521 "EHLO mout.gmx.net"
+        id S1728795AbgAIWqd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jan 2020 17:46:33 -0500
+Received: from mga01.intel.com ([192.55.52.88]:46855 "EHLO mga01.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725807AbgAIWkb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 9 Jan 2020 17:40:31 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1578609625;
-        bh=scKjw13Zpdkn0gFUcrq60bT4NxPCU9OIjwel84E2NB8=;
-        h=X-UI-Sender-Class:Reply-To:Subject:To:Cc:References:From:Date:
-         In-Reply-To;
-        b=iJaW09GLVysBuFelJ5qeTZCOEBqoo2gB+XX70j40scDeBM6itAii0WBJQnrPqsVS1
-         ZDM8M7aqkt0KyQNuH2MtHeWFeyiiRN5ZBcSit3V4tz3CeGkrIeDpKd73ftmGxkJfPq
-         xp6uscri5e8fSRJR69PlR1R6GLBsgrdG15gZkODk=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [192.168.84.205] ([81.25.174.156]) by mail.gmx.com (mrgmx104
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1N3KPq-1joclW2sba-010LGc; Thu, 09
- Jan 2020 23:40:25 +0100
-Reply-To: vtol@gmx.net
-Subject: Re: [drivers/net/phy/sfp] intermittent failure in state machine
- checks
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Cc:     Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org
-References: <d8d595ff-ec35-3426-ec43-9afd67c15e3d@gmx.net>
- <20200109144106.GA24459@lunn.ch>
- <513d6fe7-65b2-733b-1d17-b3a40b8161cf@gmx.net>
- <20200109155809.GQ25745@shell.armlinux.org.uk>
- <bb2c2eed-5efa-00f6-0e52-1326669c1b0d@gmx.net>
- <20200109174322.GR25745@shell.armlinux.org.uk>
- <acd4d7e4-7f8e-d578-c9c9-b45f062f4fe2@gmx.net>
- <7ebee7c5-4bf3-134d-bc57-ea71e0bdfc60@gmx.net>
- <20200109215903.GV25745@shell.armlinux.org.uk>
-From:   =?UTF-8?B?0b3SieG2rOG4s+KEoA==?= <vtol@gmx.net>
-Message-ID: <c7b4bec1-3f1f-8a34-cf22-8fb1f68914f3@gmx.net>
-Date:   Thu, 9 Jan 2020 22:40:24 +0000
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:68.0) Gecko/20100101 Firefox/68.0
+        id S1725840AbgAIWqd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 9 Jan 2020 17:46:33 -0500
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 09 Jan 2020 14:46:32 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.69,414,1571727600"; 
+   d="scan'208";a="421926783"
+Received: from jekeller-desk.amr.corp.intel.com ([10.166.244.172])
+  by fmsmga005.fm.intel.com with ESMTP; 09 Jan 2020 14:46:32 -0800
+From:   Jacob Keller <jacob.e.keller@intel.com>
+To:     netdev@vger.kernel.org
+Cc:     Jiri Pirko <jiri@mellanox.com>,
+        Jacob Keller <jacob.e.keller@intel.com>
+Subject: [PATCH 00/17] devlink documentation refactor
+Date:   Thu,  9 Jan 2020 14:46:08 -0800
+Message-Id: <20200109224625.1470433-1-jacob.e.keller@intel.com>
+X-Mailer: git-send-email 2.25.0.rc1
 MIME-Version: 1.0
-In-Reply-To: <20200109215903.GV25745@shell.armlinux.org.uk>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: quoted-printable
-Content-Language: en-GB
-X-Provags-ID: V03:K1:aY3I/Ad1qVPESy86D/UghGaj+gQT+ggVPOialsWRV6yL07D9uC6
- jHxrLzNuUYSPSIJ4QPTkMjfWrDhp642COLbCsqOtFOU4HfY3IoMO33cD7lMs1+JihlrQd5k
- Dxn0nYXSpmRYkaRb6kvLfffRFiliruiUgJFhQ6TIW8r8c4dAWcxJJER8gh46PWnigIT8nGT
- Mu5D2ln3Xlv9FGeEKqTVw==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:ommHQBHmm/Y=:pUXizfsv1RXdE3sSZseR4M
- AUpArPW7Y1w+MfHxiFeKYxUuW93qLDaZeRODbEyCXxh/h3FwEk4UI1VFEFcViXZalcZCUpLtU
- 602ooXsz9FsU0YxbhCDc6obAQCFP6uyPwNQgUecvfwoGWzEqLC7LvEr/xq+MESFfloukAc+k/
- Qq1miu6WB0PjO/Q2EOVuupNBgaMXOAKmlGYOVXXrY9Qib7/7+WIDnV48hc6mBNDNnpq+Y4raD
- 3telj7nrrUeYtZCYGGISBjDmoNTyYBt98KnwZI3oeWZqHMoZSEL9a5hg1aaBZVwxhkM3QPf4U
- kgK2CqcFnW8VUFllE3bT+eLvwHude6ySyJWaJ01h294y2GLcrR1TGNHS+dZ9q08QiW/CHsM0h
- rDsbVoh91cBfDnQyTw0ZDcaTrrLx/rTEmEVNIlDGO5AVNLczOPrzF41gVzMkYhTaJBbmk4Wmi
- lB70DY2MzaRGQSBP52KEsH98EBtKVCgSGTckEwsvGQJANeGpvJW1uw4Wh50lGLJqhP3aJXl3S
- KTr8PgZ/EkNPw+N3vz/P8JqAdDNW5LtUJqdPKOMnfL7QcFgwKMOFvn/g5Q+0zliH2lWfQkmis
- N3CHhNNYudfGY3m9+zIuZk6Zn0LI0xKkFP3P7qkNABe0Fb4xRkyjnIc2t3i0SetrlPa0wAlBU
- IvMCWcEyptE5GG2IbeXQ0Q1tM/8M2T1dOpLPXKu5NHHbjiSPZPqmMIZEVgF5IqvKR7POc6lSi
- b0BIsL0sCQ5AdE3pRf6KX/lLfIccxoSKlFYbDoecdeDG/051/UUFUfrzwRXSHVPWiSu711kdm
- dqmsd0p3KWCjY2ZM4XtMo0pKSeWbwnlYpXFpBsLDQnxNZzUzewcPnyhYW+hLWaDtwaegoWwNn
- Y1/2oz0wfq0TUm+mGsqA3swiH3m7A6V4uYeyn66Tl6hFsMJGI1HimaTvJ+laI701+Gh7LAoTz
- DUdQKGc7LlPPInnIep0/e+0iFLT7N54jFR/jH+3Bs/Tr9LFA5wJ375fxkmafhlDg2nAkdAd5f
- ULBx2MeALAhDze3qa3SWkGbKSQnQkaC8ByqHVrEOFVIO43sKKpzb15dttpblXRXXkv6Hw92Lr
- qHy9hy8EAHh0d5wAfZOjPJ6R999AiQVoTytGkGmOyME77bNkExsUo8ruf6GH7CErgDTorV5+o
- LAQMYZu0tOLDkwuBFNTNKo5R6EinIm1SBGgmWrzFRAkA2K+jMDHECjp8ZhPGroC3NOqrwL8ah
- 1kDsKzqaoBhseqOr8hkOXgd4icQyMQ/JMnLfGEw==
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+This series updates the devlink documentation, with a few primary goals
 
-On 09/01/2020 21:59, Russell King - ARM Linux admin wrote:
->
-> Also, note that the Metanoia MT-V5311 (at least mine) uses 1000BASE-X
-> not SGMII. It sends a 16-bit configuration word of 0x61a0, which is:
->
-> 		1000BASE-X			SGMII
-> Bit 15	0	No next page			Link down
-> 	1	Ack				Ack
-> 	1	Remote fault 2			Reserved (0)
-> 	0	Remote fault 1			Duplex (0 =3D Half)
->
-> 	0	Reserved (0)			Speed bit 1
-> 	0	Reserved (0)			Speed bit 0 (00=3D10Mbps)
-> 	0	Reserved (0)			Reserved (0)
-> 	1	Asymetric pause direction	Reserved (0)
->
-> 	1	Pause				Reserved (0)
-> 	0	Half duplex not supported	Reserved (0)
-> 	1	Full duplex supported		Reserved (0)
-> 	0	Reserved (0)			Reserved (0)
->
-> 	0	Reserved (0)			Reserved (0)
-> 	0	Reserved (0)			Reserved (0)
-> 	0	Reserved (0)			Reserved (0)
-> Bit 0	0	Reserved (0)			Must be 1
->
-> So it clearly fits 802.3 Clause 37 1000BASE-X format, reporting 1G
-> Full duplex, and not SGMII (10M Half duplex).
->
-> I have a platform here that allows me to get at the raw config_reg
-> word that the other end has sent which allows analysis as per the
-> above.
->
+ * move all of the devlink documentation into a dedicated subfolder
+ * convert that documentation to the reStructuredText format
+ * merge driver-specific documentations into a single file per driver
+ * add missing documentation, including per-driver and devlink generally
 
-The driver reports also 1000base-x for this Metonia/Allnet module:
+For each driver, I took the time to review the code and add further
+documentation on the various features it currently supports. Additionally, I
+added new documentation files for some of the features such as
+devlink-dpipe, devlink-resource, and devlink-regions.
 
-mvneta f1034000.ethernet eth2: switched to inband/1000base-x link mode
+Note for the region snapshot triggering, I kept that as a separate patch as
+that is based on work that has not yet been merged to net-next, and may
+change.
 
-mii-tool -v eth2 producing
+I also improved the existing documentation for devlink-info and
+devlink-param by adding a bit more of an introduction when converting it to
+the rst format.
 
-eth2: 1000 Mbit, full duplex, link ok
- =C2=A0 product info: vendor 00:00:00, model 0 rev 0
- =C2=A0 basic mode:=C2=A0=C2=A0 10 Mbit, full duplex
- =C2=A0 basic status: autonegotiation complete, link ok
- =C2=A0 capabilities:
- =C2=A0 advertising:=C2=A0 1000baseT-HD 1000baseT-FD 100baseT4 100baseTx-=
-FD=20
-100baseTx-HD 10baseT-FD 10baseT-HD flow-control
-______
+Jacob Keller (17):
+  devlink: add macro for "fw.psid"
+  devlink: move devlink documentation to subfolder
+  devlink: convert devlink-health.txt to rst format
+  devlink: rename devlink-info-versions.rst and add a header
+  devlink: convert devlink-params.txt to reStructuredText
+  devlink: add documentation for generic devlink parameters
+  devlink: mention reloading in devlink-params.rst
+  devlink: convert driver-specific files to reStructuredText
+  devlink: document info versions for each driver
+  devlink: add parameter documentation for the mlx4 driver
+  devlink: add a driver-specific file for the qed driver
+  devlink: add a file documenting devlink regions
+  devlink: add documentation for ionic device driver
+  devlink: rename and expand devlink-trap-netdevsim.rst
+  devlink: add a devlink-resource.rst documentation file
+  devlink: introduce devlink-dpipe.rst documentation file
+  devlink: document region snapshot triggering from userspace
 
-On 09/01/2020 21:34, Russell King - ARM Linux admin wrote:
-> You can check the state of the GPIOs by looking at
-> /sys/kernel/debug/gpio, and you will probably see that TX_FAULT is
-> being asserted by the module.
+ .../device_drivers/ti/cpsw_switchdev.txt      |   2 +-
+ Documentation/networking/devlink-health.txt   |  86 ------
+ .../networking/devlink-info-versions.rst      |  64 -----
+ .../networking/devlink-params-bnxt.txt        |  18 --
+ .../networking/devlink-params-mlx5.txt        |  17 --
+ .../networking/devlink-params-mlxsw.txt       |  10 -
+ .../networking/devlink-params-mv88e6xxx.txt   |   7 -
+ .../networking/devlink-params-nfp.txt         |   5 -
+ .../devlink-params-ti-cpsw-switch.txt         |  10 -
+ Documentation/networking/devlink-params.txt   |  71 -----
+ .../networking/devlink-trap-netdevsim.rst     |  20 --
+ Documentation/networking/devlink/bnxt.rst     |  41 +++
+ .../networking/devlink/devlink-dpipe.rst      | 252 ++++++++++++++++++
+ .../networking/devlink/devlink-health.rst     | 114 ++++++++
+ .../networking/devlink/devlink-info.rst       |  94 +++++++
+ .../networking/devlink/devlink-params.rst     | 108 ++++++++
+ .../networking/devlink/devlink-region.rst     |  60 +++++
+ .../networking/devlink/devlink-resource.rst   |  62 +++++
+ .../networking/{ => devlink}/devlink-trap.rst |   2 +-
+ Documentation/networking/devlink/index.rst    |  42 +++
+ Documentation/networking/devlink/ionic.rst    |  29 ++
+ Documentation/networking/devlink/mlx4.rst     |  56 ++++
+ Documentation/networking/devlink/mlx5.rst     |  59 ++++
+ Documentation/networking/devlink/mlxsw.rst    |  59 ++++
+ .../networking/devlink/mv88e6xxx.rst          |  28 ++
+ .../networking/devlink/netdevsim.rst          |  72 +++++
+ Documentation/networking/devlink/nfp.rst      |  65 +++++
+ Documentation/networking/devlink/qed.rst      |  26 ++
+ .../networking/devlink/ti-cpsw-switch.rst     |  31 +++
+ Documentation/networking/index.rst            |   4 +-
+ MAINTAINERS                                   |   3 +-
+ drivers/net/netdevsim/dev.c                   |   2 +-
+ include/net/devlink.h                         |   6 +-
+ 33 files changed, 1208 insertions(+), 317 deletions(-)
+ delete mode 100644 Documentation/networking/devlink-health.txt
+ delete mode 100644 Documentation/networking/devlink-info-versions.rst
+ delete mode 100644 Documentation/networking/devlink-params-bnxt.txt
+ delete mode 100644 Documentation/networking/devlink-params-mlx5.txt
+ delete mode 100644 Documentation/networking/devlink-params-mlxsw.txt
+ delete mode 100644 Documentation/networking/devlink-params-mv88e6xxx.txt
+ delete mode 100644 Documentation/networking/devlink-params-nfp.txt
+ delete mode 100644 Documentation/networking/devlink-params-ti-cpsw-switch.txt
+ delete mode 100644 Documentation/networking/devlink-params.txt
+ delete mode 100644 Documentation/networking/devlink-trap-netdevsim.rst
+ create mode 100644 Documentation/networking/devlink/bnxt.rst
+ create mode 100644 Documentation/networking/devlink/devlink-dpipe.rst
+ create mode 100644 Documentation/networking/devlink/devlink-health.rst
+ create mode 100644 Documentation/networking/devlink/devlink-info.rst
+ create mode 100644 Documentation/networking/devlink/devlink-params.rst
+ create mode 100644 Documentation/networking/devlink/devlink-region.rst
+ create mode 100644 Documentation/networking/devlink/devlink-resource.rst
+ rename Documentation/networking/{ => devlink}/devlink-trap.rst (99%)
+ create mode 100644 Documentation/networking/devlink/index.rst
+ create mode 100644 Documentation/networking/devlink/ionic.rst
+ create mode 100644 Documentation/networking/devlink/mlx4.rst
+ create mode 100644 Documentation/networking/devlink/mlx5.rst
+ create mode 100644 Documentation/networking/devlink/mlxsw.rst
+ create mode 100644 Documentation/networking/devlink/mv88e6xxx.rst
+ create mode 100644 Documentation/networking/devlink/netdevsim.rst
+ create mode 100644 Documentation/networking/devlink/nfp.rst
+ create mode 100644 Documentation/networking/devlink/qed.rst
+ create mode 100644 Documentation/networking/devlink/ti-cpsw-switch.rst
 
-With OpenWrt trying to save space wherever they can
-
-# CONFIG_DEBUG_GPIO is not set
-
-this avenue is unfortunately is not available. Is there some other way=20
-(Linux userland) to query TX_FAULT and RX_LOS and whether either/both=20
-being asserted or deasserted?
-___
-
-On 09/01/2020 21:34, Russell King - ARM Linux admin wrote:
-> BTW, I notice in you original kernel that you have at least one of my
-> "experimental" patches on your stable kernel taken from my "phy" branch=
-
-> which has never been in mainline, so I guess you're using the OpenWRT
-> kernel?
-I am not aware were the code originated from. It is not exactly OpenWrt=20
-but TOS (for the Turris Omnia router), being a downstream patchset that=20
-builds on top of OpenWrt. The TOS developers might be known at Linux=20
-kernel development, recently added their MOX platform and also with=20
-regard to Multi-CPU-DSA.
-___
-
-On 09/01/2020 21:34, Russell King - ARM Linux admin wrote:
-> You're reading/way/  too much into the state machine.
-
-How so? Those intermittent failures cause disruption in the WAN=20
-connectivity - nothing life threatening but somewhat inconvenient.
-I am trying to get to the bottom of it, with my limited capabilities and =
-
-with your input it has helped. I will ping Allnet again and see whether=20
-they bother to respond and shed some light of what their modules does=20
-with regard to TX_FAULT and RX_LOS.
-
-
+-- 
+2.25.0.rc1
 
