@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3BF03135D1F
-	for <lists+netdev@lfdr.de>; Thu,  9 Jan 2020 16:46:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C105135D23
+	for <lists+netdev@lfdr.de>; Thu,  9 Jan 2020 16:46:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732612AbgAIPpK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jan 2020 10:45:10 -0500
-Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:58916 "EHLO
+        id S1730948AbgAIPp0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jan 2020 10:45:26 -0500
+Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:33522 "EHLO
         dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728357AbgAIPpJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jan 2020 10:45:09 -0500
+        by vger.kernel.org with ESMTP id S1728293AbgAIPp0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jan 2020 10:45:26 -0500
 X-Virus-Scanned: Proofpoint Essentials engine
 Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 5094478006E;
-        Thu,  9 Jan 2020 15:45:07 +0000 (UTC)
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 42E3240005C;
+        Thu,  9 Jan 2020 15:45:24 +0000 (UTC)
 Received: from amm-opti7060.uk.solarflarecom.com (10.17.20.147) by
  ukex01.SolarFlarecom.com (10.17.10.4) with Microsoft SMTP Server (TLS) id
- 15.0.1395.4; Thu, 9 Jan 2020 15:45:02 +0000
+ 15.0.1395.4; Thu, 9 Jan 2020 15:45:19 +0000
 From:   "Alex Maftei (amaftei)" <amaftei@solarflare.com>
-Subject: [PATCH net-next 6/9] sfc: move MCDI transmit queue management code
+Subject: [PATCH net-next 7/9] sfc: move MCDI receive queue management code
 To:     <netdev@vger.kernel.org>, <davem@davemloft.net>
 CC:     <linux-net-drivers@solarflare.com>, <scrum-linux@solarflare.com>
 References: <4d915542-3699-e864-5558-bef616b2fe66@solarflare.com>
-Message-ID: <768d0e04-34ae-cdff-ddcb-d2c6963b0511@solarflare.com>
-Date:   Thu, 9 Jan 2020 15:44:59 +0000
+Message-ID: <092df53b-1e33-0659-ba61-d602a0112cde@solarflare.com>
+Date:   Thu, 9 Jan 2020 15:45:15 +0000
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.2.2
 MIME-Version: 1.0
@@ -38,134 +38,110 @@ X-Originating-IP: [10.17.20.147]
 X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
  ukex01.SolarFlarecom.com (10.17.10.4)
 X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1010-25156.003
-X-TM-AS-Result: No-5.348800-8.000000-10
-X-TMASE-MatchedRID: Ig6GCquy+lIZG2O2X/JQZRouoVvF2i0ZAf1C358hdK9jLp8Cm8vwFwoe
-        RRhCZWIBnvBWG5GT8Jdw5T4Iaj538mJZXQNDzktSGjzBgnFZvQ5/64NkLyMdN5u6++Cllkj5P5v
-        0VYIETy3iUbHr9+jEYIDGySr3NZUt8SaOVAGEZoJlpwNsTvdlKQ/o5bNHEsCTDpCUEeEFm7AL8b
-        Sq+AkUJ2c5xJalDrvMH5VvilZUGGQdqirDt7KDjEdAWPMBu8kQRElFv2Ob9BJFsPBvc3lnClGRh
-        NKlKyVFp7q20A/R7wv1kwmFvpSklJFXLDgU0XwyalRqQPhHMT5ReWnUUdhI9XxbHSW75Ustc9ZY
-        NjuFJJVMQmNkSSNknkUtrDtCnnxyjtapcCTXkeBtawJSSsDgSXyzRzLq38pIydmEN0UhdkScpsr
-        vWeoKLawx1AZuq2dUU3pAK/eq+U7lRxm3A2wKujl/1fD/GopdkvL+Ti49jcrEQdG7H66TyMdRT5
-        TQAJnAY5yoDjbJhYmiPR7AiKDb/uB2kL4CXfNZxCA3ZLyl14eeqD9WtJkSIw==
+X-TM-AS-Result: No-4.622300-8.000000-10
+X-TMASE-MatchedRID: gDKYV1z5qxqcJOjqgavgM5K9FvwQx1hFeouvej40T4gd0WOKRkwsh1ym
+        Rv3NQjsEfGzuoVn0Vs6PQi9XuOWoOHI/MxNRI7UkR/j040fRFpJ99ekRHlOQkY+Ixb7djOSCcJj
+        /63vxb+aH9eJA08ufnrdmZ+t48sNQTIunQAI8qaKiAZ3zAhQYgqIik2/euMx1R2YNIFh+clF3Xb
+        g5u5YBp3y9TPc1V7Ss+5pyml5tX6L56DmUCLEExepKEpRpjeYiGEfoClqBl866pZ/o2Hu2YXjm0
+        APnwZU2fhmJ9GaO1RQfHS8wUUuW9UdRJVfWCtkwZRwOP3rSfq+imxpEbADEvJsoi2XrUn/JyeMt
+        MD9QOgAYvR9ppOlv1o6HM5rqDwqtiCyixD7AHZURludRZQDt5ytQmx6LXr4e5LPhAE4N1aYAQ+K
+        4Sh6HXYZ5+vRu78EgwMPu02WE+FtO//fZp8o71MFwyx69Aj0AF8WOpmrvCxtyCYeHQXFONn+IaU
+        6aARfSasRgksxQ/TKwzFr1189Za5RMZUCEHkRt
 X-TM-AS-User-Approved-Sender: Yes
 X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--5.348800-8.000000
+X-TMASE-Result: 10--4.622300-8.000000
 X-TMASE-Version: SMEX-12.5.0.1300-8.5.1010-25156.003
-X-MDID: 1578584708-f7KDJh87ctQT
+X-MDID: 1578584725-7cDSnCKWEAWN
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-A function was split, the others were renamed.
-
-Code style fixes included.
+One function's prototype was changed in the header.
 
 Signed-off-by: Alexandru-Mihai Maftei <amaftei@solarflare.com>
 ---
- drivers/net/ethernet/sfc/ef10.c           |  94 ++------------------
- drivers/net/ethernet/sfc/mcdi_functions.c | 100 ++++++++++++++++++++++
- 2 files changed, 109 insertions(+), 85 deletions(-)
+ drivers/net/ethernet/sfc/ef10.c           | 99 ++---------------------
+ drivers/net/ethernet/sfc/mcdi_functions.c | 85 +++++++++++++++++++
+ drivers/net/ethernet/sfc/mcdi_functions.h |  2 +-
+ 3 files changed, 93 insertions(+), 93 deletions(-)
 
 diff --git a/drivers/net/ethernet/sfc/ef10.c b/drivers/net/ethernet/sfc/ef10.c
-index e21ee5ccea6a..aeb6c2059eb1 100644
+index aeb6c2059eb1..dc037dd927f8 100644
 --- a/drivers/net/ethernet/sfc/ef10.c
 +++ b/drivers/net/ethernet/sfc/ef10.c
-@@ -2378,20 +2378,15 @@ static u32 efx_ef10_tso_versions(struct efx_nic *efx)
+@@ -2967,91 +2967,6 @@ static int efx_ef10_vf_rx_push_rss_config(struct efx_nic *efx, bool user,
+ 	return efx_ef10_rx_push_shared_rss_config(efx, NULL);
+ }
  
- static void efx_ef10_tx_init(struct efx_tx_queue *tx_queue)
- {
--	MCDI_DECLARE_BUF(inbuf, MC_CMD_INIT_TXQ_IN_LEN(EFX_MAX_DMAQ_SIZE * 8 /
--						       EFX_BUF_SIZE));
- 	bool csum_offload = tx_queue->queue & EFX_TXQ_TYPE_OFFLOAD;
--	size_t entries = tx_queue->txd.buf.len / EFX_BUF_SIZE;
- 	struct efx_channel *channel = tx_queue->channel;
- 	struct efx_nic *efx = tx_queue->efx;
+-static int efx_ef10_rx_probe(struct efx_rx_queue *rx_queue)
+-{
+-	return efx_nic_alloc_buffer(rx_queue->efx, &rx_queue->rxd.buf,
+-				    (rx_queue->ptr_mask + 1) *
+-				    sizeof(efx_qword_t),
+-				    GFP_KERNEL);
+-}
+-
+-static void efx_ef10_rx_init(struct efx_rx_queue *rx_queue)
+-{
+-	MCDI_DECLARE_BUF(inbuf,
+-			 MC_CMD_INIT_RXQ_IN_LEN(EFX_MAX_DMAQ_SIZE * 8 /
+-						EFX_BUF_SIZE));
+-	struct efx_channel *channel = efx_rx_queue_channel(rx_queue);
+-	size_t entries = rx_queue->rxd.buf.len / EFX_BUF_SIZE;
+-	struct efx_nic *efx = rx_queue->efx;
 -	struct efx_ef10_nic_data *nic_data = efx->nic_data;
-+	struct efx_ef10_nic_data *nic_data;
- 	bool tso_v2 = false;
 -	size_t inlen;
 -	dma_addr_t dma_addr;
- 	efx_qword_t *txd;
- 	int rc;
+-	int rc;
 -	int i;
--	BUILD_BUG_ON(MC_CMD_INIT_TXQ_OUT_LEN != 0);
-+
-+	nic_data = efx->nic_data;
- 
- 	/* Only attempt to enable TX timestamping if we have the license for it,
- 	 * otherwise TXQ init will fail
-@@ -2418,51 +2413,9 @@ static void efx_ef10_tx_init(struct efx_tx_queue *tx_queue)
- 				channel->channel);
- 	}
- 
--	MCDI_SET_DWORD(inbuf, INIT_TXQ_IN_SIZE, tx_queue->ptr_mask + 1);
--	MCDI_SET_DWORD(inbuf, INIT_TXQ_IN_TARGET_EVQ, channel->channel);
--	MCDI_SET_DWORD(inbuf, INIT_TXQ_IN_LABEL, tx_queue->queue);
--	MCDI_SET_DWORD(inbuf, INIT_TXQ_IN_INSTANCE, tx_queue->queue);
--	MCDI_SET_DWORD(inbuf, INIT_TXQ_IN_OWNER_ID, 0);
--	MCDI_SET_DWORD(inbuf, INIT_TXQ_IN_PORT_ID, nic_data->vport_id);
+-	BUILD_BUG_ON(MC_CMD_INIT_RXQ_OUT_LEN != 0);
 -
--	dma_addr = tx_queue->txd.buf.dma_addr;
+-	rx_queue->scatter_n = 0;
+-	rx_queue->scatter_len = 0;
 -
--	netif_dbg(efx, hw, efx->net_dev, "pushing TXQ %d. %zu entries (%llx)\n",
--		  tx_queue->queue, entries, (u64)dma_addr);
+-	MCDI_SET_DWORD(inbuf, INIT_RXQ_IN_SIZE, rx_queue->ptr_mask + 1);
+-	MCDI_SET_DWORD(inbuf, INIT_RXQ_IN_TARGET_EVQ, channel->channel);
+-	MCDI_SET_DWORD(inbuf, INIT_RXQ_IN_LABEL, efx_rx_queue_index(rx_queue));
+-	MCDI_SET_DWORD(inbuf, INIT_RXQ_IN_INSTANCE,
+-		       efx_rx_queue_index(rx_queue));
+-	MCDI_POPULATE_DWORD_2(inbuf, INIT_RXQ_IN_FLAGS,
+-			      INIT_RXQ_IN_FLAG_PREFIX, 1,
+-			      INIT_RXQ_IN_FLAG_TIMESTAMP, 1);
+-	MCDI_SET_DWORD(inbuf, INIT_RXQ_IN_OWNER_ID, 0);
+-	MCDI_SET_DWORD(inbuf, INIT_RXQ_IN_PORT_ID, nic_data->vport_id);
+-
+-	dma_addr = rx_queue->rxd.buf.dma_addr;
+-
+-	netif_dbg(efx, hw, efx->net_dev, "pushing RXQ %d. %zu entries (%llx)\n",
+-		  efx_rx_queue_index(rx_queue), entries, (u64)dma_addr);
 -
 -	for (i = 0; i < entries; ++i) {
--		MCDI_SET_ARRAY_QWORD(inbuf, INIT_TXQ_IN_DMA_ADDR, i, dma_addr);
+-		MCDI_SET_ARRAY_QWORD(inbuf, INIT_RXQ_IN_DMA_ADDR, i, dma_addr);
 -		dma_addr += EFX_BUF_SIZE;
 -	}
 -
--	inlen = MC_CMD_INIT_TXQ_IN_LEN(entries);
+-	inlen = MC_CMD_INIT_RXQ_IN_LEN(entries);
 -
--	do {
--		MCDI_POPULATE_DWORD_4(inbuf, INIT_TXQ_IN_FLAGS,
--				/* This flag was removed from mcdi_pcol.h for
--				 * the non-_EXT version of INIT_TXQ.  However,
--				 * firmware still honours it.
--				 */
--				INIT_TXQ_EXT_IN_FLAG_TSOV2_EN, tso_v2,
--				INIT_TXQ_IN_FLAG_IP_CSUM_DIS, !csum_offload,
--				INIT_TXQ_IN_FLAG_TCP_CSUM_DIS, !csum_offload,
--				INIT_TXQ_EXT_IN_FLAG_TIMESTAMP,
--						tx_queue->timestamping);
+-	rc = efx_mcdi_rpc(efx, MC_CMD_INIT_RXQ, inbuf, inlen,
+-			  NULL, 0, NULL);
+-	if (rc)
+-		netdev_WARN(efx->net_dev, "failed to initialise RXQ %d\n",
+-			    efx_rx_queue_index(rx_queue));
+-}
 -
--		rc = efx_mcdi_rpc_quiet(efx, MC_CMD_INIT_TXQ, inbuf, inlen,
--					NULL, 0, NULL);
--		if (rc == -ENOSPC && tso_v2) {
--			/* Retry without TSOv2 if we're short on contexts. */
--			tso_v2 = false;
--			netif_warn(efx, probe, efx->net_dev,
--				   "TSOv2 context not available to segment in hardware. TCP performance may be reduced.\n");
--		} else if (rc) {
--			efx_mcdi_display_error(efx, MC_CMD_INIT_TXQ,
--					       MC_CMD_INIT_TXQ_EXT_IN_LEN,
--					       NULL, 0, rc);
--			goto fail;
--		}
--	} while (rc);
-+	rc = efx_mcdi_tx_init(tx_queue, tso_v2);
-+	if (rc)
-+		goto fail;
- 
- 	/* A previous user of this TX queue might have set us up the
- 	 * bomb by writing a descriptor to the TX push collector but
-@@ -2500,35 +2453,6 @@ static void efx_ef10_tx_init(struct efx_tx_queue *tx_queue)
- 		    tx_queue->queue);
- }
- 
--static void efx_ef10_tx_fini(struct efx_tx_queue *tx_queue)
+-static void efx_ef10_rx_fini(struct efx_rx_queue *rx_queue)
 -{
--	MCDI_DECLARE_BUF(inbuf, MC_CMD_FINI_TXQ_IN_LEN);
+-	MCDI_DECLARE_BUF(inbuf, MC_CMD_FINI_RXQ_IN_LEN);
 -	MCDI_DECLARE_BUF_ERR(outbuf);
--	struct efx_nic *efx = tx_queue->efx;
+-	struct efx_nic *efx = rx_queue->efx;
 -	size_t outlen;
 -	int rc;
 -
--	MCDI_SET_DWORD(inbuf, FINI_TXQ_IN_INSTANCE,
--		       tx_queue->queue);
+-	MCDI_SET_DWORD(inbuf, FINI_RXQ_IN_INSTANCE,
+-		       efx_rx_queue_index(rx_queue));
 -
--	rc = efx_mcdi_rpc_quiet(efx, MC_CMD_FINI_TXQ, inbuf, sizeof(inbuf),
+-	rc = efx_mcdi_rpc_quiet(efx, MC_CMD_FINI_RXQ, inbuf, sizeof(inbuf),
 -			  outbuf, sizeof(outbuf), &outlen);
 -
 -	if (rc && rc != -EALREADY)
@@ -174,142 +150,135 @@ index e21ee5ccea6a..aeb6c2059eb1 100644
 -	return;
 -
 -fail:
--	efx_mcdi_display_error(efx, MC_CMD_FINI_TXQ, MC_CMD_FINI_TXQ_IN_LEN,
+-	efx_mcdi_display_error(efx, MC_CMD_FINI_RXQ, MC_CMD_FINI_RXQ_IN_LEN,
 -			       outbuf, outlen, rc);
 -}
 -
--static void efx_ef10_tx_remove(struct efx_tx_queue *tx_queue)
+-static void efx_ef10_rx_remove(struct efx_rx_queue *rx_queue)
 -{
--	efx_nic_free_buffer(tx_queue->efx, &tx_queue->txd.buf);
+-	efx_nic_free_buffer(rx_queue->efx, &rx_queue->rxd.buf);
 -}
 -
- /* This writes to the TX_DESC_WPTR; write pointer for TX descriptor ring */
- static inline void efx_ef10_notify_tx_desc(struct efx_tx_queue *tx_queue)
- {
-@@ -3857,7 +3781,7 @@ static int efx_ef10_fini_dmaq(struct efx_nic *efx)
+ /* This creates an entry in the RX descriptor queue */
+ static inline void
+ efx_ef10_build_rx_desc(struct efx_rx_queue *rx_queue, unsigned int index)
+@@ -3779,7 +3694,7 @@ static int efx_ef10_fini_dmaq(struct efx_nic *efx)
+ 	if (efx->state != STATE_RECOVERY) {
+ 		efx_for_each_channel(channel, efx) {
  			efx_for_each_channel_rx_queue(rx_queue, channel)
- 				efx_ef10_rx_fini(rx_queue);
+-				efx_ef10_rx_fini(rx_queue);
++				efx_mcdi_rx_fini(rx_queue);
  			efx_for_each_channel_tx_queue(tx_queue, channel)
--				efx_ef10_tx_fini(tx_queue);
-+				efx_mcdi_tx_fini(tx_queue);
+ 				efx_mcdi_tx_fini(tx_queue);
  		}
- 
- 		wait_event_timeout(efx->flush_wq,
-@@ -6529,7 +6453,7 @@ const struct efx_nic_type efx_hunt_a0_vf_nic_type = {
- 	.irq_handle_legacy = efx_ef10_legacy_interrupt,
- 	.tx_probe = efx_ef10_tx_probe,
- 	.tx_init = efx_ef10_tx_init,
--	.tx_remove = efx_ef10_tx_remove,
-+	.tx_remove = efx_mcdi_tx_remove,
- 	.tx_write = efx_ef10_tx_write,
+@@ -6458,9 +6373,9 @@ const struct efx_nic_type efx_hunt_a0_vf_nic_type = {
  	.tx_limit_len = efx_ef10_tx_limit_len,
  	.rx_push_rss_config = efx_ef10_vf_rx_push_rss_config,
-@@ -6638,7 +6562,7 @@ const struct efx_nic_type efx_hunt_a0_nic_type = {
- 	.irq_handle_legacy = efx_ef10_legacy_interrupt,
- 	.tx_probe = efx_ef10_tx_probe,
- 	.tx_init = efx_ef10_tx_init,
--	.tx_remove = efx_ef10_tx_remove,
-+	.tx_remove = efx_mcdi_tx_remove,
- 	.tx_write = efx_ef10_tx_write,
- 	.tx_limit_len = efx_ef10_tx_limit_len,
- 	.rx_push_rss_config = efx_ef10_pf_rx_push_rss_config,
+ 	.rx_pull_rss_config = efx_ef10_rx_pull_rss_config,
+-	.rx_probe = efx_ef10_rx_probe,
+-	.rx_init = efx_ef10_rx_init,
+-	.rx_remove = efx_ef10_rx_remove,
++	.rx_probe = efx_mcdi_rx_probe,
++	.rx_init = efx_mcdi_rx_init,
++	.rx_remove = efx_mcdi_rx_remove,
+ 	.rx_write = efx_ef10_rx_write,
+ 	.rx_defer_refill = efx_ef10_rx_defer_refill,
+ 	.ev_probe = efx_mcdi_ev_probe,
+@@ -6570,9 +6485,9 @@ const struct efx_nic_type efx_hunt_a0_nic_type = {
+ 	.rx_push_rss_context_config = efx_ef10_rx_push_rss_context_config,
+ 	.rx_pull_rss_context_config = efx_ef10_rx_pull_rss_context_config,
+ 	.rx_restore_rss_contexts = efx_ef10_rx_restore_rss_contexts,
+-	.rx_probe = efx_ef10_rx_probe,
+-	.rx_init = efx_ef10_rx_init,
+-	.rx_remove = efx_ef10_rx_remove,
++	.rx_probe = efx_mcdi_rx_probe,
++	.rx_init = efx_mcdi_rx_init,
++	.rx_remove = efx_mcdi_rx_remove,
+ 	.rx_write = efx_ef10_rx_write,
+ 	.rx_defer_refill = efx_ef10_rx_defer_refill,
+ 	.ev_probe = efx_mcdi_ev_probe,
 diff --git a/drivers/net/ethernet/sfc/mcdi_functions.c b/drivers/net/ethernet/sfc/mcdi_functions.c
-index a1d37aec6013..9dc1395e5f68 100644
+index 9dc1395e5f68..f022e2b9e975 100644
 --- a/drivers/net/ethernet/sfc/mcdi_functions.c
 +++ b/drivers/net/ethernet/sfc/mcdi_functions.c
-@@ -162,3 +162,103 @@ void efx_mcdi_ev_fini(struct efx_channel *channel)
- 	efx_mcdi_display_error(efx, MC_CMD_FINI_EVQ, MC_CMD_FINI_EVQ_IN_LEN,
+@@ -262,3 +262,88 @@ void efx_mcdi_tx_fini(struct efx_tx_queue *tx_queue)
+ 	efx_mcdi_display_error(efx, MC_CMD_FINI_TXQ, MC_CMD_FINI_TXQ_IN_LEN,
  			       outbuf, outlen, rc);
  }
 +
-+int efx_mcdi_tx_init(struct efx_tx_queue *tx_queue, bool tso_v2)
++int efx_mcdi_rx_probe(struct efx_rx_queue *rx_queue)
 +{
-+	MCDI_DECLARE_BUF(inbuf, MC_CMD_INIT_TXQ_IN_LEN(EFX_MAX_DMAQ_SIZE * 8 /
-+						       EFX_BUF_SIZE));
-+	bool csum_offload = tx_queue->queue & EFX_TXQ_TYPE_OFFLOAD;
-+	size_t entries = tx_queue->txd.buf.len / EFX_BUF_SIZE;
-+	struct efx_channel *channel = tx_queue->channel;
-+	struct efx_nic *efx = tx_queue->efx;
-+	struct efx_ef10_nic_data *nic_data;
++	return efx_nic_alloc_buffer(rx_queue->efx, &rx_queue->rxd.buf,
++				    (rx_queue->ptr_mask + 1) *
++				    sizeof(efx_qword_t),
++				    GFP_KERNEL);
++}
++
++void efx_mcdi_rx_init(struct efx_rx_queue *rx_queue)
++{
++	MCDI_DECLARE_BUF(inbuf,
++			 MC_CMD_INIT_RXQ_IN_LEN(EFX_MAX_DMAQ_SIZE * 8 /
++						EFX_BUF_SIZE));
++	struct efx_channel *channel = efx_rx_queue_channel(rx_queue);
++	size_t entries = rx_queue->rxd.buf.len / EFX_BUF_SIZE;
++	struct efx_nic *efx = rx_queue->efx;
++	struct efx_ef10_nic_data *nic_data = efx->nic_data;
 +	dma_addr_t dma_addr;
 +	size_t inlen;
-+	int rc, i;
++	int rc;
++	int i;
++	BUILD_BUG_ON(MC_CMD_INIT_RXQ_OUT_LEN != 0);
 +
-+	BUILD_BUG_ON(MC_CMD_INIT_TXQ_OUT_LEN != 0);
++	rx_queue->scatter_n = 0;
++	rx_queue->scatter_len = 0;
 +
-+	nic_data = efx->nic_data;
++	MCDI_SET_DWORD(inbuf, INIT_RXQ_IN_SIZE, rx_queue->ptr_mask + 1);
++	MCDI_SET_DWORD(inbuf, INIT_RXQ_IN_TARGET_EVQ, channel->channel);
++	MCDI_SET_DWORD(inbuf, INIT_RXQ_IN_LABEL, efx_rx_queue_index(rx_queue));
++	MCDI_SET_DWORD(inbuf, INIT_RXQ_IN_INSTANCE,
++		       efx_rx_queue_index(rx_queue));
++	MCDI_POPULATE_DWORD_2(inbuf, INIT_RXQ_IN_FLAGS,
++			      INIT_RXQ_IN_FLAG_PREFIX, 1,
++			      INIT_RXQ_IN_FLAG_TIMESTAMP, 1);
++	MCDI_SET_DWORD(inbuf, INIT_RXQ_IN_OWNER_ID, 0);
++	MCDI_SET_DWORD(inbuf, INIT_RXQ_IN_PORT_ID, nic_data->vport_id);
 +
-+	MCDI_SET_DWORD(inbuf, INIT_TXQ_IN_SIZE, tx_queue->ptr_mask + 1);
-+	MCDI_SET_DWORD(inbuf, INIT_TXQ_IN_TARGET_EVQ, channel->channel);
-+	MCDI_SET_DWORD(inbuf, INIT_TXQ_IN_LABEL, tx_queue->queue);
-+	MCDI_SET_DWORD(inbuf, INIT_TXQ_IN_INSTANCE, tx_queue->queue);
-+	MCDI_SET_DWORD(inbuf, INIT_TXQ_IN_OWNER_ID, 0);
-+	MCDI_SET_DWORD(inbuf, INIT_TXQ_IN_PORT_ID, nic_data->vport_id);
++	dma_addr = rx_queue->rxd.buf.dma_addr;
 +
-+	dma_addr = tx_queue->txd.buf.dma_addr;
-+
-+	netif_dbg(efx, hw, efx->net_dev, "pushing TXQ %d. %zu entries (%llx)\n",
-+		  tx_queue->queue, entries, (u64)dma_addr);
++	netif_dbg(efx, hw, efx->net_dev, "pushing RXQ %d. %zu entries (%llx)\n",
++		  efx_rx_queue_index(rx_queue), entries, (u64)dma_addr);
 +
 +	for (i = 0; i < entries; ++i) {
-+		MCDI_SET_ARRAY_QWORD(inbuf, INIT_TXQ_IN_DMA_ADDR, i, dma_addr);
++		MCDI_SET_ARRAY_QWORD(inbuf, INIT_RXQ_IN_DMA_ADDR, i, dma_addr);
 +		dma_addr += EFX_BUF_SIZE;
 +	}
 +
-+	inlen = MC_CMD_INIT_TXQ_IN_LEN(entries);
++	inlen = MC_CMD_INIT_RXQ_IN_LEN(entries);
 +
-+	do {
-+		MCDI_POPULATE_DWORD_4(inbuf, INIT_TXQ_IN_FLAGS,
-+				/* This flag was removed from mcdi_pcol.h for
-+				 * the non-_EXT version of INIT_TXQ.  However,
-+				 * firmware still honours it.
-+				 */
-+				INIT_TXQ_EXT_IN_FLAG_TSOV2_EN, tso_v2,
-+				INIT_TXQ_IN_FLAG_IP_CSUM_DIS, !csum_offload,
-+				INIT_TXQ_IN_FLAG_TCP_CSUM_DIS, !csum_offload,
-+				INIT_TXQ_EXT_IN_FLAG_TIMESTAMP,
-+						tx_queue->timestamping);
-+
-+		rc = efx_mcdi_rpc_quiet(efx, MC_CMD_INIT_TXQ, inbuf, inlen,
-+					NULL, 0, NULL);
-+		if (rc == -ENOSPC && tso_v2) {
-+			/* Retry without TSOv2 if we're short on contexts. */
-+			tso_v2 = false;
-+			netif_warn(efx, probe, efx->net_dev,
-+				   "TSOv2 context not available to segment in "
-+				   "hardware. TCP performance may be reduced.\n"
-+				   );
-+		} else if (rc) {
-+			efx_mcdi_display_error(efx, MC_CMD_INIT_TXQ,
-+					       MC_CMD_INIT_TXQ_EXT_IN_LEN,
-+					       NULL, 0, rc);
-+			goto fail;
-+		}
-+	} while (rc);
-+
-+	return 0;
-+
-+fail:
-+	return rc;
++	rc = efx_mcdi_rpc(efx, MC_CMD_INIT_RXQ, inbuf, inlen,
++			  NULL, 0, NULL);
++	if (rc)
++		netdev_WARN(efx->net_dev, "failed to initialise RXQ %d\n",
++			    efx_rx_queue_index(rx_queue));
 +}
 +
-+void efx_mcdi_tx_remove(struct efx_tx_queue *tx_queue)
++void efx_mcdi_rx_remove(struct efx_rx_queue *rx_queue)
 +{
-+	efx_nic_free_buffer(tx_queue->efx, &tx_queue->txd.buf);
++	efx_nic_free_buffer(rx_queue->efx, &rx_queue->rxd.buf);
 +}
 +
-+void efx_mcdi_tx_fini(struct efx_tx_queue *tx_queue)
++void efx_mcdi_rx_fini(struct efx_rx_queue *rx_queue)
 +{
-+	MCDI_DECLARE_BUF(inbuf, MC_CMD_FINI_TXQ_IN_LEN);
++	MCDI_DECLARE_BUF(inbuf, MC_CMD_FINI_RXQ_IN_LEN);
 +	MCDI_DECLARE_BUF_ERR(outbuf);
-+	struct efx_nic *efx = tx_queue->efx;
++	struct efx_nic *efx = rx_queue->efx;
 +	size_t outlen;
 +	int rc;
 +
-+	MCDI_SET_DWORD(inbuf, FINI_TXQ_IN_INSTANCE,
-+		       tx_queue->queue);
++	MCDI_SET_DWORD(inbuf, FINI_RXQ_IN_INSTANCE,
++		       efx_rx_queue_index(rx_queue));
 +
-+	rc = efx_mcdi_rpc_quiet(efx, MC_CMD_FINI_TXQ, inbuf, sizeof(inbuf),
++	rc = efx_mcdi_rpc_quiet(efx, MC_CMD_FINI_RXQ, inbuf, sizeof(inbuf),
 +				outbuf, sizeof(outbuf), &outlen);
 +
 +	if (rc && rc != -EALREADY)
@@ -318,9 +287,22 @@ index a1d37aec6013..9dc1395e5f68 100644
 +	return;
 +
 +fail:
-+	efx_mcdi_display_error(efx, MC_CMD_FINI_TXQ, MC_CMD_FINI_TXQ_IN_LEN,
++	efx_mcdi_display_error(efx, MC_CMD_FINI_RXQ, MC_CMD_FINI_RXQ_IN_LEN,
 +			       outbuf, outlen, rc);
 +}
+diff --git a/drivers/net/ethernet/sfc/mcdi_functions.h b/drivers/net/ethernet/sfc/mcdi_functions.h
+index f0726c71698b..3c9e760238e7 100644
+--- a/drivers/net/ethernet/sfc/mcdi_functions.h
++++ b/drivers/net/ethernet/sfc/mcdi_functions.h
+@@ -23,7 +23,7 @@ int efx_mcdi_tx_init(struct efx_tx_queue *tx_queue, bool tso_v2);
+ void efx_mcdi_tx_remove(struct efx_tx_queue *tx_queue);
+ void efx_mcdi_tx_fini(struct efx_tx_queue *tx_queue);
+ int efx_mcdi_rx_probe(struct efx_rx_queue *rx_queue);
+-int efx_mcdi_rx_init(struct efx_rx_queue *rx_queue, bool want_outer_classes);
++void efx_mcdi_rx_init(struct efx_rx_queue *rx_queue);
+ void efx_mcdi_rx_remove(struct efx_rx_queue *rx_queue);
+ void efx_mcdi_rx_fini(struct efx_rx_queue *rx_queue);
+ 
 -- 
 2.20.1
 
