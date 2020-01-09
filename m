@@ -2,109 +2,213 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7579A1352F6
-	for <lists+netdev@lfdr.de>; Thu,  9 Jan 2020 07:01:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 99CB4135307
+	for <lists+netdev@lfdr.de>; Thu,  9 Jan 2020 07:04:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728003AbgAIGBQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jan 2020 01:01:16 -0500
-Received: from mail-pg1-f196.google.com ([209.85.215.196]:40843 "EHLO
-        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726541AbgAIGBQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jan 2020 01:01:16 -0500
-Received: by mail-pg1-f196.google.com with SMTP id k25so2671123pgt.7;
-        Wed, 08 Jan 2020 22:01:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=YJI+8nBaX+YClMtWDKO/JvFrqW7bGFHCvyKaisEeMn4=;
-        b=uBg7Kw8RPem8bWQ/DYpUSbNGkay8DVaYObkJffe51E1kLTYg35jmsLvMbEQXdf/crA
-         co/xDQ4iVgKAdH7Pp5tL38Cb/H+p+cZA2DD8ZKKfJceCLmKQ7zUDpjNZ76fagMiRHJB8
-         qn+Ba7LrDzYBERICP8FU/wwFVjwHM92JSEadv/L8E62iRhtmczb0OjrxfD28yNQd0q/y
-         uY1J3cdqsdibPqZE1VCtCt+0rBKEwccX1P+klG0Swz2PoPYPp5Uq7boiAa6wHwIuYeL3
-         a+d4O2viEk02ptziZBPdmT1uLN81ffB/S7refXVEF0IwjSzrn1RjOhmhCBvUX8k3odZo
-         TjkA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=YJI+8nBaX+YClMtWDKO/JvFrqW7bGFHCvyKaisEeMn4=;
-        b=DNbvKDP5LV+BqhlvTSKZqn09VXHYGRU0kq+FqD2ZYJoiaoq6SAFQytFTQocZsT0iCL
-         vNkr95bm84vtSPzzUUmC3XyM+DJOP73FbNMkz56WvyMLxjKX6Kh3QI4pZOfZkR/bYCsL
-         chCsjMmxsq6sK12Pa5E4h+7WOxOycHkXKqBVeoxwOf3gL4uFfPowpXVwBikvT9HPJPo/
-         sbCn2xaiob3rDUotFUPjQZaCsYVF+Spd8E64cJNIuRWS/KqD7A8RI7JgL4Pth4COF4KC
-         PHJLJmAaPN4XL/xHCUkNcyoE6FJwlpmV18QhULwPGkBI9CQta/B+B/CnWIT2GNAI5ESf
-         dwpw==
-X-Gm-Message-State: APjAAAWzdzdFfBcJK9QMepEpb+UHIAzqb7O0m8D+N/Yh3tckstUenV6F
-        Dy6kkmuTYtr5EoRZGo8xU20=
-X-Google-Smtp-Source: APXvYqyJerfI+ICq2cwl9GhOGJy/axJr/Cb4bSjaJXBizTWJfYQRt5HeuzByImnF+q+hy5naYIeDXQ==
-X-Received: by 2002:a62:8f0d:: with SMTP id n13mr9809271pfd.38.1578549674714;
-        Wed, 08 Jan 2020 22:01:14 -0800 (PST)
-Received: from [172.20.20.103] ([222.151.198.97])
-        by smtp.gmail.com with ESMTPSA id v143sm6135132pfc.71.2020.01.08.22.01.12
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 08 Jan 2020 22:01:14 -0800 (PST)
-Subject: Re: [bpf PATCH 2/2] bpf: xdp, remove no longer required
- rcu_read_{un}lock()
-To:     John Fastabend <john.fastabend@gmail.com>, bjorn.topel@gmail.com,
-        bpf@vger.kernel.org, toke@redhat.com
-Cc:     netdev@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net
-References: <157851907534.21459.1166135254069483675.stgit@john-Precision-5820-Tower>
- <157851930654.21459.7236323146782270917.stgit@john-Precision-5820-Tower>
-From:   Toshiaki Makita <toshiaki.makita1@gmail.com>
-Message-ID: <a4bb8f06-f960-cdda-f73a-8b87744445af@gmail.com>
-Date:   Thu, 9 Jan 2020 15:01:09 +0900
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
+        id S1728051AbgAIGEs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jan 2020 01:04:48 -0500
+Received: from mx2.suse.de ([195.135.220.15]:43740 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725893AbgAIGEs (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 9 Jan 2020 01:04:48 -0500
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx2.suse.de (Postfix) with ESMTP id DF4A4AEE0;
+        Thu,  9 Jan 2020 06:04:42 +0000 (UTC)
+Subject: Re: [PATCH v2 6/9] drm/mgag200: Constify ioreadX() iomem argument (as
+ in generic implementation)
+To:     Krzysztof Kozlowski <krzk@kernel.org>,
+        Richard Henderson <rth@twiddle.net>,
+        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
+        Matt Turner <mattst88@gmail.com>,
+        Alexey Brodkin <abrodkin@synopsys.com>,
+        Vineet Gupta <vgupta@synopsys.com>,
+        "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
+        Helge Deller <deller@gmx.de>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Yoshinori Sato <ysato@users.sourceforge.jp>,
+        Rich Felker <dalias@libc.org>,
+        Dave Airlie <airlied@redhat.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Ben Skeggs <bskeggs@redhat.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Jiri Slaby <jirislaby@gmail.com>,
+        Nick Kossifidis <mickflemm@gmail.com>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Dave Jiang <dave.jiang@intel.com>,
+        Jon Mason <jdmason@kudzu.us>, Allen Hubbe <allenbh@gmail.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-snps-arc@lists.infradead.org, linux-parisc@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, linux-sh@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, nouveau@lists.freedesktop.org,
+        linux-media@vger.kernel.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-ntb@googlegroups.com,
+        virtualization@lists.linux-foundation.org,
+        linux-arch@vger.kernel.org
+References: <20200108200528.4614-1-krzk@kernel.org>
+ <20200108200528.4614-7-krzk@kernel.org>
+From:   Thomas Zimmermann <tzimmermann@suse.de>
+Autocrypt: addr=tzimmermann@suse.de; keydata=
+ mQENBFs50uABCADEHPidWt974CaxBVbrIBwqcq/WURinJ3+2WlIrKWspiP83vfZKaXhFYsdg
+ XH47fDVbPPj+d6tQrw5lPQCyqjwrCPYnq3WlIBnGPJ4/jreTL6V+qfKRDlGLWFjZcsrPJGE0
+ BeB5BbqP5erN1qylK9i3gPoQjXGhpBpQYwRrEyQyjuvk+Ev0K1Jc5tVDeJAuau3TGNgah4Yc
+ hdHm3bkPjz9EErV85RwvImQ1dptvx6s7xzwXTgGAsaYZsL8WCwDaTuqFa1d1jjlaxg6+tZsB
+ 9GluwvIhSezPgnEmimZDkGnZRRSFiGP8yjqTjjWuf0bSj5rUnTGiyLyRZRNGcXmu6hjlABEB
+ AAG0J1Rob21hcyBaaW1tZXJtYW5uIDx0emltbWVybWFubkBzdXNlLmRlPokBVAQTAQgAPhYh
+ BHIX+6yM6c9jRKFo5WgNwR1TC3ojBQJbOdLgAhsDBQkDwmcABQsJCAcCBhUKCQgLAgQWAgMB
+ Ah4BAheAAAoJEGgNwR1TC3ojR80H/jH+vYavwQ+TvO8ksXL9JQWc3IFSiGpuSVXLCdg62AmR
+ irxW+qCwNncNQyb9rd30gzdectSkPWL3KSqEResBe24IbA5/jSkPweJasgXtfhuyoeCJ6PXo
+ clQQGKIoFIAEv1s8l0ggPZswvCinegl1diyJXUXmdEJRTWYAtxn/atut1o6Giv6D2qmYbXN7
+ mneMC5MzlLaJKUtoH7U/IjVw1sx2qtxAZGKVm4RZxPnMCp9E1MAr5t4dP5gJCIiqsdrVqI6i
+ KupZstMxstPU//azmz7ZWWxT0JzgJqZSvPYx/SATeexTYBP47YFyri4jnsty2ErS91E6H8os
+ Bv6pnSn7eAq5AQ0EWznS4AEIAMYmP4M/V+T5RY5at/g7rUdNsLhWv1APYrh9RQefODYHrNRH
+ UE9eosYbT6XMryR9hT8XlGOYRwKWwiQBoWSDiTMo/Xi29jUnn4BXfI2px2DTXwc22LKtLAgT
+ RjP+qbU63Y0xnQN29UGDbYgyyK51DW3H0If2a3JNsheAAK+Xc9baj0LGIc8T9uiEWHBnCH+R
+ dhgATnWWGKdDegUR5BkDfDg5O/FISymJBHx2Dyoklv5g4BzkgqTqwmaYzsl8UxZKvbaxq0zb
+ ehDda8lvhFXodNFMAgTLJlLuDYOGLK2AwbrS3Sp0AEbkpdJBb44qVlGm5bApZouHeJ/+n+7r
+ 12+lqdsAEQEAAYkBPAQYAQgAJhYhBHIX+6yM6c9jRKFo5WgNwR1TC3ojBQJbOdLgAhsMBQkD
+ wmcAAAoJEGgNwR1TC3ojpfcIAInwP5OlcEKokTnHCiDTz4Ony4GnHRP2fXATQZCKxmu4AJY2
+ h9ifw9Nf2TjCZ6AMvC3thAN0rFDj55N9l4s1CpaDo4J+0fkrHuyNacnT206CeJV1E7NYntxU
+ n+LSiRrOdywn6erjxRi9EYTVLCHcDhBEjKmFZfg4AM4GZMWX1lg0+eHbd5oL1as28WvvI/uI
+ aMyV8RbyXot1r/8QLlWldU3NrTF5p7TMU2y3ZH2mf5suSKHAMtbE4jKJ8ZHFOo3GhLgjVrBW
+ HE9JXO08xKkgD+w6v83+nomsEuf6C6LYrqY/tsZvyEX6zN8CtirPdPWu/VXNRYAl/lat7lSI
+ 3H26qrE=
+Message-ID: <ff03b149-b825-47f3-f92e-100899bb05fd@suse.de>
+Date:   Thu, 9 Jan 2020 07:04:36 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.3.1
 MIME-Version: 1.0
-In-Reply-To: <157851930654.21459.7236323146782270917.stgit@john-Precision-5820-Tower>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <20200108200528.4614-7-krzk@kernel.org>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="3rd3nqEKmviIlgYXLgxkt4GDz8CFTZqke"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020/01/09 6:35, John Fastabend wrote:
-> Now that we depend on rcu_call() and synchronize_rcu() to also wait
-> for preempt_disabled region to complete the rcu read critical section
-> in __dev_map_flush() is no longer relevant.
-> 
-> These originally ensured the map reference was safe while a map was
-> also being free'd. But flush by new rules can only be called from
-> preempt-disabled NAPI context. The synchronize_rcu from the map free
-> path and the rcu_call from the delete path will ensure the reference
-> here is safe. So lets remove the rcu_read_lock and rcu_read_unlock
-> pair to avoid any confusion around how this is being protected.
-> 
-> If the rcu_read_lock was required it would mean errors in the above
-> logic and the original patch would also be wrong.
-> 
-> Fixes: 0536b85239b84 ("xdp: Simplify devmap cleanup")
-> Signed-off-by: John Fastabend <john.fastabend@gmail.com>
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--3rd3nqEKmviIlgYXLgxkt4GDz8CFTZqke
+Content-Type: multipart/mixed; boundary="EqxkoMtfePcRgHH0AtAZfgeT52t9h5L9b";
+ protected-headers="v1"
+From: Thomas Zimmermann <tzimmermann@suse.de>
+To: Krzysztof Kozlowski <krzk@kernel.org>, Richard Henderson
+ <rth@twiddle.net>, Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
+ Matt Turner <mattst88@gmail.com>, Alexey Brodkin <abrodkin@synopsys.com>,
+ Vineet Gupta <vgupta@synopsys.com>,
+ "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
+ Helge Deller <deller@gmx.de>,
+ Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+ Paul Mackerras <paulus@samba.org>, Michael Ellerman <mpe@ellerman.id.au>,
+ Yoshinori Sato <ysato@users.sourceforge.jp>, Rich Felker <dalias@libc.org>,
+ Dave Airlie <airlied@redhat.com>, David Airlie <airlied@linux.ie>,
+ Daniel Vetter <daniel@ffwll.ch>, Ben Skeggs <bskeggs@redhat.com>,
+ Mauro Carvalho Chehab <mchehab@kernel.org>, Jiri Slaby
+ <jirislaby@gmail.com>, Nick Kossifidis <mickflemm@gmail.com>,
+ Luis Chamberlain <mcgrof@kernel.org>, Kalle Valo <kvalo@codeaurora.org>,
+ "David S. Miller" <davem@davemloft.net>, Dave Jiang <dave.jiang@intel.com>,
+ Jon Mason <jdmason@kudzu.us>, Allen Hubbe <allenbh@gmail.com>,
+ "Michael S. Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>,
+ Arnd Bergmann <arnd@arndb.de>, Geert Uytterhoeven <geert+renesas@glider.be>,
+ Thomas Gleixner <tglx@linutronix.de>, linux-alpha@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-snps-arc@lists.infradead.org,
+ linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+ linux-sh@vger.kernel.org, dri-devel@lists.freedesktop.org,
+ nouveau@lists.freedesktop.org, linux-media@vger.kernel.org,
+ linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+ linux-ntb@googlegroups.com, virtualization@lists.linux-foundation.org,
+ linux-arch@vger.kernel.org
+Message-ID: <ff03b149-b825-47f3-f92e-100899bb05fd@suse.de>
+Subject: Re: [PATCH v2 6/9] drm/mgag200: Constify ioreadX() iomem argument (as
+ in generic implementation)
+References: <20200108200528.4614-1-krzk@kernel.org>
+ <20200108200528.4614-7-krzk@kernel.org>
+In-Reply-To: <20200108200528.4614-7-krzk@kernel.org>
+
+--EqxkoMtfePcRgHH0AtAZfgeT52t9h5L9b
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: quoted-printable
+
+Hi
+
+Am 08.01.20 um 21:05 schrieb Krzysztof Kozlowski:
+> The ioreadX() helpers have inconsistent interface.  On some architectur=
+es
+> void *__iomem address argument is a pointer to const, on some not.
+>=20
+> Implementations of ioreadX() do not modify the memory under the address=
+
+> so they can be converted to a "const" version for const-safety and
+> consistency among architectures.
+>=20
+> Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
+
+Reviewed-by: Thomas Zimmermann <tzimmermann@suse.de>
+
 > ---
->   kernel/bpf/devmap.c |    2 --
->   1 file changed, 2 deletions(-)
-> 
-> diff --git a/kernel/bpf/devmap.c b/kernel/bpf/devmap.c
-> index f0bf525..0129d4a 100644
-> --- a/kernel/bpf/devmap.c
-> +++ b/kernel/bpf/devmap.c
-> @@ -378,10 +378,8 @@ void __dev_map_flush(void)
->   	struct list_head *flush_list = this_cpu_ptr(&dev_map_flush_list);
->   	struct xdp_bulk_queue *bq, *tmp;
->   
-> -	rcu_read_lock();
->   	list_for_each_entry_safe(bq, tmp, flush_list, flush_node)
->   		bq_xmit_all(bq, XDP_XMIT_FLUSH);
-> -	rcu_read_unlock();
+>  drivers/gpu/drm/mgag200/mgag200_drv.h | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+>=20
+> diff --git a/drivers/gpu/drm/mgag200/mgag200_drv.h b/drivers/gpu/drm/mg=
+ag200/mgag200_drv.h
+> index aa32aad222c2..6512b3af4fb7 100644
+> --- a/drivers/gpu/drm/mgag200/mgag200_drv.h
+> +++ b/drivers/gpu/drm/mgag200/mgag200_drv.h
+> @@ -34,9 +34,9 @@
+> =20
+>  #define MGAG200FB_CONN_LIMIT 1
+> =20
+> -#define RREG8(reg) ioread8(((void __iomem *)mdev->rmmio) + (reg))
+> +#define RREG8(reg) ioread8(((const void __iomem *)mdev->rmmio) + (reg)=
+)
+>  #define WREG8(reg, v) iowrite8(v, ((void __iomem *)mdev->rmmio) + (reg=
+))
+> -#define RREG32(reg) ioread32(((void __iomem *)mdev->rmmio) + (reg))
+> +#define RREG32(reg) ioread32(((const void __iomem *)mdev->rmmio) + (re=
+g))
+>  #define WREG32(reg, v) iowrite32(v, ((void __iomem *)mdev->rmmio) + (r=
+eg))
+> =20
+>  #define ATTR_INDEX 0x1fc0
+>=20
 
-I introduced this lock because some drivers have assumption that
-.ndo_xdp_xmit() is called under RCU. (commit 86723c864063)
+--=20
+Thomas Zimmermann
+Graphics Driver Developer
+SUSE Software Solutions Germany GmbH
+Maxfeldstr. 5, 90409 N=C3=BCrnberg, Germany
+(HRB 36809, AG N=C3=BCrnberg)
+Gesch=C3=A4ftsf=C3=BChrer: Felix Imend=C3=B6rffer
 
-Maybe devmap deletion logic does not need this anymore, but is it
-OK to drivers?
 
-Toshiaki Makita
+--EqxkoMtfePcRgHH0AtAZfgeT52t9h5L9b--
+
+--3rd3nqEKmviIlgYXLgxkt4GDz8CFTZqke
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEEchf7rIzpz2NEoWjlaA3BHVMLeiMFAl4WwngACgkQaA3BHVML
+eiOKNgf/dNIJuZ1NzHHcf9BEmT/BV7QlRe6/FHHA4aiJdqTNYEZ4xQWzoZBT3FUD
++t1ZzbPtJWF3dx/Bi2AyeI9UK9D5lqSqMPpjgfAgMdT60DkhStpiz4k80WtBG7NY
+dDcotCOrSeaYxImtCFAchwYcIw0l/cAD/ohiQYTfXx3FRj2Sb2hRIKx2h5Mr7k6G
+3lSOqlEt69S2/G/Xlb37VeI2f07RsVR+b89pQPgS5WWUyITa5ukgxWrI5sc7Sn5U
+ogamIdJCPT06fCNVF1JRsOBlI4qw+LNh5Z63REuA8V0qPytUKOW9kdxMwUlhkZJ/
+bQNkg8ibheQ3Xn8Bq6EjM/UUSS7XyQ==
+=C0TM
+-----END PGP SIGNATURE-----
+
+--3rd3nqEKmviIlgYXLgxkt4GDz8CFTZqke--
