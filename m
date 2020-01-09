@@ -2,116 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9AC1C135FED
-	for <lists+netdev@lfdr.de>; Thu,  9 Jan 2020 18:58:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D5B3135FF8
+	for <lists+netdev@lfdr.de>; Thu,  9 Jan 2020 19:05:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388390AbgAIR6c (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jan 2020 12:58:32 -0500
-Received: from out4-smtp.messagingengine.com ([66.111.4.28]:54957 "EHLO
-        out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728653AbgAIR6c (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jan 2020 12:58:32 -0500
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id DC0C821FC2;
-        Thu,  9 Jan 2020 12:58:31 -0500 (EST)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Thu, 09 Jan 2020 12:58:31 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=/XKjs328VqalJ+dMk
-        PuGedAcfhYuppGZ8iygSOXULag=; b=wppODpLEEnADHeLTQ3PM5JvDGhbZMEHOo
-        l5FHwX4ixdOxCd8qsDDVIIYPX89SkHDmfG4tfe8igkIeB5vzngjbjafG21s/4Que
-        gjiZPBt3FOAUD0Kgbcaej1jTP8YPubxwGxZi6AnSSDSmqoCfnEWHxGptUqXCRgaG
-        9gYzJJoNZ8U09wmwVudceewAGgkfcur9dprjBvyPCLY3f5VeP3+eIpL6K5v0ASgT
-        6r8xOH/zdRUNz09vO6x53D2A0RSBZzpaAuBBsBP3ojpBoRAOultKIxXb/TnHo4P/
-        +PLwjvajmXHBvCJ0umIjaY2UFH9D0XcKGY9Sqx8dXvNTAZVn+Jnnw==
-X-ME-Sender: <xms:x2kXXpce0qz0htsz-KqPbtUa9x9UZU7rTYWt8GtRWo0B9Hx_mPq1Ng>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedufedrvdeiuddgjedvucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucgoufhushhpvggtthffohhmrghinhculdegledmne
-    cujfgurhephffvufffkffoggfgsedtkeertdertddtnecuhfhrohhmpefkughoucfutghh
-    ihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucffohhmrghinheprg
-    hpphhsphhothdrtghomhenucfkphepudelfedrgeejrdduieehrddvhedunecurfgrrhgr
-    mhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhgnecuvehluhhsth
-    gvrhfuihiivgeptd
-X-ME-Proxy: <xmx:x2kXXnjeA73Qcz-SRvViSwIfQT7Nzjp3S2nFVCtCuT20k4T509Ogng>
-    <xmx:x2kXXqJssBhAcPWyctnqgPzM5EpildfLn9luRcf3BqWc-prDRZxDGQ>
-    <xmx:x2kXXtl-QXAstA0jnfILsp8L5UDIV65aAKuhzW6NwZ4cbpDG7lrOUg>
-    <xmx:x2kXXpR0YVmz58rDnQ3AvG32WEe_CNv6Qs7zYKWDBS0KzsCErxM_iQ>
-Received: from splinter.mtl.com (unknown [193.47.165.251])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 375E230602DE;
-        Thu,  9 Jan 2020 12:58:30 -0500 (EST)
-From:   Ido Schimmel <idosch@idosch.org>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, jiri@mellanox.com,
-        jakub.kicinski@netronome.com, dvyukov@google.com,
-        alexve@mellanox.com, mlxsw@mellanox.com,
-        Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net] devlink: Wait longer before warning about unset port type
-Date:   Thu,  9 Jan 2020 19:57:41 +0200
-Message-Id: <20200109175741.293670-1-idosch@idosch.org>
-X-Mailer: git-send-email 2.24.1
+        id S2388397AbgAISE5 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 9 Jan 2020 13:04:57 -0500
+Received: from mga14.intel.com ([192.55.52.115]:11162 "EHLO mga14.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728653AbgAISE5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 9 Jan 2020 13:04:57 -0500
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 09 Jan 2020 10:04:56 -0800
+X-IronPort-AV: E=Sophos;i="5.69,414,1571727600"; 
+   d="scan'208";a="223407819"
+Received: from unknown (HELO localhost) ([10.24.12.101])
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 09 Jan 2020 10:04:56 -0800
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 8BIT
+In-Reply-To: <BN8PR12MB32663AE71CBF7CF0258C86D7D3390@BN8PR12MB3266.namprd12.prod.outlook.com>
+References: <20191127094517.6255-1-Po.Liu@nxp.com> <157603276975.18462.4638422874481955289@pipeline> <VE1PR04MB6496CEA449E9B844094E580492510@VE1PR04MB6496.eurprd04.prod.outlook.com> <87eex43pzm.fsf@linux.intel.com> <20191219004322.GA20146@khorivan> <87lfr9axm8.fsf@linux.intel.com> <b7e1cb8b-b6b1-c0fa-3864-4036750f3164@ti.com> <157853205713.36295.17877768211004089754@aguedesl-mac01.jf.intel.com> <BN8PR12MB32663AE71CBF7CF0258C86D7D3390@BN8PR12MB3266.namprd12.prod.outlook.com>
+From:   Andre Guedes <andre.guedes@linux.intel.com>
+Subject: RE: [EXT] Re: [v1,net-next, 1/2] ethtool: add setting frame preemption of traffic classes
+To:     Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>,
+        Jose Abreu <Jose.Abreu@synopsys.com>,
+        Murali Karicheri <m-karicheri2@ti.com>,
+        Vinicius Costa Gomes <vinicius.gomes@intel.com>
+Cc:     Po Liu <po.liu@nxp.com>,
+        "alexandru.ardelean@analog.com" <alexandru.ardelean@analog.com>,
+        "allison@lohutok.net" <allison@lohutok.net>,
+        "andrew@lunn.ch" <andrew@lunn.ch>,
+        "ayal@mellanox.com" <ayal@mellanox.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "hauke.mehrtens@intel.com" <hauke.mehrtens@intel.com>,
+        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
+        "jiri@mellanox.com" <jiri@mellanox.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "pablo@netfilter.org" <pablo@netfilter.org>,
+        "saeedm@mellanox.com" <saeedm@mellanox.com>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        "simon.horman@netronome.com" <simon.horman@netronome.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandru Marginean <alexandru.marginean@nxp.com>,
+        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
+        Roy Zang <roy.zang@nxp.com>, Mingkai Hu <mingkai.hu@nxp.com>,
+        Jerry Huang <jerry.huang@nxp.com>, Leo Li <leoyang.li@nxp.com>,
+        Joao Pinto <Joao.Pinto@synopsys.com>
+Message-ID: <157859309589.47157.8012794523971663624@aguedesl-mac01.local>
+User-Agent: alot/0.8.1
+Date:   Thu, 09 Jan 2020 10:04:55 -0800
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ido Schimmel <idosch@mellanox.com>
+Hi Jose,
 
-The commit cited below causes devlink to emit a warning if a type was
-not set on a devlink port for longer than 30 seconds to "prevent
-misbehavior of drivers". This proved to be problematic when
-unregistering the backing netdev. The flow is always:
+Quoting Jose Abreu (2020-01-09 00:59:24)
+> From: Andre Guedes <andre.guedes@linux.intel.com>
+> Date: Jan/09/2020, 01:07:37 (UTC+00:00)
+> 
+> > After reading all this great discussion and revisiting the 802.1Q and 802.3br
+> > specs, I'm now leaning towards to not coupling Frame Preemption support under
+> > taprio qdisc. Besides what have been discussed, Annex S.2 from 802.1Q-2018
+> > foresees FP without EST so it makes me feel like we should keep them separate.
+> 
+> I agree that EST and FP can be used individually. But how can you 
+> specify the hold and release commands for gates without changing taprio qdisc user space API ?
 
-devlink_port_type_clear()	// schedules the warning
-unregister_netdev()		// blocking
-devlink_port_unregister()	// cancels the warning
+The 'hold' and 'release' are operations from the GCL, which is part of EST. So
+they should still be specified via taprio. No changing in the user space API is
+required since these operations are already supported in taprio API. What is
+missing today is just the 'tc' side of it, which you already have a patch for
+it.
 
-The call to unregister_netdev() can block for long periods of time for
-various reasons: RTNL lock is contended, large amounts of configuration
-to unroll following dismantle of the netdev, etc. This results in
-devlink emitting a warning despite the driver behaving correctly.
+> > Regarding the FP configuration knobs, the following seems reasonable to me:
+> >     * Enable/disable FP feature
+> >     * Preemptable queue mapping
+> >     * Fragment size multiplier
+> > 
+> > I'm not sure about the knob 'timers (hold/release)' described in the quotes
+> > above. I couldn't find a match in the specs. If it refers to 'holdAdvance' and
+> > 'releaseAdvance' parameters described in 802.1Q-2018, I believe they are not
+> > configurable. Do we know any hardware where they are configurable?
+> 
+> Synopsys' HW supports reconfiguring these parameters. They are, however, 
+> fixed independently of Queues. i.e. all queues will have same holdAdvance / releaseAdvance.
 
-In emulated environments (of future hardware) which are usually very
-slow, the warning can also be emitted during port creation as more than
-30 seconds can pass between the time the devlink port is registered and
-when its type is set.
+Good to know. Is the datasheet publicly available? If so, could you please
+point me to it?  I'd like to learn more about the FP knobs provided by
+different HW.
 
-In addition, syzbot has hit this warning [1] 1974 times since 07/11/19
-without being able to produce a reproducer. Probably because
-reproduction depends on the load or other bugs (e.g., RTNL not being
-released).
+Regards,
 
-To prevent bogus warnings, increase the timeout to 1 hour.
-
-[1] https://syzkaller.appspot.com/bug?id=e99b59e9c024a666c9f7450dc162a4b74d09d9cb
-
-Fixes: 136bf27fc0e9 ("devlink: add warning in case driver does not set port type")
-Signed-off-by: Ido Schimmel <idosch@mellanox.com>
-Reported-by: syzbot+b0a18ed7b08b735d2f41@syzkaller.appspotmail.com
-Reported-by: Alex Veber <alexve@mellanox.com>
-Tested-by: Alex Veber <alexve@mellanox.com>
-Acked-by: Jiri Pirko <jiri@mellanox.com>
----
- net/core/devlink.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/net/core/devlink.c b/net/core/devlink.c
-index 4c63c9a4c09e..b8d698a2bf57 100644
---- a/net/core/devlink.c
-+++ b/net/core/devlink.c
-@@ -6406,7 +6406,7 @@ static bool devlink_port_type_should_warn(struct devlink_port *devlink_port)
- 	       devlink_port->attrs.flavour != DEVLINK_PORT_FLAVOUR_DSA;
- }
- 
--#define DEVLINK_PORT_TYPE_WARN_TIMEOUT (HZ * 30)
-+#define DEVLINK_PORT_TYPE_WARN_TIMEOUT (HZ * 3600)
- 
- static void devlink_port_type_warn_schedule(struct devlink_port *devlink_port)
- {
--- 
-2.24.1
-
+Andre
