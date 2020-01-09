@@ -2,228 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 55D241354F2
-	for <lists+netdev@lfdr.de>; Thu,  9 Jan 2020 09:58:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EFB77135506
+	for <lists+netdev@lfdr.de>; Thu,  9 Jan 2020 09:59:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729016AbgAII54 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jan 2020 03:57:56 -0500
-Received: from us-smtp-1.mimecast.com ([205.139.110.61]:38538 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728782AbgAII54 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jan 2020 03:57:56 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1578560274;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=K4jGKAx0cxwGJj0+NXRwQRgi8kUP6lo+YsuTTEYbILg=;
-        b=cX/rWctCfFvGWr3rbX9AezroYsFIbuvJ0NMbhrBR8etZxIxcTK8Z+NWAjUPahFih0zVdj/
-        WonLNbnAe1+KK19GXxYh8wZ8evQ4rboTqFbPVYuEdePnIK7aSxEZPjSG6v7SF/xu6nMglm
-        Ou0sHiOzYgI7c9uWCAZQ9oDz2ZbonCM=
-Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
- [209.85.221.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-370-TGqkVvvlNFWWHuIycoRcKw-1; Thu, 09 Jan 2020 03:57:53 -0500
-X-MC-Unique: TGqkVvvlNFWWHuIycoRcKw-1
-Received: by mail-wr1-f72.google.com with SMTP id c17so2605843wrp.10
-        for <netdev@vger.kernel.org>; Thu, 09 Jan 2020 00:57:52 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=K4jGKAx0cxwGJj0+NXRwQRgi8kUP6lo+YsuTTEYbILg=;
-        b=SMgF0r45AJ+q/fA62QaOHl/ZifxzRcEMCC1YYDrU5ZlsTbdDyEz7rFVzD0dUgzfqUJ
-         0Q68X70GeSOo1ndvIP8bLn0uEWD0awEvzvup1vXoW+Am6pXCWDE8eu6mpSqf3P7SrY6Z
-         EzZKqHn9sg0eJE592y9nlhLJpAKC3xewKOJTcWQs/052eW8HpKEVXE8ll+q9o0ZLUg/C
-         k5dKt934iRI1ZdDIArhle6juxFhUFjm3d3KVhyZ/wRs4bNt0ZgBWSuGCaIWa4jqrz1LV
-         CHPd9UrSrMCD/UYf/TM39FTuWV7Co4c2keUdFw3egItkAEW523okEH2UZmsHbtI5PaeQ
-         D+SA==
-X-Gm-Message-State: APjAAAU1tQ1dKeN9BdkwGnyoZRa7E0vGNbumx1mhGxThj0uCjMsXseJT
-        KT3FnKBq7T7e7Av4yRPCRgR8K1Ve4H32G7z5oLdkHB20TnWfMKGkqA9N2pZuno0vccfMDm5fkYt
-        Frhq33r8sgnl6KwA7
-X-Received: by 2002:a5d:4cc9:: with SMTP id c9mr9386633wrt.70.1578560271705;
-        Thu, 09 Jan 2020 00:57:51 -0800 (PST)
-X-Google-Smtp-Source: APXvYqyapQILqXZvtVH0Ikvgh6f93ibHfoyolrt5IM4shFevzilNMV9H3zPxVEq0M+ZlBoDzJm6M7Q==
-X-Received: by 2002:a5d:4cc9:: with SMTP id c9mr9386607wrt.70.1578560271428;
-        Thu, 09 Jan 2020 00:57:51 -0800 (PST)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id x17sm7145345wrt.74.2020.01.09.00.57.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Jan 2020 00:57:50 -0800 (PST)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 1E6FE180ADD; Thu,  9 Jan 2020 09:57:50 +0100 (CET)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>, davem@davemloft.net,
-        daniel@iogearbox.net, netdev@vger.kernel.org, bpf@vger.kernel.org,
-        kernel-team@fb.com
-Subject: Re: [PATCH bpf-next 3/6] bpf: Introduce function-by-function verification
-In-Reply-To: <20200108200655.vfjqa7pq65f7evkq@ast-mbp>
-References: <20200108072538.3359838-1-ast@kernel.org> <20200108072538.3359838-4-ast@kernel.org> <87y2uigs3e.fsf@toke.dk> <20200108200655.vfjqa7pq65f7evkq@ast-mbp>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Thu, 09 Jan 2020 09:57:50 +0100
-Message-ID: <87ftgpgg6p.fsf@toke.dk>
+        id S1729023AbgAII7d (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jan 2020 03:59:33 -0500
+Received: from smtprelay-out1.synopsys.com ([149.117.73.133]:48950 "EHLO
+        smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728919AbgAII7d (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jan 2020 03:59:33 -0500
+Received: from mailhost.synopsys.com (badc-mailhost1.synopsys.com [10.192.0.17])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (No client certificate requested)
+        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 0BF48404C5;
+        Thu,  9 Jan 2020 08:59:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
+        t=1578560372; bh=I9it5sMMzHZOSKiILnapjKBqxViwI5B7OtpPCbqPFMg=;
+        h=From:To:CC:Subject:Date:References:In-Reply-To:From;
+        b=g7ADZpUpWRmNfdFcSRESjcJ11fHtovrdNK/oY0TiPQzuZzWBcRyVntsdI39kl/FZ3
+         pM/bz00iHG3vajRO/SMLmMMKW7PKalqNcM9eRqJ60DFSELDF+haGUxJig65KxbB5R6
+         Bym9K6iBhZjyQ64gFR55O3Bb5qxGqxCjOpSwsjSq+cHk2GHZsf0tJAPLTNGNhYNGPb
+         oiSPRPeEROuK+am6BmsvsVXO+C4q1uXL379hP44AhnB09IaywjMFxTVeruWJWiEygs
+         E/llx9RcEU9Iorl6lGMyNXupcdyToUfly99KGYYZTeDz03vuffvGXSVZbYPUNS57kU
+         VUsyPkrvXkasA==
+Received: from US01WEHTC3.internal.synopsys.com (us01wehtc3.internal.synopsys.com [10.15.84.232])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mailhost.synopsys.com (Postfix) with ESMTPS id 7D2B6A0079;
+        Thu,  9 Jan 2020 08:59:28 +0000 (UTC)
+Received: from US01HYBRID2.internal.synopsys.com (10.15.246.24) by
+ US01WEHTC3.internal.synopsys.com (10.15.84.232) with Microsoft SMTP Server
+ (TLS) id 14.3.408.0; Thu, 9 Jan 2020 00:59:26 -0800
+Received: from NAM04-SN1-obe.outbound.protection.outlook.com (10.202.3.67) by
+ mrs.synopsys.com (10.15.246.24) with Microsoft SMTP Server (TLS) id
+ 14.3.408.0; Thu, 9 Jan 2020 00:59:25 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=LEF28rgqyE13VomjAvpDBYuQRV9/XMTEwgVh/p+BfinDdEu4+ARwLqnRtzE74veq9M3NvqbktsM+ZMr9cPHFaJib8Ky5fwR+2nze4iTwZTpFjt6ZI/+RAQeNoEtZFiIr9AUUyiW9kxIm2WstccijQcqDBLXcYPSBIoQ3BLo67n1k+5qyjOTEpOdw9/7zARhkz8XXsjie/8zoMEiOQXIFXidfCRkEMLjrJyoX1YRjoIy+0ujAi8pBFR6WnU1lkuvBx3jf2cC0QrfRxGsT/iqLlqGys+lE8tkwgqUsEtuE+WPkcdFYGi/Dyh6tPm10wHFnL6FSJVeA2naOVn3xZhWZbA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=I9it5sMMzHZOSKiILnapjKBqxViwI5B7OtpPCbqPFMg=;
+ b=jsNxrrM3chv80gFcRW5+0psYk4xr8AZY/M63HvUBZMotaIPuYyDc4oCXi+1rE/sOIO0J/hy6XPl5gLBIH+5N8yxIGBvL/jQifOtNaPVR+d2q5dWx2Bg9P5B+xz7SiUIIyAoFkvzwH/rP66Cf7r5dzKCY4oGOBiUUYnen4njhiUiIA/pG5O/58n849n3MRR0vF1b8E36QvUkecxAILHEiISbheD2d1TcYL5BW72t8vYmtCS6yjV1kVCwO9CABebnyHsl0k/9lifo3bM0chjycPBm2JZQWM5PyjIu6GjjaOlMUoWEgmmMAWMvrnogrRNm+8SHB0eicfoJEUhJKm4v7lQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=synopsys.com; dmarc=pass action=none header.from=synopsys.com;
+ dkim=pass header.d=synopsys.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=synopsys.onmicrosoft.com; s=selector2-synopsys-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=I9it5sMMzHZOSKiILnapjKBqxViwI5B7OtpPCbqPFMg=;
+ b=TIlzKjJp6baeKQnozdp9foliIpd2P6PgpOuoRnKWR+586Cdkk9mNICYOhZM1M+sTMKwn9RTrIxONJ3n+gGYMwiFm5iHmLYLy1z17+Cxa7qQgT+FQSUcvgUGnrokD58gv8u44tQUJ8SAVLFEsp9nkkUYF+QfgdrKLwccWXoKxm+Y=
+Received: from BN8PR12MB3266.namprd12.prod.outlook.com (20.179.67.145) by
+ BN8PR12MB3187.namprd12.prod.outlook.com (20.179.66.87) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2623.9; Thu, 9 Jan 2020 08:59:24 +0000
+Received: from BN8PR12MB3266.namprd12.prod.outlook.com
+ ([fe80::c62:b247:6963:9da2]) by BN8PR12MB3266.namprd12.prod.outlook.com
+ ([fe80::c62:b247:6963:9da2%6]) with mapi id 15.20.2623.010; Thu, 9 Jan 2020
+ 08:59:24 +0000
+From:   Jose Abreu <Jose.Abreu@synopsys.com>
+To:     Andre Guedes <andre.guedes@linux.intel.com>,
+        Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>,
+        Murali Karicheri <m-karicheri2@ti.com>,
+        Vinicius Costa Gomes <vinicius.gomes@intel.com>
+CC:     Po Liu <po.liu@nxp.com>,
+        "alexandru.ardelean@analog.com" <alexandru.ardelean@analog.com>,
+        "allison@lohutok.net" <allison@lohutok.net>,
+        "andrew@lunn.ch" <andrew@lunn.ch>,
+        "ayal@mellanox.com" <ayal@mellanox.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "hauke.mehrtens@intel.com" <hauke.mehrtens@intel.com>,
+        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
+        "jiri@mellanox.com" <jiri@mellanox.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "pablo@netfilter.org" <pablo@netfilter.org>,
+        "saeedm@mellanox.com" <saeedm@mellanox.com>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        "simon.horman@netronome.com" <simon.horman@netronome.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandru Marginean <alexandru.marginean@nxp.com>,
+        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
+        Roy Zang <roy.zang@nxp.com>, Mingkai Hu <mingkai.hu@nxp.com>,
+        Jerry Huang <jerry.huang@nxp.com>, Leo Li <leoyang.li@nxp.com>,
+        Joao Pinto <Joao.Pinto@synopsys.com>
+Subject: RE: [EXT] Re: [v1,net-next, 1/2] ethtool: add setting frame
+ preemption of traffic classes
+Thread-Topic: [EXT] Re: [v1,net-next, 1/2] ethtool: add setting frame
+ preemption of traffic classes
+Thread-Index: AQHVpQlV0arssjH64ECVUQFpoidQiae0UhKAgAfLu0CAAUwKgIADVrkAgAAT1YCAEke6AIAOrCuAgACCOSA=
+Date:   Thu, 9 Jan 2020 08:59:24 +0000
+Message-ID: <BN8PR12MB32663AE71CBF7CF0258C86D7D3390@BN8PR12MB3266.namprd12.prod.outlook.com>
+References: <20191127094517.6255-1-Po.Liu@nxp.com>
+ <157603276975.18462.4638422874481955289@pipeline>
+ <VE1PR04MB6496CEA449E9B844094E580492510@VE1PR04MB6496.eurprd04.prod.outlook.com>
+ <87eex43pzm.fsf@linux.intel.com> <20191219004322.GA20146@khorivan>
+ <87lfr9axm8.fsf@linux.intel.com>
+ <b7e1cb8b-b6b1-c0fa-3864-4036750f3164@ti.com>
+ <157853205713.36295.17877768211004089754@aguedesl-mac01.jf.intel.com>
+In-Reply-To: <157853205713.36295.17877768211004089754@aguedesl-mac01.jf.intel.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=joabreu@synopsys.com; 
+x-originating-ip: [83.174.63.141]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 849bee75-9bfa-4057-8ff7-08d794e23966
+x-ms-traffictypediagnostic: BN8PR12MB3187:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <BN8PR12MB318731DA00D93F45CF72EC8BD3390@BN8PR12MB3187.namprd12.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-forefront-prvs: 02778BF158
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(366004)(136003)(396003)(376002)(39860400002)(346002)(199004)(189003)(316002)(107886003)(81156014)(55016002)(81166006)(2906002)(7416002)(9686003)(110136005)(4326008)(33656002)(8676002)(8936002)(54906003)(478600001)(52536014)(6506007)(5660300002)(26005)(66946007)(66446008)(86362001)(66556008)(186003)(7696005)(66476007)(71200400001)(76116006)(64756008);DIR:OUT;SFP:1102;SCL:1;SRVR:BN8PR12MB3187;H:BN8PR12MB3266.namprd12.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: synopsys.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: FmzvAnmnwXMcCT83DdQO7AuxlQf2wiyqbkK9dYsw1WcsX0hkQVvtyMsiLq0AZVtPdPFG/kLsYts/Cl0yPEyDXOfolWwOKXe0+8Wg1woGLwqX7o4XRQk6D7g0PmIK3kZXDXybAfZMEcutRmeCo1/UhkUi/+GKwDEOWxsHLDaB8d6lX6DyC47JEbmoxHkEubSfk/zzUpB8ewslLqOerkmGpDrS0evKPY4SsbOK98Zz9s4axPNZk3YlYV81EH+9XJis/7IX5qCYiZ5cAIoGHeCjFbA3PK/SLikSEMezIfRdXngG5yYqcYz9m82+UACM349WsXa7zgsYuU/1rJyDcuCMGa0JpPq2cam01e2kw0N9v++vzxCEtgfikNB3VAeP8tSMfSJtidq0Yz4KHLcITOAUC4TKPQ6GSYWZa4ClCMDUpDiTvzccRRqsIbUp5sKVhhmP
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+X-MS-Exchange-CrossTenant-Network-Message-Id: 849bee75-9bfa-4057-8ff7-08d794e23966
+X-MS-Exchange-CrossTenant-originalarrivaltime: 09 Jan 2020 08:59:24.1947
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: c33c9f88-1eb7-4099-9700-16013fd9e8aa
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 7bzN26GzfobA2AzR3fKFo0XoVyUE0N8hl5O0mDCR4FlznBnssuxG31usmfMEEMHPQ+RBcoNdtl5/BTpYHj8luQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR12MB3187
+X-OriginatorOrg: synopsys.com
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
-
-> On Wed, Jan 08, 2020 at 11:28:21AM +0100, Toke H=C3=B8iland-J=C3=B8rgense=
-n wrote:
->> Alexei Starovoitov <ast@kernel.org> writes:
->>=20
->> > New llvm and old llvm with libbpf help produce BTF that distinguish gl=
-obal and
->> > static functions. Unlike arguments of static function the arguments of=
- global
->> > functions cannot be removed or optimized away by llvm. The compiler ha=
-s to use
->> > exactly the arguments specified in a function prototype. The argument =
-type
->> > information allows the verifier validate each global function independ=
-ently.
->> > For now only supported argument types are pointer to context and scala=
-rs. In
->> > the future pointers to structures, sizes, pointer to packet data can be
->> > supported as well. Consider the following example:
->> >
->> > static int f1(int ...)
->> > {
->> >   ...
->> > }
->> >
->> > int f3(int b);
->> >
->> > int f2(int a)
->> > {
->> >   f1(a) + f3(a);
->> > }
->> >
->> > int f3(int b)
->> > {
->> >   ...
->> > }
->> >
->> > int main(...)
->> > {
->> >   f1(...) + f2(...) + f3(...);
->> > }
->> >
->> > The verifier will start its safety checks from the first global functi=
-on f2().
->> > It will recursively descend into f1() because it's static. Then it wil=
-l check
->> > that arguments match for the f3() invocation inside f2(). It will not =
-descend
->> > into f3(). It will finish f2() that has to be successfully verified fo=
-r all
->> > possible values of 'a'. Then it will proceed with f3(). That function =
-also has
->> > to be safe for all possible values of 'b'. Then it will start subprog =
-0 (which
->> > is main() function). It will recursively descend into f1() and will sk=
-ip full
->> > check of f2() and f3(), since they are global. The order of processing=
- global
->> > functions doesn't affect safety, since all global functions must be pr=
-oven safe
->> > based on their arguments only.
->> >
->> > Such function by function verification can drastically improve speed o=
-f the
->> > verification and reduce complexity.
->> >
->> > Note that the stack limit of 512 still applies to the call chain regar=
-dless whether
->> > functions were static or global. The nested level of 8 also still appl=
-ies. The
->> > same recursion prevention checks are in place as well.
->> >
->> > The type information and static/global kind is preserved after the ver=
-ification
->> > hence in the above example global function f2() and f3() can be replac=
-ed later
->> > by equivalent functions with the same types that are loaded and verifi=
-ed later
->> > without affecting safety of this main() program. Such replacement (re-=
-linking)
->> > of global functions is a subject of future patches.
->> >
->> > Signed-off-by: Alexei Starovoitov <ast@kernel.org>
->>=20
->> Great to see this progressing; and thanks for breaking things up, makes
->> it much easier to follow along!
->>=20
->> One question:
->>=20
->> > +enum btf_func_linkage {
->> > +	BTF_FUNC_STATIC =3D 0,
->> > +	BTF_FUNC_GLOBAL =3D 1,
->> > +	BTF_FUNC_EXTERN =3D 2,
->> > +};
->>=20
->> What's supposed to happen with FUNC_EXTERN? That is specifically for the
->> re-linking follow-up?
->
-> I was thinking to complete the whole thing with re-linking and then send =
-it,
-> but llvm 10 feature cut off date is end of this week, so we have to land =
-llvm
-> bits asap. I'd like to land patch 1 with libbpf sanitization first before
-> landing llvm. llvm release cadence is ~4 month and it would be sad to
-> miss it.
-
-Agreed, it would be sad to miss the cutoff!
-
-> Note we will be able to tweak encoding if really necessary after next wee=
-k.
-> (BTF encoding gets fixed in ABI only after full kernel release).
-> It's unlikely though. I think the encoding is good. I've played with few
-> different variants and this one fits the best. FUNC_EXTERN encoding as 2 =
-is
-> kinda obvious when encoding for global vs static is selected. The kernel =
-and
-> libbpf will not be using FUNC_EXTERN yet, but llvm is tested to do the ri=
-ght
-> thing already, so I think it's fine to add it to btf.h now.
-
-Sure, OK. Don't have any objections (or opinions on the encoding,
-really), just want to understand how this all fits together.
-
-> As far as future plans when libbpf sees FUNC_EXTERN it will do the linkin=
-g the
-> way we discussed in the other thread. The kernel will support FUNC_EXTERN=
- when
-> we introduce dynamic libraries. A collection of bpf functions will be loa=
-ded
-> into the kernel first (like libc.so) and later programs will have FUNC_EX=
-TERN
-> as part of their BTF to be resolved while loading. The func name to btf_id
-> resolution will be done by libbpf. The kernel verifier will do the type
-> checking on BTFs.
-
-Right, FUNC_EXTERN will be rejected by the kernel unless it's patched up
-with "target" btf_ids by libbpf before load? So it'll be
-FUNC_GLOBAL-linked functions that will be replaceable after the fact
-with the "dynamic re-linking" feature?
-
-> So the kernel side of FUNC_EXTERN support will be minimal,
-> but to your point below...
->
->> This doesn't reject linkage=3D=3DBTF_FUNC_EXTERN; so for this patch
->> FUNC_EXTERN will be treated the same as FUNC_STATIC (it'll fail the
->> is_global check below)? Or did I miss somewhere else where
->> BTF_FUNC_EXTERN is rejected?
->
-> ... is absolutely correct. My bad. Added this bit too soon.
-> Will remove. The kernel should accept FUNC_GLOBAL only in this patch set.
-
-Great, thanks!
-
--Toke
-
+RnJvbTogQW5kcmUgR3VlZGVzIDxhbmRyZS5ndWVkZXNAbGludXguaW50ZWwuY29tPg0KRGF0ZTog
+SmFuLzA5LzIwMjAsIDAxOjA3OjM3IChVVEMrMDA6MDApDQoNCj4gQWZ0ZXIgcmVhZGluZyBhbGwg
+dGhpcyBncmVhdCBkaXNjdXNzaW9uIGFuZCByZXZpc2l0aW5nIHRoZSA4MDIuMVEgYW5kIDgwMi4z
+YnINCj4gc3BlY3MsIEknbSBub3cgbGVhbmluZyB0b3dhcmRzIHRvIG5vdCBjb3VwbGluZyBGcmFt
+ZSBQcmVlbXB0aW9uIHN1cHBvcnQgdW5kZXINCj4gdGFwcmlvIHFkaXNjLiBCZXNpZGVzIHdoYXQg
+aGF2ZSBiZWVuIGRpc2N1c3NlZCwgQW5uZXggUy4yIGZyb20gODAyLjFRLTIwMTgNCj4gZm9yZXNl
+ZXMgRlAgd2l0aG91dCBFU1Qgc28gaXQgbWFrZXMgbWUgZmVlbCBsaWtlIHdlIHNob3VsZCBrZWVw
+IHRoZW0gc2VwYXJhdGUuDQoNCkkgYWdyZWUgdGhhdCBFU1QgYW5kIEZQIGNhbiBiZSB1c2VkIGlu
+ZGl2aWR1YWxseS4gQnV0IGhvdyBjYW4geW91IA0Kc3BlY2lmeSB0aGUgaG9sZCBhbmQgcmVsZWFz
+ZSBjb21tYW5kcyBmb3IgZ2F0ZXMgd2l0aG91dCBjaGFuZ2luZyB0YXByaW8gcWRpc2MgdXNlciBz
+cGFjZSBBUEkgPw0KDQo+IFJlZ2FyZGluZyB0aGUgRlAgY29uZmlndXJhdGlvbiBrbm9icywgdGhl
+IGZvbGxvd2luZyBzZWVtcyByZWFzb25hYmxlIHRvIG1lOg0KPiAgICAgKiBFbmFibGUvZGlzYWJs
+ZSBGUCBmZWF0dXJlDQo+ICAgICAqIFByZWVtcHRhYmxlIHF1ZXVlIG1hcHBpbmcNCj4gICAgICog
+RnJhZ21lbnQgc2l6ZSBtdWx0aXBsaWVyDQo+IA0KPiBJJ20gbm90IHN1cmUgYWJvdXQgdGhlIGtu
+b2IgJ3RpbWVycyAoaG9sZC9yZWxlYXNlKScgZGVzY3JpYmVkIGluIHRoZSBxdW90ZXMNCj4gYWJv
+dmUuIEkgY291bGRuJ3QgZmluZCBhIG1hdGNoIGluIHRoZSBzcGVjcy4gSWYgaXQgcmVmZXJzIHRv
+ICdob2xkQWR2YW5jZScgYW5kDQo+ICdyZWxlYXNlQWR2YW5jZScgcGFyYW1ldGVycyBkZXNjcmli
+ZWQgaW4gODAyLjFRLTIwMTgsIEkgYmVsaWV2ZSB0aGV5IGFyZSBub3QNCj4gY29uZmlndXJhYmxl
+LiBEbyB3ZSBrbm93IGFueSBoYXJkd2FyZSB3aGVyZSB0aGV5IGFyZSBjb25maWd1cmFibGU/DQoN
+ClN5bm9wc3lzJyBIVyBzdXBwb3J0cyByZWNvbmZpZ3VyaW5nIHRoZXNlIHBhcmFtZXRlcnMuIFRo
+ZXkgYXJlLCBob3dldmVyLCANCmZpeGVkIGluZGVwZW5kZW50bHkgb2YgUXVldWVzLiBpLmUuIGFs
+bCBxdWV1ZXMgd2lsbCBoYXZlIHNhbWUgaG9sZEFkdmFuY2UgLyByZWxlYXNlQWR2YW5jZS4NCg0K
+LS0tDQpUaGFua3MsDQpKb3NlIE1pZ3VlbCBBYnJldQ0K
