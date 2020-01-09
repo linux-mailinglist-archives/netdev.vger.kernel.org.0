@@ -2,127 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B8451135D44
-	for <lists+netdev@lfdr.de>; Thu,  9 Jan 2020 16:58:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E825E135D53
+	for <lists+netdev@lfdr.de>; Thu,  9 Jan 2020 17:00:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732561AbgAIP6P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jan 2020 10:58:15 -0500
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:54922 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729591AbgAIP6O (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jan 2020 10:58:14 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
-        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=fx3RgaLQG8a7qGoeLN8LdchrvtPP+95Yqk6dq1XYDpQ=; b=rhYEWxFjsEVMwkcGHZMfEtYhf
-        Dl7THTbVwGPHEfseOyvK9hECYscav6MLoITLj6BzJqyZT3pyMnViLzmbhLYaSt41Ye7ZsPbvH2WGc
-        dV+CDhbMOvbmiuhUGNz/YE4OL+WDMT+lHEZCduYl9RG/jSJFAMSDm+QGm6/HEKWyZ6xodiuO9ORYz
-        UeArmVZPBDrdVZBlbKva6uTlEehCN6QkI7XduGdi2P1tJYdh7cWPjvFngNjRFpPymUA76SbMJ80Fq
-        ia6ylxsMrjOEIBoACXZ7yZE+d9i/sXTybZvOSkERqCt6iyg+zfCwc5bJlHDEF/SyR8YpVGAhUe1Yx
-        RxIVC5O4A==;
-Received: from shell.armlinux.org.uk ([2002:4e20:1eda:1:5054:ff:fe00:4ec]:60200)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1ipaCI-0005x5-Fn; Thu, 09 Jan 2020 15:58:10 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1ipaCH-0000cF-FD; Thu, 09 Jan 2020 15:58:09 +0000
-Date:   Thu, 9 Jan 2020 15:58:09 +0000
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     =?utf-8?B?0b3SieG2rOG4s+KEoA==?= <vtol@gmx.net>
-Cc:     Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org
-Subject: Re: [drivers/net/phy/sfp] intermittent failure in state machine
- checks
-Message-ID: <20200109155809.GQ25745@shell.armlinux.org.uk>
-References: <d8d595ff-ec35-3426-ec43-9afd67c15e3d@gmx.net>
- <20200109144106.GA24459@lunn.ch>
- <513d6fe7-65b2-733b-1d17-b3a40b8161cf@gmx.net>
+        id S1732748AbgAIQAE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jan 2020 11:00:04 -0500
+Received: from mga09.intel.com ([134.134.136.24]:6691 "EHLO mga09.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730796AbgAIQAD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 9 Jan 2020 11:00:03 -0500
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga102.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 09 Jan 2020 08:00:03 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.69,414,1571727600"; 
+   d="scan'208";a="218399199"
+Received: from mjmartin-nuc02.mjmartin-nuc02 (HELO mjmartin-nuc02.sea.intel.com) ([10.251.4.119])
+  by fmsmga008.fm.intel.com with ESMTP; 09 Jan 2020 08:00:02 -0800
+From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
+To:     netdev@vger.kernel.org, mptcp@lists.01.org
+Cc:     Mat Martineau <mathew.j.martineau@linux.intel.com>
+Subject: [PATCH net-next v7 00/11] Multipath TCP: Prerequisites
+Date:   Thu,  9 Jan 2020 07:59:13 -0800
+Message-Id: <20200109155924.30122-1-mathew.j.martineau@linux.intel.com>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <513d6fe7-65b2-733b-1d17-b3a40b8161cf@gmx.net>
-User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 09, 2020 at 03:03:24PM +0000, ѽ҉ᶬḳ℠ wrote:
-> On 09/01/2020 14:41, Andrew Lunn wrote:
-> > On Thu, Jan 09, 2020 at 01:47:31PM +0000, ѽ҉ᶬḳ℠ wrote:
-> > > On node with 4.19.93 and a SFP module (specs at the bottom) the following is
-> > > intermittently observed:
-> > Please make sure Russell King is in Cc: for SFP issues.
-> > 
-> > The state machine has been reworked recently. Please could you try
-> > net-next, or 5.5-rc5.
-> > 
-> > Thanks
-> > 	Andrew
-> Unfortunately testing those branches is not feasible since the router (see
-> architecture below) that host the SFP module deploys the OpenWrt downstream
-> distro with LTS kernels - in their Master development branch 4.19.93 being
-> the most recent on offer.
+v6 -> v7: Rename/move ULP clone helper to make inline-friendly (patch 5)
 
-I don't think the rework will make any difference in this case, and
-I don't think there's anything failing in the software here.  The
-reported problem seems to be this:
+v5 -> v6: Fix BPF accessors for sk_type and sk_protocol (patch 2), fix
+the width of an __unused bitfield (patch 6), and add some commit message
+and comment text (patches 5 & 7).
 
- sfp sfp: module transmit fault indicated
- sfp sfp: module transmit fault recovered
- sfp sfp: module transmit fault indicated
- sfp sfp: module persistently indicates fault, disabling
+v4 -> v5: Cover letter subject fix. No changes to commits.
 
-which occurs if the module asserts the TX_FAULT signal.  The SFP MSA
-defines that this indicates a problem with the laser safety circuitry,
-and defines a way to reset the fault (by pulsing TX_DISABLE and going
-through another initialisation).
+v3 -> v4: Update coalesce/collapse of incoming MPTCP skbs (patch 7)
 
-When TX_FAULT is asserted for the first time, "module transmit fault
-indicated" is printed, and we start the process of recovery.  If we
-successfully recover, then "module transmit fault recovered" will be
-printed.
+v2 -> v3: Ensure sk_type alignment in struct sock (patch 2)
 
-We try several times to recover the fault, and once we're out of
-retries, "module persistently indicates fault, disabling" will be
-printed; at that point, we've declared the module to be dead, and
-we won't do anything further with it.
+v1 -> v2: sk_pacing_shift left as a regular struct member (patch 2), and
+modified SACK space check based on recent -net fix (patch 9).
 
-This is by design; if the module is saying that the laser safety
-circuitry is faulty, then endlessly resetting the module to recover
-from that fault is not sane.
 
-However, there's some modules (particularly GPON modules) that do
-things quite differently from what the SFP MSA says, which is
-extremely annoying and frustrating for those of us who are trying to
-implement the host support.  There are some which seem to assert
-TX_FAULT for unknown reasons.
+The MPTCP upstreaming community has been collaborating on an
+upstreamable MPTCP implementation that complies with RFC 8684. A minimal
+set of features to comply with the specification involves a sizeable set
+of code changes, so David requested that we split this work in to
+multiple, smaller patch sets to build up MPTCP infrastructure.
 
-In your original post (which you need to have sent to me, I don't
-read netdev) you've provided "SFP module specs" - not really, you
-provided the ethtool output, which is not the same as the module
-specs.  Many modules have misleading EEPROM information, sometimes
-to work around what people call "vendor lockin" or maybe to get
-their module to work in some specific equipment.  In any case,
-EEPROM information is not a specification.
+The minimal MPTCP feature set we are proposing for review in the v5.6
+timeframe begins with these three parts:
 
-For example, your module claims to be a 1000BASE-SX module.  If
-I lookup "allnet ALL4781", I find that it's a VDSL2 module.  That
-isn't a 1000BASE-SX module - 1000BASE-SX is an IEEE 802.3 defined
-term to mean 1000BASE-X over fiber using a short-wavelength laser.
+Part 1 (this patch set): MPTCP prerequisites. Introduce some MPTCP
+definitions, additional ULP and skb extension features, TCP option space
+checking, and a few exported symbols.
 
-So, given that it doesn't have a laser, why is it raising TX_FAULT.
-No idea; these modules are a law to themselves.
+Part 2: Single subflow implementation and self tests.
 
-I think the only thing we could do is to implement a workaround to
-ignore TX_FAULT for this module... great, more quirks. :(
+Part 3: Switch from MPTCP v0 (RFC 6824) to MPTCP v1 (new RFC 8684,
+publication expected in the next few days).
+
+Additional patches for multiple subflow support, path management, active
+backup, and other features are in the pipeline for submission after
+making progress with the above reviews.
+
+Clone/fetch:
+https://github.com/multipath-tcp/mptcp_net-next.git (tag: netdev-v7-part1)
+
+Browse:
+https://github.com/multipath-tcp/mptcp_net-next/tree/netdev-v7-part1
+
+Thank you for your review. You can find us at mptcp@lists.01.org and
+https://is.gd/mptcp_upstream
+
+
+Mat Martineau (9):
+  net: Make sock protocol value checks more specific
+  sock: Make sk_protocol a 16-bit value
+  tcp: Define IPPROTO_MPTCP
+  tcp: Add MPTCP option number
+  tcp, ulp: Add clone operation to tcp_ulp_ops
+  mptcp: Add MPTCP to skb extensions
+  tcp: coalesce/collapse must respect MPTCP extensions
+  tcp: Export TCP functions and ops struct
+  tcp: Check for filled TCP option space before SACK
+
+Paolo Abeni (2):
+  tcp: clean ext on tx recycle
+  skb: add helpers to allocate ext independently from sk_buff
+
+ MAINTAINERS                     | 10 ++++
+ include/linux/skbuff.h          |  6 +++
+ include/net/mptcp.h             | 85 +++++++++++++++++++++++++++++++++
+ include/net/sock.h              | 27 +++--------
+ include/net/tcp.h               | 20 ++++++++
+ include/trace/events/sock.h     |  5 +-
+ include/uapi/linux/in.h         |  2 +
+ net/ax25/af_ax25.c              |  2 +-
+ net/core/filter.c               | 60 +++++++++--------------
+ net/core/skbuff.c               | 42 +++++++++++++++-
+ net/decnet/af_decnet.c          |  2 +-
+ net/ipv4/inet_connection_sock.c | 14 ++++++
+ net/ipv4/tcp.c                  |  6 +--
+ net/ipv4/tcp_input.c            | 11 +++--
+ net/ipv4/tcp_ipv4.c             |  2 +-
+ net/ipv4/tcp_output.c           | 12 +++--
+ net/ipv6/tcp_ipv6.c             |  6 +--
+ tools/include/uapi/linux/in.h   |  2 +
+ 18 files changed, 235 insertions(+), 79 deletions(-)
+ create mode 100644 include/net/mptcp.h
 
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-According to speedtest.net: 11.9Mbps down 500kbps up
+2.24.1
+
