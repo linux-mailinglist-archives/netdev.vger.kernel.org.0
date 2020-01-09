@@ -2,122 +2,231 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EAFA8135A7B
-	for <lists+netdev@lfdr.de>; Thu,  9 Jan 2020 14:47:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CA4F5135ABB
+	for <lists+netdev@lfdr.de>; Thu,  9 Jan 2020 14:56:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731174AbgAINrf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jan 2020 08:47:35 -0500
-Received: from mout.gmx.net ([212.227.17.21]:37899 "EHLO mout.gmx.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728956AbgAINrf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 9 Jan 2020 08:47:35 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1578577652;
-        bh=UNh2sb1a1dEY1/oovEIu9WO1nkjIi8B3SNLnHzE3X/E=;
-        h=X-UI-Sender-Class:Reply-To:To:From:Subject:Date;
-        b=CJLu4kpOFgI2QayYwwVZXGIavV0IA/W3um6GWFgKg8bAzybhek2C8KII+N0z5v3Oa
-         9GRUkCfGYBfx9o+FAnF2HknBMU6z1WH9gao3jPq6wYjuzjmCtS5KVDtRW4cixNJR0l
-         2nwPlAw2bSOYX7/yyNEhF0v8RNgPJOVsF84q9Lbc=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [192.168.84.205] ([134.101.203.245]) by mail.gmx.com (mrgmx104
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1N5mKJ-1jmIdU3ocN-017CvY for
- <netdev@vger.kernel.org>; Thu, 09 Jan 2020 14:47:32 +0100
-Reply-To: vtol@gmx.net
-To:     netdev@vger.kernel.org
-From:   =?UTF-8?B?0b3SieG2rOG4s+KEoA==?= <vtol@gmx.net>
-Subject: [drivers/net/phy/sfp] intermittent failure in state machine checks
-Message-ID: <d8d595ff-ec35-3426-ec43-9afd67c15e3d@gmx.net>
-Date:   Thu, 9 Jan 2020 13:47:31 +0000
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:68.0) Gecko/20100101 Firefox/68.0
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: base64
-Content-Language: en-GB
-X-Provags-ID: V03:K1:Ij41Ii9NrB8VoDao0o3KZzHTnm4Ur0+jd/67pjgCvkTqge7tvVd
- ESxCkSQ1Es3Wr6npThEyiOj5PIB2GRZiEjZQS/tLxhglGNhABFcU4u8Q6IugOaMGE+G6EMf
- sbD5bukD0S9g8v7t7XuVBPSR94mqryMuve+NMZ+SGpw1Qs8h7UZcDqR7Gev0qgFP8B1cWnr
- DE2ewseTrPllgFqN0SuFg==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:6+tzIFjOgyg=:Ho04xO1wCSZjDqiZ4XTD1U
- E1nl1yXj5sNZrXRy9SWc6oQJV98GYv2dONtDZM/r/Ak7jifl52mVTksdTFKxSqe3HhIY5nu/S
- 8eimct2xLrybzQIvUUqjFMRCsBjYuCXACDIGzE3sIuRQen9Mzss23i4RmK7wIShyaDvz9aYwE
- Sofh0HsUyvJh2y6dRTCOSjL5t2nrpdvPeCRxi7j7jXhOkeeb0/Dz3ENAMjFeCGdvjtCfIgua1
- e7phVckJpLCsFM/csr/jMPG7uEQZ6J+e1KBhBas+9duAyjbOXUWBi+IsLWjBIGtH28G5fEiAN
- CcZfgt/8qaQf7mUY+JY1Til8vtRzPaDKrJxfdeYJ0OuoMOmsxZfQtyiUt5jJ24fxu9qbJX8ww
- M1ddKF+K89EA3XqLZwgJqpFr/6fUX/oBFSCMoIhm995rdl2BVUz5smLg/suis8yfvd3O2NuId
- EzQ2ghSSL+ZKSJpgtVhvJHVgksBXxALevkBYNoGngea4ewM16lNwX9mdvnexINT9/KUB4yJu/
- emILkWDiX5WY98QxKFONHNd14EuVsuY+LQNKHX7Zo19o46JR8/53uvdjFiM/X/Jv4bgCjatzv
- Kqbfm5TLJyttloxc+ohNe4dA3QHj3XsBh5L/hO1ZBclmDZUmhFQv4ZEwQyCRvtc8vL/w1AwJS
- PTLxmsY0ObMfPyPTaVKmB6aKbuKbfr4xM9gshyBQ1RI4IzVAGNs2cFJAEbCTJmLIvxBME/Uz2
- 7CPa5Ga316M1B4TpFt0m9aYToCDoc+DxsqpqqjysbOgeSqbj8g7vQKseeUuOmJcO7tpADY5Yc
- 3WNo0SRRwlIIcDUdcqEc+Qb18FzBx67eZbss+tHqnBCdG0gG8/wqUkYKWm4D5i+O40hbe4myK
- suIz1hMQPTHYUiWpT7U2x2q2xlPayY2J0/fq4QiIm5eXh+Ez5UOYPM7NePYA+KVZajOIt8Jer
- ZhwnsR6UhqmRxBd1XLxWoDJ21cvxvaSVV/4DsabMeJ8WU/kdlV5Zg9rmVKAM6aYlutqjkCM0G
- y+Eu6WCLqx2cuj7N7R+6odZ1gIE7OgrOjLBbRN4Z4A93YX7fj9jZfdTDea01an/bYiFUZofPW
- Mv5WVq+HcVG/oWBzj47rJ4A6cEtjQx5hluf+WZWaEkoBw/AlPg1QcMYjAU7w/fdik5qU9Srel
- FTW/dvWrt69eedGTiim+wHfFbNQQtHv7NTSwXsjt2U2wrKJCwsD91J/Md8979MnqklEJqTuuM
- tPP3ogoYhOez2eGHGTsSYtxuyJ7qY+kXI46swKQ==
+        id S1730157AbgAIN4C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jan 2020 08:56:02 -0500
+Received: from mail-io1-f66.google.com ([209.85.166.66]:43259 "EHLO
+        mail-io1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725775AbgAIN4B (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jan 2020 08:56:01 -0500
+Received: by mail-io1-f66.google.com with SMTP id n21so7125778ioo.10;
+        Thu, 09 Jan 2020 05:56:01 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=content-transfer-encoding:mime-version:subject:from:in-reply-to:cc
+         :date:message-id:references:to;
+        bh=mmPlHP71ISpsjXgRBcY1D4awusYQBGYFaYLTtQP8wmc=;
+        b=EmIrmaBtIsP2JO2tpLCZJIdGRaBCIypw9i40eFjaneE+6A4rAtGbzVG60Dn0Nu5DX0
+         zHG6urCV+i+SfYD2eS14NfyXx9MwP73eIlvPrkzP++BZCv99QnfedJSOfI47LEK0ocVV
+         UAzF1bfu7OTv56byVp1mgPXyooxK2iDgBk40e2RCoj5Py9nU48hXtJ1hZ4mDUZKk9jtj
+         HWADdpZIo2UPkwsM5rhzKSrhG9+pMLMaTBxHF1yGnu/P6YdwrftoV7FJPfLtJ/o4ozxp
+         l6gcv3CfFqZuzai4hvP8JSTfhKdiCMdb81OxIK7r50VtzsRwu4mxm8tSuAT9YdLLNR1g
+         Tlgw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:content-transfer-encoding:mime-version:subject
+         :from:in-reply-to:cc:date:message-id:references:to;
+        bh=mmPlHP71ISpsjXgRBcY1D4awusYQBGYFaYLTtQP8wmc=;
+        b=s/pFvMQo2W0us8cYEo15hhfVp7/4TGUtFcYEN/cZDROzK4SFXQeTubevFTY292KeAs
+         ssGTyIF1P9hr5rTvHtMV8whsEzIJal/4tLtiPKhvV6RdrVnWT3cMP4EfPGc4r5BTUFbd
+         R/uJ/+jjBEnk+Hho5BwVlHI2W9pLN+bIKWMMMx+9VVlIX/PS0xL8/5hKT1k+VH/zuUqg
+         ySBLaiw/RQJHHT2Vt1D3mUCnJ2QEfraz4AL2syclvmcs2GYXq52tK3Tv8y6X9yi0G6ii
+         dQGpjUqJuFBnUVaoZrJYkJvhU+5zEHk0pHlGfTLLhuMfM93lJrmz8CEVLodxCy8qRmUi
+         kMHQ==
+X-Gm-Message-State: APjAAAW3++jZR66EuA0UtTTXhEvbLh6nJSptH53HgQ55/fJsBcYGnkUS
+        CqjLnW1bfUw+vT9YdeSdIGs=
+X-Google-Smtp-Source: APXvYqzkrr+kjqupl1XB5lRiRX4IqflHY1M08ciXd6HbLYPrL8RQgMexHy/gBLyeRLeqoTZ9nptkdw==
+X-Received: by 2002:a5d:8cda:: with SMTP id k26mr7919141iot.26.1578578160705;
+        Thu, 09 Jan 2020 05:56:00 -0800 (PST)
+Received: from [100.64.72.6] ([173.245.215.240])
+        by smtp.gmail.com with ESMTPSA id v21sm1419524ios.69.2020.01.09.05.55.59
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 09 Jan 2020 05:56:00 -0800 (PST)
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Mime-Version: 1.0 (1.0)
+Subject: Re: [Xen-devel] [PATCH net-next] xen-netback: get rid of old udev related code
+From:   Rich Persaud <persaur@gmail.com>
+In-Reply-To: <79a0e144-6e98-9a12-2ad8-89459ae2c426@suse.com>
+Cc:     David Miller <davem@davemloft.net>,
+        "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>,
+        "wei.liu@kernel.org" <wei.liu@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Jason Andryuk <jandryuk@gmail.com>,
+        =?utf-8?Q?Marek_Marczykowski-G=C3=B3recki?= 
+        <marmarek@invisiblethingslab.com>
+Date:   Thu, 9 Jan 2020 08:55:59 -0500
+Message-Id: <5C36C1D3-7FDD-4880-A63C-907441F8C9C0@gmail.com>
+References: <79a0e144-6e98-9a12-2ad8-89459ae2c426@suse.com>
+To:     =?utf-8?Q?J=C3=BCrgen_Gro=C3=9F?= <jgross@suse.com>,
+        "Durrant, Paul" <pdurrant@amazon.com>
+X-Mailer: iPad Mail (17C54)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gbm9kZSB3aXRoIDQuMTkuOTMgYW5kIGEgU0ZQIG1vZHVsZSAoc3BlY3MgYXQgdGhlIGJv
-dHRvbSkgdGhlIA0KZm9sbG93aW5nIGlzIGludGVybWl0dGVudGx5IG9ic2VydmVkOg0KDQps
-aWJwaHk6IFNGUCBJMkMgQnVzOiBwcm9iZWQNCnNmcCBzZnA6IG1vZHVsZSBBTExORVQgQUxM
-NDc4MSByZXYgVjMuNCBzbiAwMDAwMDAwRkM5MTU3NjQwIGRjIDI5LTAzLTE4DQpzZnAgc2Zw
-OiB1bmtub3duIGNvbm5lY3RvciwgZW5jb2RpbmcgOGIxMGIsIG5vbWluYWwgYml0cmF0ZSAx
-LjNHYnBzICswJSAtMCUNCnNmcCBzZnA6IDEwMDBCYXNlU1grIDEwMDBCYXNlTFgtIDEwMDBC
-YXNlQ1gtIDEwMDBCYXNlVC0gMTAwQmFzZVRMWC0gDQoxMDAwQmFzZUZYLSBCYXNlQlgxMC0g
-QmFzZVBYLQ0Kc2ZwIHNmcDogMTBHQmFzZVNSLSAxMEdCYXNlTFItIDEwR0Jhc2VMUk0tIDEw
-R0Jhc2VFUi0NCnNmcCBzZnA6IFdhdmVsZW5ndGggMG5tLCBmaWJlciBsZW5ndGhzOg0Kc2Zw
-IHNmcDogOcK1bSBTTSA6IHVuc3VwcG9ydGVkDQpzZnAgc2ZwOiA2Mi41wrVtIE1NIE9NMTog
-dW5zdXBwb3J0ZWQvdW5zcGVjaWZpZWQNCnNmcCBzZnA6IDUwwrVtIE1NIE9NMjogdW5zdXBw
-b3J0ZWQvdW5zcGVjaWZpZWQNCnNmcCBzZnA6IDUwwrVtIE1NIE9NMzogdW5zdXBwb3J0ZWQv
-dW5zcGVjaWZpZWQNCnNmcCBzZnA6IDUwwrVtIE1NIE9NNDogMi41NDBrbQ0Kc2ZwIHNmcDog
-T3B0aW9uczogcmV0aW1lcg0Kc2ZwIHNmcDogRGlhZ25vc3RpY3M6DQpzZnAgc2ZwOiBtb2R1
-bGUgdHJhbnNtaXQgZmF1bHQgaW5kaWNhdGVkDQpzZnAgc2ZwOiBtb2R1bGUgdHJhbnNtaXQg
-ZmF1bHQgcmVjb3ZlcmVkDQpzZnAgc2ZwOiBtb2R1bGUgdHJhbnNtaXQgZmF1bHQgaW5kaWNh
-dGVkDQpzZnAgc2ZwOiBtb2R1bGUgcGVyc2lzdGVudGx5IGluZGljYXRlcyBmYXVsdCwgZGlz
-YWJsaW5nDQoNClRvIG15IGh1bWJsZSB1bmRlcnN0YW5kaW5nIHRoYXQgcGVydGFpbnMgdG8g
-Y2hlY2tzIGluIHN0YXRlIG1hY2hpbmUNCg0KLSBTRlBfU19XQUlUX0xPUw0KLSBTRlBfU19M
-SU5LX1VQDQoNCmJlaW5nIGRvbmUgdmlhIHRoZSBJMkMgfCBTTSBidXMgYnV0IGl0IGlzIG5v
-dCBjbGVhciB0byBtZSB3aGF0IGNhdXNlcyANCnRoZSBjaGVjayB0byBmYWlsIGFuZCBob3cg
-dG8gcmVtZWR5IGl0Lg0KDQpfX19fDQpTRlAgbW9kdWxlIHNwZWNzDQoNCklkZW50aWZpZXLC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoCA6IDB4MDMgKFNGUCkNCkV4dGVuZGVkIGlkZW50aWZpZXLCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCA6IDB4MDQgKEdCSUMvU0ZQIGRlZmlu
-ZWQgYnkgDQoyLXdpcmUgaW50ZXJmYWNlIElEKQ0KQ29ubmVjdG9ywqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCA6IDB4
-MjIgKFJKNDUpDQpUcmFuc2NlaXZlciBjb2Rlc8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoCA6IDB4MDAgMHgwMCAweDAwIDB4MDEgMHgwMCANCjB4
-MDAgMHgwMCAweDAwIDB4MDANClRyYW5zY2VpdmVyIHR5cGXCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCA6IEV0aGVybmV0OiAxMDAwQkFTRS1T
-WA0KRW5jb2RpbmfCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgOiAweDAxICg4Qi8xMEIpDQpCUiwgTm9taW5hbMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoCA6IDEzMDBNQmQNClJhdGUgaWRlbnRpZmllcsKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgOiAweDAwICh1bnNwZWNpZmllZCkNCkxl
-bmd0aCAoU01GLGttKcKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqAgOiAwa20NCkxlbmd0aCAoU01GKcKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgOiAwbQ0KTGVuZ3RoICg1MHVt
-KcKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgIDogMG0NCkxlbmd0aCAoNjIuNXVtKcKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgOiAwbQ0KTGVuZ3RoIChDb3BwZXIpwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCA6IDI1NW0NCkxl
-bmd0aCAoT00zKcKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqAgOiAwbQ0KTGFzZXIgd2F2ZWxlbmd0aMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIDogMG5tDQpWZW5kb3IgbmFtZcKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoCA6IEFMTE5FVA0KVmVuZG9yIE9VScKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIDogMDA6MGY6YzkNClZlbmRvciBQ
-TsKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqAgOiBBTEw0NzgxDQpWZW5kb3IgcmV2wqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgOiBWMy40DQpPcHRp
-b24gdmFsdWVzwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqAgOiAweDA4IDB4MDANCk9wdGlvbsKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgOiBSZXRp
-bWVyIG9yIENEUiBpbXBsZW1lbnRlZA0KQlIgbWFyZ2luLCBtYXjCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgOiAwJQ0KQlIgbWFyZ2lu
-LCBtaW7CoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqAgOiAwJQ0K
+> On Dec 16, 2019, at 03:31, J=C3=BCrgen Gro=C3=9F <jgross@suse.com> wrote:
+>=20
+> =EF=BB=BFOn 16.12.19 09:18, Durrant, Paul wrote:
+>>> -----Original Message-----
+>>> From: J=C3=BCrgen Gro=C3=9F <jgross@suse.com>
+>>> Sent: 16 December 2019 08:10
+>>> To: Durrant, Paul <pdurrant@amazon.com>; David Miller
+>>> <davem@davemloft.net>
+>>> Cc: xen-devel@lists.xenproject.org; wei.liu@kernel.org; linux-
+>>> kernel@vger.kernel.org; netdev@vger.kernel.org
+>>> Subject: Re: [Xen-devel] [PATCH net-next] xen-netback: get rid of old ud=
+ev
+>>> related code
+>>>> On 13.12.19 11:12, Durrant, Paul wrote:
+>>>>>> -----Original Message-----
+>>>>>> From: J=C3=BCrgen Gro=C3=9F <jgross@suse.com>
+>>>>>> Sent: 13 December 2019 10:02
+>>>>>> To: Durrant, Paul <pdurrant@amazon.com>; David Miller
+>>>>>> <davem@davemloft.net>
+>>>>>> Cc: xen-devel@lists.xenproject.org; wei.liu@kernel.org; linux-
+>>>>>> kernel@vger.kernel.org; netdev@vger.kernel.org
+>>>>>> Subject: Re: [Xen-devel] [PATCH net-next] xen-netback: get rid of old=
+
+>>> udev
+>>>>> related code
+>>>>> On 13.12.19 10:24, Durrant, Paul wrote:
+>>>>>>> -----Original Message-----
+>>>>>>> From: J=C3=BCrgen Gro=C3=9F <jgross@suse.com>
+>>>>>>> Sent: 13 December 2019 05:41
+>>>>>>> To: David Miller <davem@davemloft.net>; Durrant, Paul
+>>>>>>> <pdurrant@amazon.com>
+>>>>>>> Cc: xen-devel@lists.xenproject.org; wei.liu@kernel.org; linux-
+>>>>>>> kernel@vger.kernel.org; netdev@vger.kernel.org
+>>>>>>> Subject: Re: [Xen-devel] [PATCH net-next] xen-netback: get rid of ol=
+d
+>>>>> udev
+>>>>>>> related code
+>>>>>>>> On 12.12.19 20:05, David Miller wrote:
+>>>>>>>>> From: Paul Durrant <pdurrant@amazon.com>
+>>>>>>>>> Date: Thu, 12 Dec 2019 13:54:06 +0000
+>>>>>>>>>> In the past it used to be the case that the Xen toolstack relied
+>>>> upon
+>>>>>>>>>> udev to execute backend hotplug scripts. However this has not bee=
+n
+>>>>>> the
+>>>>>>>>>> case for many releases now and removal of the associated code in
+>>>>>>>>>> xen-netback shortens the source by more than 100 lines, and remov=
+es
+>>>>>>>> much
+>>>>>>>>>> complexity in the interaction with the xenstore backend state.
+>>>>>>>>>> NOTE: xen-netback is the only xenbus driver to have a functional
+>>>>>>>> uevent()
+>>>>>>>>>>         method. The only other driver to have a method at all is
+>>>>>>>>>>         pvcalls-back, and currently pvcalls_back_uevent() simply
+>>>>>> returns
+>>>>>>>> 0.
+>>>>>>>>>>         Hence this patch also facilitates further cleanup.
+>>>>>>>>>> Signed-off-by: Paul Durrant <pdurrant@amazon.com>
+>>>>>>>>> If userspace ever used this stuff, I seriously doubt you can remov=
+e
+>>>>>> this
+>>>>>>>>> even if it hasn't been used in 5+ years.
+>>>>>>>> Hmm, depends.
+>>>>>>>> This has been used by Xen tools in dom0 only. If the last usage has=
+
+>>>>>> been
+>>>>>>>> in a Xen version which is no longer able to run with current Linux i=
+n
+>>>>>>>> dom0 it could be removed. But I guess this would have to be a rathe=
+r
+>>>>>> old
+>>>>>>>> version of Xen (like 3.x?).
+>>>>>>>> Paul, can you give a hint since which Xen version the toolstack no
+>>>>>>>> longer relies on udev to start the hotplug scripts?
+>>>>>>> The udev rules were in a file called tools/hotplug/Linux/xen-
+>>>>>> backend.rules (in xen.git), and a commit from Roger removed the NIC
+>>>> rules
+>>>>>> in 2012:
+>>>>>>> commit 57ad6afe2a08a03c40bcd336bfb27e008e1d3e53
+>>>>>> Xen 4.2
+>>>>>>> The last commit I could find to that file modified its name to xen-
+>>>>>> backend.rules.in, and this was finally removed by George in 2015:
+>>>>>>> commit 2ba368d13893402b2f1fb3c283ddcc714659dd9b
+>>>>>> Xen 4.6
+>>>>>>> So, I think this means anyone using a version of the Xen tools withi=
+n
+>>>>>> recent memory will be having their hotplug scripts called directly by=
+
+>>>>>> libxl (and having udev rules present would actually be counter-
+>>>> productive,
+>>>>>> as George's commit states and as I discovered the hard way when the
+>>>> change
+>>>>>> was originally made).
+>>>>>> The problem are systems with either old Xen versions (before Xen 4.2)=
+
+>>>> or
+>>>>>> with other toolstacks (e.g. Xen 4.4 with xend) which want to use a ne=
+w
+>>>>>> dom0 kernel.
+>>>>>> And I'm not sure there aren't such systems (especially in case someon=
+e
+>>>>>> wants to stick with xend).
+>>>>> But would someone sticking with such an old toolstack expect to run on=
+
+>>>> an unmodified upstream dom0? There has to be some way in which we can
+>>>> retire old code.
+>>>> As long as there are no hypervisor interface related issues
+>>>> prohibiting running dom0 unmodified I think the expectation to be
+>>>> able to use the kernel in that environment is fine.
+>> I think we need a better policy in future then otherwise we will only col=
+lect baggage.
+>=20
+> The Linux kernel policy regarding user interfaces and existing use cases
+> is rather clear and we should not deviate without very strong reasons.
+>=20
+>>> Another question coming up would be: how is this handled in a driver
+>>> domain running netback? Which component is starting the hotplug script
+>>> there? I don't think we can assume a standard Xen toolset in this case.
+>>> So I'd rather leave this code as it is instead of breaking some rare
+>>> but valid use cases.
+>> I am not sure there is a standard. Do we 'support' driver domains with an=
+y sort of tools API or do they really just have to notice things via xenstor=
+e? I agree Linux running as a driver domain could indeed use udev.
+>=20
+> I intend in no way to break projects like Qubes. Disaggregation is
+> one of the very big advantages of Xen over KVM, Hyper-V and VMWare.
+> We should not give that up "just to get rid of some code". Period.
+
+=46rom a quick poll of Qubes and OpenXT netback usage: neither project would=
+ be impacted by the proposed change.  Qubes uses xl devd to call hotplug scr=
+ipts.  OpenXT uses uevent triggers, but does not rely on any script provided=
+ in the uevent.  Ongoing simplification of backend drivers would be welcome.=
+
+
+Rich
+
+>=20
+>>>> Aside from the udev kicks though, I still think the hotplug-status/ring=
+
+>>> state interaction is just bogus anyway. As I said in a previous thread,
+>>> the hotplug-status ought to be indicated as carrier status, if at all, s=
+o
+>>> I still think all that code ought to go.
+>>> I agree regarding the future interface, but with the carrier state just
+>>> being in the plans to be added now, it is clearly too early to remove
+>>> the code with that reasoning.
+>> I don't think so. Like I said, I think the hotplug status has nothing to d=
+o with the state of the shared ring. Even with the code as-is, nothing infor=
+ms the frontend if the netif is subsequently closed or re-plumbed, so why mu=
+st we continue to maintain this code? AFAICT it is just not fit for purpose.=
+
+>=20
+> If it is being used that way we need to continue supporting it.
+>=20
+>=20
+> Juergen
+>=20
+> _______________________________________________
+> Xen-devel mailing list
+> Xen-devel@lists.xenproject.org
+> https://lists.xenproject.org/mailman/listinfo/xen-devel
