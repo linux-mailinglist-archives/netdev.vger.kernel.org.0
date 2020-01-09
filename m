@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 856F513612E
-	for <lists+netdev@lfdr.de>; Thu,  9 Jan 2020 20:35:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A3C7D136134
+	for <lists+netdev@lfdr.de>; Thu,  9 Jan 2020 20:36:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730895AbgAITfr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jan 2020 14:35:47 -0500
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:37599 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730715AbgAITfr (ORCPT
+        id S1731059AbgAITgB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jan 2020 14:36:01 -0500
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:39673 "EHLO
+        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730685AbgAITfr (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 9 Jan 2020 14:35:47 -0500
-Received: by mail-wr1-f67.google.com with SMTP id w15so8706096wru.4
-        for <netdev@vger.kernel.org>; Thu, 09 Jan 2020 11:35:44 -0800 (PST)
+Received: by mail-wm1-f68.google.com with SMTP id 20so4124395wmj.4
+        for <netdev@vger.kernel.org>; Thu, 09 Jan 2020 11:35:45 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:from:to:cc:references:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=jThfvR9gMd1ADkV067NxtGID/0UDbv6Wb1QHkitLPNI=;
-        b=s+5ME5T/QiipudZk5ujXmlcGVMou/vZCKLcgMqm16/3iXe0hzr1JstD+Iagrt/KaPo
-         WyGjSpaXRMt0bo8UTkA9Jp6gcyGgGwogwrgs+jNMBVw/FUiBjxl4iF6JXdABUbGDbQQp
-         oIVB1XQnZMBrPW2l/QwpGBLMrrksEWucOZMKIVXoRhEcHvVrXFLy0kcNYfkda9sHktBX
-         VChTNsILsLnf4i/8VMvDBJHZXxylPyP0v7thaKZy8W/E1Vx+tVXDs4O3d7e3QSXoiIR8
-         H904oD6X4EtZAdBPjzArSWJJYCPQt2OAXPWo+9M8KI2C9rTDiwqtmbUSaHO54vDSCEle
-         kRaQ==
+        bh=SvKRmU7/Fthm2pJhN2Mi/fuHuJ0lgz5PHjmW/oZMxFg=;
+        b=vLO1QCczDNuI7w5q2L07+laVB38HcjcjLCSZ9TLe/bsMrLTFTUoBWJlSxLrrqx1uQ3
+         NC2mXNkjtAsLAfgOA3huoRqgxz67MCG4LTnJF1NnrSQmGtQ67viy3PjKIqcBGZ56cH2L
+         clVL/ARabiQSMaB7s8HyTCGmpp7pfvKmXZCLqhZCiPNON79IALl9tQ9HVi2qN5K9xas6
+         MNODCNDDdx+J0gXLrEwDkw6A/EHsJlBAHgJFbNnTjhl1u2C5tZ2s92Md+Md7kBJDzENG
+         DGG+REV1HI5wpHPbrukzq7ELWRg+qy4RWLEuTt/jUTrLuvo6jirQOguM57qREu5qdgfn
+         p0bw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:from:to:cc:references:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=jThfvR9gMd1ADkV067NxtGID/0UDbv6Wb1QHkitLPNI=;
-        b=c9eIR4SRKkdvYlJUt/DrHue+I/StBo99LUccUid6QrwSq5xLq/RHPW9KK8vBPtLU6o
-         qKhBaEQEHqWdRG0QvaBmk8zmFFRsje4/yyyqdMrc7d3O4QVc6tSWnN3tBPK4HCAd0D3H
-         Ct1rbK5Ugatfbx+tjO4/1UOtwH8uCrJQOurVyY3EMhYzU+HcAd01T+w8iyjaj9r9XfdH
-         LHuVMVDiSEV28FFmedHpjxReXooJPU35qcsZlGIjp5Mx2K71E2CNh+TVQYgTfkQuu1Oo
-         JeM4/lmbZe6ejxWSj3jluCIOyRbzLp4enly6HpKypAHIieIMs1WnHwPyoPv/SUirz8Au
-         BUaQ==
-X-Gm-Message-State: APjAAAUKo3JmAdxJcf4HM9+giUoTo4A5vZYo1aj5PJzk28g9sRKJjmKz
-        pyYvbDMFxDLLigW5X2YTGWv3KIDq
-X-Google-Smtp-Source: APXvYqzP/6djzmLjxqfY1/dvgV/YqNWylhMtzLgBWDok6xZqi0/aZaeq3LRjJp5BcUAvVTnXYRYBQg==
-X-Received: by 2002:adf:806e:: with SMTP id 101mr13137356wrk.300.1578598543881;
-        Thu, 09 Jan 2020 11:35:43 -0800 (PST)
+        bh=SvKRmU7/Fthm2pJhN2Mi/fuHuJ0lgz5PHjmW/oZMxFg=;
+        b=emTJycZZDBOvUgpGKWZaGnyGc3cQMMpisfkVYeeQ0L5a9lfKZ8nI0/HDbeMRp19vyz
+         3mfCh6y00ozf3tj5sC04WRCivXZNmT3T/2qAXbO9wx33iswMdyJsJXdjXmXF6P4BVG0x
+         kL4VvIDxIFYBTRkMoY4/9IsuBdAtsQCZkwhlGrrJbo4Eu8fsHeyOLY80GgZmIQUUGfgN
+         VL0UB3h8zKmR17025kbbpjmWYWU9MGCo75GbL98JE2KFhfX/lkHWhl7woYkTNUQ9x8fT
+         QSKSMWXAEwrrXKuVLofA6MF8wIOcAs2/ox8lyAvYePgaYF5NyiMoFffau+0y8Vqql8fS
+         aVJA==
+X-Gm-Message-State: APjAAAVnZOx7Gtb9DPqeQBLNAK2/OO+MBd+okdAPLVoqwOdUizpkt/iP
+        xOvX8gw/SbL+oZBicGaOhKsowyaS
+X-Google-Smtp-Source: APXvYqyuWDGrIcG4dtgpt0ltqVtYDplc+oHwX4FmEl9WKEh0qKvL8gWniyRhcsrNYhTGkC9GGfiNXQ==
+X-Received: by 2002:a05:600c:108a:: with SMTP id e10mr6324191wmd.38.1578598544850;
+        Thu, 09 Jan 2020 11:35:44 -0800 (PST)
 Received: from [192.168.178.85] (pD9F901D9.dip0.t-ipconnect.de. [217.249.1.217])
-        by smtp.googlemail.com with ESMTPSA id 60sm9681599wrn.86.2020.01.09.11.35.43
+        by smtp.googlemail.com with ESMTPSA id b137sm4122966wme.26.2020.01.09.11.35.44
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 09 Jan 2020 11:35:43 -0800 (PST)
-Subject: [PATCH net-next 09/15] r8169: replace rtl_patchphy
+        Thu, 09 Jan 2020 11:35:44 -0800 (PST)
+Subject: [PATCH net-next 10/15] r8169: replace rtl_w0w1_phy
 From:   Heiner Kallweit <hkallweit1@gmail.com>
 To:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
         David Miller <davem@davemloft.net>
 Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
 References: <7e03fe05-ba95-c3c0-9a68-306b6450a141@gmail.com>
-Message-ID: <70157e57-a931-1acc-eb62-616a56f6cbb2@gmail.com>
-Date:   Thu, 9 Jan 2020 20:30:37 +0100
+Message-ID: <5c5a7c1d-346e-52dd-65c7-a0c5b2544119@gmail.com>
+Date:   Thu, 9 Jan 2020 20:31:10 +0100
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
  Thunderbird/68.3.1
 MIME-Version: 1.0
@@ -65,117 +65,101 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Replace rtl_patchphy with phylib functions.
+Replace rtl_w0w1_phy with phylib functions.
 
 Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
 ---
- drivers/net/ethernet/realtek/r8169_main.c | 42 +++++++++--------------
- 1 file changed, 16 insertions(+), 26 deletions(-)
+ drivers/net/ethernet/realtek/r8169_main.c | 34 ++++++++---------------
+ 1 file changed, 12 insertions(+), 22 deletions(-)
 
 diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-index 3fb3f2ac6..9765f49e7 100644
+index 9765f49e7..457c8cdec 100644
 --- a/drivers/net/ethernet/realtek/r8169_main.c
 +++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -1081,11 +1081,6 @@ static int rtl_readphy(struct rtl8169_private *tp, int location)
+@@ -1081,14 +1081,6 @@ static int rtl_readphy(struct rtl8169_private *tp, int location)
  	}
  }
  
--static void rtl_patchphy(struct rtl8169_private *tp, int reg_addr, int value)
+-static void rtl_w0w1_phy(struct rtl8169_private *tp, int reg_addr, int p, int m)
 -{
--	rtl_writephy(tp, reg_addr, rtl_readphy(tp, reg_addr) | value);
+-	int val;
+-
+-	val = rtl_readphy(tp, reg_addr);
+-	rtl_writephy(tp, reg_addr, (val & ~m) | p);
 -}
 -
- static void rtl_w0w1_phy(struct rtl8169_private *tp, int reg_addr, int p, int m)
+ static void r8168d_modify_extpage(struct phy_device *phydev, int extpage,
+ 				  int reg, u16 mask, u16 val)
  {
- 	int val;
-@@ -2527,7 +2522,7 @@ static void rtl8168bb_hw_phy_config(struct rtl8169_private *tp,
- 				    struct phy_device *phydev)
- {
- 	rtl_writephy(tp, 0x1f, 0x0001);
--	rtl_patchphy(tp, 0x16, 1 << 0);
-+	phy_set_bits(phydev, 0x16, BIT(0));
- 	rtl_writephy(tp, 0x10, 0xf41b);
- 	rtl_writephy(tp, 0x1f, 0x0000);
- }
-@@ -2578,9 +2573,8 @@ static void rtl8168c_1_hw_phy_config(struct rtl8169_private *tp,
- 
- 	rtl_writephy_batch(phydev, phy_reg_init);
- 
--	rtl_patchphy(tp, 0x14, 1 << 5);
--	rtl_patchphy(tp, 0x0d, 1 << 5);
--	rtl_writephy(tp, 0x1f, 0x0000);
-+	phy_set_bits(phydev, 0x14, BIT(5));
-+	phy_set_bits(phydev, 0x0d, BIT(5));
- }
- 
- static void rtl8168c_2_hw_phy_config(struct rtl8169_private *tp,
-@@ -2606,10 +2600,9 @@ static void rtl8168c_2_hw_phy_config(struct rtl8169_private *tp,
- 
- 	rtl_writephy_batch(phydev, phy_reg_init);
- 
--	rtl_patchphy(tp, 0x16, 1 << 0);
--	rtl_patchphy(tp, 0x14, 1 << 5);
--	rtl_patchphy(tp, 0x0d, 1 << 5);
--	rtl_writephy(tp, 0x1f, 0x0000);
-+	phy_set_bits(phydev, 0x16, BIT(0));
-+	phy_set_bits(phydev, 0x14, BIT(5));
-+	phy_set_bits(phydev, 0x0d, BIT(5));
- }
- 
- static void rtl8168c_3_hw_phy_config(struct rtl8169_private *tp,
-@@ -2629,10 +2622,9 @@ static void rtl8168c_3_hw_phy_config(struct rtl8169_private *tp,
- 
- 	rtl_writephy_batch(phydev, phy_reg_init);
- 
--	rtl_patchphy(tp, 0x16, 1 << 0);
--	rtl_patchphy(tp, 0x14, 1 << 5);
--	rtl_patchphy(tp, 0x0d, 1 << 5);
--	rtl_writephy(tp, 0x1f, 0x0000);
-+	phy_set_bits(phydev, 0x16, BIT(0));
-+	phy_set_bits(phydev, 0x14, BIT(5));
-+	phy_set_bits(phydev, 0x0d, BIT(5));
- }
- 
- static const struct phy_reg rtl8168d_1_phy_reg_init_0[] = {
-@@ -2740,8 +2732,8 @@ static void rtl8168d_1_hw_phy_config(struct rtl8169_private *tp,
- 
- 	/* RSET couple improve */
+@@ -2702,8 +2694,8 @@ static void rtl8168d_1_hw_phy_config(struct rtl8169_private *tp,
+ 	 * Fine Tune Switching regulator parameter
+ 	 */
  	rtl_writephy(tp, 0x1f, 0x0002);
--	rtl_patchphy(tp, 0x0d, 0x0300);
--	rtl_patchphy(tp, 0x0f, 0x0010);
-+	phy_set_bits(phydev, 0x0d, 0x0300);
-+	phy_set_bits(phydev, 0x0f, 0x0010);
+-	rtl_w0w1_phy(tp, 0x0b, 0x0010, 0x00ef);
+-	rtl_w0w1_phy(tp, 0x0c, 0xa200, 0x5d00);
++	phy_modify(phydev, 0x0b, 0x00ef, 0x0010);
++	phy_modify(phydev, 0x0c, 0x5d00, 0xa200);
+ 
+ 	if (rtl8168d_efuse_read(tp, 0x01) == 0xb1) {
+ 		int val;
+@@ -2737,8 +2729,8 @@ static void rtl8168d_1_hw_phy_config(struct rtl8169_private *tp,
  
  	/* Fine tune PLL performance */
  	rtl_writephy(tp, 0x1f, 0x0002);
-@@ -2785,11 +2777,10 @@ static void rtl8168d_2_hw_phy_config(struct rtl8169_private *tp,
+-	rtl_w0w1_phy(tp, 0x02, 0x0100, 0x0600);
+-	rtl_w0w1_phy(tp, 0x03, 0x0000, 0xe000);
++	phy_modify(phydev, 0x02, 0x0600, 0x0100);
++	phy_clear_bits(phydev, 0x03, 0xe000);
+ 	rtl_writephy(tp, 0x1f, 0x0000);
+ 
+ 	rtl8168d_apply_firmware_cond(tp, 0xbf00);
+@@ -2775,8 +2767,8 @@ static void rtl8168d_2_hw_phy_config(struct rtl8169_private *tp,
+ 
+ 	/* Fine tune PLL performance */
  	rtl_writephy(tp, 0x1f, 0x0002);
- 	rtl_w0w1_phy(tp, 0x02, 0x0100, 0x0600);
- 	rtl_w0w1_phy(tp, 0x03, 0x0000, 0xe000);
-+	rtl_writephy(tp, 0x1f, 0x0000);
+-	rtl_w0w1_phy(tp, 0x02, 0x0100, 0x0600);
+-	rtl_w0w1_phy(tp, 0x03, 0x0000, 0xe000);
++	phy_modify(phydev, 0x02, 0x0600, 0x0100);
++	phy_clear_bits(phydev, 0x03, 0xe000);
+ 	rtl_writephy(tp, 0x1f, 0x0000);
  
  	/* Switching regulator Slew rate */
--	rtl_writephy(tp, 0x1f, 0x0002);
--	rtl_patchphy(tp, 0x0f, 0x0017);
+@@ -2929,7 +2921,7 @@ static void rtl8168e_2_hw_phy_config(struct rtl8169_private *tp,
+ 	/* For 4-corner performance improve */
+ 	rtl_writephy(tp, 0x1f, 0x0005);
+ 	rtl_writephy(tp, 0x05, 0x8b80);
+-	rtl_w0w1_phy(tp, 0x17, 0x0006, 0x0000);
++	phy_set_bits(phydev, 0x17, 0x0006);
+ 	rtl_writephy(tp, 0x1f, 0x0000);
+ 
+ 	/* PHY auto speed down */
+@@ -2946,12 +2938,10 @@ static void rtl8168e_2_hw_phy_config(struct rtl8169_private *tp,
+ 
+ 	/* Green feature */
+ 	rtl_writephy(tp, 0x1f, 0x0003);
+-	rtl_w0w1_phy(tp, 0x19, 0x0001, 0x0000);
+-	rtl_w0w1_phy(tp, 0x10, 0x0400, 0x0000);
 -	rtl_writephy(tp, 0x1f, 0x0000);
-+	phy_modify_paged(phydev, 0x0002, 0x0f, 0x0000, 0x0017);
- 
- 	rtl8168d_apply_firmware_cond(tp, 0xb300);
+-	rtl_writephy(tp, 0x1f, 0x0005);
+-	rtl_w0w1_phy(tp, 0x01, 0x0100, 0x0000);
++	phy_set_bits(phydev, 0x19, BIT(0));
++	phy_set_bits(phydev, 0x10, BIT(10));
+ 	rtl_writephy(tp, 0x1f, 0x0000);
++	phy_modify_paged(phydev, 0x0005, 0x01, 0, BIT(8));
  }
-@@ -3368,10 +3359,9 @@ static void rtl8102e_hw_phy_config(struct rtl8169_private *tp,
- 		{ 0x1f, 0x0000 }
- 	};
  
--	rtl_writephy(tp, 0x1f, 0x0000);
--	rtl_patchphy(tp, 0x11, 1 << 12);
--	rtl_patchphy(tp, 0x19, 1 << 13);
--	rtl_patchphy(tp, 0x10, 1 << 15);
-+	phy_set_bits(phydev, 0x11, BIT(12));
-+	phy_set_bits(phydev, 0x19, BIT(13));
-+	phy_set_bits(phydev, 0x10, BIT(15));
+ static void rtl8168f_hw_phy_config(struct rtl8169_private *tp,
+@@ -3047,8 +3037,8 @@ static void rtl8411_hw_phy_config(struct rtl8169_private *tp,
  
- 	rtl_writephy_batch(phydev, phy_reg_init);
+ 	/* Green feature */
+ 	rtl_writephy(tp, 0x1f, 0x0003);
+-	rtl_w0w1_phy(tp, 0x19, 0x0000, 0x0001);
+-	rtl_w0w1_phy(tp, 0x10, 0x0000, 0x0400);
++	phy_clear_bits(phydev, 0x19, BIT(0));
++	phy_clear_bits(phydev, 0x10, BIT(10));
+ 	rtl_writephy(tp, 0x1f, 0x0000);
  }
+ 
 -- 
 2.24.1
 
