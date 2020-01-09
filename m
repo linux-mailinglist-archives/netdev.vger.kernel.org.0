@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2C2EF136370
-	for <lists+netdev@lfdr.de>; Thu,  9 Jan 2020 23:47:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A287F13636F
+	for <lists+netdev@lfdr.de>; Thu,  9 Jan 2020 23:47:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729464AbgAIWrB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jan 2020 17:47:01 -0500
-Received: from mga01.intel.com ([192.55.52.88]:46855 "EHLO mga01.intel.com"
+        id S1729450AbgAIWrA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jan 2020 17:47:00 -0500
+Received: from mga01.intel.com ([192.55.52.88]:46885 "EHLO mga01.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729265AbgAIWqt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 9 Jan 2020 17:46:49 -0500
+        id S1729293AbgAIWqu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 9 Jan 2020 17:46:50 -0500
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from fmsmga005.fm.intel.com ([10.253.24.32])
   by fmsmga101.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 09 Jan 2020 14:46:49 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.69,414,1571727600"; 
-   d="scan'208";a="421926866"
+   d="scan'208";a="421926870"
 Received: from jekeller-desk.amr.corp.intel.com ([10.166.244.172])
-  by fmsmga005.fm.intel.com with ESMTP; 09 Jan 2020 14:46:48 -0800
+  by fmsmga005.fm.intel.com with ESMTP; 09 Jan 2020 14:46:49 -0800
 From:   Jacob Keller <jacob.e.keller@intel.com>
 To:     netdev@vger.kernel.org
 Cc:     Jiri Pirko <jiri@mellanox.com>,
         Jacob Keller <jacob.e.keller@intel.com>,
-        Tariq Toukan <tariqt@mellanox.com>
-Subject: [PATCH 12/17] devlink: add a file documenting devlink regions
-Date:   Thu,  9 Jan 2020 14:46:20 -0800
-Message-Id: <20200109224625.1470433-13-jacob.e.keller@intel.com>
+        Shannon Nelson <snelson@pensando.io>
+Subject: [PATCH 13/17] devlink: add documentation for ionic device driver
+Date:   Thu,  9 Jan 2020 14:46:21 -0800
+Message-Id: <20200109224625.1470433-14-jacob.e.keller@intel.com>
 X-Mailer: git-send-email 2.25.0.rc1
 In-Reply-To: <20200109224625.1470433-1-jacob.e.keller@intel.com>
 References: <20200109224625.1470433-1-jacob.e.keller@intel.com>
@@ -38,111 +38,64 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Also document the regions created by the mlx4 driver. This is currently
-the only in-tree driver that creates devlink region snapshots.
+The IONIC device driver allocates a devlink and reports versions. Add
+documentation for this driver.
 
 Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
-Cc: Tariq Toukan <tariqt@mellanox.com>
+Cc: Shannon Nelson <snelson@pensando.io>
 ---
- .../networking/devlink/devlink-region.rst     | 54 +++++++++++++++++++
- Documentation/networking/devlink/index.rst    |  1 +
- Documentation/networking/devlink/mlx4.rst     | 13 +++++
- 3 files changed, 68 insertions(+)
- create mode 100644 Documentation/networking/devlink/devlink-region.rst
+ Documentation/networking/devlink/index.rst |  1 +
+ Documentation/networking/devlink/ionic.rst | 29 ++++++++++++++++++++++
+ 2 files changed, 30 insertions(+)
+ create mode 100644 Documentation/networking/devlink/ionic.rst
 
-diff --git a/Documentation/networking/devlink/devlink-region.rst b/Documentation/networking/devlink/devlink-region.rst
-new file mode 100644
-index 000000000000..efa11b9a20da
---- /dev/null
-+++ b/Documentation/networking/devlink/devlink-region.rst
-@@ -0,0 +1,54 @@
-+.. SPDX-License-Identifier: GPL-2.0
-+
-+==============
-+Devlink Region
-+==============
-+
-+``devlink`` regions enable access to driver defined address regions using
-+devlink.
-+
-+Each device can create and register its own supported address regions. The
-+region can then be accessed via the devlink region interface.
-+
-+Region snapshots are collected by the driver, and can be accessed via read
-+or dump commands. This allows future analysis on the created snapshots.
-+
-+The major benefit to creating a region is to provide access to internal
-+address regions that are otherwise inaccessible to the user. They can be
-+used to provide an additional way to debug complex error states.
-+
-+example usage
-+-------------
-+
-+.. code:: shell
-+
-+    $ devlink region help
-+    $ devlink region show [ DEV/REGION ]
-+    $ devlink region del DEV/REGION snapshot SNAPSHOT_ID
-+    $ devlink region dump DEV/REGION [ snapshot SNAPSHOT_ID ]
-+    $ devlink region read DEV/REGION [ snapshot SNAPSHOT_ID ]
-+            address ADDRESS length length
-+
-+    # Show all of the exposed regions with region sizes:
-+    $ devlink region show
-+    pci/0000:00:05.0/cr-space: size 1048576 snapshot [1 2]
-+    pci/0000:00:05.0/fw-health: size 64 snapshot [1 2]
-+
-+    # Delete a snapshot using:
-+    $ devlink region del pci/0000:00:05.0/cr-space snapshot 1
-+
-+    # Dump a snapshot:
-+    $ devlink region dump pci/0000:00:05.0/fw-health snapshot 1
-+    0000000000000000 0014 95dc 0014 9514 0035 1670 0034 db30
-+    0000000000000010 0000 0000 ffff ff04 0029 8c00 0028 8cc8
-+    0000000000000020 0016 0bb8 0016 1720 0000 0000 c00f 3ffc
-+    0000000000000030 bada cce5 bada cce5 bada cce5 bada cce5
-+
-+    # Read a specific part of a snapshot:
-+    $ devlink region read pci/0000:00:05.0/fw-health snapshot 1 address 0
-+            length 16
-+    0000000000000000 0014 95dc 0014 9514 0035 1670 0034 db30
-+
-+As regions are likely very device or driver specific, no generic regions are
-+defined. See the driver-specific documentation files for information on the
-+specific regions a driver supports.
 diff --git a/Documentation/networking/devlink/index.rst b/Documentation/networking/devlink/index.rst
-index 2007e257fd8a..3d351beedb0a 100644
+index 3d351beedb0a..ce0ee563d83a 100644
 --- a/Documentation/networking/devlink/index.rst
 +++ b/Documentation/networking/devlink/index.rst
-@@ -16,6 +16,7 @@ general.
-    devlink-health
-    devlink-info
-    devlink-params
-+   devlink-region
-    devlink-trap
-    devlink-trap-netdevsim
+@@ -30,6 +30,7 @@ parameters, info versions, and other features it supports.
+    :maxdepth: 1
  
-diff --git a/Documentation/networking/devlink/mlx4.rst b/Documentation/networking/devlink/mlx4.rst
-index 4fa5c2b51c52..7b2d17ea5471 100644
---- a/Documentation/networking/devlink/mlx4.rst
-+++ b/Documentation/networking/devlink/mlx4.rst
-@@ -41,3 +41,16 @@ parameters.
-      - Enable using the 4k UAR.
- 
- The ``mlx4`` driver supports reloading via ``DEVLINK_CMD_RELOAD``
+    bnxt
++   ionic
+    mlx4
+    mlx5
+    mlxsw
+diff --git a/Documentation/networking/devlink/ionic.rst b/Documentation/networking/devlink/ionic.rst
+new file mode 100644
+index 000000000000..48da9c92d584
+--- /dev/null
++++ b/Documentation/networking/devlink/ionic.rst
+@@ -0,0 +1,29 @@
++.. SPDX-License-Identifier: GPL-2.0
 +
-+Regions
-+=======
++=====================
++ionic devlink support
++=====================
 +
-+The ``mlx4`` driver supports dumping the firmware PCI crspace and health
-+buffer during a critical firmware issue.
++This document describes the devlink features implemented by the ``ionic``
++device driver.
 +
-+In case a firmware command times out, firmware getting stuck, or a non zero
-+value on the catastrophic buffer, a snapshot will be taken by the driver.
++Info versions
++=============
 +
-+The ``cr-space`` region will contain the firmware PCI crspace contents. The
-+``fw-health`` region will contain the device firmware's health buffer.
-+Snapshots for both of these regions are taken on the same event triggers.
++The ``ionic`` driver reports the following versions
++
++.. list-table:: devlink info versions implemented
++   :widths: 5 5 90
++
++   * - Name
++     - Type
++     - Description
++   * - ``fw``
++     - running
++     - Version of firmware running on the device
++   * - ``asic.id``
++     - fixed
++     - The ASIC type for this device
++   * - ``asic.rev``
++     - fixed
++     - The revision of the ASIC for this device
 -- 
 2.25.0.rc1
 
