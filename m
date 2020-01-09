@@ -2,75 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 18E161350CC
-	for <lists+netdev@lfdr.de>; Thu,  9 Jan 2020 02:04:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 03C211350D5
+	for <lists+netdev@lfdr.de>; Thu,  9 Jan 2020 02:05:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727718AbgAIBD5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jan 2020 20:03:57 -0500
-Received: from bombadil.infradead.org ([198.137.202.133]:59878 "EHLO
-        bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727082AbgAIBD5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jan 2020 20:03:57 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20170209; h=In-Reply-To:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=/mWM8oRP55OsjqF9FfoGCj1hXV5GCmbKiI9l/netkOE=; b=FGylA5/hwZS7JCS7ZIoNyi5t4
-        S+zNXtRAWl3ABfuKkQcShbHoYNMSRgOhJnQ8YxbHo8qUsLSesyQXk0mIPlpG6IvXED+sKpnKLTcY9
-        kBDBDB3CMVKY+Ju0KGwT778EWhlI+3NfBccDP2XdSWUeSwyO1hP1l6e/xtaX/wlvMDZlrQKdv4LGI
-        5VIT9Q43yaC/a0DHoqbQG1c7r56eSojtk51MKqghiM86ZdxN3VZr3lAPMMIqJF6hTxebuvrNlmuup
-        rWQZV9TmNLjtYqcg2+CvY+/chR/zsBsNbD0n5guteId2JEYH4Tbjww+fzAwI2/Mjw8KFszlm+vRvr
-        Tj5m2p6pA==;
-Received: from willy by bombadil.infradead.org with local (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1ipMEi-0001wt-J0; Thu, 09 Jan 2020 01:03:44 +0000
-Date:   Wed, 8 Jan 2020 17:03:44 -0800
-From:   Matthew Wilcox <willy@infradead.org>
-To:     David Miller <davem@davemloft.net>
-Cc:     yukuai3@huawei.com, klassert@kernel.org, hkallweit1@gmail.com,
-        jakub.kicinski@netronome.com, hslester96@gmail.com, mst@redhat.com,
-        yang.wei9@zte.com.cn, netdev@vger.kernel.org, yi.zhang@huawei.com,
-        zhengbin13@huawei.com
-Subject: Re: [PATCH V2] net: 3com: 3c59x: remove set but not used variable
- 'mii_reg1'
-Message-ID: <20200109010344.GN6788@bombadil.infradead.org>
-References: <20200106125337.40297-1-yukuai3@huawei.com>
- <20200108.124021.2097001545081493183.davem@davemloft.net>
- <20200108215929.GM6788@bombadil.infradead.org>
- <20200108.150549.1889209588136221613.davem@davemloft.net>
+        id S1727794AbgAIBFK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jan 2020 20:05:10 -0500
+Received: from mail.kernel.org ([198.145.29.99]:58976 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727767AbgAIBFK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 8 Jan 2020 20:05:10 -0500
+Received: from mail-qv1-f50.google.com (mail-qv1-f50.google.com [209.85.219.50])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id BCBC02072A;
+        Thu,  9 Jan 2020 01:05:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1578531909;
+        bh=FNlmc+/eAgBXxoCL8FGWCsvNNUglyxf7b3ZtgzFhf18=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=WeaTpxeV9OAgLar52QwUtI3qK7yFzKuYCCJIGy+UVVyku76D09Otq/YfzEIuNKR9S
+         tqNL/T3KyG9thrh8orphIlmOoQprjpC2NLl9SsiQlmytZ0vMWXeUKxWQMQmzjLCo5U
+         lZt4ZwGfBiokTAmrDUdA9XoeICVpbHJ+DuL511Ps=
+Received: by mail-qv1-f50.google.com with SMTP id n8so2273520qvg.11;
+        Wed, 08 Jan 2020 17:05:09 -0800 (PST)
+X-Gm-Message-State: APjAAAUUN00Xf3MqbEy29YkGZVLRYhSCXiNClhFFFyPrT9Xx6iwvKJ8q
+        gaeSxHk2+Et04QZIcCN9OzfQIsdqfPWFIe7n904=
+X-Google-Smtp-Source: APXvYqxmjiW+C9Z/rsYFmn2j5Y0xCdedwR5S6HI5cRWGgaN9Qz3VysE8C8EzQwxHlIihyiw/OfzIvfijh61/lmIy0oU=
+X-Received: by 2002:a05:6214:923:: with SMTP id dk3mr6437811qvb.96.1578531908825;
+ Wed, 08 Jan 2020 17:05:08 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200108.150549.1889209588136221613.davem@davemloft.net>
+References: <20200108192132.189221-1-sdf@google.com> <CAGdtWsS7hBF0d8F_Nidar-c+NRsDSwbk6K=cXbAOu-0kW74F8g@mail.gmail.com>
+In-Reply-To: <CAGdtWsS7hBF0d8F_Nidar-c+NRsDSwbk6K=cXbAOu-0kW74F8g@mail.gmail.com>
+From:   Song Liu <song@kernel.org>
+Date:   Wed, 8 Jan 2020 17:04:56 -0800
+X-Gmail-Original-Message-ID: <CAPhsuW6_Xwo3x59B==NhnboQFY_xFqO8vn+OXeXzhnKGjyJiGg@mail.gmail.com>
+Message-ID: <CAPhsuW6_Xwo3x59B==NhnboQFY_xFqO8vn+OXeXzhnKGjyJiGg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] selftests/bpf: restore original comm in test_overhead
+To:     Petar Penkov <ppenkov.kernel@gmail.com>
+Cc:     Stanislav Fomichev <sdf@google.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 08, 2020 at 03:05:49PM -0800, David Miller wrote:
-> From: Matthew Wilcox <willy@infradead.org>
-> Date: Wed, 8 Jan 2020 13:59:29 -0800
-> 
-> > This waas a mistaken version; please revert and apply v3 instead.
-> 
-> Are you sure?
-> 
-> [davem@localhost net-next]$ git show e102774588b3ac0d221ed2d03a5153e056f1354f >x.diff
-> [davem@localhost net-next]$ patch -p1 -R <x.diff 
-> patching file drivers/net/ethernet/3com/3c59x.c
-> [davem@localhost net-next]$ mv ~/Downloads/V3-net-3com-3c59x-remove-set-but-not-used-variable-mii_reg1.patch ./
-> [davem@localhost net-next]$ patch -p1 <V3-net-3com-3c59x-remove-set-but-not-used-variable-mii_reg1.patch 
-> patching file drivers/net/ethernet/3com/3c59x.c
-> [davem@localhost net-next]$ git diff
-> [davem@localhost net-next]$
-> 
-> There is no difference in the code of the commit at all between V2 and V3.
+On Wed, Jan 8, 2020 at 3:19 PM Petar Penkov <ppenkov.kernel@gmail.com> wrote:
+>
+> On Wed, Jan 8, 2020 at 11:49 AM Stanislav Fomichev <sdf@google.com> wrote:
+> >
+> > test_overhead changes task comm in order to estimate BPF trampoline
+> > overhead but never sets the comm back to the original one.
+> > We have the tests (like core_reloc.c) that have 'test_progs'
+> > as hard-coded expected comm, so let's try to preserve the
+> > original comm.
+> >
+> > Currently, everything works because the order of execution is:
+> > first core_recloc, then test_overhead; but let's make it a bit
+> > future-proof.
+> >
+> > Other related changes: use 'test_overhead' as new comm instead of
+> > 'test' to make it easy to debug and drop '\n' at the end.
+> >
+> > Signed-off-by: Stanislav Fomichev <sdf@google.com>
+>
+> Acked-by: Petar Penkov <ppenkov@google.com>
 
-v2:
--               mii_reg1 = mdio_read(dev, vp->phys[0], MII_BMSR);
-
-v3:
--               mii_reg1 = mdio_read(dev, vp->phys[0], MII_BMSR);
-+               mdio_read(dev, vp->phys[0], MII_BMSR);
-
+Acked-by: Song Liu <songliubraving@fb.com>
