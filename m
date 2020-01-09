@@ -2,83 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 921C01359EF
-	for <lists+netdev@lfdr.de>; Thu,  9 Jan 2020 14:19:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 91D971359F8
+	for <lists+netdev@lfdr.de>; Thu,  9 Jan 2020 14:21:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730948AbgAINSq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jan 2020 08:18:46 -0500
-Received: from relay5-d.mail.gandi.net ([217.70.183.197]:33123 "EHLO
-        relay5-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729409AbgAINSq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jan 2020 08:18:46 -0500
+        id S1729623AbgAINVc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jan 2020 08:21:32 -0500
+Received: from relay2-d.mail.gandi.net ([217.70.183.194]:58571 "EHLO
+        relay2-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725839AbgAINVc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jan 2020 08:21:32 -0500
 X-Originating-IP: 90.76.143.236
 Received: from localhost (lfbn-tou-1-1075-236.w90-76.abo.wanadoo.fr [90.76.143.236])
         (Authenticated sender: antoine.tenart@bootlin.com)
-        by relay5-d.mail.gandi.net (Postfix) with ESMTPSA id 192431C0004;
-        Thu,  9 Jan 2020 13:18:42 +0000 (UTC)
-Date:   Thu, 9 Jan 2020 14:18:42 +0100
+        by relay2-d.mail.gandi.net (Postfix) with ESMTPSA id 5C8EE40004;
+        Thu,  9 Jan 2020 13:21:27 +0000 (UTC)
+Date:   Thu, 9 Jan 2020 14:21:26 +0100
 From:   Antoine Tenart <antoine.tenart@bootlin.com>
-To:     David Miller <davem@davemloft.net>
-Cc:     antoine.tenart@bootlin.com, sd@queasysnail.net, andrew@lunn.ch,
-        f.fainelli@gmail.com, hkallweit1@gmail.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, thomas.petazzoni@bootlin.com,
-        alexandre.belloni@bootlin.com, allan.nielsen@microchip.com,
-        camelia.groza@nxp.com, Simon.Edelhaus@aquantia.com,
-        Igor.Russkikh@aquantia.com, jakub.kicinski@netronome.com
-Subject: Re: [PATCH net-next v4 08/15] net: phy: mscc: macsec initialization
-Message-ID: <20200109131842.GC5472@kwain>
+To:     Igor Russkikh <irusskikh@marvell.com>
+Cc:     Antoine Tenart <antoine.tenart@bootlin.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "sd@queasysnail.net" <sd@queasysnail.net>,
+        "andrew@lunn.ch" <andrew@lunn.ch>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "thomas.petazzoni@bootlin.com" <thomas.petazzoni@bootlin.com>,
+        "alexandre.belloni@bootlin.com" <alexandre.belloni@bootlin.com>,
+        "allan.nielsen@microchip.com" <allan.nielsen@microchip.com>,
+        "camelia.groza@nxp.com" <camelia.groza@nxp.com>,
+        "Simon.Edelhaus@aquantia.com" <Simon.Edelhaus@aquantia.com>,
+        "jakub.kicinski@netronome.com" <jakub.kicinski@netronome.com>,
+        Dmitry Bogdanov <dbogdanov@marvell.com>,
+        Mark Starovoytov <mstarovoitov@marvell.com>
+Subject: Re: [EXT] [PATCH net-next v4 15/15] net: macsec: add support for
+ offloading to the MAC
+Message-ID: <20200109132126.GD5472@kwain>
 References: <20191219105515.78400-1-antoine.tenart@bootlin.com>
- <20191219105515.78400-9-antoine.tenart@bootlin.com>
- <20191219.121117.1826219046339114907.davem@davemloft.net>
+ <20191219105515.78400-16-antoine.tenart@bootlin.com>
+ <MN2PR18MB26387BD6B59565D21F936FE5B72E0@MN2PR18MB2638.namprd18.prod.outlook.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20191219.121117.1826219046339114907.davem@davemloft.net>
+In-Reply-To: <MN2PR18MB26387BD6B59565D21F936FE5B72E0@MN2PR18MB2638.namprd18.prod.outlook.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello David,
+Hi Igor,
 
-On Thu, Dec 19, 2019 at 12:11:17PM -0800, David Miller wrote:
-> From: Antoine Tenart <antoine.tenart@bootlin.com>
-> Date: Thu, 19 Dec 2019 11:55:08 +0100
+On Mon, Dec 23, 2019 at 11:36:48AM +0000, Igor Russkikh wrote:
 > 
-> > +static u32 __vsc8584_macsec_phy_read(struct phy_device *phydev,
-> > +				     enum macsec_bank bank, u32 reg, bool init)
-> > +{
-> > +	u32 val, val_l = 0, val_h = 0;
-> > +	unsigned long deadline;
-> > +	int rc;
-> > +
-> > +	if (!init) {
-> > +		rc = phy_select_page(phydev, MSCC_PHY_PAGE_MACSEC);
-> > +		if (rc < 0)
-> > +			goto failed;
-> > +	} else {
-> > +		__phy_write_page(phydev, MSCC_PHY_PAGE_MACSEC);
-> > +	}
+> > diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
+> > index 024af2d1d0af..771371d5b996 100644
+> > --- a/include/uapi/linux/if_link.h
+> > +++ b/include/uapi/linux/if_link.h
+> > @@ -489,6 +489,7 @@ enum macsec_validation_type {
+> >  enum macsec_offload {
+> >  	MACSEC_OFFLOAD_OFF = 0,
+> >  	MACSEC_OFFLOAD_PHY = 1,
+> > +	MACSEC_OFFLOAD_MAC = 2,
+> >  	__MACSEC_OFFLOAD_END,
+> >  	MACSEC_OFFLOAD_MAX = __MACSEC_OFFLOAD_END - 1,
 > 
-> Having to export __phy_write_page() in the previous patch looked like
-> a huge red flag to me, and indeed on top of it you're using it to do
-> conditional locking here.
+> So from uapi perspective user have to explicitly specify "offload mac"
+> or "offload phy"? And from non experienced user perspective he always
+> have to try these two before rolling back to "offload none" ?
 > 
-> I'm going to unfortunately have to push back on this, please sanitize
-> the locking here so that you can use the existing exports properly.
+> I'm not saying this is wrong, just trying to understand if there any
+> more streamlined way to do this..
 
-I do agree this conditional locking is not very good. We had discussions
-with Andrew about how bad this is, but there are no easy fix for this.
-At least the condition is consistent depending on if we're in the init
-step or not, which is better than having different values in the same
-context. The idea was not to duplicate hundreds of lines.
+That is the idea, the commands will be:
+# ip macsec offload macsec0 off
+# ip macsec offload macsec0 phy
+# ip macsec offload macsec0 mac
 
-Having said that, the reason we had to do this is we have multiple PHYs
-inside the same package and some steps are to be done for all PHYs at a
-time. I had another look at this and, for MACsec only, we might be able
-not to have a single common part. I'll test the changes and if that's
-successful I'll be able to fix this in a clean way.
+We should be able to report what's supported for a given interface, for
+a more user friendly experience though. (We could include the
+information in `ip macsec show` for example). Would that improve things?
 
 Thanks!
 Antoine
