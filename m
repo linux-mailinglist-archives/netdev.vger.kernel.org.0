@@ -2,48 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E9361350F2
-	for <lists+netdev@lfdr.de>; Thu,  9 Jan 2020 02:21:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C73B135101
+	for <lists+netdev@lfdr.de>; Thu,  9 Jan 2020 02:34:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727797AbgAIBVo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jan 2020 20:21:44 -0500
-Received: from mail.kernel.org ([198.145.29.99]:53746 "EHLO mail.kernel.org"
+        id S1727754AbgAIBef (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jan 2020 20:34:35 -0500
+Received: from mail.kernel.org ([198.145.29.99]:41672 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727749AbgAIBVo (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 8 Jan 2020 20:21:44 -0500
-Received: from mail-qk1-f175.google.com (mail-qk1-f175.google.com [209.85.222.175])
+        id S1726654AbgAIBee (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 8 Jan 2020 20:34:34 -0500
+Received: from mail-qk1-f170.google.com (mail-qk1-f170.google.com [209.85.222.170])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id A04602070E;
-        Thu,  9 Jan 2020 01:21:43 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id EE9B62070E;
+        Thu,  9 Jan 2020 01:34:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1578532903;
-        bh=nkUAKjPo9sGjCXJAMdjezLZohnXHrZph9WGLCj0+iHU=;
+        s=default; t=1578533674;
+        bh=L3mfRJUcGGHYyqz8ZxVIXWFWXUrULZcPO95byLbD5Q4=;
         h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=Mo0WMzYJ6BuN10Nmz55IDnoR4hPnV7tiPy63qev0Ipf9lwDiWtXY3EjEnHrkU19Z7
-         POgD1Rnpc6+tkzywtpR5oBhYXIO6Fb72gU15sRo8gyxcRq4pjSbCJESe+rQS5e1G+i
-         qsnym77hmgBkTmCaqUJ10pixF4Fd4HisCZmTnZkE=
-Received: by mail-qk1-f175.google.com with SMTP id w127so4517340qkb.11;
-        Wed, 08 Jan 2020 17:21:43 -0800 (PST)
-X-Gm-Message-State: APjAAAX0FR0KzGPkHRK97VRx7actz1RH8ei1g7iVMlOtyYXXfN9pnuzK
-        Pqws7N7tGbP2oLgTWrs8GlXUMA+NANJnL1Nk2bw=
-X-Google-Smtp-Source: APXvYqxxJfkPYyD3WDpyNUTzJo/txTUzWXs731MRMccvlZ7heH93oVSZfqoEnlBDj3j0Ppg3j2yyV00LQMI0a2zSpss=
-X-Received: by 2002:ae9:e103:: with SMTP id g3mr7346318qkm.353.1578532902812;
- Wed, 08 Jan 2020 17:21:42 -0800 (PST)
+        b=VfZ1bfONB7euu3xny3swkkuOh6BM6ZGdMC5qvE5MUNKqWutpdV7tw5Uy0yorNVwa1
+         6WRHuLJiREmnaQkkKo14/7wKF1w2bCFg68MJY6aFNzyuIXVbaTqOfcFPx90PYkdKyO
+         GqiZqFYxslOiHGA7vbwWr4DSfTYxK4SQxkpxnGZo=
+Received: by mail-qk1-f170.google.com with SMTP id c16so4572544qko.6;
+        Wed, 08 Jan 2020 17:34:33 -0800 (PST)
+X-Gm-Message-State: APjAAAVxDLacwsLfsNPXZss6w8G1wTZZPbMXjY1/jf5rUjDJWpv1v8Fl
+        wvKI3NbQjj3MXmTONeA9648VntmX7BfB0PfmQmQ=
+X-Google-Smtp-Source: APXvYqwXApudmZ/cAtPrPB4ISgJr9rZ56Kzrhq6ZQwXMkjMet8n2YFg4yW5vbUEckgM18C1ehfd9lwhHXaijlr3oZDg=
+X-Received: by 2002:ae9:f502:: with SMTP id o2mr6851044qkg.89.1578533673038;
+ Wed, 08 Jan 2020 17:34:33 -0800 (PST)
 MIME-Version: 1.0
-References: <157851907534.21459.1166135254069483675.stgit@john-Precision-5820-Tower>
- <157851930654.21459.7236323146782270917.stgit@john-Precision-5820-Tower>
-In-Reply-To: <157851930654.21459.7236323146782270917.stgit@john-Precision-5820-Tower>
+References: <157851776348.1732.12600714815781177085.stgit@ubuntu3-kvm2> <157851804766.1732.2480524840189309989.stgit@ubuntu3-kvm2>
+In-Reply-To: <157851804766.1732.2480524840189309989.stgit@ubuntu3-kvm2>
 From:   Song Liu <song@kernel.org>
-Date:   Wed, 8 Jan 2020 17:21:30 -0800
-X-Gmail-Original-Message-ID: <CAPhsuW7tVhR1oFtsZ9t0bQdBQtgAKsRpGH9N5ir7JhMBTm81PQ@mail.gmail.com>
-Message-ID: <CAPhsuW7tVhR1oFtsZ9t0bQdBQtgAKsRpGH9N5ir7JhMBTm81PQ@mail.gmail.com>
-Subject: Re: [bpf PATCH 2/2] bpf: xdp, remove no longer required rcu_read_{un}lock()
+Date:   Wed, 8 Jan 2020 17:34:21 -0800
+X-Gmail-Original-Message-ID: <CAPhsuW6CR20_81kkmp5k=h9uhZWMyLEwyeD2K5yd3RzK+pVgww@mail.gmail.com>
+Message-ID: <CAPhsuW6CR20_81kkmp5k=h9uhZWMyLEwyeD2K5yd3RzK+pVgww@mail.gmail.com>
+Subject: Re: [bpf PATCH 1/9] bpf: sockmap/tls, during free we may call
+ tcp_bpf_unhash() in loop
 To:     John Fastabend <john.fastabend@gmail.com>
-Cc:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
-        bpf <bpf@vger.kernel.org>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        Networking <netdev@vger.kernel.org>,
+Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
         Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>
 Content-Type: text/plain; charset="UTF-8"
@@ -52,23 +49,32 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 8, 2020 at 1:36 PM John Fastabend <john.fastabend@gmail.com> wrote:
+On Wed, Jan 8, 2020 at 1:14 PM John Fastabend <john.fastabend@gmail.com> wrote:
 >
-> Now that we depend on rcu_call() and synchronize_rcu() to also wait
-> for preempt_disabled region to complete the rcu read critical section
-> in __dev_map_flush() is no longer relevant.
+> When a sockmap is free'd and a socket in the map is enabled with tls
+> we tear down the bpf context on the socket, the psock struct and state,
+> and then call tcp_update_ulp(). The tcp_update_ulp() call is to inform
+> the tls stack it needs to update its saved sock ops so that when the tls
+> socket is later destroyed it doesn't try to call the now destroyed psock
+> hooks.
 >
-> These originally ensured the map reference was safe while a map was
-> also being free'd. But flush by new rules can only be called from
-> preempt-disabled NAPI context. The synchronize_rcu from the map free
-> path and the rcu_call from the delete path will ensure the reference
-> here is safe. So lets remove the rcu_read_lock and rcu_read_unlock
-> pair to avoid any confusion around how this is being protected.
+> This is about keeping stacked ULPs in good shape so they always have
+> the right set of stacked ops.
 >
-> If the rcu_read_lock was required it would mean errors in the above
-> logic and the original patch would also be wrong.
+> However, recently unhash() hook was removed from TLS side. But, the
+> sockmap/bpf side is not doing any extra work to update the unhash op
+> when is torn down instead expecting TLS side to manage it. So both
+> TLS and sockmap believe the other side is managing the op and instead
+> no one updates the hook so it continues to point at tcp_bpf_unhash().
+> When unhash hook is called we call tcp_bpf_unhash() which detects the
+> psock has already been destroyed and calls sk->sk_prot_unhash() which
+> calls tcp_bpf_unhash() yet again and so on looping and hanging the core.
 >
-> Fixes: 0536b85239b84 ("xdp: Simplify devmap cleanup")
+> To fix have sockmap tear down logic fixup the stale pointer.
+>
+> Fixes: 5d92e631b8be ("net/tls: partially revert fix transition through disconnect with close")
+> Reported-by: syzbot+83979935eb6304f8cd46@syzkaller.appspotmail.com
 > Signed-off-by: John Fastabend <john.fastabend@gmail.com>
 
+Cc: stable@vger.kernel.org
 Acked-by: Song Liu <songliubraving@fb.com>
