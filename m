@@ -2,88 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D09E6135311
-	for <lists+netdev@lfdr.de>; Thu,  9 Jan 2020 07:09:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 64E0F135335
+	for <lists+netdev@lfdr.de>; Thu,  9 Jan 2020 07:32:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727916AbgAIGJa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jan 2020 01:09:30 -0500
-Received: from mail-qk1-f195.google.com ([209.85.222.195]:38011 "EHLO
-        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725899AbgAIGJ3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jan 2020 01:09:29 -0500
-Received: by mail-qk1-f195.google.com with SMTP id k6so4999191qki.5;
-        Wed, 08 Jan 2020 22:09:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=X+RhLbVc3KJZZjKfiDgwDLr/Cdtt/34QV4MsKViVdGg=;
-        b=OqiPkOt9FJmPq8svPyvQB/Eh/HkjS965/26GzpewZtw4twZtJYZ+V5Va+jsNJI9hEx
-         C1Kbhz+FzWHMWfKy5+MPObB5T9kugUpgiVBI9fmqYkCnEJe0KmnzzigJT6aj63UnKFHp
-         vpf1o7ww9G5pn6bFvdUbcfz4kyL/sBzJ8DOyNY4bLsAuJCbENGR8CUvwJlZxH7ApLwxN
-         Kqb4s55v6KUPQlNUhzFY3Ec2yRTn2wTMBh0kzFsHF66wKfQzUkeXMLZ3TEbpbZIduDQp
-         IrpseRuJsiBFqudr9Ws9UYa58bTQocoq0IyiuY7AgZXGoJaWnSQcL5Y8PA0ZNQCBVHHN
-         tKJQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=X+RhLbVc3KJZZjKfiDgwDLr/Cdtt/34QV4MsKViVdGg=;
-        b=qv7TVETjCNiCQ/+oRPYTanqzKV1ArADHCciTS0ClKMdHLiuGfZAhaIPOf7ZATyKAZq
-         NZy53byVic7dcETXUd4NrlvGyYZn1kbAC6WykZmOSA7Q6HCQm1n5LQpU6+cQEvKOhNN0
-         3W8Ghj7gLf5qHjzMXqS7tPVEguWJqsjN330xQTu1YJo8XPbp7GbTt183h7LsZw24tupQ
-         VtFJLpeYZ30IyrVDNsTZ1B9K7TVHcxW4mkGJD+DVWs/2OKRJwn77goJDQmSo6+dEE+ID
-         oQlqqKV1tSFx8UyTLee0du07mkMl3/f5Wic0eiFP4VQFLNIKoAWCeBDF14+u6bifH8hc
-         uWkw==
-X-Gm-Message-State: APjAAAVbP3o0ApZQicW3nJ2MTeHm8R1ebnoVClXgATMwoMwqFZDTmlpW
-        MP/o8tCUZBHOqX8wI59+4FYRbpqQkFNcaDtSCJ4=
-X-Google-Smtp-Source: APXvYqzCE9JoeRyZ8YZ6++pQz1TRJTqR3biFwZkc62cyUb2OyjvsnNox9uyPDyPeQid7XpVrRKhJZ0G71AtbcKyWTXk=
-X-Received: by 2002:a37:63c7:: with SMTP id x190mr7926002qkb.232.1578550168691;
- Wed, 08 Jan 2020 22:09:28 -0800 (PST)
+        id S1728052AbgAIGb4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jan 2020 01:31:56 -0500
+Received: from host-88-217-225-28.customer.m-online.net ([88.217.225.28]:49454
+        "EHLO mail.dev.tdt.de" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726541AbgAIGbz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jan 2020 01:31:55 -0500
+Received: from mschiller01.dev.tdt.de (unknown [10.2.3.20])
+        by mail.dev.tdt.de (Postfix) with ESMTPSA id 28EB620AAB;
+        Thu,  9 Jan 2020 06:31:48 +0000 (UTC)
+From:   Martin Schiller <ms@dev.tdt.de>
+To:     arnd@arndb.de, davem@davemloft.net
+Cc:     andrew.hendry@gmail.com, edumazet@google.com,
+        gregkh@linuxfoundation.org, tglx@linutronix.de,
+        linux-x25@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com,
+        Martin Schiller <ms@dev.tdt.de>,
+        syzbot+429c200ffc8772bfe070@syzkaller.appspotmail.com,
+        syzbot+eec0c87f31a7c3b66f7b@syzkaller.appspotmail.com
+Subject: [PATCH] net/x25: fix nonblocking connect
+Date:   Thu,  9 Jan 2020 07:31:14 +0100
+Message-Id: <20200109063114.23195-1-ms@dev.tdt.de>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <CAK8P3a0LdF+aQ1hnZrVKkNBQaum0WqW1jyR7_Eb+JRiwyHWr6Q@mail.gmail.com>
+References: <CAK8P3a0LdF+aQ1hnZrVKkNBQaum0WqW1jyR7_Eb+JRiwyHWr6Q@mail.gmail.com>
 MIME-Version: 1.0
-References: <157851907534.21459.1166135254069483675.stgit@john-Precision-5820-Tower>
-In-Reply-To: <157851907534.21459.1166135254069483675.stgit@john-Precision-5820-Tower>
-From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
-Date:   Thu, 9 Jan 2020 07:09:17 +0100
-Message-ID: <CAJ+HfNiK4g9Ak_ZBSMP1bQXSOLJELu1=Hfs+o02MXVWy1H2z3g@mail.gmail.com>
-Subject: Re: [bpf PATCH 0/2] xdp devmap improvements cleanup
-To:     John Fastabend <john.fastabend@gmail.com>
-Cc:     bpf <bpf@vger.kernel.org>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        Netdev <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.0 required=5.0 tests=ALL_TRUSTED autolearn=ham
+        autolearn_force=no version=3.4.2
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.dev.tdt.de
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 8 Jan 2020 at 22:34, John Fastabend <john.fastabend@gmail.com> wrot=
-e:
->
-> Couple cleanup patches to recently posted series[0] from Bjorn to
-> cleanup and optimize the devmap usage. Patches have commit ids
-> the cleanup applies to.
->
-> [0] https://www.spinics.net/lists/netdev/msg620639.html
->
-> ---
->
-> John Fastabend (2):
->       bpf: xdp, update devmap comments to reflect napi/rcu usage
->       bpf: xdp, remove no longer required rcu_read_{un}lock()
->
+This patch fixes 2 issues in x25_connect():
 
-Thanks for the clean-up, John!
+1. It makes absolutely no sense to reset the neighbour and the
+connection state after a (successful) nonblocking call of x25_connect.
+This prevents any connection from being established, since the response
+(call accept) cannot be processed.
 
-For the series:
-Acked-by: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
+2. Any further calls to x25_connect() while a call is pending should
+simply return, instead of creating new Call Request (on different
+logical channels).
 
->
->  kernel/bpf/devmap.c |   23 +++++++++++------------
->  1 file changed, 11 insertions(+), 12 deletions(-)
->
-> --
-> Signature
+This patch should also fix the "KASAN: null-ptr-deref Write in
+x25_connect" and "BUG: unable to handle kernel NULL pointer dereference
+in x25_connect" bugs reported by syzbot.
+
+Signed-off-by: Martin Schiller <ms@dev.tdt.de>
+Reported-by: syzbot+429c200ffc8772bfe070@syzkaller.appspotmail.com
+Reported-by: syzbot+eec0c87f31a7c3b66f7b@syzkaller.appspotmail.com
+---
+ net/x25/af_x25.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/net/x25/af_x25.c b/net/x25/af_x25.c
+index 2efe44a34644..d5b09bbff375 100644
+--- a/net/x25/af_x25.c
++++ b/net/x25/af_x25.c
+@@ -766,6 +766,10 @@ static int x25_connect(struct socket *sock, struct sockaddr *uaddr,
+ 	if (sk->sk_state == TCP_ESTABLISHED)
+ 		goto out;
+ 
++	rc = -EALREADY;	/* Do nothing if call is already in progress */
++	if (sk->sk_state == TCP_SYN_SENT)
++		goto out;
++
+ 	sk->sk_state   = TCP_CLOSE;
+ 	sock->state = SS_UNCONNECTED;
+ 
+@@ -812,7 +816,7 @@ static int x25_connect(struct socket *sock, struct sockaddr *uaddr,
+ 	/* Now the loop */
+ 	rc = -EINPROGRESS;
+ 	if (sk->sk_state != TCP_ESTABLISHED && (flags & O_NONBLOCK))
+-		goto out_put_neigh;
++		goto out;
+ 
+ 	rc = x25_wait_for_connection_establishment(sk);
+ 	if (rc)
+-- 
+2.20.1
+
