@@ -2,78 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 00AF7135E85
-	for <lists+netdev@lfdr.de>; Thu,  9 Jan 2020 17:43:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A846135EE2
+	for <lists+netdev@lfdr.de>; Thu,  9 Jan 2020 18:07:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730602AbgAIQny (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jan 2020 11:43:54 -0500
-Received: from mail-lj1-f195.google.com ([209.85.208.195]:39713 "EHLO
-        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725791AbgAIQny (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jan 2020 11:43:54 -0500
-Received: by mail-lj1-f195.google.com with SMTP id l2so7953732lja.6;
-        Thu, 09 Jan 2020 08:43:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=LstMW2CeiYcPoqZkf4bg1xOXdmhfKRp00gDByJT6DSE=;
-        b=kltnbXuntI/H/jDYjgovcp6nWBDQMzX3eS+ZtOdRWXZHypHJmK7SvjMAjrq0Zshk4z
-         4QfdSdx/X28cHxEFSMGwFmz9CqFZlJOF7L3jFxQTs/wu3y3efGmBHC+R8Ecd2YKotN59
-         y5sCmzGWO8rNlPfiOpq/TLswVJ57CcHyRcR1hxixohmyKOmSZpvSorYVh3fMSE5jSqn2
-         NfwfS561T0wPWD3JMJz2kBp1P8LzBDeaYbQj5x0jkAEopP469ZoXhal47MOK12NtvYdL
-         pXOO/JZNulPWw0ym+LN08w0zw4ONdkt6CW4EoD23WabPHFRzM8ktNYnF58mFcW0Z0uhc
-         vwkQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=LstMW2CeiYcPoqZkf4bg1xOXdmhfKRp00gDByJT6DSE=;
-        b=gaLJeF7955HVI6E9iuDzx5J7oGWHAo7lulgZ6lLxS8OoY7jqktfj2+vDTWcxXy3mIx
-         Pkz2sf9hiTwMw388lyUWDwBegcSZ0CQLGJrCqXB5GBjAHGmrzDz1Ll+PuOSMiZiG6wNL
-         eU+SY2R88ffBSzDHFr+EB7L3Rlojsn6E38CxvOFGL2k3dOg2rkfQhlprMK8+LNXPv5ZH
-         SBA0tkn3DroGBfUVJYXELieiKzAf4yCaq2OKPifEr0DLg4tb4rrE8/CHrMyeHxv/Mp5M
-         vKVeNzYpKwRlDC0QHhVstrwW58VcYBGinVBEqVbPj0k69nUHtgJWSww+8Q2fqUrhiy67
-         NxOQ==
-X-Gm-Message-State: APjAAAXHCOkATmzLBNX7DD3XqpHXxiXq4E3kqQoAI1ZYsvPNtkmR1qPN
-        Wro8kDywMAFasxb0do8meqt0lgYpvhItemws1h4=
-X-Google-Smtp-Source: APXvYqwBiTR85br0hmaAJGwV0RxrMee7f0r77b5ZsIRyEDGgSErSKU8WL1jR1AcYkwFujc2mwtkGEZVb1RGcu+HEWM4=
-X-Received: by 2002:a2e:9cd8:: with SMTP id g24mr7014355ljj.243.1578588231956;
- Thu, 09 Jan 2020 08:43:51 -0800 (PST)
+        id S2387959AbgAIRHt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jan 2020 12:07:49 -0500
+Received: from mx2.suse.de ([195.135.220.15]:49716 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1731444AbgAIRHt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 9 Jan 2020 12:07:49 -0500
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx2.suse.de (Postfix) with ESMTP id 56469AE03;
+        Thu,  9 Jan 2020 17:07:47 +0000 (UTC)
+Received: by unicorn.suse.cz (Postfix, from userid 1000)
+        id 1454DE008B; Thu,  9 Jan 2020 18:07:46 +0100 (CET)
+Date:   Thu, 9 Jan 2020 18:07:46 +0100
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     Sasha Levin <sashal@kernel.org>
+Cc:     Naresh Kamboju <naresh.kamboju@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        linux- stable <stable@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Firo Yang <firo.yang@suse.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        rcu@vger.kernel.org, Netdev <netdev@vger.kernel.org>,
+        lkft-triage@lists.linaro.org
+Subject: Re: [PATCH AUTOSEL 4.19 46/84] tcp/dccp: fix possible race
+ __inet_lookup_established()
+Message-ID: <20200109170746.GO22387@unicorn.suse.cz>
+References: <20191227174352.6264-1-sashal@kernel.org>
+ <20191227174352.6264-46-sashal@kernel.org>
+ <CA+G9fYv8o4he83kqpxB9asT7eUMAeODyX3MBbmwsCdgqLcXPWw@mail.gmail.com>
+ <20200109153226.GG1706@sasha-vm>
 MIME-Version: 1.0
-References: <20200108192132.189221-1-sdf@google.com>
-In-Reply-To: <20200108192132.189221-1-sdf@google.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Thu, 9 Jan 2020 08:43:40 -0800
-Message-ID: <CAADnVQJX9b22SuzgPoMUjyaeUaJA2cvgybZ-KhYHEWKfi_FV7w@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] selftests/bpf: restore original comm in test_overhead
-To:     Stanislav Fomichev <sdf@google.com>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200109153226.GG1706@sasha-vm>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 8, 2020 at 11:21 AM Stanislav Fomichev <sdf@google.com> wrote:
->
-> test_overhead changes task comm in order to estimate BPF trampoline
-> overhead but never sets the comm back to the original one.
-> We have the tests (like core_reloc.c) that have 'test_progs'
-> as hard-coded expected comm, so let's try to preserve the
-> original comm.
->
-> Currently, everything works because the order of execution is:
-> first core_recloc, then test_overhead; but let's make it a bit
-> future-proof.
->
-> Other related changes: use 'test_overhead' as new comm instead of
-> 'test' to make it easy to debug and drop '\n' at the end.
->
-> Signed-off-by: Stanislav Fomichev <sdf@google.com>
+On Thu, Jan 09, 2020 at 10:32:26AM -0500, Sasha Levin wrote:
+> On Thu, Jan 02, 2020 at 01:31:22PM +0530, Naresh Kamboju wrote:
+> > On Fri, 27 Dec 2019 at 23:17, Sasha Levin <sashal@kernel.org> wrote:
+> > > 
+> > > From: Eric Dumazet <edumazet@google.com>
+> > > 
+> > > [ Upstream commit 8dbd76e79a16b45b2ccb01d2f2e08dbf64e71e40 ]
+> > > 
+> > > Michal Kubecek and Firo Yang did a very nice analysis of crashes
+> > > happening in __inet_lookup_established().
+> > > 
+> > > Since a TCP socket can go from TCP_ESTABLISH to TCP_LISTEN
+> > > (via a close()/socket()/listen() cycle) without a RCU grace period,
+> > > I should not have changed listeners linkage in their hash table.
+> > > 
+> > > They must use the nulls protocol (Documentation/RCU/rculist_nulls.txt),
+> > > so that a lookup can detect a socket in a hash list was moved in
+> > > another one.
+> > > 
+> > > Since we added code in commit d296ba60d8e2 ("soreuseport: Resolve
+> > > merge conflict for v4/v6 ordering fix"), we have to add
+> > > hlist_nulls_add_tail_rcu() helper.
+> > 
+> > The kernel panic reported on all devices,
+> > While running LTP syscalls accept* test cases on stable-rc-4.19 branch kernel.
+> > This report log extracted from qemu_x86_64.
+> > 
+> > Reverting this patch re-solved kernel crash.
+> 
+> I'll drop it until we can look into what's happening here, thanks!
 
-Applied. Thanks
+It was already discussed here:
+
+  http://lkml.kernel.org/r/CA+G9fYv3=oJSFodFp4wwF7G7_g5FWYRYbc4F0AMU6jyfLT689A@mail.gmail.com
+
+and fixed version should be in 4.19, 4.14 and 4.9 stable branches now.
+
+Michal Kubecek
