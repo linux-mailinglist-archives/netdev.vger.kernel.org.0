@@ -2,169 +2,220 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BA3501356ED
-	for <lists+netdev@lfdr.de>; Thu,  9 Jan 2020 11:32:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 127C51356F9
+	for <lists+netdev@lfdr.de>; Thu,  9 Jan 2020 11:33:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730194AbgAIKcP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jan 2020 05:32:15 -0500
-Received: from mail-yw1-f68.google.com ([209.85.161.68]:44165 "EHLO
-        mail-yw1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730167AbgAIKcJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jan 2020 05:32:09 -0500
-Received: by mail-yw1-f68.google.com with SMTP id t141so2480339ywc.11
-        for <netdev@vger.kernel.org>; Thu, 09 Jan 2020 02:32:09 -0800 (PST)
+        id S1729214AbgAIKdf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jan 2020 05:33:35 -0500
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:38728 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728448AbgAIKdf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jan 2020 05:33:35 -0500
+Received: by mail-wr1-f67.google.com with SMTP id y17so6834126wrh.5
+        for <netdev@vger.kernel.org>; Thu, 09 Jan 2020 02:33:33 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=z5nQ4am/whoyjhFBZzpPY6Fj7uyiRLVJF8ozpqJIS80=;
-        b=vMM5dlwHQ/jv+68HuQDmsj3zwBGYMlew1lT41NUa1fqoQwfkVhtzG2vbZozjh3caO8
-         pG+QeV5IO0pP5L4xPbSi0X3Onp1487FFQOJBoORHWiiCHwzEE5/G7Y9PbHmQdgTzGPBM
-         l6/BGc4tujUL4q+zEoz7aedP2OtQMEM0UG9BDhh7jPXOA92we5ba8M8qC3WXv3uexP7b
-         3phQ3eZpEGYTgO03XTp1v7Qe827zgoBQsFouyyK/SHvCq3H9t1jx8rTYV2qcWM5sXvhG
-         5q8wK2+rFwfhLisOy77TnCiasniWvcq1wQPB67ugD54u6XFtRe4+T+2ZTVTsPrXhBeBX
-         pEFA==
+        d=cloudflare.com; s=google;
+        h=references:user-agent:from:to:cc:subject:in-reply-to:date
+         :message-id:mime-version;
+        bh=PQ++vjBtZFpbZ5vhUNmFbh7+x0gOXpjlJ1L44U/rr0I=;
+        b=gOg28xh773Kv91RO5DuJ6yDTe8iX2YIwAroGOqjURQ7Qt19q++Udqx+3ZpUgbuA+E1
+         huZQr3S/YGFe27gvto3qmN43tbqHS3Z1rj9e6X1ajdK7o2QF6CSBlXliAntK1NgEYbPj
+         iPH/WV9alqPggIZsR8+DAlZZ/PwPKu9ZvdNFE=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=z5nQ4am/whoyjhFBZzpPY6Fj7uyiRLVJF8ozpqJIS80=;
-        b=WssRXLe4wUSeQXjGBfVM66X1Wifve+6AX7YQWmJoFV3FPbaEdaCxYuPKvZdQQfqyI3
-         RK49bX2GBQ40rUpdQgQlOKDxeEeex5zclgWZY/3HRS8wJ8C2IDQrHbjbEqSnhN+N2IR1
-         edK/6YLa5/8MABuaiz1MLkrQJvNYeKckjzWVZn0lPLFYsrhulO0kM9UwlFSNxUHEqEBn
-         fZsX9m6WE8VZ2ZSoV6zLenp2b3MZcNvlZYhxVkVwdl8QAF7KjfYIy3iBcmO5ARCgx8Wv
-         ejUptk8CjSZ3QkQZiLaR3hlZY4yRIMGAMF/BbY9KFLaKMmYXThSBQvBaESZzNR7HN4kx
-         GIpg==
-X-Gm-Message-State: APjAAAV8uc2ohCoY9UdIhVzptLuifIVnoFZ3M3f7U00NcTySkj0uyPM5
-        WTX6w59Q90i6gvV4opkfzn67n8L2+niLC5jjIg1OJQ==
-X-Google-Smtp-Source: APXvYqyakPkQ8+OdSyvg7qLb/u6D4i9wsgT9UF4oh9upoVJORqY20zlQvBuRDATAOW3QezCVZ/zvmm1vWm4DVfNpYNE=
-X-Received: by 2002:a81:7a07:: with SMTP id v7mr6779522ywc.109.1578565928495;
- Thu, 09 Jan 2020 02:32:08 -0800 (PST)
+        h=x-gm-message-state:references:user-agent:from:to:cc:subject
+         :in-reply-to:date:message-id:mime-version;
+        bh=PQ++vjBtZFpbZ5vhUNmFbh7+x0gOXpjlJ1L44U/rr0I=;
+        b=ss5O5kwOJDas6DEeTF6MYI+3Djvd/Pvau5B/1A9l2956WcC2aKOHt6AtlyXp4J7Vvz
+         oeHZg+CPczAbguKegGb4sn9Pkvco8ABJCdFgPNEisbITkZQQjX6aApo/jblsCrUlSW6E
+         DIPuUOjZHHmjA1Ow3dN0lG55T97dWHGf3HyI2EpCMGOj9K4l+HH33VQfA3Hn1By/F8ub
+         QdJJbnWuWEtM4+oQG5E8PaTeKblEhy/hpw9rXK6CYsnIuivmBG/1phbnbg0x9Oj+6+Q5
+         PpNAAOWiYAv1TVm5jgw3ivygrKhjJpReUP+KRQj26EE6Sxgzx7Gn+8W5zn3XaNWgnEaZ
+         3h2w==
+X-Gm-Message-State: APjAAAUEdM+5HaITaxJFqAkkTp9WwAew1/4RSnI7iOGATkUPf3Rtd4D+
+        YF9JC13hVeCqvw9yP5Hq6hmq6g==
+X-Google-Smtp-Source: APXvYqxvDTJO+DGXoKt4xOvaTcNgga5xQJrpfeuS9ODtTpXcNuAYW8/QTjOvTEZ1s2Wc1mS7KQKgUA==
+X-Received: by 2002:adf:ea4e:: with SMTP id j14mr10354600wrn.101.1578566012763;
+        Thu, 09 Jan 2020 02:33:32 -0800 (PST)
+Received: from cloudflare.com ([176.221.114.230])
+        by smtp.gmail.com with ESMTPSA id f1sm7607039wru.6.2020.01.09.02.33.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 09 Jan 2020 02:33:32 -0800 (PST)
+References: <157851776348.1732.12600714815781177085.stgit@ubuntu3-kvm2> <157851808101.1732.11616068811837364406.stgit@ubuntu3-kvm2>
+User-agent: mu4e 1.1.0; emacs 26.3
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     John Fastabend <john.fastabend@gmail.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@kernel.org,
+        daniel@iogearbox.net
+Subject: Re: [bpf PATCH 3/9] bpf: sockmap/tls, push write_space updates through ulp updates
+In-reply-to: <157851808101.1732.11616068811837364406.stgit@ubuntu3-kvm2>
+Date:   Thu, 09 Jan 2020 11:33:31 +0100
+Message-ID: <87tv54syv8.fsf@cloudflare.com>
 MIME-Version: 1.0
-References: <1578390738-30712-1-git-send-email-xiangxia.m.yue@gmail.com>
-In-Reply-To: <1578390738-30712-1-git-send-email-xiangxia.m.yue@gmail.com>
-From:   Or Gerlitz <gerlitz.or@gmail.com>
-Date:   Thu, 9 Jan 2020 12:31:57 +0200
-Message-ID: <CAJ3xEMgR-pzqPCpt_SDiGr57sdgezWV3kW67CQzTXLk4TKRCmA@mail.gmail.com>
-Subject: Re: [PATCH net-next] net/mlx5e: Don't allow forwarding between uplink
-To:     Tonghao Zhang <xiangxia.m.yue@gmail.com>
-Cc:     Saeed Mahameed <saeedm@dev.mellanox.co.il>,
-        Roi Dayan <roid@mellanox.com>,
-        Linux Netdev List <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 7, 2020 at 11:52 AM <xiangxia.m.yue@gmail.com> wrote:
-
-> We can install forwarding packets rule between uplink
-> in eswitchdev mode, as show below. But the hardware does
-> not do that as expected (mlnx_perf -i $PF1, we can't get
-> the counter of the PF1). By the way, if we add the uplink
-
-yeah, IMOH there's probably a firmware bug under which installation
-of this rule doesn't fail but as you said the traffic doesn't pass.
-
-We don't fail the rule b/c due to what we call "merged eswitch"
-which is a building block of the uplink LAG and  ECMP configurations
-that we do support, the driver lets you install a flow from (say) VF0
-on PF/uplink0 to uplink1 etc.
-
-Talking to Roi, he prefers to further investigate / open a case to the FW
-and later see if/how to block this rule in the driver.
-
-> PF0, PF1 to Open vSwitch and enable hw-offload, the rules
-> can be offloaded but not work fine too. This patch add a
-> check and if so return -EOPNOTSUPP.
+On Wed, Jan 08, 2020 at 10:14 PM CET, John Fastabend wrote:
+> When sockmap sock with TLS enabled is removed we cleanup bpf/psock state
+> and call tcp_update_ulp() to push updates to TLS ULP on top. However, we
+> don't push the write_space callback up and instead simply overwrite the
+> op with the psock stored previous op. This may or may not be correct so
+> to ensure we don't overwrite the TLS write space hook pass this field to
+> the ULP and have it fixup the ctx.
 >
-> $ tc filter add dev $PF0 protocol all parent ffff: prio 1 handle 1 \
->     flower skip_sw action mirred egress redirect dev $PF1
+> This completes a previous fix that pushed the ops through to the ULP
+> but at the time missed doing this for write_space, presumably because
+> write_space TLS hook was added around the same time.
 >
-> $ tc -d -s filter show dev $PF0 ingress
->     skip_sw
->     in_hw in_hw_count 1
->     action order 1: mirred (Egress Redirect to device enp130s0f1) stolen
->         ...
->         Sent 408954 bytes 4173 pkt (dropped 0, overlimits 0 requeues 0)
->         Sent hardware 408954 bytes 4173 pkt
->         ...
->
-> Signed-off-by: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+> Fixes: 95fa145479fbc ("bpf: sockmap/tls, close can race with map free")
+> Signed-off-by: John Fastabend <john.fastabend@gmail.com>
 > ---
->  drivers/net/ethernet/mellanox/mlx5/core/en_rep.c |  7 ++++++-
->  drivers/net/ethernet/mellanox/mlx5/core/en_rep.h |  1 +
->  drivers/net/ethernet/mellanox/mlx5/core/en_tc.c  | 16 +++++++++++++---
->  3 files changed, 20 insertions(+), 4 deletions(-)
+>  include/linux/skmsg.h |   12 ++++++++----
+>  include/net/tcp.h     |    6 ++++--
+>  net/ipv4/tcp_ulp.c    |    6 ++++--
+>  net/tls/tls_main.c    |   10 +++++++---
+>  4 files changed, 23 insertions(+), 11 deletions(-)
 >
-> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
-> index f175cb2..63fad66 100644
-> --- a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
-> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
-> @@ -1434,10 +1434,15 @@ static struct devlink_port *mlx5e_get_devlink_port(struct net_device *dev)
->         .ndo_set_features        = mlx5e_set_features,
->  };
->
-> +bool mlx5e_eswitch_uplink_rep(struct net_device *netdev)
-> +{
-> +       return netdev->netdev_ops == &mlx5e_netdev_ops_uplink_rep;
-> +}
-> +
->  bool mlx5e_eswitch_rep(struct net_device *netdev)
+> diff --git a/include/linux/skmsg.h b/include/linux/skmsg.h
+> index b6afe01f8592..14d61bba0b79 100644
+> --- a/include/linux/skmsg.h
+> +++ b/include/linux/skmsg.h
+> @@ -359,17 +359,21 @@ static inline void sk_psock_restore_proto(struct sock *sk,
+>  					  struct sk_psock *psock)
 >  {
->         if (netdev->netdev_ops == &mlx5e_netdev_ops_rep ||
-> -           netdev->netdev_ops == &mlx5e_netdev_ops_uplink_rep)
-> +           mlx5e_eswitch_uplink_rep(netdev))
->                 return true;
+>  	sk->sk_prot->unhash = psock->saved_unhash;
+> -	sk->sk_write_space = psock->saved_write_space;
 >
->         return false;
-> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.h b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.h
-> index 31f83c8..282c64b 100644
-> --- a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.h
-> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.h
-> @@ -198,6 +198,7 @@ void mlx5e_rep_encap_entry_detach(struct mlx5e_priv *priv,
+>  	if (psock->sk_proto) {
+>  		struct inet_connection_sock *icsk = inet_csk(sk);
+>  		bool has_ulp = !!icsk->icsk_ulp_data;
 >
->  void mlx5e_rep_queue_neigh_stats_work(struct mlx5e_priv *priv);
+> -		if (has_ulp)
+> -			tcp_update_ulp(sk, psock->sk_proto);
+> -		else
+> +		if (has_ulp) {
+> +			tcp_update_ulp(sk, psock->sk_proto,
+> +				       psock->saved_write_space);
+> +		} else {
+>  			sk->sk_prot = psock->sk_proto;
+> +			sk->sk_write_space = psock->saved_write_space;
+> +		}
+
+I'm wondering if we need the above fallback branch for no-ULP case?
+tcp_update_ulp repeats the ULP check and has the same fallback. Perhaps
+it can be reduced to:
+
+	if (psock->sk_proto) {
+		tcp_update_ulp(sk, psock->sk_proto, psock->saved_write_space);
+		psock->sk_proto = NULL;
+	} else {
+		sk->sk_write_space = psock->saved_write_space;
+	}
+
+Then there's the question if it's okay to leave psock->sk_proto set and
+potentially restore it more than once? Reading tls_update, the only user
+ULP 'update' callback, it looks fine.
+
+Can sk_psock_restore_proto be as simple as:
+
+static inline void sk_psock_restore_proto(struct sock *sk,
+					  struct sk_psock *psock)
+{
+	tcp_update_ulp(sk, psock->sk_proto, psock->saved_write_space);
+}
+
+... or am I missing something?
+
+Asking becuase I have a patch [0] like this in the queue and haven't
+seen issues with it during testing.
+
+-jkbs
+
+[0] https://github.com/jsitnicki/linux/commit/2d2152593c8e6c5f38548796501a81a6ba20b6dc
+
+>  		psock->sk_proto = NULL;
+> +	} else {
+> +		sk->sk_write_space = psock->saved_write_space;
+>  	}
+>  }
 >
-> +bool mlx5e_eswitch_uplink_rep(struct net_device *netdev);
->  bool mlx5e_eswitch_rep(struct net_device *netdev);
+> diff --git a/include/net/tcp.h b/include/net/tcp.h
+> index e460ea7f767b..e6f48384dc71 100644
+> --- a/include/net/tcp.h
+> +++ b/include/net/tcp.h
+> @@ -2147,7 +2147,8 @@ struct tcp_ulp_ops {
+>  	/* initialize ulp */
+>  	int (*init)(struct sock *sk);
+>  	/* update ulp */
+> -	void (*update)(struct sock *sk, struct proto *p);
+> +	void (*update)(struct sock *sk, struct proto *p,
+> +		       void (*write_space)(struct sock *sk));
+>  	/* cleanup ulp */
+>  	void (*release)(struct sock *sk);
+>  	/* diagnostic */
+> @@ -2162,7 +2163,8 @@ void tcp_unregister_ulp(struct tcp_ulp_ops *type);
+>  int tcp_set_ulp(struct sock *sk, const char *name);
+>  void tcp_get_available_ulp(char *buf, size_t len);
+>  void tcp_cleanup_ulp(struct sock *sk);
+> -void tcp_update_ulp(struct sock *sk, struct proto *p);
+> +void tcp_update_ulp(struct sock *sk, struct proto *p,
+> +		    void (*write_space)(struct sock *sk));
 >
->  #else /* CONFIG_MLX5_ESWITCH */
-> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-> index f91e057e..b2c18fa 100644
-> --- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-> @@ -3214,6 +3214,10 @@ static int add_vlan_pop_action(struct mlx5e_priv *priv,
->  bool mlx5e_is_valid_eswitch_fwd_dev(struct mlx5e_priv *priv,
->                                     struct net_device *out_dev)
+>  #define MODULE_ALIAS_TCP_ULP(name)				\
+>  	__MODULE_INFO(alias, alias_userspace, name);		\
+> diff --git a/net/ipv4/tcp_ulp.c b/net/ipv4/tcp_ulp.c
+> index 12ab5db2b71c..38d3ad141161 100644
+> --- a/net/ipv4/tcp_ulp.c
+> +++ b/net/ipv4/tcp_ulp.c
+> @@ -99,17 +99,19 @@ void tcp_get_available_ulp(char *buf, size_t maxlen)
+>  	rcu_read_unlock();
+>  }
+>
+> -void tcp_update_ulp(struct sock *sk, struct proto *proto)
+> +void tcp_update_ulp(struct sock *sk, struct proto *proto,
+> +		    void (*write_space)(struct sock *sk))
 >  {
-> +       if (mlx5e_eswitch_uplink_rep(priv->netdev) &&
-> +           mlx5e_eswitch_uplink_rep(out_dev))
-> +               return false;
-> +
->         if (is_merged_eswitch_dev(priv, out_dev))
->                 return true;
+>  	struct inet_connection_sock *icsk = inet_csk(sk);
 >
-> @@ -3339,9 +3343,15 @@ static int parse_tc_fdb_actions(struct mlx5e_priv *priv,
+>  	if (!icsk->icsk_ulp_ops) {
+> +		sk->sk_write_space = write_space;
+>  		sk->sk_prot = proto;
+>  		return;
+>  	}
 >
->                                 if (!mlx5e_is_valid_eswitch_fwd_dev(priv, out_dev)) {
->                                         NL_SET_ERR_MSG_MOD(extack,
-> -                                                          "devices are not on same switch HW, can't offload forwarding");
-> -                                       pr_err("devices %s %s not on same switch HW, can't offload forwarding\n",
-> -                                              priv->netdev->name, out_dev->name);
-> +                                                          "devices are both uplink "
-> +                                                          "or not on same switch HW, "
-> +                                                          "can't offload forwarding");
-> +                                       pr_err("devices %s %s are both uplink "
-> +                                              "or not on same switch HW, "
-> +                                              "can't offload forwarding\n",
-> +                                              priv->netdev->name,
-> +                                              out_dev->name);
-> +
->                                         return -EOPNOTSUPP;
->                                 }
+>  	if (icsk->icsk_ulp_ops->update)
+> -		icsk->icsk_ulp_ops->update(sk, proto);
+> +		icsk->icsk_ulp_ops->update(sk, proto, write_space);
+>  }
 >
-> --
-> 1.8.3.1
+>  void tcp_cleanup_ulp(struct sock *sk)
+> diff --git a/net/tls/tls_main.c b/net/tls/tls_main.c
+> index dac24c7aa7d4..94774c0e5ff3 100644
+> --- a/net/tls/tls_main.c
+> +++ b/net/tls/tls_main.c
+> @@ -732,15 +732,19 @@ static int tls_init(struct sock *sk)
+>  	return rc;
+>  }
 >
+> -static void tls_update(struct sock *sk, struct proto *p)
+> +static void tls_update(struct sock *sk, struct proto *p,
+> +		       void (*write_space)(struct sock *sk))
+>  {
+>  	struct tls_context *ctx;
+>
+>  	ctx = tls_get_ctx(sk);
+> -	if (likely(ctx))
+> +	if (likely(ctx)) {
+> +		ctx->sk_write_space = write_space;
+>  		ctx->sk_proto = p;
+> -	else
+> +	} else {
+>  		sk->sk_prot = p;
+> +		sk->sk_write_space = write_space;
+> +	}
+>  }
+>
+>  static int tls_get_info(const struct sock *sk, struct sk_buff *skb)
