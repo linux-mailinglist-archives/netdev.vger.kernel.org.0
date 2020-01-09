@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 66F6C1362B5
-	for <lists+netdev@lfdr.de>; Thu,  9 Jan 2020 22:38:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C386E1362EE
+	for <lists+netdev@lfdr.de>; Thu,  9 Jan 2020 22:59:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728686AbgAIViy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jan 2020 16:38:54 -0500
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:59084 "EHLO
+        id S1728980AbgAIV7J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jan 2020 16:59:09 -0500
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:59330 "EHLO
         pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725951AbgAIViy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jan 2020 16:38:54 -0500
+        with ESMTP id S1725775AbgAIV7I (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jan 2020 16:59:08 -0500
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
         Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
         Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
         Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
         List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=IaRVjxZGObhzfteZ0Bq+IyzlKQKqWna7YJqxIDkUkuk=; b=V8dFgKKMJI2ngJhXC1xmNcXCy
-        L0ZD0m/GH+amRL9Sdd2m5tW3igLsTmJOWE0aY3iHohnZpISMOCEE2tCEkkqbeiG/7uAxKjNgynbiW
-        fqSbG16kTn4KZk9VtNioa3Wvt0E3Pbh+CcN+vdOz5RSL7jyre0+/axpOR1Wp4R2lWUn/n3fsDnjBe
-        uUMtQr2PvfKl1Ec1jJHJNhUyXggwiBRQWHrI4SqowU4AYZVedZwBzYD/orNPftrckdp34NWADc+ED
-        Obq3kA3dYlHO+mJ2sVLePjHGLOUUc384dx+tfl2x6tdHYNYuNdT56icCkx/M+Y5+V47h/B/OqWqWQ
-        VypVXnQqA==;
-Received: from shell.armlinux.org.uk ([2002:4e20:1eda:1:5054:ff:fe00:4ec]:60306)
+         bh=Y1KZyHRFeGHv//z/SmNDGneqRls/FEBEFDkKZCT40Ss=; b=kQXEPvCQeq5Bae2OTx41jPeN7
+        ctNSK4Twsja2vnr2uEeUFZwMzXjhXcwasAOJmRWA1OOWRefd2I/nOvFM/NpRfCLJ0YYa1msCQpZzb
+        /xQtpPEObg2wfBNhU8SU4w72NXCoeEmNf/Tu1C3CwLO1RL4TjCGTCbxq9MsZPLhv9ZFvMuEJ2dTYb
+        bmAz4yTZYIKOit7A60N9549YG+eSBNhNSaDWfqKvNZDk7nKv9Wmwlan66DBu9p4lk6EmaSeCMFfTn
+        eEFSiXiMUQRqkD9eDuk7+ZTdEM6xCg7Ws+AiwvtzWKbFeub5t8AgF2pd6mpfLQJenUoGC7/lbbHWa
+        tfTxaDVZQ==;
+Received: from shell.armlinux.org.uk ([2002:4e20:1eda:1:5054:ff:fe00:4ec]:60310)
         by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
         (Exim 4.90_1)
         (envelope-from <linux@armlinux.org.uk>)
-        id 1ipfVz-0007Tg-8m; Thu, 09 Jan 2020 21:38:51 +0000
+        id 1ipfpY-0007Zb-S7; Thu, 09 Jan 2020 21:59:05 +0000
 Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
         (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1ipfVy-0000pD-L7; Thu, 09 Jan 2020 21:38:50 +0000
-Date:   Thu, 9 Jan 2020 21:38:50 +0000
+        id 1ipfpX-0000qS-RK; Thu, 09 Jan 2020 21:59:03 +0000
+Date:   Thu, 9 Jan 2020 21:59:03 +0000
 From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
 To:     =?utf-8?B?0b3SieG2rOG4s+KEoA==?= <vtol@gmx.net>
 Cc:     Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org
 Subject: Re: [drivers/net/phy/sfp] intermittent failure in state machine
  checks
-Message-ID: <20200109213850.GT25745@shell.armlinux.org.uk>
+Message-ID: <20200109215903.GV25745@shell.armlinux.org.uk>
 References: <d8d595ff-ec35-3426-ec43-9afd67c15e3d@gmx.net>
  <20200109144106.GA24459@lunn.ch>
  <513d6fe7-65b2-733b-1d17-b3a40b8161cf@gmx.net>
@@ -125,13 +125,36 @@ On Thu, Jan 09, 2020 at 07:42:27PM +0000, ѽ҉ᶬḳ℠ wrote:
 > DSL SFPs - the SFP does not come up and deassert LOS unless there is SGMII
 > link from NIC and NIC is not coming up unless LOS is deasserted.
 
-That would be very very broken behaviour, but one which the kernel
-doesn't care about.
+Also, note that the Metanoia MT-V5311 (at least mine) uses 1000BASE-X
+not SGMII. It sends a 16-bit configuration word of 0x61a0, which is:
 
-If RX_LOS is active, we do *not* disable the NIC. We just use RX_LOS as
-an additional input to evaluating whether the link is up.  The NIC will
-still be configured for the appropriate mode irrespective of the state
-of RX_LOS.
+		1000BASE-X			SGMII
+Bit 15	0	No next page			Link down
+	1	Ack				Ack
+	1	Remote fault 2			Reserved (0)
+	0	Remote fault 1			Duplex (0 = Half)
+
+	0	Reserved (0)			Speed bit 1
+	0	Reserved (0)			Speed bit 0 (00=10Mbps)
+	0	Reserved (0)			Reserved (0)
+	1	Asymetric pause direction	Reserved (0)
+
+	1	Pause				Reserved (0)
+	0	Half duplex not supported	Reserved (0)
+	1	Full duplex supported		Reserved (0)
+	0	Reserved (0)			Reserved (0)
+
+	0	Reserved (0)			Reserved (0)
+	0	Reserved (0)			Reserved (0)
+	0	Reserved (0)			Reserved (0)
+Bit 0	0	Reserved (0)			Must be 1
+
+So it clearly fits 802.3 Clause 37 1000BASE-X format, reporting 1G
+Full duplex, and not SGMII (10M Half duplex).
+
+I have a platform here that allows me to get at the raw config_reg
+word that the other end has sent which allows analysis as per the
+above.
 
 -- 
 RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
