@@ -2,201 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C720135D25
-	for <lists+netdev@lfdr.de>; Thu,  9 Jan 2020 16:46:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 69B0A135D2C
+	for <lists+netdev@lfdr.de>; Thu,  9 Jan 2020 16:47:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732627AbgAIPpz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jan 2020 10:45:55 -0500
-Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:51322 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728293AbgAIPpz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jan 2020 10:45:55 -0500
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1-us4.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id A3776B40064;
-        Thu,  9 Jan 2020 15:45:53 +0000 (UTC)
-Received: from amm-opti7060.uk.solarflarecom.com (10.17.20.147) by
- ukex01.SolarFlarecom.com (10.17.10.4) with Microsoft SMTP Server (TLS) id
- 15.0.1395.4; Thu, 9 Jan 2020 15:45:48 +0000
-From:   "Alex Maftei (amaftei)" <amaftei@solarflare.com>
-Subject: [PATCH net-next 9/9] sfc: move MCDI logging device attribute
-To:     <netdev@vger.kernel.org>, <davem@davemloft.net>
-CC:     <linux-net-drivers@solarflare.com>, <scrum-linux@solarflare.com>
-References: <4d915542-3699-e864-5558-bef616b2fe66@solarflare.com>
-Message-ID: <4a37492c-a0b0-a8c6-8694-025736764ed5@solarflare.com>
-Date:   Thu, 9 Jan 2020 15:45:45 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        id S1731253AbgAIPrQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jan 2020 10:47:16 -0500
+Received: from mail-io1-f67.google.com ([209.85.166.67]:37426 "EHLO
+        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731177AbgAIPrQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jan 2020 10:47:16 -0500
+Received: by mail-io1-f67.google.com with SMTP id k24so7608499ioc.4
+        for <netdev@vger.kernel.org>; Thu, 09 Jan 2020 07:47:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=90BVnvN+InM0+64a8tsWf2Ocz4suvmN3B14zh4bqQLg=;
+        b=o2ynFp8FYKuV0JiXrwErrGQatWvB9s8TQ1N1ZilzPtOaLxASvqsJuYHiPcuasAP+lf
+         +K5dSfpRtOsJv1tV1SN3ZHe5Vczer7tFu33OU9PdVM4WRra/SguKnQgVjjTCcnhlAti6
+         m5bsKl6CqhMYAkfp/+XRv239qDqILg/r4G8HOVzuyHj4HyevLdh4s5jkwGedh32jXWfr
+         F7E1XLOuqZxCZEtKocysAl6bW5JUaQqeHXGtEsGYqR0GiVm+Z63th9rHd5HF3GC+qJi7
+         JN8ptGP3+dVaknirq9nmbz5YXUWUuUk1R/x+iSAXk6D0/tQM/RR4t7ZbS/SzFu6EuDty
+         tIDg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=90BVnvN+InM0+64a8tsWf2Ocz4suvmN3B14zh4bqQLg=;
+        b=ZKTnD/tEQYoFSsQoUSiCfZxsWfBjlL8oe/olf4OHmoYjTTyLBtK+GMyyvXM5yEiytk
+         zT44R4H6L+YtvxPBnu+M/dy3YOnR8d3F6FIlUzL4HYBo5aIQFKLawW17ALWLzX3/FDh/
+         KQcbzRGu735FETRkcagcue+nCmZctn2ZhOhlLENd6b9kXY1VtTjbN8gb3fTqDEq2MhSy
+         WKryVEQ43YjKziT6WIsZX+wte874RvBkv1u1HcuxyKxSx+Pd5Ws75pMM2f6WmtrBCxQX
+         R9dHgNRsRRerUuXXchbe9YMHtuXUQDP+5nYQsebKxFtSXMDEUlNCtaShYHdZSL1WGYVF
+         z1jQ==
+X-Gm-Message-State: APjAAAVmtdz9ksV/3mw0En7z5hxHGTXOIYXquUrbQj1WIq0t9SPIH6o8
+        YbetpNU6f7uYtZdImsQF7FJA0SErfqw=
+X-Google-Smtp-Source: APXvYqzEt7a29LefUWWyO8Zh84uclb1GJF+ehRQ43t1/wAE9EEy6/YpYRTTDsCAVJgWxU6sYa/gArw==
+X-Received: by 2002:a6b:6a02:: with SMTP id x2mr8040277iog.20.1578584835943;
+        Thu, 09 Jan 2020 07:47:15 -0800 (PST)
+Received: from ?IPv6:2601:282:800:7a:aca7:cb60:c47a:2485? ([2601:282:800:7a:aca7:cb60:c47a:2485])
+        by smtp.googlemail.com with ESMTPSA id e65sm2147437ilg.2.2020.01.09.07.47.14
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 09 Jan 2020 07:47:15 -0800 (PST)
+Subject: Re: [PATCH net-next 03/10] ipv4: Add "offload" and "trap" indications
+ to routes
+To:     Ido Schimmel <idosch@idosch.org>, netdev@vger.kernel.org
+Cc:     davem@davemloft.net, jiri@mellanox.com,
+        jakub.kicinski@netronome.com, roopa@cumulusnetworks.com,
+        mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
+References: <20200107154517.239665-1-idosch@idosch.org>
+ <20200107154517.239665-4-idosch@idosch.org>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <23c1daed-d770-a61b-2e89-8466de2afc70@gmail.com>
+Date:   Thu, 9 Jan 2020 08:47:13 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.3.1
 MIME-Version: 1.0
-In-Reply-To: <4d915542-3699-e864-5558-bef616b2fe66@solarflare.com>
-Content-Type: text/plain; charset="windows-1252"
+In-Reply-To: <20200107154517.239665-4-idosch@idosch.org>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.17.20.147]
-X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
- ukex01.SolarFlarecom.com (10.17.10.4)
-X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1010-25156.003
-X-TM-AS-Result: No-7.611700-8.000000-10
-X-TMASE-MatchedRID: OSnJHwiFPR+7MyWVQJ6Bl6iUivh0j2Pv6VTG9cZxEjJwGpdgNQ0JrHIo
-        zGa69omdrdoLblq9S5qnJ7eS8LcE2dQ2aCZEo62uD3uYMxd01bfUrdux7cWNO+bnFWpNX1DB33p
-        XY2CsQeJT/Tz7ESixEodSu47z6ASJrjwZVDJcDJ8SEYfcJF0pRTxWJr0lgcJAAOHc9Ujlhb056G
-        dZxUF9VvZxvfF2IHFpU7bluV/02rDLua/qdYfP7J4CIKY/Hg3AtOt1ofVlaoLdOt3I7hra7foLR
-        4+zsDTtD12T7q2dIUvyZXaei49Kd4ZjqcTaurkRjEK3X+ykl420lN6BOkzXrQ==
-X-TM-AS-User-Approved-Sender: Yes
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--7.611700-8.000000
-X-TMASE-Version: SMEX-12.5.0.1300-8.5.1010-25156.003
-X-MDID: 1578584754-0l4mHQsWEAcA
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-A few bits were extracted from other functions.
+On 1/7/20 8:45 AM, Ido Schimmel wrote:
+> diff --git a/net/ipv4/fib_trie.c b/net/ipv4/fib_trie.c
+> index 75af3f8ae50e..272c9f73e4b3 100644
+> --- a/net/ipv4/fib_trie.c
+> +++ b/net/ipv4/fib_trie.c
+> @@ -1012,6 +1012,56 @@ static struct fib_alias *fib_find_alias(struct hlist_head *fah, u8 slen,
+>  	return NULL;
+>  }
+>  
+> +static struct fib_alias *
+> +fib_find_matching_alias(struct net *net, u32 dst, int dst_len,
+> +			const struct fib_info *fi, u8 tos, u8 type, u32 tb_id)
+> +{
+> +	u8 slen = KEYLENGTH - dst_len;
+> +	struct key_vector *l, *tp;
+> +	struct fib_table *tb;
+> +	struct fib_alias *fa;
+> +	struct trie *t;
+> +
+> +	tb = fib_get_table(net, tb_id);
+> +	if (!tb)
+> +		return NULL;
+> +
+> +	t = (struct trie *)tb->tb_data;
+> +	l = fib_find_node(t, &tp, dst);
+> +	if (!l)
+> +		return NULL;
+> +
+> +	hlist_for_each_entry_rcu(fa, &l->leaf, fa_list) {
+> +		if (fa->fa_slen == slen && fa->tb_id == tb_id &&
+> +		    fa->fa_tos == tos && fa->fa_info == fi &&
+> +		    fa->fa_type == type)
+> +			return fa;
+> +	}
+> +
+> +	return NULL;
+> +}
+> +
+> +void fib_alias_hw_flags_set(struct net *net, u32 dst, int dst_len,
+> +			    const struct fib_info *fi, u8 tos, u8 type,
+> +			    u32 tb_id, bool offload, bool trap)
 
-Signed-off-by: Alexandru-Mihai Maftei <amaftei@solarflare.com>
----
- drivers/net/ethernet/sfc/efx.c        | 40 ++-------------------------
- drivers/net/ethernet/sfc/efx_common.c | 39 ++++++++++++++++++++++++++
- drivers/net/ethernet/sfc/efx_common.h |  8 ++++++
- 3 files changed, 50 insertions(+), 37 deletions(-)
+Seem like struct fib_rt_info from the previous patch be used here and
+then passed to fib_find_matching_alias.
 
-diff --git a/drivers/net/ethernet/sfc/efx.c b/drivers/net/ethernet/sfc/efx.c
-index 33b6ed03b3ea..4affae76b03c 100644
---- a/drivers/net/ethernet/sfc/efx.c
-+++ b/drivers/net/ethernet/sfc/efx.c
-@@ -1036,28 +1036,6 @@ show_phy_type(struct device *dev, struct device_attribute *attr, char *buf)
- }
- static DEVICE_ATTR(phy_type, 0444, show_phy_type, NULL);
- 
--#ifdef CONFIG_SFC_MCDI_LOGGING
--static ssize_t show_mcdi_log(struct device *dev, struct device_attribute *attr,
--			     char *buf)
--{
--	struct efx_nic *efx = dev_get_drvdata(dev);
--	struct efx_mcdi_iface *mcdi = efx_mcdi(efx);
--
--	return scnprintf(buf, PAGE_SIZE, "%d\n", mcdi->logging_enabled);
--}
--static ssize_t set_mcdi_log(struct device *dev, struct device_attribute *attr,
--			    const char *buf, size_t count)
--{
--	struct efx_nic *efx = dev_get_drvdata(dev);
--	struct efx_mcdi_iface *mcdi = efx_mcdi(efx);
--	bool enable = count > 0 && *buf != '0';
--
--	mcdi->logging_enabled = enable;
--	return count;
--}
--static DEVICE_ATTR(mcdi_logging, 0644, show_mcdi_log, set_mcdi_log);
--#endif
--
- static int efx_register_netdev(struct efx_nic *efx)
- {
- 	struct net_device *net_dev = efx->net_dev;
-@@ -1117,21 +1095,11 @@ static int efx_register_netdev(struct efx_nic *efx)
- 			  "failed to init net dev attributes\n");
- 		goto fail_registered;
- 	}
--#ifdef CONFIG_SFC_MCDI_LOGGING
--	rc = device_create_file(&efx->pci_dev->dev, &dev_attr_mcdi_logging);
--	if (rc) {
--		netif_err(efx, drv, efx->net_dev,
--			  "failed to init net dev attributes\n");
--		goto fail_attr_mcdi_logging;
--	}
--#endif
-+
-+	efx_init_mcdi_logging(efx);
- 
- 	return 0;
- 
--#ifdef CONFIG_SFC_MCDI_LOGGING
--fail_attr_mcdi_logging:
--	device_remove_file(&efx->pci_dev->dev, &dev_attr_phy_type);
--#endif
- fail_registered:
- 	rtnl_lock();
- 	efx_dissociate(efx);
-@@ -1152,9 +1120,7 @@ static void efx_unregister_netdev(struct efx_nic *efx)
- 
- 	if (efx_dev_registered(efx)) {
- 		strlcpy(efx->name, pci_name(efx->pci_dev), sizeof(efx->name));
--#ifdef CONFIG_SFC_MCDI_LOGGING
--		device_remove_file(&efx->pci_dev->dev, &dev_attr_mcdi_logging);
--#endif
-+		efx_fini_mcdi_logging(efx);
- 		device_remove_file(&efx->pci_dev->dev, &dev_attr_phy_type);
- 		unregister_netdev(efx->net_dev);
- 	}
-diff --git a/drivers/net/ethernet/sfc/efx_common.c b/drivers/net/ethernet/sfc/efx_common.c
-index 3add2b577503..9cd7c1550c08 100644
---- a/drivers/net/ethernet/sfc/efx_common.c
-+++ b/drivers/net/ethernet/sfc/efx_common.c
-@@ -1006,3 +1006,42 @@ void efx_fini_io(struct efx_nic *efx, int bar)
- 	if (!pci_vfs_assigned(efx->pci_dev))
- 		pci_disable_device(efx->pci_dev);
- }
-+
-+#ifdef CONFIG_SFC_MCDI_LOGGING
-+static ssize_t show_mcdi_log(struct device *dev, struct device_attribute *attr,
-+			     char *buf)
-+{
-+	struct efx_nic *efx = dev_get_drvdata(dev);
-+	struct efx_mcdi_iface *mcdi = efx_mcdi(efx);
-+
-+	return scnprintf(buf, PAGE_SIZE, "%d\n", mcdi->logging_enabled);
-+}
-+
-+static ssize_t set_mcdi_log(struct device *dev, struct device_attribute *attr,
-+			    const char *buf, size_t count)
-+{
-+	struct efx_nic *efx = dev_get_drvdata(dev);
-+	struct efx_mcdi_iface *mcdi = efx_mcdi(efx);
-+	bool enable = count > 0 && *buf != '0';
-+
-+	mcdi->logging_enabled = enable;
-+	return count;
-+}
-+
-+static DEVICE_ATTR(mcdi_logging, 0644, show_mcdi_log, set_mcdi_log);
-+
-+void efx_init_mcdi_logging(struct efx_nic *efx)
-+{
-+	int rc = device_create_file(&efx->pci_dev->dev, &dev_attr_mcdi_logging);
-+
-+	if (rc) {
-+		netif_warn(efx, drv, efx->net_dev,
-+			   "failed to init net dev attributes\n");
-+	}
-+}
-+
-+void efx_fini_mcdi_logging(struct efx_nic *efx)
-+{
-+	device_remove_file(&efx->pci_dev->dev, &dev_attr_mcdi_logging);
-+}
-+#endif
-diff --git a/drivers/net/ethernet/sfc/efx_common.h b/drivers/net/ethernet/sfc/efx_common.h
-index c602e5257088..e03404d1dc0a 100644
---- a/drivers/net/ethernet/sfc/efx_common.h
-+++ b/drivers/net/ethernet/sfc/efx_common.h
-@@ -55,6 +55,14 @@ static inline int efx_check_disabled(struct efx_nic *efx)
- 	return 0;
- }
- 
-+#ifdef CONFIG_SFC_MCDI_LOGGING
-+void efx_init_mcdi_logging(struct efx_nic *efx);
-+void efx_fini_mcdi_logging(struct efx_nic *efx);
-+#else
-+static inline void efx_init_mcdi_logging(struct efx_nic *efx) {}
-+static inline void efx_fini_mcdi_logging(struct efx_nic *efx) {}
-+#endif
-+
- void efx_mac_reconfigure(struct efx_nic *efx);
- void efx_link_status_changed(struct efx_nic *efx);
- 
--- 
-2.20.1
+
+> +{
+> +	struct fib_alias *fa_match;
+> +
+> +	rcu_read_lock();
+> +
+> +	fa_match = fib_find_matching_alias(net, dst, dst_len, fi, tos, type,
+> +					   tb_id);
+> +	if (!fa_match)
+> +		goto out;
+> +
+> +	fa_match->offload = offload;
+> +	fa_match->trap = trap;
+> +
+> +out:
+> +	rcu_read_unlock();
+> +}
+> +EXPORT_SYMBOL_GPL(fib_alias_hw_flags_set);
+> +
+>  static void trie_rebalance(struct trie *t, struct key_vector *tn)
+>  {
+>  	while (!IS_TRIE(tn))
+
 
