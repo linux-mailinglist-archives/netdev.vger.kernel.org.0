@@ -2,73 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2AE42135974
-	for <lists+netdev@lfdr.de>; Thu,  9 Jan 2020 13:47:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2AB3313597B
+	for <lists+netdev@lfdr.de>; Thu,  9 Jan 2020 13:51:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728120AbgAIMrC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jan 2020 07:47:02 -0500
-Received: from mail-wr1-f51.google.com ([209.85.221.51]:40259 "EHLO
-        mail-wr1-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725308AbgAIMrC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jan 2020 07:47:02 -0500
-Received: by mail-wr1-f51.google.com with SMTP id c14so7246435wrn.7
-        for <netdev@vger.kernel.org>; Thu, 09 Jan 2020 04:47:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=UHb91H812PagwJkS3UjGEQLUs2ZiLF/pjraCvH+MVOY=;
-        b=gR+TbtRWbdCmo1NzNhZA7KLf6Ohb6BEJ1fmSXZsO3qwnoGqs7vlzit1fN9Zw/D28QA
-         d86GYVVsqIlUNH0qNTCMQ/NQgSrnhy9LnG5ov48FVDvODHx/L4Mv2Vbjhq4p97wJpiRQ
-         /uFpBLIiNoB/i2GMdEuoFkMEVJKBpyFk8i+tmQc8g//G8g3hmauJK9sMa0q9RqurBdp0
-         66m7GUIj9pwLLovImMduvfY0OW50euKKAZtn5vPvVfjF9DDtruxun8YxRkaVT1rf7Lin
-         wUQVs9mG8sNQIJnVZ3Wz8H1RM8m8n5f+Ydp1JivfxC5sB8GMTVtJhIKCLDPkdz+p63WN
-         OPqA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=UHb91H812PagwJkS3UjGEQLUs2ZiLF/pjraCvH+MVOY=;
-        b=ZFeiT/qVs39lwwjBQk+54ZCaJt4S5vQqV0vv79wgGiRFYE6rlXx5N8UzMOZ+dz7LYb
-         Pmcj020i4eSxXbyuFoteknZ4zJUloTqFrglyr0aGyhBdm31ONJP1U56eCCJh+e9gupct
-         KPQQ98Cu7JMBJ97a7hhCKZyKxQbNb/4ZAx1SyDRi+UoHSyCtJ+Rk+QmJA27AjTZm4CKk
-         cnnQc48w41L0TM61KSwk4zd65Yo/Cl1sk+jeuDSMvuMojuMxCYdcYPnSBQrVWtLJz54k
-         gv9/3kP9IXCH34QcBmrhqdU4xpmvxFmz+np7XqeWWPyBy2BdofrSRT1p2O3My2oViuY5
-         U1CQ==
-X-Gm-Message-State: APjAAAUMo8yd401MUqO+QeN4OHtsZWneoC+2jxkfveyq0Bdorh52mvZW
-        uFV+f82zHoJo+gkzJGi/PZvghADopdY=
-X-Google-Smtp-Source: APXvYqz4TqMlHRoAvsRTQbbpb/OcNn2dSESSyjK9JtnDrABqs8FK9t7VAF/QRXBj3Bs86MwJTKIPKg==
-X-Received: by 2002:adf:df03:: with SMTP id y3mr11674574wrl.260.1578574020161;
-        Thu, 09 Jan 2020 04:47:00 -0800 (PST)
-Received: from netronome.com ([2001:982:756:703:d63d:7eff:fe99:ac9d])
-        by smtp.gmail.com with ESMTPSA id w8sm2904276wmm.0.2020.01.09.04.46.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Jan 2020 04:47:00 -0800 (PST)
-Date:   Thu, 9 Jan 2020 13:46:59 +0100
-From:   Simon Horman <simon.horman@netronome.com>
-To:     Li RongQing <lirongqing@baidu.com>
-Cc:     netdev@vger.kernel.org
-Subject: Re: [PATCH][net-next] flow_dissector: fix document for
- skb_flow_get_icmp_tci
-Message-ID: <20200109124659.GC21801@netronome.com>
-References: <1578531596-6369-1-git-send-email-lirongqing@baidu.com>
+        id S1728143AbgAIMvL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jan 2020 07:51:11 -0500
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:47005 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725308AbgAIMvL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jan 2020 07:51:11 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1578574269;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Fac4VqTnxrQkaCEJdCtkFmsn4oN/rNYvc/9xIScQoz4=;
+        b=FXF5En7Vj/GE2ecCTuklH4dzCfk8qdxJGNnUZJgSeBbtf+q58KbnGFx8u7GxfRTjraIiKz
+        p6ka/vjrLZ1hH512yC81t5Fq+rZdXWNgj64c2PPGk7mxZEO2SYTBX3F8jILfCAppsGMPVN
+        jjiV/u20YhsfnzUJ8xW1u6H+FSRHMVw=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-396-_kaj9ArDOx-Z2_T2gQsS5Q-1; Thu, 09 Jan 2020 07:51:06 -0500
+X-MC-Unique: _kaj9ArDOx-Z2_T2gQsS5Q-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 5AC421856A8F;
+        Thu,  9 Jan 2020 12:51:05 +0000 (UTC)
+Received: from ovpn-117-103.ams2.redhat.com (ovpn-117-103.ams2.redhat.com [10.36.117.103])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 3E05F27BD9;
+        Thu,  9 Jan 2020 12:51:04 +0000 (UTC)
+Message-ID: <7717e4470f6881bbc92645c72ad7f6ec71360796.camel@redhat.com>
+Subject: Re: [BUG] pfifo_fast may cause out-of-order CAN frame transmission
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Ahmad Fatoum <a.fatoum@pengutronix.de>, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org
+Cc:     Sascha Hauer <kernel@pengutronix.de>
+Date:   Thu, 09 Jan 2020 13:51:03 +0100
+In-Reply-To: <661cc33a-5f65-2769-cc1a-65791cb4b131@pengutronix.de>
+References: <661cc33a-5f65-2769-cc1a-65791cb4b131@pengutronix.de>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.32.5 (3.32.5-1.fc30) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1578531596-6369-1-git-send-email-lirongqing@baidu.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 09, 2020 at 08:59:56AM +0800, Li RongQing wrote:
-> using correct input parameter name to fix the below warning:
+On Wed, 2020-01-08 at 15:55 +0100, Ahmad Fatoum wrote:
+> I've run into an issue of CAN frames being sent out-of-order on an i.MX6 Dual
+> with Linux v5.5-rc5. Bisecting has lead me down to this commit:
 > 
-> net/core/flow_dissector.c:242: warning: Function parameter or member 'thoff' not described in 'skb_flow_get_icmp_tci'
-> net/core/flow_dissector.c:242: warning: Excess function parameter 'toff' description in 'skb_flow_get_icmp_tci'
+> ba27b4cdaaa ("net: dev: introduce support for sch BYPASS for lockless qdisc")
 > 
-> Signed-off-by: Li RongQing <lirongqing@baidu.com>
+> With it, using pfifo_fast, every few hundred frames, FlexCAN's .ndo_start_xmit is
+> passed frames in an order different from how userspace stuffed them into the same
+> socket.
+> 
+> Reverting it fixes the issue as does booting with maxcpus=1 or using pfifo
+> instead of pfifo_fast.
+> 
+> According to [1], such reordering shouldn't be happening.
+> 
+> Details on my setup:
+> Kernel version: v5.5-rc5, (occurs much more often with LOCKDEP turned on)
+> CAN-Bitrate: 250 kbit/s
+> CAN frames are generated with:
+> cangen canX -I2 -L1 -Di -i -g0.12 -p 100
+> which keeps polling after ENOBUFS until socket is writable, sends out a CAN
+> frame with one incrementing payload byte and then waits 120 usec before repeating.
+> 
+> Please let me know if any additional info is needed.
 
-Reviewed-by: Simon Horman <simon.horman@netronome.com>
+Thank you for the report.
+
+I think there is a possible race condition in the 'empty' flag update
+schema:
+
+CPU 0					CPU1
+(running e.g. net_tx_action)		(can xmit)
+
+qdisc_run()				__dev_xmit_skb()
+pfifo_fast_dequeue				
+// queue is empty, returns NULL
+WRITE_ONCE(qdisc->empty, true);
+					pfifo_fast_enqueue
+					qdisc_run_begin() 	
+					// still locked by CPU 0,
+					// return false and do nothing, 
+					// qdisc->empty is still true
+
+					(next can xmit)
+					// BYPASS code path
+					sch_direct_xmit()
+					// send pkt 2
+					__qdisc_run()
+					// send pkt 1
+
+The following patch try to addresses the above, clearing 'empty' flag
+in a more aggressive way. We can end-up skipping the bypass
+optimization more often than strictly needed in some contended
+scenarios, but I guess that is preferrable to the current issue.
+
+The code is only build-tested, could you please try it in your setup?
+
+Thanks,
+
+Paolo
+---
+diff --git a/include/net/sch_generic.h b/include/net/sch_generic.h
+index fceddf89592a..df460fe0773a 100644
+--- a/include/net/sch_generic.h
++++ b/include/net/sch_generic.h
+@@ -158,7 +158,6 @@ static inline bool qdisc_run_begin(struct Qdisc *qdisc)
+ 	if (qdisc->flags & TCQ_F_NOLOCK) {
+ 		if (!spin_trylock(&qdisc->seqlock))
+ 			return false;
+-		WRITE_ONCE(qdisc->empty, false);
+ 	} else if (qdisc_is_running(qdisc)) {
+ 		return false;
+ 	}
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 0ad39c87b7fd..3c46575a5af5 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -3625,6 +3625,8 @@ static inline int __dev_xmit_skb(struct sk_buff *skb, struct Qdisc *q,
+ 			qdisc_run_end(q);
+ 		} else {
+ 			rc = q->enqueue(skb, q, &to_free) & NET_XMIT_MASK;
++			if (rc != NET_XMIT_DROP && READ_ONCE(q->empty))
++				WRITE_ONCE(q->empty, false);
+ 			qdisc_run(q);
+ 		}
+ 
 
