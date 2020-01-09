@@ -2,85 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 08DAA135CD2
-	for <lists+netdev@lfdr.de>; Thu,  9 Jan 2020 16:32:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 89CA1135CF8
+	for <lists+netdev@lfdr.de>; Thu,  9 Jan 2020 16:41:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732461AbgAIPc2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jan 2020 10:32:28 -0500
-Received: from mail.kernel.org ([198.145.29.99]:39762 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729589AbgAIPc2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 9 Jan 2020 10:32:28 -0500
-Received: from localhost (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1730458AbgAIPl5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jan 2020 10:41:57 -0500
+Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:57274 "EHLO
+        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728098AbgAIPl5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jan 2020 10:41:57 -0500
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 4FFE92072A;
-        Thu,  9 Jan 2020 15:32:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1578583947;
-        bh=e+8teUutDcTrOf1C5tq1dzQr8Tjsy4MZMpCRFIYHJuc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=x0+zT5fu5S2nCgP35Kc9swptcQDkCVh27Z9qnkoMWKBJy5yQ7KwHux13C4WwVsxeU
-         kXmNgtSCnHfhTbdZsigqPxu8OO2SYXWmcDvaPxHkFWk+T1D9WIDDjy+IBzf6h0yK1r
-         0e/PzjaCU6YFd00U72+HOKb8jUFv5SL+NSoSDeTs=
-Date:   Thu, 9 Jan 2020 10:32:26 -0500
-From:   Sasha Levin <sashal@kernel.org>
-To:     Naresh Kamboju <naresh.kamboju@linaro.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        linux- stable <stable@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Michal Kubecek <mkubecek@suse.cz>,
-        Firo Yang <firo.yang@suse.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        rcu@vger.kernel.org, Netdev <netdev@vger.kernel.org>,
-        lkft-triage@lists.linaro.org
-Subject: Re: [PATCH AUTOSEL 4.19 46/84] tcp/dccp: fix possible race
- __inet_lookup_established()
-Message-ID: <20200109153226.GG1706@sasha-vm>
-References: <20191227174352.6264-1-sashal@kernel.org>
- <20191227174352.6264-46-sashal@kernel.org>
- <CA+G9fYv8o4he83kqpxB9asT7eUMAeODyX3MBbmwsCdgqLcXPWw@mail.gmail.com>
+        by mx1-us5.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id E272640051;
+        Thu,  9 Jan 2020 15:41:55 +0000 (UTC)
+Received: from amm-opti7060.uk.solarflarecom.com (10.17.20.147) by
+ ukex01.SolarFlarecom.com (10.17.10.4) with Microsoft SMTP Server (TLS) id
+ 15.0.1395.4; Thu, 9 Jan 2020 15:41:46 +0000
+From:   "Alex Maftei (amaftei)" <amaftei@solarflare.com>
+Subject: [PATCH net-next 0/9] sfc: more code refactoring
+To:     <netdev@vger.kernel.org>, <davem@davemloft.net>
+CC:     <linux-net-drivers@solarflare.com>, <scrum-linux@solarflare.com>
+Message-ID: <4d915542-3699-e864-5558-bef616b2fe66@solarflare.com>
+Date:   Thu, 9 Jan 2020 15:41:43 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <CA+G9fYv8o4he83kqpxB9asT7eUMAeODyX3MBbmwsCdgqLcXPWw@mail.gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset="windows-1252"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.17.20.147]
+X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
+ ukex01.SolarFlarecom.com (10.17.10.4)
+X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1010-25156.003
+X-TM-AS-Result: No-9.657200-8.000000-10
+X-TMASE-MatchedRID: w6IpHgwggqcIoZsIlwjKBrdHEv7sR/OwWw/S0HB7eoOOzyCsYRwNaXv6
+        cG7t9uXqugV/3O5rmoIN1izHZ6vquDXfM+vmulo5Dko+EYiDQxG6hgVvSdGKo3S7//lqxurTNDU
+        gttty4FUeEV8OSZueLZXxnaui/I3DofaD2zI+zzzwqDryy7bDIap2m4S4J4Zomvnco5r4a3OjxY
+        yRBa/qJX3mXSdV7KK4mVLlQk0G3GcgBwKKRHe+r60JRtsLDRq0tE5HVvwA4csoxK/gHJ9/AO1mc
+        lMkIERFS99Y/esFLZQ=
+X-TM-AS-User-Approved-Sender: Yes
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--9.657200-8.000000
+X-TMASE-Version: SMEX-12.5.0.1300-8.5.1010-25156.003
+X-MDID: 1578584516-1e3BlEEu2enY
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 02, 2020 at 01:31:22PM +0530, Naresh Kamboju wrote:
->On Fri, 27 Dec 2019 at 23:17, Sasha Levin <sashal@kernel.org> wrote:
->>
->> From: Eric Dumazet <edumazet@google.com>
->>
->> [ Upstream commit 8dbd76e79a16b45b2ccb01d2f2e08dbf64e71e40 ]
->>
->> Michal Kubecek and Firo Yang did a very nice analysis of crashes
->> happening in __inet_lookup_established().
->>
->> Since a TCP socket can go from TCP_ESTABLISH to TCP_LISTEN
->> (via a close()/socket()/listen() cycle) without a RCU grace period,
->> I should not have changed listeners linkage in their hash table.
->>
->> They must use the nulls protocol (Documentation/RCU/rculist_nulls.txt),
->> so that a lookup can detect a socket in a hash list was moved in
->> another one.
->>
->> Since we added code in commit d296ba60d8e2 ("soreuseport: Resolve
->> merge conflict for v4/v6 ordering fix"), we have to add
->> hlist_nulls_add_tail_rcu() helper.
->
->The kernel panic reported on all devices,
->While running LTP syscalls accept* test cases on stable-rc-4.19 branch kernel.
->This report log extracted from qemu_x86_64.
->
->Reverting this patch re-solved kernel crash.
+Splitting more of the driver code into different files, which will
+later be used in another driver for a new product.
 
-I'll drop it until we can look into what's happening here, thanks!
+This is a continuation to my previous patch series.
+There will be another series and a stand-alone patch as well
+after this.
+
+This series in particular covers MCDI (management controller
+driver interface) code.
+
+Alexandru-Mihai Maftei (9):
+  sfc: move some port link state/caps code
+  sfc: move some MCDI port utility functions
+  sfc: move more MCDI port code
+  sfc: move MCDI VI alloc/free code
+  sfc: move MCDI event queue management code
+  sfc: move MCDI transmit queue management code
+  sfc: move MCDI receive queue management code
+  sfc: conditioned some functionality
+  sfc: move MCDI logging device attribute
+
+ drivers/net/ethernet/sfc/Makefile           |   4 +-
+ drivers/net/ethernet/sfc/ef10.c             | 355 ++------------
+ drivers/net/ethernet/sfc/efx.c              |  55 +--
+ drivers/net/ethernet/sfc/efx_channels.c     |   6 +-
+ drivers/net/ethernet/sfc/efx_common.c       |  86 +++-
+ drivers/net/ethernet/sfc/efx_common.h       |   8 +
+ drivers/net/ethernet/sfc/mcdi_functions.c   | 349 ++++++++++++++
+ drivers/net/ethernet/sfc/mcdi_functions.h   |   2 +-
+ drivers/net/ethernet/sfc/mcdi_port.c        | 464 -------------------
+ drivers/net/ethernet/sfc/mcdi_port_common.c | 489 ++++++++++++++++++++
+ 10 files changed, 958 insertions(+), 860 deletions(-)
+ create mode 100644 drivers/net/ethernet/sfc/mcdi_functions.c
+ create mode 100644 drivers/net/ethernet/sfc/mcdi_port_common.c
 
 -- 
-Thanks,
-Sasha
+2.20.1
+
