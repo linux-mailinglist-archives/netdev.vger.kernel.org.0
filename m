@@ -2,32 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B356E13636B
-	for <lists+netdev@lfdr.de>; Thu,  9 Jan 2020 23:47:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3265F13636C
+	for <lists+netdev@lfdr.de>; Thu,  9 Jan 2020 23:47:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729347AbgAIWqx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jan 2020 17:46:53 -0500
-Received: from mga01.intel.com ([192.55.52.88]:46889 "EHLO mga01.intel.com"
+        id S1729386AbgAIWqy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jan 2020 17:46:54 -0500
+Received: from mga01.intel.com ([192.55.52.88]:46855 "EHLO mga01.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729299AbgAIWqv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 9 Jan 2020 17:46:51 -0500
+        id S1729306AbgAIWqw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 9 Jan 2020 17:46:52 -0500
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 09 Jan 2020 14:46:50 -0800
+  by fmsmga101.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 09 Jan 2020 14:46:51 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.69,414,1571727600"; 
-   d="scan'208";a="421926877"
+   d="scan'208";a="421926882"
 Received: from jekeller-desk.amr.corp.intel.com ([10.166.244.172])
-  by fmsmga005.fm.intel.com with ESMTP; 09 Jan 2020 14:46:50 -0800
+  by fmsmga005.fm.intel.com with ESMTP; 09 Jan 2020 14:46:51 -0800
 From:   Jacob Keller <jacob.e.keller@intel.com>
 To:     netdev@vger.kernel.org
 Cc:     Jiri Pirko <jiri@mellanox.com>,
-        Jacob Keller <jacob.e.keller@intel.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>
-Subject: [PATCH 14/17] devlink: rename and expand devlink-trap-netdevsim.rst
-Date:   Thu,  9 Jan 2020 14:46:22 -0800
-Message-Id: <20200109224625.1470433-15-jacob.e.keller@intel.com>
+        Jacob Keller <jacob.e.keller@intel.com>
+Subject: [PATCH 15/17] devlink: add a devlink-resource.rst documentation file
+Date:   Thu,  9 Jan 2020 14:46:23 -0800
+Message-Id: <20200109224625.1470433-16-jacob.e.keller@intel.com>
 X-Mailer: git-send-email 2.25.0.rc1
 In-Reply-To: <20200109224625.1470433-1-jacob.e.keller@intel.com>
 References: <20200109224625.1470433-1-jacob.e.keller@intel.com>
@@ -38,172 +37,99 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Rename the trap-specific netdevimsim.rst file, and expand it to include
-documentation of all the devlink features currently implemented by the
-netdevsim driver code.
+Take the little bit of documentation for resources from various commit
+messages and combine it into a new devlink-resource.rst file.
+
+This could probably be expanded on even further by someone with more
+knowledge of how the devlink resources work.
 
 Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
-Cc: Jakub Kicinski <jakub.kicinski@netronome.com>
 ---
- .../devlink/devlink-trap-netdevsim.rst        | 20 ------
- .../networking/devlink/devlink-trap.rst       |  2 +-
- Documentation/networking/devlink/index.rst    |  2 +-
- .../networking/devlink/netdevsim.rst          | 72 +++++++++++++++++++
- drivers/net/netdevsim/dev.c                   |  2 +-
- 5 files changed, 75 insertions(+), 23 deletions(-)
- delete mode 100644 Documentation/networking/devlink/devlink-trap-netdevsim.rst
- create mode 100644 Documentation/networking/devlink/netdevsim.rst
+ .../networking/devlink/devlink-resource.rst   | 62 +++++++++++++++++++
+ Documentation/networking/devlink/index.rst    |  1 +
+ 2 files changed, 63 insertions(+)
+ create mode 100644 Documentation/networking/devlink/devlink-resource.rst
 
-diff --git a/Documentation/networking/devlink/devlink-trap-netdevsim.rst b/Documentation/networking/devlink/devlink-trap-netdevsim.rst
-deleted file mode 100644
-index b721c9415473..000000000000
---- a/Documentation/networking/devlink/devlink-trap-netdevsim.rst
-+++ /dev/null
-@@ -1,20 +0,0 @@
--.. SPDX-License-Identifier: GPL-2.0
--
--======================
--Devlink Trap netdevsim
--======================
--
--Driver-specific Traps
--=====================
--
--.. list-table:: List of Driver-specific Traps Registered by ``netdevsim``
--   :widths: 5 5 90
--
--   * - Name
--     - Type
--     - Description
--   * - ``fid_miss``
--     - ``exception``
--     - When a packet enters the device it is classified to a filtering
--       indentifier (FID) based on the ingress port and VLAN. This trap is used
--       to trap packets for which a FID could not be found
-diff --git a/Documentation/networking/devlink/devlink-trap.rst b/Documentation/networking/devlink/devlink-trap.rst
-index 03311849bfb1..cbaa750de37d 100644
---- a/Documentation/networking/devlink/devlink-trap.rst
-+++ b/Documentation/networking/devlink/devlink-trap.rst
-@@ -233,7 +233,7 @@ help debug packet drops caused by these exceptions. The following list includes
- links to the description of driver-specific traps registered by various device
- drivers:
- 
--  * :doc:`devlink-trap-netdevsim`
-+  * :doc:`netdevsim`
- 
- Generic Packet Trap Groups
- ==========================
-diff --git a/Documentation/networking/devlink/index.rst b/Documentation/networking/devlink/index.rst
-index ce0ee563d83a..2417d56e27cc 100644
---- a/Documentation/networking/devlink/index.rst
-+++ b/Documentation/networking/devlink/index.rst
-@@ -18,7 +18,6 @@ general.
-    devlink-params
-    devlink-region
-    devlink-trap
--   devlink-trap-netdevsim
- 
- Driver-specific documentation
- -----------------------------
-@@ -35,6 +34,7 @@ parameters, info versions, and other features it supports.
-    mlx5
-    mlxsw
-    mv88e6xxx
-+   netdevsim
-    nfp
-    qed
-    ti-cpsw-switch
-diff --git a/Documentation/networking/devlink/netdevsim.rst b/Documentation/networking/devlink/netdevsim.rst
+diff --git a/Documentation/networking/devlink/devlink-resource.rst b/Documentation/networking/devlink/devlink-resource.rst
 new file mode 100644
-index 000000000000..2a266b7e7b38
+index 000000000000..93e92d2f0752
 --- /dev/null
-+++ b/Documentation/networking/devlink/netdevsim.rst
-@@ -0,0 +1,72 @@
++++ b/Documentation/networking/devlink/devlink-resource.rst
+@@ -0,0 +1,62 @@
 +.. SPDX-License-Identifier: GPL-2.0
 +
-+=========================
-+netdevsim devlink support
-+=========================
++================
++Devlink Resource
++================
 +
-+This document describes the ``devlink`` features supported by the
-+``netdevsim`` device driver.
++``devlink`` provides the ability for drivers to register resources, which
++can allow administrators to see the device restrictions for a given
++resource, as well as how much of the given resource is currently
++in use. Additionally, these resources can optionally have configurable size.
++This could enable the administrator to limit the number of resources that
++are used.
 +
-+Parameters
-+==========
++For example, the ``netdevsim`` driver enables ``/IPv4/fib`` and
++``/IPv4/fib-rules`` as resources to limit the number of IPv4 FIB entries and
++rules for a given device.
 +
-+.. list-table:: Generic parameters implemented
++Resource Ids
++============
 +
-+   * - Name
-+     - Mode
-+   * - ``max_macs``
-+     - driverinit
++Each resource is represented by an id, and contains information about its
++current size and related sub resources. To access a sub resource, you
++specify the path of the resource. For example ``/IPv4/fib`` is the id for
++the ``fib`` sub-resource under the ``IPv4`` resource.
 +
-+The ``netdevsim`` driver also implements the following driver-specific
-+parameters.
++example usage
++-------------
 +
-+.. list-table:: Driver-specific parameters implemented
-+   :widths: 5 5 5 85
-+
-+   * - Name
-+     - Type
-+     - Mode
-+     - Description
-+   * - ``test1``
-+     - Boolean
-+     - driverinit
-+     - Test parameter used to show how a driver-specific devlink parameter
-+       can be implemented.
-+
-+The ``netdevsim`` driver supports reloading via ``DEVLINK_CMD_RELOAD``
-+
-+Regions
-+=======
-+
-+The ``netdevsim`` driver exposes a ``dummy`` region as an example of how the
-+devlink-region interfaces work. A snapshot is taken whenever the
-+``take_snapshot`` debugfs file is written to.
-+
-+Resources
-+=========
-+
-+The ``netdevsim`` driver exposes resources to control the number of FIB
-+entries and FIB rule entries that the driver will allow.
++The resources exposed by the driver can be observed, for example:
 +
 +.. code:: shell
 +
-+    $ devlink resource set netdevsim/netdevsim0 path /IPv4/fib size 96
-+    $ devlink resource set netdevsim/netdevsim0 path /IPv4/fib-rules size 16
-+    $ devlink resource set netdevsim/netdevsim0 path /IPv6/fib size 64
-+    $ devlink resource set netdevsim/netdevsim0 path /IPv6/fib-rules size 16
-+    $ devlink dev reload netdevsim/netdevsim0
++    $devlink resource show pci/0000:03:00.0
++    pci/0000:03:00.0:
++      name kvd size 245760 unit entry
++        resources:
++          name linear size 98304 occ 0 unit entry size_min 0 size_max 147456 size_gran 128
++          name hash_double size 60416 unit entry size_min 32768 size_max 180224 size_gran 128
++          name hash_single size 87040 unit entry size_min 65536 size_max 212992 size_gran 128
 +
-+Driver-specific Traps
-+=====================
++Some resource's size can be changed. Examples:
 +
-+.. list-table:: List of Driver-specific Traps Registered by ``netdevsim``
-+   :widths: 5 5 90
++.. code:: shell
 +
-+   * - Name
-+     - Type
-+     - Description
-+   * - ``fid_miss``
-+     - ``exception``
-+     - When a packet enters the device it is classified to a filtering
-+       indentifier (FID) based on the ingress port and VLAN. This trap is used
-+       to trap packets for which a FID could not be found
-diff --git a/drivers/net/netdevsim/dev.c b/drivers/net/netdevsim/dev.c
-index 2eb4ca564745..97922f9834a7 100644
---- a/drivers/net/netdevsim/dev.c
-+++ b/drivers/net/netdevsim/dev.c
-@@ -287,7 +287,7 @@ struct nsim_trap_data {
- };
++    $devlink resource set pci/0000:03:00.0 path /kvd/hash_single size 73088
++    $devlink resource set pci/0000:03:00.0 path /kvd/hash_double size 74368
++
++The changes do not apply immediately, this can be validated by the 'size_new'
++attribute, which represents the pending change in size. For example:
++
++.. code:: shell
++
++    $devlink resource show pci/0000:03:00.0
++    pci/0000:03:00.0:
++      name kvd size 245760 unit entry size_valid false
++      resources:
++        name linear size 98304 size_new 147456 occ 0 unit entry size_min 0 size_max 147456 size_gran 128
++        name hash_double size 60416 unit entry size_min 32768 size_max 180224 size_gran 128
++        name hash_single size 87040 unit entry size_min 65536 size_max 212992 size_gran 128
++
++Note that changes in resource size may require a device reload to properly
++take effect.
+diff --git a/Documentation/networking/devlink/index.rst b/Documentation/networking/devlink/index.rst
+index 2417d56e27cc..10b51d863a5c 100644
+--- a/Documentation/networking/devlink/index.rst
++++ b/Documentation/networking/devlink/index.rst
+@@ -17,6 +17,7 @@ general.
+    devlink-info
+    devlink-params
+    devlink-region
++   devlink-resource
+    devlink-trap
  
- /* All driver-specific traps must be documented in
-- * Documentation/networking/devlink/devlink-trap-netdevsim.rst
-+ * Documentation/networking/devlink/netdevsim.rst
-  */
- enum {
- 	NSIM_TRAP_ID_BASE = DEVLINK_TRAP_GENERIC_ID_MAX,
+ Driver-specific documentation
 -- 
 2.25.0.rc1
 
