@@ -2,79 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C73B135101
-	for <lists+netdev@lfdr.de>; Thu,  9 Jan 2020 02:34:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 54DA8135115
+	for <lists+netdev@lfdr.de>; Thu,  9 Jan 2020 02:54:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727754AbgAIBef (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jan 2020 20:34:35 -0500
-Received: from mail.kernel.org ([198.145.29.99]:41672 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726654AbgAIBee (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 8 Jan 2020 20:34:34 -0500
-Received: from mail-qk1-f170.google.com (mail-qk1-f170.google.com [209.85.222.170])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id EE9B62070E;
-        Thu,  9 Jan 2020 01:34:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1578533674;
-        bh=L3mfRJUcGGHYyqz8ZxVIXWFWXUrULZcPO95byLbD5Q4=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=VfZ1bfONB7euu3xny3swkkuOh6BM6ZGdMC5qvE5MUNKqWutpdV7tw5Uy0yorNVwa1
-         6WRHuLJiREmnaQkkKo14/7wKF1w2bCFg68MJY6aFNzyuIXVbaTqOfcFPx90PYkdKyO
-         GqiZqFYxslOiHGA7vbwWr4DSfTYxK4SQxkpxnGZo=
-Received: by mail-qk1-f170.google.com with SMTP id c16so4572544qko.6;
-        Wed, 08 Jan 2020 17:34:33 -0800 (PST)
-X-Gm-Message-State: APjAAAVxDLacwsLfsNPXZss6w8G1wTZZPbMXjY1/jf5rUjDJWpv1v8Fl
-        wvKI3NbQjj3MXmTONeA9648VntmX7BfB0PfmQmQ=
-X-Google-Smtp-Source: APXvYqwXApudmZ/cAtPrPB4ISgJr9rZ56Kzrhq6ZQwXMkjMet8n2YFg4yW5vbUEckgM18C1ehfd9lwhHXaijlr3oZDg=
-X-Received: by 2002:ae9:f502:: with SMTP id o2mr6851044qkg.89.1578533673038;
- Wed, 08 Jan 2020 17:34:33 -0800 (PST)
-MIME-Version: 1.0
-References: <157851776348.1732.12600714815781177085.stgit@ubuntu3-kvm2> <157851804766.1732.2480524840189309989.stgit@ubuntu3-kvm2>
-In-Reply-To: <157851804766.1732.2480524840189309989.stgit@ubuntu3-kvm2>
-From:   Song Liu <song@kernel.org>
-Date:   Wed, 8 Jan 2020 17:34:21 -0800
-X-Gmail-Original-Message-ID: <CAPhsuW6CR20_81kkmp5k=h9uhZWMyLEwyeD2K5yd3RzK+pVgww@mail.gmail.com>
-Message-ID: <CAPhsuW6CR20_81kkmp5k=h9uhZWMyLEwyeD2K5yd3RzK+pVgww@mail.gmail.com>
-Subject: Re: [bpf PATCH 1/9] bpf: sockmap/tls, during free we may call
- tcp_bpf_unhash() in loop
+        id S1727820AbgAIByd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jan 2020 20:54:33 -0500
+Received: from mail-pl1-f195.google.com ([209.85.214.195]:46559 "EHLO
+        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726913AbgAIByd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jan 2020 20:54:33 -0500
+Received: by mail-pl1-f195.google.com with SMTP id y8so1860566pll.13;
+        Wed, 08 Jan 2020 17:54:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=oTyqhoIX3DQ+f9hJq5TbGda1i2+Ze2UfFAEdDafc8q8=;
+        b=GmDO/WGd93UwUu1yW3PvrXncmirI1deCSL4bb2jBkwJiEYaJJDe2PbxRj4l125ei+r
+         hy5/0Sh3jdmoq2v49c8oT7SZYXjSJ/EwrRyHRulT85suNST5bT7mi6ooviV+lJux9lpC
+         IGAVxaJSyXs4JeTbt4CBcHYFja8bniih5mgRaQe41sMEzOwFfm86iHCoSmzXQRbPVs4e
+         EBrtlAhayhpiTsFWq3hjqSQKuyuVGSoHxhjRUmpc5/ptVOhn/81aZuJ1J20rNbn6GbAv
+         wikuOlgGDtPX4xaj/AfvZ9oRsatt11siQmhA8FCI3MHy8vZHB3wZKQ7gUv3o6xpgeAOg
+         YTKg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=oTyqhoIX3DQ+f9hJq5TbGda1i2+Ze2UfFAEdDafc8q8=;
+        b=J73BOpMmL+GXB9xSo+x5YnKlepV9qoi6t7HwuUhJ7wZDm6qPg8xGogJbT4ApuWLnz9
+         VpFdO1E1LdVPTIrEcZh0wz1I83yiYE6PpXH2IkzTjh6Y5peQDhrwbGrcFrRMn6zBGGuc
+         rxhRbAnrbqqIJL5D8yMSrtNcJy0G2uJ9u/6ohe4XHbWePMUWGJNF8JURRM2WDLSdqL3K
+         8eRKopZ4f3kezF9Gx4yb8CSkswnzIvFvajY1Ktx8FlEqONVcLfLTdqeJlYAVfjD3MubB
+         H8AvrlCudDY41k7mM5kjLnXE9y8rneNvoC2eeisnIxldls90UjrDzXF4iaXAKGPZ0SKW
+         xbOQ==
+X-Gm-Message-State: APjAAAWzzKB07WWvq7MS4yLGCJ3tSzmPY9MdvlT3QtCfHBrmm5jlHzK5
+        /XmH8v8QxfGnJzoPqpxB504=
+X-Google-Smtp-Source: APXvYqxgSaZlh8DNyp/Ta+6TiAGMk7UVF2E/i9VnUsKohjyQ972AWVLZTjak/sDUHFtrb5N/aE3BQg==
+X-Received: by 2002:a17:90a:b30b:: with SMTP id d11mr2186521pjr.22.1578534570464;
+        Wed, 08 Jan 2020 17:49:30 -0800 (PST)
+Received: from localhost.localdomain ([150.109.61.200])
+        by smtp.gmail.com with ESMTPSA id j20sm4725635pfe.168.2020.01.08.17.49.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 08 Jan 2020 17:49:29 -0800 (PST)
+From:   Lingpeng Chen <forrest0579@gmail.com>
 To:     John Fastabend <john.fastabend@gmail.com>
-Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Content-Type: text/plain; charset="UTF-8"
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Song Liu <songliubraving@fb.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, Lingpeng Chen <forrest0579@gmail.com>,
+        stable@vger.kernel.org
+Subject: [PATCH v2] bpf/sockmap: read psock ingress_msg before sk_receive_queue
+Date:   Thu,  9 Jan 2020 09:48:33 +0800
+Message-Id: <20200109014833.18951-1-forrest0579@gmail.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <5e1620c332f3c_159a2af0aa9505b861@john-XPS-13-9370.notmuch>
+References: <5e1620c332f3c_159a2af0aa9505b861@john-XPS-13-9370.notmuch>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 8, 2020 at 1:14 PM John Fastabend <john.fastabend@gmail.com> wrote:
->
-> When a sockmap is free'd and a socket in the map is enabled with tls
-> we tear down the bpf context on the socket, the psock struct and state,
-> and then call tcp_update_ulp(). The tcp_update_ulp() call is to inform
-> the tls stack it needs to update its saved sock ops so that when the tls
-> socket is later destroyed it doesn't try to call the now destroyed psock
-> hooks.
->
-> This is about keeping stacked ULPs in good shape so they always have
-> the right set of stacked ops.
->
-> However, recently unhash() hook was removed from TLS side. But, the
-> sockmap/bpf side is not doing any extra work to update the unhash op
-> when is torn down instead expecting TLS side to manage it. So both
-> TLS and sockmap believe the other side is managing the op and instead
-> no one updates the hook so it continues to point at tcp_bpf_unhash().
-> When unhash hook is called we call tcp_bpf_unhash() which detects the
-> psock has already been destroyed and calls sk->sk_prot_unhash() which
-> calls tcp_bpf_unhash() yet again and so on looping and hanging the core.
->
-> To fix have sockmap tear down logic fixup the stale pointer.
->
-> Fixes: 5d92e631b8be ("net/tls: partially revert fix transition through disconnect with close")
-> Reported-by: syzbot+83979935eb6304f8cd46@syzkaller.appspotmail.com
-> Signed-off-by: John Fastabend <john.fastabend@gmail.com>
+Right now in tcp_bpf_recvmsg, sock read data first from sk_receive_queue
+if not empty than psock->ingress_msg otherwise. If a FIN packet arrives
+and there's also some data in psock->ingress_msg, the data in
+psock->ingress_msg will be purged. It is always happen when request to a
+HTTP1.0 server like python SimpleHTTPServer since the server send FIN
+packet after data is sent out.
 
-Cc: stable@vger.kernel.org
+Fixes: 604326b41a6fb ("bpf, sockmap: convert to generic sk_msg interface")
+Reported-by: Arika Chen <eaglesora@gmail.com>
+Suggested-by: Arika Chen <eaglesora@gmail.com>
+Signed-off-by: Lingpeng Chen <forrest0579@gmail.com>
+Signed-off-by: John Fastabend <john.fastabend@gmail.com>
+Cc: stable@vger.kernel.org # v4.20+
 Acked-by: Song Liu <songliubraving@fb.com>
+---
+ net/ipv4/tcp_bpf.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/net/ipv4/tcp_bpf.c b/net/ipv4/tcp_bpf.c
+index e38705165ac9..e6b08b5a0895 100644
+--- a/net/ipv4/tcp_bpf.c
++++ b/net/ipv4/tcp_bpf.c
+@@ -121,14 +121,14 @@ int tcp_bpf_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
+ 	struct sk_psock *psock;
+ 	int copied, ret;
+ 
+-	if (unlikely(flags & MSG_ERRQUEUE))
+-		return inet_recv_error(sk, msg, len, addr_len);
+-	if (!skb_queue_empty(&sk->sk_receive_queue))
+-		return tcp_recvmsg(sk, msg, len, nonblock, flags, addr_len);
+-
+ 	psock = sk_psock_get(sk);
+ 	if (unlikely(!psock))
+ 		return tcp_recvmsg(sk, msg, len, nonblock, flags, addr_len);
++	if (unlikely(flags & MSG_ERRQUEUE))
++		return inet_recv_error(sk, msg, len, addr_len);
++	if (!skb_queue_empty(&sk->sk_receive_queue) &&
++	    sk_psock_queue_empty(psock))
++		return tcp_recvmsg(sk, msg, len, nonblock, flags, addr_len);
+ 	lock_sock(sk);
+ msg_bytes_ready:
+ 	copied = __tcp_bpf_recvmsg(sk, psock, msg, len, flags);
+@@ -139,7 +139,7 @@ int tcp_bpf_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
+ 		timeo = sock_rcvtimeo(sk, nonblock);
+ 		data = tcp_bpf_wait_data(sk, psock, flags, timeo, &err);
+ 		if (data) {
+-			if (skb_queue_empty(&sk->sk_receive_queue))
++			if (!sk_psock_queue_empty(psock))
+ 				goto msg_bytes_ready;
+ 			release_sock(sk);
+ 			sk_psock_put(sk, psock);
+-- 
+2.17.1
+
