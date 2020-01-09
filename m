@@ -2,39 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C288136196
-	for <lists+netdev@lfdr.de>; Thu,  9 Jan 2020 21:11:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AEC2F136199
+	for <lists+netdev@lfdr.de>; Thu,  9 Jan 2020 21:13:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729091AbgAIULh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jan 2020 15:11:37 -0500
-Received: from mga09.intel.com ([134.134.136.24]:37339 "EHLO mga09.intel.com"
+        id S1729117AbgAIUNY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jan 2020 15:13:24 -0500
+Received: from mga18.intel.com ([134.134.136.126]:57830 "EHLO mga18.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728511AbgAIULg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 9 Jan 2020 15:11:36 -0500
+        id S1727945AbgAIUNY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 9 Jan 2020 15:13:24 -0500
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga102.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 09 Jan 2020 12:11:36 -0800
+  by orsmga106.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 09 Jan 2020 12:13:23 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.69,414,1571727600"; 
-   d="scan'208";a="223980081"
+   d="scan'208";a="223980505"
 Received: from jekeller-mobl.amr.corp.intel.com (HELO [134.134.177.84]) ([134.134.177.84])
-  by orsmga003.jf.intel.com with ESMTP; 09 Jan 2020 12:11:36 -0800
-Subject: Re: [PATCH 2/2] doc: fix typo of snapshot in documentation
+  by orsmga003.jf.intel.com with ESMTP; 09 Jan 2020 12:13:23 -0800
+Subject: Re: [PATCH v2 0/3] devlink region trigger support
+To:     netdev@vger.kernel.org
+Cc:     valex@mellanox.com, jiri@resnulli.us
+References: <20200109193311.1352330-1-jacob.e.keller@intel.com>
 From:   Jacob Keller <jacob.e.keller@intel.com>
-To:     Stephen Hemminger <stephen@networkplumber.org>
-Cc:     netdev@vger.kernel.org, valex@mellanox.com, jiri@resnulli.us
-References: <20200109190821.1335579-1-jacob.e.keller@intel.com>
- <20200109190821.1335579-2-jacob.e.keller@intel.com>
- <20200109120021.66a46535@hermes.lan>
- <84ba1b73-aa0c-cce6-5284-6d4badb9bed4@intel.com>
 Organization: Intel Corporation
-Message-ID: <f1b34465-0bdc-e108-c887-5d04ec64e861@intel.com>
-Date:   Thu, 9 Jan 2020 12:11:36 -0800
+Message-ID: <3397d02d-5329-b63e-99b1-30a001929391@intel.com>
+Date:   Thu, 9 Jan 2020 12:13:22 -0800
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
  Thunderbird/68.3.1
 MIME-Version: 1.0
-In-Reply-To: <84ba1b73-aa0c-cce6-5284-6d4badb9bed4@intel.com>
+In-Reply-To: <20200109193311.1352330-1-jacob.e.keller@intel.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -43,41 +40,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/9/2020 12:06 PM, Jacob Keller wrote:
-> On 1/9/2020 12:00 PM, Stephen Hemminger wrote:
->> On Thu,  9 Jan 2020 11:08:21 -0800
->> Jacob Keller <jacob.e.keller@intel.com> wrote:
->>
->>> A couple of locations accidentally misspelled snapshot as shapshot.
->>>
->>> Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
->>> ---
->>>  Documentation/admin-guide/devices.txt    | 2 +-
->>>  Documentation/media/v4l-drivers/meye.rst | 2 +-
->>>  2 files changed, 2 insertions(+), 2 deletions(-)
->>>
->>> diff --git a/Documentation/admin-guide/devices.txt b/Documentation/admin-guide/devices.txt
->>> index 1c5d2281efc9..2a97aaec8b12 100644
->>> --- a/Documentation/admin-guide/devices.txt
->>> +++ b/Documentation/admin-guide/devices.txt
->>> @@ -319,7 +319,7 @@
->>>  		182 = /dev/perfctr	Performance-monitoring counters
->>>  		183 = /dev/hwrng	Generic random number generator
->>>  		184 = /dev/cpu/microcode CPU microcode update interface
->>> -		186 = /dev/atomicps	Atomic shapshot of process state data
->>> +		186 = /dev/atomicps	Atomic snapshot of process state data
->>>  		187 = /dev/irnet	IrNET device
->>
->> Oops, irnet is part of irda which is no longer part of the kernel.
->>
+On 1/9/2020 11:33 AM, Jacob Keller wrote:
+> This series consists of patches to enable devlink to request a snapshot via
+> a new DEVLINK_CMD_REGION_TRIGGER_SNAPSHOT.
 > 
-> This is probably based on the wrong tree. Will rebase and re-send.
+> A reviewer might notice that the devlink health API already has such support
+> for handling a similar case. However, the health API does not make sense in
+> cases where the data is not related to an error condition.
 > 
-> Thanks,
-> Jake>
+> In this case, using the health API only for the dumping feels incorrect.
+> Regions make sense when the addressable content is not captured
+> automatically on error conditions, but only upon request by the devlink API.
+> 
+> The netdevsim driver is modified to support the new trigger_snapshot
+> callback as an example of how this can be used.
+> 
 
-Well, I did rebase the patches locally but the contents are still the
-same so I'm not going to resend. I guess it's just because the
-devices.txt file hasn't been updated?
+As mentioned by Jakub on an earlier comment, I wanted to clarify: I
+implemented this in the netdevsim driver because I wanted to test that
+the changes actually worked as expected.
 
--Jake
+I'm planning on making use of this in an Intel driver soon, but do not
+yet have patches ready to send to the list.
+
+Thanks,
+Jake
+
+> Jacob Keller (3):
+>   devlink: add callback to trigger region snapshots
+>   devlink: introduce command to trigger region snapshot
+>   netdevsim: support triggering snapshot through devlink
+> 
+>  drivers/net/ethernet/mellanox/mlx4/crdump.c |  4 +-
+>  drivers/net/netdevsim/dev.c                 | 37 ++++++++++++-----
+>  include/net/devlink.h                       | 12 ++++--
+>  include/uapi/linux/devlink.h                |  2 +
+>  net/core/devlink.c                          | 45 +++++++++++++++++++--
+>  5 files changed, 80 insertions(+), 20 deletions(-)
+> 
