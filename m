@@ -2,118 +2,186 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D3B25135F47
-	for <lists+netdev@lfdr.de>; Thu,  9 Jan 2020 18:27:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D96A135F59
+	for <lists+netdev@lfdr.de>; Thu,  9 Jan 2020 18:31:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388111AbgAIR1j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jan 2020 12:27:39 -0500
-Received: from mail.kernel.org ([198.145.29.99]:51284 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728444AbgAIR1j (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 9 Jan 2020 12:27:39 -0500
-Received: from mail-qv1-f42.google.com (mail-qv1-f42.google.com [209.85.219.42])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 352B1206ED;
-        Thu,  9 Jan 2020 17:27:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1578590858;
-        bh=G7fm2aOiqB15WSbDOO/6Efnwsn1ynfNPyOky+BBEQ/4=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=qM2IIu80AxrENYrbfam/fOuLNPJ6pzgGXGEgHkAzsIHa9xMOWdd02hKJXUL3iTXLO
-         RiazmjbKSJI+qsxCX+cq6UxaucfW/IFSEw8ahTa2G8pvBBRO6D06omXkapxF1rvVdp
-         G0BjVPo3llYrS4MyS55YSDw0fHmra6nEt7we0MjQ=
-Received: by mail-qv1-f42.google.com with SMTP id dc14so3283150qvb.9;
-        Thu, 09 Jan 2020 09:27:38 -0800 (PST)
-X-Gm-Message-State: APjAAAUSxY5l9Zhl2420gA63XWS8h/HdDs5WfGCRvs7ygkdEG1o68bii
-        Osmtk2KqoEqIv3BHg0ESVmxnyVYlFRjXxlvbmTA=
-X-Google-Smtp-Source: APXvYqxIg/+n2oyOt0Rp23NunbNC2kRcjb63OfcVyITyeUcfnPpEa+f+sOLPb+6AEZJzO0q/Xz0DQhEFRS1VZXDIqkw=
-X-Received: by 2002:ad4:580b:: with SMTP id dd11mr9694536qvb.242.1578590857321;
- Thu, 09 Jan 2020 09:27:37 -0800 (PST)
+        id S1729311AbgAIRaF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jan 2020 12:30:05 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:30711 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1725775AbgAIRaF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jan 2020 12:30:05 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1578591003;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=WEbJMVoXKZc7Mcq0IlBQE0Aok1RVoeFXM59wAGcOfkI=;
+        b=c5WGd5U6eKK7NbavhVebNztoKxLUJeRpFTpkqGhhVzAfhngIXJZssl1FtUzpJwGyewYGkW
+        yyEvL13PitmYbO105SAcrBd7bpSlgayVV+uE4dZhZeSzBmF2TKHgtCk9RrFqnXIVU0qO8e
+        ZUVhakVqwukuAtKjOp1icWzGUDldbp0=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-270-UHfa0YhjPG-MVGqqkVtyIw-1; Thu, 09 Jan 2020 12:30:01 -0500
+X-MC-Unique: UHfa0YhjPG-MVGqqkVtyIw-1
+Received: by mail-wm1-f71.google.com with SMTP id t4so1198245wmf.2
+        for <netdev@vger.kernel.org>; Thu, 09 Jan 2020 09:30:01 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=WEbJMVoXKZc7Mcq0IlBQE0Aok1RVoeFXM59wAGcOfkI=;
+        b=VPjAOngCBwNczcb2uyKINh5oR6SbQaMEB6dEz7JMefNqc9Q0DSidw1F64GN78gFX+5
+         QdtOYHtVzNTApHl5IF6kyh5+x1l5R0j5EHRLez0947uE7e8tVlkM9/+SyLUl1BK27pES
+         tHN+bVkOGAzTvnp2L4gROaYbkjoaabiL1K6K9nx02a5TbIv8Oi/PnC8nH7797QY+uKbc
+         cbXeGVGKcl5M3IUxyCKp1IRX022dAarbxar6pfanv8ZlJ3Y7wu6IUqm4S+kUIZM5xY1A
+         jl9NpEXyjvrUkwYVngf39HzKwjyRTl/6iKBtj+pPV51v+2pLWrHxk4fyesYS8LKr0rkS
+         3Eww==
+X-Gm-Message-State: APjAAAXrJUJ8LWbsa4yrgvxVoXsIk5zIB9x7+6FAtb9bjz7YIRB9VT1a
+        yRJ1NGrGL9CiRnehT6XHkB6+IC02c6T2Ox3Kg5ye50TCdaHO5vO1042SZNA6OmLK+guYIynu8xo
+        92kxdMWEWycDgHJKp
+X-Received: by 2002:a7b:cc82:: with SMTP id p2mr6334183wma.159.1578591000129;
+        Thu, 09 Jan 2020 09:30:00 -0800 (PST)
+X-Google-Smtp-Source: APXvYqx1BpP1PMD/hi6zn1BAihvdPSsBH2NbuRaz3Pm8k4ozDAvuoLzXW5PR6hbWraBQkPwKy790ow==
+X-Received: by 2002:a7b:cc82:: with SMTP id p2mr6334157wma.159.1578590999850;
+        Thu, 09 Jan 2020 09:29:59 -0800 (PST)
+Received: from localhost.localdomain (mob-176-246-50-46.net.vodafone.it. [176.246.50.46])
+        by smtp.gmail.com with ESMTPSA id j2sm3585180wmk.23.2020.01.09.09.29.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 09 Jan 2020 09:29:59 -0800 (PST)
+Date:   Thu, 9 Jan 2020 18:29:56 +0100
+From:   Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
+To:     Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Lorenzo Bianconi <lorenzo@kernel.org>, netdev@vger.kernel.org,
+        davem@davemloft.net
+Subject: Re: [PATCH] net: socionext: get rid of huge dma sync in
+ netsec_alloc_rx_data
+Message-ID: <20200109172956.GB2626@localhost.localdomain>
+References: <5ed1bbf3e27f5b0105346838dfe405670183d723.1578410912.git.lorenzo@kernel.org>
+ <20200108145322.GA2975@apalos.home>
+ <20200109182038.3840b285@carbon>
 MIME-Version: 1.0
-References: <20200109063745.3154913-1-ast@kernel.org> <20200109063745.3154913-8-ast@kernel.org>
-In-Reply-To: <20200109063745.3154913-8-ast@kernel.org>
-From:   Song Liu <song@kernel.org>
-Date:   Thu, 9 Jan 2020 09:27:26 -0800
-X-Gmail-Original-Message-ID: <CAPhsuW67HfWZ7JLMWtXSURc97SSP4MOT7d65F+r075qGqpW9Cg@mail.gmail.com>
-Message-ID: <CAPhsuW67HfWZ7JLMWtXSURc97SSP4MOT7d65F+r075qGqpW9Cg@mail.gmail.com>
-Subject: Re: [PATCH v2 bpf-next 7/7] selftests/bpf: Add unit tests for global functions
-To:     Alexei Starovoitov <ast@kernel.org>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="K8nIJk4ghYZn606h"
+Content-Disposition: inline
+In-Reply-To: <20200109182038.3840b285@carbon>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 8, 2020 at 10:39 PM Alexei Starovoitov <ast@kernel.org> wrote:
->
-> test_global_func[12] - check 512 stack limit.
-> test_global_func[34] - check 8 frame call chain limit.
-> test_global_func5    - check that non-ctx pointer cannot be passed into
->                        a function that expects context.
-> test_global_func6    - check that ctx pointer is unmodified.
->
-> Signed-off-by: Alexei Starovoitov <ast@kernel.org>
 
-Acked-by: Song Liu <songliubraving@fb.com>
+--K8nIJk4ghYZn606h
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> ---
->  .../bpf/prog_tests/test_global_funcs.c        | 81 +++++++++++++++++++
->  .../selftests/bpf/progs/test_global_func1.c   | 45 +++++++++++
->  .../selftests/bpf/progs/test_global_func2.c   |  4 +
->  .../selftests/bpf/progs/test_global_func3.c   | 65 +++++++++++++++
->  .../selftests/bpf/progs/test_global_func4.c   |  4 +
->  .../selftests/bpf/progs/test_global_func5.c   | 31 +++++++
->  .../selftests/bpf/progs/test_global_func6.c   | 31 +++++++
->  7 files changed, 261 insertions(+)
->  create mode 100644 tools/testing/selftests/bpf/prog_tests/test_global_funcs.c
->  create mode 100644 tools/testing/selftests/bpf/progs/test_global_func1.c
->  create mode 100644 tools/testing/selftests/bpf/progs/test_global_func2.c
->  create mode 100644 tools/testing/selftests/bpf/progs/test_global_func3.c
->  create mode 100644 tools/testing/selftests/bpf/progs/test_global_func4.c
->  create mode 100644 tools/testing/selftests/bpf/progs/test_global_func5.c
->  create mode 100644 tools/testing/selftests/bpf/progs/test_global_func6.c
->
-> diff --git a/tools/testing/selftests/bpf/prog_tests/test_global_funcs.c b/tools/testing/selftests/bpf/prog_tests/test_global_funcs.c
-> new file mode 100644
-> index 000000000000..bc588fa87d65
-> --- /dev/null
-> +++ b/tools/testing/selftests/bpf/prog_tests/test_global_funcs.c
-> @@ -0,0 +1,81 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/* Copyright (c) 2020 Facebook */
-> +#include <test_progs.h>
-> +
-> +const char *err_str;
-> +bool found;
-> +
-> +static int libbpf_debug_print(enum libbpf_print_level level,
-> +                             const char *format, va_list args)
-> +{
-> +       char *log_buf;
-> +
-> +       if (level != LIBBPF_WARN ||
-> +           strcmp(format, "libbpf: \n%s\n")) {
-> +               vprintf(format, args);
-> +               return 0;
-> +       }
-> +
-> +       log_buf = va_arg(args, char *);
-> +       if (!log_buf)
-> +               goto out;
-> +       if (strstr(log_buf, err_str) == 0)
-> +               found = true;
-> +out:
-> +       printf(format, log_buf);
-> +       return 0;
-> +}
+> On Wed, 8 Jan 2020 16:53:22 +0200
+> Ilias Apalodimas <ilias.apalodimas@linaro.org> wrote:
+>=20
+> > Hi Lorenzo,=20
+> >=20
+> > On Tue, Jan 07, 2020 at 04:30:32PM +0100, Lorenzo Bianconi wrote:
 
-libbpf_debug_print() looks very useful. Maybe we can move it to some
-header files?
+Hi Jesper and Ilias,
 
-Thanks,
-Song
+thx for the review :)
+
+> > > Socionext driver can run on dma coherent and non-coherent devices.
+> > > Get rid of huge dma_sync_single_for_device in netsec_alloc_rx_data si=
+nce
+> > > now the driver can let page_pool API to managed needed DMA sync
+> > >=20
+> > > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> > > ---
+> > >  drivers/net/ethernet/socionext/netsec.c | 45 +++++++++++++++--------=
+--
+> > >  1 file changed, 28 insertions(+), 17 deletions(-)
+> > >=20
+> > > diff --git a/drivers/net/ethernet/socionext/netsec.c b/drivers/net/et=
+hernet/socionext/netsec.c
+> > > index b5a9e947a4a8..00404fef17e8 100644
+> > > --- a/drivers/net/ethernet/socionext/netsec.c
+> > > +++ b/drivers/net/ethernet/socionext/netsec.c
+>=20
+> [...]
+> > > @@ -734,9 +734,7 @@ static void *netsec_alloc_rx_data(struct netsec_p=
+riv *priv,
+> > >  	/* Make sure the incoming payload fits in the page for XDP and non-=
+XDP
+> > >  	 * cases and reserve enough space for headroom + skb_shared_info
+> > >  	 */
+> > > -	*desc_len =3D PAGE_SIZE - NETSEC_RX_BUF_NON_DATA;
+> > > -	dma_dir =3D page_pool_get_dma_dir(dring->page_pool);
+> > > -	dma_sync_single_for_device(priv->dev, *dma_handle, *desc_len, dma_d=
+ir);
+> > > +	*desc_len =3D NETSEC_RX_BUF_SIZE;
+> > > =20
+> > >  	return page_address(page);
+> > >  }
+> > > @@ -883,6 +881,7 @@ static u32 netsec_xdp_xmit_back(struct netsec_pri=
+v *priv, struct xdp_buff *xdp)
+> > >  static u32 netsec_run_xdp(struct netsec_priv *priv, struct bpf_prog =
+*prog,
+> > >  			  struct xdp_buff *xdp)
+> > >  {
+> > > +	struct netsec_desc_ring *dring =3D &priv->desc_ring[NETSEC_RING_RX];
+> > >  	u32 ret =3D NETSEC_XDP_PASS;
+> > >  	int err;
+> > >  	u32 act;
+> > > @@ -896,7 +895,10 @@ static u32 netsec_run_xdp(struct netsec_priv *pr=
+iv, struct bpf_prog *prog,
+> > >  	case XDP_TX:
+> > >  		ret =3D netsec_xdp_xmit_back(priv, xdp);
+> > >  		if (ret !=3D NETSEC_XDP_TX)
+> > > -			xdp_return_buff(xdp);
+> > > +			__page_pool_put_page(dring->page_pool,
+> > > +				     virt_to_head_page(xdp->data),
+> > > +				     xdp->data_end - xdp->data_hard_start, =20
+> >=20
+> > Do we have to include data_hard_start?
+>=20
+> That does look wrong.
+
+ack, will fix it in v2
+
+>=20
+> > @Jesper i know bpf programs can modify the packet, but isn't it safe
+> > to only sync for xdp->data_end - xdp->data in this case since the DMA t=
+ransfer
+> > in this driver will always start *after* the XDP headroom?
+>=20
+> I agree.
+>=20
+> For performance it is actually important that we avoid "cache-flushing"
+> (which what happens on these non-coherent devices) the headroom.  As the
+> headroom is used for e.g. storing xdp_frame.
+
+IIRC on mvneta there is the same issue. I will post a patch to fix it.
+
+Regards,
+Lorenzo
+
+>=20
+>=20
+> --=20
+> Best regards,
+>   Jesper Dangaard Brouer
+>   MSc.CS, Principal Kernel Engineer at Red Hat
+>   LinkedIn: http://www.linkedin.com/in/brouer
+>=20
+
+--K8nIJk4ghYZn606h
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCXhdjEQAKCRA6cBh0uS2t
+rCYZAQC+TAWtNtfCNZ4T8PLdwXizYHYlNuvdm1YA3owSRkibNAEAymRjKZe4mH64
+SnsQcEQ5LwcdZgQwfqBtxZLwjwwjGAs=
+=ChR5
+-----END PGP SIGNATURE-----
+
+--K8nIJk4ghYZn606h--
+
