@@ -2,104 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D0A801374DC
-	for <lists+netdev@lfdr.de>; Fri, 10 Jan 2020 18:33:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CD8E91374FC
+	for <lists+netdev@lfdr.de>; Fri, 10 Jan 2020 18:39:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728065AbgAJRdk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jan 2020 12:33:40 -0500
-Received: from us-smtp-1.mimecast.com ([205.139.110.61]:57859 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726696AbgAJRdj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jan 2020 12:33:39 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1578677619;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=P0yrw4PFggndqV8WTQ+RFTNzi56EoD66CCsYHKmLvlo=;
-        b=VGj2nAVvclYFB6dXoysPT6Wng+tyvH5XclO1TcEF/3CfjNIPAYi5S5TXXgaCFwWT7Bs0pp
-        g1Sngxw3iErmGvWblHUM2ZUYLMyS0O8AqQ+3aboR/1bhbDqZQc97hAgf1DJ3S1ae9obuV+
-        7S38jMJE/L77Jj8vjBfHTJV0Ry4uI7M=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-262-E7GP9qgGNXKj-2EAFpxjRQ-1; Fri, 10 Jan 2020 12:33:37 -0500
-X-MC-Unique: E7GP9qgGNXKj-2EAFpxjRQ-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 86957593AA;
-        Fri, 10 Jan 2020 17:33:36 +0000 (UTC)
-Received: from carbon (ovpn-200-25.brq.redhat.com [10.40.200.25])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 83C6B5C541;
-        Fri, 10 Jan 2020 17:33:29 +0000 (UTC)
-Date:   Fri, 10 Jan 2020 18:33:28 +0100
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Lorenzo Bianconi <lorenzo@kernel.org>
-Cc:     Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        netdev@vger.kernel.org, davem@davemloft.net,
-        lorenzo.bianconi@redhat.com, brouer@redhat.com
-Subject: Re: [PATCH v2 net-next] net: socionext: get rid of huge dma sync in
- netsec_alloc_rx_data
-Message-ID: <20200110183328.219ed2bd@carbon>
-In-Reply-To: <20200110153413.GA31419@localhost.localdomain>
-References: <81eeb4aaf1cbbbdcd4f58c5a7f06bdab67f20633.1578664483.git.lorenzo@kernel.org>
-        <20200110145631.GA69461@apalos.home>
-        <20200110153413.GA31419@localhost.localdomain>
+        id S1728519AbgAJRi5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jan 2020 12:38:57 -0500
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:45252 "EHLO
+        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726114AbgAJRi4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jan 2020 12:38:56 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
+        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=Y7V9x1rxcJN0/N2QQA+GdUY1uWXlgWareYZljTBcMZQ=; b=QXvaqUgsVlHzIT3sbyJKm+Wqy
+        UY3ow3kgHd6moWkUfpsPoCoSuiGJHKdsEH+8fIMfHYMG1n2AeBUuofD3MCdRDLIb5tHDehjyyNPZt
+        Lb8lhrwwoBXFH2mY7vbihBqukOlUumzkKzCMSOZhMVmw6BdWR8z4JA/NwtQcRCOl1Nvaywe2brqsF
+        n576mEsOSIEcQtdjyzfDtQcS9tX2qr9uQRhfVdgQSRV50o1LHcCXox1FUKzck2LNrM9X1byUO9vGk
+        LiM8SEmsGlTWl75BnfobPy0f6iY5xUqhzIpu+zNIGaEDKZO+sV6zy1ZSZABb79S5+H1CfouGy0GIh
+        aqf0sNH/Q==;
+Received: from shell.armlinux.org.uk ([2002:4e20:1eda:1:5054:ff:fe00:4ec]:60700)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1ipyFI-0004aT-Qp; Fri, 10 Jan 2020 17:38:52 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1ipyFH-0001h2-P4; Fri, 10 Jan 2020 17:38:51 +0000
+Date:   Fri, 10 Jan 2020 17:38:51 +0000
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     =?utf-8?B?0b3SieG2rOG4s+KEoA==?= <vtol@gmx.net>
+Cc:     Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org
+Subject: Re: [drivers/net/phy/sfp] intermittent failure in state machine
+ checks
+Message-ID: <20200110173851.GJ25745@shell.armlinux.org.uk>
+References: <20200110114433.GZ25745@shell.armlinux.org.uk>
+ <7b6f143a-7bdb-90be-00f6-9e81e21bde4e@gmx.net>
+ <20200110125305.GB25745@shell.armlinux.org.uk>
+ <b4b94498-5011-1e89-db54-04916f8ef846@gmx.net>
+ <20200110150955.GE25745@shell.armlinux.org.uk>
+ <e9a99276-c09d-fa8d-a280-fca2abac6602@gmx.net>
+ <20200110163235.GG25745@shell.armlinux.org.uk>
+ <717229a4-f7f6-837d-3d58-756b516a8605@gmx.net>
+ <20200110170836.GI25745@shell.armlinux.org.uk>
+ <12956566-4aa3-2c5d-be1a-8612edab3b3d@gmx.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <12956566-4aa3-2c5d-be1a-8612edab3b3d@gmx.net>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 10 Jan 2020 16:34:13 +0100
-Lorenzo Bianconi <lorenzo@kernel.org> wrote:
-
-> > On Fri, Jan 10, 2020 at 02:57:44PM +0100, Lorenzo Bianconi wrote:  
-> > > Socionext driver can run on dma coherent and non-coherent devices.
-> > > Get rid of huge dma_sync_single_for_device in netsec_alloc_rx_data since
-> > > now the driver can let page_pool API to managed needed DMA sync
-> > > 
-> > > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-> > > ---
-> > > Changes since v1:
-> > > - rely on original frame size for dma sync
-> > > ---
-> > >  drivers/net/ethernet/socionext/netsec.c | 43 +++++++++++++++----------
-> > >  1 file changed, 26 insertions(+), 17 deletions(-)
-> > >   
+On Fri, Jan 10, 2020 at 05:19:35PM +0000, ѽ҉ᶬḳ℠ wrote:
 > 
-> [...]
+> On 10/01/2020 17:08, Russell King - ARM Linux admin wrote:
+> > On Fri, Jan 10, 2020 at 04:53:06PM +0000, ѽ҉ᶬḳ℠ wrote:
+> > > Seems that the debug avenue has been exhausted, short of running SFP.C in
+> > > debug mode.
+> > You're saying you never see TX_FAULT asserted other than when the
+> > interface is down?
 > 
-> > > @@ -883,6 +881,8 @@ static u32 netsec_xdp_xmit_back(struct netsec_priv *priv, struct xdp_buff *xdp)
-> > >  static u32 netsec_run_xdp(struct netsec_priv *priv, struct bpf_prog *prog,
-> > >  			  struct xdp_buff *xdp)
-> > >  {
-> > > +	struct netsec_desc_ring *dring = &priv->desc_ring[NETSEC_RING_RX];
-> > > +	unsigned int len = xdp->data_end - xdp->data;  
-> > 
-> > We need to account for XDP expanding the headers as well here. 
-> > So something like max(xdp->data_end(before bpf), xdp->data_end(after bpf)) -
-> > xdp->data (original)  
-> 
-> correct, the corner case that is not covered at the moment is when data_end is
-> moved forward by the bpf program. I will fix it in v3. Thx
+> Yes, it never exhibits once the iif is up - it is rock-stable in that state,
+> only ever when being transitioned from down state to up state.
+> Pardon, if that has not been made explicitly clear previously.
 
-Maybe we can simplify do:
+I think if we were to have SFP debug enabled, you'll find that
+TX_FAULT is being reported to SFP as being asserted.
 
- void *data_start = NETSEC_RXBUF_HEADROOM + xdp->data_hard_start;
- unsigned int len = xdp->data_end - data_start;
+You probably aren't running that while loop, as it will exit when
+it sees TX_FAULT asserted.  So, here's another bit of shell code
+for you to run:
 
-The cache-lines that need to be flushed/synced for_device is the area
-used by NIC DMA engine.  We know it will always start at a certain
-point (given driver configured hardware to this).
+ip li set dev eth2 down; \
+ip li set dev eth2 up; \
+date
+while :; do
+  cat /proc/uptime
+  while ! grep -A5 'tx-fault.*in  hi' /sys/kernel/debug/gpio; do :; done
+  cat /proc/uptime
+  while ! grep -A5 'tx-fault.*in  lo' /sys/kernel/debug/gpio; do :; done
+done
+
+This will give you output such as:
+
+Fri 10 Jan 17:31:06 GMT 2020
+774869.13 1535859.48
+ gpio-509 (                    |tx-fault            ) in  hi ...
+774869.14 1535859.49
+ gpio-509 (                    |tx-fault            ) in  lo ...
+774869.15 1535859.50
+
+The first date and "uptime" output is the timestamp when the interface
+was brought up.  Subsequent "uptime" outputs can be used to calculate
+the time difference in seconds between the state printed immediately
+prior to the uptime output, and the first "uptime" output.
+
+So in the above example, the tx-fault signal was hi at 10ms, and then
+went low 20ms after the up.
+
+However, bear in mind that even this will not be good enough to spot
+transitory changes on TX_FAULT - as your I2C GPIO expander is interrupt
+capable, watching /proc/interrupts may tell you more.
+
+If the TX_FAULT signal is as stable as you claim it is, you should see
+the interrupt count for it remaining the same.
 
 -- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
+According to speedtest.net: 11.9Mbps down 500kbps up
