@@ -2,200 +2,725 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 154CD137650
+	by mail.lfdr.de (Postfix) with ESMTP id 8EDF8137651
 	for <lists+netdev@lfdr.de>; Fri, 10 Jan 2020 19:45:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728778AbgAJSo0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jan 2020 13:44:26 -0500
-Received: from mout.gmx.net ([212.227.17.20]:49375 "EHLO mout.gmx.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728792AbgAJSo0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 10 Jan 2020 13:44:26 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1578681861;
-        bh=PA8M/keevYanqhTc/9w9MahHGpsG/wz/SqakSXwIVj4=;
-        h=X-UI-Sender-Class:Reply-To:Subject:To:Cc:References:From:Date:
-         In-Reply-To;
-        b=fnzgd+TmeC92AJFNQ2iI0IQPDDKW6mbxV1dBJdANZeC82jDVGxHboMK5izy7zsZpT
-         bCnZEuU0H2CwsWUKIov37ZxmbbMgJy6ECpH///PG0X2tisKOcvMSQi0qq7wjF2CsR+
-         BIXu0kDygRB+FzqqWafa45qSCLCoxnyQ+jdh2Kcs=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [192.168.84.205] ([46.59.197.184]) by mail.gmx.com (mrgmx104
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1McYCb-1jOEDw0R0X-00d0Mh; Fri, 10
- Jan 2020 19:44:21 +0100
-Reply-To: vtol@gmx.net
-Subject: Re: [drivers/net/phy/sfp] intermittent failure in state machine
- checks
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Cc:     Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org
-References: <20200110114433.GZ25745@shell.armlinux.org.uk>
- <7b6f143a-7bdb-90be-00f6-9e81e21bde4e@gmx.net>
- <20200110125305.GB25745@shell.armlinux.org.uk>
- <b4b94498-5011-1e89-db54-04916f8ef846@gmx.net>
- <20200110150955.GE25745@shell.armlinux.org.uk>
- <e9a99276-c09d-fa8d-a280-fca2abac6602@gmx.net>
- <20200110163235.GG25745@shell.armlinux.org.uk>
- <717229a4-f7f6-837d-3d58-756b516a8605@gmx.net>
- <20200110170836.GI25745@shell.armlinux.org.uk>
- <12956566-4aa3-2c5d-be1a-8612edab3b3d@gmx.net>
- <20200110173851.GJ25745@shell.armlinux.org.uk>
-From:   =?UTF-8?B?0b3SieG2rOG4s+KEoA==?= <vtol@gmx.net>
-Message-ID: <e18b0fb9-0c6d-ed5e-3a20-dc29e9cc048e@gmx.net>
-Date:   Fri, 10 Jan 2020 18:44:18 +0000
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:68.0) Gecko/20100101 Firefox/68.0
+        id S1728811AbgAJSog (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jan 2020 13:44:36 -0500
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:58096 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1728798AbgAJSog (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jan 2020 13:44:36 -0500
+Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
+        by m0001303.ppops.net (8.16.0.42/8.16.0.42) with SMTP id 00AIiOCb001322
+        for <netdev@vger.kernel.org>; Fri, 10 Jan 2020 10:44:34 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-type; s=facebook;
+ bh=thWT56UKARbdWw8MUpACPPWVUn1AXtEQn1Yf02sqvY0=;
+ b=eJoyPLiqPujEmFKLEFBH5/AR7WGgFH9ACcMSJSKZxFwQ5IYS9qzYsE1TG9c/3jsK6EYn
+ FEyEAiQIhUkDpNYpHM6aq4i/hWmVP9iOViaVhF8qKRpvHQJ1yz3i8aUyiCQy/D+/eMPC
+ tz84y48fAIMeyibgYMol8hr/5P3FWwN6nWA= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by m0001303.ppops.net with ESMTP id 2xenyt33h9-12
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Fri, 10 Jan 2020 10:44:33 -0800
+Received: from intmgw002.41.prn1.facebook.com (2620:10d:c085:208::11) by
+ mail.thefacebook.com (2620:10d:c085:11d::6) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1779.2; Fri, 10 Jan 2020 10:44:30 -0800
+Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
+        id 4999C2EC1632; Fri, 10 Jan 2020 10:44:29 -0800 (PST)
+Smtp-Origin-Hostprefix: devbig
+From:   Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>, <kafai@fb.com>
+CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Cluster: ftw2c04
+Subject: [PATCH v4 bpf-next] selftests/bpf: add BPF_PROG, BPF_KPROBE, and BPF_KRETPROBE macros
+Date:   Fri, 10 Jan 2020 10:44:27 -0800
+Message-ID: <20200110184427.357298-1-andriin@fb.com>
+X-Mailer: git-send-email 2.17.1
+X-FB-Internal: Safe
 MIME-Version: 1.0
-In-Reply-To: <20200110173851.GJ25745@shell.armlinux.org.uk>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: base64
-Content-Language: en-GB
-X-Provags-ID: V03:K1:WaHOIm8OMWNzwuENxrBf3cqZMnfEX4O3ko/vj4qkuMaMIeMWKl4
- C6nwiuyCfcd6y5J0KLbfvPyalcSvd6vgfPvprn9vbl6RJnsbmw5Uw7LovuxYIlzMZJLoyxx
- T3a8GBf6PDc6+O5AclZbbusDC/8QwIj7Da/KSU14wObm3L930YjcDE+oRmwzRPCnemN1AXh
- qzH8GTKgqdHtdl+2QuNkw==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:lN+85BDzgDg=:N73DBfxgS588vL7yGag7Qi
- DwvTY1pbbtB3CBoWKBQJEHLbL/i9wqcASGSyyybtjpODThjiiqouqFVuaVRaapcssuAZASEed
- 2pAlXJMS+c8iJQDO3VLunrOLSpvYi15Uq1ZAI7FQguftlZXJ4dRHKe62fxS5rj3uoD7HKCS4t
- v2VqKUVQvkT8bPlAr8pWnWVYhHIVr5rZ6Iti8/N3Cd6xa4KGdvHZYOFjm98DgEcPiHF1Mvvpv
- xESi0UyeRaV9iPNoocAQgy9ZOr7hLvU+tri/VnTb7+klAP7bTZUf0Hic5vzyiB7mQ7UNpMJ9w
- 8Unt5k20+/sJ3PTLYRN0dhTAxB5mysON9nt4ihuvD8H4Vj8B0Ny89xP4CKoZxWqWZYiIPk9qx
- Jwzxk+9qPSYdV6oqBYhkrCoVSnO1BvRMP4WKlVDKaVypBOUpbjNTV4zUNgMQQASL52hLUSA4T
- 6toV7jxBHxk92vr6gMSFZ2ItrgskhMdBQwd6QDybKhXrUEXmhprs8Pvk8M64h8+k9GCM0KZBf
- 9k5DEdb5zF58OmlU1Ghu0hYs6dOVMTz0S5iMgnM7d2WNkuiH+3Wf3UbZ19Jbwn2QC2/29KvQO
- LQVgmn+DS0JwECz21lTxmNCkw9kTxthbjZdhwUD3xMHLmjKmun+Ep8zZ/jUdYJLTLEwIbcRPB
- pA4eOeBoWWmKFmXQyNfCPztrpkHsccl8iqJbelNEHE6u2bmKKAeG16D4HL+RSZQn2Ugjc13cW
- 5L6UphYJJ+X0jpwZgNIN5DmOz9K78DOKeEkk0xkMVvJvCJini32AYEX+cF6xC7lbyTFPl6RgC
- lvyYHVbWC2IISD1Vod1H2F7shQoeo3/lkYf+szgSYfwmbpZP3Si/Wfzx/MqAMWxhbhzsUYdJR
- mLHW/3QVontTs5WPw985srWqNcaH1/DT4nnZxCNht5EtkQP7AL5Bk2qFlOb+2e8gCitAfnXtA
- 0VqbP2P33oeO4xJsl2zX5kCgRxcFPXW+KIdWdiB/8dUz7qXN3j2QHg0F5ihJhTxA5FMyGxHTg
- M3tNRW4PjFIyY5mBOVJuNUcMdA9yS2ufAL+YBiQBWjec070jlVqUvv1WDu2GU3nNrKzV9CZHX
- pw35wWDpU+0Nje4L1OtRurGemDNO24/eU1BpyTclnsXIRHspRGZGTy4XBC53xBKlYShqT0dSi
- rULpRuu9lNKN2Khg4bOngLqrcLlFzPsoYtru/1ql7DmroHg9opqjmXoCcYu9Dk9s09yXWfOqr
- icHXas0qYuv+UJKl0CyVFR+CMZUIY0179YBZ/eA==
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
+ definitions=2020-01-10_01:2020-01-10,2020-01-09 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 malwarescore=0
+ lowpriorityscore=0 mlxscore=0 adultscore=0 clxscore=1015 bulkscore=0
+ impostorscore=0 priorityscore=1501 mlxlogscore=999 spamscore=0
+ phishscore=0 suspectscore=8 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-1910280000 definitions=main-2001100151
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gMTAvMDEvMjAyMCAxNzozOCwgUnVzc2VsbCBLaW5nIC0gQVJNIExpbnV4IGFkbWluIHdy
-b3RlOg0KPg0KPj4+IE9uIEZyaSwgSmFuIDEwLCAyMDIwIGF0IDA0OjUzOjA2UE0gKzAwMDAs
-ING90onhtqzhuLPihKAgd3JvdGU6DQo+Pj4+IFNlZW1zIHRoYXQgdGhlIGRlYnVnIGF2ZW51
-ZSBoYXMgYmVlbiBleGhhdXN0ZWQsIHNob3J0IG9mIHJ1bm5pbmcgU0ZQLkMgaW4NCj4+Pj4g
-ZGVidWcgbW9kZS4NCj4+PiBZb3UncmUgc2F5aW5nIHlvdSBuZXZlciBzZWUgVFhfRkFVTFQg
-YXNzZXJ0ZWQgb3RoZXIgdGhhbiB3aGVuIHRoZQ0KPj4+IGludGVyZmFjZSBpcyBkb3duPw0K
-Pj4gWWVzLCBpdCBuZXZlciBleGhpYml0cyBvbmNlIHRoZSBpaWYgaXMgdXAgLSBpdCBpcyBy
-b2NrLXN0YWJsZSBpbiB0aGF0IHN0YXRlLA0KPj4gb25seSBldmVyIHdoZW4gYmVpbmcgdHJh
-bnNpdGlvbmVkIGZyb20gZG93biBzdGF0ZSB0byB1cCBzdGF0ZS4NCj4+IFBhcmRvbiwgaWYg
-dGhhdCBoYXMgbm90IGJlZW4gbWFkZSBleHBsaWNpdGx5IGNsZWFyIHByZXZpb3VzbHkuDQo+
-IEkgdGhpbmsgaWYgd2Ugd2VyZSB0byBoYXZlIFNGUCBkZWJ1ZyBlbmFibGVkLCB5b3UnbGwg
-ZmluZCB0aGF0DQo+IFRYX0ZBVUxUIGlzIGJlaW5nIHJlcG9ydGVkIHRvIFNGUCBhcyBiZWlu
-ZyBhc3NlcnRlZC4NCg0KSWYgcmVhbGx5IG5lY2Vzc2FyeSBJIGNvdWxkIGFzayB0aGUgVE9T
-IGRldmVsb3BlcnMgdG8gYXNzaXN0LCBub3Qgc3VyZSANCndoZXRoZXIgdGhleSB3b3VsZCBv
-YmxpZGdlLiBUaGVpciBNYXN0ZXIgYnJhbmNoIGJ1aWxkIGJvdCBjb21waWxlcyB0d2ljZSAN
-CmEgZGF5Lg0KV291bGQgaXQganVzdCBpbnZvbHZlIHNldHRpbmcgYSBrZXJuZWwgZGVidWcg
-ZmxhZyBvciBzb21ldGhpbmcgbW9yZSANCmVsYWJvcmF0ZT8NCg0KPg0KPiBZb3UgcHJvYmFi
-bHkgYXJlbid0IHJ1bm5pbmcgdGhhdCB3aGlsZSBsb29wLCBhcyBpdCB3aWxsIGV4aXQgd2hl
-bg0KPiBpdCBzZWVzIFRYX0ZBVUxUIGFzc2VydGVkLiAgU28sIGhlcmUncyBhbm90aGVyIGJp
-dCBvZiBzaGVsbCBjb2RlDQo+IGZvciB5b3UgdG8gcnVuOg0KPg0KPiBpcCBsaSBzZXQgZGV2
-IGV0aDIgZG93bjsgXA0KPiBpcCBsaSBzZXQgZGV2IGV0aDIgdXA7IFwNCj4gZGF0ZQ0KPiB3
-aGlsZSA6OyBkbw0KPiAgICBjYXQgL3Byb2MvdXB0aW1lDQo+ICAgIHdoaWxlICEgZ3JlcCAt
-QTUgJ3R4LWZhdWx0LippbiAgaGknIC9zeXMva2VybmVsL2RlYnVnL2dwaW87IGRvIDo7IGRv
-bmUNCj4gICAgY2F0IC9wcm9jL3VwdGltZQ0KPiAgICB3aGlsZSAhIGdyZXAgLUE1ICd0eC1m
-YXVsdC4qaW4gIGxvJyAvc3lzL2tlcm5lbC9kZWJ1Zy9ncGlvOyBkbyA6OyBkb25lDQo+IGRv
-bmUNCj4NCj4gVGhpcyB3aWxsIGdpdmUgeW91IG91dHB1dCBzdWNoIGFzOg0KPg0KPiBGcmkg
-MTAgSmFuIDE3OjMxOjA2IEdNVCAyMDIwDQo+IDc3NDg2OS4xMyAxNTM1ODU5LjQ4DQo+ICAg
-Z3Bpby01MDkgKCAgICAgICAgICAgICAgICAgICAgfHR4LWZhdWx0ICAgICAgICAgICAgKSBp
-biAgaGkgLi4uDQo+IDc3NDg2OS4xNCAxNTM1ODU5LjQ5DQo+ICAgZ3Bpby01MDkgKCAgICAg
-ICAgICAgICAgICAgICAgfHR4LWZhdWx0ICAgICAgICAgICAgKSBpbiAgbG8gLi4uDQo+IDc3
-NDg2OS4xNSAxNTM1ODU5LjUwDQo+DQo+IFRoZSBmaXJzdCBkYXRlIGFuZCAidXB0aW1lIiBv
-dXRwdXQgaXMgdGhlIHRpbWVzdGFtcCB3aGVuIHRoZSBpbnRlcmZhY2UNCj4gd2FzIGJyb3Vn
-aHQgdXAuICBTdWJzZXF1ZW50ICJ1cHRpbWUiIG91dHB1dHMgY2FuIGJlIHVzZWQgdG8gY2Fs
-Y3VsYXRlDQo+IHRoZSB0aW1lIGRpZmZlcmVuY2UgaW4gc2Vjb25kcyBiZXR3ZWVuIHRoZSBz
-dGF0ZSBwcmludGVkIGltbWVkaWF0ZWx5DQo+IHByaW9yIHRvIHRoZSB1cHRpbWUgb3V0cHV0
-LCBhbmQgdGhlIGZpcnN0ICJ1cHRpbWUiIG91dHB1dC4NCj4NCj4gU28gaW4gdGhlIGFib3Zl
-IGV4YW1wbGUsIHRoZSB0eC1mYXVsdCBzaWduYWwgd2FzIGhpIGF0IDEwbXMsIGFuZCB0aGVu
-DQo+IHdlbnQgbG93IDIwbXMgYWZ0ZXIgdGhlIHVwLg0KDQphd2Z1bGx5IG5pY2Ugb2YgeW91
-IHRvIHByb3ZpZGUgdGhlIGNvZGUsIHRoaXMgaXMgdGhlIG91dHB1dCB3aGVuIHRoZSBpaWYg
-DQppcyBicm91Z2h0IGRvd24gYW5kIHVwIGFnYWluIGFuZCBleGhpYml0aW5nIHRoZSB0cmFu
-c21pdCBmYXVsdC4NCg0KaXAgbGkgc2V0IGRldiBldGgyIGRvd247IFwNCiA+IGlwIGxpIHNl
-dCBkZXYgZXRoMiB1cDsgXA0KID4gZGF0ZQ0KRnJpIEphbiAxMCAxODozNDo1MiBHTVQgMjAy
-MA0Kcm9vdEB0bzp+IyB3aGlsZSA6OyBkbw0KID7CoMKgIGNhdCAvcHJvYy91cHRpbWUNCiA+
-wqDCoCB3aGlsZSAhIGdyZXAgLUE1ICd0eC1mYXVsdC4qaW7CoCBoaScgL3N5cy9rZXJuZWwv
-ZGVidWcvZ3BpbzsgZG8gOjsgZG9uZQ0KID7CoMKgIGNhdCAvcHJvYy91cHRpbWUNCiA+wqDC
-oCB3aGlsZSAhIGdyZXAgLUE1ICd0eC1mYXVsdC4qaW7CoCBsbycgL3N5cy9rZXJuZWwvZGVi
-dWcvZ3BpbzsgZG8gOjsgZG9uZQ0KID4gZG9uZQ0KMTg2NS4yMCAzMjI0LjY3DQogwqBncGlv
-LTUwNCAowqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgfHR4LWZhdWx0
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoCApIGluwqAgaGkgSVJRDQogwqBncGlvLTUwNSAowqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgfHR4LWRpc2FibGXCoMKgwqDC
-oMKgwqDCoMKgwqAgKSBvdXQgaGkNCiDCoGdwaW8tNTA2ICjCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoCB8cmF0ZS1zZWxlY3QwwqDCoMKgwqDCoMKgwqAgKSBpbsKg
-IGxvDQogwqBncGlvLTUwNyAowqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqAgfGxvc8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgICkgaW7CoCBsbyBJUlEN
-CiDCoGdwaW8tNTA4ICjCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCB8
-bW9kLWRlZjDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgICkgaW7CoCBsbyBJUlENCjE4NzEuNzcg
-MzIzMC43MQ0KIMKgZ3Bpby01MDQgKMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgIHx0eC1mYXVsdMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgKSBpbsKgIGxvIElSUQ0K
-IMKgZ3Bpby01MDUgKMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIHx0
-eC1kaXNhYmxlwqDCoMKgwqDCoMKgwqDCoMKgICkgb3V0IGxvDQogwqBncGlvLTUwNiAowqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgfHJhdGUtc2VsZWN0MMKgwqDC
-oMKgwqDCoMKgICkgaW7CoCBsbw0KIMKgZ3Bpby01MDcgKMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgIHxsb3PCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oCApIGluwqAgbG8gSVJRDQogwqBncGlvLTUwOCAowqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqAgfG1vZC1kZWYwwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCApIGluwqAg
-bG8gSVJRDQoxOTE5LjA2IDMzMDkuNTUNCiDCoGdwaW8tNTA0ICjCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoCB8dHgtZmF1bHTCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-ICkgaW7CoCBoaSBJUlENCiDCoGdwaW8tNTA1ICjCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoCB8dHgtZGlzYWJsZcKgwqDCoMKgwqDCoMKgwqDCoCApIG91dCBsbw0K
-IMKgZ3Bpby01MDYgKMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIHxy
-YXRlLXNlbGVjdDDCoMKgwqDCoMKgwqDCoCApIGluwqAgbG8NCiDCoGdwaW8tNTA3ICjCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCB8bG9zwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqAgKSBpbsKgIGxvIElSUQ0KIMKgZ3Bpby01MDggKMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIHxtb2QtZGVmMMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqAgKSBpbsKgIGxvIElSUQ0KMTkxOS4wNyAzMzA5LjU3DQogwqBncGlvLTUwNCAo
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgfHR4LWZhdWx0wqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoCApIGluwqAgbG8gSVJRDQogwqBncGlvLTUwNSAowqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgfHR4LWRpc2FibGXCoMKgwqDCoMKgwqDC
-oMKgwqAgKSBvdXQgbG8NCiDCoGdwaW8tNTA2ICjCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoCB8cmF0ZS1zZWxlY3QwwqDCoMKgwqDCoMKgwqAgKSBpbsKgIGxvDQog
-wqBncGlvLTUwNyAowqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgfGxv
-c8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgICkgaW7CoCBsbyBJUlENCiDCoGdw
-aW8tNTA4ICjCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCB8bW9kLWRl
-ZjDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgICkgaW7CoCBsbyBJUlENCjE5MjAuNjggMzMxMi4y
-OA0KIMKgZ3Bpby01MDQgKMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-IHx0eC1mYXVsdMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgKSBpbsKgIGhpIElSUQ0KIMKgZ3Bp
-by01MDUgKMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIHx0eC1kaXNh
-YmxlwqDCoMKgwqDCoMKgwqDCoMKgICkgb3V0IGxvDQogwqBncGlvLTUwNiAowqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgfHJhdGUtc2VsZWN0MMKgwqDCoMKgwqDC
-oMKgICkgaW7CoCBsbw0KIMKgZ3Bpby01MDcgKMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgIHxsb3PCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCApIGlu
-wqAgbG8gSVJRDQogwqBncGlvLTUwOCAowqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqAgfG1vZC1kZWYwwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCApIGluwqAgbG8gSVJR
-DQoxOTIxLjg2IDMzMTQuMjENCiDCoGdwaW8tNTA0ICjCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoCB8dHgtZmF1bHTCoMKgwqDCoMKgwqDCoMKgwqDCoMKgICkgaW7C
-oCBsbyBJUlENCiDCoGdwaW8tNTA1ICjCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoCB8dHgtZGlzYWJsZcKgwqDCoMKgwqDCoMKgwqDCoCApIG91dCBsbw0KIMKgZ3Bp
-by01MDYgKMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIHxyYXRlLXNl
-bGVjdDDCoMKgwqDCoMKgwqDCoCApIGluwqAgbG8NCiDCoGdwaW8tNTA3ICjCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCB8bG9zwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqAgKSBpbsKgIGxvIElSUQ0KIMKgZ3Bpby01MDggKMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIHxtb2QtZGVmMMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqAgKSBpbsKgIGxvIElSUQ0KMTkyMS44NiAzMzE0LjIxDQoNCj4gSG93ZXZlciwgYmVhciBp
-biBtaW5kIHRoYXQgZXZlbiB0aGlzIHdpbGwgbm90IGJlIGdvb2QgZW5vdWdoIHRvIHNwb3QN
-Cj4gdHJhbnNpdG9yeSBjaGFuZ2VzIG9uIFRYX0ZBVUxUIC0gYXMgeW91ciBJMkMgR1BJTyBl
-eHBhbmRlciBpcyBpbnRlcnJ1cHQNCj4gY2FwYWJsZSwgd2F0Y2hpbmcgL3Byb2MvaW50ZXJy
-dXB0cyBtYXkgdGVsbCB5b3UgbW9yZS4NCj4NCj4gSWYgdGhlIFRYX0ZBVUxUIHNpZ25hbCBp
-cyBhcyBzdGFibGUgYXMgeW91IGNsYWltIGl0IGlzLCB5b3Ugc2hvdWxkIHNlZQ0KPiB0aGUg
-aW50ZXJydXB0IGNvdW50IGZvciBpdCByZW1haW5pbmcgdGhlIHNhbWUuDQoNCk9uY2UgdGhl
-IGlpZiBpcyB1cCB0aG9zZSB2YWx1ZXMgcmVtYWluIHN0YWJsZSBpbmRlZWQuDQoNCmNhdCAv
-cHJvYy9pbnRlcnJ1cHRzIHwgZ3JlcCBzZnANCiDCoDUyOsKgwqDCoMKgwqDCoMKgwqDCoCAw
-wqDCoMKgwqDCoMKgwqDCoMKgIDDCoMKgIHBjYTk1M3jCoMKgIDQgRWRnZcKgwqDCoMKgwqAg
-c2ZwDQogwqA1MzrCoMKgwqDCoMKgwqDCoMKgwqAgMMKgwqDCoMKgwqDCoMKgwqDCoCAwwqDC
-oCBwY2E5NTN4wqDCoCAzIEVkZ2XCoMKgwqDCoMKgIHNmcA0KIMKgNTQ6wqDCoMKgwqDCoMKg
-wqDCoMKgIDbCoMKgwqDCoMKgwqDCoMKgwqAgMMKgwqAgcGNhOTUzeMKgwqAgMCBFZGdlwqDC
-oMKgwqDCoCBzZnANCg0KYW5kIG9ubHkgaW5jcmVtZW50aW5nIHdpdGggaWZ1cGRvd24gYWN0
-aW9uICh3aGljaCB3b3VsZCBiZSBsb2dpY2FsKQ0KDQpjYXQgL3Byb2MvaW50ZXJydXB0cyB8
-IGdyZXAgc2ZwDQogwqA1MjrCoMKgwqDCoMKgwqDCoMKgwqAgMMKgwqDCoMKgwqDCoMKgwqDC
-oCAwwqDCoCBwY2E5NTN4wqDCoCA0IEVkZ2XCoMKgwqDCoMKgIHNmcA0KIMKgNTM6wqDCoMKg
-wqDCoMKgwqDCoMKgIDDCoMKgwqDCoMKgwqDCoMKgwqAgMMKgwqAgcGNhOTUzeMKgwqAgMyBF
-ZGdlwqDCoMKgwqDCoCBzZnANCiDCoDU0OsKgwqDCoMKgwqDCoMKgwqAgMTHCoMKgwqDCoMKg
-wqDCoMKgwqAgMMKgwqAgcGNhOTUzeMKgwqAgMCBFZGdlwqDCoMKgwqDCoCBzZnANCg0KDQo=
+Streamline BPF_TRACE_x macro by moving out return type and section attribute
+definition out of macro itself. That makes those function look in source code
+similar to other BPF programs. Additionally, simplify its usage by determining
+number of arguments automatically (so just single BPF_TRACE vs a family of
+BPF_TRACE_1, BPF_TRACE_2, etc). Also, allow more natural function argument
+syntax without commas inbetween argument type and name.
+
+Given this helper is useful not only for tracing tp_btf/fenty/fexit programs,
+but could be used for LSM programs and others following the same pattern,
+rename BPF_TRACE macro into more generic BPF_PROG. Existing BPF_TRACE_x
+usages in selftests are converted to new BPF_PROG macro.
+
+Following the same pattern, define BPF_KPROBE and BPF_KRETPROBE macros for
+nicer usage of kprobe/kretprobe arguments, respectively. BPF_KRETPROBE, adopts
+same convention used by fexit programs, that last defined argument is probed
+function's return result.
+
+v3->v4:
+- rebased and fixed one more BPF_TRACE_x occurence (Alexei);
+
+v2->v3:
+- rename to shorter and as generic BPF_PROG (Alexei);
+
+v1->v2:
+- verified GCC handles pragmas as expected;
+- added descriptions to macros;
+- converted new STRUCT_OPS selftest to BPF_HANDLER (worked as expected);
+- added original context as 'ctx' parameter, for cases where it has to be
+  passed into BPF helpers. This might cause an accidental naming collision,
+  unfortunately, but at least it's easy to work around. Fortunately, this
+  situation produces quite legible compilation error:
+
+progs/bpf_dctcp.c:46:6: error: redefinition of 'ctx' with a different type: 'int' vs 'unsigned long long *'
+        int ctx = 123;
+            ^
+progs/bpf_dctcp.c:42:6: note: previous definition is here
+void BPF_HANDLER(dctcp_init, struct sock *sk)
+     ^
+./bpf_trace_helpers.h:58:32: note: expanded from macro 'BPF_HANDLER'
+____##name(unsigned long long *ctx, ##args)
+
+Acked-by: Martin KaFai Lau <kafai@fb.com>
+Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+---
+ tools/testing/selftests/bpf/bpf_tcp_helpers.h |   9 -
+ .../testing/selftests/bpf/bpf_trace_helpers.h | 166 ++++++++++++------
+ tools/testing/selftests/bpf/progs/bpf_dctcp.c |  26 +--
+ .../testing/selftests/bpf/progs/fentry_test.c |  21 ++-
+ .../selftests/bpf/progs/fexit_bpf2bpf.c       |  12 +-
+ .../bpf/progs/fexit_bpf2bpf_simple.c          |   5 +-
+ .../testing/selftests/bpf/progs/fexit_test.c  |  23 +--
+ tools/testing/selftests/bpf/progs/kfree_skb.c |  16 +-
+ .../selftests/bpf/progs/test_overhead.c       |  30 ++--
+ .../selftests/bpf/progs/test_perf_buffer.c    |   3 +-
+ .../selftests/bpf/progs/test_probe_user.c     |   3 +-
+ 11 files changed, 193 insertions(+), 121 deletions(-)
+
+diff --git a/tools/testing/selftests/bpf/bpf_tcp_helpers.h b/tools/testing/selftests/bpf/bpf_tcp_helpers.h
+index 7da3e8db3adf..1052b9bb4320 100644
+--- a/tools/testing/selftests/bpf/bpf_tcp_helpers.h
++++ b/tools/testing/selftests/bpf/bpf_tcp_helpers.h
+@@ -6,15 +6,6 @@
+ #include <linux/types.h>
+ #include <bpf_helpers.h>
+ #include <bpf_core_read.h>
+-#include "bpf_trace_helpers.h"
+-
+-/* "struct_ops/" is only a convention.  not a requirement. */
+-#define BPF_TCP_OPS_0(fname, ret_type, ...) BPF_TRACE_x(0, "struct_ops/"#fname, fname, ret_type, __VA_ARGS__)
+-#define BPF_TCP_OPS_1(fname, ret_type, ...) BPF_TRACE_x(1, "struct_ops/"#fname, fname, ret_type, __VA_ARGS__)
+-#define BPF_TCP_OPS_2(fname, ret_type, ...) BPF_TRACE_x(2, "struct_ops/"#fname, fname, ret_type, __VA_ARGS__)
+-#define BPF_TCP_OPS_3(fname, ret_type, ...) BPF_TRACE_x(3, "struct_ops/"#fname, fname, ret_type, __VA_ARGS__)
+-#define BPF_TCP_OPS_4(fname, ret_type, ...) BPF_TRACE_x(4, "struct_ops/"#fname, fname, ret_type, __VA_ARGS__)
+-#define BPF_TCP_OPS_5(fname, ret_type, ...) BPF_TRACE_x(5, "struct_ops/"#fname, fname, ret_type, __VA_ARGS__)
+ 
+ struct sock_common {
+ 	unsigned char	skc_state;
+diff --git a/tools/testing/selftests/bpf/bpf_trace_helpers.h b/tools/testing/selftests/bpf/bpf_trace_helpers.h
+index c76a214a53b0..1719cabc97b7 100644
+--- a/tools/testing/selftests/bpf/bpf_trace_helpers.h
++++ b/tools/testing/selftests/bpf/bpf_trace_helpers.h
+@@ -1,58 +1,120 @@
+-/* SPDX-License-Identifier: GPL-2.0 */
++/* SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause) */
+ #ifndef __BPF_TRACE_HELPERS_H
+ #define __BPF_TRACE_HELPERS_H
+ 
+-#include "bpf_helpers.h"
+-
+-#define __BPF_MAP_0(i, m, v, ...) v
+-#define __BPF_MAP_1(i, m, v, t, a, ...) m(t, a, ctx[i])
+-#define __BPF_MAP_2(i, m, v, t, a, ...) m(t, a, ctx[i]), __BPF_MAP_1(i+1, m, v, __VA_ARGS__)
+-#define __BPF_MAP_3(i, m, v, t, a, ...) m(t, a, ctx[i]), __BPF_MAP_2(i+1, m, v, __VA_ARGS__)
+-#define __BPF_MAP_4(i, m, v, t, a, ...) m(t, a, ctx[i]), __BPF_MAP_3(i+1, m, v, __VA_ARGS__)
+-#define __BPF_MAP_5(i, m, v, t, a, ...) m(t, a, ctx[i]), __BPF_MAP_4(i+1, m, v, __VA_ARGS__)
+-#define __BPF_MAP_6(i, m, v, t, a, ...) m(t, a, ctx[i]), __BPF_MAP_5(i+1, m, v, __VA_ARGS__)
+-#define __BPF_MAP_7(i, m, v, t, a, ...) m(t, a, ctx[i]), __BPF_MAP_6(i+1, m, v, __VA_ARGS__)
+-#define __BPF_MAP_8(i, m, v, t, a, ...) m(t, a, ctx[i]), __BPF_MAP_7(i+1, m, v, __VA_ARGS__)
+-#define __BPF_MAP_9(i, m, v, t, a, ...) m(t, a, ctx[i]), __BPF_MAP_8(i+1, m, v, __VA_ARGS__)
+-#define __BPF_MAP_10(i, m, v, t, a, ...) m(t, a, ctx[i]), __BPF_MAP_9(i+1, m, v, __VA_ARGS__)
+-#define __BPF_MAP_11(i, m, v, t, a, ...) m(t, a, ctx[i]), __BPF_MAP_10(i+1, m, v, __VA_ARGS__)
+-#define __BPF_MAP_12(i, m, v, t, a, ...) m(t, a, ctx[i]), __BPF_MAP_11(i+1, m, v, __VA_ARGS__)
+-#define __BPF_MAP(n, ...) __BPF_MAP_##n(0, __VA_ARGS__)
+-
+-/* BPF sizeof(void *) is always 8, so no need to cast to long first
+- * for ptr to avoid compiler warning.
++#include <bpf_helpers.h>
++
++#define ___bpf_concat(a, b) a ## b
++#define ___bpf_apply(fn, n) ___bpf_concat(fn, n)
++#define ___bpf_nth(_, _1, _2, _3, _4, _5, _6, _7, _8, _9, _a, _b, _c, N, ...) N
++#define ___bpf_narg(...) \
++	___bpf_nth(_, ##__VA_ARGS__, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0)
++#define ___bpf_empty(...) \
++	___bpf_nth(_, ##__VA_ARGS__, N, N, N, N, N, N, N, N, N, N, 0)
++
++#define ___bpf_ctx_cast0() ctx
++#define ___bpf_ctx_cast1(x) ___bpf_ctx_cast0(), (void *)ctx[0]
++#define ___bpf_ctx_cast2(x, args...) ___bpf_ctx_cast1(args), (void *)ctx[1]
++#define ___bpf_ctx_cast3(x, args...) ___bpf_ctx_cast2(args), (void *)ctx[2]
++#define ___bpf_ctx_cast4(x, args...) ___bpf_ctx_cast3(args), (void *)ctx[3]
++#define ___bpf_ctx_cast5(x, args...) ___bpf_ctx_cast4(args), (void *)ctx[4]
++#define ___bpf_ctx_cast6(x, args...) ___bpf_ctx_cast5(args), (void *)ctx[5]
++#define ___bpf_ctx_cast7(x, args...) ___bpf_ctx_cast6(args), (void *)ctx[6]
++#define ___bpf_ctx_cast8(x, args...) ___bpf_ctx_cast7(args), (void *)ctx[7]
++#define ___bpf_ctx_cast9(x, args...) ___bpf_ctx_cast8(args), (void *)ctx[8]
++#define ___bpf_ctx_cast10(x, args...) ___bpf_ctx_cast9(args), (void *)ctx[9]
++#define ___bpf_ctx_cast11(x, args...) ___bpf_ctx_cast10(args), (void *)ctx[10]
++#define ___bpf_ctx_cast12(x, args...) ___bpf_ctx_cast11(args), (void *)ctx[11]
++#define ___bpf_ctx_cast(args...) \
++	___bpf_apply(___bpf_ctx_cast, ___bpf_narg(args))(args)
++
++/*
++ * BPF_PROG is a convenience wrapper for generic tp_btf/fentry/fexit and
++ * similar kinds of BPF programs, that accept input arguments as a single
++ * pointer to untyped u64 array, where each u64 can actually be a typed
++ * pointer or integer of different size. Instead of requring user to write
++ * manual casts and work with array elements by index, BPF_PROG macro
++ * allows user to declare a list of named and typed input arguments in the
++ * same syntax as for normal C function. All the casting is hidden and
++ * performed transparently, while user code can just assume working with
++ * function arguments of specified type and name.
++ *
++ * Original raw context argument is preserved as well as 'ctx' argument.
++ * This is useful when using BPF helpers that expect original context
++ * as one of the parameters (e.g., for bpf_perf_event_output()).
+  */
+-#define __BPF_CAST(t, a, ctx) (t) ctx
+-#define __BPF_V void
+-#define __BPF_N
+-
+-#define __BPF_DECL_ARGS(t, a, ctx) t a
+-
+-#define BPF_TRACE_x(x, sec_name, fname, ret_type, ...)			\
+-static __always_inline ret_type						\
+-____##fname(__BPF_MAP(x, __BPF_DECL_ARGS, __BPF_V, __VA_ARGS__));	\
+-									\
+-SEC(sec_name)								\
+-ret_type fname(__u64 *ctx)						\
+-{									\
+-	return ____##fname(__BPF_MAP(x, __BPF_CAST, __BPF_N, __VA_ARGS__));\
+-}									\
+-									\
+-static __always_inline							\
+-ret_type ____##fname(__BPF_MAP(x, __BPF_DECL_ARGS, __BPF_V, __VA_ARGS__))
+-
+-#define BPF_TRACE_0(sec, fname, ...)  BPF_TRACE_x(0, sec, fname, int, __VA_ARGS__)
+-#define BPF_TRACE_1(sec, fname, ...)  BPF_TRACE_x(1, sec, fname, int, __VA_ARGS__)
+-#define BPF_TRACE_2(sec, fname, ...)  BPF_TRACE_x(2, sec, fname, int, __VA_ARGS__)
+-#define BPF_TRACE_3(sec, fname, ...)  BPF_TRACE_x(3, sec, fname, int, __VA_ARGS__)
+-#define BPF_TRACE_4(sec, fname, ...)  BPF_TRACE_x(4, sec, fname, int, __VA_ARGS__)
+-#define BPF_TRACE_5(sec, fname, ...)  BPF_TRACE_x(5, sec, fname, int, __VA_ARGS__)
+-#define BPF_TRACE_6(sec, fname, ...)  BPF_TRACE_x(6, sec, fname, int, __VA_ARGS__)
+-#define BPF_TRACE_7(sec, fname, ...)  BPF_TRACE_x(7, sec, fname, int, __VA_ARGS__)
+-#define BPF_TRACE_8(sec, fname, ...)  BPF_TRACE_x(8, sec, fname, int, __VA_ARGS__)
+-#define BPF_TRACE_9(sec, fname, ...)  BPF_TRACE_x(9, sec, fname, int, __VA_ARGS__)
+-#define BPF_TRACE_10(sec, fname, ...)  BPF_TRACE_x(10, sec, fname, int, __VA_ARGS__)
+-#define BPF_TRACE_11(sec, fname, ...)  BPF_TRACE_x(11, sec, fname, int, __VA_ARGS__)
+-#define BPF_TRACE_12(sec, fname, ...)  BPF_TRACE_x(12, sec, fname, int, __VA_ARGS__)
++#define BPF_PROG(name, args...)						    \
++name(unsigned long long *ctx);						    \
++static __always_inline typeof(name(0))					    \
++____##name(unsigned long long *ctx, ##args);				    \
++typeof(name(0)) name(unsigned long long *ctx)				    \
++{									    \
++	_Pragma("GCC diagnostic push")					    \
++	_Pragma("GCC diagnostic ignored \"-Wint-conversion\"")		    \
++	return ____##name(___bpf_ctx_cast(args));			    \
++	_Pragma("GCC diagnostic pop")					    \
++}									    \
++static __always_inline typeof(name(0))					    \
++____##name(unsigned long long *ctx, ##args)
++
++struct pt_regs;
++
++#define ___bpf_kprobe_args0() ctx
++#define ___bpf_kprobe_args1(x) \
++	___bpf_kprobe_args0(), (void *)PT_REGS_PARM1(ctx)
++#define ___bpf_kprobe_args2(x, args...) \
++	___bpf_kprobe_args1(args), (void *)PT_REGS_PARM2(ctx)
++#define ___bpf_kprobe_args3(x, args...) \
++	___bpf_kprobe_args2(args), (void *)PT_REGS_PARM3(ctx)
++#define ___bpf_kprobe_args4(x, args...) \
++	___bpf_kprobe_args3(args), (void *)PT_REGS_PARM4(ctx)
++#define ___bpf_kprobe_args5(x, args...) \
++	___bpf_kprobe_args4(args), (void *)PT_REGS_PARM5(ctx)
++#define ___bpf_kprobe_args(args...) \
++	___bpf_apply(___bpf_kprobe_args, ___bpf_narg(args))(args)
+ 
++/*
++ * BPF_KPROBE serves the same purpose for kprobes as BPF_PROG for
++ * tp_btf/fentry/fexit BPF programs. It hides the underlying platform-specific
++ * low-level way of getting kprobe input arguments from struct pt_regs, and
++ * provides a familiar typed and named function arguments syntax and
++ * semantics of accessing kprobe input paremeters.
++ *
++ * Original struct pt_regs* context is preserved as 'ctx' argument. This might
++ * be necessary when using BPF helpers like bpf_perf_event_output().
++ */
++#define BPF_KPROBE(name, args...)					    \
++name(struct pt_regs *ctx);						    \
++static __always_inline typeof(name(0)) ____##name(struct pt_regs *ctx, ##args);\
++typeof(name(0)) name(struct pt_regs *ctx)				    \
++{									    \
++	_Pragma("GCC diagnostic push")					    \
++	_Pragma("GCC diagnostic ignored \"-Wint-conversion\"")		    \
++	return ____##name(___bpf_kprobe_args(args));			    \
++	_Pragma("GCC diagnostic pop")					    \
++}									    \
++static __always_inline typeof(name(0)) ____##name(struct pt_regs *ctx, ##args)
++
++#define ___bpf_kretprobe_args0() ctx
++#define ___bpf_kretprobe_argsN(x, args...) \
++	___bpf_kprobe_args(args), (void *)PT_REGS_RET(ctx)
++#define ___bpf_kretprobe_args(args...) \
++	___bpf_apply(___bpf_kretprobe_args, ___bpf_empty(args))(args)
++
++/*
++ * BPF_KRETPROBE is similar to BPF_KPROBE, except, in addition to listing all
++ * input kprobe arguments, one last extra argument has to be specified, which
++ * captures kprobe return value.
++ */
++#define BPF_KRETPROBE(name, args...)					    \
++name(struct pt_regs *ctx);						    \
++static __always_inline typeof(name(0)) ____##name(struct pt_regs *ctx, ##args);\
++typeof(name(0)) name(struct pt_regs *ctx)				    \
++{									    \
++	_Pragma("GCC diagnostic push")					    \
++	_Pragma("GCC diagnostic ignored \"-Wint-conversion\"")		    \
++	return ____##name(___bpf_kretprobe_args(args));			    \
++	_Pragma("GCC diagnostic pop")					    \
++}									    \
++static __always_inline typeof(name(0)) ____##name(struct pt_regs *ctx, ##args)
+ #endif
+diff --git a/tools/testing/selftests/bpf/progs/bpf_dctcp.c b/tools/testing/selftests/bpf/progs/bpf_dctcp.c
+index 5f9b613663e5..19650f43c192 100644
+--- a/tools/testing/selftests/bpf/progs/bpf_dctcp.c
++++ b/tools/testing/selftests/bpf/progs/bpf_dctcp.c
+@@ -8,6 +8,8 @@
+ 
+ #include <linux/bpf.h>
+ #include <linux/types.h>
++#include <bpf_helpers.h>
++#include <bpf_trace_helpers.h>
+ #include "bpf_tcp_helpers.h"
+ 
+ char _license[] SEC("license") = "GPL";
+@@ -36,7 +38,8 @@ static __always_inline void dctcp_reset(const struct tcp_sock *tp,
+ 	ca->old_delivered_ce = tp->delivered_ce;
+ }
+ 
+-BPF_TCP_OPS_1(dctcp_init, void, struct sock *, sk)
++SEC("struct_ops/dctcp_init")
++void BPF_PROG(dctcp_init, struct sock *sk)
+ {
+ 	const struct tcp_sock *tp = tcp_sk(sk);
+ 	struct dctcp *ca = inet_csk_ca(sk);
+@@ -49,7 +52,8 @@ BPF_TCP_OPS_1(dctcp_init, void, struct sock *, sk)
+ 	dctcp_reset(tp, ca);
+ }
+ 
+-BPF_TCP_OPS_1(dctcp_ssthresh, __u32, struct sock *, sk)
++SEC("struct_ops/dctcp_ssthresh")
++__u32 BPF_PROG(dctcp_ssthresh, struct sock *sk)
+ {
+ 	struct dctcp *ca = inet_csk_ca(sk);
+ 	struct tcp_sock *tp = tcp_sk(sk);
+@@ -58,8 +62,8 @@ BPF_TCP_OPS_1(dctcp_ssthresh, __u32, struct sock *, sk)
+ 	return max(tp->snd_cwnd - ((tp->snd_cwnd * ca->dctcp_alpha) >> 11U), 2U);
+ }
+ 
+-BPF_TCP_OPS_2(dctcp_update_alpha, void,
+-	      struct sock *, sk, __u32, flags)
++SEC("struct_ops/dctcp_update_alpha")
++void BPF_PROG(dctcp_update_alpha, struct sock *sk, __u32 flags)
+ {
+ 	const struct tcp_sock *tp = tcp_sk(sk);
+ 	struct dctcp *ca = inet_csk_ca(sk);
+@@ -97,7 +101,8 @@ static __always_inline void dctcp_react_to_loss(struct sock *sk)
+ 	tp->snd_ssthresh = max(tp->snd_cwnd >> 1U, 2U);
+ }
+ 
+-BPF_TCP_OPS_2(dctcp_state, void, struct sock *, sk, __u8, new_state)
++SEC("struct_ops/dctcp_state")
++void BPF_PROG(dctcp_state, struct sock *sk, __u8 new_state)
+ {
+ 	if (new_state == TCP_CA_Recovery &&
+ 	    new_state != BPF_CORE_READ_BITFIELD(inet_csk(sk), icsk_ca_state))
+@@ -144,8 +149,8 @@ void dctcp_ece_ack_update(struct sock *sk, enum tcp_ca_event evt,
+ 	dctcp_ece_ack_cwr(sk, new_ce_state);
+ }
+ 
+-BPF_TCP_OPS_2(dctcp_cwnd_event, void,
+-	      struct sock *, sk, enum tcp_ca_event, ev)
++SEC("struct_ops/dctcp_cwnd_event")
++void BPF_PROG(dctcp_cwnd_event, struct sock *sk, enum tcp_ca_event ev)
+ {
+ 	struct dctcp *ca = inet_csk_ca(sk);
+ 
+@@ -163,15 +168,16 @@ BPF_TCP_OPS_2(dctcp_cwnd_event, void,
+ 	}
+ }
+ 
+-BPF_TCP_OPS_1(dctcp_cwnd_undo, __u32, struct sock *, sk)
++SEC("struct_ops/dctcp_cwnd_undo")
++__u32 BPF_PROG(dctcp_cwnd_undo, struct sock *sk)
+ {
+ 	const struct dctcp *ca = inet_csk_ca(sk);
+ 
+ 	return max(tcp_sk(sk)->snd_cwnd, ca->loss_cwnd);
+ }
+ 
+-BPF_TCP_OPS_3(tcp_reno_cong_avoid, void,
+-	      struct sock *, sk, __u32, ack, __u32, acked)
++SEC("struct_ops/tcp_reno_cong_avoid")
++void BPF_PROG(tcp_reno_cong_avoid, struct sock *sk, __u32 ack, __u32 acked)
+ {
+ 	struct tcp_sock *tp = tcp_sk(sk);
+ 
+diff --git a/tools/testing/selftests/bpf/progs/fentry_test.c b/tools/testing/selftests/bpf/progs/fentry_test.c
+index 615f7c6bca77..1ae1779a8e2e 100644
+--- a/tools/testing/selftests/bpf/progs/fentry_test.c
++++ b/tools/testing/selftests/bpf/progs/fentry_test.c
+@@ -7,37 +7,40 @@
+ char _license[] SEC("license") = "GPL";
+ 
+ __u64 test1_result = 0;
+-BPF_TRACE_1("fentry/bpf_fentry_test1", test1, int, a)
++SEC("fentry/bpf_fentry_test1")
++int BPF_PROG(test1, int a)
+ {
+ 	test1_result = a == 1;
+ 	return 0;
+ }
+ 
+ __u64 test2_result = 0;
+-BPF_TRACE_2("fentry/bpf_fentry_test2", test2, int, a, __u64, b)
++SEC("fentry/bpf_fentry_test2")
++int BPF_PROG(test2, int a, __u64 b)
+ {
+ 	test2_result = a == 2 && b == 3;
+ 	return 0;
+ }
+ 
+ __u64 test3_result = 0;
+-BPF_TRACE_3("fentry/bpf_fentry_test3", test3, char, a, int, b, __u64, c)
++SEC("fentry/bpf_fentry_test3")
++int BPF_PROG(test3, char a, int b, __u64 c)
+ {
+ 	test3_result = a == 4 && b == 5 && c == 6;
+ 	return 0;
+ }
+ 
+ __u64 test4_result = 0;
+-BPF_TRACE_4("fentry/bpf_fentry_test4", test4,
+-	    void *, a, char, b, int, c, __u64, d)
++SEC("fentry/bpf_fentry_test4")
++int BPF_PROG(test4, void *a, char b, int c, __u64 d)
+ {
+ 	test4_result = a == (void *)7 && b == 8 && c == 9 && d == 10;
+ 	return 0;
+ }
+ 
+ __u64 test5_result = 0;
+-BPF_TRACE_5("fentry/bpf_fentry_test5", test5,
+-	    __u64, a, void *, b, short, c, int, d, __u64, e)
++SEC("fentry/bpf_fentry_test5")
++int BPF_PROG(test5, __u64 a, void *b, short c, int d, __u64 e)
+ {
+ 	test5_result = a == 11 && b == (void *)12 && c == 13 && d == 14 &&
+ 		e == 15;
+@@ -45,8 +48,8 @@ BPF_TRACE_5("fentry/bpf_fentry_test5", test5,
+ }
+ 
+ __u64 test6_result = 0;
+-BPF_TRACE_6("fentry/bpf_fentry_test6", test6,
+-	    __u64, a, void *, b, short, c, int, d, void *, e, __u64, f)
++SEC("fentry/bpf_fentry_test6")
++int BPF_PROG(test6, __u64 a, void *b, short c, int d, void * e, __u64 f)
+ {
+ 	test6_result = a == 16 && b == (void *)17 && c == 18 && d == 19 &&
+ 		e == (void *)20 && f == 21;
+diff --git a/tools/testing/selftests/bpf/progs/fexit_bpf2bpf.c b/tools/testing/selftests/bpf/progs/fexit_bpf2bpf.c
+index 81d7b4aaf79e..7c17ee159378 100644
+--- a/tools/testing/selftests/bpf/progs/fexit_bpf2bpf.c
++++ b/tools/testing/selftests/bpf/progs/fexit_bpf2bpf.c
+@@ -9,8 +9,8 @@ struct sk_buff {
+ };
+ 
+ __u64 test_result = 0;
+-BPF_TRACE_2("fexit/test_pkt_access", test_main,
+-	    struct sk_buff *, skb, int, ret)
++SEC("fexit/test_pkt_access")
++int BPF_PROG(test_main, struct sk_buff *skb, int ret)
+ {
+ 	int len;
+ 
+@@ -24,8 +24,8 @@ BPF_TRACE_2("fexit/test_pkt_access", test_main,
+ }
+ 
+ __u64 test_result_subprog1 = 0;
+-BPF_TRACE_2("fexit/test_pkt_access_subprog1", test_subprog1,
+-	    struct sk_buff *, skb, int, ret)
++SEC("fexit/test_pkt_access_subprog1")
++int BPF_PROG(test_subprog1, struct sk_buff *skb, int ret)
+ {
+ 	int len;
+ 
+@@ -81,8 +81,8 @@ int test_subprog2(struct args_subprog2 *ctx)
+ }
+ 
+ __u64 test_result_subprog3 = 0;
+-BPF_TRACE_3("fexit/test_pkt_access_subprog3", test_subprog3,
+-	    int, val, struct sk_buff *, skb, int, ret)
++SEC("fexit/test_pkt_access_subprog3")
++int BPF_PROG(test_subprog3, int val, struct sk_buff *skb, int ret)
+ {
+ 	int len;
+ 
+diff --git a/tools/testing/selftests/bpf/progs/fexit_bpf2bpf_simple.c b/tools/testing/selftests/bpf/progs/fexit_bpf2bpf_simple.c
+index ebc0ab7f0f5c..ac527b10dd80 100644
+--- a/tools/testing/selftests/bpf/progs/fexit_bpf2bpf_simple.c
++++ b/tools/testing/selftests/bpf/progs/fexit_bpf2bpf_simple.c
+@@ -9,8 +9,9 @@ struct sk_buff {
+ };
+ 
+ __u64 test_result = 0;
+-BPF_TRACE_2("fexit/test_pkt_md_access", test_main2,
+-	    struct sk_buff *, skb, int, ret)
++
++SEC("fexit/test_pkt_md_access")
++int BPF_PROG(test_main2, struct sk_buff *skb, int ret)
+ {
+ 	int len;
+ 
+diff --git a/tools/testing/selftests/bpf/progs/fexit_test.c b/tools/testing/selftests/bpf/progs/fexit_test.c
+index 86db0d60fb6e..f0dd412ca128 100644
+--- a/tools/testing/selftests/bpf/progs/fexit_test.c
++++ b/tools/testing/selftests/bpf/progs/fexit_test.c
+@@ -7,39 +7,41 @@
+ char _license[] SEC("license") = "GPL";
+ 
+ __u64 test1_result = 0;
+-BPF_TRACE_2("fexit/bpf_fentry_test1", test1, int, a, int, ret)
++SEC("fexit/bpf_fentry_test1")
++int BPF_PROG(test1, int a, int ret)
+ {
+ 	test1_result = a == 1 && ret == 2;
+ 	return 0;
+ }
+ 
+ __u64 test2_result = 0;
+-BPF_TRACE_3("fexit/bpf_fentry_test2", test2, int, a, __u64, b, int, ret)
++SEC("fexit/bpf_fentry_test2")
++int BPF_PROG(test2, int a, __u64 b, int ret)
+ {
+ 	test2_result = a == 2 && b == 3 && ret == 5;
+ 	return 0;
+ }
+ 
+ __u64 test3_result = 0;
+-BPF_TRACE_4("fexit/bpf_fentry_test3", test3, char, a, int, b, __u64, c, int, ret)
++SEC("fexit/bpf_fentry_test3")
++int BPF_PROG(test3, char a, int b, __u64 c, int ret)
+ {
+ 	test3_result = a == 4 && b == 5 && c == 6 && ret == 15;
+ 	return 0;
+ }
+ 
+ __u64 test4_result = 0;
+-BPF_TRACE_5("fexit/bpf_fentry_test4", test4,
+-	    void *, a, char, b, int, c, __u64, d, int, ret)
++SEC("fexit/bpf_fentry_test4")
++int BPF_PROG(test4, void *a, char b, int c, __u64 d, int ret)
+ {
+-
+ 	test4_result = a == (void *)7 && b == 8 && c == 9 && d == 10 &&
+ 		ret == 34;
+ 	return 0;
+ }
+ 
+ __u64 test5_result = 0;
+-BPF_TRACE_6("fexit/bpf_fentry_test5", test5,
+-	    __u64, a, void *, b, short, c, int, d, __u64, e, int, ret)
++SEC("fexit/bpf_fentry_test5")
++int BPF_PROG(test5, __u64 a, void *b, short c, int d, __u64 e, int ret)
+ {
+ 	test5_result = a == 11 && b == (void *)12 && c == 13 && d == 14 &&
+ 		e == 15 && ret == 65;
+@@ -47,9 +49,8 @@ BPF_TRACE_6("fexit/bpf_fentry_test5", test5,
+ }
+ 
+ __u64 test6_result = 0;
+-BPF_TRACE_7("fexit/bpf_fentry_test6", test6,
+-	    __u64, a, void *, b, short, c, int, d, void *, e, __u64, f,
+-	    int, ret)
++SEC("fexit/bpf_fentry_test6")
++int BPF_PROG(test6, __u64 a, void *b, short c, int d, void *e, __u64 f, int ret)
+ {
+ 	test6_result = a == 16 && b == (void *)17 && c == 18 && d == 19 &&
+ 		e == (void *)20 && f == 21 && ret == 111;
+diff --git a/tools/testing/selftests/bpf/progs/kfree_skb.c b/tools/testing/selftests/bpf/progs/kfree_skb.c
+index 974d6f3bb319..046fae868f93 100644
+--- a/tools/testing/selftests/bpf/progs/kfree_skb.c
++++ b/tools/testing/selftests/bpf/progs/kfree_skb.c
+@@ -57,8 +57,8 @@ struct meta {
+ /* TRACE_EVENT(kfree_skb,
+  *         TP_PROTO(struct sk_buff *skb, void *location),
+  */
+-BPF_TRACE_2("tp_btf/kfree_skb", trace_kfree_skb,
+-	    struct sk_buff *, skb, void *, location)
++SEC("tp_btf/kfree_skb")
++int BPF_PROG(trace_kfree_skb, struct sk_buff *skb, void *location)
+ {
+ 	struct net_device *dev;
+ 	struct callback_head *ptr;
+@@ -114,9 +114,9 @@ static volatile struct {
+ 	bool fexit_test_ok;
+ } result;
+ 
+-BPF_TRACE_3("fentry/eth_type_trans", fentry_eth_type_trans,
+-	    struct sk_buff *, skb, struct net_device *, dev,
+-	    unsigned short, protocol)
++SEC("fentry/eth_type_trans")
++int BPF_PROG(fentry_eth_type_trans, struct sk_buff *skb, struct net_device *dev,
++	     unsigned short protocol)
+ {
+ 	int len, ifindex;
+ 
+@@ -132,9 +132,9 @@ BPF_TRACE_3("fentry/eth_type_trans", fentry_eth_type_trans,
+ 	return 0;
+ }
+ 
+-BPF_TRACE_3("fexit/eth_type_trans", fexit_eth_type_trans,
+-	    struct sk_buff *, skb, struct net_device *, dev,
+-	    unsigned short, protocol)
++SEC("fexit/eth_type_trans")
++int BPF_PROG(fexit_eth_type_trans, struct sk_buff *skb, struct net_device *dev,
++	     unsigned short protocol)
+ {
+ 	int len, ifindex;
+ 
+diff --git a/tools/testing/selftests/bpf/progs/test_overhead.c b/tools/testing/selftests/bpf/progs/test_overhead.c
+index 96c0124a04ba..3af1f4ad994f 100644
+--- a/tools/testing/selftests/bpf/progs/test_overhead.c
++++ b/tools/testing/selftests/bpf/progs/test_overhead.c
+@@ -1,39 +1,45 @@
+ // SPDX-License-Identifier: GPL-2.0
+ /* Copyright (c) 2019 Facebook */
++#include <stdbool.h>
++#include <stddef.h>
+ #include <linux/bpf.h>
++#include <linux/ptrace.h>
+ #include "bpf_helpers.h"
+ #include "bpf_tracing.h"
+ #include "bpf_trace_helpers.h"
+ 
++struct task_struct;
++
+ SEC("kprobe/__set_task_comm")
+-int prog1(struct pt_regs *ctx)
++int BPF_KPROBE(prog1, struct task_struct *tsk, const char *buf, bool exec)
+ {
+-	return 0;
++	return tsk == NULL;
+ }
+ 
+ SEC("kretprobe/__set_task_comm")
+-int prog2(struct pt_regs *ctx)
++int BPF_KRETPROBE(prog2,
++		  struct task_struct *tsk, const char *buf, bool exec,
++		  int ret)
+ {
+-	return 0;
++	return PT_REGS_PARM1(ctx) == 0 && ret != 0;
+ }
+ 
+ SEC("raw_tp/task_rename")
+ int prog3(struct bpf_raw_tracepoint_args *ctx)
+ {
+-	return 0;
++	return ctx->args[0] == 0;;
+ }
+ 
+-struct task_struct;
+-BPF_TRACE_3("fentry/__set_task_comm", prog4,
+-	    struct task_struct *, tsk, const char *, buf, __u8, exec)
++SEC("fentry/__set_task_comm")
++int BPF_PROG(prog4, struct task_struct *tsk, const char *buf, bool exec)
+ {
+-	return 0;
++	return tsk == NULL;
+ }
+ 
+-BPF_TRACE_3("fexit/__set_task_comm", prog5,
+-	    struct task_struct *, tsk, const char *, buf, __u8, exec)
++SEC("fexit/__set_task_comm")
++int BPF_PROG(prog5, struct task_struct *tsk, const char *buf, bool exec, int ret)
+ {
+-	return 0;
++	return tsk == NULL && ret != 0;
+ }
+ 
+ char _license[] SEC("license") = "GPL";
+diff --git a/tools/testing/selftests/bpf/progs/test_perf_buffer.c b/tools/testing/selftests/bpf/progs/test_perf_buffer.c
+index 07c09ca5546a..1fdc999031ac 100644
+--- a/tools/testing/selftests/bpf/progs/test_perf_buffer.c
++++ b/tools/testing/selftests/bpf/progs/test_perf_buffer.c
+@@ -4,6 +4,7 @@
+ #include <linux/ptrace.h>
+ #include <linux/bpf.h>
+ #include "bpf_helpers.h"
++#include "bpf_trace_helpers.h"
+ 
+ struct {
+ 	__uint(type, BPF_MAP_TYPE_PERF_EVENT_ARRAY);
+@@ -12,7 +13,7 @@ struct {
+ } perf_buf_map SEC(".maps");
+ 
+ SEC("kprobe/sys_nanosleep")
+-int handle_sys_nanosleep_entry(struct pt_regs *ctx)
++int BPF_KPROBE(handle_sys_nanosleep_entry)
+ {
+ 	int cpu = bpf_get_smp_processor_id();
+ 
+diff --git a/tools/testing/selftests/bpf/progs/test_probe_user.c b/tools/testing/selftests/bpf/progs/test_probe_user.c
+index 1871e2ece0c4..5b570969e5c5 100644
+--- a/tools/testing/selftests/bpf/progs/test_probe_user.c
++++ b/tools/testing/selftests/bpf/progs/test_probe_user.c
+@@ -7,11 +7,12 @@
+ 
+ #include "bpf_helpers.h"
+ #include "bpf_tracing.h"
++#include "bpf_trace_helpers.h"
+ 
+ static struct sockaddr_in old;
+ 
+ SEC("kprobe/__sys_connect")
+-int handle_sys_connect(struct pt_regs *ctx)
++int BPF_KPROBE(handle_sys_connect)
+ {
+ 	void *ptr = (void *)PT_REGS_PARM2(ctx);
+ 	struct sockaddr_in new;
+-- 
+2.17.1
+
