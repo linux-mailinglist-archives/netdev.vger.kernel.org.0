@@ -2,118 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1757D1368B4
-	for <lists+netdev@lfdr.de>; Fri, 10 Jan 2020 09:02:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D35351368D6
+	for <lists+netdev@lfdr.de>; Fri, 10 Jan 2020 09:16:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726750AbgAJICH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jan 2020 03:02:07 -0500
-Received: from relay.felk.cvut.cz ([147.32.80.7]:56367 "EHLO
-        relay.felk.cvut.cz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726401AbgAJICH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jan 2020 03:02:07 -0500
-X-Greylist: delayed 1845 seconds by postgrey-1.27 at vger.kernel.org; Fri, 10 Jan 2020 03:02:03 EST
-Received: from cmp.felk.cvut.cz (haar.felk.cvut.cz [147.32.84.19])
-        by relay.felk.cvut.cz (8.15.2/8.15.2) with ESMTP id 00A7TWwh036195;
-        Fri, 10 Jan 2020 08:29:32 +0100 (CET)
-        (envelope-from pisa@cmp.felk.cvut.cz)
-Received: from haar.felk.cvut.cz (localhost [127.0.0.1])
-        by cmp.felk.cvut.cz (8.14.0/8.12.3/SuSE Linux 0.6) with ESMTP id 00A7TWdf028346;
-        Fri, 10 Jan 2020 08:29:32 +0100
-Received: (from pisa@localhost)
-        by haar.felk.cvut.cz (8.14.0/8.13.7/Submit) id 00A7TVpw028343;
-        Fri, 10 Jan 2020 08:29:31 +0100
-X-Authentication-Warning: haar.felk.cvut.cz: pisa set sender to pisa@cmp.felk.cvut.cz using -f
-From:   Pavel Pisa <pisa@cmp.felk.cvut.cz>
-To:     Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH v3 2/6] dt-bindings: net: can: binding for CTU CAN FD open-source IP core.
-Date:   Fri, 10 Jan 2020 08:29:31 +0100
-User-Agent: KMail/1.9.10
-Cc:     devicetree@vger.kernel.org, mkl@pengutronix.de,
-        linux-can@vger.kernel.org, socketcan@hartkopp.net,
-        wg@grandegger.com, davem@davemloft.net, mark.rutland@arm.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        martin.jerabek01@gmail.com, ondrej.ille@gmail.com,
-        jnovak@fel.cvut.cz, jara.beran@gmail.com, porazil@pikron.com
-References: <cover.1576922226.git.pisa@cmp.felk.cvut.cz> <61533d59378822f8c808abf193b40070810d3d35.1576922226.git.pisa@cmp.felk.cvut.cz> <20200103235359.GA23875@bogus>
-In-Reply-To: <20200103235359.GA23875@bogus>
-X-KMail-QuotePrefix: > 
+        id S1726702AbgAJIP4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jan 2020 03:15:56 -0500
+Received: from ozlabs.org ([203.11.71.1]:58839 "EHLO ozlabs.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726383AbgAJIP4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 10 Jan 2020 03:15:56 -0500
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 47vG5P3y58z9sRV;
+        Fri, 10 Jan 2020 19:15:52 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1578644154;
+        bh=L78XeBokIql9jpsHUpVD/DbiFKAMEXYZFmR+XrULacU=;
+        h=Date:From:To:Cc:Subject:From;
+        b=ulAy98SCMDO0FEG8f0mdBAKFFCv0N/PZVG8qdORNmYRAp5aNEsH1NUR5ga1wjMW96
+         zezF03ahMoxSJYGk9Pmry0yV2uH7O3z5q6mpl21JolaVd5T9/IYnIG4d2JLfag16st
+         dAgBtOSfbGv6Fye96oxiHsIh4nvcQyljvSouZOHLd4L3sjj2ILdIBPsBBb1F94joRn
+         /+DBZITOj5TYvgV/+Q8Dm9wp7XvNLEtYTnn6kHCeAIOssFxatPA6kf8QDQ8c1uLPzK
+         1zKdj03Id8A3NrGFBT7dMKgnW6aYV7IfgZWhnsikOMYyjYXeuZr9fa1LPrttvMOpuy
+         OpAjtpO7s8tvg==
+Date:   Fri, 10 Jan 2020 19:15:49 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>
+Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Radoslaw Tyl <radoslawx.tyl@intel.com>
+Subject: linux-next: Fixes tag needs some work in the net tree
+Message-ID: <20200110191549.5d0a66e6@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: Text/Plain;
-  charset="iso-8859-1"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-Message-Id: <202001100829.31344.pisa@cmp.felk.cvut.cz>
-X-FELK-MailScanner-Information: 
-X-MailScanner-ID: 00A7TWwh036195
-X-FELK-MailScanner: Found to be clean
-X-FELK-MailScanner-SpamCheck: not spam, SpamAssassin (not cached,
-        score=-0.223, required 6, BAYES_00 -0.50, KHOP_HELO_FCRDNS 0.28,
-        SPF_HELO_NONE 0.00, SPF_NONE 0.00)
-X-FELK-MailScanner-From: pisa@cmp.felk.cvut.cz
-X-FELK-MailScanner-Watermark: 1579246176.70847@vVg9umV9GG6Cdpbc0Ybbpg
-X-Spam-Status: No
+Content-Type: multipart/signed; boundary="Sig_/ibss0P6tDW9Y0q=rfHgHp41";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Rob,
+--Sig_/ibss0P6tDW9Y0q=rfHgHp41
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-thanks much for review.
+Hi all,
 
-On Saturday 04 of January 2020 00:53:59 Rob Herring wrote:
-> On Sat, Dec 21, 2019 at 03:07:31PM +0100, pisa@cmp.felk.cvut.cz wrote:
-> > From: Pavel Pisa <pisa@cmp.felk.cvut.cz>
-> >  .../devicetree/bindings/net/can/ctu,ctucanfd.txt   | 61
->
-> Bindings are moving DT schema format now. Not something I'd require on a
-> respin I've already reviewed, but OTOH it's been 10 months to respin
-> from v2. So:
+In commit
 
-Please, can you send me pointer to some CAN or other bindings
-doc which is well formed according to future direction?
-I have not dig deeper but I have not found relevant discussion
-about introduction of DT schema format.
+  aa604651d523 ("ixgbevf: Remove limit of 10 entries for unicast filter lis=
+t")
 
-> If you have a v4, then please convert to a schema.
+Fixes tag
 
-I expect that we need at least one more iteration.
-When recheck, I have found that I have forgot to update
-paths in RST documentation when moved from standalone
-automatic CI build into kernel tree
+  Fixes: 46ec20ff7d ("ixgbevf: Add macvlan support in the set rx mode op")
 
-[PATCH v3 6/6] docs: ctucanfd: CTU CAN FD open-source IP core documentation.
-https://lkml.org/lkml/2019/12/21/96
+has these problem(s):
 
-And the most important is review of the driver core to allow
-the project (http://canbus.pages.fel.cvut.cz/) to move forward.
+  - SHA1 should be at least 12 digits long
+    Can be fixed by setting core.abbrev to 12 (or more) or (for git v2.11
+    or later) just making sure it is not set (or set to "auto").
 
-[PATCH v3 3/6] can: ctucanfd: add support for CTU CAN FD open-source IP core - 
-bus independent part.
-https://lkml.org/lkml/2019/12/21/95
+--=20
+Cheers,
+Stephen Rothwell
 
-The code has no errors and a few questionable warnings reported by
-4.19 patchcheck (we have run many iterations of it to cleanup code)
-but 5.4 kernel patchcheck is more strict as I noticed
-after submission and reports a few more warnings and some of them
-could be easily resolved.
+--Sig_/ibss0P6tDW9Y0q=rfHgHp41
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
 
-What makes me to feel good is that CTU CAN FD IP core development
-stabilized, there are only changes to better cover the core by test
-framework and more than one month there is no commit disturbing CI build
-process of IP core integration for Xilinx Zynq. CI builds complete
-driver and FPGA design and then deploys and runs tests between multiple
-CTU CAN FD cores and against OpenCores SJA1000 cores with FD tolerance
+-----BEGIN PGP SIGNATURE-----
 
-https://gitlab.fel.cvut.cz/canbus/zynq/zynq-can-sja1000-top/pipelines
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl4YMrUACgkQAVBC80lX
+0Gy++Af/c9IKMnyHGxyL/2jJAB75pFrjuyExYS2U+vWV5Ft4skPOOs4BxZXIV3Q1
+OGPRpO5ShcK1I9ajvXrIeNUGsbo7pj2hSAJ1ZEinN58ceFrWjmYDoiE8ROYlHnjP
+jIwJCL+fN2wXrYzHeCDk1Knhh1QJF7bObT7zUo0a69/SE2s5nuK1JzUwzfzaTGhg
+Thnx0eSYbrCRQ8d8SE6SAbLkk7pOWpMWqBNdwzWVz0Hxa5KGg/uSMv1j0uZwvxzY
+LYsb5CuniESpXWQDS0oHFOqYrINL1Xq6WXct2yigMJAChsdecJm9SmFd6zXHBuoL
+s5CZqvju4JpJUogDrWoQUKrJTXnMpQ==
+=B/YE
+-----END PGP SIGNATURE-----
 
-https://gitlab.fel.cvut.cz/canbus/zynq/zynq-can-sja1000-top/-/jobs/51334
-
-The second link points to one of many logs of test running on MZ_APO
-(Xilinx Zynq) education kits designed for Department of Control Engineering 
-https://dce.fel.cvut.cz/en at PiKRON.com. MZ_APO kist are used in Computer 
-Architectures and Real-time Systems Programming courses.
-
-Thanks for help,
-
-Pavel
+--Sig_/ibss0P6tDW9Y0q=rfHgHp41--
