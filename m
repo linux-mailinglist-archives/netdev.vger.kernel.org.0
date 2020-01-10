@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BFB9D1368FC
-	for <lists+netdev@lfdr.de>; Fri, 10 Jan 2020 09:29:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4AB621368FD
+	for <lists+netdev@lfdr.de>; Fri, 10 Jan 2020 09:29:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727142AbgAJI3g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jan 2020 03:29:36 -0500
-Received: from mail-lf1-f68.google.com ([209.85.167.68]:42196 "EHLO
-        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726666AbgAJI3g (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jan 2020 03:29:36 -0500
-Received: by mail-lf1-f68.google.com with SMTP id y19so797980lfl.9
-        for <netdev@vger.kernel.org>; Fri, 10 Jan 2020 00:29:34 -0800 (PST)
+        id S1727151AbgAJI3i (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jan 2020 03:29:38 -0500
+Received: from mail-lj1-f195.google.com ([209.85.208.195]:36304 "EHLO
+        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726989AbgAJI3i (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jan 2020 03:29:38 -0500
+Received: by mail-lj1-f195.google.com with SMTP id r19so1247446ljg.3
+        for <netdev@vger.kernel.org>; Fri, 10 Jan 2020 00:29:36 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=sFutGcrrh/hQJaQ4Eee8Dh8Xm/R1r/Lfh3IwOeBx/5U=;
-        b=BgFId1bzzZBXpeJwPBZf35c0gHTUg2tLqxVI89gl7SR0CatVS8PSVMT5hQV2cyTSDh
-         O2VnZ2KSavbSU4umG5CZoGpvVnIRNc7Yjpa2e6fTH8cZ7lFMTpzWvTmYcVzMufPfNQjP
-         AyYN6PNPBVYhTHgnqfcvAbNLhWFkGf9DfbdepmLXVyzWJyEejs76/qq/AXHZhR/DE1Us
-         7auiM6cAKP8+8FMvu/yiZTUUNWoitNaNh5SbQNGwEOJZcK9jSoo6Q6Itn/yNrvL2oRxn
-         nhjNUUuGafYJMk16IrV6hjEpZyVzUJFYjX3EKUw9Bug+ggBRv/FpnMf2avcLqtjF3Fil
-         4PKA==
+        bh=hyFFqYAzpck6QwlVZWmSFJ4to3/dXvhTPg6iphOXnFQ=;
+        b=LbHU5DOS+p0UP9qVLoL3Ezh917dNF/7/fnmJExPTsiR4MERFjOS+NoLyQ3hMkgoUbJ
+         dIILqxvHW9frplP6XQidprT3gJsr5OAjWs6H0/zPqIhE1QDAeOYARyb/nBpPhtpaWwoL
+         JA7QmbkM+JO6IQT+mN7uFH5xKxbIGx/vrbb8WMG07OucFU+R7bf/ha7FLhZwq7aOBtkc
+         NTDWpfnid6aKsqfVTEYWeU5/fPgw2/jvfXQE4UVxLWY4UydBHvf8bEZFHuN8iiFKnkki
+         u86kHpKiDNmnaNPID9++6oBUMuKmGQhFkD5HRzPmlazCaXmkHA4Dd3GzWTNmwnwxIYXv
+         tJEw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=sFutGcrrh/hQJaQ4Eee8Dh8Xm/R1r/Lfh3IwOeBx/5U=;
-        b=fssWxN6+KB/GUYkf/v0hw8RhYJQsLs3f67yTjpGR+t71y3nfZJd3SNgzBVmJS6gGtP
-         kcUrpJUZLmgzbvQpWfFUUzOAOgxEbbtBcISwdBeoF7lMyh0BimUuyzUzWPfyREzVxiRF
-         7lRa4S7ar6ZsrihUzBzUbqVYhwS0WKmMH/CNcCsJP7jyYCmmQ58I7hP7FDbF4FwrABhd
-         QWe4b8Bv6CM1NUY1wjiuA/AV+hCJmgkM8JbSAaViAXxkrDo+txohxqHn5ALZERpKKVQl
-         STFUEFYXmGCc6/caDeGQYCAIcXl7Z/B79UbQZgUv0bzMVF1M5fYY/u766JPLJcq6SFdm
-         tgWg==
-X-Gm-Message-State: APjAAAU3b4QBOUY9knXJEWfqfnu10FbPXA9KYk4RAqrT+tYQia9u7AnK
-        zPQtElHvnYiLML1kdRxxngm6CaYWjYJgAw==
-X-Google-Smtp-Source: APXvYqyB0IbxbV/R7dm0/cmWC9pivMAomT2C0uh9f8IpPWZ6uJtTEOYamKQS1mFGWT1ue4YaoQ3unw==
-X-Received: by 2002:a05:6512:40e:: with SMTP id u14mr1433265lfk.161.1578644973356;
-        Fri, 10 Jan 2020 00:29:33 -0800 (PST)
+        bh=hyFFqYAzpck6QwlVZWmSFJ4to3/dXvhTPg6iphOXnFQ=;
+        b=YW0gz7Ae8+shlKK15bjPKl0nZ2YMnCFUdM62JAKJb8z9nHlMezpyGjLBw3nm5TeR/h
+         BMreInA41qS7j8F1TAJ8wc2qZ60/nO03HgtYmeSn0vToa85EhEB+hxu9Gxy2ufPAdhz8
+         ymIBY5LEtBaDv2+LD+WRLAi+QgsNRvDOs8CLZff9pUURfOjXXXfCZOqJjK28RV9qUrR2
+         iUoDkYHV3BM3AMJMl19tGpEP8kSKNAOgRRHNAPIpFNZJ7uivqrTYG9YF6vqZMpeH34kV
+         v1IReA4Xqb1EBW13nFYOCsRiIlut9X4DNX/lWBEebBD2m9WpoGafYQkF8ECmr7MRKKrq
+         KCmA==
+X-Gm-Message-State: APjAAAV6MsuYo8RHe16kvozC1Zh50TZ9yEJPkGgbvEebIslBeZwk/yRx
+        NR1HIQVgl7ey7DO0sqMBShVs2xFiylQGzQ==
+X-Google-Smtp-Source: APXvYqy6jbtHCNTTgi5hSeVAyOT8iyewS3LrssZdDL1iJC4UI3dDcD41X0ZUI4sqa+jU2kloxW9CDQ==
+X-Received: by 2002:a2e:b4f6:: with SMTP id s22mr1797858ljm.218.1578644975000;
+        Fri, 10 Jan 2020 00:29:35 -0800 (PST)
 Received: from linux.local (c-5ac9225c.014-348-6c756e10.bbcust.telenor.se. [92.34.201.90])
-        by smtp.gmail.com with ESMTPSA id g24sm606464lfb.85.2020.01.10.00.29.32
+        by smtp.gmail.com with ESMTPSA id g24sm606464lfb.85.2020.01.10.00.29.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 10 Jan 2020 00:29:32 -0800 (PST)
+        Fri, 10 Jan 2020 00:29:34 -0800 (PST)
 From:   Linus Walleij <linus.walleij@linaro.org>
 To:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>
 Cc:     Arnd Bergmann <arnd@arndb.de>,
         Jakub Kicinski <jakub.kicinski@netronome.com>,
         Linus Walleij <linus.walleij@linaro.org>
-Subject: [PATCH net-next 4/9 v4] ixp4xx_eth: move platform_data definition
-Date:   Fri, 10 Jan 2020 09:28:32 +0100
-Message-Id: <20200110082837.11473-5-linus.walleij@linaro.org>
+Subject: [PATCH net-next 5/9 v4] net: ethernet: ixp4xx: Standard module init
+Date:   Fri, 10 Jan 2020 09:28:33 +0100
+Message-Id: <20200110082837.11473-6-linus.walleij@linaro.org>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20200110082837.11473-1-linus.walleij@linaro.org>
 References: <20200110082837.11473-1-linus.walleij@linaro.org>
@@ -62,12 +62,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
+The IXP4xx driver was initializing the MDIO bus before even
+probing, in the callbacks supposed to be used for setting up
+the module itself, and with the side effect of trying to
+register the MDIO bus as soon as this module was loaded or
+compiled into the kernel whether the device was discovered
+or not.
 
-The platform data is needed to compile the driver as standalone,
-so move it to a global location along with similar files.
+This does not work with multiplatform environments.
 
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+To get rid of this: set up the MDIO bus from the probe()
+callback and remove it in the remove() callback. Rename
+the probe() and remove() calls to reflect the most common
+conventions.
+
+Since there is a bit of checking for the ethernet feature
+to be present in the MDIO registering function, making the
+whole module not even be registered if we can't find an
+MDIO bus, we need something similar: register the MDIO
+bus when the corresponding ethernet is probed, and
+return -EPROBE_DEFER on the other interfaces until this
+happens. If no MDIO bus is present on any of the
+registered interfaces we will eventually bail out.
+
+None of the platforms I've seen has e.g. MDIO on EthB
+and only uses EthC, there is always a Ethernet hardware
+on the NPE (B, C) that has the MDIO bus, we just might
+have to wait for it.
+
 Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 ---
 ChangeLog v3->v4:
@@ -75,88 +97,194 @@ ChangeLog v3->v4:
 ChangeLog v2->v3:
 - Rebased on v5.5-rc1
 ChangeLog v1->v2:
-- Rebased on the rest of the series.
+- Change the first alloc_etherdev() to devm_alloc_etherdev()
+  and drop one leg of the errorpath so we can just return
+  with error code in the first part of the code.
 ---
- arch/arm/mach-ixp4xx/include/mach/platform.h  | 13 +------------
- .../xscale/{ptp_ixp46x.h => ixp46x_ts.h}      |  0
- drivers/net/ethernet/xscale/ixp4xx_eth.c      |  1 +
- include/linux/platform_data/eth_ixp4xx.h      | 19 +++++++++++++++++++
- 4 files changed, 21 insertions(+), 12 deletions(-)
- rename drivers/net/ethernet/xscale/{ptp_ixp46x.h => ixp46x_ts.h} (100%)
- create mode 100644 include/linux/platform_data/eth_ixp4xx.h
+ drivers/net/ethernet/xscale/ixp4xx_eth.c | 96 +++++++++++-------------
+ 1 file changed, 44 insertions(+), 52 deletions(-)
 
-diff --git a/arch/arm/mach-ixp4xx/include/mach/platform.h b/arch/arm/mach-ixp4xx/include/mach/platform.h
-index 04ef8025accc..6d403fe0bf52 100644
---- a/arch/arm/mach-ixp4xx/include/mach/platform.h
-+++ b/arch/arm/mach-ixp4xx/include/mach/platform.h
-@@ -15,6 +15,7 @@
- #ifndef __ASSEMBLY__
- 
- #include <linux/reboot.h>
-+#include <linux/platform_data/eth_ixp4xx.h>
- 
- #include <asm/types.h>
- 
-@@ -92,18 +93,6 @@ struct ixp4xx_pata_data {
- 	void __iomem	*cs1;
- };
- 
--#define IXP4XX_ETH_NPEA		0x00
--#define IXP4XX_ETH_NPEB		0x10
--#define IXP4XX_ETH_NPEC		0x20
--
--/* Information about built-in Ethernet MAC interfaces */
--struct eth_plat_info {
--	u8 phy;		/* MII PHY ID, 0 - 31 */
--	u8 rxq;		/* configurable, currently 0 - 31 only */
--	u8 txreadyq;
--	u8 hwaddr[6];
--};
--
- /*
-  * Frequency of clock used for primary clocksource
-  */
-diff --git a/drivers/net/ethernet/xscale/ptp_ixp46x.h b/drivers/net/ethernet/xscale/ixp46x_ts.h
-similarity index 100%
-rename from drivers/net/ethernet/xscale/ptp_ixp46x.h
-rename to drivers/net/ethernet/xscale/ixp46x_ts.h
 diff --git a/drivers/net/ethernet/xscale/ixp4xx_eth.c b/drivers/net/ethernet/xscale/ixp4xx_eth.c
-index 0075ecdb21f4..e811bf0d23cb 100644
+index e811bf0d23cb..799ffebba491 100644
 --- a/drivers/net/ethernet/xscale/ixp4xx_eth.c
 +++ b/drivers/net/ethernet/xscale/ixp4xx_eth.c
-@@ -29,6 +29,7 @@
- #include <linux/net_tstamp.h>
- #include <linux/of.h>
- #include <linux/phy.h>
-+#include <linux/platform_data/eth_ixp4xx.h>
- #include <linux/platform_device.h>
- #include <linux/ptp_classify.h>
- #include <linux/slab.h>
-diff --git a/include/linux/platform_data/eth_ixp4xx.h b/include/linux/platform_data/eth_ixp4xx.h
-new file mode 100644
-index 000000000000..6f652ea0c6ae
---- /dev/null
-+++ b/include/linux/platform_data/eth_ixp4xx.h
-@@ -0,0 +1,19 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+#ifndef __PLATFORM_DATA_ETH_IXP4XX
-+#define __PLATFORM_DATA_ETH_IXP4XX
-+
-+#include <linux/types.h>
-+
-+#define IXP4XX_ETH_NPEA		0x00
-+#define IXP4XX_ETH_NPEB		0x10
-+#define IXP4XX_ETH_NPEC		0x20
-+
-+/* Information about built-in Ethernet MAC interfaces */
-+struct eth_plat_info {
-+	u8 phy;		/* MII PHY ID, 0 - 31 */
-+	u8 rxq;		/* configurable, currently 0 - 31 only */
-+	u8 txreadyq;
-+	u8 hwaddr[6];
-+};
-+
-+#endif
+@@ -519,25 +519,14 @@ static int ixp4xx_mdio_write(struct mii_bus *bus, int phy_id, int location,
+ 	return ret;
+ }
+ 
+-static int ixp4xx_mdio_register(void)
++static int ixp4xx_mdio_register(struct eth_regs __iomem *regs)
+ {
+ 	int err;
+ 
+ 	if (!(mdio_bus = mdiobus_alloc()))
+ 		return -ENOMEM;
+ 
+-	if (cpu_is_ixp43x()) {
+-		/* IXP43x lacks NPE-B and uses NPE-C for MII PHY access */
+-		if (!(ixp4xx_read_feature_bits() & IXP4XX_FEATURE_NPEC_ETH))
+-			return -ENODEV;
+-		mdio_regs = (struct eth_regs __iomem *)IXP4XX_EthC_BASE_VIRT;
+-	} else {
+-		/* All MII PHY accesses use NPE-B Ethernet registers */
+-		if (!(ixp4xx_read_feature_bits() & IXP4XX_FEATURE_NPEB_ETH0))
+-			return -ENODEV;
+-		mdio_regs = (struct eth_regs __iomem *)IXP4XX_EthB_BASE_VIRT;
+-	}
+-
++	mdio_regs = regs;
+ 	__raw_writel(DEFAULT_CORE_CNTRL, &mdio_regs->core_control);
+ 	spin_lock_init(&mdio_lock);
+ 	mdio_bus->name = "IXP4xx MII Bus";
+@@ -1376,7 +1365,7 @@ static const struct net_device_ops ixp4xx_netdev_ops = {
+ 	.ndo_validate_addr = eth_validate_addr,
+ };
+ 
+-static int eth_init_one(struct platform_device *pdev)
++static int ixp4xx_eth_probe(struct platform_device *pdev)
+ {
+ 	struct port *port;
+ 	struct net_device *dev;
+@@ -1386,7 +1375,7 @@ static int eth_init_one(struct platform_device *pdev)
+ 	char phy_id[MII_BUS_ID_SIZE + 3];
+ 	int err;
+ 
+-	if (!(dev = alloc_etherdev(sizeof(struct port))))
++	if (!(dev = devm_alloc_etherdev(&pdev->dev, sizeof(struct port))))
+ 		return -ENOMEM;
+ 
+ 	SET_NETDEV_DEV(dev, &pdev->dev);
+@@ -1396,20 +1385,51 @@ static int eth_init_one(struct platform_device *pdev)
+ 
+ 	switch (port->id) {
+ 	case IXP4XX_ETH_NPEA:
++		/* If the MDIO bus is not up yet, defer probe */
++		if (!mdio_bus)
++			return -EPROBE_DEFER;
+ 		port->regs = (struct eth_regs __iomem *)IXP4XX_EthA_BASE_VIRT;
+ 		regs_phys  = IXP4XX_EthA_BASE_PHYS;
+ 		break;
+ 	case IXP4XX_ETH_NPEB:
++		/*
++		 * On all except IXP43x, NPE-B is used for the MDIO bus.
++		 * If there is no NPE-B in the feature set, bail out, else
++		 * register the MDIO bus.
++		 */
++		if (!cpu_is_ixp43x()) {
++			if (!(ixp4xx_read_feature_bits() &
++			      IXP4XX_FEATURE_NPEB_ETH0))
++				return -ENODEV;
++			/* Else register the MDIO bus on NPE-B */
++			if ((err = ixp4xx_mdio_register(IXP4XX_EthC_BASE_VIRT)))
++				return err;
++		}
++		if (!mdio_bus)
++			return -EPROBE_DEFER;
+ 		port->regs = (struct eth_regs __iomem *)IXP4XX_EthB_BASE_VIRT;
+ 		regs_phys  = IXP4XX_EthB_BASE_PHYS;
+ 		break;
+ 	case IXP4XX_ETH_NPEC:
++		/*
++		 * IXP43x lacks NPE-B and uses NPE-C for the MDIO bus access,
++		 * of there is no NPE-C, no bus, nothing works, so bail out.
++		 */
++		if (cpu_is_ixp43x()) {
++			if (!(ixp4xx_read_feature_bits() &
++			      IXP4XX_FEATURE_NPEC_ETH))
++				return -ENODEV;
++			/* Else register the MDIO bus on NPE-C */
++			if ((err = ixp4xx_mdio_register(IXP4XX_EthC_BASE_VIRT)))
++				return err;
++		}
++		if (!mdio_bus)
++			return -EPROBE_DEFER;
+ 		port->regs = (struct eth_regs __iomem *)IXP4XX_EthC_BASE_VIRT;
+ 		regs_phys  = IXP4XX_EthC_BASE_PHYS;
+ 		break;
+ 	default:
+-		err = -ENODEV;
+-		goto err_free;
++		return -ENODEV;
+ 	}
+ 
+ 	dev->netdev_ops = &ixp4xx_netdev_ops;
+@@ -1418,10 +1438,8 @@ static int eth_init_one(struct platform_device *pdev)
+ 
+ 	netif_napi_add(dev, &port->napi, eth_poll, NAPI_WEIGHT);
+ 
+-	if (!(port->npe = npe_request(NPE_ID(port->id)))) {
+-		err = -EIO;
+-		goto err_free;
+-	}
++	if (!(port->npe = npe_request(NPE_ID(port->id))))
++		return -EIO;
+ 
+ 	port->mem_res = request_mem_region(regs_phys, REGS_SIZE, dev->name);
+ 	if (!port->mem_res) {
+@@ -1467,12 +1485,10 @@ static int eth_init_one(struct platform_device *pdev)
+ 	release_resource(port->mem_res);
+ err_npe_rel:
+ 	npe_release(port->npe);
+-err_free:
+-	free_netdev(dev);
+ 	return err;
+ }
+ 
+-static int eth_remove_one(struct platform_device *pdev)
++static int ixp4xx_eth_remove(struct platform_device *pdev)
+ {
+ 	struct net_device *dev = platform_get_drvdata(pdev);
+ 	struct phy_device *phydev = dev->phydev;
+@@ -1480,45 +1496,21 @@ static int eth_remove_one(struct platform_device *pdev)
+ 
+ 	unregister_netdev(dev);
+ 	phy_disconnect(phydev);
++	ixp4xx_mdio_remove();
+ 	npe_port_tab[NPE_ID(port->id)] = NULL;
+ 	npe_release(port->npe);
+ 	release_resource(port->mem_res);
+-	free_netdev(dev);
+ 	return 0;
+ }
+ 
+ static struct platform_driver ixp4xx_eth_driver = {
+ 	.driver.name	= DRV_NAME,
+-	.probe		= eth_init_one,
+-	.remove		= eth_remove_one,
++	.probe		= ixp4xx_eth_probe,
++	.remove		= ixp4xx_eth_remove,
+ };
+-
+-static int __init eth_init_module(void)
+-{
+-	int err;
+-
+-	/*
+-	 * FIXME: we bail out on device tree boot but this really needs
+-	 * to be fixed in a nicer way: this registers the MDIO bus before
+-	 * even matching the driver infrastructure, we should only probe
+-	 * detected hardware.
+-	 */
+-	if (of_have_populated_dt())
+-		return -ENODEV;
+-	if ((err = ixp4xx_mdio_register()))
+-		return err;
+-	return platform_driver_register(&ixp4xx_eth_driver);
+-}
+-
+-static void __exit eth_cleanup_module(void)
+-{
+-	platform_driver_unregister(&ixp4xx_eth_driver);
+-	ixp4xx_mdio_remove();
+-}
++module_platform_driver(ixp4xx_eth_driver);
+ 
+ MODULE_AUTHOR("Krzysztof Halasa");
+ MODULE_DESCRIPTION("Intel IXP4xx Ethernet driver");
+ MODULE_LICENSE("GPL v2");
+ MODULE_ALIAS("platform:ixp4xx_eth");
+-module_init(eth_init_module);
+-module_exit(eth_cleanup_module);
 -- 
 2.21.0
 
