@@ -2,214 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 18FCB137384
-	for <lists+netdev@lfdr.de>; Fri, 10 Jan 2020 17:26:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 214321373A8
+	for <lists+netdev@lfdr.de>; Fri, 10 Jan 2020 17:30:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728662AbgAJQ0K (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jan 2020 11:26:10 -0500
-Received: from relay2-d.mail.gandi.net ([217.70.183.194]:49077 "EHLO
-        relay2-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728621AbgAJQ0K (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jan 2020 11:26:10 -0500
-X-Originating-IP: 90.76.143.236
-Received: from localhost (lfbn-tou-1-1075-236.w90-76.abo.wanadoo.fr [90.76.143.236])
-        (Authenticated sender: antoine.tenart@bootlin.com)
-        by relay2-d.mail.gandi.net (Postfix) with ESMTPSA id A1CFA4000A;
-        Fri, 10 Jan 2020 16:26:06 +0000 (UTC)
-Date:   Fri, 10 Jan 2020 17:26:05 +0100
-From:   Antoine Tenart <antoine.tenart@bootlin.com>
-To:     davem@davemloft.net, sd@queasysnail.net, andrew@lunn.ch,
-        f.fainelli@gmail.com, hkallweit1@gmail.com
-Cc:     Antoine Tenart <antoine.tenart@bootlin.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        thomas.petazzoni@bootlin.com, alexandre.belloni@bootlin.com,
-        allan.nielsen@microchip.com, camelia.groza@nxp.com,
-        Simon.Edelhaus@aquantia.com, Igor.Russkikh@aquantia.com,
-        jakub.kicinski@netronome.com
-Subject: Re: [PATCH net-next v5 00/15] net: macsec: initial support for
- hardware offloading
-Message-ID: <20200110162605.GB3138@kwain>
-References: <20200110162010.338611-1-antoine.tenart@bootlin.com>
+        id S1728441AbgAJQaG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jan 2020 11:30:06 -0500
+Received: from www62.your-server.de ([213.133.104.62]:56808 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727928AbgAJQaF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jan 2020 11:30:05 -0500
+Received: from sslproxy05.your-server.de ([78.46.172.2])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1ipxAW-0006L3-Gj; Fri, 10 Jan 2020 17:29:57 +0100
+Received: from [2001:1620:665:0:5795:5b0a:e5d5:5944] (helo=linux-3.fritz.box)
+        by sslproxy05.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1ipxAW-000Fxw-8h; Fri, 10 Jan 2020 17:29:52 +0100
+Subject: Re: [PATCH v3 bpf-next 0/6] bpf: Introduce global functions
+To:     Alexei Starovoitov <ast@kernel.org>, davem@davemloft.net
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, kernel-team@fb.com
+References: <20200110064124.1760511-1-ast@kernel.org>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <5ba36dd3-f9f0-a7c3-e9cf-88bc7c1dce88@iogearbox.net>
+Date:   Fri, 10 Jan 2020 17:29:50 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20200110162010.338611-1-antoine.tenart@bootlin.com>
+In-Reply-To: <20200110064124.1760511-1-ast@kernel.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.101.4/25690/Fri Jan 10 11:02:58 2020)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello David,
-
-I realized I forgot to remove patch 07/15 "net: phy: export
-__phy_read_page/__phy_write_page" from the series... You can skip it
-when applying the series, or I can send another series without the patch
-included if that's better.
-
-Thanks,
-Antoine
-
-On Fri, Jan 10, 2020 at 05:19:55PM +0100, Antoine Tenart wrote:
-> Hello,
+On 1/10/20 7:41 AM, Alexei Starovoitov wrote:
+> v2->v3:
+> - cleaned up a check spotted by Song.
+> - rebased and dropped patch 2 that was trying to improve BTF based on ELF.
+> - added one more unit test for scalar return value from global func.
 > 
-> td;dr: When applying this series, do not apply patches 12 to 14.
+> v1->v2:
+> - addressed review comments from Song, Andrii, Yonghong
+> - fixed memory leak in error path
+> - added modified ctx check
+> - added more tests in patch 7
 > 
-> This series intends to add support for offloading MACsec transformations
-> to hardware enabled devices. The series adds the necessary
-> infrastructure for offloading MACsec configurations to hardware drivers,
-> in patches 1 to 6; then introduces MACsec offloading support in the
-> Microsemi MSCC PHY driver, in patches 7 to 11.
+> v1:
+> Introduce static vs global functions and function by function verification.
+> This is another step toward dynamic re-linking (or replacement) of global
+> functions. See patch 2 for details.
 > 
-> The remaining 4 patches, 12 to 14, are *not* part of the series but
-> provide the mandatory changes needed to support offloading MACsec
-> operations to a MAC driver. Those patches are provided for anyone
-> willing to add support for offloading MACsec operations to a MAC, and
-> should be part of the first series adding a MAC as a MACsec offloading
-> provider.
+> Alexei Starovoitov (6):
+>    libbpf: Sanitize global functions
+>    bpf: Introduce function-by-function verification
+>    selftests/bpf: Add fexit-to-skb test for global funcs
+>    selftests/bpf: Add a test for a large global function
+>    selftests/bpf: Modify a test to check global functions
+>    selftests/bpf: Add unit tests for global functions
 > 
-> The series can also be found at:
-> https://github.com/atenart/linux/tree/net-next/macsec
-> 
-> IProute2 modifications can be found at:
-> https://github.com/atenart/iproute2/tree/macsec
-> 
-> MACsec hardware offloading infrastructure
-> -----------------------------------------
-> 
-> Linux has a software implementation of the MACsec standard. There are
-> hardware engines supporting MACsec operations, such as the Intel ixgbe
-> NIC and some Microsemi PHYs (the one we use in this series). This means
-> the MACsec offloading infrastructure should support networking PHY and
-> MAC drivers. Note that MAC driver preliminary support is part of this
-> series, but should not be merged before we actually have a provider for
-> this.
-> 
-> We do intend in this series to re-use the logic, netlink API and data
-> structures of the existing MACsec software implementation. This allows
-> not to duplicate definitions and structure storing the same information;
-> as well as using the same userspace tools to configure both software or
-> hardware offloaded MACsec flows (with `ip macsec`).
-> 
-> When adding a new MACsec virtual interface the existing logic is kept:
-> offloading is disabled by default. A user driven configuration choice is
-> needed to switch to offloading mode (a patch in iproute2 is needed for
-> this). A single MACsec interface can be offloaded for now, and some
-> limitations are there: no flow can be moved from one implementation to
-> the other so the decision needs to be done before configuring the
-> interface.
-> 
-> MACsec offloading ops are called in 2 steps: a preparation one, and a
-> commit one. The first step is allowed to fail and should be used to
-> check if a provided configuration is compatible with a given MACsec
-> capable hardware. The second step is not allowed to fail and should
-> only be used to enable a given MACsec configuration.
-> 
-> A limitation as of now is the counters and statistics are not reported
-> back from the hardware to the software MACsec implementation. This
-> isn't an issue when using offloaded MACsec transformations, but it
-> should be added in the future so that the MACsec state can be reported
-> to the user (which would also improve the debug).
-> 
-> Microsemi PHY MACsec support
-> -----------------------------------
-> 
-> In order to add support for the MACsec offloading feature in the
-> Microsemi MSCC PHY driver, the __phy_read_page and __phy_write_page
-> helpers had to be exported. This is because the initialization of the
-> PHY is done while holding the MDIO bus lock, and we need to change the
-> page to configure the MACsec block.
-> 
-> The support itself is then added in three patches. The first one adds
-> support for configuring the MACsec block within the PHY, so that it is
-> up, running and available for future configuration, but is not doing any
-> modification on the traffic passing through the PHY. The second patch
-> implements the phy_device MACsec ops in the Microsemi MSCC PHY driver,
-> and introduce helpers to configure MACsec transformations and flows to
-> match specific packets. The last one adds support for PN rollover.
-> 
-> Thanks!
-> Antoine
-> 
-> Since v4:
->   - Reworked the MACsec read and write functions in the MSCC PHY driver
->     to remove the conditional locking.
-> 
-> Since v3:
->   - Fixed a check when enabling offloading that was too restrictive.
->   - Fixed the propagation of the changelink event to the underlying
->     device drivers.
-> 
-> Since v2:
->   - Allow selection the offloading from userspace, defaulting to the
->     software implementation when adding a new MACsec interface. The
->     offloading mode is now also reported through netlink.
->   - Added support for letting MKA packets in and out when using MACsec
->     (there are rules to let them bypass the MACsec h/w engine within the
->     PHY).
->   - Added support for PN rollover (following what's currently done in
->     the software implementation: the flow is disabled).
->   - Split patches to remove MAC offloading support for now, as there are
->     no current provider for this (patches are still included).
->   - Improved a few parts of the MACsec support within the MSCC PHY
->     driver (e.g. default rules now block non-MACsec traffic, depending
->     on the configuration).
->   - Many cosmetic fixes & small improvements.
-> 
-> Since v1:
->   - Reworked the MACsec offloading API, moving from a single helper
->     called for all MACsec configuration operations, to a per-operation
->     function that is provided by the underlying hardware drivers.
->   - Those functions now contain a verb to describe the configuration
->     action they're offloading.
->   - Improved the error handling in the MACsec genl helpers to revert
->     the configuration to its previous state when the offloading call
->     failed.
->   - Reworked the file inclusions.
-> 
-> Antoine Tenart (15):
->   net: macsec: move some definitions in a dedicated header
->   net: macsec: introduce the macsec_context structure
->   net: macsec: introduce MACsec ops
->   net: phy: add MACsec ops in phy_device
->   net: macsec: hardware offloading infrastructure
->   net: macsec: add nla support for changing the offloading selection
->   net: phy: export __phy_read_page/__phy_write_page
->   net: phy: mscc: macsec initialization
->   net: phy: mscc: macsec support
->   net: macsec: PN wrap callback
->   net: phy: mscc: PN rollover support
->   net: introduce the MACSEC netdev feature
->   net: add a reference to MACsec ops in net_device
->   net: macsec: allow to reference a netdev from a MACsec context
->   net: macsec: add support for offloading to the MAC
-> 
->  drivers/net/macsec.c               |  794 ++++++++++++++-----
->  drivers/net/phy/Kconfig            |    2 +
->  drivers/net/phy/mscc.c             | 1133 +++++++++++++++++++++++++++-
->  drivers/net/phy/mscc_fc_buffer.h   |   64 ++
->  drivers/net/phy/mscc_mac.h         |  159 ++++
->  drivers/net/phy/mscc_macsec.h      |  266 +++++++
->  drivers/net/phy/phy-core.c         |    6 +-
->  include/linux/netdev_features.h    |    3 +
->  include/linux/netdevice.h          |    9 +
->  include/linux/phy.h                |   12 +
->  include/net/macsec.h               |  228 ++++++
->  include/uapi/linux/if_link.h       |    8 +
->  include/uapi/linux/if_macsec.h     |   14 +-
->  net/ethtool/common.c               |    1 +
->  tools/include/uapi/linux/if_link.h |    8 +
->  15 files changed, 2518 insertions(+), 189 deletions(-)
->  create mode 100644 drivers/net/phy/mscc_fc_buffer.h
->  create mode 100644 drivers/net/phy/mscc_mac.h
->  create mode 100644 drivers/net/phy/mscc_macsec.h
->  create mode 100644 include/net/macsec.h
-> 
-> -- 
-> 2.24.1
+>   include/linux/bpf.h                           |   7 +-
+>   include/linux/bpf_verifier.h                  |  10 +-
+>   include/uapi/linux/btf.h                      |   6 +
+>   kernel/bpf/btf.c                              | 175 +++++++++---
+>   kernel/bpf/verifier.c                         | 252 ++++++++++++++----
+>   tools/include/uapi/linux/btf.h                |   6 +
+>   tools/lib/bpf/libbpf.c                        |  35 ++-
+>   .../bpf/prog_tests/bpf_verif_scale.c          |   2 +
+>   .../selftests/bpf/prog_tests/fexit_bpf2bpf.c  |   1 +
+>   .../bpf/prog_tests/test_global_funcs.c        |  82 ++++++
+>   .../selftests/bpf/progs/fexit_bpf2bpf.c       |  15 ++
+>   tools/testing/selftests/bpf/progs/pyperf.h    |   9 +-
+>   .../selftests/bpf/progs/pyperf_global.c       |   5 +
+>   .../selftests/bpf/progs/test_global_func1.c   |  45 ++++
+>   .../selftests/bpf/progs/test_global_func2.c   |   4 +
+>   .../selftests/bpf/progs/test_global_func3.c   |  65 +++++
+>   .../selftests/bpf/progs/test_global_func4.c   |   4 +
+>   .../selftests/bpf/progs/test_global_func5.c   |  31 +++
+>   .../selftests/bpf/progs/test_global_func6.c   |  31 +++
+>   .../selftests/bpf/progs/test_global_func7.c   |  18 ++
+>   .../selftests/bpf/progs/test_pkt_access.c     |  28 ++
+>   .../selftests/bpf/progs/test_xdp_noinline.c   |   4 +-
+>   22 files changed, 746 insertions(+), 89 deletions(-)
+>   create mode 100644 tools/testing/selftests/bpf/prog_tests/test_global_funcs.c
+>   create mode 100644 tools/testing/selftests/bpf/progs/pyperf_global.c
+>   create mode 100644 tools/testing/selftests/bpf/progs/test_global_func1.c
+>   create mode 100644 tools/testing/selftests/bpf/progs/test_global_func2.c
+>   create mode 100644 tools/testing/selftests/bpf/progs/test_global_func3.c
+>   create mode 100644 tools/testing/selftests/bpf/progs/test_global_func4.c
+>   create mode 100644 tools/testing/selftests/bpf/progs/test_global_func5.c
+>   create mode 100644 tools/testing/selftests/bpf/progs/test_global_func6.c
+>   create mode 100644 tools/testing/selftests/bpf/progs/test_global_func7.c
 > 
 
--- 
-Antoine Ténart, Bootlin
-Embedded Linux and Kernel engineering
-https://bootlin.com
+Applied, thanks!
