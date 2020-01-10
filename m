@@ -2,38 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 81E2E137926
-	for <lists+netdev@lfdr.de>; Fri, 10 Jan 2020 23:07:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BBEE513795F
+	for <lists+netdev@lfdr.de>; Fri, 10 Jan 2020 23:08:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728272AbgAJWG2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jan 2020 17:06:28 -0500
-Received: from mail.kernel.org ([198.145.29.99]:53274 "EHLO mail.kernel.org"
+        id S1728228AbgAJWIE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jan 2020 17:08:04 -0500
+Received: from mail.kernel.org ([198.145.29.99]:55128 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728258AbgAJWG0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 10 Jan 2020 17:06:26 -0500
+        id S1727880AbgAJWHY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 10 Jan 2020 17:07:24 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id CB0E3206ED;
-        Fri, 10 Jan 2020 22:06:25 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id AEC0D2082E;
+        Fri, 10 Jan 2020 22:07:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1578693986;
-        bh=PCWAB6L5Vsbefwr/ez1Wa0h1klyfxdyI5ew0MmL1jhg=;
+        s=default; t=1578694044;
+        bh=MHAtYlRbW9J6ju9my8jxppJ8GdNyh4Gf/jDbDQ5YUUM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EXUSbAbrp42giAK2Mu6y5Xou7EFSSWJ93RGyWddmRgA07QKQhkj5YnPcQ2UUMsVju
-         vmNl/5ZVEUcbja95ZHzFJO7PHtqQgeiUMThP2+uXVQ7RFYjoK1ZRpcbUA/sZD1ZLgp
-         WXMvp0lNIKm6B5or2poRZUJoPFlPLmCCvP8N2ocU=
+        b=NuAlUSrQNbdJxlP9BAJtcq2GmrNKNNJaN9bSw9NkkKNF+3GlvvSyVJAJmJWM4F8P2
+         c9hvuWWDX64A7fLJqoZm5WqppxEms8zjbeZcjnRphIj2artMQ/1Hm35/6GlZfkKTVv
+         6hG9+5l0keVp2KSAJbXFpgB924DSTJrPLEeegLJE=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Taehee Yoo <ap420073@gmail.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 4/8] hsr: reset network header when supervision frame is created
-Date:   Fri, 10 Jan 2020 17:06:17 -0500
-Message-Id: <20200110220621.28651-4-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.9 2/6] hsr: reset network header when supervision frame is created
+Date:   Fri, 10 Jan 2020 17:07:17 -0500
+Message-Id: <20200110220721.28780-2-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20200110220621.28651-1-sashal@kernel.org>
-References: <20200110220621.28651-1-sashal@kernel.org>
+In-Reply-To: <20200110220721.28780-1-sashal@kernel.org>
+References: <20200110220721.28780-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -85,7 +85,7 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 2 insertions(+)
 
 diff --git a/net/hsr/hsr_device.c b/net/hsr/hsr_device.c
-index cfe20f15f618..c962c406d7b1 100644
+index 52694cb759b0..aead5ac4dbf6 100644
 --- a/net/hsr/hsr_device.c
 +++ b/net/hsr/hsr_device.c
 @@ -281,6 +281,8 @@ static void send_hsr_supervision_frame(struct hsr_port *master,
@@ -96,7 +96,7 @@ index cfe20f15f618..c962c406d7b1 100644
 +	skb_reset_transport_header(skb);
  
  	if (hsrVer > 0) {
- 		hsr_tag = skb_put(skb, sizeof(struct hsr_tag));
+ 		hsr_tag = (typeof(hsr_tag)) skb_put(skb, sizeof(struct hsr_tag));
 -- 
 2.20.1
 
