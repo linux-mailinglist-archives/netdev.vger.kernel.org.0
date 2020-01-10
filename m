@@ -2,140 +2,210 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3BCD01373E9
-	for <lists+netdev@lfdr.de>; Fri, 10 Jan 2020 17:44:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E4FD51373EC
+	for <lists+netdev@lfdr.de>; Fri, 10 Jan 2020 17:44:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728750AbgAJQnx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jan 2020 11:43:53 -0500
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:31048 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728500AbgAJQnw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jan 2020 11:43:52 -0500
-Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
-        by m0001303.ppops.net (8.16.0.42/8.16.0.42) with SMTP id 00AGcMCC006241;
-        Fri, 10 Jan 2020 08:43:37 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type : content-id
- : content-transfer-encoding : mime-version; s=facebook;
- bh=o1xYxfd0dG0e83Rgq36t0TKv8/MPPtFj6WE0qHORQgY=;
- b=cIcbuRIDLNrDWeIdDwr+6Hi7pEy5A/T4g7y6eCE9wsIqCa/9oqRTqGa3WfXBJT8vcAtj
- pkxyMsd8V2GHjuh8fmxBRXd9Mp8lbmBxNA/dsLWQB/knr7oc/VgxJ8jZpdqovmA5WqP5
- iTCa2Qv9p+pYfTi7GP/gDBuyS5y5nPfLdkU= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by m0001303.ppops.net with ESMTP id 2xenyt28bb-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Fri, 10 Jan 2020 08:43:36 -0800
-Received: from NAM04-BN3-obe.outbound.protection.outlook.com (100.104.98.9) by
- o365-in.thefacebook.com (100.104.94.228) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1779.2; Fri, 10 Jan 2020 08:43:35 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=TcVxZVLNN5DF5q4bujOaMu4JvC9veqb5tuxHAKRwytJAAbSvfXWCvx3OAfl7t9asulWfNq82DfVZhViYrCfuxJKXm0XTGBKGYyO/81VqXiM/kFjHgazh0RrVL3D1nFU3o/kzP8wqDPcDu9Ad0RuR83/nOGzN2G8nSwni64D9XaBFKvpKiRdOrDJ6hItbYiKDJ87sVxWieUkh40WnbIpsRYnX6gVkY0XVZ2pv/4pFsdrzhNhos45CzaMY3/J0A3LDs0jm1rUm8hLhQfhssJ62oquFngEvWPfhHdvooluuQzLDqIInppUpkre7PeiCnZtir6kWKNp5Fbnsp1aZ0ayNKQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=o1xYxfd0dG0e83Rgq36t0TKv8/MPPtFj6WE0qHORQgY=;
- b=nxXx7XidlcSmJD9nOTKb+iSe6/2Nxa86b6f5eV8122dc3J+ZJOZj5V08/mR1NAbeDArZQSd5aGFcRAnlk23s3BjdA49J3rCHb98wRl/oAeuMls5g1PkLzOE9fWcK+Uz3u2fi4vfol261NH3eH4d9jd0D0f3dPO4/Zy0Jow3pLB0bIs09coJP+icAUj1kc3gIrCjp+n1UIMvot2oI8A1EC32D6lxBF0UqYPy9cLl1BijtvxFUju+dtX8ngtvaWDi3d84VjGBE4QuKCIMpnIst9s89YgrAA7pPfc5n7J52anB7rq7M9nbR7ivHEKoREfwCS4ugN43Hv0nlf6Vr3ZmawA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=o1xYxfd0dG0e83Rgq36t0TKv8/MPPtFj6WE0qHORQgY=;
- b=aLKMI/g3jzXE25vSQJJ1cJssxVyiQqs6dag91tUhOHr1qpUktImM7jqbFJ6WcRyBaOZixrnkXKHXf/MfNAXBzxRZzxJPfwEJPM8oVVNcIDiyBMbhhhE/xK6ELDvIKEeL6v9BO5dq80jlveqzvS60V8drr4dU+m/ASJRhsLpcy9E=
-Received: from MN2PR15MB3213.namprd15.prod.outlook.com (20.179.21.76) by
- MN2PR15MB2525.namprd15.prod.outlook.com (20.179.146.88) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2623.9; Fri, 10 Jan 2020 16:43:34 +0000
-Received: from MN2PR15MB3213.namprd15.prod.outlook.com
- ([fe80::6d1e:f2f7:d36:a42f]) by MN2PR15MB3213.namprd15.prod.outlook.com
- ([fe80::6d1e:f2f7:d36:a42f%4]) with mapi id 15.20.2623.011; Fri, 10 Jan 2020
- 16:43:34 +0000
-Received: from kafai-mbp.dhcp.thefacebook.com (2620:10d:c090:200::3:1c91) by CO2PR04CA0002.namprd04.prod.outlook.com (2603:10b6:102:1::12) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2623.9 via Frontend Transport; Fri, 10 Jan 2020 16:43:31 +0000
-From:   Martin Lau <kafai@fb.com>
-To:     Lorenz Bauer <lmb@cloudflare.com>
-CC:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Joe Stringer <joe@isovalent.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "kernel-team@cloudflare.com" <kernel-team@cloudflare.com>
-Subject: Re: [PATCH bpf v2] net: bpf: don't leak time wait and request sockets
-Thread-Topic: [PATCH bpf v2] net: bpf: don't leak time wait and request
- sockets
-Thread-Index: AQHVx7l9Y1n5XH7dBkG8DtIR/ncd4KfkGrgA
-Date:   Fri, 10 Jan 2020 16:43:32 +0000
-Message-ID: <20200110164328.aosamgjk5hfw7r7d@kafai-mbp.dhcp.thefacebook.com>
-References: <20200109115749.12283-1-lmb@cloudflare.com>
- <20200110132336.26099-1-lmb@cloudflare.com>
-In-Reply-To: <20200110132336.26099-1-lmb@cloudflare.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: CO2PR04CA0002.namprd04.prod.outlook.com
- (2603:10b6:102:1::12) To MN2PR15MB3213.namprd15.prod.outlook.com
- (2603:10b6:208:3d::12)
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [2620:10d:c090:200::3:1c91]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 8e6952c5-1bf8-4f0e-7a11-08d795ec3a97
-x-ms-traffictypediagnostic: MN2PR15MB2525:
-x-microsoft-antispam-prvs: <MN2PR15MB2525D8E553A2DD517D061830D5380@MN2PR15MB2525.namprd15.prod.outlook.com>
-x-fb-source: Internal
-x-ms-oob-tlc-oobclassifiers: OLM:7691;
-x-forefront-prvs: 02788FF38E
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(396003)(136003)(366004)(39860400002)(346002)(376002)(199004)(189003)(186003)(86362001)(52116002)(16526019)(4744005)(2906002)(7696005)(5660300002)(8936002)(316002)(55016002)(1076003)(478600001)(66946007)(8676002)(66476007)(66446008)(54906003)(71200400001)(9686003)(4326008)(6916009)(81166006)(6506007)(66556008)(81156014)(64756008);DIR:OUT;SFP:1102;SCL:1;SRVR:MN2PR15MB2525;H:MN2PR15MB3213.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: fb.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: XqHvqAZpsr6LcgmehUmu6sFRIrLwAw7lJNHtT7jRBshQaRe/rOwtNTxIFPEl1gaVDISxtY0sEyMIFYqT3YPGB7df0TqlqwBvxLJoo8VtdXVA8yHa17jhR2S6cpB/taROUIXLJhx5GqsDanZ3iTzgvyl1jmPsrXtpm/CbAOjGuT4vadqxU/MS2IKChW7Gd5V3nAulI0I/wG2UxfPsLf7FMnkytXoL7lWArOZ4hTLygsCLAsDPkNw4vX/vURsQFcnfw2wVFARf9srBkVFbslmTgmNWdbrqxTqRS8tCxMIUjONR7k3PMuHiug7ecYMpyJtETEZ5hQR6PTvZcBfWdCrICNFSDFjM+F3+p1xp15h+Yrhm/gOLcU4anALnVcEui5lrGog/acpJ7uTc/RUMprTtC1kdjCDNHup10vnnXcfeUD2plPlvQJOZmKagV/EZk/PF
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="iso-8859-1"
-Content-ID: <14142DC13E473641B35938A3DD763512@namprd15.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        id S1728828AbgAJQoN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jan 2020 11:44:13 -0500
+Received: from mail-pl1-f181.google.com ([209.85.214.181]:41222 "EHLO
+        mail-pl1-f181.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728538AbgAJQoN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jan 2020 11:44:13 -0500
+Received: by mail-pl1-f181.google.com with SMTP id bd4so1051678plb.8
+        for <netdev@vger.kernel.org>; Fri, 10 Jan 2020 08:44:12 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=fomichev-me.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
+         :user-agent;
+        bh=6eTRTZ0u2nARdBg8EkGinkti4NaJkLMmaBc0dNUZ+1Q=;
+        b=hT3oDu5BQsCq9xApi80w6kjp1Ut8Y/22qwDaLGb+UaMx9Hc3cgTY4bEMCGSKRTciwG
+         rjvv8V0aztr9GGolFyo2y/rM4IbTTRI83ZqnoBbLyuxHDh6nQ7KzTM+wF9ac23yY76mV
+         Zb9VCmCHzIXQc5j61VZCFEKy1FkbMz2JU/njd5U1QJ4j+8pMaSz+NdZsyCu35nPALM5T
+         MKT4/rg7GX4Ixn6CvVGo4hUYZ1vqupxuTi7nwodInoxIGdiAT0JkFgm3LVH4kzZ/Bxwg
+         mwukWBZG7s6M92mtZOLx6fn/f6BsINGnKT5ZvGrpRf8h9cIYIVdm0UAzDPME7RfmpWvh
+         F9LA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition:user-agent;
+        bh=6eTRTZ0u2nARdBg8EkGinkti4NaJkLMmaBc0dNUZ+1Q=;
+        b=CuOYOgi6piRFqWgckAlS4oICIdL9ctnBuTt87aO2cBoCzEcXcsU+mHLr5n0KCUBBzR
+         Y2sovwTlKNEXTB8XIivuuoLzkdNahvMwDajLhFrfAFO9RInqC/Rm5+S6sMj7QV6MYGHD
+         YRET0/owavAifL2fNnZ21Am33ZvkPkkA+qm5GJ2VSYBJiQ0DtXeOLpGwyxatjGIo03e1
+         Jb0c4oQquOCQp2x98diqeaCTcKkmKFjVKgxehV/mrE0yE+Es6n0VS0CB5WLLwHfPerxz
+         vPFRpEhBdbYKnJoUVjLTLUqrMK9UNfBQ706qDXFuwff9JKqiknK+e0cFYfkywl2rscpO
+         e7rg==
+X-Gm-Message-State: APjAAAXSmQm+zAbtrjG1o/UeKLq02SFxEOcfUfZIRdRzgVZFo5NRsBeJ
+        GmLnwaCRCPsyD2yt3A/ku1s04w==
+X-Google-Smtp-Source: APXvYqzzHdcLhwRbWwvjbB7UlShg69hiUuqGgpUPl19wY1D7KZ4TkYmjMCmBViILRTp2I+A5mqEyhA==
+X-Received: by 2002:a17:90a:8912:: with SMTP id u18mr5872920pjn.21.1578674652184;
+        Fri, 10 Jan 2020 08:44:12 -0800 (PST)
+Received: from localhost ([2601:646:8f00:18d9:d0fa:7a4b:764f:de48])
+        by smtp.gmail.com with ESMTPSA id f9sm3493156pfd.141.2020.01.10.08.44.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 10 Jan 2020 08:44:11 -0800 (PST)
+Date:   Fri, 10 Jan 2020 08:44:10 -0800
+From:   Stanislav Fomichev <sdf@fomichev.me>
+To:     acme@kernel.org, bpf@vger.kernel.org
+Cc:     netdev@vger.kernel.org, daniel@iogearbox.net, ast@fb.com,
+        andriin@fb.com, morbo@google.com
+Subject: pahole and LTO
+Message-ID: <20200110164410.GA1075235@mini-arch>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8e6952c5-1bf8-4f0e-7a11-08d795ec3a97
-X-MS-Exchange-CrossTenant-originalarrivaltime: 10 Jan 2020 16:43:32.6029
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: CBeNMzfr0YFSaGt8AleV5q4/i8K86wv/aNf2IIn1u0DECH567GnfbuuqSK4LaGqh
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR15MB2525
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
- definitions=2020-01-10_01:2020-01-10,2020-01-09 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 malwarescore=0
- lowpriorityscore=0 mlxscore=0 adultscore=0 clxscore=1015 bulkscore=0
- impostorscore=0 priorityscore=1501 mlxlogscore=480 spamscore=0
- phishscore=0 suspectscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-1910280000 definitions=main-2001100138
-X-FB-Internal: deliver
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.12.2 (2019-09-21)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 10, 2020 at 01:23:36PM +0000, Lorenz Bauer wrote:
-> It's possible to leak time wait and request sockets via the following
-> BPF pseudo code:
-> =A0
->   sk =3D bpf_skc_lookup_tcp(...)
->   if (sk)
->     bpf_sk_release(sk)
->=20
-> If sk->sk_state is TCP_NEW_SYN_RECV or TCP_TIME_WAIT the refcount taken
-> by bpf_skc_lookup_tcp is not undone by bpf_sk_release. This is because
-> sk_flags is re-used for other data in both kinds of sockets. The check
->=20
->   !sock_flag(sk, SOCK_RCU_FREE)
->=20
-> therefore returns a bogus result. Check that sk_flags is valid by calling
-> sk_fullsock. Skip checking SOCK_RCU_FREE if we already know that sk is
-> not a full socket.
-Acked-by: Martin KaFai Lau <kafai@fb.com>
+tl;dr - building the kernel with clang and lto breaks BTF generation because
+pahole doesn't seem to understand cross-cu references.
+
+Can be reproduced with the following:
+    $ cat a.c
+    struct s;
+
+    void f1() {}
+
+    __attribute__((always_inline)) void f2(struct s *p)
+    {
+            if (p)
+                    f1();
+    }
+    $ cat b.c
+    struct s {
+            int x;
+    };
+
+    void f2(struct s *p);
+
+    int main()
+    {
+            struct s s = { 10 };
+            f2(&s);
+    }
+    $ clang -fuse-ld=lld -flto {a,b}.c -g
+
+    $ pahole a.out
+    tag__recode_dwarf_type: couldn't find 0x3f type for 0x99 (inlined_subroutine)!
+    lexblock__recode_dwarf_types: couldn't find 0x3f type for 0x99 (inlined_subroutine)!
+    struct s {
+            int                        x;                    /*     0     4 */
+
+            /* size: 4, cachelines: 1, members: 1 */
+            /* last cacheline: 4 bytes */
+    };
+
+From what I can tell, pahole internally loops over each cu and resolves only
+local references, while the dwarf spec (table 2.3) states the following
+about 'reference':
+"Refers to one of the debugging information entries that describe the program.
+There are four types of reference. The first is an offset relative to the
+beginning of the compilation unit in which the reference occurs and must
+refer to an entry within that same compilation unit. The second type of
+reference is the offset of a debugging information entry in any compilation
+unit, including one different from the unit containing the reference. The
+third type of reference is an indirect reference to a type definition using
+an 8-byte signature for that type. The fourth type of reference is a reference
+from within the .debug_info section of the executable or shared object file to
+a debugging information entry in the .debug_info section of a supplementary
+object file."
+
+In particular: "The second type of reference is the offset of a debugging
+information entry in any compilation unit, including one different from the
+unit containing the reference."
+
+
+So the question is: is it a (known) issue? Is it something that's ommitted
+on purpose? Or it's not implemented because lto is not (yet) widely used?
+
+
+Here is the dwarf:
+
+$ readelf --debug-dump=info a.out
+Contents of the .debug_info section:
+
+  Compilation Unit @ offset 0x0:
+   Length:        0x44 (32-bit)
+   Version:       4
+   Abbrev Offset: 0x0
+   Pointer Size:  8
+ <0><b>: Abbrev Number: 1 (DW_TAG_compile_unit)
+    <c>   DW_AT_producer    : (indirect string, offset: 0x11): clang version 10.0.0 (https://github.com/llvm/llvm-project.git 5fe4679cc9cfb4941b766db07bf3cd928075d204)
+    <10>   DW_AT_language    : 12	(ANSI C99)
+    <12>   DW_AT_name        : (indirect string, offset: 0x0): a.c
+    <16>   DW_AT_stmt_list   : 0x0
+    <1a>   DW_AT_comp_dir    : (indirect string, offset: 0x7a): /usr/local/google/home/sdf/tmp/lto
+    <1e>   DW_AT_low_pc      : 0x201730
+    <26>   DW_AT_high_pc     : 0x6
+ <1><2a>: Abbrev Number: 2 (DW_TAG_subprogram)
+    <2b>   DW_AT_low_pc      : 0x201730
+    <33>   DW_AT_high_pc     : 0x6
+    <37>   DW_AT_frame_base  : 1 byte block: 56 	(DW_OP_reg6 (rbp))
+    <39>   DW_AT_name        : (indirect string, offset: 0xa4): f1
+    <3d>   DW_AT_decl_file   : 1
+    <3e>   DW_AT_decl_line   : 3
+    <3f>   DW_AT_external    : 1
+ <1><3f>: Abbrev Number: 3 (DW_TAG_subprogram)
+    <40>   DW_AT_name        : (indirect string, offset: 0x4): f2
+    <44>   DW_AT_decl_file   : 1
+    <45>   DW_AT_decl_line   : 5
+    <46>   DW_AT_prototyped  : 1
+    <46>   DW_AT_external    : 1
+    <46>   DW_AT_inline      : 1	(inlined)
+ <1><47>: Abbrev Number: 0
+  Compilation Unit @ offset 0x48:
+   Length:        0x7f (32-bit)
+   Version:       4
+   Abbrev Offset: 0x0
+   Pointer Size:  8
+ <0><53>: Abbrev Number: 1 (DW_TAG_compile_unit)
+    <54>   DW_AT_producer    : (indirect string, offset: 0x11): clang version 10.0.0 (https://github.com/llvm/llvm-project.git 5fe4679cc9cfb4941b766db07bf3cd928075d204)
+    <58>   DW_AT_language    : 12	(ANSI C99)
+    <5a>   DW_AT_name        : (indirect string, offset: 0x7): b.c
+    <5e>   DW_AT_stmt_list   : 0x3a
+    <62>   DW_AT_comp_dir    : (indirect string, offset: 0x7a): /usr/local/google/home/sdf/tmp/lto
+    <66>   DW_AT_low_pc      : 0x201740
+    <6e>   DW_AT_high_pc     : 0x1f
+ <1><72>: Abbrev Number: 4 (DW_TAG_subprogram)
+    <73>   DW_AT_low_pc      : 0x201740
+    <7b>   DW_AT_high_pc     : 0x1f
+    <7f>   DW_AT_frame_base  : 1 byte block: 56 	(DW_OP_reg6 (rbp))
+    <81>   DW_AT_name        : (indirect string, offset: 0x9d): main
+    <85>   DW_AT_decl_file   : 1
+    <86>   DW_AT_decl_line   : 7
+    <87>   DW_AT_type        : <0xae>
+    <8b>   DW_AT_external    : 1
+ <2><8b>: Abbrev Number: 5 (DW_TAG_variable)
+    <8c>   DW_AT_location    : 2 byte block: 91 78 	(DW_OP_fbreg: -8)
+    <8f>   DW_AT_name        : (indirect string, offset: 0xb): s
+    <93>   DW_AT_decl_file   : 1
+    <94>   DW_AT_decl_line   : 9
+    <95>   DW_AT_type        : <0xb5>
+ <2><99>: Abbrev Number: 6 (DW_TAG_inlined_subroutine)
+    <9a>   DW_AT_abstract_origin: <0x3f>
+    <9e>   DW_AT_low_pc      : 0x201752
+    <a6>   DW_AT_high_pc     : 0x5
+    <aa>   DW_AT_call_file   : 1
+    <ab>   DW_AT_call_line   : 10
+    <ac>   DW_AT_call_column : 
+ <2><ad>: Abbrev Number: 0
+ <1><ae>: Abbrev Number: 7 (DW_TAG_base_type)
+    <af>   DW_AT_name        : (indirect string, offset: 0xd): int
+    <b3>   DW_AT_encoding    : 5	(signed)
+    <b4>   DW_AT_byte_size   : 4
+ <1><b5>: Abbrev Number: 8 (DW_TAG_structure_type)
+    <b6>   DW_AT_name        : (indirect string, offset: 0xb): s
+    <ba>   DW_AT_byte_size   : 4
+    <bb>   DW_AT_decl_file   : 1
+    <bc>   DW_AT_decl_line   : 1
+ <2><bd>: Abbrev Number: 9 (DW_TAG_member)
+    <be>   DW_AT_name        : (indirect string, offset: 0xa2): x
+    <c2>   DW_AT_type        : <0xae>
+    <c6>   DW_AT_decl_file   : 1
+    <c7>   DW_AT_decl_line   : 2
+    <c8>   DW_AT_data_member_location: 0
+ <2><c9>: Abbrev Number: 0
+ <1><ca>: Abbrev Number: 0
