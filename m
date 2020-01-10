@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 632681376B4
-	for <lists+netdev@lfdr.de>; Fri, 10 Jan 2020 20:10:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B568F1376B6
+	for <lists+netdev@lfdr.de>; Fri, 10 Jan 2020 20:11:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728297AbgAJTKL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jan 2020 14:10:11 -0500
-Received: from mail-il1-f198.google.com ([209.85.166.198]:41062 "EHLO
-        mail-il1-f198.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728189AbgAJTKK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jan 2020 14:10:10 -0500
-Received: by mail-il1-f198.google.com with SMTP id k9so2193511ili.8
-        for <netdev@vger.kernel.org>; Fri, 10 Jan 2020 11:10:10 -0800 (PST)
+        id S1728118AbgAJTLL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jan 2020 14:11:11 -0500
+Received: from mail-il1-f200.google.com ([209.85.166.200]:36714 "EHLO
+        mail-il1-f200.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727355AbgAJTLK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jan 2020 14:11:10 -0500
+Received: by mail-il1-f200.google.com with SMTP id t2so2238483ilp.3
+        for <netdev@vger.kernel.org>; Fri, 10 Jan 2020 11:11:10 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=Fpulm56jnIDKor22tcvA1eRJbZCimtEL4pawhkUJ8ck=;
-        b=AMYiPiAqMPG4bA4L7I8nJWDMCFrfuZT/DKd8wT7CNkMa/H2HcpqSRq2XWvpOo2z8A2
-         XWKUADLf1i4btakoypRCQbD/HxMEWxdDoKUrENmTyJmiv5HXLk1WFZPYvb0XEd8ciEh7
-         37w6eaOFwzScu5c5d6SwSqFurtWGWxAzgppZe/53ZIGgmn+gO0G0+CyWba4uZ8vFYXjT
-         JyoD2Qr6qA1MxORHpBNcBNuHD5qIO3RRbtYyTZao2ijxzwVQ4qbXl3X9YAI5cNVVZVij
-         En/ch1azRDKD8L0Zsp/bfAz9zW0hxYQK7xdAXMeUS8tsd+n7OUvOCoB5SOAs9cmGpoHH
-         8vLA==
-X-Gm-Message-State: APjAAAXXe9okMmiGE4zXzkISVaRm3FPuy1q2bBCitFc2yoYoYHpdf6jJ
-        PDn09JSKt6XzDaPXVv9/HK+M77eillPIvWCofZRmjv2oqM6l
-X-Google-Smtp-Source: APXvYqxo7Txz3ieDkwBzYiYJ0uqOK7z8Em12aZpe8cSMm1Zupf8b1SsbdDges4f7ruezhYpk20vKlSYSeT7RmvwfJNOfqZbinBwK
+        bh=Fy/WFcnJ25iyWFvsl9r5AXVP+hcY+D0Rh4DTlOZdONM=;
+        b=ADt0GHVMMTH1Z49UML4SzYvD07AdiTupKMfWzDpSg97zjNTqDUy7nzDeLlfJtjwXzS
+         GuNik1kW3puTzBp9LpMxsM66y8Qm6fYa32f96eGEuMSNzCvlvxrrd5asbbKJ/XlyYJr9
+         Hw7TSmP06WA51GndRQdRcj9iG/MfTyWyOXlStM3PNY8Vwkq1hSspmwUcx5HGjFHqQpyb
+         Pzk9HRmz9RlTL95bIrM6xSit2H41OuRl/TfkikxKcZva1UCHlIVxP6WNhdGKQuYMDdCE
+         NZvletyMII0duwT8KPLJiZDYgGgRzWg4iWW5bpvU16XRhF3r9xyIXuIx+VP4YMA1IJLa
+         sQmg==
+X-Gm-Message-State: APjAAAXYfBPkXe7iqOI6LXYr8mD+VRzQR1lQ7I+fYyoaRQavX0rjiznV
+        /PvBZRnlMG+lvKw1LxytoHJRdpexYDH9xF0EaMx1MFHvF7+9
+X-Google-Smtp-Source: APXvYqwY3GgaXVZtkAQIcr7wURVRj5PLnEFSR3Wg8Z1BDSmZIfg3rWTj3510J3NUyAXFL3aFFxXUt677cxsGvHDKy4AIRx2nqtdv
 MIME-Version: 1.0
-X-Received: by 2002:a5d:85ce:: with SMTP id e14mr3629651ios.181.1578683410026;
- Fri, 10 Jan 2020 11:10:10 -0800 (PST)
-Date:   Fri, 10 Jan 2020 11:10:10 -0800
+X-Received: by 2002:a5d:97c3:: with SMTP id k3mr3909079ios.38.1578683470163;
+ Fri, 10 Jan 2020 11:11:10 -0800 (PST)
+Date:   Fri, 10 Jan 2020 11:11:10 -0800
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000de1d10059bcddf2b@google.com>
-Subject: WARNING in xfrm_policy_inexact_insert (2)
-From:   syzbot <syzbot+f9c439e84c4337e80301@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, herbert@gondor.apana.org.au,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        steffen.klassert@secunet.com, syzkaller-bugs@googlegroups.com
+Message-ID: <00000000000073b469059bcde315@google.com>
+Subject: BUG: unable to handle kernel NULL pointer dereference in cfg80211_wext_siwrts
+From:   syzbot <syzbot+34b582cf32c1db008f8e@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, johannes@sipsolutions.net,
+        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
 Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
@@ -48,80 +48,83 @@ Hello,
 
 syzbot found the following crash on:
 
-HEAD commit:    9f120e76 Merge branch 'mptcp-prereq'
-git tree:       net-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=17bdd5c6e00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=c9f1de9846a3cafd
-dashboard link: https://syzkaller.appspot.com/bug?extid=f9c439e84c4337e80301
+HEAD commit:    2f806c2a Merge branch 'net-ungraft-prio'
+git tree:       net
+console output: https://syzkaller.appspot.com/x/log.txt?x=1032069ee00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=5c90cac8f1f8c619
+dashboard link: https://syzkaller.appspot.com/bug?extid=34b582cf32c1db008f8e
 compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
 
 Unfortunately, I don't have any reproducer for this crash yet.
 
 IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+f9c439e84c4337e80301@syzkaller.appspotmail.com
+Reported-by: syzbot+34b582cf32c1db008f8e@syzkaller.appspotmail.com
 
-------------[ cut here ]------------
-WARNING: CPU: 0 PID: 15165 at net/xfrm/xfrm_policy.c:1508  
-xfrm_policy_insert_inexact_list net/xfrm/xfrm_policy.c:1508 [inline]
-WARNING: CPU: 0 PID: 15165 at net/xfrm/xfrm_policy.c:1508  
-xfrm_policy_inexact_insert+0x4cc/0xba0 net/xfrm/xfrm_policy.c:1197
-Kernel panic - not syncing: panic_on_warn set ...
-CPU: 0 PID: 15165 Comm: syz-executor.2 Not tainted 5.5.0-rc5-syzkaller #0
+BUG: kernel NULL pointer dereference, address: 0000000000000000
+#PF: supervisor instruction fetch in kernel mode
+#PF: error_code(0x0010) - not-present page
+PGD a7499067 P4D a7499067 PUD 9a778067 PMD 0
+Oops: 0010 [#1] PREEMPT SMP KASAN
+CPU: 1 PID: 12180 Comm: syz-executor.2 Not tainted 5.5.0-rc4-syzkaller #0
 Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
 Google 01/01/2011
+RIP: 0010:0x0
+Code: Bad RIP value.
+RSP: 0018:ffffc90001727a78 EFLAGS: 00010246
+RAX: dffffc0000000000 RBX: ffff888218678540 RCX: ffffc9000e5df000
+RDX: 1ffffffff1148744 RSI: 0000000000000008 RDI: ffff888218678540
+RBP: ffffc90001727ab8 R08: ffff8880957ac0c0 R09: ffffed1015d2703d
+R10: ffffed1015d2703c R11: ffff8880ae9381e3 R12: ffffffff88a438a0
+R13: ffff88808f309000 R14: ffffc90001727bb0 R15: 0000000000000000
+FS:  00007f1e9f870700(0000) GS:ffff8880ae900000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: ffffffffffffffd6 CR3: 0000000094518000 CR4: 00000000001406e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
 Call Trace:
-  __dump_stack lib/dump_stack.c:77 [inline]
-  dump_stack+0x197/0x210 lib/dump_stack.c:118
-  panic+0x2e3/0x75c kernel/panic.c:221
-  __warn.cold+0x2f/0x3e kernel/panic.c:582
-  report_bug+0x289/0x300 lib/bug.c:195
-  fixup_bug arch/x86/kernel/traps.c:174 [inline]
-  fixup_bug arch/x86/kernel/traps.c:169 [inline]
-  do_error_trap+0x11b/0x200 arch/x86/kernel/traps.c:267
-  do_invalid_op+0x37/0x50 arch/x86/kernel/traps.c:286
-  invalid_op+0x23/0x30 arch/x86/entry/entry_64.S:1027
-RIP: 0010:xfrm_policy_insert_inexact_list net/xfrm/xfrm_policy.c:1508  
-[inline]
-RIP: 0010:xfrm_policy_inexact_insert+0x4cc/0xba0 net/xfrm/xfrm_policy.c:1197
-Code: b2 fa 48 8b 7d b8 31 f6 e8 41 8b ff ff e8 6c dc b2 fa 48 8b 45 d0 48  
-83 c4 70 5b 41 5c 41 5d 41 5e 41 5f 5d c3 e8 54 dc b2 fa <0f> 0b 44 8b 6d  
-ac 8b 5d a4 44 89 ee 89 df e8 41 dd b2 fa 44 39 eb
-RSP: 0018:ffffc90001857378 EFLAGS: 00010212
-RAX: 0000000000040000 RBX: 0000000000000000 RCX: ffffc9000e2de000
-RDX: 0000000000001fc2 RSI: ffffffff86c2554c RDI: ffff88808c310220
-RBP: ffffc90001857410 R08: ffff88804d7801c0 R09: ffff88804d780a50
-R10: fffffbfff14f7c30 R11: ffffffff8a7be187 R12: 0000000000000000
-R13: 0000000000000000 R14: ffff88808c310000 R15: dffffc0000000000
-  xfrm_policy_insert+0x597/0x7f0 net/xfrm/xfrm_policy.c:1576
-  xfrm_add_policy+0x28f/0x580 net/xfrm/xfrm_user.c:1670
-  xfrm_user_rcv_msg+0x459/0x770 net/xfrm/xfrm_user.c:2676
-  netlink_rcv_skb+0x177/0x450 net/netlink/af_netlink.c:2477
-  xfrm_netlink_rcv+0x70/0x90 net/xfrm/xfrm_user.c:2684
-  netlink_unicast_kernel net/netlink/af_netlink.c:1302 [inline]
-  netlink_unicast+0x59e/0x7e0 net/netlink/af_netlink.c:1328
-  netlink_sendmsg+0x91c/0xea0 net/netlink/af_netlink.c:1917
-  sock_sendmsg_nosec net/socket.c:652 [inline]
-  sock_sendmsg+0xd7/0x130 net/socket.c:672
-  ____sys_sendmsg+0x753/0x880 net/socket.c:2343
-  ___sys_sendmsg+0x100/0x170 net/socket.c:2397
-  __sys_sendmsg+0x105/0x1d0 net/socket.c:2430
-  __do_sys_sendmsg net/socket.c:2439 [inline]
-  __se_sys_sendmsg net/socket.c:2437 [inline]
-  __x64_sys_sendmsg+0x78/0xb0 net/socket.c:2437
+  rdev_set_wiphy_params net/wireless/rdev-ops.h:542 [inline]
+  cfg80211_wext_siwrts+0x265/0x8f0 net/wireless/wext-compat.c:267
+  ioctl_standard_call+0xca/0x1d0 net/wireless/wext-core.c:1015
+  wireless_process_ioctl.constprop.0+0x236/0x2b0 net/wireless/wext-core.c:953
+  wext_ioctl_dispatch net/wireless/wext-core.c:986 [inline]
+  wext_ioctl_dispatch net/wireless/wext-core.c:974 [inline]
+  wext_handle_ioctl+0x106/0x1c0 net/wireless/wext-core.c:1047
+  sock_ioctl+0x47d/0x790 net/socket.c:1112
+  vfs_ioctl fs/ioctl.c:47 [inline]
+  file_ioctl fs/ioctl.c:545 [inline]
+  do_vfs_ioctl+0x977/0x14e0 fs/ioctl.c:732
+  ksys_ioctl+0xab/0xd0 fs/ioctl.c:749
+  __do_sys_ioctl fs/ioctl.c:756 [inline]
+  __se_sys_ioctl fs/ioctl.c:754 [inline]
+  __x64_sys_ioctl+0x73/0xb0 fs/ioctl.c:754
   do_syscall_64+0xfa/0x790 arch/x86/entry/common.c:294
   entry_SYSCALL_64_after_hwframe+0x49/0xbe
 RIP: 0033:0x45af49
 Code: ad b6 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 89 f8 48 89 f7  
 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff  
 ff 0f 83 7b b6 fb ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007f56bf01bc78 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RSP: 002b:00007f1e9f86fc78 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
 RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 000000000045af49
-RDX: 0000000000000000 RSI: 0000000020000080 RDI: 0000000000000003
-RBP: 000000000075bf20 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 00007f56bf01c6d4
-R13: 00000000004caa15 R14: 00000000004e3e90 R15: 00000000ffffffff
-Kernel Offset: disabled
-Rebooting in 86400 seconds..
+RDX: 0000000020000040 RSI: 0000000000008b22 RDI: 0000000000000004
+RBP: 000000000075c070 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 00007f1e9f8706d4
+R13: 00000000004c2837 R14: 00000000004d8b30 R15: 00000000ffffffff
+Modules linked in:
+CR2: 0000000000000000
+---[ end trace 4579299d7d6f7d47 ]---
+RIP: 0010:0x0
+Code: Bad RIP value.
+RSP: 0018:ffffc90001727a78 EFLAGS: 00010246
+RAX: dffffc0000000000 RBX: ffff888218678540 RCX: ffffc9000e5df000
+RDX: 1ffffffff1148744 RSI: 0000000000000008 RDI: ffff888218678540
+RBP: ffffc90001727ab8 R08: ffff8880957ac0c0 R09: ffffed1015d2703d
+R10: ffffed1015d2703c R11: ffff8880ae9381e3 R12: ffffffff88a438a0
+R13: ffff88808f309000 R14: ffffc90001727bb0 R15: 0000000000000000
+FS:  00007f1e9f870700(0000) GS:ffff8880ae900000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007fff5d5b8fc8 CR3: 0000000094518000 CR4: 00000000001406e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
 
 
 ---
