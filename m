@@ -2,213 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D11C9136957
-	for <lists+netdev@lfdr.de>; Fri, 10 Jan 2020 10:02:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A90541369F8
+	for <lists+netdev@lfdr.de>; Fri, 10 Jan 2020 10:27:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727218AbgAJJCP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jan 2020 04:02:15 -0500
-Received: from esa6.microchip.iphmx.com ([216.71.154.253]:34504 "EHLO
-        esa6.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726694AbgAJJCO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jan 2020 04:02:14 -0500
-Received-SPF: Pass (esa6.microchip.iphmx.com: domain of
-  Horatiu.Vultur@microchip.com designates 198.175.253.82 as
-  permitted sender) identity=mailfrom;
-  client-ip=198.175.253.82; receiver=esa6.microchip.iphmx.com;
-  envelope-from="Horatiu.Vultur@microchip.com";
-  x-sender="Horatiu.Vultur@microchip.com";
-  x-conformance=spf_only; x-record-type="v=spf1";
-  x-record-text="v=spf1 mx a:ushub1.microchip.com
-  a:smtpout.microchip.com -exists:%{i}.spf.microchip.iphmx.com
-  include:servers.mcsv.net include:mktomail.com
-  include:spf.protection.outlook.com ~all"
-Received-SPF: None (esa6.microchip.iphmx.com: no sender
-  authenticity information available from domain of
-  postmaster@email.microchip.com) identity=helo;
-  client-ip=198.175.253.82; receiver=esa6.microchip.iphmx.com;
-  envelope-from="Horatiu.Vultur@microchip.com";
-  x-sender="postmaster@email.microchip.com";
-  x-conformance=spf_only
-Authentication-Results: esa6.microchip.iphmx.com; dkim=none (message not signed) header.i=none; spf=Pass smtp.mailfrom=Horatiu.Vultur@microchip.com; spf=None smtp.helo=postmaster@email.microchip.com; dmarc=pass (p=none dis=none) d=microchip.com
-IronPort-SDR: fLyOfaOivnZV6YnC2Hm4qrzSy3aJusqZOQ2BvdZayW0cBMFam8uBQpkrV6fIhVe+two1u0FQNP
- V0xPBFc50RMnXp9xW9pKgg2rHrfEYvNFw8cTEwuc8AJFBYF23v18FdWw7N7bxZjDi2V0sgV8pS
- UB3h+BLpY75VNTAJuzy/uqcz0TaVHPetFdOdswfmxQQCQFdn8fwr+zga1BwkAMw0HNI2ArIhdU
- sQvKMtMyO577ZJVsTPY1T+Ca9dlgoOPaAtCCUgSGrA4Ug5AfSdyLseIbmI41jQsfZswWlbV3iB
- 2z8=
-X-IronPort-AV: E=Sophos;i="5.69,415,1571727600"; 
-   d="scan'208";a="60369690"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 10 Jan 2020 02:02:09 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Fri, 10 Jan 2020 02:02:06 -0700
-Received: from localhost (10.10.85.251) by chn-vm-ex01.mchp-main.com
- (10.10.85.143) with Microsoft SMTP Server id 15.1.1713.5 via Frontend
- Transport; Fri, 10 Jan 2020 02:02:06 -0700
-Date:   Fri, 10 Jan 2020 10:02:06 +0100
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     Stephen Hemminger <stephen@networkplumber.org>
-CC:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <bridge@lists.linux-foundation.org>, <davem@davemloft.net>,
-        <roopa@cumulusnetworks.com>, <nikolay@cumulusnetworks.com>,
-        <jakub.kicinski@netronome.com>, <vivien.didelot@gmail.com>,
-        <andrew@lunn.ch>, <jeffrey.t.kirsher@intel.com>,
-        <olteanv@gmail.com>, <anirudh.venkataramanan@intel.com>,
-        <dsahern@gmail.com>, <jiri@mellanox.com>,
-        <UNGLinuxDriver@microchip.com>
-Subject: Re: [RFC net-next Patch 0/3] net: bridge: mrp: Add support for Media
- Redundancy Protocol(MRP)
-Message-ID: <20200110090206.gihfd3coeilkyi23@soft-dev3.microsemi.net>
-References: <20200109150640.532-1-horatiu.vultur@microchip.com>
- <20200109081907.06281c0f@hermes.lan>
+        id S1726916AbgAJJ1J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jan 2020 04:27:09 -0500
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:38720 "EHLO
+        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726641AbgAJJ1I (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jan 2020 04:27:08 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
+        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=IzR1/pMpb7xjBse9eoQEK3YZKw0Lok5VBxQSI7WIc6k=; b=BVajm4eCcvvAJo9qHJEAuImMT
+        7fyt0bnzQ7uxEw1FX1Nht3pjiOFE2cT1ZSf6O1Fj3z6v/KOKGYkfmXikGZjImlg8mHqfZMzNVpqjb
+        MPAAkvzC65+OgwChxY4SvyxNggWuuIZUsKQcTjliBL4lI4XHKfE7ibw4RPwLltNe+spHAP+SkCO8U
+        9/TsmpE76HHJRdAz97nbBINNVmGhlzsb5xVIa1+ZbGlwyriAWspwyFum960oaPfjStesYikrAQLm+
+        /S1RDcwrhuX91Tk+Yx1rdAEq2imnkCV6gMOo6CzqYpdoOGVhYLw+4mTpV738cRwBzJmaBVIczrVat
+        Vx6Z/Av4w==;
+Received: from shell.armlinux.org.uk ([2001:4d48:ad52:3201:5054:ff:fe00:4ec]:53020)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1ipqZK-00028S-Oa; Fri, 10 Jan 2020 09:27:02 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1ipqZI-0001O5-NZ; Fri, 10 Jan 2020 09:27:00 +0000
+Date:   Fri, 10 Jan 2020 09:27:00 +0000
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     =?utf-8?B?0b3SieG2rOG4s+KEoA==?= <vtol@gmx.net>
+Cc:     Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org
+Subject: Re: [drivers/net/phy/sfp] intermittent failure in state machine
+ checks
+Message-ID: <20200110092700.GX25745@shell.armlinux.org.uk>
+References: <513d6fe7-65b2-733b-1d17-b3a40b8161cf@gmx.net>
+ <20200109155809.GQ25745@shell.armlinux.org.uk>
+ <bb2c2eed-5efa-00f6-0e52-1326669c1b0d@gmx.net>
+ <20200109174322.GR25745@shell.armlinux.org.uk>
+ <acd4d7e4-7f8e-d578-c9c9-b45f062f4fe2@gmx.net>
+ <7ebee7c5-4bf3-134d-bc57-ea71e0bdfc60@gmx.net>
+ <20200109215903.GV25745@shell.armlinux.org.uk>
+ <c7b4bec1-3f1f-8a34-cf22-8fb1f68914f3@gmx.net>
+ <20200109231034.GW25745@shell.armlinux.org.uk>
+ <727cea4e-9bff-efd2-3939-437038a322ad@gmx.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20200109081907.06281c0f@hermes.lan>
-User-Agent: NeoMutt/20180716
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <727cea4e-9bff-efd2-3939-437038a322ad@gmx.net>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The 01/09/2020 08:19, Stephen Hemminger wrote:
-> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
+On Thu, Jan 09, 2020 at 11:50:14PM +0000, ѽ҉ᶬḳ℠ wrote:
 > 
-> On Thu, 9 Jan 2020 16:06:37 +0100
-> Horatiu Vultur <horatiu.vultur@microchip.com> wrote:
+> On 09/01/2020 23:10, Russell King - ARM Linux admin wrote:
+> > 
+> > Please don't use mii-tool with SFPs that do not have a PHY; the "PHY"
+> > registers are emulated, and are there just for compatibility. Please
+> > use ethtool in preference, especially for SFPs.
 > 
-> > Media Redundancy Protocol is a data network protocol standardized by
-> > International Electrotechnical Commission as IEC 62439-2. It allows rings of
-> > Ethernet switches to overcome any single failure with recovery time faster than
-> > STP. It is primarily used in Industrial Ethernet applications.
-> >
-> > This is the first proposal of implementing a subset of the standard. It supports
-> > only 2 roles of an MRP node. It supports only Media Redundancy Manager(MRM) and
-> > Media Redundancy Client(MRC). In a MRP ring, each node needs to support MRP and
-> > in a ring can be only one MRM and multiple MRC. It is possible to have multiple
-> > instances of MRP on a single node. But a port can be part of only one MRP
-> > instance.
-> >
-> > The MRM is responsible for detecting when there is a loop in the ring. It is
-> > sending the frame MRP_Test to detect the loops. It would send MRP_Test on both
-> > ports in the ring and if the frame is received at the other end, then the ring
-> > is closed. Meaning that there is a loop. In this case it sets the port state to
-> > BLOCKED, not allowing traffic to pass through except MRP frames. In case it
-> > stops receiving MRP_Test frames from itself then the MRM will detect that the
-> > ring is open, therefor it would notify the other nodes of this change and will
-> > set the state of the port to be FORWARDING.
-> >
-> > The MRC is responsible for forwarding MRP_Test frames between the ring ports
-> > (and not to flood on other ports) and to listen when there is a change in the
-> > network to clear the FDB.
-> >
-> > Similar with STP, MRP is implemented on top of the bridge and they can't be
-> > enable at the same time. While STP runs on all ports of the bridge, MRP needs to
-> > run only on 2 ports.
-> >
-> > The bridge needs to:
-> > - notify when the link of one of the ports goes down or up, because MRP instance
-> >   needs to react to link changes by sending MRP_LinkChange frames.
-> > - notify when one of the ports are removed from the bridge or when the bridge
-> >   is destroyed, because if the port is part of the MRP ring then MRP state
-> >   machine should be stopped.
-> > - add a handler to allow MRP instance to process MRP frames, if MRP is enabled.
-> >   This is similar with STP design.
-> > - add logic for MRP frames inside the bridge. The bridge will just detect MRP
-> >   frames and it would forward them to the upper layer to allow to process it.
-> > - update the logic to update non-MRP frames. If MRP is enabled, then look also
-> >   at the state of the port to decide to forward or not.
-> >
-> > To create a MRP instance on the bridge:
-> > $ bridge mrp add dev br0 p_port eth0 s_port eth1 ring_role 2 ring_id 1
-> >
-> > Where:
-> > p_port, s_port: can be any port under the bridge
-> > ring_role: can have the value 1(MRC - Media Redundancy Client) or
-> >            2(MRM - Media Redundancy Manager). In a ring can be only one MRM.
-> > ring_id: unique id for each MRP instance.
-> >
-> > It is possible to create multiple instances. Each instance has to have it's own
-> > ring_id and a port can't be part of multiple instances:
-> > $ bridge mrp add dev br0 p_port eth2 s_port eth3 ring_role 1 ring_id 2
-> >
-> > To see current MRP instances and their status:
-> > $ bridge mrp show
-> > dev br0 p_port eth2 s_port eth3 ring_role 1 ring_id 2 ring_state 3
-> > dev br0 p_port eth0 s_port eth1 ring_role 2 ring_id 1 ring_state 4
-> >
-> > If this patch series is well received, the in the future it could be extended
-> > with the following:
-> > - add support for Media Redundancy Automanager. This role allows a node to
-> >   detect if needs to behave as a MRM or MRC. The advantage of this role is that
-> >   the user doesn't need to configure the nodes each time they are added/removed
-> >   from a ring and it adds redundancy to the manager.
-> > - add support for Interconnect rings. This allow to connect multiple rings.
-> > - add HW offloading. The standard defines 4 recovery times (500, 200, 30 and 10
-> >   ms). To be able to achieve 30 and 10 it is required by the HW to generate the
-> >   MRP_Test frames and detect when the ring is open/closed.
-> >
-> > Horatiu Vultur (3):
-> >   net: bridge: mrp: Add support for Media Redundancy Protocol
-> >   net: bridge: mrp: Integrate MRP into the bridge
-> >   net: bridge: mrp: Add netlink support to configure MRP
-> >
-> >  include/uapi/linux/if_bridge.h |   27 +
-> >  include/uapi/linux/if_ether.h  |    1 +
-> >  include/uapi/linux/rtnetlink.h |    7 +
-> >  net/bridge/Kconfig             |   12 +
-> >  net/bridge/Makefile            |    2 +
-> >  net/bridge/br.c                |   19 +
-> >  net/bridge/br_device.c         |    3 +
-> >  net/bridge/br_forward.c        |    1 +
-> >  net/bridge/br_if.c             |   10 +
-> >  net/bridge/br_input.c          |   22 +
-> >  net/bridge/br_mrp.c            | 1517 ++++++++++++++++++++++++++++++++
-> >  net/bridge/br_mrp_timer.c      |  227 +++++
-> >  net/bridge/br_netlink.c        |    9 +
-> >  net/bridge/br_private.h        |   30 +
-> >  net/bridge/br_private_mrp.h    |  208 +++++
-> >  security/selinux/nlmsgtab.c    |    5 +-
-> >  16 files changed, 2099 insertions(+), 1 deletion(-)
-> >  create mode 100644 net/bridge/br_mrp.c
-> >  create mode 100644 net/bridge/br_mrp_timer.c
-> >  create mode 100644 net/bridge/br_private_mrp.h
-> >
+> Sure, just ethtool is not much of help for this particular matter, all there
+> is ethtool -m and according to you the EEPROM dump is not to be relied on.
+
+How about just "ethtool eth2" ?
+
+> > CONFIG_DEBUG_GPIO is not the same as having debugfs support enabled.
+> > If debugfs is enabled, then gpiolib will provide the current state
+> > of gpios through debugfs.  debugfs is normally mounted on
+> > /sys/kernel/debug, but may not be mounted by default depending on
+> > policy.  Looking in /proc/filesystems will tell you definitively
+> > whether debugfs is enabled or not in the kernel.
+> debugsfs is mounted but ls -af /sys/kernel/debug/gpio only producing
+> (oddly):
 > 
-> Can this be implemented in userspace?
+> /sys/kernel/debug/gpio
 
-The reason for putting this in kernal space is to HW offload this in
-switchdev/dsa driver. The switches which typically supports this are
-small and don't have a lot of CPU power and the bandwidth between the
-CPU and switch core is typically limited(at least this is the case with
-the switches that we are working). Therefor we need to use HW offload
-components which can inject the frames at the needed frequency and other
-components which can terminate the expected frames and just raise and
-interrupt if the test frames are not received as expected(and a few
-other HW features).
+Try "cat /sys/kernel/debug/gpio"
 
-To put this in user-space we see two options:
-1. We need to define a netlink interface which allows a user-space
-control application to ask the kernel to ask the switchdev driver to
-setup the frame-injector or frame-terminator. In theory this would be
-possible, and we have considered it, but we think that this interface
-will be too specific for our HW and will need to be changed every time
-we want to add support for a new SoC. By focusing the user-space
-interfaces on the protocol requirement, we feel more confident that we
-have an interface which we can continue to be backwards compatible with,
-and also support future/other chips with what ever facilities (if any)
-they have to HW offload.
-
-2. Do a UIO driver and keep protocol and driver in user-space. We do not
-really like this approach for many reasons: it pretty much prevents us from
-collaborating with the community to solve this and it will be really hard
-to have the switchdev driver controlling part of the chip and a
-user-space driver controlling other parts.
-
+> > So, if that is correct...
+> > 
+> > Current OpenWRT is derived from 4.19-stable kernels, which include
+> > experimental patches picked at some point from my "phy" branch, and
+> > TOS is derived from OpenWRT.
 > 
-> Putting STP in the kernel was a mistake (even original author says so).
-> Adding more control protocols in kernel is a security and stability risk.
+> This may not be correct since there are not many device targets in OpenWrt
+> that feature a SFP cage (least as of today), the Turris Omnia might even be
+> the sole one.
+
+It isn't; there are definitely platforms that run OpenWRT that also
+have SFP cages (even a pair of them) and that make use of this code.
 
 -- 
-/Horatiu
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
+According to speedtest.net: 11.9Mbps down 500kbps up
