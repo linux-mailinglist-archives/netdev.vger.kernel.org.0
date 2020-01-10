@@ -2,190 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C6A1213715F
-	for <lists+netdev@lfdr.de>; Fri, 10 Jan 2020 16:34:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EE4F8137168
+	for <lists+netdev@lfdr.de>; Fri, 10 Jan 2020 16:36:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728370AbgAJPeU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jan 2020 10:34:20 -0500
-Received: from mail.kernel.org ([198.145.29.99]:54122 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728244AbgAJPeU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 10 Jan 2020 10:34:20 -0500
-Received: from localhost.localdomain (mob-176-246-50-46.net.vodafone.it [176.246.50.46])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 217B120673;
-        Fri, 10 Jan 2020 15:34:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1578670458;
-        bh=CgBFAk6vQQF7xcZUbHBdXjiBYIoYQvenk2YZwt1LfZ8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=v5enBeAsD9pDKKokI846/3wuiJFGa+6VI6nTZpU6wWh3O8FObYfhS7+cGiMBlafQ+
-         oV3saZuyAnEv9bpzHYDdcgZxZdWKm7pOnPGQwsgjY5EnWsmTSrY/z/Q9nVJAmNPrxW
-         5pgspNohMv8Kjs2G+mc16Akh+laKULtaMfHBzJZc=
-Date:   Fri, 10 Jan 2020 16:34:13 +0100
-From:   Lorenzo Bianconi <lorenzo@kernel.org>
-To:     Ilias Apalodimas <ilias.apalodimas@linaro.org>
-Cc:     netdev@vger.kernel.org, brouer@redhat.com, davem@davemloft.net,
-        lorenzo.bianconi@redhat.com
-Subject: Re: [PATCH v2 net-next] net: socionext: get rid of huge dma sync in
- netsec_alloc_rx_data
-Message-ID: <20200110153413.GA31419@localhost.localdomain>
-References: <81eeb4aaf1cbbbdcd4f58c5a7f06bdab67f20633.1578664483.git.lorenzo@kernel.org>
- <20200110145631.GA69461@apalos.home>
+        id S1728290AbgAJPgG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jan 2020 10:36:06 -0500
+Received: from smtp-fw-9102.amazon.com ([207.171.184.29]:7641 "EHLO
+        smtp-fw-9102.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728151AbgAJPgG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jan 2020 10:36:06 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1578670566; x=1610206566;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=SgZqy3XTPlr7N1P3ccJM4s/BqmaQ1P0z1Cl70TTTVVg=;
+  b=NONlX9UG1D5DZuADMfoS9coLx+Va8a87a4NT1so3/7QqC5vI/PyRzPNQ
+   7ajz471P2nPny8LQhrByUSqUjrp1HL822VVg3V7BtwWzvwDp5c1nwo9bc
+   k4IInC5ZhdY1gTnQaZgwRznNqNzrb9aj9KtYO+XjxeanVG1pNvNHTld6s
+   8=;
+IronPort-SDR: vO0XLbMQgitppzP2QpWLx/9TWANK+p+D6rx2ItFgJb7JazVRZhu9IZvwDPQiY2YXRlIwTKxqQ2
+ K0Gg7agBJwZQ==
+X-IronPort-AV: E=Sophos;i="5.69,417,1571702400"; 
+   d="scan'208";a="17985115"
+Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-1e-303d0b0e.us-east-1.amazon.com) ([10.47.23.38])
+  by smtp-border-fw-out-9102.sea19.amazon.com with ESMTP; 10 Jan 2020 15:35:54 +0000
+Received: from EX13MTAUWA001.ant.amazon.com (iad55-ws-svc-p15-lb9-vlan3.iad.amazon.com [10.40.159.166])
+        by email-inbound-relay-1e-303d0b0e.us-east-1.amazon.com (Postfix) with ESMTPS id 1C7D0A0716;
+        Fri, 10 Jan 2020 15:35:45 +0000 (UTC)
+Received: from EX13D10UWA003.ant.amazon.com (10.43.160.248) by
+ EX13MTAUWA001.ant.amazon.com (10.43.160.118) with Microsoft SMTP Server (TLS)
+ id 15.0.1367.3; Fri, 10 Jan 2020 15:35:21 +0000
+Received: from EX13MTAUWC001.ant.amazon.com (10.43.162.135) by
+ EX13D10UWA003.ant.amazon.com (10.43.160.248) with Microsoft SMTP Server (TLS)
+ id 15.0.1367.3; Fri, 10 Jan 2020 15:35:21 +0000
+Received: from localhost (10.85.220.176) by mail-relay.amazon.com
+ (10.43.162.232) with Microsoft SMTP Server id 15.0.1367.3 via Frontend
+ Transport; Fri, 10 Jan 2020 15:35:21 +0000
+Date:   Fri, 10 Jan 2020 07:35:20 -0800
+From:   Eduardo Valentin <eduval@amazon.com>
+To:     Peter Zijlstra <peterz@infradead.org>
+CC:     Anchal Agarwal <anchalag@amazon.com>, <tglx@linutronix.de>,
+        <mingo@redhat.com>, <bp@alien8.de>, <hpa@zytor.com>,
+        <x86@kernel.org>, <boris.ostrovsky@oracle.com>, <jgross@suse.com>,
+        <linux-pm@vger.kernel.org>, <linux-mm@kvack.org>,
+        <kamatam@amazon.com>, <sstabellini@kernel.org>,
+        <konrad.wilk@oracle.co>, <roger.pau@citrix.com>, <axboe@kernel.dk>,
+        <davem@davemloft.net>, <rjw@rjwysocki.net>, <len.brown@intel.com>,
+        <pavel@ucw.cz>, <eduval@amazon.com>, <sblbir@amazon.com>,
+        <xen-devel@lists.xenproject.org>, <vkuznets@redhat.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <Woodhouse@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>,
+        <dwmw@amazon.co.uk>, <fllinden@amaozn.com>
+Subject: Re: [RFC PATCH V2 11/11] x86: tsc: avoid system instability in
+ hibernation
+Message-ID: <20200110153520.GC8214@u40b0340c692b58f6553c.ant.amazon.com>
+References: <20200107234526.GA19034@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
+ <20200108105011.GY2827@hirez.programming.kicks-ass.net>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="uAKRQypu60I7Lcqm"
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <20200110145631.GA69461@apalos.home>
+In-Reply-To: <20200108105011.GY2827@hirez.programming.kicks-ass.net>
+User-Agent: Mutt/1.5.24 (2015-08-30)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hey Peter,
 
---uAKRQypu60I7Lcqm
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+On Wed, Jan 08, 2020 at 11:50:11AM +0100, Peter Zijlstra wrote:
+> On Tue, Jan 07, 2020 at 11:45:26PM +0000, Anchal Agarwal wrote:
+> > From: Eduardo Valentin <eduval@amazon.com>
+> > 
+> > System instability are seen during resume from hibernation when system
+> > is under heavy CPU load. This is due to the lack of update of sched
+> > clock data, and the scheduler would then think that heavy CPU hog
+> > tasks need more time in CPU, causing the system to freeze
+> > during the unfreezing of tasks. For example, threaded irqs,
+> > and kernel processes servicing network interface may be delayed
+> > for several tens of seconds, causing the system to be unreachable.
+> 
+> > The fix for this situation is to mark the sched clock as unstable
+> > as early as possible in the resume path, leaving it unstable
+> > for the duration of the resume process. This will force the
+> > scheduler to attempt to align the sched clock across CPUs using
+> > the delta with time of day, updating sched clock data. In a post
+> > hibernation event, we can then mark the sched clock as stable
+> > again, avoiding unnecessary syncs with time of day on systems
+> > in which TSC is reliable.
+> 
+> This makes no frigging sense what so bloody ever. If the clock is
+> stable, we don't care about sched_clock_data. When it is stable you get
+> a linear function of the TSC without complicated bits on.
+> 
+> When it is unstable, only then do we care about the sched_clock_data.
+> 
 
-> On Fri, Jan 10, 2020 at 02:57:44PM +0100, Lorenzo Bianconi wrote:
-> > Socionext driver can run on dma coherent and non-coherent devices.
-> > Get rid of huge dma_sync_single_for_device in netsec_alloc_rx_data since
-> > now the driver can let page_pool API to managed needed DMA sync
-> >=20
-> > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+Yeah, maybe what is not clear here is that we covering for situation
+where clock stability changes over time, e.g. at regular boot clock is
+stable, hibernation happens, then restore happens in a non-stable clock.
+
+> > Reviewed-by: Erik Quanstrom <quanstro@amazon.com>
+> > Reviewed-by: Frank van der Linden <fllinden@amazon.com>
+> > Reviewed-by: Balbir Singh <sblbir@amazon.com>
+> > Reviewed-by: Munehisa Kamata <kamatam@amazon.com>
+> > Tested-by: Anchal Agarwal <anchalag@amazon.com>
+> > Signed-off-by: Eduardo Valentin <eduval@amazon.com>
 > > ---
-> > Changes since v1:
-> > - rely on original frame size for dma sync
-> > ---
-> >  drivers/net/ethernet/socionext/netsec.c | 43 +++++++++++++++----------
-> >  1 file changed, 26 insertions(+), 17 deletions(-)
-> >=20
+> 
+> NAK, the code very much relies on never getting marked stable again
+> after it gets set to unstable.
+> 
 
-[...]
+Well actually, at the PM_POST_HIBERNATION, we do the check and set stable if
+known to be stable.
 
-> > @@ -883,6 +881,8 @@ static u32 netsec_xdp_xmit_back(struct netsec_priv =
-*priv, struct xdp_buff *xdp)
-> >  static u32 netsec_run_xdp(struct netsec_priv *priv, struct bpf_prog *p=
-rog,
-> >  			  struct xdp_buff *xdp)
+The issue only really happens during the restoration path under scheduling pressure,
+which takes forever to finish, as described in the commit.
+
+Do you see a better solution for this issue?
+
+
+> > diff --git a/kernel/sched/clock.c b/kernel/sched/clock.c
+> > index 1152259a4ca0..374d40e5b1a2 100644
+> > --- a/kernel/sched/clock.c
+> > +++ b/kernel/sched/clock.c
+> > @@ -116,7 +116,7 @@ static void __scd_stamp(struct sched_clock_data *scd)
+> >  	scd->tick_raw = sched_clock();
+> >  }
+> >  
+> > -static void __set_sched_clock_stable(void)
+> > +void set_sched_clock_stable(void)
 > >  {
-> > +	struct netsec_desc_ring *dring =3D &priv->desc_ring[NETSEC_RING_RX];
-> > +	unsigned int len =3D xdp->data_end - xdp->data;
->=20
-> We need to account for XDP expanding the headers as well here.=20
-> So something like max(xdp->data_end(before bpf), xdp->data_end(after bpf)=
-) -
-> xdp->data (original)
+> >  	struct sched_clock_data *scd;
+> >  
+> > @@ -236,7 +236,7 @@ static int __init sched_clock_init_late(void)
+> >  	smp_mb(); /* matches {set,clear}_sched_clock_stable() */
+> >  
+> >  	if (__sched_clock_stable_early)
+> > -		__set_sched_clock_stable();
+> > +		set_sched_clock_stable();
+> >  
+> >  	return 0;
+> >  }
+> > -- 
+> > 2.15.3.AMZN
+> > 
 
-correct, the corner case that is not covered at the moment is when data_end=
- is
-moved forward by the bpf program. I will fix it in v3. Thx
-
-Regards,
-Lorenzo
-
->=20
-> >  	u32 ret =3D NETSEC_XDP_PASS;
-> >  	int err;
-> >  	u32 act;
-> > @@ -896,7 +896,9 @@ static u32 netsec_run_xdp(struct netsec_priv *priv,=
- struct bpf_prog *prog,
-> >  	case XDP_TX:
-> >  		ret =3D netsec_xdp_xmit_back(priv, xdp);
-> >  		if (ret !=3D NETSEC_XDP_TX)
-> > -			xdp_return_buff(xdp);
-> > +			__page_pool_put_page(dring->page_pool,
-> > +				     virt_to_head_page(xdp->data),
-> > +				     len, true);
-> >  		break;
-> >  	case XDP_REDIRECT:
-> >  		err =3D xdp_do_redirect(priv->ndev, xdp, prog);
-> > @@ -904,7 +906,9 @@ static u32 netsec_run_xdp(struct netsec_priv *priv,=
- struct bpf_prog *prog,
-> >  			ret =3D NETSEC_XDP_REDIR;
-> >  		} else {
-> >  			ret =3D NETSEC_XDP_CONSUMED;
-> > -			xdp_return_buff(xdp);
-> > +			__page_pool_put_page(dring->page_pool,
-> > +				     virt_to_head_page(xdp->data),
-> > +				     len, true);
-> >  		}
-> >  		break;
-> >  	default:
-> > @@ -915,7 +919,9 @@ static u32 netsec_run_xdp(struct netsec_priv *priv,=
- struct bpf_prog *prog,
-> >  		/* fall through -- handle aborts by dropping packet */
-> >  	case XDP_DROP:
-> >  		ret =3D NETSEC_XDP_CONSUMED;
-> > -		xdp_return_buff(xdp);
-> > +		__page_pool_put_page(dring->page_pool,
-> > +				     virt_to_head_page(xdp->data),
-> > +				     len, true);
-> >  		break;
-> >  	}
-> > =20
-> > @@ -1014,7 +1020,8 @@ static int netsec_process_rx(struct netsec_priv *=
-priv, int budget)
-> >  			 * cache state. Since we paid the allocation cost if
-> >  			 * building an skb fails try to put the page into cache
-> >  			 */
-> > -			page_pool_recycle_direct(dring->page_pool, page);
-> > +			__page_pool_put_page(dring->page_pool, page,
-> > +					     pkt_len, true);
->=20
-> Same here, a bpf prog with XDP_PASS verdict might change lenghts
->=20
-> >  			netif_err(priv, drv, priv->ndev,
-> >  				  "rx failed to build skb\n");
-> >  			break;
-> > @@ -1272,17 +1279,19 @@ static int netsec_setup_rx_dring(struct netsec_=
-priv *priv)
-> >  {
-> >  	struct netsec_desc_ring *dring =3D &priv->desc_ring[NETSEC_RING_RX];
-> >  	struct bpf_prog *xdp_prog =3D READ_ONCE(priv->xdp_prog);
-> > -	struct page_pool_params pp_params =3D { 0 };
-> > +	struct page_pool_params pp_params =3D {
-> > +		.order =3D 0,
-> > +		/* internal DMA mapping in page_pool */
-> > +		.flags =3D PP_FLAG_DMA_MAP | PP_FLAG_DMA_SYNC_DEV,
-> > +		.pool_size =3D DESC_NUM,
-> > +		.nid =3D NUMA_NO_NODE,
-> > +		.dev =3D priv->dev,
-> > +		.dma_dir =3D xdp_prog ? DMA_BIDIRECTIONAL : DMA_FROM_DEVICE,
-> > +		.offset =3D NETSEC_RXBUF_HEADROOM,
-> > +		.max_len =3D NETSEC_RX_BUF_SIZE,
-> > +	};
-> >  	int i, err;
-> > =20
-> > -	pp_params.order =3D 0;
-> > -	/* internal DMA mapping in page_pool */
-> > -	pp_params.flags =3D PP_FLAG_DMA_MAP;
-> > -	pp_params.pool_size =3D DESC_NUM;
-> > -	pp_params.nid =3D NUMA_NO_NODE;
-> > -	pp_params.dev =3D priv->dev;
-> > -	pp_params.dma_dir =3D xdp_prog ? DMA_BIDIRECTIONAL : DMA_FROM_DEVICE;
-> > -
-> >  	dring->page_pool =3D page_pool_create(&pp_params);
-> >  	if (IS_ERR(dring->page_pool)) {
-> >  		err =3D PTR_ERR(dring->page_pool);
-> > --=20
-> > 2.21.1
-> >=20
->=20
-> Thanks
-> /Ilias
-
---uAKRQypu60I7Lcqm
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCXhiZcgAKCRA6cBh0uS2t
-rHtbAPsH2WTGg0CD4azogDXJP7EoKAlpjbaTt1k4oajQMPcW0QEAsSKks+3IXqxg
-3f98Cy/6yqIN/EHz19CdAyhXXBB2vgk=
-=bh/U
------END PGP SIGNATURE-----
-
---uAKRQypu60I7Lcqm--
+-- 
+All the best,
+Eduardo Valentin
