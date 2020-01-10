@@ -2,221 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B42A2137213
-	for <lists+netdev@lfdr.de>; Fri, 10 Jan 2020 17:03:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9CFD613723A
+	for <lists+netdev@lfdr.de>; Fri, 10 Jan 2020 17:05:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728496AbgAJQDA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jan 2020 11:03:00 -0500
-Received: from mail-ed1-f68.google.com ([209.85.208.68]:43787 "EHLO
-        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728485AbgAJQDA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jan 2020 11:03:00 -0500
-Received: by mail-ed1-f68.google.com with SMTP id dc19so1990010edb.10;
-        Fri, 10 Jan 2020 08:02:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=AVojUMyqjFTe7QocLHmtkpZSaA4+eW8y+0hQ0G/L7KE=;
-        b=GQbi6VxagFtBoDNGn47AsDsIX7GbFuxxbo9ADZdJA5DppPq9Q3udOig8l6KZyLA7G+
-         KlWDzn9rzyrtQeHdfu4Ew5DzMpt0L0pPwc77PzlLpS708rPgowGROLpvzg91bRV8wGHU
-         lE6X1lcvG869TmejUBf07Y09nBiGf/x6if5oi+tw25CLzoLeCd+rjwNHpauEUVQCEAPn
-         Z2zp9++SinfhmmAxWbormx490hqJ6WM0YnE263wPoVngh6BVZvtdIH9ufSJsHZNHwyvJ
-         fEl/2P5vVJL65zWjPOVWmjKqqqdyzdqlLzj8qdsDl7KYDlpMziNFWEWOhmZDF0SBMWEl
-         Ufeg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=AVojUMyqjFTe7QocLHmtkpZSaA4+eW8y+0hQ0G/L7KE=;
-        b=cHTsRxXZOwntIwivWXDwfwm3hZ+UcqV/ZE93R5UwScnNp7Z3or2GZEapfILbFq1tPy
-         UulL9purZeuP/QRj0dC4nwwlxueec9l/Q4uQGgaJ36n9ZZRQ8Rk9A5zGH4rziBdrFLjS
-         kl9SfX0V7+xZ8JDEbc7qBcrwyCNgng9HrfZgvaAiDMV9+xt3F56n2xQ//R7kge51aZOG
-         bO9BoIV9FJ2iYyNhz5eHChP5LJ/PGlIgXugrumaoBQndLTl0RYkvPimBPTnXZebdlAx0
-         LPN7oaVfVt7GQQlk6c49czHqWjvyJHNQxh259s2Nn75UeeCeRKvmQr7ipHuu4qVqrfa0
-         +nnQ==
-X-Gm-Message-State: APjAAAU5V1R1XA8SNAznGNjw5xPIqHTOzftISlOXJhpiEJxasKgdPzar
-        evt8ND015mKD6IfqfVYmO8GFsuVzxqqLl4TEU9Q=
-X-Google-Smtp-Source: APXvYqw8whNJFgpyJe0GoUhyEmo/i6GQC9qL7MAUL0SkyawCqcunPrYTIX2HZzO+jnYUaHEg3bY5de3fvfIro8tKY44=
-X-Received: by 2002:aa7:db04:: with SMTP id t4mr4354934eds.122.1578672177451;
- Fri, 10 Jan 2020 08:02:57 -0800 (PST)
+        id S1728724AbgAJQE6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jan 2020 11:04:58 -0500
+Received: from esa3.microchip.iphmx.com ([68.232.153.233]:15024 "EHLO
+        esa3.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728480AbgAJQE6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jan 2020 11:04:58 -0500
+Received-SPF: Pass (esa3.microchip.iphmx.com: domain of
+  Horatiu.Vultur@microchip.com designates 198.175.253.82 as
+  permitted sender) identity=mailfrom;
+  client-ip=198.175.253.82; receiver=esa3.microchip.iphmx.com;
+  envelope-from="Horatiu.Vultur@microchip.com";
+  x-sender="Horatiu.Vultur@microchip.com";
+  x-conformance=spf_only; x-record-type="v=spf1";
+  x-record-text="v=spf1 mx a:ushub1.microchip.com
+  a:smtpout.microchip.com -exists:%{i}.spf.microchip.iphmx.com
+  include:servers.mcsv.net include:mktomail.com
+  include:spf.protection.outlook.com ~all"
+Received-SPF: None (esa3.microchip.iphmx.com: no sender
+  authenticity information available from domain of
+  postmaster@email.microchip.com) identity=helo;
+  client-ip=198.175.253.82; receiver=esa3.microchip.iphmx.com;
+  envelope-from="Horatiu.Vultur@microchip.com";
+  x-sender="postmaster@email.microchip.com";
+  x-conformance=spf_only
+Authentication-Results: esa3.microchip.iphmx.com; dkim=none (message not signed) header.i=none; spf=Pass smtp.mailfrom=Horatiu.Vultur@microchip.com; spf=None smtp.helo=postmaster@email.microchip.com; dmarc=pass (p=none dis=none) d=microchip.com
+IronPort-SDR: /B5vpOr4VmrQ5c6NrR9K6byPUAx1VdG+MT3+qUKbO/Q8ItJw6ez83kRfEeaL2kB0tWH8Y+c8dm
+ 5eB2+ZDtK1E7dheYGRR66X6rZMWora3pb1ojD3o8jJF2oYCabUomMUXzNGc+pRNL8N41NxPM8w
+ LQ+jpfeGXYlsn9Isy4YlfwFryAgtSoFvYoHU9ROV496ak+1DsiEK6sLTz9e9HTbY1fxSXkhSaL
+ F2OWoEbiaep/RUVwP4a8FX0x6nXy0FO0WwUzvkh385abd8fdHJMWFvC4Ysz81KUKveb89cqz/d
+ aLc=
+X-IronPort-AV: E=Sophos;i="5.69,417,1571727600"; 
+   d="scan'208";a="62887775"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 10 Jan 2020 09:04:57 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Fri, 10 Jan 2020 09:04:55 -0700
+Received: from localhost (10.10.85.251) by chn-vm-ex01.mchp-main.com
+ (10.10.85.143) with Microsoft SMTP Server id 15.1.1713.5 via Frontend
+ Transport; Fri, 10 Jan 2020 09:04:55 -0700
+Date:   Fri, 10 Jan 2020 17:04:56 +0100
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+CC:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <bridge@lists.linux-foundation.org>, <davem@davemloft.net>,
+        <roopa@cumulusnetworks.com>, <jakub.kicinski@netronome.com>,
+        <vivien.didelot@gmail.com>, <andrew@lunn.ch>,
+        <jeffrey.t.kirsher@intel.com>, <olteanv@gmail.com>,
+        <anirudh.venkataramanan@intel.com>, <dsahern@gmail.com>,
+        <jiri@mellanox.com>, <UNGLinuxDriver@microchip.com>
+Subject: Re: [RFC net-next Patch 0/3] net: bridge: mrp: Add support for Media
+ Redundancy Protocol(MRP)
+Message-ID: <20200110160456.enzomhfsce7bptu3@soft-dev3.microsemi.net>
+References: <20200109150640.532-1-horatiu.vultur@microchip.com>
+ <6f1936e9-97e5-9502-f062-f2925c9652c9@cumulusnetworks.com>
 MIME-Version: 1.0
-References: <20191127094517.6255-1-Po.Liu@nxp.com> <157603276975.18462.4638422874481955289@pipeline>
- <VE1PR04MB6496CEA449E9B844094E580492510@VE1PR04MB6496.eurprd04.prod.outlook.com>
- <87eex43pzm.fsf@linux.intel.com> <20191219004322.GA20146@khorivan>
- <87lfr9axm8.fsf@linux.intel.com> <b7e1cb8b-b6b1-c0fa-3864-4036750f3164@ti.com>
- <157853205713.36295.17877768211004089754@aguedesl-mac01.jf.intel.com>
-In-Reply-To: <157853205713.36295.17877768211004089754@aguedesl-mac01.jf.intel.com>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Fri, 10 Jan 2020 18:02:45 +0200
-Message-ID: <CA+h21hr9ApvPSYigcS0WkFVg0+Od=G+ZVxkV7GvdaNbDmCmiCA@mail.gmail.com>
-Subject: Re: [EXT] Re: [v1,net-next, 1/2] ethtool: add setting frame
- preemption of traffic classes
-To:     Andre Guedes <andre.guedes@linux.intel.com>
-Cc:     Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>,
-        Murali Karicheri <m-karicheri2@ti.com>,
-        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
-        Po Liu <po.liu@nxp.com>,
-        "alexandru.ardelean@analog.com" <alexandru.ardelean@analog.com>,
-        "allison@lohutok.net" <allison@lohutok.net>,
-        "andrew@lunn.ch" <andrew@lunn.ch>,
-        "ayal@mellanox.com" <ayal@mellanox.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "hauke.mehrtens@intel.com" <hauke.mehrtens@intel.com>,
-        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        "jiri@mellanox.com" <jiri@mellanox.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "pablo@netfilter.org" <pablo@netfilter.org>,
-        "saeedm@mellanox.com" <saeedm@mellanox.com>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        "simon.horman@netronome.com" <simon.horman@netronome.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandru Marginean <alexandru.marginean@nxp.com>,
-        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
-        Roy Zang <roy.zang@nxp.com>, Mingkai Hu <mingkai.hu@nxp.com>,
-        Jerry Huang <jerry.huang@nxp.com>, Leo Li <leoyang.li@nxp.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+In-Reply-To: <6f1936e9-97e5-9502-f062-f2925c9652c9@cumulusnetworks.com>
+User-Agent: NeoMutt/20180716
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Andre,
+Hi Nik,
 
-On Thu, 9 Jan 2020 at 03:08, Andre Guedes <andre.guedes@linux.intel.com> wrote:
->
-> Hi,
->
-> > >>> 1. add support in taprio to be configured without any schedule in the
-> > >>> "full offload" mode. In practice, allowing taprio to work somewhat
-> > >>> similar to (mqprio + frame-preemption), changes in the code should de
-> > >>> fairly small;
-> > >>
-> > >> +
-> > >>
-> > >> And if follow mqprio settings logic then preemption also can be enabled
-> > >> immediately while configuring taprio first time, and similarly new ADMIN
-> > >> can't change it and can be set w/o preemption option afterwards.
-> > >>
-> > >> So that following is correct:
-> > >>
-> > >> OPER
-> > >> $ tc qdisc add dev IFACE parent root handle 100 taprio \
-> > >>        base-time 10000000 \
-> > >>        num_tc 3 \
-> > >>        map 2 2 1 0 2 2 2 2 2 2 2 2 2 2 2 2 \
-> > >>        queues 1@0 1@1 2@2 \
-> > >>        preemption 0 1 1 1
-> > >>        flags 1
-> > >>
-> > >> then
-> > >> ADMIN
-> > >> $ tc qdisc add dev IFACE parent root handle 100 taprio \
-> > >>        base-time 12000000 \
-> > >>        num_tc 3 \
-> > >>        map 2 2 1 0 2 2 2 2 2 2 2 2 2 2 2 2 \
-> > >>        queues 1@0 1@1 2@2 \
-> > >>        preemption 0 1 1 1
-> > >>        sched-entry S 01 300000 \
-> > >>        sched-entry S 02 300000 \
-> > >>        flags 1
-> > >>
-> > >> then
-> > >> ADMIN
-> > >> $ tc qdisc add dev IFACE parent root handle 100 taprio \
-> > >>        base-time 13000000 \
-> > >>        sched-entry S 01 300000 \
-> > >>        sched-entry S 02 300000 \
-> > >>        flags 1
-> > >>
-> > >> BUT:
-> > >>
-> > >> 1) The question is only should it be in this way? I mean preemption to be
-> > >> enabled immediately? Also should include other parameters like
-> > >> fragment size.
-> > >
-> > > We can decide what things are allowed/useful here. For example, it might
-> > > make sense to allow "preemption" to be changed. We can extend taprio to
-> > > support changing the fragment size, if that makes sense.
-> > >
-> > >>
-> > >> 2) What if I want to use frame preemption with another "transmission selection
-> > >> algorithm"? Say another one "time sensitive" - CBS? How is it going to be
-> > >> stacked?
-> > >
-> > > I am not seeing any (conceptual*) problems when plugging a cbs (for
-> > > example) qdisc into one of taprio children. Or, are you talking about a
-> > > more general problem?
-> > >
-> > > * here I am considering that support for taprio without an schedule is
-> > >   added.
-> > >
-> > >>
-> > >> In this case ethtool looks better, allowing this "MAC level" feature, to be
-> > >> configured separately.
-> > >
-> > > My only issue with using ethtool is that then we would have two
-> > > different interfaces for "complementary" features. And it would make
-> > > things even harder to configure and debug. The fact that one talks about
-> > > traffic classes and the other transmission queues doesn't make me more
-> > > comfortable as well.
-> > >
-> > > On the other hand, as there isn't a way to implement frame preemption in
-> > > software, I agree that it makes it kind of awkward to have it in the tc
-> > > subsystem.
-> > Absolutely. I think frame pre-emption feature flag, per queue express/
-> > pre-empt state, frag size, timers (hold/release) to be configured
-> > independently (perhaps through ethtool) and then taprio should check
-> > this with the lower device and then allow supporting additional Gate
-> > operations such as Hold/release if supported by underlying device.
-> >
-> > What do you think? Why to abuse tc for this?
-> >
->
-> After reading all this great discussion and revisiting the 802.1Q and 802.3br
-> specs, I'm now leaning towards to not coupling Frame Preemption support under
-> taprio qdisc. Besides what have been discussed, Annex S.2 from 802.1Q-2018
-> foresees FP without EST so it makes me feel like we should keep them separate.
->
-> Regarding the FP configuration knobs, the following seems reasonable to me:
->     * Enable/disable FP feature
->     * Preemptable queue mapping
->     * Fragment size multiplier
->
-> I'm not sure about the knob 'timers (hold/release)' described in the quotes
-> above. I couldn't find a match in the specs. If it refers to 'holdAdvance' and
-> 'releaseAdvance' parameters described in 802.1Q-2018, I believe they are not
-> configurable. Do we know any hardware where they are configurable?
->
+> I agree with Stephen here, IMO you have to take note of how STP has progressed
+> and that bringing it in the kernel was a mistake, these days mstpd has an active
+> community and much better support which is being extended. This looks best implemented
+> in user-space in my opinion with minimal kernel changes to support it. You could simply
+> open a packet socket with a filter and work through that, you don't need new netlink
+> sockets. I'm not familiar with the protocol so can't really be the judge of that, if
+> you present a good argument for needing a new netlink socket for these packets - then
+> sure, ok.
 
-On NXP LS1028A, HOLD_ADVANCE is configurable on both ENETC and the
-Felix switch (its default value is 127 bytes). Same as Synopsys, it is
-a global setting and not per queue or per GCL entry.
-RELEASE_ADVANCE is not configurable.
-Regardless, I am not sure if there is any value in configuring this
-knob. Remember that the minimum guard band size still needs to be
-twice as large as the minimum Ethernet frame size.
+We are aware of the STP story, and in case of STP I do agree, it is much
+better to have this in user-space. But while MRP has much in common with
+STP, it also differs in some important areas.
 
-As for the main topic of tc-taprio vs ethtool for configuring frame
-preemption, I think ethtool is the more natural place for configuring
-the traffic class to pMAC/eMAC mapping, global enable bit, and
-fragment size, while tc-taprio is the more natural place for
-configuring hold/release on individual GCL entries. The tc-taprio
-offload can check the netdev support of the ethtool feature, just as
-it checks right now the support for PTP clock for the full offload
-feature.
+Most importantly, MRP requires sending and receiving thousands of frames
+per second. To achieve the 10ms recovery time, the tx period per
+interface is 500us, on two interfaces, adding up to 4000 frames per
+second to RX and 4000 to TX(if the ring is closed). And this is per
+ring...
 
-Introducing tc-taprio with a null schedule is not really natural, and
-frame preemption is a hardware-only feature that cannot be emulated,
-so it is odd to enable it through tc.
+The CPU systems in the kind of switches we are working on can not handle
+this load, and it was not meant to handle this. Instead the switch core
+can do the periodic injection of frames and automatic terminate them.
 
-> Regards,
->
-> Andre
+In patch posted, we have not added this HW offload (we have this in our
+internal repos, where we also have implemented the remaining part of the
+protocol). The reason for this is that we wanted to do a proper SW
+implementation and then HW offload it.
 
-Regards,
--Vladimir
+Looking back, I can see that what we have presented here could be done
+equally good in user-space (roughly), but that is because the HW offload
+is not part of this patch.
+
+The problem in putting it in user-space is that we do not have a nice a
+clean API where it is just putting a port in forwarding/blocking state
+(like we have with STP). To do an abstraction that actually allow us to
+utilize the HW to offload a protocol like MRP will very easy become too
+specific for our SoC and rejected with that argument.
+
+> 
+> If you do decide to continue with the kernel version (which I would again discourage)
+> a few general points (from a quick scan):
+>  - the single 1.6+k line patch is just hard to review, please break it into more digestable
+>    and logical pieces
+We will work in this.
+
+>  - the locking is wrong, also there're a few use-after-free bugs
+Oops, that is not good - happy that you caught it. A hint on where,
+would be great.
+
+>  - please re-work the bridge integration code, it can be simplified and tests can be eliminated
+We will have a second look at that.
+
+>  - your netlink helpers usage is generally wrong and needs more work
+Ok - some hints on what we did wrong would be great.
+
+>  - use the already existing port states instead of adding new ones and you can avoid some tests in fast-path
+I assume you want us to re-use the STP concept of forwarding/blocking
+and relay on the checks it already has.
+
+>  - perhaps look into using br_afspec() for configuration/retrieval initially ? I don't think you need the new rtm messages yet.
+Is that a good example on how to do the netlink interface, and you want
+us to use that as a reference?
+
+>  - I'm sure I can go on, but I really think all of this should be put in user-space -
+>    in-kernel STP is a great example of how _not_ to do it. :) As a bonus you'll avoid 90% of the
+>    problems above just by making your own abstractions and using them for it.
+Please continue.
+
+We do not see any good paths for getting user-space based solutions
+which actually does use the HW offloading accepted upstream. If this
+path exists then we would like to understand it and evaluate it
+properly.
+
+-- 
+/Horatiu
