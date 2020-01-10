@@ -2,141 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F08081376AF
-	for <lists+netdev@lfdr.de>; Fri, 10 Jan 2020 20:10:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 632681376B4
+	for <lists+netdev@lfdr.de>; Fri, 10 Jan 2020 20:10:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728011AbgAJTJ2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jan 2020 14:09:28 -0500
-Received: from mail-oi1-f195.google.com ([209.85.167.195]:42288 "EHLO
-        mail-oi1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727448AbgAJTJ2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jan 2020 14:09:28 -0500
-Received: by mail-oi1-f195.google.com with SMTP id 18so2781974oin.9;
-        Fri, 10 Jan 2020 11:09:27 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Kcu1M9u0fKXhYde93cLWMfS1bu+/Sqpq3Xxjg8yPfgE=;
-        b=uTvla9/RwAC4Gb1XeGvMf1m8nX3xtJMrNX2pzSpoHpiPGrTkPvyiO0DlRqI8OoeiU3
-         e/yyUpsRaz/3i9KGgA4vqZyc/YeB0spWAiXa8n6BluiGRkHkjo9oWkNGz+OgC512X7nU
-         sEVcsS6tyctLAY4EgetnFy4VzY0vMot7qSPD17Mv5G4f11XIiEthXlEizIErEomXL8BA
-         lctYm9S+SwMptnfiD9BK9QP8wjSO+nKTeG4afHLpc1//TA9SmdC804IGalwd2l5Q2MC4
-         IXmPqMrxoi04u/w3E7UObSi8clvspX/u+tyw84nhbVIBFQXCfzBFjSuQIX9mYMyGzZBE
-         BZPg==
+        id S1728297AbgAJTKL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jan 2020 14:10:11 -0500
+Received: from mail-il1-f198.google.com ([209.85.166.198]:41062 "EHLO
+        mail-il1-f198.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728189AbgAJTKK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jan 2020 14:10:10 -0500
+Received: by mail-il1-f198.google.com with SMTP id k9so2193511ili.8
+        for <netdev@vger.kernel.org>; Fri, 10 Jan 2020 11:10:10 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Kcu1M9u0fKXhYde93cLWMfS1bu+/Sqpq3Xxjg8yPfgE=;
-        b=nD9XM/dYjjsiWoHvnWx4krqxuKBoqDLcniFdPdTq6a4ynpFktWKPcqeCjvhvdBmkcG
-         7UYQQO0l38QkwM+VIMlRKMX0A9I9NtqoCR8DE9aSzKkhmxJHxMo4EG4ya+1OMfeYYyDD
-         v+Yya1HFeCrWgQSrA/E8edODPOgtHNWvPDeCMmbG3odPxaGq/d0PPtDTMOCZ4DUQdNAF
-         LgiUE2zlE+N24UgLOfZdt/+CUip82iDqwNDwpysBHE4AfJBgP7IneHqmjWsZ+mssFKzO
-         jA0Umw5t6f0ICgBHltcRZeKsh9U4xYUwFvCnLgV+ATa9hSFCJAcl4uY/j0eXFAG3YWaB
-         pGig==
-X-Gm-Message-State: APjAAAUsLOLXixmIH2lLMAA2tJ/hlJi2qe3p1wr4qrH9PM3A1Zzb4pWn
-        AtPiCdhpNf5KLQEq6OUJPM/VnKlYvkT+GG78jaA=
-X-Google-Smtp-Source: APXvYqxi8sngqdAXFRdFWKg2sxSXcJ6veTc5AVMdcmdmeaQ4N96FkwDtjYoHoLdMhLBDZCprUD4l012VFOREU/wXIkU=
-X-Received: by 2002:aca:1011:: with SMTP id 17mr3502147oiq.72.1578683367302;
- Fri, 10 Jan 2020 11:09:27 -0800 (PST)
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=Fpulm56jnIDKor22tcvA1eRJbZCimtEL4pawhkUJ8ck=;
+        b=AMYiPiAqMPG4bA4L7I8nJWDMCFrfuZT/DKd8wT7CNkMa/H2HcpqSRq2XWvpOo2z8A2
+         XWKUADLf1i4btakoypRCQbD/HxMEWxdDoKUrENmTyJmiv5HXLk1WFZPYvb0XEd8ciEh7
+         37w6eaOFwzScu5c5d6SwSqFurtWGWxAzgppZe/53ZIGgmn+gO0G0+CyWba4uZ8vFYXjT
+         JyoD2Qr6qA1MxORHpBNcBNuHD5qIO3RRbtYyTZao2ijxzwVQ4qbXl3X9YAI5cNVVZVij
+         En/ch1azRDKD8L0Zsp/bfAz9zW0hxYQK7xdAXMeUS8tsd+n7OUvOCoB5SOAs9cmGpoHH
+         8vLA==
+X-Gm-Message-State: APjAAAXXe9okMmiGE4zXzkISVaRm3FPuy1q2bBCitFc2yoYoYHpdf6jJ
+        PDn09JSKt6XzDaPXVv9/HK+M77eillPIvWCofZRmjv2oqM6l
+X-Google-Smtp-Source: APXvYqxo7Txz3ieDkwBzYiYJ0uqOK7z8Em12aZpe8cSMm1Zupf8b1SsbdDges4f7ruezhYpk20vKlSYSeT7RmvwfJNOfqZbinBwK
 MIME-Version: 1.0
-References: <000000000000f744e0059bcd8216@google.com>
-In-Reply-To: <000000000000f744e0059bcd8216@google.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Fri, 10 Jan 2020 11:09:16 -0800
-Message-ID: <CAM_iQpWz+ivP2vS50rY94DiR6qSh1W0WKjqgBNKYpUH_VFPgGw@mail.gmail.com>
-Subject: Re: KASAN: use-after-free Read in bitmap_port_ext_cleanup
-To:     syzbot <syzbot+4c3cc6dbe7259dbf9054@syzkaller.appspotmail.com>
-Cc:     Arvid Brodin <arvid.brodin@alten.se>, coreteam@netfilter.org,
-        David Miller <davem@davemloft.net>, florent.fourcot@wifirst.fr,
-        Florian Westphal <fw@strlen.de>, jeremy@azazel.net,
-        Johannes Berg <johannes.berg@intel.com>, kadlec@netfilter.org,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        NetFilter <netfilter-devel@vger.kernel.org>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
-Content-Type: text/plain; charset="UTF-8"
+X-Received: by 2002:a5d:85ce:: with SMTP id e14mr3629651ios.181.1578683410026;
+ Fri, 10 Jan 2020 11:10:10 -0800 (PST)
+Date:   Fri, 10 Jan 2020 11:10:10 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000de1d10059bcddf2b@google.com>
+Subject: WARNING in xfrm_policy_inexact_insert (2)
+From:   syzbot <syzbot+f9c439e84c4337e80301@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, herbert@gondor.apana.org.au,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        steffen.klassert@secunet.com, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 10, 2020 at 10:44 AM syzbot
-<syzbot+4c3cc6dbe7259dbf9054@syzkaller.appspotmail.com> wrote:
->
-> Hello,
->
-> syzbot found the following crash on:
->
-> HEAD commit:    b07f636f Merge tag 'tpmdd-next-20200108' of git://git.infr..
-> git tree:       upstream
-> console output: https://syzkaller.appspot.com/x/log.txt?x=16c03259e00000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=18698c0c240ba616
-> dashboard link: https://syzkaller.appspot.com/bug?extid=4c3cc6dbe7259dbf9054
-> compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-> userspace arch: i386
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=10c365c6e00000
-> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=117df9e1e00000
->
-> The bug was bisected to:
->
-> commit b9a1e627405d68d475a3c1f35e685ccfb5bbe668
-> Author: Cong Wang <xiyou.wangcong@gmail.com>
-> Date:   Thu Jul 4 00:21:13 2019 +0000
->
->      hsr: implement dellink to clean up resources
->
-> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=118759e1e00000
-> final crash:    https://syzkaller.appspot.com/x/report.txt?x=138759e1e00000
-> console output: https://syzkaller.appspot.com/x/log.txt?x=158759e1e00000
->
-> IMPORTANT: if you fix the bug, please add the following tag to the commit:
-> Reported-by: syzbot+4c3cc6dbe7259dbf9054@syzkaller.appspotmail.com
-> Fixes: b9a1e627405d ("hsr: implement dellink to clean up resources")
->
-> ==================================================================
-> BUG: KASAN: use-after-free in test_bit
-> include/asm-generic/bitops/instrumented-non-atomic.h:110 [inline]
-> BUG: KASAN: use-after-free in bitmap_port_ext_cleanup+0xe6/0x2a0
-> net/netfilter/ipset/ip_set_bitmap_gen.h:51
-> Read of size 8 at addr ffff8880a87a47c0 by task syz-executor559/9563
->
-> CPU: 0 PID: 9563 Comm: syz-executor559 Not tainted 5.5.0-rc5-syzkaller #0
-> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS
-> Google 01/01/2011
-> Call Trace:
->   __dump_stack lib/dump_stack.c:77 [inline]
->   dump_stack+0x197/0x210 lib/dump_stack.c:118
->   print_address_description.constprop.0.cold+0xd4/0x30b mm/kasan/report.c:374
->   __kasan_report.cold+0x1b/0x41 mm/kasan/report.c:506
->   kasan_report+0x12/0x20 mm/kasan/common.c:639
->   check_memory_region_inline mm/kasan/generic.c:185 [inline]
->   check_memory_region+0x134/0x1a0 mm/kasan/generic.c:192
->   __kasan_check_read+0x11/0x20 mm/kasan/common.c:95
->   test_bit include/asm-generic/bitops/instrumented-non-atomic.h:110 [inline]
->   bitmap_port_ext_cleanup+0xe6/0x2a0
+Hello,
 
-map->members is freed by ip_set_free() right before using it in
-mtype_ext_cleanup() again. So I think probably we just have to
-move it down:
+syzbot found the following crash on:
 
-diff --git a/net/netfilter/ipset/ip_set_bitmap_gen.h
-b/net/netfilter/ipset/ip_set_bitmap_gen.h
-index 1abd6f0dc227..077a2cb65fcb 100644
---- a/net/netfilter/ipset/ip_set_bitmap_gen.h
-+++ b/net/netfilter/ipset/ip_set_bitmap_gen.h
-@@ -60,9 +60,9 @@ mtype_destroy(struct ip_set *set)
-        if (SET_WITH_TIMEOUT(set))
-                del_timer_sync(&map->gc);
+HEAD commit:    9f120e76 Merge branch 'mptcp-prereq'
+git tree:       net-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=17bdd5c6e00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=c9f1de9846a3cafd
+dashboard link: https://syzkaller.appspot.com/bug?extid=f9c439e84c4337e80301
+compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
 
--       ip_set_free(map->members);
-        if (set->dsize && set->extensions & IPSET_EXT_DESTROY)
-                mtype_ext_cleanup(set);
-+       ip_set_free(map->members);
-        ip_set_free(map);
+Unfortunately, I don't have any reproducer for this crash yet.
 
-        set->data = NULL;
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+f9c439e84c4337e80301@syzkaller.appspotmail.com
 
-Thanks.
+------------[ cut here ]------------
+WARNING: CPU: 0 PID: 15165 at net/xfrm/xfrm_policy.c:1508  
+xfrm_policy_insert_inexact_list net/xfrm/xfrm_policy.c:1508 [inline]
+WARNING: CPU: 0 PID: 15165 at net/xfrm/xfrm_policy.c:1508  
+xfrm_policy_inexact_insert+0x4cc/0xba0 net/xfrm/xfrm_policy.c:1197
+Kernel panic - not syncing: panic_on_warn set ...
+CPU: 0 PID: 15165 Comm: syz-executor.2 Not tainted 5.5.0-rc5-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
+Google 01/01/2011
+Call Trace:
+  __dump_stack lib/dump_stack.c:77 [inline]
+  dump_stack+0x197/0x210 lib/dump_stack.c:118
+  panic+0x2e3/0x75c kernel/panic.c:221
+  __warn.cold+0x2f/0x3e kernel/panic.c:582
+  report_bug+0x289/0x300 lib/bug.c:195
+  fixup_bug arch/x86/kernel/traps.c:174 [inline]
+  fixup_bug arch/x86/kernel/traps.c:169 [inline]
+  do_error_trap+0x11b/0x200 arch/x86/kernel/traps.c:267
+  do_invalid_op+0x37/0x50 arch/x86/kernel/traps.c:286
+  invalid_op+0x23/0x30 arch/x86/entry/entry_64.S:1027
+RIP: 0010:xfrm_policy_insert_inexact_list net/xfrm/xfrm_policy.c:1508  
+[inline]
+RIP: 0010:xfrm_policy_inexact_insert+0x4cc/0xba0 net/xfrm/xfrm_policy.c:1197
+Code: b2 fa 48 8b 7d b8 31 f6 e8 41 8b ff ff e8 6c dc b2 fa 48 8b 45 d0 48  
+83 c4 70 5b 41 5c 41 5d 41 5e 41 5f 5d c3 e8 54 dc b2 fa <0f> 0b 44 8b 6d  
+ac 8b 5d a4 44 89 ee 89 df e8 41 dd b2 fa 44 39 eb
+RSP: 0018:ffffc90001857378 EFLAGS: 00010212
+RAX: 0000000000040000 RBX: 0000000000000000 RCX: ffffc9000e2de000
+RDX: 0000000000001fc2 RSI: ffffffff86c2554c RDI: ffff88808c310220
+RBP: ffffc90001857410 R08: ffff88804d7801c0 R09: ffff88804d780a50
+R10: fffffbfff14f7c30 R11: ffffffff8a7be187 R12: 0000000000000000
+R13: 0000000000000000 R14: ffff88808c310000 R15: dffffc0000000000
+  xfrm_policy_insert+0x597/0x7f0 net/xfrm/xfrm_policy.c:1576
+  xfrm_add_policy+0x28f/0x580 net/xfrm/xfrm_user.c:1670
+  xfrm_user_rcv_msg+0x459/0x770 net/xfrm/xfrm_user.c:2676
+  netlink_rcv_skb+0x177/0x450 net/netlink/af_netlink.c:2477
+  xfrm_netlink_rcv+0x70/0x90 net/xfrm/xfrm_user.c:2684
+  netlink_unicast_kernel net/netlink/af_netlink.c:1302 [inline]
+  netlink_unicast+0x59e/0x7e0 net/netlink/af_netlink.c:1328
+  netlink_sendmsg+0x91c/0xea0 net/netlink/af_netlink.c:1917
+  sock_sendmsg_nosec net/socket.c:652 [inline]
+  sock_sendmsg+0xd7/0x130 net/socket.c:672
+  ____sys_sendmsg+0x753/0x880 net/socket.c:2343
+  ___sys_sendmsg+0x100/0x170 net/socket.c:2397
+  __sys_sendmsg+0x105/0x1d0 net/socket.c:2430
+  __do_sys_sendmsg net/socket.c:2439 [inline]
+  __se_sys_sendmsg net/socket.c:2437 [inline]
+  __x64_sys_sendmsg+0x78/0xb0 net/socket.c:2437
+  do_syscall_64+0xfa/0x790 arch/x86/entry/common.c:294
+  entry_SYSCALL_64_after_hwframe+0x49/0xbe
+RIP: 0033:0x45af49
+Code: ad b6 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 89 f8 48 89 f7  
+48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff  
+ff 0f 83 7b b6 fb ff c3 66 2e 0f 1f 84 00 00 00 00
+RSP: 002b:00007f56bf01bc78 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 000000000045af49
+RDX: 0000000000000000 RSI: 0000000020000080 RDI: 0000000000000003
+RBP: 000000000075bf20 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 00007f56bf01c6d4
+R13: 00000000004caa15 R14: 00000000004e3e90 R15: 00000000ffffffff
+Kernel Offset: disabled
+Rebooting in 86400 seconds..
+
+
+---
+This bug is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this bug report. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
