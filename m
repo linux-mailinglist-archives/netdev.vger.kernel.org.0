@@ -2,153 +2,200 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A371013764D
-	for <lists+netdev@lfdr.de>; Fri, 10 Jan 2020 19:45:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 154CD137650
+	for <lists+netdev@lfdr.de>; Fri, 10 Jan 2020 19:45:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728633AbgAJSoQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jan 2020 13:44:16 -0500
-Received: from mail-il1-f197.google.com ([209.85.166.197]:47414 "EHLO
-        mail-il1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728428AbgAJSoM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jan 2020 13:44:12 -0500
-Received: by mail-il1-f197.google.com with SMTP id x69so2138673ill.14
-        for <netdev@vger.kernel.org>; Fri, 10 Jan 2020 10:44:11 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=UtgqWyCMHEbuMc1chkx9FfigMbDl2qVQb2WRO39xvW8=;
-        b=GgKi7IuDvyvS8UrzXw2ZAuWP3XjE4kgKBEDl9yb679p0c1fKZLIDgZJco1cio9AsB9
-         7/aJSUHFFLqr/bBj4349o8l27lEotAqJtqPsJTGEFaLs9/dIS8Mqp/nQrU6fLgOh/5uW
-         1+qS2qIQlw52lsR50fMt6ncyjnOp52sE51VcRUqNIDOKrfqfroGDDDgxpd4xPvbdwduv
-         grhmIcAqwYTVVzrtmf/+g69o9GE0lgDA40smEGlm+1vLu73DpUptoQYL5+PkSFIS1/5t
-         Ior++RW8HH0lsjOoO2FceFzmcn54DOqfkC7yoWuLdkLIFl5hNse8XPseONYVzlPhFDIQ
-         V5bg==
-X-Gm-Message-State: APjAAAWQqTTEmtR0egObgwT8Yc1zoCkA5BsbUQeDje3O0+gQCbNf2gNH
-        MpGN7UTggrqSi0MrV8nZZqvWJ89WzHgGosjNNh4dUaZfvBGq
-X-Google-Smtp-Source: APXvYqz/absesZKveMvYc0mhZ7cQ4Ny4xIv6iOqFCtlPa1fHpSpzkHhTbbUQGL1GiI5GNSBDPPcZOL+G8hHdpLSrUr+ykFDhxjQy
+        id S1728778AbgAJSo0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jan 2020 13:44:26 -0500
+Received: from mout.gmx.net ([212.227.17.20]:49375 "EHLO mout.gmx.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728792AbgAJSo0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 10 Jan 2020 13:44:26 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1578681861;
+        bh=PA8M/keevYanqhTc/9w9MahHGpsG/wz/SqakSXwIVj4=;
+        h=X-UI-Sender-Class:Reply-To:Subject:To:Cc:References:From:Date:
+         In-Reply-To;
+        b=fnzgd+TmeC92AJFNQ2iI0IQPDDKW6mbxV1dBJdANZeC82jDVGxHboMK5izy7zsZpT
+         bCnZEuU0H2CwsWUKIov37ZxmbbMgJy6ECpH///PG0X2tisKOcvMSQi0qq7wjF2CsR+
+         BIXu0kDygRB+FzqqWafa45qSCLCoxnyQ+jdh2Kcs=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [192.168.84.205] ([46.59.197.184]) by mail.gmx.com (mrgmx104
+ [212.227.17.168]) with ESMTPSA (Nemesis) id 1McYCb-1jOEDw0R0X-00d0Mh; Fri, 10
+ Jan 2020 19:44:21 +0100
+Reply-To: vtol@gmx.net
+Subject: Re: [drivers/net/phy/sfp] intermittent failure in state machine
+ checks
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Cc:     Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org
+References: <20200110114433.GZ25745@shell.armlinux.org.uk>
+ <7b6f143a-7bdb-90be-00f6-9e81e21bde4e@gmx.net>
+ <20200110125305.GB25745@shell.armlinux.org.uk>
+ <b4b94498-5011-1e89-db54-04916f8ef846@gmx.net>
+ <20200110150955.GE25745@shell.armlinux.org.uk>
+ <e9a99276-c09d-fa8d-a280-fca2abac6602@gmx.net>
+ <20200110163235.GG25745@shell.armlinux.org.uk>
+ <717229a4-f7f6-837d-3d58-756b516a8605@gmx.net>
+ <20200110170836.GI25745@shell.armlinux.org.uk>
+ <12956566-4aa3-2c5d-be1a-8612edab3b3d@gmx.net>
+ <20200110173851.GJ25745@shell.armlinux.org.uk>
+From:   =?UTF-8?B?0b3SieG2rOG4s+KEoA==?= <vtol@gmx.net>
+Message-ID: <e18b0fb9-0c6d-ed5e-3a20-dc29e9cc048e@gmx.net>
+Date:   Fri, 10 Jan 2020 18:44:18 +0000
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:68.0) Gecko/20100101 Firefox/68.0
 MIME-Version: 1.0
-X-Received: by 2002:a02:6a10:: with SMTP id l16mr4151275jac.77.1578681851625;
- Fri, 10 Jan 2020 10:44:11 -0800 (PST)
-Date:   Fri, 10 Jan 2020 10:44:11 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000fac92e059bcd82f4@google.com>
-Subject: WARNING in set_precision (2)
-From:   syzbot <syzbot+6693adf1698864d21734@syzkaller.appspotmail.com>
-To:     andrew@lunn.ch, davem@davemloft.net, f.fainelli@gmail.com,
-        johannes@sipsolutions.net, kvalo@codeaurora.org,
-        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
-        mkubecek@suse.cz, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+In-Reply-To: <20200110173851.GJ25745@shell.armlinux.org.uk>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: base64
+Content-Language: en-GB
+X-Provags-ID: V03:K1:WaHOIm8OMWNzwuENxrBf3cqZMnfEX4O3ko/vj4qkuMaMIeMWKl4
+ C6nwiuyCfcd6y5J0KLbfvPyalcSvd6vgfPvprn9vbl6RJnsbmw5Uw7LovuxYIlzMZJLoyxx
+ T3a8GBf6PDc6+O5AclZbbusDC/8QwIj7Da/KSU14wObm3L930YjcDE+oRmwzRPCnemN1AXh
+ qzH8GTKgqdHtdl+2QuNkw==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:lN+85BDzgDg=:N73DBfxgS588vL7yGag7Qi
+ DwvTY1pbbtB3CBoWKBQJEHLbL/i9wqcASGSyyybtjpODThjiiqouqFVuaVRaapcssuAZASEed
+ 2pAlXJMS+c8iJQDO3VLunrOLSpvYi15Uq1ZAI7FQguftlZXJ4dRHKe62fxS5rj3uoD7HKCS4t
+ v2VqKUVQvkT8bPlAr8pWnWVYhHIVr5rZ6Iti8/N3Cd6xa4KGdvHZYOFjm98DgEcPiHF1Mvvpv
+ xESi0UyeRaV9iPNoocAQgy9ZOr7hLvU+tri/VnTb7+klAP7bTZUf0Hic5vzyiB7mQ7UNpMJ9w
+ 8Unt5k20+/sJ3PTLYRN0dhTAxB5mysON9nt4ihuvD8H4Vj8B0Ny89xP4CKoZxWqWZYiIPk9qx
+ Jwzxk+9qPSYdV6oqBYhkrCoVSnO1BvRMP4WKlVDKaVypBOUpbjNTV4zUNgMQQASL52hLUSA4T
+ 6toV7jxBHxk92vr6gMSFZ2ItrgskhMdBQwd6QDybKhXrUEXmhprs8Pvk8M64h8+k9GCM0KZBf
+ 9k5DEdb5zF58OmlU1Ghu0hYs6dOVMTz0S5iMgnM7d2WNkuiH+3Wf3UbZ19Jbwn2QC2/29KvQO
+ LQVgmn+DS0JwECz21lTxmNCkw9kTxthbjZdhwUD3xMHLmjKmun+Ep8zZ/jUdYJLTLEwIbcRPB
+ pA4eOeBoWWmKFmXQyNfCPztrpkHsccl8iqJbelNEHE6u2bmKKAeG16D4HL+RSZQn2Ugjc13cW
+ 5L6UphYJJ+X0jpwZgNIN5DmOz9K78DOKeEkk0xkMVvJvCJini32AYEX+cF6xC7lbyTFPl6RgC
+ lvyYHVbWC2IISD1Vod1H2F7shQoeo3/lkYf+szgSYfwmbpZP3Si/Wfzx/MqAMWxhbhzsUYdJR
+ mLHW/3QVontTs5WPw985srWqNcaH1/DT4nnZxCNht5EtkQP7AL5Bk2qFlOb+2e8gCitAfnXtA
+ 0VqbP2P33oeO4xJsl2zX5kCgRxcFPXW+KIdWdiB/8dUz7qXN3j2QHg0F5ihJhTxA5FMyGxHTg
+ M3tNRW4PjFIyY5mBOVJuNUcMdA9yS2ufAL+YBiQBWjec070jlVqUvv1WDu2GU3nNrKzV9CZHX
+ pw35wWDpU+0Nje4L1OtRurGemDNO24/eU1BpyTclnsXIRHspRGZGTy4XBC53xBKlYShqT0dSi
+ rULpRuu9lNKN2Khg4bOngLqrcLlFzPsoYtru/1ql7DmroHg9opqjmXoCcYu9Dk9s09yXWfOqr
+ icHXas0qYuv+UJKl0CyVFR+CMZUIY0179YBZ/eA==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
-
-syzbot found the following crash on:
-
-HEAD commit:    1ece2fbe ptp: clockmatrix: Rework clockmatrix version info..
-git tree:       net-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=1709d58ee00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=ff06bf0a19e7467d
-dashboard link: https://syzkaller.appspot.com/bug?extid=6693adf1698864d21734
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=15380c66e00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=131916aee00000
-
-The bug was bisected to:
-
-commit 2b4a8990b7df55875745a80a609a1ceaaf51f322
-Author: Michal Kubecek <mkubecek@suse.cz>
-Date:   Fri Dec 27 14:55:18 2019 +0000
-
-     ethtool: introduce ethtool netlink interface
-
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=11c40c66e00000
-final crash:    https://syzkaller.appspot.com/x/report.txt?x=13c40c66e00000
-console output: https://syzkaller.appspot.com/x/log.txt?x=15c40c66e00000
-
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+6693adf1698864d21734@syzkaller.appspotmail.com
-Fixes: 2b4a8990b7df ("ethtool: introduce ethtool netlink interface")
-
-netlink: 179916 bytes leftover after parsing attributes in process  
-`syz-executor273'.
-------------[ cut here ]------------
-precision 33020 too large
-WARNING: CPU: 0 PID: 9618 at lib/vsprintf.c:2471 set_precision+0x150/0x180  
-lib/vsprintf.c:2471
-Kernel panic - not syncing: panic_on_warn set ...
-CPU: 0 PID: 9618 Comm: syz-executor273 Not tainted 5.5.0-rc4-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
-Google 01/01/2011
-Call Trace:
-  __dump_stack lib/dump_stack.c:77 [inline]
-  dump_stack+0x197/0x210 lib/dump_stack.c:118
-  panic+0x2e3/0x75c kernel/panic.c:221
-  __warn.cold+0x2f/0x3e kernel/panic.c:582
-  report_bug+0x289/0x300 lib/bug.c:195
-  fixup_bug arch/x86/kernel/traps.c:174 [inline]
-  fixup_bug arch/x86/kernel/traps.c:169 [inline]
-  do_error_trap+0x11b/0x200 arch/x86/kernel/traps.c:267
-  do_invalid_op+0x37/0x50 arch/x86/kernel/traps.c:286
-  invalid_op+0x23/0x30 arch/x86/entry/entry_64.S:1027
-RIP: 0010:set_precision+0x150/0x180 lib/vsprintf.c:2471
-Code: 24 07 e8 23 30 9f f9 5b 41 5c 41 5d 41 5e 5d c3 e8 15 30 9f f9 89 de  
-48 c7 c7 60 c1 f7 88 c6 05 64 4b a1 02 01 e8 5f de 6f f9 <0f> 0b e9 60 ff  
-ff ff be 08 00 00 00 4c 89 e7 e8 4c e5 dc f9 e9 04
-RSP: 0018:ffffc90001d87280 EFLAGS: 00010286
-RAX: 0000000000000000 RBX: 00000000000080fc RCX: 0000000000000000
-RDX: 0000000000000000 RSI: ffffffff815e8fc6 RDI: fffff520003b0e42
-RBP: ffffc90001d872a0 R08: ffff88808d0702c0 R09: fffffbfff165f9ab
-R10: fffffbfff165f9aa R11: ffffffff8b2fcd57 R12: ffffc90001d87320
-R13: 0000000000000000 R14: ffffc90001d87327 R15: ffffc90001d87360
-  vsnprintf+0xa7b/0x19a0 lib/vsprintf.c:2547
-  kvasprintf+0xb2/0x170 lib/kasprintf.c:22
-  kasprintf+0xbb/0xf0 lib/kasprintf.c:59
-  hwsim_del_radio_nl+0x63a/0x7e0 drivers/net/wireless/mac80211_hwsim.c:3625
-  genl_family_rcv_msg_doit net/netlink/genetlink.c:672 [inline]
-  genl_family_rcv_msg net/netlink/genetlink.c:717 [inline]
-  genl_rcv_msg+0x67d/0xea0 net/netlink/genetlink.c:734
-  netlink_rcv_skb+0x177/0x450 net/netlink/af_netlink.c:2477
-  genl_rcv+0x29/0x40 net/netlink/genetlink.c:745
-  netlink_unicast_kernel net/netlink/af_netlink.c:1302 [inline]
-  netlink_unicast+0x58c/0x7d0 net/netlink/af_netlink.c:1328
-  netlink_sendmsg+0x91c/0xea0 net/netlink/af_netlink.c:1917
-  sock_sendmsg_nosec net/socket.c:643 [inline]
-  sock_sendmsg+0xd7/0x130 net/socket.c:663
-  ____sys_sendmsg+0x753/0x880 net/socket.c:2342
-  ___sys_sendmsg+0x100/0x170 net/socket.c:2396
-  __sys_sendmsg+0x105/0x1d0 net/socket.c:2429
-  __do_sys_sendmsg net/socket.c:2438 [inline]
-  __se_sys_sendmsg net/socket.c:2436 [inline]
-  __x64_sys_sendmsg+0x78/0xb0 net/socket.c:2436
-  do_syscall_64+0xfa/0x790 arch/x86/entry/common.c:294
-  entry_SYSCALL_64_after_hwframe+0x49/0xbe
-RIP: 0033:0x4401f9
-Code: 18 89 d0 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 00 48 89 f8 48 89 f7  
-48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff  
-ff 0f 83 fb 13 fc ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007ffe53b2d788 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 00000000004002c8 RCX: 00000000004401f9
-RDX: 0000000000000000 RSI: 0000000020000000 RDI: 0000000000000003
-RBP: 00000000006ca018 R08: 0000000000000000 R09: 00000000004002c8
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000401a80
-R13: 0000000000401b10 R14: 0000000000000000 R15: 0000000000000000
-Kernel Offset: disabled
-Rebooting in 86400 seconds..
-
-
----
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
-syzbot can test patches for this bug, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+T24gMTAvMDEvMjAyMCAxNzozOCwgUnVzc2VsbCBLaW5nIC0gQVJNIExpbnV4IGFkbWluIHdy
+b3RlOg0KPg0KPj4+IE9uIEZyaSwgSmFuIDEwLCAyMDIwIGF0IDA0OjUzOjA2UE0gKzAwMDAs
+ING90onhtqzhuLPihKAgd3JvdGU6DQo+Pj4+IFNlZW1zIHRoYXQgdGhlIGRlYnVnIGF2ZW51
+ZSBoYXMgYmVlbiBleGhhdXN0ZWQsIHNob3J0IG9mIHJ1bm5pbmcgU0ZQLkMgaW4NCj4+Pj4g
+ZGVidWcgbW9kZS4NCj4+PiBZb3UncmUgc2F5aW5nIHlvdSBuZXZlciBzZWUgVFhfRkFVTFQg
+YXNzZXJ0ZWQgb3RoZXIgdGhhbiB3aGVuIHRoZQ0KPj4+IGludGVyZmFjZSBpcyBkb3duPw0K
+Pj4gWWVzLCBpdCBuZXZlciBleGhpYml0cyBvbmNlIHRoZSBpaWYgaXMgdXAgLSBpdCBpcyBy
+b2NrLXN0YWJsZSBpbiB0aGF0IHN0YXRlLA0KPj4gb25seSBldmVyIHdoZW4gYmVpbmcgdHJh
+bnNpdGlvbmVkIGZyb20gZG93biBzdGF0ZSB0byB1cCBzdGF0ZS4NCj4+IFBhcmRvbiwgaWYg
+dGhhdCBoYXMgbm90IGJlZW4gbWFkZSBleHBsaWNpdGx5IGNsZWFyIHByZXZpb3VzbHkuDQo+
+IEkgdGhpbmsgaWYgd2Ugd2VyZSB0byBoYXZlIFNGUCBkZWJ1ZyBlbmFibGVkLCB5b3UnbGwg
+ZmluZCB0aGF0DQo+IFRYX0ZBVUxUIGlzIGJlaW5nIHJlcG9ydGVkIHRvIFNGUCBhcyBiZWlu
+ZyBhc3NlcnRlZC4NCg0KSWYgcmVhbGx5IG5lY2Vzc2FyeSBJIGNvdWxkIGFzayB0aGUgVE9T
+IGRldmVsb3BlcnMgdG8gYXNzaXN0LCBub3Qgc3VyZSANCndoZXRoZXIgdGhleSB3b3VsZCBv
+YmxpZGdlLiBUaGVpciBNYXN0ZXIgYnJhbmNoIGJ1aWxkIGJvdCBjb21waWxlcyB0d2ljZSAN
+CmEgZGF5Lg0KV291bGQgaXQganVzdCBpbnZvbHZlIHNldHRpbmcgYSBrZXJuZWwgZGVidWcg
+ZmxhZyBvciBzb21ldGhpbmcgbW9yZSANCmVsYWJvcmF0ZT8NCg0KPg0KPiBZb3UgcHJvYmFi
+bHkgYXJlbid0IHJ1bm5pbmcgdGhhdCB3aGlsZSBsb29wLCBhcyBpdCB3aWxsIGV4aXQgd2hl
+bg0KPiBpdCBzZWVzIFRYX0ZBVUxUIGFzc2VydGVkLiAgU28sIGhlcmUncyBhbm90aGVyIGJp
+dCBvZiBzaGVsbCBjb2RlDQo+IGZvciB5b3UgdG8gcnVuOg0KPg0KPiBpcCBsaSBzZXQgZGV2
+IGV0aDIgZG93bjsgXA0KPiBpcCBsaSBzZXQgZGV2IGV0aDIgdXA7IFwNCj4gZGF0ZQ0KPiB3
+aGlsZSA6OyBkbw0KPiAgICBjYXQgL3Byb2MvdXB0aW1lDQo+ICAgIHdoaWxlICEgZ3JlcCAt
+QTUgJ3R4LWZhdWx0LippbiAgaGknIC9zeXMva2VybmVsL2RlYnVnL2dwaW87IGRvIDo7IGRv
+bmUNCj4gICAgY2F0IC9wcm9jL3VwdGltZQ0KPiAgICB3aGlsZSAhIGdyZXAgLUE1ICd0eC1m
+YXVsdC4qaW4gIGxvJyAvc3lzL2tlcm5lbC9kZWJ1Zy9ncGlvOyBkbyA6OyBkb25lDQo+IGRv
+bmUNCj4NCj4gVGhpcyB3aWxsIGdpdmUgeW91IG91dHB1dCBzdWNoIGFzOg0KPg0KPiBGcmkg
+MTAgSmFuIDE3OjMxOjA2IEdNVCAyMDIwDQo+IDc3NDg2OS4xMyAxNTM1ODU5LjQ4DQo+ICAg
+Z3Bpby01MDkgKCAgICAgICAgICAgICAgICAgICAgfHR4LWZhdWx0ICAgICAgICAgICAgKSBp
+biAgaGkgLi4uDQo+IDc3NDg2OS4xNCAxNTM1ODU5LjQ5DQo+ICAgZ3Bpby01MDkgKCAgICAg
+ICAgICAgICAgICAgICAgfHR4LWZhdWx0ICAgICAgICAgICAgKSBpbiAgbG8gLi4uDQo+IDc3
+NDg2OS4xNSAxNTM1ODU5LjUwDQo+DQo+IFRoZSBmaXJzdCBkYXRlIGFuZCAidXB0aW1lIiBv
+dXRwdXQgaXMgdGhlIHRpbWVzdGFtcCB3aGVuIHRoZSBpbnRlcmZhY2UNCj4gd2FzIGJyb3Vn
+aHQgdXAuICBTdWJzZXF1ZW50ICJ1cHRpbWUiIG91dHB1dHMgY2FuIGJlIHVzZWQgdG8gY2Fs
+Y3VsYXRlDQo+IHRoZSB0aW1lIGRpZmZlcmVuY2UgaW4gc2Vjb25kcyBiZXR3ZWVuIHRoZSBz
+dGF0ZSBwcmludGVkIGltbWVkaWF0ZWx5DQo+IHByaW9yIHRvIHRoZSB1cHRpbWUgb3V0cHV0
+LCBhbmQgdGhlIGZpcnN0ICJ1cHRpbWUiIG91dHB1dC4NCj4NCj4gU28gaW4gdGhlIGFib3Zl
+IGV4YW1wbGUsIHRoZSB0eC1mYXVsdCBzaWduYWwgd2FzIGhpIGF0IDEwbXMsIGFuZCB0aGVu
+DQo+IHdlbnQgbG93IDIwbXMgYWZ0ZXIgdGhlIHVwLg0KDQphd2Z1bGx5IG5pY2Ugb2YgeW91
+IHRvIHByb3ZpZGUgdGhlIGNvZGUsIHRoaXMgaXMgdGhlIG91dHB1dCB3aGVuIHRoZSBpaWYg
+DQppcyBicm91Z2h0IGRvd24gYW5kIHVwIGFnYWluIGFuZCBleGhpYml0aW5nIHRoZSB0cmFu
+c21pdCBmYXVsdC4NCg0KaXAgbGkgc2V0IGRldiBldGgyIGRvd247IFwNCiA+IGlwIGxpIHNl
+dCBkZXYgZXRoMiB1cDsgXA0KID4gZGF0ZQ0KRnJpIEphbiAxMCAxODozNDo1MiBHTVQgMjAy
+MA0Kcm9vdEB0bzp+IyB3aGlsZSA6OyBkbw0KID7CoMKgIGNhdCAvcHJvYy91cHRpbWUNCiA+
+wqDCoCB3aGlsZSAhIGdyZXAgLUE1ICd0eC1mYXVsdC4qaW7CoCBoaScgL3N5cy9rZXJuZWwv
+ZGVidWcvZ3BpbzsgZG8gOjsgZG9uZQ0KID7CoMKgIGNhdCAvcHJvYy91cHRpbWUNCiA+wqDC
+oCB3aGlsZSAhIGdyZXAgLUE1ICd0eC1mYXVsdC4qaW7CoCBsbycgL3N5cy9rZXJuZWwvZGVi
+dWcvZ3BpbzsgZG8gOjsgZG9uZQ0KID4gZG9uZQ0KMTg2NS4yMCAzMjI0LjY3DQogwqBncGlv
+LTUwNCAowqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgfHR4LWZhdWx0
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoCApIGluwqAgaGkgSVJRDQogwqBncGlvLTUwNSAowqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgfHR4LWRpc2FibGXCoMKgwqDC
+oMKgwqDCoMKgwqAgKSBvdXQgaGkNCiDCoGdwaW8tNTA2ICjCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoCB8cmF0ZS1zZWxlY3QwwqDCoMKgwqDCoMKgwqAgKSBpbsKg
+IGxvDQogwqBncGlvLTUwNyAowqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqAgfGxvc8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgICkgaW7CoCBsbyBJUlEN
+CiDCoGdwaW8tNTA4ICjCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCB8
+bW9kLWRlZjDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgICkgaW7CoCBsbyBJUlENCjE4NzEuNzcg
+MzIzMC43MQ0KIMKgZ3Bpby01MDQgKMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgIHx0eC1mYXVsdMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgKSBpbsKgIGxvIElSUQ0K
+IMKgZ3Bpby01MDUgKMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIHx0
+eC1kaXNhYmxlwqDCoMKgwqDCoMKgwqDCoMKgICkgb3V0IGxvDQogwqBncGlvLTUwNiAowqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgfHJhdGUtc2VsZWN0MMKgwqDC
+oMKgwqDCoMKgICkgaW7CoCBsbw0KIMKgZ3Bpby01MDcgKMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgIHxsb3PCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oCApIGluwqAgbG8gSVJRDQogwqBncGlvLTUwOCAowqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqAgfG1vZC1kZWYwwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCApIGluwqAg
+bG8gSVJRDQoxOTE5LjA2IDMzMDkuNTUNCiDCoGdwaW8tNTA0ICjCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoCB8dHgtZmF1bHTCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+ICkgaW7CoCBoaSBJUlENCiDCoGdwaW8tNTA1ICjCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoCB8dHgtZGlzYWJsZcKgwqDCoMKgwqDCoMKgwqDCoCApIG91dCBsbw0K
+IMKgZ3Bpby01MDYgKMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIHxy
+YXRlLXNlbGVjdDDCoMKgwqDCoMKgwqDCoCApIGluwqAgbG8NCiDCoGdwaW8tNTA3ICjCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCB8bG9zwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqAgKSBpbsKgIGxvIElSUQ0KIMKgZ3Bpby01MDggKMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIHxtb2QtZGVmMMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqAgKSBpbsKgIGxvIElSUQ0KMTkxOS4wNyAzMzA5LjU3DQogwqBncGlvLTUwNCAo
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgfHR4LWZhdWx0wqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoCApIGluwqAgbG8gSVJRDQogwqBncGlvLTUwNSAowqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgfHR4LWRpc2FibGXCoMKgwqDCoMKgwqDC
+oMKgwqAgKSBvdXQgbG8NCiDCoGdwaW8tNTA2ICjCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoCB8cmF0ZS1zZWxlY3QwwqDCoMKgwqDCoMKgwqAgKSBpbsKgIGxvDQog
+wqBncGlvLTUwNyAowqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgfGxv
+c8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgICkgaW7CoCBsbyBJUlENCiDCoGdw
+aW8tNTA4ICjCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCB8bW9kLWRl
+ZjDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgICkgaW7CoCBsbyBJUlENCjE5MjAuNjggMzMxMi4y
+OA0KIMKgZ3Bpby01MDQgKMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+IHx0eC1mYXVsdMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgKSBpbsKgIGhpIElSUQ0KIMKgZ3Bp
+by01MDUgKMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIHx0eC1kaXNh
+YmxlwqDCoMKgwqDCoMKgwqDCoMKgICkgb3V0IGxvDQogwqBncGlvLTUwNiAowqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgfHJhdGUtc2VsZWN0MMKgwqDCoMKgwqDC
+oMKgICkgaW7CoCBsbw0KIMKgZ3Bpby01MDcgKMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgIHxsb3PCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCApIGlu
+wqAgbG8gSVJRDQogwqBncGlvLTUwOCAowqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqAgfG1vZC1kZWYwwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCApIGluwqAgbG8gSVJR
+DQoxOTIxLjg2IDMzMTQuMjENCiDCoGdwaW8tNTA0ICjCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoCB8dHgtZmF1bHTCoMKgwqDCoMKgwqDCoMKgwqDCoMKgICkgaW7C
+oCBsbyBJUlENCiDCoGdwaW8tNTA1ICjCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoCB8dHgtZGlzYWJsZcKgwqDCoMKgwqDCoMKgwqDCoCApIG91dCBsbw0KIMKgZ3Bp
+by01MDYgKMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIHxyYXRlLXNl
+bGVjdDDCoMKgwqDCoMKgwqDCoCApIGluwqAgbG8NCiDCoGdwaW8tNTA3ICjCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCB8bG9zwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqAgKSBpbsKgIGxvIElSUQ0KIMKgZ3Bpby01MDggKMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIHxtb2QtZGVmMMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqAgKSBpbsKgIGxvIElSUQ0KMTkyMS44NiAzMzE0LjIxDQoNCj4gSG93ZXZlciwgYmVhciBp
+biBtaW5kIHRoYXQgZXZlbiB0aGlzIHdpbGwgbm90IGJlIGdvb2QgZW5vdWdoIHRvIHNwb3QN
+Cj4gdHJhbnNpdG9yeSBjaGFuZ2VzIG9uIFRYX0ZBVUxUIC0gYXMgeW91ciBJMkMgR1BJTyBl
+eHBhbmRlciBpcyBpbnRlcnJ1cHQNCj4gY2FwYWJsZSwgd2F0Y2hpbmcgL3Byb2MvaW50ZXJy
+dXB0cyBtYXkgdGVsbCB5b3UgbW9yZS4NCj4NCj4gSWYgdGhlIFRYX0ZBVUxUIHNpZ25hbCBp
+cyBhcyBzdGFibGUgYXMgeW91IGNsYWltIGl0IGlzLCB5b3Ugc2hvdWxkIHNlZQ0KPiB0aGUg
+aW50ZXJydXB0IGNvdW50IGZvciBpdCByZW1haW5pbmcgdGhlIHNhbWUuDQoNCk9uY2UgdGhl
+IGlpZiBpcyB1cCB0aG9zZSB2YWx1ZXMgcmVtYWluIHN0YWJsZSBpbmRlZWQuDQoNCmNhdCAv
+cHJvYy9pbnRlcnJ1cHRzIHwgZ3JlcCBzZnANCiDCoDUyOsKgwqDCoMKgwqDCoMKgwqDCoCAw
+wqDCoMKgwqDCoMKgwqDCoMKgIDDCoMKgIHBjYTk1M3jCoMKgIDQgRWRnZcKgwqDCoMKgwqAg
+c2ZwDQogwqA1MzrCoMKgwqDCoMKgwqDCoMKgwqAgMMKgwqDCoMKgwqDCoMKgwqDCoCAwwqDC
+oCBwY2E5NTN4wqDCoCAzIEVkZ2XCoMKgwqDCoMKgIHNmcA0KIMKgNTQ6wqDCoMKgwqDCoMKg
+wqDCoMKgIDbCoMKgwqDCoMKgwqDCoMKgwqAgMMKgwqAgcGNhOTUzeMKgwqAgMCBFZGdlwqDC
+oMKgwqDCoCBzZnANCg0KYW5kIG9ubHkgaW5jcmVtZW50aW5nIHdpdGggaWZ1cGRvd24gYWN0
+aW9uICh3aGljaCB3b3VsZCBiZSBsb2dpY2FsKQ0KDQpjYXQgL3Byb2MvaW50ZXJydXB0cyB8
+IGdyZXAgc2ZwDQogwqA1MjrCoMKgwqDCoMKgwqDCoMKgwqAgMMKgwqDCoMKgwqDCoMKgwqDC
+oCAwwqDCoCBwY2E5NTN4wqDCoCA0IEVkZ2XCoMKgwqDCoMKgIHNmcA0KIMKgNTM6wqDCoMKg
+wqDCoMKgwqDCoMKgIDDCoMKgwqDCoMKgwqDCoMKgwqAgMMKgwqAgcGNhOTUzeMKgwqAgMyBF
+ZGdlwqDCoMKgwqDCoCBzZnANCiDCoDU0OsKgwqDCoMKgwqDCoMKgwqAgMTHCoMKgwqDCoMKg
+wqDCoMKgwqAgMMKgwqAgcGNhOTUzeMKgwqAgMCBFZGdlwqDCoMKgwqDCoCBzZnANCg0KDQo=
