@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B2E571378F5
-	for <lists+netdev@lfdr.de>; Fri, 10 Jan 2020 23:05:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F0BA0137968
+	for <lists+netdev@lfdr.de>; Fri, 10 Jan 2020 23:08:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727628AbgAJWFg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jan 2020 17:05:36 -0500
-Received: from mail.kernel.org ([198.145.29.99]:51308 "EHLO mail.kernel.org"
+        id S1727802AbgAJWFk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jan 2020 17:05:40 -0500
+Received: from mail.kernel.org ([198.145.29.99]:51362 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727439AbgAJWFf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 10 Jan 2020 17:05:35 -0500
+        id S1727744AbgAJWFg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 10 Jan 2020 17:05:36 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 3C79F20848;
-        Fri, 10 Jan 2020 22:05:34 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 5AF0E20721;
+        Fri, 10 Jan 2020 22:05:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1578693934;
-        bh=sbJuOVYWCWIIvdsQx1NUlA1lZjJEaLDjyV8r9P7NAXc=;
+        s=default; t=1578693936;
+        bh=aIDscSX1q6XnLqh4cZ+1qy/9MlmC1EoFUjEMn3Uu06k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Iyl0M/92/zCKjYJqHIAzcHYqsvtwZlqIF3qDIPIqZhlQO/jzZsXEkgak85IWxgG8b
-         Ukhl4fBcf5fNsQ+vdLvoMM7ORDLwQJcUgs5/mZ7NVcDi3NiwTSVkVcgtme5TstJfUK
-         Wp0HlV9yIxvdUf2UhdfftVUcbf7Csx+rU+zu86Ec=
+        b=x3smnVasrIK6eL9mWaG1/eQoFnCRTw70gyiT6fnx7Oam0Hd5YXG9S+YEOIBWzJoeH
+         GJH7XbM29HcrfvwO9zWMdadsmoX0kcvT/EIqWdG6Ypr443cBE0f7SWoL/aIGNm9g3Y
+         lijn7+pnKL5JdgjF5U2risePEtEffbuhKJTG1GJM=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Taehee Yoo <ap420073@gmail.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 17/26] hsr: rename debugfs file when interface name is changed
-Date:   Fri, 10 Jan 2020 17:05:10 -0500
-Message-Id: <20200110220519.28250-12-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.4 18/26] hsr: reset network header when supervision frame is created
+Date:   Fri, 10 Jan 2020 17:05:11 -0500
+Message-Id: <20200110220519.28250-13-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200110220519.28250-1-sashal@kernel.org>
 References: <20200110220519.28250-1-sashal@kernel.org>
@@ -45,79 +45,58 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Taehee Yoo <ap420073@gmail.com>
 
-[ Upstream commit 4c2d5e33dcd3a6333a7895be3b542ff3d373177c ]
+[ Upstream commit 3ed0a1d563903bdb4b4c36c58c4d9c1bcb23a6e6 ]
 
-hsr interface has own debugfs file, which name is same with interface name.
-So, interface name is changed, debugfs file name should be changed too.
+The supervision frame is L2 frame.
+When supervision frame is created, hsr module doesn't set network header.
+If tap routine is enabled, dev_queue_xmit_nit() is called and it checks
+network_header. If network_header pointer wasn't set(or invalid),
+it resets network_header and warns.
+In order to avoid unnecessary warning message, resetting network_header
+is needed.
 
-Fixes: fc4ecaeebd26 ("net: hsr: add debugfs support for display node list")
+Test commands:
+    ip netns add nst
+    ip link add veth0 type veth peer name veth1
+    ip link add veth2 type veth peer name veth3
+    ip link set veth1 netns nst
+    ip link set veth3 netns nst
+    ip link set veth0 up
+    ip link set veth2 up
+    ip link add hsr0 type hsr slave1 veth0 slave2 veth2
+    ip a a 192.168.100.1/24 dev hsr0
+    ip link set hsr0 up
+    ip netns exec nst ip link set veth1 up
+    ip netns exec nst ip link set veth3 up
+    ip netns exec nst ip link add hsr1 type hsr slave1 veth1 slave2 veth3
+    ip netns exec nst ip a a 192.168.100.2/24 dev hsr1
+    ip netns exec nst ip link set hsr1 up
+    tcpdump -nei veth0
+
+Splat looks like:
+[  175.852292][    C3] protocol 88fb is buggy, dev veth0
+
+Fixes: f421436a591d ("net/hsr: Add support for the High-availability Seamless Redundancy protocol (HSRv0)")
 Signed-off-by: Taehee Yoo <ap420073@gmail.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/hsr/hsr_debugfs.c | 13 +++++++++++++
- net/hsr/hsr_main.c    |  3 +++
- net/hsr/hsr_main.h    |  4 ++++
- 3 files changed, 20 insertions(+)
+ net/hsr/hsr_device.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/net/hsr/hsr_debugfs.c b/net/hsr/hsr_debugfs.c
-index a7462a718e7b..d5f709b940ff 100644
---- a/net/hsr/hsr_debugfs.c
-+++ b/net/hsr/hsr_debugfs.c
-@@ -65,6 +65,19 @@ hsr_node_table_open(struct inode *inode, struct file *filp)
- 	return single_open(filp, hsr_node_table_show, inode->i_private);
- }
+diff --git a/net/hsr/hsr_device.c b/net/hsr/hsr_device.c
+index 62c03f0d0079..c7bd6c49fadf 100644
+--- a/net/hsr/hsr_device.c
++++ b/net/hsr/hsr_device.c
+@@ -272,6 +272,8 @@ static void send_hsr_supervision_frame(struct hsr_port *master,
+ 			    skb->dev->dev_addr, skb->len) <= 0)
+ 		goto out;
+ 	skb_reset_mac_header(skb);
++	skb_reset_network_header(skb);
++	skb_reset_transport_header(skb);
  
-+void hsr_debugfs_rename(struct net_device *dev)
-+{
-+	struct hsr_priv *priv = netdev_priv(dev);
-+	struct dentry *d;
-+
-+	d = debugfs_rename(hsr_debugfs_root_dir, priv->node_tbl_root,
-+			   hsr_debugfs_root_dir, dev->name);
-+	if (IS_ERR(d))
-+		netdev_warn(dev, "failed to rename\n");
-+	else
-+		priv->node_tbl_root = d;
-+}
-+
- static const struct file_operations hsr_fops = {
- 	.open	= hsr_node_table_open,
- 	.read	= seq_read,
-diff --git a/net/hsr/hsr_main.c b/net/hsr/hsr_main.c
-index e28c975520ec..d2ee7125a7f1 100644
---- a/net/hsr/hsr_main.c
-+++ b/net/hsr/hsr_main.c
-@@ -45,6 +45,9 @@ static int hsr_netdev_notify(struct notifier_block *nb, unsigned long event,
- 	case NETDEV_CHANGE:	/* Link (carrier) state changes */
- 		hsr_check_carrier_and_operstate(hsr);
- 		break;
-+	case NETDEV_CHANGENAME:
-+		hsr_debugfs_rename(dev);
-+		break;
- 	case NETDEV_CHANGEADDR:
- 		if (port->type == HSR_PT_MASTER) {
- 			/* This should not happen since there's no
-diff --git a/net/hsr/hsr_main.h b/net/hsr/hsr_main.h
-index 6696923fd4bd..d40de84a637f 100644
---- a/net/hsr/hsr_main.h
-+++ b/net/hsr/hsr_main.h
-@@ -185,11 +185,15 @@ static inline u16 hsr_get_skb_sequence_nr(struct sk_buff *skb)
- }
- 
- #if IS_ENABLED(CONFIG_DEBUG_FS)
-+void hsr_debugfs_rename(struct net_device *dev);
- void hsr_debugfs_init(struct hsr_priv *priv, struct net_device *hsr_dev);
- void hsr_debugfs_term(struct hsr_priv *priv);
- void hsr_debugfs_create_root(void);
- void hsr_debugfs_remove_root(void);
- #else
-+static inline void void hsr_debugfs_rename(struct net_device *dev)
-+{
-+}
- static inline void hsr_debugfs_init(struct hsr_priv *priv,
- 				    struct net_device *hsr_dev)
- {}
+ 	if (hsr_ver > 0) {
+ 		hsr_tag = skb_put(skb, sizeof(struct hsr_tag));
 -- 
 2.20.1
 
