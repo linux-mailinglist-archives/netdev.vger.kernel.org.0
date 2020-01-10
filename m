@@ -2,21 +2,21 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C9444136C6D
-	for <lists+netdev@lfdr.de>; Fri, 10 Jan 2020 12:55:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 729A0136C68
+	for <lists+netdev@lfdr.de>; Fri, 10 Jan 2020 12:55:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728228AbgAJLyy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jan 2020 06:54:54 -0500
-Received: from foss.arm.com ([217.140.110.172]:43218 "EHLO foss.arm.com"
+        id S1728198AbgAJLyo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jan 2020 06:54:44 -0500
+Received: from foss.arm.com ([217.140.110.172]:43228 "EHLO foss.arm.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728142AbgAJLyl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 10 Jan 2020 06:54:41 -0500
+        id S1728183AbgAJLyn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 10 Jan 2020 06:54:43 -0500
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 14F7813A1;
-        Fri, 10 Jan 2020 03:54:41 -0800 (PST)
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C452D1474;
+        Fri, 10 Jan 2020 03:54:42 -0800 (PST)
 Received: from donnerap.arm.com (donnerap.cambridge.arm.com [10.1.197.44])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 9FCA23F73B;
-        Fri, 10 Jan 2020 03:54:39 -0800 (PST)
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 48F7D3F534;
+        Fri, 10 Jan 2020 03:54:41 -0800 (PST)
 From:   Andre Przywara <andre.przywara@arm.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
@@ -25,9 +25,9 @@ Cc:     Michal Simek <michal.simek@xilinx.com>,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
         Rob Herring <robh+dt@kernel.org>,
         Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org
-Subject: [PATCH 13/14] net: axienet: Allow DMA to beyond 4GB
-Date:   Fri, 10 Jan 2020 11:54:14 +0000
-Message-Id: <20200110115415.75683-14-andre.przywara@arm.com>
+Subject: [PATCH 14/14] net: axienet: Update devicetree binding documentation
+Date:   Fri, 10 Jan 2020 11:54:15 +0000
+Message-Id: <20200110115415.75683-15-andre.przywara@arm.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200110115415.75683-1-andre.przywara@arm.com>
 References: <20200110115415.75683-1-andre.przywara@arm.com>
@@ -36,75 +36,121 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-With all DMA address accesses wrapped, we can actually support 64-bit
-DMA if this option was chosen at IP integration time.
-Since there is no way to autodetect the actual address bus width, we
-make use of the existing "xlnx,addrwidth" DT property to let the driver
-know about the width. The value in this property should match the
-"Address Width" parameter used when synthesizing the IP.
+This adds documentation about the newly introduced, optional
+"xlnx,addrwidth" property to the binding documentation.
 
-This increases the DMA mask to let the kernel choose buffers from
-memory at higher addresses.
+While at it, clarify the wording on some properties, replace obsolete
+.txt file references with their new .yaml counterparts, and add a more
+modern example, using the axistream-connected property.
 
 Cc: Rob Herring <robh+dt@kernel.org>
 Cc: Mark Rutland <mark.rutland@arm.com>
 Cc: devicetree@vger.kernel.org
 Signed-off-by: Andre Przywara <andre.przywara@arm.com>
 ---
- .../net/ethernet/xilinx/xilinx_axienet_main.c | 19 +++++++++++++++++++
- 1 file changed, 19 insertions(+)
+ .../bindings/net/xilinx_axienet.txt           | 57 ++++++++++++++++---
+ 1 file changed, 50 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-index f7f593df0c11..e036834549b3 100644
---- a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-+++ b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-@@ -1786,6 +1786,7 @@ static int axienet_probe(struct platform_device *pdev)
- 	struct net_device *ndev;
- 	const void *mac_addr;
- 	struct resource *ethres;
-+	int addr_width = 32;
- 	u32 value;
+diff --git a/Documentation/devicetree/bindings/net/xilinx_axienet.txt b/Documentation/devicetree/bindings/net/xilinx_axienet.txt
+index 7360617cdedb..78c278c5200f 100644
+--- a/Documentation/devicetree/bindings/net/xilinx_axienet.txt
++++ b/Documentation/devicetree/bindings/net/xilinx_axienet.txt
+@@ -12,7 +12,8 @@ sent and received through means of an AXI DMA controller. This driver
+ includes the DMA driver code, so this driver is incompatible with AXI DMA
+ driver.
  
- 	ndev = alloc_etherdev(sizeof(*lp));
-@@ -1915,6 +1916,8 @@ static int axienet_probe(struct platform_device *pdev)
- 						     &dmares);
- 		lp->rx_irq = irq_of_parse_and_map(np, 1);
- 		lp->tx_irq = irq_of_parse_and_map(np, 0);
-+		of_property_read_u32(np, "xlnx,addrwidth", &addr_width);
-+
- 		of_node_put(np);
- 		lp->eth_irq = platform_get_irq(pdev, 0);
- 	} else {
-@@ -1944,6 +1947,9 @@ static int axienet_probe(struct platform_device *pdev)
- 	 * We can detect this case by writing all 1's to one such register
- 	 * and see if that sticks: when the IP is configured for 32 bits
- 	 * only, those registers are RES0.
-+	 * We can't autodetect the actual width this way, so we still use
-+	 * a 32-bit DMA mask and rely on the xlnk,addrwidth DT property
-+	 * to set this properly.
- 	 * Those MSB registers were introduced in IP v7.1, which we check first.
- 	 */
- 	if ((axienet_ior(lp, XAE_ID_OFFSET) >> 24) >= 0x9) {
-@@ -1961,6 +1967,19 @@ static int axienet_probe(struct platform_device *pdev)
- 		}
- 	}
+-For more details about mdio please refer phy.txt file in the same directory.
++For more details about mdio please refer to the ethernet-phy.yaml file in
++the same directory.
  
-+	if (!(lp->features & XAE_FEATURE_DMA_64BIT)) {
-+		if (addr_width > 32)
-+			dev_warn(&pdev->dev, "trimming DMA width from %d to 32 bits\n",
-+				 addr_width);
-+		addr_width = 32;
-+	}
+ Required properties:
+ - compatible	: Must be one of "xlnx,axi-ethernet-1.00.a",
+@@ -27,14 +28,14 @@ Required properties:
+ 		  instead, and only the Ethernet core interrupt is optionally
+ 		  specified here.
+ - phy-handle	: Should point to the external phy device.
+-		  See ethernet.txt file in the same directory.
+-- xlnx,rxmem	: Set to allocated memory buffer for Rx/Tx in the hardware
++		  See the ethernet-controller.yaml file in the same directory.
++- xlnx,rxmem	: Size of the RXMEM buffer in the hardware, in bytes.
+ 
+ Optional properties:
+-- phy-mode	: See ethernet.txt
++- phy-mode	: See ethernet-controller.yaml.
+ - xlnx,phy-type	: Deprecated, do not use, but still accepted in preference
+ 		  to phy-mode.
+-- xlnx,txcsum	: 0 or empty for disabling TX checksum offload,
++- xlnx,txcsum	: 0 for disabling TX checksum offload (default if omitted),
+ 		  1 to enable partial TX checksum offload,
+ 		  2 to enable full TX checksum offload
+ - xlnx,rxcsum	: Same values as xlnx,txcsum but for RX checksum offload
+@@ -48,10 +49,20 @@ Optional properties:
+ 		       If this is specified, the DMA-related resources from that
+ 		       device (DMA registers and DMA TX/RX interrupts) rather
+ 		       than this one will be used.
+- - mdio		: Child node for MDIO bus. Must be defined if PHY access is
++- mdio		: Child node for MDIO bus. Must be defined if PHY access is
+ 		  required through the core's MDIO interface (i.e. always,
+ 		  unless the PHY is accessed through a different bus).
+ 
++Required properties for axistream-connected subnode:
++- reg		: Address and length of the AXI DMA controller MMIO space.
++- interrupts	: A list of 2 interrupts: TX DMA and RX DMA, in that order.
 +
-+	ret = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(addr_width));
-+	if (ret) {
-+		dev_err(&pdev->dev, "No suitable DMA available\n");
-+		goto free_netdev;
-+	}
++Optional properties for axistream-connected subnode:
++- xlnx,addrwidth: Specifies the configured address width of the DMA. Newer
++		  versions of the IP allow setting this to a value between
++		  32 and 64. Defaults to 32 bits if not specified.
 +
- 	/* Check for Ethernet core IRQ (optional) */
- 	if (lp->eth_irq <= 0)
- 		dev_info(&pdev->dev, "Ethernet core IRQ not defined\n");
++
+ Example:
+ 	axi_ethernet_eth: ethernet@40c00000 {
+ 		compatible = "xlnx,axi-ethernet-1.00.a";
+@@ -60,7 +71,7 @@ Example:
+ 		interrupts = <2 0 1>;
+ 		clocks = <&axi_clk>;
+ 		phy-mode = "mii";
+-		reg = <0x40c00000 0x40000 0x50c00000 0x40000>;
++		reg = <0x40c00000 0x40000>, <0x50c00000 0x40000>;
+ 		xlnx,rxcsum = <0x2>;
+ 		xlnx,rxmem = <0x800>;
+ 		xlnx,txcsum = <0x2>;
+@@ -74,3 +85,35 @@ Example:
+ 			};
+ 		};
+ 	};
++    -----------------
++	axi_ethernet_eth: ethernet@7fe00000 {
++		compatible = "acme,fpga-ethernet", "xlnx,axi-ethernet-1.00.a";
++		reg = <0 0x7fe00000 0 0x40000>;
++		interrupts = <GIC_SPI 117 IRQ_TYPE_LEVEL_HIGH>;
++		clocks = <&soc_refclk100mhz>;
++
++		phy-mode = "sgmii";
++		phy-handle = <&phy0>;
++
++		xlnx,rxmem = <4096>;
++		axistream-connected = <&axi_dma_eth>;
++		#address-cells = <2>;
++		#size-cells = <2>;
++		ranges;
++
++		axi_dma_eth: axi_dma_ethernet@7fe40000 {
++			reg = <0 0x7fe40000 0 0x10000>;
++			interrupts = <GIC_SPI 118 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 120 IRQ_TYPE_LEVEL_HIGH>;
++			xlnx,addrwidth = <40>;
++		};
++
++		axi_ethernetlite_0_mdio: mdio {
++			#address-cells = <1>;
++			#size-cells = <0>;
++			phy0: phy@1 {
++				compatible = "ethernet-phy-ieee802.3-c22";
++				reg = <1>;
++			};
++		};
++	};
 -- 
 2.17.1
 
