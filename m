@@ -2,175 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F2DD136D38
-	for <lists+netdev@lfdr.de>; Fri, 10 Jan 2020 13:38:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8716F136D39
+	for <lists+netdev@lfdr.de>; Fri, 10 Jan 2020 13:38:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728247AbgAJMi1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jan 2020 07:38:27 -0500
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:38028 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727949AbgAJMi1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jan 2020 07:38:27 -0500
-Received: by mail-wr1-f65.google.com with SMTP id y17so1671353wrh.5;
-        Fri, 10 Jan 2020 04:38:25 -0800 (PST)
+        id S1728251AbgAJMim (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jan 2020 07:38:42 -0500
+Received: from mail-qv1-f66.google.com ([209.85.219.66]:44618 "EHLO
+        mail-qv1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727949AbgAJMim (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jan 2020 07:38:42 -0500
+Received: by mail-qv1-f66.google.com with SMTP id n8so631497qvg.11
+        for <netdev@vger.kernel.org>; Fri, 10 Jan 2020 04:38:42 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=p66wV6h17U9wMewOqvO+9P744TVt+8ikPmNpbDPLxQM=;
-        b=EA0/n8CD7hYuKCKGYNM5TV5Yj2fcCbV/6gqr0x7e7wcQ/xLh3nhNkWZyKuYyb4Y+1q
-         YBV2KG4k620T8pBjnTGxwhCdBC0GP8pw0Kue3ZRCNbuYlu/znSj26ujN+r0b5emptZK5
-         kVCjrO7INBvI+DTr9wF+NvX2JmV1+C5jx1e+xeCw0lmR1e8nb/tvpgi+ETKH0KxNrlrZ
-         xKS6l6Lx+9xxZ4JasMbEzeG3Ee84qHqnUyl74tdqpD4pGu+cyyyvNe+tt16nq47/x8Li
-         qBp41PAS6e/5O7jvvUt4OSreYX5Vs1L2NL4MeKkq4O5OArddB6RXxpM+XCJYxDxrCjE0
-         jTSw==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ajojXkhC07nfmlfMk0mmx6ju9z8VrJZrUJgcGwXjOm8=;
+        b=Cl3NlCYACfwqcK1MCO4pp2J3SfqgCcDoxor1E4V6lfqGJt72dJ7xhi+F64r2wto65R
+         NQHxDdHXp6ASuxJUSdV6lXjUNbeFwfI+Kp60GsVKzRmkyP9AmsW/VDfbf7cBgJ8ATyKp
+         0frVzxirpLxnouqhPUkbutEhqOdBNuMgPsePtRjRV9qhFb+y8r0tSpDRo6MwkHQYW0Ab
+         LwOyw7wrhRv4avdUJZG//p/dxtlCcmLktVOIRyekSiSsMjNW+4EA+Bm2UZWpVFw1b4Qq
+         +PWNUsNsEKthv+q9HUv5PiwCgjCzRhtdwjyA/u5EjYuWL1ubJqi0ho5nZm5lmlytz0qs
+         uWrg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=p66wV6h17U9wMewOqvO+9P744TVt+8ikPmNpbDPLxQM=;
-        b=nmryVy9zvQ+8ImMs7PgnNC4x92Z7RB06bqq+okO9dmGSHC881BtXP4ahxoBtBiBjAd
-         7chX6D1Nq4sfRGLW+OqReYsbthYA60/9UK9fsS9buONeRi7BDUU1wvf+a5Unu9nX+PY9
-         KdONYK6L8HT8sqdk/QEMSgS5+Nm3Kww693tCQE/9gMSqO+QOuCh8PfEvJYA/nGGC+VXp
-         zfKu81ak6fAAFlmaLY2PtMChPdhMciu4sw+c+8eJUgdEApZL2z4z63atA4/+kZst7dc/
-         z2t8RHT4E6fFtD2TLoD5Aii23G9bSp4u/H9ms+L+1DYvgQKob+CTHD7NNron+pGivAlK
-         AZcQ==
-X-Gm-Message-State: APjAAAXWWmqhxOaohYNh2zt0FW9f+5xlSAaiSAZAjD8UaxuaypbZLdS1
-        czcoIyEyMFk0zMbD8k5v0HSe/yBNB68rpow0SDzUMUYV
-X-Google-Smtp-Source: APXvYqw5VnQiSbOUcIyPWMyywOGy2Zv260R7LJnXLfdXPETw5JZerPl9HHNaOo/GHtiPnH3iquUCM8emdQsVLsh0PV4=
-X-Received: by 2002:a5d:5345:: with SMTP id t5mr3534597wrv.0.1578659904823;
- Fri, 10 Jan 2020 04:38:24 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ajojXkhC07nfmlfMk0mmx6ju9z8VrJZrUJgcGwXjOm8=;
+        b=pZFX5QHVMJKfPCBAV1BVUHIO1K2sTlGBx+QEAiTu57Gb7w7QEaarxFF0ezoysYxat9
+         3/77/kuDeW6iRqvc4hHgH+yW/M6XHf3rqLv5ZwpXE19M/xVNvhCxyt2RhLaQlLJAWKQa
+         Os1JVRgnUmE+7Nq8MGIpxBGwNgQ0NZVCK9xFGd6hvdQMvpd4vWV27b5Gh8DmFfxv4CvS
+         PlaPrSq+dYlAFyXXhTynQGbw5C5JTP9KWwK6T+XyOYKBfPyvkEST9lu4Vla66O/nL9dN
+         TTYtl6TU4lQiT9CjnBlqFOgIsuQQg6ymw84AYgCDM+zzl2KCe6E+DsBgXWDK1C7ngj5H
+         avZg==
+X-Gm-Message-State: APjAAAU9RDLCJhCRKVm5kgpZ8KeFA2LOP2xpAuZ7fgsRnmHcn0nMpwgN
+        2FxBo8fOfjIWFzD2avIrs2G/Fw==
+X-Google-Smtp-Source: APXvYqxFLPOu3GbXqZlMcyX4fth7Tu7kJlrHlp2u2ojjKGSCYTtJicI0auf5HD1UQ6cr1AAf5W+e4A==
+X-Received: by 2002:ad4:47ad:: with SMTP id a13mr2531692qvz.29.1578659921651;
+        Fri, 10 Jan 2020 04:38:41 -0800 (PST)
+Received: from jkicinski-Precision-T1700.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id t29sm780882qkm.27.2020.01.10.04.38.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 10 Jan 2020 04:38:40 -0800 (PST)
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, oss-drivers@netronome.com,
+        borisp@mellanox.com, aviadye@mellanox.com,
+        john.fastabend@gmail.com, daniel@iogearbox.net,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Mallesham Jatharakonda 
+        <mallesham.jatharakonda@oneconvergence.com>,
+        Simon Horman <simon.horman@netronome.com>
+Subject: [PATCH net] net/tls: fix async operation
+Date:   Fri, 10 Jan 2020 04:38:32 -0800
+Message-Id: <20200110123832.1086-1-jakub.kicinski@netronome.com>
+X-Mailer: git-send-email 2.23.0
 MIME-Version: 1.0
-References: <CAA5aLPhf1=wzQG0BAonhR3td-RhEmXaczug8n4hzXCzreb+52g@mail.gmail.com>
- <CAM_iQpVyEtOGd5LbyGcSNKCn5XzT8+Ouup26fvE1yp7T5aLSjg@mail.gmail.com>
- <CAA5aLPiqyhnWjY7A3xsaNJ71sDOf=Rqej8d+7=_PyJPmV9uApA@mail.gmail.com>
- <CAM_iQpUH6y8oEct3FXUhqNekQ3sn3N7LoSR0chJXAPYUzvWbxA@mail.gmail.com>
- <CAA5aLPjzX+9YFRGgCgceHjkU0=e6x8YMENfp_cC9fjfHYK3e+A@mail.gmail.com>
- <CAM_iQpXBhrOXtfJkibyxyq781Pjck-XJNgZ-=Ucj7=DeG865mw@mail.gmail.com>
- <CAA5aLPjO9rucCLJnmQiPBxw2pJ=6okf3C88rH9GWnh3p0R+Rmw@mail.gmail.com>
- <CAM_iQpVtGUH6CAAegRtTgyemLtHsO+RFP8f6LH2WtiYu9-srfw@mail.gmail.com> <9cbefe10-b172-ae2a-0ac7-d972468eb7a2@gmail.com>
-In-Reply-To: <9cbefe10-b172-ae2a-0ac7-d972468eb7a2@gmail.com>
-From:   Akshat Kakkar <akshat.1984@gmail.com>
-Date:   Fri, 10 Jan 2020 18:08:12 +0530
-Message-ID: <CAA5aLPgjEGSWmfnCgbx+bn4tYFWAuwDHTopex7_r1qEFsLO+3Q@mail.gmail.com>
-Subject: Re: Unable to create htb tc classes more than 64K
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
-        Anton Danilov <littlesmilingcloud@gmail.com>,
-        NetFilter <netfilter-devel@vger.kernel.org>,
-        lartc <lartc@vger.kernel.org>, netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Eric,
+Mallesham reports the TLS with async accelerator was broken by
+commit d10523d0b3d7 ("net/tls: free the record on encryption error")
+because encryption can return -EINPROGRESS in such setups, which
+should not be treated as an error.
 
-Thanks for a detailed reply. Sorry I couldn't reply as I was
-completely bed ridden.
+The error is also present in the BPF path (likely copied from there).
 
-In order for me to try this, I require few inputs (as I am new to all this)...
+Reported-by: Mallesham Jatharakonda <mallesham.jatharakonda@oneconvergence.com>
+Fixes: d3b18ad31f93 ("tls: add bpf support to sk_msg handling")
+Fixes: d10523d0b3d7 ("net/tls: free the record on encryption error")
+Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+Reviewed-by: Simon Horman <simon.horman@netronome.com>
+---
+ net/tls/tls_sw.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-1. How do I register in Kernel, that my eBPF program should be called? Is this
-https://netdevconf.info/1.1/proceedings/papers/On-getting-tc-classifier-fully-programmable-with-cls-bpf.pdf
-and
-http://man7.org/linux/man-pages/man8/tc-bpf.8.html
-correct documents ?
-2. Some info with respect to EDT and skb->tstamp and how things work.
+diff --git a/net/tls/tls_sw.c b/net/tls/tls_sw.c
+index c6803a82b769..bb229dc0fa81 100644
+--- a/net/tls/tls_sw.c
++++ b/net/tls/tls_sw.c
+@@ -772,7 +772,7 @@ static int bpf_exec_tx_verdict(struct sk_msg *msg, struct sock *sk,
+ 	psock = sk_psock_get(sk);
+ 	if (!psock || !policy) {
+ 		err = tls_push_record(sk, flags, record_type);
+-		if (err) {
++		if (err && err != -EINPROGRESS) {
+ 			*copied -= sk_msg_free(sk, msg);
+ 			tls_free_open_rec(sk);
+ 		}
+@@ -801,7 +801,7 @@ static int bpf_exec_tx_verdict(struct sk_msg *msg, struct sock *sk,
+ 	switch (psock->eval) {
+ 	case __SK_PASS:
+ 		err = tls_push_record(sk, flags, record_type);
+-		if (err < 0) {
++		if (err && err != -EINPROGRESS) {
+ 			*copied -= sk_msg_free(sk, msg);
+ 			tls_free_open_rec(sk);
+ 			goto out_err;
+-- 
+2.23.0
 
-On Mon, Aug 26, 2019 at 12:02 PM Eric Dumazet <eric.dumazet@gmail.com> wrote:
->
->
->
-> On 8/25/19 7:52 PM, Cong Wang wrote:
-> > On Wed, Aug 21, 2019 at 11:00 PM Akshat Kakkar <akshat.1984@gmail.com> wrote:
-> >>
-> >> On Thu, Aug 22, 2019 at 3:37 AM Cong Wang <xiyou.wangcong@gmail.com> wrote:
-> >>>> I am using ipset +  iptables to classify and not filters. Besides, if
-> >>>> tc is allowing me to define qdisc -> classes -> qdsic -> classes
-> >>>> (1,2,3 ...) sort of structure (ie like the one shown in ascii tree)
-> >>>> then how can those lowest child classes be actually used or consumed?
-> >>>
-> >>> Just install tc filters on the lower level too.
-> >>
-> >> If I understand correctly, you are saying,
-> >> instead of :
-> >> tc filter add dev eno2 parent 100: protocol ip prio 1 handle
-> >> 0x00000001 fw flowid 1:10
-> >> tc filter add dev eno2 parent 100: protocol ip prio 1 handle
-> >> 0x00000002 fw flowid 1:20
-> >> tc filter add dev eno2 parent 100: protocol ip prio 1 handle
-> >> 0x00000003 fw flowid 2:10
-> >> tc filter add dev eno2 parent 100: protocol ip prio 1 handle
-> >> 0x00000004 fw flowid 2:20
-> >>
-> >>
-> >> I should do this: (i.e. changing parent to just immediate qdisc)
-> >> tc filter add dev eno2 parent 1: protocol ip prio 1 handle 0x00000001
-> >> fw flowid 1:10
-> >> tc filter add dev eno2 parent 1: protocol ip prio 1 handle 0x00000002
-> >> fw flowid 1:20
-> >> tc filter add dev eno2 parent 2: protocol ip prio 1 handle 0x00000003
-> >> fw flowid 2:10
-> >> tc filter add dev eno2 parent 2: protocol ip prio 1 handle 0x00000004
-> >> fw flowid 2:20
-> >
-> >
-> > Yes, this is what I meant.
-> >
-> >
-> >>
-> >> I tried this previously. But there is not change in the result.
-> >> Behaviour is exactly same, i.e. I am still getting 100Mbps and not
-> >> 100kbps or 300kbps
-> >>
-> >> Besides, as I mentioned previously I am using ipset + skbprio and not
-> >> filters stuff. Filters I used just to test.
-> >>
-> >> ipset  -N foo hash:ip,mark skbinfo
-> >>
-> >> ipset -A foo 10.10.10.10, 0x0x00000001 skbprio 1:10
-> >> ipset -A foo 10.10.10.20, 0x0x00000002 skbprio 1:20
-> >> ipset -A foo 10.10.10.30, 0x0x00000003 skbprio 2:10
-> >> ipset -A foo 10.10.10.40, 0x0x00000004 skbprio 2:20
-> >>
-> >> iptables -A POSTROUTING -j SET --map-set foo dst,dst --map-prio
-> >
-> > Hmm..
-> >
-> > I am not familiar with ipset, but it seems to save the skbprio into
-> > skb->priority, so it doesn't need TC filter to classify it again.
-> >
-> > I guess your packets might go to the direct queue of HTB, which
-> > bypasses the token bucket. Can you dump the stats and check?
->
-> With more than 64K 'classes' I suggest to use a single FQ qdisc [1], and
-> an eBPF program using EDT model (Earliest Departure Time)
->
-> The BPF program would perform the classification, then find a data structure
-> based on the 'class', and then update/maintain class virtual times and skb->tstamp
->
-> TBF = bpf_map_lookup_elem(&map, &classid);
->
-> uint64_t now = bpf_ktime_get_ns();
-> uint64_t time_to_send = max(TBF->time_to_send, now);
->
-> time_to_send += (u64)qdisc_pkt_len(skb) * NSEC_PER_SEC / TBF->rate;
-> if (time_to_send > TBF->max_horizon) {
->     return TC_ACT_SHOT;
-> }
-> TBF->time_to_send = time_to_send;
-> skb->tstamp = max(time_to_send, skb->tstamp);
-> if (time_to_send - now > TBF->ecn_horizon)
->     bpf_skb_ecn_set_ce(skb);
-> return TC_ACT_OK;
->
-> tools/testing/selftests/bpf/progs/test_tc_edt.c shows something similar.
->
->
-> [1]  MQ + FQ if the device is multi-queues.
->
->    Note that this setup scales very well on SMP, since we no longer are forced
->  to use a single HTB hierarchy (protected by a single spinlock)
->
