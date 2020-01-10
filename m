@@ -2,239 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 56FFB137457
-	for <lists+netdev@lfdr.de>; Fri, 10 Jan 2020 18:06:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E54E0137471
+	for <lists+netdev@lfdr.de>; Fri, 10 Jan 2020 18:08:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726677AbgAJRFu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jan 2020 12:05:50 -0500
-Received: from mail-mw2nam10on2072.outbound.protection.outlook.com ([40.107.94.72]:54667
-        "EHLO NAM10-MW2-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726066AbgAJRFt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 10 Jan 2020 12:05:49 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=jgaJYFPaG9F0o8iPb1nlK7MqeGHnRmfKcxOPnIEzslE9auysZENmMhmK5bBRIYGMVX4GfOlCNp33KMA5zksMLazBXzUW24t5K2wdoPsLu4VFKlwQEbjvg2/GQGksDUPsiu1YVk4Rjd4cri3A3sCoT+AZIJA9ovRnbar3xwjudo8hpoTsISVEH8DPeCxqny4Xh8cf5MhoiPCr6rstL0JvMvxNYcM+SPHBXALXuJoJ90BTEjX3e3nmEBQXfjMj87cEewbHW0teJi19igXUDuT/+rIfINc/HcmJGCq1jbT55OTRsRTEJVqkS73wNlH7LAsV6JfrD4BKldjNvKvdT60OVg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=5XCKWg3dcDR4KVwX+2iFNDusQvpM4sTBg4yhzaaVqvw=;
- b=PRr5bPBucnvpN3Ttqc91xfjEZAggPTLtVCK5qNQf0Kl3OPbJpdcmmARfayQPrOaQDB4UC7sjsoUNMSpqqk13mlGzbYqWB/1FX58GYQ9aICU585xUsJ7WWulY5qT8T6uPVEziqAD7U7bcXS0AhBmjjpCnK7ppxigOI9tTi4qnS8H8yTuCscb4U4dzBu3t4rFjwTLVw4PsxN+uxwQQ7PRHKo+NiyB2xxs3OUa3OIfI40ug/gYiDRvzKGUsld04ztaAGDGHpeS1hhZySo4n6TR8Ozk8qzznjxvk9G2MJY89cc1WtiPH6mexGR+CFEOrRtMfOfr42bFV4H5DEpY2t887Ug==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=xilinx.com; dmarc=pass action=none header.from=xilinx.com;
- dkim=pass header.d=xilinx.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=5XCKWg3dcDR4KVwX+2iFNDusQvpM4sTBg4yhzaaVqvw=;
- b=tXfzPTPZ8iwUNFBb2cQAxXpJQYDNJwmQpPN2GHVe0kY565ETg/iRpfiy1NirA3310Ga799IXlIAxndVfOoPf6gXEJikPQ+HJcSdTW/q7IsVJse4I0rv8BUhiR63F+ETfJhJspmMtFQnhaZ8DVBJ0OG0kjGIT7ptoqmgeUBYsvbo=
-Received: from CH2PR02MB7000.namprd02.prod.outlook.com (20.180.9.216) by
- CH2PR02MB6262.namprd02.prod.outlook.com (52.132.229.12) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2623.9; Fri, 10 Jan 2020 17:05:46 +0000
-Received: from CH2PR02MB7000.namprd02.prod.outlook.com
- ([fe80::969:436f:b4b8:4899]) by CH2PR02MB7000.namprd02.prod.outlook.com
- ([fe80::969:436f:b4b8:4899%7]) with mapi id 15.20.2623.013; Fri, 10 Jan 2020
- 17:05:45 +0000
-From:   Radhey Shyam Pandey <radheys@xilinx.com>
-To:     Andre Przywara <andre.przywara@arm.com>
-CC:     "David S . Miller" <davem@davemloft.net>,
-        Michal Simek <michals@xilinx.com>,
-        Robert Hancock <hancock@sedsystems.ca>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH 03/14] net: axienet: Fix DMA descriptor cleanup path
-Thread-Topic: [PATCH 03/14] net: axienet: Fix DMA descriptor cleanup path
-Thread-Index: AQHVx6y2ShwELFcgQk2RmkO2ceD3dafj/VgAgAAMtgCAABRgIA==
-Date:   Fri, 10 Jan 2020 17:05:45 +0000
-Message-ID: <CH2PR02MB70008D24DA7D1426E8A71013C7380@CH2PR02MB7000.namprd02.prod.outlook.com>
-References: <20200110115415.75683-1-andre.przywara@arm.com>
-        <20200110115415.75683-4-andre.przywara@arm.com>
-        <CH2PR02MB7000F64AB27D352E00DC77A7C7380@CH2PR02MB7000.namprd02.prod.outlook.com>
- <20200110154328.6676215f@donnerap.cambridge.arm.com>
-In-Reply-To: <20200110154328.6676215f@donnerap.cambridge.arm.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=radheys@xilinx.com; 
-x-originating-ip: [183.83.136.244]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 75330d87-fa9c-4a58-e887-08d795ef556c
-x-ms-traffictypediagnostic: CH2PR02MB6262:|CH2PR02MB6262:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <CH2PR02MB62625E269AF4FD829CA853C8C7380@CH2PR02MB6262.namprd02.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-forefront-prvs: 02788FF38E
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(39850400004)(346002)(376002)(396003)(366004)(136003)(43544003)(189003)(199004)(13464003)(7696005)(53546011)(33656002)(8936002)(54906003)(86362001)(186003)(26005)(52536014)(71200400001)(5660300002)(316002)(2906002)(76116006)(478600001)(9686003)(66476007)(66446008)(6506007)(66556008)(64756008)(6916009)(55016002)(66946007)(81156014)(4326008)(81166006)(8676002);DIR:OUT;SFP:1101;SCL:1;SRVR:CH2PR02MB6262;H:CH2PR02MB7000.namprd02.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: xilinx.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: HKwhNZQjkhPEzpafQWCe4vlhuLnvUKUmM5DJR8TCy4QOEmRSeyd1mZVU/Xe9iXPALSMkskQpkh00RXgnoUfqEuH2mqMBvAoOg1JyQSX+geVCEUnyZ5SEv5xl+IVCOSqbt7TpgpKYVjCSKklCrkU0kzAB8qv6/jij6WDPWU1DsdVoVsfOmal6+uxLrTsUkKvQk7kdecKF+mREJysPtMaenytaHhrttnUasYgGkjirreIGfRuFRKNNyYp31UH3LbU6q+GPB2qZA4GcoaBeK+Ju7zaV8xHYX91YEcB0MOnVRTk+hAMA9wU5r0WgtX/bNlgGOnNbRFijhyDCx+5AWN0+0aO2AYiFecN2f0+E5aWI18DBNuWqWtg9OjWJ4jhmVukdli33SajyAe27Q9ZJrWCkZ28osx08Pq2US9kju+wrN6tL/BDqeZwvQz0dsZR4zLFndlwZpPXUJD0jXb4nta/TTw8/RqsMW4e1UJA2wcuU60RmQLgNBJDOfnGGG0nNbE9WYXvrCwySP43OCZk9CQygQw==
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1726668AbgAJRIl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jan 2020 12:08:41 -0500
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:44772 "EHLO
+        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726114AbgAJRIk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jan 2020 12:08:40 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
+        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=stvLoiYvkibWT2EGKNia6lubfLem4pZoHH11UsqgU4s=; b=ALANy2D/4A7f7CFgzysPgD7e+
+        DDXSb7jxVoydDBsnmIKxv9dwkHkX8kNsUGDuuJtI3K5hHSGHeI9p9Ou79FwP/6IQNqWk/s6847iTV
+        GKvkXlMJDljtfZzf7YFgF4w+G9Zaoc9zOeFs4U6QwWWbho6BrwVsNLW7LkpX9c1Cnp67kEWg9Fzat
+        d6RfD1xGhH7fINeK7oF0qQ5yKAsZ82bomrH2ZxFA/J9mMf2WmB4VEj0q4E0folEczQflOHg9d6hdl
+        3u/izX/CRG/j409rFmxmpEfpyAsWxBtp9MnlI/OA0jISC7Qxd0O1zZBXpRmWUmGmyUEgadpUN/tks
+        qCnZi5g2Q==;
+Received: from shell.armlinux.org.uk ([2001:4d48:ad52:3201:5054:ff:fe00:4ec]:53176)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1ipxm1-0004Or-8f; Fri, 10 Jan 2020 17:08:37 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1ipxm0-0001fp-8v; Fri, 10 Jan 2020 17:08:36 +0000
+Date:   Fri, 10 Jan 2020 17:08:36 +0000
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     =?utf-8?B?0b3SieG2rOG4s+KEoA==?= <vtol@gmx.net>
+Cc:     Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org
+Subject: Re: [drivers/net/phy/sfp] intermittent failure in state machine
+ checks
+Message-ID: <20200110170836.GI25745@shell.armlinux.org.uk>
+References: <20200110092700.GX25745@shell.armlinux.org.uk>
+ <18687669-e6f5-79f1-6cf9-d62d65f195db@gmx.net>
+ <20200110114433.GZ25745@shell.armlinux.org.uk>
+ <7b6f143a-7bdb-90be-00f6-9e81e21bde4e@gmx.net>
+ <20200110125305.GB25745@shell.armlinux.org.uk>
+ <b4b94498-5011-1e89-db54-04916f8ef846@gmx.net>
+ <20200110150955.GE25745@shell.armlinux.org.uk>
+ <e9a99276-c09d-fa8d-a280-fca2abac6602@gmx.net>
+ <20200110163235.GG25745@shell.armlinux.org.uk>
+ <717229a4-f7f6-837d-3d58-756b516a8605@gmx.net>
 MIME-Version: 1.0
-X-OriginatorOrg: xilinx.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 75330d87-fa9c-4a58-e887-08d795ef556c
-X-MS-Exchange-CrossTenant-originalarrivaltime: 10 Jan 2020 17:05:45.8321
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 657af505-d5df-48d0-8300-c31994686c5c
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: Wp4d/hBbG1EXbJfSlgUlGbJNl52ELWGC35CTCMm7IbKYSc0PtcZ3kBbzRsq9spHiYUmO4Ip7fKrcioGDUZKDLw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR02MB6262
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <717229a4-f7f6-837d-3d58-756b516a8605@gmx.net>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> -----Original Message-----
-> From: Andre Przywara <andre.przywara@arm.com>
-> Sent: Friday, January 10, 2020 9:13 PM
-> To: Radhey Shyam Pandey <radheys@xilinx.com>
-> Cc: David S . Miller <davem@davemloft.net>; Michal Simek
-> <michals@xilinx.com>; Robert Hancock <hancock@sedsystems.ca>;
-> netdev@vger.kernel.org; linux-arm-kernel@lists.infradead.org; linux-
-> kernel@vger.kernel.org
-> Subject: Re: [PATCH 03/14] net: axienet: Fix DMA descriptor cleanup path
->=20
-> On Fri, 10 Jan 2020 15:14:46 +0000
-> Radhey Shyam Pandey <radheys@xilinx.com> wrote:
->=20
-> Hi Radhey,
->=20
-> thanks for having a look!
->=20
-> > > -----Original Message-----
-> > > From: Andre Przywara <andre.przywara@arm.com>
-> > > Sent: Friday, January 10, 2020 5:24 PM
-> > > To: David S . Miller <davem@davemloft.net>; Radhey Shyam Pandey
-> > > <radheys@xilinx.com>
-> > > Cc: Michal Simek <michals@xilinx.com>; Robert Hancock
-> > > <hancock@sedsystems.ca>; netdev@vger.kernel.org; linux-arm-
-> > > kernel@lists.infradead.org; linux-kernel@vger.kernel.org
-> > > Subject: [PATCH 03/14] net: axienet: Fix DMA descriptor cleanup path
-> > >
-> > > When axienet_dma_bd_init() bails out during the initialisation proces=
-s,
-> > > it might do so with parts of the structure already allocated and
-> > > initialised, while other parts have not been touched yet. Before
-> > > returning in this case, we call axienet_dma_bd_release(), which does =
-not
-> > > take care of this corner case.
-> > > This is most obvious by the first loop happily dereferencing
-> > > lp->rx_bd_v, which we actually check to be non NULL *afterwards*.
-> > >
-> > > Make sure we only unmap or free already allocated structures, by:
-> > > - directly returning with -ENOMEM if nothing has been allocated at al=
-l
-> > > - checking for lp->rx_bd_v to be non-NULL *before* using it
-> > > - only unmapping allocated DMA RX regions
-> > >
-> > > This avoids NULL pointer dereferences when initialisation fails.
-> > >
-> > > Signed-off-by: Andre Przywara <andre.przywara@arm.com>
-> > > ---
-> > >  .../net/ethernet/xilinx/xilinx_axienet_main.c | 43 ++++++++++++-----=
---
-> > >  1 file changed, 28 insertions(+), 15 deletions(-)
-> > >
-> > > diff --git a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-> > > b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-> > > index 97482cf093ce..7e90044cf2d9 100644
-> > > --- a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-> > > +++ b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-> > > @@ -160,24 +160,37 @@ static void axienet_dma_bd_release(struct
-> > > net_device *ndev)
-> > >  	int i;
-> > >  	struct axienet_local *lp =3D netdev_priv(ndev);
-> > >
-> > > +	/* If we end up here, tx_bd_v must have been DMA allocated. */
-> > > +	dma_free_coherent(ndev->dev.parent,
-> > > +			  sizeof(*lp->tx_bd_v) * lp->tx_bd_num,
-> > > +			  lp->tx_bd_v,
-> > > +			  lp->tx_bd_p);
-> > > +
-> > > +	if (!lp->rx_bd_v)
-> > > +		return;
-> > > +
-> > >  	for (i =3D 0; i < lp->rx_bd_num; i++) {
-> > > -		dma_unmap_single(ndev->dev.parent, lp->rx_bd_v[i].phys,
-> > > -				 lp->max_frm_size, DMA_FROM_DEVICE);
-> > > +		/* A NULL skb means this descriptor has not been initialised
-> > > +		 * at all.
-> > > +		 */
-> > > +		if (!lp->rx_bd_v[i].skb)
-> > > +			break;
-> > > +
-> > >  		dev_kfree_skb(lp->rx_bd_v[i].skb);
-> > > -	}
-> > >
-> > > -	if (lp->rx_bd_v) {
-> > > -		dma_free_coherent(ndev->dev.parent,
-> > > -				  sizeof(*lp->rx_bd_v) * lp->rx_bd_num,
-> > > -				  lp->rx_bd_v,
-> > > -				  lp->rx_bd_p);
-> > > -	}
-> > > -	if (lp->tx_bd_v) {
-> > > -		dma_free_coherent(ndev->dev.parent,
-> > > -				  sizeof(*lp->tx_bd_v) * lp->tx_bd_num,
-> > > -				  lp->tx_bd_v,
-> > > -				  lp->tx_bd_p);
-> > > +		/* For each descriptor, we programmed cntrl with the (non-
-> > > zero)
-> > > +		 * descriptor size, after it had been successfully allocated.
-> > > +		 * So a non-zero value in there means we need to unmap it.
-> > > +		 */
-> >
-> > > +		if (lp->rx_bd_v[i].cntrl)
-> >
-> > I think it should ok to unmap w/o any check?
->=20
-> Do you mean because .phys would be 0 if not initialised? AFAIK 0 can be a
-> valid DMA address, so there is no special check for that, and unmapping
-> DMA address 0 will probably go wrong at some point. So it's unlike
-> kfree(NULL).
+On Fri, Jan 10, 2020 at 04:53:06PM +0000, ѽ҉ᶬḳ℠ wrote:
+> Seems that the debug avenue has been exhausted, short of running SFP.C in
+> debug mode.
 
-I mean if skb allocation is successful in _dma_bd_init then in release path
-we can assume .phys is always a valid address and skip rx_bd_v[i].cntrl
-check.=20
->=20
-> Cheers,
-> Andre.
->=20
->=20
-> > > +			dma_unmap_single(ndev->dev.parent, lp-
-> > > >rx_bd_v[i].phys,
-> > > +					 lp->max_frm_size,
-> > > DMA_FROM_DEVICE);
-> > >  	}
-> > > +
-> > > +	dma_free_coherent(ndev->dev.parent,
-> > > +			  sizeof(*lp->rx_bd_v) * lp->rx_bd_num,
-> > > +			  lp->rx_bd_v,
-> > > +			  lp->rx_bd_p);
-> > >  }
-> > >
-> > >  /**
-> > > @@ -207,7 +220,7 @@ static int axienet_dma_bd_init(struct net_device
-> > > *ndev)
-> > >  					 sizeof(*lp->tx_bd_v) * lp-
-> > > >tx_bd_num,
-> > >  					 &lp->tx_bd_p, GFP_KERNEL);
-> > >  	if (!lp->tx_bd_v)
-> > > -		goto out;
-> > > +		return -ENOMEM;
-> > >
-> > >  	lp->rx_bd_v =3D dma_alloc_coherent(ndev->dev.parent,
-> > >  					 sizeof(*lp->rx_bd_v) * lp-
-> > > >rx_bd_num,
-> > > --
-> > > 2.17.1
-> >
+You're saying you never see TX_FAULT asserted other than when the
+interface is down?
 
+> There is still no explanation why the module passes the 300 ms deassert
+> TX_FAULT test most of the time but fails intermittently at other times,
+> being kind of incoherent. Maybe it is just wishful thinking but it seems a
+> bit far-fetched that the module is really causing this, least the readings
+> from GPIO do not provide any such indicator.
+> 
+> Could there be something choking / blocking the communication channel
+> between the module and the kernel, some kernel code getting stuck / leaked
+> in memory?
+
+There is no "communication channel" involved here.  It is just those
+GPIOs.
+
+> Could the ipupdown routine, which has its own implementation in OpenWrt, be
+> an interfering agent, e.g. the way it constructs or tears down the iif,
+> though I do not see how?
+
+Very unlikely.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
+According to speedtest.net: 11.9Mbps down 500kbps up
