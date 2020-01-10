@@ -2,100 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6AA59136873
-	for <lists+netdev@lfdr.de>; Fri, 10 Jan 2020 08:42:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1757D1368B4
+	for <lists+netdev@lfdr.de>; Fri, 10 Jan 2020 09:02:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726716AbgAJHmf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jan 2020 02:42:35 -0500
-Received: from youngberry.canonical.com ([91.189.89.112]:41985 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726276AbgAJHmf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jan 2020 02:42:35 -0500
-Received: from 61-220-137-37.hinet-ip.hinet.net ([61.220.137.37] helo=localhost)
-        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <kai.heng.feng@canonical.com>)
-        id 1ipow3-0001rj-Lx; Fri, 10 Jan 2020 07:42:24 +0000
-From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
-To:     davem@davemloft.ne, jeffrey.t.kirsher@intel.com
-Cc:     Kai-Heng Feng <kai.heng.feng@canonical.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Michal Kubecek <mkubecek@suse.cz>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Maxime Chevallier <maxime.chevallier@bootlin.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Li RongQing <lirongqing@baidu.com>,
-        netdev@vger.kernel.org (open list:NETWORKING [GENERAL]),
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH 2/2] ethtool: Call begin() and complete() in __ethtool_get_link_ksettings()
-Date:   Fri, 10 Jan 2020 15:41:59 +0800
-Message-Id: <20200110074159.18473-2-kai.heng.feng@canonical.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200110074159.18473-1-kai.heng.feng@canonical.com>
-References: <20200110074159.18473-1-kai.heng.feng@canonical.com>
+        id S1726750AbgAJICH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jan 2020 03:02:07 -0500
+Received: from relay.felk.cvut.cz ([147.32.80.7]:56367 "EHLO
+        relay.felk.cvut.cz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726401AbgAJICH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jan 2020 03:02:07 -0500
+X-Greylist: delayed 1845 seconds by postgrey-1.27 at vger.kernel.org; Fri, 10 Jan 2020 03:02:03 EST
+Received: from cmp.felk.cvut.cz (haar.felk.cvut.cz [147.32.84.19])
+        by relay.felk.cvut.cz (8.15.2/8.15.2) with ESMTP id 00A7TWwh036195;
+        Fri, 10 Jan 2020 08:29:32 +0100 (CET)
+        (envelope-from pisa@cmp.felk.cvut.cz)
+Received: from haar.felk.cvut.cz (localhost [127.0.0.1])
+        by cmp.felk.cvut.cz (8.14.0/8.12.3/SuSE Linux 0.6) with ESMTP id 00A7TWdf028346;
+        Fri, 10 Jan 2020 08:29:32 +0100
+Received: (from pisa@localhost)
+        by haar.felk.cvut.cz (8.14.0/8.13.7/Submit) id 00A7TVpw028343;
+        Fri, 10 Jan 2020 08:29:31 +0100
+X-Authentication-Warning: haar.felk.cvut.cz: pisa set sender to pisa@cmp.felk.cvut.cz using -f
+From:   Pavel Pisa <pisa@cmp.felk.cvut.cz>
+To:     Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH v3 2/6] dt-bindings: net: can: binding for CTU CAN FD open-source IP core.
+Date:   Fri, 10 Jan 2020 08:29:31 +0100
+User-Agent: KMail/1.9.10
+Cc:     devicetree@vger.kernel.org, mkl@pengutronix.de,
+        linux-can@vger.kernel.org, socketcan@hartkopp.net,
+        wg@grandegger.com, davem@davemloft.net, mark.rutland@arm.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        martin.jerabek01@gmail.com, ondrej.ille@gmail.com,
+        jnovak@fel.cvut.cz, jara.beran@gmail.com, porazil@pikron.com
+References: <cover.1576922226.git.pisa@cmp.felk.cvut.cz> <61533d59378822f8c808abf193b40070810d3d35.1576922226.git.pisa@cmp.felk.cvut.cz> <20200103235359.GA23875@bogus>
+In-Reply-To: <20200103235359.GA23875@bogus>
+X-KMail-QuotePrefix: > 
+MIME-Version: 1.0
+Content-Type: Text/Plain;
+  charset="iso-8859-1"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+Message-Id: <202001100829.31344.pisa@cmp.felk.cvut.cz>
+X-FELK-MailScanner-Information: 
+X-MailScanner-ID: 00A7TWwh036195
+X-FELK-MailScanner: Found to be clean
+X-FELK-MailScanner-SpamCheck: not spam, SpamAssassin (not cached,
+        score=-0.223, required 6, BAYES_00 -0.50, KHOP_HELO_FCRDNS 0.28,
+        SPF_HELO_NONE 0.00, SPF_NONE 0.00)
+X-FELK-MailScanner-From: pisa@cmp.felk.cvut.cz
+X-FELK-MailScanner-Watermark: 1579246176.70847@vVg9umV9GG6Cdpbc0Ybbpg
+X-Spam-Status: No
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Device like igb gets runtime suspended when there's no link partner. We
-can't get correct speed under that state:
-$ cat /sys/class/net/enp3s0/speed
-1000
+Hello Rob,
 
-In addition to that, an error can also be spotted in dmesg:
-[  385.991957] igb 0000:03:00.0 enp3s0: PCIe link lost
+thanks much for review.
 
-It's because the igb device doesn't get runtime resumed before calling
-get_link_ksettings().
+On Saturday 04 of January 2020 00:53:59 Rob Herring wrote:
+> On Sat, Dec 21, 2019 at 03:07:31PM +0100, pisa@cmp.felk.cvut.cz wrote:
+> > From: Pavel Pisa <pisa@cmp.felk.cvut.cz>
+> >  .../devicetree/bindings/net/can/ctu,ctucanfd.txt   | 61
+>
+> Bindings are moving DT schema format now. Not something I'd require on a
+> respin I've already reviewed, but OTOH it's been 10 months to respin
+> from v2. So:
 
-So let's call begin() and complete() like what dev_ethtool() does, to
-runtime resume/suspend or power up/down the device properly.
+Please, can you send me pointer to some CAN or other bindings
+doc which is well formed according to future direction?
+I have not dig deeper but I have not found relevant discussion
+about introduction of DT schema format.
 
-Once this fix is in place, igb can show the speed correctly without link
-partner:
-$ cat /sys/class/net/enp3s0/speed
--1
+> If you have a v4, then please convert to a schema.
 
-Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
----
- net/ethtool/ioctl.c | 15 ++++++++++++++-
- 1 file changed, 14 insertions(+), 1 deletion(-)
+I expect that we need at least one more iteration.
+When recheck, I have found that I have forgot to update
+paths in RST documentation when moved from standalone
+automatic CI build into kernel tree
 
-diff --git a/net/ethtool/ioctl.c b/net/ethtool/ioctl.c
-index 182bffbffa78..c768dbf45fc4 100644
---- a/net/ethtool/ioctl.c
-+++ b/net/ethtool/ioctl.c
-@@ -423,13 +423,26 @@ struct ethtool_link_usettings {
- int __ethtool_get_link_ksettings(struct net_device *dev,
- 				 struct ethtool_link_ksettings *link_ksettings)
- {
-+	int rc;
-+
- 	ASSERT_RTNL();
- 
- 	if (!dev->ethtool_ops->get_link_ksettings)
- 		return -EOPNOTSUPP;
- 
-+	if (dev->ethtool_ops->begin) {
-+		rc = dev->ethtool_ops->begin(dev);
-+		if (rc  < 0)
-+			return rc;
-+	}
-+
- 	memset(link_ksettings, 0, sizeof(*link_ksettings));
--	return dev->ethtool_ops->get_link_ksettings(dev, link_ksettings);
-+	rc = dev->ethtool_ops->get_link_ksettings(dev, link_ksettings);
-+
-+	if (dev->ethtool_ops->complete)
-+		dev->ethtool_ops->complete(dev);
-+
-+	return rc;
- }
- EXPORT_SYMBOL(__ethtool_get_link_ksettings);
- 
--- 
-2.17.1
+[PATCH v3 6/6] docs: ctucanfd: CTU CAN FD open-source IP core documentation.
+https://lkml.org/lkml/2019/12/21/96
 
+And the most important is review of the driver core to allow
+the project (http://canbus.pages.fel.cvut.cz/) to move forward.
+
+[PATCH v3 3/6] can: ctucanfd: add support for CTU CAN FD open-source IP core - 
+bus independent part.
+https://lkml.org/lkml/2019/12/21/95
+
+The code has no errors and a few questionable warnings reported by
+4.19 patchcheck (we have run many iterations of it to cleanup code)
+but 5.4 kernel patchcheck is more strict as I noticed
+after submission and reports a few more warnings and some of them
+could be easily resolved.
+
+What makes me to feel good is that CTU CAN FD IP core development
+stabilized, there are only changes to better cover the core by test
+framework and more than one month there is no commit disturbing CI build
+process of IP core integration for Xilinx Zynq. CI builds complete
+driver and FPGA design and then deploys and runs tests between multiple
+CTU CAN FD cores and against OpenCores SJA1000 cores with FD tolerance
+
+https://gitlab.fel.cvut.cz/canbus/zynq/zynq-can-sja1000-top/pipelines
+
+https://gitlab.fel.cvut.cz/canbus/zynq/zynq-can-sja1000-top/-/jobs/51334
+
+The second link points to one of many logs of test running on MZ_APO
+(Xilinx Zynq) education kits designed for Department of Control Engineering 
+https://dce.fel.cvut.cz/en at PiKRON.com. MZ_APO kist are used in Computer 
+Architectures and Real-time Systems Programming courses.
+
+Thanks for help,
+
+Pavel
