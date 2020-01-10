@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 025F9137988
-	for <lists+netdev@lfdr.de>; Fri, 10 Jan 2020 23:09:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D6258137986
+	for <lists+netdev@lfdr.de>; Fri, 10 Jan 2020 23:09:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727249AbgAJWFX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jan 2020 17:05:23 -0500
-Received: from mail.kernel.org ([198.145.29.99]:50904 "EHLO mail.kernel.org"
+        id S1727417AbgAJWFZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jan 2020 17:05:25 -0500
+Received: from mail.kernel.org ([198.145.29.99]:50946 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727183AbgAJWFX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1727185AbgAJWFX (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 10 Jan 2020 17:05:23 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 9EC9520721;
-        Fri, 10 Jan 2020 22:05:20 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 14FB120842;
+        Fri, 10 Jan 2020 22:05:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1578693921;
-        bh=OeYlZmKEnASzxm0ANx4mTtUJ4sWo9i72CGM2hFCS144=;
-        h=From:To:Cc:Subject:Date:From;
-        b=Sxx7WOWkspGT4EHEBmJMpCUku+EpAF7dxpYIATVkW4Q7DoA3nBKCRjjbA28sPzSwJ
-         iEk4tHLJbChh+WB6TWa9aOEoo2igW1V/oHWEVVNEkPlpdS0nykMkzot4QLFoPUyldC
-         T5IFcvpxP1bDEKwWlnB1P8ycJztK7z0L3bMtVEk0=
+        s=default; t=1578693923;
+        bh=glpq+x/zJdkKmj8HYLHatQTZkXN+xIdD5FaHpHa3FU4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=OSgT0PHNOsKWNfDqcWLadFe3Ohxv84HrX77iTfJh7mAO8WgtZro7HhSgG71WnWvu+
+         34S3NxrjePsMJk9bn8zHWudHrPHiJ/U5fUCXwDGDoQr6hQshQraRi2wDxoml1EdSn7
+         tRniC2IMeEd9HAXbnOwx6BpaEMLFdSXzLv8SL0aI=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     David Howells <dhowells@redhat.com>,
@@ -31,10 +31,12 @@ Cc:     David Howells <dhowells@redhat.com>,
         Davidlohr Bueso <dave@stgolabs.net>,
         Sasha Levin <sashal@kernel.org>, linux-afs@lists.infradead.org,
         netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 06/26] rxrpc: Unlock new call in rxrpc_new_incoming_call() rather than the caller
-Date:   Fri, 10 Jan 2020 17:04:59 -0500
-Message-Id: <20200110220519.28250-1-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.4 07/26] rxrpc: Don't take call->user_mutex in rxrpc_new_incoming_call()
+Date:   Fri, 10 Jan 2020 17:05:00 -0500
+Message-Id: <20200110220519.28250-2-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20200110220519.28250-1-sashal@kernel.org>
+References: <20200110220519.28250-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -46,130 +48,89 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: David Howells <dhowells@redhat.com>
 
-[ Upstream commit f33121cbe91973a08e68e4bde8c3f7e6e4e351c1 ]
+[ Upstream commit 13b7955a0252e15265386b229b814152f109b234 ]
 
-Move the unlock and the ping transmission for a new incoming call into
-rxrpc_new_incoming_call() rather than doing it in the caller.  This makes
-it clearer to see what's going on.
+Standard kernel mutexes cannot be used in any way from interrupt or softirq
+context, so the user_mutex which manages access to a call cannot be a mutex
+since on a new call the mutex must start off locked and be unlocked within
+the softirq handler to prevent userspace interfering with a call we're
+setting up.
 
-Suggested-by: Peter Zijlstra <peterz@infradead.org>
+Commit a0855d24fc22d49cdc25664fb224caee16998683 ("locking/mutex: Complain
+upon mutex API misuse in IRQ contexts") causes big warnings to be splashed
+in dmesg for each a new call that comes in from the server.  Whilst it
+*seems* like it should be okay, since the accept path uses trylock, there
+are issues with PI boosting and marking the wrong task as the owner.
+
+Fix this by not taking the mutex in the softirq path at all.  It's not
+obvious that there should be any need for it as the state is set before the
+first notification is generated for the new call.
+
+There's also no particular reason why the link-assessing ping should be
+triggered inside the mutex.  It's not actually transmitted there anyway,
+but rather it has to be deferred to a workqueue.
+
+Further, I don't think that there's any particular reason that the socket
+notification needs to be done from within rx->incoming_lock, so the amount
+of time that lock is held can be shortened too and the ping prepared before
+the new call notification is sent.
+
+Fixes: 540b1c48c37a ("rxrpc: Fix deadlock between call creation and sendmsg/recvmsg")
 Signed-off-by: David Howells <dhowells@redhat.com>
-Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+cc: Peter Zijlstra (Intel) <peterz@infradead.org>
 cc: Ingo Molnar <mingo@redhat.com>
 cc: Will Deacon <will@kernel.org>
 cc: Davidlohr Bueso <dave@stgolabs.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/rxrpc/call_accept.c | 36 ++++++++++++++++++++++++++++--------
- net/rxrpc/input.c       | 18 ------------------
- 2 files changed, 28 insertions(+), 26 deletions(-)
+ net/rxrpc/call_accept.c | 20 +++-----------------
+ 1 file changed, 3 insertions(+), 17 deletions(-)
 
 diff --git a/net/rxrpc/call_accept.c b/net/rxrpc/call_accept.c
-index 135bf5cd8dd5..3685b1732f65 100644
+index 3685b1732f65..44fa22b020ef 100644
 --- a/net/rxrpc/call_accept.c
 +++ b/net/rxrpc/call_accept.c
-@@ -239,6 +239,22 @@ void rxrpc_discard_prealloc(struct rxrpc_sock *rx)
- 	kfree(b);
- }
- 
-+/*
-+ * Ping the other end to fill our RTT cache and to retrieve the rwind
-+ * and MTU parameters.
-+ */
-+static void rxrpc_send_ping(struct rxrpc_call *call, struct sk_buff *skb)
-+{
-+	struct rxrpc_skb_priv *sp = rxrpc_skb(skb);
-+	ktime_t now = skb->tstamp;
-+
-+	if (call->peer->rtt_usage < 3 ||
-+	    ktime_before(ktime_add_ms(call->peer->rtt_last_req, 1000), now))
-+		rxrpc_propose_ACK(call, RXRPC_ACK_PING, sp->hdr.serial,
-+				  true, true,
-+				  rxrpc_propose_ack_ping_for_params);
-+}
-+
- /*
-  * Allocate a new incoming call from the prealloc pool, along with a connection
-  * and a peer as necessary.
-@@ -346,9 +362,7 @@ struct rxrpc_call *rxrpc_new_incoming_call(struct rxrpc_local *local,
- 				  sp->hdr.seq, RX_INVALID_OPERATION, ESHUTDOWN);
- 		skb->mark = RXRPC_SKB_MARK_REJECT_ABORT;
- 		skb->priority = RX_INVALID_OPERATION;
--		_leave(" = NULL [close]");
--		call = NULL;
--		goto out;
-+		goto no_call;
- 	}
- 
- 	/* The peer, connection and call may all have sprung into existence due
-@@ -361,9 +375,7 @@ struct rxrpc_call *rxrpc_new_incoming_call(struct rxrpc_local *local,
- 	call = rxrpc_alloc_incoming_call(rx, local, peer, conn, skb);
- 	if (!call) {
- 		skb->mark = RXRPC_SKB_MARK_REJECT_BUSY;
--		_leave(" = NULL [busy]");
--		call = NULL;
--		goto out;
-+		goto no_call;
- 	}
- 
+@@ -381,18 +381,6 @@ struct rxrpc_call *rxrpc_new_incoming_call(struct rxrpc_local *local,
  	trace_rxrpc_receive(call, rxrpc_receive_incoming,
-@@ -432,10 +444,18 @@ struct rxrpc_call *rxrpc_new_incoming_call(struct rxrpc_local *local,
+ 			    sp->hdr.serial, sp->hdr.seq);
+ 
+-	/* Lock the call to prevent rxrpc_kernel_send/recv_data() and
+-	 * sendmsg()/recvmsg() inconveniently stealing the mutex once the
+-	 * notification is generated.
+-	 *
+-	 * The BUG should never happen because the kernel should be well
+-	 * behaved enough not to access the call before the first notification
+-	 * event and userspace is prevented from doing so until the state is
+-	 * appropriate.
+-	 */
+-	if (!mutex_trylock(&call->user_mutex))
+-		BUG();
+-
+ 	/* Make the call live. */
+ 	rxrpc_incoming_call(rx, call, skb);
+ 	conn = call->conn;
+@@ -433,6 +421,9 @@ struct rxrpc_call *rxrpc_new_incoming_call(struct rxrpc_local *local,
+ 		BUG();
+ 	}
+ 	spin_unlock(&conn->state_lock);
++	spin_unlock(&rx->incoming_lock);
++
++	rxrpc_send_ping(call, skb);
+ 
+ 	if (call->state == RXRPC_CALL_SERVER_ACCEPTING)
+ 		rxrpc_notify_socket(call);
+@@ -444,11 +435,6 @@ struct rxrpc_call *rxrpc_new_incoming_call(struct rxrpc_local *local,
  	 */
  	rxrpc_put_call(call, rxrpc_call_put);
  
--	_leave(" = %p{%d}", call, call->debug_id);
--out:
- 	spin_unlock(&rx->incoming_lock);
-+
-+	rxrpc_send_ping(call, skb);
-+	mutex_unlock(&call->user_mutex);
-+
-+	_leave(" = %p{%d}", call, call->debug_id);
+-	spin_unlock(&rx->incoming_lock);
+-
+-	rxrpc_send_ping(call, skb);
+-	mutex_unlock(&call->user_mutex);
+-
+ 	_leave(" = %p{%d}", call, call->debug_id);
  	return call;
-+
-+no_call:
-+	spin_unlock(&rx->incoming_lock);
-+	_leave(" = NULL [%u]", skb->mark);
-+	return NULL;
- }
  
- /*
-diff --git a/net/rxrpc/input.c b/net/rxrpc/input.c
-index 157be1ff8697..86bd133b4fa0 100644
---- a/net/rxrpc/input.c
-+++ b/net/rxrpc/input.c
-@@ -192,22 +192,6 @@ static void rxrpc_congestion_management(struct rxrpc_call *call,
- 	goto out_no_clear_ca;
- }
- 
--/*
-- * Ping the other end to fill our RTT cache and to retrieve the rwind
-- * and MTU parameters.
-- */
--static void rxrpc_send_ping(struct rxrpc_call *call, struct sk_buff *skb)
--{
--	struct rxrpc_skb_priv *sp = rxrpc_skb(skb);
--	ktime_t now = skb->tstamp;
--
--	if (call->peer->rtt_usage < 3 ||
--	    ktime_before(ktime_add_ms(call->peer->rtt_last_req, 1000), now))
--		rxrpc_propose_ACK(call, RXRPC_ACK_PING, sp->hdr.serial,
--				  true, true,
--				  rxrpc_propose_ack_ping_for_params);
--}
--
- /*
-  * Apply a hard ACK by advancing the Tx window.
-  */
-@@ -1396,8 +1380,6 @@ int rxrpc_input_packet(struct sock *udp_sk, struct sk_buff *skb)
- 		call = rxrpc_new_incoming_call(local, rx, skb);
- 		if (!call)
- 			goto reject_packet;
--		rxrpc_send_ping(call, skb);
--		mutex_unlock(&call->user_mutex);
- 	}
- 
- 	/* Process a call packet; this either discards or passes on the ref
 -- 
 2.20.1
 
