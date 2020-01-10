@@ -2,125 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A71A013765E
-	for <lists+netdev@lfdr.de>; Fri, 10 Jan 2020 19:50:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EEEB2137658
+	for <lists+netdev@lfdr.de>; Fri, 10 Jan 2020 19:47:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728772AbgAJSuG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jan 2020 13:50:06 -0500
-Received: from lelv0143.ext.ti.com ([198.47.23.248]:44550 "EHLO
-        lelv0143.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728676AbgAJSuF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jan 2020 13:50:05 -0500
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 00AInwX6001024;
-        Fri, 10 Jan 2020 12:49:58 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1578682198;
-        bh=YkLYeJEKlGhb+RCMV1xyuQRGPxl9AzfqwGb7FDoC+S4=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=QCWbK9/gbeqyLVKP1HoXCElowCSsSvhECLXWbVY7Kxamw3howfLITiLc+ufvqUVLa
-         XlOZ5wUW9DUFkTNoXEE4066H1H433NPBvRqA85bQviemrlJQnp8veZGlSqNij+seqZ
-         7r6R8PBU0rgLKnrii82YKylpQemCpJugciLc4smU=
-Received: from DLEE115.ent.ti.com (dlee115.ent.ti.com [157.170.170.26])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 00AInwh6059088
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Fri, 10 Jan 2020 12:49:58 -0600
-Received: from DLEE112.ent.ti.com (157.170.170.23) by DLEE115.ent.ti.com
- (157.170.170.26) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3; Fri, 10
- Jan 2020 12:49:57 -0600
-Received: from fllv0039.itg.ti.com (10.64.41.19) by DLEE112.ent.ti.com
- (157.170.170.23) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3 via
- Frontend Transport; Fri, 10 Jan 2020 12:49:57 -0600
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 00AInvsN088630;
-        Fri, 10 Jan 2020 12:49:57 -0600
-From:   Dan Murphy <dmurphy@ti.com>
-To:     <andrew@lunn.ch>, <f.fainelli@gmail.com>, <hkallweit1@gmail.com>,
-        <davem@davemloft.net>, <netdev@vger.kernel.org>
-CC:     <linux-kernel@vger.kernel.org>, Dan Murphy <dmurphy@ti.com>
-Subject: [PATCH 4/4] net: phy: DP83822: Add support for additional DP83825 devices
-Date:   Fri, 10 Jan 2020 12:47:02 -0600
-Message-ID: <20200110184702.14330-5-dmurphy@ti.com>
-X-Mailer: git-send-email 2.23.0
-In-Reply-To: <20200110184702.14330-1-dmurphy@ti.com>
-References: <20200110184702.14330-1-dmurphy@ti.com>
+        id S1728428AbgAJSrY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jan 2020 13:47:24 -0500
+Received: from mail-qt1-f181.google.com ([209.85.160.181]:42210 "EHLO
+        mail-qt1-f181.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728023AbgAJSrY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jan 2020 13:47:24 -0500
+Received: by mail-qt1-f181.google.com with SMTP id j5so2795282qtq.9
+        for <netdev@vger.kernel.org>; Fri, 10 Jan 2020 10:47:24 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=iDXs7GJRopkNsUE9KnH2AWuInO/13VctKFcUupza++o=;
+        b=UgronQRnThCJgyP+i6G/xCOL83S0ijVNLFI2BX8ZN4N9U5g+MDKfkgR8skoR/xStxS
+         WRssejjLZVQHH3xHa02y+pKS2VljZ7YJGKzJG0x9QIrtD8YdkW/5a3R7snVJS7Z8hr1G
+         HFQcv59tKoEz55JX3K5WNHnm0BnK//2hJD4DbcYDVQmDnP56fey0pwaQZvSSc8xR2zRC
+         dzUpbdXCSe8NuAMZnsebafmHL/bW22TM1P+VKa2qA/kGDDHX/p0dbQSXi7yJQx0lw8eb
+         0Nf7uKzHDha1awiFfz4xPOKUW7Vr4eJEeVYvThouac5EvG9FB6l1eztYFNu37ggQbxwB
+         Answ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=iDXs7GJRopkNsUE9KnH2AWuInO/13VctKFcUupza++o=;
+        b=t0n3rooEdKuyS8BrIUlU8WtVD/XetZC46HcSsF71z3uai51cxO32mcFLbf8cMBWy/d
+         8jXTaWxIyrFxqwoyOd2Z9zmcEjBlW1iX3rNPFSyss33hjehkPfCIoJmwtzfsYNwk+v7v
+         k2C29+y4E52LS5ep3gAac8GCCytr42fx6IrP97LoaoEabiUQdbg6RoV89v6adYK1nlm/
+         Iv6lABHPeNuonvnSAJD7Ve6xWlcHVrK29RoOmHYV/zcviCSSRd7g2QVwc7purM+TKQyq
+         5m5EoCO9BqlTDqetAPii7ZGxA7wEaoESuAWQr8eJSor7S9/+1cG1Jh9K7cLE9H8biNvl
+         sbMg==
+X-Gm-Message-State: APjAAAXYYL+NN50ixTWO67CuIwSyCMBmTILsVupZnRpEAicMU9zrTUAE
+        Q+K85PxjoJVtuoOBWlSlPV1GaQ==
+X-Google-Smtp-Source: APXvYqyNGkpQ08PZmDyL0t4ZF9kWmNuatOi1kwvsBmZfmFLelDUbMyjrsgsdxD7R2gz8hQJqdWhQdw==
+X-Received: by 2002:aed:3be1:: with SMTP id s30mr3778119qte.163.1578682043632;
+        Fri, 10 Jan 2020 10:47:23 -0800 (PST)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id t198sm1283325qke.6.2020.01.10.10.47.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 10 Jan 2020 10:47:23 -0800 (PST)
+Date:   Fri, 10 Jan 2020 10:47:19 -0800
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Jacob Keller <jacob.e.keller@intel.com>
+Cc:     Jiri Pirko <jiri@resnulli.us>, netdev@vger.kernel.org,
+        valex@mellanox.com
+Subject: Re: [PATCH v2 0/3] devlink region trigger support
+Message-ID: <20200110104719.2035572d@cakuba.netronome.com>
+In-Reply-To: <c5fe026b-d29f-7be2-78b5-c54ec6d2f549@intel.com>
+References: <20200109193311.1352330-1-jacob.e.keller@intel.com>
+        <20200110094027.GL2235@nanopsycho.orion>
+        <c5fe026b-d29f-7be2-78b5-c54ec6d2f549@intel.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add PHY IDs for the DP83825CS, DP83825CM and the DP83825S devices to the
-DP83822 driver.
+On Fri, 10 Jan 2020 09:54:20 -0800, Jacob Keller wrote:
+> On 1/10/2020 1:40 AM, Jiri Pirko wrote:
+> > Thu, Jan 09, 2020 at 08:33:07PM CET, jacob.e.keller@intel.com wrote:  
+> >> This series consists of patches to enable devlink to request a snapshot via
+> >> a new DEVLINK_CMD_REGION_TRIGGER_SNAPSHOT.
+> >>
+> >> A reviewer might notice that the devlink health API already has such support
+> >> for handling a similar case. However, the health API does not make sense in
+> >> cases where the data is not related to an error condition.
+> >>
+> >> In this case, using the health API only for the dumping feels incorrect.
+> >> Regions make sense when the addressable content is not captured
+> >> automatically on error conditions, but only upon request by the devlink API.
+> >>
+> >> The netdevsim driver is modified to support the new trigger_snapshot
+> >> callback as an example of how this can be used.  
+> > 
+> > I don't think that the netdevsim usecase is enough to merge this in. You
+> > need a real-driver user as well.
+> >   
+> Sure. But this direction and implementation seems reasonable?
+> 
+> I am making progress on a driver implementation for this, and I am fine
+> holding onto these patches until I am ready to submit the full series to
+> the list with the driver..
+> 
+> Mostly I wanted to make sure the direction was looking good earlier than
+> the time frame for completing that work.
 
-Signed-off-by: Dan Murphy <dmurphy@ti.com>
----
- drivers/net/phy/Kconfig   |  3 ++-
- drivers/net/phy/dp83822.c | 12 ++++++++++--
- 2 files changed, 12 insertions(+), 3 deletions(-)
+As Jiri said, quite hard to tell without seeing the real user.
 
-diff --git a/drivers/net/phy/Kconfig b/drivers/net/phy/Kconfig
-index 90c9297280d2..60700a62d74f 100644
---- a/drivers/net/phy/Kconfig
-+++ b/drivers/net/phy/Kconfig
-@@ -342,7 +342,8 @@ config DAVICOM_PHY
- config DP83822_PHY
- 	tristate "Texas Instruments DP83822/825/826 PHYs"
- 	---help---
--	  Supports the DP83822, DP83825I, DP83826C and DP83826NC PHYs.
-+	  Supports the DP83822, DP83825I, DP83825CM, DP83825CS, DP83825S,
-+	  DP83826C and DP83826NC PHYs.
- 
- config DP83TC811_PHY
- 	tristate "Texas Instruments DP83TC811 PHY"
-diff --git a/drivers/net/phy/dp83822.c b/drivers/net/phy/dp83822.c
-index 5159b28baa0f..fe9aa3ad52a7 100644
---- a/drivers/net/phy/dp83822.c
-+++ b/drivers/net/phy/dp83822.c
-@@ -1,6 +1,5 @@
- // SPDX-License-Identifier: GPL-2.0
--/*
-- * Driver for the Texas Instruments DP83822 PHY
-+/* Driver for the Texas Instruments DP83822, DP83825 and DP83826 PHYs.
-  *
-  * Copyright (C) 2017 Texas Instruments Inc.
-  */
-@@ -15,7 +14,10 @@
- #include <linux/netdevice.h>
- 
- #define DP83822_PHY_ID	        0x2000a240
-+#define DP83825S_PHY_ID		0x2000a140
- #define DP83825I_PHY_ID		0x2000a150
-+#define DP83825CM_PHY_ID	0x2000a160
-+#define DP83825CS_PHY_ID	0x2000a170
- #define DP83826C_PHY_ID		0x2000a130
- #define DP83826NC_PHY_ID	0x2000a110
- 
-@@ -323,6 +325,9 @@ static struct phy_driver dp83822_driver[] = {
- 	DP83822_PHY_DRIVER(DP83825I_PHY_ID, "TI DP83825I"),
- 	DP83822_PHY_DRIVER(DP83826C_PHY_ID, "TI DP83826C"),
- 	DP83822_PHY_DRIVER(DP83826NC_PHY_ID, "TI DP83826NC"),
-+	DP83822_PHY_DRIVER(DP83825S_PHY_ID, "TI DP83825S"),
-+	DP83822_PHY_DRIVER(DP83825CM_PHY_ID, "TI DP83825M"),
-+	DP83822_PHY_DRIVER(DP83825CS_PHY_ID, "TI DP83825CS"),
- };
- module_phy_driver(dp83822_driver);
- 
-@@ -331,6 +336,9 @@ static struct mdio_device_id __maybe_unused dp83822_tbl[] = {
- 	{ DP83825I_PHY_ID, 0xfffffff0 },
- 	{ DP83826C_PHY_ID, 0xfffffff0 },
- 	{ DP83826NC_PHY_ID, 0xfffffff0 },
-+	{ DP83825S_PHY_ID, 0xfffffff0 },
-+	{ DP83825CM_PHY_ID, 0xfffffff0 },
-+	{ DP83825CS_PHY_ID, 0xfffffff0 },
- 	{ },
- };
- MODULE_DEVICE_TABLE(mdio, dp83822_tbl);
--- 
-2.23.0
+I presume you take some lock to ensure the contents of the snapshot are
+atomic?  Otherwise I wonder if you wouldn't be better served by just
+allowing region read to operate directly on the data rather then going
+through the snapshot create -> read -> snapshot remove cycle. Not sure
+Jiri would agree, it require more code.
 
+For the patches themselves we may want to move the callbacks into some
+ops structure in the region.  And I don't think you need to make the
+trigger command NO_LOCK.
