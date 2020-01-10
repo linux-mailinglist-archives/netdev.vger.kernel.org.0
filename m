@@ -2,57 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 58C8C1376DF
-	for <lists+netdev@lfdr.de>; Fri, 10 Jan 2020 20:22:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 752161376E0
+	for <lists+netdev@lfdr.de>; Fri, 10 Jan 2020 20:23:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728451AbgAJTWH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jan 2020 14:22:07 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:39870 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728191AbgAJTWH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jan 2020 14:22:07 -0500
-Received: from localhost (unknown [IPv6:2601:601:9f00:1c3::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id AA6711577D935;
-        Fri, 10 Jan 2020 11:22:06 -0800 (PST)
-Date:   Fri, 10 Jan 2020 11:22:06 -0800 (PST)
-Message-Id: <20200110.112206.136037463219370475.davem@davemloft.net>
-To:     jakub.kicinski@netronome.com
-Cc:     netdev@vger.kernel.org, oss-drivers@netronome.com,
-        borisp@mellanox.com, aviadye@mellanox.com,
-        john.fastabend@gmail.com, daniel@iogearbox.net,
-        mallesham.jatharakonda@oneconvergence.com,
-        simon.horman@netronome.com
-Subject: Re: [PATCH net] net/tls: fix async operation
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200110123832.1086-1-jakub.kicinski@netronome.com>
-References: <20200110123832.1086-1-jakub.kicinski@netronome.com>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Fri, 10 Jan 2020 11:22:07 -0800 (PST)
+        id S1728194AbgAJTXW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jan 2020 14:23:22 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:60514 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728019AbgAJTXW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 10 Jan 2020 14:23:22 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=AaOWYWDQdbzSOvBU3U1oPjEcoWoLZrkOfW+sanpYw7E=; b=oAJsyBTqKjoR9zF16uydQygoEf
+        qTvFiZ5NAnBJCe/UdIlmYDUyUHJZp/lrw1gxSOhJGOL4iEyqq4yPOO7eAfa/pDaGBVppJTSTu8dTH
+        CqjZxxq1EFlfMkMWas2a9w48BvTC6EthbatVAXx/Lz/bibH7GilZtx45s1N3oAV2k4Wk=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1ipzsM-0003hP-44; Fri, 10 Jan 2020 20:23:18 +0100
+Date:   Fri, 10 Jan 2020 20:23:18 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     =?utf-8?B?0b3SieG2rOG4s+KEoA==?= <vtol@gmx.net>
+Cc:     Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        netdev@vger.kernel.org
+Subject: Re: [drivers/net/phy/sfp] intermittent failure in state machine
+ checks
+Message-ID: <20200110192318.GN19739@lunn.ch>
+References: <20200110125305.GB25745@shell.armlinux.org.uk>
+ <b4b94498-5011-1e89-db54-04916f8ef846@gmx.net>
+ <20200110150955.GE25745@shell.armlinux.org.uk>
+ <e9a99276-c09d-fa8d-a280-fca2abac6602@gmx.net>
+ <20200110163235.GG25745@shell.armlinux.org.uk>
+ <717229a4-f7f6-837d-3d58-756b516a8605@gmx.net>
+ <20200110170836.GI25745@shell.armlinux.org.uk>
+ <12956566-4aa3-2c5d-be1a-8612edab3b3d@gmx.net>
+ <20200110173851.GJ25745@shell.armlinux.org.uk>
+ <e18b0fb9-0c6d-ed5e-3a20-dc29e9cc048e@gmx.net>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <e18b0fb9-0c6d-ed5e-3a20-dc29e9cc048e@gmx.net>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jakub Kicinski <jakub.kicinski@netronome.com>
-Date: Fri, 10 Jan 2020 04:38:32 -0800
+> If really necessary I could ask the TOS developers to assist, not sure
+> whether they would oblidge. Their Master branch build bot compiles twice a
+> day.
+> Would it just involve setting a kernel debug flag or something more
+> elaborate?
 
-> Mallesham reports the TLS with async accelerator was broken by
-> commit d10523d0b3d7 ("net/tls: free the record on encryption error")
-> because encryption can return -EINPROGRESS in such setups, which
-> should not be treated as an error.
-> 
-> The error is also present in the BPF path (likely copied from there).
-> 
-> Reported-by: Mallesham Jatharakonda <mallesham.jatharakonda@oneconvergence.com>
-> Fixes: d3b18ad31f93 ("tls: add bpf support to sk_msg handling")
-> Fixes: d10523d0b3d7 ("net/tls: free the record on encryption error")
-> Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
-> Reviewed-by: Simon Horman <simon.horman@netronome.com>
+You could ask them to build a kernel with dynamic debug enabled
 
-Applied and queued up for -stable, thanks.
+https://www.kernel.org/doc/html/latest/admin-guide/dynamic-debug-howto.html
+
+You can then turn on debugging in a flexible way. And it will be
+useful for more than just you.
+
+    Andrew
