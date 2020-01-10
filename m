@@ -2,59 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3CC1E136D4D
-	for <lists+netdev@lfdr.de>; Fri, 10 Jan 2020 13:48:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 25217136D57
+	for <lists+netdev@lfdr.de>; Fri, 10 Jan 2020 13:53:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728141AbgAJMsg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jan 2020 07:48:36 -0500
-Received: from mail.kernel.org ([198.145.29.99]:56674 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728074AbgAJMsg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 10 Jan 2020 07:48:36 -0500
-Received: from localhost (83-84-126-242.cable.dynamic.v4.ziggo.nl [83.84.126.242])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id D6AD220721;
-        Fri, 10 Jan 2020 12:48:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1578660514;
-        bh=PrOwLV4tQ+lI1OTRTBOIvMq4rzUtK4hs298T1zbtacE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=SqTugStLNX+pRuf7gCMwoCYvksuMTTptT58RIF20ZMu0BuGuSKdAgAOCm2EpLitWS
-         vOKTErvPU5Vix3nOBAjLY2i/QSuzMn9A8/SjgDVkeP91isX2HSNZxtKNab0JneFEDr
-         0PKqLX4fOdY06u/Xr50selEkwSjtOc5hITYJORCc=
-Date:   Fri, 10 Jan 2020 13:48:32 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Alexander X Sverdlin <alexander.sverdlin@nokia.com>
-Cc:     devel@driverdev.osuosl.org, Aaro Koskinen <aaro.koskinen@iki.fi>,
-        Ralf Baechle <ralf@linux-mips.org>, netdev@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH] staging: octeon: Drop on uncorrectable alignment or FCS
- error
-Message-ID: <20200110124832.GA1090147@kroah.com>
-References: <20200108161042.253618-1-alexander.sverdlin@nokia.com>
+        id S1727236AbgAJMxM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jan 2020 07:53:12 -0500
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:41236 "EHLO
+        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727145AbgAJMxM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jan 2020 07:53:12 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
+        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=DVOOcIvOYgsS2mFfmgSd5vHzi6LMw5BR8zt/bL8xmio=; b=hqRDbVI7QZkjDj0W2N++LzPLL
+        rez5Pp0sNyLJvzfuq77zE3qjHNLZ9IX0qcZieEGAYXEpTJqYRG1zdEfcYIc1SRQNG/GNBqdSthHu1
+        ACjf1ITmt+lH9Nbw803Pknb8w5/03M/f2UPevv+UO8nVwZ5jyTmosHUlgpqEovbQ+nnvik9DWBjul
+        2IAzo16VthrHNsNn5aIV4J2J67siESs8Llypr/zDJpUI4EFFo2NmrrbILhXEc1xZ6ZRlA5Mv4MIc7
+        3HZkyJbZQ7C8ii2i3LumzKf8vlyd6dO5snu7/AYbU71J3E/xRLcr7zg4A42mBE6lrgL/Hg3gwWd+j
+        yQe2QoExA==;
+Received: from shell.armlinux.org.uk ([2002:4e20:1eda:1:5054:ff:fe00:4ec]:60598)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1iptmk-00035J-My; Fri, 10 Jan 2020 12:53:07 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1iptmj-0001Vy-PY; Fri, 10 Jan 2020 12:53:05 +0000
+Date:   Fri, 10 Jan 2020 12:53:05 +0000
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     =?utf-8?B?0b3SieG2rOG4s+KEoA==?= <vtol@gmx.net>
+Cc:     Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org
+Subject: Re: [drivers/net/phy/sfp] intermittent failure in state machine
+ checks
+Message-ID: <20200110125305.GB25745@shell.armlinux.org.uk>
+References: <acd4d7e4-7f8e-d578-c9c9-b45f062f4fe2@gmx.net>
+ <7ebee7c5-4bf3-134d-bc57-ea71e0bdfc60@gmx.net>
+ <20200109215903.GV25745@shell.armlinux.org.uk>
+ <c7b4bec1-3f1f-8a34-cf22-8fb1f68914f3@gmx.net>
+ <20200109231034.GW25745@shell.armlinux.org.uk>
+ <727cea4e-9bff-efd2-3939-437038a322ad@gmx.net>
+ <20200110092700.GX25745@shell.armlinux.org.uk>
+ <18687669-e6f5-79f1-6cf9-d62d65f195db@gmx.net>
+ <20200110114433.GZ25745@shell.armlinux.org.uk>
+ <7b6f143a-7bdb-90be-00f6-9e81e21bde4e@gmx.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20200108161042.253618-1-alexander.sverdlin@nokia.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <7b6f143a-7bdb-90be-00f6-9e81e21bde4e@gmx.net>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 08, 2020 at 05:10:42PM +0100, Alexander X Sverdlin wrote:
-> From: Alexander Sverdlin <alexander.sverdlin@nokia.com>
+On Fri, Jan 10, 2020 at 12:45:52PM +0000, ѽ҉ᶬḳ℠ wrote:
+> On 10/01/2020 11:44, Russell King - ARM Linux admin wrote:
+> > 
+> > Which is also indicating everything is correct.  When the problem
+> > occurs, check the state of the signals again as close as possible
+> > to the event - it depends how long the transceiver keeps it
+> > asserted.  You will probably find tx-fault is indicating
+> > "in  hi IRQ".
+> just discovered userland - gpioinfo pca9538 - which seems more verbose
 > 
-> Currently in case of alignment or FCS error if the packet cannot be
-> corrected it's still not dropped. Report the error properly and drop the
-> packet while making the code around a little bit more readable.
+> gpiochip2 - 8 lines:
+>         line   0:      unnamed   "tx-fault"   input  active-high [used]
+>         line   1:      unnamed "tx-disable"  output  active-high [used]
+>         line   2:      unnamed "rate-select0" input active-high [used]
+>         line   3:      unnamed        "los"   input  active-high [used]
+>         line   4:      unnamed   "mod-def0"   input   active-low [used]
+>         line   5:      unnamed       unused   input  active-high
+>         line   6:      unnamed       unused   input  active-high
+>         line   7:      unnamed       unused   input  active-high
 > 
-> Fixes: 80ff0fd3ab ("Staging: Add octeon-ethernet driver files.")
-> Signed-off-by: Alexander Sverdlin <alexander.sverdlin@nokia.com>
-> ---
->  drivers/staging/octeon/ethernet-rx.c | 18 +++++++++---------
->  1 file changed, 9 insertions(+), 9 deletions(-)
+> The above is depicting the current state with the module working, i.e. being
+> online. Will do some testing and report back, not sure yet how to keep a
+> close watch relating to the failure events.
 
-This driver is now deleted from the tree, sorry.
+However, that doesn't give the current levels of the inputs, so it's
+useless for the purpose I've asked for.
 
-greg k-h
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
+According to speedtest.net: 11.9Mbps down 500kbps up
