@@ -2,99 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C9D83136872
-	for <lists+netdev@lfdr.de>; Fri, 10 Jan 2020 08:42:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6AA59136873
+	for <lists+netdev@lfdr.de>; Fri, 10 Jan 2020 08:42:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726598AbgAJHmY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jan 2020 02:42:24 -0500
-Received: from youngberry.canonical.com ([91.189.89.112]:41972 "EHLO
+        id S1726716AbgAJHmf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jan 2020 02:42:35 -0500
+Received: from youngberry.canonical.com ([91.189.89.112]:41985 "EHLO
         youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726276AbgAJHmY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jan 2020 02:42:24 -0500
+        with ESMTP id S1726276AbgAJHmf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jan 2020 02:42:35 -0500
 Received: from 61-220-137-37.hinet-ip.hinet.net ([61.220.137.37] helo=localhost)
         by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
         (Exim 4.86_2)
         (envelope-from <kai.heng.feng@canonical.com>)
-        id 1ipovy-0001rC-CO; Fri, 10 Jan 2020 07:42:18 +0000
+        id 1ipow3-0001rj-Lx; Fri, 10 Jan 2020 07:42:24 +0000
 From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
 To:     davem@davemloft.ne, jeffrey.t.kirsher@intel.com
 Cc:     Kai-Heng Feng <kai.heng.feng@canonical.com>,
         "David S. Miller" <davem@davemloft.net>,
-        intel-wired-lan@lists.osuosl.org (moderated list:INTEL ETHERNET DRIVERS),
-        netdev@vger.kernel.org (open list:NETWORKING DRIVERS),
+        Michal Kubecek <mkubecek@suse.cz>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Maxime Chevallier <maxime.chevallier@bootlin.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Li RongQing <lirongqing@baidu.com>,
+        netdev@vger.kernel.org (open list:NETWORKING [GENERAL]),
         linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH 1/2] igb: Use device_lock() insead of rtnl_lock()
-Date:   Fri, 10 Jan 2020 15:41:58 +0800
-Message-Id: <20200110074159.18473-1-kai.heng.feng@canonical.com>
+Subject: [PATCH 2/2] ethtool: Call begin() and complete() in __ethtool_get_link_ksettings()
+Date:   Fri, 10 Jan 2020 15:41:59 +0800
+Message-Id: <20200110074159.18473-2-kai.heng.feng@canonical.com>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20200110074159.18473-1-kai.heng.feng@canonical.com>
+References: <20200110074159.18473-1-kai.heng.feng@canonical.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit 9474933caf21 ("igb: close/suspend race in netif_device_detach")
-fixed race condition between close and power management ops by using
-rtnl_lock().
+Device like igb gets runtime suspended when there's no link partner. We
+can't get correct speed under that state:
+$ cat /sys/class/net/enp3s0/speed
+1000
 
-However we can achieve the same by using device_lock() since all power
-management ops are protected by device_lock().
+In addition to that, an error can also be spotted in dmesg:
+[  385.991957] igb 0000:03:00.0 enp3s0: PCIe link lost
 
-This fix is a preparation for next patch, to prevent a dead lock under
-rtnl_lock() when calling runtime resume routine.
+It's because the igb device doesn't get runtime resumed before calling
+get_link_ksettings().
+
+So let's call begin() and complete() like what dev_ethtool() does, to
+runtime resume/suspend or power up/down the device properly.
+
+Once this fix is in place, igb can show the speed correctly without link
+partner:
+$ cat /sys/class/net/enp3s0/speed
+-1
 
 Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
 ---
- drivers/net/ethernet/intel/igb/igb_main.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+ net/ethtool/ioctl.c | 15 ++++++++++++++-
+ 1 file changed, 14 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
-index b46bff8fe056..3750e2b926b1 100644
---- a/drivers/net/ethernet/intel/igb/igb_main.c
-+++ b/drivers/net/ethernet/intel/igb/igb_main.c
-@@ -4026,8 +4026,13 @@ static int __igb_close(struct net_device *netdev, bool suspending)
- 
- int igb_close(struct net_device *netdev)
+diff --git a/net/ethtool/ioctl.c b/net/ethtool/ioctl.c
+index 182bffbffa78..c768dbf45fc4 100644
+--- a/net/ethtool/ioctl.c
++++ b/net/ethtool/ioctl.c
+@@ -423,13 +423,26 @@ struct ethtool_link_usettings {
+ int __ethtool_get_link_ksettings(struct net_device *dev,
+ 				 struct ethtool_link_ksettings *link_ksettings)
  {
-+	struct igb_adapter *adapter = netdev_priv(netdev);
-+	struct device *dev = &adapter->pdev->dev;
++	int rc;
 +
-+	device_lock(dev);
- 	if (netif_device_present(netdev) || netdev->dismantle)
- 		return __igb_close(netdev, false);
-+	device_unlock(dev);
- 	return 0;
+ 	ASSERT_RTNL();
+ 
+ 	if (!dev->ethtool_ops->get_link_ksettings)
+ 		return -EOPNOTSUPP;
+ 
++	if (dev->ethtool_ops->begin) {
++		rc = dev->ethtool_ops->begin(dev);
++		if (rc  < 0)
++			return rc;
++	}
++
+ 	memset(link_ksettings, 0, sizeof(*link_ksettings));
+-	return dev->ethtool_ops->get_link_ksettings(dev, link_ksettings);
++	rc = dev->ethtool_ops->get_link_ksettings(dev, link_ksettings);
++
++	if (dev->ethtool_ops->complete)
++		dev->ethtool_ops->complete(dev);
++
++	return rc;
  }
+ EXPORT_SYMBOL(__ethtool_get_link_ksettings);
  
-@@ -8760,7 +8765,6 @@ static int __igb_shutdown(struct pci_dev *pdev, bool *enable_wake,
- 	u32 wufc = runtime ? E1000_WUFC_LNKC : adapter->wol;
- 	bool wake;
- 
--	rtnl_lock();
- 	netif_device_detach(netdev);
- 
- 	if (netif_running(netdev))
-@@ -8769,7 +8773,6 @@ static int __igb_shutdown(struct pci_dev *pdev, bool *enable_wake,
- 	igb_ptp_suspend(adapter);
- 
- 	igb_clear_interrupt_scheme(adapter);
--	rtnl_unlock();
- 
- 	status = rd32(E1000_STATUS);
- 	if (status & E1000_STATUS_LU)
-@@ -8897,13 +8900,11 @@ static int __maybe_unused igb_resume(struct device *dev)
- 
- 	wr32(E1000_WUS, ~0);
- 
--	rtnl_lock();
- 	if (!err && netif_running(netdev))
- 		err = __igb_open(netdev, true);
- 
- 	if (!err)
- 		netif_device_attach(netdev);
--	rtnl_unlock();
- 
- 	return err;
- }
 -- 
 2.17.1
 
