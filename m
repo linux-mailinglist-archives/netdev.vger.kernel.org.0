@@ -2,53 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 50F5F136C21
+	by mail.lfdr.de (Postfix) with ESMTP id C4FEF136C22
 	for <lists+netdev@lfdr.de>; Fri, 10 Jan 2020 12:42:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727876AbgAJLmR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jan 2020 06:42:17 -0500
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:36829 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727457AbgAJLmR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jan 2020 06:42:17 -0500
-Received: by mail-pf1-f196.google.com with SMTP id x184so1031483pfb.3
-        for <netdev@vger.kernel.org>; Fri, 10 Jan 2020 03:42:16 -0800 (PST)
+        id S1727883AbgAJLmV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jan 2020 06:42:21 -0500
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:45164 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727838AbgAJLmV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jan 2020 06:42:21 -0500
+Received: by mail-pg1-f195.google.com with SMTP id b9so877258pgk.12
+        for <netdev@vger.kernel.org>; Fri, 10 Jan 2020 03:42:19 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=aLRT3ugfu9YaWhBnJhHE7PgMgEw2C+WSGlslyzbuQeg=;
-        b=g8S3Bb1QOcdk1CNlmR1FnbVg4bi6iRakaESxi4hoyqOQ1Ln0ICWNLrfZuTIxsHB9SA
-         1xzTYcSvFFwcAXXx2okTfFWnOC6fW3e+ILEDgNeEqiZWwEkPLC9bexq+snznd3pArU61
-         sT65sNJfNCm+ruJMxrqH/hPrNgGUyyuCSWDtRsgmbJS99Dob2bFcMR7LgHuYSbZQ5xNQ
-         vlmDGGXdI8KW3flBsrB9YutBtYbFOPC2YTbdYb9u9rwgj/BN7zRH4etsaCzOU+j3ZQZl
-         q2fS4ArnDzQ6UqsaCrEoCzkjgj7bkClmazTHbfZ77Gg+x/VM8KiqzJsWWB8jQFK+WEnE
-         ZfWw==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=B8QZNesciWgtk4OtSSz1zrDlW+mCKj7RER4e+y+sSiU=;
+        b=a1VDu+TIZfr1rLiGqcUGrrdpuCZaElucxQciiBNW0tKFnHTJkyilSdpUUPDXcRDoc/
+         isWDmaIdwTQPhB283TJZipgUz6jfJtvqop74xL6mrilKuYb9XyrRQTORwdm0lRi3LOti
+         Qvy0MFhm2WDkji4jzPYNhR9O5Husko1qpOgU5m7BkaAR6AWy2K4U7uTWqNDeEjyhSOVX
+         /0SOpPbAjDbXAghcIoDG5xJoji3Lr80SNOfwSjb7f7bd84qBE+JxbQfCfbaRvMPMYkor
+         Sv/jPqDne/zkfIyT0SnqIH0XciMsgcj7o3iH1bnRC9MFOsdwT5w4kmcn2zC0DMHlolXf
+         zDJg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=aLRT3ugfu9YaWhBnJhHE7PgMgEw2C+WSGlslyzbuQeg=;
-        b=hdKEFOW4Ba6Nft11TozFdI3uGMbcVzd9FxPXh5E0gmI7Jwvovg/JhWsXX/yG/nddaZ
-         WMm6vLiGgUE1jlO3ZYLHf5vNL0cSSroig0QOEGsBu8eQxM2E2rRIjb+Fl27wTuA+C4cI
-         nRjs+4oNTUGUTo1+SkpGcTiIJMNAG9MczDaHrVhE/bb8bGTiokjUodyxO8r/K17UEEVH
-         tplxA9s5t0UWoHDd7XatAc+3LXATrBMuFfKXNDh/8DKlwCLrrSXDUIeCR/zs1/W7/VfD
-         Ow3m+rjwwTeVCtE+a1Z2JRqxafROzEHKyUPhTDhSfh0GjAxziXhhAoUAsJ843I1qu4Ul
-         9MAA==
-X-Gm-Message-State: APjAAAU1iedvePiepj8GDQaBoBtmLrQe8osqzYs3ORdmZ0P7/pFei/4F
-        N+cxXtCPX7I3oPP9Wy73qKXtwRlfZvs=
-X-Google-Smtp-Source: APXvYqwR/M6lX3UxJeJOJho/SXZRTvKKZ9cb7JdxEA4iz+mzHMFopcl19vp1ko/9E8OxIeweFCgpZA==
-X-Received: by 2002:a62:1944:: with SMTP id 65mr3663288pfz.151.1578656536001;
-        Fri, 10 Jan 2020 03:42:16 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=B8QZNesciWgtk4OtSSz1zrDlW+mCKj7RER4e+y+sSiU=;
+        b=Re5PtABc5SUqmNGYBlZHbjEycciu2QHm/qm6xOSJPr/3pVjp46fPv6bSQwt96AWYW+
+         tHO3vEqziEZDbRKTY8QLYmuekuXFzm4XPWJVBVoQqQA+Ntu6p7JGMaG+LWxg+oJBWLHB
+         XRrvkhKN1G9XbjU/Rb+H+VOumuSrIm13xA5c9a2eiO8lsIMALzE18NgPDk+/7eHUmKkV
+         DiociCPAS8xffNa6LB/5F0HKXNfb85E+uZBtWEZvc3m9z/0go58Vj9Bt9SRDj0VoO3Ax
+         iKDz+lqmzklvuEusbzm6EDe5RD8y/mxFRnfQxVKqYCtT4hEM+Ij70vZHVpHLJW/gs0im
+         5HMA==
+X-Gm-Message-State: APjAAAUGzRbuu6QnJXXmUYt7VaAu9AhLLYfm4HI/yiRk66qj6ZhJE7R2
+        gCQCKVzRIFIb9AuV5AxlSSWPq+FS++o=
+X-Google-Smtp-Source: APXvYqzxBvrwmaeeINxcNY2yHqN7DLB2H6d9EbM9pFovlrc3JfnXktdBdLV6wZrft0XoAgQfXivMSg==
+X-Received: by 2002:a62:e215:: with SMTP id a21mr3628054pfi.3.1578656539195;
+        Fri, 10 Jan 2020 03:42:19 -0800 (PST)
 Received: from machine421.marvell.com ([115.113.156.2])
-        by smtp.googlemail.com with ESMTPSA id o19sm8848866pjr.2.2020.01.10.03.42.14
+        by smtp.googlemail.com with ESMTPSA id o19sm8848866pjr.2.2020.01.10.03.42.17
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Fri, 10 Jan 2020 03:42:15 -0800 (PST)
+        Fri, 10 Jan 2020 03:42:18 -0800 (PST)
 From:   sunil.kovvuri@gmail.com
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, Sunil Goutham <sgoutham@marvell.com>
-Subject: [PATCH 00/17] octeontx2-pf: Add network driver for physical function
-Date:   Fri, 10 Jan 2020 17:11:44 +0530
-Message-Id: <1578656521-14189-1-git-send-email-sunil.kovvuri@gmail.com>
+Subject: [PATCH 01/17] octeontx2-pf: Add Marvell OcteonTX2 NIC driver
+Date:   Fri, 10 Jan 2020 17:11:45 +0530
+Message-Id: <1578656521-14189-2-git-send-email-sunil.kovvuri@gmail.com>
 X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1578656521-14189-1-git-send-email-sunil.kovvuri@gmail.com>
+References: <1578656521-14189-1-git-send-email-sunil.kovvuri@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -56,76 +59,432 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Sunil Goutham <sgoutham@marvell.com>
 
-OcteonTX2 SOC's resource virtualization unit (RVU) supports 
-multiple physical and virtual functions. Each of the PF's
-functionality is determined by what kind of resources are attached
-to it. If NPA and NIX blocks are attached to a PF it can function
-as a highly capable network device.
+This patch adds template for the Marvell's OcteonTX2 network
+controller's physical function driver. Just the probe, PCI
+specific initialization and netdev registration.
 
-This patch series add a network driver for the PF. Initial set of
-patches adds mailbox communication with admin function (RVU AF)
-and configuration of queues. Followed by Rx and tx pkts NAPI
-handler and then support for HW offloads like RSS, TSO, Rxhash etc. 
-Ethtool support to extract stats, config RSS, queue sizes, queue
-count is also added. 
-
-Added documentation to give a high level overview of HW and
-different drivers which will be upstreamed and how they interact.
-
-Christina Jacob (1):
-  octeontx2-pf: Add basic ethtool support
-
-Geetha sowjanya (2):
-  octeontx2-pf: Error handling support
-  octeontx2-pf: Add ndo_get_stats64
-
-Linu Cherian (1):
-  octeontx2-pf: Register and handle link notifications
-
-Sunil Goutham (13):
-  octeontx2-pf: Add Marvell OcteonTX2 NIC driver
-  octeontx2-pf: Mailbox communication with AF
-  octeontx2-pf: Attach NIX and NPA block LFs
-  octeontx2-pf: Initialize and config queues
-  octeontx2-pf: Setup interrupts and NAPI handler
-  octeontx2-pf: Receive packet handling support
-  octeontx2-pf: Add packet transmission support
-  octeontx2-pf: MTU, MAC and RX mode config support
-  octeontx2-pf: Receive side scaling support
-  octeontx2-pf: TCP segmentation offload support
-  octeontx2-pf: ethtool RSS config support
-  Documentation: net: octeontx2: Add RVU HW and drivers overview
-  MAINTAINERS: Add entry for Marvell OcteonTX2 Physical Function driver
-
- Documentation/networking/device_drivers/index.rst  |    1 +
- .../device_drivers/marvell/octeontx2.rst           |  159 +++
- MAINTAINERS                                        |   10 +
- drivers/net/ethernet/marvell/octeontx2/Kconfig     |    7 +
- drivers/net/ethernet/marvell/octeontx2/Makefile    |    2 +
- drivers/net/ethernet/marvell/octeontx2/af/common.h |    9 +-
- drivers/net/ethernet/marvell/octeontx2/af/mbox.h   |    8 +-
- .../net/ethernet/marvell/octeontx2/af/rvu_nix.c    |   17 +
- .../net/ethernet/marvell/octeontx2/nic/Makefile    |   10 +
- .../ethernet/marvell/octeontx2/nic/otx2_common.c   | 1409 ++++++++++++++++++++
- .../ethernet/marvell/octeontx2/nic/otx2_common.h   |  615 +++++++++
- .../ethernet/marvell/octeontx2/nic/otx2_ethtool.c  |  659 +++++++++
- .../net/ethernet/marvell/octeontx2/nic/otx2_pf.c   | 1361 +++++++++++++++++++
- .../net/ethernet/marvell/octeontx2/nic/otx2_reg.h  |  147 ++
- .../ethernet/marvell/octeontx2/nic/otx2_struct.h   |  439 ++++++
- .../net/ethernet/marvell/octeontx2/nic/otx2_txrx.c |  863 ++++++++++++
- .../net/ethernet/marvell/octeontx2/nic/otx2_txrx.h |  162 +++
- 17 files changed, 5875 insertions(+), 3 deletions(-)
- create mode 100644 Documentation/networking/device_drivers/marvell/octeontx2.rst
+Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
+---
+ drivers/net/ethernet/marvell/octeontx2/Kconfig     |   7 +
+ drivers/net/ethernet/marvell/octeontx2/Makefile    |   2 +
+ .../net/ethernet/marvell/octeontx2/nic/Makefile    |  10 +
+ .../ethernet/marvell/octeontx2/nic/otx2_common.h   |  77 ++++++++
+ .../net/ethernet/marvell/octeontx2/nic/otx2_pf.c   | 220 +++++++++++++++++++++
+ .../net/ethernet/marvell/octeontx2/nic/otx2_reg.h  |  51 +++++
+ 6 files changed, 367 insertions(+)
  create mode 100644 drivers/net/ethernet/marvell/octeontx2/nic/Makefile
- create mode 100644 drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
  create mode 100644 drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
- create mode 100644 drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c
  create mode 100644 drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
  create mode 100644 drivers/net/ethernet/marvell/octeontx2/nic/otx2_reg.h
- create mode 100644 drivers/net/ethernet/marvell/octeontx2/nic/otx2_struct.h
- create mode 100644 drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c
- create mode 100644 drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.h
 
+diff --git a/drivers/net/ethernet/marvell/octeontx2/Kconfig b/drivers/net/ethernet/marvell/octeontx2/Kconfig
+index fb34fbd..d59429f 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/Kconfig
++++ b/drivers/net/ethernet/marvell/octeontx2/Kconfig
+@@ -25,3 +25,10 @@ config NDC_DIS_DYNAMIC_CACHING
+ 	  This config option disables caching of dynamic entries such as NIX SQEs
+ 	  , NPA stack pages etc in NDC. Also locks down NIX SQ/CQ/RQ/RSS and
+ 	  NPA Aura/Pool contexts.
++
++config OCTEONTX2_PF
++	tristate "Marvell OcteonTX2 NIC Physical Function driver"
++	select OCTEONTX2_MBOX
++	depends on PCI
++	help
++	  This driver supports Marvell's OcteonTX2 NIC physical function.
+diff --git a/drivers/net/ethernet/marvell/octeontx2/Makefile b/drivers/net/ethernet/marvell/octeontx2/Makefile
+index e579dcd..0064a69 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/Makefile
++++ b/drivers/net/ethernet/marvell/octeontx2/Makefile
+@@ -3,4 +3,6 @@
+ # Makefile for Marvell OcteonTX2 device drivers.
+ #
+ 
++obj-$(CONFIG_OCTEONTX2_MBOX) += af/
+ obj-$(CONFIG_OCTEONTX2_AF) += af/
++obj-$(CONFIG_OCTEONTX2_PF) += nic/
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/Makefile b/drivers/net/ethernet/marvell/octeontx2/nic/Makefile
+new file mode 100644
+index 0000000..622b803
+--- /dev/null
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/Makefile
+@@ -0,0 +1,10 @@
++# SPDX-License-Identifier: GPL-2.0
++#
++# Makefile for Marvell's OcteonTX2 ethernet device drivers
++#
++
++obj-$(CONFIG_OCTEONTX2_PF) += octeontx2_nicpf.o
++
++octeontx2_nicpf-y := otx2_pf.o
++
++ccflags-y += -I$(srctree)/drivers/net/ethernet/marvell/octeontx2/af
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
+new file mode 100644
+index 0000000..9d52ab3
+--- /dev/null
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
+@@ -0,0 +1,77 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/* Marvell OcteonTx2 RVU Ethernet driver
++ *
++ * Copyright (C) 2020 Marvell International Ltd.
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ */
++
++#ifndef OTX2_COMMON_H
++#define OTX2_COMMON_H
++
++#include <linux/pci.h>
++
++#include "otx2_reg.h"
++
++/* PCI device IDs */
++#define PCI_DEVID_OCTEONTX2_RVU_PF              0xA063
++
++/* PCI BAR nos */
++#define PCI_CFG_REG_BAR_NUM                     2
++
++struct otx2_hw {
++	struct pci_dev		*pdev;
++	u16                     rx_queues;
++	u16                     tx_queues;
++	u16			max_queues;
++};
++
++struct otx2_nic {
++	void __iomem		*reg_base;
++	struct net_device	*netdev;
++
++	struct otx2_hw		hw;
++	struct pci_dev		*pdev;
++	struct device		*dev;
++};
++
++/* Register read/write APIs */
++static inline void __iomem *otx2_get_regaddr(struct otx2_nic *nic, u64 offset)
++{
++	u64 blkaddr;
++
++	switch ((offset >> RVU_FUNC_BLKADDR_SHIFT) & RVU_FUNC_BLKADDR_MASK) {
++	case BLKTYPE_NIX:
++		blkaddr = BLKADDR_NIX0;
++		break;
++	case BLKTYPE_NPA:
++		blkaddr = BLKADDR_NPA;
++		break;
++	default:
++		blkaddr = BLKADDR_RVUM;
++		break;
++	};
++
++	offset &= ~(RVU_FUNC_BLKADDR_MASK << RVU_FUNC_BLKADDR_SHIFT);
++	offset |= (blkaddr << RVU_FUNC_BLKADDR_SHIFT);
++
++	return nic->reg_base + offset;
++}
++
++static inline void otx2_write64(struct otx2_nic *nic, u64 offset, u64 val)
++{
++	void __iomem *addr = otx2_get_regaddr(nic, offset);
++
++	writeq(val, addr);
++}
++
++static inline u64 otx2_read64(struct otx2_nic *nic, u64 offset)
++{
++	void __iomem *addr = otx2_get_regaddr(nic, offset);
++
++	return readq(addr);
++}
++
++#endif /* OTX2_COMMON_H */
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
+new file mode 100644
+index 0000000..cf60efa
+--- /dev/null
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
+@@ -0,0 +1,220 @@
++// SPDX-License-Identifier: GPL-2.0
++/* Marvell OcteonTx2 RVU Physcial Function ethernet driver
++ *
++ * Copyright (C) 2020 Marvell International Ltd.
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ */
++
++#include <linux/module.h>
++#include <linux/interrupt.h>
++#include <linux/pci.h>
++#include <linux/etherdevice.h>
++#include <linux/of.h>
++#include <linux/if_vlan.h>
++#include <linux/iommu.h>
++#include <net/ip.h>
++
++#include "otx2_common.h"
++
++#define DRV_NAME	"octeontx2-nicpf"
++#define DRV_STRING	"Marvell OcteonTX2 NIC Physical Function Driver"
++#define DRV_VERSION	"1.0"
++
++/* Supported devices */
++static const struct pci_device_id otx2_pf_id_table[] = {
++	{ PCI_DEVICE(PCI_VENDOR_ID_CAVIUM, PCI_DEVID_OCTEONTX2_RVU_PF) },
++	{ 0, }  /* end of table */
++};
++
++MODULE_AUTHOR("Marvell International Ltd.");
++MODULE_DESCRIPTION(DRV_STRING);
++MODULE_LICENSE("GPL v2");
++MODULE_VERSION(DRV_VERSION);
++MODULE_DEVICE_TABLE(pci, otx2_pf_id_table);
++
++static int otx2_set_real_num_queues(struct net_device *netdev,
++				    int tx_queues, int rx_queues)
++{
++	int err;
++
++	err = netif_set_real_num_tx_queues(netdev, tx_queues);
++	if (err) {
++		netdev_err(netdev,
++			   "Failed to set no of Tx queues: %d\n", tx_queues);
++		return err;
++	}
++
++	err = netif_set_real_num_rx_queues(netdev, rx_queues);
++	if (err)
++		netdev_err(netdev,
++			   "Failed to set no of Rx queues: %d\n", rx_queues);
++	return err;
++}
++
++static int otx2_open(struct net_device *netdev)
++{
++	netif_carrier_off(netdev);
++
++	return 0;
++}
++
++static int otx2_stop(struct net_device *netdev)
++{
++	return 0;
++}
++
++static const struct net_device_ops otx2_netdev_ops = {
++	.ndo_open		= otx2_open,
++	.ndo_stop		= otx2_stop,
++};
++
++static int otx2_check_pf_usable(struct otx2_nic *nic)
++{
++	u64 rev;
++
++	rev = otx2_read64(nic, RVU_PF_BLOCK_ADDRX_DISC(BLKADDR_RVUM));
++	rev = (rev >> 12) & 0xFF;
++	/* Check if AF has setup revision for RVUM block,
++	 * otherwise this driver probe should be deferred
++	 * until AF driver comes up.
++	 */
++	if (!rev) {
++		dev_warn(nic->dev,
++			 "AF is not initialized, deferring probe\n");
++		return -EPROBE_DEFER;
++	}
++	return 0;
++}
++
++static int otx2_probe(struct pci_dev *pdev, const struct pci_device_id *id)
++{
++	struct device *dev = &pdev->dev;
++	struct net_device *netdev;
++	struct otx2_nic *pf;
++	struct otx2_hw *hw;
++	int err, qcount;
++
++	err = pcim_enable_device(pdev);
++	if (err) {
++		dev_err(dev, "Failed to enable PCI device\n");
++		return err;
++	}
++
++	err = pci_request_regions(pdev, DRV_NAME);
++	if (err) {
++		dev_err(dev, "PCI request regions failed 0x%x\n", err);
++		return err;
++	}
++
++	err = pci_set_dma_mask(pdev, DMA_BIT_MASK(48));
++	if (err) {
++		dev_err(dev, "Unable to set DMA mask\n");
++		goto err_release_regions;
++	}
++
++	err = pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(48));
++	if (err) {
++		dev_err(dev, "Unable to set consistent DMA mask\n");
++		goto err_release_regions;
++	}
++
++	pci_set_master(pdev);
++
++	/* Set number of queues */
++	qcount = min_t(int, num_online_cpus(), num_online_cpus());
++
++	netdev = alloc_etherdev_mqs(sizeof(*pf), qcount, qcount);
++	if (!netdev) {
++		err = -ENOMEM;
++		goto err_release_regions;
++	}
++
++	pci_set_drvdata(pdev, netdev);
++	SET_NETDEV_DEV(netdev, &pdev->dev);
++	pf = netdev_priv(netdev);
++	pf->netdev = netdev;
++	pf->pdev = pdev;
++	pf->dev = dev;
++
++	hw = &pf->hw;
++	hw->pdev = pdev;
++	hw->rx_queues = qcount;
++	hw->tx_queues = qcount;
++	hw->max_queues = qcount;
++
++	/* Map CSRs */
++	pf->reg_base = pcim_iomap(pdev, PCI_CFG_REG_BAR_NUM, 0);
++	if (!pf->reg_base) {
++		dev_err(dev, "Unable to map physical function CSRs, aborting\n");
++		err = -ENOMEM;
++		goto err_free_netdev;
++	}
++
++	err = otx2_check_pf_usable(pf);
++	if (err)
++		goto err_free_netdev;
++
++	err = otx2_set_real_num_queues(netdev, hw->tx_queues, hw->rx_queues);
++	if (err)
++		goto err_free_netdev;
++
++	netdev->netdev_ops = &otx2_netdev_ops;
++
++	err = register_netdev(netdev);
++	if (err) {
++		dev_err(dev, "Failed to register netdevice\n");
++		goto err_free_netdev;
++	}
++
++	return 0;
++
++err_free_netdev:
++	pci_set_drvdata(pdev, NULL);
++	free_netdev(netdev);
++err_release_regions:
++	pci_release_regions(pdev);
++	return err;
++}
++
++static void otx2_remove(struct pci_dev *pdev)
++{
++	struct net_device *netdev = pci_get_drvdata(pdev);
++	struct otx2_nic *pf;
++
++	if (!netdev)
++		return;
++
++	pf = netdev_priv(netdev);
++
++	unregister_netdev(netdev);
++	pci_free_irq_vectors(pf->pdev);
++	pci_set_drvdata(pdev, NULL);
++	free_netdev(netdev);
++	pci_release_regions(pdev);
++}
++
++static struct pci_driver otx2_pf_driver = {
++	.name = DRV_NAME,
++	.id_table = otx2_pf_id_table,
++	.probe = otx2_probe,
++	.shutdown = otx2_remove,
++	.remove = otx2_remove,
++};
++
++static int __init otx2_rvupf_init_module(void)
++{
++	pr_info("%s: %s\n", DRV_NAME, DRV_STRING);
++
++	return pci_register_driver(&otx2_pf_driver);
++}
++
++static void __exit otx2_rvupf_cleanup_module(void)
++{
++	pci_unregister_driver(&otx2_pf_driver);
++}
++
++module_init(otx2_rvupf_init_module);
++module_exit(otx2_rvupf_cleanup_module);
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_reg.h b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_reg.h
+new file mode 100644
+index 0000000..d0bd64a
+--- /dev/null
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_reg.h
+@@ -0,0 +1,51 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/* Marvell OcteonTx2 RVU Ethernet driver
++ *
++ * Copyright (C) 2020 Marvell International Ltd.
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ */
++
++#ifndef OTX2_REG_H
++#define OTX2_REG_H
++
++#include <rvu_struct.h>
++
++/* RVU PF registers */
++#define	RVU_PF_VFX_PFVF_MBOX0		    (0x00000)
++#define	RVU_PF_VFX_PFVF_MBOX1		    (0x00008)
++#define RVU_PF_VFX_PFVF_MBOXX(a, b)         (0x0 | (a) << 12 | (b) << 3)
++#define RVU_PF_VF_BAR4_ADDR                 (0x10)
++#define RVU_PF_BLOCK_ADDRX_DISC(a)          (0x200 | (a) << 3)
++#define RVU_PF_VFME_STATUSX(a)              (0x800 | (a) << 3)
++#define RVU_PF_VFTRPENDX(a)                 (0x820 | (a) << 3)
++#define RVU_PF_VFTRPEND_W1SX(a)             (0x840 | (a) << 3)
++#define RVU_PF_VFPF_MBOX_INTX(a)            (0x880 | (a) << 3)
++#define RVU_PF_VFPF_MBOX_INT_W1SX(a)        (0x8A0 | (a) << 3)
++#define RVU_PF_VFPF_MBOX_INT_ENA_W1SX(a)    (0x8C0 | (a) << 3)
++#define RVU_PF_VFPF_MBOX_INT_ENA_W1CX(a)    (0x8E0 | (a) << 3)
++#define RVU_PF_VFFLR_INTX(a)                (0x900 | (a) << 3)
++#define RVU_PF_VFFLR_INT_W1SX(a)            (0x920 | (a) << 3)
++#define RVU_PF_VFFLR_INT_ENA_W1SX(a)        (0x940 | (a) << 3)
++#define RVU_PF_VFFLR_INT_ENA_W1CX(a)        (0x960 | (a) << 3)
++#define RVU_PF_VFME_INTX(a)                 (0x980 | (a) << 3)
++#define RVU_PF_VFME_INT_W1SX(a)             (0x9A0 | (a) << 3)
++#define RVU_PF_VFME_INT_ENA_W1SX(a)         (0x9C0 | (a) << 3)
++#define RVU_PF_VFME_INT_ENA_W1CX(a)         (0x9E0 | (a) << 3)
++#define RVU_PF_PFAF_MBOX0                   (0xC00)
++#define RVU_PF_PFAF_MBOX1                   (0xC08)
++#define RVU_PF_PFAF_MBOXX(a)                (0xC00 | (a) << 3)
++#define RVU_PF_INT                          (0xc20)
++#define RVU_PF_INT_W1S                      (0xc28)
++#define RVU_PF_INT_ENA_W1S                  (0xc30)
++#define RVU_PF_INT_ENA_W1C                  (0xc38)
++#define RVU_PF_MSIX_VECX_ADDR(a)            (0x000 | (a) << 4)
++#define RVU_PF_MSIX_VECX_CTL(a)             (0x008 | (a) << 4)
++#define RVU_PF_MSIX_PBAX(a)                 (0xF0000 | (a) << 3)
++
++#define RVU_FUNC_BLKADDR_SHIFT		20
++#define RVU_FUNC_BLKADDR_MASK		0x1FULL
++
++#endif /* OTX2_REG_H */
 -- 
 2.7.4
 
