@@ -2,285 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E171136B3B
-	for <lists+netdev@lfdr.de>; Fri, 10 Jan 2020 11:46:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A0552136B22
+	for <lists+netdev@lfdr.de>; Fri, 10 Jan 2020 11:35:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727491AbgAJKp6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jan 2020 05:45:58 -0500
-Received: from mail-m975.mail.163.com ([123.126.97.5]:39766 "EHLO
-        mail-m975.mail.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727345AbgAJKp6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jan 2020 05:45:58 -0500
-X-Greylist: delayed 933 seconds by postgrey-1.27 at vger.kernel.org; Fri, 10 Jan 2020 05:45:50 EST
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=g2tbO
-        +qzlpA2w5Cd7SBiifcvdUZuxRzhuQ247WytjJ4=; b=bREENsEDpS/bG1RHE+i7N
-        Hn7cEFqrreokTkfTFoS6clEiQwS18uhJ7iGiXxCoISmha84Bqq0TehL6mxkq/Jdg
-        u+n0JBaZdCh3x9bG50fHzx+4z6O1Kd/Z9EmGShVlzwSHMoQ4NSAJ0rzO+biT2KIG
-        yWj58sXe7wRHwFRtE1ctJ4=
-Received: from xilei-TM1604.mioffice.cn (unknown [114.247.175.196])
-        by smtp5 (Coremail) with SMTP id HdxpCgCHCsjgURheqcdzDA--.474S4;
-        Fri, 10 Jan 2020 18:29:26 +0800 (CST)
-From:   Niu Xilei <niu_xilei@163.com>
-To:     davem@davemloft.net
-Cc:     tglx@linutronix.de, fw@strlen.de, peterz@infradead.org,
-        pabeni@redhat.com, anshuman.khandual@arm.com,
-        linyunsheng@huawei.com, bigeasy@linutronix.de,
-        jonathan.lemon@gmail.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Niu Xilei <niu_xilei@163.com>
-Subject: [PATCH]     pktgen: create packet use  IPv6 source address between src6_min and src6_max.
-Date:   Fri, 10 Jan 2020 18:28:42 +0800
-Message-Id: <20200110102842.13585-1-niu_xilei@163.com>
-X-Mailer: git-send-email 2.20.1
+        id S1727518AbgAJKfF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jan 2020 05:35:05 -0500
+Received: from mail.kernel.org ([198.145.29.99]:33502 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726697AbgAJKfE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 10 Jan 2020 05:35:04 -0500
+Received: from disco-boy.misterjones.org (disco-boy.misterjones.org [51.254.78.96])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 388AD20721;
+        Fri, 10 Jan 2020 10:35:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1578652504;
+        bh=O6NFD8wrjXHYKqN+wmpbS8vPepwh3hMeCNx2Yl2KWXE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=xr/aOlKnna+8ImgwYVYrX/FO51itRz4WR2ANaPtBOe7Ev2SwQbYcJxsSK3Hu4vyNj
+         ZEJTTwb/4LBdTHTkmxMi/DH30avrAgkjBuFWaYkiuUl4AnKAcRt0Xqlv3UBKxr+8+T
+         UvesEDS8NdT707Y/g6A9bWM7gZwjffQyYxVKKfBU=
+Received: from disco-boy.misterjones.org ([51.254.78.96] helo=www.loen.fr)
+        by disco-boy.misterjones.org with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.92)
+        (envelope-from <maz@kernel.org>)
+        id 1iprd8-0007Js-6n; Fri, 10 Jan 2020 10:35:02 +0000
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: HdxpCgCHCsjgURheqcdzDA--.474S4
-X-Coremail-Antispam: 1Uf129KBjvJXoW3AFyUZF4kGF4Uuw4UuryUJrb_yoWxWF1fpF
-        W5JF98Jry7CF13Jw43JF9Iyw4a9ryvya47WayrZ34FkFs8XrW0vrn7KFy3tF4jqr1fA39x
-        tw4UKa1jgan0vr7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07jNOz3UUUUU=
-X-Originating-IP: [114.247.175.196]
-X-CM-SenderInfo: pqlxs5plohxqqrwthudrp/1tbiTRmmgFc7O6dgPgAAsc
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Fri, 10 Jan 2020 10:35:02 +0000
+From:   Marc Zyngier <maz@kernel.org>
+To:     Jianyong Wu <Jianyong.Wu@arm.com>
+Cc:     netdev@vger.kernel.org, yangbo.lu@nxp.com, john.stultz@linaro.org,
+        tglx@linutronix.de, pbonzini@redhat.com,
+        sean.j.christopherson@intel.com, richardcochran@gmail.com,
+        Mark Rutland <Mark.Rutland@arm.com>, will@kernel.org,
+        Suzuki Poulose <Suzuki.Poulose@arm.com>,
+        Steven Price <Steven.Price@arm.com>,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        kvmarm@lists.cs.columbia.edu, kvm@vger.kernel.org,
+        Steve Capper <Steve.Capper@arm.com>,
+        Kaly Xin <Kaly.Xin@arm.com>, Justin He <Justin.He@arm.com>,
+        nd <nd@arm.com>
+Subject: Re: [RFC PATCH v9 7/8] ptp: arm64: Enable ptp_kvm for arm64
+In-Reply-To: <HE1PR0801MB16765B52E5DCD8EA480EDABFF4380@HE1PR0801MB1676.eurprd08.prod.outlook.com>
+References: <20191210034026.45229-1-jianyong.wu@arm.com>
+ <20191210034026.45229-8-jianyong.wu@arm.com>
+ <ca162efb3a0de530e119f5237c006515@kernel.org>
+ <HE1PR0801MB1676EE12CF0DB7C5BB8CC62DF4390@HE1PR0801MB1676.eurprd08.prod.outlook.com>
+ <ee801dacbf4143e8d41807d5bfad1409@kernel.org>
+ <HE1PR0801MB16765B52E5DCD8EA480EDABFF4380@HE1PR0801MB1676.eurprd08.prod.outlook.com>
+Message-ID: <a85deebc23c1fa77e6f70b6eaef22a34@kernel.org>
+X-Sender: maz@kernel.org
+User-Agent: Roundcube Webmail/1.3.8
+X-SA-Exim-Connect-IP: 51.254.78.96
+X-SA-Exim-Rcpt-To: Jianyong.Wu@arm.com, netdev@vger.kernel.org, yangbo.lu@nxp.com, john.stultz@linaro.org, tglx@linutronix.de, pbonzini@redhat.com, sean.j.christopherson@intel.com, richardcochran@gmail.com, Mark.Rutland@arm.com, will@kernel.org, Suzuki.Poulose@arm.com, Steven.Price@arm.com, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu, kvm@vger.kernel.org, Steve.Capper@arm.com, Kaly.Xin@arm.com, Justin.He@arm.com, nd@arm.com
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-    Pktgen can use only one IPv6 source address from output device, or src6 command
-    setting. When in pressure test need create lots of session more than 65536.
-    If IPSRC_RND flag is use random  address between src6_min and src6_max.
+Hi Jianyong,
 
-    The GCC  generates code that calls functions in the libgcc library to implement
-    the / and % operations with 128-bit operands on 64-bit CPUs. So kernel need
-    implement the function  to do / and % operation.
+On 2020-01-10 10:15, Jianyong Wu wrote:
+> Hi Marc,
 
-    Signed-off-by: Niu Xilei <niu_xilei@163.com>
----
- net/core/pktgen.c | 183 ++++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 183 insertions(+)
+[...]
 
-diff --git a/net/core/pktgen.c b/net/core/pktgen.c
-index 294bfcf0ce0e..b07ab5984fa8 100644
---- a/net/core/pktgen.c
-+++ b/net/core/pktgen.c
-@@ -254,6 +254,111 @@ struct flow_state {
- /* flow flag bits */
- #define F_INIT   (1<<0)		/* flow has been initialized */
- 
-+#ifdef CONFIG_ARCH_SUPPORTS_INT128
-+
-+__extension__ typedef  unsigned __int128 u128;
-+
-+/* Kernel not implement __int128's divide and modulo operator. Implement these
-+ * operation use shift-subtract division algorithm  adpater from
-+ * https://chromium.googlesource.com/chromium/src/third_party/+/master/abseil-cpp/absl/numeric/int128.cc */
-+
-+/* find first bit set of u128 */
-+static inline int fls128(u128 n)
-+{
-+	u64 hi = n >> 64;
-+
-+	if (hi)
-+		return fls64(hi) + 64;
-+
-+	return fls64((__u64)n);
-+}
-+
-+/**
-+ * div128_u128 - unsigned 128bit int divide with unsigned 128bit int divisor
-+ * @dividend:   128bit dividend
-+ * @divisor:    128bit divisor
-+ * @remainder:  128bit  remainder
-+ * @return:     128bit quotient
-+ */
-+u128 div128_u128(u128 dividend, u128 divisor, u128 *remainder)
-+{
-+	int i;
-+	int shift;
-+	u128 quotient = 0;
-+	u128 denominator = divisor;
-+
-+	if (divisor > dividend) {
-+		*remainder = dividend;
-+		return 0;
-+	}
-+	if (divisor == dividend) {
-+		*remainder = 0;
-+		return 1;
-+	}
-+
-+	/* Left aligns the MSB of the dividend and the dividend. */
-+	shift = fls128(dividend) - fls128(denominator);
-+	denominator <<= shift;
-+	/* Uses shift-subtract algorithm to divide dividend by denominator. The
-+	 * remainder will be left in dividend. */
-+	for (i = 0; i <= shift; ++i) {
-+		quotient <<= 1;
-+		if (dividend >= denominator) {
-+			dividend -= denominator;
-+			quotient |= 1;
-+		}
-+		denominator >>= 1;
-+	}
-+	*remainder = dividend;
-+	return quotient;
-+}
-+
-+#ifdef __LITTLE_ENDIAN
-+
-+static inline u128 be128_to_cpu(u128 net128)
-+{
-+#if defined(CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS)
-+	u64 *pnet = (u64 *)&net128;
-+
-+	return (((__force u128)swab64(pnet[0]) << 64) |
-+		(__force u128)swab64(pnet[1]));
-+#else
-+
-+	u32 *pnet = (u32 *)&net128;
-+
-+	return (((__force u128)swap32(pnet[0])) << 96 |
-+		((__force u128)swap32(pnet[1])) << 64 |
-+		((__force u128)swap32(pnet[2])) << 32 |
-+		(__force u128)swap32(pnet[3]));
-+
-+#endif
-+}
-+
-+static inline u128 cpu_to_be128(u128 host128)
-+{
-+#if defined(CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS)
-+	u64 *phost = (u64 *)&host128;
-+
-+	return  (((__force u128)swab64(phost[0])) << 64 |
-+		(__force u128)swab64(phost[1]));
-+#else
-+	u32 *phost = (u32 *)&host128;
-+
-+	return (((__force u128)swap32(phost[0])) << 96 |
-+		((__force u128)swap32(phost[1])) << 64 |
-+		((__force u128)swap32(phost[2])) << 32 |
-+		(__force u128)swap32(phost[3]));
-+#endif
-+}
-+
-+#else /* !__LITTLE_ENDIAN  */
-+
-+#define be128_to_cpu(x) (x)
-+#define cpu_to_be128(x) (x)
-+
-+#endif /* __LITTLE_ENDIAN */
-+#endif /* CONFIG_ARCH_SUPPORTS_INT128 */
-+
- struct pktgen_dev {
- 	/*
- 	 * Try to keep frequent/infrequent used vars. separated.
-@@ -1355,6 +1460,49 @@ static ssize_t pktgen_if_write(struct file *file,
- 		sprintf(pg_result, "OK: dst6_max=%s", buf);
- 		return count;
- 	}
-+	if (!strcmp(name, "src6_min")) {
-+		len = strn_len(&user_buffer[i], sizeof(buf) - 1);
-+		if (len < 0)
-+			return len;
-+
-+		pkt_dev->flags |= F_IPV6;
-+
-+		if (copy_from_user(buf, &user_buffer[i], len))
-+			return -EFAULT;
-+		buf[len] = 0;
-+
-+		in6_pton(buf, -1, pkt_dev->min_in6_saddr.s6_addr, -1, NULL);
-+		snprintf(buf, sizeof(buf), "%pI6c", &pkt_dev->min_in6_saddr);
-+
-+		pkt_dev->cur_in6_saddr = pkt_dev->min_in6_saddr;
-+		if (debug)
-+			pr_debug("src6_min set to: %s\n", buf);
-+
-+		i += len;
-+		sprintf(pg_result, "OK: src6_min=%s", buf);
-+		return count;
-+	}
-+	if (!strcmp(name, "src6_max")) {
-+		len = strn_len(&user_buffer[i], sizeof(buf) - 1);
-+		if (len < 0)
-+			return len;
-+
-+		pkt_dev->flags |= F_IPV6;
-+
-+		if (copy_from_user(buf, &user_buffer[i], len))
-+			return -EFAULT;
-+		buf[len] = 0;
-+
-+		in6_pton(buf, -1, pkt_dev->max_in6_saddr.s6_addr, -1, NULL);
-+		snprintf(buf, sizeof(buf), "%pI6c", &pkt_dev->max_in6_saddr);
-+
-+		if (debug)
-+			pr_debug("dst6_max set to: %s\n", buf);
-+
-+		i += len;
-+		sprintf(pg_result, "OK: dst6_max=%s", buf);
-+		return count;
-+	}
- 	if (!strcmp(name, "src6")) {
- 		len = strn_len(&user_buffer[i], sizeof(buf) - 1);
- 		if (len < 0)
-@@ -2286,6 +2434,38 @@ static void set_cur_queue_map(struct pktgen_dev *pkt_dev)
- 	pkt_dev->cur_queue_map  = pkt_dev->cur_queue_map % pkt_dev->odev->real_num_tx_queues;
- }
- 
-+/* create ipv6 source addr, random generator or iterator between the range  */
-+static inline void set_src_in6_addr(struct pktgen_dev *pkt_dev)
-+{
-+	u128 t;
-+	u128 imn6, imx6;
-+
-+	if (!ipv6_addr_any(&pkt_dev->min_in6_saddr)) {
-+#ifdef CONFIG_ARCH_SUPPORTS_INT128
-+		imn6 = be128_to_cpu(*(u128 *)pkt_dev->min_in6_saddr.s6_addr);
-+		imx6 = be128_to_cpu(*(u128 *)pkt_dev->max_in6_saddr.s6_addr);
-+		if (imn6 < imx6) {
-+			if (pkt_dev->flags & F_IPSRC_RND) {
-+				do {
-+					prandom_bytes(&t, sizeof(t));
-+					/*t = t % range */
-+					div128_u128(t, imx6 - imn6, &t);
-+					t = imn6 + t;
-+				} while (ipv6_addr_loopback((struct in6_addr *)&t) ||
-+					 ipv6_addr_v4mapped((struct in6_addr *)&t) ||
-+					 ipv6_addr_is_multicast((struct in6_addr *)(&t)));
-+			} else {
-+				t = be128_to_cpu(*(u128 *)pkt_dev->cur_in6_saddr.s6_addr);
-+				t++;
-+				if (t > imx6)
-+					t = imn6;
-+			}
-+			t = cpu_to_be128(t);
-+			pkt_dev->cur_in6_saddr = *(struct in6_addr *)&t;
-+		}
-+#endif
-+	}
-+}
- /* Increment/randomize headers according to flags and current values
-  * for IP src/dest, UDP src/dst port, MAC-Addr src/dst
-  */
-@@ -2293,6 +2473,7 @@ static void mod_cur_headers(struct pktgen_dev *pkt_dev)
- {
- 	__u32 imn;
- 	__u32 imx;
-+
- 	int flow = 0;
- 
- 	if (pkt_dev->cflows)
-@@ -2454,6 +2635,8 @@ static void mod_cur_headers(struct pktgen_dev *pkt_dev)
- 		}
- 	} else {		/* IPV6 * */
- 
-+		set_src_in6_addr(pkt_dev);
-+
- 		if (!ipv6_addr_any(&pkt_dev->min_in6_daddr)) {
- 			int i;
- 
+>> >> > +	ktime_overall = hvc_res.a0 << 32 | hvc_res.a1;
+>> >> > +	*ts = ktime_to_timespec64(ktime_overall);
+>> >> > +	*cycle = hvc_res.a2 << 32 | hvc_res.a3;
+>> >>
+>> >> So why isn't that just a read of the virtual counter, given that what
+>> >> you do in the hypervisor seems to be "cntpct - cntvoff"?
+>> >>
+>> >> What am I missing here?
+>> >>
+>> > We need get clock time and counter cycle at the same time, so we can't
+>> > just read virtual counter at guest and must get it from host.
+>> 
+>> See my comment in my reply to patch #6: *Must* seems like a very 
+>> strong
+>> word, and you don't explain *why* that's better than just computing 
+>> the
+>> total hypercall cost. Hint: given the frequency of the counter (in the 
+>> few MHz
+>> range) vs the frequency of a CPU (in the multiple GHz range, and with 
+>> an IPC
+>> close enough to 1), I doubt that you'll see the counter making much 
+>> progress
+>> across a hypercall.
+>> 
+> Sorry, I will avoid to use those strong words.
+> 
+> It's really the case that the hypercall won't across cycle in general.
+> But sometimes, kernel preempt
+> may happen in the middle of the hypercall which we can't assume how
+> long before schedule back. so it's better capture them
+> together at the same time.
+
+Fair enough. Please document the rational, as I guess others will ask
+the same questions.
+
+Then the problem to solve is that of the reference counter, as you so 
+far
+assume the virtual counter. I guess you need to be able to let the guest
+select the reference counter when calling the PTP service.
+
+[...]
+
+> By the way, does nested virtualization diff between arm64 and arm32?
+
+There is no nested virt for 32bit (it is explicitly forbidden by the
+architecture).
+
+         M.
 -- 
-2.20.1
-
+Jazz is not dead. It just smells funny...
