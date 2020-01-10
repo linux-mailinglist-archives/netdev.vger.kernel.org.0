@@ -2,215 +2,202 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B434413702D
-	for <lists+netdev@lfdr.de>; Fri, 10 Jan 2020 15:54:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D24EF137063
+	for <lists+netdev@lfdr.de>; Fri, 10 Jan 2020 15:56:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728349AbgAJOyk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jan 2020 09:54:40 -0500
-Received: from mail-bn8nam12on2052.outbound.protection.outlook.com ([40.107.237.52]:8034
-        "EHLO NAM12-BN8-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728308AbgAJOyi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 10 Jan 2020 09:54:38 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=e8hE0Ok0STMoWusQ9TGi4Ta08BkovEV5HX3jrkQUFTWGs7Gw3HAaFCgq4zLGBJ1a5D7XMDEua/QUvtXkZs7/aBaS7T2bxOq3thueHX4/gYYrbvSP+izsYfiXgluDglIXGYy+0Jx+hrdjn/PizoFF2Q5KEyriqI8TS+S1L0BpbLQL4CtLFiPQPsApOwnlfjzDvyHghCmbUzmzvHP8eKA6WZ/YJsHJMXGXbhKqLWEEoyc1nSfhMdhOWbnxMbTBH2J4N5bRmqHyDalf9nDetvhrwx9lPiUXIAjujHPJC0OU5NPRfLb0WeoxwV6MXcf7Sf9DyKNJ4kJCkeWSFc0hqRPbZA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=RWp09n2CH7TcP/N2KbkGHdfSNjz6T/re9GHkqptVCW8=;
- b=hcMvsSIWV8fC1oUi/SPFvv6ZH2JZ/UVQbAR6Sr4Tz1aB8u3qz51vewykKNLuVWeRvn5Kn/ighLhBEjpDvtAQQrOZ45bbefSlQ9u/1VpFfMNTvCcPLKu3kOSfQDYXqpGO468W8y9OXk9amf0R8k9dDadIXv/5VcJOnUe9DijUGwPc+uV3f/w5CHCVzHUw5oTjcCnqdxjtzcgfnfvwQdz4G1N/u9P2vHp4nEh7cvV3Sifuxk7+edXs44L/3Ym/lqHUdQhsvkx8jlIHk9ozxapNrvq747c6lrs+6yk1Ayr8Ba0o600Cwh6kj6+aqZfb4Ff8mpttv1aMaHA2zKVg7GaGXA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=xilinx.com; dmarc=pass action=none header.from=xilinx.com;
- dkim=pass header.d=xilinx.com; arc=none
+        id S1728367AbgAJO4i (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jan 2020 09:56:38 -0500
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:53261 "EHLO
+        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728310AbgAJO4h (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jan 2020 09:56:37 -0500
+Received: by mail-wm1-f65.google.com with SMTP id m24so2313745wmc.3
+        for <netdev@vger.kernel.org>; Fri, 10 Jan 2020 06:56:35 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=RWp09n2CH7TcP/N2KbkGHdfSNjz6T/re9GHkqptVCW8=;
- b=Acd26+9aGknuNXlMEA8tS1BErB+CGwUC4yti6J0cjU71PThh00b77Mkof6DlzGuOSZbTRcjc8G38EVm5AlbOGViFgpsDpcFq3uydbCnu8Voe9kro3EubGpACebn+dPom8rSRgruxeITMH6MvtDi9dY6VuIbiQaZ0xaGXGX+rFlk=
-Received: from CH2PR02MB7000.namprd02.prod.outlook.com (20.180.9.216) by
- CH2PR02MB6760.namprd02.prod.outlook.com (10.141.156.73) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2623.9; Fri, 10 Jan 2020 14:54:35 +0000
-Received: from CH2PR02MB7000.namprd02.prod.outlook.com
- ([fe80::969:436f:b4b8:4899]) by CH2PR02MB7000.namprd02.prod.outlook.com
- ([fe80::969:436f:b4b8:4899%7]) with mapi id 15.20.2623.013; Fri, 10 Jan 2020
- 14:54:35 +0000
-From:   Radhey Shyam Pandey <radheys@xilinx.com>
-To:     Andre Przywara <andre.przywara@arm.com>,
-        "David S . Miller" <davem@davemloft.net>
-CC:     Michal Simek <michals@xilinx.com>,
-        Robert Hancock <hancock@sedsystems.ca>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH 02/14] net: axienet: Propagate failure of DMA descriptor
- setup
-Thread-Topic: [PATCH 02/14] net: axienet: Propagate failure of DMA descriptor
- setup
-Thread-Index: AQHVx6y29d9jke+J9UGemOnmCbRblqfj+/xw
-Date:   Fri, 10 Jan 2020 14:54:35 +0000
-Message-ID: <CH2PR02MB7000063BD3CFC30D18B06FDFC7380@CH2PR02MB7000.namprd02.prod.outlook.com>
-References: <20200110115415.75683-1-andre.przywara@arm.com>
- <20200110115415.75683-3-andre.przywara@arm.com>
-In-Reply-To: <20200110115415.75683-3-andre.przywara@arm.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=radheys@xilinx.com; 
-x-originating-ip: [149.199.50.133]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: a987f790-008e-4875-9333-08d795dd0286
-x-ms-traffictypediagnostic: CH2PR02MB6760:|CH2PR02MB6760:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <CH2PR02MB67603C40A482241CBCA9BF76C7380@CH2PR02MB6760.namprd02.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:3968;
-x-forefront-prvs: 02788FF38E
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(366004)(396003)(136003)(346002)(39860400002)(376002)(199004)(189003)(13464003)(54906003)(110136005)(8676002)(81156014)(86362001)(81166006)(7696005)(26005)(186003)(478600001)(71200400001)(2906002)(6506007)(316002)(8936002)(53546011)(66446008)(64756008)(66556008)(4326008)(52536014)(33656002)(66476007)(55016002)(5660300002)(76116006)(66946007)(9686003);DIR:OUT;SFP:1101;SCL:1;SRVR:CH2PR02MB6760;H:CH2PR02MB7000.namprd02.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: xilinx.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: PWQiwu3otGzYSLtuYcCPGH4ZqYBkgD1P7S0kBdyECWGOcFBvuZXjS6XxyjnKg9tICTY3mvcBSOjRMstCZDmObooQnTOrFGzdvAF+YY/9xEE7TazvYeD9N/FzFVX1rmbDWBcbCfVCbz3k3yk7JxeF+MbvC5Pb2UZBNA6dxr5OfoY58YgtKB6nLA9jX0/amKL+L968cWsL25nt+Sc15LWebcR+ZFTpPNHnw+gQFCwjbs/akXkILiNfJD0Hw4kRsJ0xCgbJI96Xg2R9Sus6Angxae2FEi3zbnrGYTyKjcpoMlYmN6dJva9G/HEV8LoVbCKSC7ZA3MJ2prnjx0GhvV4mWI4XBhqKipl/gxCO5rb9GQW0KWZdFqcBd423kl4NjKOA84+1gAN3JFrJ9pVVnBsOO8XCYLY1tK5AGIxL4tlKc1fMqo+mFPw+HQRz12zUZekjpV2PIHQKqBeKYgMSgJjKCUU9UWjwCQCd5atCecrPnRUcxYLuRVzBXHUssvv4P0j8
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=z5xEiIwweisv7uGkMK7SCdhdi2LzwAtdwuz+Dm7/uSM=;
+        b=x89hDITqj+0CECIaebqQ+Dxw8J52pCxPKJi2w4JvCTig2J/eNjrdchZow8YGAhZePo
+         o1Z8q1e7jIzNtAF9/9XivhBEaAt2Hlmjt/KOgVmrEMKVR7Wy1ntdkGobkb52/8+wMRMN
+         HHcsPJaPJoGB5fvubNggj7CvJguVTpNPyT7w/GaeR9XkB7etM3DrBTRaIH69rslKdCKz
+         7BCLSh3ocRYjZg+4U8IH0M8Pja7+F9DfszpzrM1ldDHEL/VmvYS9il0mMip1H8DO6K7v
+         0nFlXcPF1ybJX0WxxlgmzQ2hn71iRzBQGi+jCGkiaIzqBsOtbS6HXwFWj/mlUlLesufF
+         OZ0A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=z5xEiIwweisv7uGkMK7SCdhdi2LzwAtdwuz+Dm7/uSM=;
+        b=j/M32JlE7ZI0AQF4z9TqjQ5D/wVz3V9MJ3e1ubxwxI9e9q+uLwMaJV2Zcd0/Rbm2cS
+         ZojN6Vg4IbEuu4dnsC4h4ug/gau+NWBMRj1ojkHdOnlaihXjTuoEkPIHgHmI+IXPZbdX
+         uW2l+wgzISqSpVQm8qhMp0rngWXoB4oHrxfXlJoM4DG46RMHj63rnMjdorZh69eTQtYR
+         A9hHYz8Y/DCKG42BGxUhMoqdYDxrasXBzewDw2pih4x3I5AGdiNzYzo7P2Hqx5a7I3x/
+         YXlVD+M57fA1A7eQ5d8s56bWjHWYO7zZ6psLwqOKkOLMm9mu7iSHmz9SSPKEMWjkwBVn
+         eJ5g==
+X-Gm-Message-State: APjAAAVGFo9zmQBpt/Ls2Zbh5d5r08BhCKpdjk/n1d4OlWv3ofuWqoU6
+        aAaOek9hpWMsBaVcdS2fKrSzsA==
+X-Google-Smtp-Source: APXvYqwMlVA5ec+JKxcZ7q7TEeffu2ZEQi0CtcwGaY/Gfb/yuz8aoRCobi2H6Xhy9+rJim4Xt8NwVg==
+X-Received: by 2002:a7b:c3d7:: with SMTP id t23mr5023101wmj.33.1578668195148;
+        Fri, 10 Jan 2020 06:56:35 -0800 (PST)
+Received: from apalos.home (athedsl-321073.home.otenet.gr. [85.72.109.207])
+        by smtp.gmail.com with ESMTPSA id z21sm2422867wml.5.2020.01.10.06.56.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 10 Jan 2020 06:56:34 -0800 (PST)
+Date:   Fri, 10 Jan 2020 16:56:31 +0200
+From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
+To:     Lorenzo Bianconi <lorenzo@kernel.org>
+Cc:     netdev@vger.kernel.org, brouer@redhat.com, davem@davemloft.net,
+        lorenzo.bianconi@redhat.com
+Subject: Re: [PATCH v2 net-next] net: socionext: get rid of huge dma sync in
+ netsec_alloc_rx_data
+Message-ID: <20200110145631.GA69461@apalos.home>
+References: <81eeb4aaf1cbbbdcd4f58c5a7f06bdab67f20633.1578664483.git.lorenzo@kernel.org>
 MIME-Version: 1.0
-X-OriginatorOrg: xilinx.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a987f790-008e-4875-9333-08d795dd0286
-X-MS-Exchange-CrossTenant-originalarrivaltime: 10 Jan 2020 14:54:35.7674
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 657af505-d5df-48d0-8300-c31994686c5c
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: NKGSwuX3gG8GxXp+RBX5/80Nie0VQy1xapCxTY+CMzP3yZqE2uM2YCgkP+XGkqeewDnJN8E4dejNEhQL/KOCjw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR02MB6760
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <81eeb4aaf1cbbbdcd4f58c5a7f06bdab67f20633.1578664483.git.lorenzo@kernel.org>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> -----Original Message-----
-> From: Andre Przywara <andre.przywara@arm.com>
-> Sent: Friday, January 10, 2020 5:24 PM
-> To: David S . Miller <davem@davemloft.net>; Radhey Shyam Pandey
-> <radheys@xilinx.com>
-> Cc: Michal Simek <michals@xilinx.com>; Robert Hancock
-> <hancock@sedsystems.ca>; netdev@vger.kernel.org; linux-arm-
-> kernel@lists.infradead.org; linux-kernel@vger.kernel.org
-> Subject: [PATCH 02/14] net: axienet: Propagate failure of DMA descriptor
-> setup
->=20
-> When we fail allocating the DMA buffers in axienet_dma_bd_init(), we
-> report this error, but carry on with initialisation nevertheless.
->=20
-> This leads to a kernel panic when the driver later wants to send a
-> packet, as it uses uninitialised data structures.
->=20
-> Make the axienet_device_reset() routine return an error value, as it
-> contains the DMA buffer initialisation. Make sure we propagate the error
-> up the chain and eventually fail the driver initialisation, to avoid
-> relying on non-initialised buffers.
->=20
-> Signed-off-by: Andre Przywara <andre.przywara@arm.com>
-Reviewed-by: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
-
+On Fri, Jan 10, 2020 at 02:57:44PM +0100, Lorenzo Bianconi wrote:
+> Socionext driver can run on dma coherent and non-coherent devices.
+> Get rid of huge dma_sync_single_for_device in netsec_alloc_rx_data since
+> now the driver can let page_pool API to managed needed DMA sync
+> 
+> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
 > ---
->  .../net/ethernet/xilinx/xilinx_axienet_main.c | 25 +++++++++++++------
->  1 file changed, 18 insertions(+), 7 deletions(-)
->=20
-> diff --git a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-> b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-> index 20746b801959..97482cf093ce 100644
-> --- a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-> +++ b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-> @@ -437,9 +437,10 @@ static void axienet_setoptions(struct net_device
-> *ndev, u32 options)
->  	lp->options |=3D options;
->  }
->=20
-> -static void __axienet_device_reset(struct axienet_local *lp)
-> +static int __axienet_device_reset(struct axienet_local *lp)
+> Changes since v1:
+> - rely on original frame size for dma sync
+> ---
+>  drivers/net/ethernet/socionext/netsec.c | 43 +++++++++++++++----------
+>  1 file changed, 26 insertions(+), 17 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/socionext/netsec.c b/drivers/net/ethernet/socionext/netsec.c
+> index b5a9e947a4a8..45c76b437457 100644
+> --- a/drivers/net/ethernet/socionext/netsec.c
+> +++ b/drivers/net/ethernet/socionext/netsec.c
+> @@ -243,6 +243,7 @@
+>  			       NET_IP_ALIGN)
+>  #define NETSEC_RX_BUF_NON_DATA (NETSEC_RXBUF_HEADROOM + \
+>  				SKB_DATA_ALIGN(sizeof(struct skb_shared_info)))
+> +#define NETSEC_RX_BUF_SIZE	(PAGE_SIZE - NETSEC_RX_BUF_NON_DATA)
+>  
+>  #define DESC_SZ	sizeof(struct netsec_de)
+>  
+> @@ -719,7 +720,6 @@ static void *netsec_alloc_rx_data(struct netsec_priv *priv,
 >  {
->  	u32 timeout;
-> +
->  	/* Reset Axi DMA. This would reset Axi Ethernet core as well. The
-> reset
->  	 * process of Axi DMA takes a while to complete as all pending
->  	 * commands/transfers will be flushed or completed during this
-> @@ -455,9 +456,11 @@ static void __axienet_device_reset(struct
-> axienet_local *lp)
->  		if (--timeout =3D=3D 0) {
->  			netdev_err(lp->ndev, "%s: DMA reset timeout!\n",
->  				   __func__);
-> -			break;
-> +			return -ETIMEDOUT;
->  		}
->  	}
-> +
-> +	return 0;
->  }
->=20
->  /**
-> @@ -471,12 +474,15 @@ static void __axienet_device_reset(struct
-> axienet_local *lp)
->   * Ethernet core. No separate hardware reset is done for the Axi Etherne=
-t
->   * core.
->   */
-> -static void axienet_device_reset(struct net_device *ndev)
-> +static int axienet_device_reset(struct net_device *ndev)
->  {
->  	u32 axienet_status;
->  	struct axienet_local *lp =3D netdev_priv(ndev);
-> +	int ret;
->=20
-> -	__axienet_device_reset(lp);
-> +	ret =3D __axienet_device_reset(lp);
-> +	if (ret)
-> +		return ret;
->=20
->  	lp->max_frm_size =3D XAE_MAX_VLAN_FRAME_SIZE;
->  	lp->options |=3D XAE_OPTION_VLAN;
-> @@ -491,9 +497,11 @@ static void axienet_device_reset(struct net_device
-> *ndev)
->  			lp->options |=3D XAE_OPTION_JUMBO;
->  	}
->=20
-> -	if (axienet_dma_bd_init(ndev)) {
-> +	ret =3D axienet_dma_bd_init(ndev);
-> +	if (ret) {
->  		netdev_err(ndev, "%s: descriptor allocation failed\n",
->  			   __func__);
-> +		return ret;
->  	}
->=20
->  	axienet_status =3D axienet_ior(lp, XAE_RCW1_OFFSET);
-> @@ -518,6 +526,8 @@ static void axienet_device_reset(struct net_device
-> *ndev)
->  	axienet_setoptions(ndev, lp->options);
->=20
->  	netif_trans_update(ndev);
-> +
-> +	return 0;
->  }
->=20
->  /**
-> @@ -921,8 +931,9 @@ static int axienet_open(struct net_device *ndev)
+>  
+>  	struct netsec_desc_ring *dring = &priv->desc_ring[NETSEC_RING_RX];
+> -	enum dma_data_direction dma_dir;
+>  	struct page *page;
+>  
+>  	page = page_pool_dev_alloc_pages(dring->page_pool);
+> @@ -734,9 +734,7 @@ static void *netsec_alloc_rx_data(struct netsec_priv *priv,
+>  	/* Make sure the incoming payload fits in the page for XDP and non-XDP
+>  	 * cases and reserve enough space for headroom + skb_shared_info
 >  	 */
->  	mutex_lock(&lp->mii_bus->mdio_lock);
->  	axienet_mdio_disable(lp);
-> -	axienet_device_reset(ndev);
-> -	ret =3D axienet_mdio_enable(lp);
-> +	ret =3D axienet_device_reset(ndev);
-> +	if (ret =3D=3D 0)
-> +		ret =3D axienet_mdio_enable(lp);
->  	mutex_unlock(&lp->mii_bus->mdio_lock);
->  	if (ret < 0)
->  		return ret;
-> --
-> 2.17.1
+> -	*desc_len = PAGE_SIZE - NETSEC_RX_BUF_NON_DATA;
+> -	dma_dir = page_pool_get_dma_dir(dring->page_pool);
+> -	dma_sync_single_for_device(priv->dev, *dma_handle, *desc_len, dma_dir);
+> +	*desc_len = NETSEC_RX_BUF_SIZE;
+>  
+>  	return page_address(page);
+>  }
+> @@ -883,6 +881,8 @@ static u32 netsec_xdp_xmit_back(struct netsec_priv *priv, struct xdp_buff *xdp)
+>  static u32 netsec_run_xdp(struct netsec_priv *priv, struct bpf_prog *prog,
+>  			  struct xdp_buff *xdp)
+>  {
+> +	struct netsec_desc_ring *dring = &priv->desc_ring[NETSEC_RING_RX];
+> +	unsigned int len = xdp->data_end - xdp->data;
 
+We need to account for XDP expanding the headers as well here. 
+So something like max(xdp->data_end(before bpf), xdp->data_end(after bpf)) -
+xdp->data (original)
+
+>  	u32 ret = NETSEC_XDP_PASS;
+>  	int err;
+>  	u32 act;
+> @@ -896,7 +896,9 @@ static u32 netsec_run_xdp(struct netsec_priv *priv, struct bpf_prog *prog,
+>  	case XDP_TX:
+>  		ret = netsec_xdp_xmit_back(priv, xdp);
+>  		if (ret != NETSEC_XDP_TX)
+> -			xdp_return_buff(xdp);
+> +			__page_pool_put_page(dring->page_pool,
+> +				     virt_to_head_page(xdp->data),
+> +				     len, true);
+>  		break;
+>  	case XDP_REDIRECT:
+>  		err = xdp_do_redirect(priv->ndev, xdp, prog);
+> @@ -904,7 +906,9 @@ static u32 netsec_run_xdp(struct netsec_priv *priv, struct bpf_prog *prog,
+>  			ret = NETSEC_XDP_REDIR;
+>  		} else {
+>  			ret = NETSEC_XDP_CONSUMED;
+> -			xdp_return_buff(xdp);
+> +			__page_pool_put_page(dring->page_pool,
+> +				     virt_to_head_page(xdp->data),
+> +				     len, true);
+>  		}
+>  		break;
+>  	default:
+> @@ -915,7 +919,9 @@ static u32 netsec_run_xdp(struct netsec_priv *priv, struct bpf_prog *prog,
+>  		/* fall through -- handle aborts by dropping packet */
+>  	case XDP_DROP:
+>  		ret = NETSEC_XDP_CONSUMED;
+> -		xdp_return_buff(xdp);
+> +		__page_pool_put_page(dring->page_pool,
+> +				     virt_to_head_page(xdp->data),
+> +				     len, true);
+>  		break;
+>  	}
+>  
+> @@ -1014,7 +1020,8 @@ static int netsec_process_rx(struct netsec_priv *priv, int budget)
+>  			 * cache state. Since we paid the allocation cost if
+>  			 * building an skb fails try to put the page into cache
+>  			 */
+> -			page_pool_recycle_direct(dring->page_pool, page);
+> +			__page_pool_put_page(dring->page_pool, page,
+> +					     pkt_len, true);
+
+Same here, a bpf prog with XDP_PASS verdict might change lenghts
+
+>  			netif_err(priv, drv, priv->ndev,
+>  				  "rx failed to build skb\n");
+>  			break;
+> @@ -1272,17 +1279,19 @@ static int netsec_setup_rx_dring(struct netsec_priv *priv)
+>  {
+>  	struct netsec_desc_ring *dring = &priv->desc_ring[NETSEC_RING_RX];
+>  	struct bpf_prog *xdp_prog = READ_ONCE(priv->xdp_prog);
+> -	struct page_pool_params pp_params = { 0 };
+> +	struct page_pool_params pp_params = {
+> +		.order = 0,
+> +		/* internal DMA mapping in page_pool */
+> +		.flags = PP_FLAG_DMA_MAP | PP_FLAG_DMA_SYNC_DEV,
+> +		.pool_size = DESC_NUM,
+> +		.nid = NUMA_NO_NODE,
+> +		.dev = priv->dev,
+> +		.dma_dir = xdp_prog ? DMA_BIDIRECTIONAL : DMA_FROM_DEVICE,
+> +		.offset = NETSEC_RXBUF_HEADROOM,
+> +		.max_len = NETSEC_RX_BUF_SIZE,
+> +	};
+>  	int i, err;
+>  
+> -	pp_params.order = 0;
+> -	/* internal DMA mapping in page_pool */
+> -	pp_params.flags = PP_FLAG_DMA_MAP;
+> -	pp_params.pool_size = DESC_NUM;
+> -	pp_params.nid = NUMA_NO_NODE;
+> -	pp_params.dev = priv->dev;
+> -	pp_params.dma_dir = xdp_prog ? DMA_BIDIRECTIONAL : DMA_FROM_DEVICE;
+> -
+>  	dring->page_pool = page_pool_create(&pp_params);
+>  	if (IS_ERR(dring->page_pool)) {
+>  		err = PTR_ERR(dring->page_pool);
+> -- 
+> 2.21.1
+> 
+
+Thanks
+/Ilias
