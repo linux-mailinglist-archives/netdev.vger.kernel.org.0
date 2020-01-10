@@ -2,165 +2,345 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 36723137094
-	for <lists+netdev@lfdr.de>; Fri, 10 Jan 2020 16:03:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1BD1E137099
+	for <lists+netdev@lfdr.de>; Fri, 10 Jan 2020 16:04:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728394AbgAJPDC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jan 2020 10:03:02 -0500
-Received: from esa3.microchip.iphmx.com ([68.232.153.233]:8141 "EHLO
-        esa3.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728249AbgAJPDA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jan 2020 10:03:00 -0500
-Received-SPF: Pass (esa3.microchip.iphmx.com: domain of
-  Claudiu.Beznea@microchip.com designates 198.175.253.82 as
-  permitted sender) identity=mailfrom;
-  client-ip=198.175.253.82; receiver=esa3.microchip.iphmx.com;
-  envelope-from="Claudiu.Beznea@microchip.com";
-  x-sender="Claudiu.Beznea@microchip.com";
-  x-conformance=spf_only; x-record-type="v=spf1";
-  x-record-text="v=spf1 mx a:ushub1.microchip.com
-  a:smtpout.microchip.com -exists:%{i}.spf.microchip.iphmx.com
-  include:servers.mcsv.net include:mktomail.com
-  include:spf.protection.outlook.com ~all"
-Received-SPF: None (esa3.microchip.iphmx.com: no sender
-  authenticity information available from domain of
-  postmaster@email.microchip.com) identity=helo;
-  client-ip=198.175.253.82; receiver=esa3.microchip.iphmx.com;
-  envelope-from="Claudiu.Beznea@microchip.com";
-  x-sender="postmaster@email.microchip.com";
-  x-conformance=spf_only
-Authentication-Results: esa3.microchip.iphmx.com; spf=Pass smtp.mailfrom=Claudiu.Beznea@microchip.com; spf=None smtp.helo=postmaster@email.microchip.com; dkim=pass (signature verified) header.i=@microchiptechnology.onmicrosoft.com; dmarc=pass (p=none dis=none) d=microchip.com
-IronPort-SDR: q1mZVEN9+9nW+41vxWAi9UpPaolO36Gv6BAftDCUtxI9Vs+WlxZ+r9Mt14bSknsGsG5e9CWlT5
- GUOEqYpVdaJTX6RGfbeKYdrSIYqx9T6gj+foUKu4P/Ofdq7mPWdys8NrkrX9y42aCZSY4Hg6iX
- OVtsUuuauqEFqqwrjejtqKe75XqvXJHv8oVd6oZENCHuwIxMoh7J+3R7n/2mcsZ2ozbePmnEl2
- 3PACBOOhyXFJQ/K3CgpJGMhmbiSZ6HOiWhKRpdjwSnVjCWGSoI+7P1HT/CI67Qv0r1q7ns2WFW
- hBc=
-X-IronPort-AV: E=Sophos;i="5.69,417,1571727600"; 
-   d="scan'208";a="62881054"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 10 Jan 2020 08:02:57 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Fri, 10 Jan 2020 08:02:56 -0700
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (10.10.215.89) by
- email.microchip.com (10.10.87.71) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1713.5 via Frontend
- Transport; Fri, 10 Jan 2020 08:02:56 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=lswe8IrsffHQnGEOc/m08k4TFkyhASIbI9pLP6ZP2SUMgxlht8kOovEEVcmJ4yWRwdyVeOtRZmkeDv45nlY2bzGxvtZRNEaaYQFUiE3VkrTnjHIllvWdq/Uc74H6JMM92/gHliW4o4yPy/P4BUL4sJZXoxG6qtWIzR4b+7KSENVYEUIMmMBxgYH7ogVCUMk1i/vIcCUXPYAh4Q/p0Glhw4DvkLFQrc0TsR/p8g8NdDDATRD666Yty2aD8r2eByhKgxdigyGuTjy/lRjfYBiOnJhSdX7GbG+xWJqzWdCdqd/brn3PefDRVOlXAxhWUHfHJN64sK+AihX5+rYrShSigQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ROYUQMPp03uT25P58fK2sBlfAea5ZRoYtOpcKJhSISs=;
- b=LJAbNACXHrIL1ZOgru/FlYDYtHSbDZlz4TNkRIyjjALHC3sZbaAVjfi7lkUiomU62b7NzM959T6TATPshzX6b5caUnj7jDRQBCrGaY84L/zAwflQsrK3Jdvk95xbNZWXD+gBZ9wIO1hkoQUEfWPJ9fHK4oDvY5XGni0g6DObq/hlsZayX0h+bLSRahhXDBlI5xU+9h65jBIaXNSWPCJ9av1PINBkANLhrG7Eazp2hFGgJosGfTkv7SgTdsjF1OtQF+rW2yTMGFrccLM+gwU1F//G2kJLPjLTnybYWNp8rb1F8wcsb7hQ2ZXzjmpSEEK7NymestctrNnH1es7VjofTA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microchip.com; dmarc=pass action=none
- header.from=microchip.com; dkim=pass header.d=microchip.com; arc=none
+        id S1728249AbgAJPEA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jan 2020 10:04:00 -0500
+Received: from mail-qt1-f196.google.com ([209.85.160.196]:34393 "EHLO
+        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728107AbgAJPD7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jan 2020 10:03:59 -0500
+Received: by mail-qt1-f196.google.com with SMTP id 5so2171655qtz.1;
+        Fri, 10 Jan 2020 07:03:58 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=microchiptechnology.onmicrosoft.com;
- s=selector2-microchiptechnology-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ROYUQMPp03uT25P58fK2sBlfAea5ZRoYtOpcKJhSISs=;
- b=WPUm0YU5eWGC/DgvWkZMio4tPNbVPq899Z9fw6fILUacE1XLRZNfmq8dc290WXJZ3uDua0/2NFCNfRQzAWiPBAQhh2OHk2aMBbNNMaqSD4xWkR+1MiGnJqUDw15E7r8BzbcDJNO/Y2xs6DHLVPnTwhV68HDEfbG9h2GFuhEHqJ8=
-Received: from DM6PR11MB3225.namprd11.prod.outlook.com (20.176.120.224) by
- DM6PR11MB4073.namprd11.prod.outlook.com (10.255.61.22) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2623.9; Fri, 10 Jan 2020 15:02:55 +0000
-Received: from DM6PR11MB3225.namprd11.prod.outlook.com
- ([fe80::106f:424f:ac54:1dbb]) by DM6PR11MB3225.namprd11.prod.outlook.com
- ([fe80::106f:424f:ac54:1dbb%7]) with mapi id 15.20.2623.008; Fri, 10 Jan 2020
- 15:02:55 +0000
-From:   <Claudiu.Beznea@microchip.com>
-To:     <alexandre.belloni@bootlin.com>
-CC:     <robh+dt@kernel.org>, <mark.rutland@arm.com>,
-        <Nicolas.Ferre@microchip.com>, <Ludovic.Desroches@microchip.com>,
-        <vkoul@kernel.org>, <Eugen.Hristev@microchip.com>,
-        <jic23@kernel.org>, <knaack.h@gmx.de>, <lars@metafoo.de>,
-        <pmeerw@pmeerw.net>, <mchehab@kernel.org>, <lee.jones@linaro.org>,
-        <richard.genoud@gmail.com>, <radu_nicolae.pirea@upb.ro>,
-        <Tudor.Ambarus@microchip.com>, <miquel.raynal@bootlin.com>,
-        <richard@nod.at>, <vigneshr@ti.com>, <wg@grandegger.com>,
-        <mkl@pengutronix.de>, <a.zummo@towertech.it>, <broonie@kernel.org>,
-        <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <dmaengine@vger.kernel.org>,
-        <linux-iio@vger.kernel.org>, <linux-media@vger.kernel.org>,
-        <linux-spi@vger.kernel.org>, <linux-mtd@lists.infradead.org>,
-        <linux-can@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-rtc@vger.kernel.org>
-Subject: Re: [PATCH 11/16] dt-bindings: atmel,at91rm9200-rtc: add
- microchip,sam9x60-rtc
-Thread-Topic: [PATCH 11/16] dt-bindings: atmel,at91rm9200-rtc: add
- microchip,sam9x60-rtc
-Thread-Index: AQHVx8cJ1Sdz4XPBp0a+PBJp3PSmrg==
-Date:   Fri, 10 Jan 2020 15:02:55 +0000
-Message-ID: <cd8ecfb1-b88a-88c4-205f-45ac7e25c5cc@microchip.com>
-References: <1578488123-26127-1-git-send-email-claudiu.beznea@microchip.com>
- <1578488123-26127-12-git-send-email-claudiu.beznea@microchip.com>
- <20200110143001.GE1027187@piout.net>
-In-Reply-To: <20200110143001.GE1027187@piout.net>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [94.177.32.156]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 3f3eed86-8fd5-4bf0-35f0-08d795de2c78
-x-ms-traffictypediagnostic: DM6PR11MB4073:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <DM6PR11MB4073030C1B5DBFA428B71AF787380@DM6PR11MB4073.namprd11.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:4941;
-x-forefront-prvs: 02788FF38E
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(346002)(396003)(39860400002)(376002)(366004)(136003)(199004)(189003)(8676002)(186003)(5660300002)(6486002)(6512007)(2906002)(71200400001)(53546011)(6506007)(2616005)(26005)(478600001)(66556008)(6916009)(66946007)(66446008)(76116006)(64756008)(66476007)(4326008)(8936002)(81166006)(54906003)(91956017)(31686004)(31696002)(7416002)(7406005)(966005)(316002)(86362001)(81156014)(36756003)(142933001);DIR:OUT;SFP:1101;SCL:1;SRVR:DM6PR11MB4073;H:DM6PR11MB3225.namprd11.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: microchip.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: iwSqYCZiVdt5raWL0+yTz682VYv1qyx7XtWg5eo1oekx5xf+sw34bc+EqB2Vat14SBoqfHBZUhe9AONHULKP8ivYiLSZs7xr+DXzvLR8ttdv2tvPCBpwTma/flzeDtc7Iit+bqLnXKQMep/PIIEDt37PDXTPhqHOoqHvZVSOdoC+rfSP9yQx+BRACJXVCFZQ9tFrbQKqr2GpctWj6kRFS8z+2eX+sBjuu4yjg3anKLa5LX1r07sOqueQo5ZPonA4FULeeAah2U+2kN83Dj9+5nF4KEPY/HGGofbi2Tcqph845d2tmA4ZjQdM7FHfIpU7UN19QOmwRhmOCXxlvVZOVo09I/UiXWjRT47z9AF+29AO/ayrBLKwqpIjt1Ltl7IbS4s++yTfnpkLlDl7RNP5luU6+XeTgwG6SEzdUK7aQoCJnmXwK2AmGNX8cHrnMUqGwaYFLHpCvvHEiOJYOB78PykKqXObMglF01qSpJKVNmY1mEdG8WWlVGqv1NPBEVQbm5TZEP3brumwVq61Foe0yg==
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <AE39BBAE4DFACA498B36344FFFF2868E@namprd11.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=lPwriYPpmU7vTBtppMavx7sT+x5VSWjpmuZxvXXCnKQ=;
+        b=nhMgq8wecsXKtiA5/JyeKmp4/i56C8MciqPhLrUM/3fN6GQdJLLTUQwX1eXmjHDr6W
+         QCXj1CgjIAjVmYtaY3yV3P3cY3C3BvDWEOLMvqJS6X+K6ClyTj/7rkMTbSaimFZsPJcA
+         KDpZ56oN9oRERUj1QSWr+Xt0g/m6xY2gdxZN0SesRW9c8lNAEGE09lR4dSd85SSQYQtV
+         7AEmmAehrUo7y+n1dR+8MBKe66hVQI2GhND7y77FbAhzEIfdOaHNI6fN+ODLHX8Tt9Tx
+         qItgJYMqDKTNQ04eyy5TMXVWbTj1olRCqs7P0W9+QQXQFk6gAG/k+xb8NJ8Tw1qzEerV
+         ou2w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=lPwriYPpmU7vTBtppMavx7sT+x5VSWjpmuZxvXXCnKQ=;
+        b=hJ5DqQjiQAfIwf46SncoMgw+Vu/U8meKdiBH7/WVuvoJZ4EKppR81Z/g5F2H8wI8eb
+         9T+9hJIvWGkzH4Tfm/rwq/7frctTMgA1AUmUo6wl+S39MeFTEG4FEEYK6EAC/zbpyytM
+         6+niYcReuM0cZT0yGwX7aLstketoIEjHPCybJeBmD/hr4UzLcQrjGi6pJKQRPdpSNxPf
+         p+Nr901tFFyYtm2ot4aWj8SQdYEbYCcCouGIoIab9UKB1D3L04JFktEQg/wC9wUyUk9w
+         N9qX8RxZKRrJDXhdm9XNtX6giGybI16pWVvJI6se1kQjOMUCdNYXmjNIyqkA3VCDgiN2
+         Vm0g==
+X-Gm-Message-State: APjAAAXL8PIxJTIT/IL2S+ihBnLKP2+Ibt/lZ8GECAW+pGzmdmax2uOn
+        uVjig024uJnlkYYuQ58jvbLB57t4ard6faD1Nfs=
+X-Google-Smtp-Source: APXvYqxSTZTCVrDCTz/VA1e2oRKnHJ8Dunm/AOlYmFKG3BMI35MXijjpH7dscBqiufb1d3yLRo90GX2OPLAGYjBQFWg=
+X-Received: by 2002:ac8:33a5:: with SMTP id c34mr2779846qtb.359.1578668638333;
+ Fri, 10 Jan 2020 07:03:58 -0800 (PST)
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3f3eed86-8fd5-4bf0-35f0-08d795de2c78
-X-MS-Exchange-CrossTenant-originalarrivaltime: 10 Jan 2020 15:02:55.5649
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: lstx1sjPtslO9cBwiO8kwk8GOEMvvmTcWCx/9VtduurAc4xi13Z118GNEtPtQAoOyi5efonltgFH80Q7t6LwkHm2VBspvI71Uh+h8ZS3nmM=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR11MB4073
+References: <157866612174.432695.5077671447287539053.stgit@toke.dk> <157866612285.432695.6722430952732620313.stgit@toke.dk>
+In-Reply-To: <157866612285.432695.6722430952732620313.stgit@toke.dk>
+From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
+Date:   Fri, 10 Jan 2020 16:03:47 +0100
+Message-ID: <CAJ+HfNgkouU8=T2+Of1nAfwBQ-eqCKKAqrNzhhEafw5qW8bO_w@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 1/2] xdp: Move devmap bulk queue into struct net_device
+To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Cc:     Netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        John Fastabend <john.fastabend@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQoNCk9uIDEwLjAxLjIwMjAgMTY6MzAsIEFsZXhhbmRyZSBCZWxsb25pIHdyb3RlOg0KPiBFWFRF
-Uk5BTCBFTUFJTDogRG8gbm90IGNsaWNrIGxpbmtzIG9yIG9wZW4gYXR0YWNobWVudHMgdW5sZXNz
-IHlvdSBrbm93IHRoZSBjb250ZW50IGlzIHNhZmUNCj4gDQo+IEhpLA0KPiANCj4gT24gMDgvMDEv
-MjAyMCAxNDo1NToxOCswMjAwLCBDbGF1ZGl1IEJlem5lYSB3cm90ZToNCj4+IEFkZCBtaWNyb2No
-aXAsc2FtOXg2MC1ydGMgdG8gRFQgYmluZGluZ3MgZG9jdW1lbnRhdGlvbi4NCj4gDQo+IFRoaXMg
-d2lsbCBoYXZlIHRvIGJlIHJlYmFzZWQgb24gdG9wIG9mDQo+IGh0dHBzOi8vbG9yZS5rZXJuZWwu
-b3JnL2xpbnV4LXJ0Yy8yMDE5MTIyOTIwNDQyMS4zMzc2MTItMi1hbGV4YW5kcmUuYmVsbG9uaUBi
-b290bGluLmNvbS8NCg0KVGhpcyBpcyBhbHNvIG5vdCBpbnRlZ3JhdGVkIGluIGxhdGVzdCBuZXh0
-LiBXaWxsIHRoaXMgcG9zdHBvbmUgdGhlDQphY2NlcHRhbmNlIG9mIHRoZSBkZXZpY2UgdHJlZSwg
-dW50aWwgdGhlIHlhbWwgY29udmVyc2lvbiBpcyBhY2NlcHRlZD8NCg0KPiANCj4+DQo+PiBTaWdu
-ZWQtb2ZmLWJ5OiBDbGF1ZGl1IEJlem5lYSA8Y2xhdWRpdS5iZXpuZWFAbWljcm9jaGlwLmNvbT4N
-Cj4+IC0tLQ0KPj4gIERvY3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9ydGMvYXRtZWws
-YXQ5MXJtOTIwMC1ydGMudHh0IHwgMyArKy0NCj4+ICAxIGZpbGUgY2hhbmdlZCwgMiBpbnNlcnRp
-b25zKCspLCAxIGRlbGV0aW9uKC0pDQo+Pg0KPj4gZGlmZiAtLWdpdCBhL0RvY3VtZW50YXRpb24v
-ZGV2aWNldHJlZS9iaW5kaW5ncy9ydGMvYXRtZWwsYXQ5MXJtOTIwMC1ydGMudHh0IGIvRG9jdW1l
-bnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdzL3J0Yy9hdG1lbCxhdDkxcm05MjAwLXJ0Yy50eHQN
-Cj4+IGluZGV4IDVkMzc5MWU3ODljNi4uMzVlYWI5MTM4ZDBiIDEwMDY0NA0KPj4gLS0tIGEvRG9j
-dW1lbnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdzL3J0Yy9hdG1lbCxhdDkxcm05MjAwLXJ0Yy50
-eHQNCj4+ICsrKyBiL0RvY3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9ydGMvYXRtZWws
-YXQ5MXJtOTIwMC1ydGMudHh0DQo+PiBAQCAtMSw3ICsxLDggQEANCj4+ICBBdG1lbCBBVDkxUk05
-MjAwIFJlYWwgVGltZSBDbG9jaw0KPj4NCj4+ICBSZXF1aXJlZCBwcm9wZXJ0aWVzOg0KPj4gLS0g
-Y29tcGF0aWJsZTogc2hvdWxkIGJlOiAiYXRtZWwsYXQ5MXJtOTIwMC1ydGMiIG9yICJhdG1lbCxh
-dDkxc2FtOXg1LXJ0YyINCj4+ICstIGNvbXBhdGlibGU6IHNob3VsZCBiZTogImF0bWVsLGF0OTFy
-bTkyMDAtcnRjIiwgImF0bWVsLGF0OTFzYW05eDUtcnRjIiBvcg0KPj4gKyAgIm1pY3JvY2hpcCxz
-YW05eDYwLXJ0YyINCj4+ICAtIHJlZzogcGh5c2ljYWwgYmFzZSBhZGRyZXNzIG9mIHRoZSBjb250
-cm9sbGVyIGFuZCBsZW5ndGggb2YgbWVtb3J5IG1hcHBlZA0KPj4gICAgcmVnaW9uLg0KPj4gIC0g
-aW50ZXJydXB0czogcnRjIGFsYXJtL2V2ZW50IGludGVycnVwdA0KPj4gLS0NCj4+IDIuNy40DQo+
-Pg0KPiANCj4gLS0NCj4gQWxleGFuZHJlIEJlbGxvbmksIEJvb3RsaW4NCj4gRW1iZWRkZWQgTGlu
-dXggYW5kIEtlcm5lbCBlbmdpbmVlcmluZw0KPiBodHRwczovL2Jvb3RsaW4uY29tDQo+IA==
+On Fri, 10 Jan 2020 at 15:22, Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat=
+.com> wrote:
+>
+> From: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+>
+> Commit 96360004b862 ("xdp: Make devmap flush_list common for all map
+> instances"), changed devmap flushing to be a global operation instead of =
+a
+> per-map operation. However, the queue structure used for bulking was stil=
+l
+> allocated as part of the containing map.
+>
+> This patch moves the devmap bulk queue into struct net_device. The
+> motivation for this is reusing it for the non-map variant of XDP_REDIRECT=
+,
+> which will be changed in a subsequent commit.
+>
+> We defer the actual allocation of the bulk queue structure until the
+> NETDEV_REGISTER notification devmap.c. This makes it possible to check fo=
+r
+> ndo_xdp_xmit support before allocating the structure, which is not possib=
+le
+> at the time struct net_device is allocated. However, we keep the freeing =
+in
+> free_netdev() to avoid adding another RCU callback on NETDEV_UNREGISTER.
+>
+> Because of this change, we lose the reference back to the map that
+> originated the redirect, so change the tracepoint to always return 0 as t=
+he
+> map ID and index. Otherwise no functional change is intended with this
+> patch.
+>
+
+Nice work, Toke!
+
+I'm getting some checkpatch warnings (>80 char lines), other than that:
+
+Acked-by: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
+
+> Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+> ---
+>  include/linux/netdevice.h  |    3 ++
+>  include/trace/events/xdp.h |    2 +
+>  kernel/bpf/devmap.c        |   61 ++++++++++++++++++--------------------=
+------
+>  net/core/dev.c             |    2 +
+>  4 files changed, 31 insertions(+), 37 deletions(-)
+>
+> diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+> index 2741aa35bec6..1b2bc2a7522e 100644
+> --- a/include/linux/netdevice.h
+> +++ b/include/linux/netdevice.h
+> @@ -876,6 +876,7 @@ enum bpf_netdev_command {
+>  struct bpf_prog_offload_ops;
+>  struct netlink_ext_ack;
+>  struct xdp_umem;
+> +struct xdp_dev_bulk_queue;
+>
+>  struct netdev_bpf {
+>         enum bpf_netdev_command command;
+> @@ -1993,6 +1994,8 @@ struct net_device {
+>         spinlock_t              tx_global_lock;
+>         int                     watchdog_timeo;
+>
+> +       struct xdp_dev_bulk_queue __percpu *xdp_bulkq;
+> +
+>  #ifdef CONFIG_XPS
+>         struct xps_dev_maps __rcu *xps_cpus_map;
+>         struct xps_dev_maps __rcu *xps_rxqs_map;
+> diff --git a/include/trace/events/xdp.h b/include/trace/events/xdp.h
+> index a7378bcd9928..72bad13d4a3c 100644
+> --- a/include/trace/events/xdp.h
+> +++ b/include/trace/events/xdp.h
+> @@ -278,7 +278,7 @@ TRACE_EVENT(xdp_devmap_xmit,
+>         ),
+>
+>         TP_fast_assign(
+> -               __entry->map_id         =3D map->id;
+> +               __entry->map_id         =3D map ? map->id : 0;
+>                 __entry->act            =3D XDP_REDIRECT;
+>                 __entry->map_index      =3D map_index;
+>                 __entry->drops          =3D drops;
+> diff --git a/kernel/bpf/devmap.c b/kernel/bpf/devmap.c
+> index da9c832fc5c8..bcb05cb6b728 100644
+> --- a/kernel/bpf/devmap.c
+> +++ b/kernel/bpf/devmap.c
+> @@ -53,13 +53,11 @@
+>         (BPF_F_NUMA_NODE | BPF_F_RDONLY | BPF_F_WRONLY)
+>
+>  #define DEV_MAP_BULK_SIZE 16
+> -struct bpf_dtab_netdev;
+> -
+> -struct xdp_bulk_queue {
+> +struct xdp_dev_bulk_queue {
+>         struct xdp_frame *q[DEV_MAP_BULK_SIZE];
+>         struct list_head flush_node;
+> +       struct net_device *dev;
+>         struct net_device *dev_rx;
+> -       struct bpf_dtab_netdev *obj;
+>         unsigned int count;
+>  };
+>
+> @@ -67,9 +65,8 @@ struct bpf_dtab_netdev {
+>         struct net_device *dev; /* must be first member, due to tracepoin=
+t */
+>         struct hlist_node index_hlist;
+>         struct bpf_dtab *dtab;
+> -       struct xdp_bulk_queue __percpu *bulkq;
+>         struct rcu_head rcu;
+> -       unsigned int idx; /* keep track of map index for tracepoint */
+> +       unsigned int idx;
+>  };
+>
+>  struct bpf_dtab {
+> @@ -219,7 +216,6 @@ static void dev_map_free(struct bpf_map *map)
+>
+>                         hlist_for_each_entry_safe(dev, next, head, index_=
+hlist) {
+>                                 hlist_del_rcu(&dev->index_hlist);
+> -                               free_percpu(dev->bulkq);
+>                                 dev_put(dev->dev);
+>                                 kfree(dev);
+>                         }
+> @@ -234,7 +230,6 @@ static void dev_map_free(struct bpf_map *map)
+>                         if (!dev)
+>                                 continue;
+>
+> -                       free_percpu(dev->bulkq);
+>                         dev_put(dev->dev);
+>                         kfree(dev);
+>                 }
+> @@ -320,10 +315,9 @@ static int dev_map_hash_get_next_key(struct bpf_map =
+*map, void *key,
+>         return -ENOENT;
+>  }
+>
+> -static int bq_xmit_all(struct xdp_bulk_queue *bq, u32 flags)
+> +static int bq_xmit_all(struct xdp_dev_bulk_queue *bq, u32 flags)
+>  {
+> -       struct bpf_dtab_netdev *obj =3D bq->obj;
+> -       struct net_device *dev =3D obj->dev;
+> +       struct net_device *dev =3D bq->dev;
+>         int sent =3D 0, drops =3D 0, err =3D 0;
+>         int i;
+>
+> @@ -346,8 +340,7 @@ static int bq_xmit_all(struct xdp_bulk_queue *bq, u32=
+ flags)
+>  out:
+>         bq->count =3D 0;
+>
+> -       trace_xdp_devmap_xmit(&obj->dtab->map, obj->idx,
+> -                             sent, drops, bq->dev_rx, dev, err);
+> +       trace_xdp_devmap_xmit(NULL, 0, sent, drops, bq->dev_rx, dev, err)=
+;
+>         bq->dev_rx =3D NULL;
+>         __list_del_clearprev(&bq->flush_node);
+>         return 0;
+> @@ -374,7 +367,7 @@ static int bq_xmit_all(struct xdp_bulk_queue *bq, u32=
+ flags)
+>  void __dev_map_flush(void)
+>  {
+>         struct list_head *flush_list =3D this_cpu_ptr(&dev_map_flush_list=
+);
+> -       struct xdp_bulk_queue *bq, *tmp;
+> +       struct xdp_dev_bulk_queue *bq, *tmp;
+>
+>         rcu_read_lock();
+>         list_for_each_entry_safe(bq, tmp, flush_list, flush_node)
+> @@ -401,12 +394,12 @@ struct bpf_dtab_netdev *__dev_map_lookup_elem(struc=
+t bpf_map *map, u32 key)
+>  /* Runs under RCU-read-side, plus in softirq under NAPI protection.
+>   * Thus, safe percpu variable access.
+>   */
+> -static int bq_enqueue(struct bpf_dtab_netdev *obj, struct xdp_frame *xdp=
+f,
+> +static int bq_enqueue(struct net_device *dev, struct xdp_frame *xdpf,
+>                       struct net_device *dev_rx)
+>
+>  {
+>         struct list_head *flush_list =3D this_cpu_ptr(&dev_map_flush_list=
+);
+> -       struct xdp_bulk_queue *bq =3D this_cpu_ptr(obj->bulkq);
+> +       struct xdp_dev_bulk_queue *bq =3D this_cpu_ptr(dev->xdp_bulkq);
+>
+>         if (unlikely(bq->count =3D=3D DEV_MAP_BULK_SIZE))
+>                 bq_xmit_all(bq, 0);
+> @@ -444,7 +437,7 @@ int dev_map_enqueue(struct bpf_dtab_netdev *dst, stru=
+ct xdp_buff *xdp,
+>         if (unlikely(!xdpf))
+>                 return -EOVERFLOW;
+>
+> -       return bq_enqueue(dst, xdpf, dev_rx);
+> +       return bq_enqueue(dev, xdpf, dev_rx);
+>  }
+>
+>  int dev_map_generic_redirect(struct bpf_dtab_netdev *dst, struct sk_buff=
+ *skb,
+> @@ -483,7 +476,6 @@ static void __dev_map_entry_free(struct rcu_head *rcu=
+)
+>         struct bpf_dtab_netdev *dev;
+>
+>         dev =3D container_of(rcu, struct bpf_dtab_netdev, rcu);
+> -       free_percpu(dev->bulkq);
+>         dev_put(dev->dev);
+>         kfree(dev);
+>  }
+> @@ -538,30 +530,14 @@ static struct bpf_dtab_netdev *__dev_map_alloc_node=
+(struct net *net,
+>                                                     u32 ifindex,
+>                                                     unsigned int idx)
+>  {
+> -       gfp_t gfp =3D GFP_ATOMIC | __GFP_NOWARN;
+>         struct bpf_dtab_netdev *dev;
+> -       struct xdp_bulk_queue *bq;
+> -       int cpu;
+>
+> -       dev =3D kmalloc_node(sizeof(*dev), gfp, dtab->map.numa_node);
+> +       dev =3D kmalloc_node(sizeof(*dev), GFP_ATOMIC | __GFP_NOWARN, dta=
+b->map.numa_node);
+>         if (!dev)
+>                 return ERR_PTR(-ENOMEM);
+>
+> -       dev->bulkq =3D __alloc_percpu_gfp(sizeof(*dev->bulkq),
+> -                                       sizeof(void *), gfp);
+> -       if (!dev->bulkq) {
+> -               kfree(dev);
+> -               return ERR_PTR(-ENOMEM);
+> -       }
+> -
+> -       for_each_possible_cpu(cpu) {
+> -               bq =3D per_cpu_ptr(dev->bulkq, cpu);
+> -               bq->obj =3D dev;
+> -       }
+> -
+>         dev->dev =3D dev_get_by_index(net, ifindex);
+>         if (!dev->dev) {
+> -               free_percpu(dev->bulkq);
+>                 kfree(dev);
+>                 return ERR_PTR(-EINVAL);
+>         }
+> @@ -721,9 +697,22 @@ static int dev_map_notification(struct notifier_bloc=
+k *notifier,
+>  {
+>         struct net_device *netdev =3D netdev_notifier_info_to_dev(ptr);
+>         struct bpf_dtab *dtab;
+> -       int i;
+> +       int i, cpu;
+>
+>         switch (event) {
+> +       case NETDEV_REGISTER:
+> +               if (!netdev->netdev_ops->ndo_xdp_xmit || netdev->xdp_bulk=
+q)
+> +                       break;
+> +
+> +               /* will be freed in free_netdev() */
+> +               netdev->xdp_bulkq =3D __alloc_percpu_gfp(sizeof(struct xd=
+p_dev_bulk_queue),
+> +                                                      sizeof(void *), GF=
+P_ATOMIC);
+> +               if (!netdev->xdp_bulkq)
+> +                       return NOTIFY_BAD;
+> +
+> +               for_each_possible_cpu(cpu)
+> +                       per_cpu_ptr(netdev->xdp_bulkq, cpu)->dev =3D netd=
+ev;
+> +               break;
+>         case NETDEV_UNREGISTER:
+>                 /* This rcu_read_lock/unlock pair is needed because
+>                  * dev_map_list is an RCU list AND to ensure a delete
+> diff --git a/net/core/dev.c b/net/core/dev.c
+> index d99f88c58636..e7802a41ae7f 100644
+> --- a/net/core/dev.c
+> +++ b/net/core/dev.c
+> @@ -9847,6 +9847,8 @@ void free_netdev(struct net_device *dev)
+>
+>         free_percpu(dev->pcpu_refcnt);
+>         dev->pcpu_refcnt =3D NULL;
+> +       free_percpu(dev->xdp_bulkq);
+> +       dev->xdp_bulkq =3D NULL;
+>
+>         netdev_unregister_lockdep_key(dev);
+>
+>
