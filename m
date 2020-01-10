@@ -2,91 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A3037136C94
-	for <lists+netdev@lfdr.de>; Fri, 10 Jan 2020 12:58:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A102136D2E
+	for <lists+netdev@lfdr.de>; Fri, 10 Jan 2020 13:37:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728017AbgAJL6K (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jan 2020 06:58:10 -0500
-Received: from dispatch1-us1.ppe-hosted.com ([148.163.129.52]:60990 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727710AbgAJL6K (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jan 2020 06:58:10 -0500
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 4FB93940060;
-        Fri, 10 Jan 2020 11:58:08 +0000 (UTC)
-Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
- (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Fri, 10 Jan
- 2020 11:58:01 +0000
-Subject: Re: [PATCH net-next] sfc: remove duplicated include from ef10.c
-To:     YueHaibing <yuehaibing@huawei.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>
-CC:     <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <kernel-janitors@vger.kernel.org>
-References: <20200110013517.37685-1-yuehaibing@huawei.com>
-From:   Edward Cree <ecree@solarflare.com>
-Message-ID: <422eff3d-05ea-d967-ff1b-448b6dc9dcb5@solarflare.com>
-Date:   Fri, 10 Jan 2020 11:57:51 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        id S1728195AbgAJMhS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jan 2020 07:37:18 -0500
+Received: from mail-qk1-f194.google.com ([209.85.222.194]:37659 "EHLO
+        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728010AbgAJMhS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jan 2020 07:37:18 -0500
+Received: by mail-qk1-f194.google.com with SMTP id 21so1648482qky.4
+        for <netdev@vger.kernel.org>; Fri, 10 Jan 2020 04:37:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=724E2+k+wYWoJNd3a2e5o4hAZ4Lz1W/Uqd0RV5K3kag=;
+        b=A2gYEzogfCN61kgR+N/v10e0lA2w92ArfI9nC44DHktxGL30qxtAvot1GLSSG3/WAZ
+         bM0TehTedhLiI0v14g8WnStG0eyyRGd+F/FiiUIjewUTqtrWjYqUm7O+DZiX5MvPcG03
+         FpZELEt/KeK3T9X5xUig+Nj26t/toIekcs1Q7+KBPI50OO7lLRlhWNOgip6TlC/oLlFB
+         EWlGbaUc7SUIzZazE3EUl/rHrU4p0nUCRdddDBpF3fZnvp2S8JWdB+qRPVvF4jcVXOoz
+         RWMxIzcEXCphcftKPE6hq/6r5lwDNzxXnsM1vuoLHNvKrRu/8vvJyhzUSTkFGXZq28BS
+         GMPg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=724E2+k+wYWoJNd3a2e5o4hAZ4Lz1W/Uqd0RV5K3kag=;
+        b=qiii4Lfj2FTvMpzIW44j/K9+mmBojQHSFgK7ZGnwTQ4bbRmKZ0Y96CPbf2ZZgVfke+
+         YknNjbJnGdkVZynRC/ir9fJ2fEo25fGx8HZDwtJT0749JIXwjqXwoMtrNL3koKj6AZ8D
+         s9ma7JKO+iZUbtmbL3yjzCVdZOuIrs7wos3GqMtLK4SD2UzXAH+uXWwZLvVwcAqasgtr
+         P756I49DnMi3X9WkcL8Lru+Dc8G1m428EZ0rEMZSNttfGhAEsV3JZ+NqvEC1Hhh3mNOS
+         reIpCizeNRnahz2REvVc3wp+l3F7fWavAN0DQZ9G7SvHUP8OS3OUYhEat+6Y7BdQKUg4
+         Z7zw==
+X-Gm-Message-State: APjAAAUyFjAoBFO0/Hn2Zd3E5NrDQMdh3WD48YOLk8zoDkungukFdZd6
+        9owEEueLKu8PdKm/+yoi10pJEw==
+X-Google-Smtp-Source: APXvYqxKMwo/0YnAVD2L/5+Zw4WZ2N2Vo0U2AhPnTT8mfyERJEN0SFmkjHmrT/gOAviRL/q4aXdYbg==
+X-Received: by 2002:a37:ac16:: with SMTP id e22mr2965861qkm.186.1578659837194;
+        Fri, 10 Jan 2020 04:37:17 -0800 (PST)
+Received: from jkicinski-Precision-T1700.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id v2sm790814qkj.29.2020.01.10.04.37.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 10 Jan 2020 04:37:16 -0800 (PST)
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, oss-drivers@netronome.com,
+        borisp@mellanox.com, aviadye@mellanox.com,
+        john.fastabend@gmail.com, daniel@iogearbox.net,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        David Beckett <david.beckett@netronome.com>,
+        Simon Horman <simon.horman@netronome.com>
+Subject: [PATCH net] net/tls: avoid spurious decryption error with HW resync
+Date:   Fri, 10 Jan 2020 04:36:55 -0800
+Message-Id: <20200110123655.996-1-jakub.kicinski@netronome.com>
+X-Mailer: git-send-email 2.23.0
 MIME-Version: 1.0
-In-Reply-To: <20200110013517.37685-1-yuehaibing@huawei.com>
-Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-Content-Language: en-GB
-X-Originating-IP: [10.17.20.203]
-X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
- ukex01.SolarFlarecom.com (10.17.10.4)
-X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1010-25158.003
-X-TM-AS-Result: No-0.728100-8.000000-10
-X-TMASE-MatchedRID: 7ySqCuYCpfjmLzc6AOD8DfHkpkyUphL9MVx/3ZYby795t7W19HpOSInk
-        wRg6lRQ7YBSz+G5WOZ1NopDNndSAdcx079ojRyOiuwdUMMznEA/Uk/02d006RVjBUeMsjed6QBz
-        oPKhLashO9UxJ8vboSappUg2a/OM2XHEPHmpuRH2DGx/OQ1GV8l/EokdYvzRR+gtHj7OwNO2Ohz
-        Oa6g8KrXRn8zaQo/+Meh0Kazpb0bcoszuMlgVLjU3K33XCov4A6yBdeO88+nxyPOdEY4MyA4mZp
-        km845EgWff/h11Liu/RPW7LVvsuo+L59MzH0po2K2yzo9Rrj9wPoYC35RuihKPUI7hfQSp5eCBc
-        UCG1aJiUTGVAhB5EbQ==
-X-TM-AS-User-Approved-Sender: Yes
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--0.728100-8.000000
-X-TMASE-Version: SMEX-12.5.0.1300-8.5.1010-25158.003
-X-MDID: 1578657489-izF-tTf2gs7g
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/01/2020 01:35, YueHaibing wrote:
-> Remove duplicated include.
->
-> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
-Acked-by: Edward Cree <ecree@solarflare.com>
-but you seem to have come up with a strange CC list, full of bpf maintainers
- rather than sfc driver maintainers; check your submission scripts?  (AFAIK
- the MAINTAINERS file has the right things in.)
+When device loses sync mid way through a record - kernel
+has to re-encrypt the part of the record which the device
+already decrypted to be able to decrypt and authenticate
+the record in its entirety.
 
--Ed
-> ---
->  drivers/net/ethernet/sfc/ef10.c | 1 -
->  1 file changed, 1 deletion(-)
->
-> diff --git a/drivers/net/ethernet/sfc/ef10.c b/drivers/net/ethernet/sfc/ef10.c
-> index dc037dd927f8..fa460831af7d 100644
-> --- a/drivers/net/ethernet/sfc/ef10.c
-> +++ b/drivers/net/ethernet/sfc/ef10.c
-> @@ -16,7 +16,6 @@
->  #include "workarounds.h"
->  #include "selftest.h"
->  #include "ef10_sriov.h"
-> -#include "rx_common.h"
->  #include <linux/in.h>
->  #include <linux/jhash.h>
->  #include <linux/wait.h>
->
->
->
+The re-encryption piggy backs on the decryption routine,
+but obviously because the partially decrypted record can't
+be authenticated crypto API returns an error which is then
+ignored by tls_device_reencrypt().
+
+Commit 5c5ec6685806 ("net/tls: add TlsDecryptError stat")
+added a statistic to count decryption errors, this statistic
+can't be incremented when we see the expected re-encryption
+error. Move the inc to the caller.
+
+Reported-and-tested-by: David Beckett <david.beckett@netronome.com>
+Fixes: 5c5ec6685806 ("net/tls: add TlsDecryptError stat")
+Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+Reviewed-by: Simon Horman <simon.horman@netronome.com>
+---
+ net/tls/tls_sw.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/net/tls/tls_sw.c b/net/tls/tls_sw.c
+index bb229dc0fa81..5c7c00429f8e 100644
+--- a/net/tls/tls_sw.c
++++ b/net/tls/tls_sw.c
+@@ -256,8 +256,6 @@ static int tls_do_decryption(struct sock *sk,
+ 			return ret;
+ 
+ 		ret = crypto_wait_req(ret, &ctx->async_wait);
+-	} else if (ret == -EBADMSG) {
+-		TLS_INC_STATS(sock_net(sk), LINUX_MIB_TLSDECRYPTERROR);
+ 	}
+ 
+ 	if (async)
+@@ -1515,7 +1513,9 @@ static int decrypt_skb_update(struct sock *sk, struct sk_buff *skb,
+ 				if (err == -EINPROGRESS)
+ 					tls_advance_record_sn(sk, prot,
+ 							      &tls_ctx->rx);
+-
++				else if (err == -EBADMSG)
++					TLS_INC_STATS(sock_net(sk),
++						      LINUX_MIB_TLSDECRYPTERROR);
+ 				return err;
+ 			}
+ 		} else {
+-- 
+2.23.0
 
