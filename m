@@ -2,101 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B97B136736
-	for <lists+netdev@lfdr.de>; Fri, 10 Jan 2020 07:14:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ABB23136766
+	for <lists+netdev@lfdr.de>; Fri, 10 Jan 2020 07:27:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731522AbgAJGNI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jan 2020 01:13:08 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:41602 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1725797AbgAJGNH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jan 2020 01:13:07 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1578636786;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=JUb7J5k9pHQGDMgWElpRTaa3UN/XQp4RFy7vMyL+c3E=;
-        b=OT9Wu/mKzzAeyjpxRTYXt2RsGZjq/bfXeGs9VMwjAB/u+h/M4mGFzdUZW5r9rFlma1jhcU
-        niNyoEAdw9KsJNce8VrLcKD4LqSOy/BUgt75QjjBpmgUZGGYTzNEFAGeWJa98jE2+zIgAV
-        bVJf9v7ZlEFRWJPoMsjDm44qYQAZ1QE=
-Received: from mail-qk1-f197.google.com (mail-qk1-f197.google.com
- [209.85.222.197]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-192-PZYkGlehNV6yuXMav8zVGg-1; Fri, 10 Jan 2020 01:13:03 -0500
-X-MC-Unique: PZYkGlehNV6yuXMav8zVGg-1
-Received: by mail-qk1-f197.google.com with SMTP id 194so567704qkh.18
-        for <netdev@vger.kernel.org>; Thu, 09 Jan 2020 22:13:03 -0800 (PST)
+        id S1731576AbgAJG1N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jan 2020 01:27:13 -0500
+Received: from mail-pg1-f180.google.com ([209.85.215.180]:40912 "EHLO
+        mail-pg1-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731495AbgAJG1M (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jan 2020 01:27:12 -0500
+Received: by mail-pg1-f180.google.com with SMTP id k25so504501pgt.7
+        for <netdev@vger.kernel.org>; Thu, 09 Jan 2020 22:27:12 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=DwAeG1q2U5MtGjMXKj/C+Yj7VuMBhv4bDmYZtUidW20=;
+        b=EtZopCZgL6hZwBsfZMazBnnVYkIU2irUL+rpV6la748NA0ShBcWbYIWh29YkLwHGiu
+         glw7hyCnyGZVwVpML6rMLNoe/UxOsYzmbl8ss8FeQ/46bA5vNLqiZPtaQGoQFG2ac82g
+         R90ThMpl+MFomf8gICOV4cThlKRpIA18sL7HWJd8WP4vb8SCkjc7tJNI1D7h+e8AwbxF
+         Pk66jUYz1oK5TT2L0N8/Jmz6HWyP9HHW2IS9kHxmxSpXvxYX+W4Tl1TCN8odvkgSJI/8
+         TwWI3cyDtGcIpg53fIWtnZDGvEbds70upgvrKxIfvd2P7euJJSkWpMReAhQIQNrp7Uiz
+         pj9g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=JUb7J5k9pHQGDMgWElpRTaa3UN/XQp4RFy7vMyL+c3E=;
-        b=lfWmMlsCHn8x3L+kQPNLDuybQrWhWmzNmZ2pFHyYbxZo+Uem8l66vKIxYCx6XUW0XT
-         Aghhrpos3ipdD8sxjOvpo4dN0aT+g+icDge/mdfZ1Q0z5bKEZN60+RPGnyb26Qi4LtX6
-         TLRHsW2yACvPkdBfqcQ0ytds8tIyBhjldF7Z96M59qp5C+UMEy8ppwqbiVGap5+67ccG
-         u7/eHmc3eAQqO7sPH8QjxGR/JlMtbAzBb1OPWiOk7DnhzsjgAgZzoLVFk4O9nfiNT/E1
-         NogmwzvibqEBn0aptWBtObhapac9O7uDSAlf4P7E95Ww3mPQaMx57p7DSR9jbFwaP7Ye
-         osMQ==
-X-Gm-Message-State: APjAAAW9DnCvp3fXOAXslTH2kqyRgsPbohB0+Nxo5LQfEXHhzxgELGh2
-        A+7w+ehnaTO0PGiyRSAh3vHzroS0k80Wb7VHl/qTfRLndRWOri/2qCEysORtsy8fm/yA6QYNCJA
-        DRjvHFWBgw4EeKopC
-X-Received: by 2002:ac8:6697:: with SMTP id d23mr1080346qtp.350.1578636783316;
-        Thu, 09 Jan 2020 22:13:03 -0800 (PST)
-X-Google-Smtp-Source: APXvYqyEBnt7IxTIASPQRiXS/2qwYjQd4GY3gTOeHUpypwIPSrQCqrkSOQtY6sfsyfysgAniCEZu/A==
-X-Received: by 2002:ac8:6697:: with SMTP id d23mr1080336qtp.350.1578636783113;
-        Thu, 09 Jan 2020 22:13:03 -0800 (PST)
-Received: from redhat.com (bzq-79-183-34-164.red.bezeqint.net. [79.183.34.164])
-        by smtp.gmail.com with ESMTPSA id z3sm546702qtm.5.2020.01.09.22.12.59
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=DwAeG1q2U5MtGjMXKj/C+Yj7VuMBhv4bDmYZtUidW20=;
+        b=FL/w9qb2o+HhrQ5ckP3OLjsuOONgR2LL8BdOFfk/Zh5RazSUOkTehwHLn+6ZZRcKEE
+         AzMDkZJoSEQzEyV29Jef40jjJp7h/DLzhEiurtxh2NrYsfzq3kyn127aUhEXzNZiBdHp
+         LaqBIV5zANEIeLRxHp7Skzei/wOsXOYGgTMO8W/FxMQGR9lK4MyYsdnj3QeUsOXtINB4
+         9/uG3Fv5HpjH7ZzsUV5OGxOXZFDmx/7Vjurfwq/p71HzXXUt+gvxVocrmhTh3W1lpdec
+         RcJSHI2wD6skYNG4oDFJxnVVutWEJnCSu4F4jDvH3xCrcJkHwJ3YWWBko44sYY/Dx2gE
+         DV5A==
+X-Gm-Message-State: APjAAAU+A/oQCZtINCaJ+fnpCCbdlT1pvX2Ae4jxCikc6OaHR6JLhePB
+        2oInhi+eWARNkyr4P8nIWhGYcTN6eo+qYQ==
+X-Google-Smtp-Source: APXvYqzNhabkYX/6O6mnMTUPDSHv7R3k5sqolcYunke7+fNG17wU5RCnvSdPfkcVw6XCqYpUKK68Dg==
+X-Received: by 2002:a65:5608:: with SMTP id l8mr2475327pgs.210.1578637631615;
+        Thu, 09 Jan 2020 22:27:11 -0800 (PST)
+Received: from localhost.localdomain ([223.186.236.152])
+        by smtp.gmail.com with ESMTPSA id u12sm1139011pfm.165.2020.01.09.22.27.06
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Jan 2020 22:13:01 -0800 (PST)
-Date:   Fri, 10 Jan 2020 01:12:56 -0500
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     David Miller <davem@davemloft.net>
-Cc:     linux-kernel@vger.kernel.org, adelva@google.com,
-        willemdebruijn.kernel@gmail.com, jasowang@redhat.com,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
-Subject: Re: [PATCH v2] virtio_net: CTRL_GUEST_OFFLOADS depends on CTRL_VQ
-Message-ID: <20200110011236-mutt-send-email-mst@kernel.org>
-References: <20200105132120.92370-1-mst@redhat.com>
- <20200109.183339.173768060466817001.davem@davemloft.net>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200109.183339.173768060466817001.davem@davemloft.net>
+        Thu, 09 Jan 2020 22:27:10 -0800 (PST)
+From:   gautamramk@gmail.com
+To:     netdev@vger.kernel.org
+Cc:     Gautam Ramakrishnan <gautamramk@gmail.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Dave Taht <dave.taht@gmail.com>,
+        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        Leslie Monis <lesliemonis@gmail.com>,
+        "Mohit P . Tahiliani" <tahiliani@nitk.edu.in>
+Subject: [PATCH net-next v3 0/2] net: sched: add Flow Queue PIE packet scheduler
+Date:   Fri, 10 Jan 2020 11:56:55 +0530
+Message-Id: <20200110062657.7217-1-gautamramk@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 09, 2020 at 06:33:39PM -0800, David Miller wrote:
-> From: "Michael S. Tsirkin" <mst@redhat.com>
-> Date: Sun, 5 Jan 2020 08:22:07 -0500
-> 
-> > The only way for guest to control offloads (as enabled by
-> > VIRTIO_NET_F_CTRL_GUEST_OFFLOADS) is by sending commands
-> > through CTRL_VQ. So it does not make sense to
-> > acknowledge VIRTIO_NET_F_CTRL_GUEST_OFFLOADS without
-> > VIRTIO_NET_F_CTRL_VQ.
-> > 
-> > The spec does not outlaw devices with such a configuration, so we have
-> > to support it. Simply clear VIRTIO_NET_F_CTRL_GUEST_OFFLOADS.
-> > Note that Linux is still crashing if it tries to
-> > change the offloads when there's no control vq.
-> > That needs to be fixed by another patch.
-> > 
-> > Reported-by: Alistair Delva <adelva@google.com>
-> > Reported-by: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-> > Fixes: 3f93522ffab2 ("virtio-net: switch off offloads on demand if possible on XDP set")
-> > Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-> > ---
-> > 
-> > Same patch as v1 but update documentation so it's clear it's not
-> > enough to fix the crash.
-> 
-> Where are we with this patch?  There seems to still be some unresolved
-> discussion about how we should actually handle this case.
-> 
-> Thanks.
+From: Gautam Ramakrishnan <gautamramk@gmail.com>
 
-Once discussion is resolved I'll post v3 with updated commit log.
+Flow Queue PIE packet scheduler
+
+This patch series implements the Flow Queue Proportional
+Integral controller Enhanced (FQ-PIE) active queue
+Management algorithm. It is an enhancement over the PIE
+algorithm. It integrates the PIE aqm with a deficit round robin
+scheme.
+
+FQ-PIE is implemented over the latest version of PIE which
+uses timestamps to calculate queue delay with an additional
+option of using average dequeue rate to calculate the queue
+delay. This patch also adds a memory limit of all the packets
+across all queues to a default value of 32Mb.
+
+For more information: 
+https://tools.ietf.org/html/rfc8033
+
+Changes from v2 to v3
+ - Exported drop_early, pie_process_dequeue and
+   calculate_probability functions from sch_pie as
+   suggested by Stephen Hemminger.
+
+Changes from v1 ( and RFC patch) to v2
+ - Added timestamp to calculate queue delay as recommended
+   by Dave Taht
+ - Packet memory limit implemented as recommended by Toke.
+ - Added external classifier as recommended by Toke.
+ - Used NET_XMIT_CN instead of NET_XMIT_DROP as the return
+   value in the fq_pie_qdisc_enqueue function.
+
+
+Mohit P. Tahiliani (2):
+  net: sched: pie: refactor code
+  net: sched: add Flow Queue PIE packet scheduler
+
+ include/net/pie.h              | 138 +++++++++
+ include/uapi/linux/pkt_sched.h |  33 ++
+ net/sched/Kconfig              |  12 +
+ net/sched/Makefile             |   1 +
+ net/sched/sch_fq_pie.c         | 550 +++++++++++++++++++++++++++++++++
+ net/sched/sch_pie.c            | 302 +++++++-----------
+ 6 files changed, 846 insertions(+), 190 deletions(-)
+ create mode 100644 include/net/pie.h
+ create mode 100644 net/sched/sch_fq_pie.c
+
+-- 
+2.17.1
 
