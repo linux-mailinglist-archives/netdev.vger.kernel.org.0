@@ -2,140 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 881C81378D4
-	for <lists+netdev@lfdr.de>; Fri, 10 Jan 2020 23:02:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C52601378E7
+	for <lists+netdev@lfdr.de>; Fri, 10 Jan 2020 23:04:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727189AbgAJWCg convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 10 Jan 2020 17:02:36 -0500
-Received: from mga17.intel.com ([192.55.52.151]:3535 "EHLO mga17.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727170AbgAJWCg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 10 Jan 2020 17:02:36 -0500
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 10 Jan 2020 14:02:35 -0800
-X-IronPort-AV: E=Sophos;i="5.69,418,1571727600"; 
-   d="scan'208,223";a="212393117"
-Received: from jmanteyx-desk.jf.intel.com ([10.54.51.75])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-SHA; 10 Jan 2020 14:02:23 -0800
-From:   Johnathan Mantey <johnathanx.mantey@intel.com>
-Subject: [PATCH] Propagate NCSI channel carrier loss/gain events to the kernel
-To:     netdev@vger.kernel.org
-Cc:     sam@mendozajonas.com, davem@davemloft.net
-Autocrypt: addr=johnathanx.mantey@intel.com; prefer-encrypt=mutual; keydata=
- mQENBFija08BCAC60TO2X22b0tJ2Gy2iQLWx20mGcD7ugBpm1o2IW2M+um3GR0BG/bUcLciw
- dEnX9SWT30jx8TimenyUYeDS1CKML/e4JnCAUhSktNZRPBjzla991OkpqtFJEHj/pHrXTsz0
- ODhmnSaZ49TsY+5BqtRMexICYOtSP8+xuftPN7g2pQNFi7xYlQkutP8WKIY3TacW/6MPiYek
- pqVaaF0cXynCMDvbK0km7m0S4X01RZFKXUwlbuMireNk4IyZ/59hN+fh1MYMQ6RXOgmHqxSu
- 04GjkbBLf2Sddplb6KzPMRWPJ5uNdvlkAfyT4P0R5EfkV5wCRdoJ1lNC9WI1bqHkbt07ABEB
- AAG0JUpvaG5hdGhhbiBNYW50ZXkgPG1hbnRleWpnQGdtYWlsLmNvbT6JATcEEwEIACEFAlij
- a08CGwMFCwkIBwIGFQgJCgsCBBYCAwECHgECF4AACgkQ0EfviT3fHwmcBAgAkENzQ8s0RK+f
- nr4UogrCBS132lDdtlOypm1WgGDOVQNra7A1rvXFgN05RqrdRTpRevv7+S8ipbiG/kxn9P8+
- VhhW1SvUT8Tvkb9YYHos6za3v0YblibFNbYRgQcybYMeKz2/DcVU+ioKZ1SxNJsFXx6wH71I
- V2YumQRHAsh4Je6CmsiMVP4XNadzCQXzzcU9sstKV0A194JM/d8hjXfwMHZE6qnKgAkHIV3Q
- 61YCuvkdr5SJSrOVo2IMN0pVxhhW7lqCAGBGb4oOhqePwGqOabU3Ui4qTbHP2BWP5UscehkK
- 6TVKcpYApsUcWyxvvOARoktmlPnGYqJPnRwXpQBlqLkBDQRYo2tPAQgAyOv5Lgg2VkHO84R7
- LJJDBxcaCDjyAvHBynznEEk11JHrPuonEWi6pqgB8+Kc588/GerXZqJ9AMkR43UW/5cPlyF2
- wVO4aYaQwryDtiXEu+5rpbQfAvBpKTbrBfYIPc8thuAC2kdB4IO24T6PVSYVXYc/giOL0Iwb
- /WZfMd5ajtKfa727xfbKCEHlzakqmUl0SyrARdrSynhX1R9Wnf2BwtUV7mxFxtMukak0zdTf
- 2IXZXDltZC224vWqkXiI7Gt/FDc2y6gcsYY/4a2+vjhWuZk3lEzP0pbXQqOseDM1zZXln/m7
- BFbJ6VUn1zWcrt0c82GTMqkeGUheUhDiYLQ7xwARAQABiQEfBBgBCAAJBQJYo2tPAhsMAAoJ
- ENBH74k93x8JKEUH/3UPZryjmM0F3h8I0ZWuruxAxiqvksLOOtarU6RikIAHhwjvluEcTH4E
- JsDjqtRUvBMU907XNotpqpW2e9jN8tFRyR4wW9CYkilB02qgrDm9DXVGb2BDtC/MY+6KUgsG
- k5Ftr9uaXNd0K4IGRJSyU6ZZn0inTcXlqD+NgOE2eX9qpeKEhDufgF7fKHbKDkS4hj6Z09dT
- Y8eW9d6d2Yf/RzTBJvZxjBFbIgeUGeykbSKztp2OBe6mecpVPhKooTq+X/mJehpRA6mAhuQZ
- 28lvie7hbRFjqR3JB7inAKL4eT1/9bT/MqcPh43PXTAzB6/Iclg5B7GGgEFe27VL0hyqiqc=
-Message-ID: <b2ef76f2-cf4e-3d14-7436-8c66e63776ba@intel.com>
-Date:   Fri, 10 Jan 2020 14:02:23 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.3.1
+        id S1727208AbgAJWEr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jan 2020 17:04:47 -0500
+Received: from mail-pj1-f68.google.com ([209.85.216.68]:54726 "EHLO
+        mail-pj1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727185AbgAJWEq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jan 2020 17:04:46 -0500
+Received: by mail-pj1-f68.google.com with SMTP id kx11so1505274pjb.4;
+        Fri, 10 Jan 2020 14:04:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=eb9Zu4ng3OFqsu040N9uJfSobuP+HTIZaWYh+4c4MGU=;
+        b=Jw7ulMnHhi1YOBpqwEdBLml7YAwubcJCZcoToV/R0C8wYwVEcWMyuZ4bjkjUf8+ZfH
+         VO5KMRPDx9PvPvp6ZuJRARBI5veWbkLa4lbAX/HWM3fEGHBD5FWPPkm0IxFqM1K4mjU5
+         Jj7ZeyE726wmedlcfCkur+OTHpk/D1e+T1FJr0X4PZFSdiPY0Pu5b/0GwScM6QK65jnk
+         +taKEZwtxcDeOMcsdImrRlziMp/OFCvqyZ0qqT7ScjyQavM3LIjwF7OT7mZ8UpyRzeNK
+         XOpNzJEp1TAhHIcp6JrdPB9HHQfel/gKuVnYnsrzkqtEBhQNiG8268N9m0P5D+gEpf6Q
+         SECg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=eb9Zu4ng3OFqsu040N9uJfSobuP+HTIZaWYh+4c4MGU=;
+        b=K6RQqfG5B4Q+aEwb+14OVEh3pchkAwws6TqW7WNwEnsAIyK4U2qIMU+JK3yCQzv8Us
+         /IDejAuqToH+Zl2V7H4CAu3S7aJ6JWeagnXIYygoDAIa6i+l4xhKnO2qDPTqd097DzDU
+         XpmH57x8Ol+3E20y1Ny+U3ik2wqpSLIVSOjK9JPlQuGUdsM6mXblbWFIzd+CLpsDRuFL
+         G4Q+VOiiWxSmAIsMj4bKU0kuAya6pWSykIsLAjOOcXytubYq3KbS1sPs6yE399iQmCch
+         Cx7ITAzLFH0Fyg3NB3pqByku0FZWMknA837Sc7Z8hPU79dujfQTE0JdBQp9fQu8CMJhd
+         s4uA==
+X-Gm-Message-State: APjAAAWbUc0E31M2u15B/yVW7WkMg119SAViWIFPsMKPndYXFNdJUINU
+        /hxBEedNm684KN3eZzuqRJk=
+X-Google-Smtp-Source: APXvYqwzcNzzjZTeNYqD22n3zkIm0G4tZqFkBwHfbfRvfsFZUW+TC3MUL8MNnVHfRP2HISTMBmDh9A==
+X-Received: by 2002:a17:90a:8584:: with SMTP id m4mr7552496pjn.123.1578693885765;
+        Fri, 10 Jan 2020 14:04:45 -0800 (PST)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:200::2:ba5e])
+        by smtp.gmail.com with ESMTPSA id k1sm3941926pgk.90.2020.01.10.14.04.44
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 10 Jan 2020 14:04:44 -0800 (PST)
+Date:   Fri, 10 Jan 2020 14:04:43 -0800
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Andrii Nakryiko <andriin@fb.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@fb.com,
+        daniel@iogearbox.net, kafai@fb.com, andrii.nakryiko@gmail.com,
+        kernel-team@fb.com
+Subject: Re: [PATCH v5 bpf-next] selftests/bpf: add BPF_PROG, BPF_KPROBE, and
+ BPF_KRETPROBE macros
+Message-ID: <20200110220441.rwbxg4c452eupvjt@ast-mbp.dhcp.thefacebook.com>
+References: <20200110211634.1614739-1-andriin@fb.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8BIT
-Content-Language: en-US
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200110211634.1614739-1-andriin@fb.com>
+User-Agent: NeoMutt/20180223
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From 76d99782ec897b010ba507895d60d27dca8dca44 Mon Sep 17 00:00:00 2001
-From: Johnathan Mantey <johnathanx.mantey@intel.com>
-Date: Fri, 10 Jan 2020 12:46:17 -0800
-Subject: [PATCH] Propagate NCSI channel carrier loss/gain events to the
-kernel
+On Fri, Jan 10, 2020 at 01:16:34PM -0800, Andrii Nakryiko wrote:
+> Streamline BPF_TRACE_x macro by moving out return type and section attribute
+> definition out of macro itself. That makes those function look in source code
+> similar to other BPF programs. Additionally, simplify its usage by determining
+> number of arguments automatically (so just single BPF_TRACE vs a family of
+> BPF_TRACE_1, BPF_TRACE_2, etc). Also, allow more natural function argument
+> syntax without commas inbetween argument type and name.
+> 
+> Given this helper is useful not only for tracing tp_btf/fenty/fexit programs,
+> but could be used for LSM programs and others following the same pattern,
+> rename BPF_TRACE macro into more generic BPF_PROG. Existing BPF_TRACE_x
+> usages in selftests are converted to new BPF_PROG macro.
+> 
+> Following the same pattern, define BPF_KPROBE and BPF_KRETPROBE macros for
+> nicer usage of kprobe/kretprobe arguments, respectively. BPF_KRETPROBE, adopts
+> same convention used by fexit programs, that last defined argument is probed
+> function's return result.
+...
+>  SEC("kretprobe/__set_task_comm")
+> -int prog2(struct pt_regs *ctx)
+> +int BPF_KRETPROBE(prog2,
+> +		  struct task_struct *tsk, const char *buf, bool exec,
+> +		  int ret)
+>  {
+> -	return 0;
+> +	return PT_REGS_PARM1(ctx) == 0 && ret != 0;
+>  }
+>  
+>  SEC("raw_tp/task_rename")
+>  int prog3(struct bpf_raw_tracepoint_args *ctx)
+>  {
+> -	return 0;
+> +	return ctx->args[0] == 0;;
 
-Problem statement:
-Insertion or removal of a network cable attached to a NCSI controlled
-network channel does not notify the kernel of the loss/gain of the
-network link.
-
-The expectation is that /sys/class/net/eth(x)/carrier will change
-state after a pull/insertion event. In addition the carrier_up_count
-and carrier_down_count files should increment.
-
-Change statement:
-Use the NCSI Asynchronous Event Notification handler to detect a
-change in a NCSI link.
-Add code to propagate carrier on/off state to the network interface.
-The on/off state is only modified after the existing code identifies
-if the network device HAD or HAS a link state change.
-
-Test procedure:
-Connected a L2 switch with only two ports connected.
-One port was a DHCP corporate net, the other port attached to the NCSI
-controlled NIC.
-
-Starting with the L2 switch with DC on, check to make sure the NCSI
-link is operating.
-cat /sys/class/net/eth1/carrier
-1
-cat /sys/class/net/eth1/carrier_up_count
-0
-cat /sys/class/net/eth1/carrier_down_count
-0
-
-Remove DC from the L2 switch, and check link state
-cat /sys/class/net/eth1/carrier
-0
-cat /sys/class/net/eth1/carrier_up_count
-0
-cat /sys/class/net/eth1/carrier_down_count
-1
-
-Restore DC to the L2 switch, and check link state
-cat /sys/class/net/eth1/carrier
-1
-cat /sys/class/net/eth1/carrier_up_count
-1
-cat /sys/class/net/eth1/carrier_down_count
-1
-
-Signed-off-by: Johnathan Mantey <johnathanx.mantey@intel.com>
----
- net/ncsi/ncsi-aen.c | 6 ++++++
- 1 file changed, 6 insertions(+)
-
-diff --git a/net/ncsi/ncsi-aen.c b/net/ncsi/ncsi-aen.c
-index b635c194f0a8..274c415dcead 100644
---- a/net/ncsi/ncsi-aen.c
-+++ b/net/ncsi/ncsi-aen.c
-@@ -89,6 +89,12 @@ static int ncsi_aen_handler_lsc(struct ncsi_dev_priv
-*ndp,
-     if ((had_link == has_link) || chained)
-         return 0;
- 
-+    if (had_link) {
-+        netif_carrier_off(ndp->ndev.dev);
-+    } else {
-+        netif_carrier_on(ndp->ndev.dev);
-+    }
-+
-     if (!ndp->multi_package && !nc->package->multi_channel) {
-         if (had_link) {
-             ndp->flags |= NCSI_DEV_RESHUFFLE;
--- 
-2.24.1
-
-
-
+I've corrected this typo
+and converted != 0 and == 0 to more traditional checks for null.
+And applied.
