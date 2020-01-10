@@ -2,99 +2,191 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 58A7E13654C
-	for <lists+netdev@lfdr.de>; Fri, 10 Jan 2020 03:19:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F439136558
+	for <lists+netdev@lfdr.de>; Fri, 10 Jan 2020 03:30:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730703AbgAJCTs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jan 2020 21:19:48 -0500
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:34064 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730596AbgAJCTr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jan 2020 21:19:47 -0500
-Received: by mail-wr1-f67.google.com with SMTP id t2so336698wrr.1
-        for <netdev@vger.kernel.org>; Thu, 09 Jan 2020 18:19:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=from:date:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=/7Y6vHBhDcfuo0B3nVmmVJjH9+6KSaoEfTy2tqTJIhw=;
-        b=J9jEGbemKJdizAvrnyJuTZjAl+1tG1DtF0mLqws24Pjj35b8hn4pw5HGi2f42HKaTx
-         eQgOgloNWBb+fCaWYkZtg42Sywdttawe6gDnpOML6fJR1lo78D5s0+a18GvEgtDIefwG
-         BIfhPD7KSfTsmBKVq9AHh64iD21/jNqB0Y9S4=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=/7Y6vHBhDcfuo0B3nVmmVJjH9+6KSaoEfTy2tqTJIhw=;
-        b=KDqzL+r8jkXvF8wl3rEnLdImyON/SLCh4t15Enxq7qnVZ829pcYMYyKjoWUIglxtNI
-         19fJF9LfbK4wTyMzFd+vNreTMYsB6JojpdEco2RTudiBZ/IIm4ukHOaiWvLZr2b6jCiU
-         +zy1W1bAeYK+YfI4GjxeD8F2HCRyifYS+THCPup9SgGAxz0l0yXVpVMqOm1UPDP1xNbS
-         gtKNp46+xDOCKPKIyiv41hAypkNIHke+XxSAXby/Ycpip9UgEorW3ivl6vKv1XX2HQ5y
-         BLvj9WZHpiQNNz7fQAFjBmbQFAsbKMiwo6ICMFK24KJvR6VGeh9rqJoCXhdQaS/Aj9Q2
-         RKdQ==
-X-Gm-Message-State: APjAAAWgxipNCszQ6lgilF37TthXfnUAmqixhZXrrGVTK4A8f2GIRPcp
-        omfpqWuAWrvf6oNFIN1hSj8Dlg==
-X-Google-Smtp-Source: APXvYqwCV8wjU3XthzzuNAqBJL6IOBDVHOtjZ9fHDUft8R3okINxbsek4wf67NiGN9Nzz/2tusJeFA==
-X-Received: by 2002:a5d:480b:: with SMTP id l11mr581751wrq.129.1578622785471;
-        Thu, 09 Jan 2020 18:19:45 -0800 (PST)
-Received: from C02YVCJELVCG ([192.19.231.250])
-        by smtp.gmail.com with ESMTPSA id g7sm510260wrq.21.2020.01.09.18.19.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Jan 2020 18:19:44 -0800 (PST)
-From:   Andy Gospodarek <andrew.gospodarek@broadcom.com>
-X-Google-Original-From: Andy Gospodarek <gospo@broadcom.com>
-Date:   Thu, 9 Jan 2020 21:19:15 -0500
-To:     Jonathan Lemon <jonathan.lemon@gmail.com>
-Cc:     netdev@vger.kernel.org, michael.chan@broadcom.com,
-        davem@davemloft.net, kernel-team@fb.com
-Subject: Re: [PATCH net-next] bnxt: Detach page from page pool before sending
- up the stack
-Message-ID: <20200110021915.GA13304@C02YVCJELVCG>
-References: <20200109193542.4171646-1-jonathan.lemon@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200109193542.4171646-1-jonathan.lemon@gmail.com>
+        id S1730888AbgAJCaF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jan 2020 21:30:05 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:60700 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730868AbgAJCaF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jan 2020 21:30:05 -0500
+Received: from localhost (unknown [IPv6:2601:601:9f00:1c3::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 694911573640C;
+        Thu,  9 Jan 2020 18:30:04 -0800 (PST)
+Date:   Thu, 09 Jan 2020 18:30:01 -0800 (PST)
+Message-Id: <20200109.183001.2198948440388440605.davem@davemloft.net>
+To:     sfr@canb.auug.org.au
+Cc:     netdev@vger.kernel.org, linux-next@vger.kernel.org,
+        linux-kernel@vger.kernel.org, petrm@mellanox.com
+Subject: Re: linux-next: build failure after merge of the net-next tree
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20200110105738.2b20cbad@canb.auug.org.au>
+References: <20200110105738.2b20cbad@canb.auug.org.au>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 09 Jan 2020 18:30:04 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 09, 2020 at 11:35:42AM -0800, Jonathan Lemon wrote:
-> When running in XDP mode, pages come from the page pool, and should
-> be freed back to the same pool or specifically detached.  Currently,
-> when the driver re-initializes, the page pool destruction is delayed
-> forever since it thinks there are oustanding pages.
+From: Stephen Rothwell <sfr@canb.auug.org.au>
+Date: Fri, 10 Jan 2020 10:57:38 +1100
 
-If you can please share a reproduction script/steps that would be
-helpful for me.
-
-Since this is an XDP_PASS case I can easily create a program that does
-that, so no need to share that program -- just the sequence to remove
-the program, shutdown the driver, whatever is done and the error you
-see.
-
-Thanks!
-
-> 
-> Fixes: 322b87ca55f2 ("bnxt_en: add page_pool support")
-> Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
-> ---
->  drivers/net/ethernet/broadcom/bnxt/bnxt.c | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-> index 39d4309b17fb..33eb8cd6551e 100644
-> --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-> +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-> @@ -944,6 +944,7 @@ static struct sk_buff *bnxt_rx_page_skb(struct bnxt *bp,
->  	dma_addr -= bp->rx_dma_offset;
->  	dma_unmap_page_attrs(&bp->pdev->dev, dma_addr, PAGE_SIZE, bp->rx_dir,
->  			     DMA_ATTR_WEAK_ORDERING);
-> +	page_pool_release_page(rxr->page_pool, page);
+> After merging the net-next tree, today's linux-next build (x86_64
+> allmodconfig) failed like this:
+> diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_qdisc.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_qdisc.c
+> index 17b29e2d19ed..54807b4930fe 100644
+> --- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_qdisc.c
+> +++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_qdisc.c
+> @@ -767,7 +767,7 @@ __mlxsw_sp_qdisc_ets_graft(struct mlxsw_sp_port *mlxsw_sp_port,
+>  	    mlxsw_sp_port->tclass_qdiscs[tclass_num].handle == child_handle)
+>  		return 0;
 >  
->  	if (unlikely(!payload))
->  		payload = eth_get_headlen(bp->dev, data_ptr, len);
+> -	if (!p->child_handle) {
+> +	if (!child_handle) {
+>  		/* This is an invisible FIFO replacing the original Qdisc.
+>  		 * Ignore it--the original Qdisc's destroy will follow.
+>  		 */
 > -- 
-> 2.17.1
-> 
+> 2.24.0
+
+Yep, this is the merge resolution you will find in net-next at commit:
+
+commit a2d6d7ae591c47ebc04926cb29a840adfdde49e6
+Merge: b1daa4d19473 e69ec487b2c7
+Author: David S. Miller <davem@davemloft.net>
+Date:   Thu Jan 9 12:10:26 2020 -0800
+
+    Merge git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net
+    
+    The ungrafting from PRIO bug fixes in net, when merged into net-next,
+    merge cleanly but create a build failure.  The resolution used here is
+    from Petr Machata.
+    
+    Signed-off-by: David S. Miller <davem@davemloft.net>
+
+diff --cc drivers/net/ethernet/mellanox/mlxsw/spectrum_qdisc.c
+index 81a2c087f534,46d43cfd04e9..54807b4930fe
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_qdisc.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_qdisc.c
+@@@ -681,92 -631,33 +681,99 @@@ static struct mlxsw_sp_qdisc_ops mlxsw_
+  	.clean_stats = mlxsw_sp_setup_tc_qdisc_prio_clean_stats,
+  };
+  
+ -/* Grafting is not supported in mlxsw. It will result in un-offloading of the
+ - * grafted qdisc as well as the qdisc in the qdisc new location.
+ - * (However, if the graft is to the location where the qdisc is already at, it
+ - * will be ignored completely and won't cause un-offloading).
+ +static int
+ +mlxsw_sp_qdisc_ets_check_params(struct mlxsw_sp_port *mlxsw_sp_port,
+ +				struct mlxsw_sp_qdisc *mlxsw_sp_qdisc,
+ +				void *params)
+ +{
+ +	struct tc_ets_qopt_offload_replace_params *p = params;
+ +
+ +	return __mlxsw_sp_qdisc_ets_check_params(p->bands);
+ +}
+ +
+ +static int
+ +mlxsw_sp_qdisc_ets_replace(struct mlxsw_sp_port *mlxsw_sp_port,
+ +			   struct mlxsw_sp_qdisc *mlxsw_sp_qdisc,
+ +			   void *params)
+ +{
+ +	struct tc_ets_qopt_offload_replace_params *p = params;
+ +
+ +	return __mlxsw_sp_qdisc_ets_replace(mlxsw_sp_port, p->bands,
+ +					    p->quanta, p->weights, p->priomap);
+ +}
+ +
+ +static void
+ +mlxsw_sp_qdisc_ets_unoffload(struct mlxsw_sp_port *mlxsw_sp_port,
+ +			     struct mlxsw_sp_qdisc *mlxsw_sp_qdisc,
+ +			     void *params)
+ +{
+ +	struct tc_ets_qopt_offload_replace_params *p = params;
+ +
+ +	__mlxsw_sp_qdisc_ets_unoffload(mlxsw_sp_port, mlxsw_sp_qdisc,
+ +				       p->qstats);
+ +}
+ +
+ +static int
+ +mlxsw_sp_qdisc_ets_destroy(struct mlxsw_sp_port *mlxsw_sp_port,
+ +			   struct mlxsw_sp_qdisc *mlxsw_sp_qdisc)
+ +{
+ +	return __mlxsw_sp_qdisc_ets_destroy(mlxsw_sp_port);
+ +}
+ +
+ +static struct mlxsw_sp_qdisc_ops mlxsw_sp_qdisc_ops_ets = {
+ +	.type = MLXSW_SP_QDISC_ETS,
+ +	.check_params = mlxsw_sp_qdisc_ets_check_params,
+ +	.replace = mlxsw_sp_qdisc_ets_replace,
+ +	.unoffload = mlxsw_sp_qdisc_ets_unoffload,
+ +	.destroy = mlxsw_sp_qdisc_ets_destroy,
+ +	.get_stats = mlxsw_sp_qdisc_get_prio_stats,
+ +	.clean_stats = mlxsw_sp_setup_tc_qdisc_prio_clean_stats,
+ +};
+ +
+ +/* Linux allows linking of Qdiscs to arbitrary classes (so long as the resulting
+ + * graph is free of cycles). These operations do not change the parent handle
+ + * though, which means it can be incomplete (if there is more than one class
+ + * where the Qdisc in question is grafted) or outright wrong (if the Qdisc was
+ + * linked to a different class and then removed from the original class).
+ + *
+ + * E.g. consider this sequence of operations:
+ + *
+ + *  # tc qdisc add dev swp1 root handle 1: prio
+ + *  # tc qdisc add dev swp1 parent 1:3 handle 13: red limit 1000000 avpkt 10000
+ + *  RED: set bandwidth to 10Mbit
+ + *  # tc qdisc link dev swp1 handle 13: parent 1:2
+ + *
+ + * At this point, both 1:2 and 1:3 have the same RED Qdisc instance as their
+ + * child. But RED will still only claim that 1:3 is its parent. If it's removed
+ + * from that band, its only parent will be 1:2, but it will continue to claim
+ + * that it is in fact 1:3.
+ + *
+ + * The notification for child Qdisc replace (e.g. TC_RED_REPLACE) comes before
+ + * the notification for parent graft (e.g. TC_PRIO_GRAFT). We take the replace
+ + * notification to offload the child Qdisc, based on its parent handle, and use
+ + * the graft operation to validate that the class where the child is actually
+ + * grafted corresponds to the parent handle. If the two don't match, we
+ + * unoffload the child.
+   */
+  static int
+ -mlxsw_sp_qdisc_prio_graft(struct mlxsw_sp_port *mlxsw_sp_port,
+ -			  struct mlxsw_sp_qdisc *mlxsw_sp_qdisc,
+ -			  struct tc_prio_qopt_offload_graft_params *p)
+ +__mlxsw_sp_qdisc_ets_graft(struct mlxsw_sp_port *mlxsw_sp_port,
+ +			   struct mlxsw_sp_qdisc *mlxsw_sp_qdisc,
+ +			   u8 band, u32 child_handle)
+  {
+ -	int tclass_num = MLXSW_SP_PRIO_BAND_TO_TCLASS(p->band);
+ +	int tclass_num = MLXSW_SP_PRIO_BAND_TO_TCLASS(band);
+  	struct mlxsw_sp_qdisc *old_qdisc;
+  
+ -	/* Check if the grafted qdisc is already in its "new" location. If so -
+ -	 * nothing needs to be done.
+ -	 */
+ -	if (p->band < IEEE_8021QAZ_MAX_TCS &&
+ -	    mlxsw_sp_port->tclass_qdiscs[tclass_num].handle == p->child_handle)
+ +	if (band < IEEE_8021QAZ_MAX_TCS &&
+ +	    mlxsw_sp_port->tclass_qdiscs[tclass_num].handle == child_handle)
+  		return 0;
+  
+ -	if (!p->child_handle) {
+++	if (!child_handle) {
++ 		/* This is an invisible FIFO replacing the original Qdisc.
++ 		 * Ignore it--the original Qdisc's destroy will follow.
++ 		 */
++ 		return 0;
++ 	}
++ 
+  	/* See if the grafted qdisc is already offloaded on any tclass. If so,
+  	 * unoffload it.
+  	 */
