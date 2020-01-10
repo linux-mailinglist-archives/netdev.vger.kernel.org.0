@@ -2,114 +2,175 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A102136D2E
-	for <lists+netdev@lfdr.de>; Fri, 10 Jan 2020 13:37:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F2DD136D38
+	for <lists+netdev@lfdr.de>; Fri, 10 Jan 2020 13:38:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728195AbgAJMhS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jan 2020 07:37:18 -0500
-Received: from mail-qk1-f194.google.com ([209.85.222.194]:37659 "EHLO
-        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728010AbgAJMhS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jan 2020 07:37:18 -0500
-Received: by mail-qk1-f194.google.com with SMTP id 21so1648482qky.4
-        for <netdev@vger.kernel.org>; Fri, 10 Jan 2020 04:37:17 -0800 (PST)
+        id S1728247AbgAJMi1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jan 2020 07:38:27 -0500
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:38028 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727949AbgAJMi1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jan 2020 07:38:27 -0500
+Received: by mail-wr1-f65.google.com with SMTP id y17so1671353wrh.5;
+        Fri, 10 Jan 2020 04:38:25 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=724E2+k+wYWoJNd3a2e5o4hAZ4Lz1W/Uqd0RV5K3kag=;
-        b=A2gYEzogfCN61kgR+N/v10e0lA2w92ArfI9nC44DHktxGL30qxtAvot1GLSSG3/WAZ
-         bM0TehTedhLiI0v14g8WnStG0eyyRGd+F/FiiUIjewUTqtrWjYqUm7O+DZiX5MvPcG03
-         FpZELEt/KeK3T9X5xUig+Nj26t/toIekcs1Q7+KBPI50OO7lLRlhWNOgip6TlC/oLlFB
-         EWlGbaUc7SUIzZazE3EUl/rHrU4p0nUCRdddDBpF3fZnvp2S8JWdB+qRPVvF4jcVXOoz
-         RWMxIzcEXCphcftKPE6hq/6r5lwDNzxXnsM1vuoLHNvKrRu/8vvJyhzUSTkFGXZq28BS
-         GMPg==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=p66wV6h17U9wMewOqvO+9P744TVt+8ikPmNpbDPLxQM=;
+        b=EA0/n8CD7hYuKCKGYNM5TV5Yj2fcCbV/6gqr0x7e7wcQ/xLh3nhNkWZyKuYyb4Y+1q
+         YBV2KG4k620T8pBjnTGxwhCdBC0GP8pw0Kue3ZRCNbuYlu/znSj26ujN+r0b5emptZK5
+         kVCjrO7INBvI+DTr9wF+NvX2JmV1+C5jx1e+xeCw0lmR1e8nb/tvpgi+ETKH0KxNrlrZ
+         xKS6l6Lx+9xxZ4JasMbEzeG3Ee84qHqnUyl74tdqpD4pGu+cyyyvNe+tt16nq47/x8Li
+         qBp41PAS6e/5O7jvvUt4OSreYX5Vs1L2NL4MeKkq4O5OArddB6RXxpM+XCJYxDxrCjE0
+         jTSw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=724E2+k+wYWoJNd3a2e5o4hAZ4Lz1W/Uqd0RV5K3kag=;
-        b=qiii4Lfj2FTvMpzIW44j/K9+mmBojQHSFgK7ZGnwTQ4bbRmKZ0Y96CPbf2ZZgVfke+
-         YknNjbJnGdkVZynRC/ir9fJ2fEo25fGx8HZDwtJT0749JIXwjqXwoMtrNL3koKj6AZ8D
-         s9ma7JKO+iZUbtmbL3yjzCVdZOuIrs7wos3GqMtLK4SD2UzXAH+uXWwZLvVwcAqasgtr
-         P756I49DnMi3X9WkcL8Lru+Dc8G1m428EZ0rEMZSNttfGhAEsV3JZ+NqvEC1Hhh3mNOS
-         reIpCizeNRnahz2REvVc3wp+l3F7fWavAN0DQZ9G7SvHUP8OS3OUYhEat+6Y7BdQKUg4
-         Z7zw==
-X-Gm-Message-State: APjAAAUyFjAoBFO0/Hn2Zd3E5NrDQMdh3WD48YOLk8zoDkungukFdZd6
-        9owEEueLKu8PdKm/+yoi10pJEw==
-X-Google-Smtp-Source: APXvYqxKMwo/0YnAVD2L/5+Zw4WZ2N2Vo0U2AhPnTT8mfyERJEN0SFmkjHmrT/gOAviRL/q4aXdYbg==
-X-Received: by 2002:a37:ac16:: with SMTP id e22mr2965861qkm.186.1578659837194;
-        Fri, 10 Jan 2020 04:37:17 -0800 (PST)
-Received: from jkicinski-Precision-T1700.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id v2sm790814qkj.29.2020.01.10.04.37.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 10 Jan 2020 04:37:16 -0800 (PST)
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, oss-drivers@netronome.com,
-        borisp@mellanox.com, aviadye@mellanox.com,
-        john.fastabend@gmail.com, daniel@iogearbox.net,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        David Beckett <david.beckett@netronome.com>,
-        Simon Horman <simon.horman@netronome.com>
-Subject: [PATCH net] net/tls: avoid spurious decryption error with HW resync
-Date:   Fri, 10 Jan 2020 04:36:55 -0800
-Message-Id: <20200110123655.996-1-jakub.kicinski@netronome.com>
-X-Mailer: git-send-email 2.23.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=p66wV6h17U9wMewOqvO+9P744TVt+8ikPmNpbDPLxQM=;
+        b=nmryVy9zvQ+8ImMs7PgnNC4x92Z7RB06bqq+okO9dmGSHC881BtXP4ahxoBtBiBjAd
+         7chX6D1Nq4sfRGLW+OqReYsbthYA60/9UK9fsS9buONeRi7BDUU1wvf+a5Unu9nX+PY9
+         KdONYK6L8HT8sqdk/QEMSgS5+Nm3Kww693tCQE/9gMSqO+QOuCh8PfEvJYA/nGGC+VXp
+         zfKu81ak6fAAFlmaLY2PtMChPdhMciu4sw+c+8eJUgdEApZL2z4z63atA4/+kZst7dc/
+         z2t8RHT4E6fFtD2TLoD5Aii23G9bSp4u/H9ms+L+1DYvgQKob+CTHD7NNron+pGivAlK
+         AZcQ==
+X-Gm-Message-State: APjAAAXWWmqhxOaohYNh2zt0FW9f+5xlSAaiSAZAjD8UaxuaypbZLdS1
+        czcoIyEyMFk0zMbD8k5v0HSe/yBNB68rpow0SDzUMUYV
+X-Google-Smtp-Source: APXvYqw5VnQiSbOUcIyPWMyywOGy2Zv260R7LJnXLfdXPETw5JZerPl9HHNaOo/GHtiPnH3iquUCM8emdQsVLsh0PV4=
+X-Received: by 2002:a5d:5345:: with SMTP id t5mr3534597wrv.0.1578659904823;
+ Fri, 10 Jan 2020 04:38:24 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <CAA5aLPhf1=wzQG0BAonhR3td-RhEmXaczug8n4hzXCzreb+52g@mail.gmail.com>
+ <CAM_iQpVyEtOGd5LbyGcSNKCn5XzT8+Ouup26fvE1yp7T5aLSjg@mail.gmail.com>
+ <CAA5aLPiqyhnWjY7A3xsaNJ71sDOf=Rqej8d+7=_PyJPmV9uApA@mail.gmail.com>
+ <CAM_iQpUH6y8oEct3FXUhqNekQ3sn3N7LoSR0chJXAPYUzvWbxA@mail.gmail.com>
+ <CAA5aLPjzX+9YFRGgCgceHjkU0=e6x8YMENfp_cC9fjfHYK3e+A@mail.gmail.com>
+ <CAM_iQpXBhrOXtfJkibyxyq781Pjck-XJNgZ-=Ucj7=DeG865mw@mail.gmail.com>
+ <CAA5aLPjO9rucCLJnmQiPBxw2pJ=6okf3C88rH9GWnh3p0R+Rmw@mail.gmail.com>
+ <CAM_iQpVtGUH6CAAegRtTgyemLtHsO+RFP8f6LH2WtiYu9-srfw@mail.gmail.com> <9cbefe10-b172-ae2a-0ac7-d972468eb7a2@gmail.com>
+In-Reply-To: <9cbefe10-b172-ae2a-0ac7-d972468eb7a2@gmail.com>
+From:   Akshat Kakkar <akshat.1984@gmail.com>
+Date:   Fri, 10 Jan 2020 18:08:12 +0530
+Message-ID: <CAA5aLPgjEGSWmfnCgbx+bn4tYFWAuwDHTopex7_r1qEFsLO+3Q@mail.gmail.com>
+Subject: Re: Unable to create htb tc classes more than 64K
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
+        Anton Danilov <littlesmilingcloud@gmail.com>,
+        NetFilter <netfilter-devel@vger.kernel.org>,
+        lartc <lartc@vger.kernel.org>, netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When device loses sync mid way through a record - kernel
-has to re-encrypt the part of the record which the device
-already decrypted to be able to decrypt and authenticate
-the record in its entirety.
+Hi Eric,
 
-The re-encryption piggy backs on the decryption routine,
-but obviously because the partially decrypted record can't
-be authenticated crypto API returns an error which is then
-ignored by tls_device_reencrypt().
+Thanks for a detailed reply. Sorry I couldn't reply as I was
+completely bed ridden.
 
-Commit 5c5ec6685806 ("net/tls: add TlsDecryptError stat")
-added a statistic to count decryption errors, this statistic
-can't be incremented when we see the expected re-encryption
-error. Move the inc to the caller.
+In order for me to try this, I require few inputs (as I am new to all this)...
 
-Reported-and-tested-by: David Beckett <david.beckett@netronome.com>
-Fixes: 5c5ec6685806 ("net/tls: add TlsDecryptError stat")
-Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
-Reviewed-by: Simon Horman <simon.horman@netronome.com>
----
- net/tls/tls_sw.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+1. How do I register in Kernel, that my eBPF program should be called? Is this
+https://netdevconf.info/1.1/proceedings/papers/On-getting-tc-classifier-fully-programmable-with-cls-bpf.pdf
+and
+http://man7.org/linux/man-pages/man8/tc-bpf.8.html
+correct documents ?
+2. Some info with respect to EDT and skb->tstamp and how things work.
 
-diff --git a/net/tls/tls_sw.c b/net/tls/tls_sw.c
-index bb229dc0fa81..5c7c00429f8e 100644
---- a/net/tls/tls_sw.c
-+++ b/net/tls/tls_sw.c
-@@ -256,8 +256,6 @@ static int tls_do_decryption(struct sock *sk,
- 			return ret;
- 
- 		ret = crypto_wait_req(ret, &ctx->async_wait);
--	} else if (ret == -EBADMSG) {
--		TLS_INC_STATS(sock_net(sk), LINUX_MIB_TLSDECRYPTERROR);
- 	}
- 
- 	if (async)
-@@ -1515,7 +1513,9 @@ static int decrypt_skb_update(struct sock *sk, struct sk_buff *skb,
- 				if (err == -EINPROGRESS)
- 					tls_advance_record_sn(sk, prot,
- 							      &tls_ctx->rx);
--
-+				else if (err == -EBADMSG)
-+					TLS_INC_STATS(sock_net(sk),
-+						      LINUX_MIB_TLSDECRYPTERROR);
- 				return err;
- 			}
- 		} else {
--- 
-2.23.0
-
+On Mon, Aug 26, 2019 at 12:02 PM Eric Dumazet <eric.dumazet@gmail.com> wrote:
+>
+>
+>
+> On 8/25/19 7:52 PM, Cong Wang wrote:
+> > On Wed, Aug 21, 2019 at 11:00 PM Akshat Kakkar <akshat.1984@gmail.com> wrote:
+> >>
+> >> On Thu, Aug 22, 2019 at 3:37 AM Cong Wang <xiyou.wangcong@gmail.com> wrote:
+> >>>> I am using ipset +  iptables to classify and not filters. Besides, if
+> >>>> tc is allowing me to define qdisc -> classes -> qdsic -> classes
+> >>>> (1,2,3 ...) sort of structure (ie like the one shown in ascii tree)
+> >>>> then how can those lowest child classes be actually used or consumed?
+> >>>
+> >>> Just install tc filters on the lower level too.
+> >>
+> >> If I understand correctly, you are saying,
+> >> instead of :
+> >> tc filter add dev eno2 parent 100: protocol ip prio 1 handle
+> >> 0x00000001 fw flowid 1:10
+> >> tc filter add dev eno2 parent 100: protocol ip prio 1 handle
+> >> 0x00000002 fw flowid 1:20
+> >> tc filter add dev eno2 parent 100: protocol ip prio 1 handle
+> >> 0x00000003 fw flowid 2:10
+> >> tc filter add dev eno2 parent 100: protocol ip prio 1 handle
+> >> 0x00000004 fw flowid 2:20
+> >>
+> >>
+> >> I should do this: (i.e. changing parent to just immediate qdisc)
+> >> tc filter add dev eno2 parent 1: protocol ip prio 1 handle 0x00000001
+> >> fw flowid 1:10
+> >> tc filter add dev eno2 parent 1: protocol ip prio 1 handle 0x00000002
+> >> fw flowid 1:20
+> >> tc filter add dev eno2 parent 2: protocol ip prio 1 handle 0x00000003
+> >> fw flowid 2:10
+> >> tc filter add dev eno2 parent 2: protocol ip prio 1 handle 0x00000004
+> >> fw flowid 2:20
+> >
+> >
+> > Yes, this is what I meant.
+> >
+> >
+> >>
+> >> I tried this previously. But there is not change in the result.
+> >> Behaviour is exactly same, i.e. I am still getting 100Mbps and not
+> >> 100kbps or 300kbps
+> >>
+> >> Besides, as I mentioned previously I am using ipset + skbprio and not
+> >> filters stuff. Filters I used just to test.
+> >>
+> >> ipset  -N foo hash:ip,mark skbinfo
+> >>
+> >> ipset -A foo 10.10.10.10, 0x0x00000001 skbprio 1:10
+> >> ipset -A foo 10.10.10.20, 0x0x00000002 skbprio 1:20
+> >> ipset -A foo 10.10.10.30, 0x0x00000003 skbprio 2:10
+> >> ipset -A foo 10.10.10.40, 0x0x00000004 skbprio 2:20
+> >>
+> >> iptables -A POSTROUTING -j SET --map-set foo dst,dst --map-prio
+> >
+> > Hmm..
+> >
+> > I am not familiar with ipset, but it seems to save the skbprio into
+> > skb->priority, so it doesn't need TC filter to classify it again.
+> >
+> > I guess your packets might go to the direct queue of HTB, which
+> > bypasses the token bucket. Can you dump the stats and check?
+>
+> With more than 64K 'classes' I suggest to use a single FQ qdisc [1], and
+> an eBPF program using EDT model (Earliest Departure Time)
+>
+> The BPF program would perform the classification, then find a data structure
+> based on the 'class', and then update/maintain class virtual times and skb->tstamp
+>
+> TBF = bpf_map_lookup_elem(&map, &classid);
+>
+> uint64_t now = bpf_ktime_get_ns();
+> uint64_t time_to_send = max(TBF->time_to_send, now);
+>
+> time_to_send += (u64)qdisc_pkt_len(skb) * NSEC_PER_SEC / TBF->rate;
+> if (time_to_send > TBF->max_horizon) {
+>     return TC_ACT_SHOT;
+> }
+> TBF->time_to_send = time_to_send;
+> skb->tstamp = max(time_to_send, skb->tstamp);
+> if (time_to_send - now > TBF->ecn_horizon)
+>     bpf_skb_ecn_set_ce(skb);
+> return TC_ACT_OK;
+>
+> tools/testing/selftests/bpf/progs/test_tc_edt.c shows something similar.
+>
+>
+> [1]  MQ + FQ if the device is multi-queues.
+>
+>    Note that this setup scales very well on SMP, since we no longer are forced
+>  to use a single HTB hierarchy (protected by a single spinlock)
+>
