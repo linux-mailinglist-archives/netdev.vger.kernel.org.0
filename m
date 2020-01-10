@@ -2,99 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B001136A14
-	for <lists+netdev@lfdr.de>; Fri, 10 Jan 2020 10:40:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 53599136A37
+	for <lists+netdev@lfdr.de>; Fri, 10 Jan 2020 10:50:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727218AbgAJJka (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jan 2020 04:40:30 -0500
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:40909 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727192AbgAJJka (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jan 2020 04:40:30 -0500
-Received: by mail-wr1-f68.google.com with SMTP id c14so1124788wrn.7
-        for <netdev@vger.kernel.org>; Fri, 10 Jan 2020 01:40:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=WXnTgOPDH+z337Wfb0xCw3m14azvnAshyBDM3QUKc5M=;
-        b=FX0STnnPKdszYYa4KuXolRqcRbEGWUUvxdeiCooR5NQaVjkEaKIJyQuTN/Z10qG47P
-         W1IZbKae9yQl7qsUMgJ43TVBzyV0NILejXw71O7sCyXapzar7F+Uc4HTPeg0PaIn6O/Z
-         /JcZXDIV2jZkziwsT8lNNBWv2iSIPoPqv9GeOg094PiK1K4j6nSzGcgVqcntsOLr0BwC
-         tnBFunhQjcG0qM5Nuk9d+/C1U/nGBIkV6RM+mFwKI/daCg1pYMuMm3VA66NhoHjIGfAL
-         Dg7x/fs0eujoW3dQaWguAqM4x8MuA9v+hzPWCi2Z2mjTih1ldlB5/bJCLwUbRlFumc2R
-         9duQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=WXnTgOPDH+z337Wfb0xCw3m14azvnAshyBDM3QUKc5M=;
-        b=ATWoAbhMp70lygflodA/6LPXiFCTPdJyx85rhh6B7WDZz0NPfQrpex165YV5OyeWlQ
-         poqe22ufDl+Q28h0Ajyx4EAkKiBmKC3W5O0VeqhaWiN/nIE+9qS4J/PyXe5GLqtn3m4L
-         lVt3CWmoxmwM+fKPMlx/EQyxLqrLxdQlsJKCv+cIpA5OMFeVIhRnbROzywYfRh4PrPWE
-         IQFrgyn0sff3/p5XrvLkMF8Qsn/ht6bowJUzbj4EdjVsgoV8O60D0WE6EUhw6CFzlUxL
-         tQ9DlynmRtu6aNZ/ifL/OkWCYw7gP7LgXRpaUFw/uZgQ/TJsZf0P8v0I/SELRBWHxeUq
-         KS9A==
-X-Gm-Message-State: APjAAAW5EEwHWO/HSBXVEgAkCp+QsAD0mz96yafQBc/CTaVzTTgZm3C6
-        qOVLG7REt4BwYAfeVsP0eeRng0BsxpI=
-X-Google-Smtp-Source: APXvYqwRnBAQuUjmRM4OL3kRTTDv9X0aXtDjC22rqh+y80PD9ds/D2Zz9Myo2ME6oa7xZ/LtBIuZqg==
-X-Received: by 2002:adf:f98c:: with SMTP id f12mr2380319wrr.138.1578649228503;
-        Fri, 10 Jan 2020 01:40:28 -0800 (PST)
-Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id c2sm1552635wrp.46.2020.01.10.01.40.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 10 Jan 2020 01:40:28 -0800 (PST)
-Date:   Fri, 10 Jan 2020 10:40:27 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Jacob Keller <jacob.e.keller@intel.com>
-Cc:     netdev@vger.kernel.org, valex@mellanox.com
-Subject: Re: [PATCH v2 0/3] devlink region trigger support
-Message-ID: <20200110094027.GL2235@nanopsycho.orion>
-References: <20200109193311.1352330-1-jacob.e.keller@intel.com>
+        id S1727298AbgAJJuJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jan 2020 04:50:09 -0500
+Received: from mout.gmx.net ([212.227.15.15]:37289 "EHLO mout.gmx.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727169AbgAJJuJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 10 Jan 2020 04:50:09 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1578649804;
+        bh=JKM3pxAcCog5OmuZc9V2r2LkCtdUZf9kIufyt5oxXZQ=;
+        h=X-UI-Sender-Class:Reply-To:Subject:To:Cc:References:From:Date:
+         In-Reply-To;
+        b=Aif77AW9N9TGclFkJhZ00ecuDk1miw9XqP5k/yfSKC84USEux9iFPNqzHfknO4cjh
+         dhzAfuSzVRGqrvahqaTkFCO0eCEaA31gYAbE1MdiAmpmjhgAf9xIoVLfF0UA6zOBZC
+         JUmajZ7LZDH8c7+AfX6DY4Hn6+xokTGipsfefHBQ=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [192.168.84.205] ([134.101.143.177]) by mail.gmx.com (mrgmx005
+ [212.227.17.190]) with ESMTPSA (Nemesis) id 1MmlXA-1jZg4r23qI-00jruI; Fri, 10
+ Jan 2020 10:50:03 +0100
+Reply-To: vtol@gmx.net
+Subject: Re: [drivers/net/phy/sfp] intermittent failure in state machine
+ checks
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Cc:     Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org
+References: <513d6fe7-65b2-733b-1d17-b3a40b8161cf@gmx.net>
+ <20200109155809.GQ25745@shell.armlinux.org.uk>
+ <bb2c2eed-5efa-00f6-0e52-1326669c1b0d@gmx.net>
+ <20200109174322.GR25745@shell.armlinux.org.uk>
+ <acd4d7e4-7f8e-d578-c9c9-b45f062f4fe2@gmx.net>
+ <7ebee7c5-4bf3-134d-bc57-ea71e0bdfc60@gmx.net>
+ <20200109215903.GV25745@shell.armlinux.org.uk>
+ <c7b4bec1-3f1f-8a34-cf22-8fb1f68914f3@gmx.net>
+ <20200109231034.GW25745@shell.armlinux.org.uk>
+ <727cea4e-9bff-efd2-3939-437038a322ad@gmx.net>
+ <20200110092700.GX25745@shell.armlinux.org.uk>
+From:   =?UTF-8?B?0b3SieG2rOG4s+KEoA==?= <vtol@gmx.net>
+Message-ID: <18687669-e6f5-79f1-6cf9-d62d65f195db@gmx.net>
+Date:   Fri, 10 Jan 2020 09:50:00 +0000
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:68.0) Gecko/20100101 Firefox/68.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200109193311.1352330-1-jacob.e.keller@intel.com>
+In-Reply-To: <20200110092700.GX25745@shell.armlinux.org.uk>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: base64
+Content-Language: en-GB
+X-Provags-ID: V03:K1:2JMe0QDQiwHX23UiCnAmn+nJSqqVV6EvCR0U7xrSTl8PDop66ZR
+ SFBFt/sULJpShIlMVpmqR6flb/g3RHyoHOwEy20bjsiwAZRVuyaU7yoCCcDfqOjLZtguAdv
+ tnw+fsMwL3E9yHO9cZ1UPo/XNIm2JAewZ0CBRfZRuAMMHN7TEG+yx9sZode2Zdz7SSC+01O
+ eru7O8oghq9AHbno8Z/fA==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:QkkOWRHqzvs=:GDRJ2L/B+qPGfQYKaZ9Six
+ z0WzyTttZ5b9dZQ3IoKOweMttcB/ATRedmRZQHjkkCdxwzRinMB22ZZnQiTjpFPvDCCNYBQEU
+ aKqpKGYikbTuHWu4Z1C/f5NmCezrAEuNYddV0Laga5ouxGYuq5+D8buj5N9WYUPSZcvqiU0+g
+ AVH9vokm6vsvbhNmav2JU9l2Zb2D3wjJimq/CkMsxQrYPZjampHneL0HDyKm7D28nCa170eIC
+ Du5bLaOePJmtwLC29FzZbPztt+tTWN/a2qfkfgR/Dsubf6iS1IEq/7qxlxr+FGKZR27LoaJC2
+ WTyjWj2B00WDwE58PsF7Ws0RtCJz0IyoNOz4Lox2/iZd82K43Y4ubtJLnNyekCFALtacLiWPu
+ pIbgD/BdgOyOxNVguOghHTyPVCZMcoEkAAsKpkT4bWJ5ZgsmDx4zHer6lD4aLnI3418FszhbA
+ mRYQpzsbEZsFzE1L2+W75xlL96b11AaCqlKyNw5mGhQSgnOC2tZtAwaf8TVQ9bG5KjV1W1MSV
+ UlLyGNQ4inaem/p4MH+5LLREzXsnjQ3mcGFOWSBRwN2LjD+owYpdmEXP7WUY4IaXa28qWth4E
+ M4x9vtltJ7ndjGp4ksNKfbYPcIjNc8qb6eydVDgYRWWYoiG1JJuSi1iAG0FDzRKWahurLBCcV
+ cvGDi8hZf/aVhnVRPnFRRlKnXMbdDSy7Q7qlzmvmw6jzwgFZiVeCodmO4nn799GLLBSLTin1W
+ ucEd/ETsMHCKF9fypqN06M+1ej8UUdvmiXrlL5+MMqK8kinR65DDBKRWqzueWFd/prgNh7FLb
+ 4Y/ovavmkuZx3EixuVl9ZZvDYLjrTcXWiLWlOSdTvqYUKU/nv4K1KbArlqX6A/o95kTSyjG/E
+ xpoJxkrSEn47g1s+FgmrO7rspyHv2nExH7FbQqRKWhzBAl4s2+evWF+IZkqmXLHYO/Y1bmUi7
+ TVSjgYbbskGzhnBg817VTwbKjFupNwv9PBGIZyFjavSFC/ApzCgqPC8ycJTEtzo9OY9CNtHff
+ JV2EUGYd31BS/a+kHWSyL5DB/yHSqrquV1lMjTUNELl47OHMZODqQp921Q56WZHq2rDLmT7n9
+ ry+gzcmJSgz1fgls+JUZmX4cYjcJR6CY0eJA1eEl7aVaCa5IsNjs5GhK78IEzUZ17H9ubzEpO
+ sc0JQ0a+Wo4R403EQiH8Zr39pB+CW/vTno0oUo+b+ZLg5FUbAmCHFqdTem6+7SeLH+Nv/USr9
+ hve3u+y+YMKSE7mbgr6UQatQxKwHfEgbeHNPnCQ==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thu, Jan 09, 2020 at 08:33:07PM CET, jacob.e.keller@intel.com wrote:
->This series consists of patches to enable devlink to request a snapshot via
->a new DEVLINK_CMD_REGION_TRIGGER_SNAPSHOT.
->
->A reviewer might notice that the devlink health API already has such support
->for handling a similar case. However, the health API does not make sense in
->cases where the data is not related to an error condition.
->
->In this case, using the health API only for the dumping feels incorrect.
->Regions make sense when the addressable content is not captured
->automatically on error conditions, but only upon request by the devlink API.
->
->The netdevsim driver is modified to support the new trigger_snapshot
->callback as an example of how this can be used.
-
-I don't think that the netdevsim usecase is enough to merge this in. You
-need a real-driver user as well.
-
-Of course, netdevsim implementation is good to have to, but you have to
-bundle selftests along with that.
-
-
->
->Jacob Keller (3):
->  devlink: add callback to trigger region snapshots
->  devlink: introduce command to trigger region snapshot
->  netdevsim: support triggering snapshot through devlink
->
-> drivers/net/ethernet/mellanox/mlx4/crdump.c |  4 +-
-> drivers/net/netdevsim/dev.c                 | 37 ++++++++++++-----
-> include/net/devlink.h                       | 12 ++++--
-> include/uapi/linux/devlink.h                |  2 +
-> net/core/devlink.c                          | 45 +++++++++++++++++++--
-> 5 files changed, 80 insertions(+), 20 deletions(-)
->
->-- 
->2.25.0.rc1
->
+DQpPbiAxMC8wMS8yMDIwIDA5OjI3LCBSdXNzZWxsIEtpbmcgLSBBUk0gTGludXggYWRtaW4g
+d3JvdGU6DQo+IE9uIFRodSwgSmFuIDA5LCAyMDIwIGF0IDExOjUwOjE0UE0gKzAwMDAsING9
+0onhtqzhuLPihKAgd3JvdGU6DQo+PiBPbiAwOS8wMS8yMDIwIDIzOjEwLCBSdXNzZWxsIEtp
+bmcgLSBBUk0gTGludXggYWRtaW4gd3JvdGU6DQo+Pj4gUGxlYXNlIGRvbid0IHVzZSBtaWkt
+dG9vbCB3aXRoIFNGUHMgdGhhdCBkbyBub3QgaGF2ZSBhIFBIWTsgdGhlICJQSFkiDQo+Pj4g
+cmVnaXN0ZXJzIGFyZSBlbXVsYXRlZCwgYW5kIGFyZSB0aGVyZSBqdXN0IGZvciBjb21wYXRp
+YmlsaXR5LiBQbGVhc2UNCj4+PiB1c2UgZXRodG9vbCBpbiBwcmVmZXJlbmNlLCBlc3BlY2lh
+bGx5IGZvciBTRlBzLg0KPj4gU3VyZSwganVzdCBldGh0b29sIGlzIG5vdCBtdWNoIG9mIGhl
+bHAgZm9yIHRoaXMgcGFydGljdWxhciBtYXR0ZXIsIGFsbCB0aGVyZQ0KPj4gaXMgZXRodG9v
+bCAtbSBhbmQgYWNjb3JkaW5nIHRvIHlvdSB0aGUgRUVQUk9NIGR1bXAgaXMgbm90IHRvIGJl
+IHJlbGllZCBvbi4NCj4gSG93IGFib3V0IGp1c3QgImV0aHRvb2wgZXRoMiIgPw0KDQpTZXR0
+aW5ncyBmb3IgZXRoMjoNCiDCoMKgwqDCoMKgwqDCoCBTdXBwb3J0ZWQgcG9ydHM6IFsgVFAg
+XQ0KIMKgwqDCoMKgwqDCoMKgIFN1cHBvcnRlZCBsaW5rIG1vZGVzOsKgwqAgMTAwMGJhc2VY
+L0Z1bGwNCiDCoMKgwqDCoMKgwqDCoCBTdXBwb3J0ZWQgcGF1c2UgZnJhbWUgdXNlOiBTeW1t
+ZXRyaWMNCiDCoMKgwqDCoMKgwqDCoCBTdXBwb3J0cyBhdXRvLW5lZ290aWF0aW9uOiBZZXMN
+CiDCoMKgwqDCoMKgwqDCoCBTdXBwb3J0ZWQgRkVDIG1vZGVzOiBOb3QgcmVwb3J0ZWQNCiDC
+oMKgwqDCoMKgwqDCoCBBZHZlcnRpc2VkIGxpbmsgbW9kZXM6wqAgMTAwMGJhc2VYL0Z1bGwN
+CiDCoMKgwqDCoMKgwqDCoCBBZHZlcnRpc2VkIHBhdXNlIGZyYW1lIHVzZTogU3ltbWV0cmlj
+DQogwqDCoMKgwqDCoMKgwqAgQWR2ZXJ0aXNlZCBhdXRvLW5lZ290aWF0aW9uOiBZZXMNCiDC
+oMKgwqDCoMKgwqDCoCBBZHZlcnRpc2VkIEZFQyBtb2RlczogTm90IHJlcG9ydGVkDQogwqDC
+oMKgwqDCoMKgwqAgU3BlZWQ6IDEwMDBNYi9zDQogwqDCoMKgwqDCoMKgwqAgRHVwbGV4OiBG
+dWxsDQogwqDCoMKgwqDCoMKgwqAgUG9ydDogVHdpc3RlZCBQYWlyDQogwqDCoMKgwqDCoMKg
+wqAgUEhZQUQ6IDANCiDCoMKgwqDCoMKgwqDCoCBUcmFuc2NlaXZlcjogaW50ZXJuYWwNCiDC
+oMKgwqDCoMKgwqDCoCBBdXRvLW5lZ290aWF0aW9uOiBvbg0KIMKgwqDCoMKgwqDCoMKgIE1E
+SS1YOiBVbmtub3duDQogwqDCoMKgwqDCoMKgwqAgU3VwcG9ydHMgV2FrZS1vbjogZA0KIMKg
+wqDCoMKgwqDCoMKgIFdha2Utb246IGQNCiDCoMKgwqDCoMKgwqDCoCBMaW5rIGRldGVjdGVk
+OiB5ZXMNCg0KQW5kIGkyY2RldGVjdCAtbA0KDQppMmMtM8KgwqAgaTJjwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgIGkyYy0wLW11eCAoY2hhbl9pZCAyKcKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoCBJMkMgYWRhcHRlcg0KaTJjLTHCoMKgIGkyY8KgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoCBpMmMtMC1tdXggKGNoYW5faWQgMCnCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqAgSTJDIGFkYXB0ZXINCmkyYy04wqDCoCBpMmPCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqAgaTJjLTAtbXV4IChjaGFuX2lkIDcpwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgIEkyQyBhZGFwdGVyDQppMmMtNsKgwqAgaTJjwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgIGkyYy0wLW11eCAoY2hhbl9pZCA1KcKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoCBJMkMgYWRhcHRlcg0KaTJjLTTCoMKgIGkyY8KgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoCBpMmMtMC1tdXggKGNoYW5faWQgMynCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqAgSTJDIGFkYXB0ZXINCmkyYy0ywqDCoCBpMmPCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqAgaTJjLTAtbXV4IChjaGFuX2lkIDEpwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgIEkyQyBhZGFwdGVyDQppMmMtMMKgwqAgaTJjwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgIG12NjR4eHhfaTJjIGFkYXB0ZXLCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIEkyQyBhZGFwdGVyDQppMmMtN8KgwqAgaTJjwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgIGkyYy0wLW11eCAoY2hhbl9pZCA2KcKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBJMkMgYWRhcHRlcg0KaTJjLTXCoMKgIGkyY8Kg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBpMmMtMC1tdXggKGNoYW5faWQgNCnCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgSTJDIGFkYXB0ZXINCg0KPg0KPj4+IENPTkZJ
+R19ERUJVR19HUElPIGlzIG5vdCB0aGUgc2FtZSBhcyBoYXZpbmcgZGVidWdmcyBzdXBwb3J0
+IGVuYWJsZWQuDQo+Pj4gSWYgZGVidWdmcyBpcyBlbmFibGVkLCB0aGVuIGdwaW9saWIgd2ls
+bCBwcm92aWRlIHRoZSBjdXJyZW50IHN0YXRlDQo+Pj4gb2YgZ3Bpb3MgdGhyb3VnaCBkZWJ1
+Z2ZzLiAgZGVidWdmcyBpcyBub3JtYWxseSBtb3VudGVkIG9uDQo+Pj4gL3N5cy9rZXJuZWwv
+ZGVidWcsIGJ1dCBtYXkgbm90IGJlIG1vdW50ZWQgYnkgZGVmYXVsdCBkZXBlbmRpbmcgb24N
+Cj4+PiBwb2xpY3kuICBMb29raW5nIGluIC9wcm9jL2ZpbGVzeXN0ZW1zIHdpbGwgdGVsbCB5
+b3UgZGVmaW5pdGl2ZWx5DQo+Pj4gd2hldGhlciBkZWJ1Z2ZzIGlzIGVuYWJsZWQgb3Igbm90
+IGluIHRoZSBrZXJuZWwuDQo+PiBkZWJ1Z3NmcyBpcyBtb3VudGVkIGJ1dCBscyAtYWYgL3N5
+cy9rZXJuZWwvZGVidWcvZ3BpbyBvbmx5IHByb2R1Y2luZw0KPj4gKG9kZGx5KToNCj4+DQo+
+PiAvc3lzL2tlcm5lbC9kZWJ1Zy9ncGlvDQo+IFRyeSAiY2F0IC9zeXMva2VybmVsL2RlYnVn
+L2dwaW8iDQoNCmdwaW9jaGlwMjogR1BJT3MgNTA0LTUxMSwgcGFyZW50OiBpMmMvOC0wMDcx
+LCBwY2E5NTM4LCBjYW4gc2xlZXA6DQogwqBncGlvLTUwNCAowqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqAgfHR4LWZhdWx0wqDCoMKgwqDCoMKgwqDCoMKgwqDCoCAp
+IGluwqAgbG8gSVJRDQogwqBncGlvLTUwNSAowqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqAgfHR4LWRpc2FibGXCoMKgwqDCoMKgwqDCoMKgwqAgKSBvdXQgbG8NCiDC
+oGdwaW8tNTA2ICjCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCB8cmF0
+ZS1zZWxlY3QwwqDCoMKgwqDCoMKgwqAgKSBpbsKgIGxvDQogwqBncGlvLTUwNyAowqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgfGxvc8KgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgICkgaW7CoCBsbyBJUlENCiDCoGdwaW8tNTA4ICjCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCB8bW9kLWRlZjDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgICkgaW7CoCBsbyBJUlENCg0KX19fDQoNClByb2JhYmx5IHVucmVsYXRlZCwganVz
+dCBmb3IgcG9zdGVyaXR5IG5vdGljZWQgaW4gdGhlIGxvZ3M6DQoNCnBjYTk1M3ggOC0wMDcx
+OiA4LTAwNzEgc3VwcGx5IHZjYyBub3QgZm91bmQsIHVzaW5nIGR1bW15IHJlZ3VsYXRvcg0K
+X19fDQpNZWFudGltZSBBbGxuZXQgcmVzcG9uZGVkLCB3aGljaCBiYXNpY2FsbHkgc3VtcyB1
+cCB0byAoYmxhbWUgcGluZyBwb25nIC0gDQppdCBpcyBub3QgbWUgYnV0IGdvIGFuZCBsb29r
+IHRoZXJlIGluc3RlYWQuLi4pDQoNCi0gZHJpdmVyIHN1cHBvcnQgaXMgbm90IGJlaW5nIGhh
+bmRsZWQgYnkgQWxsbmV0IGJ1dCBieSBNZXRhbm9pYSwgbGF0dGVyIA0KYmVpbmcgZGVzaWdu
+ZXIgYW5kIG1hbnVmYWN0dXJlcg0KLSBBbGxuZXQgZG9lcyBub3QgaGF2ZSB0aGUgYnV5aW5n
+IHBvd2VyIHRvIHBlcnN1YWRlIE1ldGFub2lhIHRvIGxvb2sgDQppbnRvIHRoZSBtYXR0ZXIN
+Ci0gaXQgd291bGQgYXBwZWFyIHRoYXQgU0ZQLkMgaXMgdHJ5aW5nIHRvIGNvbW11bmljYXRl
+IHdpdGggRmliZXItR0JJQyANCmFuZCBmYWlscyBzaW5jZSB0aGUgc2lnbmFsIHJlcG9ydHMg
+bWF5IG5vdCBiZSAxMDAlIGNvbXBhdGlibGUNCg0KUGVuZGluZyBpcyB0aGVpciBmZWVkYmFj
+ayBhYm91dCBTRlAgTVNBIGNvbmZvcm1pdHkuDQoNCg==
