@@ -2,137 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 78CBD1377E9
-	for <lists+netdev@lfdr.de>; Fri, 10 Jan 2020 21:27:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AB1061377F5
+	for <lists+netdev@lfdr.de>; Fri, 10 Jan 2020 21:33:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726520AbgAJU1n (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jan 2020 15:27:43 -0500
-Received: from mout.gmx.net ([212.227.17.22]:46693 "EHLO mout.gmx.net"
+        id S1726680AbgAJUds (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jan 2020 15:33:48 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:60662 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726190AbgAJU1n (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 10 Jan 2020 15:27:43 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1578688060;
-        bh=I/JAISfHvRPnhmv0O5h8ysJ6wAr7MUQk58JpAjt5yLI=;
-        h=X-UI-Sender-Class:Reply-To:Subject:To:Cc:References:From:Date:
-         In-Reply-To;
-        b=IoPtDoNptMfSdZTS4tURCuJkEHlg9wz2hm+SxZG3D3Xx/vgKsHnujfZvUu9eoixrU
-         gL0dYz8cPKtlAUJ7nGkvFEFhrrc/fbrSpQORyv/JnGyape2CgN1HbqsNzafrawcVV/
-         zIlXOgubVXEaH3L7gTZrQekQRFQzJvKWf5ScchWM=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [192.168.84.205] ([46.59.197.184]) by mail.gmx.com (mrgmx104
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1N1fii-1jnEIN3Dia-011zjg; Fri, 10
- Jan 2020 21:27:40 +0100
-Reply-To: vtol@gmx.net
-Subject: Re: [drivers/net/phy/sfp] intermittent failure in state machine
- checks
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Cc:     Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org
-References: <20200110150955.GE25745@shell.armlinux.org.uk>
- <e9a99276-c09d-fa8d-a280-fca2abac6602@gmx.net>
- <20200110163235.GG25745@shell.armlinux.org.uk>
- <717229a4-f7f6-837d-3d58-756b516a8605@gmx.net>
- <20200110170836.GI25745@shell.armlinux.org.uk>
- <12956566-4aa3-2c5d-be1a-8612edab3b3d@gmx.net>
- <20200110173851.GJ25745@shell.armlinux.org.uk>
- <e18b0fb9-0c6d-ed5e-3a20-dc29e9cc048e@gmx.net>
- <20200110190134.GL25745@shell.armlinux.org.uk>
- <a2a22d92-11ec-5f80-f010-d8da838b7cbf@gmx.net>
- <20200110195533.GM25745@shell.armlinux.org.uk>
-From:   =?UTF-8?B?0b3SieG2rOG4s+KEoA==?= <vtol@gmx.net>
-Message-ID: <b8b9a61c-d361-e6dd-1cd9-db4cea624fd7@gmx.net>
-Date:   Fri, 10 Jan 2020 20:27:39 +0000
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:68.0) Gecko/20100101 Firefox/68.0
+        id S1726623AbgAJUds (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 10 Jan 2020 15:33:48 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=u3jxCHUDd5Pm/Y2q0b/qKxrWWseDBaS/hK6okC7Pk38=; b=YHFcu8ccMp5yFy9YS4lh6wzLz/
+        8fCAAtavMf+JJh9EqEP0ZkXV6mLtbmco+6Jx7JSgW3DgH0KSS+gmK9gMPsupNwqNRy56wsbsSNszi
+        uYcm8f/wSwIdznLSiE+eT8ROc96UUbliZxKnHfakYQO2WZo+4U4euwJOt0NPElAigykE=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1iq0yT-0004fK-5C; Fri, 10 Jan 2020 21:33:41 +0100
+Date:   Fri, 10 Jan 2020 21:33:41 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Horatiu Vultur <horatiu.vultur@microchip.com>
+Cc:     Vladimir Oltean <olteanv@gmail.com>,
+        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
+        lkml <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        bridge@lists.linux-foundation.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Roopa Prabhu <roopa@cumulusnetworks.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        anirudh.venkataramanan@intel.com, David Ahern <dsahern@gmail.com>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>
+Subject: Re: [RFC net-next Patch 0/3] net: bridge: mrp: Add support for Media
+ Redundancy Protocol(MRP)
+Message-ID: <20200110203341.GU19739@lunn.ch>
+References: <20200109150640.532-1-horatiu.vultur@microchip.com>
+ <6f1936e9-97e5-9502-f062-f2925c9652c9@cumulusnetworks.com>
+ <20200110160456.enzomhfsce7bptu3@soft-dev3.microsemi.net>
+ <CA+h21hrq7U4EdqSgpYQRjK8rkcJdvD5jXCSOH_peA-R4xCocTg@mail.gmail.com>
+ <20200110172536.42rdfwdc6eiwsw7m@soft-dev3.microsemi.net>
+ <20200110175608.GK19739@lunn.ch>
+ <20200110201248.tletol7glyr4soqz@soft-dev3.microsemi.net>
 MIME-Version: 1.0
-In-Reply-To: <20200110195533.GM25745@shell.armlinux.org.uk>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: quoted-printable
-Content-Language: en-GB
-X-Provags-ID: V03:K1:EY7gtmb+2ctrOb12beycTORJtm594IlOf7s9ezxf+9phbb2BhGs
- fho9gz15F4BvM9wx6QIaaOhYj48836G2f+XqahJueiaD1x/cMCXKnQM4JMwveNRm5pHenLp
- sjfnqFYG8W7vH5JNYADBEBsiSeiQW7JM5pUzpevMiYJyptPz3gKJTXdNc2t3N67kq/3VAKe
- aAD8LG+7mmNydOls/ja1Q==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:Q9T6JtYdxII=:+X+7XSlG0L/dbnemVr+4d+
- mXlckSjpDRwYzco6dtDXawN2V8czBhHuToIkXb7nWgjQDN1lSBxwNTCo1BJAPxkhSCq9WcETW
- ozN4H+8iavWRiEB7wFJkygOXb++FFIW8agY+J+r8FZiHw6fvS7qvT4oGuNRJA4srJSQIw0hCa
- HUkMmqEjPxryBPVnxj+W5lZUHNzveTvk+ZAYIJdo6oV5VU2v3e1L6MtB6JxnVy37zMTDB42xj
- 9QlZov8SnMdB87OgMPJ9JnpPsYk6sSZyoYI86RbITAXIiutv7KtLkIK0e0rsC6vLoReOktP0s
- +zf7sLmWQ2C3BBIaF2YE4yIiPWjJOngU1GWOlnzMcmMUt5cdwS440fxRsqaeWSmRQZpvHWwf6
- qClez6McBx1Yk6nXhy0BhOADeSUfCy8M4wcVb3ndHteihpVH8JTmDb75ffxeIoCPo6dQbg0oM
- ac5ttZsLW9hYKqNFJUHI7TcoVW1X7DWPurCJRTPos1WWKRbXYAlWaGnomhsMjkdizYGwj4rAs
- uhTdRJeXGYuBCudEo50l4zx704fA1SuAcJRBOVtkQYv4Y10exhqKV+jRYIWn6La9p+8wxNR7r
- 2t+73k8vgIpeFdknu8G9023yimfhQAPmjwRhG3Mw0qPO5PKJtCyE0+wcU/uulH28QEZwlGoUe
- oJ6qmI0cpItKontrTcWahWqd0Qt7E/JCE73JRIJr8GojFNECyRfpqgGTB3e3o9ULEWeXYkzOJ
- VUsWCFW7ztTiEyPWxly34QAtIc4euacGy71EHdUYYILyGBe+gxjhurF3jnrEvpZ6T7uChhY6r
- C4QwDrghaIFpzSiS+HpcUiT2AGTy+M7SMVa/AfZ14qSkbtg0w32xArwsLnfcL4DVEL/Snps0W
- 3DTkn1CyWjybqV1S41i7ZW882YzufEsnMy5370a3cStP1hGywZnr3uEUt/4FIFIMZHYG1fanz
- LliO1vSaFgKVUVXkj3KR2Hm8sDL+YnyN5vFcrBiV+FvCor9aRDQ1MNQJiakac4Cve7je/BqGE
- S2xeAWebr8tP6xvBc46s3oxaGMvSTFF9PwtlGD570/hqTWEWLESnLBQog1d3utf/UuQaUn45x
- E+UgH8tBX+mq/RzF3pCJEF4IRbjp+jMWDn2ujPvUf7RBcQsggyID1p+hKXN0NgVAR0uy3dVQv
- 66+fsI9TWVyYc+5lgMM8pIwZhkSGj1N8spedhXmJY0/S8GeN1BTgVLXOYL1DFfOHl2OTBNPtn
- GlPPLLYpoOjx2UaSTUMubwcqg5xa8oZYQWXFqfA==
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200110201248.tletol7glyr4soqz@soft-dev3.microsemi.net>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, Jan 10, 2020 at 09:12:48PM +0100, Horatiu Vultur wrote:
+> The 01/10/2020 18:56, Andrew Lunn wrote:
+> > EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
+> > 
+> > > > Horatiu, could you also give some references to the frames that need
+> > > > to be sent. I've no idea what information they need to contain, if the
+> > > > contents is dynamic, or static, etc.
+> > > It is dynamic - but trivial...
+> > 
+> > If it is trivial, i don't see why you are so worried about abstracting
+> > it?
+> Maybe we misunderstood each other. When you asked if it is dynamic or
+> static, I thought you meant if it is the same frame being send repeated
+> or if it needs to be changed. It needs to be changed but the changes are
+> trivial, but it means that a non-MRP aware frame generator can't
+> properly offload this.
 
-On 10/01/2020 19:55, Russell King - ARM Linux admin wrote:
->
-> Define "stable once the interface is up".  Is that stable after ten
-> seconds?  Or stable in under the 300ms initialisation delay allowed
-> by the SFP MSA?
+The only frame generator i've ever seen are for generating test
+packets. They generally have random content, random length, maybe the
+option to send invalid CRC etc. These are never going to work for MRP.
+So we should limit our thinking to hardware specifically designed for
+MRP offload.
 
-The router boots, SFP.C is called and performs its functions and the=20
-module gets online and stays that way.
-At some point the modules thus apparently passes the checks, incl. the=20
-under the 300ms initialisation, or else it would never get online and I=20
-could trash it.
-Once up it is rock-solid - the IRQ values are staying constant.
+What we need to think about is an abstract model for MRP offload. What
+must such a bit of hardware do? What parameters do we need to pass to
+it? When should it interrupt us because some event has happened?
 
-If at later stage the iif is being brought down and up again the issue=20
-starts to exhibit.
+Once we have an abstract model, we can define netlink messages, or
+devlink messages. And you can implement driver code which takes this
+abstract model and implements it for your real hardware. And if you
+have the abstract model correct, other vendors should also be able to
+implement drivers as well.
 
->
->> The 5 toggles are resulting from manually invoking ifupdown action.
->>
->>> Therefore, I'd say that the SFP state machines are operating as
->>> designed, and as per the SFP MSA, and what we have is a module that
->>> likes to assert TX_FAULT for unknown reasons, and this confirms the
->>> hypothesis I've been putting forward.
->>>
->> This is based on the 5 IRQ toggles or the previous reading on the GPIO=
+Since this is a closed standard, there is not much the rest of us can
+do. You need to define this abstract model. We can then review it.
 
->> output?
-> On _both_.
->
->
-> Okay, I give up trying to help you.  Sorry, but I've spent a lot of
-> time over the last two days trying to help and explain stuff, and
-> you seem to want to constantly tell me I'm wrong, or misreading what
-> you're saying, or that there's some problem with the "sm check"
-> when I've already pointed out is a figment of your imagination.
-
-Not sure really why took such offence from that bit of summary.
-
-I am not saying/implying that you are wrong, just beg to differ - there=20
-is no explanation why the module is passing the test on initial up (at=20
-boot time) but failing intermittently with ifupdown action later on,=20
-that is all I am saying.
-That the module is failing checks is hardly a figment of my imagination=20
-or else I would not have bothered in seeking support in various places,=20
-and prior reaching out all the way upstream having tried first in this=20
-order:
-
-- TOS
-- OpenWrt
-- vendor
-
-> Sorry, but I'm not prepared to help any further.
-
-It would be just sad to leave on such note and thus just let me=20
-emphasize that I have thoroughly enjoyed and appreciated the exchange.
-Unless you object me posting to this mailing list I would just remove=20
-your email address then.
-
+    Andrew
