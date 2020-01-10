@@ -2,65 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6EB1D136ED7
-	for <lists+netdev@lfdr.de>; Fri, 10 Jan 2020 14:57:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EF052136ED9
+	for <lists+netdev@lfdr.de>; Fri, 10 Jan 2020 14:57:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727965AbgAJN5h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jan 2020 08:57:37 -0500
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:37591 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727503AbgAJN5g (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jan 2020 08:57:36 -0500
-Received: by mail-wr1-f67.google.com with SMTP id w15so1917146wru.4
-        for <netdev@vger.kernel.org>; Fri, 10 Jan 2020 05:57:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:sender:in-reply-to:references:from:date:message-id
-         :subject:to:content-transfer-encoding;
-        bh=OVC6IuEPGG9HW5E9uWnuhqNWzdHilZimhoeo1FLrWTQ=;
-        b=MkzhThnScnuosjGNw4wSO0mdbGboVFtGB9uPslgqfa+djX6WMloFDqB67ndjOLkbZ0
-         lRlN8x12rR+SI05UGPCPck1E0yPAZb41lXb2H75uMNrXcen6VgG5SFCzfNQ0RgqENU1L
-         rfCh+hwL2xc9Q0YJRt5rgqHt4H+cSGq0R/SvAcokiVFUDesX7mlKIgekyxTnw3lABr+9
-         7wBb9sGI3I9eXCm4Qth/1nDbU+f6g4xo0DsjhKWbW1frPepjhE8XvvCVZ/RvwFBzJTZF
-         T69EAq5O4tDkfbI1LtPRtSzVDY8lZRGnG8I5HYj6gDDGIB8TBm9XqJcmQz8mAMUHATHO
-         PBJg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:sender:in-reply-to:references:from
-         :date:message-id:subject:to:content-transfer-encoding;
-        bh=OVC6IuEPGG9HW5E9uWnuhqNWzdHilZimhoeo1FLrWTQ=;
-        b=puVBX4DvMc/4jJGG1yrKXQK7b5Y2xNYBR+AUzrORlQkN3RD8+zvo5bdLvvjBaA1jhg
-         a++Yx0tZXWNhJVBNBdpxnt17ldO+XC3SGfw5Qp5a2XBrJW14nW3H2T0bOEf5LSWtAJ7Y
-         w7c/cwumkfVTg8VV2wPwqQ6WS7MC55Nx/Dp5wj2OM8VL1ZXPGus95VKHEnH0TYOUfZQJ
-         e76y9Wnvt2eVl4KSyIlDUwA8dympwK2A+P9cm87GwwpQ0x8T/viysKcto0UxBNwyKjsL
-         wTZBEBaUqnr549Hq5hFnNS4PJLHktSyrImlbqhkK0pWSkgq612YpfdP8INTRTRWJg5RM
-         rRWw==
-X-Gm-Message-State: APjAAAVJxsmJx3s2zH/21JXIDOZVvhvTBRWnezn0N3e14u4lgtUQvieT
-        wprsIPOjNHg7FUVuPn45r2FNIAaXYyy/i3ny5dU=
-X-Google-Smtp-Source: APXvYqyNiAdpUEojNbXz6ag/mTziHNvAxBJV9YkW7J0fr4qu8bi6AviyypKBqJzzvwyU2fYCfm+CXNnaPBfn/l6uKcw=
-X-Received: by 2002:a05:6000:118d:: with SMTP id g13mr3960972wrx.141.1578664654335;
- Fri, 10 Jan 2020 05:57:34 -0800 (PST)
+        id S1727977AbgAJN54 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jan 2020 08:57:56 -0500
+Received: from mail.kernel.org ([198.145.29.99]:42482 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727503AbgAJN5z (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 10 Jan 2020 08:57:55 -0500
+Received: from localhost.localdomain.com (mob-176-246-50-46.net.vodafone.it [176.246.50.46])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 504D32072E;
+        Fri, 10 Jan 2020 13:57:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1578664674;
+        bh=FDvqn5gzu+XlgXmfvrv9xYlw6SXOT0W4toCRURJ9jdk=;
+        h=From:To:Cc:Subject:Date:From;
+        b=p3FL5m9ZvPYZP4LBa4ep3Uqx98Rr8sCSHAzpW/wiF+G9V5qnujd9J3YAc+nccXlRg
+         d2Q+mnnHF4srFgKhUaTwFFPO3ZieS/HG2apvzbKeAcZCojx6MiVsCTTlrqc49u/2yW
+         Ht803xHIeWvU6ms63FeIUmQdQ/OrN8FezNkYpZ10=
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     ilias.apalodimas@linaro.org
+Cc:     netdev@vger.kernel.org, brouer@redhat.com, davem@davemloft.net,
+        lorenzo.bianconi@redhat.com
+Subject: [PATCH v2 net-next] net: socionext: get rid of huge dma sync in netsec_alloc_rx_data
+Date:   Fri, 10 Jan 2020 14:57:44 +0100
+Message-Id: <81eeb4aaf1cbbbdcd4f58c5a7f06bdab67f20633.1578664483.git.lorenzo@kernel.org>
+X-Mailer: git-send-email 2.21.1
 MIME-Version: 1.0
-Received: by 2002:a5d:558d:0:0:0:0:0 with HTTP; Fri, 10 Jan 2020 05:57:33
- -0800 (PST)
-In-Reply-To: <CA+EvRRFFiGc8nBs7=dEqPyvcPyFcT9qzhsFC68dUG5s1_H0Tgw@mail.gmail.com>
-References: <CA+EvRRG0dCNC=ZES5Jm5Jr+2pR4G6GPAeYVzk14eoKiMJpZ0ew@mail.gmail.com>
- <CA+EvRRFBY8swOfo+jn7NYoVreAWbxj4PZudp83TONC+3b4Up6A@mail.gmail.com>
- <CA+EvRREyZTFraZOh+QcvHp0+wAHd_iV7YUoSJPMZ+LcjcFWE1Q@mail.gmail.com> <CA+EvRRFFiGc8nBs7=dEqPyvcPyFcT9qzhsFC68dUG5s1_H0Tgw@mail.gmail.com>
-From:   Christy Ruth Walton <idrissdaouda11@gmail.com>
-Date:   Fri, 10 Jan 2020 05:57:33 -0800
-X-Google-Sender-Auth: UPg-ko7LUJJPkpXVbu6dDvjFPK4
-Message-ID: <CA+EvRRFs8=wuPDvfzoOWaBQ1U=5mx7MoUnSnFdYNM9uQVGMbKA@mail.gmail.com>
-Subject: Fwd: ::::::::::::::::::::Ruth jjjj Christy
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
- I want to open Company & Charity Foundation in your country on your
-behalf is it okay?
+Socionext driver can run on dma coherent and non-coherent devices.
+Get rid of huge dma_sync_single_for_device in netsec_alloc_rx_data since
+now the driver can let page_pool API to managed needed DMA sync
 
- I=E2=80=99m Christy Ruth Walton from America.
+Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+---
+Changes since v1:
+- rely on original frame size for dma sync
+---
+ drivers/net/ethernet/socionext/netsec.c | 43 +++++++++++++++----------
+ 1 file changed, 26 insertions(+), 17 deletions(-)
+
+diff --git a/drivers/net/ethernet/socionext/netsec.c b/drivers/net/ethernet/socionext/netsec.c
+index b5a9e947a4a8..45c76b437457 100644
+--- a/drivers/net/ethernet/socionext/netsec.c
++++ b/drivers/net/ethernet/socionext/netsec.c
+@@ -243,6 +243,7 @@
+ 			       NET_IP_ALIGN)
+ #define NETSEC_RX_BUF_NON_DATA (NETSEC_RXBUF_HEADROOM + \
+ 				SKB_DATA_ALIGN(sizeof(struct skb_shared_info)))
++#define NETSEC_RX_BUF_SIZE	(PAGE_SIZE - NETSEC_RX_BUF_NON_DATA)
+ 
+ #define DESC_SZ	sizeof(struct netsec_de)
+ 
+@@ -719,7 +720,6 @@ static void *netsec_alloc_rx_data(struct netsec_priv *priv,
+ {
+ 
+ 	struct netsec_desc_ring *dring = &priv->desc_ring[NETSEC_RING_RX];
+-	enum dma_data_direction dma_dir;
+ 	struct page *page;
+ 
+ 	page = page_pool_dev_alloc_pages(dring->page_pool);
+@@ -734,9 +734,7 @@ static void *netsec_alloc_rx_data(struct netsec_priv *priv,
+ 	/* Make sure the incoming payload fits in the page for XDP and non-XDP
+ 	 * cases and reserve enough space for headroom + skb_shared_info
+ 	 */
+-	*desc_len = PAGE_SIZE - NETSEC_RX_BUF_NON_DATA;
+-	dma_dir = page_pool_get_dma_dir(dring->page_pool);
+-	dma_sync_single_for_device(priv->dev, *dma_handle, *desc_len, dma_dir);
++	*desc_len = NETSEC_RX_BUF_SIZE;
+ 
+ 	return page_address(page);
+ }
+@@ -883,6 +881,8 @@ static u32 netsec_xdp_xmit_back(struct netsec_priv *priv, struct xdp_buff *xdp)
+ static u32 netsec_run_xdp(struct netsec_priv *priv, struct bpf_prog *prog,
+ 			  struct xdp_buff *xdp)
+ {
++	struct netsec_desc_ring *dring = &priv->desc_ring[NETSEC_RING_RX];
++	unsigned int len = xdp->data_end - xdp->data;
+ 	u32 ret = NETSEC_XDP_PASS;
+ 	int err;
+ 	u32 act;
+@@ -896,7 +896,9 @@ static u32 netsec_run_xdp(struct netsec_priv *priv, struct bpf_prog *prog,
+ 	case XDP_TX:
+ 		ret = netsec_xdp_xmit_back(priv, xdp);
+ 		if (ret != NETSEC_XDP_TX)
+-			xdp_return_buff(xdp);
++			__page_pool_put_page(dring->page_pool,
++				     virt_to_head_page(xdp->data),
++				     len, true);
+ 		break;
+ 	case XDP_REDIRECT:
+ 		err = xdp_do_redirect(priv->ndev, xdp, prog);
+@@ -904,7 +906,9 @@ static u32 netsec_run_xdp(struct netsec_priv *priv, struct bpf_prog *prog,
+ 			ret = NETSEC_XDP_REDIR;
+ 		} else {
+ 			ret = NETSEC_XDP_CONSUMED;
+-			xdp_return_buff(xdp);
++			__page_pool_put_page(dring->page_pool,
++				     virt_to_head_page(xdp->data),
++				     len, true);
+ 		}
+ 		break;
+ 	default:
+@@ -915,7 +919,9 @@ static u32 netsec_run_xdp(struct netsec_priv *priv, struct bpf_prog *prog,
+ 		/* fall through -- handle aborts by dropping packet */
+ 	case XDP_DROP:
+ 		ret = NETSEC_XDP_CONSUMED;
+-		xdp_return_buff(xdp);
++		__page_pool_put_page(dring->page_pool,
++				     virt_to_head_page(xdp->data),
++				     len, true);
+ 		break;
+ 	}
+ 
+@@ -1014,7 +1020,8 @@ static int netsec_process_rx(struct netsec_priv *priv, int budget)
+ 			 * cache state. Since we paid the allocation cost if
+ 			 * building an skb fails try to put the page into cache
+ 			 */
+-			page_pool_recycle_direct(dring->page_pool, page);
++			__page_pool_put_page(dring->page_pool, page,
++					     pkt_len, true);
+ 			netif_err(priv, drv, priv->ndev,
+ 				  "rx failed to build skb\n");
+ 			break;
+@@ -1272,17 +1279,19 @@ static int netsec_setup_rx_dring(struct netsec_priv *priv)
+ {
+ 	struct netsec_desc_ring *dring = &priv->desc_ring[NETSEC_RING_RX];
+ 	struct bpf_prog *xdp_prog = READ_ONCE(priv->xdp_prog);
+-	struct page_pool_params pp_params = { 0 };
++	struct page_pool_params pp_params = {
++		.order = 0,
++		/* internal DMA mapping in page_pool */
++		.flags = PP_FLAG_DMA_MAP | PP_FLAG_DMA_SYNC_DEV,
++		.pool_size = DESC_NUM,
++		.nid = NUMA_NO_NODE,
++		.dev = priv->dev,
++		.dma_dir = xdp_prog ? DMA_BIDIRECTIONAL : DMA_FROM_DEVICE,
++		.offset = NETSEC_RXBUF_HEADROOM,
++		.max_len = NETSEC_RX_BUF_SIZE,
++	};
+ 	int i, err;
+ 
+-	pp_params.order = 0;
+-	/* internal DMA mapping in page_pool */
+-	pp_params.flags = PP_FLAG_DMA_MAP;
+-	pp_params.pool_size = DESC_NUM;
+-	pp_params.nid = NUMA_NO_NODE;
+-	pp_params.dev = priv->dev;
+-	pp_params.dma_dir = xdp_prog ? DMA_BIDIRECTIONAL : DMA_FROM_DEVICE;
+-
+ 	dring->page_pool = page_pool_create(&pp_params);
+ 	if (IS_ERR(dring->page_pool)) {
+ 		err = PTR_ERR(dring->page_pool);
+-- 
+2.21.1
+
