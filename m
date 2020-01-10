@@ -2,73 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E0956136A0F
-	for <lists+netdev@lfdr.de>; Fri, 10 Jan 2020 10:36:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B001136A14
+	for <lists+netdev@lfdr.de>; Fri, 10 Jan 2020 10:40:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727219AbgAJJgk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jan 2020 04:36:40 -0500
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:42748 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726900AbgAJJgj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jan 2020 04:36:39 -0500
-Received: by mail-wr1-f65.google.com with SMTP id q6so1100957wro.9
-        for <netdev@vger.kernel.org>; Fri, 10 Jan 2020 01:36:38 -0800 (PST)
+        id S1727218AbgAJJka (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jan 2020 04:40:30 -0500
+Received: from mail-wr1-f68.google.com ([209.85.221.68]:40909 "EHLO
+        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727192AbgAJJka (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jan 2020 04:40:30 -0500
+Received: by mail-wr1-f68.google.com with SMTP id c14so1124788wrn.7
+        for <netdev@vger.kernel.org>; Fri, 10 Jan 2020 01:40:29 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=resnulli-us.20150623.gappssmtp.com; s=20150623;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=9Q9e6ia1B3GJb/96TdFkPsyoMjZj6xp/EaWt0ZKXYyY=;
-        b=wh+AapZEoJcqSyWTcqbM4cZIzlZmq1lAAcD6NkdWs9gLwZgNBw77iG8LodULRc6CX1
-         U5oVWLyZLgqya5ZcyIjVcATVh35F+d1t2qG54acrqlY3l1quKTaOyPaRRGF2BL01G9Sd
-         DSQcngzYOPxHdRu4Z68tlIkO/Xb/oEpJjXVfFTpegw2ecWGzpzr/tZxUEJV56sBytBQX
-         eBCYr4IXIZBaqjnoh8nOpnXrNrPXwo3i6tx4r32ceZKdooexI2xUCCti1Bui71LVflv7
-         7WPjRJ9V4KjWx8J7I/u8GvrLjuUeCJxAA21zilZpxA2/3nWk25l6lLzmmClav9HP4IXs
-         s0tA==
+        bh=WXnTgOPDH+z337Wfb0xCw3m14azvnAshyBDM3QUKc5M=;
+        b=FX0STnnPKdszYYa4KuXolRqcRbEGWUUvxdeiCooR5NQaVjkEaKIJyQuTN/Z10qG47P
+         W1IZbKae9yQl7qsUMgJ43TVBzyV0NILejXw71O7sCyXapzar7F+Uc4HTPeg0PaIn6O/Z
+         /JcZXDIV2jZkziwsT8lNNBWv2iSIPoPqv9GeOg094PiK1K4j6nSzGcgVqcntsOLr0BwC
+         tnBFunhQjcG0qM5Nuk9d+/C1U/nGBIkV6RM+mFwKI/daCg1pYMuMm3VA66NhoHjIGfAL
+         Dg7x/fs0eujoW3dQaWguAqM4x8MuA9v+hzPWCi2Z2mjTih1ldlB5/bJCLwUbRlFumc2R
+         9duQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=9Q9e6ia1B3GJb/96TdFkPsyoMjZj6xp/EaWt0ZKXYyY=;
-        b=M/igUAEIHS8IYZv2YjILk1sA4YO3dyOgfqnfFDyVeZdjcKVW/4eMqqZgUB/q+mm3Zf
-         vG3m0asmjNZNlEpqyP8SPm4sInyNVBrwpNsMiYH7UsoG28wJoB6DFSJEvw+9Rz+2OlnL
-         zR1Vn0CotXnBknLKhFD5AKsj90mqaMW5dXIem9WRoUULoxOZh6kX5FVCc88Jn//LzTzu
-         qc8ismo5jtRhcsVzIxkAFo5uzyYTs/ZluQ91zk7Scq611TNGpK9ZHostCnWkFnb1hO3G
-         YLSKi9OvlDrD5d+RFApxxT5KTCwIrXYGYyApYSZCxPXtlKmZPNbwE6v4Ng0YQKyk1X0C
-         7r5g==
-X-Gm-Message-State: APjAAAW/PZxgrx1w1ASOMhqbOIiGJL+mLWm04V4UulERqvvOLon2xiRB
-        THvxQIa2dpgkz8xMnDCN1pP5wA==
-X-Google-Smtp-Source: APXvYqxUhxHIrT6FLY3YJ2BFMRc3QcoGhrvZhnXb9Wpn+WMsDTt/wUXz4czv+F4w/6mObY9IpBmxcg==
-X-Received: by 2002:adf:9c8f:: with SMTP id d15mr2461555wre.390.1578648998003;
-        Fri, 10 Jan 2020 01:36:38 -0800 (PST)
+        bh=WXnTgOPDH+z337Wfb0xCw3m14azvnAshyBDM3QUKc5M=;
+        b=ATWoAbhMp70lygflodA/6LPXiFCTPdJyx85rhh6B7WDZz0NPfQrpex165YV5OyeWlQ
+         poqe22ufDl+Q28h0Ajyx4EAkKiBmKC3W5O0VeqhaWiN/nIE+9qS4J/PyXe5GLqtn3m4L
+         lVt3CWmoxmwM+fKPMlx/EQyxLqrLxdQlsJKCv+cIpA5OMFeVIhRnbROzywYfRh4PrPWE
+         IQFrgyn0sff3/p5XrvLkMF8Qsn/ht6bowJUzbj4EdjVsgoV8O60D0WE6EUhw6CFzlUxL
+         tQ9DlynmRtu6aNZ/ifL/OkWCYw7gP7LgXRpaUFw/uZgQ/TJsZf0P8v0I/SELRBWHxeUq
+         KS9A==
+X-Gm-Message-State: APjAAAW5EEwHWO/HSBXVEgAkCp+QsAD0mz96yafQBc/CTaVzTTgZm3C6
+        qOVLG7REt4BwYAfeVsP0eeRng0BsxpI=
+X-Google-Smtp-Source: APXvYqwRnBAQuUjmRM4OL3kRTTDv9X0aXtDjC22rqh+y80PD9ds/D2Zz9Myo2ME6oa7xZ/LtBIuZqg==
+X-Received: by 2002:adf:f98c:: with SMTP id f12mr2380319wrr.138.1578649228503;
+        Fri, 10 Jan 2020 01:40:28 -0800 (PST)
 Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id t190sm1517429wmt.44.2020.01.10.01.36.37
+        by smtp.gmail.com with ESMTPSA id c2sm1552635wrp.46.2020.01.10.01.40.27
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 10 Jan 2020 01:36:37 -0800 (PST)
-Date:   Fri, 10 Jan 2020 10:36:36 +0100
+        Fri, 10 Jan 2020 01:40:28 -0800 (PST)
+Date:   Fri, 10 Jan 2020 10:40:27 +0100
 From:   Jiri Pirko <jiri@resnulli.us>
 To:     Jacob Keller <jacob.e.keller@intel.com>
 Cc:     netdev@vger.kernel.org, valex@mellanox.com
-Subject: Re: [PATCH 1/2] devlink: correct misspelling of snapshot
-Message-ID: <20200110093636.GK2235@nanopsycho.orion>
-References: <20200109190821.1335579-1-jacob.e.keller@intel.com>
+Subject: Re: [PATCH v2 0/3] devlink region trigger support
+Message-ID: <20200110094027.GL2235@nanopsycho.orion>
+References: <20200109193311.1352330-1-jacob.e.keller@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200109190821.1335579-1-jacob.e.keller@intel.com>
+In-Reply-To: <20200109193311.1352330-1-jacob.e.keller@intel.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thu, Jan 09, 2020 at 08:08:20PM CET, jacob.e.keller@intel.com wrote:
->The function to obtain a unique snapshot id was mistakenly typo'd as
->devlink_region_shapshot_id_get. Fix this typo by renaming the function
->and all of its users.
+Thu, Jan 09, 2020 at 08:33:07PM CET, jacob.e.keller@intel.com wrote:
+>This series consists of patches to enable devlink to request a snapshot via
+>a new DEVLINK_CMD_REGION_TRIGGER_SNAPSHOT.
 >
->Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
+>A reviewer might notice that the devlink health API already has such support
+>for handling a similar case. However, the health API does not make sense in
+>cases where the data is not related to an error condition.
+>
+>In this case, using the health API only for the dumping feels incorrect.
+>Regions make sense when the addressable content is not captured
+>automatically on error conditions, but only upon request by the devlink API.
+>
+>The netdevsim driver is modified to support the new trigger_snapshot
+>callback as an example of how this can be used.
 
-If you want to send this as a patchset, please provide a cover letter.
+I don't think that the netdevsim usecase is enough to merge this in. You
+need a real-driver user as well.
 
-This patch looks fine to me.
+Of course, netdevsim implementation is good to have to, but you have to
+bundle selftests along with that.
 
-Acked-by: Jiri Pirko <jiri@mellanox.com>
+
+>
+>Jacob Keller (3):
+>  devlink: add callback to trigger region snapshots
+>  devlink: introduce command to trigger region snapshot
+>  netdevsim: support triggering snapshot through devlink
+>
+> drivers/net/ethernet/mellanox/mlx4/crdump.c |  4 +-
+> drivers/net/netdevsim/dev.c                 | 37 ++++++++++++-----
+> include/net/devlink.h                       | 12 ++++--
+> include/uapi/linux/devlink.h                |  2 +
+> net/core/devlink.c                          | 45 +++++++++++++++++++--
+> 5 files changed, 80 insertions(+), 20 deletions(-)
+>
+>-- 
+>2.25.0.rc1
+>
