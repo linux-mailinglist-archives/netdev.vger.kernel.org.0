@@ -2,102 +2,174 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C52601378E7
-	for <lists+netdev@lfdr.de>; Fri, 10 Jan 2020 23:04:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 025F9137988
+	for <lists+netdev@lfdr.de>; Fri, 10 Jan 2020 23:09:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727208AbgAJWEr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jan 2020 17:04:47 -0500
-Received: from mail-pj1-f68.google.com ([209.85.216.68]:54726 "EHLO
-        mail-pj1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727185AbgAJWEq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jan 2020 17:04:46 -0500
-Received: by mail-pj1-f68.google.com with SMTP id kx11so1505274pjb.4;
-        Fri, 10 Jan 2020 14:04:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=eb9Zu4ng3OFqsu040N9uJfSobuP+HTIZaWYh+4c4MGU=;
-        b=Jw7ulMnHhi1YOBpqwEdBLml7YAwubcJCZcoToV/R0C8wYwVEcWMyuZ4bjkjUf8+ZfH
-         VO5KMRPDx9PvPvp6ZuJRARBI5veWbkLa4lbAX/HWM3fEGHBD5FWPPkm0IxFqM1K4mjU5
-         Jj7ZeyE726wmedlcfCkur+OTHpk/D1e+T1FJr0X4PZFSdiPY0Pu5b/0GwScM6QK65jnk
-         +taKEZwtxcDeOMcsdImrRlziMp/OFCvqyZ0qqT7ScjyQavM3LIjwF7OT7mZ8UpyRzeNK
-         XOpNzJEp1TAhHIcp6JrdPB9HHQfel/gKuVnYnsrzkqtEBhQNiG8268N9m0P5D+gEpf6Q
-         SECg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=eb9Zu4ng3OFqsu040N9uJfSobuP+HTIZaWYh+4c4MGU=;
-        b=K6RQqfG5B4Q+aEwb+14OVEh3pchkAwws6TqW7WNwEnsAIyK4U2qIMU+JK3yCQzv8Us
-         /IDejAuqToH+Zl2V7H4CAu3S7aJ6JWeagnXIYygoDAIa6i+l4xhKnO2qDPTqd097DzDU
-         XpmH57x8Ol+3E20y1Ny+U3ik2wqpSLIVSOjK9JPlQuGUdsM6mXblbWFIzd+CLpsDRuFL
-         G4Q+VOiiWxSmAIsMj4bKU0kuAya6pWSykIsLAjOOcXytubYq3KbS1sPs6yE399iQmCch
-         Cx7ITAzLFH0Fyg3NB3pqByku0FZWMknA837Sc7Z8hPU79dujfQTE0JdBQp9fQu8CMJhd
-         s4uA==
-X-Gm-Message-State: APjAAAWbUc0E31M2u15B/yVW7WkMg119SAViWIFPsMKPndYXFNdJUINU
-        /hxBEedNm684KN3eZzuqRJk=
-X-Google-Smtp-Source: APXvYqwzcNzzjZTeNYqD22n3zkIm0G4tZqFkBwHfbfRvfsFZUW+TC3MUL8MNnVHfRP2HISTMBmDh9A==
-X-Received: by 2002:a17:90a:8584:: with SMTP id m4mr7552496pjn.123.1578693885765;
-        Fri, 10 Jan 2020 14:04:45 -0800 (PST)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:200::2:ba5e])
-        by smtp.gmail.com with ESMTPSA id k1sm3941926pgk.90.2020.01.10.14.04.44
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 10 Jan 2020 14:04:44 -0800 (PST)
-Date:   Fri, 10 Jan 2020 14:04:43 -0800
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Andrii Nakryiko <andriin@fb.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@fb.com,
-        daniel@iogearbox.net, kafai@fb.com, andrii.nakryiko@gmail.com,
-        kernel-team@fb.com
-Subject: Re: [PATCH v5 bpf-next] selftests/bpf: add BPF_PROG, BPF_KPROBE, and
- BPF_KRETPROBE macros
-Message-ID: <20200110220441.rwbxg4c452eupvjt@ast-mbp.dhcp.thefacebook.com>
-References: <20200110211634.1614739-1-andriin@fb.com>
+        id S1727249AbgAJWFX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jan 2020 17:05:23 -0500
+Received: from mail.kernel.org ([198.145.29.99]:50904 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727183AbgAJWFX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 10 Jan 2020 17:05:23 -0500
+Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 9EC9520721;
+        Fri, 10 Jan 2020 22:05:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1578693921;
+        bh=OeYlZmKEnASzxm0ANx4mTtUJ4sWo9i72CGM2hFCS144=;
+        h=From:To:Cc:Subject:Date:From;
+        b=Sxx7WOWkspGT4EHEBmJMpCUku+EpAF7dxpYIATVkW4Q7DoA3nBKCRjjbA28sPzSwJ
+         iEk4tHLJbChh+WB6TWa9aOEoo2igW1V/oHWEVVNEkPlpdS0nykMkzot4QLFoPUyldC
+         T5IFcvpxP1bDEKwWlnB1P8ycJztK7z0L3bMtVEk0=
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     David Howells <dhowells@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>, Will Deacon <will@kernel.org>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        Sasha Levin <sashal@kernel.org>, linux-afs@lists.infradead.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 06/26] rxrpc: Unlock new call in rxrpc_new_incoming_call() rather than the caller
+Date:   Fri, 10 Jan 2020 17:04:59 -0500
+Message-Id: <20200110220519.28250-1-sashal@kernel.org>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200110211634.1614739-1-andriin@fb.com>
-User-Agent: NeoMutt/20180223
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 10, 2020 at 01:16:34PM -0800, Andrii Nakryiko wrote:
-> Streamline BPF_TRACE_x macro by moving out return type and section attribute
-> definition out of macro itself. That makes those function look in source code
-> similar to other BPF programs. Additionally, simplify its usage by determining
-> number of arguments automatically (so just single BPF_TRACE vs a family of
-> BPF_TRACE_1, BPF_TRACE_2, etc). Also, allow more natural function argument
-> syntax without commas inbetween argument type and name.
-> 
-> Given this helper is useful not only for tracing tp_btf/fenty/fexit programs,
-> but could be used for LSM programs and others following the same pattern,
-> rename BPF_TRACE macro into more generic BPF_PROG. Existing BPF_TRACE_x
-> usages in selftests are converted to new BPF_PROG macro.
-> 
-> Following the same pattern, define BPF_KPROBE and BPF_KRETPROBE macros for
-> nicer usage of kprobe/kretprobe arguments, respectively. BPF_KRETPROBE, adopts
-> same convention used by fexit programs, that last defined argument is probed
-> function's return result.
-...
->  SEC("kretprobe/__set_task_comm")
-> -int prog2(struct pt_regs *ctx)
-> +int BPF_KRETPROBE(prog2,
-> +		  struct task_struct *tsk, const char *buf, bool exec,
-> +		  int ret)
->  {
-> -	return 0;
-> +	return PT_REGS_PARM1(ctx) == 0 && ret != 0;
->  }
->  
->  SEC("raw_tp/task_rename")
->  int prog3(struct bpf_raw_tracepoint_args *ctx)
->  {
-> -	return 0;
-> +	return ctx->args[0] == 0;;
+From: David Howells <dhowells@redhat.com>
 
-I've corrected this typo
-and converted != 0 and == 0 to more traditional checks for null.
-And applied.
+[ Upstream commit f33121cbe91973a08e68e4bde8c3f7e6e4e351c1 ]
+
+Move the unlock and the ping transmission for a new incoming call into
+rxrpc_new_incoming_call() rather than doing it in the caller.  This makes
+it clearer to see what's going on.
+
+Suggested-by: Peter Zijlstra <peterz@infradead.org>
+Signed-off-by: David Howells <dhowells@redhat.com>
+Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+cc: Ingo Molnar <mingo@redhat.com>
+cc: Will Deacon <will@kernel.org>
+cc: Davidlohr Bueso <dave@stgolabs.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ net/rxrpc/call_accept.c | 36 ++++++++++++++++++++++++++++--------
+ net/rxrpc/input.c       | 18 ------------------
+ 2 files changed, 28 insertions(+), 26 deletions(-)
+
+diff --git a/net/rxrpc/call_accept.c b/net/rxrpc/call_accept.c
+index 135bf5cd8dd5..3685b1732f65 100644
+--- a/net/rxrpc/call_accept.c
++++ b/net/rxrpc/call_accept.c
+@@ -239,6 +239,22 @@ void rxrpc_discard_prealloc(struct rxrpc_sock *rx)
+ 	kfree(b);
+ }
+ 
++/*
++ * Ping the other end to fill our RTT cache and to retrieve the rwind
++ * and MTU parameters.
++ */
++static void rxrpc_send_ping(struct rxrpc_call *call, struct sk_buff *skb)
++{
++	struct rxrpc_skb_priv *sp = rxrpc_skb(skb);
++	ktime_t now = skb->tstamp;
++
++	if (call->peer->rtt_usage < 3 ||
++	    ktime_before(ktime_add_ms(call->peer->rtt_last_req, 1000), now))
++		rxrpc_propose_ACK(call, RXRPC_ACK_PING, sp->hdr.serial,
++				  true, true,
++				  rxrpc_propose_ack_ping_for_params);
++}
++
+ /*
+  * Allocate a new incoming call from the prealloc pool, along with a connection
+  * and a peer as necessary.
+@@ -346,9 +362,7 @@ struct rxrpc_call *rxrpc_new_incoming_call(struct rxrpc_local *local,
+ 				  sp->hdr.seq, RX_INVALID_OPERATION, ESHUTDOWN);
+ 		skb->mark = RXRPC_SKB_MARK_REJECT_ABORT;
+ 		skb->priority = RX_INVALID_OPERATION;
+-		_leave(" = NULL [close]");
+-		call = NULL;
+-		goto out;
++		goto no_call;
+ 	}
+ 
+ 	/* The peer, connection and call may all have sprung into existence due
+@@ -361,9 +375,7 @@ struct rxrpc_call *rxrpc_new_incoming_call(struct rxrpc_local *local,
+ 	call = rxrpc_alloc_incoming_call(rx, local, peer, conn, skb);
+ 	if (!call) {
+ 		skb->mark = RXRPC_SKB_MARK_REJECT_BUSY;
+-		_leave(" = NULL [busy]");
+-		call = NULL;
+-		goto out;
++		goto no_call;
+ 	}
+ 
+ 	trace_rxrpc_receive(call, rxrpc_receive_incoming,
+@@ -432,10 +444,18 @@ struct rxrpc_call *rxrpc_new_incoming_call(struct rxrpc_local *local,
+ 	 */
+ 	rxrpc_put_call(call, rxrpc_call_put);
+ 
+-	_leave(" = %p{%d}", call, call->debug_id);
+-out:
+ 	spin_unlock(&rx->incoming_lock);
++
++	rxrpc_send_ping(call, skb);
++	mutex_unlock(&call->user_mutex);
++
++	_leave(" = %p{%d}", call, call->debug_id);
+ 	return call;
++
++no_call:
++	spin_unlock(&rx->incoming_lock);
++	_leave(" = NULL [%u]", skb->mark);
++	return NULL;
+ }
+ 
+ /*
+diff --git a/net/rxrpc/input.c b/net/rxrpc/input.c
+index 157be1ff8697..86bd133b4fa0 100644
+--- a/net/rxrpc/input.c
++++ b/net/rxrpc/input.c
+@@ -192,22 +192,6 @@ static void rxrpc_congestion_management(struct rxrpc_call *call,
+ 	goto out_no_clear_ca;
+ }
+ 
+-/*
+- * Ping the other end to fill our RTT cache and to retrieve the rwind
+- * and MTU parameters.
+- */
+-static void rxrpc_send_ping(struct rxrpc_call *call, struct sk_buff *skb)
+-{
+-	struct rxrpc_skb_priv *sp = rxrpc_skb(skb);
+-	ktime_t now = skb->tstamp;
+-
+-	if (call->peer->rtt_usage < 3 ||
+-	    ktime_before(ktime_add_ms(call->peer->rtt_last_req, 1000), now))
+-		rxrpc_propose_ACK(call, RXRPC_ACK_PING, sp->hdr.serial,
+-				  true, true,
+-				  rxrpc_propose_ack_ping_for_params);
+-}
+-
+ /*
+  * Apply a hard ACK by advancing the Tx window.
+  */
+@@ -1396,8 +1380,6 @@ int rxrpc_input_packet(struct sock *udp_sk, struct sk_buff *skb)
+ 		call = rxrpc_new_incoming_call(local, rx, skb);
+ 		if (!call)
+ 			goto reject_packet;
+-		rxrpc_send_ping(call, skb);
+-		mutex_unlock(&call->user_mutex);
+ 	}
+ 
+ 	/* Process a call packet; this either discards or passes on the ref
+-- 
+2.20.1
+
