@@ -2,60 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E7AEE137756
-	for <lists+netdev@lfdr.de>; Fri, 10 Jan 2020 20:37:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B4C23137759
+	for <lists+netdev@lfdr.de>; Fri, 10 Jan 2020 20:40:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728602AbgAJThO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jan 2020 14:37:14 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:40060 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728519AbgAJThO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jan 2020 14:37:14 -0500
-Received: from localhost (unknown [IPv6:2601:601:9f00:1c3::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id CA2EA1577F7ED;
-        Fri, 10 Jan 2020 11:37:13 -0800 (PST)
-Date:   Fri, 10 Jan 2020 11:37:13 -0800 (PST)
-Message-Id: <20200110.113713.476697922680090862.davem@davemloft.net>
-To:     dsahern@kernel.org
-Cc:     jakub.kicinski@netronome.com, netdev@vger.kernel.org,
-        haegar@sdinet.de, dsahern@gmail.com
-Subject: Re: [PATCH net] ipv4: Detect rollover in specific fib table dump
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200110170358.29474-1-dsahern@kernel.org>
-References: <20200110170358.29474-1-dsahern@kernel.org>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Fri, 10 Jan 2020 11:37:14 -0800 (PST)
+        id S1728566AbgAJTkR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jan 2020 14:40:17 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:60614 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727812AbgAJTkQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 10 Jan 2020 14:40:16 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=WlPNc0IApWTQ9YLSaEpP2QUSavNX3euCIRf3LT4SKP0=; b=KC//4915q4GYTIfKAIExwZBhjw
+        Cx7V18fcoED7O89gIU8p6LM2O0eu9qYXbj7HH2tXFJMJv2uWugn5l9J7ZC0eAS1/ocjg35Cc48tAr
+        Wb1iy5VhhUzkrtVnD4X09648c2XBb5R5gdn9Lbwdzv/vWkbWab3R7aoM2qQsOr7qR+WI=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1iq08h-00040I-N4; Fri, 10 Jan 2020 20:40:11 +0100
+Date:   Fri, 10 Jan 2020 20:40:11 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Dan Murphy <dmurphy@ti.com>
+Cc:     f.fainelli@gmail.com, hkallweit1@gmail.com, davem@davemloft.net,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 0/4] TI DP8382x Phy support update
+Message-ID: <20200110194011.GT19739@lunn.ch>
+References: <20200110184702.14330-1-dmurphy@ti.com>
+ <20200110192524.GO19739@lunn.ch>
+ <2e9333e1-1ee7-80ce-fab4-a98a9f4b345f@ti.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <2e9333e1-1ee7-80ce-fab4-a98a9f4b345f@ti.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: David Ahern <dsahern@kernel.org>
-Date: Fri, 10 Jan 2020 09:03:58 -0800
+> You mean separate series between fixes and functionality?
+> 
+> Sure I can separate them but they are dependent on each other.
 
-> From: David Ahern <dsahern@gmail.com>
-> 
-> Sven-Haegar reported looping on fib dumps when 255.255.255.255 route has
-> been added to a table. The looping is caused by the key rolling over from
-> FFFFFFFF to 0. When dumping a specific table only, we need a means to detect
-> when the table dump is done. The key and count saved to cb args are both 0
-> only at the start of the table dump. If key is 0 and count > 0, then we are
-> in the rollover case. Detect and return to avoid looping.
-> 
-> This only affects dumps of a specific table; for dumps of all tables
-> (the case prior to the change in the Fixes tag) inet_dump_fib moved
-> the entry counter to the next table and reset the cb args used by
-> fib_table_dump and fn_trie_dump_leaf, so the rollover ffffffff back
-> to 0 did not cause looping with the dumps.
-> 
-> Fixes: effe67926624 ("net: Enable kernel side filtering of route dumps")
-> Reported-by: Sven-Haegar Koch <haegar@sdinet.de>
-> Signed-off-by: David Ahern <dsahern@gmail.com>
+Send 1 and 2 first. After about a week, David will merge net into
+net-next, and then you can submit 3 and 4.
 
-Applied, and queued up for -stable, thanks.
+	  Andrew
