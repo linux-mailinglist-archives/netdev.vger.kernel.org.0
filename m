@@ -2,112 +2,236 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B4825137C4F
-	for <lists+netdev@lfdr.de>; Sat, 11 Jan 2020 09:20:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5987D137C51
+	for <lists+netdev@lfdr.de>; Sat, 11 Jan 2020 09:20:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728633AbgAKIUV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Jan 2020 03:20:21 -0500
-Received: from sonic302-1.consmr.mail.bf2.yahoo.com ([74.6.135.40]:43378 "EHLO
-        sonic302-1.consmr.mail.bf2.yahoo.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728595AbgAKIUV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 11 Jan 2020 03:20:21 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1578730819; bh=rLzamwWDU6w+ljUNz15IdfH92SpsSZVAbr+GO8Whobg=; h=Date:From:Reply-To:Subject:References:From:Subject; b=MSibc7UEw4VtfjkFP7qv/RR3WMEZ3TvB25lMVHCIJzX9P5HqGseue6SH15A+fiWjJhQrhG7KV2kCbIlZHzn/fR23LXgKL0TjOunxIaE3cZoxo2vweAq/1ta/oP395aHiKgCM4uJr4fC0Cz6d3xqhrCVZDwTkWHdKPcmTsCb9MLoHGL/j3H5tsa/OnK/XmOuJcaYPJ97neDCVzdroqk5jJAmkqcr+eoKodrcu2N2Pj+qBatPmuMBda4nR/5ChgGBTwr9ohfhtY+hDCz6/IAACWVvNZpDU7ztjfTuFFUvikOjQhhdMJQoJe7xWRYSb28QUafUvUEguC3phBL2GsqF1iw==
-X-YMail-OSG: 5bI1lR4VM1llky_6K6QRR6JF3FDN9OTxEaTITXhSrubm0PLq335JNBmVpE1at5x
- WTXS0yfYYJdMdAFeQlMTWhOHXftlpT0_Um._1l._l2fO63G05Bwcr_ITVHFBqYOF696EY4EkvE6d
- 9uQ1ekkhbUhf.UyOK4omp40k4qG0OZEq48CqcBlNrBLE9hN5.aCvgRdQYMkZHvogLGD7_n0swgBN
- 5mZjuYc6mPR2cEcdlu2.zbUpT7hNvTDrLtJpj8ySdrpLEbX.Dg1RHBJjeAA1iAdpoQrleZoA.YMh
- YqkZpHdv40u3ntVrtxhu5xe4IFTcTzdHMfx_Mxx1wgUVWkowyCOeYlhsdKtxQ_14NUBxgjvQrErb
- l2BFC3SRpcOCwlutBTRzFiAe8KjO0Qlr2QV1AwxhS9MCoU5KLdEIVvGAcNAgqDalIx0O4RpzNvlt
- 9uLyXX188x27DWWPqq3MR.SqGeRlJYiwvBI0Y3STC8uNbENvjBXpzzvkNpy8sCi1nAHF9r5aKkj5
- 4mcVhqLLOPdfqNYcpsmpNuAwPGbEDc6xha4JkHz8txreeoz7a20_8BHGNdND67YhT3Mi_Nigrq1Z
- OxCzi9P8dQyjeITVwg0MINLATURMQvglRnl5Cq_UECmxW7obOwYbHmtUDYi4jUYhuUVsNHIdqHAK
- fAdKIvHJA4dzHhtMbMxij94UH4.ug0Ehg.SL5t5TjNcFbkbOL0gFS6PwOKeENbeF.uLdFRJWBhtD
- Nk0UbTSivnrsM0iWDin.DMuBgMElb3gIWvXYkRreiuHWbciEWm8pw9L1bOkVyJbU.dF1OThFC63T
- nG67uGV.MB.Q5sdcvuTd__GWOIvbfteadjaIefg5bEq6wbodHVVR6uhtUch2gjAYRq1_NcHaejk8
- rFp7R1bibGOz11sC18T2UXi8oIUv5qd16wuSjc_nTRLdFvz8F4XshRh_1IKPQD0.awc9yq5k1_Kf
- C2vfwNVXRWiw0QNIjxFkj30h6HXipqko7aoDOJ8OL6kt_lwEfuMOBU.ip9KlXZf6leAi_SR2.Xmb
- 4WEPrw8dZdwsT7fiYV7iwoavzZwKH3WV7BZHCva1RyDFPLcW5loO7_XpgdrzkLvGm.SPPO4vXFio
- a6CbUaCDDScwVRp1WVjY7s1eQw7BrT9VYCjTgMt4fa.TP8ipUIzPo04XrzUZWicLZRmWv_VqfLK3
- rYG6KOVA0sVUKo6yQBh9w7ick3yMSFk_xJ6gTNeTe0sz3JgH16TDsloM66WRPFR9HNkpjAoUOce_
- _IweVJl9ElutKeAaPLr3TNiiCsHi58.zJV0.5ahPU2ZAkk8nzTWyT0wg4Hb7qPGJHnR4otGVg9XN
- Qmg--
-Received: from sonic.gate.mail.ne1.yahoo.com by sonic302.consmr.mail.bf2.yahoo.com with HTTP; Sat, 11 Jan 2020 08:20:19 +0000
-Date:   Sat, 11 Jan 2020 08:20:15 +0000 (UTC)
-From:   "MR.Abderazack Zebdani" <zebdanimrabderazack@gmail.com>
-Reply-To: zebdanimrabderazack@gmail.com
-Message-ID: <2028710208.6539028.1578730815412@mail.yahoo.com>
-Subject: MY CONDOLENT GREETINGS TO YOUR FAMILY
+        id S1728638AbgAKIUX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Jan 2020 03:20:23 -0500
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:53030 "EHLO
+        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728626AbgAKIUW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 11 Jan 2020 03:20:22 -0500
+Received: by mail-wm1-f68.google.com with SMTP id p9so4372166wmc.2
+        for <netdev@vger.kernel.org>; Sat, 11 Jan 2020 00:20:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding:content-language;
+        bh=11AexEDhCWrONHKkV2o41CP3JylAVBhE9wS2UnkPlVY=;
+        b=Dzp42I+zBq8gLLIzouLMiGLE8s6+wl1yFjlYWJvIIL5H9kW7Reii6wwHMiQ4Al6AXF
+         E1fjMb2rsEAnh8BiKBDaaqC7GSltElEcwtbNhJ1iX2D++ZEYF0uKVDRKjnTVe9MTIkBs
+         F6+A7cnHhtG88EL4/EYKs7Sm0ioiXDtsjmgW0R2vrzBIw4fnWKtYgXiZNGnvCYQLOW42
+         Ha9BoeuuI9y9eaahHpPsmYmsyc4qR5uXZtlPqmuPPfxPvhiuM2n+idqSnr3Jmb5sMylo
+         H94GAWSrToobLLPyPm8scKTX0dapVL3I+mzxzvqYC2NM+w3y4JwYmGvsru5Elm4ly7O2
+         vXYA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=11AexEDhCWrONHKkV2o41CP3JylAVBhE9wS2UnkPlVY=;
+        b=IjFDIGhMxSJ3zw9OPp4XCoegA/KJrxYoFWjuEOVzzBEWBirHMh9hphAFcC06TuV51M
+         b+9hOdcXKf96SeYlIasQMLmUGXGtY+EDW83ScN87yLEAPHmPdqLLxitiP2IWlfzJPNlb
+         Fz58FlixszPLDggI/jl8x/syVcLawmdFt5rFtpl3sOuvgpfFEcLAyZfXvkPAp1+9M0v2
+         AFYvbMVgYccs6mR41+nzt8DcsO0qppqRze8upjRg7+oIDrc0riJNg2Lrvc+QiuF5O7CD
+         uAIgMuR1NfbsfsjMmSfn5VW6A1K6Ugg2CTe6lSY1e9RwdTQ8WHp1KXHjtRpsxkMVQhE8
+         Hg5Q==
+X-Gm-Message-State: APjAAAXysf9RRdNozYT1vBZ7GEYUUjTZqJJW9ykwuuQA1QlGg5SJSQLq
+        yWMHpIEGLN1vfLdZvkiHoOO5rdjkL1bX/A==
+X-Google-Smtp-Source: APXvYqwBMOfdkRCRsLEB9EG+0E8ZTJgZoWjszTkvvN9YCToKjXk5AAFeNbI6v4kswnH9GK1+s3OK0g==
+X-Received: by 2002:a1c:7d92:: with SMTP id y140mr8236421wmc.145.1578730820297;
+        Sat, 11 Jan 2020 00:20:20 -0800 (PST)
+Received: from xps13.intranet.net (82-64-122-65.subs.proxad.net. [82.64.122.65])
+        by smtp.googlemail.com with ESMTPSA id v14sm5441053wrm.28.2020.01.11.00.20.19
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 11 Jan 2020 00:20:19 -0800 (PST)
+Subject: Re: [PATCH net] net: usb: lan78xx: fix possible skb leak
+To:     Eric Dumazet <eric.dumazet@gmail.com>,
+        Eric Dumazet <edumazet@google.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Stefan Wahren <stefan.wahren@i2se.com>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>
+References: <20200107185701.137063-1-edumazet@google.com>
+ <393ec56d-5d37-ac75-13af-25ade6aabac8@gmail.com>
+ <CANn89iKD6DSnz-QdBMYgm=1N2V7UZpCD3TiB+yTO_tGu7XKReg@mail.gmail.com>
+ <870db5aa-d1b3-1466-c5f5-c6d84e250411@gmail.com>
+ <57d6fc48-3665-3df1-1c55-48d1b84ef889@gmail.com>
+From:   RENARD Pierre-Francois <pfrenard@gmail.com>
+Message-ID: <b9440da5-3682-634f-fca8-7cb70bae8581@gmail.com>
+Date:   Sat, 11 Jan 2020 09:20:19 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-References: <2028710208.6539028.1578730815412.ref@mail.yahoo.com>
-X-Mailer: WebService/1.1.14873 YMailNodin Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.88 Safari/537.36
-To:     unlisted-recipients:; (no To-header on input)
+In-Reply-To: <57d6fc48-3665-3df1-1c55-48d1b84ef889@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
+Hello,
 
-Greetings My Dear Friend,
+I applied patch and I am NOT able to reproduce the issue with both NFS 
+or SCP !
 
-Before I introduce myself, I wish to inform you that this letter is not a h=
-oax mail and I urge you to treat it serious.This letter must come to you as=
- a big surprise, but I believe it is only a day that people meet and become=
- great friends and business partners. Please I want you to read this letter=
- very carefully and I must apologize for barging this message into your mai=
-l box without any formal introduction due to the urgency and confidentialit=
-y of this business. I make this contact with you as I believe that you can =
-be of great assistance to me. My name is Mr.Abderazack Zebdani, from Burkin=
-a Faso, West Africa. I work in Bank Of Africa (BOA) as telex manager, pleas=
-e see this as a confidential message and do not reveal it to another person=
- and let me know whether you can be of assistance regarding my proposal bel=
-ow because it is top secret.
+Congratulations !
 
-I am about to retire from active Banking service to start a new life but I =
-am skeptical to reveal this particular secret to a stranger. You must assur=
-e me that everything will be handled confidentially because we are not goin=
-g to suffer again in life. It has been 10 years now that most of the greedy=
- African Politicians used our bank to launder money overseas through the he=
-lp of their Political advisers. Most of the funds which they transferred ou=
-t of the shores of Africa were gold and oil money that was supposed to have=
- been used to develop the continent. Their Political advisers always inflat=
-ed the amounts before transferring to foreign accounts, so I also used the =
-opportunity to divert part of the funds hence I am aware that there is no o=
-fficial trace of how much was transferred as all the accounts used for such=
- transfers were being closed after transfer. I acted as the Bank Officer to=
- most of the politicians and when I discovered that they were using me to s=
-ucceed in their greedy act; I also cleaned some of their banking records fr=
-om the Bank files and no one cared to ask me because the money was too much=
- for them to control. They laundered over $5billion Dollars during the proc=
-ess.
+Fox
 
-Before I send this message to you, I have already diverted ($10.5million Do=
-llars) to an escrow account belonging to no one in the bank. The bank is an=
-xious now to know who the beneficiary to the funds because they have made a=
- lot of profits with the funds. It is more than Eight years now and most of=
- the politicians are no longer using our bank to transfer funds overseas. T=
-he ($10.5million Dollars) has been laying waste in our bank and I don=E2=80=
-=99t want to retire from the bank without transferring the funds to a forei=
-gn account to enable me share the proceeds with the receiver (a foreigner).=
- The money will be shared 60% for me and 40% for you. There is no one comin=
-g to ask you about the funds because I secured everything. I only want you =
-to assist me by providing a reliable bank account where the funds can be tr=
-ansferred.
 
-You are not to face any difficulties or legal implications as I am going to=
- handle the transfer personally. If you are capable of receiving the funds,=
- do let me know immediately to enable me give you a detailed information on=
- what to do. For me, I have not stolen the money from anyone because the ot=
-her people that took the whole money did not face any problems. This is my =
-chance to grab my own life opportunity but you must keep the details of the=
- funds secret to avoid any leakages as no one in the bank knows about my pl=
-ans.Please get back to me if you are interested and capable to handle this =
-project, I am looking forward to hear from you immediately for further info=
-rmation.
-Thanks with my best regards.
-Mr.Abderazack Zebdani.
-Telex Manager
-Bank Of Africa (BOA)
-Burkina Faso.
+On 1/10/20 8:07 PM, Eric Dumazet wrote:
+>
+> On 1/8/20 3:19 PM, RENARD Pierre-Francois wrote:
+>> OK
+>>
+>> Before scp command ( and after a fresh reboot)
+>> ---------------------------------
+>> skbuff_ext_cache     378    378    192   21    1 : tunables 0    0    0 : slabdata     18     18      0
+>> skbuff_fclone_cache    112    112    512   16    2 : tunables 0    0    0 : slabdata      7      7      0
+>> skbuff_head_cache   1936   2160    256   16    1 : tunables 0    0    0 : slabdata    135    135      0
+>> ---------------------------------
+>> ---------------------------------
+>>
+>> After the hang of scp (hanged at 203 MB)
+>> ---------------------------------
+>> skbuff_ext_cache     693    693    192   21    1 : tunables 0    0    0 : slabdata     33     33      0
+>> skbuff_fclone_cache    128    128    512   16    2 : tunables 0    0    0 : slabdata      8      8      0
+>> skbuff_head_cache   2032   2176    256   16    1 : tunables 0    0    0 : slabdata    136    136      0
+>> ---------------------------------
+>> TcpExtTCPSpuriousRtxHostQueues 120                0.0
+>> ---------------------------------
+>>
+>> After CTRL-C of scp
+>> ---------------------------------
+>> skbuff_ext_cache     693    693    192   21    1 : tunables 0    0    0 : slabdata     33     33      0
+>> skbuff_fclone_cache    128    128    512   16    2 : tunables 0    0    0 : slabdata      8      8      0
+>> skbuff_head_cache   2112   2336    256   16    1 : tunables 0    0    0 : slabdata    146    146      0
+>> ---------------------------------
+>> TcpExtTCPSpuriousRtxHostQueues  124                0.0
+>> ---------------------------------
+>>
+>>
+>>
+>> After the hang of a second attempt (hanged at 1214 MB)
+>> ---------------------------------
+>> skbuff_ext_cache     735    735    192   21    1 : tunables 0    0    0 : slabdata     35     35      0
+>> skbuff_fclone_cache    160    160    512   16    2 : tunables 0    0    0 : slabdata     10     10      0
+>> skbuff_head_cache   2096   2240    256   16    1 : tunables 0    0    0 : slabdata    140    140      0
+>> ---------------------------------
+>> TcpExtTCPSpuriousRtxHostQueues  248                0.0
+>> ---------------------------------
+>>
+>>
+>> After a third attempt (hanged at 55 MB)
+>> ---------------------------------
+>> skbuff_ext_cache     735    735    192   21    1 : tunables 0    0    0 : slabdata     35     35      0
+>> skbuff_fclone_cache    176    176    512   16    2 : tunables 0    0    0 : slabdata     11     11      0
+>> skbuff_head_cache   2000   2144    256   16    1 : tunables 0    0    0 : slabdata    134    134      0
+>> ---------------------------------
+>> TcpExtTCPSpuriousRtxHostQueues  365                0.0
+>> ---------------------------------
+>>
+>>
+>
+> Thanks for testing.
+>
+> This seems to suggest there is another bug in the driver, leading to some skb being never freed.
+>
+> Since the driver seems to limit aggregation to 9000 bytes (MAX_SINGLE_PACKET_SIZE)
+> I wonder if gso skbs should also be limited to the same value.
+>
+> diff --git a/drivers/net/usb/lan78xx.c b/drivers/net/usb/lan78xx.c
+> index d3239b49c3bb2803c874a2e8af332bcf03848e18..65dea9a94b90e27889c8f44294560ffeabda2eb9 100644
+> --- a/drivers/net/usb/lan78xx.c
+> +++ b/drivers/net/usb/lan78xx.c
+> @@ -3787,6 +3787,8 @@ static int lan78xx_probe(struct usb_interface *intf,
+>          if (ret < 0)
+>                  goto out4;
+>   
+> +       netif_set_gso_max_size(netdev, MAX_SINGLE_PACKET_SIZE - MAX_HEADER);
+> +
+>          ret = register_netdev(netdev);
+>          if (ret != 0) {
+>                  netif_err(dev, probe, netdev, "couldn't register the device\n");
+>
+>
+>
+>>
+>>
+>>
+>>
+>>
+>> On 1/8/20 9:25 PM, Eric Dumazet wrote:
+>>> On Wed, Jan 8, 2020 at 11:13 AM RENARD Pierre-Francois
+>>> <pfrenard@gmail.com> wrote:
+>>>> I tried with last rawhide kernel 5.5.0-0.rc5.git0.1.local.fc32.aarch64
+>>>> I compiled it this night. (I check it includes the patch for lan78xx.c )
+>>>>
+>>>> Both tests (scp and nfs ) are failing the same way as before.
+>>>>
+>>>> Fox
+>>>>
+>>> Please report the output of " grep skb /proc/slabinfo"
+>>>
+>>> before and after your test.
+>>>
+>>> The symptoms (of retransmit being not attempted by TCP) match the fact
+>>> that skb(s) is(are) not freed by a driver (or some layer)
+>>>
+>>> When TCP detects this (function skb_still_in_host_queue()), one SNMP
+>>> counter is incremented
+>>>
+>>> nstat -a | grep TCPSpuriousRtxHostQueues
+>>>
+>>> Thanks.
+>>>
+>>>> On 1/7/20 7:57 PM, Eric Dumazet wrote:
+>>>>> If skb_linearize() fails, we need to free the skb.
+>>>>>
+>>>>> TSO makes skb bigger, and this bug might be the reason
+>>>>> Raspberry Pi 3B+ users had to disable TSO.
+>>>>>
+>>>>> Fixes: 55d7de9de6c3 ("Microchip's LAN7800 family USB 2/3 to 10/100/1000 Ethernet device driver")
+>>>>> Signed-off-by: Eric Dumazet <edumazet@google.com>
+>>>>> Reported-by: RENARD Pierre-Francois <pfrenard@gmail.com>
+>>>>> Cc: Stefan Wahren <stefan.wahren@i2se.com>
+>>>>> Cc: Woojung Huh <woojung.huh@microchip.com>
+>>>>> Cc: Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>
+>>>>> ---
+>>>>>     drivers/net/usb/lan78xx.c | 9 +++------
+>>>>>     1 file changed, 3 insertions(+), 6 deletions(-)
+>>>>>
+>>>>> diff --git a/drivers/net/usb/lan78xx.c b/drivers/net/usb/lan78xx.c
+>>>>> index f940dc6485e56a7e8f905082ce920f5dd83232b0..fb4781080d6dec2af22f41c5e064350ea74130b3 100644
+>>>>> --- a/drivers/net/usb/lan78xx.c
+>>>>> +++ b/drivers/net/usb/lan78xx.c
+>>>>> @@ -2724,11 +2724,6 @@ static int lan78xx_stop(struct net_device *net)
+>>>>>         return 0;
+>>>>>     }
+>>>>>
+>>>>> -static int lan78xx_linearize(struct sk_buff *skb)
+>>>>> -{
+>>>>> -     return skb_linearize(skb);
+>>>>> -}
+>>>>> -
+>>>>>     static struct sk_buff *lan78xx_tx_prep(struct lan78xx_net *dev,
+>>>>>                                        struct sk_buff *skb, gfp_t flags)
+>>>>>     {
+>>>>> @@ -2740,8 +2735,10 @@ static struct sk_buff *lan78xx_tx_prep(struct lan78xx_net *dev,
+>>>>>                 return NULL;
+>>>>>         }
+>>>>>
+>>>>> -     if (lan78xx_linearize(skb) < 0)
+>>>>> +     if (skb_linearize(skb)) {
+>>>>> +             dev_kfree_skb_any(skb);
+>>>>>                 return NULL;
+>>>>> +     }
+>>>>>
+>>>>>         tx_cmd_a = (u32)(skb->len & TX_CMD_A_LEN_MASK_) | TX_CMD_A_FCS_;
+>>>>>
+
