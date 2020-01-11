@@ -2,116 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 325A3138178
-	for <lists+netdev@lfdr.de>; Sat, 11 Jan 2020 15:06:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EB4C713817A
+	for <lists+netdev@lfdr.de>; Sat, 11 Jan 2020 15:08:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729662AbgAKOGH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Jan 2020 09:06:07 -0500
-Received: from relay2-d.mail.gandi.net ([217.70.183.194]:59487 "EHLO
-        relay2-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729622AbgAKOGH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 11 Jan 2020 09:06:07 -0500
-X-Originating-IP: 79.86.19.127
-Received: from [192.168.0.12] (127.19.86.79.rev.sfr.net [79.86.19.127])
-        (Authenticated sender: alexandre@ghiti.fr)
-        by relay2-d.mail.gandi.net (Postfix) with ESMTPSA id EE08540002;
-        Sat, 11 Jan 2020 14:06:00 +0000 (UTC)
-Subject: Re: linux-next: build warning after merge of the bpf-next tree
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        ppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        linux-arm-kernel@lists.infradead.org, zong.li@sifive.com,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>
-References: <20191018105657.4584ec67@canb.auug.org.au>
- <20191028110257.6d6dba6e@canb.auug.org.au>
- <a367af4d-7267-2e94-74dc-2a2aac204080@ghiti.fr>
- <CAADnVQLo5HEjTpTTRm=BtExuKifPtCJm+Hu_WP6yeyV-Er55Qg@mail.gmail.com>
-From:   Alexandre Ghiti <alexandre@ghiti.fr>
-Message-ID: <3e6f298c-e428-fdee-47a8-14addc581501@ghiti.fr>
-Date:   Sat, 11 Jan 2020 09:06:00 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.3.0
+        id S1729695AbgAKOIL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Jan 2020 09:08:11 -0500
+Received: from mail.kernel.org ([198.145.29.99]:34776 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729674AbgAKOIL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 11 Jan 2020 09:08:11 -0500
+Received: from cakuba.hsd1.ca.comcast.net (c-73-93-4-247.hsd1.ca.comcast.net [73.93.4.247])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 3BD2F20842;
+        Sat, 11 Jan 2020 14:08:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1578751690;
+        bh=49yNVjrUNIa8teHfZrhS1FTBl3geKHch17rvqg+qPQM=;
+        h=From:To:Cc:Subject:Date:From;
+        b=qN5CEyfk6QnsJaQTvacvjf9yKJPGa9PU178+G8A1vDckKwLFkV7Ck1RRogpdc1YOc
+         dDUR2lAkoZc1yuOD0JFQioH/OIfW9TyI4mZVm3bSbkcBnNrisG/mr4T4zCD+TuhJ1X
+         3bm8HTi1X1OpAXSzMqxpDNkAm7pVhQKSHTJCMLAA=
+From:   kuba@kernel.org
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH net] MAINTAINERS: update my email address
+Date:   Sat, 11 Jan 2020 06:07:52 -0800
+Message-Id: <20200111140752.137292-1-kuba@kernel.org>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-In-Reply-To: <CAADnVQLo5HEjTpTTRm=BtExuKifPtCJm+Hu_WP6yeyV-Er55Qg@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Jakub Kicinski <kuba@kernel.org>
 
-On 1/10/20 6:18 PM, Alexei Starovoitov wrote:
-> On Fri, Jan 10, 2020 at 2:28 PM Alexandre Ghiti <alexandre@ghiti.fr> wrote:
->> Hi guys,
->>
->> On 10/27/19 8:02 PM, Stephen Rothwell wrote:
->>> Hi all,
->>>
->>> On Fri, 18 Oct 2019 10:56:57 +1100 Stephen Rothwell <sfr@canb.auug.org.au> wrote:
->>>> Hi all,
->>>>
->>>> After merging the bpf-next tree, today's linux-next build (powerpc
->>>> ppc64_defconfig) produced this warning:
->>>>
->>>> WARNING: 2 bad relocations
->>>> c000000001998a48 R_PPC64_ADDR64    _binary__btf_vmlinux_bin_start
->>>> c000000001998a50 R_PPC64_ADDR64    _binary__btf_vmlinux_bin_end
->>>>
->>>> Introduced by commit
->>>>
->>>>     8580ac9404f6 ("bpf: Process in-kernel BTF")
->>> This warning now appears in the net-next tree build.
->>>
->>>
->> I bump that thread up because Zong also noticed that 2 new relocations for
->> those symbols appeared in my riscv relocatable kernel branch following
->> that commit.
->>
->> I also noticed 2 new relocations R_AARCH64_ABS64 appearing in arm64 kernel.
->>
->> Those 2 weak undefined symbols have existed since commit
->> 341dfcf8d78e ("btf: expose BTF info through sysfs") but this is the fact
->> to declare those symbols into btf.c that produced those relocations.
->>
->> I'm not sure what this all means, but this is not something I expected
->> for riscv for
->> a kernel linked with -shared/-fpie. Maybe should we just leave them to
->> zero ?
->>
->> I think that deserves a deeper look if someone understands all this
->> better than I do.
-> Are you saying there is a warning for arm64 as well?
+My Netronome email address may become inactive soon.
 
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+---
+ .mailmap    |  1 +
+ MAINTAINERS | 10 +++++-----
+ 2 files changed, 6 insertions(+), 5 deletions(-)
 
-Nop.
-
-
-> Can ppc folks explain the above warning?
-> What does it mean "2 bad relocations"?
-
-
-This is what I'd like to understand too, it is not clear in
-the ppc tool that outputs this message why it is considered 'bad'.
-
-
-> The code is doing:
-> extern char __weak _binary__btf_vmlinux_bin_start[];
-> extern char __weak _binary__btf_vmlinux_bin_end[];
-> Since they are weak they should be zero when not defined.
-> What's the issue?
-
-
-There likely is no issue, I just want to make sure those relocations
-are legitimate and I want to understand what we should do with those.
-
-At the moment arm64 does not relocate those at runtime and purely
-ignore them: is this the right thing to do ?
-
+diff --git a/.mailmap b/.mailmap
+index a7bc8cabd157..d9d5c80252f9 100644
+--- a/.mailmap
++++ b/.mailmap
+@@ -99,6 +99,7 @@ Jacob Shin <Jacob.Shin@amd.com>
+ Jaegeuk Kim <jaegeuk@kernel.org> <jaegeuk@google.com>
+ Jaegeuk Kim <jaegeuk@kernel.org> <jaegeuk@motorola.com>
+ Jaegeuk Kim <jaegeuk@kernel.org> <jaegeuk.kim@samsung.com>
++Jakub Kicinski <kuba@kernel.org> <jakub.kicinski@netronome.com>
+ James Bottomley <jejb@mulgrave.(none)>
+ James Bottomley <jejb@titanic.il.steeleye.com>
+ James E Wilson <wilson@specifix.com>
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 4017e6b760be..7933584afc56 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -3150,7 +3150,7 @@ S:	Maintained
+ F:	arch/mips/net/
+ 
+ BPF JIT for NFP NICs
+-M:	Jakub Kicinski <jakub.kicinski@netronome.com>
++M:	Jakub Kicinski <kuba@kernel.org>
+ L:	netdev@vger.kernel.org
+ L:	bpf@vger.kernel.org
+ S:	Supported
+@@ -11431,7 +11431,7 @@ F:	include/uapi/linux/netrom.h
+ F:	net/netrom/
+ 
+ NETRONOME ETHERNET DRIVERS
+-M:	Jakub Kicinski <jakub.kicinski@netronome.com>
++M:	Jakub Kicinski <kuba@kernel.org>
+ L:	oss-drivers@netronome.com
+ S:	Maintained
+ F:	drivers/net/ethernet/netronome/
+@@ -11591,7 +11591,7 @@ M:	Boris Pismenny <borisp@mellanox.com>
+ M:	Aviad Yehezkel <aviadye@mellanox.com>
+ M:	John Fastabend <john.fastabend@gmail.com>
+ M:	Daniel Borkmann <daniel@iogearbox.net>
+-M:	Jakub Kicinski <jakub.kicinski@netronome.com>
++M:	Jakub Kicinski <kuba@kernel.org>
+ L:	netdev@vger.kernel.org
+ S:	Maintained
+ F:	net/tls/*
+@@ -11603,7 +11603,7 @@ L:	linux-wireless@vger.kernel.org
+ Q:	http://patchwork.kernel.org/project/linux-wireless/list/
+ 
+ NETDEVSIM
+-M:	Jakub Kicinski <jakub.kicinski@netronome.com>
++M:	Jakub Kicinski <kuba@kernel.org>
+ S:	Maintained
+ F:	drivers/net/netdevsim/*
+ 
+@@ -18042,7 +18042,7 @@ XDP (eXpress Data Path)
+ M:	Alexei Starovoitov <ast@kernel.org>
+ M:	Daniel Borkmann <daniel@iogearbox.net>
+ M:	David S. Miller <davem@davemloft.net>
+-M:	Jakub Kicinski <jakub.kicinski@netronome.com>
++M:	Jakub Kicinski <kuba@kernel.org>
+ M:	Jesper Dangaard Brouer <hawk@kernel.org>
+ M:	John Fastabend <john.fastabend@gmail.com>
+ L:	netdev@vger.kernel.org
+-- 
+2.24.1
 
