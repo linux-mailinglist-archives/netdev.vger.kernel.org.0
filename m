@@ -2,119 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A398B137BC1
-	for <lists+netdev@lfdr.de>; Sat, 11 Jan 2020 07:12:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7CE57137BC3
+	for <lists+netdev@lfdr.de>; Sat, 11 Jan 2020 07:12:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728371AbgAKGMY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Jan 2020 01:12:24 -0500
-Received: from mail-io1-f68.google.com ([209.85.166.68]:35198 "EHLO
-        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728360AbgAKGMX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 11 Jan 2020 01:12:23 -0500
-Received: by mail-io1-f68.google.com with SMTP id h8so4445805iob.2;
-        Fri, 10 Jan 2020 22:12:23 -0800 (PST)
+        id S1728376AbgAKGMd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Jan 2020 01:12:33 -0500
+Received: from mail-io1-f67.google.com ([209.85.166.67]:39232 "EHLO
+        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726065AbgAKGMd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 11 Jan 2020 01:12:33 -0500
+Received: by mail-io1-f67.google.com with SMTP id c16so4411132ioh.6;
+        Fri, 10 Jan 2020 22:12:32 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=O9cAtZX+jQRLW+3bJ03zk7zXTO3mItghIEmHM4zbesk=;
-        b=AxjPdH9ozmLvjdarCcxEZtGPiHW/o/LiG4DXoaQuD0hJngsy9Uow+Essg6c0zOOqlF
-         CnhDX2+BoTepKq7sYJpn+BhaE8gQRGEg2rNUBCK0OMivUaaLZFS7dr4FoGI3HrhAt/ea
-         PKb0033RGN4vu9ZQAwz8vB5fp4eSlELMRVIxShUxuzv31tYmos6nynDYR6XzXDe/j8kV
-         5YqQHHSF5ku9pH85CUwtMJxMVL1m0d6kRJqpFtBlm9eMwLoQE7twbP3CoFudylxQ5UkH
-         k5rdoGJVW0qTTBtOJcxoXmuEwFy6+/0LAZQvLPH1twD9aHn914qGz4jLGVVJEJi0sUy8
-         lzdw==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=k/uOUC4WZrxLQy7Z1uiXWhhGNWt+EgxTQhQgxc/WTeQ=;
+        b=glSJbUPkGbA/zZ77sxSrpphY5koT0ODVZa2PWUS9kxFltmKHRODxtGXD7276Z/zXpz
+         U7OQSf52AapQY4pk2Guvyuo0Np1TNEud5Da/GOuPVCw1bkRT/YrN29SE4oL78YwcKcV7
+         w/TDm/uxpFIxneS/+MDe5w+4GBLTS8dphBpCYoiDrEtqozYdMFxZZaaRC6ANroAS9i+w
+         mwWnK9bdpNq2PHAKOTTdjfql9h9iI7aFEwnHdQVhe/xo70x91bMp+0404sNZaaepDrT5
+         f/6Ho1qSJ9FCratYeXyjj5WJZF5wtVqPg1l/n7zcALorGwPhRHcPxc392dcJ/ZbWxfel
+         Hmcg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=O9cAtZX+jQRLW+3bJ03zk7zXTO3mItghIEmHM4zbesk=;
-        b=Q7w70uGqQ8KNuQXd/7nvuy8fiLZZgkrdBuzjD1z46b1jULstP+/+lY/eC23ZcfRXEf
-         0GLGy+nLMuNOGdZzoawjbFXz5mK2UZRxKeSA7mIeTFeRnWpHj773BTk69taLOrnFcu20
-         Icsecweej95Wc9ub4bq4J40LXHb/DwvYqYlQ8P/E7V6cQMMWfgkEDuJJMh/w52luz7J5
-         c3gab6sWkJvLN6TQl1NHlbEPj7FgHcVNq63RXLJO8PONjR74Bu17az4VyXFHX9pJykw5
-         RIrZXARFEve4fh9Z8WRbJuBL4NbOxpBmxzw/GrX21qn5IJCOCy1SuGIYIO4MiNkfuYDS
-         8YAQ==
-X-Gm-Message-State: APjAAAWP/T3GMq/p3aLBczuUUFt+Mw85HO1PbZVslq6Xd/5wYRjlD5Cx
-        QlWC4xlkmrrC4TYUI4lHcqUb4agh
-X-Google-Smtp-Source: APXvYqxeZUGKKtjK0vKJz5AEOlrGYfIVXBom2NgMs7+uqFSLD3uD2+zchF00M/jta+cG8cuL2zrfjw==
-X-Received: by 2002:a02:13ca:: with SMTP id 193mr6322567jaz.54.1578723143062;
-        Fri, 10 Jan 2020 22:12:23 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=k/uOUC4WZrxLQy7Z1uiXWhhGNWt+EgxTQhQgxc/WTeQ=;
+        b=EeaWa8tF72zsQ1w+ZutJYgL3jk5I+eRZ2rvpUnUoTK7Mc7y3289Hqh09u/Nb7NtVAx
+         yqX5RQhLBNTwHNJjzkBiMzt/cqrQEVYtIhLUHbfiKT7XZyC8/bNThxxQXYhAp1BT66nR
+         FIS4CBDYuNicJ53ldOS3mHFvRZpsL6vRj/MNpHn2MOKBLYBm9HwE+bTHj5h0NiQN99YL
+         Pn7e/sA6HGXt7EaNyZj8HdzQ1lK63HeeLGQiRdNtZe7qpJ+VcjdcOgtAmaFHnhx2lYCx
+         ieWiBjc7vl3NRLnFv1q6gqYBSbnBW9YFwJ+0Pi179KhKjWQVxixp6aOMifBosmlpwfZ0
+         +fJA==
+X-Gm-Message-State: APjAAAX1jaz6RdVMlsenVtfto7TnRTLzbSovHU3xKQ+lEr0bKFfY3BvR
+        eM9hF6/xFF25gMQyWbjQYKMkYhud
+X-Google-Smtp-Source: APXvYqzogvFDa66OvKD/9iILKwwbyTtZo6bxlJax41rKJ3OLTlrA2CZG02NidGW3cnXBGgIsGmoDCg==
+X-Received: by 2002:a5e:8813:: with SMTP id l19mr5711114ioj.261.1578723152076;
+        Fri, 10 Jan 2020 22:12:32 -0800 (PST)
 Received: from localhost.localdomain ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id 141sm1417784ile.44.2020.01.10.22.12.14
+        by smtp.gmail.com with ESMTPSA id 141sm1417784ile.44.2020.01.10.22.12.23
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 10 Jan 2020 22:12:22 -0800 (PST)
+        Fri, 10 Jan 2020 22:12:31 -0800 (PST)
 From:   John Fastabend <john.fastabend@gmail.com>
 To:     bpf@vger.kernel.org
 Cc:     netdev@vger.kernel.org, daniel@iogearbox.net, ast@kernel.org,
         john.fastabend@gmail.com, song@kernel.org, jonathan.lemon@gmail.com
-Subject: [bpf PATCH v2 0/8] Fixes for sockmap/tls from more complex BPF progs
-Date:   Sat, 11 Jan 2020 06:11:58 +0000
-Message-Id: <20200111061206.8028-1-john.fastabend@gmail.com>
+Subject: [bpf PATCH v2 1/8] bpf: sockmap/tls, during free we may call tcp_bpf_unhash() in loop
+Date:   Sat, 11 Jan 2020 06:11:59 +0000
+Message-Id: <20200111061206.8028-2-john.fastabend@gmail.com>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20200111061206.8028-1-john.fastabend@gmail.com>
+References: <20200111061206.8028-1-john.fastabend@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-To date our usage of sockmap/tls has been fairly simple, the BPF programs
-did only well-defined pop, push, pull and apply/cork operations.
+When a sockmap is free'd and a socket in the map is enabled with tls
+we tear down the bpf context on the socket, the psock struct and state,
+and then call tcp_update_ulp(). The tcp_update_ulp() call is to inform
+the tls stack it needs to update its saved sock ops so that when the tls
+socket is later destroyed it doesn't try to call the now destroyed psock
+hooks.
 
-Now that we started to push more complex programs into sockmap we uncovered
-a series of issues addressed here. Further OpenSSL3.0 version should be
-released soon with kTLS support so its important to get any remaining
-issues on BPF and kTLS support resolved.
+This is about keeping stacked ULPs in good shape so they always have
+the right set of stacked ops.
 
-Additionally, I have a patch under development to allow sockmap to be
-enabled/disabled at runtime for Cilium endpoints. This allows us to stress
-the map insert/delete with kTLS more than previously where Cilium only
-added the socket to the map when it entered ESTABLISHED state and never
-touched it from the control path side again relying on the sockets own
-close() hook to remove it.
+However, recently unhash() hook was removed from TLS side. But, the
+sockmap/bpf side is not doing any extra work to update the unhash op
+when is torn down instead expecting TLS side to manage it. So both
+TLS and sockmap believe the other side is managing the op and instead
+no one updates the hook so it continues to point at tcp_bpf_unhash().
+When unhash hook is called we call tcp_bpf_unhash() which detects the
+psock has already been destroyed and calls sk->sk_prot_unhash() which
+calls tcp_bpf_unhash() yet again and so on looping and hanging the core.
 
-To test I have a set of test cases in test_sockmap.c that expose these
-issues. Once we get fixes here merged and in bpf-next I'll submit the
-tests to bpf-next tree to ensure we don't regress again. Also I've run
-these patches in the Cilium CI with OpenSSL (master branch) this will
-run tools such as netperf, ab, wrk2, curl, etc. to get a broad set of
-testing.
+To fix have sockmap tear down logic fixup the stale pointer.
 
-I'm aware of two more issues that we are working to resolve in another
-couple (probably two) patches. First we see an auth tag corruption in
-kTLS when sending small 1byte chunks under stress. I've not pinned this
-down yet. But, guessing because its under 1B stress tests it must be
-some error path being triggered. And second we need to ensure BPF RX
-programs are not skipped when kTLS ULP is loaded. This breaks some of
-the sockmap selftests when running with kTLS. I'll send a follow up
-for this.
+Fixes: 5d92e631b8be ("net/tls: partially revert fix transition through disconnect with close")
+Reported-by: syzbot+83979935eb6304f8cd46@syzkaller.appspotmail.com
+Cc: stable@vger.kernel.org
+Acked-by: Song Liu <songliubraving@fb.com>
+Signed-off-by: John Fastabend <john.fastabend@gmail.com>
+---
+ include/linux/skmsg.h | 1 +
+ 1 file changed, 1 insertion(+)
 
-v2: I dropped a patch that added !0 size check in tls_push_record
-    this originated from a panic I caught awhile ago with a trace
-    in the crypto stack. But I can not reproduce it anymore so will
-    dig into that and send another patch later if needed. Anyways
-    after a bit of thought it would be nicer if tls/crypto/bpf didn't
-    require special case handling for the !0 size.
-
-John Fastabend (8):
-  bpf: sockmap/tls, during free we may call tcp_bpf_unhash() in loop
-  bpf: sockmap, ensure sock lock held during tear down
-  bpf: sockmap/tls, push write_space updates through ulp updates
-  bpf: sockmap, skmsg helper overestimates push, pull, and pop bounds
-  bpf: sockmap/tls, msg_push_data may leave end mark in place
-  bpf: sockmap/tls, tls_sw can create a plaintext buf > encrypt buf
-  bpf: sockmap/tls, skmsg can have wrapped skmsg that needs extra
-    chaining
-  bpf: sockmap/tls, fix pop data with SK_DROP return code
-
- include/linux/skmsg.h | 13 +++++++++----
- include/net/tcp.h     |  6 ++++--
- net/core/filter.c     | 11 ++++++-----
- net/core/skmsg.c      |  2 ++
- net/core/sock_map.c   |  7 ++++++-
- net/ipv4/tcp_bpf.c    |  5 +----
- net/ipv4/tcp_ulp.c    |  6 ++++--
- net/tls/tls_main.c    | 10 +++++++---
- net/tls/tls_sw.c      | 31 +++++++++++++++++++++++++++----
- 9 files changed, 66 insertions(+), 25 deletions(-)
-
+diff --git a/include/linux/skmsg.h b/include/linux/skmsg.h
+index ef7031f8a304..b6afe01f8592 100644
+--- a/include/linux/skmsg.h
++++ b/include/linux/skmsg.h
+@@ -358,6 +358,7 @@ static inline void sk_psock_update_proto(struct sock *sk,
+ static inline void sk_psock_restore_proto(struct sock *sk,
+ 					  struct sk_psock *psock)
+ {
++	sk->sk_prot->unhash = psock->saved_unhash;
+ 	sk->sk_write_space = psock->saved_write_space;
+ 
+ 	if (psock->sk_proto) {
 -- 
 2.17.1
 
