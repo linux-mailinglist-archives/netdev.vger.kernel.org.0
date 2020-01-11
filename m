@@ -2,119 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A7D70137A86
-	for <lists+netdev@lfdr.de>; Sat, 11 Jan 2020 01:20:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BB01F137A98
+	for <lists+netdev@lfdr.de>; Sat, 11 Jan 2020 01:29:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727764AbgAKAUN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jan 2020 19:20:13 -0500
-Received: from mail-pg1-f196.google.com ([209.85.215.196]:33461 "EHLO
+        id S1727772AbgAKA3L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jan 2020 19:29:11 -0500
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:33080 "EHLO
         mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727780AbgAKAUM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jan 2020 19:20:12 -0500
-Received: by mail-pg1-f196.google.com with SMTP id 6so1762213pgk.0
-        for <netdev@vger.kernel.org>; Fri, 10 Jan 2020 16:20:11 -0800 (PST)
+        with ESMTP id S1727544AbgAKA3L (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jan 2020 19:29:11 -0500
+Received: by mail-pg1-f196.google.com with SMTP id 6so1770563pgk.0
+        for <netdev@vger.kernel.org>; Fri, 10 Jan 2020 16:29:11 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:from:subject:cc:to:in-reply-to:references:message-id
-         :mime-version:content-transfer-encoding;
-        bh=c3X7AVrd0eaweLYAuO8RL12YZV2EtbyuB8unmVAV0Nc=;
-        b=o/riBuR2mH3VghdAJD08lJGw+G6Nmt2YFqawukfV3FgIyraZCC33g4w6UUkTg4B9YA
-         bPaQ7HIdl9EVvkaFzug0pY/FlWJECuXnToQMWAXeRVE0al9hqWVAVcLgt0QhvWPJSBsQ
-         bB5dxtI06QKGwTmE7+MmdzSWdr5sWOBaOx8ylflwJxzwunQWhFk0yZMqgjvLjx3Ta6Qw
-         IY0NzO2fCoYN5CkwLwDpJMeX7S6jXG0r+Ka/MngphRFWsDvtkDRIbForX/TrNPi0+IDh
-         9ZHCf9TkSZkGR/2ZIQQ0xtQVlRTLSLv2/gi03mwbtBLmcgcOWB86bKQt7FFpTbEBt+yn
-         J0AQ==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Z1oljhl2ycEHZWbLZ+RzzjjF8KtGlR4IWad6y7qdb94=;
+        b=gk7kGspB2snM/wkshYVIwZq62scQn7AiKzZqmvDmE1eeD9zllq+nCsUnqYZrxYgXw0
+         rcSwqB0u7BZjt+oW0LeFqWCb8bZ1P7y2M2RR7zH4hRm2v9KnNZkL9G9ghJ5koK9wIYHF
+         lWEkV3AFMrjLVWJ4rOYZBwAMZDI9rcsi8GwOYN3cw+CTjrN5MQntIrhKTYFKOz+4iyTg
+         eXpk3HeNyZsorkEaykObyFQD2UgT7ETnr7gi3yI/K3MLTn6684Mg1av9TEglTLz9v8Na
+         uRM7f/nctTSBp05yhpJ0rRcwZ9uibtojWeIio/RuGFQ9aSfViKebG8yJR0uCMEd8sT0f
+         eNhA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:subject:cc:to:in-reply-to:references
-         :message-id:mime-version:content-transfer-encoding;
-        bh=c3X7AVrd0eaweLYAuO8RL12YZV2EtbyuB8unmVAV0Nc=;
-        b=PcpZ0FyNthkEDifQOr2D4RDXm5xOz+N8XFAlBtwv7IdlNMLjsMf1t5NmRX5WxRLiGm
-         5+aDGqMjB0FPnOfcORynYQJ0LcNgxfqyRPAHcVsoQG4T74/DD4mVMsrgojQlGKrDCK4N
-         n09fBpwtsTsp4dzH8J3GOWTk4niGsJsU3UCIet0aEnY4LEpFwXZq5s1PqXhz3xIQZiyo
-         ASzIUKF3cW7lOF/U5yzfzSubvEkyYsfiHs6LOniS1yLZWzNwbBxGy70jmiv9Zr3RLzLI
-         V+gMqjxmmcPa5ZKd39eGD8I/mqTuNRzPD+h2AN4C/7iWifyZCF+z+Fy6hrhZAioITqWP
-         aeEg==
-X-Gm-Message-State: APjAAAWytwCBlUqYvyKhqRjXG5mAtolZwS2cTMSSWwvgDpwVCKOBGPI7
-        ugbuFf28f4l/QLoK40ea0kTMwg==
-X-Google-Smtp-Source: APXvYqz94HjiloVFGVWbZus+RYXmvPQjwFd3nN3tcOUYSqCGg0YFmHQZNCSbn5YazmB7epfwxn4mvg==
-X-Received: by 2002:a63:e30a:: with SMTP id f10mr7422254pgh.331.1578702011266;
-        Fri, 10 Jan 2020 16:20:11 -0800 (PST)
-Received: from localhost ([2620:0:1000:2514:7f69:cd98:a2a2:a03d])
-        by smtp.gmail.com with ESMTPSA id c14sm4013510pjr.24.2020.01.10.16.20.10
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Z1oljhl2ycEHZWbLZ+RzzjjF8KtGlR4IWad6y7qdb94=;
+        b=XD7EdAzgTbyigJi2Xn8Ur0v6sVfScpjm1QVqWRJH66edjAD7oxlmfSwjKzjA9Cr1Jb
+         3nZxIYEfNFMh1hJpvZffXo3msLMTJ6Xh7uqbBPCQGttbpD1w0SiA+yCyGyfCjmpWLj/q
+         cnXC5XPrwQZZU5OtLl3biU4LHgfmHaUjvQKYxmknMCzttaamQoxSytgU1tRr0djN4lcd
+         qOKvR2QTdHMJq/bckfvoY8j08G/F4JHAZDFqxUjKzo1UTk1Zl1Jfm9QxYjVIawFyI6yD
+         s8eOzW2pe+0vnhxIOuegWdafx3wPkgpxbQbeUnBxLk+aGVIiR43RM+yHKtATrGgwe9OO
+         zr+A==
+X-Gm-Message-State: APjAAAW3CfzOA50N/g2/UpGWYi2SbMFqRb+fkiAShSJkoEJKPfcVoYPv
+        i9kvV6DibTt7/MmiGFiI2awW4taK
+X-Google-Smtp-Source: APXvYqxlDo/HhhLT6RpUNEhLbMmrYm1u2/xqNvHPplpw3e/JAZOWpZA1TSDoKgYjE197YNwwCTRNpQ==
+X-Received: by 2002:a62:62c4:: with SMTP id w187mr7300329pfb.216.1578702550723;
+        Fri, 10 Jan 2020 16:29:10 -0800 (PST)
+Received: from phantasmagoria.svl.corp.google.com ([2620:15c:2c4:201:2b0a:8c1:6a84:1aa0])
+        by smtp.gmail.com with ESMTPSA id h126sm4567066pfe.19.2020.01.10.16.29.09
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 10 Jan 2020 16:20:10 -0800 (PST)
-Date:   Fri, 10 Jan 2020 16:20:10 -0800 (PST)
-X-Google-Original-Date: Fri, 10 Jan 2020 16:19:54 PST (-0800)
-From:   Palmer Dabbelt <palmerdabbelt@google.com>
-X-Google-Original-From: Palmer Dabbelt <palmer@dabbelt.com>
-Subject:     Re: Re: linux-next: build warning after merge of the bpf-next tree
-CC:     Stephen Rothwell <sfr@canb.auug.org.au>, daniel@iogearbox.net,
-        ast@kernel.org, netdev@vger.kernel.org, linux-next@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-arm-kernel@lists.infradead.org, zong.li@sifive.com
-To:     alexandre@ghiti.fr
-In-Reply-To: <a367af4d-7267-2e94-74dc-2a2aac204080@ghiti.fr>
-References: <a367af4d-7267-2e94-74dc-2a2aac204080@ghiti.fr>
-  <20191018105657.4584ec67@canb.auug.org.au> <20191028110257.6d6dba6e@canb.auug.org.au>
-Message-ID: <mhng-0daa1a90-2bed-4b2e-833e-02cd9c0aa73f@palmerdabbelt-glaptop>
-Mime-Version: 1.0 (MHng)
-Content-Type: text/plain; charset=utf-8; format=flowed
+        Fri, 10 Jan 2020 16:29:10 -0800 (PST)
+From:   Arjun Roy <arjunroy.kdev@gmail.com>
+To:     davem@davemloft.net, netdev@vger.kernel.org,
+        akpm@linux-foundation.org, linux-mm@kvack.org
+Cc:     arjunroy@google.com, Arjun Roy <arjunroy.kdev@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Soheil Hassas Yeganeh <soheil@google.com>
+Subject: [PATCH mm,net-next 1/3] mm: Refactor insert_page to prepare for batched-lock insert.
+Date:   Fri, 10 Jan 2020 16:28:47 -0800
+Message-Id: <20200111002849.252704-1-arjunroy.kdev@gmail.com>
+X-Mailer: git-send-email 2.25.0.rc1.283.g88dfdc4193-goog
+MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 10 Jan 2020 14:28:17 PST (-0800), alexandre@ghiti.fr wrote:
-> Hi guys,
->
-> On 10/27/19 8:02 PM, Stephen Rothwell wrote:
->> Hi all,
->>
->> On Fri, 18 Oct 2019 10:56:57 +1100 Stephen Rothwell <sfr@canb.auug.org.au> wrote:
->>> Hi all,
->>>
->>> After merging the bpf-next tree, today's linux-next build (powerpc
->>> ppc64_defconfig) produced this warning:
->>>
->>> WARNING: 2 bad relocations
->>> c000000001998a48 R_PPC64_ADDR64    _binary__btf_vmlinux_bin_start
->>> c000000001998a50 R_PPC64_ADDR64    _binary__btf_vmlinux_bin_end
->>>
->>> Introduced by commit
->>>
->>>    8580ac9404f6 ("bpf: Process in-kernel BTF")
->> This warning now appears in the net-next tree build.
->>
->>
-> I bump that thread up because Zong also noticed that 2 new relocations for
-> those symbols appeared in my riscv relocatable kernel branch following
-> that commit.
->
-> I also noticed 2 new relocations R_AARCH64_ABS64 appearing in arm64 kernel.
->
-> Those 2 weak undefined symbols have existed since commit
-> 341dfcf8d78e ("btf: expose BTF info through sysfs") but this is the fact
-> to declare those symbols into btf.c that produced those relocations.
->
-> I'm not sure what this all means, but this is not something I expected
-> for riscv for
-> a kernel linked with -shared/-fpie. Maybe should we just leave them to
-> zero ?
->
-> I think that deserves a deeper look if someone understands all this
-> better than I do.
+Add helper methods for vm_insert_page()/insert_page() to prepare for
+vm_insert_pages(), which batch-inserts pages to reduce spinlock
+operations when inserting multiple consecutive pages into the user
+page table.
 
-Can you give me a pointer to your tree and how to build a relocatable kernel?
-Weak undefined symbols have the absolute value 0, but the kernel is linked at
-an address such that 0 can't be reached by normal means.  When I added support
-to binutils for this I did it in a way that required almost no code --
-essetially I just stopped dissallowing x0 as a possible base register for PCREL
-relocations, which results in 0 always being accessible.  I just wanted to get
-the kernel to build again, so I didn't worry about chasing around all the
-addressing modes.  The PIC/PIE support generates different relocations and I
-wouldn't be surprised if I just missed one (or more likely all) of them.
+The intention of this patch-set is to reduce atomic ops for
+tcp zerocopy receives, which normally hits the same spinlock multiple
+times consecutively.
 
-It's probably a simple fix, though I feel like every time I say that about the
-linker I end up spending a month in there...
+Signed-off-by: Arjun Roy <arjunroy.kdev@gmail.com>
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: Soheil Hassas Yeganeh <soheil@google.com>
+
+---
+ mm/memory.c | 41 ++++++++++++++++++++++++-----------------
+ 1 file changed, 24 insertions(+), 17 deletions(-)
+
+diff --git a/mm/memory.c b/mm/memory.c
+index 7c6e19bdc428..7e23a9275386 100644
+--- a/mm/memory.c
++++ b/mm/memory.c
+@@ -1693,6 +1693,27 @@ pte_t *__get_locked_pte(struct mm_struct *mm, unsigned long addr,
+ 	return pte_alloc_map_lock(mm, pmd, addr, ptl);
+ }
+ 
++static int validate_page_before_insert(struct page *page)
++{
++	if (PageAnon(page) || PageSlab(page))
++		return -EINVAL;
++	flush_dcache_page(page);
++	return 0;
++}
++
++static int insert_page_into_pte_locked(struct mm_struct *mm, pte_t *pte,
++			unsigned long addr, struct page *page, pgprot_t prot)
++{
++	if (!pte_none(*pte))
++		return -EBUSY;
++	/* Ok, finally just insert the thing.. */
++	get_page(page);
++	inc_mm_counter_fast(mm, mm_counter_file(page));
++	page_add_file_rmap(page, false);
++	set_pte_at(mm, addr, pte, mk_pte(page, prot));
++	return 0;
++}
++
+ /*
+  * This is the old fallback for page remapping.
+  *
+@@ -1708,28 +1729,14 @@ static int insert_page(struct vm_area_struct *vma, unsigned long addr,
+ 	pte_t *pte;
+ 	spinlock_t *ptl;
+ 
+-	retval = -EINVAL;
+-	if (PageAnon(page) || PageSlab(page))
++	retval = validate_page_before_insert(page);
++	if (retval)
+ 		goto out;
+ 	retval = -ENOMEM;
+-	flush_dcache_page(page);
+ 	pte = get_locked_pte(mm, addr, &ptl);
+ 	if (!pte)
+ 		goto out;
+-	retval = -EBUSY;
+-	if (!pte_none(*pte))
+-		goto out_unlock;
+-
+-	/* Ok, finally just insert the thing.. */
+-	get_page(page);
+-	inc_mm_counter_fast(mm, mm_counter_file(page));
+-	page_add_file_rmap(page, false);
+-	set_pte_at(mm, addr, pte, mk_pte(page, prot));
+-
+-	retval = 0;
+-	pte_unmap_unlock(pte, ptl);
+-	return retval;
+-out_unlock:
++	retval = insert_page_into_pte_locked(mm, pte, addr, page, prot);
+ 	pte_unmap_unlock(pte, ptl);
+ out:
+ 	return retval;
+-- 
+2.25.0.rc1.283.g88dfdc4193-goog
+
