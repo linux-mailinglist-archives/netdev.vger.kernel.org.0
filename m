@@ -2,84 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 97FA81383E1
-	for <lists+netdev@lfdr.de>; Sat, 11 Jan 2020 23:58:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F6AE1383E8
+	for <lists+netdev@lfdr.de>; Sun, 12 Jan 2020 00:08:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731621AbgAKW6V (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Jan 2020 17:58:21 -0500
-Received: from mail-il1-f177.google.com ([209.85.166.177]:33439 "EHLO
-        mail-il1-f177.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731594AbgAKW6U (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 11 Jan 2020 17:58:20 -0500
-Received: by mail-il1-f177.google.com with SMTP id v15so4848332iln.0;
-        Sat, 11 Jan 2020 14:58:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=e3cJBG4UgdJbniWY+dA61AMSnuqYTNCPy5lZtPxjOvQ=;
-        b=vWagqjdDOEV8f71QgrvEXMowoiyquCf5njDk6oNcmfWBg0tG6h+rksSlmrpmHiojSY
-         7ty+7Yh8829KR8hVfkuiCdds3uUhrjsoOTYkJcHb7QMjK4KpIKAzozOxl+52Zju3Uvo9
-         kw9S0ZQ8NR5UanNl6gxidUyRh0gF1/7S80lD+6zPeSx+aKu/0ZkrSvv0QJ4jHv2DA6GL
-         b351OsnBg/dty8Kve/6AFh9G0L8nf7JBZwdGF7kwZQNVOLx/G+KQV3E0Gs4yFwZlMGrI
-         0KopRIZ29M1I/eamXvi+cYkqNFbnVa0EAtQaqkgHXdnEVs2AbepRkaZ+0HieKWC4xymW
-         Nq0w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=e3cJBG4UgdJbniWY+dA61AMSnuqYTNCPy5lZtPxjOvQ=;
-        b=qjI+YzzmOp/FFV9wZbm0jf+rAMrobFtvrljibYztq1h2OgNWlL1ZHFNRsWsHnXglTv
-         o8vj41gft/EzL3Ns6YsXXzQnfKvC+tquJmXW/yIquWtfkUWd6IZEriNJh3mHi5Mq877O
-         KK5XP/6hrLesSeyeXG2Bqwt++WMv/Sz2qWOvdeNrCLbyaJNTg1ryUGm2kYTJm9ijn7ms
-         hL0LwzLUlXZic83bNmGhJCAYLNcj3WTixUoWJ65WN8Oba4Y6dQT4PVsGtWf5Gwxe5xgx
-         xd8FwbopQh+rDFr/WOcKVAxoGiK6SzSKJMmEooWn6uf6vUuBjlPLn4qKtjWL+n/GDusK
-         eURA==
-X-Gm-Message-State: APjAAAXoTTQagJxgbt+xXrLH5tULSTlfDd/91nmxJZDhVvhJm/QYMj7A
-        1yY8TbaLVbwaDV7xnvAOHl4=
-X-Google-Smtp-Source: APXvYqxiBkejkzsqa5ClIiF0hE3zr9u/XqCn+x8ScT6rHctxqlbWCXyZl4PB5yyCs0bZ3n3Iq/rINw==
-X-Received: by 2002:a92:ba93:: with SMTP id t19mr9218396ill.0.1578783039950;
-        Sat, 11 Jan 2020 14:50:39 -0800 (PST)
-Received: from localhost ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id i11sm1601511ion.1.2020.01.11.14.50.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 11 Jan 2020 14:50:39 -0800 (PST)
-Date:   Sat, 11 Jan 2020 14:50:32 -0800
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Jakub Sitnicki <jakub@cloudflare.com>, bpf@vger.kernel.org
-Cc:     netdev@vger.kernel.org, kernel-team@cloudflare.com,
-        Eric Dumazet <edumazet@google.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        Martin KaFai Lau <kafai@fb.com>
-Message-ID: <5e1a5138b2ba5_1e7f2b0c859c45c05a@john-XPS-13-9370.notmuch>
-In-Reply-To: <20200110105027.257877-2-jakub@cloudflare.com>
-References: <20200110105027.257877-1-jakub@cloudflare.com>
- <20200110105027.257877-2-jakub@cloudflare.com>
-Subject: RE: [PATCH bpf-next v2 01/11] bpf, sk_msg: Don't reset saved sock
- proto on restore
+        id S1731645AbgAKXIL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Jan 2020 18:08:11 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:49376 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731633AbgAKXIL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 11 Jan 2020 18:08:11 -0500
+Received: from localhost (unknown [IPv6:2601:601:9f00:1c3::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id BA14215A0B3CE;
+        Sat, 11 Jan 2020 15:08:09 -0800 (PST)
+Date:   Sat, 11 Jan 2020 15:08:07 -0800 (PST)
+Message-Id: <20200111.150807.963654509739345915.davem@davemloft.net>
+To:     antoine.tenart@bootlin.com
+Cc:     sd@queasysnail.net, andrew@lunn.ch, f.fainelli@gmail.com,
+        hkallweit1@gmail.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, thomas.petazzoni@bootlin.com,
+        alexandre.belloni@bootlin.com, allan.nielsen@microchip.com,
+        camelia.groza@nxp.com, Simon.Edelhaus@aquantia.com,
+        Igor.Russkikh@aquantia.com, jakub.kicinski@netronome.com
+Subject: Re: [PATCH net-next v5 00/15] net: macsec: initial support for
+ hardware offloading
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20200110162010.338611-1-antoine.tenart@bootlin.com>
+References: <20200110162010.338611-1-antoine.tenart@bootlin.com>
+X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
+Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sat, 11 Jan 2020 15:08:10 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jakub Sitnicki wrote:
-> There is no need to reset psock->sk_proto when restoring socket protocol
-> callbacks (sk->sk_prot). The psock is about to get detached from the sock
-> and eventually destroyed.
-> 
-> No harm done if we restore the protocol callbacks twice, while it makes
-> reasoning about psock state easier, that is once psock was initialized, we
-> can assume psock->sk_proto is set.
-> 
-> Also, we don't need a fallback for when socket is not using ULP.
-> tcp_update_ulp already does this for us.
-> 
-> Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
-> ---
+From: Antoine Tenart <antoine.tenart@bootlin.com>
+Date: Fri, 10 Jan 2020 17:19:55 +0100
 
-Acked-by: John Fastabend <john.fastabend@gmail.com>
+> td;dr: When applying this series, do not apply patches 12 to 14.
+> 
+> This series intends to add support for offloading MACsec transformations
+> to hardware enabled devices. The series adds the necessary
+> infrastructure for offloading MACsec configurations to hardware drivers,
+> in patches 1 to 6; then introduces MACsec offloading support in the
+> Microsemi MSCC PHY driver, in patches 7 to 11.
+> 
+> The remaining 4 patches, 12 to 14, are *not* part of the series but
+> provide the mandatory changes needed to support offloading MACsec
+> operations to a MAC driver. Those patches are provided for anyone
+> willing to add support for offloading MACsec operations to a MAC, and
+> should be part of the first series adding a MAC as a MACsec offloading
+> provider.
+
+You say four 4 patches, but 12 to 14 is 3.  I think you meant 12 to 15
+because 15 depends upon stuff added in 12 :-)
+
+I applied everything except patch #7, which had the unnecessary phy
+exports, and also elided 12 to 15.
+
+Thanks.
