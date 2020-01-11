@@ -2,90 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 046C1137B88
-	for <lists+netdev@lfdr.de>; Sat, 11 Jan 2020 06:24:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A398B137BC1
+	for <lists+netdev@lfdr.de>; Sat, 11 Jan 2020 07:12:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726259AbgAKFYL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Jan 2020 00:24:11 -0500
-Received: from mail-ot1-f67.google.com ([209.85.210.67]:35062 "EHLO
-        mail-ot1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726213AbgAKFYL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 11 Jan 2020 00:24:11 -0500
-Received: by mail-ot1-f67.google.com with SMTP id i15so4135098oto.2;
-        Fri, 10 Jan 2020 21:24:11 -0800 (PST)
+        id S1728371AbgAKGMY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Jan 2020 01:12:24 -0500
+Received: from mail-io1-f68.google.com ([209.85.166.68]:35198 "EHLO
+        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728360AbgAKGMX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 11 Jan 2020 01:12:23 -0500
+Received: by mail-io1-f68.google.com with SMTP id h8so4445805iob.2;
+        Fri, 10 Jan 2020 22:12:23 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ulN2oU6xZjaVScLYbWPyLshfWZ9NLYCBI301oK8HmTc=;
-        b=KKkDsIoxY+z4pfkRvdwVhz06iHBeS+Km6wMD5Gd9lKk8HfdIe7tyFqNXw8B4M/pYSs
-         rBNAE/kV7AMQn/yjzTTrPfOZik3TFDGcOvBi4xK6sdMy4GSPYPCsb0jZIGTM0HJfTVi0
-         clqWSA4oPnvxYRN6plRnrQrONZ2v5/emp7HaaYs8TRO4NsfZb9Y3Ii5xiwDnjvyBE7io
-         807pKvWH/9vgKwkAxvy/3nT4FKwkh8y6pcw56IG43tASV7twVeyumj/x1JPad3iOUrue
-         1II8kD7pyUGAweXuFUpbL04JtsjJoAJVaHOxkgU81+Jznj4RkgbRdckZNGjFkNA5KML0
-         O7Jg==
+        h=from:to:cc:subject:date:message-id;
+        bh=O9cAtZX+jQRLW+3bJ03zk7zXTO3mItghIEmHM4zbesk=;
+        b=AxjPdH9ozmLvjdarCcxEZtGPiHW/o/LiG4DXoaQuD0hJngsy9Uow+Essg6c0zOOqlF
+         CnhDX2+BoTepKq7sYJpn+BhaE8gQRGEg2rNUBCK0OMivUaaLZFS7dr4FoGI3HrhAt/ea
+         PKb0033RGN4vu9ZQAwz8vB5fp4eSlELMRVIxShUxuzv31tYmos6nynDYR6XzXDe/j8kV
+         5YqQHHSF5ku9pH85CUwtMJxMVL1m0d6kRJqpFtBlm9eMwLoQE7twbP3CoFudylxQ5UkH
+         k5rdoGJVW0qTTBtOJcxoXmuEwFy6+/0LAZQvLPH1twD9aHn914qGz4jLGVVJEJi0sUy8
+         lzdw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ulN2oU6xZjaVScLYbWPyLshfWZ9NLYCBI301oK8HmTc=;
-        b=ddHVPldLrDGlOR0ts0YciT07f3j7aEO8V4FzL9z5ZrKGJeoK5xvVuhEv488205xHVM
-         ItwM2FnM1XG02lj6XzuMpcYYB2jHRyiGN8Lt1Qj5q0tv0rqJrcP8Wnd2+DEQBeqVr9t/
-         34FX6YUE6FVoTbz797xHfXaqmnvG9qJP0AahjNdBtM8PjXrTqCGY1EsWK8Mk90fMwYBD
-         ZrqAyCHkPbt2mHm71h/MUoypy093NJ+6mdyiOpkWIHQdLwvJJg1dHQkui4R38wBOj97a
-         IMtjfoW4dAB59GmZTL9q2596/e2mFhX4utFKXKKl0XRl8YBimtIgotRWYSRUvRFCPyel
-         q+dg==
-X-Gm-Message-State: APjAAAX6VdjL7zlMOlVQl+9Ov377eHXfmDTVoWC9+CBG9Hx8bSP6KbZK
-        oxjzeh1PmUkujQEIv+XGXtz8r6coxKvIWVcn5XcLxj/IuUHwgw==
-X-Google-Smtp-Source: APXvYqw9ewCZDB4jVPAZcXejrgmV2upwbAa/c2CbDKio7tYR1Bk+jtkM+YJNvNgdzbZ6t+UPeZMrc4fVvYqXxQYv2F8=
-X-Received: by 2002:a05:6830:1515:: with SMTP id k21mr5241169otp.177.1578720250672;
- Fri, 10 Jan 2020 21:24:10 -0800 (PST)
-MIME-Version: 1.0
-References: <00000000000073b469059bcde315@google.com> <b5d74ce6b6e3c4b39cfac7df6c2b65d0a43d4416.camel@sipsolutions.net>
-In-Reply-To: <b5d74ce6b6e3c4b39cfac7df6c2b65d0a43d4416.camel@sipsolutions.net>
-From:   Justin Capella <justincapella@gmail.com>
-Date:   Fri, 10 Jan 2020 21:23:57 -0800
-Message-ID: <CAMrEMU_a9evtp26tYB6VUxznmSmH98AmpP8xnejQr5bGTgE+8g@mail.gmail.com>
-Subject: Re: BUG: unable to handle kernel NULL pointer dereference in cfg80211_wext_siwrts
-To:     Johannes Berg <johannes@sipsolutions.net>
-Cc:     syzbot <syzbot+34b582cf32c1db008f8e@syzkaller.appspotmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        LKML <linux-kernel@vger.kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com,
-        Cody Schuffelen <schuffelen@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=O9cAtZX+jQRLW+3bJ03zk7zXTO3mItghIEmHM4zbesk=;
+        b=Q7w70uGqQ8KNuQXd/7nvuy8fiLZZgkrdBuzjD1z46b1jULstP+/+lY/eC23ZcfRXEf
+         0GLGy+nLMuNOGdZzoawjbFXz5mK2UZRxKeSA7mIeTFeRnWpHj773BTk69taLOrnFcu20
+         Icsecweej95Wc9ub4bq4J40LXHb/DwvYqYlQ8P/E7V6cQMMWfgkEDuJJMh/w52luz7J5
+         c3gab6sWkJvLN6TQl1NHlbEPj7FgHcVNq63RXLJO8PONjR74Bu17az4VyXFHX9pJykw5
+         RIrZXARFEve4fh9Z8WRbJuBL4NbOxpBmxzw/GrX21qn5IJCOCy1SuGIYIO4MiNkfuYDS
+         8YAQ==
+X-Gm-Message-State: APjAAAWP/T3GMq/p3aLBczuUUFt+Mw85HO1PbZVslq6Xd/5wYRjlD5Cx
+        QlWC4xlkmrrC4TYUI4lHcqUb4agh
+X-Google-Smtp-Source: APXvYqxeZUGKKtjK0vKJz5AEOlrGYfIVXBom2NgMs7+uqFSLD3uD2+zchF00M/jta+cG8cuL2zrfjw==
+X-Received: by 2002:a02:13ca:: with SMTP id 193mr6322567jaz.54.1578723143062;
+        Fri, 10 Jan 2020 22:12:23 -0800 (PST)
+Received: from localhost.localdomain ([184.63.162.180])
+        by smtp.gmail.com with ESMTPSA id 141sm1417784ile.44.2020.01.10.22.12.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 10 Jan 2020 22:12:22 -0800 (PST)
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     bpf@vger.kernel.org
+Cc:     netdev@vger.kernel.org, daniel@iogearbox.net, ast@kernel.org,
+        john.fastabend@gmail.com, song@kernel.org, jonathan.lemon@gmail.com
+Subject: [bpf PATCH v2 0/8] Fixes for sockmap/tls from more complex BPF progs
+Date:   Sat, 11 Jan 2020 06:11:58 +0000
+Message-Id: <20200111061206.8028-1-john.fastabend@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I noticed pfifo_qdisc_ops is exported as default_qdisc_ops is it
-possible this is how rdev->ops is NULL
+To date our usage of sockmap/tls has been fairly simple, the BPF programs
+did only well-defined pop, push, pull and apply/cork operations.
 
-Seems unlikely, but thought I'd point it out.
+Now that we started to push more complex programs into sockmap we uncovered
+a series of issues addressed here. Further OpenSSL3.0 version should be
+released soon with kTLS support so its important to get any remaining
+issues on BPF and kTLS support resolved.
 
+Additionally, I have a patch under development to allow sockmap to be
+enabled/disabled at runtime for Cilium endpoints. This allows us to stress
+the map insert/delete with kTLS more than previously where Cilium only
+added the socket to the map when it entered ESTABLISHED state and never
+touched it from the control path side again relying on the sockets own
+close() hook to remove it.
 
-On Fri, Jan 10, 2020 at 11:13 AM Johannes Berg
-<johannes@sipsolutions.net> wrote:
->
-> On Fri, 2020-01-10 at 11:11 -0800, syzbot wrote:
-> > Hello,
-> >
-> > syzbot found the following crash on:
-> >
-> > HEAD commit:    2f806c2a Merge branch 'net-ungraft-prio'
-> > git tree:       net
-> > console output: https://syzkaller.appspot.com/x/log.txt?x=1032069ee00000
-> > kernel config:  https://syzkaller.appspot.com/x/.config?x=5c90cac8f1f8c619
-> > dashboard link: https://syzkaller.appspot.com/bug?extid=34b582cf32c1db008f8e
-> > compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-> >
-> > Unfortunately, I don't have any reproducer for this crash yet.
->
-> It's quite likely also in virt_wifi, evidently that has some issues.
->
-> Cody, did you take a look at the previous report by any chance?
->
-> johannes
->
+To test I have a set of test cases in test_sockmap.c that expose these
+issues. Once we get fixes here merged and in bpf-next I'll submit the
+tests to bpf-next tree to ensure we don't regress again. Also I've run
+these patches in the Cilium CI with OpenSSL (master branch) this will
+run tools such as netperf, ab, wrk2, curl, etc. to get a broad set of
+testing.
+
+I'm aware of two more issues that we are working to resolve in another
+couple (probably two) patches. First we see an auth tag corruption in
+kTLS when sending small 1byte chunks under stress. I've not pinned this
+down yet. But, guessing because its under 1B stress tests it must be
+some error path being triggered. And second we need to ensure BPF RX
+programs are not skipped when kTLS ULP is loaded. This breaks some of
+the sockmap selftests when running with kTLS. I'll send a follow up
+for this.
+
+v2: I dropped a patch that added !0 size check in tls_push_record
+    this originated from a panic I caught awhile ago with a trace
+    in the crypto stack. But I can not reproduce it anymore so will
+    dig into that and send another patch later if needed. Anyways
+    after a bit of thought it would be nicer if tls/crypto/bpf didn't
+    require special case handling for the !0 size.
+
+John Fastabend (8):
+  bpf: sockmap/tls, during free we may call tcp_bpf_unhash() in loop
+  bpf: sockmap, ensure sock lock held during tear down
+  bpf: sockmap/tls, push write_space updates through ulp updates
+  bpf: sockmap, skmsg helper overestimates push, pull, and pop bounds
+  bpf: sockmap/tls, msg_push_data may leave end mark in place
+  bpf: sockmap/tls, tls_sw can create a plaintext buf > encrypt buf
+  bpf: sockmap/tls, skmsg can have wrapped skmsg that needs extra
+    chaining
+  bpf: sockmap/tls, fix pop data with SK_DROP return code
+
+ include/linux/skmsg.h | 13 +++++++++----
+ include/net/tcp.h     |  6 ++++--
+ net/core/filter.c     | 11 ++++++-----
+ net/core/skmsg.c      |  2 ++
+ net/core/sock_map.c   |  7 ++++++-
+ net/ipv4/tcp_bpf.c    |  5 +----
+ net/ipv4/tcp_ulp.c    |  6 ++++--
+ net/tls/tls_main.c    | 10 +++++++---
+ net/tls/tls_sw.c      | 31 +++++++++++++++++++++++++++----
+ 9 files changed, 66 insertions(+), 25 deletions(-)
+
+-- 
+2.17.1
+
