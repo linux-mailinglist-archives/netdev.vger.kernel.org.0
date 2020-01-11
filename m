@@ -2,71 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AEC3B137CCC
-	for <lists+netdev@lfdr.de>; Sat, 11 Jan 2020 10:50:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DA515137F56
+	for <lists+netdev@lfdr.de>; Sat, 11 Jan 2020 11:19:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728819AbgAKJuQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Jan 2020 04:50:16 -0500
-Received: from szxga02-in.huawei.com ([45.249.212.188]:2985 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728759AbgAKJuQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 11 Jan 2020 04:50:16 -0500
-Received: from DGGEMM403-HUB.china.huawei.com (unknown [172.30.72.56])
-        by Forcepoint Email with ESMTP id B6A7D6195E8CA0ACD33A;
-        Sat, 11 Jan 2020 17:50:13 +0800 (CST)
-Received: from dggeme764-chm.china.huawei.com (10.3.19.110) by
- DGGEMM403-HUB.china.huawei.com (10.3.20.211) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Sat, 11 Jan 2020 17:50:13 +0800
-Received: from dggeme763-chm.china.huawei.com (10.3.19.109) by
- dggeme764-chm.china.huawei.com (10.3.19.110) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.1713.5; Sat, 11 Jan 2020 17:50:13 +0800
-Received: from dggeme763-chm.china.huawei.com ([10.6.66.36]) by
- dggeme763-chm.china.huawei.com ([10.6.66.36]) with mapi id 15.01.1713.004;
- Sat, 11 Jan 2020 17:50:13 +0800
-From:   linmiaohe <linmiaohe@huawei.com>
-To:     Colin King <colin.king@canonical.com>
-CC:     Kalle Valo <kvalo@codeaurora.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        John Crispin <john@phrozen.org>,
-        Shashidhar Lakkavalli <slakkavalli@datto.com>,
-        "ath11k@lists.infradead.org" <ath11k@lists.infradead.org>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "kernel-janitors@vger.kernel.org" <kernel-janitors@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH][next] ath11k: avoid null pointer dereference when pointer
- band is null
-Thread-Topic: [PATCH][next] ath11k: avoid null pointer dereference when
- pointer band is null
-Thread-Index: AdXIZDUYESk9sMb86Em1GlFaBBmLPA==
-Date:   Sat, 11 Jan 2020 09:50:12 +0000
-Message-ID: <05d5d54e035e4d69ad4ffb4a835a495a@huawei.com>
-Accept-Language: en-US
-Content-Language: zh-CN
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.173.221.158]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S1730369AbgAKKSl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Jan 2020 05:18:41 -0500
+Received: from mail.kernel.org ([198.145.29.99]:37136 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729838AbgAKKSl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 11 Jan 2020 05:18:41 -0500
+Received: from localhost (unknown [62.119.166.9])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 29A9020842;
+        Sat, 11 Jan 2020 10:18:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1578737920;
+        bh=mcjFmwhwJrbakRmABQ1xRFN6l3QsdshO9EqfWV3t6OE=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=V4QwhqXoiXRUBBEly3h4M+CMX/Qm9RO+rJdWfo3BiqYs+ceBM1ez9axlAixx60MXK
+         +Kjus9Ke6fuJXbek4MlfDnMePv4SBlCNjKenf5gbIAQejuJfFd5tb7Bu/VAaf07g7c
+         9CxiLhsIbiEEo3MV2ELW1sWp2IAroeuvwZkbYCkc=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Wen Yang <wenyang@linux.alibaba.com>,
+        Kevin Darbyshire-Bryant <ldir@darbyshire-bryant.me.uk>,
+        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        cake@lists.bufferbloat.net, netdev@vger.kernel.org,
+        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>
+Subject: [PATCH 4.19 73/84] sch_cake: avoid possible divide by zero in cake_enqueue()
+Date:   Sat, 11 Jan 2020 10:50:50 +0100
+Message-Id: <20200111094911.801043901@linuxfoundation.org>
+X-Mailer: git-send-email 2.24.1
+In-Reply-To: <20200111094845.328046411@linuxfoundation.org>
+References: <20200111094845.328046411@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQpDb2xpbiBJYW4gS2luZyA8Y29saW4ua2luZ0BjYW5vbmljYWwuY29tPiB3cm90Ze+8mg0KPkZy
-b206IENvbGluIElhbiBLaW5nIDxjb2xpbi5raW5nQGNhbm9uaWNhbC5jb20+DQo+DQo+SW4gdGhl
-IHVubGlrZWx5IGV2ZW50IHRoYXQgY2FwLT5zdXBwb3J0ZWRfYmFuZHMgaGFzIG5laXRoZXIgV01J
-X0hPU1RfV0xBTl8yR19DQVAgc2V0IG9yIFdNSV9IT1NUX1dMQU5fNUdfQ0FQIHNldCB0aGVuIHBv
-aW50ZXIgYmFuZCBpcyBudWxsIGFuZCBhIG51bGwgZGVyZWZlcmVuY2Ugb2NjdXJzIHdoZW4gYXNz
-aWduaW5nDQo+YmFuZC0+bl9pZnR5cGVfZGF0YS4gIE1vdmUgdGhlIGFzc2lnbm1lbnQgdG8gdGhl
-IGlmIGJsb2NrcyB0bw0KPmF2b2lkIHRoaXMuICBDbGVhbnMgdXAgc3RhdGljIGFuYWx5c2lzIHdh
-cm5pbmdzLg0KPg0KPkFkZHJlc3Nlcy1Db3Zlcml0eTogKCJFeHBsaWNpdCBudWxsIGRlcmVmZXJl
-bmNlIikNCj5GaXhlczogOWYwNTZlZDhlZTAxICgiYXRoMTFrOiBhZGQgSEUgc3VwcG9ydCIpDQo+
-U2lnbmVkLW9mZi1ieTogQ29saW4gSWFuIEtpbmcgPGNvbGluLmtpbmdAY2Fub25pY2FsLmNvbT4N
-Cj4tLS0NCj4gZHJpdmVycy9uZXQvd2lyZWxlc3MvYXRoL2F0aDExay9tYWMuYyB8IDggKysrKy0t
-LS0NCj4gMSBmaWxlIGNoYW5nZWQsIDQgaW5zZXJ0aW9ucygrKSwgNCBkZWxldGlvbnMoLSkNCg0K
-SXQgbG9va3MgZmluZSBmb3IgbWUuIFRoYW5rcy4NClJldmlld2VkLWJ5OiBNaWFvaGUgTGluIDxs
-aW5taWFvaGVAaHVhd2VpLmNvbT4NCg==
+From: Wen Yang <wenyang@linux.alibaba.com>
+
+[ Upstream commit 68aab823c223646fab311f8a6581994facee66a0 ]
+
+The variables 'window_interval' is u64 and do_div()
+truncates it to 32 bits, which means it can test
+non-zero and be truncated to zero for division.
+The unit of window_interval is nanoseconds,
+so its lower 32-bit is relatively easy to exceed.
+Fix this issue by using div64_u64() instead.
+
+Fixes: 7298de9cd725 ("sch_cake: Add ingress mode")
+Signed-off-by: Wen Yang <wenyang@linux.alibaba.com>
+Cc: Kevin Darbyshire-Bryant <ldir@darbyshire-bryant.me.uk>
+Cc: Toke Høiland-Jørgensen <toke@redhat.com>
+Cc: David S. Miller <davem@davemloft.net>
+Cc: Cong Wang <xiyou.wangcong@gmail.com>
+Cc: cake@lists.bufferbloat.net
+Cc: netdev@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Acked-by: Toke Høiland-Jørgensen <toke@toke.dk>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ net/sched/sch_cake.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--- a/net/sched/sch_cake.c
++++ b/net/sched/sch_cake.c
+@@ -1758,7 +1758,7 @@ static s32 cake_enqueue(struct sk_buff *
+ 						      q->avg_window_begin));
+ 			u64 b = q->avg_window_bytes * (u64)NSEC_PER_SEC;
+ 
+-			do_div(b, window_interval);
++			b = div64_u64(b, window_interval);
+ 			q->avg_peak_bandwidth =
+ 				cake_ewma(q->avg_peak_bandwidth, b,
+ 					  b > q->avg_peak_bandwidth ? 2 : 8);
+
+
