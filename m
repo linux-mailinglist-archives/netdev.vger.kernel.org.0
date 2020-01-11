@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B39F9137A99
-	for <lists+netdev@lfdr.de>; Sat, 11 Jan 2020 01:29:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B4179137A9A
+	for <lists+netdev@lfdr.de>; Sat, 11 Jan 2020 01:29:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727780AbgAKA3U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jan 2020 19:29:20 -0500
-Received: from mail-pf1-f195.google.com ([209.85.210.195]:44601 "EHLO
-        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727629AbgAKA3U (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jan 2020 19:29:20 -0500
-Received: by mail-pf1-f195.google.com with SMTP id 195so1904635pfw.11
-        for <netdev@vger.kernel.org>; Fri, 10 Jan 2020 16:29:20 -0800 (PST)
+        id S1727814AbgAKA3Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jan 2020 19:29:24 -0500
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:36669 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727466AbgAKA3Y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jan 2020 19:29:24 -0500
+Received: by mail-pf1-f193.google.com with SMTP id x184so1929018pfb.3
+        for <netdev@vger.kernel.org>; Fri, 10 Jan 2020 16:29:23 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=Gi5VusVvvj1EAGHsvSusLtofyqlxnWkFGPP+dJke9XY=;
-        b=SqtEzNNsDIZw16bVAUxP1SUzCkG88m9GcNZEN8KQfhxn80iribMRCwxrHYco8IEP5c
-         Mc3ABV1u5n/mWyo3PRxwlO/TfH45BQnPKoD0MWVUKLbXsNpWAIlg85o4DK3/XFoLHbME
-         8Ae4HfB8EenYqpxAzOQxOb4OHn4aPSUAm+Qy4uv/AUIULvtgcmV+I+Y4pU6je1HzQ7ax
-         ZYHk9BFwFLr3W+6XN8Ud+nNdwsfsdcXYLCU+W717xirVTp9TOohDjR0YXDMUlpbPGLPs
-         UYM1cgo3NYCC+XK8gtWk3KRfN3VKmQvW4oBeIwr/+NJDbDEaTSIpvmLk/2/+csppyLHN
-         Fq7Q==
+        bh=1LDI4J9RjcFLtSkqnZ1wNc4xIuHBN5WiIppT7x73FiY=;
+        b=oitzAvxblJcT6HGYXN37tqOcTuVllVo4oE3LuXvven6wfJ8p78mTXgRCOKE6vhpIrI
+         5gpd2HOJZTNUmqtS8pKj9qXOsbypMvTLm/krIkJTC6XR7NRJhSBiApNG5QMUtofSvGDC
+         0+U8Bpm5nyTcHp9nckqbASiV/Wpyw1oNXghPmIoGVh9ylTdiilfHVQSeqSVFzorNop26
+         TaGUXEa4OyIU1ERTjy8aEcnBGJGhp21SWtKWbqhVZGnjYkw3l2U1htDRjopxKLrkwfCU
+         fsL5KkFLXNYoQn06r3Ph4OOFZFQvKG7I9SYNX3v8E+H/kQnkW5j9OgjW3Iq4ouHE82EX
+         1OiA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=Gi5VusVvvj1EAGHsvSusLtofyqlxnWkFGPP+dJke9XY=;
-        b=oSi1seVHZUmzMFm2sKoX6rNR82sYXJ4o3EhfR3fxcwfPeCS1Kd444SQYu/3i9Er40r
-         ONckyzb8DtveOlhZxhpJoAgRDVlfs3uW8w2CpjGNPBObRdlBUu7noJmWhpFdDJ0KLu9E
-         nm9GfnUO+D89JHMjFThJURaQE+0FG8cBhdQlQu7+xP6txOQq0j9QJx1H1LTSDvxB9ubO
-         AUL85b//sWqfuEIc5FhgpEtH9pSWodvDOo/PYohHtTIK/QGIs/o1lymhBu1BRV02AASS
-         AAwAEVhqYEp7XNeRVbkNKhIXIGyQ99NuqOJZ6mEwzxDpiXaTqt+VIKJL0ya32Dh4XLc/
-         AThA==
-X-Gm-Message-State: APjAAAUOXNp3XUqbz8vwfZ2ZOofRv1q6GVbmqHa9FSnGtovcYNl5V1kt
-        g4ASVieDY6E9RcEH0y7Uiac=
-X-Google-Smtp-Source: APXvYqzWZFgzucfT1bTpxXTNs41dByCko8XkdEtOTPH7RA2v77uF13CiFCi1KRDmkLOv4OSLHWHEDw==
-X-Received: by 2002:a63:dc0d:: with SMTP id s13mr7396134pgg.129.1578702559505;
-        Fri, 10 Jan 2020 16:29:19 -0800 (PST)
+        bh=1LDI4J9RjcFLtSkqnZ1wNc4xIuHBN5WiIppT7x73FiY=;
+        b=f6u60JXeSihmuetddariLQKl0iUgx/kYxlZ5XlDf+0pZDzamF3+N2iYsjQvKd/JD27
+         Dp1FbB7YrHTkncqI6L7RATfKrj0gupuivZzE2u8KdlJaSK2Xy4OIiT8jnwXMlR23ejsR
+         JB9etdZLtHRoet8YQCfPJxoL3qLRvdp+qJrRrsMDKpUUzhjv6bNrFs7V2rn9TAWfPDRx
+         1IcduaHTp52ukxc/y5S1NiojcNb8/bx8WEIklBQ5cZikEGDbRArClq0e9EHxP/8unYZg
+         wRP4DdppdQIGSngq4nEIi3Bple4Yw1Rwkydt8tFT4bbXr/8QDXQz4uzya6xVah0Rj/q8
+         T4Dg==
+X-Gm-Message-State: APjAAAUMHs6x5ya5uge05CGV/5ph5tSHURQTXcLfdDdoPJrMYfmiiEw2
+        vnXbEwIL7u7sNgBE18n280E=
+X-Google-Smtp-Source: APXvYqynZPWxev5HGGPaDMT4SeA3bIUYAeFJGYDi8krQcaLK/IaE5Dvc8g5CvUIMBFJWYPXZuzz2rQ==
+X-Received: by 2002:a63:fe50:: with SMTP id x16mr7557165pgj.31.1578702563076;
+        Fri, 10 Jan 2020 16:29:23 -0800 (PST)
 Received: from phantasmagoria.svl.corp.google.com ([2620:15c:2c4:201:2b0a:8c1:6a84:1aa0])
-        by smtp.gmail.com with ESMTPSA id h126sm4567066pfe.19.2020.01.10.16.29.18
+        by smtp.gmail.com with ESMTPSA id h126sm4567066pfe.19.2020.01.10.16.29.22
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 10 Jan 2020 16:29:19 -0800 (PST)
+        Fri, 10 Jan 2020 16:29:22 -0800 (PST)
 From:   Arjun Roy <arjunroy.kdev@gmail.com>
 To:     davem@davemloft.net, netdev@vger.kernel.org,
         akpm@linux-foundation.org, linux-mm@kvack.org
 Cc:     arjunroy@google.com, Arjun Roy <arjunroy.kdev@gmail.com>,
         Eric Dumazet <edumazet@google.com>,
         Soheil Hassas Yeganeh <soheil@google.com>
-Subject: [PATCH mm,net-next 2/3] mm: Add vm_insert_pages().
-Date:   Fri, 10 Jan 2020 16:28:48 -0800
-Message-Id: <20200111002849.252704-2-arjunroy.kdev@gmail.com>
+Subject: [PATCH mm,net-next 3/3] net-zerocopy: Use vm_insert_pages() for tcp rcv zerocopy.
+Date:   Fri, 10 Jan 2020 16:28:49 -0800
+Message-Id: <20200111002849.252704-3-arjunroy.kdev@gmail.com>
 X-Mailer: git-send-email 2.25.0.rc1.283.g88dfdc4193-goog
 In-Reply-To: <20200111002849.252704-1-arjunroy.kdev@gmail.com>
 References: <20200111002849.252704-1-arjunroy.kdev@gmail.com>
@@ -63,8 +63,11 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add the ability to insert multiple pages at once to a user VM with
-lower PTE spinlock operations.
+Use vm_insert_pages() for tcp receive zerocopy. Spin lock cycles
+(as reported by perf) drop from a couple of percentage points
+to a fraction of a percent. This results in a roughly 6% increase in
+efficiency, measured roughly as zerocopy receive count divided by CPU
+utilization.
 
 The intention of this patch-set is to reduce atomic ops for
 tcp zerocopy receives, which normally hits the same spinlock multiple
@@ -75,166 +78,120 @@ Signed-off-by: Eric Dumazet <edumazet@google.com>
 Signed-off-by: Soheil Hassas Yeganeh <soheil@google.com>
 
 ---
- include/linux/mm.h |   2 +
- mm/memory.c        | 111 ++++++++++++++++++++++++++++++++++++++++++++-
- 2 files changed, 111 insertions(+), 2 deletions(-)
+ net/ipv4/tcp.c | 67 +++++++++++++++++++++++++++++++++++++++++++++-----
+ 1 file changed, 61 insertions(+), 6 deletions(-)
 
-diff --git a/include/linux/mm.h b/include/linux/mm.h
-index 29c928ba6b42..a3ac40fbe8fd 100644
---- a/include/linux/mm.h
-+++ b/include/linux/mm.h
-@@ -2563,6 +2563,8 @@ struct vm_area_struct *find_extend_vma(struct mm_struct *, unsigned long addr);
- int remap_pfn_range(struct vm_area_struct *, unsigned long addr,
- 			unsigned long pfn, unsigned long size, pgprot_t);
- int vm_insert_page(struct vm_area_struct *, unsigned long addr, struct page *);
-+int vm_insert_pages(struct vm_area_struct *vma, unsigned long addr,
-+			struct page **pages, unsigned long *num);
- int vm_insert_pfn(struct vm_area_struct *vma, unsigned long addr,
- 			unsigned long pfn);
- int vm_insert_pfn_prot(struct vm_area_struct *vma, unsigned long addr,
-diff --git a/mm/memory.c b/mm/memory.c
-index 7e23a9275386..1655c5feaf32 100644
---- a/mm/memory.c
-+++ b/mm/memory.c
-@@ -1670,8 +1670,7 @@ int zap_vma_ptes(struct vm_area_struct *vma, unsigned long address,
+diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+index 34490d972758..52f96c3ceab3 100644
+--- a/net/ipv4/tcp.c
++++ b/net/ipv4/tcp.c
+@@ -1861,14 +1861,48 @@ int tcp_mmap(struct file *file, struct socket *sock,
  }
- EXPORT_SYMBOL_GPL(zap_vma_ptes);
+ EXPORT_SYMBOL(tcp_mmap);
  
--pte_t *__get_locked_pte(struct mm_struct *mm, unsigned long addr,
--			spinlock_t **ptl)
-+static pmd_t *walk_to_pmd(struct mm_struct *mm, unsigned long addr)
- {
- 	pgd_t *pgd;
- 	p4d_t *p4d;
-@@ -1690,6 +1689,16 @@ pte_t *__get_locked_pte(struct mm_struct *mm, unsigned long addr,
- 		return NULL;
- 
- 	VM_BUG_ON(pmd_trans_huge(*pmd));
-+	return pmd;
-+}
-+
-+pte_t *__get_locked_pte(struct mm_struct *mm, unsigned long addr,
-+			spinlock_t **ptl)
++static int tcp_zerocopy_vm_insert_batch(struct vm_area_struct *vma,
++					struct page **pages,
++					unsigned long pages_to_map,
++					unsigned long *insert_addr,
++					u32 *length_with_pending,
++					u32 *seq,
++					struct tcp_zerocopy_receive *zc)
 +{
-+	pmd_t *pmd = walk_to_pmd(mm, addr);
-+
-+	if (!pmd)
-+		return NULL;
- 	return pte_alloc_map_lock(mm, pmd, addr, ptl);
- }
- 
-@@ -1714,6 +1723,15 @@ static int insert_page_into_pte_locked(struct mm_struct *mm, pte_t *pte,
- 	return 0;
- }
- 
-+static int insert_page_in_batch_locked(struct mm_struct *mm, pmd_t *pmd,
-+			unsigned long addr, struct page *page, pgprot_t prot)
-+{
-+	const int err = validate_page_before_insert(page);
-+
-+	return err ? err : insert_page_into_pte_locked(
-+		mm, pte_offset_map(pmd, addr), addr, page, prot);
-+}
-+
- /*
-  * This is the old fallback for page remapping.
-  *
-@@ -1742,6 +1760,95 @@ static int insert_page(struct vm_area_struct *vma, unsigned long addr,
- 	return retval;
- }
- 
-+/* insert_pages() amortizes the cost of spinlock operations
-+ * when inserting pages in a loop.
-+ */
-+static int insert_pages(struct vm_area_struct *vma, unsigned long addr,
-+			struct page **pages, unsigned long *num, pgprot_t prot)
-+{
-+	pmd_t *pmd = NULL;
-+	spinlock_t *pte_lock = NULL;
-+	struct mm_struct *const mm = vma->vm_mm;
-+	unsigned long curr_page_idx = 0;
-+	unsigned long remaining_pages_total = *num;
-+	unsigned long pages_to_write_in_pmd;
++	unsigned long pages_remaining = pages_to_map;
++	int bytes_mapped;
 +	int ret;
-+more:
-+	ret = -EFAULT;
-+	pmd = walk_to_pmd(mm, addr);
-+	if (!pmd)
-+		goto out;
 +
-+	pages_to_write_in_pmd = min_t(unsigned long,
-+		remaining_pages_total, PTRS_PER_PTE - pte_index(addr));
-+
-+	/* Allocate the PTE if necessary; takes PMD lock once only. */
-+	ret = -ENOMEM;
-+	if (pte_alloc(mm, pmd, addr))
-+		goto out;
-+	pte_lock = pte_lockptr(mm, pmd);
-+
-+	while (pages_to_write_in_pmd) {
-+		int pte_idx = 0;
-+		const int batch_size = min_t(int, pages_to_write_in_pmd, 8);
-+
-+		spin_lock(pte_lock);
-+		for (; pte_idx < batch_size; ++pte_idx) {
-+			int err = insert_page_in_batch_locked(mm, pmd,
-+				addr, pages[curr_page_idx], prot);
-+			if (unlikely(err)) {
-+				spin_unlock(pte_lock);
-+				ret = err;
-+				remaining_pages_total -= pte_idx;
-+				goto out;
-+			}
-+			addr += PAGE_SIZE;
-+			++curr_page_idx;
-+		}
-+		spin_unlock(pte_lock);
-+		pages_to_write_in_pmd -= batch_size;
-+		remaining_pages_total -= batch_size;
++	ret = vm_insert_pages(vma, *insert_addr, pages, &pages_remaining);
++	bytes_mapped = PAGE_SIZE * (pages_to_map - pages_remaining);
++	/* Even if vm_insert_pages fails, it may have partially succeeded in
++	 * mapping (some but not all of the pages).
++	 */
++	*seq += bytes_mapped;
++	*insert_addr += bytes_mapped;
++	if (ret) {
++		/* But if vm_insert_pages did fail, we have to unroll some state
++		 * we speculatively touched before.
++		 */
++		const int bytes_not_mapped = PAGE_SIZE * pages_remaining;
++		*length_with_pending -= bytes_not_mapped;
++		zc->recv_skip_hint += bytes_not_mapped;
 +	}
-+	if (remaining_pages_total)
-+		goto more;
-+	ret = 0;
-+out:
-+	*num = remaining_pages_total;
 +	return ret;
 +}
 +
-+/**
-+ * vm_insert_pages - insert multiple pages into user vma, batching the pmd lock.
-+ * @vma: user vma to map to
-+ * @addr: target start user address of these pages
-+ * @pages: source kernel pages
-+ * @num: in: number of pages to map. out: number of pages that were *not*
-+ * mapped. (0 means all pages were successfully mapped).
-+ *
-+ * Preferred over vm_insert_page() when inserting multiple pages.
-+ *
-+ * In case of error, we may have mapped a subset of the provided
-+ * pages. It is the caller's responsibility to account for this case.
-+ *
-+ * The same restrictions apply as in vm_insert_page().
-+ */
-+int vm_insert_pages(struct vm_area_struct *vma, unsigned long addr,
-+			struct page **pages, unsigned long *num)
-+{
-+	const unsigned long end_addr = addr + (*num * PAGE_SIZE) - 1;
-+
-+	if (addr < vma->vm_start || end_addr >= vma->vm_end)
-+		return -EFAULT;
-+	if (!(vma->vm_flags & VM_MIXEDMAP)) {
-+		BUG_ON(down_read_trylock(&vma->vm_mm->mmap_sem));
-+		BUG_ON(vma->vm_flags & VM_PFNMAP);
-+		vma->vm_flags |= VM_MIXEDMAP;
+ static int tcp_zerocopy_receive(struct sock *sk,
+ 				struct tcp_zerocopy_receive *zc)
+ {
+ 	unsigned long address = (unsigned long)zc->address;
+ 	u32 length = 0, seq, offset, zap_len;
++	#define PAGE_BATCH_SIZE 8
++	struct page *pages[PAGE_BATCH_SIZE];
+ 	const skb_frag_t *frags = NULL;
+ 	struct vm_area_struct *vma;
+ 	struct sk_buff *skb = NULL;
++	unsigned long pg_idx = 0;
++	unsigned long curr_addr;
+ 	struct tcp_sock *tp;
+ 	int inq;
+ 	int ret;
+@@ -1901,15 +1935,26 @@ static int tcp_zerocopy_receive(struct sock *sk,
+ 		zc->recv_skip_hint = zc->length;
+ 	}
+ 	ret = 0;
++	curr_addr = address;
+ 	while (length + PAGE_SIZE <= zc->length) {
+ 		if (zc->recv_skip_hint < PAGE_SIZE) {
++			/* If we're here, finish the current batch. */
++			if (pg_idx) {
++				ret = tcp_zerocopy_vm_insert_batch(vma, pages,
++								   pg_idx,
++								   &curr_addr,
++								   &length,
++								   &seq, zc);
++				if (ret)
++					goto out;
++				pg_idx = 0;
++			}
+ 			if (skb) {
+ 				skb = skb->next;
+ 				offset = seq - TCP_SKB_CB(skb)->seq;
+ 			} else {
+ 				skb = tcp_recv_skb(sk, seq, &offset);
+ 			}
+-
+ 			zc->recv_skip_hint = skb->len - offset;
+ 			offset -= skb_headlen(skb);
+ 			if ((int)offset < 0 || skb_has_frag_list(skb))
+@@ -1933,14 +1978,24 @@ static int tcp_zerocopy_receive(struct sock *sk,
+ 			zc->recv_skip_hint -= remaining;
+ 			break;
+ 		}
+-		ret = vm_insert_page(vma, address + length,
+-				     skb_frag_page(frags));
+-		if (ret)
+-			break;
++		pages[pg_idx] = skb_frag_page(frags);
++		pg_idx++;
+ 		length += PAGE_SIZE;
+-		seq += PAGE_SIZE;
+ 		zc->recv_skip_hint -= PAGE_SIZE;
+ 		frags++;
++		if (pg_idx == PAGE_BATCH_SIZE) {
++			ret = tcp_zerocopy_vm_insert_batch(vma, pages, pg_idx,
++							   &curr_addr, &length,
++							   &seq, zc);
++			if (ret)
++				goto out;
++			pg_idx = 0;
++		}
 +	}
-+	/* Defer page refcount checking till we're about to map that page. */
-+	return insert_pages(vma, addr, pages, num, vma->vm_page_prot);
-+}
-+EXPORT_SYMBOL(vm_insert_pages);
-+
- /**
-  * vm_insert_page - insert single page into user vma
-  * @vma: user vma to map to
++	if (pg_idx) {
++		ret = tcp_zerocopy_vm_insert_batch(vma, pages, pg_idx,
++						   &curr_addr, &length, &seq,
++						   zc);
+ 	}
+ out:
+ 	up_read(&current->mm->mmap_sem);
 -- 
 2.25.0.rc1.283.g88dfdc4193-goog
 
