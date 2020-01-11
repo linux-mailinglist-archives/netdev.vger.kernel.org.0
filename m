@@ -2,120 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AF27C137A80
-	for <lists+netdev@lfdr.de>; Sat, 11 Jan 2020 01:18:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A7D70137A86
+	for <lists+netdev@lfdr.de>; Sat, 11 Jan 2020 01:20:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727802AbgAKASO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jan 2020 19:18:14 -0500
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:37626 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727444AbgAKASO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jan 2020 19:18:14 -0500
-Received: by mail-pf1-f196.google.com with SMTP id p14so1911027pfn.4;
-        Fri, 10 Jan 2020 16:18:13 -0800 (PST)
+        id S1727764AbgAKAUN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jan 2020 19:20:13 -0500
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:33461 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727780AbgAKAUM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jan 2020 19:20:12 -0500
+Received: by mail-pg1-f196.google.com with SMTP id 6so1762213pgk.0
+        for <netdev@vger.kernel.org>; Fri, 10 Jan 2020 16:20:11 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=8efEnNmzA1N34DiX1i5g0/D4PtX+ChPTrW8NgfMJMxk=;
-        b=fJP3/JBUbABlyAOJK24rhtqFWmXQ91yDB8VXbmxaMbktMlEPOiYrapML+maSezo2DE
-         +7aIFjXTCOIOl/9kPfordh+F9PzA9pPxM5W3TH//ZDSuolba9ep9kJX8RvQNbh1q0skd
-         kCtliNk37SIgTb2nF3zzvjQ33v4DDn4w44+8mFSTrDMXwDGT5x8Napbg3+5J4ys++4Mu
-         G73LVSgQZaf3p9CaJYhKtpbN27lZE1gQX+Yqk5oGZOEsJ5qfXk4xFbbHD5jlNMj+MdVF
-         SIvlVji+UnZOAwYq6ZNgQ6lwVCaboweazmKo2OK1VTAFqiKNXIfTv1GhRHFcdGSbDa+n
-         1hLQ==
+        d=google.com; s=20161025;
+        h=date:from:subject:cc:to:in-reply-to:references:message-id
+         :mime-version:content-transfer-encoding;
+        bh=c3X7AVrd0eaweLYAuO8RL12YZV2EtbyuB8unmVAV0Nc=;
+        b=o/riBuR2mH3VghdAJD08lJGw+G6Nmt2YFqawukfV3FgIyraZCC33g4w6UUkTg4B9YA
+         bPaQ7HIdl9EVvkaFzug0pY/FlWJECuXnToQMWAXeRVE0al9hqWVAVcLgt0QhvWPJSBsQ
+         bB5dxtI06QKGwTmE7+MmdzSWdr5sWOBaOx8ylflwJxzwunQWhFk0yZMqgjvLjx3Ta6Qw
+         IY0NzO2fCoYN5CkwLwDpJMeX7S6jXG0r+Ka/MngphRFWsDvtkDRIbForX/TrNPi0+IDh
+         9ZHCf9TkSZkGR/2ZIQQ0xtQVlRTLSLv2/gi03mwbtBLmcgcOWB86bKQt7FFpTbEBt+yn
+         J0AQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=8efEnNmzA1N34DiX1i5g0/D4PtX+ChPTrW8NgfMJMxk=;
-        b=NN3jQGr7fvKfQExkOvTiS6IQJBTchpPWgfcl7mAVn9wij7hMw44osbO5O/kVmiWtUU
-         8sKrk5yN/byaB+W4tW0iPD+Jxaa5tlP/2YQ//oSWOd5M0iIq5Sq1/IayR7eQN1K/DmfW
-         JINzzDQ2PUtDtz2Ti9SNvCUoI1Y/qPHWalOtDFY87WpRePnbW7JP+9GS3B1ShiZSd4mZ
-         AH5qITATHa3ZWLv5hK06RzNmorvhfM8+CKM0haPboNRB1vjrQl8XTkxT+BCug1Q+P2Hl
-         jNShqR3BCU9pJSwCgEavurEKtCH6dIEoEu8XAteWgi8ouUAcecBRXZTt/Vf1VL0e9h87
-         p0Sw==
-X-Gm-Message-State: APjAAAXIDQFzErPr6Vc340v5kkzdBa1Xk7ntrxqVe1WUOPK6nI0e1OTC
-        KsApKGta21rk1UxpGf+VU7U=
-X-Google-Smtp-Source: APXvYqzUuCGHem5pHYNs3sl6igcsdAwmZdUH1CblsLJEt+ANiyEVDkKucNwa5IwsVayUgGk7Bkh2Dg==
-X-Received: by 2002:a63:26c4:: with SMTP id m187mr7696609pgm.410.1578701893290;
-        Fri, 10 Jan 2020 16:18:13 -0800 (PST)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:200::2:ba5e])
-        by smtp.gmail.com with ESMTPSA id y62sm4692965pfg.45.2020.01.10.16.18.12
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 10 Jan 2020 16:18:12 -0800 (PST)
-Date:   Fri, 10 Jan 2020 16:18:11 -0800
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Jakub Sitnicki <jakub@cloudflare.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        kernel-team@cloudflare.com, Eric Dumazet <edumazet@google.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        Martin KaFai Lau <kafai@fb.com>
-Subject: Re: [PATCH bpf-next v2 00/11] Extend SOCKMAP to store listening
- sockets
-Message-ID: <20200111001809.uznbax2rr6peexkl@ast-mbp.dhcp.thefacebook.com>
-References: <20200110105027.257877-1-jakub@cloudflare.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200110105027.257877-1-jakub@cloudflare.com>
-User-Agent: NeoMutt/20180223
+        h=x-gm-message-state:date:from:subject:cc:to:in-reply-to:references
+         :message-id:mime-version:content-transfer-encoding;
+        bh=c3X7AVrd0eaweLYAuO8RL12YZV2EtbyuB8unmVAV0Nc=;
+        b=PcpZ0FyNthkEDifQOr2D4RDXm5xOz+N8XFAlBtwv7IdlNMLjsMf1t5NmRX5WxRLiGm
+         5+aDGqMjB0FPnOfcORynYQJ0LcNgxfqyRPAHcVsoQG4T74/DD4mVMsrgojQlGKrDCK4N
+         n09fBpwtsTsp4dzH8J3GOWTk4niGsJsU3UCIet0aEnY4LEpFwXZq5s1PqXhz3xIQZiyo
+         ASzIUKF3cW7lOF/U5yzfzSubvEkyYsfiHs6LOniS1yLZWzNwbBxGy70jmiv9Zr3RLzLI
+         V+gMqjxmmcPa5ZKd39eGD8I/mqTuNRzPD+h2AN4C/7iWifyZCF+z+Fy6hrhZAioITqWP
+         aeEg==
+X-Gm-Message-State: APjAAAWytwCBlUqYvyKhqRjXG5mAtolZwS2cTMSSWwvgDpwVCKOBGPI7
+        ugbuFf28f4l/QLoK40ea0kTMwg==
+X-Google-Smtp-Source: APXvYqz94HjiloVFGVWbZus+RYXmvPQjwFd3nN3tcOUYSqCGg0YFmHQZNCSbn5YazmB7epfwxn4mvg==
+X-Received: by 2002:a63:e30a:: with SMTP id f10mr7422254pgh.331.1578702011266;
+        Fri, 10 Jan 2020 16:20:11 -0800 (PST)
+Received: from localhost ([2620:0:1000:2514:7f69:cd98:a2a2:a03d])
+        by smtp.gmail.com with ESMTPSA id c14sm4013510pjr.24.2020.01.10.16.20.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 10 Jan 2020 16:20:10 -0800 (PST)
+Date:   Fri, 10 Jan 2020 16:20:10 -0800 (PST)
+X-Google-Original-Date: Fri, 10 Jan 2020 16:19:54 PST (-0800)
+From:   Palmer Dabbelt <palmerdabbelt@google.com>
+X-Google-Original-From: Palmer Dabbelt <palmer@dabbelt.com>
+Subject:     Re: Re: linux-next: build warning after merge of the bpf-next tree
+CC:     Stephen Rothwell <sfr@canb.auug.org.au>, daniel@iogearbox.net,
+        ast@kernel.org, netdev@vger.kernel.org, linux-next@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        linux-arm-kernel@lists.infradead.org, zong.li@sifive.com
+To:     alexandre@ghiti.fr
+In-Reply-To: <a367af4d-7267-2e94-74dc-2a2aac204080@ghiti.fr>
+References: <a367af4d-7267-2e94-74dc-2a2aac204080@ghiti.fr>
+  <20191018105657.4584ec67@canb.auug.org.au> <20191028110257.6d6dba6e@canb.auug.org.au>
+Message-ID: <mhng-0daa1a90-2bed-4b2e-833e-02cd9c0aa73f@palmerdabbelt-glaptop>
+Mime-Version: 1.0 (MHng)
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 10, 2020 at 11:50:16AM +0100, Jakub Sitnicki wrote:
-> With the realization that properly cloning listening sockets that have
-> psock state/callbacks is tricky, comes the second version of patches.
-> 
-> The spirit of the patch set stays the same - make SOCKMAP a generic
-> collection for listening and established sockets. This would let us use the
-> SOCKMAP with reuseport today, and in the future hopefully with BPF programs
-> that run at socket lookup time [0]. For a bit more context, please see v1
-> cover letter [1].
-> 
-> The biggest change that happened since v1 is how we deal with clearing
-> psock state in a copy of parent socket when cloning it (patches 3 & 4).
-> 
-> As much as I did not want to touch icsk/tcp clone path, it seems
-> unavoidable. The changes were kept down to a minimum, with attention to not
-> break existing users. That said, a review from the TCP maintainer would be
-> invaluable (patches 3 & 4).
-> 
-> Patches 1 & 2 will conflict with recently posted "Fixes for sockmap/tls
-> from more complex BPF progs" series [0]. I'll adapt or split them out this
-> series once sockmap/tls fixes from John land in bpf-next branch.
-> 
-> Some food for thought - is mixing listening and established sockets in the
-> same BPF map a good idea? I don't know but I couldn't find a good reason to
-> restrict the user.
-> 
-> Considering how much the code evolved, I didn't carry over Acks from v1.
-> 
-> Thanks,
-> jkbs
-> 
-> [0] https://lore.kernel.org/bpf/157851776348.1732.12600714815781177085.stgit@ubuntu3-kvm2/T/#t
-> [1] https://lore.kernel.org/bpf/20191123110751.6729-1-jakub@cloudflare.com/
-> 
-> v1 -> v2:
-> 
-> - af_ops->syn_recv_sock callback is no longer overridden and burdened with
->   restoring sk_prot and clearing sk_user_data in the child socket. As child
->   socket is already hashed when syn_recv_sock returns, it is too late to
->   put it in the right state. Instead patches 3 & 4 restore sk_prot and
->   clear sk_user_data before we hash the child socket. (Pointed out by
->   Martin Lau)
-> 
-> - Annotate shared access to sk->sk_prot with READ_ONCE/WRITE_ONCE macros as
->   we write to it from sk_msg while socket might be getting cloned on
->   another CPU. (Suggested by John Fastabend)
-> 
-> - Convert tests for SOCKMAP holding listening sockets to return-on-error
->   style, and hook them up to test_progs. Also use BPF skeleton for setup.
->   Add new tests to cover the race scenario discovered during v1 review.
+On Fri, 10 Jan 2020 14:28:17 PST (-0800), alexandre@ghiti.fr wrote:
+> Hi guys,
+>
+> On 10/27/19 8:02 PM, Stephen Rothwell wrote:
+>> Hi all,
+>>
+>> On Fri, 18 Oct 2019 10:56:57 +1100 Stephen Rothwell <sfr@canb.auug.org.au> wrote:
+>>> Hi all,
+>>>
+>>> After merging the bpf-next tree, today's linux-next build (powerpc
+>>> ppc64_defconfig) produced this warning:
+>>>
+>>> WARNING: 2 bad relocations
+>>> c000000001998a48 R_PPC64_ADDR64    _binary__btf_vmlinux_bin_start
+>>> c000000001998a50 R_PPC64_ADDR64    _binary__btf_vmlinux_bin_end
+>>>
+>>> Introduced by commit
+>>>
+>>>    8580ac9404f6 ("bpf: Process in-kernel BTF")
+>> This warning now appears in the net-next tree build.
+>>
+>>
+> I bump that thread up because Zong also noticed that 2 new relocations for
+> those symbols appeared in my riscv relocatable kernel branch following
+> that commit.
+>
+> I also noticed 2 new relocations R_AARCH64_ABS64 appearing in arm64 kernel.
+>
+> Those 2 weak undefined symbols have existed since commit
+> 341dfcf8d78e ("btf: expose BTF info through sysfs") but this is the fact
+> to declare those symbols into btf.c that produced those relocations.
+>
+> I'm not sure what this all means, but this is not something I expected
+> for riscv for
+> a kernel linked with -shared/-fpie. Maybe should we just leave them to
+> zero ?
+>
+> I think that deserves a deeper look if someone understands all this
+> better than I do.
 
-lgtm
-Martin, John, please review.
+Can you give me a pointer to your tree and how to build a relocatable kernel?
+Weak undefined symbols have the absolute value 0, but the kernel is linked at
+an address such that 0 can't be reached by normal means.  When I added support
+to binutils for this I did it in a way that required almost no code --
+essetially I just stopped dissallowing x0 as a possible base register for PCREL
+relocations, which results in 0 always being accessible.  I just wanted to get
+the kernel to build again, so I didn't worry about chasing around all the
+addressing modes.  The PIC/PIE support generates different relocations and I
+wouldn't be surprised if I just missed one (or more likely all) of them.
+
+It's probably a simple fix, though I feel like every time I say that about the
+linker I end up spending a month in there...
