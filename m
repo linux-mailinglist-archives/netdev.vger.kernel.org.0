@@ -2,132 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3791F1383BF
-	for <lists+netdev@lfdr.de>; Sat, 11 Jan 2020 22:53:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 450A21383C6
+	for <lists+netdev@lfdr.de>; Sat, 11 Jan 2020 23:20:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731554AbgAKVxr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Jan 2020 16:53:47 -0500
-Received: from mail-ot1-f51.google.com ([209.85.210.51]:44658 "EHLO
-        mail-ot1-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731549AbgAKVxr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 11 Jan 2020 16:53:47 -0500
-Received: by mail-ot1-f51.google.com with SMTP id h9so5491420otj.11
-        for <netdev@vger.kernel.org>; Sat, 11 Jan 2020 13:53:47 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=p2+prck3fTAOLxZxLml10K6KNGhNGC7LWQKEQtK4bP4=;
-        b=kgovbnkpuHntxVnVGexD7aY71323M4p0RPHiMVELEBgfExkjxCCuRnlqbCBwazZCHy
-         /PmU/Z2BzFUVMlmHfomlxf5reVvCrA6ttbUQc1Ph7da/3tuG8KOdYBxjcsby8lCd+0mX
-         rLkujp8SGCPTWV+iDLg8moEpambKKCm6H4Gqa8Msr6MHX09Rkzyx23uao4GPH900LjZi
-         LtPAwg6wa0Uk56M/KphcLMt9jTDoyvB001mc/ASK8h5fHO/jGyoJdu5FqA460MFjAZHb
-         BoiHyb8XIZytVsYDFl2V+vcx5C+ymjMOrKqF8OYdCWaQJih9w+6X3tuJjCdmP7hAiIt8
-         0Rew==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=p2+prck3fTAOLxZxLml10K6KNGhNGC7LWQKEQtK4bP4=;
-        b=I6X6kY7QGnYVQnz0R1Hd9Ecjc8b4K6qEFuPrPgw3hNEmiGfEYsuy/jGFQYNkzcIJsM
-         AzMJPNKrnnFyP0wESn0K8a3oMs5L3Npc+DMULI7JzZwGtrAlACVJjUOgIAlvP2w4/nV6
-         6ebLA2q2FuTDzb+zmDCOTxLt8yXnhVx2eFd7e7u7z9YlkY7meuQm77qmWj1zZOuCJDlN
-         mm3rWgiK0jBv2JEUZPiDrDbvvkZQKnOCZE7w+8Y6xzKQJ7GVqWi/X5jcho6ZaxFxnBU+
-         mk/dTHjBjeMHh/wcJklJuw9ozZtSRCj7GzbuWK0YTu+4MYxeDyeX+rjrb+W4l1POOceV
-         v8jg==
-X-Gm-Message-State: APjAAAVNs8tfGMpp/O404G2Nl8YgZ1UjsobiahExWyHS+DFR+ipGuMak
-        W6sW0p4RBiLVv8gRMJUsTi6Dfdw4t30gYalzxoo=
-X-Google-Smtp-Source: APXvYqzVjOwOKNAw8vzQLETvrftyIlBED73lXcWQeJNGzr2RZ7xS7A8VGNxGaF2opO67Ngd6EGteIdh01hhuqibc9wY=
-X-Received: by 2002:a9d:53c4:: with SMTP id i4mr8423500oth.48.1578779626667;
- Sat, 11 Jan 2020 13:53:46 -0800 (PST)
+        id S1731531AbgAKWUH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Jan 2020 17:20:07 -0500
+Received: from Chamillionaire.breakpoint.cc ([193.142.43.52]:38680 "EHLO
+        Chamillionaire.breakpoint.cc" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1731486AbgAKWUG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 11 Jan 2020 17:20:06 -0500
+Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
+        (envelope-from <fw@breakpoint.cc>)
+        id 1iqP6y-0004fv-H5; Sat, 11 Jan 2020 23:20:04 +0100
+From:   Florian Westphal <fw@strlen.de>
+To:     netfilter-devel@vger.kernel.org
+Cc:     netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
+        Florian Westphal <fw@strlen.de>,
+        syzbot+91bdd8eece0f6629ec8b@syzkaller.appspotmail.com
+Subject: [PATCH nf] netfilter: arp_tables: init netns pointer in xt_tgdtor_param struct
+Date:   Sat, 11 Jan 2020 23:19:53 +0100
+Message-Id: <20200111221953.17759-1-fw@strlen.de>
+X-Mailer: git-send-email 2.24.1
+In-Reply-To: <000000000000af1c5b059be111e5@google.com>
+References: <000000000000af1c5b059be111e5@google.com>
 MIME-Version: 1.0
-References: <000000000000ab3f800598cec624@google.com> <000000000000802598059b6c7989@google.com>
- <CAM_iQpX7-BF=C+CAV3o=VeCZX7=CgdscZaazTD6QT-Tw1=XY9Q@mail.gmail.com>
- <CAMArcTXTtJB8WUuJUumP2NHVg_c19m-6EheC3JRGxzseYmHVDw@mail.gmail.com>
- <CAM_iQpVJiYHnhUJKzQpoPzaUhjrd=O4WR6zFJ+329KnWi6jJig@mail.gmail.com>
- <CAMArcTVPrKrhY63P=VgFuTQf0wUNO_9=H2R96p08-xoJ+mbZ5w@mail.gmail.com>
- <CAM_iQpX-S7cPvYTqAMkZF=avaoMi_af70dwQEiC37OoXNWA4Aw@mail.gmail.com>
- <CAMArcTUFK6TUYP+zwD3009m126fz+S-cAT5CN5pZ3C5axErh8g@mail.gmail.com>
- <CAM_iQpUpZLcsC2eYPGO-UCRf047FTvP-0x8hQnDxRZ-w3vL9Tg@mail.gmail.com> <CAMArcTV66StxE=Pjiv6zsh0san039tuVvsKNE2Sb=7+jJ3xEdQ@mail.gmail.com>
-In-Reply-To: <CAMArcTV66StxE=Pjiv6zsh0san039tuVvsKNE2Sb=7+jJ3xEdQ@mail.gmail.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Sat, 11 Jan 2020 13:53:35 -0800
-Message-ID: <CAM_iQpU9EXx7xWAaps2E3DWiZbt25ByCK4sR=njYMHF=KsvLFg@mail.gmail.com>
-Subject: Re: WARNING: bad unlock balance in sch_direct_xmit
-To:     Taehee Yoo <ap420073@gmail.com>
-Cc:     syzbot <syzbot+4ec99438ed7450da6272@syzkaller.appspotmail.com>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 9, 2020 at 10:02 PM Taehee Yoo <ap420073@gmail.com> wrote:
-> ndo_get_lock_subclass() was used to calculate subclass which was used by
-> netif_addr_lock_nested().
->
-> -static inline void netif_addr_lock_nested(struct net_device *dev)
-> -{
-> -       int subclass = SINGLE_DEPTH_NESTING;
-> -
-> -       if (dev->netdev_ops->ndo_get_lock_subclass)
-> -               subclass = dev->netdev_ops->ndo_get_lock_subclass(dev);
-> -
-> -       spin_lock_nested(&dev->addr_list_lock, subclass);
-> -}
->
-> The most important thing about nested lock is to get the correct subclass.
-> nest_level was used as subclass and this was calculated by
-> ->ndo_get_lock_subclass().
-> But, ->ndo_get_lock_subclass() didn't calculate correct subclass.
-> After "master" and "nomaster" operations, nest_level should be updated
-> recursively, but it didn't. So incorrect subclass was used.
->
-> team3 <-- subclass 0
->
-> "ip link set team3 master team2"
->
-> team2 <-- subclass 0
-> team3 <-- subclass 1
->
-> "ip link set team2 master team1"
->
-> team1 <-- subclass 0
-> team3 <-- subclass 1
-> team3 <-- subclass 1
->
-> "ip link set team1 master team0"
->
-> team0 <-- subclass 0
-> team1 <-- subclass 1
-> team3 <-- subclass 1
-> team3 <-- subclass 1
->
-> After "master" and "nomaster" operation, subclass values of all lower or
-> upper interfaces would be changed. But ->ndo_get_lock_subclass()
-> didn't update subclass recursively, lockdep warning appeared.
-> In order to fix this, I had two ways.
-> 1. use dynamic keys instead of static keys.
-> 2. fix ndo_get_lock_subclass().
->
-> The reason why I adopted using dynamic keys instead of fixing
-> ->ndo_get_lock_subclass() is that the ->ndo_get_lock_subclass() isn't
-> a common helper function.
-> So, driver writers should implement ->ndo_get_lock_subclass().
-> If we use dynamic keys, ->ndo_get_lock_subclass() code could be removed.
->
+An earlier commit (1b789577f655060d98d20e,
+"netfilter: arp_tables: init netns pointer in xt_tgchk_param struct"
+fixed missing net initialization for arptables, but turns out it was
+incomplete.  We can get a very similar struct net NULL deref during
+error unwinding:
 
-The details you provide here are really helpful for me to understand
-the reasons behind your changes. Let me think about this and see how
-I could address both problems. This appears to be harder than I originally
-thought.
+general protection fault: 0000 [#1] PREEMPT SMP KASAN
+RIP: 0010:xt_rateest_put+0xa1/0x440 net/netfilter/xt_RATEEST.c:77
+ xt_rateest_tg_destroy+0x72/0xa0 net/netfilter/xt_RATEEST.c:175
+ cleanup_entry net/ipv4/netfilter/arp_tables.c:509 [inline]
+ translate_table+0x11f4/0x1d80 net/ipv4/netfilter/arp_tables.c:587
+ do_replace net/ipv4/netfilter/arp_tables.c:981 [inline]
+ do_arpt_set_ctl+0x317/0x650 net/ipv4/netfilter/arp_tables.c:1461
 
->
-> What I fixed problems with dynamic lockdep keys could be fixed by
-> nested lock too. I think if the subclass value synchronization routine
-> works well, there will be no problem.
+Also init the netns pointer in xt_tgdtor_param struct.
 
-Great! We are on the same page.
+Fixes: add67461240c1d ("netfilter: add struct net * to target parameters")
+Reported-by: syzbot+91bdd8eece0f6629ec8b@syzkaller.appspotmail.com
+Signed-off-by: Florian Westphal <fw@strlen.de>
+---
+ net/ipv4/netfilter/arp_tables.c | 19 ++++++++++---------
+ 1 file changed, 10 insertions(+), 9 deletions(-)
 
-Thanks for all the information and the reproducer too!
+diff --git a/net/ipv4/netfilter/arp_tables.c b/net/ipv4/netfilter/arp_tables.c
+index 069f72edb264..f1f78a742b36 100644
+--- a/net/ipv4/netfilter/arp_tables.c
++++ b/net/ipv4/netfilter/arp_tables.c
+@@ -496,12 +496,13 @@ static inline int check_entry_size_and_hooks(struct arpt_entry *e,
+ 	return 0;
+ }
+ 
+-static inline void cleanup_entry(struct arpt_entry *e)
++static void cleanup_entry(struct arpt_entry *e, struct net *net)
+ {
+ 	struct xt_tgdtor_param par;
+ 	struct xt_entry_target *t;
+ 
+ 	t = arpt_get_target(e);
++	par.net      = net;
+ 	par.target   = t->u.kernel.target;
+ 	par.targinfo = t->data;
+ 	par.family   = NFPROTO_ARP;
+@@ -584,7 +585,7 @@ static int translate_table(struct net *net,
+ 		xt_entry_foreach(iter, entry0, newinfo->size) {
+ 			if (i-- == 0)
+ 				break;
+-			cleanup_entry(iter);
++			cleanup_entry(iter, net);
+ 		}
+ 		return ret;
+ 	}
+@@ -927,7 +928,7 @@ static int __do_replace(struct net *net, const char *name,
+ 	/* Decrease module usage counts and free resource */
+ 	loc_cpu_old_entry = oldinfo->entries;
+ 	xt_entry_foreach(iter, loc_cpu_old_entry, oldinfo->size)
+-		cleanup_entry(iter);
++		cleanup_entry(iter, net);
+ 
+ 	xt_free_table_info(oldinfo);
+ 	if (copy_to_user(counters_ptr, counters,
+@@ -990,7 +991,7 @@ static int do_replace(struct net *net, const void __user *user,
+ 
+  free_newinfo_untrans:
+ 	xt_entry_foreach(iter, loc_cpu_entry, newinfo->size)
+-		cleanup_entry(iter);
++		cleanup_entry(iter, net);
+  free_newinfo:
+ 	xt_free_table_info(newinfo);
+ 	return ret;
+@@ -1287,7 +1288,7 @@ static int compat_do_replace(struct net *net, void __user *user,
+ 
+  free_newinfo_untrans:
+ 	xt_entry_foreach(iter, loc_cpu_entry, newinfo->size)
+-		cleanup_entry(iter);
++		cleanup_entry(iter, net);
+  free_newinfo:
+ 	xt_free_table_info(newinfo);
+ 	return ret;
+@@ -1514,7 +1515,7 @@ static int do_arpt_get_ctl(struct sock *sk, int cmd, void __user *user, int *len
+ 	return ret;
+ }
+ 
+-static void __arpt_unregister_table(struct xt_table *table)
++static void __arpt_unregister_table(struct net *net, struct xt_table *table)
+ {
+ 	struct xt_table_info *private;
+ 	void *loc_cpu_entry;
+@@ -1526,7 +1527,7 @@ static void __arpt_unregister_table(struct xt_table *table)
+ 	/* Decrease module usage counts and free resources */
+ 	loc_cpu_entry = private->entries;
+ 	xt_entry_foreach(iter, loc_cpu_entry, private->size)
+-		cleanup_entry(iter);
++		cleanup_entry(iter, net);
+ 	if (private->number > private->initial_entries)
+ 		module_put(table_owner);
+ 	xt_free_table_info(private);
+@@ -1566,7 +1567,7 @@ int arpt_register_table(struct net *net,
+ 
+ 	ret = nf_register_net_hooks(net, ops, hweight32(table->valid_hooks));
+ 	if (ret != 0) {
+-		__arpt_unregister_table(new_table);
++		__arpt_unregister_table(net, new_table);
+ 		*res = NULL;
+ 	}
+ 
+@@ -1581,7 +1582,7 @@ void arpt_unregister_table(struct net *net, struct xt_table *table,
+ 			   const struct nf_hook_ops *ops)
+ {
+ 	nf_unregister_net_hooks(net, ops, hweight32(table->valid_hooks));
+-	__arpt_unregister_table(table);
++	__arpt_unregister_table(net, table);
+ }
+ 
+ /* The built-in targets: standard (NULL) and error. */
+-- 
+2.24.1
+
