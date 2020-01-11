@@ -2,91 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C5F41383F4
-	for <lists+netdev@lfdr.de>; Sun, 12 Jan 2020 00:14:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9908D1383FD
+	for <lists+netdev@lfdr.de>; Sun, 12 Jan 2020 00:29:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731654AbgAKXOx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Jan 2020 18:14:53 -0500
-Received: from mail-il1-f195.google.com ([209.85.166.195]:35203 "EHLO
-        mail-il1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731641AbgAKXOx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 11 Jan 2020 18:14:53 -0500
-Received: by mail-il1-f195.google.com with SMTP id g12so4857585ild.2;
-        Sat, 11 Jan 2020 15:14:52 -0800 (PST)
+        id S1731643AbgAKX2m (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Jan 2020 18:28:42 -0500
+Received: from mail-oi1-f194.google.com ([209.85.167.194]:44806 "EHLO
+        mail-oi1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731621AbgAKX2l (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 11 Jan 2020 18:28:41 -0500
+Received: by mail-oi1-f194.google.com with SMTP id d62so5142200oia.11
+        for <netdev@vger.kernel.org>; Sat, 11 Jan 2020 15:28:41 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=Va4b13i55Mfugq8R6nigFZvjFx0difsOtedLg/4J7hc=;
-        b=UmqCpKFjzGYVpfM6VPxhh3vW74uYldV4gcIu2vn2WUK7lmKHyyBZihVNzFC9FXjFdI
-         z+VDfL3glj9v6zbr8g9FYpDUr8yStArMOlgjkgQ+uQCpAwvOcZLzg9x/wr9FIvyTO9Kv
-         oDo01u8OyqQD9dO4rB4N0eS1LxEboeHJnykmcRWfHOxmuaCgmcP+5TJF06A/vAvgO4tZ
-         yxx6H1x9BBaAiOY9/ffiWOu1ce8r6LWDbgKpCuefL5p5sW0hI0UqMdjqs7yy95wZSXxJ
-         BNlP1gmPrV44tF4UaicYf0p2YQ9O2QTkhUjUgDMxH2yqhCG2GsJlYNt3JTI7jvnLercV
-         skow==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=XgsQ2wd7oHMAd5nOFS6lJmWzOavHx5TDiotohKMH8BA=;
+        b=BwjQdzkc1jCWwphR8oCmyKJgMzVXzTXqsUo092VfRSU9A3JhaOoZP27WMymj9m1Zi8
+         HxLK5J7ug4r4tPBLYGaRm7jWbcBbXcnYU9OzuBNgAwbHob1c2YLZmmG8rsEjF4ANzQS4
+         31Ts1GiogYtiZBRiXMBxjDu1MVNoBr028zBBvieCu3+fTvRNpjtvGjgnP7scfv/3poDj
+         Yyz8il67zlFkpkLKtDn5LmD7JTkd26CNAtRkQyE3oBmuzYMD5vhd94hYHWbC3K7kDH7C
+         MsVfCDYEPG4KiR8ZaknK58QaF4URLZfowE4n/4rU7Cg1a5FX+kNkWF+PSsHPQNr5hwWY
+         QvHA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=Va4b13i55Mfugq8R6nigFZvjFx0difsOtedLg/4J7hc=;
-        b=rvVUsztdlp1xZ27DrSSdE8jDmn4/tzh6ZHEEFNytrcN9P61/J4dF6a4KkC7iSig1Qn
-         VQFxnT8L6gQpUnEqESy89uQQZeRTNnPTjd7es3bM3KWOeNx54MdkHC8WAo7ayp+FzJ0d
-         3y+zVnjLGxxCnSHb14GTf6Uzb6kip5yYdvfJbhHWxT7ysVmoWxEBbKEcoS4fW1pwfER5
-         G+0986R1luHPDccGKnKd464giCkWu1G4dwC2lcc/Y7ZVJhdVRXM5c2hDCRNZbri60Hgf
-         Eh7j7o+68BCykRRwNja3ohYzH5B4KWK2bhZsV3sbjnxi20x7620lvsQxIjotqNl1dWQH
-         I1CA==
-X-Gm-Message-State: APjAAAVljsC3GR14o1DlNyHD93XxbsP2GP561K9MaeZQGMqlXda0q1wA
-        mYR4j5J/nt4cFn9fz1epFqSUP5ya
-X-Google-Smtp-Source: APXvYqz2GaoRRN1Kgoodk1V+FsWq248+f4757dppZeAJjy9tVKj0Bog1o6xJunNo5Tc5CepJAG5U2A==
-X-Received: by 2002:a92:914a:: with SMTP id t71mr9335783ild.293.1578784492628;
-        Sat, 11 Jan 2020 15:14:52 -0800 (PST)
-Received: from localhost ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id g4sm2209406iln.81.2020.01.11.15.14.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 11 Jan 2020 15:14:52 -0800 (PST)
-Date:   Sat, 11 Jan 2020 15:14:46 -0800
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Jakub Sitnicki <jakub@cloudflare.com>, bpf@vger.kernel.org
-Cc:     netdev@vger.kernel.org, kernel-team@cloudflare.com,
-        Eric Dumazet <edumazet@google.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        Martin KaFai Lau <kafai@fb.com>
-Message-ID: <5e1a56e630ee1_1e7f2b0c859c45c0c4@john-XPS-13-9370.notmuch>
-In-Reply-To: <20200110105027.257877-3-jakub@cloudflare.com>
-References: <20200110105027.257877-1-jakub@cloudflare.com>
- <20200110105027.257877-3-jakub@cloudflare.com>
-Subject: RE: [PATCH bpf-next v2 02/11] net, sk_msg: Annotate lockless access
- to sk_prot on clone
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=XgsQ2wd7oHMAd5nOFS6lJmWzOavHx5TDiotohKMH8BA=;
+        b=AH2vuvJ1/NublHhvDHWEr8KRcy7Xij/ZLUXEovUYTiqlsgBoI3Dwe2gOxcSZvVmWk6
+         K3nocBXLJgHs3Sw+/gaF6Pls0s+4ndtQxLPTLpq+2tTHLPdBbWrYYp5XgWFSeT4C85uN
+         78AZyBYr5J5eFsdfV2tsNw5lKnOoYkE/ofhTwiT87weZEQy1yxFSCV7+KJfmDxAsgiS7
+         w0BNBpRsRTEtjGGyJztwD3l0pQeQehjejySA8YDaCIJeMK4hqDuJZViim0tyy1bq0EC9
+         he/pHPC8rwEkaqQkFdBfMqMGy66R6Mi/S9qgsc6ft8sVyB0pi62DiZgbtqzn0pqqYDqR
+         HaKw==
+X-Gm-Message-State: APjAAAWyDHPa+pIVl85ITYka3afgoy5ynWfwnTqnbAWKenHN3u0sZv0A
+        Fixow9drRJuoINs6de+e2ZdJhLuAjO8tme0Wu6AzT+Spjm8=
+X-Google-Smtp-Source: APXvYqxzT+1mZFs+UYSQVoKrwXWW6BhggnHkgQ0NjXni4ux6cPTIdjc7Qw9vMrN8PHc6iuMfeobnBc7HIFMVmXFQHUA=
+X-Received: by 2002:aca:3cd7:: with SMTP id j206mr8006868oia.142.1578785320983;
+ Sat, 11 Jan 2020 15:28:40 -0800 (PST)
+MIME-Version: 1.0
+References: <000000000000ab3f800598cec624@google.com> <000000000000802598059b6c7989@google.com>
+ <CAM_iQpX7-BF=C+CAV3o=VeCZX7=CgdscZaazTD6QT-Tw1=XY9Q@mail.gmail.com>
+ <CAMArcTXTtJB8WUuJUumP2NHVg_c19m-6EheC3JRGxzseYmHVDw@mail.gmail.com>
+ <CAM_iQpVJiYHnhUJKzQpoPzaUhjrd=O4WR6zFJ+329KnWi6jJig@mail.gmail.com>
+ <CAMArcTVPrKrhY63P=VgFuTQf0wUNO_9=H2R96p08-xoJ+mbZ5w@mail.gmail.com>
+ <CAM_iQpX-S7cPvYTqAMkZF=avaoMi_af70dwQEiC37OoXNWA4Aw@mail.gmail.com>
+ <CAMArcTUFK6TUYP+zwD3009m126fz+S-cAT5CN5pZ3C5axErh8g@mail.gmail.com>
+ <CAM_iQpUpZLcsC2eYPGO-UCRf047FTvP-0x8hQnDxRZ-w3vL9Tg@mail.gmail.com>
+ <CAMArcTV66StxE=Pjiv6zsh0san039tuVvsKNE2Sb=7+jJ3xEdQ@mail.gmail.com> <CAM_iQpU9EXx7xWAaps2E3DWiZbt25ByCK4sR=njYMHF=KsvLFg@mail.gmail.com>
+In-Reply-To: <CAM_iQpU9EXx7xWAaps2E3DWiZbt25ByCK4sR=njYMHF=KsvLFg@mail.gmail.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Sat, 11 Jan 2020 15:28:29 -0800
+Message-ID: <CAM_iQpUDd6hFrQwb2TkGpbe5AFOtTMyeVg1-OBfY50vC5CEJnQ@mail.gmail.com>
+Subject: Re: WARNING: bad unlock balance in sch_direct_xmit
+To:     Taehee Yoo <ap420073@gmail.com>
+Cc:     syzbot <syzbot+4ec99438ed7450da6272@syzkaller.appspotmail.com>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jakub Sitnicki wrote:
-> sk_msg and ULP frameworks override protocol callbacks pointer in
-> sk->sk_prot, while TCP accesses it locklessly when cloning the listening
-> socket.
-> 
-> Once we enable use of listening sockets with sockmap (and hence sk_msg),
-> there can be shared access to sk->sk_prot if socket is getting cloned while
-> being inserted/deleted to/from the sockmap from another CPU. Mark the
-> shared access with READ_ONCE/WRITE_ONCE annotations.
-> 
-> Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
+On Sat, Jan 11, 2020 at 1:53 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
+> The details you provide here are really helpful for me to understand
+> the reasons behind your changes. Let me think about this and see how
+> I could address both problems. This appears to be harder than I originally
+> thought.
 
-In sockmap side I fixed this by wrapping the access in a lock_sock[0]. So
-Do you think this is still needed with that in mind? The bpf_clone call
-is using sk_prot_creater and also setting the newsk's proto field. Even
-if the listening parent sock was being deleted in parallel would that be
-a problem? We don't touch sk_prot_creator from the tear down path. I've
-only scanned the 3..11 patches so maybe the answer is below. If that is
-the case probably an improved commit message would be helpful.
+Do you think the following patch will make everyone happy?
 
-[0] https://patchwork.ozlabs.org/patch/1221536/
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 0ad39c87b7fd..7e885d069707 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -9177,22 +9177,10 @@ static void
+netdev_unregister_lockdep_key(struct net_device *dev)
 
-Thanks.
+ void netdev_update_lockdep_key(struct net_device *dev)
+ {
+-       struct netdev_queue *queue;
+-       int i;
+-
+-       lockdep_unregister_key(&dev->qdisc_xmit_lock_key);
+        lockdep_unregister_key(&dev->addr_list_lock_key);
+-
+-       lockdep_register_key(&dev->qdisc_xmit_lock_key);
+        lockdep_register_key(&dev->addr_list_lock_key);
+
+        lockdep_set_class(&dev->addr_list_lock, &dev->addr_list_lock_key);
+-       for (i = 0; i < dev->num_tx_queues; i++) {
+-               queue = netdev_get_tx_queue(dev, i);
+-
+-               lockdep_set_class(&queue->_xmit_lock,
+-                                 &dev->qdisc_xmit_lock_key);
+-       }
+ }
+ EXPORT_SYMBOL(netdev_update_lockdep_key);
+
+I think as long as we don't take _xmit_lock nestedly, it is fine. And
+most (or all?) of the software netdev's are already lockless, so I can't
+think of any case we take more than one _xmit_lock on TX path.
+
+I tested it with the syzbot reproducer and your set master/nomaster
+commands, I don't get any lockdep splat.
+
+What do you think?
+
+Thanks!
