@@ -2,33 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E9EA137C04
-	for <lists+netdev@lfdr.de>; Sat, 11 Jan 2020 08:16:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F032137C19
+	for <lists+netdev@lfdr.de>; Sat, 11 Jan 2020 08:30:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728548AbgAKHQQ convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Sat, 11 Jan 2020 02:16:16 -0500
-Received: from rcmsmail01.rcms.jp ([112.78.197.69]:44382 "EHLO
-        rcmsmail01.rcms.jp" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728500AbgAKHQP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 11 Jan 2020 02:16:15 -0500
-X-Greylist: delayed 303 seconds by postgrey-1.27 at vger.kernel.org; Sat, 11 Jan 2020 02:16:15 EST
-Received: from rcmsmail01.rcms.jp (v163-44-159-103.a01a.g.sin1.static.cnode.io [163.44.159.103])
-        by rcmsmail01.rcms.jp (Postfix) with ESMTP id 8FE1E1B388DB
-        for <netdev@vger.kernel.org>; Sat, 11 Jan 2020 16:11:10 +0900 (JST)
-From:   "Oliver Carter" <olivercarter_google@asteddo-home.com>
-Content-Type: text/plain;
-        charset=us-ascii
-Content-Transfer-Encoding: 8BIT
-Mime-Version: 1.0 (1.0)
-Subject: 
-Message-Id: <D873487D-782E-43C4-B37D-536D95990E5D@asteddo-home.com>
-Date:   Sat, 11 Jan 2020 02:17:34 -0500
-To:     "netdev" <netdev@vger.kernel.org>
-Reply-To: "Oliver Carter" <olivercarter_googler@yahoo.co.uk>
-X-Mailer: iPhone Mail (15F79)
+        id S1728511AbgAKHaV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Jan 2020 02:30:21 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:44308 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728500AbgAKHaV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 11 Jan 2020 02:30:21 -0500
+Received: from localhost (unknown [IPv6:2601:601:9f00:1c3::f0c])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 64269159A883F;
+        Fri, 10 Jan 2020 23:30:20 -0800 (PST)
+Date:   Fri, 10 Jan 2020 23:30:19 -0800 (PST)
+Message-Id: <20200110.233019.380242373018361619.davem@davemloft.net>
+To:     linus.walleij@linaro.org
+Cc:     netdev@vger.kernel.org, arnd@arndb.de, jakub.kicinski@netronome.com
+Subject: Re: [PATCH net-next 0/9 v4] IXP4xx networking cleanups
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20200110082837.11473-1-linus.walleij@linaro.org>
+References: <20200110082837.11473-1-linus.walleij@linaro.org>
+X-Mailer: Mew version 6.8 on Emacs 26.3
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Fri, 10 Jan 2020 23:30:20 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Netdev    http://inx.lv/zmUG   Oliver
+From: Linus Walleij <linus.walleij@linaro.org>
+Date: Fri, 10 Jan 2020 09:28:28 +0100
+
+> This is a patch series which jams together Arnds and mine
+> cleanups for the IXP4xx networking.
+ ...
+
+Hey, could you please respin this against current net-next for
+me?  Some conflicts came up which I think came from the recent
+net --> net-next merge.
+
+Thank you.
