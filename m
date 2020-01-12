@@ -2,108 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F54E1386B5
-	for <lists+netdev@lfdr.de>; Sun, 12 Jan 2020 14:47:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CA6001386DA
+	for <lists+netdev@lfdr.de>; Sun, 12 Jan 2020 15:54:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732936AbgALNrg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 12 Jan 2020 08:47:36 -0500
-Received: from mx3.wp.pl ([212.77.101.9]:18663 "EHLO mx3.wp.pl"
+        id S1733042AbgALOyi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 12 Jan 2020 09:54:38 -0500
+Received: from mga09.intel.com ([134.134.136.24]:47156 "EHLO mga09.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1732921AbgALNrf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 12 Jan 2020 08:47:35 -0500
-Received: (wp-smtpd smtp.wp.pl 26130 invoked from network); 12 Jan 2020 14:47:31 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=wp.pl; s=1024a;
-          t=1578836851; bh=WYqpIdicSPVhDWKCKda5FFj7FxnC192DoYoKxwaLnXI=;
-          h=From:To:Cc:Subject;
-          b=V1tEhCI6472X6nhKIXMFbRaBiG9Lk4u8wex0Rtj/OBgMsdOcPz+v0J8GqP71iM+cX
-           lHElg3NjTyWDFdyARlmdUXmNEdepUkq86oFuVdw3XmcHriYlLPpDQbJnGEVIIdIZCe
-           jTB2GqCWCtb8Rsu8GcqxoCWaR42Z7+A/ZSTECfLc=
-Received: from c-73-93-4-247.hsd1.ca.comcast.net (HELO cakuba) (kubakici@wp.pl@[73.93.4.247])
-          (envelope-sender <kubakici@wp.pl>)
-          by smtp.wp.pl (WP-SMTPD) with ECDHE-RSA-AES256-GCM-SHA384 encrypted SMTP
-          for <ap420073@gmail.com>; 12 Jan 2020 14:47:31 +0100
-Date:   Sun, 12 Jan 2020 05:47:25 -0800
-From:   Jakub Kicinski <kubakici@wp.pl>
-To:     Taehee Yoo <ap420073@gmail.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org
-Subject: Re: [PATCH net 2/5] netdevsim: fix stack-out-of-bounds in
- nsim_dev_debugfs_init()
-Message-ID: <20200112054725.7a8e6074@cakuba>
-In-Reply-To: <20200111163709.4181-1-ap420073@gmail.com>
-References: <20200111163709.4181-1-ap420073@gmail.com>
+        id S1733021AbgALOyh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 12 Jan 2020 09:54:37 -0500
+X-Amp-Result: UNKNOWN
+X-Amp-Original-Verdict: FILE UNKNOWN
+X-Amp-File-Uploaded: False
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga102.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 12 Jan 2020 06:54:37 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.69,425,1571727600"; 
+   d="scan'208";a="224668477"
+Received: from ranger.igk.intel.com ([10.102.21.164])
+  by orsmga003.jf.intel.com with ESMTP; 12 Jan 2020 06:54:34 -0800
+Date:   Sun, 12 Jan 2020 08:47:22 +0100
+From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+To:     John Fastabend <john.fastabend@gmail.com>
+Cc:     bjorn.topel@gmail.com, bpf@vger.kernel.org, toke@redhat.com,
+        toshiaki.makita1@gmail.com, netdev@vger.kernel.org, ast@kernel.org,
+        daniel@iogearbox.net
+Subject: Re: [bpf-next PATCH v2 1/2] bpf: xdp, update devmap comments to
+ reflect napi/rcu usage
+Message-ID: <20200112074722.GA24420@ranger.igk.intel.com>
+References: <157879606461.8200.2816751890292483534.stgit@john-Precision-5820-Tower>
+ <157879664156.8200.4955971883120344808.stgit@john-Precision-5820-Tower>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-WP-MailID: 0e8b98beda5aa2f877c35e9cce8f99de
-X-WP-AV: skaner antywirusowy Poczty Wirtualnej Polski
-X-WP-SPAM: NO 0000000 [ATMk]                               
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <157879664156.8200.4955971883120344808.stgit@john-Precision-5820-Tower>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 11 Jan 2020 16:37:09 +0000, Taehee Yoo wrote:
-> When netdevsim dev is being created, a debugfs directory is created.
-> The variable "dev_ddir_name" is 16bytes device name pointer and device
-> name is "netdevsim<dev id>".
-> The maximum dev id length is 10.
-> So, 16bytes for device name isn't enough.
-> 
-> Test commands:
->     modprobe netdevsim
->     echo "1000000000 0" > /sys/bus/netdevsim/new_device
-> 
-> Splat looks like:
-> [   90.624922][ T1000] BUG: KASAN: stack-out-of-bounds in number+0x824/0x880
-> [   90.626999][ T1000] Write of size 1 at addr ffff8880b7f47988 by task bash/1000
-> [   90.627798][ T1000]
-> [   90.628076][ T1000] CPU: 0 PID: 1000 Comm: bash Not tainted 5.5.0-rc5+ #270
-> [   90.628806][ T1000] Hardware name: innotek GmbH VirtualBox/VirtualBox, BIOS VirtualBox 12/01/2006
-> [   90.629752][ T1000] Call Trace:
-> [   90.630080][ T1000]  dump_stack+0x96/0xdb
-> [   90.630512][ T1000]  ? number+0x824/0x880
-> [   90.630939][ T1000]  print_address_description.constprop.5+0x1be/0x360
-> [   90.631610][ T1000]  ? number+0x824/0x880
-> [   90.632038][ T1000]  ? number+0x824/0x880
-> [   90.632469][ T1000]  __kasan_report+0x12a/0x16f
-> [   90.632939][ T1000]  ? number+0x824/0x880
-> [   90.633397][ T1000]  kasan_report+0xe/0x20
-> [   90.633954][ T1000]  number+0x824/0x880
-> [   90.634513][ T1000]  ? put_dec+0xa0/0xa0
-> [   90.635047][ T1000]  ? rcu_read_lock_sched_held+0x90/0xc0
-> [   90.636469][ T1000]  vsnprintf+0x63c/0x10b0
-> [   90.637187][ T1000]  ? pointer+0x5b0/0x5b0
-> [   90.637871][ T1000]  ? mark_lock+0x11d/0xc40
-> [   90.638591][ T1000]  sprintf+0x9b/0xd0
-> [   90.639164][ T1000]  ? scnprintf+0xe0/0xe0
-> [   90.639802][ T1000]  nsim_dev_probe+0x63c/0xbf0 [netdevsim]
-> [ ... ]
-> 
-> Fixes: 83c9e13aa39a ("netdevsim: add software driver for testing offloads")
+On Sat, Jan 11, 2020 at 06:37:21PM -0800, John Fastabend wrote:
 
-The correct Fixes tag is:
+Small nits for typos, can be ignored.
 
-Fixes: ab1d0cc004d7 ("netdevsim: change debugfs tree topology")
+> Now that we rely on synchronize_rcu and call_rcu waiting to
+> exit perempt-disable regions (NAPI) lets update the comments
 
-> Signed-off-by: Taehee Yoo <ap420073@gmail.com>
+s/perempt/preempt
+
+> to reflect this.
+> 
+> Fixes: 0536b85239b84 ("xdp: Simplify devmap cleanup")
+> Acked-by: Björn Töpel <bjorn.topel@intel.com>
+> Acked-by: Song Liu <songliubraving@fb.com>
+> Signed-off-by: John Fastabend <john.fastabend@gmail.com>
 > ---
->  drivers/net/netdevsim/dev.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+>  kernel/bpf/devmap.c |   21 +++++++++++----------
+>  1 file changed, 11 insertions(+), 10 deletions(-)
 > 
-> diff --git a/drivers/net/netdevsim/dev.c b/drivers/net/netdevsim/dev.c
-> index 634eb5cdcbbe..a0c80a70bb23 100644
-> --- a/drivers/net/netdevsim/dev.c
-> +++ b/drivers/net/netdevsim/dev.c
-> @@ -88,7 +88,7 @@ static const struct file_operations nsim_dev_take_snapshot_fops = {
+> diff --git a/kernel/bpf/devmap.c b/kernel/bpf/devmap.c
+> index da9c832..f0bf525 100644
+> --- a/kernel/bpf/devmap.c
+> +++ b/kernel/bpf/devmap.c
+> @@ -193,10 +193,12 @@ static void dev_map_free(struct bpf_map *map)
 >  
->  static int nsim_dev_debugfs_init(struct nsim_dev *nsim_dev)
->  {
-> -	char dev_ddir_name[16];
-> +	char dev_ddir_name[32];
+>  	/* At this point bpf_prog->aux->refcnt == 0 and this map->refcnt == 0,
+>  	 * so the programs (can be more than one that used this map) were
+> -	 * disconnected from events. Wait for outstanding critical sections in
+> -	 * these programs to complete. The rcu critical section only guarantees
+> -	 * no further reads against netdev_map. It does __not__ ensure pending
+> -	 * flush operations (if any) are complete.
+> +	 * disconnected from events. The following synchronize_rcu() guarantees
+> +	 * both rcu read critical sections complete and waits for
+> +	 * preempt-disable regions (NAPI being the relavent context here) so we
 
-nit: it'd be tempting to size this to the correct value 
-     (20? or sizeof(DRV_NAME) + 10) rather than the arbitrary 32,
-     perhaps?
+s/relavent/relevant
 
->  	sprintf(dev_ddir_name, DRV_NAME "%u", nsim_dev->nsim_bus_dev->dev.id);
->  	nsim_dev->ddir = debugfs_create_dir(dev_ddir_name, nsim_dev_ddir);
+> +	 * are certain there will be no further reads against the netdev_map and
+> +	 * all flush operations are complete. Flush operations can only be done
+> +	 * from NAPI context for this reason.
+>  	 */
+>  
+>  	spin_lock(&dev_map_lock);
+> @@ -498,12 +500,11 @@ static int dev_map_delete_elem(struct bpf_map *map, void *key)
+>  		return -EINVAL;
+>  
+>  	/* Use call_rcu() here to ensure any rcu critical sections have
+> -	 * completed, but this does not guarantee a flush has happened
+> -	 * yet. Because driver side rcu_read_lock/unlock only protects the
+> -	 * running XDP program. However, for pending flush operations the
+> -	 * dev and ctx are stored in another per cpu map. And additionally,
+> -	 * the driver tear down ensures all soft irqs are complete before
+> -	 * removing the net device in the case of dev_put equals zero.
+> +	 * completed as well as any flush operations because call_rcu
+> +	 * will wait for preempt-disable region to complete, NAPI in this
+> +	 * context.  And additionally, the driver tear down ensures all
+> +	 * soft irqs are complete before removing the net device in the
+> +	 * case of dev_put equals zero.
+>  	 */
+>  	old_dev = xchg(&dtab->netdev_map[k], NULL);
+>  	if (old_dev)
+> 
