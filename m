@@ -2,111 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 16B8D138497
-	for <lists+netdev@lfdr.de>; Sun, 12 Jan 2020 03:37:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EBDE01384A0
+	for <lists+netdev@lfdr.de>; Sun, 12 Jan 2020 04:09:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732012AbgALChq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Jan 2020 21:37:46 -0500
-Received: from mail-il1-f196.google.com ([209.85.166.196]:41838 "EHLO
-        mail-il1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731985AbgALChq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 11 Jan 2020 21:37:46 -0500
-Received: by mail-il1-f196.google.com with SMTP id f10so5004265ils.8
-        for <netdev@vger.kernel.org>; Sat, 11 Jan 2020 18:37:45 -0800 (PST)
+        id S1732030AbgALDJY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Jan 2020 22:09:24 -0500
+Received: from mail-lj1-f195.google.com ([209.85.208.195]:43535 "EHLO
+        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732025AbgALDJY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 11 Jan 2020 22:09:24 -0500
+Received: by mail-lj1-f195.google.com with SMTP id a13so6248460ljm.10;
+        Sat, 11 Jan 2020 19:09:22 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:from:date:message-id:subject:to;
-        bh=SgWqPlw5a162XxY6jo+8sQk5VUDwc7iIQaUM7PGYuhY=;
-        b=UktrYvpBmG1vOnHn7eZJuEwwDmX7gULA2lgE9Lg2I8cs5/G/oZYxShQrntrsKxC1Wl
-         mwbHbjoARgZkqIUaEbsdcGwEzX1CzKpBTN5RYEryzAVpGSp9KMGYgZnTBrrivbxorHqf
-         ruK4uoIuzPgqhn9lkZZ9zSGKy7GHkY51yLHTiG7phbVCRZdmoA7SaVuilcF7+hf4fXQt
-         tO+X5xZzk4g/MPOSsf3Oajoc5y9TwKxJ+IMEFsKXsin3TAzS4RUeMGTDx9tIt/UmUVxR
-         KQOO4s8lCCGeMxHk/3wpoAmwLVkQxMk7R6GjYmm5FwHStmGR1EbGZONn7kJs6EHi5kA0
-         3HSg==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=NussGT5cAZIKaccwz5P4suw1pt0jo6uznt4vhCldmXM=;
+        b=drfIe5J8QkINlKQIoyA8Lu/dE5FbLBDxVpKyBdmCma15iBEqsajMmnRM6/C6PSgrdk
+         SzFJnC1+ep9B+jnXqvaxfPDeY1iIo9YnzkSJe+0dY7qD0Qh5cO5SvgNlUYIbOscsUCQ2
+         VM7nrjEx0A+bS8bSZ1LuvMpQWkbyO6L4yOQUxMZCO11c4dzaRe0+JQvxftroHhbY8Lcr
+         je1ScBYrT175JiSuOiPvNt0D0iZ58aHdYccXTH6tB/5F5wCE3LS4SotfNp1oOjzLsRGR
+         5ttPdAvmO1D7zc9Y+yOnVsmFOAeCafZ47lniaYvQcOzv1y7LXLgfBEf7znpmPE3smGdL
+         jgoQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
-        bh=SgWqPlw5a162XxY6jo+8sQk5VUDwc7iIQaUM7PGYuhY=;
-        b=Di9UdDbIK7Sm45/cUavbHtr4Hw8fc0QtM0yYrINgaSuvje7iV1zOxvVyWvcSokCEY7
-         CbMK4NdU4XwHTusix6mE2ZtRCXgcPfGfl6pNUfdKkO+TktfzzX+WD8sN5hXwvEHHpms6
-         Ohfr0eDRnnZLB4lcVklpO/lBLeCroh5aKWy6/W1UxgRlgMGDQ2Jc9HaoA4wjg/6T0KV/
-         DaSwzEKX/itduwjwVloxKz8geibWcOzIq7g5opH9YGBOY5he1NQI/gr67oK6bEOGsXf0
-         Qkxrd9v+OY164mWGzrigjzyp2QgHbvXpJd02W0OfZdPTqn4IE7eYAM99AKLg4luaLA1Y
-         6zKQ==
-X-Gm-Message-State: APjAAAW0eOlVwyP044Wv3f9tf+vEvTz7KaTBXGhZBJfqTH6wRH56YXMk
-        P+9u0d/YHdkJ9SVleI2f6Sxc0ybu5u9pZ2mWweEjMg==
-X-Google-Smtp-Source: APXvYqzQcsS5Grgfk07wiucZiDm3u/HJLMsdzVY1eHJU6EL+2gZO4OOto8/WUzCaxbbFYjkDnZW32yEoQiJU+7hI5ic=
-X-Received: by 2002:a92:2904:: with SMTP id l4mr9763786ilg.166.1578796665364;
- Sat, 11 Jan 2020 18:37:45 -0800 (PST)
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=NussGT5cAZIKaccwz5P4suw1pt0jo6uznt4vhCldmXM=;
+        b=i+OiNd/P5MGHQY4BcVsLMr75OvgFCGGHaaJQDpJFINVYh2IG6KtlNzlGDH4bToakGl
+         0TJLVC/8/dfBCcLKUNrTx5dD/M/JlfYeMAyxWb7tmNjKqe3/qGnL9NpO4q18/hXJSpgV
+         d9yI0SCbEl+SzP8S2sRjG0TBthyvgDH9JYj8Go1Bl4uoWmyP+9JZ1YzCvGVmic5uieIi
+         gs7q38DqEqqMLFCDum/U3rwa4WOWItT+q0sfcR+SJboP7i0xBGOkW51pi7wIa6kVRFI1
+         7td1KXqQc7WZKPs9qG1L2Hmmf5jP2arxGdOz37LkJK8ICNIeNvgj560+RDbIeYJ5bY1c
+         /oow==
+X-Gm-Message-State: APjAAAU9P3nGQKaJVE2YIw7m4QQsb6xIu8Lc1UbmzUMxFJ2NVu2d8piU
+        004OwRurRp07W7srSQs8O6+zgyUuBQjW2SuEvyY=
+X-Google-Smtp-Source: APXvYqzfqNr1gySwxCVkhFRpHo++EpjWek4BPjcW0RHO7PfZylCEmhga/pUVblV6azdDNvVfSIVwYxocUN2RNI2zVVI=
+X-Received: by 2002:a2e:89d0:: with SMTP id c16mr7123711ljk.228.1578798561958;
+ Sat, 11 Jan 2020 19:09:21 -0800 (PST)
 MIME-Version: 1.0
-Received: by 2002:a02:a902:0:0:0:0:0 with HTTP; Sat, 11 Jan 2020 18:37:45
- -0800 (PST)
-From:   Admin Remittance <remittancedept6@gmail.com>
-Date:   Sun, 12 Jan 2020 03:37:45 +0100
-Message-ID: <CAF1GF1CbC+f-GDEnJ0uY9ajyM-jC-26DQdcbwFiWeiUPoCHq=Q@mail.gmail.com>
-Subject: I contacted you to assist in repatriating the money in addition
-To:     netdev@vger.kernel.org
+References: <20200110231644.3484151-1-kafai@fb.com> <2e5a0dfc-6b22-4a5f-d305-da920c9a44c7@netronome.com>
+In-Reply-To: <2e5a0dfc-6b22-4a5f-d305-da920c9a44c7@netronome.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Sat, 11 Jan 2020 19:09:10 -0800
+Message-ID: <CAADnVQ+NrqhsB8u+Hvn2k1C=rjDgT2OdM7iDwrLNy+p3LowD1A@mail.gmail.com>
+Subject: Re: [PATCH bpf] bpftool: Fix printing incorrect pointer in btf_dump_ptr
+To:     Quentin Monnet <quentin.monnet@netronome.com>
+Cc:     Martin KaFai Lau <kafai@fb.com>, bpf <bpf@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        David Miller <davem@davemloft.net>,
+        Kernel Team <kernel-team@fb.com>,
+        Network Development <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I am Mr. Matt Hubbard, an Accountant with Lloyds Bank and am the
-personal Account Manager to Late Mr. Theodoros Angelopoulos.
+On Sat, Jan 11, 2020 at 12:07 PM Quentin Monnet
+<quentin.monnet@netronome.com> wrote:
+>
+> 2020-01-10 15:16 UTC-0800 ~ Martin KaFai Lau <kafai@fb.com>
+> > For plain text output, it incorrectly prints the pointer value
+> > "void *data".  The "void *data" is actually pointing to memory that
+> > contains a bpf-map's value.  The intention is to print the content of
+> > the bpf-map's value instead of printing the pointer pointing to the
+> > bpf-map's value.
+> >
+> > In this case, a member of the bpf-map's value is a pointer type.
+> > Thus, it should print the "*(void **)data".
+> >
+> > Fixes: 22c349e8db89 ("tools: bpftool: fix format strings and arguments for jsonw_printf()")
+> > Cc: Quentin Monnet <quentin.monnet@netronome.com>
+> > Signed-off-by: Martin KaFai Lau <kafai@fb.com>
+>
+> My bad, thank you for the fix!
+>
+> Reviewed-by: Quentin Monnet <quentin.monnet@netronome.com>
 
-
-Theodoros Angelopoulos (Herein after shall be referred to as my
-client), died late on Tuesday, 24 January 2012, several hours after
-being involved in an accident while shooting his latest film. Theo
-Angelopoulos the filmmaker had been with his crew in the area of
-Drapetsona, Piraeus Greece when he was hit by a motorcycle driven by
-an off-duty police officer. Unfortunately he lost his life in the
-event of the accident, since then I have made several inquiries to
-locate any of his extended relatives, this has also proved
-unsuccessful. After these several Unsuccessful attempts, I decided to
-trace his relatives over the Internet, to locate any member of His
-family but of no avail, hence I contacted you to stand as his next of
-kin.
-
-
-I contacted you to assist in repatriating the money in addition,
-property left behind by my client before they got Confiscated or
-declared non-serviceable by the bank where this huge deposits were
-lodged. Particularly, Lloyds Bank, where the deceased had an account
-valued at about Nine Million Great British Pounds. Consequently, the
-bank issued me a notice to provide the Next of Kin or have the account
-confiscated within the next twenty official working days.
-
-
-Since I have been unsuccessful in locating the relatives for over 5
-years now, I hereby seek your consent to present you as the next of
-kin to the deceased based on the fact that you are a foreigner so that
-the proceeds of this account valued at about Nine Million Great
-British Pounds can be paid to you and then you and I can share the
-money. 50% to me and 40% to you, while 10% shall be for expenses or
-tax as your government may require. An attorney shall be contracted to
-help re-validate and notarize all the necessary legal documents that
-can be used to back up any claim we make. All I require is your honest
-cooperation to enable us sees this deal through. I guarantee that this
-will be executed under a legitimate arrangement that will protect you
-from any breach of the law.
-
-
-To enable us discuss further, I want you to email me the following
-information so I can open up a next of kin file on your behalf here in
-the bank.
-
-
-1. Name in full:
-2. Address:
-3. Nationality:
-4. Age/Sex:
-5. Occupation:
-6. Direct Phone number:
-Note:Reply through this email address.  matthubbard935@gmail.com
-
-
-Best regards,
-Mr. Matt Hubbard
-+44-203-389-5667
+Applied to bpf tree. Thanks
