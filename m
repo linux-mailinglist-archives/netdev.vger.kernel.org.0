@@ -2,51 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9147D1386E0
-	for <lists+netdev@lfdr.de>; Sun, 12 Jan 2020 16:14:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E8991386FA
+	for <lists+netdev@lfdr.de>; Sun, 12 Jan 2020 17:07:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733068AbgALPOt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 12 Jan 2020 10:14:49 -0500
-Received: from mail4.protonmail.ch ([185.70.40.27]:58712 "EHLO
-        mail4.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1733062AbgALPOt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 12 Jan 2020 10:14:49 -0500
-Date:   Sun, 12 Jan 2020 15:14:43 +0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=protonmail.com;
-        s=default; t=1578842087;
-        bh=GYvB/YjW/U58Qft0cwN//Yxj9VA4Tdvc7lOrhfB1F/c=;
-        h=Date:To:From:Cc:Reply-To:Subject:In-Reply-To:References:
-         Feedback-ID:From;
-        b=vAJzwTcH2Yl32ivVLUDm+8Oi4mgkxeP/Mz/05stgS9agbgxf0Iyu9Inb23WkpyDma
-         /B50PAKz0pdMmxvrSgrZuM0Df8mxir1cyQtEFBtU65BmPNNDvTIWaXxh+2yAUJVE1/
-         dM+DQOTjaeys62P8SEiSPA0xJ09XqwFWuIvIX46g=
-To:     Stephen Hemminger <stephen@networkplumber.org>
-From:   Ttttabcd <ttttabcd@protonmail.com>
-Cc:     Netdev <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        "kuznet@ms2.inr.ac.ru" <kuznet@ms2.inr.ac.ru>,
-        "yoshfuji@linux-ipv6.org" <yoshfuji@linux-ipv6.org>
-Reply-To: Ttttabcd <ttttabcd@protonmail.com>
-Subject: Re: [PATCH] fragment: Improved handling of incorrect IP fragments
-Message-ID: <cG71NUDfI9tJnD4i5DpHv7kpY5x0EDSY1Jks6WIu6MhJhibPRQAsIhqWcpOVPUwncqQ6FlfxGJlC_e6BxTSc5h-03-gwg9lz0tl7eVyMLqA=@protonmail.com>
-In-Reply-To: <20200106160635.2550c92f@hermes.lan>
-References: <u0QFePiYSfxBeUsNVFRhPjsGViwg-pXLIApJaVLdUICuvLTQg5y5-rdNhh9lPcDsyO24c7wXxy5m6b6dK0aB6kqR0ypk8X9ekiLe3NQ3ICY=@protonmail.com>
- <20200102112731.299b5fe4@hermes.lan>
- <BRNuMFiJpql6kgRrEdMdQfo3cypcBpqGRtfWvbW8QFsv2MSUj_fUV-s8Fx-xopJ8kvR3ZMJM0tck6FYxm8S0EcpZngEzrfFg5w22Qo8asEQ=@protonmail.com>
- <20200106160635.2550c92f@hermes.lan>
-Feedback-ID: EvWK9os_-weOBrycfL_HEFp-ixys9sxnciOqqctCHB9kjCM4ip8VR9shOcMQZgeZ7RCnmNC4HYjcUKNMz31NBA==:Ext:ProtonMail
+        id S1733098AbgALQHF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 12 Jan 2020 11:07:05 -0500
+Received: from out3-smtp.messagingengine.com ([66.111.4.27]:59717 "EHLO
+        out3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1733064AbgALQHF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 12 Jan 2020 11:07:05 -0500
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id 993AC21111;
+        Sun, 12 Jan 2020 11:07:04 -0500 (EST)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute3.internal (MEProxy); Sun, 12 Jan 2020 11:07:04 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-transfer-encoding:date:from
+        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=NkzVWBsZVbdDXqpnA
+        2xLqcUwl34l+L97SHocWNRNCcg=; b=Feh8CM+XT5O85hOenoH8+OlicRDPnOreV
+        CPpkTnS4eIkoZmlYvuwELW4Nm/C0L44OHwTQ2jJZtXoqR/qrvuxnDtpn5E68ibTP
+        UzkIKopQwBY5PNL+Sysg4pNFdk1lHQchtAT/ieOoj9H8mXAxTGuwm9GnpjWDdnAq
+        ZjJpBowwUtjXraOdY7/Fwvfhx6UBYjnTI3R6+Efgb8EttYk0o8TuK+Cq7Pji+Rin
+        FXpEpmgT1KuZRSM9lWMs8ZOCIX4M2/JibsCsjfvLrRNiidrmnX5JnGtHWVxjR9tE
+        4wz41lV/45L0AX5EhasU5MxW0BFpxVUzXEerOsywmj3+5SAibsQew==
+X-ME-Sender: <xms:KEQbXqoM72YkfNfvjFowRbDcYDH9lfliGju2P3mSsN3vtV-gcLXq2g>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedufedrvdeikedgkeegucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgggfestdekredtre
+    dttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiughoshgt
+    hhdrohhrgheqnecukfhppeduleefrdegjedrudeihedrvdehudenucfrrghrrghmpehmrg
+    hilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrghenucevlhhushhtvghrufhi
+    iigvpedt
+X-ME-Proxy: <xmx:KEQbXgEYs2NS2Hyy43MgL3AIJHh4rTz8U3G4joeLWMNOT60R2nsAhA>
+    <xmx:KEQbXskmPI7b-X4QEYG-Gwt9ktHB6SpcEJoFmAC3roVaO8XaUf1bVg>
+    <xmx:KEQbXjmdi5JQOdOZK867nL4R8Wu8vXE_JD0x2Rvd2J2EEV6SY2I9Wg>
+    <xmx:KEQbXkyoPTPXrf3lspyr8Xq2PnmiToCQjGVrfJoz1AVOVjzzZBR0ag>
+Received: from splinter.mtl.com (unknown [193.47.165.251])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 254EC80059;
+        Sun, 12 Jan 2020 11:07:02 -0500 (EST)
+From:   Ido Schimmel <idosch@idosch.org>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, jiri@mellanox.com, mlxsw@mellanox.com,
+        Ido Schimmel <idosch@mellanox.com>
+Subject: [PATCH net 0/4] mlxsw: Various fixes
+Date:   Sun, 12 Jan 2020 18:06:37 +0200
+Message-Id: <20200112160641.282108-1-idosch@idosch.org>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-0.2 required=7.0 tests=ALL_TRUSTED,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,HK_RANDOM_REPLYTO
-        shortcircuit=no autolearn=no autolearn_force=no version=3.4.2
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.protonmail.ch
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> You need to split IPv4 and IPv6 parts into two different patches.
+From: Ido Schimmel <idosch@mellanox.com>
 
-Forgot to ask, is it necessary to divide this patch into two?
+This patch set contains various fixes for mlxsw.
+
+Patch #1 splits the init() callback between Spectrum-2 and Spectrum-3 in
+order to avoid enforcing the same firmware version for both ASICs, as
+this can't possibly work. Without this patch the driver cannot boot with
+the Spectrum-3 ASIC.
+
+Patches #2-#3 from Shalom fix a long standing race condition that was
+recently exposed while testing the driver on an emulator, which is very
+slow compared to the actual hardware. The problem is explained in detail
+in the commit message.
+
+Patch #4 from Petr fixes a selftest.
+
+Ido Schimmel (1):
+  mlxsw: spectrum: Do not enforce same firmware version for multiple
+    ASICs
+
+Petr Machata (1):
+  selftests: mlxsw: qos_mc_aware: Fix mausezahn invocation
+
+Shalom Toledo (2):
+  mlxsw: switchx2: Do not modify cloned SKBs during xmit
+  mlxsw: spectrum: Do not modify cloned SKBs during xmit
+
+ .../net/ethernet/mellanox/mlxsw/spectrum.c    | 27 ++++++++++++++++++-
+ .../net/ethernet/mellanox/mlxsw/switchx2.c    |  4 +++
+ .../drivers/net/mlxsw/qos_mc_aware.sh         |  8 ++++--
+ 3 files changed, 36 insertions(+), 3 deletions(-)
+
+-- 
+2.24.1
+
