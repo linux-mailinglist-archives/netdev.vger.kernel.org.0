@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2353F138622
+	by mail.lfdr.de (Postfix) with ESMTP id C599C138623
 	for <lists+netdev@lfdr.de>; Sun, 12 Jan 2020 13:05:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732803AbgALMFJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 12 Jan 2020 07:05:09 -0500
-Received: from mail-lf1-f65.google.com ([209.85.167.65]:41497 "EHLO
-        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732796AbgALMFI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 12 Jan 2020 07:05:08 -0500
-Received: by mail-lf1-f65.google.com with SMTP id m30so4827659lfp.8
-        for <netdev@vger.kernel.org>; Sun, 12 Jan 2020 04:05:06 -0800 (PST)
+        id S1732809AbgALMFL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 12 Jan 2020 07:05:11 -0500
+Received: from mail-lf1-f67.google.com ([209.85.167.67]:35818 "EHLO
+        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732774AbgALMFJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 12 Jan 2020 07:05:09 -0500
+Received: by mail-lf1-f67.google.com with SMTP id 15so4849473lfr.2
+        for <netdev@vger.kernel.org>; Sun, 12 Jan 2020 04:05:08 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=AAnsc8RCCRH0gsrO6JIcw3MEFq+31z6wm/rGDE/KuRQ=;
-        b=aTObKf9jOY5DSPZaFHPlwfNPcLJ3/GZ8UnRc5ySOKdbW9sZuWMGox03axDrio9bxjj
-         +sOZ6qoazNRcJYbr5/ZgMWGRUOUVMNMHjOx8iLbZZgOkoRDofvsXmnR8At53NL22fK9q
-         nx8qzX9pmb+9oIlTOZ3I9SwrUHv5vGNGeboVTZe4/L3TO0dZVdlrGS9RRWSSN4ADBLHP
-         krFCz3hKkesmF7Uu/TDABWdR1Zgfz1oCDB4ubk1oWAnHbl5yp9MAJ4CDiQOIONswr7DB
-         wO5O2GoPcQUsY1uCtwpuPUANbgSh/7HvdSXUd77LeAOfbDW23QCt3DysFharPM9st8tp
-         T3Vw==
+        bh=AJcb9EynpGQPaCRXZFp5Z/kkfxUX5I93NLEGssvipjk=;
+        b=Ri+8twh6gEXFTQA++lcQ0Shd7qCIa6OSHpTK2o6oXLIy+ZY16LCP5ta/jMc1EWsz3u
+         ZDnbrItolWJ9MO6S/3P2H3+8/yV6P9pzzuc9gp0pVeVZvwogEMyUwurogto3rVEpckvF
+         IBQbEzC1ECd959ZdF1v5PUicHE19mjRz9e8mjpNZQm1Qk142udsn3JKe0QpPT69oVkWQ
+         wta4UYftelVvRkRNjDKVCIlAjSkNv2E5dAqV8hlcI9rRz24Q0zIjlYDD70r6iU4pv/Ts
+         A234be0ub9EiW52XUCI0Y042gFMc/JCxTEx1/aBwk5TG+25D9iU3V72VPC5W7dU6glr5
+         Z2dw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=AAnsc8RCCRH0gsrO6JIcw3MEFq+31z6wm/rGDE/KuRQ=;
-        b=c3WnbOL3opoILFKFUSup8oqRpPKeMuzJ+GIMvSwLeaJb7504TmkTfR6U+9aR7Dmwmo
-         YEWhowdsKDdN6RZs8ozeNuCZCahyZrD26GqQLYmlA5OT93ItN0sahWmu0LE78mzjvm/o
-         wduNEqwPkEHCnW/mvQYtA6/HHi20pJG7xXuManAQKehmX9FG1psi8Fsu+2nJeSARjaB1
-         ZIwagvkmHt5figpAx6S6IzsxaGZk9DXPEC8hR5zt9l/m2UbncwXy1eyK3+V8nbjvdlNp
-         5/TrWLS9TNblMV46NOPKGJiNlYIHpMGk64C3/f2HIakFr82544CBm6dCJH3ALq2N5C8M
-         5WdA==
-X-Gm-Message-State: APjAAAWBSNJrh5nWWb+P5K+XUzcdQj9UvUsuCPj9tynM/OnY1gLqJECs
-        ep2yCogjEkI8Sq+h6/gpz+okZY3JXfb1pA==
-X-Google-Smtp-Source: APXvYqw1ZHMG8t1977Az4nvCezE/lvq05WvJq3Bg/69ZCs/IrcuUN560HTFreBkAwO825oVGInpmEg==
-X-Received: by 2002:a19:48c5:: with SMTP id v188mr7535743lfa.100.1578830705591;
-        Sun, 12 Jan 2020 04:05:05 -0800 (PST)
+        bh=AJcb9EynpGQPaCRXZFp5Z/kkfxUX5I93NLEGssvipjk=;
+        b=KwC0m5UxOAL+XCWvs/LKeNMe03bW3Jd9cFE5RNEHjOY3Sl1Rh5vJC6k6dAZvWT19vh
+         52zNwmsNW01VSyzGGJi4rNz3+T/jZs/PLYsOT+NREkQWL9IfVPSNvk+XVMMFgYqr/hVL
+         doF1mWYop+wpI6WNkMD8rEjDS5G9DRCg6GVuxml/Nfwwy5K7ywlwlZMPpyt+1B+duBIq
+         cw3tjX0kCFlDUTDV0wmme/P8cQ1fiTQHe0g8KEUZmv0xLK+BDohuh3q/QLAV1piOFhqR
+         gdTsmjo5x4VIURzhQjGIathQZSfC6xyaK3MggCxycdhBEFpLqGxaTXi+fOdBl+1NkcUQ
+         xvuA==
+X-Gm-Message-State: APjAAAXeI8trigF8az6+KffZOCDV1gpxmtcSXzR+m+8Oz+9ECmELVUXs
+        EsWILWfulTkRivadW1pSUBocNQxUvvPQFA==
+X-Google-Smtp-Source: APXvYqxwghuBGR9HOgbuAl0DW06uLBS1RHnkNSpCnpc1hfxn+qyaurgdcct2iDe5q2H8+rNPsO0A1w==
+X-Received: by 2002:a19:850a:: with SMTP id h10mr7123909lfd.89.1578830707298;
+        Sun, 12 Jan 2020 04:05:07 -0800 (PST)
 Received: from localhost.bredbandsbolaget (c-5ac9225c.014-348-6c756e10.bbcust.telenor.se. [92.34.201.90])
-        by smtp.gmail.com with ESMTPSA id z7sm4660347lfa.81.2020.01.12.04.05.04
+        by smtp.gmail.com with ESMTPSA id z7sm4660347lfa.81.2020.01.12.04.05.06
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 12 Jan 2020 04:05:05 -0800 (PST)
+        Sun, 12 Jan 2020 04:05:06 -0800 (PST)
 From:   Linus Walleij <linus.walleij@linaro.org>
 To:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>
 Cc:     Arnd Bergmann <arnd@arndb.de>,
         Jakub Kicinski <jakub.kicinski@netronome.com>,
         Linus Walleij <linus.walleij@linaro.org>
-Subject: [PATCH net-next 5/9 v5] net: ethernet: ixp4xx: Standard module init
-Date:   Sun, 12 Jan 2020 13:04:46 +0100
-Message-Id: <20200112120450.11874-6-linus.walleij@linaro.org>
+Subject: [PATCH net-next 6/9 v5] net: ethernet: ixp4xx: Use distinct local variable
+Date:   Sun, 12 Jan 2020 13:04:47 +0100
+Message-Id: <20200112120450.11874-7-linus.walleij@linaro.org>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20200112120450.11874-1-linus.walleij@linaro.org>
 References: <20200112120450.11874-1-linus.walleij@linaro.org>
@@ -62,33 +62,12 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The IXP4xx driver was initializing the MDIO bus before even
-probing, in the callbacks supposed to be used for setting up
-the module itself, and with the side effect of trying to
-register the MDIO bus as soon as this module was loaded or
-compiled into the kernel whether the device was discovered
-or not.
+Use "ndev" for the struct net_device and "dev" for the
+struct device in probe() and remove(). Add the local
+"dev" pointer for later use in refactoring.
 
-This does not work with multiplatform environments.
-
-To get rid of this: set up the MDIO bus from the probe()
-callback and remove it in the remove() callback. Rename
-the probe() and remove() calls to reflect the most common
-conventions.
-
-Since there is a bit of checking for the ethernet feature
-to be present in the MDIO registering function, making the
-whole module not even be registered if we can't find an
-MDIO bus, we need something similar: register the MDIO
-bus when the corresponding ethernet is probed, and
-return -EPROBE_DEFER on the other interfaces until this
-happens. If no MDIO bus is present on any of the
-registered interfaces we will eventually bail out.
-
-None of the platforms I've seen has e.g. MDIO on EthB
-and only uses EthC, there is always a Ethernet hardware
-on the NPE (B, C) that has the MDIO bus, we just might
-have to wait for it.
+Take this opportunity to fix inverse christmas tree
+coding style.
 
 Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 ---
@@ -99,194 +78,119 @@ ChangeLog v3->v4:
 ChangeLog v2->v3:
 - Rebased on v5.5-rc1
 ChangeLog v1->v2:
-- Change the first alloc_etherdev() to devm_alloc_etherdev()
-  and drop one leg of the errorpath so we can just return
-  with error code in the first part of the code.
+- Rebase on the other changes.
 ---
- drivers/net/ethernet/xscale/ixp4xx_eth.c | 96 +++++++++++-------------
- 1 file changed, 44 insertions(+), 52 deletions(-)
+ drivers/net/ethernet/xscale/ixp4xx_eth.c | 47 +++++++++++++-----------
+ 1 file changed, 25 insertions(+), 22 deletions(-)
 
 diff --git a/drivers/net/ethernet/xscale/ixp4xx_eth.c b/drivers/net/ethernet/xscale/ixp4xx_eth.c
-index e811bf0d23cb..799ffebba491 100644
+index 799ffebba491..05ab8426bb8d 100644
 --- a/drivers/net/ethernet/xscale/ixp4xx_eth.c
 +++ b/drivers/net/ethernet/xscale/ixp4xx_eth.c
-@@ -519,25 +519,14 @@ static int ixp4xx_mdio_write(struct mii_bus *bus, int phy_id, int location,
- 	return ret;
- }
+@@ -1367,20 +1367,23 @@ static const struct net_device_ops ixp4xx_netdev_ops = {
  
--static int ixp4xx_mdio_register(void)
-+static int ixp4xx_mdio_register(struct eth_regs __iomem *regs)
+ static int ixp4xx_eth_probe(struct platform_device *pdev)
  {
+-	struct port *port;
+-	struct net_device *dev;
+-	struct eth_plat_info *plat = dev_get_platdata(&pdev->dev);
++	char phy_id[MII_BUS_ID_SIZE + 3];
+ 	struct phy_device *phydev = NULL;
++	struct device *dev = &pdev->dev;
++	struct eth_plat_info *plat;
++	struct net_device *ndev;
++	struct port *port;
+ 	u32 regs_phys;
+-	char phy_id[MII_BUS_ID_SIZE + 3];
  	int err;
  
- 	if (!(mdio_bus = mdiobus_alloc()))
+-	if (!(dev = devm_alloc_etherdev(&pdev->dev, sizeof(struct port))))
++	plat = dev_get_platdata(dev);
++
++	if (!(ndev = devm_alloc_etherdev(dev, sizeof(struct port))))
  		return -ENOMEM;
  
--	if (cpu_is_ixp43x()) {
--		/* IXP43x lacks NPE-B and uses NPE-C for MII PHY access */
--		if (!(ixp4xx_read_feature_bits() & IXP4XX_FEATURE_NPEC_ETH))
--			return -ENODEV;
--		mdio_regs = (struct eth_regs __iomem *)IXP4XX_EthC_BASE_VIRT;
--	} else {
--		/* All MII PHY accesses use NPE-B Ethernet registers */
--		if (!(ixp4xx_read_feature_bits() & IXP4XX_FEATURE_NPEB_ETH0))
--			return -ENODEV;
--		mdio_regs = (struct eth_regs __iomem *)IXP4XX_EthB_BASE_VIRT;
--	}
--
-+	mdio_regs = regs;
- 	__raw_writel(DEFAULT_CORE_CNTRL, &mdio_regs->core_control);
- 	spin_lock_init(&mdio_lock);
- 	mdio_bus->name = "IXP4xx MII Bus";
-@@ -1376,7 +1365,7 @@ static const struct net_device_ops ixp4xx_netdev_ops = {
- 	.ndo_validate_addr = eth_validate_addr,
- };
- 
--static int eth_init_one(struct platform_device *pdev)
-+static int ixp4xx_eth_probe(struct platform_device *pdev)
- {
- 	struct port *port;
- 	struct net_device *dev;
-@@ -1386,7 +1375,7 @@ static int eth_init_one(struct platform_device *pdev)
- 	char phy_id[MII_BUS_ID_SIZE + 3];
- 	int err;
- 
--	if (!(dev = alloc_etherdev(sizeof(struct port))))
-+	if (!(dev = devm_alloc_etherdev(&pdev->dev, sizeof(struct port))))
- 		return -ENOMEM;
- 
- 	SET_NETDEV_DEV(dev, &pdev->dev);
-@@ -1396,20 +1385,51 @@ static int eth_init_one(struct platform_device *pdev)
+-	SET_NETDEV_DEV(dev, &pdev->dev);
+-	port = netdev_priv(dev);
+-	port->netdev = dev;
++	SET_NETDEV_DEV(ndev, dev);
++	port = netdev_priv(ndev);
++	port->netdev = ndev;
+ 	port->id = pdev->id;
  
  	switch (port->id) {
- 	case IXP4XX_ETH_NPEA:
-+		/* If the MDIO bus is not up yet, defer probe */
-+		if (!mdio_bus)
-+			return -EPROBE_DEFER;
- 		port->regs = (struct eth_regs __iomem *)IXP4XX_EthA_BASE_VIRT;
- 		regs_phys  = IXP4XX_EthA_BASE_PHYS;
- 		break;
- 	case IXP4XX_ETH_NPEB:
-+		/*
-+		 * On all except IXP43x, NPE-B is used for the MDIO bus.
-+		 * If there is no NPE-B in the feature set, bail out, else
-+		 * register the MDIO bus.
-+		 */
-+		if (!cpu_is_ixp43x()) {
-+			if (!(ixp4xx_read_feature_bits() &
-+			      IXP4XX_FEATURE_NPEB_ETH0))
-+				return -ENODEV;
-+			/* Else register the MDIO bus on NPE-B */
-+			if ((err = ixp4xx_mdio_register(IXP4XX_EthC_BASE_VIRT)))
-+				return err;
-+		}
-+		if (!mdio_bus)
-+			return -EPROBE_DEFER;
- 		port->regs = (struct eth_regs __iomem *)IXP4XX_EthB_BASE_VIRT;
- 		regs_phys  = IXP4XX_EthB_BASE_PHYS;
- 		break;
- 	case IXP4XX_ETH_NPEC:
-+		/*
-+		 * IXP43x lacks NPE-B and uses NPE-C for the MDIO bus access,
-+		 * of there is no NPE-C, no bus, nothing works, so bail out.
-+		 */
-+		if (cpu_is_ixp43x()) {
-+			if (!(ixp4xx_read_feature_bits() &
-+			      IXP4XX_FEATURE_NPEC_ETH))
-+				return -ENODEV;
-+			/* Else register the MDIO bus on NPE-C */
-+			if ((err = ixp4xx_mdio_register(IXP4XX_EthC_BASE_VIRT)))
-+				return err;
-+		}
-+		if (!mdio_bus)
-+			return -EPROBE_DEFER;
- 		port->regs = (struct eth_regs __iomem *)IXP4XX_EthC_BASE_VIRT;
- 		regs_phys  = IXP4XX_EthC_BASE_PHYS;
- 		break;
- 	default:
--		err = -ENODEV;
--		goto err_free;
-+		return -ENODEV;
+@@ -1432,16 +1435,16 @@ static int ixp4xx_eth_probe(struct platform_device *pdev)
+ 		return -ENODEV;
  	}
  
- 	dev->netdev_ops = &ixp4xx_netdev_ops;
-@@ -1418,10 +1438,8 @@ static int eth_init_one(struct platform_device *pdev)
+-	dev->netdev_ops = &ixp4xx_netdev_ops;
+-	dev->ethtool_ops = &ixp4xx_ethtool_ops;
+-	dev->tx_queue_len = 100;
++	ndev->netdev_ops = &ixp4xx_netdev_ops;
++	ndev->ethtool_ops = &ixp4xx_ethtool_ops;
++	ndev->tx_queue_len = 100;
  
- 	netif_napi_add(dev, &port->napi, eth_poll, NAPI_WEIGHT);
+-	netif_napi_add(dev, &port->napi, eth_poll, NAPI_WEIGHT);
++	netif_napi_add(ndev, &port->napi, eth_poll, NAPI_WEIGHT);
  
--	if (!(port->npe = npe_request(NPE_ID(port->id)))) {
--		err = -EIO;
--		goto err_free;
--	}
-+	if (!(port->npe = npe_request(NPE_ID(port->id))))
-+		return -EIO;
+ 	if (!(port->npe = npe_request(NPE_ID(port->id))))
+ 		return -EIO;
  
- 	port->mem_res = request_mem_region(regs_phys, REGS_SIZE, dev->name);
+-	port->mem_res = request_mem_region(regs_phys, REGS_SIZE, dev->name);
++	port->mem_res = request_mem_region(regs_phys, REGS_SIZE, ndev->name);
  	if (!port->mem_res) {
-@@ -1467,12 +1485,10 @@ static int eth_init_one(struct platform_device *pdev)
- 	release_resource(port->mem_res);
- err_npe_rel:
- 	npe_release(port->npe);
--err_free:
--	free_netdev(dev);
- 	return err;
- }
+ 		err = -EBUSY;
+ 		goto err_npe_rel;
+@@ -1449,9 +1452,9 @@ static int ixp4xx_eth_probe(struct platform_device *pdev)
  
--static int eth_remove_one(struct platform_device *pdev)
-+static int ixp4xx_eth_remove(struct platform_device *pdev)
- {
- 	struct net_device *dev = platform_get_drvdata(pdev);
- 	struct phy_device *phydev = dev->phydev;
-@@ -1480,45 +1496,21 @@ static int eth_remove_one(struct platform_device *pdev)
+ 	port->plat = plat;
+ 	npe_port_tab[NPE_ID(port->id)] = port;
+-	memcpy(dev->dev_addr, plat->hwaddr, ETH_ALEN);
++	memcpy(ndev->dev_addr, plat->hwaddr, ETH_ALEN);
  
- 	unregister_netdev(dev);
- 	phy_disconnect(phydev);
-+	ixp4xx_mdio_remove();
- 	npe_port_tab[NPE_ID(port->id)] = NULL;
- 	npe_release(port->npe);
- 	release_resource(port->mem_res);
--	free_netdev(dev);
+-	platform_set_drvdata(pdev, dev);
++	platform_set_drvdata(pdev, ndev);
+ 
+ 	__raw_writel(DEFAULT_CORE_CNTRL | CORE_RESET,
+ 		     &port->regs->core_control);
+@@ -1461,7 +1464,7 @@ static int ixp4xx_eth_probe(struct platform_device *pdev)
+ 
+ 	snprintf(phy_id, MII_BUS_ID_SIZE + 3, PHY_ID_FMT,
+ 		mdio_bus->id, plat->phy);
+-	phydev = phy_connect(dev, phy_id, &ixp4xx_adjust_link,
++	phydev = phy_connect(ndev, phy_id, &ixp4xx_adjust_link,
+ 			     PHY_INTERFACE_MODE_MII);
+ 	if (IS_ERR(phydev)) {
+ 		err = PTR_ERR(phydev);
+@@ -1470,10 +1473,10 @@ static int ixp4xx_eth_probe(struct platform_device *pdev)
+ 
+ 	phydev->irq = PHY_POLL;
+ 
+-	if ((err = register_netdev(dev)))
++	if ((err = register_netdev(ndev)))
+ 		goto err_phy_dis;
+ 
+-	printk(KERN_INFO "%s: MII PHY %i on %s\n", dev->name, plat->phy,
++	printk(KERN_INFO "%s: MII PHY %i on %s\n", ndev->name, plat->phy,
+ 	       npe_name(port->npe));
+ 
  	return 0;
- }
+@@ -1490,11 +1493,11 @@ static int ixp4xx_eth_probe(struct platform_device *pdev)
  
- static struct platform_driver ixp4xx_eth_driver = {
- 	.driver.name	= DRV_NAME,
--	.probe		= eth_init_one,
--	.remove		= eth_remove_one,
-+	.probe		= ixp4xx_eth_probe,
-+	.remove		= ixp4xx_eth_remove,
- };
--
--static int __init eth_init_module(void)
--{
--	int err;
--
--	/*
--	 * FIXME: we bail out on device tree boot but this really needs
--	 * to be fixed in a nicer way: this registers the MDIO bus before
--	 * even matching the driver infrastructure, we should only probe
--	 * detected hardware.
--	 */
--	if (of_have_populated_dt())
--		return -ENODEV;
--	if ((err = ixp4xx_mdio_register()))
--		return err;
--	return platform_driver_register(&ixp4xx_eth_driver);
--}
--
--static void __exit eth_cleanup_module(void)
--{
--	platform_driver_unregister(&ixp4xx_eth_driver);
--	ixp4xx_mdio_remove();
--}
-+module_platform_driver(ixp4xx_eth_driver);
+ static int ixp4xx_eth_remove(struct platform_device *pdev)
+ {
+-	struct net_device *dev = platform_get_drvdata(pdev);
+-	struct phy_device *phydev = dev->phydev;
+-	struct port *port = netdev_priv(dev);
++	struct net_device *ndev = platform_get_drvdata(pdev);
++	struct phy_device *phydev = ndev->phydev;
++	struct port *port = netdev_priv(ndev);
  
- MODULE_AUTHOR("Krzysztof Halasa");
- MODULE_DESCRIPTION("Intel IXP4xx Ethernet driver");
- MODULE_LICENSE("GPL v2");
- MODULE_ALIAS("platform:ixp4xx_eth");
--module_init(eth_init_module);
--module_exit(eth_cleanup_module);
+-	unregister_netdev(dev);
++	unregister_netdev(ndev);
+ 	phy_disconnect(phydev);
+ 	ixp4xx_mdio_remove();
+ 	npe_port_tab[NPE_ID(port->id)] = NULL;
 -- 
 2.21.0
 
