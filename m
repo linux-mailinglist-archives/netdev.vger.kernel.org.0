@@ -2,100 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A6DE3138466
-	for <lists+netdev@lfdr.de>; Sun, 12 Jan 2020 02:08:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 40B01138494
+	for <lists+netdev@lfdr.de>; Sun, 12 Jan 2020 03:37:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731851AbgALBH7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Jan 2020 20:07:59 -0500
-Received: from mail-il1-f178.google.com ([209.85.166.178]:37973 "EHLO
-        mail-il1-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731842AbgALBH6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 11 Jan 2020 20:07:58 -0500
-Received: by mail-il1-f178.google.com with SMTP id f5so4946081ilq.5;
-        Sat, 11 Jan 2020 17:07:58 -0800 (PST)
+        id S1731991AbgALChQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Jan 2020 21:37:16 -0500
+Received: from mail-il1-f193.google.com ([209.85.166.193]:38083 "EHLO
+        mail-il1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731985AbgALChP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 11 Jan 2020 21:37:15 -0500
+Received: by mail-il1-f193.google.com with SMTP id f5so5027542ilq.5;
+        Sat, 11 Jan 2020 18:37:15 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=3aiZezXXLGNkOSlMbgvnEbJ3OmTH7yDpKNWYbQfNjUQ=;
-        b=f5/xXbbFsRCi094tlXh0jQCi5sAW1+5WLIeQjbYz3hblyc/YaaOqja2d2W59UWiB8Y
-         RHd5Eeg5aknI0DOcPHEi3JsnD2Tbicj00gQtKcBfZZ1a68bTFtY8R1fxJYJgHkpxUvLP
-         hU/K2oFLj+RUyOQO0W9QfhGPtDvyZ2vfg2wZMejK6F6XIGDmAAhhVVtY0d2tXveQzxpM
-         n2oS1vYFk547hzoyXpaOrpe6heLX4br1Yl/O6JV9Wy973KwTbCw0VkL3GTl2YNCXJjDV
-         xM+K9Dwc7CbUTUBoXdSHdVYaTRHiS8FAvLnODjdN9X8Rc9pBjnSJYDiDmw4azJCktkA2
-         MxOQ==
+        h=subject:from:to:cc:date:message-id:user-agent:mime-version
+         :content-transfer-encoding;
+        bh=I++qOGIiNcg90Q+eACsnB9l0fti70rH2JLo9BsRMgxU=;
+        b=JrYLt/EuWRLHzu51xBiO9AciJQr0RqgHHSb4iXthrtyEx26sCrBkzBuYJrywMtFOOd
+         Sl+sbdlJz2cOEuk9nqiNy14Zfplb4lZcg6v3cpbTmtuy9bp5pX2y7bO0GdeZVwpl5txx
+         ICeeFsW33MKiMETOJvq0YhXK7mzRG29MCvBkVGxP+ajt7uUjc5wVKqb5/bpe3Wed8yM0
+         ChvfCoYtxL/4TJI2fd9QEBppQL6pNfz9HJayrFil6mDkrbPOUG9HgrF9rRulxVxgHvI8
+         VcWn/9OaBI7U6kWdLGeuhLDUuS0rpBab4Okh5tQkeA5dMoYTM8luCbItcu+Cbjt0lFjf
+         TGDA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=3aiZezXXLGNkOSlMbgvnEbJ3OmTH7yDpKNWYbQfNjUQ=;
-        b=et71Qs6yNG4oPcY/eTN2+CM1XU+gkkZw77//tqHAnyU00+3JTy9YkYL3i0HgUkkHmu
-         Lk1FpXe8vLWiCjXhnbIOQFvaQBW4/syKUcYPlu13701qACSvQuTYfTErulFP/woye2UT
-         +lVM3MYNGzuIsoDtc3QD3cOZeAR/TfGq7gn8Q82Yf3kuhI3RwuI7ChHP8mWe39jHf424
-         D4id1ZHCFj+KkoQq7W5usWBgbv3LSAyd1aajfUjoEtxxNKCuh6QtLuwpswIni9xhs7Wg
-         4n7e1r5o+oy9VHP09XDIahq/dcsYZu6Pgbu3I2pAw5ZbfBMs7WTAKEGIQHikHB8kooE/
-         je+w==
-X-Gm-Message-State: APjAAAUNhuQsCbAdrgOK1o62ZzX/Oodh8kO+cQD/9vL5CHV+jbxQw8/t
-        YuJgbMrpKyBUZkl7sBEj8TU=
-X-Google-Smtp-Source: APXvYqz5kQz9iACCCWzGaLXyrc9pBUaYsMlyzAq1RU/d/x7QFj79JE+2WIlh1YzOEiShZK/Voufqag==
-X-Received: by 2002:a05:6e02:4c2:: with SMTP id f2mr8928553ils.126.1578791278169;
-        Sat, 11 Jan 2020 17:07:58 -0800 (PST)
-Received: from localhost ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id x77sm2270740ilk.34.2020.01.11.17.07.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 11 Jan 2020 17:07:57 -0800 (PST)
-Date:   Sat, 11 Jan 2020 17:07:49 -0800
+        h=x-gm-message-state:subject:from:to:cc:date:message-id:user-agent
+         :mime-version:content-transfer-encoding;
+        bh=I++qOGIiNcg90Q+eACsnB9l0fti70rH2JLo9BsRMgxU=;
+        b=W8LKVvtkFDtyZ/h0uGB3UNgfSGcEvkuYAGWo1LlTobj5sz5Dbux/kUR7QPCgbGkPnH
+         Vh46H/zfRXjirCO4V64fsNgepR+wZ77UoDJ1+VvtlSa3CumwWzLyBSysVgcCYi14j4WT
+         nzaAB7mJ0+L6mBAoskYQ12zzn4i1VTi3TvOolfKinO4TQSWmEsUKUWhZDrwmhhtzSJjA
+         CbwGOtcd5XPNlfuyhmmw4jbsC/pHR5fpuz4b5sBAbq9BYzYeJEvq1l2ErQz7xJ0wE+5/
+         ZWWV3RJXfH3nmfR+33d2tDnbsJx3XxgvEf0E6Oboem1XhQy3Qv2xmCr825caJbyO3Bgp
+         xkSQ==
+X-Gm-Message-State: APjAAAW5jSXNPjWE79AlqTe3r1oMO9Yj95bQVOAwbCW0T85QWkUnEVh6
+        UuSuEs/Dz+B/DhSSnmvECx4=
+X-Google-Smtp-Source: APXvYqyy32RnyQgxbbE7HRax2MDbDw/9y5XyRHf4bQeDr5HfJjIUWNoq311KbALRH9rI8IgzgtRfaA==
+X-Received: by 2002:a05:6e02:f0f:: with SMTP id x15mr8826184ilj.298.1578796635047;
+        Sat, 11 Jan 2020 18:37:15 -0800 (PST)
+Received: from [127.0.1.1] ([184.63.162.180])
+        by smtp.gmail.com with ESMTPSA id 137sm1652798iou.41.2020.01.11.18.37.05
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Sat, 11 Jan 2020 18:37:14 -0800 (PST)
+Subject: [bpf-next PATCH v2 0/2] xdp devmap improvements cleanup
 From:   John Fastabend <john.fastabend@gmail.com>
-To:     John Fastabend <john.fastabend@gmail.com>,
-        Jakub Sitnicki <jakub@cloudflare.com>, bpf@vger.kernel.org
-Cc:     netdev@vger.kernel.org, kernel-team@cloudflare.com,
-        Eric Dumazet <edumazet@google.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        Martin KaFai Lau <kafai@fb.com>
-Message-ID: <5e1a7165b4a67_76782ace374ba5c050@john-XPS-13-9370.notmuch>
-In-Reply-To: <5e1a6d8a5de6c_1e7f2b0c859c45c063@john-XPS-13-9370.notmuch>
-References: <20200110105027.257877-1-jakub@cloudflare.com>
- <20200110105027.257877-7-jakub@cloudflare.com>
- <5e1a6d8a5de6c_1e7f2b0c859c45c063@john-XPS-13-9370.notmuch>
-Subject: RE: [PATCH bpf-next v2 06/11] bpf, sockmap: Don't set up sockmap
- progs for listening sockets
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
+To:     bjorn.topel@gmail.com, bpf@vger.kernel.org, toke@redhat.com,
+        toshiaki.makita1@gmail.com
+Cc:     netdev@vger.kernel.org, john.fastabend@gmail.com, ast@kernel.org,
+        daniel@iogearbox.net
+Date:   Sat, 11 Jan 2020 18:36:59 -0800
+Message-ID: <157879606461.8200.2816751890292483534.stgit@john-Precision-5820-Tower>
+User-Agent: StGit/0.17.1-dirty
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-John Fastabend wrote:
-> Jakub Sitnicki wrote:
-> > Now that sockmap can hold listening sockets, when setting up the psock we
-> > will (i) grab references to verdict/parser progs, and (2) override socket
-> > upcalls sk_data_ready and sk_write_space.
-> > 
-> > We cannot redirect to listening sockets so we don't need to link the socket
-> > to the BPF progs, but more importantly we don't want the listening socket
-> > to have overridden upcalls because they would get inherited by child
-> > sockets cloned from it.
-> > 
-> > Introduce a separate initialization path for listening sockets that does
-> > not change the upcalls and ignores the BPF progs.
-> > 
-> > Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
-> > ---
-> >  net/core/sock_map.c | 34 +++++++++++++++++++++++++++++++++-
-> >  1 file changed, 33 insertions(+), 1 deletion(-)
-> 
-> 
-> Any reason only support for sock_map types are added? We can also support
-> sock_hash I presume? Could be a follow up patch I guess but if its not
-> too much trouble would be worth adding now vs trying to detect at run
-> time later. I think it should be as simple as using similar logic as
-> below in sock_hash_update_common
-> 
-> Thanks.
+Couple cleanup patches to recently posted series[0] from Bjorn to
+cleanup and optimize the devmap usage. Patches have commit ids
+the cleanup applies to.
 
-After running through the other patches I think its probably OK to do hash
-support as a follow up. Up to you.
+Toshiaki, noted that virtio_net depends on rcu_lock being held
+when calling xdp flush routines. This is specific to virtio_net
+dereferencing xdp program to determine if xdp is enabled or not.
+More typical pattern is to look at a flag set by the driver, at
+least in the case of real hardware drivers. veth has a similar
+requirement where it derferences the peer netdev priv structure
+requiring the rcu_read_lock. I believe its better to put the
+rcu_read_lock()/unlock() pair where its actually used in the
+driver. FWIW in other xdp paths we expect driver writers to
+place rcu_read_lock/unlock pairs where they are needed as well
+so this keeps that expectation. Also it improves readability
+making it obvious why the rcu_read_lock and unlock pair is
+needed. In the virtio case we can probably do some further
+cleanup and remove it altogether if we want. For more details
+see patch 2/2.
+
+[0] https://www.spinics.net/lists/netdev/msg620639.html
+
+v2: Place rcu_read_{un}lock pair in virtio_net and veth drivers
+    so we don't break this requirement when removing rcu read
+    lock from devmap.
+
+---
+
+John Fastabend (2):
+      bpf: xdp, update devmap comments to reflect napi/rcu usage
+      bpf: xdp, remove no longer required rcu_read_{un}lock()
+
+
+ drivers/net/veth.c       |    6 +++++-
+ drivers/net/virtio_net.c |    8 ++++++--
+ kernel/bpf/devmap.c      |   26 ++++++++++++++------------
+ 3 files changed, 25 insertions(+), 15 deletions(-)
+
+--
+Signature
