@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A79151386FD
-	for <lists+netdev@lfdr.de>; Sun, 12 Jan 2020 17:07:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 783FC1386FE
+	for <lists+netdev@lfdr.de>; Sun, 12 Jan 2020 17:07:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733113AbgALQHL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 12 Jan 2020 11:07:11 -0500
-Received: from out3-smtp.messagingengine.com ([66.111.4.27]:57887 "EHLO
+        id S1733118AbgALQHO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 12 Jan 2020 11:07:14 -0500
+Received: from out3-smtp.messagingengine.com ([66.111.4.27]:34425 "EHLO
         out3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1733064AbgALQHK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 12 Jan 2020 11:07:10 -0500
+        by vger.kernel.org with ESMTP id S1733064AbgALQHM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 12 Jan 2020 11:07:12 -0500
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 2449E22076;
-        Sun, 12 Jan 2020 11:07:10 -0500 (EST)
+        by mailout.nyi.internal (Postfix) with ESMTP id ECCD42207A;
+        Sun, 12 Jan 2020 11:07:11 -0500 (EST)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Sun, 12 Jan 2020 11:07:10 -0500
+  by compute3.internal (MEProxy); Sun, 12 Jan 2020 11:07:11 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; bh=fbX9g5Z9mHki9I17GjdDTjOrweQRLr7zREd+KBWp/DU=; b=kAh9l62O
-        PdyOZtXZKRpRxgPDdagRtTD2wAoOBbeXxXpIHa8VLDUS796/2LMuy9UmNw0M2sau
-        hlCGOnAdhD2CBv2gIOZMVOUTnTs2bnpYK9pP1ULwP2tM7ev9+TTEIxxunB8OFV4j
-        LIpxeMbJVyotbjK/rcboFuGfcvDl6SoJ11zKrr0akJa4/GSzK08q03h1Vpmdhe3w
-        8V/hESyoWN+JdJ29iSyl0Mr+li40LOdkz3NRIV5GPBohjkqLRw6Aymkoj3Y0eXIz
-        OVuC3ApgZkTLxZ1ODq7qNJVbEEl0NNsWxbJFa++N+y/lW00hKY5oOh7/4dz08Y3g
-        6EYoNLlplX0w/g==
-X-ME-Sender: <xms:LkQbXjg6vM0Mu2shCyljcIdaJ7T2NJpcUwsJjrTMoun6z7UJ29yNqg>
+        fm1; bh=D3i1JmeFAwsJ5CpQHqA/fqC6YT2L/rJwbmBXt8WF5M4=; b=WDz7dMdQ
+        hsphRNAwaTR8Temk5U5diRIPK4kq1xMxxulCu7SfQMQCeKMG/EEUkwFVa07JHZMa
+        elbDmE4Cbp4omYrdWQ7COOfo8/B279BX51whd6rwF4LWLNfeKBw9BQ3qazb0Vmyt
+        HRDZ9PnoUosf1alzVqK7FjWQjT8ocs95iS89SbT83dAmxCbUPzL3xQprUtBND+xp
+        B7ZSr/WovEIJdDSxzhBQbxbYHsPGEQkO+8qBBMDHDMBCdc4ANh4kj0/VfADEsHHn
+        NW7hziSCf4Kzr6vqjz97fWXevbIOmkjMJ6QCVEPSHVocscuLEh8ooyAn5tg/TeTM
+        6+Ouczbx+IMPiw==
+X-ME-Sender: <xms:L0QbXlNmbS0vbyiFrwkvNRsQZwMSCqUmtMNkud-WwmvfVWLECaDyOQ>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedufedrvdeikedgkeehucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
@@ -35,21 +35,21 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedufedrvdeikedgkeehucetufdoteggod
     tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucfkphepudelfe
     drgeejrdduieehrddvhedunecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhes
     ihguohhstghhrdhorhhgnecuvehluhhsthgvrhfuihiivgeptd
-X-ME-Proxy: <xmx:LkQbXqsO9cU5dfujlEXyrqChn04qhIPRmd57M0__EUO5OnYAiJC5jg>
-    <xmx:LkQbXnFj8-UjplnIo2cx_yGnoKh1-uOx66K1yjNMyowyJikfM8kvrw>
-    <xmx:LkQbXg8pwXpKkGwizssm-Mre3c5p0PqxPiuljB_01BndzjydOPkSzQ>
-    <xmx:LkQbXlvdY0YZan1W7DiHWx2oGigede6hjYe3PBfgNHtOK-kTfy9GKw>
+X-ME-Proxy: <xmx:L0QbXqyyi8ngrHJ6SWXV20HKCfmwmjTcNP26cMBiFOO1k7sOI6p2WA>
+    <xmx:L0QbXprU-d3U5UaxJZc3T_Vyzlw9Jog7isfSNo7eiA_yS1Rtpfeuaw>
+    <xmx:L0QbXvdgqxCYgRBvuJDASEPdE5p0r8D356VkR6gO4aVtJIxEhb7uMw>
+    <xmx:L0QbXo055uz0qPEUNY3_fQkG3QhUdCSg0XPAnHl_iW4sLlS9ToxzYA>
 Received: from splinter.mtl.com (unknown [193.47.165.251])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 8DB1C80059;
-        Sun, 12 Jan 2020 11:07:08 -0500 (EST)
+        by mail.messagingengine.com (Postfix) with ESMTPA id 3DA6480059;
+        Sun, 12 Jan 2020 11:07:10 -0500 (EST)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, jiri@mellanox.com, mlxsw@mellanox.com,
-        Shalom Toledo <shalomt@mellanox.com>,
+        Petr Machata <petrm@mellanox.com>,
         Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net 3/4] mlxsw: spectrum: Do not modify cloned SKBs during xmit
-Date:   Sun, 12 Jan 2020 18:06:40 +0200
-Message-Id: <20200112160641.282108-4-idosch@idosch.org>
+Subject: [PATCH net 4/4] selftests: mlxsw: qos_mc_aware: Fix mausezahn invocation
+Date:   Sun, 12 Jan 2020 18:06:41 +0200
+Message-Id: <20200112160641.282108-5-idosch@idosch.org>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20200112160641.282108-1-idosch@idosch.org>
 References: <20200112160641.282108-1-idosch@idosch.org>
@@ -60,56 +60,50 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Shalom Toledo <shalomt@mellanox.com>
+From: Petr Machata <petrm@mellanox.com>
 
-The driver needs to prepend a Tx header to each packet it is transmitting.
-The header includes information such as the egress port and traffic class.
+Mausezahn does not recognize "own" as a keyword on source IP address. As a
+result, the MC stream is not running at all, and therefore no UC
+degradation can be observed even in principle.
 
-The addition of the header requires the driver to modify the SKB's data
-buffer and therefore the SKB must be unshared first. Otherwise, we risk
-hitting various race conditions with cloned SKBs.
+Fix the invocation, and tighten the test: due to the minimum shaper
+configured at the MC TCs, we always expect about 20% degradation. Fail the
+test if it is lower.
 
-For example, when a packet is flooded (cloned) by the bridge driver to two
-switch ports swp1 and swp2:
-
-t0 - mlxsw_sp_port_xmit() is called for swp1. Tx header is prepended with
-     swp1's port number
-t1 - mlxsw_sp_port_xmit() is called for swp2. Tx header is prepended with
-     swp2's port number, overwriting swp1's port number
-t2 - The device processes data buffer from t0. Packet is transmitted via
-     swp2
-t3 - The device processes data buffer from t1. Packet is transmitted via
-     swp2
-
-Usually, the device is fast enough and transmits the packet before its
-Tx header is overwritten, but this is not the case in emulated
-environments.
-
-Fix this by unsharing the SKB.
-
-Fixes: 56ade8fe3fe1 ("mlxsw: spectrum: Add initial support for Spectrum ASIC")
-Signed-off-by: Shalom Toledo <shalomt@mellanox.com>
-Acked-by: Jiri Pirko <jiri@mellanox.com>
+Fixes: 573363a68f27 ("selftests: mlxsw: Add qos_lib.sh")
+Signed-off-by: Petr Machata <petrm@mellanox.com>
+Reported-by: Amit Cohen <amitc@mellanox.com>
 Signed-off-by: Ido Schimmel <idosch@mellanox.com>
 ---
- drivers/net/ethernet/mellanox/mlxsw/spectrum.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ tools/testing/selftests/drivers/net/mlxsw/qos_mc_aware.sh | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-index 5408a964bd10..6c7bf93dd804 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-@@ -860,6 +860,10 @@ static netdev_tx_t mlxsw_sp_port_xmit(struct sk_buff *skb,
- 	u64 len;
- 	int err;
+diff --git a/tools/testing/selftests/drivers/net/mlxsw/qos_mc_aware.sh b/tools/testing/selftests/drivers/net/mlxsw/qos_mc_aware.sh
+index 47315fe48d5a..24dd8ed48580 100755
+--- a/tools/testing/selftests/drivers/net/mlxsw/qos_mc_aware.sh
++++ b/tools/testing/selftests/drivers/net/mlxsw/qos_mc_aware.sh
+@@ -232,7 +232,7 @@ test_mc_aware()
+ 	stop_traffic
+ 	local ucth1=${uc_rate[1]}
  
-+	skb = skb_unshare(skb, GFP_ATOMIC);
-+	if (unlikely(!skb))
-+		return NETDEV_TX_BUSY;
+-	start_traffic $h1 own bc bc
++	start_traffic $h1 192.0.2.65 bc bc
+ 
+ 	local d0=$(date +%s)
+ 	local t0=$(ethtool_stats_get $h3 rx_octets_prio_0)
+@@ -254,7 +254,11 @@ test_mc_aware()
+ 			ret = 100 * ($ucth1 - $ucth2) / $ucth1
+ 			if (ret > 0) { ret } else { 0 }
+ 		    ")
+-	check_err $(bc <<< "$deg > 25")
 +
- 	memset(skb->cb, 0, sizeof(struct mlxsw_skb_cb));
++	# Minimum shaper of 200Mbps on MC TCs should cause about 20% of
++	# degradation on 1Gbps link.
++	check_err $(bc <<< "$deg < 15") "Minimum shaper not in effect"
++	check_err $(bc <<< "$deg > 25") "MC traffic degrades UC performance too much"
  
- 	if (mlxsw_core_skb_transmit_busy(mlxsw_sp->core, &tx_info))
+ 	local interval=$((d1 - d0))
+ 	local mc_ir=$(rate $u0 $u1 $interval)
 -- 
 2.24.1
 
