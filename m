@@ -2,71 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 313B013882B
-	for <lists+netdev@lfdr.de>; Sun, 12 Jan 2020 21:13:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 11F29138843
+	for <lists+netdev@lfdr.de>; Sun, 12 Jan 2020 21:45:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387399AbgALUNC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 12 Jan 2020 15:13:02 -0500
-Received: from mail-il1-f197.google.com ([209.85.166.197]:36931 "EHLO
-        mail-il1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1733280AbgALUNB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 12 Jan 2020 15:13:01 -0500
-Received: by mail-il1-f197.google.com with SMTP id l13so6432764ilj.4
-        for <netdev@vger.kernel.org>; Sun, 12 Jan 2020 12:13:01 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=wSZwdREHh/ntl8Mv5tdng+7hV3BjjjHVSK0hr94al3E=;
-        b=ltJn/J2LBceEseAq2CCe3416FGYGi2gM/Cghc08rYnvd+2JRT0Qjsf4uy/nwiw+/1O
-         AHX3VbtrwaTaArfkn+nBgY2xIZGQwfs6Qn1JN3+p+IwnCR4AsKXqcwH++/qmV/3IJBnM
-         ArBybozAnwFtKI1iwPegCRUWsIeHGhf24kLp3Q45QaYR3jMAsHpR9oU58L8BCSDFhl12
-         sm1RiPcwDbiJ8Plddmw/KnlN8UoyYGKVohJy0O97K+21NOzBpQOQHMe9o+l+tmeeS1ad
-         nWhjxtKOm+oJf7/z+FHG715F9ZcpNs2Gxhv9i3RzrEyY+PIuRc78/ciXBjemTOMu5HoP
-         SRWA==
-X-Gm-Message-State: APjAAAUtXUYbh5OwhGPV9Rhal61FY+Yyz7Vq9EAMETnan3v2+nknTimI
-        F4fck6w+7zSQ1Fh5O6i11LpS/35hRFFDg7+vqqUJ4JbrnN7S
-X-Google-Smtp-Source: APXvYqysv5E1t8WrfxtjWbC+uwQ/9OlRxhNSPyvPDsydc1sPB0QD741bCxjYAsJLKOy90RBDJm5/NfigIYFyDkKVs3CU0i6ItP1R
+        id S2387416AbgALUpd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 12 Jan 2020 15:45:33 -0500
+Received: from mx4.wp.pl ([212.77.101.11]:32345 "EHLO mx4.wp.pl"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1732825AbgALUpc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 12 Jan 2020 15:45:32 -0500
+Received: (wp-smtpd smtp.wp.pl 22672 invoked from network); 12 Jan 2020 21:45:29 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=wp.pl; s=1024a;
+          t=1578861930; bh=hiso0TBhVn9E3h2VZK4Ha0yg4s3zeLiMWHTl0ZvCCLc=;
+          h=From:To:Cc:Subject;
+          b=vn9nXgrrrHcbBbI5UCJ9S956hfAsCA4S6/ny4Qtou4Vo6BrL9/43pU/wMLFSb5oPD
+           /M7pb0nkjtk2BxBrzUiJueTlZe938b0ZrPv6a8ZhcKiivmOJ1SkqLoSkBevbmdfaax
+           6cLXvfUW6A9jyrW+ETaGFO+VhdV+pHIAKw7nd7jE=
+Received: from c-73-93-4-247.hsd1.ca.comcast.net (HELO cakuba) (kubakici@wp.pl@[73.93.4.247])
+          (envelope-sender <kubakici@wp.pl>)
+          by smtp.wp.pl (WP-SMTPD) with ECDHE-RSA-AES256-GCM-SHA384 encrypted SMTP
+          for <linyunsheng@huawei.com>; 12 Jan 2020 21:45:29 +0100
+Date:   Sun, 12 Jan 2020 12:45:21 -0800
+From:   Jakub Kicinski <kubakici@wp.pl>
+To:     Yunsheng Lin <linyunsheng@huawei.com>
+Cc:     Jacob Keller <jacob.e.keller@intel.com>, <netdev@vger.kernel.org>,
+        <valex@mellanox.com>, <jiri@resnulli.us>
+Subject: Re: [PATCH v2 0/3] devlink region trigger support
+Message-ID: <20200112124521.467fa06a@cakuba>
+In-Reply-To: <fe6c0d5e-5705-1118-1a71-80bd0e26a97e@huawei.com>
+References: <20200109193311.1352330-1-jacob.e.keller@intel.com>
+        <4d8fe881-8d36-06dd-667a-276a717a0d89@huawei.com>
+        <1d00deb9-16fc-b2a5-f8f7-5bb8316dbac2@intel.com>
+        <fe6c0d5e-5705-1118-1a71-80bd0e26a97e@huawei.com>
 MIME-Version: 1.0
-X-Received: by 2002:a92:da44:: with SMTP id p4mr12562216ilq.168.1578859980942;
- Sun, 12 Jan 2020 12:13:00 -0800 (PST)
-Date:   Sun, 12 Jan 2020 12:13:00 -0800
-In-Reply-To: <000000000000af1c5b059be111e5@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000005073ea059bf6fce1@google.com>
-Subject: Re: general protection fault in xt_rateest_put
-From:   syzbot <syzbot+91bdd8eece0f6629ec8b@syzkaller.appspotmail.com>
-To:     coreteam@netfilter.org, davem@davemloft.net, edumazet@google.com,
-        fw@strlen.de, kadlec@blackhole.kfki.hu, kadlec@netfilter.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, pablo@netfilter.org,
-        syzkaller-bugs@googlegroups.com, xiyou.wangcong@gmail.com
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-WP-MailID: a89c90e55a1a084ed5cad8185d133461
+X-WP-AV: skaner antywirusowy Poczty Wirtualnej Polski
+X-WP-SPAM: NO 000000A [UfM0]                               
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has bisected this bug to:
+On Sat, 11 Jan 2020 09:51:00 +0800, Yunsheng Lin wrote:
+> > regions can essentially be used to dump arbitrary addressable content. I
+> > think all of the above are great examples.
+> > 
+> > I have a series of patches to update and convert the devlink
+> > documentation, and I do provide some further detail in the new
+> > devlink-region.rst file.
+> > 
+> > Perhaps you could review that and provide suggestions on what would make
+> > sense to add there?  
+> 
+> For the case of region for mlx4, I am not sure it worths the effort to
+> document it, because Jiri has mention that there was plan to convert mlx4 to
+> use "devlink health" api for the above case.
+> 
+> Also, there is dpipe, health and region api:
+> For health and region, they seems similar to me, and the non-essential
+> difference is:
+> 1. health can be used used to dump content of tlv style, and can be triggered
+>    by driver automatically or by user manually.
+> 
+> 2. region can be used to dump binary content and can be triggered by driver
+>    automatically only.
+> 
+> It would be good to merged the above to the same api(perhaps merge the binary
+> content dumping of region api to health api), then we can resue the same dump
+> ops for both driver and user triggering case.
 
-commit 3427b2ab63faccafe774ea997fc2da7faf690c5a
-Author: Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Fri Mar 2 02:58:38 2018 +0000
-
-     netfilter: make xt_rateest hash table per net
-
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=129b9c35e00000
-start commit:   e69ec487 Merge branch 'for-linus' of git://git.kernel.org/..
-git tree:       upstream
-final crash:    https://syzkaller.appspot.com/x/report.txt?x=119b9c35e00000
-console output: https://syzkaller.appspot.com/x/log.txt?x=169b9c35e00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=18698c0c240ba616
-dashboard link: https://syzkaller.appspot.com/bug?extid=91bdd8eece0f6629ec8b
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=13dbd58ee00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=15eff9e1e00000
-
-Reported-by: syzbot+91bdd8eece0f6629ec8b@syzkaller.appspotmail.com
-Fixes: 3427b2ab63fa ("netfilter: make xt_rateest hash table per net")
-
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+I think there is a fundamental difference between health API and
+regions in the fact that health reporters allow for returning
+structured data from different sources which are associated with 
+an event/error condition. That includes information read from the
+hardware or driver/software state. Region API (as Jake said) is good
+for dumping arbitrary addressable content, e.g. registers. I don't see
+much use for merging the two right now, FWIW...
