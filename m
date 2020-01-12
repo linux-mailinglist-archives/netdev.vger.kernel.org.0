@@ -2,105 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6DC741385FF
-	for <lists+netdev@lfdr.de>; Sun, 12 Jan 2020 12:22:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C2B1113861D
+	for <lists+netdev@lfdr.de>; Sun, 12 Jan 2020 13:05:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732696AbgALLWL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 12 Jan 2020 06:22:11 -0500
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:38079 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1732692AbgALLWK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 12 Jan 2020 06:22:10 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1578828129;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=OyYLN7biZthy4ZgKpi4qBC5XSIISZKtzeFJ2niSFzW8=;
-        b=HUBmwfQYYWj7j+yYNu06nkqigBLPBMgWnAb79FjReVUOrAYcd1WDtoO+/i/NaUE8wP8l/g
-        3tO6GQHRGWz3yRANRamiAcfyszknAqkWKr89BR8Jj2iykuzQa0gC79eXLj+d/Tk44n76TB
-        MJ3H7/ms5yMtW6DpZ1av9nAP75t3IZw=
-Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
- [209.85.221.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-263-nqXcS-k_OTSQYpSZK01nnw-1; Sun, 12 Jan 2020 06:22:08 -0500
-X-MC-Unique: nqXcS-k_OTSQYpSZK01nnw-1
-Received: by mail-wr1-f72.google.com with SMTP id z10so3485367wrt.21
-        for <netdev@vger.kernel.org>; Sun, 12 Jan 2020 03:22:07 -0800 (PST)
+        id S1732778AbgALME6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 12 Jan 2020 07:04:58 -0500
+Received: from mail-lf1-f66.google.com ([209.85.167.66]:36482 "EHLO
+        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732774AbgALME6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 12 Jan 2020 07:04:58 -0500
+Received: by mail-lf1-f66.google.com with SMTP id n12so4831976lfe.3
+        for <netdev@vger.kernel.org>; Sun, 12 Jan 2020 04:04:56 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=v2MVhT9CoFfKWNrsL6FPFLZGPfRIgjwWLVXDfnLxqnU=;
+        b=xyrppyNL+9mToJ8hZQYnJgNI3YbmaOFwvADOVOgJsSfAUWcRWZ/MTHNO+wF2ihWb2w
+         Q7bjs02GDMO4T/7QuJ3qfKtnAzm1qRtGJ8ds98snhcMrIo2N5X9OOtvqoDTkSsvgvqNa
+         holZSOj9H/D1ddo5Tw+UsS5lgAUDQEK0DO256ngYxBfCDw0KJQvo1yCuviKP46zT4dQM
+         2tUUm5PBjh2Un9fE0GmcAbFtuRFv43a9WNVyN/riv0jqvfb6a+apavqtJB7oQ61DN2TY
+         A52kGm3si2Yryopi+dKzUqc/8/JzzhYTHWlm0fPbsOvUhVcXSNSq2XQ9fw+kRfxWYXrv
+         CB+g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=OyYLN7biZthy4ZgKpi4qBC5XSIISZKtzeFJ2niSFzW8=;
-        b=pC8pOZu7bMOqAQDgspsIVBcelM8XeFF0WwNgU5Z9OJiG5fjUvzlT+w+GmeTBXnWZpX
-         R2ljKa2ckT8EhY2xMkRor7JhJKVnQRmT82UrJJ7xokhzhCNXNdYCxqSFXvh0ZzDy5X2/
-         NIOpwsGNruD2czkst7CnRoYNTVJ054jXCQDpl4nPCX8FTvo4gidJwmwnQYUrUXoSFfiK
-         YKn58vIc3qR9LGi6AfoFfO0O+9sT2YBOcT4dK/R2Hsufnol9yZHip1osKcHBjt3hyzNH
-         CykVzzCp93zfT+CYs2tFVW6AAe4hY8vhQt/C0dW5PxNAujgIzM5CtEbLFGZ0yVp/VJai
-         +h9A==
-X-Gm-Message-State: APjAAAUfzArrpvsJbw3U5yEfNBV6lIcTrn8tbui4TH0yc/Gc8AtlGxjR
-        XjQUe7Ua73QBPC6lVbPXMx8IypDEWKVTEVgecn5PcOBJdjStWbI34cPHj4Y51AS3wGzon07sehl
-        KnfIl7UKLr9GS9E1x
-X-Received: by 2002:a1c:f31a:: with SMTP id q26mr14239273wmq.142.1578828126898;
-        Sun, 12 Jan 2020 03:22:06 -0800 (PST)
-X-Google-Smtp-Source: APXvYqwz9fioFKDalqOic1TVY0mou4uz6C3C/929qnEGdrE0P9cH/kAwIEOkYjp2Ub2x1s7aSWhQyw==
-X-Received: by 2002:a1c:f31a:: with SMTP id q26mr14239257wmq.142.1578828126721;
-        Sun, 12 Jan 2020 03:22:06 -0800 (PST)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id w17sm10371564wrt.89.2020.01.12.03.22.05
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=v2MVhT9CoFfKWNrsL6FPFLZGPfRIgjwWLVXDfnLxqnU=;
+        b=bmTDN6bvugcOb8TEpy4rcCxpmWauTxkkGepyfpG0vRtSWG1Ku1CpXYIq/RdEx4CybF
+         tF0IhnFe2M1ZTdjPTKIRs7XTeCzVJ8OSl7soKkDj6AREvtELw8V67RpQkVMVpLJD0ubp
+         cM/+M+CdyOYZoA9Q4+M7Rn4PthbtyKpj8+AdswgJBz/nchTrByhAjbRN8ac+3qiZ9LE8
+         4JwdTy1CkkK9MhzIjawNTTxpBHddYS9P3ydD+lb5u7/J9qYYY3KHSYUqDro8HJB/WJEg
+         oLWOY8Evl3q+VvyFQPv8Qxa5Uziv2MXKk4widhZI/meay7Wtgsb5HMmyp/ePUgE9qLSB
+         P+RQ==
+X-Gm-Message-State: APjAAAU9zjNf2GpkLOQVd99S77t0FxO/LeF1LRFrOzzdQzmg5ntkt8WL
+        c79+M3TuJoHoqXex8y7s18YMpj8kUhDpTA==
+X-Google-Smtp-Source: APXvYqwWlQpwi+7wFvU59X18zaCqu3UWGd/ct5Tkzx5493mHdCGMMig3QbPpbpLpULWyZ3oLO/GfBA==
+X-Received: by 2002:a19:c1c1:: with SMTP id r184mr7495784lff.128.1578830695963;
+        Sun, 12 Jan 2020 04:04:55 -0800 (PST)
+Received: from localhost.bredbandsbolaget (c-5ac9225c.014-348-6c756e10.bbcust.telenor.se. [92.34.201.90])
+        by smtp.gmail.com with ESMTPSA id z7sm4660347lfa.81.2020.01.12.04.04.54
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 12 Jan 2020 03:22:06 -0800 (PST)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 85DA71804D6; Sun, 12 Jan 2020 12:22:05 +0100 (CET)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     John Fastabend <john.fastabend@gmail.com>, bjorn.topel@gmail.com,
-        bpf@vger.kernel.org, toshiaki.makita1@gmail.com
-Cc:     netdev@vger.kernel.org, john.fastabend@gmail.com, ast@kernel.org,
-        daniel@iogearbox.net
-Subject: Re: [bpf-next PATCH v2 2/2] bpf: xdp, remove no longer required rcu_read_{un}lock()
-In-Reply-To: <157879666276.8200.5529955400195897154.stgit@john-Precision-5820-Tower>
-References: <157879606461.8200.2816751890292483534.stgit@john-Precision-5820-Tower> <157879666276.8200.5529955400195897154.stgit@john-Precision-5820-Tower>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Sun, 12 Jan 2020 12:22:05 +0100
-Message-ID: <87muasx6le.fsf@toke.dk>
+        Sun, 12 Jan 2020 04:04:55 -0800 (PST)
+From:   Linus Walleij <linus.walleij@linaro.org>
+To:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Linus Walleij <linus.walleij@linaro.org>
+Subject: [PATCH net-next 0/9 v5] IXP4xx networking cleanups
+Date:   Sun, 12 Jan 2020 13:04:41 +0100
+Message-Id: <20200112120450.11874-1-linus.walleij@linaro.org>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-John Fastabend <john.fastabend@gmail.com> writes:
+This v5 is a rebase of the v4 patch set on top of
+net-next.
 
-> Now that we depend on rcu_call() and synchronize_rcu() to also wait
-> for preempt_disabled region to complete the rcu read critical section
-> in __dev_map_flush() is no longer required. Except in a few special
-> cases in drivers that need it for other reasons.
->
-> These originally ensured the map reference was safe while a map was
-> also being free'd. And additionally that bpf program updates via
-> ndo_bpf did not happen while flush updates were in flight. But flush
-> by new rules can only be called from preempt-disabled NAPI context.
-> The synchronize_rcu from the map free path and the rcu_call from the
-> delete path will ensure the reference there is safe. So lets remove
-> the rcu_read_lock and rcu_read_unlock pair to avoid any confusion
-> around how this is being protected.
->
-> If the rcu_read_lock was required it would mean errors in the above
-> logic and the original patch would also be wrong.
->
-> Now that we have done above we put the rcu_read_lock in the driver
-> code where it is needed in a driver dependent way. I think this
-> helps readability of the code so we know where and why we are
-> taking read locks. Most drivers will not need rcu_read_locks here
-> and further XDP drivers already have rcu_read_locks in their code
-> paths for reading xdp programs on RX side so this makes it symmetric
-> where we don't have half of rcu critical sections define in driver
-> and the other half in devmap.
->
-> Fixes: 0536b85239b84 ("xdp: Simplify devmap cleanup")
-> Signed-off-by: John Fastabend <john.fastabend@gmail.com>
+Arnd Bergmann (4):
+  wan: ixp4xx_hss: fix compile-testing on 64-bit
+  wan: ixp4xx_hss: prepare compile testing
+  ptp: ixp46x: move adjacent to ethernet driver
+  ixp4xx_eth: move platform_data definition
 
-Acked-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+Linus Walleij (5):
+  net: ethernet: ixp4xx: Standard module init
+  net: ethernet: ixp4xx: Use distinct local variable
+  net: ehernet: ixp4xx: Use netdev_* messages
+  ARM/net: ixp4xx: Pass ethernet physical base as resource
+  net: ethernet: ixp4xx: Use parent dev for DMA pool
+
+ arch/arm/mach-ixp4xx/fsg-setup.c              |  20 ++
+ arch/arm/mach-ixp4xx/goramo_mlr.c             |  24 ++
+ arch/arm/mach-ixp4xx/include/mach/platform.h  |  22 +-
+ arch/arm/mach-ixp4xx/ixdp425-setup.c          |  20 ++
+ arch/arm/mach-ixp4xx/nas100d-setup.c          |  10 +
+ arch/arm/mach-ixp4xx/nslu2-setup.c            |  10 +
+ arch/arm/mach-ixp4xx/omixp-setup.c            |  20 ++
+ arch/arm/mach-ixp4xx/vulcan-setup.c           |  20 ++
+ drivers/net/ethernet/xscale/Kconfig           |  14 ++
+ drivers/net/ethernet/xscale/Makefile          |   3 +-
+ .../net/ethernet/xscale}/ixp46x_ts.h          |   0
+ drivers/net/ethernet/xscale/ixp4xx_eth.c      | 213 +++++++++---------
+ .../{ptp => net/ethernet/xscale}/ptp_ixp46x.c |   3 +-
+ drivers/net/wan/Kconfig                       |   3 +-
+ drivers/net/wan/ixp4xx_hss.c                  |  39 ++--
+ drivers/ptp/Kconfig                           |  14 --
+ drivers/ptp/Makefile                          |   3 +-
+ include/linux/platform_data/eth_ixp4xx.h      |  19 ++
+ include/linux/platform_data/wan_ixp4xx_hss.h  |  17 ++
+ 19 files changed, 307 insertions(+), 167 deletions(-)
+ rename {arch/arm/mach-ixp4xx/include/mach => drivers/net/ethernet/xscale}/ixp46x_ts.h (100%)
+ rename drivers/{ptp => net/ethernet/xscale}/ptp_ixp46x.c (99%)
+ create mode 100644 include/linux/platform_data/eth_ixp4xx.h
+ create mode 100644 include/linux/platform_data/wan_ixp4xx_hss.h
+
+-- 
+2.21.0
 
