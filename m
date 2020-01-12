@@ -2,106 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1113A1387F8
-	for <lists+netdev@lfdr.de>; Sun, 12 Jan 2020 20:51:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 313B013882B
+	for <lists+netdev@lfdr.de>; Sun, 12 Jan 2020 21:13:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733269AbgALTvG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 12 Jan 2020 14:51:06 -0500
-Received: from bilbo.ozlabs.org ([203.11.71.1]:45273 "EHLO ozlabs.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1732957AbgALTvG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 12 Jan 2020 14:51:06 -0500
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 47wnQb4Mvpz9s29;
-        Mon, 13 Jan 2020 06:51:02 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1578858664;
-        bh=YJrCAGCTW+pQ5Aa6nSfF6ttqD/5c99CvooxYkZ1k7rI=;
-        h=Date:From:To:Cc:Subject:From;
-        b=s+QfH5pVowiaXM4tywG/+M7If6zwgOb/MjyXy2j/qUFmgni+FKvPzcBDCfZd2q5L9
-         nynP+RbvfbHgUpK2gYE3yKtv4Rjzrs5ll+E4MLMcJSdXG6cc669SoA/z+4b22BI9f6
-         seQAmfWRZzP/EOcBk82fJlOZqDTe5hPfTaFt+h5X9tMmoH9BA1xKY7qUw7PkNQdeTx
-         xmHzQwhzuEgAS7WX8MnnGxd1Oo3cjRnDSs6YiaYX3IX7VgeIcyTgaL7q+OLOjuAGMn
-         1GavuWld8l0vILEd9jeUX0Nina7UMgy74EjccQfpmheUhrHHJLGIFf8kg+2DAzhwro
-         hqiuloOW9VEXA==
-Date:   Mon, 13 Jan 2020 06:50:54 +1100
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Dan Murphy <dmurphy@ti.com>
-Subject: linux-next: Fixes tags need some work in the net tree
-Message-ID: <20200113065054.25c85bac@canb.auug.org.au>
+        id S2387399AbgALUNC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 12 Jan 2020 15:13:02 -0500
+Received: from mail-il1-f197.google.com ([209.85.166.197]:36931 "EHLO
+        mail-il1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1733280AbgALUNB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 12 Jan 2020 15:13:01 -0500
+Received: by mail-il1-f197.google.com with SMTP id l13so6432764ilj.4
+        for <netdev@vger.kernel.org>; Sun, 12 Jan 2020 12:13:01 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=wSZwdREHh/ntl8Mv5tdng+7hV3BjjjHVSK0hr94al3E=;
+        b=ltJn/J2LBceEseAq2CCe3416FGYGi2gM/Cghc08rYnvd+2JRT0Qjsf4uy/nwiw+/1O
+         AHX3VbtrwaTaArfkn+nBgY2xIZGQwfs6Qn1JN3+p+IwnCR4AsKXqcwH++/qmV/3IJBnM
+         ArBybozAnwFtKI1iwPegCRUWsIeHGhf24kLp3Q45QaYR3jMAsHpR9oU58L8BCSDFhl12
+         sm1RiPcwDbiJ8Plddmw/KnlN8UoyYGKVohJy0O97K+21NOzBpQOQHMe9o+l+tmeeS1ad
+         nWhjxtKOm+oJf7/z+FHG715F9ZcpNs2Gxhv9i3RzrEyY+PIuRc78/ciXBjemTOMu5HoP
+         SRWA==
+X-Gm-Message-State: APjAAAUtXUYbh5OwhGPV9Rhal61FY+Yyz7Vq9EAMETnan3v2+nknTimI
+        F4fck6w+7zSQ1Fh5O6i11LpS/35hRFFDg7+vqqUJ4JbrnN7S
+X-Google-Smtp-Source: APXvYqysv5E1t8WrfxtjWbC+uwQ/9OlRxhNSPyvPDsydc1sPB0QD741bCxjYAsJLKOy90RBDJm5/NfigIYFyDkKVs3CU0i6ItP1R
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/CvnqbAAkyhjcYWh8YyqqyGO";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+X-Received: by 2002:a92:da44:: with SMTP id p4mr12562216ilq.168.1578859980942;
+ Sun, 12 Jan 2020 12:13:00 -0800 (PST)
+Date:   Sun, 12 Jan 2020 12:13:00 -0800
+In-Reply-To: <000000000000af1c5b059be111e5@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000005073ea059bf6fce1@google.com>
+Subject: Re: general protection fault in xt_rateest_put
+From:   syzbot <syzbot+91bdd8eece0f6629ec8b@syzkaller.appspotmail.com>
+To:     coreteam@netfilter.org, davem@davemloft.net, edumazet@google.com,
+        fw@strlen.de, kadlec@blackhole.kfki.hu, kadlec@netfilter.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, pablo@netfilter.org,
+        syzkaller-bugs@googlegroups.com, xiyou.wangcong@gmail.com
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/CvnqbAAkyhjcYWh8YyqqyGO
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+syzbot has bisected this bug to:
 
-Hi all,
+commit 3427b2ab63faccafe774ea997fc2da7faf690c5a
+Author: Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Fri Mar 2 02:58:38 2018 +0000
 
-In commit
+     netfilter: make xt_rateest hash table per net
 
-  a26ad4d5676f ("net: phy: DP83822: Update Kconfig with DP83825I support")
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=129b9c35e00000
+start commit:   e69ec487 Merge branch 'for-linus' of git://git.kernel.org/..
+git tree:       upstream
+final crash:    https://syzkaller.appspot.com/x/report.txt?x=119b9c35e00000
+console output: https://syzkaller.appspot.com/x/log.txt?x=169b9c35e00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=18698c0c240ba616
+dashboard link: https://syzkaller.appspot.com/bug?extid=91bdd8eece0f6629ec8b
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=13dbd58ee00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=15eff9e1e00000
 
-Fixes tag
+Reported-by: syzbot+91bdd8eece0f6629ec8b@syzkaller.appspotmail.com
+Fixes: 3427b2ab63fa ("netfilter: make xt_rateest hash table per net")
 
-  Fixes: 32b12dc8fde1  ("net: phy: Add DP83825I to the DP83822 driver")
-
-has these problem(s):
-
-  - Target SHA1 does not exist
-
-Maybe you meant
-
-Fixes: 06acc17a9621 ("net: phy: Add DP83825I to the DP83822 driver")
-
-In commit
-
-  443180567763 ("net: phy: DP83TC811: Fix typo in Kconfig")
-
-Fixes tag
-
-  Fixes: 6d749428788b {"net: phy: DP83TC811: Introduce support for the DP83=
-TC811 phy")
-
-has these problem(s):
-
-  - Target SHA1 does not exist
-
-Maybe you meant
-
-Fixes: b753a9faaf9a ("net: phy: DP83TC811: Introduce support for the DP83TC=
-811 phy")
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/CvnqbAAkyhjcYWh8YyqqyGO
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl4beJ4ACgkQAVBC80lX
-0Gyx5Af/XjIKBgM9cjcJWHgZQVHNKx9nPlblb1KgEZfAZTIk3X72akLIlxzQB2CN
-NQwKRLiK3ulDnqbJGGoPan3AUXFulQCl5O7W4+Dh0zp55pdOjvSJMCrd/aDHrdhL
-ub19p6H/cG08+t+tkiamIl5JTMPqwrfcFBWsxIBs1qPGX5rQRaum+hvQa0ZjMdE/
-7yQhQ4Pq6pJ8rg3O48/6QnCQ3aCxWnOVnnSKTa4aJMZODPL2g4a3v2CL83O6S2qf
-lLKR/dendQVHRRKoEcglqDuhYRykZlLcYIkUyDZ0PRvAmyKvAAOc1EFBswo8luN1
-Q9sZJ/VgfpGJ/fLokgawkeRlyee9ew==
-=iWsT
------END PGP SIGNATURE-----
-
---Sig_/CvnqbAAkyhjcYWh8YyqqyGO--
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
