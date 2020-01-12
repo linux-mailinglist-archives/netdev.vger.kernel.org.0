@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B5EC1138625
+	by mail.lfdr.de (Postfix) with ESMTP id 43B38138624
 	for <lists+netdev@lfdr.de>; Sun, 12 Jan 2020 13:05:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732819AbgALMFP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 12 Jan 2020 07:05:15 -0500
-Received: from mail-lj1-f194.google.com ([209.85.208.194]:37987 "EHLO
-        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732796AbgALMFM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 12 Jan 2020 07:05:12 -0500
-Received: by mail-lj1-f194.google.com with SMTP id w1so6934261ljh.5
-        for <netdev@vger.kernel.org>; Sun, 12 Jan 2020 04:05:09 -0800 (PST)
+        id S1732815AbgALMFO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 12 Jan 2020 07:05:14 -0500
+Received: from mail-lj1-f195.google.com ([209.85.208.195]:43425 "EHLO
+        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732774AbgALMFN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 12 Jan 2020 07:05:13 -0500
+Received: by mail-lj1-f195.google.com with SMTP id a13so6912096ljm.10
+        for <netdev@vger.kernel.org>; Sun, 12 Jan 2020 04:05:11 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=YcPjGNcTmjwLbnQf/9/DcoDwx42HaxPL9Z78rtWExN0=;
-        b=NNG2zgeKMfvwdGgcECzV3lrB8MGHagt0C4QANdXDno83mZHM9my6oJN8eCpjdRNHSA
-         tnqBOHC5P20TWVXgw3ydSqbqc9/8PcPPgF6ylmqCe8ks+EAV+gPaLkBV06pd+a4OsXG4
-         /vykfPcl7iWTlj/jB5aPZW28sgOlb6BN33pPY2Yzor0Zm+KkxVWk4cdee38Tvy0zO1sG
-         H75IvBWqdu/uCqVHLFTT78Eu2WKs/JPFidaYZMc+pAsCVlvDPB9uGfJhX+5SLHg4qSVI
-         blfGUFwfvejqH6ivcsUJlgN/oZfnDhzPhnThmpKN759OpQ9Q8NyWB3wcpF8LbeuKDrdy
-         U04g==
+        bh=XJKp6ZeAq94OXUjfq5QU4GFx4A01NxhOkBWCYIlbSXY=;
+        b=a0Vpd2ekUm1iC26IZQSuKglYbpbyVOdQPbor7PJ4D1wOnPthhAi99s1hKQoTbc3aT5
+         fE8XJc7PaffSv8uzFzuJru70gls7G7VAO7p+pe7yJHa9UoA2XLCpCQNhyc89GNYqAx2k
+         twY0rjzJZu1lrlAfTOrcFylUMHTZnA8znwI23umeXpYbcqu3LlfTCpRqhGWY0+VzQlUv
+         IRd6di90qyGLV11DugrO/7KM1gkFhnSK8pYjPICyf+9+HNEm4tP4UKpr/Z761u0yCLpI
+         ex1aZFVFwBNH+AtbouCwpe/TIHrWgaR9RX1avKqo/4LwTtOdt83cgdXFgxdmKXVysX3K
+         hqyA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=YcPjGNcTmjwLbnQf/9/DcoDwx42HaxPL9Z78rtWExN0=;
-        b=IYN6HO8SCg6BH7v2VGiKVimf1ayAJMtCAOlTzmrLm9QrITiCnyVG7ki38gNPxjvBCa
-         33ffx4FzKx6j61YZks2pZNafx5sIikxnBo7chXCtvOqJxKtv6lihA92p7Jh+sE/ZlXnP
-         pMQITMcBjEtFa8JHfTtNBDBz2QXfrPPooK1ULzcDbzrNNPSLReKUuZ+EjWiW9CLM45Tv
-         xQV2QjoH4JivN3jSHByGCJz6M6HuZkn6K0Lnr52mlklRe/uItzQZiaOVDMZr2AcOJZ6/
-         56JHGE8CLR06urLobpcXhrFF+7pktOpx0W5QlAgZSutWz11lIVxK4jpxHoKf7Z3HqAn+
-         +cqQ==
-X-Gm-Message-State: APjAAAVbJ0kWwylENv3IOxq7DvDJoXyQS4t3Gqi9gRP/QGZlIM/10+hP
-        PKsnpRyBSOg3IYgNcPz0C6MKfNC2slDTng==
-X-Google-Smtp-Source: APXvYqyprubGkpbWR7Vi5mR59F1b1VtnQVt6BI5pRHHaz7JPNtZ8VizvmC/bv+DXjURT1VMr+79UkQ==
-X-Received: by 2002:a2e:844e:: with SMTP id u14mr7955830ljh.183.1578830708919;
-        Sun, 12 Jan 2020 04:05:08 -0800 (PST)
+        bh=XJKp6ZeAq94OXUjfq5QU4GFx4A01NxhOkBWCYIlbSXY=;
+        b=o3UR1IHGtqOavP3d7sM24uHbgsCEdbDfUmPP2FxH6yG/1GX0koIPzrxf4fUOuGUjqf
+         CsJ2nFLEabDAc5JmXY9fXRWNm807ZiWVLs1cLePvja0Lo4Qsi5txFe3IJZVjC5D8Pey8
+         Zrx7EC/c+bGVxfI4oLtzfwo0VyZ+XOlWCoRinjUAVtIFFbcz1BAEJslZ1DT5xWp3lvaJ
+         HP9/AFxlbk30x/yHRhUwKTSyq9ONizMgEPBO8RaJGN9gNbvgdsENZxoJKppxC/NVH2yr
+         Hhi7yVVfPcctXn7tfSkkyKnHt+0IE4N23PDE7jDSMGuBFR7YFIQ/peMsJ3ncNhYR6Wz4
+         q6SQ==
+X-Gm-Message-State: APjAAAV4hV/wpqyy2I98VPLvH5L1IMnIGvnoksykBIWT2rwwJ20BE+yA
+        p/e0KPMTY8gZiwJpYYaAPCMfzmztNUpSRg==
+X-Google-Smtp-Source: APXvYqxINiAkr7z71El/iGWiJrjCDCGVyspe1hYvzRBu9UPsPK86AkWlwN1Xj76D49Rv/UcJu3jqbw==
+X-Received: by 2002:a2e:b52b:: with SMTP id z11mr7947891ljm.155.1578830710637;
+        Sun, 12 Jan 2020 04:05:10 -0800 (PST)
 Received: from localhost.bredbandsbolaget (c-5ac9225c.014-348-6c756e10.bbcust.telenor.se. [92.34.201.90])
-        by smtp.gmail.com with ESMTPSA id z7sm4660347lfa.81.2020.01.12.04.05.08
+        by smtp.gmail.com with ESMTPSA id z7sm4660347lfa.81.2020.01.12.04.05.09
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 12 Jan 2020 04:05:08 -0800 (PST)
+        Sun, 12 Jan 2020 04:05:10 -0800 (PST)
 From:   Linus Walleij <linus.walleij@linaro.org>
 To:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>
 Cc:     Arnd Bergmann <arnd@arndb.de>,
         Jakub Kicinski <jakub.kicinski@netronome.com>,
         Linus Walleij <linus.walleij@linaro.org>
-Subject: [PATCH net-next 7/9 v5] net: ehernet: ixp4xx: Use netdev_* messages
-Date:   Sun, 12 Jan 2020 13:04:48 +0100
-Message-Id: <20200112120450.11874-8-linus.walleij@linaro.org>
+Subject: [PATCH net-next 8/9 v5] ARM/net: ixp4xx: Pass ethernet physical base as resource
+Date:   Sun, 12 Jan 2020 13:04:49 +0100
+Message-Id: <20200112120450.11874-9-linus.walleij@linaro.org>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20200112120450.11874-1-linus.walleij@linaro.org>
 References: <20200112120450.11874-1-linus.walleij@linaro.org>
@@ -62,9 +62,12 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Simplify and correct a bunch of messages using printk
-directly to use the netdev_* macros. I have not changed
-all of them, just the low-hanging fruit.
+In order to probe this ethernet interface from the device tree
+all physical MMIO regions must be passed as resources. Begin
+this rewrite by first passing the port base address as a
+resource for all platforms using this driver, remap it in
+the driver and avoid using any reference of the statically
+mapped virtual address in the driver.
 
 Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 ---
@@ -75,185 +78,356 @@ ChangeLog v3->v4:
 ChangeLog v2->v3:
 - Rebased on v5.5-rc1
 ChangeLog v1->v2:
-- Squashed the previous devm_* changes into the patch
-  where the simplified errorpath is needed and renamed
-  this patch to just be about the message.
-- Fixed a bunch more prints.
+- Rebased on the rest of the series.
 ---
- drivers/net/ethernet/xscale/ixp4xx_eth.c | 52 +++++++++++-------------
- 1 file changed, 23 insertions(+), 29 deletions(-)
+ arch/arm/mach-ixp4xx/fsg-setup.c         | 20 ++++++++++++++++++++
+ arch/arm/mach-ixp4xx/goramo_mlr.c        | 20 ++++++++++++++++++++
+ arch/arm/mach-ixp4xx/ixdp425-setup.c     | 20 ++++++++++++++++++++
+ arch/arm/mach-ixp4xx/nas100d-setup.c     | 10 ++++++++++
+ arch/arm/mach-ixp4xx/nslu2-setup.c       | 10 ++++++++++
+ arch/arm/mach-ixp4xx/omixp-setup.c       | 20 ++++++++++++++++++++
+ arch/arm/mach-ixp4xx/vulcan-setup.c      | 20 ++++++++++++++++++++
+ drivers/net/ethernet/xscale/ixp4xx_eth.c | 20 +++++++++++---------
+ 8 files changed, 131 insertions(+), 9 deletions(-)
 
+diff --git a/arch/arm/mach-ixp4xx/fsg-setup.c b/arch/arm/mach-ixp4xx/fsg-setup.c
+index 648932d8d7a8..507ee3878769 100644
+--- a/arch/arm/mach-ixp4xx/fsg-setup.c
++++ b/arch/arm/mach-ixp4xx/fsg-setup.c
+@@ -132,6 +132,22 @@ static struct platform_device fsg_leds = {
+ };
+ 
+ /* Built-in 10/100 Ethernet MAC interfaces */
++static struct resource fsg_eth_npeb_resources[] = {
++	{
++		.start		= IXP4XX_EthB_BASE_PHYS,
++		.end		= IXP4XX_EthB_BASE_PHYS + 0x0fff,
++		.flags		= IORESOURCE_MEM,
++	},
++};
++
++static struct resource fsg_eth_npec_resources[] = {
++	{
++		.start		= IXP4XX_EthC_BASE_PHYS,
++		.end		= IXP4XX_EthC_BASE_PHYS + 0x0fff,
++		.flags		= IORESOURCE_MEM,
++	},
++};
++
+ static struct eth_plat_info fsg_plat_eth[] = {
+ 	{
+ 		.phy		= 5,
+@@ -151,12 +167,16 @@ static struct platform_device fsg_eth[] = {
+ 		.dev = {
+ 			.platform_data	= fsg_plat_eth,
+ 		},
++		.num_resources	= ARRAY_SIZE(fsg_eth_npeb_resources),
++		.resource	= fsg_eth_npeb_resources,
+ 	}, {
+ 		.name			= "ixp4xx_eth",
+ 		.id			= IXP4XX_ETH_NPEC,
+ 		.dev = {
+ 			.platform_data	= fsg_plat_eth + 1,
+ 		},
++		.num_resources	= ARRAY_SIZE(fsg_eth_npec_resources),
++		.resource	= fsg_eth_npec_resources,
+ 	}
+ };
+ 
+diff --git a/arch/arm/mach-ixp4xx/goramo_mlr.c b/arch/arm/mach-ixp4xx/goramo_mlr.c
+index 93b7afeee142..07b50dfcc489 100644
+--- a/arch/arm/mach-ixp4xx/goramo_mlr.c
++++ b/arch/arm/mach-ixp4xx/goramo_mlr.c
+@@ -273,6 +273,22 @@ static struct platform_device device_uarts = {
+ 
+ 
+ /* Built-in 10/100 Ethernet MAC interfaces */
++static struct resource eth_npeb_resources[] = {
++	{
++		.start		= IXP4XX_EthB_BASE_PHYS,
++		.end		= IXP4XX_EthB_BASE_PHYS + 0x0fff,
++		.flags		= IORESOURCE_MEM,
++	},
++};
++
++static struct resource eth_npec_resources[] = {
++	{
++		.start		= IXP4XX_EthC_BASE_PHYS,
++		.end		= IXP4XX_EthC_BASE_PHYS + 0x0fff,
++		.flags		= IORESOURCE_MEM,
++	},
++};
++
+ static struct eth_plat_info eth_plat[] = {
+ 	{
+ 		.phy		= 0,
+@@ -290,10 +306,14 @@ static struct platform_device device_eth_tab[] = {
+ 		.name			= "ixp4xx_eth",
+ 		.id			= IXP4XX_ETH_NPEB,
+ 		.dev.platform_data	= eth_plat,
++		.num_resources		= ARRAY_SIZE(eth_npeb_resources),
++		.resource		= eth_npeb_resources,
+ 	}, {
+ 		.name			= "ixp4xx_eth",
+ 		.id			= IXP4XX_ETH_NPEC,
+ 		.dev.platform_data	= eth_plat + 1,
++		.num_resources		= ARRAY_SIZE(eth_npec_resources),
++		.resource		= eth_npec_resources,
+ 	}
+ };
+ 
+diff --git a/arch/arm/mach-ixp4xx/ixdp425-setup.c b/arch/arm/mach-ixp4xx/ixdp425-setup.c
+index 6f0f7ed18ea8..45d5b720ded6 100644
+--- a/arch/arm/mach-ixp4xx/ixdp425-setup.c
++++ b/arch/arm/mach-ixp4xx/ixdp425-setup.c
+@@ -187,6 +187,22 @@ static struct platform_device ixdp425_uart = {
+ };
+ 
+ /* Built-in 10/100 Ethernet MAC interfaces */
++static struct resource ixp425_npeb_resources[] = {
++	{
++		.start		= IXP4XX_EthB_BASE_PHYS,
++		.end		= IXP4XX_EthB_BASE_PHYS + 0x0fff,
++		.flags		= IORESOURCE_MEM,
++	},
++};
++
++static struct resource ixp425_npec_resources[] = {
++	{
++		.start		= IXP4XX_EthC_BASE_PHYS,
++		.end		= IXP4XX_EthC_BASE_PHYS + 0x0fff,
++		.flags		= IORESOURCE_MEM,
++	},
++};
++
+ static struct eth_plat_info ixdp425_plat_eth[] = {
+ 	{
+ 		.phy		= 0,
+@@ -204,10 +220,14 @@ static struct platform_device ixdp425_eth[] = {
+ 		.name			= "ixp4xx_eth",
+ 		.id			= IXP4XX_ETH_NPEB,
+ 		.dev.platform_data	= ixdp425_plat_eth,
++		.num_resources		= ARRAY_SIZE(ixp425_npeb_resources),
++		.resource		= ixp425_npeb_resources,
+ 	}, {
+ 		.name			= "ixp4xx_eth",
+ 		.id			= IXP4XX_ETH_NPEC,
+ 		.dev.platform_data	= ixdp425_plat_eth + 1,
++		.num_resources		= ARRAY_SIZE(ixp425_npec_resources),
++		.resource		= ixp425_npec_resources,
+ 	}
+ };
+ 
+diff --git a/arch/arm/mach-ixp4xx/nas100d-setup.c b/arch/arm/mach-ixp4xx/nas100d-setup.c
+index c142cfa8c5d6..6959ad2e3aec 100644
+--- a/arch/arm/mach-ixp4xx/nas100d-setup.c
++++ b/arch/arm/mach-ixp4xx/nas100d-setup.c
+@@ -165,6 +165,14 @@ static struct platform_device nas100d_uart = {
+ };
+ 
+ /* Built-in 10/100 Ethernet MAC interfaces */
++static struct resource nas100d_eth_resources[] = {
++	{
++		.start		= IXP4XX_EthB_BASE_PHYS,
++		.end		= IXP4XX_EthB_BASE_PHYS + 0x0fff,
++		.flags		= IORESOURCE_MEM,
++	},
++};
++
+ static struct eth_plat_info nas100d_plat_eth[] = {
+ 	{
+ 		.phy		= 0,
+@@ -178,6 +186,8 @@ static struct platform_device nas100d_eth[] = {
+ 		.name			= "ixp4xx_eth",
+ 		.id			= IXP4XX_ETH_NPEB,
+ 		.dev.platform_data	= nas100d_plat_eth,
++		.num_resources		= ARRAY_SIZE(nas100d_eth_resources),
++		.resource		= nas100d_eth_resources,
+ 	}
+ };
+ 
+diff --git a/arch/arm/mach-ixp4xx/nslu2-setup.c b/arch/arm/mach-ixp4xx/nslu2-setup.c
+index ee1877fcfafe..a428bb918703 100644
+--- a/arch/arm/mach-ixp4xx/nslu2-setup.c
++++ b/arch/arm/mach-ixp4xx/nslu2-setup.c
+@@ -185,6 +185,14 @@ static struct platform_device nslu2_uart = {
+ };
+ 
+ /* Built-in 10/100 Ethernet MAC interfaces */
++static struct resource nslu2_eth_resources[] = {
++	{
++		.start		= IXP4XX_EthB_BASE_PHYS,
++		.end		= IXP4XX_EthB_BASE_PHYS + 0x0fff,
++		.flags		= IORESOURCE_MEM,
++	},
++};
++
+ static struct eth_plat_info nslu2_plat_eth[] = {
+ 	{
+ 		.phy		= 1,
+@@ -198,6 +206,8 @@ static struct platform_device nslu2_eth[] = {
+ 		.name			= "ixp4xx_eth",
+ 		.id			= IXP4XX_ETH_NPEB,
+ 		.dev.platform_data	= nslu2_plat_eth,
++		.num_resources		= ARRAY_SIZE(nslu2_eth_resources),
++		.resource		= nslu2_eth_resources,
+ 	}
+ };
+ 
+diff --git a/arch/arm/mach-ixp4xx/omixp-setup.c b/arch/arm/mach-ixp4xx/omixp-setup.c
+index 6ed5a9aed600..8f2b8c473d7a 100644
+--- a/arch/arm/mach-ixp4xx/omixp-setup.c
++++ b/arch/arm/mach-ixp4xx/omixp-setup.c
+@@ -170,6 +170,22 @@ static struct platform_device mic256_leds = {
+ };
+ 
+ /* Built-in 10/100 Ethernet MAC interfaces */
++static struct resource ixp425_npeb_resources[] = {
++	{
++		.start		= IXP4XX_EthB_BASE_PHYS,
++		.end		= IXP4XX_EthB_BASE_PHYS + 0x0fff,
++		.flags		= IORESOURCE_MEM,
++	},
++};
++
++static struct resource ixp425_npec_resources[] = {
++	{
++		.start		= IXP4XX_EthC_BASE_PHYS,
++		.end		= IXP4XX_EthC_BASE_PHYS + 0x0fff,
++		.flags		= IORESOURCE_MEM,
++	},
++};
++
+ static struct eth_plat_info ixdp425_plat_eth[] = {
+ 	{
+ 		.phy		= 0,
+@@ -187,10 +203,14 @@ static struct platform_device ixdp425_eth[] = {
+ 		.name			= "ixp4xx_eth",
+ 		.id			= IXP4XX_ETH_NPEB,
+ 		.dev.platform_data	= ixdp425_plat_eth,
++		.num_resources		= ARRAY_SIZE(ixp425_npeb_resources),
++		.resource		= ixp425_npeb_resources,
+ 	}, {
+ 		.name			= "ixp4xx_eth",
+ 		.id			= IXP4XX_ETH_NPEC,
+ 		.dev.platform_data	= ixdp425_plat_eth + 1,
++		.num_resources		= ARRAY_SIZE(ixp425_npec_resources),
++		.resource		= ixp425_npec_resources,
+ 	},
+ };
+ 
+diff --git a/arch/arm/mach-ixp4xx/vulcan-setup.c b/arch/arm/mach-ixp4xx/vulcan-setup.c
+index d2ebb7c675a8..e506d2af98ad 100644
+--- a/arch/arm/mach-ixp4xx/vulcan-setup.c
++++ b/arch/arm/mach-ixp4xx/vulcan-setup.c
+@@ -124,6 +124,22 @@ static struct platform_device vulcan_uart = {
+ 	.num_resources		= ARRAY_SIZE(vulcan_uart_resources),
+ };
+ 
++static struct resource vulcan_npeb_resources[] = {
++	{
++		.start		= IXP4XX_EthB_BASE_PHYS,
++		.end		= IXP4XX_EthB_BASE_PHYS + 0x0fff,
++		.flags		= IORESOURCE_MEM,
++	},
++};
++
++static struct resource vulcan_npec_resources[] = {
++	{
++		.start		= IXP4XX_EthC_BASE_PHYS,
++		.end		= IXP4XX_EthC_BASE_PHYS + 0x0fff,
++		.flags		= IORESOURCE_MEM,
++	},
++};
++
+ static struct eth_plat_info vulcan_plat_eth[] = {
+ 	[0] = {
+ 		.phy		= 0,
+@@ -144,6 +160,8 @@ static struct platform_device vulcan_eth[] = {
+ 		.dev = {
+ 			.platform_data	= &vulcan_plat_eth[0],
+ 		},
++		.num_resources		= ARRAY_SIZE(vulcan_npeb_resources),
++		.resource		= vulcan_npeb_resources,
+ 	},
+ 	[1] = {
+ 		.name			= "ixp4xx_eth",
+@@ -151,6 +169,8 @@ static struct platform_device vulcan_eth[] = {
+ 		.dev = {
+ 			.platform_data	= &vulcan_plat_eth[1],
+ 		},
++		.num_resources		= ARRAY_SIZE(vulcan_npec_resources),
++		.resource		= vulcan_npec_resources,
+ 	},
+ };
+ 
 diff --git a/drivers/net/ethernet/xscale/ixp4xx_eth.c b/drivers/net/ethernet/xscale/ixp4xx_eth.c
-index 05ab8426bb8d..f7edf8b38dea 100644
+index f7edf8b38dea..ee45215c4ba4 100644
 --- a/drivers/net/ethernet/xscale/ixp4xx_eth.c
 +++ b/drivers/net/ethernet/xscale/ixp4xx_eth.c
-@@ -572,8 +572,8 @@ static void ixp4xx_adjust_link(struct net_device *dev)
- 		__raw_writel(DEFAULT_TX_CNTRL0 | TX_CNTRL0_HALFDUPLEX,
- 			     &port->regs->tx_control[0]);
+@@ -1365,9 +1365,10 @@ static int ixp4xx_eth_probe(struct platform_device *pdev)
+ 	struct phy_device *phydev = NULL;
+ 	struct device *dev = &pdev->dev;
+ 	struct eth_plat_info *plat;
++	resource_size_t regs_phys;
+ 	struct net_device *ndev;
++	struct resource *res;
+ 	struct port *port;
+-	u32 regs_phys;
+ 	int err;
  
--	printk(KERN_INFO "%s: link up, speed %u Mb/s, %s duplex\n",
--	       dev->name, port->speed, port->duplex ? "full" : "half");
-+	netdev_info(dev, "%s: link up, speed %u Mb/s, %s duplex\n",
-+		    dev->name, port->speed, port->duplex ? "full" : "half");
- }
+ 	plat = dev_get_platdata(dev);
+@@ -1380,13 +1381,18 @@ static int ixp4xx_eth_probe(struct platform_device *pdev)
+ 	port->netdev = ndev;
+ 	port->id = pdev->id;
  
- 
-@@ -583,7 +583,7 @@ static inline void debug_pkt(struct net_device *dev, const char *func,
- #if DEBUG_PKT_BYTES
- 	int i;
- 
--	printk(KERN_DEBUG "%s: %s(%i) ", dev->name, func, len);
-+	netdev_debug(dev, "%s(%i) ", func, len);
- 	for (i = 0; i < len; i++) {
- 		if (i >= DEBUG_PKT_BYTES)
- 			break;
-@@ -674,7 +674,7 @@ static int eth_poll(struct napi_struct *napi, int budget)
- 	int received = 0;
- 
- #if DEBUG_RX
--	printk(KERN_DEBUG "%s: eth_poll\n", dev->name);
-+	netdev_debug(dev, "eth_poll\n");
- #endif
- 
- 	while (received < budget) {
-@@ -688,23 +688,20 @@ static int eth_poll(struct napi_struct *napi, int budget)
- 
- 		if ((n = queue_get_desc(rxq, port, 0)) < 0) {
- #if DEBUG_RX
--			printk(KERN_DEBUG "%s: eth_poll napi_complete\n",
--			       dev->name);
-+			netdev_debug(dev, "eth_poll napi_complete\n");
- #endif
- 			napi_complete(napi);
- 			qmgr_enable_irq(rxq);
- 			if (!qmgr_stat_below_low_watermark(rxq) &&
- 			    napi_reschedule(napi)) { /* not empty again */
- #if DEBUG_RX
--				printk(KERN_DEBUG "%s: eth_poll napi_reschedule succeeded\n",
--				       dev->name);
-+				netdev_debug(dev, "eth_poll napi_reschedule succeeded\n");
- #endif
- 				qmgr_disable_irq(rxq);
- 				continue;
- 			}
- #if DEBUG_RX
--			printk(KERN_DEBUG "%s: eth_poll all done\n",
--			       dev->name);
-+			netdev_debug(dev, "eth_poll all done\n");
- #endif
- 			return received; /* all work done */
++	/* Get the port resource and remap */
++	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
++	if (!res)
++		return -ENODEV;
++	regs_phys = res->start;
++	port->regs = devm_ioremap_resource(dev, res);
++
+ 	switch (port->id) {
+ 	case IXP4XX_ETH_NPEA:
+ 		/* If the MDIO bus is not up yet, defer probe */
+ 		if (!mdio_bus)
+ 			return -EPROBE_DEFER;
+-		port->regs = (struct eth_regs __iomem *)IXP4XX_EthA_BASE_VIRT;
+-		regs_phys  = IXP4XX_EthA_BASE_PHYS;
+ 		break;
+ 	case IXP4XX_ETH_NPEB:
+ 		/*
+@@ -1399,13 +1405,11 @@ static int ixp4xx_eth_probe(struct platform_device *pdev)
+ 			      IXP4XX_FEATURE_NPEB_ETH0))
+ 				return -ENODEV;
+ 			/* Else register the MDIO bus on NPE-B */
+-			if ((err = ixp4xx_mdio_register(IXP4XX_EthC_BASE_VIRT)))
++			if ((err = ixp4xx_mdio_register(port->regs)))
+ 				return err;
  		}
-@@ -769,7 +766,7 @@ static int eth_poll(struct napi_struct *napi, int budget)
- 	}
- 
- #if DEBUG_RX
--	printk(KERN_DEBUG "eth_poll(): end, not all work done\n");
-+	netdev_debug(dev, "eth_poll(): end, not all work done\n");
- #endif
- 	return received;		/* not all work done */
- }
-@@ -833,7 +830,7 @@ static int eth_xmit(struct sk_buff *skb, struct net_device *dev)
- 	struct desc *desc;
- 
- #if DEBUG_TX
--	printk(KERN_DEBUG "%s: eth_xmit\n", dev->name);
-+	netdev_debug(dev, "eth_xmit\n");
- #endif
- 
- 	if (unlikely(skb->len > MAX_MRU)) {
-@@ -888,22 +885,21 @@ static int eth_xmit(struct sk_buff *skb, struct net_device *dev)
- 
- 	if (qmgr_stat_below_low_watermark(txreadyq)) { /* empty */
- #if DEBUG_TX
--		printk(KERN_DEBUG "%s: eth_xmit queue full\n", dev->name);
-+		netdev_debug(dev, "eth_xmit queue full\n");
- #endif
- 		netif_stop_queue(dev);
- 		/* we could miss TX ready interrupt */
- 		/* really empty in fact */
- 		if (!qmgr_stat_below_low_watermark(txreadyq)) {
- #if DEBUG_TX
--			printk(KERN_DEBUG "%s: eth_xmit ready again\n",
--			       dev->name);
-+			netdev_debug(dev, "eth_xmit ready again\n");
- #endif
- 			netif_wake_queue(dev);
+ 		if (!mdio_bus)
+ 			return -EPROBE_DEFER;
+-		port->regs = (struct eth_regs __iomem *)IXP4XX_EthB_BASE_VIRT;
+-		regs_phys  = IXP4XX_EthB_BASE_PHYS;
+ 		break;
+ 	case IXP4XX_ETH_NPEC:
+ 		/*
+@@ -1417,13 +1421,11 @@ static int ixp4xx_eth_probe(struct platform_device *pdev)
+ 			      IXP4XX_FEATURE_NPEC_ETH))
+ 				return -ENODEV;
+ 			/* Else register the MDIO bus on NPE-C */
+-			if ((err = ixp4xx_mdio_register(IXP4XX_EthC_BASE_VIRT)))
++			if ((err = ixp4xx_mdio_register(port->regs)))
+ 				return err;
  		}
- 	}
- 
- #if DEBUG_TX
--	printk(KERN_DEBUG "%s: eth_xmit end\n", dev->name);
-+	netdev_debug(dev, "eth_xmit end\n");
- #endif
- 
- 	ixp_tx_timestamp(port, skb);
-@@ -1177,8 +1173,7 @@ static int eth_open(struct net_device *dev)
- 			return err;
- 
- 		if (npe_recv_message(npe, &msg, "ETH_GET_STATUS")) {
--			printk(KERN_ERR "%s: %s not responding\n", dev->name,
--			       npe_name(npe));
-+			netdev_err(dev, "%s not responding\n", npe_name(npe));
- 			return -EIO;
- 		}
- 		port->firmware[0] = msg.byte4;
-@@ -1290,7 +1285,7 @@ static int eth_close(struct net_device *dev)
- 	msg.eth_id = port->id;
- 	msg.byte3 = 1;
- 	if (npe_send_recv_message(port->npe, &msg, "ETH_ENABLE_LOOPBACK"))
--		printk(KERN_CRIT "%s: unable to enable loopback\n", dev->name);
-+		netdev_crit(dev, "unable to enable loopback\n");
- 
- 	i = 0;
- 	do {			/* drain RX buffers */
-@@ -1314,11 +1309,11 @@ static int eth_close(struct net_device *dev)
- 	} while (++i < MAX_CLOSE_WAIT);
- 
- 	if (buffs)
--		printk(KERN_CRIT "%s: unable to drain RX queue, %i buffer(s)"
--		       " left in NPE\n", dev->name, buffs);
-+		netdev_crit(dev, "unable to drain RX queue, %i buffer(s)"
-+			    " left in NPE\n", buffs);
- #if DEBUG_CLOSE
- 	if (!buffs)
--		printk(KERN_DEBUG "Draining RX queue took %i cycles\n", i);
-+		netdev_debug(dev, "draining RX queue took %i cycles\n", i);
- #endif
- 
- 	buffs = TX_DESCS;
-@@ -1334,17 +1329,16 @@ static int eth_close(struct net_device *dev)
- 	} while (++i < MAX_CLOSE_WAIT);
- 
- 	if (buffs)
--		printk(KERN_CRIT "%s: unable to drain TX queue, %i buffer(s) "
--		       "left in NPE\n", dev->name, buffs);
-+		netdev_crit(dev, "unable to drain TX queue, %i buffer(s) "
-+			    "left in NPE\n", buffs);
- #if DEBUG_CLOSE
- 	if (!buffs)
--		printk(KERN_DEBUG "Draining TX queues took %i cycles\n", i);
-+		netdev_debug(dev, "draining TX queues took %i cycles\n", i);
- #endif
- 
- 	msg.byte3 = 0;
- 	if (npe_send_recv_message(port->npe, &msg, "ETH_DISABLE_LOOPBACK"))
--		printk(KERN_CRIT "%s: unable to disable loopback\n",
--		       dev->name);
-+		netdev_crit(dev, "unable to disable loopback\n");
- 
- 	phy_stop(dev->phydev);
- 
-@@ -1476,8 +1470,8 @@ static int ixp4xx_eth_probe(struct platform_device *pdev)
- 	if ((err = register_netdev(ndev)))
- 		goto err_phy_dis;
- 
--	printk(KERN_INFO "%s: MII PHY %i on %s\n", ndev->name, plat->phy,
--	       npe_name(port->npe));
-+	netdev_info(ndev, "%s: MII PHY %i on %s\n", ndev->name, plat->phy,
-+		    npe_name(port->npe));
- 
- 	return 0;
- 
+ 		if (!mdio_bus)
+ 			return -EPROBE_DEFER;
+-		port->regs = (struct eth_regs __iomem *)IXP4XX_EthC_BASE_VIRT;
+-		regs_phys  = IXP4XX_EthC_BASE_PHYS;
+ 		break;
+ 	default:
+ 		return -ENODEV;
 -- 
 2.21.0
 
