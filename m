@@ -2,84 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E811413845F
-	for <lists+netdev@lfdr.de>; Sun, 12 Jan 2020 02:00:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 245DA138461
+	for <lists+netdev@lfdr.de>; Sun, 12 Jan 2020 02:01:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731844AbgALBAz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Jan 2020 20:00:55 -0500
-Received: from mail-pl1-f196.google.com ([209.85.214.196]:35992 "EHLO
-        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731838AbgALBAy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 11 Jan 2020 20:00:54 -0500
-Received: by mail-pl1-f196.google.com with SMTP id a6so2371843plm.3;
-        Sat, 11 Jan 2020 17:00:54 -0800 (PST)
+        id S1731846AbgALBBc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Jan 2020 20:01:32 -0500
+Received: from mail-il1-f180.google.com ([209.85.166.180]:39884 "EHLO
+        mail-il1-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731831AbgALBBb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 11 Jan 2020 20:01:31 -0500
+Received: by mail-il1-f180.google.com with SMTP id x5so4935944ila.6;
+        Sat, 11 Jan 2020 17:01:31 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version;
-        bh=UzS8fCV70X00w/fY21xvJPaNUzV5IfL2EWyUuY3260o=;
-        b=XcfvTIsa1Qk7wn7Ta9piJmi3d+Nb8RXnYMpKJzBH946VetaMUr218YE2tvynqGTLEl
-         2PfLhr71rGoZtzmjKvUWmKgzb/uFzvmcNUTPZ+VZ1BBi0PKP96CzyPv/lT8TY5WSHDIy
-         sBhS5zFFlISgAqtuSkyroFFqMQkp+rWhmMiOLCHFwYqiFx8RleWSba5wUW+KXPBFmsuY
-         J+Ku5ZqNRVs/qjF1GhBkgUQQoq4I021aXuhcG402sf7vOHoiT7BcvlOqqMX5ewZjELX1
-         ktMnnTeLqpb8DmAoY/hKThmAV+1y7HLFQphuOg7xo5YouFUGh2n9eDgH2fDS4CoDzs9z
-         Kbsw==
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=UuKJPIkDgwTtD70ltTC++UTu+SdwSndYMdy/TpvjRxU=;
+        b=H9URM5+3nnO4WnZPyNcTDROD7+KxIVrv1WNxfEZ2DeLwJ9r5MC8Akn6qyp5R/1i5i2
+         PuUATQmuRwBV6ROaIi+HGcyuSgUWEOct9stelgjuA/rwnujYpvZbF3yMCL6MMEl41TYv
+         5xUcGaz0Lb4oKDGcpIm6YQhOl7VTpEvvV/gKamA4dbaYJ3ipp2d9UApf1wNCvzCZN0Qe
+         7WQMyBsznzdaKSV1vPzfp8Ep+wpcUdtcZU2+SPRVHueUCXZyjq/6y7XMwW3H2qNd0kwg
+         goAoXyasd5Y7+m0pmSgSaIePYc0Bb4sZZH2rc+07L376tRz9vKVtXU2CSMMqCj7hmV8p
+         dM7Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version;
-        bh=UzS8fCV70X00w/fY21xvJPaNUzV5IfL2EWyUuY3260o=;
-        b=gSjOZevM4oBE6PJwmuMZfbN0TH/e0jfudG83EQxUI3a+HE2qKOuT6IRXBYC5yiJC+l
-         6mrmJ9MsIUU94RzZ7XSRiYfEpZ0C0iCvVomRFykS+m1B483IsYdqPc7ogOXnIXE58q3n
-         X+M/vf0slVsimfuicTsR99Zvff+/0F3/Kv8Ff4hvjBH73pyLzI603SyGeV2d5VXKjKbp
-         1M3BBXClLA30gDuFzayaFvL68YX4G5P9Lin4x+yovn93dO3UDBiCy6o4CPtyIZdwdncN
-         e9MKY41P50ezt+OqI/CxrYsCb50z4RKBH+YiU25cJimOS3yUWTX5MTpiy039xYIwYyel
-         ee7g==
-X-Gm-Message-State: APjAAAWs1isf+iG7rCGhpNM92LevYKBEDxiJy1f48LbpKuybS7ojWOea
-        Pya90JjzOlUaSt+xoGJfkTq+p19S
-X-Google-Smtp-Source: APXvYqxwW5RQn8w+xDSdQ5WEKQWPx2ZSuGVAdjXeM07GzXmMjvwggU6YubmhF2F1ikp1OzJ8yfXzWA==
-X-Received: by 2002:a17:90b:30c8:: with SMTP id hi8mr14945876pjb.73.1578790854041;
-        Sat, 11 Jan 2020 17:00:54 -0800 (PST)
-Received: from [172.26.97.36] ([2620:10d:c090:180::694c])
-        by smtp.gmail.com with ESMTPSA id r8sm7519368pjo.22.2020.01.11.17.00.53
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 11 Jan 2020 17:00:53 -0800 (PST)
-From:   "Jonathan Lemon" <jonathan.lemon@gmail.com>
-To:     "John Fastabend" <john.fastabend@gmail.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, daniel@iogearbox.net,
-        ast@kernel.org, song@kernel.org
-Subject: Re: [bpf PATCH v2 3/8] bpf: sockmap/tls, push write_space updates
- through ulp updates
-Date:   Sat, 11 Jan 2020 17:00:52 -0800
-X-Mailer: MailMate (1.13.1r5671)
-Message-ID: <5D9DDCE5-DF7B-438A-ACCE-4CACC3141D87@gmail.com>
-In-Reply-To: <20200111061206.8028-4-john.fastabend@gmail.com>
-References: <20200111061206.8028-1-john.fastabend@gmail.com>
- <20200111061206.8028-4-john.fastabend@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=UuKJPIkDgwTtD70ltTC++UTu+SdwSndYMdy/TpvjRxU=;
+        b=gh9G2e0nhKJ/7SJgniUVleDhdEFRn2FaKtgsIaaI0oj3/+MBubkLJVWLN3UNE84aX5
+         LDVpPg1fqM39bncResQfAOTn/g7aXxeHN68cbeVWM6N9BD9xBJiXvbsboiHRsX1qvpOY
+         cwPT70GnaLvGndB8nppBgpm5G8j5SLjtitYG6hRNE3FRiep76KG4EskV7sxSZnG1aB0/
+         6/wJKy7jQLjjO3Fl6uFNjXKyIO6waIdk+uD8SojijNGd0MxCMD037+PRgxvP/+Eei/iI
+         weVYZaSdJBnJKP8O0C74KS2bBbUJmjTWF92yivZpKttv9Lu2uzv/l8aPakB0C7jQxiqC
+         urlQ==
+X-Gm-Message-State: APjAAAX4FxbUbyeshJJDF2+SNHpZMeAhzci7633fPFw4nYHvRskWYgh+
+        OCghvrisxdP0sYCNs0JfW+o=
+X-Google-Smtp-Source: APXvYqwktZFR8ZN/ExT+TKIHN49pyCB3zNX7xakO/BYqkG389GBvZadwVc0XmV+09rv0aUU1CCquqQ==
+X-Received: by 2002:a92:b744:: with SMTP id c4mr8639386ilm.34.1578790891450;
+        Sat, 11 Jan 2020 17:01:31 -0800 (PST)
+Received: from localhost ([184.63.162.180])
+        by smtp.gmail.com with ESMTPSA id z15sm2252481ill.20.2020.01.11.17.01.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 11 Jan 2020 17:01:31 -0800 (PST)
+Date:   Sat, 11 Jan 2020 17:01:25 -0800
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Jakub Sitnicki <jakub@cloudflare.com>, bpf@vger.kernel.org
+Cc:     netdev@vger.kernel.org, kernel-team@cloudflare.com,
+        Eric Dumazet <edumazet@google.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Martin KaFai Lau <kafai@fb.com>
+Message-ID: <5e1a6fe51de9a_76782ace374ba5c0e1@john-XPS-13-9370.notmuch>
+In-Reply-To: <20200110105027.257877-11-jakub@cloudflare.com>
+References: <20200110105027.257877-1-jakub@cloudflare.com>
+ <20200110105027.257877-11-jakub@cloudflare.com>
+Subject: RE: [PATCH bpf-next v2 10/11] selftests/bpf: Extend SK_REUSEPORT
+ tests to cover SOCKMAP
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Jakub Sitnicki wrote:
+> Parametrize the SK_REUSEPORT tests so that the map type for storing sockets
+> is not hard-coded in the test setup routine.
+> 
+> This, together with careful state cleaning after the tests, let's us run
+> the test cases once with REUSEPORT_ARRAY and once with SOCKMAP (TCP only),
+> to have test coverage for the latter as well.
+> 
+> Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
+> ---
+> 
 
-
-On 10 Jan 2020, at 22:12, John Fastabend wrote:
-
-> When sockmap sock with TLS enabled is removed we cleanup bpf/psock state
-> and call tcp_update_ulp() to push updates to TLS ULP on top. However, we
-> don't push the write_space callback up and instead simply overwrite the
-> op with the psock stored previous op. This may or may not be correct so
-> to ensure we don't overwrite the TLS write space hook pass this field to
-> the ULP and have it fixup the ctx.
->
-> This completes a previous fix that pushed the ops through to the ULP
-> but at the time missed doing this for write_space, presumably because
-> write_space TLS hook was added around the same time.
->
-> Cc: stable@vger.kernel.org
-> Fixes: 95fa145479fbc ("bpf: sockmap/tls, close can race with map free")
-> Signed-off-by: John Fastabend <john.fastabend@gmail.com>
-
-Acked-by: Jonathan Lemon <jonathan.lemon@gmail.com>
+Acked-by: John Fastabend <john.fastabend@gmail.com>
