@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A3DBD139541
-	for <lists+netdev@lfdr.de>; Mon, 13 Jan 2020 16:53:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 397F2139544
+	for <lists+netdev@lfdr.de>; Mon, 13 Jan 2020 16:53:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728783AbgAMPxJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jan 2020 10:53:09 -0500
-Received: from mail-lj1-f193.google.com ([209.85.208.193]:38732 "EHLO
-        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728734AbgAMPxH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jan 2020 10:53:07 -0500
-Received: by mail-lj1-f193.google.com with SMTP id w1so10652139ljh.5
-        for <netdev@vger.kernel.org>; Mon, 13 Jan 2020 07:53:06 -0800 (PST)
+        id S1728799AbgAMPxL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jan 2020 10:53:11 -0500
+Received: from mail-lf1-f67.google.com ([209.85.167.67]:45584 "EHLO
+        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726567AbgAMPxJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jan 2020 10:53:09 -0500
+Received: by mail-lf1-f67.google.com with SMTP id 203so7201803lfa.12
+        for <netdev@vger.kernel.org>; Mon, 13 Jan 2020 07:53:08 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=cumulusnetworks.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=OEK3+d3CKz1mIylcZTyAVylsHfHcJSc3xiPKTSlMW5U=;
-        b=JJyBw1Bdfdn/DXRctvYndAg0AuUSmUbCaylTOhEiNjsqQ4f8/QE2UFY4NwHHcEoUer
-         PxkGvdOOeAZjIRYdL5wT/4tn7JNvJXR+mR85wrex6ZvWA0Q+luITCfvZer6p8kb4tklp
-         Ol0ihmY5HpDqO4oyPFKgU4aK/H0vKrHxvdeXE=
+        bh=6KhiteAq58/yJLkVm+s0FO5WRg6fiYggtvqwfk58QqA=;
+        b=FuduCArAbwO3Fht2xwe51gZ42JgFlhOhcvXjfB179mM4/qmRlVBygb8HsPoED3U5X5
+         fLmFItFEExmztMf2ph1NQUbMMjel9nae3R8GrIjnNgY1KwQayttpEk/8SjOaXtEfjIzu
+         B+AW+335auSvRZS5XKh0KDWzWs8oTzHBoC7xU=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=OEK3+d3CKz1mIylcZTyAVylsHfHcJSc3xiPKTSlMW5U=;
-        b=nc9Tkww9mfzdcvZFjpKJjTk6RgLVzULii1K6n7PVndJufdCUAyNrNC+p6Z/fMN8uo4
-         maFT6YPjYLx1a4gTaKQv+jMSdab+l8jpZgxk3UvO3TNTssnVhpFgcTKXKvpi1I9/IQqX
-         hhTIPBHBNWmzjzVFn+JBdLL7itM96dYfDy5Et+qQU0664tJd0xZE64aMDBQNFFPs1kU0
-         7UQU1WZ/c1o0VmaVMWgX3fwr5E14RPoSQM9bXblpc/TcxAmeCCLTRV811DQs05wkCsBQ
-         cFm59eRVZ7i5VYGfOU5Bh+2aVWAMdMGoRzsJum6N16iPB4qbFBf+0SnF5aDEso2jx8GD
-         1N/g==
-X-Gm-Message-State: APjAAAU33nGaq8wPoBok35tCaJ510W8a3L+BDVX0B/lBfLzJBu5DjSMY
-        WKInPno8yy51LelZKLI27+D7iH8gi9A=
-X-Google-Smtp-Source: APXvYqxceAKLZyUuArHDU7dwD9jiViqFCLrqjxbUGKI+t/EoK6oZ93obLx70UWxUHq4SQzZdAUvS7A==
-X-Received: by 2002:a2e:8512:: with SMTP id j18mr9188451lji.269.1578930784874;
-        Mon, 13 Jan 2020 07:53:04 -0800 (PST)
+        bh=6KhiteAq58/yJLkVm+s0FO5WRg6fiYggtvqwfk58QqA=;
+        b=qKsJOUBboeYudIQYUq8T8yY9puPqjU3GUifl2cwIJjV0ahh7UsTJyrJ341SFmAWi+9
+         wGTR/QJhVF7xLgCQrgpWnJXx1AHPJgchY2Hl3jd09RhKq6YEgBcfhpOHZQaP8rZL3RuU
+         X6VhDzEk3VrltdeevFKVEmHI1jjM9mCLi+ikkFcaC4nSqjWYFLgNoyw6bWPEXSApW9rO
+         YRW7R5nS85L4nbyeLERDnXAxu/61kulVFtq7psA9XyAJj1JyRU9brvqDQK6jHoIWmMzi
+         inf4ALMlHrhWRsP6lqEQ9PutAw4zHhAHbWwxDW0PWXGviCN5j5Qpm5ehaGHpbkLF4kOz
+         B7Ug==
+X-Gm-Message-State: APjAAAVg7Y5vygyu0i9ioj84z0PsTKyAo4EDL3uxYTrbTDidU2tyF8H1
+        MbFJQjfaKwzBhkaZFxmiWcsuPbpJ74c=
+X-Google-Smtp-Source: APXvYqyQMFI/EkaKTQ4vad7pvPeuhtEpxuLsSujVWQ8mZ0IgEfDd1GoG7Np1g1aK7dL7woK4oIAvMA==
+X-Received: by 2002:a19:4901:: with SMTP id w1mr9886397lfa.168.1578930787026;
+        Mon, 13 Jan 2020 07:53:07 -0800 (PST)
 Received: from localhost.localdomain (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
-        by smtp.gmail.com with ESMTPSA id e20sm6175658ljl.59.2020.01.13.07.53.02
+        by smtp.gmail.com with ESMTPSA id e20sm6175658ljl.59.2020.01.13.07.53.04
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Jan 2020 07:53:03 -0800 (PST)
+        Mon, 13 Jan 2020 07:53:06 -0800 (PST)
 From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
 To:     netdev@vger.kernel.org
 Cc:     roopa@cumulusnetworks.com, davem@davemloft.net,
         bridge@lists.linux-foundation.org,
         Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-Subject: [PATCH net-next 2/8] net: bridge: netlink: add extack error messages when processing vlans
-Date:   Mon, 13 Jan 2020 17:52:27 +0200
-Message-Id: <20200113155233.20771-3-nikolay@cumulusnetworks.com>
+Subject: [PATCH net-next 3/8] net: bridge: vlan: add rtm definitions and dump support
+Date:   Mon, 13 Jan 2020 17:52:28 +0200
+Message-Id: <20200113155233.20771-4-nikolay@cumulusnetworks.com>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20200113155233.20771-1-nikolay@cumulusnetworks.com>
 References: <20200113155233.20771-1-nikolay@cumulusnetworks.com>
@@ -59,107 +59,321 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add extack messages on vlan processing errors. We need to move the flags
-missing check after the "last" check since we may have "last" set but
-lack a range end flag in the next entry.
+This patch adds vlan rtm definitions:
+ - NEWVLAN: to be used for creating vlans, setting options and
+   notifications
+ - DELVLAN: to be used for deleting vlans
+ - GETVLAN: used for dumping vlan information
+
+Dumping vlans which can span multiple messages is added now with basic
+information (vid and flags).
 
 Signed-off-by: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
 ---
- net/bridge/br_netlink.c |  6 +++---
- net/bridge/br_private.h | 38 +++++++++++++++++++++++++++-----------
- 2 files changed, 30 insertions(+), 14 deletions(-)
+ include/uapi/linux/if_bridge.h |  28 +++++++
+ include/uapi/linux/rtnetlink.h |   7 ++
+ net/bridge/br_netlink.c        |   2 +
+ net/bridge/br_private.h        |  14 ++++
+ net/bridge/br_vlan.c           | 149 +++++++++++++++++++++++++++++++++
+ security/selinux/nlmsgtab.c    |   5 +-
+ 6 files changed, 204 insertions(+), 1 deletion(-)
 
+diff --git a/include/uapi/linux/if_bridge.h b/include/uapi/linux/if_bridge.h
+index 4a58e3d7de46..4da04f77d9ee 100644
+--- a/include/uapi/linux/if_bridge.h
++++ b/include/uapi/linux/if_bridge.h
+@@ -165,6 +165,34 @@ struct bridge_stp_xstats {
+ 	__u64 tx_tcn;
+ };
+ 
++/* Bridge vlan RTM header */
++struct br_vlan_msg {
++	__u8 family;
++	__u8 reserved1;
++	__u16 reserved2;
++	__u32 ifindex;
++};
++
++/* Bridge vlan RTM attributes
++ * [BRIDGE_VLANDB_ENTRY] = {
++ *     [BRIDGE_VLANDB_ENTRY_INFO]
++ *     ...
++ * }
++ */
++enum {
++	BRIDGE_VLANDB_UNSPEC,
++	BRIDGE_VLANDB_ENTRY,
++	__BRIDGE_VLANDB_MAX,
++};
++#define BRIDGE_VLANDB_MAX (__BRIDGE_VLANDB_MAX - 1)
++
++enum {
++	BRIDGE_VLANDB_ENTRY_UNSPEC,
++	BRIDGE_VLANDB_ENTRY_INFO,
++	__BRIDGE_VLANDB_ENTRY_MAX,
++};
++#define BRIDGE_VLANDB_ENTRY_MAX (__BRIDGE_VLANDB_ENTRY_MAX - 1)
++
+ /* Bridge multicast database attributes
+  * [MDBA_MDB] = {
+  *     [MDBA_MDB_ENTRY] = {
+diff --git a/include/uapi/linux/rtnetlink.h b/include/uapi/linux/rtnetlink.h
+index 1418a8362bb7..e06e3e09a1b4 100644
+--- a/include/uapi/linux/rtnetlink.h
++++ b/include/uapi/linux/rtnetlink.h
+@@ -171,6 +171,13 @@ enum {
+ 	RTM_GETLINKPROP,
+ #define RTM_GETLINKPROP	RTM_GETLINKPROP
+ 
++	RTM_NEWVLAN = 112,
++#define RTM_NEWNVLAN	RTM_NEWVLAN
++	RTM_DELVLAN,
++#define RTM_DELVLAN	RTM_DELVLAN
++	RTM_GETVLAN,
++#define RTM_GETVLAN	RTM_GETVLAN
++
+ 	__RTM_MAX,
+ #define RTM_MAX		(((__RTM_MAX + 3) & ~3) - 1)
+ };
 diff --git a/net/bridge/br_netlink.c b/net/bridge/br_netlink.c
-index 14100e8653e6..40942cece51a 100644
+index 40942cece51a..75a7ecf95d7f 100644
 --- a/net/bridge/br_netlink.c
 +++ b/net/bridge/br_netlink.c
-@@ -568,11 +568,11 @@ static int br_process_vlan_info(struct net_bridge *br,
- 				bool *changed,
- 				struct netlink_ext_ack *extack)
+@@ -1657,6 +1657,7 @@ int __init br_netlink_init(void)
+ 	int err;
+ 
+ 	br_mdb_init();
++	br_vlan_rtnl_init();
+ 	rtnl_af_register(&br_af_ops);
+ 
+ 	err = rtnl_link_register(&br_link_ops);
+@@ -1674,6 +1675,7 @@ int __init br_netlink_init(void)
+ void br_netlink_fini(void)
  {
--	if (!br_vlan_valid_id(vinfo_curr->vid))
-+	if (!br_vlan_valid_id(vinfo_curr->vid, extack))
- 		return -EINVAL;
- 
- 	if (vinfo_curr->flags & BRIDGE_VLAN_INFO_RANGE_BEGIN) {
--		if (!br_vlan_valid_range(vinfo_curr, *vinfo_last))
-+		if (!br_vlan_valid_range(vinfo_curr, *vinfo_last, extack))
- 			return -EINVAL;
- 		*vinfo_last = vinfo_curr;
- 		return 0;
-@@ -582,7 +582,7 @@ static int br_process_vlan_info(struct net_bridge *br,
- 		struct bridge_vlan_info tmp_vinfo;
- 		int v, err;
- 
--		if (!br_vlan_valid_range(vinfo_curr, *vinfo_last))
-+		if (!br_vlan_valid_range(vinfo_curr, *vinfo_last, extack))
- 			return -EINVAL;
- 
- 		memcpy(&tmp_vinfo, *vinfo_last,
+ 	br_mdb_uninit();
++	br_vlan_rtnl_uninit();
+ 	rtnl_af_unregister(&br_af_ops);
+ 	rtnl_link_unregister(&br_link_ops);
+ }
 diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
-index dbc0089e2c1a..a7dddc5d7790 100644
+index a7dddc5d7790..1c00411ae938 100644
 --- a/net/bridge/br_private.h
 +++ b/net/bridge/br_private.h
-@@ -507,32 +507,48 @@ static inline bool nbp_state_should_learn(const struct net_bridge_port *p)
- 	return p->state == BR_STATE_LEARNING || p->state == BR_STATE_FORWARDING;
+@@ -958,6 +958,8 @@ void br_vlan_get_stats(const struct net_bridge_vlan *v,
+ void br_vlan_port_event(struct net_bridge_port *p, unsigned long event);
+ int br_vlan_bridge_event(struct net_device *dev, unsigned long event,
+ 			 void *ptr);
++void br_vlan_rtnl_init(void);
++void br_vlan_rtnl_uninit(void);
+ 
+ static inline struct net_bridge_vlan_group *br_vlan_group(
+ 					const struct net_bridge *br)
+@@ -1009,6 +1011,10 @@ static inline u16 br_get_pvid(const struct net_bridge_vlan_group *vg)
+ 	return vg->pvid;
  }
  
--static inline bool br_vlan_valid_id(u16 vid)
-+static inline bool br_vlan_valid_id(u16 vid, struct netlink_ext_ack *extack)
++static inline u16 br_vlan_flags(const struct net_bridge_vlan *v, u16 pvid)
++{
++	return v->vid == pvid ? v->flags | BRIDGE_VLAN_INFO_PVID : v->flags;
++}
+ #else
+ static inline bool br_allowed_ingress(const struct net_bridge *br,
+ 				      struct net_bridge_vlan_group *vg,
+@@ -1152,6 +1158,14 @@ static inline int br_vlan_bridge_event(struct net_device *dev,
  {
--	return vid > 0 && vid < VLAN_VID_MASK;
-+	bool ret = vid > 0 && vid < VLAN_VID_MASK;
-+
-+	if (!ret)
-+		NL_SET_ERR_MSG_MOD(extack, "Vlan id is invalid");
-+
-+	return ret;
+ 	return 0;
  }
++
++static inline void br_vlan_rtnl_init(void)
++{
++}
++
++static inline void br_vlan_rtnl_uninit(void)
++{
++}
+ #endif
  
- static inline bool br_vlan_valid_range(const struct bridge_vlan_info *cur,
--				       const struct bridge_vlan_info *last)
-+				       const struct bridge_vlan_info *last,
-+				       struct netlink_ext_ack *extack)
- {
- 	/* pvid flag is not allowed in ranges */
--	if (cur->flags & BRIDGE_VLAN_INFO_PVID)
--		return false;
--
--	/* check for required range flags */
--	if (!(cur->flags & (BRIDGE_VLAN_INFO_RANGE_BEGIN |
--			    BRIDGE_VLAN_INFO_RANGE_END)))
-+	if (cur->flags & BRIDGE_VLAN_INFO_PVID) {
-+		NL_SET_ERR_MSG_MOD(extack, "Pvid isn't allowed in a range");
- 		return false;
+ struct nf_br_ops {
+diff --git a/net/bridge/br_vlan.c b/net/bridge/br_vlan.c
+index bb98984cd27d..0135a67f50a7 100644
+--- a/net/bridge/br_vlan.c
++++ b/net/bridge/br_vlan.c
+@@ -1505,3 +1505,152 @@ void br_vlan_port_event(struct net_bridge_port *p, unsigned long event)
+ 		break;
+ 	}
+ }
++
++static bool br_vlan_fill_vids(struct sk_buff *skb, u16 vid, u16 flags)
++{
++	struct bridge_vlan_info info;
++	struct nlattr *nest;
++
++	nest = nla_nest_start(skb, BRIDGE_VLANDB_ENTRY);
++	if (!nest)
++		return false;
++
++	memset(&info, 0, sizeof(info));
++	info.vid = vid;
++	if (flags & BRIDGE_VLAN_INFO_UNTAGGED)
++		info.flags |= BRIDGE_VLAN_INFO_UNTAGGED;
++	if (flags & BRIDGE_VLAN_INFO_PVID)
++		info.flags |= BRIDGE_VLAN_INFO_PVID;
++
++	if (nla_put(skb, BRIDGE_VLANDB_ENTRY_INFO, sizeof(info), &info))
++		goto out_err;
++
++	nla_nest_end(skb, nest);
++
++	return true;
++
++out_err:
++	nla_nest_cancel(skb, nest);
++	return false;
++}
++
++static int br_vlan_dump_dev(const struct net_device *dev,
++			    struct sk_buff *skb,
++			    struct netlink_callback *cb)
++{
++	struct net_bridge_vlan_group *vg;
++	int idx = 0, s_idx = cb->args[1];
++	struct nlmsghdr *nlh = NULL;
++	struct net_bridge_vlan *v;
++	struct net_bridge_port *p;
++	struct br_vlan_msg *bvm;
++	struct net_bridge *br;
++	int err = 0;
++	u16 pvid;
++
++	if (!netif_is_bridge_master(dev) && !netif_is_bridge_port(dev))
++		return -EINVAL;
++
++	if (netif_is_bridge_master(dev)) {
++		br = netdev_priv(dev);
++		vg = br_vlan_group_rcu(br);
++		p = NULL;
++	} else {
++		p = br_port_get_rcu(dev);
++		if (WARN_ON(!p))
++			return -EINVAL;
++		vg = nbp_vlan_group_rcu(p);
++		br = p->br;
 +	}
- 
- 	/* when cur is the range end, check if:
- 	 *  - it has range start flag
- 	 *  - range ids are invalid (end is equal to or before start)
- 	 */
- 	if (last) {
--		if (cur->flags & BRIDGE_VLAN_INFO_RANGE_BEGIN)
-+		if (cur->flags & BRIDGE_VLAN_INFO_RANGE_BEGIN) {
-+			NL_SET_ERR_MSG_MOD(extack, "Found a new vlan range start while processing one");
- 			return false;
--		else if (cur->vid <= last->vid)
-+		} else if (!(cur->flags & BRIDGE_VLAN_INFO_RANGE_END)) {
-+			NL_SET_ERR_MSG_MOD(extack, "Vlan range end flag is missing");
- 			return false;
-+		} else if (cur->vid <= last->vid) {
-+			NL_SET_ERR_MSG_MOD(extack, "End vlan id is less than or equal to start vlan id");
-+			return false;
++
++	if (!vg)
++		return 0;
++
++	nlh = nlmsg_put(skb, NETLINK_CB(cb->skb).portid, cb->nlh->nlmsg_seq,
++			RTM_NEWVLAN, sizeof(*bvm), NLM_F_MULTI);
++	if (!nlh)
++		return -EMSGSIZE;
++	bvm = nlmsg_data(nlh);
++	memset(bvm, 0, sizeof(*bvm));
++	bvm->family = PF_BRIDGE;
++	bvm->ifindex = dev->ifindex;
++	pvid = br_get_pvid(vg);
++
++	list_for_each_entry_rcu(v, &vg->vlan_list, vlist) {
++		if (!br_vlan_should_use(v))
++			continue;
++		if (idx < s_idx)
++			goto skip;
++		if (!br_vlan_fill_vids(skb, v->vid, br_vlan_flags(v, pvid))) {
++			err = -EMSGSIZE;
++			break;
++		}
++skip:
++		idx++;
++	}
++	if (err)
++		cb->args[1] = idx;
++	else
++		cb->args[1] = 0;
++	nlmsg_end(skb, nlh);
++
++	return err;
++}
++
++static int br_vlan_rtm_dump(struct sk_buff *skb, struct netlink_callback *cb)
++{
++	int idx = 0, err = 0, s_idx = cb->args[0];
++	struct net *net = sock_net(skb->sk);
++	struct br_vlan_msg *bvm;
++	struct net_device *dev;
++
++	if (cb->nlh->nlmsg_len < nlmsg_msg_size(sizeof(*bvm))) {
++		NL_SET_ERR_MSG_MOD(cb->extack, "Invalid header for vlan dump request");
++		return -EINVAL;
++	}
++
++	bvm = nlmsg_data(cb->nlh);
++
++	rcu_read_lock();
++	if (bvm->ifindex) {
++		dev = dev_get_by_index_rcu(net, bvm->ifindex);
++		if (!dev) {
++			err = -ENODEV;
++			goto out_err;
++		}
++		err = br_vlan_dump_dev(dev, skb, cb);
++		if (err && err != -EMSGSIZE)
++			goto out_err;
++	} else {
++		for_each_netdev_rcu(net, dev) {
++			if (idx < s_idx)
++				goto skip;
++
++			err = br_vlan_dump_dev(dev, skb, cb);
++			if (err == -EMSGSIZE)
++				break;
++skip:
++			idx++;
 +		}
 +	}
++	cb->args[0] = idx;
++	rcu_read_unlock();
 +
-+	/* check for required range flags */
-+	if (!(cur->flags & (BRIDGE_VLAN_INFO_RANGE_BEGIN |
-+			    BRIDGE_VLAN_INFO_RANGE_END))) {
-+		NL_SET_ERR_MSG_MOD(extack, "Both vlan range flags are missing");
-+		return false;
- 	}
++	return skb->len;
++
++out_err:
++	rcu_read_unlock();
++
++	return err;
++}
++
++void br_vlan_rtnl_init(void)
++{
++	rtnl_register_module(THIS_MODULE, PF_BRIDGE, RTM_GETVLAN, NULL,
++			     br_vlan_rtm_dump, 0);
++}
++
++void br_vlan_rtnl_uninit(void)
++{
++	rtnl_unregister(PF_BRIDGE, RTM_GETVLAN);
++}
+diff --git a/security/selinux/nlmsgtab.c b/security/selinux/nlmsgtab.c
+index c97fdae8f71b..b69231918686 100644
+--- a/security/selinux/nlmsgtab.c
++++ b/security/selinux/nlmsgtab.c
+@@ -85,6 +85,9 @@ static const struct nlmsg_perm nlmsg_route_perms[] =
+ 	{ RTM_GETNEXTHOP,	NETLINK_ROUTE_SOCKET__NLMSG_READ  },
+ 	{ RTM_NEWLINKPROP,	NETLINK_ROUTE_SOCKET__NLMSG_WRITE },
+ 	{ RTM_DELLINKPROP,	NETLINK_ROUTE_SOCKET__NLMSG_WRITE },
++	{ RTM_NEWVLAN,		NETLINK_ROUTE_SOCKET__NLMSG_WRITE },
++	{ RTM_DELVLAN,		NETLINK_ROUTE_SOCKET__NLMSG_WRITE },
++	{ RTM_GETVLAN,		NETLINK_ROUTE_SOCKET__NLMSG_READ  },
+ };
  
- 	return true;
+ static const struct nlmsg_perm nlmsg_tcpdiag_perms[] =
+@@ -168,7 +171,7 @@ int selinux_nlmsg_lookup(u16 sclass, u16 nlmsg_type, u32 *perm)
+ 		 * structures at the top of this file with the new mappings
+ 		 * before updating the BUILD_BUG_ON() macro!
+ 		 */
+-		BUILD_BUG_ON(RTM_MAX != (RTM_NEWLINKPROP + 3));
++		BUILD_BUG_ON(RTM_MAX != (RTM_NEWVLAN + 3));
+ 		err = nlmsg_perm(nlmsg_type, perm, nlmsg_route_perms,
+ 				 sizeof(nlmsg_route_perms));
+ 		break;
 -- 
 2.21.0
 
