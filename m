@@ -2,118 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F9FC1392F5
-	for <lists+netdev@lfdr.de>; Mon, 13 Jan 2020 15:01:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 12115139300
+	for <lists+netdev@lfdr.de>; Mon, 13 Jan 2020 15:02:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728699AbgAMOBB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jan 2020 09:01:01 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:34542 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726976AbgAMOBB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 13 Jan 2020 09:01:01 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=cELMnT1Jt7j4w7vyuZ1BE3RQ7rFJoxX50inLYK5rNEs=; b=bDV2GGr/nOQ4Xwcynjkr+lgysY
-        tdy8YtWaQebbRIGXNe90CR5MsN8hNowk8dcfkDI72H8aHvb8VrOK71q8HaTUbviGFWWanixUCUmhm
-        T1gcsImmAde1jIQfe9xoIbE26SSWp93ciQoBkhgV4hSNtu3GRsD55nwzUxyR4bmCWagU=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1ir0H0-0004M8-23; Mon, 13 Jan 2020 15:00:54 +0100
-Date:   Mon, 13 Jan 2020 15:00:53 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Horatiu Vultur <horatiu.vultur@microchip.com>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bridge@lists.linux-foundation.org, davem@davemloft.net,
-        roopa@cumulusnetworks.com, nikolay@cumulusnetworks.com,
-        jakub.kicinski@netronome.com, vivien.didelot@gmail.com,
-        olteanv@gmail.com, anirudh.venkataramanan@intel.com,
-        dsahern@gmail.com, jiri@resnulli.us, ivecera@redhat.com,
-        UNGLinuxDriver@microchip.com
-Subject: Re: [RFC net-next Patch v2 4/4] net: bridge: mrp: switchdev: Add HW
- offload
-Message-ID: <20200113140053.GE11788@lunn.ch>
-References: <20200113124620.18657-1-horatiu.vultur@microchip.com>
- <20200113124620.18657-5-horatiu.vultur@microchip.com>
+        id S1728925AbgAMOCm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jan 2020 09:02:42 -0500
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:37039 "EHLO
+        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726074AbgAMOCm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jan 2020 09:02:42 -0500
+Received: from lupine.hi.pengutronix.de ([2001:67c:670:100:3ad5:47ff:feaf:1a17] helo=lupine)
+        by metis.ext.pengutronix.de with esmtp (Exim 4.92)
+        (envelope-from <p.zabel@pengutronix.de>)
+        id 1ir0Ig-000461-CS; Mon, 13 Jan 2020 15:02:38 +0100
+Message-ID: <02f6d17a410114ea9b3bea6e9c43d3aa4bc2dffe.camel@pengutronix.de>
+Subject: Re: [PATCH] mdio_bus: Simplify reset handling and extend to non-DT
+ systems
+From:   Philipp Zabel <p.zabel@pengutronix.de>
+To:     Geert Uytterhoeven <geert+renesas@glider.be>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Date:   Mon, 13 Jan 2020 15:02:36 +0100
+In-Reply-To: <20200113130529.15372-1-geert+renesas@glider.be>
+References: <20200113130529.15372-1-geert+renesas@glider.be>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.30.5-1.1 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200113124620.18657-5-horatiu.vultur@microchip.com>
+Content-Transfer-Encoding: 7bit
+X-SA-Exim-Connect-IP: 2001:67c:670:100:3ad5:47ff:feaf:1a17
+X-SA-Exim-Mail-From: p.zabel@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 13, 2020 at 01:46:20PM +0100, Horatiu Vultur wrote:
-> +#ifdef CONFIG_BRIDGE_MRP
-> +/* SWITCHDEV_OBJ_ID_PORT_MRP */
-> +struct switchdev_obj_port_mrp {
-> +	struct switchdev_obj obj;
-> +	struct net_device *port;
-> +	u32 ring_nr;
-> +};
+On Mon, 2020-01-13 at 14:05 +0100, Geert Uytterhoeven wrote:
+> Convert mdiobus_register_reset() from open-coded DT-only optional reset
+> handling to reset_control_get_optional_exclusive().  This not only
+> simplifies the code, but also adds support for lookup-based resets on
+> non-DT systems.
+> 
+> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> ---
+> Only tested on systems without PHY resets, with and without
+> CONFIG_RESET_CONTROLLER=y.
+> 
+>  drivers/net/phy/mdio_bus.c | 16 +++++-----------
+>  1 file changed, 5 insertions(+), 11 deletions(-)
+> 
+> diff --git a/drivers/net/phy/mdio_bus.c b/drivers/net/phy/mdio_bus.c
+> index 229e480179ff1de4..8d753bb07227e561 100644
+> --- a/drivers/net/phy/mdio_bus.c
+> +++ b/drivers/net/phy/mdio_bus.c
+> @@ -59,17 +59,11 @@ static int mdiobus_register_gpiod(struct mdio_device *mdiodev)
+>  
+>  static int mdiobus_register_reset(struct mdio_device *mdiodev)
+>  {
+> -	struct reset_control *reset = NULL;
+> -
+> -	if (mdiodev->dev.of_node)
+> -		reset = of_reset_control_get_exclusive(mdiodev->dev.of_node,
+> -						       "phy");
+> -	if (IS_ERR(reset)) {
+> -		if (PTR_ERR(reset) == -ENOENT || PTR_ERR(reset) == -ENOTSUPP)
+> -			reset = NULL;
+> -		else
+> -			return PTR_ERR(reset);
+> -	}
+> +	struct reset_control *reset;
 > +
-> +#define SWITCHDEV_OBJ_PORT_MRP(OBJ) \
-> +	container_of((OBJ), struct switchdev_obj_port_mrp, obj)
-> +
-> +/* SWITCHDEV_OBJ_ID_RING_TEST_MRP */
-> +struct switchdev_obj_ring_test_mrp {
-> +	struct switchdev_obj obj;
-> +	/* The value is in us and a value of 0 represents to stop */
-> +	u32 interval;
-> +	u8 max;
-> +	u32 ring_nr;
-> +};
-> +
-> +#define SWITCHDEV_OBJ_RING_TEST_MRP(OBJ) \
-> +	container_of((OBJ), struct switchdev_obj_ring_test_mrp, obj)
-> +
-> +/* SWITCHDEV_OBJ_ID_RING_ROLE_MRP */
-> +struct switchdev_obj_ring_role_mrp {
-> +	struct switchdev_obj obj;
-> +	u8 ring_role;
-> +	u32 ring_nr;
-> +};
+> +	reset = reset_control_get_optional_exclusive(&mdiodev->dev, "phy");
+> +	if (IS_ERR(reset))
+> +		return PTR_ERR(reset);
 
-Hi Horatiu
+Reviewed-by: Philipp Zabel <p.zabel@pengutronix.de>
 
-The structures above should give me enough information to build this,
-correct?
+regards
+Philipp
 
-Ethernet II, Src: 7a:8b:b1:35:96:e1 (7a:8b:b1:35:96:e1), Dst: Iec_00:00:01 (01:15:4e:00:00:01)
-    Destination: Iec_00:00:01 (01:15:4e:00:00:01)
-    Source: 7a:8b:b1:35:96:e1 (7a:8b:b1:35:96:e1)
-    Type: MRP (0x88e3)
-PROFINET MRP MRP_Test, MRP_Common, MRP_End
-    MRP_Version: 1
-    MRP_TLVHeader.Type: MRP_Test (0x02)
-        MRP_TLVHeader.Type: MRP_Test (0x02)
-        MRP_TLVHeader.Length: 18
-        MRP_Prio: 0x1f40 High priorities
-        MRP_SA: 7a:8b:b1:35:96:e1 (7a:8b:b1:35:96:e1)
-        MRP_PortRole: Primary ring port (0x0000)
-        MRP_RingState: Ring closed (0x0001)
-        MRP_Transition: 0x0001
-        MRP_TimeStamp [ms]: 0x000cf574             <---------- Updated automatic
-    MRP_TLVHeader.Type: MRP_Common (0x01)
-        MRP_TLVHeader.Type: MRP_Common (0x01)
-        MRP_TLVHeader.Length: 18
-        MRP_SequenceID: 0x00e9                     <---------- Updated automatic
-        MRP_DomainUUID: ffffffff-ffff-ffff-ffff-ffffffffffff
-    MRP_TLVHeader.Type: MRP_End (0x00)
-        MRP_TLVHeader.Type: MRP_End (0x00)
-        MRP_TLVHeader.Length: 0
-
-There are a couple of fields i don't see. MRP_SA, MRP_Transition.
-
-What are max and ring_nr used for?
-
-Do you need to set the first value MRP_SequenceID uses? Often, in
-order to detect a reset, a random value is used to initialise the
-sequence number. Also, does the time stamp need initializing?
-
-Thanks
-	Andrew
