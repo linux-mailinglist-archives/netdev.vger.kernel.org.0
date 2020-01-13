@@ -2,97 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D531138C62
-	for <lists+netdev@lfdr.de>; Mon, 13 Jan 2020 08:32:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6B98B138CC8
+	for <lists+netdev@lfdr.de>; Mon, 13 Jan 2020 09:27:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728811AbgAMHcH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jan 2020 02:32:07 -0500
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:41080 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728847AbgAMHcG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jan 2020 02:32:06 -0500
-Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 00D7Ue0J017533
-        for <netdev@vger.kernel.org>; Sun, 12 Jan 2020 23:32:05 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-type; s=facebook; bh=g2L0ndR2Fb/5ZG+K7BX9PViazIin+aA4pa/dBMkl+i4=;
- b=LxEHxKRIdY1uUejZpWPsKxNaGTKqdmuGKsq2GDrXeiX/mCj6OY/KisIze5bBlrWqlOp7
- 7/fRSMQFBJ2AvgerBbazExoKFwiBWshDqH4El74MO8GhCZ185kbDUd6+H0we+CdkTnsr
- Zk+L0LZ1lr1ht02Ugq9OL4Yj6G6X6KZOGxY= 
-Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by mx0a-00082601.pphosted.com with ESMTP id 2xfxt4386h-5
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Sun, 12 Jan 2020 23:32:05 -0800
-Received: from intmgw003.03.ash8.facebook.com (2620:10d:c081:10::13) by
- mail.thefacebook.com (2620:10d:c081:35::129) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
- Sun, 12 Jan 2020 23:32:04 -0800
-Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
-        id B79B72EC2329; Sun, 12 Jan 2020 23:32:01 -0800 (PST)
-Smtp-Origin-Hostprefix: devbig
-From:   Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
-        <daniel@iogearbox.net>
-CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH v2 bpf-next 6/6] selftests/bpf: build runqslower from selftests
-Date:   Sun, 12 Jan 2020 23:31:43 -0800
-Message-ID: <20200113073143.1779940-7-andriin@fb.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200113073143.1779940-1-andriin@fb.com>
-References: <20200113073143.1779940-1-andriin@fb.com>
-X-FB-Internal: Safe
+        id S1728787AbgAMI1G (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jan 2020 03:27:06 -0500
+Received: from nbd.name ([46.4.11.11]:57666 "EHLO nbd.name"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728680AbgAMI1G (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 13 Jan 2020 03:27:06 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=nbd.name;
+         s=20160729; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:
+        MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=/NHwwQnGBAa85zcV4M8gNdsSSkTKTe3Kl6d6gN17ino=; b=tKzaUnt5QT42dRYU/FjhfrfmXF
+        liDld7MJepEdNDuZpRoJSCDIIssSb89CrgCkjhONFiFWr7YWBQIH2phOTbzAnEcQjVLTL2+1CG6U7
+        4RX7rRAIuuzvovpbMQ6U6FmI9hBwv00Plhb3hqh5d01LR7iDoXC2kTx9s03RqGfl5X3U=;
+Received: from [80.255.7.117] (helo=nf.local)
+        by ds12 with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.89)
+        (envelope-from <nbd@nbd.name>)
+        id 1iqv3u-0007t4-C7; Mon, 13 Jan 2020 09:27:02 +0100
+Subject: Re: [PATCH] ath9k: Fix possible data races in ath_set_channel()
+To:     Jia-Ju Bai <baijiaju1990@gmail.com>, ath9k-devel@qca.qualcomm.com,
+        kvalo@codeaurora.org, davem@davemloft.net
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20200111171528.7053-1-baijiaju1990@gmail.com>
+From:   Felix Fietkau <nbd@nbd.name>
+Autocrypt: addr=nbd@nbd.name; prefer-encrypt=mutual; keydata=
+ xsDiBEah5CcRBADIY7pu4LIv3jBlyQ/2u87iIZGe6f0f8pyB4UjzfJNXhJb8JylYYRzIOSxh
+ ExKsdLCnJqsG1PY1mqTtoG8sONpwsHr2oJ4itjcGHfn5NJSUGTbtbbxLro13tHkGFCoCr4Z5
+ Pv+XRgiANSpYlIigiMbOkide6wbggQK32tC20QxUIwCg4k6dtV/4kwEeiOUfErq00TVqIiEE
+ AKcUi4taOuh/PQWx/Ujjl/P1LfJXqLKRPa8PwD4j2yjoc9l+7LptSxJThL9KSu6gtXQjcoR2
+ vCK0OeYJhgO4kYMI78h1TSaxmtImEAnjFPYJYVsxrhay92jisYc7z5R/76AaELfF6RCjjGeP
+ wdalulG+erWju710Bif7E1yjYVWeA/9Wd1lsOmx6uwwYgNqoFtcAunDaMKi9xVQW18FsUusM
+ TdRvTZLBpoUAy+MajAL+R73TwLq3LnKpIcCwftyQXK5pEDKq57OhxJVv1Q8XkA9Dn1SBOjNB
+ l25vJDFAT9ntp9THeDD2fv15yk4EKpWhu4H00/YX8KkhFsrtUs69+vZQwc0cRmVsaXggRmll
+ dGthdSA8bmJkQG5iZC5uYW1lPsJgBBMRAgAgBQJGoeQnAhsjBgsJCAcDAgQVAggDBBYCAwEC
+ HgECF4AACgkQ130UHQKnbvXsvgCgjsAIIOsY7xZ8VcSm7NABpi91yTMAniMMmH7FRenEAYMa
+ VrwYTIThkTlQzsFNBEah5FQQCACMIep/hTzgPZ9HbCTKm9xN4bZX0JjrqjFem1Nxf3MBM5vN
+ CYGBn8F4sGIzPmLhl4xFeq3k5irVg/YvxSDbQN6NJv8o+tP6zsMeWX2JjtV0P4aDIN1pK2/w
+ VxcicArw0VYdv2ZCarccFBgH2a6GjswqlCqVM3gNIMI8ikzenKcso8YErGGiKYeMEZLwHaxE
+ Y7mTPuOTrWL8uWWRL5mVjhZEVvDez6em/OYvzBwbkhImrryF29e3Po2cfY2n7EKjjr3/141K
+ DHBBdgXlPNfDwROnA5ugjjEBjwkwBQqPpDA7AYPvpHh5vLbZnVGu5CwG7NAsrb2isRmjYoqk
+ wu++3117AAMFB/9S0Sj7qFFQcD4laADVsabTpNNpaV4wAgVTRHKV/kC9luItzwDnUcsZUPdQ
+ f3MueRJ3jIHU0UmRBG3uQftqbZJj3ikhnfvyLmkCNe+/hXhPu9sGvXyi2D4vszICvc1KL4RD
+ aLSrOsROx22eZ26KqcW4ny7+va2FnvjsZgI8h4sDmaLzKczVRIiLITiMpLFEU/VoSv0m1F4B
+ FtRgoiyjFzigWG0MsTdAN6FJzGh4mWWGIlE7o5JraNhnTd+yTUIPtw3ym6l8P+gbvfoZida0
+ TspgwBWLnXQvP5EDvlZnNaKa/3oBes6z0QdaSOwZCRA3QSLHBwtgUsrT6RxRSweLrcabwkkE
+ GBECAAkFAkah5FQCGwwACgkQ130UHQKnbvW2GgCfTKx80VvCR/PvsUlrvdOLsIgeRGAAn1ee
+ RjMaxwtSdaCKMw3j33ZbsWS4
+Message-ID: <67d7a9f7-546b-3dc9-07b2-846e390c1c5e@nbd.name>
+Date:   Mon, 13 Jan 2020 09:27:01 +0100
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0)
+ Gecko/20100101 Thunderbird/68.3.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
- definitions=2020-01-13_01:2020-01-13,2020-01-13 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 phishscore=0
- clxscore=1015 mlxlogscore=847 impostorscore=0 priorityscore=1501
- spamscore=0 adultscore=0 lowpriorityscore=0 suspectscore=9 bulkscore=0
- malwarescore=0 mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-1910280000 definitions=main-2001130063
-X-FB-Internal: deliver
+In-Reply-To: <20200111171528.7053-1-baijiaju1990@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Ensure runqslower tool is built as part of selftests to prevent it from bit
-rotting.
+On 2020-01-11 18:15, Jia-Ju Bai wrote:
+> The functions ath9k_config() and ath_ani_calibrate() may be concurrently
+> executed.
+> 
+> A variable survey->filled is accessed with holding a spinlock
+> common->cc_lock, through:
+> ath_ani_calibrate()
+>     spin_lock_irqsave(&common->cc_lock, flags);
+>     ath_update_survey_stats()
+>         ath_update_survey_nf()
+>             survey->filled |= SURVEY_INFO_NOISE_DBM;
+> 
+> The identical variables sc->cur_survey->filled and 
+> sc->survey[pos].filled is accessed without holding this lock, through:
+> ath9k_config()
+>     ath_chanctx_set_channel()
+>         ath_set_channel()
+>             sc->cur_survey->filled &= ~SURVEY_INFO_IN_USE;
+>             sc->cur_survey->filled |= SURVEY_INFO_IN_USE;
+>             else if (!(sc->survey[pos].filled & SURVEY_INFO_IN_USE))
+>             ath_update_survey_nf
+>                 survey->filled |= SURVEY_INFO_NOISE_DBM;
+> 
+> Thus, possible data races may occur.
+> 
+> To fix these data races, in ath_set_channel(), these variables are
+> accessed with holding the spinlock common->cc_lock.
+> 
+> These data races are found by the runtime testing of our tool DILP-2.
+> 
+> Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
+I think a much better solution would be to stop common->ani.timer
+earlier in ath_set_channel to prevent this race from occurring.
 
-Signed-off-by: Andrii Nakryiko <andriin@fb.com>
----
- tools/testing/selftests/bpf/Makefile | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
-
-diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
-index bf9f7e415e95..246d09ffb296 100644
---- a/tools/testing/selftests/bpf/Makefile
-+++ b/tools/testing/selftests/bpf/Makefile
-@@ -73,7 +73,7 @@ TEST_PROGS_EXTENDED := with_addr.sh \
- # Compile but not part of 'make run_tests'
- TEST_GEN_PROGS_EXTENDED = test_sock_addr test_skb_cgroup_id_user \
- 	flow_dissector_load test_flow_dissector test_tcp_check_syncookie_user \
--	test_lirc_mode2_user xdping test_cpp
-+	test_lirc_mode2_user xdping test_cpp runqslower
- 
- TEST_CUSTOM_PROGS = urandom_read
- 
-@@ -124,6 +124,11 @@ $(OUTPUT)/test_stub.o: test_stub.c
- 	$(call msg,CC,,$@)
- 	$(CC) -c $(CFLAGS) -o $@ $<
- 
-+.PHONY: $(OUTPUT)/runqslower
-+$(OUTPUT)/runqslower: force
-+	$(Q)$(MAKE) $(submake_extras) -C $(TOOLSDIR)/bpf/runqslower	      \
-+		    OUTPUT=$(CURDIR)/tools/
-+
- BPFOBJ := $(OUTPUT)/libbpf.a
- 
- $(TEST_GEN_PROGS) $(TEST_GEN_PROGS_EXTENDED): $(OUTPUT)/test_stub.o $(BPFOBJ)
--- 
-2.17.1
-
+- Felix
