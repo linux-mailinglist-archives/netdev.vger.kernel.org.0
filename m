@@ -2,72 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F29EF13968F
-	for <lists+netdev@lfdr.de>; Mon, 13 Jan 2020 17:42:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 34E6D1396BB
+	for <lists+netdev@lfdr.de>; Mon, 13 Jan 2020 17:48:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728904AbgAMQmD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jan 2020 11:42:03 -0500
-Received: from mail-il1-f199.google.com ([209.85.166.199]:41062 "EHLO
-        mail-il1-f199.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726567AbgAMQmC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jan 2020 11:42:02 -0500
-Received: by mail-il1-f199.google.com with SMTP id k9so8172254ili.8
-        for <netdev@vger.kernel.org>; Mon, 13 Jan 2020 08:42:02 -0800 (PST)
+        id S1728714AbgAMQsw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jan 2020 11:48:52 -0500
+Received: from mail-qt1-f179.google.com ([209.85.160.179]:34002 "EHLO
+        mail-qt1-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726567AbgAMQsv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jan 2020 11:48:51 -0500
+Received: by mail-qt1-f179.google.com with SMTP id 5so9677449qtz.1
+        for <netdev@vger.kernel.org>; Mon, 13 Jan 2020 08:48:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=zT1ACHXDAGcCFCbYH2+lWy63svaPFGdb0dXNcilJ+Zw=;
+        b=mz4C4bYMI1gyoKNzGs6atsHIaghu4IPDrgqzaMF1WEyO6sUoN4fbfSe2Pz0/8BjCst
+         FCpFAsGEq710ZHYiEbOruNEn/rkiBNoFa0itVetnxvWJ4KMLs743/hLsRd1dLBGMCQCM
+         AapUB4wO1qMNKgBgeWsgXTUM1rJkXjSrsMi8lUACe2/ysHcSHkUT55er9qLaL7ASwKmH
+         BBfzS6aVZPOrn9HX+LUk+vwOSQDbL+WYtpRLqFgSy1bHfePYzNwhe+gSGC00sY7a6pHd
+         3W5IQqSZcdX8R3m1XL3tJTxdm0fy/pv8y6b7f42Mu+fH6x9fIeCLCkJDcc2hON/a2zXE
+         SMMQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=UggXgyDMOpX5GHDFThGPB3yVNMKWrTSHTCaDTJ6McXo=;
-        b=VorIkgl5Owv4+EVfGMebkUxeoWk4VT6rIrRHg/OQ4eaUXh1uFFgYnG5gPQpgxve934
-         zAJ1b7Uc+jgqxS3Dxs0BEoss/kLrA9ABDdEI6xSFAn5GBmpphMx0/Ls5kF7WblUnbVOV
-         iMw9x6KjKT9TKSREODrKsJD4UMcKLPEHHlRQAohvXnOTpYUed8vGSqawQtqpPfFVqQkX
-         OZJCIynvkxv2KfmQj48As2OvP/n6oiymS/k5TI+e8tdoJlBteVUuHCTtmmOTtMRCtr6k
-         H2AFT2+AldEdVl124StvJ6P5P+QGZkMKM6O8S6HJgcT5zfieBxA2zNt/LUXJXnmPiVAB
-         QMyg==
-X-Gm-Message-State: APjAAAVDuHrSWWLPMsIJAl4kjlhqS6Pt5P9O8zCOECb0OVGDwbcTncPy
-        AWTvhjDYhILbw4/SGm1VcRGOpwINeSOdPDmoJhhXhJZ8HCGh
-X-Google-Smtp-Source: APXvYqy9CaTqUtRxm4JcRDeD0S3bogD6d4mwoiAZp6aBCI1DHZPoiOj+/Q+WaCE26zNZRvjut3aai5qER8Zl/wD9tSgZi30iB5tl
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=zT1ACHXDAGcCFCbYH2+lWy63svaPFGdb0dXNcilJ+Zw=;
+        b=refxYQnLrg2vHjvvtTevf5fexxAFjWucYEMUCxePMYPWWhHYdECCgiV10wY/BuXk7X
+         I8h1lMX7f2DlQnhui5yODv4mK2M7V2YweyYqTTIVtpQTwFclgPz0b3IOOoWcLC+mx9Pf
+         DGG9HogXpS/U9GyvqG/CiXvmJ+yfhhaLfpiCVs/9O9PBZu/WNMRfvu9+HNg1gAoswS6K
+         rXRAgATUb+ock8mxRI4/frC0ALImrb3hWreype8EhhGSw/QhOIqka2yThI/M1DqXDwUY
+         UguqWdBKlPMSnOnYb0ctfPxvar1DMXM96220kKtDNObpjE8fEim5VdEny+JBW6S5lz6l
+         lpKQ==
+X-Gm-Message-State: APjAAAXEf07vcDWTot8AgH+X59XZphIpxAypDHRJfnqzPTPJCRFEVO4u
+        9Wd4sebMXAEu03ll1YqSpuYfkF/JPMM=
+X-Google-Smtp-Source: APXvYqyEZytK5pwhwRpDY0Hl62q5n6qDD6bC6isixd4kNIeTe0hue7thkB1bsoxjD8F7JMjlLSZAwg==
+X-Received: by 2002:aed:2ac5:: with SMTP id t63mr10726167qtd.315.1578934130537;
+        Mon, 13 Jan 2020 08:48:50 -0800 (PST)
+Received: from ?IPv6:2601:282:800:7a:ad53:3eb0:98a5:6359? ([2601:282:800:7a:ad53:3eb0:98a5:6359])
+        by smtp.googlemail.com with ESMTPSA id h34sm6009320qtc.62.2020.01.13.08.48.49
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 13 Jan 2020 08:48:49 -0800 (PST)
+Subject: Re: VRF + ip xfrm, egress ESP packet looping when qdisc configured
+To:     Ben Greear <greearb@candelatech.com>, Trev Larock <trev@larock.ca>
+Cc:     netdev@vger.kernel.org
+References: <CAHgT=KfpKenfzn3+uiVdF-B3mGv30Ngu70y6Zn+wH0GcGcDFYQ@mail.gmail.com>
+ <ff36e5d0-0b01-9683-1698-474468067402@gmail.com>
+ <CAHgT=KcQb4ngBmhU82cc+XbW_2RvYfi0OwH5ROstkw9DD8G3mA@mail.gmail.com>
+ <5e8522fb-d383-c0ea-f013-8625f204c4ce@gmail.com>
+ <CAHgT=KdW3hNy4pE+prSA1WyKNu0Ni8qg0SSbxWQ_Dx0RjcPLdA@mail.gmail.com>
+ <9777beb0-0c9c-ef8b-22f0-81373b635e50@candelatech.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <fe7ec5d0-73ed-aa8b-3246-39894252fec7@gmail.com>
+Date:   Mon, 13 Jan 2020 09:48:48 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.3.1
 MIME-Version: 1.0
-X-Received: by 2002:a5e:8516:: with SMTP id i22mr13810044ioj.130.1578933722080;
- Mon, 13 Jan 2020 08:42:02 -0800 (PST)
-Date:   Mon, 13 Jan 2020 08:42:02 -0800
-In-Reply-To: <0000000000005ed7710596937e86@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000a0ef18059c082789@google.com>
-Subject: Re: KASAN: use-after-free Read in j1939_xtp_rx_abort_one
-From:   syzbot <syzbot+db4869ba599c0de9b13e@syzkaller.appspotmail.com>
-To:     bst@pengutronix.de, davem@davemloft.net,
-        dev.kurt@vandijck-laurijssen.be, ecathinds@gmail.com,
-        kernel@pengutronix.de, linux-can@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux@rempel-privat.de,
-        lkp@intel.com, maxime.jayat@mobile-devices.fr, mkl@pengutronix.de,
-        netdev@vger.kernel.org, o.rempel@pengutronix.de, robin@protonic.nl,
-        socketcan@hartkopp.net, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+In-Reply-To: <9777beb0-0c9c-ef8b-22f0-81373b635e50@candelatech.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot suspects this bug was fixed by commit:
+On 1/7/20 3:59 PM, Ben Greear wrote:
+> 
+> As luck would have it, I am investigating problems that sound very similar
+> today.
 
-commit ddeeb7d4822ed06d79fc15e822b70dce3fa77e39
-Author: Oleksij Rempel <o.rempel@pengutronix.de>
-Date:   Sat Nov 9 15:11:18 2019 +0000
+Trev's problem is looping due to the presence of the qdisc. The vrf
+driver needs to detect that it has seen the packet and not redirect it
+again.
 
-     can: j1939: j1939_can_recv(): add priv refcounting
+> 
+> In my case, I'm not using network name spaces.  For instance:
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=15a7ec76e00000
-start commit:   de620fb9 Merge branch 'for-5.4-fixes' of git://git.kernel...
-git tree:       upstream
-kernel config:  https://syzkaller.appspot.com/x/.config?x=f9ff8f11e66c1fb1
-dashboard link: https://syzkaller.appspot.com/bug?extid=db4869ba599c0de9b13e
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=113e0d72e00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=136aa6e8e00000
+use of the namespaces is solely for a standalone (single node) test. It
+has no bearing on the problem.
 
-If the result looks correct, please mark the bug fixed by replying with:
+> 
+> eth1 is the un-encrypted interface
+> x_eth1 is the xfrm network device on top of eth1
+> both belong to _vrf1
+> 
+> What I see is that packets coming in eth1 from the VPN are encrypted and
+> received
+> on x_eth1.
+> 
+> But, UDP frames that I am trying very hard to send on x_eth1
+> (SO_BINDTODEVICE is called)
+> are not actually sent from there but instead go out of eth1 un-encrypted.
 
-#syz fix: can: j1939: j1939_can_recv(): add priv refcounting
-
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+have you added debugs to the udp code to check that device binding? What
+about the fib_table_lookup tracepoint?
